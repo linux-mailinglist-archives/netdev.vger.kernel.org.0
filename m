@@ -2,65 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 20B705AC878
-	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 03:19:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D34C5AC882
+	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 03:26:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231686AbiIEBTK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Sep 2022 21:19:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55980 "EHLO
+        id S235124AbiIEB0o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Sep 2022 21:26:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230013AbiIEBTJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Sep 2022 21:19:09 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 672B827FFF;
-        Sun,  4 Sep 2022 18:19:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662340748; x=1693876748;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ll9tO925T9xsodBipO9e3UrxjRbk99kbcxC/Fg87W2A=;
-  b=EsoTzrfevMiJfZLZRJBAP56/SkBgbKa3wOA/jRLOLsDuFM+uEVKrCgFk
-   mIAmsKzqYI/iC+ZaAfwqBbmHaySaGWsGYoUfSnt1KfCNmASHGuK9Z25pT
-   Ey4iJ2YQaQVZbEDMUpTdEQKA4TlV3Ova+7u0PTXUhAvrRZymhurMlNKCR
-   BjIuBDgfgipatc06IUMuuiCcYHJpmKkl2yehtmLxhW/UR7PsiS9bp6Th/
-   +PjD6pJb25fy9fMPFnUrgo/HD4X/jVhmy6CUXT6YQRhDCneibJNKWTANy
-   6hxLVhFCFBijGL3JhZ3OIH6rte5vyAIIxqgkovYzu6Xdk523TIhRZhocV
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10460"; a="360238493"
-X-IronPort-AV: E=Sophos;i="5.93,290,1654585200"; 
-   d="scan'208";a="360238493"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Sep 2022 18:19:07 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,290,1654585200"; 
-   d="scan'208";a="702719901"
-Received: from lkp-server02.sh.intel.com (HELO 95dfd251caa2) ([10.239.97.151])
-  by FMSMGA003.fm.intel.com with ESMTP; 04 Sep 2022 18:19:05 -0700
-Received: from kbuild by 95dfd251caa2 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oV0lV-0003ex-0R;
-        Mon, 05 Sep 2022 01:19:05 +0000
-Date:   Mon, 5 Sep 2022 09:18:42 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Olliver Schinagl <oliver@schinagl.nl>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        inux-kernel@vger.kernel.org,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Olliver Schinagl <oliver@schinagl.nl>
-Subject: Re: [PATCH] phy: Add helpers for setting/clearing bits in paged
- registers
-Message-ID: <202209050910.t87wLY38-lkp@intel.com>
-References: <20220904225555.1994290-1-oliver@schinagl.nl>
+        with ESMTP id S229702AbiIEB0m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Sep 2022 21:26:42 -0400
+Received: from out162-62-57-137.mail.qq.com (out162-62-57-137.mail.qq.com [162.62.57.137])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63DB82BB0D
+        for <netdev@vger.kernel.org>; Sun,  4 Sep 2022 18:26:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1662341197;
+        bh=YIE8sJ2GxvwPy8tD7EYzlAYfVnYvTWwBsPmlX9YPYv0=;
+        h=From:To:Cc:Subject:Date;
+        b=EQK6EeCfz1V063X5OSzU4zO/IkhR7hPkyYrzgITk5QtFmNySMU3iVXcgJ8YnNK+G9
+         +0DjK6LUQREKbMCrKgUXAqong7Ad0tpN6UYAPo4gACooTS6IoKNUyv/jVTRsWJfdBj
+         pZNaPSQ1k/YSNc+fJ/+InJ3BZZRjLoHEJaL5otF8=
+Received: from localhost.localdomain ([220.180.239.55])
+        by newxmesmtplogicsvrsza30.qq.com (NewEsmtp) with SMTP
+        id 64A95C5E; Mon, 05 Sep 2022 09:25:10 +0800
+X-QQ-mid: xmsmtpt1662341110tndn78uzk
+Message-ID: <tencent_E50CA8A206904897C2D20DDAE90731183C05@qq.com>
+X-QQ-XMAILINFO: NQR8mRxMnur9ZWgqfJXkZM4H4vOysS4TklrQQhM+P+Ej9Syk9Sq/AudcFZzF2R
+         fugW62F6ffsfWk9IKEDRHBG+02SAx4sD/Hw/TckfMiP1mrZdLBiS+sd/1B7k3DL3yS/w8BExiu+H
+         gAgPy+NIfO/EvODK5QcUsXa4uudd3Ql236ddTYts2ihWr6Z9Kqg0ab6BsGKtolH1hOZxh29ALy5T
+         RjOU2INrZqPWUjwCdaHr/quI395Ndm7Pk26oVqL4OY0Xn9dQA42xjKXiULh6+8ekaPamBqg0SyvO
+         Rongy1d4mnC3LBT0pBMY2dbPDmo5pBzjwj8McgMWl6UNNPK3MDM+/DWalFBZVv9sKhEUI2+sg8AU
+         G7ypTnLCgJSOG8LfZWGli+dl9jhwfEdyMXN9db8vBY1U26D7LVK3bxIQBc9tv7kXl+dS8fXysGSQ
+         gTED/w9siCb0ibE/M3YOaQLn+5tZ9VmmDsCCEfSZ4BNgk5lNgCBouEOTKZ65K7Y4hsO7Ppax/jFB
+         7ZsfGCoJh6/dcFZU4tzM8GrwaYtdUwPGwVKfuG6jpAHbPMGBZyiFgGO0LA8hdTlskh0dME/YxMiL
+         e540ryjDXntcJ43S8gvuRAVIFShaoi11O5i1iHqIPAx7rP9x0bjAnnjcuuXIVwG7RtckadLSiWKv
+         iBe0JjE/YOErLJ57dY00K+wL72H3MPjqNtzogcTZDdsOnW7jP3T8vm6FlPJoaxX0J83v/i2PkoJ3
+         nsrykLUE1Ba/zrXGVTkLDJ4HvHYi2T9foRgNBoc77nsyNuXlIISv0475qlo6rGnNo7odu1ZqzTLV
+         3bKXaH8p/AQUjCXqby+O350k+BxhoOt49EsBmetdsraLZXAPEUPAjyJwn/hQlk5EvgpqAekyIxtY
+         +ZCsgEhXSPucF+KUuoGjGVIrVi87VcTTs8GC9wrrpoNEkTp9UBZykPMy6GG6cSLXAU2dwq1PUJLF
+         IfwgnjwDLFttfq1l/R+9y6q0zWZIhP1btwYjQbuQS7aN+cBowC2KqUS+LeL5SVxaiM6TT2Ngo=
+From:   "jerry.meng" <jerry-meng@foxmail.com>
+To:     bjorn@mork.no, davem@davemloft.net
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, "jerry.meng" <jerry-meng@foxmail.com>
+Subject: [PATCH] net: usb: qmi_wwan: add Quectel RM520N
+Date:   Mon,  5 Sep 2022 09:24:52 +0800
+X-OQ-MSGID: <20220905012452.36343-1-jerry-meng@foxmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220904225555.1994290-1-oliver@schinagl.nl>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        HELO_DYNAMIC_IPADDR,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,RDNS_DYNAMIC,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,73 +61,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Olliver,
+add support for Quectel RM520N which is based on Qualcomm SDX62 chip.
 
-Thank you for the patch! Yet something to improve:
+0x0801: DIAG + NMEA + AT + MODEM + RMNET
 
-[auto build test ERROR on linus/master]
-[also build test ERROR on v6.0-rc4 next-20220901]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+T:  Bus=03 Lev=01 Prnt=01 Port=01 Cnt=02 Dev#= 10 Spd=480  MxCh= 0
+D:  Ver= 2.10 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
+P:  Vendor=2c7c ProdID=0801 Rev= 5.04
+S:  Manufacturer=Quectel
+S:  Product=RM520N-GL
+S:  SerialNumber=384af524
+C:* #Ifs= 5 Cfg#= 1 Atr=a0 MxPwr=500mA
+I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=30 Driver=option
+E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 1 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=40 Driver=option
+E:  Ad=83(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
+E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=85(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
+E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=87(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
+E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+E:  Ad=88(I) Atr=03(Int.) MxPS=   8 Ivl=32ms
+E:  Ad=8e(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=0f(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Olliver-Schinagl/phy-Add-helpers-for-setting-clearing-bits-in-paged-registers/20220905-070318
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 7e18e42e4b280c85b76967a9106a13ca61c16179
-config: hexagon-randconfig-r045-20220905 (https://download.01.org/0day-ci/archive/20220905/202209050910.t87wLY38-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project c55b41d5199d2394dd6cdb8f52180d8b81d809d4)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/342260cb7603ad567f4799836ad4ed390ccedf2a
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Olliver-Schinagl/phy-Add-helpers-for-setting-clearing-bits-in-paged-registers/20220905-070318
-        git checkout 342260cb7603ad567f4799836ad4ed390ccedf2a
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/phy/microchip/
+Signed-off-by: jerry.meng <jerry-meng@foxmail.com>
+---
+ drivers/net/usb/qmi_wwan.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from drivers/phy/microchip/lan966x_serdes.c:7:
->> include/linux/phy.h:1275:9: error: call to undeclared function 'phy_modify_paged'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-           return phy_modify_paged(phydev, page, regnum, 0, val);
-                  ^
-   include/linux/phy.h:1275:9: note: did you mean 'phy_modify_changed'?
-   include/linux/phy.h:1142:5: note: 'phy_modify_changed' declared here
-   int phy_modify_changed(struct phy_device *phydev, u32 regnum, u16 mask,
-       ^
-   include/linux/phy.h:1288:9: error: call to undeclared function 'phy_modify_paged'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-           return phy_modify_paged(phydev, page, regnum, val, 0);
-                  ^
-   include/linux/phy.h:1447:5: error: conflicting types for 'phy_modify_paged'
-   int phy_modify_paged(struct phy_device *phydev, int page, u32 regnum,
-       ^
-   include/linux/phy.h:1275:9: note: previous implicit declaration is here
-           return phy_modify_paged(phydev, page, regnum, 0, val);
-                  ^
-   3 errors generated.
-
-
-vim +/phy_modify_paged +1275 include/linux/phy.h
-
-  1264	
-  1265	/**
-  1266	 * phy_set_bits_paged - Convenience function for setting bits in a paged register
-  1267	 * @phydev: the phy_device struct
-  1268	 * @page: the page for the phy
-  1269	 * @regnum: register number to write
-  1270	 * @val: bits to set
-  1271	 */
-  1272	static inline int phy_set_bits_paged(struct phy_device *phydev, int page,
-  1273					     u32 regnum, u16 val)
-  1274	{
-> 1275		return phy_modify_paged(phydev, page, regnum, 0, val);
-  1276	}
-  1277	
-
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index 709e3c59e340..0cb187def5bc 100644
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -1087,6 +1087,7 @@ static const struct usb_device_id products[] = {
+ 	{QMI_MATCH_FF_FF_FF(0x2c7c, 0x0512)},	/* Quectel EG12/EM12 */
+ 	{QMI_MATCH_FF_FF_FF(0x2c7c, 0x0620)},	/* Quectel EM160R-GL */
+ 	{QMI_MATCH_FF_FF_FF(0x2c7c, 0x0800)},	/* Quectel RM500Q-GL */
++	{QMI_MATCH_FF_FF_FF(0x2c7c, 0x0801)},	/* Quectel RM520N */
+ 
+ 	/* 3. Combined interface devices matching on interface number */
+ 	{QMI_FIXED_INTF(0x0408, 0xea42, 4)},	/* Yota / Megafon M100-1 */
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
+
