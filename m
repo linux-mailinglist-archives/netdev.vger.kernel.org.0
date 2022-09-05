@@ -2,169 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 775695AD82D
+	by mail.lfdr.de (Postfix) with ESMTP id 08FCA5AD82C
 	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 19:13:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229797AbiIERMr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Sep 2022 13:12:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39130 "EHLO
+        id S232005AbiIERNI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Sep 2022 13:13:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232160AbiIERMp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 13:12:45 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5A8162A92
-        for <netdev@vger.kernel.org>; Mon,  5 Sep 2022 10:12:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662397963; x=1693933963;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=xu226FYnnpgDCFZ+ujR4rYnxLI08NOVz/3ZednLXJhs=;
-  b=BMrMMidnXzNaxK0Y+6rDaZvJP7uzCNZNvHPn8VNvzEmlRpCWMTlfOW+m
-   JY53/hIMoIRTr8sSL6Fpq7v10MrUq5dQ0hEYGIrD882sV0Z/w0aXh+gjB
-   xeRspn0CXA+FvYPbgbMKSZoHgvf22vlUn1zkQa/iJz7J2YwZo8wszpnXh
-   1NmUIE6T1hWnsM4VSUIhhxZDpJWPD8E7qBKBDKIs8j9qyZIgPtwav0xU/
-   1Vlw/UaAltaFm2h4BFEJYkImcRcAA+MErXqhpZVYMVNNV4uYnLoGJkilP
-   I0lGtVTI+Q/tSH5I+z33wrYQtPmCoU8qGXT3MTIJKrGoskb+imUnnce1M
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10461"; a="276822318"
-X-IronPort-AV: E=Sophos;i="5.93,291,1654585200"; 
-   d="scan'208";a="276822318"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Sep 2022 10:12:43 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,291,1654585200"; 
-   d="scan'208";a="702950738"
-Received: from lkp-server02.sh.intel.com (HELO 95dfd251caa2) ([10.239.97.151])
-  by FMSMGA003.fm.intel.com with ESMTP; 05 Sep 2022 10:12:40 -0700
-Received: from kbuild by 95dfd251caa2 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oVFeK-0004N3-0c;
-        Mon, 05 Sep 2022 17:12:40 +0000
-Date:   Tue, 6 Sep 2022 01:12:13 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mattias Forsblad <mattias.forsblad@gmail.com>,
-        netdev@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S231236AbiIERNH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 13:13:07 -0400
+Received: from EUR03-AM7-obe.outbound.protection.outlook.com (mail-am7eur03on2046.outbound.protection.outlook.com [40.107.105.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 871FD1EAFC;
+        Mon,  5 Sep 2022 10:13:06 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ML6rvo/oVVixylof+x4wVRLMMhb/2rx19bH9GFw9b3irFmuK4VUL2DdtDMC9Vq6312m9Qc5mcV+y621mImBKEmDyU0TpEUd1eGKaJ2ypPCg/+VXXSCVBw86ex6MrSnJ0Juvp9bXkdzySJsou82N8Bm/t4M+j83xIxxpsOBDXjWzY+dPlkIcNm2ueNanX9r1ESPNL1m01rugi8DeaSUoxr6P1O9h/s/O5CvoxgDgvToANQrZx7DywukC6gTxHF3T6RHFVE2Pjq/VvKGjoVTJRJ4gZ69/RaFPvLm148g6m6hzEeYESqtxqJVvH0S9BHuoi8fbicENJR2MBpS7P5Fl5cw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=KLW21lTwhlOkxLzRLdJ1D2xOMmi6hl2iC7ukZGUn2GY=;
+ b=Sc6G7A/cNLRNV8+KvOzRQQ2v1r/GLFIzqzGt3AB+CNLTGZeMsaL+a2ideBSWoXTyawNlqNPjwC9VrCbgdJ6I4sKCaVHeSmvxr0XZXddB7CsBJBsH+il6/pD10DPJoZawnm4NRe0Z0fCBTGMSF6MSW8Q7lLhXHQTjfWAniRxMhICrathGOSm6zwdUftJzxada7jXCiBzd923PShmeMydgDkKl9c6OcuoQCKFpTMPtETguxwuL6SbJnNQbq9tBAiNLXnBAq0ebFvJd+N2ulg4ifuZThbZyYCHXDWsu9oaMZqEeU6dj5Sv2irc3S78PU/93oXZBgG4s81gAOm+6VFA2eQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KLW21lTwhlOkxLzRLdJ1D2xOMmi6hl2iC7ukZGUn2GY=;
+ b=p3F/VamE8+O6JcEA3T7txZJ4q7xzg2zJ4s5KD5V1yuFBM/Z1GyhClhz/NOdj66TCbgBeYxd4d/kGwT9VwSF1WlJZI1AxxCRSXR7e1bjzHXa03VR+j/ksLjkKb4Qh1GtN9DC+LtP4qS46dOjEaew8xz5LCAS4BMORZ9r6FnnoBZw=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by HE1PR0402MB3481.eurprd04.prod.outlook.com (2603:10a6:7:83::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.18; Mon, 5 Sep
+ 2022 17:13:04 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3412:9d57:ec73:fef3]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3412:9d57:ec73:fef3%5]) with mapi id 15.20.5588.017; Mon, 5 Sep 2022
+ 17:13:03 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Mattias Forsblad <mattias.forsblad@gmail.com>
-Subject: Re: [PATCH net-next v3 1/2] net: dsa: mv88e6xxx: Add functionality
- for handling RMU frames.
-Message-ID: <202209060019.VUMe4qJF-lkp@intel.com>
-References: <20220905131917.3643193-2-mattias.forsblad@gmail.com>
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Michael Walle <michael@walle.cc>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Richie Pearn <richard.pearn@nxp.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net 0/3] Fixes for Felix DSA driver calculation of
+ tc-taprio guard bands
+Thread-Topic: [PATCH net 0/3] Fixes for Felix DSA driver calculation of
+ tc-taprio guard bands
+Thread-Index: AQHYvxb28/qM7TJw1kq6G5TAZWP7l63RF1WA
+Date:   Mon, 5 Sep 2022 17:13:03 +0000
+Message-ID: <20220905171303.tdphogp6odtzpxnn@skbuf>
+References: <20220902215702.3895073-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20220902215702.3895073-1-vladimir.oltean@nxp.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0abacd28-c5b5-4386-085c-08da8f61e4c6
+x-ms-traffictypediagnostic: HE1PR0402MB3481:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 9pSrQ1tVGvUqG6J6QT0hQvxAy4+HeHVjjP7pu0s+4v+AZEMS4ZhuAPXdf2Cl7aqMTndbK5UYm4yTsslDl7KKWNkIscA18hODOxxyeKCBiDx6WI9Z1fxULbnMxpp3R2e8JSJb6lK5HsGRpVlyzttChoxplrx0RfdCUkrRphAhfUZjQyXZ0IkBdv9ckuUy1iSdeInjJvxHh52+Dirr/f+mYDUk5P1AmSvXwyFblyGtDvGeTDPg+Z016f6pCN4AKblsahjE0uvgjbmePkoXykqyTwC6AbpKcBEw4cFGYiCZJ2shVOg8cDDESaiGfntsdDU7HXkRY4k0+zdGERK/Uwt7Hk3T7zQ4D0SEf1d9rBEjIjVjsydSjpqfc/L65xEj5HdkiVtxJB3cuinwOwZkmGSsExTFYYN2Xy/IFrkkhfpoadwJ+f8Cgfgd1iflrf1rFynX9s2Zsab+ndKvFITh/RDhsv+kYlTKwnb1VHXjIV5qtWS3l2ZVa2owtdsY3uJBa77h6sk2eV/pgm4u1maXYY2GvLIzIbHNhKFFcdpdv8MfvxfLeZLv7HlE0YnuilMKCepfCf6Efo4JgJWMG3SHH0zhF/YlQ8Y3EGFd0d7zE+62xdCd95QR7wef1+Gjk7+1p5H0KnxvhVwTj5P/Gsdu960+cmJVcOVUh1rPua4Ea3o0cL2g5gVkQptMRgbWzJ3UW0mPl8TariJ+DEjHkLdRopSGm2ErmXQszL6E5Z2vH6jbRr3QTEi7wkkpN3D03Kk/Z82WiTOE1Rx67xF6slQgv+VAH/UhY+7bIDk3JFXIqTy427I=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(7916004)(346002)(396003)(136003)(376002)(39860400002)(366004)(478600001)(41300700001)(8676002)(71200400001)(26005)(6512007)(9686003)(6506007)(33716001)(66556008)(4744005)(66476007)(64756008)(66946007)(4326008)(66446008)(2906002)(316002)(966005)(38070700005)(76116006)(86362001)(54906003)(6916009)(6486002)(1076003)(122000001)(38100700002)(186003)(44832011)(5660300002)(7416002)(8936002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?XnjYPq//8qeLYfoUJk856igjGX5HY9Ity6/omExg6smLvE+JqMD2AG0Yq2eo?=
+ =?us-ascii?Q?5HHNfZmr7KEovRN/JhsuLar1TB5tdLV6b/DNHwCi6splTUmCi/2XMXX82Aqc?=
+ =?us-ascii?Q?nXv87SgKwkDV4e+1jfcAnimRn9UmfNgDARFu5rCRdooWaOUbklnHbsh76hha?=
+ =?us-ascii?Q?7lx/DPv4v0v3gXOVvaJrVTsZiYEMNZpMyRq9JXuw5ZgEdz2QugfKq81qDVxK?=
+ =?us-ascii?Q?MAcPaQZKnGp1y7t0H7DPzB87iZMrxm1A1yQXNt1m0U9WOxX+RoB1SCQYRCzX?=
+ =?us-ascii?Q?xYahL/kpZZU+dkS3SUQdDGcs85m1h0Hf+Uvv/B/yIDDXSpyKaT9yekg1d4ym?=
+ =?us-ascii?Q?Xj0M3ZW8x1FezTZhgoic6g2XpbrIQ8Vw6iBFnRYaP+zrlJeNKlE+FzzA+MPJ?=
+ =?us-ascii?Q?RdsQd9334F83ICAcFQGQLQ4/XubCsn/57fw3H/AzAAs6ARpQYJdau8YwSszK?=
+ =?us-ascii?Q?icPnpK5VyMnOkC/Gydg/rke/eB0Hpklio1iv6SYCh+2NgVZfjJQHEPuTt5FT?=
+ =?us-ascii?Q?hqwsQEyGWTLZEgZf1ErUv7r33JnRnPF1XUBETTiHAZGzeQRkgrn8Qrvynhk9?=
+ =?us-ascii?Q?cqiJXqu5lTTsQQwCGCgLDH8CSj5++XQz4BDx++cJPJWwK6Q06xs/7/YVSnfp?=
+ =?us-ascii?Q?yLEQoWExhiQLQbG/UMprELtqilnI8/BE6X1AFuR972U0vfB673JwraqUWdgW?=
+ =?us-ascii?Q?183L4b5Py70IDjFxY05so3S+rVTvHHWfIF3FnFLPT+H47FSxXgifkCTalQCW?=
+ =?us-ascii?Q?0bI7IifpPSMAYurbpgAOD2v00tW957fI/2Xp6XSvaEB685ctS1ja7u75Qblr?=
+ =?us-ascii?Q?k37D5zUDHy5ujHtwkI97cNjZNW7XyWgvtNzzDGAG+YfKSOiBvwn2Yul+4Rjq?=
+ =?us-ascii?Q?VFMumj0rd8U63t91dUvuxHZKZ6B2nb2FUUUfrAzNBwBsKTkklegrEu+l7jAS?=
+ =?us-ascii?Q?1hH7syP00/7wlNNAU8IvDiLO0Kjr1mBKFVUNiq92iZ1bHfn/vYqh12NNYmcz?=
+ =?us-ascii?Q?JBpbEerNSZiieMy3a1Eovii9a5UajPJ+Ch4X2d4nuo8UCHaYB0hrZp9WBYpm?=
+ =?us-ascii?Q?LLCUN8O/WC4Di8aKkeReBwCELGsguQm81Xb1EWkieGQnudmMoS8wDonCv0aP?=
+ =?us-ascii?Q?xJHH2NnoTeddOr0TGY/dRKDjgnzsi5F8Dm/xDG/ufFtPEHbH/fOuRf2YliZs?=
+ =?us-ascii?Q?GV53pIW1ygOwQWGPl4xyoILtqRUP98WHvUo0wDXwJUM4yR8u0Gt0btLE5aHJ?=
+ =?us-ascii?Q?TCy5fzxgYlxkQrxWOJJ0kL3Zm4b2b0svev1pPHPAsm0hjHMXfRmsFRC1M/Es?=
+ =?us-ascii?Q?kN5fypRPcyHBydsK2WIHd3SoYjP96PuS69jiLiJQGkT59OqmRwveHLj7wt16?=
+ =?us-ascii?Q?y/R27NHT6KCyQGRXzhpwXCe/PrVmfR7A7yMGiQFeUJaxOCjpQc4jI687QvXL?=
+ =?us-ascii?Q?RJDCHN4AJDu14HRTil41NIzGD2a7AiKTDDwc2E+7T465RuBbnoXQH+coQ9Er?=
+ =?us-ascii?Q?Ucj3ZVv3ij8ALU4SDmBiTSBBkY55P2XKi7o/L2aJDoSju7BlAABReKXoC/tp?=
+ =?us-ascii?Q?zc6ptzOeUfBwUFcuXhWFFzS2Z4xPKPvemb9rfenOxbHq5Tfd1pRXY7zHdfTN?=
+ =?us-ascii?Q?sg=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <3C244F2FCD2F14478CC5579CEF868BFC@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220905131917.3643193-2-mattias.forsblad@gmail.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0abacd28-c5b5-4386-085c-08da8f61e4c6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Sep 2022 17:13:03.8817
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: QXqrn5Umtq5Mh2WMtBIHLamhBLXHxkIX0hVQKBL0le+EIcJMfaCm4jDykkMphHs2XyziJPjuMHaZFIpIqr5+bw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0402MB3481
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Mattias,
+On Sat, Sep 03, 2022 at 12:56:59AM +0300, Vladimir Oltean wrote:
+> This series fixes some bugs which are not quite new, but date from v5.13
+> when static guard bands were enabled by Michael Walle to prevent
+> tc-taprio overruns.
 
-Thank you for the patch! Perhaps something to improve:
-
-[auto build test WARNING on net-next/master]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Mattias-Forsblad/net-dsa-mv88e6xxx-qca8k-Add-RMU-support/20220905-212125
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 5f3c5193479e5b9d51b201245febab6fbda4c477
-config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220906/202209060019.VUMe4qJF-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/50e5d9b5948e53c773edc3c710020e01f6045f9f
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Mattias-Forsblad/net-dsa-mv88e6xxx-qca8k-Add-RMU-support/20220905-212125
-        git checkout 50e5d9b5948e53c773edc3c710020e01f6045f9f
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/dsa/mv88e6xxx/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/net/dsa/mv88e6xxx/rmu.c: In function 'mv88e6xxx_decode_frame2reg_handler':
->> drivers/net/dsa/mv88e6xxx/rmu.c:239:33: warning: variable 'tagger_data' set but not used [-Wunused-but-set-variable]
-     239 |         struct dsa_tagger_data *tagger_data;
-         |                                 ^~~~~~~~~~~
-
-
-vim +/tagger_data +239 drivers/net/dsa/mv88e6xxx/rmu.c
-
-   236	
-   237	void mv88e6xxx_decode_frame2reg_handler(struct net_device *dev, struct sk_buff *skb)
-   238	{
- > 239		struct dsa_tagger_data *tagger_data;
-   240		struct dsa_port *dp = dev->dsa_ptr;
-   241		struct dsa_switch *ds = dp->ds;
-   242		struct mv88e6xxx_chip *chip;
-   243		int source_device;
-   244		u8 *dsa_header;
-   245		u16 format;
-   246		u16 code;
-   247		u8 seqno;
-   248	
-   249		tagger_data = ds->tagger_data;
-   250	
-   251		if (mv88e6xxx_validate_mac(ds, skb))
-   252			return;
-   253	
-   254		/* Decode Frame2Reg DSA portion */
-   255		dsa_header = skb->data - 2;
-   256	
-   257		source_device = FIELD_GET(MV88E6XXX_SOURCE_DEV, dsa_header[0]);
-   258		ds = dsa_switch_find(ds->dst->index, source_device);
-   259		if (!ds) {
-   260			net_dbg_ratelimited("RMU: Didn't find switch with index %d", source_device);
-   261			return;
-   262		}
-   263	
-   264		chip = ds->priv;
-   265		seqno = dsa_header[3];
-   266		if (seqno != chip->rmu.inband_seqno) {
-   267			net_dbg_ratelimited("RMU: wrong seqno received. Was %d, expected %d",
-   268					    seqno, chip->rmu.inband_seqno);
-   269			return;
-   270		}
-   271	
-   272		/* Pull DSA L2 data */
-   273		skb_pull(skb, MV88E6XXX_DSA_HLEN);
-   274	
-   275		format = get_unaligned_be16(&skb->data[0]);
-   276		if (format != MV88E6XXX_RMU_RESP_FORMAT_1 &&
-   277		    format != MV88E6XXX_RMU_RESP_FORMAT_2) {
-   278			net_dbg_ratelimited("RMU: received unknown format 0x%04x", format);
-   279			return;
-   280		}
-   281	
-   282		code = get_unaligned_be16(&skb->data[4]);
-   283		if (code == MV88E6XXX_RMU_RESP_ERROR) {
-   284			net_dbg_ratelimited("RMU: error response code 0x%04x", code);
-   285			return;
-   286		}
-   287	
-   288		if (code == MV88E6XXX_RMU_RESP_CODE_GOT_ID)
-   289			mv88e6xxx_prod_id_handler(ds, skb);
-   290		else if (code == MV88E6XXX_RMU_RESP_CODE_DUMP_MIB)
-   291			mv88e6xxx_mib_handler(ds, skb);
-   292	
-   293		dsa_switch_inband_complete(ds, NULL);
-   294	}
-   295	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Please discard this patch set, I've sent v2 here:
+https://patchwork.kernel.org/project/netdevbpf/cover/20220905170125.1269498=
+-1-vladimir.oltean@nxp.com/=
