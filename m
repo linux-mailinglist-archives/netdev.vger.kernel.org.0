@@ -2,305 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2799D5AF862
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 01:25:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D39365AF861
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 01:25:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229704AbiIFXZO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Sep 2022 19:25:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58532 "EHLO
+        id S229502AbiIFXZL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Sep 2022 19:25:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229509AbiIFXZL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 19:25:11 -0400
-Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87F0573904
-        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 16:25:10 -0700 (PDT)
+        with ESMTP id S229494AbiIFXZK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 19:25:10 -0400
+Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30C7672FF4
+        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 16:25:09 -0700 (PDT)
+Received: by mail-il1-x131.google.com with SMTP id a9so6774079ilh.1
+        for <netdev@vger.kernel.org>; Tue, 06 Sep 2022 16:25:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1662506711; x=1694042711;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=DvlUd1QRKfClwvY0YVzalUw54m7T3knqsKG1APKZTvI=;
-  b=m2fzCV/K3+SkMHEhhgbqeC/43k3x/J1IiOCS9hfHhCmfbJCnbs+4YjTF
-   pBi//wdG8JmYyj+Z79B4rHr0yjPK++eu4Sos02gI7VhsWK/Jv7nqBkgGA
-   YC8SaLfn2mj2pBEIiVf5GqnYyvJ5Aphbj0/4JxcVnb8oSrGlpb3ZyIIc4
-   A=;
-X-IronPort-AV: E=Sophos;i="5.93,294,1654560000"; 
-   d="scan'208";a="127340388"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2c-72dc3927.us-west-2.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2022 23:24:57 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2c-72dc3927.us-west-2.amazon.com (Postfix) with ESMTPS id 19C8A45001;
-        Tue,  6 Sep 2022 23:24:56 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Tue, 6 Sep 2022 23:24:55 +0000
-Received: from 88665a182662.ant.amazon.com.com (10.43.162.89) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Tue, 6 Sep 2022 23:24:52 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <kuniyu@amazon.com>
-CC:     <davem@davemloft.net>, <edumazet@google.com>,
-        <eric.dumazet@gmail.com>, <kuba@kernel.org>, <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>, <pabeni@redhat.com>
-Subject: Re: [PATCH v4 net-next 2/6] tcp: Don't allocate tcp_death_row outside of struct netns_ipv4.
-Date:   Tue, 6 Sep 2022 16:24:44 -0700
-Message-ID: <20220906232444.68846-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220906231150.68045-1-kuniyu@amazon.com>
-References: <20220906231150.68045-1-kuniyu@amazon.com>
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=C6CqzmqAV+zNrM0cv5gJQkUSvfqgiaw/UrSpes/FRLc=;
+        b=ptUmMGPRHnZM0uZAS5AHvq2Eo9Dk68yOMPS32nGhBaotpwLrm+Et3XcAu27rJRpQSj
+         2zd4t3FSPr7jnDSe4MgP7ODCRIH7BnmHv/YcvlLIvUamnMr7GOSXckumJtJRkx3o5M1z
+         NBFgrO2+0ZmGjCv9mMx6BQIAFY7PacyoC05id9M7R4NGKnjfC7gn9NNbxhVCzkQw0f7i
+         QZuaWqVqmbHTtezWsoUT549xGm/zR7CRGPFMDFtdDprGbRWrZfQ7D0pQRODkGwQfE7mG
+         yoM4b1VCZd6auEZWlm8ZzNC5m9bereFlrrXllGTsJqA6yWlwn04D/ga+XuV6ZJUEqtjn
+         djAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=C6CqzmqAV+zNrM0cv5gJQkUSvfqgiaw/UrSpes/FRLc=;
+        b=mP6Lc8uNSnWXPT8sacApe0ehKXqgv7Z/brG/3IBNTsyJGdhA1c3+fShO7eWBb6hTUT
+         bVOnNG1x+2jqu0uxggETN4xvtFuopD31H7lSd18XNsX7UdfCrtruTmFHLtaiYetpU6NQ
+         LJ3w2Ua5mXGlw7TgBEdTjfrRex0fcVhMUglhV3zYstFdfuj2lUIw9284TL4ykIEnmJrh
+         rOzMJXzkNkN7Wq2c9gvzRFBTPLAzJzX9zgwWUjtekfSkztbjeh8mllKSS3p9AMvQcmsT
+         /IpcAvAhi8T7aBrbUlnhFd75EZNQJ0NCLuKDbSObtueCQbGKLFMx7HXNd6g4FIJoKxpl
+         R+3Q==
+X-Gm-Message-State: ACgBeo22teDX9NQkxTd27uksaI3jTpa+w1wZPYkMJ6zUpECfmdIUugER
+        xAXQ9RmEv0uzbRXANmYR9/4WJT57pcZ34VmCax0=
+X-Google-Smtp-Source: AA6agR47Qs59C3/nTDgV3KQPjhEgvRMGM9KfHB69N7dmVXl6KCUIGs8mWhLG3EexR897PR75BLOxTOPMKJCesoF0O3Q=
+X-Received: by 2002:a92:ca0b:0:b0:2f1:da1d:c229 with SMTP id
+ j11-20020a92ca0b000000b002f1da1dc229mr464317ils.145.1662506708547; Tue, 06
+ Sep 2022 16:25:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.89]
-X-ClientProxiedBy: EX13D15UWB004.ant.amazon.com (10.43.161.61) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220816042405.2416972-1-m.chetan.kumar@intel.com>
+ <CAHNKnsT1E1A25iNN143kRZ=R5cC=P6zDJ+RkXhKYZopG4i38yQ@mail.gmail.com> <8458896f-9207-e548-f485-6218201c9099@linux.intel.com>
+In-Reply-To: <8458896f-9207-e548-f485-6218201c9099@linux.intel.com>
+From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Date:   Wed, 7 Sep 2022 02:24:59 +0300
+Message-ID: <CAHNKnsRY2cRS8LggQbpFaPGoOT_hSZSecT8QtKxW=D7Gq7Ug+A@mail.gmail.com>
+Subject: Re: [PATCH net-next 4/5] net: wwan: t7xx: Enable devlink based fw
+ flashing and coredump collection
+To:     "Kumar, M Chetan" <m.chetan.kumar@linux.intel.com>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        "Sudi, Krishna C" <krishna.c.sudi@intel.com>,
+        Intel Corporation <linuxwwan@intel.com>,
+        Devegowda Chandrashekar <chandrashekar.devegowda@intel.com>,
+        Mishra Soumya Prakash <soumya.prakash.mishra@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-Date:   Tue, 6 Sep 2022 16:11:50 -0700
-> From:   Eric Dumazet <eric.dumazet@gmail.com>
-> Date:   Tue, 6 Sep 2022 14:26:30 -0700
-> > On 9/6/22 09:24, Kuniyuki Iwashima wrote:
-> > > We will soon introduce an optional per-netns ehash and access hash
-> > > tables via net->ipv4.tcp_death_row->hashinfo instead of &tcp_hashinfo
-> > > in most places.
-> > >
-> > > It could harm the fast path because dereferences of two fields in net
-> > > and tcp_death_row might incur two extra cache line misses.  To save one
-> > > dereference, let's place tcp_death_row back in netns_ipv4 and fetch
-> > > hashinfo via net->ipv4.tcp_death_row"."hashinfo.
-> > >
-> > > Note tcp_death_row was initially placed in netns_ipv4, and commit
-> > > fbb8295248e1 ("tcp: allocate tcp_death_row outside of struct netns_ipv4")
-> > > changed it to a pointer so that we can fire TIME_WAIT timers after freeing
-> > > net.  However, we don't do so after commit 04c494e68a13 ("Revert "tcp/dccp:
-> > > get rid of inet_twsk_purge()""), so we need not define tcp_death_row as a
-> > > pointer.
-> > >
-> > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> > > ---
-> > >   include/net/netns/ipv4.h      |  3 ++-
-> > >   net/dccp/minisocks.c          |  2 +-
-> > >   net/ipv4/inet_timewait_sock.c |  4 +---
-> > >   net/ipv4/proc.c               |  2 +-
-> > >   net/ipv4/sysctl_net_ipv4.c    |  8 ++------
-> > >   net/ipv4/tcp_ipv4.c           | 14 +++-----------
-> > >   net/ipv4/tcp_minisocks.c      |  2 +-
-> > >   net/ipv6/tcp_ipv6.c           |  2 +-
-> > >   8 files changed, 12 insertions(+), 25 deletions(-)
-> > >
-> > > diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
-> > > index 6320a76cefdc..2c7df93e3403 100644
-> > > --- a/include/net/netns/ipv4.h
-> > > +++ b/include/net/netns/ipv4.h
-> > > @@ -34,6 +34,7 @@ struct inet_hashinfo;
-> > >   struct inet_timewait_death_row {
-> > >   	refcount_t		tw_refcount;
-> > >   
-> > > +	/* Padding to avoid false sharing, tw_refcount can be often written */
-> > >   	struct inet_hashinfo 	*hashinfo ____cacheline_aligned_in_smp;
-> > >   	int			sysctl_max_tw_buckets;
-> > >   };
-> > > @@ -41,7 +42,7 @@ struct inet_timewait_death_row {
-> > >   struct tcp_fastopen_context;
-> > >   
-> > >   struct netns_ipv4 {
-> > > -	struct inet_timewait_death_row *tcp_death_row;
-> > > +	struct inet_timewait_death_row tcp_death_row;
-> > >   
-> > >   #ifdef CONFIG_SYSCTL
-> > >   	struct ctl_table_header	*forw_hdr;
-> > > diff --git a/net/dccp/minisocks.c b/net/dccp/minisocks.c
-> > > index 64d805b27add..39f408d44da5 100644
-> > > --- a/net/dccp/minisocks.c
-> > > +++ b/net/dccp/minisocks.c
-> > > @@ -22,7 +22,7 @@
-> > >   #include "feat.h"
-> > >   
-> > >   struct inet_timewait_death_row dccp_death_row = {
-> > > -	.tw_refcount = REFCOUNT_INIT(1),
-> > > +	.tw_refcount = REFCOUNT_INIT(0),
-> > 
-> > 
-> > I do not see how this can possibly work.
-> > 
-> > If the initial (TCP/DCCP) tw_refcount value is 0, then the first attempt
-> > 
-> > doing a refcount_inc() will trigger a warning/crash.
-> > 
-> > Have you looked at dmesg/syslog when testing your patch ?
-> > 
-> > It should contain a loud warning...
-> 
-> Ah.. right... I'll keep the base as 1.
-> 
-> > 
-> > 
-> > >   	.sysctl_max_tw_buckets = NR_FILE * 2,
-> > >   	.hashinfo	= &dccp_hashinfo,
-> > >   };
-> > > diff --git a/net/ipv4/inet_timewait_sock.c b/net/ipv4/inet_timewait_sock.c
-> > > index 47ccc343c9fb..71d3bb0abf6c 100644
-> > > --- a/net/ipv4/inet_timewait_sock.c
-> > > +++ b/net/ipv4/inet_timewait_sock.c
-> > > @@ -59,9 +59,7 @@ static void inet_twsk_kill(struct inet_timewait_sock *tw)
-> > >   	inet_twsk_bind_unhash(tw, hashinfo);
-> > >   	spin_unlock(&bhead->lock);
-> > >   
-> > > -	if (refcount_dec_and_test(&tw->tw_dr->tw_refcount))
-> > > -		kfree(tw->tw_dr);
-> > > -
-> > > +	refcount_dec(&tw->tw_dr->tw_refcount);
-> > >   	inet_twsk_put(tw);
-> > >   }
-> > >   
-> > > diff --git a/net/ipv4/proc.c b/net/ipv4/proc.c
-> > > index 0088a4c64d77..37508be97393 100644
-> > > --- a/net/ipv4/proc.c
-> > > +++ b/net/ipv4/proc.c
-> > > @@ -59,7 +59,7 @@ static int sockstat_seq_show(struct seq_file *seq, void *v)
-> > >   	socket_seq_show(seq);
-> > >   	seq_printf(seq, "TCP: inuse %d orphan %d tw %d alloc %d mem %ld\n",
-> > >   		   sock_prot_inuse_get(net, &tcp_prot), orphans,
-> > > -		   refcount_read(&net->ipv4.tcp_death_row->tw_refcount) - 1,
-> > 
-> > 
-> > I think your patch changes too many things.
-> > 
-> > Please leave the refcount base value at 1, not 0 :/
-> 
-> Will do.
-> 
-> 
-> > > +		   refcount_read(&net->ipv4.tcp_death_row.tw_refcount),
-> > >   		   sockets, proto_memory_allocated(&tcp_prot));
-> > >   	seq_printf(seq, "UDP: inuse %d mem %ld\n",
-> > >   		   sock_prot_inuse_get(net, &udp_prot),
-> > > diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-> > > index 5490c285668b..4d7c110c772f 100644
-> > > --- a/net/ipv4/sysctl_net_ipv4.c
-> > > +++ b/net/ipv4/sysctl_net_ipv4.c
-> > > @@ -530,10 +530,9 @@ static struct ctl_table ipv4_table[] = {
-> > >   };
-> > >   
-> > >   static struct ctl_table ipv4_net_table[] = {
-> > > -	/* tcp_max_tw_buckets must be first in this table. */
-> > >   	{
-> > >   		.procname	= "tcp_max_tw_buckets",
-> > > -/*		.data		= &init_net.ipv4.tcp_death_row.sysctl_max_tw_buckets, */
-> > > +		.data		= &init_net.ipv4.tcp_death_row.sysctl_max_tw_buckets,
-> > >   		.maxlen		= sizeof(int),
-> > >   		.mode		= 0644,
-> > >   		.proc_handler	= proc_dointvec
-> > > @@ -1361,8 +1360,7 @@ static __net_init int ipv4_sysctl_init_net(struct net *net)
-> > >   		if (!table)
-> > >   			goto err_alloc;
-> > >   
-> > > -		/* skip first entry (sysctl_max_tw_buckets) */
-> > > -		for (i = 1; i < ARRAY_SIZE(ipv4_net_table) - 1; i++) {
-> > > +		for (i = 0; i < ARRAY_SIZE(ipv4_net_table) - 1; i++) {
-> > >   			if (table[i].data) {
-> > >   				/* Update the variables to point into
-> > >   				 * the current struct net
-> > > @@ -1377,8 +1375,6 @@ static __net_init int ipv4_sysctl_init_net(struct net *net)
-> > >   		}
-> > >   	}
-> > >   
-> > > -	table[0].data = &net->ipv4.tcp_death_row->sysctl_max_tw_buckets;
-> > > -
-> > >   	net->ipv4.ipv4_hdr = register_net_sysctl(net, "net/ipv4", table);
-> > >   	if (!net->ipv4.ipv4_hdr)
-> > >   		goto err_reg;
-> > > diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-> > > index a07243f66d4c..e2a6511218f8 100644
-> > > --- a/net/ipv4/tcp_ipv4.c
-> > > +++ b/net/ipv4/tcp_ipv4.c
-> > > @@ -292,7 +292,7 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
-> > >   	 * complete initialization after this.
-> > >   	 */
-> > >   	tcp_set_state(sk, TCP_SYN_SENT);
-> > > -	tcp_death_row = net->ipv4.tcp_death_row;
-> > > +	tcp_death_row = &net->ipv4.tcp_death_row;
-> > >   	err = inet_hash_connect(tcp_death_row, sk);
-> > >   	if (err)
-> > >   		goto failure;
-> > > @@ -3091,13 +3091,9 @@ EXPORT_SYMBOL(tcp_prot);
-> > >   
-> > >   static void __net_exit tcp_sk_exit(struct net *net)
-> > >   {
-> > > -	struct inet_timewait_death_row *tcp_death_row = net->ipv4.tcp_death_row;
-> > > -
-> > >   	if (net->ipv4.tcp_congestion_control)
-> > >   		bpf_module_put(net->ipv4.tcp_congestion_control,
-> > >   			       net->ipv4.tcp_congestion_control->owner);
-> > > -	if (refcount_dec_and_test(&tcp_death_row->tw_refcount))
-> > > -		kfree(tcp_death_row);
-> > 
-> > We might add a debug check about tw_refcount being 1 at this point.
-> > 
-> > WARN_ON_ONCE(!refcount_dec_and_test(&net->ipv4.tcp_death_row.tw_refcount)));
-> 
-> I'll add it.
+On Sat, Sep 3, 2022 at 11:32 AM Kumar, M Chetan
+<m.chetan.kumar@linux.intel.com> wrote:
+> On 8/30/2022 7:51 AM, Sergey Ryazanov wrote:
+>> On Tue, Aug 16, 2022 at 7:12 AM <m.chetan.kumar@intel.com> wrote:
+>>> From: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+>>>
+>>> This patch brings-in support for t7xx wwan device firmware flashing &
+>>> coredump collection using devlink.
+>>>
+>>> Driver Registers with Devlink framework.
+>>> Implements devlink ops flash_update callback that programs modem firmware.
+>>> Creates region & snapshot required for device coredump log collection.
+>>> On early detection of wwan device in fastboot mode driver sets up CLDMA0 HW
+>>> tx/rx queues for raw data transfer then registers with devlink framework.
+>>> Upon receiving firmware image & partition details driver sends fastboot
+>>> commands for flashing the firmware.
+>>>
+>>> In this flow the fastboot command & response gets exchanged between driver
+>>> and device. Once firmware flashing is success completion status is reported
+>>> to user space application.
+>>>
+>>> Below is the devlink command usage for firmware flashing
+>>>
+>>> $devlink dev flash pci/$BDF file ABC.img component ABC
+>>>
+>>> Note: ABC.img is the firmware to be programmed to "ABC" partition.
+>>>
+>>> In case of coredump collection when wwan device encounters an exception
+>>> it reboots & stays in fastboot mode for coredump collection by host driver.
+>>> On detecting exception state driver collects the core dump, creates the
+>>> devlink region & reports an event to user space application for dump
+>>> collection. The user space application invokes devlink region read command
+>>> for dump collection.
+>>>
+>>> Below are the devlink commands used for coredump collection.
+>>>
+>>> devlink region new pci/$BDF/mr_dump
+>>> devlink region read pci/$BDF/mr_dump snapshot $ID address $ADD length $LEN
+>>> devlink region del pci/$BDF/mr_dump snapshot $ID
+>>>
+>>> Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+>>> Signed-off-by: Devegowda Chandrashekar <chandrashekar.devegowda@intel.com>
+>>> Signed-off-by: Mishra Soumya Prakash <soumya.prakash.mishra@intel.com>
+>>
+>> [skipped]
+>>
+>>> diff --git a/drivers/net/wwan/t7xx/t7xx_state_monitor.c b/drivers/net/wwan/t7xx/t7xx_state_monitor.c
+>>> index 9c222809371b..00e143c8d568 100644
+>>> --- a/drivers/net/wwan/t7xx/t7xx_state_monitor.c
+>>> +++ b/drivers/net/wwan/t7xx/t7xx_state_monitor.c
+>>
+>> [skipped]
+>>
+>>> @@ -239,8 +252,16 @@ static void t7xx_lk_stage_event_handling(struct t7xx_fsm_ctl *ctl, unsigned int
+>>>                          return;
+>>>                  }
+>>>
+>>> +               if (lk_event == LK_EVENT_CREATE_PD_PORT)
+>>> +                       port->dl->mode = T7XX_FB_DUMP_MODE;
+>>> +               else
+>>> +                       port->dl->mode = T7XX_FB_DL_MODE;
+>>>                  port->port_conf->ops->enable_chl(port);
+>>>                  t7xx_cldma_start(md_ctrl);
+>>> +               if (lk_event == LK_EVENT_CREATE_PD_PORT)
+>>> +                       t7xx_uevent_send(dev, T7XX_UEVENT_MODEM_FASTBOOT_DUMP_MODE);
+>>> +               else
+>>> +                       t7xx_uevent_send(dev, T7XX_UEVENT_MODEM_FASTBOOT_DL_MODE);
+>>>                  break;
+>>>
+>>>          case LK_EVENT_RESET:
+>>
+>> [skipped]
+>>
+>>> @@ -318,6 +349,7 @@ static void fsm_routine_ready(struct t7xx_fsm_ctl *ctl)
+>>>
+>>>          ctl->curr_state = FSM_STATE_READY;
+>>>          t7xx_fsm_broadcast_ready_state(ctl);
+>>> +       t7xx_uevent_send(&md->t7xx_dev->pdev->dev, T7XX_UEVENT_MODEM_READY);
+>>>          t7xx_md_event_notify(md, FSM_READY);
+>>>   }
+>>
+>> These UEVENT things look at least unrelated to the patch. If the
+>> deriver is really need it, please factor out it into a separate patch
+>> with a comment describing why userspace wants to see these events.
+>>
+>> On the other hand, this looks like a custom tracing implementation. It
+>> might be better to use simple debug messages instead or even the
+>> tracing API, which is much more powerful than any uevent.
+>
+> Driver is reporting modem status (up, down, exception, etc) via uevent.
+> The wwan user space services use these states for taking some action.
+> So we have choose uevent for reporting modem status to user space.
+>
+> Is it ok we retain this logic ? I will drop it from this patch and send
+> it as a separate patch for review.
 
-In tcp_sk_exit(), we could still have tw sockets and inet_twsk_purge()
-could get rid of them.  So, I'll add the check in tcp_sk_exit_batch().
+Usually some subsystem generates common events for served devices. And
+it is quite unusual for drivers to generate custom uevents. I found
+only a few examples of such drivers.
 
+I am not against the uevent usage, I just doubt that some userspace
+software could benefit from custom driver uevents. If this case is
+special, then please send these uevent changes as a separate patch
+with a comment describing why userspace wants to see them.
 
-> 
-> Thank you!
-> 
-> 
-> > >   }
-> > >   
-> > >   static int __net_init tcp_sk_init(struct net *net)
-> > > @@ -3129,13 +3125,9 @@ static int __net_init tcp_sk_init(struct net *net)
-> > >   	net->ipv4.sysctl_tcp_tw_reuse = 2;
-> > >   	net->ipv4.sysctl_tcp_no_ssthresh_metrics_save = 1;
-> > >   
-> > > -	net->ipv4.tcp_death_row = kzalloc(sizeof(struct inet_timewait_death_row), GFP_KERNEL);
-> > > -	if (!net->ipv4.tcp_death_row)
-> > > -		return -ENOMEM;
-> > > -	refcount_set(&net->ipv4.tcp_death_row->tw_refcount, 1);
-> > >   	cnt = tcp_hashinfo.ehash_mask + 1;
-> > > -	net->ipv4.tcp_death_row->sysctl_max_tw_buckets = cnt / 2;
-> > > -	net->ipv4.tcp_death_row->hashinfo = &tcp_hashinfo;
-> > > +	net->ipv4.tcp_death_row.sysctl_max_tw_buckets = cnt / 2;
-> > > +	net->ipv4.tcp_death_row.hashinfo = &tcp_hashinfo;
-> > >   
-> > >   	net->ipv4.sysctl_max_syn_backlog = max(128, cnt / 128);
-> > >   	net->ipv4.sysctl_tcp_sack = 1;
-> > > diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-> > > index 80ce27f8f77e..8bddb2a78b21 100644
-> > > --- a/net/ipv4/tcp_minisocks.c
-> > > +++ b/net/ipv4/tcp_minisocks.c
-> > > @@ -250,7 +250,7 @@ void tcp_time_wait(struct sock *sk, int state, int timeo)
-> > >   	struct net *net = sock_net(sk);
-> > >   	struct inet_timewait_sock *tw;
-> > >   
-> > > -	tw = inet_twsk_alloc(sk, net->ipv4.tcp_death_row, state);
-> > > +	tw = inet_twsk_alloc(sk, &net->ipv4.tcp_death_row, state);
-> > >   
-> > >   	if (tw) {
-> > >   		struct tcp_timewait_sock *tcptw = tcp_twsk((struct sock *)tw);
-> > > diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-> > > index 5c562d69fddf..eb1da7a63fbb 100644
-> > > --- a/net/ipv6/tcp_ipv6.c
-> > > +++ b/net/ipv6/tcp_ipv6.c
-> > > @@ -325,7 +325,7 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
-> > >   	inet->inet_dport = usin->sin6_port;
-> > >   
-> > >   	tcp_set_state(sk, TCP_SYN_SENT);
-> > > -	tcp_death_row = net->ipv4.tcp_death_row;
-> > > +	tcp_death_row = &net->ipv4.tcp_death_row;
-> > >   	err = inet6_hash_connect(tcp_death_row, sk);
-> > >   	if (err)
-> > >   		goto late_failure;
+-- 
+Sergey
