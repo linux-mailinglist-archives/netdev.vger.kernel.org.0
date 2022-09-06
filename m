@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E7E075AF205
-	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 19:13:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42C3F5AF159
+	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 18:59:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234668AbiIFRLg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Sep 2022 13:11:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52484 "EHLO
+        id S234562AbiIFQ7X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Sep 2022 12:59:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240041AbiIFRJT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 13:09:19 -0400
-Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABFB3857DF
-        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 09:57:54 -0700 (PDT)
+        with ESMTP id S234567AbiIFQ7E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 12:59:04 -0400
+Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54D1B94EE7
+        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 09:46:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1662483474; x=1694019474;
+  t=1662482799; x=1694018799;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=clq5YtH643+AsnclTApHCX7yhBjxeN0aZku06G3SlkI=;
-  b=jCIUaGZt1D7WXFgG+i684JDdqEIw01Mtl5+Y4cYr+4XDLVv82RZrpXqm
-   7/Ck/9PCu5Oul17pISmrNWDJshyh3+9Jyu/ddbr1wTBfThO73/oe7DOXg
-   yKGucSj6/S0YbBmCbPCCpFzunM9ZgOcYtISIhDOqe/cEELei40fMaqNWG
-   g=;
+  bh=JdQ/cjbBeb/qtw+g2Ah6vcsnp87bmZw+4BMP5WYszHQ=;
+  b=XNj9YRyC+jcI2aS4KQSVeIqEM06OcyqXQTg80mz5QkXLpAc5ljvpmkvT
+   vmflbs1UOA9ISdFzwHZTkiQy8K0XNvcO0R9IAWkjGlYRhnKChx3/cye7v
+   yiDw9bRnIP/QZt1PUjtGY7SeTlDmCEj9L3ptFqxrAK3/WLYQyLw5GcQBN
+   8=;
 X-IronPort-AV: E=Sophos;i="5.93,294,1654560000"; 
-   d="scan'208";a="127228991"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2b-d803d33a.us-west-2.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2022 16:25:43 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-2b-d803d33a.us-west-2.amazon.com (Postfix) with ESMTPS id 3F41E8144C;
-        Tue,  6 Sep 2022 16:25:42 +0000 (UTC)
+   d="scan'208";a="1051765268"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2a-6a4112b2.us-west-2.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-9103.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2022 16:25:56 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2a-6a4112b2.us-west-2.amazon.com (Postfix) with ESMTPS id 5F7F04C0012;
+        Tue,  6 Sep 2022 16:25:56 +0000 (UTC)
 Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Tue, 6 Sep 2022 16:25:41 +0000
+ id 15.0.1497.38; Tue, 6 Sep 2022 16:25:55 +0000
 Received: from 88665a182662.ant.amazon.com (10.43.161.172) by
  EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Tue, 6 Sep 2022 16:25:38 +0000
+ Tue, 6 Sep 2022 16:25:53 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -46,9 +46,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
         Kuniyuki Iwashima <kuni1840@gmail.com>,
         <netdev@vger.kernel.org>
-Subject: [PATCH v4 net-next 2/6] tcp: Don't allocate tcp_death_row outside of struct netns_ipv4.
-Date:   Tue, 6 Sep 2022 09:24:19 -0700
-Message-ID: <20220906162423.44410-3-kuniyu@amazon.com>
+Subject: [PATCH v4 net-next 3/6] tcp: Set NULL to sk->sk_prot->h.hashinfo.
+Date:   Tue, 6 Sep 2022 09:24:20 -0700
+Message-ID: <20220906162423.44410-4-kuniyu@amazon.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220906162423.44410-1-kuniyu@amazon.com>
 References: <20220906162423.44410-1-kuniyu@amazon.com>
@@ -68,200 +68,190 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We will soon introduce an optional per-netns ehash and access hash
-tables via net->ipv4.tcp_death_row->hashinfo instead of &tcp_hashinfo
-in most places.
+We will soon introduce an optional per-netns ehash.
 
-It could harm the fast path because dereferences of two fields in net
-and tcp_death_row might incur two extra cache line misses.  To save one
-dereference, let's place tcp_death_row back in netns_ipv4 and fetch
-hashinfo via net->ipv4.tcp_death_row"."hashinfo.
+This means we cannot use the global sk->sk_prot->h.hashinfo
+to fetch a TCP hashinfo.
 
-Note tcp_death_row was initially placed in netns_ipv4, and commit
-fbb8295248e1 ("tcp: allocate tcp_death_row outside of struct netns_ipv4")
-changed it to a pointer so that we can fire TIME_WAIT timers after freeing
-net.  However, we don't do so after commit 04c494e68a13 ("Revert "tcp/dccp:
-get rid of inet_twsk_purge()""), so we need not define tcp_death_row as a
-pointer.
+Instead, set NULL to sk->sk_prot->h.hashinfo for TCP and get
+a proper hashinfo from net->ipv4.tcp_death_row.hashinfo.
+
+Note that we need not use sk->sk_prot->h.hashinfo if DCCP is
+disabled.
 
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 ---
- include/net/netns/ipv4.h      |  3 ++-
- net/dccp/minisocks.c          |  2 +-
- net/ipv4/inet_timewait_sock.c |  4 +---
- net/ipv4/proc.c               |  2 +-
- net/ipv4/sysctl_net_ipv4.c    |  8 ++------
- net/ipv4/tcp_ipv4.c           | 14 +++-----------
- net/ipv4/tcp_minisocks.c      |  2 +-
- net/ipv6/tcp_ipv6.c           |  2 +-
- 8 files changed, 12 insertions(+), 25 deletions(-)
+ include/net/inet_hashtables.h   | 10 ++++++++++
+ net/ipv4/af_inet.c              |  2 +-
+ net/ipv4/inet_connection_sock.c |  9 ++++-----
+ net/ipv4/inet_hashtables.c      | 14 +++++++-------
+ net/ipv4/tcp_ipv4.c             |  2 +-
+ net/ipv6/tcp_ipv6.c             |  2 +-
+ 6 files changed, 24 insertions(+), 15 deletions(-)
 
-diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
-index 6320a76cefdc..2c7df93e3403 100644
---- a/include/net/netns/ipv4.h
-+++ b/include/net/netns/ipv4.h
-@@ -34,6 +34,7 @@ struct inet_hashinfo;
- struct inet_timewait_death_row {
- 	refcount_t		tw_refcount;
- 
-+	/* Padding to avoid false sharing, tw_refcount can be often written */
- 	struct inet_hashinfo 	*hashinfo ____cacheline_aligned_in_smp;
- 	int			sysctl_max_tw_buckets;
- };
-@@ -41,7 +42,7 @@ struct inet_timewait_death_row {
- struct tcp_fastopen_context;
- 
- struct netns_ipv4 {
--	struct inet_timewait_death_row *tcp_death_row;
-+	struct inet_timewait_death_row tcp_death_row;
- 
- #ifdef CONFIG_SYSCTL
- 	struct ctl_table_header	*forw_hdr;
-diff --git a/net/dccp/minisocks.c b/net/dccp/minisocks.c
-index 64d805b27add..39f408d44da5 100644
---- a/net/dccp/minisocks.c
-+++ b/net/dccp/minisocks.c
-@@ -22,7 +22,7 @@
- #include "feat.h"
- 
- struct inet_timewait_death_row dccp_death_row = {
--	.tw_refcount = REFCOUNT_INIT(1),
-+	.tw_refcount = REFCOUNT_INIT(0),
- 	.sysctl_max_tw_buckets = NR_FILE * 2,
- 	.hashinfo	= &dccp_hashinfo,
- };
-diff --git a/net/ipv4/inet_timewait_sock.c b/net/ipv4/inet_timewait_sock.c
-index 47ccc343c9fb..71d3bb0abf6c 100644
---- a/net/ipv4/inet_timewait_sock.c
-+++ b/net/ipv4/inet_timewait_sock.c
-@@ -59,9 +59,7 @@ static void inet_twsk_kill(struct inet_timewait_sock *tw)
- 	inet_twsk_bind_unhash(tw, hashinfo);
- 	spin_unlock(&bhead->lock);
- 
--	if (refcount_dec_and_test(&tw->tw_dr->tw_refcount))
--		kfree(tw->tw_dr);
--
-+	refcount_dec(&tw->tw_dr->tw_refcount);
- 	inet_twsk_put(tw);
- }
- 
-diff --git a/net/ipv4/proc.c b/net/ipv4/proc.c
-index 0088a4c64d77..37508be97393 100644
---- a/net/ipv4/proc.c
-+++ b/net/ipv4/proc.c
-@@ -59,7 +59,7 @@ static int sockstat_seq_show(struct seq_file *seq, void *v)
- 	socket_seq_show(seq);
- 	seq_printf(seq, "TCP: inuse %d orphan %d tw %d alloc %d mem %ld\n",
- 		   sock_prot_inuse_get(net, &tcp_prot), orphans,
--		   refcount_read(&net->ipv4.tcp_death_row->tw_refcount) - 1,
-+		   refcount_read(&net->ipv4.tcp_death_row.tw_refcount),
- 		   sockets, proto_memory_allocated(&tcp_prot));
- 	seq_printf(seq, "UDP: inuse %d mem %ld\n",
- 		   sock_prot_inuse_get(net, &udp_prot),
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index 5490c285668b..4d7c110c772f 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -530,10 +530,9 @@ static struct ctl_table ipv4_table[] = {
+diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
+index 44a419b9e3d5..520dd894b73d 100644
+--- a/include/net/inet_hashtables.h
++++ b/include/net/inet_hashtables.h
+@@ -170,6 +170,16 @@ struct inet_hashinfo {
+ 	struct inet_listen_hashbucket	*lhash2;
  };
  
- static struct ctl_table ipv4_net_table[] = {
--	/* tcp_max_tw_buckets must be first in this table. */
- 	{
- 		.procname	= "tcp_max_tw_buckets",
--/*		.data		= &init_net.ipv4.tcp_death_row.sysctl_max_tw_buckets, */
-+		.data		= &init_net.ipv4.tcp_death_row.sysctl_max_tw_buckets,
- 		.maxlen		= sizeof(int),
- 		.mode		= 0644,
- 		.proc_handler	= proc_dointvec
-@@ -1361,8 +1360,7 @@ static __net_init int ipv4_sysctl_init_net(struct net *net)
- 		if (!table)
- 			goto err_alloc;
- 
--		/* skip first entry (sysctl_max_tw_buckets) */
--		for (i = 1; i < ARRAY_SIZE(ipv4_net_table) - 1; i++) {
-+		for (i = 0; i < ARRAY_SIZE(ipv4_net_table) - 1; i++) {
- 			if (table[i].data) {
- 				/* Update the variables to point into
- 				 * the current struct net
-@@ -1377,8 +1375,6 @@ static __net_init int ipv4_sysctl_init_net(struct net *net)
- 		}
++static inline struct inet_hashinfo *tcp_or_dccp_get_hashinfo(const struct sock *sk)
++{
++#if IS_ENABLED(CONFIG_IP_DCCP)
++	return sk->sk_prot->h.hashinfo ? :
++		sock_net(sk)->ipv4.tcp_death_row.hashinfo;
++#else
++	return sock_net(sk)->ipv4.tcp_death_row.hashinfo;
++#endif
++}
++
+ static inline struct inet_listen_hashbucket *
+ inet_lhash2_bucket(struct inet_hashinfo *h, u32 hash)
+ {
+diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+index d3ab1ae32ef5..e2c219382345 100644
+--- a/net/ipv4/af_inet.c
++++ b/net/ipv4/af_inet.c
+@@ -1250,7 +1250,7 @@ static int inet_sk_reselect_saddr(struct sock *sk)
  	}
  
--	table[0].data = &net->ipv4.tcp_death_row->sysctl_max_tw_buckets;
--
- 	net->ipv4.ipv4_hdr = register_net_sysctl(net, "net/ipv4", table);
- 	if (!net->ipv4.ipv4_hdr)
- 		goto err_reg;
+ 	prev_addr_hashbucket =
+-		inet_bhashfn_portaddr(sk->sk_prot->h.hashinfo, sk,
++		inet_bhashfn_portaddr(tcp_or_dccp_get_hashinfo(sk), sk,
+ 				      sock_net(sk), inet->inet_num);
+ 
+ 	inet->inet_saddr = inet->inet_rcv_saddr = new_saddr;
+diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+index 8e71d65cfad4..ebca860e113f 100644
+--- a/net/ipv4/inet_connection_sock.c
++++ b/net/ipv4/inet_connection_sock.c
+@@ -285,7 +285,7 @@ inet_csk_find_open_port(const struct sock *sk, struct inet_bind_bucket **tb_ret,
+ 			struct inet_bind2_bucket **tb2_ret,
+ 			struct inet_bind_hashbucket **head2_ret, int *port_ret)
+ {
+-	struct inet_hashinfo *hinfo = sk->sk_prot->h.hashinfo;
++	struct inet_hashinfo *hinfo = tcp_or_dccp_get_hashinfo(sk);
+ 	int i, low, high, attempt_half, port, l3mdev;
+ 	struct inet_bind_hashbucket *head, *head2;
+ 	struct net *net = sock_net(sk);
+@@ -467,8 +467,8 @@ void inet_csk_update_fastreuse(struct inet_bind_bucket *tb,
+  */
+ int inet_csk_get_port(struct sock *sk, unsigned short snum)
+ {
++	struct inet_hashinfo *hinfo = tcp_or_dccp_get_hashinfo(sk);
+ 	bool reuse = sk->sk_reuse && sk->sk_state != TCP_LISTEN;
+-	struct inet_hashinfo *hinfo = sk->sk_prot->h.hashinfo;
+ 	bool found_port = false, check_bind_conflict = true;
+ 	bool bhash_created = false, bhash2_created = false;
+ 	struct inet_bind_hashbucket *head, *head2;
+@@ -910,10 +910,9 @@ static bool reqsk_queue_unlink(struct request_sock *req)
+ 	bool found = false;
+ 
+ 	if (sk_hashed(sk)) {
+-		struct inet_hashinfo *hashinfo = sk->sk_prot->h.hashinfo;
+-		spinlock_t *lock;
++		struct inet_hashinfo *hashinfo = tcp_or_dccp_get_hashinfo(sk);
++		spinlock_t *lock = inet_ehash_lockp(hashinfo, req->rsk_hash);
+ 
+-		lock = inet_ehash_lockp(hashinfo, req->rsk_hash);
+ 		spin_lock(lock);
+ 		found = __sk_nulls_del_node_init_rcu(sk);
+ 		spin_unlock(lock);
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index 29dce78de179..bdb5427a7a3d 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -168,7 +168,7 @@ void inet_bind_hash(struct sock *sk, struct inet_bind_bucket *tb,
+  */
+ static void __inet_put_port(struct sock *sk)
+ {
+-	struct inet_hashinfo *hashinfo = sk->sk_prot->h.hashinfo;
++	struct inet_hashinfo *hashinfo = tcp_or_dccp_get_hashinfo(sk);
+ 	struct inet_bind_hashbucket *head, *head2;
+ 	struct net *net = sock_net(sk);
+ 	struct inet_bind_bucket *tb;
+@@ -208,7 +208,7 @@ EXPORT_SYMBOL(inet_put_port);
+ 
+ int __inet_inherit_port(const struct sock *sk, struct sock *child)
+ {
+-	struct inet_hashinfo *table = sk->sk_prot->h.hashinfo;
++	struct inet_hashinfo *table = tcp_or_dccp_get_hashinfo(sk);
+ 	unsigned short port = inet_sk(child)->inet_num;
+ 	struct inet_bind_hashbucket *head, *head2;
+ 	bool created_inet_bind_bucket = false;
+@@ -629,7 +629,7 @@ static bool inet_ehash_lookup_by_sk(struct sock *sk,
+  */
+ bool inet_ehash_insert(struct sock *sk, struct sock *osk, bool *found_dup_sk)
+ {
+-	struct inet_hashinfo *hashinfo = sk->sk_prot->h.hashinfo;
++	struct inet_hashinfo *hashinfo = tcp_or_dccp_get_hashinfo(sk);
+ 	struct inet_ehash_bucket *head;
+ 	struct hlist_nulls_head *list;
+ 	spinlock_t *lock;
+@@ -701,7 +701,7 @@ static int inet_reuseport_add_sock(struct sock *sk,
+ 
+ int __inet_hash(struct sock *sk, struct sock *osk)
+ {
+-	struct inet_hashinfo *hashinfo = sk->sk_prot->h.hashinfo;
++	struct inet_hashinfo *hashinfo = tcp_or_dccp_get_hashinfo(sk);
+ 	struct inet_listen_hashbucket *ilb2;
+ 	int err = 0;
+ 
+@@ -747,7 +747,7 @@ EXPORT_SYMBOL_GPL(inet_hash);
+ 
+ void inet_unhash(struct sock *sk)
+ {
+-	struct inet_hashinfo *hashinfo = sk->sk_prot->h.hashinfo;
++	struct inet_hashinfo *hashinfo = tcp_or_dccp_get_hashinfo(sk);
+ 
+ 	if (sk_unhashed(sk))
+ 		return;
+@@ -834,7 +834,7 @@ inet_bind2_bucket_find(const struct inet_bind_hashbucket *head, const struct net
+ struct inet_bind_hashbucket *
+ inet_bhash2_addr_any_hashbucket(const struct sock *sk, const struct net *net, int port)
+ {
+-	struct inet_hashinfo *hinfo = sk->sk_prot->h.hashinfo;
++	struct inet_hashinfo *hinfo = tcp_or_dccp_get_hashinfo(sk);
+ 	u32 hash;
+ #if IS_ENABLED(CONFIG_IPV6)
+ 	struct in6_addr addr_any = {};
+@@ -850,7 +850,7 @@ inet_bhash2_addr_any_hashbucket(const struct sock *sk, const struct net *net, in
+ 
+ int inet_bhash2_update_saddr(struct inet_bind_hashbucket *prev_saddr, struct sock *sk)
+ {
+-	struct inet_hashinfo *hinfo = sk->sk_prot->h.hashinfo;
++	struct inet_hashinfo *hinfo = tcp_or_dccp_get_hashinfo(sk);
+ 	struct inet_bind2_bucket *tb2, *new_tb2;
+ 	int l3mdev = inet_sk_bound_l3mdev(sk);
+ 	struct inet_bind_hashbucket *head2;
 diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index a07243f66d4c..e2a6511218f8 100644
+index e2a6511218f8..100c6b3e896b 100644
 --- a/net/ipv4/tcp_ipv4.c
 +++ b/net/ipv4/tcp_ipv4.c
-@@ -292,7 +292,7 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
- 	 * complete initialization after this.
- 	 */
- 	tcp_set_state(sk, TCP_SYN_SENT);
--	tcp_death_row = net->ipv4.tcp_death_row;
-+	tcp_death_row = &net->ipv4.tcp_death_row;
- 	err = inet_hash_connect(tcp_death_row, sk);
- 	if (err)
- 		goto failure;
-@@ -3091,13 +3091,9 @@ EXPORT_SYMBOL(tcp_prot);
- 
- static void __net_exit tcp_sk_exit(struct net *net)
- {
--	struct inet_timewait_death_row *tcp_death_row = net->ipv4.tcp_death_row;
--
- 	if (net->ipv4.tcp_congestion_control)
- 		bpf_module_put(net->ipv4.tcp_congestion_control,
- 			       net->ipv4.tcp_congestion_control->owner);
--	if (refcount_dec_and_test(&tcp_death_row->tw_refcount))
--		kfree(tcp_death_row);
- }
- 
- static int __net_init tcp_sk_init(struct net *net)
-@@ -3129,13 +3125,9 @@ static int __net_init tcp_sk_init(struct net *net)
- 	net->ipv4.sysctl_tcp_tw_reuse = 2;
- 	net->ipv4.sysctl_tcp_no_ssthresh_metrics_save = 1;
- 
--	net->ipv4.tcp_death_row = kzalloc(sizeof(struct inet_timewait_death_row), GFP_KERNEL);
--	if (!net->ipv4.tcp_death_row)
--		return -ENOMEM;
--	refcount_set(&net->ipv4.tcp_death_row->tw_refcount, 1);
- 	cnt = tcp_hashinfo.ehash_mask + 1;
--	net->ipv4.tcp_death_row->sysctl_max_tw_buckets = cnt / 2;
--	net->ipv4.tcp_death_row->hashinfo = &tcp_hashinfo;
-+	net->ipv4.tcp_death_row.sysctl_max_tw_buckets = cnt / 2;
-+	net->ipv4.tcp_death_row.hashinfo = &tcp_hashinfo;
- 
- 	net->ipv4.sysctl_max_syn_backlog = max(128, cnt / 128);
- 	net->ipv4.sysctl_tcp_sack = 1;
-diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-index 80ce27f8f77e..8bddb2a78b21 100644
---- a/net/ipv4/tcp_minisocks.c
-+++ b/net/ipv4/tcp_minisocks.c
-@@ -250,7 +250,7 @@ void tcp_time_wait(struct sock *sk, int state, int timeo)
- 	struct net *net = sock_net(sk);
- 	struct inet_timewait_sock *tw;
- 
--	tw = inet_twsk_alloc(sk, net->ipv4.tcp_death_row, state);
-+	tw = inet_twsk_alloc(sk, &net->ipv4.tcp_death_row, state);
- 
- 	if (tw) {
- 		struct tcp_timewait_sock *tcptw = tcp_twsk((struct sock *)tw);
+@@ -3083,7 +3083,7 @@ struct proto tcp_prot = {
+ 	.slab_flags		= SLAB_TYPESAFE_BY_RCU,
+ 	.twsk_prot		= &tcp_timewait_sock_ops,
+ 	.rsk_prot		= &tcp_request_sock_ops,
+-	.h.hashinfo		= &tcp_hashinfo,
++	.h.hashinfo		= NULL,
+ 	.no_autobind		= true,
+ 	.diag_destroy		= tcp_abort,
+ };
 diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 5c562d69fddf..eb1da7a63fbb 100644
+index eb1da7a63fbb..e0b5f5b4d868 100644
 --- a/net/ipv6/tcp_ipv6.c
 +++ b/net/ipv6/tcp_ipv6.c
-@@ -325,7 +325,7 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
- 	inet->inet_dport = usin->sin6_port;
- 
- 	tcp_set_state(sk, TCP_SYN_SENT);
--	tcp_death_row = net->ipv4.tcp_death_row;
-+	tcp_death_row = &net->ipv4.tcp_death_row;
- 	err = inet6_hash_connect(tcp_death_row, sk);
- 	if (err)
- 		goto late_failure;
+@@ -2194,7 +2194,7 @@ struct proto tcpv6_prot = {
+ 	.slab_flags		= SLAB_TYPESAFE_BY_RCU,
+ 	.twsk_prot		= &tcp6_timewait_sock_ops,
+ 	.rsk_prot		= &tcp6_request_sock_ops,
+-	.h.hashinfo		= &tcp_hashinfo,
++	.h.hashinfo		= NULL,
+ 	.no_autobind		= true,
+ 	.diag_destroy		= tcp_abort,
+ };
 -- 
 2.30.2
 
