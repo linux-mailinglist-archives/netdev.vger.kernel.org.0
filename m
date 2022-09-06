@@ -2,158 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E812B5AF2CE
-	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 19:39:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06EF35AF33C
+	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 20:04:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229787AbiIFRjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Sep 2022 13:39:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60764 "EHLO
+        id S229520AbiIFSEl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Sep 2022 14:04:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233673AbiIFRip (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 13:38:45 -0400
-Received: from na01-obe.outbound.protection.outlook.com (mail-centralusazon11013001.outbound.protection.outlook.com [52.101.64.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C4EEC14;
-        Tue,  6 Sep 2022 10:37:48 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aoJDmoiIBtrN2tvGO0lJZNPxE5oOzL4bK3B30ljZWwXbsVyIuFym5B7gdS1o2vWuInd8Bp21+tR7jRGz0a1sblHfKk1muw1XHB1Fznri66bgCUA3kQFVfIBXPnAunwp96Wgd2TsIwF8QeXYbr6yxcwbdPeBrOaw97k+q7PToFPy3AVxC4oBOqPyAp6PFtlao+EwK5tFI36L3QcresUaZoGC5AOOvkSgakP0T0JL5dlblMetfK7EpTeoYtIjKvHLB8K1SnQsRJynMjvxHampAqdoQ0Xq5/OzEiOwdOj2z5mCoPHsA1EESJtvY3+6W2wVXgUdbzLajr0Ji6xMBMwe9xA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rLYGAP5T7jZsDTmSdZNplX/2RRsSlrdQmwBf7rPj3g8=;
- b=CCDR12SdWM2sPs4zCQ3EtXQ1pikX0jdb5bPxbU4qrJIlGiLEYAhhGPFrH7QHCVRWsUOnytrb4CK3Dg3WAnkT4ERzx9ExduuuPBsxnF0GDYYjwJSbS19CvM5G3T0Tpah96UocC0LH7VmJVGtr+RRb1g86athXRfm3TmypU271bAmA1Utp7PeY+7nFFfYUYl9vUygRQ4ibFiOEL7awHJw5m/p4/r4pnh6sVGY3QCQXye+JilyMD9g6MBK5H5I2YPi3nTaUcKpfKZ95Gf3QDl1GlzvSo8xA0rf5vAoeGh1/GvpAz622iYNnXFtMClQCO9sEF9ZJ1kXX/8CGhPMllTd1mw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vmware.com; dmarc=pass action=none header.from=vmware.com;
- dkim=pass header.d=vmware.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vmware.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rLYGAP5T7jZsDTmSdZNplX/2RRsSlrdQmwBf7rPj3g8=;
- b=GtHAekKZFjSgX69cuvQgc5G5keZH1hmSh1GSRJxvyyLDvX3T1p8QIkebfk8DYoQ7SniMBe6xH/yHXe3j3jmu/sw8UItnIxT4g7em0t2FbdPocSSCqc0UlwuAe5Ad1+byAjlKrfNOLI/aZCUcGWCCP1uW9IbDfqWyORVsenSXvYU=
-Received: from BY3PR05MB8531.namprd05.prod.outlook.com (2603:10b6:a03:3ce::6)
- by BL0PR05MB4739.namprd05.prod.outlook.com (2603:10b6:208:29::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.9; Tue, 6 Sep
- 2022 17:37:44 +0000
-Received: from BY3PR05MB8531.namprd05.prod.outlook.com
- ([fe80::e46:a7cf:acd:c835]) by BY3PR05MB8531.namprd05.prod.outlook.com
- ([fe80::e46:a7cf:acd:c835%2]) with mapi id 15.20.5612.012; Tue, 6 Sep 2022
- 17:37:43 +0000
-From:   Nadav Amit <namit@vmware.com>
-To:     Vishnu Dasa <vdasa@vmware.com>
-CC:     Vishal Bhakta <vbhakta@vmware.com>,
-        Bryan Tan <bryantan@vmware.com>, Zack Rusin <zackr@vmware.com>,
-        Linux-graphics-maintainer <Linux-graphics-maintainer@vmware.com>,
-        Ronak Doshi <doshir@vmware.com>,
-        "sgarzare@redhat.com" <sgarzare@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Pv-drivers <Pv-drivers@vmware.com>,
-        Joe Perches <joe@perches.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>
-Subject: Re: [PATCH 2/3] MAINTAINERS: Change status of some VMware drivers
-Thread-Topic: [PATCH 2/3] MAINTAINERS: Change status of some VMware drivers
-Thread-Index: AQHYwhYZd5LRJliYYkuk8GCfNhJZQa3Sqo8A
-Date:   Tue, 6 Sep 2022 17:37:43 +0000
-Message-ID: <4269C33A-AC6E-4247-8471-5AC0A7D3DB1C@vmware.com>
-References: <20220906172722.19862-1-vdasa@vmware.com>
- <20220906172722.19862-3-vdasa@vmware.com>
-In-Reply-To: <20220906172722.19862-3-vdasa@vmware.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3696.120.41.1.1)
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vmware.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BY3PR05MB8531:EE_|BL0PR05MB4739:EE_
-x-ms-office365-filtering-correlation-id: 0f7de458-1c6e-473f-dbdb-08da902e811e
-x-ld-processed: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: xST/KcV54v6zjbQK8ejLFQe2/2tPGKfXQVAjiHWqilw/2RO6ha/OwInIKpIHz/RhcDTpxZVYUZugpgV3sPdqt/7KdSduBWZ2h0hWJIiJYeFgY1wBfwoG32guunfZJZjU8l2pBjjX/F1g76LthcWh6lQMNyjYvmxW1GKu6A2YcwsHy3PkXPySon+R5RcewXKmzn3BeavR41uP2hWh1eydimywCseYYXWPo16dhvEyhjW4wx4cymJWCCtt7S7o1Ka2m9dgvvYpKYl1zcVWxiUggaBgHb2Y+ViGHSOWB/3cQQ4ETLFUKc50pBkDcIWPJtvgTa1Gii1BE6jtq0B+UcfEOWJPseOXzIFy1Pavxbadhwf+F3kcVW87sDRtuyH+2HpvV2AgYUR1VTYrB/hyj0KF7sSck546vbreVMnoS8x8tiad4GXUDCZ/x3hi6RavpMIwO7lKFt9PBee6GDL5SGb+T2mYPC43LlJOfqeVYABju7a5ka7mCM5hVmOZbytVjLQ1zf6GNeYrMXEhkkyXc+jwVbv0yg0Q/ZHeJvK1K8dG7RlHuEdK/+/DsRmN15B1vExbTUKVTIl/W+MRSW6UhGI85rqOyaydWqsPSSiAzymxxZ1ZvhZdLyyV0Xyom8mMkq4WTswMVaUnXVlFHUg24zh0SQfyz1LCQi3iIs9qP+sS/7ukMgnmU/G4DQWwYQdtvXvJxST6TwQrLhRqhOCj2CAE9al45FfyjuiRzkJttGlQ9KPFY7DK3eqgksJ1Fye2tuStuShROO1M2TAvfulMGfgOvU7lRrpG3aoii4yk/y8v41drpwNB8uWQd1Z/Pkd+DfVcx1g9mq+EKd6hz6zC1B4pIeYnxxW/ML0H84+pmZiX5IpOI7zKT9IfLCYGaW5fOXuhV2/SbMc0gjj3wbH6227+jRVEAvaKZlduJwXfhzmBoTcyoQlzRIsXS/4w7kpCU1Qf
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY3PR05MB8531.namprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(396003)(346002)(39860400002)(366004)(376002)(66556008)(8676002)(4326008)(66946007)(7416002)(2906002)(4744005)(76116006)(8936002)(6862004)(5660300002)(38070700005)(64756008)(66476007)(122000001)(38100700002)(53546011)(6506007)(66446008)(41300700001)(6512007)(26005)(478600001)(36756003)(71200400001)(966005)(6486002)(316002)(54906003)(2616005)(186003)(83380400001)(86362001)(37006003)(33656002)(6636002)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Ffowl9du0aBsi20dxDrApkzw5edNv2yYrjy7F0CuHV+rQv4n+pKxR3Ijax/1?=
- =?us-ascii?Q?iGy2WVnGkd86Tm17+2+HELt4LbIdgcV1KwYeSCa6D2GCLJSIZK/iGVr9uVAa?=
- =?us-ascii?Q?Tf8aP9ocvTRNR4TvrukTYcFBF03qyQ6sh8SjwMmokJ7hZCf7lnwNXB77tcrB?=
- =?us-ascii?Q?lJpNMMTOA4R8n6nuo9HxmCtLNbZrI6n+FAWzkChVxxPTnXEf3QISUsx7uiJD?=
- =?us-ascii?Q?pt2fM/suPHiv3oFsmdQxY8r0Orv6LMCdz6eQARnD6wD8K+7iDkfd+slge0K0?=
- =?us-ascii?Q?D3MyZrQDvgIDGwIM3hGenPJYI5lzuSex2G/9azPl34SJkconRxhxo5NVB7Gs?=
- =?us-ascii?Q?HlZIQwpJEGnRgDxqJr0J74b5HBXhK5JLUDbRKURlCV8g/L1DvcYovEH0jt3n?=
- =?us-ascii?Q?/dMGFFGA4aWZUUFIkpXq8M6tNoCKlbKnnXC1oLnDnyDMUshq85Y/FwgznjWN?=
- =?us-ascii?Q?6OQsdLZ6mR87ebF7kNd2G/DNH3QN6I0n3XChnUl+0r3mCS0CzBA38wgcQD63?=
- =?us-ascii?Q?QDXYeJHMyrMukGnd/6XtTQB3F/hLlFNXzcThVEmeXa9wAYH8D7tY3cGaBIAj?=
- =?us-ascii?Q?xF9yj/dbDCPvNsGdZmCAxQxYYWLn8b37BsJSiUo3XJL0xYDQB1z1CZt8H39B?=
- =?us-ascii?Q?sw2CDajxwXj9yDVGvL49ap7Hv4NeHu0KcpG1GjfQQKYRpiyOHmFbZ/XtaoaX?=
- =?us-ascii?Q?9gerc0ydQlIvZ/xlhr+dUDzbVNKIQbZ2jQ9hOYHfhSPxyh/GHv0sEbEgbnn/?=
- =?us-ascii?Q?5hiVgKRaQyB1Y289vHvZt4cIP+VZzIsWOHar001oq6NI+7+soSdQbvoMSv3h?=
- =?us-ascii?Q?I2Ce70/GdQbE3vkhjR8mLQgb+e9n8o7iQ2dNEWQotK9Yl3bXP58dsBNKlUmG?=
- =?us-ascii?Q?heCa1ijSzOc9NpYZFzw3VTWvqEk044GeBuSeVdIsslgBf/NJfCLgFmxczlST?=
- =?us-ascii?Q?ihaEvYaPISdcYJgv2/fl7V1b9QbfU9t9VI4ceSKu0QHgq1UqrnNzvu48WQHn?=
- =?us-ascii?Q?rxJjCyf66JArDm3uPTauvObpxKeuRFrOsuUGCeGmdYuf/YTUd8Tl5Bd7nLBp?=
- =?us-ascii?Q?ZVNckC7fiLT9wbX0QdDT4Wej1U8lCLETyA+K4YurmvL0v59ICMJSLE7H9kKS?=
- =?us-ascii?Q?n1Q/yyMJzzfPKicToFq8Km04O1c/hwXuZQ3L8f+GeCm7oTCOsICTE9yuyTkU?=
- =?us-ascii?Q?9YufdSQ/vo0Q5JjNOWryN9p8Tevx1hGyxn6YqdRC8lwnKPCWfqlc4BxN9Pwf?=
- =?us-ascii?Q?DpQjv0XVl14pLzwRoufDO4Uj/HobIQoAUNhSQq8TIttTOFUzH7KbbXB2TTyr?=
- =?us-ascii?Q?XiTnRrkAkuSTaCTRx3YSttRYTBvJLN6+LG4RASUwz12N47Ha5jTBmxWpht8h?=
- =?us-ascii?Q?OoNarSvSgbpFUDcLthQXeU8/cG5MRDA/coZnxBuDwTj6b0bY3KONAsVKbpns?=
- =?us-ascii?Q?GPE9az0uo7r+K6XFbTKDlY/D8/fXGCjmbcSPIYrjGijHvd6K0tf4myeVZK64?=
- =?us-ascii?Q?r3MvUykl2lmpTB8vNPPKIAeyw/5LVm5uoO0s2ltlC2V1Tmjz/yvnjRIvDZZO?=
- =?us-ascii?Q?G+pWQ9uCBh/0AghWXnU2mfyMyJL0ywxIaIqv5JPz?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1781454FFC6038499E8F43715531848E@namprd05.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S229447AbiIFSEk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 14:04:40 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2D7213E16
+        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 11:04:38 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id lz22so4262362ejb.3
+        for <netdev@vger.kernel.org>; Tue, 06 Sep 2022 11:04:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares.net; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=Ow/wLd30qnpVXkYHu9y10pAdjF3WB8VsFrXpWU88Txg=;
+        b=28aoz7P7Ti8HMbmay9OAw9t6XaM0aGpiu1qjbU04Xqk2kmJdB4n9pNYyu0BPHUUARY
+         ZkbOuz7tkerHLa8mU/2DfbvUnLjzVt0QzW2FvP5WkryNWCzQLwkUD0VUDRMIUv3Jnc8/
+         HK4nSUiWPhF10YEtpPnvdueoz28qFOugksikcsiT0kFlnCBU1MLUYwYxM+pm7AgDWF3i
+         NcwfutTvXQfxGw1kqCfn5zZxJbot2DWR80QA+Kp76BU6Y2dn9cy6uRzViwHr4s5Y6Jj2
+         tBmutwyjtSbapmcxuaPfdkN2NNyoYWCuYFD4oemB0Wf2udzDwE5lfca2uUFxgfhRyFzm
+         gUBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=Ow/wLd30qnpVXkYHu9y10pAdjF3WB8VsFrXpWU88Txg=;
+        b=SIvvnuz8u0m5VyxexbWKbxMMdVRIm12ttgsVniOkBF1/2sAnQTwhHrkWgFctReOgoF
+         LeiQvFo8LuGMjZGqjjqaPI/IQZDw3r/9OBq10XoibeZ6S7ZrNkWS0kg2SysG9Z8xM+R4
+         zau+Gu6wpzSKm4OjwUtK+vWAlxUPYmoD+mO/0QMoo5pRz8RhgJVTQoeGpaMvDSkVp9F8
+         A5dH1z0pt1cqGFvUH736KW0/vmHbn7W+QB6XXTMVPjIrwKXNyJ52KBYqjMnj2R9Dw5+0
+         ENE7v+6PMJDWQ3aztiVfDsNEFjyHQUSr+jXCaGRo9OTICX1e7zMRnNZhnBQLycAdKGGl
+         58oQ==
+X-Gm-Message-State: ACgBeo05ZAgxTK8mNlFvqnYehbJJdYWc0o0jCQXumvXxmf7K8tMAKYrn
+        7QeQ4+3+GxoOVV+WqPnnmEoQvA==
+X-Google-Smtp-Source: AA6agR6lafvIMENxBfPkng6SP6E+fxgPIE0i4Xce9xglTCv8jjI/RR4iSZAXuzihbSYkU0fRkNQ0Hg==
+X-Received: by 2002:a17:907:7ea8:b0:731:4fa1:d034 with SMTP id qb40-20020a1709077ea800b007314fa1d034mr40894770ejc.758.1662487477080;
+        Tue, 06 Sep 2022 11:04:37 -0700 (PDT)
+Received: from vdi08.nix.tessares.net (static.219.156.76.144.clients.your-server.de. [144.76.156.219])
+        by smtp.gmail.com with ESMTPSA id t6-20020a170906948600b00731745a7e62sm7007845ejx.28.2022.09.06.11.04.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Sep 2022 11:04:35 -0700 (PDT)
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     kernel test robot <oliver.sang@intel.com>, netdev@vger.kernel.org,
+        mptcp@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH net 1/2] mptcp: fix fwd memory accounting on coalesce
+Date:   Tue,  6 Sep 2022 20:04:01 +0200
+Message-Id: <20220906180404.1255873-1-matthieu.baerts@tessares.net>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-X-OriginatorOrg: vmware.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR05MB4739
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+X-Developer-Signature: v=1; a=openpgp-sha256; l=5665; i=matthieu.baerts@tessares.net;
+ h=from:subject; bh=t8cmDnU3uUS9PdW1N2RcyIJOSiEW+cMzPyWsGrCTiQQ=;
+ b=owEBbQKS/ZANAwAIAfa3gk9CaaBzAcsmYgBjF4uEGvXD6136jzJ9RSpbwD8Xf7mZeTRCTlvAoKQd
+ KrYW74mJAjMEAAEIAB0WIQToy4X3aHcFem4n93r2t4JPQmmgcwUCYxeLhAAKCRD2t4JPQmmgc5GsD/
+ 42uTEzezIR1isCLJfxvuKH+edEeHDc9WVDBxEr5SDyxKjNZVBgmWShPjaOFV+HodpN9REuezgZwD0R
+ A37hGko4Y6ERWeXVuzglXERHMVz2ImDvXEHQrlJUpQc4ilv8miqLDA4Po5C3T+2y6SMtRMvzuE5g/b
+ 8YeGKfPWWnaI/1gjXjIyKenkVBgGxuqs138qDExX5N8hGCjUAyNdNCpFX7QjvgWb7luKbsRKhD59H5
+ tO6kfywJ2bim9uN2pyBMZM0sWjHHYNp3tkPAWPNpo+8MJcCW822DH4MYutUA9kKA3i6q5zoQj95IrC
+ wzh43vOcIu1yncmBN3ckaRRWqoCygKnYQjDsxE9hkXXVcdoTcdxOFQ602YOifciIFuhlwA/AWTwLwR
+ 4XRLLaO8On3Zw+A7LWWhK2DtsUglp5/htgHnEAvpw2SeQJCGBt+PmIDkonTYJVuxX0sN69gOsZG7nL
+ MHNCISs+EzMl/bFSU8ppq5Ml3+JRvjXkDPdxHKTGcJjQR6+e5J3vlGzZ0+Lp0RRax/OC9i72D+gwg4
+ KvZhr5TqxOFq4i01t2W8iZ4sDqnlx7jfYFsPq0DaZhpRpOteQun1pOTzw00sXqE89NpuzS84WBQukK
+ v9CWFpvH2ZQTmGAbaRbKunMVmKFAGXYbzEXXs6I8JxZLSpumiHZVlUSTnyZA==
+X-Developer-Key: i=matthieu.baerts@tessares.net; a=openpgp; fpr=E8CB85F76877057A6E27F77AF6B7824F4269A073
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sep 6, 2022, at 10:27 AM, Vishnu Dasa <vdasa@vmware.com> wrote:
+From: Paolo Abeni <pabeni@redhat.com>
 
-> From: Vishnu Dasa <vdasa@vmware.com>
->=20
-> Change the status from 'Maintained' to 'Supported' for VMWARE
-> BALLOON DRIVER, VMWARE PVRDMA DRIVER, VMWARE PVSCSI driver,
-> VMWARE VMCI DRIVER, VMWARE VMMOUSE SUBDRIVER and VMWARE VMXNET3
-> ETHERNET DRIVER.
->=20
-> This needs to be done to conform to the guidelines in [1].
-> Maintainers for these drivers are VMware employees.
->=20
-> [1] https://docs.kernel.org/process/maintainers.html
->=20
-> Signed-off-by: Vishnu Dasa <vdasa@vmware.com>
-> ---
-> MAINTAINERS | 12 ++++++------
-> 1 file changed, 6 insertions(+), 6 deletions(-)
->=20
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index b75eb23a099b..5a634b5d6f6c 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -21812,7 +21812,7 @@ VMWARE BALLOON DRIVER
-> M:	Nadav Amit <namit@vmware.com>
-> R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
-> L:	linux-kernel@vger.kernel.org
-> -S:	Maintained
-> +S:	Supported
-> F:	drivers/misc/vmw_balloon.c
+The intel bot reported a memory accounting related splat:
 
-Acked-by: Nadav Amit <namit@vmware.com>
+[  240.473094] ------------[ cut here ]------------
+[  240.478507] page_counter underflow: -4294828518 nr_pages=4294967290
+[  240.485500] WARNING: CPU: 2 PID: 14986 at mm/page_counter.c:56 page_counter_cancel+0x96/0xc0
+[  240.570849] CPU: 2 PID: 14986 Comm: mptcp_connect Tainted: G S                5.19.0-rc4-00739-gd24141fe7b48 #1
+[  240.581637] Hardware name: HP HP Z240 SFF Workstation/802E, BIOS N51 Ver. 01.63 10/05/2017
+[  240.590600] RIP: 0010:page_counter_cancel+0x96/0xc0
+[  240.596179] Code: 00 00 00 45 31 c0 48 89 ef 5d 4c 89 c6 41 5c e9 40 fd ff ff 4c 89 e2 48 c7 c7 20 73 39 84 c6 05 d5 b1 52 04 01 e8 e7 95 f3
+01 <0f> 0b eb a9 48 89 ef e8 1e 25 fc ff eb c3 66 66 2e 0f 1f 84 00 00
+[  240.615639] RSP: 0018:ffffc9000496f7c8 EFLAGS: 00010082
+[  240.621569] RAX: 0000000000000000 RBX: ffff88819c9c0120 RCX: 0000000000000000
+[  240.629404] RDX: 0000000000000027 RSI: 0000000000000004 RDI: fffff5200092deeb
+[  240.637239] RBP: ffff88819c9c0120 R08: 0000000000000001 R09: ffff888366527a2b
+[  240.645069] R10: ffffed106cca4f45 R11: 0000000000000001 R12: 00000000fffffffa
+[  240.652903] R13: ffff888366536118 R14: 00000000fffffffa R15: ffff88819c9c0000
+[  240.660738] FS:  00007f3786e72540(0000) GS:ffff888366500000(0000) knlGS:0000000000000000
+[  240.669529] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  240.675974] CR2: 00007f966b346000 CR3: 0000000168cea002 CR4: 00000000003706e0
+[  240.683807] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  240.691641] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  240.699468] Call Trace:
+[  240.702613]  <TASK>
+[  240.705413]  page_counter_uncharge+0x29/0x80
+[  240.710389]  drain_stock+0xd0/0x180
+[  240.714585]  refill_stock+0x278/0x580
+[  240.718951]  __sk_mem_reduce_allocated+0x222/0x5c0
+[  240.729248]  __mptcp_update_rmem+0x235/0x2c0
+[  240.734228]  __mptcp_move_skbs+0x194/0x6c0
+[  240.749764]  mptcp_recvmsg+0xdfa/0x1340
+[  240.763153]  inet_recvmsg+0x37f/0x500
+[  240.782109]  sock_read_iter+0x24a/0x380
+[  240.805353]  new_sync_read+0x420/0x540
+[  240.838552]  vfs_read+0x37f/0x4c0
+[  240.842582]  ksys_read+0x170/0x200
+[  240.864039]  do_syscall_64+0x5c/0x80
+[  240.872770]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+[  240.878526] RIP: 0033:0x7f3786d9ae8e
+[  240.882805] Code: c0 e9 b6 fe ff ff 50 48 8d 3d 6e 18 0a 00 e8 89 e8 01 00 66 0f 1f 84 00 00 00 00 00 64 8b 04 25 18 00 00 00 85 c0 75 14 0f 05 <48> 3d 00 f0 ff ff 77 5a c3 66 0f 1f 84 00 00 00 00 00 48 83 ec 28
+[  240.902259] RSP: 002b:00007fff7be81e08 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
+[  240.910533] RAX: ffffffffffffffda RBX: 0000000000002000 RCX: 00007f3786d9ae8e
+[  240.918368] RDX: 0000000000002000 RSI: 00007fff7be87ec0 RDI: 0000000000000005
+[  240.926206] RBP: 0000000000000005 R08: 00007f3786e6a230 R09: 00007f3786e6a240
+[  240.934046] R10: fffffffffffff288 R11: 0000000000000246 R12: 0000000000002000
+[  240.941884] R13: 00007fff7be87ec0 R14: 00007fff7be87ec0 R15: 0000000000002000
+[  240.949741]  </TASK>
+[  240.952632] irq event stamp: 27367
+[  240.956735] hardirqs last  enabled at (27366): [<ffffffff81ba50ea>] mem_cgroup_uncharge_skmem+0x6a/0x80
+[  240.966848] hardirqs last disabled at (27367): [<ffffffff81b8fd42>] refill_stock+0x282/0x580
+[  240.976017] softirqs last  enabled at (27360): [<ffffffff83a4d8ef>] mptcp_recvmsg+0xaf/0x1340
+[  240.985273] softirqs last disabled at (27364): [<ffffffff83a4d30c>] __mptcp_move_skbs+0x18c/0x6c0
+[  240.994872] ---[ end trace 0000000000000000 ]---
+
+After commit d24141fe7b48 ("mptcp: drop SK_RECLAIM_* macros"),
+if rmem_fwd_alloc become negative, mptcp_rmem_uncharge() can
+try to reclaim a negative amount of pages, since the expression:
+
+	reclaimable >= PAGE_SIZE
+
+will evaluate to true for any negative value of the int
+'reclaimable': 'PAGE_SIZE' is an unsigned long and
+the negative integer will be promoted to a (very large)
+unsigned long value.
+
+Still after the mentioned commit, kfree_skb_partial()
+in mptcp_try_coalesce() will reclaim most of just released fwd
+memory, so that following charging of the skb delta size will
+lead to negative fwd memory values.
+
+At that point a racing recvmsg() can trigger the splat.
+
+Address the issue switching the order of the memory accounting
+operations. The fwd memory can still transiently reach negative
+values, but that will happen in an atomic scope and no code
+path could touch/use such value.
+
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Fixes: d24141fe7b48 ("mptcp: drop SK_RECLAIM_* macros")
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+---
+ net/mptcp/protocol.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index d398f3810662..969b33a9dd64 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -150,9 +150,15 @@ static bool mptcp_try_coalesce(struct sock *sk, struct sk_buff *to,
+ 		 MPTCP_SKB_CB(from)->map_seq, MPTCP_SKB_CB(to)->map_seq,
+ 		 to->len, MPTCP_SKB_CB(from)->end_seq);
+ 	MPTCP_SKB_CB(to)->end_seq = MPTCP_SKB_CB(from)->end_seq;
+-	kfree_skb_partial(from, fragstolen);
++
++	/* note the fwd memory can reach a negative value after accounting
++	 * for the delta, but the later skb free will restore a non
++	 * negative one
++	 */
+ 	atomic_add(delta, &sk->sk_rmem_alloc);
+ 	mptcp_rmem_charge(sk, delta);
++	kfree_skb_partial(from, fragstolen);
++
+ 	return true;
+ }
+ 
+-- 
+2.37.2
 
