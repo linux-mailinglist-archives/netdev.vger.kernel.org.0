@@ -2,125 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC4035AF38C
-	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 20:25:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6382C5AF3CC
+	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 20:39:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229451AbiIFSZL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Sep 2022 14:25:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45512 "EHLO
+        id S229516AbiIFSiS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Sep 2022 14:38:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbiIFSZK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 14:25:10 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDBD08604A
-        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 11:25:08 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id 29so11204488edv.2
-        for <netdev@vger.kernel.org>; Tue, 06 Sep 2022 11:25:08 -0700 (PDT)
+        with ESMTP id S229534AbiIFSiN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 14:38:13 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA18880039;
+        Tue,  6 Sep 2022 11:38:12 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id gh9so3374724ejc.8;
+        Tue, 06 Sep 2022 11:38:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:content-language:cc:to:subject:from
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date;
-        bh=D04y5KyF8kDmjryMC0lzu1jlfsVbN+WEejJz+5yiV6Q=;
-        b=E4iI3dJ7qDk+4ZtmDImVyOIjdETRuR3/u7z/rJOa9+oNJwUusNTf1TXXu4FnbZvzfe
-         ufx2BflMvOSNBV+gITgPHi5ZfsHwiOujLy0u+N6wTANNgDvE/Z3TfW/T5VjdN3aOmyRs
-         7ZpEK9x9FRCPToqDOESCZRDHFB+H0XZNL/G9C2UPARLpayk9Dpp7Dx5FbBL2lnaJdue4
-         F1tsTK57dFt5Ny5bvkgaghdyKz2BhDLoh+KfJoIZLmEaqRG7P/ZDKOSCe4z+UwfAVrYV
-         SyB/um5k4C+/BSX9O6DDhS0l3pdQNglFYdqDCp8t4ov2Lq2f5jLNzjqgnOTd4WLY6bwG
-         1qLw==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=2vJ8FGNUWqNGrwFrjilO8GSXb55Nwy+/cJ8JAN+vf/Q=;
+        b=SUKr1jsDOLNqamb/0igyvl0avGj607M0DPUstfTFcJTLuWl4LanT0/YoRCYm9eA69u
+         1kj4fVTiWUjtqCnFI0C6ZoFg5/RqkmqAv98TqohWLkwkUomyZAcUp1dsGY+pQq6u+q+w
+         tOjNN1cBakyHjgUr+MPj1XXwywhuJ1z6JmzTF5sqGB4jAMUH7+BLZy8fOn3pCu3NXQQg
+         z33jqnAPLObqF8syJeAU1+viuExfeIdnfLvhtgx1RKxaa+ywUEk/vuS7cVplJK7ofQIb
+         MDZX3vYfbZSTXO77p6gMRjdYdm+gKaNqZ0+Iv4tRrwj9ndqopTptF6xzlsPY6BHhmmq2
+         q14A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:content-language:cc:to:subject:from
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date;
-        bh=D04y5KyF8kDmjryMC0lzu1jlfsVbN+WEejJz+5yiV6Q=;
-        b=FWUhzF8BJNI36veES9sBWoc3xJCToxq8fWD0dpMXmbRRsixJ+Q1+ag7ZdwUxVFAV5i
-         VxR63fnoQ0BvcguEJzdcKLSD3qrJY0y82nE2DH1UIxlWsa1hMnx/7RIPpf6C6GFYS8Zr
-         bg/RQTrBIdl3uZ+qrOkazggL/Qz6LwuLgVhIfX+pXinvvKwyQqEbM767mZbOAnsrA4Q4
-         Nqzb2/hm/PgOZyG0fI+odTZORrtvZ4flcwU6p5IQuytyCE6rExbbPG/jLOECLJIptSfy
-         DL59nXRuF1B7VVXa/vw7+2TPaJ3qJ5UXPvICBEnJdqI0phxuvBbsWaHNSexoG+kW8gfN
-         US2g==
-X-Gm-Message-State: ACgBeo2xBwzAoehA7XlLsfKZ9xnVO8GNoEooawwKVVmEItW55GfcRGUd
-        sTeyl97Ww3Qk1w3Owrd28X4=
-X-Google-Smtp-Source: AA6agR7Kqp7PiFGHGt4Q22cRbzS8BkcxnNQlY3RzH2Y0udl+M5js8H5z42pvkyeVpT7ha7XD2Q6ARg==
-X-Received: by 2002:a05:6402:120f:b0:44e:fe1a:b968 with SMTP id c15-20020a056402120f00b0044efe1ab968mr709633edw.127.1662488707357;
-        Tue, 06 Sep 2022 11:25:07 -0700 (PDT)
-Received: from ?IPV6:2a01:c23:bd23:a800:187f:c2cb:1804:1a? (dynamic-2a01-0c23-bd23-a800-187f-c2cb-1804-001a.c23.pool.telefonica.de. [2a01:c23:bd23:a800:187f:c2cb:1804:1a])
-        by smtp.googlemail.com with ESMTPSA id f22-20020a056402161600b0044e8ecb9d25sm4080316edv.52.2022.09.06.11.25.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 06 Sep 2022 11:25:07 -0700 (PDT)
-Message-ID: <2391ada0-eac5-ac43-f061-a7a44b0e7f33@gmail.com>
-Date:   Tue, 6 Sep 2022 20:24:57 +0200
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=2vJ8FGNUWqNGrwFrjilO8GSXb55Nwy+/cJ8JAN+vf/Q=;
+        b=v7Aq+IXoJFIKs/LNQOjaK/M8PE9V9c+BG7Rr9AdDgyV4UPVCJ0NVbOnfIe1c6Kgllh
+         hhiAgfOBjigE+4JZ/C+Jj3dBXj09G/DSvNPajeenpashYRprFSebwSCmhLRR8qErUwxh
+         s7VD7QTL4cK1O3hgp11TQUMaaf0wx0Ug9y66m0usUiRFXWuLLzAsz+yRhE2XKdiFyOiR
+         bOEsx7piXmF+SPyHSxsNHtl18yd+6eLItM1lAw8zRbh4zlWe/HmaOkb+lkgf+Y2VaAlN
+         /KBzanoz1dlZIJso+TQlx5kS6OOTGOSY/UfiLIE7oN1vMJwh3VDuan2fyWJqmB7LgmoR
+         n+qA==
+X-Gm-Message-State: ACgBeo0Wn+9lSw2Kyfo852YK/5FSAoVtnmhhqgCIwQ5CekIZHAmFN8u6
+        XrFWhIC2n441Ab98i+5lwaNgQHqh335XrBLc56s=
+X-Google-Smtp-Source: AA6agR6Fao8GdRMU9Boeo6RrjyWxi8jemda0qoa7GZAmSudyHUWqHOtxrprir6nYy7TaNbFl5BgDhJcydhPRqP6/mJY=
+X-Received: by 2002:a17:906:58d1:b0:76d:af13:5ae3 with SMTP id
+ e17-20020a17090658d100b0076daf135ae3mr6712594ejs.708.1662489491088; Tue, 06
+ Sep 2022 11:38:11 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] r8169: remove rtl_wol_shutdown_quirk()
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220906165131.59f395a9@canb.auug.org.au> <dab10759-c059-2254-116b-8360bc240e57@suse.cz>
+In-Reply-To: <dab10759-c059-2254-116b-8360bc240e57@suse.cz>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 6 Sep 2022 11:37:59 -0700
+Message-ID: <CAADnVQJTDdA=vpQhrbAbX7oEQ=uaPXwAmjMzpW4Nk2Xi9f2JLA@mail.gmail.com>
+Subject: Re: linux-next: build failure after merge of the slab tree
+To:     Vlastimil Babka <vbabka@suse.cz>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Marco Elver <elver@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since f658b90977d2 ("r8169: fix DMA being used after buffer free if WoL is
-enabled") it has been redundant to disable PCI bus mastering in
-rtl_wol_shutdown_quirk(). And since 120068481405 ("r8169: fix failing WoL")
-CmdRxEnb is still enabled when we get here. So we can remove the function.
+On Tue, Sep 6, 2022 at 12:53 AM Vlastimil Babka <vbabka@suse.cz> wrote:
+>
+> On 9/6/22 08:51, Stephen Rothwell wrote:
+> > Hi all,
+>
+> Hi,
+>
+> > After merging the slab tree, today's linux-next build (powerpc
+> > ppc64_defconfig) failed like this:
+> >
+> > kernel/bpf/memalloc.c: In function 'bpf_mem_free':
+> > kernel/bpf/memalloc.c:613:33: error: implicit declaration of function '__ksize'; did you mean 'ksize'? [-Werror=implicit-function-declaration]
+> >    613 |         idx = bpf_mem_cache_idx(__ksize(ptr - LLIST_NODE_SZ));
+> >        |                                 ^~~~~~~
+> >        |                                 ksize
+>
+> Could you use ksize() here? I'm guessing you picked __ksize() because
+> kasan_unpoison_element() in mm/mempool.c did, but that's to avoid
+> kasan_unpoison_range() in ksize() as this caller does it differently.
+> AFAICS your function doesn't handle kasan differently, so ksize() should
+> be fine.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 19 -------------------
- 1 file changed, 19 deletions(-)
-
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 3763855e4..306c65228 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -4842,22 +4842,6 @@ static const struct dev_pm_ops rtl8169_pm_ops = {
- 		       rtl8169_runtime_idle)
- };
- 
--static void rtl_wol_shutdown_quirk(struct rtl8169_private *tp)
--{
--	/* WoL fails with 8168b when the receiver is disabled. */
--	switch (tp->mac_version) {
--	case RTL_GIGA_MAC_VER_11:
--	case RTL_GIGA_MAC_VER_17:
--		pci_clear_master(tp->pci_dev);
--
--		RTL_W8(tp, ChipCmd, CmdRxEnb);
--		rtl_pci_commit(tp);
--		break;
--	default:
--		break;
--	}
--}
--
- static void rtl_shutdown(struct pci_dev *pdev)
- {
- 	struct rtl8169_private *tp = pci_get_drvdata(pdev);
-@@ -4871,9 +4855,6 @@ static void rtl_shutdown(struct pci_dev *pdev)
- 
- 	if (system_state == SYSTEM_POWER_OFF &&
- 	    tp->dash_type == RTL_DASH_NONE) {
--		if (tp->saved_wolopts)
--			rtl_wol_shutdown_quirk(tp);
--
- 		pci_wake_from_d3(pdev, tp->saved_wolopts);
- 		pci_set_power_state(pdev, PCI_D3hot);
- 	}
--- 
-2.37.3
-
+Ok. Will change to use ksize().
