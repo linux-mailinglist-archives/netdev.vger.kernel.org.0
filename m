@@ -2,304 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 703F25AF2E1
-	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 19:41:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A07B85AF247
+	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 19:19:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230118AbiIFRlK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Sep 2022 13:41:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45456 "EHLO
+        id S239496AbiIFRRf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Sep 2022 13:17:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230175AbiIFRlG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 13:41:06 -0400
-Received: from frasgout12.his.huawei.com (frasgout12.his.huawei.com [14.137.139.154])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B41BA5F8B;
-        Tue,  6 Sep 2022 10:41:03 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.18.147.227])
-        by frasgout12.his.huawei.com (SkyGuard) with ESMTP id 4MMWqZ2rtLz9xHMX;
-        Wed,  7 Sep 2022 01:00:58 +0800 (CST)
-Received: from huaweicloud.com (unknown [10.204.63.22])
-        by APP1 (Coremail) with SMTP id LxC2BwA34JNSfRdjftYoAA--.8234S9;
-        Tue, 06 Sep 2022 18:04:42 +0100 (CET)
-From:   Roberto Sassu <roberto.sassu@huaweicloud.com>
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, mykolal@fb.com,
-        shuah@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, jakub@cloudflare.com
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, cgroups@vger.kernel.org,
-        linux-kernel@vger.kernel.org, houtao1@huawei.com,
-        Roberto Sassu <roberto.sassu@huawei.com>
-Subject: [PATCH 7/7] selftests/bpf: Add tests for _opts variants of libbpf
-Date:   Tue,  6 Sep 2022 19:03:01 +0200
-Message-Id: <20220906170301.256206-8-roberto.sassu@huaweicloud.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220906170301.256206-1-roberto.sassu@huaweicloud.com>
-References: <20220906170301.256206-1-roberto.sassu@huaweicloud.com>
+        with ESMTP id S237058AbiIFRRO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 13:17:14 -0400
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D57795ADC;
+        Tue,  6 Sep 2022 10:06:12 -0700 (PDT)
+Received: by mail-qk1-x729.google.com with SMTP id f4so8643636qkl.7;
+        Tue, 06 Sep 2022 10:06:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=8sd1XUbOAaqPt2UCp3leBFo+ZTg1rtmlDOW2QOnPSY4=;
+        b=UpW2c3Q5SPY5cpVDcDaldZhV6TrTm9uikL8Sd8wiKKD4SaxIUKoPBHv2xlT/0T+O7L
+         wCu7F64Ybkzrdh56zxEGQXeG/IpapGwwmx77FSCnENV9Lu9pLSapSlNaENmkBhniPZKy
+         w6Xwd68F9ZzNULGVSCZJyeyNRsKXvudlclI4hJgOSnjlExEJTYgxpdIh3HftxjAmzRB8
+         W4L/L2C++Ddmcov4GGvSGX1RATzP2qgW6Bi7UoCtEDbqJh1KLK/z9sOQ8XiwbNcp7tfP
+         BP+CR9ko7ggnxxhmKNfrdlBr8CTO506lDq917+e8kVpuy/xtkM/vHIAloK4gcW+xfZ1a
+         O8Pg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=8sd1XUbOAaqPt2UCp3leBFo+ZTg1rtmlDOW2QOnPSY4=;
+        b=bDCLVGf4w3Un4RvtgTncmqc27k+NYjxmRkczagbANgAIsMHnkUG9S7wcZnC6ZXPxrc
+         2BgkyqqXctbJcpN4DXjE8+gqarhU/hZu2C1WwCcacW6MFrOwL8X2OVy4BZNyhiHJ49Rh
+         2CigNLj7Dn2krUeDloOTNdUfQJxLWT4GnCDPh7O/gqgkgulOIjVZjVmr2JcCYaTEBZ+1
+         c3Te9iJh6b44oJnf4JotJIa9BMvZDN7Ly+x2misMod/E2FZWDO2z5YV6lghwBhwYfQkG
+         nLucEHnAQ7OYy1EuPB0G1ShZieeR/ntDUAcu1t/Xp9/3PU8BeurGWAUB9qZFwgk4uYmZ
+         XSAA==
+X-Gm-Message-State: ACgBeo3S7oIy7vy3FQcS5kvym5ikFDGowLyveYiXrFoDCCSuWLnVhIe5
+        b8YAMkFuDS/eQEF38jHEvyA=
+X-Google-Smtp-Source: AA6agR5Fh76feQksNNuMqw8LuVW2nPF1DLvwm04cZ58xFgMHtAIHU/k+SKMVvtgd5SOemtCLL7r4Kg==
+X-Received: by 2002:a05:620a:4089:b0:6bb:97e6:d5b1 with SMTP id f9-20020a05620a408900b006bb97e6d5b1mr37512666qko.117.1662483948729;
+        Tue, 06 Sep 2022 10:05:48 -0700 (PDT)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id fp5-20020a05622a508500b0031e9ab4e4cesm9876026qtb.26.2022.09.06.10.05.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 06 Sep 2022 10:05:48 -0700 (PDT)
+Message-ID: <45cdae58-632a-7cbb-c9d5-74c126ba6a3e@gmail.com>
+Date:   Tue, 6 Sep 2022 10:05:46 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: LxC2BwA34JNSfRdjftYoAA--.8234S9
-X-Coremail-Antispam: 1UD129KBjvJXoW3XF48KFW3ZryfGw4UJw15CFg_yoW3Xw4Dpa
-        9Ygryjkr1FqrW8u398Ja13Gr4xKF18W3WUt397WF15Zr18X3Z7W34xGF13tF9xZFZ5Cw4f
-        Cw4ayrW8GrW7uFDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUPvb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
-        6cxKx2IYs7xG6r1S6rWUM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUAV
-        Cq3wA2048vs2IY020Ec7CjxVAFwI0_Xr0E3s1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0
-        rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW8JVW5JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267
-        AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv6xkF7I0E
-        14v26F4UJVW0owAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I
-        80ewAv7VC0I7IYx2IY67AKxVWUXVWUAwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6xCaFVCj
-        c4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4IIrI8v6xkF7I0E8cxan2IY04v7MxkF7I0En4
-        kS14v26r4a6rW5MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E
-        5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVW8ZV
-        WrXwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r4j6ryUMIIF0xvE2Ix0cI8IcVCY
-        1x0267AKxVW8Jr0_Cr1UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67
-        AKxVW8JVWxJwCI42IY6I8E87Iv6xkF7I0E14v26F4UJVW0obIYCTnIWIevJa73UjIFyTuY
-        vjxUsS_MDUUUU
-X-CM-SenderInfo: purev21wro2thvvxqx5xdzvxpfor3voofrz/1tbiAgAHBF1jj36uiQAAsp
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.1
+Subject: Re: [PATCH net-next 2/2] ARM: dts: aspeed: elbert: Enable mac3
+ controller
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>, Tao Ren <rentao.bupt@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Heyi Guo <guoheyi@linux.alibaba.com>,
+        Dylan Hung <dylan_hung@aspeedtech.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Liang He <windhl@126.com>, Hao Chen <chenhao288@hisilicon.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>, Tao Ren <taoren@fb.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
+References: <20220905235634.20957-1-rentao.bupt@gmail.com>
+ <20220905235634.20957-3-rentao.bupt@gmail.com> <YxaS2mS5vwW4HuqL@lunn.ch>
+ <YxalTToannPyLQpI@taoren-fedora-PC23YAB4> <Yxc1N1auY5jk3yJI@lunn.ch>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <Yxc1N1auY5jk3yJI@lunn.ch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roberto Sassu <roberto.sassu@huawei.com>
 
-Introduce the data_input map, write-protected with a small eBPF program
-implementing the lsm/bpf_map hook.
 
-Then, ensure that bpf_map_get_fd_by_id() and bpf_map_get_fd_by_id_opts()
-with NULL opts don't succeed due to requesting read-write access to the
-write-protected map. Also, ensure that bpf_map_get_fd_by_id_opts() with
-flags in opts set to BPF_F_RDONLY instead succeeds.
+On 9/6/2022 4:55 AM, Andrew Lunn wrote:
+> On Mon, Sep 05, 2022 at 06:41:33PM -0700, Tao Ren wrote:
+>> Hi Andrew,
+>>
+>> On Tue, Sep 06, 2022 at 02:22:50AM +0200, Andrew Lunn wrote:
+>>> On Mon, Sep 05, 2022 at 04:56:34PM -0700, rentao.bupt@gmail.com wrote:
+>>>> From: Tao Ren <rentao.bupt@gmail.com>
+>>>>
+>>>> Enable mac3 controller in Elbert dts: Elbert MAC3 is connected to the
+>>>> onboard switch directly (fixed link).
+>>>
+>>> What is the switch? Could you also add a DT node for it?
+>>>
+>>>>
+>>>> Signed-off-by: Tao Ren <rentao.bupt@gmail.com>
+>>>> ---
+>>>>   arch/arm/boot/dts/aspeed-bmc-facebook-elbert.dts | 11 +++++++++++
+>>>>   1 file changed, 11 insertions(+)
+>>>>
+>>>> diff --git a/arch/arm/boot/dts/aspeed-bmc-facebook-elbert.dts b/arch/arm/boot/dts/aspeed-bmc-facebook-elbert.dts
+>>>> index 27b43fe099f1..52cb617783ac 100644
+>>>> --- a/arch/arm/boot/dts/aspeed-bmc-facebook-elbert.dts
+>>>> +++ b/arch/arm/boot/dts/aspeed-bmc-facebook-elbert.dts
+>>>> @@ -183,3 +183,14 @@ imux31: i2c@7 {
+>>>>   &i2c11 {
+>>>>   	status = "okay";
+>>>>   };
+>>>> +
+>>>> +&mac3 {
+>>>> +	status = "okay";
+>>>> +	phy-mode = "rgmii";
+>>>
+>>> 'rgmii' is suspicious, though not necessarily wrong. This value is
+>>> normally passed to the PHY, so the PHY inserts the RGMII delay. You
+>>> however don't have a PHY. So i assume the switch is inserting the
+>>> delay? Again, being able to see the DT properties for the switch would
+>>> be useful.
+>>>
+>>>     Andrew
+>>
+>> Thank you for the quick review!
+>>
+>> The BMC mac3 is connected to BCM53134P's IMP_RGMII port, and there is no
+>> PHY between BMC MAC and BCM53134P. BCM53134P loads configurations from
+>> its EEPROM when the chip is powered.
+> 
+> So i assume you have the switch RGMII port doing the delays. That is
+> fine.
+> 
+>> Could you please point me an example showing how to describe the switch in
+>> dts? Anyhow I will need to improve the patch description and comments in
+>> v2.
+> 
+> It looks like drivers/net/dsa/b53 does not support this particular
+> switch. You could consider extending the driver. See
+> 
+> Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml
+> 
+> for documentation of the binding.
 
-After obtaining a read-only fd, ensure that only map lookup succeeds and
-not update. Ensure that update works only with the read-write fd obtained
-at program loading time, when the write protection was not yet enabled.
-
-Finally, ensure that other _opts variants of libbpf don't work if the
-BPF_F_RDONLY flag is set in opts (due to the kernel not handling the
-open_flags member of bpf_attr).
-
-Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
----
- .../bpf/prog_tests/libbpf_get_fd_opts.c       | 145 ++++++++++++++++++
- .../bpf/progs/test_libbpf_get_fd_opts.c       |  49 ++++++
- 2 files changed, 194 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/libbpf_get_fd_opts.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_libbpf_get_fd_opts.c
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/libbpf_get_fd_opts.c b/tools/testing/selftests/bpf/prog_tests/libbpf_get_fd_opts.c
-new file mode 100644
-index 000000000000..8ea1c44f979e
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/libbpf_get_fd_opts.c
-@@ -0,0 +1,145 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+/*
-+ * Copyright (C) 2022 Huawei Technologies Duesseldorf GmbH
-+ *
-+ * Author: Roberto Sassu <roberto.sassu@huawei.com>
-+ */
-+
-+#include <test_progs.h>
-+
-+#include "test_libbpf_get_fd_opts.skel.h"
-+
-+void test_libbpf_get_fd_opts(void)
-+{
-+	DECLARE_LIBBPF_OPTS(bpf_iter_attach_opts, opts);
-+	struct test_libbpf_get_fd_opts *skel;
-+	struct bpf_map_info info_m = { 0 };
-+	__u32 len = sizeof(info_m), value;
-+	union bpf_iter_link_info linfo;
-+	struct bpf_link *link;
-+	struct bpf_map *map;
-+	char buf[16];
-+	int ret, zero = 0, fd = -1, iter_fd;
-+
-+	DECLARE_LIBBPF_OPTS(bpf_get_fd_opts, fd_opts_rdonly,
-+		.open_flags = BPF_F_RDONLY,
-+	);
-+
-+	skel = test_libbpf_get_fd_opts__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "test_libbpf_get_fd_opts__open_and_load"))
-+		return;
-+
-+	bpf_program__set_autoattach(skel->progs.write_bpf_array_map, false);
-+
-+	ret = test_libbpf_get_fd_opts__attach(skel);
-+	if (!ASSERT_OK(ret, "test_libbpf_get_fd_opts__attach"))
-+		goto close_prog;
-+
-+	map = bpf_object__find_map_by_name(skel->obj, "data_input");
-+	if (!ASSERT_OK_PTR(map, "bpf_object__find_map_by_name"))
-+		goto close_prog;
-+
-+	ret = bpf_obj_get_info_by_fd(bpf_map__fd(map), &info_m, &len);
-+	if (!ASSERT_OK(ret, "bpf_obj_get_info_by_fd"))
-+		goto close_prog;
-+
-+	fd = bpf_map_get_fd_by_id(info_m.id);
-+	if (!ASSERT_LT(fd, 0, "bpf_map_get_fd_by_id"))
-+		goto close_prog;
-+
-+	fd = bpf_map_get_fd_by_id_opts(info_m.id, NULL);
-+	if (!ASSERT_LT(fd, 0, "bpf_map_get_fd_by_id_opts"))
-+		goto close_prog;
-+
-+	fd = bpf_map_get_fd_by_id_opts(info_m.id, &fd_opts_rdonly);
-+	if (!ASSERT_GE(fd, 0, "bpf_map_get_fd_by_id_opts"))
-+		goto close_prog;
-+
-+	/* Map lookup should work with read-only fd. */
-+	ret = bpf_map_lookup_elem(fd, &zero, &value);
-+	if (!ASSERT_OK(ret, "bpf_map_lookup_elem"))
-+		goto close_prog;
-+
-+	if (!ASSERT_EQ(value, 0, "map value mismatch"))
-+		goto close_prog;
-+
-+	/* Map update should not work with read-only fd. */
-+	ret = bpf_map_update_elem(fd, &zero, &len, BPF_ANY);
-+	if (!ASSERT_LT(ret, 0, "bpf_map_update_elem"))
-+		goto close_prog;
-+
-+	/* Map update through map iterator should not work with read-only fd. */
-+	memset(&linfo, 0, sizeof(linfo));
-+	linfo.map.map_fd = fd;
-+	opts.link_info = &linfo;
-+	opts.link_info_len = sizeof(linfo);
-+	link = bpf_program__attach_iter(skel->progs.write_bpf_array_map, &opts);
-+	if (!ASSERT_ERR_PTR(link, "bpf_program__attach_iter")) {
-+		/*
-+		 * Faulty path, this should never happen if fd modes check is
-+		 * added for map iterators.
-+		 */
-+		iter_fd = bpf_iter_create(bpf_link__fd(link));
-+		bpf_link__destroy(link);
-+
-+		if (!ASSERT_GE(iter_fd, 0, "bpf_iter_create (faulty path)"))
-+			goto close_prog;
-+
-+		read(iter_fd, buf, sizeof(buf));
-+		close(iter_fd);
-+
-+		ret = bpf_map_lookup_elem(fd, &zero, &value);
-+		if (!ASSERT_OK(ret, "bpf_map_lookup_elem (faulty path)"))
-+			goto close_prog;
-+
-+		if (!ASSERT_EQ(value, 5,
-+			       "unauthorized map update (faulty path)"))
-+			goto close_prog;
-+	}
-+
-+	/* Map update should work with read-write fd. */
-+	ret = bpf_map_update_elem(bpf_map__fd(map), &zero, &len, BPF_ANY);
-+	if (!ASSERT_OK(ret, "bpf_map_update_elem"))
-+		goto close_prog;
-+
-+	/* Map update through map iterator should work with read-write fd. */
-+	linfo.map.map_fd = bpf_map__fd(map);
-+	link = bpf_program__attach_iter(skel->progs.write_bpf_array_map, &opts);
-+	if (!ASSERT_OK_PTR(link, "bpf_program__attach_iter"))
-+		goto close_prog;
-+
-+	iter_fd = bpf_iter_create(bpf_link__fd(link));
-+	bpf_link__destroy(link);
-+
-+	if (!ASSERT_GE(iter_fd, 0, "bpf_iter_create"))
-+		goto close_prog;
-+
-+	read(iter_fd, buf, sizeof(buf));
-+	close(iter_fd);
-+
-+	ret = bpf_map_lookup_elem(fd, &zero, &value);
-+	if (!ASSERT_OK(ret, "bpf_map_lookup_elem"))
-+		goto close_prog;
-+
-+	if (!ASSERT_EQ(value, 5, "map value mismatch"))
-+		goto close_prog;
-+
-+	/* Prog get fd with opts set should not work (no kernel support). */
-+	ret = bpf_prog_get_fd_by_id_opts(0, &fd_opts_rdonly);
-+	if (!ASSERT_EQ(ret, -EINVAL, "bpf_prog_get_fd_by_id_opts"))
-+		goto close_prog;
-+
-+	/* Link get fd with opts set should not work (no kernel support). */
-+	ret = bpf_link_get_fd_by_id_opts(0, &fd_opts_rdonly);
-+	if (!ASSERT_EQ(ret, -EINVAL, "bpf_link_get_fd_by_id_opts"))
-+		goto close_prog;
-+
-+	/* BTF get fd with opts set should not work (no kernel support). */
-+	ret = bpf_btf_get_fd_by_id_opts(0, &fd_opts_rdonly);
-+	ASSERT_EQ(ret, -EINVAL, "bpf_btf_get_fd_by_id_opts");
-+
-+close_prog:
-+	close(fd);
-+	test_libbpf_get_fd_opts__destroy(skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_libbpf_get_fd_opts.c b/tools/testing/selftests/bpf/progs/test_libbpf_get_fd_opts.c
-new file mode 100644
-index 000000000000..83366024023f
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_libbpf_get_fd_opts.c
-@@ -0,0 +1,49 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+/*
-+ * Copyright (C) 2022 Huawei Technologies Duesseldorf GmbH
-+ *
-+ * Author: Roberto Sassu <roberto.sassu@huawei.com>
-+ */
-+
-+#include "vmlinux.h"
-+#include <errno.h>
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+/* From include/linux/mm.h. */
-+#define FMODE_WRITE	0x2
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__uint(max_entries, 1);
-+	__type(key, __u32);
-+	__type(value, __u32);
-+} data_input SEC(".maps");
-+
-+char _license[] SEC("license") = "GPL";
-+
-+SEC("lsm/bpf_map")
-+int BPF_PROG(check_access, struct bpf_map *map, fmode_t fmode)
-+{
-+	if (map != (struct bpf_map *)&data_input)
-+		return 0;
-+
-+	if (fmode & FMODE_WRITE)
-+		return -EACCES;
-+
-+	return 0;
-+}
-+
-+SEC("iter/bpf_map_elem")
-+int write_bpf_array_map(struct bpf_iter__bpf_map_elem *ctx)
-+{
-+	u32 *key = ctx->key;
-+	u32 *val = ctx->value;
-+
-+	if (key == NULL || val == NULL)
-+		return 0;
-+
-+	*val = 5;
-+	return 0;
-+}
+Correct the 53134 is not supported at the moment by the b53 driver, 
+however it should not be too hard to support it, if you would be willing 
+to add it, I would be glad to review patches.
 -- 
-2.25.1
-
+Florian
