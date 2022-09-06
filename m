@@ -2,70 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB9025AF7A2
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 00:07:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F16065AF7B2
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 00:10:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229595AbiIFWHS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Sep 2022 18:07:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55360 "EHLO
+        id S229838AbiIFWKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Sep 2022 18:10:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiIFWHR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 18:07:17 -0400
+        with ESMTP id S229656AbiIFWKf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 18:10:35 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F28156E887;
-        Tue,  6 Sep 2022 15:07:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C33394125;
+        Tue,  6 Sep 2022 15:10:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A1FA615BB;
-        Tue,  6 Sep 2022 22:07:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F16DFC4347C;
-        Tue,  6 Sep 2022 22:07:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B000C616FE;
+        Tue,  6 Sep 2022 22:10:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 148B5C433D7;
+        Tue,  6 Sep 2022 22:10:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662502036;
-        bh=ggBXNpbprbbjS+tHbwc/iRG/UM2KC8UOk0AZEUifhqk=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=rDpSG2kA7vs8fAsaE6Xqe/+Q44EwBBrPZbQ+qJslk3bQqpII6EdhGqOXw54hSIZcn
-         d1yapkHDXKYHylEUxzGEfXz2jY6zj3eq0j8ybDMRDwV7uaoNhhiuHs9AfSpxEcC1cb
-         Bod3s4v7IY2WXL2Q+DZN4AdN2KmL68UiEtz7kWD1FmT+qbPsKgEIYTjnBMsrfpPbGW
-         0oJv/5YkWlXFvaNJz6ghEllZ7qqfUmU5nav9eCxON2KReVo6XJvhMpBCCo6qONQyyC
-         Z6PJHFTwknnoLstAgxg2QKrpxP8idfSzdz9r/KofRqKyxZiajcQ6WtEIGkJ8Xj4i5O
-         HPEfRaojI4Cug==
-Received: by mail-ot1-f46.google.com with SMTP id h20-20020a056830165400b00638ac7ddba5so9014863otr.4;
-        Tue, 06 Sep 2022 15:07:15 -0700 (PDT)
-X-Gm-Message-State: ACgBeo34GgT0UYeQnB2CXF6sS5gEgzE616cz8+BkGjx30mo9BTmT7Wlc
-        /Uj4C7ekg47JZQhAx75xxvpg7yKvFsm2FVwLLxE=
-X-Google-Smtp-Source: AA6agR5iLz+d4dflDQEnkd22ERc4VQyxcQxSSl+JiGq7Q1igXFXtVFY3F5yQ6aHbLp1d+Bp97nAc2Fk8bSiBPlTF4Q8=
-X-Received: by 2002:a9d:7c94:0:b0:636:f74b:2364 with SMTP id
- q20-20020a9d7c94000000b00636f74b2364mr248408otn.165.1662502035160; Tue, 06
- Sep 2022 15:07:15 -0700 (PDT)
+        s=k20201202; t=1662502233;
+        bh=6nl+07PG2EsRbuGvtWZzO5LV/7d3NT0wju8FrZ4HUY8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=pchr5qgoaQt4vV0dOQtjSiWTgrgjlPJFP4u204fUqJqLtf03ePOg7Jz52QSPbU8ag
+         y5MXTiSfJZo8BsfQzxhU2gMwRMdIW29qqHiztoKER13mMNpUXAkfjHIsYqblXcZ6Vu
+         joS1ygLRomQGW7zjR+pqsC4OjMNsYjFUZ3aWxT93zs/4AcRDXNCVDa1cykNSEQm/WJ
+         eY7HPNpG+NRdc8tsALOhfqcWatMGajFXUncxuCf/t1SJ0NSegTq0269XrvzKzbAWYS
+         6OYAG3G9ld0dR0ri5bkxw3JAycJnRljKYGiFslpObOeCDIRPQtV8XRH1snpYV/2TNH
+         JQTYbMX5UEqcA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E6B8CC73FE9;
+        Tue,  6 Sep 2022 22:10:32 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220905193359.969347-1-toke@redhat.com> <20220905193359.969347-4-toke@redhat.com>
-In-Reply-To: <20220905193359.969347-4-toke@redhat.com>
-From:   Song Liu <song@kernel.org>
-Date:   Tue, 6 Sep 2022 15:07:04 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW5Aui-DquaZQGM0EgJXei9UCweB8bqv7KOhegVJR-fKZA@mail.gmail.com>
-Message-ID: <CAPhsuW5Aui-DquaZQGM0EgJXei9UCweB8bqv7KOhegVJR-fKZA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 3/3] bpf: Use 64-bit return value for bpf_prog_run
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Subject: Re: pull-request: bpf-next 2022-09-05
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166250223293.18190.3241675203059060448.git-patchwork-notify@kernel.org>
+Date:   Tue, 06 Sep 2022 22:10:32 +0000
+References: <20220905161136.9150-1-daniel@iogearbox.net>
+In-Reply-To: <20220905161136.9150-1-daniel@iogearbox.net>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, ast@kernel.org, andrii@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -76,28 +57,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 5, 2022 at 12:34 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
->
-> BPF ABI always uses 64-bit return value, but so far __bpf_prog_run and
-> higher level wrappers always truncated the return value to 32-bit. We wan=
-t
-> to be able to introduce a new BPF program type that returns a PTR_TO_BTF_=
-ID
-> or NULL from the BPF program to the caller context in the kernel. To be
-> able to use this returned pointer value, the bpf_prog_run invocation need=
-s
-> to be able to return a 64-bit value, so update the definitions to allow
-> this.
->
-> To avoid code churn in the whole kernel, we let the compiler handle
-> truncation normally, and allow new call sites to utilize the 64-bit
-> return value, by receiving the return value as a u64.
->
-> Reviewed-by: Stanislav Fomichev <sdf@google.com>
-> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+Hello:
 
-Acked-by: Song Liu <song@kernel.org>
+This pull request was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
+
+On Mon,  5 Sep 2022 18:11:36 +0200 you wrote:
+> Hi David, hi Jakub, hi Paolo, hi Eric,
+> 
+> The following pull-request contains BPF updates for your *net-next* tree.
+> 
+> We've added 106 non-merge commits during the last 18 day(s) which contain
+> a total of 159 files changed, 5225 insertions(+), 1358 deletions(-).
+> 
+> [...]
+
+Here is the summary with links:
+  - pull-request: bpf-next 2022-09-05
+    https://git.kernel.org/netdev/net-next/c/2786bcff28bd
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
