@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9637A5AE75B
-	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 14:13:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAC1E5AE77E
+	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 14:13:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239250AbiIFMLu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Sep 2022 08:11:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46944 "EHLO
+        id S239372AbiIFML5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Sep 2022 08:11:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239014AbiIFMLp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 08:11:45 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8C3878BDE;
-        Tue,  6 Sep 2022 05:11:42 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MMPMb0QJGzrS6F;
-        Tue,  6 Sep 2022 20:09:47 +0800 (CST)
+        with ESMTP id S237863AbiIFMLs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 08:11:48 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39EF178BE1;
+        Tue,  6 Sep 2022 05:11:43 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MMPLr3bj9znV4v;
+        Tue,  6 Sep 2022 20:09:08 +0800 (CST)
 Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
  (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 6 Sep
- 2022 20:11:39 +0800
+ 2022 20:11:40 +0800
 From:   Zhengchao Shao <shaozhengchao@huawei.com>
 To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <bpf@vger.kernel.org>, <davem@davemloft.net>,
@@ -32,9 +32,9 @@ CC:     <daniel@iogearbox.net>, <john.fastabend@gmail.com>,
         <yhs@fb.com>, <kpsingh@kernel.org>, <sdf@google.com>,
         <haoluo@google.com>, <jolsa@kernel.org>, <weiyongjun1@huawei.com>,
         <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
-Subject: [PATCH net-next,v2 02/22] net: sched: act_api: implement generic walker and search for tc action
-Date:   Tue, 6 Sep 2022 20:13:26 +0800
-Message-ID: <20220906121346.71578-3-shaozhengchao@huawei.com>
+Subject: [PATCH net-next,v2 03/22] net: sched: act_bpf: get rid of tcf_bpf_walker and tcf_bpf_search
+Date:   Tue, 6 Sep 2022 20:13:27 +0800
+Message-ID: <20220906121346.71578-4-shaozhengchao@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220906121346.71578-1-shaozhengchao@huawei.com>
 References: <20220906121346.71578-1-shaozhengchao@huawei.com>
@@ -53,86 +53,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Being able to get tc_action_net by using net_id stored in tc_action_ops
-and execute the generic walk/search function, add __tcf_generic_walker()
-and __tcf_idr_search() helpers.
+tcf_bpf_walker() and tcf_bpf_search() do the same thing as generic
+walk/search function, so remove them.
 
 Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 ---
- net/sched/act_api.c | 33 +++++++++++++++++++++++++++++----
- 1 file changed, 29 insertions(+), 4 deletions(-)
+ net/sched/act_bpf.c | 19 -------------------
+ 1 file changed, 19 deletions(-)
 
-diff --git a/net/sched/act_api.c b/net/sched/act_api.c
-index 817065aa2833..9b31a10cc639 100644
---- a/net/sched/act_api.c
-+++ b/net/sched/act_api.c
-@@ -676,6 +676,31 @@ int tcf_idr_search(struct tc_action_net *tn, struct tc_action **a, u32 index)
+diff --git a/net/sched/act_bpf.c b/net/sched/act_bpf.c
+index dd839efe9649..c5dbb68e6b78 100644
+--- a/net/sched/act_bpf.c
++++ b/net/sched/act_bpf.c
+@@ -389,23 +389,6 @@ static void tcf_bpf_cleanup(struct tc_action *act)
+ 	tcf_bpf_cfg_cleanup(&tmp);
  }
- EXPORT_SYMBOL(tcf_idr_search);
  
-+static int __tcf_generic_walker(struct net *net, struct sk_buff *skb,
-+				struct netlink_callback *cb, int type,
-+				const struct tc_action_ops *ops,
-+				struct netlink_ext_ack *extack)
-+{
-+	struct tc_action_net *tn = net_generic(net, ops->net_id);
-+
-+	if (unlikely(ops->walk))
-+		return ops->walk(net, skb, cb, type, ops, extack);
-+
-+	return tcf_generic_walker(tn, skb, cb, type, ops, extack);
-+}
-+
-+static int __tcf_idr_search(struct net *net,
-+			    const struct tc_action_ops *ops,
-+			    struct tc_action **a, u32 index)
-+{
-+	struct tc_action_net *tn = net_generic(net, ops->net_id);
-+
-+	if (unlikely(ops->lookup))
-+		return ops->lookup(net, a, index);
-+
-+	return tcf_idr_search(tn, a, index);
-+}
-+
- static int tcf_idr_delete_index(struct tcf_idrinfo *idrinfo, u32 index)
- {
- 	struct tc_action *p;
-@@ -926,7 +951,7 @@ int tcf_register_action(struct tc_action_ops *act,
- 	struct tc_action_ops *a;
- 	int ret;
- 
--	if (!act->act || !act->dump || !act->init || !act->walk || !act->lookup)
-+	if (!act->act || !act->dump || !act->init)
- 		return -EINVAL;
- 
- 	/* We have to register pernet ops before making the action ops visible,
-@@ -1638,7 +1663,7 @@ static struct tc_action *tcf_action_get_1(struct net *net, struct nlattr *nla,
- 		goto err_out;
- 	}
- 	err = -ENOENT;
--	if (ops->lookup(net, &a, index) == 0) {
-+	if (__tcf_idr_search(net, ops, &a, index) == 0) {
- 		NL_SET_ERR_MSG(extack, "TC action with specified index not found");
- 		goto err_mod;
- 	}
-@@ -1703,7 +1728,7 @@ static int tca_action_flush(struct net *net, struct nlattr *nla,
- 		goto out_module_put;
- 	}
- 
--	err = ops->walk(net, skb, &dcb, RTM_DELACTION, ops, extack);
-+	err = __tcf_generic_walker(net, skb, &dcb, RTM_DELACTION, ops, extack);
- 	if (err <= 0) {
- 		nla_nest_cancel(skb, nest);
- 		goto out_module_put;
-@@ -2121,7 +2146,7 @@ static int tc_dump_action(struct sk_buff *skb, struct netlink_callback *cb)
- 	if (nest == NULL)
- 		goto out_module_put;
- 
--	ret = a_o->walk(net, skb, cb, RTM_GETACTION, a_o, NULL);
-+	ret = __tcf_generic_walker(net, skb, cb, RTM_GETACTION, a_o, NULL);
- 	if (ret < 0)
- 		goto out_module_put;
+-static int tcf_bpf_walker(struct net *net, struct sk_buff *skb,
+-			  struct netlink_callback *cb, int type,
+-			  const struct tc_action_ops *ops,
+-			  struct netlink_ext_ack *extack)
+-{
+-	struct tc_action_net *tn = net_generic(net, act_bpf_ops.net_id);
+-
+-	return tcf_generic_walker(tn, skb, cb, type, ops, extack);
+-}
+-
+-static int tcf_bpf_search(struct net *net, struct tc_action **a, u32 index)
+-{
+-	struct tc_action_net *tn = net_generic(net, act_bpf_ops.net_id);
+-
+-	return tcf_idr_search(tn, a, index);
+-}
+-
+ static struct tc_action_ops act_bpf_ops __read_mostly = {
+ 	.kind		=	"bpf",
+ 	.id		=	TCA_ID_BPF,
+@@ -414,8 +397,6 @@ static struct tc_action_ops act_bpf_ops __read_mostly = {
+ 	.dump		=	tcf_bpf_dump,
+ 	.cleanup	=	tcf_bpf_cleanup,
+ 	.init		=	tcf_bpf_init,
+-	.walk		=	tcf_bpf_walker,
+-	.lookup		=	tcf_bpf_search,
+ 	.size		=	sizeof(struct tcf_bpf),
+ };
  
 -- 
 2.17.1
