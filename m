@@ -2,121 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E3B2F5AF6EA
-	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 23:37:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 512435AF6F8
+	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 23:38:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229738AbiIFVhK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Sep 2022 17:37:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58948 "EHLO
+        id S229511AbiIFVh3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Sep 2022 17:37:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229511AbiIFVhI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 17:37:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB1789E2D1;
-        Tue,  6 Sep 2022 14:37:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 90A1BB81A4F;
-        Tue,  6 Sep 2022 21:37:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24317C433C1;
-        Tue,  6 Sep 2022 21:37:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662500225;
-        bh=vwK6RdaFY762tJiRgbnouER58jZq2nGr+V9lFAf/bSU=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ddOeATtFk5xo9vM0LUqv+fLrErIsFlz2z2GY+ENj9zwfy0S7ZbuqEp/TmkLFtEiWC
-         9h6d3eaQQc2NUQVelvegWxbBCMztUxhTJQ1Y/8eZ3maVsVgk7ixWXEmMXKN1/yu7XO
-         y01+O6xRyKf/atij2cCBd8hq+W8uCsEpIvDui+WR0mra2DOUc7NRSIGBWiqI92IbYB
-         xZBgQZniDH5D4Pelr1dVOr5mXPFAavge8nBZVUEPfbOcFZt7vqsKW788lIgeU+rZa2
-         IeQyNr+V5Od6cTc5MkWqVlLwtwBbfhwML7qu6gq+ZasgXCs++5T4OHGYy1K26WzOWV
-         8j2hLNPjZNnYg==
-Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-1278624b7c4so13230940fac.5;
-        Tue, 06 Sep 2022 14:37:05 -0700 (PDT)
-X-Gm-Message-State: ACgBeo18ULyUzvQs9RNmQoLljtDvs9aJYv1MCVAoIoymraQiiwey0B8A
-        pzWct6CJMA/nfOqo3yBqzV6d+V9MhAMIqawEvDo=
-X-Google-Smtp-Source: AA6agR5ChQlvHJ0b03v8jKNgSuCFhptyi1QcPljJMhinNAfeX/DA3UxlvQanFdWM4bEyNU1UmGmL6LoMnPJUKxX1kO4=
-X-Received: by 2002:a05:6870:3127:b0:11c:8c2c:9015 with SMTP id
- v39-20020a056870312700b0011c8c2c9015mr12340159oaa.31.1662500224336; Tue, 06
- Sep 2022 14:37:04 -0700 (PDT)
+        with ESMTP id S229447AbiIFVh2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 17:37:28 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EC3E9E2FC
+        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 14:37:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=rjo9gZsYoR8R81YIppdby1zxMkF7h4JLrIdaFjRlZKM=; b=bRgazClBOvpCQbw24/X/Z+SxCC
+        eX5oMYucUGXe8KmNFwHXTBi5yNUXn//lGPzXR7QZOB0O7Yh9LESJtK88nCI37BsuLu1b5eOUflpfO
+        v6zA0AvvKhNKChMvfJEVDVYd6MDTlCL1vfc42ZNzTMRm7pZbBtQPnd+WQNM8rqprFkR0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oVgG3-00Fmpg-V2; Tue, 06 Sep 2022 23:37:23 +0200
+Date:   Tue, 6 Sep 2022 23:37:23 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Subject: Re: [PATCH iproute2] ip link: add sub-command to view and change DSA
+ master
+Message-ID: <Yxe9k86sWSf687zd@lunn.ch>
+References: <20220904190025.813574-1-vladimir.oltean@nxp.com>
+ <20220906082907.5c1f8398@hermes.local>
+ <20220906164117.7eiirl4gm6bho2ko@skbuf>
+ <20220906095517.4022bde6@hermes.local>
+ <20220906191355.bnimmq4z36p5yivo@skbuf>
+ <YxeoFfxWwrWmUCkm@lunn.ch>
+ <05593f07-42e8-c4bd-8608-cf50e8b103d6@gmail.com>
+ <20220906141719.4482f31d@hermes.local>
 MIME-Version: 1.0
-References: <cover.1662383493.git.lorenzo@kernel.org> <fa02d93153b99bc994215c1644a2c75a226e3c7d.1662383493.git.lorenzo@kernel.org>
-In-Reply-To: <fa02d93153b99bc994215c1644a2c75a226e3c7d.1662383493.git.lorenzo@kernel.org>
-From:   Song Liu <song@kernel.org>
-Date:   Tue, 6 Sep 2022 14:36:53 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW5P=K7463Ka0CGxFD0BGChrEffbeO6UqReDtr80osDJLg@mail.gmail.com>
-Message-ID: <CAPhsuW5P=K7463Ka0CGxFD0BGChrEffbeO6UqReDtr80osDJLg@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 3/4] net: netfilter: add bpf_ct_set_nat_info
- kfunc helper
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, pablo@netfilter.org,
-        fw@strlen.de, netfilter-devel@vger.kernel.org,
-        lorenzo.bianconi@redhat.com,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220906141719.4482f31d@hermes.local>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 5, 2022 at 6:15 AM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
->
-> Introduce bpf_ct_set_nat_info kfunc helper in order to set source and
-> destination nat addresses/ports in a new allocated ct entry not inserted
-> in the connection tracking table yet.
->
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
->  net/netfilter/nf_conntrack_bpf.c | 49 +++++++++++++++++++++++++++++++-
->  1 file changed, 48 insertions(+), 1 deletion(-)
->
-> diff --git a/net/netfilter/nf_conntrack_bpf.c b/net/netfilter/nf_conntrack_bpf.c
-> index 1cd87b28c9b0..85b8c7ee00af 100644
-> --- a/net/netfilter/nf_conntrack_bpf.c
-> +++ b/net/netfilter/nf_conntrack_bpf.c
-> @@ -14,6 +14,7 @@
->  #include <net/netfilter/nf_conntrack.h>
->  #include <net/netfilter/nf_conntrack_bpf.h>
->  #include <net/netfilter/nf_conntrack_core.h>
-> +#include <net/netfilter/nf_nat.h>
->
->  /* bpf_ct_opts - Options for CT lookup helpers
->   *
-> @@ -134,7 +135,6 @@ __bpf_nf_ct_alloc_entry(struct net *net, struct bpf_sock_tuple *bpf_tuple,
->
->         memset(&ct->proto, 0, sizeof(ct->proto));
->         __nf_ct_set_timeout(ct, timeout * HZ);
-> -       ct->status |= IPS_CONFIRMED;
->
->  out:
->         if (opts->netns_id >= 0)
-> @@ -339,6 +339,7 @@ struct nf_conn *bpf_ct_insert_entry(struct nf_conn___init *nfct_i)
->         struct nf_conn *nfct = (struct nf_conn *)nfct_i;
->         int err;
->
-> +       nfct->status |= IPS_CONFIRMED;
->         err = nf_conntrack_hash_check_insert(nfct);
->         if (err < 0) {
->                 nf_conntrack_free(nfct);
-> @@ -424,6 +425,51 @@ int bpf_ct_change_status(struct nf_conn *nfct, u32 status)
->         return nf_ct_change_status_common(nfct, status);
->  }
+On Tue, Sep 06, 2022 at 02:17:19PM -0700, Stephen Hemminger wrote:
+> On Tue, 6 Sep 2022 13:33:09 -0700
+> Florian Fainelli <f.fainelli@gmail.com> wrote:
+> 
+> > On 9/6/2022 1:05 PM, Andrew Lunn wrote:
+> > >> [ Alternative answer: how about "schnauzer"? I always liked how that word sounds. ]  
+> > > 
+> > > Unfortunately, it is not gender neutral, which i assume is a
+> > > requirement?
+> > > 
+> > > Plus the plural is also schnauzer, which would make your current
+> > > multiple CPU/schnauzer patches confusing, unless you throw the rule
+> > > book out and use English pluralisation.  
+> > 
+> > What a nice digression, I had no idea you two mastered German that well 
+> > :). How about "conduit" or "mgmt_port" or some variant in the same lexicon?
+> 
+> Is there an IEEE or PCI standard for this? What is used there?
 
-Why do we need the above two changes in this patch?
+The whole DSA concept is comes from Marvell.
 
-Thanks,
-Song
+commit 91da11f870f00a3322b81c73042291d7f0be5a17
+Author: Lennert Buytenhek <buytenh@wantstofly.org>
+Date:   Tue Oct 7 13:44:02 2008 +0000
+
+    net: Distributed Switch Architecture protocol support
+    
+    Distributed Switch Architecture is a protocol for managing hardware
+    switch chips.  It consists of a set of MII management registers and
+    commands to configure the switch, and an ethernet header format to
+    signal which of the ports of the switch a packet was received from
+    or is intended to be sent to.
+    
+    The switches that this driver supports are typically embedded in
+    access points and routers, and a typical setup with a DSA switch
+    looks something like this:
+    
+            +-----------+       +-----------+
+            |           | RGMII |           |
+            |           +-------+           +------ 1000baseT MDI ("WAN")
+            |           |       |  6-port   +------ 1000baseT MDI ("LAN1")
+            |    CPU    |       |  ethernet +------ 1000baseT MDI ("LAN2")
+            |           |MIImgmt|  switch   +------ 1000baseT MDI ("LAN3")
+            |           +-------+  w/5 PHYs +------ 1000baseT MDI ("LAN4")
+            |           |       |           |
+            +-----------+       +-----------+
+    
+    The switch driver presents each port on the switch as a separate
+    network interface to Linux, polls the switch to maintain software
+    link state of those ports, forwards MII management interface
+    accesses to those network interfaces (e.g. as done by ethtool) to
+    the switch, and exposes the switch's hardware statistics counters
+    via the appropriate Linux kernel interfaces.
+    
+    This initial patch supports the MII management interface register
+    layout of the Marvell 88E6123, 88E6161 and 88E6165 switch chips, and
+    supports the "Ethertype DSA" packet tagging format.
+    
+    (There is no officially registered ethertype for the Ethertype DSA
+    packet format, so we just grab a random one.  The ethertype to use
+    is programmed into the switch, and the switch driver uses the value
+    of ETH_P_EDSA for this, so this define can be changed at any time in
+    the future if the one we chose is allocated to another protocol or
+    if Ethertype DSA gets its own officially registered ethertype, and
+    everything will continue to work.)
+
+That first patch from 2008 uses the name master.
+
+The Marvell datasheets tend to just refer to the management CPU, and
+sending to / receiving from frames via one of the switches
+ports. There is no reference to the network interface the management
+CPU must have in order to receive/send such frames.
+
+	Andrew
