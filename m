@@ -2,86 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A02125AF63B
-	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 22:39:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 669665AF652
+	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 22:49:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231156AbiIFUix (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Sep 2022 16:38:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40138 "EHLO
+        id S230404AbiIFUta (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Sep 2022 16:49:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231191AbiIFUiu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 16:38:50 -0400
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08D4C89914;
-        Tue,  6 Sep 2022 13:38:50 -0700 (PDT)
-Received: by mail-qt1-x82b.google.com with SMTP id w28so8995585qtc.7;
-        Tue, 06 Sep 2022 13:38:49 -0700 (PDT)
+        with ESMTP id S229742AbiIFUt1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 16:49:27 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3DD1E99;
+        Tue,  6 Sep 2022 13:49:25 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id o4so12511916pjp.4;
+        Tue, 06 Sep 2022 13:49:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=h237n7/UKMUwrtK2SdW8VgK2awMEb5gtKYbegstNBYY=;
-        b=C9Ss8byNwMFLSuiFD4ppV8owA9/4wkUTBP/U9WKwcHSUI4M6aleZ6JI47wDpnkXwvP
-         sZOiL5B8tm854nQMBnoWx0QFNoZAC40OYRWf3oCu0hnqVdbYj86/gybzpnL3oBIPPAZh
-         B53R+G9LFexSWJa8KlhN098kxoLc/uAlOUrSWZ8IgB4ORIpBlIj3V7ZDsxkySiy77FAo
-         jF809Cgn/tHn57YHP3b+oVVszQzoN3sVs4fU6e/0EylbBuZTDwcFJsF0CpFHEx6YUo5m
-         DCDD2ERnMUeNyjy99d2P8UijGtKO5WqpGOcppPHDPOBaSMIdO1jnJGIW2VRCtez5JZ5f
-         764w==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=KJYp1zfVvwJHJHkMhxfowkWQ7RAPypxyqcgS+k23cys=;
+        b=qS6qxFg8Q9+sTHY7Kw1qn4myoojesKDAukNzzf1quR0tc3w9XKteaw9cFnj0D2bJth
+         LpZdaxD0mo85T9iDZXEkJWiqnl/FjqMv/HSDLMu3kSkBPltmLKh0F06vmbS4+d7c1PqY
+         mG/HELC/SbxJ/A8O/v10WrVA1r3tJK/JJnm5RjPeCepFuGO7pFRDgFjEBaxsT8bcSXRP
+         uwAgNBgghepPjYvqB/KrK3T8fnC2l8RuxH+JhUjl3xaUZcmdnMAKNBO09L3oIu0XYnzk
+         p/i0+afBw3RlYlZToqKiZ2P+fLegIEq/FKvKAssquLVcXnR3zVKyO+gnrUZOL4XNmWed
+         Ydwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=h237n7/UKMUwrtK2SdW8VgK2awMEb5gtKYbegstNBYY=;
-        b=QUrElzvllE6YXinZqG0/iSpsWNGNti57P4Z2IySnBU4mAdRBIr5d6yKRNwdonoriV2
-         67V+9Q+ds4cMI5HTF2+iUvrAF69eOrD6LbRFoG0v/Ek602tL2m5rTbJ7rOpaJtvAQHI7
-         dXY8SQ0iaPM5txMiLiwqD2A9RA7LoNthl1evT7EdXMOLj+cYuPnSVqtbK5N9Lo8XuTVL
-         kihcHK3qRQ/+r3sviF7dWOV/HfWtm5QOSn3gcohJbDqcokL1GAUMeidBiKbjKQU0ntfx
-         g1aKvsCV+tnmj55KvCq/0hvLgw2ao20CgPmn4H2u0S917egA5gw2iboBN5EeI6uEEc9V
-         Pd+g==
-X-Gm-Message-State: ACgBeo2jEm0MxYJqFMjmlhBu9mByaYI5AKkNsMyn9uRnXAvIVFz+NiBO
-        VbrORzvGx99JX2S9GWXi0W4=
-X-Google-Smtp-Source: AA6agR7jUYM/thCW3aozvylNyqUlO54iIfwG+TJITPxh00AjybJsEh/bVfCV5cWcRER/xBmwVBiXKw==
-X-Received: by 2002:ac8:5907:0:b0:344:e61b:8c0e with SMTP id 7-20020ac85907000000b00344e61b8c0emr335730qty.349.1662496729120;
-        Tue, 06 Sep 2022 13:38:49 -0700 (PDT)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id 137-20020a37078f000000b006be68f9bdddsm11617656qkh.133.2022.09.06.13.38.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 06 Sep 2022 13:38:46 -0700 (PDT)
-Message-ID: <a475ec3e-a1ce-c81c-5d80-8254e9b62068@gmail.com>
-Date:   Tue, 6 Sep 2022 13:38:42 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Subject: Re: [PATCH v3 05/11] leds: bcm6358: Get rid of custom
- led_init_default_state_get()
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Gene Chen <gene_chen@richtek.com>,
-        Andrew Jeffery <andrew@aj.id.au>, linux-leds@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     Pavel Machek <pavel@ucw.cz>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=KJYp1zfVvwJHJHkMhxfowkWQ7RAPypxyqcgS+k23cys=;
+        b=dVU/R0KQdxO0bVuuZnZVHSm8vR9D7e2FPCVIiVFT/knEAksGa7HyzorcoeZnuDuUmB
+         OdTyQ5H0Jvk0hS24/6JYDgImiRWX7vSm05gUOGC9jJOPynPDuhPlezC7mbkj2B20xv8o
+         51egdynswHKLWwfFCxpWTzt1qYYAPX3CZukMYFKnvTvWvwPJgPLln4R4zY2q2iL6dhg1
+         ON//9NKxyOdltxlAYIKAL3D54mAGLIGI/AIqmhebIekcn4lCZF3jTvZCdbAPq9uvopKU
+         6u1DkBxaAavxzJyF+A3xHmHjpa8apI/sDL6uJG2oBxDf0nH4i+YvqdF6YOhsp8/IPLIm
+         VqUQ==
+X-Gm-Message-State: ACgBeo0GKLJHDNl5RmYz/nus6nqc+xfMZuGJmROojtcFZg6Hcw9JXjkP
+        1mB0vxqIxW9fBidIYBLVwfw=
+X-Google-Smtp-Source: AA6agR5C3vks1BNI5tECMMk1F6pNr7y+uvArmo3hAPEaEnUa78DxFdEAYa8wVfo18CtwimaI40D5iA==
+X-Received: by 2002:a17:902:8d88:b0:175:368a:5e1e with SMTP id v8-20020a1709028d8800b00175368a5e1emr117297plo.5.1662497364927;
+        Tue, 06 Sep 2022 13:49:24 -0700 (PDT)
+Received: from dtor-ws.mtv.corp.google.com ([2620:15c:202:201:abc4:5d24:5a73:a96b])
+        by smtp.gmail.com with ESMTPSA id e6-20020a656886000000b00434e2e1a82bsm61664pgt.66.2022.09.06.13.49.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Sep 2022 13:49:24 -0700 (PDT)
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
         Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Lee Jones <lee@kernel.org>
-References: <20220906135004.14885-1-andriy.shevchenko@linux.intel.com>
- <20220906135004.14885-6-andriy.shevchenko@linux.intel.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220906135004.14885-6-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/3] net: davicom: dm9000: switch to using gpiod API
+Date:   Tue,  6 Sep 2022 13:49:20 -0700
+Message-Id: <20220906204922.3789922-1-dmitry.torokhov@gmail.com>
+X-Mailer: git-send-email 2.37.2.789.g6183377224-goog
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -90,14 +70,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch switches the driver away from legacy gpio/of_gpio API to
+gpiod API, and removes use of of_get_named_gpio_flags() which I want to
+make private to gpiolib.
 
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+---
+ drivers/net/ethernet/davicom/dm9000.c | 26 ++++++++++++++------------
+ 1 file changed, 14 insertions(+), 12 deletions(-)
 
-On 9/6/2022 6:49 AM, Andy Shevchenko wrote:
-> LED core provides a helper to parse default state from firmware node.
-> Use it instead of custom implementation.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+diff --git a/drivers/net/ethernet/davicom/dm9000.c b/drivers/net/ethernet/davicom/dm9000.c
+index 77229e53b04e..c85a6ebd79fc 100644
+--- a/drivers/net/ethernet/davicom/dm9000.c
++++ b/drivers/net/ethernet/davicom/dm9000.c
+@@ -28,8 +28,7 @@
+ #include <linux/irq.h>
+ #include <linux/slab.h>
+ #include <linux/regulator/consumer.h>
+-#include <linux/gpio.h>
+-#include <linux/of_gpio.h>
++#include <linux/gpio/consumer.h>
+ 
+ #include <asm/delay.h>
+ #include <asm/irq.h>
+@@ -1421,8 +1420,7 @@ dm9000_probe(struct platform_device *pdev)
+ 	int iosize;
+ 	int i;
+ 	u32 id_val;
+-	int reset_gpios;
+-	enum of_gpio_flags flags;
++	struct gpio_desc *reset_gpio;
+ 	struct regulator *power;
+ 	bool inv_mac_addr = false;
+ 	u8 addr[ETH_ALEN];
+@@ -1442,20 +1440,24 @@ dm9000_probe(struct platform_device *pdev)
+ 		dev_dbg(dev, "regulator enabled\n");
+ 	}
+ 
+-	reset_gpios = of_get_named_gpio_flags(dev->of_node, "reset-gpios", 0,
+-					      &flags);
+-	if (gpio_is_valid(reset_gpios)) {
+-		ret = devm_gpio_request_one(dev, reset_gpios, flags,
+-					    "dm9000_reset");
++	reset_gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
++	ret = PTR_ERR_OR_ZERO(reset_gpio);
++	if (ret) {
++		dev_err(dev, "failed to request reset gpio: %d\n", ret);
++		goto out_regulator_disable;
++	}
++
++	if (reset_gpio) {
++		ret = gpiod_set_consumer_name(reset_gpio, "dm9000_reset");
+ 		if (ret) {
+-			dev_err(dev, "failed to request reset gpio %d: %d\n",
+-				reset_gpios, ret);
++			dev_err(dev, "failed to set reset gpio name: %d\n",
++				ret);
+ 			goto out_regulator_disable;
+ 		}
+ 
+ 		/* According to manual PWRST# Low Period Min 1ms */
+ 		msleep(2);
+-		gpio_set_value(reset_gpios, 1);
++		gpiod_set_value_cansleep(reset_gpio, 0);
+ 		/* Needs 3ms to read eeprom when PWRST is deasserted */
+ 		msleep(4);
+ 	}
 -- 
-Florian
+2.37.2.789.g6183377224-goog
+
