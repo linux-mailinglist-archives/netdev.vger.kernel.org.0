@@ -2,171 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A0E05AF1A6
-	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 19:05:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D3AF5AF1D8
+	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 19:10:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239452AbiIFRCn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Sep 2022 13:02:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35342 "EHLO
+        id S239279AbiIFRH4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Sep 2022 13:07:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233479AbiIFRBn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 13:01:43 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FC4495E42
-        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 09:48:13 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id k9so16390386wri.0
-        for <netdev@vger.kernel.org>; Tue, 06 Sep 2022 09:48:12 -0700 (PDT)
+        with ESMTP id S234087AbiIFRHT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 13:07:19 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EB697C763
+        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 09:55:20 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id c198so2109068pfc.13
+        for <netdev@vger.kernel.org>; Tue, 06 Sep 2022 09:55:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=qkEQMAFlFrUq6t0pAagx8mtMZ2aPJX8cpHX423TQAwM=;
-        b=DnOGkv/KYL8gcy8iyMtlv3MMxHyG/2pKRadRuY3FexCysYlKZYHL09csaLylqDDN4H
-         MArGzMAU2lyJWYAVsC6oq4smwmUW9PTr80vEJvu6aMeUdm0K59o/vhyQHDQC5MBtKagw
-         O3Pj1UVREYXacGofgXd8Q1kco268ZMjQT9Q44T1OLCMuTlvGJyVtSQzLW6b37x7YGTSF
-         ZpQF0CX9PJyWQxxOz1XMFIqZSvfWao/2njAqjRSlaBHIF9fsPAUtS0Asy460HaQApVEC
-         NGUUZaYZNZxRwpzW7O/jmBy6tgRLbZ7hv+tmn/w3Nvan+cfQdJAa4MsSxu6yrDm+QM9j
-         xesg==
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=UkLsIRoPITN4M5EzGiQRq9TqbBIEfHXPT42QowPDTAk=;
+        b=VkdNrQ2BR/DXUgBnBjQUwdGEN3P1EBFQR3Vqf246bk3JTQ1z78wN2if1HjfXgRXnUX
+         6r5KD+qbcI4iEp//nHG3ED7ydyEXos0ianjzn8xgP0kld5HYEOUGBOg5RM7c40Bxaktv
+         8aj30chWZRDWd/lfhyo9DEbPzMaFCdPkUnNDGtoNBmVEKcGWihKuy5ifMnqmvFwRbLSE
+         gImMqCQEPniOkYwNvvf6NEZCXTJxsNY9DKG9/74FXlTZMG2JUJssmzJk31BpSTYhr+XM
+         wWtwD7X/HMs6w50v0l4Htqwc1VVvvn55o61gVC24FC3Nf+nlRw6iNqKQdJX6IGCN0hQ+
+         FMZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=qkEQMAFlFrUq6t0pAagx8mtMZ2aPJX8cpHX423TQAwM=;
-        b=5m5se0kFLGrvduv3JANgfZ3qJE9eqWhp0GpxwWf69CyN7dZcDDZ9RF/gEAw0PMkR7N
-         m42TCvzIJaQtYUGLPQud2FSjMRZtoguDIvobqQUv1ALhyp2xPjIl+ZMYHni8T7yIp9fL
-         U+o1HMrhkyfpayLQEH01VGQO+paqs4jFxxjXE8HJ6JRBEMCVt/eEQI4FfEDGrtjK1/BW
-         xIegoTWkmnuk2z2/AvFEymhioBX7u0Sz2lbPjOdRke/TifSKPMgacDItUHrFx9lKaVlw
-         H4ol/FdIgVZFWbcmQs0bEmgrshZxqrYeA4A7KikIiGFLpMxdFRRZ8eUhHJ6FgX4NCYkO
-         Pztw==
-X-Gm-Message-State: ACgBeo3xOhp8IinbqKb8caF2+jXQ7RcSVRaHyu3GwGLtEGZVJq9XuhYM
-        r7izLdgfI3vfzWorvo/HYQvnsg==
-X-Google-Smtp-Source: AA6agR6pYidUqQfaw5PiqdmgwSPcOM7ujKy471ATA8rF5Ex957kqrXg0qovVF/YXl4DKIswXTn92qg==
-X-Received: by 2002:a05:6000:1446:b0:222:c466:58a0 with SMTP id v6-20020a056000144600b00222c46658a0mr28946592wrx.53.1662482892540;
-        Tue, 06 Sep 2022 09:48:12 -0700 (PDT)
-Received: from localhost.localdomain (146725694.box.freepro.com. [130.180.211.218])
-        by smtp.gmail.com with ESMTPSA id e27-20020adf9bdb000000b0021f0ff1bc6csm7426600wrc.41.2022.09.06.09.48.11
+        bh=UkLsIRoPITN4M5EzGiQRq9TqbBIEfHXPT42QowPDTAk=;
+        b=hvC1xEAufXERfkxMWjZg80UbGjqYTESD0ygRZIPuOd1RpKZ4mMbouy/wkK/yFLkiSL
+         ++uM56dK75G/zubIis3uaitFbL+ReNiWdIJbJuIwb9pqZ7HdXSpDdAcETW6HTfWfsrsO
+         ewhyTL7j7ZG9jKOkl8ZBdxSZoNM+Ck6gonGNwLiai1vC9HvlhEvoQSUD5lM2sY5Ry/Bs
+         nl6DuOICUvcKrtxThlrcs29IOBXMTmCtIhIvmeLKo0be0h7ZJTEqyoMMO4Vz08K1AYsk
+         zMwDEL8n5jbitkhKmsFAq/xWBv3ZLB2TfMUsa8vOVWizXNNRFoY8ToPpfeKVqSko9xf6
+         Ywmg==
+X-Gm-Message-State: ACgBeo2Uw1IWvI2Q78GXpc9RvcydB4WPojxjySCEIVTmB+vbJJX4R/bW
+        y4iDXxfU3akb80HmqmjZpqzWCQF/6OnBKg==
+X-Google-Smtp-Source: AA6agR7bCRaA6MAYlL6dGNA93H5MHQXixdbUu4xtrisnia0ZcuBwh+gv3fn4zjMKKi+S1HBL8uSsCw==
+X-Received: by 2002:aa7:9dde:0:b0:53e:5af7:ac10 with SMTP id g30-20020aa79dde000000b0053e5af7ac10mr1037809pfq.16.1662483319350;
+        Tue, 06 Sep 2022 09:55:19 -0700 (PDT)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id r12-20020aa7988c000000b0053612ec8859sm10329345pfl.209.2022.09.06.09.55.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Sep 2022 09:48:12 -0700 (PDT)
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-To:     daniel.lezcano@linaro.org, rafael@kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Raju Rangoju <rajur@chelsio.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev@vger.kernel.org (open list:CXGB4 ETHERNET DRIVER (CXGB4))
-Subject: [PATCH v3 28/30] thermal/drivers/cxgb4: Use generic thermal_zone_get_trip() function
-Date:   Tue,  6 Sep 2022 18:47:18 +0200
-Message-Id: <20220906164720.330701-29-daniel.lezcano@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220906164720.330701-1-daniel.lezcano@linaro.org>
-References: <20220906164720.330701-1-daniel.lezcano@linaro.org>
+        Tue, 06 Sep 2022 09:55:19 -0700 (PDT)
+Date:   Tue, 6 Sep 2022 09:55:17 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        David Ahern <dsahern@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH iproute2] ip link: add sub-command to view and change
+ DSA master
+Message-ID: <20220906095517.4022bde6@hermes.local>
+In-Reply-To: <20220906164117.7eiirl4gm6bho2ko@skbuf>
+References: <20220904190025.813574-1-vladimir.oltean@nxp.com>
+        <20220906082907.5c1f8398@hermes.local>
+        <20220906164117.7eiirl4gm6bho2ko@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The thermal framework gives the possibility to register the trip
-points with the thermal zone. When that is done, no get_trip_* ops are
-needed and they can be removed.
+On Tue, 6 Sep 2022 16:41:17 +0000
+Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
 
-Convert ops content logic into generic trip points and register them with the
-thermal zone.
+> On Tue, Sep 06, 2022 at 08:29:07AM -0700, Stephen Hemminger wrote:
+> > On Sun,  4 Sep 2022 22:00:25 +0300
+> > Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+> >   
+> > > Support the "dsa" kind of rtnl_link_ops exported by the kernel, and
+> > > export reads/writes to IFLA_DSA_MASTER.
+> > > 
+> > > Examples:
+> > > 
+> > > $ ip link set swp0 type dsa master eth1
+> > > 
+> > > $ ip -d link show dev swp0
+> > >     (...)
+> > >     dsa master eth0
+> > > 
+> > > $ ip -d -j link show swp0
+> > > [
+> > > 	{
+> > > 		"link": "eth1",
+> > > 		"linkinfo": {
+> > > 			"info_kind": "dsa",
+> > > 			"info_data": {
+> > > 				"master": "eth1"
+> > > 			}
+> > > 		},
+> > > 	}
+> > > ]
+> > > 
+> > > Note that by construction and as shown in the example, the IFLA_LINK
+> > > reported by a DSA user port is identical to what is reported through
+> > > IFLA_DSA_MASTER. However IFLA_LINK is not writable, and overloading its
+> > > meaning to make it writable would clash with other users of IFLA_LINK
+> > > (vlan etc) for which writing this property does not make sense.
+> > > 
+> > > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > > ---  
+> > 
+> > Using the term master is an unfortunate choice.
+> > Although it is common practice in Linux it is not part of any
+> > current standard and goes against the Linux Foundation non-inclusive
+> > naming policy.  
+> 
+> Concretely, what is it that you propose?
 
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
-Acked-by: Jakub Kicinski <kuba@kernel.org>
----
- drivers/net/ethernet/chelsio/cxgb4/cxgb4.h    |  2 -
- .../ethernet/chelsio/cxgb4/cxgb4_thermal.c    | 41 ++++---------------
- 2 files changed, 8 insertions(+), 35 deletions(-)
-
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-index 5657ac8cfca0..fca9533bc011 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-@@ -1079,8 +1079,6 @@ struct mbox_list {
- #if IS_ENABLED(CONFIG_THERMAL)
- struct ch_thermal {
- 	struct thermal_zone_device *tzdev;
--	int trip_temp;
--	int trip_type;
- };
- #endif
- 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_thermal.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_thermal.c
-index 9a6d65243334..1d49cfe3e2ab 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_thermal.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_thermal.c
-@@ -29,36 +29,12 @@ static int cxgb4_thermal_get_temp(struct thermal_zone_device *tzdev,
- 	return 0;
- }
- 
--static int cxgb4_thermal_get_trip_type(struct thermal_zone_device *tzdev,
--				       int trip, enum thermal_trip_type *type)
--{
--	struct adapter *adap = tzdev->devdata;
--
--	if (!adap->ch_thermal.trip_temp)
--		return -EINVAL;
--
--	*type = adap->ch_thermal.trip_type;
--	return 0;
--}
--
--static int cxgb4_thermal_get_trip_temp(struct thermal_zone_device *tzdev,
--				       int trip, int *temp)
--{
--	struct adapter *adap = tzdev->devdata;
--
--	if (!adap->ch_thermal.trip_temp)
--		return -EINVAL;
--
--	*temp = adap->ch_thermal.trip_temp;
--	return 0;
--}
--
- static struct thermal_zone_device_ops cxgb4_thermal_ops = {
- 	.get_temp = cxgb4_thermal_get_temp,
--	.get_trip_type = cxgb4_thermal_get_trip_type,
--	.get_trip_temp = cxgb4_thermal_get_trip_temp,
- };
- 
-+static struct thermal_trip trip = { .type = THERMAL_TRIP_CRITICAL } ;
-+
- int cxgb4_thermal_init(struct adapter *adap)
- {
- 	struct ch_thermal *ch_thermal = &adap->ch_thermal;
-@@ -79,15 +55,14 @@ int cxgb4_thermal_init(struct adapter *adap)
- 	if (ret < 0) {
- 		num_trip = 0; /* could not get trip temperature */
- 	} else {
--		ch_thermal->trip_temp = val * 1000;
--		ch_thermal->trip_type = THERMAL_TRIP_CRITICAL;
-+		trip.temperature = val * 1000;
- 	}
--
-+	
- 	snprintf(ch_tz_name, sizeof(ch_tz_name), "cxgb4_%s", adap->name);
--	ch_thermal->tzdev = thermal_zone_device_register(ch_tz_name, num_trip,
--							 0, adap,
--							 &cxgb4_thermal_ops,
--							 NULL, 0, 0);
-+	ch_thermal->tzdev = thermal_zone_device_register_with_trips(ch_tz_name, &trip, num_trip,
-+								    0, adap,
-+								    &cxgb4_thermal_ops,
-+								    NULL, 0, 0);
- 	if (IS_ERR(ch_thermal->tzdev)) {
- 		ret = PTR_ERR(ch_thermal->tzdev);
- 		dev_err(adap->pdev_dev, "Failed to register thermal zone\n");
--- 
-2.34.1
+Maybe "switch" instead of "master"?
 
