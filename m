@@ -2,65 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B7DF5AEF61
-	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 17:50:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DE5A5AEEB5
+	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 17:28:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233013AbiIFPuo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Sep 2022 11:50:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45776 "EHLO
+        id S233878AbiIFP0m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Sep 2022 11:26:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234567AbiIFPuM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 11:50:12 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 586E21DD
-        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 08:02:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=F3DsM4pxSO2AsDPVuFJe30VQtaTAqyoBGp8wWOgMI50=; b=AzXWxmuXK6T2tK5GM/m52i5CZn
-        ukUUChdUHljrrNET2ppBEbd6xjjIp3loKEymKZF9NIfJqUla9mi1xDohk77WDuWpRdfX5o5aA4ORo
-        xeSOX++kKj5lJD47QvQmlBh7XfLvLBdrNj3DNorRxuWlE5Qeb6V9QYWLqzWtd09zFZhI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oVZgI-00Fl9Q-1f; Tue, 06 Sep 2022 16:36:02 +0200
-Date:   Tue, 6 Sep 2022 16:36:02 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Casper Andersson <casper.casan@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: Re: [PATCH v2 net-next] net: sparx5: fix function return type to
- match actual type
-Message-ID: <Yxda0mGgvq8pUinU@lunn.ch>
-References: <20220906065815.3856323-1-casper.casan@gmail.com>
+        with ESMTP id S233691AbiIFP0S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 11:26:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDD4BBFE98
+        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 07:37:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7EBB6B8164A
+        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 14:36:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8300C433D7;
+        Tue,  6 Sep 2022 14:36:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662475017;
+        bh=XRL315MAyOCfgp7sMWqBqs6KwVLvXbXCAZ47y0frCXA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=kB32FJVm4R9Okt3CwKgk8fekAYOeRDxFGmyaiergN1oM215KgguvHmR1bJUDQVZGA
+         7sd8FntlwN4RIxMWQl2xh/dldqUgIjZcgI8bK5bXNMegHWezOh0IkcOCIZkOcts0k0
+         aO35aAo1LGF7fNbr1t0fW+rZUugFeC94A36B/pSPIgtvWYA+irhNUfZZRVTeFQtpnm
+         qP9GUQ5sM9fo63gMOO/OdnWRInu8opaYX9BxciT9B80feQZ0xsFkmXK4s5KxRGG+lP
+         iXDzVgoAJzHewQCfFzArXSvlrS0wuGEW9YrNItBnmCUnr3jJiZ/PZConqGrCaVmz1C
+         oxeIdlW8t/uFA==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
+        Mark-MC.Lee@mediatek.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, matthias.bgg@gmail.com,
+        linux-mediatek@lists.infradead.org, lorenzo.bianconi@redhat.com
+Subject: [PATCH net] net: ethernet: mtk_eth_soc: fix typo in __mtk_foe_entry_clear
+Date:   Tue,  6 Sep 2022 16:36:32 +0200
+Message-Id: <6fb6f748b78faba37702f4757e5b3fb279eaf5ed.1662474824.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220906065815.3856323-1-casper.casan@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 06, 2022 at 08:58:15AM +0200, Casper Andersson wrote:
-> Function returns error integer, not bool.
-> 
-> Does not have any impact on functionality.
-> 
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Signed-off-by: Casper Andersson <casper.casan@gmail.com>
+Set ib1 state to MTK_FOE_STATE_UNBIND in __mtk_foe_entry_clear routine.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Fixes: 33fc42de33278 ("net: ethernet: mtk_eth_soc: support creating mac address based offload entries")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+---
+ drivers/net/ethernet/mediatek/mtk_ppe.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-    Andrew
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
+index dab8f3f771f8..cfe804bc8d20 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe.c
++++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
+@@ -412,7 +412,7 @@ __mtk_foe_entry_clear(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
+ 	if (entry->hash != 0xffff) {
+ 		ppe->foe_table[entry->hash].ib1 &= ~MTK_FOE_IB1_STATE;
+ 		ppe->foe_table[entry->hash].ib1 |= FIELD_PREP(MTK_FOE_IB1_STATE,
+-							      MTK_FOE_STATE_BIND);
++							      MTK_FOE_STATE_UNBIND);
+ 		dma_wmb();
+ 	}
+ 	entry->hash = 0xffff;
+-- 
+2.37.3
+
