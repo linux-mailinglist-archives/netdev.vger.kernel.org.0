@@ -2,103 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 51A4C5AF6A9
-	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 23:13:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E59615AF6B2
+	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 23:17:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230487AbiIFVNQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Sep 2022 17:13:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48300 "EHLO
+        id S230266AbiIFVR3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Sep 2022 17:17:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230465AbiIFVNK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 17:13:10 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56B60B81FF
-        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 14:13:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662498789; x=1694034789;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=yF6N9MgKVSzzoiiOjle0IgG9t3Nvh57RkPFXzoZsD2g=;
-  b=eeDg3NAGtsAzOWz6FBYbOxAemCUo8+MH8J/Sarr0OW47Cgu+ycEAHlBm
-   b8fZK07QJe2Yegjj0mOEFi++pdzrqb8BzxXMkrqNkftLbc7lqo9ULXNex
-   0K5ePZfunoBsX6XktbsdtS3sZA8bMIj+Sy+YX59dkuMoEDz0EedmO/z8c
-   e/ofEmuJNpC43bv1uMq+PacM3SisovtuwLaNxbZIdIoewxN3ycAXLT0R1
-   9yhxMxdxUSZI9TqRKBsByK/uUuiyld4TfBZ+BBvJ+pWHQSznUuoO84iiT
-   lnxxVnz/PyMrK47ZXl37Tm2YdbRXh67R+Gw+FNfwy88Z4axBSEQ2cTKyL
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10462"; a="295441854"
-X-IronPort-AV: E=Sophos;i="5.93,294,1654585200"; 
-   d="scan'208";a="295441854"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2022 14:13:07 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,294,1654585200"; 
-   d="scan'208";a="591421371"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga006.jf.intel.com with ESMTP; 06 Sep 2022 14:13:06 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com
-Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com
-Subject: [PATCH net-next 5/5] ice: Simplify memory allocation in ice_sched_init_port()
-Date:   Tue,  6 Sep 2022 14:13:02 -0700
-Message-Id: <20220906211302.3501186-6-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220906211302.3501186-1-anthony.l.nguyen@intel.com>
-References: <20220906211302.3501186-1-anthony.l.nguyen@intel.com>
+        with ESMTP id S229889AbiIFVRW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 17:17:22 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09826B8F30
+        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 14:17:22 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id n65-20020a17090a5ac700b001fbb4fad865so12730021pji.1
+        for <netdev@vger.kernel.org>; Tue, 06 Sep 2022 14:17:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=oTzUbb/6CE82vCLs9D17/mfJjdHTEO8Nl2XjNtgXIo8=;
+        b=Q/8sqYK1JYCg2PiqbQ6C9Ur5SfeZjAuqMCsg11XEUl/9n4pnQTq/AJIggRCUahkgtC
+         ZHz0Kccp+S9Cd5+DPM/Wiiw/ujq3aOuJQNpftLzHvxgDG7/yvG7Nph6VnQXxv/p7Rt6J
+         /3jBFw+aU+OXPwzIaazEYrplnryVnEd/SeMxNPkNzRvl6823kjsQEY9SB+uTfqbRX0U6
+         dNr8h2uavWOxjbeKYchLu0Cu2vfGNSoRWZyVD/xcI+cgGIHadoqVnAUlK1trMNZY13dN
+         LD6HsZq6lSEKBXgUm3qkZk9N794/+ZB5gGd7/LyqHw0tQL9lUmKx77ozLiymYL+cz+6Y
+         XcZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=oTzUbb/6CE82vCLs9D17/mfJjdHTEO8Nl2XjNtgXIo8=;
+        b=zU+BcIsfycqnIspZIBhcgDpQFHQIQsW1sPbGtEmFpCaa22BH8KOe0Uw388qDjIvp3M
+         P+hHouo5K+Ey3AD46pfNS+gs9dQ1sgiEZ76zh0tZrr4UUFzoMb8yVjSmd0FxufShy9Az
+         XPv5ZISeLyoNS3sICwxLulK0aIEhM8gxzqxTqn6vd13klk2mDZnJh37VFjuO7lxSqYNv
+         oEs/xkKj3Ikj3N0M1f27PK4G3dsuYyR93Gmq6iqq+6t6RyL1lB2Ip2swgOuseuS9kqhe
+         OwqzB98EuHbrRQu5J/VL3EwSV1/diZj9fCgliW51OvJlSDidQe2DeNoU3hgDj1HKa1TB
+         ZWBA==
+X-Gm-Message-State: ACgBeo0/6EQ9aZwftN7BgCDTd+cWPQDTJXKN9IukEJ3s2qdHAfOhwRcM
+        ksYKY8TNaByvhnnYoE17lcFPkg==
+X-Google-Smtp-Source: AA6agR78gk9guthLs/jjz6UEIg1HSfT3QiIV/A2uKhPOi29K7tILy0Gn9FqMCESig/8XYKzwhWwoeg==
+X-Received: by 2002:a17:90b:1804:b0:1fb:141:a09d with SMTP id lw4-20020a17090b180400b001fb0141a09dmr26306332pjb.170.1662499041494;
+        Tue, 06 Sep 2022 14:17:21 -0700 (PDT)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id n2-20020a170902f60200b00174c0dd29f0sm10375285plg.144.2022.09.06.14.17.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Sep 2022 14:17:21 -0700 (PDT)
+Date:   Tue, 6 Sep 2022 14:17:19 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Subject: Re: [PATCH iproute2] ip link: add sub-command to view and change
+ DSA master
+Message-ID: <20220906141719.4482f31d@hermes.local>
+In-Reply-To: <05593f07-42e8-c4bd-8608-cf50e8b103d6@gmail.com>
+References: <20220904190025.813574-1-vladimir.oltean@nxp.com>
+        <20220906082907.5c1f8398@hermes.local>
+        <20220906164117.7eiirl4gm6bho2ko@skbuf>
+        <20220906095517.4022bde6@hermes.local>
+        <20220906191355.bnimmq4z36p5yivo@skbuf>
+        <YxeoFfxWwrWmUCkm@lunn.ch>
+        <05593f07-42e8-c4bd-8608-cf50e8b103d6@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+On Tue, 6 Sep 2022 13:33:09 -0700
+Florian Fainelli <f.fainelli@gmail.com> wrote:
 
-'buf' is locale to the ice_sched_init_port() function.
-There is no point in using devm_kzalloc()/devm_kfree().
+> On 9/6/2022 1:05 PM, Andrew Lunn wrote:
+> >> [ Alternative answer: how about "schnauzer"? I always liked how that word sounds. ]  
+> > 
+> > Unfortunately, it is not gender neutral, which i assume is a
+> > requirement?
+> > 
+> > Plus the plural is also schnauzer, which would make your current
+> > multiple CPU/schnauzer patches confusing, unless you throw the rule
+> > book out and use English pluralisation.  
+> 
+> What a nice digression, I had no idea you two mastered German that well 
+> :). How about "conduit" or "mgmt_port" or some variant in the same lexicon?
 
-use kzalloc()/kfree() instead.
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
-As a side effect, it also require less memory. devm_kzalloc() has a small
-memory overhead, and requesting ICE_AQ_MAX_BUF_LEN (i.e. 4096) bytes,
-8192 are really allocated.
----
- drivers/net/ethernet/intel/ice/ice_sched.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_sched.c b/drivers/net/ethernet/intel/ice/ice_sched.c
-index 7947223536e3..118595763bba 100644
---- a/drivers/net/ethernet/intel/ice/ice_sched.c
-+++ b/drivers/net/ethernet/intel/ice/ice_sched.c
-@@ -1212,7 +1212,7 @@ int ice_sched_init_port(struct ice_port_info *pi)
- 	hw = pi->hw;
- 
- 	/* Query the Default Topology from FW */
--	buf = devm_kzalloc(ice_hw_to_dev(hw), ICE_AQ_MAX_BUF_LEN, GFP_KERNEL);
-+	buf = kzalloc(ICE_AQ_MAX_BUF_LEN, GFP_KERNEL);
- 	if (!buf)
- 		return -ENOMEM;
- 
-@@ -1290,7 +1290,7 @@ int ice_sched_init_port(struct ice_port_info *pi)
- 		pi->root = NULL;
- 	}
- 
--	devm_kfree(ice_hw_to_dev(hw), buf);
-+	kfree(buf);
- 	return status;
- }
- 
--- 
-2.35.1
-
+Is there an IEEE or PCI standard for this? What is used there?
