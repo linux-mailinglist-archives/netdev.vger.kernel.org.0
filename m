@@ -2,157 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E9F1F5AF102
-	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 18:48:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 874705AF0FE
+	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 18:48:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234490AbiIFQrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Sep 2022 12:47:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40542 "EHLO
+        id S234273AbiIFQrd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Sep 2022 12:47:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234567AbiIFQqY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 12:46:24 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EBBD7FF96
-        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 09:27:11 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id kk26so24490218ejc.11
-        for <netdev@vger.kernel.org>; Tue, 06 Sep 2022 09:27:11 -0700 (PDT)
+        with ESMTP id S238210AbiIFQrB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 12:47:01 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 213975F46
+        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 09:28:25 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id m10-20020a17090a730a00b001fa986fd8eeso15559300pjk.0
+        for <netdev@vger.kernel.org>; Tue, 06 Sep 2022 09:28:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc
-         :subject:date;
-        bh=0OozxLkamyMLDKk4u80slhahH/+s0KovGrehlqjA6/g=;
-        b=XgMnq+8SWNMH/cOQoHAeuYqKKtHanUodn0wMiQ6C/qlwGJEkp9CLM3kY1sVavdHRpP
-         MYBQOhH+fWNKhGvvR+UqO91K/nBMj8EwbIOM5OVxd65hOm3adVrddPjeB85QTDm2PgfP
-         KaOsyCmBQnGWQLXJUHM7ACR5RipeXdPLvOjbqzNZ+0O8um7j8II5uRr5n94STEK98a23
-         eeyXsunFDOo8ggs3qSrQnIV7NxVYsyrxBFHsYEuho5XmPZy1DW47avPNQtEDOOsAZ3/l
-         BGm/IEhfN5QhVrbvj/gPWFTH8dmZJpDT7LeDIF3pMz1nXySg1FmhTzIhuRSmJ0FKC+Af
-         zxvw==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=B1tJnaSq5B/t3yPTU483R+WqjIq3j1MpuJsYb9B/pbQ=;
+        b=EOGnj+ex+mzb1QoXlxZmruTtPMsY2GGHaDg6tLc51/sZheXmtecxOiixUNY15/0fYq
+         noa2G6Yrg4B9m58yntwEO9QsKjr/SEqIXxy+7fZoF0MTfq/v9KjRTkmBuFrBwq3bg3M+
+         /vUFe+VcGA8Ra5nxQNXhy49vrfYEJFxTuiPQJMpG4qwyhBjcEPgzO0sZmZzABu6i8Lzf
+         pelBU6CfS8kbtywOtM/zEix0kwn/PZ5A8cKH+Gh/hZOxtfPmp3FfycS+YAnTFESvSU6I
+         bafdbPysbjl1hcJZsmfAAsLOOYzS5npRXHR8C4Buf58R2k/4tHxAPhXEiw1qwzmMyG/k
+         IY3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=0OozxLkamyMLDKk4u80slhahH/+s0KovGrehlqjA6/g=;
-        b=d2zsaXtK2YRq1Rd29X1PL2ttkkYRZnq1exzkTfR/qmajQGsfg3h1dDWXz3YBNmdCSi
-         b+PK+Ku0o1M9BmRThshhaOwPo0+c3PFxTi4ww8a86EH+TgVj0k/vAVznQn4JQ3RT1Yuv
-         AAZChXzNsC7/c7RZSScQ/w4UYciGnUOKH+BINWAPUcMeoRePvokvBwwhyTUGSGk9ycYL
-         HT077tI/2TC2znFb8N7E9Fis8NmOUobw3IhJOjHmDV/Cv42Be1eenVesZoiGOiEe+C4l
-         JpW39AN47xkszLdZkuQcfDG4YCKZydq4RuQnda6N0wpJ2rrWx6h2LaPjlKvBrfzM7av3
-         cE6A==
-X-Gm-Message-State: ACgBeo0spqFdzdXdY047ylwkb5HEaezsOaFhslDCAPHKrFrwTNc4WlBS
-        PJd2X3H/djCDYRvxUy9ykmo=
-X-Google-Smtp-Source: AA6agR539VE3/ljYYTS+aAJfxhyvvGq+xrGwuyDP4IBVCmeYgmF1NldzwCbikaqFjveLNfvZ9Exc1w==
-X-Received: by 2002:a17:907:7204:b0:749:7839:4dd2 with SMTP id dr4-20020a170907720400b0074978394dd2mr16866787ejc.714.1662481629682;
-        Tue, 06 Sep 2022 09:27:09 -0700 (PDT)
-Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
-        by smtp.gmail.com with ESMTPSA id t19-20020a1709067c1300b00730b61d8a5esm6860247ejo.61.2022.09.06.09.27.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 06 Sep 2022 09:27:09 -0700 (PDT)
-Subject: Re: [PATCH net-next] sfc: introduce shutdown entry point in efx pci
- driver
-To:     pieter.jansen-van-vuuren@amd.com, netdev@vger.kernel.org,
-        linux-net-drivers@amd.com
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, Martin Habets <habetsm.xilinx@gmail.com>
-References: <20220906105620.26179-1-pieter.jansen-van-vuuren@amd.com>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <16164cd2-0dce-8bfe-92da-f874184a3127@gmail.com>
-Date:   Tue, 6 Sep 2022 17:27:08 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=B1tJnaSq5B/t3yPTU483R+WqjIq3j1MpuJsYb9B/pbQ=;
+        b=wW11sTHdr2rvq7DP9vv5YAFHm0iWi38EcvZWj/2KLLgN7kRfCfpYeMPKirANRVChAO
+         eEwgyqvngRm8M/rC6YP0vGxxkhBP2nEoct9J7hap2haNAEBJwRHNzLCP4oOpVXg+8FIf
+         TP8p9lS61pasCaf50XNP7FWjWz0OOxw+tHKnjGBpNAG2OfYLWxCXgiLJBX/A8CbOwiuz
+         wY5WIiALwWPBOULyNw3YYiSftgGu29gllhS+3MnlMqfT2cZOWauOZSYQsUCwjI/ksO6T
+         aYBWCA07szHKXIX0WmrFrLmqhFnl262t6tG1+8I5CVxjL8H3aJGM3+LZjwOoOiCK+8YX
+         m2cA==
+X-Gm-Message-State: ACgBeo0XGK8R/8J03powmFfyzJIrUtdpk88hRKmMniPULXFPjgOgc0mq
+        jUkESocCngjSQXCHKX5LIPh45RIvfXMco2vXKAwoKjRIPB7lmQ==
+X-Google-Smtp-Source: AA6agR6PTzR1b20iQrk5gA/zq+HQjYuIpQS11sd+axJYGleAlkydltfAkZ/aF1MGRPonz5RvWUjCnoRsN5MjVgpDybU=
+X-Received: by 2002:a17:90b:388e:b0:1f5:40d4:828d with SMTP id
+ mu14-20020a17090b388e00b001f540d4828dmr26456732pjb.31.1662481704429; Tue, 06
+ Sep 2022 09:28:24 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20220906105620.26179-1-pieter.jansen-van-vuuren@amd.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <CABG=zsBEh-P4NXk23eBJw7eajB5YJeRS7oPXnTAzs=yob4EMoQ@mail.gmail.com>
+ <Yw/aYIR3mBABN75G@google.com> <CABG=zsCTiqt4QuPo70xiGePh1F4ntyNh4-bsVh_DKvSw=CkWjA@mail.gmail.com>
+In-Reply-To: <CABG=zsCTiqt4QuPo70xiGePh1F4ntyNh4-bsVh_DKvSw=CkWjA@mail.gmail.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Tue, 6 Sep 2022 09:28:13 -0700
+Message-ID: <CAKH8qBvVhkrXdesEUmDAeLG+LUWO=-j-d40F_V4Laq7rB1ScZQ@mail.gmail.com>
+Subject: Re: [RFC] Socket termination for policy enforcement and load-balancing
+To:     Aditi Ghag <aditivghag@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/09/2022 11:56, pieter.jansen-van-vuuren@amd.com wrote:
-> From: Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>
-> 
-> Make the device inactive when the system shutdown callback has been
-> invoked. This is achieved by freezing the driver and disabling the
-> PCI bus mastering.
-> 
-> Co-developed-by: Martin Habets <habetsm.xilinx@gmail.com>
-> Signed-off-by: Martin Habets <habetsm.xilinx@gmail.com>
-> Signed-off-by: Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>
+On Sun, Sep 4, 2022 at 10:41 AM Aditi Ghag <aditivghag@gmail.com> wrote:
+>
+> On Wed, Aug 31, 2022 at 3:02 PM <sdf@google.com> wrote:
+> >
+> > On 08/31, Aditi Ghag wrote:
+> > [...]
+> >
+> > > - The sock_destroy API added for similar Android use cases is
+> > > effective in tearing down sockets. The API is behind the
+> > > CONFIG_INET_DIAG_DESTROY config that's disabled by default, and
+> > > currently exposed via SOCK_DIAG netlink infrastructure in userspace.
+> > > The sock destroy handlers for TCP and UDP protocols send ECONNABORTED
+> > > error code to sockets related to the abort state as mentioned in RFC
+> > > 793.
+> >
+> > > - Add unreachable routes for deleted backends. I experimented with
+> > > this approach with my colleague, Nikolay Aleksandrov. We found that
+> > > TCP and connected UDP sockets in the established state simply ignore
+> > > the ICMP error messages, and continue to send data in the presence of
+> > > such routes. My read is that applications are ignoring the ICMP errors
+> > > reported on sockets [2].
+> >
+> > [..]
+> >
+> > > - Use BPF (sockets) iterator to identify sockets connected to a
+> > > deleted backend. The BPF (sockets) iterator is network namespace aware
+> > > so we'll either need to enter every possible container network
+> > > namespace to identify the affected connections, or adapt the iterator
+> > > to be without netns checks [3]. This was discussed with my colleague
+> > > Daniel Borkmann based on the feedback he shared from the LSFMMBPF
+> > > conference discussions.
+> >
+> > Maybe something worth fixing as well even if you end up using netlink?
+> > Having to manually go over all networking namespaces (if I want
+> > to iterate over all sockets on the host) doesn't seem feasible?
+>
+> SOCK_DIAG netlink infrastructure also has similar netns checks. The
+> iterator approach
+> would allow us to invoke sock destroy handlers from BPF though.
 
-Acked-by: Edward Cree <ecree.xilinx@gmail.com>
+Sorry, I think I wasn't clear enough.
+I meant that having a mode to iterate over all sockets on the host
+regardless of the namespace might be useful.
+Martin suggests the same in [1], I'll follow that thread :-)
 
-> ---
->  drivers/net/ethernet/sfc/efx.c       | 12 ++++++++++++
->  drivers/net/ethernet/sfc/siena/efx.c | 12 ++++++++++++
->  2 files changed, 24 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
-> index 153d68e29b8b..b85c95e1ae7c 100644
-> --- a/drivers/net/ethernet/sfc/efx.c
-> +++ b/drivers/net/ethernet/sfc/efx.c
-> @@ -1175,6 +1175,17 @@ static int efx_pm_freeze(struct device *dev)
->  	return 0;
->  }
->  
-> +static void efx_pci_shutdown(struct pci_dev *pci_dev)
-> +{
-> +	struct efx_nic *efx = pci_get_drvdata(pci_dev);
-> +
-> +	if (!efx)
-> +		return;
-> +
-> +	efx_pm_freeze(&pci_dev->dev);
-> +	pci_disable_device(pci_dev);
-> +}
-> +
->  static int efx_pm_thaw(struct device *dev)
->  {
->  	int rc;
-> @@ -1279,6 +1290,7 @@ static struct pci_driver efx_pci_driver = {
->  	.probe		= efx_pci_probe,
->  	.remove		= efx_pci_remove,
->  	.driver.pm	= &efx_pm_ops,
-> +	.shutdown	= efx_pci_shutdown,
->  	.err_handler	= &efx_err_handlers,
->  #ifdef CONFIG_SFC_SRIOV
->  	.sriov_configure = efx_pci_sriov_configure,
-> diff --git a/drivers/net/ethernet/sfc/siena/efx.c b/drivers/net/ethernet/sfc/siena/efx.c
-> index 63d999e63960..cf09521b0c64 100644
-> --- a/drivers/net/ethernet/sfc/siena/efx.c
-> +++ b/drivers/net/ethernet/sfc/siena/efx.c
-> @@ -1148,6 +1148,17 @@ static int efx_pm_freeze(struct device *dev)
->  	return 0;
->  }
->  
-> +static void efx_pci_shutdown(struct pci_dev *pci_dev)
-> +{
-> +	struct efx_nic *efx = pci_get_drvdata(pci_dev);
-> +
-> +	if (!efx)
-> +		return;
-> +
-> +	efx_pm_freeze(&pci_dev->dev);
-> +	pci_disable_device(pci_dev);
-> +}
-> +
->  static int efx_pm_thaw(struct device *dev)
->  {
->  	int rc;
-> @@ -1252,6 +1263,7 @@ static struct pci_driver efx_pci_driver = {
->  	.probe		= efx_pci_probe,
->  	.remove		= efx_pci_remove,
->  	.driver.pm	= &efx_pm_ops,
-> +	.shutdown	= efx_pci_shutdown,
->  	.err_handler	= &efx_siena_err_handlers,
->  #ifdef CONFIG_SFC_SIENA_SRIOV
->  	.sriov_configure = efx_pci_sriov_configure,
-> 
-
+[1] https://lore.kernel.org/bpf/20220831230157.7lchomcdxmvq3qqw@kafai-mbp.dhcp.thefacebook.com
