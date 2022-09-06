@@ -2,215 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA14C5AE8FA
-	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 15:02:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25DDA5AE90F
+	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 15:06:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239751AbiIFNCI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Sep 2022 09:02:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60112 "EHLO
+        id S240258AbiIFNF3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Sep 2022 09:05:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239912AbiIFNCF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 09:02:05 -0400
-Received: from corp-front07-corp.i.nease.net (corp-front07-corp.i.nease.net [59.111.134.157])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 151713E762;
-        Tue,  6 Sep 2022 06:02:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=corp.netease.com; s=s210401; h=Received:From:To:Cc:Subject:
-        Date:Message-Id:MIME-Version:Content-Transfer-Encoding; bh=HN2Mc
-        O4xu5s1yDc9quFJmm947U7zeu6eeNVixn18oFU=; b=fgWu9iEHOPYQpSW0lemeU
-        s2jQpFHrwCbs3gR6OCm+K/BoMLFI6ZnqQBlqCKio0Bzsumn81b6fh7kB/NXtSOCu
-        FKh5hUI423jn46YE3xRXeep50a/LE5hnJhmyssGqlV85BUSy7UIqdsGSUKGNs43A
-        IREOIwGspe60vWIMMICAcQ=
-Received: from pubt1-k8s74.yq.163.org (unknown [115.238.122.38])
-        by corp-front07-corp.i.nease.net (Coremail) with SMTP id nRDICgCX6+e1RBdj_dYXAA--.49705S2;
-        Tue, 06 Sep 2022 21:01:41 +0800 (HKT)
-From:   liuyacan@corp.netease.com
-To:     wenjia@linux.ibm.com, davem@davemloft.net, edumazet@google.com,
-        kgraul@linux.ibm.com, kuba@kernel.org
-Cc:     tonylu@linux.alibaba.com, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, liuyacan@corp.netease.com,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        ubraun@linux.vnet.ibm.com, wintera@linux.ibm.com
-Subject: [PATCH net v5] net/smc: Fix possible access to freed memory in link clear
-Date:   Tue,  6 Sep 2022 21:01:39 +0800
-Message-Id: <20220906130139.830513-1-liuyacan@corp.netease.com>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
+        with ESMTP id S240267AbiIFNFX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 09:05:23 -0400
+Received: from EUR03-AM7-obe.outbound.protection.outlook.com (mail-am7eur03on2063.outbound.protection.outlook.com [40.107.105.63])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E907E520A2
+        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 06:05:21 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lOomsjeveLdcU6ADdJELDehEMhL985KvAL5ah4lQGerl7amU5E66ptkG6SFvJT1qYGh3UdcTdaLZ/CbZaIYG8hqfux+TxeWHgTF8srbWKNofawxexvNaIeDLXT6eFg2TcjzW87SbJ6CTXH5PXpvZEL5JPGfxDU9rOoQ4Jw8K7vv9pbCMj+k+dNleWYvGAyvZ2db5JlPTyCWHIffbmiAqd4Abjc2DjCOBNGLuRsD9nImVN7I7yQRB2lPfaw/MOfUBUdhdbYT2FtjTjGEmJK3Hx4GMiXqpq/34cPBBX+9lso9hzTxjpGJtWR1G0a85Eok1sqv6yRNDjXAyRtvRhmXfUw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yuhuP8ic7Dr0apxxZZ4FnI1NzwYMg4b7Zq1FszV7WSM=;
+ b=Tz6zjjne6/x/Qrc4JlOuNGveu4RNy4yTDnpvkFam0/aEdN23il8ZG3CasoEiPuWgy41jZXkKSg2xwKQhUff3nFWv5oZVzJwwlVue4ZAE9VqEuODeC+BeImvYFoL7o688qPTgoak+8MGoVwd4wJVVEDYZMkLgnPMkfnuVuinZs8SvpX7DilP7aurQTH0tI90QBxYjgtYrHxQeRuqgmDisc6kQd5StRzy1+KRPK0B5pozqtDuSCD40ijt2Vx5Lbk0YridaLJbIiJq90K4mXJDPdjkTipoQdczGwk2lvHaKAmyWe5cvI+T+jNMxMiTEQfv9fdPctYgqIH54UdpXXSDbgA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yuhuP8ic7Dr0apxxZZ4FnI1NzwYMg4b7Zq1FszV7WSM=;
+ b=CypicTn9lkIaOe55VMzwuOl3Ttqg7FQ+Ug2E18cF3FXlM5pS1shWC1eh7zFfc4Hs8mI4Nw1V72y9tEpnoiuITcg1+cr0R6HyEbkmMxRuJj9S1hUse7yrZ7XVuEnJQOv2DgcLkzi9Z3yPZrG59m9sKDgAraDYYSkjMByakOa2mS4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from GV1PR04MB9055.eurprd04.prod.outlook.com (2603:10a6:150:1e::22)
+ by DB6PR04MB3062.eurprd04.prod.outlook.com (2603:10a6:6:b::10) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5588.18; Tue, 6 Sep 2022 13:05:17 +0000
+Received: from GV1PR04MB9055.eurprd04.prod.outlook.com
+ ([fe80::b9df:164b:d457:e8c0]) by GV1PR04MB9055.eurprd04.prod.outlook.com
+ ([fe80::b9df:164b:d457:e8c0%4]) with mapi id 15.20.5588.018; Tue, 6 Sep 2022
+ 13:05:17 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        f.fainelli@gmail.com, Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: [PATCH v2 net] net: phy: aquantia: wait for the suspend/resume operations to finish
+Date:   Tue,  6 Sep 2022 16:04:51 +0300
+Message-Id: <20220906130451.1483448-1-ioana.ciornei@nxp.com>
+X-Mailer: git-send-email 2.33.1
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: nRDICgCX6+e1RBdj_dYXAA--.49705S2
-X-Coremail-Antispam: 1UD129KBjvJXoW3ArWUKF15AF18XFy8Gw1kGrg_yoW7trWDpF
-        47Jr17Cr48Xr1DXF1kCr18Zwn8t3ZFkF1rGrnF9r1rAFn8Gw18tr1Sqry2vFWDJF4qqa4I
-        vw48Jw1xKrs8XaUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUULYb7IF0VCFI7km07C26c804VAKzcIF0wAFF20E14v26r4j6ryU
-        M7CY07I20VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2
-        IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84AC
-        jcxK6xIIjxv20xvEc7CjxVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84
-        ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2kK67ZEXf0FJ3sC6x9vy-n0Xa0_Xr1Utr1k
-        JwI_Jr4ln4vE4IxY62xKV4CY8xCE548m6r4UJryUGwAS0I0E0xvYzxvE52x082IY62kv04
-        87Mc804VCqF7xvr2I5Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWU
-        JVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7V
-        AKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628vn2kIc2xKxwAKzVCY
-        07xG64k0F24l7I0Y64k_MxkI7II2jI8vz4vEwIxGrwCF04k20xvY0x0EwIxGrwCF72vEw2
-        IIxxk0rwCFx2IqxVCFs4IE7xkEbVWUJVW8JwCFI7vE0wC20s026c02F40E14v26r1j6r18
-        MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr4
-        1lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1l
-        IxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4
-        A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0pRp6wAUUUUU=
-X-CM-SenderInfo: 5olx5txfdqquhrush05hwht23hof0z/1tbiBQABCVt7717U9AAJs1
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-ClientProxiedBy: AM8P189CA0006.EURP189.PROD.OUTLOOK.COM
+ (2603:10a6:20b:218::11) To GV1PR04MB9055.eurprd04.prod.outlook.com
+ (2603:10a6:150:1e::22)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: afa65158-2266-4b4e-cc1e-08da900871de
+X-MS-TrafficTypeDiagnostic: DB6PR04MB3062:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Qes9H2/Ucf4qQavotngQKity5zy/LEm9W1zwxLDbaDjFzgpZ0tC8E4FFkZUdwiE8Tg5nGVwdEtLC6bbaWRZ5xu0WPC8nmnvnGwlcK8SrDSCYafvsMu0oKUf6Un8uGCS2x7It07LwHM9Q5eFu7ZwNtLxY4h7yfsS0eyRcH1XOZRrCDD9lsZmXfEdezzOZm1Fu5LKMLMWgAH4G2DadGDWxIOBwjsc0gFUI8r90QevoWl+eIFI7736fRfTf88qd2nsNzAzvYvH6ANt43gcnHwY5srEY9Y9ijOjoh3AVyhqLZo0OXjPH9lDziXi8j/Keo8Km9td1AytDuQqjsn5glrw7iHCOJZkQoOMlO+LohEjV9FEmWm/ZrkJG8RyR6n23JWyqZlTp7XBfyaU5yuiQeVUs3GR7KYmMD+TWrQlfs8WXa2TLjNadKyYua9s7Io6QRXkzA/VOHKUlKgtiehQTVagqb5gOQldin/Tx31zEDDXZG+NgDDcVAHv00mLO5QY2nsrgepXv7pgMJdluDwjOv3ieSVgvzotfN+9tEeJ0GuvykJava4GHOknMs6HTkmg5hE0xjhy/2KrjSCd0LGuNPiUQFTFg/C1DXf7TFPD18UWwzMoDrkf5VlvBgkcTF7MhvIxyWkfLrw5EM3OmXEp6ba2pYDspZ+gL602ja4H2PX5kOo5kq4EjGHqLKSdVUU58GO6pgP74ydmmepRZ9ZJ6tuhOP3MK+llkRx9G/U20+kUzil5g5vH8WUtXhxMqt+dmBRWU+57CRHZJBcViA+Ny7gs5Nw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV1PR04MB9055.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(366004)(396003)(39860400002)(136003)(2906002)(52116002)(41300700001)(44832011)(5660300002)(26005)(6506007)(86362001)(6512007)(316002)(15650500001)(6666004)(6486002)(186003)(2616005)(66946007)(66476007)(66556008)(38100700002)(8676002)(478600001)(83380400001)(4326008)(1076003)(8936002)(36756003)(38350700002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?HyLJSJI8VLzym9fALGq3GxunWoNTPa1ilUmOJOyh5o1GAtk2ArxNBm5iswB8?=
+ =?us-ascii?Q?tqWVNocU7HpxnsXky+18kMpz3tfSguVGQ7mXCHNILJ9L+gyl7kTLCglIl6np?=
+ =?us-ascii?Q?KcdlwoINuEh9g96SNHQhr3i8OsvYKb1TMpdBUGFIuu8yIhgMxTn8O7r14VaA?=
+ =?us-ascii?Q?4uSKGy5MGka2rG+GiZfxHFd7k6Q11REU9Dl6gyBsMlYJ8Uogl186lXi+Dzbf?=
+ =?us-ascii?Q?kArU583LynCfYxy8ONBCZ67SVVYnZHSGP3y2JCcekKKsFQcUwuTB0BemTxNK?=
+ =?us-ascii?Q?kGhQpS6TzbcxnwvXDBkpDXl1fKIAbaZcm/25ruRp762CT2j6gcymf5S8QuFb?=
+ =?us-ascii?Q?Rur6VUok7JEd1JWRK9NPyGW+zOeABuMARoGQ0aO9FK7qtFsBcvJLUQrlXZXY?=
+ =?us-ascii?Q?Z2V5IBdAR1CsHQoJhF/Ci33Gqz/a+irX1CnJ0vu8dlVRPXuYwtiQLGdPeEsg?=
+ =?us-ascii?Q?ccKZSEenOX+szTpqsJA9xBaoT1oxfFTx+gxh8VoNOgjOTdDEtdyyTXjXBpgq?=
+ =?us-ascii?Q?XApHpAvjCPZODAnq/UnWkHmfBI5sAx0UDP+Ma3M+foL9C33M+6MQuuaZKz7z?=
+ =?us-ascii?Q?pSw24B63ITRjdnh3Y3yLoZKvbyffhXk6cY6x3ql0/UnKivdGpnL9aOZmzUDB?=
+ =?us-ascii?Q?AuEPL7XblwIRCEc3/QJw99zw3wxqkrqQnr5QuzqBalPSkcEz/UtKtdZV0KNP?=
+ =?us-ascii?Q?K3kFn7L53G9VQbJy8EUNgxJQZOU12LcpTEU5KwTVzYDd8Q5QD4+7N0qTKuPX?=
+ =?us-ascii?Q?hGbNzHDPbyNwP3PNEahSKo0yRXYb72pBPR8F+y0qqbJsY0U6UM3ABhVEVr7P?=
+ =?us-ascii?Q?6Om2S96G+BqbJVOwaWrjGYVPVydqtwrF7ndd1LUXew4bkfi7Y6BNETe23TFA?=
+ =?us-ascii?Q?UFesRZEKCmnhIxQpeXuKmUwp+Iolb6JbJStePBv+QdmmzNZnlYBX9X5lvLrT?=
+ =?us-ascii?Q?M6VfxdBOCvcA4qcVeBTBzIVfq7f218T3mNLYg7jpPv46eclwTpuU01OYyybw?=
+ =?us-ascii?Q?YmgGP09ZxyUDKQttAZtLrrRzt+lRm4dncPCZ96U50+aFq8SZZ4wQtkjgawUv?=
+ =?us-ascii?Q?C8ioMRQlXJL0Gf8SwA4LXb6e1TyJVw16SAXY73N2KxGL1xiFWntAUMRTJgzB?=
+ =?us-ascii?Q?NALPZtFdaawc1JdoWGhkIIetQakjfQ104zJ8+PaJBl9rrPuPlYAyRXt60iP2?=
+ =?us-ascii?Q?/5R/DeS0D+9KIoj4CwBqhM3mBkJBrScPHe0tS94gIgzS6bS3b2m7GIf//wek?=
+ =?us-ascii?Q?8Kw9/nzRPWWVwbje0qbp3QiwCy9gVl/2c8m3LCSkQDRlLcylaq+bNl2V63su?=
+ =?us-ascii?Q?x9OENKupdOcArbbCRwzJxjouUX7cLtOwHWm4ENaYG9bt5818Dq+fidprZVIi?=
+ =?us-ascii?Q?a5iNADVmV3DhZ8r5Xq6Oa+frQfwgHzSzTd8V9WI7sHPflEyxJeT/Q2ZWjmRE?=
+ =?us-ascii?Q?IBlXN1lvHjvKbopo3M5T1GE3hiGSCVlxJKXoaWGa8Xna8mXAj2T7lPueLmSx?=
+ =?us-ascii?Q?8NFQguZBQmH8ZsBZtV+vmr/maXrFnGHw1vn35ixsARbiB1DgQAZSnXSgxxfx?=
+ =?us-ascii?Q?6QXkDgyMjJrRta3w1vT/nyAf4CYx3P68mHjK5S4JijUTrVbIrlSq3ROCdlTp?=
+ =?us-ascii?Q?Cg=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: afa65158-2266-4b4e-cc1e-08da900871de
+X-MS-Exchange-CrossTenant-AuthSource: GV1PR04MB9055.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Sep 2022 13:05:17.2629
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: gVCDzEfMFbyB/JiU+vRAenrROJYwPoxgvnKaPnZnMU7F6ZmQ2HQLjdgL9xvEKpj/ToanJ4Q+jkNCJCrKFU0IeA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR04MB3062
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yacan Liu <liuyacan@corp.netease.com>
+The Aquantia datasheet notes that after issuing a Processor-Intensive
+MDIO operation, like changing the low-power state of the device, the
+driver should wait for the operation to finish before issuing a new MDIO
+command.
 
-After modifying the QP to the Error state, all RX WR would be completed
-with WC in IB_WC_WR_FLUSH_ERR status. Current implementation does not
-wait for it is done, but destroy the QP and free the link group directly.
-So there is a risk that accessing the freed memory in tasklet context.
+The new aqr107_wait_processor_intensive_op() function is added which can
+be used after these kind of MDIO operations. At the moment, we are only
+adding it at the end of the suspend/resume calls.
 
-Here is a crash example:
+The issue was identified on a board featuring the AQR113C PHY, on
+which commands like 'ip link (..) up / down' issued without any delays
+between them would render the link on the PHY to remain down.
+The issue was easy to reproduce with a one-liner:
+ $ ip link set dev ethX down; ip link set dev ethX up; \
+ ip link set dev ethX down; ip link set dev ethX up;
 
- BUG: unable to handle page fault for address: ffffffff8f220860
- #PF: supervisor write access in kernel mode
- #PF: error_code(0x0002) - not-present page
- PGD f7300e067 P4D f7300e067 PUD f7300f063 PMD 8c4e45063 PTE 800ffff08c9df060
- Oops: 0002 [#1] SMP PTI
- CPU: 1 PID: 0 Comm: swapper/1 Kdump: loaded Tainted: G S         OE     5.10.0-0607+ #23
- Hardware name: Inspur NF5280M4/YZMB-00689-101, BIOS 4.1.20 07/09/2018
- RIP: 0010:native_queued_spin_lock_slowpath+0x176/0x1b0
- Code: f3 90 48 8b 32 48 85 f6 74 f6 eb d5 c1 ee 12 83 e0 03 83 ee 01 48 c1 e0 05 48 63 f6 48 05 00 c8 02 00 48 03 04 f5 00 09 98 8e <48> 89 10 8b 42 08 85 c0 75 09 f3 90 8b 42 08 85 c0 74 f7 48 8b 32
- RSP: 0018:ffffb3b6c001ebd8 EFLAGS: 00010086
- RAX: ffffffff8f220860 RBX: 0000000000000246 RCX: 0000000000080000
- RDX: ffff91db1f86c800 RSI: 000000000000173c RDI: ffff91db62bace00
- RBP: ffff91db62bacc00 R08: 0000000000000000 R09: c00000010000028b
- R10: 0000000000055198 R11: ffffb3b6c001ea58 R12: ffff91db80e05010
- R13: 000000000000000a R14: 0000000000000006 R15: 0000000000000040
- FS:  0000000000000000(0000) GS:ffff91db1f840000(0000) knlGS:0000000000000000
- CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- CR2: ffffffff8f220860 CR3: 00000001f9580004 CR4: 00000000003706e0
- DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
- DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
- Call Trace:
-  <IRQ>
-  _raw_spin_lock_irqsave+0x30/0x40
-  mlx5_ib_poll_cq+0x4c/0xc50 [mlx5_ib]
-  smc_wr_rx_tasklet_fn+0x56/0xa0 [smc]
-  tasklet_action_common.isra.21+0x66/0x100
-  __do_softirq+0xd5/0x29c
-  asm_call_irq_on_stack+0x12/0x20
-  </IRQ>
-  do_softirq_own_stack+0x37/0x40
-  irq_exit_rcu+0x9d/0xa0
-  sysvec_call_function_single+0x34/0x80
-  asm_sysvec_call_function_single+0x12/0x20
-
-Fixes: bd4ad57718cc ("smc: initialize IB transport incl. PD, MR, QP, CQ, event, WR")
-Signed-off-by: Yacan Liu <liuyacan@corp.netease.com>
-Reviewed-by: Tony Lu <tonylu@linux.alibaba.com>
-
+Fixes: ac9e81c230eb ("net: phy: aquantia: add suspend / resume callbacks for AQR107 family")
+Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 ---
-Change in v5:
-  -- Move smc_wr_drain_cq() into smc_wr_free_link()
-Chagen in v4:
-  -- Remove the rx_drain flag because smc_wr_rx_post() may not have been called.
-  -- Remove timeout.
-Change in v3:
-  -- Tune commit message (Signed-Off tag, Fixes tag).
-     Tune code to avoid column length exceeding.
-Change in v2:
-  -- Fix some compile warnings and errors.
----
- net/smc/smc_core.c | 1 +
- net/smc/smc_core.h | 2 ++
- net/smc/smc_wr.c   | 5 +++++
- net/smc/smc_wr.h   | 5 +++++
- 4 files changed, 13 insertions(+)
+Changes in v2:
+ - use phy_read_mmd_poll_timeout instead of readx_poll_timeout
+ - increase a bit the sleep and timeout values for the poll
 
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index ff49a11f5..ebf56cdf1 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -757,6 +757,7 @@ int smcr_link_init(struct smc_link_group *lgr, struct smc_link *lnk,
- 	lnk->lgr = lgr;
- 	smc_lgr_hold(lgr); /* lgr_put in smcr_link_clear() */
- 	lnk->link_idx = link_idx;
-+	lnk->wr_rx_id_compl = 0;
- 	smc_ibdev_cnt_inc(lnk);
- 	smcr_copy_dev_info_to_link(lnk);
- 	atomic_set(&lnk->conn_cnt, 0);
-diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
-index fe8b524ad..285f9bd8e 100644
---- a/net/smc/smc_core.h
-+++ b/net/smc/smc_core.h
-@@ -115,8 +115,10 @@ struct smc_link {
- 	dma_addr_t		wr_rx_dma_addr;	/* DMA address of wr_rx_bufs */
- 	dma_addr_t		wr_rx_v2_dma_addr; /* DMA address of v2 rx buf*/
- 	u64			wr_rx_id;	/* seq # of last recv WR */
-+	u64			wr_rx_id_compl; /* seq # of last completed WR */
- 	u32			wr_rx_cnt;	/* number of WR recv buffers */
- 	unsigned long		wr_rx_tstamp;	/* jiffies when last buf rx */
-+	wait_queue_head_t       wr_rx_empty_wait; /* wait for RQ empty */
+ drivers/net/phy/aquantia_main.c | 53 ++++++++++++++++++++++++++++++---
+ 1 file changed, 49 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/phy/aquantia_main.c b/drivers/net/phy/aquantia_main.c
+index 8b7a46db30e0..7111e2e958e9 100644
+--- a/drivers/net/phy/aquantia_main.c
++++ b/drivers/net/phy/aquantia_main.c
+@@ -91,6 +91,9 @@
+ #define VEND1_GLOBAL_FW_ID_MAJOR		GENMASK(15, 8)
+ #define VEND1_GLOBAL_FW_ID_MINOR		GENMASK(7, 0)
  
- 	struct ib_reg_wr	wr_reg;		/* WR register memory region */
- 	wait_queue_head_t	wr_reg_wait;	/* wait for wr_reg result */
-diff --git a/net/smc/smc_wr.c b/net/smc/smc_wr.c
-index 26f8f240d..b0678a417 100644
---- a/net/smc/smc_wr.c
-+++ b/net/smc/smc_wr.c
-@@ -454,6 +454,7 @@ static inline void smc_wr_rx_process_cqes(struct ib_wc wc[], int num)
++#define VEND1_GLOBAL_GEN_STAT2			0xc831
++#define VEND1_GLOBAL_GEN_STAT2_OP_IN_PROG	BIT(15)
++
+ #define VEND1_GLOBAL_RSVD_STAT1			0xc885
+ #define VEND1_GLOBAL_RSVD_STAT1_FW_BUILD_ID	GENMASK(7, 4)
+ #define VEND1_GLOBAL_RSVD_STAT1_PROV_ID		GENMASK(3, 0)
+@@ -125,6 +128,12 @@
+ #define VEND1_GLOBAL_INT_VEND_MASK_GLOBAL2	BIT(1)
+ #define VEND1_GLOBAL_INT_VEND_MASK_GLOBAL3	BIT(0)
  
- 	for (i = 0; i < num; i++) {
- 		link = wc[i].qp->qp_context;
-+		link->wr_rx_id_compl = wc[i].wr_id;
- 		if (wc[i].status == IB_WC_SUCCESS) {
- 			link->wr_rx_tstamp = jiffies;
- 			smc_wr_rx_demultiplex(&wc[i]);
-@@ -465,6 +466,8 @@ static inline void smc_wr_rx_process_cqes(struct ib_wc wc[], int num)
- 			case IB_WC_RNR_RETRY_EXC_ERR:
- 			case IB_WC_WR_FLUSH_ERR:
- 				smcr_link_down_cond_sched(link);
-+				if (link->wr_rx_id_compl == link->wr_rx_id)
-+					wake_up(&link->wr_rx_empty_wait);
- 				break;
- 			default:
- 				smc_wr_rx_post(link); /* refill WR RX */
-@@ -639,6 +642,7 @@ void smc_wr_free_link(struct smc_link *lnk)
- 		return;
- 	ibdev = lnk->smcibdev->ibdev;
- 
-+	smc_wr_drain_cq(lnk);
- 	smc_wr_wakeup_reg_wait(lnk);
- 	smc_wr_wakeup_tx_wait(lnk);
- 
-@@ -889,6 +893,7 @@ int smc_wr_create_link(struct smc_link *lnk)
- 	atomic_set(&lnk->wr_tx_refcnt, 0);
- 	init_waitqueue_head(&lnk->wr_reg_wait);
- 	atomic_set(&lnk->wr_reg_refcnt, 0);
-+	init_waitqueue_head(&lnk->wr_rx_empty_wait);
- 	return rc;
- 
- dma_unmap:
-diff --git a/net/smc/smc_wr.h b/net/smc/smc_wr.h
-index a54e90a11..45e9b894d 100644
---- a/net/smc/smc_wr.h
-+++ b/net/smc/smc_wr.h
-@@ -73,6 +73,11 @@ static inline void smc_wr_tx_link_put(struct smc_link *link)
- 		wake_up_all(&link->wr_tx_wait);
++/* Sleep and timeout for checking if the Processor-Intensive
++ * MDIO operation is finished
++ */
++#define AQR107_OP_IN_PROG_SLEEP		1000
++#define AQR107_OP_IN_PROG_TIMEOUT	100000
++
+ struct aqr107_hw_stat {
+ 	const char *name;
+ 	int reg;
+@@ -597,16 +606,52 @@ static void aqr107_link_change_notify(struct phy_device *phydev)
+ 		phydev_info(phydev, "Aquantia 1000Base-T2 mode active\n");
  }
  
-+static inline void smc_wr_drain_cq(struct smc_link *lnk)
++static int aqr107_wait_processor_intensive_op(struct phy_device *phydev)
 +{
-+	wait_event(lnk->wr_rx_empty_wait, lnk->wr_rx_id_compl == lnk->wr_rx_id);
++	int val, err;
++
++	/* The datasheet notes to wait at least 1ms after issuing a
++	 * processor intensive operation before checking.
++	 * We cannot use the 'sleep_before_read' parameter of read_poll_timeout
++	 * because that just determines the maximum time slept, not the minimum.
++	 */
++	usleep_range(1000, 5000);
++
++	err = phy_read_mmd_poll_timeout(phydev, MDIO_MMD_VEND1,
++					VEND1_GLOBAL_GEN_STAT2, val,
++					!(val & VEND1_GLOBAL_GEN_STAT2_OP_IN_PROG),
++					AQR107_OP_IN_PROG_SLEEP,
++					AQR107_OP_IN_PROG_TIMEOUT, false);
++	if (err) {
++		phydev_err(phydev, "timeout: processor-intensive MDIO operation\n");
++		return err;
++	}
++
++	return 0;
 +}
 +
- static inline void smc_wr_wakeup_tx_wait(struct smc_link *lnk)
+ static int aqr107_suspend(struct phy_device *phydev)
  {
- 	wake_up_all(&lnk->wr_tx_wait);
+-	return phy_set_bits_mmd(phydev, MDIO_MMD_VEND1, MDIO_CTRL1,
+-				MDIO_CTRL1_LPOWER);
++	int err;
++
++	err = phy_set_bits_mmd(phydev, MDIO_MMD_VEND1, MDIO_CTRL1,
++			       MDIO_CTRL1_LPOWER);
++	if (err)
++		return err;
++
++	return aqr107_wait_processor_intensive_op(phydev);
+ }
+ 
+ static int aqr107_resume(struct phy_device *phydev)
+ {
+-	return phy_clear_bits_mmd(phydev, MDIO_MMD_VEND1, MDIO_CTRL1,
+-				  MDIO_CTRL1_LPOWER);
++	int err;
++
++	err = phy_clear_bits_mmd(phydev, MDIO_MMD_VEND1, MDIO_CTRL1,
++				 MDIO_CTRL1_LPOWER);
++	if (err)
++		return err;
++
++	return aqr107_wait_processor_intensive_op(phydev);
+ }
+ 
+ static int aqr107_probe(struct phy_device *phydev)
 -- 
-2.20.1
+2.33.1
 
