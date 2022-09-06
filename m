@@ -2,201 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81C4D5AF656
-	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 22:50:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED2D95AF663
+	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 22:56:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231359AbiIFUuA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Sep 2022 16:50:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60428 "EHLO
+        id S231298AbiIFU4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Sep 2022 16:56:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231328AbiIFUtc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 16:49:32 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D71F61115;
-        Tue,  6 Sep 2022 13:49:27 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id a5-20020a17090aa50500b002008eeb040eso3000632pjq.1;
-        Tue, 06 Sep 2022 13:49:27 -0700 (PDT)
+        with ESMTP id S230029AbiIFU4h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 16:56:37 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E61BD895FA
+        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 13:56:32 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id c11so13025911wrp.11
+        for <netdev@vger.kernel.org>; Tue, 06 Sep 2022 13:56:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=sTu5hnPVKKbrS3kjiFxTAtowIT69L16Eo7T0raDDBz8=;
-        b=PjbMcCIvT/98vMSwy7Uft37YfmyFNTwgkXWNFfk8vx9uBlS22i518kxRi0fXoE533o
-         /U8ho5nF8JVcVnIpG0+YfZL928BOE21VIKWYU7Br+z9WktyHydfqTn/9NdE/bglLFo2j
-         J69cYeNWDDBNwS/jVBjY9r/HvAh826HOANJttJcaFXukqLpJjt9RsbFdijbRStG2/+cO
-         fWoRf7bFZjvXXPxVNZCS+YxM7eaN/FvAgp56QS+8jmxwGVevCALLz7ha1eyh2gx7FZ7X
-         qCUY0/nYF6rbbWLoMfTIpU0tjy9O6ucsZ7PTgi1AXgk5vLVNwBe/ktAMXgf+gwLs+WDq
-         ST7Q==
+        d=tessares.net; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=RZRC0OhzUwbsz5o6LL8NbWidAu3WkyLmyQWIoEdm+Jg=;
+        b=4Ji5BUeDdT3w2OVS/yQVfWuHzPrLkTm8zpYRx2UWHWio/6W9jrrt8L3IWVHPr+ooY7
+         i3Jej7gc5Exww9C/RufEN860zdBH0dpndyfofXbcYgHBOaT1AxHxGmKFFgGvKJ4N8mcW
+         fyNE1WmC4f0iU/4k/9LT4GJO7zd8RBe3Svnuc+uij8L6SQraU2MCw6e+dwyWFjw63cch
+         I7hUZuoXTmqgoxVl0YF2M1GVjaTeOrCLBPfJc0gaZB6+W9skIDOyyRFhzPrftQQnZ5a3
+         oXhYxnlZ3kxfES7Fsm85706o/VroybaNW2sY8wK5ymL5cbxiEahstleQ9VXzQxj7j75b
+         /grw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=sTu5hnPVKKbrS3kjiFxTAtowIT69L16Eo7T0raDDBz8=;
-        b=3o1VgGnNgSCoIAUF3kiHdA78XNNiw4B6Q8+8qVNt+DxBKQztWFAPUSM3vOZzHQQa0y
-         mriowDbbvGWvs07oelFHo8MZ+wnYjuhhUE9krD8AdXAsiD7wHzlUpch00uA+EimiYkkM
-         gp5RCU8YWupIjyS/UP8wk+BoJ8QJWi7MJwTDFUe5FdnyFQ+2hyE9zemn7fHA9YQUuPVh
-         SQARZJOLo9v6NtQ9Dwm/UfqREfMv+pryhp6pQQzks6CIcaBigueR24G0+zAKL1Sj8wCs
-         oSqHvv3AfQUlL0X3AXr7/tfOCOLkoxKiHi6n/qNwexWCQZxnecE5dGWGqzqaIJeXnbZW
-         6x4Q==
-X-Gm-Message-State: ACgBeo208PhZ99UtEj23eNpN/fu/uTOf0vDgHhZy2bYpJYbhOQ7xuHq5
-        2yfhxsqlsIkCuDgP14nNnRw=
-X-Google-Smtp-Source: AA6agR6+VULZsUOMRYNWWPiGqXh6RG1ze3qzfNOU/4KRhldhDUoQ0OSIToeruWkQ9H6MGIzYRfgcCQ==
-X-Received: by 2002:a17:90b:4d8e:b0:200:73b4:4da2 with SMTP id oj14-20020a17090b4d8e00b0020073b44da2mr11338265pjb.197.1662497367075;
-        Tue, 06 Sep 2022 13:49:27 -0700 (PDT)
-Received: from dtor-ws.mtv.corp.google.com ([2620:15c:202:201:abc4:5d24:5a73:a96b])
-        by smtp.gmail.com with ESMTPSA id e6-20020a656886000000b00434e2e1a82bsm61664pgt.66.2022.09.06.13.49.26
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=RZRC0OhzUwbsz5o6LL8NbWidAu3WkyLmyQWIoEdm+Jg=;
+        b=4KShJMR8AcPsxSGfFftKLYO6/H9Fv+ozaJvjNTO1aZpMPmfFGs0BTyhpsPo4+W4CyL
+         FPUEXuEiazJpnxLj4lhbdkGoD7BlcsFSdnVbO3NzYjbMVl7k5k1r04r7+pHjmXTN9mQl
+         QmBjABLwUeDHp5vXlEDdQmYHW4WUX05misRamrKUyty3AYocG33KVcb46ki7vC50lGaq
+         qnD/bWJKrjyEMIo5QGWuo7n+YsI3jgn240f/BdFHjkwqG8AekGOuVB6hKd6NtYXX7NcJ
+         wn2bCUnPx7j9rzwWpsbStYN3Rdc6q8FfkAaOOa/DekDskmkrdTYUxyjZYtzlnmZTFbiq
+         KkJg==
+X-Gm-Message-State: ACgBeo0dozYquH53UXjwKV+3wU1O2Y2GZV2nznnV1vLLKx3hBcxnkzEX
+        0P3wS7soezEHkdk2fx6/uKTdtQ==
+X-Google-Smtp-Source: AA6agR7XxadU1nBJKVC9I9af5814KUHtWktC30z4WVGLJu0wF/DHqaVW1+kfOIN4gVZqmnVjY8oMIQ==
+X-Received: by 2002:a5d:66ce:0:b0:228:a430:673f with SMTP id k14-20020a5d66ce000000b00228a430673fmr154542wrw.355.1662497791425;
+        Tue, 06 Sep 2022 13:56:31 -0700 (PDT)
+Received: from vdi08.nix.tessares.net (static.219.156.76.144.clients.your-server.de. [144.76.156.219])
+        by smtp.gmail.com with ESMTPSA id n24-20020a1c7218000000b003a317ee3036sm15735887wmc.2.2022.09.06.13.56.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Sep 2022 13:49:26 -0700 (PDT)
-From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+        Tue, 06 Sep 2022 13:56:28 -0700 (PDT)
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
 To:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 3/3] net: phy: spi_ks8895: switch to using gpiod API
-Date:   Tue,  6 Sep 2022 13:49:22 -0700
-Message-Id: <20220906204922.3789922-3-dmitry.torokhov@gmail.com>
-X-Mailer: git-send-email 2.37.2.789.g6183377224-goog
-In-Reply-To: <20220906204922.3789922-1-dmitry.torokhov@gmail.com>
-References: <20220906204922.3789922-1-dmitry.torokhov@gmail.com>
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        mptcp@lists.linux.dev, netdev@vger.kernel.org
+Subject: [PATCH net-next 0/5] mptcp: allow privileged operations from user ns & cleanup
+Date:   Tue,  6 Sep 2022 22:55:38 +0200
+Message-Id: <20220906205545.1623193-1-matthieu.baerts@tessares.net>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1171; i=matthieu.baerts@tessares.net;
+ h=from:subject; bh=S4CDyrNeDuwlK018W6S651nbf7bbfRCydZCxhDW7uh0=;
+ b=owEBbQKS/ZANAwAIAfa3gk9CaaBzAcsmYgBjF7O5qBlYlK33qKWIebumCBpUmWZJxbNvIYsaNWiw
+ uwEx7WiJAjMEAAEIAB0WIQToy4X3aHcFem4n93r2t4JPQmmgcwUCYxezuQAKCRD2t4JPQmmgc1oyEA
+ Dc9Qn2D1dJo1OMABQwg6c2OfVJyiZprfb9sKPSfeSQxD6rj7treW/AUKsgVZ3CA2RVUruf090DtCKD
+ Cb7qbGDOViZN+d1VsHTMDULxI3mETmFLVGQYYg+ytqIOdNE/iKJhbOWRbVhul6XC3bCBYoN4nKKI5E
+ iw6X1N5MagJh6O2cjt9f//FfO4g9NoAbGtA9SU5KOuQ7mbF++NEDmIWs5Zkxs5Qw3hwCK7QtvpHFEw
+ sn/+5gNL63vkzzemfZBwaK8VGyhrOs5w/ZBz0b2bKlMpkf+l6Yg/qBkFfQlqdFj8VpVPYgmb5vOihK
+ IoRkWkzXGoy0erIOm93Z63E/ulhrkWYFYIEtiYFhQFbjSkusCQ/BOa9wGVuC9vF1Eh9aUbsPmx0lvm
+ tnh82vA68Tmp9QZNPGu0zlFhg0LIlbiYYsJ+O3sBH02cMlyH8gcHAGMROBQsC9vBzeY1+4lhBJEReJ
+ ENlKkhknoNGgErC9nxLnesxDqzC8rtLq87JlqO/r3NVdRbOqnKCFGE7eZJH2iNXpT4PW4dMFkU94v3
+ K52Jj5jMyKxZQ5PknJu97DbWOqSkn6ZbXMErQUG2ed7fiJI4/8Jjk8RXc0y2On0agcNN+H1HiBdOXq
+ ztEWwjdVkvpjce9c1OGiRZv/dQNQhMwq2ecC3rs2sJfDSW5f4cs0+SEanUkg==
+X-Developer-Key: i=matthieu.baerts@tessares.net; a=openpgp; fpr=E8CB85F76877057A6E27F77AF6B7824F4269A073
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch switches the driver away from legacy gpio/of_gpio API to
-gpiod API, and removes use of of_get_named_gpio_flags() which I want to
-make private to gpiolib.
+This series allows privileged Netlink operations from user namespaces. When a
+non-root user configures MPTCP endpoints, the memory allocation is now accounted
+to this user. See patches 4 and 5.
 
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
----
- drivers/net/phy/spi_ks8995.c | 69 ++++++++----------------------------
- 1 file changed, 14 insertions(+), 55 deletions(-)
+Apart from that, there are some cleanup:
 
-diff --git a/drivers/net/phy/spi_ks8995.c b/drivers/net/phy/spi_ks8995.c
-index ff37f8ba6758..d4202d40d47a 100644
---- a/drivers/net/phy/spi_ks8995.c
-+++ b/drivers/net/phy/spi_ks8995.c
-@@ -17,7 +17,6 @@
- #include <linux/device.h>
- #include <linux/gpio/consumer.h>
- #include <linux/of.h>
--#include <linux/of_gpio.h>
- 
- #include <linux/spi/spi.h>
- 
-@@ -137,15 +136,10 @@ static const struct ks8995_chip_params ks8995_chip[] = {
- 	},
- };
- 
--struct ks8995_pdata {
--	int reset_gpio;
--	enum of_gpio_flags reset_gpio_flags;
--};
--
- struct ks8995_switch {
- 	struct spi_device	*spi;
- 	struct mutex		lock;
--	struct ks8995_pdata	*pdata;
-+	struct gpio_desc	*reset_gpio;
- 	struct bin_attribute	regs_attr;
- 	const struct ks8995_chip_params	*chip;
- 	int			revision_id;
-@@ -401,24 +395,6 @@ static int ks8995_get_revision(struct ks8995_switch *ks)
- 	return err;
- }
- 
--/* ks8995_parse_dt - setup platform data from devicetree
-- * @ks: pointer to switch instance
-- *
-- * Parses supported DT properties and sets up platform data
-- * accordingly.
-- */
--static void ks8995_parse_dt(struct ks8995_switch *ks)
--{
--	struct device_node *np = ks->spi->dev.of_node;
--	struct ks8995_pdata *pdata = ks->pdata;
--
--	if (!np)
--		return;
--
--	pdata->reset_gpio = of_get_named_gpio_flags(np, "reset-gpios", 0,
--		&pdata->reset_gpio_flags);
--}
--
- static const struct bin_attribute ks8995_registers_attr = {
- 	.attr = {
- 		.name   = "registers",
-@@ -449,38 +425,22 @@ static int ks8995_probe(struct spi_device *spi)
- 	ks->spi = spi;
- 	ks->chip = &ks8995_chip[variant];
- 
--	if (ks->spi->dev.of_node) {
--		ks->pdata = devm_kzalloc(&spi->dev, sizeof(*ks->pdata),
--					 GFP_KERNEL);
--		if (!ks->pdata)
--			return -ENOMEM;
--
--		ks->pdata->reset_gpio = -1;
--
--		ks8995_parse_dt(ks);
-+	ks->reset_gpio = devm_gpiod_get_optional(&spi->dev, "reset",
-+						 GPIOD_OUT_HIGH);
-+	err = PTR_ERR_OR_ZERO(ks->reset_gpio);
-+	if (err) {
-+		dev_err(&spi->dev,
-+			"failed to get reset gpio: %d\n", err);
-+		return err;
- 	}
- 
--	if (!ks->pdata)
--		ks->pdata = spi->dev.platform_data;
-+	err = gpiod_set_consumer_name(ks->reset_gpio, "switch-reset");
-+	if (err)
-+		return err;
- 
- 	/* de-assert switch reset */
--	if (ks->pdata && gpio_is_valid(ks->pdata->reset_gpio)) {
--		unsigned long flags;
--
--		flags = (ks->pdata->reset_gpio_flags == OF_GPIO_ACTIVE_LOW ?
--			 GPIOF_ACTIVE_LOW : 0);
--
--		err = devm_gpio_request_one(&spi->dev,
--					    ks->pdata->reset_gpio,
--					    flags, "switch-reset");
--		if (err) {
--			dev_err(&spi->dev,
--				"failed to get reset-gpios: %d\n", err);
--			return -EIO;
--		}
--
--		gpiod_set_value(gpio_to_desc(ks->pdata->reset_gpio), 0);
--	}
-+	/* FIXME: this likely requires a delay */
-+	gpiod_set_value_cansleep(ks->reset_gpio, 0);
- 
- 	spi_set_drvdata(spi, ks);
- 
-@@ -524,8 +484,7 @@ static void ks8995_remove(struct spi_device *spi)
- 	sysfs_remove_bin_file(&spi->dev.kobj, &ks->regs_attr);
- 
- 	/* assert reset */
--	if (ks->pdata && gpio_is_valid(ks->pdata->reset_gpio))
--		gpiod_set_value(gpio_to_desc(ks->pdata->reset_gpio), 1);
-+	gpiod_set_value_cansleep(ks->reset_gpio, 1);
- }
- 
- /* ------------------------------------------------------------------------ */
+ - Patch 1 adds a macro to improve code readability
+
+ - Patch 2 regroups similar checks all together
+
+ - Patch 3 uses an explicit boolean instead of a counter to do one more check
+
+Geliang Tang (2):
+  selftests: mptcp: move prefix tests of addr_nr_ns2 together
+  mptcp: add do_check_data_fin to replace copied
+
+Matthieu Baerts (1):
+  mptcp: add mptcp_for_each_subflow_safe helper
+
+Thomas Haller (2):
+  mptcp: allow privileged operations from user namespaces
+  mptcp: account memory allocation in mptcp_nl_cmd_add_addr() to user
+
+ net/mptcp/pm_netlink.c                        | 22 +++++++++----------
+ net/mptcp/protocol.c                          | 13 ++++++-----
+ net/mptcp/protocol.h                          |  2 ++
+ .../testing/selftests/net/mptcp/mptcp_join.sh | 10 ++++-----
+ 4 files changed, 24 insertions(+), 23 deletions(-)
+
+
+base-commit: 03fdb11da92fde0bdc0b6e9c1c642b7414d49e8d
 -- 
-2.37.2.789.g6183377224-goog
+2.37.2
 
