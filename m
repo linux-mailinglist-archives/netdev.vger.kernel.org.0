@@ -2,145 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 499505AF2B6
-	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 19:34:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E812B5AF2CE
+	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 19:39:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239849AbiIFRdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Sep 2022 13:33:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52850 "EHLO
+        id S229787AbiIFRjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Sep 2022 13:39:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238237AbiIFRcd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 13:32:33 -0400
-Received: from na01-obe.outbound.protection.outlook.com (mail-westcentralusazon11010011.outbound.protection.outlook.com [40.93.198.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ADA8BE31;
-        Tue,  6 Sep 2022 10:28:36 -0700 (PDT)
+        with ESMTP id S233673AbiIFRip (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 13:38:45 -0400
+Received: from na01-obe.outbound.protection.outlook.com (mail-centralusazon11013001.outbound.protection.outlook.com [52.101.64.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C4EEC14;
+        Tue,  6 Sep 2022 10:37:48 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CusdoEl6BQHJtLQdTmaNZebowxYh3jQBgupVuaLRoM7vvOM2bhUH4QwPFVqyywUv06knBPPsscPpznhD8QuUK+Hnic+N3j9ZGAQr5oixNbyUuwRavF3vKpcsaLX+XpwSa4KMlAUAxR9CHmNRkWcFmNqQCR8QnYu47KN4QCIBYguVFGXtIgd7wRyUUTZ7tzmW0469nBlKXzDyXnmasuxYN7v16U2NliGm+r4HR4pTpHn1x0MDb1LxcsmyRznvHFvr94XWFM2t9Rz4clEeCqaf960bnazZkHFMJ3iumP+HV1QipT1rikO68n220tSQjjYN4h3CVGkUQDxFhC4dA6ZfMg==
+ b=aoJDmoiIBtrN2tvGO0lJZNPxE5oOzL4bK3B30ljZWwXbsVyIuFym5B7gdS1o2vWuInd8Bp21+tR7jRGz0a1sblHfKk1muw1XHB1Fznri66bgCUA3kQFVfIBXPnAunwp96Wgd2TsIwF8QeXYbr6yxcwbdPeBrOaw97k+q7PToFPy3AVxC4oBOqPyAp6PFtlao+EwK5tFI36L3QcresUaZoGC5AOOvkSgakP0T0JL5dlblMetfK7EpTeoYtIjKvHLB8K1SnQsRJynMjvxHampAqdoQ0Xq5/OzEiOwdOj2z5mCoPHsA1EESJtvY3+6W2wVXgUdbzLajr0Ji6xMBMwe9xA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=S1c2jpic1ZsehO77/dNJ6DM6lUU4PciUDZDcjrhYwb0=;
- b=Id3ivb5awhrtAsgyZrLLZ8Emz9svd+PcDOVk9M/OdhytE7n0q+EES3EBj82jkQLDPRHT/keWGRrbrEwnTCYw5gWzw2OWuk7r6kOmXO+WHSkvaSsiE0tVBJabUs4pxgqI9XGPJBDfaqYeIrMhmzkSnDA4cjgupPg64gs4HMuO2Xo4ZO6siIsBdgERWZuoXSKiATZkiP9V8dPb65kfuysPFZOLvf+TdtTf/NBxyyb+36Z/Q9T+5tA60X9aEjBPiVLEFl0kiHIj6f+ESQnj+HVN4lDb9qQpJqLSiMp+NiCphBqt7AnchB2kaulkVvq8zEVcK+XQ+OrWQnMOCYOBPmnVKw==
+ bh=rLYGAP5T7jZsDTmSdZNplX/2RRsSlrdQmwBf7rPj3g8=;
+ b=CCDR12SdWM2sPs4zCQ3EtXQ1pikX0jdb5bPxbU4qrJIlGiLEYAhhGPFrH7QHCVRWsUOnytrb4CK3Dg3WAnkT4ERzx9ExduuuPBsxnF0GDYYjwJSbS19CvM5G3T0Tpah96UocC0LH7VmJVGtr+RRb1g86athXRfm3TmypU271bAmA1Utp7PeY+7nFFfYUYl9vUygRQ4ibFiOEL7awHJw5m/p4/r4pnh6sVGY3QCQXye+JilyMD9g6MBK5H5I2YPi3nTaUcKpfKZ95Gf3QDl1GlzvSo8xA0rf5vAoeGh1/GvpAz622iYNnXFtMClQCO9sEF9ZJ1kXX/8CGhPMllTd1mw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=vmware.com; dmarc=pass action=none header.from=vmware.com;
  dkim=pass header.d=vmware.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vmware.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=S1c2jpic1ZsehO77/dNJ6DM6lUU4PciUDZDcjrhYwb0=;
- b=gyR+RymbbaF24gQhyXwb86TvQlGQYvOUyzeEBULvC+KGsJ7gOzvuyoX5oUnXkvx2g9TdSODPUY69624Ob47NOIfguFiWgDAV63umM0xAvhqUTVAk3Z2COoY7tw0UkDpQSOu8xisj75Jzu++AwYxhDqdOh4Bx9Q071sw3+G6D1hQ=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vmware.com;
-Received: from BYAPR05MB3960.namprd05.prod.outlook.com (2603:10b6:a02:88::12)
- by BN7PR05MB4276.namprd05.prod.outlook.com (2603:10b6:406:f1::28) with
+ bh=rLYGAP5T7jZsDTmSdZNplX/2RRsSlrdQmwBf7rPj3g8=;
+ b=GtHAekKZFjSgX69cuvQgc5G5keZH1hmSh1GSRJxvyyLDvX3T1p8QIkebfk8DYoQ7SniMBe6xH/yHXe3j3jmu/sw8UItnIxT4g7em0t2FbdPocSSCqc0UlwuAe5Ad1+byAjlKrfNOLI/aZCUcGWCCP1uW9IbDfqWyORVsenSXvYU=
+Received: from BY3PR05MB8531.namprd05.prod.outlook.com (2603:10b6:a03:3ce::6)
+ by BL0PR05MB4739.namprd05.prod.outlook.com (2603:10b6:208:29::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.5; Tue, 6 Sep
- 2022 17:28:34 +0000
-Received: from BYAPR05MB3960.namprd05.prod.outlook.com
- ([fe80::a8ee:57cf:b2f1:b818]) by BYAPR05MB3960.namprd05.prod.outlook.com
- ([fe80::a8ee:57cf:b2f1:b818%5]) with mapi id 15.20.5612.011; Tue, 6 Sep 2022
- 17:28:34 +0000
-From:   vdasa@vmware.com
-To:     vbhakta@vmware.com, namit@vmware.com, bryantan@vmware.com,
-        zackr@vmware.com, linux-graphics-maintainer@vmware.com,
-        doshir@vmware.com, sgarzare@redhat.com, gregkh@linuxfoundation.org,
-        davem@davemloft.net
-Cc:     pv-drivers@vmware.com, joe@perches.com, netdev@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-rdma@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Vishnu Dasa <vdasa@vmware.com>
-Subject: [PATCH 3/3] MAINTAINERS: Add a new entry for VMWARE VSOCK VMCI TRANSPORT DRIVER
-Date:   Tue,  6 Sep 2022 10:27:22 -0700
-Message-Id: <20220906172722.19862-4-vdasa@vmware.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220906172722.19862-1-vdasa@vmware.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.9; Tue, 6 Sep
+ 2022 17:37:44 +0000
+Received: from BY3PR05MB8531.namprd05.prod.outlook.com
+ ([fe80::e46:a7cf:acd:c835]) by BY3PR05MB8531.namprd05.prod.outlook.com
+ ([fe80::e46:a7cf:acd:c835%2]) with mapi id 15.20.5612.012; Tue, 6 Sep 2022
+ 17:37:43 +0000
+From:   Nadav Amit <namit@vmware.com>
+To:     Vishnu Dasa <vdasa@vmware.com>
+CC:     Vishal Bhakta <vbhakta@vmware.com>,
+        Bryan Tan <bryantan@vmware.com>, Zack Rusin <zackr@vmware.com>,
+        Linux-graphics-maintainer <Linux-graphics-maintainer@vmware.com>,
+        Ronak Doshi <doshir@vmware.com>,
+        "sgarzare@redhat.com" <sgarzare@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Pv-drivers <Pv-drivers@vmware.com>,
+        Joe Perches <joe@perches.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>
+Subject: Re: [PATCH 2/3] MAINTAINERS: Change status of some VMware drivers
+Thread-Topic: [PATCH 2/3] MAINTAINERS: Change status of some VMware drivers
+Thread-Index: AQHYwhYZd5LRJliYYkuk8GCfNhJZQa3Sqo8A
+Date:   Tue, 6 Sep 2022 17:37:43 +0000
+Message-ID: <4269C33A-AC6E-4247-8471-5AC0A7D3DB1C@vmware.com>
 References: <20220906172722.19862-1-vdasa@vmware.com>
-Reply-To: vdasa@vmware.com
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BYAPR21CA0009.namprd21.prod.outlook.com
- (2603:10b6:a03:114::19) To BYAPR05MB3960.namprd05.prod.outlook.com
- (2603:10b6:a02:88::12)
+ <20220906172722.19862-3-vdasa@vmware.com>
+In-Reply-To: <20220906172722.19862-3-vdasa@vmware.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3696.120.41.1.1)
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vmware.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BY3PR05MB8531:EE_|BL0PR05MB4739:EE_
+x-ms-office365-filtering-correlation-id: 0f7de458-1c6e-473f-dbdb-08da902e811e
+x-ld-processed: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: xST/KcV54v6zjbQK8ejLFQe2/2tPGKfXQVAjiHWqilw/2RO6ha/OwInIKpIHz/RhcDTpxZVYUZugpgV3sPdqt/7KdSduBWZ2h0hWJIiJYeFgY1wBfwoG32guunfZJZjU8l2pBjjX/F1g76LthcWh6lQMNyjYvmxW1GKu6A2YcwsHy3PkXPySon+R5RcewXKmzn3BeavR41uP2hWh1eydimywCseYYXWPo16dhvEyhjW4wx4cymJWCCtt7S7o1Ka2m9dgvvYpKYl1zcVWxiUggaBgHb2Y+ViGHSOWB/3cQQ4ETLFUKc50pBkDcIWPJtvgTa1Gii1BE6jtq0B+UcfEOWJPseOXzIFy1Pavxbadhwf+F3kcVW87sDRtuyH+2HpvV2AgYUR1VTYrB/hyj0KF7sSck546vbreVMnoS8x8tiad4GXUDCZ/x3hi6RavpMIwO7lKFt9PBee6GDL5SGb+T2mYPC43LlJOfqeVYABju7a5ka7mCM5hVmOZbytVjLQ1zf6GNeYrMXEhkkyXc+jwVbv0yg0Q/ZHeJvK1K8dG7RlHuEdK/+/DsRmN15B1vExbTUKVTIl/W+MRSW6UhGI85rqOyaydWqsPSSiAzymxxZ1ZvhZdLyyV0Xyom8mMkq4WTswMVaUnXVlFHUg24zh0SQfyz1LCQi3iIs9qP+sS/7ukMgnmU/G4DQWwYQdtvXvJxST6TwQrLhRqhOCj2CAE9al45FfyjuiRzkJttGlQ9KPFY7DK3eqgksJ1Fye2tuStuShROO1M2TAvfulMGfgOvU7lRrpG3aoii4yk/y8v41drpwNB8uWQd1Z/Pkd+DfVcx1g9mq+EKd6hz6zC1B4pIeYnxxW/ML0H84+pmZiX5IpOI7zKT9IfLCYGaW5fOXuhV2/SbMc0gjj3wbH6227+jRVEAvaKZlduJwXfhzmBoTcyoQlzRIsXS/4w7kpCU1Qf
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY3PR05MB8531.namprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(396003)(346002)(39860400002)(366004)(376002)(66556008)(8676002)(4326008)(66946007)(7416002)(2906002)(4744005)(76116006)(8936002)(6862004)(5660300002)(38070700005)(64756008)(66476007)(122000001)(38100700002)(53546011)(6506007)(66446008)(41300700001)(6512007)(26005)(478600001)(36756003)(71200400001)(966005)(6486002)(316002)(54906003)(2616005)(186003)(83380400001)(86362001)(37006003)(33656002)(6636002)(45980500001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Ffowl9du0aBsi20dxDrApkzw5edNv2yYrjy7F0CuHV+rQv4n+pKxR3Ijax/1?=
+ =?us-ascii?Q?iGy2WVnGkd86Tm17+2+HELt4LbIdgcV1KwYeSCa6D2GCLJSIZK/iGVr9uVAa?=
+ =?us-ascii?Q?Tf8aP9ocvTRNR4TvrukTYcFBF03qyQ6sh8SjwMmokJ7hZCf7lnwNXB77tcrB?=
+ =?us-ascii?Q?lJpNMMTOA4R8n6nuo9HxmCtLNbZrI6n+FAWzkChVxxPTnXEf3QISUsx7uiJD?=
+ =?us-ascii?Q?pt2fM/suPHiv3oFsmdQxY8r0Orv6LMCdz6eQARnD6wD8K+7iDkfd+slge0K0?=
+ =?us-ascii?Q?D3MyZrQDvgIDGwIM3hGenPJYI5lzuSex2G/9azPl34SJkconRxhxo5NVB7Gs?=
+ =?us-ascii?Q?HlZIQwpJEGnRgDxqJr0J74b5HBXhK5JLUDbRKURlCV8g/L1DvcYovEH0jt3n?=
+ =?us-ascii?Q?/dMGFFGA4aWZUUFIkpXq8M6tNoCKlbKnnXC1oLnDnyDMUshq85Y/FwgznjWN?=
+ =?us-ascii?Q?6OQsdLZ6mR87ebF7kNd2G/DNH3QN6I0n3XChnUl+0r3mCS0CzBA38wgcQD63?=
+ =?us-ascii?Q?QDXYeJHMyrMukGnd/6XtTQB3F/hLlFNXzcThVEmeXa9wAYH8D7tY3cGaBIAj?=
+ =?us-ascii?Q?xF9yj/dbDCPvNsGdZmCAxQxYYWLn8b37BsJSiUo3XJL0xYDQB1z1CZt8H39B?=
+ =?us-ascii?Q?sw2CDajxwXj9yDVGvL49ap7Hv4NeHu0KcpG1GjfQQKYRpiyOHmFbZ/XtaoaX?=
+ =?us-ascii?Q?9gerc0ydQlIvZ/xlhr+dUDzbVNKIQbZ2jQ9hOYHfhSPxyh/GHv0sEbEgbnn/?=
+ =?us-ascii?Q?5hiVgKRaQyB1Y289vHvZt4cIP+VZzIsWOHar001oq6NI+7+soSdQbvoMSv3h?=
+ =?us-ascii?Q?I2Ce70/GdQbE3vkhjR8mLQgb+e9n8o7iQ2dNEWQotK9Yl3bXP58dsBNKlUmG?=
+ =?us-ascii?Q?heCa1ijSzOc9NpYZFzw3VTWvqEk044GeBuSeVdIsslgBf/NJfCLgFmxczlST?=
+ =?us-ascii?Q?ihaEvYaPISdcYJgv2/fl7V1b9QbfU9t9VI4ceSKu0QHgq1UqrnNzvu48WQHn?=
+ =?us-ascii?Q?rxJjCyf66JArDm3uPTauvObpxKeuRFrOsuUGCeGmdYuf/YTUd8Tl5Bd7nLBp?=
+ =?us-ascii?Q?ZVNckC7fiLT9wbX0QdDT4Wej1U8lCLETyA+K4YurmvL0v59ICMJSLE7H9kKS?=
+ =?us-ascii?Q?n1Q/yyMJzzfPKicToFq8Km04O1c/hwXuZQ3L8f+GeCm7oTCOsICTE9yuyTkU?=
+ =?us-ascii?Q?9YufdSQ/vo0Q5JjNOWryN9p8Tevx1hGyxn6YqdRC8lwnKPCWfqlc4BxN9Pwf?=
+ =?us-ascii?Q?DpQjv0XVl14pLzwRoufDO4Uj/HobIQoAUNhSQq8TIttTOFUzH7KbbXB2TTyr?=
+ =?us-ascii?Q?XiTnRrkAkuSTaCTRx3YSttRYTBvJLN6+LG4RASUwz12N47Ha5jTBmxWpht8h?=
+ =?us-ascii?Q?OoNarSvSgbpFUDcLthQXeU8/cG5MRDA/coZnxBuDwTj6b0bY3KONAsVKbpns?=
+ =?us-ascii?Q?GPE9az0uo7r+K6XFbTKDlY/D8/fXGCjmbcSPIYrjGijHvd6K0tf4myeVZK64?=
+ =?us-ascii?Q?r3MvUykl2lmpTB8vNPPKIAeyw/5LVm5uoO0s2ltlC2V1Tmjz/yvnjRIvDZZO?=
+ =?us-ascii?Q?G+pWQ9uCBh/0AghWXnU2mfyMyJL0ywxIaIqv5JPz?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1781454FFC6038499E8F43715531848E@namprd05.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BYAPR05MB3960:EE_|BN7PR05MB4276:EE_
-X-MS-Office365-Filtering-Correlation-Id: 20a19e96-1ce1-43f4-20aa-08da902d3951
-X-LD-Processed: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: j4zWbF9CLz15R4uYwk0HJqL/OG2FL15NX1LjNzJIPaIFbyadSdPyPRFIU9N9C97NT8iEEe1rBEDB2NpqvXm45LucaOzsjBTFr323kee1O7C4FBZLeshulHu2Q+sC17chmlQ0Hix2RzI9yE/WWS4vXaEhzeG1d/vPRB3e8alPZ6B72Fv10XjkGxjRf12ZOS7SLjwx/RU8GG/Iyq6TgVwSV0IfK0yJpchPi3vFQZSyC2JX+iCsKvM28PSNkI2WBNfd7YTtgOQVfacarTrqQSJPfns6khdsUUy3DSNBt2eMqIG+LIGdGrqUSKv+lveprjKJcUcGlxMGi97yj9zjuFIDOMv51Ectju5bsb+rAY7FAuTIEpzzmzHsXHajFP366K0uM1AZ4Rk+hDyZE3MrcQxVV0ZemNQYSAL2UbeH4I2KS9UnkUfsBiigAJI6f/1KDMt/jqoaApb+yTtLldGu0hgCHZz+NwX8yPcAsu6PXefDtZFYn4K6peiMVw+3YiRAt9Z56jXEOVKNDcNcEXPPOSvpkL7BeXKFV9zNkKACBqZaSuwhJD4cQiC/juyR4lNsmXgsSfQ10frkdoOLCVJr77eMR5u+R518FSmbs5mADlHOFwl7kDiAHYQkEz/fT0eARZJrphx2ylsZ4PhxX8glUX7rO21LGR1JRQjxnAucMV1lsVi3OVtKjQ4l+yjtuVqEvfSKKo1a5F3mQR3mr3vWOOJi7wjsP5Huv1L1j5KYjfZKgFGWEFQ+6/0VJKfsR7227GR0wHDQ9rG5/baX6VkL493Tq8OvBogACcFMubhY7EEFE8OQrpUeGJ4HRylClY1UJhLq
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR05MB3960.namprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(376002)(366004)(136003)(39860400002)(346002)(38350700002)(38100700002)(66946007)(66556008)(66476007)(8676002)(4326008)(316002)(2906002)(4744005)(7416002)(5660300002)(8936002)(186003)(1076003)(2616005)(9686003)(6512007)(41300700001)(6486002)(478600001)(6506007)(86362001)(26005)(52116002)(6666004)(36756003)(107886003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?L+7jPtTMvWLeigsS8NlwdDk1nVIrRcQbrlTGPdbTsKeNjzMgMVNmPbCcTh9o?=
- =?us-ascii?Q?Oy0Ct35gFkgVbKN8ZdCtVHs9QG28yNasxP8h7CL4kfRF2d/DWnyVf5YqWQyG?=
- =?us-ascii?Q?VjQQIj5sGufFjOa1ZbaW1wuWkFKMs5afTnnygRxVMk7wbiD38acRcTzUQvUN?=
- =?us-ascii?Q?BAJ+KhvhPK+uYb9yofnnrglDdPapelqyR8rUdwO7YuIIyxh9hSpu3yBUwqQm?=
- =?us-ascii?Q?S66rBM4D0ou1hmbn+XV0aXNo0UsMndt2PzTTsm595o60w+fUiJXhRjd9glTB?=
- =?us-ascii?Q?fAFEGwNHM9Wyq1+EJ2pDKbf81lcNb4vxp9O5kmaw62C98uiGk6AUjo817wKb?=
- =?us-ascii?Q?8GleuwFKcV2IzxBwg5D8tYaGxv3zw6TMnTAN6NU5J4nDHlQKXafFmG1Kx1Ac?=
- =?us-ascii?Q?ZneJwssY5K9JKkbQdlqr7XpWFl+joS4eN9ihvMvn6VGzaUfildEAURelAKk/?=
- =?us-ascii?Q?rMry4mFpuyGtXnMuRElpoEeu8oyqNbwD0xan9IdAKKadSNCqHFTkaP4TH9IG?=
- =?us-ascii?Q?7KofLmXtyS6NzaliFQ/CTWQ84fJo+0RByXDKxIZygArCyzWNNSMrp5b+AO0I?=
- =?us-ascii?Q?qmDX/72+TUnjShOpiOow6Gl/PCgEMk6X8dUrNqStDNaCG7DLqJHRA/42y6Ob?=
- =?us-ascii?Q?REiLDDaEGTVVo14K4P3p0zs6dplYRmTRYCZkfC0H7wgtYTFK2lb4+kDhia+T?=
- =?us-ascii?Q?1ZZNk/ODFfc5qseiZKVNKkHyGcK34G0W5l2IapD/BhRcelF3v6Gj8Pm/KK+8?=
- =?us-ascii?Q?ld3SzlsVqlNal/TP0yIvk3fdyE21lFet0+PANs1LQJnyFYVXSgF9cehjzLS4?=
- =?us-ascii?Q?BLo2d79ba8ovP9NLeufxCUH8e5Fw5DHG+Qhhm9eVqSct5BDl5vHjJzyd33RP?=
- =?us-ascii?Q?ormA7fTUsJUEwDvh+mg5V/X7iger0m1n3f+R4MAEFkUQeU1rQw82lBjhcYvf?=
- =?us-ascii?Q?jTX9oFbZujlFQqhyQSkuBpc/nsE689VCv2L+1HpehYzuGkOS7dUhMaTvjae3?=
- =?us-ascii?Q?CQQHmvki20Bxvl+InVZWAoW14/2Zggva/vnCkICUpICfTugg8eOVZwZBMp3s?=
- =?us-ascii?Q?6XKPqyw2lvRURZ8FeeG82JXlz8co4Myod0BohNqolYwvH2/+/brd6obiuCMF?=
- =?us-ascii?Q?qxSUZbwc+nGdMEQ5aAR0WSgM/28vcTrjRFgA/MEaNYtT6QU4s5fk1ielO+YQ?=
- =?us-ascii?Q?qVdaiBpWOVUeCtQX27cA++TanIOZ2+HRLIXNMRaAMjvmw4VEERHYlSmJwsL1?=
- =?us-ascii?Q?Rutrwp1nzd0C4cEus+g3a4inY8DyVhsVm2eWhq3eLftKc2/WiHzI3mLw8zKA?=
- =?us-ascii?Q?7h40EH1ZiEGipv3F8J9cYLYeE9Y+5Eu5JlwARoV+h3DuXlH77Sj5Z/qHWjRG?=
- =?us-ascii?Q?lvfgwv6vCfl6cOyLn7P5IIHCClIGnobnZlge9+PVB+07vdO1yyEDG6hbeARA?=
- =?us-ascii?Q?IxcjqttM0QZNnVTOlRe4vw8Nr5woCAhOLcZ41X615oRP3+XHKxBrEP/3ubjC?=
- =?us-ascii?Q?O+evKtPhklaRWkSmMOou62TEmGrJf5+grWgfVkHV7c3Yo5lWRUS3g68ANkEd?=
- =?us-ascii?Q?wUR3PikIXlienrahtOKD5Ut2vAyqlenVlOG7psPA?=
 X-OriginatorOrg: vmware.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR05MB4276
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR05MB4739
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vishnu Dasa <vdasa@vmware.com>
+On Sep 6, 2022, at 10:27 AM, Vishnu Dasa <vdasa@vmware.com> wrote:
 
-Add a new entry for VMWARE VSOCK VMCI TRANSPORT DRIVER in the
-MAINTAINERS file.
+> From: Vishnu Dasa <vdasa@vmware.com>
+>=20
+> Change the status from 'Maintained' to 'Supported' for VMWARE
+> BALLOON DRIVER, VMWARE PVRDMA DRIVER, VMWARE PVSCSI driver,
+> VMWARE VMCI DRIVER, VMWARE VMMOUSE SUBDRIVER and VMWARE VMXNET3
+> ETHERNET DRIVER.
+>=20
+> This needs to be done to conform to the guidelines in [1].
+> Maintainers for these drivers are VMware employees.
+>=20
+> [1] https://docs.kernel.org/process/maintainers.html
+>=20
+> Signed-off-by: Vishnu Dasa <vdasa@vmware.com>
+> ---
+> MAINTAINERS | 12 ++++++------
+> 1 file changed, 6 insertions(+), 6 deletions(-)
+>=20
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index b75eb23a099b..5a634b5d6f6c 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -21812,7 +21812,7 @@ VMWARE BALLOON DRIVER
+> M:	Nadav Amit <namit@vmware.com>
+> R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
+> L:	linux-kernel@vger.kernel.org
+> -S:	Maintained
+> +S:	Supported
+> F:	drivers/misc/vmw_balloon.c
 
-Signed-off-by: Vishnu Dasa <vdasa@vmware.com>
----
- MAINTAINERS | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 5a634b5d6f6c..0e52ee3521c3 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -21873,6 +21873,14 @@ L:	netdev@vger.kernel.org
- S:	Supported
- F:	drivers/net/vmxnet3/
- 
-+VMWARE VSOCK VMCI TRANSPORT DRIVER
-+M:	Bryan Tan <bryantan@vmware.com>
-+M:	Vishnu Dasa <vdasa@vmware.com>
-+R:	VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
-+L:	linux-kernel@vger.kernel.org
-+S:	Supported
-+F:	net/vmw_vsock/vmci_transport*
-+
- VOCORE VOCORE2 BOARD
- M:	Harvey Hunt <harveyhuntnexus@gmail.com>
- L:	linux-mips@vger.kernel.org
--- 
-2.35.1
+Acked-by: Nadav Amit <namit@vmware.com>
 
