@@ -2,79 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 689D15AE927
-	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 15:12:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09C435AE937
+	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 15:16:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240368AbiIFNMr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Sep 2022 09:12:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49576 "EHLO
+        id S233387AbiIFNQB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Sep 2022 09:16:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240165AbiIFNMq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 09:12:46 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6307D2C655
-        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 06:12:44 -0700 (PDT)
+        with ESMTP id S240391AbiIFNPz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 09:15:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AEFB57238
+        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 06:15:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662469963;
+        s=mimecast20190719; t=1662470153;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=nPXU2vL80KndlHKrXBdhj3U+PkIo9q6AqsJq3aprkc8=;
-        b=jWjps2iNLSGusiWMtYgoqhJs7mWcu1diMAxG4mz3Hm9XZDKk6s7ds1FwNUz1jH/HaS3g5Q
-        J1CjBcvU6H5Pqnx4y3OMecblf368ZqOMarbaHyyMNMowep8zyC5Ji4UJXibTKuvfN7nU6w
-        FQDaw5q7K8gjlgab0unGzz7oluZpefo=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=1uJsWhraelKXluHwB7FaDWCgu+gdxCn6dypgVW00Tgc=;
+        b=GiDryCGiXaZvT+uNIVIJwGAcBweDZGcg1Z/2m7/JXiakS/3eiT4rOFbm3a3sj6YDN/1m5K
+        ALK0Anyh0pJF7hrCLP0o+mk3AjRv+4OD0fikFx8nS9DFnt9XA/7XeGiFkg5aSceDdbkXHK
+        Ko2R2pUITSATB2k9zqOLEeSNiNFnykM=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-572-6w2B2PNrPairAagiYUa36Q-1; Tue, 06 Sep 2022 09:12:41 -0400
-X-MC-Unique: 6w2B2PNrPairAagiYUa36Q-1
-Received: by mail-wm1-f72.google.com with SMTP id p19-20020a05600c1d9300b003a5c3141365so8761536wms.9
-        for <netdev@vger.kernel.org>; Tue, 06 Sep 2022 06:12:41 -0700 (PDT)
+ us-mta-301-r3zt6mTFM5qPzMC76soLZA-1; Tue, 06 Sep 2022 09:15:36 -0400
+X-MC-Unique: r3zt6mTFM5qPzMC76soLZA-1
+Received: by mail-wm1-f70.google.com with SMTP id b16-20020a05600c4e1000b003a5a47762c3so6273546wmq.9
+        for <netdev@vger.kernel.org>; Tue, 06 Sep 2022 06:15:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:user-agent:references
          :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
          :from:to:cc:subject:date;
-        bh=nPXU2vL80KndlHKrXBdhj3U+PkIo9q6AqsJq3aprkc8=;
-        b=sElL2lU33yKrIR1ItoaAGGzSQ64nxLXWEDNH+lhREVhTOuyBdaw3mfWiGjKFym7G+D
-         tVnMCOirntPxOBPtTgjCNAgjLcCnBEham4I4SdEfJV/QF8YTH0heiIm6c80WGvfnjo2I
-         GF974p5MYTgiIKQh6DS00hSsnU7QIKCuc/iZnlSbYm088amcOW+KFt7/4KgFBZCuTrtF
-         GxjpahLeJfXaqDKmJf85lKZ+h5rqXIyDobFibrhuglhnOCDQSZwqi+nW+nAZ6oRJ70ny
-         JlkdymQwioNDUCprQxoWKTHAeffVNlsuuEGe9r5GS+G79zbzITFrYFQA0JQwGMWRy4W7
-         Joqw==
-X-Gm-Message-State: ACgBeo3llo+LOXcUhHXpRnS/7Bc8I8VV6Z6sY8v5H1RwpRBCzTEl/AZK
-        /dioPf7eKMo1nLcX+p30vbiaRWwSHS3KhmeKQyWwYqvZQNokM3HgUkZIyB+0o+4OXZwCY6IKuR7
-        rggt8SHhJEicJGeO+
-X-Received: by 2002:adf:fb0a:0:b0:225:265d:493 with SMTP id c10-20020adffb0a000000b00225265d0493mr27349806wrr.394.1662469959425;
-        Tue, 06 Sep 2022 06:12:39 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7BPkkEtX4haa8tO2sfQDf8b9gde5k8lEFdtYT/OxeEtfQ4rOrUg4tf1Eu0Bo3O9H+Sx950Yw==
-X-Received: by 2002:adf:fb0a:0:b0:225:265d:493 with SMTP id c10-20020adffb0a000000b00225265d0493mr27349778wrr.394.1662469959088;
-        Tue, 06 Sep 2022 06:12:39 -0700 (PDT)
+        bh=1uJsWhraelKXluHwB7FaDWCgu+gdxCn6dypgVW00Tgc=;
+        b=SdZWmrMduXJWHQFOLZRto9N0cY0y0SswjyVF0koa+9Zdd6sRHJ49GZBqjfrdPe67NS
+         IVeOPQqdZgF2dcRMeYjRT6LmgERWuvwTpfN+UqgJ6p47j53nZmf1ND9d3PJAmcKQX8k8
+         TPsswZaEp0cMjKa8kE0Eb6R2ZmE4SCB+S6kSI3LzZmko4LDVTF8rw5kNPE8JBG7+X53X
+         4hs02iHVIXJeoRrDuFAU6J+G+EADd5qG0rQpFi4zBbeGjs/YbC9tWEFg+EwLamklKDIF
+         unLcZpQqwaLDKuehaZSomDoVz7uzYVdZN6NDpUn4IVM2S0yHdT6gEhRiSC474xL7KmY8
+         4Y+Q==
+X-Gm-Message-State: ACgBeo1jPT8GH1OvBTIraGUf6FtkajfTdPc1oZgmSidqg10RG7sPyHVT
+        kWaEg4eclGmuu8gX5FeG6nwdC5Gwbwsn5y83U7wDpsEby5JHZ4JDPjt0/dLIIDJtAT5if+/ZfIl
+        PlwYmUwN3qtlQalsp
+X-Received: by 2002:a5d:59a4:0:b0:228:5f74:796 with SMTP id p4-20020a5d59a4000000b002285f740796mr9196587wrr.655.1662470133833;
+        Tue, 06 Sep 2022 06:15:33 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5P3NAwv8A+ZEKH3JYcwHQ89wUpJPH3H2eNehgZC3vx/2n+iYwWJrNvkLHshgWwyn7m7zUFWA==
+X-Received: by 2002:a5d:59a4:0:b0:228:5f74:796 with SMTP id p4-20020a5d59a4000000b002285f740796mr9196562wrr.655.1662470133442;
+        Tue, 06 Sep 2022 06:15:33 -0700 (PDT)
 Received: from gerbillo.redhat.com (146-241-112-72.dyn.eolo.it. [146.241.112.72])
-        by smtp.gmail.com with ESMTPSA id x5-20020a5d6505000000b00228634628f1sm8735224wru.110.2022.09.06.06.12.37
+        by smtp.gmail.com with ESMTPSA id q1-20020a05600c2e4100b003a2cf1ba9e2sm13653800wmf.6.2022.09.06.06.15.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Sep 2022 06:12:38 -0700 (PDT)
-Message-ID: <624262faa90a788ba37f8cb3df50895d13fa8eaf.camel@redhat.com>
-Subject: Re: [PATCH net-next 1/5] net: hns3: add support config dscp map to
- tc
+        Tue, 06 Sep 2022 06:15:32 -0700 (PDT)
+Message-ID: <8b2589bd6303133fd27cab1af27b096a5f848074.camel@redhat.com>
+Subject: Re: [PATCH net-next 2/5] net: hns3: support ndo_select_queue()
 From:   Paolo Abeni <pabeni@redhat.com>
 To:     Guangbin Huang <huangguangbin2@huawei.com>, davem@davemloft.net,
         kuba@kernel.org
 Cc:     edumazet@google.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, lipeng321@huawei.com,
         lanhao@huawei.com
-Date:   Tue, 06 Sep 2022 15:12:37 +0200
-In-Reply-To: <20220905081539.62131-2-huangguangbin2@huawei.com>
+Date:   Tue, 06 Sep 2022 15:15:31 +0200
+In-Reply-To: <20220905081539.62131-3-huangguangbin2@huawei.com>
 References: <20220905081539.62131-1-huangguangbin2@huawei.com>
-         <20220905081539.62131-2-huangguangbin2@huawei.com>
+         <20220905081539.62131-3-huangguangbin2@huawei.com>
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,261 +82,67 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On Mon, 2022-09-05 at 16:15 +0800, Guangbin Huang wrote:
-> This patch add support config dscp map to tc by implementing ieee_setapp
-> and ieee_delapp of struct dcbnl_rtnl_ops. Driver will convert mapping
-> relationship from dscp-prio to dscp-tc.
+> To support tx packets to select queue according to its dscp field after
+> setting dscp and tc map relationship, this patch implements
+> ndo_select_queue() to set skb->priority according to the user's setting
+> dscp and priority map relationship.
 > 
 > Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 > ---
->  drivers/net/ethernet/hisilicon/hns3/hnae3.h   |  10 ++
->  .../net/ethernet/hisilicon/hns3/hns3_dcbnl.c  |  28 +++++
->  .../hisilicon/hns3/hns3pf/hclge_dcb.c         | 107 ++++++++++++++++++
->  .../hisilicon/hns3/hns3pf/hclge_dcb.h         |   3 +
->  .../hisilicon/hns3/hns3pf/hclge_main.c        |   1 +
->  .../hisilicon/hns3/hns3pf/hclge_main.h        |   4 +
->  .../ethernet/hisilicon/hns3/hns3pf/hclge_tm.c |  50 +++++++-
->  .../ethernet/hisilicon/hns3/hns3pf/hclge_tm.h |   5 +
->  8 files changed, 207 insertions(+), 1 deletion(-)
+>  .../net/ethernet/hisilicon/hns3/hns3_enet.c   | 46 +++++++++++++++++++
+>  1 file changed, 46 insertions(+)
 > 
-> diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-> index 795df7111119..33b5ac47f342 100644
-> --- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-> +++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-> @@ -310,6 +310,11 @@ enum hnae3_dbg_cmd {
->  	HNAE3_DBG_CMD_UNKNOWN,
->  };
->  
-> +enum hnae3_tc_map_mode {
-> +	HNAE3_TC_MAP_MODE_PRIO,
-> +	HNAE3_TC_MAP_MODE_DSCP,
-> +};
-> +
->  struct hnae3_vector_info {
->  	u8 __iomem *io_addr;
->  	int vector;
-> @@ -739,6 +744,8 @@ struct hnae3_ae_ops {
->  	int (*get_link_diagnosis_info)(struct hnae3_handle *handle,
->  				       u32 *status_code);
->  	void (*clean_vf_config)(struct hnae3_ae_dev *ae_dev, int num_vfs);
-> +	int (*get_dscp_prio)(struct hnae3_handle *handle, u8 dscp,
-> +			     u8 *tc_map_mode, u8 *priority);
->  };
->  
->  struct hnae3_dcb_ops {
-> @@ -747,6 +754,8 @@ struct hnae3_dcb_ops {
->  	int (*ieee_setets)(struct hnae3_handle *, struct ieee_ets *);
->  	int (*ieee_getpfc)(struct hnae3_handle *, struct ieee_pfc *);
->  	int (*ieee_setpfc)(struct hnae3_handle *, struct ieee_pfc *);
-> +	int (*ieee_setapp)(struct hnae3_handle *h, struct dcb_app *app);
-> +	int (*ieee_delapp)(struct hnae3_handle *h, struct dcb_app *app);
->  
->  	/* DCBX configuration */
->  	u8   (*getdcbx)(struct hnae3_handle *);
-> @@ -786,6 +795,7 @@ struct hnae3_knic_private_info {
->  	u32 tx_spare_buf_size;
->  
->  	struct hnae3_tc_info tc_info;
-> +	u8 tc_map_mode;
->  
->  	u16 num_tqps;		  /* total number of TQPs in this handle */
->  	struct hnae3_queue **tqp;  /* array base of all TQPs in this instance */
-> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_dcbnl.c b/drivers/net/ethernet/hisilicon/hns3/hns3_dcbnl.c
-> index d2ec4c573bf8..3b6dbf158b98 100644
-> --- a/drivers/net/ethernet/hisilicon/hns3/hns3_dcbnl.c
-> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_dcbnl.c
-> @@ -56,6 +56,32 @@ static int hns3_dcbnl_ieee_setpfc(struct net_device *ndev, struct ieee_pfc *pfc)
->  	return -EOPNOTSUPP;
+> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+> index 481a300819ad..82f83e3f8162 100644
+> --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+> @@ -2963,6 +2963,51 @@ static int hns3_nic_set_vf_mac(struct net_device *netdev, int vf_id, u8 *mac)
+>  	return h->ae_algo->ops->set_vf_mac(h, vf_id, mac);
 >  }
 >  
-> +static int hns3_dcbnl_ieee_setapp(struct net_device *ndev, struct dcb_app *app)
+> +#define HNS3_INVALID_DSCP		0xff
+> +#define HNS3_DSCP_SHIFT			2
+> +
+> +static u8 hns3_get_skb_dscp(struct sk_buff *skb)
 > +{
-> +	struct hnae3_handle *h = hns3_get_handle(ndev);
+> +	__be16 protocol = skb->protocol;
+> +	u8 dscp = HNS3_INVALID_DSCP;
 > +
-> +	if (hns3_nic_resetting(ndev))
-> +		return -EBUSY;
+> +	if (protocol == htons(ETH_P_8021Q))
+> +		protocol = vlan_get_protocol(skb);
 > +
-> +	if (h->kinfo.dcb_ops->ieee_setapp)
-> +		return h->kinfo.dcb_ops->ieee_setapp(h, app);
+> +	if (protocol == htons(ETH_P_IP))
+> +		dscp = ipv4_get_dsfield(ip_hdr(skb)) >> HNS3_DSCP_SHIFT;
+> +	else if (protocol == htons(ETH_P_IPV6))
+> +		dscp = ipv6_get_dsfield(ipv6_hdr(skb)) >> HNS3_DSCP_SHIFT;
 > +
-> +	return -EOPNOTSUPP;
+> +	return dscp;
 > +}
 > +
-> +static int hns3_dcbnl_ieee_delapp(struct net_device *ndev, struct dcb_app *app)
+> +static u16 hns3_nic_select_queue(struct net_device *netdev,
+> +				 struct sk_buff *skb,
+> +				 struct net_device *sb_dev)
 > +{
-> +	struct hnae3_handle *h = hns3_get_handle(ndev);
-> +
-> +	if (hns3_nic_resetting(ndev))
-> +		return -EBUSY;
-> +
-> +	if (h->kinfo.dcb_ops->ieee_setapp)
-> +		return h->kinfo.dcb_ops->ieee_delapp(h, app);
-> +
-> +	return -EOPNOTSUPP;
-> +}
-> +
->  /* DCBX configuration */
->  static u8 hns3_dcbnl_getdcbx(struct net_device *ndev)
->  {
-> @@ -83,6 +109,8 @@ static const struct dcbnl_rtnl_ops hns3_dcbnl_ops = {
->  	.ieee_setets	= hns3_dcbnl_ieee_setets,
->  	.ieee_getpfc	= hns3_dcbnl_ieee_getpfc,
->  	.ieee_setpfc	= hns3_dcbnl_ieee_setpfc,
-> +	.ieee_setapp    = hns3_dcbnl_ieee_setapp,
-> +	.ieee_delapp    = hns3_dcbnl_ieee_delapp,
->  	.getdcbx	= hns3_dcbnl_getdcbx,
->  	.setdcbx	= hns3_dcbnl_setdcbx,
->  };
-> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c
-> index 69b8673436ca..7fcacc76e749 100644
-> --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c
-> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c
-> @@ -359,6 +359,111 @@ static int hclge_ieee_setpfc(struct hnae3_handle *h, struct ieee_pfc *pfc)
->  	return hclge_notify_client(hdev, HNAE3_UP_CLIENT);
->  }
->  
-> +static int hclge_ieee_setapp(struct hnae3_handle *h, struct dcb_app *app)
-> +{
-> +	struct hclge_vport *vport = hclge_get_vport(h);
-> +	struct net_device *netdev = h->kinfo.netdev;
-> +	struct hclge_dev *hdev = vport->back;
-> +	struct dcb_app old_app;
+> +	struct hnae3_handle *h = hns3_get_handle(netdev);
+> +	u8 dscp, priority;
 > +	int ret;
 > +
-> +	if (app->selector != IEEE_8021QAZ_APP_SEL_DSCP ||
-> +	    app->protocol >= HCLGE_MAX_DSCP ||
-> +	    app->priority >= HNAE3_MAX_USER_PRIO)
-> +		return -EINVAL;
+> +	if (h->kinfo.tc_map_mode != HNAE3_TC_MAP_MODE_DSCP ||
+> +	    !h->ae_algo->ops->get_dscp_prio)
+> +		goto out;
 > +
-> +	dev_info(&hdev->pdev->dev, "setapp dscp=%u priority=%u\n",
-> +		 app->protocol, app->priority);
+> +	dscp = hns3_get_skb_dscp(skb);
+> +	if (unlikely(dscp == HNS3_INVALID_DSCP))
+> +		goto out;
 > +
-> +	if (app->priority == hdev->tm_info.dscp_prio[app->protocol])
-> +		return 0;
-> +
-> +	ret = dcb_ieee_setapp(netdev, app);
-> +	if (ret)
-> +		return ret;
-> +
-> +	old_app.selector = IEEE_8021QAZ_APP_SEL_DSCP;
-> +	old_app.protocol = app->protocol;
-> +	old_app.priority = hdev->tm_info.dscp_prio[app->protocol];
-> +
-> +	hdev->tm_info.dscp_prio[app->protocol] = app->priority;
-> +	ret = hclge_dscp_to_tc_map(hdev);
-> +	if (ret) {
-> +		dev_err(&hdev->pdev->dev,
-> +			"failed to set dscp to tc map, ret = %d\n", ret);
-> +		hdev->tm_info.dscp_prio[app->protocol] = old_app.priority;
-> +		(void)dcb_ieee_delapp(netdev, app);
-> +		return ret;
-> +	}
-> +
-> +	vport->nic.kinfo.tc_map_mode = HNAE3_TC_MAP_MODE_DSCP;
-> +	if (old_app.priority == HCLGE_PRIO_ID_INVALID)
-> +		hdev->tm_info.dscp_app_cnt++;
-> +	else
-> +		ret = dcb_ieee_delapp(netdev, &old_app);
-> +
-> +	return ret;
-> +}
-> +
-> +static int hclge_ieee_delapp(struct hnae3_handle *h, struct dcb_app *app)
-> +{
-> +	struct hclge_vport *vport = hclge_get_vport(h);
-> +	struct net_device *netdev = h->kinfo.netdev;
-> +	struct hclge_dev *hdev = vport->back;
-> +	int ret;
-> +
-> +	if (app->selector != IEEE_8021QAZ_APP_SEL_DSCP ||
-> +	    app->protocol >= HCLGE_MAX_DSCP ||
-> +	    app->priority >= HNAE3_MAX_USER_PRIO ||
-> +	    app->priority != hdev->tm_info.dscp_prio[app->protocol])
-> +		return -EINVAL;
-> +
-> +	dev_info(&hdev->pdev->dev, "delapp dscp=%u priority=%u\n",
-> +		 app->protocol, app->priority);
-> +
-> +	ret = dcb_ieee_delapp(netdev, app);
-> +	if (ret)
-> +		return ret;
-> +
-> +	hdev->tm_info.dscp_prio[app->protocol] = HCLGE_PRIO_ID_INVALID;
-> +	ret = hclge_dscp_to_tc_map(hdev);
-> +	if (ret) {
-> +		dev_err(&hdev->pdev->dev,
-> +			"failed to del dscp to tc map, ret = %d\n", ret);
-> +		hdev->tm_info.dscp_prio[app->protocol] = app->priority;
-> +		(void)dcb_ieee_setapp(netdev, app);
-> +		return ret;
-> +	}
-> +
-> +	if (hdev->tm_info.dscp_app_cnt)
-> +		hdev->tm_info.dscp_app_cnt--;
-> +
-> +	if (!hdev->tm_info.dscp_app_cnt) {
-> +		vport->nic.kinfo.tc_map_mode = HNAE3_TC_MAP_MODE_PRIO;
-> +		ret = hclge_up_to_tc_map(hdev);
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +int hclge_get_dscp_prio(struct hnae3_handle *h, u8 dscp, u8 *tc_mode,
-> +			u8 *priority)
-> +{
-> +	struct hclge_vport *vport = hclge_get_vport(h);
-> +	struct hclge_dev *hdev = vport->back;
-> +
-> +	if (dscp >= HCLGE_MAX_DSCP)
-> +		return -EINVAL;
-> +
-> +	if (tc_mode)
-> +		*tc_mode = vport->nic.kinfo.tc_map_mode;
-> +	if (priority)
-> +		*priority = hdev->tm_info.dscp_prio[dscp] == HCLGE_PRIO_ID_INVALID ? 0 :
-> +			    hdev->tm_info.dscp_prio[dscp];
-> +
-> +	return 0;
-> +}
-> +
->  /* DCBX configuration */
->  static u8 hclge_getdcbx(struct hnae3_handle *h)
->  {
-> @@ -543,6 +648,8 @@ static const struct hnae3_dcb_ops hns3_dcb_ops = {
->  	.ieee_setets	= hclge_ieee_setets,
->  	.ieee_getpfc	= hclge_ieee_getpfc,
->  	.ieee_setpfc	= hclge_ieee_setpfc,
-> +	.ieee_setapp    = hclge_ieee_setapp,
-> +	.ieee_delapp    = hclge_ieee_delapp,
->  	.getdcbx	= hclge_getdcbx,
->  	.setdcbx	= hclge_setdcbx,
->  	.setup_tc	= hclge_setup_tc,
-> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.h
-> index b04702e65689..17a5460e7ea9 100644
-> --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.h
-> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.h
-> @@ -12,4 +12,7 @@ void hclge_dcb_ops_set(struct hclge_dev *hdev);
->  static inline void hclge_dcb_ops_set(struct hclge_dev *hdev) {}
->  #endif
->  
-> +int hclge_get_dscp_prio(struct hnae3_handle *h, u8 dscp, u8 *tc_mode,
-> +			u8 *priority);
-> +
->  #endif /* __HCLGE_DCB_H__ */
-> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-> index fcdc978379ff..f43c7d392d1a 100644
-> --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-> @@ -12907,6 +12907,7 @@ static const struct hnae3_ae_ops hclge_ops = {
->  	.get_ts_info = hclge_ptp_get_ts_info,
->  	.get_link_diagnosis_info = hclge_get_link_diagnosis_info,
->  	.clean_vf_config = hclge_clean_vport_config,
-> +	.get_dscp_prio = hclge_get_dscp_prio,
+> +	ret = h->ae_algo->ops->get_dscp_prio(h, dscp, NULL, &priority);
 
-This brings in an implicit dependency on CONFIG_HNS3_DCB, causing the
-build error reported by the intel bot.
+This introduces an additional, unneeded indirect call in the fast path,
+you could consider replacing the above with a direct call to
+hclge_get_dscp_prio() - again taking care of the CONFIG_HNS3_DCB
+dependency.
 
-Please, address the above, thanks!
+Cheers,
 
 Paolo
 
