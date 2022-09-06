@@ -2,121 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CE145ADFA2
-	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 08:17:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 970015ADFA6
+	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 08:20:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238610AbiIFGRa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Sep 2022 02:17:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54498 "EHLO
+        id S232215AbiIFGUi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Sep 2022 02:20:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238527AbiIFGQ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 02:16:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A545C71BEC
-        for <netdev@vger.kernel.org>; Mon,  5 Sep 2022 23:15:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E01B4612DB
-        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 06:15:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAAA5C433C1;
-        Tue,  6 Sep 2022 06:15:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662444940;
-        bh=hRQGhz4mWavoL/4X/r0gw+F2RXcmlGKJ+IPeHA/W3hA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mcpHjePk7Ue0pDaP7qhez1VdXUfSbCkjGUdFb45EC3BvPAVRfxomMiyByqZnVlyHP
-         xpye0YYSCierCSn84BLvSXhklceLbfAUqlcSOEKAYtDYl+GvFIcNmCWOVb4Ebi/npW
-         LsxjFtjcQ+RHIYvL5C7C1q14EQvrXFnPhkIBGPnY=
-Date:   Tue, 6 Sep 2022 08:15:36 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     "Michalik, Michal" <michal.michalik@intel.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "G, GurucharanX" <gurucharanx.g@intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH net 3/3] ice: Add set_termios tty operations handle to
- GNSS
-Message-ID: <YxbliLlS9YU6eKMn@kroah.com>
-References: <20220829220049.333434-1-anthony.l.nguyen@intel.com>
- <20220829220049.333434-4-anthony.l.nguyen@intel.com>
- <20220831145439.2f268c34@kernel.org>
- <YxBHL6YzF2dAWf3q@kroah.com>
- <BN6PR11MB417756CED7AE9DF7C3FA88DCE37F9@BN6PR11MB4177.namprd11.prod.outlook.com>
+        with ESMTP id S229546AbiIFGUf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 02:20:35 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D13BB222AE;
+        Mon,  5 Sep 2022 23:20:34 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id fa2so10246612pjb.2;
+        Mon, 05 Sep 2022 23:20:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=delLkvjT8PCP+Ncz2RgacJbjqYhQsYq5ByGTAUQohKI=;
+        b=AB50cPp4YWn/0IYxLsU/3B3UTojp/d4KXUj/q1xX6JS2ZseKmIvcJZjRvv3kqLo6NA
+         l+8eaRrkN7ElsC6NsnpcFQH/rKPYmIDOg8ypvlYzo39naFopoGuK7ONUjYZN4fVBX9ni
+         QhWmQzlWjFV0t3wXlxdMXRkrr20u5+DLae/EIFKFzHFjFeOsDRpLHj9qjejFNya70bcc
+         XBaN3+H+/KQU8Bgs0nafT0roBxNRvX/umh801T99OaOZ1ssmYI8vS+zUo2Vb9g/QCVHg
+         JLrOeK0FttAPYuqXDHy7pFJ4E8rPgkTsOeEMyRkIWmzAbzKF7JbV6Jz6H2RfDQ3lM30r
+         k6Uw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=delLkvjT8PCP+Ncz2RgacJbjqYhQsYq5ByGTAUQohKI=;
+        b=6T0yCB9v6RR4+ESAJ+XdgsDS9n+nP8EsRBp660wOi+ct7CmeEwAz0wXtLFJHc37C41
+         bSARqwC/NbNk+oNWda21KXLqhQVmbixZkcyqwyKgslH3sFajXRocoessl9+CfwlAtyru
+         55FpNVOt2wSUxUfUr2F5vQz+s2h2NAJ6fPYUJ8crs0kv3bJxM8HWStBtT7UsC15Me01I
+         5W0ODSeiPXfcQapbLhItxoJZl/u9T4NHxT6tMCZ2/IwTctxQrSVUDWDhp9oLPF8cZ+t3
+         Hvc+dMi3yH8oUej3vxOe3mMBlbkkXoVz69uBw5EsAP3BBHaB+XbaDC1lossGGcJfaVGt
+         eC9A==
+X-Gm-Message-State: ACgBeo2+BVrZbGzYlCVvp+ULm3nzoXwDV+ocZLziUQiTMEXyjsxsq92X
+        MhdU5gsFCw3K+bhoMZGK4Co=
+X-Google-Smtp-Source: AA6agR5U9d9xHuCBeBjB3Bsy0w5WuyL0CxOpnm27siaJBDHBM6cwNBK8dAAtaDTNDXunhC/T34P3IA==
+X-Received: by 2002:a17:903:110e:b0:171:3afa:e68c with SMTP id n14-20020a170903110e00b001713afae68cmr51767140plh.12.1662445233400;
+        Mon, 05 Sep 2022 23:20:33 -0700 (PDT)
+Received: from localhost.localdomain ([76.132.249.1])
+        by smtp.gmail.com with ESMTPSA id m16-20020a170902db1000b00172dd10f64fsm8877798plx.263.2022.09.05.23.20.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Sep 2022 23:20:32 -0700 (PDT)
+From:   rentao.bupt@gmail.com
+To:     Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Heyi Guo <guoheyi@linux.alibaba.com>,
+        Dylan Hung <dylan_hung@aspeedtech.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Liang He <windhl@126.com>, Hao Chen <chenhao288@hisilicon.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>, Tao Ren <taoren@fb.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Cc:     Tao Ren <rentao.bupt@gmail.com>
+Subject: [PATCH net-next v2 0/2] net: ftgmac100: support fixed link
+Date:   Mon,  5 Sep 2022 23:20:24 -0700
+Message-Id: <20220906062026.57169-1-rentao.bupt@gmail.com>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN6PR11MB417756CED7AE9DF7C3FA88DCE37F9@BN6PR11MB4177.namprd11.prod.outlook.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 05, 2022 at 07:32:44PM +0000, Michalik, Michal wrote:
-> Hello Greg,
-> 
-> Much thanks for a feedback. Please excuse me for delayed answer, we tried to collect all
-> the required information before returning to you - but we are still working on it.
-> 
-> Best regards,
-> M^2
-> 
-> > 
-> > -----Original Message-----
-> > From: Greg Kroah-Hartman <gregkh@linuxfoundation.org> 
-> > Sent: Thursday, September 1, 2022 7:46 AM
-> > To: Jakub Kicinski <kuba@kernel.org>
-> > Cc: Nguyen, Anthony L <anthony.l.nguyen@intel.com>; davem@davemloft.net; pabeni@redhat.com; edumazet@google.com; Michalik, Michal <michal.michalik@intel.com>; netdev@vger.kernel.org; richardcochran@gmail.com; G, GurucharanX <gurucharanx.g@intel.com>; Jiri Slaby <jirislaby@kernel.org>; Johan Hovold <johan@kernel.org>
-> > Subject: Re: [PATCH net 3/3] ice: Add set_termios tty operations handle to GNSS
-> > 
-> > On Wed, Aug 31, 2022 at 02:54:39PM -0700, Jakub Kicinski wrote:
-> > > On Mon, 29 Aug 2022 15:00:49 -0700 Tony Nguyen wrote:
-> > > > From: Michal Michalik <michal.michalik@intel.com>
-> > > > 
-> > > > Some third party tools (ex. ubxtool) try to change GNSS TTY parameters
-> > > > (ex. speed). While being optional implementation, without set_termios
-> > > > handle this operation fails and prevents those third party tools from
-> > > > working.
-> > 
-> > What tools are "blocked" by this?  And what is the problem they have
-> > with just the default happening here?  You are now doing nothing, while
-> > if you do not have the callback, at least a basic "yes, we accepted
-> > these values" happens which was intended for userspace to not know that
-> > there was a problem here.
-> > 
-> 
-> As I stated in the commit message, the example tool is ubxtool - while trying to
-> connect to the GPS module the error appreared:
-> Traceback (most recent call last):
-> 
-> 	  File "/usr/local/bin/ubxtool", line 378, in <module>
-> 		io_handle = gps.gps_io(
-> 	  File "/usr/local/lib/python3.9/site-packages/gps/gps.py", line 309, in __init__
-> 		self.ser = Serial.Serial(
-> 	  File "/usr/local/lib/python3.9/site-packages/serial/serialutil.py", line 244, in __init__
-> 		self.open()
-> 	  File "/usr/local/lib/python3.9/site-packages/serial/serialposix.py", line 332, in open
-> 		self._reconfigure_port(force_update=True)
-> 	  File "/usr/local/lib/python3.9/site-packages/serial/serialposix.py", line 517, in _reconfigure_port
-> 		termios.tcsetattr(
-> 	termios.error: (22, 'Invalid argument')
-> 	
-> Adding this empty function solved the problem.
+From: Tao Ren <rentao.bupt@gmail.com>
 
-That seems very wrong, please work to fix this by NOT having an empty
-function like this as it should not be required.
+The patch series adds fixed link support to ftgmac100 driver.
 
-thanks,
+Patch #1 adds fixed link logic into ftgmac100 driver.
 
-greg k-h
+Patch #2 enables mac3 controller in Elbert dts: Elbert mac3 is connected
+to the onboard switch BCM53134P's IMP_RGMII port directly (no PHY
+between BMC MAC and BCM53134P).
+
+Tao Ren (2):
+  net: ftgmac100: support fixed link
+  ARM: dts: aspeed: elbert: Enable mac3 controller
+
+ .../boot/dts/aspeed-bmc-facebook-elbert.dts   | 20 ++++++++++++++++
+ drivers/net/ethernet/faraday/ftgmac100.c      | 24 +++++++++++++++++++
+ 2 files changed, 44 insertions(+)
+
+-- 
+2.37.3
+
