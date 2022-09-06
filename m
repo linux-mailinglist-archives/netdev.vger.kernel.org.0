@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C3C745AF66F
-	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 22:58:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D9C75AF671
+	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 22:58:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231393AbiIFU5T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Sep 2022 16:57:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46944 "EHLO
+        id S231245AbiIFU5f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Sep 2022 16:57:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230231AbiIFU5D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 16:57:03 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 685E89350D
-        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 13:56:51 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id t7so12224167wrm.10
-        for <netdev@vger.kernel.org>; Tue, 06 Sep 2022 13:56:51 -0700 (PDT)
+        with ESMTP id S231419AbiIFU5T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 16:57:19 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC387A2850
+        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 13:56:57 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id az27so17249574wrb.6
+        for <netdev@vger.kernel.org>; Tue, 06 Sep 2022 13:56:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=tessares.net; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=PRqsWYZZH0s3GHQzsnOmHr+CxH/u15ul/CIYu9EYojs=;
-        b=Vc9QaQE8ZfUf7ItbFMvQYVkMnX0f6ekQuvgXGvdF+seJxFAmGhZU4/sZzM4XxEMjKp
-         Bw4VDC2zn+lHjwmmG+ga0OBUM9JHJjbAyQB7SRIgwBk4bFfGlXBe+AQwr0m2ooiMB1E6
-         g0cjqP/MqzHpMFPaGU3LVjHNXSUv8yvec13xLxDaL4Ovjt8BeNHEQDmJoonssHWgvx/X
-         PB4zHTc8Scb4UxDj9J0GCFqWPzYUCnllyPh1nxFrqwEA0J5vIX6zHkudspLS2HrA8us/
-         fBZ7/Fno7MCwVrTyw0FSjccMQ+pSLZ9FfgMhHHnDfRVLwSZ6O4lKKGPPFkGRrUXvP93B
-         MuyA==
+        bh=yMM2FY3IJOc8ZIC+YBU+PmCr88InYvCeIt5RFR0M8Pk=;
+        b=X+Trjh9rPGbs7UPhbuvHibypqjrCN55jfWvRbMk2FxxXv9XSvr/JCZRxehh4P2rxRd
+         enCv/OBAErOTA7xi9ki3iIRmvPIOI8cz0o5C5rq1Z2JsqZD7UNTWLFmoFXoVr1GXKI+J
+         AbnYCgmGnf7kyzoqWsUUclps9Y1474jh7R99y/LoGyAwkE2EJbdxwNAEk+y87+GkrTIF
+         ihIua75zQcntpzpVXAXrObMGh9GMCdWd3PqKSCRBnvoexrt6knZbXMQpd4aJm4UoGg4E
+         kIgGf9+y9hPYHOp83DsKRyoiDVxLtdckdjjt+4TqvyiE1Bq+/x4QL4GnrD41xJZjoV2S
+         ZgLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=PRqsWYZZH0s3GHQzsnOmHr+CxH/u15ul/CIYu9EYojs=;
-        b=XzN6lDHvvoyacVoZoGFXii1mXd4CutFn4lkhck0lV1Gp1hjpUO8kv8yH4IEKK9pkkA
-         Q5kVHxVirmyl21GSow30zFGWq6Wvf+9PBsR6FtfkwtYgUf/MC+oTPF4u1ODdiO1zQOsV
-         YjVrkDXGEfh7rKBOEbwGNqBgOkvzKKyp0kHsHYn2P/hJMq+y4aUUg1vKheG4JvBcoYtc
-         C9KSV5sDhxHah7xiKdwu1jc1vpJS61W778x+GSWEdRsvE2E1v2uvm29zXjrx1/Usuh2k
-         a4Xf2wj3ii6soFtjGXWtCvziSXOUkzr77oXJ2SfzVzZz6iaOhITDuFJHiGVIx0W5btMo
-         zg6Q==
-X-Gm-Message-State: ACgBeo2Y6rMqzzJ8R3EFImO0tpuYWhUeenVQbhooi4J8oXk+kHmwKpMi
-        Nhmw5+GTTWT/pQR7hBJRxTucEw==
-X-Google-Smtp-Source: AA6agR4pLdGZnGlAAJLaZh+M/E+8JiAP3AsAe0Vaci1KDqpNnMmIz2UttpItjJ4787L+hrDUmYj7Ig==
-X-Received: by 2002:adf:fb10:0:b0:228:9072:72e1 with SMTP id c16-20020adffb10000000b00228907272e1mr150723wrr.459.1662497810733;
-        Tue, 06 Sep 2022 13:56:50 -0700 (PDT)
+        bh=yMM2FY3IJOc8ZIC+YBU+PmCr88InYvCeIt5RFR0M8Pk=;
+        b=jd0hFHynx7ALOP2i1QIUYvw8f4Zo9fnbPnl6+awQUmlaspMp2G9n/67ZI245rGTlQ5
+         1kWYXCnXi0KuqJasPUKwO378c2hz/ty9CpNXOrKNzk8UqHrpgEqaLtg0PcXehm/5E4+b
+         mDH69IQiPfRBOUcgDk8UfotkmgzDpaytoSfEXKOrCxe88gxDIo8bJcByKSWVrXbbrRCb
+         EazA2KvmdH0EuyN+FfmiutbyMhAKHt8WaOD+VerajRIriqxLL01eSwoqQU1tY4MxBEeM
+         1qO7pZdTVgjZQUwa8oQEL/bc7zvplFB5YIuiCV1CaE4msQtf9qq/DumvV1ckmKk0Gj5k
+         soSg==
+X-Gm-Message-State: ACgBeo2EPxquWwA7YVw+/sQOY9b1lgaVaZBInewgq8JJ3xk/Yp/stTEY
+        qLE+Eq3WYpxNHwV02Rs9Xn5+yw==
+X-Google-Smtp-Source: AA6agR6i36nnqPOqjfG5LL42pPJrr20SYSi1MC6hX0LjqRAWLHRtnZIDE+SUfSn3GO/M8GzyX12qSg==
+X-Received: by 2002:a5d:4534:0:b0:228:a411:1145 with SMTP id j20-20020a5d4534000000b00228a4111145mr165002wra.222.1662497815748;
+        Tue, 06 Sep 2022 13:56:55 -0700 (PDT)
 Received: from vdi08.nix.tessares.net (static.219.156.76.144.clients.your-server.de. [144.76.156.219])
-        by smtp.gmail.com with ESMTPSA id n24-20020a1c7218000000b003a317ee3036sm15735887wmc.2.2022.09.06.13.56.44
+        by smtp.gmail.com with ESMTPSA id n24-20020a1c7218000000b003a317ee3036sm15735887wmc.2.2022.09.06.13.56.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Sep 2022 13:56:48 -0700 (PDT)
+        Tue, 06 Sep 2022 13:56:52 -0700 (PDT)
 From:   Matthieu Baerts <matthieu.baerts@tessares.net>
 To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
         Matthieu Baerts <matthieu.baerts@tessares.net>,
@@ -57,31 +57,31 @@ To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     Thomas Haller <thaller@redhat.com>, netdev@vger.kernel.org,
         mptcp@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 4/5] mptcp: allow privileged operations from user namespaces
-Date:   Tue,  6 Sep 2022 22:55:42 +0200
-Message-Id: <20220906205545.1623193-5-matthieu.baerts@tessares.net>
+Subject: [PATCH net-next 5/5] mptcp: account memory allocation in mptcp_nl_cmd_add_addr() to user
+Date:   Tue,  6 Sep 2022 22:55:43 +0200
+Message-Id: <20220906205545.1623193-6-matthieu.baerts@tessares.net>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220906205545.1623193-1-matthieu.baerts@tessares.net>
 References: <20220906205545.1623193-1-matthieu.baerts@tessares.net>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2701; i=matthieu.baerts@tessares.net;
- h=from:subject; bh=3W6+TJOTAo68xHMXohFmObHMW6ruenZqCo5JEcs+SRE=;
- b=owEBbQKS/ZANAwAIAfa3gk9CaaBzAcsmYgBjF7O5PKfhLXp46IKTuhbxFJRXEMBLqpmcSLP2ZsMV
- idUjSFuJAjMEAAEIAB0WIQToy4X3aHcFem4n93r2t4JPQmmgcwUCYxezuQAKCRD2t4JPQmmgc+q3D/
- 9tWNzntGdWV3cJtFlqYZ74eleNBcqTmo/FFcgACrAoZRGXRSMygfyVd7RcWw6pxTrlCqCLxwTQcn7I
- K7eq5EmHyB0CIYg8ZMiEFR8s3joxLddN3xLmRELV3Sob8pAKc0lRF/FEGkHz0pMGb3cIzaLTezAXas
- pJkx0ufs0rPG6T2oZ0oxWuohbp26Hrd2EjWTdDb/gpwnhJT9aLhD6OmhwpVEKAiN6OJ+faxMRyoooG
- 6lM1nifQobB0aO+3ZOLU/DmhZzVtx1d/Vn/i+EO5jBuk9TmLFHo5UVG0V61wGjKbXrqE1V88Lj8Z0k
- 5RzVJcD8ekYq2EKBJm5MhIifxIudDkDFV62mgYfSg9v8Qlv2fBEr1HnQUIEhyr7E2ryYt+0sIpSazD
- sJfzTXXqEEaPXRZTV5dvCsoO4uw0GfIiNaDybuqTWUApeKdb/xNGJOkZp+Ta9WDq2Wcnwl454wEME2
- /q/x78qdSX3RPmKuDKcEr5VnZGwDd8qraCNbysp1c2N2+G0E7FvHBYqmaM4koDoR7d6SrLqmGxyXc3
- nz0537mhcNanyF0YOZdZot8GxiW9gh1SWld8y53nL2Iv/kYulTzM5VHX9Oju3ObpCJfn+CczCzYWB9
- 5NYFg2Zzc4rhc5PtgXHmAhFQycp4WyOiFYiWsvG/HnIi77b/qUzRwuI+kEjA==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=865; i=matthieu.baerts@tessares.net;
+ h=from:subject; bh=hqQtNGfqEcSdigDLJiA3QmJUymEPTwMdYwGqPXFlNhA=;
+ b=owEBbQKS/ZANAwAIAfa3gk9CaaBzAcsmYgBjF7O5vhEtOWQ/pfczdwco8rjLVXWSgmW0J1lYVXuy
+ Z/n7UFCJAjMEAAEIAB0WIQToy4X3aHcFem4n93r2t4JPQmmgcwUCYxezuQAKCRD2t4JPQmmgcyagEA
+ COkVtEkFDeK16sX1ShQiSuLqXI8eeLGbzuEd6GSJ2TQS2vOlYP9aw6gYwraBV+mCCzQx6TicRsWC6p
+ bMjqzjwROu98J7e4ZG0/eWDeqTUVPE8FG2kNbMhOPIopWDr0mRG4kUP5ixQuDixOXSLXY9/0wVcAcQ
+ Y6VJlG6f0dxRSitFjOCUN57qxiA4qC/o/y1D0JN7LDBIAbEty4Q0FKMzux+9kSI2bdF4O2LjCYt/XE
+ oClVp6vFG5VdbSFZVrDamFsRdXOS66w8VYYchqogE6MRzEYUvAAy1gBA5dHJWaZKXq4aHtXY6dbZJ8
+ eY32rg159zmUy3dPquMmnMRJckEXBpABx4QYeqEcj80b2Ihvq15nxxS8C+lyZ3AJI/O8ielu8wmR45
+ X0kq/DXWmwPH8fq7TGVKvJVSh2LGHRxqWskmSOGsraHhR2CE5Sf/BKBTF0cfDIYgsB1waN2fw4aaDG
+ Ue2Ea/UDJ3N2LoLG7jQ2dw44+vHuJGaW9RGtxVmjE09ECrF+3Wzq/0BoCx/YxDNw/n42/E6G2FrBtQ
+ NtsRmjkKjir8JSZNnqiJ6VgX+X/P2QWhtMDkUcog49bmeexNm0kUXFqn/8L55EucUvgQXzNPCYIjIZ
+ fuG5TolplUBupmQg6iH5BuSPRn+LnBOwvdcJIXbQqKDJp2uMw7Z2NtzTLG9A==
 X-Developer-Key: i=matthieu.baerts@tessares.net; a=openpgp; fpr=E8CB85F76877057A6E27F77AF6B7824F4269A073
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -91,95 +91,29 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Thomas Haller <thaller@redhat.com>
 
-GENL_ADMIN_PERM checks that the user has CAP_NET_ADMIN in the initial
-namespace by calling netlink_capable(). Instead, use GENL_UNS_ADMIN_PERM
-which uses netlink_ns_capable(). This checks that the caller has
-CAP_NET_ADMIN in the current user namespace.
-
-See also
-
-  commit 4a92602aa1cd ("openvswitch: allow management from inside user namespaces")
-
-which introduced this mechanism. See also
-
-  commit 5617c6cd6f84 ("nl80211: Allow privileged operations from user namespaces")
-
-which introduced this for nl80211.
+Now that non-root users can configure MPTCP endpoints, account
+the memory allocation to the user.
 
 Signed-off-by: Thomas Haller <thaller@redhat.com>
 Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 ---
- net/mptcp/pm_netlink.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ net/mptcp/pm_netlink.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index 5e142c0c597a..afc98adf2746 100644
+index afc98adf2746..9813ed0fde9b 100644
 --- a/net/mptcp/pm_netlink.c
 +++ b/net/mptcp/pm_netlink.c
-@@ -2218,17 +2218,17 @@ static const struct genl_small_ops mptcp_pm_ops[] = {
- 	{
- 		.cmd    = MPTCP_PM_CMD_ADD_ADDR,
- 		.doit   = mptcp_nl_cmd_add_addr,
--		.flags  = GENL_ADMIN_PERM,
-+		.flags  = GENL_UNS_ADMIN_PERM,
- 	},
- 	{
- 		.cmd    = MPTCP_PM_CMD_DEL_ADDR,
- 		.doit   = mptcp_nl_cmd_del_addr,
--		.flags  = GENL_ADMIN_PERM,
-+		.flags  = GENL_UNS_ADMIN_PERM,
- 	},
- 	{
- 		.cmd    = MPTCP_PM_CMD_FLUSH_ADDRS,
- 		.doit   = mptcp_nl_cmd_flush_addrs,
--		.flags  = GENL_ADMIN_PERM,
-+		.flags  = GENL_UNS_ADMIN_PERM,
- 	},
- 	{
- 		.cmd    = MPTCP_PM_CMD_GET_ADDR,
-@@ -2238,7 +2238,7 @@ static const struct genl_small_ops mptcp_pm_ops[] = {
- 	{
- 		.cmd    = MPTCP_PM_CMD_SET_LIMITS,
- 		.doit   = mptcp_nl_cmd_set_limits,
--		.flags  = GENL_ADMIN_PERM,
-+		.flags  = GENL_UNS_ADMIN_PERM,
- 	},
- 	{
- 		.cmd    = MPTCP_PM_CMD_GET_LIMITS,
-@@ -2247,27 +2247,27 @@ static const struct genl_small_ops mptcp_pm_ops[] = {
- 	{
- 		.cmd    = MPTCP_PM_CMD_SET_FLAGS,
- 		.doit   = mptcp_nl_cmd_set_flags,
--		.flags  = GENL_ADMIN_PERM,
-+		.flags  = GENL_UNS_ADMIN_PERM,
- 	},
- 	{
- 		.cmd    = MPTCP_PM_CMD_ANNOUNCE,
- 		.doit   = mptcp_nl_cmd_announce,
--		.flags  = GENL_ADMIN_PERM,
-+		.flags  = GENL_UNS_ADMIN_PERM,
- 	},
- 	{
- 		.cmd    = MPTCP_PM_CMD_REMOVE,
- 		.doit   = mptcp_nl_cmd_remove,
--		.flags  = GENL_ADMIN_PERM,
-+		.flags  = GENL_UNS_ADMIN_PERM,
- 	},
- 	{
- 		.cmd    = MPTCP_PM_CMD_SUBFLOW_CREATE,
- 		.doit   = mptcp_nl_cmd_sf_create,
--		.flags  = GENL_ADMIN_PERM,
-+		.flags  = GENL_UNS_ADMIN_PERM,
- 	},
- 	{
- 		.cmd    = MPTCP_PM_CMD_SUBFLOW_DESTROY,
- 		.doit   = mptcp_nl_cmd_sf_destroy,
--		.flags  = GENL_ADMIN_PERM,
-+		.flags  = GENL_UNS_ADMIN_PERM,
- 	},
- };
+@@ -1327,7 +1327,7 @@ static int mptcp_nl_cmd_add_addr(struct sk_buff *skb, struct genl_info *info)
+ 		return -EINVAL;
+ 	}
  
+-	entry = kmalloc(sizeof(*entry), GFP_KERNEL);
++	entry = kmalloc(sizeof(*entry), GFP_KERNEL_ACCOUNT);
+ 	if (!entry) {
+ 		GENL_SET_ERR_MSG(info, "can't allocate addr");
+ 		return -ENOMEM;
 -- 
 2.37.2
 
