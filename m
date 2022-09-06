@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6AB25AF635
-	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 22:38:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A02125AF63B
+	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 22:39:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230459AbiIFUid (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Sep 2022 16:38:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39932 "EHLO
+        id S231156AbiIFUix (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Sep 2022 16:38:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230426AbiIFUi3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 16:38:29 -0400
-Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AA45895C7;
-        Tue,  6 Sep 2022 13:38:27 -0700 (PDT)
-Received: by mail-qv1-xf32.google.com with SMTP id s13so6034237qvq.10;
-        Tue, 06 Sep 2022 13:38:27 -0700 (PDT)
+        with ESMTP id S231191AbiIFUiu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 16:38:50 -0400
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08D4C89914;
+        Tue,  6 Sep 2022 13:38:50 -0700 (PDT)
+Received: by mail-qt1-x82b.google.com with SMTP id w28so8995585qtc.7;
+        Tue, 06 Sep 2022 13:38:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date;
         bh=h237n7/UKMUwrtK2SdW8VgK2awMEb5gtKYbegstNBYY=;
-        b=lCUlfk1RNpuxwAiYCvs/3Af6ZbW9gCaXR/t4W5EZj0lvBH2IGsJKDmR0RcAgRSdjbG
-         FIpDo9RB+OvUpMm3j3sp0ux9UB/EVGw6dw13YTCzjzUwUEUN8MpSur1hoUcF8dI+74ED
-         BdnCwwU3de5L7GIapuk4DTxRQ5GvNLcLJak13f6Pzq46uyjgbaNchtVelkZ0LouCTEtk
-         XinXrlCwiEKpdYkM7tWtGyPZUnAKprJ2+bTbUMnVyHrKJagiLap86OFpO5+gsHHG5YvD
-         iWNkKF+Z0KCIagRozUWrRO9QgDLOHaoW2xn1lFtbOEB1DfDwB85A0OMG14DiKOH1JJau
-         TEXg==
+        b=C9Ss8byNwMFLSuiFD4ppV8owA9/4wkUTBP/U9WKwcHSUI4M6aleZ6JI47wDpnkXwvP
+         sZOiL5B8tm854nQMBnoWx0QFNoZAC40OYRWf3oCu0hnqVdbYj86/gybzpnL3oBIPPAZh
+         B53R+G9LFexSWJa8KlhN098kxoLc/uAlOUrSWZ8IgB4ORIpBlIj3V7ZDsxkySiy77FAo
+         jF809Cgn/tHn57YHP3b+oVVszQzoN3sVs4fU6e/0EylbBuZTDwcFJsF0CpFHEx6YUo5m
+         DCDD2ERnMUeNyjy99d2P8UijGtKO5WqpGOcppPHDPOBaSMIdO1jnJGIW2VRCtez5JZ5f
+         764w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date;
         bh=h237n7/UKMUwrtK2SdW8VgK2awMEb5gtKYbegstNBYY=;
-        b=GH/gVftDPrN1Y/G3odNLpnI/hmn0mLqaSdHQviMxmFJ/Tt8h9afEEEKNM2Ny0OtZpH
-         a+BM3CeKCtercFALQXFr63qXYd9rbNvlLPRMjUs32FXe8su/VFjkxEE/UITBPuTZpSXN
-         JZrQ7noD+RBhFmju3e4Unw1dQSwMCrQTjwYjaiAc0WEKOWyfNycjY6bG/eXZWFQ/7c1v
-         VvRWdB2Nq9C2aIpF2Q17qTqiHRaTTAn4P/onV3bssgUnWfPlf8iz2EcQ93SqcH8P2Fqf
-         hRWk+9pkFXNwY2BmsfrnGjwaX3+b5Hd3wLeUhkwuouzjWdt7Eqlrv6kjS5Co6Slbi4tV
-         Xneg==
-X-Gm-Message-State: ACgBeo1FGfmQNGXY2c8clYODAEYrH9aQFx0YcwIT5AeUCTQa/9u2LhbP
-        Z1r3++HR1p4ey9E+4V1cNTA=
-X-Google-Smtp-Source: AA6agR4/gnXe/kw9M8c9Ft8wZy+DRa7WhO497d/AyApMFfagKNLbUVb7qzJX/XoqxQvZyYcORdmRMg==
-X-Received: by 2002:a0c:b2de:0:b0:499:363f:222f with SMTP id d30-20020a0cb2de000000b00499363f222fmr319781qvf.73.1662496706717;
-        Tue, 06 Sep 2022 13:38:26 -0700 (PDT)
+        b=QUrElzvllE6YXinZqG0/iSpsWNGNti57P4Z2IySnBU4mAdRBIr5d6yKRNwdonoriV2
+         67V+9Q+ds4cMI5HTF2+iUvrAF69eOrD6LbRFoG0v/Ek602tL2m5rTbJ7rOpaJtvAQHI7
+         dXY8SQ0iaPM5txMiLiwqD2A9RA7LoNthl1evT7EdXMOLj+cYuPnSVqtbK5N9Lo8XuTVL
+         kihcHK3qRQ/+r3sviF7dWOV/HfWtm5QOSn3gcohJbDqcokL1GAUMeidBiKbjKQU0ntfx
+         g1aKvsCV+tnmj55KvCq/0hvLgw2ao20CgPmn4H2u0S917egA5gw2iboBN5EeI6uEEc9V
+         Pd+g==
+X-Gm-Message-State: ACgBeo2jEm0MxYJqFMjmlhBu9mByaYI5AKkNsMyn9uRnXAvIVFz+NiBO
+        VbrORzvGx99JX2S9GWXi0W4=
+X-Google-Smtp-Source: AA6agR7jUYM/thCW3aozvylNyqUlO54iIfwG+TJITPxh00AjybJsEh/bVfCV5cWcRER/xBmwVBiXKw==
+X-Received: by 2002:ac8:5907:0:b0:344:e61b:8c0e with SMTP id 7-20020ac85907000000b00344e61b8c0emr335730qty.349.1662496729120;
+        Tue, 06 Sep 2022 13:38:49 -0700 (PDT)
 Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id bn5-20020a05620a2ac500b006bb41ac3b6bsm12005175qkb.113.2022.09.06.13.38.24
+        by smtp.gmail.com with ESMTPSA id 137-20020a37078f000000b006be68f9bdddsm11617656qkh.133.2022.09.06.13.38.43
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 06 Sep 2022 13:38:26 -0700 (PDT)
-Message-ID: <9df7311e-3b8c-40e0-d100-b8dbeb24373e@gmail.com>
-Date:   Tue, 6 Sep 2022 13:38:19 -0700
+        Tue, 06 Sep 2022 13:38:46 -0700 (PDT)
+Message-ID: <a475ec3e-a1ce-c81c-5d80-8254e9b62068@gmail.com>
+Date:   Tue, 6 Sep 2022 13:38:42 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.2.1
-Subject: Re: [PATCH v3 04/11] leds: bcm6328: Get rid of custom
+Subject: Re: [PATCH v3 05/11] leds: bcm6358: Get rid of custom
  led_init_default_state_get()
 Content-Language: en-US
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -75,9 +75,9 @@ Cc:     Pavel Machek <pavel@ucw.cz>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, Lee Jones <lee@kernel.org>
 References: <20220906135004.14885-1-andriy.shevchenko@linux.intel.com>
- <20220906135004.14885-5-andriy.shevchenko@linux.intel.com>
+ <20220906135004.14885-6-andriy.shevchenko@linux.intel.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220906135004.14885-5-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20220906135004.14885-6-andriy.shevchenko@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
