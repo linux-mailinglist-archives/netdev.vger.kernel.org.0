@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC61F5AF6AD
+	by mail.lfdr.de (Postfix) with ESMTP id 641925AF6AC
 	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 23:13:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229960AbiIFVNM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Sep 2022 17:13:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48284 "EHLO
+        id S230478AbiIFVNO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Sep 2022 17:13:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230386AbiIFVNJ (ORCPT
+        with ESMTP id S230435AbiIFVNJ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 17:13:09 -0400
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FAE4B81FB
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFAB1B81FC
         for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 14:13:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1662498788; x=1694034788;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Akq2irF5tszgvMBXr+DQ7V7jouCVUpoXinqzAgZkzuY=;
-  b=nCmTBFlPl8iri/jm5lc7uwqki0GSQGPM6N4ITEGh2AsFCHgSk4zIECGW
-   hm+WpefWes8InAIYn+HokkHG4r1YUgNk1AkkBwF9kwUaRUrtsfqoQVZGi
-   ETzSuNnQlC4CodS0F1j3s3RRmY1oB18s1QDdOvQ0brqkDX5Tn67QPKnMu
-   K9zgcTALH9zJcBjMrrKYquUVAZhGFnhjs+bVonSadmJhn6XD8JJ+zvUs3
-   Yij9HbmR/FeosKt+frd1ggss0i5Q6QkDpKYLbrMopzJUzb6IpmA6/bYeT
-   weL+ZAlvIXXxgo06pROe7Dxu6wisDxt4SA0oaiFZ34rd3RVPnsLqhRq7d
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10462"; a="295441850"
+  bh=SzhxcI2MDmlaazjXXEihJzJXdFRPogx800EpXy0Jltc=;
+  b=VARCCrVqcyAlzKG2JKMSvM2hV0t+Kfv0RaqUP9jELRb7EPQSdCEodQ6t
+   03xLYMBolfsMo5TjbF0JzwJyFtxRr1VHAY4Mj0vCJrVS8Vc36hz7c57ql
+   xFWl+veRXsEBFFduOUeYgWVApymLU8TlcKOsXh1HIq14rs1DVTLBf0vW4
+   DbYe8yhU0R06Tjcgn4d8GS9WqP3fo6E9zMKMq+jeKtb5bv3T4WRCs098N
+   +yc8cwbq7fHfnIOrmCJzOq4ZObRJPpmYy1NIaJ6lIh4Az4+UqT5Lh/LX2
+   c4sIufvO5KoaDRrldLNm5qUr3p6iJ86uztfYv1fu9GcFeLGzf3fVTHEqz
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10462"; a="295441851"
 X-IronPort-AV: E=Sophos;i="5.93,294,1654585200"; 
-   d="scan'208";a="295441850"
+   d="scan'208";a="295441851"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2022 14:13:06 -0700
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2022 14:13:07 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,294,1654585200"; 
-   d="scan'208";a="591421365"
+   d="scan'208";a="591421368"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga006.jf.intel.com with ESMTP; 06 Sep 2022 14:13:06 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
-Cc:     Paul Greenwalt <paul.greenwalt@intel.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH net-next 3/5] ice: add helper function to check FW API version
-Date:   Tue,  6 Sep 2022 14:13:00 -0700
-Message-Id: <20220906211302.3501186-4-anthony.l.nguyen@intel.com>
+Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Subject: [PATCH net-next 4/5] ice: switch: Simplify memory allocation
+Date:   Tue,  6 Sep 2022 14:13:01 -0700
+Message-Id: <20220906211302.3501186-5-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220906211302.3501186-1-anthony.l.nguyen@intel.com>
 References: <20220906211302.3501186-1-anthony.l.nguyen@intel.com>
@@ -62,114 +61,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paul Greenwalt <paul.greenwalt@intel.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-Several functions in ice_common.c check the firmware API version to see if
-the current API version meets some minimum requirement.
+'rbuf' is locale to the ice_get_initial_sw_cfg() function.
+There is no point in using devm_kzalloc()/devm_kfree().
 
-Improve the readability of these checks by introducing
-ice_is_fw_api_min_ver, a helper function to perform that check.
+use kzalloc()/kfree() instead.
 
-Signed-off-by: Paul Greenwalt <paul.greenwalt@intel.com>
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_common.c | 57 +++++++++++----------
- 1 file changed, 29 insertions(+), 28 deletions(-)
+As a side effect, it also require less memory. devm_kzalloc() has a small
+memory overhead, and requesting ICE_SW_CFG_MAX_BUF_LEN (i.e. 2048) bytes,
+4096 are really allocated.
+---
+ drivers/net/ethernet/intel/ice/ice_switch.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
-index 40e4c286649c..bec770e34f39 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.c
-+++ b/drivers/net/ethernet/intel/ice/ice_common.c
-@@ -5286,26 +5286,41 @@ ice_aq_get_gpio(struct ice_hw *hw, u16 gpio_ctrl_handle, u8 pin_idx,
+diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
+index 697feb89188c..eb6e19deb70d 100644
+--- a/drivers/net/ethernet/intel/ice/ice_switch.c
++++ b/drivers/net/ethernet/intel/ice/ice_switch.c
+@@ -2274,9 +2274,7 @@ int ice_get_initial_sw_cfg(struct ice_hw *hw)
+ 	int status;
+ 	u16 i;
+ 
+-	rbuf = devm_kzalloc(ice_hw_to_dev(hw), ICE_SW_CFG_MAX_BUF_LEN,
+-			    GFP_KERNEL);
+-
++	rbuf = kzalloc(ICE_SW_CFG_MAX_BUF_LEN, GFP_KERNEL);
+ 	if (!rbuf)
+ 		return -ENOMEM;
+ 
+@@ -2324,7 +2322,7 @@ int ice_get_initial_sw_cfg(struct ice_hw *hw)
+ 		}
+ 	} while (req_desc && !status);
+ 
+-	devm_kfree(ice_hw_to_dev(hw), rbuf);
++	kfree(rbuf);
+ 	return status;
  }
  
- /**
-- * ice_fw_supports_link_override
-+ * ice_is_fw_api_min_ver
-  * @hw: pointer to the hardware structure
-+ * @maj: major version
-+ * @min: minor version
-+ * @patch: patch version
-  *
-- * Checks if the firmware supports link override
-+ * Checks if the firmware API is minimum version
-  */
--bool ice_fw_supports_link_override(struct ice_hw *hw)
-+static bool ice_is_fw_api_min_ver(struct ice_hw *hw, u8 maj, u8 min, u8 patch)
- {
--	if (hw->api_maj_ver == ICE_FW_API_LINK_OVERRIDE_MAJ) {
--		if (hw->api_min_ver > ICE_FW_API_LINK_OVERRIDE_MIN)
-+	if (hw->api_maj_ver == maj) {
-+		if (hw->api_min_ver > min)
- 			return true;
--		if (hw->api_min_ver == ICE_FW_API_LINK_OVERRIDE_MIN &&
--		    hw->api_patch >= ICE_FW_API_LINK_OVERRIDE_PATCH)
-+		if (hw->api_min_ver == min && hw->api_patch >= patch)
- 			return true;
--	} else if (hw->api_maj_ver > ICE_FW_API_LINK_OVERRIDE_MAJ) {
-+	} else if (hw->api_maj_ver > maj) {
- 		return true;
- 	}
- 
- 	return false;
- }
- 
-+/**
-+ * ice_fw_supports_link_override
-+ * @hw: pointer to the hardware structure
-+ *
-+ * Checks if the firmware supports link override
-+ */
-+bool ice_fw_supports_link_override(struct ice_hw *hw)
-+{
-+	return ice_is_fw_api_min_ver(hw, ICE_FW_API_LINK_OVERRIDE_MAJ,
-+				     ICE_FW_API_LINK_OVERRIDE_MIN,
-+				     ICE_FW_API_LINK_OVERRIDE_PATCH);
-+}
-+
- /**
-  * ice_get_link_default_override
-  * @ldo: pointer to the link default override struct
-@@ -5436,16 +5451,9 @@ bool ice_fw_supports_lldp_fltr_ctrl(struct ice_hw *hw)
- 	if (hw->mac_type != ICE_MAC_E810)
- 		return false;
- 
--	if (hw->api_maj_ver == ICE_FW_API_LLDP_FLTR_MAJ) {
--		if (hw->api_min_ver > ICE_FW_API_LLDP_FLTR_MIN)
--			return true;
--		if (hw->api_min_ver == ICE_FW_API_LLDP_FLTR_MIN &&
--		    hw->api_patch >= ICE_FW_API_LLDP_FLTR_PATCH)
--			return true;
--	} else if (hw->api_maj_ver > ICE_FW_API_LLDP_FLTR_MAJ) {
--		return true;
--	}
--	return false;
-+	return ice_is_fw_api_min_ver(hw, ICE_FW_API_LLDP_FLTR_MAJ,
-+				     ICE_FW_API_LLDP_FLTR_MIN,
-+				     ICE_FW_API_LLDP_FLTR_PATCH);
- }
- 
- /**
-@@ -5482,14 +5490,7 @@ ice_lldp_fltr_add_remove(struct ice_hw *hw, u16 vsi_num, bool add)
-  */
- bool ice_fw_supports_report_dflt_cfg(struct ice_hw *hw)
- {
--	if (hw->api_maj_ver == ICE_FW_API_REPORT_DFLT_CFG_MAJ) {
--		if (hw->api_min_ver > ICE_FW_API_REPORT_DFLT_CFG_MIN)
--			return true;
--		if (hw->api_min_ver == ICE_FW_API_REPORT_DFLT_CFG_MIN &&
--		    hw->api_patch >= ICE_FW_API_REPORT_DFLT_CFG_PATCH)
--			return true;
--	} else if (hw->api_maj_ver > ICE_FW_API_REPORT_DFLT_CFG_MAJ) {
--		return true;
--	}
--	return false;
-+	return ice_is_fw_api_min_ver(hw, ICE_FW_API_REPORT_DFLT_CFG_MAJ,
-+				     ICE_FW_API_REPORT_DFLT_CFG_MIN,
-+				     ICE_FW_API_REPORT_DFLT_CFG_PATCH);
- }
 -- 
 2.35.1
 
