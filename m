@@ -2,110 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 856435AEFDB
-	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 18:06:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7323A5AF011
+	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 18:14:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233778AbiIFQGH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Sep 2022 12:06:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50760 "EHLO
+        id S238798AbiIFQOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Sep 2022 12:14:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233384AbiIFQFr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 12:05:47 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EC54BA8
-        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 08:29:10 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id 65so1489022pfx.0
-        for <netdev@vger.kernel.org>; Tue, 06 Sep 2022 08:29:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=22GHhBGxs8jlO5k0UplRrIY5gUtV1yOb+CWAaqqW1FU=;
-        b=XssJOCkbFij8L2G8wvzLLG/aFQDQtp2HkuJrpb4D8t2tBxE46DJ61wufVOsG0pws6U
-         nJpMxxkeJHGkb+ebfs/gazrRpq28/8kvjpfMNGCZItQIaZUwlxXhAY2iRA/asB/EMjzh
-         0UqvckfVuOK3tB5QlTpE2+VqbEbNIPAvqGCRHnp2DUFSHpBAw0cK7SjPxLJjnrAePgKE
-         YxYvlM2iX8FPTXRx6uEX374WhfAEfB3eeoICuaQckC0y0TnCJghUxUKD+96+rHg0QzXA
-         AdceQKJyhvMkBFZ6X1CGRHmMFRHaVKVWOeawlozwYtjHGQDbtedjE4E6rw6t7tLfD6Va
-         80mw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=22GHhBGxs8jlO5k0UplRrIY5gUtV1yOb+CWAaqqW1FU=;
-        b=yuH8GOHmxtddgMZRiU7Jg6vU9xBYt+RyV83dbGEgtnmj+p8QwjTIKH+l0+99gVWSnX
-         cYtR9A29gs3gq3mRevDORXRj8CY3zP6rxpu3RG0mx7Y8KSUFBeqKxbN+PTnPoyvXlhty
-         do4RBsGEC6IFfH3dEmCLzswiIVAPL3heam8cqG85FGpd94JJvZhLvDgOR6Rdv8sv3MA+
-         TDSeW+nFYjWU0/NUF03/Y0q7NvWpY00vSsgUAq+pvzzRgolLkEiTP3iyHM56QMR94Kp5
-         hK9R3hddXYKwrfUjl3x/Aa70ZmJF3vYG/zOrLz/Wy8wd3gNbth1VSFeMQ9ZKDcaFkbZL
-         FNEQ==
-X-Gm-Message-State: ACgBeo3rXuei8wPoLovT+HNPncN7m1x/Z37cTnIqJz2Iw80kyfo0uK3v
-        tbl5BGQkGkwopFI3JGPiExPoQ6T8gAnuOA==
-X-Google-Smtp-Source: AA6agR6oHSXOXpCGsF85DFc25y1TLbS2+S+ALAOI2T/Pz10UCKEvfYng9/qauHXB9RwtB3UaVNoZhg==
-X-Received: by 2002:a05:6a00:4393:b0:52f:3603:e62f with SMTP id bt19-20020a056a00439300b0052f3603e62fmr55466906pfb.23.1662478149894;
-        Tue, 06 Sep 2022 08:29:09 -0700 (PDT)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id 135-20020a62188d000000b0053dd1bc5ac6sm4214119pfy.66.2022.09.06.08.29.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Sep 2022 08:29:09 -0700 (PDT)
-Date:   Tue, 6 Sep 2022 08:29:07 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>
-Subject: Re: [PATCH iproute2] ip link: add sub-command to view and change
- DSA master
-Message-ID: <20220906082907.5c1f8398@hermes.local>
-In-Reply-To: <20220904190025.813574-1-vladimir.oltean@nxp.com>
-References: <20220904190025.813574-1-vladimir.oltean@nxp.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S233825AbiIFQOM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 12:14:12 -0400
+Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DBF869E8BA;
+        Tue,  6 Sep 2022 08:41:45 -0700 (PDT)
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 286FUmmV027329;
+        Tue, 6 Sep 2022 10:30:48 -0500
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 286FUlxp027324;
+        Tue, 6 Sep 2022 10:30:47 -0500
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Tue, 6 Sep 2022 10:30:47 -0500
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Florian Weimer <fweimer@redhat.com>
+Cc:     Menglong Dong <menglong8.dong@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>, kuba@kernel.org,
+        miguel.ojeda.sandonis@gmail.com, ojeda@kernel.org,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        asml.silence@gmail.com, imagedong@tencent.com,
+        luiz.von.dentz@intel.com, vasily.averin@linux.dev,
+        jk@codeconstruct.com.au, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        linux-toolchains <linux-toolchains@vger.kernel.org>
+Subject: Re: [PATCH net-next v4] net: skb: prevent the split of kfree_skb_reason() by gcc
+Message-ID: <20220906153046.GD25951@gate.crashing.org>
+References: <20220816032846.2579217-1-imagedong@tencent.com> <CAKwvOd=accNK7t_SOmybo3e4UcBKoZ6TBPjCHT3eSSpSUouzEA@mail.gmail.com> <CADxym3Yxq0k_W43kVjrofjNoUUag3qwmpRGLLAQL1Emot3irPQ@mail.gmail.com> <20220818165838.GM25951@gate.crashing.org> <CADxym3YEfSASDg9ppRKtZ16NLh_NhH253frd5LXZLGTObsVQ9g@mail.gmail.com> <20220819152157.GO25951@gate.crashing.org> <CADxym3Y-=6pRP=CunxRomfwXf58k0LyLm510WGtzsBnzjqdD4g@mail.gmail.com> <871qt86711.fsf@oldenburg.str.redhat.com> <CADxym3Z7WpPbX7VSZqVd+nVnbaO6HvxV7ak58TXBCqBqodU+Jg@mail.gmail.com> <87edwo65lw.fsf@oldenburg.str.redhat.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87edwo65lw.fsf@oldenburg.str.redhat.com>
+User-Agent: Mutt/1.4.2.3i
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun,  4 Sep 2022 22:00:25 +0300
-Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+On Tue, Sep 06, 2022 at 02:37:47PM +0200, Florian Weimer wrote:
+> > On Mon, Aug 22, 2022 at 4:01 PM Florian Weimer <fweimer@redhat.com> wrote:
+> > I did some research on the 'sibcalls' you mentioned above. Feel like
+> > It's a little similar to 'inline', and makes the callee use the same stack
+> > frame with the caller, which obviously will influence the result of
+> > '__builtin_return_address'.
 
-> Support the "dsa" kind of rtnl_link_ops exported by the kernel, and
-> export reads/writes to IFLA_DSA_MASTER.
-> 
-> Examples:
-> 
-> $ ip link set swp0 type dsa master eth1
-> 
-> $ ip -d link show dev swp0
->     (...)
->     dsa master eth0
-> 
-> $ ip -d -j link show swp0
-> [
-> 	{
-> 		"link": "eth1",
-> 		"linkinfo": {
-> 			"info_kind": "dsa",
-> 			"info_data": {
-> 				"master": "eth1"
-> 			}
-> 		},
-> 	}
-> ]
-> 
-> Note that by construction and as shown in the example, the IFLA_LINK
-> reported by a DSA user port is identical to what is reported through
-> IFLA_DSA_MASTER. However IFLA_LINK is not writable, and overloading its
-> meaning to make it writable would clash with other users of IFLA_LINK
-> (vlan etc) for which writing this property does not make sense.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
+Sibling calls are essentially calls that can be replaced by jumps (aka
+"tail call"), without needing a separate entry point to the callee.
 
-Using the term master is an unfortunate choice.
-Although it is common practice in Linux it is not part of any
-current standard and goes against the Linux Foundation non-inclusive
-naming policy.
+Different targets can have a slightly different implementation and
+definition of what exactly is a sibling call, but that's the gist.
+
+> > Hmm......but I'm not able to find any attribute to disable this optimization.
+> > Do you have any ideas?
+> 
+> Unless something changed quite recently, GCC does not allow disabling
+> the optimization with a simple attribute (which would have to apply to
+> function pointers as well, not functions).
+
+It isn't specified what a sibling call exactly *is*, certainly not on C
+level (only in the generated machine code), and the details differs per
+target.
+
+> asm ("") barriers that move
+> out a call out of the tail position are supposed to prevent the
+> optimization.
+
+Not just "supposed": they work 100%.  The asm has to stay after the
+function call by the fundamental rules of C (the function call having a
+sequence point, and the asm a side effect).
+
+
+void g(void);
+void f(void)
+{
+	g();		// This can not be optimised to a jump...
+	asm("");	// ... because it has to stay before this.
+}
+
+
+Segher
