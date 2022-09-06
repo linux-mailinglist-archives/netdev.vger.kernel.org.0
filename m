@@ -2,121 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A9CB5AE0CA
-	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 09:17:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07E405AE1A0
+	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 09:54:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238832AbiIFHRo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Sep 2022 03:17:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60584 "EHLO
+        id S233079AbiIFHyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Sep 2022 03:54:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238836AbiIFHRm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 03:17:42 -0400
-Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40BBE73935;
-        Tue,  6 Sep 2022 00:17:41 -0700 (PDT)
-Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        with ESMTP id S238599AbiIFHxf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 03:53:35 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBA3074DD9;
+        Tue,  6 Sep 2022 00:53:33 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 8794E21BD;
-        Tue,  6 Sep 2022 09:17:39 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1662448659;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 718C31F96A;
+        Tue,  6 Sep 2022 07:53:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1662450812; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Qxi49WzANBodoTQOX0E/K8f/DX4qR1X+vWMmaXpTEi0=;
-        b=meVG/NVLfkJRQq1uQnr1QrnzD86804WP6rLDZ4fMa74eMzJRJ06DuH2PpAeYygx6Q0yVmI
-        CKxYu2kWDrIH7e5gBxduRNf0iG3RAQ/QV8226tNmvaCHkSj9YzB4ZCRlLWBfZfKjlQTR+F
-        /hEGP/tq0pYx88MrddxkP9B1G6W82MBFEuSFNxflm2i4E0qRiG6PAmm6ZAx3vPM82q3LFN
-        MZ0rHiuraa/yULLl/UrQtGZvoVj1DSpb+2BGFwu3Ftmu823xOZu51ZKHMNUGXbSlbOORKW
-        6fXPcV+4bmlYLw/pf4d+0295AYasFcyNwKeymFV1krtZDiB2m74YBPiDpCgLKg==
+        bh=e3QUGRmGqEl6xPagnkOR/JexF9yw1PltCqI7wAdRJxg=;
+        b=szOuRIs0cCBK1H6PKsUsPpAeNxWI1rQoZXD8JHcTFx4Pd4FbY7Zaow4t6VKG/eCu28Uykw
+        08koAlFpwrqRPIvX38x8DqEATR+CgzjdatCWvZqWD9zJUc9QEGvodSEKfvbHt+mPuOUIAC
+        d4uII081ZhK5cB5AQX5syr5K/Cq58DM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1662450812;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=e3QUGRmGqEl6xPagnkOR/JexF9yw1PltCqI7wAdRJxg=;
+        b=LbJNw5OZF+aS6zamEygbmkEhapLIQEGf++3G6rX+mlhq4ujGasckDo8OXslkEh1swKvhC7
+        MzjHTvKXXrH4vpDA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 2DEE313A7A;
+        Tue,  6 Sep 2022 07:53:32 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id Qs4TCnz8FmOnQAAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Tue, 06 Sep 2022 07:53:32 +0000
+Message-ID: <dab10759-c059-2254-116b-8360bc240e57@suse.cz>
+Date:   Tue, 6 Sep 2022 09:53:31 +0200
 MIME-Version: 1.0
-Date:   Tue, 06 Sep 2022 09:17:39 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Richie Pearn <richard.pearn@nxp.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 net 1/3] net: dsa: felix: tc-taprio intervals smaller
- than MTU should send at least one packet
-In-Reply-To: <20220906001134.ikooyzebb4pmgzib@skbuf>
-References: <20220905170125.1269498-1-vladimir.oltean@nxp.com>
- <20220905170125.1269498-2-vladimir.oltean@nxp.com>
- <d50be0e224c70453e1a4a7d690cfdf1b@walle.cc>
- <20220906001134.ikooyzebb4pmgzib@skbuf>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <0c7c5fecc853ce161236f66c517b7474@walle.cc>
-X-Sender: michael@walle.cc
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: linux-next: build failure after merge of the slab tree
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Marco Elver <elver@google.com>
+References: <20220906165131.59f395a9@canb.auug.org.au>
+Content-Language: en-US
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20220906165131.59f395a9@canb.auug.org.au>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2022-09-06 02:11, schrieb Vladimir Oltean:
-> On Tue, Sep 06, 2022 at 12:53:20AM +0200, Michael Walle wrote:
->> I haven't looked at the overall code, but the solution described
->> above sounds good.
->> 
->> FWIW, I don't think such a schedule, where exactly one frame
->> can be sent, is very likely in the wild though. Imagine a piece
->> of software is generating one frame per cycle. It might happen
->> that during one (hardware) cycle there is no frame ready (because
->> it is software and it jitters), but then in the next cycle, there
->> are now two frames ready. In that case you'll always lag one frame
->> behind and you'll never recover from it.
->> 
->> Either I'd make sure I can send at two frames in one cycle, or
->> my software would only send a frame every other cycle.
+On 9/6/22 08:51, Stephen Rothwell wrote:
+> Hi all,
+
+Hi,
+
+> After merging the slab tree, today's linux-next build (powerpc
+> ppc64_defconfig) failed like this:
 > 
-> A 10 us interval is a 10 us interval, it shouldn't matter if you slice
-> it up as one 1250B frame, or two 500B frames, or four 200B frames, etc.
-> Except with the Microchip hardware implementation, it does. In v1, we
-> were slicing the 10 us interval in half for useful traffic and half for
-> the guard band. So we could fit more small packets in 5 us. In v2, at
-> your proposal, we are slicing it in 33 ns for the useful traffic, and
-> 10 us - 33 ns for the guard band. This indeed allows for a single
-> packet, be it big or small. It's how the hardware works; without any
-> other input data point, a slicing point needs to be put somewhere.
-> Somehow it's just as arbitrary in v2 as where it was in v1, just
-> optimized for a different metric which you're now saying is less 
-> practical.
+> kernel/bpf/memalloc.c: In function 'bpf_mem_free':
+> kernel/bpf/memalloc.c:613:33: error: implicit declaration of function '__ksize'; did you mean 'ksize'? [-Werror=implicit-function-declaration]
+>    613 |         idx = bpf_mem_cache_idx(__ksize(ptr - LLIST_NODE_SZ));
+>        |                                 ^~~~~~~
+>        |                                 ksize
 
-I actually checked the code before writing and saw that one could
-change the guard band by setting the MTU of the interface. I though,
-"ah ok, then there is no issue". After sleeping, I noticed that you'd
-restrict the size of all the frames on the interface. Doh ;)
+Could you use ksize() here? I'm guessing you picked __ksize() because 
+kasan_unpoison_element() in mm/mempool.c did, but that's to avoid 
+kasan_unpoison_range() in ksize() as this caller does it differently.
+AFAICS your function doesn't handle kasan differently, so ksize() should 
+be fine.
 
--michael
-
-> By the way, I was a fool in last year's discussion on guard bands for
-> saying that there isn't any way for the user to control per-tc MTU.
-> IEEE 802.1Qbv, later standardized as IEEE 802.1Q clause 8.6.8.4
-> Enhancements for scheduled traffic, does contain a queueMaxSDUTable
-> structure with queueMaxSDU elements. I guess I have no choice except to
-> add this to the tc-taprio UAPI in a net-next patch, because as I've
-> explained above, even though I've solved the port hanging issue, this
-> hardware needs more fine tuning to obtain a differentiation between 
-> many
-> small packets vs few large packets per interval.
+> Caused by commit
+> 
+>    8dfa9d554061 ("mm/slab_common: move declaration of __ksize() to mm/slab.h")
+> 
+> interacting with commit
+> 
+>    7c8199e24fa0 ("bpf: Introduce any context BPF specific memory allocator.")
+> 
+> from the bpf-next tree.
+> 
+> I have reverted the slab tree commit for today.
+> 
 
