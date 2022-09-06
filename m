@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E9E635ADEDF
-	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 07:31:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF7D55ADEF2
+	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 07:31:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232807AbiIFFVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Sep 2022 01:21:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52262 "EHLO
+        id S232809AbiIFFVx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Sep 2022 01:21:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232736AbiIFFVs (ORCPT
+        with ESMTP id S232740AbiIFFVs (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 01:21:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 015316D544
-        for <netdev@vger.kernel.org>; Mon,  5 Sep 2022 22:21:44 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21BE26CF6B
+        for <netdev@vger.kernel.org>; Mon,  5 Sep 2022 22:21:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 26AA8612D3
-        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 05:21:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B557C433C1;
-        Tue,  6 Sep 2022 05:21:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF22DB815FB
+        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 05:21:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60B8CC433C1;
+        Tue,  6 Sep 2022 05:21:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662441703;
-        bh=VlsfeIEfhvJDqzBimIumPwZCde87bS/OgZR9eX26ryw=;
+        s=k20201202; t=1662441704;
+        bh=3Vnt58qIBBWDXY0tzVT0lM07TV2ERqNJDJPSYizCP3M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SdIAiLkIrn5+2M3iQAEn2xd9y3WMYTKMheMN1gW2BKBwr+YiCJRJvrksTGL5f3872
-         JOfHHCNnbYI7RLNSQunrlsB/ZIkuxfJldj5nJPoEvw48Cg6Vda7hhiffffwNxGn0vP
-         Zq6QRv5kQfbHo7LrcTJ3k8uQevZXpGlaYOZGwCzj8Ao5xvhZK9TOY+AtNA6dSxlXae
-         ZKYDwqa+eG4a1+z8n0iNRN4aHB5XRCj9jRs8zazrMJqYIoWOIH7Kke7gS7Hhdk5iXV
-         t/w54+TGXCxFaAEg7B3XJDtnCmM3yE0V14SevhpnTykpEwO93Tim9xsi6CnI944xwd
-         Ymj0PacV3xuYw==
+        b=NtD4g34eGQfYoxZKujTUQy4ANGKhVLOpD2+tXsaLUiYwsm5A1oClM1VW8UQ24ORRx
+         y9+sN5sYaxdXxoGGwV+8+h4e8NX54V4iZCRl6FhwFL0ujSGHEQRrkjqum2ekmgrVdm
+         jpwG+Uz+ygEIlNvmAlMtzs2QXEhAL1cBFcAIl2P7uYRoESwb8ldzu3ZeGBTndu8wKW
+         7Kx5jT+B3GjiQnuzzUwJXNpXzrSUsc3zwyYqOQA6adwYwytSefrQhOjh6SUzzu+mh0
+         8zi2+MXuid5D+vrDPCyix/CcdLtd4VzwP7jMib0NhAAgaWIqIaXtqy/1GdkqfszwbD
+         Ihl+cgINMQjwA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -40,9 +40,9 @@ Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
         Lior Nahmanson <liorna@nvidia.com>,
         Raed Salem <raeds@nvidia.com>
-Subject: [PATCH net-next V2 05/17] net/mlx5: Generalize Flow Context for new crypto fields
-Date:   Mon,  5 Sep 2022 22:21:17 -0700
-Message-Id: <20220906052129.104507-6-saeed@kernel.org>
+Subject: [PATCH net-next V2 06/17] net/mlx5: Introduce MACsec Connect-X offload hardware bits and structures
+Date:   Mon,  5 Sep 2022 22:21:18 -0700
+Message-Id: <20220906052129.104507-7-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220906052129.104507-1-saeed@kernel.org>
 References: <20220906052129.104507-1-saeed@kernel.org>
@@ -60,139 +60,211 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Lior Nahmanson <liorna@nvidia.com>
 
-In order to support MACsec offload (and maybe some other crypto features
-in the future), generalize flow action parameters / defines to be used by
-crypto offlaods other than IPsec.
-The following changes made:
-ipsec_obj_id field at flow action context was changed to crypto_obj_id,
-intreduced a new crypto_type field where IPsec is the default zero type
-for backward compatibility.
-Action ipsec_decrypt was changed to crypto_decrypt.
-Action ipsec_encrypt was changed to crypto_encrypt.
-
-IPsec offload code was updated accordingly for backward compatibility.
+Add MACsec offload related IFC structs, layouts and enumerations.
 
 Signed-off-by: Lior Nahmanson <liorna@nvidia.com>
 Reviewed-by: Raed Salem <raeds@nvidia.com>
-Signed-off-by: Raed Salem <raeds@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c  |  7 ++++---
- drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c     |  5 ++++-
- include/linux/mlx5/fs.h                              |  7 ++++---
- include/linux/mlx5/mlx5_ifc.h                        | 12 ++++++++----
- 4 files changed, 20 insertions(+), 11 deletions(-)
+ include/linux/mlx5/device.h   |  4 ++
+ include/linux/mlx5/mlx5_ifc.h | 99 ++++++++++++++++++++++++++++++++++-
+ 2 files changed, 101 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
-index e776b9f2da06..976f5669b6e5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
-@@ -388,7 +388,8 @@ static void setup_fte_common(struct mlx5_accel_esp_xfrm_attrs *attrs,
- 		       0xff, 16);
- 	}
+diff --git a/include/linux/mlx5/device.h b/include/linux/mlx5/device.h
+index b5f58fd37a0f..2927810f172b 100644
+--- a/include/linux/mlx5/device.h
++++ b/include/linux/mlx5/device.h
+@@ -1198,6 +1198,7 @@ enum mlx5_cap_type {
+ 	MLX5_CAP_DEV_EVENT = 0x14,
+ 	MLX5_CAP_IPSEC,
+ 	MLX5_CAP_DEV_SHAMPO = 0x1d,
++	MLX5_CAP_MACSEC = 0x1f,
+ 	MLX5_CAP_GENERAL_2 = 0x20,
+ 	MLX5_CAP_PORT_SELECTION = 0x25,
+ 	/* NUM OF CAP Types */
+@@ -1446,6 +1447,9 @@ enum mlx5_qcam_feature_groups {
+ #define MLX5_CAP_DEV_SHAMPO(mdev, cap)\
+ 	MLX5_GET(shampo_cap, mdev->caps.hca_cur[MLX5_CAP_DEV_SHAMPO], cap)
  
--	flow_act->ipsec_obj_id = ipsec_obj_id;
-+	flow_act->crypto.type = MLX5_FLOW_CONTEXT_ENCRYPT_DECRYPT_TYPE_IPSEC;
-+	flow_act->crypto.obj_id = ipsec_obj_id;
- 	flow_act->flags |= FLOW_ACT_NO_APPEND;
- }
- 
-@@ -444,7 +445,7 @@ static int rx_add_rule(struct mlx5e_priv *priv,
- 	}
- 
- 	flow_act.action = MLX5_FLOW_CONTEXT_ACTION_FWD_DEST |
--			  MLX5_FLOW_CONTEXT_ACTION_IPSEC_DECRYPT |
-+			  MLX5_FLOW_CONTEXT_ACTION_CRYPTO_DECRYPT |
- 			  MLX5_FLOW_CONTEXT_ACTION_MOD_HDR;
- 	dest.type = MLX5_FLOW_DESTINATION_TYPE_FLOW_TABLE;
- 	flow_act.modify_hdr = modify_hdr;
-@@ -500,7 +501,7 @@ static int tx_add_rule(struct mlx5e_priv *priv,
- 		 MLX5_ETH_WQE_FT_META_IPSEC);
- 
- 	flow_act.action = MLX5_FLOW_CONTEXT_ACTION_ALLOW |
--			  MLX5_FLOW_CONTEXT_ACTION_IPSEC_ENCRYPT;
-+			  MLX5_FLOW_CONTEXT_ACTION_CRYPTO_ENCRYPT;
- 	rule = mlx5_add_flow_rules(priv->ipsec->tx_fs->ft, spec, &flow_act, NULL, 0);
- 	if (IS_ERR(rule)) {
- 		err = PTR_ERR(rule);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c
-index e735e19461ba..ff5d23f0e4b1 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c
-@@ -577,7 +577,10 @@ static int mlx5_cmd_set_fte(struct mlx5_core_dev *dev,
- 		MLX5_SET(flow_context, in_flow_context, modify_header_id,
- 			 fte->action.modify_hdr->id);
- 
--	MLX5_SET(flow_context, in_flow_context, ipsec_obj_id, fte->action.ipsec_obj_id);
-+	MLX5_SET(flow_context, in_flow_context, encrypt_decrypt_type,
-+		 fte->action.crypto.type);
-+	MLX5_SET(flow_context, in_flow_context, encrypt_decrypt_obj_id,
-+		 fte->action.crypto.obj_id);
- 
- 	vlan = MLX5_ADDR_OF(flow_context, in_flow_context, push_vlan);
- 
-diff --git a/include/linux/mlx5/fs.h b/include/linux/mlx5/fs.h
-index 920cbc9524ad..e62d50acb6bd 100644
---- a/include/linux/mlx5/fs.h
-+++ b/include/linux/mlx5/fs.h
-@@ -243,9 +243,10 @@ struct mlx5_flow_act {
- 	u32 action;
- 	struct mlx5_modify_hdr  *modify_hdr;
- 	struct mlx5_pkt_reformat *pkt_reformat;
--	union {
--		u32 ipsec_obj_id;
--	};
-+	struct mlx5_flow_act_crypto_params {
-+		u8 type;
-+		u32 obj_id;
-+	} crypto;
- 	u32 flags;
- 	struct mlx5_fs_vlan vlan[MLX5_FS_VLAN_DEPTH];
- 	struct ib_counters *counters;
++#define MLX5_CAP_MACSEC(mdev, cap)\
++	MLX5_GET(macsec_cap, (mdev)->caps.hca[MLX5_CAP_MACSEC]->cur, cap)
++
+ enum {
+ 	MLX5_CMD_STAT_OK			= 0x0,
+ 	MLX5_CMD_STAT_INT_ERR			= 0x1,
 diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index 4acd5610e96b..5758218cb3fa 100644
+index 5758218cb3fa..8decbf9a7bdd 100644
 --- a/include/linux/mlx5/mlx5_ifc.h
 +++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -3310,8 +3310,8 @@ enum {
- 	MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH = 0x100,
- 	MLX5_FLOW_CONTEXT_ACTION_VLAN_POP_2  = 0x400,
- 	MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH_2 = 0x800,
--	MLX5_FLOW_CONTEXT_ACTION_IPSEC_DECRYPT = 0x1000,
--	MLX5_FLOW_CONTEXT_ACTION_IPSEC_ENCRYPT = 0x2000,
-+	MLX5_FLOW_CONTEXT_ACTION_CRYPTO_DECRYPT = 0x1000,
-+	MLX5_FLOW_CONTEXT_ACTION_CRYPTO_ENCRYPT = 0x2000,
- 	MLX5_FLOW_CONTEXT_ACTION_EXECUTE_ASO = 0x4000,
+@@ -82,6 +82,7 @@ enum {
+ 	MLX5_GENERAL_OBJ_TYPES_CAP_SW_ICM = (1ULL << MLX5_OBJ_TYPE_SW_ICM),
+ 	MLX5_GENERAL_OBJ_TYPES_CAP_GENEVE_TLV_OPT = (1ULL << 11),
+ 	MLX5_GENERAL_OBJ_TYPES_CAP_VIRTIO_NET_Q = (1ULL << 13),
++	MLX5_GENERAL_OBJ_TYPES_CAP_MACSEC_OFFLOAD = (1ULL << 39),
  };
  
-@@ -3321,6 +3321,10 @@ enum {
- 	MLX5_FLOW_CONTEXT_FLOW_SOURCE_LOCAL_VPORT       = 0x2,
+ enum {
+@@ -449,7 +450,12 @@ struct mlx5_ifc_flow_table_prop_layout_bits {
+ 	u8         reserved_at_60[0x2];
+ 	u8         reformat_insert[0x1];
+ 	u8         reformat_remove[0x1];
+-	u8         reserver_at_64[0x14];
++	u8         macsec_encrypt[0x1];
++	u8         macsec_decrypt[0x1];
++	u8         reserved_at_66[0x2];
++	u8         reformat_add_macsec[0x1];
++	u8         reformat_remove_macsec[0x1];
++	u8         reserved_at_6a[0xe];
+ 	u8         log_max_ft_num[0x8];
+ 
+ 	u8         reserved_at_80[0x10];
+@@ -611,7 +617,11 @@ struct mlx5_ifc_fte_match_set_misc2_bits {
+ 
+ 	u8         metadata_reg_a[0x20];
+ 
+-	u8         reserved_at_1a0[0x60];
++	u8         reserved_at_1a0[0x8];
++
++	u8         macsec_syndrome[0x8];
++
++	u8         reserved_at_1b0[0x50];
  };
  
-+enum {
-+	MLX5_FLOW_CONTEXT_ENCRYPT_DECRYPT_TYPE_IPSEC   = 0x0,
+ struct mlx5_ifc_fte_match_set_misc3_bits {
+@@ -1276,6 +1286,24 @@ struct mlx5_ifc_ipsec_cap_bits {
+ 	u8         reserved_at_30[0x7d0];
+ };
+ 
++struct mlx5_ifc_macsec_cap_bits {
++	u8    macsec_epn[0x1];
++	u8    reserved_at_1[0x2];
++	u8    macsec_crypto_esp_aes_gcm_256_encrypt[0x1];
++	u8    macsec_crypto_esp_aes_gcm_128_encrypt[0x1];
++	u8    macsec_crypto_esp_aes_gcm_256_decrypt[0x1];
++	u8    macsec_crypto_esp_aes_gcm_128_decrypt[0x1];
++	u8    reserved_at_7[0x4];
++	u8    log_max_macsec_offload[0x5];
++	u8    reserved_at_10[0x10];
++
++	u8    min_log_macsec_full_replay_window[0x8];
++	u8    max_log_macsec_full_replay_window[0x8];
++	u8    reserved_at_30[0x10];
++
++	u8    reserved_at_40[0x7c0];
 +};
 +
+ enum {
+ 	MLX5_WQ_TYPE_LINKED_LIST  = 0x0,
+ 	MLX5_WQ_TYPE_CYCLIC       = 0x1,
+@@ -3295,6 +3323,7 @@ union mlx5_ifc_hca_cap_union_bits {
+ 	struct mlx5_ifc_device_mem_cap_bits device_mem_cap;
+ 	struct mlx5_ifc_virtio_emulation_cap_bits virtio_emulation_cap;
+ 	struct mlx5_ifc_shampo_cap_bits shampo_cap;
++	struct mlx5_ifc_macsec_cap_bits macsec_cap;
+ 	u8         reserved_at_0[0x8000];
+ };
+ 
+@@ -3323,6 +3352,7 @@ enum {
+ 
+ enum {
+ 	MLX5_FLOW_CONTEXT_ENCRYPT_DECRYPT_TYPE_IPSEC   = 0x0,
++	MLX5_FLOW_CONTEXT_ENCRYPT_DECRYPT_TYPE_MACSEC  = 0x1,
+ };
+ 
  struct mlx5_ifc_vlan_bits {
- 	u8         ethtype[0x10];
- 	u8         prio[0x3];
-@@ -3374,7 +3378,7 @@ struct mlx5_ifc_flow_context_bits {
- 	u8         extended_destination[0x1];
- 	u8         reserved_at_81[0x1];
- 	u8         flow_source[0x2];
--	u8         reserved_at_84[0x4];
-+	u8         encrypt_decrypt_type[0x4];
- 	u8         destination_list_size[0x18];
+@@ -6320,6 +6350,8 @@ enum mlx5_reformat_ctx_type {
+ 	MLX5_REFORMAT_TYPE_L2_TO_L3_TUNNEL = 0x4,
+ 	MLX5_REFORMAT_TYPE_INSERT_HDR = 0xf,
+ 	MLX5_REFORMAT_TYPE_REMOVE_HDR = 0x10,
++	MLX5_REFORMAT_TYPE_ADD_MACSEC = 0x11,
++	MLX5_REFORMAT_TYPE_DEL_MACSEC = 0x12,
+ };
  
- 	u8         reserved_at_a0[0x8];
-@@ -3386,7 +3390,7 @@ struct mlx5_ifc_flow_context_bits {
+ struct mlx5_ifc_alloc_packet_reformat_context_in_bits {
+@@ -11475,6 +11507,7 @@ enum {
+ 	MLX5_GENERAL_OBJECT_TYPES_IPSEC = 0x13,
+ 	MLX5_GENERAL_OBJECT_TYPES_SAMPLER = 0x20,
+ 	MLX5_GENERAL_OBJECT_TYPES_FLOW_METER_ASO = 0x24,
++	MLX5_GENERAL_OBJECT_TYPES_MACSEC = 0x27,
+ };
  
- 	struct mlx5_ifc_vlan_bits push_vlan_2;
+ enum {
+@@ -11525,6 +11558,67 @@ struct mlx5_ifc_modify_ipsec_obj_in_bits {
+ 	struct mlx5_ifc_ipsec_obj_bits ipsec_object;
+ };
  
--	u8         ipsec_obj_id[0x20];
-+	u8         encrypt_decrypt_obj_id[0x20];
- 	u8         reserved_at_140[0xc0];
++struct mlx5_ifc_macsec_aso_bits {
++	u8    valid[0x1];
++	u8    reserved_at_1[0x1];
++	u8    mode[0x2];
++	u8    window_size[0x2];
++	u8    soft_lifetime_arm[0x1];
++	u8    hard_lifetime_arm[0x1];
++	u8    remove_flow_enable[0x1];
++	u8    epn_event_arm[0x1];
++	u8    reserved_at_a[0x16];
++
++	u8    remove_flow_packet_count[0x20];
++
++	u8    remove_flow_soft_lifetime[0x20];
++
++	u8    reserved_at_60[0x80];
++
++	u8    mode_parameter[0x20];
++
++	u8    replay_protection_window[8][0x20];
++};
++
++struct mlx5_ifc_macsec_offload_obj_bits {
++	u8    modify_field_select[0x40];
++
++	u8    confidentiality_en[0x1];
++	u8    reserved_at_41[0x1];
++	u8    esn_en[0x1];
++	u8    esn_overlap[0x1];
++	u8    reserved_at_44[0x2];
++	u8    confidentiality_offset[0x2];
++	u8    reserved_at_48[0x4];
++	u8    aso_return_reg[0x4];
++	u8    reserved_at_50[0x10];
++
++	u8    esn_msb[0x20];
++
++	u8    reserved_at_80[0x8];
++	u8    dekn[0x18];
++
++	u8    reserved_at_a0[0x20];
++
++	u8    sci[0x40];
++
++	u8    reserved_at_100[0x8];
++	u8    macsec_aso_access_pd[0x18];
++
++	u8    reserved_at_120[0x60];
++
++	u8    salt[3][0x20];
++
++	u8    reserved_at_1e0[0x20];
++
++	struct mlx5_ifc_macsec_aso_bits macsec_aso;
++};
++
++struct mlx5_ifc_create_macsec_obj_in_bits {
++	struct mlx5_ifc_general_obj_in_cmd_hdr_bits general_obj_in_cmd_hdr;
++	struct mlx5_ifc_macsec_offload_obj_bits macsec_object;
++};
++
+ struct mlx5_ifc_encryption_key_obj_bits {
+ 	u8         modify_field_select[0x40];
  
- 	struct mlx5_ifc_fte_match_param_bits match_value;
+@@ -11642,6 +11736,7 @@ enum {
+ enum {
+ 	MLX5_GENERAL_OBJECT_TYPE_ENCRYPTION_KEY_TYPE_TLS = 0x1,
+ 	MLX5_GENERAL_OBJECT_TYPE_ENCRYPTION_KEY_TYPE_IPSEC = 0x2,
++	MLX5_GENERAL_OBJECT_TYPE_ENCRYPTION_KEY_TYPE_MACSEC = 0x4,
+ };
+ 
+ struct mlx5_ifc_tls_static_params_bits {
 -- 
 2.37.2
 
