@@ -2,136 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EADB45B0E4D
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 22:40:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F32AB5B0E7D
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 22:49:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229720AbiIGUks (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 16:40:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38816 "EHLO
+        id S230159AbiIGUtn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 16:49:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiIGUkp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 16:40:45 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EA96BCCE1
-        for <netdev@vger.kernel.org>; Wed,  7 Sep 2022 13:40:43 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id x1so11394398plv.5
-        for <netdev@vger.kernel.org>; Wed, 07 Sep 2022 13:40:43 -0700 (PDT)
+        with ESMTP id S230144AbiIGUtl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 16:49:41 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 014D814D20
+        for <netdev@vger.kernel.org>; Wed,  7 Sep 2022 13:49:38 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id i15-20020a17090a4b8f00b0020073b4ac27so157631pjh.3
+        for <netdev@vger.kernel.org>; Wed, 07 Sep 2022 13:49:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=ifTJWgUBZuhYPn1CCxpPML/WHgW9WCVjXotHpDzf0Vw=;
-        b=pwGxOv0hdSLtPAzib/aSrdLbUF4LzPqYnfoZQt3ylKk1/poeog58+AiO5/5AwaxY9F
-         yNok49R032A3jfwl+Hq5Ruoq5ZqoljABacBtYuEmCLORlfYYdMHogrV3IjyA0dgV7iOv
-         SVHJ1F8HMkrrUBcg3gLAWQU4eHJoV9bLSYp9yLZFeO6XmwjDEbuyAvnKkf3zuG4rWkxd
-         w/TYU4UCeafuIrXaBxuXrX1TeIagoMyOrvWkWlXTgOI5NV6gyz6oPlZ/P3VasFEIKxlM
-         nxlLzSZiDP3+JMNTeA+3LBHePAyNhE/GUtqg4pzYBOz/YhMUVARNpI+VHSDyGQ65mdD8
-         cmOA==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=VILwDL/sIUZC34sszkWtJPfoLU5yiUkOiwtDL7IE2b0=;
+        b=ClFo6oZego6igRhj/tOJY4x+HLqCA3i9nMX4KM0+Ag+rW9iC/gWlE9ZAyqzTQ4iqE3
+         B2sP2BYHvX4v3bo4jjmvnSWB9pRtI0U0DfznyhuIDVSYZBukRj9fEVBD2ySXsnKW5m2q
+         vIn6wNvPqNg4Ks1scp3jRgPLQMl9Hn13YAQmYf5vR1SZsjb/1hG59nidUzJkCBf5vBYA
+         ri3feTAswyIQRKCZ619KqiSAMkKHUiaMMjAxyxJb05vZJmh0xQ+4JB6Q3H8nkpq7ZwaN
+         Par5PHOTxOOac20WE6/B9l0FKuUeML6jF34zkqdwkJ/XSPH3MDgudonPiEfKBp6iw7m4
+         yhIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=ifTJWgUBZuhYPn1CCxpPML/WHgW9WCVjXotHpDzf0Vw=;
-        b=G3zI0vyrpLMbGKVzn9KJB3ZBUTmIdfs9Ipq7wVcDl7RFpUwEJQD43toRtGFUYVneJ5
-         eATYlrI93IZcpW+pZkTS3O/fG0PVLz5bVgo9+Sk/4cQqebXWw0sYEi31Rn1ZnnYTRuts
-         EHZ64LaK1KbFenmhhyemgC1N62FT3qx0wcvPXORY+WwYGQFtY/gRdhN3TO+3B4XnQbeR
-         hhpQKSkKv8QcSMDzuBlaMr0PZA/Fkjuq0y/JjFJtGb1EiIyDekEvKicFpYSkaQB7cfeR
-         l9Idvfo+fpfuJEEg7wj1zuHhcNLzPIKDToZpa+ncaBjYe6Y0mfvfJRkhsdElUZlNDYfx
-         tpUQ==
-X-Gm-Message-State: ACgBeo3YJ4gdd6JtTvWlHMWnG/xQMpoF2cCFD8TF2LaHsSBPjbn7xEgG
-        i22P/bj35BDvsTxBqy/n0g8=
-X-Google-Smtp-Source: AA6agR5NSNTx/6DprKO4z6LCre6r04VHaV1hxbW5OpUcQQ8lP6lpOq8qIRC6herTpzOIPF/CpgtR8w==
-X-Received: by 2002:a17:902:d509:b0:16f:1e1:2063 with SMTP id b9-20020a170902d50900b0016f01e12063mr5274180plg.131.1662583243022;
-        Wed, 07 Sep 2022 13:40:43 -0700 (PDT)
-Received: from ?IPV6:2620:15c:2c1:200:ccca:4aae:967f:c6c9? ([2620:15c:2c1:200:ccca:4aae:967f:c6c9])
-        by smtp.gmail.com with ESMTPSA id oa11-20020a17090b1bcb00b002007b60e288sm58211pjb.23.2022.09.07.13.40.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 07 Sep 2022 13:40:42 -0700 (PDT)
-Message-ID: <66c8b7c2-25a6-2834-b341-22b6498e3f7e@gmail.com>
-Date:   Wed, 7 Sep 2022 13:40:40 -0700
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=VILwDL/sIUZC34sszkWtJPfoLU5yiUkOiwtDL7IE2b0=;
+        b=QW3wRqDvSdMsIqlDn5OaMkriU5SqtsCvX3GZkFCXit+azjlWc7kvz3IRUxXpe1zMiy
+         cn2Sl/pKVRnDH7gZvmHsaAjSlg4dnLcifoArSXPVHu6Fp8FIwZRxFMFjKKYF05D6qjcE
+         mfymhZ14b+GgMjRexz8+w0gpWE+JpEzZt0prHDXRcEz5hEWlwmaCPCyG4Ys1JsxiR1+C
+         WUyminaMKoMcNsmswKke32TxL1Hlsih/GjcQUmQR9c3QLvva33SiVu/7gJl5Z/zUoaiL
+         6OJNrC4/EcYEJI6/H/omTdNTnX29aSut4lUSIJ2xR3/AVG1lnNYl/WudKo26Ur5cwu/i
+         T9OA==
+X-Gm-Message-State: ACgBeo1RLL5WnZ14yp4EPUoxSfsoD6xfJw9xIcd8MsttR/ksihrw6Ge9
+        k0/yTbFm/vQuL1Gtv6nqyAfHvw==
+X-Google-Smtp-Source: AA6agR7mirZmtO2FC7GgkTq0WIz+FVoIZ5otVGbaluywI72PpIdKKFO3WQhD7jyObY6RKdBYtMAFJg==
+X-Received: by 2002:a17:90b:3c8a:b0:200:b874:804 with SMTP id pv10-20020a17090b3c8a00b00200b8740804mr342150pjb.151.1662583777293;
+        Wed, 07 Sep 2022 13:49:37 -0700 (PDT)
+Received: from localhost.localdomain ([2401:4900:1c60:5362:9d7f:2354:1d0a:78e3])
+        by smtp.gmail.com with ESMTPSA id e6-20020a17090301c600b001712c008f99sm12795140plh.11.2022.09.07.13.49.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Sep 2022 13:49:37 -0700 (PDT)
+From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
+To:     devicetree@vger.kernel.org
+Cc:     linux-arm-msm@vger.kernel.org, agross@kernel.org,
+        bhupesh.sharma@linaro.org, bhupesh.linux@gmail.com,
+        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski@linaro.org, netdev@vger.kernel.org,
+        Bjorn Andersson <andersson@kernel.org>,
+        Rob Herring <robh@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+        David Miller <davem@davemloft.net>
+Subject: [PATCH 0/4] dt-bindings: net: Convert qcom,ethqos bindings to YAML (and related fixes)
+Date:   Thu,  8 Sep 2022 02:19:20 +0530
+Message-Id: <20220907204924.2040384-1-bhupesh.sharma@linaro.org>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net] net: avoid 32 x truesize under-estimation for tiny
- skbs
-Content-Language: en-US
-To:     Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Greg Thelen <gthelen@google.com>
-References: <20210113161819.1155526-1-eric.dumazet@gmail.com>
- <bd79ede94805326cd63f105c84f1eaa4e75c8176.camel@redhat.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-In-Reply-To: <bd79ede94805326cd63f105c84f1eaa4e75c8176.camel@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patchset converts the qcom,ethqos bindings to YAML. It also
+contains a few related fixes in the snps,dwmac bindings to support
+Qualcomm ethqos ethernet controller for qcs404 (based) and sa8155p-adp
+boards.
 
-On 9/7/22 13:19, Paolo Abeni wrote:
-> Hello,
->
-> reviving an old thread...
-> On Wed, 2021-01-13 at 08:18 -0800, Eric Dumazet wrote:
->> While using page fragments instead of a kmalloc backed skb->head might give
->> a small performance improvement in some cases, there is a huge risk of
->> under estimating memory usage.
-> [...]
->
->> Note that we might in the future use the sk_buff napi cache,
->> instead of going through a more expensive __alloc_skb()
->>
->> Another idea would be to use separate page sizes depending
->> on the allocated length (to never have more than 4 frags per page)
-> I'm investigating a couple of performance regressions pointing to this
-> change and I'd like to have a try to the 2nd suggestion above.
->
-> If I read correctly, it means:
-> - extend the page_frag_cache alloc API to allow forcing max order==0
-> - add a 2nd page_frag_cache into napi_alloc_cache (say page_order0 or
-> page_small)
-> - in __napi_alloc_skb(), when len <= SKB_WITH_OVERHEAD(1024), use the
-> page_small cache with order 0 allocation.
-> (all the above constrained to host with 4K pages)
->
-> I'm not quite sure about the "never have more than 4 frags per page"
-> part.
->
-> What outlined above will allow for 10 min size frags in page_order0, as
-> (SKB_DATA_ALIGN(0) + SKB_DATA_ALIGN(struct skb_shared_info) == 384. I'm
-> not sure that anything will allocate such small frags.
-> With a more reasonable GRO_MAX_HEAD, there will be 6 frags per page.
+Note that this patchset depends on the following dts fix to avoid
+any 'make dtbs_check' errors:
+https://lore.kernel.org/linux-arm-msm/20220907204153.2039776-1-bhupesh.sharma@linaro.org/T/#u
 
+Cc: Bjorn Andersson <andersson@kernel.org>
+Cc: Rob Herring <robh@kernel.org>
+Cc: Vinod Koul <vkoul@kernel.org>
+Cc: David Miller <davem@davemloft.net>
+Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
 
-Well, some arches have PAGE_SIZE=65536 :/
+Bhupesh Sharma (4):
+  dt-bindings: net: qcom,ethqos: Convert bindings to yaml
+  dt-bindings: net: snps,dwmac: Add Qualcomm Ethernet ETHQOS compatibles
+  dt-bindings: net: snps,dwmac: Update reg maxitems
+  dt-bindings: net: snps,dwmac: Update interrupt-names
 
+ .../devicetree/bindings/net/qcom,ethqos.txt   |  66 ---------
+ .../devicetree/bindings/net/qcom,ethqos.yaml  | 139 ++++++++++++++++++
+ .../devicetree/bindings/net/snps,dwmac.yaml   |  16 +-
+ 3 files changed, 150 insertions(+), 71 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/net/qcom,ethqos.txt
+ create mode 100644 Documentation/devicetree/bindings/net/qcom,ethqos.yaml
 
->
-> The maximum truesize underestimation in both cases will be lower than
-> what we can get with the current code in the worst case (almost 32x
-> AFAICS).
->
-> Is the above schema safe enough or should the requested size
-> artificially inflatted to fit at most 4 allocations per page_order0?
-> Am I miss something else? Apart from omitting a good deal of testing in
-> the above list ;)
->
-> Thanks!
->
-> Paolo
->
+-- 
+2.37.1
+
