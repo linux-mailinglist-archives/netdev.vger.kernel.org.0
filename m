@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A93D5B1080
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 01:37:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60E305B1084
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 01:37:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230092AbiIGXhZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 19:37:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53048 "EHLO
+        id S230162AbiIGXhi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 19:37:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230097AbiIGXhR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 19:37:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3209AB1B0;
-        Wed,  7 Sep 2022 16:37:15 -0700 (PDT)
+        with ESMTP id S230128AbiIGXh1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 19:37:27 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9801ADCD2;
+        Wed,  7 Sep 2022 16:37:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E90F261B0B;
-        Wed,  7 Sep 2022 23:37:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8124C433D7;
-        Wed,  7 Sep 2022 23:37:14 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 92910CE1E04;
+        Wed,  7 Sep 2022 23:37:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8897FC433D7;
+        Wed,  7 Sep 2022 23:37:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662593834;
-        bh=31f/+Pxmp+jwfUGcUc1AUkGHv0K36aQdL2EuWTaPh4E=;
+        s=k20201202; t=1662593835;
+        bh=30kPdfXe1jiHy3vWD6kAZognCv2TE4+G3T8RIuFi+1o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kofRHSrVSMlqJpKP//tqdmDD3zPYaO6nCN6+syRn3lOMPnfBbxcw2cTElYmdHwMZ2
-         hKyz5FhK0idlgb9ATJqBZ9Y32GW2yqeaFF9Jj+tymA+JvpdTEJQX4S2zA+kA722SoX
-         GGs+Asfvw54CIYavxjUp7GAojBG+eCShJcpG+SvCvUlmU6BUSTCDNss2bUEZBXCCJN
-         D+wOE7mePYefLL1t8hFwnyvk+g5bC4I+RLVk1YhF1gTsKYcqadT2+QA78RAqP2ghne
-         YbRcEMFrTywLJiG1gOKXlvA2JU+x9DS7reE9AlsjCzD5/g2w0LMk7LAikUqscRWgfa
-         FtCFLcLa2FsEg==
+        b=h1guX238eWmgV3QM/t+iUY7UPWuICWUqBsf+Qki6GngAlHpQbML0Q1I7M3sRSJFJR
+         M/f+CyKcPpoTMc51Up9ePvV7xkfCyKqXjXOF/PvFx9F+emdprBb/8U7IDpClqE2gZ0
+         JRMzK/I36l7M1Am0zMrnCY0e1TeFOXFOf/txyaPNQUgfEYARlZODOFt9tUNfeFgxn9
+         4ElzFNtJ3hFHIWiV6rfWm7Gj3WwoB21BtQdemGpUPmTltoZYy5ZLptl8aYAAczsGp1
+         EePz0FxP/TqdOVc10zw0ZIGaFyzDC9JmEcaSBDk7mMbijRhc9VJ+uBgM3ip/EFQlpW
+         +NQjr+PcPUXow==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     Saeed Mahameed <saeedm@nvidia.com>,
         Leon Romanovsky <leonro@nvidia.com>
@@ -42,9 +42,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Jason Gunthorpe <jgg@nvidia.com>, linux-rdma@vger.kernel.org,
         "Liu, Changcheng" <jerrliu@nvidia.com>, Liu@vger.kernel.org,
         Mark Bloch <mbloch@nvidia.com>
-Subject: [PATCH mlx5-next 06/14] net/mlx5: Lag, enable hash mode by default for all NICs
-Date:   Wed,  7 Sep 2022 16:36:28 -0700
-Message-Id: <20220907233636.388475-7-saeed@kernel.org>
+Subject: [PATCH mlx5-next 07/14] net/mlx5: detect and enable bypass port select flow table
+Date:   Wed,  7 Sep 2022 16:36:29 -0700
+Message-Id: <20220907233636.388475-8-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220907233636.388475-1-saeed@kernel.org>
 References: <20220907233636.388475-1-saeed@kernel.org>
@@ -62,52 +62,70 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Liu, Changcheng" <jerrliu@nvidia.com>
 
-The firmware supports adding a steering rule to catch egress traffic
-of the QPs/TISs which are set port affinity explicitly in hash mode.
-Enable that mode for NICS with 2 ports as well.
+Use port selection capability port_select_flow_table_bypass
+bit to detect and enable explicit port affinity even when
+in lag hash mode.
 
 Signed-off-by: Liu, Changcheng <jerrliu@nvidia.com>
 Reviewed-by: Mark Bloch <mbloch@nvidia.com>
+Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/lag/lag.c   | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/main.c    | 34 +++++++++++++++++++
+ 1 file changed, 34 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
-index d4d4d1d1e8c7..97c4a525226b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
-@@ -484,21 +484,22 @@ void mlx5_modify_lag(struct mlx5_lag *ldev,
- 		mlx5_lag_drop_rule_setup(ldev, tracker);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index bec8d6d0b5f6..a284c97af213 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -652,6 +652,33 @@ static int handle_hca_cap_roce(struct mlx5_core_dev *dev, void *set_ctx)
+ 	return err;
  }
  
--#define MLX5_LAG_ROCE_HASH_PORTS_SUPPORTED 4
- static int mlx5_lag_set_port_sel_mode_roce(struct mlx5_lag *ldev,
- 					   unsigned long *flags)
- {
--	struct lag_func *dev0 = &ldev->pf[MLX5_LAG_P1];
-+	struct mlx5_core_dev *dev0 = ldev->pf[MLX5_LAG_P1].dev;
- 
--	if (ldev->ports == MLX5_LAG_ROCE_HASH_PORTS_SUPPORTED) {
--		/* Four ports are support only in hash mode */
--		if (!MLX5_CAP_PORT_SELECTION(dev0->dev, port_select_flow_table))
--			return -EINVAL;
--		set_bit(MLX5_LAG_MODE_FLAG_HASH_BASED, flags);
-+	if (!MLX5_CAP_PORT_SELECTION(dev0, port_select_flow_table)) {
- 		if (ldev->ports > 2)
--			ldev->buckets = MLX5_LAG_MAX_HASH_BUCKETS;
-+			return -EINVAL;
++static int handle_hca_cap_port_selection(struct mlx5_core_dev *dev,
++					 void *set_ctx)
++{
++	void *set_hca_cap;
++	int err;
++
++	if (!MLX5_CAP_GEN(dev, port_selection_cap))
 +		return 0;
++
++	err = mlx5_core_get_caps(dev, MLX5_CAP_PORT_SELECTION);
++	if (err)
++		return err;
++
++	if (MLX5_CAP_PORT_SELECTION(dev, port_select_flow_table_bypass) ||
++	    !MLX5_CAP_PORT_SELECTION_MAX(dev, port_select_flow_table_bypass))
++		return 0;
++
++	set_hca_cap = MLX5_ADDR_OF(set_hca_cap_in, set_ctx, capability);
++	memcpy(set_hca_cap, dev->caps.hca[MLX5_CAP_PORT_SELECTION]->cur,
++	       MLX5_ST_SZ_BYTES(port_selection_cap));
++	MLX5_SET(port_selection_cap, set_hca_cap, port_select_flow_table_bypass, 1);
++
++	err = set_caps(dev, set_ctx, MLX5_SET_HCA_CAP_OP_MODE_PORT_SELECTION);
++
++	return err;
++}
++
+ static int set_hca_cap(struct mlx5_core_dev *dev)
+ {
+ 	int set_sz = MLX5_ST_SZ_BYTES(set_hca_cap_in);
+@@ -696,6 +723,13 @@ static int set_hca_cap(struct mlx5_core_dev *dev)
+ 		goto out;
  	}
  
-+	if (ldev->ports > 2)
-+		ldev->buckets = MLX5_LAG_MAX_HASH_BUCKETS;
++	memset(set_ctx, 0, set_sz);
++	err = handle_hca_cap_port_selection(dev, set_ctx);
++	if (err) {
++		mlx5_core_err(dev, "handle_hca_cap_port_selection failed\n");
++		goto out;
++	}
 +
-+	set_bit(MLX5_LAG_MODE_FLAG_HASH_BASED, flags);
-+
- 	return 0;
- }
- 
+ out:
+ 	kfree(set_ctx);
+ 	return err;
 -- 
 2.37.2
 
