@@ -2,73 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B366F5AFAFF
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 06:13:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 027955AFB0D
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 06:21:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229687AbiIGENp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 00:13:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35280 "EHLO
+        id S229538AbiIGEV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 00:21:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229503AbiIGENo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 00:13:44 -0400
+        with ESMTP id S229449AbiIGEVZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 00:21:25 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2C817E00B
-        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 21:13:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4283B895D6
+        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 21:21:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662524023;
+        s=mimecast20190719; t=1662524481;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=QAjDz4sR+CkkuN65TaxyzVYEg4bR36wJx58FYQ4lykw=;
-        b=VPhVXT1i2843BdHopm5pbxzFyuHlZ7JA5/Z4WjhypaKbbWmL5luVlufY19gpHj0NiKSAq4
-        PfCF/PSv2spAvweabpii3d2NOJoqFv8/vvvoUVcsHEVDOinDvTIN3cXvxptQMjWKq2L+XR
-        JcmMyoJiVHeQKkj0OQou0fYo9eIySMo=
-Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com
- [209.85.216.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=S+P+z8TSJ/Zyfj7d1c5azECG0cOYl08GFb3K30xN3HE=;
+        b=Lpu79Qs4LxRlTr9nFiLQt8z3VqN1+EVqRtq9cv6L9TIFgnCJ8GNHQdijAMYVh+YHPMxLPp
+        hYWm22hAlZdg7toFaJlgGO9zSV+x+/SnrjCTGC7O6CF0kQ8ogZFHtkLbHCb7na8mWB2dEO
+        9OL8y22bLnAr5j8riMYXsQJtvtxGYHU=
+Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com
+ [209.85.210.198]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-314-V3zI5oiwPCOMMyrHIKwA3Q-1; Wed, 07 Sep 2022 00:13:41 -0400
-X-MC-Unique: V3zI5oiwPCOMMyrHIKwA3Q-1
-Received: by mail-pj1-f70.google.com with SMTP id ng1-20020a17090b1a8100b001f4f9f69d48so10397669pjb.4
-        for <netdev@vger.kernel.org>; Tue, 06 Sep 2022 21:13:41 -0700 (PDT)
+ us-mta-614-EABEQ3e0PD2qOaWUUvvo5A-1; Wed, 07 Sep 2022 00:21:20 -0400
+X-MC-Unique: EABEQ3e0PD2qOaWUUvvo5A-1
+Received: by mail-pf1-f198.google.com with SMTP id cg5-20020a056a00290500b0053511889856so6864435pfb.18
+        for <netdev@vger.kernel.org>; Tue, 06 Sep 2022 21:21:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date;
-        bh=QAjDz4sR+CkkuN65TaxyzVYEg4bR36wJx58FYQ4lykw=;
-        b=aHkUtPxurCpOEzMSokJtzkRysFvKVm8v0EN9YPl32SVywI9DBeDYDjBBf5V5P4WNUz
-         +wtriLyVApK4hH8RuhoP5xNd8HGQlVT11b+beg2RUbSJC+FuBrJGIC8nYa85Dqr71eN0
-         DuI/L/q4ccTktXoIMvtCciOG5PqI5whgIG+uBrMUnzKlcGJsW41Peg8fAlE80ZKM7PcY
-         SnuXsnNbH7uxdZu/tODH5bYHzjGMloOJrUIP39djvzNs+fuOELAUjP0H3tT7iCxMtMSQ
-         9+d9SaO/8+yuQdYV/pb4VN4QMWazHWE43jG5FTb79Ws07gl1+0d+7FQiGv6xuP1w5Jdr
-         7/UA==
-X-Gm-Message-State: ACgBeo3/uBTz5ygo5lkRWlj+GvozbJ0ee6jA5ikBhc83VUtu28fJVsJc
-        ow7Iq8VYqv4K7n3ebLfwXQMGs+dCfoVN16EKZyncnTO2Gk1rUeU4pp7Gv6y5UJ1lpacv3jiNG+j
-        nR/JeNcfKWoBTyI/r
-X-Received: by 2002:a17:90b:164f:b0:1f5:4ced:ed81 with SMTP id il15-20020a17090b164f00b001f54ceded81mr27894927pjb.122.1662524020662;
-        Tue, 06 Sep 2022 21:13:40 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR6tb2znMua0rzcLRn+uEQoCxTA59Ra17knzBtFeDBJjJ2A8wstPFAsHDWkW6ISWVk/3jYZOcA==
-X-Received: by 2002:a17:90b:164f:b0:1f5:4ced:ed81 with SMTP id il15-20020a17090b164f00b001f54ceded81mr27894912pjb.122.1662524020456;
-        Tue, 06 Sep 2022 21:13:40 -0700 (PDT)
-Received: from [10.72.13.171] ([43.228.180.230])
-        by smtp.gmail.com with ESMTPSA id w13-20020a1709027b8d00b0016c0eb202a5sm10856284pll.225.2022.09.06.21.13.37
+        bh=S+P+z8TSJ/Zyfj7d1c5azECG0cOYl08GFb3K30xN3HE=;
+        b=0TyBqlk7QtYYCpvo8dqoFlbvUv0c+EbQlojJCCvfjEtQ3S1JPzSvsIp7ZM4ULIG202
+         RKdJ+EE6rqt2k47QTJlik79VTDx6GUWBLqT72roUGrgUnsmmB6Xdmk4ZvKNsmyEp1v6R
+         z8fiCP5g+mB3jkbM6B8FAjMPCF0O3ac6/DdjNW+PGRvvOm29ETj0s7ntxC06vNUzCZcp
+         Q5vhvG45Cnizzb2q803/OaAznYyCDPsxy3YFt4UNFJ4gPiC5JDVQ17HnTWyvuaTktcEw
+         2hf25cWxej+LF/a90scnKKMQNx6zX9UdyoYjoTR53VBto9Fc2UHu1LgDsSdHDCqIk733
+         3SsA==
+X-Gm-Message-State: ACgBeo0zZQfbFxV6xdJJm+/BNp4ubNXuK0AflLi3ehHaxSiqi/OTEu8k
+        0oAcTV9nl7SmbkPZ4FyJ46VosMP4quP1s+Z9GfU3xeOYpC+02FWfaEZTc5AjB6L6FEEbkO9mbVV
+        gNajf45II7XEsPLmy
+X-Received: by 2002:a05:6a00:22c7:b0:53a:bea5:9abd with SMTP id f7-20020a056a0022c700b0053abea59abdmr1770318pfj.3.1662524479098;
+        Tue, 06 Sep 2022 21:21:19 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7FdPkXihchbJtJv8Jd83bDgPxk3tYbsa2yRZ4rh/+Tyemh4rXUJmUXF5h6WyCU3XNVQ3nufA==
+X-Received: by 2002:a05:6a00:22c7:b0:53a:bea5:9abd with SMTP id f7-20020a056a0022c700b0053abea59abdmr1770291pfj.3.1662524478842;
+        Tue, 06 Sep 2022 21:21:18 -0700 (PDT)
+Received: from [10.72.13.171] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id b28-20020aa78edc000000b0053ae6a3c51asm11172533pfr.186.2022.09.06.21.21.11
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 06 Sep 2022 21:13:40 -0700 (PDT)
-Message-ID: <f02e4c7a-3cbe-20dd-fdea-77dfcae7b67e@redhat.com>
-Date:   Wed, 7 Sep 2022 12:13:32 +0800
+        Tue, 06 Sep 2022 21:21:18 -0700 (PDT)
+Message-ID: <dcf40392-26a7-b4f1-ad2c-44fac99fb330@redhat.com>
+Date:   Wed, 7 Sep 2022 12:21:06 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
  Gecko/20100101 Thunderbird/91.13.0
-Subject: Re: [RFC v3 0/7] In order support for virtio_ring, vhost and vsock.
+Subject: Re: [RFC v3 1/7] vhost: expose used buffers
 Content-Language: en-US
 To:     Guo Zhi <qtxuning1999@sjtu.edu.cn>, eperezma@redhat.com,
         sgarzare@redhat.com, mst@redhat.com
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         kvm@vger.kernel.org, virtualization@lists.linux-foundation.org
 References: <20220901055434.824-1-qtxuning1999@sjtu.edu.cn>
+ <20220901055434.824-2-qtxuning1999@sjtu.edu.cn>
 From:   Jason Wang <jasowang@redhat.com>
-In-Reply-To: <20220901055434.824-1-qtxuning1999@sjtu.edu.cn>
+In-Reply-To: <20220901055434.824-2-qtxuning1999@sjtu.edu.cn>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -83,53 +84,70 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 在 2022/9/1 13:54, Guo Zhi 写道:
-> In virtio-spec 1.1, new feature bit VIRTIO_F_IN_ORDER was introduced.
-> When this feature has been negotiated, virtio driver will use
-> descriptors in ring order: starting from offset 0 in the table, and
-> wrapping around at the end of the table. Vhost devices will always use
-> descriptors in the same order in which they have been made available.
-> This can reduce virtio accesses to used ring.
+> Follow VIRTIO 1.1 spec, only writing out a single used ring for a batch
+> of descriptors.
 >
-> Based on updated virtio-spec, this series realized IN_ORDER prototype in virtio
-> driver and vhost. Currently IN_ORDER feature supported devices are *vhost_test*
-> and *vsock* in vhost and virtio-net in QEMU. IN_ORDER feature works well
-> combined with INDIRECT feature in this patch series.
+> Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
+> ---
+>   drivers/vhost/vhost.c | 16 +++++++++++++---
+>   1 file changed, 13 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> index 40097826cff0..26862c8bf751 100644
+> --- a/drivers/vhost/vhost.c
+> +++ b/drivers/vhost/vhost.c
+> @@ -2376,10 +2376,20 @@ static int __vhost_add_used_n(struct vhost_virtqueue *vq,
+>   	vring_used_elem_t __user *used;
+>   	u16 old, new;
+>   	int start;
+> +	int copy_n = count;
+>   
+> +	/**
+> +	 * If in order feature negotiated, devices can notify the use of a batch of buffers to
+> +	 * the driver by only writing out a single used ring entry with the id corresponding
+> +	 * to the head entry of the descriptor chain describing the last buffer in the batch.
+> +	 */
+> +	if (vhost_has_feature(vq, VIRTIO_F_IN_ORDER)) {
+> +		copy_n = 1;
+> +		heads = &heads[count - 1];
+> +	}
 
 
-As stated in the previous versions, I'd like to see performance numbers. 
-We need to prove that the feature actually help for the performance.
+Would it better to have a dedicated helper like 
+vhost_add_used_in_order() here?
 
-And it would be even better if we do the in-order in this order (vhost 
-side):
 
-1) enable in-order but without batching used
-2) enable in-order with batching used
+>   	start = vq->last_used_idx & (vq->num - 1);
+>   	used = vq->used->ring + start;
+> -	if (vhost_put_used(vq, heads, start, count)) {
+> +	if (vhost_put_used(vq, heads, start, copy_n)) {
+>   		vq_err(vq, "Failed to write used");
+>   		return -EFAULT;
+>   	}
+> @@ -2388,7 +2398,7 @@ static int __vhost_add_used_n(struct vhost_virtqueue *vq,
+>   		smp_wmb();
+>   		/* Log used ring entry write. */
+>   		log_used(vq, ((void __user *)used - (void __user *)vq->used),
+> -			 count * sizeof *used);
+> +			 copy_n * sizeof(*used));
+>   	}
+>   	old = vq->last_used_idx;
+>   	new = (vq->last_used_idx += count);
+> @@ -2410,7 +2420,7 @@ int vhost_add_used_n(struct vhost_virtqueue *vq, struct vring_used_elem *heads,
+>   
+>   	start = vq->last_used_idx & (vq->num - 1);
+>   	n = vq->num - start;
+> -	if (n < count) {
+> +	if (n < count && !vhost_has_feature(vq, VIRTIO_F_IN_ORDER)) {
 
-Then we can see how:
 
-1) in-order helps
-2) batching helps
+This seems strange, any reason for this? (Actually if we support 
+in-order we only need one used slot which fit for the case here)
 
 Thanks
 
 
->
-> Virtio driver in_order support for packed vq hasn't been done in this patch
-> series now.
->
-> Guo Zhi (7):
->    vhost: expose used buffers
->    vhost_test: batch used buffer
->    vsock: batch buffers in tx
->    vsock: announce VIRTIO_F_IN_ORDER in vsock
->    virtio: unmask F_NEXT flag in desc_extra
->    virtio: in order support for virtio_ring
->    virtio: announce VIRTIO_F_IN_ORDER support
->
->   drivers/vhost/test.c         | 16 ++++++--
->   drivers/vhost/vhost.c        | 16 ++++++--
->   drivers/vhost/vsock.c        | 13 +++++-
->   drivers/virtio/virtio_ring.c | 79 +++++++++++++++++++++++++++++++-----
->   4 files changed, 104 insertions(+), 20 deletions(-)
->
+>   		r = __vhost_add_used_n(vq, heads, n);
+>   		if (r < 0)
+>   			return r;
 
