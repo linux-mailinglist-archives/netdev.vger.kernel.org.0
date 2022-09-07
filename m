@@ -2,110 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C5705AF9AA
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 04:02:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44FF25AF900
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 02:37:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229652AbiIGCCS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Sep 2022 22:02:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37656 "EHLO
+        id S229508AbiIGAhe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Sep 2022 20:37:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229572AbiIGCCQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 22:02:16 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 945858E45C;
-        Tue,  6 Sep 2022 19:02:15 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id iw17so6421494plb.0;
-        Tue, 06 Sep 2022 19:02:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=Jwpb3CZaX0bMWLoqG62o2gobYjHtSytkFeKeRqFEhrY=;
-        b=QKiwhfzXFGTWU+koGlbakEy4hnfAjf2RRPKehip8lIbi1F+bGTjEW5yJnv3JElHfJZ
-         MZc5P6QJsQAb/vuQUbDR4Rv7Z9d50pIQIvmXAN28w4MpkfCu6Wbf7LHzcB5SGFTzjFoW
-         w4D5n14fxADlWX+ExPNuzu9pgf49j8ewU7Q3LpzVTugHDVpbNNT6BVl8C3vwvvZUnA9u
-         n6sKqNth8Cv7/WXx7LTPMlKFZR4vSssT0ZJOEZ3dwTPeYoINlRzsf2L0qBKkLOOnbGDl
-         QXcmkK6n8hOoab/BIziBpSIvpPjoeaNEbROWDYhTc/RwQasBqOdX8YkAMJrvDZFEYOBX
-         7LQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=Jwpb3CZaX0bMWLoqG62o2gobYjHtSytkFeKeRqFEhrY=;
-        b=DbhXrxVj4dW89WwOETI0Q7UeRBEdU8FX7L1QTe+Y7GPnZCf4Ij8rwoQyTd4yYancfH
-         0Tz8Rp6+rU1V/0NSDbByc8WSloYkChKlaxyGaSusxyqLFTCSPcSNxc2fkoTDrJKcVmrr
-         DB1soFYXwUGnM9VzysYhCj9aUXDpS6BhBq76nHrjuysPc7e/AeFySf9r7X7JdwdhhL6V
-         jsPMhHQISQ+uUZnwbUw5QUextnBuY3n1jYeBjLadRW276A3yZKpnJ9fW3ZPptrpbrmuy
-         S0vgqUbSwNtBUMw/tylwP5puetX59JlfTUMlJKFJxHBC5GoibrK1THEuw1anURg/x/6d
-         Nomw==
-X-Gm-Message-State: ACgBeo3dKyBZshojwDzDfnToBScZ4Odx7chcdKel7tPqP6sgBfVPU7x6
-        Wg97ZgSxIUWoYunaYF1MUv4=
-X-Google-Smtp-Source: AA6agR7H+bk1DuR8iBTTcyXMcZqKoOEh+Br0mw78q71U+dGZKIgxgvmo8IgUtWIxojqM4EEQDz7XjA==
-X-Received: by 2002:a17:903:1c4:b0:176:e348:c386 with SMTP id e4-20020a17090301c400b00176e348c386mr1404659plh.3.1662516134925;
-        Tue, 06 Sep 2022 19:02:14 -0700 (PDT)
-Received: from localhost (ec2-13-57-97-131.us-west-1.compute.amazonaws.com. [13.57.97.131])
-        by smtp.gmail.com with ESMTPSA id o7-20020a656a47000000b004308422060csm8975063pgu.69.2022.09.06.19.02.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Sep 2022 19:02:14 -0700 (PDT)
-Date:   Thu, 18 Aug 2022 14:39:32 +0000
-From:   Bobby Eshleman <bobbyeshleman@gmail.com>
-To:     Stefan Hajnoczi <stefanha@redhat.com>
-Cc:     Bobby Eshleman <bobby.eshleman@gmail.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229459AbiIGAhd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 20:37:33 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C5FA85A8B;
+        Tue,  6 Sep 2022 17:37:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=1w+PiibJZ2yyuhgSvo52DkSUg05XLDMRLXc6gQeov3U=; b=okSr5ZQbJBoDHWc3KTd52Jkw/J
+        ojX7oRUowARXyW8mgmxV3NF9Mh8/KAvbqjpOOYu1FmPWYAiM18m92LwTDq/qE58rtBV6Dg/7RAHSS
+        nS3xBKmPrX4tsYUYk/SpVMZSRthhew1WZKsxcxELAuYiYhbhUs+O1Fkmm3xcjEnxTXVQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oVj3R-00Fnzn-ER; Wed, 07 Sep 2022 02:36:33 +0200
+Date:   Wed, 7 Sep 2022 02:36:33 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Tao Ren <rentao.bupt@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org
-Subject: Re: [PATCH 0/6] virtio/vsock: introduce dgrams, sk_buff, and qdisc
-Message-ID: <Yv5PFz1YrSk8jxzY@bullseye>
-References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
- <YxdKiUzlfpHs3h3q@fedora>
+        Heyi Guo <guoheyi@linux.alibaba.com>,
+        Dylan Hung <dylan_hung@aspeedtech.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Liang He <windhl@126.com>, Hao Chen <chenhao288@hisilicon.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>, Tao Ren <taoren@fb.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 2/2] ARM: dts: aspeed: elbert: Enable mac3
+ controller
+Message-ID: <YxfnkSAVq6FO0vd/@lunn.ch>
+References: <20220905235634.20957-1-rentao.bupt@gmail.com>
+ <20220905235634.20957-3-rentao.bupt@gmail.com>
+ <YxaS2mS5vwW4HuqL@lunn.ch>
+ <YxalTToannPyLQpI@taoren-fedora-PC23YAB4>
+ <Yxc1N1auY5jk3yJI@lunn.ch>
+ <45cdae58-632a-7cbb-c9d5-74c126ba6a3e@gmail.com>
+ <YxfZOPz/iWVm0G5F@taoren-fedora-PC23YAB4>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YxdKiUzlfpHs3h3q@fedora>
-X-Spam-Status: No, score=1.3 required=5.0 tests=BAYES_00,DATE_IN_PAST_96_XX,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+In-Reply-To: <YxfZOPz/iWVm0G5F@taoren-fedora-PC23YAB4>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 06, 2022 at 09:26:33AM -0400, Stefan Hajnoczi wrote:
-> Hi Bobby,
-> If you are attending Linux Foundation conferences in Dublin, Ireland
-> next week (Linux Plumbers Conference, Open Source Summit Europe, KVM
-> Forum, ContainerCon Europe, CloudOpen Europe, etc) then you could meet
-> Stefano Garzarella and others to discuss this patch series.
-> 
-> Using netdev and sk_buff is a big change to vsock. Discussing your
-> requirements and the future direction of vsock in person could help.
-> 
-> If you won't be in Dublin, don't worry. You can schedule a video call if
-> you feel it would be helpful to discuss these topics.
-> 
-> Stefan
+> Specific to this Elbert platform, we don't have plan to configure
+> BCM53134 via OpenBMC MDIO (dts), because we expect the switch always
+> loads configurations from its EEPROM.
 
-Hey Stefan,
+DSA offers more than configuration. You can also get interface
+statistics, and knowledge of if an interface is up/down. And since the
+PHY of the switch becomes normal Linux PHYs, you can do cable testing,
+if the PHY has support, etc.
 
-That sounds like a great idea! I was unable to make the Dublin trip work
-so I think a video call would be best, of course if okay with everyone.
+Do you have spanning tree to break L2 network loops? Linux will
+provide that as well.
 
-Thanks,
-Bobby
+However, if you are happy with dumb switch, then what you posted is
+sufficient.
+
+	Andrew
