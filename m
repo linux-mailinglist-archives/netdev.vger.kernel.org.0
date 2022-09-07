@@ -2,95 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FEC45B0C31
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 20:09:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 368BA5B0C35
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 20:09:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230402AbiIGSJT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 14:09:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38332 "EHLO
+        id S230238AbiIGSJm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 14:09:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229723AbiIGSJN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 14:09:13 -0400
+        with ESMTP id S230408AbiIGSJg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 14:09:36 -0400
 Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70BB677EBD;
-        Wed,  7 Sep 2022 11:09:12 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id dv25so2928429ejb.12;
-        Wed, 07 Sep 2022 11:09:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 443A06361;
+        Wed,  7 Sep 2022 11:09:25 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id fg1so10098230ejc.2;
+        Wed, 07 Sep 2022 11:09:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=rfVlZdFyNY+a+CZnW8eNIktxjS2pSLRvf4SoDS42ZEc=;
-        b=bMEyL8mq7Frspx3FJg260Ba4BWd19uqOoD/nl5ulR9z+lTnnc2YC53xJfsUI/uK1/l
-         TrY2zDx37B3jKux2NbvrwmHAwOqaOOt/D7L+40q+kiCAOS8lNPsEMS0ec7ige9dCtwNr
-         SB9UtfHvzhybNaInW5ArDAx6n9AweaozyocNT8Vm4HXk1ZHWvbcTUuMirnVLQgmWU/mC
-         Bo8S7t485KRsivVHFAHndhBtk/NJbpfVZUTSUSVAvYRz40oYbeM8LyGYOAu42sc6n3kR
-         IuRU203RemodgiVdicbh1crBILTU8JmVrhjfwtjPxzqmKdzRwF8LeUFmUSipnYbWWEMz
-         1tnw==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=YpBQotoGZNVTm0xUrupXAeoFQOusEenuOy1efqUfeig=;
+        b=j4ISLYTikdQ6qUZEdNQO2K8UEEV/jYQxSH/ugTlxA2Rp9XhkXab+fAt7e6NWqpI1y4
+         NZdbJAPREKqWPbgOdFfTmUxUKEWIxKY75WRayDWkTFTb/IOiMQZEvXYwAG+I6kOhlF0z
+         1hiLgTn/N5yntMm+bCRHA8eo+HSHADrD9KWweabXH2mxexPciowOEQ3WjD268z8MArfY
+         HCXpPbnHmho/9a++dlI2H9JK7j9H3baAIA/9WKbCq0sjYfuVSso09o2yQkFavQFdoYVy
+         8WUB3Dfjak5wiGiiF51FUZz74pY6Yb1jRNM+q5eWlAp4C8E2Xk7raE5okQc6gOFDEK13
+         0hMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=rfVlZdFyNY+a+CZnW8eNIktxjS2pSLRvf4SoDS42ZEc=;
-        b=nyt6xyEqdOSq3bxEBj6xRyyRpUu1vjWySk8o+srXIUzw+862fo+kVXViL13D7kVWOs
-         Jw4y+TOsHIGx1gJ3/RkvIAcC8avXI5er70sp4ZIl5SRiXITvdvPiEqp03enoz8vw4DG4
-         F71F4YIsYRcNI+FUmmIo00j6Vl10vL9v17+pyMzohf240U/K4WCSp3TEPdEW5m43+x0l
-         LJHZ2+FsLzuSoTSXrDMidcgnwcXIv8Hpl3zX4CF4uDgp4d4Hhfyq7WwapjbQVr35SK9O
-         SFLHYOZFpolfjyWwZbenTtbrDgnVJPPCXAWblPiKdmb4W1K5vBqMHdAGIQpHlcn1SGoK
-         t+WA==
-X-Gm-Message-State: ACgBeo0Ml8bqYNjjaxw1FtmSqV+TBeuH21ubQlKuFenNsnRM9B0RGBK1
-        sm0puQAAGO3Rw9r5IB0syeg=
-X-Google-Smtp-Source: AA6agR6EDqXZnqWcF2uXSuqxhTN1096/KgtqMjEOzBcDFk4E4aFEIcXJLT8dg2gFZlKWSjDZ6z4B1g==
-X-Received: by 2002:a17:907:1b12:b0:72f:9b44:f9e with SMTP id mp18-20020a1709071b1200b0072f9b440f9emr3216808ejc.653.1662574150847;
-        Wed, 07 Sep 2022 11:09:10 -0700 (PDT)
-Received: from ?IPV6:2a04:241e:502:a09c:cbe0:7b37:373:7410? ([2a04:241e:502:a09c:cbe0:7b37:373:7410])
-        by smtp.gmail.com with ESMTPSA id kz3-20020a17090777c300b0073d68d2fc29sm28375ejc.218.2022.09.07.11.09.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 07 Sep 2022 11:09:10 -0700 (PDT)
-Message-ID: <9d26bcb4-b55f-29d5-9790-2a800b22a3a5@gmail.com>
-Date:   Wed, 7 Sep 2022 21:09:08 +0300
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=YpBQotoGZNVTm0xUrupXAeoFQOusEenuOy1efqUfeig=;
+        b=5XlNalnMmSKth7Yr7Ct51iyVxuMBMNJFA3yvf7IfEZHrhLSYL9g+KpqbSAaQEnsIDW
+         UHJdsaEKmExKv09SrrUQBWf3TVr0qznEHgl3SEVftBSpaNaAysJVTXtW6ldgUKOdjpw+
+         O8kaYmQXVhsvMCL25nOCa31QY0LY+K3NIzv+zm3HzS7KPgQ/Ly9UL3Gc5MIFpFkkKtFv
+         ri6thBzw/MvK5yv+hYkTv1KfzHoqJWb+bv3VODhB2w+BcWpq3fjnP7f4fSAxiZu2T+9S
+         9I8FNzZMpr+DJk5Y1sJ1wZKqy3SBym5gXF/D+1kZPAvK67ba/KpJw1SJS6vOTjnLlIYK
+         yrxg==
+X-Gm-Message-State: ACgBeo1cxAq6FpiJZuFOKKE+5V70Kl0JLS2PaZ3Fr/Wi64xRNV6wIANR
+        vQPL0Ye4UHz7iTQq8o4yWxK53TJlJKGQBMzrJF4=
+X-Google-Smtp-Source: AA6agR6wtygx0JUUhPohNUk5lAc85vpE1NnKtlYo41kHO/pZRz4XZFdDpp8a3uD4M+AqIiT2pkzaBAYq2gGMqGsynZE=
+X-Received: by 2002:a17:907:2c74:b0:741:657a:89de with SMTP id
+ ib20-20020a1709072c7400b00741657a89demr3156554ejc.58.1662574163526; Wed, 07
+ Sep 2022 11:09:23 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v8 01/26] tcp: authopt: Initial support and key management
-Content-Language: en-US
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     David Ahern <dsahern@kernel.org>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        Philip Paeps <philip@trouble.is>,
-        Shuah Khan <shuah@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Yuchung Cheng <ycheng@google.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Christoph Paasch <cpaasch@apple.com>,
-        Ivan Delalande <colona@arista.com>,
-        Caowangbao <caowangbao@huawei.com>,
-        Priyaranjan Jha <priyarjha@google.com>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
-        <linux-crypto@vger.kernel.org>,
+References: <20220906151303.2780789-1-benjamin.tissoires@redhat.com>
+ <20220906151303.2780789-5-benjamin.tissoires@redhat.com> <CAP01T76Q4VGYveL=6NoRFsgjFvLTLLF8jER0HwU1hx+maqo7Tg@mail.gmail.com>
+In-Reply-To: <CAP01T76Q4VGYveL=6NoRFsgjFvLTLLF8jER0HwU1hx+maqo7Tg@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 7 Sep 2022 11:09:12 -0700
+Message-ID: <CAADnVQK=ZYRvnR38+JMS_ckZBAeHm_o1Jg3XCyr1mg2Hpu4xSg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v11 4/7] selftests/bpf: add test for accessing
+ ctx from syscall program type
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
         "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <cover.1662361354.git.cdleonard@gmail.com>
- <0e4c0a98509b907e33c2f80b95cc6cfe713ac2b2.1662361354.git.cdleonard@gmail.com>
- <CANn89i+a0mMUMhUhTPoshifNzzuR_gfThPKptB8cuBiw6Bs5jw@mail.gmail.com>
- <4a47b4ea-750c-a569-5754-4aa0cd5218fc@gmail.com>
- <CANn89i+028SO1q6Hz8E3X7mrzkGSW5mQSLaMj70qka7amsPZ3w@mail.gmail.com>
-From:   Leonard Crestez <cdleonard@gmail.com>
-In-Reply-To: <CANn89i+028SO1q6Hz8E3X7mrzkGSW5mQSLaMj70qka7amsPZ3w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        <linux-kselftest@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -99,116 +78,355 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Sep 7, 2022 at 10:46 AM Kumar Kartikeya Dwivedi
+<memxor@gmail.com> wrote:
+>
+> On Tue, 6 Sept 2022 at 17:13, Benjamin Tissoires
+> <benjamin.tissoires@redhat.com> wrote:
+> >
+> > We need to also export the kfunc set to the syscall program type,
+> > and then add a couple of eBPF programs that are testing those calls.
+> >
+> > The first one checks for valid access, and the second one is OK
+> > from a static analysis point of view but fails at run time because
+> > we are trying to access outside of the allocated memory.
+> >
+> > Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+> >
+> > ---
+>
+> CI is failing for test_progs-no_alu32:
+> https://github.com/kernel-patches/bpf/runs/8220916615?check_suite_focus=true
+>
+> >
+> > changes in v11:
+> > - use new way of declaring tests
+> >
+> > changes in v10:
+> > - use new definitions for tests in an array
+> > - add a new kfunc syscall_test_null_fail test
+> >
+> > no changes in v9
+> >
+> > no changes in v8
+> >
+> > changes in v7:
+> > - add 1 more case to ensure we can read the entire sizeof(ctx)
+> > - add a test case for when the context is NULL
+> >
+> > new in v6
+> > ---
+> >  net/bpf/test_run.c                            |   1 +
+> >  .../selftests/bpf/prog_tests/kfunc_call.c     | 143 +++++++++++++++++-
+> >  .../selftests/bpf/progs/kfunc_call_fail.c     |  39 +++++
+> >  .../selftests/bpf/progs/kfunc_call_test.c     |  38 +++++
+> >  4 files changed, 214 insertions(+), 7 deletions(-)
+> >  create mode 100644 tools/testing/selftests/bpf/progs/kfunc_call_fail.c
+> >
+> > diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+> > index 25d8ecf105aa..f16baf977a21 100644
+> > --- a/net/bpf/test_run.c
+> > +++ b/net/bpf/test_run.c
+> > @@ -1634,6 +1634,7 @@ static int __init bpf_prog_test_run_init(void)
+> >
+> >         ret = register_btf_kfunc_id_set(BPF_PROG_TYPE_SCHED_CLS, &bpf_prog_test_kfunc_set);
+> >         ret = ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_TRACING, &bpf_prog_test_kfunc_set);
+> > +       ret = ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_SYSCALL, &bpf_prog_test_kfunc_set);
+> >         return ret ?: register_btf_id_dtor_kfuncs(bpf_prog_test_dtor_kfunc,
+> >                                                   ARRAY_SIZE(bpf_prog_test_dtor_kfunc),
+> >                                                   THIS_MODULE);
+> > diff --git a/tools/testing/selftests/bpf/prog_tests/kfunc_call.c b/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
+> > index 9dfbe5355a2d..d5881c3331a8 100644
+> > --- a/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
+> > +++ b/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
+> > @@ -2,6 +2,7 @@
+> >  /* Copyright (c) 2021 Facebook */
+> >  #include <test_progs.h>
+> >  #include <network_helpers.h>
+> > +#include "kfunc_call_fail.skel.h"
+> >  #include "kfunc_call_test.skel.h"
+> >  #include "kfunc_call_test.lskel.h"
+> >  #include "kfunc_call_test_subprog.skel.h"
+> > @@ -10,37 +11,96 @@
+> >
+> >  #include "cap_helpers.h"
+> >
+> > +static size_t log_buf_sz = 1048576; /* 1 MB */
+> > +static char obj_log_buf[1048576];
+> > +
+> > +enum kfunc_test_type {
+> > +       tc_test = 0,
+> > +       syscall_test,
+> > +       syscall_null_ctx_test,
+> > +};
+> > +
+> >  struct kfunc_test_params {
+> >         const char *prog_name;
+> >         unsigned long lskel_prog_desc_offset;
+> >         int retval;
+> > +       enum kfunc_test_type test_type;
+> > +       const char *expected_err_msg;
+> >  };
+> >
+> > -#define TC_TEST(name, __retval) \
+> > +#define __BPF_TEST_SUCCESS(name, __retval, type) \
+> >         { \
+> >           .prog_name = #name, \
+> >           .lskel_prog_desc_offset = offsetof(struct kfunc_call_test_lskel, progs.name), \
+> >           .retval = __retval, \
+> > +         .test_type = type, \
+> > +         .expected_err_msg = NULL, \
+> > +       }
+> > +
+> > +#define __BPF_TEST_FAIL(name, __retval, type, error_msg) \
+> > +       { \
+> > +         .prog_name = #name, \
+> > +         .lskel_prog_desc_offset = 0 /* unused when test is failing */, \
+> > +         .retval = __retval, \
+> > +         .test_type = type, \
+> > +         .expected_err_msg = error_msg, \
+> >         }
+> >
+> > +#define TC_TEST(name, retval) __BPF_TEST_SUCCESS(name, retval, tc_test)
+> > +#define SYSCALL_TEST(name, retval) __BPF_TEST_SUCCESS(name, retval, syscall_test)
+> > +#define SYSCALL_NULL_CTX_TEST(name, retval) __BPF_TEST_SUCCESS(name, retval, syscall_null_ctx_test)
+> > +
+> > +#define SYSCALL_NULL_CTX_FAIL(name, retval, error_msg) \
+> > +       __BPF_TEST_FAIL(name, retval, syscall_null_ctx_test, error_msg)
+> > +
+> >  static struct kfunc_test_params kfunc_tests[] = {
+> > +       /* failure cases:
+> > +        * if retval is 0 -> the program will fail to load and the error message is an error
+> > +        * if retval is not 0 -> the program can be loaded but running it will gives the
+> > +        *                       provided return value. The error message is thus the one
+> > +        *                       from a successful load
+> > +        */
+> > +       SYSCALL_NULL_CTX_FAIL(kfunc_syscall_test_fail, -EINVAL, "processed 4 insns"),
+> > +       SYSCALL_NULL_CTX_FAIL(kfunc_syscall_test_null_fail, -EINVAL, "processed 4 insns"),
+> > +
+> > +       /* success cases */
+> >         TC_TEST(kfunc_call_test1, 12),
+> >         TC_TEST(kfunc_call_test2, 3),
+> >         TC_TEST(kfunc_call_test_ref_btf_id, 0),
+> > +       SYSCALL_TEST(kfunc_syscall_test, 0),
+> > +       SYSCALL_NULL_CTX_TEST(kfunc_syscall_test_null, 0),
+> > +};
+> > +
+> > +struct syscall_test_args {
+> > +       __u8 data[16];
+> > +       size_t size;
+> >  };
+> >
+> >  static void verify_success(struct kfunc_test_params *param)
+> >  {
+> >         struct kfunc_call_test_lskel *lskel = NULL;
+> > +       LIBBPF_OPTS(bpf_test_run_opts, topts);
+> >         struct bpf_prog_desc *lskel_prog;
+> >         struct kfunc_call_test *skel;
+> >         struct bpf_program *prog;
+> >         int prog_fd, err;
+> > -       LIBBPF_OPTS(bpf_test_run_opts, topts,
+> > -               .data_in = &pkt_v4,
+> > -               .data_size_in = sizeof(pkt_v4),
+> > -               .repeat = 1,
+> > -       );
+> > +       struct syscall_test_args args = {
+> > +               .size = 10,
+> > +       };
+> > +
+> > +       switch (param->test_type) {
+> > +       case syscall_test:
+> > +               topts.ctx_in = &args;
+> > +               topts.ctx_size_in = sizeof(args);
+> > +               /* fallthrough */
+> > +       case syscall_null_ctx_test:
+> > +               break;
+> > +       case tc_test:
+> > +               topts.data_in = &pkt_v4;
+> > +               topts.data_size_in = sizeof(pkt_v4);
+> > +               topts.repeat = 1;
+> > +               break;
+> > +       }
+> >
+> >         /* first test with normal libbpf */
+> >         skel = kfunc_call_test__open_and_load();
+> > @@ -79,6 +139,72 @@ static void verify_success(struct kfunc_test_params *param)
+> >                 kfunc_call_test_lskel__destroy(lskel);
+> >  }
+> >
+> > +static void verify_fail(struct kfunc_test_params *param)
+> > +{
+> > +       LIBBPF_OPTS(bpf_object_open_opts, opts);
+> > +       LIBBPF_OPTS(bpf_test_run_opts, topts);
+> > +       struct bpf_program *prog;
+> > +       struct kfunc_call_fail *skel;
+> > +       int prog_fd, err;
+> > +       struct syscall_test_args args = {
+> > +               .size = 10,
+> > +       };
+> > +
+> > +       opts.kernel_log_buf = obj_log_buf;
+> > +       opts.kernel_log_size = log_buf_sz;
+> > +       opts.kernel_log_level = 1;
+> > +
+> > +       switch (param->test_type) {
+> > +       case syscall_test:
+> > +               topts.ctx_in = &args;
+> > +               topts.ctx_size_in = sizeof(args);
+> > +               /* fallthrough */
+> > +       case syscall_null_ctx_test:
+> > +               break;
+> > +       case tc_test:
+> > +               topts.data_in = &pkt_v4;
+> > +               topts.data_size_in = sizeof(pkt_v4);
+> > +               break;
+> > +               topts.repeat = 1;
+> > +       }
+> > +
+> > +       skel = kfunc_call_fail__open_opts(&opts);
+> > +       if (!ASSERT_OK_PTR(skel, "kfunc_call_fail__open_opts"))
+> > +               goto cleanup;
+> > +
+> > +       prog = bpf_object__find_program_by_name(skel->obj, param->prog_name);
+> > +       if (!ASSERT_OK_PTR(prog, "bpf_object__find_program_by_name"))
+> > +               goto cleanup;
+> > +
+> > +       bpf_program__set_autoload(prog, true);
+> > +
+> > +       err = kfunc_call_fail__load(skel);
+> > +       if (!param->retval) {
+> > +               /* the verifier is supposed to complain and refuses to load */
+> > +               if (!ASSERT_ERR(err, "unexpected load success"))
+> > +                       goto out_err;
+> > +
+> > +       } else {
+> > +               /* the program is loaded but must dynamically fail */
+> > +               if (!ASSERT_OK(err, "unexpected load error"))
+> > +                       goto out_err;
+> > +
+> > +               prog_fd = bpf_program__fd(prog);
+> > +               err = bpf_prog_test_run_opts(prog_fd, &topts);
+> > +               if (!ASSERT_EQ(err, param->retval, param->prog_name))
+> > +                       goto out_err;
+> > +       }
+> > +
+> > +out_err:
+> > +       if (!ASSERT_OK_PTR(strstr(obj_log_buf, param->expected_err_msg), "expected_err_msg")) {
+> > +               fprintf(stderr, "Expected err_msg: %s\n", param->expected_err_msg);
+> > +               fprintf(stderr, "Verifier output: %s\n", obj_log_buf);
+> > +       }
+> > +
+> > +cleanup:
+> > +       kfunc_call_fail__destroy(skel);
+> > +}
+> > +
+> >  static void test_main(void)
+> >  {
+> >         int i;
+> > @@ -87,7 +213,10 @@ static void test_main(void)
+> >                 if (!test__start_subtest(kfunc_tests[i].prog_name))
+> >                         continue;
+> >
+> > -               verify_success(&kfunc_tests[i]);
+> > +               if (!kfunc_tests[i].expected_err_msg)
+> > +                       verify_success(&kfunc_tests[i]);
+> > +               else
+> > +                       verify_fail(&kfunc_tests[i]);
+> >         }
+> >  }
+> >
+> > diff --git a/tools/testing/selftests/bpf/progs/kfunc_call_fail.c b/tools/testing/selftests/bpf/progs/kfunc_call_fail.c
+> > new file mode 100644
+> > index 000000000000..4168027f2ab1
+> > --- /dev/null
+> > +++ b/tools/testing/selftests/bpf/progs/kfunc_call_fail.c
+> > @@ -0,0 +1,39 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +/* Copyright (c) 2021 Facebook */
+> > +#include <vmlinux.h>
+> > +#include <bpf/bpf_helpers.h>
+> > +
+> > +extern void bpf_kfunc_call_test_mem_len_pass1(void *mem, int len) __ksym;
+> > +
+> > +struct syscall_test_args {
+> > +       __u8 data[16];
+> > +       size_t size;
+> > +};
+> > +
+> > +SEC("?syscall")
+> > +int kfunc_syscall_test_fail(struct syscall_test_args *args)
+> > +{
+> > +       bpf_kfunc_call_test_mem_len_pass1(&args->data, sizeof(*args) + 1);
+> > +
+> > +       return 0;
+> > +}
+> > +
+> > +SEC("?syscall")
+> > +int kfunc_syscall_test_null_fail(struct syscall_test_args *args)
+> > +{
+> > +       /* Must be called with args as a NULL pointer
+> > +        * we do not check for it to have the verifier consider that
+> > +        * the pointer might not be null, and so we can load it.
+> > +        *
+> > +        * So the following can not be added:
+> > +        *
+> > +        * if (args)
+> > +        *      return -22;
+> > +        */
+> > +
+> > +       bpf_kfunc_call_test_mem_len_pass1(args, sizeof(*args));
+> > +
+> > +       return 0;
+> > +}
+> > +
+> > +char _license[] SEC("license") = "GPL";
+> > diff --git a/tools/testing/selftests/bpf/progs/kfunc_call_test.c b/tools/testing/selftests/bpf/progs/kfunc_call_test.c
+> > index 5aecbb9fdc68..94c05267e5e7 100644
+> > --- a/tools/testing/selftests/bpf/progs/kfunc_call_test.c
+> > +++ b/tools/testing/selftests/bpf/progs/kfunc_call_test.c
+> > @@ -92,4 +92,42 @@ int kfunc_call_test_pass(struct __sk_buff *skb)
+> >         return 0;
+> >  }
+> >
+> > +struct syscall_test_args {
+> > +       __u8 data[16];
+> > +       size_t size;
+> > +};
+> > +
+> > +SEC("syscall")
+> > +int kfunc_syscall_test(struct syscall_test_args *args)
+> > +{
+> > +       const int size = args->size;
+> > +
+> > +       if (size > sizeof(args->data))
+> > +               return -7; /* -E2BIG */
+> > +
+>
+> Looks like it is due to this. Verifier is confused because:
+> r7 = args->data;
+> r1 = r7;
+>
+> then it does r1 <<= 32; r1 >>=32; clearing upper 32 bits, so both r1
+> and r7 lose the id association which propagates the bounds of r1
+> learnt from comparison of it with sizeof(args->data);
+>
+> > +       bpf_kfunc_call_test_mem_len_pass1(&args->data, sizeof(args->data));
+> > +       bpf_kfunc_call_test_mem_len_pass1(&args->data, sizeof(*args));
+>
+> Later llvm assigns r7 to r2 for this call's 2nd arg. At this point the
+> verifier still thinks r7 is unbounded, while to make a call with mem,
+> len pair you need non-negative min value.
+>
+> Easiest way might be to just do args->size & sizeof(args->data), as
+> the verifier log says. You might still keep the error above.
+> Others may have better ideas/insights.
 
+I just did s/const int size/const long size/
+to fix the issues.
 
-On 9/7/22 19:28, Eric Dumazet wrote:
-> On Wed, Sep 7, 2022 at 9:19 AM Leonard Crestez <cdleonard@gmail.com> wrote:
->>
->> On 9/7/22 01:57, Eric Dumazet wrote:
->>> On Mon, Sep 5, 2022 at 12:06 AM Leonard Crestez <cdleonard@gmail.com> wrote:
->>>>
->>>> This commit adds support to add and remove keys but does not use them
->>>> further.
->>>>
->>>> Similar to tcp md5 a single pointer to a struct tcp_authopt_info* struct
->>>> is added to struct tcp_sock, this avoids increasing memory usage. The
->>>> data structures related to tcp_authopt are initialized on setsockopt and
->>>> only freed on socket close.
->>>>
->>>
->>> Thanks Leonard.
->>>
->>> Small points from my side, please find them attached.
->>
->> ...
->>
->>>> +/* Free info and keys.
->>>> + * Don't touch tp->authopt_info, it might not even be assigned yes.
->>>> + */
->>>> +void tcp_authopt_free(struct sock *sk, struct tcp_authopt_info *info)
->>>> +{
->>>> +       kfree_rcu(info, rcu);
->>>> +}
->>>> +
->>>> +/* Free everything and clear tcp_sock.authopt_info to NULL */
->>>> +void tcp_authopt_clear(struct sock *sk)
->>>> +{
->>>> +       struct tcp_authopt_info *info;
->>>> +
->>>> +       info = rcu_dereference_protected(tcp_sk(sk)->authopt_info, lockdep_sock_is_held(sk));
->>>> +       if (info) {
->>>> +               tcp_authopt_free(sk, info);
->>>> +               tcp_sk(sk)->authopt_info = NULL;
->>>
->>> RCU rules at deletion mandate that the pointer must be cleared before
->>> the call_rcu()/kfree_rcu() call.
->>>
->>> It is possible that current MD5 code has an issue here, let's not copy/paste it.
->>
->> OK. Is there a need for some special form of assignment or is current
->> plain form enough?
-> 
-> It is the right way (when clearing the pointer), no need for another form.
+Also fixed commit in patch 3 that talks about max_ctx_offset
+and did:
+-       BTF_KFUNC_SET_MAX_CNT = 64,
++       BTF_KFUNC_SET_MAX_CNT = 256,
 
-OK
-
->>>> +/* checks that ipv4 or ipv6 addr matches. */
->>>> +static bool ipvx_addr_match(struct sockaddr_storage *a1,
->>>> +                           struct sockaddr_storage *a2)
->>>> +{
->>>> +       if (a1->ss_family != a2->ss_family)
->>>> +               return false;
->>>> +       if (a1->ss_family == AF_INET &&
->>>> +           (((struct sockaddr_in *)a1)->sin_addr.s_addr !=
->>>> +            ((struct sockaddr_in *)a2)->sin_addr.s_addr))
->>>> +               return false;
->>>> +       if (a1->ss_family == AF_INET6 &&
->>>> +           !ipv6_addr_equal(&((struct sockaddr_in6 *)a1)->sin6_addr,
->>>> +                            &((struct sockaddr_in6 *)a2)->sin6_addr))
->>>> +               return false;
->>>> +       return true;
->>>> +}
->>>
->>> Always surprising to see this kind of generic helper being added in a patch.
->>
->> I remember looking for an equivalent and not finding it. Many places
->> have distinct code paths for ipv4 and ipv6 and my use of
->> "sockaddr_storage" as ipv4/ipv6 union is uncommon.
-> 
-> inetpeer_addr_cmp() might do it (and we also could fix a bug in it it
-> seems, at least for __tcp_get_metrics() usage :/
-
-That uses a different `struct inetpeer_addr` which also has some extra 
-"vif" fields for ipv4 that I don't know about.
-
-Everybody seems to be rolling their own ipv4/v6 union, other examples 
-are `struct tcp_md5_addr` and `xfrm_address_t`. struct sockaddr_storage 
-is "more standard" but also larger so maybe that's why others don't use it.
-
->>>> +int tcp_get_authopt_val(struct sock *sk, struct tcp_authopt *opt)
->>>> +{
->>>> +       struct tcp_sock *tp = tcp_sk(sk);
->>>> +       struct tcp_authopt_info *info;
->>>> +
->>>> +       memset(opt, 0, sizeof(*opt));
->>>> +       sock_owned_by_me(sk);
->>>> +
->>>> +       info = rcu_dereference_check(tp->authopt_info, lockdep_sock_is_held(sk));
->>>
->>> Probably not a big deal, but it seems the prior sock_owned_by_me()
->>> might be redundant.
->>
->> The sock_owned_by_me call checks checks lockdep_sock_is_held
->>
->> The rcu_dereference_check call checks lockdep_sock_is_held ||
->> rcu_read_lock_held()
-> 
-> Then if you own the socket lock, no need for rcu_dereference_check()
-> 
-> It could be instead an rcu_dereference_protected(). This is stronger, because
-> if your thread no longer owns the socket lock, but is inside
-> rcu_read_lock(), we would
-> still get a proper lockdep splat.
-
-Ok, I think there are several places where rcu_dereference_check is 
-incorrectly used instead of rcu_dereference_protected.
+and applied.
