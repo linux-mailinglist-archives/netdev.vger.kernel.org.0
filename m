@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 11D585B1076
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 01:37:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCC8A5B107D
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 01:37:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230002AbiIGXhN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 19:37:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52974 "EHLO
+        id S229793AbiIGXhU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 19:37:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbiIGXhL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 19:37:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C54277E33B;
-        Wed,  7 Sep 2022 16:37:10 -0700 (PDT)
+        with ESMTP id S230031AbiIGXhP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 19:37:15 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F7527C1CF;
+        Wed,  7 Sep 2022 16:37:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 66DDF61AF2;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6A008CE1E05;
+        Wed,  7 Sep 2022 23:37:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95474C433D7;
         Wed,  7 Sep 2022 23:37:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B509EC433D6;
-        Wed,  7 Sep 2022 23:37:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662593829;
-        bh=fmr28kv/65U8JUTR7nL+T542LMSwkh0XA5b938laPIA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=iXWDDgc3nSouXP1ACypdbUru4N3Os94Qx0fYPqGkykDUU8Iv+D1qBOm9S34EfGyPp
-         wi9i5Byg3qdk23ptBWBuJ6BZwiE6Y7XrCxI8FXKbHFapi4hSppuHQZnQYZRQFe0wb1
-         WFwvKHYVZ+fofjTUnK0OXpcOsS9KJjhBnQ1jlOitQhLlya7ZElgXP/XU1+jPvL6MYc
-         fC0D8EAZrL3aBUKLQuS2zrqrIat/7rUF8BdjxtUiiXRiwYHPAQtKHZKgyPq+AhCxEU
-         5dMeUtGVTqKTy1n0+K3sRLLVDhr16UrwgKn+wleT/tsJayarua+MBS0Gzf04nXs3bH
-         SltJRTuMazpTQ==
+        s=k20201202; t=1662593830;
+        bh=Xy/P04BxUZSe9boIeJFProSOXcQrLF/gu7yicfUSKlY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=cbqHrQB8DN1dSafiw5lAUFS8i+GnFOIpjHqntRGihFWiDBlgHWhceYVLKYlrpan16
+         /RMnrQdlbLDKtoU5xAneeblEW6q9xrRIX3LDrrEn1lpBJRZBfDQBRGyZ+rcdzmBE9N
+         Zxo0Zky33YXNTPi6UfDl0bB6vBE5WMYShKS3NaorTZO4XmUV3C1EzWdkmICo3+SYVH
+         HNa+SGxzVLw6M5bybRmaYem79lVQXrq7ZrWGtKbp8+5okAq6RnpSL8rqyzTokQAaS4
+         1NxYNsRdNhJ2t0Losu1IACdkbIb4qMcS9yb9+GqfG7BR4KOLjCPdq+iZ87f3i541Yy
+         BA3GP7diRfu1A==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     Saeed Mahameed <saeedm@nvidia.com>,
         Leon Romanovsky <leonro@nvidia.com>
@@ -39,11 +39,15 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>, linux-rdma@vger.kernel.org
-Subject: [PATCH mlx5-next 00/14] mlx5-next updates 2022-09-07
-Date:   Wed,  7 Sep 2022 16:36:22 -0700
-Message-Id: <20220907233636.388475-1-saeed@kernel.org>
+        Jason Gunthorpe <jgg@nvidia.com>, linux-rdma@vger.kernel.org,
+        Aya Levin <ayal@nvidia.com>,
+        Eran Ben Elisha <eranbe@nvidia.com>
+Subject: [PATCH mlx5-next 01/14] net/mlx5: Expose NPPS related registers
+Date:   Wed,  7 Sep 2022 16:36:23 -0700
+Message-Id: <20220907233636.388475-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220907233636.388475-1-saeed@kernel.org>
+References: <20220907233636.388475-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -56,110 +60,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Aya Levin <ayal@nvidia.com>
 
-This series includes various mlx5 updates
+Add management capability bits indicating firmware may support N pulses
+per second. Add corresponding fields in MTPPS register.
 
-1) HW definitions and support for NPPS clock settings.
+Signed-off-by: Aya Levin <ayal@nvidia.com>
+Reviewed-by: Eran Ben Elisha <eranbe@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+---
+ include/linux/mlx5/mlx5_ifc.h | 18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
 
-2) NVMEoTCP HW capabilities and definitions 
-
-3) crypt HW bits and definitions for upcoming ipsec and TLS improvements
-
-4) various cleanups 
-
-5)  Enable hash mode by default for all NICs
-
-Liu, Changcheng Says:
-=====================
-When hardware lag hash mode is active, the explicit port affinity
-of the QP/TIS is ignored. The steering rules inside the port-select
-steering domain will determine the egress port.
-
-To support setting explicit port affinity while using hardware lag
-hash mode, a new capability of bypassing the port-select steering
-domain is introduced.
-
-The following patch series enable hash mode over NICs that support
-the new capability:
-5.1) Set the active port bit mask to let the firmware know which ports
-   are down and which are up, so it can use this info when handling
-   failover on QPs with explicit port affinity.
-5.2) Remove the assignment of default port affinity by the driver as
-   the user has dedicated userspace APIs to set the port affinity so
-   the default configuration isn't needed anymore.
-5.3) Detect and enable port-select bypass so explicit port affinity is
-   honored by the firmware.
-5.4) Enable hash mode by default on all NICs
-
-When setting QP/TIS port affinity explicitly and hash mode is active
-and the bypass port-select flow table capability is enabled by firmware,
-firmware adds a steering rule to catch egress traffic of these QPs/TISs
-and make their traffic skip the port-select steering domain. This adds
-performance overhead for all QPs/TISs. The common use case is to not
-set explicit port affinity(as when in hash, we don't need it). If there
-is a user that does want to set port affinity, it can be done with the
-dedicated userspace APIs.
-
-Detect the bypass port-select flow table capability, set it to let
-firmware know the driver supports this new capability.
-
-=====================
-
-
-Aya Levin (2):
-  net/mlx5: Expose NPPS related registers
-  net/mlx5: Add support for NPPS with real time mode
-
-Ben Ben-Ishay (1):
-  net/mlx5: Add NVMEoTCP caps, HW bits, 128B CQE and enumerations
-
-Gal Pressman (2):
-  net/mlx5: Remove unused functions
-  net/mlx5: Remove unused structs
-
-Jianbo Liu (2):
-  net/mlx5: Add IFC bits for general obj create param
-  net/mlx5: Add IFC bits and enums for crypto key
-
-Leon Romanovsky (1):
-  net/mlx5: Remove from FPGA IFC file not-needed definitions
-
-Liu, Changcheng (5):
-  net/mlx5: add IFC bits for bypassing port select flow table
-  RDMA/mlx5: Don't set tx affinity when lag is in hash mode
-  net/mlx5: Lag, set active ports if support bypass port select flow
-    table
-  net/mlx5: Lag, enable hash mode by default for all NICs
-  net/mlx5: detect and enable bypass port select flow table
-
-Or Gerlitz (1):
-  net/mlx5e: Rename from tls to transport static params
-
- drivers/infiniband/hw/mlx5/mlx5_ib.h          |  12 +
- .../ethernet/mellanox/mlx5/core/en/tc/meter.c |   6 +-
- .../mlx5/core/en_accel/common_utils.h         |  32 ++
- .../mellanox/mlx5/core/en_accel/ipsec_rxtx.h  |   5 -
- .../mellanox/mlx5/core/en_accel/ktls_rx.c     |   6 +-
- .../mellanox/mlx5/core/en_accel/ktls_tx.c     |   8 +-
- .../mellanox/mlx5/core/en_accel/ktls_txrx.c   |  36 +--
- .../mellanox/mlx5/core/en_accel/ktls_utils.h  |  17 +-
- drivers/net/ethernet/mellanox/mlx5/core/fw.c  |   6 +
- .../net/ethernet/mellanox/mlx5/core/health.c  |   7 -
- .../net/ethernet/mellanox/mlx5/core/lag/lag.c |  91 +++++-
- .../ethernet/mellanox/mlx5/core/lib/clock.c   | 139 +++++++--
- .../net/ethernet/mellanox/mlx5/core/main.c    |  34 +++
- .../mellanox/mlx5/core/steering/dr_types.h    |  14 -
- .../mellanox/mlx5/core/steering/fs_dr.h       |   4 -
- include/linux/mlx5/device.h                   |  70 ++++-
- include/linux/mlx5/driver.h                   |   9 +-
- include/linux/mlx5/fs_helpers.h               |  48 ---
- include/linux/mlx5/mlx5_ifc.h                 | 280 ++++++++++++++++--
- include/linux/mlx5/mlx5_ifc_fpga.h            |  24 --
- include/linux/mlx5/qp.h                       |   1 +
- 21 files changed, 629 insertions(+), 220 deletions(-)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/common_utils.h
-
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index 4acd5610e96b..e2f71c8d9bd7 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -9789,7 +9789,9 @@ struct mlx5_ifc_pcam_reg_bits {
+ struct mlx5_ifc_mcam_enhanced_features_bits {
+ 	u8         reserved_at_0[0x5d];
+ 	u8         mcia_32dwords[0x1];
+-	u8         reserved_at_5e[0xc];
++	u8         out_pulse_duration_ns[0x1];
++	u8         npps_period[0x1];
++	u8         reserved_at_60[0xa];
+ 	u8         reset_state[0x1];
+ 	u8         ptpcyc2realtime_modify[0x1];
+ 	u8         reserved_at_6c[0x2];
+@@ -10289,7 +10291,12 @@ struct mlx5_ifc_mtpps_reg_bits {
+ 	u8         reserved_at_18[0x4];
+ 	u8         cap_max_num_of_pps_out_pins[0x4];
+ 
+-	u8         reserved_at_20[0x24];
++	u8         reserved_at_20[0x13];
++	u8         cap_log_min_npps_period[0x5];
++	u8         reserved_at_38[0x3];
++	u8         cap_log_min_out_pulse_duration_ns[0x5];
++
++	u8         reserved_at_40[0x4];
+ 	u8         cap_pin_3_mode[0x4];
+ 	u8         reserved_at_48[0x4];
+ 	u8         cap_pin_2_mode[0x4];
+@@ -10308,7 +10315,9 @@ struct mlx5_ifc_mtpps_reg_bits {
+ 	u8         cap_pin_4_mode[0x4];
+ 
+ 	u8         field_select[0x20];
+-	u8         reserved_at_a0[0x60];
++	u8         reserved_at_a0[0x20];
++
++	u8         npps_period[0x40];
+ 
+ 	u8         enable[0x1];
+ 	u8         reserved_at_101[0xb];
+@@ -10317,7 +10326,8 @@ struct mlx5_ifc_mtpps_reg_bits {
+ 	u8         pin_mode[0x4];
+ 	u8         pin[0x8];
+ 
+-	u8         reserved_at_120[0x20];
++	u8         reserved_at_120[0x2];
++	u8         out_pulse_duration_ns[0x1e];
+ 
+ 	u8         time_stamp[0x40];
+ 
 -- 
 2.37.2
 
