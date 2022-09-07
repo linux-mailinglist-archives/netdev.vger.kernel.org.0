@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD3685B1088
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 01:37:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9A225B108A
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 01:37:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230185AbiIGXho (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 19:37:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53582 "EHLO
+        id S230195AbiIGXht (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 19:37:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230146AbiIGXh3 (ORCPT
+        with ESMTP id S230147AbiIGXh3 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 19:37:29 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B014C480D;
-        Wed,  7 Sep 2022 16:37:20 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C735EC58D6;
+        Wed,  7 Sep 2022 16:37:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E5461CE1E05;
-        Wed,  7 Sep 2022 23:37:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 215B3C433C1;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 95F1ECE1E1C;
+        Wed,  7 Sep 2022 23:37:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8C76C43470;
         Wed,  7 Sep 2022 23:37:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662593837;
-        bh=TY6erFYHZ8WMJWtlX48MYBWhCozS/CeISBZAdV2IRcU=;
+        s=k20201202; t=1662593838;
+        bh=aAXnCkV+nxiGQI7iRg1i4AG4A/y7hBGobBjlmiiYmpA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GxFhoMrx3XrxMUnIOCZMLw/Lz2GLZT0SuMXhT7idlXmypC3tN8a2MG/Mpxc0gJw63
-         +d1EF4/NpC3NTEEAwM9WnCerSpkspOGNZFkTJ67tndogObpFd8ZybinvRPXlq64Znv
-         28zKW5KlznNQhDcXBbfbqudih19eZzpZulRjWE/8CrWvwkRYF/PQ8gvnvJ4rvyROFw
-         rEJlPxgpt9wOgwXnYPnWOQ5xs+3eTSuz/RG6nN908fV22ibhtyFenF/a7lBm1FB4V8
-         4MYPbqCpo8s5Pk24ybn+4yp/APrddXQXRu4d2x8UrBiiDCxZS29IEimBvTkAJ7utUv
-         +6qIEP2P3s/0A==
+        b=RMe+hH5nohRKXDBg8hmNlpyCVx8gWa1FOv/qHYdoAzWvFcDMFRvxAb857dZs8ydHG
+         4dE9ZqSmq4lq+ztZNVKMQSfvKYAUOgJe5W/6bmvDmV6nM1fhfmYisOIOP88qATxoOo
+         Pf4Fd1UJwAGxzkknQ/zMk6NgjgVW7EONebhX998mWVrNfAJOIpKJnTDJrm3YJJf+93
+         GpgJG5EtUnxtlpPzocXYDrA4AkSJDGTupOlQNZM1KAcqLdPTMP8lMxrKGCiet3UrQB
+         i19RgCXdri03O2gQcPDHM0uWw7Y4XCqrQz7YbpL3alzbqhGRpQEzWqhsjpIEweCd4P
+         4roTpJpYJU5Jg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     Saeed Mahameed <saeedm@nvidia.com>,
         Leon Romanovsky <leonro@nvidia.com>
@@ -40,10 +40,10 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
         Jason Gunthorpe <jgg@nvidia.com>, linux-rdma@vger.kernel.org,
-        Gal Pressman <gal@nvidia.com>
-Subject: [PATCH mlx5-next 09/14] net/mlx5: Remove unused structs
-Date:   Wed,  7 Sep 2022 16:36:31 -0700
-Message-Id: <20220907233636.388475-10-saeed@kernel.org>
+        Raed Salem <raeds@nvidia.com>
+Subject: [PATCH mlx5-next 10/14] net/mlx5: Remove from FPGA IFC file not-needed definitions
+Date:   Wed,  7 Sep 2022 16:36:32 -0700
+Message-Id: <20220907233636.388475-11-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220907233636.388475-1-saeed@kernel.org>
 References: <20220907233636.388475-1-saeed@kernel.org>
@@ -59,78 +59,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Gal Pressman <gal@nvidia.com>
+From: Leon Romanovsky <leonro@nvidia.com>
 
-Remove structs which are no longer used in the driver:
-  mlx5dr_cmd_qp_create_attr
-  mlx5_fs_dr_ns
-  mlx5_pas
+Move IP layout bits definitions to be close to the place that actually
+uses it, together with removal extra defines that not in-use.
 
-Signed-off-by: Gal Pressman <gal@nvidia.com>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Reviewed-by: Raed Salem <raeds@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/steering/dr_types.h         | 14 --------------
- .../ethernet/mellanox/mlx5/core/steering/fs_dr.h   |  4 ----
- include/linux/mlx5/driver.h                        |  5 -----
- 3 files changed, 23 deletions(-)
+ include/linux/mlx5/mlx5_ifc.h      | 16 ++++++++++++++++
+ include/linux/mlx5/mlx5_ifc_fpga.h | 24 ------------------------
+ 2 files changed, 16 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-index 062c7c74a1f3..1777a1e508e7 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-@@ -1294,20 +1294,6 @@ struct mlx5dr_cmd_gid_attr {
- 	u32 roce_ver;
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index 3c1756763e90..26619b8e57c2 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -477,6 +477,22 @@ struct mlx5_ifc_odp_per_transport_service_cap_bits {
+ 	u8         reserved_at_6[0x1a];
  };
  
--struct mlx5dr_cmd_qp_create_attr {
--	u32 page_id;
--	u32 pdn;
--	u32 cqn;
--	u32 pm_state;
--	u32 service_type;
--	u32 buff_umem_id;
--	u32 db_umem_id;
--	u32 sq_wqe_cnt;
--	u32 rq_wqe_cnt;
--	u32 rq_wqe_shift;
--	u8 isolate_vl_tc:1;
++struct mlx5_ifc_ipv4_layout_bits {
++	u8         reserved_at_0[0x60];
++
++	u8         ipv4[0x20];
++};
++
++struct mlx5_ifc_ipv6_layout_bits {
++	u8         ipv6[16][0x8];
++};
++
++union mlx5_ifc_ipv6_layout_ipv4_layout_auto_bits {
++	struct mlx5_ifc_ipv6_layout_bits ipv6_layout;
++	struct mlx5_ifc_ipv4_layout_bits ipv4_layout;
++	u8         reserved_at_0[0x80];
++};
++
+ struct mlx5_ifc_fte_match_set_lyr_2_4_bits {
+ 	u8         smac_47_16[0x20];
+ 
+diff --git a/include/linux/mlx5/mlx5_ifc_fpga.h b/include/linux/mlx5/mlx5_ifc_fpga.h
+index 45c7c0d67635..0596472923ad 100644
+--- a/include/linux/mlx5/mlx5_ifc_fpga.h
++++ b/include/linux/mlx5/mlx5_ifc_fpga.h
+@@ -32,30 +32,6 @@
+ #ifndef MLX5_IFC_FPGA_H
+ #define MLX5_IFC_FPGA_H
+ 
+-struct mlx5_ifc_ipv4_layout_bits {
+-	u8         reserved_at_0[0x60];
+-
+-	u8         ipv4[0x20];
 -};
 -
- int mlx5dr_cmd_query_gid(struct mlx5_core_dev *mdev, u8 vhca_port_num,
- 			 u16 index, struct mlx5dr_cmd_gid_attr *attr);
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.h
-index 1fb185d6ac7f..d168622063d5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.h
-@@ -14,10 +14,6 @@ struct mlx5_fs_dr_action {
- 	struct mlx5dr_action *dr_action;
- };
- 
--struct mlx5_fs_dr_ns {
--	struct mlx5_dr_ns *dr_ns;
+-struct mlx5_ifc_ipv6_layout_bits {
+-	u8         ipv6[16][0x8];
 -};
 -
- struct mlx5_fs_dr_rule {
- 	struct mlx5dr_rule    *dr_rule;
- 	/* Only actions created by fs_dr */
-diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index 48f2d79a7732..b55583425920 100644
---- a/include/linux/mlx5/driver.h
-+++ b/include/linux/mlx5/driver.h
-@@ -856,11 +856,6 @@ struct mlx5_cmd_work_ent {
- 	refcount_t              refcnt;
- };
- 
--struct mlx5_pas {
--	u64	pa;
--	u8	log_sz;
+-union mlx5_ifc_ipv6_layout_ipv4_layout_auto_bits {
+-	struct mlx5_ifc_ipv6_layout_bits ipv6_layout;
+-	struct mlx5_ifc_ipv4_layout_bits ipv4_layout;
+-	u8         reserved_at_0[0x80];
 -};
 -
- enum phy_port_state {
- 	MLX5_AAA_111
- };
+-enum {
+-	MLX5_FPGA_CAP_SANDBOX_VENDOR_ID_MLNX = 0x2c9,
+-};
+-
+-enum {
+-	MLX5_FPGA_CAP_SANDBOX_PRODUCT_ID_IPSEC    = 0x2,
+-};
+-
+ struct mlx5_ifc_fpga_shell_caps_bits {
+ 	u8         max_num_qps[0x10];
+ 	u8         reserved_at_10[0x8];
 -- 
 2.37.2
 
