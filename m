@@ -2,67 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 522045B0B55
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 19:19:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 700235B0B6A
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 19:25:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229814AbiIGRTi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 13:19:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38326 "EHLO
+        id S229750AbiIGRZo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 13:25:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229773AbiIGRTg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 13:19:36 -0400
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B88313E13;
-        Wed,  7 Sep 2022 10:19:34 -0700 (PDT)
-Received: by mail-il1-x144.google.com with SMTP id b17so7944523ilh.0;
-        Wed, 07 Sep 2022 10:19:34 -0700 (PDT)
+        with ESMTP id S229713AbiIGRZj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 13:25:39 -0400
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E9BA7754E;
+        Wed,  7 Sep 2022 10:25:38 -0700 (PDT)
+Received: by mail-qk1-x732.google.com with SMTP id a15so11007200qko.4;
+        Wed, 07 Sep 2022 10:25:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=sAH9skRux/chFuQu9Rc4h8GuA7UNvAhFPO2U0LHdA7c=;
-        b=OG3eeLGxpzJrb5KG5sHWN9h+9tJX1BZZDjIO5lJrc61G+3WWrDbaEQ8f6feV16fBWp
-         ptn5ruffe7qN1mf69OdTBsEi7DEq1PUxtws+QTru5UFIoYL4w5H/J0PBed/dZCZObz02
-         M6oZmCNroTjcVXmVuRAtZAqI7mvfN4X6L8kSYvnFOAjx+BfcZ/QD97X+LpmQuCs0sUu5
-         iyajNcKZbqjQeEQjzc/SimfBmzW2hy3lodWjktaSYd+Vcc5KW3Aix9p5284NGyi5hgqQ
-         beu4dJh4Qe1uy/3RrpduNYU5LyEPueeuLs5KGgAI5FwKBsjiCjTzNhbXL/E8XjoPcyXV
-         klsg==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=cWon+Fvd+4B60TMyr3bnMFYMdsAD3pS2yqIjGTbwaT4=;
+        b=VoaJy7o/RKdCCt2QujB8CI8PNsT+pZuxu1u+gLDtbyd8K/ALH+Yh28xtnuYiAm/qYB
+         5Qrv89+Vz3YBDpnyZZNAJ5+EEDvF0ePDmxls7A1nj59vni+XsBuLDKZZRJuz/uZq42e1
+         4rBiOQnc8Jf4N2CTOqu5ocVXwwei9YkcSLyhjEBaYhn09z/UoRIwmM4A4qZ7hL5WfB3I
+         awkb1Rghoiwu9QA1hF7ty9wcIqqgOGlZcFHKDJD1Ccr9NSZF13wbcAbu4PQyBhIoGJHm
+         CE1B3AHd0H372/RGPQuQiuugEozCbLqICnAbJC5Q5JuvBjw3qNAbm/m6IWVqNIjBtPvR
+         pxqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=sAH9skRux/chFuQu9Rc4h8GuA7UNvAhFPO2U0LHdA7c=;
-        b=nz2xQC1AdxLAZBEj0qR0hLpi6Vk+inVEc+Bhr3RaZkg9spl1ds4lH3m4inatUTfyWQ
-         uZs3tPzpQj0Jw/ykDtNi/mFLj/HLNdB7tKwNgZY1Us8f4GbWD+plJ4KYS5pobp6L4PBy
-         iWugxqKs5jucgr3k0i1Ksp1ZGGXaDlJXYFht5j+saimqB2DlmYIU8+fwyq5V1H4mlirw
-         S6af0PgAa7WJe2BF9pJ9VexDgWLcCr16UPwjCRERbUaGAQ2/g0bNxapy7Uwb8LG0zuUU
-         5byIClR9T/VZ8UFs+e7rlZ+2LFBG1moHJXojaSPB97C2z0aLlE2EtwnBoqz32eQ4XJtG
-         B7lQ==
-X-Gm-Message-State: ACgBeo1KmobPRjRgm85Zdh8KGm4p+C6S8hB80I0fkm5OMFLfxYjuuQmR
-        Hx6xt6AShxkpwJlkJ16J35qqq/8xZtacMaLLWmI=
-X-Google-Smtp-Source: AA6agR6U+WYk2h4nLSnIzWFoV2UStyHu3E1LGe7APYWsBp4pvmnvLEvv+3XhA03PJTQb4hXci4Odubp5vbuUjcji0wc=
-X-Received: by 2002:a05:6e02:1d0b:b0:2eb:73fc:2235 with SMTP id
- i11-20020a056e021d0b00b002eb73fc2235mr2444495ila.164.1662571173764; Wed, 07
- Sep 2022 10:19:33 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=cWon+Fvd+4B60TMyr3bnMFYMdsAD3pS2yqIjGTbwaT4=;
+        b=8DOg0ne3B6XpnfAZkrXv9YxgzyQ5yMhwgAC7gGY4L+10Y/CAPPFr+DQ7ruGXJC7XCi
+         6j2WP5pL4JMu0dPqQ0BFbl37FoWDk4HL9NOtyHRzkdQMFDBca7+AH2mgCIUPyYkIsOYO
+         f36HVJMbsAafwVfmtuiNl47OIbBgi3bWhVLUgaz9moYiHxwWs9U0ZZx16RH2kTEnp0NO
+         DkrgmlguLtBvO0aZvlV8fGWEWDKgdDIqJF5dQ6I2XePcWtxxr1S1oL6v+hzJKsskmU68
+         rKj9tylgd25KiW2zQYe10hPCSRWGQ+wYYMv2lQm/ZNJWCduTS8vzTMeLqhuFu61lh4hj
+         bOdg==
+X-Gm-Message-State: ACgBeo1ekpHyjSkSQa6ryWmqIw3m/0DmSiVOXJjyOgv6PPICh+WyzUqn
+        XwNk1diho+hG4LCTb/TK7XH0vo+lR70=
+X-Google-Smtp-Source: AA6agR66jJybsuExOf0X9daECGHdF9G6YjYlGuW1uAOynH/JcKaK/g9pXUnFmmFUmFPo51sHnnbavQ==
+X-Received: by 2002:a05:620a:687:b0:6c8:c85a:6d63 with SMTP id f7-20020a05620a068700b006c8c85a6d63mr3543014qkh.82.1662571537239;
+        Wed, 07 Sep 2022 10:25:37 -0700 (PDT)
+Received: from localhost ([2600:1700:65a0:ab60:43a8:b047:37c3:33fe])
+        by smtp.gmail.com with ESMTPSA id a26-20020a05620a103a00b006aee5df383csm13730465qkk.134.2022.09.07.10.25.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Sep 2022 10:25:36 -0700 (PDT)
+Date:   Wed, 7 Sep 2022 10:25:35 -0700
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     Zhengchao Shao <shaozhengchao@huawei.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, jhs@mojatatu.com,
+        jiri@resnulli.us, martin.lau@linux.dev, daniel@iogearbox.net,
+        john.fastabend@gmail.com, ast@kernel.org, andrii@kernel.org,
+        song@kernel.org, yhs@fb.com, kpsingh@kernel.org, sdf@google.com,
+        haoluo@google.com, jolsa@kernel.org, weiyongjun1@huawei.com,
+        yuehaibing@huawei.com
+Subject: Re: [PATCH net-next,v2 00/22] refactor the walk and lookup hook
+ functions in tc_action_ops
+Message-ID: <YxjUDwJ9/KAblwM3@pop-os.localdomain>
+References: <20220906121346.71578-1-shaozhengchao@huawei.com>
 MIME-Version: 1.0
-References: <20220906151303.2780789-1-benjamin.tissoires@redhat.com> <20220906151303.2780789-3-benjamin.tissoires@redhat.com>
-In-Reply-To: <20220906151303.2780789-3-benjamin.tissoires@redhat.com>
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Date:   Wed, 7 Sep 2022 19:18:58 +0200
-Message-ID: <CAP01T76kXAoumUt37mMEzqNU9k43mJq08jfNYMbSVN5b5sZ_fQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v11 2/7] bpf: split btf_check_subprog_arg_match
- in two
-To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220906121346.71578-1-shaozhengchao@huawei.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -73,180 +76,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 6 Sept 2022 at 17:13, Benjamin Tissoires
-<benjamin.tissoires@redhat.com> wrote:
->
-> btf_check_subprog_arg_match() was used twice in verifier.c:
-> - when checking for the type mismatches between a (sub)prog declaration
->   and BTF
-> - when checking the call of a subprog to see if the provided arguments
->   are correct and valid
->
-> This is problematic when we check if the first argument of a program
-> (pointer to ctx) is correctly accessed:
-> To be able to ensure we access a valid memory in the ctx, the verifier
-> assumes the pointer to context is not null.
-> This has the side effect of marking the program accessing the entire
-> context, even if the context is never dereferenced.
->
-> For example, by checking the context access with the current code, the
-> following eBPF program would fail with -EINVAL if the ctx is set to null
-> from the userspace:
->
-> ```
-> SEC("syscall")
-> int prog(struct my_ctx *args) {
->   return 0;
-> }
-> ```
->
-> In that particular case, we do not want to actually check that the memory
-> is correct while checking for the BTF validity, but we just want to
-> ensure that the (sub)prog definition matches the BTF we have.
->
-> So split btf_check_subprog_arg_match() in two so we can actually check
-> for the memory used when in a call, and ignore that part when not.
->
-> Note that a further patch is in preparation to disentangled
-> btf_check_func_arg_match() from these two purposes, and so right now we
-> just add a new hack around that by adding a boolean to this function.
->
-> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
->
+On Tue, Sep 06, 2022 at 08:13:24PM +0800, Zhengchao Shao wrote:
+> The implementation logic of the walk/lookup hook function in each action
+> module is the same. Therefore, the two functions can be reconstructed.
+> When registering tc_action_ops of each action module, the corresponding
+> net_id is saved to tc_action_ops. In this way, the net_id of the
+> corresponding module can be directly obtained in act_api without executing
+> the specific walk and lookup hook functions. Then, generic functions can
+> be added to replace the walk and lookup hook functions of each action
+> module. Last, modify each action module in alphabetical order. 
+> 
+> Reserve the walk and lookup interfaces and delete them when they are no 
+> longer used.
+> 
+> This patchset has been tested by using TDC, and I will add selftest in
+> other patchset.
+> 
 > ---
->
-
-Given I'll fix it properly in my kfunc rework, LGTM otherwise:
-Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-
-> no changes in v11
->
-> new in v10
+> v1: save the net_id of each TC action module to the tc_action_ops structure
 > ---
->  include/linux/bpf.h   |  2 ++
->  kernel/bpf/btf.c      | 54 +++++++++++++++++++++++++++++++++++++++----
->  kernel/bpf/verifier.c |  2 +-
->  3 files changed, 52 insertions(+), 6 deletions(-)
->
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index 9c1674973e03..c9c72a089579 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -1943,6 +1943,8 @@ int btf_distill_func_proto(struct bpf_verifier_log *log,
->  struct bpf_reg_state;
->  int btf_check_subprog_arg_match(struct bpf_verifier_env *env, int subprog,
->                                 struct bpf_reg_state *regs);
-> +int btf_check_subprog_call(struct bpf_verifier_env *env, int subprog,
-> +                          struct bpf_reg_state *regs);
->  int btf_check_kfunc_arg_match(struct bpf_verifier_env *env,
->                               const struct btf *btf, u32 func_id,
->                               struct bpf_reg_state *regs,
-> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> index 903719b89238..eca9ea78ee5f 100644
-> --- a/kernel/bpf/btf.c
-> +++ b/kernel/bpf/btf.c
-> @@ -6170,7 +6170,8 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
->                                     const struct btf *btf, u32 func_id,
->                                     struct bpf_reg_state *regs,
->                                     bool ptr_to_mem_ok,
-> -                                   u32 kfunc_flags)
-> +                                   u32 kfunc_flags,
-> +                                   bool processing_call)
->  {
->         enum bpf_prog_type prog_type = resolve_prog_type(env->prog);
->         bool rel = false, kptr_get = false, trusted_arg = false;
-> @@ -6356,7 +6357,7 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
->                                         reg_ref_tname);
->                                 return -EINVAL;
->                         }
-> -               } else if (ptr_to_mem_ok) {
-> +               } else if (ptr_to_mem_ok && processing_call) {
->                         const struct btf_type *resolve_ret;
->                         u32 type_size;
->
-> @@ -6431,7 +6432,7 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
->         return rel ? ref_regno : 0;
->  }
->
-> -/* Compare BTF of a function with given bpf_reg_state.
-> +/* Compare BTF of a function declaration with given bpf_reg_state.
->   * Returns:
->   * EFAULT - there is a verifier bug. Abort verification.
->   * EINVAL - there is a type mismatch or BTF is not available.
-> @@ -6458,7 +6459,50 @@ int btf_check_subprog_arg_match(struct bpf_verifier_env *env, int subprog,
->                 return -EINVAL;
->
->         is_global = prog->aux->func_info_aux[subprog].linkage == BTF_FUNC_GLOBAL;
-> -       err = btf_check_func_arg_match(env, btf, btf_id, regs, is_global, 0);
-> +       err = btf_check_func_arg_match(env, btf, btf_id, regs, is_global, 0, false);
-> +
-> +       /* Compiler optimizations can remove arguments from static functions
-> +        * or mismatched type can be passed into a global function.
-> +        * In such cases mark the function as unreliable from BTF point of view.
-> +        */
-> +       if (err)
-> +               prog->aux->func_info_aux[subprog].unreliable = true;
-> +       return err;
-> +}
-> +
-> +/* Compare BTF of a function call with given bpf_reg_state.
-> + * Returns:
-> + * EFAULT - there is a verifier bug. Abort verification.
-> + * EINVAL - there is a type mismatch or BTF is not available.
-> + * 0 - BTF matches with what bpf_reg_state expects.
-> + * Only PTR_TO_CTX and SCALAR_VALUE states are recognized.
-> + *
-> + * NOTE: the code is duplicated from btf_check_subprog_arg_match()
-> + * because btf_check_func_arg_match() is still doing both. Once that
-> + * function is split in 2, we can call from here btf_check_subprog_arg_match()
-> + * first, and then treat the calling part in a new code path.
-> + */
-> +int btf_check_subprog_call(struct bpf_verifier_env *env, int subprog,
-> +                          struct bpf_reg_state *regs)
-> +{
-> +       struct bpf_prog *prog = env->prog;
-> +       struct btf *btf = prog->aux->btf;
-> +       bool is_global;
-> +       u32 btf_id;
-> +       int err;
-> +
-> +       if (!prog->aux->func_info)
-> +               return -EINVAL;
-> +
-> +       btf_id = prog->aux->func_info[subprog].type_id;
-> +       if (!btf_id)
-> +               return -EFAULT;
-> +
-> +       if (prog->aux->func_info_aux[subprog].unreliable)
-> +               return -EINVAL;
-> +
-> +       is_global = prog->aux->func_info_aux[subprog].linkage == BTF_FUNC_GLOBAL;
-> +       err = btf_check_func_arg_match(env, btf, btf_id, regs, is_global, 0, true);
->
->         /* Compiler optimizations can remove arguments from static functions
->          * or mismatched type can be passed into a global function.
-> @@ -6474,7 +6518,7 @@ int btf_check_kfunc_arg_match(struct bpf_verifier_env *env,
->                               struct bpf_reg_state *regs,
->                               u32 kfunc_flags)
->  {
-> -       return btf_check_func_arg_match(env, btf, func_id, regs, true, kfunc_flags);
-> +       return btf_check_func_arg_match(env, btf, func_id, regs, true, kfunc_flags, true);
->  }
->
->  /* Convert BTF of a function into bpf_reg_state if possible
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index 0194a36d0b36..d27fae3ce949 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -6626,7 +6626,7 @@ static int __check_func_call(struct bpf_verifier_env *env, struct bpf_insn *insn
->         func_info_aux = env->prog->aux->func_info_aux;
->         if (func_info_aux)
->                 is_global = func_info_aux[subprog].linkage == BTF_FUNC_GLOBAL;
-> -       err = btf_check_subprog_arg_match(env, subprog, caller->regs);
-> +       err = btf_check_subprog_call(env, subprog, caller->regs);
->         if (err == -EFAULT)
->                 return err;
->         if (is_global) {
-> --
-> 2.36.1
->
+> 
+> Zhengchao Shao (22):
+>   net: sched: act: move global static variable net_id to tc_action_ops
+>   net: sched: act_api: implement generic walker and search for tc action
+>   net: sched: act_bpf: get rid of tcf_bpf_walker and tcf_bpf_search
+>   net: sched: act_connmark: get rid of tcf_connmark_walker and
+>     tcf_connmark_search
+>   net: sched: act_csum: get rid of tcf_csum_walker and tcf_csum_search
+>   net: sched: act_ct: get rid of tcf_ct_walker and tcf_ct_search
+>   net: sched: act_ctinfo: get rid of tcf_ctinfo_walker and
+>     tcf_ctinfo_search
+>   net: sched: act_gact: get rid of tcf_gact_walker and tcf_gact_search
+>   net: sched: act_gate: get rid of tcf_gate_walker and tcf_gate_search
+>   net: sched: act_ife: get rid of tcf_ife_walker and tcf_ife_search
+>   net: sched: act_ipt: get rid of tcf_ipt_walker/tcf_xt_walker and
+>     tcf_ipt_search/tcf_xt_search
+>   net: sched: act_mirred: get rid of tcf_mirred_walker and
+>     tcf_mirred_search
+>   net: sched: act_mpls: get rid of tcf_mpls_walker and tcf_mpls_search
+>   net: sched: act_nat: get rid of tcf_nat_walker and tcf_nat_search
+>   net: sched: act_pedit: get rid of tcf_pedit_walker and
+>     tcf_pedit_search
+>   net: sched: act_police: get rid of tcf_police_walker and
+>     tcf_police_search
+>   net: sched: act_sample: get rid of tcf_sample_walker and
+>     tcf_sample_search
+>   net: sched: act_simple: get rid of tcf_simp_walker and tcf_simp_search
+>   net: sched: act_skbedit: get rid of tcf_skbedit_walker and
+>     tcf_skbedit_search
+>   net: sched: act_skbmod: get rid of tcf_skbmod_walker and
+>     tcf_skbmod_search
+>   net: sched: act_tunnel_key: get rid of tunnel_key_walker and
+>     tunnel_key_search
+>   net: sched: act_vlan: get rid of tcf_vlan_walker and tcf_vlan_search
+> 
+
+I think it is easier to review if you can fold those removal patches
+into one, pretty much like your 2nd patch. They are just cleanup's
+following a same pattern.
+
+Thanks.
