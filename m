@@ -2,182 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 47C4D5AFE08
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 09:49:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 574E25AFE20
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 09:52:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230156AbiIGHtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 03:49:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45972 "EHLO
+        id S230009AbiIGHwE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 03:52:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbiIGHst (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 03:48:49 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2913A6C06;
-        Wed,  7 Sep 2022 00:48:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=WJ2b8qVHDZJNqUbRpw1alUgkg2tYX5NB7/G3I8fEYno=; b=rbrzSllJxBQoU46oO61RreeO36
-        yv5hzD9M6XX1m4nxp855D++VbI0NYuJP30eV2U/KfQUm6UQ4KcixqbbLzqGWcaI/Onu+ROQNIbzTe
-        yyRtqsZd6ASn7TlLtqAqCxQr2+3qfi4twT64FvZ4R/duwtckJjcgAWI6Taf7C6ITfCPtPeZoKhx24
-        i04TUP+x+nc/X6E9S0oLB86CnK+pC1sHxoUPQ61qKgIxKEaFIIZnfzF++cn7Q/7VYPjmOQkp+zstS
-        kHruBzgAAmdsM/MoHiC3OlC4fe3Ysj2i1HBDiR4RVs0dRi7GGctmNo5x1OcTmc+wHWx6Wj6zRpt3s
-        uUONeIPQ==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:41590 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1oVpnf-0004yG-Ir; Wed, 07 Sep 2022 08:48:43 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-        id 1oVpne-005LCR-RJ; Wed, 07 Sep 2022 08:48:42 +0100
-In-Reply-To: <YxhMaYOfnM+7FG+W@shell.armlinux.org.uk>
-References: <YxhMaYOfnM+7FG+W@shell.armlinux.org.uk>
-From:   Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-To:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>
-Cc:     Alyssa Rosenzweig <alyssa@rosenzweig.io>, asahi@lists.linux.dev,
-        brcm80211-dev-list.pdl@broadcom.com,
-        "David S. Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Hector Martin <marcan@marcan.st>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Rafa__ Mi__ecki" <zajec5@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        SHA-cyfmac-dev-list@infineon.com, Sven Peter <sven@svenpeter.dev>
-Subject: [PATCH net-next 12/12] arm64: dts: apple: Add WiFi module and antenna
- properties
+        with ESMTP id S230169AbiIGHvy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 03:51:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D1783043
+        for <netdev@vger.kernel.org>; Wed,  7 Sep 2022 00:51:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662537108;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8KMdampSVOfSjQJ+eYUB/+euJ05288b13jRxouoL8v4=;
+        b=jAfinEBHOn0YSN2jsKbwC6yErdPNrGiYxg1SpTPbhhAhb0WPvoK05LAbXZpMOrjOjyYYfh
+        FWJgNYr2A/enzAjImRsRm8q4ZfPLEge4q6fAMr0xs/hWCR1URa6+FNZopw8wOP/Dl4uE31
+        tpXqMKvwlDvl/NJzbC81snkcJVMWXdk=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-365-yNOgJ1_CPfa6_Ed60xzdmA-1; Wed, 07 Sep 2022 03:51:44 -0400
+X-MC-Unique: yNOgJ1_CPfa6_Ed60xzdmA-1
+Received: by mail-wm1-f70.google.com with SMTP id n7-20020a1c2707000000b003a638356355so7071909wmn.2
+        for <netdev@vger.kernel.org>; Wed, 07 Sep 2022 00:51:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=8KMdampSVOfSjQJ+eYUB/+euJ05288b13jRxouoL8v4=;
+        b=ZmGSPa5wyvY414aS11+ZeTenpYJYIMu53VGPXg5A+xjhblBKfTIdvXr2D4tn5CMnQE
+         r2YfGNK0gcU+3FKm/icLNXies6GUKHCbOA3OSR3wsROZ2GxAia3S5Zj5mhjjSpMsXBlQ
+         G9Vwb1OLo7qt4hp4rRB70sa8R56SmxH7TAxYs4GJ83RTi1xnbR1OMdQ66g3ofH4ap/Qo
+         QmYxrol2D6UFVnQLzNykt5d/UzlVZ5On0IeMvBM6dWzZ9/oqLHseGYur6N7/++5a1rpc
+         LuPyS/eq+5OUdsDN3WK1eGCqRa5QYw2kV5aOEoOBi2opAr3Ptd7l2+GhXXg23luOEKv5
+         8VeA==
+X-Gm-Message-State: ACgBeo3zUJZC9axwBQZC/yG862cxWl6LnMr9fGfDhIax94ebCqV59Glz
+        xRaXuBcWP90Pt8LW4g3kmubGKtgOLBnSfHTBKUD5nFARFONMR10RcZeDbrXyUPYtIUtmplWAIN4
+        dTjswzZa34ZtMCjQQ
+X-Received: by 2002:a5d:6f19:0:b0:228:d8e8:3ac8 with SMTP id ay25-20020a5d6f19000000b00228d8e83ac8mr1149258wrb.101.1662537103869;
+        Wed, 07 Sep 2022 00:51:43 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6ThqBf88YF8iut0HC9FOIofHwvY/fghW1g6YgYSZwxQVisX9JDtm6hidIgh47utu42naZpeA==
+X-Received: by 2002:a5d:6f19:0:b0:228:d8e8:3ac8 with SMTP id ay25-20020a5d6f19000000b00228d8e83ac8mr1149243wrb.101.1662537103667;
+        Wed, 07 Sep 2022 00:51:43 -0700 (PDT)
+Received: from sgarzare-redhat (host-87-11-6-69.retail.telecomitalia.it. [87.11.6.69])
+        by smtp.gmail.com with ESMTPSA id d14-20020adff2ce000000b00228d6edade0sm6597943wrp.46.2022.09.07.00.51.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Sep 2022 00:51:43 -0700 (PDT)
+Date:   Wed, 7 Sep 2022 09:51:38 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     vdasa@vmware.com
+Cc:     vbhakta@vmware.com, namit@vmware.com, bryantan@vmware.com,
+        zackr@vmware.com, linux-graphics-maintainer@vmware.com,
+        doshir@vmware.com, gregkh@linuxfoundation.org, davem@davemloft.net,
+        pv-drivers@vmware.com, joe@perches.com, netdev@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-rdma@vger.kernel.org,
+        virtualization@lists.linux-foundation.org
+Subject: Re: [PATCH 0/3] MAINTAINERS: Update entries for some VMware drivers
+Message-ID: <20220907075138.ph3bbitnev72rei3@sgarzare-redhat>
+References: <20220906172722.19862-1-vdasa@vmware.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1oVpne-005LCR-RJ@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Wed, 07 Sep 2022 08:48:42 +0100
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220906172722.19862-1-vdasa@vmware.com>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+On Tue, Sep 06, 2022 at 10:27:19AM -0700, vdasa@vmware.com wrote:
+>From: Vishnu Dasa <vdasa@vmware.com>
+>
+>This series updates a few existing maintainer entries for VMware
+>supported drivers and adds a new entry for vsock vmci transport
+>driver.
+>
 
-Add the new module-instance/antenna-sku properties required to select
-WiFi firmwares properly to all board device trees.
+Since you are updating MAINTAINERS, what about adding 
+"include/linux/vmw_vmci*" under "VMWARE VMCI DRIVER"?
 
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
----
- arch/arm64/boot/dts/apple/t8103-j274.dts  | 4 ++++
- arch/arm64/boot/dts/apple/t8103-j293.dts  | 4 ++++
- arch/arm64/boot/dts/apple/t8103-j313.dts  | 4 ++++
- arch/arm64/boot/dts/apple/t8103-j456.dts  | 4 ++++
- arch/arm64/boot/dts/apple/t8103-j457.dts  | 4 ++++
- arch/arm64/boot/dts/apple/t8103-jxxx.dtsi | 2 ++
- 6 files changed, 22 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/apple/t8103-j274.dts b/arch/arm64/boot/dts/apple/t8103-j274.dts
-index 2cd429efba5b..c1f3ba9c39f6 100644
---- a/arch/arm64/boot/dts/apple/t8103-j274.dts
-+++ b/arch/arm64/boot/dts/apple/t8103-j274.dts
-@@ -21,6 +21,10 @@ aliases {
- 	};
- };
- 
-+&wifi0 {
-+	brcm,board-type = "apple,atlantisb";
-+};
-+
- /*
-  * Force the bus number assignments so that we can declare some of the
-  * on-board devices and properties that are populated by the bootloader
-diff --git a/arch/arm64/boot/dts/apple/t8103-j293.dts b/arch/arm64/boot/dts/apple/t8103-j293.dts
-index 49cdf4b560a3..ecb10d237a05 100644
---- a/arch/arm64/boot/dts/apple/t8103-j293.dts
-+++ b/arch/arm64/boot/dts/apple/t8103-j293.dts
-@@ -17,6 +17,10 @@ / {
- 	model = "Apple MacBook Pro (13-inch, M1, 2020)";
- };
- 
-+&wifi0 {
-+	brcm,board-type = "apple,honshu";
-+};
-+
- /*
-  * Remove unused PCIe ports and disable the associated DARTs.
-  */
-diff --git a/arch/arm64/boot/dts/apple/t8103-j313.dts b/arch/arm64/boot/dts/apple/t8103-j313.dts
-index b0ebb45bdb6f..df741737b8e6 100644
---- a/arch/arm64/boot/dts/apple/t8103-j313.dts
-+++ b/arch/arm64/boot/dts/apple/t8103-j313.dts
-@@ -17,6 +17,10 @@ / {
- 	model = "Apple MacBook Air (M1, 2020)";
- };
- 
-+&wifi0 {
-+	brcm,board-type = "apple,shikoku";
-+};
-+
- /*
-  * Remove unused PCIe ports and disable the associated DARTs.
-  */
-diff --git a/arch/arm64/boot/dts/apple/t8103-j456.dts b/arch/arm64/boot/dts/apple/t8103-j456.dts
-index 884fddf7d363..8c6bf9592510 100644
---- a/arch/arm64/boot/dts/apple/t8103-j456.dts
-+++ b/arch/arm64/boot/dts/apple/t8103-j456.dts
-@@ -21,6 +21,10 @@ aliases {
- 	};
- };
- 
-+&wifi0 {
-+	brcm,board-type = "apple,capri";
-+};
-+
- &i2c0 {
- 	hpm2: usb-pd@3b {
- 		compatible = "apple,cd321x";
-diff --git a/arch/arm64/boot/dts/apple/t8103-j457.dts b/arch/arm64/boot/dts/apple/t8103-j457.dts
-index d7c622931627..fe7c0aaf7d62 100644
---- a/arch/arm64/boot/dts/apple/t8103-j457.dts
-+++ b/arch/arm64/boot/dts/apple/t8103-j457.dts
-@@ -21,6 +21,10 @@ aliases {
- 	};
- };
- 
-+&wifi0 {
-+	brcm,board-type = "apple,santorini";
-+};
-+
- /*
-  * Force the bus number assignments so that we can declare some of the
-  * on-board devices and properties that are populated by the bootloader
-diff --git a/arch/arm64/boot/dts/apple/t8103-jxxx.dtsi b/arch/arm64/boot/dts/apple/t8103-jxxx.dtsi
-index fe2ae40fa9dd..3d15b8e2a6c1 100644
---- a/arch/arm64/boot/dts/apple/t8103-jxxx.dtsi
-+++ b/arch/arm64/boot/dts/apple/t8103-jxxx.dtsi
-@@ -71,8 +71,10 @@ hpm1: usb-pd@3f {
- &port00 {
- 	bus-range = <1 1>;
- 	wifi0: network@0,0 {
-+		compatible = "pci14e4,4425";
- 		reg = <0x10000 0x0 0x0 0x0 0x0>;
- 		/* To be filled by the loader */
- 		local-mac-address = [00 00 00 00 00 00];
-+		apple,antenna-sku = "XX";
- 	};
- };
--- 
-2.30.2
+Thanks,
+Stefano
 
