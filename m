@@ -2,209 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D7DCE5B0AF9
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 19:04:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 263305B0B1B
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 19:09:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230118AbiIGREq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 13:04:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34748 "EHLO
+        id S229967AbiIGRJw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 13:09:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229902AbiIGREo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 13:04:44 -0400
-Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6FA513F3E
-        for <netdev@vger.kernel.org>; Wed,  7 Sep 2022 10:04:40 -0700 (PDT)
-Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-324ec5a9e97so134575527b3.7
-        for <netdev@vger.kernel.org>; Wed, 07 Sep 2022 10:04:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=hLyrjDAXFGcKrBQvO2vsySR9eSdav05DqWhM1DrTM6w=;
-        b=kzTpMwICMFv0pmARBUEcUnfZg1NJ3terhdZgPs0jgweZObfTivz+51xhwcI+eGtziI
-         SPo4Vt3ENKnX06k7No8dIPawE+AXH8ekiD5rpIOH5Tah0qXfmTbVx6ip1lP8sNcTD0bw
-         tDJ2CbO0PAu9y4Y4mAfjPn/5Ve7iQ+LwEhahTG3JUP2t6Xnze7VGpnyD+Kh35+Hvn/vl
-         wIQhj/fLXTyoj/SR5oczmY0rKeQvGC4mROOVeES80WaiTiNcSSNP8ux08F4+S9FTpfiF
-         6a0e7HrNRcWPh3UEylSZYZGNb2wKeE/KFU3tU+qHsBjwoKot5MHwRb83I8G5IHuxrC3f
-         ft7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=hLyrjDAXFGcKrBQvO2vsySR9eSdav05DqWhM1DrTM6w=;
-        b=weMemmQW8aDNJHWucpAi7zvfdPluLjdGZREkG6PCt4Ilb61MtG96cBUIWwI2ctnXY/
-         ZOH5eC8r/1TRyGTZSVurtBV1hFWiFfAXWPANkE49aga9uTW4ahxvXefuhwAn2ng1OLCv
-         +lt94tFe9J75eh1F8GeI3tr+CW5F85vGIfaxTJqEzn3ubVTOg6pC+y94zVQpLo1CRmWe
-         hN0BqlOSZ+u3nwjutgODa0SgTH6pCYiWlMpvgevNhLX5V6nIGdOI0zIENURqghMuLqBq
-         zwFpOI/atZEevUa+maMZf1vC2MR8c1AwJTArscVp2ZD69iVenW53FFRsFI4Yanqiiz4C
-         5iQQ==
-X-Gm-Message-State: ACgBeo0nSAF6mJsXb0EJcMqoRsKyXEyu/psIgWqUo41wGrvWAbvSCRFL
-        9c9oP3mj8S2zamRNp1YX7dMFyCEgmmKC0MzpzM+5Ww==
-X-Google-Smtp-Source: AA6agR7jgcXkTjKkoU/wI+WaEwUj+8Y4DmQn8qZkFiDWBQX8ngt7el8mfF55JYy4izxDZLf8Q0ntXsx1UWAci0wEAxE=
-X-Received: by 2002:a81:4fce:0:b0:344:fba8:cb88 with SMTP id
- d197-20020a814fce000000b00344fba8cb88mr4110212ywb.278.1662570279401; Wed, 07
- Sep 2022 10:04:39 -0700 (PDT)
-MIME-Version: 1.0
-References: <cover.1662361354.git.cdleonard@gmail.com> <298e4e87ce3a822b4217b309438483959082e6bb.1662361354.git.cdleonard@gmail.com>
- <CANn89iKq4rUkCwSSD-35u+Lb8s9u-8t5bj1=aZuQ8+oYwuC-Eg@mail.gmail.com> <b951b8fb-f2b3-bcbb-8b7f-868b1f78f9bb@gmail.com>
-In-Reply-To: <b951b8fb-f2b3-bcbb-8b7f-868b1f78f9bb@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 7 Sep 2022 10:04:28 -0700
-Message-ID: <CANn89iJ9XGKHV1F1uhKmWqyOdDjiBebo0FOb6SfCxcvE5XzJPQ@mail.gmail.com>
-Subject: Re: [PATCH v8 08/26] tcp: authopt: Disable via sysctl by default
-To:     Leonard Crestez <cdleonard@gmail.com>
-Cc:     David Ahern <dsahern@kernel.org>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        Philip Paeps <philip@trouble.is>,
-        Shuah Khan <shuah@kernel.org>,
+        with ESMTP id S229445AbiIGRJu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 13:09:50 -0400
+Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B1723AB3E;
+        Wed,  7 Sep 2022 10:09:47 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id AF6883200805;
+        Wed,  7 Sep 2022 13:09:43 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Wed, 07 Sep 2022 13:09:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
+         h=cc:cc:content-transfer-encoding:date:date:from:from
+        :in-reply-to:message-id:mime-version:reply-to:sender:subject
+        :subject:to:to; s=fm2; t=1662570583; x=1662656983; bh=lEMgyuskMd
+        HHSxUE4iU5Q9az2x12J7mJ4G0YEW9bdmY=; b=6DdqzQcWCUDxwh08S9lzK0/F3/
+        2T4RE5qzIZGJmTYC/BMZRp4yprwzfDorrdR6aGj7WLZqZ309f0JVA9tvMYzNdSti
+        DGyMzqkzCehl1khYrIWhQuKquRyPMfSaVyIHq9VG0GUTp1w07Twmxp4RbdhdkcuX
+        rnyfdPu+6mYOkcCbeEaq5gXeTL44E5KgPv56xvOAOOJp4N7y9T0Nck6U7Vi3sKqB
+        7AhvaVN8Y0CE3J+Qj4g4zg2C8XOOorU0+Or4CYTrX+vhGgbvSBHhLvtiCKBVah1i
+        Q8TO+i/K4J/aLZMo96fD7AOgNibf6P1+4Q257fwpgvtkbMc6CkuWL3HVEhPA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:message-id
+        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
+        1662570583; x=1662656983; bh=lEMgyuskMdHHSxUE4iU5Q9az2x12J7mJ4G0
+        YEW9bdmY=; b=1xyVMiCf/OS3T6kbat1VPmsNuBWqnWvuMY05PBBxzFePRrkIW+H
+        DPYJPyTVGWGfCHmzMfmC0eezzk1tdd8o5Jaw1+yTqampY0OiPAHJ+EygSgFyc4eT
+        vaiyOjUyaWZxSLqNzAZ2PCZz96WP2Vf42jpWnb/Y5lbg45Zk5OTUhcwNsjLWpuln
+        lNSwhxUtLqtjzVxOYZf+9Y054QQZXOvn+bGFKL1Dxe458X04RLHXdm3d/jTN87Ey
+        beiNT024ky8y3mXi9tDmov6+/Zwnh2B95oGGsAGKjMkKA0iICy2ABUxbpKePg8rC
+        CA5YdX/WQsZZRRptsUB7F+rABNTnNYd6v3g==
+X-ME-Sender: <xms:VtAYY0Dgw1jmikCM9R2W3EmOj3BcSIsQbOYQvuzDlvPyztERjaH_wg>
+    <xme:VtAYY2gX1knX2Do8O6baN2Ho4_2VOV8awORVpxvyjPo77tqDAztY3-EpMDFQZV_ab
+    oWJZCySPepuTulEDqA>
+X-ME-Received: <xmr:VtAYY3m_b4Su6M3qVwvoVB9mQdsc9Op5l2wS1tkFoPTnycpAsCSNcw-lL4mXDcbyeiHRL6EmAgrzixVZq4WY5Fx4NZmd57xP_OOoHbDF0tf4jdhhHtnu-uk>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfedttddguddutdcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuvhgvnhcu
+    rfgvthgvrhcuoehsvhgvnhesshhvvghnphgvthgvrhdruggvvheqnecuggftrfgrthhtvg
+    hrnhepgfegudffudelfeeugedtjeeugeehueffudevveegveektdfhueehueeufeelheev
+    necuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtne
+    curfgrrhgrmhepmhgrihhlfhhrohhmpehsvhgvnhesshhvvghnphgvthgvrhdruggvvh
+X-ME-Proxy: <xmx:VtAYY6yoCoD1eaLJHNOVLnZ9Bv_wYUTeOujxDM7vBAZjG4HTjYiLuQ>
+    <xmx:VtAYY5Qd6PrPh_22--TkK7QQ1RtJVbKvoGLxXoLB3WlNjCWMWF5m3w>
+    <xmx:VtAYY1YsvnwDQYodwF7cNNzrzP5MYRgBsHHyDTwAVsQ7KnLy3Fp-Pg>
+    <xmx:V9AYY6BJTNJ6kioNeMu14tXHSdvm8MPK4kHpl0BoNRHahGHQ4Mb_NQ>
+Feedback-ID: i51094778:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 7 Sep 2022 13:09:39 -0400 (EDT)
+From:   Sven Peter <sven@svenpeter.dev>
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     Sven Peter <sven@svenpeter.dev>,
         "David S. Miller" <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Yuchung Cheng <ycheng@google.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Christoph Paasch <cpaasch@apple.com>,
-        Ivan Delalande <colona@arista.com>,
-        Caowangbao <caowangbao@huawei.com>,
-        Priyaranjan Jha <priyarjha@google.com>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
-        <linux-crypto@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Hector Martin <marcan@marcan.st>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        asahi@lists.linux.dev, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/5] Broadcom/Apple Bluetooth driver for Apple Silicon
+Date:   Wed,  7 Sep 2022 19:09:30 +0200
+Message-Id: <20220907170935.11757-1-sven@svenpeter.dev>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 7, 2022 at 9:53 AM Leonard Crestez <cdleonard@gmail.com> wrote:
->
-> On 9/7/22 02:11, Eric Dumazet wrote:
-> > On Mon, Sep 5, 2022 at 12:06 AM Leonard Crestez <cdleonard@gmail.com> wrote:
-> >>
-> >> This is mainly intended to protect against local privilege escalations
-> >> through a rarely used feature so it is deliberately not namespaced.
-> >>
-> >> Enforcement is only at the setsockopt level, this should be enough to
-> >> ensure that the tcp_authopt_needed static key never turns on.
-> >>
-> >> No effort is made to handle disabling when the feature is already in
-> >> use.
-> >>
-> >> Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
-> >> ---
-> >>   Documentation/networking/ip-sysctl.rst |  6 ++++
-> >>   include/net/tcp_authopt.h              |  1 +
-> >>   net/ipv4/sysctl_net_ipv4.c             | 39 ++++++++++++++++++++++++++
-> >>   net/ipv4/tcp_authopt.c                 | 25 +++++++++++++++++
-> >>   4 files changed, 71 insertions(+)
-> >>
-> >> diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-> >> index a759872a2883..41be0e69d767 100644
-> >> --- a/Documentation/networking/ip-sysctl.rst
-> >> +++ b/Documentation/networking/ip-sysctl.rst
-> >> @@ -1038,10 +1038,16 @@ tcp_challenge_ack_limit - INTEGER
-> >>          Note that this per netns rate limit can allow some side channel
-> >>          attacks and probably should not be enabled.
-> >>          TCP stack implements per TCP socket limits anyway.
-> >>          Default: INT_MAX (unlimited)
-> >>
-> >> +tcp_authopt - BOOLEAN
-> >> +       Enable the TCP Authentication Option (RFC5925), a replacement for TCP
-> >> +       MD5 Signatures (RFC2835).
-> >> +
-> >> +       Default: 0
-> >> +
->
-> ...
->
-> >> +#ifdef CONFIG_TCP_AUTHOPT
-> >> +static int proc_tcp_authopt(struct ctl_table *ctl,
-> >> +                           int write, void *buffer, size_t *lenp,
-> >> +                           loff_t *ppos)
-> >> +{
-> >> +       int val = sysctl_tcp_authopt;
-> >
-> > val = READ_ONCE(sysctl_tcp_authopt);
-> >
-> >> +       struct ctl_table tmp = {
-> >> +               .data = &val,
-> >> +               .mode = ctl->mode,
-> >> +               .maxlen = sizeof(val),
-> >> +               .extra1 = SYSCTL_ZERO,
-> >> +               .extra2 = SYSCTL_ONE,
-> >> +       };
-> >> +       int err;
-> >> +
-> >> +       err = proc_dointvec_minmax(&tmp, write, buffer, lenp, ppos);
-> >> +       if (err)
-> >> +               return err;
-> >> +       if (sysctl_tcp_authopt && !val) {
-> >
-> > READ_ONCE(sysctl_tcp_authopt)
-> >
-> > Note that this test would still be racy, because another cpu might
-> > change sysctl_tcp_authopt right after the read.
->
-> What meaningful races are possible here? This is a variable that changes
-> from 0 to 1 at most once.
+Hi,
 
-Two cpus can issue writes of 0 and 1 values at the same time.
+v1: https://lore.kernel.org/asahi/20220801103633.27772-1-sven@svenpeter.dev/
 
-Depending on scheduling writing the 0 can 'win' the race and overwrite
-the value back to 0.
+Here's v2 of the Apple/Broadcom Bluetooth series. Most changes from
+v1 are only related to the device tree bindings. Other than that I fixed
+a few minor bugs and adjusted some commit messages to make checkpatch
+happier.
 
-This is in clear violation of the claim you are making (that the
-sysctl can only go once from 0 to 1)
 
->
-> In theory if two processes attempt to assign "non-zero" at the same time
-> then one will "win" and the other will get an error but races between
-> userspace writing different values are possible for any sysctl. The
-> solution seems to be "write sysctls from a single place".
->
-> All the checks are in sockopts - in theory if the sysctl is written on
-> one CPU then a sockopt can still fail on another CPU until caches are
-> flushed. Is this what you're worried about?
->
-> In theory doing READ_ONCE might incur a slight penalty on sockopt but
-> not noticeable.
+Best,
 
-Not at all. There is _no_ penalty using READ_ONCE(). Unless it is done
-in a loop and this prevents some compiler optimization.
 
-Please use WRITE_ONCE() and READ_ONCE() for all sysctl values used in
-TCP stack (and elsewhere)
+Sven
 
-See all the silly patches we had recently.
+Sven Peter (5):
+  dt-bindings: net: Add generic Bluetooth controller
+  dt-bindings: net: Add Broadcom BCM4377 family PCIe Bluetooth
+  Bluetooth: hci_event: Add quirk to ignore byte in LE Extended Adv
+    Report
+  Bluetooth: Add quirk to disable extended scanning
+  Bluetooth: hci_bcm4377: Add new driver for BCM4377 PCI boards
 
->
-> >
-> >> +               net_warn_ratelimited("Enabling TCP Authentication Option is permanent\n");
-> >> +               return -EINVAL;
-> >> +       }
-> >> +       sysctl_tcp_authopt = val;
-> >
-> > WRITE_ONCE(sysctl_tcp_authopt, val),  or even better:
-> >
-> > if (val)
-> >       cmpxchg(&sysctl_tcp_authopt, 0, val);
-> >
-> >> +       return 0;
-> >> +}
-> >> +#endif
-> >> +
->
-> This would be useful if we did any sort of initialization here but we
-> don't. Crypto is initialized somewhere completely different.
+ .../bindings/net/bluetooth-controller.yaml    |   30 +
+ .../devicetree/bindings/net/bluetooth.txt     |    5 -
+ .../bindings/net/brcm,bcm4377-bluetooth.yaml  |   78 +
+ .../bindings/net/qualcomm-bluetooth.yaml      |    4 +-
+ .../bindings/soc/qcom/qcom,wcnss.yaml         |    8 +-
+ MAINTAINERS                                   |    2 +
+ drivers/bluetooth/Kconfig                     |   12 +
+ drivers/bluetooth/Makefile                    |    1 +
+ drivers/bluetooth/hci_bcm4377.c               | 2515 +++++++++++++++++
+ include/net/bluetooth/hci.h                   |   21 +
+ include/net/bluetooth/hci_core.h              |    4 +-
+ net/bluetooth/hci_event.c                     |    4 +
+ 12 files changed, 2671 insertions(+), 13 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/bluetooth-controller.yaml
+ delete mode 100644 Documentation/devicetree/bindings/net/bluetooth.txt
+ create mode 100644 Documentation/devicetree/bindings/net/brcm,bcm4377-bluetooth.yaml
+ create mode 100644 drivers/bluetooth/hci_bcm4377.c
+
+-- 
+2.25.1
+
