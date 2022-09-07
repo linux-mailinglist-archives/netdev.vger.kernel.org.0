@@ -2,133 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B07D65AFB98
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 07:15:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F26A5AFBA3
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 07:18:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229577AbiIGFPm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 01:15:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33666 "EHLO
+        id S229614AbiIGFSq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 01:18:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229480AbiIGFPl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 01:15:41 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C2956F555;
-        Tue,  6 Sep 2022 22:15:40 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id l14so4325886eja.7;
-        Tue, 06 Sep 2022 22:15:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=j+gF2bUdw4ITHGeuOAn3Q2fblVykEdsAK30iGjvCAVE=;
-        b=H0NBzFnfCondXQal0g4/vI4B8E19WEXfXFzHB9S2KIh4Y40ynRBpNhJ7nJZDNhLoqW
-         WVTcWN19+OM4LnBzGOXD2c6rCIR5Ltbs6EVIOPQlJ0Kztj1I4w6uOdXCioIK5ER3ZYTl
-         KrCfH8cullvGLwFNMxdR0Z4r9Ero6j79DxmEtzuSEye0TosR61ANoK3lNvXDzhvZOEXy
-         GerrXQ4MLUUOspAgBj0VzJV27+HkRPQ7Z6bX4iCgE6UfZinXWPPc7DtouBy6ZXuyZM7S
-         ycfDaWynccnL8dtlgMkUiPLmjCzyBm6hwZvJp4328dRAVAg8DI/BvNca51XpxqCfDOeM
-         ucuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=j+gF2bUdw4ITHGeuOAn3Q2fblVykEdsAK30iGjvCAVE=;
-        b=VIlC00RcraoTn2DO3sm1R+lm973p1Oh/PEWrK5P8oQxyyX3YokJQ/mn+Ln0+KZ3cJP
-         mdgNTr/Ac4rdLnL8IuWdawc6IAKjvB+IvE3sRTK0BT/a3IAoAWmRlA3Du2ORYMtjNtEk
-         rCRN+mQWBOhiOdBys43qLJQRTNMlrutm+gih2zDdLva4e/Nwuo+JP6eqUVX1fvhJ0m9t
-         c+CWYuui51Tr5ZJyKn5PQtt9IRHjSwkhFkXMDY1SLGX4P8I2nFXoFefuWO8CiL4nq/f3
-         yrL1vh79+eYAwoAgVLbyfQ+Vk79FXGdzsEQWtEhWuW7ZAr9mDvJEGiFDeLPTyFBe6Ftj
-         5d+Q==
-X-Gm-Message-State: ACgBeo143pgyt1XvmTpF3zhIcykswT+LIGcNvRuyS9zVWWPnf+4epcRc
-        Z54m25DiHNaCHOr0YKe4ku0pSAfuO9JvmgA7T9k=
-X-Google-Smtp-Source: AA6agR5Y9xApB8c6DhmDhMDqodjtZVDSPB0Oy8CfE3YZ77w+lxLy8OTqIFDJaADHnjXzBURk9Opg0gqaLuIezBff6I8=
-X-Received: by 2002:a17:906:847c:b0:73f:d7cf:bf2d with SMTP id
- hx28-20020a170906847c00b0073fd7cfbf2dmr1128579ejc.327.1662527738806; Tue, 06
- Sep 2022 22:15:38 -0700 (PDT)
+        with ESMTP id S229461AbiIGFSo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 01:18:44 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40B319C8D9;
+        Tue,  6 Sep 2022 22:18:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662527924; x=1694063924;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ramvOUtx8XnHZKzNv1q3piGUCQeF1ndHFRzBHtiRrN8=;
+  b=XBDz7rhh1E5PVC1p3wV/K/zqk2IUKiZwVVuYmQZCkJnXIn31l6uR7v+w
+   smBzqMnGZLLHeAlySRNgHfLFSHJkuaz7sp5oVUdW3AJWW1tZszkPfukda
+   rBt3XZmY1BX7pYP+yJF0To3xHgSDrqCowHotR3tf0NyKPB6u5Tr+OeOsO
+   NXq+cXewilfag1FBoKou+ce1gw6XTZ63GnPDdlzPCPZ7U4osVRp+r3rxz
+   KA6V57hiE7BagW3l3jKpBXtLsPMAV75AIDmPQCPluGGbND2dbBAUVeZde
+   HVvAfJmtxeRZwLKh2lx4/cEfG2oG0JnGoH8PFlVzF+lgIcLmXz2MkHgGz
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10462"; a="360728973"
+X-IronPort-AV: E=Sophos;i="5.93,295,1654585200"; 
+   d="scan'208";a="360728973"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2022 22:18:43 -0700
+X-IronPort-AV: E=Sophos;i="5.93,295,1654585200"; 
+   d="scan'208";a="644464015"
+Received: from jiebi-mobl1.ccr.corp.intel.com (HELO jiezho4x-mobl1.ccr.corp.intel.com) ([10.255.30.104])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2022 22:18:39 -0700
+From:   Jie2x Zhou <jie2x.zhou@intel.com>
+To:     jie2x.zhou@intel.com, andrii@kernel.org, mykolal@fb.com,
+        ast@kernel.org, daniel@iogearbox.net, martin.lau@linux.dev,
+        davem@davemloft.net, kuba@kernel.org, hawk@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Philip Li <philip.li@intel.com>
+Subject: test ./tools/testing/selftests/bpf/test_offload.py failed
+Date:   Wed,  7 Sep 2022 13:16:57 +0800
+Message-Id: <20220907051657.55597-1-jie2x.zhou@intel.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <cover.1662383493.git.lorenzo@kernel.org> <fa02d93153b99bc994215c1644a2c75a226e3c7d.1662383493.git.lorenzo@kernel.org>
- <CAADnVQJ4XtFpsEsPRC-cepfQvXr-hN7e_3L5SchieeGHH40_4A@mail.gmail.com> <CAP01T77BuY9VNBVt98SJio5D2SqkR5i3bynPXTZG4VVUng-bBA@mail.gmail.com>
-In-Reply-To: <CAP01T77BuY9VNBVt98SJio5D2SqkR5i3bynPXTZG4VVUng-bBA@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 6 Sep 2022 22:15:27 -0700
-Message-ID: <CAADnVQJ7PnY+AQmyaMggx6twZ5a4bOncKApkjhPhjj2iniXoUQ@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 3/4] net: netfilter: add bpf_ct_set_nat_info
- kfunc helper
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        netfilter-devel <netfilter-devel@vger.kernel.org>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 6, 2022 at 9:40 PM Kumar Kartikeya Dwivedi <memxor@gmail.com> wrote:
->
-> On Wed, 7 Sept 2022 at 06:27, Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Mon, Sep 5, 2022 at 6:14 AM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
-> > > +int bpf_ct_set_nat_info(struct nf_conn___init *nfct__ref,
-> > > +                       union nf_inet_addr *addr, __be16 *port,
-> > > +                       enum nf_nat_manip_type manip)
-> > > +{
-> > ...
-> > > @@ -437,6 +483,7 @@ BTF_ID_FLAGS(func, bpf_ct_set_timeout, KF_TRUSTED_ARGS)
-> > >  BTF_ID_FLAGS(func, bpf_ct_change_timeout, KF_TRUSTED_ARGS)
-> > >  BTF_ID_FLAGS(func, bpf_ct_set_status, KF_TRUSTED_ARGS)
-> > >  BTF_ID_FLAGS(func, bpf_ct_change_status, KF_TRUSTED_ARGS)
-> > > +BTF_ID_FLAGS(func, bpf_ct_set_nat_info)
-> > >  BTF_SET8_END(nf_ct_kfunc_set)
-> >
-> > Instead of __ref and patch 1 and 2 it would be better to
-> > change the meaning of "trusted_args".
-> > In this case "addr" and "port" are just as "trusted".
-> > They're not refcounted per verifier definition,
-> > but they need to be "trusted" by the helper.
-> > At the end the "trusted_args" flags would mean
-> > "this helper can assume that all pointers can be safely
-> > accessed without worrying about lifetime".
->
-> So you mean it only forces PTR_TO_BTF_ID to have reg->ref_obj_id > 0?
->
-> But suppose in the future you have a type that has scalars only.
->
-> struct foo { int a; int b; ... };
-> Just data, and this is acquired from a kfunc and released using another kfunc.
-> Now with this new definition you are proposing, verifier ends up
-> allowing PTR_TO_MEM to also be passed to such helpers for the struct
-> foo *.
->
-> I guess even reg->ref_obj_id check is not enough, user may also pass
-> PTR_TO_MEM | MEM_ALLOC which can be refcounted.
->
-> It would be easy to forget such subtle details later.
+hi,
 
-It may add headaches to the verifier side, but here we have to
-think from pov of other subsystems that add kfuncs.
-They shouldn't need to know the verifier details.
-The internals will change anyway.
-Ideally KF_TRUSTED_ARGS will become the default flag that every kfunc
-will use to indicate that the function assumes valid pointers.
-How the verifier recognizes them is irrelevant from kfunc pov.
-People that write bpf progs are not that much different from
-people that write kfuncs that bpf progs use.
-Both should be easy to write.
+I try to know why output following error?
+I found that "disable_ifindex" file do not set read function, so return -EINVAL when do read.
+Is it a bug in test_offload.py?
+
+test output:
+ selftests: bpf: test_offload.py
+ Test destruction of generic XDP...
+......
+     raise Exception("Command failed: %s\n%s" % (proc.args, stderr))
+ Exception: Command failed: cat /sys/kernel/debug/netdevsim/netdevsim0//ports/0/dev/hwstats/l3/disable_ifindex
+ 
+ cat: /sys/kernel/debug/netdevsim/netdevsim0//ports/0/dev/hwstats/l3/disable_ifindex: Invalid argument
+ not ok 20 selftests: bpf: test_offload.py # exit=1
+
+source code:
+In drivers/net/netdevsim/hwstats.c:
+define NSIM_DEV_HWSTATS_FOPS(ACTION, TYPE)                     \
+        {                                                       \
+                .fops = {                                       \
+                        .open = simple_open,                    \
+                        .write = nsim_dev_hwstats_do_write,     \
+                        .llseek = generic_file_llseek,          \
+                        .owner = THIS_MODULE,                   \
+                },                                              \
+                .action = ACTION,                               \
+                .type = TYPE,                                   \
+        }
+
+static const struct nsim_dev_hwstats_fops nsim_dev_hwstats_l3_disable_fops =
+        NSIM_DEV_HWSTATS_FOPS(NSIM_DEV_HWSTATS_DO_DISABLE,
+                              NETDEV_OFFLOAD_XSTATS_TYPE_L3);
+
+        debugfs_create_file("disable_ifindex", 0600, hwstats->l3_ddir, hwstats,
+                            &nsim_dev_hwstats_l3_disable_fops.fops);
+
+In fs/read_write.c:
+ssize_t vfs_read(struct file *file, char __user *buf, size_t count, loff_t *pos)
+{
+......
+        if (file->f_op->read)
+                ret = file->f_op->read(file, buf, count, pos);
+        else if (file->f_op->read_iter)
+                ret = new_sync_read(file, buf, count, pos);
+        else
+                ret = -EINVAL;
+......
+}
+
+best regards,
