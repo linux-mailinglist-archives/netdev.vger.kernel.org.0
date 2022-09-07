@@ -2,46 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A6D95B090C
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 17:46:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90CE25B090E
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 17:46:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229731AbiIGPqU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 11:46:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49580 "EHLO
+        id S229785AbiIGPqX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 11:46:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229836AbiIGPqM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 11:46:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9149A82762
-        for <netdev@vger.kernel.org>; Wed,  7 Sep 2022 08:46:07 -0700 (PDT)
+        with ESMTP id S229614AbiIGPqN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 11:46:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91FED6CF7C
+        for <netdev@vger.kernel.org>; Wed,  7 Sep 2022 08:46:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662565566;
+        s=mimecast20190719; t=1662565571;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=EQkFLDjoyFYBBnPe05h3hhYJQzwJrKql3Np1KjDu3/w=;
-        b=XnjbzR/GMrf8EpWBF51QOw6wL2nv1GUn/JRvCpobCLtMUv2Z5c+E/Phmar/d7IRXgiyruY
-        jl3dA/0OMRush1xbIjEf4pO00W6NBbr0sc79J1rJmXB4ktv+JheRH62qtyYQbG1n1pi0sb
-        MPleh9A9SsDbOJt5i9jR4Dewpl5UYIc=
+        bh=A559hgNhNxZLa/lcKgd8/J/9OLu6thHW1dOCvPXH/Cw=;
+        b=TONa26D2EjRJX/xIeh1JnArf1O+1lXVKSXXp8QEOqW5Nobiz5xK2OsWpD92GQU9wzFTHSS
+        ICGWEfvUtHRoO9qf6A51ikaptb8CejL/s+YPIEb6WN0fgqzxfjVaaiTFb0cOSPB+P0D5MI
+        2LksLa2bvyKwkI2bOnbjb+zZSulDUEI=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-461-Fyr_K0d3Oyaoqn-ZWrtPjA-1; Wed, 07 Sep 2022 11:46:03 -0400
-X-MC-Unique: Fyr_K0d3Oyaoqn-ZWrtPjA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+ us-mta-620-Y5EFfDaTN2euBjOXU9qFmA-1; Wed, 07 Sep 2022 11:46:08 -0400
+X-MC-Unique: Y5EFfDaTN2euBjOXU9qFmA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B4B7B85A58D;
-        Wed,  7 Sep 2022 15:46:02 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CA63D811E87;
+        Wed,  7 Sep 2022 15:46:07 +0000 (UTC)
 Received: from firesoul.localdomain (unknown [10.40.208.22])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 556BD4010E4D;
-        Wed,  7 Sep 2022 15:46:02 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 66F4D945D2;
+        Wed,  7 Sep 2022 15:46:07 +0000 (UTC)
 Received: from [192.168.42.3] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id 51EE930721A6C;
-        Wed,  7 Sep 2022 17:46:01 +0200 (CEST)
-Subject: [PATCH RFCv2 bpf-next 12/18] net: use XDP-hints in xdp_frame to SKB
- conversion
+        by firesoul.localdomain (Postfix) with ESMTP id 5EA5530721A6C;
+        Wed,  7 Sep 2022 17:46:06 +0200 (CEST)
+Subject: [PATCH RFCv2 bpf-next 13/18] mvneta: add XDP-hints support
 From:   Jesper Dangaard Brouer <brouer@redhat.com>
 To:     bpf@vger.kernel.org
 Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
@@ -53,18 +52,18 @@ Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
         Andrii Nakryiko <andrii.nakryiko@gmail.com>,
         dave@dtucker.co.uk, Magnus Karlsson <magnus.karlsson@intel.com>,
         bjorn@kernel.org
-Date:   Wed, 07 Sep 2022 17:46:01 +0200
-Message-ID: <166256556130.1434226.10426110144984671774.stgit@firesoul>
+Date:   Wed, 07 Sep 2022 17:46:06 +0200
+Message-ID: <166256556634.1434226.5193053845415014583.stgit@firesoul>
 In-Reply-To: <166256538687.1434226.15760041133601409770.stgit@firesoul>
 References: <166256538687.1434226.15760041133601409770.stgit@firesoul>
 User-Agent: StGit/1.4
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,159 +71,178 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch makes the net/core/xdp function __xdp_build_skb_from_frame()
-consume HW offloads provided via XDP-hints when creating an SKB based
-on an xdp_frame. This is an initial step towards SKB less drivers that
-moves SKB handing to net/core.
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-Current users that already benefit from this are: Redirect into veth
-and cpumap. XDP_PASS action in bpf_test_run_xdp_live and driver
-ethernet/aquantia/atlantic/.
+In mvneta_rx_swbm() code path this driver already builds the SKB based
+on the xdp_buff. The natural next step is to use XDP-hints to populate
+the SKB fields, even when sending packets to normal netstack.
 
+The hardware/driver only support RX checksum offloading, which is stored
+as XDP-hints. Still the generic function xdp_hint2skb() that applies all
+common hints is called.  This makes sense as an XDP bpf_prog have the
+opportunity to add some of these common hints prior to SKB creation.
+
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 ---
- include/net/xdp.h |   72 +++++++++++++++++++++++++++++++++++++++++++++++++++++
- net/core/xdp.c    |   17 ++++++++-----
- 2 files changed, 83 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/marvell/mvneta.c |   59 ++++++++++++++++++++++++++++-----
+ 1 file changed, 50 insertions(+), 9 deletions(-)
 
-diff --git a/include/net/xdp.h b/include/net/xdp.h
-index c7cdcef83fa5..bdb497c7b296 100644
---- a/include/net/xdp.h
-+++ b/include/net/xdp.h
-@@ -153,6 +153,68 @@ static __always_inline u32 xdp_hints_set_vlan(struct xdp_hints_common *hints,
- 	return flags;
- }
+diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+index 0caa2df87c04..7d0055488a86 100644
+--- a/drivers/net/ethernet/marvell/mvneta.c
++++ b/drivers/net/ethernet/marvell/mvneta.c
+@@ -40,6 +40,7 @@
+ #include <net/page_pool.h>
+ #include <net/pkt_cls.h>
+ #include <linux/bpf_trace.h>
++#include <linux/btf.h>
  
-+/* XDP hints to SKB helper functions */
-+static inline void xdp_hint2skb_record_rx_queue(struct sk_buff *skb,
-+						struct xdp_hints_common *hints)
-+{
-+	if (hints->xdp_hints_flags & HINT_FLAG_RX_QUEUE)
-+		skb_record_rx_queue(skb, hints->rx_queue);
-+}
-+
-+static inline void xdp_hint2skb_set_hash(struct sk_buff *skb,
-+					 struct xdp_hints_common *hints)
-+{
-+	u32 hash_type = hints->xdp_hints_flags & HINT_FLAG_RX_HASH_TYPE_MASK;
-+
-+	if (hash_type) {
-+		hash_type = hash_type >> HINT_FLAG_RX_HASH_TYPE_SHIFT;
-+		skb_set_hash(skb, hints->rx_hash32, hash_type);
-+	}
-+}
-+
-+static inline void xdp_hint2skb_checksum(struct sk_buff *skb,
-+					 struct xdp_hints_common *hints)
-+{
-+	u32 csum_type = hints->xdp_hints_flags & HINT_FLAG_CSUM_TYPE_MASK;
-+	u32 csum_level = hints->xdp_hints_flags & HINT_FLAG_CSUM_LEVEL_MASK;
-+
-+	if (csum_type == CHECKSUM_UNNECESSARY)
-+		skb->ip_summed = CHECKSUM_UNNECESSARY;
-+
-+	if (csum_level)
-+		skb->csum_level = csum_level >> HINT_FLAG_CSUM_LEVEL_SHIFT;
-+
-+	/* TODO: First driver implementing CHECKSUM_PARTIAL or CHECKSUM_COMPLETE
-+	 *  need to implement handling here.
-+	 */
-+}
-+
-+static inline void xdp_hint2skb_vlan_hw_tag(struct sk_buff *skb,
-+					    struct xdp_hints_common *hints)
-+{
-+	u32 flags = hints->xdp_hints_flags;
-+	__be16 proto = htons(ETH_P_8021Q);
-+
-+	if (flags & HINT_FLAG_VLAN_PROTO_ETH_P_8021AD)
-+		proto = htons(ETH_P_8021AD);
-+
-+	if (flags & HINT_FLAG_VLAN_PRESENT) {
-+		/* like: __vlan_hwaccel_put_tag */
-+		skb->vlan_proto = proto;
-+		skb->vlan_tci = hints->vlan_tci;
-+		skb->vlan_present = 1;
-+	}
-+}
-+
-+static inline void xdp_hint2skb(struct sk_buff *skb,
-+				struct xdp_hints_common *hints)
-+{
-+	xdp_hint2skb_record_rx_queue(skb, hints);
-+	xdp_hint2skb_set_hash(skb, hints);
-+	xdp_hint2skb_checksum(skb, hints);
-+	xdp_hint2skb_vlan_hw_tag(skb, hints);
-+}
-+
- /**
-  * DOC: XDP RX-queue information
-  *
-@@ -364,6 +426,16 @@ static __always_inline bool xdp_frame_is_frag_pfmemalloc(struct xdp_frame *frame
- 	return !!(frame->flags & XDP_FLAGS_FRAGS_PF_MEMALLOC);
- }
+ /* Registers */
+ #define MVNETA_RXQ_CONFIG_REG(q)                (0x1400 + ((q) << 2))
+@@ -371,6 +372,9 @@
+ #define MVNETA_RX_GET_BM_POOL_ID(rxd) \
+ 	(((rxd)->status & MVNETA_RXD_BM_POOL_MASK) >> MVNETA_RXD_BM_POOL_SHIFT)
  
-+static __always_inline bool xdp_frame_has_hints_compat(struct xdp_frame *xdpf)
-+{
-+	u32 flags = xdpf->flags;
++static struct btf *mvneta_btf;
++static u64 btf_id_xdp_hints;
 +
-+	if (!(flags & XDP_FLAGS_HINTS_COMPAT_COMMON))
-+		return false;
-+
-+	return !!(flags & XDP_FLAGS_HINTS_MASK);
-+}
-+
- #define XDP_BULK_QUEUE_SIZE	16
- struct xdp_frame_bulk {
- 	int count;
-diff --git a/net/core/xdp.c b/net/core/xdp.c
-index a57bd5278b47..ffa353367941 100644
---- a/net/core/xdp.c
-+++ b/net/core/xdp.c
-@@ -623,6 +623,7 @@ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
- 					   struct net_device *dev)
+ enum {
+ 	ETHTOOL_STAT_EEE_WAKEUP,
+ 	ETHTOOL_STAT_SKB_ALLOC_ERR,
+@@ -2308,12 +2312,15 @@ mvneta_swbm_rx_frame(struct mvneta_port *pp,
+ 		     struct mvneta_rx_desc *rx_desc,
+ 		     struct mvneta_rx_queue *rxq,
+ 		     struct xdp_buff *xdp, int *size,
+-		     struct page *page)
++		     struct page *page, u32 status)
  {
- 	struct skb_shared_info *sinfo = xdp_get_shared_info_from_frame(xdpf);
-+	struct xdp_hints_common *xdp_hints = NULL;
- 	unsigned int headroom, frame_size;
- 	void *hard_start;
- 	u8 nr_frags;
-@@ -640,14 +641,17 @@ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
- 	frame_size = xdpf->frame_sz;
+ 	unsigned char *data = page_address(page);
+ 	int data_len = -MVNETA_MH_SIZE, len;
++	struct xdp_hints_common *xdp_hints;
+ 	struct net_device *dev = pp->dev;
+ 	enum dma_data_direction dma_dir;
++	u32 xdp_hints_flags;
++	u16 cksum;
  
- 	hard_start = xdpf->data - headroom;
-+	prefetch(xdpf->data); /* cache-line for eth_type_trans */
- 	skb = build_skb_around(skb, hard_start, frame_size);
- 	if (unlikely(!skb))
- 		return NULL;
- 
- 	skb_reserve(skb, headroom);
- 	__skb_put(skb, xdpf->len);
--	if (xdpf->metasize)
-+	if (xdpf->metasize) {
- 		skb_metadata_set(skb, xdpf->metasize);
-+		prefetch(xdpf->data - sizeof(*xdp_hints));
+ 	if (*size > MVNETA_MAX_RX_BUF_SIZE) {
+ 		len = MVNETA_MAX_RX_BUF_SIZE;
+@@ -2336,6 +2343,20 @@ mvneta_swbm_rx_frame(struct mvneta_port *pp,
+ 	xdp_buff_clear_frags_flag(xdp);
+ 	xdp_prepare_buff(xdp, data, pp->rx_offset_correction + MVNETA_MH_SIZE,
+ 			 data_len, false);
++
++	if (unlikely(!(pp->dev->features & NETIF_F_XDP_HINTS))) {
++		xdp_buff_clear_hints_flags(xdp);
++		return;
 +	}
++
++	xdp_hints = xdp->data - sizeof(*xdp_hints);
++	cksum = mvneta_rx_csum(pp, status);
++	xdp_hints_flags = xdp_hints_set_rx_csum(xdp_hints, cksum, 0);
++	xdp_hints_set_flags(xdp_hints, xdp_hints_flags);
++	xdp_hints->btf_full_id = btf_id_xdp_hints;
++	xdp->data_meta = xdp->data - sizeof(*xdp_hints);
++
++	xdp_buff_set_hints_flags(xdp, true);
+ }
  
- 	if (unlikely(xdp_frame_has_frags(xdpf)))
- 		xdp_update_skb_shared_info(skb, nr_frags,
-@@ -658,11 +662,12 @@ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
- 	/* Essential SKB info: protocol and skb->dev */
- 	skb->protocol = eth_type_trans(skb, dev);
+ static void
+@@ -2385,9 +2406,25 @@ mvneta_swbm_add_rx_fragment(struct mvneta_port *pp,
+ 	*size -= len;
+ }
  
--	/* Optional SKB info, currently missing:
--	 * - HW checksum info		(skb->ip_summed)
--	 * - HW RX hash			(skb_set_hash)
--	 * - RX ring dev queue index	(skb_record_rx_queue)
--	 */
-+	/* Populate (optional) HW offload hints in SKB via XDP-hints */
-+	if (xdp_frame_has_hints_compat(xdpf)
-+	    && xdpf->metasize >= sizeof(*xdp_hints)) {
-+		xdp_hints = xdpf->data - sizeof(*xdp_hints);
-+		xdp_hint2skb(skb, xdp_hints);
-+	}
++static void
++mvneta_set_skb_hints_from_xdp(struct xdp_buff *xdp, struct sk_buff *skb)
++{
++	struct xdp_hints_common *xdp_hints;
++
++	if (!(xdp_buff_has_hints_compat(xdp)))
++		return;
++
++	if (xdp->data - xdp->data_meta < sizeof(*xdp_hints))
++		return;
++
++	xdp_hints = xdp->data - sizeof(*xdp_hints);
++	xdp_hint2skb(skb, xdp_hints);
++}
++
++
+ static struct sk_buff *
+ mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
+-		      struct xdp_buff *xdp, u32 desc_status)
++		      struct xdp_buff *xdp)
+ {
+ 	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
+ 	struct sk_buff *skb;
+@@ -2404,7 +2441,7 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
  
- 	/* Until page_pool get SKB return path, release DMA here */
- 	xdp_release_frame(xdpf);
+ 	skb_reserve(skb, xdp->data - xdp->data_hard_start);
+ 	skb_put(skb, xdp->data_end - xdp->data);
+-	skb->ip_summed = mvneta_rx_csum(pp, desc_status);
++	mvneta_set_skb_hints_from_xdp(xdp, skb);
+ 
+ 	if (unlikely(xdp_buff_has_frags(xdp)))
+ 		xdp_update_skb_shared_info(skb, num_frags,
+@@ -2424,8 +2461,8 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
+ 	struct net_device *dev = pp->dev;
+ 	struct mvneta_stats ps = {};
+ 	struct bpf_prog *xdp_prog;
+-	u32 desc_status, frame_sz;
+ 	struct xdp_buff xdp_buf;
++	u32 frame_sz;
+ 
+ 	xdp_init_buff(&xdp_buf, PAGE_SIZE, &rxq->xdp_rxq);
+ 	xdp_buf.data_hard_start = NULL;
+@@ -2458,10 +2495,8 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
+ 
+ 			size = rx_desc->data_size;
+ 			frame_sz = size - ETH_FCS_LEN;
+-			desc_status = rx_status;
+-
+ 			mvneta_swbm_rx_frame(pp, rx_desc, rxq, &xdp_buf,
+-					     &size, page);
++					     &size, page, rx_status);
+ 		} else {
+ 			if (unlikely(!xdp_buf.data_hard_start)) {
+ 				rx_desc->buf_phys_addr = 0;
+@@ -2487,7 +2522,7 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
+ 		    mvneta_run_xdp(pp, rxq, xdp_prog, &xdp_buf, frame_sz, &ps))
+ 			goto next;
+ 
+-		skb = mvneta_swbm_build_skb(pp, rxq->page_pool, &xdp_buf, desc_status);
++		skb = mvneta_swbm_build_skb(pp, rxq->page_pool, &xdp_buf);
+ 		if (IS_ERR(skb)) {
+ 			struct mvneta_pcpu_stats *stats = this_cpu_ptr(pp->stats);
+ 
+@@ -5613,7 +5648,7 @@ static int mvneta_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	dev->features = NETIF_F_SG | NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
+-			NETIF_F_TSO | NETIF_F_RXCSUM;
++			NETIF_F_TSO | NETIF_F_RXCSUM | NETIF_F_XDP_HINTS;
+ 	dev->hw_features |= dev->features;
+ 	dev->vlan_features |= dev->features;
+ 	dev->priv_flags |= IFF_LIVE_ADDR_CHANGE;
+@@ -5817,6 +5852,11 @@ static int __init mvneta_driver_init(void)
+ {
+ 	int ret;
+ 
++	mvneta_btf = btf_get_module_btf(THIS_MODULE);
++	if (mvneta_btf)
++		btf_id_xdp_hints = btf_get_module_btf_full_id(mvneta_btf,
++							      "xdp_hints_common");
++
+ 	ret = cpuhp_setup_state_multi(CPUHP_AP_ONLINE_DYN, "net/mvneta:online",
+ 				      mvneta_cpu_online,
+ 				      mvneta_cpu_down_prepare);
+@@ -5844,6 +5884,7 @@ module_init(mvneta_driver_init);
+ 
+ static void __exit mvneta_driver_exit(void)
+ {
++	btf_put_module_btf(mvneta_btf);
+ 	platform_driver_unregister(&mvneta_driver);
+ 	cpuhp_remove_multi_state(CPUHP_NET_MVNETA_DEAD);
+ 	cpuhp_remove_multi_state(online_hpstate);
 
 
