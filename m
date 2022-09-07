@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7751B5B1092
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 01:38:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 668D25B108F
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 01:38:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230107AbiIGXh5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 19:37:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53906 "EHLO
+        id S230245AbiIGXhy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 19:37:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230128AbiIGXhi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 19:37:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C850C58E5;
+        with ESMTP id S230151AbiIGXha (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 19:37:30 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A3CBC57B2;
         Wed,  7 Sep 2022 16:37:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39D66B81F6C;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 4865DCE1CEB;
         Wed,  7 Sep 2022 23:37:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAEB2C433D6;
-        Wed,  7 Sep 2022 23:37:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C91C7C433D7;
+        Wed,  7 Sep 2022 23:37:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662593838;
-        bh=VTwKE/HifF14fvKgG7CJFPsTBYaYcf3fzqcU6L7WhkA=;
+        s=k20201202; t=1662593839;
+        bh=XQIgzbMI3GIc8o7EozC79ny/919LFUhRvRsCfLNut5o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HtHCLMQac3FIzVC4iybRJKLUESC7Bg6H5fDrOX6aM1hXUBzhnhILS/QF6T8lvw6WM
-         lTopQohZy21fkKKSHyR7V2WCwjJL/rRDR2Bs6JAqxcky+FPIIr3RlRp0HdgqtO8YvG
-         f8ejMqn0JE2fTCw4M0zFWVMF5oduFF541n3YTmKShIPKUMT66dAdYLeMYlLJycMPmz
-         0hheFXeDZ0L51cMt5gu8AQOSIFJJHGFzlrW+AqBEQUfuixSy7hWBCv3pQ99nT8r9+K
-         GkwFf7zCKBrHqaVvKRh0+eQ9ITPI6Iy/zJNusdZ/1j0EoLkn/sy7FybLBZhX+heDLn
-         B2IrBCFZ5LMEg==
+        b=l1L9u8BuCPrDiVuJWuFmgb/eMudg0HkCpYA3G2LFIVHAVXogzM2TFG1Fq/yC2J4NA
+         qKqHxFZ425olARFGdgPAVlmHyBHNQYWZP4jXk5Gtszxfbr6j70PTAV64aJjphMEdbf
+         gVCU6aJFANQB6qncgD+ztoYlYcbkOwf9TFt8SsM70K0ZvFOCI/HSp+ha2LInksM/qs
+         aNR8wm1gORj94Z56P9+AEPxpbPTzJwyQgB8e/O96NH8turbqeQvMTpORAmIU9P21fU
+         b+eVrv358WAnBVYvFK4ldLVIsMSDs8y3qdpNrbHNihmHfxLNR49Ji6yn294V46vLBO
+         1cFXWnOW/aD0w==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     Saeed Mahameed <saeedm@nvidia.com>,
         Leon Romanovsky <leonro@nvidia.com>
@@ -40,12 +40,12 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
         Jason Gunthorpe <jgg@nvidia.com>, linux-rdma@vger.kernel.org,
-        Or Gerlitz <ogerlitz@nvidia.com>,
         Ben Ben-Ishay <benishay@nvidia.com>,
+        Or Gerlitz <ogerlitz@nvidia.com>,
         Aurelien Aptel <aaptel@nvidia.com>
-Subject: [PATCH mlx5-next 11/14] net/mlx5e: Rename from tls to transport static params
-Date:   Wed,  7 Sep 2022 16:36:33 -0700
-Message-Id: <20220907233636.388475-12-saeed@kernel.org>
+Subject: [PATCH mlx5-next 12/14] net/mlx5: Add NVMEoTCP caps, HW bits, 128B CQE and enumerations
+Date:   Wed,  7 Sep 2022 16:36:34 -0700
+Message-Id: <20220907233636.388475-13-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220907233636.388475-1-saeed@kernel.org>
 References: <20220907233636.388475-1-saeed@kernel.org>
@@ -61,312 +61,313 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Or Gerlitz <ogerlitz@nvidia.com>
+From: Ben Ben-Ishay <benishay@nvidia.com>
 
-The static params structure is used in TLS but also in other
-transports we're offloading like nvmeotcp:
+Add the necessary infrastructure for NVMEoTCP offload:
+- Create mlx5_cqe128 structure for NVMEoTCP offload.
+  The new structure consist from the regular mlx5_cqe64 +
+  NVMEoTCP data information for offloaded packets.
+- Add nvmetcp field to mlx5_cqe64, this field define the type
+  of the data that the additional NVMEoTCP part represents.
+- Add nvmeotcp_zero_copy_en + nvmeotcp_crc_en bit
+  to the TIR, for identify NVMEoTCP offload flow
+  and tag_buffer_id that will be used by the
+  connected nvmeotcp_queues.
+- Add new capability to HCA_CAP that represents the
+  NVMEoTCP offload ability.
 
-- Rename the relevant structures/fields
-- Create common file for appropriate transports
-- Apply changes in the TLS code
-
-No functional change here.
-
-Signed-off-by: Or Gerlitz <ogerlitz@nvidia.com>
 Signed-off-by: Ben Ben-Ishay <benishay@nvidia.com>
+Signed-off-by: Or Gerlitz <ogerlitz@nvidia.com>
 Signed-off-by: Aurelien Aptel <aaptel@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mlx5/core/en_accel/common_utils.h         | 32 +++++++++++++++++
- .../mellanox/mlx5/core/en_accel/ktls_rx.c     |  6 ++--
- .../mellanox/mlx5/core/en_accel/ktls_tx.c     |  8 ++---
- .../mellanox/mlx5/core/en_accel/ktls_txrx.c   | 36 ++++++++-----------
- .../mellanox/mlx5/core/en_accel/ktls_utils.h  | 17 ++-------
- include/linux/mlx5/device.h                   |  8 ++---
- include/linux/mlx5/mlx5_ifc.h                 |  8 +++--
- 7 files changed, 66 insertions(+), 49 deletions(-)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/common_utils.h
+ drivers/net/ethernet/mellanox/mlx5/core/fw.c |  6 ++
+ include/linux/mlx5/device.h                  | 51 +++++++++++++-
+ include/linux/mlx5/mlx5_ifc.h                | 74 ++++++++++++++++++--
+ include/linux/mlx5/qp.h                      |  1 +
+ 4 files changed, 127 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/common_utils.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/common_utils.h
-new file mode 100644
-index 000000000000..0353389a0b60
---- /dev/null
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/common_utils.h
-@@ -0,0 +1,32 @@
-+/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-+/* Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. */
-+#ifndef __MLX5E_COMMON_UTILS_H__
-+#define __MLX5E_COMMON_UTILS_H__
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw.c b/drivers/net/ethernet/mellanox/mlx5/core/fw.c
+index 079fa44ada71..f5b30ddf81ea 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fw.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fw.c
+@@ -273,6 +273,12 @@ int mlx5_query_hca_caps(struct mlx5_core_dev *dev)
+ 			return err;
+ 	}
+ 
++	if (MLX5_CAP_GEN(dev, nvmeotcp)) {
++		err = mlx5_core_get_caps(dev, MLX5_CAP_DEV_NVMEOTCP);
++		if (err)
++			return err;
++	}
 +
-+#include "en.h"
-+
-+struct mlx5e_set_transport_static_params_wqe {
-+	struct mlx5_wqe_ctrl_seg ctrl;
-+	struct mlx5_wqe_umr_ctrl_seg uctrl;
-+	struct mlx5_mkey_seg mkc;
-+	struct mlx5_wqe_transport_static_params_seg params;
-+};
-+
-+/* macros for transport_static_params handling */
-+#define MLX5E_TRANSPORT_SET_STATIC_PARAMS_WQEBBS \
-+	(DIV_ROUND_UP(sizeof(struct mlx5e_set_transport_static_params_wqe), MLX5_SEND_WQE_BB))
-+
-+#define MLX5E_TRANSPORT_FETCH_SET_STATIC_PARAMS_WQE(sq, pi) \
-+	((struct mlx5e_set_transport_static_params_wqe *)\
-+	 mlx5e_fetch_wqe(&(sq)->wq, pi, sizeof(struct mlx5e_set_transport_static_params_wqe)))
-+
-+#define MLX5E_TRANSPORT_STATIC_PARAMS_WQE_SZ \
-+	(sizeof(struct mlx5e_set_transport_static_params_wqe))
-+
-+#define MLX5E_TRANSPORT_STATIC_PARAMS_DS_CNT \
-+	(DIV_ROUND_UP(MLX5E_TRANSPORT_STATIC_PARAMS_WQE_SZ, MLX5_SEND_WQE_DS))
-+
-+#define MLX5E_TRANSPORT_STATIC_PARAMS_OCTWORD_SIZE \
-+	(MLX5_ST_SZ_BYTES(transport_static_params) / MLX5_SEND_WQE_DS)
-+
-+#endif /* __MLX5E_COMMON_UTILS_H__ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
-index 27483aa7be8a..157b47c6dc7a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
-@@ -136,16 +136,16 @@ static struct mlx5_wqe_ctrl_seg *
- post_static_params(struct mlx5e_icosq *sq,
- 		   struct mlx5e_ktls_offload_context_rx *priv_rx)
- {
--	struct mlx5e_set_tls_static_params_wqe *wqe;
-+	struct mlx5e_set_transport_static_params_wqe *wqe;
- 	struct mlx5e_icosq_wqe_info wi;
- 	u16 pi, num_wqebbs;
- 
--	num_wqebbs = MLX5E_TLS_SET_STATIC_PARAMS_WQEBBS;
-+	num_wqebbs = MLX5E_TRANSPORT_SET_STATIC_PARAMS_WQEBBS;
- 	if (unlikely(!mlx5e_icosq_can_post_wqe(sq, num_wqebbs)))
- 		return ERR_PTR(-ENOSPC);
- 
- 	pi = mlx5e_icosq_get_next_pi(sq, num_wqebbs);
--	wqe = MLX5E_TLS_FETCH_SET_STATIC_PARAMS_WQE(sq, pi);
-+	wqe = MLX5E_TRANSPORT_FETCH_SET_STATIC_PARAMS_WQE(sq, pi);
- 	mlx5e_ktls_build_static_params(wqe, sq->pc, sq->sqn, &priv_rx->crypto_info,
- 				       mlx5e_tir_get_tirn(&priv_rx->tir),
- 				       priv_rx->key_id, priv_rx->resync.seq, false,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
-index 0aef69527226..de843f3eb222 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c
-@@ -32,7 +32,7 @@ u16 mlx5e_ktls_get_stop_room(struct mlx5_core_dev *mdev, struct mlx5e_params *pa
- 
- 	num_dumps = mlx5e_ktls_dumps_num_wqes(params, MAX_SKB_FRAGS, TLS_MAX_PAYLOAD_SIZE);
- 
--	stop_room += mlx5e_stop_room_for_wqe(mdev, MLX5E_TLS_SET_STATIC_PARAMS_WQEBBS);
-+	stop_room += mlx5e_stop_room_for_wqe(mdev, MLX5E_TRANSPORT_SET_STATIC_PARAMS_WQEBBS);
- 	stop_room += mlx5e_stop_room_for_wqe(mdev, MLX5E_TLS_SET_PROGRESS_PARAMS_WQEBBS);
- 	stop_room += num_dumps * mlx5e_stop_room_for_wqe(mdev, MLX5E_KTLS_DUMP_WQEBBS);
- 	stop_room += 1; /* fence nop */
-@@ -544,12 +544,12 @@ post_static_params(struct mlx5e_txqsq *sq,
- 		   struct mlx5e_ktls_offload_context_tx *priv_tx,
- 		   bool fence)
- {
--	struct mlx5e_set_tls_static_params_wqe *wqe;
-+	struct mlx5e_set_transport_static_params_wqe *wqe;
- 	u16 pi, num_wqebbs;
- 
--	num_wqebbs = MLX5E_TLS_SET_STATIC_PARAMS_WQEBBS;
-+	num_wqebbs = MLX5E_TRANSPORT_SET_STATIC_PARAMS_WQEBBS;
- 	pi = mlx5e_txqsq_get_next_pi(sq, num_wqebbs);
--	wqe = MLX5E_TLS_FETCH_SET_STATIC_PARAMS_WQE(sq, pi);
-+	wqe = MLX5E_TRANSPORT_FETCH_SET_STATIC_PARAMS_WQE(sq, pi);
- 	mlx5e_ktls_build_static_params(wqe, sq->pc, sq->sqn, &priv_tx->crypto_info,
- 				       priv_tx->tisn, priv_tx->key_id, 0, fence,
- 				       TLS_OFFLOAD_CTX_DIR_TX);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_txrx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_txrx.c
-index ac29aeb8af49..68c16daa6008 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_txrx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_txrx.c
-@@ -8,10 +8,6 @@ enum {
- 	MLX5E_STATIC_PARAMS_CONTEXT_TLS_1_2 = 0x2,
- };
- 
--enum {
--	MLX5E_ENCRYPTION_STANDARD_TLS = 0x1,
--};
--
- #define EXTRACT_INFO_FIELDS do { \
- 	salt    = info->salt;    \
- 	rec_seq = info->rec_seq; \
-@@ -20,7 +16,7 @@ enum {
- } while (0)
- 
- static void
--fill_static_params(struct mlx5_wqe_tls_static_params_seg *params,
-+fill_static_params(struct mlx5_wqe_transport_static_params_seg *params,
- 		   struct tls12_crypto_info_aes_gcm_128 *info,
- 		   u32 key_id, u32 resync_tcp_sn)
- {
-@@ -34,25 +30,25 @@ fill_static_params(struct mlx5_wqe_tls_static_params_seg *params,
- 
- 	EXTRACT_INFO_FIELDS;
- 
--	gcm_iv      = MLX5_ADDR_OF(tls_static_params, ctx, gcm_iv);
--	initial_rn  = MLX5_ADDR_OF(tls_static_params, ctx, initial_record_number);
-+	gcm_iv      = MLX5_ADDR_OF(transport_static_params, ctx, gcm_iv);
-+	initial_rn  = MLX5_ADDR_OF(transport_static_params, ctx, initial_record_number);
- 
- 	memcpy(gcm_iv,      salt,    salt_sz);
- 	memcpy(initial_rn,  rec_seq, rec_seq_sz);
- 
- 	tls_version = MLX5E_STATIC_PARAMS_CONTEXT_TLS_1_2;
- 
--	MLX5_SET(tls_static_params, ctx, tls_version, tls_version);
--	MLX5_SET(tls_static_params, ctx, const_1, 1);
--	MLX5_SET(tls_static_params, ctx, const_2, 2);
--	MLX5_SET(tls_static_params, ctx, encryption_standard,
--		 MLX5E_ENCRYPTION_STANDARD_TLS);
--	MLX5_SET(tls_static_params, ctx, resync_tcp_sn, resync_tcp_sn);
--	MLX5_SET(tls_static_params, ctx, dek_index, key_id);
-+	MLX5_SET(transport_static_params, ctx, tls_version, tls_version);
-+	MLX5_SET(transport_static_params, ctx, const_1, 1);
-+	MLX5_SET(transport_static_params, ctx, const_2, 2);
-+	MLX5_SET(transport_static_params, ctx, acc_type,
-+		 MLX5_TRANSPORT_STATIC_PARAMS_ACC_TYPE_TLS);
-+	MLX5_SET(transport_static_params, ctx, resync_tcp_sn, resync_tcp_sn);
-+	MLX5_SET(transport_static_params, ctx, dek_index, key_id);
+ 	return 0;
  }
  
- void
--mlx5e_ktls_build_static_params(struct mlx5e_set_tls_static_params_wqe *wqe,
-+mlx5e_ktls_build_static_params(struct mlx5e_set_transport_static_params_wqe *wqe,
- 			       u16 pc, u32 sqn,
- 			       struct tls12_crypto_info_aes_gcm_128 *info,
- 			       u32 tis_tir_num, u32 key_id, u32 resync_tcp_sn,
-@@ -61,19 +57,17 @@ mlx5e_ktls_build_static_params(struct mlx5e_set_tls_static_params_wqe *wqe,
- 	struct mlx5_wqe_umr_ctrl_seg *ucseg = &wqe->uctrl;
- 	struct mlx5_wqe_ctrl_seg     *cseg  = &wqe->ctrl;
- 	u8 opmod = direction == TLS_OFFLOAD_CTX_DIR_TX ?
--		MLX5_OPC_MOD_TLS_TIS_STATIC_PARAMS :
--		MLX5_OPC_MOD_TLS_TIR_STATIC_PARAMS;
--
--#define STATIC_PARAMS_DS_CNT DIV_ROUND_UP(sizeof(*wqe), MLX5_SEND_WQE_DS)
-+		MLX5_OPC_MOD_TRANSPORT_TIS_STATIC_PARAMS :
-+		MLX5_OPC_MOD_TRANSPORT_TIR_STATIC_PARAMS;
- 
- 	cseg->opmod_idx_opcode = cpu_to_be32((pc << 8) | MLX5_OPCODE_UMR | (opmod << 24));
- 	cseg->qpn_ds           = cpu_to_be32((sqn << MLX5_WQE_CTRL_QPN_SHIFT) |
--					     STATIC_PARAMS_DS_CNT);
-+					     MLX5E_TRANSPORT_STATIC_PARAMS_DS_CNT);
- 	cseg->fm_ce_se         = fence ? MLX5_FENCE_MODE_INITIATOR_SMALL : 0;
- 	cseg->tis_tir_num      = cpu_to_be32(tis_tir_num << 8);
- 
- 	ucseg->flags = MLX5_UMR_INLINE;
--	ucseg->bsf_octowords = cpu_to_be16(MLX5_ST_SZ_BYTES(tls_static_params) / 16);
-+	ucseg->bsf_octowords = cpu_to_be16(MLX5E_TRANSPORT_STATIC_PARAMS_OCTWORD_SIZE);
- 
- 	fill_static_params(&wqe->params, info, key_id, resync_tcp_sn);
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_utils.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_utils.h
-index 0dc715c4c10d..9077785752ef 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_utils.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_utils.h
-@@ -6,6 +6,7 @@
- 
- #include <net/tls.h>
- #include "en.h"
-+#include "en_accel/common_utils.h"
- 
- enum {
- 	MLX5E_TLS_PROGRESS_PARAMS_AUTH_STATE_NO_OFFLOAD     = 0,
-@@ -27,13 +28,6 @@ int mlx5e_ktls_add_rx(struct net_device *netdev, struct sock *sk,
- void mlx5e_ktls_del_rx(struct net_device *netdev, struct tls_context *tls_ctx);
- void mlx5e_ktls_rx_resync(struct net_device *netdev, struct sock *sk, u32 seq, u8 *rcd_sn);
- 
--struct mlx5e_set_tls_static_params_wqe {
--	struct mlx5_wqe_ctrl_seg ctrl;
--	struct mlx5_wqe_umr_ctrl_seg uctrl;
--	struct mlx5_mkey_seg mkc;
--	struct mlx5_wqe_tls_static_params_seg params;
--};
--
- struct mlx5e_set_tls_progress_params_wqe {
- 	struct mlx5_wqe_ctrl_seg ctrl;
- 	struct mlx5_wqe_tls_progress_params_seg params;
-@@ -44,19 +38,12 @@ struct mlx5e_get_tls_progress_params_wqe {
- 	struct mlx5_seg_get_psv  psv;
- };
- 
--#define MLX5E_TLS_SET_STATIC_PARAMS_WQEBBS \
--	(DIV_ROUND_UP(sizeof(struct mlx5e_set_tls_static_params_wqe), MLX5_SEND_WQE_BB))
--
- #define MLX5E_TLS_SET_PROGRESS_PARAMS_WQEBBS \
- 	(DIV_ROUND_UP(sizeof(struct mlx5e_set_tls_progress_params_wqe), MLX5_SEND_WQE_BB))
- 
- #define MLX5E_KTLS_GET_PROGRESS_WQEBBS \
- 	(DIV_ROUND_UP(sizeof(struct mlx5e_get_tls_progress_params_wqe), MLX5_SEND_WQE_BB))
- 
--#define MLX5E_TLS_FETCH_SET_STATIC_PARAMS_WQE(sq, pi) \
--	((struct mlx5e_set_tls_static_params_wqe *)\
--	 mlx5e_fetch_wqe(&(sq)->wq, pi, sizeof(struct mlx5e_set_tls_static_params_wqe)))
--
- #define MLX5E_TLS_FETCH_SET_PROGRESS_PARAMS_WQE(sq, pi) \
- 	((struct mlx5e_set_tls_progress_params_wqe *)\
- 	 mlx5e_fetch_wqe(&(sq)->wq, pi, sizeof(struct mlx5e_set_tls_progress_params_wqe)))
-@@ -70,7 +57,7 @@ struct mlx5e_get_tls_progress_params_wqe {
- 	 mlx5e_fetch_wqe(&(sq)->wq, pi, sizeof(struct mlx5e_dump_wqe)))
- 
- void
--mlx5e_ktls_build_static_params(struct mlx5e_set_tls_static_params_wqe *wqe,
-+mlx5e_ktls_build_static_params(struct mlx5e_set_transport_static_params_wqe *wqe,
- 			       u16 pc, u32 sqn,
- 			       struct tls12_crypto_info_aes_gcm_128 *info,
- 			       u32 tis_tir_num, u32 key_id, u32 resync_tcp_sn,
 diff --git a/include/linux/mlx5/device.h b/include/linux/mlx5/device.h
-index 3fbeb0468618..fc621790c1af 100644
+index fc621790c1af..8bae541937c9 100644
 --- a/include/linux/mlx5/device.h
 +++ b/include/linux/mlx5/device.h
-@@ -444,8 +444,8 @@ enum {
- };
- 
+@@ -263,6 +263,7 @@ enum {
  enum {
--	MLX5_OPC_MOD_TLS_TIS_STATIC_PARAMS = 0x1,
--	MLX5_OPC_MOD_TLS_TIR_STATIC_PARAMS = 0x2,
-+	MLX5_OPC_MOD_TRANSPORT_TIS_STATIC_PARAMS = 0x1,
-+	MLX5_OPC_MOD_TRANSPORT_TIR_STATIC_PARAMS = 0x2,
+ 	MLX5_MKEY_MASK_LEN		= 1ull << 0,
+ 	MLX5_MKEY_MASK_PAGE_SIZE	= 1ull << 1,
++	MLX5_MKEY_MASK_XLT_OCT_SIZE     = 1ull << 2,
+ 	MLX5_MKEY_MASK_START_ADDR	= 1ull << 6,
+ 	MLX5_MKEY_MASK_PD		= 1ull << 7,
+ 	MLX5_MKEY_MASK_EN_RINVAL	= 1ull << 8,
+@@ -780,7 +781,11 @@ struct mlx5_err_cqe {
+ 
+ struct mlx5_cqe64 {
+ 	u8		tls_outer_l3_tunneled;
+-	u8		rsvd0;
++	u8		rsvd16bit:4;
++	u8		nvmeotcp_zc:1;
++	u8		nvmeotcp_ddgst:1;
++	u8		nvmeotcp_resync:1;
++	u8		rsvd23bit:1;
+ 	__be16		wqe_id;
+ 	union {
+ 		struct {
+@@ -829,6 +834,19 @@ struct mlx5_cqe64 {
+ 	u8		op_own;
  };
  
- enum {
-@@ -453,8 +453,8 @@ enum {
- 	MLX5_OPC_MOD_TLS_TIR_PROGRESS_PARAMS = 0x2,
- };
- 
--struct mlx5_wqe_tls_static_params_seg {
--	u8     ctx[MLX5_ST_SZ_BYTES(tls_static_params)];
-+struct mlx5_wqe_transport_static_params_seg {
-+	u8     ctx[MLX5_ST_SZ_BYTES(transport_static_params)];
- };
- 
- struct mlx5_wqe_tls_progress_params_seg {
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index 26619b8e57c2..4a549b26daa0 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -11671,12 +11671,16 @@ enum {
- 	MLX5_GENERAL_OBJECT_TYPE_ENCRYPTION_KEY_TYPE_IPSEC = 0x2,
- };
- 
--struct mlx5_ifc_tls_static_params_bits {
-+enum {
-+	MLX5_TRANSPORT_STATIC_PARAMS_ACC_TYPE_TLS               = 0x1,
++struct mlx5e_cqe128 {
++	__be16 cclen;
++	__be16 hlen;
++	union {
++		__be32 resync_tcp_sn;
++		__be32 ccoff;
++	};
++	__be16 ccid;
++	__be16 rsvd8;
++	u8 rsvd12[52];
++	struct mlx5_cqe64 cqe64;
 +};
 +
-+struct mlx5_ifc_transport_static_params_bits {
- 	u8         const_2[0x2];
- 	u8         tls_version[0x4];
- 	u8         const_1[0x2];
- 	u8         reserved_at_8[0x14];
--	u8         encryption_standard[0x4];
-+	u8         acc_type[0x4];
+ struct mlx5_mini_cqe8 {
+ 	union {
+ 		__be32 rx_hash_result;
+@@ -864,6 +882,28 @@ enum {
  
- 	u8         reserved_at_20[0x20];
+ #define MLX5_MINI_CQE_ARRAY_SIZE 8
  
++static inline bool cqe_is_nvmeotcp_resync(struct mlx5_cqe64 *cqe)
++{
++	return cqe->nvmeotcp_resync;
++}
++
++static inline bool cqe_is_nvmeotcp_crcvalid(struct mlx5_cqe64 *cqe)
++{
++	return cqe->nvmeotcp_ddgst;
++}
++
++static inline bool cqe_is_nvmeotcp_zc(struct mlx5_cqe64 *cqe)
++{
++	return cqe->nvmeotcp_zc;
++}
++
++/* check if cqe is zc or crc or resync */
++static inline bool cqe_is_nvmeotcp(struct mlx5_cqe64 *cqe)
++{
++	return cqe_is_nvmeotcp_zc(cqe) || cqe_is_nvmeotcp_crcvalid(cqe) ||
++	       cqe_is_nvmeotcp_resync(cqe);
++}
++
+ static inline u8 mlx5_get_cqe_format(struct mlx5_cqe64 *cqe)
+ {
+ 	return (cqe->op_own >> 2) & 0x3;
+@@ -1186,6 +1226,7 @@ enum mlx5_cap_type {
+ 	MLX5_CAP_VDPA_EMULATION = 0x13,
+ 	MLX5_CAP_DEV_EVENT = 0x14,
+ 	MLX5_CAP_IPSEC,
++	MLX5_CAP_DEV_NVMEOTCP = 0x19,
+ 	MLX5_CAP_DEV_SHAMPO = 0x1d,
+ 	MLX5_CAP_GENERAL_2 = 0x20,
+ 	MLX5_CAP_PORT_SELECTION = 0x25,
+@@ -1435,6 +1476,14 @@ enum mlx5_qcam_feature_groups {
+ #define MLX5_CAP_DEV_SHAMPO(mdev, cap)\
+ 	MLX5_GET(shampo_cap, mdev->caps.hca_cur[MLX5_CAP_DEV_SHAMPO], cap)
+ 
++#define MLX5_CAP_DEV_NVMEOTCP(mdev, cap)\
++	MLX5_GET(nvmeotcp_cap, \
++		 (mdev)->caps.hca[MLX5_CAP_DEV_NVMEOTCP]->cur, cap)
++
++#define MLX5_CAP64_DEV_NVMEOTCP(mdev, cap)\
++	MLX5_GET64(nvmeotcp_cap, \
++		   (mdev)->caps.hca[MLX5_CAP_DEV_NVMEOTCP]->cur, cap)
++
+ enum {
+ 	MLX5_CMD_STAT_OK			= 0x0,
+ 	MLX5_CMD_STAT_INT_ERR			= 0x1,
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index 4a549b26daa0..fac675418541 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -1413,7 +1413,9 @@ struct mlx5_ifc_cmd_hca_cap_bits {
+ 	u8         event_cap[0x1];
+ 	u8         reserved_at_91[0x2];
+ 	u8         isolate_vl_tc_new[0x1];
+-	u8         reserved_at_94[0x4];
++	u8         reserved_at_94[0x2];
++	u8         nvmeotcp[0x1];
++	u8         reserved_at_97[0x1];
+ 	u8         prio_tag_required[0x1];
+ 	u8         reserved_at_99[0x2];
+ 	u8         log_max_qp[0x5];
+@@ -3291,7 +3293,20 @@ struct mlx5_ifc_shampo_cap_bits {
+ 	u8    reserved_at_20[0x3];
+ 	u8    shampo_max_log_headers_entry_size[0x5];
+ 	u8    reserved_at_28[0x18];
++	u8    reserved_at_40[0x7c0];
++};
++
++struct mlx5_ifc_nvmeotcp_cap_bits {
++	u8    zerocopy[0x1];
++	u8    crc_rx[0x1];
++	u8    crc_tx[0x1];
++	u8    reserved_at_3[0x15];
++	u8    version[0x8];
+ 
++	u8    reserved_at_20[0x13];
++	u8    log_max_nvmeotcp_tag_buffer_table[0x5];
++	u8    reserved_at_38[0x3];
++	u8    log_max_nvmeotcp_tag_buffer_size[0x5];
+ 	u8    reserved_at_40[0x7c0];
+ };
+ 
+@@ -3314,6 +3329,7 @@ union mlx5_ifc_hca_cap_union_bits {
+ 	struct mlx5_ifc_device_mem_cap_bits device_mem_cap;
+ 	struct mlx5_ifc_virtio_emulation_cap_bits virtio_emulation_cap;
+ 	struct mlx5_ifc_shampo_cap_bits shampo_cap;
++	struct mlx5_ifc_nvmeotcp_cap_bits nvmeotcp_cap;
+ 	u8         reserved_at_0[0x8000];
+ };
+ 
+@@ -3553,7 +3569,9 @@ struct mlx5_ifc_tirc_bits {
+ 
+ 	u8         disp_type[0x4];
+ 	u8         tls_en[0x1];
+-	u8         reserved_at_25[0x1b];
++	u8         nvmeotcp_zero_copy_en[0x1];
++	u8         nvmeotcp_crc_en[0x1];
++	u8         reserved_at_27[0x19];
+ 
+ 	u8         reserved_at_40[0x40];
+ 
+@@ -3584,7 +3602,8 @@ struct mlx5_ifc_tirc_bits {
+ 
+ 	struct mlx5_ifc_rx_hash_field_select_bits rx_hash_field_selector_inner;
+ 
+-	u8         reserved_at_2c0[0x4c0];
++	u8         nvmeotcp_tag_buffer_table_id[0x20];
++	u8         reserved_at_2e0[0x4a0];
+ };
+ 
+ enum {
+@@ -11494,6 +11513,7 @@ enum {
+ 	MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_ENCRYPTION_KEY = BIT_ULL(0xc),
+ 	MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_IPSEC = BIT_ULL(0x13),
+ 	MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_SAMPLER = BIT_ULL(0x20),
++	MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_NVMEOTCP_TAG_BUFFER_TABLE = BIT_ULL(0x21),
+ 	MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_FLOW_METER_ASO = BIT_ULL(0x24),
+ };
+ 
+@@ -11501,6 +11521,7 @@ enum {
+ 	MLX5_GENERAL_OBJECT_TYPES_ENCRYPTION_KEY = 0xc,
+ 	MLX5_GENERAL_OBJECT_TYPES_IPSEC = 0x13,
+ 	MLX5_GENERAL_OBJECT_TYPES_SAMPLER = 0x20,
++	MLX5_GENERAL_OBJECT_TYPES_NVMEOTCP_TAG_BUFFER_TABLE = 0x21,
+ 	MLX5_GENERAL_OBJECT_TYPES_FLOW_METER_ASO = 0x24,
+ };
+ 
+@@ -11661,6 +11682,20 @@ struct mlx5_ifc_query_sampler_obj_out_bits {
+ 	struct mlx5_ifc_sampler_obj_bits sampler_object;
+ };
+ 
++struct mlx5_ifc_nvmeotcp_tag_buf_table_obj_bits {
++	u8    modify_field_select[0x40];
++
++	u8    reserved_at_40[0x20];
++
++	u8    reserved_at_60[0x1b];
++	u8    log_tag_buffer_table_size[0x5];
++};
++
++struct mlx5_ifc_create_nvmeotcp_tag_buf_table_in_bits {
++	struct mlx5_ifc_general_obj_in_cmd_hdr_bits general_obj_in_cmd_hdr;
++	struct mlx5_ifc_nvmeotcp_tag_buf_table_obj_bits nvmeotcp_tag_buf_table_obj;
++};
++
+ enum {
+ 	MLX5_GENERAL_OBJECT_TYPE_ENCRYPTION_KEY_KEY_SIZE_128 = 0x0,
+ 	MLX5_GENERAL_OBJECT_TYPE_ENCRYPTION_KEY_KEY_SIZE_256 = 0x1,
+@@ -11673,6 +11708,13 @@ enum {
+ 
+ enum {
+ 	MLX5_TRANSPORT_STATIC_PARAMS_ACC_TYPE_TLS               = 0x1,
++	MLX5_TRANSPORT_STATIC_PARAMS_ACC_TYPE_NVMETCP           = 0x2,
++	MLX5_TRANSPORT_STATIC_PARAMS_ACC_TYPE_NVMETCP_WITH_TLS  = 0x3,
++};
++
++enum {
++	MLX5_TRANSPORT_STATIC_PARAMS_TI_INITIATOR  = 0x0,
++	MLX5_TRANSPORT_STATIC_PARAMS_TI_TARGET     = 0x1,
+ };
+ 
+ struct mlx5_ifc_transport_static_params_bits {
+@@ -11695,7 +11737,20 @@ struct mlx5_ifc_transport_static_params_bits {
+ 	u8         reserved_at_100[0x8];
+ 	u8         dek_index[0x18];
+ 
+-	u8         reserved_at_120[0xe0];
++	u8         reserved_at_120[0x14];
++
++	u8         const1[0x1];
++	u8         ti[0x1];
++	u8         zero_copy_en[0x1];
++	u8         ddgst_offload_en[0x1];
++	u8         hdgst_offload_en[0x1];
++	u8         ddgst_en[0x1];
++	u8         hddgst_en[0x1];
++	u8         pda[0x5];
++
++	u8         nvme_resync_tcp_sn[0x20];
++
++	u8         reserved_at_160[0xa0];
+ };
+ 
+ struct mlx5_ifc_tls_progress_params_bits {
+@@ -11853,4 +11908,15 @@ struct mlx5_ifc_load_vhca_state_out_bits {
+ 	u8         reserved_at_40[0x40];
+ };
+ 
++struct mlx5_ifc_nvmeotcp_progress_params_bits {
++	u8    next_pdu_tcp_sn[0x20];
++
++	u8    hw_resync_tcp_sn[0x20];
++
++	u8    pdu_tracker_state[0x2];
++	u8    offloading_state[0x2];
++	u8    reserved_at_44[0xc];
++	u8    cccid_ttag[0x10];
++};
++
+ #endif /* MLX5_IFC_H */
+diff --git a/include/linux/mlx5/qp.h b/include/linux/mlx5/qp.h
+index 8bda3ba5b109..c411f018a096 100644
+--- a/include/linux/mlx5/qp.h
++++ b/include/linux/mlx5/qp.h
+@@ -225,6 +225,7 @@ struct mlx5_wqe_ctrl_seg {
+ #define MLX5_WQE_CTRL_OPCODE_MASK 0xff
+ #define MLX5_WQE_CTRL_WQE_INDEX_MASK 0x00ffff00
+ #define MLX5_WQE_CTRL_WQE_INDEX_SHIFT 8
++#define MLX5_WQE_CTRL_TIR_TIS_INDEX_SHIFT 8
+ 
+ enum {
+ 	MLX5_ETH_WQE_L3_INNER_CSUM      = 1 << 4,
 -- 
 2.37.2
 
