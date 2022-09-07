@@ -2,159 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 440295B009E
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 11:37:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA3FA5B00AC
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 11:38:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229930AbiIGJhR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 05:37:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41738 "EHLO
+        id S230379AbiIGJit (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 05:38:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229476AbiIGJhP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 05:37:15 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7633FAA4F0;
-        Wed,  7 Sep 2022 02:37:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662543434; x=1694079434;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Fm94KITMVPvJBzxCnyPknZfdfxk9KSXkT2Wso/5vHA4=;
-  b=j4sHbpQh2JBkvw2y+lRJ0s3lBEOUK//6+ENIHnL2FuFFm+qY6aZYm6pk
-   N1+h30z2CATMTiKxLDomgp28FsW+w5mb6gZ3Rkl9k3UudEKfvjk5Z41TP
-   eFeV+CdzrFWOFrQnYf6zFqOjZcTXg3wdt7yuuvY+Rao5UooXolzoWhycx
-   AOumxPnbnJbVIU+m0QyQEm1Zab1AtkP/qjfb2NM6fT8LbzTJoCBjAd9JQ
-   O9CUVilhT2UfbG1LYhVF8p4t8C2UfavJw2vUA4Z51quZ8Iga0S5VnvfWa
-   ROFbTBtC8oq1PxvZVo4QFThwjr6Uw2rMs+eXrHWN/sPBEYXjed3VFqd+z
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10462"; a="298143161"
-X-IronPort-AV: E=Sophos;i="5.93,296,1654585200"; 
-   d="scan'208";a="298143161"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Sep 2022 02:37:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,296,1654585200"; 
-   d="scan'208";a="859577988"
-Received: from lkp-server02.sh.intel.com (HELO 95dfd251caa2) ([10.239.97.151])
-  by fmsmga006.fm.intel.com with ESMTP; 07 Sep 2022 02:37:10 -0700
-Received: from kbuild by 95dfd251caa2 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oVrUb-0006P6-20;
-        Wed, 07 Sep 2022 09:37:09 +0000
-Date:   Wed, 7 Sep 2022 17:36:16 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     menglong8.dong@gmail.com, pabeni@redhat.com
-Cc:     kbuild-all@lists.01.org, mathew.j.martineau@linux.intel.com,
-        matthieu.baerts@tessares.net, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, fw@strlen.de,
-        peter.krystad@linux.intel.com, netdev@vger.kernel.org,
-        mptcp@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Menglong Dong <imagedong@tencent.com>,
-        Jiang Biao <benbjiang@tencent.com>,
-        Mengen Sun <mengensun@tencent.com>
-Subject: Re: [PATCH net v2] net: mptcp: fix unreleased socket in accept queue
-Message-ID: <202209071742.Cv2hLTkj-lkp@intel.com>
-References: <20220907083304.605526-1-imagedong@tencent.com>
+        with ESMTP id S229628AbiIGJir (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 05:38:47 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFCDFB14C7;
+        Wed,  7 Sep 2022 02:38:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=jGLUAyN4WBC7ZkwS6LsB0mO/kpRXd9GgONv16gVjrak=; b=1Bg1Oz59XoW8AlgxRN51V8jlKR
+        xiGVymL1Q/bWZ12dS0LzK1Hq+CkBrW2E/Ly0IlKKFxGpWmdwcb/W5ES65bp8LnK14o7v9yjJ5LAaD
+        X7xuqQBcuw9R1eYLBKgp0KOqcOTy8TztqbmnBg91tykhcJSZHGuQ9/qagUrLEFItlBx9sjxXwY8/u
+        2gHuNvwPwO9NHCtdGWO2qrFj6aQ129LF0fv5fgy5Zi64UdtyRuNfS5yTelNtZYb3HPR4rY4mNWlHb
+        6MSpRS5gZJ0a8ev82RvgfsHwuViCYKsY0JcK3x9BVAjZM7CDLrxw13lW2f4khEYu+nTsBTnaztSGt
+        rRhx9RfA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34166)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1oVrW4-0005Bj-Dx; Wed, 07 Sep 2022 10:38:40 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1oVrW1-0000rW-7y; Wed, 07 Sep 2022 10:38:37 +0100
+Date:   Wed, 7 Sep 2022 10:38:37 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        linux-kernel@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net-next v5 1/8] net: phylink: Document MAC_(A)SYM_PAUSE
+Message-ID: <YxhmnVIB+qT0W/5v@shell.armlinux.org.uk>
+References: <20220906161852.1538270-1-sean.anderson@seco.com>
+ <20220906161852.1538270-2-sean.anderson@seco.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220907083304.605526-1-imagedong@tencent.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220906161852.1538270-2-sean.anderson@seco.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Tue, Sep 06, 2022 at 12:18:45PM -0400, Sean Anderson wrote:
+> This documents the possible MLO_PAUSE_* settings which can result from
+> different combinations of MLO_(A)SYM_PAUSE. These are more-or-less a
+> direct consequence of IEEE 802.3 Table 28B-2.
+> 
+> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+> ---
+> 
+> (no changes since v3)
+> 
+> Changes in v3:
+> - New
+> 
+>  include/linux/phylink.h | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
+> 
+> diff --git a/include/linux/phylink.h b/include/linux/phylink.h
+> index 6d06896fc20d..a431a0b0d217 100644
+> --- a/include/linux/phylink.h
+> +++ b/include/linux/phylink.h
+> @@ -21,6 +21,22 @@ enum {
+>  	MLO_AN_FIXED,	/* Fixed-link mode */
+>  	MLO_AN_INBAND,	/* In-band protocol */
+>  
+> +	/* MAC_SYM_PAUSE and MAC_ASYM_PAUSE correspond to the PAUSE and
+> +	 * ASM_DIR bits used in autonegotiation, respectively. See IEEE 802.3
 
-Thank you for the patch! Perhaps something to improve:
+"used in our autonegotiation advertisement" would be more clear.
 
-[auto build test WARNING on net/master]
+> +	 * Annex 28B for more information.
+> +	 *
+> +	 * The following table lists the values of MLO_PAUSE_* (aside from
+> +	 * MLO_PAUSE_AN) which might be requested depending on the results of
+> +	 * autonegotiation or user configuration:
+> +	 *
+> +	 * MAC_SYM_PAUSE MAC_ASYM_PAUSE Valid pause modes
+> +	 * ============= ============== ==============================
+> +	 *             0              0 MLO_PAUSE_NONE
+> +	 *             0              1 MLO_PAUSE_NONE, MLO_PAUSE_TX
+> +	 *             1              0 MLO_PAUSE_NONE, MLO_PAUSE_TXRX
+> +	 *             1              1 MLO_PAUSE_NONE, MLO_PAUSE_TXRX,
+> +	 *                              MLO_PAUSE_RX
 
-url:    https://github.com/intel-lab-lkp/linux/commits/menglong8-dong-gmail-com/net-mptcp-fix-unreleased-socket-in-accept-queue/20220907-163559
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git e1091e226a2bab4ded1fe26efba2aee1aab06450
-config: parisc-allyesconfig (https://download.01.org/0day-ci/archive/20220907/202209071742.Cv2hLTkj-lkp@intel.com/config)
-compiler: hppa-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/d238db12dcac26bfb2197e0aae24fadf6bbfdcb6
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review menglong8-dong-gmail-com/net-mptcp-fix-unreleased-socket-in-accept-queue/20220907-163559
-        git checkout d238db12dcac26bfb2197e0aae24fadf6bbfdcb6
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=parisc SHELL=/bin/bash net/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> net/mptcp/protocol.c:2799:6: warning: no previous prototype for 'mptcp_close_nolock' [-Wmissing-prototypes]
-    2799 | void mptcp_close_nolock(struct sock *sk, long timeout)
-         |      ^~~~~~~~~~~~~~~~~~
-
-
-vim +/mptcp_close_nolock +2799 net/mptcp/protocol.c
-
-  2798	
-> 2799	void mptcp_close_nolock(struct sock *sk, long timeout)
-  2800	{
-  2801		struct mptcp_subflow_context *subflow;
-  2802		struct mptcp_sock *msk = mptcp_sk(sk);
-  2803		bool do_cancel_work = false;
-  2804	
-  2805		sk->sk_shutdown = SHUTDOWN_MASK;
-  2806	
-  2807		if ((1 << sk->sk_state) & (TCPF_LISTEN | TCPF_CLOSE)) {
-  2808			inet_sk_state_store(sk, TCP_CLOSE);
-  2809			goto cleanup;
-  2810		}
-  2811	
-  2812		if (mptcp_close_state(sk))
-  2813			__mptcp_wr_shutdown(sk);
-  2814	
-  2815		sk_stream_wait_close(sk, timeout);
-  2816	
-  2817	cleanup:
-  2818		/* orphan all the subflows */
-  2819		inet_csk(sk)->icsk_mtup.probe_timestamp = tcp_jiffies32;
-  2820		mptcp_for_each_subflow(msk, subflow) {
-  2821			struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
-  2822			bool slow = lock_sock_fast_nested(ssk);
-  2823	
-  2824			/* since the close timeout takes precedence on the fail one,
-  2825			 * cancel the latter
-  2826			 */
-  2827			if (ssk == msk->first)
-  2828				subflow->fail_tout = 0;
-  2829	
-  2830			sock_orphan(ssk);
-  2831			unlock_sock_fast(ssk, slow);
-  2832		}
-  2833		sock_orphan(sk);
-  2834	
-  2835		pr_debug("msk=%p state=%d", sk, sk->sk_state);
-  2836		if (mptcp_sk(sk)->token)
-  2837			mptcp_event(MPTCP_EVENT_CLOSED, msk, NULL, GFP_KERNEL);
-  2838	
-  2839		if (sk->sk_state == TCP_CLOSE) {
-  2840			__mptcp_destroy_sock(sk);
-  2841			do_cancel_work = true;
-  2842		} else {
-  2843			mptcp_reset_timeout(msk, 0);
-  2844		}
-  2845	
-  2846		if (do_cancel_work)
-  2847			mptcp_cancel_work(sk);
-  2848	}
-  2849	
+Any of none, tx, txrx and rx can occur with both bits set in the last
+case, the tx-only case will be due to user configuration.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
