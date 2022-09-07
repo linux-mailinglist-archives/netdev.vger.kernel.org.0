@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CCEAA5AFEB8
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 10:14:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9311D5AFEC9
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 10:16:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229640AbiIGIOp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 04:14:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46024 "EHLO
+        id S229903AbiIGIQc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 04:16:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229946AbiIGIOm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 04:14:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B486626CE;
-        Wed,  7 Sep 2022 01:14:39 -0700 (PDT)
+        with ESMTP id S229516AbiIGIQb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 04:16:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70ECC3B97C;
+        Wed,  7 Sep 2022 01:16:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 98D07B81B62;
-        Wed,  7 Sep 2022 08:14:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B66FFC43470;
-        Wed,  7 Sep 2022 08:14:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BF40C617CA;
+        Wed,  7 Sep 2022 08:16:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF2F6C433C1;
+        Wed,  7 Sep 2022 08:16:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662538476;
-        bh=nCjrwhu4Hv0/rkKfoQw5UBPI3nCcw75wcbv6WTgbygo=;
+        s=k20201202; t=1662538589;
+        bh=WPz0hEmaLRR2o9iEaOapRahUqEImeqvU61J+OmlJNQg=;
         h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=L8risvptovTerFqCZSvFpVhLBSrmTkOVbSDtxBOfe4pG3kVUUrFwGzGV6F5TbEg24
-         PFa+a8o645k0IN54/8Lb3o60UQ2dvJh8jyBf4tk3rVLWCfZNsGqNhv1z01LK6FSJFK
-         TKDdOcEfbTQHd116b8shu1lBjEul/xzrsPOxV6ioSYo09aFgSdN4ow/pWtfcPFkwDN
-         e+ods9s8dg0JgWfhL8pBFNepXb/KiQlDTujBRfdN7i3cDw91PgNyz6geJn+nrCKeEm
-         zFvjY9JtdKprfYY8mVzQ5MriSZRRvpoGO7uoQdOdUTU9PCBtp7a663lZNEzcVBHK5l
-         xaQEgXdIaCt/Q==
+        b=hGMFQ5sK0ZM6kVlEbtpKlKvnd5C/qv883+l+bqrVBQKuZMguKcl38KYIoAFomUGQB
+         3uAuVhecjkwmqnUmftQivDethtqrAsw0kd31TRJj1CCPqFh0cvJeZhBIbQZX4TCakS
+         ZwhMfJPXUMRaOUKBKbfXja6r0LBT1L0uE0D4aDEPmlVoBm/Jtax1wb64voxixJYVLk
+         PSm1HfF6giQxyvomAUDMw7YlWihj3leTtIosDpSpEkbd8aXUxsLau4Bbm707vennRs
+         0yZuvRKlfOtjTnv9jlSPsjdXk4WxzAnbKffXKu240SeoAWHdv8c3R5ZNCieQfLunZI
+         +YU4cZhUnldHQ==
 From:   Kalle Valo <kvalo@kernel.org>
-To:     "Russell King \(Oracle\)" <linux@armlinux.org.uk>
+To:     Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Cc:     Arend van Spriel <aspriel@gmail.com>,
         Franky Lin <franky.lin@broadcom.com>,
         Hante Meuleman <hante.meuleman@broadcom.com>,
@@ -46,16 +46,16 @@ Cc:     Arend van Spriel <aspriel@gmail.com>,
         linux-arm-kernel@lists.infradead.org,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         Paolo Abeni <pabeni@redhat.com>,
-        =?utf-8?Q?Raf?= =?utf-8?Q?a=C5=82_Mi=C5=82ecki?= 
-        <zajec5@gmail.com>, Rob Herring <robh+dt@kernel.org>,
-        SHA-cyfmac-dev-list@infineon.com, Sven Peter <sven@svenpeter.dev>,
-        van Spriel <arend@broadcom.com>
-Subject: Re: [PATCH net-next 0/12] Add support for bcm4378 on Apple platforms
+        "Rafa__ Mi__ecki" <zajec5@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        SHA-cyfmac-dev-list@infineon.com, Sven Peter <sven@svenpeter.dev>
+Subject: Re: [PATCH net-next 12/12] arm64: dts: apple: Add WiFi module and antenna properties
 References: <YxhMaYOfnM+7FG+W@shell.armlinux.org.uk>
-Date:   Wed, 07 Sep 2022 11:14:28 +0300
-In-Reply-To: <YxhMaYOfnM+7FG+W@shell.armlinux.org.uk> (Russell King's message
-        of "Wed, 7 Sep 2022 08:46:49 +0100")
-Message-ID: <874jxja9ej.fsf@kernel.org>
+        <E1oVpne-005LCR-RJ@rmk-PC.armlinux.org.uk>
+Date:   Wed, 07 Sep 2022 11:16:22 +0300
+In-Reply-To: <E1oVpne-005LCR-RJ@rmk-PC.armlinux.org.uk> (Russell King's
+        message of "Wed, 07 Sep 2022 08:48:42 +0100")
+Message-ID: <87zgfb8uqx.fsf@kernel.org>
 User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
 Content-Type: text/plain
@@ -69,21 +69,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Russell King (Oracle)" <linux@armlinux.org.uk> writes:
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk> writes:
 
-> This series adds support for bcm4378 found on Apple platforms, and has
-> been tested on the Apple Mac Mini. It is a re-posting of a subset of
-> Hector's previous 38 patch series, and it is believed that the comments
-> from that review were addressed.
+> From: Hector Martin <marcan@marcan.st>
 >
-> (I'm just the middle man; please don't complain if something has been
-> missed.)
+> Add the new module-instance/antenna-sku properties required to select
+> WiFi firmwares properly to all board device trees.
+>
+> Signed-off-by: Hector Martin <marcan@marcan.st>
+> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> ---
+>  arch/arm64/boot/dts/apple/t8103-j274.dts  | 4 ++++
+>  arch/arm64/boot/dts/apple/t8103-j293.dts  | 4 ++++
+>  arch/arm64/boot/dts/apple/t8103-j313.dts  | 4 ++++
+>  arch/arm64/boot/dts/apple/t8103-j456.dts  | 4 ++++
+>  arch/arm64/boot/dts/apple/t8103-j457.dts  | 4 ++++
+>  arch/arm64/boot/dts/apple/t8103-jxxx.dtsi | 2 ++
+>  6 files changed, 22 insertions(+)
 
-Thanks for sending the subset, this is much more manageable. Arend,
-please take a look. It would be nice to get this to v6.1.
-
-BTW brcmfmac patches go via wireless-next, not net-next, but no need to
-resend because of this.
+Is it ok to take this via wireless-next? Can I get an ack from the
+maintainers of these files?
 
 -- 
 https://patchwork.kernel.org/project/linux-wireless/list/
