@@ -2,133 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EF08B5AFBE4
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 07:45:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CED2F5AFBE7
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 07:46:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229808AbiIGFpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 01:45:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49414 "EHLO
+        id S229797AbiIGFp6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 01:45:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229774AbiIGFpN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 01:45:13 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76AAC371BB;
-        Tue,  6 Sep 2022 22:45:05 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id z187so13528318pfb.12;
-        Tue, 06 Sep 2022 22:45:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=MxUjkhck3ThCup5JU1rYOQtyKBWOrj1qhayfFTMHy24=;
-        b=n294xEYj18Ngb737eeY0NWR2FiB5hbvUei2t+J5yesyN4dPpRgCcQI5xcIi4MC/r/h
-         6+jt4NOnvd3xqc+iQiy/4rDKGUgcvcmOEZP/ukuUUzrQX2hr7ku5EJBu6RXANfcTBX3v
-         Hm1auCTam2QnlOGmN//E2ZN2f3Kr66eZQ55KRHqkH8eAuNJOTPE7SMDFGF5z4ba2PX9j
-         7wwCLpIbO+HRSLCOLVeHMLgPipKfQDZm75lqTBK0ZFnMsKsvIqkwZgASvLhe+ReAIsSF
-         PNy9j4zmR33ajjcv0h5ZntfKQARz1NDjXaZq+A0VJ7QxSRz3c2Ecv9RVBIKU6oBpcw3Z
-         cdlA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=MxUjkhck3ThCup5JU1rYOQtyKBWOrj1qhayfFTMHy24=;
-        b=qde9e1f6BRCoQaF633bkFWJ8faLe8ahxzfPthSHYYepqHXwV9+CHsNJjz7V4wq4oiF
-         9idtDE0CzmzuP3VJFjnRcPD/obG4jsl1S7yK5XygNhjt7GxJpBN8fhot2a6pQG0NAcuP
-         N1li8oCmMSLvX9+rmk83l80WsPgatHNVfBNH+6PAgCaUk/NJKaiy/1HWMK3TP32EYphe
-         Yc1Dkhr07BpelP1Rokl8oNW18xATtEyqw5B+NosAkjamfnxjeqwtV5SyG5bWVNkqEON8
-         bX89TMaPPqFnpsBqk+5hQnlCrYpkJq9lINk0VhEYXqkmGXEukkF0HqI8kFVZMSsSTihb
-         yNaQ==
-X-Gm-Message-State: ACgBeo3iBp96oC4sU4pCb/n7vx7/gNll0O3Y3DiE3tw8sEisz/sArAQS
-        2AwaR7DFIvsCXR2HVhS3TUU=
-X-Google-Smtp-Source: AA6agR7kbaoNt6zjIBweSiPmfp6LIaSt/m1OzJ7rtVUYJf/gIBW1VZ07ewfRKxRgezbUZstg0VLgJg==
-X-Received: by 2002:a05:6a00:4c85:b0:538:5500:4873 with SMTP id eb5-20020a056a004c8500b0053855004873mr2265813pfb.81.1662529504723;
-        Tue, 06 Sep 2022 22:45:04 -0700 (PDT)
-Received: from localhost.localdomain ([76.132.249.1])
-        by smtp.gmail.com with ESMTPSA id b2-20020a170902d50200b0016c0c82e85csm11222798plg.75.2022.09.06.22.45.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Sep 2022 22:45:04 -0700 (PDT)
-From:   rentao.bupt@gmail.com
-To:     Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Heyi Guo <guoheyi@linux.alibaba.com>,
-        Dylan Hung <dylan_hung@aspeedtech.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        Liang He <windhl@126.com>, Hao Chen <chenhao288@hisilicon.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>, Tao Ren <taoren@fb.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Cc:     Tao Ren <rentao.bupt@gmail.com>
-Subject: [PATCH net-next v3 2/2] ARM: dts: aspeed: elbert: Enable mac3 controller
-Date:   Tue,  6 Sep 2022 22:44:53 -0700
-Message-Id: <20220907054453.20016-3-rentao.bupt@gmail.com>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220907054453.20016-1-rentao.bupt@gmail.com>
-References: <20220907054453.20016-1-rentao.bupt@gmail.com>
+        with ESMTP id S229821AbiIGFpt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 01:45:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D53E2419A7
+        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 22:45:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7EB45B81B55
+        for <netdev@vger.kernel.org>; Wed,  7 Sep 2022 05:45:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54101C433B5;
+        Wed,  7 Sep 2022 05:45:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1662529544;
+        bh=nMfUHk4CgQ1O80w2uXZNoc3RbnLVQ6NZOM4mWrEYuZk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gv/2hxFlNn56FCKJXEY+jkROM375O9GQNmbQhvsS/176PDLPHvkyBaFgIKQBvYot9
+         IKwa4Gv9L+VByteFekLTpgTyezv1a3sDlp+JuDsGKiQNsAMXEw8JR0ua1n1lusif4e
+         kkS/PjKXnN7skIucHlqMQDElSDHq29WEkaJXWjJs=
+Date:   Wed, 7 Sep 2022 07:45:39 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     "Michalik, Michal" <michal.michalik@intel.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        "G, GurucharanX" <gurucharanx.g@intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>
+Subject: Re: [PATCH net 3/3] ice: Add set_termios tty operations handle to
+ GNSS
+Message-ID: <YxgwA9bTvdheeZUf@kroah.com>
+References: <20220829220049.333434-1-anthony.l.nguyen@intel.com>
+ <20220829220049.333434-4-anthony.l.nguyen@intel.com>
+ <20220831145439.2f268c34@kernel.org>
+ <YxBHL6YzF2dAWf3q@kroah.com>
+ <BN6PR11MB417756CED7AE9DF7C3FA88DCE37F9@BN6PR11MB4177.namprd11.prod.outlook.com>
+ <YxbliLlS9YU6eKMn@kroah.com>
+ <BN6PR11MB4177F526AA1726DC0EF95E62E37E9@BN6PR11MB4177.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BN6PR11MB4177F526AA1726DC0EF95E62E37E9@BN6PR11MB4177.namprd11.prod.outlook.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tao Ren <rentao.bupt@gmail.com>
+On Tue, Sep 06, 2022 at 08:55:59PM +0000, Michalik, Michal wrote:
+> Greg,
+> 
+> Thanks - answer inline.
 
-Enable mac3 controller in Elbert dts: Elbert MAC3 is connected to the
-BCM53134P onboard switch's IMP_RGMII port directly (fixed link, no PHY
-between BMC MAC and BCM53134P).
+As is required, no need to put this on your emails, as top-posting is
+not allowed :)
 
-Note: BMC's mdio0 controller is connected to BCM53134P's MDIO interface,
-and the MDIO channel will be enabled later, when BCM53134 is added to
-"bcm53xx" DSA driver.
+> > -----Original Message-----
+> > From: Greg Kroah-Hartman <gregkh@linuxfoundation.org> 
+> > Sent: Tuesday, September 6, 2022 8:16 AM
+> > To: Michalik, Michal <michal.michalik@intel.com>
+> > Cc: Jakub Kicinski <kuba@kernel.org>; Nguyen, Anthony L <anthony.l.nguyen@intel.com>; davem@davemloft.net; pabeni@redhat.com; edumazet@google.com; netdev@vger.kernel.org; richardcochran@gmail.com; G, GurucharanX <gurucharanx.g@intel.com>; Jiri Slaby <jirislaby@kernel.org>; Johan Hovold <johan@kernel.org>
+> > Subject: Re: [PATCH net 3/3] ice: Add set_termios tty operations handle to GNSS
 
-Signed-off-by: Tao Ren <rentao.bupt@gmail.com>
----
- Changes in v3:
-  - updated comments and patch description.
- Changes in v2:
-  - updated comments and patch description.
- .../boot/dts/aspeed-bmc-facebook-elbert.dts    | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+Please fix your email client to not do this.
 
-diff --git a/arch/arm/boot/dts/aspeed-bmc-facebook-elbert.dts b/arch/arm/boot/dts/aspeed-bmc-facebook-elbert.dts
-index 27b43fe099f1..8e1a1d1b282d 100644
---- a/arch/arm/boot/dts/aspeed-bmc-facebook-elbert.dts
-+++ b/arch/arm/boot/dts/aspeed-bmc-facebook-elbert.dts
-@@ -183,3 +183,21 @@ imux31: i2c@7 {
- &i2c11 {
- 	status = "okay";
- };
-+
-+/*
-+ * BMC's "mac3" controller is connected to BCM53134P's IMP_RGMII port
-+ * directly (fixed link, no PHY in between).
-+ * Note: BMC's "mdio0" controller is connected to BCM53134P's MDIO
-+ * interface, and the MDIO channel will be enabled in dts later, when
-+ * BCM53134 is added to "bcm53xx" DSA driver.
-+ */
-+&mac3 {
-+	status = "okay";
-+	phy-mode = "rgmii";
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_rgmii4_default>;
-+	fixed-link {
-+		speed = <1000>;
-+		full-duplex;
-+	};
-+};
--- 
-2.37.3
+> > > Adding this empty function solved the problem.
+> > 
+> > That seems very wrong, please work to fix this by NOT having an empty
+> > function like this as it should not be required.
+> > 
+> 
+> I don't get one thing, though. You are saying, it "seem" wrong and that
+> "should not" be required but I observe different behavior. I have prepared
+> a very simple code to reproduce the issue:
+> 	#include <termios.h>
+> 	#include <unistd.h>
+> 	#include <stdio.h>
+> 	#include <fcntl.h>
+> 	#include <errno.h>
+> 
+> 	int main()
+> 	{
+> 		struct termios tty;
+> 		int fd;
+> 		
+> 		fd = open("/dev/ttyGNSS_0300", O_RDWR | O_NOCTTY | O_SYNC);
+> 
+> 		if (fd < 0) {
+> 				printf("Error - TTY not open.\n");
+> 				return -1;
+> 		}
+> 				
+> 		if (tcgetattr (fd, &tty) != 0) {
+> 			printf("Error on get - errno=%i\n", errno);
+> 			return -1;
+> 		}
+> 		tty.c_cflag |= CS8; // try to set 8 data bits 
+> 		if (tcsetattr(fd, TCSANOW, &tty) != 0) {
+> 			printf("Error on set - errno=%i\n", errno);
+> 			return -1;
+> 		}
+> 
+> 		close(fd);
+> 		printf("Done.\n");
+> 	}
+> 
+> In this case, when I don't satisfy this API, I get an errno 22.
 
+You get the error on the first get or the set?
+
+> If add this
+> empty function and therefore implement the full API it works as expected (no
+> error). In our case no action is needed, therefore we have an empty function.
+> At the moment, I'm not sure how I should fix it other way - since no action
+> on HW is neccessary.
+
+This should not be needed as I thought the default would be "just ignore
+this", but maybe not.  Can you look into this problem please and figure
+out why this is required and fix that up?
+
+> Of course in the meantime we are working on investigating if we can easily
+> align to existing GNSS interface accroding to community suggestions. Still,
+> we believe that this fix is solving the problem at the moment. 
+
+Let's fix the root problem here, not paper over it.
+
+thanks,
+
+greg k-h
