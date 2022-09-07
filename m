@@ -2,153 +2,274 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 48F3C5B09F2
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 18:18:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 996F15B09F7
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 18:19:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229748AbiIGQSu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 12:18:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37130 "EHLO
+        id S229955AbiIGQTQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 12:19:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229535AbiIGQSr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 12:18:47 -0400
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C053A0314
-        for <netdev@vger.kernel.org>; Wed,  7 Sep 2022 09:18:45 -0700 (PDT)
-Received: by mail-io1-xd34.google.com with SMTP id r141so11895921iod.4
-        for <netdev@vger.kernel.org>; Wed, 07 Sep 2022 09:18:45 -0700 (PDT)
+        with ESMTP id S229689AbiIGQTL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 12:19:11 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4735A3D1E;
+        Wed,  7 Sep 2022 09:19:05 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id b16so20520229edd.4;
+        Wed, 07 Sep 2022 09:19:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=3zNN3wcgN+vd2wpUDCMnqQdDRuWeI+hRUZA1kdW/gBw=;
-        b=s0yX+1Tsw+LGKp/WuH2QNVA6JtpdWfgnp9Uv9TymdUg3eW6kR5/FzIEuoPu5nQqteo
-         w1kMgFQCG2O8ecgqQAEr7t1EsDpVGp2NzdD8btlZStwFyOSIDGMGy7tLEAGxnkenlWtR
-         iOryB9grGozUoWHC8y64+2QMmDxLcb85zFbjBN5bsFfo6+N7Tnwsol5N6TdWXm3MfTNk
-         X2roSYWVOvaBCQfT3bAWemt9UpSTzGFTAvxce+5EdHyzvJALBBOZ0PsFY50SfpISGrKw
-         FQxa+c0r9N5De2B994r220T/VGxDcdpux7x5pc6svCDXkMsoxZqm2ApGffdpT2SXse2U
-         +UQw==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=hQ9th6n5lq83vAo1UjW41EiQHnnZngjeZzxW+Zvqg/o=;
+        b=lOFrVGRN6hHWcfmqLPAWd10+9jgWInlDzjGvPwt/sUpt/HepcEOMsaFdXsILE9OXIN
+         +UQlSJuCNc6HDjnWHhH1PbpnAF4cCs5xxM+HsRoSLKlQhEstEbAgwkFye7z/R+bdp0Hg
+         4PJ8hFSSEFVVpuvrFzKTaYhhQprBf1CZNkKsr3tS4srGrAdBEOAaZFthBbPTsAY9mTbI
+         bGfrfdwtMpKE1gjzQvWPLlNP5arKF3RqkGu565p4i9ZAs2XSyQCYa2B4Z5FAsUHPAnKq
+         t0W691Y16jVevXElPy4MXVgZDOAJUk88GOJJ5xbqillb8ykkoMKYgmiOvJUIg5Q9HhNv
+         ViUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=3zNN3wcgN+vd2wpUDCMnqQdDRuWeI+hRUZA1kdW/gBw=;
-        b=IR3mGAI49OnPmf6YAVg9b4Sf4167+ZkCHKQcuTEINztajUxZ0/VIntriYXcxGReCwI
-         HA/YEAbkLON0LfpmCP6JbQbphBI+DVxaROsLgugJSUbwyvjsI9Il6u1EymnJFRz+m/mA
-         7HNWnJ71q/NUPU3wAVqGToQnAfDN60nob5oO6PnS9NKYABw9qbdKCSE86yWQml7ffWWH
-         OrqjnEYh0q3vHqjI73/+CKA/ywTANfxWQeMlOy2RNgm64O23/QwWrr4kq/1LXmfxIHQ9
-         mGCuKkajltzrwK3OTRhfaSLjcwhF4EFKplqnPGbX0UQTaWfuGtWNE3fO7Ek0XtrZI3u5
-         q0Qw==
-X-Gm-Message-State: ACgBeo0o/L/K+FCfXbGC50aWCreq7ut4HMin3wcs1dALgRVN/uFtnnWI
-        55M5YkQzkJdupL4pkYZUmZdHhAqif5XGs4hfTlqdzA==
-X-Google-Smtp-Source: AA6agR5Ped6k79ynll8L86xxWr9/kOoRwDvPtAc2Cm+IZifGBnCuZO+iMYna3+YXEkXm+lBYb6r8nh6o3dnRJIZO1cg=
-X-Received: by 2002:a05:6638:2042:b0:346:e51a:da4e with SMTP id
- t2-20020a056638204200b00346e51ada4emr2539678jaj.164.1662567524331; Wed, 07
- Sep 2022 09:18:44 -0700 (PDT)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=hQ9th6n5lq83vAo1UjW41EiQHnnZngjeZzxW+Zvqg/o=;
+        b=lofdGBAwLi4q2uIdcfD5rnrym4KghRMFlKHzG7CUgk+kQF2tXCQ7edBnuvDEHhKnm2
+         tSXNAPOtojTBLc41RSC/W38cXkZv9GkAxUvoUVCeRJMp5ju1s7qOm+ZGfRUUHdfNiORi
+         jcUPXB4CYgZVuEtVRg05sMI8dztBH3IhpDKqrlwCejJzAoKwB06mvLy3KZ344hFLzRS0
+         DVH2fMtIeLN/QpWGXwOQ2kbg9gpxpGiVWoc4MZevYA6Xzt2zDp/JcOsVREvMxFBZVYcv
+         b4fxevVDag1G5iadtVgEITRJ3sdZPM3e1L4QXKSHQWX275M6/dihhMPH3YBt/vipn2l7
+         N+sA==
+X-Gm-Message-State: ACgBeo2LvquUGTEhDRgOHoElLClqhYCcCjWuvwms3iVZU2oZ+GEBctuz
+        kriJ9OvaNfHR7U8dpeQL2NE=
+X-Google-Smtp-Source: AA6agR7JpUzIepk/dw+bCY0I5AOVf7pDgVVPlHrmFMnGg0awKBNETT2LrCH7R54WapWd4v+lKJNiFQ==
+X-Received: by 2002:aa7:da4f:0:b0:44e:864b:7a3e with SMTP id w15-20020aa7da4f000000b0044e864b7a3emr3816915eds.378.1662567543518;
+        Wed, 07 Sep 2022 09:19:03 -0700 (PDT)
+Received: from ?IPV6:2a04:241e:502:a09c:3df:1c49:9ca5:8ba3? ([2a04:241e:502:a09c:3df:1c49:9ca5:8ba3])
+        by smtp.gmail.com with ESMTPSA id b23-20020a170906039700b00715a02874acsm8631877eja.35.2022.09.07.09.19.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 07 Sep 2022 09:19:02 -0700 (PDT)
+Message-ID: <4a47b4ea-750c-a569-5754-4aa0cd5218fc@gmail.com>
+Date:   Wed, 7 Sep 2022 19:19:00 +0300
 MIME-Version: 1.0
-References: <20220907101204.255213-1-luwei32@huawei.com>
-In-Reply-To: <20220907101204.255213-1-luwei32@huawei.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 7 Sep 2022 09:18:33 -0700
-Message-ID: <CANn89i+eMg-fg8VicJn5LqXx-EwJ3WQuswQEPwRNSadxP_w35Q@mail.gmail.com>
-Subject: Re: [PATCH net] ipvlan: Fix out-of-bound bugs caused by unset skb->mac_header
-To:     Lu Wei <luwei32@huawei.com>
-Cc:     David Miller <davem@davemloft.net>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v8 01/26] tcp: authopt: Initial support and key management
+Content-Language: en-US
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     David Ahern <dsahern@kernel.org>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Salam Noureddine <noureddine@arista.com>,
+        Philip Paeps <philip@trouble.is>,
+        Shuah Khan <shuah@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, vulab@iscas.ac.cn,
-        Mahesh Bandewar <maheshb@google.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Christoph Paasch <cpaasch@apple.com>,
+        Ivan Delalande <colona@arista.com>,
+        Caowangbao <caowangbao@huawei.com>,
+        Priyaranjan Jha <priyarjha@google.com>,
         netdev <netdev@vger.kernel.org>,
+        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
+        <linux-crypto@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+References: <cover.1662361354.git.cdleonard@gmail.com>
+ <0e4c0a98509b907e33c2f80b95cc6cfe713ac2b2.1662361354.git.cdleonard@gmail.com>
+ <CANn89i+a0mMUMhUhTPoshifNzzuR_gfThPKptB8cuBiw6Bs5jw@mail.gmail.com>
+From:   Leonard Crestez <cdleonard@gmail.com>
+In-Reply-To: <CANn89i+a0mMUMhUhTPoshifNzzuR_gfThPKptB8cuBiw6Bs5jw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 7, 2022 at 3:09 AM Lu Wei <luwei32@huawei.com> wrote:
->
-> If an AF_PACKET socket is used to send packets through ipvlan and the
-> default xmit function of the AF_PACKET socket is changed from
-> dev_queue_xmit() to packet_direct_xmit() via setsockopt() with the option
-> name of PACKET_QDISC_BYPASS, the skb->mac_header may not be reset and
-> remains as the initial value of 65535, this may trigger slab-out-of-bounds
-> bugs as following:
->
-> =================================================================
-> UG: KASAN: slab-out-of-bounds in ipvlan_xmit_mode_l2+0xdb/0x330 [ipvlan]
+On 9/7/22 01:57, Eric Dumazet wrote:
+> On Mon, Sep 5, 2022 at 12:06 AM Leonard Crestez <cdleonard@gmail.com> wrote:
+>>
+>> This commit adds support to add and remove keys but does not use them
+>> further.
+>>
+>> Similar to tcp md5 a single pointer to a struct tcp_authopt_info* struct
+>> is added to struct tcp_sock, this avoids increasing memory usage. The
+>> data structures related to tcp_authopt are initialized on setsockopt and
+>> only freed on socket close.
+>>
+> 
+> Thanks Leonard.
+> 
+> Small points from my side, please find them attached.
 
->
-> Fixes: 2ad7bf363841 ("ipvlan: Initial check-in of the IPVLAN driver.")
-> Signed-off-by: Lu Wei <luwei32@huawei.com>
-> ---
+...
 
-This was on my TODO list, I had a similar KASAN report, after my
-recent addition in skb_mac_header()
+>> +/* Free info and keys.
+>> + * Don't touch tp->authopt_info, it might not even be assigned yes.
+>> + */
+>> +void tcp_authopt_free(struct sock *sk, struct tcp_authopt_info *info)
+>> +{
+>> +       kfree_rcu(info, rcu);
+>> +}
+>> +
+>> +/* Free everything and clear tcp_sock.authopt_info to NULL */
+>> +void tcp_authopt_clear(struct sock *sk)
+>> +{
+>> +       struct tcp_authopt_info *info;
+>> +
+>> +       info = rcu_dereference_protected(tcp_sk(sk)->authopt_info, lockdep_sock_is_held(sk));
+>> +       if (info) {
+>> +               tcp_authopt_free(sk, info);
+>> +               tcp_sk(sk)->authopt_info = NULL;
+> 
+> RCU rules at deletion mandate that the pointer must be cleared before
+> the call_rcu()/kfree_rcu() call.
+> 
+> It is possible that current MD5 code has an issue here, let's not copy/paste it.
 
-DEBUG_NET_WARN_ON_ONCE(!skb_mac_header_was_set(skb));
+OK. Is there a need for some special form of assignment or is current 
+plain form enough?
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+> 
+>> +       }
+>> +}
+>> +
+>> +/* checks that ipv4 or ipv6 addr matches. */
+>> +static bool ipvx_addr_match(struct sockaddr_storage *a1,
+>> +                           struct sockaddr_storage *a2)
+>> +{
+>> +       if (a1->ss_family != a2->ss_family)
+>> +               return false;
+>> +       if (a1->ss_family == AF_INET &&
+>> +           (((struct sockaddr_in *)a1)->sin_addr.s_addr !=
+>> +            ((struct sockaddr_in *)a2)->sin_addr.s_addr))
+>> +               return false;
+>> +       if (a1->ss_family == AF_INET6 &&
+>> +           !ipv6_addr_equal(&((struct sockaddr_in6 *)a1)->sin6_addr,
+>> +                            &((struct sockaddr_in6 *)a2)->sin6_addr))
+>> +               return false;
+>> +       return true;
+>> +}
+> 
+> Always surprising to see this kind of generic helper being added in a patch.
 
-WARNING: CPU: 1 PID: 14752 at include/linux/skbuff.h:2821
-skb_mac_header include/linux/skbuff.h:2821 [inline]
-WARNING: CPU: 1 PID: 14752 at include/linux/skbuff.h:2821 eth_hdr
-include/linux/if_ether.h:24 [inline]
-WARNING: CPU: 1 PID: 14752 at include/linux/skbuff.h:2821
-ipvlan_xmit_mode_l2 drivers/net/ipvlan/ipvlan_core.c:592 [inline]
-WARNING: CPU: 1 PID: 14752 at include/linux/skbuff.h:2821
-ipvlan_queue_xmit+0xcba/0x19d0 drivers/net/ipvlan/ipvlan_core.c:644
-Modules linked in:
-CPU: 1 PID: 14752 Comm: syz-executor.4 Not tainted 6.0.0-rc3-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine,
-BIOS Google 07/22/2022
-RIP: 0010:skb_mac_header include/linux/skbuff.h:2821 [inline]
-RIP: 0010:eth_hdr include/linux/if_ether.h:24 [inline]
-RIP: 0010:ipvlan_xmit_mode_l2 drivers/net/ipvlan/ipvlan_core.c:592 [inline]
-RIP: 0010:ipvlan_queue_xmit+0xcba/0x19d0 drivers/net/ipvlan/ipvlan_core.c:644
-Code: 41 0f b7 d6 48 c7 c6 40 c7 75 8a 48 c7 c7 c0 c4 75 8a c6 05 7d
-52 d9 08 01 e8 df 0d 4a 04 0f 0b e9 e5 f7 ff ff e8 66 cb 8b fc <0f> 0b
-e9 ac f8 ff ff e8 6a 35 d8 fc e9 ed f4 ff ff e8 70 35 d8 fc
-RSP: 0018:ffffc900069b7808 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: ffff8880456ea000 RCX: 0000000000000000
-RDX: ffff8880214c5880 RSI: ffffffff84f03eca RDI: 0000000000000003
-RBP: ffffc900069b79b8 R08: 0000000000000003 R09: 000000000000ffff
-R10: 000000000000ffff R11: 0000000000000000 R12: ffff888075d62140
-R13: 1ffff92000d36f06 R14: 000000000000ffff R15: ffff8880456eaca0
-FS: 00007f2302712700(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
-CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f23005fe718 CR3: 000000001f461000 CR4: 00000000003506e0
-Call Trace:
-<TASK>
-ipvlan_start_xmit+0x45/0x150 drivers/net/ipvlan/ipvlan_main.c:220
-__netdev_start_xmit include/linux/netdevice.h:4819 [inline]
-netdev_start_xmit include/linux/netdevice.h:4833 [inline]
-__dev_direct_xmit+0x500/0x720 net/core/dev.c:4312
-dev_direct_xmit include/linux/netdevice.h:3021 [inline]
-packet_direct_xmit+0x1b3/0x2c0 net/packet/af_packet.c:282
-packet_snd net/packet/af_packet.c:3073 [inline]
-packet_sendmsg+0x3354/0x5500 net/packet/af_packet.c:3104
-sock_sendmsg_nosec net/socket.c:714 [inline]
-sock_sendmsg+0xcf/0x120 net/socket.c:734
-__sys_sendto+0x236/0x340 net/socket.c:2117
-__do_sys_sendto net/socket.c:2129 [inline]
-__se_sys_sendto net/socket.c:2125 [inline]
-__x64_sys_sendto+0xdd/0x1b0 net/socket.c:2125
-do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f2301689279
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48
-89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d
-01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f2302712168 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
-RAX: ffffffffffffffda RBX: 00007f230179c120 RCX: 00007f2301689279
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000003
-RBP: 00007f23016e3189 R08: 00000000200000c0 R09: 0000000000000014
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f2301ccfb1f R14: 00007f2302712300 R15: 0000000000022000
-</TASK>
+I remember looking for an equivalent and not finding it. Many places 
+have distinct code paths for ipv4 and ipv6 and my use of 
+"sockaddr_storage" as ipv4/ipv6 union is uncommon.
+
+It also wastes some memory.
+
+>> +int tcp_get_authopt_val(struct sock *sk, struct tcp_authopt *opt)
+>> +{
+>> +       struct tcp_sock *tp = tcp_sk(sk);
+>> +       struct tcp_authopt_info *info;
+>> +
+>> +       memset(opt, 0, sizeof(*opt));
+>> +       sock_owned_by_me(sk);
+>> +
+>> +       info = rcu_dereference_check(tp->authopt_info, lockdep_sock_is_held(sk));
+> 
+> Probably not a big deal, but it seems the prior sock_owned_by_me()
+> might be redundant.
+
+The sock_owned_by_me call checks checks lockdep_sock_is_held
+
+The rcu_dereference_check call checks lockdep_sock_is_held || 
+rcu_read_lock_held()
+
+This is a getsockopt so caller ensures socket locking but 
+rcu_read_lock_held() == 0.
+
+The sock_owned_by_me is indeed redundant because it seems very unlikely 
+the sockopt calling conditions will be changes. It was mostly there to 
+clarify for myself because I had probably at one time with locking 
+warnings. I guess they can be removed.
+
+>> +int tcp_set_authopt_key(struct sock *sk, sockptr_t optval, unsigned int optlen)
+>> +{
+>> +       struct tcp_authopt_key opt;
+>> +       struct tcp_authopt_info *info;
+>> +       struct tcp_authopt_key_info *key_info, *old_key_info;
+>> +       struct netns_tcp_authopt *net = sock_net_tcp_authopt(sk);
+>> +       int err;
+>> +
+>> +       sock_owned_by_me(sk);
+>> +       if (!ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN))
+>> +               return -EPERM;
+>> +
+>> +       err = _copy_from_sockptr_tolerant((u8 *)&opt, sizeof(opt), optval, optlen);
+>> +       if (err)
+>> +               return err;
+>> +
+>> +       if (opt.flags & ~TCP_AUTHOPT_KEY_KNOWN_FLAGS)
+>> +               return -EINVAL;
+>> +
+>> +       if (opt.keylen > TCP_AUTHOPT_MAXKEYLEN)
+>> +               return -EINVAL;
+>> +
+>> +       /* Delete is a special case: */
+>> +       if (opt.flags & TCP_AUTHOPT_KEY_DEL) {
+>> +               mutex_lock(&net->mutex);
+>> +               key_info = tcp_authopt_key_lookup_exact(sk, net, &opt);
+>> +               if (key_info) {
+>> +                       tcp_authopt_key_del(net, key_info);
+>> +                       err = 0;
+>> +               } else {
+>> +                       err = -ENOENT;
+>> +               }
+>> +               mutex_unlock(&net->mutex);
+>> +               return err;
+>> +       }
+>> +
+>> +       /* check key family */
+>> +       if (opt.flags & TCP_AUTHOPT_KEY_ADDR_BIND) {
+>> +               if (sk->sk_family != opt.addr.ss_family)
+>> +                       return -EINVAL;
+>> +       }
+>> +
+>> +       /* Initialize tcp_authopt_info if not already set */
+>> +       info = __tcp_authopt_info_get_or_create(sk);
+>> +       if (IS_ERR(info))
+>> +               return PTR_ERR(info);
+>> +
+>> +       key_info = kmalloc(sizeof(*key_info), GFP_KERNEL | __GFP_ZERO);
+> 
+> kzalloc() ?
+
+Yes
+
+>> +static int tcp_authopt_init_net(struct net *full_net)
+> 
+> Hmmm... our convention is to use "struct net *net"
+> 
+>> +{
+>> +       struct netns_tcp_authopt *net = &full_net->tcp_authopt;
+> 
+> Here, you should use a different name ...
+
+OK, will replace with net_ao
+
+>> @@ -2267,10 +2268,11 @@ void tcp_v4_destroy_sock(struct sock *sk)
+>>                  tcp_clear_md5_list(sk);
+>>                  kfree_rcu(rcu_dereference_protected(tp->md5sig_info, 1), rcu);
+>>                  tp->md5sig_info = NULL;
+>>          }
+>>   #endif
+>> +       tcp_authopt_clear(sk);
+> 
+> Do we really own the socket lock at this point ?
+
+Not sure how I would tell but there is a lockdep_sock_is_held check 
+inside tcp_authopt_clear. I also added sock_owned_by_me and there were 
+no warnings.
