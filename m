@@ -2,45 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C43E95B0909
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 17:46:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A6D95B090C
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 17:46:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229692AbiIGPqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 11:46:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49572 "EHLO
+        id S229731AbiIGPqU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 11:46:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229783AbiIGPqM (ORCPT
+        with ESMTP id S229836AbiIGPqM (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 11:46:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 814046FA0F
-        for <netdev@vger.kernel.org>; Wed,  7 Sep 2022 08:46:02 -0700 (PDT)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9149A82762
+        for <netdev@vger.kernel.org>; Wed,  7 Sep 2022 08:46:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662565561;
+        s=mimecast20190719; t=1662565566;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=RxXs7B8LQSH1QSFqxekwrMBinIO+X+jrbfvcwnHR9n0=;
-        b=f+nMjHKAUkdJzZ0Jjkyt1c3bAK9FKqqXB1FPjDvnGNMLap12qzskQ68ZzReEb5nWN99SZz
-        JsJ3z1j/6nKc7xrejqMyXTEirJjDjxgqGGscNOFU+7K3+KTVKhPFpv0ofEElEZTQDt3hNh
-        gwW73RaWNECCg2uo3LyQ2NqAsU7kghs=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=EQkFLDjoyFYBBnPe05h3hhYJQzwJrKql3Np1KjDu3/w=;
+        b=XnjbzR/GMrf8EpWBF51QOw6wL2nv1GUn/JRvCpobCLtMUv2Z5c+E/Phmar/d7IRXgiyruY
+        jl3dA/0OMRush1xbIjEf4pO00W6NBbr0sc79J1rJmXB4ktv+JheRH62qtyYQbG1n1pi0sb
+        MPleh9A9SsDbOJt5i9jR4Dewpl5UYIc=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-198-Hi2NMbUKP-unt3JTnucn4w-1; Wed, 07 Sep 2022 11:45:58 -0400
-X-MC-Unique: Hi2NMbUKP-unt3JTnucn4w-1
+ us-mta-461-Fyr_K0d3Oyaoqn-ZWrtPjA-1; Wed, 07 Sep 2022 11:46:03 -0400
+X-MC-Unique: Fyr_K0d3Oyaoqn-ZWrtPjA-1
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id ACCA03800C2E;
-        Wed,  7 Sep 2022 15:45:57 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B4B7B85A58D;
+        Wed,  7 Sep 2022 15:46:02 +0000 (UTC)
 Received: from firesoul.localdomain (unknown [10.40.208.22])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4A6E24010D2A;
-        Wed,  7 Sep 2022 15:45:57 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 556BD4010E4D;
+        Wed,  7 Sep 2022 15:46:02 +0000 (UTC)
 Received: from [192.168.42.3] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id 45F9930721A6C;
-        Wed,  7 Sep 2022 17:45:56 +0200 (CEST)
-Subject: [PATCH RFCv2 bpf-next 11/18] i40e: add XDP-hints handling
+        by firesoul.localdomain (Postfix) with ESMTP id 51EE930721A6C;
+        Wed,  7 Sep 2022 17:46:01 +0200 (CEST)
+Subject: [PATCH RFCv2 bpf-next 12/18] net: use XDP-hints in xdp_frame to SKB
+ conversion
 From:   Jesper Dangaard Brouer <brouer@redhat.com>
 To:     bpf@vger.kernel.org
 Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
@@ -52,8 +53,8 @@ Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
         Andrii Nakryiko <andrii.nakryiko@gmail.com>,
         dave@dtucker.co.uk, Magnus Karlsson <magnus.karlsson@intel.com>,
         bjorn@kernel.org
-Date:   Wed, 07 Sep 2022 17:45:56 +0200
-Message-ID: <166256555623.1434226.18405044972840995177.stgit@firesoul>
+Date:   Wed, 07 Sep 2022 17:46:01 +0200
+Message-ID: <166256556130.1434226.10426110144984671774.stgit@firesoul>
 In-Reply-To: <166256538687.1434226.15760041133601409770.stgit@firesoul>
 References: <166256538687.1434226.15760041133601409770.stgit@firesoul>
 User-Agent: StGit/1.4
@@ -63,7 +64,7 @@ Content-Transfer-Encoding: 7bit
 X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,307 +72,159 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add two different XDP-hints named
- "xdp_hints_i40e" and "xdp_hints_i40e_timestamp".
+This patch makes the net/core/xdp function __xdp_build_skb_from_frame()
+consume HW offloads provided via XDP-hints when creating an SKB based
+on an xdp_frame. This is an initial step towards SKB less drivers that
+moves SKB handing to net/core.
 
-The "xdp_hints_i40e" struct is compatible with common struct, and
-extends with member i40e_hash_ptype (type struct i40e_rx_ptype_decoded)
-what contains more details on what protocol the packet contains. Info on
-IPv4 or IPv6, fragmented or not, L4 protocols UDP, TCP, SCTP, ICMP or
-timesync.
-
-The "xdp_hints_i40e_timestamp" struct is also compatible with common
-struct, and extends on top of "xdp_hints_i40e" by adding a 64-bit
-"rx_timestamp" provided by hardware.
+Current users that already benefit from this are: Redirect into veth
+and cpumap. XDP_PASS action in bpf_test_run_xdp_live and driver
+ethernet/aquantia/atlantic/.
 
 Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c |   22 ++++
- drivers/net/ethernet/intel/i40e/i40e_txrx.c |  155 ++++++++++++++++++++++++---
- 2 files changed, 160 insertions(+), 17 deletions(-)
+ include/net/xdp.h |   72 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ net/core/xdp.c    |   17 ++++++++-----
+ 2 files changed, 83 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index b36bf9c3e1e4..50deaa25099e 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -5,6 +5,7 @@
- #include <linux/of_net.h>
- #include <linux/pci.h>
- #include <linux/bpf.h>
-+#include <linux/btf.h>
- #include <generated/utsrelease.h>
- #include <linux/crash_dump.h>
+diff --git a/include/net/xdp.h b/include/net/xdp.h
+index c7cdcef83fa5..bdb497c7b296 100644
+--- a/include/net/xdp.h
++++ b/include/net/xdp.h
+@@ -153,6 +153,68 @@ static __always_inline u32 xdp_hints_set_vlan(struct xdp_hints_common *hints,
+ 	return flags;
+ }
  
-@@ -27,6 +28,10 @@ static const char i40e_driver_string[] =
- 
- static const char i40e_copyright[] = "Copyright (c) 2013 - 2019 Intel Corporation.";
- 
-+static struct btf *this_module_btf;
-+extern u64 btf_id_xdp_hints_i40e;
-+extern u64 btf_id_xdp_hints_i40e_timestamp;
-+
- /* a bit of forward declarations */
- static void i40e_vsi_reinit_locked(struct i40e_vsi *vsi);
- static void i40e_handle_reset_warning(struct i40e_pf *pf, bool lock_acquired);
-@@ -13661,6 +13666,7 @@ static int i40e_config_netdev(struct i40e_vsi *vsi)
- 			  NETIF_F_SCTP_CRC		|
- 			  NETIF_F_RXHASH		|
- 			  NETIF_F_RXCSUM		|
-+			  NETIF_F_XDP_HINTS		|
- 			  0;
- 
- 	if (!(pf->hw_features & I40E_HW_OUTER_UDP_CSUM_CAPABLE))
-@@ -13705,6 +13711,7 @@ static int i40e_config_netdev(struct i40e_vsi *vsi)
- 	netdev->hw_features |= hw_features;
- 
- 	netdev->features |= hw_features | NETIF_F_HW_VLAN_CTAG_FILTER;
-+	netdev->features |= NETIF_F_XDP_HINTS;
- 	netdev->hw_enc_features |= NETIF_F_TSO_MANGLEID;
- 
- 	netdev->features &= ~NETIF_F_HW_TC;
-@@ -16617,6 +16624,15 @@ static struct pci_driver i40e_driver = {
- 	.sriov_configure = i40e_pci_sriov_configure,
- };
- 
-+static void i40e_this_module_btf_lookups(struct btf *btf)
++/* XDP hints to SKB helper functions */
++static inline void xdp_hint2skb_record_rx_queue(struct sk_buff *skb,
++						struct xdp_hints_common *hints)
 +{
-+	btf_id_xdp_hints_i40e = btf_get_module_btf_full_id(btf,
-+							   "xdp_hints_i40e");
++	if (hints->xdp_hints_flags & HINT_FLAG_RX_QUEUE)
++		skb_record_rx_queue(skb, hints->rx_queue);
++}
 +
-+	btf_id_xdp_hints_i40e_timestamp = btf_get_module_btf_full_id(btf,
-+						"xdp_hints_i40e_timestamp");
++static inline void xdp_hint2skb_set_hash(struct sk_buff *skb,
++					 struct xdp_hints_common *hints)
++{
++	u32 hash_type = hints->xdp_hints_flags & HINT_FLAG_RX_HASH_TYPE_MASK;
++
++	if (hash_type) {
++		hash_type = hash_type >> HINT_FLAG_RX_HASH_TYPE_SHIFT;
++		skb_set_hash(skb, hints->rx_hash32, hash_type);
++	}
++}
++
++static inline void xdp_hint2skb_checksum(struct sk_buff *skb,
++					 struct xdp_hints_common *hints)
++{
++	u32 csum_type = hints->xdp_hints_flags & HINT_FLAG_CSUM_TYPE_MASK;
++	u32 csum_level = hints->xdp_hints_flags & HINT_FLAG_CSUM_LEVEL_MASK;
++
++	if (csum_type == CHECKSUM_UNNECESSARY)
++		skb->ip_summed = CHECKSUM_UNNECESSARY;
++
++	if (csum_level)
++		skb->csum_level = csum_level >> HINT_FLAG_CSUM_LEVEL_SHIFT;
++
++	/* TODO: First driver implementing CHECKSUM_PARTIAL or CHECKSUM_COMPLETE
++	 *  need to implement handling here.
++	 */
++}
++
++static inline void xdp_hint2skb_vlan_hw_tag(struct sk_buff *skb,
++					    struct xdp_hints_common *hints)
++{
++	u32 flags = hints->xdp_hints_flags;
++	__be16 proto = htons(ETH_P_8021Q);
++
++	if (flags & HINT_FLAG_VLAN_PROTO_ETH_P_8021AD)
++		proto = htons(ETH_P_8021AD);
++
++	if (flags & HINT_FLAG_VLAN_PRESENT) {
++		/* like: __vlan_hwaccel_put_tag */
++		skb->vlan_proto = proto;
++		skb->vlan_tci = hints->vlan_tci;
++		skb->vlan_present = 1;
++	}
++}
++
++static inline void xdp_hint2skb(struct sk_buff *skb,
++				struct xdp_hints_common *hints)
++{
++	xdp_hint2skb_record_rx_queue(skb, hints);
++	xdp_hint2skb_set_hash(skb, hints);
++	xdp_hint2skb_checksum(skb, hints);
++	xdp_hint2skb_vlan_hw_tag(skb, hints);
 +}
 +
  /**
-  * i40e_init_module - Driver registration routine
+  * DOC: XDP RX-queue information
   *
-@@ -16628,6 +16644,10 @@ static int __init i40e_init_module(void)
- 	pr_info("%s: %s\n", i40e_driver_name, i40e_driver_string);
- 	pr_info("%s: %s\n", i40e_driver_name, i40e_copyright);
- 
-+	this_module_btf = btf_get_module_btf(THIS_MODULE);
-+	if (this_module_btf)
-+		i40e_this_module_btf_lookups(this_module_btf);
-+
- 	/* There is no need to throttle the number of active tasks because
- 	 * each device limits its own task using a state bit for scheduling
- 	 * the service task, and the device tasks do not interfere with each
-@@ -16658,5 +16678,7 @@ static void __exit i40e_exit_module(void)
- 	destroy_workqueue(i40e_wq);
- 	ida_destroy(&i40e_client_ida);
- 	i40e_dbg_exit();
-+	if (!IS_ERR_OR_NULL(this_module_btf))
-+		btf_put_module_btf(this_module_btf);
+@@ -364,6 +426,16 @@ static __always_inline bool xdp_frame_is_frag_pfmemalloc(struct xdp_frame *frame
+ 	return !!(frame->flags & XDP_FLAGS_FRAGS_PF_MEMALLOC);
  }
- module_exit(i40e_exit_module);
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-index a7a896321880..d945ac122d4c 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-@@ -1819,15 +1819,10 @@ _i40e_rx_checksum(struct i40e_vsi *vsi,
- 		ret.csum_level = 1;
  
- 	/* Only report checksum unnecessary for TCP, UDP, or SCTP */
--	switch (decoded.inner_prot) {
--	case I40E_RX_PTYPE_INNER_PROT_TCP:
--	case I40E_RX_PTYPE_INNER_PROT_UDP:
--	case I40E_RX_PTYPE_INNER_PROT_SCTP:
-+	if (likely(decoded.inner_prot == I40E_RX_PTYPE_INNER_PROT_TCP ||
-+		   decoded.inner_prot == I40E_RX_PTYPE_INNER_PROT_UDP ||
-+		   decoded.inner_prot == I40E_RX_PTYPE_INNER_PROT_SCTP))
- 		ret.ip_summed = CHECKSUM_UNNECESSARY;
--		fallthrough;
--	default:
--		break;
--	}
- 
- 	return ret;
- 
-@@ -1858,19 +1853,17 @@ static inline void i40e_rx_checksum(struct i40e_vsi *vsi,
- 
- /**
-  * i40e_ptype_to_htype - get a hash type
-- * @ptype: the ptype value from the descriptor
-+ * @ptype: the decoded ptype value from the descriptor
-  *
-  * Returns a hash type to be used by skb_set_hash
-  **/
--static inline int i40e_ptype_to_htype(u8 ptype)
-+static inline int i40e_ptype_to_htype(struct i40e_rx_ptype_decoded decoded)
++static __always_inline bool xdp_frame_has_hints_compat(struct xdp_frame *xdpf)
++{
++	u32 flags = xdpf->flags;
++
++	if (!(flags & XDP_FLAGS_HINTS_COMPAT_COMMON))
++		return false;
++
++	return !!(flags & XDP_FLAGS_HINTS_MASK);
++}
++
+ #define XDP_BULK_QUEUE_SIZE	16
+ struct xdp_frame_bulk {
+ 	int count;
+diff --git a/net/core/xdp.c b/net/core/xdp.c
+index a57bd5278b47..ffa353367941 100644
+--- a/net/core/xdp.c
++++ b/net/core/xdp.c
+@@ -623,6 +623,7 @@ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
+ 					   struct net_device *dev)
  {
--	struct i40e_rx_ptype_decoded decoded = decode_rx_desc_ptype(ptype);
--
--	if (!decoded.known)
-+	if (unlikely(!decoded.known))
- 		return PKT_HASH_TYPE_NONE;
+ 	struct skb_shared_info *sinfo = xdp_get_shared_info_from_frame(xdpf);
++	struct xdp_hints_common *xdp_hints = NULL;
+ 	unsigned int headroom, frame_size;
+ 	void *hard_start;
+ 	u8 nr_frags;
+@@ -640,14 +641,17 @@ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
+ 	frame_size = xdpf->frame_sz;
  
--	if (decoded.outer_ip == I40E_RX_PTYPE_OUTER_IP &&
--	    decoded.payload_layer == I40E_RX_PTYPE_PAYLOAD_LAYER_PAY4)
-+	if (likely(decoded.outer_ip == I40E_RX_PTYPE_OUTER_IP &&
-+		   decoded.payload_layer == I40E_RX_PTYPE_PAYLOAD_LAYER_PAY4))
- 		return PKT_HASH_TYPE_L4;
- 	else if (decoded.outer_ip == I40E_RX_PTYPE_OUTER_IP &&
- 		 decoded.payload_layer == I40E_RX_PTYPE_PAYLOAD_LAYER_PAY3)
-@@ -1900,8 +1893,11 @@ static inline void i40e_rx_hash(struct i40e_ring *ring,
- 		return;
+ 	hard_start = xdpf->data - headroom;
++	prefetch(xdpf->data); /* cache-line for eth_type_trans */
+ 	skb = build_skb_around(skb, hard_start, frame_size);
+ 	if (unlikely(!skb))
+ 		return NULL;
  
- 	if ((rx_desc->wb.qword1.status_error_len & rss_mask) == rss_mask) {
-+		struct i40e_rx_ptype_decoded ptype;
-+
-+		ptype = decode_rx_desc_ptype(rx_ptype);
- 		hash = le32_to_cpu(rx_desc->wb.qword0.hi_dword.rss);
--		skb_set_hash(skb, hash, i40e_ptype_to_htype(rx_ptype));
-+		skb_set_hash(skb, hash, i40e_ptype_to_htype(ptype));
- 	}
- }
- 
-@@ -1947,6 +1943,129 @@ void i40e_process_skb_fields(struct i40e_ring *rx_ring,
- 	skb->protocol = eth_type_trans(skb, rx_ring->netdev);
- }
- 
-+struct xdp_hints_i40e {
-+	struct i40e_rx_ptype_decoded i40e_hash_ptype;
-+	struct xdp_hints_common common;
-+};
-+
-+struct xdp_hints_i40e_timestamp {
-+	u64 rx_timestamp;
-+	struct xdp_hints_i40e base;
-+};
-+
-+/* Extending xdp_hints_flags */
-+enum xdp_hints_flags_driver {
-+	HINT_FLAG_RX_TIMESTAMP = BIT(16),
-+};
-+
-+/* BTF full IDs gets looked up on driver i40e_init_module */
-+u64 btf_id_xdp_hints_i40e;
-+u64 btf_id_xdp_hints_i40e_timestamp;
-+
-+static inline u32 i40e_rx_checksum_xdp(struct i40e_vsi *vsi, u64 qword1,
-+				       struct xdp_hints_i40e *xdp_hints,
-+				       struct i40e_rx_ptype_decoded ptype)
-+{
-+	struct i40e_rx_checksum_ret ret;
-+
-+	ret = _i40e_rx_checksum(vsi, qword1, ptype);
-+	return xdp_hints_set_rx_csum(&xdp_hints->common, ret.ip_summed, ret.csum_level);
-+}
-+
-+static inline u32 i40e_rx_hash_xdp(struct i40e_ring *ring,
-+				   union i40e_rx_desc *rx_desc,
-+				   struct xdp_buff *xdp,
-+				   u64 rx_desc_qword1,
-+				   struct xdp_hints_i40e *xdp_hints,
-+				   struct i40e_rx_ptype_decoded ptype
-+	)
-+{
-+	const u64 rss_mask = (u64)I40E_RX_DESC_FLTSTAT_RSS_HASH <<
-+				I40E_RX_DESC_STATUS_FLTSTAT_SHIFT;
-+	u32 flags = 0;
-+
-+	if (unlikely(!(ring->netdev->features & NETIF_F_RXHASH))) {
-+		struct i40e_rx_ptype_decoded zero = {};
-+
-+		xdp_hints->i40e_hash_ptype = zero;
-+		return 0;
+ 	skb_reserve(skb, headroom);
+ 	__skb_put(skb, xdpf->len);
+-	if (xdpf->metasize)
++	if (xdpf->metasize) {
+ 		skb_metadata_set(skb, xdpf->metasize);
++		prefetch(xdpf->data - sizeof(*xdp_hints));
 +	}
-+
-+	if (likely((rx_desc_qword1 & rss_mask) == rss_mask)) {
-+		u32 hash = le32_to_cpu(rx_desc->wb.qword0.hi_dword.rss);
-+		u32 htype;
-+
-+		/* i40e provide extra information about protocol type  */
-+		xdp_hints->i40e_hash_ptype = ptype;
-+		htype = i40e_ptype_to_htype(ptype);
-+		flags = xdp_hints_set_rx_hash(&xdp_hints->common, hash, htype);
-+	}
-+	return flags;
-+}
-+
-+static inline void i40e_process_xdp_hints(struct i40e_ring *rx_ring,
-+					  union i40e_rx_desc *rx_desc,
-+					  struct xdp_buff *xdp,
-+					  u64 qword)
-+{
-+	u32 rx_status = (qword & I40E_RXD_QW1_STATUS_MASK) >>
-+			I40E_RXD_QW1_STATUS_SHIFT;
-+	u32 tsynvalid = rx_status & I40E_RXD_QW1_STATUS_TSYNVALID_MASK;
-+	u32 tsyn = (rx_status & I40E_RXD_QW1_STATUS_TSYNINDX_MASK) >>
-+		   I40E_RXD_QW1_STATUS_TSYNINDX_SHIFT;
-+	u64 tsyn_ts;
-+
-+	struct i40e_rx_ptype_decoded ptype;
-+	struct xdp_hints_i40e *xdp_hints;
-+	struct xdp_hints_common *common;
-+	u32 btf_full_id = btf_id_xdp_hints_i40e;
-+	u32 btf_sz = sizeof(*xdp_hints);
-+	u32 f1 = 0, f2, f3, f4, f5 = 0;
-+	u8 rx_ptype;
-+
-+	if (!(rx_ring->netdev->features & NETIF_F_XDP_HINTS))
-+		return;
-+
-+	/* Driver have xdp headroom when using build_skb */
-+	if (unlikely(!ring_uses_build_skb(rx_ring)))
-+		return;
-+
-+	xdp_hints = xdp->data - btf_sz;
-+	common = &xdp_hints->common;
-+
-+	if (unlikely(tsynvalid)) {
-+		struct xdp_hints_i40e_timestamp *hints;
-+
-+		tsyn_ts = i40e_ptp_rx_hwtstamp_raw(rx_ring->vsi->back, tsyn);
-+		btf_full_id = btf_id_xdp_hints_i40e_timestamp;
-+		btf_sz = sizeof(*hints);
-+		hints = xdp->data - btf_sz;
-+		hints->rx_timestamp = ns_to_ktime(tsyn_ts);
-+		f1 = HINT_FLAG_RX_TIMESTAMP;
-+	}
-+
-+	/* ptype needed by both hash and checksum code */
-+	rx_ptype = (qword & I40E_RXD_QW1_PTYPE_MASK) >> I40E_RXD_QW1_PTYPE_SHIFT;
-+	ptype = decode_rx_desc_ptype(rx_ptype);
-+
-+	f2 = i40e_rx_hash_xdp(rx_ring, rx_desc, xdp, qword, xdp_hints, ptype);
-+	f3 = i40e_rx_checksum_xdp(rx_ring->vsi, qword, xdp_hints, ptype);
-+	f4 = xdp_hints_set_rxq(common, rx_ring->queue_index);
-+
-+	if (unlikely(qword & BIT(I40E_RX_DESC_STATUS_L2TAG1P_SHIFT))) {
-+		__le16 vlan_tag = rx_desc->wb.qword0.lo_dword.l2tag1;
-+
-+		f5 = xdp_hints_set_vlan(common, le16_to_cpu(vlan_tag),
-+					htons(ETH_P_8021Q));
-+	}
-+
-+	xdp_hints_set_flags(common, (f1 | f2 | f3 | f4 | f5));
-+	common->btf_full_id = btf_full_id;
-+	xdp->data_meta = xdp->data - btf_sz;
-+
-+	xdp_buff_set_hints_flags(xdp, true);
-+}
-+
- /**
-  * i40e_cleanup_headers - Correct empty headers
-  * @rx_ring: rx descriptor ring packet is being transacted on
-@@ -2495,7 +2614,7 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_ring, int budget)
- 		 */
- 		dma_rmb();
  
--		if (i40e_rx_is_programming_status(qword)) {
-+		if (unlikely(i40e_rx_is_programming_status(qword))) {
- 			i40e_clean_programming_status(rx_ring,
- 						      rx_desc->raw.qword[0],
- 						      qword);
-@@ -2522,6 +2641,8 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_ring, int budget)
- 				     rx_buffer->page_offset - offset;
- 			xdp_prepare_buff(&xdp, hard_start, offset, size, true);
- 			xdp_buff_clear_frags_flag(&xdp);
-+			prefetchw(xdp.data - 8); /* xdp.data_meta cacheline */
-+			i40e_process_xdp_hints(rx_ring, rx_desc, &xdp, qword);
- #if (PAGE_SIZE > 4096)
- 			/* At larger PAGE_SIZE, frame_sz depend on len size */
- 			xdp.frame_sz = i40e_rx_frame_truesize(rx_ring, size);
+ 	if (unlikely(xdp_frame_has_frags(xdpf)))
+ 		xdp_update_skb_shared_info(skb, nr_frags,
+@@ -658,11 +662,12 @@ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
+ 	/* Essential SKB info: protocol and skb->dev */
+ 	skb->protocol = eth_type_trans(skb, dev);
+ 
+-	/* Optional SKB info, currently missing:
+-	 * - HW checksum info		(skb->ip_summed)
+-	 * - HW RX hash			(skb_set_hash)
+-	 * - RX ring dev queue index	(skb_record_rx_queue)
+-	 */
++	/* Populate (optional) HW offload hints in SKB via XDP-hints */
++	if (xdp_frame_has_hints_compat(xdpf)
++	    && xdpf->metasize >= sizeof(*xdp_hints)) {
++		xdp_hints = xdpf->data - sizeof(*xdp_hints);
++		xdp_hint2skb(skb, xdp_hints);
++	}
+ 
+ 	/* Until page_pool get SKB return path, release DMA here */
+ 	xdp_release_frame(xdpf);
 
 
