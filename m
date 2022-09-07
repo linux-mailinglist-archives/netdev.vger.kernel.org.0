@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB7585B0F63
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 23:46:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 550AF5B0F66
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 23:46:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230300AbiIGVqI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 17:46:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34204 "EHLO
+        id S230292AbiIGVqq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 17:46:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230297AbiIGVqF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 17:46:05 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 550AC7F11A
-        for <netdev@vger.kernel.org>; Wed,  7 Sep 2022 14:46:01 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id u9so33469748ejy.5
-        for <netdev@vger.kernel.org>; Wed, 07 Sep 2022 14:46:01 -0700 (PDT)
+        with ESMTP id S230197AbiIGVqo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 17:46:44 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 553777FF9B
+        for <netdev@vger.kernel.org>; Wed,  7 Sep 2022 14:46:43 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id gh9so11532775ejc.8
+        for <netdev@vger.kernel.org>; Wed, 07 Sep 2022 14:46:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date;
-        bh=FzI+NYgLreNdRpGLkfDnamsfShBf0ZKTlM17YZgua3A=;
-        b=I0TddPEPV0fFbnI0v9AXqC9cgbCPCcRzvdkDFi1tHIr/t6gPXSniK8XYygCGv8baS0
-         HQisqd6PLa82tyoBTLwft7iOGUk3TvDgpGPWX+viFekQ8sCQUHgaSIuo8qB3KU17qhtp
-         wFEvofiqWUkmYIndOucyu9zvfiLodemHnIcLTTtQF2/QwF3F8Jt2EAIRgmw+zDRP3V6Z
-         l9NZH6OTENqGNA8wcqdtb+qdw/4WaWzYvr8jMY0mRFdAF4Hy4WNSokwJVepExjON+HO8
-         uij/kJGSeXOjgMiKhmRiFJ/zafP5c8QB7rgPpMFtQIKT3KdsTillvRUKMgFt4qt4jlzX
-         NlRg==
+        bh=PXE/Z3HxiWt7F7e2RZWHNf3RUT/q51Qsliy5mCBtP5k=;
+        b=pwly5T/gbB+J2hYRkrP61PLvO2E15PzaheurniFapDV4j5Yljugy9ue+NzJeYwWFQr
+         smn4HDexLQykl6Z2dwZGeCawlT6PU3bAomGTY48GAtilnHRM1mlJ2aij6swYTnqVZdkI
+         /PRQA+qfezkYjGe0hymquv5y0ZnQpssplarfnmru6RMYdAFsc0rfI+CyuPlrPtv5gH6n
+         onMoxT644LVdC0XJnmfbomrdRIUi8fzHZe/JloIJwjPgtRg5nmJ8SJpkVXF9O3eBGtaY
+         hEeHZMRGAoEfd3Q1vHqXnOLdX9PP8S1Wd7r6xQUT+h5hmiy8sBVO0Tdz4qGtldwM7fAY
+         lnvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=FzI+NYgLreNdRpGLkfDnamsfShBf0ZKTlM17YZgua3A=;
-        b=eTPyL+vw3deNe+xvVPBwLvegVctZ4VMPaRQo5GISB32yo9IJl+N4C1m5Z8PnFjC3h6
-         8KtgYHfaYQ8fhOnJREJ8AHEiXVaE25vlRPiGP9+ujiYL0J2OB6iyoqqTw/0+534GiG8u
-         UFctYpLfLopKidTTpBxE176EmaI6+6YhPtKZklTpIxYb4al5C1LxIGNuK3NMXIiVrag1
-         oPng1VbCyZVpauHtd55lf/2nzOzDU305sEKS+6VVpQw0o7iW4qSReSqTzRHt/MrGydBf
-         z2dBzw2cG4UZ7irw14Ne1i0CWh27lfEFRWnBCySKcVcuT7c7iGSDIJDG8kJRKEX2OyXG
-         1RGw==
-X-Gm-Message-State: ACgBeo339F1Mx8HqqoCk/L6wZtk13tt0wc3dvOniv2Ql/ttYrTdP9mGu
-        IkIRtDHlqnJg9tf17kZRNxUbiH2nnCvesNgjkIpcAvN5+aMSrw==
-X-Google-Smtp-Source: AA6agR66HDLg6KtgJAD6Rmh/HlSzioiDi0XVXWaEsGvWZykm0m7HBw7EcFTDJSLMaeYUZU7JZCorEivpZFO4E/pPwMQ=
-X-Received: by 2002:a17:906:9b86:b0:73d:72cf:72af with SMTP id
- dd6-20020a1709069b8600b0073d72cf72afmr3780632ejc.440.1662587159927; Wed, 07
- Sep 2022 14:45:59 -0700 (PDT)
+        bh=PXE/Z3HxiWt7F7e2RZWHNf3RUT/q51Qsliy5mCBtP5k=;
+        b=6jn/QSWsZjqYlaBhUM1iV1PybTWHLDisKVoy1ufZtLBdt4AM7OGBCVfyNPPwkeNEkD
+         vHkAgraw6NIkoK+gSsfBDGv/zmyA3M2CC4NZnA6NHtjDqqLMwKxqaj0uK2vtwK3ZFdCj
+         6E1hV1J2XLky26Yi8Bq2unvmr2UQYVnpZRCYcVkmOe2ka/KtvT2Cd9y4mR39rV8upDCG
+         TBhaRlXBECTo3lbm9webVILRByrpjdRXtEI7AtpSYm8fL3fErp9+lGpXm2fvQ98YNNsL
+         uDnvrUXxq+GYwWLfpZIxH428Y2Oq9TH8HuuZJZpB82oUP3OylbgEeNUqgztCE8UwsL0y
+         iWcQ==
+X-Gm-Message-State: ACgBeo1easovvdzt1dEvrfX/QuR985EYYiGRQQRMuZT2Gr122MJhBMEt
+        7b24mlKOlcibZt11e8z6BbDhIPQMIaYFe6+nlwi6zQ==
+X-Google-Smtp-Source: AA6agR5osXxsf7Y/1KOb7R6nPfjHt592g98SobKcQv4OldFYmQfmcPeERB/7qZvkwp3xU+Asg7r52+qxMfzkVrFC+fg=
+X-Received: by 2002:a17:906:cc5a:b0:741:5240:d91a with SMTP id
+ mm26-20020a170906cc5a00b007415240d91amr3794491ejb.500.1662587201970; Wed, 07
+ Sep 2022 14:46:41 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220906204922.3789922-1-dmitry.torokhov@gmail.com>
-In-Reply-To: <20220906204922.3789922-1-dmitry.torokhov@gmail.com>
+References: <20220906204922.3789922-1-dmitry.torokhov@gmail.com> <20220906204922.3789922-2-dmitry.torokhov@gmail.com>
+In-Reply-To: <20220906204922.3789922-2-dmitry.torokhov@gmail.com>
 From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Wed, 7 Sep 2022 23:45:48 +0200
-Message-ID: <CACRpkdaUK7SQ9BoR0C2=8XeKWCsjbwd-KdowN5ee_BU+Jhzeqw@mail.gmail.com>
-Subject: Re: [PATCH 1/3] net: davicom: dm9000: switch to using gpiod API
+Date:   Wed, 7 Sep 2022 23:46:30 +0200
+Message-ID: <CACRpkdbO9WSeyY279WwWxYjfRUUvnw3++BsZWYkAW+upm73GLQ@mail.gmail.com>
+Subject: Re: [PATCH 2/3] net: ks8851: switch to using gpiod API
 To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Andrew Lunn <andrew@lunn.ch>,
@@ -78,9 +78,6 @@ On Tue, Sep 6, 2022 at 10:49 PM Dmitry Torokhov
 > Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 
 Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-
-I think net patches need [PATCH net-next] in the subject to get
-applied.
 
 Yours,
 Linus Walleij
