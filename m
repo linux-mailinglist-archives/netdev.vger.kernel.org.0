@@ -2,76 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A44865B0B7D
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 19:29:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E10365B0B8C
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 19:33:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229596AbiIGR3y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 13:29:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55354 "EHLO
+        id S229913AbiIGRdc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 13:33:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbiIGR3x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 13:29:53 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4994237E1;
-        Wed,  7 Sep 2022 10:29:50 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id t3so10207887ply.2;
-        Wed, 07 Sep 2022 10:29:50 -0700 (PDT)
+        with ESMTP id S229838AbiIGRdb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 13:33:31 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B4AFAA3FD;
+        Wed,  7 Sep 2022 10:33:30 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id e17so13157679edc.5;
+        Wed, 07 Sep 2022 10:33:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=WZNMZpyF/eauipQuXO/Lbt+W4cgA4TDPwg9iv72mCSc=;
-        b=WAENKmD5GUO7Gu8pUKDlUY65iW5Bv7O4OLrgMQ1/c3H2pReC6PsQYMyWmCK4TkLhuh
-         TXFLUcW3eNf65aGwrZkN+nEd72rJku95CCtcejx3s88frLbryVpMERpD9j5lhTTYwYM6
-         FtR3zoX/Or8aIqU3FOXHZE99JkA7A134KVTz1PdF7lSxqXLQO+JzyRAPFmDwUU0QfUs1
-         fPRpAQM3vKlJ+4tKDwwJD39YWxc8NVvlc/wtPs+poca1XdIaT6wCMFqHjTAwSju8aqrB
-         QjxE7JcqNTqLeuwI3zDLJfiogCxFxWIgPOAE7kjoFY+xknoxFCkxrtUpycmOcA5dxDjg
-         i/OQ==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=EMdYVgrPORJghmWcwCaLMhyYB6LX7bPDOyParbvErPs=;
+        b=cs+9ZSYV01bTQ1hYnQmhHmp7bhG89YTNFqdwtSrJ51SP/TepurT9AJ3JkOwiDIT6B/
+         EGdl/sTe+1DsjywfitSHGGZctfMwdPw6E2SYHXNQCkdxpKQ2oK9CUSdidc6aB4Dhyq4m
+         n6NRHrD8Phw7RRv718tidhAxqQSnUoUUsz5sKqBekvMb8AJmz6fOxZY8bU1k2ELu3Gy0
+         rjBGAl9G7gVQMsnCPEJTanmHRCOpmlI07cXAOrmwA0m3DJo7p17dh1IS7LMWuz+f1mjZ
+         khu34rcWdhJGeaoXD5tw4JJ/lYnkINHEWdFo2XqzDgE/pnUnfA9ANq9HCtfLVwv62fzK
+         MPhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=WZNMZpyF/eauipQuXO/Lbt+W4cgA4TDPwg9iv72mCSc=;
-        b=ykfyGRQZ9WFpk8L7E3WmOx2qch13d0qWQcrAcQb4IRl2EPpa2QpMdwKMmPKFxiwYp6
-         y9NpI2foIQ96H0v/CZ3eOJp/LG1WF2GLPTXmMg5Wd+ZQS/VDT2A2rzLe0EqiRmfhjk6H
-         2Itzxp7urMdlhn++zt7X+DyL98k2fX9m6yKF0/oazL6ZJwGDC8sAq77kwsZBHjrh+OB5
-         a+RvfUvxg9UuR+benMkhAena62uI18PzL+ynNEON+GNZ0er/2yIbCHHD4nOBsSglmYdn
-         mYy+iLbYAKS6q8MMBJj5UM8mqAexoFPzZaWRWq/EgYeD51CpJ2ivSXkt6j3q96XxCSom
-         2JkA==
-X-Gm-Message-State: ACgBeo3aJKtDCuU1LOwd2YFpUA1a96Q3r9eY+dxcn0qyZcXd5HhI4zxO
-        CvyOAMpuGnj03Qa0vvCz+ZthdMwoezK2yoFv
-X-Google-Smtp-Source: AA6agR4nZIDAkir23+CZDT4FLGWnf2uCZr7DP14dD5iS4RXim07D51OkylWsFdBAjy0V6Dd3VRiLxw==
-X-Received: by 2002:a17:902:b109:b0:174:fd03:8c3e with SMTP id q9-20020a170902b10900b00174fd038c3emr4802393plr.23.1662571790058;
-        Wed, 07 Sep 2022 10:29:50 -0700 (PDT)
-Received: from ?IPV6:2620:10d:c083:3603:1885:b229:3257:6535? ([2620:10d:c090:500::2:3e49])
-        by smtp.gmail.com with ESMTPSA id p20-20020a170902e35400b001726ea1b716sm6540044plc.237.2022.09.07.10.29.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 07 Sep 2022 10:29:49 -0700 (PDT)
-Message-ID: <b1570efa-d27e-8af0-f705-2896fa615d05@gmail.com>
-Date:   Wed, 7 Sep 2022 10:29:46 -0700
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=EMdYVgrPORJghmWcwCaLMhyYB6LX7bPDOyParbvErPs=;
+        b=RKi6mbnjSPp+A/Byy8tqcKRnWbvP570vcuGsidqYDHQ+1x33zNbVvcs8pfKzyJ6ZJt
+         1KeE1Icc6egmPBGsG3f++vqr21joqLjlt/kIt6pYut6Gbqs9qvNpYSVF8MLiWNjSlWTx
+         zAJMLe36A7nbnGyK5v2wnWYtDFr7UnWWCsDej/q6SY/3eqlOotMd2TpYBsSoJeJhI7jq
+         1ep1iwqJI5gq2axWFFxIQEWjLwQkyhyAPrknvM+0hV6vghQzUP5QzhEUl0p6olmzamNf
+         ZP193YyCr1P6ANKtuE3ZVR8vXmlxtfPJYVoYGyRhcu82ZyBiuV5QqDCToCOd59an7MTh
+         tJLg==
+X-Gm-Message-State: ACgBeo2NlRThCRsat/Xc/mUk9drXJAkrP9cnpxp2opSOkEHMxBIXZjTZ
+        XmN89jGRPTU+X4Lbv7fdaVXsPizcK6Rr9GXwfK8=
+X-Google-Smtp-Source: AA6agR7jyBlmHjD6fVjU2V3kZqqc5HVdvc9mt6OH6WYba51qMyt9FU3+AsVluLccZEW6Az48z1cSlC3G8OlUkEy9IXo=
+X-Received: by 2002:a05:6402:378f:b0:43a:d3f5:79f2 with SMTP id
+ et15-20020a056402378f00b0043ad3f579f2mr4017979edb.338.1662572008559; Wed, 07
+ Sep 2022 10:33:28 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.1.2
-Subject: Re: [net-next v3 1/6] net: Documentation on QUIC kernel Tx crypto.
-Content-Language: en-US
-To:     Bagas Sanjaya <bagasdotme@gmail.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, corbet@lwn.net, dsahern@kernel.org,
-        shuah@kernel.org, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        kernel test robot <lkp@intel.com>
-References: <adel.abushaev@gmail.com>
- <20220907004935.3971173-1-adel.abushaev@gmail.com>
- <20220907004935.3971173-2-adel.abushaev@gmail.com>
- <YxgSHJDAknxqEznd@debian.me>
-From:   Adel Abouchaev <adel.abushaev@gmail.com>
-In-Reply-To: <YxgSHJDAknxqEznd@debian.me>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+References: <cover.1662383493.git.lorenzo@kernel.org> <fa02d93153b99bc994215c1644a2c75a226e3c7d.1662383493.git.lorenzo@kernel.org>
+ <CAADnVQJ4XtFpsEsPRC-cepfQvXr-hN7e_3L5SchieeGHH40_4A@mail.gmail.com>
+ <CAP01T77BuY9VNBVt98SJio5D2SqkR5i3bynPXTZG4VVUng-bBA@mail.gmail.com>
+ <CAADnVQJ7PnY+AQmyaMggx6twZ5a4bOncKApkjhPhjj2iniXoUQ@mail.gmail.com> <CAP01T77goGbF3GVithEuJ7yMQR9PxHNA9GXFODq_nfA66G=F9g@mail.gmail.com>
+In-Reply-To: <CAP01T77goGbF3GVithEuJ7yMQR9PxHNA9GXFODq_nfA66G=F9g@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 7 Sep 2022 10:33:17 -0700
+Message-ID: <CAADnVQJxe1QT5bvcsrZQCLeZ6kei6WEESP5bDXf_5qcB2Bb6_Q@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 3/4] net: netfilter: add bpf_ct_set_nat_info
+ kfunc helper
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel <netfilter-devel@vger.kernel.org>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -80,373 +82,141 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 9/6/22 8:38 PM, Bagas Sanjaya wrote:
-> On Tue, Sep 06, 2022 at 05:49:30PM -0700, Adel Abouchaev wrote:
->> +===========
->> +KERNEL QUIC
->> +===========
->> +
->> +Overview
->> +========
->> +
->> +QUIC is a secure general-purpose transport protocol that creates a stateful
->> +interaction between a client and a server. QUIC provides end-to-end integrity
->> +and confidentiality. Refer to RFC 9000 for more information on QUIC.
->> +
->> +The kernel Tx side offload covers the encryption of the application streams
->> +in the kernel rather than in the application. These packets are 1RTT packets
->> +in QUIC connection. Encryption of every other packets is still done by the
->> +QUIC library in user space.
->> +
->> +The flow match is performed using 5 parameters: source and destination IP
->> +addresses, source and destination UDP ports and destination QUIC connection ID.
->> +Not all 5 parameters are always needed. The Tx direction matches the flow on
->> +the destination IP, port and destination connection ID, while the Rx part would
->> +later match on source IP, port and destination connection ID. This will cover
->> +multiple scenarios where the server is using SO_REUSEADDR and/or empty
->> +destination connection IDs or combination of these.
->> +
-> Both Tx and Rx direction match destination connection ID. Is it right?
-
-That is correct. The QUIC packet only carries the destination CID in its 
-header.
-
-Although the Tx direction could have an ancillary data carrying the 
-source CID,
-
-it is not required by any viable use case scenario.
-
-Thank you for looking at the doc, I will add the documentation changes 
-into the
-
-v4 update.
-
+On Tue, Sep 6, 2022 at 10:52 PM Kumar Kartikeya Dwivedi
+<memxor@gmail.com> wrote:
 >
->> +The Rx direction is not implemented in this set of patches.
->> +
->> +The connection migration scenario is not handled by the kernel code and will
->> +be handled by the user space portion of QUIC library. On the Tx direction,
->> +the new key would be installed before a packet with an updated destination is
->> +sent. On the Rx direction, the behavior will be to drop a packet if a flow is
->> +missing.
->> +
->> +For the key rotation, the behavior is to drop packets on Tx when the encryption
->> +key with matching key rotation bit is not present. On Rx direction, the packet
->> +will be sent to the userspace library with unencrypted header and encrypted
->> +payload. A separate indication will be added to the ancillary data to indicate
->> +the status of the operation as not matching the current key bit. It is not
->> +possible to use the key rotation bit as part of the key for flow lookup as that
->> +bit is protected by the header protection. A special provision will need to be
->> +done in user mode to still attempt the decryption of the payload to prevent a
->> +timing attack.
->> +
->> +
->> +User Interface
->> +==============
->> +
->> +Creating a QUIC connection
->> +--------------------------
->> +
->> +QUIC connection originates and terminates in the application, using one of many
->> +available QUIC libraries. The code instantiates QUIC client and QUIC server in
->> +some form and configures them to use certain addresses and ports for the
->> +source and destination. The client and server negotiate the set of keys to
->> +protect the communication during different phases of the connection, maintain
->> +the connection and perform congestion control.
->> +
->> +Requesting to add QUIC Tx kernel encryption to the connection
->> +-------------------------------------------------------------
->> +
->> +Each flow that should be encrypted by the kernel needs to be registered with
->> +the kernel using socket API. A setsockopt() call on the socket creates an
->> +association between the QUIC connection ID of the flow with the encryption
->> +parameters for the crypto operations:
->> +
->> +.. code-block:: c
->> +
->> +	struct quic_connection_info conn_info;
->> +	char conn_id[5] = {0x01, 0x02, 0x03, 0x04, 0x05};
->> +	const size_t conn_id_len = sizeof(conn_id);
->> +	char conn_key[16] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
->> +			     0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f};
->> +	char conn_iv[12] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
->> +			    0x08, 0x09, 0x0a, 0x0b};
->> +	char conn_hdr_key[16] = {0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
->> +				 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f
->> +				};
->> +
->> +        conn_info.conn_payload_key_gen = 0;
->> +	conn_info.cipher_type = TLS_CIPHER_AES_GCM_128;
->> +
->> +	memset(&conn_info.key, 0, sizeof(struct quic_connection_info_key));
->> +	conn_info.key.conn_id_length = 5;
->> +	memcpy(&conn_info.key.conn_id[QUIC_MAX_CONNECTION_ID_SIZE
->> +				      - conn_id_len],
->> +	       &conn_id, conn_id_len);
->> +
->> +	memcpy(&conn_info.payload_key, conn_key, sizeof(conn_key));
->> +	memcpy(&conn_info.payload_iv, conn_iv, sizeof(conn_iv));
->> +	memcpy(&conn_info.header_key, conn_hdr_key, sizeof(conn_hdr_key));
->> +
->> +	setsockopt(fd, SOL_UDP, UDP_QUIC_ADD_TX_CONNECTION, &conn_info,
->> +		   sizeof(conn_info));
->> +
->> +
->> +Requesting to remove QUIC Tx kernel crypto offload control messages
->> +-------------------------------------------------------------------
->> +
->> +All flows are removed when the socket is closed. To request an explicit remove
->> +of the offload for the connection during the lifetime of the socket the process
->> +is similar to adding the flow. Only the connection ID and its length are
->> +necessary to supply to remove the connection from the offload:
->> +
->> +.. code-block:: c
->> +
->> +	memset(&conn_info.key, 0, sizeof(struct quic_connection_info_key));
->> +	conn_info.key.conn_id_length = 5;
->> +	memcpy(&conn_info.key.conn_id[QUIC_MAX_CONNECTION_ID_SIZE
->> +				      - conn_id_len],
->> +	       &conn_id, conn_id_len);
->> +	setsockopt(fd, SOL_UDP, UDP_QUIC_DEL_TX_CONNECTION, &conn_info,
->> +		   sizeof(conn_info));
->> +
->> +Sending QUIC application data
->> +-----------------------------
->> +
->> +For QUIC Tx encryption offload, the application should use sendmsg() socket
->> +call and provide ancillary data with information on connection ID length and
->> +offload flags for the kernel to perform the encryption and GSO support if
->> +requested.
->> +
->> +.. code-block:: c
->> +
->> +	size_t cmsg_tx_len = sizeof(struct quic_tx_ancillary_data);
->> +	uint8_t cmsg_buf[CMSG_SPACE(cmsg_tx_len)];
->> +	struct quic_tx_ancillary_data * anc_data;
->> +	size_t quic_data_len = 4500;
->> +	struct cmsghdr * cmsg_hdr;
->> +	char quic_data[9000];
->> +	struct iovec iov[2];
->> +	int send_len = 9000;
->> +	struct msghdr msg;
->> +	int err;
->> +
->> +	iov[0].iov_base = quic_data;
->> +	iov[0].iov_len = quic_data_len;
->> +	iov[1].iov_base = quic_data + 4500;
->> +	iov[1].iov_len = quic_data_len;
->> +
->> +	if (client.addr.sin_family == AF_INET) {
->> +		msg.msg_name = &client.addr;
->> +		msg.msg_namelen = sizeof(client.addr);
->> +	} else {
->> +		msg.msg_name = &client.addr6;
->> +		msg.msg_namelen = sizeof(client.addr6);
->> +	}
->> +
->> +	msg.msg_iov = iov;
->> +	msg.msg_iovlen = 2;
->> +	msg.msg_control = cmsg_buf;
->> +	msg.msg_controllen = sizeof(cmsg_buf);
->> +	cmsg_hdr = CMSG_FIRSTHDR(&msg);
->> +	cmsg_hdr->cmsg_level = IPPROTO_UDP;
->> +	cmsg_hdr->cmsg_type = UDP_QUIC_ENCRYPT;
->> +	cmsg_hdr->cmsg_len = CMSG_LEN(cmsg_tx_len);
->> +	anc_data = CMSG_DATA(cmsg_hdr);
->> +	anc_data->flags = 0;
->> +	anc_data->next_pkt_num = 0x0d65c9;
->> +	anc_data->conn_id_length = conn_id_len;
->> +	err = sendmsg(self->sfd, &msg, 0);
->> +
->> +QUIC Tx offload in kernel will read the data from userspace, encrypt and
->> +copy it to the ciphertext within the same operation.
->> +
->> +
->> +Sending QUIC application data with GSO
->> +--------------------------------------
->> +When GSO is in use, the kernel will use the GSO fragment size as the target
->> +for ciphertext. The packets from the user space should align on the boundary
->> +of GSO fragment size minus the size of the tag for the chosen cipher. For the
->> +GSO fragment 1200, the plain packets should follow each other at every 1184
->> +bytes, given the tag size of 16. After the encryption, the rest of the UDP
->> +and IP stacks will follow the defined value of GSO fragment which will include
->> +the trailing tag bytes.
->> +
->> +To set up GSO fragmentation:
->> +
->> +.. code-block:: c
->> +
->> +	setsockopt(self->sfd, SOL_UDP, UDP_SEGMENT, &frag_size,
->> +		   sizeof(frag_size));
->> +
->> +If the GSO fragment size is provided in ancillary data within the sendmsg()
->> +call, the value in ancillary data will take precedence over the segment size
->> +provided in setsockopt to split the payload into packets. This is consistent
->> +with the UDP stack behavior.
->> +
->> +Integrating to userspace QUIC libraries
->> +---------------------------------------
->> +
->> +Userspace QUIC libraries integration would depend on the implementation of the
->> +QUIC protocol. For MVFST library, the control plane is integrated into the
->> +handshake callbacks to properly configure the flows into the socket; and the
->> +data plane is integrated into the methods that perform encryption and send
->> +the packets to the batch scheduler for transmissions to the socket.
->> +
->> +MVFST library can be found at https://github.com/facebookincubator/mvfst.
->> +
->> +Statistics
->> +==========
->> +
->> +QUIC Tx offload to the kernel has counters
->> +(``/proc/net/quic_stat``):
->> +
->> +- ``QuicCurrTxSw`` -
->> +  number of currently active kernel offloaded QUIC connections
->> +- ``QuicTxSw`` -
->> +  accumulative total number of offloaded QUIC connections
->> +- ``QuicTxSwError`` -
->> +  accumulative total number of errors during QUIC Tx offload to kernel
-> The rest of documentation can be improved, like:
+> On Wed, 7 Sept 2022 at 07:15, Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Tue, Sep 6, 2022 at 9:40 PM Kumar Kartikeya Dwivedi <memxor@gmail.com> wrote:
+> > >
+> > > On Wed, 7 Sept 2022 at 06:27, Alexei Starovoitov
+> > > <alexei.starovoitov@gmail.com> wrote:
+> > > >
+> > > > On Mon, Sep 5, 2022 at 6:14 AM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+> > > > > +int bpf_ct_set_nat_info(struct nf_conn___init *nfct__ref,
+> > > > > +                       union nf_inet_addr *addr, __be16 *port,
+> > > > > +                       enum nf_nat_manip_type manip)
+> > > > > +{
+> > > > ...
+> > > > > @@ -437,6 +483,7 @@ BTF_ID_FLAGS(func, bpf_ct_set_timeout, KF_TRUSTED_ARGS)
+> > > > >  BTF_ID_FLAGS(func, bpf_ct_change_timeout, KF_TRUSTED_ARGS)
+> > > > >  BTF_ID_FLAGS(func, bpf_ct_set_status, KF_TRUSTED_ARGS)
+> > > > >  BTF_ID_FLAGS(func, bpf_ct_change_status, KF_TRUSTED_ARGS)
+> > > > > +BTF_ID_FLAGS(func, bpf_ct_set_nat_info)
+> > > > >  BTF_SET8_END(nf_ct_kfunc_set)
+> > > >
+> > > > Instead of __ref and patch 1 and 2 it would be better to
+> > > > change the meaning of "trusted_args".
+> > > > In this case "addr" and "port" are just as "trusted".
+> > > > They're not refcounted per verifier definition,
+> > > > but they need to be "trusted" by the helper.
+> > > > At the end the "trusted_args" flags would mean
+> > > > "this helper can assume that all pointers can be safely
+> > > > accessed without worrying about lifetime".
+> > >
+> > > So you mean it only forces PTR_TO_BTF_ID to have reg->ref_obj_id > 0?
+> > >
+> > > But suppose in the future you have a type that has scalars only.
+> > >
+> > > struct foo { int a; int b; ... };
+> > > Just data, and this is acquired from a kfunc and released using another kfunc.
+> > > Now with this new definition you are proposing, verifier ends up
+> > > allowing PTR_TO_MEM to also be passed to such helpers for the struct
+> > > foo *.
+> > >
+> > > I guess even reg->ref_obj_id check is not enough, user may also pass
+> > > PTR_TO_MEM | MEM_ALLOC which can be refcounted.
+> > >
+> > > It would be easy to forget such subtle details later.
+> >
+> > It may add headaches to the verifier side, but here we have to
+> > think from pov of other subsystems that add kfuncs.
+> > They shouldn't need to know the verifier details.
+> > The internals will change anyway.
 >
-> ---- >8 ----
+> Ok, I'll go with making it work for all args for this case.
 >
-> diff --git a/Documentation/networking/quic.rst b/Documentation/networking/quic.rst
-> index 2e6ec72f4eea3a..3f3d05b901da3f 100644
-> --- a/Documentation/networking/quic.rst
-> +++ b/Documentation/networking/quic.rst
-> @@ -9,22 +9,22 @@ Overview
->   
->   QUIC is a secure general-purpose transport protocol that creates a stateful
->   interaction between a client and a server. QUIC provides end-to-end integrity
-> -and confidentiality. Refer to RFC 9000 for more information on QUIC.
-> +and confidentiality. Refer to RFC 9000 [#rfc9000]_ for the standard document.
->   
->   The kernel Tx side offload covers the encryption of the application streams
->   in the kernel rather than in the application. These packets are 1RTT packets
->   in QUIC connection. Encryption of every other packets is still done by the
-> -QUIC library in user space.
-> +QUIC library in userspace.
->   
->   The flow match is performed using 5 parameters: source and destination IP
->   addresses, source and destination UDP ports and destination QUIC connection ID.
-> -Not all 5 parameters are always needed. The Tx direction matches the flow on
-> -the destination IP, port and destination connection ID, while the Rx part would
-> -later match on source IP, port and destination connection ID. This will cover
-> -multiple scenarios where the server is using SO_REUSEADDR and/or empty
-> -destination connection IDs or combination of these.
-> +Not all these parameters are always needed. The Tx direction matches the flow
-> +on the destination IP, port and destination connection ID; while the Rx
-> +direction would later match on source IP, port and destination connection ID.
-> +This will cover multiple scenarios where the server is using ``SO_REUSEADDR``
-> +and/or empty destination connection IDs or combination of these.
->   
-> -The Rx direction is not implemented in this set of patches.
-> +The Rx direction is not implemented yet.
->   
->   The connection migration scenario is not handled by the kernel code and will
->   be handled by the user space portion of QUIC library. On the Tx direction,
-> @@ -39,8 +39,8 @@ payload. A separate indication will be added to the ancillary data to indicate
->   the status of the operation as not matching the current key bit. It is not
->   possible to use the key rotation bit as part of the key for flow lookup as that
->   bit is protected by the header protection. A special provision will need to be
-> -done in user mode to still attempt the decryption of the payload to prevent a
-> -timing attack.
-> +done in user mode to keep attempting the payload decription to prevent timing
-> +attacks.
->   
->   
->   User Interface
-> @@ -50,7 +50,7 @@ Creating a QUIC connection
->   --------------------------
->   
->   QUIC connection originates and terminates in the application, using one of many
-> -available QUIC libraries. The code instantiates QUIC client and QUIC server in
-> +available QUIC libraries. The code instantiates the client and server in
->   some form and configures them to use certain addresses and ports for the
->   source and destination. The client and server negotiate the set of keys to
->   protect the communication during different phases of the connection, maintain
-> @@ -60,7 +60,7 @@ Requesting to add QUIC Tx kernel encryption to the connection
->   -------------------------------------------------------------
->   
->   Each flow that should be encrypted by the kernel needs to be registered with
-> -the kernel using socket API. A setsockopt() call on the socket creates an
-> +the kernel using socket API. A ``setsockopt()`` call on the socket creates an
->   association between the QUIC connection ID of the flow with the encryption
->   parameters for the crypto operations:
->   
-> @@ -112,10 +112,10 @@ necessary to supply to remove the connection from the offload:
->   	setsockopt(fd, SOL_UDP, UDP_QUIC_DEL_TX_CONNECTION, &conn_info,
->   		   sizeof(conn_info));
->   
-> -Sending QUIC application data
-> ------------------------------
-> +Sending application data
-> +------------------------
->   
-> -For QUIC Tx encryption offload, the application should use sendmsg() socket
-> +For Tx encryption offload, the application should use ``sendmsg()`` socket
->   call and provide ancillary data with information on connection ID length and
->   offload flags for the kernel to perform the encryption and GSO support if
->   requested.
-> @@ -168,11 +168,11 @@ Sending QUIC application data with GSO
->   --------------------------------------
->   When GSO is in use, the kernel will use the GSO fragment size as the target
->   for ciphertext. The packets from the user space should align on the boundary
-> -of GSO fragment size minus the size of the tag for the chosen cipher. For the
-> -GSO fragment 1200, the plain packets should follow each other at every 1184
-> -bytes, given the tag size of 16. After the encryption, the rest of the UDP
-> -and IP stacks will follow the defined value of GSO fragment which will include
-> -the trailing tag bytes.
-> +of the fragment size minus the tag size for the chosen cipher. For example,
-> +if the fragment size is 1200 bytes and the tag size is 16 bytes, the plain
-> +packets should follow each other at every 1184 bytes. After the encryption,
-> +the rest of UDP and IP stacks will follow the defined value of the fragment,
-> +which includes the trailing tag bytes.
->   
->   To set up GSO fragmentation:
->   
-> @@ -181,7 +181,7 @@ To set up GSO fragmentation:
->   	setsockopt(self->sfd, SOL_UDP, UDP_SEGMENT, &frag_size,
->   		   sizeof(frag_size));
->   
-> -If the GSO fragment size is provided in ancillary data within the sendmsg()
-> +If the fragment size is provided in ancillary data within the ``sendmsg()``
->   call, the value in ancillary data will take precedence over the segment size
->   provided in setsockopt to split the payload into packets. This is consistent
->   with the UDP stack behavior.
-> @@ -190,12 +190,10 @@ Integrating to userspace QUIC libraries
->   ---------------------------------------
->   
->   Userspace QUIC libraries integration would depend on the implementation of the
-> -QUIC protocol. For MVFST library, the control plane is integrated into the
-> -handshake callbacks to properly configure the flows into the socket; and the
-> -data plane is integrated into the methods that perform encryption and send
-> -the packets to the batch scheduler for transmissions to the socket.
-> -
-> -MVFST library can be found at https://github.com/facebookincubator/mvfst.
-> +QUIC protocol. For MVFST library [#mvfst]_, the control plane is integrated
-> +into the handshake callbacks to properly configure the flows into the socket;
-> +and the data plane is integrated into the methods that perform encryption
-> +and send the packets to the batch scheduler for transmissions to the socket.
->   
->   Statistics
->   ==========
-> @@ -209,3 +207,9 @@ QUIC Tx offload to the kernel has counters
->     accumulative total number of offloaded QUIC connections
->   - ``QuicTxSwError`` -
->     accumulative total number of errors during QUIC Tx offload to kernel
-> +
-> +References
-> +==========
-> +
-> +.. [#rfc9000] https://datatracker.ietf.org/doc/html/rfc9000
-> +.. [#mvfst] https://github.com/facebookincubator/mvfst
+> > Ideally KF_TRUSTED_ARGS will become the default flag that every kfunc
+> > will use to indicate that the function assumes valid pointers.
+> > How the verifier recognizes them is irrelevant from kfunc pov.
+> > People that write bpf progs are not that much different from
+> > people that write kfuncs that bpf progs use.
+> > Both should be easy to write.
 >
-> Thanks.
+> That is a worthy goal, but it can't become the default unless we
+> somehow fix how normal PTR_TO_BTF_ID without ref_obj_id is allowed to
+> be valid, valid-looking-but-uaf pointer, NULL all at the same time
+> depending on how it was obtained. Currently all helpers, even stable
+> ones, are broken in this regard. Similarly recently added
+> cgroup_rstat_flush etc. kfuncs are equally unsafe.
 >
-Cheers,
+> All stable helpers taking PTR_TO_BTF_ID are not even checking for at
+> least NULL, even though it's right there in bpf.h.
+>    592         /* PTR_TO_BTF_ID points to a kernel struct that does not need
+>    593          * to be null checked by the BPF program. This does not imply the
+>    594          * pointer is _not_ null and in practice this can
+> easily be a null
+>    595          * pointer when reading pointer chains. The assumption is program
+> which just proves how confusing it is right now. And "fixing" that by
+> adding a NULL check doesn't fix it completely, since it can also be a
+> seemingly valid looking but freed pointer.
+>
+> My previous proposal still stands, to accommodate direct PTR_TO_BTF_ID
+> pointers from loads from PTR_TO_CTX of tracing progs into this
+> definition of 'trusted', but not those obtained from walking them. It
+> works for iterator arguments also.
+>
+> We could limit these restrictions only to kfuncs instead of stable helpers.
+>
+> It might be possible to instead just whitelist the function BTF IDs as
+> well, even saying pointers from walks are also safe in this context
+> for the kfuncs allowed there, or we work on annotating the safe cases
+> using BTF tags.
+>
+> There are some problems currently (GCC not supporting BTF tags yet, is
+> argument really trusted in fexit program in 'xyz_free' function), but
+> overall it seems like a better state than status quo. It might also
+> finally push GCC to begin supporting BTF tags.
+>
+> Mapping of a set of btf_ids can be done to a specific kfunc hook
+> (instead of current program type), so you are basically composing a
+> kfunc hook out of a set of btf_ids instead of program type. It
+> represents a safe context to call those kfuncs in.
+>
+> It is impossible to know otherwise what case is safe to call a kfunc
+> for and what is not statically - short of also allowing the unsafe
+> cases.
+>
+> Then the kfuncs work on refcounted pointers, and also unrefcounted
+> ones for known safe cases (basically where the lifetime is guaranteed
+> by bpf program caller). For arguments it works by default. The only
+> extra work is annotating things inside structures.
+> Might not even need that extra annotation in many cases, since kernel
+> already has __rcu etc. which we can start recognizing like __user to
+> complain in non-sleepable programs (e.g. without explicit RCU section
+> which may be added in the future).
+>
+> Then just flip KF_TRUSTED_ARGS by default, and people have to opt into
+> 'unsafe' instead to make it work for some edge cases, with a big fat
+> warning for the user of that kfunc.
 
-Adel.
+With few minor nits, that I don't want to get into right now,
+all of the above makes sense. It can be a plan of record.
+But all that will be done later.
+The immediate first step I'm proposing is
+to extend the definition of KF_TRUSTED_ARGS to include this
+particular use case of:
+union nf_inet_addr *addr, __be16 *port,
 
+Those won't be PTR_TO_BTF_ID so above plan doesn't affect this case.
+They're PTR_TO_MEM (if I'm reading the selftest in the next patch
+correctly) and we can relax:
+                if (is_kfunc && trusted_arg && !reg->ref_obj_id) {
+
+Just minimal amount of verifier work to enable this specific
+bpf_ct_set_nat_info kfunc.
+
+I think that's user friendlier approach than __ref suffix
+which forces kfunc writers to understand all of the above
+verifier details (valid-looking-but-uaf, null-but-not-null, etc).
