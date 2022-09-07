@@ -2,56 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DED985AFE5C
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 10:01:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC8075AFE62
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 10:02:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230239AbiIGIBg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 04:01:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48668 "EHLO
+        id S230304AbiIGICG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 04:02:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230245AbiIGIBR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 04:01:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1BC1A98ED;
-        Wed,  7 Sep 2022 01:01:07 -0700 (PDT)
+        with ESMTP id S230223AbiIGIBa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 04:01:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EE0F6CD11;
+        Wed,  7 Sep 2022 01:01:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C9E2616EF;
-        Wed,  7 Sep 2022 08:01:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1755C433B5;
-        Wed,  7 Sep 2022 08:01:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D7F1FB81B8E;
+        Wed,  7 Sep 2022 08:01:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70BD7C433C1;
+        Wed,  7 Sep 2022 08:01:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662537666;
-        bh=5rUJz9euJWfUraacEejsgy75afWo8CaSad4gs2Rf/Eg=;
+        s=k20201202; t=1662537685;
+        bh=N+7iZGeOHbg0TPasbx+AdEIV8g3wgzwCGlxN4DcmeAo=;
         h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=hwaBCDpQPNt/rB05iWByzUqQReVvevzT/9QHcZ7ehH+upw7QtNmPEo7zjuycWcJZR
-         HvJn6pNGdfWKfD82ALiiBzcvvJIEniSI3IWMNRDk7DHyWRc4SVF5MtaCUk8yFnZ6Hb
-         LMCBh/Tenpxz2dzdgOptkehDW4xRJn2dtGNK/Y28+45tVA9RGJ7FAjefLAewlR3537
-         cOJKqXUXEgrr0JPKxPUxadsVJOgELngvMWYIrQKnSrKydz2hqvuk9Wd1ujrpWs4EZe
-         0QPJ+so8RSBZ59GWCUpg2DWfyiyOI/bgAIQ1vo39uniQ7mLGtVwtPco0CEXN5/+8+T
-         6Grtk0hePsVUQ==
+        b=TJkr5j3pNDnkllm1lIQEogNKElKW3BDjmBvL7CiePXCsjIRl9G+NYFb9NMZ1gwPI9
+         vQOHGmId7ppcCvF/OXJwxbK1gpjVA4DL4wVvFvufQet8vPsaWSXNHUT/9jG2p65gVG
+         6RBapPFmQF+dr2cUuzMUf+9DhM6j/bujy1lCRAODjw1Jr8RfihLM6vtQm6yqrQdd7Y
+         M9ku/iyt3cuVdnz5PXyCAIMUGJ17zkr+9LCFfEkPsnSwtjgkDJUun6gW6ZPMQxW3Ga
+         ClczsFAfkizG6szezkUjmUDcQvhRLpA90A57SIapBS0aUWcRk9DL3v+TcQPLqGfge2
+         QZNNCDbiFItCw==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] wifi: rtl8xxxu: Simplify the error handling code
+Subject: Re: wifi: brcmfmac: add 43439 SDIO ids and initialization
 From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20220818073352.3156288-1-zheyuma97@gmail.com>
-References: <20220818073352.3156288-1-zheyuma97@gmail.com>
-To:     Zheyu Ma <zheyuma97@gmail.com>
-Cc:     Jes Sorensen <Jes.Sorensen@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Zheyu Ma <zheyuma97@gmail.com>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+In-Reply-To: <20220827024903.617294-1-marex@denx.de>
+References: <20220827024903.617294-1-marex@denx.de>
+To:     Marek Vasut <marex@denx.de>
+Cc:     linux-wireless@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        SHA-cyfmac-dev-list@infineon.com,
+        brcm80211-dev-list.pdl@broadcom.com, netdev@vger.kernel.org
 User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <166253766198.23292.4646705960885932905.kvalo@kernel.org>
-Date:   Wed,  7 Sep 2022 08:01:03 +0000 (UTC)
+Message-ID: <166253768156.23292.6474967284299325719.kvalo@kernel.org>
+Date:   Wed,  7 Sep 2022 08:01:23 +0000 (UTC)
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -62,21 +59,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Zheyu Ma <zheyuma97@gmail.com> wrote:
+Marek Vasut <marex@denx.de> wrote:
 
-> Since the logic of the driver's error handling code has changed, the
-> previous dead store and checks are not needed.
+> Add HW and SDIO ids for use with the muRata 1YN (Cypress CYW43439).
+> Add the firmware mapping structures for the CYW43439 chipset.
+> The 43439 needs some things setup similar to the 43430 chipset.
 > 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+> Signed-off-by: Marek Vasut <marex@denx.de>
 
 Patch applied to wireless-next.git, thanks.
 
-98d3f063be78 wifi: rtl8xxxu: Simplify the error handling code
+be376df724aa wifi: brcmfmac: add 43439 SDIO ids and initialization
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220818073352.3156288-1-zheyuma97@gmail.com/
+https://patchwork.kernel.org/project/linux-wireless/patch/20220827024903.617294-1-marex@denx.de/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
