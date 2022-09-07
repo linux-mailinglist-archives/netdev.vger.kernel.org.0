@@ -2,91 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B4B505B014E
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 12:08:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 582F95B015F
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 12:11:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229744AbiIGKIe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 06:08:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52624 "EHLO
+        id S229837AbiIGKLO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 06:11:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229765AbiIGKI3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 06:08:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E90B1B07E8;
-        Wed,  7 Sep 2022 03:08:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 879F76185F;
-        Wed,  7 Sep 2022 10:08:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA523C433C1;
-        Wed,  7 Sep 2022 10:08:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662545307;
-        bh=dP9xemqn6VbnteZEmIn3ds2pIeYUmDTcWHEmiXzGBTk=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=Xi+zWNl38ktfZCKaIUaOuBtI3xHQV5b6MmHRUDjUig8Om3/TXY0VNI+pk5plfcCq4
-         NXZEdvYpzKspgBrw59t4Tl638/GAQIYcmaor0Kgnh3pATHhuIvrVpUrI2xye8tLXDM
-         81ixy8JsORoIQmmHMfwbSCJlmrY93lcbnDYBIak2LZkWwrqhEK4YtyFhgDX2yrKVlW
-         Il3v/E33aIQ0X4cF1z8bXahMi5W0ivMy4SjNwzT12KkUEKKP+nJQm096Nnz0rV798X
-         RaFD06sQUbOOyUteNygK59B2cVcvS1gKUMUmNxK5ztx18yxmvV5dJg1db/dPZcnPS1
-         1WDRNSTvQXi+Q==
-Message-ID: <1e0877bc528f3e9218f0070889c7288a8aaa47ba.camel@kernel.org>
-Subject: Re: [PATCH] SUNRPC: Fix potential memory leak in
- xs_udp_send_request()
-From:   Jeff Layton <jlayton@kernel.org>
-To:     Jianglei Nie <niejianglei2021@163.com>, chuck.lever@oracle.com,
-        trond.myklebust@hammerspace.com, anna@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     linux-nfs@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Wed, 07 Sep 2022 06:08:25 -0400
-In-Reply-To: <20220907071338.56969-1-niejianglei2021@163.com>
-References: <20220907071338.56969-1-niejianglei2021@163.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
+        with ESMTP id S229962AbiIGKLI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 06:11:08 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C094C9D648;
+        Wed,  7 Sep 2022 03:11:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=JzTlhZoQdTgX29JObm/3zifLoY6nLpvd+jv0OT7bzL4=; b=1Sj6h/MjqhU9ZV5YQpYpYz1rRL
+        gghVXCoasUgdI4s9yI2MYjF6HqYu7ALRxdNG9f2BoG8CdX/VVJoViChosaF4WGuh34Gnbg+zD/4qw
+        rWA0tbkSaW8VKmDq/zfEfnRybv18Fl6hcz3KUtqc6Xu5d0REY+YsJiY2Rby6IENOUsuecIPvtRy4e
+        akpwkAnqG5qAdFot3Z5KJwOfB47ypDqEcjPfXNQJDffei3C3J7KaoKvLD24ER8L56gDX/LPuVzTDE
+        q3QhgUesgddcWWBPfyer/AuTyruMZNLDhldJ/mU5IOutTyXxyes1SwTb4fsxtDkk+TFSpToAABjc+
+        uVmJUq7g==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34172)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1oVs1M-0005Ei-5y; Wed, 07 Sep 2022 11:11:00 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1oVs1K-0000ti-7K; Wed, 07 Sep 2022 11:10:58 +0100
+Date:   Wed, 7 Sep 2022 11:10:58 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        linux-kernel@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net-next v5 5/8] net: phylink: Adjust link settings based
+ on rate adaptation
+Message-ID: <YxhuMjZsBb7wCBFy@shell.armlinux.org.uk>
+References: <20220906161852.1538270-1-sean.anderson@seco.com>
+ <20220906161852.1538270-6-sean.anderson@seco.com>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220906161852.1538270-6-sean.anderson@seco.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-09-07 at 15:13 +0800, Jianglei Nie wrote:
-> xs_udp_send_request() allocates a memory chunk for xdr->bvec with
-> xdr_alloc_bvec(). When xprt_sock_sendmsg() finishs, xdr->bvec is not
-> released, which will lead to a memory leak.
->=20
-> we should release the xdr->bvec with xdr_free_bvec() after
-> xprt_sock_sendmsg() like bc_sendto() does.
->=20
-> Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
-> ---
->  net/sunrpc/xprtsock.c | 1 +
->  1 file changed, 1 insertion(+)
->=20
-> diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
-> index e976007f4fd0..298182a3c168 100644
-> --- a/net/sunrpc/xprtsock.c
-> +++ b/net/sunrpc/xprtsock.c
-> @@ -958,6 +958,7 @@ static int xs_udp_send_request(struct rpc_rqst *req)
->  		return status;
->  	req->rq_xtime =3D ktime_get();
->  	status =3D xprt_sock_sendmsg(transport->sock, &msg, xdr, 0, 0, &sent);
-> +	xdr_free_bvec(xdr);
-> =20
->  	dprintk("RPC:       xs_udp_send_request(%u) =3D %d\n",
->  			xdr->len, status);
+On Tue, Sep 06, 2022 at 12:18:49PM -0400, Sean Anderson wrote:
+> @@ -1015,19 +1086,45 @@ static void phylink_link_up(struct phylink *pl,
+>  			    struct phylink_link_state link_state)
+>  {
+>  	struct net_device *ndev = pl->netdev;
+> +	int speed, duplex;
+> +	bool rx_pause;
+> +
+> +	speed = link_state.speed;
+> +	duplex = link_state.duplex;
+> +	rx_pause = !!(link_state.pause & MLO_PAUSE_RX);
+> +
+> +	switch (link_state.rate_adaptation) {
+> +	case RATE_ADAPT_PAUSE:
+> +		/* The PHY is doing rate adaption from the media rate (in
+> +		 * the link_state) to the interface speed, and will send
+> +		 * pause frames to the MAC to limit its transmission speed.
+> +		 */
+> +		speed = phylink_interface_max_speed(link_state.interface);
+> +		duplex = DUPLEX_FULL;
+> +		rx_pause = true;
+> +		break;
+> +
+> +	case RATE_ADAPT_CRS:
+> +		/* The PHY is doing rate adaption from the media rate (in
+> +		 * the link_state) to the interface speed, and will cause
+> +		 * collisions to the MAC to limit its transmission speed.
+> +		 */
+> +		speed = phylink_interface_max_speed(link_state.interface);
+> +		duplex = DUPLEX_HALF;
+> +		break;
+> +	}
+>  
+>  	pl->cur_interface = link_state.interface;
+> +	if (link_state.rate_adaptation == RATE_ADAPT_PAUSE)
+> +		link_state.pause |= MLO_PAUSE_RX;
 
-I think you're probably correct here.
+I specifically omitted this from my patch because I don't think we
+should tell the user that "Link is Up - ... - flow control rx" if
+we have rate adaption, but the media link is not using flow control.
 
-I was thinking we might have a similar bug in svc_tcp_sendmsg, but it
-looks like that one gets freed in svc_tcp_sendto.
+The "Link is Up" message tells the user what was negotiated on the
+media, not what is going on inside their network device, so the
+fact we're using rate adaption which has turned on RX pause on the
+MAC is neither here nor there.
 
-Reviewed-by: Jeff Layton <jlayton@kernel.org>
+>  
+>  	if (pl->pcs && pl->pcs->ops->pcs_link_up)
+>  		pl->pcs->ops->pcs_link_up(pl->pcs, pl->cur_link_an_mode,
+> -					 pl->cur_interface,
+> -					 link_state.speed, link_state.duplex);
+> +					  pl->cur_interface, speed, duplex);
+
+It seems you have one extra unnecessary space here - not sure how
+that occurred as it isn't in my original patch.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
