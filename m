@@ -2,163 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 29A285AFFC0
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 10:59:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FDF65AFFC9
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 11:01:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229831AbiIGI7q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 04:59:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53206 "EHLO
+        id S230190AbiIGJBP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 05:01:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbiIGI7o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 04:59:44 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582A715FC5;
-        Wed,  7 Sep 2022 01:59:41 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id 73so13005077pga.1;
-        Wed, 07 Sep 2022 01:59:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=mKARXm2kMQBJjCoMq1zHo4f6Vijr8sVnvDkYWq/yY00=;
-        b=JyzYTnj4Jo1BhJLatgnyH3qO4uNfq7eYWswaPviDRn6zx52TDlV0p+EXjU0/Fj0fBp
-         M26YLiYs0SQDzb221bpFX45l30bIjt4i97wrGCR2gHdPUrD8HjxO/WD5gOTMiXWBPr7T
-         NBnSINLZz7XpDL0XyMVuWoD7KEY7VEXdKvCxDr1ujie3p4uvgNV9GqLv1WrJ8RhQLxI7
-         m8u8O860aneQz74CickxPrLWsfzQfLMHKWnxK9criXkbM7wRbOcYrTMHw+3sBXCaMpj0
-         Emt57oBDZZAVyG0XMaXOk6CQHkTX5B8Y2LBvIV4TPOzahoTWXK168Pam0ZfLgG7E82be
-         OztA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=mKARXm2kMQBJjCoMq1zHo4f6Vijr8sVnvDkYWq/yY00=;
-        b=6ADZhX1664NI1adSRckpo3kYQ+aFN6T8razeeCVtC5J8ZSiU4dHHq8RtxrMTX4/VvI
-         1XPqvb+YCTHIVBYGmOHeUAfjWeI+QOuDfK3oNmHf+c5XpZOx5jgkJnvMCxBDZ72lfAR3
-         VUsXqLIq60uj9oxC98bGxgH30auVRUEHn73V0ZFP3zUcdxS5hBfIEAKnfjRnM1IdQFXr
-         6XOaT1M2O9sM6SbxqmgFG5QGySUsIGG/wskND+jmj+X1lxZzT7gKINPr27d4yO4o++jE
-         U5FqgmTAN2bAdFi6yIEaI8onBfqa2U7lI0ceyQDraI/dlT7gSWLWIgbyJVM6UJUXpvxj
-         FUyg==
-X-Gm-Message-State: ACgBeo3dZKhSl8wyjxqaE0RS+jnOuY1ym/KggDs2IFOXyPeiTSEZA/E0
-        bGJ9xMmJLWcA7KssUDPkVOaUc7de9ib/zGmf8XE=
-X-Google-Smtp-Source: AA6agR7ugy96b6qwQ050Ysi1QiI6Gbohgqoj15UIwkoRiZqKNeVKVVYF3ex9FrK9aiSxRamzOtC48nmR7WaTNe2dVjM=
-X-Received: by 2002:a05:6a00:1307:b0:53a:9663:1bd6 with SMTP id
- j7-20020a056a00130700b0053a96631bd6mr2779063pfu.55.1662541180552; Wed, 07 Sep
- 2022 01:59:40 -0700 (PDT)
+        with ESMTP id S230173AbiIGJBL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 05:01:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D993A060B;
+        Wed,  7 Sep 2022 02:01:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ABF31B81BBB;
+        Wed,  7 Sep 2022 09:01:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 086C9C433D6;
+        Wed,  7 Sep 2022 09:01:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662541267;
+        bh=rH6TTBqa/Bz0QhJHyUANa4AuDGXX3ecMpobbjz6gRfQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=AShtNBs5ji0EgTLzQupsf1gReGro8yuTQDq4Xv56jP/rJk6DUS8ARBfWZXlpBRzVE
+         mxuT7jShmgf2NJKvcQ71IBoTPn6hEonTw3vwFUDy23/9P4Uwlu4subQntwiZ1FY4VY
+         ZLZbiZu9q2XHlKcRJE3NrC04c9kLuq+3vwavpgYmmJkOjUccM8bm49KrauNt7wXXhY
+         adPhmqIcV+mpFilqY6Hdx90scmhLoStut0c25zfEFLWCI2DsKNH5f09zSMn2eCj2cR
+         WzxCPLalCny33WrzhFH8JE7IhTfIWExj0v9PqG2s/oqmFSygLVl7+MQUcYDDXPLH65
+         5S5Ss0mNxUNqQ==
+Date:   Wed, 7 Sep 2022 11:01:03 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Song Liu <song@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, pablo@netfilter.org,
+        fw@strlen.de, netfilter-devel@vger.kernel.org,
+        lorenzo.bianconi@redhat.com,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Subject: Re: [PATCH v2 bpf-next 3/4] net: netfilter: add bpf_ct_set_nat_info
+ kfunc helper
+Message-ID: <Yxhdz47DZiL8V4JE@lore-desk>
+References: <cover.1662383493.git.lorenzo@kernel.org>
+ <fa02d93153b99bc994215c1644a2c75a226e3c7d.1662383493.git.lorenzo@kernel.org>
+ <CAPhsuW5P=K7463Ka0CGxFD0BGChrEffbeO6UqReDtr80osDJLg@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220907083304.605526-1-imagedong@tencent.com> <873298fe-7fc2-4417-2852-5180f81f94aa@tessares.net>
-In-Reply-To: <873298fe-7fc2-4417-2852-5180f81f94aa@tessares.net>
-From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Wed, 7 Sep 2022 16:59:29 +0800
-Message-ID: <CADxym3YQCjpVXs8EZr_B7iJDdbjOv53kqiqZqZmJ4fh3KUbzrg@mail.gmail.com>
-Subject: Re: [PATCH net v2] net: mptcp: fix unreleased socket in accept queue
-To:     Matthieu Baerts <matthieu.baerts@tessares.net>
-Cc:     pabeni@redhat.com, mathew.j.martineau@linux.intel.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        fw@strlen.de, peter.krystad@linux.intel.com,
-        netdev@vger.kernel.org, mptcp@lists.linux.dev,
-        linux-kernel@vger.kernel.org,
-        Menglong Dong <imagedong@tencent.com>,
-        Jiang Biao <benbjiang@tencent.com>,
-        Mengen Sun <mengensun@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="Bjcyid3/P3gYQ/y/"
+Content-Disposition: inline
+In-Reply-To: <CAPhsuW5P=K7463Ka0CGxFD0BGChrEffbeO6UqReDtr80osDJLg@mail.gmail.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 7, 2022 at 4:51 PM Matthieu Baerts
-<matthieu.baerts@tessares.net> wrote:
->
-> Hi Menglong,
->
-> On 07/09/2022 10:33, menglong8.dong@gmail.com wrote:
-> > From: Menglong Dong <imagedong@tencent.com>
+
+--Bjcyid3/P3gYQ/y/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+> On Mon, Sep 5, 2022 at 6:15 AM Lorenzo Bianconi <lorenzo@kernel.org> wrot=
+e:
 > >
-> > The mptcp socket and its subflow sockets in accept queue can't be
-> > released after the process exit.
+> > Introduce bpf_ct_set_nat_info kfunc helper in order to set source and
+> > destination nat addresses/ports in a new allocated ct entry not inserted
+> > in the connection tracking table yet.
 > >
-> > While the release of a mptcp socket in listening state, the
-> > corresponding tcp socket will be released too. Meanwhile, the tcp
-> > socket in the unaccept queue will be released too. However, only init
-> > subflow is in the unaccept queue, and the joined subflow is not in the
-> > unaccept queue, which makes the joined subflow won't be released, and
-> > therefore the corresponding unaccepted mptcp socket will not be released
-> > to.
->
-> Thank you for the patch!
->
-> (...)
->
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 > > ---
-> >  net/mptcp/protocol.c | 13 +++++++++----
-> >  net/mptcp/subflow.c  | 33 ++++++++-------------------------
-> >  2 files changed, 17 insertions(+), 29 deletions(-)
+> >  net/netfilter/nf_conntrack_bpf.c | 49 +++++++++++++++++++++++++++++++-
+> >  1 file changed, 48 insertions(+), 1 deletion(-)
 > >
-> > diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-> > index d398f3810662..fe6b7fbb145c 100644
-> > --- a/net/mptcp/protocol.c
-> > +++ b/net/mptcp/protocol.c
-> > @@ -2796,13 +2796,12 @@ static void __mptcp_destroy_sock(struct sock *sk)
-> >       sock_put(sk);
+> > diff --git a/net/netfilter/nf_conntrack_bpf.c b/net/netfilter/nf_conntr=
+ack_bpf.c
+> > index 1cd87b28c9b0..85b8c7ee00af 100644
+> > --- a/net/netfilter/nf_conntrack_bpf.c
+> > +++ b/net/netfilter/nf_conntrack_bpf.c
+> > @@ -14,6 +14,7 @@
+> >  #include <net/netfilter/nf_conntrack.h>
+> >  #include <net/netfilter/nf_conntrack_bpf.h>
+> >  #include <net/netfilter/nf_conntrack_core.h>
+> > +#include <net/netfilter/nf_nat.h>
+> >
+> >  /* bpf_ct_opts - Options for CT lookup helpers
+> >   *
+> > @@ -134,7 +135,6 @@ __bpf_nf_ct_alloc_entry(struct net *net, struct bpf=
+_sock_tuple *bpf_tuple,
+> >
+> >         memset(&ct->proto, 0, sizeof(ct->proto));
+> >         __nf_ct_set_timeout(ct, timeout * HZ);
+> > -       ct->status |=3D IPS_CONFIRMED;
+> >
+> >  out:
+> >         if (opts->netns_id >=3D 0)
+> > @@ -339,6 +339,7 @@ struct nf_conn *bpf_ct_insert_entry(struct nf_conn_=
+__init *nfct_i)
+> >         struct nf_conn *nfct =3D (struct nf_conn *)nfct_i;
+> >         int err;
+> >
+> > +       nfct->status |=3D IPS_CONFIRMED;
+> >         err =3D nf_conntrack_hash_check_insert(nfct);
+> >         if (err < 0) {
+> >                 nf_conntrack_free(nfct);
+> > @@ -424,6 +425,51 @@ int bpf_ct_change_status(struct nf_conn *nfct, u32=
+ status)
+> >         return nf_ct_change_status_common(nfct, status);
 > >  }
-> >
-> > -static void mptcp_close(struct sock *sk, long timeout)
-> > +void mptcp_close_nolock(struct sock *sk, long timeout)
->
-> I didn't look at it into details but like the previous previous, I don't
-> think this one compiles without errors: you define this (non static)
-> function here in protocol.c but you don't "expose" it in protocol.h ...
-> (see below)
->
+>=20
+> Why do we need the above two changes in this patch?
 
-Oops...I forgot to commit the protocol.h :)
+nf_nat_setup_info() does not really add the nat info in the connection trac=
+king
+entry if it is already confirmed (it just returns NF_ACCEPT). I moved
+IPS_CONFIRMED in bpf_ct_insert_entry() since we can run bpf_ct_set_nat_info=
+()
+just if the entry has not inserted in the table yet.
 
-> > diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-> > index c7d49fb6e7bd..cebabf2bb222 100644
-> > --- a/net/mptcp/subflow.c
-> > +++ b/net/mptcp/subflow.c
->
-> (...)
->
-> > @@ -1765,11 +1740,19 @@ void mptcp_subflow_queue_clean(struct sock *listener_ssk)
-> >               struct sock *sk = (struct sock *)msk;
-> >               bool slow;
-> >
-> > +             sock_hold(sk);
-> >               slow = lock_sock_fast_nested(sk);
-> >               next = msk->dl_next;
-> >               msk->first = NULL;
-> >               msk->dl_next = NULL;
-> > +
-> > +             /* mptcp_close_nolock() will put a extra reference on sk,
-> > +              * so we hold one here.
-> > +              */
-> > +             sock_hold(sk);
-> > +             mptcp_close_nolock(sk, 0);
->
-> ... I guess the compiler will complain if you try to use it here from
-> subflow.c, no?
->
+Regards,
+Lorenzo
 
-Hmm...The compiler didn't, as I modified protocol.h locally. That
-'s why I didn't find this mistake :)
+>=20
+> Thanks,
+> Song
 
-> Also, did you have the opportunity to run the different MPTCP selftests
-> with this patch?
->
+--Bjcyid3/P3gYQ/y/
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Not yet. I'll do it before the next version.
+-----BEGIN PGP SIGNATURE-----
 
-Thanks!
-Menglong Dong
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYxhdzwAKCRA6cBh0uS2t
+rFQAAP9N6QFmTiFwKPuVU9Xq3PxrGlPWKdybMgExG+P8ncCOxgEAstVttxKiizOI
+3Qutbjz+rzRm/1EyVR08VmoT9DV/Yg8=
+=o5De
+-----END PGP SIGNATURE-----
 
-> Cheers,
-> Matt
-> --
-> Tessares | Belgium | Hybrid Access Solutions
-> www.tessares.net
+--Bjcyid3/P3gYQ/y/--
