@@ -2,82 +2,273 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 550AF5B0F66
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 23:46:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C12065B0F6B
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 23:47:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230292AbiIGVqq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 17:46:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35520 "EHLO
+        id S230307AbiIGVrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 17:47:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230197AbiIGVqo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 17:46:44 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 553777FF9B
-        for <netdev@vger.kernel.org>; Wed,  7 Sep 2022 14:46:43 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id gh9so11532775ejc.8
-        for <netdev@vger.kernel.org>; Wed, 07 Sep 2022 14:46:43 -0700 (PDT)
+        with ESMTP id S229925AbiIGVrK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 17:47:10 -0400
+Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 881747E83B
+        for <netdev@vger.kernel.org>; Wed,  7 Sep 2022 14:47:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=PXE/Z3HxiWt7F7e2RZWHNf3RUT/q51Qsliy5mCBtP5k=;
-        b=pwly5T/gbB+J2hYRkrP61PLvO2E15PzaheurniFapDV4j5Yljugy9ue+NzJeYwWFQr
-         smn4HDexLQykl6Z2dwZGeCawlT6PU3bAomGTY48GAtilnHRM1mlJ2aij6swYTnqVZdkI
-         /PRQA+qfezkYjGe0hymquv5y0ZnQpssplarfnmru6RMYdAFsc0rfI+CyuPlrPtv5gH6n
-         onMoxT644LVdC0XJnmfbomrdRIUi8fzHZe/JloIJwjPgtRg5nmJ8SJpkVXF9O3eBGtaY
-         hEeHZMRGAoEfd3Q1vHqXnOLdX9PP8S1Wd7r6xQUT+h5hmiy8sBVO0Tdz4qGtldwM7fAY
-         lnvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=PXE/Z3HxiWt7F7e2RZWHNf3RUT/q51Qsliy5mCBtP5k=;
-        b=6jn/QSWsZjqYlaBhUM1iV1PybTWHLDisKVoy1ufZtLBdt4AM7OGBCVfyNPPwkeNEkD
-         vHkAgraw6NIkoK+gSsfBDGv/zmyA3M2CC4NZnA6NHtjDqqLMwKxqaj0uK2vtwK3ZFdCj
-         6E1hV1J2XLky26Yi8Bq2unvmr2UQYVnpZRCYcVkmOe2ka/KtvT2Cd9y4mR39rV8upDCG
-         TBhaRlXBECTo3lbm9webVILRByrpjdRXtEI7AtpSYm8fL3fErp9+lGpXm2fvQ98YNNsL
-         uDnvrUXxq+GYwWLfpZIxH428Y2Oq9TH8HuuZJZpB82oUP3OylbgEeNUqgztCE8UwsL0y
-         iWcQ==
-X-Gm-Message-State: ACgBeo1easovvdzt1dEvrfX/QuR985EYYiGRQQRMuZT2Gr122MJhBMEt
-        7b24mlKOlcibZt11e8z6BbDhIPQMIaYFe6+nlwi6zQ==
-X-Google-Smtp-Source: AA6agR5osXxsf7Y/1KOb7R6nPfjHt592g98SobKcQv4OldFYmQfmcPeERB/7qZvkwp3xU+Asg7r52+qxMfzkVrFC+fg=
-X-Received: by 2002:a17:906:cc5a:b0:741:5240:d91a with SMTP id
- mm26-20020a170906cc5a00b007415240d91amr3794491ejb.500.1662587201970; Wed, 07
- Sep 2022 14:46:41 -0700 (PDT)
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1662587228; x=1694123228;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=6MiKtx1GoleuHb9wMY1O1MQX/8axtH279NUIibzlJ/U=;
+  b=WD5cNLFHkx/07kW3GtUPRGJ69oAwvU+DWJbyJ6CzhIza3qemGMnCC8UR
+   Uc9GFaHY6voMq2itWRmL/+NAKVrM3MCmcwZ1Lrw4o5SvCkzL/Jn9iHyXv
+   zc+cyxSzao/+GpWApB6GUfdlAuZMVIARxEPrEseEvoXebu6DZhtLdKKQa
+   4=;
+X-IronPort-AV: E=Sophos;i="5.93,298,1654560000"; 
+   d="scan'208";a="238727335"
+Received: from iad6-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-2520d768.us-west-2.amazon.com) ([10.124.125.6])
+  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Sep 2022 21:46:55 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-pdx-2b-2520d768.us-west-2.amazon.com (Postfix) with ESMTPS id 6A14A4502C;
+        Wed,  7 Sep 2022 21:46:54 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Wed, 7 Sep 2022 21:46:53 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.160.137) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
+ Wed, 7 Sep 2022 21:46:51 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <edumazet@google.com>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <kuni1840@gmail.com>,
+        <kuniyu@amazon.com>, <netdev@vger.kernel.org>, <pabeni@redhat.com>
+Subject: Re: [PATCH v5 net-next 6/6] tcp: Introduce optional per-netns ehash.
+Date:   Wed, 7 Sep 2022 14:46:44 -0700
+Message-ID: <20220907214644.34344-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <CANn89i+mJdBZB3ecGa6-N3FdOAHv0Of=XYus389TiMMH5PYeug@mail.gmail.com>
+References: <CANn89i+mJdBZB3ecGa6-N3FdOAHv0Of=XYus389TiMMH5PYeug@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220906204922.3789922-1-dmitry.torokhov@gmail.com> <20220906204922.3789922-2-dmitry.torokhov@gmail.com>
-In-Reply-To: <20220906204922.3789922-2-dmitry.torokhov@gmail.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Wed, 7 Sep 2022 23:46:30 +0200
-Message-ID: <CACRpkdbO9WSeyY279WwWxYjfRUUvnw3++BsZWYkAW+upm73GLQ@mail.gmail.com>
-Subject: Re: [PATCH 2/3] net: ks8851: switch to using gpiod API
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.160.137]
+X-ClientProxiedBy: EX13D42UWB002.ant.amazon.com (10.43.161.155) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 6, 2022 at 10:49 PM Dmitry Torokhov
-<dmitry.torokhov@gmail.com> wrote:
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 7 Sep 2022 13:55:08 -0700
+> On Tue, Sep 6, 2022 at 5:57 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+> >
+> > The more sockets we have in the hash table, the longer we spend looking
+> > up the socket.  While running a number of small workloads on the same
+> > host, they penalise each other and cause performance degradation.
+> >
+> > The root cause might be a single workload that consumes much more
+> > resources than the others.  It often happens on a cloud service where
+> > different workloads share the same computing resource.
+> >
+> > On EC2 c5.24xlarge instance (196 GiB memory and 524288 (1Mi / 2) ehash
+> > entries), after running iperf3 in different netns, creating 24Mi sockets
+> > without data transfer in the root netns causes about 10% performance
+> > regression for the iperf3's connection.
+> >
+> >  thash_entries          sockets         length          Gbps
+> >         524288                1              1          50.7
+> >                            24Mi             48          45.1
+> >
+> > It is basically related to the length of the list of each hash bucket.
+> > For testing purposes to see how performance drops along the length,
+> > I set 131072 (1Mi / 8) to thash_entries, and here's the result.
+> >
+> >  thash_entries          sockets         length          Gbps
+> >         131072                1              1          50.7
+> >                             1Mi              8          49.9
+> >                             2Mi             16          48.9
+> >                             4Mi             32          47.3
+> >                             8Mi             64          44.6
+> >                            16Mi            128          40.6
+> >                            24Mi            192          36.3
+> >                            32Mi            256          32.5
+> >                            40Mi            320          27.0
+> >                            48Mi            384          25.0
+> >
+> > To resolve the socket lookup degradation, we introduce an optional
+> > per-netns hash table for TCP, but it's just ehash, and we still share
+> > the global bhash, bhash2 and lhash2.
+> >
+> > With a smaller ehash, we can look up non-listener sockets faster and
+> > isolate such noisy neighbours.  In addition, we can reduce lock contention.
+> >
+> > We can control the ehash size by a new sysctl knob.  However, depending
+> > on workloads, it will require very sensitive tuning, so we disable the
+> > feature by default (net.ipv4.tcp_child_ehash_entries == 0).  Moreover,
+> > we can fall back to using the global ehash in case we fail to allocate
+> > enough memory for a new ehash.  The maximum size is 16Mi, which is large
+> > enough that even if we have 48Mi sockets, the average list length is 3,
+> > and regression would be less than 1%.
+> >
+> > We can check the current ehash size by another read-only sysctl knob,
+> > net.ipv4.tcp_ehash_entries.  A negative value means the netns shares
+> > the global ehash (per-netns ehash is disabled or failed to allocate
+> > memory).
+> >
+> >   # dmesg | cut -d ' ' -f 5- | grep "established hash"
+> >   TCP established hash table entries: 524288 (order: 10, 4194304 bytes, vmalloc hugepage)
+> >
+> >   # sysctl net.ipv4.tcp_ehash_entries
+> >   net.ipv4.tcp_ehash_entries = 524288  # can be changed by thash_entries
+> >
+> >   # sysctl net.ipv4.tcp_child_ehash_entries
+> >   net.ipv4.tcp_child_ehash_entries = 0  # disabled by default
+> >
+> >   # ip netns add test1
+> >   # ip netns exec test1 sysctl net.ipv4.tcp_ehash_entries
+> >   net.ipv4.tcp_ehash_entries = -524288  # share the global ehash
+> >
+> >   # sysctl -w net.ipv4.tcp_child_ehash_entries=100
+> >   net.ipv4.tcp_child_ehash_entries = 100
+> >
+> >   # ip netns add test2
+> >   # ip netns exec test2 sysctl net.ipv4.tcp_ehash_entries
+> >   net.ipv4.tcp_ehash_entries = 128  # own a per-netns ehash with 2^n buckets
+> >
+> > When more than two processes in the same netns create per-netns ehash
+> > concurrently with different sizes, we need to guarantee the size in
+> > one of the following ways:
+> >
+> >   1) Share the global ehash and create per-netns ehash
+> >
+> >   First, unshare() with tcp_child_ehash_entries==0.  It creates dedicated
+> >   netns sysctl knobs where we can safely change tcp_child_ehash_entries
+> >   and clone()/unshare() to create a per-netns ehash.
+> >
+> >   2) Control write on sysctl by BPF
+> >
+> >   We can use BPF_PROG_TYPE_CGROUP_SYSCTL to allow/deny read/write on
+> >   sysctl knobs.
+> >
+> > Note the default values of two sysctl knobs depend on the ehash size and
+> > should be tuned carefully:
+> >
+> >   tcp_max_tw_buckets  : tcp_child_ehash_entries / 2
+> >   tcp_max_syn_backlog : max(128, tcp_child_ehash_entries / 128)
+> >
+> > As a bonus, we can dismantle netns faster.  Currently, while destroying
+> > netns, we call inet_twsk_purge(), which walks through the global ehash.
+> > It can be potentially big because it can have many sockets other than
+> > TIME_WAIT in all netns.  Splitting ehash changes that situation, where
+> > it's only necessary for inet_twsk_purge() to clean up TIME_WAIT sockets
+> > in each netns.
+> >
+> > With regard to this, we do not free the per-netns ehash in inet_twsk_kill()
+> > to avoid UAF while iterating the per-netns ehash in inet_twsk_purge().
+> > Instead, we do it in tcp_sk_exit_batch() after calling tcp_twsk_purge() to
+> > keep it protocol-family-independent.
+> >
+> > In the future, we could optimise ehash lookup/iteration further by removing
+> > netns comparison for the per-netns ehash.
+> >
+> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> 
+> ...
+> 
+> > diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+> > index c440de998910..e94e1316fcc3 100644
+> > --- a/net/ipv4/inet_hashtables.c
+> > +++ b/net/ipv4/inet_hashtables.c
+> > @@ -1145,3 +1145,60 @@ int inet_ehash_locks_alloc(struct inet_hashinfo *hashinfo)
+> >         return 0;
+> >  }
+> >  EXPORT_SYMBOL_GPL(inet_ehash_locks_alloc);
+> > +
+> > +struct inet_hashinfo *inet_pernet_hashinfo_alloc(struct inet_hashinfo *hashinfo,
+> > +                                                unsigned int ehash_entries)
+> > +{
+> > +       struct inet_hashinfo *new_hashinfo;
+> > +       int i;
+> > +
+> > +       new_hashinfo = kmalloc(sizeof(*new_hashinfo), GFP_KERNEL);
+> > +       if (!new_hashinfo)
+> > +               goto err;
+> > +
+> > +       new_hashinfo->ehash = kvmalloc_array(ehash_entries,
+> > +                                            sizeof(struct inet_ehash_bucket),
+> > +                                            GFP_KERNEL_ACCOUNT);
+> 
+> Note that in current kernel,  init_net ehash table is using hugepages:
+> 
+> # dmesg | grep "TCP established hash table"
+> [   17.512756] TCP established hash table entries: 524288 (order: 10,
+> 4194304 bytes, vmalloc hugepage)
+> 
+> As this is very desirable, I would suggest using the following to
+> avoid possible performance regression,
+> especially for workload wanting a big ehash, as hinted by your changelog.
+> 
+> new_hashinfo->ehash = vmalloc_huge(ehash_entries * sizeof(struct
+> inet_ehash_bucket), GFP_KERNEL_ACCOUNT);
+> 
+> (No overflow can happen in the multiply, as ehash_entries < 16M)
 
-> This patch switches the driver away from legacy gpio/of_gpio API to
-> gpiod API, and removes use of of_get_named_gpio_flags() which I want to
-> make private to gpiolib.
->
-> Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Do we need 'get_order(size) >= MAX_ORDER' check or just use it?
+Due to the test in alloc_large_system_hash(), on a machine where the
+calculted bucket size is not large enough, we don't use hugepages for
+init_net.
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-Yours,
-Linus Walleij
+> Another point is that on NUMA, init_net ehash table is spread over
+> available NUMA nodes.
+> 
+> While net_pernet_hashinfo_alloc() will allocate pages depending on
+> current process NUMA policy.
+> 
+> Maybe worth noting this in the changelog, because it is very possible
+> that new nets
+> is created with default NUMA policy, and depending on which cpu
+> current thread is
+> running, hash table will fully reside on a 'random' node, with very
+> different performance
+> results for highly optimized networking applications.
+
+Sounds great!
+But I'm not familiar with mm, so let me confirm a bit more.
+
+It seems vmalloc_huge() always pass NUMA_NO_NODE to __vmalloc_node_range(),
+so if we use vmalloc_huge(), the per-net ehash will be spread on each NUMA
+nodes unless vmap_allow_huge is disabled in the kernel parameters, right?
+
+Or, even if we use vmalloc_huge(), the ehash could be controlled by the
+current process's NUMA policy?  (Sorry I'm not sure where the policy is
+applied..)
+
+
+> > +       if (!new_hashinfo->ehash)
+> > +               goto free_hashinfo;
+> > +
+> > +       new_hashinfo->ehash_mask = ehash_entries - 1;
+> > +
+> > +       if (inet_ehash_locks_alloc(new_hashinfo))
+> > +               goto free_ehash;
+> > +
+> > +       for (i = 0; i < ehash_entries; i++)
+> > +               INIT_HLIST_NULLS_HEAD(&new_hashinfo->ehash[i].chain, i);
+> > +
+> > +       new_hashinfo->bind_bucket_cachep = hashinfo->bind_bucket_cachep;
+> > +       new_hashinfo->bhash = hashinfo->bhash;
+> > +       new_hashinfo->bind2_bucket_cachep = hashinfo->bind2_bucket_cachep;
+> > +       new_hashinfo->bhash2 = hashinfo->bhash2;
+> > +       new_hashinfo->bhash_size = hashinfo->bhash_size;
+> > +
+> > +       new_hashinfo->lhash2_mask = hashinfo->lhash2_mask;
+> > +       new_hashinfo->lhash2 = hashinfo->lhash2;
+> > +
