@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3426A5B07CB
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 17:00:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F23F5B07C9
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 17:00:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230261AbiIGPAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 11:00:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50116 "EHLO
+        id S230248AbiIGPAn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 11:00:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230280AbiIGPAY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 11:00:24 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 522D57671
-        for <netdev@vger.kernel.org>; Wed,  7 Sep 2022 08:00:22 -0700 (PDT)
+        with ESMTP id S230271AbiIGPAX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 11:00:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB5374E60A;
+        Wed,  7 Sep 2022 08:00:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 85ACBCE1C69
-        for <netdev@vger.kernel.org>; Wed,  7 Sep 2022 15:00:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id DDABAC4347C;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3EBEFB81DAE;
+        Wed,  7 Sep 2022 15:00:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id CFABAC433B5;
         Wed,  7 Sep 2022 15:00:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1662562818;
-        bh=7jeJEjwql3EEohaZJAOSWd5SKm8C6mgXQtWepI34pDI=;
+        bh=LDaAYPiMQUwOKCdX537Ls4chLt3OGo4ond9LIYOfcbk=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=S2HWqr7rKRMhjHPBT6cOYnBvkscOpgZiL63Ed92b8qVKSGeZNvCoZIJgm41vIO1nd
-         tcoYKCzcSkBsBFENNLZQX8UohGvwD43EOWA7dJ4DcxXAk+pE+UT7GAJkaUeIsmMblZ
-         d+OsjY5RxkDmcp5rHK090HTRh79H7G18VF2Obd4Imiv7EN3b69lmu8xCmfLytY/U5j
-         DquStpmodWczaP5KyoFrvbofJVkWuXhK6R/kIfXWM3zpcJTVzaopZIRN6T2KA/ULWw
-         DXMv2jh0iLMBJFR7pafutJlJ2ah5r+gqbqPKJfQjuqa47La5wyO5C2tklKeoAMjNoY
-         2Z7vVXYzDJ7ug==
+        b=iXMQ870TZr//kmFS6G0LslxyFB/qCsOk0djZetOwujEB8l4o54Kj3LNlpgZGI4wOY
+         fqezNp17mVY/m2ahfFWs9wEOlXHVkazpqxkHwKvqXa7uM+Ev9xae9c9qoVlJUOxR+d
+         OJIMO/2MNkgml07qG5KV99VYWy4Hfb5csfk3stv++7YYRnN7aIncIiXy+f4/Wx8DMQ
+         taCtwnw/NIiLTqEA0RKqRF5sRhnDqu4E1rCfBhXoLBK0tPK7pzHpj4gSVMGbg8e48U
+         V21SEsMz9DJgl/2diBqzuHyDgK8K2MURFOaig1seVrwRTe8QuRukoICQzCpSeSmEiR
+         B7++BQPYJPPVw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C7173E1CABE;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BD4F8C73FE7;
         Wed,  7 Sep 2022 15:00:18 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/5][pull request] Intel Wired LAN Driver Updates
- 2022-09-06 (ice)
+Subject: Re: [PATCH] net: sysctl: remove unused variable long_max
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166256281881.26447.10260309099428658851.git-patchwork-notify@kernel.org>
+Message-Id: <166256281877.26447.3691488668583692931.git-patchwork-notify@kernel.org>
 Date:   Wed, 07 Sep 2022 15:00:18 +0000
-References: <20220906211302.3501186-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20220906211302.3501186-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, netdev@vger.kernel.org
+References: <20220905125042.2234889-1-liushixin2@huawei.com>
+In-Reply-To: <20220905125042.2234889-1-liushixin2@huawei.com>
+To:     Liu Shixin <liushixin2@huawei.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        wangkefeng.wang@huawei.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -59,31 +60,22 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (master)
-by Tony Nguyen <anthony.l.nguyen@intel.com>:
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-On Tue,  6 Sep 2022 14:12:57 -0700 you wrote:
-> This series contains updates to ice driver only.
+On Mon, 5 Sep 2022 20:50:42 +0800 you wrote:
+> The variable long_max is replaced by bpf_jit_limit_max and no longer be
+> used. So remove it.
 > 
-> Tony reduces device MSI-X request/usage when entire request can't be fulfilled.
+> No functional change.
 > 
-> Michal adds check for reset when waiting for PTP offsets.
-> 
-> Paul refactors firmware version checks to use a common helper.
+> Signed-off-by: Liu Shixin <liushixin2@huawei.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,1/5] ice: Allow operation with reduced device MSI-X
-    https://git.kernel.org/netdev/net-next/c/ce4626131112
-  - [net-next,2/5] ice: Check if reset in progress while waiting for offsets
-    https://git.kernel.org/netdev/net-next/c/0b57e0d44299
-  - [net-next,3/5] ice: add helper function to check FW API version
-    https://git.kernel.org/netdev/net-next/c/1bd50f2deb19
-  - [net-next,4/5] ice: switch: Simplify memory allocation
-    https://git.kernel.org/netdev/net-next/c/1b9e740dd733
-  - [net-next,5/5] ice: Simplify memory allocation in ice_sched_init_port()
-    https://git.kernel.org/netdev/net-next/c/04cbaa6c08e3
+  - net: sysctl: remove unused variable long_max
+    https://git.kernel.org/netdev/net-next/c/53fc01a0a8cb
 
 You are awesome, thank you!
 -- 
