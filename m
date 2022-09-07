@@ -2,79 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 027955AFB0D
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 06:21:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4D265AFB4C
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 06:27:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229538AbiIGEV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 00:21:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48070 "EHLO
+        id S229738AbiIGE1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 00:27:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiIGEVZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 00:21:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4283B895D6
-        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 21:21:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662524481;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=S+P+z8TSJ/Zyfj7d1c5azECG0cOYl08GFb3K30xN3HE=;
-        b=Lpu79Qs4LxRlTr9nFiLQt8z3VqN1+EVqRtq9cv6L9TIFgnCJ8GNHQdijAMYVh+YHPMxLPp
-        hYWm22hAlZdg7toFaJlgGO9zSV+x+/SnrjCTGC7O6CF0kQ8ogZFHtkLbHCb7na8mWB2dEO
-        9OL8y22bLnAr5j8riMYXsQJtvtxGYHU=
-Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com
- [209.85.210.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-614-EABEQ3e0PD2qOaWUUvvo5A-1; Wed, 07 Sep 2022 00:21:20 -0400
-X-MC-Unique: EABEQ3e0PD2qOaWUUvvo5A-1
-Received: by mail-pf1-f198.google.com with SMTP id cg5-20020a056a00290500b0053511889856so6864435pfb.18
-        for <netdev@vger.kernel.org>; Tue, 06 Sep 2022 21:21:20 -0700 (PDT)
+        with ESMTP id S229706AbiIGE1q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 00:27:46 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0293A8C005;
+        Tue,  6 Sep 2022 21:27:46 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id kg20so870035ejc.12;
+        Tue, 06 Sep 2022 21:27:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=DtQEUbHrZXRVSvv8X3cr2fMxJ2Hd5j5uiQKjuorqFRg=;
+        b=gzHNKSTsW2UnOmGXJY/6xvJyQROkAckj3ZKV3yg1DqGwmgTFzW6PMygHfaZQLiNuOt
+         kVugpkIJX00CPBFesY3tI1m2aaY/5bg70boDpR8kofVad4cMlOuwZnl88XbtarkZihJt
+         5T96PjeDEQ5O8r93y8k//ubptfq4EEvg1XOMDP9Q77cZnKaOwphjakbfQMcBV2XD7m+S
+         m9QWrt9TH9q/LymBBeMjwlfI8BcT8F097C/o1y5UDIXT5UZfH4lDlckrSK4fc794TH7P
+         y3pWWCuBqqVVh85iC9V1ExxWJBDVtEXnat+FvYnv19bdH0h5TKwLxvey27XFEnmeMN+R
+         o/tg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=S+P+z8TSJ/Zyfj7d1c5azECG0cOYl08GFb3K30xN3HE=;
-        b=0TyBqlk7QtYYCpvo8dqoFlbvUv0c+EbQlojJCCvfjEtQ3S1JPzSvsIp7ZM4ULIG202
-         RKdJ+EE6rqt2k47QTJlik79VTDx6GUWBLqT72roUGrgUnsmmB6Xdmk4ZvKNsmyEp1v6R
-         z8fiCP5g+mB3jkbM6B8FAjMPCF0O3ac6/DdjNW+PGRvvOm29ETj0s7ntxC06vNUzCZcp
-         Q5vhvG45Cnizzb2q803/OaAznYyCDPsxy3YFt4UNFJ4gPiC5JDVQ17HnTWyvuaTktcEw
-         2hf25cWxej+LF/a90scnKKMQNx6zX9UdyoYjoTR53VBto9Fc2UHu1LgDsSdHDCqIk733
-         3SsA==
-X-Gm-Message-State: ACgBeo0zZQfbFxV6xdJJm+/BNp4ubNXuK0AflLi3ehHaxSiqi/OTEu8k
-        0oAcTV9nl7SmbkPZ4FyJ46VosMP4quP1s+Z9GfU3xeOYpC+02FWfaEZTc5AjB6L6FEEbkO9mbVV
-        gNajf45II7XEsPLmy
-X-Received: by 2002:a05:6a00:22c7:b0:53a:bea5:9abd with SMTP id f7-20020a056a0022c700b0053abea59abdmr1770318pfj.3.1662524479098;
-        Tue, 06 Sep 2022 21:21:19 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7FdPkXihchbJtJv8Jd83bDgPxk3tYbsa2yRZ4rh/+Tyemh4rXUJmUXF5h6WyCU3XNVQ3nufA==
-X-Received: by 2002:a05:6a00:22c7:b0:53a:bea5:9abd with SMTP id f7-20020a056a0022c700b0053abea59abdmr1770291pfj.3.1662524478842;
-        Tue, 06 Sep 2022 21:21:18 -0700 (PDT)
-Received: from [10.72.13.171] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id b28-20020aa78edc000000b0053ae6a3c51asm11172533pfr.186.2022.09.06.21.21.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 06 Sep 2022 21:21:18 -0700 (PDT)
-Message-ID: <dcf40392-26a7-b4f1-ad2c-44fac99fb330@redhat.com>
-Date:   Wed, 7 Sep 2022 12:21:06 +0800
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=DtQEUbHrZXRVSvv8X3cr2fMxJ2Hd5j5uiQKjuorqFRg=;
+        b=Cxd7Fp7mQMphWEQDxgBZLwfNPUciXbrRef2IpIcNLIgXW2Kw9iBOZ6NPllIzKn8Y6T
+         SV/eWNL5XHsnNX/3U8ESHAVEUarMzDRV4GaUvCt5ON91ZxOgsS689hlncZsLF80ll/u5
+         VDVEOlZuZdF/dcYJaTWRS1Bxj+Wh+borfLtrRcim6QaMQDPOF05KH0ZEt9kfWbcUr6Y1
+         IBh7VecHi5nsS/6B8PuVSZ1wTdMMcOAceJXh7HC3wQemJGTsYzEKWgNzddsBEobE+vKw
+         GlsgaQxYMEU9A/UAAvhdeFi5vQfG0qq8xPsKDzhbtewHPrGH/Pk3Fm9V+PUGQm4roe8u
+         Hl6Q==
+X-Gm-Message-State: ACgBeo2zKvQU4vdh3irYsuwQ+IPdZeqvqJTFT909bjin8JJcLAOB0B0h
+        ecRKaU3YHJxGEx09S8dCXXmbNS7Wkya3h9T4gYw=
+X-Google-Smtp-Source: AA6agR7lq7k88REO9qL4S+HSxpM4lCI9Je0lcsEPs5OD64RGY135DA0Cz2F1x9ZE+oZ6bdcaZ8WWLBHKuc2TgOo/vO4=
+X-Received: by 2002:a17:907:2c74:b0:741:657a:89de with SMTP id
+ ib20-20020a1709072c7400b00741657a89demr1047973ejc.58.1662524864401; Tue, 06
+ Sep 2022 21:27:44 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.13.0
-Subject: Re: [RFC v3 1/7] vhost: expose used buffers
-Content-Language: en-US
-To:     Guo Zhi <qtxuning1999@sjtu.edu.cn>, eperezma@redhat.com,
-        sgarzare@redhat.com, mst@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org
-References: <20220901055434.824-1-qtxuning1999@sjtu.edu.cn>
- <20220901055434.824-2-qtxuning1999@sjtu.edu.cn>
-From:   Jason Wang <jasowang@redhat.com>
-In-Reply-To: <20220901055434.824-2-qtxuning1999@sjtu.edu.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+References: <cover.1662383493.git.lorenzo@kernel.org> <fa02d93153b99bc994215c1644a2c75a226e3c7d.1662383493.git.lorenzo@kernel.org>
+In-Reply-To: <fa02d93153b99bc994215c1644a2c75a226e3c7d.1662383493.git.lorenzo@kernel.org>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 6 Sep 2022 21:27:33 -0700
+Message-ID: <CAADnVQJ4XtFpsEsPRC-cepfQvXr-hN7e_3L5SchieeGHH40_4A@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 3/4] net: netfilter: add bpf_ct_set_nat_info
+ kfunc helper
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel <netfilter-devel@vger.kernel.org>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,72 +80,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Sep 5, 2022 at 6:14 AM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+> +int bpf_ct_set_nat_info(struct nf_conn___init *nfct__ref,
+> +                       union nf_inet_addr *addr, __be16 *port,
+> +                       enum nf_nat_manip_type manip)
+> +{
+...
+> @@ -437,6 +483,7 @@ BTF_ID_FLAGS(func, bpf_ct_set_timeout, KF_TRUSTED_ARGS)
+>  BTF_ID_FLAGS(func, bpf_ct_change_timeout, KF_TRUSTED_ARGS)
+>  BTF_ID_FLAGS(func, bpf_ct_set_status, KF_TRUSTED_ARGS)
+>  BTF_ID_FLAGS(func, bpf_ct_change_status, KF_TRUSTED_ARGS)
+> +BTF_ID_FLAGS(func, bpf_ct_set_nat_info)
+>  BTF_SET8_END(nf_ct_kfunc_set)
 
-在 2022/9/1 13:54, Guo Zhi 写道:
-> Follow VIRTIO 1.1 spec, only writing out a single used ring for a batch
-> of descriptors.
->
-> Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
-> ---
->   drivers/vhost/vhost.c | 16 +++++++++++++---
->   1 file changed, 13 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> index 40097826cff0..26862c8bf751 100644
-> --- a/drivers/vhost/vhost.c
-> +++ b/drivers/vhost/vhost.c
-> @@ -2376,10 +2376,20 @@ static int __vhost_add_used_n(struct vhost_virtqueue *vq,
->   	vring_used_elem_t __user *used;
->   	u16 old, new;
->   	int start;
-> +	int copy_n = count;
->   
-> +	/**
-> +	 * If in order feature negotiated, devices can notify the use of a batch of buffers to
-> +	 * the driver by only writing out a single used ring entry with the id corresponding
-> +	 * to the head entry of the descriptor chain describing the last buffer in the batch.
-> +	 */
-> +	if (vhost_has_feature(vq, VIRTIO_F_IN_ORDER)) {
-> +		copy_n = 1;
-> +		heads = &heads[count - 1];
-> +	}
-
-
-Would it better to have a dedicated helper like 
-vhost_add_used_in_order() here?
-
-
->   	start = vq->last_used_idx & (vq->num - 1);
->   	used = vq->used->ring + start;
-> -	if (vhost_put_used(vq, heads, start, count)) {
-> +	if (vhost_put_used(vq, heads, start, copy_n)) {
->   		vq_err(vq, "Failed to write used");
->   		return -EFAULT;
->   	}
-> @@ -2388,7 +2398,7 @@ static int __vhost_add_used_n(struct vhost_virtqueue *vq,
->   		smp_wmb();
->   		/* Log used ring entry write. */
->   		log_used(vq, ((void __user *)used - (void __user *)vq->used),
-> -			 count * sizeof *used);
-> +			 copy_n * sizeof(*used));
->   	}
->   	old = vq->last_used_idx;
->   	new = (vq->last_used_idx += count);
-> @@ -2410,7 +2420,7 @@ int vhost_add_used_n(struct vhost_virtqueue *vq, struct vring_used_elem *heads,
->   
->   	start = vq->last_used_idx & (vq->num - 1);
->   	n = vq->num - start;
-> -	if (n < count) {
-> +	if (n < count && !vhost_has_feature(vq, VIRTIO_F_IN_ORDER)) {
-
-
-This seems strange, any reason for this? (Actually if we support 
-in-order we only need one used slot which fit for the case here)
-
-Thanks
-
-
->   		r = __vhost_add_used_n(vq, heads, n);
->   		if (r < 0)
->   			return r;
-
+Instead of __ref and patch 1 and 2 it would be better to
+change the meaning of "trusted_args".
+In this case "addr" and "port" are just as "trusted".
+They're not refcounted per verifier definition,
+but they need to be "trusted" by the helper.
+At the end the "trusted_args" flags would mean
+"this helper can assume that all pointers can be safely
+accessed without worrying about lifetime".
