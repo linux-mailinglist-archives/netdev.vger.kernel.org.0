@@ -2,253 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E74C5AF9C5
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 04:17:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E4D35AF9F1
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 04:36:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229512AbiIGCRg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Sep 2022 22:17:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58904 "EHLO
+        id S229813AbiIGCgI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Sep 2022 22:36:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbiIGCRf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 22:17:35 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C061A8A7E0
-        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 19:17:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662517052;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=37pp2dOfkAFH3OGVSOJ+e4RmJm5kCPc4oNtISihYwXE=;
-        b=D2tdDIH8Ki/kWYw5iYaySgG+3uskBRABYClmM5mEuWQyQ8R5JuUydp36AEE5bWxEjRzOP/
-        JwBc+rJN5O5RX8gA+9jwlGoNqJHIcd5Pvb5H0f72nKxRjajlvaGr3sKao42Hi0tsiTP5Lo
-        4bfQd/JulmHMYj6PUcNI0wU96PvywuU=
-Received: from mail-pg1-f200.google.com (mail-pg1-f200.google.com
- [209.85.215.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-645-w8OyvOjTM3qq-es4pacN5w-1; Tue, 06 Sep 2022 22:17:31 -0400
-X-MC-Unique: w8OyvOjTM3qq-es4pacN5w-1
-Received: by mail-pg1-f200.google.com with SMTP id m34-20020a634c62000000b0042aff6dff12so6669644pgl.14
-        for <netdev@vger.kernel.org>; Tue, 06 Sep 2022 19:17:31 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=37pp2dOfkAFH3OGVSOJ+e4RmJm5kCPc4oNtISihYwXE=;
-        b=SFwlwM1bm4PBdGsYnLpVCQgUEzqp0hobnhwg8pDitIZSrnOdUh07WTml4TduXbkdZX
-         Thw6Wnyrz1AF913UfujBHWJF0Cezr7tVWcuELt5GktMok9BODYbju7DgLMWQJq6Wvu5U
-         fDa2EMaajX7I1jt/KGQ1ScyaffHVN8Fq/VdIs//05yalpTlbiPUWbFFN/2v3VUZgqVZy
-         1QmES9ElzwwAm3JUFMQT/EARpFXA4NAIhKYMe8HRmgm1ARkBJkzQaA4Is1Hnf8kF/kYM
-         U6jDFiF33yleUYQFdk3qT5iwylUiJ35ESUPHlKEum3GyHOURPPp2SEuKbYvKJty208zP
-         4WSA==
-X-Gm-Message-State: ACgBeo0xJjWwk5GWOEH8Oull14AesIiKtpfo7Q73UBfytGtrvU8b7vOB
-        fI//dLeji0y8BQUpg+d9I+pq9qW83QEhBqMfg5n4lNY0hNTTwWiY2Ki+3a9fwQRQDKsdkprVR/+
-        36lL30e++3I6V2OpP
-X-Received: by 2002:a17:902:f68d:b0:174:471b:4794 with SMTP id l13-20020a170902f68d00b00174471b4794mr1487353plg.156.1662517050532;
-        Tue, 06 Sep 2022 19:17:30 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4sVuqAhYxMyMk+K7mSSO1Fis+Kh9CIjCFZJYJAYBxX21s1UEUt8zKqzTAfow8lYTs74ob7Zw==
-X-Received: by 2002:a17:902:f68d:b0:174:471b:4794 with SMTP id l13-20020a170902f68d00b00174471b4794mr1487343plg.156.1662517050239;
-        Tue, 06 Sep 2022 19:17:30 -0700 (PDT)
-Received: from [10.72.13.171] ([43.228.180.230])
-        by smtp.gmail.com with ESMTPSA id ik26-20020a170902ab1a00b00172d0c7edf4sm8256869plb.106.2022.09.06.19.17.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 06 Sep 2022 19:17:29 -0700 (PDT)
-Message-ID: <a5e1eae0-d977-a625-afa7-69582bf49cb8@redhat.com>
-Date:   Wed, 7 Sep 2022 10:17:22 +0800
+        with ESMTP id S229488AbiIGCgH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Sep 2022 22:36:07 -0400
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BE357F112;
+        Tue,  6 Sep 2022 19:36:06 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id 9FE815C0098;
+        Tue,  6 Sep 2022 22:36:03 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Tue, 06 Sep 2022 22:36:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm1; t=1662518163; x=1662604563; bh=UvF1iyuJKX
+        q7GvuceIIhqaYE9S82z6ibv1ru64WCKdc=; b=bybK68XNIMVzk+3c/RNymCE2UC
+        g2D6xW8Z45awBvx6tOITVI0L7dMStE8kEEJ6QGwB5OjImAJT32HpYD2CHWTMRN97
+        8/BEFv4XahFjMhvb8KUxNEJIqaloK/Qh+Mgd97eZsMtxVkjv6IdDMi4eU7EZwtwK
+        Y/EP5MfBlXpXMJ6+jHccSW1FXOjyvJfdV8xWDD/tWL0Soc2Hp/kO4Hz7IbAq+0Nq
+        IcPH/Pnlf9qS3wKqVCx0nrE4TFfoAFQjQk9KKeHBOaKd5VXJ5OI5GCQf+lgNThR4
+        AzbEx2Vl/nIzfO+BDAkHW9xq7xADqsUgdH1iyRLtKHCyP0R4mI8SUgPhSJyA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm2; t=1662518163; x=1662604563; bh=UvF1iyuJKXq7GvuceIIhqaYE9S82
+        z6ibv1ru64WCKdc=; b=g/Ms29JUaxSVe+jMIChvRDNZfKFivNkazOSYXrZh5ok6
+        6dWw7gBXGSQDXf1LIzWoCobS8lYawRN5kyDycB2Hninoqu0IxHixZBT2BAyNVOy8
+        NrJUQClcIrxzr9mHMRb36ASirhr3OQqA9nhnsMC4ru5kmxH33eTfYU1Qsn7qhvnY
+        zwfyIvWW9zvStejmSPjSd7RYUTiJnpNo3GGjSsmzh+IFydHaK/gHIdWnieVmKlyH
+        iJ/sf7BcVujYK7TrXEh0yAA1ysfDo2IhguPWA/oygP72byIqwUOJwR+MDpoCi8Cb
+        eQUP+gPYSWc2VeCFDO2X09nxXw4yrVhvdY/YKPZumg==
+X-ME-Sender: <xms:kQMYY34JVm0p7oDx7hhJ6lvoaufVmGYLL5bLsMXpGLa_Gw9hWF0jZg>
+    <xme:kQMYY85aRyY8Z-QupbI3XEKBARn5yAL8R53XVY8m1nmHSXjLRBEn9394oQd4UnQBV
+    _n8nJdM3WgGmRUKRw>
+X-ME-Received: <xmr:kQMYY-cVP7mJbsbvcQhvEAky98IOSVslrlcgxWmI_i7gYavPQhmue0QWnVBmkKcmyaW8NEuN9kHBIxR0AuWLNhVuhxRBhS8HuB05-Mo>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdelledgieduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucgfrhhlucfvnfffucdlfeehmdenucfjughrpeffhf
+    fvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpeffrghnihgvlhcuighuuceo
+    ugiguhesugiguhhuuhdrgiihiieqnecuggftrfgrthhtvghrnhepheeltedvgffhgfduud
+    elleeguddtueefgfefvdeukeffvdeguddtvdeuteehteevnecuffhomhgrihhnpehkvghr
+    nhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
+    hrohhmpegugihusegugihuuhhurdighiii
+X-ME-Proxy: <xmx:kQMYY4JJYVWpNWNKelD6ugCM7kqpE2U88j6teYM8OVUVpGfBY2BFIQ>
+    <xmx:kQMYY7Lckn6zshgDilaoCg72EFbgFppXr5657UpOYbMyJ5Q1va962Q>
+    <xmx:kQMYYxyAzifvgDd8EbcQOfP6BasZzhsNeuTJu6J816IyIX1qK9g5uw>
+    <xmx:kwMYY4D_EZpkBmZDijU0yOGmXVDBkJSrXdhQ2d_4p29AaPzjwtWuyA>
+Feedback-ID: i6a694271:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 6 Sep 2022 22:36:00 -0400 (EDT)
+Date:   Tue, 6 Sep 2022 20:35:59 -0600
+From:   Daniel Xu <dxu@dxuuu.xyz>
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, pablo@netfilter.org, fw@strlen.de,
+        toke@kernel.org, martin.lau@linux.dev,
+        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH bpf-next v4 4/5] bpf: Add support for writing to
+ nf_conn:mark
+Message-ID: <20220907023559.22juhtyl3qh2gsym@kashmir.localdomain>
+References: <cover.1661192455.git.dxu@dxuuu.xyz>
+ <073173502d762faf87bde0ca23e609c84848dd7e.1661192455.git.dxu@dxuuu.xyz>
+ <CAP01T74XK_6wMi+tzReTkBqmZkKbUqCmV6pVwcbCMrHrv0X0SA@mail.gmail.com>
+ <20220823021923.vmhp5r76dvgwvh2j@kashmir.localdomain>
+ <CAP01T77mwS=_sW803CaBgpFtuwMEd4fS81uTvVKYLdGyg5hv1A@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.13.0
-Subject: Re: [virtio-dev] [PATCH v5 2/2] virtio-net: use mtu size as buffer
- length for big packets
-Content-Language: en-US
-To:     Gavin Li <gavinl@nvidia.com>, stephen@networkplumber.org,
-        davem@davemloft.net, jesse.brandeburg@intel.com,
-        alexander.h.duyck@intel.com, kuba@kernel.org,
-        sridhar.samudrala@intel.com, loseweigh@gmail.com,
-        netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        virtio-dev@lists.oasis-open.org, mst@redhat.com
-Cc:     gavi@nvidia.com, parav@nvidia.com,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>
-References: <20220901021038.84751-1-gavinl@nvidia.com>
- <20220901021038.84751-3-gavinl@nvidia.com>
-From:   Jason Wang <jasowang@redhat.com>
-In-Reply-To: <20220901021038.84751-3-gavinl@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAP01T77mwS=_sW803CaBgpFtuwMEd4fS81uTvVKYLdGyg5hv1A@mail.gmail.com>
+X-Spam-Status: No, score=-0.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FROM_SUSPICIOUS_NTLD,
+        PDS_OTHER_BAD_TLD,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Kumar,
 
-在 2022/9/1 10:10, Gavin Li 写道:
-> Currently add_recvbuf_big() allocates MAX_SKB_FRAGS segments for big
-> packets even when GUEST_* offloads are not present on the device.
-> However, if guest GSO is not supported, it would be sufficient to
-> allocate segments to cover just up the MTU size and no further.
-> Allocating the maximum amount of segments results in a large waste of
-> buffer space in the queue, which limits the number of packets that can
-> be buffered and can result in reduced performance.
->
-> Therefore, if guest GSO is not supported, use the MTU to calculate the
-> optimal amount of segments required.
->
-> When guest offload is enabled at runtime, RQ already has packets of bytes
-> less than 64K. So when packet of 64KB arrives, all the packets of such
-> size will be dropped. and RQ is now not usable.
->
-> So this means that during set_guest_offloads() phase, RQs have to be
-> destroyed and recreated, which requires almost driver reload.
->
-> If VIRTIO_NET_F_CTRL_GUEST_OFFLOADS has been negotiated, then it should
-> always treat them as GSO enabled.
->
-> Accordingly, for now the assumption is that if guest GSO has been
-> negotiated then it has been enabled, even if it's actually been disabled
-> at runtime through VIRTIO_NET_F_CTRL_GUEST_OFFLOADS.
+On Tue, Aug 23, 2022 at 04:29:17AM +0200, Kumar Kartikeya Dwivedi wrote:
+> On Tue, 23 Aug 2022 at 04:19, Daniel Xu <dxu@dxuuu.xyz> wrote:
 
+[...]
 
-Nit: Actually, it's not the assumption but the behavior of the codes 
-itself. Since we don't try to change guest offloading in probe so it's 
-ok to check GSO via negotiated features?
+> > There's also some other issues I'm uncovering with duplicate BTF IDs for
+> > nf_conn. Might have to do a lookup by name instead of the BTF_ID_LIST().
+> >
+> 
+> I think I also hit this problem back when I was working on these
+> patches, is it similar to this?
+> https://lore.kernel.org/bpf/20211028014428.rsuq6rkfvqzq23tg@apollo.localdomain
 
-Thanks
+Yes, identical I think.
 
+> 
+> I think this might be a bug in the BTF generation, since there should
+> only be one BTF ID for a type, either in vmlinux or the module BTF.
+> Maybe Andrii would be able to confirm.
 
->
-> Below is the iperf TCP test results over a Mellanox NIC, using vDPA for
-> 1 VQ, queue size 1024, before and after the change, with the iperf
-> server running over the virtio-net interface.
->
-> MTU(Bytes)/Bandwidth (Gbit/s)
->               Before   After
->    1500        22.5     22.4
->    9000        12.8     25.9
->
-> Signed-off-by: Gavin Li <gavinl@nvidia.com>
-> Reviewed-by: Gavi Teitz <gavi@nvidia.com>
-> Reviewed-by: Parav Pandit <parav@nvidia.com>
-> Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> Reviewed-by: Si-Wei Liu <si-wei.liu@oracle.com>
-> ---
-> changelog:
-> v4->v5
-> - Addressed comments from Michael S. Tsirkin
-> - Improve commit message
-> v3->v4
-> - Addressed comments from Si-Wei
-> - Rename big_packets_sg_num with big_packets_num_skbfrags
-> v2->v3
-> - Addressed comments from Si-Wei
-> - Simplify the condition check to enable the optimization
-> v1->v2
-> - Addressed comments from Jason, Michael, Si-Wei.
-> - Remove the flag of guest GSO support, set sg_num for big packets and
->    use it directly
-> - Recalculate sg_num for big packets in virtnet_set_guest_offloads
-> - Replace the round up algorithm with DIV_ROUND_UP
-> ---
->   drivers/net/virtio_net.c | 37 ++++++++++++++++++++++++-------------
->   1 file changed, 24 insertions(+), 13 deletions(-)
->
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index f831a0290998..dbffd5f56fb8 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -225,6 +225,9 @@ struct virtnet_info {
->   	/* I like... big packets and I cannot lie! */
->   	bool big_packets;
->   
-> +	/* number of sg entries allocated for big packets */
-> +	unsigned int big_packets_num_skbfrags;
-> +
->   	/* Host will merge rx buffers for big packets (shake it! shake it!) */
->   	bool mergeable_rx_bufs;
->   
-> @@ -1331,10 +1334,10 @@ static int add_recvbuf_big(struct virtnet_info *vi, struct receive_queue *rq,
->   	char *p;
->   	int i, err, offset;
->   
-> -	sg_init_table(rq->sg, MAX_SKB_FRAGS + 2);
-> +	sg_init_table(rq->sg, vi->big_packets_num_skbfrags + 2);
->   
-> -	/* page in rq->sg[MAX_SKB_FRAGS + 1] is list tail */
-> -	for (i = MAX_SKB_FRAGS + 1; i > 1; --i) {
-> +	/* page in rq->sg[vi->big_packets_num_skbfrags + 1] is list tail */
-> +	for (i = vi->big_packets_num_skbfrags + 1; i > 1; --i) {
->   		first = get_a_page(rq, gfp);
->   		if (!first) {
->   			if (list)
-> @@ -1365,7 +1368,7 @@ static int add_recvbuf_big(struct virtnet_info *vi, struct receive_queue *rq,
->   
->   	/* chain first in list head */
->   	first->private = (unsigned long)list;
-> -	err = virtqueue_add_inbuf(rq->vq, rq->sg, MAX_SKB_FRAGS + 2,
-> +	err = virtqueue_add_inbuf(rq->vq, rq->sg, vi->big_packets_num_skbfrags + 2,
->   				  first, gfp);
->   	if (err < 0)
->   		give_pages(rq, first);
-> @@ -3690,13 +3693,27 @@ static bool virtnet_check_guest_gso(const struct virtnet_info *vi)
->   		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_UFO);
->   }
->   
-> +static void virtnet_set_big_packets_fields(struct virtnet_info *vi, const int mtu)
-> +{
-> +	bool guest_gso = virtnet_check_guest_gso(vi);
-> +
-> +	/* If device can receive ANY guest GSO packets, regardless of mtu,
-> +	 * allocate packets of maximum size, otherwise limit it to only
-> +	 * mtu size worth only.
-> +	 */
-> +	if (mtu > ETH_DATA_LEN || guest_gso) {
-> +		vi->big_packets = true;
-> +		vi->big_packets_num_skbfrags = guest_gso ? MAX_SKB_FRAGS : DIV_ROUND_UP(mtu, PAGE_SIZE);
-> +	}
-> +}
-> +
->   static int virtnet_probe(struct virtio_device *vdev)
->   {
->   	int i, err = -ENOMEM;
->   	struct net_device *dev;
->   	struct virtnet_info *vi;
->   	u16 max_queue_pairs;
-> -	int mtu;
-> +	int mtu = 0;
->   
->   	/* Find if host supports multiqueue/rss virtio_net device */
->   	max_queue_pairs = 1;
-> @@ -3784,10 +3801,6 @@ static int virtnet_probe(struct virtio_device *vdev)
->   	INIT_WORK(&vi->config_work, virtnet_config_changed_work);
->   	spin_lock_init(&vi->refill_lock);
->   
-> -	/* If we can receive ANY GSO packets, we must allocate large ones. */
-> -	if (virtnet_check_guest_gso(vi))
-> -		vi->big_packets = true;
-> -
->   	if (virtio_has_feature(vdev, VIRTIO_NET_F_MRG_RXBUF))
->   		vi->mergeable_rx_bufs = true;
->   
-> @@ -3853,12 +3866,10 @@ static int virtnet_probe(struct virtio_device *vdev)
->   
->   		dev->mtu = mtu;
->   		dev->max_mtu = mtu;
-> -
-> -		/* TODO: size buffers correctly in this case. */
-> -		if (dev->mtu > ETH_DATA_LEN)
-> -			vi->big_packets = true;
->   	}
->   
-> +	virtnet_set_big_packets_fields(vi, mtu);
-> +
->   	if (vi->any_header_sg)
->   		dev->needed_headroom = vi->hdr_len;
->   
+Had to put out some fires last week.
 
+I chased this down a bit today and best I can tell was the `nf_conn`
+definitions in BTF were all slightly different.
+
+For example, here were the 3 definitions in nf_conntrack.ko alone:
+
+    [88439] STRUCT 'nf_conn' size=296 vlen=11
+            'ct_general' type_id=67058 bits_offset=0
+            'lock' type_id=373 bits_offset=64
+            'timeout' type_id=160 bits_offset=576
+            'tuplehash' type_id=67235 bits_offset=640
+            'status' type_id=1 bits_offset=1536
+            'ct_net' type_id=4298 bits_offset=1600
+            '__nfct_init_offset' type_id=4213 bits_offset=1664
+            'master' type_id=88438 bits_offset=1664
+            'mark' type_id=67192 bits_offset=1728
+            'ext' type_id=67236 bits_offset=1792
+            'proto' type_id=67234 bits_offset=1856
+            
+    [90882] STRUCT 'nf_conn' size=296 vlen=11
+            'ct_general' type_id=67058 bits_offset=0
+            'lock' type_id=373 bits_offset=64
+            'timeout' type_id=160 bits_offset=576
+            'tuplehash' type_id=67235 bits_offset=640
+            'status' type_id=1 bits_offset=1536
+            'ct_net' type_id=90574 bits_offset=1600
+            '__nfct_init_offset' type_id=4213 bits_offset=1664
+            'master' type_id=90881 bits_offset=1664
+            'mark' type_id=67192 bits_offset=1728
+            'ext' type_id=67236 bits_offset=1792
+            'proto' type_id=67234 bits_offset=1856
+            
+    [92469] STRUCT 'nf_conn' size=296 vlen=11
+            'ct_general' type_id=67058 bits_offset=0
+            'lock' type_id=373 bits_offset=64
+            'timeout' type_id=160 bits_offset=576
+            'tuplehash' type_id=67235 bits_offset=640
+            'status' type_id=1 bits_offset=1536
+            'ct_net' type_id=92160 bits_offset=1600
+            '__nfct_init_offset' type_id=4213 bits_offset=1664
+            'master' type_id=92468 bits_offset=1664
+            'mark' type_id=67192 bits_offset=1728
+            'ext' type_id=67236 bits_offset=1792
+            'proto' type_id=67234 bits_offset=1856
+
+Note how `master` and `ct_net` all have different BTF IDs. Best I can
+tell is that there's some kind of subtle difference in BTF types and
+it's confusing the dedup algorithm.
+
+I went and upgraded to latest pahole (built from today's source tree) to
+chase the issue down further but the problem went away.
+
+Figured I'd write this up in case someone stumbles onto this in the
+future.
+
+[...]
+
+Thanks,
+Daniel
