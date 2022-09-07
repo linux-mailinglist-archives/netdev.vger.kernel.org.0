@@ -2,98 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AE9C5B07E1
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 17:03:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F4795B0814
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 17:10:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230242AbiIGPDx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 11:03:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59376 "EHLO
+        id S230287AbiIGPKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 11:10:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230123AbiIGPDv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 11:03:51 -0400
-Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E06C932D
-        for <netdev@vger.kernel.org>; Wed,  7 Sep 2022 08:03:50 -0700 (PDT)
-Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-127f5411b9cso5345658fac.4
-        for <netdev@vger.kernel.org>; Wed, 07 Sep 2022 08:03:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=qwoAmwE7uzwpfQFltUBKCke30IDuWY14X85lPw5iYX8=;
-        b=CF2rm5xRQRPuhBo4+WmmI3m1i/0k4lPy5fZy67/JPbhBT54u7zDuEJaxcZaiaQ8Vj2
-         U1qNQ252Dm/VR0W9fo6iZ/OBNdOyq59mXsdlQeL3nJX/4/uMci3v2+uAB0bjUkZPc+U6
-         /EgrutyVmQ7NHeIl6hzH5c8tqUjop51koR5EyIEzIGkGxOhbGHUYXl/qhuCvQ5HOTZjh
-         Ym/d8DqbUYvcVb8jieVD8Srg7uYtk36hCpeNOcXT079xoi8ruRmtYWDi/WC69fK1eJhG
-         2e6j0herMZkZYl89cO2JULaQerpcBHJ77N59L5+xTP/8vTF3hFupt9nK/x2UYOE/Fbaa
-         Sjfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=qwoAmwE7uzwpfQFltUBKCke30IDuWY14X85lPw5iYX8=;
-        b=fY8V5Dgh/laoBLkLhZwCwhEHizMVqYKOQuHybYsqcb0CAQEL5i1LN1iMy3z/OwnALH
-         hy/QHMMuaBfdWfMolrWN3f++V/D0WlyLhr/jRvhrlC1U8aPQol+4jYFBzCRa3AeHPB1Y
-         X3u8LVEVpymDmQ4tIz6ZsPLMCmPQJR0W9Lcwvc/NzjqK7ZNEnlnkbAbgAeQnXMyiNsrp
-         auQUV9K0TFwlEFNrkz/gReyPP1vWSZY24S3fpWwJMTlVUZdrpkDo5bwQAByY9XinAv93
-         +yesYdg9WaPFaAiVSY6bSeE1k7i6ToJspsG7TApAPIctBlDRv4Ty3YVxwQ78KUV6y3M9
-         oNSg==
-X-Gm-Message-State: ACgBeo1Ow7Hft5llVCufEn6r1ztMwX+Vu1/GPuw4gcCcprqvyDRMJf6N
-        SeAdVVnZnTplDBru9Q1D4d3nocMfWtobPWvANp8UdA==
-X-Google-Smtp-Source: AA6agR74ExVJP/+hViALnfUQQ+EAGCa2ACNRreueZ0t6HqgdEHLnSjUS1OljuLFRWxG78CK2RLOoNTUbizOljJLIIZ8=
-X-Received: by 2002:a05:6808:1d6:b0:344:93c6:ec88 with SMTP id
- x22-20020a05680801d600b0034493c6ec88mr1649793oic.2.1662563028738; Wed, 07 Sep
- 2022 08:03:48 -0700 (PDT)
+        with ESMTP id S229740AbiIGPKS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 11:10:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31B273C8F8;
+        Wed,  7 Sep 2022 08:10:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E65ACB81DEE;
+        Wed,  7 Sep 2022 15:10:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A3C75C433D7;
+        Wed,  7 Sep 2022 15:10:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662563414;
+        bh=y3vev92uf2aRQIN78o3qvAAHssrNc8oo+5GpspII1uE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=oZKpsaGYEPHeJG3FzASD+1KmAIbVAi17hzb96TaAbfeqP8r7npOU6jb3D2n7ByG6q
+         QV3OmbTcTrIHgiOLc2Q464l9zF975+h60jp7dLNt7V8xHTPeW5nSofu99N2r1dtS/n
+         U3vkIIYPx2COAwCF3gmxCJPtUpRo4Z3BDTO+0/X5glEwVBbttNKtKt2jou2lAISmtD
+         MV94lnR/Gm6ob+FwPx00L9nxU6YGOTeppgX3lJ7//cAui1VLa5zMJOeTDpVMRkKxHG
+         6483CDdL+xLhSmUGHboJ6gZmczFPxjps7oYEFPDv3ah9rbvEwNvg9zaTU3tDlTcoIq
+         yDnA8pFon9w5Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 80102C73FE7;
+        Wed,  7 Sep 2022 15:10:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220906121346.71578-1-shaozhengchao@huawei.com>
-In-Reply-To: <20220906121346.71578-1-shaozhengchao@huawei.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Date:   Wed, 7 Sep 2022 11:03:37 -0400
-Message-ID: <CAM0EoMn6NfFwZsDbpP1oq4irjF3d8Gm1t_nzxnWaOb3qXRkDLQ@mail.gmail.com>
-Subject: Re: [PATCH net-next,v2 00/22] refactor the walk and lookup hook
- functions in tc_action_ops
-To:     Zhengchao Shao <shaozhengchao@huawei.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, martin.lau@linux.dev, daniel@iogearbox.net,
-        john.fastabend@gmail.com, ast@kernel.org, andrii@kernel.org,
-        song@kernel.org, yhs@fb.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, weiyongjun1@huawei.com,
-        yuehaibing@huawei.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net v5] net/smc: Fix possible access to freed memory in link
+ clear
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166256341452.32760.12403709624294959610.git-patchwork-notify@kernel.org>
+Date:   Wed, 07 Sep 2022 15:10:14 +0000
+References: <20220906130139.830513-1-liuyacan@corp.netease.com>
+In-Reply-To: <20220906130139.830513-1-liuyacan@corp.netease.com>
+To:     None <liuyacan@corp.netease.com>
+Cc:     wenjia@linux.ibm.com, davem@davemloft.net, edumazet@google.com,
+        kgraul@linux.ibm.com, kuba@kernel.org, tonylu@linux.alibaba.com,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        ubraun@linux.vnet.ibm.com, wintera@linux.ibm.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 6, 2022 at 8:11 AM Zhengchao Shao <shaozhengchao@huawei.com> wrote:
->
-> The implementation logic of the walk/lookup hook function in each action
-> module is the same. Therefore, the two functions can be reconstructed.
-> When registering tc_action_ops of each action module, the corresponding
-> net_id is saved to tc_action_ops. In this way, the net_id of the
-> corresponding module can be directly obtained in act_api without executing
-> the specific walk and lookup hook functions. Then, generic functions can
-> be added to replace the walk and lookup hook functions of each action
-> module. Last, modify each action module in alphabetical order.
->
-> Reserve the walk and lookup interfaces and delete them when they are no
-> longer used.
->
-> This patchset has been tested by using TDC, and I will add selftest in
-> other patchset.
->
+Hello:
 
-Thank you for running the tdc tests! Please for any future changes to tc try
-to do the same. And you are going to be a hero if you add more tests!
-This is a  better patchset and overall a nice cleanup. For the series:
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+On Tue,  6 Sep 2022 21:01:39 +0800 you wrote:
+> From: Yacan Liu <liuyacan@corp.netease.com>
+> 
+> After modifying the QP to the Error state, all RX WR would be completed
+> with WC in IB_WC_WR_FLUSH_ERR status. Current implementation does not
+> wait for it is done, but destroy the QP and free the link group directly.
+> So there is a risk that accessing the freed memory in tasklet context.
+> 
+> [...]
 
-cheers,
-jamal
+Here is the summary with links:
+  - [net,v5] net/smc: Fix possible access to freed memory in link clear
+    https://git.kernel.org/netdev/net/c/e9b1a4f867ae
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
