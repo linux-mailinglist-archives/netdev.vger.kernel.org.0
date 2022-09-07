@@ -2,121 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D7385AFCB9
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 08:44:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44D225AFCDF
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 08:52:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229967AbiIGGoK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 02:44:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37804 "EHLO
+        id S229873AbiIGGwX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 02:52:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229902AbiIGGoI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 02:44:08 -0400
-Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D31B4395;
-        Tue,  6 Sep 2022 23:44:07 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id 616BA5C0111;
-        Wed,  7 Sep 2022 02:44:05 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Wed, 07 Sep 2022 02:44:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; t=1662533045; x=1662619445; bh=uxiqkYILFEE10SEls//zfdxclfvI
-        YtJHN4wQcFOIvkg=; b=Uxb4gwtROIdhEyw7mFwSLtR5WDWlTWdH87vIJXNkjoR6
-        DNeSkJ2GHkwqRH9I/tfQvc5eUKcCRoz/O3glVtC5WBg4rBB8XlXCDlAkW041TJWE
-        SfvjS30mYnyJHQvT1eb7wH2XdFRbOiJ2KyllVZ02dFHz3kbKJk61v8afrRECdB3X
-        hZSH4p304O12shHlvyVmqFTblSiXttpkbyz/thDFlJ71z5+5/BItWk8w5Na0FKBL
-        FHlIiiATN6MFsoYjsjHHPIkEPTz4eOOuFVaJJWQ/SSvRnxXBSZoVt+PE6Rw5gMe3
-        fYSBy+gPHR6ordnGP9nv1EKMRsJODpixR7WH9qBlrA==
-X-ME-Sender: <xms:tD0YY5ZtClD4VEzqLuDM4MlZ3sX88YW8VT22RUHKOvg6BInRBuddPQ>
-    <xme:tD0YYwaJI9VdokU2gZdWQNn-YG6vXbgEQpwrYF01Vp6ueGCucYG0QLjbQKfl7L47a
-    ucHVVzO-OODIgM>
-X-ME-Received: <xmr:tD0YY78TJSpLB2aNVE7qIBwyQi80KAkhDdiJ_EobdAq_w0MuSOTVzS8yAnyew5dCORWaqj9FYUqM04-nJnfANb6tpom94Q>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdelledguddufecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkugho
-    ucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrg
-    htthgvrhhnpeefheffgeegffeuffehiedthfektdefleffffejgeettdffgeeijeejueet
-    jeetveenucffohhmrghinhepohhffhhlohgrugdrphihnecuvehluhhsthgvrhfuihiivg
-    eptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhr
-    gh
-X-ME-Proxy: <xmx:tD0YY3puflwJsg40JZj-QAg6b7bB874oYekJBVIy93Cq1Ppsp7lRAA>
-    <xmx:tD0YY0pq0tlB7goeK1uQdPQzGE_4h43v5kAXUHvEzvfOWxxx4Jv3lg>
-    <xmx:tD0YY9RZNHPLRMuvPsXMxeCYY1ibrBUmGHEgiHYI1KGIUmml7Mn-aw>
-    <xmx:tT0YY6gP5K1_23jqnL-vxdaCqNgP8gZNs-M9zrl_-3Vg78M904tT9A>
-Feedback-ID: i494840e7:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 7 Sep 2022 02:44:04 -0400 (EDT)
-Date:   Wed, 7 Sep 2022 09:43:59 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Jie2x Zhou <jie2x.zhou@intel.com>
-Cc:     andrii@kernel.org, mykolal@fb.com, ast@kernel.org,
-        daniel@iogearbox.net, martin.lau@linux.dev, davem@davemloft.net,
-        kuba@kernel.org, hawk@kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Philip Li <philip.li@intel.com>,
-        petrm@nvidia.com
-Subject: Re: test ./tools/testing/selftests/bpf/test_offload.py failed
-Message-ID: <Yxg9r37w1Wg3mvxy@shredder>
-References: <20220907051657.55597-1-jie2x.zhou@intel.com>
+        with ESMTP id S229813AbiIGGwW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 02:52:22 -0400
+Received: from mail-m974.mail.163.com (mail-m974.mail.163.com [123.126.97.4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5C4401CFCB;
+        Tue,  6 Sep 2022 23:52:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=X3lrt
+        93nIs2ExWkz5BJeKbh2vPXhTHhjwRs/Ic1JO0k=; b=SKbogZSKr8kZld7SmnyOV
+        oKJzDXprGRh2c+RW5yQc8iQvfU7kSsKVwlU1ItF7qa2peuQku3BHkMDA/HH13ixB
+        3fkr03lB3Mf5yXgXo2QPwxsGP8u0hrzOnYXhll/c7YiURIEwkhg5vzdRZ5TslLnv
+        mIJCM+Bnv663esXF7kOH84=
+Received: from localhost.localdomain (unknown [36.112.3.164])
+        by smtp4 (Coremail) with SMTP id HNxpCgCnxs54PxhjRjvoaw--.21843S4;
+        Wed, 07 Sep 2022 14:51:45 +0800 (CST)
+From:   Jianglei Nie <niejianglei2021@163.com>
+To:     aelior@marvell.com, skalluru@marvell.com, manishc@marvell.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jianglei Nie <niejianglei2021@163.com>
+Subject: [PATCH] bnx2x: fix potential memory leak in bnx2x_tpa_stop()
+Date:   Wed,  7 Sep 2022 14:51:28 +0800
+Message-Id: <20220907065128.55190-1-niejianglei2021@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220907051657.55597-1-jie2x.zhou@intel.com>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: HNxpCgCnxs54PxhjRjvoaw--.21843S4
+X-Coremail-Antispam: 1Uf129KBjvdXoWrKF13CF1rWw17Gry3WF1rZwb_yoWkXrbEgw
+        n8Zw17Jr4DG392k3yjkr4aq34ayFyqqrn3uFyagrZagryDGr1UG3Wv9Fn3Xw17Wr4UJFnx
+        Gryaqa4YvwnxKjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRM8nYUUUUUU==
+X-Originating-IP: [36.112.3.164]
+X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/xtbB0QF1jFzICmnm4QAAsZ
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 07, 2022 at 01:16:57PM +0800, Jie2x Zhou wrote:
-> I found that "disable_ifindex" file do not set read function, so return -EINVAL when do read.
-> Is it a bug in test_offload.py?
+bnx2x_tpa_stop() allocates a memory chunk from new_data with
+bnx2x_frag_alloc(). The new_data should be freed when gets some error.
+But when "pad + len > fp->rx_buf_size" is true, bnx2x_tpa_stop() returns
+without releasing the new_data, which will lead to a memory leak.
 
-Most likely a bug in netdevsim itself as it sets the mode of this file
-as "rw" instead of "w". The test actually knows to skip such files:
+We should free the new_data with bnx2x_frag_free() when "pad + len >
+fp->rx_buf_size" is true.
 
-            p = os.path.join(path, f)
-            if not os.stat(p).st_mode & stat.S_IRUSR:
-                continue
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+---
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Can you test the following patch?
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
+index 712b5595bc39..24bfc65e28e1 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
+@@ -789,6 +789,7 @@ static void bnx2x_tpa_stop(struct bnx2x *bp, struct bnx2x_fastpath *fp,
+ 			BNX2X_ERR("skb_put is about to fail...  pad %d  len %d  rx_buf_size %d\n",
+ 				  pad, len, fp->rx_buf_size);
+ 			bnx2x_panic();
++			bnx2x_frag_free(fp, new_data);
+ 			return;
+ 		}
+ #endif
+-- 
+2.25.1
 
-diff --git a/drivers/net/netdevsim/hwstats.c b/drivers/net/netdevsim/hwstats.c
-index 605a38e16db0..0e58aa7f0374 100644
---- a/drivers/net/netdevsim/hwstats.c
-+++ b/drivers/net/netdevsim/hwstats.c
-@@ -433,11 +433,11 @@ int nsim_dev_hwstats_init(struct nsim_dev *nsim_dev)
-                goto err_remove_hwstats_recursive;
-        }
- 
--       debugfs_create_file("enable_ifindex", 0600, hwstats->l3_ddir, hwstats,
-+       debugfs_create_file("enable_ifindex", 0200, hwstats->l3_ddir, hwstats,
-                            &nsim_dev_hwstats_l3_enable_fops.fops);
--       debugfs_create_file("disable_ifindex", 0600, hwstats->l3_ddir, hwstats,
-+       debugfs_create_file("disable_ifindex", 0200, hwstats->l3_ddir, hwstats,
-                            &nsim_dev_hwstats_l3_disable_fops.fops);
--       debugfs_create_file("fail_next_enable", 0600, hwstats->l3_ddir, hwstats,
-+       debugfs_create_file("fail_next_enable", 0200, hwstats->l3_ddir, hwstats,
-                            &nsim_dev_hwstats_l3_fail_fops.fops);
- 
-        INIT_DELAYED_WORK(&hwstats->traffic_dw,
-
-> 
-> test output:
->  selftests: bpf: test_offload.py
->  Test destruction of generic XDP...
-> ......
->      raise Exception("Command failed: %s\n%s" % (proc.args, stderr))
->  Exception: Command failed: cat /sys/kernel/debug/netdevsim/netdevsim0//ports/0/dev/hwstats/l3/disable_ifindex
->  
->  cat: /sys/kernel/debug/netdevsim/netdevsim0//ports/0/dev/hwstats/l3/disable_ifindex: Invalid argument
->  not ok 20 selftests: bpf: test_offload.py # exit=1
