@@ -2,102 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ED2425B08E6
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 17:43:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F8635B08EE
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 17:45:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229768AbiIGPng (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 11:43:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41748 "EHLO
+        id S229561AbiIGPpL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 11:45:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbiIGPne (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 11:43:34 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFFBD9E2D5;
-        Wed,  7 Sep 2022 08:43:33 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id t11-20020a17090a510b00b001fac77e9d1fso18700114pjh.5;
-        Wed, 07 Sep 2022 08:43:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc:subject:date;
-        bh=P2y+BRPoGQxcqMhj3bfHoCPdDwxzhdrBdUaNfcmh0tE=;
-        b=f5sV92bQm4uCzJmJSVchg7K5WurYb/bA7u1+zpo2OohtxddaHLFxpVSinPu25hGluS
-         VkVOWz86PqadpIhvGnfZmfe930SnCERVZ2J3AOA0m1LyyfcQEry8dCLvK5fhH9KSEV18
-         /rRmvEwReN/H0EpByLp1q/20tf9gmD9mgGGF6nSZdvU47MkCXJlk8293pdZBJKCefA5y
-         YYWhiBYlY8h7ehdLbUBnhi1pc7HuYKW1myQIGQxATR/Q0Szx3n2srUQgWD96HzkCvz1Y
-         LymO1eHKTcsuqUITTxAhGw24ZQ/KfJpsIFl0lx9Je8dNu3aJcnroCfGUMot1FAOcAwyP
-         nK9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=P2y+BRPoGQxcqMhj3bfHoCPdDwxzhdrBdUaNfcmh0tE=;
-        b=4mssJghjS2lBgrK/cb7MK2dKLu6I+l4cmYUEmEKHw34UpLbX+Yv0YrY35nLtGFNZ7I
-         ZYGHlPLRJVVbjB04Ws6dx1SZx7sSTO3nL6aG6tbU1KcUAO5YBGa3XfBfQurBSkjp4dW6
-         3kapyAAeIomF3nSSvYZsPEaaNRUzVw2aJ6fkTGF1c+5EanaBMvOR9pGUnBKKhIzx1fAU
-         RBEMV4NWOCWu6/kcOD3VP4tv69bVeRKgRB8DYBDbMDEYgzwHXG8qpcA4K5s6yQ72KrT4
-         g0xkykEixQBJ85cFEzcdATJ59GhKw/uwj3duvFHGwbsBCsUW0Eq7VFILTtAworI7oAAd
-         nTEw==
-X-Gm-Message-State: ACgBeo0Kn1uwdCyGZDqlMuCEHefyElC0HufRadq+vbhczpW9pLSSq/IZ
-        trmx4s2i316Xq5WAUG9G8nA=
-X-Google-Smtp-Source: AA6agR4wkKXd44PtzA2Fo4ApkSYqzqk7KHyAZDGJtqQROW6vcymT6U6Dzu0AdoOFp0/dTQoHV98OKQ==
-X-Received: by 2002:a17:903:22cd:b0:176:ca53:3e82 with SMTP id y13-20020a17090322cd00b00176ca533e82mr4672673plg.59.1662565413004;
-        Wed, 07 Sep 2022 08:43:33 -0700 (PDT)
-Received: from localhost (2603-800c-1a02-1bae-a7fa-157f-969a-4cde.res6.spectrum.com. [2603:800c:1a02:1bae:a7fa:157f:969a:4cde])
-        by smtp.gmail.com with ESMTPSA id e6-20020a170902784600b00172bf229dfdsm12515263pln.97.2022.09.07.08.43.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Sep 2022 08:43:32 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Wed, 7 Sep 2022 05:43:31 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Yafang Shao <laoar.shao@gmail.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, hannes@cmpxchg.org,
-        mhocko@kernel.org, roman.gushchin@linux.dev, shakeelb@google.com,
-        songmuchun@bytedance.com, akpm@linux-foundation.org,
-        lizefan.x@bytedance.com, cgroups@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH bpf-next v3 00/13] bpf: Introduce selectable memcg for
- bpf map
-Message-ID: <Yxi8I4fXXSCi6z9T@slm.duckdns.org>
-References: <20220902023003.47124-1-laoar.shao@gmail.com>
+        with ESMTP id S229484AbiIGPpI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 11:45:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CBD34D818
+        for <netdev@vger.kernel.org>; Wed,  7 Sep 2022 08:45:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662565506;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=MAyR8PJJXyDlzwKroYevTctRX3Y6leqOfqXTHF2prlQ=;
+        b=FEu1WXF9NTGkdNEnelu9sGT3jEmpbfi6pCXShQiSK+Io+p+I697iDiQzdkIFEodqcOwACb
+        N6yzpbP73Wc7LmMKyrZc1r39TEQwyA0LVBOknluKzHgVo4ilkLAeWcX3gAYH7z3GKV5R8W
+        udIXTNsq5wGNThtoUtlBbqqQm6Nun9Y=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-518-SeeSGD2ZMt64KaP2unZSug-1; Wed, 07 Sep 2022 11:45:02 -0400
+X-MC-Unique: SeeSGD2ZMt64KaP2unZSug-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 47C341C05EAA;
+        Wed,  7 Sep 2022 15:45:02 +0000 (UTC)
+Received: from firesoul.localdomain (unknown [10.40.208.22])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C83F04010D2A;
+        Wed,  7 Sep 2022 15:45:01 +0000 (UTC)
+Received: from [192.168.42.3] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 9E33A30721A6C;
+        Wed,  7 Sep 2022 17:45:00 +0200 (CEST)
+Subject: [PATCH RFCv2 bpf-next 00/18] XDP-hints: XDP gaining access to HW
+ offload hints via BTF
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     bpf@vger.kernel.org
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
+        xdp-hints@xdp-project.net, larysa.zaremba@intel.com,
+        memxor@gmail.com, Lorenzo Bianconi <lorenzo@kernel.org>,
+        mtahhan@redhat.com,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        dave@dtucker.co.uk, Magnus Karlsson <magnus.karlsson@intel.com>,
+        bjorn@kernel.org
+Date:   Wed, 07 Sep 2022 17:45:00 +0200
+Message-ID: <166256538687.1434226.15760041133601409770.stgit@firesoul>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220902023003.47124-1-laoar.shao@gmail.com>
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+This patchset expose the traditional hardware offload hints to XDP and
+rely on BTF to expose the layout to users.
 
-On Fri, Sep 02, 2022 at 02:29:50AM +0000, Yafang Shao wrote:
-...
-> This patchset tries to resolve the above two issues by introducing a
-> selectable memcg to limit the bpf memory. Currently we only allow to
-> select its ancestor to avoid breaking the memcg hierarchy further. 
-> Possible use cases of the selectable memcg as follows,
+Main idea is that the kernel and NIC drivers simply defines the struct
+layouts they choose to use for XDP-hints. These XDP-hints structs gets
+naturally and automatically described via BTF and implicitly exported to
+users. NIC drivers populate and records their own BTF ID as the last
+member in XDP metadata area (making it easily accessible by AF_XDP
+userspace at a known negative offset from packet data start).
 
-As discussed in the following thread, there are clear downsides to an
-interface which requires the users to specify the cgroups directly.
+Naming conventions for the structs (xdp_hints_*) is used such that
+userspace can find and decode the BTF layout and match against the
+provided BTF IDs. Thus, no new UAPI interfaces are needed for exporting
+what XDP-hints a driver supports.
 
- https://lkml.kernel.org/r/YwNold0GMOappUxc@slm.duckdns.org
+The patch "i40e: Add xdp_hints_union" introduce the idea of creating a
+union named "xdp_hints_union" in every driver, which contains all
+xdp_hints_* struct this driver can support. This makes it easier/quicker
+to find and parse the relevant BTF types.  (Seeking input before fixing
+up all drivers in patchset).
 
-So, I don't really think this is an interface we wanna go for. I was hoping
-to hear more from memcg folks in the above thread. Maybe ping them in that
-thread and continue there?
 
-Thanks.
+The main different from RFC-v1:
+ - Drop idea of BTF "origin" (vmlinux, module or local)
+ - Instead to use full 64-bit BTF ID that combine object+type ID
 
--- 
-tejun
+I've taken some of Alexandr/Larysa's libbpf patches and integrated
+those.
+
+Patchset exceeds netdev usually max 15 patches rule. My excuse is three
+NIC drivers (i40e, ixgbe and mvneta) gets XDP-hints support and which
+required some refactoring to remove the SKB dependencies.
+
+
+---
+
+Jesper Dangaard Brouer (10):
+      net: create xdp_hints_common and set functions
+      net: add net_device feature flag for XDP-hints
+      xdp: controlling XDP-hints from BPF-prog via helper
+      i40e: Refactor i40e_ptp_rx_hwtstamp
+      i40e: refactor i40e_rx_checksum with helper
+      bpf: export btf functions for modules
+      btf: Add helper for kernel modules to lookup full BTF ID
+      i40e: add XDP-hints handling
+      net: use XDP-hints in xdp_frame to SKB conversion
+      i40e: Add xdp_hints_union
+
+Larysa Zaremba (3):
+      libbpf: factor out BTF loading from load_module_btfs()
+      libbpf: try to load vmlinux BTF from the kernel first
+      libbpf: patch module BTF obj+type ID into BPF insns
+
+Lorenzo Bianconi (1):
+      mvneta: add XDP-hints support
+
+Maryam Tahhan (4):
+      ixgbe: enable xdp-hints
+      ixgbe: add rx timestamp xdp hints support
+      xsk: AF_XDP xdp-hints support in desc options
+      ixgbe: AF_XDP xdp-hints processing in ixgbe_clean_rx_irq_zc
+
+
+ drivers/net/ethernet/intel/i40e/i40e.h        |   1 +
+ drivers/net/ethernet/intel/i40e/i40e_main.c   |  22 ++
+ drivers/net/ethernet/intel/i40e/i40e_ptp.c    |  36 ++-
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c   | 252 ++++++++++++++---
+ drivers/net/ethernet/intel/ixgbe/ixgbe.h      |   5 +
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 217 +++++++++++++--
+ drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c  |  82 ++++--
+ drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c  |   2 +
+ drivers/net/ethernet/marvell/mvneta.c         |  59 +++-
+ include/linux/btf.h                           |   3 +
+ include/linux/netdev_features.h               |   3 +-
+ include/net/xdp.h                             | 256 +++++++++++++++++-
+ include/uapi/linux/bpf.h                      |  35 +++
+ include/uapi/linux/if_xdp.h                   |   2 +-
+ kernel/bpf/btf.c                              |  36 ++-
+ net/core/filter.c                             |  52 ++++
+ net/core/xdp.c                                |  22 +-
+ net/ethtool/common.c                          |   1 +
+ net/xdp/xsk.c                                 |   2 +-
+ net/xdp/xsk_queue.h                           |   3 +-
+ tools/lib/bpf/bpf_core_read.h                 |   3 +-
+ tools/lib/bpf/btf.c                           | 142 +++++++++-
+ tools/lib/bpf/libbpf.c                        |  52 +---
+ tools/lib/bpf/libbpf_internal.h               |   7 +-
+ tools/lib/bpf/relo_core.c                     |   8 +-
+ tools/lib/bpf/relo_core.h                     |   1 +
+ 26 files changed, 1127 insertions(+), 177 deletions(-)
+
+--
+
