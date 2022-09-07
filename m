@@ -2,125 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 582F95B015F
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 12:11:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9AAE5B0151
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 12:10:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229837AbiIGKLO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 06:11:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59946 "EHLO
+        id S229682AbiIGKKD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 06:10:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229962AbiIGKLI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 06:11:08 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C094C9D648;
-        Wed,  7 Sep 2022 03:11:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=JzTlhZoQdTgX29JObm/3zifLoY6nLpvd+jv0OT7bzL4=; b=1Sj6h/MjqhU9ZV5YQpYpYz1rRL
-        gghVXCoasUgdI4s9yI2MYjF6HqYu7ALRxdNG9f2BoG8CdX/VVJoViChosaF4WGuh34Gnbg+zD/4qw
-        rWA0tbkSaW8VKmDq/zfEfnRybv18Fl6hcz3KUtqc6Xu5d0REY+YsJiY2Rby6IENOUsuecIPvtRy4e
-        akpwkAnqG5qAdFot3Z5KJwOfB47ypDqEcjPfXNQJDffei3C3J7KaoKvLD24ER8L56gDX/LPuVzTDE
-        q3QhgUesgddcWWBPfyer/AuTyruMZNLDhldJ/mU5IOutTyXxyes1SwTb4fsxtDkk+TFSpToAABjc+
-        uVmJUq7g==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34172)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oVs1M-0005Ei-5y; Wed, 07 Sep 2022 11:11:00 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oVs1K-0000ti-7K; Wed, 07 Sep 2022 11:10:58 +0100
-Date:   Wed, 7 Sep 2022 11:10:58 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH net-next v5 5/8] net: phylink: Adjust link settings based
- on rate adaptation
-Message-ID: <YxhuMjZsBb7wCBFy@shell.armlinux.org.uk>
-References: <20220906161852.1538270-1-sean.anderson@seco.com>
- <20220906161852.1538270-6-sean.anderson@seco.com>
+        with ESMTP id S229650AbiIGKJ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 06:09:59 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CBC33D594;
+        Wed,  7 Sep 2022 03:09:55 -0700 (PDT)
+Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MMyZN4WMLz1P83t;
+        Wed,  7 Sep 2022 18:06:04 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by kwepemi500015.china.huawei.com
+ (7.221.188.92) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 7 Sep
+ 2022 18:09:52 +0800
+From:   Lu Wei <luwei32@huawei.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <vulab@iscas.ac.cn>, <maheshb@google.com>,
+        <netdev@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>
+Subject: [PATCH net] ipvlan: Fix out-of-bound bugs caused by unset skb->mac_header
+Date:   Wed, 7 Sep 2022 18:12:04 +0800
+Message-ID: <20220907101204.255213-1-luwei32@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220906161852.1538270-6-sean.anderson@seco.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemi500015.china.huawei.com (7.221.188.92)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 06, 2022 at 12:18:49PM -0400, Sean Anderson wrote:
-> @@ -1015,19 +1086,45 @@ static void phylink_link_up(struct phylink *pl,
->  			    struct phylink_link_state link_state)
->  {
->  	struct net_device *ndev = pl->netdev;
-> +	int speed, duplex;
-> +	bool rx_pause;
-> +
-> +	speed = link_state.speed;
-> +	duplex = link_state.duplex;
-> +	rx_pause = !!(link_state.pause & MLO_PAUSE_RX);
-> +
-> +	switch (link_state.rate_adaptation) {
-> +	case RATE_ADAPT_PAUSE:
-> +		/* The PHY is doing rate adaption from the media rate (in
-> +		 * the link_state) to the interface speed, and will send
-> +		 * pause frames to the MAC to limit its transmission speed.
-> +		 */
-> +		speed = phylink_interface_max_speed(link_state.interface);
-> +		duplex = DUPLEX_FULL;
-> +		rx_pause = true;
-> +		break;
-> +
-> +	case RATE_ADAPT_CRS:
-> +		/* The PHY is doing rate adaption from the media rate (in
-> +		 * the link_state) to the interface speed, and will cause
-> +		 * collisions to the MAC to limit its transmission speed.
-> +		 */
-> +		speed = phylink_interface_max_speed(link_state.interface);
-> +		duplex = DUPLEX_HALF;
-> +		break;
-> +	}
->  
->  	pl->cur_interface = link_state.interface;
-> +	if (link_state.rate_adaptation == RATE_ADAPT_PAUSE)
-> +		link_state.pause |= MLO_PAUSE_RX;
+If an AF_PACKET socket is used to send packets through ipvlan and the
+default xmit function of the AF_PACKET socket is changed from
+dev_queue_xmit() to packet_direct_xmit() via setsockopt() with the option
+name of PACKET_QDISC_BYPASS, the skb->mac_header may not be reset and
+remains as the initial value of 65535, this may trigger slab-out-of-bounds
+bugs as following:
 
-I specifically omitted this from my patch because I don't think we
-should tell the user that "Link is Up - ... - flow control rx" if
-we have rate adaption, but the media link is not using flow control.
+=================================================================
+UG: KASAN: slab-out-of-bounds in ipvlan_xmit_mode_l2+0xdb/0x330 [ipvlan]
+PU: 2 PID: 1768 Comm: raw_send Kdump: loaded Not tainted 6.0.0-rc4+ #6
+ardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-1.fc33
+all Trace:
+print_address_description.constprop.0+0x1d/0x160
+print_report.cold+0x4f/0x112
+kasan_report+0xa3/0x130
+ipvlan_xmit_mode_l2+0xdb/0x330 [ipvlan]
+ipvlan_start_xmit+0x29/0xa0 [ipvlan]
+__dev_direct_xmit+0x2e2/0x380
+packet_direct_xmit+0x22/0x60
+packet_snd+0x7c9/0xc40
+sock_sendmsg+0x9a/0xa0
+__sys_sendto+0x18a/0x230
+__x64_sys_sendto+0x74/0x90
+do_syscall_64+0x3b/0x90
+entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-The "Link is Up" message tells the user what was negotiated on the
-media, not what is going on inside their network device, so the
-fact we're using rate adaption which has turned on RX pause on the
-MAC is neither here nor there.
+The root cause is:
+  1. packet_snd() only reset skb->mac_header when sock->type is SOCK_RAW
+     and skb->protocol is not specified as in packet_parse_headers()
 
->  
->  	if (pl->pcs && pl->pcs->ops->pcs_link_up)
->  		pl->pcs->ops->pcs_link_up(pl->pcs, pl->cur_link_an_mode,
-> -					 pl->cur_interface,
-> -					 link_state.speed, link_state.duplex);
-> +					  pl->cur_interface, speed, duplex);
+  2. packet_direct_xmit() doesn't reset skb->mac_header as dev_queue_xmit()
 
-It seems you have one extra unnecessary space here - not sure how
-that occurred as it isn't in my original patch.
+In this case, skb->mac_header is 65535 when ipvlan_xmit_mode_l2() is
+called. So when ipvlan_xmit_mode_l2() gets mac header with eth_hdr() which
+use "skb->head + skb->mac_header", out-of-bound access occurs.
 
+This patch replaces eth_hdr() with skb_eth_hdr() in ipvlan_xmit_mode_l2()
+and reset mac header in multicast to solve this out-of-bound bug.
+
+Fixes: 2ad7bf363841 ("ipvlan: Initial check-in of the IPVLAN driver.")
+Signed-off-by: Lu Wei <luwei32@huawei.com>
+---
+ drivers/net/ipvlan/ipvlan_core.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ipvlan/ipvlan_core.c b/drivers/net/ipvlan/ipvlan_core.c
+index dfeb5b392e64..bb1c298c1e78 100644
+--- a/drivers/net/ipvlan/ipvlan_core.c
++++ b/drivers/net/ipvlan/ipvlan_core.c
+@@ -495,7 +495,6 @@ static int ipvlan_process_v6_outbound(struct sk_buff *skb)
+ 
+ static int ipvlan_process_outbound(struct sk_buff *skb)
+ {
+-	struct ethhdr *ethh = eth_hdr(skb);
+ 	int ret = NET_XMIT_DROP;
+ 
+ 	/* The ipvlan is a pseudo-L2 device, so the packets that we receive
+@@ -505,6 +504,8 @@ static int ipvlan_process_outbound(struct sk_buff *skb)
+ 	if (skb_mac_header_was_set(skb)) {
+ 		/* In this mode we dont care about
+ 		 * multicast and broadcast traffic */
++		struct ethhdr *ethh = eth_hdr(skb);
++
+ 		if (is_multicast_ether_addr(ethh->h_dest)) {
+ 			pr_debug_ratelimited(
+ 				"Dropped {multi|broad}cast of type=[%x]\n",
+@@ -589,7 +590,7 @@ static int ipvlan_xmit_mode_l3(struct sk_buff *skb, struct net_device *dev)
+ static int ipvlan_xmit_mode_l2(struct sk_buff *skb, struct net_device *dev)
+ {
+ 	const struct ipvl_dev *ipvlan = netdev_priv(dev);
+-	struct ethhdr *eth = eth_hdr(skb);
++	struct ethhdr *eth = skb_eth_hdr(skb);
+ 	struct ipvl_addr *addr;
+ 	void *lyr3h;
+ 	int addr_type;
+@@ -619,6 +620,7 @@ static int ipvlan_xmit_mode_l2(struct sk_buff *skb, struct net_device *dev)
+ 		return dev_forward_skb(ipvlan->phy_dev, skb);
+ 
+ 	} else if (is_multicast_ether_addr(eth->h_dest)) {
++		skb_reset_mac_header(skb);
+ 		ipvlan_skb_crossing_ns(skb, NULL);
+ 		ipvlan_multicast_enqueue(ipvlan->port, skb, true);
+ 		return NET_XMIT_SUCCESS;
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.31.1
+
