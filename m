@@ -2,73 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B0D35AFEAB
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 10:13:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCEAA5AFEB8
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 10:14:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230029AbiIGINu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 04:13:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45404 "EHLO
+        id S229640AbiIGIOp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 04:14:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230387AbiIGINs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 04:13:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0CF5AA350
-        for <netdev@vger.kernel.org>; Wed,  7 Sep 2022 01:13:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662538425;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=jGCBXs/LiZV7m+4iWwK0A0ed0uGkgznMIVJgxIo+Gcw=;
-        b=C6OpBLJGh6qKlE4hFiayxc3IryfQijyMtbcB0BO7QI5IyXvvpsBFXe8oD2+CWn3BoKyqHW
-        Ao4JTTRbnYXHtxUJHxF1I8Rq3ejnGb0LbgWViq3WqAGaxN9DCirmEGGryJvd3CN4samBAD
-        7vCQ9RIxWHisCDfY+bna8BGlSJZ7EGQ=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-468-F7eglEinNqSy7dJKIhalRA-1; Wed, 07 Sep 2022 04:13:44 -0400
-X-MC-Unique: F7eglEinNqSy7dJKIhalRA-1
-Received: by mail-qt1-f197.google.com with SMTP id cj19-20020a05622a259300b003446920ea91so11196473qtb.10
-        for <netdev@vger.kernel.org>; Wed, 07 Sep 2022 01:13:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=jGCBXs/LiZV7m+4iWwK0A0ed0uGkgznMIVJgxIo+Gcw=;
-        b=0R6Z9JcUiI/56q3m6hG4sACptN5uhoecOpCjQoZZt2fAtYTR4wJQOR2gGyo/ARmi4l
-         oZ7YTlUYx9ZP28Fq7l6S3XM9Nqu+XzGZjxcnyyf4wxKPBMvHkJDmDabVZqAharX2CSlM
-         IjcRd8HpM6MPyXlFI11fUCLKk0m39DVMjlfkaZ7DKg3oJUq4WsnYgjE5U228UoU8w3Dq
-         9ZVnokQIjEx7YkvwLsG6/CjzWF6PuszGGEfQL+do6fRcuXVD0FZLleYoesyYRn9VqKwf
-         pJPmGol8fiiBNNjc1khz3qGxbDh1UbszvtAle3UOcRSQHszyfzLc8L90U+PB0CVvy4tV
-         QTaQ==
-X-Gm-Message-State: ACgBeo3D+bD7Kdm38QiyiaGMZSYZaGRgQsj6ZsqJsWpABG6wcOQGgtZI
-        Dm22UIPPU/PoEmHFrYqidJ+a6YNkD9WQx5eZOi0WPqOWzZ+OP04GgFTxIiQ6BXGmO80KTHfTmSG
-        CpqYQ+FeJW8vyGjB1
-X-Received: by 2002:a05:622a:103:b0:343:3ce4:c383 with SMTP id u3-20020a05622a010300b003433ce4c383mr2147910qtw.388.1662538424190;
-        Wed, 07 Sep 2022 01:13:44 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4M+BpK0S3drKVwl3E/AGnsS1H35ouLbhYkpwM8Wr1TNLAJDN5peZCbYmUDdaNP/jFdyZTRnQ==
-X-Received: by 2002:a05:622a:103:b0:343:3ce4:c383 with SMTP id u3-20020a05622a010300b003433ce4c383mr2147902qtw.388.1662538423966;
-        Wed, 07 Sep 2022 01:13:43 -0700 (PDT)
-Received: from sgarzare-redhat (host-87-11-6-69.retail.telecomitalia.it. [87.11.6.69])
-        by smtp.gmail.com with ESMTPSA id f20-20020ac84994000000b0031eebfcb369sm11206617qtq.97.2022.09.07.01.13.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Sep 2022 01:13:23 -0700 (PDT)
-Date:   Wed, 7 Sep 2022 10:12:56 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Jilin Yuan <yuanjilin@cdjrlc.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] vsock/vmci: fix repeated words in comments
-Message-ID: <20220907081256.wlua35p72s6azgqr@sgarzare-redhat>
-References: <20220907040131.52975-1-yuanjilin@cdjrlc.com>
+        with ESMTP id S229946AbiIGIOm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 04:14:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B486626CE;
+        Wed,  7 Sep 2022 01:14:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 98D07B81B62;
+        Wed,  7 Sep 2022 08:14:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B66FFC43470;
+        Wed,  7 Sep 2022 08:14:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662538476;
+        bh=nCjrwhu4Hv0/rkKfoQw5UBPI3nCcw75wcbv6WTgbygo=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=L8risvptovTerFqCZSvFpVhLBSrmTkOVbSDtxBOfe4pG3kVUUrFwGzGV6F5TbEg24
+         PFa+a8o645k0IN54/8Lb3o60UQ2dvJh8jyBf4tk3rVLWCfZNsGqNhv1z01LK6FSJFK
+         TKDdOcEfbTQHd116b8shu1lBjEul/xzrsPOxV6ioSYo09aFgSdN4ow/pWtfcPFkwDN
+         e+ods9s8dg0JgWfhL8pBFNepXb/KiQlDTujBRfdN7i3cDw91PgNyz6geJn+nrCKeEm
+         zFvjY9JtdKprfYY8mVzQ5MriSZRRvpoGO7uoQdOdUTU9PCBtp7a663lZNEzcVBHK5l
+         xaQEgXdIaCt/Q==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     "Russell King \(Oracle\)" <linux@armlinux.org.uk>
+Cc:     Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        asahi@lists.linux.dev, brcm80211-dev-list.pdl@broadcom.com,
+        "David S. Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Hector Martin <marcan@marcan.st>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        =?utf-8?Q?Raf?= =?utf-8?Q?a=C5=82_Mi=C5=82ecki?= 
+        <zajec5@gmail.com>, Rob Herring <robh+dt@kernel.org>,
+        SHA-cyfmac-dev-list@infineon.com, Sven Peter <sven@svenpeter.dev>,
+        van Spriel <arend@broadcom.com>
+Subject: Re: [PATCH net-next 0/12] Add support for bcm4378 on Apple platforms
+References: <YxhMaYOfnM+7FG+W@shell.armlinux.org.uk>
+Date:   Wed, 07 Sep 2022 11:14:28 +0300
+In-Reply-To: <YxhMaYOfnM+7FG+W@shell.armlinux.org.uk> (Russell King's message
+        of "Wed, 7 Sep 2022 08:46:49 +0100")
+Message-ID: <874jxja9ej.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220907040131.52975-1-yuanjilin@cdjrlc.com>
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,32 +69,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 07, 2022 at 12:01:31PM +0800, Jilin Yuan wrote:
->Delete the redundant word 'that'.
->
->Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
->---
-> net/vmw_vsock/vmci_transport.c | 2 +-
-> 1 file changed, 1 insertion(+), 1 deletion(-)
+"Russell King (Oracle)" <linux@armlinux.org.uk> writes:
 
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+> This series adds support for bcm4378 found on Apple platforms, and has
+> been tested on the Apple Mac Mini. It is a re-posting of a subset of
+> Hector's previous 38 patch series, and it is believed that the comments
+> from that review were addressed.
+>
+> (I'm just the middle man; please don't complain if something has been
+> missed.)
 
->
->diff --git a/net/vmw_vsock/vmci_transport.c b/net/vmw_vsock/vmci_transport.c
->index b14f0ed7427b..842c94286d31 100644
->--- a/net/vmw_vsock/vmci_transport.c
->+++ b/net/vmw_vsock/vmci_transport.c
->@@ -951,7 +951,7 @@ static int vmci_transport_recv_listen(struct sock *sk,
-> 	 * for ourself or any previous connection requests that we received.
-> 	 * If it's the latter, we try to find a socket in our list of pending
-> 	 * connections and, if we do, call the appropriate handler for the
->-	 * state that that socket is in.  Otherwise we try to service the
->+	 * state that socket is in.  Otherwise we try to service the
-> 	 * connection request.
-> 	 */
-> 	pending = vmci_transport_get_pending(sk, pkt);
->-- 
->2.36.1
->
->
+Thanks for sending the subset, this is much more manageable. Arend,
+please take a look. It would be nice to get this to v6.1.
 
+BTW brcmfmac patches go via wireless-next, not net-next, but no need to
+resend because of this.
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
