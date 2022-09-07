@@ -2,119 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 501C25AFDAC
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 09:39:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 859EB5AFDCD
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 09:45:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229704AbiIGHi7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 03:38:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52564 "EHLO
+        id S229980AbiIGHpq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 03:45:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229540AbiIGHi6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 03:38:58 -0400
-Received: from mail-m974.mail.163.com (mail-m974.mail.163.com [123.126.97.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 62AF27B29E;
-        Wed,  7 Sep 2022 00:38:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=5F0Lv
-        wMp5Uf995lkO/Kaz7oV49tMvldju3dPm9T1C4Y=; b=e53lznAbnIsVv5a8/sJWR
-        iLV+M4ptv14xJo2wWlLLbt9f4oM0WfERvZl67bpjHKNH7oE2cS8UHjPzDUyTOQuU
-        0bzRvu6yxYjX8Z+U02/yEp9HxyNmCNwk1ssSTOKBcgTyNsRbs2xqqvAUiqAMkbWd
-        pprZXGza2JZWRTYnfc64lY=
-Received: from localhost.localdomain (unknown [36.112.3.164])
-        by smtp4 (Coremail) with SMTP id HNxpCgAn1cUiShhj2zzxaw--.48992S4;
-        Wed, 07 Sep 2022 15:37:17 +0800 (CST)
-From:   Jianglei Nie <niejianglei2021@163.com>
-To:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
-Cc:     ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jianglei Nie <niejianglei2021@163.com>
-Subject: [PATCH] ath11k: mhi: fix potential memory leak in ath11k_mhi_register()
-Date:   Wed,  7 Sep 2022 15:37:04 +0800
-Message-Id: <20220907073704.58806-1-niejianglei2021@163.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229602AbiIGHpp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 03:45:45 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB2037FFAC;
+        Wed,  7 Sep 2022 00:45:42 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4MMvSM48Bmz4wgr;
+        Wed,  7 Sep 2022 17:45:39 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1662536741;
+        bh=bhsJcQEgyb5vhXPUdvUG6IM1FjPRH71usf9pZQ22R1M=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=cYRv60Mn0VD9/sCRd9f51WWo2eCrDCXr4Bzs0uDkG19XgmBhgzXAvmFA1Snjc2s+X
+         0bpBYSJ//f6SITYk+MhxISXGg/B0muwWFUbuBJQPE8Nwei7j+JNdpgArKGL+89TXLm
+         pPm0hF6l9GRDS0MTstX6c1YOEz5kj3XKKQXQZTthbl0PmpJZDDuPRe2aQrC5DJUxZW
+         4NYauY4Apix4awRLXlM4FkAkew2C0fT1c73vdBhBmXL6f0zh2jr3vCsNLg4TWnYDLc
+         4pBx0nRaXQb2HYytzoPAGqek89313v0+w0LrRQP+Idu48OWA4YYIyd5Tqm2ipBA2Ie
+         GJkcm0Gk9A8dQ==
+Date:   Wed, 7 Sep 2022 17:45:35 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Vlastimil Babka <vbabka@suse.cz>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Marco Elver <elver@google.com>
+Subject: Re: linux-next: build failure after merge of the slab tree
+Message-ID: <20220907174535.4852e7da@canb.auug.org.au>
+In-Reply-To: <CAADnVQKJORAcV75CHE1yG6_+c8qnoOj6gf=zJG9vnWwR5+4SqQ@mail.gmail.com>
+References: <20220906165131.59f395a9@canb.auug.org.au>
+        <dab10759-c059-2254-116b-8360bc240e57@suse.cz>
+        <CAADnVQJTDdA=vpQhrbAbX7oEQ=uaPXwAmjMzpW4Nk2Xi9f2JLA@mail.gmail.com>
+        <CAADnVQKJORAcV75CHE1yG6_+c8qnoOj6gf=zJG9vnWwR5+4SqQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: HNxpCgAn1cUiShhj2zzxaw--.48992S4
-X-Coremail-Antispam: 1Uf129KBjvJXoW7uF1ruF4UKw1xJFW3uF13XFb_yoW8uFyDpF
-        4fW3y7AFyrArs3WFWrtF4kJFy3ua93Ar1DKrZrGw1fGwnavF90q345JF1rXFyakw4xGFyU
-        ZF4Ut3W3Gas0qF7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0ziCeHPUUUUU=
-X-Originating-IP: [36.112.3.164]
-X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/xtbBOQB1jF-PPLP6bAAAsJ
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="Sig_/IMql38jc4ngYXPwtr.DpjJM";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-mhi_alloc_controller() allocates a memory space for mhi_ctrl. When gets
-some error, mhi_ctrl should be freed with mhi_free_controller(). But
-when ath11k_mhi_read_addr_from_dt() fails, the function returns without
-calling mhi_free_controller(), which will lead to a memory leak.
+--Sig_/IMql38jc4ngYXPwtr.DpjJM
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-We can fix it by calling mhi_free_controller() when
-ath11k_mhi_read_addr_from_dt() fails.
+Hi all,
 
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
----
- drivers/net/wireless/ath/ath11k/mhi.c | 17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+On Tue, 6 Sep 2022 20:05:44 -0700 Alexei Starovoitov <alexei.starovoitov@gm=
+ail.com> wrote:
+>
+> On Tue, Sep 6, 2022 at 11:37 AM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Tue, Sep 6, 2022 at 12:53 AM Vlastimil Babka <vbabka@suse.cz> wrote:=
+ =20
+> > >
+> > > On 9/6/22 08:51, Stephen Rothwell wrote: =20
+> > > > Hi all, =20
+> > >
+> > > Hi,
+> > > =20
+> > > > After merging the slab tree, today's linux-next build (powerpc
+> > > > ppc64_defconfig) failed like this:
+> > > >
+> > > > kernel/bpf/memalloc.c: In function 'bpf_mem_free':
+> > > > kernel/bpf/memalloc.c:613:33: error: implicit declaration of functi=
+on '__ksize'; did you mean 'ksize'? [-Werror=3Dimplicit-function-declaratio=
+n]
+> > > >    613 |         idx =3D bpf_mem_cache_idx(__ksize(ptr - LLIST_NODE=
+_SZ));
+> > > >        |                                 ^~~~~~~
+> > > >        |                                 ksize =20
+> > >
+> > > Could you use ksize() here? I'm guessing you picked __ksize() because
+> > > kasan_unpoison_element() in mm/mempool.c did, but that's to avoid
+> > > kasan_unpoison_range() in ksize() as this caller does it differently.
+> > > AFAICS your function doesn't handle kasan differently, so ksize() sho=
+uld
+> > > be fine. =20
+> >
+> > Ok. Will change to use ksize(). =20
+>=20
+> Just pushed the following commit to address the issue:
+> https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/commit/?=
+id=3D1e660f7ebe0ff6ac65ee0000280392d878630a67
+>=20
+> It will get to net-next soon.
 
-diff --git a/drivers/net/wireless/ath/ath11k/mhi.c b/drivers/net/wireless/ath/ath11k/mhi.c
-index c44df17719f6..86995e8dc913 100644
---- a/drivers/net/wireless/ath/ath11k/mhi.c
-+++ b/drivers/net/wireless/ath/ath11k/mhi.c
-@@ -402,8 +402,7 @@ int ath11k_mhi_register(struct ath11k_pci *ab_pci)
- 	ret = ath11k_mhi_get_msi(ab_pci);
- 	if (ret) {
- 		ath11k_err(ab, "failed to get msi for mhi\n");
--		mhi_free_controller(mhi_ctrl);
--		return ret;
-+		goto free_controller;
- 	}
- 
- 	if (!test_bit(ATH11K_FLAG_MULTI_MSI_VECTORS, &ab->dev_flags))
-@@ -412,7 +411,7 @@ int ath11k_mhi_register(struct ath11k_pci *ab_pci)
- 	if (test_bit(ATH11K_FLAG_FIXED_MEM_RGN, &ab->dev_flags)) {
- 		ret = ath11k_mhi_read_addr_from_dt(mhi_ctrl);
- 		if (ret < 0)
--			return ret;
-+			goto free_controller;
- 	} else {
- 		mhi_ctrl->iova_start = 0;
- 		mhi_ctrl->iova_stop = 0xFFFFFFFF;
-@@ -440,18 +439,22 @@ int ath11k_mhi_register(struct ath11k_pci *ab_pci)
- 	default:
- 		ath11k_err(ab, "failed assign mhi_config for unknown hw rev %d\n",
- 			   ab->hw_rev);
--		mhi_free_controller(mhi_ctrl);
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto free_controller;
- 	}
- 
- 	ret = mhi_register_controller(mhi_ctrl, ath11k_mhi_config);
- 	if (ret) {
- 		ath11k_err(ab, "failed to register to mhi bus, err = %d\n", ret);
--		mhi_free_controller(mhi_ctrl);
--		return ret;
-+		goto free_controller;
- 	}
- 
- 	return 0;
-+
-+free_controller:
-+	mhi_free_controller(mhi_ctrl);
-+	ab_pci->mhi_ctrl = NULL;
-+	return ret;
- }
- 
- void ath11k_mhi_unregister(struct ath11k_pci *ab_pci)
--- 
-2.25.1
+I replaced my revert with that patch for today (and will discard that
+when it arrives via some other tree).
 
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/IMql38jc4ngYXPwtr.DpjJM
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmMYTB8ACgkQAVBC80lX
+0GyK6Qf/QTHmLJ5Q68YznFmFD9sOrzRpxcX1pruMX5LvK7xzTn3NoGEmaFSNPT1i
+2ikd8XlTRk8YIbW+k80qPoHHWJy7hfmYEEwznigEOPfgq1a/HfmUbhc4tYjRffTD
+KBwk2urFFvs59tjKt2PgH0aS2Jr7Ze/1LaY1eYnJ9mS6+wY8b6OeBarl+0qbuAop
+Ia4q0N6/Z1Nf1NrAAo+7llUdda26Ly30iJCrS9prkOfvWYy6k/B6ehgbFwDg5sV5
+1gfz3aZokZXvb5XAKVmwnQHJPq094gZ7qr59OjIkNLKQ1ZkD6pOddWzCmcuqrhQY
+mOoX0BJ/H/c5ez5x43XtgYgMwZrTYQ==
+=tqs4
+-----END PGP SIGNATURE-----
+
+--Sig_/IMql38jc4ngYXPwtr.DpjJM--
