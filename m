@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D195E5AFBE0
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 07:45:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF08B5AFBE4
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 07:45:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229781AbiIGFpJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 01:45:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48960 "EHLO
+        id S229808AbiIGFpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 01:45:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229774AbiIGFpF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 01:45:05 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0DE131378;
-        Tue,  6 Sep 2022 22:45:02 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id l65so13542774pfl.8;
-        Tue, 06 Sep 2022 22:45:02 -0700 (PDT)
+        with ESMTP id S229774AbiIGFpN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 01:45:13 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76AAC371BB;
+        Tue,  6 Sep 2022 22:45:05 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id z187so13528318pfb.12;
+        Tue, 06 Sep 2022 22:45:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=vc+9lhZdvHGipmJiQR19DK5It5RgAjYlDgcsNDiBYQ0=;
-        b=EM8MHwat55nL4Wjn4+ya6MxNTraM9ElIKbCMnpkCgyrNM7kPFcj2J4e2SlrDK5a/U2
-         1AmHYLeIRJP/eopqpa6mzwjvFjOfyVd9l4zP5lPBh69ZCn6YF5zUTclM8HqcAOedibJ7
-         TkLDCP1+ZzTxIH4gGugzDDozIcU5CJnqmFhfMWdIR1Wgjg/KvCtBsMjnm+Edhap8ee5a
-         R5jaNIKv2Jy7yRfFFBgadZVSKI01j3aM5I7iiSRwanDfC19uG/z8P1wGRO3ST1XkTNi/
-         0tLEvLiH1ZyLYOfyjtSzjkkdzPNvFozpLWVowbrxgJTHkOWiAhAFDvNsqaFDdkFLAi2r
-         dnVA==
+        bh=MxUjkhck3ThCup5JU1rYOQtyKBWOrj1qhayfFTMHy24=;
+        b=n294xEYj18Ngb737eeY0NWR2FiB5hbvUei2t+J5yesyN4dPpRgCcQI5xcIi4MC/r/h
+         6+jt4NOnvd3xqc+iQiy/4rDKGUgcvcmOEZP/ukuUUzrQX2hr7ku5EJBu6RXANfcTBX3v
+         Hm1auCTam2QnlOGmN//E2ZN2f3Kr66eZQ55KRHqkH8eAuNJOTPE7SMDFGF5z4ba2PX9j
+         7wwCLpIbO+HRSLCOLVeHMLgPipKfQDZm75lqTBK0ZFnMsKsvIqkwZgASvLhe+ReAIsSF
+         PNy9j4zmR33ajjcv0h5ZntfKQARz1NDjXaZq+A0VJ7QxSRz3c2Ecv9RVBIKU6oBpcw3Z
+         cdlA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=vc+9lhZdvHGipmJiQR19DK5It5RgAjYlDgcsNDiBYQ0=;
-        b=N7QK9mrEymVwZCkaVhQk7ghvCTRx2K6B1UD0MjGtUGahiphn2uAjXk3lauW6bTduI4
-         RqCNpw0AtIaJ4S7dUdF7vskvU+lVudKBuPmERS46utN5uok9hGbSC/38x21Vq6zF14+2
-         tvgl/bhQJ/CZBbl+1tLkxmZLTyKI4ueaNVlhUDzF1nBhSFqz25AlyT/Xx3urSzsD1gdK
-         tKkrb8q6CyTtX5fh8SsHJiVbLiAvnrwR2EWLOjk01wnYh2I9iKkNLHhtqeadgRhxEbTf
-         +16IKXh46UQ8QLZ/dEIePcLP1IPfb0J0NiR8T+FpLNDZma2vhyfiYqgQPiWmk5DmERuA
-         wpzw==
-X-Gm-Message-State: ACgBeo0Kl/fzTdGDoutsyxT054j6qtH41QQWbu8K+P5tbUBr7QwP1g1h
-        zcAUASrNy6BDfhEqs/O3fQM=
-X-Google-Smtp-Source: AA6agR64WB1uKVsnb83+o3qiFDrgAfqg4TmB3M18AMQi1RgPJhea91VyXpDVcMspPl4mWCNRguOWow==
-X-Received: by 2002:a63:c003:0:b0:434:dd62:18e1 with SMTP id h3-20020a63c003000000b00434dd6218e1mr2020043pgg.53.1662529502321;
-        Tue, 06 Sep 2022 22:45:02 -0700 (PDT)
+        bh=MxUjkhck3ThCup5JU1rYOQtyKBWOrj1qhayfFTMHy24=;
+        b=qde9e1f6BRCoQaF633bkFWJ8faLe8ahxzfPthSHYYepqHXwV9+CHsNJjz7V4wq4oiF
+         9idtDE0CzmzuP3VJFjnRcPD/obG4jsl1S7yK5XygNhjt7GxJpBN8fhot2a6pQG0NAcuP
+         N1li8oCmMSLvX9+rmk83l80WsPgatHNVfBNH+6PAgCaUk/NJKaiy/1HWMK3TP32EYphe
+         Yc1Dkhr07BpelP1Rokl8oNW18xATtEyqw5B+NosAkjamfnxjeqwtV5SyG5bWVNkqEON8
+         bX89TMaPPqFnpsBqk+5hQnlCrYpkJq9lINk0VhEYXqkmGXEukkF0HqI8kFVZMSsSTihb
+         yNaQ==
+X-Gm-Message-State: ACgBeo3iBp96oC4sU4pCb/n7vx7/gNll0O3Y3DiE3tw8sEisz/sArAQS
+        2AwaR7DFIvsCXR2HVhS3TUU=
+X-Google-Smtp-Source: AA6agR7kbaoNt6zjIBweSiPmfp6LIaSt/m1OzJ7rtVUYJf/gIBW1VZ07ewfRKxRgezbUZstg0VLgJg==
+X-Received: by 2002:a05:6a00:4c85:b0:538:5500:4873 with SMTP id eb5-20020a056a004c8500b0053855004873mr2265813pfb.81.1662529504723;
+        Tue, 06 Sep 2022 22:45:04 -0700 (PDT)
 Received: from localhost.localdomain ([76.132.249.1])
-        by smtp.gmail.com with ESMTPSA id b2-20020a170902d50200b0016c0c82e85csm11222798plg.75.2022.09.06.22.45.00
+        by smtp.gmail.com with ESMTPSA id b2-20020a170902d50200b0016c0c82e85csm11222798plg.75.2022.09.06.22.45.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Sep 2022 22:45:01 -0700 (PDT)
+        Tue, 06 Sep 2022 22:45:04 -0700 (PDT)
 From:   rentao.bupt@gmail.com
 To:     Andrew Lunn <andrew@lunn.ch>,
         "David S . Miller" <davem@davemloft.net>,
@@ -66,9 +66,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         linux-arm-kernel@lists.infradead.org,
         linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
 Cc:     Tao Ren <rentao.bupt@gmail.com>
-Subject: [PATCH net-next v3 1/2] net: ftgmac100: support fixed link
-Date:   Tue,  6 Sep 2022 22:44:52 -0700
-Message-Id: <20220907054453.20016-2-rentao.bupt@gmail.com>
+Subject: [PATCH net-next v3 2/2] ARM: dts: aspeed: elbert: Enable mac3 controller
+Date:   Tue,  6 Sep 2022 22:44:53 -0700
+Message-Id: <20220907054453.20016-3-rentao.bupt@gmail.com>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220907054453.20016-1-rentao.bupt@gmail.com>
 References: <20220907054453.20016-1-rentao.bupt@gmail.com>
@@ -86,64 +86,49 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tao Ren <rentao.bupt@gmail.com>
 
-Support fixed link in ftgmac100 driver. Fixed link is used on several
-Meta OpenBMC platforms, such as Elbert (AST2620) and Wedge400 (AST2520).
+Enable mac3 controller in Elbert dts: Elbert MAC3 is connected to the
+BCM53134P onboard switch's IMP_RGMII port directly (fixed link, no PHY
+between BMC MAC and BCM53134P).
+
+Note: BMC's mdio0 controller is connected to BCM53134P's MDIO interface,
+and the MDIO channel will be enabled later, when BCM53134 is added to
+"bcm53xx" DSA driver.
 
 Signed-off-by: Tao Ren <rentao.bupt@gmail.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- Changes in v3: None
- Changes in v2: None
+ Changes in v3:
+  - updated comments and patch description.
+ Changes in v2:
+  - updated comments and patch description.
+ .../boot/dts/aspeed-bmc-facebook-elbert.dts    | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
- drivers/net/ethernet/faraday/ftgmac100.c | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
-
-diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
-index 9277d5fb5052..da04beee5865 100644
---- a/drivers/net/ethernet/faraday/ftgmac100.c
-+++ b/drivers/net/ethernet/faraday/ftgmac100.c
-@@ -1701,10 +1701,14 @@ static int ftgmac100_setup_mdio(struct net_device *netdev)
- 
- static void ftgmac100_phy_disconnect(struct net_device *netdev)
- {
-+	struct ftgmac100 *priv = netdev_priv(netdev);
+diff --git a/arch/arm/boot/dts/aspeed-bmc-facebook-elbert.dts b/arch/arm/boot/dts/aspeed-bmc-facebook-elbert.dts
+index 27b43fe099f1..8e1a1d1b282d 100644
+--- a/arch/arm/boot/dts/aspeed-bmc-facebook-elbert.dts
++++ b/arch/arm/boot/dts/aspeed-bmc-facebook-elbert.dts
+@@ -183,3 +183,21 @@ imux31: i2c@7 {
+ &i2c11 {
+ 	status = "okay";
+ };
 +
- 	if (!netdev->phydev)
- 		return;
- 
- 	phy_disconnect(netdev->phydev);
-+	if (of_phy_is_fixed_link(priv->dev->of_node))
-+		of_phy_deregister_fixed_link(priv->dev->of_node);
- }
- 
- static void ftgmac100_destroy_mdio(struct net_device *netdev)
-@@ -1867,6 +1871,26 @@ static int ftgmac100_probe(struct platform_device *pdev)
- 			err = -EINVAL;
- 			goto err_phy_connect;
- 		}
-+	} else if (np && of_phy_is_fixed_link(np)) {
-+		struct phy_device *phy;
-+
-+		err = of_phy_register_fixed_link(np);
-+		if (err) {
-+			dev_err(&pdev->dev, "Failed to register fixed PHY\n");
-+			goto err_phy_connect;
-+		}
-+
-+		phy = of_phy_get_and_connect(priv->netdev, np,
-+					     &ftgmac100_adjust_link);
-+		if (!phy) {
-+			dev_err(&pdev->dev, "Failed to connect to fixed PHY\n");
-+			of_phy_deregister_fixed_link(np);
-+			err = -EINVAL;
-+			goto err_phy_connect;
-+		}
-+
-+		/* Display what we found */
-+		phy_attached_info(phy);
- 	} else if (np && of_get_property(np, "phy-handle", NULL)) {
- 		struct phy_device *phy;
- 
++/*
++ * BMC's "mac3" controller is connected to BCM53134P's IMP_RGMII port
++ * directly (fixed link, no PHY in between).
++ * Note: BMC's "mdio0" controller is connected to BCM53134P's MDIO
++ * interface, and the MDIO channel will be enabled in dts later, when
++ * BCM53134 is added to "bcm53xx" DSA driver.
++ */
++&mac3 {
++	status = "okay";
++	phy-mode = "rgmii";
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_rgmii4_default>;
++	fixed-link {
++		speed = <1000>;
++		full-duplex;
++	};
++};
 -- 
 2.37.3
 
