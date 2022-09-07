@@ -2,162 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ECDFC5AFC45
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 08:18:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32A325AFC48
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 08:19:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229677AbiIGGSA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 02:18:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42596 "EHLO
+        id S229626AbiIGGT2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 02:19:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229502AbiIGGR6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 02:17:58 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F51F9A979;
-        Tue,  6 Sep 2022 23:17:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1662531475; x=1694067475;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=sq0si2PrDhOgtcIHs/t22Vqh4mT9XAr7UzcmO71dwEE=;
-  b=1Bu4qU2IYr6UXLNugSjIjRAQAt8cs5JfLLzHIpd7fcvixK2+5bd6d2zM
-   X48IhXuoQ8sxbysrZrm6sKHRJcIVjVtIjKDY8wrKBrjYKKyYmNrQjMjsN
-   Rj+BTB3qTV3t6G2V6T8b27NJ63t7hQPHx/sNeov4V2tSMYL+CC42zpWhQ
-   ILPdHP+x06X6D2LbllS8GeTRrd4DE6VSBxJ4ThqSUrjVtvhVVHpPZDw0w
-   DzpJ6Vch9MykL/iscUQ4HUtFffaoRZkTGxqooW7IH2eEiCxgyZd1/cUQH
-   1iJ+SzoIpt1u/r8LYKSIwxkMlfrEFgEAOr1nQje90Rq+z8bVWcTNaBuFd
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.93,295,1654585200"; 
-   d="scan'208";a="189742277"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Sep 2022 23:17:53 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 6 Sep 2022 23:17:53 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
- Transport; Tue, 6 Sep 2022 23:17:50 -0700
-Date:   Wed, 7 Sep 2022 11:47:49 +0530
-From:   Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        <linux-kernel@vger.kernel.org>, <bryan.whitehead@microchip.com>,
-        <richardcochran@gmail.com>, <UNGLinuxDriver@microchip.com>,
-        <Ian.Saturley@microchip.com>
-Subject: Re: [PATCH net-next] net: lan743x: Fix the multi queue overflow issue
-Message-ID: <20220907061749.GA14128@raju-project-pc>
-References: <20220809083628.650493-1-Raju.Lakkaraju@microchip.com>
- <20220810223523.426b5e22@kernel.org>
+        with ESMTP id S229557AbiIGGT1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 02:19:27 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0EF620E
+        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 23:19:22 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id x14so5468134lfu.10
+        for <netdev@vger.kernel.org>; Tue, 06 Sep 2022 23:19:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=ymsvTRHXCNvvnsumNgBrxVHtXrTys/FdvaRLzgGKxG0=;
+        b=hxVDAKkDdfct6AphEBV3V7b/+48S7lJCP049Nldt2mNvH1j7UDfkAH+q0X7barHgqG
+         FhXiw0SvVgBa3L75pBUFgFV4Cv0/yTetm37TxbsA+WTZooaNkREvCnczD8gn8nJQl4nm
+         +qDt0fESddL3z6xDBpMUfFXQ4Yr+QyrRm+KaR6jw8L7WqIpWrvZimdyBa1o4ytG7AeJk
+         MPVlSctVuFp9H889M4Wk5Sp26xT0uVTgeUvoasocaOZsjKD7DHx9iq7UdxpZURtsRWQg
+         SZUGu2BrgVLy/Os+Lx15Ax3mkLYTxlFacBIHGomaORXW/d37qX1la/ErE9mHmG1D0j+d
+         UEGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=ymsvTRHXCNvvnsumNgBrxVHtXrTys/FdvaRLzgGKxG0=;
+        b=Xv/cUblW6QfmjW9qK6iSurJjybGqmQEs6xYlrb0C4gbDcKG3ERWZHabJ6r2eqkAcZe
+         CvF6t1LzQCISObb92cqmBcxRifbUW2JuNxJloIr+Qkf6UY0mNlBhOHBgEf2dbfjeOtsu
+         bsY6tZmVX0P5bYLqSYoHGpFhgJzSjmEcx/F7O0aHE+I+vS7W1sNMjF+Q2IFSgV1F7yzT
+         wzQ158bDU+4OoQc42Pc7boXFcGvG8ufwHxj/YFb5xcTKaRjAX6pylRzkXtCAqw6ZgceI
+         5LPNapTI9/6P8KnMdjb4gIl7EBzU30bDf1gGKzpM0WeOg6Pzrjsfgy7m/2Hy7UY+HFKf
+         H/LQ==
+X-Gm-Message-State: ACgBeo3oZ+uNaW+01ewpdW9RlnE2MfsFj1+HtU+qE3c6eZ7Cc9ai3neH
+        IUD7yT9pwbOGQNYbYv0QVZ8=
+X-Google-Smtp-Source: AA6agR4UCXdbUp2jKG5PkyKYpQu4upb1FruSWyU9z6xkz2LFiXsyOiMDPdwldZVAMz01nuSWkHYufw==
+X-Received: by 2002:a05:6512:1106:b0:494:7374:a05b with SMTP id l6-20020a056512110600b004947374a05bmr616956lfg.432.1662531561166;
+        Tue, 06 Sep 2022 23:19:21 -0700 (PDT)
+Received: from [10.0.1.14] (h-98-128-229-160.NA.cust.bahnhof.se. [98.128.229.160])
+        by smtp.gmail.com with ESMTPSA id u24-20020ac258d8000000b0048b0975ac7asm2240168lfo.151.2022.09.06.23.19.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 06 Sep 2022 23:19:20 -0700 (PDT)
+Message-ID: <1ccbbf02-e285-0534-6845-93c0f3f34a80@gmail.com>
+Date:   Wed, 7 Sep 2022 08:19:19 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20220810223523.426b5e22@kernel.org>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH net-next v4 2/6] net: dsa: Add convenience functions for
+ frame handling
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+References: <20220906063450.3698671-1-mattias.forsblad@gmail.com>
+ <20220906063450.3698671-3-mattias.forsblad@gmail.com>
+ <YxdAhDHy1V22HFw+@lunn.ch>
+From:   Mattias Forsblad <mattias.forsblad@gmail.com>
+In-Reply-To: <YxdAhDHy1V22HFw+@lunn.ch>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
-
-Thank you for review comments.
-I accepted all your comments.
-I will fix in V1 patch series and also change the subject line to 
-"net: lan743x: Fix to use multiqueue start/stop APIs"
-
-Thanks,
-Raju
-The 08/10/2022 22:35, Jakub Kicinski wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+On 2022-09-06 14:43, Andrew Lunn wrote:
+> On Tue, Sep 06, 2022 at 08:34:46AM +0200, Mattias Forsblad wrote:
+>> Add common control functions for drivers that need
+>> to send and wait for control frames.
 > 
-> On Tue, 9 Aug 2022 14:06:28 +0530 Raju Lakkaraju wrote:
-> > Fix the Tx multi-queue overflow issue
-> >
-> > Tx ring size of 128 (for TCP) provides ability to handle way more data than
-> > what Rx can (Rx buffers are constrained to one frame or even less during a
-> > dynamic mtu size change)
-> >
-> > TX napi weight dependent of the ring size like it is now (ring size -1)
-> > because there is an express warning in the kernel about not registering weight
-> > values > NAPI_POLL_WEIGHT (currently 64)
-> 
-> I've read this message 3 times, I don't understand what you're saying.
-> Could you please rewrite it and add necessary details?
-> 
-> > diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
-> > index a9a1dea6d731..d7c14ee7e413 100644
-> > --- a/drivers/net/ethernet/microchip/lan743x_main.c
-> > +++ b/drivers/net/ethernet/microchip/lan743x_main.c
-> > @@ -2064,8 +2064,10 @@ static void lan743x_tx_frame_end(struct lan743x_tx *tx,
-> >  static netdev_tx_t lan743x_tx_xmit_frame(struct lan743x_tx *tx,
-> >                                        struct sk_buff *skb)
-> >  {
-> > +     struct lan743x_adapter *adapter = tx->adapter;
-> >       int required_number_of_descriptors = 0;
-> >       unsigned int start_frame_length = 0;
-> > +     netdev_tx_t retval = NETDEV_TX_OK;
-> >       unsigned int frame_length = 0;
-> >       unsigned int head_length = 0;
-> >       unsigned long irq_flags = 0;
-> > @@ -2083,9 +2085,13 @@ static netdev_tx_t lan743x_tx_xmit_frame(struct lan743x_tx *tx,
-> >               if (required_number_of_descriptors > (tx->ring_size - 1)) {
-> >                       dev_kfree_skb_irq(skb);
-> >               } else {
-> > -                     /* save to overflow buffer */
-> > -                     tx->overflow_skb = skb;
-> > -                     netif_stop_queue(tx->adapter->netdev);
-> > +                     /* save how many descriptors we needed to restart the queue */
-> > +                     tx->rqd_descriptors = required_number_of_descriptors;
-> > +                     retval = NETDEV_TX_BUSY;
-> > +                     if (is_pci11x1x_chip(adapter))
-> > +                             netif_stop_subqueue(adapter->netdev, tx->channel_number);
-> 
-> Is tx->channel_number not 0 for devices other than pci11x1x ?
-> netif_stop_queue() is just an alias for queue 0 IIRC so
-> you can save all the ifs, most likely?
-> 
-Yes.
-I will fix.
-
-> > +                     else
-> > +                             netif_stop_queue(adapter->netdev);
-> >               }
-> >               goto unlock;
-> >       }
-> > @@ -2093,7 +2099,7 @@ static netdev_tx_t lan743x_tx_xmit_frame(struct lan743x_tx *tx,
-> >       /* space available, transmit skb  */
-> >       if ((skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
-> >           (tx->ts_flags & TX_TS_FLAG_TIMESTAMPING_ENABLED) &&
-> > -         (lan743x_ptp_request_tx_timestamp(tx->adapter))) {
-> > +         (lan743x_ptp_request_tx_timestamp(adapter))) {
-> 
-> If this is a fix you should hold off on refactoring like adding the
-> local variable for adapter to make backports easier.
+> It would be nice to explain why a custom complete is needed. Ideally,
+> it should not be needed at all.
 > 
 
-Accepted.
-I will fix.
+My first approach was with without a custom complete as I only used
+one single complete instance. However, when migrating the qca8k driver
+I noticed they use two different complete instances, one in
+qca8k_mgmt_eth_data and one in qca8k_mib_eth_data. This leads
+to the suggestion that the qca8k implementation could have several
+requests in-flight, thus the custom completion parameter.
 
-> >               skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
-> >               do_timestamp = true;
-> >               if (tx->ts_flags & TX_TS_FLAG_ONE_STEP_SYNC)
+>> Signed-off-by: Mattias Forsblad <mattias.forsblad@gmail.com>
+>> ---
+>>  include/net/dsa.h | 13 +++++++++++++
+>>  net/dsa/dsa.c     | 28 ++++++++++++++++++++++++++++
+>>  net/dsa/dsa2.c    |  2 ++
+>>  3 files changed, 43 insertions(+)
+>>
+>> diff --git a/include/net/dsa.h b/include/net/dsa.h
+>> index f2ce12860546..70a358641235 100644
+>> --- a/include/net/dsa.h
+>> +++ b/include/net/dsa.h
+>> @@ -495,6 +495,8 @@ struct dsa_switch {
+>>  	unsigned int		max_num_bridges;
+>>  
+>>  	unsigned int		num_ports;
+>> +
+>> +	struct completion	inband_done;
+>>  };
+>>  
+>>  static inline struct dsa_port *dsa_to_port(struct dsa_switch *ds, int p)
+>> @@ -1390,6 +1392,17 @@ void dsa_tag_drivers_register(struct dsa_tag_driver *dsa_tag_driver_array[],
+>>  void dsa_tag_drivers_unregister(struct dsa_tag_driver *dsa_tag_driver_array[],
+>>  				unsigned int count);
+>>  
+>> +int dsa_switch_inband_tx(struct dsa_switch *ds, struct sk_buff *skb,
+>> +			 struct completion *completion, unsigned long timeout);
 > 
-> > @@ -1110,7 +1109,7 @@ struct lan743x_tx_buffer_info {
-> >       unsigned int    buffer_length;
-> >  };
-> >
-> > -#define LAN743X_TX_RING_SIZE    (50)
-> > +#define LAN743X_TX_RING_SIZE    (128)
+> Blank line please.
 > 
-> So the ring size is getting increased? I did not get that from the
-> commit message at all :S
 
--- 
---------
-Thanks,
-Raju
+Will fix.
+
+>> +static inline void dsa_switch_inband_complete(struct dsa_switch *ds, struct completion *completion)
+>> +{
+>> +	/* Custom completion? */
+>> +	if (completion)
+>> +		complete(completion);
+>> +	else
+>> +		complete(&ds->inband_done);
+>> +}
+>> +
+>>  #define dsa_tag_driver_module_drivers(__dsa_tag_drivers_array, __count)	\
+>>  static int __init dsa_tag_driver_module_init(void)			\
+>>  {									\
+>> diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
+>> index be7b320cda76..2d7add779b6f 100644
+>> --- a/net/dsa/dsa.c
+>> +++ b/net/dsa/dsa.c
+>> @@ -324,6 +324,34 @@ int dsa_switch_resume(struct dsa_switch *ds)
+>>  EXPORT_SYMBOL_GPL(dsa_switch_resume);
+>>  #endif
+>>  
+>> +int dsa_switch_inband_tx(struct dsa_switch *ds, struct sk_buff *skb,
+>> +			 struct completion *completion, unsigned long timeout)
+>> +{
+>> +	int ret;
+>> +	struct completion *com;
+> 
+> Reverse christmas tree. Longest lines first.
+> 
+
+Duh, again? Sorry, will fix.
+
+>> +
+>> +	/* Custom completion? */
+>> +	if (completion)
+>> +		com = completion;
+>> +	else
+>> +		com = &ds->inband_done;
+>> +
+>> +	reinit_completion(com);
+>> +
+>> +	if (skb)
+>> +		dev_queue_xmit(skb);
+>> +
+>> +	ret = wait_for_completion_timeout(com, msecs_to_jiffies(timeout));
+>> +	if (ret <= 0) {
+>> +		dev_dbg(ds->dev, "DSA inband: timeout waiting for answer\n");
+>> +
+>> +		return -ETIMEDOUT;
+>> +	}
+> 
+> It looks like wait_for_completion_timeout() can return a negative
+> error code. You should return that error code, not replace it with
+> -ETIMEDOUT. If it returns 0, then it has timed out, and returning
+> -ETIMEDOUT does make sense. If the completion is indicated before the
+> timeout, the return value is the remaining time. So you can return a
+> positive number here. It is worth documenting that, since a common
+> patterns is:
+> 
+> 	err = dsa_switch_inband_tx()
+> 	if (err)
+> 		return err;
+> 
+> does not work in this case.
+> 
+>      Andrew
+
+Will fix.
+	
+	Mattias
+
