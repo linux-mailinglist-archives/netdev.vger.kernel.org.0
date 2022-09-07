@@ -2,328 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CF035B0F9C
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 23:57:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95E165B0FAD
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 00:11:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229820AbiIGV53 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 17:57:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59018 "EHLO
+        id S230040AbiIGWLw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 18:11:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229577AbiIGV51 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 17:57:27 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F17C5A881
-        for <netdev@vger.kernel.org>; Wed,  7 Sep 2022 14:57:26 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id c9so23588443ybf.5
-        for <netdev@vger.kernel.org>; Wed, 07 Sep 2022 14:57:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=fAvSqxewWz4edfvSdcCYx/zKhTyZI5m0tkAiB6j6bME=;
-        b=XNc8eRd7JCcELOsjHIiZQ6RpAmg6cNsTZy6T4YkW0kouwx0CPfMK7vED7K8Px5aeyI
-         gDWAiCX16sFi5/drMlvnYrN3epeJBqZtR3c3ytGPEhFLqOahUcWWJDOOpxPgpC+NlzcF
-         Tb2QCHwKcCl8Y+FVucL/uWXa1x3kweaBE1ZeMZhqovwjnrDcwYafdbzfWfjjtS6r0pXI
-         vg1vXuWDe25jL5xQJgsV8PeWb5mgJpxQZZVNj4MkaObYb7qKoXJoSoagKDglmWHoovAk
-         hYtxOIJzRLeDEOb88Rp2aOEYMTQUXRNjKnzCbsF5Cj/PUyjrJ5Wr7+zYhk4cokavrFdz
-         GDaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=fAvSqxewWz4edfvSdcCYx/zKhTyZI5m0tkAiB6j6bME=;
-        b=bxW4zaSL/hf+zrJvJd2KcGOfqhsAlNW+mRZ6xEEFVay9S9v8GSzKaTtJntt5th/G1X
-         0zH4uWnqyzzwGZpBkizuhpEYm/KHHatfM7PUTcPDSKMXzRaLP5E6+xe0omfA/rZaKcJA
-         03a3AjMy8mtPX/ys+GVZU3dS3SO4E12XDFkEgYN5C028ezK0q75rtKgCUfviHIdpeMN/
-         caORm4q8MN/TIk1uCk7g15w7p6Uf2gAZD4a3X2UI/gS5SO7Nm6xeI9W0Jkbld1FYQQek
-         2uQt7NQGIWRH7Qaqx/wvIeetwWGwXfgIwNgVr5aljsIBoudGwWHvLC0FjmeD12Rusi35
-         6B6Q==
-X-Gm-Message-State: ACgBeo0fDKewapm+mHxYrvpGHg/qis4KXc4JcoAbOdgMvaj2HJsZ56hZ
-        MCMFd7917b15r275fBpejrTIE5zIfS1zdHF/wRZ/uWwW6kjiMg==
-X-Google-Smtp-Source: AA6agR5CMLWz8/tcVzlHTRVpQCxRol3VPRlBUw0VW2gPGVXAQX7FCEF6koSRZN7WnBsnw0CdJYmPfPbNuYn6KKsi7VY=
-X-Received: by 2002:a25:e0c4:0:b0:6a8:d8f0:5485 with SMTP id
- x187-20020a25e0c4000000b006a8d8f05485mr4236599ybg.387.1662587845290; Wed, 07
- Sep 2022 14:57:25 -0700 (PDT)
+        with ESMTP id S229567AbiIGWLv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 18:11:51 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C57D69C1F0
+        for <netdev@vger.kernel.org>; Wed,  7 Sep 2022 15:11:50 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Z4rActdiGZJQjDnfdnt5jUrkL66WQrIZJRT73P/UkjXjvXx1s12UD6QR4mhXmwFHIP3FGTFAgUA6M/GNgbcyOJ2XCtBrM8dYrjqta/IPpF1f5X173hM+rj+v/aJSI8MSmqEbp6yVrw8inNTyAOZNR3MJ3anj9TlcQV6KqiYjO9ttoCz21cP9Nb1roaZ2/lLKvOcAYKnfNaMzYfx+MTmd2pBdfIL2ydjdshArHuz51yqE2QKC1A5GlbvATZh1iSKyZYXQ4q9xSRqgVMefTCraJeVzLsQIDps6A9taWD9DRMrkpK+jf+oSkdc04q1aj3m+LfW+RXNhsDBu/OpQs49SPA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=EtKKe3rrkpsRvU/7NIqkd6fU5Dako9KCekESepysgM4=;
+ b=IK+S7+adrDd5V9CJ8199WctvzovYpmO2H3oQZfjHQ32XHZgcWHv5bqRygCE+3XVkqez5Y9FCVN14p9+L0ylUQOUDMw+jr/mClne/K6AZwgAjvOy5KtZ83J5RKroA1Xl/8QcCqKLg+kZPaQ5fySxfeFKAPAoGp2ZxEPTPQVfbR1EwBAaG2Z6PKApKj9/8F3u1DGLTq4Rh86VaEclLTx48y2AsIxkDjFOFS/b1cU2Ny8xuoVmBclDBjJ0ljhPzE06VubrXW3hNsX5kLKQJnwal5mfby2EFtraDh9gJuyfEud35YBuswcz4D3OQBBna9GQK0u3pSVfthbloyqZRF24Epg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EtKKe3rrkpsRvU/7NIqkd6fU5Dako9KCekESepysgM4=;
+ b=h9UxTZfbzm5Mkwz1jTE0Y9NAHS8Eb1cRUTRXT0WPd/J51Ud0lOeZcfUWbZFdA8pyi8lE5wWlO6WCbZy06Z6+UH2+qUhuazuTC4X6ardgadBQvL+B8lgAxBECw12F7W4oYS7ezxPEnLnyZZPnsqDgdXZZ8EkIoX/9xDUo8Fi4MvktPV9nNw5YKUC5z86JnvqwI5l3KbiUCOsqFh6KCX25S42UZxoQ1h81f6LDrm6sERZ+clZ6M9ALuX+72rQeASTUwgWKIsa2HNZXh+E1RaFWizvySX6EOlY3RmOvB9uZoT13TtMV29yGyX0zXWy/Hc2YRGSP4DWt1keVPanbhhwjOA==
+Received: from PH0PR12MB5481.namprd12.prod.outlook.com (2603:10b6:510:d4::15)
+ by BN9PR12MB5308.namprd12.prod.outlook.com (2603:10b6:408:105::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.11; Wed, 7 Sep
+ 2022 22:11:49 +0000
+Received: from PH0PR12MB5481.namprd12.prod.outlook.com
+ ([fe80::1429:e3e9:dc54:ba98]) by PH0PR12MB5481.namprd12.prod.outlook.com
+ ([fe80::1429:e3e9:dc54:ba98%9]) with mapi id 15.20.5612.014; Wed, 7 Sep 2022
+ 22:11:48 +0000
+From:   Parav Pandit <parav@nvidia.com>
+To:     Si-Wei Liu <si-wei.liu@oracle.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+CC:     Gavin Li <gavinl@nvidia.com>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "jesse.brandeburg@intel.com" <jesse.brandeburg@intel.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "sridhar.samudrala@intel.com" <sridhar.samudrala@intel.com>,
+        "jasowang@redhat.com" <jasowang@redhat.com>,
+        "loseweigh@gmail.com" <loseweigh@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+        Gavi Teitz <gavi@nvidia.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Subject: RE: [virtio-dev] RE: [PATCH v5 2/2] virtio-net: use mtu size as
+ buffer length for big packets
+Thread-Topic: [virtio-dev] RE: [PATCH v5 2/2] virtio-net: use mtu size as
+ buffer length for big packets
+Thread-Index: AQHYwpEbqLdY6RByfkyoSMo8wpA6EK3TsrMAgABG8oCAAA3LAIAAADnAgAACroCAABYGQIAAJjCAgAALaACAAAQwAIAAAFDQgAADKICAAACIkIAAAuAAgAAASDCAACJHAIAAAOVQ
+Date:   Wed, 7 Sep 2022 22:11:48 +0000
+Message-ID: <PH0PR12MB548125D85533125828CE8454DC419@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20220907101335-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481D19E1E5DA11B2BD067CFDC419@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220907103420-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481066A18907753997A6F0CDC419@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220907141447-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481C6E39AB31AB445C714A1DC419@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220907151026-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB54811F1234CB7822F47DD1B9DC419@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220907152156-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481291080EBEC54C82A5641DC419@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220907153425-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB54815E541D435DDC9339CA02DC419@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <8d80bb05-2d01-9046-6642-3f74b59cc830@oracle.com>
+In-Reply-To: <8d80bb05-2d01-9046-6642-3f74b59cc830@oracle.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|BN9PR12MB5308:EE_
+x-ms-office365-filtering-correlation-id: 1de44cce-3714-4273-506e-08da911df5bb
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: mvpKK8rFztd5xUyDGZOjAQ2b2PtmLIPAz09KOrCVgLHRrPk3jUjASRWgUfMhiYaNaCLlPWCCcV9bLU+SgEOVNuVJesp8VE+9ty2TbumTZ/uTdApHxiJKeaRj2UBISn/Vx8w29PU1AOmJ6n0JVOQATYuFhv42tldgI2qIhKBjP+Tby1BdMnqx1B45TIjsKQdevIQNfJ1b1REy47NEi31D4daw/gkyqUCTKmFYWlUGJnCOZ407TKftAxX0bDQ3IsJGY008qrKiYQtKgfqsVrDVM3gP4ksWRA0TkZoNXDql1hwSGK6e+vRDLcgC7v3cq3ltijMhUtpjgmnbooiU1pVDJihtifAV781iaE907Ithy66HtBCWECUEiw0qvNSu3Lqs07z4HQDg9ujpuUCXEqS2/e5j+buJ0wL/ydJylLc2BVeG2LI1NEQM6AglKzinG3ksXMZ6SKd+bvGbdi8+g9U4HOCkLgOPLs5l1/nbu77MB7MdxK/aLvwJlhFN+7cH9Hdj/77h+d8ZJ3GvP+bGje297E3XdAlqmulM1lQF8PA5pSKcjMszRKwtglcQBTZma7BOq57poziY0nnstVrgo3J//e7emnSLYTKLkk27+k3ZoFjfPv/ysuV+1Z49Dh2/oramjp9LOsdazbQAs8Ino6D6AtlJ4Geh2mW4X96P7G0adtQ4anvsjLs+x+6ApFoQQAXbrIJnXKgOhngSjzCxTnLE2ryRJmGSHTzf7Q7t60PoHfT/5o1mUsZ4MfYtCMa6AiM1ukMnU6EiXHHq9ocxJmRUjg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(376002)(366004)(136003)(396003)(346002)(66946007)(33656002)(186003)(66446008)(66476007)(54906003)(64756008)(83380400001)(5660300002)(8936002)(66556008)(8676002)(76116006)(7416002)(4326008)(52536014)(26005)(6506007)(53546011)(7696005)(478600001)(71200400001)(41300700001)(316002)(9686003)(86362001)(38100700002)(2906002)(55016003)(110136005)(122000001)(38070700005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?TU5oY1VVanVtbUlQVGRYWURoc2Z5dllERlk3REdpNjd2Q2tpSHpSN2t0Zi9v?=
+ =?utf-8?B?VTk2SmppVlpFS3VMQm9Iemp0Q1ljTW5sN0l5eW43MUxrTWVIUVFtcmFEV3gz?=
+ =?utf-8?B?ZFg3N0RodndCZ3g4WHJtb21STit0bGYvdE4rdHlLZUJrMTRwdklhcitXMjNU?=
+ =?utf-8?B?UTFmTVBLZTJIZGF1ck5iUnNqR1JyTEt5ZXZ5SnZ3SUhlRGRNbXJJa2RmK25W?=
+ =?utf-8?B?VW9IMStzK25ZNzBUdjNmQU42YWxqZjhwM1cybnMwY3kzc0ExUFdTQnRGRGVq?=
+ =?utf-8?B?RXNsTTFuYVFYTC94K1c2Y2hCazN5WU53NDdJWU83VkE5eVlvaGlsdkloRUxm?=
+ =?utf-8?B?TmNVQzVZdUtjOFVNbGF2TVRucVBvQ29DdHZiOVBsV3U3YTYvVSsyS0lJRXly?=
+ =?utf-8?B?eDl3aXV5R3Iyb3RWS1VzcTd3RFUyOC80a2xTS3JFbW1LNG9DdzlnNkM5N1or?=
+ =?utf-8?B?NWJITXppYnQzbjRjcWJ3aGlLZ3NXam9Yb3FBQXp2VGxwR0t1ZTRhZlJ4NmZK?=
+ =?utf-8?B?Rlc1ZUo0YmtqU0JZTG16VTZvcXN2YVVXaWxUdlY5d2NFcCtWNisvQk84VWRK?=
+ =?utf-8?B?ZTU2dEx6R29tUjY1MjhhTG1uanJjZ056U1Z0aWdhVmhSeWxMM29YWGI0cWJq?=
+ =?utf-8?B?Q3FwdkdrUzZVVUhIcHNINkVVaFRob2QxR1NNWm9wMlhHTjVJL0ZSdENxNUNz?=
+ =?utf-8?B?QnVOTWRPL3poc2xXTHlaZUdwZmtST1B2L0h1SHBGVkVmcEEvdzF1ZEJJdUh4?=
+ =?utf-8?B?ci9NV1VlWTgrYjFhZCtOKzBmdkoyMWtXcEc1N3gxVWNtNmxSV0psOEZFTXJI?=
+ =?utf-8?B?bDZHbHhhMWQ5OVg0M2VvK3ZwWG1uUmoxMnJNSEFpNWE1Nm5hTU5WcnlBVmNJ?=
+ =?utf-8?B?SHZVY3pCNTFCYWwwSUtDb1VOVGJSYXZ2UjRHU1FQN0pZS0RXVG9oQjJKajBQ?=
+ =?utf-8?B?c2RzNzBwMDlBN1NKNm5TSEVKdldULy8wUXJNRXk2UDhyWGpVcmxrTFNtcVBL?=
+ =?utf-8?B?K0p0RjZ6dFdvVG0rYTNuMVp2eERlMWY5L0VvTkFJL0w5WVA0SEZWWm9CVXpn?=
+ =?utf-8?B?MW5sNzdhQTNMVnRaZUw5V1VaNW9LS044UTNSaUJFNUdSSGI3T2lKRjdHb3Vz?=
+ =?utf-8?B?UjJXdnlxTmtmeTZsZnR2N2dPbjQ5bnJicEJ0bkk1a210TmFvSzg5U3B4YSsw?=
+ =?utf-8?B?ZjZ3QTJXeWtOVkhLa0N0VVJPcjBSbHVXVEtXUGZmdTFtOUE5clhWL2xPZFZl?=
+ =?utf-8?B?ZFI0MWVZY0RkeTRVZHRrTEhhZldyTjU4UnVzNGJGUnhkYmNSaDFpL0ZkT09u?=
+ =?utf-8?B?SnVqMUg1WnAvWlJnZmxhZkVLVVFwT29hYS9NeUI5NVBiUVhnUzVkZVd3azdo?=
+ =?utf-8?B?Q0lYMXJ1aG5lWXZ3WTV4UXJrUEh5b01LelFwb2c1bXhzWk9qUVhwTjAwQmRO?=
+ =?utf-8?B?bnVwcTRRR3kwdU4rSjdHaEducFMwYlVtZ3NsY2tEc04xS2lHVXlVaDlham5a?=
+ =?utf-8?B?cUE1WTN1M0dWZDBQN0ozSlVLNXNBMVNGMGw0czNBS1NjcnBaNUpjRDRlVW85?=
+ =?utf-8?B?cVFRSEZmR2IwRVpRR2pPMkZvSzdYREs2eU1aeXFKbjR1TUFKa3R5eFhvSmlS?=
+ =?utf-8?B?VndISlJBUXp6c05WcXhjZTFYRUMxOHh6Z0JNbjkyWDgzK29Mb05VcE9nL1Vh?=
+ =?utf-8?B?U0liMDg5TmhmNDNwZXdGTUdQcW5PYlpNTGR4SVJtdXYrVmh2V2ZsZWhIa2h5?=
+ =?utf-8?B?UmkyTllFSmpSWGJNZDVZLzBvUFNHcnp0UVNUay9pNnloOUZBTGVkMjdqVjNV?=
+ =?utf-8?B?Yy9mbVkwSmcxQjlESzdyR2Y5ZGRNdE5WY1hpQUFudGRoVnYvR2NkOXNNOU9N?=
+ =?utf-8?B?Tkx2b3ZVb3EyZjBGZXdmQ05kQTBSSGpqQitGd0wxeURZdXJ0MGZYc1lSRGlC?=
+ =?utf-8?B?RTV0UVNnYndLVXNRbVVaTjVzWk5lb2FOclVVWWJuVWFOQVRTYlBhRWQrNkpE?=
+ =?utf-8?B?cTJUQWs3ZzVlaXZnWU1hVnpHRkJXNGNRcXNySkgyd00wMlcrelRJRjhqeHIz?=
+ =?utf-8?B?MWZoWHdKUTFmQ05NTGdZYk93ZmZTRVJXT21tbkxVT0pZangxcGo3YTBybkZI?=
+ =?utf-8?Q?Vd0k=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <CANn89i+mJdBZB3ecGa6-N3FdOAHv0Of=XYus389TiMMH5PYeug@mail.gmail.com>
- <20220907214644.34344-1-kuniyu@amazon.com>
-In-Reply-To: <20220907214644.34344-1-kuniyu@amazon.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 7 Sep 2022 14:57:14 -0700
-Message-ID: <CANn89iLHReCZF8k0PT7-5kvfZeZOF590obNN3i25jKcd--2Siw@mail.gmail.com>
-Subject: Re: [PATCH v5 net-next 6/6] tcp: Introduce optional per-netns ehash.
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1de44cce-3714-4273-506e-08da911df5bb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Sep 2022 22:11:48.8963
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 2hDpkN2gTMaSPRzCrO1FhqPzjecKkH3AAWdcyyAmkyeQPf1/d9GqaP9/mNzOfU7nLafzWRaVr/zF7PrlrPdCEw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5308
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 7, 2022 at 2:47 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
->
-> From:   Eric Dumazet <edumazet@google.com>
-> Date:   Wed, 7 Sep 2022 13:55:08 -0700
-> > On Tue, Sep 6, 2022 at 5:57 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
-> > >
-> > > The more sockets we have in the hash table, the longer we spend looking
-> > > up the socket.  While running a number of small workloads on the same
-> > > host, they penalise each other and cause performance degradation.
-> > >
-> > > The root cause might be a single workload that consumes much more
-> > > resources than the others.  It often happens on a cloud service where
-> > > different workloads share the same computing resource.
-> > >
-> > > On EC2 c5.24xlarge instance (196 GiB memory and 524288 (1Mi / 2) ehash
-> > > entries), after running iperf3 in different netns, creating 24Mi sockets
-> > > without data transfer in the root netns causes about 10% performance
-> > > regression for the iperf3's connection.
-> > >
-> > >  thash_entries          sockets         length          Gbps
-> > >         524288                1              1          50.7
-> > >                            24Mi             48          45.1
-> > >
-> > > It is basically related to the length of the list of each hash bucket.
-> > > For testing purposes to see how performance drops along the length,
-> > > I set 131072 (1Mi / 8) to thash_entries, and here's the result.
-> > >
-> > >  thash_entries          sockets         length          Gbps
-> > >         131072                1              1          50.7
-> > >                             1Mi              8          49.9
-> > >                             2Mi             16          48.9
-> > >                             4Mi             32          47.3
-> > >                             8Mi             64          44.6
-> > >                            16Mi            128          40.6
-> > >                            24Mi            192          36.3
-> > >                            32Mi            256          32.5
-> > >                            40Mi            320          27.0
-> > >                            48Mi            384          25.0
-> > >
-> > > To resolve the socket lookup degradation, we introduce an optional
-> > > per-netns hash table for TCP, but it's just ehash, and we still share
-> > > the global bhash, bhash2 and lhash2.
-> > >
-> > > With a smaller ehash, we can look up non-listener sockets faster and
-> > > isolate such noisy neighbours.  In addition, we can reduce lock contention.
-> > >
-> > > We can control the ehash size by a new sysctl knob.  However, depending
-> > > on workloads, it will require very sensitive tuning, so we disable the
-> > > feature by default (net.ipv4.tcp_child_ehash_entries == 0).  Moreover,
-> > > we can fall back to using the global ehash in case we fail to allocate
-> > > enough memory for a new ehash.  The maximum size is 16Mi, which is large
-> > > enough that even if we have 48Mi sockets, the average list length is 3,
-> > > and regression would be less than 1%.
-> > >
-> > > We can check the current ehash size by another read-only sysctl knob,
-> > > net.ipv4.tcp_ehash_entries.  A negative value means the netns shares
-> > > the global ehash (per-netns ehash is disabled or failed to allocate
-> > > memory).
-> > >
-> > >   # dmesg | cut -d ' ' -f 5- | grep "established hash"
-> > >   TCP established hash table entries: 524288 (order: 10, 4194304 bytes, vmalloc hugepage)
-> > >
-> > >   # sysctl net.ipv4.tcp_ehash_entries
-> > >   net.ipv4.tcp_ehash_entries = 524288  # can be changed by thash_entries
-> > >
-> > >   # sysctl net.ipv4.tcp_child_ehash_entries
-> > >   net.ipv4.tcp_child_ehash_entries = 0  # disabled by default
-> > >
-> > >   # ip netns add test1
-> > >   # ip netns exec test1 sysctl net.ipv4.tcp_ehash_entries
-> > >   net.ipv4.tcp_ehash_entries = -524288  # share the global ehash
-> > >
-> > >   # sysctl -w net.ipv4.tcp_child_ehash_entries=100
-> > >   net.ipv4.tcp_child_ehash_entries = 100
-> > >
-> > >   # ip netns add test2
-> > >   # ip netns exec test2 sysctl net.ipv4.tcp_ehash_entries
-> > >   net.ipv4.tcp_ehash_entries = 128  # own a per-netns ehash with 2^n buckets
-> > >
-> > > When more than two processes in the same netns create per-netns ehash
-> > > concurrently with different sizes, we need to guarantee the size in
-> > > one of the following ways:
-> > >
-> > >   1) Share the global ehash and create per-netns ehash
-> > >
-> > >   First, unshare() with tcp_child_ehash_entries==0.  It creates dedicated
-> > >   netns sysctl knobs where we can safely change tcp_child_ehash_entries
-> > >   and clone()/unshare() to create a per-netns ehash.
-> > >
-> > >   2) Control write on sysctl by BPF
-> > >
-> > >   We can use BPF_PROG_TYPE_CGROUP_SYSCTL to allow/deny read/write on
-> > >   sysctl knobs.
-> > >
-> > > Note the default values of two sysctl knobs depend on the ehash size and
-> > > should be tuned carefully:
-> > >
-> > >   tcp_max_tw_buckets  : tcp_child_ehash_entries / 2
-> > >   tcp_max_syn_backlog : max(128, tcp_child_ehash_entries / 128)
-> > >
-> > > As a bonus, we can dismantle netns faster.  Currently, while destroying
-> > > netns, we call inet_twsk_purge(), which walks through the global ehash.
-> > > It can be potentially big because it can have many sockets other than
-> > > TIME_WAIT in all netns.  Splitting ehash changes that situation, where
-> > > it's only necessary for inet_twsk_purge() to clean up TIME_WAIT sockets
-> > > in each netns.
-> > >
-> > > With regard to this, we do not free the per-netns ehash in inet_twsk_kill()
-> > > to avoid UAF while iterating the per-netns ehash in inet_twsk_purge().
-> > > Instead, we do it in tcp_sk_exit_batch() after calling tcp_twsk_purge() to
-> > > keep it protocol-family-independent.
-> > >
-> > > In the future, we could optimise ehash lookup/iteration further by removing
-> > > netns comparison for the per-netns ehash.
-> > >
-> > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> >
-> > ...
-> >
-> > > diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-> > > index c440de998910..e94e1316fcc3 100644
-> > > --- a/net/ipv4/inet_hashtables.c
-> > > +++ b/net/ipv4/inet_hashtables.c
-> > > @@ -1145,3 +1145,60 @@ int inet_ehash_locks_alloc(struct inet_hashinfo *hashinfo)
-> > >         return 0;
-> > >  }
-> > >  EXPORT_SYMBOL_GPL(inet_ehash_locks_alloc);
-> > > +
-> > > +struct inet_hashinfo *inet_pernet_hashinfo_alloc(struct inet_hashinfo *hashinfo,
-> > > +                                                unsigned int ehash_entries)
-> > > +{
-> > > +       struct inet_hashinfo *new_hashinfo;
-> > > +       int i;
-> > > +
-> > > +       new_hashinfo = kmalloc(sizeof(*new_hashinfo), GFP_KERNEL);
-> > > +       if (!new_hashinfo)
-> > > +               goto err;
-> > > +
-> > > +       new_hashinfo->ehash = kvmalloc_array(ehash_entries,
-> > > +                                            sizeof(struct inet_ehash_bucket),
-> > > +                                            GFP_KERNEL_ACCOUNT);
-> >
-> > Note that in current kernel,  init_net ehash table is using hugepages:
-> >
-> > # dmesg | grep "TCP established hash table"
-> > [   17.512756] TCP established hash table entries: 524288 (order: 10,
-> > 4194304 bytes, vmalloc hugepage)
-> >
-> > As this is very desirable, I would suggest using the following to
-> > avoid possible performance regression,
-> > especially for workload wanting a big ehash, as hinted by your changelog.
-> >
-> > new_hashinfo->ehash = vmalloc_huge(ehash_entries * sizeof(struct
-> > inet_ehash_bucket), GFP_KERNEL_ACCOUNT);
-> >
-> > (No overflow can happen in the multiply, as ehash_entries < 16M)
->
-> Do we need 'get_order(size) >= MAX_ORDER' check or just use it?
-
-No need, just use it.
-
-If you happen to allocate 1MB, vmalloc_huge() will simply use 256 4k
-pages, not 2MB.
-
-> Due to the test in alloc_large_system_hash(), on a machine where the
-> calculted bucket size is not large enough, we don't use hugepages for
-> init_net.
-
-I can tell that even my laptop allocates hugepage...
-
-And it will all depend on the user-configured ehash table size.
-
->
->
-> > Another point is that on NUMA, init_net ehash table is spread over
-> > available NUMA nodes.
-> >
-> > While net_pernet_hashinfo_alloc() will allocate pages depending on
-> > current process NUMA policy.
-> >
-> > Maybe worth noting this in the changelog, because it is very possible
-> > that new nets
-> > is created with default NUMA policy, and depending on which cpu
-> > current thread is
-> > running, hash table will fully reside on a 'random' node, with very
-> > different performance
-> > results for highly optimized networking applications.
->
-> Sounds great!
-> But I'm not familiar with mm, so let me confirm a bit more.
->
-> It seems vmalloc_huge() always pass NUMA_NO_NODE to __vmalloc_node_range(),
-> so if we use vmalloc_huge(), the per-net ehash will be spread on each NUMA
-> nodes unless vmap_allow_huge is disabled in the kernel parameters, right?
-
-No, it depends on current NUMA policy
-
-"man numa"
-
-By default, at system init time, NUMA policy spreads allocations on
-all memory nodes.
-
-After system has booted, default NUMA policy allocates memory on your
-local node only.
-
-You can check on a NUMA host how vmalloc regions are spread
-
-grep N0= /proc/vmallocinfo
-grep N1= /proc/vmallocinfo
-
-
-For instance, all large system hashes are evenly spread:
-
-grep alloc_large_system_hash /proc/vmallocinfo
-...
-0x00000000c13cf72b-0x0000000068e51b86 4198400
-alloc_large_system_hash+0x160/0x3aa pages=1024 vmalloc vpages N0=512
-N1=512
-...
-
-while:
-# echo 200000 >/proc/sys/net/ipv4/tcp_child_ehash_entries
-# unshare -n
-# grep  inet_pernet_hashinfo_alloc /proc/vmallocinfo
-0x00000000980d41fd-0x00000000ea510502 2101248
-inet_pernet_hashinfo_alloc+0x79/0x910 pages=512 vmalloc N1=512
-
-(everything has been allocated into N1, because "unshare -n" probably
-was scheduled on a cpu in NUMA node1)
-
-
-
->
-> Or, even if we use vmalloc_huge(), the ehash could be controlled by the
-> current process's NUMA policy?  (Sorry I'm not sure where the policy is
-> applied..)
->
->
-> > > +       if (!new_hashinfo->ehash)
-> > > +               goto free_hashinfo;
-> > > +
-> > > +       new_hashinfo->ehash_mask = ehash_entries - 1;
-> > > +
-> > > +       if (inet_ehash_locks_alloc(new_hashinfo))
-> > > +               goto free_ehash;
-> > > +
-> > > +       for (i = 0; i < ehash_entries; i++)
-> > > +               INIT_HLIST_NULLS_HEAD(&new_hashinfo->ehash[i].chain, i);
-> > > +
-> > > +       new_hashinfo->bind_bucket_cachep = hashinfo->bind_bucket_cachep;
-> > > +       new_hashinfo->bhash = hashinfo->bhash;
-> > > +       new_hashinfo->bind2_bucket_cachep = hashinfo->bind2_bucket_cachep;
-> > > +       new_hashinfo->bhash2 = hashinfo->bhash2;
-> > > +       new_hashinfo->bhash_size = hashinfo->bhash_size;
-> > > +
-> > > +       new_hashinfo->lhash2_mask = hashinfo->lhash2_mask;
-> > > +       new_hashinfo->lhash2 = hashinfo->lhash2;
-> > > +
+DQo+IEZyb206IFNpLVdlaSBMaXUgPHNpLXdlaS5saXVAb3JhY2xlLmNvbT4NCj4gU2VudDogV2Vk
+bmVzZGF5LCBTZXB0ZW1iZXIgNywgMjAyMiA1OjQwIFBNDQo+IA0KPiANCj4gT24gOS83LzIwMjIg
+MTI6NTEgUE0sIFBhcmF2IFBhbmRpdCB3cm90ZToNCj4gPj4gQW5kIEknZCBsaWtlIGNvbW1pdCBs
+b2cgdG8gaW5jbHVkZSByZXN1bHRzIG9mIHBlcmYgdGVzdGluZw0KPiA+PiAtIHdpdGggaW5kaXJl
+Y3QgZmVhdHVyZSBvbg0KPiA+IFdoaWNoIGRldmljZSBkbyB5b3Ugc3VnZ2VzdCB1c2luZyBmb3Ig
+dGhpcyB0ZXN0Pw0KPiA+DQo+IFlvdSBtYXkgdXNlIHNvZnR3YXJlIHZob3N0LW5ldCBiYWNrZW5k
+IHdpdGggYW5kIHdpdGhvdXQgZml4IHRvIGNvbXBhcmUuDQo+IFNpbmNlIHRoaXMgZHJpdmVyIGZp
+eCBlZmZlY3RpdmVseSBsb3dlcnMgZG93biB0aGUgYnVmZmVyIHNpemUgZm9yIHRoZQ0KPiBpbmRp
+cmVjdD1vbiBjYXNlIGFzIHdlbGwsIA0KRG8geW91IGhhdmUgc2FtcGxlIGV4YW1wbGUgZm9yIHRo
+aXM/DQoNCj4gaXQncyBhIG5hdHVyYWwgcmVxdWVzdCB0byBtYWtlIHN1cmUgbm8gcGVyZg0KPiBk
+ZWdyYWRhdGlvbiBpcyBzZWVuIG9uIGRldmljZXMgd2l0aCBpbmRpcmVjdCBkZXNjcmlwdG9yIGVu
+YWJsZWQuIEkgZG9uJ3QNCj4gZXhwZWN0IGRlZ3JhZGF0aW9uIHRob3VnaCBhbmQgdGhpbmsgdGhp
+cyBwYXRjaCBzaG91bGQgaW1wcm92ZSBlZmZpY2llbmN5DQo+IHdpdGggbGVzcyBtZW1vcnkgZm9v
+dCBwcmludC4NCj4gDQpBbnkgc3BlY2lmaWMgcmVhc29uIHRvIGRpc2NvdW50IHRlc3QgZm9yIHRo
+ZSBwYWNrZWQgdnEgaGVyZSBiZWNhdXNlIHRoZSBjaGFuZ2UgYXBwbGllcyB0byBwYWNrZWQgdnEg
+dG9vPw0KDQpJdCBpcyBjb3VudGVyIGludHVpdGl2ZSB0byBzZWUgZGVncmFkYXRpb24gd2l0aCBz
+bWFsbGVyIHNpemUgYnVmZmVycy4NCkJ1dCBzdXJlLCBjb2RlIHJldmlld3MgY2FuIG1pc3MgdGhp
+bmdzIHRoYXQgY2FuIGJyaW5nIHJlZ3Jlc3Npb24gZm9yIHdoaWNoIGl0IHNob3VsZCBiZSB0ZXN0
+ZWQuDQoNCkkgYW0gbm90IGFnYWluc3QgdGhlIHRlc3QgaXRzZWxmLiBJdCBpcyBnb29kIHRoaW5n
+IHRvIGRvIG1vcmUgdGVzdCBjb3ZlcmFnZS4NCldoYXQgaXMgcHV6emxpbmcgbWUgaXMsIEkgZmFp
+bCB0byBzZWUgdGVzdCByZXN1bHRzIG5vdCBhdmFpbGFibGUgaW4gcHJldmlvdXMgY29tbWl0cyBh
+bmQgY292ZXIgbGV0dGVycywgd2hpY2ggaXMgbWFraW5nIHRoaXMgcGF0Y2ggc3BlY2lhbCBmb3Ig
+dGVzdCBjb3ZlcmFnZS4NCk9yIGEgbmV3IHRyZW5kIGJlZ2lucyB3aXRoIHRoaXMgc3BlY2lmaWMg
+cGF0Y2ggb253YXJkcz8NCg0KRm9yIGV4YW1wbGUsIEkgZG9u4oCZdCBzZWUgYSB0ZXN0IHJlc3Vs
+dHMgaW4gY29tbWl0IFsxXSwgWzJdLCBbM10gdG8gaW5kaWNhdGUgdGhhdCBubyBkZWdyYWRhdGlv
+biBpcyBzZWVuIHdoaWNoIGhlYXZpbHkgdG91Y2hlcyB0aGUgbG9jayBpbiBjb3JlIGRhdGEgcGF0
+aC4NCg0KU28gd2FudCB0byBrbm93IHRlc3QgcmVwb3J0aW5nIGd1aWRlbGluZXMgaW4gdGhlIGNv
+bW1pdCBsb2dzIGZvciB0aGlzIGFuZCBvdGhlciBwYXRjaGVzLg0KDQpbMV0gY29tbWl0IDVhMmY5
+NjZkMGYNClsyXSBjb21taXQgYTc3NjZlZjE4YjMzIA0KWzNdIGNvbW1pdCAyMmJjNjNjNThlODc2
+DQo=
