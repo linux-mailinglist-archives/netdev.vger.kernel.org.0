@@ -2,127 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 146305B0922
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 17:48:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 303B45B0939
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 17:52:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229755AbiIGPsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 11:48:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50414 "EHLO
+        id S229744AbiIGPwV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 11:52:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229786AbiIGPsB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 11:48:01 -0400
-Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A11DAB9F90;
-        Wed,  7 Sep 2022 08:47:58 -0700 (PDT)
-Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-127dca21a7dso9740590fac.12;
-        Wed, 07 Sep 2022 08:47:58 -0700 (PDT)
+        with ESMTP id S229730AbiIGPwT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 11:52:19 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65D9C3DF10
+        for <netdev@vger.kernel.org>; Wed,  7 Sep 2022 08:52:17 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id bp20so20611741wrb.9
+        for <netdev@vger.kernel.org>; Wed, 07 Sep 2022 08:52:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:reply-to:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date;
+        bh=NYzhmzD+Hlo+7fMnBjpgbj1puf06rcJdgGC2mEQ/ztA=;
+        b=LDxfrhEFnmzhrhYxmVz2myek1v8Bg4MQZrIBkKNIxjNF4GsBJfYRcaNQsrLU454+Zu
+         m2M2HNxKxBP3PTGgdMVhVMxjLitd7P9ehj2zQpmTRyfI1uxnISmUzWktA5MqkektQfDT
+         E467PnvS767e8UOwq0biUv1X5OjAnkPx4lXNpqD0FMYx4GuCqnVOQHjZE1iX7HlR285h
+         QSkmX64GTXSzBaHFD+cQzyaOEyse2CjJ1YP5YheOh0tfzQ19wjd1uihOhetibhAQCi4s
+         lgF42EhjbGXR5MpUDEgTRkxmIGThCEyB/us+RykzHCPcdcVx67w+gIZxiOCfDrulW2wH
+         F8XA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=P9M7/bzZ0ZMw/d0qpnlcd3bSu1NtUDhgwC52m6jfjak=;
-        b=ay3OgbdOmmRKaP7uBF4xjWNyjko0xdBI/R4BTiAJ+bGYc5lyszUgyVAaMzpbM/tI2s
-         8u415YkLMaaAQmXhPWnVGQHdVLQOfkZEp+osXK/HoQ/uskwBczh1e96ZdBackJ+Oe3H+
-         UHiyChPYq+zTzLms++uTXAFPQ7OejVuBJ9hJEopOiar/MWMZb/JLv+2haJ5F4b5S1kiD
-         Mrlpcqu7yDU1ero7nFL9y3oiytMgNBvtqMxb5ikxKR9EqADxxxrvEKpGGLrMu0bx8T2K
-         xrycjTbM3reI45VbNP+9w7eE/xFY36Ivf30Ok2Wa40IzX1LnThxuHrbR+1DAE/bomJu1
-         jiTQ==
-X-Gm-Message-State: ACgBeo3LkQGy8lLT51Fgs74wK6ooEB7ZIaLRXA4gFv+G2RhFaGjbYoPD
-        jb+TDdPGQ3Y0tdiHqDR+qg==
-X-Google-Smtp-Source: AA6agR7V8XXJWCZA66/vmCNdtFQHBPBeY7vIpPYKBM+iV7v+1t93G419nZX9b4Lu3VamSExZLcbo0Q==
-X-Received: by 2002:a05:6808:1489:b0:344:7ff8:54e8 with SMTP id e9-20020a056808148900b003447ff854e8mr12233447oiw.195.1662565677655;
-        Wed, 07 Sep 2022 08:47:57 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id bm23-20020a0568081a9700b0034480f7eec4sm6558187oib.12.2022.09.07.08.47.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Sep 2022 08:47:57 -0700 (PDT)
-Received: (nullmailer pid 3514416 invoked by uid 1000);
-        Wed, 07 Sep 2022 15:47:56 -0000
-Date:   Wed, 7 Sep 2022 10:47:56 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        asahi@lists.linux.dev, brcm80211-dev-list.pdl@broadcom.com,
-        "David S. Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Hector Martin <marcan@marcan.st>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rafa__ Mi__ecki <zajec5@gmail.com>,
-        SHA-cyfmac-dev-list@infineon.com, Sven Peter <sven@svenpeter.dev>,
-        van Spriel <arend@broadcom.com>
-Subject: Re: [PATCH net-next 01/12] dt-bindings: net: bcm4329-fmac: Add Apple
- properties & chips
-Message-ID: <20220907154756.GA3505310-robh@kernel.org>
-References: <YxhMaYOfnM+7FG+W@shell.armlinux.org.uk>
- <E1oVpmk-005LBL-5U@rmk-PC.armlinux.org.uk>
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:reply-to:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date;
+        bh=NYzhmzD+Hlo+7fMnBjpgbj1puf06rcJdgGC2mEQ/ztA=;
+        b=1cwqhWZ8fob4Z7Vv0Yk0Glytx7Tr4IaIN7+YZiZl6nu90U0O5Zgx0DOsTzj4ZQMA2a
+         yEvNFBdxpX0wYXO8eMzQqlIanDqCc4Sj60/ISJOMQJNO3+Er+k6nv6E1mI6OtGv0pUCB
+         nl1O6EhE68V1zPCn+/shwCUqmzWzeaLXgh3ef1sV6aJdBcs0xA2ZwzMJTNgZtaaYz2nL
+         ckN0b/ITr72a3zo9Gtswu3TEAJclcB7kEntBv0yoSkVl6M/XTvCeI7u4P3/m6q1s7YCa
+         c4jP88dzXqbTnpFb4RuVDEAMxpAZVI9Huu7Dhns1XdB6CmhhoQjdbm5+V2XPdIDs8Otc
+         HgBg==
+X-Gm-Message-State: ACgBeo2QEZ4auGvphDhmL0A5VslGEJNGFgLdjh+8JiFYdHDEhR5+V4Ub
+        kYlwPM1h1V9nRlnM8pu+xa1K2Q==
+X-Google-Smtp-Source: AA6agR6Ck/iuOSME6EjZf8jow12+0iA5PATS6wY7tjSqX+x7dYs/TYvadEnR8TtfnZ08Q6C4u32vow==
+X-Received: by 2002:a05:6000:18a1:b0:222:c54a:3081 with SMTP id b1-20020a05600018a100b00222c54a3081mr2463664wri.666.1662565935974;
+        Wed, 07 Sep 2022 08:52:15 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:b41:c160:d023:bfe9:4cda:fa70? ([2a01:e0a:b41:c160:d023:bfe9:4cda:fa70])
+        by smtp.gmail.com with ESMTPSA id e4-20020a5d65c4000000b00228cd9f6349sm9500020wrw.106.2022.09.07.08.52.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 07 Sep 2022 08:52:14 -0700 (PDT)
+Message-ID: <953e16f5-80bd-2098-bd7f-5f4fd74ceaaa@6wind.com>
+Date:   Wed, 7 Sep 2022 17:52:13 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <E1oVpmk-005LBL-5U@rmk-PC.armlinux.org.uk>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH nf-next] netfilter: nf_tables: add ebpf expression
+Content-Language: en-US
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@kernel.org>,
+        netfilter-devel <netfilter-devel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+References: <20220831101617.22329-1-fw@strlen.de> <87v8q84nlq.fsf@toke.dk>
+ <20220831125608.GA8153@breakpoint.cc> <87o7w04jjb.fsf@toke.dk>
+ <20220831135757.GC8153@breakpoint.cc> <87ilm84goh.fsf@toke.dk>
+ <20220831152624.GA15107@breakpoint.cc>
+ <CAADnVQJp5RJ0kZundd5ag-b3SDYir8cF4R_nVbN8Zj9Rcn0rww@mail.gmail.com>
+ <20220831155341.GC15107@breakpoint.cc>
+ <CAADnVQJGQmu02f5B=mc1xJvVWSmk_GNZj9WAUskekykmyo8FzA@mail.gmail.com>
+ <20220831215737.GE15107@breakpoint.cc>
+ <bf148d57-dab9-0e25-d406-332d1b28f045@6wind.com>
+ <CAADnVQLYcjhpVaFJ3vriDcv=bczXddRd=q83exNNPrgnvsCEAg@mail.gmail.com>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+In-Reply-To: <CAADnVQLYcjhpVaFJ3vriDcv=bczXddRd=q83exNNPrgnvsCEAg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-6.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 07, 2022 at 08:47:46AM +0100, Russell King wrote:
-> From: Hector Martin <marcan@marcan.st>
-> 
-> This binding is currently used for SDIO devices, but these chips are
-> also used as PCIe devices on DT platforms and may be represented in the
-> DT. Re-use the existing binding and add chip compatibles used by Apple
-> T2 and M1 platforms (the T2 ones are not known to be used in DT
-> platforms, but we might as well document them).
-> 
-> Then, add properties required for firmware selection and calibration on
-> M1 machines.
-> 
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> Signed-off-by: Hector Martin <marcan@marcan.st>
-> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> ---
->  .../net/wireless/brcm,bcm4329-fmac.yaml       | 37 +++++++++++++++++--
->  1 file changed, 34 insertions(+), 3 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml b/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
-> index 53b4153d9bfc..53ded82b273a 100644
-> --- a/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
-> +++ b/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
-> @@ -4,7 +4,7 @@
->  $id: http://devicetree.org/schemas/net/wireless/brcm,bcm4329-fmac.yaml#
->  $schema: http://devicetree.org/meta-schemas/core.yaml#
->  
-> -title: Broadcom BCM4329 family fullmac wireless SDIO devices
-> +title: Broadcom BCM4329 family fullmac wireless SDIO/PCIE devices
->  
->  maintainers:
->    - Arend van Spriel <arend@broadcom.com>
-> @@ -42,10 +42,16 @@ title: Broadcom BCM4329 family fullmac wireless SDIO devices
->                - cypress,cyw43012-fmac
->            - const: brcm,bcm4329-fmac
->        - const: brcm,bcm4329-fmac
 
-If you respin, this compatible can be combined with the enum below.
+Le 07/09/2022 à 05:04, Alexei Starovoitov a écrit :
+> On Mon, Sep 5, 2022 at 11:57 PM Nicolas Dichtel
+> <nicolas.dichtel@6wind.com> wrote:
+>>
+>>
+>> Le 31/08/2022 à 23:57, Florian Westphal a écrit :
+>>> Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+>>>>> This helps gradually moving towards move epbf for those that
+>>>>> still heavily rely on the classic forwarding path.
+>>>>
+>>>> No one is using it.
+>>>> If it was, we would have seen at least one bug report over
+>>>> all these years. We've seen none.
+>>>
+>>> Err, it IS used, else I would not have sent this patch.
+>>>
+>>>> very reasonable early on and turned out to be useless with
+>>>> zero users.
+>>>> BPF_PROG_TYPE_SCHED_ACT and BPF_PROG_TYPE_LWT*
+>>>> are in this category.
+>>>
+>>> I doubt it had 0 users.  Those users probably moved to something
+>>> better?
+>> We are using BPF_PROG_TYPE_SCHED_ACT to perform custom encapsulations.
+>> What could we used to replace that?
+> 
+> SCHED_CLS. It has all of the features of cls and act combined.
 
-> +      - enum:
-> +          - pci14e4,43dc  # BCM4355
-> +          - pci14e4,4464  # BCM4364
-> +          - pci14e4,4488  # BCM4377
-> +          - pci14e4,4425  # BCM4378
-> +          - pci14e4,4433  # BCM4387
-
-
-Reviewed-by: Rob Herring <robh@kernel.org>
+Indeed, thanks.
