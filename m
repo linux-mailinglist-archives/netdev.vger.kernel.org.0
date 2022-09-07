@@ -2,155 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 25B675B09BF
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 18:08:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 370555B09CB
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 18:12:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229766AbiIGQIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 12:08:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36900 "EHLO
+        id S230087AbiIGQMx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 12:12:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229652AbiIGQIZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 12:08:25 -0400
-Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE1583AE7F;
-        Wed,  7 Sep 2022 09:08:21 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id 50B395C0150;
-        Wed,  7 Sep 2022 12:08:18 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Wed, 07 Sep 2022 12:08:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; t=1662566898; x=1662653298; bh=09XcLY+Oh89nxAbOdZB+wq/xVi9I
-        kY5d9sAv3nm7+vU=; b=S+2VagZcRJa0df0SXZoltSC5mTxQ2CJMLQbGS+ADdHeb
-        6GkHCYghhu6pQnr7fny4YGaX/Yce6RLfhEqLSiBT+AUaNN50TaUtBwQRJ7MC1SmQ
-        Q7aaJFrZ/+GwZ+SNNjwG1X9GlAOT/zkiVm7GD6fw7kC6WwE6pI7aeK2TF2AtTyud
-        e9BG7W3tQG0aUUlNMTl+tA+skmheYcf6Ir/dKwhZ8btyFXYAGik/A+YgJ+lpQ2pR
-        PTZI3soXAa4BAnKghj63bdVjjMTs3hq1Qh7DzwkwjE/D3EACsAgNJch4ydfcZSF4
-        K/8QkNh+XUceApvbG9kiyEVU6nTj3LHrnE6xdtncRA==
-X-ME-Sender: <xms:8cEYY8Mo99YOk85-NRX0cy2LFdqOmW0Pd4eG1z8avUKe3n8A50wPJA>
-    <xme:8cEYYy-plYsm4M_CZK7B0HtP5dSsZJcoYjKqESg61_kD7603opVArBAkOIHSOseCY
-    LAwHrpInoM1RXU>
-X-ME-Received: <xmr:8cEYYzSbbZVxXSY0KkJXrtsu6mCQGRvpApk4HqVW5RMl7PwDnbg2n8OkrIntx805cJKR3UpgFsYFroQaRH-meOk1KcdKIw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfedttddgleejucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnhepfeehffeggeffueffheeitdfhkedtfeelffffjeegtedtffegieejjeeuteej
-    teevnecuffhomhgrihhnpehofhhflhhorggurdhphienucevlhhushhtvghrufhiiigvpe
-    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:8cEYY0s574npuVmYzJvedy1Yu5t-t5SZaQ7qQV4isikwv2QTzw8LBQ>
-    <xmx:8cEYY0eLvL8_qBZs6c1d6L16JBKoF2QVityTgEhKcPWxJdtTX8W3lQ>
-    <xmx:8cEYY42zw4BLGYFAtgoF4QyrpVtVonW2PQsx9Xg4Xd_ZxJ4hOtM70A>
-    <xmx:8sEYYz-XXd8EynQ6tmnN6sEV7OTbM-5p3JEML7n-JKmnG5OyzfWK0A>
-Feedback-ID: i494840e7:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 7 Sep 2022 12:08:17 -0400 (EDT)
-Date:   Wed, 7 Sep 2022 19:08:13 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     "Zhou, Jie2X" <jie2x.zhou@intel.com>, kuba@kernel.org
-Cc:     "andrii@kernel.org" <andrii@kernel.org>,
-        "mykolal@fb.com" <mykolal@fb.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "martin.lau@linux.dev" <martin.lau@linux.dev>,
+        with ESMTP id S229477AbiIGQMv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 12:12:51 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 753149C2EA
+        for <netdev@vger.kernel.org>; Wed,  7 Sep 2022 09:12:49 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=liocXmwd8PjiMeZFiu+5ZZqnwsspbDcLYZ8E+u4mvyvlC2MO89WnTISsfW7pOMJ9qVraC6AIkjrTtjIjaN6ZLkQ7I7qOCwHkw6duXrwTO/a1GLJp5kI3MzC4DMr6AKsuFzBNLcz8nBGt/JmRWdG1e4UxtC/8qqPak3KlrYJFVOcCAfwWu2B9ef1FISQRbr7liviywwH+ga6Fa3nxDwZxzRTLCYflInL4s1DnWZdCb1Mg0JkY9XBfRWtw99QNaDBobeN77qKDePC8v6nWrh5rvdM/M4KX8ZH9GaqpamBnYYU0ez3jxMVZNHnaF2zSK1mPcRkOFxiRb8/72lkQ2rRliw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=OdFpmOLPlQKDFi2KQuixc0xzowfrdtCkNv189wwCenQ=;
+ b=QAl0PivRH0I3XvuEJDPj0cFUO2anNOwER7JP4uzMEIzDR5U7x3B+QHqMrhFZs5vNB6gi6O+/6RmyYoE7LBEld9EHcyXX82X3q7Pau6uj/IC8sj0NHk50arTUwu2ePDcH2Ud5CCMofe6LEWxrdV6RGHQqYQfpRpTZQMRnOOxWmz44JSwbR5XtpfS2tuKjbAZSAz0ovS0BTjLdpb0HG34oqsgNwK44tBOctOVtfl0PmYI/WNQ/PIS8U4K1kpOJOvEB6ud94B7sQoh8DZELZxz8uTL6tH5gbvyFry6msZzD77UaXWlENLQgsVj2eoG8WvWJAt9Yg+mEKHG5fOB2YJR3Vg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OdFpmOLPlQKDFi2KQuixc0xzowfrdtCkNv189wwCenQ=;
+ b=rT7E4DrB+UW/Xp1bY3EoP6X+6+ySOXQC8PbvqqpEq8jaRqE80F7PiAT/RcFd69O4k+pfP4nH8sJXyrYt3xMQtH2It6c7wtwrEXNo9xRQq+xoEoBSxkRr2aSn+9uYgAf9UCPh9cd+v+c2Q5nIOQfuWWq7H746nyKkfg15IyT7ufeMB00FWj5rDVU16XVfhr+9WGz+A8s4vcUzbsOhX8RhRU/YcDt1VDrMunaUFJIeHrEm6BNumybeoNhrWi2AWUzwY6Ujubm87aU0/Ey1shp+S0EleV0pecbgd0VUz2SCPD4We/2/Zac0cKs3oApC2t4AHiWHJkWLNb7g+2lG8Cqh7w==
+Received: from PH0PR12MB5481.namprd12.prod.outlook.com (2603:10b6:510:d4::15)
+ by DM4PR12MB5866.namprd12.prod.outlook.com (2603:10b6:8:65::6) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5612.12; Wed, 7 Sep 2022 16:12:47 +0000
+Received: from PH0PR12MB5481.namprd12.prod.outlook.com
+ ([fe80::1429:e3e9:dc54:ba98]) by PH0PR12MB5481.namprd12.prod.outlook.com
+ ([fe80::1429:e3e9:dc54:ba98%9]) with mapi id 15.20.5612.014; Wed, 7 Sep 2022
+ 16:12:47 +0000
+From:   Parav Pandit <parav@nvidia.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+CC:     Gavin Li <gavinl@nvidia.com>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>,
         "davem@davemloft.net" <davem@davemloft.net>,
+        "jesse.brandeburg@intel.com" <jesse.brandeburg@intel.com>,
         "kuba@kernel.org" <kuba@kernel.org>,
-        "hawk@kernel.org" <hawk@kernel.org>,
+        "sridhar.samudrala@intel.com" <sridhar.samudrala@intel.com>,
+        "jasowang@redhat.com" <jasowang@redhat.com>,
+        "loseweigh@gmail.com" <loseweigh@gmail.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Li, Philip" <philip.li@intel.com>,
-        "petrm@nvidia.com" <petrm@nvidia.com>
-Subject: Re: test ./tools/testing/selftests/bpf/test_offload.py failed
-Message-ID: <YxjB7RZvVrKxJ4ec@shredder>
-References: <20220907051657.55597-1-jie2x.zhou@intel.com>
- <Yxg9r37w1Wg3mvxy@shredder>
- <CY4PR11MB1320E553043DC1D67B5E7D56C5419@CY4PR11MB1320.namprd11.prod.outlook.com>
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+        Gavi Teitz <gavi@nvidia.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>
+Subject: RE: [PATCH v5 2/2] virtio-net: use mtu size as buffer length for big
+ packets
+Thread-Topic: [PATCH v5 2/2] virtio-net: use mtu size as buffer length for big
+ packets
+Thread-Index: AQHYwpEbqLdY6RByfkyoSMo8wpA6EK3TsrMAgABG8oCAAA3LAIAAADnAgAACroCAABYGQA==
+Date:   Wed, 7 Sep 2022 16:12:47 +0000
+Message-ID: <PH0PR12MB5481066A18907753997A6F0CDC419@PH0PR12MB5481.namprd12.prod.outlook.com>
+References: <20220901021038.84751-1-gavinl@nvidia.com>
+ <20220901021038.84751-3-gavinl@nvidia.com>
+ <20220907012608-mutt-send-email-mst@kernel.org>
+ <0355d1e4-a3cf-5b16-8c7f-b39b1ec14ade@nvidia.com>
+ <20220907052317-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB54812EC7F4711C1EA4CAA119DC419@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220907101335-mutt-send-email-mst@kernel.org>
+ <PH0PR12MB5481D19E1E5DA11B2BD067CFDC419@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220907103420-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20220907103420-mutt-send-email-mst@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|DM4PR12MB5866:EE_
+x-ms-office365-filtering-correlation-id: ca4e01e5-951d-422a-4896-08da90ebce0e
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: sMALsQQxew5XC+klPa0so9UU9DfwymX11DTZBJZHiCfA3OtkqCcbb5Llw3Ni1q/X+QsUdTATnPivFWsq9F/1MUR9PO3kQpYhCiVyDFQCLKjVRCnpmYYeCQdE0zVbJUzAn2Mp7y5rwQm8KbVadm8TFtWJwOCXNzdR7FBssMFavuMpr7YYJ2WzapTzJVnZTuKColV8hvDhT/jeRcV355XJWa/V+4NVQoWypuJwd/vOeKYh1knzvKxdXJFXAyKNOqvABniWeHVy4q6Z0B5HnYtxV3lKFm2s5kOg4Ee1t1DZ9Ed5rnXIhQ8VUDdxO0moPtO0boJVzI3MjO5B+XoNnucu7/yMhs/jCdbUrOZ87BXwNGFZKTf9uCdv5Kq5XafjIH1o8NGLulT+9bkIHe9Hp9bfg22+pG+CsK2ncSit/gt1apcqP+oQ0BVEroo9ykN4UEP+hGLdjKKb9sPCntkGMcPhHSo9EfgxOl5GcGKhliR8B39iCC/V/3lHYLQWKLKWcNqX9kxHyhtrL9+ALLvaBKcutUVHVCYIwk4YCOgmP1mJS/RLrfeXqN8FYT/pjfwO51lEKoUDgVoXr8NmFNxeYUIqxK8mHo0+IU0b3YXK0mnKD17/ZRRLHOzAp7eplIpozCBA4GwYnAbU3Hir+TL/cFUh6PBcYytcc0+jMZ2k1SftoFb4M2Uykgfqz03+aFdHDeQGjkyYJ7SKcvSK0oFuxH+O1HuB1PB9sDiFKemvLwwSDD3T/sMmfYaVwPMY9SlHkm8Mq34KGBKLTntx+9L1v5uWJ14m1krpawwSEpQrBtefzBORO07joiMmbxB4ybHAEeTa
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(396003)(39860400002)(376002)(346002)(136003)(26005)(9686003)(55016003)(71200400001)(316002)(86362001)(122000001)(2906002)(6916009)(7696005)(6506007)(54906003)(76116006)(41300700001)(5660300002)(478600001)(83380400001)(38070700005)(66946007)(8936002)(33656002)(7416002)(186003)(38100700002)(66476007)(64756008)(66556008)(8676002)(66446008)(52536014)(4326008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?OAak2PfTnSwTrtdnla1Z8dePwmDUmd0CE/mvNEq/dJJuByfOusT6Pwzg43i7?=
+ =?us-ascii?Q?uKuFCMGWnQ1OmyjdP7cecw0pXEzvV9Us+dohK7ccGGBx2rq1/xvtsnDHjDxk?=
+ =?us-ascii?Q?KNApTEuLsp1PsWiPrDjF5/v+XaETtiQK4mqIt51Yv94cLR2hfV6X63S//d1d?=
+ =?us-ascii?Q?LDo5y1CuQoQLoZGVubB3MAfbeHgJr9nubxkdlzIn1W9hJstGCfj/4n1ncFiu?=
+ =?us-ascii?Q?spNpVo6w7Go8XZuvpRznemB69ylhIqG6olKrO6WGej0Z6kNsz3EC83ZM7xud?=
+ =?us-ascii?Q?E82sNQ6MQpqAAf9lfkEeftV0sA4NoYMp/ugcZjePAto/n5E6nhezBz6kyj7i?=
+ =?us-ascii?Q?AHjQiALI0sDVkJoDIXP2zqDBrgyXo0WbiPDmWL4NilfSKM/3J3a/paJ3iZIH?=
+ =?us-ascii?Q?RaSc1vnQ2BNwHtVLQRViMaJzAc9JFH/JlEJLcJt6IKMvwouKZ5BOISsJrblo?=
+ =?us-ascii?Q?IuY8k3CFML5hwGlrSqvf10nCOdiUaRY9JZp3JJGK4RN4/71srCR/qU0xGoTQ?=
+ =?us-ascii?Q?PAG5vaRo84Wk6fH5BNUHBKNBChh/UZiCTFVeKpJ7DH1++YbKRP43Oquu/CXJ?=
+ =?us-ascii?Q?eAUQGtnTankqralO4BIg/b2V4PGBrLB386m6ofYPATtuJ/ARBrGAymRUJRX9?=
+ =?us-ascii?Q?VY2StBXVjgozmMTmHS25pKKQxfN67FHVdunoiIVNJXSChYAwmMKM6oEr3nIy?=
+ =?us-ascii?Q?OH9ls4/NGSV04oOPlEbuqOcZYFjV71JWwd5GvIPLvByu2jo4wXAok+/OC53y?=
+ =?us-ascii?Q?LLSyys4LI/vrYoYVH1549bMm+pO/TaZabNYy34zjVyZZ8gA3PF0FGgU1Ttlc?=
+ =?us-ascii?Q?Q4Wbae3DrCAL6Vd33qlRjcAbJIzMHTrJUvQVHoa//wHB7PfY03chHRGw8cPw?=
+ =?us-ascii?Q?/F9K8YkHRxtobdcMISfaBLhwjNCWK+OW8jrBYU7SsqWsgFzEgh1fwpPt7HUy?=
+ =?us-ascii?Q?vA+d3PsLMtLqePBs98qIlnG01sg1xmPWXJYe9FcBzFMfe7y7OHKxw2xg9kY1?=
+ =?us-ascii?Q?m3q4FjAg1wzCsPIBVyd/sZKHuzF7h/zAkjxXjCWU7Rs7D/NcyfFq+q7q/ohq?=
+ =?us-ascii?Q?DBUIDlXTidQSdLtuwnKjQbXpmm/NEjIz4jq+4EV111AXJviUcmQ9YPdUzILE?=
+ =?us-ascii?Q?89gR9ZlabCL9wbiJVa4xp7vyk203vBMDN//nN6ciYBdUFRfEedBH6gG1wjvP?=
+ =?us-ascii?Q?Ht3CIRsZZiqo9KQLhTBgVYfFtx7Tr8L5uqPoVoQO1Eqh25f+hI/pTJ/9+ain?=
+ =?us-ascii?Q?yu5hvdK3Ie+wqupkFFYvchJj3ADSIez4tajZq/DcbotH+Go5U762yImodTzR?=
+ =?us-ascii?Q?9pfUmK1fOLz3le0IQhAFQ6W842ghjiPmqV7xANUfWptiSVsw2r9apFuVodTG?=
+ =?us-ascii?Q?n7Xo42Sa0rZ2Oh2MzxpfFjxszdVIdf9CKX4k0KkYx1xzvIANpEy6uT/pxaPn?=
+ =?us-ascii?Q?jKtsNrrO07uSQoLagCOenKGCT5TCfnhdV/HixRoYEchp6VOBgoMbbir/sMkX?=
+ =?us-ascii?Q?CRgYSGkW3Li7UdBc5FGp4L2lzEDaD+ZInj4yfDqPkNXkp0Bb/HZ9ez6QTorI?=
+ =?us-ascii?Q?isaeRtUqTvWcbMVAAMs=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CY4PR11MB1320E553043DC1D67B5E7D56C5419@CY4PR11MB1320.namprd11.prod.outlook.com>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ca4e01e5-951d-422a-4896-08da90ebce0e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Sep 2022 16:12:47.4790
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 5ePvGptBLaqDyUCNmnU2FmqRnSDHveZnsrW73GSpicBiSV4EggRe9WuZ0e0JNZ9IDLc2Jd49AsEHvczplI1i+A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5866
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 07, 2022 at 08:51:56AM +0000, Zhou, Jie2X wrote:
-> What is the output of test_offload.py?
 
-This output [1], but requires this [2] additional fix on top of the one
-I already posted for netdevsim. Hopefully someone more familiar with
-this test can comment if this is the right fix or not.
+> From: Michael S. Tsirkin <mst@redhat.com>
+> Sent: Wednesday, September 7, 2022 10:40 AM
+>=20
+> On Wed, Sep 07, 2022 at 02:33:02PM +0000, Parav Pandit wrote:
+> >
+> > > From: Michael S. Tsirkin <mst@redhat.com>
+> > > Sent: Wednesday, September 7, 2022 10:30 AM
+> >
+> > [..]
+> > > > > actually how does this waste space? Is this because your device
+> > > > > does not have INDIRECT?
+> > > > VQ is 256 entries deep.
+> > > > Driver posted total of 256 descriptors.
+> > > > Each descriptor points to a page of 4K.
+> > > > These descriptors are chained as 4K * 16.
+> > >
+> > > So without indirect then? with indirect each descriptor can point to
+> > > 16 entries.
+> > >
+> > With indirect, can it post 256 * 16 size buffers even though vq depth i=
+s 256
+> entries?
+> > I recall that total number of descriptors with direct/indirect descript=
+ors is
+> limited to vq depth.
+>=20
+>=20
+> > Was there some recent clarification occurred in the spec to clarify thi=
+s?
+>=20
+>=20
+> This would make INDIRECT completely pointless.  So I don't think we ever
+> had such a limitation.
+> The only thing that comes to mind is this:
+>=20
+> 	A driver MUST NOT create a descriptor chain longer than the Queue
+> Size of
+> 	the device.
+>=20
+> but this limits individual chain length not the total length of all chain=
+s.
+>=20
+Right.
+I double checked in virtqueue_add_split() which doesn't count table entries=
+ towards desc count of VQ for indirect case.
 
-Without it, bpftool refuses to load the program [3].
-
-[1]
-# ./test_offload.py
-Test destruction of generic XDP...
-Test TC non-offloaded...
-Test TC non-offloaded isn't getting bound...
-Test TC offloads are off by default...
-[...]
-test_offload.py: OK
-# echo $?
-0
-
-[2]
-diff --git a/tools/testing/selftests/bpf/progs/sample_map_ret0.c b/tools/testing/selftests/bpf/progs/sample_map_ret0.c
-index 495990d355ef..91417aae6194 100644
---- a/tools/testing/selftests/bpf/progs/sample_map_ret0.c
-+++ b/tools/testing/selftests/bpf/progs/sample_map_ret0.c
-@@ -17,7 +17,8 @@ struct {
- } array SEC(".maps");
- 
- /* Sample program which should always load for testing control paths. */
--SEC(".text") int func()
-+SEC("xdp")
-+int func()
- {
- 	__u64 key64 = 0;
- 	__u32 key = 0;
-diff --git a/tools/testing/selftests/bpf/progs/sample_ret0.c b/tools/testing/selftests/bpf/progs/sample_ret0.c
-index fec99750d6ea..f51c63dd6f20 100644
---- a/tools/testing/selftests/bpf/progs/sample_ret0.c
-+++ b/tools/testing/selftests/bpf/progs/sample_ret0.c
-@@ -1,6 +1,9 @@
- /* SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause) */
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
- 
- /* Sample program which should always load for testing control paths. */
-+SEC("xdp")
- int func()
- {
- 	return 0;
-diff --git a/tools/testing/selftests/bpf/test_offload.py b/tools/testing/selftests/bpf/test_offload.py
-index 6cd6ef9fc20b..0381f48f45a6 100755
---- a/tools/testing/selftests/bpf/test_offload.py
-+++ b/tools/testing/selftests/bpf/test_offload.py
-@@ -235,7 +235,7 @@ def tc(args, JSON=True, ns="", fail=True, include_stderr=False):
- def ethtool(dev, opt, args, fail=True):
-     return cmd("ethtool %s %s %s" % (opt, dev["ifname"], args), fail=fail)
- 
--def bpf_obj(name, sec=".text", path=bpf_test_dir,):
-+def bpf_obj(name, sec="xdp", path=bpf_test_dir,):
-     return "obj %s sec %s" % (os.path.join(path, name), sec)
- 
- def bpf_pinned(name):
-
-[3]
-# bpftool prog load /home/idosch/code/linux/tools/testing/selftests/bpf/sample_ret0.o /sys/fs/bpf/nooffload type xdp                                                 
-Error: object file doesn't contain any bpf program                                    
-Warning: bpftool is now running in libbpf strict mode and has more stringent requirements about BPF programs.                                                                
-If it used to work for this object file but now doesn't, see --legacy option for more details.
+With indirect descriptors without this patch the situation is even worse wi=
+th memory usage.
+Driver will allocate 64K * 256 =3D 16MB buffer per VQ, while needed (and us=
+ed) buffer is only 2.3 Mbytes.
