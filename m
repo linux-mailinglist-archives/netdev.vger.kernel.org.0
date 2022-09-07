@@ -2,101 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 039AB5AFD2A
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 09:11:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BEDA5AFD38
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 09:14:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230021AbiIGHLO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 03:11:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58914 "EHLO
+        id S229576AbiIGHO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 03:14:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230032AbiIGHLF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 03:11:05 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10B4C86FEB;
-        Wed,  7 Sep 2022 00:11:01 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MMtdP2BrXznV6P;
-        Wed,  7 Sep 2022 15:08:25 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by canpemm500010.china.huawei.com
- (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 7 Sep
- 2022 15:10:58 +0800
-From:   Liu Jian <liujian56@huawei.com>
-To:     <john.fastabend@gmail.com>, <jakub@cloudflare.com>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <daniel@iogearbox.net>, <ast@kernel.org>,
-        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
-CC:     <liujian56@huawei.com>
-Subject: [PATCH bpf] skmsg: schedule psock work if the cached skb exists on the psock
-Date:   Wed, 7 Sep 2022 15:13:11 +0800
-Message-ID: <20220907071311.60534-1-liujian56@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S229437AbiIGHO1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 03:14:27 -0400
+Received: from mail-m975.mail.163.com (mail-m975.mail.163.com [123.126.97.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E651E8E4DB;
+        Wed,  7 Sep 2022 00:14:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=tB1RP
+        O26vXe1FKV6Z0BCxutSM6Hh9I8XS6K8h1ddblw=; b=lULX5HIQA49HMpjnmMClZ
+        bUDrbrnBT081jnGcf/yLo0vTjve0E95ZcYr4gtOirJnKHVSukPOHtpqM5MUA5IJD
+        7RCV7bfKOf3NrieJeHbi1O+RjPWYEicTeYXqseOQEWh9nP/sPdwV22SEMfSJBFJH
+        5B9xKjMFY2R0BhSYy55Tgo=
+Received: from localhost.localdomain (unknown [36.112.3.164])
+        by smtp5 (Coremail) with SMTP id HdxpCgCHGUqjRBhjg6Qvag--.54847S4;
+        Wed, 07 Sep 2022 15:13:51 +0800 (CST)
+From:   Jianglei Nie <niejianglei2021@163.com>
+To:     chuck.lever@oracle.com, jlayton@kernel.org,
+        trond.myklebust@hammerspace.com, anna@kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     linux-nfs@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jianglei Nie <niejianglei2021@163.com>
+Subject: [PATCH] SUNRPC: Fix potential memory leak in xs_udp_send_request()
+Date:   Wed,  7 Sep 2022 15:13:38 +0800
+Message-Id: <20220907071338.56969-1-niejianglei2021@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: HdxpCgCHGUqjRBhjg6Qvag--.54847S4
+X-Coremail-Antispam: 1Uf129KBjvdXoW7Wr1rZFy8CrWkXrWkuw4fuFg_yoWfAFcEgF
+        ykWa1xXr1qganxJayUZa13Gr1ayay7WFZ5u3Z3GFy7J3W8ur13tr10grn3GayxCr43Jr98
+        C3WkKry2yw1SvjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRK7KsUUUUUU==
+X-Originating-IP: [36.112.3.164]
+X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/xtbBOQZ1jF-PPLOtqgAAse
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In sk_psock_backlog function, for ingress direction skb, if no new data
-packet arrives after the skb is cached, the cached skb does not have a
-chance to be added to the receive queue of psock. As a result, the cached
-skb cannot be received by the upper-layer application.
+xs_udp_send_request() allocates a memory chunk for xdr->bvec with
+xdr_alloc_bvec(). When xprt_sock_sendmsg() finishs, xdr->bvec is not
+released, which will lead to a memory leak.
 
-Fix this by reschedule the psock work to dispose the cached skb in
-sk_msg_recvmsg function.
+we should release the xdr->bvec with xdr_free_bvec() after
+xprt_sock_sendmsg() like bc_sendto() does.
 
-Fixes: 604326b41a6f ("bpf, sockmap: convert to generic sk_msg interface")
-Signed-off-by: Liu Jian <liujian56@huawei.com>
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
 ---
- net/core/skmsg.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ net/sunrpc/xprtsock.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index 188f8558d27d..ca70525621c7 100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -434,8 +434,10 @@ int sk_msg_recvmsg(struct sock *sk, struct sk_psock *psock, struct msghdr *msg,
- 			if (copied + copy > len)
- 				copy = len - copied;
- 			copy = copy_page_to_iter(page, sge->offset, copy, iter);
--			if (!copy)
--				return copied ? copied : -EFAULT;
-+			if (!copy) {
-+				copied = copied ? copied : -EFAULT;
-+				goto out;
-+			}
+diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
+index e976007f4fd0..298182a3c168 100644
+--- a/net/sunrpc/xprtsock.c
++++ b/net/sunrpc/xprtsock.c
+@@ -958,6 +958,7 @@ static int xs_udp_send_request(struct rpc_rqst *req)
+ 		return status;
+ 	req->rq_xtime = ktime_get();
+ 	status = xprt_sock_sendmsg(transport->sock, &msg, xdr, 0, 0, &sent);
++	xdr_free_bvec(xdr);
  
- 			copied += copy;
- 			if (likely(!peek)) {
-@@ -455,7 +457,7 @@ int sk_msg_recvmsg(struct sock *sk, struct sk_psock *psock, struct msghdr *msg,
- 				 * didn't copy the entire length lets just break.
- 				 */
- 				if (copy != sge->length)
--					return copied;
-+					goto out;
- 				sk_msg_iter_var_next(i);
- 			}
- 
-@@ -477,7 +479,9 @@ int sk_msg_recvmsg(struct sock *sk, struct sk_psock *psock, struct msghdr *msg,
- 		}
- 		msg_rx = sk_psock_peek_msg(psock);
- 	}
--
-+out:
-+	if (psock->work_state.skb && copied > 0)
-+		schedule_work(&psock->work);
- 	return copied;
- }
- EXPORT_SYMBOL_GPL(sk_msg_recvmsg);
+ 	dprintk("RPC:       xs_udp_send_request(%u) = %d\n",
+ 			xdr->len, status);
 -- 
-2.17.1
+2.25.1
 
