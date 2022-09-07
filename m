@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B4A2C5B0A4F
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 18:41:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 084CA5B0A50
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 18:41:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229624AbiIGQlY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 12:41:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43926 "EHLO
+        id S230246AbiIGQlZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 12:41:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229486AbiIGQlQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 12:41:16 -0400
+        with ESMTP id S230238AbiIGQlR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 12:41:17 -0400
 Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 513B36F271;
-        Wed,  7 Sep 2022 09:41:15 -0700 (PDT)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id AD3955C012E;
-        Wed,  7 Sep 2022 12:41:14 -0400 (EDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E3866F55D;
+        Wed,  7 Sep 2022 09:41:16 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id C06E65C0143;
+        Wed,  7 Sep 2022 12:41:15 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Wed, 07 Sep 2022 12:41:14 -0400
+  by compute2.internal (MEProxy); Wed, 07 Sep 2022 12:41:15 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
         :cc:content-transfer-encoding:date:date:from:from:in-reply-to
         :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm1; t=1662568874; x=1662655274; bh=aL
-        Me3hfwrfUYHRBTM9OM468pvSm6sK4LPXiHdUtizGA=; b=KY63N1HFip65odDm+0
-        5iFjJ5q4V9vmioJBMalPzSEc/F+9bJxSOkY+2VKIz5NO0yGoW9WVtuaw4mcYMVwP
-        vXjPezEnH9Jso8YWXqY4bn7R9LT/kl/O6/DgmAAziFYxJHLXr9NG8EMm/1wGa/y+
-        AlPU1q3f44RCaYmdmaZOyu5IBQFerfQ3mnnFyjkT1pDnutD3QSqzQqV5tbqDT0k7
-        DcMXQTTrEBN67bmih//JxwgWxkxaq6/bLgs1+k7aWR5XeU+wawO0BciwnZjLzHv+
-        Erx6UrwdPYEgIyctlpM+FNJHYzDPUpBkkJPqrFuASXtrBw2aZMaFduyDq8IvWyIV
-        CH4w==
+        :subject:subject:to:to; s=fm1; t=1662568875; x=1662655275; bh=Yi
+        pKfE5H7K9Z8GqiZelawUT7boFvb7Vr7t0y/LekHjU=; b=NuK3uPYJVI4VwIsazO
+        MKYEM8cpzAXqUtbTu6FSAX4Ugx8QI2zubhFtYyvnspqgVE33BJzf6HLl3BIYzTag
+        waauXsxX54P3Z9eMX+LaHZzlsdp/j1RfuofpOXngviC7YPPNLyhAxEYexPICSmqx
+        +VVcdP/hoUGUc8ipXzVwLXOtU3e/5sAuyqzBjvPzEgzi9yPJpMuYr2N0uhaxA3sU
+        CTnIa4TOSB9bIxg/GbUVzeeDh29xqGfBVsSOryl0HEhg0fVPVGhYdJU9hDA5mbJS
+        bLnj6KoSv54Cfq1D9uHbXzkqkxx6IZRJTFLwcBs0JbH9TNCZDzpFE7F0Vgzcsahg
+        6uQQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
         :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
         :message-id:mime-version:references:reply-to:sender:subject
         :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; t=1662568874; x=1662655274; bh=aLMe3hfwrfUYH
-        RBTM9OM468pvSm6sK4LPXiHdUtizGA=; b=HjS/kQ3kHFIBygxzNrPtHQ5uM/kqE
-        Uuru3pgjg4UtmvTC4+fhQN4GUwuVugMVEnSEAb72LXlO4FRn4wJHKN3/YtUgdwiK
-        X66x7ojt6Ia+G7AMmaVfdX2sHoZhWsaHUlVpBGeDRz+jxqAHD1dmk9dwLy0VucNK
-        0MEDuEfKAsNN98VDOJzKI3drW7Y4kg6sG5hT78yHY9vGjGoJUNTK1LKniPCRjvdp
-        T5LYDSfGiHYjQwBIcp+ZLtGFciZ6S5USTVxQwUYS5dIrciOtMz36l2cgJZytXnIK
-        RwwqWiaaA84hy6fN4/GLpL1IL6PReKGJv2BIMKO/GGVj8f6JlmAcAc2HQ==
-X-ME-Sender: <xms:qskYY1eO4XBQdvWB2Ceow9vg1f9KiI1CvKj1essYQcjLO1jbGrBYWA>
-    <xme:qskYYzPhFahTOpUz0DohboBOaaf9jgL4KHDvDi-DSnPKT_8cxZHF-lYOv0fTNOYCx
-    pElom1UY9xQeKYMVA>
-X-ME-Received: <xmr:qskYY-gMCQYq05I7oRVCaoW5hix7ORgzU9WvILeqjSpn3Vk2ZOWMiYGvgI4iVgVlnH8DaorYHvQZh6fdBNF8QZ2efa9L8T-CNDI5ySc>
+        :x-sasl-enc; s=fm2; t=1662568875; x=1662655275; bh=YipKfE5H7K9Z8
+        GqiZelawUT7boFvb7Vr7t0y/LekHjU=; b=ubAm8/hxHUIJDSTDNStqDEgXEUKNz
+        cdxLmOUdSwQavIQ0iTu28wYTdG1220vY16hif0UGjsQtprBBng31juPpetgK1c/W
+        Fsgi5+uc+bFfgnFMSAVtv7zq/YYlIqnuHeySeu7trNYYdec0mo5ZFanYPAexJLPO
+        UNqv0bzS9fyN8EYbmWjYhGD/P5RdMhGQNcxC7nXooFpRM3u4NjPvZcvzFbB3/qDO
+        cOsnLImFjtmNxOUhWBOfj/CNHPHhv/VDFiC0Sxvx2F1FXU6318tJ8Efj3+AdMofC
+        5LL5PhiUqgY6N2VqcyyXW2ybQ2K8uLDeXVRj3rc30lwkm1WC72mGnNHfA==
+X-ME-Sender: <xms:q8kYY7YCfB7E_WoD9nxkOoGa245k1bwzYqyS3zXR-CfQBMnETTEFOQ>
+    <xme:q8kYY6bH-gBgHErwcO-yhalfUCrgOG3MFQ3ng5mX_7h7xMNGMDDTwn1m2aUQj4q4Z
+    keStJ4lCXkKMZaxLw>
+X-ME-Received: <xmr:q8kYY999jrKx9eOrMnF8NH-dwepulzljkjQ_Hf9XxS22Wk3vPNmINOiVxRlvilQzrYQHS2ryfPo44dFZNNhS7AaFAbuF_SOgp2O-nAY>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfedttddguddtgecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecufghrlhcuvffnffculdejtddmnecujfgurhephf
@@ -53,13 +53,13 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfedttddguddtgecutefuodetgg
     oegugihusegugihuuhhurdighiiiqeenucggtffrrghtthgvrhhnpefgfefggeejhfduie
     ekvdeuteffleeifeeuvdfhheejleejjeekgfffgefhtddtteenucevlhhushhtvghrufhi
     iigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegugihusegugihuuhhurdighiii
-X-ME-Proxy: <xmx:qskYY-9aNg7o1Ek-2mstA-PyO2uGceaL6dPA7yNdPc3_R01Tvm3Mig>
-    <xmx:qskYYxs2bzXvDKU7EkgUFamv4jMl_vcFa5d-1scVOn3U6o4Vtp28Xg>
-    <xmx:qskYY9HnwHZk23rDQ5bkxEhQAixfFX9YpbI4TCohLr7HLJh7jkW-EQ>
-    <xmx:qskYY9GQFFKgc6pdIndOIR4hQVBVNgh5TOjBOOydFitSnGoz67fvsQ>
+X-ME-Proxy: <xmx:q8kYYxpeObwTzdTA7MyqirliUEXWvzpoMYtCHYJeoXcrppPQ91tqvg>
+    <xmx:q8kYY2oxNDeAPUloykw-Fx_-2NllS_CI8sID6lgSUx1k8D3vIhiyxg>
+    <xmx:q8kYY3TiPGC-U292WtMzUNkR-t95d7KCndPF_7wE-uJm-P4pymmGCA>
+    <xmx:q8kYYzR6YES2iOk9yxDFOpXOlrWmoYZC3fqujM_fDfDTNkKeWL6jQg>
 Feedback-ID: i6a694271:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 7 Sep 2022 12:41:13 -0400 (EDT)
+ 7 Sep 2022 12:41:14 -0400 (EDT)
 From:   Daniel Xu <dxu@dxuuu.xyz>
 To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
         andrii@kernel.org, memxor@gmail.com
@@ -67,9 +67,9 @@ Cc:     Daniel Xu <dxu@dxuuu.xyz>, pablo@netfilter.org, fw@strlen.de,
         toke@kernel.org, martin.lau@linux.dev,
         netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next v5 5/6] bpf: Add support for writing to nf_conn:mark
-Date:   Wed,  7 Sep 2022 10:40:40 -0600
-Message-Id: <ebca06dea366e3e7e861c12f375a548cc4c61108.1662568410.git.dxu@dxuuu.xyz>
+Subject: [PATCH bpf-next v5 6/6] selftests/bpf: Add tests for writing to nf_conn:mark
+Date:   Wed,  7 Sep 2022 10:40:41 -0600
+Message-Id: <f78966b81b9349d2b8ebb4cee2caf15cb6b38ee2.1662568410.git.dxu@dxuuu.xyz>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <cover.1662568410.git.dxu@dxuuu.xyz>
 References: <cover.1662568410.git.dxu@dxuuu.xyz>
@@ -86,267 +86,102 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Support direct writes to nf_conn:mark from TC and XDP prog types. This
-is useful when applications want to store per-connection metadata. This
-is also particularly useful for applications that run both bpf and
-iptables/nftables because the latter can trivially access this metadata.
-
-One example use case would be if a bpf prog is responsible for advanced
-packet classification and iptables/nftables is later used for routing
-due to pre-existing/legacy code.
+Add a simple extension to the existing selftest to write to
+nf_conn:mark. Also add a failure test for writing to unsupported field.
 
 Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
 ---
- include/net/netfilter/nf_conntrack_bpf.h | 23 +++++++++
- net/core/filter.c                        | 54 +++++++++++++++++++
- net/netfilter/nf_conntrack_bpf.c         | 66 +++++++++++++++++++++++-
- net/netfilter/nf_conntrack_core.c        |  1 +
- 4 files changed, 143 insertions(+), 1 deletion(-)
+ tools/testing/selftests/bpf/prog_tests/bpf_nf.c    |  2 ++
+ tools/testing/selftests/bpf/progs/test_bpf_nf.c    |  9 +++++++--
+ .../testing/selftests/bpf/progs/test_bpf_nf_fail.c | 14 ++++++++++++++
+ 3 files changed, 23 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/netfilter/nf_conntrack_bpf.h b/include/net/netfilter/nf_conntrack_bpf.h
-index a473b56842c5..a61a93d1c6dc 100644
---- a/include/net/netfilter/nf_conntrack_bpf.h
-+++ b/include/net/netfilter/nf_conntrack_bpf.h
-@@ -3,13 +3,22 @@
- #ifndef _NF_CONNTRACK_BPF_H
- #define _NF_CONNTRACK_BPF_H
+diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_nf.c b/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
+index 544bf90ac2a7..ab9117ae7545 100644
+--- a/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
++++ b/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
+@@ -17,6 +17,7 @@ struct {
+ 	{ "set_status_after_insert", "kernel function bpf_ct_set_status args#0 expected pointer to STRUCT nf_conn___init but" },
+ 	{ "change_timeout_after_alloc", "kernel function bpf_ct_change_timeout args#0 expected pointer to STRUCT nf_conn but" },
+ 	{ "change_status_after_alloc", "kernel function bpf_ct_change_status args#0 expected pointer to STRUCT nf_conn but" },
++	{ "write_not_allowlisted_field", "no write support to nf_conn at off" },
+ };
  
-+#include <linux/bpf.h>
- #include <linux/btf.h>
- #include <linux/kconfig.h>
-+#include <linux/mutex.h>
+ enum {
+@@ -113,6 +114,7 @@ static void test_bpf_nf_ct(int mode)
+ 	ASSERT_LE(skel->bss->test_delta_timeout, 10, "Test for max ct timeout update");
+ 	/* expected status is IPS_SEEN_REPLY */
+ 	ASSERT_EQ(skel->bss->test_status, 2, "Test for ct status update ");
++	ASSERT_EQ(skel->bss->test_insert_lookup_mark, 77, "Test for insert and lookup mark value");
+ 	ASSERT_EQ(skel->data->test_exist_lookup, 0, "Test existing connection lookup");
+ 	ASSERT_EQ(skel->bss->test_exist_lookup_mark, 43, "Test existing connection lookup ctmark");
+ end:
+diff --git a/tools/testing/selftests/bpf/progs/test_bpf_nf.c b/tools/testing/selftests/bpf/progs/test_bpf_nf.c
+index 2722441850cc..b5e7079701e8 100644
+--- a/tools/testing/selftests/bpf/progs/test_bpf_nf.c
++++ b/tools/testing/selftests/bpf/progs/test_bpf_nf.c
+@@ -23,6 +23,7 @@ int test_insert_entry = -EAFNOSUPPORT;
+ int test_succ_lookup = -ENOENT;
+ u32 test_delta_timeout = 0;
+ u32 test_status = 0;
++u32 test_insert_lookup_mark = 0;
+ __be32 saddr = 0;
+ __be16 sport = 0;
+ __be32 daddr = 0;
+@@ -144,6 +145,7 @@ nf_ct_test(struct nf_conn *(*lookup_fn)(void *, struct bpf_sock_tuple *, u32,
  
- #if (IS_BUILTIN(CONFIG_NF_CONNTRACK) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF)) || \
-     (IS_MODULE(CONFIG_NF_CONNTRACK) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF_MODULES))
+ 		bpf_ct_set_timeout(ct, 10000);
+ 		bpf_ct_set_status(ct, IPS_CONFIRMED);
++		ct->mark = 77;
  
- extern int register_nf_conntrack_bpf(void);
-+extern void cleanup_nf_conntrack_bpf(void);
-+
-+extern struct mutex nf_conn_btf_access_lock;
-+extern int (*nfct_bsa)(struct bpf_verifier_log *log, const struct btf *btf,
-+		       const struct btf_type *t, int off, int size,
-+		       enum bpf_access_type atype, u32 *next_btf_id,
-+		       enum bpf_type_flag *flag);
- 
- #else
- 
-@@ -18,6 +27,20 @@ static inline int register_nf_conntrack_bpf(void)
+ 		ct_ins = bpf_ct_insert_entry(ct);
+ 		if (ct_ins) {
+@@ -157,6 +159,7 @@ nf_ct_test(struct nf_conn *(*lookup_fn)(void *, struct bpf_sock_tuple *, u32,
+ 				test_delta_timeout = ct_lk->timeout - bpf_jiffies64();
+ 				test_delta_timeout /= CONFIG_HZ;
+ 				test_status = IPS_SEEN_REPLY;
++				test_insert_lookup_mark = ct_lk->mark;
+ 				bpf_ct_change_status(ct_lk, IPS_SEEN_REPLY);
+ 				bpf_ct_release(ct_lk);
+ 				test_succ_lookup = 0;
+@@ -175,8 +178,10 @@ nf_ct_test(struct nf_conn *(*lookup_fn)(void *, struct bpf_sock_tuple *, u32,
+ 		       sizeof(opts_def));
+ 	if (ct) {
+ 		test_exist_lookup = 0;
+-		if (ct->mark == 42)
+-			test_exist_lookup_mark = 43;
++		if (ct->mark == 42) {
++			ct->mark++;
++			test_exist_lookup_mark = ct->mark;
++		}
+ 		bpf_ct_release(ct);
+ 	} else {
+ 		test_exist_lookup = opts_def.error;
+diff --git a/tools/testing/selftests/bpf/progs/test_bpf_nf_fail.c b/tools/testing/selftests/bpf/progs/test_bpf_nf_fail.c
+index bf79af15c808..0e4759ab38ff 100644
+--- a/tools/testing/selftests/bpf/progs/test_bpf_nf_fail.c
++++ b/tools/testing/selftests/bpf/progs/test_bpf_nf_fail.c
+@@ -69,6 +69,20 @@ int lookup_insert(struct __sk_buff *ctx)
  	return 0;
  }
  
-+static inline void cleanup_nf_conntrack_bpf(void)
++SEC("?tc")
++int write_not_allowlisted_field(struct __sk_buff *ctx)
 +{
-+}
++	struct bpf_ct_opts___local opts = {};
++	struct bpf_sock_tuple tup = {};
++	struct nf_conn *ct;
 +
-+static inline int nf_conntrack_btf_struct_access(struct bpf_verifier_log *log,
-+						 const struct btf *btf,
-+						 const struct btf_type *t, int off,
-+						 int size, enum bpf_access_type atype,
-+						 u32 *next_btf_id,
-+						 enum bpf_type_flag *flag)
-+{
-+	return -EACCES;
-+}
-+
- #endif
- 
- #endif /* _NF_CONNTRACK_BPF_H */
-diff --git a/net/core/filter.c b/net/core/filter.c
-index e872f45399b0..4b2be211bcbe 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -18,6 +18,7 @@
-  */
- 
- #include <linux/atomic.h>
-+#include <linux/bpf_verifier.h>
- #include <linux/module.h>
- #include <linux/types.h>
- #include <linux/mm.h>
-@@ -8604,6 +8605,36 @@ static bool tc_cls_act_is_valid_access(int off, int size,
- 	return bpf_skb_is_valid_access(off, size, type, prog, info);
- }
- 
-+DEFINE_MUTEX(nf_conn_btf_access_lock);
-+EXPORT_SYMBOL_GPL(nf_conn_btf_access_lock);
-+
-+int (*nfct_bsa)(struct bpf_verifier_log *log, const struct btf *btf,
-+		const struct btf_type *t, int off, int size,
-+		enum bpf_access_type atype, u32 *next_btf_id,
-+		enum bpf_type_flag *flag);
-+EXPORT_SYMBOL_GPL(nfct_bsa);
-+
-+static int tc_cls_act_btf_struct_access(struct bpf_verifier_log *log,
-+					const struct btf *btf,
-+					const struct btf_type *t, int off,
-+					int size, enum bpf_access_type atype,
-+					u32 *next_btf_id,
-+					enum bpf_type_flag *flag)
-+{
-+	int ret = -EACCES;
-+
-+	if (atype == BPF_READ)
-+		return btf_struct_access(log, btf, t, off, size, atype, next_btf_id,
-+					 flag);
-+
-+	mutex_lock(&nf_conn_btf_access_lock);
-+	if (nfct_bsa)
-+		ret = nfct_bsa(log, btf, t, off, size, atype, next_btf_id, flag);
-+	mutex_unlock(&nf_conn_btf_access_lock);
-+
-+	return ret;
-+}
-+
- static bool __is_valid_xdp_access(int off, int size)
- {
- 	if (off < 0 || off >= sizeof(struct xdp_md))
-@@ -8663,6 +8694,27 @@ void bpf_warn_invalid_xdp_action(struct net_device *dev, struct bpf_prog *prog,
- }
- EXPORT_SYMBOL_GPL(bpf_warn_invalid_xdp_action);
- 
-+static int xdp_btf_struct_access(struct bpf_verifier_log *log,
-+				 const struct btf *btf,
-+				 const struct btf_type *t, int off,
-+				 int size, enum bpf_access_type atype,
-+				 u32 *next_btf_id,
-+				 enum bpf_type_flag *flag)
-+{
-+	int ret = -EACCES;
-+
-+	if (atype == BPF_READ)
-+		return btf_struct_access(log, btf, t, off, size, atype, next_btf_id,
-+					 flag);
-+
-+	mutex_lock(&nf_conn_btf_access_lock);
-+	if (nfct_bsa)
-+		ret = nfct_bsa(log, btf, t, off, size, atype, next_btf_id, flag);
-+	mutex_unlock(&nf_conn_btf_access_lock);
-+
-+	return ret;
-+}
-+
- static bool sock_addr_is_valid_access(int off, int size,
- 				      enum bpf_access_type type,
- 				      const struct bpf_prog *prog,
-@@ -10557,6 +10609,7 @@ const struct bpf_verifier_ops tc_cls_act_verifier_ops = {
- 	.convert_ctx_access	= tc_cls_act_convert_ctx_access,
- 	.gen_prologue		= tc_cls_act_prologue,
- 	.gen_ld_abs		= bpf_gen_ld_abs,
-+	.btf_struct_access	= tc_cls_act_btf_struct_access,
- };
- 
- const struct bpf_prog_ops tc_cls_act_prog_ops = {
-@@ -10568,6 +10621,7 @@ const struct bpf_verifier_ops xdp_verifier_ops = {
- 	.is_valid_access	= xdp_is_valid_access,
- 	.convert_ctx_access	= xdp_convert_ctx_access,
- 	.gen_prologue		= bpf_noop_prologue,
-+	.btf_struct_access	= xdp_btf_struct_access,
- };
- 
- const struct bpf_prog_ops xdp_prog_ops = {
-diff --git a/net/netfilter/nf_conntrack_bpf.c b/net/netfilter/nf_conntrack_bpf.c
-index 1cd87b28c9b0..77eb8e959f61 100644
---- a/net/netfilter/nf_conntrack_bpf.c
-+++ b/net/netfilter/nf_conntrack_bpf.c
-@@ -6,8 +6,10 @@
-  * are exposed through to BPF programs is explicitly unstable.
-  */
- 
-+#include <linux/bpf_verifier.h>
- #include <linux/bpf.h>
- #include <linux/btf.h>
-+#include <linux/mutex.h>
- #include <linux/types.h>
- #include <linux/btf_ids.h>
- #include <linux/net_namespace.h>
-@@ -184,6 +186,54 @@ static struct nf_conn *__bpf_nf_ct_lookup(struct net *net,
- 	return ct;
- }
- 
-+BTF_ID_LIST(btf_nf_conn_ids)
-+BTF_ID(struct, nf_conn)
-+BTF_ID(struct, nf_conn___init)
-+
-+/* Check writes into `struct nf_conn` */
-+static int _nf_conntrack_btf_struct_access(struct bpf_verifier_log *log,
-+					   const struct btf *btf,
-+					   const struct btf_type *t, int off,
-+					   int size, enum bpf_access_type atype,
-+					   u32 *next_btf_id,
-+					   enum bpf_type_flag *flag)
-+{
-+	const struct btf_type *ncit;
-+	const struct btf_type *nct;
-+	size_t end;
-+
-+	ncit = btf_type_by_id(btf, btf_nf_conn_ids[1]);
-+	nct = btf_type_by_id(btf, btf_nf_conn_ids[0]);
-+
-+	if (t != nct && t != ncit) {
-+		bpf_log(log, "only read is supported\n");
-+		return -EACCES;
-+	}
-+
-+	/* `struct nf_conn` and `struct nf_conn___init` have the same layout
-+	 * so we are safe to simply merge offset checks here
-+	 */
-+	switch (off) {
-+#if defined(CONFIG_NF_CONNTRACK_MARK)
-+	case offsetof(struct nf_conn, mark):
-+		end = offsetofend(struct nf_conn, mark);
-+		break;
-+#endif
-+	default:
-+		bpf_log(log, "no write support to nf_conn at off %d\n", off);
-+		return -EACCES;
-+	}
-+
-+	if (off + size > end) {
-+		bpf_log(log,
-+			"write access at off %d with size %d beyond the member of nf_conn ended at %zu\n",
-+			off, size, end);
-+		return -EACCES;
-+	}
-+
++	ct = bpf_skb_ct_lookup(ctx, &tup, sizeof(tup.ipv4), &opts, sizeof(opts));
++	if (!ct)
++		return 0;
++	ct->status = 0xF00;
 +	return 0;
 +}
 +
- __diag_push();
- __diag_ignore_all("-Wmissing-prototypes",
- 		  "Global functions as their definitions will be in nf_conntrack BTF");
-@@ -449,5 +499,19 @@ int register_nf_conntrack_bpf(void)
- 	int ret;
- 
- 	ret = register_btf_kfunc_id_set(BPF_PROG_TYPE_XDP, &nf_conntrack_kfunc_set);
--	return ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_SCHED_CLS, &nf_conntrack_kfunc_set);
-+	ret = ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_SCHED_CLS, &nf_conntrack_kfunc_set);
-+	if (!ret) {
-+		mutex_lock(&nf_conn_btf_access_lock);
-+		nfct_bsa = _nf_conntrack_btf_struct_access;
-+		mutex_unlock(&nf_conn_btf_access_lock);
-+	}
-+
-+	return ret;
-+}
-+
-+void cleanup_nf_conntrack_bpf(void)
-+{
-+	mutex_lock(&nf_conn_btf_access_lock);
-+	nfct_bsa = NULL;
-+	mutex_unlock(&nf_conn_btf_access_lock);
- }
-diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index da65c6e8eeeb..0195f60fc43b 100644
---- a/net/netfilter/nf_conntrack_core.c
-+++ b/net/netfilter/nf_conntrack_core.c
-@@ -2512,6 +2512,7 @@ static int kill_all(struct nf_conn *i, void *data)
- 
- void nf_conntrack_cleanup_start(void)
+ SEC("?tc")
+ int set_timeout_after_insert(struct __sk_buff *ctx)
  {
-+	cleanup_nf_conntrack_bpf();
- 	conntrack_gc_work.exiting = true;
- }
- 
 -- 
 2.37.1
 
