@@ -2,137 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 633735B091B
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 17:47:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 146305B0922
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 17:48:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229983AbiIGPrM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 11:47:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50418 "EHLO
+        id S229755AbiIGPsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 11:48:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230019AbiIGPqw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 11:46:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E227BB95A7
-        for <netdev@vger.kernel.org>; Wed,  7 Sep 2022 08:46:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662565596;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RpZB9X0DET31F7pJclkQNUipKM0FnFOUPz4JB+ooQnY=;
-        b=WBjf/fOrIRRZbWK8IXtGipUjEIhFd7vCGWrF64FDKYuoQA6xH31PpU4HbR2uOXRJo8c2hg
-        5PEMIgDYBKs9D1m9TujwuYgbwx8IADGR88SJb5ZiJoS04CTdP/XlWtF2OsjaIYLq135yzJ
-        bPE7DBjbW1ImfS1vr3am61BUxmqPGCA=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-554-pSXxsqiNPUWLKJjMVin8Pg-1; Wed, 07 Sep 2022 11:46:33 -0400
-X-MC-Unique: pSXxsqiNPUWLKJjMVin8Pg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E15878039B2;
-        Wed,  7 Sep 2022 15:46:32 +0000 (UTC)
-Received: from firesoul.localdomain (unknown [10.40.208.22])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A63C6C15BB3;
-        Wed,  7 Sep 2022 15:46:32 +0000 (UTC)
-Received: from [192.168.42.3] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id A37D430721A6C;
-        Wed,  7 Sep 2022 17:46:31 +0200 (CEST)
-Subject: [PATCH RFCv2 bpf-next 18/18] ixgbe: AF_XDP xdp-hints processing in
- ixgbe_clean_rx_irq_zc
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     bpf@vger.kernel.org
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
-        xdp-hints@xdp-project.net, larysa.zaremba@intel.com,
-        memxor@gmail.com, Lorenzo Bianconi <lorenzo@kernel.org>,
-        mtahhan@redhat.com,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        dave@dtucker.co.uk, Magnus Karlsson <magnus.karlsson@intel.com>,
-        bjorn@kernel.org
-Date:   Wed, 07 Sep 2022 17:46:31 +0200
-Message-ID: <166256559162.1434226.13443800671075647862.stgit@firesoul>
-In-Reply-To: <166256538687.1434226.15760041133601409770.stgit@firesoul>
-References: <166256538687.1434226.15760041133601409770.stgit@firesoul>
-User-Agent: StGit/1.4
+        with ESMTP id S229786AbiIGPsB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 11:48:01 -0400
+Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A11DAB9F90;
+        Wed,  7 Sep 2022 08:47:58 -0700 (PDT)
+Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-127dca21a7dso9740590fac.12;
+        Wed, 07 Sep 2022 08:47:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=P9M7/bzZ0ZMw/d0qpnlcd3bSu1NtUDhgwC52m6jfjak=;
+        b=ay3OgbdOmmRKaP7uBF4xjWNyjko0xdBI/R4BTiAJ+bGYc5lyszUgyVAaMzpbM/tI2s
+         8u415YkLMaaAQmXhPWnVGQHdVLQOfkZEp+osXK/HoQ/uskwBczh1e96ZdBackJ+Oe3H+
+         UHiyChPYq+zTzLms++uTXAFPQ7OejVuBJ9hJEopOiar/MWMZb/JLv+2haJ5F4b5S1kiD
+         Mrlpcqu7yDU1ero7nFL9y3oiytMgNBvtqMxb5ikxKR9EqADxxxrvEKpGGLrMu0bx8T2K
+         xrycjTbM3reI45VbNP+9w7eE/xFY36Ivf30Ok2Wa40IzX1LnThxuHrbR+1DAE/bomJu1
+         jiTQ==
+X-Gm-Message-State: ACgBeo3LkQGy8lLT51Fgs74wK6ooEB7ZIaLRXA4gFv+G2RhFaGjbYoPD
+        jb+TDdPGQ3Y0tdiHqDR+qg==
+X-Google-Smtp-Source: AA6agR7V8XXJWCZA66/vmCNdtFQHBPBeY7vIpPYKBM+iV7v+1t93G419nZX9b4Lu3VamSExZLcbo0Q==
+X-Received: by 2002:a05:6808:1489:b0:344:7ff8:54e8 with SMTP id e9-20020a056808148900b003447ff854e8mr12233447oiw.195.1662565677655;
+        Wed, 07 Sep 2022 08:47:57 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id bm23-20020a0568081a9700b0034480f7eec4sm6558187oib.12.2022.09.07.08.47.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Sep 2022 08:47:57 -0700 (PDT)
+Received: (nullmailer pid 3514416 invoked by uid 1000);
+        Wed, 07 Sep 2022 15:47:56 -0000
+Date:   Wed, 7 Sep 2022 10:47:56 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        asahi@lists.linux.dev, brcm80211-dev-list.pdl@broadcom.com,
+        "David S. Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Hector Martin <marcan@marcan.st>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kalle Valo <kvalo@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rafa__ Mi__ecki <zajec5@gmail.com>,
+        SHA-cyfmac-dev-list@infineon.com, Sven Peter <sven@svenpeter.dev>,
+        van Spriel <arend@broadcom.com>
+Subject: Re: [PATCH net-next 01/12] dt-bindings: net: bcm4329-fmac: Add Apple
+ properties & chips
+Message-ID: <20220907154756.GA3505310-robh@kernel.org>
+References: <YxhMaYOfnM+7FG+W@shell.armlinux.org.uk>
+ <E1oVpmk-005LBL-5U@rmk-PC.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <E1oVpmk-005LBL-5U@rmk-PC.armlinux.org.uk>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maryam Tahhan <mtahhan@redhat.com>
+On Wed, Sep 07, 2022 at 08:47:46AM +0100, Russell King wrote:
+> From: Hector Martin <marcan@marcan.st>
+> 
+> This binding is currently used for SDIO devices, but these chips are
+> also used as PCIe devices on DT platforms and may be represented in the
+> DT. Re-use the existing binding and add chip compatibles used by Apple
+> T2 and M1 platforms (the T2 ones are not known to be used in DT
+> platforms, but we might as well document them).
+> 
+> Then, add properties required for firmware selection and calibration on
+> M1 machines.
+> 
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+> Signed-off-by: Hector Martin <marcan@marcan.st>
+> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> ---
+>  .../net/wireless/brcm,bcm4329-fmac.yaml       | 37 +++++++++++++++++--
+>  1 file changed, 34 insertions(+), 3 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml b/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
+> index 53b4153d9bfc..53ded82b273a 100644
+> --- a/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
+> +++ b/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
+> @@ -4,7 +4,7 @@
+>  $id: http://devicetree.org/schemas/net/wireless/brcm,bcm4329-fmac.yaml#
+>  $schema: http://devicetree.org/meta-schemas/core.yaml#
+>  
+> -title: Broadcom BCM4329 family fullmac wireless SDIO devices
+> +title: Broadcom BCM4329 family fullmac wireless SDIO/PCIE devices
+>  
+>  maintainers:
+>    - Arend van Spriel <arend@broadcom.com>
+> @@ -42,10 +42,16 @@ title: Broadcom BCM4329 family fullmac wireless SDIO devices
+>                - cypress,cyw43012-fmac
+>            - const: brcm,bcm4329-fmac
+>        - const: brcm,bcm4329-fmac
 
-Add XDP-hints processing to the AF_XDP zero-copy code path.
+If you respin, this compatible can be combined with the enum below.
 
-Signed-off-by: Maryam Tahhan <mtahhan@redhat.com>
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
----
- drivers/net/ethernet/intel/ixgbe/ixgbe.h      |    3 +++
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |    4 ++--
- drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c  |    2 ++
- 3 files changed, 7 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe.h b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-index 97b3fbd2de28..22eddadb3f7c 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-@@ -1025,6 +1025,9 @@ void ixgbe_ptp_rx_pktstamp(struct ixgbe_q_vector *, struct sk_buff *);
- void ixgbe_ptp_rx_rgtstamp(struct ixgbe_q_vector *, struct sk_buff *skb);
- u64 ixgbe_ptp_convert_to_hwtstamp(struct ixgbe_adapter *adapter, u64 timestamp);
- u64 ixgbe_ptp_rx_hwtstamp_raw(struct ixgbe_adapter *adapter);
-+inline void ixgbe_process_xdp_hints(struct ixgbe_ring *ring,
-+						union ixgbe_adv_rx_desc *rx_desc,
-+						struct xdp_buff *xdp);
- static inline void ixgbe_ptp_rx_hwtstamp(struct ixgbe_ring *rx_ring,
- 					 union ixgbe_adv_rx_desc *rx_desc,
- 					 struct sk_buff *skb)
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index dc371b4c65bb..18f00f2bacaf 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -1798,7 +1798,7 @@ static inline u32 ixgbe_rx_hash_xdp(struct ixgbe_ring *ring,
- 	return flags;
- }
- 
--static inline void ixgbe_process_xdp_hints(struct ixgbe_ring *ring,
-+inline void ixgbe_process_xdp_hints(struct ixgbe_ring *ring,
- 						union ixgbe_adv_rx_desc *rx_desc,
- 						struct xdp_buff *xdp)
- {
-@@ -2395,7 +2395,7 @@ static struct sk_buff *ixgbe_run_xdp(struct ixgbe_adapter *adapter,
- 	return ERR_PTR(-result);
- }
- 
--static unsigned int ixgbe_rx_frame_truesize(struct ixgbe_ring *rx_ring,
-+static inline unsigned int ixgbe_rx_frame_truesize(struct ixgbe_ring *rx_ring,
- 					    unsigned int size)
- {
- 	unsigned int truesize;
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-index 1703c640a434..c3fb8f7660df 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-@@ -304,7 +304,9 @@ int ixgbe_clean_rx_irq_zc(struct ixgbe_q_vector *q_vector,
- 		}
- 
- 		bi->xdp->data_end = bi->xdp->data + size;
-+		ixgbe_process_xdp_hints(rx_ring, rx_desc, bi->xdp);
- 		xsk_buff_dma_sync_for_cpu(bi->xdp, rx_ring->xsk_pool);
-+
- 		xdp_res = ixgbe_run_xdp_zc(adapter, rx_ring, bi->xdp);
- 
- 		if (likely(xdp_res & (IXGBE_XDP_TX | IXGBE_XDP_REDIR))) {
+> +      - enum:
+> +          - pci14e4,43dc  # BCM4355
+> +          - pci14e4,4464  # BCM4364
+> +          - pci14e4,4488  # BCM4377
+> +          - pci14e4,4425  # BCM4378
+> +          - pci14e4,4433  # BCM4387
 
 
+Reviewed-by: Rob Herring <robh@kernel.org>
