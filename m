@@ -2,185 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF34E5AFC64
-	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 08:29:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA6B55AFC6C
+	for <lists+netdev@lfdr.de>; Wed,  7 Sep 2022 08:30:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229889AbiIGG3B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 02:29:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58106 "EHLO
+        id S229990AbiIGGaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 02:30:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229862AbiIGG27 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 02:28:59 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C6719C1FA;
-        Tue,  6 Sep 2022 23:28:57 -0700 (PDT)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MMsgR1qt7z1P87L;
-        Wed,  7 Sep 2022 14:25:07 +0800 (CST)
-Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 7 Sep 2022 14:28:55 +0800
-Received: from localhost.localdomain (10.67.165.2) by
- kwepemm600013.china.huawei.com (7.193.23.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 7 Sep 2022 14:28:54 +0800
-From:   Haoyue Xu <xuhaoyue1@hisilicon.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <xuhaoyue1@hisilicon.com>, <pabeni@redhat.com>,
-        <edumazet@google.com>, <huangdaode@huawei.com>,
-        <liangwenpeng@huawei.com>, <liyangyang20@huawei.com>
-Subject: [PATCH net-next 3/3] net: amd: Switch and case should be at the same indent
-Date:   Wed, 7 Sep 2022 14:28:12 +0800
-Message-ID: <20220907062812.2259309-4-xuhaoyue1@hisilicon.com>
-X-Mailer: git-send-email 2.30.0
-In-Reply-To: <20220907062812.2259309-1-xuhaoyue1@hisilicon.com>
-References: <20220907062812.2259309-1-xuhaoyue1@hisilicon.com>
+        with ESMTP id S230002AbiIGGaL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 02:30:11 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4851FCE21
+        for <netdev@vger.kernel.org>; Tue,  6 Sep 2022 23:29:59 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id by6so14748475ljb.11
+        for <netdev@vger.kernel.org>; Tue, 06 Sep 2022 23:29:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=8T4wFcSQis3DWrnDl8j28CkECsrB4vzGjp7sp/ptmmk=;
+        b=E/VyXnfg0tFRH8FjvthPZOKT2HfSWWRnxVcrEw7zn3Fmjjn/DZEt+HpR+IMIF6CQTs
+         srbl4WU+QOngLmcgpVBxLHAOizRyjuBRhMae+KobG8kyT1LGl4PBNzFKxWI0P9j99Jnz
+         Ert7UPZGT+FZD9jqFgBoCF0LmLIvFsWSe7Wm8JHKtjoG/Uc9e+THXVn7lxqIo1pp981t
+         V+paNiCq6rErEnRCRkq/prWh+BjAXPSQC7Z8satLBwqBev5rZlQISE7G/g/+5vy6px2l
+         kFJk36yp1TaDUi8y7vvg5JxfFoXVRTj2mLTFkKadeszyUzfJrziUkXSr18/busNDpJqz
+         Yf4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=8T4wFcSQis3DWrnDl8j28CkECsrB4vzGjp7sp/ptmmk=;
+        b=M1ITBqB9tLhazIzASLYkfZBv3O8YPw+TIQsviBq6ry6EFVPKNIPbEt1IFRNfZ/rA56
+         CW6PwO5807zeVqh+7gy+YfAUR+sVWrncf+I8DPe/5By809OOB/S1Zn4rF3+ppaoFWYiV
+         b/OEpVgooxbvWBKz/Z9YuNmsk+F63jd2amWI/RaTxvBzBg1iglqVFbt6DdIYP4Flqj0r
+         tH45N7QkQRXUX9WGETvOjSyFDKzk9jMz7lRwCRhbAJF9vEdSeI+YO0RAHmrTLtPfGVOt
+         jOku3+Z+Wt5PlseOsdccOjs+N9smjLMgokIwC7upyqjzvQnHeUn1Uo/vk0L5DRddCUun
+         H3CQ==
+X-Gm-Message-State: ACgBeo0y3VZ7zwbUREcTdiSYbl1fL5G3g+GbqdeqR8ajbB3GNEDPUyFL
+        1ZConAqnua/7eNulzwlVh6fki7tgNSZIbMMQ
+X-Google-Smtp-Source: AA6agR5nj2e/F+slA+23Cjbxydr3WySjwpoxMRwIjpXReZCdOve/nwocjQkvBM7XGjXhrx1mVacAVA==
+X-Received: by 2002:a2e:a4b4:0:b0:268:cb78:271c with SMTP id g20-20020a2ea4b4000000b00268cb78271cmr549235ljm.156.1662532196600;
+        Tue, 06 Sep 2022 23:29:56 -0700 (PDT)
+Received: from [10.0.1.14] (h-98-128-229-160.NA.cust.bahnhof.se. [98.128.229.160])
+        by smtp.gmail.com with ESMTPSA id e7-20020a05651236c700b0048a85bd4429sm2245220lfs.126.2022.09.06.23.29.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 06 Sep 2022 23:29:56 -0700 (PDT)
+Message-ID: <8fed012c-a683-89d8-0738-a3ea66412892@gmail.com>
+Date:   Wed, 7 Sep 2022 08:29:55 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.2]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600013.china.huawei.com (7.193.23.68)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,HK_RANDOM_ENVFROM,
-        HK_RANDOM_FROM,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH net-next v4 1/6] net: dsa: mv88e6xxx: Add RMU enable for
+ select switches.
+Content-Language: en-US
+To:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+References: <20220906063450.3698671-1-mattias.forsblad@gmail.com>
+ <20220906063450.3698671-2-mattias.forsblad@gmail.com>
+ <d0908a9e-cfe3-a178-1b40-a93b12b980da@gmail.com>
+From:   Mattias Forsblad <mattias.forsblad@gmail.com>
+In-Reply-To: <d0908a9e-cfe3-a178-1b40-a93b12b980da@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Guofeng Yue <yueguofeng@hisilicon.com>
+On 2022-09-06 23:46, Florian Fainelli wrote:
+> 
+> 
+> On 9/5/2022 11:34 PM, Mattias Forsblad wrote:
+>> Add RMU enable functionality for some Marvell SOHO switches.
+>>
+>> Signed-off-by: Mattias Forsblad <mattias.forsblad@gmail.com>
+>> ---
+> 
+> [snip]
+> 
+>> +int mv88e6085_g1_rmu_enable(struct mv88e6xxx_chip *chip, int upstream_port)
+>> +{
+>> +    int val = MV88E6352_G1_CTL2_RMU_MODE_DISABLED;
+>> +
+>> +    dev_dbg(chip->dev, "RMU: Enabling on port %d", upstream_port);
+> 
+> This debug print is in every chip-specific function, so maybe you can consider moving it to mv88e6xxx_master_change()?
+> 
 
-Cleaning some static warnings of indent.
+Ofc, will fix.
+>> +
+>> +    switch (upstream_port) {
+>> +    case 9:
+>> +        val = MV88E6085_G1_CTL2_RM_ENABLE;
+>> +        break;
+>> +    case 10:
+>> +        val = MV88E6085_G1_CTL2_RM_ENABLE | MV88E6085_G1_CTL2_P10RM;
+>> +        break;
+>> +    default:
+>> +        return -EOPNOTSUPP;
+>> +    }
+>> +
+>> +    return mv88e6xxx_g1_ctl2_mask(chip, MV88E6085_G1_CTL2_P10RM |
+>> +                      MV88E6085_G1_CTL2_RM_ENABLE, val);
+>> +}
+>> +
+>>   int mv88e6352_g1_rmu_disable(struct mv88e6xxx_chip *chip)
+>>   {
+>>       return mv88e6xxx_g1_ctl2_mask(chip, MV88E6352_G1_CTL2_RMU_MODE_MASK,
+>>                         MV88E6352_G1_CTL2_RMU_MODE_DISABLED);
+>>   }
+>>   +int mv88e6352_g1_rmu_enable(struct mv88e6xxx_chip *chip, int port)
+> 
+> Can we name this argument upstream_port and pass it a dsa_switch_upstream_port() port already?
 
-Signed-off-by: Guofeng Yue <yueguofeng@hisilicon.com>
-Signed-off-by: Haoyue Xu <xuhaoyue1@hisilicon.com>
----
- drivers/net/ethernet/amd/amd8111e.c   | 35 +++++++++++++--------------
- drivers/net/ethernet/amd/atarilance.c |  6 ++---
- drivers/net/ethernet/amd/nmclan_cs.c  | 14 +++++------
- 3 files changed, 27 insertions(+), 28 deletions(-)
+Will fix.
 
-diff --git a/drivers/net/ethernet/amd/amd8111e.c b/drivers/net/ethernet/amd/amd8111e.c
-index 7b4d9bbb079c..ea6cfc2095e1 100644
---- a/drivers/net/ethernet/amd/amd8111e.c
-+++ b/drivers/net/ethernet/amd/amd8111e.c
-@@ -185,24 +185,23 @@ static void amd8111e_set_ext_phy(struct net_device *dev)
- 	advert = amd8111e_mdio_read(dev, lp->ext_phy_addr, MII_ADVERTISE);
- 	tmp = advert & ~(ADVERTISE_ALL | ADVERTISE_100BASE4);
- 	switch (lp->ext_phy_option) {
--
--		default:
--		case SPEED_AUTONEG: /* advertise all values */
--			tmp |= (ADVERTISE_10HALF | ADVERTISE_10FULL |
--				ADVERTISE_100HALF | ADVERTISE_100FULL);
--			break;
--		case SPEED10_HALF:
--			tmp |= ADVERTISE_10HALF;
--			break;
--		case SPEED10_FULL:
--			tmp |= ADVERTISE_10FULL;
--			break;
--		case SPEED100_HALF:
--			tmp |= ADVERTISE_100HALF;
--			break;
--		case SPEED100_FULL:
--			tmp |= ADVERTISE_100FULL;
--			break;
-+	default:
-+	case SPEED_AUTONEG: /* advertise all values */
-+		tmp |= (ADVERTISE_10HALF | ADVERTISE_10FULL |
-+			ADVERTISE_100HALF | ADVERTISE_100FULL);
-+		break;
-+	case SPEED10_HALF:
-+		tmp |= ADVERTISE_10HALF;
-+		break;
-+	case SPEED10_FULL:
-+		tmp |= ADVERTISE_10FULL;
-+		break;
-+	case SPEED100_HALF:
-+		tmp |= ADVERTISE_100HALF;
-+		break;
-+	case SPEED100_FULL:
-+		tmp |= ADVERTISE_100FULL;
-+		break;
- 	}
- 
- 	if(advert != tmp)
-diff --git a/drivers/net/ethernet/amd/atarilance.c b/drivers/net/ethernet/amd/atarilance.c
-index e5c6d99957cd..3222c48ce6ae 100644
---- a/drivers/net/ethernet/amd/atarilance.c
-+++ b/drivers/net/ethernet/amd/atarilance.c
-@@ -581,15 +581,15 @@ static unsigned long __init lance_probe1( struct net_device *dev,
- 
- 	/* Get the ethernet address */
- 	switch( lp->cardtype ) {
--	  case OLD_RIEBL:
-+	case OLD_RIEBL:
- 		/* No ethernet address! (Set some default address) */
- 		eth_hw_addr_set(dev, OldRieblDefHwaddr);
- 		break;
--	  case NEW_RIEBL:
-+	case NEW_RIEBL:
- 		lp->memcpy_f(addr, RIEBL_HWADDR_ADDR, ETH_ALEN);
- 		eth_hw_addr_set(dev, addr);
- 		break;
--	  case PAM_CARD:
-+	case PAM_CARD:
- 		i = IO->eeprom;
- 		for( i = 0; i < 6; ++i )
- 			addr[i] =
-diff --git a/drivers/net/ethernet/amd/nmclan_cs.c b/drivers/net/ethernet/amd/nmclan_cs.c
-index 684b412c77fd..823a329a921f 100644
---- a/drivers/net/ethernet/amd/nmclan_cs.c
-+++ b/drivers/net/ethernet/amd/nmclan_cs.c
-@@ -485,10 +485,10 @@ static int mace_read(mace_private *lp, unsigned int ioaddr, int reg)
-   unsigned long flags;
- 
-   switch (reg >> 4) {
--    case 0: /* register 0-15 */
-+  case 0: /* register 0-15 */
-       data = inb(ioaddr + AM2150_MACE_BASE + reg);
-       break;
--    case 1: /* register 16-31 */
-+  case 1: /* register 16-31 */
-       spin_lock_irqsave(&lp->bank_lock, flags);
-       MACEBANK(1);
-       data = inb(ioaddr + AM2150_MACE_BASE + (reg & 0x0F));
-@@ -512,10 +512,10 @@ static void mace_write(mace_private *lp, unsigned int ioaddr, int reg,
-   unsigned long flags;
- 
-   switch (reg >> 4) {
--    case 0: /* register 0-15 */
-+  case 0: /* register 0-15 */
-       outb(data & 0xFF, ioaddr + AM2150_MACE_BASE + reg);
-       break;
--    case 1: /* register 16-31 */
-+  case 1: /* register 16-31 */
-       spin_lock_irqsave(&lp->bank_lock, flags);
-       MACEBANK(1);
-       outb(data & 0xFF, ioaddr + AM2150_MACE_BASE + (reg & 0x0F));
-@@ -567,13 +567,13 @@ static int mace_init(mace_private *lp, unsigned int ioaddr,
-    * Or just set ASEL in PHYCC below!
-    */
-   switch (if_port) {
--    case 1:
-+  case 1:
-       mace_write(lp, ioaddr, MACE_PLSCC, 0x02);
-       break;
--    case 2:
-+  case 2:
-       mace_write(lp, ioaddr, MACE_PLSCC, 0x00);
-       break;
--    default:
-+  default:
-       mace_write(lp, ioaddr, MACE_PHYCC, /* ASEL */ 4);
-       /* ASEL Auto Select.  When set, the PORTSEL[1-0] bits are overridden,
- 	 and the MACE device will automatically select the operating media
--- 
-2.30.0
+	Mattias
 
