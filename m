@@ -2,121 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE52E5B1B44
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 13:21:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 507D35B1B67
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 13:29:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230525AbiIHLVd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 07:21:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32806 "EHLO
+        id S231220AbiIHL3r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 07:29:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231144AbiIHLVP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 07:21:15 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA15E13F15;
-        Thu,  8 Sep 2022 04:20:52 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id 29so18734221edv.2;
-        Thu, 08 Sep 2022 04:20:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=G8ZnoARtuecckP3hweHke5GOybQ4Tx8AFkQAdpOiTb4=;
-        b=o3CYbDyCbEVhWcKDUNyemWRpDB/jalwhB9aKwfAiQiAAIycxvO3x8vNjM2BbbmGETQ
-         qmYVGwNejRe0ZiGsWxi1PC8OdZqDIWoZb6HYHGpLUxXu7Om1xnQ034XpYv4zMiLlLX2h
-         sg4C2k2Xv+IX34PF6zos9eS3dY/zY+vCALN73udNDncKWjxals7NZRLSiXB42Q2fNGPw
-         co3sk3l0aMsDyc4fy+12gj1OOrSw+NB0qHRKLgqxrc3+6GvPnmIf7NdGZtkt+84PR2n1
-         pzz0uWK02TyFNkFyV46Dr3F5EA1HbcwnOnOGQ4r60egXvGebPdNn6mZrsBtgihpNyO8R
-         N1xg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=G8ZnoARtuecckP3hweHke5GOybQ4Tx8AFkQAdpOiTb4=;
-        b=ST93VHhV17NS3A+BNIEw7O/tqSiUoj1jB+2IMz8lkdEZ4tO/Cb9EknuznNttEaVh5V
-         cPPs3vQkEg7tfaoFyooMcrbpxzr/JzyupJGStTfJNQwFUuKD01PZXdyRbwOjFnYFtBRw
-         tazGzeXJOr/hw91QuHD+8fTMs29s/hRL2Ktbq69+BnTgvH5AvwN2/pFDw6CvLrKfpbk7
-         72XrwnnN7kkQ02xgQ0MgZ1KSLN7FAu9lY25iEUTINRXhThYDymMTwIeKiYLOdpD1/lmo
-         rVRaO+IkwVnkJbU+mtTo64ofji2GCPVm7oF/dDhI7AjrpgaQFjAl2NlXJkui3tlLs29+
-         x/nQ==
-X-Gm-Message-State: ACgBeo0WZePBM3LFEaRGE3huGb0PyCkujDh10U++0I2+AMxr+768G2fC
-        7ir+NxtEeILImjXoLp6RHxI=
-X-Google-Smtp-Source: AA6agR5FVS+CRHX7ZNRp3l6+bfFEe/zLpbi+VIWGy2rLmJ3mU9ZkunVXWhrZz/JnhHHr46WP0K1dVQ==
-X-Received: by 2002:aa7:d703:0:b0:44e:a7b9:d5bd with SMTP id t3-20020aa7d703000000b0044ea7b9d5bdmr6773436edq.425.1662636051345;
-        Thu, 08 Sep 2022 04:20:51 -0700 (PDT)
-Received: from skbuf ([188.27.184.197])
-        by smtp.gmail.com with ESMTPSA id lr23-20020a170906fb9700b0077077c62cadsm1120329ejb.31.2022.09.08.04.20.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Sep 2022 04:20:49 -0700 (PDT)
-Date:   Thu, 8 Sep 2022 14:20:44 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     netdev@kapio-technology.com
-Cc:     Ido Schimmel <idosch@nvidia.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
+        with ESMTP id S229644AbiIHL3q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 07:29:46 -0400
+Received: from hutie.ust.cz (hutie.ust.cz [185.8.165.127])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E868B18B0B;
+        Thu,  8 Sep 2022 04:29:42 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cutebit.org; s=mail;
+        t=1662636574; bh=eA2LMCy4I214W/X512BaZYIk9y7xAY0TdZeYuwcrUnM=;
+        h=Subject:From:In-Reply-To:Date:Cc:References:To;
+        b=mrzaxyx6V/uFgjAWurZEr3sq5LP2vqupdTG4Sad9liAwF7U47bMDSRCVzE+8pgDYj
+         U3S9PNkA+QF1l9PjI1eDBYJu+5qeTOHgIKmu4QO7BwG8kWq0+CljGW5nPPtCqLKrxI
+         TaIdqkMQtfnca25A0/5N1Cl6B7Mr1O2vaW8iHR3I=
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
+Subject: Re: [PATCH v2 2/5] dt-bindings: net: Add Broadcom BCM4377 family PCIe
+ Bluetooth
+From:   =?utf-8?Q?Martin_Povi=C5=A1er?= <povik@cutebit.org>
+In-Reply-To: <bcb799ea-d58e-70dc-c5c2-daaff1b19bf5@linaro.org>
+Date:   Thu, 8 Sep 2022 13:29:30 +0200
+Cc:     Sven Peter <sven@svenpeter.dev>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v5 net-next 6/6] selftests: forwarding: add test of
- MAC-Auth Bypass to locked port tests
-Message-ID: <20220908112044.czjh3xkzb4r27ohq@skbuf>
-References: <Ywyj1VF1wlYqlHb6@shredder>
- <9e1a9eb218bbaa0d36cb98ff5d4b97d7@kapio-technology.com>
- <YwzPJ2oCYJQHOsXD@shredder>
- <69db7606896c77924c11a6c175c4b1a6@kapio-technology.com>
- <YwzjPcQjfLPk3q/k@shredder>
- <f1a17512266ac8b61444e7f0e568aca7@kapio-technology.com>
- <YxNo/0+/Sbg9svid@shredder>
- <5cee059b65f6f7671e099150f9da79c1@kapio-technology.com>
- <Yxmgs7Du62V1zyjK@shredder>
- <8dfc9b525f084fa5ad55019f4418a35e@kapio-technology.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8dfc9b525f084fa5ad55019f4418a35e@kapio-technology.com>
+        Hector Martin <marcan@marcan.st>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        asahi@lists.linux.dev, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <E53D41D9-1675-42EB-BC76-3453043FCB6E@cutebit.org>
+References: <20220907170935.11757-1-sven@svenpeter.dev>
+ <20220907170935.11757-3-sven@svenpeter.dev>
+ <bcb799ea-d58e-70dc-c5c2-daaff1b19bf5@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 08, 2022 at 01:14:59PM +0200, netdev@kapio-technology.com wrote:
-> On 2022-09-08 09:59, Ido Schimmel wrote:
-> > On Wed, Sep 07, 2022 at 11:10:07PM +0200, netdev@kapio-technology.com wrote:
-> > > I am at the blackhole driver implementation now, as I suppose that the
-> > > iproute2 command should work with the mv88e6xxx driver when adding blackhole
-> > > entries (with a added selftest)?
-> > > I decided to add the blackhole feature as new ops for drivers with functions
-> > > blackhole_fdb_add() and blackhole_fdb_del(). Do you agree with that approach?
-> > 
-> > I assume you are talking about extending 'dsa_switch_ops'?
-> 
-> Yes, that is the idea.
-> 
-> > If so, it's up to the DSA maintainers to decide.
 
-What will be the usefulness of adding a blackhole FDB entry from user space?
+
+> On 8. 9. 2022, at 13:19, Krzysztof Kozlowski =
+<krzysztof.kozlowski@linaro.org> wrote:
+>=20
+> On 07/09/2022 19:09, Sven Peter wrote:
+>> These chips are combined Wi-Fi/Bluetooth radios which expose a
+>> PCI subfunction for the Bluetooth part.
+>> They are found in Apple machines such as the x86 models with the T2
+>> chip or the arm64 models with the M1 or M2 chips.
+>>=20
+>> Signed-off-by: Sven Peter <sven@svenpeter.dev>
+>> ---
+>> changes from v1:
+>> - added apple,* pattern to brcm,board-type
+>> - s/PCI/PCIe/
+>> - fixed 1st reg cell inside the example to not contain the bus number
+>>=20
+>> .../bindings/net/brcm,bcm4377-bluetooth.yaml | 78 +++++++++++++++++++
+>> MAINTAINERS | 1 +
+>> 2 files changed, 79 insertions(+)
+>> create mode 100644 =
+Documentation/devicetree/bindings/net/brcm,bcm4377-bluetooth.yaml
+>>=20
+>> diff --git =
+a/Documentation/devicetree/bindings/net/brcm,bcm4377-bluetooth.yaml =
+b/Documentation/devicetree/bindings/net/brcm,bcm4377-bluetooth.yaml
+>> new file mode 100644
+>> index 000000000000..fb851f8e6bcb
+>> --- /dev/null
+>> +++ =
+b/Documentation/devicetree/bindings/net/brcm,bcm4377-bluetooth.yaml
+>> @@ -0,0 +1,78 @@
+>> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/net/brcm,bcm4377-bluetooth.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: Broadcom BCM4377 family PCIe Bluetooth Chips
+>> +
+>> +allOf:
+>> + - $ref: bluetooth-controller.yaml#
+>=20
+> Put it before properties (so after description).
+>=20
+>> +
+>> +maintainers:
+>> + - Sven Peter <sven@svenpeter.dev>
+>> +
+>> +description:
+>> + This binding describes Broadcom BCM4377 family PCIe-attached =
+bluetooth chips
+>> + usually found in Apple machines. The Wi-Fi part of the chip is =
+described in
+>> + bindings/net/wireless/brcm,bcm4329-fmac.yaml.
+>> +
+>> +properties:
+>> + compatible:
+>> + enum:
+>> + - pci14e4,5fa0 # BCM4377
+>> + - pci14e4,5f69 # BCM4378
+>> + - pci14e4,5f71 # BCM4387
+>> +
+>> + reg:
+>> + description: PCI device identifier.
+>=20
+> maxItems: X
+>=20
+>> +
+>> + brcm,board-type:
+>> + $ref: /schemas/types.yaml#/definitions/string
+>> + description: Board type of the Bluetooth chip. This is used to =
+decouple
+>> + the overall system board from the Bluetooth module and used to =
+construct
+>> + firmware and calibration data filenames.
+>> + On Apple platforms, this should be the Apple module-instance =
+codename
+>> + prefixed by "apple,", e.g. "apple,atlantisb".
+>> + pattern: '^apple,.*'
+>> +
+>> + brcm,taurus-cal-blob:
+>> + $ref: /schemas/types.yaml#/definitions/uint8-array
+>> + description: A per-device calibration blob for the Bluetooth radio. =
+This
+>> + should be filled in by the bootloader from platform configuration
+>> + data, if necessary, and will be uploaded to the device.
+>> + This blob is used if the chip stepping of the Bluetooth module does =
+not
+>> + support beamforming.
+>=20
+> Isn't it:
+> s/beamforming/beam forming/
+> ?
+
+Doesn=E2=80=99t seem like it:
+https://www.google.com/search?hl=3Den&q=3Dbeam%20forming
+
+Best,
+Martin
+
+>> +
+>> + brcm,taurus-bf-cal-blob:
+>> + $ref: /schemas/types.yaml#/definitions/uint8-array
+>> + description: A per-device calibration blob for the Bluetooth radio. =
+This
+>> + should be filled in by the bootloader from platform configuration
+>> + data, if necessary, and will be uploaded to the device.
+>> + This blob is used if the chip stepping of the Bluetooth module =
+supports
+>> + beamforming.
+>=20
+> Same here.
+
+
+> Best regards,
+> Krzysztof
+
