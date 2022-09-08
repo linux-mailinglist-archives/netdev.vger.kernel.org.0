@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 217895B2446
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 19:17:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E80315B2447
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 19:17:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229904AbiIHRRW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 13:17:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43254 "EHLO
+        id S230011AbiIHRRX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 13:17:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbiIHRRV (ORCPT
+        with ESMTP id S229893AbiIHRRV (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 13:17:21 -0400
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D4FACCD6F
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9AC6CAC78
         for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 10:17:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662657440; x=1694193440;
+  t=1662657441; x=1694193441;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=T7LLJuTTmSSaYItDJH/lrWEXA8IDEXbtQpb/ZqojxZo=;
-  b=enjEBWQtOdlv/Im9bZDJEp9xhNRYqYl9J7gaic9gerBfHNHSdU92c+sW
-   3/rizgQ0VNzgdLy+CLXXxbEwFhAxPyIddn5Ej/ZZqke7P4cMoTFBVCzyl
-   fe9Wsz5GX/NoC5Eqs6PljvStUEF79yCg4/5M9jGy7sU9Wed00lhWtlTn2
-   ZtqEbo552Acfy4+E9816UR50X/1QVpRwPnykSrKvTpbdc9Fy/gXMZ6usn
-   s2Nyy8rFLERwN5qpURCtHIwwqr2ZVRPl9bl5jQn2s4aNTm+mTZvH67dZR
-   XPCqB10wSQEQZCA53XRw3bZcI0rd9DdzlhwWzjM6NEsGjtRbhHXwI1G6l
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10464"; a="297267563"
+  bh=S8T0IJZGltHxQ+Ll+F3o2rWmlG/OCDW7S2Zdfooa9Rs=;
+  b=ZUcKxBRbU2JFYof5wHOl5UqaM2P4VrRmoTFTQoA25rYsb8yPXQfl2MRJ
+   DqcMVSulEeTKm73RPA1v3m549X55gYlnl2h7Lw8Ru5tpVakshMa5z7MMc
+   wVUVtGsW5CWdE3AjwRTRgQrdV/1svRlmOsHnyypJMMQiRmSrLXrrva7En
+   tbD8d40DGUQtLmG7huJrXr/oy6EnXsXD/2BJe8soDIdQfwpAGDjBGtPug
+   v9VKbsLOp/ImbAJz83YQa5woc3+HjPYffeZau+j9vXwJn2ZJ/0wGNcaaS
+   AuOdFphJNyAOtP9TWQfnSfpMDEzvPaf2jcJPemfTzRFg9IziJjceQKyRs
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10464"; a="297267567"
 X-IronPort-AV: E=Sophos;i="5.93,300,1654585200"; 
-   d="scan'208";a="297267563"
+   d="scan'208";a="297267567"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Sep 2022 10:16:55 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Sep 2022 10:16:56 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,300,1654585200"; 
-   d="scan'208";a="860117814"
+   d="scan'208";a="860117825"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by fmsmga006.fm.intel.com with ESMTP; 08 Sep 2022 10:16:55 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -49,9 +49,9 @@ Cc:     Wojciech Drewek <wojciech.drewek@intel.com>,
         baowen.zheng@corigine.com, maksym.glubokiy@plvision.eu,
         jiri@resnulli.us, paulb@nvidia.com, jhs@mojatatu.com,
         xiyou.wangcong@gmail.com
-Subject: [PATCH net-next v1 1/5] uapi: move IPPROTO_L2TP to in.h
-Date:   Thu,  8 Sep 2022 10:16:40 -0700
-Message-Id: <20220908171644.1282191-2-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next v1 2/5] flow_dissector: Add L2TPv3 dissectors
+Date:   Thu,  8 Sep 2022 10:16:41 -0700
+Message-Id: <20220908171644.1282191-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220908171644.1282191-1-anthony.l.nguyen@intel.com>
 References: <20220908171644.1282191-1-anthony.l.nguyen@intel.com>
@@ -69,44 +69,95 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Wojciech Drewek <wojciech.drewek@intel.com>
 
-IPPROTO_L2TP is currently defined in l2tp.h, but most of
-ip protocols are defined in in.h file. Move it there in order
-to keep code clean.
+Allow to dissect L2TPv3 specific field which is:
+- session ID (32 bits)
+
+L2TPv3 might be transported over IP or over UDP,
+this implementation is only about L2TPv3 over IP.
+IP protocol carries L2TPv3 when ip_proto is
+IPPROTO_L2TP (115).
 
 Acked-by: Guillaume Nault <gnault@redhat.com>
 Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- include/uapi/linux/in.h   | 2 ++
- include/uapi/linux/l2tp.h | 2 --
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ include/net/flow_dissector.h |  9 +++++++++
+ net/core/flow_dissector.c    | 28 ++++++++++++++++++++++++++++
+ 2 files changed, 37 insertions(+)
 
-diff --git a/include/uapi/linux/in.h b/include/uapi/linux/in.h
-index 578daa6f816b..f243ce665f74 100644
---- a/include/uapi/linux/in.h
-+++ b/include/uapi/linux/in.h
-@@ -68,6 +68,8 @@ enum {
- #define IPPROTO_PIM		IPPROTO_PIM
-   IPPROTO_COMP = 108,		/* Compression Header Protocol		*/
- #define IPPROTO_COMP		IPPROTO_COMP
-+  IPPROTO_L2TP = 115,		/* Layer 2 Tunnelling Protocol		*/
-+#define IPPROTO_L2TP		IPPROTO_L2TP
-   IPPROTO_SCTP = 132,		/* Stream Control Transport Protocol	*/
- #define IPPROTO_SCTP		IPPROTO_SCTP
-   IPPROTO_UDPLITE = 136,	/* UDP-Lite (RFC 3828)			*/
-diff --git a/include/uapi/linux/l2tp.h b/include/uapi/linux/l2tp.h
-index bab8c9708611..7d81c3e1ec29 100644
---- a/include/uapi/linux/l2tp.h
-+++ b/include/uapi/linux/l2tp.h
-@@ -13,8 +13,6 @@
- #include <linux/in.h>
- #include <linux/in6.h>
+diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
+index 6c74812d64b2..5ccf52ef8809 100644
+--- a/include/net/flow_dissector.h
++++ b/include/net/flow_dissector.h
+@@ -289,6 +289,14 @@ struct flow_dissector_key_pppoe {
+ 	__be16 type;
+ };
  
--#define IPPROTO_L2TP		115
--
- /**
-  * struct sockaddr_l2tpip - the sockaddr structure for L2TP-over-IP sockets
-  * @l2tp_family:  address family number AF_L2TPIP.
++/**
++ * struct flow_dissector_key_l2tpv3:
++ * @session_id: identifier for a l2tp session
++ */
++struct flow_dissector_key_l2tpv3 {
++	__be32 session_id;
++};
++
+ enum flow_dissector_key_id {
+ 	FLOW_DISSECTOR_KEY_CONTROL, /* struct flow_dissector_key_control */
+ 	FLOW_DISSECTOR_KEY_BASIC, /* struct flow_dissector_key_basic */
+@@ -320,6 +328,7 @@ enum flow_dissector_key_id {
+ 	FLOW_DISSECTOR_KEY_HASH, /* struct flow_dissector_key_hash */
+ 	FLOW_DISSECTOR_KEY_NUM_OF_VLANS, /* struct flow_dissector_key_num_of_vlans */
+ 	FLOW_DISSECTOR_KEY_PPPOE, /* struct flow_dissector_key_pppoe */
++	FLOW_DISSECTOR_KEY_L2TPV3, /* struct flow_dissector_key_l2tpv3 */
+ 
+ 	FLOW_DISSECTOR_KEY_MAX,
+ };
+diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
+index 990429c69ccd..2a1f513a2dc8 100644
+--- a/net/core/flow_dissector.c
++++ b/net/core/flow_dissector.c
+@@ -204,6 +204,30 @@ static void __skb_flow_dissect_icmp(const struct sk_buff *skb,
+ 	skb_flow_get_icmp_tci(skb, key_icmp, data, thoff, hlen);
+ }
+ 
++static void __skb_flow_dissect_l2tpv3(const struct sk_buff *skb,
++				      struct flow_dissector *flow_dissector,
++				      void *target_container, const void *data,
++				      int nhoff, int hlen)
++{
++	struct flow_dissector_key_l2tpv3 *key_l2tpv3;
++	struct {
++		__be32 session_id;
++	} *hdr, _hdr;
++
++	if (!dissector_uses_key(flow_dissector, FLOW_DISSECTOR_KEY_L2TPV3))
++		return;
++
++	hdr = __skb_header_pointer(skb, nhoff, sizeof(_hdr), data, hlen, &_hdr);
++	if (!hdr)
++		return;
++
++	key_l2tpv3 = skb_flow_dissector_target(flow_dissector,
++					       FLOW_DISSECTOR_KEY_L2TPV3,
++					       target_container);
++
++	key_l2tpv3->session_id = hdr->session_id;
++}
++
+ void skb_flow_dissect_meta(const struct sk_buff *skb,
+ 			   struct flow_dissector *flow_dissector,
+ 			   void *target_container)
+@@ -1501,6 +1525,10 @@ bool __skb_flow_dissect(const struct net *net,
+ 		__skb_flow_dissect_icmp(skb, flow_dissector, target_container,
+ 					data, nhoff, hlen);
+ 		break;
++	case IPPROTO_L2TP:
++		__skb_flow_dissect_l2tpv3(skb, flow_dissector, target_container,
++					  data, nhoff, hlen);
++		break;
+ 
+ 	default:
+ 		break;
 -- 
 2.35.1
 
