@@ -2,113 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A7F0D5B1B93
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 13:35:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A83905B1C01
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 13:58:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231486AbiIHLfX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 07:35:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38906 "EHLO
+        id S230178AbiIHL6r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 07:58:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231420AbiIHLfG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 07:35:06 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D2032042
-        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 04:35:02 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id y29so6926364ljq.7
-        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 04:35:02 -0700 (PDT)
+        with ESMTP id S229700AbiIHL6p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 07:58:45 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC32811C7EB
+        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 04:58:44 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id q21so13093770lfo.0
+        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 04:58:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=rGbehmmbFjGdP39Tva2lX3JsZ3RKZXRTihQXkTFVj0Y=;
-        b=u6D+fKJ2Lhfyp6EpZaftp621lBz6Wd859kwOBiqFQ3lUxvV9CWJbk8wOUpHBKAnWOJ
-         Ay19wrgdZbZWV7IS7+EwTdDnyzs1gQo+vI4ToLdDyGdhHkq1VlOwt7MAYkg9PE1lU6qo
-         F16V9/sqUWF0TWbcg/8py5MBiAGP+i7UlE06Zvuba3U2XsCSkq0BGs6XNK1XPEcmncx3
-         j5w4fQ2F/4zInUlUf2dTKh4Myma9gGm+JZNaFR8GdOtrtDQwJ1WGRKxb5AUbN+YFwZap
-         w16k9HfAxB5IseMpsnbuKf1KdTr3ZczXUc4GMFHag3eMo9Kbo/zinntSpaM1kmLh/0h9
-         UmPQ==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=+eo4JfjB9Ehn0AoFNdQLah3HvVMczQGEOrXYOlb6oS8=;
+        b=QSzx+ltL/fW1XSZyi2CU6W+ut1MXlxWWyTKJRKZbqZJuMZlayHVR12mth5e+LqhMRz
+         iv2ohMUPh7nKuZJ03HVctx+Gl+T7xTE8A6iCMCW72LA5YdcM2oyU0GMBJ1tH4lugqftH
+         /qb4XxlXeR8gcIn4hLtHJo/DHhRobm+5m488hKPlVlQCkrcPxKCd7bvui23sB2KEPg1A
+         azWHfA8cMGxjLQp8SgzYAjEJ6XfoFSwSLXHxy8ga3wsK7+xStQI4ZpXWjCrg95bvSs3s
+         Yd6k9a9SeDfx8pTbQsPPA0KvyPMGg6hPx5W/ZILkuSyoyGUJG4mrm3cn/1GGW4lF4ZCX
+         UfWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=rGbehmmbFjGdP39Tva2lX3JsZ3RKZXRTihQXkTFVj0Y=;
-        b=wGCdAUXkf/P5OffXzSF/GybrcipsRp7QWCj9SWixcLy3Gg/dkc8a1B3RYDo4EK2pX/
-         I2qhbeDeoQi1i5vGMYYbIPxEC/j2Xv9z30pWYvZH0lJ1trTs/8h29xrvgJLvoq0ZpSNU
-         ioFFnSi8Zxhc7fCsOS1u0ch5Xs3lH6cVTVEUiU80E+twZMh3N1FFbCZxPx2RBsanLGCN
-         GyAUr6Tlp5NxaFc48x0wpeY91L7RkfFKiyoz5AvbLs0lXAesUvc9/NBzNFRrLAIElerl
-         flcmoTz6HNWlqFGMpAF76h6GUtlAA64UknvjO4fKoptlNUQqdfYWtxA+o3x1N1JZml//
-         d85Q==
-X-Gm-Message-State: ACgBeo07uhOQadqhY4PVtihxHYdy95NQFiO+AfhyyJMaLxk3PBwFTxNi
-        TY8eIzmpVO5Qbe9r2pbswlrPJw==
-X-Google-Smtp-Source: AA6agR4ui+DsaI/rx9G71gnDc6YAJvWKPoB3zCyZaJ1nLjK+vVvOPNBMn6vOY0NTUCUZDxAiUFpecw==
-X-Received: by 2002:a05:651c:1a26:b0:269:15ee:809a with SMTP id by38-20020a05651c1a2600b0026915ee809amr2203010ljb.307.1662636900510;
-        Thu, 08 Sep 2022 04:35:00 -0700 (PDT)
-Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id v25-20020a05651203b900b00497aae401f8sm770409lfp.184.2022.09.08.04.34.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 08 Sep 2022 04:34:59 -0700 (PDT)
-Message-ID: <d0dacbf4-3768-7bbf-77a5-957bb37cd2b7@linaro.org>
-Date:   Thu, 8 Sep 2022 13:34:58 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH v2 2/5] dt-bindings: net: Add Broadcom BCM4377 family PCIe
- Bluetooth
-Content-Language: en-US
-To:     =?UTF-8?Q?Martin_Povi=c5=a1er?= <povik@cutebit.org>
-Cc:     Sven Peter <sven@svenpeter.dev>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=+eo4JfjB9Ehn0AoFNdQLah3HvVMczQGEOrXYOlb6oS8=;
+        b=KYCie7pACs5TSmG17mrKXIs/1BnJB5Yp0CBj21UYtpHGbYsbVphE3brqiDdDZbqZo4
+         BBgrKPjU3gR0hpGKTJsRzFk9ltM2CX3oswqEw7JsEuptr4bWQTWFZxfvCyMdV7g5uYff
+         BmPutkeEjo0GiJjVEH9ScwMw2cCNkw2HbqkdBVnlrp9XrMexSxbpx84LUneHJaE/XttS
+         8PF7ExpRUczFoG0TPBv3vMhBoSQphPcbD4lDhfLSIOdsaf72nd2zdBaJS944BwptjYbI
+         8aPhqwn1GfQpDqCNPJi/qSmBzzVfumfhXz1qWYXI68ywm+/DWHMYsN8eY5QFaxQRtiDf
+         8qWQ==
+X-Gm-Message-State: ACgBeo3KPRQw7bmT2OBqTdLCGa1yTFgkmxX596kmMmCijY9xd5HTlqWT
+        xGXJTiH8U97n4T+lQxmGu3KLXs+ImdGRQmzU
+X-Google-Smtp-Source: AA6agR7PYX4D7j2mshOB2ZnCHI+/G80ocm7QdFmrf44wMZikWg19TCeeT3g09++RKZPvz57L59TGig==
+X-Received: by 2002:a05:6512:2807:b0:494:6cc8:d31e with SMTP id cf7-20020a056512280700b004946cc8d31emr2624360lfb.82.1662638322649;
+        Thu, 08 Sep 2022 04:58:42 -0700 (PDT)
+Received: from wse-c0089.raspi.local (h-98-128-229-160.NA.cust.bahnhof.se. [98.128.229.160])
+        by smtp.gmail.com with ESMTPSA id s10-20020a2e81ca000000b0026acfbbcb7esm833595ljg.12.2022.09.08.04.58.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Sep 2022 04:58:42 -0700 (PDT)
+From:   Mattias Forsblad <mattias.forsblad@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Hector Martin <marcan@marcan.st>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        asahi@lists.linux.dev, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220907170935.11757-1-sven@svenpeter.dev>
- <20220907170935.11757-3-sven@svenpeter.dev>
- <bcb799ea-d58e-70dc-c5c2-daaff1b19bf5@linaro.org>
- <E53D41D9-1675-42EB-BC76-3453043FCB6E@cutebit.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <E53D41D9-1675-42EB-BC76-3453043FCB6E@cutebit.org>
-Content-Type: text/plain; charset=UTF-8
+        Mattias Forsblad <mattias.forsblad@gmail.com>
+Subject: [PATCH net-next v6 0/6] net: dsa: qca8k, mv88e6xxx: rmon: Add RMU support
+Date:   Thu,  8 Sep 2022 13:58:29 +0200
+Message-Id: <20220908115835.3205487-1-mattias.forsblad@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/09/2022 13:29, Martin Povišer wrote:
->>> + brcm,taurus-cal-blob:
->>> + $ref: /schemas/types.yaml#/definitions/uint8-array
->>> + description: A per-device calibration blob for the Bluetooth radio. This
->>> + should be filled in by the bootloader from platform configuration
->>> + data, if necessary, and will be uploaded to the device.
->>> + This blob is used if the chip stepping of the Bluetooth module does not
->>> + support beamforming.
->>
->> Isn't it:
->> s/beamforming/beam forming/
->> ?
-> 
-> Doesn’t seem like it:
-> https://www.google.com/search?hl=en&q=beam%20forming
+The Marvell SOHO switches have the ability to receive and transmit
+Remote Management Frames (Frame2Reg) to the CPU through the
+attached network interface.
+This is handled by the Remote Management Unit (RMU) in the switch
+These frames can contain different payloads:
+single switch register read and writes, daisy chained switch
+register read and writes, RMON/MIB dump/dump clear and ATU dump.
+The dump functions are very costly over MDIO but it's
+only a couple of network packets via the RMU.
 
-OK, thanks :)
+Next step could be to implement ATU dump.
+We've found that the gain to use RMU for single register
+read and writes is neglible.
 
+qca8k
+=====
+There's a newly introduced convenience function for sending
+and waiting for frames. Changes have been made for the qca8k
+driver to use this. Please test for regressions.
 
-Best regards,
-Krzysztof
+RFC -> v1:
+  - Track master interface availability.
+  - Validate destination MAC for incoming frames.
+  - Rate limit outputs.
+  - Cleanup setup function validating upstream port on switch.
+  - Fix return values when setting up RMU.
+  - Prefix defines correctly.
+  - Fix aligned accesses.
+  - Validate that switch exists for incoming frames.
+  - Split RMON stats function.
+
+v1 -> v2:
+  - Remove unused variable.
+
+v2 -> v3:
+  - Rewrite after feedback. Use tagger_data to handle
+    frames more like qca8k.
+  - qca8k: Change to use convenience functions introduced.
+    Requesting test of this.
+    
+v3 -> v4:
+  - Separated patches more granular.
+
+v4 -> v5:
+  - Some small fixes after feedback.
+
+v5 -> v6:
+  - Rewrite of send_wait function to more adhere
+    to RPC standards
+  - Cleanup of ops handling
+  - Move get id to when master device is available.
+  
+Regards,
+Mattias Forsblad
+
+Mattias Forsblad (6):
+  net: dsa: mv88e6xxx: Add RMU enable for select switches.
+  net: dsa: Add convenience functions for frame handling
+  net: dsa: Introduce dsa tagger data operation.
+  net: dsa: mv88e6xxxx: Add RMU functionality.
+  net: dsa: mv88e6xxx: rmon: Use RMU for reading RMON data
+  net: dsa: qca8k: Use new convenience functions
+
+ drivers/net/dsa/mv88e6xxx/Makefile  |   1 +
+ drivers/net/dsa/mv88e6xxx/chip.c    |  70 ++++--
+ drivers/net/dsa/mv88e6xxx/chip.h    |  24 ++
+ drivers/net/dsa/mv88e6xxx/global1.c |  66 ++++++
+ drivers/net/dsa/mv88e6xxx/global1.h |   3 +
+ drivers/net/dsa/mv88e6xxx/rmu.c     | 355 ++++++++++++++++++++++++++++
+ drivers/net/dsa/mv88e6xxx/rmu.h     |  21 ++
+ drivers/net/dsa/mv88e6xxx/smi.c     |   3 +
+ drivers/net/dsa/qca/qca8k-8xxx.c    |  61 ++---
+ include/net/dsa.h                   |  19 ++
+ net/dsa/dsa.c                       |  20 ++
+ net/dsa/dsa2.c                      |   2 +
+ net/dsa/tag_dsa.c                   |  32 ++-
+ 13 files changed, 614 insertions(+), 63 deletions(-)
+ create mode 100644 drivers/net/dsa/mv88e6xxx/rmu.c
+ create mode 100644 drivers/net/dsa/mv88e6xxx/rmu.h
+
+-- 
+2.25.1
+
