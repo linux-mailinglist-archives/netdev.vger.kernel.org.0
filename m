@@ -2,220 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 580C65B1AA4
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 12:54:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17C9F5B1AC4
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 13:01:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229600AbiIHKx5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 06:53:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44472 "EHLO
+        id S229600AbiIHLA5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 07:00:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230354AbiIHKxy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 06:53:54 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EB26F774C
-        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 03:53:52 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=g9lGDEQXoBsuUSfuF/CJHED6uk2/5mxlDQjIUOCJMz2sJf2e15au7sZupIgyYcrr0w+769bKzrajaTNsqOfPzOlJGWm/CEXUxSAc/gkopcckP8kAMTWRkvdClLJSM6PmRF2N85NsFun/1X07vlk9mclEdvAXQk/HxnpzSYCJuDlC4i7KHlM+N1UeybZOOqKyikEIy1WNKxoTmZEyyhZBSsB/37IiozAxWOHFJBkTTk/asG7s0AHipiItolvjvBk8iCtVR1WM2DZfE2CKkW91sjH4ZEcAobHPLKEH1JWwE7tv5jw1MgJqNdE0lomOExwcdeuJr3rgk52PFK674cwj2Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5xxkGFobN3xjCQk+3reBuc2mKwCTYbee0N0HWRTMH3g=;
- b=GmYon1Hs/uhkqy79+4COpyccrUF8d22QxNMGerUkP8O2Psvf6WTRqFtNpOvxCJk0VFGvWznYBtkVHB/enLFTLnD99bpgmjTQrB58S/lYP/ffKyAK86Kw96Ov+9ayn9GgoAowBLKqf/e6AZFyTvBEjDnaZ+GIirKaS9ko3nnSfIxXZqn2C3+/jMxX2wK/puuAddh48gsAirRbKjmwW7BBKwr1h8T9HaMhfGOWrQpGXT7k5pBjCh4aZoHymCMRhStqQXEQm7vm3T89X88cA7Z/JdIvYcaQRd5nGTCkKtbOgsj82fGHsZT6lBviHlc0pz9YbHDqi5hzoMkZp9jZdQnHXw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5xxkGFobN3xjCQk+3reBuc2mKwCTYbee0N0HWRTMH3g=;
- b=WZadhWVCZbxLip8UAaEOU0jMavsL2PlsE58ERuWIwg70BPpIJQceniI7UwsaTK0Fh0xzcq14qsTQz6M4Si97bqCOkC+Y5adjURbNOq1TluqyovF3N75BiyqKoCOga+nLVSQ0fhfvOZXn2h6Nvyfb98ZdGFGaUi0kOSX3NSm3dOP5QjXecbuHPWbdfsVSLhkKZdSpFu09GvM1e8BMFWMSTxovsnlDNNbQSEL/OpNrVsjK8TGs3WW1sb9xE7DT2p6Cr/qFnYKXNF1eaeVBSmGXvprc8DGa+/6io0FQFnR+IH7SgDD1ji95L/cN9s1bnnPW2Xrfmday5Sa+MfCEau75xw==
-Received: from BN0PR08CA0010.namprd08.prod.outlook.com (2603:10b6:408:142::11)
- by SA1PR12MB7296.namprd12.prod.outlook.com (2603:10b6:806:2ba::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.11; Thu, 8 Sep
- 2022 10:53:50 +0000
-Received: from BN8NAM11FT102.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:142:cafe::2a) by BN0PR08CA0010.outlook.office365.com
- (2603:10b6:408:142::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.14 via Frontend
- Transport; Thu, 8 Sep 2022 10:53:50 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.234) by
- BN8NAM11FT102.mail.protection.outlook.com (10.13.177.27) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5612.13 via Frontend Transport; Thu, 8 Sep 2022 10:53:50 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Thu, 8 Sep
- 2022 10:53:49 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Thu, 8 Sep 2022
- 03:53:48 -0700
-Received: from vdi.nvidia.com (10.127.8.9) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server id 15.2.986.29 via Frontend Transport; Thu, 8 Sep
- 2022 03:53:47 -0700
-From:   Emeel Hakim <ehakim@nvidia.com>
-To:     <dsahern@kernel.org>, <sd@queasysnail.net>
-CC:     <netdev@vger.kernel.org>, <raeds@nvidia.com>, <tariqt@nvidia.com>,
-        "Emeel Hakim" <ehakim@nvidia.com>
-Subject: [PATCH main v4 2/2] macsec: add user manual description for extended packet number feature
-Date:   Thu, 8 Sep 2022 13:53:38 +0300
-Message-ID: <20220908105338.30589-2-ehakim@nvidia.com>
-X-Mailer: git-send-email 2.21.3
-In-Reply-To: <20220908105338.30589-1-ehakim@nvidia.com>
-References: <20220908105338.30589-1-ehakim@nvidia.com>
+        with ESMTP id S229547AbiIHLA4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 07:00:56 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA735B276A
+        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 04:00:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662634854;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=tc8oQBF9Qw9ZbPm0DoFV49CE44ekZUxvU0qecc6cMtE=;
+        b=OVXLA4Q0J68WGunkBvBFNZ/idUxzDmpZHcOOD3LQ9jnu6YllOuSD6xBUntOKiVmUxAaofw
+        SxVkqpkNGkbMyECLQi/aQaejNlH6L1JMM8jdvlwPey0LMymPg6vBSfedEYFm4d4dA0/ESw
+        wkhESoJnN22lxVMkK66vSIAgF0TcmBk=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-455-A21GjwImO5aeRkl_hfFedw-1; Thu, 08 Sep 2022 07:00:53 -0400
+X-MC-Unique: A21GjwImO5aeRkl_hfFedw-1
+Received: by mail-wr1-f69.google.com with SMTP id h2-20020adfa4c2000000b00228db7822cbso2667094wrb.19
+        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 04:00:53 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=tc8oQBF9Qw9ZbPm0DoFV49CE44ekZUxvU0qecc6cMtE=;
+        b=2G+IP8EzM+0SIxspRJGB0nBoZFVb5KgWOW71hi2MpapVwmvFt6nnr92N7D73y4PTcw
+         tiNwJbdwU7kl0GZjIPfvKBp02cewDMZvQB3yWuYP5+W8MqLtvNiMm9EcrCtNz0H4pQTe
+         oJ+dlV5UFn+11WovkYk0IOHpON4bGNjElVMq8kDsY75ASSoEkLslGsYmTv0SgPUMZ01V
+         rx+8ZXHGAZtMh1k/LRkU3To1jMRwGsKJbHQso3AHx+pfYmAJvgToZty91cyO6uvMB3RY
+         B1EF+9L/qKv8r5g6gXy+bfqbd3ZlNAvR/o2g2M26A1MMUNVvtgOfegqwsKPHpSAaKtQh
+         RvEA==
+X-Gm-Message-State: ACgBeo1fC2kAp7xqc5liB/q65J2X8JN5bZ5qkeRoJ0MgB2xqi4CXHejk
+        Sp7ko4h1Z7d1mespTjoKM73nUhtiE12VBTJD6JW+prsAWANIkoaQMKWRf74RNYWAyIwwOP+gVFv
+        I1jMVIqHYPn8f2GL7
+X-Received: by 2002:a05:600c:3d09:b0:3a5:e408:ca19 with SMTP id bh9-20020a05600c3d0900b003a5e408ca19mr1883715wmb.135.1662634852104;
+        Thu, 08 Sep 2022 04:00:52 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7rhUZPz9EVPjEB+7st3OYmzKDYw3L4ZpK/1dte/dIvQ+9VNa+WQ6kDF3k4FiQGXcttXvJvVQ==
+X-Received: by 2002:a05:600c:3d09:b0:3a5:e408:ca19 with SMTP id bh9-20020a05600c3d0900b003a5e408ca19mr1883693wmb.135.1662634851820;
+        Thu, 08 Sep 2022 04:00:51 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-119-112.dyn.eolo.it. [146.241.119.112])
+        by smtp.gmail.com with ESMTPSA id m5-20020adff385000000b00228c792aaaasm13170345wro.100.2022.09.08.04.00.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Sep 2022 04:00:51 -0700 (PDT)
+Message-ID: <498a25e4f7ba4e21d688ca74f335b28cadcb3381.camel@redhat.com>
+Subject: Re: [PATCH net] net: avoid 32 x truesize under-estimation for tiny
+ skbs
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Alexander H Duyck <alexander.duyck@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Greg Thelen <gthelen@google.com>
+Date:   Thu, 08 Sep 2022 13:00:50 +0200
+In-Reply-To: <dcffcf6fde8272975e44124f55fba3936833360e.camel@gmail.com>
+References: <20210113161819.1155526-1-eric.dumazet@gmail.com>
+         <bd79ede94805326cd63f105c84f1eaa4e75c8176.camel@redhat.com>
+         <dcffcf6fde8272975e44124f55fba3936833360e.camel@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT102:EE_|SA1PR12MB7296:EE_
-X-MS-Office365-Filtering-Correlation-Id: de332858-ebf0-47cb-dbc3-08da918869c8
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ZvkFLq9Jk4W/THUWjH17+trPNdX+wfYAHvNvu71d9ECvE56oxEO+66QJDqCdtKma0IX9pBwGKKsoL0RcaGpFmCeK3flONEPtQsGkNPKWhLpLmvfWx6vyPnV4PM3sLeqNIo5Uk6ZiA+pC+HcTh/hpgg1ZJxd0vCo9BFhWX7k9hdvqfjxCqUX3Ozgpi7x8pfLHVoPsFJGQqcpyR4j3iLGI/B/v8Om6jQ7aEFlGooFfUzpHcO1s4aaD+S13VDgWro1VbKZRvkw2MruqABAWSB/9SWzJyCSZS9t+AvAIlET6vdozFzdNZdIkk0KyjsRhWtLvAjlpQo+WSxo0KcnaWRfbSVLZvyDz3mZvguUg1/1jOxL0dgnBUJrRO5c9Emw4jsTw5xDfISvpZywoofIebT2gRXekKhkUJybds0FchdbTGvOWa6OD827wO3Fgu4VwqALDIXZbeb5s5lJcTupmVrluBhBAmz8Rq07XGv3cFcvAHMUFCLDUp/BMiPkrC7iI8YoUZgNbDEE5t6F762FKc5+rrF2R0tvCj+/p8/u+TVEC9xpWkICKyfnjp6wh16ZLYm5tE8DywHShjKikZ756OI51qtcCLOV3bT2tV9ge+Knalx/i8lf8sq2kQBk5G7DIcq4gp59vmexM/wv+7km8b3Na589Lszx+PIw5t72+MzfX7G2Lc2BlH63hka1ueaxZnmtBh4AgMG+COIJO+//DYpqRxUotHFGS/koxCu8YYF7BkVa5fh/W/WnulaSR+sp+2Wa2wzz6breizIM7cSj8eukdqVj/cGr9xwjguJrj6gz4LOA=
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(346002)(396003)(136003)(46966006)(40470700004)(36840700001)(107886003)(336012)(6666004)(186003)(2616005)(82310400005)(1076003)(478600001)(426003)(40480700001)(26005)(47076005)(41300700001)(7696005)(86362001)(81166007)(40460700003)(356005)(82740400003)(83380400001)(316002)(5660300002)(54906003)(36860700001)(8936002)(8676002)(2906002)(110136005)(36756003)(70206006)(4326008)(70586007)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Sep 2022 10:53:50.1135
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: de332858-ebf0-47cb-dbc3-08da918869c8
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT102.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB7296
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update the user manual describing how to use extended packet number (XPN)
-feature for macsec. As part of configuring XPN, providing ssci and salt is
-required hence update user manual on  how to provide the above as part of
-the ip macsec command.
+On Wed, 2022-09-07 at 14:36 -0700, Alexander H Duyck wrote:
+> On Wed, 2022-09-07 at 22:19 +0200, Paolo Abeni wrote:
+> > What outlined above will allow for 10 min size frags in page_order0, as
+> > (SKB_DATA_ALIGN(0) + SKB_DATA_ALIGN(struct skb_shared_info) == 384. I'm
+> > not sure that anything will allocate such small frags.
+> > With a more reasonable GRO_MAX_HEAD, there will be 6 frags per page. 
+> 
+> That doesn't account for any headroom though. 
 
-Signed-off-by: Emeel Hakim <ehakim@nvidia.com>
----
-V1->V2: 
-- Updated documentation.
+Yes, the 0-size data packet was just a theoretical example to make the
+really worst case scenario.
 
-V2->V3:
+> Most of the time you have
+> to reserve some space for headroom so that if this buffer ends up
+> getting routed off somewhere to be tunneled there is room for adding to
+> the header. I think the default ends up being NET_SKB_PAD, though many
+> NICs use larger values. So adding any data onto that will push you up
+> to a minimum of 512 per skb for the first 64B for header data.
+> 
+> With that said it would probably put you in the range of 8 or fewer
+> skbs per page assuming at least 1 byte for data:
+>   512 =	SKB_DATA_ALIGN(NET_SKB_PAD + 1) +
+> 	SKB_DATA_ALIGN(struct skb_shared_info)
 
-V3->V4:
-- Updated documentation.
+In most build GRO_MAX_HEAD packets are even larger (should be 640)
 
- man/man8/ip-macsec.8 | 57 ++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 55 insertions(+), 2 deletions(-)
+> > The maximum truesize underestimation in both cases will be lower than
+> > what we can get with the current code in the worst case (almost 32x
+> > AFAICS). 
+> > 
+> > Is the above schema safe enough or should the requested size
+> > artificially inflatted to fit at most 4 allocations per page_order0?
+> > Am I miss something else? Apart from omitting a good deal of testing in
+> > the above list ;) 
+> 
+> If we are working with an order 0 page we may just want to split it up
+> into a fixed 1K fragments and not bother with a variable pagecnt bias.
+> Doing that we would likely simplify this quite a bit and avoid having
+> to do as much page count manipulation which could get expensive if we
+> are not getting many uses out of the page. An added advantage is that
+> we can get rid of the pagecnt_bias and just work based on the page
+> offset.
+> 
+> As such I am not sure the page frag cache would really be that good of
+> a fit since we have quite a bit of overhead in terms of maintaining the
+> pagecnt_bias which assumes the page is a bit longer lived so the ratio
+> of refcnt updates vs pagecnt_bias updates is better.
 
-diff --git a/man/man8/ip-macsec.8 b/man/man8/ip-macsec.8
-index bb816157..1a144853 100644
---- a/man/man8/ip-macsec.8
-+++ b/man/man8/ip-macsec.8
-@@ -10,7 +10,7 @@ ip-macsec \- MACsec device configuration
- |
- .BI sci " <u64>"
- ] [
--.BR cipher " { " default " | " gcm-aes-128 " | " gcm-aes-256 " } ] ["
-+.BR cipher " { " default " | " gcm-aes-128 " | " gcm-aes-256 " | " gcm-aes-xpn-128 " | " gcm-aes-xpn-256 " } ] ["
- .BI icvlen " ICVLEN"
- ] [
- .BR encrypt " { " on " | " off " } ] ["
-@@ -63,7 +63,13 @@ ip-macsec \- MACsec device configuration
- 
- .IR OPTS " := [ "
- .BR pn " { "
--.IR 1..2^32-1 " } ] ["
-+.IR 1..2^32-1 " } |"
-+.BR xpn " { "
-+.IR 1..2^64-1 " } ] ["
-+.B salt
-+.IR SALT " ] ["
-+.B ssci
-+.IR <u32> " ] ["
- .BR on " | " off " ]"
- .br
- .IR SCI " := { "
-@@ -75,6 +81,8 @@ ip-macsec \- MACsec device configuration
- }
- .br
- .IR PORT " := { " 1..2^16-1 " } "
-+.br
-+.IR SALT " := 96-bit hex string "
- 
- 
- .SH DESCRIPTION
-@@ -116,6 +124,29 @@ type.
- .nf
- # ip link add link eth0 macsec0 type macsec port 11 encrypt on offload mac
- 
-+.SH EXTENDED PACKET NUMBER EXAMPLES
-+.PP
-+.SS Create a MACsec device on link eth0 with enabled extended packet number (offload is disabled by default)
-+.nf
-+# ip link add link eth0 macsec0 type macsec port 11 encrypt on cipher gcm-aes-xpn-128
-+.PP
-+.SS Configure a secure association on that device
-+.nf
-+# ip macsec add macsec0 tx sa 0 xpn 1024 on salt 838383838383838383838383 ssci 123 key 01 81818181818181818181818181818181
-+.PP
-+.SS Configure a receive channel
-+.nf
-+# ip macsec add macsec0 rx port 11 address c6:19:52:8f:e6:a0
-+.PP
-+.SS Configure a receive association
-+.nf
-+# ip macsec add macsec0 rx port 11 address c6:19:52:8f:e6:a0 sa 0 xpn 1 on salt 838383838383838383838383 ssci 123 key 00 82828282828282828282828282828282
-+.PP
-+.SS Display MACsec configuration
-+.nf
-+# ip macsec show
-+.PP
-+
- .SH NOTES
- This tool can be used to configure the 802.1AE keys of the interface. Note that 802.1AE uses GCM-AES
- with a initialization vector (IV) derived from the packet number. The same key must not be used
-@@ -125,6 +156,28 @@ that reconfigures the keys. It is wrong to just configure the keys statically an
- indefinitely. The suggested and standardized way for key management is 802.1X-2010, which is implemented
- by wpa_supplicant.
- 
-+.SH EXTENDED PACKET NUMBER NOTES
-+Passing cipher
-+.B gcm-aes-xpn-128
-+or
-+.B gcm-aes-xpn-256
-+to
-+.B ip link add
-+command using the
-+.I macsec
-+type requires using the keyword
-+.B 'xpn'
-+instead of
-+.B 'pn'
-+in addition to providing a salt using the
-+.B 'salt'
-+keyword and ssci using the
-+.B 'ssci'
-+keyword when using the
-+.B ip macsec
-+command.
-+
-+
- .SH SEE ALSO
- .br
- .BR ip-link (8)
--- 
-2.21.3
+I see. With the above schema there will be 4-6 frags per packet. I'm
+wild guessing that the pagecnt_bias optimization still give some gain
+in that case, but I really shold collect some data points.
+
+If the pagecnt optimization should be dropped, it would be probably
+more straight-forward to use/adapt 'page_frag' for the page_order0
+allocator.
+
+BTW it's quite strange/confusing having to very similar APIs (page_frag
+and page_frag_cache) with very similar names and no references between
+them.
+
+Thanks!
+
+Paolo
 
