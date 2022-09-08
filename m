@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C4C35B11F7
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 03:14:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E9D95B11F8
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 03:14:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229955AbiIHBOc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 21:14:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33894 "EHLO
+        id S229925AbiIHBOl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 21:14:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229492AbiIHBOb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 21:14:31 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACEB9958B
-        for <netdev@vger.kernel.org>; Wed,  7 Sep 2022 18:14:28 -0700 (PDT)
+        with ESMTP id S230305AbiIHBOj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 21:14:39 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4239E11179
+        for <netdev@vger.kernel.org>; Wed,  7 Sep 2022 18:14:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662599669; x=1694135669;
+  t=1662599674; x=1694135674;
   h=subject:from:to:cc:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=PwS2c341IBy7CnbS/049DNnhbYAtdftlwZmU8hsfgys=;
-  b=m+QVYUv0uyvFmppSOkFo9rKPkPX7LBvKzz6iiOLcqtEuADKL3+mz3mAu
-   rSLlsAh+snq4tlAy+TAfFrd5tRkqxzN/ibJXUNCEbrEH95J7S7fR35bu6
-   Ye9hzcDxPUaNBXngB2a6dLJeSUpuYcZ+BYT+dbsHl3J8W9kdUBHkhLzj1
-   CUrB2fSd+QkIjEXZcYg4TrphQVMIYvtTb5/viI4BDm5Z/V9eDqqa02XC9
-   /WZnRszE3v2iJj7ixNYQLKjCl9bp+6JXRplHGA/evQyWIlgAO7j75AnWj
-   IPAuyQMF84r6X0TdJNkQq9Uq+cWwvtbX8ApcZ7H+DhVhdyQU9qD2Foxto
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10463"; a="284054994"
+  bh=Fesw1W7SiY57DTFnFsjvyxOJeR2wyGZS2eK6hmRYpsc=;
+  b=ax0XEKMnGzBSh0kdYZK3h7kXXIsm5jwGkoEnS6qSf3DhC06FG+luOlqW
+   7JkhvW2R9mpL8IQpZcLWoe0qZewc7L/l3COdR3hkQski0gOkntzYAW6Xt
+   tLm2SRgNbNR15u6IFCO03ONfBnCL6tHttmQiDJwzFwaXR0VPaxt1LwQTz
+   gEdTV86ZIbUrxN4cp3fkWjJcTA6U9NrbK68MIOusKyCi0zAGdZgQB/+dj
+   ZOzT87FRwzv7VKppPkVjnh55wKWJhdp+L7JrR6PQ2mXpl3K2lIV+tkkvV
+   Y7PbPgkQm/Wzxo9MMssWtBAaeA4pX1kTXbF14a3gQu2YuCQL9NCq3J5Dt
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10463"; a="276772463"
 X-IronPort-AV: E=Sophos;i="5.93,298,1654585200"; 
-   d="scan'208";a="284054994"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Sep 2022 18:14:28 -0700
+   d="scan'208";a="276772463"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Sep 2022 18:14:33 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,298,1654585200"; 
-   d="scan'208";a="683034303"
+   d="scan'208";a="703818432"
 Received: from anambiarhost.jf.intel.com ([10.166.29.163])
-  by fmsmga004.fm.intel.com with ESMTP; 07 Sep 2022 18:14:27 -0700
-Subject: [net-next PATCH v2 1/4] act_skbedit: Add support for action skbedit
- RX queue mapping
+  by FMSMGA003.fm.intel.com with ESMTP; 07 Sep 2022 18:14:33 -0700
+Subject: [net-next PATCH v2 2/4] act_skbedit: Offload skbedit queue mapping
+ for receive queue
 From:   Amritha Nambiar <amritha.nambiar@intel.com>
 To:     netdev@vger.kernel.org, kuba@kernel.org
 Cc:     alexander.duyck@gmail.com, jhs@mojatatu.com, jiri@resnulli.us,
         xiyou.wangcong@gmail.com, vinicius.gomes@intel.com,
         sridhar.samudrala@intel.com, amritha.nambiar@intel.com
-Date:   Wed, 07 Sep 2022 18:24:02 -0700
-Message-ID: <166260024268.81018.16643044761694552448.stgit@anambiarhost.jf.intel.com>
+Date:   Wed, 07 Sep 2022 18:24:08 -0700
+Message-ID: <166260024803.81018.18128135286421132291.stgit@anambiarhost.jf.intel.com>
 In-Reply-To: <166260012413.81018.8010396115034847972.stgit@anambiarhost.jf.intel.com>
 References: <166260012413.81018.8010396115034847972.stgit@anambiarhost.jf.intel.com>
 User-Agent: StGit/unknown-version
@@ -54,70 +54,144 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The skbedit action in tc allows the selection of transmit queue
-in an interface with multiple queues. This patch extends this
-ability of skedit action by supporting the selection of receive
-queue on which the packets would arrive.
+Add support for offloading skbedit queue mapping action on
+receive side. This enables offloading filters for receive
+queue selection in the hardware using the skbedit action.
+Traffic arrives on the Rx queue requested in the skbedit
+action parameter. A new tc action flag TCA_ACT_FLAGS_AT_INGRESS
+is introduced to identify the traffic direction the action
+queue_mapping is requested on during filter addition.
+This is used to disallow offloading the skbedit queue mapping
+action on transmit side.
+
+Example:
+$tc filter add dev $IFACE ingress protocol ip flower dst_ip $DST_IP\
+skip_sw action skbedit queue_mapping $rxq_id
 
 Reviewed-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
 Signed-off-by: Amritha Nambiar <amritha.nambiar@intel.com>
 ---
- net/sched/act_skbedit.c |   29 +++++++++++++++++++++++------
- 1 file changed, 23 insertions(+), 6 deletions(-)
+ include/net/act_api.h           |    1 +
+ include/net/flow_offload.h      |    2 ++
+ include/net/tc_act/tc_skbedit.h |   11 +++++++++++
+ net/sched/act_skbedit.c         |   11 +++++++++--
+ net/sched/cls_api.c             |    7 +++++++
+ 5 files changed, 30 insertions(+), 2 deletions(-)
 
-diff --git a/net/sched/act_skbedit.c b/net/sched/act_skbedit.c
-index e3bd11dfe1ca..9b8274d09117 100644
---- a/net/sched/act_skbedit.c
-+++ b/net/sched/act_skbedit.c
-@@ -37,6 +37,24 @@ static u16 tcf_skbedit_hash(struct tcf_skbedit_params *params,
- 	return netdev_cap_txqueue(skb->dev, queue_mapping);
+diff --git a/include/net/act_api.h b/include/net/act_api.h
+index 9cf6870b526e..7eb78519d579 100644
+--- a/include/net/act_api.h
++++ b/include/net/act_api.h
+@@ -67,6 +67,7 @@ struct tc_action {
+ #define TCA_ACT_FLAGS_BIND	(1U << (TCA_ACT_FLAGS_USER_BITS + 1))
+ #define TCA_ACT_FLAGS_REPLACE	(1U << (TCA_ACT_FLAGS_USER_BITS + 2))
+ #define TCA_ACT_FLAGS_NO_RTNL	(1U << (TCA_ACT_FLAGS_USER_BITS + 3))
++#define TCA_ACT_FLAGS_AT_INGRESS	(1U << (TCA_ACT_FLAGS_USER_BITS + 4))
+ 
+ /* Update lastuse only if needed, to avoid dirtying a cache line.
+  * We use a temp variable to avoid fetching jiffies twice.
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index 2a9a9e42e7fd..8b7786343a03 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -149,6 +149,7 @@ enum flow_action_id {
+ 	FLOW_ACTION_MARK,
+ 	FLOW_ACTION_PTYPE,
+ 	FLOW_ACTION_PRIORITY,
++	FLOW_ACTION_RX_QUEUE_MAPPING,
+ 	FLOW_ACTION_WAKE,
+ 	FLOW_ACTION_QUEUE,
+ 	FLOW_ACTION_SAMPLE,
+@@ -241,6 +242,7 @@ struct flow_action_entry {
+ 		u32			csum_flags;	/* FLOW_ACTION_CSUM */
+ 		u32			mark;		/* FLOW_ACTION_MARK */
+ 		u16                     ptype;          /* FLOW_ACTION_PTYPE */
++		u16			rx_queue;	/* FLOW_ACTION_RX_QUEUE_MAPPING */
+ 		u32			priority;	/* FLOW_ACTION_PRIORITY */
+ 		struct {				/* FLOW_ACTION_QUEUE */
+ 			u32		ctx;
+diff --git a/include/net/tc_act/tc_skbedit.h b/include/net/tc_act/tc_skbedit.h
+index dc1079f28e13..07145aafb0f1 100644
+--- a/include/net/tc_act/tc_skbedit.h
++++ b/include/net/tc_act/tc_skbedit.h
+@@ -95,6 +95,17 @@ static inline u32 tcf_skbedit_priority(const struct tc_action *a)
+ 	return priority;
  }
  
-+static void tcf_skbedit_act_txq(struct tcf_skbedit_params *params,
-+				struct sk_buff *skb)
++static inline u16 tcf_skbedit_rx_queue_mapping(const struct tc_action *a)
 +{
-+	if (skb->dev->real_num_tx_queues > params->queue_mapping) {
-+#ifdef CONFIG_NET_EGRESS
-+		netdev_xmit_skip_txqueue(true);
-+#endif
-+		skb_set_queue_mapping(skb, tcf_skbedit_hash(params, skb));
-+	}
++	u16 rx_queue;
++
++	rcu_read_lock();
++	rx_queue = rcu_dereference(to_skbedit(a)->params)->queue_mapping;
++	rcu_read_unlock();
++
++	return rx_queue;
 +}
 +
-+static void tcf_skbedit_act_rxq(struct tcf_skbedit_params *params,
-+				struct sk_buff *skb)
-+{
-+	if (skb->dev->real_num_rx_queues > params->queue_mapping)
-+		skb_record_rx_queue(skb, params->queue_mapping);
-+}
-+
- static int tcf_skbedit_act(struct sk_buff *skb, const struct tc_action *a,
- 			   struct tcf_result *res)
+ /* Return true iff action is queue_mapping */
+ static inline bool is_tcf_skbedit_queue_mapping(const struct tc_action *a)
  {
-@@ -71,12 +89,11 @@ static int tcf_skbedit_act(struct sk_buff *skb, const struct tc_action *a,
- 			break;
- 		}
+diff --git a/net/sched/act_skbedit.c b/net/sched/act_skbedit.c
+index 9b8274d09117..f5d92ba916e6 100644
+--- a/net/sched/act_skbedit.c
++++ b/net/sched/act_skbedit.c
+@@ -410,8 +410,12 @@ static int tcf_skbedit_offload_act_setup(struct tc_action *act, void *entry_data
+ 			entry->id = FLOW_ACTION_PRIORITY;
+ 			entry->priority = tcf_skbedit_priority(act);
+ 		} else if (is_tcf_skbedit_queue_mapping(act)) {
+-			NL_SET_ERR_MSG_MOD(extack, "Offload not supported when \"queue_mapping\" option is used");
+-			return -EOPNOTSUPP;
++			if (!(act->tcfa_flags & TCA_ACT_FLAGS_AT_INGRESS)) {
++				NL_SET_ERR_MSG_MOD(extack, "Offload not supported when \"queue_mapping\" option is used on transmit side");
++				return -EOPNOTSUPP;
++			}
++			entry->id = FLOW_ACTION_RX_QUEUE_MAPPING;
++			entry->rx_queue = tcf_skbedit_rx_queue_mapping(act);
+ 		} else if (is_tcf_skbedit_inheritdsfield(act)) {
+ 			NL_SET_ERR_MSG_MOD(extack, "Offload not supported when \"inheritdsfield\" option is used");
+ 			return -EOPNOTSUPP;
+@@ -429,6 +433,9 @@ static int tcf_skbedit_offload_act_setup(struct tc_action *act, void *entry_data
+ 			fl_action->id = FLOW_ACTION_PTYPE;
+ 		else if (is_tcf_skbedit_priority(act))
+ 			fl_action->id = FLOW_ACTION_PRIORITY;
++		else if (is_tcf_skbedit_queue_mapping(act) &&
++			 (act->tcfa_flags & TCA_ACT_FLAGS_AT_INGRESS))
++			fl_action->id = FLOW_ACTION_RX_QUEUE_MAPPING;
+ 		else
+ 			return -EOPNOTSUPP;
  	}
--	if (params->flags & SKBEDIT_F_QUEUE_MAPPING &&
--	    skb->dev->real_num_tx_queues > params->queue_mapping) {
--#ifdef CONFIG_NET_EGRESS
--		netdev_xmit_skip_txqueue(true);
--#endif
--		skb_set_queue_mapping(skb, tcf_skbedit_hash(params, skb));
-+	if (params->flags & SKBEDIT_F_QUEUE_MAPPING) {
-+		if (!skb_at_tc_ingress(skb))
-+			tcf_skbedit_act_txq(params, skb);
-+		else
-+			tcf_skbedit_act_rxq(params, skb);
- 	}
- 	if (params->flags & SKBEDIT_F_MARK) {
- 		skb->mark &= ~params->mask;
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 1ebab4b11262..9cc11395396b 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -1953,6 +1953,11 @@ static void tfilter_put(struct tcf_proto *tp, void *fh)
+ 		tp->ops->put(tp, fh);
+ }
+ 
++static bool is_qdisc_ingress(__u32 classid)
++{
++	return (TC_H_MIN(classid) == TC_H_MIN(TC_H_MIN_INGRESS));
++}
++
+ static int tc_new_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
+ 			  struct netlink_ext_ack *extack)
+ {
+@@ -2143,6 +2148,8 @@ static int tc_new_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
+ 		flags |= TCA_ACT_FLAGS_REPLACE;
+ 	if (!rtnl_held)
+ 		flags |= TCA_ACT_FLAGS_NO_RTNL;
++	if (is_qdisc_ingress(parent))
++		flags |= TCA_ACT_FLAGS_AT_INGRESS;
+ 	err = tp->ops->change(net, skb, tp, cl, t->tcm_handle, tca, &fh,
+ 			      flags, extack);
+ 	if (err == 0) {
 
