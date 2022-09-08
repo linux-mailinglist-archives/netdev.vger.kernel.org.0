@@ -2,31 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9285C5B1973
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 11:58:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8C715B1978
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 11:58:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230147AbiIHJ6o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 05:58:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32802 "EHLO
+        id S230150AbiIHJ6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 05:58:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229673AbiIHJ6h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 05:58:37 -0400
+        with ESMTP id S230006AbiIHJ6o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 05:58:44 -0400
 Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8334CE42FC;
-        Thu,  8 Sep 2022 02:58:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EEB2E42F1;
+        Thu,  8 Sep 2022 02:58:40 -0700 (PDT)
 Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
         (envelope-from <fw@breakpoint.cc>)
-        id 1oWEIp-0002wI-DO; Thu, 08 Sep 2022 11:58:31 +0200
+        id 1oWEIt-0002wr-PI; Thu, 08 Sep 2022 11:58:35 +0200
 From:   Florian Westphal <fw@strlen.de>
 To:     <netdev@vger.kernel.org>
 Cc:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        <netfilter-devel@vger.kernel.org>, Florian Westphal <fw@strlen.de>
-Subject: [PATCH net 2/4] selftests: nft_concat_range: add socat support
-Date:   Thu,  8 Sep 2022 11:57:55 +0200
-Message-Id: <20220908095757.1755-3-fw@strlen.de>
+        <netfilter-devel@vger.kernel.org>, David Leadbeater <dgl@dgl.cx>,
+        Florian Westphal <fw@strlen.de>
+Subject: [PATCH net 3/4] netfilter: nf_conntrack_irc: Tighten matching on DCC message
+Date:   Thu,  8 Sep 2022 11:57:56 +0200
+Message-Id: <20220908095757.1755-4-fw@strlen.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220908095757.1755-1-fw@strlen.de>
 References: <20220908095757.1755-1-fw@strlen.de>
@@ -41,183 +42,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are different flavors of 'nc' around, this script fails on
-my test vm because 'nc' is 'nmap-ncat' which isn't 100% compatible.
+From: David Leadbeater <dgl@dgl.cx>
 
-Add socat support and use it if available.
+CTCP messages should only be at the start of an IRC message, not
+anywhere within it.
 
+While the helper only decodes packes in the ORIGINAL direction, its
+possible to make a client send a CTCP message back by empedding one into
+a PING request.  As-is, thats enough to make the helper believe that it
+saw a CTCP message.
+
+Fixes: 869f37d8e48f ("[NETFILTER]: nf_conntrack/nf_nat: add IRC helper port")
+Signed-off-by: David Leadbeater <dgl@dgl.cx>
 Signed-off-by: Florian Westphal <fw@strlen.de>
 ---
- .../selftests/netfilter/nft_concat_range.sh   | 65 +++++++++++++++----
- 1 file changed, 53 insertions(+), 12 deletions(-)
+ net/netfilter/nf_conntrack_irc.c | 34 ++++++++++++++++++++++++++------
+ 1 file changed, 28 insertions(+), 6 deletions(-)
 
-diff --git a/tools/testing/selftests/netfilter/nft_concat_range.sh b/tools/testing/selftests/netfilter/nft_concat_range.sh
-index a6991877e50c..e908009576c7 100755
---- a/tools/testing/selftests/netfilter/nft_concat_range.sh
-+++ b/tools/testing/selftests/netfilter/nft_concat_range.sh
-@@ -91,7 +91,7 @@ src
- start		1
- count		5
- src_delta	2000
--tools		sendip nc bash
-+tools		sendip socat nc bash
- proto		udp
+diff --git a/net/netfilter/nf_conntrack_irc.c b/net/netfilter/nf_conntrack_irc.c
+index 992decbcaa5c..5703846bea3b 100644
+--- a/net/netfilter/nf_conntrack_irc.c
++++ b/net/netfilter/nf_conntrack_irc.c
+@@ -157,15 +157,37 @@ static int help(struct sk_buff *skb, unsigned int protoff,
+ 	data = ib_ptr;
+ 	data_limit = ib_ptr + datalen;
  
- race_repeat	3
-@@ -116,7 +116,7 @@ src
- start		10
- count		5
- src_delta	2000
--tools		sendip nc bash
-+tools		sendip socat nc bash
- proto		udp6
- 
- race_repeat	3
-@@ -141,7 +141,7 @@ src
- start		1
- count		5
- src_delta	2000
--tools		sendip nc bash
-+tools		sendip socat nc bash
- proto		udp
- 
- race_repeat	0
-@@ -163,7 +163,7 @@ src		mac
- start		10
- count		5
- src_delta	2000
--tools		sendip nc bash
-+tools		sendip socat nc bash
- proto		udp6
- 
- race_repeat	0
-@@ -185,7 +185,7 @@ src		mac proto
- start		10
- count		5
- src_delta	2000
--tools		sendip nc bash
-+tools		sendip socat nc bash
- proto		udp6
- 
- race_repeat	0
-@@ -207,7 +207,7 @@ src		addr4
- start		1
- count		5
- src_delta	2000
--tools		sendip nc bash
-+tools		sendip socat nc bash
- proto		udp
- 
- race_repeat	3
-@@ -227,7 +227,7 @@ src		addr6 port
- start		10
- count		5
- src_delta	2000
--tools		sendip nc
-+tools		sendip socat nc
- proto		udp6
- 
- race_repeat	3
-@@ -247,7 +247,7 @@ src		mac proto addr4
- start		1
- count		5
- src_delta	2000
--tools		sendip nc bash
-+tools		sendip socat nc bash
- proto		udp
- 
- race_repeat	0
-@@ -264,7 +264,7 @@ src		mac
- start		1
- count		5
- src_delta	2000
--tools		sendip nc bash
-+tools		sendip socat nc bash
- proto		udp
- 
- race_repeat	0
-@@ -286,7 +286,7 @@ src		mac addr4
- start		1
- count		5
- src_delta	2000
--tools		sendip nc bash
-+tools		sendip socat nc bash
- proto		udp
- 
- race_repeat	0
-@@ -337,7 +337,7 @@ src		addr4
- start		1
- count		5
- src_delta	2000
--tools		sendip nc
-+tools		sendip socat nc
- proto		udp
- 
- race_repeat	3
-@@ -363,7 +363,7 @@ src		mac
- start		1
- count		1
- src_delta	2000
--tools		sendip nc bash
-+tools		sendip socat nc bash
- proto		udp
- 
- race_repeat	0
-@@ -541,6 +541,24 @@ setup_send_udp() {
- 			dst_port=
- 			src_addr4=
+-	/* strlen("\1DCC SENT t AAAAAAAA P\1\n")=24
+-	 * 5+MINMATCHLEN+strlen("t AAAAAAAA P\1\n")=14 */
+-	while (data < data_limit - (19 + MINMATCHLEN)) {
+-		if (memcmp(data, "\1DCC ", 5)) {
++	/* Skip any whitespace */
++	while (data < data_limit - 10) {
++		if (*data == ' ' || *data == '\r' || *data == '\n')
++			data++;
++		else
++			break;
++	}
++
++	/* strlen("PRIVMSG x ")=10 */
++	if (data < data_limit - 10) {
++		if (strncasecmp("PRIVMSG ", data, 8))
++			goto out;
++		data += 8;
++	}
++
++	/* strlen(" :\1DCC SENT t AAAAAAAA P\1\n")=26
++	 * 7+MINMATCHLEN+strlen("t AAAAAAAA P\1\n")=26
++	 */
++	while (data < data_limit - (21 + MINMATCHLEN)) {
++		/* Find first " :", the start of message */
++		if (memcmp(data, " :", 2)) {
+ 			data++;
+ 			continue;
  		}
-+	elif command -v socat -v >/dev/null; then
-+		send_udp() {
-+			if [ -n "${src_addr4}" ]; then
-+				B ip addr add "${src_addr4}" dev veth_b
-+				__socatbind=",bind=${src_addr4}"
-+				if [ -n "${src_port}" ];then
-+					__socatbind="${__socatbind}:${src_port}"
-+				fi
-+			fi
++		data += 2;
 +
-+			ip addr add "${dst_addr4}" dev veth_a 2>/dev/null
-+			[ -z "${dst_port}" ] && dst_port=12345
-+
-+			echo "test4" | B socat -t 0.01 STDIN UDP4-DATAGRAM:${dst_addr4}:${dst_port}"${__socatbind}"
-+
-+			src_addr4=
-+			src_port=
-+		}
- 	elif command -v nc >/dev/null; then
- 		if nc -u -w0 1.1.1.1 1 2>/dev/null; then
- 			# OpenBSD netcat
-@@ -606,6 +624,29 @@ setup_send_udp6() {
- 			dst_port=
- 			src_addr6=
- 		}
-+	elif command -v socat -v >/dev/null; then
-+		send_udp6() {
-+			ip -6 addr add "${dst_addr6}" dev veth_a nodad \
-+				2>/dev/null
-+
-+			__socatbind6=
-+
-+			if [ -n "${src_addr6}" ]; then
-+				if [ -n "${src_addr6} != "${src_addr6_added} ]; then
-+					B ip addr add "${src_addr6}" dev veth_b nodad
-+
-+					src_addr6_added=${src_addr6}
-+				fi
-+
-+				__socatbind6=",bind=[${src_addr6}]"
-+
-+				if [ -n "${src_port}" ] ;then
-+					__socatbind6="${__socatbind6}:${src_port}"
-+				fi
-+			fi
-+
-+			echo "test6" | B socat -t 0.01 STDIN UDP6-DATAGRAM:[${dst_addr6}]:${dst_port}"${__socatbind6}"
-+		}
- 	elif command -v nc >/dev/null && nc -u -w0 1.1.1.1 1 2>/dev/null; then
- 		# GNU netcat might not work with IPv6, try next tool
- 		send_udp6() {
++		/* then check that place only for the DCC command */
++		if (memcmp(data, "\1DCC ", 5))
++			goto out;
+ 		data += 5;
+-		/* we have at least (19+MINMATCHLEN)-5 bytes valid data left */
++		/* we have at least (21+MINMATCHLEN)-(2+5) bytes valid data left */
+ 
+ 		iph = ip_hdr(skb);
+ 		pr_debug("DCC found in master %pI4:%u %pI4:%u\n",
+@@ -181,7 +203,7 @@ static int help(struct sk_buff *skb, unsigned int protoff,
+ 			pr_debug("DCC %s detected\n", dccprotos[i]);
+ 
+ 			/* we have at least
+-			 * (19+MINMATCHLEN)-5-dccprotos[i].matchlen bytes valid
++			 * (21+MINMATCHLEN)-7-dccprotos[i].matchlen bytes valid
+ 			 * data left (== 14/13 bytes) */
+ 			if (parse_dcc(data, data_limit, &dcc_ip,
+ 				       &dcc_port, &addr_beg_p, &addr_end_p)) {
 -- 
 2.35.1
 
