@@ -2,84 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D5FD05B1B69
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 13:30:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BAABD5B1B6D
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 13:30:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231166AbiIHLaS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 07:30:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58476 "EHLO
+        id S231276AbiIHLac (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 07:30:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229644AbiIHLaR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 07:30:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFB302CC82
-        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 04:30:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S231264AbiIHLaa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 07:30:30 -0400
+Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A9197696B;
+        Thu,  8 Sep 2022 04:30:29 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E0B661CB8
-        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 11:30:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D2C61C433B5;
-        Thu,  8 Sep 2022 11:30:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662636615;
-        bh=l7alf7NB7PNWZO0VQ2RCFiNPtsnMJQyC9t7Ck2aGRdI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=BDbOxPT1ffhPOdlaRQX/YPeerq1PM07ilI21R4RdG0Vjk7KuLW2bjrzbeyimwM68P
-         PVQDwyVOFGAgANdOxczEzDHwI5weUcKdX8/sU+WNKcoYkFR2zszqI4AmylxqnMoRoH
-         Ycwt0+onwT0zAIUUj9d00dJ2g4PnNFV39rEa+nyrd8wxjBdGlG/9gm4tDQvcLEmXGt
-         C/GzXW0teGYnESJgaYQcxKShqUsdCHXFItzXdRXAi5uqHuwpw1FrWk77msho5NCAr8
-         +7q9/v7QHfM2SqSjnjNfe9Oxfbv0pvJK7z4oRuvRAADAvBHF5O5+Wlm8eV88NSxRqi
-         W9TfnhW4Pqq6g==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id ADB96E1CABD;
-        Thu,  8 Sep 2022 11:30:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        (Authenticated sender: marcan@marcan.st)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id C3A5942450;
+        Thu,  8 Sep 2022 11:30:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
+        t=1662636627; bh=+WfXnmU5h8HnqOApI/MBnFeTKMAoVkVZ67dL2ngIcxA=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=Bq2ziIrh+VlOtoQ6bzRhsuuSxak/XjWictNpNHQm95uAOudZMUIg46orswoJzRpv0
+         hLchImQWWh4EQDUO57FeO+4WGU1jmLyBAY9DG3NsTqCfwWGVIDuqnfigGDOOV08Mux
+         lwMkv0H1BoQNTjyxfPGgxlglMGmCCoicNcvJF+n3dbw901P05rsw8WcxuyJMJbIgeR
+         bIUG1PVr8KVe+5K+XS+6yTne5at4lUqVscTTPI2srcwg98Lm5qTexiWlBIKxJKRMtC
+         TmK7JkUTEm0FW3zMI+7sVTWzyzGsWRLV3GuVvRkrqKt4ajBBq5nzWN2/ByjqZ1/MPF
+         RxMeYmNcmK4JQ==
+Message-ID: <a7ff9909-d797-c3f4-1ca7-1b92e85db34d@marcan.st>
+Date:   Thu, 8 Sep 2022 20:30:19 +0900
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] r8169: merge support for chip versions 10, 13, 16
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166263661570.19056.4217903243926517154.git-patchwork-notify@kernel.org>
-Date:   Thu, 08 Sep 2022 11:30:15 +0000
-References: <469d27e0-1d06-9b15-6c96-6098b3a52e35@gmail.com>
-In-Reply-To: <469d27e0-1d06-9b15-6c96-6098b3a52e35@gmail.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, nic_swsd@realtek.com,
-        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v2 2/5] dt-bindings: net: Add Broadcom BCM4377 family PCIe
+ Bluetooth
+Content-Language: es-ES
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Sven Peter <sven@svenpeter.dev>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        asahi@lists.linux.dev, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220907170935.11757-1-sven@svenpeter.dev>
+ <20220907170935.11757-3-sven@svenpeter.dev>
+ <bcb799ea-d58e-70dc-c5c2-daaff1b19bf5@linaro.org>
+From:   Hector Martin <marcan@marcan.st>
+In-Reply-To: <bcb799ea-d58e-70dc-c5c2-daaff1b19bf5@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
-
-On Mon, 5 Sep 2022 21:23:12 +0200 you wrote:
-> These chip versions are closely related and all of them have no
-> chip-specific MAC/PHY initialization. Therefore merge support
-> for the three chip versions.
+On 08/09/2022 20.19, Krzysztof Kozlowski wrote:
+> On 07/09/2022 19:09, Sven Peter wrote:
+>> +
+>> +  brcm,board-type:
+>> +    $ref: /schemas/types.yaml#/definitions/string
+>> +    description: Board type of the Bluetooth chip. This is used to decouple
+>> +      the overall system board from the Bluetooth module and used to construct
+>> +      firmware and calibration data filenames.
+>> +      On Apple platforms, this should be the Apple module-instance codename
+>> +      prefixed by "apple,", e.g. "apple,atlantisb".
+>> +    pattern: '^apple,.*'
+>> +
+>> +  brcm,taurus-cal-blob:
+>> +    $ref: /schemas/types.yaml#/definitions/uint8-array
+>> +    description: A per-device calibration blob for the Bluetooth radio. This
+>> +      should be filled in by the bootloader from platform configuration
+>> +      data, if necessary, and will be uploaded to the device.
+>> +      This blob is used if the chip stepping of the Bluetooth module does not
+>> +      support beamforming.
 > 
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-> ---
->  drivers/net/ethernet/realtek/r8169.h            |  4 ++--
->  drivers/net/ethernet/realtek/r8169_main.c       | 11 ++---------
->  drivers/net/ethernet/realtek/r8169_phy_config.c |  2 --
->  3 files changed, 4 insertions(+), 13 deletions(-)
+> Isn't it:
+> s/beamforming/beam forming/
+> ?
 
-Here is the summary with links:
-  - [net-next] r8169: merge support for chip versions 10, 13, 16
-    https://git.kernel.org/netdev/net-next/c/e66d6586843e
+Nope, it's one word: https://en.wikipedia.org/wiki/Beamforming
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+- Hector
