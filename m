@@ -2,85 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E19F25B2081
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 16:26:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2954C5B20AC
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 16:37:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232378AbiIHO0d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 10:26:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36786 "EHLO
+        id S232459AbiIHOhH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 10:37:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232457AbiIHO00 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 10:26:26 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4DBCFB8CF
-        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 07:26:22 -0700 (PDT)
+        with ESMTP id S231532AbiIHOhF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 10:37:05 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E819FD021F
+        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 07:37:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662647181;
+        s=mimecast20190719; t=1662647824;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=RMcpwqPqWAUl25PqKrWr6Y7WQAHGIW5e+w2aQFa0sQg=;
-        b=e3FG8Ur5ZUV/oWVifr+q4cBarpph4PUrk/CFfDy4k+iquIMYgjxKwtyJ+92ublvJ3PEY5l
-        zrYF2b+xaJoSCVzC7PFU4gAOFzbbEZ2sD/Eoo2O92RV8De1Q6lKIiW1cDKKyUKfF1pLK88
-        rsOiAp2d84bOfC+jNJG0r6OyHfIAL4Q=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=wFcDqpqfo5+BlCFcCMK6T6o/K8WN6HmeBg3zPocSOsQ=;
+        b=N+tZaDGiUYRQF8AzZbxuUVas3Ry684LxyexUNSPudcRz4ydhuPXxg4p6/ELaE07YT/F+iO
+        SZYRySLI+nM03eC7TH9Z98S45uPb6QIGqtZECC32q5xBQqa7H0terh0k2WfR3fSMEfCAhJ
+        uBKCqB/pWtdCuDcaQvpAIWD5EXV7UcQ=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-139-Vk0ny81CNSGPDgaSgWYojg-1; Thu, 08 Sep 2022 10:26:18 -0400
-X-MC-Unique: Vk0ny81CNSGPDgaSgWYojg-1
-Received: by mail-qt1-f197.google.com with SMTP id h19-20020ac85493000000b00343408bd8e5so14516018qtq.4
-        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 07:26:18 -0700 (PDT)
+ us-mta-286-ELQWd1FAMh6P_VOTRWSxkQ-1; Thu, 08 Sep 2022 10:36:59 -0400
+X-MC-Unique: ELQWd1FAMh6P_VOTRWSxkQ-1
+Received: by mail-wr1-f70.google.com with SMTP id k17-20020adfb351000000b00228853e5d71so4030794wrd.17
+        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 07:36:59 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=RMcpwqPqWAUl25PqKrWr6Y7WQAHGIW5e+w2aQFa0sQg=;
-        b=v0DJwkYZH8MOUNQB5WKGyYOmx1H4Bg0DvcysvEWxNNvr6ortdv3dTwKDr0JLgHJxb5
-         ZPlpNLo78xCUPhLlPEVkdGeuBI7ZLs3nlaZD/r55yYgf/m0eqj4TM2KqACmo0KR+kN9l
-         n/hRHt5NomXlzT+apO9NGe4JRPZbp/rry6XfNxKE5qBJ2SHdTAJne/UFmqkBba/WiPsj
-         +w1GrF8DKPF7jH5hxOSbZAtzdovao17Ikl+eDrKZiJiJ4i7CShM98QawpZaVr6daAY7/
-         zJYc7j6uYIliDtiMS6IuuHby4J0xyJC7rGDIFb7wG0Cz+GxzfKjE+l4oQvcEv3tYnXfl
-         DaWA==
-X-Gm-Message-State: ACgBeo1Tkg8RvXICG1wKWO8Nll/rapaCBpnCHuw20RRLxQGD+Bqcin0+
-        EpcQoWZLYi88kSeWmum4e5GSNk/0qt3AEayJD6KcSi02lL9FU7mkI39Vma5HtzIy8MH5q4S9D3l
-        yC6FRvs2ptAkIUSxg
-X-Received: by 2002:a05:622a:2d1:b0:343:6193:3348 with SMTP id a17-20020a05622a02d100b0034361933348mr8214453qtx.633.1662647177529;
-        Thu, 08 Sep 2022 07:26:17 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4+9coz+EzaDAS7QE+rrL05GUW6TNi8oKibhJQCwsvOVaopMNnnRbZp/JWMja/yS7o+S3/igg==
-X-Received: by 2002:a05:622a:2d1:b0:343:6193:3348 with SMTP id a17-20020a05622a02d100b0034361933348mr8214429qtx.633.1662647177252;
-        Thu, 08 Sep 2022 07:26:17 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-119-112.dyn.eolo.it. [146.241.119.112])
-        by smtp.gmail.com with ESMTPSA id j7-20020a05620a410700b006bc68cfcdf7sm17735261qko.13.2022.09.08.07.26.15
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=wFcDqpqfo5+BlCFcCMK6T6o/K8WN6HmeBg3zPocSOsQ=;
+        b=peVUtb4npXkGBcbSfteGdj+eJFijDQQKz0gxibtTQv+NHWvkbUUc1ZUEmxPYzx5aJY
+         d6cWnBu5skxKb8QNVkmuI9iN6NBMBdL1IRS+7Qm6HD8G6CDb4VsgoLX0C9YhtlZHzi7s
+         EfpEnP8g4WmMOqXISjuvihQd16amKbT6BjNFZE9FFiHzjEuWKitW5sjPy/OW9bGEI8j1
+         cheYelECMPpsn8FGsex5EDNnWQrxVnYnhbztZGo00bTnzNLZZ3zJop9Kl51x1fO6y2VG
+         g7mR9sLnC9SVCLpszCXXCzMaO69dckSwbQYX5sYvwauPJL0iOgccgKRRdSJCKeH5nuHC
+         +wiw==
+X-Gm-Message-State: ACgBeo2HbHb29EYWDqJx1LSaDGdVTkIflYValaBM4PWJGRxh4COzrr3a
+        jvPaKzop+B7Z4y5kAJOFEUCXdwUA/9OLvRhrYKa9KgYcjjt39ZDq5gO5fJ94fIXUTHvCjDpJKdk
+        xZi1qJM6ACKVQ8PP2
+X-Received: by 2002:a5d:6da2:0:b0:228:64ca:3978 with SMTP id u2-20020a5d6da2000000b0022864ca3978mr5285527wrs.542.1662647818274;
+        Thu, 08 Sep 2022 07:36:58 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6BEGVkHcFX/ZuPLpySO7WMaIWzsWXcmGzFBbS0MxMsqv14mvHPWdYH6rv4OjZ1+HxLnAXdhw==
+X-Received: by 2002:a5d:6da2:0:b0:228:64ca:3978 with SMTP id u2-20020a5d6da2000000b0022864ca3978mr5285510wrs.542.1662647818042;
+        Thu, 08 Sep 2022 07:36:58 -0700 (PDT)
+Received: from sgarzare-redhat (host-87-11-6-69.retail.telecomitalia.it. [87.11.6.69])
+        by smtp.gmail.com with ESMTPSA id v11-20020a05600c444b00b003a3442f1229sm3131212wmn.29.2022.09.08.07.36.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Sep 2022 07:26:16 -0700 (PDT)
-Message-ID: <0ad4ba2bc157a2d1fa8a898056bea431fc244122.camel@redhat.com>
-Subject: Re: [PATCH net] net: avoid 32 x truesize under-estimation for tiny
- skbs
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        Thu, 08 Sep 2022 07:36:56 -0700 (PDT)
+Date:   Thu, 8 Sep 2022 16:36:52 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Bobby Eshleman <bobbyeshleman@gmail.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        Bryan Tan <bryantan@vmware.com>,
+        Vishnu Dasa <vdasa@vmware.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Bobby Eshleman <bobby.eshleman@gmail.com>,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Greg Thelen <gthelen@google.com>
-Date:   Thu, 08 Sep 2022 16:26:13 +0200
-In-Reply-To: <CANn89iJzSgdQg3BO0ifEKOAaptBVfyH1kxKLOW=oMfojCiUvSg@mail.gmail.com>
-References: <20210113161819.1155526-1-eric.dumazet@gmail.com>
-         <bd79ede94805326cd63f105c84f1eaa4e75c8176.camel@redhat.com>
-         <66c8b7c2-25a6-2834-b341-22b6498e3f7e@gmail.com>
-         <fff6a18ddb74423cd31918802e4001f8bd7e27c5.camel@redhat.com>
-         <CANn89iJzSgdQg3BO0ifEKOAaptBVfyH1kxKLOW=oMfojCiUvSg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Paolo Abeni <pabeni@redhat.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hyperv@vger.kernel.org
+Subject: Call to discuss vsock netdev/sk_buff [was Re: [PATCH 0/6]
+ virtio/vsock: introduce dgrams, sk_buff, and qdisc]
+Message-ID: <20220908143652.tfyjjx2z6in6v66c@sgarzare-redhat>
+References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
+ <YxdKiUzlfpHs3h3q@fedora>
+ <Yv5PFz1YrSk8jxzY@bullseye>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <Yv5PFz1YrSk8jxzY@bullseye>
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -88,78 +100,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2022-09-08 at 05:20 -0700, Eric Dumazet wrote:
-> On Thu, Sep 8, 2022 at 3:48 AM Paolo Abeni <pabeni@redhat.com> wrote:
-> > On Wed, 2022-09-07 at 13:40 -0700, Eric Dumazet wrote:
-> > > On 9/7/22 13:19, Paolo Abeni wrote:
-> > > > reviving an old thread...
-> > > > On Wed, 2021-01-13 at 08:18 -0800, Eric Dumazet wrote:
-> > > > > While using page fragments instead of a kmalloc backed skb->head might give
-> > > > > a small performance improvement in some cases, there is a huge risk of
-> > > > > under estimating memory usage.
-> > > > [...]
-> > > > 
-> > > > > Note that we might in the future use the sk_buff napi cache,
-> > > > > instead of going through a more expensive __alloc_skb()
-> > > > > 
-> > > > > Another idea would be to use separate page sizes depending
-> > > > > on the allocated length (to never have more than 4 frags per page)
-> > > > I'm investigating a couple of performance regressions pointing to this
-> > > > change and I'd like to have a try to the 2nd suggestion above.
-> > > > 
-> > > > If I read correctly, it means:
-> > > > - extend the page_frag_cache alloc API to allow forcing max order==0
-> > > > - add a 2nd page_frag_cache into napi_alloc_cache (say page_order0 or
-> > > > page_small)
-> > > > - in __napi_alloc_skb(), when len <= SKB_WITH_OVERHEAD(1024), use the
-> > > > page_small cache with order 0 allocation.
-> > > > (all the above constrained to host with 4K pages)
-> > > > 
-> > > > I'm not quite sure about the "never have more than 4 frags per page"
-> > > > part.
-> > > > 
-> > > > What outlined above will allow for 10 min size frags in page_order0, as
-> > > > (SKB_DATA_ALIGN(0) + SKB_DATA_ALIGN(struct skb_shared_info) == 384. I'm
-> > > > not sure that anything will allocate such small frags.
-> > > > With a more reasonable GRO_MAX_HEAD, there will be 6 frags per page.
-> > > 
-> > > Well, some arches have PAGE_SIZE=65536 :/
-> > 
-> > Yes, the idea is to implement all the above only for arches with
-> > PAGE_SIZE==4K. Would that be reasonable?
-> 
-> Well, we also have changed MAX_SKB_FRAGS from 17 to 45 for BIG TCP.
-> 
-> And locally we have
-> 
-> #define GRO_MAX_HEAD 192
+On Thu, Aug 18, 2022 at 02:39:32PM +0000, Bobby Eshleman wrote:
+>On Tue, Sep 06, 2022 at 09:26:33AM -0400, Stefan Hajnoczi wrote:
+>> Hi Bobby,
+>> If you are attending Linux Foundation conferences in Dublin, Ireland
+>> next week (Linux Plumbers Conference, Open Source Summit Europe, KVM
+>> Forum, ContainerCon Europe, CloudOpen Europe, etc) then you could meet
+>> Stefano Garzarella and others to discuss this patch series.
+>>
+>> Using netdev and sk_buff is a big change to vsock. Discussing your
+>> requirements and the future direction of vsock in person could help.
+>>
+>> If you won't be in Dublin, don't worry. You can schedule a video call if
+>> you feel it would be helpful to discuss these topics.
+>>
+>> Stefan
+>
+>Hey Stefan,
+>
+>That sounds like a great idea! I was unable to make the Dublin trip work
+>so I think a video call would be best, of course if okay with everyone.
 
-default allocation size for napi_get_frags() is ~960b in google kernel,
-right? It looks like it should fit the above quite nicely with 4 frags
-per page?!?
+Looking better at the KVM forum sched, I found 1h slot for Sep 15 at 
+16:30 UTC.
 
-Vanilla kernel may hit a larger number of fragments per page, even if
-very likely not as high as the theoretical maximum mentioned in my
-previous email (as noted by Alex). 
+Could this work for you?
 
-If in that case excessive truesize underestimation would still be
-problematic (with a order0 4k page) __napi_alloc_skb() could be patched
-to increase smaller sizes to some reasonable minimum. 
+It would be nice to also have HyperV and VMCI people in the call and 
+anyone else who is interested of course.
 
-Likely there is some point in your reply I did not get. Luckily LPC is
-coming :) 
+@Dexuan @Bryan @Vishnu can you attend?
 
-> Reference:
-> 
-> commit fd9ea57f4e9514f9d0f0dec505eefd99a8faa148
-> Author: Eric Dumazet <edumazet@google.com>
-> Date:   Wed Jun 8 09:04:38 2022 -0700
-> 
->     net: add napi_get_frags_check() helper
-
-I guess such check should be revisited with all the above. 
+@MST @Jason @Stefan if you can be there that would be great, we could 
+connect together from Dublin.
 
 Thanks,
-
-Paolo
+Stefano
 
