@@ -2,105 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E7755B11C7
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 03:04:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DC8E5B11E1
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 03:11:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230192AbiIHBEq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 21:04:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44384 "EHLO
+        id S229476AbiIHBLQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 21:11:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230220AbiIHBEk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 21:04:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54D6B13DF5;
-        Wed,  7 Sep 2022 18:04:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1155CB81F7C;
-        Thu,  8 Sep 2022 01:04:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC175C4347C;
-        Thu,  8 Sep 2022 01:04:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662599071;
-        bh=pDKliAAXbuuHRjn1Tmw2PK6pJKiEg51Kk3HsHlIQUfk=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=YNNTXqSKtzq1oKkK0voUjm8ZKYC1iduun6DAdgJCwwfOLNKX8jG6cbQysIPTR87DM
-         y+HMl1QEEoetsmalSv4Uay1ZK3kB18HqlVAtILAbmy6u9MNn2qL9nA0j/cplojh6sb
-         8jpv6eblgFJB+qXjtJ4F7rAuRx3+O4xi+2ugVlKEclVhx6AwsIgIO9DC5ftjdaNwtO
-         KR0GPf6XCpudvxzcjpmrbIAXytjpNjjXRPV5ItRZ0PViOAgqy5D6YCvnj6Zv9p6PLW
-         J3bxZbWgib3PAlOH52MWGWKICf93BdtwE6KEC3WWkVSFm9RnwVY1qSOmXG/EdxviIz
-         g+RqHxVawOw6w==
-Received: by mail-wr1-f46.google.com with SMTP id t14so16037655wrx.8;
-        Wed, 07 Sep 2022 18:04:31 -0700 (PDT)
-X-Gm-Message-State: ACgBeo1Feq6zFHQkNmwrpw6bhcJ2KvHSCsRNaYXvFRsndVOoe5kMpC19
-        h29mQMu5dK6dZBiT/UKkMWMjedF90pugckSRbZk=
-X-Google-Smtp-Source: AA6agR6TiHrGhJmQC1WmULfwqDbYWxvDpIJUVuPL3xFAGnZeEq3rEYabuCKG1z3oIgWXoh9Pi/FO3vYTL0uf8rMPUqs=
-X-Received: by 2002:a5d:6da2:0:b0:228:64cb:5333 with SMTP id
- u2-20020a5d6da2000000b0022864cb5333mr3335307wrs.428.1662599070046; Wed, 07
- Sep 2022 18:04:30 -0700 (PDT)
-MIME-Version: 1.0
-References: <f35b32f3303b7cb70a5e55f5fbe0bd3a1d38c9a6.1662548037.git.lorenzo@kernel.org>
-In-Reply-To: <f35b32f3303b7cb70a5e55f5fbe0bd3a1d38c9a6.1662548037.git.lorenzo@kernel.org>
-From:   Song Liu <song@kernel.org>
-Date:   Wed, 7 Sep 2022 18:04:18 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW4Vcn4GELkKWNdb+X4L+KfdtOiHqN0VijhWy+vLjvD74g@mail.gmail.com>
-Message-ID: <CAPhsuW4Vcn4GELkKWNdb+X4L+KfdtOiHqN0VijhWy+vLjvD74g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] selftests/bpf: fix ct status check in bpf_nf selftests
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S230425AbiIHBLC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 21:11:02 -0400
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40722AC272
+        for <netdev@vger.kernel.org>; Wed,  7 Sep 2022 18:11:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1662599460; x=1694135460;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=0BOvLkWstnCBOKf/xbeBOMTmu437LOwXIwd3pUEQyBE=;
+  b=SHY0GSuuK3LMgnMyKjAVSTO7xoGnOmkKyLCcR/ch1L8A6MUib7TYirM2
+   dSshZrA8xNwqe3jlcSfh2fZCfnodX3ZZbHOBWDUmxUOeDmdWpRv6IlCgf
+   Zv6NxrrbWULgPSzqgoAOe1xnSY88rSvJuz+UYN9hDSOyggwsJo/c2d80h
+   g=;
+X-IronPort-AV: E=Sophos;i="5.93,298,1654560000"; 
+   d="scan'208";a="127861490"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2c-388992e0.us-west-2.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Sep 2022 01:10:46 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-pdx-2c-388992e0.us-west-2.amazon.com (Postfix) with ESMTPS id 7A90FE0966;
+        Thu,  8 Sep 2022 01:10:44 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Thu, 8 Sep 2022 01:10:42 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.160.222) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
+ Thu, 8 Sep 2022 01:10:40 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, pablo@netfilter.org,
-        fw@strlen.de, netfilter-devel@vger.kernel.org,
-        lorenzo.bianconi@redhat.com,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH v6 net-next 0/6] tcp: Introduce optional per-netns ehash.
+Date:   Wed, 7 Sep 2022 18:10:16 -0700
+Message-ID: <20220908011022.45342-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.160.222]
+X-ClientProxiedBy: EX13D05UWC002.ant.amazon.com (10.43.162.92) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 7, 2022 at 3:56 AM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
->
-> Check properly the connection tracking entry status configured running
-> bpf_ct_change_status kfunc.
-> Remove unnecessary IPS_CONFIRMED status configuration since it is
-> already done during entry allocation.
->
-> Fixes: 6eb7fba007a7 ("selftests/bpf: Add tests for new nf_conntrack kfuncs")
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
->  tools/testing/selftests/bpf/prog_tests/bpf_nf.c | 4 ++--
->  tools/testing/selftests/bpf/progs/test_bpf_nf.c | 8 +++++---
->  2 files changed, 7 insertions(+), 5 deletions(-)
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_nf.c b/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
-> index 544bf90ac2a7..903d16e3abed 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
-> @@ -111,8 +111,8 @@ static void test_bpf_nf_ct(int mode)
->         /* allow some tolerance for test_delta_timeout value to avoid races. */
->         ASSERT_GT(skel->bss->test_delta_timeout, 8, "Test for min ct timeout update");
->         ASSERT_LE(skel->bss->test_delta_timeout, 10, "Test for max ct timeout update");
-> -       /* expected status is IPS_SEEN_REPLY */
-> -       ASSERT_EQ(skel->bss->test_status, 2, "Test for ct status update ");
-> +       /* expected status is IPS_CONFIRMED | IPS_SEEN_REPLY */
-> +       ASSERT_EQ(skel->bss->test_status, 0xa, "Test for ct status update ");
+The more sockets we have in the hash table, the longer we spend looking
+up the socket.  While running a number of small workloads on the same
+host, they penalise each other and cause performance degradation.
 
-Why do we use 0xa instead of IPS_CONFIRMED | IPS_SEEN_REPLY?
-To avoid dependency on the header file?
+The root cause might be a single workload that consumes much more
+resources than the others.  It often happens on a cloud service where
+different workloads share the same computing resource.
 
-Thanks,
-Song
+On EC2 c5.24xlarge instance (196 GiB memory and 524288 (1Mi / 2) ehash
+entries), after running iperf3 in different netns, creating 24Mi sockets
+without data transfer in the root netns causes about 10% performance
+regression for the iperf3's connection.
+
+ thash_entries		sockets		length		Gbps
+	524288		      1		     1		50.7
+			   24Mi		    48		45.1
+
+It is basically related to the length of the list of each hash bucket.
+For testing purposes to see how performance drops along the length,
+I set 131072 (1Mi / 8) to thash_entries, and here's the result.
+
+ thash_entries		sockets		length		Gbps
+        131072		      1		     1		50.7
+			    1Mi		     8		49.9
+			    2Mi		    16		48.9
+			    4Mi		    32		47.3
+			    8Mi		    64		44.6
+			   16Mi		   128		40.6
+			   24Mi		   192		36.3
+			   32Mi		   256		32.5
+			   40Mi		   320		27.0
+			   48Mi		   384		25.0
+
+To resolve the socket lookup degradation, we introduce an optional
+per-netns hash table for TCP, but it's just ehash, and we still share
+the global bhash, bhash2 and lhash2.
+
+With a smaller ehash, we can look up non-listener sockets faster and
+isolate such noisy neighbours.  Also, we can reduce lock contention.
+
+For details, please see the last patch.
+
+  patch 1 - 4: prep for per-netns ehash
+  patch     5: small optimisation for netns dismantle without TIME_WAIT sockets
+  patch     6: add per-netns ehash
+
+Many thanks to Eric Dumazet for reviewing and advising.
+
+
+Changes:
+  v6:
+    * Patch 6
+      * Use vmalloc_huge() in inet_pernet_hashinfo_alloc() and
+        update the changelog and doc about NUMA (Eric Dumazet)
+      * Use kmemdup() in inet_pernet_hashinfo_alloc() (Eric Dumazet)
+      * Use vfree() in inet_pernet_hashinfo_(alloc|free)()
+
+  v5: https://lore.kernel.org/netdev/20220907005534.72876-1-kuniyu@amazon.com/
+    * Patch 2
+      * Keep the tw_refcount base value at 1 (Eric Dumazet)
+      * Add WARN_ON_ONCE() for tw_refcount (Eric Dumazet)
+    * Patch 5
+      * Test tw_refcount against 1 in tcp_twsk_purge()
+
+  v4: https://lore.kernel.org/netdev/20220906162423.44410-1-kuniyu@amazon.com/
+    * Add Patch 2
+    * Patch 1
+      * Add cleanups in tcp_time_wait() and  tcp_v[46]_connect()
+    * Patch 3
+      * /tcp_death_row/s/->/./
+    * Patch 4
+      * Add mellanox and netronome driver changes back (Paolo Abeni, Jakub Kicinski)
+      * /tcp_death_row/s/->/./
+    * Patch 5
+      * Simplify tcp_twsk_purge()
+    * Patch 6
+      * Move inet_pernet_hashinfo_free() into tcp_sk_exit_batch()
+
+  v3: https://lore.kernel.org/netdev/20220830191518.77083-1-kuniyu@amazon.com/
+    * Patch 3
+      * Drop mellanox and netronome driver changes (Eric Dumazet)
+    * Patch 4
+      * Add test results in the changelog
+    * Patch 5
+      * Use roundup_pow_of_two() in tcp_set_hashinfo() (Eric Dumazet)
+      * Remove proc_tcp_child_ehash_entries() and use proc_douintvec_minmax()
+
+  v2: https://lore.kernel.org/netdev/20220829161920.99409-1-kuniyu@amazon.com/
+    * Drop flock() and UDP stuff
+    * Patch 2
+      * Rename inet_get_hashinfo() to tcp_or_dccp_get_hashinfo() (Eric Dumazet)
+    * Patch 4
+      * Remove unnecessary inet_twsk_purge() calls for unshare()
+      * Factorise inet_twsk_purge() calls (Eric Dumazet)
+    * Patch 5
+      * Change max buckets size as 16Mi
+      * Use unsigned int for ehash size (Eric Dumazet)
+      * Use GFP_KERNEL_ACCOUNT for the per-netns ehash allocation (Eric Dumazet)
+      * Use current->nsproxy->net_ns for parent netns (Eric Dumazet)
+
+  v1: https://lore.kernel.org/netdev/20220826000445.46552-1-kuniyu@amazon.com/
+
+
+Kuniyuki Iwashima (6):
+  tcp: Clean up some functions.
+  tcp: Don't allocate tcp_death_row outside of struct netns_ipv4.
+  tcp: Set NULL to sk->sk_prot->h.hashinfo.
+  tcp: Access &tcp_hashinfo via net.
+  tcp: Save unnecessary inet_twsk_purge() calls.
+  tcp: Introduce optional per-netns ehash.
+
+ Documentation/networking/ip-sysctl.rst        |  29 ++++
+ .../chelsio/inline_crypto/chtls/chtls_cm.c    |   5 +-
+ .../mellanox/mlx5/core/en_accel/ktls_rx.c     |   5 +-
+ .../net/ethernet/netronome/nfp/crypto/tls.c   |   5 +-
+ include/net/inet_hashtables.h                 |  16 ++
+ include/net/netns/ipv4.h                      |   4 +-
+ include/net/tcp.h                             |   1 +
+ net/core/filter.c                             |   5 +-
+ net/dccp/proto.c                              |   2 +
+ net/ipv4/af_inet.c                            |   2 +-
+ net/ipv4/esp4.c                               |   3 +-
+ net/ipv4/inet_connection_sock.c               |  22 ++-
+ net/ipv4/inet_hashtables.c                    |  92 ++++++++---
+ net/ipv4/inet_timewait_sock.c                 |   4 +-
+ net/ipv4/netfilter/nf_socket_ipv4.c           |   4 +-
+ net/ipv4/netfilter/nf_tproxy_ipv4.c           |  16 +-
+ net/ipv4/proc.c                               |   2 +-
+ net/ipv4/sysctl_net_ipv4.c                    |  47 +++++-
+ net/ipv4/tcp.c                                |   1 +
+ net/ipv4/tcp_diag.c                           |  18 ++-
+ net/ipv4/tcp_ipv4.c                           | 143 +++++++++++-------
+ net/ipv4/tcp_minisocks.c                      |  28 +++-
+ net/ipv6/esp6.c                               |   3 +-
+ net/ipv6/inet6_hashtables.c                   |   4 +-
+ net/ipv6/netfilter/nf_socket_ipv6.c           |   4 +-
+ net/ipv6/netfilter/nf_tproxy_ipv6.c           |   8 +-
+ net/ipv6/tcp_ipv6.c                           |  42 ++---
+ net/mptcp/mptcp_diag.c                        |   7 +-
+ 28 files changed, 361 insertions(+), 161 deletions(-)
+
+-- 
+2.30.2
+
