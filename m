@@ -2,166 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C9485B1640
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 10:06:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F0655B1643
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 10:06:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230012AbiIHIGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 04:06:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52286 "EHLO
+        id S229559AbiIHIGd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 04:06:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229782AbiIHIGU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 04:06:20 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD24F2A720;
-        Thu,  8 Sep 2022 01:06:18 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id s206so15998843pgs.3;
-        Thu, 08 Sep 2022 01:06:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=srKp0qF1Diby5Qs9xfv49IWriKBlWuLXT5Vhw8RgQwA=;
-        b=pYClB6FS9fkQJ5dt0Gt64pDWEkSCLMROuws+FO+tdaksEJnwfYGi+WhEKmcgU1uM/A
-         FflnhAPK3MIEeVOpmabdaFB6iJue3l9izzL+cTkDpS2Y1gQ8A1zpsw13yRXsNTvxggLX
-         00dHo1IYwxj6jQ919AYsDphu1A6GULpmksejsvpYEjbF9+Voo/vOXqaPelkT7UPAwa6D
-         TYNZdH2FDfDZZgFQlhyh04XZ3VmTty14teo0BNTrEbTnBl6f4ppyzeYhSeG57FVOIAc2
-         z/hwtGO/QXLfd3UEQ+Xx50uOorZON8lkspfytJCWt9Flad7V8m801cOz9isQ7lrL707p
-         MMSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=srKp0qF1Diby5Qs9xfv49IWriKBlWuLXT5Vhw8RgQwA=;
-        b=V32WHEP+JxtvhwGbcHThwmhIOAEyjQFHe+NGCTnCTitdcqxMGsZnjUOEJbdsDg4Teb
-         zq4f6m0vW/Bn50s7OH3gWzyLnf263WwbrsskP+HFopB6SX7ivDSh7Mp7z1EjA3Stn4CE
-         cUsvZI1Ic/0yGZRxSHMRXVHUzZ0QCdhFwCTZrL33T/JBLODRuojdsL+Ch9DwjOg41C3k
-         NrvQhGJcqg0pY9nvL/mKM26cex/6TH1vug8wsVbZn/K3RAvsrSh0mWvUPkdl0xWJvBcM
-         zT/45jowaRD+4VkI5XKi6EPFzLMsIwvk4uIjU0PMNBE95CeXVf8KX79kcQ95hmjXVHiW
-         Yhjg==
-X-Gm-Message-State: ACgBeo3aW9H/NmL3r+TGeRBC/i84A/15uMyqZJsR2cYeted3+z4HHagh
-        fSsrS9hM91yybaPuuXfn2oe9D0PSh8WxCS/VrtY=
-X-Google-Smtp-Source: AA6agR57bUG3mPEtxyWXG+q4PpxQqoYcnvuFddzBAFn03hap+zWba66gaObxQ5TYtNzzDguiam3ukKXhvg31qkBIdCs=
-X-Received: by 2002:a63:cc51:0:b0:41f:12f5:675b with SMTP id
- q17-20020a63cc51000000b0041f12f5675bmr6690826pgi.69.1662624378290; Thu, 08
- Sep 2022 01:06:18 -0700 (PDT)
+        with ESMTP id S230506AbiIHIG2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 04:06:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0540D2B3A;
+        Thu,  8 Sep 2022 01:06:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B45261BBC;
+        Thu,  8 Sep 2022 08:06:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5734CC4347C;
+        Thu,  8 Sep 2022 08:06:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662624383;
+        bh=99N8urgmXc1eLWiQJCkk4lIJ8riw3A9WweOprQIo+KE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=YmBrTiybj0Ivgs2gDTsXWD+HM0PRsIp5we8N4JpMBxWM0NFdouusm3G1sda2XVC2q
+         jGflQERFNsybjhmDM8okYUuOC9/Ti7bf9l9k4EODrUiwD92A4/oRZ0xiQdAamiED13
+         Zirgu43N/F/XQbj4Hl1P5h7KAcbouBpiKLmnFTx1isfBmWoZwELH9SZheYShKfZm1W
+         rmcObPipBkzoGX6kWsBugCBzv/mdkrqedOtY+SKS+KGlaJdHzP4HdhI9zIxGS7I2L0
+         7Q1g5E+koN6Q4KUNHizC2kvNyheRtKUi3XUqcrCGxltLHrcuJrudnkLciOT6mVTMSj
+         Qvg1rR/GwN83w==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        edumazet@google.com, pabeni@redhat.com, pablo@netfilter.org,
+        fw@strlen.de, netfilter-devel@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, brouer@redhat.com, toke@redhat.com,
+        memxor@gmail.com, song@kernel.org
+Subject: [PATCH v2 bpf-next] selftests/bpf: fix ct status check in bpf_nf selftests
+Date:   Thu,  8 Sep 2022 10:06:12 +0200
+Message-Id: <813a5161a71911378dfac8770ec890428e4998aa.1662623574.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-References: <166256538687.1434226.15760041133601409770.stgit@firesoul> <166256558657.1434226.7390735974413846384.stgit@firesoul>
-In-Reply-To: <166256558657.1434226.7390735974413846384.stgit@firesoul>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Thu, 8 Sep 2022 10:06:06 +0200
-Message-ID: <CAJ8uoz3UcC2tnMtG8W6a3HpCKgaYSzSCqowLFQVwCcsr+NKBOQ@mail.gmail.com>
-Subject: Re: [PATCH RFCv2 bpf-next 17/18] xsk: AF_XDP xdp-hints support in
- desc options
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        xdp-hints@xdp-project.net, larysa.zaremba@intel.com,
-        memxor@gmail.com, Lorenzo Bianconi <lorenzo@kernel.org>,
-        mtahhan@redhat.com,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        dave@dtucker.co.uk, Magnus Karlsson <magnus.karlsson@intel.com>,
-        bjorn@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 7, 2022 at 5:48 PM Jesper Dangaard Brouer <brouer@redhat.com> wrote:
->
-> From: Maryam Tahhan <mtahhan@redhat.com>
->
-> Simply set AF_XDP descriptor options to XDP flags.
->
-> Jesper: Will this really be acceptable by AF_XDP maintainers?
+Check properly the connection tracking entry status configured running
+bpf_ct_change_status kfunc.
+Remove unnecessary IPS_CONFIRMED status configuration since it is
+already done during entry allocation.
 
-Maryam, you guessed correctly that dedicating all these options bits
-for a single feature will not be ok :-). E.g., I want one bit for the
-AF_XDP multi-buffer support and who knows what other uses there might
-be for this options field in the future. Let us try to solve this in
-some other way. Here are some suggestions, all with their pros and
-cons.
+Fixes: 6eb7fba007a7 ("selftests/bpf: Add tests for new nf_conntrack kfuncs")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+---
+Change since v1:
+- rely on nf_conntrack_common.h definitions for ct status in bpf_nf.c
+---
+ tools/testing/selftests/bpf/prog_tests/bpf_nf.c | 5 +++--
+ tools/testing/selftests/bpf/progs/test_bpf_nf.c | 8 +++++---
+ 2 files changed, 8 insertions(+), 5 deletions(-)
 
-* Put this feature flag at a known place in the metadata area, for
-example just before the BTF ID. No need to fill this in if you are not
-redirecting to AF_XDP, but at a redirect to AF_XDP, the XDP flags are
-copied into this u32 in the metadata area so that user-space can
-consume it. Will cost 4 bytes of the metadata area though.
+diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_nf.c b/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
+index 544bf90ac2a7..cdaf6a7d6fd1 100644
+--- a/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
++++ b/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0
+ #include <test_progs.h>
+ #include <network_helpers.h>
++#include <linux/netfilter/nf_conntrack_common.h>
+ #include "test_bpf_nf.skel.h"
+ #include "test_bpf_nf_fail.skel.h"
+ 
+@@ -111,8 +112,8 @@ static void test_bpf_nf_ct(int mode)
+ 	/* allow some tolerance for test_delta_timeout value to avoid races. */
+ 	ASSERT_GT(skel->bss->test_delta_timeout, 8, "Test for min ct timeout update");
+ 	ASSERT_LE(skel->bss->test_delta_timeout, 10, "Test for max ct timeout update");
+-	/* expected status is IPS_SEEN_REPLY */
+-	ASSERT_EQ(skel->bss->test_status, 2, "Test for ct status update ");
++	ASSERT_EQ(skel->bss->test_status, IPS_CONFIRMED | IPS_SEEN_REPLY,
++		  "Test for ct status update ");
+ 	ASSERT_EQ(skel->data->test_exist_lookup, 0, "Test existing connection lookup");
+ 	ASSERT_EQ(skel->bss->test_exist_lookup_mark, 43, "Test existing connection lookup ctmark");
+ end:
+diff --git a/tools/testing/selftests/bpf/progs/test_bpf_nf.c b/tools/testing/selftests/bpf/progs/test_bpf_nf.c
+index 2722441850cc..a3b9d32d1555 100644
+--- a/tools/testing/selftests/bpf/progs/test_bpf_nf.c
++++ b/tools/testing/selftests/bpf/progs/test_bpf_nf.c
+@@ -143,7 +143,6 @@ nf_ct_test(struct nf_conn *(*lookup_fn)(void *, struct bpf_sock_tuple *, u32,
+ 		struct nf_conn *ct_ins;
+ 
+ 		bpf_ct_set_timeout(ct, 10000);
+-		bpf_ct_set_status(ct, IPS_CONFIRMED);
+ 
+ 		ct_ins = bpf_ct_insert_entry(ct);
+ 		if (ct_ins) {
+@@ -156,8 +155,11 @@ nf_ct_test(struct nf_conn *(*lookup_fn)(void *, struct bpf_sock_tuple *, u32,
+ 				bpf_ct_change_timeout(ct_lk, 10000);
+ 				test_delta_timeout = ct_lk->timeout - bpf_jiffies64();
+ 				test_delta_timeout /= CONFIG_HZ;
+-				test_status = IPS_SEEN_REPLY;
+-				bpf_ct_change_status(ct_lk, IPS_SEEN_REPLY);
++
++				bpf_ct_change_status(ct_lk,
++						     IPS_CONFIRMED | IPS_SEEN_REPLY);
++				test_status = ct_lk->status;
++
+ 				bpf_ct_release(ct_lk);
+ 				test_succ_lookup = 0;
+ 			}
+-- 
+2.37.3
 
-* Instead encode this information into each metadata entry in the
-metadata area, in some way so that a flags field is not needed (-1
-signifies not valid, or whatever happens to make sense). This has the
-drawback that the user might have to look at a large number of entries
-just to find out there is nothing valid to read. To alleviate this, it
-could be combined with the next suggestion.
-
-* Dedicate one bit in the options field to indicate that there is at
-least one valid metadata entry in the metadata area. This could be
-combined with the two approaches above. However, depending on what
-metadata you have enabled, this bit might be pointless. If some
-metadata is always valid, then it serves no purpose. But it might if
-all enabled metadata is rarely valid, e.g., if you get an Rx timestamp
-on one packet out of one thousand.
-
-> Signed-off-by: Maryam Tahhan <mtahhan@redhat.com>
-> ---
->  include/uapi/linux/if_xdp.h |    2 +-
->  net/xdp/xsk.c               |    2 +-
->  net/xdp/xsk_queue.h         |    3 ++-
->  3 files changed, 4 insertions(+), 3 deletions(-)
->
-> diff --git a/include/uapi/linux/if_xdp.h b/include/uapi/linux/if_xdp.h
-> index a78a8096f4ce..9335b56474e7 100644
-> --- a/include/uapi/linux/if_xdp.h
-> +++ b/include/uapi/linux/if_xdp.h
-> @@ -103,7 +103,7 @@ struct xdp_options {
->  struct xdp_desc {
->         __u64 addr;
->         __u32 len;
-> -       __u32 options;
-> +       __u32 options; /* set to the values of xdp_hints_flags*/
->  };
->
->  /* UMEM descriptor is __u64 */
-> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> index 5b4ce6ba1bc7..32095d78f06b 100644
-> --- a/net/xdp/xsk.c
-> +++ b/net/xdp/xsk.c
-> @@ -141,7 +141,7 @@ static int __xsk_rcv_zc(struct xdp_sock *xs, struct xdp_buff *xdp, u32 len)
->         int err;
->
->         addr = xp_get_handle(xskb);
-> -       err = xskq_prod_reserve_desc(xs->rx, addr, len);
-> +       err = xskq_prod_reserve_desc(xs->rx, addr, len, xdp->flags);
->         if (err) {
->                 xs->rx_queue_full++;
->                 return err;
-> diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
-> index fb20bf7207cf..7a66f082f97e 100644
-> --- a/net/xdp/xsk_queue.h
-> +++ b/net/xdp/xsk_queue.h
-> @@ -368,7 +368,7 @@ static inline u32 xskq_prod_reserve_addr_batch(struct xsk_queue *q, struct xdp_d
->  }
->
->  static inline int xskq_prod_reserve_desc(struct xsk_queue *q,
-> -                                        u64 addr, u32 len)
-> +                                        u64 addr, u32 len, u32 flags)
->  {
->         struct xdp_rxtx_ring *ring = (struct xdp_rxtx_ring *)q->ring;
->         u32 idx;
-> @@ -380,6 +380,7 @@ static inline int xskq_prod_reserve_desc(struct xsk_queue *q,
->         idx = q->cached_prod++ & q->ring_mask;
->         ring->desc[idx].addr = addr;
->         ring->desc[idx].len = len;
-> +       ring->desc[idx].options = flags;
->
->         return 0;
->  }
->
->
