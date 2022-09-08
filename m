@@ -2,81 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 17C9F5B1AC4
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 13:01:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABD3A5B1ADE
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 13:07:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229600AbiIHLA5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 07:00:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59874 "EHLO
+        id S229546AbiIHLG7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 07:06:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229547AbiIHLA4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 07:00:56 -0400
+        with ESMTP id S229480AbiIHLG6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 07:06:58 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA735B276A
-        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 04:00:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3736EBE4C1
+        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 04:06:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662634854;
+        s=mimecast20190719; t=1662635216;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=tc8oQBF9Qw9ZbPm0DoFV49CE44ekZUxvU0qecc6cMtE=;
-        b=OVXLA4Q0J68WGunkBvBFNZ/idUxzDmpZHcOOD3LQ9jnu6YllOuSD6xBUntOKiVmUxAaofw
-        SxVkqpkNGkbMyECLQi/aQaejNlH6L1JMM8jdvlwPey0LMymPg6vBSfedEYFm4d4dA0/ESw
-        wkhESoJnN22lxVMkK66vSIAgF0TcmBk=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-455-A21GjwImO5aeRkl_hfFedw-1; Thu, 08 Sep 2022 07:00:53 -0400
-X-MC-Unique: A21GjwImO5aeRkl_hfFedw-1
-Received: by mail-wr1-f69.google.com with SMTP id h2-20020adfa4c2000000b00228db7822cbso2667094wrb.19
-        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 04:00:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=tc8oQBF9Qw9ZbPm0DoFV49CE44ekZUxvU0qecc6cMtE=;
-        b=2G+IP8EzM+0SIxspRJGB0nBoZFVb5KgWOW71hi2MpapVwmvFt6nnr92N7D73y4PTcw
-         tiNwJbdwU7kl0GZjIPfvKBp02cewDMZvQB3yWuYP5+W8MqLtvNiMm9EcrCtNz0H4pQTe
-         oJ+dlV5UFn+11WovkYk0IOHpON4bGNjElVMq8kDsY75ASSoEkLslGsYmTv0SgPUMZ01V
-         rx+8ZXHGAZtMh1k/LRkU3To1jMRwGsKJbHQso3AHx+pfYmAJvgToZty91cyO6uvMB3RY
-         B1EF+9L/qKv8r5g6gXy+bfqbd3ZlNAvR/o2g2M26A1MMUNVvtgOfegqwsKPHpSAaKtQh
-         RvEA==
-X-Gm-Message-State: ACgBeo1fC2kAp7xqc5liB/q65J2X8JN5bZ5qkeRoJ0MgB2xqi4CXHejk
-        Sp7ko4h1Z7d1mespTjoKM73nUhtiE12VBTJD6JW+prsAWANIkoaQMKWRf74RNYWAyIwwOP+gVFv
-        I1jMVIqHYPn8f2GL7
-X-Received: by 2002:a05:600c:3d09:b0:3a5:e408:ca19 with SMTP id bh9-20020a05600c3d0900b003a5e408ca19mr1883715wmb.135.1662634852104;
-        Thu, 08 Sep 2022 04:00:52 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7rhUZPz9EVPjEB+7st3OYmzKDYw3L4ZpK/1dte/dIvQ+9VNa+WQ6kDF3k4FiQGXcttXvJvVQ==
-X-Received: by 2002:a05:600c:3d09:b0:3a5:e408:ca19 with SMTP id bh9-20020a05600c3d0900b003a5e408ca19mr1883693wmb.135.1662634851820;
-        Thu, 08 Sep 2022 04:00:51 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-119-112.dyn.eolo.it. [146.241.119.112])
-        by smtp.gmail.com with ESMTPSA id m5-20020adff385000000b00228c792aaaasm13170345wro.100.2022.09.08.04.00.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Sep 2022 04:00:51 -0700 (PDT)
-Message-ID: <498a25e4f7ba4e21d688ca74f335b28cadcb3381.camel@redhat.com>
-Subject: Re: [PATCH net] net: avoid 32 x truesize under-estimation for tiny
- skbs
+         content-transfer-encoding:content-transfer-encoding;
+        bh=xL9zKh/M+MTFoAa+TFKYW1CEVc0Dis/piOqO58DdPyc=;
+        b=bQP5Vh9c+z9VXrKHQZmZA/DkbBIMN9TXDxgfpGgTU3Vsmzl+Pz96BN60w3a+QcM8tHwxPv
+        oPw1G33bQDQnOzNN59j36ryTBAXyy/EYb24+XLZtgTXId7CsFpWaC4liuj0M1J7rHCKGRP
+        RLY4sDjZOI5CCp6Rxtp9cs04qyE18HY=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-503-VtdmsV5WMp6iB2uyDAftrw-1; Thu, 08 Sep 2022 07:06:55 -0400
+X-MC-Unique: VtdmsV5WMp6iB2uyDAftrw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9876C3815D37;
+        Thu,  8 Sep 2022 11:06:54 +0000 (UTC)
+Received: from gerbillo.redhat.com (unknown [10.39.192.219])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5F7A040B40C9;
+        Thu,  8 Sep 2022 11:06:53 +0000 (UTC)
 From:   Paolo Abeni <pabeni@redhat.com>
-To:     Alexander H Duyck <alexander.duyck@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Greg Thelen <gthelen@google.com>
-Date:   Thu, 08 Sep 2022 13:00:50 +0200
-In-Reply-To: <dcffcf6fde8272975e44124f55fba3936833360e.camel@gmail.com>
-References: <20210113161819.1155526-1-eric.dumazet@gmail.com>
-         <bd79ede94805326cd63f105c84f1eaa4e75c8176.camel@redhat.com>
-         <dcffcf6fde8272975e44124f55fba3936833360e.camel@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+To:     torvalds@linux-foundation.org
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [GIT PULL] Networking for 6.0-rc5
+Date:   Thu,  8 Sep 2022 13:06:10 +0200
+Message-Id: <20220908110610.28284-1-pabeni@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -87,67 +57,278 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-09-07 at 14:36 -0700, Alexander H Duyck wrote:
-> On Wed, 2022-09-07 at 22:19 +0200, Paolo Abeni wrote:
-> > What outlined above will allow for 10 min size frags in page_order0, as
-> > (SKB_DATA_ALIGN(0) + SKB_DATA_ALIGN(struct skb_shared_info) == 384. I'm
-> > not sure that anything will allocate such small frags.
-> > With a more reasonable GRO_MAX_HEAD, there will be 6 frags per page. 
-> 
-> That doesn't account for any headroom though. 
+Hi Linus!
 
-Yes, the 0-size data packet was just a theoretical example to make the
-really worst case scenario.
+The following changes since commit 42e66b1cc3a070671001f8a1e933a80818a192bf:
 
-> Most of the time you have
-> to reserve some space for headroom so that if this buffer ends up
-> getting routed off somewhere to be tunneled there is room for adding to
-> the header. I think the default ends up being NET_SKB_PAD, though many
-> NICs use larger values. So adding any data onto that will push you up
-> to a minimum of 512 per skb for the first 64B for header data.
-> 
-> With that said it would probably put you in the range of 8 or fewer
-> skbs per page assuming at least 1 byte for data:
->   512 =	SKB_DATA_ALIGN(NET_SKB_PAD + 1) +
-> 	SKB_DATA_ALIGN(struct skb_shared_info)
+  Merge tag 'net-6.0-rc4' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2022-09-01 09:20:42 -0700)
 
-In most build GRO_MAX_HEAD packets are even larger (should be 640)
+are available in the Git repository at:
 
-> > The maximum truesize underestimation in both cases will be lower than
-> > what we can get with the current code in the worst case (almost 32x
-> > AFAICS). 
-> > 
-> > Is the above schema safe enough or should the requested size
-> > artificially inflatted to fit at most 4 allocations per page_order0?
-> > Am I miss something else? Apart from omitting a good deal of testing in
-> > the above list ;) 
-> 
-> If we are working with an order 0 page we may just want to split it up
-> into a fixed 1K fragments and not bother with a variable pagecnt bias.
-> Doing that we would likely simplify this quite a bit and avoid having
-> to do as much page count manipulation which could get expensive if we
-> are not getting many uses out of the page. An added advantage is that
-> we can get rid of the pagecnt_bias and just work based on the page
-> offset.
-> 
-> As such I am not sure the page frag cache would really be that good of
-> a fit since we have quite a bit of overhead in terms of maintaining the
-> pagecnt_bias which assumes the page is a bit longer lived so the ratio
-> of refcnt updates vs pagecnt_bias updates is better.
+  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-6.0-rc5
 
-I see. With the above schema there will be 4-6 frags per packet. I'm
-wild guessing that the pagecnt_bias optimization still give some gain
-in that case, but I really shold collect some data points.
+for you to fetch changes up to 2f09707d0c972120bf794cfe0f0c67e2c2ddb252:
 
-If the pagecnt optimization should be dropped, it would be probably
-more straight-forward to use/adapt 'page_frag' for the page_order0
-allocator.
+  sch_sfb: Also store skb len before calling child enqueue (2022-09-08 11:12:58 +0200)
 
-BTW it's quite strange/confusing having to very similar APIs (page_frag
-and page_frag_cache) with very similar names and no references between
-them.
+----------------------------------------------------------------
+Networking fixes for 6.0-rc5, including fixes from rxrpc, netfilter,
+wireless and bluetooth subtrees
 
-Thanks!
+Current release - regressions:
+  - skb: export skb drop reaons to user by TRACE_DEFINE_ENUM
 
-Paolo
+  - bluetooth: fix regression preventing ACL packet transmission
+
+Current release - new code bugs:
+  - dsa: microchip: fix kernel oops on ksz8 switches
+
+  - dsa: qca8k: fix NULL pointer dereference for of_device_get_match_data
+
+Previous releases - regressions:
+  - netfilter: clean up hook list when offload flags check fails
+
+  - wifi: mt76: fix crash in chip reset fail
+
+  - rxrpc: fix ICMP/ICMP6 error handling
+
+  - ice: fix DMA mappings leak
+
+  - i40e: fix kernel crash during module removal
+
+Previous releases - always broken:
+  - ipv6: sr: fix out-of-bounds read when setting HMAC data.
+
+  - tcp: TX zerocopy should not sense pfmemalloc status
+
+  - sch_sfb: don't assume the skb is still around after enqueueing to child
+
+  - netfilter: drop dst references before setting
+
+  - wifi: wilc1000: fix DMA on stack objects
+
+  - rxrpc: fix an insufficiently large sglist in rxkad_verify_packet_2()
+
+  - fec: use a spinlock to guard `fep->ptp_clk_on`
+
+Misc:
+  - usb: qmi_wwan: add Quectel RM520N
+
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+
+----------------------------------------------------------------
+Ajay.Kathat@microchip.com (1):
+      wifi: wilc1000: fix DMA on stack objects
+
+Arun Ramadoss (1):
+      net: phy: lan87xx: change interrupt src of link_up to comm_ready
+
+Christian Marangi (1):
+      net: dsa: qca8k: fix NULL pointer dereference for of_device_get_match_data
+
+Christophe JAILLET (1):
+      stmmac: intel: Simplify intel_eth_pci_remove()
+
+Csókás Bence (1):
+      net: fec: Use a spinlock to guard `fep->ptp_clk_on`
+
+Dan Carpenter (1):
+      tipc: fix shift wrapping bug in map_get()
+
+David Howells (6):
+      rxrpc: Fix ICMP/ICMP6 error handling
+      rxrpc: Fix an insufficiently large sglist in rxkad_verify_packet_2()
+      rxrpc: Fix local destruction being repeated
+      rxrpc: Fix calc of resend age
+      afs: Use the operation issue time instead of the reply time for callbacks
+      rxrpc: Remove rxrpc_get_reply_time() which is no longer used
+
+David Leadbeater (1):
+      netfilter: nf_conntrack_irc: Fix forged IP logic
+
+David Lebrun (1):
+      ipv6: sr: fix out-of-bounds read when setting HMAC data.
+
+David S. Miller (7):
+      Merge tag 'rxrpc-fixes-20220901' of git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs
+      Merge branch '100GbE' of git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue
+      Merge branch '40GbE' of git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue
+      Merge tag 'wireless-2022-09-03' of git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless
+      Merge branch 'bonding-fixes'
+      Merge tag 'for-net-2022-09-02' of git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth
+      Merge branch 'dsa-felix-fixes'
+
+Deren Wu (1):
+      wifi: mt76: mt7921e: fix crash in chip reset fail
+
+Eric Dumazet (1):
+      tcp: TX zerocopy should not sense pfmemalloc status
+
+Greg Kroah-Hartman (1):
+      net: mvpp2: debugfs: fix memory leak when using debugfs_lookup()
+
+Hangbin Liu (3):
+      bonding: use unspecified address if no available link local address
+      bonding: add all node mcast address when slave up
+      bonding: accept unsolicited NA message
+
+Harsh Modi (1):
+      netfilter: br_netfilter: Drop dst references before setting.
+
+Heiner Kallweit (1):
+      Revert "net: phy: meson-gxl: improve link-up behavior"
+
+Ivan Vecera (2):
+      i40e: Fix kernel crash during module removal
+      iavf: Detach device during reset task
+
+Jakub Kicinski (1):
+      Merge git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf
+
+Johannes Berg (3):
+      wifi: mac80211: mlme: release deflink channel in error case
+      wifi: mac80211: fix locking in auth/assoc timeout
+      wifi: use struct_group to copy addresses
+
+Lorenzo Bianconi (2):
+      net: ethernet: mtk_eth_soc: fix typo in __mtk_foe_entry_clear
+      net: ethernet: mtk_eth_soc: check max allowed hash in mtk_ppe_check_skb
+
+Luiz Augusto von Dentz (1):
+      Bluetooth: hci_sync: Fix hci_read_buffer_size_sync
+
+Menglong Dong (1):
+      net: skb: export skb drop reaons to user by TRACE_DEFINE_ENUM
+
+Michal Swiatkowski (1):
+      ice: use bitmap_free instead of devm_kfree
+
+Mukesh Sisodiya (1):
+      wifi: mac80211: fix link warning in RX agg timer expiry
+
+Neal Cardwell (1):
+      tcp: fix early ETIMEDOUT after spurious non-SACK RTO
+
+Oleksij Rempel (1):
+      net: dsa: microchip: fix kernel oops on ksz8 switches
+
+Pablo Neira Ayuso (2):
+      netfilter: remove nf_conntrack_helper sysctl and modparam toggles
+      netfilter: nf_tables: clean up hook list when offload flags check fails
+
+Paul Durrant (1):
+      xen-netback: only remove 'hotplug-status' when the vif is actually destroyed
+
+Przemyslaw Patynowski (2):
+      ice: Fix DMA mappings leak
+      i40e: Fix ADQ rate limiting for PF
+
+Soenke Huster (1):
+      wifi: mac80211_hwsim: check length for virtio packets
+
+Stanislaw Gruszka (1):
+      wifi: iwlegacy: 4965: corrected fix for potential off-by-one overflow in il4965_rs_fill_link_cmd()
+
+Toke Høiland-Jørgensen (2):
+      sch_sfb: Don't assume the skb is still around after enqueueing to child
+      sch_sfb: Also store skb len before calling child enqueue
+
+Vladimir Oltean (3):
+      net: dsa: felix: tc-taprio intervals smaller than MTU should send at least one packet
+      net: dsa: felix: disable cut-through forwarding for frames oversized for tc-taprio
+      net: dsa: felix: access QSYS_TAG_CONFIG under tas_lock in vsc9959_sched_speed_set
+
+Wei Fang (1):
+      net: fec: add pm_qos support on imx6q platform
+
+Yacan Liu (1):
+      net/smc: Fix possible access to freed memory in link clear
+
+jerry.meng (1):
+      net: usb: qmi_wwan: add Quectel RM520N
+
+ Documentation/networking/rxrpc.rst                 |  11 -
+ drivers/net/bonding/bond_main.c                    |  20 +-
+ drivers/net/dsa/microchip/ksz_common.c             |  30 ++-
+ drivers/net/dsa/ocelot/felix_vsc9959.c             | 161 +++++++----
+ drivers/net/dsa/qca/qca8k-8xxx.c                   |   2 +-
+ drivers/net/ethernet/freescale/fec.h               |   6 +-
+ drivers/net/ethernet/freescale/fec_main.c          |  26 +-
+ drivers/net/ethernet/freescale/fec_ptp.c           |  28 +-
+ drivers/net/ethernet/intel/i40e/i40e_client.c      |   5 +-
+ drivers/net/ethernet/intel/i40e/i40e_main.c        |   3 +
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c        |   3 +-
+ drivers/net/ethernet/intel/iavf/iavf_main.c        |  14 +-
+ drivers/net/ethernet/intel/ice/ice_base.c          |  17 --
+ drivers/net/ethernet/intel/ice/ice_main.c          |  10 +-
+ drivers/net/ethernet/intel/ice/ice_xsk.c           |  63 +++++
+ drivers/net/ethernet/intel/ice/ice_xsk.h           |   8 +
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c |   4 +-
+ drivers/net/ethernet/mediatek/mtk_ppe.c            |   2 +-
+ drivers/net/ethernet/mediatek/mtk_ppe.h            |   3 +
+ drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c  |   2 -
+ drivers/net/phy/meson-gxl.c                        |   8 +-
+ drivers/net/phy/microchip_t1.c                     |  58 +++-
+ drivers/net/usb/qmi_wwan.c                         |   1 +
+ drivers/net/wireless/intel/iwlegacy/4965-rs.c      |   5 +-
+ drivers/net/wireless/mac80211_hwsim.c              |   7 +-
+ .../net/wireless/mediatek/mt76/mt7921/pci_mac.c    |   2 +-
+ drivers/net/wireless/microchip/wilc1000/netdev.h   |   1 +
+ drivers/net/wireless/microchip/wilc1000/sdio.c     |  39 ++-
+ drivers/net/wireless/microchip/wilc1000/wlan.c     |  15 +-
+ drivers/net/xen-netback/xenbus.c                   |   2 +-
+ fs/afs/flock.c                                     |   2 +-
+ fs/afs/fsclient.c                                  |   2 +-
+ fs/afs/internal.h                                  |   3 +-
+ fs/afs/rxrpc.c                                     |   7 +-
+ fs/afs/yfsclient.c                                 |   3 +-
+ include/linux/ieee80211.h                          |   8 +-
+ include/linux/skbuff.h                             |  21 ++
+ include/linux/udp.h                                |   1 +
+ include/net/af_rxrpc.h                             |   2 -
+ include/net/dropreason.h                           |  67 +++++
+ include/net/netfilter/nf_conntrack.h               |   2 -
+ include/net/netns/conntrack.h                      |   1 -
+ include/net/udp_tunnel.h                           |   4 +
+ include/trace/events/skb.h                         |  15 +-
+ net/bluetooth/hci_sync.c                           |  12 +-
+ net/bridge/br_netfilter_hooks.c                    |   2 +
+ net/bridge/br_netfilter_ipv6.c                     |   1 +
+ net/core/.gitignore                                |   1 -
+ net/core/Makefile                                  |  22 +-
+ net/core/datagram.c                                |   2 +-
+ net/core/skbuff.c                                  |   6 +-
+ net/ipv4/tcp.c                                     |   2 +-
+ net/ipv4/tcp_input.c                               |  25 +-
+ net/ipv4/udp.c                                     |   2 +
+ net/ipv4/udp_tunnel_core.c                         |   1 +
+ net/ipv6/addrconf.c                                |   8 +-
+ net/ipv6/seg6.c                                    |   5 +
+ net/ipv6/udp.c                                     |   5 +-
+ net/mac80211/mlme.c                                |  12 +-
+ net/mac80211/rx.c                                  |   4 +
+ net/mac80211/wpa.c                                 |   4 +-
+ net/netfilter/nf_conntrack_core.c                  |   7 +-
+ net/netfilter/nf_conntrack_helper.c                |  80 +-----
+ net/netfilter/nf_conntrack_irc.c                   |   5 +-
+ net/netfilter/nf_conntrack_netlink.c               |   5 -
+ net/netfilter/nf_conntrack_standalone.c            |  10 -
+ net/netfilter/nf_tables_api.c                      |   4 +-
+ net/netfilter/nft_ct.c                             |   3 -
+ net/rxrpc/ar-internal.h                            |   1 +
+ net/rxrpc/call_event.c                             |   2 +-
+ net/rxrpc/local_object.c                           |   4 +
+ net/rxrpc/peer_event.c                             | 293 ++++++++++++++++++---
+ net/rxrpc/recvmsg.c                                |  43 ---
+ net/rxrpc/rxkad.c                                  |   2 +-
+ net/sched/sch_sfb.c                                |  13 +-
+ net/smc/smc_core.c                                 |   1 +
+ net/smc/smc_core.h                                 |   2 +
+ net/smc/smc_wr.c                                   |   5 +
+ net/smc/smc_wr.h                                   |   5 +
+ net/tipc/monitor.c                                 |   2 +-
+ net/wireless/lib80211_crypt_ccmp.c                 |   2 +-
+ .../selftests/netfilter/nft_conntrack_helper.sh    |  36 ++-
+ 82 files changed, 913 insertions(+), 420 deletions(-)
+ delete mode 100644 net/core/.gitignore
 
