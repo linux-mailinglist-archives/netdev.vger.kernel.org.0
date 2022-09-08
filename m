@@ -2,77 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 65D605B2404
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 18:56:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD2215B2445
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 19:17:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230019AbiIHQ4B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 12:56:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57614 "EHLO
+        id S229811AbiIHRRV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 13:17:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231660AbiIHQzc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 12:55:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 032EFEA616
-        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 09:54:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662656030;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jM/4652ZU+ilVOa2VHytxd0Y/6mr00fBnuvbs8bYj04=;
-        b=N8naxf9JavYeVUGKh/aLgW2vI18i0xpDzM3mO0K5cVIvfsC9/38ooWG3w5XNpfHY4R4F3Z
-        1asl/JPUoXwoxxoMM/6zDNs9BlOVc9QbqpAWkMJLNNiDet4P93Zcf3AdSWnr1moZeApDsR
-        jdqvjJdWFcABmVrDtTIzsx8INrk2CfU=
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com
- [209.85.166.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-660-uSHQjH_WOFWBHxQ98p_TaQ-1; Thu, 08 Sep 2022 12:53:49 -0400
-X-MC-Unique: uSHQjH_WOFWBHxQ98p_TaQ-1
-Received: by mail-io1-f70.google.com with SMTP id c2-20020a6bec02000000b00689b26e92f0so11654931ioh.6
-        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 09:53:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=jM/4652ZU+ilVOa2VHytxd0Y/6mr00fBnuvbs8bYj04=;
-        b=R8Rlp7l4WjycKp7xBknTje4aRxw6brZkplK0KPJ8jkGy1P4zBKQpuEIZT7qdUcf6En
-         //BMg5hzv7FlLqa0LQ7CeO1sL719X2oioSS48/vyktwAT5usCkHPfL2yvMjmG1DZ/dqr
-         KOQ9/LWW3BNAwltoSRBwm8QOhj3LD3/OwPvwZQfifHn25WCMIw8gCFubcwVC5RwrH4Qi
-         Ww4PTPVTFCRo9xU9u+3emLVNjFtb0p+N/FzH12akgYYRIzNZmcim3k3ldUoTuPiSYCDg
-         CFeetjjRBrrS/8fkg1+r2JJH11q1ttpSKFOKU5xs7QuqVteZ9JeOPHjskUtjthwz6Lp9
-         uwFQ==
-X-Gm-Message-State: ACgBeo3ZuKKFBPeKS38W+0MdUSvkkkHXZ40L4gLYyrS3TfCqI9eAivpK
-        YWL8St82kOr7pqwVEmthcnzDfiu6f811XbrNJKrXCYPy3Hg/IP36l+TS5WW4YglD0sjf2U7a4Au
-        1t1jRx/AZ2UzLA5cc
-X-Received: by 2002:a05:6602:2c95:b0:689:e4e2:2c02 with SMTP id i21-20020a0566022c9500b00689e4e22c02mr4502050iow.94.1662656027337;
-        Thu, 08 Sep 2022 09:53:47 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4C0Z1a3e1j36Z0x3OLIC8ipRTXLsZlmpzmGPoLTlCAR7z8o7PJmPC/zPVvPBR23LI13B82fg==
-X-Received: by 2002:a05:6602:2c95:b0:689:e4e2:2c02 with SMTP id i21-20020a0566022c9500b00689e4e22c02mr4502042iow.94.1662656027114;
-        Thu, 08 Sep 2022 09:53:47 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id g8-20020a92d7c8000000b002e67267b4bfsm1025299ilq.70.2022.09.08.09.53.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Sep 2022 09:53:46 -0700 (PDT)
-Date:   Thu, 8 Sep 2022 10:53:45 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     saeedm@nvidia.com, kvm@vger.kernel.org, netdev@vger.kernel.org,
-        kuba@kernel.org, kevin.tian@intel.com, joao.m.martins@oracle.com,
-        yishaih@nvidia.com, maorg@nvidia.com, cohuck@redhat.com
-Subject: Re: [GIT PULL] Please pull mlx5 vfio changes
-Message-ID: <20220908105345.28da7c98.alex.williamson@redhat.com>
-In-Reply-To: <YxmMMR3u1VRedWdK@unreal>
-References: <20220907094344.381661-1-leon@kernel.org>
-        <20220907132119.447b9219.alex.williamson@redhat.com>
-        <YxmMMR3u1VRedWdK@unreal>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
+        with ESMTP id S229455AbiIHRRU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 13:17:20 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC9FACAC78
+        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 10:17:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662657439; x=1694193439;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=V2YsRguj/UCTTl115hMydgNCtYK9SKQ/6WZTsWru+U0=;
+  b=Lz0wrUxZA9Qt7rcJH4+NNyorIpViMkAK8ZepsQMxHlSXgCTXdSZbd70N
+   ypsL6gyO4b7XcJbkG7qMbjt4TPS5rjFkE+wQCkhttft8g8Nf1X/2A7rcq
+   rWiF00l/5dZzYTYGnUNMa2pB8NiDP5otOa6oeW0A2/CY0bCheD0GnrlTR
+   n4rxOE0SikF0WsLq9lDZtBv260u1QMHDb4QuTR2goYxNRDZxQXscfYTmK
+   EyvvZtsPFAMmBo0VGaPXq4xgYmmUQe4fOtKsLExFC0Q3DYnhuxik3kaGJ
+   PbtM23vcu22geBQDcm9q5A1GgEyGj4v3WCnzQvS1W3JJ536EgrD3tZVpQ
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10464"; a="297267558"
+X-IronPort-AV: E=Sophos;i="5.93,300,1654585200"; 
+   d="scan'208";a="297267558"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Sep 2022 10:16:55 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,300,1654585200"; 
+   d="scan'208";a="860117809"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by fmsmga006.fm.intel.com with ESMTP; 08 Sep 2022 10:16:54 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        wojciech.drewek@intel.com, simon.horman@corigine.com,
+        kurt@linutronix.de, komachi.yoshiki@gmail.com,
+        jchapman@katalix.com, boris.sukholitko@broadcom.com,
+        louis.peens@corigine.com, gnault@redhat.com, vladbu@nvidia.com,
+        pablo@netfilter.org, baowen.zheng@corigine.com,
+        maksym.glubokiy@plvision.eu, jiri@resnulli.us, paulb@nvidia.com,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com
+Subject: [PATCH net-next v1 0/5][pull request] ice: L2TPv3 offload support
+Date:   Thu,  8 Sep 2022 10:16:39 -0700
+Message-Id: <20220908171644.1282191-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -81,42 +64,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 8 Sep 2022 09:31:13 +0300
-Leon Romanovsky <leon@kernel.org> wrote:
+Wojciech Drewek says:
 
-> On Wed, Sep 07, 2022 at 01:21:19PM -0600, Alex Williamson wrote:
-> > On Wed,  7 Sep 2022 12:43:44 +0300
-> > Leon Romanovsky <leon@kernel.org> wrote:
-> >   
-> > > Hi Alex,
-> > > 
-> > > This series is based on clean 6.0-rc4 as such it causes to two small merge
-> > > conficts whis vfio-next. One is in thrird patch where you should take whole
-> > > chunk for include/uapi/linux/vfio.h as is. Another is in vfio_main.c around
-> > > header includes, which you should take too.  
-> > 
-> > Is there any reason you can't provide a topic branch for the two
-> > net/mlx5 patches and the remainder are rebased and committed through
-> > the vfio tree?    
-> 
-> You added your Acked-by to vfio/mlx5 patches and for me it is a sign to
-> prepare clean PR with whole series.
-> 
-> I reset mlx5-vfio topic to have only two net/mlx5 commits without
-> special tag.
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/mellanox/linux.git topic/mlx5-vfio
-> Everything else can go directly to your tree without my intervention.
+Add support for dissecting L2TPv3 session id in flow dissector. Add support
+for this field in tc-flower and support offloading L2TPv3. Finally, add
+support for hardware offload of L2TPv3 packets based on session id in
+switchdev mode in ice driver.
 
-Sorry, I knew the intention initially was to send a PR and I didn't
-think about the conflicts we'd have versus the base you'd use.  Thanks
-for splitting this out, I think it'll make for a cleaner upstream path
-given the clear code split.
+Example filter:
+  # tc filter add dev $PF1 ingress prio 1 protocol ip \
+      flower \
+        ip_proto l2tp \
+        l2tpv3_sid 1234 \
+        skip_sw \
+      action mirred egress redirect dev $VF1_PR
 
-Yishai, can you post a v7 rebased on the vfio next branch?  The comment
-I requested is now ephemeral since it only existed in the commits Leon
-dropped.  Also feel free to drop my Acks since I'll add new Sign-offs.
-Thanks,
+Changes in iproute2 are required to use the new fields.
 
-Alex
+ICE COMMS DDP package is required to create a filter in ice.
+COMMS DDP package contains profiles of more advanced protocols.
+Without COMMS DDP package hw offload will not work, however
+sw offload will still work.
+---
+v1: fix typos
+
+From RFC:
+v2: rebase
+v3: refactor of __skb_flow_dissect_l2tpv3
+
+The following are changes since commit 75554fe00f941c3c3d9344e88708093a14d2b4b8:
+  net: sparx5: fix function return type to match actual type
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 100GbE
+
+Marcin Szycik (1):
+  ice: Add L2TPv3 hardware offload support
+
+Wojciech Drewek (4):
+  uapi: move IPPROTO_L2TP to in.h
+  flow_dissector: Add L2TPv3 dissectors
+  net/sched: flower: Add L2TPv3 filter
+  flow_offload: Introduce flow_match_l2tpv3
+
+ .../ethernet/intel/ice/ice_protocol_type.h    |  8 +++
+ drivers/net/ethernet/intel/ice/ice_switch.c   | 70 ++++++++++++++++++-
+ drivers/net/ethernet/intel/ice/ice_tc_lib.c   | 27 ++++++-
+ drivers/net/ethernet/intel/ice/ice_tc_lib.h   |  6 ++
+ include/net/flow_dissector.h                  |  9 +++
+ include/net/flow_offload.h                    |  6 ++
+ include/uapi/linux/in.h                       |  2 +
+ include/uapi/linux/l2tp.h                     |  2 -
+ include/uapi/linux/pkt_cls.h                  |  2 +
+ net/core/flow_dissector.c                     | 28 ++++++++
+ net/core/flow_offload.c                       |  7 ++
+ net/sched/cls_flower.c                        | 16 +++++
+ 12 files changed, 179 insertions(+), 4 deletions(-)
+
+-- 
+2.35.1
 
