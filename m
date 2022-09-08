@@ -2,183 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1118A5B25EF
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 20:36:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B06775B2691
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 21:13:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232214AbiIHSgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 14:36:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59350 "EHLO
+        id S229989AbiIHTNz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 15:13:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232154AbiIHSfw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 14:35:52 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2058.outbound.protection.outlook.com [40.107.93.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41B0BE917C;
-        Thu,  8 Sep 2022 11:35:51 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bXTz56kc/dTXWrIOme2nR8NEkJiABVSxHw8HY4VJ3pmNFJLIfdq+m5ldd39vG+IALI2wfrlAFBh/kw8ZaNTxmxMGUUVbY6G4uxBQ0TkrfIcWWqJAllNGXoqcOXBXqpficJnACaq0c0d5Rb7lOHcpiVVCInhUn2YBs0hoZKM5Lg6Gm0j4Nx8/ionbsOWzxrvBM3i4Qr1qMYEl1YH7xY7oPRMz2lVPnTTlOLnNBY663MamkSlXymwHjomSgUEoi0SUYYoh7w+teXs1aNhVkB4hqaWYRrg7rSboX31C743jfuG45xqs+cU0WF6V/vZD/iPG6VP0QQEbDJrzoVjPbV0Q9Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uE6sjx0oSA79BfIgkJVMlmUd3p6BL3oGNTJ2eCqwAtA=;
- b=VGG7vzWBeCkye0aGMcHdo3n7UgHnAXdNc0QEu4bzmqnOBd/i0rpJN+3garc6bPQDn71YGk3+VacUnTp5zqKFjmFCEcjHx5xdkPsCmF5JLFNu17SXQl1B4xkhG0s/cwRStYxPC9OBfjI+ugQno+sekBOIjTwZHOV3tcZ5mpbacFkgBRNSKvJVPHTqN9dyhy0G7gkH2T7YUp6f7Yb6ijQcobDDIzSiLXElFMKa+xvKZ+tK6r31HV7r9ayUxzp+Au5YqQT2qmDEDI4w3ArRb43NsYQMmPlTtWd5HnhWghwAMf4BZW7sUEeCijlJkiE/EVdIgIQPGVCnPOTfbCGD4uQUCw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com; dmarc=pass
- (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
- (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uE6sjx0oSA79BfIgkJVMlmUd3p6BL3oGNTJ2eCqwAtA=;
- b=SqgLQSbPzqm6f4H8XOz2352RSKOkSWJV3Tluasd2uOJ/GaagZ7led0YuR+mHsCn0ysVtwN5MO7H1uuoQS/jwZ8tk2quhSiAQVzaegH00xDF/z9Nt73mqtPN2U3x5MYVSRXLGWPn/8EMv3dkXZhhjDLYldGm1jW2QxVLx3IJfh74a/s0VQr9HC5vas6o3ZDIAzE1REsI/mw9IwPDOmQDJHkuXwg4QOW+hTvi6g0TRub7QBWREgxqbv23ZaNbTprQ586+k8TW3f2fvVvmArQ7H9YIBexJOxklVkLnsXCyxdYfM/LScsaveaqHZhwKffVMDFd0be7qud9/XMu/JImy30w==
-Received: from MW4PR04CA0091.namprd04.prod.outlook.com (2603:10b6:303:83::6)
- by PH0PR12MB5419.namprd12.prod.outlook.com (2603:10b6:510:e9::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.16; Thu, 8 Sep
- 2022 18:35:49 +0000
-Received: from CO1NAM11FT078.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:83:cafe::6c) by MW4PR04CA0091.outlook.office365.com
- (2603:10b6:303:83::6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.14 via Frontend
- Transport; Thu, 8 Sep 2022 18:35:49 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.235) by
- CO1NAM11FT078.mail.protection.outlook.com (10.13.175.177) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5612.13 via Frontend Transport; Thu, 8 Sep 2022 18:35:49 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by DRHQMAIL107.nvidia.com
- (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Thu, 8 Sep
- 2022 18:35:48 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Thu, 8 Sep 2022
- 11:35:47 -0700
-Received: from vdi.nvidia.com (10.127.8.10) by mail.nvidia.com (10.129.68.9)
- with Microsoft SMTP Server id 15.2.986.29 via Frontend Transport; Thu, 8 Sep
- 2022 11:35:44 -0700
-From:   Yishai Hadas <yishaih@nvidia.com>
-To:     <alex.williamson@redhat.com>, <jgg@nvidia.com>
-CC:     <saeedm@nvidia.com>, <kvm@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <kuba@kernel.org>,
-        <kevin.tian@intel.com>, <joao.m.martins@oracle.com>,
-        <leonro@nvidia.com>, <yishaih@nvidia.com>, <maorg@nvidia.com>,
-        <cohuck@redhat.com>
-Subject: [PATCH V7 vfio 10/10] vfio/mlx5: Set the driver DMA logging callbacks
-Date:   Thu, 8 Sep 2022 21:34:48 +0300
-Message-ID: <20220908183448.195262-11-yishaih@nvidia.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20220908183448.195262-1-yishaih@nvidia.com>
-References: <20220908183448.195262-1-yishaih@nvidia.com>
+        with ESMTP id S229437AbiIHTNx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 15:13:53 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F29CEE50E
+        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 12:13:52 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id bz13so24368780wrb.2
+        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 12:13:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20210112;
+        h=content-transfer-encoding:subject:from:to:content-language
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date;
+        bh=hXot5Yk4b8g9FLlGulknQtsPjQUxy/GicFei7aiKjsA=;
+        b=WlmlxSlg7llHhixPzp1MvspHgMpkGrMKj5rJ7CEh00Y89DOLiGiD7dIXzFTP461ajX
+         0Yqo8NQYzAQCbxivma7J2L2eiBetmOtn4ySmXtpM6LQ1DvAYtYl9Iw+K7v9QgSOiN1Eh
+         901ZQAyXSg75ChMf6PhdIU50XtHlRc0z9Mgch27mg7BNjNrX0a1zCDez5iCmrHsJcVO5
+         m9YkO2E3PsNVB5/XtypUZGvpGUgdwCeMwHd2U+kydZaScj2nCLB3CDn3WsOVEbNpdqBq
+         nxbsXmFgFKJUVHYlqYb1yC6rqb29Necg+ECWPvBr4nCDuBFI+NOXRwf/d4hAve+vEPu7
+         80pQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:subject:from:to:content-language
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date;
+        bh=hXot5Yk4b8g9FLlGulknQtsPjQUxy/GicFei7aiKjsA=;
+        b=kDURUwMLfFuDqFJVwECb2xKMGwNavqC5gCltbfErZmI4EEBECY1QNK4QBmqq09sO4X
+         5Zf2VI5VMkH6PzAJPrUfBo51aQvUqvAIcaqIKsz6Qeh8h1vYGkC+ziNZ0C+PYosJW2Bh
+         hs9KL/ydXPoGH795/zwhQt9NZWiW+i7SiKSBRukZFXXNex+EuSHRO99V+8ysGb3QcDfP
+         q4yERg7Iw43AAAp0qyQsB6osXpN2b4k+VFZWdU9SM1swXIkQXxwJr+W6GXheSfr+cM6L
+         Fw+HqgYgcxhtz9I8Q3bDXNxQtZALbha81EcPK3r5TG5gorFkq8PlyMb758AagNozPNnx
+         20xA==
+X-Gm-Message-State: ACgBeo0Kl/A1EiurLL+Cz0CQGT36LqR3q5iThc8CLzTuzf0utG3Bn6PZ
+        9UK1nglZR6oyuqSqSOf620DolKBFNFY=
+X-Google-Smtp-Source: AA6agR5zshfpQJCrBzvsGyI4/pHABHauGCzlVdGxmttyZu7arKxg2OD4giGDrhOkO708P0Vm9BXG8g==
+X-Received: by 2002:adf:fa12:0:b0:228:62a8:7c79 with SMTP id m18-20020adffa12000000b0022862a87c79mr5882070wrr.231.1662664430754;
+        Thu, 08 Sep 2022 12:13:50 -0700 (PDT)
+Received: from [192.168.1.10] (2e41ab4c.skybroadband.com. [46.65.171.76])
+        by smtp.googlemail.com with ESMTPSA id o5-20020a05600c510500b003a31fd05e0fsm13464876wms.2.2022.09.08.12.13.49
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 08 Sep 2022 12:13:49 -0700 (PDT)
+Message-ID: <e5d757d7-69bc-a92a-9d19-0f7ed0a81743@googlemail.com>
+Date:   Thu, 8 Sep 2022 20:13:47 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT078:EE_|PH0PR12MB5419:EE_
-X-MS-Office365-Filtering-Correlation-Id: c3bcc088-9880-4401-63e9-08da91c8f387
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: L0osUvJovlBl0ydftER/7Z86efzpLfP/Bq5qLtD+NvVVLxXDfPnjgEHuNXrowleDzu+G/JC2i/6R0TCDXwC9tOUbZbkBU41Ij2MBo7YzaAgg0i6vnspGeC1EQpx2n9w9OwouLYa+DgiMBTCEJQ2a0OUMYEhUYLrayQr7Y1KJUGJ3kK+1fYat0oRsCSCCBTunDG+6xmCbtnp8MdO4fPZiTbyEHVn3mezI6A31/GavN4oPOqIxtwrH73i7gjcUxKHWgtY0kfFPk1mdQnsrRQ21y2osrGTFE+je6doVpssmi/I65FzJvQx/tSxCOXgR4sbr8V9sHLUKxNT9phkH1S/csWv82zXuRDu4n4rRHxFc9dftzJ0ue7cP/GvtQQvU0T4s1pQhq8TpoX4KvWNzj9eIaci7KhUFYMMuW6TW9UOzBKKvSJuiIGxz2yh1fEcPvTnwtrkZEEv2T1PhSmMiVQo18+LyjNhfBaaj9dJP0w8dgbP4g8y+Huy2cQhHU94Paba4YLYNCwSRBMKMQsOkNCT3pRUNqvQBirShr6Z/voS2sXTEtwSbMePJGwcJ5B1+UQEOioRIDzJ39m5F3gY/NwDNy3la4MMVugSWx96QHDXxIIz5pLnxbpZ02HR9KJhk20iZ4yjk3OM39W1hFVh6Vq7FAsT7ooPdpqsLhMRQZmmJxA3chSE/XOaKBYkg2RmEcKAT0SAFqog8zBX2LMiSAQcGtcfBCaO0xQe1mgNb72f+TdPmS3kPbGdQqI9LMlhQZgoEEngl3AJdqdd+hbpSOmLuM22jjOXXf5vk39RwFV/0WqnB7vebrBs+9WnbU1uN3hJj
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(376002)(136003)(39860400002)(396003)(346002)(46966006)(36840700001)(40470700004)(478600001)(81166007)(26005)(356005)(36860700001)(7696005)(41300700001)(426003)(83380400001)(47076005)(186003)(6636002)(1076003)(336012)(2616005)(82740400003)(8936002)(8676002)(70586007)(4326008)(86362001)(70206006)(40480700001)(82310400005)(36756003)(2906002)(54906003)(316002)(110136005)(5660300002)(40460700003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Sep 2022 18:35:49.0319
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: c3bcc088-9880-4401-63e9-08da91c8f387
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT078.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB5419
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Content-Language: en-GB
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Chris Clayton <chris2553@googlemail.com>
+Subject: b118509076b3 (probably) breaks my firewall
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that everything is ready set the driver DMA logging callbacks if
-supported by the device.
+Just a heads up and a question...
 
-Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
----
- drivers/vfio/pci/mlx5/cmd.c  | 5 ++++-
- drivers/vfio/pci/mlx5/cmd.h  | 3 ++-
- drivers/vfio/pci/mlx5/main.c | 9 ++++++++-
- 3 files changed, 14 insertions(+), 3 deletions(-)
+I've pulled the latest and greatest from Linus' tree and built and installed the kernel. git describe gives
+v6.0-rc4-126-g26b1224903b3.
 
-diff --git a/drivers/vfio/pci/mlx5/cmd.c b/drivers/vfio/pci/mlx5/cmd.c
-index 3e92b4d92be2..c604b70437a5 100644
---- a/drivers/vfio/pci/mlx5/cmd.c
-+++ b/drivers/vfio/pci/mlx5/cmd.c
-@@ -126,7 +126,8 @@ void mlx5vf_cmd_remove_migratable(struct mlx5vf_pci_core_device *mvdev)
- }
- 
- void mlx5vf_cmd_set_migratable(struct mlx5vf_pci_core_device *mvdev,
--			       const struct vfio_migration_ops *mig_ops)
-+			       const struct vfio_migration_ops *mig_ops,
-+			       const struct vfio_log_ops *log_ops)
- {
- 	struct pci_dev *pdev = mvdev->core_device.pdev;
- 	int ret;
-@@ -169,6 +170,8 @@ void mlx5vf_cmd_set_migratable(struct mlx5vf_pci_core_device *mvdev,
- 		VFIO_MIGRATION_P2P;
- 	mvdev->core_device.vdev.mig_ops = mig_ops;
- 	init_completion(&mvdev->tracker_comp);
-+	if (MLX5_CAP_GEN(mvdev->mdev, adv_virtualization))
-+		mvdev->core_device.vdev.log_ops = log_ops;
- 
- end:
- 	mlx5_vf_put_core_dev(mvdev->mdev);
-diff --git a/drivers/vfio/pci/mlx5/cmd.h b/drivers/vfio/pci/mlx5/cmd.h
-index 8b0ae40c620c..921d5720a1e5 100644
---- a/drivers/vfio/pci/mlx5/cmd.h
-+++ b/drivers/vfio/pci/mlx5/cmd.h
-@@ -118,7 +118,8 @@ int mlx5vf_cmd_resume_vhca(struct mlx5vf_pci_core_device *mvdev, u16 op_mod);
- int mlx5vf_cmd_query_vhca_migration_state(struct mlx5vf_pci_core_device *mvdev,
- 					  size_t *state_size);
- void mlx5vf_cmd_set_migratable(struct mlx5vf_pci_core_device *mvdev,
--			       const struct vfio_migration_ops *mig_ops);
-+			       const struct vfio_migration_ops *mig_ops,
-+			       const struct vfio_log_ops *log_ops);
- void mlx5vf_cmd_remove_migratable(struct mlx5vf_pci_core_device *mvdev);
- void mlx5vf_cmd_close_migratable(struct mlx5vf_pci_core_device *mvdev);
- int mlx5vf_cmd_save_vhca_state(struct mlx5vf_pci_core_device *mvdev,
-diff --git a/drivers/vfio/pci/mlx5/main.c b/drivers/vfio/pci/mlx5/main.c
-index a9b63d15c5d3..759a5f5f7b3f 100644
---- a/drivers/vfio/pci/mlx5/main.c
-+++ b/drivers/vfio/pci/mlx5/main.c
-@@ -579,6 +579,12 @@ static const struct vfio_migration_ops mlx5vf_pci_mig_ops = {
- 	.migration_get_state = mlx5vf_pci_get_device_state,
- };
- 
-+static const struct vfio_log_ops mlx5vf_pci_log_ops = {
-+	.log_start = mlx5vf_start_page_tracker,
-+	.log_stop = mlx5vf_stop_page_tracker,
-+	.log_read_and_clear = mlx5vf_tracker_read_and_clear,
-+};
-+
- static const struct vfio_device_ops mlx5vf_pci_ops = {
- 	.name = "mlx5-vfio-pci",
- 	.open_device = mlx5vf_pci_open_device,
-@@ -602,7 +608,8 @@ static int mlx5vf_pci_probe(struct pci_dev *pdev,
- 	if (!mvdev)
- 		return -ENOMEM;
- 	vfio_pci_core_init_device(&mvdev->core_device, pdev, &mlx5vf_pci_ops);
--	mlx5vf_cmd_set_migratable(mvdev, &mlx5vf_pci_mig_ops);
-+	mlx5vf_cmd_set_migratable(mvdev, &mlx5vf_pci_mig_ops,
-+				  &mlx5vf_pci_log_ops);
- 	dev_set_drvdata(&pdev->dev, &mvdev->core_device);
- 	ret = vfio_pci_core_register_device(&mvdev->core_device);
- 	if (ret)
--- 
-2.18.1
+I find that my firewall is broken because /proc/sys/net/netfilter/nf_conntrack_helper no longer exists. It existed on an
+-rc4 kernel. Are changes like this supposed to be introduced at this stage of the -rc cycle?
 
+I'd like to revert the change and see if it fixes things, but I'm tied up for the next 10 days.
+
+Chris
