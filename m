@@ -2,83 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C64845B1FDD
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 15:59:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 045325B1FF1
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 16:00:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232446AbiIHN71 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 09:59:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59650 "EHLO
+        id S232634AbiIHOAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 10:00:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232444AbiIHN7G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 09:59:06 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13D9B1316F0;
-        Thu,  8 Sep 2022 06:58:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-        bh=F+/Dxjohl88DP9zeW/Xq+d0mtw7wj+FfyyXk6EaZSa8=; b=URjDC6QafAo8lH5tx9N07vvvRg
-        7U/2jNIrM6zD2kAmhisaZZcqoycHrpRbj0oE3acueFAa5SVqP8WHnqRJAz+QEl9qHGRkEWD2fZTQE
-        HjbbYmKLWkebzrfHQoNE/5kl2Yc+uY5rgC3HFhmPVVLTl8sYAOF1BQW+Wd5XFcqTuBrvHx+g5xT8r
-        +XdVKx1WlcaLrSRYfwE1phdKUIo8XYGvzHA1V9rGlihPu2A9jSkiiQaY9BuQjN13pUWXAY73Fwabp
-        EqAPnHXI1drft5hKgKcYpqDCHS0n9IKMxdoxpTzg2EQQxxkUOjVhYhI9HVF814Xdwc5/WwyarCWNn
-        uALq/oEw==;
-Received: from [2601:1c0:6280:3f0::a6b3]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oWI2Z-004Gmq-L3; Thu, 08 Sep 2022 13:57:59 +0000
-Message-ID: <f76d0607-4753-3131-3b09-9d2ef4b3a60f@infradead.org>
-Date:   Thu, 8 Sep 2022 06:57:58 -0700
+        with ESMTP id S232349AbiIHOAI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 10:00:08 -0400
+Received: from frasgout12.his.huawei.com (frasgout12.his.huawei.com [14.137.139.154])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82B93F5BA;
+        Thu,  8 Sep 2022 06:59:34 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.18.147.228])
+        by frasgout12.his.huawei.com (SkyGuard) with ESMTP id 4MNgcW0HfGz9y62N;
+        Thu,  8 Sep 2022 21:55:23 +0800 (CST)
+Received: from roberto-ThinkStation-P620 (unknown [10.204.63.22])
+        by APP1 (Coremail) with SMTP id LxC2BwDn3pIh9RljLSYwAA--.49581S2;
+        Thu, 08 Sep 2022 14:59:10 +0100 (CET)
+Message-ID: <8d7a713e500b5e3fce93e4c5c7b8841eb6dd28e4.camel@huaweicloud.com>
+Subject: Re: [PATCH 1/7] bpf: Add missing fd modes check for map iterators
+From:   Roberto Sassu <roberto.sassu@huaweicloud.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Mykola Lysenko <mykolal@fb.com>, Shuah Khan <shuah@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        "open list:CONTROL GROUP (CGROUP)" <cgroups@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Hou Tao <houtao1@huawei.com>,
+        Roberto Sassu <roberto.sassu@huawei.com>,
+        stable <stable@vger.kernel.org>, Chenbo Feng <fengc@google.com>,
+        LSM List <linux-security-module@vger.kernel.org>
+Date:   Thu, 08 Sep 2022 15:58:53 +0200
+In-Reply-To: <CAADnVQ+cEM5Sb7d9yPA72Mp2zimx7VZ5Si3SPVdAZgsdFGpP1Q@mail.gmail.com>
+References: <20220906170301.256206-1-roberto.sassu@huaweicloud.com>
+         <20220906170301.256206-2-roberto.sassu@huaweicloud.com>
+         <CAADnVQ+o8zyi_Z+XqCQynmvj04AtEtF9AoOTSeyUx9dvKTXOqg@mail.gmail.com>
+         <02309cfbc1ce47f7de6be8addc2caa315b1fee1b.camel@huaweicloud.com>
+         <CAADnVQ+cEM5Sb7d9yPA72Mp2zimx7VZ5Si3SPVdAZgsdFGpP1Q@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5-0ubuntu1 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Subject: Re: [PATCH] mellanox/mlxsw: fix repeated words in comments
-Content-Language: en-US
-To:     wangjianli <wangjianli@cdjrlc.com>, idosch@nvidia.com,
-        petrm@nvidia.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220908124350.22861-1-wangjianli@cdjrlc.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220908124350.22861-1-wangjianli@cdjrlc.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-CM-TRANSID: LxC2BwDn3pIh9RljLSYwAA--.49581S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxWr4rJw17tF18ZF47Xr15twb_yoWrAFy3pF
+        Z3tryxtr1kZFW7Za9Y9F48WFWFy3srAasrAF1DJryUAFWkXr1vkr1xta1fXasIyFyrX3WS
+        y3yYk348Xa4UXaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkjb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
+        6cxKx2IYs7xG6r1S6rWUM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
+        vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7Cj
+        xVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIEc7CjxV
+        AFwI0_Gr0_Gr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40E
+        x7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x
+        0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkIwI1l42xK82IYc2Ij
+        64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x
+        8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r4a6rW5MIIYrxkI7VAKI48JMIIF0xvE
+        2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42
+        xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIE
+        c7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07UAkuxUUUUU=
+X-CM-SenderInfo: purev21wro2thvvxqx5xdzvxpfor3voofrz/1tbiAgAJBF1jj37gqQAAsJ
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 9/8/22 05:43, wangjianli wrote:
-> Delete the redundant word 'in'.
+On Wed, 2022-09-07 at 09:02 -0700, Alexei Starovoitov wrote:
 > 
-> Signed-off-by: wangjianli <wangjianli@cdjrlc.com>
-> ---
->  drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+
+[...]
+
+> > Well, if you write a security module to prevent writes on a map,
+> > and
+> > user space is able to do it anyway with an iterator, what is the
+> > purpose of the security module then?
 > 
-> diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-> index 2c4443c6b964..48f1fa62a4fd 100644
-> --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-> +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-> @@ -1819,7 +1819,7 @@ void mlxsw_sp_ipip_entry_demote_tunnel(struct mlxsw_sp *mlxsw_sp,
->  /* The configuration where several tunnels have the same local address in the
->   * same underlay table needs special treatment in the HW. That is currently not
->   * implemented in the driver. This function finds and demotes the first tunnel
-> - * with a given source address, except the one passed in in the argument
-> + * with a given source address, except the one passed in the argument
+> sounds like a broken "security module" and nothing else.
 
-Yeah, either way is OK.
+Ok, if a custom security module does not convince you, let me make a
+small example with SELinux.
 
->   * `except'.
->   */
->  bool
+I created a small map iterator that sets every value of a map to 5:
 
--- 
-~Randy
+SEC("iter/bpf_map_elem")
+int write_bpf_hash_map(struct bpf_iter__bpf_map_elem *ctx)
+{
+	u32 *key = ctx->key;
+	u8 *val = ctx->value;
+
+	if (key == NULL || val == NULL)
+		return 0;
+
+	*val = 5;
+	return 0;
+}
+
+I create and pin a map:
+
+# bpftool map create /sys/fs/bpf/map type array key 4 value 1 entries 1
+name test
+
+Initially, the content of the map looks like:
+
+# bpftool map dump pinned /sys/fs/bpf/map 
+key: 00 00 00 00  value: 00
+Found 1 element
+
+I then created a new SELinux type bpftool_test_t, which has only read
+permission on maps:
+
+# sesearch -A -s bpftool_test_t -t unconfined_t -c bpf
+allow bpftool_test_t unconfined_t:bpf map_read;
+
+So, what I expect is that this type is not able to write to the map.
+
+Indeed, the current bpftool is not able to do it:
+
+# strace -f -etrace=bpf runcon -t bpftool_test_t bpftool iter pin
+writer.o /sys/fs/bpf/iter map pinned /sys/fs/bpf/map
+bpf(BPF_OBJ_GET, {pathname="/sys/fs/bpf/map", bpf_fd=0, file_flags=0},
+144) = -1 EACCES (Permission denied)
+Error: bpf obj get (/sys/fs/bpf): Permission denied
+
+This happens because the current bpftool requests to access the map
+with read-write permission, and SELinux denies it:
+
+# cat /var/log/audit/audit.log|audit2allow
+
+
+#============= bpftool_test_t ==============
+allow bpftool_test_t unconfined_t:bpf map_write;
+
+
+The command failed, and the content of the map is still:
+
+# bpftool map dump pinned /sys/fs/bpf/map 
+key: 00 00 00 00  value: 00
+Found 1 element
+
+
+Now, what I will do is to use a slightly modified version of bpftool
+which requests read-only access to the map instead:
+
+# strace -f -etrace=bpf runcon -t bpftool_test_t ./bpftool iter pin
+writer.o /sys/fs/bpf/iter map pinned /sys/fs/bpf/map
+bpf(BPF_OBJ_GET, {pathname="/sys/fs/bpf/map", bpf_fd=0,
+file_flags=BPF_F_RDONLY}, 16) = 3
+libbpf: elf: skipping unrecognized data section(5) .eh_frame
+libbpf: elf: skipping relo section(6) .rel.eh_frame for section(5)
+.eh_frame
+
+...
+
+bpf(BPF_LINK_CREATE, {link_create={prog_fd=4, target_fd=0,
+attach_type=BPF_TRACE_ITER, flags=0}, ...}, 48) = 5
+bpf(BPF_OBJ_PIN, {pathname="/sys/fs/bpf/iter", bpf_fd=5, file_flags=0},
+16) = 0
+
+That worked, because SELinux grants read-only permission to
+bpftool_test_t. However, the map iterator does not check how the fd was
+obtained, and thus allows the iterator to be created.
+
+At this point, we have write access, despite not having the right to do
+it:
+
+# cat /sys/fs/bpf/iter
+# bpftool map dump pinned /sys/fs/bpf/map 
+key: 00 00 00 00  value: 05
+Found 1 element
+
+The iterator updated the map value.
+
+
+The patch I'm proposing checks how the map fd was obtained, and if its
+modes are compatible with the operations an attached program is allowed
+to do. If the fd does not have the required modes, eBPF denies the
+creation of the map iterator.
+
+After patching the kernel, I try to run the modified bpftool again:
+
+# strace -f -etrace=bpf runcon -t bpftool_test_t ./bpftool iter pin
+writer.o /sys/fs/bpf/iter map pinned /sys/fs/bpf/map
+bpf(BPF_OBJ_GET, {pathname="/sys/fs/bpf/map", bpf_fd=0,
+file_flags=BPF_F_RDONLY}, 16) = 3
+libbpf: elf: skipping unrecognized data section(5) .eh_frame
+libbpf: elf: skipping relo section(6) .rel.eh_frame for section(5)
+.eh_frame
+
+...
+
+bpf(BPF_LINK_CREATE, {link_create={prog_fd=4, target_fd=0,
+attach_type=BPF_TRACE_ITER, flags=0}, ...}, 48) = -1 EPERM (Operation
+not permitted)
+libbpf: prog 'write_bpf_hash_map': failed to attach to iterator:
+Operation not permitted
+Error: attach_iter failed for program write_bpf_hash_map
+
+The map iterator cannot be created and the map is not updated:
+
+# bpftool map dump pinned /sys/fs/bpf/map 
+key: 00 00 00 00  value: 00
+Found 1 element
+
+Roberto
+
