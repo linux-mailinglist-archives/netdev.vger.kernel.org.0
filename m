@@ -2,83 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 66BA95B1B7B
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 13:32:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7F0D5B1B93
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 13:35:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231366AbiIHLcS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 07:32:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60694 "EHLO
+        id S231486AbiIHLfX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 07:35:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231249AbiIHLcQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 07:32:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5793CEB31
-        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 04:32:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662636733;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gkJqLIEodaigCyDyu25qqM08BkWZq831iBlo9xS/2rU=;
-        b=SIDwodXmytZIYMSzNcBHV01mtuY0178TktxwiqPVIc6YyCHHv4CXn2tD6lFIDtaMIeIT0+
-        cPxvDGLqzG9FM5SCzS1hYQXSXqaFIoOPmziOKwSrTAttwrd0FcIPoyGyyaaWS0KVaktxNt
-        xbJix86zS1W1v/hLeXCZWOsawgxq9gg=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-657-Frd59t5ONtCSwVc7jY6-Ig-1; Thu, 08 Sep 2022 07:32:12 -0400
-X-MC-Unique: Frd59t5ONtCSwVc7jY6-Ig-1
-Received: by mail-qv1-f70.google.com with SMTP id y7-20020ad45307000000b004ac7fd46495so595587qvr.23
-        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 04:32:12 -0700 (PDT)
+        with ESMTP id S231420AbiIHLfG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 07:35:06 -0400
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D2032042
+        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 04:35:02 -0700 (PDT)
+Received: by mail-lj1-x22c.google.com with SMTP id y29so6926364ljq.7
+        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 04:35:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=rGbehmmbFjGdP39Tva2lX3JsZ3RKZXRTihQXkTFVj0Y=;
+        b=u6D+fKJ2Lhfyp6EpZaftp621lBz6Wd859kwOBiqFQ3lUxvV9CWJbk8wOUpHBKAnWOJ
+         Ay19wrgdZbZWV7IS7+EwTdDnyzs1gQo+vI4ToLdDyGdhHkq1VlOwt7MAYkg9PE1lU6qo
+         F16V9/sqUWF0TWbcg/8py5MBiAGP+i7UlE06Zvuba3U2XsCSkq0BGs6XNK1XPEcmncx3
+         j5w4fQ2F/4zInUlUf2dTKh4Myma9gGm+JZNaFR8GdOtrtDQwJ1WGRKxb5AUbN+YFwZap
+         w16k9HfAxB5IseMpsnbuKf1KdTr3ZczXUc4GMFHag3eMo9Kbo/zinntSpaM1kmLh/0h9
+         UmPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=gkJqLIEodaigCyDyu25qqM08BkWZq831iBlo9xS/2rU=;
-        b=65Rj2TgFQILtcGQ7dNzyuk3T382s13ndR7CLi4oU87iH5f6hQOhFNI2qHx3OEqtgnu
-         HLRR7vrwP4/k4wQZ+WKH7Vp/BryTqldRSHohqdrdjp+dVf8VPT1efNBSnN9Ig9NMkIZ3
-         5vMqDswX1/d6ZxNrrW319UT+CCqbC5xI8lZ8fQAXYZCxYzl2RbGuedZ5nTkaDNqckbBh
-         POFEbJ7aAOCG7ZW5fEhKoBzbrzwA7QlVX/VDM9triEP7rkur4o3tHSCPqPNtN96qUeJV
-         xz8Mj8sJPBMzozHn88c3YcnmPYcwpv4zdFhQFO2zzi7W+HF2cJJq6FtcCwmUIFnwNNDp
-         D0Kg==
-X-Gm-Message-State: ACgBeo3JvTZSZDzFYeB8ipbpPmxwupYbKzsXCrm45UEXic1+nCfaSVDk
-        HYVtIXjzdzpcLzGaV+/1rjDO7h840oVfePR4gsPYqcFO/20em0aw+r+HufkT0Qyn2hdWaUVKN7P
-        +SMxiOPbJTprU2CbP
-X-Received: by 2002:a05:622a:1ba0:b0:343:f90e:f90c with SMTP id bp32-20020a05622a1ba000b00343f90ef90cmr7631575qtb.184.1662636732128;
-        Thu, 08 Sep 2022 04:32:12 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7KwyO4DPYlmtZuNDkOE4HnlW2p/NDAxYgqGD/kryPelOfqqk73z0RnOhdubSwvyXaDILa0+g==
-X-Received: by 2002:a05:622a:1ba0:b0:343:f90e:f90c with SMTP id bp32-20020a05622a1ba000b00343f90ef90cmr7631551qtb.184.1662636731878;
-        Thu, 08 Sep 2022 04:32:11 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-119-112.dyn.eolo.it. [146.241.119.112])
-        by smtp.gmail.com with ESMTPSA id 192-20020a3708c9000000b006b60d5a7205sm16002987qki.51.2022.09.08.04.32.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Sep 2022 04:32:11 -0700 (PDT)
-Message-ID: <6567eac7c42fe05b9091e9c8e99b519207111f25.camel@redhat.com>
-Subject: Re: [PATCH net-next v4 2/6] net: dsa: Add convenience functions for
- frame handling
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Mattias Forsblad <mattias.forsblad@gmail.com>,
-        netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Date:   Thu, 08 Sep 2022 13:32:08 +0200
-In-Reply-To: <20220906063450.3698671-3-mattias.forsblad@gmail.com>
-References: <20220906063450.3698671-1-mattias.forsblad@gmail.com>
-         <20220906063450.3698671-3-mattias.forsblad@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=rGbehmmbFjGdP39Tva2lX3JsZ3RKZXRTihQXkTFVj0Y=;
+        b=wGCdAUXkf/P5OffXzSF/GybrcipsRp7QWCj9SWixcLy3Gg/dkc8a1B3RYDo4EK2pX/
+         I2qhbeDeoQi1i5vGMYYbIPxEC/j2Xv9z30pWYvZH0lJ1trTs/8h29xrvgJLvoq0ZpSNU
+         ioFFnSi8Zxhc7fCsOS1u0ch5Xs3lH6cVTVEUiU80E+twZMh3N1FFbCZxPx2RBsanLGCN
+         GyAUr6Tlp5NxaFc48x0wpeY91L7RkfFKiyoz5AvbLs0lXAesUvc9/NBzNFRrLAIElerl
+         flcmoTz6HNWlqFGMpAF76h6GUtlAA64UknvjO4fKoptlNUQqdfYWtxA+o3x1N1JZml//
+         d85Q==
+X-Gm-Message-State: ACgBeo07uhOQadqhY4PVtihxHYdy95NQFiO+AfhyyJMaLxk3PBwFTxNi
+        TY8eIzmpVO5Qbe9r2pbswlrPJw==
+X-Google-Smtp-Source: AA6agR4ui+DsaI/rx9G71gnDc6YAJvWKPoB3zCyZaJ1nLjK+vVvOPNBMn6vOY0NTUCUZDxAiUFpecw==
+X-Received: by 2002:a05:651c:1a26:b0:269:15ee:809a with SMTP id by38-20020a05651c1a2600b0026915ee809amr2203010ljb.307.1662636900510;
+        Thu, 08 Sep 2022 04:35:00 -0700 (PDT)
+Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id v25-20020a05651203b900b00497aae401f8sm770409lfp.184.2022.09.08.04.34.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 08 Sep 2022 04:34:59 -0700 (PDT)
+Message-ID: <d0dacbf4-3768-7bbf-77a5-957bb37cd2b7@linaro.org>
+Date:   Thu, 8 Sep 2022 13:34:58 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH v2 2/5] dt-bindings: net: Add Broadcom BCM4377 family PCIe
+ Bluetooth
+Content-Language: en-US
+To:     =?UTF-8?Q?Martin_Povi=c5=a1er?= <povik@cutebit.org>
+Cc:     Sven Peter <sven@svenpeter.dev>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hector Martin <marcan@marcan.st>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        asahi@lists.linux.dev, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220907170935.11757-1-sven@svenpeter.dev>
+ <20220907170935.11757-3-sven@svenpeter.dev>
+ <bcb799ea-d58e-70dc-c5c2-daaff1b19bf5@linaro.org>
+ <E53D41D9-1675-42EB-BC76-3453043FCB6E@cutebit.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <E53D41D9-1675-42EB-BC76-3453043FCB6E@cutebit.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -86,73 +91,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2022-09-06 at 08:34 +0200, Mattias Forsblad wrote:
-> Add common control functions for drivers that need
-> to send and wait for control frames.
+On 08/09/2022 13:29, Martin Povišer wrote:
+>>> + brcm,taurus-cal-blob:
+>>> + $ref: /schemas/types.yaml#/definitions/uint8-array
+>>> + description: A per-device calibration blob for the Bluetooth radio. This
+>>> + should be filled in by the bootloader from platform configuration
+>>> + data, if necessary, and will be uploaded to the device.
+>>> + This blob is used if the chip stepping of the Bluetooth module does not
+>>> + support beamforming.
+>>
+>> Isn't it:
+>> s/beamforming/beam forming/
+>> ?
 > 
-> Signed-off-by: Mattias Forsblad <mattias.forsblad@gmail.com>
-> ---
->  include/net/dsa.h | 13 +++++++++++++
->  net/dsa/dsa.c     | 28 ++++++++++++++++++++++++++++
->  net/dsa/dsa2.c    |  2 ++
->  3 files changed, 43 insertions(+)
-> 
-> diff --git a/include/net/dsa.h b/include/net/dsa.h
-> index f2ce12860546..70a358641235 100644
-> --- a/include/net/dsa.h
-> +++ b/include/net/dsa.h
-> @@ -495,6 +495,8 @@ struct dsa_switch {
->  	unsigned int		max_num_bridges;
->  
->  	unsigned int		num_ports;
-> +
-> +	struct completion	inband_done;
->  };
->  
->  static inline struct dsa_port *dsa_to_port(struct dsa_switch *ds, int p)
-> @@ -1390,6 +1392,17 @@ void dsa_tag_drivers_register(struct dsa_tag_driver *dsa_tag_driver_array[],
->  void dsa_tag_drivers_unregister(struct dsa_tag_driver *dsa_tag_driver_array[],
->  				unsigned int count);
->  
-> +int dsa_switch_inband_tx(struct dsa_switch *ds, struct sk_buff *skb,
-> +			 struct completion *completion, unsigned long timeout);
-> +static inline void dsa_switch_inband_complete(struct dsa_switch *ds, struct completion *completion)
-> +{
-> +	/* Custom completion? */
-> +	if (completion)
-> +		complete(completion);
-> +	else
-> +		complete(&ds->inband_done);
-> +}
-> +
->  #define dsa_tag_driver_module_drivers(__dsa_tag_drivers_array, __count)	\
->  static int __init dsa_tag_driver_module_init(void)			\
->  {									\
-> diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
-> index be7b320cda76..2d7add779b6f 100644
-> --- a/net/dsa/dsa.c
-> +++ b/net/dsa/dsa.c
-> @@ -324,6 +324,34 @@ int dsa_switch_resume(struct dsa_switch *ds)
->  EXPORT_SYMBOL_GPL(dsa_switch_resume);
->  #endif
->  
-> +int dsa_switch_inband_tx(struct dsa_switch *ds, struct sk_buff *skb,
-> +			 struct completion *completion, unsigned long timeout)
-> +{
-> +	int ret;
-> +	struct completion *com;
-> +
-> +	/* Custom completion? */
-> +	if (completion)
-> +		com = completion;
-> +	else
-> +		com = &ds->inband_done;
+> Doesn’t seem like it:
+> https://www.google.com/search?hl=en&q=beam%20forming
 
-Since a new version is need, you can as well do:
+OK, thanks :)
 
-	com = completion ? : &ds->inband_done;
 
-Thanks!
-
-Paolo
-
+Best regards,
+Krzysztof
