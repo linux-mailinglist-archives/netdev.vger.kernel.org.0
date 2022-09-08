@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A34E65B1510
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 08:49:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF63F5B1573
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 09:13:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231250AbiIHGtG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 02:49:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55856 "EHLO
+        id S230126AbiIHHN2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 03:13:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231132AbiIHGsr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 02:48:47 -0400
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [81.169.146.167])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08DE3D2B0D;
-        Wed,  7 Sep 2022 23:48:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1662619683;
+        with ESMTP id S229508AbiIHHNZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 03:13:25 -0400
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A33F7D4778;
+        Thu,  8 Sep 2022 00:13:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1662621015;
     s=strato-dkim-0002; d=hartkopp.net;
     h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
     From:Subject:Sender;
-    bh=O1xo/jjb+NdYDRz2qFvm3F+/OFhapvqfEg6EDCRFB44=;
-    b=qq2fYL4pMNxmi56Dy/4bW3/tUO9k27iILB5jy82RXy9tclbWVfP9uRnUJVrRqnQGY2
-    5RNy7PT6CBq0Hw30j+233F4+KVQp1bUB5YRKqaNZP+33eL7cDMD9EeZh5ZDhFt/vTGLN
-    KxRxmEngDJPQbSO1svem5rUIxz2eZ61X3gMce1gSxtJ7izcGs58u6yO2G+5jtRbmfW+m
-    IMPhqHx6YHSvu/Q3a9YH1mON16n6ZpZ7mqW13Vim2H9h3ctlvA9jwh1cKxoeK/m3Fqgg
-    YNeoXnAu/tTTaUc4IBYZoSZOSWIH3CbAbzWIlNdgZBqtccOKvnchAN5Ihp/NB2yNV1qX
-    mK5A==
+    bh=PfeGL0sg6M1qDITuSaR33ABiwlNh0JNNpQKasyQHY9w=;
+    b=F4Gqllbp0TDCEP0rVJILYj2fwQKzRHcFjhF2a3FQ/9PIVX1TCqqjkzfl7Xds5aYyJR
+    CBWd0hFjQPC6SrQ4GmN8Ty6/bkpq/OF2jT6QNXgx1fibybvqPLgX/grEhuNCqraOO0To
+    16gH9XfiDh/2sF6GgUrcVvf/T9UYfNGyVwFdAkPBpjuUxm9pQ9kiCy/AvR4cEMafu6eP
+    XCcMgy5yovnDYyTHmeT0I6zX4NXmub0ITZJPgg6bG5/O+0suu0Rn1EKFe87R5HYbws9F
+    zS5CJMF6H5MAzIsE9mW7lp1kEZQjim/0XSY5iC7yVrmqz+8/TrNKlZSwXo2eYQg/oPNG
+    Gk4w==
 Authentication-Results: strato.com;
     dkim=none
 X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdIrpKytJSr63tDxrw=="
 X-RZG-CLASS-ID: mo00
 Received: from [IPV6:2a00:6020:1cfd:d100::b82]
     by smtp.strato.de (RZmta 48.0.2 AUTH)
-    with ESMTPSA id wfa541y886m3685
+    with ESMTPSA id wfa541y887AF6Dj
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
         (Client did not present a certificate);
-    Thu, 8 Sep 2022 08:48:03 +0200 (CEST)
-Message-ID: <1caf3e52-c862-e702-c833-153f130b790a@hartkopp.net>
-Date:   Thu, 8 Sep 2022 08:47:57 +0200
+    Thu, 8 Sep 2022 09:10:15 +0200 (CEST)
+Message-ID: <381dd961-f786-2400-0977-9639c3f7006e@hartkopp.net>
+Date:   Thu, 8 Sep 2022 09:10:15 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.13.0
-Subject: Re: [PATCH 2/2] can: bcm: check the result of can_send() in
- bcm_can_tx()
+Subject: Re: [PATCH 1/2] can: bcm: registration process optimization in
+ bcm_module_init()
 Content-Language: en-US
 To:     Ziyang Xuan <william.xuanziyang@huawei.com>, mkl@pengutronix.de,
         edumazet@google.com, kuba@kernel.org, linux-can@vger.kernel.org,
         netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org
 References: <cover.1662606045.git.william.xuanziyang@huawei.com>
- <5c0f2f1bd1dc7bbb9500afd4273e36378e00a35d.1662606045.git.william.xuanziyang@huawei.com>
+ <823cff0ebec33fa9389eeaf8b8ded3217c32cb38.1662606045.git.william.xuanziyang@huawei.com>
 From:   Oliver Hartkopp <socketcan@hartkopp.net>
-In-Reply-To: <5c0f2f1bd1dc7bbb9500afd4273e36378e00a35d.1662606045.git.william.xuanziyang@huawei.com>
+In-Reply-To: <823cff0ebec33fa9389eeaf8b8ded3217c32cb38.1662606045.git.william.xuanziyang@huawei.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+X-Spam-Status: No, score=-6.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
         SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -63,54 +63,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sorry, but NACK.
 
-The curr_frame counter handles the sequence counter of multiplex messages.
 
-Even when this single send attempt failed the curr_frame counter has to 
-continue.
+On 08.09.22 05:04, Ziyang Xuan wrote:
+> Now, register_netdevice_notifier() and register_pernet_subsys() are both
+> after can_proto_register(). It can create CAN_BCM socket and process socket
+> once can_proto_register() successfully, so it is possible missing notifier
+> event or proc node creation because notifier or bcm proc directory is not
+> registered or created yet. Although this is a low probability scenario, it
+> is not impossible.
+> 
+> Move register_pernet_subsys() and register_netdevice_notifier() to the
+> front of can_proto_register(). In addition, register_pernet_subsys() and
+> register_netdevice_notifier() may fail, check their results are necessary.
+> 
+> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+> ---
+>   net/can/bcm.c | 18 +++++++++++++++---
+>   1 file changed, 15 insertions(+), 3 deletions(-)
+> 
+> diff --git a/net/can/bcm.c b/net/can/bcm.c
+> index e60161bec850..e2783156bfd1 100644
+> --- a/net/can/bcm.c
+> +++ b/net/can/bcm.c
+> @@ -1744,15 +1744,27 @@ static int __init bcm_module_init(void)
+>   
+>   	pr_info("can: broadcast manager protocol\n");
+>   
+> +	err = register_pernet_subsys(&canbcm_pernet_ops);
+> +	if (err)
+> +		return err;
 
-For that reason the comment about statistics *before* the curr_frame++ 
-might be misleading.
+Analogue to your patch for the CAN_RAW socket here (which has been 
+applied to can-next right now) ...
 
-A potential improvement could be:
+https://lore.kernel.org/linux-can/7af9401f0d2d9fed36c1667b5ac9b8df8f8b87ee.1661584485.git.william.xuanziyang@huawei.com/T/#u
 
-	if (!(can_send(skb, 1)))
-		op->frames_abs++;
+... I'm not sure whether this is the right sequence to acquire the 
+different resources here.
 
-	op->currframe++;
+E.g. in ipsec_pfkey_init() in af_key.c
 
-But as op->frames_abs is a functional unused(!) value for tx ops and 
-only displayed via procfs I would NOT tag such improvement as a 'fix' 
-which might then be queued up for stable.
+https://elixir.bootlin.com/linux/v5.19.7/source/net/key/af_key.c#L3887
 
-This could be something for the can-next tree ...
+proto_register() is executed before register_pernet_subsys()
+
+Which seems to be more natural to me.
 
 Best regards,
 Oliver
 
-
-On 08.09.22 05:04, Ziyang Xuan wrote:
-> If can_send() fail, it should not update statistics in bcm_can_tx().
-> Add the result check for can_send() in bcm_can_tx().
-> 
-> Fixes: ffd980f976e7 ("[CAN]: Add broadcast manager (bcm) protocol")
-> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
-> ---
->   net/can/bcm.c | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/can/bcm.c b/net/can/bcm.c
-> index e2783156bfd1..8f5d704a409f 100644
-> --- a/net/can/bcm.c
-> +++ b/net/can/bcm.c
-> @@ -298,7 +298,8 @@ static void bcm_can_tx(struct bcm_op *op)
->   	/* send with loopback */
->   	skb->dev = dev;
->   	can_skb_set_owner(skb, op->sk);
-> -	can_send(skb, 1);
-> +	if (can_send(skb, 1))
-> +		goto out;
+> +
+> +	err = register_netdevice_notifier(&canbcm_notifier);
+> +	if (err)
+> +		goto register_notifier_failed;
+> +
+>   	err = can_proto_register(&bcm_can_proto);
+>   	if (err < 0) {
+>   		printk(KERN_ERR "can: registration of bcm protocol failed\n");
+> -		return err;
+> +		goto register_proto_failed;
+>   	}
 >   
->   	/* update statistics */
->   	op->currframe++;
+> -	register_pernet_subsys(&canbcm_pernet_ops);
+> -	register_netdevice_notifier(&canbcm_notifier);
+>   	return 0;
+> +
+> +register_proto_failed:
+> +	unregister_netdevice_notifier(&canbcm_notifier);
+> +register_notifier_failed:
+> +	unregister_pernet_subsys(&canbcm_pernet_ops);
+> +	return err;
+>   }
+>   
+>   static void __exit bcm_module_exit(void)
