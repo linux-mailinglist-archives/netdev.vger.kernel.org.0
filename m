@@ -2,50 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 794FD5B27CE
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 22:37:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA2965B27CF
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 22:37:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229827AbiIHUhO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 16:37:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55772 "EHLO
+        id S229873AbiIHUhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 16:37:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbiIHUhL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 16:37:11 -0400
+        with ESMTP id S229686AbiIHUhM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 16:37:12 -0400
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 611381017F1
-        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 13:37:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C53A31017F1
+        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 13:37:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662669430; x=1694205430;
+  t=1662669431; x=1694205431;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=ZMmTJAbZe9pVmmVYud87rooNlFMnQAMdRM6ah/BP1kI=;
-  b=IBVGQAoYPYbb0HCR2n+kx/CWGIloOd8P1rC+kNpFD3KiYmN7gT1dv8DK
-   9Tgn7ubSndWk6fk0XPoCCULboQdKx8fCvCwAPJJJ7i1AQ+Hs7O8022+jG
-   FyJIIupGLL1idJNzA9zCFa878rb4veSHZPY1/51YpHlZOxAriqQVsBLh6
-   4b+dVp0/UKBNI58Viy3dUSNgNHG6grF3gOJn9Rsd2oD7lGccj3Sg0kARr
-   e2CKbsUlf1iEZV38q0M4+CcpTYHKdnudAN/64p+EqPCnrxOfSFxHeqsaU
-   4jLcYtVWi9hC1E6RXmCAETBNP5M81ZljwunXLL4eOg9IGdw1Y5EyW84x/
+  bh=v//2VTOMKH5ZBy9QZvrUbA5ez4R944Ox1DoIbg0AykE=;
+  b=nswTriDdjG7/nmYpEkvERYvrn+kFMsI5t9lr8ruo8/5gM+x/4Y7hsPRq
+   DCNsg+7H8YllhFdJh2a/UIe/Li3BwoVwjh1Lg1rfpZBQqILuYt53WsPpB
+   ll6np8aJZsdFpKOofKdwgA9IrRvcCqjkN0eAoRkGfHtU5c7ms5shcp0W7
+   3xhtvUk4U5u1EgPftt20arisIcqt8UZkROTh22V7oPljTQuOCA6MgX4k2
+   +93Zz+safo2Ym2nOr4VjvZW0/yemFddff1zsFWKqRXnwKr1uP0w3xJspx
+   eHLgAHrA+H1rvyBcfyWtH6t6sV0AHL7ltp350iuATy3Y/0VVDeuukE+6o
    Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10464"; a="294900347"
+X-IronPort-AV: E=McAfee;i="6500,9779,10464"; a="294900354"
 X-IronPort-AV: E=Sophos;i="5.93,300,1654585200"; 
-   d="scan'208";a="294900347"
+   d="scan'208";a="294900354"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Sep 2022 13:37:09 -0700
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Sep 2022 13:37:11 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,300,1654585200"; 
-   d="scan'208";a="943509281"
+   d="scan'208";a="943509287"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by fmsmga005.fm.intel.com with ESMTP; 08 Sep 2022 13:37:09 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
-Cc:     Dave Ertman <david.m.ertman@intel.com>, netdev@vger.kernel.org,
+Cc:     Ding Hui <dinghui@sangfor.com.cn>, netdev@vger.kernel.org,
         anthony.l.nguyen@intel.com,
-        Helena Anna Dubel <helena.anna.dubel@intel.com>
-Subject: [PATCH net 1/4] ice: Don't double unplug aux on peer initiated reset
-Date:   Thu,  8 Sep 2022 13:36:58 -0700
-Message-Id: <20220908203701.2089562-2-anthony.l.nguyen@intel.com>
+        Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>,
+        Arpana Arland <arpanax.arland@intel.com>
+Subject: [PATCH net 2/4] ice: Fix crash by keep old cfg when update TCs more than queues
+Date:   Thu,  8 Sep 2022 13:36:59 -0700
+Message-Id: <20220908203701.2089562-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220908203701.2089562-1-anthony.l.nguyen@intel.com>
 References: <20220908203701.2089562-1-anthony.l.nguyen@intel.com>
@@ -61,142 +62,194 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dave Ertman <david.m.ertman@intel.com>
+From: Ding Hui <dinghui@sangfor.com.cn>
 
-In the IDC callback that is accessed when the aux drivers request a reset,
-the function to unplug the aux devices is called.  This function is also
-called in the ice_prepare_for_reset function. This double call is causing
-a "scheduling while atomic" BUG.
+There are problems if allocated queues less than Traffic Classes.
 
-[  662.676430] ice 0000:4c:00.0 rocep76s0: cqp opcode = 0x1 maj_err_code = 0xffff min_err_code = 0x8003
+Commit a632b2a4c920 ("ice: ethtool: Prohibit improper channel config
+for DCB") already disallow setting less queues than TCs.
 
-[  662.676609] ice 0000:4c:00.0 rocep76s0: [Modify QP Cmd Error][op_code=8] status=-29 waiting=1 completion_err=1 maj=0xffff min=0x8003
+Another case is if we first set less queues, and later update more TCs
+config due to LLDP, ice_vsi_cfg_tc() will failed but left dirty
+num_txq/rxq and tc_cfg in vsi, that will cause invalid pointer access.
 
-[  662.815006] ice 0000:4c:00.0 rocep76s0: ICE OICR event notification: oicr = 0x10000003
+[   95.968089] ice 0000:3b:00.1: More TCs defined than queues/rings allocated.
+[   95.968092] ice 0000:3b:00.1: Trying to use more Rx queues (8), than were allocated (1)!
+[   95.968093] ice 0000:3b:00.1: Failed to config TC for VSI index: 0
+[   95.969621] general protection fault: 0000 [#1] SMP NOPTI
+[   95.969705] CPU: 1 PID: 58405 Comm: lldpad Kdump: loaded Tainted: G     U  W  O     --------- -t - 4.18.0 #1
+[   95.969867] Hardware name: O.E.M/BC11SPSCB10, BIOS 8.23 12/30/2021
+[   95.969992] RIP: 0010:devm_kmalloc+0xa/0x60
+[   95.970052] Code: 5c ff ff ff 31 c0 5b 5d 41 5c c3 b8 f4 ff ff ff eb f4 0f 1f 40 00 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 89 d1 <8b> 97 60 02 00 00 48 8d 7e 18 48 39 f7 72 3f 55 89 ce 53 48 8b 4c
+[   95.970344] RSP: 0018:ffffc9003f553888 EFLAGS: 00010206
+[   95.970425] RAX: dead000000000200 RBX: ffffea003c425b00 RCX: 00000000006080c0
+[   95.970536] RDX: 00000000006080c0 RSI: 0000000000000200 RDI: dead000000000200
+[   95.970648] RBP: dead000000000200 R08: 00000000000463c0 R09: ffff888ffa900000
+[   95.970760] R10: 0000000000000000 R11: 0000000000000002 R12: ffff888ff6b40100
+[   95.970870] R13: ffff888ff6a55018 R14: 0000000000000000 R15: ffff888ff6a55460
+[   95.970981] FS:  00007f51b7d24700(0000) GS:ffff88903ee80000(0000) knlGS:0000000000000000
+[   95.971108] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   95.971197] CR2: 00007fac5410d710 CR3: 0000000f2c1de002 CR4: 00000000007606e0
+[   95.971309] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[   95.971419] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[   95.971530] PKRU: 55555554
+[   95.971573] Call Trace:
+[   95.971622]  ice_setup_rx_ring+0x39/0x110 [ice]
+[   95.971695]  ice_vsi_setup_rx_rings+0x54/0x90 [ice]
+[   95.971774]  ice_vsi_open+0x25/0x120 [ice]
+[   95.971843]  ice_open_internal+0xb8/0x1f0 [ice]
+[   95.971919]  ice_ena_vsi+0x4f/0xd0 [ice]
+[   95.971987]  ice_dcb_ena_dis_vsi.constprop.5+0x29/0x90 [ice]
+[   95.972082]  ice_pf_dcb_cfg+0x29a/0x380 [ice]
+[   95.972154]  ice_dcbnl_setets+0x174/0x1b0 [ice]
+[   95.972220]  dcbnl_ieee_set+0x89/0x230
+[   95.972279]  ? dcbnl_ieee_del+0x150/0x150
+[   95.972341]  dcb_doit+0x124/0x1b0
+[   95.972392]  rtnetlink_rcv_msg+0x243/0x2f0
+[   95.972457]  ? dcb_doit+0x14d/0x1b0
+[   95.972510]  ? __kmalloc_node_track_caller+0x1d3/0x280
+[   95.972591]  ? rtnl_calcit.isra.31+0x100/0x100
+[   95.972661]  netlink_rcv_skb+0xcf/0xf0
+[   95.972720]  netlink_unicast+0x16d/0x220
+[   95.972781]  netlink_sendmsg+0x2ba/0x3a0
+[   95.975891]  sock_sendmsg+0x4c/0x50
+[   95.979032]  ___sys_sendmsg+0x2e4/0x300
+[   95.982147]  ? kmem_cache_alloc+0x13e/0x190
+[   95.985242]  ? __wake_up_common_lock+0x79/0x90
+[   95.988338]  ? __check_object_size+0xac/0x1b0
+[   95.991440]  ? _copy_to_user+0x22/0x30
+[   95.994539]  ? move_addr_to_user+0xbb/0xd0
+[   95.997619]  ? __sys_sendmsg+0x53/0x80
+[   96.000664]  __sys_sendmsg+0x53/0x80
+[   96.003747]  do_syscall_64+0x5b/0x1d0
+[   96.006862]  entry_SYSCALL_64_after_hwframe+0x65/0xca
 
-[  662.815014] ice 0000:4c:00.0 rocep76s0: critical PE Error, GLPE_CRITERR=0x00011424
+Only update num_txq/rxq when passed check, and restore tc_cfg if setup
+queue map failed.
 
-[  662.815017] ice 0000:4c:00.0 rocep76s0: Requesting a reset
-
-[  662.815475] BUG: scheduling while atomic: swapper/37/0/0x00010002
-
-[  662.815475] BUG: scheduling while atomic: swapper/37/0/0x00010002
-[  662.815477] Modules linked in: rpcsec_gss_krb5 auth_rpcgss nfsv4 dns_resolver nfs lockd grace fscache netfs rfkill 8021q garp mrp stp llc vfat fat rpcrdma intel_rapl_msr intel_rapl_common sunrpc i10nm_edac rdma_ucm nfit ib_srpt libnvdimm ib_isert iscsi_target_mod x86_pkg_temp_thermal intel_powerclamp coretemp target_core_mod snd_hda_intel ib_iser snd_intel_dspcfg libiscsi snd_intel_sdw_acpi scsi_transport_iscsi kvm_intel iTCO_wdt rdma_cm snd_hda_codec kvm iw_cm ipmi_ssif iTCO_vendor_support snd_hda_core irqbypass crct10dif_pclmul crc32_pclmul ghash_clmulni_intel snd_hwdep snd_seq snd_seq_device rapl snd_pcm snd_timer isst_if_mbox_pci pcspkr isst_if_mmio irdma intel_uncore idxd acpi_ipmi joydev isst_if_common snd mei_me idxd_bus ipmi_si soundcore i2c_i801 mei ipmi_devintf i2c_smbus i2c_ismt ipmi_msghandler acpi_power_meter acpi_pad rv(OE) ib_uverbs ib_cm ib_core xfs libcrc32c ast i2c_algo_bit drm_vram_helper drm_kms_helper syscopyarea sysfillrect sysimgblt fb_sys_fops drm_ttm_helpe
- r ttm
-[  662.815546]  nvme nvme_core ice drm crc32c_intel i40e t10_pi wmi pinctrl_emmitsburg dm_mirror dm_region_hash dm_log dm_mod fuse
-[  662.815557] Preemption disabled at:
-[  662.815558] [<0000000000000000>] 0x0
-[  662.815563] CPU: 37 PID: 0 Comm: swapper/37 Kdump: loaded Tainted: G S         OE     5.17.1 #2
-[  662.815566] Hardware name: Intel Corporation D50DNP/D50DNP, BIOS SE5C6301.86B.6624.D18.2111021741 11/02/2021
-[  662.815568] Call Trace:
-[  662.815572]  <IRQ>
-[  662.815574]  dump_stack_lvl+0x33/0x42
-[  662.815581]  __schedule_bug.cold.147+0x7d/0x8a
-[  662.815588]  __schedule+0x798/0x990
-[  662.815595]  schedule+0x44/0xc0
-[  662.815597]  schedule_preempt_disabled+0x14/0x20
-[  662.815600]  __mutex_lock.isra.11+0x46c/0x490
-[  662.815603]  ? __ibdev_printk+0x76/0xc0 [ib_core]
-[  662.815633]  device_del+0x37/0x3d0
-[  662.815639]  ice_unplug_aux_dev+0x1a/0x40 [ice]
-[  662.815674]  ice_schedule_reset+0x3c/0xd0 [ice]
-[  662.815693]  irdma_iidc_event_handler.cold.7+0xb6/0xd3 [irdma]
-[  662.815712]  ? bitmap_find_next_zero_area_off+0x45/0xa0
-[  662.815719]  ice_send_event_to_aux+0x54/0x70 [ice]
-[  662.815741]  ice_misc_intr+0x21d/0x2d0 [ice]
-[  662.815756]  __handle_irq_event_percpu+0x4c/0x180
-[  662.815762]  handle_irq_event_percpu+0xf/0x40
-[  662.815764]  handle_irq_event+0x34/0x60
-[  662.815766]  handle_edge_irq+0x9a/0x1c0
-[  662.815770]  __common_interrupt+0x62/0x100
-[  662.815774]  common_interrupt+0xb4/0xd0
-[  662.815779]  </IRQ>
-[  662.815780]  <TASK>
-[  662.815780]  asm_common_interrupt+0x1e/0x40
-[  662.815785] RIP: 0010:cpuidle_enter_state+0xd6/0x380
-[  662.815789] Code: 49 89 c4 0f 1f 44 00 00 31 ff e8 65 d7 95 ff 45 84 ff 74 12 9c 58 f6 c4 02 0f 85 64 02 00 00 31 ff e8 ae c5 9c ff fb 45 85 f6 <0f> 88 12 01 00 00 49 63 d6 4c 2b 24 24 48 8d 04 52 48 8d 04 82 49
-[  662.815791] RSP: 0018:ff2c2c4f18edbe80 EFLAGS: 00000202
-[  662.815793] RAX: ff280805df140000 RBX: 0000000000000002 RCX: 000000000000001f
-[  662.815795] RDX: 0000009a52da2d08 RSI: ffffffff93f8240b RDI: ffffffff93f53ee7
-[  662.815796] RBP: ff5e2bd11ff41928 R08: 0000000000000000 R09: 000000000002f8c0
-[  662.815797] R10: 0000010c3f18e2cf R11: 000000000000000f R12: 0000009a52da2d08
-[  662.815798] R13: ffffffff94ad7e20 R14: 0000000000000002 R15: 0000000000000000
-[  662.815801]  cpuidle_enter+0x29/0x40
-[  662.815803]  do_idle+0x261/0x2b0
-[  662.815807]  cpu_startup_entry+0x19/0x20
-[  662.815809]  start_secondary+0x114/0x150
-[  662.815813]  secondary_startup_64_no_verify+0xd5/0xdb
-[  662.815818]  </TASK>
-[  662.815846] bad: scheduling from the idle thread!
-[  662.815849] CPU: 37 PID: 0 Comm: swapper/37 Kdump: loaded Tainted: G S      W  OE     5.17.1 #2
-[  662.815852] Hardware name: Intel Corporation D50DNP/D50DNP, BIOS SE5C6301.86B.6624.D18.2111021741 11/02/2021
-[  662.815853] Call Trace:
-[  662.815855]  <IRQ>
-[  662.815856]  dump_stack_lvl+0x33/0x42
-[  662.815860]  dequeue_task_idle+0x20/0x30
-[  662.815863]  __schedule+0x1c3/0x990
-[  662.815868]  schedule+0x44/0xc0
-[  662.815871]  schedule_preempt_disabled+0x14/0x20
-[  662.815873]  __mutex_lock.isra.11+0x3a8/0x490
-[  662.815876]  ? __ibdev_printk+0x76/0xc0 [ib_core]
-[  662.815904]  device_del+0x37/0x3d0
-[  662.815909]  ice_unplug_aux_dev+0x1a/0x40 [ice]
-[  662.815937]  ice_schedule_reset+0x3c/0xd0 [ice]
-[  662.815961]  irdma_iidc_event_handler.cold.7+0xb6/0xd3 [irdma]
-[  662.815979]  ? bitmap_find_next_zero_area_off+0x45/0xa0
-[  662.815985]  ice_send_event_to_aux+0x54/0x70 [ice]
-[  662.816011]  ice_misc_intr+0x21d/0x2d0 [ice]
-[  662.816033]  __handle_irq_event_percpu+0x4c/0x180
-[  662.816037]  handle_irq_event_percpu+0xf/0x40
-[  662.816039]  handle_irq_event+0x34/0x60
-[  662.816042]  handle_edge_irq+0x9a/0x1c0
-[  662.816045]  __common_interrupt+0x62/0x100
-[  662.816048]  common_interrupt+0xb4/0xd0
-[  662.816052]  </IRQ>
-[  662.816053]  <TASK>
-[  662.816054]  asm_common_interrupt+0x1e/0x40
-[  662.816057] RIP: 0010:cpuidle_enter_state+0xd6/0x380
-[  662.816060] Code: 49 89 c4 0f 1f 44 00 00 31 ff e8 65 d7 95 ff 45 84 ff 74 12 9c 58 f6 c4 02 0f 85 64 02 00 00 31 ff e8 ae c5 9c ff fb 45 85 f6 <0f> 88 12 01 00 00 49 63 d6 4c 2b 24 24 48 8d 04 52 48 8d 04 82 49
-[  662.816063] RSP: 0018:ff2c2c4f18edbe80 EFLAGS: 00000202
-[  662.816065] RAX: ff280805df140000 RBX: 0000000000000002 RCX: 000000000000001f
-[  662.816067] RDX: 0000009a52da2d08 RSI: ffffffff93f8240b RDI: ffffffff93f53ee7
-[  662.816068] RBP: ff5e2bd11ff41928 R08: 0000000000000000 R09: 000000000002f8c0
-[  662.816070] R10: 0000010c3f18e2cf R11: 000000000000000f R12: 0000009a52da2d08
-[  662.816071] R13: ffffffff94ad7e20 R14: 0000000000000002 R15: 0000000000000000
-[  662.816075]  cpuidle_enter+0x29/0x40
-[  662.816077]  do_idle+0x261/0x2b0
-[  662.816080]  cpu_startup_entry+0x19/0x20
-[  662.816083]  start_secondary+0x114/0x150
-[  662.816087]  secondary_startup_64_no_verify+0xd5/0xdb
-[  662.816091]  </TASK>
-[  662.816169] bad: scheduling from the idle thread!
-
-The correct place to unplug the aux devices for a reset is in the
-prepare_for_reset function, as this is a common place for all reset flows.
-It also has built in protection from being called twice in a single reset
-instance before the aux devices are replugged.
-
-Fixes: f9f5301e7e2d4 ("ice: Register auxiliary device to provide RDMA")
-Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
-Tested-by: Helena Anna Dubel <helena.anna.dubel@intel.com>
+Fixes: a632b2a4c920 ("ice: ethtool: Prohibit improper channel config for DCB")
+Signed-off-by: Ding Hui <dinghui@sangfor.com.cn>
+Reviewed-by: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
+Tested-by: Arpana Arland <arpanax.arland@intel.com> (A Contingent worker at Intel)
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_main.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_lib.c | 42 +++++++++++++++---------
+ 1 file changed, 26 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 8c30eea61b6d..04836bbaf7d5 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -2399,8 +2399,6 @@ int ice_schedule_reset(struct ice_pf *pf, enum ice_reset_req reset)
- 		return -EBUSY;
+diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
+index 0c4ec9264071..58d483e2f539 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_lib.c
+@@ -914,7 +914,7 @@ static void ice_set_dflt_vsi_ctx(struct ice_hw *hw, struct ice_vsi_ctx *ctxt)
+  */
+ static int ice_vsi_setup_q_map(struct ice_vsi *vsi, struct ice_vsi_ctx *ctxt)
+ {
+-	u16 offset = 0, qmap = 0, tx_count = 0, pow = 0;
++	u16 offset = 0, qmap = 0, tx_count = 0, rx_count = 0, pow = 0;
+ 	u16 num_txq_per_tc, num_rxq_per_tc;
+ 	u16 qcount_tx = vsi->alloc_txq;
+ 	u16 qcount_rx = vsi->alloc_rxq;
+@@ -981,23 +981,25 @@ static int ice_vsi_setup_q_map(struct ice_vsi *vsi, struct ice_vsi_ctx *ctxt)
+ 	 * at least 1)
+ 	 */
+ 	if (offset)
+-		vsi->num_rxq = offset;
++		rx_count = offset;
+ 	else
+-		vsi->num_rxq = num_rxq_per_tc;
++		rx_count = num_rxq_per_tc;
+ 
+-	if (vsi->num_rxq > vsi->alloc_rxq) {
++	if (rx_count > vsi->alloc_rxq) {
+ 		dev_err(ice_pf_to_dev(vsi->back), "Trying to use more Rx queues (%u), than were allocated (%u)!\n",
+-			vsi->num_rxq, vsi->alloc_rxq);
++			rx_count, vsi->alloc_rxq);
+ 		return -EINVAL;
  	}
  
--	ice_unplug_aux_dev(pf);
--
- 	switch (reset) {
- 	case ICE_RESET_PFR:
- 		set_bit(ICE_PFR_REQ, pf->state);
+-	vsi->num_txq = tx_count;
+-	if (vsi->num_txq > vsi->alloc_txq) {
++	if (tx_count > vsi->alloc_txq) {
+ 		dev_err(ice_pf_to_dev(vsi->back), "Trying to use more Tx queues (%u), than were allocated (%u)!\n",
+-			vsi->num_txq, vsi->alloc_txq);
++			tx_count, vsi->alloc_txq);
+ 		return -EINVAL;
+ 	}
+ 
++	vsi->num_txq = tx_count;
++	vsi->num_rxq = rx_count;
++
+ 	if (vsi->type == ICE_VSI_VF && vsi->num_txq != vsi->num_rxq) {
+ 		dev_dbg(ice_pf_to_dev(vsi->back), "VF VSI should have same number of Tx and Rx queues. Hence making them equal\n");
+ 		/* since there is a chance that num_rxq could have been changed
+@@ -3490,6 +3492,7 @@ ice_vsi_setup_q_map_mqprio(struct ice_vsi *vsi, struct ice_vsi_ctx *ctxt,
+ 	u16 pow, offset = 0, qcount_tx = 0, qcount_rx = 0, qmap;
+ 	u16 tc0_offset = vsi->mqprio_qopt.qopt.offset[0];
+ 	int tc0_qcount = vsi->mqprio_qopt.qopt.count[0];
++	u16 new_txq, new_rxq;
+ 	u8 netdev_tc = 0;
+ 	int i;
+ 
+@@ -3530,21 +3533,24 @@ ice_vsi_setup_q_map_mqprio(struct ice_vsi *vsi, struct ice_vsi_ctx *ctxt,
+ 		}
+ 	}
+ 
+-	/* Set actual Tx/Rx queue pairs */
+-	vsi->num_txq = offset + qcount_tx;
+-	if (vsi->num_txq > vsi->alloc_txq) {
++	new_txq = offset + qcount_tx;
++	if (new_txq > vsi->alloc_txq) {
+ 		dev_err(ice_pf_to_dev(vsi->back), "Trying to use more Tx queues (%u), than were allocated (%u)!\n",
+-			vsi->num_txq, vsi->alloc_txq);
++			new_txq, vsi->alloc_txq);
+ 		return -EINVAL;
+ 	}
+ 
+-	vsi->num_rxq = offset + qcount_rx;
+-	if (vsi->num_rxq > vsi->alloc_rxq) {
++	new_rxq = offset + qcount_rx;
++	if (new_rxq > vsi->alloc_rxq) {
+ 		dev_err(ice_pf_to_dev(vsi->back), "Trying to use more Rx queues (%u), than were allocated (%u)!\n",
+-			vsi->num_rxq, vsi->alloc_rxq);
++			new_rxq, vsi->alloc_rxq);
+ 		return -EINVAL;
+ 	}
+ 
++	/* Set actual Tx/Rx queue pairs */
++	vsi->num_txq = new_txq;
++	vsi->num_rxq = new_rxq;
++
+ 	/* Setup queue TC[0].qmap for given VSI context */
+ 	ctxt->info.tc_mapping[0] = cpu_to_le16(qmap);
+ 	ctxt->info.q_mapping[0] = cpu_to_le16(vsi->rxq_map[0]);
+@@ -3576,6 +3582,7 @@ int ice_vsi_cfg_tc(struct ice_vsi *vsi, u8 ena_tc)
+ {
+ 	u16 max_txqs[ICE_MAX_TRAFFIC_CLASS] = { 0 };
+ 	struct ice_pf *pf = vsi->back;
++	struct ice_tc_cfg old_tc_cfg;
+ 	struct ice_vsi_ctx *ctx;
+ 	struct device *dev;
+ 	int i, ret = 0;
+@@ -3600,6 +3607,7 @@ int ice_vsi_cfg_tc(struct ice_vsi *vsi, u8 ena_tc)
+ 			max_txqs[i] = vsi->num_txq;
+ 	}
+ 
++	memcpy(&old_tc_cfg, &vsi->tc_cfg, sizeof(old_tc_cfg));
+ 	vsi->tc_cfg.ena_tc = ena_tc;
+ 	vsi->tc_cfg.numtc = num_tc;
+ 
+@@ -3616,8 +3624,10 @@ int ice_vsi_cfg_tc(struct ice_vsi *vsi, u8 ena_tc)
+ 	else
+ 		ret = ice_vsi_setup_q_map(vsi, ctx);
+ 
+-	if (ret)
++	if (ret) {
++		memcpy(&vsi->tc_cfg, &old_tc_cfg, sizeof(vsi->tc_cfg));
+ 		goto out;
++	}
+ 
+ 	/* must to indicate which section of VSI context are being modified */
+ 	ctx->info.valid_sections = cpu_to_le16(ICE_AQ_VSI_PROP_RXQ_MAP_VALID);
 -- 
 2.35.1
 
