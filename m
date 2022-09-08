@@ -2,53 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F41F35B18D8
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 11:37:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 919F25B18DD
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 11:37:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230223AbiIHJhG convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 8 Sep 2022 05:37:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46496 "EHLO
+        id S229911AbiIHJhr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 05:37:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229535AbiIHJhF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 05:37:05 -0400
-Received: from smtp237.sjtu.edu.cn (smtp237.sjtu.edu.cn [202.120.2.237])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A7D372EC6;
-        Thu,  8 Sep 2022 02:36:59 -0700 (PDT)
-Received: from mta91.sjtu.edu.cn (unknown [10.118.0.91])
-        by smtp237.sjtu.edu.cn (Postfix) with ESMTPS id E63B910087D60;
-        Thu,  8 Sep 2022 17:36:57 +0800 (CST)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by mta91.sjtu.edu.cn (Postfix) with ESMTP id 942D037C83F;
-        Thu,  8 Sep 2022 17:36:57 +0800 (CST)
-X-Virus-Scanned: amavisd-new at 
-Received: from mta91.sjtu.edu.cn ([127.0.0.1])
-        by localhost (mta91.sjtu.edu.cn [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id WkUyVMmREoC1; Thu,  8 Sep 2022 17:36:57 +0800 (CST)
-Received: from mstore105.sjtu.edu.cn (mstore101.sjtu.edu.cn [10.118.0.105])
-        by mta91.sjtu.edu.cn (Postfix) with ESMTP id 64E7637C83E;
-        Thu,  8 Sep 2022 17:36:57 +0800 (CST)
-Date:   Thu, 8 Sep 2022 17:36:57 +0800 (CST)
-From:   Guo Zhi <qtxuning1999@sjtu.edu.cn>
-To:     jasowang <jasowang@redhat.com>
-Cc:     eperezma <eperezma@redhat.com>, sgarzare <sgarzare@redhat.com>,
-        Michael Tsirkin <mst@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        kvm list <kvm@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>
-Message-ID: <460316643.171392.1662629817302.JavaMail.zimbra@sjtu.edu.cn>
-In-Reply-To: <b1a7c454-860d-6a40-9da1-2a06f30ff1be@redhat.com>
-References: <20220901055434.824-1-qtxuning1999@sjtu.edu.cn> <20220901055434.824-7-qtxuning1999@sjtu.edu.cn> <b1a7c454-860d-6a40-9da1-2a06f30ff1be@redhat.com>
-Subject: Re: [RFC v3 6/7] virtio: in order support for virtio_ring
+        with ESMTP id S229502AbiIHJhq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 05:37:46 -0400
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BBB243613;
+        Thu,  8 Sep 2022 02:37:43 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046056;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VP29UV3_1662629860;
+Received: from 30.221.129.118(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0VP29UV3_1662629860)
+          by smtp.aliyun-inc.com;
+          Thu, 08 Sep 2022 17:37:41 +0800
+Message-ID: <9f67d8b3-e813-6bc6-ca1f-e387288e9df4@linux.alibaba.com>
+Date:   Thu, 8 Sep 2022 17:37:37 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=GB2312
-Content-Transfer-Encoding: 8BIT
-X-Originating-IP: [220.196.194.222]
-X-Mailer: Zimbra 8.8.15_GA_4372 (ZimbraWebClient - GC104 (Mac)/8.8.15_GA_3928)
-Thread-Topic: virtio: in order support for virtio_ring
-Thread-Index: d4zGho/hPVQp8Ijl8j3JGif1L2LP/w==
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH net-next v2 10/10] net/smc: fix application data exception
+To:     "D. Wythe" <alibuda@linux.alibaba.com>, kgraul@linux.ibm.com,
+        wenjia@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+References: <cover.1661407821.git.alibuda@linux.alibaba.com>
+ <e590ca91e24d002608df29d100d4139977d0bcb6.1661407821.git.alibuda@linux.alibaba.com>
+From:   Wen Gu <guwen@linux.alibaba.com>
+In-Reply-To: <e590ca91e24d002608df29d100d4139977d0bcb6.1661407821.git.alibuda@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-11.8 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,NORMAL_HTTP_TO_IP,NUMERIC_HTTP_ADDR,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,193 +47,93 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
------ Original Message -----
-> From: "jasowang" <jasowang@redhat.com>
-> To: "Guo Zhi" <qtxuning1999@sjtu.edu.cn>, "eperezma" <eperezma@redhat.com>, "sgarzare" <sgarzare@redhat.com>, "Michael
-> Tsirkin" <mst@redhat.com>
-> Cc: "netdev" <netdev@vger.kernel.org>, "linux-kernel" <linux-kernel@vger.kernel.org>, "kvm list" <kvm@vger.kernel.org>,
-> "virtualization" <virtualization@lists.linux-foundation.org>
-> Sent: Wednesday, September 7, 2022 1:38:03 PM
-> Subject: Re: [RFC v3 6/7] virtio: in order support for virtio_ring
+On 2022/8/26 17:51, D. Wythe wrote:
 
-> ÔÚ 2022/9/1 13:54, Guo Zhi Ð´µÀ:
->> If in order feature negotiated, we can skip the used ring to get
->> buffer's desc id sequentially.  For skipped buffers in the batch, the
->> used ring doesn't contain the buffer length, actually there is not need
->> to get skipped buffers' length as they are tx buffer.
->>
->> Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
->> ---
->>   drivers/virtio/virtio_ring.c | 74 +++++++++++++++++++++++++++++++-----
->>   1 file changed, 64 insertions(+), 10 deletions(-)
->>
->> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
->> index 00aa4b7a49c2..d52624179b43 100644
->> --- a/drivers/virtio/virtio_ring.c
->> +++ b/drivers/virtio/virtio_ring.c
->> @@ -103,6 +103,9 @@ struct vring_virtqueue {
->>   	/* Host supports indirect buffers */
->>   	bool indirect;
->>   
->> +	/* Host supports in order feature */
->> +	bool in_order;
->> +
->>   	/* Host publishes avail event idx */
->>   	bool event;
->>   
->> @@ -144,6 +147,19 @@ struct vring_virtqueue {
->>   			/* DMA address and size information */
->>   			dma_addr_t queue_dma_addr;
->>   			size_t queue_size_in_bytes;
->> +
->> +			/* If in_order feature is negotiated, here is the next head to consume */
->> +			u16 next_desc_begin;
->> +			/*
->> +			 * If in_order feature is negotiated,
->> +			 * here is the last descriptor's id in the batch
->> +			 */
->> +			u16 last_desc_in_batch;
->> +			/*
->> +			 * If in_order feature is negotiated,
->> +			 * buffers except last buffer in the batch are skipped buffer
->> +			 */
->> +			bool is_skipped_buffer;
->>   		} split;
->>   
->>   		/* Available for packed ring */
->> @@ -584,8 +600,6 @@ static inline int virtqueue_add_split(struct virtqueue *_vq,
->>   					 total_sg * sizeof(struct vring_desc),
->>   					 VRING_DESC_F_INDIRECT,
->>   					 false);
->> -		vq->split.desc_extra[head & (vq->split.vring.num - 1)].flags &=
->> -			~VRING_DESC_F_NEXT;
+> From: "D. Wythe" <alibuda@linux.alibaba.com>
 > 
+> After we optimize the parallel capability of SMC-R connection
+> establishment, There is a certain probability that following
+> exceptions will occur in the wrk benchmark test:
 > 
-> This seems irrelevant.
+> Running 10s test @ http://11.213.45.6:80
+>    8 threads and 64 connections
+>    Thread Stats   Avg      Stdev     Max   +/- Stdev
+>      Latency     3.72ms   13.94ms 245.33ms   94.17%
+>      Req/Sec     1.96k   713.67     5.41k    75.16%
+>    155262 requests in 10.10s, 23.10MB read
+> Non-2xx or 3xx responses: 3
 > 
+> We will find that the error is HTTP 400 error, which is a serious
+> exception in our test, which means the application data was
+> corrupted.
 > 
-I will put this change in another commit, this is due to my git rebase mistake.
-Thanks.
+> Consider the following scenarios:
+> 
+> CPU0                            CPU1
+> 
+> buf_desc->used = 0;
+>                                  cmpxchg(buf_desc->used, 0, 1)
+>                                  deal_with(buf_desc)
+> 
+> memset(buf_desc->cpu_addr,0);
+> 
+> This will cause the data received by a victim connection to be cleared,
+> thus triggering an HTTP 400 error in the server.
+> 
+> This patch exchange the order between clear used and memset, add
+> barrier to ensure memory consistency.
+> 
+> Fixes: 1c5526968e27 ("net/smc: Clear memory when release and reuse buffer")
+> Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
+> ---
+>   net/smc/smc_core.c | 5 +++--
+>   1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+> index 84bf84c..fdad953 100644
+> --- a/net/smc/smc_core.c
+> +++ b/net/smc/smc_core.c
+> @@ -1380,8 +1380,9 @@ static void smcr_buf_unuse(struct smc_buf_desc *buf_desc, bool is_rmb,
+>   
+>   		smc_buf_free(lgr, is_rmb, buf_desc);
+>   	} else {
+> -		buf_desc->used = 0;
+> -		memset(buf_desc->cpu_addr, 0, buf_desc->len);
+> +		/* memzero_explicit provides potential memory barrier semantics */
+> +		memzero_explicit(buf_desc->cpu_addr, buf_desc->len);
+> +		WRITE_ONCE(buf_desc->used, 0);
+>   	}
+>   }
+>   
 
->>   	}
->>   
->>   	/* We're using some buffers from the free list. */
->> @@ -701,8 +715,16 @@ static void detach_buf_split(struct vring_virtqueue *vq,
->> unsigned int head,
->>   	}
->>   
->>   	vring_unmap_one_split(vq, i);
->> -	vq->split.desc_extra[i].next = vq->free_head;
->> -	vq->free_head = head;
->> +	/*
->> +	 * If in_order feature is negotiated,
->> +	 * the descriptors are made available in order.
->> +	 * Since the free_head is already a circular list,
->> +	 * it must consume it sequentially.
->> +	 */
->> +	if (!vq->in_order) {
->> +		vq->split.desc_extra[i].next = vq->free_head;
->> +		vq->free_head = head;
->> +	}
->>   
->>   	/* Plus final descriptor */
->>   	vq->vq.num_free++;
->> @@ -744,7 +766,7 @@ static void *virtqueue_get_buf_ctx_split(struct virtqueue
->> *_vq,
->>   {
->>   	struct vring_virtqueue *vq = to_vvq(_vq);
->>   	void *ret;
->> -	unsigned int i;
->> +	unsigned int i, j;
->>   	u16 last_used;
->>   
->>   	START_USE(vq);
->> @@ -763,11 +785,38 @@ static void *virtqueue_get_buf_ctx_split(struct virtqueue
->> *_vq,
->>   	/* Only get used array entries after they have been exposed by host. */
->>   	virtio_rmb(vq->weak_barriers);
->>   
->> -	last_used = (vq->last_used_idx & (vq->split.vring.num - 1));
->> -	i = virtio32_to_cpu(_vq->vdev,
->> -			vq->split.vring.used->ring[last_used].id);
->> -	*len = virtio32_to_cpu(_vq->vdev,
->> -			vq->split.vring.used->ring[last_used].len);
->> +	if (vq->in_order) {
->> +		last_used = (vq->last_used_idx & (vq->split.vring.num - 1));
-> 
-> 
-> Let's move this beyond the in_order check.
-> 
-> 
->> +		if (!vq->split.is_skipped_buffer) {
->> +			vq->split.last_desc_in_batch =
->> +				virtio32_to_cpu(_vq->vdev,
->> +						vq->split.vring.used->ring[last_used].id);
->> +			vq->split.is_skipped_buffer = true;
->> +		}
->> +		/* For skipped buffers in batch, we can ignore the len info, simply set len
->> as 0 */
-> 
-> 
-> This seems to break the caller that depends on a correct len.
-> 
-> 
->> +		if (vq->split.next_desc_begin != vq->split.last_desc_in_batch) {
->> +			*len = 0;
->> +		} else {
->> +			*len = virtio32_to_cpu(_vq->vdev,
->> +					       vq->split.vring.used->ring[last_used].len);
->> +			vq->split.is_skipped_buffer = false;
->> +		}
->> +		i = vq->split.next_desc_begin;
->> +		j = i;
->> +		/* Indirect only takes one descriptor in descriptor table */
->> +		while (!vq->indirect && (vq->split.desc_extra[j].flags & VRING_DESC_F_NEXT))
->> +			j = (j + 1) & (vq->split.vring.num - 1);
-> 
-> 
-> Any reason indirect descriptors can't be chained?
-> 
-> 
->> +		/* move to next */
->> +		j = (j + 1) % vq->split.vring.num;
->> +		/* Next buffer will use this descriptor in order */
->> +		vq->split.next_desc_begin = j;
-> 
-> 
-> Is it more efficient to poke the available ring?
-> 
-> Thanks
-> 
-> 
->> +	} else {
->> +		last_used = (vq->last_used_idx & (vq->split.vring.num - 1));
->> +		i = virtio32_to_cpu(_vq->vdev,
->> +				    vq->split.vring.used->ring[last_used].id);
->> +		*len = virtio32_to_cpu(_vq->vdev,
->> +				       vq->split.vring.used->ring[last_used].len);
->> +	}
->>   
->>   	if (unlikely(i >= vq->split.vring.num)) {
->>   		BAD_RING(vq, "id %u out of range\n", i);
->> @@ -2223,6 +2272,7 @@ struct virtqueue *__vring_new_virtqueue(unsigned int
->> index,
->>   
->>   	vq->indirect = virtio_has_feature(vdev, VIRTIO_RING_F_INDIRECT_DESC) &&
->>   		!context;
->> +	vq->in_order = virtio_has_feature(vdev, VIRTIO_F_IN_ORDER);
->>   	vq->event = virtio_has_feature(vdev, VIRTIO_RING_F_EVENT_IDX);
->>   
->>   	if (virtio_has_feature(vdev, VIRTIO_F_ORDER_PLATFORM))
->> @@ -2235,6 +2285,10 @@ struct virtqueue *__vring_new_virtqueue(unsigned int
->> index,
->>   	vq->split.avail_flags_shadow = 0;
->>   	vq->split.avail_idx_shadow = 0;
->>   
->> +	vq->split.next_desc_begin = 0;
->> +	vq->split.last_desc_in_batch = 0;
->> +	vq->split.is_skipped_buffer = false;
->> +
->>   	/* No callback?  Tell other side not to bother us. */
->>   	if (!callback) {
->>   		vq->split.avail_flags_shadow |= VRING_AVAIL_F_NO_INTERRUPT;
+It seems that the same issue exists in smc_buf_unuse(), Maybe it also needs to be fixed?
+
+
+static void smc_buf_unuse(struct smc_connection *conn,
+			  struct smc_link_group *lgr)
+{
+	if (conn->sndbuf_desc) {
+		if (!lgr->is_smcd && conn->sndbuf_desc->is_vm) {
+			smcr_buf_unuse(conn->sndbuf_desc, false, lgr);
+		} else {
+			conn->sndbuf_desc->used = 0;
+			memset(conn->sndbuf_desc->cpu_addr, 0,
+			       conn->sndbuf_desc->len);
+                         ^...................
+		}
+	}
+	if (conn->rmb_desc) {
+		if (!lgr->is_smcd) {
+			smcr_buf_unuse(conn->rmb_desc, true, lgr);
+		} else {
+			conn->rmb_desc->used = 0;
+			memset(conn->rmb_desc->cpu_addr, 0,
+			       conn->rmb_desc->len +
+			       sizeof(struct smcd_cdc_msg));
+                         ^...................
+		}
+	}
+}
+
+Thanks,
+Wen Gu
