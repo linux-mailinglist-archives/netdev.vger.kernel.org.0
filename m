@@ -2,131 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BC8A5B1A70
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 12:48:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5133A5B1A9C
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 12:53:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230515AbiIHKsO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 06:48:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35880 "EHLO
+        id S231318AbiIHKxL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 06:53:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229534AbiIHKsM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 06:48:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0431DED3B4
-        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 03:48:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662634091;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=yfx6Pf7fOZJ08hVi3MDI43RjV5cYDVw4BdOhPdnkxu4=;
-        b=YkyCXJBAHVPDovjTJtEprrd/kFhIwXVIfq1iwzvguFAvbNA6fQKgzp6V3QdfxXjwOiV5r2
-        1JMifKX+xY9xPYd+2YJvvfkadwCE53ze6hkctBHCpCqT01lMS3miEJu9eXeScHcUvzodKQ
-        +n1AF79caluqPt2iQ7X1WaAa+z20uOQ=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-597-9VmBXe3iPo26hvm72DA_Xw-1; Thu, 08 Sep 2022 06:48:09 -0400
-X-MC-Unique: 9VmBXe3iPo26hvm72DA_Xw-1
-Received: by mail-qv1-f72.google.com with SMTP id g4-20020ad45424000000b004a9bb302c85so7088053qvt.22
-        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 03:48:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=yfx6Pf7fOZJ08hVi3MDI43RjV5cYDVw4BdOhPdnkxu4=;
-        b=YQYepPd4TqLhw7vSXyjA7AsYg7JW725f0ZOos2bFYMmmZfe3zJ1kgMq8ET6CuiQ59N
-         ufc9vaTcbF2Ew/kUBv5GQ9BI3xlQlJN24JhP0OfNlnCjIJPZMSAlVooe5gbFOlJGc+9D
-         fqbzHMeJtXHd1aoduGA/b3G2V5QGvf1I7dY8bUNSOrOcAFZ235LZkOAB5l5+p8JN/VjG
-         fBX4D6VO2tzG9IriM9ZmMWoHrJvUAU0PJgPNcKyB7hbcfL5rgJkCzn2EdhpJp1DWqNvY
-         ZBUHsjZHNCl4Pk9IBN3rn2gCO0fa0YXV84K5WvVdrC0dXHdwAJHlqhNZhJLDikZkVcQt
-         FRjA==
-X-Gm-Message-State: ACgBeo0U0i346U/60qWmBYNMQ/pAAgLFZs8eYN2k3MZKKdsIo1F04V+z
-        1eDJJXukDKxGHSC20VUqsNq0iTD3//pe0WlpFdtNbpq3zuvofH3rPGSSuhjBPnZp30LW/hnsXhh
-        GkGfP4mHcckmxumD4
-X-Received: by 2002:ad4:5c6f:0:b0:4aa:a393:fe85 with SMTP id i15-20020ad45c6f000000b004aaa393fe85mr6696467qvh.124.1662634089427;
-        Thu, 08 Sep 2022 03:48:09 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4y2W4LejdYbw3BROZCwbWX/f7TdFQGfm8JOHS5wVF3jE7vJfCgi1ij92pkBCpt4BWBEPbYFw==
-X-Received: by 2002:ad4:5c6f:0:b0:4aa:a393:fe85 with SMTP id i15-20020ad45c6f000000b004aaa393fe85mr6696449qvh.124.1662634089214;
-        Thu, 08 Sep 2022 03:48:09 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-119-112.dyn.eolo.it. [146.241.119.112])
-        by smtp.gmail.com with ESMTPSA id m11-20020a05620a290b00b006bb87c4833asm17594284qkp.109.2022.09.08.03.48.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Sep 2022 03:48:08 -0700 (PDT)
-Message-ID: <fff6a18ddb74423cd31918802e4001f8bd7e27c5.camel@redhat.com>
-Subject: Re: [PATCH net] net: avoid 32 x truesize under-estimation for tiny
- skbs
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Greg Thelen <gthelen@google.com>
-Date:   Thu, 08 Sep 2022 12:48:05 +0200
-In-Reply-To: <66c8b7c2-25a6-2834-b341-22b6498e3f7e@gmail.com>
-References: <20210113161819.1155526-1-eric.dumazet@gmail.com>
-         <bd79ede94805326cd63f105c84f1eaa4e75c8176.camel@redhat.com>
-         <66c8b7c2-25a6-2834-b341-22b6498e3f7e@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S230441AbiIHKxF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 06:53:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A692F7550;
+        Thu,  8 Sep 2022 03:53:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0216E61B77;
+        Thu,  8 Sep 2022 10:53:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8421BC433C1;
+        Thu,  8 Sep 2022 10:53:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662634383;
+        bh=T2b1neGCZ1zcm07GNhCg8eLRvHEy51UOJVapdPUXtW0=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=TSaXFTGxJghx3ThVEdgZXAba3w5CIXpD/ZK0ytZcf4EJ631fx8dzCGIQ11b1ytHJ1
+         wM9vL4boRo/3uHtvMDA7t4JAt08w3v9eLB7WrVuVnc3eyKYktWNNnEgDA/LeJvapdX
+         kKlL5+22qJ3+pNlttra6wHZEfrWcGyn0bEavCFFxYEySjEPHG0mwn1BZGgrEaYutFI
+         nU1XKFSuGh3KVvneD45vAelfZZjV3rCXmlKN0IDK78Z4tsiL7uVIaV4AzUp0GCY+Q1
+         Mxrb8M8hlfL4N9gLnQ+i3Ddx4mD9Qz0Q3NaXxwKPOkW3iarRnjYrL5ttlz6CaiV/qn
+         cLJEZPFKBdz0A==
+Message-ID: <5e6eb6d6-3221-856e-daa1-7c27b1a1d659@kernel.org>
+Date:   Thu, 8 Sep 2022 04:53:01 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.13.0
+Subject: Re: [PATCH v8 01/26] tcp: authopt: Initial support and key management
+Content-Language: en-US
+To:     Leonard Crestez <cdleonard@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     Francesco Ruggeri <fruggeri@arista.com>,
+        Salam Noureddine <noureddine@arista.com>,
+        Philip Paeps <philip@trouble.is>,
+        Shuah Khan <shuah@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yuchung Cheng <ycheng@google.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Christoph Paasch <cpaasch@apple.com>,
+        Ivan Delalande <colona@arista.com>,
+        Caowangbao <caowangbao@huawei.com>,
+        Priyaranjan Jha <priyarjha@google.com>, netdev@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Dmitry Safonov <0x7f454c46@gmail.com>
+References: <cover.1662361354.git.cdleonard@gmail.com>
+ <0e4c0a98509b907e33c2f80b95cc6cfe713ac2b2.1662361354.git.cdleonard@gmail.com>
+ <9bb98d13313d2ebeb5804d67285e8e6320ce4e74.camel@redhat.com>
+ <589e17df-e321-c8ad-5360-e286c10cb1a3@gmail.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <589e17df-e321-c8ad-5360-e286c10cb1a3@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-10.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-09-07 at 13:40 -0700, Eric Dumazet wrote:
-> On 9/7/22 13:19, Paolo Abeni wrote:
-> > Hello,
-> > 
-> > reviving an old thread...
-> > On Wed, 2021-01-13 at 08:18 -0800, Eric Dumazet wrote:
-> > > While using page fragments instead of a kmalloc backed skb->head might give
-> > > a small performance improvement in some cases, there is a huge risk of
-> > > under estimating memory usage.
-> > [...]
-> > 
-> > > Note that we might in the future use the sk_buff napi cache,
-> > > instead of going through a more expensive __alloc_skb()
-> > > 
-> > > Another idea would be to use separate page sizes depending
-> > > on the allocated length (to never have more than 4 frags per page)
-> > I'm investigating a couple of performance regressions pointing to this
-> > change and I'd like to have a try to the 2nd suggestion above.
-> > 
-> > If I read correctly, it means:
-> > - extend the page_frag_cache alloc API to allow forcing max order==0
-> > - add a 2nd page_frag_cache into napi_alloc_cache (say page_order0 or
-> > page_small)
-> > - in __napi_alloc_skb(), when len <= SKB_WITH_OVERHEAD(1024), use the
-> > page_small cache with order 0 allocation.
-> > (all the above constrained to host with 4K pages)
-> > 
-> > I'm not quite sure about the "never have more than 4 frags per page"
-> > part.
-> > 
-> > What outlined above will allow for 10 min size frags in page_order0, as
-> > (SKB_DATA_ALIGN(0) + SKB_DATA_ALIGN(struct skb_shared_info) == 384. I'm
-> > not sure that anything will allocate such small frags.
-> > With a more reasonable GRO_MAX_HEAD, there will be 6 frags per page.
+On 9/8/22 4:47 AM, Leonard Crestez wrote:
+> On 9/8/22 09:35, Paolo Abeni wrote:
+>> On Mon, 2022-09-05 at 10:05 +0300, Leonard Crestez wrote:
+>> [...]
+>>> diff --git a/net/ipv4/tcp_authopt.c b/net/ipv4/tcp_authopt.c
+>>> new file mode 100644
+>>> index 000000000000..d38e9c89c89d
+>>> --- /dev/null
+>>> +++ b/net/ipv4/tcp_authopt.c
+>>> @@ -0,0 +1,317 @@
+>>> +// SPDX-License-Identifier: GPL-2.0-or-later
+>>> +
+>>> +#include <net/tcp_authopt.h>
+>>> +#include <net/ipv6.h>
+>>> +#include <net/tcp.h>
+>>> +#include <linux/kref.h>
+>>> +
+>>> +/* This is enabled when first struct tcp_authopt_info is allocated
+>>> and never released */
+>>> +DEFINE_STATIC_KEY_FALSE(tcp_authopt_needed_key);
+>>> +EXPORT_SYMBOL(tcp_authopt_needed_key);
+>>> +
+>>> +static inline struct netns_tcp_authopt *sock_net_tcp_authopt(const
+>>> struct sock *sk)
+>>> +{
+>>> +    return &sock_net(sk)->tcp_authopt;
+>>> +}
+>>
+>> Please have a look at PW report for this series, there are a bunch of
+>> issues to be addressed, e.g. above 'static inline' should be just
+>> 'static'
 > 
-> Well, some arches have PAGE_SIZE=65536 :/
+> What is a "PW report"? I can't find any info about this.
 
-Yes, the idea is to implement all the above only for arches with
-PAGE_SIZE==4K. Would that be reasonable? 
+patchworks: https://patchwork.kernel.org/project/netdevbpf/list/
 
-Thanks!
+This set:
+https://patchwork.kernel.org/project/netdevbpf/list/?series=&submitter=116101&state=7&q=&archive=&delegate=
 
-Paolo
 
+>> I'm sorry to bring the next topic this late (If already discussed, I
+>> missed that point), is possible to split this series in smaller chunks?
+> 
+> It's already 26 patches and 3675 added lines, less that 150 lines per
+> patch seems reasonable?
+> 
+> The split is already somewhat artificial, for example there are patches
+> that "add crypto" without actually using it because then it would be too
+> large.
+> 
+> Some features could be dropped for later in order to make this smaller,
+> for example TCP_REPAIR doesn't have many usecases. Features like
+> prefixlen, vrf binding and ipv4-mapped-ipv6 were explicitly requested by
+> maintainers so I included them as separate patches in the main series.
+> 
+
+The tests could be dropped from the first set along with TCP_REPAIR and
+ /proc/net/tcp_authopt patch. That would get it down to 21 patches. From
+there the refactor patches could be sent first in a separate PR that
+would get it down to 19. Those 19 are the core feature split into small
+patches; they should come in together IMHO.
