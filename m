@@ -1,114 +1,110 @@
 Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AA0B5B1250
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 04:02:40 +0200 (CEST)
+Received: from out1.vger.email (unknown [IPv6:2620:137:e000::1:20])
+	by mail.lfdr.de (Postfix) with ESMTP id AC35D5B126A
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 04:23:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230168AbiIHCCa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 22:02:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44318 "EHLO
+        id S229980AbiIHCW5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 22:22:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229607AbiIHCC2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 22:02:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D0B4AB1B6
-        for <netdev@vger.kernel.org>; Wed,  7 Sep 2022 19:02:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662602547;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=GjfEsUaHMfzHi5IAlxBstxq1c6LM3vW3A0uBM7qUHYs=;
-        b=hhacnbv39Vkwv9+W4VRKj+iXFy+PuT0VzpRAnkDCo/oi7Yl+qeqt+337HqvOFSx2R2ydkb
-        IqMk1LsMHIb4qJXI3lJs5XFtnViQIV7tVWdbiC/HhTpF85vtNLcR3UH3Q+Wtz/9uNXoE+e
-        p3bJeDfJT6Qt9ZGd5wFuMWfwdSEPdHA=
-Received: from mail-yw1-f200.google.com (mail-yw1-f200.google.com
- [209.85.128.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-125-I4swC4VsMNKGT9OzsoZAMw-1; Wed, 07 Sep 2022 22:02:26 -0400
-X-MC-Unique: I4swC4VsMNKGT9OzsoZAMw-1
-Received: by mail-yw1-f200.google.com with SMTP id 00721157ae682-34558a60c39so72028027b3.16
-        for <netdev@vger.kernel.org>; Wed, 07 Sep 2022 19:02:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=GjfEsUaHMfzHi5IAlxBstxq1c6LM3vW3A0uBM7qUHYs=;
-        b=Q0u80KdBNBr9Cp9q7CrhHJSvbiO3PkcL8seay/1OYPXKG97WhLweZwFJj1DZt2i4fr
-         Af8Z2pX6/aEVVOgB2VNzu7RjjuxAmmzaDMjxqRwOZB9d7sau+smZR22SzGOhQL8p/kZB
-         mDS0k5BQeVMT9GDXG6t4o/IlTKtTlRHYIL7h9kBC0uGh466rnYzde/TBmuABBRp6S4fQ
-         QwU3J/jR4AHt62IWO32TAJhEZkqNsxyIppkFEQ6lUy6pxEeXa6vNyUkMAZ3LfQw1BR/q
-         O9FZD0bCUKB542WARWjJoe8PC5fpgwFL+UbajvkBoKYwq61MGuFc28a/DUlLiARofytU
-         +YOQ==
-X-Gm-Message-State: ACgBeo1GAZxzb8PrPqiu6b0k+UQyr6nGegoL4pAJd+r51sonWx55/lKr
-        PVMWHoGFFClIlF9j8GAts8U6sl9xhtN6QCMX/3wo4iYUmAnD3qCZAv4sPExOYzp7zv3sNNKyBOJ
-        +GPOXkGXGJAmm09z8whB+7P/kFb7WUaaF
-X-Received: by 2002:a81:892:0:b0:345:3873:36e4 with SMTP id 140-20020a810892000000b00345387336e4mr5729593ywi.249.1662602545651;
-        Wed, 07 Sep 2022 19:02:25 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4+T3GDchJFTil6rYC+k2C3e0KB6ejdT/dDcUQqKgjob00o6B04iojRGphbGviSqYgspdGJOnn2xYLI9NMsyrY=
-X-Received: by 2002:a81:892:0:b0:345:3873:36e4 with SMTP id
- 140-20020a810892000000b00345387336e4mr5729573ywi.249.1662602545440; Wed, 07
- Sep 2022 19:02:25 -0700 (PDT)
+        with ESMTP id S229534AbiIHCW4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 22:22:56 -0400
+Received: from m12-12.163.com (m12-12.163.com [220.181.12.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 04D8AB56E2;
+        Wed,  7 Sep 2022 19:22:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=AZWIX
+        NnkX3ErlisVUb2M5Rru5jbGkoNRar4HCqxI8lU=; b=VrbwZmERR+z41tduuvjcJ
+        Z1EPrUkqBeBQFRMmegMJcPLFULq8gFUC2LI9EqbPYdkx9elu4DVzqqdjgMX6BLiC
+        mAaASt1YjsiJjm29bmDHGj8wQeKU7pTwpfFCSbgteUrTYE3x3FRJCv/xKuJ5X1S/
+        yHBCZ+Ew5HSwaFQU+TlnPU=
+Received: from f00160-VMware-Virtual-Platform.localdomain (unknown [1.203.67.201])
+        by smtp8 (Coremail) with SMTP id DMCowAAXzTGhURljKjUEZw--.19744S4;
+        Thu, 08 Sep 2022 10:21:33 +0800 (CST)
+From:   Jingyu Wang <jingyuwang_vip@163.com>
+To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jingyu Wang <jingyuwang_vip@163.com>
+Subject: [PATCH] net: ipv4: Fix some coding style in ah4.c file
+Date:   Thu,  8 Sep 2022 10:21:18 +0800
+Message-Id: <20220908022118.57973-1-jingyuwang_vip@163.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220830070339.494695-1-tcs_kernel@tencent.com>
-In-Reply-To: <20220830070339.494695-1-tcs_kernel@tencent.com>
-From:   Alexander Aring <aahringo@redhat.com>
-Date:   Wed, 7 Sep 2022 22:02:14 -0400
-Message-ID: <CAK-6q+iGfyKdcXRy5Qq+71D=BE2NbXPNSjx6YELr1HO0RYYk-g@mail.gmail.com>
-Subject: Re: [PATCH V2] net/ieee802154: fix uninit value bug in dgram_sendmsg
-To:     Haimin Zhang <tcs.kernel@gmail.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Haimin Zhang <tcs_kernel@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DMCowAAXzTGhURljKjUEZw--.19744S4
+X-Coremail-Antispam: 1Uf129KBjvJXoW7KFWxXryxWr48Ar1rGw45Wrg_yoW8GF43pF
+        4Dua4UtFW8Jw4xtF1UAF1ku34Yk3s7KFW7W34Dtw1ft3Z8uFy5WF1FyrWSyF4rWFWrGayx
+        XFyYyrWUJw1rJrJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pEID7sUUUUU=
+X-Originating-IP: [1.203.67.201]
+X-CM-SenderInfo: 5mlqw5xxzd0whbyl1qqrwthudrp/1tbiyQ12F2I66z5yrQAAs3
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Fix some checkpatch.pl complained about in ah4.c
 
-On Tue, Aug 30, 2022 at 3:03 AM Haimin Zhang <tcs.kernel@gmail.com> wrote:
->
-> There is uninit value bug in dgram_sendmsg function in
-> net/ieee802154/socket.c when the length of valid data pointed by the
-> msg->msg_name isn't verified.
->
-> We should check the msg_namelen is not less than struct
-> sockaddr_ieee802154 when addr_type is SHORT before calling
-> ieee802154_addr_from_sa. So we define IEEE802154_MIN_NAMELEN.
-> And in function ieee802154_addr_from_sa, when
-> addr_type is LONG, we check msg_namelen is not less than
-> sizeof(struct sockaddr_ieee802154). Meanwhile we check in the
-> beginning of function dgram_sendmsg.
->
+Signed-off-by: Jingyu Wang <jingyuwang_vip@163.com>
+---
+ net/ipv4/ah4.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-There exists also an IEEE802154_ADDR_NONE addr_type.
+diff --git a/net/ipv4/ah4.c b/net/ipv4/ah4.c
+index f8ad04470d3a..fe4715e7c80e 100644
+--- a/net/ipv4/ah4.c
++++ b/net/ipv4/ah4.c
+@@ -93,7 +93,7 @@ static int ip_clear_mutable_options(const struct iphdr *iph, __be32 *daddr)
+ 			continue;
+ 		}
+ 		optlen = optptr[1];
+-		if (optlen<2 || optlen>l)
++		if (optlen < 2 || optlen > l)
+ 			return -EINVAL;
+ 		switch (*optptr) {
+ 		case IPOPT_SEC:
+@@ -165,7 +165,8 @@ static int ah_output(struct xfrm_state *x, struct sk_buff *skb)
+ 	ahp = x->data;
+ 	ahash = ahp->ahash;
+ 
+-	if ((err = skb_cow_data(skb, 0, &trailer)) < 0)
++	err = skb_cow_data(skb, 0, &trailer));
++	if (err < 0)
+ 		goto out;
+ 	nfrags = err;
+ 
+@@ -352,7 +353,8 @@ static int ah_input(struct xfrm_state *x, struct sk_buff *skb)
+ 	skb->ip_summed = CHECKSUM_NONE;
+ 
+ 
+-	if ((err = skb_cow_data(skb, 0, &trailer)) < 0)
++	err = skb_cow_data(skb, 0, &trailer);
++	if (err < 0)
+ 		goto out;
+ 	nfrags = err;
+ 
+@@ -553,8 +555,7 @@ static int ah4_rcv_cb(struct sk_buff *skb, int err)
+ 	return 0;
+ }
+ 
+-static const struct xfrm_type ah_type =
+-{
++static const struct xfrm_type ah_type = {
+ 	.owner		= THIS_MODULE,
+ 	.proto	     	= IPPROTO_AH,
+ 	.flags		= XFRM_TYPE_REPLAY_PROT,
 
-We need to first check that space is there to evaluate the addr_type.
-
-If it's NONE, ignore hwaddr or short address. If it's SHORT or hwaddr
-check if they have space for it, if it's something completely
-different return -EINVAL.
-
-There are still missing bits and I would recommend introducing a
-helper function to do this "kind" of more complex check. This patch
-spreads different checks around by checking on IEEE802154_MIN_NAMELEN
-(which isn't correct, because NONE) and then requires another check by
-calling ieee802154_addr_from_sa() and checking the return code.
-
-- Alex
+base-commit: 5957ac6635a1a12d4aa2661bbf04d3085a73372a
+-- 
+2.34.1
 
