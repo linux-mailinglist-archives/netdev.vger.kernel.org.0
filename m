@@ -2,58 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A2415B16C3
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 10:20:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE2925B16E6
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 10:26:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230261AbiIHIUW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 04:20:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55864 "EHLO
+        id S230354AbiIHI0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 04:26:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229736AbiIHIUT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 04:20:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C49A3550A5
-        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 01:20:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 56A9E61BB8
-        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 08:20:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B8A06C433D7;
-        Thu,  8 Sep 2022 08:20:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662625217;
-        bh=tt5pNw545GGdWzNyJNvr5Ao3R4SZx3Fnq+mjQE1DDa4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=QTuuvW4pJR3vRD1U0L8w4dClBOWPHwES7PbNmb8t2VbTCkXFLO+/JYckTmxZHvX1n
-         V+cqGUfuxcJbhuYKbidIayuTpz1UmILDKtWZSbxoyWVwazHQYe4QZQFHwRLluqHLBo
-         usKH+cS6ESkWPvn2hsOeynhL7MBlI4AXVOr9za6/zsBAxyIIZVKAhXWeXbRnNAipLT
-         gryjSKr5r8PwD9tlqmDwtyYHgM1w8WMdLM2ZxRQC53ZhDy3xmJr6JCKuvRlImI1bg8
-         VrFlingN7rDZyYvmx7seVOySrQOBICaKBfAntsF4eVBY/UIG1KnocEzHSsG/ta82+u
-         shgGz8HA/iRaw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 926FAC73FEF;
-        Thu,  8 Sep 2022 08:20:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S231572AbiIHIZf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 04:25:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 183467C52D
+        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 01:25:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662625531;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8vnkvot4M9lG5xTS18xARZyv61dU23JiFJA7U0ihCpA=;
+        b=Re1bAaqLuGykCpDjVX7sSiwmigS1unuMmICnxYvYE3LUClOhiIlg7TXGVjkykRV/XxoAXk
+        48wFlF1/ITmqzT/yDA2X3V9qHecgSAKPqWa3KfJydHFRG1GVwTE4yXXuApuzbdQ5JTDu1I
+        hK2ml2FvP4gq7KhS+L6L870V9BknNAk=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-264-KXkJ7nfJNwuKwQY5uhQ1uQ-1; Thu, 08 Sep 2022 04:25:22 -0400
+X-MC-Unique: KXkJ7nfJNwuKwQY5uhQ1uQ-1
+Received: by mail-qt1-f199.google.com with SMTP id b10-20020a05622a020a00b003437e336ca7so13898211qtx.16
+        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 01:25:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=8vnkvot4M9lG5xTS18xARZyv61dU23JiFJA7U0ihCpA=;
+        b=QrmWPEeD2VWJ4sV6c8vnqwjBf6JE4DbssTWw69oSTu0VNkyM1mg1/aUCg5HISd+2/2
+         rxFYfWIO8LMNuYUAxUncHBH2jjbMpWuBlU0Abj5MdSyxxVknsGMgzKyGl0tpb+qjSw6J
+         +Ylz0l4oHqJl6OlVX3kxYiUOgYs5QUDFKd2PxzDU5wZElPD6DbmKRx4S/qWHSYxKmaxJ
+         iv2OCKNcP5gNmKBRQ/SOHcPvegTyTMxeL3TbMK8ymIl9llUWzzcKcDZ+tPw3WveIv/ir
+         vIqfTb48G4r08Wcc5r59Wrt/xY5FvV+qoGufcsNrJT55eQNMYt7sOwrFINxfFwYG8eI4
+         fGJA==
+X-Gm-Message-State: ACgBeo1MXNiJkI+po4T+jcq5RcVIbFbxABwcOzNKZCE07yJq0wT8rB5T
+        C/VUXGoLJ1CCVOYNBnxGn6pewsfUAur9bbmurmMeX04+5MczqamgpB9WcwQTP3lXrp0jDqDW63N
+        aEBTcZlm7uINnjMlA
+X-Received: by 2002:a05:620a:488e:b0:6bb:3f84:d175 with SMTP id ea14-20020a05620a488e00b006bb3f84d175mr5511007qkb.587.1662625522290;
+        Thu, 08 Sep 2022 01:25:22 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7WL/XsMoUG5GX69icxKiBPEm17mvgWkJkdT1o5b/1KnaPdUY5FzdDPBRyYucqyskfLfkIT2w==
+X-Received: by 2002:a05:620a:488e:b0:6bb:3f84:d175 with SMTP id ea14-20020a05620a488e00b006bb3f84d175mr5510997qkb.587.1662625522071;
+        Thu, 08 Sep 2022 01:25:22 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-119-112.dyn.eolo.it. [146.241.119.112])
+        by smtp.gmail.com with ESMTPSA id m25-20020ac84459000000b00344cb66b860sm14415062qtn.38.2022.09.08.01.25.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Sep 2022 01:25:21 -0700 (PDT)
+Message-ID: <f62937889fdb5613a59ae1f3f5c05207c07bd6e2.camel@redhat.com>
+Subject: Re: [PATCH net-next] net marvell: prestera: add support for for
+ Aldrin2
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Taras Chornyi <taras.chornyi@plvision.eu>
+Date:   Thu, 08 Sep 2022 10:25:17 +0200
+In-Reply-To: <GV1P190MB20194E2C26F15E21AF1C6E5CE47E9@GV1P190MB2019.EURP190.PROD.OUTLOOK.COM>
+References: <20220905131414.8318-1-oleksandr.mazur@plvision.eu>
+         <GV1P190MB20194E2C26F15E21AF1C6E5CE47E9@GV1P190MB2019.EURP190.PROD.OUTLOOK.COM>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v1] net: stmmac: Disable automatic FCS/Pad stripping
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166262521759.28234.1058076387389491092.git-patchwork-notify@kernel.org>
-Date:   Thu, 08 Sep 2022 08:20:17 +0000
-References: <20220905130155.193640-1-kurt@linutronix.de>
-In-Reply-To: <20220905130155.193640-1-kurt@linutronix.de>
-To:     Kurt Kanzenbach <kurt@linutronix.de>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, peppe.cavallaro@st.com,
-        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
-        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,31 +85,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
-
-On Mon,  5 Sep 2022 15:01:55 +0200 you wrote:
-> The stmmac has the possibility to automatically strip the padding/FCS for IEEE
-> 802.3 type frames. This feature is enabled conditionally. Therefore, the stmmac
-> receive path has to have a determination logic whether the FCS has to be
-> stripped in software or not.
+On Tue, 2022-09-06 at 08:18 +0000, Oleksandr Mazur wrote:
+> Apparently i've missed the colon to the subject:
+> > net marvell
+> instead of "net: marvell".
 > 
-> In fact, for DSA this ACS feature is disabled and the determination logic
-> doesn't check for it properly. For instance, when using DSA in combination with
-> an older stmmac (pre version 4), the FCS is not stripped by hardware or software
-> which is problematic.
-> 
-> [...]
+> Should i resend V2 with mentioned issue fixed?
 
-Here is the summary with links:
-  - [net-next,v1] net: stmmac: Disable automatic FCS/Pad stripping
-    https://git.kernel.org/netdev/net-next/c/929d43421ee5
+Yes, please. Additionally I think this should target the -net tree.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Thanks!
 
+Paolo
 
