@@ -2,288 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E4495B1C07
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 13:59:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E4005B1C12
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 14:01:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230376AbiIHL7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 07:59:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55486 "EHLO
+        id S229862AbiIHMBS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 08:01:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230391AbiIHL67 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 07:58:59 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC0F711C7F2
-        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 04:58:51 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id bt10so27333521lfb.1
-        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 04:58:51 -0700 (PDT)
+        with ESMTP id S229504AbiIHMBR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 08:01:17 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E556FE2291
+        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 05:01:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1662638477; x=1694174477;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=j/yX8TpwgjNrkgTk/muTA9Y3BkQHbhwLm1VdA15O9AA=;
+  b=agIC2YIls2Urzk4wy5Kv0oqVNge2M55fBIGsYiQcJ/sLRLqm8OhjAwKq
+   MayiNeqedJ710y1tOrszqmFZbYgWmoZfJEJSX/JU5YgIzLh7dvuoj4lyH
+   KtqP7+BgHF5Qrp81FkVzQ0G9SDJX/W7ktmPive7Wqsbz0+mpnCwlFrh2G
+   KYrig3hhk4DyG3lVAwdZRXstBBglubjI1jC5mSGIjc54p6S5JICmFwI5+
+   jiHrZLQpKGNn1NWgFo/UtS4hzl92+VArsNqGgRshUzG2BfunfqHqQ2aeR
+   zmOdIJeZtY4Y64XSGXFqPz3zMBqAC858NbHHgYYcp/Jm5MHSmfJ6uR2Fb
+   w==;
+X-IronPort-AV: E=Sophos;i="5.93,300,1654585200"; 
+   d="scan'208";a="172936922"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Sep 2022 05:01:16 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Thu, 8 Sep 2022 05:01:15 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12 via Frontend Transport; Thu, 8 Sep 2022 05:01:15 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SWJm6d2iwFm/rHNbjwMcduowzS/IP0hrwhFy0qrvCmFLmlm4/ja3BmUpsYBuYMIebQLxlay3udC6ISrsdj9o9759SEWcxGjbaoaWZsj+ggIDg4jwaF2RHHvDTZJ5tQsaCw2AZek9KfUqQoYd80GFKFBuZp56uo+s3ygubxsAG/PbXtGlymJ6QxZCZIjB8yUkLX7GJFUyUTYnxUG6kJMIPYAZV3DuysxIywQyX1//iaHI8JBZzPz31CtQ3n+M/1PKFYDm3lWtMqjHNfXUf0QmlMHAGq9Uibqn5+oJEvCbcFtyv2fGD6q+0em/o+Q5vj7Yi28uMSn08J4VxfKeMJvVIQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=j/yX8TpwgjNrkgTk/muTA9Y3BkQHbhwLm1VdA15O9AA=;
+ b=eTLvMnZuAM2L5HWrNz6SpuS0CuqvK+WHT176fEPY5xrYpSqRW1nQ8CMpUW2rH9PKxtJ6ZHx3Mhs8vs5H+zpFksFxPczn6xxvTXE9RL54SNdlV+kJ/eXqDkOvyIW+gi/8mD01UCCssRyFMhfz86tZu6cdTwxfevYZKvETzZjOlImT8FwHm3hRquLgoJd6ySEUeILZ0ksQQ6lPvsmziodzwt978Smm96dk9t7LoPZ6qYcT5UhqksVmguvasQ1e0vMaMThgGh4uiN8sMIvsRf6txMiTIHH0w3kdAuFx87Kujb/5A0J8CPwxy+cz7Qg6RHkjPUCOSEXrKJK7BgYVPhBQcQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=f/0j/+ErzTE6lgqBL+X99uyT3sFRj/WP+OI3F6HeGd4=;
-        b=iBCA3COAIcKyt9o1HqHPVGquHt2rG7jIBtk6o/6q4cvBJEGSu/sekyMCdqi3WqK5Od
-         rX9Tx4qsAs2mvU/6D0Z4HTzN8ZaHJD3nWABSFNxlikvqi91KiPbiAommp3rw+IXaHc+t
-         1sB9T+w+rT5llN8SUrbmJLN3elpjHSK4P8THZsUY2Obis3DY6RbokcFqZIJxh/7x+xyz
-         yUHyZjPjan9z/PZTv30BjwSD+l5LYmNaMLlp1xMzm6p2elOs1U7UGS7SwCqb9mKpHIgB
-         yym5e+F/ohAFAgyXANZMlArJ1VAXTUjA313fhx3IoWrdGk4+w1sx5GxI0ALta2gUrWZ3
-         hQSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=f/0j/+ErzTE6lgqBL+X99uyT3sFRj/WP+OI3F6HeGd4=;
-        b=ykNAl2aapA3KXE34ff9B0LbOjp0/JB5lSkWi1AfYdbBXZygzU4AN61/4CaeaRf7VRE
-         sNdq3pe0oSE5yIYs78arCydQqj09PLml5C/Hj4mU6mXRHE7eK4+7hDUlLWDG8nPvBN3c
-         YsfwiuKKxpJLW+yHfQIAITZsvty9ZVQRZsIMD1GVMOTe71GdZbPuCiNjs/JCa6IjpWFq
-         KyPDkd45R/hHY1aQVj31CkDpyyX4LtaT1/tNNoVba3fkh/1EIZLg0O60L3ObaFJnP5GR
-         Bl7NShhwag3Q217WF53Zf0HVK2e2isAQ9Ryj/aWS+uG7CrmrBtSf6m/RLUpDA4Y3B3ei
-         ZT1A==
-X-Gm-Message-State: ACgBeo0CQwgNt95ajmvO6Z1XBujQnHEZe4mF1VLF6ZwL6FF/Gfvxk/Ex
-        DwJkxLFCuN3f/10fZJYRzwXwI770IqQGkmXt
-X-Google-Smtp-Source: AA6agR6YD0O1OFNZWIffE7GbhYBDmQEoY32gOKHi8a4us3Dq+OTwXzgWveqPYBn/Dn7Zovw4DQRx9w==
-X-Received: by 2002:a05:6512:41c:b0:497:a5fe:f39f with SMTP id u28-20020a056512041c00b00497a5fef39fmr2853949lfk.291.1662638327943;
-        Thu, 08 Sep 2022 04:58:47 -0700 (PDT)
-Received: from wse-c0089.raspi.local (h-98-128-229-160.NA.cust.bahnhof.se. [98.128.229.160])
-        by smtp.gmail.com with ESMTPSA id s10-20020a2e81ca000000b0026acfbbcb7esm833595ljg.12.2022.09.08.04.58.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Sep 2022 04:58:47 -0700 (PDT)
-From:   Mattias Forsblad <mattias.forsblad@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Mattias Forsblad <mattias.forsblad@gmail.com>
-Subject: [PATCH net-next v6 6/6] net: dsa: qca8k: Use new convenience functions
-Date:   Thu,  8 Sep 2022 13:58:35 +0200
-Message-Id: <20220908115835.3205487-7-mattias.forsblad@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220908115835.3205487-1-mattias.forsblad@gmail.com>
-References: <20220908115835.3205487-1-mattias.forsblad@gmail.com>
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=j/yX8TpwgjNrkgTk/muTA9Y3BkQHbhwLm1VdA15O9AA=;
+ b=dBvsQryRAo1uL1Nqv05tN6vz8Yz57G5CBVdM0Iw/8M5wB0nNtJXyfKayISyUPligMrUyuulm6OAXjQMiW5niIChVvfF3PGSYCmPMspiB9QD61AU3TFdDJyU01+M+qyPrIipTTAod7fjRt15YsbXX3xbqbLYZo08jAOKQ2XT1Ph8=
+Received: from CO6PR11MB5569.namprd11.prod.outlook.com (2603:10b6:303:139::20)
+ by BYAPR11MB3303.namprd11.prod.outlook.com (2603:10b6:a03:18::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.14; Thu, 8 Sep
+ 2022 12:01:03 +0000
+Received: from CO6PR11MB5569.namprd11.prod.outlook.com
+ ([fe80::b082:2b7a:7b7:3c53]) by CO6PR11MB5569.namprd11.prod.outlook.com
+ ([fe80::b082:2b7a:7b7:3c53%5]) with mapi id 15.20.5612.012; Thu, 8 Sep 2022
+ 12:01:02 +0000
+From:   <Daniel.Machon@microchip.com>
+To:     <petrm@nvidia.com>
+CC:     <vladimir.oltean@nxp.com>, <Allan.Nielsen@microchip.com>,
+        <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <vinicius.gomes@intel.com>, <thomas.petazzoni@bootlin.com>,
+        <maxime.chevallier@bootlin.com>, <roopa@nvidia.com>
+Subject: Re: Basic PCP/DEI-based queue classification
+Thread-Topic: Basic PCP/DEI-based queue classification
+Thread-Index: AQHYs6to3s1IQsOvq0mxCyeVWfydNK22C7sAgAPQsYCAAOG8gIAC9iEAgAAg5QCAAItKAIAAGesAgABY2ICABr5YAIAGp+0AgAeuXgCAAG6mgIAALLAAgAD+2ICAAA56AA==
+Date:   Thu, 8 Sep 2022 12:01:02 +0000
+Message-ID: <Yxnbnp9dIxG5A+XF@DEN-LT-70577>
+References: <87pmgpki9v.fsf@nvidia.com> <YwZoGJXgx/t/Qxam@DEN-LT-70577>
+ <87k06xjplj.fsf@nvidia.com> <20220824175453.0bc82031@kernel.org>
+ <20220829075342.5ztd5hf4sznl7req@lx-anielsen>
+ <20220902133218.bgfd2uaelvn6dsfa@skbuf> <Yxh3ZOvfESYT36UN@DEN-LT-70577>
+ <20220907172613.mufgnw3k5rt745ir@skbuf> <Yxj5smlnHEMn0sq2@DEN-LT-70577>
+ <871qsmf6rk.fsf@nvidia.com>
+In-Reply-To: <871qsmf6rk.fsf@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: CO6PR11MB5569:EE_|BYAPR11MB3303:EE_
+x-ms-office365-filtering-correlation-id: b6b1b1bb-cd1d-42f2-9816-08da9191cd5c
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Nf9N0GSVRilPUgeaUnIE2+g9Vw25FRzCXVTKOCnWToUdjNvrktauMcEtFmaRWTW4IyYgF/yYl3ZFYv0GrlvLJ4bDbZqWP4yGkqgBpdoqsryoNzxcCGaUm2r1ZJBjOSH6eyNvL6XT1zW9dMDz3TyaqmgdLk8gLLpw7sFDw1mViCUOv/zCRSbPeV0JyMrNuiaqZ/9i5XW595edNd/wSC6HvUSsltpEHIbLbwgeucd1Mny37l/Oyk0Sdbv2XpgwcZGGN1iHPOLkLbq72S4wKhXEXq9m/2OvNBUYffejAwCaidxI7us6liU4k2TBCfRF/gSulWTLMAz3F8ZwlsJZteAVzd260Qwt8JnfROHez+g4v8vRVwdkgHktRGS7r/ar5LQEFWLeqtbt+q+BuR8NJqlQF2yk3PW8ZOhO2Cl8d8f3MsSdOx6xyNpvVvYbvynaqCVQAffWrEng3rl2DZd3trORmpAJuAQRZci+bXVtvnN6r0ccVHws79PUDNfHaw1jh9wBOxyaAj+sm03rjf+w0M+cmLlIfrqTtGTC+12y+DiraRPvkVF+KWrFWnlYkzhEam7mYWg4EpTCWTJcap7ZiFwoKwmtES4TKK0Awb77pC2vFfNarFje65Yt/VNfmMaUOm9dzBXNh08U8yReoMfBQsQ16K5Vl8zgaaVsxuQ60/y0zLDwWtM2XziPe4KAXGwU7vpMLREiFR4p2MHpn9OxRheeQkDXlR6vy4fM3H7opFdQudo4qKGZkGyRA9j3rNln1TIJb7ai7xNdsbo2e75yegor9ng8L0NzSu6jKV2aHmWVycjcLJYucPsVRrKB0LPTmn+e
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR11MB5569.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(396003)(39860400002)(366004)(376002)(346002)(136003)(38070700005)(122000001)(38100700002)(66556008)(66476007)(76116006)(8676002)(4326008)(66946007)(91956017)(66446008)(64756008)(558084003)(86362001)(186003)(6512007)(26005)(6506007)(6486002)(41300700001)(478600001)(966005)(71200400001)(9686003)(6916009)(316002)(33716001)(54906003)(2906002)(8936002)(5660300002)(67856001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?FOOgIu15bkImMkZAd95Ns9uOXK0ulxaDzk2ury49/uugf1gRjH9gzP0WVqGE?=
+ =?us-ascii?Q?pbx1YmRsnd0IHD3r35C7qfDpKGsqRx8UBKQY3IcCD2nKN5jX6a9wSoUc2THw?=
+ =?us-ascii?Q?MAh+qjPmwYxNPh+dL8FDZoq64sLS7tCthB+ocmsOm/5/ykXtlduL5KigEOJ0?=
+ =?us-ascii?Q?x3xEDEUtPsOSDiR0OgMqnMRBCZiLHgqs2YKuu4oe6U9uvQoh0hrjaFkHxNW7?=
+ =?us-ascii?Q?Qjg4CCSnU9Tk/tHlE2clGz7uA9lnTcc+qJb7lAYH/3TVBf78ZRuA0+Vdjdw7?=
+ =?us-ascii?Q?4bIIY8DQHx23itkQ5Vo5KaRaFXtCjoh9Fxyl6D/bwCC7rEfxyC4ajxs4zkaH?=
+ =?us-ascii?Q?+TY1RGHyjsGKhebryXQa1vAITTCeRTkRWZqGTS+4MZR3TcxSV7sMR1FpuEd4?=
+ =?us-ascii?Q?Z/2vsRbq7v5M1B4MfMgC6aY3yrGEFbuw3lhu0/JmhFKIpF7aAZ/jZCWJmmyh?=
+ =?us-ascii?Q?YEBnpce/KJKh3HcvX/GGOPCQEbbmq2s74YW1/MM7tyTd+IN/tNtfN+S4uM7H?=
+ =?us-ascii?Q?wZfvTdGfMMBbridwVsEbbKmlyTS1okXVrKdbO7vRwEypPKreyBvIcpSNDejL?=
+ =?us-ascii?Q?1ugzfahyuZ6T3T6tIFA5Zq4vJTbNofhM6rOyMz35/T3R28if+K9SFry3pJSX?=
+ =?us-ascii?Q?tGd7G9Aoga0B5zMBx79H2yMKlHQDM4/Ngy3g1sRaHlAjpAONvkkf9W1u8CWh?=
+ =?us-ascii?Q?shFMIZItopSnwtc7rD7qOCSpS6qRSesVqWxBR2TAG25ZR3kEsMOaAyHTHXeL?=
+ =?us-ascii?Q?FsJ0MRICJKdJ6p9HefSK9xOupWN7klXJKyHb8nA5mx1f+soeYVBMNxiavuBe?=
+ =?us-ascii?Q?beUGf68+s02DON3yKBuHLIEySW9vG7U3MQto4WfDyM02EyrONXhVHH+gN3Mw?=
+ =?us-ascii?Q?64h90659IsQqvg917/TSvo1S+FYk8dW4M//di4TBzOJ5+i3SpIuyd4iu8UI2?=
+ =?us-ascii?Q?Ana7gaXimsOEjX0Nw0lU6gNQ3HiHCTe+rPQpE9utM5YkeyLMsJUx+T8LzPKY?=
+ =?us-ascii?Q?5SOlvVz7sFErz6T6KI5ufJA4LHgvS+ep4Iuq7DhMKmlg3zx0fGuiy3IddBoE?=
+ =?us-ascii?Q?2QEXuu0e7hI/EhrpIXdb5XVuGo3iZ7fRRE4Eu/ceGXtfpCMmI2tSCgxx8ryJ?=
+ =?us-ascii?Q?nby4Xw7ewjVISh9V2a7N7tJYuMdjzwCNsrzRapMPXzcGP86ZijnIavcP4Ceq?=
+ =?us-ascii?Q?X9C/jG6nT+IHO8vdMcpdOmOi3iQcxasR4o+/SDFInD1hnrGr5lVVpG+3lrs/?=
+ =?us-ascii?Q?AShPH5csoIjPBxJlUNbrqLotpnORX24Z2nzxpTdRhxCiAhbas2D150/XGDGP?=
+ =?us-ascii?Q?t1B+R2TIe/szFupn11B2w9DCoGGi1qfNEFO6jKdww/dNA3NFffCmXYKkn5Em?=
+ =?us-ascii?Q?J5uREphXv3YdYqa89EFQp4xwnzf+TD18Ftn0rBy7QCPwDr8QEIr26MYSjGdV?=
+ =?us-ascii?Q?WEsu/8q2cvarQC5WdEUXr67iKzn4s3IsoY+19y2xTeC1Ak8RckHKixEmy/Z3?=
+ =?us-ascii?Q?C3rNcyX/QTGJZFLkPHe9MeifcqEOHORneSUuJShjq9UFqOrhgyiQJmA3M+Nc?=
+ =?us-ascii?Q?oeuhJFhxVwogWenOLUNLUnjOfn+ZOIwoSOcBKBohU01xT5LwOZD1SGTfsxx7?=
+ =?us-ascii?Q?Uc0wmar0ZmduoqrUeMOjXgI=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <0C6954BEEA92574D84A811DB6D20518A@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO6PR11MB5569.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b6b1b1bb-cd1d-42f2-9816-08da9191cd5c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Sep 2022 12:01:02.7873
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Ln8vEz1q5tL6K1oREi0brYmV8PqmcPtJ6qYyEzSOnim3ec7Y8VoU3/RZzUjkPhkAJEimYshnJLyj77UW2inMG8YcEyGWl7aKqAfmc0pMjEs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB3303
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the new common convenience functions for sending and
-waiting for frames.
+FYI:
 
-Signed-off-by: Mattias Forsblad <mattias.forsblad@gmail.com>
----
- drivers/net/dsa/qca/qca8k-8xxx.c | 61 +++++++++-----------------------
- 1 file changed, 17 insertions(+), 44 deletions(-)
+RFC patch for the kernel dcbnl side has been posted at:
 
-diff --git a/drivers/net/dsa/qca/qca8k-8xxx.c b/drivers/net/dsa/qca/qca8k-8xxx.c
-index 1d3e7782a71f..7c9782be8dfe 100644
---- a/drivers/net/dsa/qca/qca8k-8xxx.c
-+++ b/drivers/net/dsa/qca/qca8k-8xxx.c
-@@ -160,7 +160,7 @@ static void qca8k_rw_reg_ack_handler(struct dsa_switch *ds, struct sk_buff *skb)
- 			       QCA_HDR_MGMT_DATA2_LEN);
- 	}
- 
--	complete(&mgmt_eth_data->rw_done);
-+	dsa_switch_inband_complete(ds, &mgmt_eth_data->rw_done);
- }
- 
- static struct sk_buff *qca8k_alloc_mdio_header(enum mdio_cmd cmd, u32 reg, u32 *val,
-@@ -228,6 +228,7 @@ static void qca8k_mdio_header_fill_seq_num(struct sk_buff *skb, u32 seq_num)
- static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
- {
- 	struct qca8k_mgmt_eth_data *mgmt_eth_data = &priv->mgmt_eth_data;
-+	struct dsa_switch *ds = priv->ds;
- 	struct sk_buff *skb;
- 	bool ack;
- 	int ret;
-@@ -248,17 +249,12 @@ static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
- 
- 	skb->dev = priv->mgmt_master;
- 
--	reinit_completion(&mgmt_eth_data->rw_done);
--
- 	/* Increment seq_num and set it in the mdio pkt */
- 	mgmt_eth_data->seq++;
- 	qca8k_mdio_header_fill_seq_num(skb, mgmt_eth_data->seq);
- 	mgmt_eth_data->ack = false;
- 
--	dev_queue_xmit(skb);
--
--	ret = wait_for_completion_timeout(&mgmt_eth_data->rw_done,
--					  msecs_to_jiffies(QCA8K_ETHERNET_TIMEOUT));
-+	ret = dsa_switch_inband_tx(ds, skb, &mgmt_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
- 
- 	*val = mgmt_eth_data->data[0];
- 	if (len > QCA_HDR_MGMT_DATA1_LEN)
-@@ -280,6 +276,7 @@ static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
- static int qca8k_write_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
- {
- 	struct qca8k_mgmt_eth_data *mgmt_eth_data = &priv->mgmt_eth_data;
-+	struct dsa_switch *ds = priv->ds;
- 	struct sk_buff *skb;
- 	bool ack;
- 	int ret;
-@@ -300,17 +297,12 @@ static int qca8k_write_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
- 
- 	skb->dev = priv->mgmt_master;
- 
--	reinit_completion(&mgmt_eth_data->rw_done);
--
- 	/* Increment seq_num and set it in the mdio pkt */
- 	mgmt_eth_data->seq++;
- 	qca8k_mdio_header_fill_seq_num(skb, mgmt_eth_data->seq);
- 	mgmt_eth_data->ack = false;
- 
--	dev_queue_xmit(skb);
--
--	ret = wait_for_completion_timeout(&mgmt_eth_data->rw_done,
--					  msecs_to_jiffies(QCA8K_ETHERNET_TIMEOUT));
-+	ret = dsa_switch_inband_tx(ds, skb, &mgmt_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
- 
- 	ack = mgmt_eth_data->ack;
- 
-@@ -441,24 +433,21 @@ static struct regmap_config qca8k_regmap_config = {
- };
- 
- static int
--qca8k_phy_eth_busy_wait(struct qca8k_mgmt_eth_data *mgmt_eth_data,
-+qca8k_phy_eth_busy_wait(struct qca8k_priv *priv,
- 			struct sk_buff *read_skb, u32 *val)
- {
-+	struct qca8k_mgmt_eth_data *mgmt_eth_data = &priv->mgmt_eth_data;
- 	struct sk_buff *skb = skb_copy(read_skb, GFP_KERNEL);
-+	struct dsa_switch *ds = priv->ds;
- 	bool ack;
- 	int ret;
- 
--	reinit_completion(&mgmt_eth_data->rw_done);
--
- 	/* Increment seq_num and set it in the copy pkt */
- 	mgmt_eth_data->seq++;
- 	qca8k_mdio_header_fill_seq_num(skb, mgmt_eth_data->seq);
- 	mgmt_eth_data->ack = false;
- 
--	dev_queue_xmit(skb);
--
--	ret = wait_for_completion_timeout(&mgmt_eth_data->rw_done,
--					  QCA8K_ETHERNET_TIMEOUT);
-+	ret = dsa_switch_inband_tx(ds, skb, &mgmt_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
- 
- 	ack = mgmt_eth_data->ack;
- 
-@@ -480,6 +469,7 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
- 	struct sk_buff *write_skb, *clear_skb, *read_skb;
- 	struct qca8k_mgmt_eth_data *mgmt_eth_data;
- 	u32 write_val, clear_val = 0, val;
-+	struct dsa_switch *ds = priv->ds;
- 	struct net_device *mgmt_master;
- 	int ret, ret1;
- 	bool ack;
-@@ -540,17 +530,12 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
- 	clear_skb->dev = mgmt_master;
- 	write_skb->dev = mgmt_master;
- 
--	reinit_completion(&mgmt_eth_data->rw_done);
--
- 	/* Increment seq_num and set it in the write pkt */
- 	mgmt_eth_data->seq++;
- 	qca8k_mdio_header_fill_seq_num(write_skb, mgmt_eth_data->seq);
- 	mgmt_eth_data->ack = false;
- 
--	dev_queue_xmit(write_skb);
--
--	ret = wait_for_completion_timeout(&mgmt_eth_data->rw_done,
--					  QCA8K_ETHERNET_TIMEOUT);
-+	ret = dsa_switch_inband_tx(ds, write_skb, &mgmt_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
- 
- 	ack = mgmt_eth_data->ack;
- 
-@@ -569,7 +554,7 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
- 	ret = read_poll_timeout(qca8k_phy_eth_busy_wait, ret1,
- 				!(val & QCA8K_MDIO_MASTER_BUSY), 0,
- 				QCA8K_BUSY_WAIT_TIMEOUT * USEC_PER_MSEC, false,
--				mgmt_eth_data, read_skb, &val);
-+				priv, read_skb, &val);
- 
- 	if (ret < 0 && ret1 < 0) {
- 		ret = ret1;
-@@ -577,17 +562,13 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
- 	}
- 
- 	if (read) {
--		reinit_completion(&mgmt_eth_data->rw_done);
--
- 		/* Increment seq_num and set it in the read pkt */
- 		mgmt_eth_data->seq++;
- 		qca8k_mdio_header_fill_seq_num(read_skb, mgmt_eth_data->seq);
- 		mgmt_eth_data->ack = false;
- 
--		dev_queue_xmit(read_skb);
--
--		ret = wait_for_completion_timeout(&mgmt_eth_data->rw_done,
--						  QCA8K_ETHERNET_TIMEOUT);
-+		ret = dsa_switch_inband_tx(ds, read_skb, &mgmt_eth_data->rw_done,
-+					   QCA8K_ETHERNET_TIMEOUT);
- 
- 		ack = mgmt_eth_data->ack;
- 
-@@ -606,17 +587,12 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
- 		kfree_skb(read_skb);
- 	}
- exit:
--	reinit_completion(&mgmt_eth_data->rw_done);
--
- 	/* Increment seq_num and set it in the clear pkt */
- 	mgmt_eth_data->seq++;
- 	qca8k_mdio_header_fill_seq_num(clear_skb, mgmt_eth_data->seq);
- 	mgmt_eth_data->ack = false;
- 
--	dev_queue_xmit(clear_skb);
--
--	wait_for_completion_timeout(&mgmt_eth_data->rw_done,
--				    QCA8K_ETHERNET_TIMEOUT);
-+	ret = dsa_switch_inband_tx(ds, clear_skb, &mgmt_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
- 
- 	mutex_unlock(&mgmt_eth_data->mutex);
- 
-@@ -1528,7 +1504,7 @@ static void qca8k_mib_autocast_handler(struct dsa_switch *ds, struct sk_buff *sk
- exit:
- 	/* Complete on receiving all the mib packet */
- 	if (refcount_dec_and_test(&mib_eth_data->port_parsed))
--		complete(&mib_eth_data->rw_done);
-+		dsa_switch_inband_complete(ds, &mib_eth_data->rw_done);
- }
- 
- static int
-@@ -1543,8 +1519,6 @@ qca8k_get_ethtool_stats_eth(struct dsa_switch *ds, int port, u64 *data)
- 
- 	mutex_lock(&mib_eth_data->mutex);
- 
--	reinit_completion(&mib_eth_data->rw_done);
--
- 	mib_eth_data->req_port = dp->index;
- 	mib_eth_data->data = data;
- 	refcount_set(&mib_eth_data->port_parsed, QCA8K_NUM_PORTS);
-@@ -1562,8 +1536,7 @@ qca8k_get_ethtool_stats_eth(struct dsa_switch *ds, int port, u64 *data)
- 	if (ret)
- 		goto exit;
- 
--	ret = wait_for_completion_timeout(&mib_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
--
-+	ret = dsa_switch_inband_tx(ds, NULL, &mib_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
- exit:
- 	mutex_unlock(&mib_eth_data->mutex);
- 
--- 
-2.25.1
-
+https://lore.kernel.org/netdev/20220908120442.3069771-1-daniel.machon@micro=
+chip.com/T/#t=
