@@ -2,105 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F57A5B1C70
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 14:11:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 391F35B1C6B
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 14:11:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231561AbiIHMKN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 08:10:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46226 "EHLO
+        id S231564AbiIHMLA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 08:11:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230481AbiIHMJc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 08:09:32 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F14E11C168;
-        Thu,  8 Sep 2022 05:09:12 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MNdCg4N2KzHnj3;
-        Thu,  8 Sep 2022 20:07:11 +0800 (CST)
-Received: from [10.174.179.200] (10.174.179.200) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 8 Sep 2022 20:09:07 +0800
-Subject: Re: [PATCH 2/2] can: bcm: check the result of can_send() in
- bcm_can_tx()
-To:     Oliver Hartkopp <socketcan@hartkopp.net>, <mkl@pengutronix.de>,
-        <edumazet@google.com>, <kuba@kernel.org>,
-        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>
-References: <cover.1662606045.git.william.xuanziyang@huawei.com>
- <5c0f2f1bd1dc7bbb9500afd4273e36378e00a35d.1662606045.git.william.xuanziyang@huawei.com>
- <1caf3e52-c862-e702-c833-153f130b790a@hartkopp.net>
-From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
-Message-ID: <88a5cdf5-d8e3-3822-7864-80aecf3c4ac3@huawei.com>
-Date:   Thu, 8 Sep 2022 20:09:06 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        with ESMTP id S231598AbiIHMKh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 08:10:37 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27FA864F3
+        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 05:10:34 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id f11so13364703lfa.6
+        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 05:10:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=bVFfN/0QOAoeQEvO/xXmj8KiPeuyZ35f/xifeOzWA5s=;
+        b=NRSeF0Lru/4IsPPkWju4xOeeyFhe0Qb8HKox/cFl/6AOtHqkRMjuDaR+ODUbL/Ffd0
+         KKR0X4RxRZlTHwawPnlpEZ++/T9BlAvMeu77WACdv+mYCxj1GJvqsF6SiC1FibIHOTTJ
+         G+1KHvx1KsSLfxcXAYjQcXF+0IfubsSFO737azWXB1PC+HtDXb7WYReK6waLNzcNLaWR
+         1Fs4RqwdZ+CQXRs+i3yGisXzmWgCmaUwtoUOQJRVA8ZA4/JfD53ugh2iTaKjZ34VgDOd
+         d2Gx9ble9bpol+/kFpUZ8Y1aXX53HjK08RXI9fx8eeAMpezvIYQwOJiqRaoVPSfpkFh9
+         Jd8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=bVFfN/0QOAoeQEvO/xXmj8KiPeuyZ35f/xifeOzWA5s=;
+        b=SVCP6jUWXfA/Su+ir7tCGeIO5BipD6nX+LX56k+NBP265ShFRxU7D8kG/rZqEX4ilc
+         hhTEXokuGBorys1UugBWHd0JKaowDow+s+9pQRJqdg8vFc64/jZniaZSkHP0vhmwH7Kx
+         qNWRx1EpsCVmEZfb4vjTH9r/1jNLs2wiNZwzS8hczQNO7dTH8ASx9JgOvKQTKgp3AGtP
+         gIHWHA52xn8Z/2T6FM5tzhrh4Om7Jwp0jHtLN6PUAhm8lVaC8tZzF/ZJLSvo8IVd7C9J
+         DuXDNHRNGh2i+N1TN8n8GvyGtT7w46LcafQo5HSBIY0Llkrq4QhCLYawJnKJqMbVgWcp
+         ixeg==
+X-Gm-Message-State: ACgBeo2ri0DdNhvh1f2/bw0308WAZhdlKnpLdinjgRaFNNS/fz2QylUB
+        YB4azWekTYVlcstQS/ni6Q95RZzFLGpBJg==
+X-Google-Smtp-Source: AA6agR5mIdcRh+FAs8EMoAtW68Mdhp0fAfd3lvimm/cRWEeKfsZ5j01hjDnJI2AreVtKkuKmPJYCFg==
+X-Received: by 2002:a05:6512:3406:b0:494:9e2a:cbd with SMTP id i6-20020a056512340600b004949e2a0cbdmr2667654lfr.635.1662639032477;
+        Thu, 08 Sep 2022 05:10:32 -0700 (PDT)
+Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id o12-20020ac24e8c000000b0049482979fe0sm3011006lfr.179.2022.09.08.05.10.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 08 Sep 2022 05:10:31 -0700 (PDT)
+Message-ID: <c798e387-caf1-ab7d-305a-7f7fa8e98749@linaro.org>
+Date:   Thu, 8 Sep 2022 14:10:30 +0200
 MIME-Version: 1.0
-In-Reply-To: <1caf3e52-c862-e702-c833-153f130b790a@hartkopp.net>
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH net-next 1/2] dt-bindings: net: fec: add fsl,s32v234-fec
+ to compatible property
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.200]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+To:     wei.fang@nxp.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220907095649.3101484-1-wei.fang@nxp.com>
+ <20220907095649.3101484-2-wei.fang@nxp.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220907095649.3101484-2-wei.fang@nxp.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Sorry, but NACK.
+On 07/09/2022 11:56, wei.fang@nxp.com wrote:
+> From: Wei Fang <wei.fang@nxp.com>
 > 
-> The curr_frame counter handles the sequence counter of multiplex messages.
+> Add fsl,s32v234-fec to compatible property to support s32v234 platform.
 > 
-> Even when this single send attempt failed the curr_frame counter has to continue.
-> 
-> For that reason the comment about statistics *before* the curr_frame++ might be misleading.
-> 
-> A potential improvement could be:
-> 
->     if (!(can_send(skb, 1)))
->         op->frames_abs++;
-> 
->     op->currframe++;
-> 
-> But as op->frames_abs is a functional unused(!) value for tx ops and only displayed via procfs I would NOT tag such improvement as a 'fix' which might then be queued up for stable.
-> 
-I will modify and remove 'Fixes' tag in v2.
+> Signed-off-by: Wei Fang <wei.fang@nxp.com>
 
-Thank you for your review.
 
-> This could be something for the can-next tree ...
-> 
-> Best regards,
-> Oliver
-> 
-> 
-> On 08.09.22 05:04, Ziyang Xuan wrote:
->> If can_send() fail, it should not update statistics in bcm_can_tx().
->> Add the result check for can_send() in bcm_can_tx().
->>
->> Fixes: ffd980f976e7 ("[CAN]: Add broadcast manager (bcm) protocol")
->> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
->> ---
->>   net/can/bcm.c | 3 ++-
->>   1 file changed, 2 insertions(+), 1 deletion(-)
->>
->> diff --git a/net/can/bcm.c b/net/can/bcm.c
->> index e2783156bfd1..8f5d704a409f 100644
->> --- a/net/can/bcm.c
->> +++ b/net/can/bcm.c
->> @@ -298,7 +298,8 @@ static void bcm_can_tx(struct bcm_op *op)
->>       /* send with loopback */
->>       skb->dev = dev;
->>       can_skb_set_owner(skb, op->sk);
->> -    can_send(skb, 1);
->> +    if (can_send(skb, 1))
->> +        goto out;
->>         /* update statistics */
->>       op->currframe++;
-> .
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+
+Best regards,
+Krzysztof
