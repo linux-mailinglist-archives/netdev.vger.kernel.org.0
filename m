@@ -2,101 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E9A55B27D0
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 22:37:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2AB45B282C
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 23:11:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229834AbiIHUh0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 16:37:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55842 "EHLO
+        id S229631AbiIHVLn convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 8 Sep 2022 17:11:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229733AbiIHUhN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 16:37:13 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7BC7103027
-        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 13:37:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662669432; x=1694205432;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=W2LNCdjKh/zjoUhCpR4GZr9+guyq3k9KkD5vObUgjNc=;
-  b=axsKlSutg+5Frd463d7HIgXJ4cuukJXRQkINx3TYPoDDfFYjJGky8oVp
-   zw9cW8B/X9lEQvYyKOw08dzf73b168SlQq2wimrOhwsFSJeOpS06Rvb6F
-   nyht6S/Z+Ck+weFOnJKX64ugLS5bNTOUBIpYQUyOlwzW97YnI+Rd9eTop
-   cb/YiHEnPytUI+7i2AIb2NALjN0OfI88XrdmuMq6E4TpZLc+ZLrrvEWyo
-   Jkv6Zho/mHfI4CDX0dm5+WBzjaM3X5iaqP0Hslw0uj3QLSoRzmK4bLzWk
-   iVTr1K1h7t21if7vX2jLZ5FHPPCwxJv4J6D13aIPO8GQlBk04EUyPWie6
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10464"; a="294900360"
-X-IronPort-AV: E=Sophos;i="5.93,300,1654585200"; 
-   d="scan'208";a="294900360"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Sep 2022 13:37:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,300,1654585200"; 
-   d="scan'208";a="943509297"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga005.fm.intel.com with ESMTP; 08 Sep 2022 13:37:11 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com
-Cc:     Brett Creeley <brett.creeley@intel.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com,
-        Norbert Zulinski <norbertx.zulinski@intel.com>,
-        Mateusz Palczewski <mateusz.palczewski@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net 4/4] iavf: Fix cached head and tail value for iavf_get_tx_pending
-Date:   Thu,  8 Sep 2022 13:37:01 -0700
-Message-Id: <20220908203701.2089562-5-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220908203701.2089562-1-anthony.l.nguyen@intel.com>
-References: <20220908203701.2089562-1-anthony.l.nguyen@intel.com>
+        with ESMTP id S229955AbiIHVLl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 17:11:41 -0400
+X-Greylist: delayed 598 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 08 Sep 2022 14:11:38 PDT
+Received: from mail.lixid.net (lixid.tarent.de [193.107.123.118])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96856AFAFC
+        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 14:11:37 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.lixid.net (MTA) with ESMTP id 8DECB1410EC
+        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 23:01:37 +0200 (CEST)
+Received: from mail.lixid.net ([127.0.0.1])
+        by localhost (mail.lixid.net [127.0.0.1]) (MFA, port 10024) with LMTP
+        id sIFsDWLPkuoT for <netdev@vger.kernel.org>;
+        Thu,  8 Sep 2022 23:01:32 +0200 (CEST)
+Received: from x61w.mirbsd.org (vpn-172-34-0-14.dynamic.tarent.de [172.34.0.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.lixid.net (MTA) with ESMTPS id 4A603140A17
+        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 23:01:32 +0200 (CEST)
+Received: by x61w.mirbsd.org (Postfix, from userid 1000)
+        id EA72469985; Thu,  8 Sep 2022 23:01:31 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by x61w.mirbsd.org (Postfix) with ESMTP id E51E460094
+        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 23:01:31 +0200 (CEST)
+Date:   Thu, 8 Sep 2022 23:01:31 +0200 (CEST)
+From:   Thorsten Glaser <t.glaser@tarent.de>
+To:     netdev@vger.kernel.org
+Subject: RFH, where did I go wrong?
+Message-ID: <42776059-242c-cf49-c3ed-31e311b91f1c@tarent.de>
+Content-Language: de-DE-1901
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-0.5 required=5.0 tests=BAYES_05,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Brett Creeley <brett.creeley@intel.com>
+Hi,
 
-The underlying hardware may or may not allow reading of the head or tail
-registers and it really makes no difference if we use the software
-cached values. So, always used the software cached values.
+under high load, my homegrown qdisc causes a system crash,
+but I’m a bit baffled at the message and location. Perhaps
+anyone has directly an idea where I could have messed up?
 
-Fixes: 9c6c12595b73 ("i40e: Detection and recovery of TX queue hung logic moved to service_task from tx_timeout")
-Signed-off-by: Brett Creeley <brett.creeley@intel.com>
-Co-developed-by: Norbert Zulinski <norbertx.zulinski@intel.com>
-Signed-off-by: Norbert Zulinski <norbertx.zulinski@intel.com>
-Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/iavf/iavf_txrx.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_txrx.c b/drivers/net/ethernet/intel/iavf/iavf_txrx.c
-index 06d18797d25a..4c3f3f419110 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_txrx.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_txrx.c
-@@ -114,8 +114,11 @@ u32 iavf_get_tx_pending(struct iavf_ring *ring, bool in_sw)
- {
- 	u32 head, tail;
- 
-+	/* underlying hardware might not allow access and/or always return
-+	 * 0 for the head/tail registers so just use the cached values
-+	 */
- 	head = ring->next_to_clean;
--	tail = readl(ring->tail);
-+	tail = ring->next_to_use;
- 
- 	if (head != tail)
- 		return (head < tail) ?
+Transcription of the most relevant info from the screen photo:
+
+virt_to_cache: Object is not a Slab page!
+… at mm/slab.h:435 kmem_cache_free+…
+
+Call Trace:
+__rtnl_unlock+0x34/0x40
+netdev_run_todo+…
+rtnetlink_rcv_msg
+? _copy_to_iter
+? __free_one_page
+? rtnl_calcit.isra.0
+netlink_rcv_skb
+netlink_unicast
+netlink_sendmsg
+sock_sendmsg
+____sys_sendmsg
+[…]
+
+The trace is followed by two…
+
+BUG: Bad rss-counter state mm:0000000001b817b09
+first one is type:MM_FILEPAGES val:81
+second one is type:MM_ANONPAGES val:30
+
+
+I guess I either messed up with pointers or locking, but I don’t
+have the Linux kernel coding experience to know where to even start
+looking for causes.
+
+Source in question is…
+https://github.com/tarent/sch_jens/blob/iproute2_5.10.0-4jens14/janz/sch_janz.c
+… though I don’t exactly ask for someone to solve this for me (though
+that would, obviously, also be welcome ☺) but to get to know enough
+for me to figure out the bug.
+
+I probably would start by adding lots of debugging printks, but the
+problem occurs when throwing iperf with 40 Mbit/s on this set to limit
+to 20 Mbit/s, which’d cause a lot of information — plus I don’t even
+know what kind of error “Object is not a Slab page” is (i.e. what wrong
+thing is passed where or written to where).
+
+Thanks in advance,
+//mirabilos
 -- 
-2.35.1
+Infrastrukturexperte • tarent solutions GmbH
+Am Dickobskreuz 10, D-53121 Bonn • http://www.tarent.de/
+Telephon +49 228 54881-393 • Fax: +49 228 54881-235
+HRB AG Bonn 5168 • USt-ID (VAT): DE122264941
+Geschäftsführer: Dr. Stefan Barth, Kai Ebenrett, Boris Esser, Alexander Steeg
 
+                        ****************************************************
+/⁀\ The UTF-8 Ribbon
+╲ ╱ Campaign against      Mit dem tarent-Newsletter nichts mehr verpassen:
+ ╳  HTML eMail! Also,     https://www.tarent.de/newsletter
+╱ ╲ header encryption!
+                        ****************************************************
