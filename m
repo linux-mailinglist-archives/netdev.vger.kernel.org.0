@@ -2,426 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 571395B15CA
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 09:38:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23E535B15D5
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 09:42:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230424AbiIHHi2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 03:38:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58382 "EHLO
+        id S229706AbiIHHmG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 03:42:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229572AbiIHHi0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 03:38:26 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 731D5B4EA9
-        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 00:38:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662622703;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=lNfeIss/S9NdjFZnn/7NBXn285+NBOOH2efNN52matc=;
-        b=N1YfTFQ9O6vSQxLRfDwZncJca0km738FhMdCYOKl6Gh3mM3PYgV3dv1LYxGoHX02e321US
-        hAqfMx2yAXKzC8pO34oKzoteYU8lZHKI4wuioKOxLYcycuNXK+Y4r0VZRcG9+cVFM2NYsu
-        BjXTb+pB05YkkpYWPjJz19GcQMge4MQ=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-610-dlU298e5NcqXQxTEue3Rzg-1; Thu, 08 Sep 2022 03:38:22 -0400
-X-MC-Unique: dlU298e5NcqXQxTEue3Rzg-1
-Received: by mail-wm1-f70.google.com with SMTP id j36-20020a05600c1c2400b003a540d88677so8152676wms.1
-        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 00:38:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=lNfeIss/S9NdjFZnn/7NBXn285+NBOOH2efNN52matc=;
-        b=J00hBMQncFe/i3pzshI0uBxhEvJxYv6J9Ci2Otx8aFpBA8qRxkDLjm4RKy0vsk4SAq
-         7LJu1UqlFyNu1btmB6K0nPxo1pHHBbCI3wXiCJYRRpkXj2rRKChRqnyTx4gLfGHDNtFv
-         BgWBXwvIMH0BaZku8N0yoDIcK5y4Jrqmv2G71AjvxkwvzBBFYoyYJVUZ3GXDv4qsk29X
-         8mhTS3wzP/8axqOvd+6c9sJyBpKon4ur6C4D2YgW1MsRFR2JuMdpZTGNrtogYA5s0tm1
-         avAu8Ha4g35Les9RZEcdROID6NX7saxsiX2nUyM1nZCYMmO44u9m7dO2i7HvS1QBvI1K
-         a5/Q==
-X-Gm-Message-State: ACgBeo13gfQn5uj3GnOBibjIXuLfc7Y4ilxITSVKYe6wIYs9hsupXV+x
-        XHhfXG8nZ44Ng1FitYnxx1rwC6GV+9kkZsjPLUrRqG8Hhp7v9OyCVt5pt1VgQaQZDbFjhqXcRmD
-        m0oNJy4IDrakZC8Gq
-X-Received: by 2002:adf:da50:0:b0:223:a1f5:fa68 with SMTP id r16-20020adfda50000000b00223a1f5fa68mr4076315wrl.528.1662622701080;
-        Thu, 08 Sep 2022 00:38:21 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4G2du1LAb1HOSymNGWkaMcWDs4SUveZWIl8JMEgjM1PZBEXAKQIfn9iCcIIZMKC20K7OViHw==
-X-Received: by 2002:adf:da50:0:b0:223:a1f5:fa68 with SMTP id r16-20020adfda50000000b00223a1f5fa68mr4076299wrl.528.1662622700753;
-        Thu, 08 Sep 2022 00:38:20 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-119-112.dyn.eolo.it. [146.241.119.112])
-        by smtp.gmail.com with ESMTPSA id r13-20020a05600c35cd00b003a319b67f64sm7888708wmq.0.2022.09.08.00.38.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Sep 2022 00:38:20 -0700 (PDT)
-Message-ID: <f1ad425c45b7e3f589409010ed0966c0676e52c3.camel@redhat.com>
-Subject: Re: [PATCH net-next 02/02] net: ngbe: Check some hardware functions
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Mengyuan Lou <mengyuanlou@net-swift.com>, netdev@vger.kernel.org
-Cc:     jiawenwu@net-swift.com
-Date:   Thu, 08 Sep 2022 09:38:19 +0200
-In-Reply-To: <20220905125248.2361-1-mengyuanlou@net-swift.com>
-References: <20220905125248.2361-1-mengyuanlou@net-swift.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S229535AbiIHHmE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 03:42:04 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75D8BCD509;
+        Thu,  8 Sep 2022 00:42:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662622923; x=1694158923;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=/WhuhHRr+qNbzKaxn/IfB3Tc7Nozbtt3QSWS3t4bqwg=;
+  b=Nnfj8rt2689XlO5gi6HTvjKS/xVboysaleU0EOgeaVP3cIxWwS6qB24N
+   Icdhjnrt24EB3Ldz9HSggesP6K22kUoV+meNw5rX3Fn5sPOYfuVrf3yG/
+   Feq/bgUbG5xQrjwLCNjvVNReBDQwEm1oofTeseu5PRiHIAjvhT9fEc/rP
+   zM9jlWDjT80YIH3+DOSaPcFA1H4S5j7XuuWrW4/zEA0dg/3F84RM1WwoM
+   Z4OqCViEH9uID7Eku2bZv71nsKTk7dZ1bWqzMGdC32xXt6OJaP04QoskC
+   M+eEu6ygkqtZbREFA/rbH6TpH05MfGfBGgIo3vNS7NIeLRYqRSpWsyTpN
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10463"; a="284116733"
+X-IronPort-AV: E=Sophos;i="5.93,299,1654585200"; 
+   d="scan'208";a="284116733"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Sep 2022 00:42:03 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,299,1654585200"; 
+   d="scan'208";a="647945150"
+Received: from lkp-server02.sh.intel.com (HELO 95dfd251caa2) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 08 Sep 2022 00:41:56 -0700
+Received: from kbuild by 95dfd251caa2 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oWCAd-0007VF-10;
+        Thu, 08 Sep 2022 07:41:55 +0000
+Date:   Thu, 8 Sep 2022 15:41:40 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jingyu Wang <jingyuwang_vip@163.com>, steffen.klassert@secunet.com,
+        herbert@gondor.apana.org.au, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jingyu Wang <jingyuwang_vip@163.com>
+Subject: Re: [PATCH] net: ipv4: Fix some coding style in ah4.c file
+Message-ID: <202209081543.BAjUZP1r-lkp@intel.com>
+References: <20220908022118.57973-1-jingyuwang_vip@163.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220908022118.57973-1-jingyuwang_vip@163.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2022-09-05 at 20:52 +0800, Mengyuan Lou wrote:
-> Check eeprom ready.
-> Check whether WOL is enabled.
-> Check whether the MAC is available.
-> 
-> Signed-off-by: Mengyuan Lou <mengyuanlou@net-swift.com>
-> ---
->  drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c   | 311 ++++++++++++++++++
->  drivers/net/ethernet/wangxun/ngbe/ngbe_hw.h   |   8 +
->  drivers/net/ethernet/wangxun/ngbe/ngbe_main.c |  54 +++
->  3 files changed, 373 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c b/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c
-> index 20c21f99e308..f38dc47b8f32 100644
-> --- a/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c
-> +++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c
-> @@ -381,3 +381,314 @@ int ngbe_reset_hw(struct ngbe_hw *hw)
->  
->  	return 0;
->  }
-> +
-> +/**
-> + *  ngbe_release_eeprom_semaphore - Release hardware semaphore
-> + *  @hw: pointer to hardware structure
-> + *
-> + *  This function clears hardware semaphore bits.
-> + **/
-> +static void ngbe_release_eeprom_semaphore(struct ngbe_hw *hw)
-> +{
-> +	wr32m(hw, NGBE_MIS_SWSM, NGBE_MIS_SWSM_SMBI, 0);
-> +	ngbe_flush(hw);
-> +}
-> +
-> +/**
-> + *  ngbe_get_eeprom_semaphore - Get hardware semaphore
-> + *  @hw: pointer to hardware structure
-> + *  Sets the hardware semaphores so EEPROM access can occur for bit-bang method
-> + **/
-> +static int ngbe_get_eeprom_semaphore(struct ngbe_hw *hw)
-> +{
-> +	int status = 0;
-> +	u32 times = 10;
-> +	u32 i;
-> +	u32 swsm;
-> +
-> +	/* Get SMBI software semaphore between device drivers first */
-> +	for (i = 0; i < times; i++) {
-> +		/* If the SMBI bit is 0 when we read it, then the bit will be
-> +		 * set and we have the semaphore
-> +		 */
-> +		status = read_poll_timeout(rd32, swsm, !(swsm & NGBE_MIS_SWSM_SMBI), 50,
-> +					   20000, false, hw, NGBE_MIS_SWSM);
-> +		if (!status)
-> +			return 0;
-> +	}
-> +
-> +	if (i == times) {
-> +		dev_err(ngbe_hw_to_dev(hw),
-> +			"Driver can't access the Eeprom - SMBI Semaphore not granted.\n");
-> +		/* this release is particularly important because our attempts
-> +		 * above to get the semaphore may have succeeded, and if there
-> +		 * was a timeout, we should unconditionally clear the semaphore
-> +		 * bits to free the driver to make progress
-> +		 */
-> +		ngbe_release_eeprom_semaphore(hw);
+Hi Jingyu,
 
-If I read correctly, the firmware is setting/clearing the semaphore bit
-to avoid conflicts with the kernel/driver code. I'm wondering if the
-above clear would inconditionally mark the semaphore as free even if
-the firmware is still holding it? (causing later bugs, hard to track).
+Thank you for the patch! Yet something to improve:
 
-It's not clear to me why such clear is needed.
+[auto build test ERROR on 5957ac6635a1a12d4aa2661bbf04d3085a73372a]
 
-If the later test will succeed, the driver will emit an error and will
-acquire the semaphore successfully, and that will be most confusing.
+url:    https://github.com/intel-lab-lkp/linux/commits/Jingyu-Wang/net-ipv4-Fix-some-coding-style-in-ah4-c-file/20220908-102444
+base:   5957ac6635a1a12d4aa2661bbf04d3085a73372a
+config: i386-randconfig-a015 (https://download.01.org/0day-ci/archive/20220908/202209081543.BAjUZP1r-lkp@intel.com/config)
+compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/603895160512cd6e8f03a032b6523d1b90aa2d7c
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Jingyu-Wang/net-ipv4-Fix-some-coding-style-in-ah4-c-file/20220908-102444
+        git checkout 603895160512cd6e8f03a032b6523d1b90aa2d7c
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash net/
 
-> +		status = -EBUSY;
-> +	}
-> +	/* one last try
-> +	 * If the SMBI bit is 0 when we read it, then the bit will be
-> +	 * set and we have the semaphore
-> +	 */
-> +	swsm = rd32(hw, NGBE_MIS_SWSM);
-> +	if (!(swsm & NGBE_MIS_SWSM_SMBI))
-> +		status = 0;
-> +	return status;
-> +}
-> +
-> +/**
-> + *  ngbe_acquire_swfw_sync - Acquire SWFW semaphore
-> + *  @hw: pointer to hardware structure
-> + *  @mask: Mask to specify which semaphore to acquire
-> + *
-> + *  Acquires the SWFW semaphore through the GSSR register for the specified
-> + *  function (CSR, PHY0, PHY1, EEPROM, Flash)
-> + **/
-> +static int ngbe_acquire_swfw_sync(struct ngbe_hw *hw, u32 mask)
-> +{
-> +	u32 gssr = 0;
-> +	u32 swmask = mask;
-> +	u32 fwmask = mask << 16;
-> +	u32 times = 2000;
-> +	u32 i;
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Please respect the reverse x-mas tree declaration order. Other
-instances later and in the previous patch.
+All errors (new ones prefixed by >>):
 
-> +
-> +	for (i = 0; i < times; i++) {
-> +		/* SW NVM semaphore bit is used for access to all
-> +		 * SW_FW_SYNC bits (not just NVM)
-> +		 */
-> +		if (ngbe_get_eeprom_semaphore(hw))
-> +			return -EBUSY;
-> +
-> +		gssr = rd32(hw, NGBE_MNG_SWFW_SYNC);
-> +		if (!(gssr & (fwmask | swmask))) {
-> +			gssr |= swmask;
-> +			wr32(hw, NGBE_MNG_SWFW_SYNC, gssr);
-> +			ngbe_release_eeprom_semaphore(hw);
-> +			return 0;
-> +		}
-> +		/* Resource is currently in use by FW or SW */
-> +		ngbe_release_eeprom_semaphore(hw);
-> +	}
-> +
-> +	/* If time expired clear the bits holding the lock and retry */
-> +	if (gssr & (fwmask | swmask))
-> +		ngbe_release_swfw_sync(hw, gssr & (fwmask | swmask));
-> +
-> +	return -EBUSY;
-> +}
-> +
-> +/**
-> + *  ngbe_release_swfw_sync - Release SWFW semaphore
-> + *  @hw: pointer to hardware structure
-> + *  @mask: Mask to specify which semaphore to release
-> + *
-> + *  Releases the SWFW semaphore through the GSSR register for the specified
-> + *  function (CSR, PHY0, PHY1, EEPROM, Flash)
-> + **/
-> +void ngbe_release_swfw_sync(struct ngbe_hw *hw, u32 mask)
-> +{
-> +	ngbe_get_eeprom_semaphore(hw);
-
-Why can't ngbe_get_eeprom_semaphore() fail here? 
-
-> +	wr32m(hw, NGBE_MNG_SWFW_SYNC, mask, 0);
-> +	ngbe_release_eeprom_semaphore(hw);
-> +}
-> +
-> +/**
-> + *  ngbe_host_interface_command - Issue command to manageability block
-> + *  @hw: pointer to the HW structure
-> + *  @buffer: contains the command to write and where the return status will
-> + *   be placed
-> + *  @length: length of buffer, must be multiple of 4 bytes
-> + *  @timeout: time in ms to wait for command completion
-> + *  @return_data: read and return data from the buffer (true) or not (false)
-> + *   Needed because FW structures are big endian and decoding of
-> + *   these fields can be 8 bit or 16 bit based on command. Decoding
-> + *   is not easily understood without making a table of commands.
-> + *   So we will leave this up to the caller to read back the data
-> + *   in these cases.
-> + **/
-> +int ngbe_host_interface_command(struct ngbe_hw *hw, u32 *buffer,
-> +				u32 length, u32 timeout, bool return_data)
-> +{
-> +	u32 hicr, i, bi;
-> +	u32 hdr_size = sizeof(struct ngbe_hic_hdr);
-> +	u16 buf_len;
-> +	u32 dword_len;
-> +	int err = 0;
-> +	u32 buf[64] = {};
-> +
-> +	if (length == 0 || length > NGBE_HI_MAX_BLOCK_BYTE_LENGTH) {
-> +		dev_err(ngbe_hw_to_dev(hw),
-> +			"Buffer length failure buffersize=%d.\n", length);
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (ngbe_acquire_swfw_sync(hw, NGBE_MNG_SWFW_SYNC_SW_MB) != 0)
-> +		return -EBUSY;
-> +
-> +	/* Calculate length in DWORDs. We must be DWORD aligned */
-> +	if ((length % (sizeof(u32))) != 0) {
-> +		dev_err(ngbe_hw_to_dev(hw),
-> +			"Buffer length failure, not aligned to dword");
-> +		err = -EINVAL;
-> +		goto rel_out;
-> +	}
-> +
-> +	/*read to clean all status*/
-> +	hicr = rd32(hw, NGBE_MNG_MBOX_CTL);
-> +	if ((hicr & NGBE_MNG_MBOX_CTL_FWRDY))
-> +		dev_err(ngbe_hw_to_dev(hw),
-> +			"fwrdy is set before command.\n");
-> +	dword_len = length >> 2;
-> +	/* The device driver writes the relevant command block
-> +	 * into the ram area.
-> +	 */
-> +	for (i = 0; i < dword_len; i++)
-> +		wr32a(hw, NGBE_MNG_MBOX, i, buffer[i]);
-> +
-> +	/* Setting this bit tells the ARC that a new command is pending. */
-> +	wr32m(hw, NGBE_MNG_MBOX_CTL,
-> +	      NGBE_MNG_MBOX_CTL_SWRDY, NGBE_MNG_MBOX_CTL_SWRDY);
-> +
-> +	for (i = 0; i < timeout; i++) {
-> +		err = read_poll_timeout(rd32, hicr, hicr & NGBE_MNG_MBOX_CTL_FWRDY, 1000,
-> +					20000, false, hw, NGBE_MNG_MBOX_CTL);
-> +		if (!err)
-> +			break;
-> +	}
-> +
-> +	buf[0] = rd32(hw, NGBE_MNG_MBOX);
-> +	/* Check command completion */
-> +	if (timeout != 0 && i == timeout) {
-> +		dev_err(ngbe_hw_to_dev(hw),
-> +			"Command has failed with no status valid.\n");
-> +		if ((buffer[0] & 0xff) != (~buf[0] >> 24)) {
-> +			err = -EINVAL;
-> +			goto rel_out;
-> +		}
-> +	}
-> +
-> +	if (!return_data)
-> +		goto rel_out;
-> +
-> +	/* Calculate length in DWORDs */
-> +	dword_len = hdr_size >> 2;
-> +
-> +	/* first pull in the header so we know the buffer length */
-> +	for (bi = 0; bi < dword_len; bi++)
-> +		buffer[bi] = rd32a(hw, NGBE_MNG_MBOX, bi);
-> +
-> +	/* If there is any thing in data position pull it in */
-> +	buf_len = ((struct ngbe_hic_hdr *)buffer)->buf_len;
-> +	if (buf_len == 0)
-> +		goto rel_out;
-> +
-> +	if (length < buf_len + hdr_size) {
-> +		dev_err(ngbe_hw_to_dev(hw),
-> +			"Buffer not large enough for reply message.\n");
-> +		err = -ENOMEM;
-> +		goto rel_out;
-> +	}
-> +
-> +	/* Calculate length in DWORDs, add 3 for odd lengths */
-> +	dword_len = (buf_len + 3) >> 2;
-> +
-> +	/* Pull in the rest of the buffer (bi is where we left off) */
-> +	for (; bi <= dword_len; bi++)
-> +		buffer[bi] = rd32a(hw, NGBE_MNG_MBOX, bi);
-> +
-> +rel_out:
-> +	ngbe_release_swfw_sync(hw, NGBE_MNG_SWFW_SYNC_SW_MB);
-> +	return err;
-> +}
-> +
-> +/**
-> + *  ngbe_init_eeprom_params - Initialize EEPROM params
-> + *  @hw: pointer to hardware structure
-> + *
-> + *  Initializes the EEPROM parameters ngbe_eeprom_info within the
-> + *  ngbe_hw struct in order to set up EEPROM access.
-> + **/
-> +void ngbe_init_eeprom_params(struct ngbe_hw *hw)
-> +{
-> +	struct ngbe_eeprom_info *eeprom = &hw->eeprom;
-> +
-> +	eeprom->semaphore_delay = 10;
-> +	eeprom->word_size = 1024 >> 1;
-> +	eeprom->sw_region_offset = 0x80;
-> +}
-> +
-> +int ngbe_eeprom_chksum_hostif(struct ngbe_hw *hw)
-> +{
-> +	int tmp;
-> +	int status;
-> +	struct ngbe_hic_read_shadow_ram buffer;
-> +
-> +	buffer.hdr.req.cmd = NGBE_FW_EEPROM_CHECKSUM_CMD;
-> +	buffer.hdr.req.buf_lenh = 0;
-> +	buffer.hdr.req.buf_lenl = 0;
-> +	buffer.hdr.req.checksum = NGBE_FW_CMD_DEFAULT_CHECKSUM;
-> +	/* convert offset from words to bytes */
-> +	buffer.address = 0;
-> +	/* one word */
-> +	buffer.length = 0;
-> +
-> +	status = ngbe_host_interface_command(hw, (u32 *)&buffer,
-> +					     sizeof(buffer),
-> +					     NGBE_HI_COMMAND_TIMEOUT, false);
-> +
-> +	if (status < 0)
-> +		return status;
-> +	tmp = (u32)rd32a(hw, NGBE_MNG_MBOX, 1);
-
-If you declare tmp as u32 the above cast will be needed, also a more
-meaningful variable name would help
-
-> +	if (tmp == 0x80658383)
-
-Why this magic mumber? perhaps you can define/use some driver constant.
-
-> +		status = 0;
-
-or just:
-		return 0;
-	return -EIO;
-
-unless you plan to touch this code path with later patches.
-
-> +	else
-> +		return -EIO;
-> +
-> +	return status;
-> +}
-> +
-> +static int ngbe_read_ee_hostif_data32(struct ngbe_hw *hw, u16 offset, u32 *data)
-> +{
-> +	int status;
-> +	struct ngbe_hic_read_shadow_ram buffer;
-> +
-> +	buffer.hdr.req.cmd = NGBE_FW_READ_SHADOW_RAM_CMD;
-> +	buffer.hdr.req.buf_lenh = 0;
-> +	buffer.hdr.req.buf_lenl = NGBE_FW_READ_SHADOW_RAM_LEN;
-> +	buffer.hdr.req.checksum = NGBE_FW_CMD_DEFAULT_CHECKSUM;
-> +	/* convert offset from words to bytes */
-> +	buffer.address = (__force u32)cpu_to_be32(offset * 2);
-> +	/* one word */
-> +	buffer.length = (__force u16)cpu_to_be16(sizeof(u32));
-> +
-> +	status = ngbe_host_interface_command(hw, (u32 *)&buffer,
-> +					     sizeof(buffer),
-> +					     NGBE_HI_COMMAND_TIMEOUT, false);
-> +	if (status)
-> +		return status;
-> +	*data = (u32)rd32a(hw, NGBE_MNG_MBOX, NGBE_FW_NVM_DATA_OFFSET);
-
-Cast likely not needed.
+>> net/ipv4/ah4.c:168:38: error: extraneous ')' before ';'
+           err = skb_cow_data(skb, 0, &trailer));
+                                               ^
+   1 error generated.
 
 
-Cheers,
+vim +168 net/ipv4/ah4.c
 
-Paolo
+   146	
+   147	static int ah_output(struct xfrm_state *x, struct sk_buff *skb)
+   148	{
+   149		int err;
+   150		int nfrags;
+   151		int ihl;
+   152		u8 *icv;
+   153		struct sk_buff *trailer;
+   154		struct crypto_ahash *ahash;
+   155		struct ahash_request *req;
+   156		struct scatterlist *sg;
+   157		struct iphdr *iph, *top_iph;
+   158		struct ip_auth_hdr *ah;
+   159		struct ah_data *ahp;
+   160		int seqhi_len = 0;
+   161		__be32 *seqhi;
+   162		int sglists = 0;
+   163		struct scatterlist *seqhisg;
+   164	
+   165		ahp = x->data;
+   166		ahash = ahp->ahash;
+   167	
+ > 168		err = skb_cow_data(skb, 0, &trailer));
+   169		if (err < 0)
+   170			goto out;
+   171		nfrags = err;
+   172	
+   173		skb_push(skb, -skb_network_offset(skb));
+   174		ah = ip_auth_hdr(skb);
+   175		ihl = ip_hdrlen(skb);
+   176	
+   177		if (x->props.flags & XFRM_STATE_ESN) {
+   178			sglists = 1;
+   179			seqhi_len = sizeof(*seqhi);
+   180		}
+   181		err = -ENOMEM;
+   182		iph = ah_alloc_tmp(ahash, nfrags + sglists, ihl + seqhi_len);
+   183		if (!iph)
+   184			goto out;
+   185		seqhi = (__be32 *)((char *)iph + ihl);
+   186		icv = ah_tmp_icv(ahash, seqhi, seqhi_len);
+   187		req = ah_tmp_req(ahash, icv);
+   188		sg = ah_req_sg(ahash, req);
+   189		seqhisg = sg + nfrags;
+   190	
+   191		memset(ah->auth_data, 0, ahp->icv_trunc_len);
+   192	
+   193		top_iph = ip_hdr(skb);
+   194	
+   195		iph->tos = top_iph->tos;
+   196		iph->ttl = top_iph->ttl;
+   197		iph->frag_off = top_iph->frag_off;
+   198	
+   199		if (top_iph->ihl != 5) {
+   200			iph->daddr = top_iph->daddr;
+   201			memcpy(iph+1, top_iph+1, top_iph->ihl*4 - sizeof(struct iphdr));
+   202			err = ip_clear_mutable_options(top_iph, &top_iph->daddr);
+   203			if (err)
+   204				goto out_free;
+   205		}
+   206	
+   207		ah->nexthdr = *skb_mac_header(skb);
+   208		*skb_mac_header(skb) = IPPROTO_AH;
+   209	
+   210		top_iph->tos = 0;
+   211		top_iph->tot_len = htons(skb->len);
+   212		top_iph->frag_off = 0;
+   213		top_iph->ttl = 0;
+   214		top_iph->check = 0;
+   215	
+   216		if (x->props.flags & XFRM_STATE_ALIGN4)
+   217			ah->hdrlen  = (XFRM_ALIGN4(sizeof(*ah) + ahp->icv_trunc_len) >> 2) - 2;
+   218		else
+   219			ah->hdrlen  = (XFRM_ALIGN8(sizeof(*ah) + ahp->icv_trunc_len) >> 2) - 2;
+   220	
+   221		ah->reserved = 0;
+   222		ah->spi = x->id.spi;
+   223		ah->seq_no = htonl(XFRM_SKB_CB(skb)->seq.output.low);
+   224	
+   225		sg_init_table(sg, nfrags + sglists);
+   226		err = skb_to_sgvec_nomark(skb, sg, 0, skb->len);
+   227		if (unlikely(err < 0))
+   228			goto out_free;
+   229	
+   230		if (x->props.flags & XFRM_STATE_ESN) {
+   231			/* Attach seqhi sg right after packet payload */
+   232			*seqhi = htonl(XFRM_SKB_CB(skb)->seq.output.hi);
+   233			sg_set_buf(seqhisg, seqhi, seqhi_len);
+   234		}
+   235		ahash_request_set_crypt(req, sg, icv, skb->len + seqhi_len);
+   236		ahash_request_set_callback(req, 0, ah_output_done, skb);
+   237	
+   238		AH_SKB_CB(skb)->tmp = iph;
+   239	
+   240		err = crypto_ahash_digest(req);
+   241		if (err) {
+   242			if (err == -EINPROGRESS)
+   243				goto out;
+   244	
+   245			if (err == -ENOSPC)
+   246				err = NET_XMIT_DROP;
+   247			goto out_free;
+   248		}
+   249	
+   250		memcpy(ah->auth_data, icv, ahp->icv_trunc_len);
+   251	
+   252		top_iph->tos = iph->tos;
+   253		top_iph->ttl = iph->ttl;
+   254		top_iph->frag_off = iph->frag_off;
+   255		if (top_iph->ihl != 5) {
+   256			top_iph->daddr = iph->daddr;
+   257			memcpy(top_iph+1, iph+1, top_iph->ihl*4 - sizeof(struct iphdr));
+   258		}
+   259	
+   260	out_free:
+   261		kfree(iph);
+   262	out:
+   263		return err;
+   264	}
+   265	
 
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
