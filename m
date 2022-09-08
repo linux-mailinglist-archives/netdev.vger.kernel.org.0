@@ -2,79 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CFD55B17E6
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 11:00:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 462475B1873
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 11:22:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231424AbiIHJAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 05:00:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59292 "EHLO
+        id S231847AbiIHJVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 05:21:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230384AbiIHJAU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 05:00:20 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30C1392F6E
-        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 02:00:19 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id c10so9591371ljj.2
-        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 02:00:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=Ly9IEYTInP8tS6e927ZRVIe99VpHkJBnPnaAyl8oAUQ=;
-        b=NfJYCPTU0FSTkctPFB601rskf+uu1n4QI7Ee/ejRS5GsPfHvoJ0DwKNQ58zs8Lwt1U
-         dQBSVO4jGReIsIffEyNBr+p8XgiSlQr/Red47hz7EB1QlsJaW/ZjTworgo3tCCn18BaJ
-         xqKO69a8CfFieoSNKv0N/dgCXa8dJUhuRcejnewhfalw0FizXCCxWY/E2sa9gSTWa0dm
-         VpaeKdUu7LZHLbKHbYdlLVBg7iO0VOvddIbZOr8sPt00Nr2Fw6ELhQYJB2/I0zGI+PYb
-         shiQLOBh/fy4bk+IIZdFdcBt0YNi4UutinHvjBY3XulereemLXZJeW4V4jyl/5pm0X/f
-         2Y6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=Ly9IEYTInP8tS6e927ZRVIe99VpHkJBnPnaAyl8oAUQ=;
-        b=372NttmL0vz7atNAbwIzqyZ8JohYcDOoEzUNEaSIrXnm8EW6PWc4fqj+AfBSAI8Tfo
-         AH+75sMLt7pGjZzkmPpQ7cwTgZKmw8zNrtSdVUPgt3UiF6PbUl+G57m3RpDsLow21xQ9
-         gXzEnNULbJboFktKgehFd5LC74BuKM9SN4ir2QfIam8zmEDY9kQctkRog8Mk5Y6tMfe9
-         xTvaBPvCsVnOuLqbgKYHVySE/e+qC4KHDffrDCXTZe4SDvvcnY41X8i5HMLkHd3Ujw4n
-         oUiX7EE2T9Y1szDiZLeB1mxsf9btMhEU+egENbYuDcxY1+5jPOwW37nwMz4K4c2DoGtm
-         7s/g==
-X-Gm-Message-State: ACgBeo13VeeuSSTxSAtMKtz8fN8Wzor70BDNfCKj6aXWlh3Ghdhoe//Q
-        kP/89qxws7Db0iRA+FONn31v3Q==
-X-Google-Smtp-Source: AA6agR6y9hLVMc5n964fka1mBct1yqVVvdizyIoXKoRfIG/TFKTZIAwVYcC1/xRy+j7g4Vwkz3AL+A==
-X-Received: by 2002:a2e:8188:0:b0:25e:4ae6:5503 with SMTP id e8-20020a2e8188000000b0025e4ae65503mr2044547ljg.412.1662627617599;
-        Thu, 08 Sep 2022 02:00:17 -0700 (PDT)
-Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id m9-20020a056512358900b004979df1c1fasm1468931lfr.61.2022.09.08.02.00.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 08 Sep 2022 02:00:17 -0700 (PDT)
-Message-ID: <d5c88236-6c6b-2583-7f96-55e7a428d1b7@linaro.org>
-Date:   Thu, 8 Sep 2022 11:00:15 +0200
+        with ESMTP id S231814AbiIHJUp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 05:20:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25DB5D2B20;
+        Thu,  8 Sep 2022 02:20:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F7AC61C0D;
+        Thu,  8 Sep 2022 09:20:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D90D6C433D7;
+        Thu,  8 Sep 2022 09:20:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662628817;
+        bh=FUvuGhqZtmaM2z20lSw7K2UwexslQelsC6q//ijWWVo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=MBi9LL0eCxKQDfD4wK2GuZz3o8nYgCHQPaEuKM6z+NzY3mOMJXDqtm3H+pw1Nqkz6
+         X6qwa0CKOQNGIxs9ac7W9+qnotSlvROc4Mp+g95WwUCRe5nQf0erFI2iBCDQhWOiEZ
+         meibrtXUre+pox3t2YvqRwSzn7+tI6pF5xn/QF46sgs5UJFDtgPTf6n4kaGS///dOv
+         wFAGFZ4MRPOnSt06WcBko5Nwyga6l5LnisX0P/Qnj7Gi0rzKxQ0QUFfkKPf2Qr3YPx
+         jJLeuf83Ht/LHXg/+tBPyA3oVobvKz5YCRsRuunmMiNgGr9QKY2nfqQrC41FIigNcY
+         FYJ1lMujhzVhA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AE471C73FED;
+        Thu,  8 Sep 2022 09:20:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [v2 1/2] dt-bindings: net: rockchip-dwmac: add rv1126 compatible
-Content-Language: en-US
-To:     Anand Moon <anand@edgeble.ai>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        David Wu <david.wu@rock-chips.com>
-Cc:     Jagan Teki <jagan@edgeble.ai>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220907210649.12447-1-anand@edgeble.ai>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220907210649.12447-1-anand@edgeble.ai>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Patch net v2] net: phy: lan87xx: change interrupt src of link_up to
+ comm_ready
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166262881770.11432.13226560643030582200.git-patchwork-notify@kernel.org>
+Date:   Thu, 08 Sep 2022 09:20:17 +0000
+References: <20220905152750.5079-1-arun.ramadoss@microchip.com>
+In-Reply-To: <20220905152750.5079-1-arun.ramadoss@microchip.com>
+To:     Arun Ramadoss <arun.ramadoss@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        prasanna.vengateshan@microchip.com, UNGLinuxDriver@microchip.com,
+        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -83,21 +60,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/09/2022 23:06, Anand Moon wrote:
-> Add compatible string for RV1126 gmac, and constrain it to
-> be compatible with Synopsys dwmac 4.20a.
+Hello:
+
+This patch was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
+
+On Mon, 5 Sep 2022 20:57:50 +0530 you wrote:
+> Currently phy link up/down interrupt is enabled using the
+> LAN87xx_INTERRUPT_MASK register. In the lan87xx_read_status function,
+> phy link is determined using the T1_MODE_STAT_REG register comm_ready bit.
+> comm_ready bit is set using the loc_rcvr_status & rem_rcvr_status.
+> Whenever the phy link is up, LAN87xx_INTERRUPT_SOURCE link_up bit is set
+> first but comm_ready bit takes some time to set based on local and
+> remote receiver status.
+> As per the current implementation, interrupt is triggered using link_up
+> but the comm_ready bit is still cleared in the read_status function. So,
+> link is always down.  Initially tested with the shared interrupt
+> mechanism with switch and internal phy which is working, but after
+> implementing interrupt controller it is not working.
+> It can fixed either by updating the read_status function to read from
+> LAN87XX_INTERRUPT_SOURCE register or enable the interrupt mask for
+> comm_ready bit. But the validation team recommends the use of comm_ready
+> for link detection.
+> This patch fixes by enabling the comm_ready bit for link_up in the
+> LAN87XX_INTERRUPT_MASK_2 register (MISC Bank) and link_down in
+> LAN87xx_INTERRUPT_MASK register.
 > 
-> Reviewed-by: Heiko Stuebner <heiko@sntech.de>
-> Signed-off-by: Jagan Teki <jagan@edgeble.ai>
-> Signed-off-by: Anand Moon <anand@edgeble.ai>
-> ---
-> v2: add missing compatible string to property
->     added reviewed by Heiko Stuebner.
-> ---
+> [...]
+
+Here is the summary with links:
+  - [net,v2] net: phy: lan87xx: change interrupt src of link_up to comm_ready
+    https://git.kernel.org/netdev/net/c/5382033a3522
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-
-Best regards,
-Krzysztof
