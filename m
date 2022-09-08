@@ -2,145 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DB2C5B1B22
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 13:17:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CE735B19AF
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 12:10:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230220AbiIHLRT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 07:17:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59242 "EHLO
+        id S229818AbiIHKKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 06:10:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230236AbiIHLRR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 07:17:17 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93BF4E42D6
-        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 04:17:16 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WCRTNLm7FUsv/EgoN+bbGauew07DiK7HIaf+BfGT/eNG2bbe9QTpnhKcDHmNiEKj2LuTO+bJBXjswQjPvdGQXvjee85GhFX6nCzyK6dpEG3B7kYPDHNjff+d6CfOjLhjIxPNeRZnHYEF0JYgx2/6oT8HMR3RjZjR7VsSlgnd+NGpXWjHDJbdaFPxKSEgNAZ8yvZ/QzhM07tPbWHdHPAND48vI7kV8/Lcih1/DduN0kblsiZ/1wVXRsxZrrl19zF8Z0QrWfLDmZklZ7Skw5qVpXou35EWE22tF4kFY04Rn9q2uw8JuixPUIfin4tCr3FxzCvdbfs5oYZQ/VPQcMDgCA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8RpzamPZTygFP5eH5WnRzXlOQazwEui6u3fsj2WWrdA=;
- b=BqzbKV75we/4kbET189OBsKL2Usxfp2L6/pRFcSyVGZO6D/D02Xx9ZhJ3mPTQpD55XNxnIbl7jjJgm7CyOuIzX6nDsI+bXkIFlGE00o0tzuT0CHZUSqBBAw+OUc265XI0tc/clNrtL/NuwQJDQl9qCnznuwTfxzlcMPgx2PtSHSn02klgZ9zEr3PD3Y6arSypPZ0Kh/JhosX3BAgEmqT61Q9DrGm5tD+YlL3q94yfI7o4yuUyewdKTUk4+zRtJ2yEvAulx2cZf3qdXsCT+INZfg3tt6KEB513GHUWycMxFU6fRJa1j/xts5ZgEnAt+oeXyRKtUTZ1gFhZpb+lP5w9g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=microchip.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8RpzamPZTygFP5eH5WnRzXlOQazwEui6u3fsj2WWrdA=;
- b=Vv41/nHJNhHiEhk+kRa8Hj9k5FkHvHC4g8pmkUMbbkLME9HWyeSN8/KLbf644MA/wYRu4rCYX9AzADF1EgxlGAYVvxj2DAvsS2AAlfT9QCID+O54wRm/ejzsQwNO8n+2EArf7Fa0IGHXcRcK/T+EdPMdcOfpI6ApIvAcmhi8IBgvTGYYvRhCKAVAcT2r2LTPYOF5XyfQPccIVy8xiEykLZEj+xNEUk+XMssrGC0KsF+kvlZPkkMJUJLRwtRoc449V57hrsq/3aYEGS1evo0jWrBcKsyYoQIB+8eoFdzD8qZDUifXyRiYVg0TMPBMfgRsQiuZT63AV58T2YbbWQzaVA==
-Received: from DS7PR03CA0040.namprd03.prod.outlook.com (2603:10b6:5:3b5::15)
- by SA1PR12MB5670.namprd12.prod.outlook.com (2603:10b6:806:239::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.14; Thu, 8 Sep
- 2022 11:17:14 +0000
-Received: from DM6NAM11FT096.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:3b5:cafe::6d) by DS7PR03CA0040.outlook.office365.com
- (2603:10b6:5:3b5::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.12 via Frontend
- Transport; Thu, 8 Sep 2022 11:17:14 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.235) by
- DM6NAM11FT096.mail.protection.outlook.com (10.13.173.145) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5612.13 via Frontend Transport; Thu, 8 Sep 2022 11:17:14 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL107.nvidia.com
- (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Thu, 8 Sep
- 2022 11:17:13 +0000
-Received: from yaviefel (10.126.231.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Thu, 8 Sep 2022
- 04:17:10 -0700
-References: <YwKeVQWtVM9WC9Za@DEN-LT-70577> <87v8qklbly.fsf@nvidia.com>
- <YwXXqB64QLDuKObh@DEN-LT-70577> <87pmgpki9v.fsf@nvidia.com>
- <YwZoGJXgx/t/Qxam@DEN-LT-70577> <87k06xjplj.fsf@nvidia.com>
- <20220824175453.0bc82031@kernel.org>
- <20220829075342.5ztd5hf4sznl7req@lx-anielsen>
- <20220902133218.bgfd2uaelvn6dsfa@skbuf> <Yxh3ZOvfESYT36UN@DEN-LT-70577>
- <20220907172613.mufgnw3k5rt745ir@skbuf>
-User-agent: mu4e 1.6.6; emacs 28.1
-From:   Petr Machata <petrm@nvidia.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-CC:     "Daniel.Machon@microchip.com" <Daniel.Machon@microchip.com>,
-        "Allan.Nielsen@microchip.com" <Allan.Nielsen@microchip.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "petrm@nvidia.com" <petrm@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "vinicius.gomes@intel.com" <vinicius.gomes@intel.com>,
-        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
-        "maxime.chevallier@bootlin.com" <maxime.chevallier@bootlin.com>,
-        "roopa@nvidia.com" <roopa@nvidia.com>
-Subject: Re: Basic PCP/DEI-based queue classification
-Date:   Thu, 8 Sep 2022 10:27:58 +0200
-In-Reply-To: <20220907172613.mufgnw3k5rt745ir@skbuf>
-Message-ID: <875yhyf74c.fsf@nvidia.com>
+        with ESMTP id S229796AbiIHKKh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 06:10:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90A9C786CA
+        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 03:10:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662631835;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=J5bbihJxibbZG98nvmOoRyWPRDe2h39ZD/bGM+Jcg48=;
+        b=M6wbdEalLKUC9hmr5+8v8FfCVCF5egSKv9tM96Tb9NKVfpOgpAgBnhqHGO1Q9HVidW/1ew
+        3cN5XUrp12P/bYOukSwuQgNrH558RfzXNGra6klxh1E+/25eL9ZONJ7en1O+N66045/phH
+        aneXW3jKRvFJx4KlnK2fnzm4uMRXMk0=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-397-t9C_UnEvOd29dkvzPs21Nw-1; Thu, 08 Sep 2022 06:10:34 -0400
+X-MC-Unique: t9C_UnEvOd29dkvzPs21Nw-1
+Received: by mail-wm1-f69.google.com with SMTP id c128-20020a1c3586000000b003b324bb08c5so665340wma.9
+        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 03:10:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=J5bbihJxibbZG98nvmOoRyWPRDe2h39ZD/bGM+Jcg48=;
+        b=Z1xFdMgGLyBcns5dVu0VE2eVxk2IaSX5fsMFSIxj4fqjQcedf9Zkky/sTrr2UwZjGM
+         WsiPp64/1wElNPHHYESJWns/xgdduGjknc97zzr8Q3RVgmH1MAF/YhKSR+pO8KmWWd3M
+         DHbJSS6JMrEotGI4ygqkCYx0GxBgwwwn0zsYeyNbLMX6vZQ4yXNu+VPajQMLlIUgrqL2
+         qSXYYiLqqvV2qNwfF22HJYCxNhOb9IZwcleCkOlG/rMkAX6VfOuouw6jIBMJwKi3O9jy
+         CdOgUsRnDYfmJaZ9qg4qeUOVSrp5NtQifuquDulWeH/LLKzxGnn6G9xPulyD0DyEB9AQ
+         ifBA==
+X-Gm-Message-State: ACgBeo2d11Dp9p7WP9QPbLr7wrl8XoOOD3tzva7rBHRoNhvBylj1r0iO
+        SjeDsVhgBQXbT7IbMsqrLF5QMWXrTgHT/T3xLbto48cbn1Xk3EptB9cyiIpvxTuSuvQ/sx2zhdM
+        SBngcxOGMAiiJvj7N
+X-Received: by 2002:a05:6000:1d93:b0:22a:3318:860d with SMTP id bk19-20020a0560001d9300b0022a3318860dmr887177wrb.352.1662631833679;
+        Thu, 08 Sep 2022 03:10:33 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5j89wi/Zu5U7jnKd0D8sJ2jzDuep/sdQH8t6zKveJvmPbUuarPvV4XeisBWFaemKR+F4jq/g==
+X-Received: by 2002:a05:6000:1d93:b0:22a:3318:860d with SMTP id bk19-20020a0560001d9300b0022a3318860dmr887152wrb.352.1662631833406;
+        Thu, 08 Sep 2022 03:10:33 -0700 (PDT)
+Received: from [192.168.0.4] ([78.17.187.218])
+        by smtp.gmail.com with ESMTPSA id c7-20020adfe747000000b00226dfac0149sm15392967wrn.114.2022.09.08.03.10.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 08 Sep 2022 03:10:33 -0700 (PDT)
+Message-ID: <b5f0d10d-2d4e-34d6-1e45-c206cb6f5d26@redhat.com>
+Date:   Thu, 8 Sep 2022 11:10:31 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.126.231.35]
-X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT096:EE_|SA1PR12MB5670:EE_
-X-MS-Office365-Filtering-Correlation-Id: 28841464-7615-4992-6aa5-08da918baeb7
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Rd0ebCUc7e212xupoUGG0ja45jqoDzrG2XyMkJ6k1s7HFzmy3EXI8eUhy0Lb0Q/4Ch9vTdaAi7qHr1INLLJWb4iL6qoSrTWVET1U/iKYj9w8cXweXqWs5mS7LExlz8IZrgA59sd/R9cCF0rVSd1NyqLSSL0A3SOLLHpb+6LB7bPIPL/xQhSz/slouUA/tQ9Lbn/ZCEb3cchs74yz7n0GvL0UvsBd1+qbEASzbjHYw8D1+Z6/wD3Ka25KWGK/nInPdsl8SllW/zE6I9dYP0FrjkR/57+knbkrB5zrWmdMtXFwjMxW+7Y2BGgHRM2dvWP+JaXt1QvAHksPNEoEXDtpzO5XZlP5lY1EO3zlQNgEGuYdgTyb/OnSehzwm5j8gRWbhUOcvfCQ9Y9H8H11hT3Kd5D5sIw6p0mDY5XqujM6lUTPvUUMOHukwLxeWFLUmQjuMMSYFszMouoV5+wC7OkfGu6p+iOXYXHwsjEqpTE3AvO/eqAmo3zPbOtYxLs9nAk2XCRVJVY0nRNgH8/kLAXcczfzWlFVF/fOA8SJd64uwovEshz73d6PlxymVFrCxC86HDqkJeTws1KAtPTo1C3IPQN+ccydvvMxKQ+SHEUudrgxYtUmn1n8ECM/45HFj7Z07h/RW3yKdilXzhLNJAW0XAx2bx0j5fCXGcx4/G0YfEP4/6IV77MbTFLcxfJtJZVHEIs7nD5tHv0ctBa2pYB/7Z1vEm7zclsVFzt05fJHwnEIsc0nG+AGmihOG6NGiZQZF9I18usiKfoLg2VcjM8wF5wkNOWbhRLQ6lGdxy3ZTCS89Brjq/T0WkXqQvQ4n0u1
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(136003)(39860400002)(346002)(376002)(396003)(40470700004)(46966006)(36840700001)(186003)(47076005)(426003)(81166007)(356005)(36860700001)(16526019)(336012)(82310400005)(478600001)(70206006)(54906003)(70586007)(36756003)(4326008)(316002)(6916009)(83380400001)(8676002)(2906002)(26005)(6666004)(40460700003)(107886003)(8936002)(41300700001)(5660300002)(2616005)(86362001)(82740400003)(40480700001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Sep 2022 11:17:14.2990
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 28841464-7615-4992-6aa5-08da918baeb7
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT096.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB5670
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.2.1
+Subject: Re: [PATCH RFCv2 bpf-next 17/18] xsk: AF_XDP xdp-hints support in
+ desc options
+Content-Language: en-US
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        xdp-hints@xdp-project.net, larysa.zaremba@intel.com,
+        memxor@gmail.com, Lorenzo Bianconi <lorenzo@kernel.org>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        dave@dtucker.co.uk, Magnus Karlsson <magnus.karlsson@intel.com>,
+        bjorn@kernel.org
+References: <166256538687.1434226.15760041133601409770.stgit@firesoul>
+ <166256558657.1434226.7390735974413846384.stgit@firesoul>
+ <CAJ8uoz3UcC2tnMtG8W6a3HpCKgaYSzSCqowLFQVwCcsr+NKBOQ@mail.gmail.com>
+From:   Maryam Tahhan <mtahhan@redhat.com>
+In-Reply-To: <CAJ8uoz3UcC2tnMtG8W6a3HpCKgaYSzSCqowLFQVwCcsr+NKBOQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 08/09/2022 09:06, Magnus Karlsson wrote:
+> On Wed, Sep 7, 2022 at 5:48 PM Jesper Dangaard Brouer <brouer@redhat.com> wrote:
+>>
+>> From: Maryam Tahhan <mtahhan@redhat.com>
+>>
+>> Simply set AF_XDP descriptor options to XDP flags.
+>>
+>> Jesper: Will this really be acceptable by AF_XDP maintainers?
+> 
+> Maryam, you guessed correctly that dedicating all these options bits
+> for a single feature will not be ok :-). E.g., I want one bit for the
+> AF_XDP multi-buffer support and who knows what other uses there might
+> be for this options field in the future. Let us try to solve this in
+> some other way. Here are some suggestions, all with their pros and
+> cons.
+> 
 
-Vladimir Oltean <vladimir.oltean@nxp.com> writes:
+TBH it was Jespers question :)
 
-> The problem with the ingress-qos-map and egress-qos-map from 802.1Q that
-> I see is that they allow for per-VID prioritization, which is way more
-> fine grained than what we need. This, plus the fact that bridge VLANs
-> don't have this setting, only termination (8021q) VLANs do.
->
-> How about an ingress-qos-map and an egress-qos-map per port rather
-> than per VID, potentially even a bridge_slave netlink attribute,
-> offloadable through switchdev? We could make the bridge input fast
-> path alter skb->priority for the VLAN-tagged code paths, and this
-> could give us superior semantics compared to putting this
-> non-standardized knob in the hardware only dcbnl.
+> * Put this feature flag at a known place in the metadata area, for
+> example just before the BTF ID. No need to fill this in if you are not
+> redirecting to AF_XDP, but at a redirect to AF_XDP, the XDP flags are
+> copied into this u32 in the metadata area so that user-space can
+> consume it. Will cost 4 bytes of the metadata area though.
 
-Per-netdevice qos map is exactly what we are looking for. I think it
-wasn't even considered because the layering is obviously wrong. Stuff
-like this really belongs to TC.
+If Jesper agrees I think this approach would make sense. Trying to
+translate encodings into some other flags for AF_XDP I think will lead
+to a growing set of translations as more options come along.
+The other thing to be aware of is just making sure to clear/zero the 
+metadata space in the buffers at some point (ideally when the descriptor 
+is returned from the application) so when the buffers are used again
+they are already in a "reset" state.
 
-Having them on bridge_slave would IMHO not solve much, besides the
-layering violations :) If you use anything besides vlan_filtering
-bridges, you have X places to configure compatibly. Which is not great
-for either offload or configuration.
+> 
+> * Instead encode this information into each metadata entry in the
+> metadata area, in some way so that a flags field is not needed (-1
+> signifies not valid, or whatever happens to make sense). This has the
+> drawback that the user might have to look at a large number of entries
+> just to find out there is nothing valid to read. To alleviate this, it
+> could be combined with the next suggestion.
+> 
+> * Dedicate one bit in the options field to indicate that there is at
+> least one valid metadata entry in the metadata area. This could be
+> combined with the two approaches above. However, depending on what
+> metadata you have enabled, this bit might be pointless. If some
+> metadata is always valid, then it serves no purpose. But it might if
+> all enabled metadata is rarely valid, e.g., if you get an Rx timestamp
+> on one packet out of one thousand.
+> 
+>> Signed-off-by: Maryam Tahhan <mtahhan@redhat.com>
+>> ---
+>>   include/uapi/linux/if_xdp.h |    2 +-
+>>   net/xdp/xsk.c               |    2 +-
+>>   net/xdp/xsk_queue.h         |    3 ++-
+>>   3 files changed, 4 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/include/uapi/linux/if_xdp.h b/include/uapi/linux/if_xdp.h
+>> index a78a8096f4ce..9335b56474e7 100644
+>> --- a/include/uapi/linux/if_xdp.h
+>> +++ b/include/uapi/linux/if_xdp.h
+>> @@ -103,7 +103,7 @@ struct xdp_options {
+>>   struct xdp_desc {
+>>          __u64 addr;
+>>          __u32 len;
+>> -       __u32 options;
+>> +       __u32 options; /* set to the values of xdp_hints_flags*/
+>>   };
+>>
+>>   /* UMEM descriptor is __u64 */
+>> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+>> index 5b4ce6ba1bc7..32095d78f06b 100644
+>> --- a/net/xdp/xsk.c
+>> +++ b/net/xdp/xsk.c
+>> @@ -141,7 +141,7 @@ static int __xsk_rcv_zc(struct xdp_sock *xs, struct xdp_buff *xdp, u32 len)
+>>          int err;
+>>
+>>          addr = xp_get_handle(xskb);
+>> -       err = xskq_prod_reserve_desc(xs->rx, addr, len);
+>> +       err = xskq_prod_reserve_desc(xs->rx, addr, len, xdp->flags);
+>>          if (err) {
+>>                  xs->rx_queue_full++;
+>>                  return err;
+>> diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
+>> index fb20bf7207cf..7a66f082f97e 100644
+>> --- a/net/xdp/xsk_queue.h
+>> +++ b/net/xdp/xsk_queue.h
+>> @@ -368,7 +368,7 @@ static inline u32 xskq_prod_reserve_addr_batch(struct xsk_queue *q, struct xdp_d
+>>   }
+>>
+>>   static inline int xskq_prod_reserve_desc(struct xsk_queue *q,
+>> -                                        u64 addr, u32 len)
+>> +                                        u64 addr, u32 len, u32 flags)
+>>   {
+>>          struct xdp_rxtx_ring *ring = (struct xdp_rxtx_ring *)q->ring;
+>>          u32 idx;
+>> @@ -380,6 +380,7 @@ static inline int xskq_prod_reserve_desc(struct xsk_queue *q,
+>>          idx = q->cached_prod++ & q->ring_mask;
+>>          ring->desc[idx].addr = addr;
+>>          ring->desc[idx].len = len;
+>> +       ring->desc[idx].options = flags;
+>>
+>>          return 0;
+>>   }
+>>
+>>
+> 
 
-Given there's one piece of HW to actually do the prioritization, it
-seems obvious to aim at having a single source of the mapping in Linux.
-DCB or TC both fit the bill here.
-
-Maybe we need to figure out how to tweak TC to make this stuff easier to
-configure and offload...
