@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C06E5B18FB
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 11:42:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FA515B1901
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 11:42:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230420AbiIHJmI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 05:42:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57278 "EHLO
+        id S231142AbiIHJmm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 05:42:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230362AbiIHJmH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 05:42:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5249DB14CD;
-        Thu,  8 Sep 2022 02:42:06 -0700 (PDT)
+        with ESMTP id S229579AbiIHJmk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 05:42:40 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A710311CD50;
+        Thu,  8 Sep 2022 02:42:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F366FB82054;
-        Thu,  8 Sep 2022 09:42:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9926AC433D6;
-        Thu,  8 Sep 2022 09:41:58 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7E950CE1EE1;
+        Thu,  8 Sep 2022 09:42:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 374FBC433D6;
+        Thu,  8 Sep 2022 09:42:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662630123;
-        bh=ntPtZqkKQgA88xitl7MbgJ0C7eK0xZrwocnCU7VRuew=;
+        s=k20201202; t=1662630151;
+        bh=Rbz4UhF1Mzda+y/wbm+1YflUS3xq9FGXeREcMBANRU8=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tE7YZ4K9o+VxFD5FsuXdd0Zel+JvLhbkWw1RHmZS8/U6uv7o7eQQDhpHZAoaC2ArY
-         Xi/wTRN3zduhbyS6aSQ3vTigRp/V8Mu3oCo59zcsEHQyBIVv76SD7agU0gE2OFowYg
-         qqtdYMMBUeAAko+5gKbPQGTrnCaf59/vGu4Boo1GtGfHt9romvmoxt1dKySq2hhhnF
-         96W3He9ANeFeTYxwL0EIrwdcb7i63cE8sKzOktoZ+6ohnPT9jqnSmZDD6+ARraRz3y
-         WsMJkZq2cLyiN/Kl5JvOH7XMuIEnuhGjQsi8qw/w3hrn7s/PEsX38K0a37scAiBTuE
-         c2+5pctL62D4w==
-Date:   Thu, 8 Sep 2022 10:41:55 +0100
+        b=bcV1kHZz2uyK2owVZ8uuptrtzoLKEs1JF3vJ5D5+p1Puztefa8032CeutsT+aDsLl
+         Qr/M9Q27HjfCPsQbL7V6im/X/sU5D53dFC8qKOnfdtiJ+obNe1FboHhV6bF3Y6T038
+         LtWWc4SEoGL89HqkSCYqciqGsEW+KoSn6HlYwZdGOtKtEehly8LY7nyErt18mvND/K
+         pWZxdf0MOnPSEAt2kH6Z2CbK1SRL7D2qRK/GLKtkwOlatWGVrzUCJYtN13F78muRRh
+         Cmjgz0DlYu3wPiWt9j8e9YhvmZYlDcFJDzsaGDDOX01ezNCdlg81pmL7/cPDjIpIvh
+         BtZntYlBOrmMw==
+Date:   Thu, 8 Sep 2022 10:42:22 +0100
 From:   Lee Jones <lee@kernel.org>
 To:     Colin Foster <colin.foster@in-advantage.com>
 Cc:     linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
@@ -54,17 +54,19 @@ Cc:     linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, katie.morris@in-advantage.com
-Subject: Re: [RESEND PATCH v16 mfd 3/8] pinctrl: ocelot: add ability to be
- used in a non-mmio configuration
-Message-ID: <Yxm447l7hNKrKbto@google.com>
+        Rob Herring <robh+dt@kernel.org>,
+        katie.morris@in-advantage.com,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [RESEND PATCH v16 mfd 4/8] pinctrl: microchip-sgpio: allow sgpio
+ driver to be used as a module
+Message-ID: <Yxm4/nu4bk1/PBvv@google.com>
 References: <20220905162132.2943088-1-colin.foster@in-advantage.com>
- <20220905162132.2943088-4-colin.foster@in-advantage.com>
+ <20220905162132.2943088-5-colin.foster@in-advantage.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220905162132.2943088-4-colin.foster@in-advantage.com>
+In-Reply-To: <20220905162132.2943088-5-colin.foster@in-advantage.com>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -77,31 +79,28 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Mon, 05 Sep 2022, Colin Foster wrote:
 
-> There are a few Ocelot chips that contain pinctrl logic, but can be
-> controlled externally. Specifically the VSC7511, 7512, 7513 and 7514. In
-> the externally controlled configurations these registers are not
-> memory-mapped.
-> 
-> Add support for these non-memory-mapped configurations.
+> As the commit message suggests, this simply adds the ability to select
+> SGPIO pinctrl as a module. This becomes more practical when the SGPIO
+> hardware exists on an external chip, controlled indirectly by I2C or SPI.
+> This commit enables that level of control.
 > 
 > Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 > Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 > Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> Acked-by: Linus Walleij <linus.walleij@linaro.org>
 > ---
 > 
 > v16
 >     * Add Andy Reviewed-by tag
 > 
-> v15
+> v14,15
 >     * No changes
 > 
-> v14
->     * Add Reviewed and Acked tags
-> 
 > ---
->  drivers/pinctrl/pinctrl-ocelot.c | 16 +++++-----------
->  1 file changed, 5 insertions(+), 11 deletions(-)
+>  drivers/pinctrl/Kconfig                   | 5 ++++-
+>  drivers/pinctrl/pinctrl-microchip-sgpio.c | 6 +++++-
+>  2 files changed, 9 insertions(+), 2 deletions(-)
 
 Applied, thanks.
 
