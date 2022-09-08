@@ -2,105 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A51F55B1187
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 02:44:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E7755B11C7
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 03:04:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229749AbiIHAoU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Sep 2022 20:44:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41358 "EHLO
+        id S230192AbiIHBEq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Sep 2022 21:04:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229498AbiIHAoT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 20:44:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE77CBFC57;
-        Wed,  7 Sep 2022 17:44:18 -0700 (PDT)
+        with ESMTP id S230220AbiIHBEk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Sep 2022 21:04:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54D6B13DF5;
+        Wed,  7 Sep 2022 18:04:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 48D7261B18;
-        Thu,  8 Sep 2022 00:44:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D131C433D6;
-        Thu,  8 Sep 2022 00:44:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1155CB81F7C;
+        Thu,  8 Sep 2022 01:04:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC175C4347C;
+        Thu,  8 Sep 2022 01:04:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662597857;
-        bh=g5nR0cX0QPYzLJn1sJLMWOJPxVQFmzSG3JCsEpMQcqA=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=S5OUTbCwVAhMJxMa7IGDJMDUmzz8roBfoBf3nVOAiw210yURvlh3PIKH6NhXlRpo4
-         7xhR1uY9gn8axS/y26G9VJKiaRaHhmNvkZF4jm/vTkxSvu8gqXH/n+Yy8lOvXjGpPQ
-         60c6Svd0wV9asXyFsVrQnkkUTS7fsvxvyXIR6NeUmcmVif0KXfQNYxsKGzpqKUaTor
-         Zmpiy2Z6lD/S6DtExbJrBj8Zgl6nyQWY9LwLOIVRvbHDeKKKcXCnimMWtWHCZ4LZbj
-         HT5lEWVtdVf82PWm5gGg/ReODFsX3x2SAfFK2cHxBAkvSF3OfghCMVZKdX/b2J/Gaz
-         QyZnOz599W87A==
-Message-ID: <e1e6519f-2e77-05c1-697c-56b174addc6e@kernel.org>
-Date:   Wed, 7 Sep 2022 18:44:16 -0600
+        s=k20201202; t=1662599071;
+        bh=pDKliAAXbuuHRjn1Tmw2PK6pJKiEg51Kk3HsHlIQUfk=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=YNNTXqSKtzq1oKkK0voUjm8ZKYC1iduun6DAdgJCwwfOLNKX8jG6cbQysIPTR87DM
+         y+HMl1QEEoetsmalSv4Uay1ZK3kB18HqlVAtILAbmy6u9MNn2qL9nA0j/cplojh6sb
+         8jpv6eblgFJB+qXjtJ4F7rAuRx3+O4xi+2ugVlKEclVhx6AwsIgIO9DC5ftjdaNwtO
+         KR0GPf6XCpudvxzcjpmrbIAXytjpNjjXRPV5ItRZ0PViOAgqy5D6YCvnj6Zv9p6PLW
+         J3bxZbWgib3PAlOH52MWGWKICf93BdtwE6KEC3WWkVSFm9RnwVY1qSOmXG/EdxviIz
+         g+RqHxVawOw6w==
+Received: by mail-wr1-f46.google.com with SMTP id t14so16037655wrx.8;
+        Wed, 07 Sep 2022 18:04:31 -0700 (PDT)
+X-Gm-Message-State: ACgBeo1Feq6zFHQkNmwrpw6bhcJ2KvHSCsRNaYXvFRsndVOoe5kMpC19
+        h29mQMu5dK6dZBiT/UKkMWMjedF90pugckSRbZk=
+X-Google-Smtp-Source: AA6agR6TiHrGhJmQC1WmULfwqDbYWxvDpIJUVuPL3xFAGnZeEq3rEYabuCKG1z3oIgWXoh9Pi/FO3vYTL0uf8rMPUqs=
+X-Received: by 2002:a5d:6da2:0:b0:228:64cb:5333 with SMTP id
+ u2-20020a5d6da2000000b0022864cb5333mr3335307wrs.428.1662599070046; Wed, 07
+ Sep 2022 18:04:30 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.13.0
-Subject: Re: [PATCH v3 0/6] TUN/VirtioNet USO features support.
-Content-Language: en-US
-To:     Andrew Melnychenko <andrew@daynix.com>, edumazet@google.com,
-        netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jasowang@redhat.com, mst@redhat.com, pabeni@redhat.com,
-        yoshfuji@linux-ipv6.org
-Cc:     yan@daynix.com, yuri.benditovich@daynix.com
-References: <20220907125048.396126-1-andrew@daynix.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <20220907125048.396126-1-andrew@daynix.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-11.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <f35b32f3303b7cb70a5e55f5fbe0bd3a1d38c9a6.1662548037.git.lorenzo@kernel.org>
+In-Reply-To: <f35b32f3303b7cb70a5e55f5fbe0bd3a1d38c9a6.1662548037.git.lorenzo@kernel.org>
+From:   Song Liu <song@kernel.org>
+Date:   Wed, 7 Sep 2022 18:04:18 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW4Vcn4GELkKWNdb+X4L+KfdtOiHqN0VijhWy+vLjvD74g@mail.gmail.com>
+Message-ID: <CAPhsuW4Vcn4GELkKWNdb+X4L+KfdtOiHqN0VijhWy+vLjvD74g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: fix ct status check in bpf_nf selftests
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, pablo@netfilter.org,
+        fw@strlen.de, netfilter-devel@vger.kernel.org,
+        lorenzo.bianconi@redhat.com,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/7/22 6:50 AM, Andrew Melnychenko wrote:
-> Added new offloads for TUN devices TUN_F_USO4 and TUN_F_USO6.
-> Technically they enable NETIF_F_GSO_UDP_L4
-> (and only if USO4 & USO6 are set simultaneously).
-> It allows the transmission of large UDP packets. 
+On Wed, Sep 7, 2022 at 3:56 AM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+>
+> Check properly the connection tracking entry status configured running
+> bpf_ct_change_status kfunc.
+> Remove unnecessary IPS_CONFIRMED status configuration since it is
+> already done during entry allocation.
+>
+> Fixes: 6eb7fba007a7 ("selftests/bpf: Add tests for new nf_conntrack kfuncs")
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  tools/testing/selftests/bpf/prog_tests/bpf_nf.c | 4 ++--
+>  tools/testing/selftests/bpf/progs/test_bpf_nf.c | 8 +++++---
+>  2 files changed, 7 insertions(+), 5 deletions(-)
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_nf.c b/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
+> index 544bf90ac2a7..903d16e3abed 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
+> @@ -111,8 +111,8 @@ static void test_bpf_nf_ct(int mode)
+>         /* allow some tolerance for test_delta_timeout value to avoid races. */
+>         ASSERT_GT(skel->bss->test_delta_timeout, 8, "Test for min ct timeout update");
+>         ASSERT_LE(skel->bss->test_delta_timeout, 10, "Test for max ct timeout update");
+> -       /* expected status is IPS_SEEN_REPLY */
+> -       ASSERT_EQ(skel->bss->test_status, 2, "Test for ct status update ");
+> +       /* expected status is IPS_CONFIRMED | IPS_SEEN_REPLY */
+> +       ASSERT_EQ(skel->bss->test_status, 0xa, "Test for ct status update ");
 
-Please spell out USO at least once in the cover letter to make sure the
-acronym is clear.
+Why do we use 0xa instead of IPS_CONFIRMED | IPS_SEEN_REPLY?
+To avoid dependency on the header file?
 
-> 
-> Different features USO4 and USO6 are required for qemu where Windows guests can
-> enable disable USO receives for IPv4 and IPv6 separately.
-> On the other side, Linux can't really differentiate USO4 and USO6, for now.
-
-Why is that and what is needed for Linux to differentiate between the 2
-protocols?
-
-> For now, to enable USO for TUN it requires enabling USO4 and USO6 together.
-> In the future, there would be a mechanism to control UDP_L4 GSO separately.
-> 
-> New types for virtio-net already in virtio-net specification:
-> https://github.com/oasis-tcs/virtio-spec/issues/120
-> 
-> Test it WIP Qemu https://github.com/daynix/qemu/tree/USOv3
-> 
-> Andrew (5):
->   uapi/linux/if_tun.h: Added new offload types for USO4/6.
->   driver/net/tun: Added features for USO.
->   uapi/linux/virtio_net.h: Added USO types.
->   linux/virtio_net.h: Support USO offload in vnet header.
->   drivers/net/virtio_net.c: Added USO support.
-> 
-> Andrew Melnychenko (1):
->   udp: allow header check for dodgy GSO_UDP_L4 packets.
-> 
->  drivers/net/tap.c               | 10 ++++++++--
->  drivers/net/tun.c               |  8 +++++++-
->  drivers/net/virtio_net.c        | 19 +++++++++++++++----
->  include/linux/virtio_net.h      |  9 +++++++++
->  include/uapi/linux/if_tun.h     |  2 ++
->  include/uapi/linux/virtio_net.h |  5 +++++
->  net/ipv4/udp_offload.c          |  2 +-
->  7 files changed, 47 insertions(+), 8 deletions(-)
-> 
-
+Thanks,
+Song
