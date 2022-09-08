@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E8F5E5B1E98
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 15:21:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0F405B1E9C
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 15:21:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232355AbiIHNV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 09:21:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40778 "EHLO
+        id S232434AbiIHNV3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 09:21:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232335AbiIHNVU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 09:21:20 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27F2A6178
-        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 06:21:16 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id i26so11945587lfp.11
-        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 06:21:15 -0700 (PDT)
+        with ESMTP id S232343AbiIHNVV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 09:21:21 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52FE7DEAB
+        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 06:21:17 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id q21so13462625lfo.0
+        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 06:21:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=mA8EP7nF2Ml9l8M0evjs0Js/bYOH3uWZJWaYcgqAs/s=;
-        b=UpPNUujB9+QvhedvvOuwkMqHnmC8QTmf2tNkYzn5rLauH/T7eV9g5NlJPlsl4KWHzj
-         uuXDce8gwPsz+jUZQ86JeGqsdVna5HwzL71yAKxIV0Vq/RXK5+xSBlY6zruotzjaNZht
-         uT+yMQGkf1t9YtQjyq7g7zwr46uGxorC0ob+wNNIkNw5te+at1UOqWgiRociuoSGkl/r
-         t7LekbCI7H/peWptpB48us7uyF4q4MRXx5yYfV7h7FF+B+8NnSxWoS6W6HujHEB2pWkK
-         KBZ4I6TibioXP0p0FR7K5oJIEONSAmXabrymecJTz4PoTxCpcSC8ZqkOpt2qudn1saKu
-         vuXA==
+        bh=R/2Z6ZQoZzqpL1LfavqO+X5S24pYhQKeMt7hudS7Sd8=;
+        b=av1LyBbQ3hr/bw8fUAkAig2axheXObLSpMLxGEB7qthP2Gfh5plVCQhC5oTzHHOr5T
+         tBfKthn6BKLCGthnPt3E6ZahpB9GRd8FbPt2Nch+1fZLO2+qvr+dug/IP/dF4rsrsQuu
+         lOD77NsAMpT/bQVoH0eXNZyIq0apKO+1uc5EDwKU/mBI5OSbpd0ES25JvRFb2bZH4SAE
+         buK5bh/mdCK0mpzt2my8LovgG4biar/jxzqI7Pt2uEUaOQ96xYORHUHXz8qX6qIjreAY
+         7iHG3yYV6YuuokQDsDmrMVp96yiEm3c6BwcQh5u9v/I0RWevMQxLK7xE0m/9xdVCZ8Ow
+         ht0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=mA8EP7nF2Ml9l8M0evjs0Js/bYOH3uWZJWaYcgqAs/s=;
-        b=GjNlyRJT9oQZDeX62TWgkLugSVRqIkRjgMTvfMUiBqTCms2v5n+545fCnfV/nJwTt0
-         64hgIdT/qzqbhZzSiVOYdcK8zezYqDFxQpCC3Qpn2mrGK6qIKS/G1Nbp+BLBb6H6jA6h
-         mRoA29NbXrl8MSA4e2qpoH3RUGKYmlxnZO4bB2pXQT9bFgowWAvBLoBfPcWFvKOPH/Mn
-         6ZTfl91z5oShdkhkqPtWbxxtj2z4OBeBYGE+MfRVNmZYmizYwvStNLV7sx5SXCPNqARB
-         NeAditi0ZThZlNE3LJjrUVGEDCfkRCSjCG9HfblQ/X2IN5KtEc+AAM41GBf9Qh+TF4IE
-         PP3A==
-X-Gm-Message-State: ACgBeo1swBjSYE4Xmow0V4UQkmJxFCIfR/163ueudIhOHOr8CezTVQSa
-        1jbUrP5AJ+r2HdTDXX4zV50xTV+kkQdJYBU0
-X-Google-Smtp-Source: AA6agR5jzLplmgoZNfYpPq8C/SfL1Wcc0kyS8PE+fk7opa32/gpmEXjEi2ZqAKmXnnev2SjQLIzNBQ==
-X-Received: by 2002:a05:6512:3f18:b0:492:ed03:1aa8 with SMTP id y24-20020a0565123f1800b00492ed031aa8mr3025599lfa.515.1662643273928;
-        Thu, 08 Sep 2022 06:21:13 -0700 (PDT)
+        bh=R/2Z6ZQoZzqpL1LfavqO+X5S24pYhQKeMt7hudS7Sd8=;
+        b=CwILBbPpPgNUmuwTeb9gWXNU57NtwAwSmB83CDssClnjUU5X0G3AIQ6/XIpt2wgniy
+         s7a05slzItY9zFin9ORc1WtAe7W/X3Ss3VipIoYIj4FYxTZ16q2WYd89BonKBZP0SHLa
+         +A6R0+m33l5WKYFV4WEWVxGCa7VbjCKOipTe6i0mVjEswZdibHDTaWizQqBKXVM/Z1MY
+         EdqVmE48kJsxChul9ImQTz4HtWMCX8loRBUvopQ1LWfQDLxDhI3gpiPLSMBqpXNKn9wH
+         4uKoE2RzcJl6656Y/haDjZHZDRxgdbxeEg+V7oRqUvZNSMjG9JEh4F/+Zz9yC0FAx6lI
+         1qqg==
+X-Gm-Message-State: ACgBeo1+KESG2wO34gsc0q1cxaKgZArIsM5L8gVV4YaWLjDI+b0HU6+S
+        HRHVHepMJf0zHCze2RDNOM4UKtMsWu8sCuhd
+X-Google-Smtp-Source: AA6agR5K0Nkv/Qk4uUuFnEjQm4GKmX6XtTsgMyIYY6LyAT43q3w4pXTMWt5GYb0fmLHsAGAj5/0deA==
+X-Received: by 2002:a05:6512:b98:b0:494:6a8b:53e6 with SMTP id b24-20020a0565120b9800b004946a8b53e6mr2854890lfv.113.1662643274809;
+        Thu, 08 Sep 2022 06:21:14 -0700 (PDT)
 Received: from wse-c0089.raspi.local (h-98-128-229-160.NA.cust.bahnhof.se. [98.128.229.160])
-        by smtp.gmail.com with ESMTPSA id j6-20020a056512344600b00498f32ae907sm104837lfr.95.2022.09.08.06.21.13
+        by smtp.gmail.com with ESMTPSA id j6-20020a056512344600b00498f32ae907sm104837lfr.95.2022.09.08.06.21.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Sep 2022 06:21:13 -0700 (PDT)
+        Thu, 08 Sep 2022 06:21:14 -0700 (PDT)
 From:   Mattias Forsblad <mattias.forsblad@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -59,9 +59,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Mattias Forsblad <mattias.forsblad@gmail.com>
-Subject: [PATCH net-next v7 1/6] net: dsa: mv88e6xxx: Add RMU enable for select switches.
-Date:   Thu,  8 Sep 2022 15:21:04 +0200
-Message-Id: <20220908132109.3213080-2-mattias.forsblad@gmail.com>
+Subject: [PATCH net-next v7 2/6] net: dsa: Add convenience functions for frame handling
+Date:   Thu,  8 Sep 2022 15:21:05 +0200
+Message-Id: <20220908132109.3213080-3-mattias.forsblad@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220908132109.3213080-1-mattias.forsblad@gmail.com>
 References: <20220908132109.3213080-1-mattias.forsblad@gmail.com>
@@ -77,182 +77,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add RMU enable functionality for some Marvell SOHO switches.
+Add common control functions for drivers that need
+to send and wait for control frames.
 
 Signed-off-by: Mattias Forsblad <mattias.forsblad@gmail.com>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c    |  6 +++
- drivers/net/dsa/mv88e6xxx/chip.h    |  1 +
- drivers/net/dsa/mv88e6xxx/global1.c | 64 +++++++++++++++++++++++++++++
- drivers/net/dsa/mv88e6xxx/global1.h |  3 ++
- 4 files changed, 74 insertions(+)
+ include/net/dsa.h | 14 ++++++++++++++
+ net/dsa/dsa.c     | 17 +++++++++++++++++
+ net/dsa/dsa2.c    |  2 ++
+ 3 files changed, 33 insertions(+)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 6f4ea39ab466..46e12b53a9e4 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -4098,6 +4098,7 @@ static const struct mv88e6xxx_ops mv88e6085_ops = {
- 	.ppu_disable = mv88e6185_g1_ppu_disable,
- 	.reset = mv88e6185_g1_reset,
- 	.rmu_disable = mv88e6085_g1_rmu_disable,
-+	.rmu_enable = mv88e6085_g1_rmu_enable,
- 	.vtu_getnext = mv88e6352_g1_vtu_getnext,
- 	.vtu_loadpurge = mv88e6352_g1_vtu_loadpurge,
- 	.stu_getnext = mv88e6352_g1_stu_getnext,
-@@ -4181,6 +4182,7 @@ static const struct mv88e6xxx_ops mv88e6097_ops = {
- 	.pot_clear = mv88e6xxx_g2_pot_clear,
- 	.reset = mv88e6352_g1_reset,
- 	.rmu_disable = mv88e6085_g1_rmu_disable,
-+	.rmu_enable = mv88e6085_g1_rmu_enable,
- 	.vtu_getnext = mv88e6352_g1_vtu_getnext,
- 	.vtu_loadpurge = mv88e6352_g1_vtu_loadpurge,
- 	.phylink_get_caps = mv88e6095_phylink_get_caps,
-@@ -5300,6 +5302,7 @@ static const struct mv88e6xxx_ops mv88e6352_ops = {
- 	.pot_clear = mv88e6xxx_g2_pot_clear,
- 	.reset = mv88e6352_g1_reset,
- 	.rmu_disable = mv88e6352_g1_rmu_disable,
-+	.rmu_enable = mv88e6352_g1_rmu_enable,
- 	.atu_get_hash = mv88e6165_g1_atu_get_hash,
- 	.atu_set_hash = mv88e6165_g1_atu_set_hash,
- 	.vtu_getnext = mv88e6352_g1_vtu_getnext,
-@@ -5367,6 +5370,7 @@ static const struct mv88e6xxx_ops mv88e6390_ops = {
- 	.pot_clear = mv88e6xxx_g2_pot_clear,
- 	.reset = mv88e6352_g1_reset,
- 	.rmu_disable = mv88e6390_g1_rmu_disable,
-+	.rmu_enable = mv88e6390_g1_rmu_enable,
- 	.atu_get_hash = mv88e6165_g1_atu_get_hash,
- 	.atu_set_hash = mv88e6165_g1_atu_set_hash,
- 	.vtu_getnext = mv88e6390_g1_vtu_getnext,
-@@ -5434,6 +5438,7 @@ static const struct mv88e6xxx_ops mv88e6390x_ops = {
- 	.pot_clear = mv88e6xxx_g2_pot_clear,
- 	.reset = mv88e6352_g1_reset,
- 	.rmu_disable = mv88e6390_g1_rmu_disable,
-+	.rmu_enable = mv88e6390_g1_rmu_enable,
- 	.atu_get_hash = mv88e6165_g1_atu_get_hash,
- 	.atu_set_hash = mv88e6165_g1_atu_set_hash,
- 	.vtu_getnext = mv88e6390_g1_vtu_getnext,
-@@ -5504,6 +5509,7 @@ static const struct mv88e6xxx_ops mv88e6393x_ops = {
- 	.pot_clear = mv88e6xxx_g2_pot_clear,
- 	.reset = mv88e6352_g1_reset,
- 	.rmu_disable = mv88e6390_g1_rmu_disable,
-+	.rmu_enable = mv88e6390_g1_rmu_enable,
- 	.atu_get_hash = mv88e6165_g1_atu_get_hash,
- 	.atu_set_hash = mv88e6165_g1_atu_set_hash,
- 	.vtu_getnext = mv88e6390_g1_vtu_getnext,
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index e693154cf803..7ce3c41f6caf 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.h
-+++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -637,6 +637,7 @@ struct mv88e6xxx_ops {
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index f2ce12860546..0e8a7ef17490 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -495,6 +495,8 @@ struct dsa_switch {
+ 	unsigned int		max_num_bridges;
  
- 	/* Remote Management Unit operations */
- 	int (*rmu_disable)(struct mv88e6xxx_chip *chip);
-+	int (*rmu_enable)(struct mv88e6xxx_chip *chip, int port);
+ 	unsigned int		num_ports;
++
++	struct completion	inband_done;
+ };
  
- 	/* Precision Time Protocol operations */
- 	const struct mv88e6xxx_ptp_ops *ptp_ops;
-diff --git a/drivers/net/dsa/mv88e6xxx/global1.c b/drivers/net/dsa/mv88e6xxx/global1.c
-index 5848112036b0..b808009a6098 100644
---- a/drivers/net/dsa/mv88e6xxx/global1.c
-+++ b/drivers/net/dsa/mv88e6xxx/global1.c
-@@ -466,18 +466,82 @@ int mv88e6085_g1_rmu_disable(struct mv88e6xxx_chip *chip)
- 				      MV88E6085_G1_CTL2_RM_ENABLE, 0);
- }
+ static inline struct dsa_port *dsa_to_port(struct dsa_switch *ds, int p)
+@@ -1390,6 +1392,18 @@ void dsa_tag_drivers_register(struct dsa_tag_driver *dsa_tag_driver_array[],
+ void dsa_tag_drivers_unregister(struct dsa_tag_driver *dsa_tag_driver_array[],
+ 				unsigned int count);
  
-+int mv88e6085_g1_rmu_enable(struct mv88e6xxx_chip *chip, int upstream_port)
++int dsa_switch_inband_tx(struct dsa_switch *ds, struct sk_buff *skb,
++			 struct completion *completion, unsigned long timeout);
++
++static inline void dsa_switch_inband_complete(struct dsa_switch *ds, struct completion *completion)
 +{
-+	int val = MV88E6352_G1_CTL2_RMU_MODE_DISABLED;
-+
-+	switch (upstream_port) {
-+	case 9:
-+		val = MV88E6085_G1_CTL2_RM_ENABLE;
-+		break;
-+	case 10:
-+		val = MV88E6085_G1_CTL2_RM_ENABLE | MV88E6085_G1_CTL2_P10RM;
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return mv88e6xxx_g1_ctl2_mask(chip, MV88E6085_G1_CTL2_P10RM |
-+				      MV88E6085_G1_CTL2_RM_ENABLE, val);
++	/* Custom completion? */
++	if (completion)
++		complete(completion);
++	else
++		complete(&ds->inband_done);
 +}
 +
- int mv88e6352_g1_rmu_disable(struct mv88e6xxx_chip *chip)
- {
- 	return mv88e6xxx_g1_ctl2_mask(chip, MV88E6352_G1_CTL2_RMU_MODE_MASK,
- 				      MV88E6352_G1_CTL2_RMU_MODE_DISABLED);
- }
+ #define dsa_tag_driver_module_drivers(__dsa_tag_drivers_array, __count)	\
+ static int __init dsa_tag_driver_module_init(void)			\
+ {									\
+diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
+index be7b320cda76..ad870494d68b 100644
+--- a/net/dsa/dsa.c
++++ b/net/dsa/dsa.c
+@@ -324,6 +324,23 @@ int dsa_switch_resume(struct dsa_switch *ds)
+ EXPORT_SYMBOL_GPL(dsa_switch_resume);
+ #endif
  
-+int mv88e6352_g1_rmu_enable(struct mv88e6xxx_chip *chip, int upstream_port)
++int dsa_switch_inband_tx(struct dsa_switch *ds, struct sk_buff *skb,
++			 struct completion *completion, unsigned long timeout)
 +{
-+	int val = MV88E6352_G1_CTL2_RMU_MODE_DISABLED;
++	struct completion *com;
 +
-+	switch (upstream_port) {
-+	case 4:
-+		val = MV88E6352_G1_CTL2_RMU_MODE_PORT_4;
-+		break;
-+	case 5:
-+		val = MV88E6352_G1_CTL2_RMU_MODE_PORT_5;
-+		break;
-+	case 6:
-+		val = MV88E6352_G1_CTL2_RMU_MODE_PORT_6;
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
++	/* Custom completion? */
++	com = completion ? : &ds->inband_done;
 +
-+	return mv88e6xxx_g1_ctl2_mask(chip, MV88E6352_G1_CTL2_RMU_MODE_MASK, val);
++	reinit_completion(com);
++
++	if (skb)
++		dev_queue_xmit(skb);
++
++	return wait_for_completion_timeout(com, msecs_to_jiffies(timeout));
 +}
++EXPORT_SYMBOL_GPL(dsa_switch_inband_tx);
 +
- int mv88e6390_g1_rmu_disable(struct mv88e6xxx_chip *chip)
- {
- 	return mv88e6xxx_g1_ctl2_mask(chip, MV88E6390_G1_CTL2_RMU_MODE_MASK,
- 				      MV88E6390_G1_CTL2_RMU_MODE_DISABLED);
+ static struct packet_type dsa_pack_type __read_mostly = {
+ 	.type	= cpu_to_be16(ETH_P_XDSA),
+ 	.func	= dsa_switch_rcv,
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index ed56c7a554b8..a1b3ecfdffb8 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -1746,6 +1746,8 @@ static int dsa_switch_probe(struct dsa_switch *ds)
+ 		dsa_tree_put(dst);
+ 	}
+ 
++	init_completion(&ds->inband_done);
++
+ 	return err;
  }
- 
-+int mv88e6390_g1_rmu_enable(struct mv88e6xxx_chip *chip, int upstream_port)
-+{
-+	int val = MV88E6390_G1_CTL2_RMU_MODE_DISABLED;
-+
-+	switch (upstream_port) {
-+	case 0:
-+		val = MV88E6390_G1_CTL2_RMU_MODE_PORT_0;
-+		break;
-+	case 1:
-+		val = MV88E6390_G1_CTL2_RMU_MODE_PORT_1;
-+		break;
-+	case 9:
-+		val = MV88E6390_G1_CTL2_RMU_MODE_PORT_9;
-+		break;
-+	case 10:
-+		val = MV88E6390_G1_CTL2_RMU_MODE_PORT_10;
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return mv88e6xxx_g1_ctl2_mask(chip, MV88E6390_G1_CTL2_RMU_MODE_MASK, val);
-+}
-+
- int mv88e6390_g1_stats_set_histogram(struct mv88e6xxx_chip *chip)
- {
- 	return mv88e6xxx_g1_ctl2_mask(chip, MV88E6390_G1_CTL2_HIST_MODE_MASK,
-diff --git a/drivers/net/dsa/mv88e6xxx/global1.h b/drivers/net/dsa/mv88e6xxx/global1.h
-index 65958b2a0d3a..29c0c8acb583 100644
---- a/drivers/net/dsa/mv88e6xxx/global1.h
-+++ b/drivers/net/dsa/mv88e6xxx/global1.h
-@@ -313,8 +313,11 @@ int mv88e6250_g1_ieee_pri_map(struct mv88e6xxx_chip *chip);
- int mv88e6185_g1_set_cascade_port(struct mv88e6xxx_chip *chip, int port);
- 
- int mv88e6085_g1_rmu_disable(struct mv88e6xxx_chip *chip);
-+int mv88e6085_g1_rmu_enable(struct mv88e6xxx_chip *chip, int upstream_port);
- int mv88e6352_g1_rmu_disable(struct mv88e6xxx_chip *chip);
-+int mv88e6352_g1_rmu_enable(struct mv88e6xxx_chip *chip, int upstream_port);
- int mv88e6390_g1_rmu_disable(struct mv88e6xxx_chip *chip);
-+int mv88e6390_g1_rmu_enable(struct mv88e6xxx_chip *chip, int upstream_port);
- 
- int mv88e6xxx_g1_set_device_number(struct mv88e6xxx_chip *chip, int index);
  
 -- 
 2.25.1
