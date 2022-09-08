@@ -1,87 +1,130 @@
 Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from out1.vger.email (unknown [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FD575B145B
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 08:04:54 +0200 (CEST)
+Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
+	by mail.lfdr.de (Postfix) with ESMTP id 18A775B149A
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 08:24:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230115AbiIHGEt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 02:04:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39220 "EHLO
+        id S230053AbiIHGYA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 02:24:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230000AbiIHGEs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 02:04:48 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C02E13DF5;
-        Wed,  7 Sep 2022 23:04:39 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MNT6L41phzgYyW;
-        Thu,  8 Sep 2022 14:02:02 +0800 (CST)
-Received: from [10.174.178.66] (10.174.178.66) by
- dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 8 Sep 2022 14:04:36 +0800
-Message-ID: <9673fd54-a11a-369c-83e4-4a0a4236be74@huawei.com>
-Date:   Thu, 8 Sep 2022 14:04:36 +0800
+        with ESMTP id S229491AbiIHGX6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 02:23:58 -0400
+Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F965CCD56;
+        Wed,  7 Sep 2022 23:23:58 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id 7FCE83200708;
+        Thu,  8 Sep 2022 02:23:54 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Thu, 08 Sep 2022 02:23:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm2; t=1662618234; x=1662704634; bh=tQVYpCBZL3BsXXUIGuhHhn+GnF9r
+        ZgFIWXrgHaQZMbY=; b=ewJMBlVaLQYFSExMsQK75AOZdcexluLL5bNUc2vWoTxh
+        rgWjfNa5+R7tbzYKG2oUFXPDQVYLSkPhcgmtbm9bZ0LlzCnxI6fs/XXPGcUtNWl/
+        4KTIMXd8rTSeGY1vCbJVWoANYNeO0mzG8NaHJEwfxwjwrOf9byNE+FKcOwqe4zWE
+        +R7HRlcGpkofHCXUiaS2tQHxkOskppkTx9PZ/72AtOafBo9uIIK2OCrSsROttQZw
+        1oswHQSwrvz4FtXJe9S639YmGu326indkySDFvPtm+voHxpGoIOAaZ9wvPKJkAyH
+        v/Q5OJ/5Drtxe1cBd8U6s9CU/i3iD1HD6f+n0/q5fw==
+X-ME-Sender: <xms:eYoZY45VwEC_og3CawJYOAhr4DK9_runwm6215wCONy0pIIGrDrDOw>
+    <xme:eYoZY54doKlfEvYh3dFjXyH-C_jTMUWaBssAub3MM4NvjpeZRD5eoNXYGIaLYw3y2
+    3Fl-cEdXhebJwk>
+X-ME-Received: <xmr:eYoZY3fo0FyVb9UN9URtGDipJTsSOG8pes-MJOkk5UOvzqlI1wGdKWml2VQAGs7ZhUZJiYmPG8WGq8ISrqcYc_mBAjWgwA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfedtuddgudduudcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkugho
+    ucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrg
+    htthgvrhhnpedvudefveekheeugeeftddvveefgfduieefudeifefgleekheegleegjeej
+    geeghfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:eYoZY9JQZfqfXxqjwaEhpU2l7DyJYG2DKVyOPvnEF_QNc84tDPe31g>
+    <xmx:eYoZY8LZm318XSdzurWKOtkgPmlZOOx2Ga8ovY-8ddKLNIjGWwe4ag>
+    <xmx:eYoZY-yfvvx4-ZCHoPCwJkFyfQFOFOtfd3dMbSozdN06KLKtwtu8jg>
+    <xmx:eooZY-D1Z1Huck6Q0HZ8HeqvfKXEjUEXz3jiS0C0rhd6fdLA8VQ5aA>
+Feedback-ID: i494840e7:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 8 Sep 2022 02:23:53 -0400 (EDT)
+Date:   Thu, 8 Sep 2022 09:23:48 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     "Zhou, Jie2X" <jie2x.zhou@intel.com>
+Cc:     "kuba@kernel.org" <kuba@kernel.org>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "mykolal@fb.com" <mykolal@fb.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "martin.lau@linux.dev" <martin.lau@linux.dev>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "hawk@kernel.org" <hawk@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Li, Philip" <philip.li@intel.com>,
+        "petrm@nvidia.com" <petrm@nvidia.com>
+Subject: Re: test ./tools/testing/selftests/bpf/test_offload.py failed
+Message-ID: <YxmKdBVkNCPF4Kob@shredder>
+References: <20220907051657.55597-1-jie2x.zhou@intel.com>
+ <Yxg9r37w1Wg3mvxy@shredder>
+ <CY4PR11MB1320E553043DC1D67B5E7D56C5419@CY4PR11MB1320.namprd11.prod.outlook.com>
+ <YxjB7RZvVrKxJ4ec@shredder>
+ <CY4PR11MB132098D8E47E38FD945E6398C5409@CY4PR11MB1320.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.2
-Subject: Re: [PATCH net-next,v2 01/22] net: sched: act: move global static
- variable net_id to tc_action_ops
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <jhs@mojatatu.com>, <jiri@resnulli.us>, <martin.lau@linux.dev>,
-        <daniel@iogearbox.net>, <john.fastabend@gmail.com>,
-        <ast@kernel.org>, <andrii@kernel.org>, <song@kernel.org>,
-        <yhs@fb.com>, <kpsingh@kernel.org>, <sdf@google.com>,
-        <haoluo@google.com>, <jolsa@kernel.org>, <weiyongjun1@huawei.com>,
-        <yuehaibing@huawei.com>
-References: <20220906121346.71578-1-shaozhengchao@huawei.com>
- <20220906121346.71578-2-shaozhengchao@huawei.com>
- <YxjQ0Pyz74xVLFBC@pop-os.localdomain>
-From:   shaozhengchao <shaozhengchao@huawei.com>
-In-Reply-To: <YxjQ0Pyz74xVLFBC@pop-os.localdomain>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.66]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-8.4 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CY4PR11MB132098D8E47E38FD945E6398C5409@CY4PR11MB1320.namprd11.prod.outlook.com>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Sep 08, 2022 at 03:10:51AM +0000, Zhou, Jie2X wrote:
+> My error is  "Exception: Command failed: cat /sys/kernel/debug/netdevsim/netdevsim0//ports/0/dev/hwstats/l3/disable_ifindex"
 
+This one is solved by the netdevsim patch ([2]).
 
-On 2022/9/8 1:11, Cong Wang wrote:
-> On Tue, Sep 06, 2022 at 08:13:25PM +0800, Zhengchao Shao wrote:
->> diff --git a/include/net/act_api.h b/include/net/act_api.h
->> index 9cf6870b526e..86253f8b69a3 100644
->> --- a/include/net/act_api.h
->> +++ b/include/net/act_api.h
->> @@ -113,6 +113,7 @@ struct tc_action_ops {
->>   	enum tca_id  id; /* identifier should match kind */
->>   	size_t	size;
->>   	struct module		*owner;
->> +	unsigned int		net_id;
->>   	int     (*act)(struct sk_buff *, const struct tc_action *,
->>   		       struct tcf_result *); /* called under RCU BH lock*/
->>   	int     (*dump)(struct sk_buff *, struct tc_action *, int, int);
+> Do you get [1]error, after patch [2]?
+
+Yes. Maybe you do not see it because you have an older bpftool without
+"libbpf_strict" feature:
+
+$ bpftool --version
+bpftool v6.8.0
+using libbpf v0.8
+features: libbfd, libbpf_strict, skeletons
+
+> [1]
+> # bpftool prog load /home/idosch/code/linux/tools/testing/selftests/bpf/sample_ret0.o /sys/fs/bpf/nooffload type xdp
+> Error: object file doesn't contain any bpf program
+> Warning: bpftool is now running in libbpf strict mode and has more stringent requirements about BPF programs.
+> If it used to work for this object file but now doesn't, see --legacy option for more details.
 > 
-> This _might_ introduce some unnecessary hole in this struct, could you
-> check pahole output?
+> [2]
+> diff --git a/drivers/net/netdevsim/hwstats.c b/drivers/net/netdevsim/hwstats.c
+> index 605a38e16db0..0e58aa7f0374 100644
+> --- a/drivers/net/netdevsim/hwstats.c
+> +++ b/drivers/net/netdevsim/hwstats.c
+> @@ -433,11 +433,11 @@ int nsim_dev_hwstats_init(struct nsim_dev *nsim_dev)
+>                 goto err_remove_hwstats_recursive;
+>         }
 > 
-> Thanks.
-
-Hi Wang:
-	Thank you for your review. I have send v3. And I'll pay
-attention next time.
-
-Zhengchao Shao
+> -       debugfs_create_file("enable_ifindex", 0600, hwstats->l3_ddir, hwstats,
+> +       debugfs_create_file("enable_ifindex", 0200, hwstats->l3_ddir, hwstats,
+>                             &nsim_dev_hwstats_l3_enable_fops.fops);
+> -       debugfs_create_file("disable_ifindex", 0600, hwstats->l3_ddir, hwstats,
+> +       debugfs_create_file("disable_ifindex", 0200, hwstats->l3_ddir, hwstats,
+>                             &nsim_dev_hwstats_l3_disable_fops.fops);
+> -       debugfs_create_file("fail_next_enable", 0600, hwstats->l3_ddir, hwstats,
+> +       debugfs_create_file("fail_next_enable", 0200, hwstats->l3_ddir, hwstats,
+>                             &nsim_dev_hwstats_l3_fail_fops.fops);
+> 
+>         INIT_DELAYED_WORK(&hwstats->traffic_dw,
