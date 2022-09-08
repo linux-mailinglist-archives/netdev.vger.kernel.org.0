@@ -2,142 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 32F395B2545
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 20:02:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 398215B2565
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 20:13:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231239AbiIHSCB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 14:02:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55556 "EHLO
+        id S229809AbiIHSNM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 14:13:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230350AbiIHSB6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 14:01:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 808EBF10DF
-        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 11:01:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662660116;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rec3e1xO+/lfC9NYVlLPNP8AcM8i5/2lja30cN6ZSbE=;
-        b=fow7XozgJmWajs2O3kc6cm7/kDMU7edi1XoZUYkYIZDHbI9Tfb5kfqlZbnWeCKjiu5PLcF
-        cVze9KUhSVK60uS/9voTV07i+Io2TF+n6XFTiTnytaEta0v4viXBYGxaXZWBJ4kw7AQgB/
-        JBJncYIznTkuv7FKaTMaQ/QeAGKjXMU=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-159-dhk0VPecPLWXT0DKDbSK6g-1; Thu, 08 Sep 2022 14:01:47 -0400
-X-MC-Unique: dhk0VPecPLWXT0DKDbSK6g-1
-Received: by mail-qt1-f199.google.com with SMTP id ci6-20020a05622a260600b0034370b6f5d6so15176793qtb.14
-        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 11:01:47 -0700 (PDT)
+        with ESMTP id S229504AbiIHSNL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 14:13:11 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F6BCCCE30
+        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 11:13:09 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id t3so13630532ply.2
+        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 11:13:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=58YU/Um2Y+pIFav1jVCf02BC0IMsYkCsaqeH0L7ttmk=;
+        b=nMYeQOh5B7GtIro5V6BodWH8tTWIw3fjVL97IhpzTJVmgth9cStV78u4gyWwsTkqvl
+         S0p1Y009rotTkI8wqHQ5k6GSme29vDZrdU5QTdDKWJiind6hqeHHeCjKvP8bfoY2mo+D
+         tUJZhNTA0kP4L6AidHcQ1uFBrwpYi/IgNYVPBHAZ1U70R3u9KD2sKXEms/pQbW8qCy8b
+         okeQbu1T0vHOKYj6/ap4XkT+SQqniI55iRztL6PpUijOnjvoYihydPagg04UBQqeLAH5
+         YOyeY1JGcndPeQ5hKvV2ur3GP61iUjMSW5tMwOiOoK+sbzZzwjcfy0AYo9ss6fzhfxvP
+         kMAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=rec3e1xO+/lfC9NYVlLPNP8AcM8i5/2lja30cN6ZSbE=;
-        b=gSbBv0JRoidgQ2VL+p1tVNRoa9D3x6M6gnxTCdVbaDE9Rq7s68XDxHp2Oe1jeaBxDq
-         QUkIA4Gs4TsjF+vebcd6xX5UWgQPoFqJJUsnw5oA8myMcsQJ4M9MuNhaDTNoXR61PbU/
-         53/+OHClf8kaZdn0zckZuhC30+dauZNpBHdkYI3bb12XBY0jB1uhEdvTffe65uR32GeZ
-         prANeRURXfBJis8wIdwKAS6m90wNxtpNRCC94oTsHZmAsf6SUsgFoDIoH8ZZIanNeRT5
-         K0B+1v7ehWlrgbZJ4XeG05je+W/DHDu2Bh1QjrSQUaQ8/Vvk1mkZY7LBOPnxyHiJP//n
-         lfNQ==
-X-Gm-Message-State: ACgBeo3E0dxFcl5yvJ6ObhU89T6pbJURoPcVVIn5lMQ/ld5+9gAI88Vs
-        zcoFG4jTrDJA73YzAWl/qw6FfzpBHIVn/J+3o4q7IE6ddU3lVTYclvDH6MNfUW0CQtbwVrkcM1H
-        zhuR/6RtPnDjvYqSC
-X-Received: by 2002:a05:6214:c66:b0:499:2f1a:1cec with SMTP id t6-20020a0562140c6600b004992f1a1cecmr8279237qvj.93.1662660107273;
-        Thu, 08 Sep 2022 11:01:47 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5SrROjS8cVb29mFGztmJb04rbrRJmMyuaSF8EqKZYHelvrLJNn7tccUS8I/7ZSvPM5hVqgcg==
-X-Received: by 2002:a05:6214:c66:b0:499:2f1a:1cec with SMTP id t6-20020a0562140c6600b004992f1a1cecmr8279201qvj.93.1662660106948;
-        Thu, 08 Sep 2022 11:01:46 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-119-112.dyn.eolo.it. [146.241.119.112])
-        by smtp.gmail.com with ESMTPSA id n3-20020a05620a294300b006b953a7929csm18385620qkp.73.2022.09.08.11.01.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Sep 2022 11:01:46 -0700 (PDT)
-Message-ID: <f3f867cf6814510817b253e6aca997cdd3acc48a.camel@redhat.com>
-Subject: Re: [PATCH net] net: avoid 32 x truesize under-estimation for tiny
- skbs
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Alexander H Duyck <alexander.duyck@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Greg Thelen <gthelen@google.com>
-Date:   Thu, 08 Sep 2022 20:01:42 +0200
-In-Reply-To: <cf264865cb1613c0e7acf4bbc1ed345533767822.camel@gmail.com>
-References: <20210113161819.1155526-1-eric.dumazet@gmail.com>
-         <bd79ede94805326cd63f105c84f1eaa4e75c8176.camel@redhat.com>
-         <dcffcf6fde8272975e44124f55fba3936833360e.camel@gmail.com>
-         <498a25e4f7ba4e21d688ca74f335b28cadcb3381.camel@redhat.com>
-         <cf264865cb1613c0e7acf4bbc1ed345533767822.camel@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=58YU/Um2Y+pIFav1jVCf02BC0IMsYkCsaqeH0L7ttmk=;
+        b=oEOV0qI1nh957P67cZsewOC/0wiwjkDdXrD3adf2+5AqSQOJnRwVDlqbjT6qhMoKdi
+         wnfj1fDjIGA+05jnHPsykX8ziSKoV1QiMJIAGULfkqp9OyyogkkII7m8vL/Jy6mu6mWH
+         lf0+jWBhivBahMfMPexVQX6xLcHRJW5OkztuOLIQfE+MVa4YMIgEZkqe5JOu4Wr9xRwS
+         FCOMoX6H6SWQYstlf5qOwithCmN8qSoqbL38Ih3WuUMSdIqGR80UngfwSgZgn08tx4bF
+         VaoIajjBvwoR/CWGH3rN2QbDjOiMDG6bxETyzcQX+slbRuwfEsxB4VyreFQx7hqJxYKT
+         St0A==
+X-Gm-Message-State: ACgBeo1vYWAR7hSPLX5Bxv1uZ72tAsoSodrr5p+EvJBeHZU9PB0hg6Op
+        eH7poh7VLfj0UszUq49bdjU=
+X-Google-Smtp-Source: AA6agR47hV/itFlyHfuQc0whMwGXu3sGH5dkL9YhGuZLrQgMSi5XlsxKLCNZKHM+j7/PoHYrGC+GsA==
+X-Received: by 2002:a17:902:82c8:b0:177:e4c7:e8a6 with SMTP id u8-20020a17090282c800b00177e4c7e8a6mr7598844plz.130.1662660789025;
+        Thu, 08 Sep 2022 11:13:09 -0700 (PDT)
+Received: from ?IPV6:2620:15c:2c1:200:23b:bb9:e15e:6876? ([2620:15c:2c1:200:23b:bb9:e15e:6876])
+        by smtp.gmail.com with ESMTPSA id z27-20020aa7991b000000b005385e2e86eesm14757143pff.18.2022.09.08.11.13.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 08 Sep 2022 11:13:08 -0700 (PDT)
+Message-ID: <248395fc-7dd7-3c7d-affc-ced4145c5285@gmail.com>
+Date:   Thu, 8 Sep 2022 11:13:07 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v6 net-next 0/6] tcp: Introduce optional per-netns ehash.
+Content-Language: en-US
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org
+References: <20220908011022.45342-1-kuniyu@amazon.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+In-Reply-To: <20220908011022.45342-1-kuniyu@amazon.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-5.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2022-09-08 at 07:53 -0700, Alexander H Duyck wrote:
-> On Thu, 2022-09-08 at 13:00 +0200, Paolo Abeni wrote:
-> > In most build GRO_MAX_HEAD packets are even larger (should be 640)
-> 
-> Right, which is why I am thinking we may want to default to a 1K slice.
 
-Ok it looks like there is agreement to force a minimum frag size of 1K.
-Side note: that should not cause a memory usage increase compared to
-the slab allocator as kmalloc(640) should use the kmalloc-1k slab.
+On 9/7/22 18:10, Kuniyuki Iwashima wrote:
+> The more sockets we have in the hash table, the longer we spend looking
+> up the socket.  While running a number of small workloads on the same
+> host, they penalise each other and cause performance degradation.
+>
+> The root cause might be a single workload that consumes much more
+> resources than the others.  It often happens on a cloud service where
+> different workloads share the same computing resource.
+>
+> On EC2 c5.24xlarge instance (196 GiB memory and 524288 (1Mi / 2) ehash
+> entries), after running iperf3 in different netns, creating 24Mi sockets
+> without data transfer in the root netns causes about 10% performance
+> regression for the iperf3's connection.
+>
+>   thash_entries		sockets		length		Gbps
+> 	524288		      1		     1		50.7
+> 			   24Mi		    48		45.1
+>
+> It is basically related to the length of the list of each hash bucket.
+> For testing purposes to see how performance drops along the length,
+> I set 131072 (1Mi / 8) to thash_entries, and here's the result.
+>
+>   thash_entries		sockets		length		Gbps
+>          131072		      1		     1		50.7
+> 			    1Mi		     8		49.9
+> 			    2Mi		    16		48.9
+> 			    4Mi		    32		47.3
+> 			    8Mi		    64		44.6
+> 			   16Mi		   128		40.6
+> 			   24Mi		   192		36.3
+> 			   32Mi		   256		32.5
+> 			   40Mi		   320		27.0
+> 			   48Mi		   384		25.0
+>
+> To resolve the socket lookup degradation, we introduce an optional
+> per-netns hash table for TCP, but it's just ehash, and we still share
+> the global bhash, bhash2 and lhash2.
+>
+> With a smaller ehash, we can look up non-listener sockets faster and
+> isolate such noisy neighbours.  Also, we can reduce lock contention.
+>
+> For details, please see the last patch.
+>
+>    patch 1 - 4: prep for per-netns ehash
+>    patch     5: small optimisation for netns dismantle without TIME_WAIT sockets
+>    patch     6: add per-netns ehash
+>
+> Many thanks to Eric Dumazet for reviewing and advising.
+>
+>
+> Changes:
+>    v6:
+>      * Patch 6
+>        * Use vmalloc_huge() in inet_pernet_hashinfo_alloc() and
+>          update the changelog and doc about NUMA (Eric Dumazet)
+>        * Use kmemdup() in inet_pernet_hashinfo_alloc() (Eric Dumazet)
+>        * Use vfree() in inet_pernet_hashinfo_(alloc|free)()
+>
+>    v5: https://lore.kernel.org/netdev/20220907005534.72876-1-kuniyu@amazon.com/
+>      * Patch 2
+>        * Keep the tw_refcount base value at 1 (Eric Dumazet)
+>        * Add WARN_ON_ONCE() for tw_refcount (Eric Dumazet)
+>      * Patch 5
+>        * Test tw_refcount against 1 in tcp_twsk_purge()
+>
+>    v4: https://lore.kernel.org/netdev/20220906162423.44410-1-kuniyu@amazon.com/
+>      * Add Patch 2
+>      * Patch 1
+>        * Add cleanups in tcp_time_wait() and  tcp_v[46]_connect()
+>      * Patch 3
+>        * /tcp_death_row/s/->/./
+>      * Patch 4
+>        * Add mellanox and netronome driver changes back (Paolo Abeni, Jakub Kicinski)
+>        * /tcp_death_row/s/->/./
+>      * Patch 5
+>        * Simplify tcp_twsk_purge()
+>      * Patch 6
+>        * Move inet_pernet_hashinfo_free() into tcp_sk_exit_batch()
+>
+>    v3: https://lore.kernel.org/netdev/20220830191518.77083-1-kuniyu@amazon.com/
+>      * Patch 3
+>        * Drop mellanox and netronome driver changes (Eric Dumazet)
+>      * Patch 4
+>        * Add test results in the changelog
+>      * Patch 5
+>        * Use roundup_pow_of_two() in tcp_set_hashinfo() (Eric Dumazet)
+>        * Remove proc_tcp_child_ehash_entries() and use proc_douintvec_minmax()
+>
+>    v2: https://lore.kernel.org/netdev/20220829161920.99409-1-kuniyu@amazon.com/
+>      * Drop flock() and UDP stuff
+>      * Patch 2
+>        * Rename inet_get_hashinfo() to tcp_or_dccp_get_hashinfo() (Eric Dumazet)
+>      * Patch 4
+>        * Remove unnecessary inet_twsk_purge() calls for unshare()
+>        * Factorise inet_twsk_purge() calls (Eric Dumazet)
+>      * Patch 5
+>        * Change max buckets size as 16Mi
+>        * Use unsigned int for ehash size (Eric Dumazet)
+>        * Use GFP_KERNEL_ACCOUNT for the per-netns ehash allocation (Eric Dumazet)
+>        * Use current->nsproxy->net_ns for parent netns (Eric Dumazet)
+>
+>    v1: https://lore.kernel.org/netdev/20220826000445.46552-1-kuniyu@amazon.com/
+>
 
-[...]
+SGTM, thanks.
 
-> > > 
-> > If the pagecnt optimization should be dropped, it would be probably
-> > more straight-forward to use/adapt 'page_frag' for the page_order0
-> > allocator.
-> 
-> That would make sense. Basically we could get rid of the pagecnt bias
-> and add the fixed number of slices to the count at allocation so we
-> would just need to track the offset to decide when we need to allocate
-> a new page. In addtion if we are flushing the page when it is depleted
-> we don't have to mess with the pfmemalloc logic.
+For the whole series:
 
-Uhmm... it looks like that the existing page_frag allocator does not
-always flush the depleted page:
+Reviewed-by: Eric Dumazet <edumazet@google.com>
 
-bool skb_page_frag_refill(unsigned int sz, struct page_frag *pfrag, gfp_t gfp)
-{
-        if (pfrag->page) {
-                if (page_ref_count(pfrag->page) == 1) {
-                        pfrag->offset = 0;
-                        return true;
-                }
-
-so I'll try adding some separate/specialized code and see if the
-overall complexity would be reasonable.
-
-> > BTW it's quite strange/confusing having to very similar APIs (page_frag
-> > and page_frag_cache) with very similar names and no references between
-> > them.
-> 
-> I'm not sure what you are getting at here. There are plenty of
-> references between them, they just aren't direct.
-
-Looking/greping the tree I could not trivially understand when 'struct
-page_frag' should be preferred over 'struct page_frag_cache' and/or
-vice versa, I had to look at the respective implementation details.
-
-Thanks,
-
-Paolo
 
