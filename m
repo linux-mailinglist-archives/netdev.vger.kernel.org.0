@@ -2,76 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E6AC85B1FC1
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 15:56:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C64845B1FDD
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 15:59:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232174AbiIHN4q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 09:56:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59386 "EHLO
+        id S232446AbiIHN71 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 09:59:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232142AbiIHN4m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 09:56:42 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAEBAED99C
-        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 06:56:36 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id z17so10149131eje.0
-        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 06:56:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares.net; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=oU7r9URdkHR4hFtjwb+DGbO5ThpZ489lVmOF+LZfRK0=;
-        b=UQlzr6tCetqVbCOOX2ttQ/neOUnakbzGJShT7CCa07IJuqxjOzl+EOWl/kv99025Iy
-         rCDQcVk1pCFItNZQ/tvHphz+S7cmtNw9x42goeylzffmomGRsueAsM7xcL8I3cfWC/qF
-         KFfnufPnVdlKSc22AbRxrP5tMpvvRvvTo+BR7MBP2Sqkf/1IFL8fMcKO/hSe+W6+tlNR
-         SgbSCHx09n1Y8nXPKoM4arIoWokszvDSY94Pjn4G38V08HlvuJzx6+lHIeUVbqekZd1m
-         FF5F/dlhvn8S82lH7Y00yvifqIo+ANWsQ466ROvddquwTgi1TrDwIgKG2jZtyzlNqMtf
-         mY1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=oU7r9URdkHR4hFtjwb+DGbO5ThpZ489lVmOF+LZfRK0=;
-        b=flZ35v32JVLGu6smSFf6VgwALi8I4vIRS2v1HRjJTUXFVwq1yal9Hakpl+odoXgatY
-         3YHke8iXNqITpdHWbeaN3gFHO9sxprGu5K2XIgxYLAdYK9/ino1WSGjDQUrGk65o909K
-         yhXPZdL0Ss6u1rS9VwVUHFdFla2w31NyNa9nQnQZL/za9BKbmuJ0AWa1HKisrCQhgx5g
-         QoRXhGntkUKzu9upCllBN6VeBfyKWXUVkZoBMK8cLfYyBsUN6u9bYuNO8eliikkQy4/1
-         QJZLnrZtg/VJuy6+JYIjtxzPAp6EE7WpkSqO8sLdl2ZrGaPSt/TQi1rsyB3GMYkbgBmL
-         eSpQ==
-X-Gm-Message-State: ACgBeo1jQR+WnPSxDSG9OxbMtH7hzKSHddhvTdGK3vTwSyg9lhd2FXue
-        ObU8TLOUPut7fGhEjvt6kHu5htH5Efujcg==
-X-Google-Smtp-Source: AA6agR71PQQCRleuxeuH7B8IXp8332nCARvv5AMHLZ9ubQsUxlJHU9AyInKTff/3PUJPpU6bxUx9mA==
-X-Received: by 2002:a17:906:974f:b0:778:ce93:38e3 with SMTP id o15-20020a170906974f00b00778ce9338e3mr588170ejy.644.1662645395092;
-        Thu, 08 Sep 2022 06:56:35 -0700 (PDT)
-Received: from ?IPV6:2a02:578:8593:1200:8618:9875:a93a:7063? ([2a02:578:8593:1200:8618:9875:a93a:7063])
-        by smtp.gmail.com with ESMTPSA id u24-20020a056402111800b0044ebe6f364csm6002652edv.45.2022.09.08.06.56.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 08 Sep 2022 06:56:16 -0700 (PDT)
-Message-ID: <e4b7eddc-3a73-0994-467e-6d65d6ad80c0@tessares.net>
-Date:   Thu, 8 Sep 2022 15:56:13 +0200
+        with ESMTP id S232444AbiIHN7G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 09:59:06 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13D9B1316F0;
+        Thu,  8 Sep 2022 06:58:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+        bh=F+/Dxjohl88DP9zeW/Xq+d0mtw7wj+FfyyXk6EaZSa8=; b=URjDC6QafAo8lH5tx9N07vvvRg
+        7U/2jNIrM6zD2kAmhisaZZcqoycHrpRbj0oE3acueFAa5SVqP8WHnqRJAz+QEl9qHGRkEWD2fZTQE
+        HjbbYmKLWkebzrfHQoNE/5kl2Yc+uY5rgC3HFhmPVVLTl8sYAOF1BQW+Wd5XFcqTuBrvHx+g5xT8r
+        +XdVKx1WlcaLrSRYfwE1phdKUIo8XYGvzHA1V9rGlihPu2A9jSkiiQaY9BuQjN13pUWXAY73Fwabp
+        EqAPnHXI1drft5hKgKcYpqDCHS0n9IKMxdoxpTzg2EQQxxkUOjVhYhI9HVF814Xdwc5/WwyarCWNn
+        uALq/oEw==;
+Received: from [2601:1c0:6280:3f0::a6b3]
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oWI2Z-004Gmq-L3; Thu, 08 Sep 2022 13:57:59 +0000
+Message-ID: <f76d0607-4753-3131-3b09-9d2ef4b3a60f@infradead.org>
+Date:   Thu, 8 Sep 2022 06:57:58 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.2.1
-Subject: Re: [PATCH net v3] net: mptcp: fix unreleased socket in accept queue
-Content-Language: en-GB
-To:     menglong8.dong@gmail.com, pabeni@redhat.com
-Cc:     mathew.j.martineau@linux.intel.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, fw@strlen.de,
-        peter.krystad@linux.intel.com, netdev@vger.kernel.org,
-        mptcp@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Menglong Dong <imagedong@tencent.com>,
-        Jiang Biao <benbjiang@tencent.com>,
-        Mengen Sun <mengensun@tencent.com>
-References: <20220907111132.31722-1-imagedong@tencent.com>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-In-Reply-To: <20220907111132.31722-1-imagedong@tencent.com>
+Subject: Re: [PATCH] mellanox/mlxsw: fix repeated words in comments
+Content-Language: en-US
+To:     wangjianli <wangjianli@cdjrlc.com>, idosch@nvidia.com,
+        petrm@nvidia.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220908124350.22861-1-wangjianli@cdjrlc.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220908124350.22861-1-wangjianli@cdjrlc.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,44 +53,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Menglong,
 
-On 07/09/2022 13:11, menglong8.dong@gmail.com wrote:
-> From: Menglong Dong <imagedong@tencent.com>
+
+On 9/8/22 05:43, wangjianli wrote:
+> Delete the redundant word 'in'.
 > 
-> The mptcp socket and its subflow sockets in accept queue can't be
-> released after the process exit.
+> Signed-off-by: wangjianli <wangjianli@cdjrlc.com>
+> ---
+>  drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> While the release of a mptcp socket in listening state, the
-> corresponding tcp socket will be released too. Meanwhile, the tcp
-> socket in the unaccept queue will be released too. However, only init
-> subflow is in the unaccept queue, and the joined subflow is not in the
-> unaccept queue, which makes the joined subflow won't be released, and
-> therefore the corresponding unaccepted mptcp socket will not be released
-> to.
+> diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+> index 2c4443c6b964..48f1fa62a4fd 100644
+> --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+> +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+> @@ -1819,7 +1819,7 @@ void mlxsw_sp_ipip_entry_demote_tunnel(struct mlxsw_sp *mlxsw_sp,
+>  /* The configuration where several tunnels have the same local address in the
+>   * same underlay table needs special treatment in the HW. That is currently not
+>   * implemented in the driver. This function finds and demotes the first tunnel
+> - * with a given source address, except the one passed in in the argument
+> + * with a given source address, except the one passed in the argument
 
-Thank you for the v3.
+Yeah, either way is OK.
 
-Unfortunately, our CI found a possible recursive locking:
+>   * `except'.
+>   */
+>  bool
 
-> - KVM Validation: debug:
->   - Unstable: 1 failed test(s): selftest_mptcp_join - Critical: 1 Call Trace(s) ❌:
->   - Task: https://cirrus-ci.com/task/5418283233968128
->   - Summary: https://api.cirrus-ci.com/v1/artifact/task/5418283233968128/summary/summary.txt
-
-https://lore.kernel.org/mptcp/4e6d3d9e-1f1a-23ae-cb56-2d4f043f17ae@gmail.com/T/#u
-
-Do you mind looking at it please?
-
-Also, because it is not just a simple fix, may you send any new versions
-only to MPTCP mailing list please? So without the other mailing lists
-and netdev maintainers to reduce the audience during the development.
-
-Once the patch is ready, we will apply it in MPTCP tree and send it to
-netdev. That's what we usually for MPTCP related patches.
-
-Cheers,
-Matt
 -- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
+~Randy
