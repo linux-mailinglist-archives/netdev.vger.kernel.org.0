@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 10E6B5B1345
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 06:14:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0BC75B1349
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 06:14:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229706AbiIHENh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 00:13:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42622 "EHLO
+        id S230114AbiIHENu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 00:13:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229846AbiIHENP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 00:13:15 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73666A0240;
-        Wed,  7 Sep 2022 21:13:14 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MNQfY0kR0zHndR;
-        Thu,  8 Sep 2022 12:11:17 +0800 (CST)
+        with ESMTP id S229914AbiIHENZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 00:13:25 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7348DC2F93;
+        Wed,  7 Sep 2022 21:13:15 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MNQcd4GglzmVGB;
+        Thu,  8 Sep 2022 12:09:37 +0800 (CST)
 Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
  (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 8 Sep
- 2022 12:13:11 +0800
+ 2022 12:13:12 +0800
 From:   Zhengchao Shao <shaozhengchao@huawei.com>
 To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <bpf@vger.kernel.org>, <davem@davemloft.net>,
@@ -32,9 +32,9 @@ CC:     <daniel@iogearbox.net>, <john.fastabend@gmail.com>,
         <yhs@fb.com>, <kpsingh@kernel.org>, <sdf@google.com>,
         <haoluo@google.com>, <jolsa@kernel.org>, <weiyongjun1@huawei.com>,
         <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
-Subject: [PATCH net-next,v3 07/22] net: sched: act_ctinfo: get rid of tcf_ctinfo_walker and tcf_ctinfo_search
-Date:   Thu, 8 Sep 2022 12:14:39 +0800
-Message-ID: <20220908041454.365070-8-shaozhengchao@huawei.com>
+Subject: [PATCH net-next,v3 08/22] net: sched: act_gact: get rid of tcf_gact_walker and tcf_gact_search
+Date:   Thu, 8 Sep 2022 12:14:40 +0800
+Message-ID: <20220908041454.365070-9-shaozhengchao@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220908041454.365070-1-shaozhengchao@huawei.com>
 References: <20220908041454.365070-1-shaozhengchao@huawei.com>
@@ -53,52 +53,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tcf_ctinfo_walker() and tcf_ctinfo_search() do the same thing as generic
+tcf_gact_walker() and tcf_gact_search() do the same thing as generic
 walk/search function, so remove them.
 
 Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
 ---
- net/sched/act_ctinfo.c | 19 -------------------
+ net/sched/act_gact.c | 19 -------------------
  1 file changed, 19 deletions(-)
 
-diff --git a/net/sched/act_ctinfo.c b/net/sched/act_ctinfo.c
-index 626f338c694d..d4102f0a9abd 100644
---- a/net/sched/act_ctinfo.c
-+++ b/net/sched/act_ctinfo.c
-@@ -341,23 +341,6 @@ static int tcf_ctinfo_dump(struct sk_buff *skb, struct tc_action *a,
+diff --git a/net/sched/act_gact.c b/net/sched/act_gact.c
+index ede896a7ee6b..abe1bcc5c797 100644
+--- a/net/sched/act_gact.c
++++ b/net/sched/act_gact.c
+@@ -221,23 +221,6 @@ static int tcf_gact_dump(struct sk_buff *skb, struct tc_action *a,
  	return -1;
  }
  
--static int tcf_ctinfo_walker(struct net *net, struct sk_buff *skb,
--			     struct netlink_callback *cb, int type,
--			     const struct tc_action_ops *ops,
--			     struct netlink_ext_ack *extack)
+-static int tcf_gact_walker(struct net *net, struct sk_buff *skb,
+-			   struct netlink_callback *cb, int type,
+-			   const struct tc_action_ops *ops,
+-			   struct netlink_ext_ack *extack)
 -{
--	struct tc_action_net *tn = net_generic(net, act_ctinfo_ops.net_id);
+-	struct tc_action_net *tn = net_generic(net, act_gact_ops.net_id);
 -
 -	return tcf_generic_walker(tn, skb, cb, type, ops, extack);
 -}
 -
--static int tcf_ctinfo_search(struct net *net, struct tc_action **a, u32 index)
+-static int tcf_gact_search(struct net *net, struct tc_action **a, u32 index)
 -{
--	struct tc_action_net *tn = net_generic(net, act_ctinfo_ops.net_id);
+-	struct tc_action_net *tn = net_generic(net, act_gact_ops.net_id);
 -
 -	return tcf_idr_search(tn, a, index);
 -}
 -
- static void tcf_ctinfo_cleanup(struct tc_action *a)
+ static size_t tcf_gact_get_fill_size(const struct tc_action *act)
  {
- 	struct tcf_ctinfo *ci = to_ctinfo(a);
-@@ -376,8 +359,6 @@ static struct tc_action_ops act_ctinfo_ops = {
- 	.dump	= tcf_ctinfo_dump,
- 	.init	= tcf_ctinfo_init,
- 	.cleanup= tcf_ctinfo_cleanup,
--	.walk	= tcf_ctinfo_walker,
--	.lookup	= tcf_ctinfo_search,
- 	.size	= sizeof(struct tcf_ctinfo),
- };
- 
+ 	size_t sz = nla_total_size(sizeof(struct tc_gact)); /* TCA_GACT_PARMS */
+@@ -307,8 +290,6 @@ static struct tc_action_ops act_gact_ops = {
+ 	.stats_update	=	tcf_gact_stats_update,
+ 	.dump		=	tcf_gact_dump,
+ 	.init		=	tcf_gact_init,
+-	.walk		=	tcf_gact_walker,
+-	.lookup		=	tcf_gact_search,
+ 	.get_fill_size	=	tcf_gact_get_fill_size,
+ 	.offload_act_setup =	tcf_gact_offload_act_setup,
+ 	.size		=	sizeof(struct tcf_gact),
 -- 
 2.17.1
 
