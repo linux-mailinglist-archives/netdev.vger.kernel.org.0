@@ -2,166 +2,426 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2945D5B15C3
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 09:37:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 571395B15CA
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 09:38:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230245AbiIHHhA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 03:37:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56904 "EHLO
+        id S230424AbiIHHi2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 03:38:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229924AbiIHHg7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 03:36:59 -0400
-Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [217.70.178.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD4C1BCCF4;
-        Thu,  8 Sep 2022 00:36:54 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 31ACA240008;
-        Thu,  8 Sep 2022 07:36:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1662622613;
+        with ESMTP id S229572AbiIHHi0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 03:38:26 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 731D5B4EA9
+        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 00:38:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662622703;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ot1OCH0XE7vuVQNBMm5PA+hO9WFmQKMyOZ0Ey/IcXCk=;
-        b=YU7vRzEtKKIMoivaAPW4AQWetOdiR16xcdcLtpGptKxr5luBCSD3T5MTK90GTwVwfB4fhw
-        3PpI755PJvo6BUWotZVCnu9UWOy7u5AHjqlMGc6tIYGHq+AUl55X7qJE+u03fTfZ5gkkFb
-        eAGSC/rLj44b8nPOH2EwoOrW8zzZttqyMDqbkqJ0WseQDodFBnJcYiOpn6wzw+hNO1Gm5z
-        DvirSisNF6sUMFi3inDA6xJsH4i5cNsscnxToRJP6nYR3nfWbpAa2C8GLIAWSOtOlGB0+O
-        C5bJxSqMYMpiyzDQ42DtFkU4Yi+SWPIPLTMRYEWXTsxxHhFVA0GNvdMDyl7ljg==
-Date:   Thu, 8 Sep 2022 09:36:48 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <aahringo@redhat.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH wpan/next v3 0/9] net: ieee802154: Support
- scanning/beaconing
-Message-ID: <20220908093648.5bae41b2@xps-13>
-In-Reply-To: <CAK-6q+g64BTFsHKKwoCqRGEERRgwoMSTX2LJMQMmmRseWBi=hQ@mail.gmail.com>
-References: <20220905203412.1322947-1-miquel.raynal@bootlin.com>
-        <CAK-6q+g64BTFsHKKwoCqRGEERRgwoMSTX2LJMQMmmRseWBi=hQ@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        bh=lNfeIss/S9NdjFZnn/7NBXn285+NBOOH2efNN52matc=;
+        b=N1YfTFQ9O6vSQxLRfDwZncJca0km738FhMdCYOKl6Gh3mM3PYgV3dv1LYxGoHX02e321US
+        hAqfMx2yAXKzC8pO34oKzoteYU8lZHKI4wuioKOxLYcycuNXK+Y4r0VZRcG9+cVFM2NYsu
+        BjXTb+pB05YkkpYWPjJz19GcQMge4MQ=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-610-dlU298e5NcqXQxTEue3Rzg-1; Thu, 08 Sep 2022 03:38:22 -0400
+X-MC-Unique: dlU298e5NcqXQxTEue3Rzg-1
+Received: by mail-wm1-f70.google.com with SMTP id j36-20020a05600c1c2400b003a540d88677so8152676wms.1
+        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 00:38:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=lNfeIss/S9NdjFZnn/7NBXn285+NBOOH2efNN52matc=;
+        b=J00hBMQncFe/i3pzshI0uBxhEvJxYv6J9Ci2Otx8aFpBA8qRxkDLjm4RKy0vsk4SAq
+         7LJu1UqlFyNu1btmB6K0nPxo1pHHBbCI3wXiCJYRRpkXj2rRKChRqnyTx4gLfGHDNtFv
+         BgWBXwvIMH0BaZku8N0yoDIcK5y4Jrqmv2G71AjvxkwvzBBFYoyYJVUZ3GXDv4qsk29X
+         8mhTS3wzP/8axqOvd+6c9sJyBpKon4ur6C4D2YgW1MsRFR2JuMdpZTGNrtogYA5s0tm1
+         avAu8Ha4g35Les9RZEcdROID6NX7saxsiX2nUyM1nZCYMmO44u9m7dO2i7HvS1QBvI1K
+         a5/Q==
+X-Gm-Message-State: ACgBeo13gfQn5uj3GnOBibjIXuLfc7Y4ilxITSVKYe6wIYs9hsupXV+x
+        XHhfXG8nZ44Ng1FitYnxx1rwC6GV+9kkZsjPLUrRqG8Hhp7v9OyCVt5pt1VgQaQZDbFjhqXcRmD
+        m0oNJy4IDrakZC8Gq
+X-Received: by 2002:adf:da50:0:b0:223:a1f5:fa68 with SMTP id r16-20020adfda50000000b00223a1f5fa68mr4076315wrl.528.1662622701080;
+        Thu, 08 Sep 2022 00:38:21 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4G2du1LAb1HOSymNGWkaMcWDs4SUveZWIl8JMEgjM1PZBEXAKQIfn9iCcIIZMKC20K7OViHw==
+X-Received: by 2002:adf:da50:0:b0:223:a1f5:fa68 with SMTP id r16-20020adfda50000000b00223a1f5fa68mr4076299wrl.528.1662622700753;
+        Thu, 08 Sep 2022 00:38:20 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-119-112.dyn.eolo.it. [146.241.119.112])
+        by smtp.gmail.com with ESMTPSA id r13-20020a05600c35cd00b003a319b67f64sm7888708wmq.0.2022.09.08.00.38.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Sep 2022 00:38:20 -0700 (PDT)
+Message-ID: <f1ad425c45b7e3f589409010ed0966c0676e52c3.camel@redhat.com>
+Subject: Re: [PATCH net-next 02/02] net: ngbe: Check some hardware functions
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Mengyuan Lou <mengyuanlou@net-swift.com>, netdev@vger.kernel.org
+Cc:     jiawenwu@net-swift.com
+Date:   Thu, 08 Sep 2022 09:38:19 +0200
+In-Reply-To: <20220905125248.2361-1-mengyuanlou@net-swift.com>
+References: <20220905125248.2361-1-mengyuanlou@net-swift.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexander,
+On Mon, 2022-09-05 at 20:52 +0800, Mengyuan Lou wrote:
+> Check eeprom ready.
+> Check whether WOL is enabled.
+> Check whether the MAC is available.
+> 
+> Signed-off-by: Mengyuan Lou <mengyuanlou@net-swift.com>
+> ---
+>  drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c   | 311 ++++++++++++++++++
+>  drivers/net/ethernet/wangxun/ngbe/ngbe_hw.h   |   8 +
+>  drivers/net/ethernet/wangxun/ngbe/ngbe_main.c |  54 +++
+>  3 files changed, 373 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c b/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c
+> index 20c21f99e308..f38dc47b8f32 100644
+> --- a/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c
+> +++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_hw.c
+> @@ -381,3 +381,314 @@ int ngbe_reset_hw(struct ngbe_hw *hw)
+>  
+>  	return 0;
+>  }
+> +
+> +/**
+> + *  ngbe_release_eeprom_semaphore - Release hardware semaphore
+> + *  @hw: pointer to hardware structure
+> + *
+> + *  This function clears hardware semaphore bits.
+> + **/
+> +static void ngbe_release_eeprom_semaphore(struct ngbe_hw *hw)
+> +{
+> +	wr32m(hw, NGBE_MIS_SWSM, NGBE_MIS_SWSM_SMBI, 0);
+> +	ngbe_flush(hw);
+> +}
+> +
+> +/**
+> + *  ngbe_get_eeprom_semaphore - Get hardware semaphore
+> + *  @hw: pointer to hardware structure
+> + *  Sets the hardware semaphores so EEPROM access can occur for bit-bang method
+> + **/
+> +static int ngbe_get_eeprom_semaphore(struct ngbe_hw *hw)
+> +{
+> +	int status = 0;
+> +	u32 times = 10;
+> +	u32 i;
+> +	u32 swsm;
+> +
+> +	/* Get SMBI software semaphore between device drivers first */
+> +	for (i = 0; i < times; i++) {
+> +		/* If the SMBI bit is 0 when we read it, then the bit will be
+> +		 * set and we have the semaphore
+> +		 */
+> +		status = read_poll_timeout(rd32, swsm, !(swsm & NGBE_MIS_SWSM_SMBI), 50,
+> +					   20000, false, hw, NGBE_MIS_SWSM);
+> +		if (!status)
+> +			return 0;
+> +	}
+> +
+> +	if (i == times) {
+> +		dev_err(ngbe_hw_to_dev(hw),
+> +			"Driver can't access the Eeprom - SMBI Semaphore not granted.\n");
+> +		/* this release is particularly important because our attempts
+> +		 * above to get the semaphore may have succeeded, and if there
+> +		 * was a timeout, we should unconditionally clear the semaphore
+> +		 * bits to free the driver to make progress
+> +		 */
+> +		ngbe_release_eeprom_semaphore(hw);
 
-aahringo@redhat.com wrote on Wed, 7 Sep 2022 21:40:13 -0400:
+If I read correctly, the firmware is setting/clearing the semaphore bit
+to avoid conflicts with the kernel/driver code. I'm wondering if the
+above clear would inconditionally mark the semaphore as free even if
+the firmware is still holding it? (causing later bugs, hard to track).
 
-> Hi,
->=20
-> On Mon, Sep 5, 2022 at 4:34 PM Miquel Raynal <miquel.raynal@bootlin.com> =
-wrote:
-> >
-> > Hello,
-> >
-> > A third version of this series, dropping the scan patches for now
-> > because before we need to settle on the filtering topic and the
-> > coordinator interface topic. Here is just the filtering part, I've
-> > integrated Alexander's patches, as well as the atusb fix. Once this is
-> > merge there are a few coordinator-related patches, and finally the
-> > scan. =20
->=20
-> I think we have a communication problem here and we should talk about
-> what the problems are and agree on a way to solve them.
->=20
-> The problems are:
->=20
-> 1. We never supported switching from an operating phy (interfaces are
-> up) into another filtering mode.
+It's not clear to me why such clear is needed.
 
-In the trigger scan path there is a:
+If the later test will succeed, the driver will emit an error and will
+acquire the semaphore successfully, and that will be most confusing.
 
-	mlme_op_pre() // stop Tx
-	drv_stop() // stop Rx
-	synchronize_net()
-	drv_start(params) // restart Rx with another hw filtering level
+> +		status = -EBUSY;
+> +	}
+> +	/* one last try
+> +	 * If the SMBI bit is 0 when we read it, then the bit will be
+> +	 * set and we have the semaphore
+> +	 */
+> +	swsm = rd32(hw, NGBE_MIS_SWSM);
+> +	if (!(swsm & NGBE_MIS_SWSM_SMBI))
+> +		status = 0;
+> +	return status;
+> +}
+> +
+> +/**
+> + *  ngbe_acquire_swfw_sync - Acquire SWFW semaphore
+> + *  @hw: pointer to hardware structure
+> + *  @mask: Mask to specify which semaphore to acquire
+> + *
+> + *  Acquires the SWFW semaphore through the GSSR register for the specified
+> + *  function (CSR, PHY0, PHY1, EEPROM, Flash)
+> + **/
+> +static int ngbe_acquire_swfw_sync(struct ngbe_hw *hw, u32 mask)
+> +{
+> +	u32 gssr = 0;
+> +	u32 swmask = mask;
+> +	u32 fwmask = mask << 16;
+> +	u32 times = 2000;
+> +	u32 i;
 
-> 2. Scan requires to be in "promiscuous mode" (according to the
-> 802.15.4 spec promiscuous mode). We don't support promiscuous mode
-> (according to the 802.15.4 spec promiscuous mode). We "can" however
-> use the currently supported mode which does not filter anything
-> (IEEE802154_FILTERING_NONE) when we do additional filtering in
-> mac802154. _But_ this is only required when the phy is scanning, it
-> will also deliver anything to the upper layers.
->=20
-> This patch-series tries to do the second thing, okay that's fine. But
-> I thought this should only be done while the phy is in "scanning
-> mode"?
+Please respect the reverse x-mas tree declaration order. Other
+instances later and in the previous patch.
 
-I don't understand what's wrong then. We ask for the "scan mode"
-filtering level when starting the scan [1] and we ask for the normal
-filtering level when it's done/aborted [2] [3].
+> +
+> +	for (i = 0; i < times; i++) {
+> +		/* SW NVM semaphore bit is used for access to all
+> +		 * SW_FW_SYNC bits (not just NVM)
+> +		 */
+> +		if (ngbe_get_eeprom_semaphore(hw))
+> +			return -EBUSY;
+> +
+> +		gssr = rd32(hw, NGBE_MNG_SWFW_SYNC);
+> +		if (!(gssr & (fwmask | swmask))) {
+> +			gssr |= swmask;
+> +			wr32(hw, NGBE_MNG_SWFW_SYNC, gssr);
+> +			ngbe_release_eeprom_semaphore(hw);
+> +			return 0;
+> +		}
+> +		/* Resource is currently in use by FW or SW */
+> +		ngbe_release_eeprom_semaphore(hw);
+> +	}
+> +
+> +	/* If time expired clear the bits holding the lock and retry */
+> +	if (gssr & (fwmask | swmask))
+> +		ngbe_release_swfw_sync(hw, gssr & (fwmask | swmask));
+> +
+> +	return -EBUSY;
+> +}
+> +
+> +/**
+> + *  ngbe_release_swfw_sync - Release SWFW semaphore
+> + *  @hw: pointer to hardware structure
+> + *  @mask: Mask to specify which semaphore to release
+> + *
+> + *  Releases the SWFW semaphore through the GSSR register for the specified
+> + *  function (CSR, PHY0, PHY1, EEPROM, Flash)
+> + **/
+> +void ngbe_release_swfw_sync(struct ngbe_hw *hw, u32 mask)
+> +{
+> +	ngbe_get_eeprom_semaphore(hw);
 
-[1] https://github.com/miquelraynal/linux/blob/wpan-next/scan/net/mac802154=
-/scan.c#L326
-[2] https://github.com/miquelraynal/linux/blob/wpan-next/scan/net/mac802154=
-/scan.c#L55
+Why can't ngbe_get_eeprom_semaphore() fail here? 
 
-> The other receive path while not in promiscuous mode
-> (phy->filtering =3D=3D IEEE802154_FILTERING_4_FRAME_FIELDS) should never
-> require any additional filtering. I somehow miss this point here.
+> +	wr32m(hw, NGBE_MNG_SWFW_SYNC, mask, 0);
+> +	ngbe_release_eeprom_semaphore(hw);
+> +}
+> +
+> +/**
+> + *  ngbe_host_interface_command - Issue command to manageability block
+> + *  @hw: pointer to the HW structure
+> + *  @buffer: contains the command to write and where the return status will
+> + *   be placed
+> + *  @length: length of buffer, must be multiple of 4 bytes
+> + *  @timeout: time in ms to wait for command completion
+> + *  @return_data: read and return data from the buffer (true) or not (false)
+> + *   Needed because FW structures are big endian and decoding of
+> + *   these fields can be 8 bit or 16 bit based on command. Decoding
+> + *   is not easily understood without making a table of commands.
+> + *   So we will leave this up to the caller to read back the data
+> + *   in these cases.
+> + **/
+> +int ngbe_host_interface_command(struct ngbe_hw *hw, u32 *buffer,
+> +				u32 length, u32 timeout, bool return_data)
+> +{
+> +	u32 hicr, i, bi;
+> +	u32 hdr_size = sizeof(struct ngbe_hic_hdr);
+> +	u16 buf_len;
+> +	u32 dword_len;
+> +	int err = 0;
+> +	u32 buf[64] = {};
+> +
+> +	if (length == 0 || length > NGBE_HI_MAX_BLOCK_BYTE_LENGTH) {
+> +		dev_err(ngbe_hw_to_dev(hw),
+> +			"Buffer length failure buffersize=%d.\n", length);
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (ngbe_acquire_swfw_sync(hw, NGBE_MNG_SWFW_SYNC_SW_MB) != 0)
+> +		return -EBUSY;
+> +
+> +	/* Calculate length in DWORDs. We must be DWORD aligned */
+> +	if ((length % (sizeof(u32))) != 0) {
+> +		dev_err(ngbe_hw_to_dev(hw),
+> +			"Buffer length failure, not aligned to dword");
+> +		err = -EINVAL;
+> +		goto rel_out;
+> +	}
+> +
+> +	/*read to clean all status*/
+> +	hicr = rd32(hw, NGBE_MNG_MBOX_CTL);
+> +	if ((hicr & NGBE_MNG_MBOX_CTL_FWRDY))
+> +		dev_err(ngbe_hw_to_dev(hw),
+> +			"fwrdy is set before command.\n");
+> +	dword_len = length >> 2;
+> +	/* The device driver writes the relevant command block
+> +	 * into the ram area.
+> +	 */
+> +	for (i = 0; i < dword_len; i++)
+> +		wr32a(hw, NGBE_MNG_MBOX, i, buffer[i]);
+> +
+> +	/* Setting this bit tells the ARC that a new command is pending. */
+> +	wr32m(hw, NGBE_MNG_MBOX_CTL,
+> +	      NGBE_MNG_MBOX_CTL_SWRDY, NGBE_MNG_MBOX_CTL_SWRDY);
+> +
+> +	for (i = 0; i < timeout; i++) {
+> +		err = read_poll_timeout(rd32, hicr, hicr & NGBE_MNG_MBOX_CTL_FWRDY, 1000,
+> +					20000, false, hw, NGBE_MNG_MBOX_CTL);
+> +		if (!err)
+> +			break;
+> +	}
+> +
+> +	buf[0] = rd32(hw, NGBE_MNG_MBOX);
+> +	/* Check command completion */
+> +	if (timeout != 0 && i == timeout) {
+> +		dev_err(ngbe_hw_to_dev(hw),
+> +			"Command has failed with no status valid.\n");
+> +		if ((buffer[0] & 0xff) != (~buf[0] >> 24)) {
+> +			err = -EINVAL;
+> +			goto rel_out;
+> +		}
+> +	}
+> +
+> +	if (!return_data)
+> +		goto rel_out;
+> +
+> +	/* Calculate length in DWORDs */
+> +	dword_len = hdr_size >> 2;
+> +
+> +	/* first pull in the header so we know the buffer length */
+> +	for (bi = 0; bi < dword_len; bi++)
+> +		buffer[bi] = rd32a(hw, NGBE_MNG_MBOX, bi);
+> +
+> +	/* If there is any thing in data position pull it in */
+> +	buf_len = ((struct ngbe_hic_hdr *)buffer)->buf_len;
+> +	if (buf_len == 0)
+> +		goto rel_out;
+> +
+> +	if (length < buf_len + hdr_size) {
+> +		dev_err(ngbe_hw_to_dev(hw),
+> +			"Buffer not large enough for reply message.\n");
+> +		err = -ENOMEM;
+> +		goto rel_out;
+> +	}
+> +
+> +	/* Calculate length in DWORDs, add 3 for odd lengths */
+> +	dword_len = (buf_len + 3) >> 2;
+> +
+> +	/* Pull in the rest of the buffer (bi is where we left off) */
+> +	for (; bi <= dword_len; bi++)
+> +		buffer[bi] = rd32a(hw, NGBE_MNG_MBOX, bi);
+> +
+> +rel_out:
+> +	ngbe_release_swfw_sync(hw, NGBE_MNG_SWFW_SYNC_SW_MB);
+> +	return err;
+> +}
+> +
+> +/**
+> + *  ngbe_init_eeprom_params - Initialize EEPROM params
+> + *  @hw: pointer to hardware structure
+> + *
+> + *  Initializes the EEPROM parameters ngbe_eeprom_info within the
+> + *  ngbe_hw struct in order to set up EEPROM access.
+> + **/
+> +void ngbe_init_eeprom_params(struct ngbe_hw *hw)
+> +{
+> +	struct ngbe_eeprom_info *eeprom = &hw->eeprom;
+> +
+> +	eeprom->semaphore_delay = 10;
+> +	eeprom->word_size = 1024 >> 1;
+> +	eeprom->sw_region_offset = 0x80;
+> +}
+> +
+> +int ngbe_eeprom_chksum_hostif(struct ngbe_hw *hw)
+> +{
+> +	int tmp;
+> +	int status;
+> +	struct ngbe_hic_read_shadow_ram buffer;
+> +
+> +	buffer.hdr.req.cmd = NGBE_FW_EEPROM_CHECKSUM_CMD;
+> +	buffer.hdr.req.buf_lenh = 0;
+> +	buffer.hdr.req.buf_lenl = 0;
+> +	buffer.hdr.req.checksum = NGBE_FW_CMD_DEFAULT_CHECKSUM;
+> +	/* convert offset from words to bytes */
+> +	buffer.address = 0;
+> +	/* one word */
+> +	buffer.length = 0;
+> +
+> +	status = ngbe_host_interface_command(hw, (u32 *)&buffer,
+> +					     sizeof(buffer),
+> +					     NGBE_HI_COMMAND_TIMEOUT, false);
+> +
+> +	if (status < 0)
+> +		return status;
+> +	tmp = (u32)rd32a(hw, NGBE_MNG_MBOX, 1);
 
-Maybe the drv_start() function should receive an sdata pointer. This way
-instead of changing the PHY filtering level to what has just be asked
-blindly, the code should look at the filtering level of all the
-interfaces up on the PHY and apply the lowest filtering level by
-hardware, knowing that on a per interface basis, the software will
-compensate.
+If you declare tmp as u32 the above cast will be needed, also a more
+meaningful variable name would help
 
-It should work just fine because local->phy->filtering shows the actual
-filtering level of the PHY while sdata->requested_filtering shows the
-level of filtering that was expected on each interface. If you don't
-like the idea of having a mutable sdata->requested_filtering entry, I
-can have an sdata->base_filtering which should only be set by
-ieee802154_setup_sdata() and an sdata->expected_filtering which would
-reflect what the mac expects on this interface at the present moment.
+> +	if (tmp == 0x80658383)
 
-> For 1), the driver should change the filtering mode" when we start to
-> "listen", this is done by the start() driver callback. They should get
-> all receive parameters and set up receiving to whatever mac802154,
-> currently there is a bit of chaos there. To move it into drv_start()
-> is just a workaround to begin this step that we move it at some point
-> to the driver. I mention 1) here because that should be part of the
-> picture how everything works together when the phy is switched to a
-> different filter level while it's operating (I mean there are running
-> interfaces on it which requires IEEE802154_FILTERING_4_FRAME_FIELDS)
-> which then activates the different receive path for the use case of
-> scanning (something like (phy->state & WPANPHY_SCANING) =3D=3D true)?
+Why this magic mumber? perhaps you can define/use some driver constant.
 
-Scanning is a dedicated filtering level per-se because it must discard
-!beacon frames, that's why I request this level of filtering (which
-maybe I should do on a per-interface basis instead of using the *local
-poiner).
+> +		status = 0;
 
-> I am sorry, but I somehow miss the picture of how those things work
-> together. It is not clear for me and I miss those parts to get a whole
-> picture of this. For me it's not clear that those patches are going in
-> this direction.
+or just:
+		return 0;
+	return -EIO;
 
-Please tell me if it's more clear and if you agree with this vision. I
-don't have time to draft something this week.
+unless you plan to touch this code path with later patches.
 
-Thanks,
-Miqu=C3=A8l
+> +	else
+> +		return -EIO;
+> +
+> +	return status;
+> +}
+> +
+> +static int ngbe_read_ee_hostif_data32(struct ngbe_hw *hw, u16 offset, u32 *data)
+> +{
+> +	int status;
+> +	struct ngbe_hic_read_shadow_ram buffer;
+> +
+> +	buffer.hdr.req.cmd = NGBE_FW_READ_SHADOW_RAM_CMD;
+> +	buffer.hdr.req.buf_lenh = 0;
+> +	buffer.hdr.req.buf_lenl = NGBE_FW_READ_SHADOW_RAM_LEN;
+> +	buffer.hdr.req.checksum = NGBE_FW_CMD_DEFAULT_CHECKSUM;
+> +	/* convert offset from words to bytes */
+> +	buffer.address = (__force u32)cpu_to_be32(offset * 2);
+> +	/* one word */
+> +	buffer.length = (__force u16)cpu_to_be16(sizeof(u32));
+> +
+> +	status = ngbe_host_interface_command(hw, (u32 *)&buffer,
+> +					     sizeof(buffer),
+> +					     NGBE_HI_COMMAND_TIMEOUT, false);
+> +	if (status)
+> +		return status;
+> +	*data = (u32)rd32a(hw, NGBE_MNG_MBOX, NGBE_FW_NVM_DATA_OFFSET);
+
+Cast likely not needed.
+
+
+Cheers,
+
+Paolo
+
