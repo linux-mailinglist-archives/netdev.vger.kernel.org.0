@@ -2,363 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 70FEE5B26E5
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 21:36:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AB905B27A3
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 22:22:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231401AbiIHTgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 15:36:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57250 "EHLO
+        id S229770AbiIHUWr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 16:22:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231952AbiIHTfv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 15:35:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F4FCC6FF2;
-        Thu,  8 Sep 2022 12:35:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2017961DFA;
-        Thu,  8 Sep 2022 19:35:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F281BC433C1;
-        Thu,  8 Sep 2022 19:35:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662665748;
-        bh=N3gGUtPQnoarYcxL8xMDNl4MjAyEvlH2AOujjg7IviY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jtTgWZ21IgLgZN9BGhoFLOfOjFs1hCqGPu9QOxyUXs7n2Rg5OE9v1AA8/vcgIKlzT
-         /PPYoEKYV7Rj9SNIKjMScLxi9U8nbSJUif8KYw3ouAfO4s93K4jlxD0x8UvUXzbdU/
-         rgdaPBzJNR3/WGwWVZmV40e+Zws3F2SbRWxClwzIFHrSMxuAnRhP5FahOxEE+GbOH1
-         m5KsDEt5IW/UCCKXCn98UWLvXesTiT27gD7a74ArPqHIzUBP41k/XEGano0N02PJp2
-         7B+OBIOV3nhBaVeZO1TH1x/SVJ3lmHSLeMpGbmWVpH41Z5bf3HLEswr7WNECbNNNCK
-         AVaCfVAjybLag==
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
-        Mark-MC.Lee@mediatek.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, matthias.bgg@gmail.com,
-        linux-mediatek@lists.infradead.org, lorenzo.bianconi@redhat.com,
-        Bo.Jiao@mediatek.com, sujuan.chen@mediatek.com,
-        ryder.Lee@mediatek.com, evelyn.tsai@mediatek.com,
-        devicetree@vger.kernel.org, robh@kernel.org
-Subject: [PATCH net-next 12/12] net: ethernet: mtk_eth_soc: introduce flow offloading support for mt7986
-Date:   Thu,  8 Sep 2022 21:33:46 +0200
-Message-Id: <6775ed6546cacd174a165c7085f7e1f77db9f30c.1662661555.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <cover.1662661555.git.lorenzo@kernel.org>
-References: <cover.1662661555.git.lorenzo@kernel.org>
+        with ESMTP id S229508AbiIHUWo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 16:22:44 -0400
+Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AB931079FD
+        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 13:22:42 -0700 (PDT)
+Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-127d10b4f19so21697965fac.9
+        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 13:22:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=daynix-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=RX8VIBrkIrN+uaJDyGYK1oayYALRo341SLY9FJGeLKg=;
+        b=BOSQ+7TVFALXbxC/myMu5Chncu9V3l4sSSxY4m0Bx02D2bgLEFpAbb5BltskTSr+5F
+         F70VCqtvBpr3Q4AFCBsDmpLukbkEYUhpmykaTpNj12w37og7JsupiMmJKnsVhnBNAbdJ
+         hAhMAUzA1kQlQmqsKZ/GOKRml0/zJTsu2tPGYflD2YKqBQuBWqCz2Ipf8dbhnqCxz/Z3
+         rCsguQKWgB3xbFyTgY/FoqIJ69KBVkn0ktWbgK+gfzDaVhmOc84RzmawuiGIbSZPF06g
+         /Qb0TXYcSI7c8gutf7cwJsaoPMP5cQ3oy2G3bklXfmkKos4jtJhiBNaRVkg+RACOz7Bz
+         tM1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=RX8VIBrkIrN+uaJDyGYK1oayYALRo341SLY9FJGeLKg=;
+        b=nFv7OlDoRq2l71QfgMx0X6Hmwx17Hr1vt2mx8gh1SYlHi75FxALxM35IxkMxlbvCOv
+         mYN/CdVlUlfjg1g0/KYxRTULp20k7QTU3/xEzCFg8xQGD3GUKjmJPjgwKJtESbfhMkAe
+         A7Fak0YTGyRmq8N/wykEK2ckag7W+EPvifNDpfcAu8LF0/WWm8XUa+VZNGR1n2Ld2QK3
+         fiusOMsVs3N6/yHKTkmdl8iPWzlaBQLAYad5O5Js6mPkQGpJBDzH67HPTQUCNgYP1Z8f
+         Nr/T41rCRvb4ivmiRZSkkvgwFUZoNGInCdp3CQzrWRJQ/VsbCruX5j1Uguud8rUSjhyp
+         Z2zA==
+X-Gm-Message-State: ACgBeo2HJiUsUdlnxSJjGOlUU81k0QrQWjq0CsV36KsRVwT9YUbZBlly
+        VntEgllokILnJ81zLyA6uEGefZI54LOHgw7YzeDpIw==
+X-Google-Smtp-Source: AA6agR49XRbIMolMgRxwv8qrnpTs2QgNkLEpVvZTqKvSQ7ilNqc92R6DLRt+yLI0hlnLZ5GHBBBhLlWXrjDL36m0UZg=
+X-Received: by 2002:a05:6808:2382:b0:344:90f9:b79 with SMTP id
+ bp2-20020a056808238200b0034490f90b79mr2264444oib.137.1662668561813; Thu, 08
+ Sep 2022 13:22:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220907125048.396126-1-andrew@daynix.com> <e1e6519f-2e77-05c1-697c-56b174addc6e@kernel.org>
+In-Reply-To: <e1e6519f-2e77-05c1-697c-56b174addc6e@kernel.org>
+From:   Andrew Melnichenko <andrew@daynix.com>
+Date:   Thu, 8 Sep 2022 23:09:24 +0300
+Message-ID: <CABcq3pFbKB26x2yCAxMFTU02uAkQrRCRvY1YNYRcx6zHbG54Kg@mail.gmail.com>
+Subject: Re: [PATCH v3 0/6] TUN/VirtioNet USO features support.
+To:     David Ahern <dsahern@kernel.org>
+Cc:     edumazet@google.com, netdev@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jasowang@redhat.com, mst@redhat.com, pabeni@redhat.com,
+        yoshfuji@linux-ipv6.org, yan@daynix.com,
+        yuri.benditovich@daynix.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce hw flow offload support for mt7986 chipset. PPE is not enabled
-yet in mt7986 since mt76 support is not available yet.
+Hi all,
 
-Co-developed-by: Bo Jiao <Bo.Jiao@mediatek.com>
-Signed-off-by: Bo Jiao <Bo.Jiao@mediatek.com>
-Co-developed-by: Sujuan Chen <sujuan.chen@mediatek.com>
-Signed-off-by: Sujuan Chen <sujuan.chen@mediatek.com>
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- drivers/net/ethernet/mediatek/mtk_eth_soc.c   | 27 +++++++++--
- drivers/net/ethernet/mediatek/mtk_ppe.c       | 45 ++++++++++++++-----
- drivers/net/ethernet/mediatek/mtk_ppe.h       | 10 ++++-
- .../net/ethernet/mediatek/mtk_ppe_offload.c   | 15 ++++++-
- drivers/net/ethernet/mediatek/mtk_ppe_regs.h  |  8 ++++
- 5 files changed, 87 insertions(+), 18 deletions(-)
+On Thu, Sep 8, 2022 at 3:44 AM David Ahern <dsahern@kernel.org> wrote:
+>
+> On 9/7/22 6:50 AM, Andrew Melnychenko wrote:
+> > Added new offloads for TUN devices TUN_F_USO4 and TUN_F_USO6.
+> > Technically they enable NETIF_F_GSO_UDP_L4
+> > (and only if USO4 & USO6 are set simultaneously).
+> > It allows the transmission of large UDP packets.
+>
+> Please spell out USO at least once in the cover letter to make sure the
+> acronym is clear.
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index 7dae650c4586..cc790f12c9cc 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -1906,12 +1906,14 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
- 		bytes += skb->len;
- 
- 		if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2)) {
-+			reason = FIELD_GET(MTK_RXD5_PPE_CPU_REASON, trxd.rxd5);
- 			hash = trxd.rxd5 & MTK_RXD5_FOE_ENTRY;
- 			if (hash != MTK_RXD5_FOE_ENTRY)
- 				skb_set_hash(skb, jhash_1word(hash, 0),
- 					     PKT_HASH_TYPE_L4);
- 			rxdcsum = &trxd.rxd3;
- 		} else {
-+			reason = FIELD_GET(MTK_RXD4_PPE_CPU_REASON, trxd.rxd4);
- 			hash = trxd.rxd4 & MTK_RXD4_FOE_ENTRY;
- 			if (hash != MTK_RXD4_FOE_ENTRY)
- 				skb_set_hash(skb, jhash_1word(hash, 0),
-@@ -1925,7 +1927,6 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
- 			skb_checksum_none_assert(skb);
- 		skb->protocol = eth_type_trans(skb, netdev);
- 
--		reason = FIELD_GET(MTK_RXD4_PPE_CPU_REASON, trxd.rxd4);
- 		if (reason == MTK_PPE_CPU_REASON_HIT_UNBIND_RATE_REACHED)
- 			mtk_ppe_check_skb(eth->ppe[0], skb, hash);
- 
-@@ -4241,7 +4242,7 @@ static const struct mtk_soc_data mt7621_data = {
- 		.dma_len_offset = 16,
- 	},
- 	.foe = {
--		.entry_size = sizeof(struct mtk_foe_entry),
-+		.entry_size = sizeof(struct mtk_foe_entry) - 16,
- 		.hash_offset = 2,
- 		.ib1 = {
- 			.bind_ppoe = BIT(19),
-@@ -4279,7 +4280,7 @@ static const struct mtk_soc_data mt7622_data = {
- 		.dma_len_offset = 16,
- 	},
- 	.foe = {
--		.entry_size = sizeof(struct mtk_foe_entry),
-+		.entry_size = sizeof(struct mtk_foe_entry) - 16,
- 		.hash_offset = 2,
- 		.ib1 = {
- 			.bind_ppoe = BIT(19),
-@@ -4323,7 +4324,7 @@ static const struct mtk_soc_data mt7623_data = {
- 		.dma_len_offset = 16,
- 	},
- 	.foe = {
--		.entry_size = sizeof(struct mtk_foe_entry),
-+		.entry_size = sizeof(struct mtk_foe_entry) - 16,
- 		.hash_offset = 2,
- 		.ib1 = {
- 			.bind_ppoe = BIT(19),
-@@ -4365,6 +4366,7 @@ static const struct mtk_soc_data mt7986_data = {
- 	.reg_map = &mt7986_reg_map,
- 	.ana_rgc3 = 0x128,
- 	.caps = MT7986_CAPS,
-+	.hw_features = MTK_HW_FEATURES,
- 	.required_clks = MT7986_CLKS_BITMAP,
- 	.required_pctl = false,
- 	.txrx = {
-@@ -4376,7 +4378,24 @@ static const struct mtk_soc_data mt7986_data = {
- 		.dma_len_offset = 8,
- 	},
- 	.foe = {
-+		.entry_size = sizeof(struct mtk_foe_entry),
- 		.hash_offset = 4,
-+		.ib1 = {
-+			.bind_ppoe = BIT(17),
-+			.bind_vlan_tag = BIT(18),
-+			.bind_cache = BIT(20),
-+			.bind_ttl = BIT(22),
-+			.bind_ts = GENMASK(7, 0),
-+			.bind_vlan_layer = GENMASK(16, 14),
-+			.pkt_type = GENMASK(27, 23),
-+		},
-+		.ib2 = {
-+			.multicast = BIT(13),
-+			.wdma_winfo = BIT(19),
-+			.port_ag = GENMASK(23, 20),
-+			.port_mg = BIT(7),
-+			.dst_port = GENMASK(12, 9),
-+		},
- 	},
- 	.wed = {
- 		.desc_ctrl_len1 = GENMASK(13, 0),
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
-index 4248a3b78aa6..4d495c2b19e3 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe.c
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
-@@ -172,9 +172,12 @@ int mtk_foe_entry_prepare(struct mtk_eth *eth, struct mtk_foe_entry *entry,
- 	      eth->soc->foe.ib1.bind_cache;
- 	entry->ib1 = val;
- 
--	val = MTK_FIELD_PREP(eth->soc->foe.ib2.port_mg, 0x3f) |
--	      MTK_FIELD_PREP(eth->soc->foe.ib2.port_ag, 0x1f) |
--	      MTK_FIELD_PREP(eth->soc->foe.ib2.dst_port, pse_port);
-+	val = MTK_FIELD_PREP(eth->soc->foe.ib2.dst_port, pse_port);
-+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2))
-+		val |= MTK_FIELD_PREP(eth->soc->foe.ib2.port_ag, 0xf);
-+	else
-+		val |= MTK_FIELD_PREP(eth->soc->foe.ib2.port_mg, 0x3f) |
-+		       MTK_FIELD_PREP(eth->soc->foe.ib2.port_ag, 0x1f);
- 
- 	if (is_multicast_ether_addr(dest_mac))
- 		val |= eth->soc->foe.ib2.multicast;
-@@ -370,12 +373,17 @@ int mtk_foe_entry_set_wdma(struct mtk_eth *eth, struct mtk_foe_entry *entry,
- 
- 	*ib2 &= ~eth->soc->foe.ib2.port_mg;
- 	*ib2 |= eth->soc->foe.ib2.wdma_winfo;
--	if (wdma_idx)
--		*ib2 |= MTK_FOE_IB2_WDMA_DEVIDX;
--
--	l2->vlan2 = FIELD_PREP(MTK_FOE_VLAN2_WINFO_BSS, bss) |
--		    FIELD_PREP(MTK_FOE_VLAN2_WINFO_WCID, wcid) |
--		    FIELD_PREP(MTK_FOE_VLAN2_WINFO_RING, txq);
-+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2)) {
-+		*ib2 |=  FIELD_PREP(MTK_FOE_IB2_RX_IDX, txq);
-+		l2->winfo = FIELD_PREP(MTK_FOE_WINFO_WCID, wcid) |
-+			    FIELD_PREP(MTK_FOE_WINFO_BSS, bss);
-+	} else {
-+		if (wdma_idx)
-+			*ib2 |= MTK_FOE_IB2_WDMA_DEVIDX;
-+		l2->vlan2 = FIELD_PREP(MTK_FOE_VLAN2_WINFO_BSS, bss) |
-+			    FIELD_PREP(MTK_FOE_VLAN2_WINFO_WCID, wcid) |
-+			    FIELD_PREP(MTK_FOE_VLAN2_WINFO_RING, txq);
-+	}
- 
- 	return 0;
- }
-@@ -784,6 +792,8 @@ void mtk_ppe_start(struct mtk_ppe *ppe)
- 			 MTK_PPE_SCAN_MODE_KEEPALIVE_AGE) |
- 	      FIELD_PREP(MTK_PPE_TB_CFG_ENTRY_NUM,
- 			 MTK_PPE_ENTRIES_SHIFT);
-+	if (MTK_HAS_CAPS(ppe->eth->soc->caps, MTK_NETSYS_V2))
-+		val |= MTK_PPE_TB_CFG_INFO_SEL;
- 	ppe_w32(ppe, MTK_PPE_TB_CFG, val);
- 
- 	ppe_w32(ppe, MTK_PPE_IP_PROTO_CHK,
-@@ -791,15 +801,21 @@ void mtk_ppe_start(struct mtk_ppe *ppe)
- 
- 	mtk_ppe_cache_enable(ppe, true);
- 
--	val = MTK_PPE_FLOW_CFG_IP4_TCP_FRAG |
--	      MTK_PPE_FLOW_CFG_IP4_UDP_FRAG |
--	      MTK_PPE_FLOW_CFG_IP6_3T_ROUTE |
-+	val = MTK_PPE_FLOW_CFG_IP6_3T_ROUTE |
- 	      MTK_PPE_FLOW_CFG_IP6_5T_ROUTE |
- 	      MTK_PPE_FLOW_CFG_IP6_6RD |
- 	      MTK_PPE_FLOW_CFG_IP4_NAT |
- 	      MTK_PPE_FLOW_CFG_IP4_NAPT |
- 	      MTK_PPE_FLOW_CFG_IP4_DSLITE |
- 	      MTK_PPE_FLOW_CFG_IP4_NAT_FRAG;
-+	if (MTK_HAS_CAPS(ppe->eth->soc->caps, MTK_NETSYS_V2))
-+		val |= MTK_PPE_MD_TOAP_BYP_CRSN0 |
-+		       MTK_PPE_MD_TOAP_BYP_CRSN1 |
-+		       MTK_PPE_MD_TOAP_BYP_CRSN2 |
-+		       MTK_PPE_FLOW_CFG_IP4_HASH_GRE_KEY;
-+	else
-+		val |= MTK_PPE_FLOW_CFG_IP4_TCP_FRAG |
-+		       MTK_PPE_FLOW_CFG_IP4_UDP_FRAG;
- 	ppe_w32(ppe, MTK_PPE_FLOW_CFG, val);
- 
- 	val = FIELD_PREP(MTK_PPE_UNBIND_AGE_MIN_PACKETS, 1000) |
-@@ -833,6 +849,11 @@ void mtk_ppe_start(struct mtk_ppe *ppe)
- 	ppe_w32(ppe, MTK_PPE_GLO_CFG, val);
- 
- 	ppe_w32(ppe, MTK_PPE_DEFAULT_CPU_PORT, 0);
-+
-+	if (MTK_HAS_CAPS(ppe->eth->soc->caps, MTK_NETSYS_V2)) {
-+		ppe_w32(ppe, MTK_PPE_DEFAULT_CPU_PORT1, 0xcb777);
-+		ppe_w32(ppe, MTK_PPE_SBW_CTRL, 0x7f);
-+	}
- }
- 
- int mtk_ppe_stop(struct mtk_ppe *ppe)
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.h b/drivers/net/ethernet/mediatek/mtk_ppe.h
-index a364f45edf38..1f584fd0632d 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe.h
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe.h
-@@ -53,6 +53,7 @@ enum {
- 
- #define MTK_FOE_IB2_PORT_MG		GENMASK(17, 12)
- 
-+#define MTK_FOE_IB2_RX_IDX		GENMASK(18, 17)
- #define MTK_FOE_IB2_PORT_AG		GENMASK(23, 18)
- 
- #define MTK_FOE_IB2_DSCP		GENMASK(31, 24)
-@@ -61,8 +62,12 @@ enum {
- #define MTK_FOE_VLAN2_WINFO_WCID	GENMASK(13, 6)
- #define MTK_FOE_VLAN2_WINFO_RING	GENMASK(15, 14)
- 
-+#define MTK_FOE_WINFO_BSS		GENMASK(5, 0)
-+#define MTK_FOE_WINFO_WCID		GENMASK(15, 6)
-+
- #define MTK_FIELD_PREP(mask, val)	(((typeof(mask))(val) << __bf_shf(mask)) & (mask))
- #define MTK_FIELD_GET(mask, val)	((typeof(mask))(((val) & (mask)) >> __bf_shf(mask)))
-+
- enum {
- 	MTK_FOE_STATE_INVALID,
- 	MTK_FOE_STATE_UNBIND,
-@@ -83,6 +88,9 @@ struct mtk_foe_mac_info {
- 
- 	u16 pppoe_id;
- 	u16 src_mac_lo;
-+
-+	u16 minfo;
-+	u16 winfo;
- };
- 
- /* software-only entry type */
-@@ -200,7 +208,7 @@ struct mtk_foe_entry {
- 		struct mtk_foe_ipv4_dslite dslite;
- 		struct mtk_foe_ipv6 ipv6;
- 		struct mtk_foe_ipv6_6rd ipv6_6rd;
--		u32 data[19];
-+		u32 data[23];
- 	};
- };
- 
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
-index 56c49ac712b9..c63eeee0ceba 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
-@@ -193,7 +193,20 @@ mtk_flow_set_output_device(struct mtk_eth *eth, struct mtk_foe_entry *foe,
- 	if (mtk_flow_get_wdma_info(dev, dest_mac, &info) == 0) {
- 		mtk_foe_entry_set_wdma(eth, foe, info.wdma_idx, info.queue,
- 				       info.bss, info.wcid);
--		pse_port = 3;
-+		if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2)) {
-+			switch (info.wdma_idx) {
-+			case 0:
-+				pse_port = 8;
-+				break;
-+			case 1:
-+				pse_port = 9;
-+				break;
-+			default:
-+				return -EINVAL;
-+			}
-+		} else {
-+			pse_port = 3;
-+		}
- 		*wed_index = info.wdma_idx;
- 		goto out;
- 	}
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_regs.h b/drivers/net/ethernet/mediatek/mtk_ppe_regs.h
-index 0c45ea0900f1..59596d823d8b 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe_regs.h
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe_regs.h
-@@ -21,6 +21,9 @@
- #define MTK_PPE_GLO_CFG_BUSY			BIT(31)
- 
- #define MTK_PPE_FLOW_CFG			0x204
-+#define MTK_PPE_MD_TOAP_BYP_CRSN0		BIT(1)
-+#define MTK_PPE_MD_TOAP_BYP_CRSN1		BIT(2)
-+#define MTK_PPE_MD_TOAP_BYP_CRSN2		BIT(3)
- #define MTK_PPE_FLOW_CFG_IP4_TCP_FRAG		BIT(6)
- #define MTK_PPE_FLOW_CFG_IP4_UDP_FRAG		BIT(7)
- #define MTK_PPE_FLOW_CFG_IP6_3T_ROUTE		BIT(8)
-@@ -54,6 +57,7 @@
- #define MTK_PPE_TB_CFG_HASH_MODE		GENMASK(15, 14)
- #define MTK_PPE_TB_CFG_SCAN_MODE		GENMASK(17, 16)
- #define MTK_PPE_TB_CFG_HASH_DEBUG		GENMASK(19, 18)
-+#define MTK_PPE_TB_CFG_INFO_SEL			BIT(20)
- 
- enum {
- 	MTK_PPE_SCAN_MODE_DISABLED,
-@@ -112,6 +116,8 @@ enum {
- #define MTK_PPE_DEFAULT_CPU_PORT		0x248
- #define MTK_PPE_DEFAULT_CPU_PORT_MASK(_n)	(GENMASK(2, 0) << ((_n) * 4))
- 
-+#define MTK_PPE_DEFAULT_CPU_PORT1		0x24c
-+
- #define MTK_PPE_MTU_DROP			0x308
- 
- #define MTK_PPE_VLAN_MTU0			0x30c
-@@ -141,4 +147,6 @@ enum {
- #define MTK_PPE_MIB_CACHE_CTL_EN		BIT(0)
- #define MTK_PPE_MIB_CACHE_CTL_FLUSH		BIT(2)
- 
-+#define MTK_PPE_SBW_CTRL			0x374
-+
- #endif
--- 
-2.37.3
+USO - UDP Segmentation Offload. Ability to split UDP packets into
+several segments.
+Allows sending/receiving big UDP packets. At some point, it looks like
+UFO(fragmentation),
+but each segment contains a UDP header.
 
+>
+> >
+> > Different features USO4 and USO6 are required for qemu where Windows guests can
+> > enable disable USO receives for IPv4 and IPv6 separately.
+> > On the other side, Linux can't really differentiate USO4 and USO6, for now.
+>
+> Why is that and what is needed for Linux to differentiate between the 2
+> protocols?
+
+Well, this feature requires for Windows VM guest interaction. Windows may have
+a separate configuration for USO4/USO6. Currently, we support Windows guests
+with enabled USO4 and USO6 simultaneously.
+To implement this on Linux host, will require at least one additional
+netdev feature
+and changes in Linux network stack. Discussion about that will be in
+the future after
+some research.
+
+>
+> > For now, to enable USO for TUN it requires enabling USO4 and USO6 together.
+> > In the future, there would be a mechanism to control UDP_L4 GSO separately.
+> >
+> > New types for virtio-net already in virtio-net specification:
+> > https://github.com/oasis-tcs/virtio-spec/issues/120
+> >
+> > Test it WIP Qemu https://github.com/daynix/qemu/tree/USOv3
+> >
+> > Andrew (5):
+> >   uapi/linux/if_tun.h: Added new offload types for USO4/6.
+> >   driver/net/tun: Added features for USO.
+> >   uapi/linux/virtio_net.h: Added USO types.
+> >   linux/virtio_net.h: Support USO offload in vnet header.
+> >   drivers/net/virtio_net.c: Added USO support.
+> >
+> > Andrew Melnychenko (1):
+> >   udp: allow header check for dodgy GSO_UDP_L4 packets.
+> >
+> >  drivers/net/tap.c               | 10 ++++++++--
+> >  drivers/net/tun.c               |  8 +++++++-
+> >  drivers/net/virtio_net.c        | 19 +++++++++++++++----
+> >  include/linux/virtio_net.h      |  9 +++++++++
+> >  include/uapi/linux/if_tun.h     |  2 ++
+> >  include/uapi/linux/virtio_net.h |  5 +++++
+> >  net/ipv4/udp_offload.c          |  2 +-
+> >  7 files changed, 47 insertions(+), 8 deletions(-)
+> >
+>
