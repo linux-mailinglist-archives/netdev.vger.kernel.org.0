@@ -2,164 +2,243 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 352A65B217E
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 17:04:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93E355B2182
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 17:05:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232779AbiIHPE3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 11:04:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56530 "EHLO
+        id S231890AbiIHPEz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 11:04:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231149AbiIHPE2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 11:04:28 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2129.outbound.protection.outlook.com [40.107.94.129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27E972F6;
-        Thu,  8 Sep 2022 08:04:22 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lj8+n/RMFi+/vH0vifTOIYhEz764nAIgWFLHZr47EozememKcL36sHOX7OYmox9euAEAAnF3nSVUEXy8XCB1lEqPl7GIwUOkHwR0YbIwqveOpD/p2HJPY6dxC11lhRh08oNc8YhegnMAHtoOeAeg+vuxHHsiYt7GtwX1JYL4UwFOeP7h+PiyXjRFvR2RA3B9krzhq+ceMGgzEMxqMJnGGx114HS0JWSC4b+AqUxQ5oA6OmdLVoRAsis4tRDjohfg2JF94aGCWkB0G9SqAcE9IgCvuhnsCV+0ITpVoQ5v06kzQDkZkWZG2ZDjF/1zynKo4W7CZGTKbrgG9ZDJ8xGsQQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ItOH2Lz1bJTErRwdLkVe3O/p5AKP5HRD4vzYsMDL7J8=;
- b=QT3hJHWxsxu6QG2CFG7H1jkVYC0qmMwWrZzmU2gc+8VSt4ROtD4wUlqlmh2Jw6cv/XilG8UNkEblJENKLlYt2PSQ/AvRiDwwmILHNAnlR5xKGEXagJLFoOxfopcWXoHs/UzES7yhl6g76Vc17vEKmTu4eb/QvTDLZRZpup9WmR1wDAJs/SxpZZvWkc7cr8nJcav/TpYwXvzxgq/DIMZmAh3At8p5nXXZE4c9k1NCqsNsg27l6vUlWfiW6qn17QUoZyeAR/lfVzNlvrJfNNiiR06eDDQwp5TSX4X0YvKg6eD14D1wUAaPS1VnCRKnhf37wrDrzmyPNCbBJl8NRUW1/Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=in-advantage.com; dmarc=pass action=none
- header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ItOH2Lz1bJTErRwdLkVe3O/p5AKP5HRD4vzYsMDL7J8=;
- b=IGcBX2aczbytWzK8XuVWVywwJAgqfD2AkFZN+2mvrryVCjgs+gw3BGkhdZeb5gzKjjkLMRt86Zwjdw9wRUmvTOW4CWYj4vEakhL/DMQJKrN0qzKB8O31bJPMD9mNxXJJios3UV1itICHIP4AhfGp0OfO6CDQ/iAV9WudzEcXwLo=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=in-advantage.com;
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37) by CH0PR10MB5114.namprd10.prod.outlook.com
- (2603:10b6:610:dd::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.16; Thu, 8 Sep
- 2022 15:04:20 +0000
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::38ee:4bfb:c7b8:72e1]) by MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::38ee:4bfb:c7b8:72e1%7]) with mapi id 15.20.5588.020; Thu, 8 Sep 2022
- 15:04:20 +0000
-Date:   Thu, 8 Sep 2022 08:04:13 -0700
-From:   Colin Foster <colin.foster@in-advantage.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Lee Jones <lee@kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Terry Bowman <terry.bowman@amd.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "katie.morris@in-advantage.com" <katie.morris@in-advantage.com>
-Subject: Re: [RESEND PATCH v16 mfd 1/8] mfd: ocelot: add helper to get regmap
- from a resource
-Message-ID: <YxoEbfq6YKx/4Vko@colin-ia-desktop>
-References: <20220905162132.2943088-1-colin.foster@in-advantage.com>
- <20220905162132.2943088-2-colin.foster@in-advantage.com>
- <Yxm4oMq8dpsFg61b@google.com>
- <20220908142256.7aad25k553sqfgbm@skbuf>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220908142256.7aad25k553sqfgbm@skbuf>
-X-ClientProxiedBy: BYAPR06CA0069.namprd06.prod.outlook.com
- (2603:10b6:a03:14b::46) To MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37)
+        with ESMTP id S232802AbiIHPEu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 11:04:50 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 114A11DA6B
+        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 08:04:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662649487;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mBJ6ROdPX0g4m7N1nAlcmBG0Oq4I/T9yWEpREjh3gHQ=;
+        b=C5Uy5ikJO7+RtnIcdXLyT9zKqwt5keOo2BEEFTAYGHJ+ZJlogXma1FUBZcid2rxZkSIfZ7
+        8tMyoTeoTsfX6uZNjY6j3mzD37roAOh6PQzod8dGUbhJMJcA8U2MgEFeCcR0NTKAAtAJXf
+        rwucC1rw++mwvBHAbcxyX33yJzh1PSc=
+Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
+ [209.85.167.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-281-wR486DGzMg2X8T7dLgK6BA-1; Thu, 08 Sep 2022 11:04:45 -0400
+X-MC-Unique: wR486DGzMg2X8T7dLgK6BA-1
+Received: by mail-lf1-f72.google.com with SMTP id z1-20020a0565120c0100b0048ab2910b13so4532526lfu.23
+        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 08:04:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:references:to
+         :content-language:subject:cc:user-agent:mime-version:date:message-id
+         :from:x-gm-message-state:from:to:cc:subject:date;
+        bh=mBJ6ROdPX0g4m7N1nAlcmBG0Oq4I/T9yWEpREjh3gHQ=;
+        b=XAb7JefZyi5yO8eFAClXxMyNKII5gDfvysy8VLa23vPfYtsnYZULPNxe47O+6Ih+hn
+         9JzT0OMtNU7jPEaXyCUb8ydUDMtxWb/q4mrKtiw7z2si0tT/vCCUrY2AKvTXIDKbubJS
+         aQy0ktTGoOAviiR29m7tn7SexHud/bYjXUma9BtmwL/w0TZFjpnKzJm5X54fQR90ny7c
+         ijRQ+Vtl2FcqE0HafshLaViXqLWM9HROK9HGFpqYtfW+BN456wto8kXMgBMOZx+BLb3H
+         v/9vwe2i7/hhXANsKt86WOTz4BUkjZsmN/kmi1sm32CGZ8h6pEdVir2TE1w0kGhUD9Un
+         QMBQ==
+X-Gm-Message-State: ACgBeo0i6tQrh4Vrq0N+eVC5Amr+Bnqxgfhvsb7IuH4QP5Gl5BjE+mfa
+        +JN9cTZjz8pxN5GeJm37jve8wmgY1iPEprzCITG8nu0wjCqwrWJ7klZPd7Yy8fCfc+66gX82YXd
+        27wfsoXBNkHfI440i
+X-Received: by 2002:a05:651c:1146:b0:261:d36a:7ff8 with SMTP id h6-20020a05651c114600b00261d36a7ff8mr2780213ljo.363.1662649483947;
+        Thu, 08 Sep 2022 08:04:43 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7CK20FTdB+XkXWCfE1133Hsl1hhN7e9RFclguwY6lDjHxFzUyQMCb/Elui4yOx7Tl0SSbljg==
+X-Received: by 2002:a05:651c:1146:b0:261:d36a:7ff8 with SMTP id h6-20020a05651c114600b00261d36a7ff8mr2780180ljo.363.1662649483588;
+        Thu, 08 Sep 2022 08:04:43 -0700 (PDT)
+Received: from [192.168.41.81] (83-90-141-187-cable.dk.customer.tdc.net. [83.90.141.187])
+        by smtp.gmail.com with ESMTPSA id 139-20020a2e0591000000b0026ace57a971sm1004055ljf.18.2022.09.08.08.04.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 08 Sep 2022 08:04:42 -0700 (PDT)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <9aab9ef1-446d-57ab-5789-afffe27801f4@redhat.com>
+Date:   Thu, 8 Sep 2022 17:04:40 +0200
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 40459e03-0976-4a2a-81b6-08da91ab6831
-X-MS-TrafficTypeDiagnostic: CH0PR10MB5114:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: OW+RTij8GHaFU20YKsaa4b4D4UvMPcty+Cgif8y8wPYlBHazntyLhACPLztaAkf5C177O0PFTKUtKEro+/F81Id+GmDhyejODL55sx9uQR6PiRkp4N9rmnQifgOz8jkoJJ3pBR5FoNsk8eDrc1B2YC73jUr1iDRweiCJeV9nB/cQoQAlQyf78X2pbd2HpS381la+1+QcLP/GEA7BBWYBq4/8t21fEy65vNjP6ACQf6kFy3UKC4f0kke3ilRrl2xl81QgcN5IYwI/O+KIAuA2GZ7y9KhDYkAmI8IzGhQyyTDlhT+AaRld6SZZosbN/7E8yzabeuA/SRnHsVQw80hCvjpjeTsnpMS86b554z20j60PkgZe3SvMp/l7MIH++5WmC8i+WWo4Iq8sfnAM2p6mkEhVmY/Gt/4phOZmpIpgyTFMcUYLrx8JjcS5+ZTHXF4YTKd7qsQToPV3FDT0LtC1lTN7I/f+ekDfObBhRyVxJGAFAE72MN6G0RPMQJhwlv3jGCpJMgLD6fVMCQNOqVqVGXIAKc0eA+EXHGKNf45zlarYncIIHT/IT1y0yFsa7rG9hNRbvDYCjgaKwOb+z9acpR6WEbEGczzNEVLLSNywAM1DdhdV7JfwKM0A5rb77ylJp+bqXP6b7o2GIW/JmjG+kTuSSi0hnkoBBEnUbEeJTQdMUcOIvpZe4X3eb/d5NHzqjC1J8wYNNiYmTmTdgcQPEQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(376002)(396003)(346002)(39840400004)(136003)(366004)(38100700002)(8676002)(4326008)(66476007)(66556008)(66946007)(86362001)(186003)(83380400001)(6512007)(26005)(107886003)(6666004)(6506007)(6486002)(41300700001)(478600001)(9686003)(6916009)(316002)(54906003)(33716001)(2906002)(44832011)(7416002)(8936002)(5660300002)(4744005);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?w5Ygj1KAwvwSh5STiUWhpnPVFHVaLViRH+FDy40h3TU9HDnJ91ix/uhN+nOs?=
- =?us-ascii?Q?yP2NKc6jA5D7wAs71Sztq9lLxb8mH9R5N7SKFCyRFbGxtp4Q9VODbskE99nn?=
- =?us-ascii?Q?tTY/8iFqQfiQ1VFS+WaAW0D47XA+qz1XZZe7S5kV+gG4wic25em6SzrCLAAa?=
- =?us-ascii?Q?txkU9XIh98eeRA4sxmyjpkGXmdOLpBDNNdIMQ2sWBvjrkDggDDIfjv1cumBL?=
- =?us-ascii?Q?kcPrLJ1qtwtlhgJAnpvCk5WrxrlRmGOnZuOqgJi4TDIU4aPq32HiZ6zlcDKW?=
- =?us-ascii?Q?uJHqBgg8r1MYChXVA81pku2ZRi/D6aYAv5Mjm8avQ6RfVrmNGQah3XA8rK0L?=
- =?us-ascii?Q?LqqBU81mgzCOIiyLEUaRXw7jZYS6STbV4tVi5/dGBM/OYnYKQsarOdupFIgL?=
- =?us-ascii?Q?dV0D7hWj50GvsYKLd3f1pm66V6YsMxJZd5YfNgqfjo0axurEEntjkctB2bSe?=
- =?us-ascii?Q?Y2PhXUZ8T7sooUVzhnm3Z0yvd0llrznpg6tQD7ydRNx+sdvqtJ466DZ/ZiWQ?=
- =?us-ascii?Q?CdNSMvvlbFRDpDCPe++Mpiaw1sKGMW6rqmgcIWNZGUGw+ape4QmCiGMRVxPY?=
- =?us-ascii?Q?0K1c0YsFotfxaZW8buYYscJ23jvHERY+P39yEuldElwHow6W8C5qKiRTjm2j?=
- =?us-ascii?Q?n1O5qZXKclDblJpsFBoGfmGnPJiTEzqWNvw/hAE1vWTIkcAHyrkQdkdh+sD3?=
- =?us-ascii?Q?vTv1hz/FiNjB4sdaNlc1jrs1/lVIyvU5rMYrvEVZCowV6Y3xSnTtQRZM2Fij?=
- =?us-ascii?Q?mmAMOMm3XURPmUWmmH1FPOWbPm+F7J3uDf7k1ejcwYi/1koMRdw1nKdF7kQe?=
- =?us-ascii?Q?RjF9M1k1X7elx2pKn0xVrp2OCve5cFZ8mx+VP6LwsAoZMBa4RHKIfa1wVvH1?=
- =?us-ascii?Q?tFPvXp0UwqNKGs5H2dVUbk10N0i61NgToTSSKATiPZS2cU5iYA7YZ42zLmMY?=
- =?us-ascii?Q?1z2T1d3Z1NWGlPXPSOZB5NXUZXEldMMcs8YwWYHmO28lcNkdtaOS7iKUTo8s?=
- =?us-ascii?Q?pD7mbL+JfaXm5x5ZtztgT0YJP1IW8OZLqViFIg+XB+t+ufD3k2fulYYsJ1W5?=
- =?us-ascii?Q?a5GJhUp8BnOas1rfpKz1HbgSV1THIXo/LD4Rge22qtsolH5ylBiq2NRfF2Gt?=
- =?us-ascii?Q?xQe5kV8cxao47qtS2J24+qOF8f2+ykPwKDm0izMxvif9Ym8kevnPHP2oe6f4?=
- =?us-ascii?Q?J7B4nVBA1baB/br8kNF+jXS1IruS32Q6oBWwjow4EjJYO5pNO/uYZa7/7dxT?=
- =?us-ascii?Q?DG5c0Z2Rbjp2/S5oPQAAOaGflPE6puxFhKmj4rbuTbKv8SgsGdv6KW/+/nTz?=
- =?us-ascii?Q?vbljENut2d1JgxOwie9yBSSgfDPhrJBoXDXBaohALXim143iGXIsWYi0QpOH?=
- =?us-ascii?Q?htfBLqZeDHsoQfsVmuOK1FCBURszqi+0YkrYXDeJHP3SQ/c6K/6qPKYb2QpF?=
- =?us-ascii?Q?Vx7MpoEJaPNtYnZlEoS/wyivtNhnk7usJsHFHAYGKOo8QPtd7i437l+VKS8x?=
- =?us-ascii?Q?Xrr1kJhnKH3rPV7A7NIVG65VnNzauDZ8AGsO5hgMYqHzTRjRjRNyA9BrLt8C?=
- =?us-ascii?Q?vMWVtSGgjYtiw8OasnL6lkp66hFtuhXJ/g/EmFDNZmnB5vV+bh94K5+Ncgbb?=
- =?us-ascii?Q?9A=3D=3D?=
-X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 40459e03-0976-4a2a-81b6-08da91ab6831
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Sep 2022 15:04:20.2356
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: g4F9isRFW37vcwmPG+SdZwEU2vswaHjrGHuNyyPHdhAFI7meei+CzKrEitCxj8iyjjqaN0J59srRcSCfUgfRg5nNgs7wmN+WeTwXHT+d6Bw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR10MB5114
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Cc:     brouer@redhat.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
+        xdp-hints@xdp-project.net, larysa.zaremba@intel.com,
+        memxor@gmail.com, Lorenzo Bianconi <lorenzo@kernel.org>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        dave@dtucker.co.uk, Magnus Karlsson <magnus.karlsson@intel.com>,
+        bjorn@kernel.org
+Subject: Re: [PATCH RFCv2 bpf-next 17/18] xsk: AF_XDP xdp-hints support in
+ desc options
+Content-Language: en-US
+To:     Maryam Tahhan <mtahhan@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>
+References: <166256538687.1434226.15760041133601409770.stgit@firesoul>
+ <166256558657.1434226.7390735974413846384.stgit@firesoul>
+ <CAJ8uoz3UcC2tnMtG8W6a3HpCKgaYSzSCqowLFQVwCcsr+NKBOQ@mail.gmail.com>
+ <b5f0d10d-2d4e-34d6-1e45-c206cb6f5d26@redhat.com>
+In-Reply-To: <b5f0d10d-2d4e-34d6-1e45-c206cb6f5d26@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-6.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 08, 2022 at 02:22:56PM +0000, Vladimir Oltean wrote:
-> On Thu, Sep 08, 2022 at 10:40:48AM +0100, Lee Jones wrote:
-> > Applied, thanks.
+
+On 08/09/2022 12.10, Maryam Tahhan wrote:
+> On 08/09/2022 09:06, Magnus Karlsson wrote:
+>> On Wed, Sep 7, 2022 at 5:48 PM Jesper Dangaard Brouer 
+>> <brouer@redhat.com> wrote:
+>>>
+>>> From: Maryam Tahhan <mtahhan@redhat.com>
+>>>
+>>> Simply set AF_XDP descriptor options to XDP flags.
+>>>
+>>> Jesper: Will this really be acceptable by AF_XDP maintainers?
+>>
+>> Maryam, you guessed correctly that dedicating all these options bits
+>> for a single feature will not be ok :-). E.g., I want one bit for the
+>> AF_XDP multi-buffer support and who knows what other uses there might
+>> be for this options field in the future. Let us try to solve this in
+>> some other way. Here are some suggestions, all with their pros and
+>> cons.
+>>
 > 
-> Hurray!
+> TBH it was Jespers question :)
+
+True. I'm generally questioning this patch...
+... and indirectly asking Magnus.  (If you noticed, I didn't add my SoB)
+
+>> * Put this feature flag at a known place in the metadata area, for
+>> example just before the BTF ID. No need to fill this in if you are not
+>> redirecting to AF_XDP, but at a redirect to AF_XDP, the XDP flags are
+>> copied into this u32 in the metadata area so that user-space can
+>> consume it. Will cost 4 bytes of the metadata area though.
 > 
-> Colin, what plans do you have for the rest of VSC7512 upstreaming?
-> Do you need Lee to provide a stable branch for networking to pull, so
-> you can continue development in this kernel release cycle, or do you
-> expect that there won't be dependencies and you can therefore just test
-> on linux-next?
+> If Jesper agrees I think this approach would make sense. Trying to
+> translate encodings into some other flags for AF_XDP I think will lead
+> to a growing set of translations as more options come along.
+> The other thing to be aware of is just making sure to clear/zero the 
+> metadata space in the buffers at some point (ideally when the descriptor 
+> is returned from the application) so when the buffers are used again
+> they are already in a "reset" state.
 
-Yay!
+I don't like this option ;-)
 
-My plan was to start sending RFCs on the internal copper phys and get
-some feedback there. I assume there'll be a couple rounds and I don't
-expect to hit this next release (if I'm being honest).
+First of all because this can give false positives, if "XDP flags copied
+into metadata area" is used for something else.  This can easily happen
+as XDP BPF-progs are free to metadata for something else.
 
-So I'll turn this question around to the net people: would a round or
-two of RFCs that don't cleanly apply to net-next be acceptable? Then I
-could submit a patch right after the next merge window? I've been
-dragging these patches around for quite some time, I can do it for
-another month :-)
+Second reason, because it would require AF_XDP to always read the
+metadata cache-line (and write, if clearing on "return").  Not a good
+optioon, given how performance sensitive AF_XDP workloads (at least
+benchmarks).
+
+>>
+>> * Instead encode this information into each metadata entry in the
+>> metadata area, in some way so that a flags field is not needed (-1
+>> signifies not valid, or whatever happens to make sense). This has the
+>> drawback that the user might have to look at a large number of entries
+>> just to find out there is nothing valid to read. To alleviate this, it
+>> could be combined with the next suggestion.
+>>
+>> * Dedicate one bit in the options field to indicate that there is at
+>> least one valid metadata entry in the metadata area. This could be
+>> combined with the two approaches above. However, depending on what
+>> metadata you have enabled, this bit might be pointless. If some
+>> metadata is always valid, then it serves no purpose. But it might if
+>> all enabled metadata is rarely valid, e.g., if you get an Rx timestamp
+>> on one packet out of one thousand.
+>>
+
+I like this option better! Except that I have hoped to get 2 bits ;-)
+
+The performance advantage is that the AF_XDP descriptor bits will 
+already be cache-hot, and if it indicates no-metadata-hints the AF_XDP 
+application can avoid reading the metadata cache-line :-).
+
+When metadata is valid and contains valid XDP-hints can change between 
+two packets.  E.g. XDP-hints can be enabled/disabled via ethtool, and 
+the content can be enabled/disabled by other ethtool commands, and even 
+setsockopt calls (e.g timestamping).  An XDP prog can also choose to use 
+the area for something else for a subset of the packets.
+
+It is a design choice in this patchset to avoid locking down the NIC 
+driver to a fixed XDP-hints layout, and avoid locking/disabling other 
+ethtool config setting to keeping XDP-hints layout stable.  Originally I 
+wanted this, but I realized that it would be impossible (and annoying 
+for users) if we had to control every config interface to NIC hardware 
+offload hints, to keep XDP-hints "always-valid".
+
+--Jesper
+
+>>> Signed-off-by: Maryam Tahhan <mtahhan@redhat.com>
+>>> ---
+>>>   include/uapi/linux/if_xdp.h |    2 +-
+>>>   net/xdp/xsk.c               |    2 +-
+>>>   net/xdp/xsk_queue.h         |    3 ++-
+>>>   3 files changed, 4 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/include/uapi/linux/if_xdp.h b/include/uapi/linux/if_xdp.h
+>>> index a78a8096f4ce..9335b56474e7 100644
+>>> --- a/include/uapi/linux/if_xdp.h
+>>> +++ b/include/uapi/linux/if_xdp.h
+>>> @@ -103,7 +103,7 @@ struct xdp_options {
+>>>   struct xdp_desc {
+>>>          __u64 addr;
+>>>          __u32 len;
+>>> -       __u32 options;
+>>> +       __u32 options; /* set to the values of xdp_hints_flags*/
+>>>   };
+>>>
+>>>   /* UMEM descriptor is __u64 */
+>>> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+>>> index 5b4ce6ba1bc7..32095d78f06b 100644
+>>> --- a/net/xdp/xsk.c
+>>> +++ b/net/xdp/xsk.c
+>>> @@ -141,7 +141,7 @@ static int __xsk_rcv_zc(struct xdp_sock *xs, 
+>>> struct xdp_buff *xdp, u32 len)
+>>>          int err;
+>>>
+>>>          addr = xp_get_handle(xskb);
+>>> -       err = xskq_prod_reserve_desc(xs->rx, addr, len);
+>>> +       err = xskq_prod_reserve_desc(xs->rx, addr, len, xdp->flags);
+>>>          if (err) {
+>>>                  xs->rx_queue_full++;
+>>>                  return err;
+>>> diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
+>>> index fb20bf7207cf..7a66f082f97e 100644
+>>> --- a/net/xdp/xsk_queue.h
+>>> +++ b/net/xdp/xsk_queue.h
+>>> @@ -368,7 +368,7 @@ static inline u32 
+>>> xskq_prod_reserve_addr_batch(struct xsk_queue *q, struct xdp_d
+>>>   }
+>>>
+>>>   static inline int xskq_prod_reserve_desc(struct xsk_queue *q,
+>>> -                                        u64 addr, u32 len)
+>>> +                                        u64 addr, u32 len, u32 flags)
+>>>   {
+>>>          struct xdp_rxtx_ring *ring = (struct xdp_rxtx_ring *)q->ring;
+>>>          u32 idx;
+>>> @@ -380,6 +380,7 @@ static inline int xskq_prod_reserve_desc(struct 
+>>> xsk_queue *q,
+>>>          idx = q->cached_prod++ & q->ring_mask;
+>>>          ring->desc[idx].addr = addr;
+>>>          ring->desc[idx].len = len;
+>>> +       ring->desc[idx].options = flags;
+>>>
+>>>          return 0;
+>>>   }
+>>>
+>>>
+>>
+> 
+
