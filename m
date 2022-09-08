@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A83905B1C01
+	by mail.lfdr.de (Postfix) with ESMTP id EF96A5B1C02
 	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 13:58:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230178AbiIHL6r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 07:58:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55214 "EHLO
+        id S230283AbiIHL6s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 07:58:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229700AbiIHL6p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 07:58:45 -0400
+        with ESMTP id S229874AbiIHL6q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 07:58:46 -0400
 Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC32811C7EB
-        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 04:58:44 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id q21so13093770lfo.0
-        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 04:58:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8203611C7EC
+        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 04:58:45 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id u18so15021747lfo.8
+        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 04:58:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=+eo4JfjB9Ehn0AoFNdQLah3HvVMczQGEOrXYOlb6oS8=;
-        b=QSzx+ltL/fW1XSZyi2CU6W+ut1MXlxWWyTKJRKZbqZJuMZlayHVR12mth5e+LqhMRz
-         iv2ohMUPh7nKuZJ03HVctx+Gl+T7xTE8A6iCMCW72LA5YdcM2oyU0GMBJ1tH4lugqftH
-         /qb4XxlXeR8gcIn4hLtHJo/DHhRobm+5m488hKPlVlQCkrcPxKCd7bvui23sB2KEPg1A
-         azWHfA8cMGxjLQp8SgzYAjEJ6XfoFSwSLXHxy8ga3wsK7+xStQI4ZpXWjCrg95bvSs3s
-         Yd6k9a9SeDfx8pTbQsPPA0KvyPMGg6hPx5W/ZILkuSyoyGUJG4mrm3cn/1GGW4lF4ZCX
-         UfWA==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=JgN2FF1Ci4Ij0PM8WpmHKSnHghjpw3iCMjtlqpJR2Ug=;
+        b=OxViWfnMVJM3CzYCrwUDSkiDqujrPd7q/czmVxfp1iRj+AdQK8b54CfnhMzXDpMGzU
+         +Rr319gRv2wGSkBRM3Et8Jh757EbjH6y1FtiaAsn8zM7c7RhSHE3agKiDsMvfTIkAWxr
+         e5rQBVUFBcGAIjJKbgY8n57Y9B+HUe3TN+w6KKIvMRG/k0Szgpc47gXbx5/erGkcV62p
+         Oyui6Xra7iNVtbN3qxcSc4+DYg4RVaHZ789b0MQLwWr3pjRRG3OFsHYOGIU/Z0bqyrrA
+         zsEQ04D6tin/x+8myp0+Fqx45O4l5jhzr4B14lD+E7TyLkCEZCZy2voc05MFFGQu8Saw
+         XQUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=+eo4JfjB9Ehn0AoFNdQLah3HvVMczQGEOrXYOlb6oS8=;
-        b=KYCie7pACs5TSmG17mrKXIs/1BnJB5Yp0CBj21UYtpHGbYsbVphE3brqiDdDZbqZo4
-         BBgrKPjU3gR0hpGKTJsRzFk9ltM2CX3oswqEw7JsEuptr4bWQTWFZxfvCyMdV7g5uYff
-         BmPutkeEjo0GiJjVEH9ScwMw2cCNkw2HbqkdBVnlrp9XrMexSxbpx84LUneHJaE/XttS
-         8PF7ExpRUczFoG0TPBv3vMhBoSQphPcbD4lDhfLSIOdsaf72nd2zdBaJS944BwptjYbI
-         8aPhqwn1GfQpDqCNPJi/qSmBzzVfumfhXz1qWYXI68ywm+/DWHMYsN8eY5QFaxQRtiDf
-         8qWQ==
-X-Gm-Message-State: ACgBeo3KPRQw7bmT2OBqTdLCGa1yTFgkmxX596kmMmCijY9xd5HTlqWT
-        xGXJTiH8U97n4T+lQxmGu3KLXs+ImdGRQmzU
-X-Google-Smtp-Source: AA6agR7PYX4D7j2mshOB2ZnCHI+/G80ocm7QdFmrf44wMZikWg19TCeeT3g09++RKZPvz57L59TGig==
-X-Received: by 2002:a05:6512:2807:b0:494:6cc8:d31e with SMTP id cf7-20020a056512280700b004946cc8d31emr2624360lfb.82.1662638322649;
-        Thu, 08 Sep 2022 04:58:42 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=JgN2FF1Ci4Ij0PM8WpmHKSnHghjpw3iCMjtlqpJR2Ug=;
+        b=vnFH+Ig25q8UFdRfLSm05tflEmuJspF2LMsXb9aX5tOsVwpYIg39jA+zo148rO2hk+
+         75tqv2OhoeltpvYmUBs2e2lU7v/jtTuTPtLQjE7W2Pe/rzbyUH5xNcGeuTlue26PEfxO
+         TjKC3ORMwdlmpM8AP6UmilvgL7Ue4g9AtI4vSQYKyKwNnsO+ZRsO+/P9J2lAeHQVvRMz
+         x4DItYEYxpZ/TeGJuJ1K31RAXbns6lHDLuARMGSRguyGWC8Iy5WfNf9wTZjXLi3vt8Qt
+         ft4CLgZQ+zREysz/pD41G0xaI+acOF46sgzihT3RNC7lLO9wd48j7Jx7wzUUy4IU2BTi
+         XC/A==
+X-Gm-Message-State: ACgBeo2MeCrHkzEpcA6VyiAEQf0bR9H/Fm6Ylu7a5iY4YUdTF1Kx2iX3
+        nsTQADMCeD8Nr8pZNKrN+MNYFZc74QzOfIoK
+X-Google-Smtp-Source: AA6agR57zL86pK9aGZESy5apG2Tl7Ob2IX+r9pXKDeci1kbxnBpcjaIJrkMDuMD1EA6TUXFsDax0ow==
+X-Received: by 2002:a05:6512:22ce:b0:497:499e:c966 with SMTP id g14-20020a05651222ce00b00497499ec966mr2493177lfu.402.1662638323487;
+        Thu, 08 Sep 2022 04:58:43 -0700 (PDT)
 Received: from wse-c0089.raspi.local (h-98-128-229-160.NA.cust.bahnhof.se. [98.128.229.160])
-        by smtp.gmail.com with ESMTPSA id s10-20020a2e81ca000000b0026acfbbcb7esm833595ljg.12.2022.09.08.04.58.41
+        by smtp.gmail.com with ESMTPSA id s10-20020a2e81ca000000b0026acfbbcb7esm833595ljg.12.2022.09.08.04.58.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Sep 2022 04:58:42 -0700 (PDT)
+        Thu, 08 Sep 2022 04:58:43 -0700 (PDT)
 From:   Mattias Forsblad <mattias.forsblad@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -58,10 +59,12 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Mattias Forsblad <mattias.forsblad@gmail.com>
-Subject: [PATCH net-next v6 0/6] net: dsa: qca8k, mv88e6xxx: rmon: Add RMU support
-Date:   Thu,  8 Sep 2022 13:58:29 +0200
-Message-Id: <20220908115835.3205487-1-mattias.forsblad@gmail.com>
+Subject: [PATCH net-next v6 1/6] net: dsa: mv88e6xxx: Add RMU enable for select switches.
+Date:   Thu,  8 Sep 2022 13:58:30 +0200
+Message-Id: <20220908115835.3205487-2-mattias.forsblad@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220908115835.3205487-1-mattias.forsblad@gmail.com>
+References: <20220908115835.3205487-1-mattias.forsblad@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -74,86 +77,185 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Marvell SOHO switches have the ability to receive and transmit
-Remote Management Frames (Frame2Reg) to the CPU through the
-attached network interface.
-This is handled by the Remote Management Unit (RMU) in the switch
-These frames can contain different payloads:
-single switch register read and writes, daisy chained switch
-register read and writes, RMON/MIB dump/dump clear and ATU dump.
-The dump functions are very costly over MDIO but it's
-only a couple of network packets via the RMU.
+Add RMU enable functionality for some Marvell SOHO switches.
 
-Next step could be to implement ATU dump.
-We've found that the gain to use RMU for single register
-read and writes is neglible.
+Signed-off-by: Mattias Forsblad <mattias.forsblad@gmail.com>
+---
+ drivers/net/dsa/mv88e6xxx/chip.c    |  6 +++
+ drivers/net/dsa/mv88e6xxx/chip.h    |  1 +
+ drivers/net/dsa/mv88e6xxx/global1.c | 66 +++++++++++++++++++++++++++++
+ drivers/net/dsa/mv88e6xxx/global1.h |  3 ++
+ 4 files changed, 76 insertions(+)
 
-qca8k
-=====
-There's a newly introduced convenience function for sending
-and waiting for frames. Changes have been made for the qca8k
-driver to use this. Please test for regressions.
-
-RFC -> v1:
-  - Track master interface availability.
-  - Validate destination MAC for incoming frames.
-  - Rate limit outputs.
-  - Cleanup setup function validating upstream port on switch.
-  - Fix return values when setting up RMU.
-  - Prefix defines correctly.
-  - Fix aligned accesses.
-  - Validate that switch exists for incoming frames.
-  - Split RMON stats function.
-
-v1 -> v2:
-  - Remove unused variable.
-
-v2 -> v3:
-  - Rewrite after feedback. Use tagger_data to handle
-    frames more like qca8k.
-  - qca8k: Change to use convenience functions introduced.
-    Requesting test of this.
-    
-v3 -> v4:
-  - Separated patches more granular.
-
-v4 -> v5:
-  - Some small fixes after feedback.
-
-v5 -> v6:
-  - Rewrite of send_wait function to more adhere
-    to RPC standards
-  - Cleanup of ops handling
-  - Move get id to when master device is available.
-  
-Regards,
-Mattias Forsblad
-
-Mattias Forsblad (6):
-  net: dsa: mv88e6xxx: Add RMU enable for select switches.
-  net: dsa: Add convenience functions for frame handling
-  net: dsa: Introduce dsa tagger data operation.
-  net: dsa: mv88e6xxxx: Add RMU functionality.
-  net: dsa: mv88e6xxx: rmon: Use RMU for reading RMON data
-  net: dsa: qca8k: Use new convenience functions
-
- drivers/net/dsa/mv88e6xxx/Makefile  |   1 +
- drivers/net/dsa/mv88e6xxx/chip.c    |  70 ++++--
- drivers/net/dsa/mv88e6xxx/chip.h    |  24 ++
- drivers/net/dsa/mv88e6xxx/global1.c |  66 ++++++
- drivers/net/dsa/mv88e6xxx/global1.h |   3 +
- drivers/net/dsa/mv88e6xxx/rmu.c     | 355 ++++++++++++++++++++++++++++
- drivers/net/dsa/mv88e6xxx/rmu.h     |  21 ++
- drivers/net/dsa/mv88e6xxx/smi.c     |   3 +
- drivers/net/dsa/qca/qca8k-8xxx.c    |  61 ++---
- include/net/dsa.h                   |  19 ++
- net/dsa/dsa.c                       |  20 ++
- net/dsa/dsa2.c                      |   2 +
- net/dsa/tag_dsa.c                   |  32 ++-
- 13 files changed, 614 insertions(+), 63 deletions(-)
- create mode 100644 drivers/net/dsa/mv88e6xxx/rmu.c
- create mode 100644 drivers/net/dsa/mv88e6xxx/rmu.h
-
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 6f4ea39ab466..46e12b53a9e4 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -4098,6 +4098,7 @@ static const struct mv88e6xxx_ops mv88e6085_ops = {
+ 	.ppu_disable = mv88e6185_g1_ppu_disable,
+ 	.reset = mv88e6185_g1_reset,
+ 	.rmu_disable = mv88e6085_g1_rmu_disable,
++	.rmu_enable = mv88e6085_g1_rmu_enable,
+ 	.vtu_getnext = mv88e6352_g1_vtu_getnext,
+ 	.vtu_loadpurge = mv88e6352_g1_vtu_loadpurge,
+ 	.stu_getnext = mv88e6352_g1_stu_getnext,
+@@ -4181,6 +4182,7 @@ static const struct mv88e6xxx_ops mv88e6097_ops = {
+ 	.pot_clear = mv88e6xxx_g2_pot_clear,
+ 	.reset = mv88e6352_g1_reset,
+ 	.rmu_disable = mv88e6085_g1_rmu_disable,
++	.rmu_enable = mv88e6085_g1_rmu_enable,
+ 	.vtu_getnext = mv88e6352_g1_vtu_getnext,
+ 	.vtu_loadpurge = mv88e6352_g1_vtu_loadpurge,
+ 	.phylink_get_caps = mv88e6095_phylink_get_caps,
+@@ -5300,6 +5302,7 @@ static const struct mv88e6xxx_ops mv88e6352_ops = {
+ 	.pot_clear = mv88e6xxx_g2_pot_clear,
+ 	.reset = mv88e6352_g1_reset,
+ 	.rmu_disable = mv88e6352_g1_rmu_disable,
++	.rmu_enable = mv88e6352_g1_rmu_enable,
+ 	.atu_get_hash = mv88e6165_g1_atu_get_hash,
+ 	.atu_set_hash = mv88e6165_g1_atu_set_hash,
+ 	.vtu_getnext = mv88e6352_g1_vtu_getnext,
+@@ -5367,6 +5370,7 @@ static const struct mv88e6xxx_ops mv88e6390_ops = {
+ 	.pot_clear = mv88e6xxx_g2_pot_clear,
+ 	.reset = mv88e6352_g1_reset,
+ 	.rmu_disable = mv88e6390_g1_rmu_disable,
++	.rmu_enable = mv88e6390_g1_rmu_enable,
+ 	.atu_get_hash = mv88e6165_g1_atu_get_hash,
+ 	.atu_set_hash = mv88e6165_g1_atu_set_hash,
+ 	.vtu_getnext = mv88e6390_g1_vtu_getnext,
+@@ -5434,6 +5438,7 @@ static const struct mv88e6xxx_ops mv88e6390x_ops = {
+ 	.pot_clear = mv88e6xxx_g2_pot_clear,
+ 	.reset = mv88e6352_g1_reset,
+ 	.rmu_disable = mv88e6390_g1_rmu_disable,
++	.rmu_enable = mv88e6390_g1_rmu_enable,
+ 	.atu_get_hash = mv88e6165_g1_atu_get_hash,
+ 	.atu_set_hash = mv88e6165_g1_atu_set_hash,
+ 	.vtu_getnext = mv88e6390_g1_vtu_getnext,
+@@ -5504,6 +5509,7 @@ static const struct mv88e6xxx_ops mv88e6393x_ops = {
+ 	.pot_clear = mv88e6xxx_g2_pot_clear,
+ 	.reset = mv88e6352_g1_reset,
+ 	.rmu_disable = mv88e6390_g1_rmu_disable,
++	.rmu_enable = mv88e6390_g1_rmu_enable,
+ 	.atu_get_hash = mv88e6165_g1_atu_get_hash,
+ 	.atu_set_hash = mv88e6165_g1_atu_set_hash,
+ 	.vtu_getnext = mv88e6390_g1_vtu_getnext,
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
+index e693154cf803..7ce3c41f6caf 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.h
++++ b/drivers/net/dsa/mv88e6xxx/chip.h
+@@ -637,6 +637,7 @@ struct mv88e6xxx_ops {
+ 
+ 	/* Remote Management Unit operations */
+ 	int (*rmu_disable)(struct mv88e6xxx_chip *chip);
++	int (*rmu_enable)(struct mv88e6xxx_chip *chip, int port);
+ 
+ 	/* Precision Time Protocol operations */
+ 	const struct mv88e6xxx_ptp_ops *ptp_ops;
+diff --git a/drivers/net/dsa/mv88e6xxx/global1.c b/drivers/net/dsa/mv88e6xxx/global1.c
+index 5848112036b0..c5bb414f4291 100644
+--- a/drivers/net/dsa/mv88e6xxx/global1.c
++++ b/drivers/net/dsa/mv88e6xxx/global1.c
+@@ -466,18 +466,84 @@ int mv88e6085_g1_rmu_disable(struct mv88e6xxx_chip *chip)
+ 				      MV88E6085_G1_CTL2_RM_ENABLE, 0);
+ }
+ 
++int mv88e6085_g1_rmu_enable(struct mv88e6xxx_chip *chip, int upstream_port)
++{
++	int val = MV88E6352_G1_CTL2_RMU_MODE_DISABLED;
++
++	switch (upstream_port) {
++	case 9:
++		val = MV88E6085_G1_CTL2_RM_ENABLE;
++		break;
++	case 10:
++		val = MV88E6085_G1_CTL2_RM_ENABLE | MV88E6085_G1_CTL2_P10RM;
++		break;
++	default:
++		return -EOPNOTSUPP;
++	}
++
++	return mv88e6xxx_g1_ctl2_mask(chip, MV88E6085_G1_CTL2_P10RM |
++				      MV88E6085_G1_CTL2_RM_ENABLE, val);
++}
++
+ int mv88e6352_g1_rmu_disable(struct mv88e6xxx_chip *chip)
+ {
+ 	return mv88e6xxx_g1_ctl2_mask(chip, MV88E6352_G1_CTL2_RMU_MODE_MASK,
+ 				      MV88E6352_G1_CTL2_RMU_MODE_DISABLED);
+ }
+ 
++int mv88e6352_g1_rmu_enable(struct mv88e6xxx_chip *chip, int upstream_port)
++{
++	int val = MV88E6352_G1_CTL2_RMU_MODE_DISABLED;
++
++	switch (upstream_port) {
++	case 4:
++		val = MV88E6352_G1_CTL2_RMU_MODE_PORT_4;
++		break;
++	case 5:
++		val = MV88E6352_G1_CTL2_RMU_MODE_PORT_5;
++		break;
++	case 6:
++		val = MV88E6352_G1_CTL2_RMU_MODE_PORT_6;
++		break;
++	default:
++		return -EOPNOTSUPP;
++	}
++
++	return mv88e6xxx_g1_ctl2_mask(chip, MV88E6352_G1_CTL2_RMU_MODE_MASK,
++			val);
++}
++
+ int mv88e6390_g1_rmu_disable(struct mv88e6xxx_chip *chip)
+ {
+ 	return mv88e6xxx_g1_ctl2_mask(chip, MV88E6390_G1_CTL2_RMU_MODE_MASK,
+ 				      MV88E6390_G1_CTL2_RMU_MODE_DISABLED);
+ }
+ 
++int mv88e6390_g1_rmu_enable(struct mv88e6xxx_chip *chip, int upstream_port)
++{
++	int val = MV88E6390_G1_CTL2_RMU_MODE_DISABLED;
++
++	switch (upstream_port) {
++	case 0:
++		val = MV88E6390_G1_CTL2_RMU_MODE_PORT_0;
++		break;
++	case 1:
++		val = MV88E6390_G1_CTL2_RMU_MODE_PORT_1;
++		break;
++	case 9:
++		val = MV88E6390_G1_CTL2_RMU_MODE_PORT_9;
++		break;
++	case 10:
++		val = MV88E6390_G1_CTL2_RMU_MODE_PORT_10;
++		break;
++	default:
++		return -EOPNOTSUPP;
++	}
++
++	return mv88e6xxx_g1_ctl2_mask(chip, MV88E6390_G1_CTL2_RMU_MODE_MASK,
++			val);
++}
++
+ int mv88e6390_g1_stats_set_histogram(struct mv88e6xxx_chip *chip)
+ {
+ 	return mv88e6xxx_g1_ctl2_mask(chip, MV88E6390_G1_CTL2_HIST_MODE_MASK,
+diff --git a/drivers/net/dsa/mv88e6xxx/global1.h b/drivers/net/dsa/mv88e6xxx/global1.h
+index 65958b2a0d3a..29c0c8acb583 100644
+--- a/drivers/net/dsa/mv88e6xxx/global1.h
++++ b/drivers/net/dsa/mv88e6xxx/global1.h
+@@ -313,8 +313,11 @@ int mv88e6250_g1_ieee_pri_map(struct mv88e6xxx_chip *chip);
+ int mv88e6185_g1_set_cascade_port(struct mv88e6xxx_chip *chip, int port);
+ 
+ int mv88e6085_g1_rmu_disable(struct mv88e6xxx_chip *chip);
++int mv88e6085_g1_rmu_enable(struct mv88e6xxx_chip *chip, int upstream_port);
+ int mv88e6352_g1_rmu_disable(struct mv88e6xxx_chip *chip);
++int mv88e6352_g1_rmu_enable(struct mv88e6xxx_chip *chip, int upstream_port);
+ int mv88e6390_g1_rmu_disable(struct mv88e6xxx_chip *chip);
++int mv88e6390_g1_rmu_enable(struct mv88e6xxx_chip *chip, int upstream_port);
+ 
+ int mv88e6xxx_g1_set_device_number(struct mv88e6xxx_chip *chip, int index);
+ 
 -- 
 2.25.1
 
