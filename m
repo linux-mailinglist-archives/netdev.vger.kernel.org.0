@@ -2,32 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D8C715B1978
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 11:58:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD7D25B197B
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 11:59:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230150AbiIHJ6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 05:58:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32960 "EHLO
+        id S229787AbiIHJ64 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 05:58:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230006AbiIHJ6o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 05:58:44 -0400
+        with ESMTP id S229983AbiIHJ6u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 05:58:50 -0400
 Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EEB2E42F1;
-        Thu,  8 Sep 2022 02:58:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01472E4DDA;
+        Thu,  8 Sep 2022 02:58:45 -0700 (PDT)
 Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
         (envelope-from <fw@breakpoint.cc>)
-        id 1oWEIt-0002wr-PI; Thu, 08 Sep 2022 11:58:35 +0200
+        id 1oWEIy-0002xR-7M; Thu, 08 Sep 2022 11:58:40 +0200
 From:   Florian Westphal <fw@strlen.de>
 To:     <netdev@vger.kernel.org>
 Cc:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        <netfilter-devel@vger.kernel.org>, David Leadbeater <dgl@dgl.cx>,
+        <netfilter-devel@vger.kernel.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
         Florian Westphal <fw@strlen.de>
-Subject: [PATCH net 3/4] netfilter: nf_conntrack_irc: Tighten matching on DCC message
-Date:   Thu,  8 Sep 2022 11:57:56 +0200
-Message-Id: <20220908095757.1755-4-fw@strlen.de>
+Subject: [PATCH net 4/4] netfilter: nfnetlink_osf: fix possible bogus match in nf_osf_find()
+Date:   Thu,  8 Sep 2022 11:57:57 +0200
+Message-Id: <20220908095757.1755-5-fw@strlen.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220908095757.1755-1-fw@strlen.de>
 References: <20220908095757.1755-1-fw@strlen.de>
@@ -42,79 +43,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Leadbeater <dgl@dgl.cx>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-CTCP messages should only be at the start of an IRC message, not
-anywhere within it.
+nf_osf_find() incorrectly returns true on mismatch, this leads to
+copying uninitialized memory area in nft_osf which can be used to leak
+stale kernel stack data to userspace.
 
-While the helper only decodes packes in the ORIGINAL direction, its
-possible to make a client send a CTCP message back by empedding one into
-a PING request.  As-is, thats enough to make the helper believe that it
-saw a CTCP message.
-
-Fixes: 869f37d8e48f ("[NETFILTER]: nf_conntrack/nf_nat: add IRC helper port")
-Signed-off-by: David Leadbeater <dgl@dgl.cx>
+Fixes: 22c7652cdaa8 ("netfilter: nft_osf: Add version option support")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Florian Westphal <fw@strlen.de>
 ---
- net/netfilter/nf_conntrack_irc.c | 34 ++++++++++++++++++++++++++------
- 1 file changed, 28 insertions(+), 6 deletions(-)
+ net/netfilter/nfnetlink_osf.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/net/netfilter/nf_conntrack_irc.c b/net/netfilter/nf_conntrack_irc.c
-index 992decbcaa5c..5703846bea3b 100644
---- a/net/netfilter/nf_conntrack_irc.c
-+++ b/net/netfilter/nf_conntrack_irc.c
-@@ -157,15 +157,37 @@ static int help(struct sk_buff *skb, unsigned int protoff,
- 	data = ib_ptr;
- 	data_limit = ib_ptr + datalen;
+diff --git a/net/netfilter/nfnetlink_osf.c b/net/netfilter/nfnetlink_osf.c
+index 0fa2e2030427..ee6840bd5933 100644
+--- a/net/netfilter/nfnetlink_osf.c
++++ b/net/netfilter/nfnetlink_osf.c
+@@ -269,6 +269,7 @@ bool nf_osf_find(const struct sk_buff *skb,
+ 	struct nf_osf_hdr_ctx ctx;
+ 	const struct tcphdr *tcp;
+ 	struct tcphdr _tcph;
++	bool found = false;
  
--	/* strlen("\1DCC SENT t AAAAAAAA P\1\n")=24
--	 * 5+MINMATCHLEN+strlen("t AAAAAAAA P\1\n")=14 */
--	while (data < data_limit - (19 + MINMATCHLEN)) {
--		if (memcmp(data, "\1DCC ", 5)) {
-+	/* Skip any whitespace */
-+	while (data < data_limit - 10) {
-+		if (*data == ' ' || *data == '\r' || *data == '\n')
-+			data++;
-+		else
-+			break;
-+	}
-+
-+	/* strlen("PRIVMSG x ")=10 */
-+	if (data < data_limit - 10) {
-+		if (strncasecmp("PRIVMSG ", data, 8))
-+			goto out;
-+		data += 8;
-+	}
-+
-+	/* strlen(" :\1DCC SENT t AAAAAAAA P\1\n")=26
-+	 * 7+MINMATCHLEN+strlen("t AAAAAAAA P\1\n")=26
-+	 */
-+	while (data < data_limit - (21 + MINMATCHLEN)) {
-+		/* Find first " :", the start of message */
-+		if (memcmp(data, " :", 2)) {
- 			data++;
- 			continue;
- 		}
-+		data += 2;
-+
-+		/* then check that place only for the DCC command */
-+		if (memcmp(data, "\1DCC ", 5))
-+			goto out;
- 		data += 5;
--		/* we have at least (19+MINMATCHLEN)-5 bytes valid data left */
-+		/* we have at least (21+MINMATCHLEN)-(2+5) bytes valid data left */
+ 	memset(&ctx, 0, sizeof(ctx));
  
- 		iph = ip_hdr(skb);
- 		pr_debug("DCC found in master %pI4:%u %pI4:%u\n",
-@@ -181,7 +203,7 @@ static int help(struct sk_buff *skb, unsigned int protoff,
- 			pr_debug("DCC %s detected\n", dccprotos[i]);
+@@ -283,10 +284,11 @@ bool nf_osf_find(const struct sk_buff *skb,
  
- 			/* we have at least
--			 * (19+MINMATCHLEN)-5-dccprotos[i].matchlen bytes valid
-+			 * (21+MINMATCHLEN)-7-dccprotos[i].matchlen bytes valid
- 			 * data left (== 14/13 bytes) */
- 			if (parse_dcc(data, data_limit, &dcc_ip,
- 				       &dcc_port, &addr_beg_p, &addr_end_p)) {
+ 		data->genre = f->genre;
+ 		data->version = f->version;
++		found = true;
+ 		break;
+ 	}
+ 
+-	return true;
++	return found;
+ }
+ EXPORT_SYMBOL_GPL(nf_osf_find);
+ 
 -- 
 2.35.1
 
