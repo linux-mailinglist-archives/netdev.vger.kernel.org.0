@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD90A5B2A07
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 01:16:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DAEC5B2A0A
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 01:16:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230006AbiIHXQb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 19:16:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52710 "EHLO
+        id S229976AbiIHXQc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 19:16:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229952AbiIHXQX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 19:16:23 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3697BA9D4
-        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 16:16:22 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id g63-20020a636b42000000b004305794e112so9968895pgc.20
-        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 16:16:22 -0700 (PDT)
+        with ESMTP id S229974AbiIHXQ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 19:16:26 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8013BBFA9B
+        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 16:16:24 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id v18-20020a17090a899200b00200a2c60f3aso2181767pjn.5
+        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 16:16:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date;
-        bh=WXnjmdIZb8SItePycRIoqj321JtXN7AVWGBtHTjKeOI=;
-        b=auGjm7l00c3N6SBaC9Csw5++EgSC1Zm7HpLjON+624O0S5/bgb7pSZH8lkmfJD8olc
-         TUZzrspoiyZTAmKxgT+26wsdAF4qvtMrJrk6Oy5hMFZ+2KFfBb+xPadtppIoekqvTkW1
-         1cLlHClLCi9F5t2jFo4a60sr+5w5J5nlTozyPD9vGk4vmfp8q35YqvQc62DoRrswc9zA
-         8NY93ZOoVuUabfXeGtdta3ZUaIgMqrw4z2GhDDQBK0Kjd3KVwlzY3GgTtKRCxVEmCA2G
-         LFQURWaqt0CfaTgAKLfcmaCemq4C6ks5v+J6Fnf2ndojWdrAzbRQu9+jjHYLgLvgIc20
-         uVtA==
+        bh=zz2v3pzyW66Zc+jXSlJ3rYl7T0V9QeWpVe+1jRgrufI=;
+        b=CZX2YHZLbbFRnW9OQGvTh/rA0bFixDp/yBQHj6ZJy+QOrxd59lhX1Avhn8LCclixYO
+         +UUtiKcmQLK3LHaNz57Fpkff97HWMxqojScqf6LuW1IHZ++AMaOw3YTqw7FQAtnrkfYa
+         sAusItMaYRsGAiZY7g3jN3v+Da/rL9Bvk6+FIvq31BkGBtzY4EG20qJl5SbboGVRVTIX
+         9epQcuMYqK+wLdNAJ2b14Eyeyj9mLqLhJVRXw0YLYgly1p2SAqXtUjVm0bH801KNOC32
+         9twNeIZCPdAFSo4+GkhL68WFhpbL4BCew7l9K4PS+BxCx+nbVq9vriRnaDMO47ccuYkB
+         qm0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date;
-        bh=WXnjmdIZb8SItePycRIoqj321JtXN7AVWGBtHTjKeOI=;
-        b=OdDHf+k9AJtTw0so1zL3MJXzXxXQtSetyK0YNe0P79FMymoDrMJj9eZzHBGyFj6mFD
-         wH2N/bUMekawXx45Tz/ZanAiJ8G7f9T/vjWdSqb8ifZl3ApUunTvbrmHhMtES2H52heT
-         tTcoBNQ34ZOq3q6VnzzHb6uf8F+i/sOt+zRB9v95XxLKVO3ZcRgQX+BYGJh2o3AUaPbA
-         0bdtu0bTN5fqXVtSd72EXjQlK9iSMuXvXmfwNZNCNJkPOtDhsQEDipOiLUSRn7A9Ntpn
-         VK5361uSKeC81LsW7p6kPBO/Y1yunHbG1gR2ix47A5Iu828g966s/uOyZI+mkQRkPID6
-         roDw==
-X-Gm-Message-State: ACgBeo3tELRKzAG32eB4t85vIjy/KvWyGXrmEpHuLyDI+EgVkwGPR+YN
-        whwUKdk+oELiM1PWC2za2SBXnc+rZ5xpXw==
-X-Google-Smtp-Source: AA6agR76kWYppR6kfa4P+bDEZx0kZ2jhPW7byMQzksxO9nCmtRigFEL6Rwc41ifUCULrH+hnkpmkCMinoWT28A==
+        bh=zz2v3pzyW66Zc+jXSlJ3rYl7T0V9QeWpVe+1jRgrufI=;
+        b=QBhRrtOB9cNkzJ1+X2uP5E91grC1JdrjYrNjlHluut63kO4UXOXV/jMxzqfNc4BMi9
+         R9LGA1s7NW5qtZSAIM0SkoCVeHRAUlabWChFSDOSwYNuVycZ8Kepl7W3ZbUShgmcOYqu
+         G1iD6FwPOI32WgQZayr4xKoSBDIWKfQQzKsEsHySgjtXF2RR/vNYWLj1xmm5vfwan11x
+         MIh6QomLeAesNM5VOPX4RWvwFbeqquolaLq6VwIzVWvLfxgjYHa08EWpaHzlSq5dNrR0
+         aIQkga0UwtAWsYl+G9G0xdQHPOTEhh9K29bWefM1zyxK2jFAx2IN82jJTHecq85ASImk
+         FI3Q==
+X-Gm-Message-State: ACgBeo3vlwPzNc69oORSrgyM3mpgdX7Y9aRj39KVkNgu53gaj0c5LBxM
+        yofWLXIguWb/g2vYuFI2BR4bkxhceh0B4g==
+X-Google-Smtp-Source: AA6agR4TdA08QvC9IGKZrcEjFSK70ESxgvUO89Qg3kj8UleIA7bTCCyD0uc0soqY00KgFl0qfqBJUqA67EgCJA==
 X-Received: from zhuyifei-kvm.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:2edc])
- (user=zhuyifei job=sendgmr) by 2002:a17:90b:10a:b0:200:2849:235f with SMTP id
- p10-20020a17090b010a00b002002849235fmr23407pjz.1.1662678981761; Thu, 08 Sep
- 2022 16:16:21 -0700 (PDT)
-Date:   Thu,  8 Sep 2022 23:16:14 +0000
+ (user=zhuyifei job=sendgmr) by 2002:a17:902:c40f:b0:175:3c1e:8493 with SMTP
+ id k15-20020a170902c40f00b001753c1e8493mr10565484plk.19.1662678983902; Thu,
+ 08 Sep 2022 16:16:23 -0700 (PDT)
+Date:   Thu,  8 Sep 2022 23:16:15 +0000
 In-Reply-To: <cover.1662678623.git.zhuyifei@google.com>
 Mime-Version: 1.0
 References: <cover.1662678623.git.zhuyifei@google.com>
 X-Mailer: git-send-email 2.37.2.789.g6183377224-goog
-Message-ID: <9b4fc9a27bd52f771b657b4c4090fc8d61f3a6b5.1662678623.git.zhuyifei@google.com>
-Subject: [PATCH v3 bpf-next 2/3] selftests/bpf: Deduplicate write_sysctl() to test_progs.c
+Message-ID: <97288b66a44c984cb5514ca7390ca0cf9c30275f.1662678623.git.zhuyifei@google.com>
+Subject: [PATCH v3 bpf-next 3/3] selftests/bpf: Ensure cgroup/connect{4,6}
+ programs can bind unpriv ICMP ping
 From:   YiFei Zhu <zhuyifei@google.com>
 To:     bpf@vger.kernel.org
 Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
@@ -77,124 +78,266 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This helper is needed in multiple tests. Instead of copying it over
-and over, better to deduplicate this helper to test_progs.c.
+This tests that when an unprivileged ICMP ping socket connects,
+the hooks are actually invoked. We also ensure that if the hook does
+not call bpf_bind(), the bound address is unmodified, and if the
+hook calls bpf_bind(), the bound address is exactly what we provided
+to the helper.
 
-test_progs.c is chosen over testing_helpers.c because of this helper's
-use of CHECK / ASSERT_*, and the CHECK was modified to use ASSERT_*
-so it does not rely on a duration variable.
+A new netns is used to enable ping_group_range in the test without
+affecting ouside of the test, because by default, not even root is
+permitted to use unprivileged ICMP ping...
 
-Suggested-by: Martin KaFai Lau <kafai@fb.com>
 Signed-off-by: YiFei Zhu <zhuyifei@google.com>
 ---
- .../bpf/prog_tests/btf_skc_cls_ingress.c      | 20 -------------------
- .../bpf/prog_tests/tcp_hdr_options.c          | 20 -------------------
- tools/testing/selftests/bpf/test_progs.c      | 17 ++++++++++++++++
- tools/testing/selftests/bpf/test_progs.h      |  1 +
- 4 files changed, 18 insertions(+), 40 deletions(-)
+ .../selftests/bpf/prog_tests/connect_ping.c   | 177 ++++++++++++++++++
+ .../selftests/bpf/progs/connect_ping.c        |  53 ++++++
+ 2 files changed, 230 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/connect_ping.c
+ create mode 100644 tools/testing/selftests/bpf/progs/connect_ping.c
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/btf_skc_cls_ingress.c b/tools/testing/selftests/bpf/prog_tests/btf_skc_cls_ingress.c
-index 664ffc0364f4f..7a277035c275b 100644
---- a/tools/testing/selftests/bpf/prog_tests/btf_skc_cls_ingress.c
-+++ b/tools/testing/selftests/bpf/prog_tests/btf_skc_cls_ingress.c
-@@ -22,26 +22,6 @@ static __u32 duration;
- 
- #define PROG_PIN_FILE "/sys/fs/bpf/btf_skc_cls_ingress"
- 
--static int write_sysctl(const char *sysctl, const char *value)
--{
--	int fd, err, len;
--
--	fd = open(sysctl, O_WRONLY);
--	if (CHECK(fd == -1, "open sysctl", "open(%s): %s (%d)\n",
--		  sysctl, strerror(errno), errno))
--		return -1;
--
--	len = strlen(value);
--	err = write(fd, value, len);
--	close(fd);
--	if (CHECK(err != len, "write sysctl",
--		  "write(%s, %s, %d): err:%d %s (%d)\n",
--		  sysctl, value, len, err, strerror(errno), errno))
--		return -1;
--
--	return 0;
--}
--
- static int prepare_netns(void)
- {
- 	if (CHECK(unshare(CLONE_NEWNET), "create netns",
-diff --git a/tools/testing/selftests/bpf/prog_tests/tcp_hdr_options.c b/tools/testing/selftests/bpf/prog_tests/tcp_hdr_options.c
-index 1fa7720799674..f24436d33cd6f 100644
---- a/tools/testing/selftests/bpf/prog_tests/tcp_hdr_options.c
-+++ b/tools/testing/selftests/bpf/prog_tests/tcp_hdr_options.c
-@@ -54,26 +54,6 @@ static int create_netns(void)
- 	return 0;
- }
- 
--static int write_sysctl(const char *sysctl, const char *value)
--{
--	int fd, err, len;
--
--	fd = open(sysctl, O_WRONLY);
--	if (CHECK(fd == -1, "open sysctl", "open(%s): %s (%d)\n",
--		  sysctl, strerror(errno), errno))
--		return -1;
--
--	len = strlen(value);
--	err = write(fd, value, len);
--	close(fd);
--	if (CHECK(err != len, "write sysctl",
--		  "write(%s, %s): err:%d %s (%d)\n",
--		  sysctl, value, err, strerror(errno), errno))
--		return -1;
--
--	return 0;
--}
--
- static void print_hdr_stg(const struct hdr_stg *hdr_stg, const char *prefix)
- {
- 	fprintf(stderr, "%s{active:%u, resend_syn:%u, syncookie:%u, fastopen:%u}\n",
-diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
-index 3561c97701f24..0e9a47f978908 100644
---- a/tools/testing/selftests/bpf/test_progs.c
-+++ b/tools/testing/selftests/bpf/test_progs.c
-@@ -943,6 +943,23 @@ int trigger_module_test_write(int write_sz)
- 	return 0;
- }
- 
-+int write_sysctl(const char *sysctl, const char *value)
+diff --git a/tools/testing/selftests/bpf/prog_tests/connect_ping.c b/tools/testing/selftests/bpf/prog_tests/connect_ping.c
+new file mode 100644
+index 0000000000000..e6031e060feae
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/connect_ping.c
+@@ -0,0 +1,177 @@
++// SPDX-License-Identifier: GPL-2.0-only
++
++/*
++ * Copyright 2022 Google LLC.
++ */
++
++#define _GNU_SOURCE
++#include <sys/mount.h>
++
++#include "test_progs.h"
++#include "cgroup_helpers.h"
++#include "network_helpers.h"
++
++#include "connect_ping.skel.h"
++
++/* 2001:db8::1 */
++#define BINDADDR_V6 { { { 0x20,0x01,0x0d,0xb8,0,0,0,0,0,0,0,0,0,0,0,1 } } }
++static const struct in6_addr bindaddr_v6 = BINDADDR_V6;
++
++static void subtest(int cgroup_fd, struct connect_ping *skel,
++		    int family, int do_bind)
 +{
-+	int fd, err, len;
++	struct sockaddr_in sa4 = {
++		.sin_family = AF_INET,
++		.sin_addr.s_addr = htonl(INADDR_LOOPBACK),
++	};
++	struct sockaddr_in6 sa6 = {
++		.sin6_family = AF_INET6,
++		.sin6_addr = IN6ADDR_LOOPBACK_INIT,
++	};
++	struct sockaddr *sa;
++	socklen_t sa_len;
++	int protocol;
++	int sock_fd;
 +
-+	fd = open(sysctl, O_WRONLY);
-+	if (!ASSERT_NEQ(fd, -1, "open sysctl"))
-+		return -1;
++	switch (family) {
++	case AF_INET:
++		sa = (struct sockaddr *)&sa4;
++		sa_len = sizeof(sa4);
++		protocol = IPPROTO_ICMP;
++		break;
++	case AF_INET6:
++		sa = (struct sockaddr *)&sa6;
++		sa_len = sizeof(sa6);
++		protocol = IPPROTO_ICMPV6;
++		break;
++	}
 +
-+	len = strlen(value);
-+	err = write(fd, value, len);
-+	close(fd);
-+	if (!ASSERT_EQ(err, len, "write sysctl"))
-+		return -1;
++	memset(skel->bss, 0, sizeof(*skel->bss));
++	skel->bss->do_bind = do_bind;
 +
-+	return 0;
++	sock_fd = socket(family, SOCK_DGRAM, protocol);
++	if (!ASSERT_GE(sock_fd, 0, "sock-create"))
++		return;
++
++	if (!ASSERT_OK(connect(sock_fd, sa, sa_len), "connect"))
++		goto close_sock;
++
++	if (!ASSERT_EQ(skel->bss->invocations_v4, family == AF_INET ? 1 : 0,
++		       "invocations_v4"))
++		goto close_sock;
++	if (!ASSERT_EQ(skel->bss->invocations_v6, family == AF_INET6 ? 1 : 0,
++		       "invocations_v6"))
++		goto close_sock;
++	if (!ASSERT_EQ(skel->bss->has_error, 0, "has_error"))
++		goto close_sock;
++
++	if (!ASSERT_OK(getsockname(sock_fd, sa, &sa_len),
++		       "getsockname"))
++		goto close_sock;
++
++	switch (family) {
++	case AF_INET:
++		if (!ASSERT_EQ(sa4.sin_family, family, "sin_family"))
++			goto close_sock;
++		if (!ASSERT_EQ(sa4.sin_addr.s_addr,
++			       htonl(do_bind ? 0x01010101 : INADDR_LOOPBACK),
++			       "sin_addr"))
++			goto close_sock;
++		break;
++	case AF_INET6:
++		if (!ASSERT_EQ(sa6.sin6_family, AF_INET6, "sin6_family"))
++			goto close_sock;
++		if (!ASSERT_EQ(memcmp(&sa6.sin6_addr,
++				      do_bind ? &bindaddr_v6 : &in6addr_loopback,
++				      sizeof(sa6.sin6_addr)),
++			       0, "sin6_addr"))
++			goto close_sock;
++		break;
++	}
++
++close_sock:
++	close(sock_fd);
 +}
 +
- #define MAX_BACKTRACE_SZ 128
- void crash_handler(int signum)
- {
-diff --git a/tools/testing/selftests/bpf/test_progs.h b/tools/testing/selftests/bpf/test_progs.h
-index 5fe1365c2bb1e..b090996daee5c 100644
---- a/tools/testing/selftests/bpf/test_progs.h
-+++ b/tools/testing/selftests/bpf/test_progs.h
-@@ -384,6 +384,7 @@ int extract_build_id(char *build_id, size_t size);
- int kern_sync_rcu(void);
- int trigger_module_test_read(int read_sz);
- int trigger_module_test_write(int write_sz);
-+int write_sysctl(const char *sysctl, const char *value);
- 
- #ifdef __x86_64__
- #define SYS_NANOSLEEP_KPROBE_NAME "__x64_sys_nanosleep"
++void test_connect_ping(void)
++{
++	struct connect_ping *skel;
++	int cgroup_fd;
++
++	if (!ASSERT_OK(unshare(CLONE_NEWNET | CLONE_NEWNS), "unshare"))
++		return;
++
++	/* overmount sysfs, and making original sysfs private so overmount
++	 * does not propagate to other mntns.
++	 */
++	if (!ASSERT_OK(mount("none", "/sys", NULL, MS_PRIVATE, NULL),
++		       "remount-private-sys"))
++		return;
++	if (!ASSERT_OK(mount("sysfs", "/sys", "sysfs", 0, NULL),
++		       "mount-sys"))
++		return;
++	if (!ASSERT_OK(mount("bpffs", "/sys/fs/bpf", "bpf", 0, NULL),
++		       "mount-bpf"))
++		goto clean_mount;
++
++	if (!ASSERT_OK(system("ip link set dev lo up"), "lo-up"))
++		goto clean_mount;
++	if (!ASSERT_OK(system("ip addr add 1.1.1.1 dev lo"), "lo-addr-v4"))
++		goto clean_mount;
++	if (!ASSERT_OK(system("ip -6 addr add 2001:db8::1 dev lo"), "lo-addr-v6"))
++		goto clean_mount;
++	if (write_sysctl("/proc/sys/net/ipv4/ping_group_range", "0 0"))
++		goto clean_mount;
++
++	cgroup_fd = test__join_cgroup("/connect_ping");
++	if (!ASSERT_GE(cgroup_fd, 0, "cg-create"))
++		goto clean_mount;
++
++	skel = connect_ping__open_and_load();
++	if (!ASSERT_OK_PTR(skel, "skel-load"))
++		goto close_cgroup;
++	skel->links.connect_v4_prog =
++		bpf_program__attach_cgroup(skel->progs.connect_v4_prog, cgroup_fd);
++	if (!ASSERT_OK_PTR(skel->links.connect_v4_prog, "cg-attach-v4"))
++		goto close_cgroup;
++	skel->links.connect_v6_prog =
++		bpf_program__attach_cgroup(skel->progs.connect_v6_prog, cgroup_fd);
++	if (!ASSERT_OK_PTR(skel->links.connect_v6_prog, "cg-attach-v6"))
++		goto close_cgroup;
++
++	/* Connect a v4 ping socket to localhost, assert that only v4 is called,
++	 * and called exactly once, and that the socket's bound address is
++	 * original loopback address.
++	 */
++	if (test__start_subtest("ipv4"))
++		subtest(cgroup_fd, skel, AF_INET, 0);
++
++	/* Connect a v4 ping socket to localhost, assert that only v4 is called,
++	 * and called exactly once, and that the socket's bound address is
++	 * address we explicitly bound.
++	 */
++	if (test__start_subtest("ipv4-bind"))
++		subtest(cgroup_fd, skel, AF_INET, 1);
++
++	/* Connect a v6 ping socket to localhost, assert that only v6 is called,
++	 * and called exactly once, and that the socket's bound address is
++	 * original loopback address.
++	 */
++	if (test__start_subtest("ipv6"))
++		subtest(cgroup_fd, skel, AF_INET6, 0);
++
++	/* Connect a v6 ping socket to localhost, assert that only v6 is called,
++	 * and called exactly once, and that the socket's bound address is
++	 * address we explicitly bound.
++	 */
++	if (test__start_subtest("ipv6-bind"))
++		subtest(cgroup_fd, skel, AF_INET6, 1);
++
++	connect_ping__destroy(skel);
++
++close_cgroup:
++	close(cgroup_fd);
++
++clean_mount:
++	umount2("/sys", MNT_DETACH);
++}
+diff --git a/tools/testing/selftests/bpf/progs/connect_ping.c b/tools/testing/selftests/bpf/progs/connect_ping.c
+new file mode 100644
+index 0000000000000..60178192b672f
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/connect_ping.c
+@@ -0,0 +1,53 @@
++// SPDX-License-Identifier: GPL-2.0-only
++
++/*
++ * Copyright 2022 Google LLC.
++ */
++
++#include <linux/bpf.h>
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_endian.h>
++#include <netinet/in.h>
++#include <sys/socket.h>
++
++/* 2001:db8::1 */
++#define BINDADDR_V6 { { { 0x20,0x01,0x0d,0xb8,0,0,0,0,0,0,0,0,0,0,0,1 } } }
++
++__u32 do_bind = 0;
++__u32 has_error = 0;
++__u32 invocations_v4 = 0;
++__u32 invocations_v6 = 0;
++
++SEC("cgroup/connect4")
++int connect_v4_prog(struct bpf_sock_addr *ctx)
++{
++	struct sockaddr_in sa = {
++		.sin_family = AF_INET,
++		.sin_addr.s_addr = bpf_htonl(0x01010101),
++	};
++
++	__sync_fetch_and_add(&invocations_v4, 1);
++
++	if (do_bind && bpf_bind(ctx, (struct sockaddr *)&sa, sizeof(sa)))
++		has_error = 1;
++
++	return 1;
++}
++
++SEC("cgroup/connect6")
++int connect_v6_prog(struct bpf_sock_addr *ctx)
++{
++	struct sockaddr_in6 sa = {
++		.sin6_family = AF_INET6,
++		.sin6_addr = BINDADDR_V6,
++	};
++
++	__sync_fetch_and_add(&invocations_v6, 1);
++
++	if (do_bind && bpf_bind(ctx, (struct sockaddr *)&sa, sizeof(sa)))
++		has_error = 1;
++
++	return 1;
++}
++
++char _license[] SEC("license") = "GPL";
 -- 
 2.37.2.789.g6183377224-goog
 
