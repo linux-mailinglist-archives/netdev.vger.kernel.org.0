@@ -2,64 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 796415B24AF
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 19:34:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F5295B2540
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 20:00:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231435AbiIHRe2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 13:34:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50888 "EHLO
+        id S231290AbiIHSA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 14:00:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231722AbiIHRe1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 13:34:27 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 462D426A
-        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 10:34:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662658465; x=1694194465;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=VgzmDo79W8qIfxTllA4oWWA+30kdllMT7dJGKF8QaOM=;
-  b=NpXNgu8ag1FwWsYSSEZ0ctX07GsOAqkjzL+Tz3s7uYa+UD6NPy1ZPCzj
-   TMAIlLhQMEXVf3sXU/F/zbUPTavmHheMbi9kvkT8GGr3cPKpPgswY/gv4
-   c3k4wlIitxkez2Hyw6J1EbhwMXn4Vs/CqcEmTJcuJqpLsvbAaai+EstOv
-   /ZR6fQ1zaRFrYMvbxab0Mdt/IwDiTOibryVJEmqcTUDmOAjSRtlGgV6k6
-   Slk7VNrc9PLTJXm1TwYz63axHDmAGxZXyYwtLbx/eamam6cq5ThrHBTpD
-   jmu3FGuGw/MZDkH4BmrTnSQUH+wXZCW2FXvpXqI5XpJsTqvV5fOm9JQDI
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10464"; a="277005532"
-X-IronPort-AV: E=Sophos;i="5.93,300,1654585200"; 
-   d="scan'208";a="277005532"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Sep 2022 10:34:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,300,1654585200"; 
-   d="scan'208";a="683317123"
-Received: from lkp-server02.sh.intel.com (HELO b2938d2e5c5a) ([10.239.97.151])
-  by fmsmga004.fm.intel.com with ESMTP; 08 Sep 2022 10:34:22 -0700
-Received: from kbuild by b2938d2e5c5a with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oWLPy-0000Bd-0l;
-        Thu, 08 Sep 2022 17:34:22 +0000
-Date:   Fri, 9 Sep 2022 01:34:20 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Amritha Nambiar <amritha.nambiar@intel.com>,
-        netdev@vger.kernel.org, kuba@kernel.org
-Cc:     kbuild-all@lists.01.org, alexander.duyck@gmail.com,
-        jhs@mojatatu.com, jiri@resnulli.us, xiyou.wangcong@gmail.com,
-        vinicius.gomes@intel.com, sridhar.samudrala@intel.com,
-        amritha.nambiar@intel.com
-Subject: Re: [net-next PATCH v2 4/4] Documentation: networking: TC queue
- based filtering
-Message-ID: <202209090101.Eze9wDA6-lkp@intel.com>
-References: <166260025920.81018.12730039389826735230.stgit@anambiarhost.jf.intel.com>
+        with ESMTP id S230317AbiIHSAZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 14:00:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66EF3B728B
+        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 11:00:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662660021;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/1CJqDZwdhNTxwT7stL4n24A7xf7/eYqBeTJa+7t530=;
+        b=MvjRnnqGHnvfyltIvSiO1tjbqvAL7uUOPvyOjebzLOeJf99HWg01L0ZYE9x8gJLjGaOjCy
+        w/kuSnhNO8DLL2TY+/04o28ApaUWVG5zf+WPVJbltpknv86u0Ru+M72dgR2b/f5/MnPRX/
+        M0FMpH2YsAuuF8myLMSJ+mYEHEIsRso=
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com
+ [209.85.166.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-216-iXNz06LAMUKfIgrtLUE_WQ-1; Thu, 08 Sep 2022 14:00:20 -0400
+X-MC-Unique: iXNz06LAMUKfIgrtLUE_WQ-1
+Received: by mail-io1-f71.google.com with SMTP id z30-20020a05660217de00b00688bd42dc1dso11890037iox.15
+        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 11:00:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=/1CJqDZwdhNTxwT7stL4n24A7xf7/eYqBeTJa+7t530=;
+        b=vLkZBRqZUVdiROXe5nvgA3Ds+KTWMpH+GUZLDWMzLvnxE0K7EXsS1SbEDwulBqvnoN
+         x7qwR0h+o3Gz3+Knw+0x5h4YSmwRMpEJI6XC7E5+IvsTWCEhLKAReV1rTTr9fzePt0mp
+         S9uuUB9U1Z/+9pgIsbIKPlOb+jAyGCltIOUN9u0pZNBnFmhwd0E6xCjRarCDg0dBv4nd
+         I2b9UGcPDiIUA++KwFhXlzKR+vQwFLSaVgFK0IrmDLllWgeMjCxLM6CldLKoGnWdvRsZ
+         PqGOCCGlUWILARuYGNwioW5TzzelPtyQpjjR438xE9EVKAl9tbqGoABYaxaVxEnF0iT/
+         Osaw==
+X-Gm-Message-State: ACgBeo3ucIbqLH3F0L3C9fL/6TFpDUDZu6/m+YXgMCRSnVCPFughRk2t
+        ITtzfm1Nreu1zMH3GRymc56zbapFIrBSZx8tzLK+vHrRhMf+PDZLz2jRI//hlV987lxXE5D8foJ
+        6Dc0k3FJXvmspkBI4
+X-Received: by 2002:a05:6e02:2167:b0:2f1:a5f4:e49e with SMTP id s7-20020a056e02216700b002f1a5f4e49emr2594267ilv.136.1662660019998;
+        Thu, 08 Sep 2022 11:00:19 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6RH3UTD9rWrJdbISb1Dj3cENOMfZD3ljMSL4pm/HG0zjU6rQoOp/Bw16M3nBoZIyDLrQPgcQ==
+X-Received: by 2002:a05:6e02:2167:b0:2f1:a5f4:e49e with SMTP id s7-20020a056e02216700b002f1a5f4e49emr2594249ilv.136.1662660019743;
+        Thu, 08 Sep 2022 11:00:19 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id c12-20020a02330c000000b0034c12270863sm8507755jae.80.2022.09.08.11.00.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Sep 2022 11:00:19 -0700 (PDT)
+Date:   Thu, 8 Sep 2022 12:00:16 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Yishai Hadas <yishaih@nvidia.com>
+Cc:     <saeedm@nvidia.com>, <kvm@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <kuba@kernel.org>,
+        <kevin.tian@intel.com>, <joao.m.martins@oracle.com>,
+        <maorg@nvidia.com>, <cohuck@redhat.com>,
+        Leon Romanovsky <leon@kernel.org>
+Subject: Re: [GIT PULL] Please pull mlx5 vfio changes
+Message-ID: <20220908120016.473c144c.alex.williamson@redhat.com>
+In-Reply-To: <83fe2fa1-7f49-35f5-ba4b-5662175bbe31@nvidia.com>
+References: <20220907094344.381661-1-leon@kernel.org>
+        <20220907132119.447b9219.alex.williamson@redhat.com>
+        <YxmMMR3u1VRedWdK@unreal>
+        <20220908105345.28da7c98.alex.williamson@redhat.com>
+        <83fe2fa1-7f49-35f5-ba4b-5662175bbe31@nvidia.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <166260025920.81018.12730039389826735230.stgit@anambiarhost.jf.intel.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,43 +85,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Amritha,
+On Thu, 8 Sep 2022 20:31:35 +0300
+Yishai Hadas <yishaih@nvidia.com> wrote:
 
-Thank you for the patch! Perhaps something to improve:
+> On 08/09/2022 19:53, Alex Williamson wrote:
+> > On Thu, 8 Sep 2022 09:31:13 +0300
+> > Leon Romanovsky <leon@kernel.org> wrote:
+> >  
+> >> On Wed, Sep 07, 2022 at 01:21:19PM -0600, Alex Williamson wrote:  
+> >>> On Wed,  7 Sep 2022 12:43:44 +0300
+> >>> Leon Romanovsky <leon@kernel.org> wrote:
+> >>>      
+> >>>> Hi Alex,
+> >>>>
+> >>>> This series is based on clean 6.0-rc4 as such it causes to two small merge
+> >>>> conficts whis vfio-next. One is in thrird patch where you should take whole
+> >>>> chunk for include/uapi/linux/vfio.h as is. Another is in vfio_main.c around
+> >>>> header includes, which you should take too.  
+> >>> Is there any reason you can't provide a topic branch for the two
+> >>> net/mlx5 patches and the remainder are rebased and committed through
+> >>> the vfio tree?  
+> >> You added your Acked-by to vfio/mlx5 patches and for me it is a sign to
+> >> prepare clean PR with whole series.
+> >>
+> >> I reset mlx5-vfio topic to have only two net/mlx5 commits without
+> >> special tag.
+> >>
+> >> https://git.kernel.org/pub/scm/linux/kernel/git/mellanox/linux.git topic/mlx5-vfio
+> >> Everything else can go directly to your tree without my intervention.  
+> > Sorry, I knew the intention initially was to send a PR and I didn't
+> > think about the conflicts we'd have versus the base you'd use.  Thanks
+> > for splitting this out, I think it'll make for a cleaner upstream path
+> > given the clear code split.
+> >
+> > Yishai, can you post a v7 rebased on the vfio next branch?  
+> 
+> 
+> Sure
+> 
+> Do you want me to include in V7 the two net/mlx5 patches that are part 
+> of the PR or that you'll take them first from the PR, publish your 
+> vfio/next tree and I'll drop them from V7 ?
 
-[auto build test WARNING on net-next/master]
+For the sake of having a series that compiles and doesn't confuse
+anyone with buildbot errors, please include them, but I'll pull them
+from Leon's topic branch rather than applying them directly.  Thanks,
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Amritha-Nambiar/Extend-action-skbedit-to-RX-queue-mapping/20220908-091523
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 2018b22a759e26a4c7e3ac6c60c283cfbd2c9c93
-reproduce:
-        # https://github.com/intel-lab-lkp/linux/commit/1c8a93c17a4a1a9ba7be2aba8b1886d12ea14d8c
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Amritha-Nambiar/Extend-action-skbedit-to-RX-queue-mapping/20220908-091523
-        git checkout 1c8a93c17a4a1a9ba7be2aba8b1886d12ea14d8c
-        make menuconfig
-        # enable CONFIG_COMPILE_TEST, CONFIG_WARN_MISSING_DOCUMENTS, CONFIG_WARN_ABI_ERRORS
-        make htmldocs
+Alex
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> Documentation/networking/tc-queue-filters.rst:12: WARNING: Unexpected indentation.
->> Documentation/networking/tc-queue-filters.rst:14: WARNING: Block quote ends without a blank line; unexpected unindent.
->> Documentation/networking/tc-queue-filters.rst: WARNING: document isn't included in any toctree
-
-vim +12 Documentation/networking/tc-queue-filters.rst
-
-     9	
-    10	On the transmit side:
-    11	1. TC filter directing traffic to a set of queues is achieved
-  > 12	   using the action skbedit priority for Tx priority selection,
-    13	   the priority maps to a traffic class (set of queues).
-  > 14	2. TC filter directs traffic to a transmit queue with the action
-    15	   skbedit queue_mapping $tx_qid.
-    16	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
