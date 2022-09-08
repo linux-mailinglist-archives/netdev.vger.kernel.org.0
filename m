@@ -2,74 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4345F5B2A01
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 01:15:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 212E35B2A04
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 01:16:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229814AbiIHXP5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 19:15:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51864 "EHLO
+        id S229959AbiIHXQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 19:16:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229566AbiIHXP4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 19:15:56 -0400
-Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E78A7B1B8D;
-        Thu,  8 Sep 2022 16:15:55 -0700 (PDT)
-Received: by mail-qk1-x72a.google.com with SMTP id x3so58512qkn.5;
-        Thu, 08 Sep 2022 16:15:55 -0700 (PDT)
+        with ESMTP id S229908AbiIHXQT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 19:16:19 -0400
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCDCFB9F83
+        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 16:16:18 -0700 (PDT)
+Received: by mail-pg1-x549.google.com with SMTP id g63-20020a636b42000000b004305794e112so9968815pgc.20
+        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 16:16:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=MlhnWP7ey0aRvA15+oNfZLaURLs2EkPM1ZLYxQmv3zs=;
-        b=Ykw6VUj12Epd82J0HG6/59kvFPyl6clziGlDNs/83MyQX7vSGfllr9cWtRe0prRoD9
-         LyqtDnGEk4mJP4qQTSSNZQJhBKaYKxNoR7wKtHYqBeqZTM6+1cGLc42yJLDsLnVGddrQ
-         ETtL3H11txbATZJMiO2DUDGBLrBfsoIMHdUiBZLm95wY6SApjIt+vBleyMch1f8NVVvD
-         9SMjRr2QqBtIE6bdriqRUqxhWhcf0H0maazgTvFtZTLcmhBlqjAHyCIOHfmlg1/FoAfz
-         VIijLWB5Ye7lNdI2LESOJLVNSbgUuVa+grm+ZQE5GiO1laLJUNbqlSJcrXcUlXLz2TtR
-         G7ag==
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date;
+        bh=iHS2kH9GIhQyTrzXAC4JM2mZSat2l8dW4Ph0P8ewe24=;
+        b=NWec8YrX1deaWua+9TotWZsoY5U9On+hr9CKq6WdhiyPwiSZt9WJMljWXLaFoGjAcn
+         5RxcGYRyWD8Qf3p5I+7tTfudE/KObEKYWRoBXaT7IdYXXFPKu9BLgT2Wp4rIyLyA5wet
+         eP1embT41Xi7VLa5hRKprVWc/UoE7jDuAnd4TuppOYJaiBi5PgB0LsIoPLy1ovb4jmyS
+         itCdoAnNDFchhgwAABtcrgRwrDWEkKUP0F/5Bc6CrHGJxB+MkkulbkIYmDMC63rDUqIj
+         XhIUPxrqQ/lxrjFWB8acJz1jHDkZyMPVhGGcWX4u4q0kBEB1S1Z2AZfaIIK4pLFrlRtX
+         gxmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=MlhnWP7ey0aRvA15+oNfZLaURLs2EkPM1ZLYxQmv3zs=;
-        b=uYbFq9ZTTjVOmxX9HYAGIaAR8xnbSlU52VpprZokMa+2AayRVD8CVPiY5PGsiCP0JA
-         YzMTA/paofmeqmohRw3GOa9zTLlbW+PvNmrjE49yqUW2HyqBmUo16nf9f5a8aVDlWnFR
-         cF2zZvEIkJFeQF+t3WiqDo5ItZ5mv7V8hM5+VljSC/mMOE5OG6KXB1yhXkSoc9iv/4ZQ
-         9sXQTGAsT9Jo05g5MkvJj0fjkQYC3Db1/Ivi2K6i0CkwH4D3PJde4Pu3+ngsHjpnLb5x
-         A+NxgDzh5Ndyhhvy8+MELvKHmtsGVC7ZH2//M6MuXNrgTkp2PUmViebkNYOlv9G09cHO
-         ooyg==
-X-Gm-Message-State: ACgBeo2XpQ8j4zq5+z4DjHwdKtqSrZtta4RL61+XkZurvUdAz1rg2yKh
-        r9xAY/BqEJczqZHaxNPQ5dQ9oR2pgA==
-X-Google-Smtp-Source: AA6agR4Io04Wfi0JujSmtHYwI26uCjhiVk12ETiJlfYWLj7n8Wpojnv1/TWF22qYzBEYDbsZ6Rc16g==
-X-Received: by 2002:a05:620a:102e:b0:6cb:d59c:812f with SMTP id a14-20020a05620a102e00b006cbd59c812fmr3278843qkk.232.1662678955062;
-        Thu, 08 Sep 2022 16:15:55 -0700 (PDT)
-Received: from bytedance.attlocal.net ([130.44.215.155])
-        by smtp.gmail.com with ESMTPSA id n72-20020a37274b000000b006cbc40f4b36sm92134qkn.39.2022.09.08.16.15.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Sep 2022 16:15:54 -0700 (PDT)
-From:   Peilin Ye <yepeilin.cs@gmail.com>
-To:     Eric Dumazet <edumazet@google.com>,
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=iHS2kH9GIhQyTrzXAC4JM2mZSat2l8dW4Ph0P8ewe24=;
+        b=oSWrHTYf0px1A/BIw6TcoRHPq4f4cFryG7Btv/PpaQYUtLmFOQcIi7w0JA3UQUAYHH
+         4ZT+q7QXKTougpxwfxSz3dRQorrsna4H9wyOTDDswBW74GV5lneL1R0qFB8ndpbojFGG
+         BZB9t5jCasZV0elUHn7bPyNxTX6Cy1IT/t4zitDfXRELd3v9VSHQG0GdDFyD6yeuw9mQ
+         CGnqYxavLZIms4BdYG6jXYIehWDx4Am1qeO973n0+nXfW5aEom4KhJo9aQQR0nTy/AKZ
+         ASs5Fw/oBjaEoTATZbUG0afbsSDi/o39mtTprvVS6SYZuFAU3GUrGZ1RQMg6lBUmFVYT
+         n7jw==
+X-Gm-Message-State: ACgBeo3msfU85zeo3k9pRpM0K7tlkvRaeX0xzKKDkicmFvKRnEmF6H6r
+        FlYwsX/uldPlmxejjYiI8Wq1Z0hlLRZ/oQ==
+X-Google-Smtp-Source: AA6agR43ns+TDQgH9hXv6Z5piOKiw7Cq7kfd3C/yP+AnQsEj803mnGL9EUEuA3JCuNpwncMuVrGygXZ5SUNRFQ==
+X-Received: from zhuyifei-kvm.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:2edc])
+ (user=zhuyifei job=sendgmr) by 2002:a17:903:41c3:b0:176:b990:6c28 with SMTP
+ id u3-20020a17090341c300b00176b9906c28mr10816405ple.94.1662678978373; Thu, 08
+ Sep 2022 16:16:18 -0700 (PDT)
+Date:   Thu,  8 Sep 2022 23:16:12 +0000
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.2.789.g6183377224-goog
+Message-ID: <cover.1662678623.git.zhuyifei@google.com>
+Subject: [PATCH v3 bpf-next 0/3] cgroup/connect{4,6} programs for unprivileged
+ ICMP ping
+From:   YiFei Zhu <zhuyifei@google.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Stanislav Fomichev <sdf@google.com>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
-Cc:     Peilin Ye <peilin.ye@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Peilin Ye <yepeilin.cs@gmail.com>
-Subject: [PATCH net] tcp: Use WARN_ON_ONCE() in tcp_read_skb()
-Date:   Thu,  8 Sep 2022 16:15:23 -0700
-Message-Id: <20220908231523.8977-1-yepeilin.cs@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <87r1169hs2.fsf@cloudflare.com>
-References: <87r1169hs2.fsf@cloudflare.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,29 +76,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+Usually when a TCP/UDP connection is initiated, we can bind the socket
+to a specific IP attached to an interface in a cgroup/connect hook.
+But for pings, this is impossible, as the hook is not being called.
 
-Prevent tcp_read_skb() from flooding the syslog.
+This series adds the invocation for cgroup/connect{4,6} programs to
+unprivileged ICMP ping (i.e. ping sockets created with SOCK_DGRAM
+IPPROTO_ICMP(V6) as opposed to SOCK_RAW). This also adds a test to
+verify that the hooks are being called and invoking bpf_bind() from
+within the hook actually binds the socket.
 
-Suggested-by: Jakub Sitnicki <jakub@cloudflare.com>
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
----
- net/ipv4/tcp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Patch 1 adds the invocation of the hook.
+Patch 2 deduplicates write_sysctl in BPF test_progs.
+Patch 3 adds the tests for this hook.
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 8230be00ecca..9251c99d3cfd 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1766,7 +1766,7 @@ int tcp_read_skb(struct sock *sk, skb_read_actor_t recv_actor)
- 		return 0;
- 
- 	__skb_unlink(skb, &sk->sk_receive_queue);
--	WARN_ON(!skb_set_owner_sk_safe(skb, sk));
-+	WARN_ON_ONCE(!skb_set_owner_sk_safe(skb, sk));
- 	copied = recv_actor(sk, skb);
- 	if (copied >= 0) {
- 		seq += copied;
+v1 -> v2:
+* Added static to bindaddr_v6 in prog_tests/connect_ping.c
+* Deduplicated much of the test logic in prog_tests/connect_ping.c
+* Deduplicated write_sysctl() to test_progs.c
+
+v2 -> v3:
+* Renamed variable "obj" to "skel" for the BPF skeleton object in
+  prog_tests/connect_ping.c
+
+YiFei Zhu (3):
+  bpf: Invoke cgroup/connect{4,6} programs for unprivileged ICMP ping
+  selftests/bpf: Deduplicate write_sysctl() to test_progs.c
+  selftests/bpf: Ensure cgroup/connect{4,6} programs can bind unpriv
+    ICMP ping
+
+ net/ipv4/ping.c                               |  15 ++
+ net/ipv6/ping.c                               |  16 ++
+ .../bpf/prog_tests/btf_skc_cls_ingress.c      |  20 --
+ .../selftests/bpf/prog_tests/connect_ping.c   | 177 ++++++++++++++++++
+ .../bpf/prog_tests/tcp_hdr_options.c          |  20 --
+ .../selftests/bpf/progs/connect_ping.c        |  53 ++++++
+ tools/testing/selftests/bpf/test_progs.c      |  17 ++
+ tools/testing/selftests/bpf/test_progs.h      |   1 +
+ 8 files changed, 279 insertions(+), 40 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/connect_ping.c
+ create mode 100644 tools/testing/selftests/bpf/progs/connect_ping.c
+
 -- 
-2.20.1
+2.37.2.789.g6183377224-goog
 
