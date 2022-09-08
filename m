@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 233875B23EC
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 18:50:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5611C5B23EF
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 18:50:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231912AbiIHQuC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 12:50:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44846 "EHLO
+        id S232000AbiIHQu4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 12:50:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231476AbiIHQtX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 12:49:23 -0400
+        with ESMTP id S229794AbiIHQte (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 12:49:34 -0400
 Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60072.outbound.protection.outlook.com [40.107.6.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CACF112950E;
-        Thu,  8 Sep 2022 09:49:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD7DDE54;
+        Thu,  8 Sep 2022 09:49:22 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aDmZeX5c8KgNPCot3SjGuXCSrjpF5/EQpaxCkL0Fsg7gwlPCfSYBI2sOk9sHX7m/CIEeMvocJf9dqRs2AVnWt2sHPAvVxpxooWCyZpHy7pw1mO0vJXwWyTMo6youzeIpmwF3c5uUdbG3t8OSMbVQXkQ+VHGPhDvz4FG9Lq27KFn1suR4hLYhNu6j1EVlwB5Gmlc/Ibz2d69GTobqjX1vRa7bLysCMeVWGdfsx+lxCEgOkqLWCVkZnuAKIete5rpki3hAwIIxK2343bukMFaKnjIVsqWDoaO2RZzLFSELmimVHpNAZPl+wQsljDZBeymhx4r9twYB509l9rOT7umrmA==
+ b=UoBrZ/dHJ9uqXfpSxE8pm7CkzbrLNQKhV4bEiT0hOlbqrgGzMcZ8tNHg99DOkczoHn82xQNYpCbyeBodvdmgPXSuxYOhqpGVEsf6L+QqzU2xEzB/q7Suy5mHK0Ga/TbP0tzBmatIXI8NhpkFhNL0GLcwarVEPCoYHW23726kBmZNx2xvLRUaF4y8AJq28GlXFalZX4U+SKiqmNjypP9DX/tRQ1/R6/fWnr6lQVbncLO1lXQdqBaJiQ684d4kx8pO3PxYN5U5ZnlG3ym2ZQBkSCrk2RsF2Xp/nEyWXOJG4Zx3OVe/+mqQToS2VgLSMf/wm32AGPrBrMpgBSxSeN5Ppw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zOmORmOPPS+er3uZOA5Qky4mvzw44WhH855XFJBfPAU=;
- b=ASoJeo9Qw2cI89OsEse8KOuuHBuQsK0kdcOL/SdmM5/gTQOpCZsRBmvAx6lPsswxrH86dPIdGQk5bf47LcyQASTN4iwwVc8cqV7ki0QW7JNxnxzH/mMvW5rSv9x84Ha5orjSPKl5Vtb9Y6mVl30Sx3aLsLxlR7wQus+ZkGtQB8ocm5PAu4tLlU8pI2F0SgcCP/NRSkgLTkOHcsYtK0zSXy4fc6BfMXVROehGquQTms+d+0m7Wh1DZAw/GMb0vDUPHBN0bz55r4Ex2b+ayKzEJb2VCUX9gzitf4ceWS/4oDZxn5IlXO+ga/rWkEqzdwobymOU3fgyKjj5Qsg+J2P8Kw==
+ bh=34nTt03rCshPh/KGzPIEU3vcwniaxwtbS9f64Bk+RK8=;
+ b=E8FeJ9FnhhDsQW1lp7jclJ4SfINZ3nOIHFNgRASOBNh21NtsCKti/NCKT2rtGvI+jz3PpgdTOYSTYiosx7ULP/Mh60PUbqWCTGIXwIazwfb4fH5T0eQ2yK6kia3kLd7RwrXIgd9mBRf9AiGiBopVAkjSg8j+o7R9S65kuPSAudFcp0MoPewzmv6vGJI5/m2bWuhu4cZmlbOYXMPvoKK79Tc+pwcIqbTw+cp4TknYwBDo1RC6+OfRC8MtaW+s8tO6en5aePTOhDK4vgilHC6mpYRv6ZrvLiabIAbjIZ19GgAgFOadxTFWMdNAisjGPYi1HPBoSnbPZwsG4hLPO/D/Mw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zOmORmOPPS+er3uZOA5Qky4mvzw44WhH855XFJBfPAU=;
- b=kdXbxDhzKom/spLTxPUjhxaFcUU+wRQHtECpzZZONRApzt1fmJmsY493XElkPSk/1yaWM97iSazaMiW5uXe4X+ceWCly6wGLl+OiaF+Yxz7al8dsAFCxgfTDzUxOfsPQncLsJ4+xSJwpF5hLPckpDbSENeAvzagfWSCplYi4vJw=
+ bh=34nTt03rCshPh/KGzPIEU3vcwniaxwtbS9f64Bk+RK8=;
+ b=sGqrQQMFI8ouAkTjeQTjSv0WX2eqT9FBGlHhjrr3NZpIvT+lPh49mzuFF9u3/C3su2SrU2/JRG6f4BtFd68vyXYMc8GzFpF61Yi3C7ClBD/FLlaG3I+q5OPZAqrQPuzHa0ecGIszGM0OhU3/x13qgOaxnyGKuObRBLr0cl+exJY=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by DB7PR04MB5052.eurprd04.prod.outlook.com (2603:10a6:10:1b::32) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.18; Thu, 8 Sep
- 2022 16:49:14 +0000
+ 2022 16:49:15 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3412:9d57:ec73:fef3]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3412:9d57:ec73:fef3%5]) with mapi id 15.20.5588.017; Thu, 8 Sep 2022
- 16:49:14 +0000
+ 16:49:15 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -55,9 +55,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Colin Foster <colin.foster@in-advantage.com>,
         Richie Pearn <richard.pearn@nxp.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 12/14] net: mscc: ocelot: harmonize names of SYS_COUNT_TX_AGING and OCELOT_STAT_TX_AGED
-Date:   Thu,  8 Sep 2022 19:48:14 +0300
-Message-Id: <20220908164816.3576795-13-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 13/14] net: mscc: ocelot: minimize definitions for stats
+Date:   Thu,  8 Sep 2022 19:48:15 +0300
+Message-Id: <20220908164816.3576795-14-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220908164816.3576795-1-vladimir.oltean@nxp.com>
 References: <20220908164816.3576795-1-vladimir.oltean@nxp.com>
@@ -67,160 +67,1538 @@ X-ClientProxiedBy: BEXP281CA0009.DEUP281.PROD.OUTLOOK.COM (2603:10a6:b10::19)
  To VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 766dc45a-c93c-472a-b210-08da91b9fcbd
+X-MS-Office365-Filtering-Correlation-Id: eda8af15-8251-43f0-2f61-08da91b9fd81
 X-MS-TrafficTypeDiagnostic: DB7PR04MB5052:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: dg44Gb2QK9coMKhyH/DiQvrA//veion5MU+qf8zuAK9KD8x3jpLRt3vfqKzAiGJO2pJhVOgWeSaLhSWSuaTbySVAWx/aC2GGl9zrR9BBS7ektM66cefZFS/LUFH2jGImRCw222+gAtXFRsukTXbo36ydZTMrVNpTWk5B+TCNOGVKog1LKJZ0iwiUFWn+fc32kV6WAWu0VAj1ZCurQcDumHHWl9cwftC0VmOkKj2gs8ZLlM9eYb/RK0NzypHllEio22PW6c1HMkRSYm8JQv1akO6Y8IwCOcTnHzZhIJRvfRhjYu3xUZLSAGWyvlODldJqwFyrLdmjJjwR8naVjb7YGtKL/xLmKqdpMFBtHFHCBcmtxyqng2rli25U/UwPHoD/FvcVvneqHDNjcHJI1Tvs5FBC/iL5VdHPAU6LUh8rmza1Nfn3ppjB2jyLl5x9afm+EZrZZziXBxNNgRimTcWzGf+vgyjEAyrHXVteJOyxrDCEhVkPEwbPCj2A+VhFEKfB+T9M48N6ADdYOFgEb/a6KDpgA2GocClskDqPxl8TQePcwjTpvl+5V0V2GXnyTKMetdWJRBVGnOqaMP9H96J3g2h6FO/N+qFK9oXOdeNeqBmbPPsYhDNTVp6aXXxjHnt+YrDFs+dW06LvvzZNw/kxRZFBniHB71aMfx/px82EaKyusWAwJ2JL2foZpxP/ufPUzdwSSVfJqEAxNSMQqGafaxPAUQRS0jc5dp/kUIb3P18VgVFUPSX/MJlh8RZNjmCml5nJMNwY9ju893vepO3ZjA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(39860400002)(396003)(346002)(366004)(376002)(38350700002)(8676002)(66476007)(66946007)(2616005)(6486002)(186003)(66556008)(38100700002)(36756003)(1076003)(4326008)(478600001)(83380400001)(8936002)(2906002)(5660300002)(44832011)(7416002)(52116002)(41300700001)(6506007)(6916009)(26005)(54906003)(6512007)(86362001)(316002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: typNsTt0O5Jh2lAnfxOw33xy2+4Cs61BI/H7cUaQ6vNvwNpmZNmEfig1YGS3v7Pzcpk4osi5HY/w8hoJAWz8t4kdmq/OcAYdNCGJX3XQmNl1UskvCywK26bwuPDKrRH2MMCSoSv8tFpGt1713rETsJ4B0qGoq65MbXnUvOasMYVuu/7n74rboVLfD5tnrgi74qXNtm6rnSuK/a+etxNtkGxgU3rDRrSC6/GQHQpeAOW58WcKhOwh4Ekg9Lr2LlPW0AKrCkhaTvSiVRL2sd0HfjNfRRpaEFId6Cz9FxwHzwAHeqbQQsbExueACnS+MUFaVNq2cMa/jPF1slbX6qE0CIXrUMznMqCJGOFHUFDL5S+9vW0n0VZxEYQr8U09j9cl655dIuaKJ16QVvoKA3i7SAEW2pgNtXlA4LpnDIT5EIyf61VMNDaxOdzLZBDmdTSi9A7IWSUKJNrt7OhZBnhvLs9DBtZMoVlA9PLXmIpNDixGgWa9NBlZnn+ilZGCcwbNuN8DPj7nPa+HRgt5AjfGa4cyUPskxkf42zsmHrtcMqAFHvU7RA/lXx0YCGqBPMWJD1FzIBrGqI1df+ak2uohjxtZbMOL9gTu/9bh4Zon3ip/IJhIFMO7efdmyM7CFyg8eybnJlwTKmYlHkSRFWsVEimYR8rtSECABcwjO76JKYw8XNJyDamExpp9OWLmSd7gAgkXgU3p16ogBI82qR2cjnJ9R1ezxKge/ELe94ctHTTXASAb2HvtG5b0UD5gdgwX
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(39860400002)(396003)(346002)(366004)(376002)(38350700002)(8676002)(66476007)(66946007)(2616005)(6486002)(186003)(66556008)(38100700002)(36756003)(1076003)(4326008)(478600001)(83380400001)(8936002)(2906002)(5660300002)(44832011)(30864003)(7416002)(52116002)(41300700001)(6506007)(6916009)(26005)(54906003)(6512007)(86362001)(316002)(559001)(579004);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?PijMBkDK3ujKsFmRiEyWo/3q6dX4BtQprz9+R8g4LTsMcC5W4ENd5wIn1OFI?=
- =?us-ascii?Q?8/NoeJty+E7fRKqcydD5+qwSUUSycoGDaufrGjKzCst2RnzgWFXYrcuyy7gA?=
- =?us-ascii?Q?qKnKOcAJSKqVdbKPjNS4h/+kA5qtbkwSEBx251qbGhF5wyipnso8KVXJTG00?=
- =?us-ascii?Q?1T7MI+GsiLTU75PmRJv7Moqz1ijIuFb8UxTU8t41/Kteon16dkdPlxr3Qf8/?=
- =?us-ascii?Q?Q0qukv42CkCay32YuyiRJ8puUZV9LF6Auxw0VfrU4a65BAE0TTg4Hzl2QY8+?=
- =?us-ascii?Q?lsAzsi5nVtpfswGEJN0lNGPPO5bbXZxTk1t3+CpQZmfXfvRd5W8BfJ4So8WW?=
- =?us-ascii?Q?lKJXCcLs93oOyCGHUHj4SWfQFRSFr3goDNeavzoXmgyNT5fr3DI80y/E//L9?=
- =?us-ascii?Q?x3QNLOFjbBblV6BWWZfGUTyXLhmX6xRkPbBuLZPpXC5mq18P2ke3ZzfxWz6E?=
- =?us-ascii?Q?7W/t2gkoyTZfnC4x4zasa7vuijTrf41IuWKt8WpjlK8ZN8IKG4loWOt8fy0f?=
- =?us-ascii?Q?frpeelvQek5Hevj7i9OhwloAudcRiRkUNO/w3uO/Ttz9C35j/+iOj/yVQOZV?=
- =?us-ascii?Q?NdNv33Yz8egOi3BiwTsb9gvWBf9GYFh/sEhln+MbKsua889D45PVxVSvPsK3?=
- =?us-ascii?Q?cHc8eZ6wZ2mOojTME8Dm3Ez6zuXelnonof7PPLxg4iUzLb8mjz8g71CUxJB7?=
- =?us-ascii?Q?/ExDbICu8XTOjiNDHY+I4Lu9KDtIKQudAqe3b0w04u5NREQLQBG3evfvKLsH?=
- =?us-ascii?Q?FDnCQmU52eES+HJCCw7zmnTr5k55wmvXxGtKSIfJBXTLcG7YgUQnOh293B+2?=
- =?us-ascii?Q?/6hI5YjnApNVVqvJTHtuGbv8ZdrRoV07F6SkKRC2AgDzT9Xf8P5ec5ZBzbt0?=
- =?us-ascii?Q?G/g4DunXNmKD24lHBW115iRV1N+bi9SvLlyhfD5RrPPUhM5CsP10oaMYsSgQ?=
- =?us-ascii?Q?RBqyS0hvj2R90/Hdkdr5OpPZPsXWkVSWG8Rtkrw1yllAmy28gHb3ivSJxFxP?=
- =?us-ascii?Q?0G8RVNIx9aw9ms4U9OgbamjQ5j9Ya4/9dlo9hKGbFnblQcYSzGFGHRuOPS/Q?=
- =?us-ascii?Q?2oQ1UHUH/APVw7Q9q5e9KDGh+k9LlfoyQm0YjPQ3+jmL6EQAGgXYPsuLw2/j?=
- =?us-ascii?Q?FGggtIksezx4Px2cmlXqjufi6jkY+anrhzzm5xTVoHAaE6gHxPFICFSsNfLn?=
- =?us-ascii?Q?nmq0Dq4hJbm7+Vv1ibl26py7T765yDAsehB6MrTHd736zPTiSA7eWeoDxuBW?=
- =?us-ascii?Q?dJQoNUF6tqXP+BIW7unA4PPUdHflzlWOERG9jf2ojicC5/+KKm0m2zVBOvF2?=
- =?us-ascii?Q?iChva2QMQpi/y8dIAKTEHw9xo0vaqu7aBU64vAU3s/wvDGdh7c7lfiJRlgp8?=
- =?us-ascii?Q?XNWmyrWUfdzatV95iEFbsJx0/WY6zMy+Zyx6tTuekIRXIMNG+q61vKP/bO4W?=
- =?us-ascii?Q?/oU0HrcgecnaOF/gh9GDroi2HYWd+BNvv7j6KNTgegBcMSW1f6vX15JcUhU3?=
- =?us-ascii?Q?kkeZ26p51CFphUHHYvwt49mvYvYi3o5Bg1JYtlY818Uwv/GrfGfqL3nzKc4L?=
- =?us-ascii?Q?S8gmPRMLkCP3VdYXnUq0jbpM9URtFNgVEqEl+lQ7C7TpfR5ZDcZjgyFuoxK0?=
- =?us-ascii?Q?Ng=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Ugl3ahwBj0cMfA9Oht7Jbtunfhl3aIwHqQXYqfn5gHLOOIbqQ7RYJBGBUzfJ?=
+ =?us-ascii?Q?rbIpYXa6cg68MMa9VLrYVbU9z7x5CNmxuLsTqEWHuyZzeNOChRQKq9jO7Bn5?=
+ =?us-ascii?Q?p4wYvD59CPzxm3uQCxMoLbTapeq+z6LtKpUL5FNBqDxg54BJF1XKk4EihyjQ?=
+ =?us-ascii?Q?EKHBAUBGIpJWSG3Wr+TRREy0JGdAsx2dyYN+rHEgw0OmQZyrgJ7JuALZxBAx?=
+ =?us-ascii?Q?h9X9zwudYPIzPXdZWsRaHcAlIATLIVLMztEfIJrw0UbfaGlW1KjaiCRB4wpH?=
+ =?us-ascii?Q?oYa80XUsz0dKLzj3AkKoofdBoOkFwIXlGU7K+QKQXRTDYMH8OEDuHykc4rFJ?=
+ =?us-ascii?Q?xqXt70rDykllBUv8P9+xzOk2lsGRw+rCzXvcdX5W7qv7+JUUQzw49tyBcKMc?=
+ =?us-ascii?Q?2Na9Ps4Pwxx+Ry1cGSEMyI3/0RA+86J38MqijVTDnwur4q0JE4ye2y+Ytpeh?=
+ =?us-ascii?Q?vtMdXlAqsSd6zdXcLvMnwoKUDusX0TwzN16y31h8T59yrUfu+SB4fjcwqF55?=
+ =?us-ascii?Q?r6vo0me/hZauN6A4FVgdPZSfSxThSg9EcT+x1fLpVrZ+VToZ2JhtPHyAGEQD?=
+ =?us-ascii?Q?vTHqRrvqJQBChSy1dWhgMuU4fOl3HGlLo83UGh15zePgJ+r5eUh+vPApCiEN?=
+ =?us-ascii?Q?Y2G3fcQMzXLcGJHBWtP7syyqOdzgWfOqvrfWGHVctFZW9Wi66M9M5RsCtiGb?=
+ =?us-ascii?Q?zt7e+trlrcNModVA/bjq94VRgpbAtpk3BoO3hJpkIB3Uu/NBs8RnZvj+llFa?=
+ =?us-ascii?Q?J4/7f46iqick4asBHtTVyQOMN3zGZGtuocqiqb/CYjz/Ipvq0fRvX+d1vC3G?=
+ =?us-ascii?Q?TCLfo20ZH4Gokg8CoW1ieAbQlZMbvOR6yA4N6RfZvKqkJF9wGPSF3rdAjXfu?=
+ =?us-ascii?Q?yimzQpCe8JFnoGcfJn/JaQawdVocrEKnADdfIn54PgjkldOYv/3iVDxRxItB?=
+ =?us-ascii?Q?MkZSojQI5kzAET6VS+nendkO4W/YhZ2CYQCvLSjGsT4deOFvpqKbFvbyxBxh?=
+ =?us-ascii?Q?DNhY+hbKDWle1rU8EMtgq9+HQjCixeBjLkQddlxOFtSfTb1b6H1wUUBx3O09?=
+ =?us-ascii?Q?8KJCPpBWGsgf9H4731K4WE0BgJVahP7ldmgx/54gWeuj6xLvP8QAJHX/deEJ?=
+ =?us-ascii?Q?i0t338FBMafxUe7kYO/FmwmQqazrO1/K1DVgHrgNu5AVtmnxB0oIg8J/cLnt?=
+ =?us-ascii?Q?oHyiqnPWg9IXBfnnPxqObbTA7wovlULHu1HobyfrE+RUorqj2V2E/aPvtGeh?=
+ =?us-ascii?Q?xlxTvMTo8ISihEf09J8ZyPtc5auK67EAOtZItTu/2E5MDoGMK0Oob3ertC/I?=
+ =?us-ascii?Q?OsT9SIr/8yL9TQ2ZnfwHx9L44c4wQlMCiWjdJYvrnnqBqASv2SraEBTc5iEH?=
+ =?us-ascii?Q?VGJRQqflHkaaGQIKx2T5NSJHF+bo48QyoiXI1GM6V0iSIxki4EDWHUfSgeHW?=
+ =?us-ascii?Q?CLglF64PbZpKLiurfJkkROa21JZR/9hRV5IR431sNWxKtu6cNTSWDEsFnTvR?=
+ =?us-ascii?Q?5QxsIOKEGci79pWNNcj0nABtOgrqmPd6hyxQdK25HtNnQK9dEaYog/1Jd6xF?=
+ =?us-ascii?Q?IQX9nC9afHu6Jq5ZW+T13ek69TYOsct24Ma4RNIVV4bPXZ+oAVeMhKkitUAk?=
+ =?us-ascii?Q?8A=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 766dc45a-c93c-472a-b210-08da91b9fcbd
+X-MS-Exchange-CrossTenant-Network-Message-Id: eda8af15-8251-43f0-2f61-08da91b9fd81
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Sep 2022 16:48:42.3645
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Sep 2022 16:48:43.6300
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +T5OCA+aoonbGwcTrkSe4IPVahAeVQUVldvOkbe/RWj5MTHr9X87CiP1LnPnqfzdUQXEXCZJtCLtiustT1ocVg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6irvKOLZvUTO8vUFX/iCzuVZEZv5YwA6WSBY0JKmn8HmjQzukm6PKt+tWCpJ9xjW2boseGIcq9RVHY5pOkpoWw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB5052
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UPPERCASE_50_75 autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The hardware counter is called C_TX_AGED, so rename SYS_COUNT_TX_AGING
-to SYS_COUNT_TX_AGED. This will become important since we want to
-minimize the way in which we declare struct ocelot_stat_layout elements,
-using the C preprocessor.
+The current definition of struct ocelot_stat_layout is long-winded (4
+lines per entry, and we have hundreds of entries), so we could make an
+effort to use the C preprocessor and reduce the line count.
+
+Create an implicit correspondence between enum ocelot_reg, which tells
+us the register address (SYS_COUNT_RX_OCTETS etc) and enum ocelot_stat
+which allows us to index the ocelot->stats array (OCELOT_STAT_RX_OCTETS
+etc), and don't require us to specify both when we define what stats
+each switch family has.
+
+Create an OCELOT_STAT() macro that pairs only an enum ocelot_stat to an
+enum ocelot_reg, and an OCELOT_STAT_ETHTOOL() macro which also contains
+a name exported to the unstructured ethtool -S stringset API. For now,
+we define all counters as having the OCELOT_STAT_ETHTOOL() kind, but we
+will add more counters in the future which are not exported to the
+unstructured ethtool -S.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/ocelot/felix_vsc9959.c     | 4 ++--
- drivers/net/dsa/ocelot/seville_vsc9953.c   | 4 ++--
- drivers/net/ethernet/mscc/ocelot_vsc7514.c | 2 +-
- drivers/net/ethernet/mscc/vsc7514_regs.c   | 2 +-
- include/soc/mscc/ocelot.h                  | 2 +-
- 5 files changed, 7 insertions(+), 7 deletions(-)
+ drivers/net/dsa/ocelot/felix_vsc9959.c     | 465 +++++----------------
+ drivers/net/dsa/ocelot/seville_vsc9953.c   | 465 +++++----------------
+ drivers/net/ethernet/mscc/ocelot_vsc7514.c | 465 +++++----------------
+ include/soc/mscc/ocelot.h                  |  11 +
+ 4 files changed, 290 insertions(+), 1116 deletions(-)
 
 diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index b56aad84b6cb..c8377a79d5ec 100644
+index c8377a79d5ec..07641915fcf0 100644
 --- a/drivers/net/dsa/ocelot/felix_vsc9959.c
 +++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -347,7 +347,7 @@ static const u32 vsc9959_sys_regmap[] = {
- 	REG(SYS_COUNT_TX_GREEN_PRIO_5,		0x00026c),
- 	REG(SYS_COUNT_TX_GREEN_PRIO_6,		0x000270),
- 	REG(SYS_COUNT_TX_GREEN_PRIO_7,		0x000274),
--	REG(SYS_COUNT_TX_AGING,			0x000278),
-+	REG(SYS_COUNT_TX_AGED,			0x000278),
- 	REG(SYS_COUNT_DROP_LOCAL,		0x000400),
- 	REG(SYS_COUNT_DROP_TAIL,		0x000404),
- 	REG(SYS_COUNT_DROP_YELLOW_PRIO_0,	0x000408),
-@@ -920,7 +920,7 @@ static const struct ocelot_stat_layout vsc9959_stats_layout[OCELOT_NUM_STATS] =
- 	},
- 	[OCELOT_STAT_TX_AGED] = {
- 		.name = "tx_aged",
--		.reg = SYS_COUNT_TX_AGING,
-+		.reg = SYS_COUNT_TX_AGED,
- 	},
- 	[OCELOT_STAT_DROP_LOCAL] = {
- 		.name = "drop_local",
+@@ -622,378 +622,99 @@ static const struct reg_field vsc9959_regfields[REGFIELD_MAX] = {
+ };
+ 
+ static const struct ocelot_stat_layout vsc9959_stats_layout[OCELOT_NUM_STATS] = {
+-	[OCELOT_STAT_RX_OCTETS] = {
+-		.name = "rx_octets",
+-		.reg = SYS_COUNT_RX_OCTETS,
+-	},
+-	[OCELOT_STAT_RX_UNICAST] = {
+-		.name = "rx_unicast",
+-		.reg = SYS_COUNT_RX_UNICAST,
+-	},
+-	[OCELOT_STAT_RX_MULTICAST] = {
+-		.name = "rx_multicast",
+-		.reg = SYS_COUNT_RX_MULTICAST,
+-	},
+-	[OCELOT_STAT_RX_BROADCAST] = {
+-		.name = "rx_broadcast",
+-		.reg = SYS_COUNT_RX_BROADCAST,
+-	},
+-	[OCELOT_STAT_RX_SHORTS] = {
+-		.name = "rx_shorts",
+-		.reg = SYS_COUNT_RX_SHORTS,
+-	},
+-	[OCELOT_STAT_RX_FRAGMENTS] = {
+-		.name = "rx_fragments",
+-		.reg = SYS_COUNT_RX_FRAGMENTS,
+-	},
+-	[OCELOT_STAT_RX_JABBERS] = {
+-		.name = "rx_jabbers",
+-		.reg = SYS_COUNT_RX_JABBERS,
+-	},
+-	[OCELOT_STAT_RX_CRC_ALIGN_ERRS] = {
+-		.name = "rx_crc_align_errs",
+-		.reg = SYS_COUNT_RX_CRC_ALIGN_ERRS,
+-	},
+-	[OCELOT_STAT_RX_SYM_ERRS] = {
+-		.name = "rx_sym_errs",
+-		.reg = SYS_COUNT_RX_SYM_ERRS,
+-	},
+-	[OCELOT_STAT_RX_64] = {
+-		.name = "rx_frames_below_65_octets",
+-		.reg = SYS_COUNT_RX_64,
+-	},
+-	[OCELOT_STAT_RX_65_127] = {
+-		.name = "rx_frames_65_to_127_octets",
+-		.reg = SYS_COUNT_RX_65_127,
+-	},
+-	[OCELOT_STAT_RX_128_255] = {
+-		.name = "rx_frames_128_to_255_octets",
+-		.reg = SYS_COUNT_RX_128_255,
+-	},
+-	[OCELOT_STAT_RX_256_511] = {
+-		.name = "rx_frames_256_to_511_octets",
+-		.reg = SYS_COUNT_RX_256_511,
+-	},
+-	[OCELOT_STAT_RX_512_1023] = {
+-		.name = "rx_frames_512_to_1023_octets",
+-		.reg = SYS_COUNT_RX_512_1023,
+-	},
+-	[OCELOT_STAT_RX_1024_1526] = {
+-		.name = "rx_frames_1024_to_1526_octets",
+-		.reg = SYS_COUNT_RX_1024_1526,
+-	},
+-	[OCELOT_STAT_RX_1527_MAX] = {
+-		.name = "rx_frames_over_1526_octets",
+-		.reg = SYS_COUNT_RX_1527_MAX,
+-	},
+-	[OCELOT_STAT_RX_PAUSE] = {
+-		.name = "rx_pause",
+-		.reg = SYS_COUNT_RX_PAUSE,
+-	},
+-	[OCELOT_STAT_RX_CONTROL] = {
+-		.name = "rx_control",
+-		.reg = SYS_COUNT_RX_CONTROL,
+-	},
+-	[OCELOT_STAT_RX_LONGS] = {
+-		.name = "rx_longs",
+-		.reg = SYS_COUNT_RX_LONGS,
+-	},
+-	[OCELOT_STAT_RX_CLASSIFIED_DROPS] = {
+-		.name = "rx_classified_drops",
+-		.reg = SYS_COUNT_RX_CLASSIFIED_DROPS,
+-	},
+-	[OCELOT_STAT_RX_RED_PRIO_0] = {
+-		.name = "rx_red_prio_0",
+-		.reg = SYS_COUNT_RX_RED_PRIO_0,
+-	},
+-	[OCELOT_STAT_RX_RED_PRIO_1] = {
+-		.name = "rx_red_prio_1",
+-		.reg = SYS_COUNT_RX_RED_PRIO_1,
+-	},
+-	[OCELOT_STAT_RX_RED_PRIO_2] = {
+-		.name = "rx_red_prio_2",
+-		.reg = SYS_COUNT_RX_RED_PRIO_2,
+-	},
+-	[OCELOT_STAT_RX_RED_PRIO_3] = {
+-		.name = "rx_red_prio_3",
+-		.reg = SYS_COUNT_RX_RED_PRIO_3,
+-	},
+-	[OCELOT_STAT_RX_RED_PRIO_4] = {
+-		.name = "rx_red_prio_4",
+-		.reg = SYS_COUNT_RX_RED_PRIO_4,
+-	},
+-	[OCELOT_STAT_RX_RED_PRIO_5] = {
+-		.name = "rx_red_prio_5",
+-		.reg = SYS_COUNT_RX_RED_PRIO_5,
+-	},
+-	[OCELOT_STAT_RX_RED_PRIO_6] = {
+-		.name = "rx_red_prio_6",
+-		.reg = SYS_COUNT_RX_RED_PRIO_6,
+-	},
+-	[OCELOT_STAT_RX_RED_PRIO_7] = {
+-		.name = "rx_red_prio_7",
+-		.reg = SYS_COUNT_RX_RED_PRIO_7,
+-	},
+-	[OCELOT_STAT_RX_YELLOW_PRIO_0] = {
+-		.name = "rx_yellow_prio_0",
+-		.reg = SYS_COUNT_RX_YELLOW_PRIO_0,
+-	},
+-	[OCELOT_STAT_RX_YELLOW_PRIO_1] = {
+-		.name = "rx_yellow_prio_1",
+-		.reg = SYS_COUNT_RX_YELLOW_PRIO_1,
+-	},
+-	[OCELOT_STAT_RX_YELLOW_PRIO_2] = {
+-		.name = "rx_yellow_prio_2",
+-		.reg = SYS_COUNT_RX_YELLOW_PRIO_2,
+-	},
+-	[OCELOT_STAT_RX_YELLOW_PRIO_3] = {
+-		.name = "rx_yellow_prio_3",
+-		.reg = SYS_COUNT_RX_YELLOW_PRIO_3,
+-	},
+-	[OCELOT_STAT_RX_YELLOW_PRIO_4] = {
+-		.name = "rx_yellow_prio_4",
+-		.reg = SYS_COUNT_RX_YELLOW_PRIO_4,
+-	},
+-	[OCELOT_STAT_RX_YELLOW_PRIO_5] = {
+-		.name = "rx_yellow_prio_5",
+-		.reg = SYS_COUNT_RX_YELLOW_PRIO_5,
+-	},
+-	[OCELOT_STAT_RX_YELLOW_PRIO_6] = {
+-		.name = "rx_yellow_prio_6",
+-		.reg = SYS_COUNT_RX_YELLOW_PRIO_6,
+-	},
+-	[OCELOT_STAT_RX_YELLOW_PRIO_7] = {
+-		.name = "rx_yellow_prio_7",
+-		.reg = SYS_COUNT_RX_YELLOW_PRIO_7,
+-	},
+-	[OCELOT_STAT_RX_GREEN_PRIO_0] = {
+-		.name = "rx_green_prio_0",
+-		.reg = SYS_COUNT_RX_GREEN_PRIO_0,
+-	},
+-	[OCELOT_STAT_RX_GREEN_PRIO_1] = {
+-		.name = "rx_green_prio_1",
+-		.reg = SYS_COUNT_RX_GREEN_PRIO_1,
+-	},
+-	[OCELOT_STAT_RX_GREEN_PRIO_2] = {
+-		.name = "rx_green_prio_2",
+-		.reg = SYS_COUNT_RX_GREEN_PRIO_2,
+-	},
+-	[OCELOT_STAT_RX_GREEN_PRIO_3] = {
+-		.name = "rx_green_prio_3",
+-		.reg = SYS_COUNT_RX_GREEN_PRIO_3,
+-	},
+-	[OCELOT_STAT_RX_GREEN_PRIO_4] = {
+-		.name = "rx_green_prio_4",
+-		.reg = SYS_COUNT_RX_GREEN_PRIO_4,
+-	},
+-	[OCELOT_STAT_RX_GREEN_PRIO_5] = {
+-		.name = "rx_green_prio_5",
+-		.reg = SYS_COUNT_RX_GREEN_PRIO_5,
+-	},
+-	[OCELOT_STAT_RX_GREEN_PRIO_6] = {
+-		.name = "rx_green_prio_6",
+-		.reg = SYS_COUNT_RX_GREEN_PRIO_6,
+-	},
+-	[OCELOT_STAT_RX_GREEN_PRIO_7] = {
+-		.name = "rx_green_prio_7",
+-		.reg = SYS_COUNT_RX_GREEN_PRIO_7,
+-	},
+-	[OCELOT_STAT_TX_OCTETS] = {
+-		.name = "tx_octets",
+-		.reg = SYS_COUNT_TX_OCTETS,
+-	},
+-	[OCELOT_STAT_TX_UNICAST] = {
+-		.name = "tx_unicast",
+-		.reg = SYS_COUNT_TX_UNICAST,
+-	},
+-	[OCELOT_STAT_TX_MULTICAST] = {
+-		.name = "tx_multicast",
+-		.reg = SYS_COUNT_TX_MULTICAST,
+-	},
+-	[OCELOT_STAT_TX_BROADCAST] = {
+-		.name = "tx_broadcast",
+-		.reg = SYS_COUNT_TX_BROADCAST,
+-	},
+-	[OCELOT_STAT_TX_COLLISION] = {
+-		.name = "tx_collision",
+-		.reg = SYS_COUNT_TX_COLLISION,
+-	},
+-	[OCELOT_STAT_TX_DROPS] = {
+-		.name = "tx_drops",
+-		.reg = SYS_COUNT_TX_DROPS,
+-	},
+-	[OCELOT_STAT_TX_PAUSE] = {
+-		.name = "tx_pause",
+-		.reg = SYS_COUNT_TX_PAUSE,
+-	},
+-	[OCELOT_STAT_TX_64] = {
+-		.name = "tx_frames_below_65_octets",
+-		.reg = SYS_COUNT_TX_64,
+-	},
+-	[OCELOT_STAT_TX_65_127] = {
+-		.name = "tx_frames_65_to_127_octets",
+-		.reg = SYS_COUNT_TX_65_127,
+-	},
+-	[OCELOT_STAT_TX_128_255] = {
+-		.name = "tx_frames_128_255_octets",
+-		.reg = SYS_COUNT_TX_128_255,
+-	},
+-	[OCELOT_STAT_TX_256_511] = {
+-		.name = "tx_frames_256_511_octets",
+-		.reg = SYS_COUNT_TX_256_511,
+-	},
+-	[OCELOT_STAT_TX_512_1023] = {
+-		.name = "tx_frames_512_1023_octets",
+-		.reg = SYS_COUNT_TX_512_1023,
+-	},
+-	[OCELOT_STAT_TX_1024_1526] = {
+-		.name = "tx_frames_1024_1526_octets",
+-		.reg = SYS_COUNT_TX_1024_1526,
+-	},
+-	[OCELOT_STAT_TX_1527_MAX] = {
+-		.name = "tx_frames_over_1526_octets",
+-		.reg = SYS_COUNT_TX_1527_MAX,
+-	},
+-	[OCELOT_STAT_TX_YELLOW_PRIO_0] = {
+-		.name = "tx_yellow_prio_0",
+-		.reg = SYS_COUNT_TX_YELLOW_PRIO_0,
+-	},
+-	[OCELOT_STAT_TX_YELLOW_PRIO_1] = {
+-		.name = "tx_yellow_prio_1",
+-		.reg = SYS_COUNT_TX_YELLOW_PRIO_1,
+-	},
+-	[OCELOT_STAT_TX_YELLOW_PRIO_2] = {
+-		.name = "tx_yellow_prio_2",
+-		.reg = SYS_COUNT_TX_YELLOW_PRIO_2,
+-	},
+-	[OCELOT_STAT_TX_YELLOW_PRIO_3] = {
+-		.name = "tx_yellow_prio_3",
+-		.reg = SYS_COUNT_TX_YELLOW_PRIO_3,
+-	},
+-	[OCELOT_STAT_TX_YELLOW_PRIO_4] = {
+-		.name = "tx_yellow_prio_4",
+-		.reg = SYS_COUNT_TX_YELLOW_PRIO_4,
+-	},
+-	[OCELOT_STAT_TX_YELLOW_PRIO_5] = {
+-		.name = "tx_yellow_prio_5",
+-		.reg = SYS_COUNT_TX_YELLOW_PRIO_5,
+-	},
+-	[OCELOT_STAT_TX_YELLOW_PRIO_6] = {
+-		.name = "tx_yellow_prio_6",
+-		.reg = SYS_COUNT_TX_YELLOW_PRIO_6,
+-	},
+-	[OCELOT_STAT_TX_YELLOW_PRIO_7] = {
+-		.name = "tx_yellow_prio_7",
+-		.reg = SYS_COUNT_TX_YELLOW_PRIO_7,
+-	},
+-	[OCELOT_STAT_TX_GREEN_PRIO_0] = {
+-		.name = "tx_green_prio_0",
+-		.reg = SYS_COUNT_TX_GREEN_PRIO_0,
+-	},
+-	[OCELOT_STAT_TX_GREEN_PRIO_1] = {
+-		.name = "tx_green_prio_1",
+-		.reg = SYS_COUNT_TX_GREEN_PRIO_1,
+-	},
+-	[OCELOT_STAT_TX_GREEN_PRIO_2] = {
+-		.name = "tx_green_prio_2",
+-		.reg = SYS_COUNT_TX_GREEN_PRIO_2,
+-	},
+-	[OCELOT_STAT_TX_GREEN_PRIO_3] = {
+-		.name = "tx_green_prio_3",
+-		.reg = SYS_COUNT_TX_GREEN_PRIO_3,
+-	},
+-	[OCELOT_STAT_TX_GREEN_PRIO_4] = {
+-		.name = "tx_green_prio_4",
+-		.reg = SYS_COUNT_TX_GREEN_PRIO_4,
+-	},
+-	[OCELOT_STAT_TX_GREEN_PRIO_5] = {
+-		.name = "tx_green_prio_5",
+-		.reg = SYS_COUNT_TX_GREEN_PRIO_5,
+-	},
+-	[OCELOT_STAT_TX_GREEN_PRIO_6] = {
+-		.name = "tx_green_prio_6",
+-		.reg = SYS_COUNT_TX_GREEN_PRIO_6,
+-	},
+-	[OCELOT_STAT_TX_GREEN_PRIO_7] = {
+-		.name = "tx_green_prio_7",
+-		.reg = SYS_COUNT_TX_GREEN_PRIO_7,
+-	},
+-	[OCELOT_STAT_TX_AGED] = {
+-		.name = "tx_aged",
+-		.reg = SYS_COUNT_TX_AGED,
+-	},
+-	[OCELOT_STAT_DROP_LOCAL] = {
+-		.name = "drop_local",
+-		.reg = SYS_COUNT_DROP_LOCAL,
+-	},
+-	[OCELOT_STAT_DROP_TAIL] = {
+-		.name = "drop_tail",
+-		.reg = SYS_COUNT_DROP_TAIL,
+-	},
+-	[OCELOT_STAT_DROP_YELLOW_PRIO_0] = {
+-		.name = "drop_yellow_prio_0",
+-		.reg = SYS_COUNT_DROP_YELLOW_PRIO_0,
+-	},
+-	[OCELOT_STAT_DROP_YELLOW_PRIO_1] = {
+-		.name = "drop_yellow_prio_1",
+-		.reg = SYS_COUNT_DROP_YELLOW_PRIO_1,
+-	},
+-	[OCELOT_STAT_DROP_YELLOW_PRIO_2] = {
+-		.name = "drop_yellow_prio_2",
+-		.reg = SYS_COUNT_DROP_YELLOW_PRIO_2,
+-	},
+-	[OCELOT_STAT_DROP_YELLOW_PRIO_3] = {
+-		.name = "drop_yellow_prio_3",
+-		.reg = SYS_COUNT_DROP_YELLOW_PRIO_3,
+-	},
+-	[OCELOT_STAT_DROP_YELLOW_PRIO_4] = {
+-		.name = "drop_yellow_prio_4",
+-		.reg = SYS_COUNT_DROP_YELLOW_PRIO_4,
+-	},
+-	[OCELOT_STAT_DROP_YELLOW_PRIO_5] = {
+-		.name = "drop_yellow_prio_5",
+-		.reg = SYS_COUNT_DROP_YELLOW_PRIO_5,
+-	},
+-	[OCELOT_STAT_DROP_YELLOW_PRIO_6] = {
+-		.name = "drop_yellow_prio_6",
+-		.reg = SYS_COUNT_DROP_YELLOW_PRIO_6,
+-	},
+-	[OCELOT_STAT_DROP_YELLOW_PRIO_7] = {
+-		.name = "drop_yellow_prio_7",
+-		.reg = SYS_COUNT_DROP_YELLOW_PRIO_7,
+-	},
+-	[OCELOT_STAT_DROP_GREEN_PRIO_0] = {
+-		.name = "drop_green_prio_0",
+-		.reg = SYS_COUNT_DROP_GREEN_PRIO_0,
+-	},
+-	[OCELOT_STAT_DROP_GREEN_PRIO_1] = {
+-		.name = "drop_green_prio_1",
+-		.reg = SYS_COUNT_DROP_GREEN_PRIO_1,
+-	},
+-	[OCELOT_STAT_DROP_GREEN_PRIO_2] = {
+-		.name = "drop_green_prio_2",
+-		.reg = SYS_COUNT_DROP_GREEN_PRIO_2,
+-	},
+-	[OCELOT_STAT_DROP_GREEN_PRIO_3] = {
+-		.name = "drop_green_prio_3",
+-		.reg = SYS_COUNT_DROP_GREEN_PRIO_3,
+-	},
+-	[OCELOT_STAT_DROP_GREEN_PRIO_4] = {
+-		.name = "drop_green_prio_4",
+-		.reg = SYS_COUNT_DROP_GREEN_PRIO_4,
+-	},
+-	[OCELOT_STAT_DROP_GREEN_PRIO_5] = {
+-		.name = "drop_green_prio_5",
+-		.reg = SYS_COUNT_DROP_GREEN_PRIO_5,
+-	},
+-	[OCELOT_STAT_DROP_GREEN_PRIO_6] = {
+-		.name = "drop_green_prio_6",
+-		.reg = SYS_COUNT_DROP_GREEN_PRIO_6,
+-	},
+-	[OCELOT_STAT_DROP_GREEN_PRIO_7] = {
+-		.name = "drop_green_prio_7",
+-		.reg = SYS_COUNT_DROP_GREEN_PRIO_7,
+-	},
++	OCELOT_STAT_ETHTOOL(RX_OCTETS, "rx_octets"),
++	OCELOT_STAT_ETHTOOL(RX_UNICAST, "rx_unicast"),
++	OCELOT_STAT_ETHTOOL(RX_MULTICAST, "rx_multicast"),
++	OCELOT_STAT_ETHTOOL(RX_BROADCAST, "rx_broadcast"),
++	OCELOT_STAT_ETHTOOL(RX_SHORTS, "rx_shorts"),
++	OCELOT_STAT_ETHTOOL(RX_FRAGMENTS, "rx_fragments"),
++	OCELOT_STAT_ETHTOOL(RX_JABBERS, "rx_jabbers"),
++	OCELOT_STAT_ETHTOOL(RX_CRC_ALIGN_ERRS, "rx_crc_align_errs"),
++	OCELOT_STAT_ETHTOOL(RX_SYM_ERRS, "rx_sym_errs"),
++	OCELOT_STAT_ETHTOOL(RX_64, "rx_frames_below_65_octets"),
++	OCELOT_STAT_ETHTOOL(RX_65_127, "rx_frames_65_to_127_octets"),
++	OCELOT_STAT_ETHTOOL(RX_128_255, "rx_frames_128_to_255_octets"),
++	OCELOT_STAT_ETHTOOL(RX_256_511, "rx_frames_256_to_511_octets"),
++	OCELOT_STAT_ETHTOOL(RX_512_1023, "rx_frames_512_to_1023_octets"),
++	OCELOT_STAT_ETHTOOL(RX_1024_1526, "rx_frames_1024_to_1526_octets"),
++	OCELOT_STAT_ETHTOOL(RX_1527_MAX, "rx_frames_over_1526_octets"),
++	OCELOT_STAT_ETHTOOL(RX_PAUSE, "rx_pause"),
++	OCELOT_STAT_ETHTOOL(RX_CONTROL, "rx_control"),
++	OCELOT_STAT_ETHTOOL(RX_LONGS, "rx_longs"),
++	OCELOT_STAT_ETHTOOL(RX_CLASSIFIED_DROPS, "rx_classified_drops"),
++	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_0, "rx_red_prio_0"),
++	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_1, "rx_red_prio_1"),
++	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_2, "rx_red_prio_2"),
++	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_3, "rx_red_prio_3"),
++	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_4, "rx_red_prio_4"),
++	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_5, "rx_red_prio_5"),
++	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_6, "rx_red_prio_6"),
++	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_7, "rx_red_prio_7"),
++	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_0, "rx_yellow_prio_0"),
++	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_1, "rx_yellow_prio_1"),
++	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_2, "rx_yellow_prio_2"),
++	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_3, "rx_yellow_prio_3"),
++	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_4, "rx_yellow_prio_4"),
++	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_5, "rx_yellow_prio_5"),
++	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_6, "rx_yellow_prio_6"),
++	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_7, "rx_yellow_prio_7"),
++	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_0, "rx_green_prio_0"),
++	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_1, "rx_green_prio_1"),
++	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_2, "rx_green_prio_2"),
++	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_3, "rx_green_prio_3"),
++	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_4, "rx_green_prio_4"),
++	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_5, "rx_green_prio_5"),
++	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_6, "rx_green_prio_6"),
++	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_7, "rx_green_prio_7"),
++	OCELOT_STAT_ETHTOOL(TX_OCTETS, "tx_octets"),
++	OCELOT_STAT_ETHTOOL(TX_UNICAST, "tx_unicast"),
++	OCELOT_STAT_ETHTOOL(TX_MULTICAST, "tx_multicast"),
++	OCELOT_STAT_ETHTOOL(TX_BROADCAST, "tx_broadcast"),
++	OCELOT_STAT_ETHTOOL(TX_COLLISION, "tx_collision"),
++	OCELOT_STAT_ETHTOOL(TX_DROPS, "tx_drops"),
++	OCELOT_STAT_ETHTOOL(TX_PAUSE, "tx_pause"),
++	OCELOT_STAT_ETHTOOL(TX_64, "tx_frames_below_65_octets"),
++	OCELOT_STAT_ETHTOOL(TX_65_127, "tx_frames_65_to_127_octets"),
++	OCELOT_STAT_ETHTOOL(TX_128_255, "tx_frames_128_255_octets"),
++	OCELOT_STAT_ETHTOOL(TX_256_511, "tx_frames_256_511_octets"),
++	OCELOT_STAT_ETHTOOL(TX_512_1023, "tx_frames_512_1023_octets"),
++	OCELOT_STAT_ETHTOOL(TX_1024_1526, "tx_frames_1024_1526_octets"),
++	OCELOT_STAT_ETHTOOL(TX_1527_MAX, "tx_frames_over_1526_octets"),
++	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_0, "tx_yellow_prio_0"),
++	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_1, "tx_yellow_prio_1"),
++	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_2, "tx_yellow_prio_2"),
++	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_3, "tx_yellow_prio_3"),
++	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_4, "tx_yellow_prio_4"),
++	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_5, "tx_yellow_prio_5"),
++	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_6, "tx_yellow_prio_6"),
++	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_7, "tx_yellow_prio_7"),
++	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_0, "tx_green_prio_0"),
++	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_1, "tx_green_prio_1"),
++	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_2, "tx_green_prio_2"),
++	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_3, "tx_green_prio_3"),
++	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_4, "tx_green_prio_4"),
++	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_5, "tx_green_prio_5"),
++	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_6, "tx_green_prio_6"),
++	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_7, "tx_green_prio_7"),
++	OCELOT_STAT_ETHTOOL(TX_AGED, "tx_aged"),
++	OCELOT_STAT_ETHTOOL(DROP_LOCAL, "drop_local"),
++	OCELOT_STAT_ETHTOOL(DROP_TAIL, "drop_tail"),
++	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_0, "drop_yellow_prio_0"),
++	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_1, "drop_yellow_prio_1"),
++	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_2, "drop_yellow_prio_2"),
++	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_3, "drop_yellow_prio_3"),
++	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_4, "drop_yellow_prio_4"),
++	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_5, "drop_yellow_prio_5"),
++	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_6, "drop_yellow_prio_6"),
++	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_7, "drop_yellow_prio_7"),
++	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_0, "drop_green_prio_0"),
++	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_1, "drop_green_prio_1"),
++	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_2, "drop_green_prio_2"),
++	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_3, "drop_green_prio_3"),
++	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_4, "drop_green_prio_4"),
++	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_5, "drop_green_prio_5"),
++	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_6, "drop_green_prio_6"),
++	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_7, "drop_green_prio_7"),
+ };
+ 
+ static const struct vcap_field vsc9959_vcap_es0_keys[] = {
 diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
-index 26fdd0d90724..5799c4e50e36 100644
+index 5799c4e50e36..a8f69d483abf 100644
 --- a/drivers/net/dsa/ocelot/seville_vsc9953.c
 +++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
-@@ -343,7 +343,7 @@ static const u32 vsc9953_sys_regmap[] = {
- 	REG(SYS_COUNT_TX_GREEN_PRIO_5,		0x00016c),
- 	REG(SYS_COUNT_TX_GREEN_PRIO_6,		0x000170),
- 	REG(SYS_COUNT_TX_GREEN_PRIO_7,		0x000174),
--	REG(SYS_COUNT_TX_AGING,			0x000178),
-+	REG(SYS_COUNT_TX_AGED,			0x000178),
- 	REG(SYS_COUNT_DROP_LOCAL,		0x000200),
- 	REG(SYS_COUNT_DROP_TAIL,		0x000204),
- 	REG(SYS_COUNT_DROP_YELLOW_PRIO_0,	0x000208),
-@@ -912,7 +912,7 @@ static const struct ocelot_stat_layout vsc9953_stats_layout[OCELOT_NUM_STATS] =
- 	},
- 	[OCELOT_STAT_TX_AGED] = {
- 		.name = "tx_aged",
--		.reg = SYS_COUNT_TX_AGING,
-+		.reg = SYS_COUNT_TX_AGED,
- 	},
- 	[OCELOT_STAT_DROP_LOCAL] = {
- 		.name = "drop_local",
+@@ -614,378 +614,99 @@ static const struct reg_field vsc9953_regfields[REGFIELD_MAX] = {
+ };
+ 
+ static const struct ocelot_stat_layout vsc9953_stats_layout[OCELOT_NUM_STATS] = {
+-	[OCELOT_STAT_RX_OCTETS] = {
+-		.name = "rx_octets",
+-		.reg = SYS_COUNT_RX_OCTETS,
+-	},
+-	[OCELOT_STAT_RX_UNICAST] = {
+-		.name = "rx_unicast",
+-		.reg = SYS_COUNT_RX_UNICAST,
+-	},
+-	[OCELOT_STAT_RX_MULTICAST] = {
+-		.name = "rx_multicast",
+-		.reg = SYS_COUNT_RX_MULTICAST,
+-	},
+-	[OCELOT_STAT_RX_BROADCAST] = {
+-		.name = "rx_broadcast",
+-		.reg = SYS_COUNT_RX_BROADCAST,
+-	},
+-	[OCELOT_STAT_RX_SHORTS] = {
+-		.name = "rx_shorts",
+-		.reg = SYS_COUNT_RX_SHORTS,
+-	},
+-	[OCELOT_STAT_RX_FRAGMENTS] = {
+-		.name = "rx_fragments",
+-		.reg = SYS_COUNT_RX_FRAGMENTS,
+-	},
+-	[OCELOT_STAT_RX_JABBERS] = {
+-		.name = "rx_jabbers",
+-		.reg = SYS_COUNT_RX_JABBERS,
+-	},
+-	[OCELOT_STAT_RX_CRC_ALIGN_ERRS] = {
+-		.name = "rx_crc_align_errs",
+-		.reg = SYS_COUNT_RX_CRC_ALIGN_ERRS,
+-	},
+-	[OCELOT_STAT_RX_SYM_ERRS] = {
+-		.name = "rx_sym_errs",
+-		.reg = SYS_COUNT_RX_SYM_ERRS,
+-	},
+-	[OCELOT_STAT_RX_64] = {
+-		.name = "rx_frames_below_65_octets",
+-		.reg = SYS_COUNT_RX_64,
+-	},
+-	[OCELOT_STAT_RX_65_127] = {
+-		.name = "rx_frames_65_to_127_octets",
+-		.reg = SYS_COUNT_RX_65_127,
+-	},
+-	[OCELOT_STAT_RX_128_255] = {
+-		.name = "rx_frames_128_to_255_octets",
+-		.reg = SYS_COUNT_RX_128_255,
+-	},
+-	[OCELOT_STAT_RX_256_511] = {
+-		.name = "rx_frames_256_to_511_octets",
+-		.reg = SYS_COUNT_RX_256_511,
+-	},
+-	[OCELOT_STAT_RX_512_1023] = {
+-		.name = "rx_frames_512_to_1023_octets",
+-		.reg = SYS_COUNT_RX_512_1023,
+-	},
+-	[OCELOT_STAT_RX_1024_1526] = {
+-		.name = "rx_frames_1024_to_1526_octets",
+-		.reg = SYS_COUNT_RX_1024_1526,
+-	},
+-	[OCELOT_STAT_RX_1527_MAX] = {
+-		.name = "rx_frames_over_1526_octets",
+-		.reg = SYS_COUNT_RX_1527_MAX,
+-	},
+-	[OCELOT_STAT_RX_PAUSE] = {
+-		.name = "rx_pause",
+-		.reg = SYS_COUNT_RX_PAUSE,
+-	},
+-	[OCELOT_STAT_RX_CONTROL] = {
+-		.name = "rx_control",
+-		.reg = SYS_COUNT_RX_CONTROL,
+-	},
+-	[OCELOT_STAT_RX_LONGS] = {
+-		.name = "rx_longs",
+-		.reg = SYS_COUNT_RX_LONGS,
+-	},
+-	[OCELOT_STAT_RX_CLASSIFIED_DROPS] = {
+-		.name = "rx_classified_drops",
+-		.reg = SYS_COUNT_RX_CLASSIFIED_DROPS,
+-	},
+-	[OCELOT_STAT_RX_RED_PRIO_0] = {
+-		.name = "rx_red_prio_0",
+-		.reg = SYS_COUNT_RX_RED_PRIO_0,
+-	},
+-	[OCELOT_STAT_RX_RED_PRIO_1] = {
+-		.name = "rx_red_prio_1",
+-		.reg = SYS_COUNT_RX_RED_PRIO_1,
+-	},
+-	[OCELOT_STAT_RX_RED_PRIO_2] = {
+-		.name = "rx_red_prio_2",
+-		.reg = SYS_COUNT_RX_RED_PRIO_2,
+-	},
+-	[OCELOT_STAT_RX_RED_PRIO_3] = {
+-		.name = "rx_red_prio_3",
+-		.reg = SYS_COUNT_RX_RED_PRIO_3,
+-	},
+-	[OCELOT_STAT_RX_RED_PRIO_4] = {
+-		.name = "rx_red_prio_4",
+-		.reg = SYS_COUNT_RX_RED_PRIO_4,
+-	},
+-	[OCELOT_STAT_RX_RED_PRIO_5] = {
+-		.name = "rx_red_prio_5",
+-		.reg = SYS_COUNT_RX_RED_PRIO_5,
+-	},
+-	[OCELOT_STAT_RX_RED_PRIO_6] = {
+-		.name = "rx_red_prio_6",
+-		.reg = SYS_COUNT_RX_RED_PRIO_6,
+-	},
+-	[OCELOT_STAT_RX_RED_PRIO_7] = {
+-		.name = "rx_red_prio_7",
+-		.reg = SYS_COUNT_RX_RED_PRIO_7,
+-	},
+-	[OCELOT_STAT_RX_YELLOW_PRIO_0] = {
+-		.name = "rx_yellow_prio_0",
+-		.reg = SYS_COUNT_RX_YELLOW_PRIO_0,
+-	},
+-	[OCELOT_STAT_RX_YELLOW_PRIO_1] = {
+-		.name = "rx_yellow_prio_1",
+-		.reg = SYS_COUNT_RX_YELLOW_PRIO_1,
+-	},
+-	[OCELOT_STAT_RX_YELLOW_PRIO_2] = {
+-		.name = "rx_yellow_prio_2",
+-		.reg = SYS_COUNT_RX_YELLOW_PRIO_2,
+-	},
+-	[OCELOT_STAT_RX_YELLOW_PRIO_3] = {
+-		.name = "rx_yellow_prio_3",
+-		.reg = SYS_COUNT_RX_YELLOW_PRIO_3,
+-	},
+-	[OCELOT_STAT_RX_YELLOW_PRIO_4] = {
+-		.name = "rx_yellow_prio_4",
+-		.reg = SYS_COUNT_RX_YELLOW_PRIO_4,
+-	},
+-	[OCELOT_STAT_RX_YELLOW_PRIO_5] = {
+-		.name = "rx_yellow_prio_5",
+-		.reg = SYS_COUNT_RX_YELLOW_PRIO_5,
+-	},
+-	[OCELOT_STAT_RX_YELLOW_PRIO_6] = {
+-		.name = "rx_yellow_prio_6",
+-		.reg = SYS_COUNT_RX_YELLOW_PRIO_6,
+-	},
+-	[OCELOT_STAT_RX_YELLOW_PRIO_7] = {
+-		.name = "rx_yellow_prio_7",
+-		.reg = SYS_COUNT_RX_YELLOW_PRIO_7,
+-	},
+-	[OCELOT_STAT_RX_GREEN_PRIO_0] = {
+-		.name = "rx_green_prio_0",
+-		.reg = SYS_COUNT_RX_GREEN_PRIO_0,
+-	},
+-	[OCELOT_STAT_RX_GREEN_PRIO_1] = {
+-		.name = "rx_green_prio_1",
+-		.reg = SYS_COUNT_RX_GREEN_PRIO_1,
+-	},
+-	[OCELOT_STAT_RX_GREEN_PRIO_2] = {
+-		.name = "rx_green_prio_2",
+-		.reg = SYS_COUNT_RX_GREEN_PRIO_2,
+-	},
+-	[OCELOT_STAT_RX_GREEN_PRIO_3] = {
+-		.name = "rx_green_prio_3",
+-		.reg = SYS_COUNT_RX_GREEN_PRIO_3,
+-	},
+-	[OCELOT_STAT_RX_GREEN_PRIO_4] = {
+-		.name = "rx_green_prio_4",
+-		.reg = SYS_COUNT_RX_GREEN_PRIO_4,
+-	},
+-	[OCELOT_STAT_RX_GREEN_PRIO_5] = {
+-		.name = "rx_green_prio_5",
+-		.reg = SYS_COUNT_RX_GREEN_PRIO_5,
+-	},
+-	[OCELOT_STAT_RX_GREEN_PRIO_6] = {
+-		.name = "rx_green_prio_6",
+-		.reg = SYS_COUNT_RX_GREEN_PRIO_6,
+-	},
+-	[OCELOT_STAT_RX_GREEN_PRIO_7] = {
+-		.name = "rx_green_prio_7",
+-		.reg = SYS_COUNT_RX_GREEN_PRIO_7,
+-	},
+-	[OCELOT_STAT_TX_OCTETS] = {
+-		.name = "tx_octets",
+-		.reg = SYS_COUNT_TX_OCTETS,
+-	},
+-	[OCELOT_STAT_TX_UNICAST] = {
+-		.name = "tx_unicast",
+-		.reg = SYS_COUNT_TX_UNICAST,
+-	},
+-	[OCELOT_STAT_TX_MULTICAST] = {
+-		.name = "tx_multicast",
+-		.reg = SYS_COUNT_TX_MULTICAST,
+-	},
+-	[OCELOT_STAT_TX_BROADCAST] = {
+-		.name = "tx_broadcast",
+-		.reg = SYS_COUNT_TX_BROADCAST,
+-	},
+-	[OCELOT_STAT_TX_COLLISION] = {
+-		.name = "tx_collision",
+-		.reg = SYS_COUNT_TX_COLLISION,
+-	},
+-	[OCELOT_STAT_TX_DROPS] = {
+-		.name = "tx_drops",
+-		.reg = SYS_COUNT_TX_DROPS,
+-	},
+-	[OCELOT_STAT_TX_PAUSE] = {
+-		.name = "tx_pause",
+-		.reg = SYS_COUNT_TX_PAUSE,
+-	},
+-	[OCELOT_STAT_TX_64] = {
+-		.name = "tx_frames_below_65_octets",
+-		.reg = SYS_COUNT_TX_64,
+-	},
+-	[OCELOT_STAT_TX_65_127] = {
+-		.name = "tx_frames_65_to_127_octets",
+-		.reg = SYS_COUNT_TX_65_127,
+-	},
+-	[OCELOT_STAT_TX_128_255] = {
+-		.name = "tx_frames_128_255_octets",
+-		.reg = SYS_COUNT_TX_128_255,
+-	},
+-	[OCELOT_STAT_TX_256_511] = {
+-		.name = "tx_frames_256_511_octets",
+-		.reg = SYS_COUNT_TX_256_511,
+-	},
+-	[OCELOT_STAT_TX_512_1023] = {
+-		.name = "tx_frames_512_1023_octets",
+-		.reg = SYS_COUNT_TX_512_1023,
+-	},
+-	[OCELOT_STAT_TX_1024_1526] = {
+-		.name = "tx_frames_1024_1526_octets",
+-		.reg = SYS_COUNT_TX_1024_1526,
+-	},
+-	[OCELOT_STAT_TX_1527_MAX] = {
+-		.name = "tx_frames_over_1526_octets",
+-		.reg = SYS_COUNT_TX_1527_MAX,
+-	},
+-	[OCELOT_STAT_TX_YELLOW_PRIO_0] = {
+-		.name = "tx_yellow_prio_0",
+-		.reg = SYS_COUNT_TX_YELLOW_PRIO_0,
+-	},
+-	[OCELOT_STAT_TX_YELLOW_PRIO_1] = {
+-		.name = "tx_yellow_prio_1",
+-		.reg = SYS_COUNT_TX_YELLOW_PRIO_1,
+-	},
+-	[OCELOT_STAT_TX_YELLOW_PRIO_2] = {
+-		.name = "tx_yellow_prio_2",
+-		.reg = SYS_COUNT_TX_YELLOW_PRIO_2,
+-	},
+-	[OCELOT_STAT_TX_YELLOW_PRIO_3] = {
+-		.name = "tx_yellow_prio_3",
+-		.reg = SYS_COUNT_TX_YELLOW_PRIO_3,
+-	},
+-	[OCELOT_STAT_TX_YELLOW_PRIO_4] = {
+-		.name = "tx_yellow_prio_4",
+-		.reg = SYS_COUNT_TX_YELLOW_PRIO_4,
+-	},
+-	[OCELOT_STAT_TX_YELLOW_PRIO_5] = {
+-		.name = "tx_yellow_prio_5",
+-		.reg = SYS_COUNT_TX_YELLOW_PRIO_5,
+-	},
+-	[OCELOT_STAT_TX_YELLOW_PRIO_6] = {
+-		.name = "tx_yellow_prio_6",
+-		.reg = SYS_COUNT_TX_YELLOW_PRIO_6,
+-	},
+-	[OCELOT_STAT_TX_YELLOW_PRIO_7] = {
+-		.name = "tx_yellow_prio_7",
+-		.reg = SYS_COUNT_TX_YELLOW_PRIO_7,
+-	},
+-	[OCELOT_STAT_TX_GREEN_PRIO_0] = {
+-		.name = "tx_green_prio_0",
+-		.reg = SYS_COUNT_TX_GREEN_PRIO_0,
+-	},
+-	[OCELOT_STAT_TX_GREEN_PRIO_1] = {
+-		.name = "tx_green_prio_1",
+-		.reg = SYS_COUNT_TX_GREEN_PRIO_1,
+-	},
+-	[OCELOT_STAT_TX_GREEN_PRIO_2] = {
+-		.name = "tx_green_prio_2",
+-		.reg = SYS_COUNT_TX_GREEN_PRIO_2,
+-	},
+-	[OCELOT_STAT_TX_GREEN_PRIO_3] = {
+-		.name = "tx_green_prio_3",
+-		.reg = SYS_COUNT_TX_GREEN_PRIO_3,
+-	},
+-	[OCELOT_STAT_TX_GREEN_PRIO_4] = {
+-		.name = "tx_green_prio_4",
+-		.reg = SYS_COUNT_TX_GREEN_PRIO_4,
+-	},
+-	[OCELOT_STAT_TX_GREEN_PRIO_5] = {
+-		.name = "tx_green_prio_5",
+-		.reg = SYS_COUNT_TX_GREEN_PRIO_5,
+-	},
+-	[OCELOT_STAT_TX_GREEN_PRIO_6] = {
+-		.name = "tx_green_prio_6",
+-		.reg = SYS_COUNT_TX_GREEN_PRIO_6,
+-	},
+-	[OCELOT_STAT_TX_GREEN_PRIO_7] = {
+-		.name = "tx_green_prio_7",
+-		.reg = SYS_COUNT_TX_GREEN_PRIO_7,
+-	},
+-	[OCELOT_STAT_TX_AGED] = {
+-		.name = "tx_aged",
+-		.reg = SYS_COUNT_TX_AGED,
+-	},
+-	[OCELOT_STAT_DROP_LOCAL] = {
+-		.name = "drop_local",
+-		.reg = SYS_COUNT_DROP_LOCAL,
+-	},
+-	[OCELOT_STAT_DROP_TAIL] = {
+-		.name = "drop_tail",
+-		.reg = SYS_COUNT_DROP_TAIL,
+-	},
+-	[OCELOT_STAT_DROP_YELLOW_PRIO_0] = {
+-		.name = "drop_yellow_prio_0",
+-		.reg = SYS_COUNT_DROP_YELLOW_PRIO_0,
+-	},
+-	[OCELOT_STAT_DROP_YELLOW_PRIO_1] = {
+-		.name = "drop_yellow_prio_1",
+-		.reg = SYS_COUNT_DROP_YELLOW_PRIO_1,
+-	},
+-	[OCELOT_STAT_DROP_YELLOW_PRIO_2] = {
+-		.name = "drop_yellow_prio_2",
+-		.reg = SYS_COUNT_DROP_YELLOW_PRIO_2,
+-	},
+-	[OCELOT_STAT_DROP_YELLOW_PRIO_3] = {
+-		.name = "drop_yellow_prio_3",
+-		.reg = SYS_COUNT_DROP_YELLOW_PRIO_3,
+-	},
+-	[OCELOT_STAT_DROP_YELLOW_PRIO_4] = {
+-		.name = "drop_yellow_prio_4",
+-		.reg = SYS_COUNT_DROP_YELLOW_PRIO_4,
+-	},
+-	[OCELOT_STAT_DROP_YELLOW_PRIO_5] = {
+-		.name = "drop_yellow_prio_5",
+-		.reg = SYS_COUNT_DROP_YELLOW_PRIO_5,
+-	},
+-	[OCELOT_STAT_DROP_YELLOW_PRIO_6] = {
+-		.name = "drop_yellow_prio_6",
+-		.reg = SYS_COUNT_DROP_YELLOW_PRIO_6,
+-	},
+-	[OCELOT_STAT_DROP_YELLOW_PRIO_7] = {
+-		.name = "drop_yellow_prio_7",
+-		.reg = SYS_COUNT_DROP_YELLOW_PRIO_7,
+-	},
+-	[OCELOT_STAT_DROP_GREEN_PRIO_0] = {
+-		.name = "drop_green_prio_0",
+-		.reg = SYS_COUNT_DROP_GREEN_PRIO_0,
+-	},
+-	[OCELOT_STAT_DROP_GREEN_PRIO_1] = {
+-		.name = "drop_green_prio_1",
+-		.reg = SYS_COUNT_DROP_GREEN_PRIO_1,
+-	},
+-	[OCELOT_STAT_DROP_GREEN_PRIO_2] = {
+-		.name = "drop_green_prio_2",
+-		.reg = SYS_COUNT_DROP_GREEN_PRIO_2,
+-	},
+-	[OCELOT_STAT_DROP_GREEN_PRIO_3] = {
+-		.name = "drop_green_prio_3",
+-		.reg = SYS_COUNT_DROP_GREEN_PRIO_3,
+-	},
+-	[OCELOT_STAT_DROP_GREEN_PRIO_4] = {
+-		.name = "drop_green_prio_4",
+-		.reg = SYS_COUNT_DROP_GREEN_PRIO_4,
+-	},
+-	[OCELOT_STAT_DROP_GREEN_PRIO_5] = {
+-		.name = "drop_green_prio_5",
+-		.reg = SYS_COUNT_DROP_GREEN_PRIO_5,
+-	},
+-	[OCELOT_STAT_DROP_GREEN_PRIO_6] = {
+-		.name = "drop_green_prio_6",
+-		.reg = SYS_COUNT_DROP_GREEN_PRIO_6,
+-	},
+-	[OCELOT_STAT_DROP_GREEN_PRIO_7] = {
+-		.name = "drop_green_prio_7",
+-		.reg = SYS_COUNT_DROP_GREEN_PRIO_7,
+-	},
++	OCELOT_STAT_ETHTOOL(RX_OCTETS, "rx_octets"),
++	OCELOT_STAT_ETHTOOL(RX_UNICAST, "rx_unicast"),
++	OCELOT_STAT_ETHTOOL(RX_MULTICAST, "rx_multicast"),
++	OCELOT_STAT_ETHTOOL(RX_BROADCAST, "rx_broadcast"),
++	OCELOT_STAT_ETHTOOL(RX_SHORTS, "rx_shorts"),
++	OCELOT_STAT_ETHTOOL(RX_FRAGMENTS, "rx_fragments"),
++	OCELOT_STAT_ETHTOOL(RX_JABBERS, "rx_jabbers"),
++	OCELOT_STAT_ETHTOOL(RX_CRC_ALIGN_ERRS, "rx_crc_align_errs"),
++	OCELOT_STAT_ETHTOOL(RX_SYM_ERRS, "rx_sym_errs"),
++	OCELOT_STAT_ETHTOOL(RX_64, "rx_frames_below_65_octets"),
++	OCELOT_STAT_ETHTOOL(RX_65_127, "rx_frames_65_to_127_octets"),
++	OCELOT_STAT_ETHTOOL(RX_128_255, "rx_frames_128_to_255_octets"),
++	OCELOT_STAT_ETHTOOL(RX_256_511, "rx_frames_256_to_511_octets"),
++	OCELOT_STAT_ETHTOOL(RX_512_1023, "rx_frames_512_to_1023_octets"),
++	OCELOT_STAT_ETHTOOL(RX_1024_1526, "rx_frames_1024_to_1526_octets"),
++	OCELOT_STAT_ETHTOOL(RX_1527_MAX, "rx_frames_over_1526_octets"),
++	OCELOT_STAT_ETHTOOL(RX_PAUSE, "rx_pause"),
++	OCELOT_STAT_ETHTOOL(RX_CONTROL, "rx_control"),
++	OCELOT_STAT_ETHTOOL(RX_LONGS, "rx_longs"),
++	OCELOT_STAT_ETHTOOL(RX_CLASSIFIED_DROPS, "rx_classified_drops"),
++	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_0, "rx_red_prio_0"),
++	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_1, "rx_red_prio_1"),
++	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_2, "rx_red_prio_2"),
++	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_3, "rx_red_prio_3"),
++	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_4, "rx_red_prio_4"),
++	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_5, "rx_red_prio_5"),
++	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_6, "rx_red_prio_6"),
++	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_7, "rx_red_prio_7"),
++	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_0, "rx_yellow_prio_0"),
++	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_1, "rx_yellow_prio_1"),
++	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_2, "rx_yellow_prio_2"),
++	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_3, "rx_yellow_prio_3"),
++	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_4, "rx_yellow_prio_4"),
++	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_5, "rx_yellow_prio_5"),
++	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_6, "rx_yellow_prio_6"),
++	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_7, "rx_yellow_prio_7"),
++	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_0, "rx_green_prio_0"),
++	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_1, "rx_green_prio_1"),
++	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_2, "rx_green_prio_2"),
++	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_3, "rx_green_prio_3"),
++	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_4, "rx_green_prio_4"),
++	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_5, "rx_green_prio_5"),
++	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_6, "rx_green_prio_6"),
++	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_7, "rx_green_prio_7"),
++	OCELOT_STAT_ETHTOOL(TX_OCTETS, "tx_octets"),
++	OCELOT_STAT_ETHTOOL(TX_UNICAST, "tx_unicast"),
++	OCELOT_STAT_ETHTOOL(TX_MULTICAST, "tx_multicast"),
++	OCELOT_STAT_ETHTOOL(TX_BROADCAST, "tx_broadcast"),
++	OCELOT_STAT_ETHTOOL(TX_COLLISION, "tx_collision"),
++	OCELOT_STAT_ETHTOOL(TX_DROPS, "tx_drops"),
++	OCELOT_STAT_ETHTOOL(TX_PAUSE, "tx_pause"),
++	OCELOT_STAT_ETHTOOL(TX_64, "tx_frames_below_65_octets"),
++	OCELOT_STAT_ETHTOOL(TX_65_127, "tx_frames_65_to_127_octets"),
++	OCELOT_STAT_ETHTOOL(TX_128_255, "tx_frames_128_255_octets"),
++	OCELOT_STAT_ETHTOOL(TX_256_511, "tx_frames_256_511_octets"),
++	OCELOT_STAT_ETHTOOL(TX_512_1023, "tx_frames_512_1023_octets"),
++	OCELOT_STAT_ETHTOOL(TX_1024_1526, "tx_frames_1024_1526_octets"),
++	OCELOT_STAT_ETHTOOL(TX_1527_MAX, "tx_frames_over_1526_octets"),
++	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_0, "tx_yellow_prio_0"),
++	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_1, "tx_yellow_prio_1"),
++	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_2, "tx_yellow_prio_2"),
++	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_3, "tx_yellow_prio_3"),
++	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_4, "tx_yellow_prio_4"),
++	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_5, "tx_yellow_prio_5"),
++	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_6, "tx_yellow_prio_6"),
++	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_7, "tx_yellow_prio_7"),
++	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_0, "tx_green_prio_0"),
++	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_1, "tx_green_prio_1"),
++	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_2, "tx_green_prio_2"),
++	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_3, "tx_green_prio_3"),
++	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_4, "tx_green_prio_4"),
++	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_5, "tx_green_prio_5"),
++	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_6, "tx_green_prio_6"),
++	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_7, "tx_green_prio_7"),
++	OCELOT_STAT_ETHTOOL(TX_AGED, "tx_aged"),
++	OCELOT_STAT_ETHTOOL(DROP_LOCAL, "drop_local"),
++	OCELOT_STAT_ETHTOOL(DROP_TAIL, "drop_tail"),
++	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_0, "drop_yellow_prio_0"),
++	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_1, "drop_yellow_prio_1"),
++	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_2, "drop_yellow_prio_2"),
++	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_3, "drop_yellow_prio_3"),
++	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_4, "drop_yellow_prio_4"),
++	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_5, "drop_yellow_prio_5"),
++	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_6, "drop_yellow_prio_6"),
++	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_7, "drop_yellow_prio_7"),
++	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_0, "drop_green_prio_0"),
++	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_1, "drop_green_prio_1"),
++	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_2, "drop_green_prio_2"),
++	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_3, "drop_green_prio_3"),
++	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_4, "drop_green_prio_4"),
++	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_5, "drop_green_prio_5"),
++	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_6, "drop_green_prio_6"),
++	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_7, "drop_green_prio_7"),
+ };
+ 
+ static const struct vcap_field vsc9953_vcap_es0_keys[] = {
 diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-index 9c488953f541..fc1c890e3db1 100644
+index fc1c890e3db1..8fe84d753cc9 100644
 --- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
 +++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-@@ -395,7 +395,7 @@ static const struct ocelot_stat_layout ocelot_stats_layout[OCELOT_NUM_STATS] = {
- 	},
- 	[OCELOT_STAT_TX_AGED] = {
- 		.name = "tx_aged",
--		.reg = SYS_COUNT_TX_AGING,
-+		.reg = SYS_COUNT_TX_AGED,
- 	},
- 	[OCELOT_STAT_DROP_LOCAL] = {
- 		.name = "drop_local",
-diff --git a/drivers/net/ethernet/mscc/vsc7514_regs.c b/drivers/net/ethernet/mscc/vsc7514_regs.c
-index bd062203a6b2..9d2d3e13cacf 100644
---- a/drivers/net/ethernet/mscc/vsc7514_regs.c
-+++ b/drivers/net/ethernet/mscc/vsc7514_regs.c
-@@ -242,7 +242,7 @@ const u32 vsc7514_sys_regmap[] = {
- 	REG(SYS_COUNT_TX_GREEN_PRIO_5,			0x00016c),
- 	REG(SYS_COUNT_TX_GREEN_PRIO_6,			0x000170),
- 	REG(SYS_COUNT_TX_GREEN_PRIO_7,			0x000174),
--	REG(SYS_COUNT_TX_AGING,				0x000178),
-+	REG(SYS_COUNT_TX_AGED,				0x000178),
- 	REG(SYS_COUNT_DROP_LOCAL,			0x000200),
- 	REG(SYS_COUNT_DROP_TAIL,			0x000204),
- 	REG(SYS_COUNT_DROP_YELLOW_PRIO_0,		0x000208),
+@@ -97,378 +97,99 @@ static const struct reg_field ocelot_regfields[REGFIELD_MAX] = {
+ };
+ 
+ static const struct ocelot_stat_layout ocelot_stats_layout[OCELOT_NUM_STATS] = {
+-	[OCELOT_STAT_RX_OCTETS] = {
+-		.name = "rx_octets",
+-		.reg = SYS_COUNT_RX_OCTETS,
+-	},
+-	[OCELOT_STAT_RX_UNICAST] = {
+-		.name = "rx_unicast",
+-		.reg = SYS_COUNT_RX_UNICAST,
+-	},
+-	[OCELOT_STAT_RX_MULTICAST] = {
+-		.name = "rx_multicast",
+-		.reg = SYS_COUNT_RX_MULTICAST,
+-	},
+-	[OCELOT_STAT_RX_BROADCAST] = {
+-		.name = "rx_broadcast",
+-		.reg = SYS_COUNT_RX_BROADCAST,
+-	},
+-	[OCELOT_STAT_RX_SHORTS] = {
+-		.name = "rx_shorts",
+-		.reg = SYS_COUNT_RX_SHORTS,
+-	},
+-	[OCELOT_STAT_RX_FRAGMENTS] = {
+-		.name = "rx_fragments",
+-		.reg = SYS_COUNT_RX_FRAGMENTS,
+-	},
+-	[OCELOT_STAT_RX_JABBERS] = {
+-		.name = "rx_jabbers",
+-		.reg = SYS_COUNT_RX_JABBERS,
+-	},
+-	[OCELOT_STAT_RX_CRC_ALIGN_ERRS] = {
+-		.name = "rx_crc_align_errs",
+-		.reg = SYS_COUNT_RX_CRC_ALIGN_ERRS,
+-	},
+-	[OCELOT_STAT_RX_SYM_ERRS] = {
+-		.name = "rx_sym_errs",
+-		.reg = SYS_COUNT_RX_SYM_ERRS,
+-	},
+-	[OCELOT_STAT_RX_64] = {
+-		.name = "rx_frames_below_65_octets",
+-		.reg = SYS_COUNT_RX_64,
+-	},
+-	[OCELOT_STAT_RX_65_127] = {
+-		.name = "rx_frames_65_to_127_octets",
+-		.reg = SYS_COUNT_RX_65_127,
+-	},
+-	[OCELOT_STAT_RX_128_255] = {
+-		.name = "rx_frames_128_to_255_octets",
+-		.reg = SYS_COUNT_RX_128_255,
+-	},
+-	[OCELOT_STAT_RX_256_511] = {
+-		.name = "rx_frames_256_to_511_octets",
+-		.reg = SYS_COUNT_RX_256_511,
+-	},
+-	[OCELOT_STAT_RX_512_1023] = {
+-		.name = "rx_frames_512_to_1023_octets",
+-		.reg = SYS_COUNT_RX_512_1023,
+-	},
+-	[OCELOT_STAT_RX_1024_1526] = {
+-		.name = "rx_frames_1024_to_1526_octets",
+-		.reg = SYS_COUNT_RX_1024_1526,
+-	},
+-	[OCELOT_STAT_RX_1527_MAX] = {
+-		.name = "rx_frames_over_1526_octets",
+-		.reg = SYS_COUNT_RX_1527_MAX,
+-	},
+-	[OCELOT_STAT_RX_PAUSE] = {
+-		.name = "rx_pause",
+-		.reg = SYS_COUNT_RX_PAUSE,
+-	},
+-	[OCELOT_STAT_RX_CONTROL] = {
+-		.name = "rx_control",
+-		.reg = SYS_COUNT_RX_CONTROL,
+-	},
+-	[OCELOT_STAT_RX_LONGS] = {
+-		.name = "rx_longs",
+-		.reg = SYS_COUNT_RX_LONGS,
+-	},
+-	[OCELOT_STAT_RX_CLASSIFIED_DROPS] = {
+-		.name = "rx_classified_drops",
+-		.reg = SYS_COUNT_RX_CLASSIFIED_DROPS,
+-	},
+-	[OCELOT_STAT_RX_RED_PRIO_0] = {
+-		.name = "rx_red_prio_0",
+-		.reg = SYS_COUNT_RX_RED_PRIO_0,
+-	},
+-	[OCELOT_STAT_RX_RED_PRIO_1] = {
+-		.name = "rx_red_prio_1",
+-		.reg = SYS_COUNT_RX_RED_PRIO_1,
+-	},
+-	[OCELOT_STAT_RX_RED_PRIO_2] = {
+-		.name = "rx_red_prio_2",
+-		.reg = SYS_COUNT_RX_RED_PRIO_2,
+-	},
+-	[OCELOT_STAT_RX_RED_PRIO_3] = {
+-		.name = "rx_red_prio_3",
+-		.reg = SYS_COUNT_RX_RED_PRIO_3,
+-	},
+-	[OCELOT_STAT_RX_RED_PRIO_4] = {
+-		.name = "rx_red_prio_4",
+-		.reg = SYS_COUNT_RX_RED_PRIO_4,
+-	},
+-	[OCELOT_STAT_RX_RED_PRIO_5] = {
+-		.name = "rx_red_prio_5",
+-		.reg = SYS_COUNT_RX_RED_PRIO_5,
+-	},
+-	[OCELOT_STAT_RX_RED_PRIO_6] = {
+-		.name = "rx_red_prio_6",
+-		.reg = SYS_COUNT_RX_RED_PRIO_6,
+-	},
+-	[OCELOT_STAT_RX_RED_PRIO_7] = {
+-		.name = "rx_red_prio_7",
+-		.reg = SYS_COUNT_RX_RED_PRIO_7,
+-	},
+-	[OCELOT_STAT_RX_YELLOW_PRIO_0] = {
+-		.name = "rx_yellow_prio_0",
+-		.reg = SYS_COUNT_RX_YELLOW_PRIO_0,
+-	},
+-	[OCELOT_STAT_RX_YELLOW_PRIO_1] = {
+-		.name = "rx_yellow_prio_1",
+-		.reg = SYS_COUNT_RX_YELLOW_PRIO_1,
+-	},
+-	[OCELOT_STAT_RX_YELLOW_PRIO_2] = {
+-		.name = "rx_yellow_prio_2",
+-		.reg = SYS_COUNT_RX_YELLOW_PRIO_2,
+-	},
+-	[OCELOT_STAT_RX_YELLOW_PRIO_3] = {
+-		.name = "rx_yellow_prio_3",
+-		.reg = SYS_COUNT_RX_YELLOW_PRIO_3,
+-	},
+-	[OCELOT_STAT_RX_YELLOW_PRIO_4] = {
+-		.name = "rx_yellow_prio_4",
+-		.reg = SYS_COUNT_RX_YELLOW_PRIO_4,
+-	},
+-	[OCELOT_STAT_RX_YELLOW_PRIO_5] = {
+-		.name = "rx_yellow_prio_5",
+-		.reg = SYS_COUNT_RX_YELLOW_PRIO_5,
+-	},
+-	[OCELOT_STAT_RX_YELLOW_PRIO_6] = {
+-		.name = "rx_yellow_prio_6",
+-		.reg = SYS_COUNT_RX_YELLOW_PRIO_6,
+-	},
+-	[OCELOT_STAT_RX_YELLOW_PRIO_7] = {
+-		.name = "rx_yellow_prio_7",
+-		.reg = SYS_COUNT_RX_YELLOW_PRIO_7,
+-	},
+-	[OCELOT_STAT_RX_GREEN_PRIO_0] = {
+-		.name = "rx_green_prio_0",
+-		.reg = SYS_COUNT_RX_GREEN_PRIO_0,
+-	},
+-	[OCELOT_STAT_RX_GREEN_PRIO_1] = {
+-		.name = "rx_green_prio_1",
+-		.reg = SYS_COUNT_RX_GREEN_PRIO_1,
+-	},
+-	[OCELOT_STAT_RX_GREEN_PRIO_2] = {
+-		.name = "rx_green_prio_2",
+-		.reg = SYS_COUNT_RX_GREEN_PRIO_2,
+-	},
+-	[OCELOT_STAT_RX_GREEN_PRIO_3] = {
+-		.name = "rx_green_prio_3",
+-		.reg = SYS_COUNT_RX_GREEN_PRIO_3,
+-	},
+-	[OCELOT_STAT_RX_GREEN_PRIO_4] = {
+-		.name = "rx_green_prio_4",
+-		.reg = SYS_COUNT_RX_GREEN_PRIO_4,
+-	},
+-	[OCELOT_STAT_RX_GREEN_PRIO_5] = {
+-		.name = "rx_green_prio_5",
+-		.reg = SYS_COUNT_RX_GREEN_PRIO_5,
+-	},
+-	[OCELOT_STAT_RX_GREEN_PRIO_6] = {
+-		.name = "rx_green_prio_6",
+-		.reg = SYS_COUNT_RX_GREEN_PRIO_6,
+-	},
+-	[OCELOT_STAT_RX_GREEN_PRIO_7] = {
+-		.name = "rx_green_prio_7",
+-		.reg = SYS_COUNT_RX_GREEN_PRIO_7,
+-	},
+-	[OCELOT_STAT_TX_OCTETS] = {
+-		.name = "tx_octets",
+-		.reg = SYS_COUNT_TX_OCTETS,
+-	},
+-	[OCELOT_STAT_TX_UNICAST] = {
+-		.name = "tx_unicast",
+-		.reg = SYS_COUNT_TX_UNICAST,
+-	},
+-	[OCELOT_STAT_TX_MULTICAST] = {
+-		.name = "tx_multicast",
+-		.reg = SYS_COUNT_TX_MULTICAST,
+-	},
+-	[OCELOT_STAT_TX_BROADCAST] = {
+-		.name = "tx_broadcast",
+-		.reg = SYS_COUNT_TX_BROADCAST,
+-	},
+-	[OCELOT_STAT_TX_COLLISION] = {
+-		.name = "tx_collision",
+-		.reg = SYS_COUNT_TX_COLLISION,
+-	},
+-	[OCELOT_STAT_TX_DROPS] = {
+-		.name = "tx_drops",
+-		.reg = SYS_COUNT_TX_DROPS,
+-	},
+-	[OCELOT_STAT_TX_PAUSE] = {
+-		.name = "tx_pause",
+-		.reg = SYS_COUNT_TX_PAUSE,
+-	},
+-	[OCELOT_STAT_TX_64] = {
+-		.name = "tx_frames_below_65_octets",
+-		.reg = SYS_COUNT_TX_64,
+-	},
+-	[OCELOT_STAT_TX_65_127] = {
+-		.name = "tx_frames_65_to_127_octets",
+-		.reg = SYS_COUNT_TX_65_127,
+-	},
+-	[OCELOT_STAT_TX_128_255] = {
+-		.name = "tx_frames_128_255_octets",
+-		.reg = SYS_COUNT_TX_128_255,
+-	},
+-	[OCELOT_STAT_TX_256_511] = {
+-		.name = "tx_frames_256_511_octets",
+-		.reg = SYS_COUNT_TX_256_511,
+-	},
+-	[OCELOT_STAT_TX_512_1023] = {
+-		.name = "tx_frames_512_1023_octets",
+-		.reg = SYS_COUNT_TX_512_1023,
+-	},
+-	[OCELOT_STAT_TX_1024_1526] = {
+-		.name = "tx_frames_1024_1526_octets",
+-		.reg = SYS_COUNT_TX_1024_1526,
+-	},
+-	[OCELOT_STAT_TX_1527_MAX] = {
+-		.name = "tx_frames_over_1526_octets",
+-		.reg = SYS_COUNT_TX_1527_MAX,
+-	},
+-	[OCELOT_STAT_TX_YELLOW_PRIO_0] = {
+-		.name = "tx_yellow_prio_0",
+-		.reg = SYS_COUNT_TX_YELLOW_PRIO_0,
+-	},
+-	[OCELOT_STAT_TX_YELLOW_PRIO_1] = {
+-		.name = "tx_yellow_prio_1",
+-		.reg = SYS_COUNT_TX_YELLOW_PRIO_1,
+-	},
+-	[OCELOT_STAT_TX_YELLOW_PRIO_2] = {
+-		.name = "tx_yellow_prio_2",
+-		.reg = SYS_COUNT_TX_YELLOW_PRIO_2,
+-	},
+-	[OCELOT_STAT_TX_YELLOW_PRIO_3] = {
+-		.name = "tx_yellow_prio_3",
+-		.reg = SYS_COUNT_TX_YELLOW_PRIO_3,
+-	},
+-	[OCELOT_STAT_TX_YELLOW_PRIO_4] = {
+-		.name = "tx_yellow_prio_4",
+-		.reg = SYS_COUNT_TX_YELLOW_PRIO_4,
+-	},
+-	[OCELOT_STAT_TX_YELLOW_PRIO_5] = {
+-		.name = "tx_yellow_prio_5",
+-		.reg = SYS_COUNT_TX_YELLOW_PRIO_5,
+-	},
+-	[OCELOT_STAT_TX_YELLOW_PRIO_6] = {
+-		.name = "tx_yellow_prio_6",
+-		.reg = SYS_COUNT_TX_YELLOW_PRIO_6,
+-	},
+-	[OCELOT_STAT_TX_YELLOW_PRIO_7] = {
+-		.name = "tx_yellow_prio_7",
+-		.reg = SYS_COUNT_TX_YELLOW_PRIO_7,
+-	},
+-	[OCELOT_STAT_TX_GREEN_PRIO_0] = {
+-		.name = "tx_green_prio_0",
+-		.reg = SYS_COUNT_TX_GREEN_PRIO_0,
+-	},
+-	[OCELOT_STAT_TX_GREEN_PRIO_1] = {
+-		.name = "tx_green_prio_1",
+-		.reg = SYS_COUNT_TX_GREEN_PRIO_1,
+-	},
+-	[OCELOT_STAT_TX_GREEN_PRIO_2] = {
+-		.name = "tx_green_prio_2",
+-		.reg = SYS_COUNT_TX_GREEN_PRIO_2,
+-	},
+-	[OCELOT_STAT_TX_GREEN_PRIO_3] = {
+-		.name = "tx_green_prio_3",
+-		.reg = SYS_COUNT_TX_GREEN_PRIO_3,
+-	},
+-	[OCELOT_STAT_TX_GREEN_PRIO_4] = {
+-		.name = "tx_green_prio_4",
+-		.reg = SYS_COUNT_TX_GREEN_PRIO_4,
+-	},
+-	[OCELOT_STAT_TX_GREEN_PRIO_5] = {
+-		.name = "tx_green_prio_5",
+-		.reg = SYS_COUNT_TX_GREEN_PRIO_5,
+-	},
+-	[OCELOT_STAT_TX_GREEN_PRIO_6] = {
+-		.name = "tx_green_prio_6",
+-		.reg = SYS_COUNT_TX_GREEN_PRIO_6,
+-	},
+-	[OCELOT_STAT_TX_GREEN_PRIO_7] = {
+-		.name = "tx_green_prio_7",
+-		.reg = SYS_COUNT_TX_GREEN_PRIO_7,
+-	},
+-	[OCELOT_STAT_TX_AGED] = {
+-		.name = "tx_aged",
+-		.reg = SYS_COUNT_TX_AGED,
+-	},
+-	[OCELOT_STAT_DROP_LOCAL] = {
+-		.name = "drop_local",
+-		.reg = SYS_COUNT_DROP_LOCAL,
+-	},
+-	[OCELOT_STAT_DROP_TAIL] = {
+-		.name = "drop_tail",
+-		.reg = SYS_COUNT_DROP_TAIL,
+-	},
+-	[OCELOT_STAT_DROP_YELLOW_PRIO_0] = {
+-		.name = "drop_yellow_prio_0",
+-		.reg = SYS_COUNT_DROP_YELLOW_PRIO_0,
+-	},
+-	[OCELOT_STAT_DROP_YELLOW_PRIO_1] = {
+-		.name = "drop_yellow_prio_1",
+-		.reg = SYS_COUNT_DROP_YELLOW_PRIO_1,
+-	},
+-	[OCELOT_STAT_DROP_YELLOW_PRIO_2] = {
+-		.name = "drop_yellow_prio_2",
+-		.reg = SYS_COUNT_DROP_YELLOW_PRIO_2,
+-	},
+-	[OCELOT_STAT_DROP_YELLOW_PRIO_3] = {
+-		.name = "drop_yellow_prio_3",
+-		.reg = SYS_COUNT_DROP_YELLOW_PRIO_3,
+-	},
+-	[OCELOT_STAT_DROP_YELLOW_PRIO_4] = {
+-		.name = "drop_yellow_prio_4",
+-		.reg = SYS_COUNT_DROP_YELLOW_PRIO_4,
+-	},
+-	[OCELOT_STAT_DROP_YELLOW_PRIO_5] = {
+-		.name = "drop_yellow_prio_5",
+-		.reg = SYS_COUNT_DROP_YELLOW_PRIO_5,
+-	},
+-	[OCELOT_STAT_DROP_YELLOW_PRIO_6] = {
+-		.name = "drop_yellow_prio_6",
+-		.reg = SYS_COUNT_DROP_YELLOW_PRIO_6,
+-	},
+-	[OCELOT_STAT_DROP_YELLOW_PRIO_7] = {
+-		.name = "drop_yellow_prio_7",
+-		.reg = SYS_COUNT_DROP_YELLOW_PRIO_7,
+-	},
+-	[OCELOT_STAT_DROP_GREEN_PRIO_0] = {
+-		.name = "drop_green_prio_0",
+-		.reg = SYS_COUNT_DROP_GREEN_PRIO_0,
+-	},
+-	[OCELOT_STAT_DROP_GREEN_PRIO_1] = {
+-		.name = "drop_green_prio_1",
+-		.reg = SYS_COUNT_DROP_GREEN_PRIO_1,
+-	},
+-	[OCELOT_STAT_DROP_GREEN_PRIO_2] = {
+-		.name = "drop_green_prio_2",
+-		.reg = SYS_COUNT_DROP_GREEN_PRIO_2,
+-	},
+-	[OCELOT_STAT_DROP_GREEN_PRIO_3] = {
+-		.name = "drop_green_prio_3",
+-		.reg = SYS_COUNT_DROP_GREEN_PRIO_3,
+-	},
+-	[OCELOT_STAT_DROP_GREEN_PRIO_4] = {
+-		.name = "drop_green_prio_4",
+-		.reg = SYS_COUNT_DROP_GREEN_PRIO_4,
+-	},
+-	[OCELOT_STAT_DROP_GREEN_PRIO_5] = {
+-		.name = "drop_green_prio_5",
+-		.reg = SYS_COUNT_DROP_GREEN_PRIO_5,
+-	},
+-	[OCELOT_STAT_DROP_GREEN_PRIO_6] = {
+-		.name = "drop_green_prio_6",
+-		.reg = SYS_COUNT_DROP_GREEN_PRIO_6,
+-	},
+-	[OCELOT_STAT_DROP_GREEN_PRIO_7] = {
+-		.name = "drop_green_prio_7",
+-		.reg = SYS_COUNT_DROP_GREEN_PRIO_7,
+-	},
++	OCELOT_STAT_ETHTOOL(RX_OCTETS, "rx_octets"),
++	OCELOT_STAT_ETHTOOL(RX_UNICAST, "rx_unicast"),
++	OCELOT_STAT_ETHTOOL(RX_MULTICAST, "rx_multicast"),
++	OCELOT_STAT_ETHTOOL(RX_BROADCAST, "rx_broadcast"),
++	OCELOT_STAT_ETHTOOL(RX_SHORTS, "rx_shorts"),
++	OCELOT_STAT_ETHTOOL(RX_FRAGMENTS, "rx_fragments"),
++	OCELOT_STAT_ETHTOOL(RX_JABBERS, "rx_jabbers"),
++	OCELOT_STAT_ETHTOOL(RX_CRC_ALIGN_ERRS, "rx_crc_align_errs"),
++	OCELOT_STAT_ETHTOOL(RX_SYM_ERRS, "rx_sym_errs"),
++	OCELOT_STAT_ETHTOOL(RX_64, "rx_frames_below_65_octets"),
++	OCELOT_STAT_ETHTOOL(RX_65_127, "rx_frames_65_to_127_octets"),
++	OCELOT_STAT_ETHTOOL(RX_128_255, "rx_frames_128_to_255_octets"),
++	OCELOT_STAT_ETHTOOL(RX_256_511, "rx_frames_256_to_511_octets"),
++	OCELOT_STAT_ETHTOOL(RX_512_1023, "rx_frames_512_to_1023_octets"),
++	OCELOT_STAT_ETHTOOL(RX_1024_1526, "rx_frames_1024_to_1526_octets"),
++	OCELOT_STAT_ETHTOOL(RX_1527_MAX, "rx_frames_over_1526_octets"),
++	OCELOT_STAT_ETHTOOL(RX_PAUSE, "rx_pause"),
++	OCELOT_STAT_ETHTOOL(RX_CONTROL, "rx_control"),
++	OCELOT_STAT_ETHTOOL(RX_LONGS, "rx_longs"),
++	OCELOT_STAT_ETHTOOL(RX_CLASSIFIED_DROPS, "rx_classified_drops"),
++	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_0, "rx_red_prio_0"),
++	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_1, "rx_red_prio_1"),
++	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_2, "rx_red_prio_2"),
++	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_3, "rx_red_prio_3"),
++	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_4, "rx_red_prio_4"),
++	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_5, "rx_red_prio_5"),
++	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_6, "rx_red_prio_6"),
++	OCELOT_STAT_ETHTOOL(RX_RED_PRIO_7, "rx_red_prio_7"),
++	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_0, "rx_yellow_prio_0"),
++	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_1, "rx_yellow_prio_1"),
++	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_2, "rx_yellow_prio_2"),
++	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_3, "rx_yellow_prio_3"),
++	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_4, "rx_yellow_prio_4"),
++	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_5, "rx_yellow_prio_5"),
++	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_6, "rx_yellow_prio_6"),
++	OCELOT_STAT_ETHTOOL(RX_YELLOW_PRIO_7, "rx_yellow_prio_7"),
++	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_0, "rx_green_prio_0"),
++	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_1, "rx_green_prio_1"),
++	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_2, "rx_green_prio_2"),
++	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_3, "rx_green_prio_3"),
++	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_4, "rx_green_prio_4"),
++	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_5, "rx_green_prio_5"),
++	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_6, "rx_green_prio_6"),
++	OCELOT_STAT_ETHTOOL(RX_GREEN_PRIO_7, "rx_green_prio_7"),
++	OCELOT_STAT_ETHTOOL(TX_OCTETS, "tx_octets"),
++	OCELOT_STAT_ETHTOOL(TX_UNICAST, "tx_unicast"),
++	OCELOT_STAT_ETHTOOL(TX_MULTICAST, "tx_multicast"),
++	OCELOT_STAT_ETHTOOL(TX_BROADCAST, "tx_broadcast"),
++	OCELOT_STAT_ETHTOOL(TX_COLLISION, "tx_collision"),
++	OCELOT_STAT_ETHTOOL(TX_DROPS, "tx_drops"),
++	OCELOT_STAT_ETHTOOL(TX_PAUSE, "tx_pause"),
++	OCELOT_STAT_ETHTOOL(TX_64, "tx_frames_below_65_octets"),
++	OCELOT_STAT_ETHTOOL(TX_65_127, "tx_frames_65_to_127_octets"),
++	OCELOT_STAT_ETHTOOL(TX_128_255, "tx_frames_128_255_octets"),
++	OCELOT_STAT_ETHTOOL(TX_256_511, "tx_frames_256_511_octets"),
++	OCELOT_STAT_ETHTOOL(TX_512_1023, "tx_frames_512_1023_octets"),
++	OCELOT_STAT_ETHTOOL(TX_1024_1526, "tx_frames_1024_1526_octets"),
++	OCELOT_STAT_ETHTOOL(TX_1527_MAX, "tx_frames_over_1526_octets"),
++	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_0, "tx_yellow_prio_0"),
++	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_1, "tx_yellow_prio_1"),
++	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_2, "tx_yellow_prio_2"),
++	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_3, "tx_yellow_prio_3"),
++	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_4, "tx_yellow_prio_4"),
++	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_5, "tx_yellow_prio_5"),
++	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_6, "tx_yellow_prio_6"),
++	OCELOT_STAT_ETHTOOL(TX_YELLOW_PRIO_7, "tx_yellow_prio_7"),
++	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_0, "tx_green_prio_0"),
++	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_1, "tx_green_prio_1"),
++	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_2, "tx_green_prio_2"),
++	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_3, "tx_green_prio_3"),
++	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_4, "tx_green_prio_4"),
++	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_5, "tx_green_prio_5"),
++	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_6, "tx_green_prio_6"),
++	OCELOT_STAT_ETHTOOL(TX_GREEN_PRIO_7, "tx_green_prio_7"),
++	OCELOT_STAT_ETHTOOL(TX_AGED, "tx_aged"),
++	OCELOT_STAT_ETHTOOL(DROP_LOCAL, "drop_local"),
++	OCELOT_STAT_ETHTOOL(DROP_TAIL, "drop_tail"),
++	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_0, "drop_yellow_prio_0"),
++	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_1, "drop_yellow_prio_1"),
++	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_2, "drop_yellow_prio_2"),
++	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_3, "drop_yellow_prio_3"),
++	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_4, "drop_yellow_prio_4"),
++	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_5, "drop_yellow_prio_5"),
++	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_6, "drop_yellow_prio_6"),
++	OCELOT_STAT_ETHTOOL(DROP_YELLOW_PRIO_7, "drop_yellow_prio_7"),
++	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_0, "drop_green_prio_0"),
++	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_1, "drop_green_prio_1"),
++	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_2, "drop_green_prio_2"),
++	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_3, "drop_green_prio_3"),
++	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_4, "drop_green_prio_4"),
++	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_5, "drop_green_prio_5"),
++	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_6, "drop_green_prio_6"),
++	OCELOT_STAT_ETHTOOL(DROP_GREEN_PRIO_7, "drop_green_prio_7"),
+ };
+ 
+ static void ocelot_pll5_init(struct ocelot *ocelot)
 diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index 050e142518e6..860ec592c689 100644
+index 860ec592c689..2fd8486bb7f0 100644
 --- a/include/soc/mscc/ocelot.h
 +++ b/include/soc/mscc/ocelot.h
-@@ -392,7 +392,7 @@ enum ocelot_reg {
- 	SYS_COUNT_TX_GREEN_PRIO_5,
- 	SYS_COUNT_TX_GREEN_PRIO_6,
- 	SYS_COUNT_TX_GREEN_PRIO_7,
--	SYS_COUNT_TX_AGING,
-+	SYS_COUNT_TX_AGED,
- 	SYS_COUNT_DROP_LOCAL,
- 	SYS_COUNT_DROP_TAIL,
- 	SYS_COUNT_DROP_YELLOW_PRIO_0,
+@@ -698,6 +698,17 @@ struct ocelot_stat_layout {
+ 	char name[ETH_GSTRING_LEN];
+ };
+ 
++/* 32-bit counter checked for wraparound by ocelot_port_update_stats()
++ * and copied to ocelot->stats.
++ */
++#define OCELOT_STAT(kind) \
++	[OCELOT_STAT_ ## kind] = { .reg = SYS_COUNT_ ## kind }
++/* Same as above, except also exported to ethtool -S. Standard counters should
++ * only be exposed to more specific interfaces rather than by their string name.
++ */
++#define OCELOT_STAT_ETHTOOL(kind, ethtool_name) \
++	[OCELOT_STAT_ ## kind] = { .reg = SYS_COUNT_ ## kind, .name = ethtool_name }
++
+ struct ocelot_stats_region {
+ 	struct list_head node;
+ 	u32 base;
 -- 
 2.34.1
 
