@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F20C5B23F9
-	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 18:52:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CDE05B23F3
+	for <lists+netdev@lfdr.de>; Thu,  8 Sep 2022 18:51:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231841AbiIHQwq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 12:52:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45180 "EHLO
+        id S231586AbiIHQvd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 12:51:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231846AbiIHQwB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 12:52:01 -0400
+        with ESMTP id S231468AbiIHQuB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 12:50:01 -0400
 Received: from EUR02-VE1-obe.outbound.protection.outlook.com (mail-eopbgr20087.outbound.protection.outlook.com [40.107.2.87])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD208E9004;
-        Thu,  8 Sep 2022 09:50:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2C69120AA;
+        Thu,  8 Sep 2022 09:49:35 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WG2h5tA/2f3ztUmhxbmwyDK+mG9/c2t7uHOJbYrfEoG7ygHYZ65sNhyh4/4bcunk4wMOknuvconnJshyGfBPeb3Tjf1CDzAnDCJZzzqk/43B2sxIyRXfV4FzC+BtJtXqbxmOMLdrVcPSqCFcmdLm5pUJzzTbOXmSQ4EXNvBjO6yjP3RqPky3OQszp//Ev2Lnd94J8yQ+zY0p7iGUFlLthM10WuOGBiOBI47AbQJWO4jQmMZHeYm2iLTA1LM9LzvHpzOsGGipeon7m+sFyC873NBr+7mwJ0fcO+jCMDxRCV/XzpLFJBKiLYZzKnmugGpYKHkAqrMXjfaSbVybiRJtfw==
+ b=hwvjeyx4VElShYlqy2XzUUwLtYyhBrvQBn1FAPhopGk/GxTaPVeNH2tmhk233zDjDtaRWMB/TxKSlEeNSV73/1KhN9A0qIxR0GKhlMLxpsrS2fKD6+uluWUsUT/MwHD9+nhaL1ElHV4WDEoWnufkJ5j80rjsRIGcUHZQu3irphdXy3chAEtREPT2O6Dv81Ln9sGMOYwJjAulSx5fMDLqwMTaeRV/n6LJ9taSr55NuU0bi3G9kpk9v5akrNgymLpBZS/O6dls1ADW9LW3k6f3zeeaIO+0wiaH6I1FxzbUcWAj85asLuQuoFWYZwm9hOgMzql8zHrGtsu1FtwRO9Mejg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1JBZxIYHganXC9206W1lSDRFR3ltuJR9gMupEa8vO1U=;
- b=QqO/yHOCZEP/p4xYK0fGqAKFxQBOjTP9msqmJppKwvWzNkBm9PZS0FoE55oeO68LnLvWMf/Ar4g9mG/JWmlTSMGZxwL9BFV/7aKT6k7aN1Dx/0w7az0wuuCTwixb+tEJfz3OH/VbR/IHH82+hzdnouzVviyq5a8uTSZ5G72N3z9mHSAOpDWFTDM2IsmTK97/uuzKpTdgzVsRwmAj0iJizYHlV9gxsvIXkqmk0sod6s0T1tSuv29xV1x3NbLEoiBHv8hEAhjM3qLpI/L55rOPRMvkt6EREp8Rbn2pkcVS/omrWWbSnQRAxQqB1pBmBqR+9Taybr9cQi+pbPGbs9Szfg==
+ bh=6JPN3KKEzoXiekZ0SGOifkdlMTJn/56/zD2mO4ND4tI=;
+ b=D+Q+2yCbgrkSQUhiDVvmcPfcwJLydwto5kRs1pENG1PlG83kjODHWPU/p9tiHjp3tJU7VYzSa02rDt1pGIOEzZcSypUd+Ke7sptQC8UAnOPdTQru9HIymz8TPqDISdOnhTjFqYJxbKsmFgiBr4R2YwE4j9YDDDodttemQhwyipQHB5LT6ncgvgO3FeGpW3c8vffSsNmQrSEnOLFkKYxMQPM/Rx+hJiBLSyM6g9PPBmE40VI0wjVu5dae+5zeyIH43131anhNgOdUcnMT6LIvdwuMn6f0Gzg4IMXmNVQsLJZ9TzjMo/nFpryMkpoxWIX5xcq5lMCLZ9zUzY+nGRmQfg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1JBZxIYHganXC9206W1lSDRFR3ltuJR9gMupEa8vO1U=;
- b=GFZuy9Yb/YVekqMHYKZ6ndWiW9KW1yomZNPHq8Tk1oQOm2McupSg3SNLBnkjf3gOMDvNFqg+PZwGpjNidaC3/k3rC//xuH5mT93WcGCHc/yMRQULy9MnEL1ZtCeWDgZ/rXMp5ycBxcCx3hgPD2HKcj6mtK4s4m3vTcHiSGOtg4Y=
+ bh=6JPN3KKEzoXiekZ0SGOifkdlMTJn/56/zD2mO4ND4tI=;
+ b=Zd7qBTXnifKqefYs9ShyYTGhe1PLb+B8OtUBvpPYzW12AbbrHSMKaMkIqO7wWRGUeQBKc2wSRcWNgsI3zbu54iVwnAvQ0xcZhTOT8HDWBIDMoNH34h5KNmb/VVByzKUgf+pzGOrxzVNNuULayo39w2AViprkSkaTe02uF553Zc4=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by AM0PR04MB5154.eurprd04.prod.outlook.com (2603:10a6:208:c4::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.17; Thu, 8 Sep
- 2022 16:48:40 +0000
+ 2022 16:48:45 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3412:9d57:ec73:fef3]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3412:9d57:ec73:fef3%5]) with mapi id 15.20.5588.017; Thu, 8 Sep 2022
- 16:48:40 +0000
+ 16:48:45 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -55,9 +55,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Colin Foster <colin.foster@in-advantage.com>,
         Richie Pearn <richard.pearn@nxp.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 03/14] net: dsa: felix: check the 32-bit PSFP stats against overflow
-Date:   Thu,  8 Sep 2022 19:48:05 +0300
-Message-Id: <20220908164816.3576795-4-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 04/14] net: mscc: ocelot: report FIFO drop counters through stats->rx_dropped
+Date:   Thu,  8 Sep 2022 19:48:06 +0300
+Message-Id: <20220908164816.3576795-5-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220908164816.3576795-1-vladimir.oltean@nxp.com>
 References: <20220908164816.3576795-1-vladimir.oltean@nxp.com>
@@ -67,52 +67,52 @@ X-ClientProxiedBy: BEXP281CA0009.DEUP281.PROD.OUTLOOK.COM (2603:10a6:b10::19)
  To VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3336d1ce-17d0-4d18-9a21-08da91b9f5cd
+X-MS-Office365-Filtering-Correlation-Id: b84bb84f-9a07-41f4-f080-08da91b9f689
 X-MS-TrafficTypeDiagnostic: AM0PR04MB5154:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: xIunJIi7gl6/F7tVGOQdSIahRZ3EDP1I4ZnzxI2Vvn0hInfsRLoacuV1MljTJP2+lY5EClMrl7PbwpdWepTsYbioEsCvcU29QcC2OyJUUHE3PqmylrmlDxd+fetbUwYQaFcvB1So9BV1x8qd5IsMXEgSyksq0sPQSpf9AufA/kxpl7atPgZ8RxRr6L6mDDBHaIUbcbsRj0rlNfxkK6oneX8cLCdu5UoXgdc78kNW49VIa+/r227+qFxli9MUBldyn47e01USDpsPKjU+CEl11+UxEywv8d4u+ay71hTZJV0VYa8834dRVw+zZNhlX8LrXaNVS0lv4EXEQqkV8vpqeHMRQd1pKeMlJBm/S2EwHw0BAyS/dTSiSLAo6LRd0LFLdguMJ+Q8jD6T+YtRDBZWSEI+7hcHHIL7qIo3rU8Dw8/sQueR6E8mNuSVzQkF0XukItUOmWHSulMfRQ9MDit+iyBiJ0zH5dBw6iFJyaWz3JnXGqWbvJ8ytsizICbZGcuq5G9+LF3j4S1kVhuz5xdjpOYfu+QIhytrMct4oYmHWr/iYKHZV/hHCTQaNya7wvRnMe9igWQPER8+w61orwR9b2h+U1Qb6BG1JFZHoUbYTWcfaUPirDGNT1+IMt7g7g8UF4oQAoa0QNCi3Qn74UIyNqu9dZa2ppSMxdIu5fVgD4IfvqW3rZt3dfLbMzA/hC0E/rvv6OmBkqACCqF7C2vqj+Ffvxm4DDIvMohSxH9HYXINgIig6SNXfkTCyk0J4iJdMFGIHnu3bu7H02dfkSE9CQ==
+X-Microsoft-Antispam-Message-Info: 3UL/qX+gGDal0gFtU1dPholLwqfM87hkZSZb7z5Xrm/DFlkhUJVs1Ee6dwTXJXUhYBhk+ZZFV5pX/Pb05GZzqaJYcVTUypKj25Nv9vwYKgsgJ+Bntfk8Yg7ELk98MLA1TuKzIZbTYq5ckT1LhmpOknPaO358ltHMjiI9Pir3rxoYWUcTtgSwX2PRJw5rADssPr2VqtKLHz0yRFKA/+XNf/yo7/HE4y1ven0BA/cznaRlLwvOz//AM8GQj8nWp759R/9BRuyJqqVNVB3ROcTY4FQ9M4pb0QdWhif8+SijsQpqSBr/P0rWUi69zd1EjvUb+2isDPcp1cogKv7sLxM58Q/kuOrDS+yc4LjPVaCOt55kMS2XCla66ABKd6/IOz7nJ1VWBx1mnV1kaL6tYZnei1br2w/29wK70KB9wYN5QJ7reGxH1KeV9V+aUm52z5Somrvo4vv67rgNPlRm3547hK2vVUQF6U89iMtDcUKFxgYQo07htZvyyvaDMEtrhcujcgWxn0p0CE9i7OOi5X94FUvpiUtK1sUhRLT7RxcdYUcjfRBg/Cdc+hC0fVHWELwVkYmSr0anJp0fscufKNvnJp4hly80P8jj9WxmFv18w6SIQRr1Co7592ojOQ2YeFSDH8KQacoZ7toaUA4NbHpc1E/zZ88tO8V5NKl9/MmvFBP1s/MCYZpE8ivvkLzuz0qQtgYThdt4NDil0idMJLhRUSm87yGs7lDFqguDdq+nwKKEHDzpb94j9lnzmd+zOBAx3fIY3h3wxIA/W7fWhrXSdw==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(136003)(396003)(39860400002)(366004)(186003)(6506007)(41300700001)(1076003)(6512007)(6666004)(478600001)(6486002)(2616005)(26005)(52116002)(38100700002)(86362001)(38350700002)(5660300002)(83380400001)(54906003)(316002)(44832011)(4326008)(8676002)(2906002)(8936002)(66476007)(66556008)(66946007)(6916009)(7416002)(36756003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Lo4VXO0cjvWR+9AJsF99lNNvn/pG7UZgdCfVNr1b2GoTCTvt9vzexChCNBL4?=
- =?us-ascii?Q?6YnoKlUWXx5RbsBZ/SNDm5c+GyHdgcmtpCjXE7eTAkqddyi5x3bSSs8YUpIf?=
- =?us-ascii?Q?QPeK8vUoxKWllZ3EUVCvmscJ42CH8wB6j8+YieDZt7beg0hY+2nOFIXHXvNv?=
- =?us-ascii?Q?/2os6ZK5z7bAVgNSHtEr4dkJT09cMY1kEEpXegyzzMuCJEuFbqzh+l/og2gj?=
- =?us-ascii?Q?dYPKQC8UVO1fF7z4SHp0HHRix4CxbUKe8nLKdl2SzGYwUwweqiygMrIAQfT8?=
- =?us-ascii?Q?D/Ct7XFFQ2rx1AaL+sSJI6vl9nB8xEXf3MQVAGDxv8jIHhf4dV/3ZoWzqvn5?=
- =?us-ascii?Q?cn8an3GJRoBZA+Br5gjJZks6k8aH4bUHtx8UAXyFehBf54bO2r3HKmPkQROX?=
- =?us-ascii?Q?csoplZ89pRdfTC7ZTzcdZmyA6UvJ6iLHoYV/O9mFrFg+1ZduwSZshZqSHbgR?=
- =?us-ascii?Q?NlVIp7EWjLwg81/58ZR8/SeouBTfYZ3Vb8aIFu3RNy1Qc43HajR4WP67GgAw?=
- =?us-ascii?Q?/qvMCJ0nfCeBupZEhmdp7WNlxSv9Tmo7sqREvhDyRdr4ZSIqHRCs2yB0duCw?=
- =?us-ascii?Q?4cVY532aHRi0n0hkUh9ncYh4lBKPy7enEG/UaEZIHxenXs95Izg/XInbtGRx?=
- =?us-ascii?Q?RSIopUWm6EfsOzm+H2B0pzCwkYMcBcE8RQmkSAwEwupd1gOeoAtXeJzITGCy?=
- =?us-ascii?Q?zUu/WhPVbfaG9nS7f0DIvSL0/nAo+5NWMMyfxqKR/yha3lV3uLlrT1K8YIoG?=
- =?us-ascii?Q?FbqDNYvaYUrns6BSDSE8VzVNfI5OAzN6IOgBjOZHmuhOUZ+Cmo5D7KEw7ayk?=
- =?us-ascii?Q?J+QtRaC2qF9Rt3xsF84ARq0kqsH5IN3eXdyg/0e8JkpJUPFcPAy4lscJI6t3?=
- =?us-ascii?Q?xkqmjzmP0DHxeUmKUu38tcwrWXVKVCD4h77dEXFuyuN0/GxR+oxUlSDRfPv6?=
- =?us-ascii?Q?tULKTmR9ekXkVSetLegrZQauduSfmnMGrPS/RrPKSzsY2hkFOZQwXBisNjvk?=
- =?us-ascii?Q?vrJY2ffSC3Lay1IO3Sq5nh4ToA7nypUplEGKZwO6fAnsHekmOy3lqHegCgk3?=
- =?us-ascii?Q?cjRTpG3ojWQXTCGKAThmnXebxY5V05bgZaXZ7BorpU5BsYieuJ0rxLDSc9oY?=
- =?us-ascii?Q?4slUSXgIX+a+WVHD1TGsgq1KjeBHztZsScTRMuNFzW1Hfpo2rwPup5vT/Cbu?=
- =?us-ascii?Q?SfxNaYvO9Y22500n3jNWT5mMqh9CTFFsFd+OwAlI1g6JOErHsMvww5mT9pa2?=
- =?us-ascii?Q?vfN7nw6ggwhcxtIJ6ThbyNnTkOyQEKnl+u99Ikw+MDPT0ViKaXWyMgoHmi6w?=
- =?us-ascii?Q?efNwnbfMzRUwuQjQQogKRvWTZELu7RVQVy0qjItpxZ4OTFA9Lmeuif7KcSdq?=
- =?us-ascii?Q?TP2l5n9vVXsNWJNZasgZ/WFbd2QSUzJ3cfLfj045cHo4Yf4Df+RRW9rF0wJ3?=
- =?us-ascii?Q?F3HduEpCBtWV9UImPTOe/t+ShlqeISZnRcA22NAkDnPEjL9A0Hv5Lct16/XZ?=
- =?us-ascii?Q?JAyWIC86dt2Tmroi+hEOEjmueE97XFd3Ij8gY/99KWZs8IqK6sAUsfNT/Jpl?=
- =?us-ascii?Q?Khfya/u25B4wi71ougdGl0PbQnltvF/cv0BqOGabSmhDX2iWXdCZcRpSM0eH?=
- =?us-ascii?Q?Uw=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?+tKGoDptsz5+rYZcPsBU+Wx3hz/61V0Oo6iWH6OD++Xkbpsewe9vqb80NPv8?=
+ =?us-ascii?Q?2ZXYyVYso+CFywKqXSfnqy7casn55OC0GQ6KYm3bsLmW9kxveg832cUV66ta?=
+ =?us-ascii?Q?VgIU3C0BUP5EfXtZH2gHh1Y9U7G7VQSsTRH5jiS3mv+vGnBHZlxnr6Kt5D2k?=
+ =?us-ascii?Q?3A85o6lTrSw7ZPentr7dC81u7tMoGImKtG6AhjymzVyOkZkiZy/3nKAjGQDq?=
+ =?us-ascii?Q?ykBZUVsLAToa+YCQL51ir+4lIkqXYFzZXSMXEhJlBAJfWnIzXeQlDjRLPWhY?=
+ =?us-ascii?Q?maucMr5h1fxkU2N9oW1+PPu4ptYZD3nTukibnahu5Ww/H/xCXdypH5txa37a?=
+ =?us-ascii?Q?ZI7hmk2R+D/whJzSfHnG4xe3K9MtYwBdMFAgBzHm2N/hXJMFNK5NTxCrgQpK?=
+ =?us-ascii?Q?8DXM5hiJEtA0sHhWz2czoCKdSWZrIY1JDBxa9ew19YNPm+0JdpZg5zBffX09?=
+ =?us-ascii?Q?tHvygdoLrflGdk73BQnPnCrRNNG5TvZD0LPp6aJvbd1LNUaUmwbHlyUGm4N1?=
+ =?us-ascii?Q?95Jy6SD+oYbDmLSwNEmTOOb2Gi8o3582OBD9bVIXh2pEWH5wzi2z+dv+VygP?=
+ =?us-ascii?Q?6o9x16gIkFMufw59CVvTZVOA8u9iVcBafuUljBTqnO0xMAArIwdkIu4KTW3S?=
+ =?us-ascii?Q?30kUb8sJIbjFf2jZIckyf5SOISCtFvIpKB96eLLrJ1lebiL2ifxtFEV1vp4l?=
+ =?us-ascii?Q?NKTBegfGgs+mtHf7iWMIao/H5Ze2CweZeDEnvlXrE6BlKQWkXnhN3s9KLXYo?=
+ =?us-ascii?Q?k3vIkH7/OTJpGCoqd1koMrOJCrd5jn7KJ0xw1V9v/FSpexWB3joPH//I2eMH?=
+ =?us-ascii?Q?xI1ModiGzQpIzHmtm5jcr8FNIhnQWEIKrXx81bHOSF3PWThSLi8nW2XhAoie?=
+ =?us-ascii?Q?M5HL+ZBjg0oDN0MlMB2i2I6e5DeUIO2f/X6sk3zkdSoDICtceSMre1eVwTk4?=
+ =?us-ascii?Q?KcYw1sBP28gCzOlxebpt8o0ym6z3Q4LB+Qy/mU8hyuaunpUZM20cePTTc/2f?=
+ =?us-ascii?Q?FElG0xiRjDbEIrWYz2EZeuoUqKBO1EnCr4b22o9M5h0gbjhRaB14rmwZ1j3Y?=
+ =?us-ascii?Q?dT+24BnLdIjXGtPlcsOlschhg5AWXYU+ibsvzzM/JPzBfNpl+NZgvEUBykQD?=
+ =?us-ascii?Q?ePyH3WB0yLRNeP9A4AHDhfI9Vxk7FmOLMyvgBa0iGf3/9wsyaDWTsiLFIRH2?=
+ =?us-ascii?Q?JUedNwuRFfxA+dclPHVlYzXh7q1chQwcWo5Oy1xDN3h9sHEFqIa/OFcN4CTI?=
+ =?us-ascii?Q?iXVB4o1FfOcqQ7uoQJ/OXU3sQ/kbrrkElHN7wQVV+OfODzt6tP8Yb+kuYOOH?=
+ =?us-ascii?Q?UCWGn4qRR6U0Czrorr7s0xEI9amxwrSM0mfkzt1bDCKpDlqIdnEubWabceua?=
+ =?us-ascii?Q?gCKIVtMIJrWeBWz7pni6o9h8ssVJDs2PCmH/E+q0TJbXAaW4QLYPXSOgMz6G?=
+ =?us-ascii?Q?v7kQtR3Gsca/DVXuqptFJvIY5up96sifcuGrzNBrQMTE053RkXz6RSrniZT8?=
+ =?us-ascii?Q?kSNl4Nf/lX7QtyrpmnA2LEaTR5RzVHUeiKU4MwVpFlBLIYqZ0heNPKATu/xX?=
+ =?us-ascii?Q?ybBhKYB4vcOAVTe8bOADB1CR/cB+UEWETycCL2soQxjDufZqv7mKwClhe5TI?=
+ =?us-ascii?Q?vg=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3336d1ce-17d0-4d18-9a21-08da91b9f5cd
+X-MS-Exchange-CrossTenant-Network-Message-Id: b84bb84f-9a07-41f4-f080-08da91b9f689
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Sep 2022 16:48:30.6934
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Sep 2022 16:48:31.9433
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: HFNJczFwNvhnGA8+LzfWBCYEgxi7wlSxzkwYJS2zDGsM/e8GRNocqcCB3Lo5OoZ8EK9z2jmlNxsiaDJi7SB03Q==
+X-MS-Exchange-CrossTenant-UserPrincipalName: rEwF9iGSH6mj8s5HTLZTfE1JblHN5BfYcsAIaKtCmVQLT+Vy3831qjReobgQjz74wGnUu/0mjMJfkgod9EC41g==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB5154
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -124,312 +124,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Felix PSFP counters suffer from the same problem as the ocelot
-ndo_get_stats64 ones - they are 32-bit, so they can easily overflow and
-this can easily go undetected.
+if_link.h says:
 
-Add a custom hook in ocelot_check_stats_work() through which driver
-specific actions can be taken, and update the stats for the existing
-PSFP filters from that hook.
+ * @rx_dropped: Number of packets received but not processed,
+ *   e.g. due to lack of resources or unsupported protocol.
+ *   For hardware interfaces this counter may include packets discarded
+ *   due to L2 address filtering but should not include packets dropped
+ *   by the device due to buffer exhaustion which are counted separately in
+ *   @rx_missed_errors (since procfs folds those two counters together).
 
-Previously, vsc9959_psfp_filter_add() and vsc9959_psfp_filter_del() were
-serialized with respect to each other via rtnl_lock(). However, with the
-new entry point into &psfp->sfi_list coming from the periodic worker, we
-now need an explicit mutex to serialize access to these lists.
+Currently we report "stats->rx_dropped = dev->stats.rx_dropped", the
+latter being incremented by various entities in the stack. This is not
+wrong, but we'd like to move ocelot_get_stats64() in the common ocelot
+switch lib which is independent of struct net_device.
 
-We used to keep a struct felix_stream_filter_counters on stack, through
-which vsc9959_psfp_stats_get() - a FLOW_CLS_STATS callback - would
-retrieve data from vsc9959_psfp_counters_get(). We need to become
-smarter about that in 3 ways:
-
-- we need to keep a persistent set of counters for each stream instead
-  of keeping them on stack
-
-- we need to promote those counters from u32 to u64, and create a
-  procedure that properly keeps 64-bit counters. Since we clear the
-  hardware counters anyway, and we poll every 2 seconds, a simple
-  increment of a u64 counter with a u32 value will perfectly do the job.
-
-- FLOW_CLS_STATS also expect incremental counters, so we also need to
-  zeroize our u64 counters every time sch_flower calls us
+To do that, report the hardware RX drop counters instead. These drops
+are due to policer action, or due to no destinations. When we have no
+memory in the queue system, report this through rx_missed_errors, as
+instructed.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/ocelot/felix_vsc9959.c | 131 +++++++++++++++++--------
- drivers/net/ethernet/mscc/ocelot.c     |   3 +
- include/soc/mscc/ocelot.h              |   3 +
- 3 files changed, 94 insertions(+), 43 deletions(-)
+ drivers/net/ethernet/mscc/ocelot_net.c | 27 +++++++++++++++++++++++++-
+ 1 file changed, 26 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index 18543bee793b..b56aad84b6cb 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -1991,7 +1991,15 @@ struct felix_stream {
- 	u32 ssid;
- };
+diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
+index 330d30841cdc..d7956fd051e6 100644
+--- a/drivers/net/ethernet/mscc/ocelot_net.c
++++ b/drivers/net/ethernet/mscc/ocelot_net.c
+@@ -745,7 +745,32 @@ static void ocelot_get_stats64(struct net_device *dev,
+ 			    s[OCELOT_STAT_RX_1024_1526] +
+ 			    s[OCELOT_STAT_RX_1527_MAX];
+ 	stats->multicast = s[OCELOT_STAT_RX_MULTICAST];
+-	stats->rx_dropped = dev->stats.rx_dropped;
++	stats->rx_missed_errors = s[OCELOT_STAT_DROP_TAIL];
++	stats->rx_dropped = s[OCELOT_STAT_RX_RED_PRIO_0] +
++			    s[OCELOT_STAT_RX_RED_PRIO_1] +
++			    s[OCELOT_STAT_RX_RED_PRIO_2] +
++			    s[OCELOT_STAT_RX_RED_PRIO_3] +
++			    s[OCELOT_STAT_RX_RED_PRIO_4] +
++			    s[OCELOT_STAT_RX_RED_PRIO_5] +
++			    s[OCELOT_STAT_RX_RED_PRIO_6] +
++			    s[OCELOT_STAT_RX_RED_PRIO_7] +
++			    s[OCELOT_STAT_DROP_LOCAL] +
++			    s[OCELOT_STAT_DROP_YELLOW_PRIO_0] +
++			    s[OCELOT_STAT_DROP_YELLOW_PRIO_1] +
++			    s[OCELOT_STAT_DROP_YELLOW_PRIO_2] +
++			    s[OCELOT_STAT_DROP_YELLOW_PRIO_3] +
++			    s[OCELOT_STAT_DROP_YELLOW_PRIO_4] +
++			    s[OCELOT_STAT_DROP_YELLOW_PRIO_5] +
++			    s[OCELOT_STAT_DROP_YELLOW_PRIO_6] +
++			    s[OCELOT_STAT_DROP_YELLOW_PRIO_7] +
++			    s[OCELOT_STAT_DROP_GREEN_PRIO_0] +
++			    s[OCELOT_STAT_DROP_GREEN_PRIO_1] +
++			    s[OCELOT_STAT_DROP_GREEN_PRIO_2] +
++			    s[OCELOT_STAT_DROP_GREEN_PRIO_3] +
++			    s[OCELOT_STAT_DROP_GREEN_PRIO_4] +
++			    s[OCELOT_STAT_DROP_GREEN_PRIO_5] +
++			    s[OCELOT_STAT_DROP_GREEN_PRIO_6] +
++			    s[OCELOT_STAT_DROP_GREEN_PRIO_7];
  
-+struct felix_stream_filter_counters {
-+	u64 match;
-+	u64 not_pass_gate;
-+	u64 not_pass_sdu;
-+	u64 red;
-+};
-+
- struct felix_stream_filter {
-+	struct felix_stream_filter_counters stats;
- 	struct list_head list;
- 	refcount_t refcount;
- 	u32 index;
-@@ -2006,13 +2014,6 @@ struct felix_stream_filter {
- 	u32 maxsdu;
- };
- 
--struct felix_stream_filter_counters {
--	u32 match;
--	u32 not_pass_gate;
--	u32 not_pass_sdu;
--	u32 red;
--};
--
- struct felix_stream_gate {
- 	u32 index;
- 	u8 enable;
-@@ -2516,31 +2517,6 @@ static void vsc9959_psfp_sgi_table_del(struct ocelot *ocelot,
- 		}
- }
- 
--static void vsc9959_psfp_counters_get(struct ocelot *ocelot, u32 index,
--				      struct felix_stream_filter_counters *counters)
--{
--	mutex_lock(&ocelot->stat_view_lock);
--
--	ocelot_rmw(ocelot, SYS_STAT_CFG_STAT_VIEW(index),
--		   SYS_STAT_CFG_STAT_VIEW_M,
--		   SYS_STAT_CFG);
--
--	counters->match = ocelot_read(ocelot, SYS_COUNT_SF_MATCHING_FRAMES);
--	counters->not_pass_gate = ocelot_read(ocelot,
--					      SYS_COUNT_SF_NOT_PASSING_FRAMES);
--	counters->not_pass_sdu = ocelot_read(ocelot,
--					     SYS_COUNT_SF_NOT_PASSING_SDU);
--	counters->red = ocelot_read(ocelot, SYS_COUNT_SF_RED_FRAMES);
--
--	/* Clear the PSFP counter. */
--	ocelot_write(ocelot,
--		     SYS_STAT_CFG_STAT_VIEW(index) |
--		     SYS_STAT_CFG_STAT_CLEAR_SHOT(0x10),
--		     SYS_STAT_CFG);
--
--	mutex_unlock(&ocelot->stat_view_lock);
--}
--
- static int vsc9959_psfp_filter_add(struct ocelot *ocelot, int port,
- 				   struct flow_cls_offload *f)
- {
-@@ -2565,6 +2541,8 @@ static int vsc9959_psfp_filter_add(struct ocelot *ocelot, int port,
- 		return ret;
- 	}
- 
-+	mutex_lock(&psfp->lock);
-+
- 	flow_action_for_each(i, a, &f->rule->action) {
- 		switch (a->id) {
- 		case FLOW_ACTION_GATE:
-@@ -2606,6 +2584,7 @@ static int vsc9959_psfp_filter_add(struct ocelot *ocelot, int port,
- 			sfi.maxsdu = a->police.mtu;
- 			break;
- 		default:
-+			mutex_unlock(&psfp->lock);
- 			return -EOPNOTSUPP;
- 		}
- 	}
-@@ -2675,6 +2654,8 @@ static int vsc9959_psfp_filter_add(struct ocelot *ocelot, int port,
- 		goto err;
- 	}
- 
-+	mutex_unlock(&psfp->lock);
-+
- 	return 0;
- 
- err:
-@@ -2684,6 +2665,8 @@ static int vsc9959_psfp_filter_add(struct ocelot *ocelot, int port,
- 	if (sfi.fm_valid)
- 		ocelot_vcap_policer_del(ocelot, sfi.fmid);
- 
-+	mutex_unlock(&psfp->lock);
-+
- 	return ret;
- }
- 
-@@ -2691,18 +2674,22 @@ static int vsc9959_psfp_filter_del(struct ocelot *ocelot,
- 				   struct flow_cls_offload *f)
- {
- 	struct felix_stream *stream, tmp, *stream_entry;
-+	struct ocelot_psfp_list *psfp = &ocelot->psfp;
- 	static struct felix_stream_filter *sfi;
--	struct ocelot_psfp_list *psfp;
- 
--	psfp = &ocelot->psfp;
-+	mutex_lock(&psfp->lock);
- 
- 	stream = vsc9959_stream_table_get(&psfp->stream_list, f->cookie);
--	if (!stream)
-+	if (!stream) {
-+		mutex_unlock(&psfp->lock);
- 		return -ENOMEM;
-+	}
- 
- 	sfi = vsc9959_psfp_sfi_table_get(&psfp->sfi_list, stream->sfid);
--	if (!sfi)
-+	if (!sfi) {
-+		mutex_unlock(&psfp->lock);
- 		return -ENOMEM;
-+	}
- 
- 	if (sfi->sg_valid)
- 		vsc9959_psfp_sgi_table_del(ocelot, sfi->sgid);
-@@ -2728,27 +2715,83 @@ static int vsc9959_psfp_filter_del(struct ocelot *ocelot,
- 					  stream_entry->ports);
- 	}
- 
-+	mutex_unlock(&psfp->lock);
-+
- 	return 0;
- }
- 
-+static void vsc9959_update_sfid_stats(struct ocelot *ocelot,
-+				      struct felix_stream_filter *sfi)
-+{
-+	struct felix_stream_filter_counters *s = &sfi->stats;
-+	u32 match, not_pass_gate, not_pass_sdu, red;
-+	u32 sfid = sfi->index;
-+
-+	lockdep_assert_held(&ocelot->stat_view_lock);
-+
-+	ocelot_rmw(ocelot, SYS_STAT_CFG_STAT_VIEW(sfid),
-+		   SYS_STAT_CFG_STAT_VIEW_M,
-+		   SYS_STAT_CFG);
-+
-+	match = ocelot_read(ocelot, SYS_COUNT_SF_MATCHING_FRAMES);
-+	not_pass_gate = ocelot_read(ocelot, SYS_COUNT_SF_NOT_PASSING_FRAMES);
-+	not_pass_sdu = ocelot_read(ocelot, SYS_COUNT_SF_NOT_PASSING_SDU);
-+	red = ocelot_read(ocelot, SYS_COUNT_SF_RED_FRAMES);
-+
-+	/* Clear the PSFP counter. */
-+	ocelot_write(ocelot,
-+		     SYS_STAT_CFG_STAT_VIEW(sfid) |
-+		     SYS_STAT_CFG_STAT_CLEAR_SHOT(0x10),
-+		     SYS_STAT_CFG);
-+
-+	s->match += match;
-+	s->not_pass_gate += not_pass_gate;
-+	s->not_pass_sdu += not_pass_sdu;
-+	s->red += red;
-+}
-+
-+/* Caller must hold &ocelot->stat_view_lock */
-+static void vsc9959_update_stats(struct ocelot *ocelot)
-+{
-+	struct ocelot_psfp_list *psfp = &ocelot->psfp;
-+	struct felix_stream_filter *sfi;
-+
-+	mutex_lock(&psfp->lock);
-+
-+	list_for_each_entry(sfi, &psfp->sfi_list, list)
-+		vsc9959_update_sfid_stats(ocelot, sfi);
-+
-+	mutex_unlock(&psfp->lock);
-+}
-+
- static int vsc9959_psfp_stats_get(struct ocelot *ocelot,
- 				  struct flow_cls_offload *f,
- 				  struct flow_stats *stats)
- {
--	struct felix_stream_filter_counters counters;
--	struct ocelot_psfp_list *psfp;
-+	struct ocelot_psfp_list *psfp = &ocelot->psfp;
-+	struct felix_stream_filter_counters *s;
-+	static struct felix_stream_filter *sfi;
- 	struct felix_stream *stream;
- 
--	psfp = &ocelot->psfp;
- 	stream = vsc9959_stream_table_get(&psfp->stream_list, f->cookie);
- 	if (!stream)
- 		return -ENOMEM;
- 
--	vsc9959_psfp_counters_get(ocelot, stream->sfid, &counters);
-+	sfi = vsc9959_psfp_sfi_table_get(&psfp->sfi_list, stream->sfid);
-+	if (!sfi)
-+		return -EINVAL;
-+
-+	mutex_lock(&ocelot->stat_view_lock);
-+
-+	vsc9959_update_sfid_stats(ocelot, sfi);
-+
-+	s = &sfi->stats;
-+	stats->pkts = s->match;
-+	stats->drops = s->not_pass_gate + s->not_pass_sdu + s->red;
- 
--	stats->pkts = counters.match;
--	stats->drops = counters.not_pass_gate + counters.not_pass_sdu +
--		       counters.red;
-+	memset(s, 0, sizeof(*s));
-+
-+	mutex_unlock(&ocelot->stat_view_lock);
- 
- 	return 0;
- }
-@@ -2760,6 +2803,7 @@ static void vsc9959_psfp_init(struct ocelot *ocelot)
- 	INIT_LIST_HEAD(&psfp->stream_list);
- 	INIT_LIST_HEAD(&psfp->sfi_list);
- 	INIT_LIST_HEAD(&psfp->sgi_list);
-+	mutex_init(&psfp->lock);
- }
- 
- /* When using cut-through forwarding and the egress port runs at a higher data
-@@ -2850,6 +2894,7 @@ static const struct ocelot_ops vsc9959_ops = {
- 	.psfp_stats_get		= vsc9959_psfp_stats_get,
- 	.cut_through_fwd	= vsc9959_cut_through_fwd,
- 	.tas_clock_adjust	= vsc9959_tas_clock_adjust,
-+	.update_stats		= vsc9959_update_stats,
- };
- 
- static const struct felix_info felix_info_vsc9959 = {
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index a677a18239c5..8e063322625a 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -1934,6 +1934,9 @@ static void ocelot_check_stats_work(struct work_struct *work)
- 		spin_unlock(&ocelot->stats_lock);
- 	}
- 
-+	if (!err && ocelot->ops->update_stats)
-+		ocelot->ops->update_stats(ocelot);
-+
- 	mutex_unlock(&ocelot->stat_view_lock);
- 
- 	if (err)
-diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index e85fb3b15524..bc6ca1be08f3 100644
---- a/include/soc/mscc/ocelot.h
-+++ b/include/soc/mscc/ocelot.h
-@@ -729,6 +729,7 @@ struct ocelot_ops {
- 			      struct flow_stats *stats);
- 	void (*cut_through_fwd)(struct ocelot *ocelot);
- 	void (*tas_clock_adjust)(struct ocelot *ocelot);
-+	void (*update_stats)(struct ocelot *ocelot);
- };
- 
- struct ocelot_vcap_policer {
-@@ -766,6 +767,8 @@ struct ocelot_psfp_list {
- 	struct list_head stream_list;
- 	struct list_head sfi_list;
- 	struct list_head sgi_list;
-+	/* Serialize access to the lists */
-+	struct mutex lock;
- };
- 
- enum ocelot_sb {
+ 	/* Get Tx stats */
+ 	stats->tx_bytes = s[OCELOT_STAT_TX_OCTETS];
 -- 
 2.34.1
 
