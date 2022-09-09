@@ -2,115 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E56D45B4198
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 23:43:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F8195B41A0
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 23:47:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231600AbiIIVnZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Sep 2022 17:43:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37702 "EHLO
+        id S230118AbiIIVrc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Sep 2022 17:47:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230264AbiIIVnX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 17:43:23 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04F2D13E4C7
-        for <netdev@vger.kernel.org>; Fri,  9 Sep 2022 14:43:22 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id j15-20020a056902020f00b006aea95548b0so290151ybs.19
-        for <netdev@vger.kernel.org>; Fri, 09 Sep 2022 14:43:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date;
-        bh=RQ/RHVVHpmpB1V0DuvGfzSeOFbDRdXln7rq3LTWarTA=;
-        b=Y9COy7bDApy6jOXUDs8cE/zwtaXpJVQs2yW5bcVJUB9dEen41pIRSOfHXVEy3XpSMr
-         In1BWDC4ycuBveJyi34VQdSRPykN8pakuW1CdhDdvg2KmEW/9K55JFtORM9Zzbuwc8UM
-         YbQ/ghAlbbAAFF1kOkK5N9S89JsdjbS60gmnh6oNl/ut1jCSz21+k+9fiZIREwDWFrSK
-         NXFJWd8OAt+sTzRI9S7CN1P8dYDaGrnXc4gqLtbT7mSzgg1U5JSXaL8E+FfXULJZ/rJM
-         J2SMtm04BpMuLnTwrpW8SL7iid6zwqKbu6bKDIsl6pj5Y5HgtWT8O+Ee6YOi6s3hURjQ
-         eKlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date;
-        bh=RQ/RHVVHpmpB1V0DuvGfzSeOFbDRdXln7rq3LTWarTA=;
-        b=I1iG+wJYWpvy5CiYcLKipqvuRw+dgA3xq3YoP8wrQkYZDSYTv9TVE6KJpIB7K6Fyoj
-         0rSe97reN0eiZtmQ/tnCcz0mkyO3befNxWmdpxUfgTEXWkv46f9cZeN2WrFiwkJqlbuD
-         qFWwIbbW7GjVhfFL+2tltMjqvxO7iQAZixXhJRLS5mTbLUFl7jzBBRtRMHFmdydPWh9q
-         Vuw9bgG9Txmnj7d+SgMA+J8LjlGAxGk09+BdArqY718Fo5D+2icQqkbc9nQA0NBfPJXa
-         g3a/eG9KhlzN7ksNoRnWvTBeWEDO02S9sgUyg2MOG8VNoxkqZgc+m2PwK4ZZueRoLWiO
-         7fXw==
-X-Gm-Message-State: ACgBeo3dBPgUr5hBf8NWQe+/0S/8M+1enZQr72quKbM6gWJxBtSVp6zi
-        l3TTfgE+5z4SDhAO3zOZVHORmME=
-X-Google-Smtp-Source: AA6agR6hPX1FHMMsmDh95SYa0O35eolLvLx65t+G3+4vzi9V2C7ZvZaasr4ExgdC0ocMNamDN1DmEaw=
-X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
- (user=sdf job=sendgmr) by 2002:a25:bed1:0:b0:695:8192:8d1d with SMTP id
- k17-20020a25bed1000000b0069581928d1dmr13187190ybm.533.1662759800271; Fri, 09
- Sep 2022 14:43:20 -0700 (PDT)
-Date:   Fri, 9 Sep 2022 14:43:18 -0700
-In-Reply-To: <20220909211540.GA11304@bytedance>
-Mime-Version: 1.0
-References: <000000000000e506e905e836d9e7@google.com> <YxtrrG8ebrarIqnc@google.com>
- <CAO-hwJJyrhmzWY4fth5miiHd3QXHvs4KPuPRacyNp8xrTxOucA@mail.gmail.com>
- <YxuZ3j0PE0cauK1E@google.com> <20220909211540.GA11304@bytedance>
-Message-ID: <YxuzdhmaHeyycyRi@google.com>
-Subject: Re: [syzbot] WARNING in bpf_verifier_vlog
-From:   sdf@google.com
-To:     Peilin Ye <yepeilin.cs@gmail.com>
-Cc:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, davem@davemloft.net,
-        haoluo@google.com, hawk@kernel.org,
-        John Fastabend <john.fastabend@gmail.com>, jolsa@kernel.org,
-        KP Singh <kpsingh@kernel.org>, kuba@kernel.org,
-        lkml <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev,
-        martin.lau@linux.dev, nathan@kernel.org,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Networking <netdev@vger.kernel.org>, Song Liu <song@kernel.org>,
-        syzkaller-bugs@googlegroups.com, Tom Rix <trix@redhat.com>,
-        Yonghong Song <yhs@fb.com>, Peilin Ye <peilin.ye@bytedance.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        with ESMTP id S229548AbiIIVra (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 17:47:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D3028053B;
+        Fri,  9 Sep 2022 14:47:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D915FB82659;
+        Fri,  9 Sep 2022 21:47:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04275C433D7;
+        Fri,  9 Sep 2022 21:47:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662760046;
+        bh=Ax/uvAY03/zgpeUKLhwstiXZ3hgfRZwfa9av35aAHXg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OwoSfo3Bd9xYfIGwgcbVQjmaS1OKWhafPVU2M5E3uQ3xVQnIxtPJSRfMy5XpdEsuB
+         YbuN3yYoFTM9yEEHtcY+gRDAPEN//SxS4FIOh0MBzinNjwPwwSgKih9xdJxRNeECHU
+         wNeY1+eyKj8axBJi8t9g8ewh/rBfEga7G4OYFnW7aDAjnQOFzqLOrmk2zbeE7woStX
+         fHYoPmUCtIZloQhFL3zay3IzE879R+qTC1LGkxr00/m4g2Kuyt29Q1evNWrDBU/bsZ
+         7mvrTZddtXkcbpevydhkCPRCQH1Rx+7GjE0PxvMfPM5wMSVq2BZKnfVXAG+h85pBgG
+         k7IU9aU1+X8FA==
+Date:   Fri, 9 Sep 2022 23:47:22 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Daniel Golle <daniel@makrotopia.org>
+Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
+        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, matthias.bgg@gmail.com,
+        linux-mediatek@lists.infradead.org, lorenzo.bianconi@redhat.com,
+        Bo.Jiao@mediatek.com, sujuan.chen@mediatek.com,
+        ryder.Lee@mediatek.com, evelyn.tsai@mediatek.com,
+        devicetree@vger.kernel.org, robh@kernel.org
+Subject: Re: [PATCH net-next 08/12] net: ethernet: mtk_eth_soc: add foe info
+ in mtk_soc_data structure
+Message-ID: <Yxu0aoBcCirDkm9j@lore-desk>
+References: <cover.1662661555.git.lorenzo@kernel.org>
+ <0d0bfa99e313c0b00bf75f943f58b6fe552ed004.1662661555.git.lorenzo@kernel.org>
+ <YxuL45OghfKVGTrM@makrotopia.org>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="o/fDb3p0UsNpkYZx"
+Content-Disposition: inline
+In-Reply-To: <YxuL45OghfKVGTrM@makrotopia.org>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/09, Peilin Ye wrote:
-> Hi all,
 
-> On Fri, Sep 09, 2022 at 12:54:06PM -0700, sdf@google.com wrote:
-> > On 09/09, Benjamin Tissoires wrote:
-> > Yeah, good point. I've run the repro. I think the issue is that
-> > syzkaller is able to pass btf with a super long random name which
-> > then hits BPF_VERIFIER_TMP_LOG_SIZE while printing the verifier
-> > log line. Seems like a non-issue to me, but maybe we need to
-> > add some extra validation..
+--o/fDb3p0UsNpkYZx
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> In btf_func_proto_check_meta():
+> On Thu, Sep 08, 2022 at 09:33:42PM +0200, Lorenzo Bianconi wrote:
+> > Introduce foe struct in mtk_soc_data as a container for foe table chip
+> > related definitions.
+> > This is a preliminary patch to enable mt7986 wed support.
+> >=20
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > ---
+> >  drivers/net/ethernet/mediatek/mtk_eth_soc.c   |  70 +++++++-
+> >  drivers/net/ethernet/mediatek/mtk_eth_soc.h   |  27 ++-
+> >  drivers/net/ethernet/mediatek/mtk_ppe.c       | 161 ++++++++++--------
+> >  drivers/net/ethernet/mediatek/mtk_ppe.h       |  29 ++--
+> >  .../net/ethernet/mediatek/mtk_ppe_offload.c   |  34 ++--
+> >  5 files changed, 208 insertions(+), 113 deletions(-)
+> >=20
+> > [...]
+> > diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.h b/drivers/net/ethe=
+rnet/mediatek/mtk_ppe.h
+> > index 6d4c91acd1a5..a364f45edf38 100644
+> > --- a/drivers/net/ethernet/mediatek/mtk_ppe.h
+> > +++ b/drivers/net/ethernet/mediatek/mtk_ppe.h
+> > @@ -61,6 +61,8 @@ enum {
+> >  #define MTK_FOE_VLAN2_WINFO_WCID	GENMASK(13, 6)
+> >  #define MTK_FOE_VLAN2_WINFO_RING	GENMASK(15, 14)
+> > =20
+> > +#define MTK_FIELD_PREP(mask, val)	(((typeof(mask))(val) << __bf_shf(ma=
+sk)) & (mask))
+> > +#define MTK_FIELD_GET(mask, val)	((typeof(mask))(((val) & (mask)) >> _=
+_bf_shf(mask)))
+>=20
+> This seems to trigger a compiler bug on ARMv7 (e.g. MT7623) builds:
+>=20
+>   LD      .tmp_vmlinux.kallsyms1
+> arm-openwrt-linux-muslgnueabi-ld: drivers/net/ethernet/mediatek/mtk_ppe.o=
+: in function `mtk_flow_entry_match':
+> /usr/src/lede/build_dir/target-arm_cortex-a7+neon-vfpv4_musl_eabi/linux-m=
+ediatek_mt7623/linux-5.15.67/drivers/net/ethernet/mediatek/mtk_ppe.c:406: u=
+ndefined reference to `__ffsdi2'
+> arm-openwrt-linux-muslgnueabi-ld: drivers/net/ethernet/mediatek/mtk_ppe.o=
+: in function `__mtk_foe_entry_commit':
+> /usr/src/lede/build_dir/target-arm_cortex-a7+neon-vfpv4_musl_eabi/linux-m=
+ediatek_mt7623/linux-5.15.67/drivers/net/ethernet/mediatek/mtk_ppe.c:533: u=
+ndefined reference to `__ffsdi2'
+> arm-openwrt-linux-muslgnueabi-ld: drivers/net/ethernet/mediatek/mtk_ppe.o=
+: in function `mtk_foe_entry_l2':
+> /usr/src/lede/build_dir/target-arm_cortex-a7+neon-vfpv4_musl_eabi/linux-m=
+ediatek_mt7623/linux-5.15.67/drivers/net/ethernet/mediatek/mtk_ppe.c:134: u=
+ndefined reference to `__ffsdi2'
+> arm-openwrt-linux-muslgnueabi-ld: drivers/net/ethernet/mediatek/mtk_ppe.o=
+: in function `mtk_foe_entry_commit_subflow':
+> /usr/src/lede/build_dir/target-arm_cortex-a7+neon-vfpv4_musl_eabi/linux-m=
+ediatek_mt7623/linux-5.15.67/drivers/net/ethernet/mediatek/mtk_ppe.c:611: u=
+ndefined reference to `__ffsdi2'
+> arm-openwrt-linux-muslgnueabi-ld: drivers/net/ethernet/mediatek/mtk_ppe.o=
+: in function `mtk_foe_entry_ib2':
+> /usr/src/lede/build_dir/target-arm_cortex-a7+neon-vfpv4_musl_eabi/linux-m=
+ediatek_mt7623/linux-5.15.67/drivers/net/ethernet/mediatek/mtk_ppe.c:148: u=
+ndefined reference to `__ffsdi2'
+> arm-openwrt-linux-muslgnueabi-ld: drivers/net/ethernet/mediatek/mtk_ppe.o=
+:/usr/src/lede/build_dir/target-arm_cortex-a7+neon-vfpv4_musl_eabi/linux-me=
+diatek_mt7623/linux-5.15.67/drivers/net/ethernet/mediatek/mtk_ppe.c:169: mo=
+re undefined references to `__ffsdi2' follow
 
-> 	if (t->name_off) {
-> 		btf_verifier_log_type(env, t, "Invalid name");
-> 		return -EINVAL;
-> 	}
+Hi Daniel,
 
-> In the verifier log, maybe we should just say that  
-> BTF_KIND_FUNC_PROTO "must
-> not have a name" [1], instead of printing out the user-provided
-> (potentially very long) name and say it's "Invalid" ?
+ack, I will fix it in v2.
 
-> Similarly, for name-too-long errors, should we truncate the name to
-> KSYM_NAME_LEN bytes (see __btf_name_valid()) in the log ?
+Regards,
+Lorenzo
 
-Both suggestions sound good to me. Care to cook and send a patch with a
-fix?
+>=20
+>=20
+> >  enum {
+> >  	MTK_FOE_STATE_INVALID,
+> >  	MTK_FOE_STATE_UNBIND,
 
-> [1] commit 2667a2626f4d ("bpf: btf: Add BTF_KIND_FUNC and  
-> BTF_KIND_FUNC_PROTO")
+--o/fDb3p0UsNpkYZx
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> Thanks,
-> Peilin Ye
+-----BEGIN PGP SIGNATURE-----
 
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYxu0agAKCRA6cBh0uS2t
+rIASAQC4DrW2Z2WRfMzAKwO9ZVvP2jDgt/p3kM30a/xV699wywEA9xq3pzx4TYa7
+H2xGS3bd8wdUqwiGkljU0zhYoWxG5Qg=
+=WiH2
+-----END PGP SIGNATURE-----
+
+--o/fDb3p0UsNpkYZx--
