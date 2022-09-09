@@ -2,251 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF05B5B3DC9
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 19:16:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 632985B3DEB
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 19:26:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231302AbiIIRQe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Sep 2022 13:16:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41002 "EHLO
+        id S231163AbiIIR0x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Sep 2022 13:26:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231126AbiIIRQd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 13:16:33 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22C971269F9
-        for <netdev@vger.kernel.org>; Fri,  9 Sep 2022 10:16:31 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id v18-20020a17090a899200b00200a2c60f3aso3564820pjn.5
-        for <netdev@vger.kernel.org>; Fri, 09 Sep 2022 10:16:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date;
-        bh=QFnamYGdcG3RTWVvJqLpNP3EOD8aM2gxJ3g8gRyZ/qk=;
-        b=SZDHTIlVA5bFdnkuLwRHMUF8b0DsCuxNe0fYCWz/xwk8nwWdFc9k+A/WOChKR6ieC3
-         +BW4tKJNm3e1VqUqRMNxLvU8sPPNogaEYK8hCYU4cK0DkN03j7mdOZMMAvviilmuOwQ4
-         kKI8hcgpOsaAk/GzQy2WIxA4gLrfrL3nDQtuIq5fWkzo32K0mtGJvl6lduSquvjr2Ui9
-         4hrw8ugyiAtQK9eJ5o++h7DMHX6voU/NU+SIqLvyeaqmk6hTU6RbeLWsCFkkKlvUgAGD
-         do4tJ0+3JJr9aF6opCBRafTiqUPU1Mpvxf47fQ1eZQTJ+PqcRPb1SYay2obwdigNTsOn
-         V2SA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date;
-        bh=QFnamYGdcG3RTWVvJqLpNP3EOD8aM2gxJ3g8gRyZ/qk=;
-        b=A9HHcsqSlyrRH0KDmRCMtAg5RgAF4QElH2JTDBfmmOl8T6WZon23lnrTVOasHKb+aj
-         SF6dHi49gLj3RiMSufrdwHlrRqEwWRuA8yIRAfBeRg9cDKttVOJ5H1kesnexfsPJ4tPA
-         4dO3Oy1F58gMwi7Ov2YzEQHuSmuUZXJva4T8ZviiK234QVXImTUJAIbUCSLx2U1EhOs0
-         fXleUeqN8SwaZARiVC9oYhLMy04asqRGFLkW+oSXHPQ0ttc3+OeNv5IJ4AiXJZRzbUNN
-         smLjAZ9XbwRg9oFhZb8744VaUYCo5/boQOi4jpz/d1IDVtbwKoY5EcaR4Kz4NS/9g2ws
-         Rl5A==
-X-Gm-Message-State: ACgBeo2/6e2w1gElfCBHzI1bkCNXITOKRFMSwmpZOMnZ0p5PIb2qW0Xl
-        B/gFRCBp6mYvGh5tqeud2yYRbQQ=
-X-Google-Smtp-Source: AA6agR4VgrH7q/84mlNCM//BP7eyC3elYRo8C1BlKXdyJDnVsy4G6helZVU18gXJ3LRp2ozS5hXIPhc=
-X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
- (user=sdf job=sendgmr) by 2002:a05:6a00:1252:b0:53a:8943:4b1e with SMTP id
- u18-20020a056a00125200b0053a89434b1emr15344063pfi.2.1662743790577; Fri, 09
- Sep 2022 10:16:30 -0700 (PDT)
-Date:   Fri, 9 Sep 2022 10:16:28 -0700
-In-Reply-To: <1662702346-29665-2-git-send-email-wangyufen@huawei.com>
-Mime-Version: 1.0
-References: <1662702346-29665-1-git-send-email-wangyufen@huawei.com> <1662702346-29665-2-git-send-email-wangyufen@huawei.com>
-Message-ID: <Yxt07BE7TOX6dGh2@google.com>
-Subject: Re: [bpf-next 2/2] libbpf: Add pathname_concat() helper
-From:   sdf@google.com
-To:     Wang Yufen <wangyufen@huawei.com>
-Cc:     andrii@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, haoluo@google.com,
-        jolsa@kernel.org, paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, davem@davemloft.net, kuba@kernel.org,
-        hawk@kernel.org, nathan@kernel.org, ndesaulniers@google.com,
-        trix@redhat.com, bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        with ESMTP id S229517AbiIIR0w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 13:26:52 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7118211B00E;
+        Fri,  9 Sep 2022 10:26:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662744411; x=1694280411;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=2XgdYbkWHU5wpwgtFuAdOr2mJB8qz3+43GTBZWw+MgY=;
+  b=D64wy3a2WPMCW3Kuxj26EWmPLxhrfH03wo3GFb9YqqPXecMEb8QO1EBf
+   UAaBNduKFdJilCa/5oNOJTjcMidnX4g8Q8iGHDG6QtmPpYxMZCkqPxMD+
+   8rykCNQUgPszNo8yS7IWVlIj+JqTMfzXk/8vvqKhbYTaz9r47fjSqAimY
+   qteioV57oqc++lMa5az8+wNLca7uO4u17FMLcEnrqIGm2b3mVDwUPHZds
+   HvnkGUjkilm4uTRKqeNiOhf+AaJSEG4ZFguUE0d1L86MtJUujb1669Z58
+   1jur8dFLo9Bz1cpnBqXKhuhcvyhs0HXfQ+izY6n+w5MP+AE64FJlaQ0/R
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10465"; a="298330945"
+X-IronPort-AV: E=Sophos;i="5.93,303,1654585200"; 
+   d="scan'208";a="298330945"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2022 10:26:50 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,303,1654585200"; 
+   d="scan'208";a="566441041"
+Received: from lkp-server02.sh.intel.com (HELO b2938d2e5c5a) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 09 Sep 2022 10:26:47 -0700
+Received: from kbuild by b2938d2e5c5a with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oWhmB-0001WX-07;
+        Fri, 09 Sep 2022 17:26:47 +0000
+Date:   Sat, 10 Sep 2022 01:26:01 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, geert+renesas@glider.be
+Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: Re: [PATCH 3/5] net: ethernet: renesas: Add Ethernet Switch driver
+Message-ID: <202209100156.WIC248Uh-lkp@intel.com>
+References: <20220909132614.1967276-4-yoshihiro.shimoda.uh@renesas.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220909132614.1967276-4-yoshihiro.shimoda.uh@renesas.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/09, Wang Yufen wrote:
-> Move snprintf and len check to common helper pathname_concat() to make the
-> code simpler.
+Hi Yoshihiro,
 
-> Signed-off-by: Wang Yufen <wangyufen@huawei.com>
-> ---
->   tools/lib/bpf/libbpf.c | 74  
-> ++++++++++++++++++--------------------------------
->   1 file changed, 27 insertions(+), 47 deletions(-)
+I love your patch! Perhaps something to improve:
 
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 5854b92..238a03e 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -2096,20 +2096,31 @@ static bool get_map_field_int(const char  
-> *map_name, const struct btf *btf,
->   	return true;
->   }
+[auto build test WARNING on next-20220909]
+[also build test WARNING on v6.0-rc4]
+[cannot apply to geert-renesas-devel/next net-next/master net/master linus/master v6.0-rc4 v6.0-rc3 v6.0-rc2]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-> -static int build_map_pin_path(struct bpf_map *map, const char *path)
-> +static int pathname_concat(const char *path, const char *name, char *buf)
->   {
-> -	char buf[PATH_MAX];
->   	int len;
+url:    https://github.com/intel-lab-lkp/linux/commits/Yoshihiro-Shimoda/treewide-Add-R-Car-S4-8-Ethernet-Switch-support/20220909-212759
+base:    9a82ccda91ed2b40619cb3c10d446ae1f97bab6e
+config: sh-allmodconfig (https://download.01.org/0day-ci/archive/20220910/202209100156.WIC248Uh-lkp@intel.com/config)
+compiler: sh4-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/9c5c4dd0ca6beb269dd0a6ef12c386198e193c68
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Yoshihiro-Shimoda/treewide-Add-R-Car-S4-8-Ethernet-Switch-support/20220909-212759
+        git checkout 9c5c4dd0ca6beb269dd0a6ef12c386198e193c68
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sh SHELL=/bin/bash M=drivers/net/ethernet/renesas
 
-> -	if (!path)
-> -		path = "/sys/fs/bpf";
-> -
-> -	len = snprintf(buf, PATH_MAX, "%s/%s", path, bpf_map__name(map));
-> +	len = snprintf(buf, PATH_MAX, "%s/%s", path, name);
->   	if (len < 0)
->   		return -EINVAL;
->   	else if (len >= PATH_MAX)
->   		return -ENAMETOOLONG;
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-> +	return 0;
-> +}
-> +
-> +static int build_map_pin_path(struct bpf_map *map, const char *path)
-> +{
-> +	char buf[PATH_MAX];
-> +	int err;
-> +
-> +	if (!path)
-> +		path = "/sys/fs/bpf";
-> +
-> +	err = pathname_concat(path, bpf_map__name(map), buf);
-> +	if (err)
-> +		return err;
-> +
->   	return bpf_map__set_pin_path(map, buf);
->   }
+All warnings (new ones prefixed by >>):
 
-> @@ -7959,17 +7970,8 @@ int bpf_object__pin_maps(struct bpf_object *obj,  
-> const char *path)
->   			continue;
-
->   		if (path) {
-> -			int len;
-> -
-> -			len = snprintf(buf, PATH_MAX, "%s/%s", path,
-> -				       bpf_map__name(map));
-> -			if (len < 0) {
-> -				err = -EINVAL;
-> -				goto err_unpin_maps;
-> -			} else if (len >= PATH_MAX) {
-> -				err = -ENAMETOOLONG;
-
-[..]
-
-> +			if (pathname_concat(path, bpf_map__name(map), buf))
->   				goto err_unpin_maps;
-> -			}
-
-You're breaking error reporting here and in a bunch of other places.
-Should be:
-
-err = pathname_concat();
-if (err)
-	goto err_unpin_maps;
-
-I have the same attitude towards this patch as the first one in the
-series: not worth it. Nothing is currently broken, the code as is relatively
-readable, this version is not much simpler, it just looks slightly different
-taste-wise..
-
-How about this: if you really want to push this kind of cleanup, send
-selftests that exercise all these error cases? :-)
+>> drivers/net/ethernet/renesas/rswitch_serdes.c:16:6: warning: no previous prototype for 'rswitch_serdes_write32' [-Wmissing-prototypes]
+      16 | void rswitch_serdes_write32(void __iomem *addr, u32 offs,  u32 bank, u32 data)
+         |      ^~~~~~~~~~~~~~~~~~~~~~
+>> drivers/net/ethernet/renesas/rswitch_serdes.c:22:5: warning: no previous prototype for 'rswitch_serdes_read32' [-Wmissing-prototypes]
+      22 | u32 rswitch_serdes_read32(void __iomem *addr, u32 offs,  u32 bank)
+         |     ^~~~~~~~~~~~~~~~~~~~~
 
 
->   			sanitize_pin_path(buf);
->   			pin_path = buf;
->   		} else if (!map->pin_path) {
-> @@ -8007,14 +8009,9 @@ int bpf_object__unpin_maps(struct bpf_object *obj,  
-> const char *path)
->   		char buf[PATH_MAX];
+vim +/rswitch_serdes_write32 +16 drivers/net/ethernet/renesas/rswitch_serdes.c
 
->   		if (path) {
-> -			int len;
-> -
-> -			len = snprintf(buf, PATH_MAX, "%s/%s", path,
-> -				       bpf_map__name(map));
-> -			if (len < 0)
-> -				return libbpf_err(-EINVAL);
-> -			else if (len >= PATH_MAX)
-> -				return libbpf_err(-ENAMETOOLONG);
-> +			err = pathname_concat(path, bpf_map__name(map), buf);
-> +			if (err)
-> +				return err;
->   			sanitize_pin_path(buf);
->   			pin_path = buf;
->   		} else if (!map->pin_path) {
-> @@ -8032,6 +8029,7 @@ int bpf_object__unpin_maps(struct bpf_object *obj,  
-> const char *path)
->   int bpf_object__pin_programs(struct bpf_object *obj, const char *path)
->   {
->   	struct bpf_program *prog;
-> +	char buf[PATH_MAX];
->   	int err;
+    15	
+  > 16	void rswitch_serdes_write32(void __iomem *addr, u32 offs,  u32 bank, u32 data)
+    17	{
+    18		iowrite32(bank, addr + RSWITCH_SERDES_BANK_SELECT);
+    19		iowrite32(data, addr + offs);
+    20	}
+    21	
+  > 22	u32 rswitch_serdes_read32(void __iomem *addr, u32 offs,  u32 bank)
+    23	{
+    24		iowrite32(bank, addr + RSWITCH_SERDES_BANK_SELECT);
+    25	
+    26		return ioread32(addr + offs);
+    27	}
+    28	
 
->   	if (!obj)
-> @@ -8043,17 +8041,8 @@ int bpf_object__pin_programs(struct bpf_object  
-> *obj, const char *path)
->   	}
-
->   	bpf_object__for_each_program(prog, obj) {
-> -		char buf[PATH_MAX];
-> -		int len;
-> -
-> -		len = snprintf(buf, PATH_MAX, "%s/%s", path, prog->name);
-> -		if (len < 0) {
-> -			err = -EINVAL;
-> +		if (pathname_concat(path, prog->name, buf))
->   			goto err_unpin_programs;
-> -		} else if (len >= PATH_MAX) {
-> -			err = -ENAMETOOLONG;
-> -			goto err_unpin_programs;
-> -		}
-
->   		err = bpf_program__pin(prog, buf);
->   		if (err)
-> @@ -8064,13 +8053,7 @@ int bpf_object__pin_programs(struct bpf_object  
-> *obj, const char *path)
-
->   err_unpin_programs:
->   	while ((prog = bpf_object__prev_program(obj, prog))) {
-> -		char buf[PATH_MAX];
-> -		int len;
-> -
-> -		len = snprintf(buf, PATH_MAX, "%s/%s", path, prog->name);
-> -		if (len < 0)
-> -			continue;
-> -		else if (len >= PATH_MAX)
-> +		if (pathname_concat(path, prog->name, buf))
->   			continue;
-
->   		bpf_program__unpin(prog, buf);
-> @@ -8089,13 +8072,10 @@ int bpf_object__unpin_programs(struct bpf_object  
-> *obj, const char *path)
-
->   	bpf_object__for_each_program(prog, obj) {
->   		char buf[PATH_MAX];
-> -		int len;
-
-> -		len = snprintf(buf, PATH_MAX, "%s/%s", path, prog->name);
-> -		if (len < 0)
-> -			return libbpf_err(-EINVAL);
-> -		else if (len >= PATH_MAX)
-> -			return libbpf_err(-ENAMETOOLONG);
-> +		err = pathname_concat(path, prog->name, buf);
-> +		if (err)
-> +			return libbpf_err(err);
-
->   		err = bpf_program__unpin(prog, buf);
->   		if (err)
-> --
-> 1.8.3.1
-
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
