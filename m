@@ -2,106 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC50C5B404E
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 22:05:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B04275B4068
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 22:16:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231715AbiIIUE7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Sep 2022 16:04:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40290 "EHLO
+        id S232013AbiIIUQs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Sep 2022 16:16:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231178AbiIIUE6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 16:04:58 -0400
-Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC46C26139
-        for <netdev@vger.kernel.org>; Fri,  9 Sep 2022 13:04:51 -0700 (PDT)
-Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-1280590722dso6785871fac.1
-        for <netdev@vger.kernel.org>; Fri, 09 Sep 2022 13:04:51 -0700 (PDT)
+        with ESMTP id S232000AbiIIUQp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 16:16:45 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D88B9122384;
+        Fri,  9 Sep 2022 13:16:44 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id iw17so2837781plb.0;
+        Fri, 09 Sep 2022 13:16:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=PBBkfqyKEKmoKSlfumXcfswFTGpWKdlelDU3j7TdrR4=;
-        b=MHywHitd5io7XuRWQ1rvvt5OziBwdtSQkH6YWIvZJXhDzI0hK+yn26ZtZ5AmtVG4Kn
-         HrSjUsuHgDOXfTP8N9TWP1x7NIkLdK3/t7GT0g6yajI4+GpgY/j5nwOq5W31DjCxx02e
-         zZqdEAnp7y1AUW/yFAsJvidtJ+MkBYVTCp5RIFpFktu/KdD4mPTB/H1E5VweTBovTVgg
-         8s4tsTJK5l4foiGE66je2O3u9GdFIaFWajCgl7jrckozwvMYP/rnSzwIilaQLxl2Wqbo
-         gXzk+Q//svkPmlif8IuOV2mdB32O1jMWIpjNAJl0YwB4Q645aETejfaBmjUNXUlDpm3C
-         mQQw==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=9VcEOS6tYLKIyOQMQW0PNupq+2esyo3BxlMVIMYy3Es=;
+        b=goNX8ojnJkZ7wZ953PokHx25OK65eCiCsZEOFSuYyEvSNaASosD9UIFvl6jryTbyUn
+         cHQ5Dt7TYgPGDrlwus3gAIrmxkxwUlIodi94Ioay9uOc8ny/3FxB0+klzXQnaaYEpYNx
+         OQ+7S1Wp64x+ulKJ6J+JOgZtuchNr6mtnh7LkZG9Gsx4L0sIdYyG0guoPh4g/qw6eT43
+         wtrNQ6o+Mdk9vEDsLmdhK5Rdgq2CnWj6dE60LvGIBft1s1IoeCiFCt14TaxEybdYl3qA
+         twW6AefXXgN1g3i9p9rDPCzEx22RSZwOpKwYbSHuXw54D71vUqjjZTbvf43I7wUxpLxT
+         QYtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=PBBkfqyKEKmoKSlfumXcfswFTGpWKdlelDU3j7TdrR4=;
-        b=XVkn19v+cfu1UnpIVswMRHxZjHFBqIm5fpSo8VRkilLBzP1PRen4R9GKryZ6CiaxQ2
-         PUpAo+V/eDu8rUiwwUvMgM7Ofm7pm1qXCHhvsViH8Mw3MViGEC0NEYHvHUPse9FaY6L5
-         7TzaPuYrxjwfDYx/AqOtKTwE6A4x7phuazgJ27nN4h8l+u4WZ5CvmooKzJYf/D4LgAf/
-         rO0s/8RZaXpZdUn7T8bEHYuSBLgYe8nGmo2W8SyM2wQUzqjJK2ylgVEkRBeJi0Gj1y9P
-         GhTzWA07R6I/H4/iBkIZUc6nsMCKKRoMt9GhKoT6PAr8bwM4bcVs3Wvdcz2u56nl+FSd
-         AUDw==
-X-Gm-Message-State: ACgBeo2rEzhCUCDt2TvseokHTVA7zWs7fiQepG8oGcrglV/KJ7V2r6MB
-        yQ+wczvMRfAT/+deNiXvG9ZT5A==
-X-Google-Smtp-Source: AA6agR5RYgasVurh3aZ6wjP27XeqkU/V82in/0/Rq3d0A0Fg9HJAYXaPlZLWbDr6iVRloG2uUuMB9A==
-X-Received: by 2002:a05:6870:a197:b0:128:4c:ffd7 with SMTP id a23-20020a056870a19700b00128004cffd7mr6050134oaf.176.1662753891117;
-        Fri, 09 Sep 2022 13:04:51 -0700 (PDT)
-Received: from ?IPV6:2804:1b3:7000:8f29:b747:519c:23a4:77ca? ([2804:1b3:7000:8f29:b747:519c:23a4:77ca])
-        by smtp.gmail.com with ESMTPSA id a65-20020a9d2647000000b006391bdbb361sm184640otb.31.2022.09.09.13.04.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 09 Sep 2022 13:04:50 -0700 (PDT)
-Message-ID: <6d627826-94ac-6c44-9a26-2e2662b58ee0@mojatatu.com>
-Date:   Fri, 9 Sep 2022 17:04:47 -0300
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=9VcEOS6tYLKIyOQMQW0PNupq+2esyo3BxlMVIMYy3Es=;
+        b=hhqd+bIb/UVVc2iHKSi34rSF/T2B66e0Z2lwNSbs6YbR8ReTJkxadRS6W7hZrYoKq3
+         w2YFdLrjg8/8cpesK7HIpHh2btWVZYUimLfCfmyx7Ns2K+pyUVo+yJsM273hNNEL3FxB
+         nR5qz62bhJ5TpRvt2i+f9lR8ppKFUHBDhTabz0IYF/AbBBO8kOOR6dNUibyxmxULbjjH
+         bfI2Gu8EK2AAz6p2GyZX4B6TQUaTmhTTsyZxWoMYHT/WJGzI5hRMg/ISyVX56fgNpaSJ
+         k7s/+UJrRVnaX3E3KamNxumoU57+YMto4+x/6djtnwKL4cHI3Rb3t/uyPIN6Oc9UYypM
+         AAwA==
+X-Gm-Message-State: ACgBeo3Qz1OQpAs4JyLFgTviz0jQV/XyrK8TVcdH3Dl6s4cAUbpAk2XE
+        RdTl/CvM2AYCcr1YF22wl0Hh7tgHW9XAqQ==
+X-Google-Smtp-Source: AA6agR4OibZJpiqzs7z/LQj2JCypTsO+jgnlq788FbbcRxXqsfvD2fBwkwmKM90B0D1Ny1GJfETGcQ==
+X-Received: by 2002:a17:90b:17c7:b0:202:95a2:e30f with SMTP id me7-20020a17090b17c700b0020295a2e30fmr2921283pjb.28.1662754604276;
+        Fri, 09 Sep 2022 13:16:44 -0700 (PDT)
+Received: from lvondent-mobl4.. (c-71-56-157-77.hsd1.or.comcast.net. [71.56.157.77])
+        by smtp.gmail.com with ESMTPSA id e12-20020a170902784c00b0016c78f9f024sm867987pln.104.2022.09.09.13.16.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Sep 2022 13:16:43 -0700 (PDT)
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: pull request: bluetooth 2022-09-09
+Date:   Fri,  9 Sep 2022 13:16:42 -0700
+Message-Id: <20220909201642.3810565-1-luiz.dentz@gmail.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH net-next 0/8] add tc-testing test cases
-Content-Language: en-US
-To:     Zhengchao Shao <shaozhengchao@huawei.com>,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, shuah@kernel.org
-Cc:     weiyongjun1@huawei.com, yuehaibing@huawei.com
-References: <20220909012936.268433-1-shaozhengchao@huawei.com>
-From:   Victor Nogueira <victor@mojatatu.com>
-In-Reply-To: <20220909012936.268433-1-shaozhengchao@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> For this patchset, test cases of the ctinfo, gate, and xt action modules
-> are added to the tc-testing test suite. Also add deleting test for
-> connmark, ife, nat, sample and tunnel_key action modules.
-> 
-> Zhengchao Shao (8):
->    selftests/tc-testings: add selftests for ctinfo action
->    selftests/tc-testings: add selftests for gate action
->    selftests/tc-testings: add selftests for xt action
->    selftests/tc-testings: add connmark action deleting test case
->    selftests/tc-testings: add ife action deleting test case
->    selftests/tc-testings: add nat action deleting test case
->    selftests/tc-testings: add sample action deleting test case
->    selftests/tc-testings: add tunnel_key action deleting test case
-> 
->   .../tc-testing/tc-tests/actions/connmark.json |  50 +++
->   .../tc-testing/tc-tests/actions/ctinfo.json   | 316 ++++++++++++++++++
->   .../tc-testing/tc-tests/actions/gate.json     | 315 +++++++++++++++++
->   .../tc-testing/tc-tests/actions/ife.json      |  50 +++
->   .../tc-testing/tc-tests/actions/nat.json      |  50 +++
->   .../tc-testing/tc-tests/actions/sample.json   |  50 +++
->   .../tc-tests/actions/tunnel_key.json          |  50 +++
->   .../tc-testing/tc-tests/actions/xt.json       | 219 ++++++++++++
->   8 files changed, 1100 insertions(+)
->   create mode 100644 tools/testing/selftests/tc-testing/tc-tests/actions/ctinfo.json
->   create mode 100644 tools/testing/selftests/tc-testing/tc-tests/actions/gate.json
->   create mode 100644 tools/testing/selftests/tc-testing/tc-tests/actions/xt.json
-> 
+The following changes since commit 64ae13ed478428135cddc2f1113dff162d8112d4:
 
-Reviewed-by: Victor Nogueira <victor@mojatatu.com>
+  net: core: fix flow symmetric hash (2022-09-09 12:48:00 +0100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth.git tags/for-net-2022-09-09
+
+for you to fetch changes up to 35e60f1aadf6c02d77fdf42180fbf205aec7e8fc:
+
+  Bluetooth: Fix HCIGETDEVINFO regression (2022-09-09 12:25:18 -0700)
+
+----------------------------------------------------------------
+bluetooth pull request for net:
+
+ -Fix HCIGETDEVINFO regression
+
+----------------------------------------------------------------
+Luiz Augusto von Dentz (1):
+      Bluetooth: Fix HCIGETDEVINFO regression
+
+ include/net/bluetooth/hci_sock.h | 2 --
+ 1 file changed, 2 deletions(-)
