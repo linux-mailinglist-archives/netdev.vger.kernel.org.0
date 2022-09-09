@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE1F25B2E21
+	by mail.lfdr.de (Postfix) with ESMTP id 2B8105B2E1F
 	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 07:34:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230251AbiIIFea (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Sep 2022 01:34:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60722 "EHLO
+        id S230241AbiIIFe3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Sep 2022 01:34:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229495AbiIIFe2 (ORCPT
+        with ESMTP id S229771AbiIIFe2 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 01:34:28 -0400
 Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1458BD7A;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9D601171;
         Thu,  8 Sep 2022 22:34:26 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MP4MX5w1mzlVr2;
-        Fri,  9 Sep 2022 13:30:32 +0800 (CST)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MP4P10dQmznVCR;
+        Fri,  9 Sep 2022 13:31:49 +0800 (CST)
 Received: from localhost.localdomain (10.175.112.70) by
  canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 9 Sep 2022 13:34:22 +0800
+ 15.1.2375.24; Fri, 9 Sep 2022 13:34:24 +0800
 From:   Wang Yufen <wangyufen@huawei.com>
 To:     <andrii@kernel.org>, <ast@kernel.org>, <daniel@iogearbox.net>,
         <martin.lau@linux.dev>, <song@kernel.org>, <yhs@fb.com>,
@@ -32,10 +32,12 @@ To:     <andrii@kernel.org>, <ast@kernel.org>, <daniel@iogearbox.net>,
         <trix@redhat.com>
 CC:     <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <netdev@vger.kernel.org>, <llvm@lists.linux.dev>
-Subject: [bpf-next 1/2] libbpf: Add make_path_and_pin() helper for bpf_xxx__pin()
-Date:   Fri, 9 Sep 2022 13:45:45 +0800
-Message-ID: <1662702346-29665-1-git-send-email-wangyufen@huawei.com>
+Subject: [bpf-next 2/2] libbpf: Add pathname_concat() helper
+Date:   Fri, 9 Sep 2022 13:45:46 +0800
+Message-ID: <1662702346-29665-2-git-send-email-wangyufen@huawei.com>
 X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1662702346-29665-1-git-send-email-wangyufen@huawei.com>
+References: <1662702346-29665-1-git-send-email-wangyufen@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.175.112.70]
@@ -51,125 +53,152 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move make path, check path and pin to the common helper make_path_and_pin() to make
-the code simpler.
+Move snprintf and len check to common helper pathname_concat() to make the
+code simpler.
 
 Signed-off-by: Wang Yufen <wangyufen@huawei.com>
 ---
- tools/lib/bpf/libbpf.c | 56 ++++++++++++++++++++++----------------------------
- 1 file changed, 24 insertions(+), 32 deletions(-)
+ tools/lib/bpf/libbpf.c | 74 ++++++++++++++++++--------------------------------
+ 1 file changed, 27 insertions(+), 47 deletions(-)
 
 diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 3ad1392..5854b92 100644
+index 5854b92..238a03e 100644
 --- a/tools/lib/bpf/libbpf.c
 +++ b/tools/lib/bpf/libbpf.c
-@@ -7755,16 +7755,11 @@ static int check_path(const char *path)
- 	return err;
+@@ -2096,20 +2096,31 @@ static bool get_map_field_int(const char *map_name, const struct btf *btf,
+ 	return true;
  }
  
--int bpf_program__pin(struct bpf_program *prog, const char *path)
-+static int make_path_and_pin(int fd, const char *path)
+-static int build_map_pin_path(struct bpf_map *map, const char *path)
++static int pathname_concat(const char *path, const char *name, char *buf)
  {
- 	char *cp, errmsg[STRERR_BUFSIZE];
- 	int err;
+-	char buf[PATH_MAX];
+ 	int len;
  
--	if (prog->fd < 0) {
--		pr_warn("prog '%s': can't pin program that wasn't loaded\n", prog->name);
--		return libbpf_err(-EINVAL);
--	}
+-	if (!path)
+-		path = "/sys/fs/bpf";
 -
- 	err = make_parent_dir(path);
- 	if (err)
- 		return libbpf_err(err);
-@@ -7773,12 +7768,27 @@ int bpf_program__pin(struct bpf_program *prog, const char *path)
- 	if (err)
- 		return libbpf_err(err);
+-	len = snprintf(buf, PATH_MAX, "%s/%s", path, bpf_map__name(map));
++	len = snprintf(buf, PATH_MAX, "%s/%s", path, name);
+ 	if (len < 0)
+ 		return -EINVAL;
+ 	else if (len >= PATH_MAX)
+ 		return -ENAMETOOLONG;
  
--	if (bpf_obj_pin(prog->fd, path)) {
-+	if (bpf_obj_pin(fd, path)) {
- 		err = -errno;
- 		cp = libbpf_strerror_r(err, errmsg, sizeof(errmsg));
--		pr_warn("prog '%s': failed to pin at '%s': %s\n", prog->name, path, cp);
-+		pr_warn("failed to pin at '%s': %s\n", path, cp);
- 		return libbpf_err(err);
- 	}
 +	return 0;
 +}
 +
-+int bpf_program__pin(struct bpf_program *prog, const char *path)
++static int build_map_pin_path(struct bpf_map *map, const char *path)
 +{
++	char buf[PATH_MAX];
 +	int err;
 +
-+	if (prog->fd < 0) {
-+		pr_warn("prog '%s': can't pin program that wasn't loaded\n", prog->name);
-+		return libbpf_err(-EINVAL);
-+	}
++	if (!path)
++		path = "/sys/fs/bpf";
 +
-+	err = make_path_and_pin(prog->fd, path);
++	err = pathname_concat(path, bpf_map__name(map), buf);
 +	if (err)
-+		return libbpf_err(err);
- 
- 	pr_debug("prog '%s': pinned at '%s'\n", prog->name, path);
- 	return 0;
-@@ -7838,32 +7848,20 @@ int bpf_map__pin(struct bpf_map *map, const char *path)
- 		map->pin_path = strdup(path);
- 		if (!map->pin_path) {
- 			err = -errno;
--			goto out_err;
-+			cp = libbpf_strerror_r(-err, errmsg, sizeof(errmsg));
-+			pr_warn("failed to pin map: %s\n", cp);
-+			return libbpf_err(err);
- 		}
- 	}
- 
--	err = make_parent_dir(map->pin_path);
--	if (err)
--		return libbpf_err(err);
--
--	err = check_path(map->pin_path);
-+	err = make_path_and_pin(map->fd, map->pin_path);
- 	if (err)
- 		return libbpf_err(err);
- 
--	if (bpf_obj_pin(map->fd, map->pin_path)) {
--		err = -errno;
--		goto out_err;
--	}
--
- 	map->pinned = true;
- 	pr_debug("pinned map '%s'\n", map->pin_path);
- 
- 	return 0;
--
--out_err:
--	cp = libbpf_strerror_r(-err, errmsg, sizeof(errmsg));
--	pr_warn("failed to pin map: %s\n", cp);
--	return libbpf_err(err);
++		return err;
++
+ 	return bpf_map__set_pin_path(map, buf);
  }
  
- int bpf_map__unpin(struct bpf_map *map, const char *path)
-@@ -9611,19 +9609,13 @@ int bpf_link__pin(struct bpf_link *link, const char *path)
+@@ -7959,17 +7970,8 @@ int bpf_object__pin_maps(struct bpf_object *obj, const char *path)
+ 			continue;
  
- 	if (link->pin_path)
- 		return libbpf_err(-EBUSY);
--	err = make_parent_dir(path);
--	if (err)
--		return libbpf_err(err);
--	err = check_path(path);
--	if (err)
--		return libbpf_err(err);
+ 		if (path) {
+-			int len;
+-
+-			len = snprintf(buf, PATH_MAX, "%s/%s", path,
+-				       bpf_map__name(map));
+-			if (len < 0) {
+-				err = -EINVAL;
+-				goto err_unpin_maps;
+-			} else if (len >= PATH_MAX) {
+-				err = -ENAMETOOLONG;
++			if (pathname_concat(path, bpf_map__name(map), buf))
+ 				goto err_unpin_maps;
+-			}
+ 			sanitize_pin_path(buf);
+ 			pin_path = buf;
+ 		} else if (!map->pin_path) {
+@@ -8007,14 +8009,9 @@ int bpf_object__unpin_maps(struct bpf_object *obj, const char *path)
+ 		char buf[PATH_MAX];
  
- 	link->pin_path = strdup(path);
- 	if (!link->pin_path)
- 		return libbpf_err(-ENOMEM);
+ 		if (path) {
+-			int len;
+-
+-			len = snprintf(buf, PATH_MAX, "%s/%s", path,
+-				       bpf_map__name(map));
+-			if (len < 0)
+-				return libbpf_err(-EINVAL);
+-			else if (len >= PATH_MAX)
+-				return libbpf_err(-ENAMETOOLONG);
++			err = pathname_concat(path, bpf_map__name(map), buf);
++			if (err)
++				return err;
+ 			sanitize_pin_path(buf);
+ 			pin_path = buf;
+ 		} else if (!map->pin_path) {
+@@ -8032,6 +8029,7 @@ int bpf_object__unpin_maps(struct bpf_object *obj, const char *path)
+ int bpf_object__pin_programs(struct bpf_object *obj, const char *path)
+ {
+ 	struct bpf_program *prog;
++	char buf[PATH_MAX];
+ 	int err;
  
--	if (bpf_obj_pin(link->fd, link->pin_path)) {
--		err = -errno;
-+	err = make_path_and_pin(link->fd, path);
-+	if (err) {
- 		zfree(&link->pin_path);
- 		return libbpf_err(err);
+ 	if (!obj)
+@@ -8043,17 +8041,8 @@ int bpf_object__pin_programs(struct bpf_object *obj, const char *path)
  	}
+ 
+ 	bpf_object__for_each_program(prog, obj) {
+-		char buf[PATH_MAX];
+-		int len;
+-
+-		len = snprintf(buf, PATH_MAX, "%s/%s", path, prog->name);
+-		if (len < 0) {
+-			err = -EINVAL;
++		if (pathname_concat(path, prog->name, buf))
+ 			goto err_unpin_programs;
+-		} else if (len >= PATH_MAX) {
+-			err = -ENAMETOOLONG;
+-			goto err_unpin_programs;
+-		}
+ 
+ 		err = bpf_program__pin(prog, buf);
+ 		if (err)
+@@ -8064,13 +8053,7 @@ int bpf_object__pin_programs(struct bpf_object *obj, const char *path)
+ 
+ err_unpin_programs:
+ 	while ((prog = bpf_object__prev_program(obj, prog))) {
+-		char buf[PATH_MAX];
+-		int len;
+-
+-		len = snprintf(buf, PATH_MAX, "%s/%s", path, prog->name);
+-		if (len < 0)
+-			continue;
+-		else if (len >= PATH_MAX)
++		if (pathname_concat(path, prog->name, buf))
+ 			continue;
+ 
+ 		bpf_program__unpin(prog, buf);
+@@ -8089,13 +8072,10 @@ int bpf_object__unpin_programs(struct bpf_object *obj, const char *path)
+ 
+ 	bpf_object__for_each_program(prog, obj) {
+ 		char buf[PATH_MAX];
+-		int len;
+ 
+-		len = snprintf(buf, PATH_MAX, "%s/%s", path, prog->name);
+-		if (len < 0)
+-			return libbpf_err(-EINVAL);
+-		else if (len >= PATH_MAX)
+-			return libbpf_err(-ENAMETOOLONG);
++		err = pathname_concat(path, prog->name, buf);
++		if (err)
++			return libbpf_err(err);
+ 
+ 		err = bpf_program__unpin(prog, buf);
+ 		if (err)
 -- 
 1.8.3.1
 
