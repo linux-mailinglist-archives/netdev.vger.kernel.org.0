@@ -2,38 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C179A5B3BCF
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 17:27:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C1C15B3C22
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 17:38:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232442AbiIIP0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Sep 2022 11:26:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51790 "EHLO
+        id S232456AbiIIPiQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Sep 2022 11:38:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232383AbiIIPZ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 11:25:28 -0400
-Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A922A4F387;
-        Fri,  9 Sep 2022 08:25:16 -0700 (PDT)
-Received: (Authenticated sender: maxime.chevallier@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id A1455FF813;
-        Fri,  9 Sep 2022 15:25:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1662737115;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=l3W+cN77pdwmdquczGiRkG+k9n/6OnKXFonxm0r0J1U=;
-        b=RbirY5TYUHf7ZBqCUqS29y8Gud8xhlGPh/2iLnvZvklNx8MTE5FvXzxhnSA1CJg+n9gbt4
-        8WjkOJkiY6mrgt+FR8lxDZq646Dw6Z0qn1QAlUhIWntECLVtkyd2JM6Vl8ag8YEd0J9FzP
-        injFPwtlUGSHILQikdyeXNjSRUQ1R+tAHT6qIZxQIqFtOsOlst5Wg015MHAplkX+TJeL7z
-        /50B0j7wAvNXI+ezZQ9r6txIII+6Y3NIMrWgkxOcu07UQgk+CijvinwCzhLqvENBCFti3j
-        n+kLIhR+WP1sD0S0ffc5bKO0sp8ZCOtO/mbO88HaA72exPOT28nmIkVb3mjlHw==
-From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
-To:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        with ESMTP id S232452AbiIIPhn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 11:37:43 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F19A972862
+        for <netdev@vger.kernel.org>; Fri,  9 Sep 2022 08:36:33 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id w8so3304811lft.12
+        for <netdev@vger.kernel.org>; Fri, 09 Sep 2022 08:36:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=72IKp5JhqIMtfECNJjjPmdnnrzUSSSK/UrmLy7eeLeQ=;
+        b=NXdEY12XTeuuYu/Csekbn0zatod6oeuRuFZvKmX4iAA5javleoseYqK1qRO4vkPYo7
+         CDRBGpMwmQCPv1UzH0BkpkfkR30Cn4qvchRwM6quuYautlo1W7Lg+yvZk6HJOVrPzTAU
+         sPEYOH9LXxu1FT/Nml9aRhijaVUIEGH7COlz5KuHXKGoMcL/vy0dPcOAyvbr5x4DeS+B
+         E4GYyjRqwXj4ibKVszV4Qbp64trC3tegr59Yzswwani/Tu9QlgX0gI1YWAvDiGqT49Rj
+         WRaMGVBwMQ5sq6fn64MjQjZN/9nETr+AyrJaGk91XhZ36HLBnGe/+m24EQg8PCtDFp4M
+         +JBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=72IKp5JhqIMtfECNJjjPmdnnrzUSSSK/UrmLy7eeLeQ=;
+        b=EK2JsqgpkRmWJXF+S5bFiQ5Q4ZEK2hZAUz7bATXvLuKVB/jhrdwyqZhHRkZ2wxmhF6
+         i4EH+YHjx4lNya33CJPgmXEhrJD5SVAhSarQdhjxPChtyDV/ZxgaoDRt+0D2W03UrNtZ
+         PHT7RA9xz0wNmMyIUo70wm7pv37GorJCvCOyUV07T/2lg2NlR00xh0CDmcHTK1RJdztW
+         kkyCRR7gL1C1d9Nuw+vswXAVrKcTn2I3/898vLMvgNkes55vB3Rfh7/i7Wfa+b/0murH
+         LWE/k8YFyLmMJ7k1jC9UnkrqbMRtBPzz/RCMtSV3uUs545jHYghJzHq9yi6QaymdNzc/
+         jQFg==
+X-Gm-Message-State: ACgBeo1neCuyMpkpX1yuoXfydJnNbuijw41O7yAkkD/I1WmXtU0j1GCx
+        joyfC4+V+EZe7+FUPFsXldGhTA==
+X-Google-Smtp-Source: AA6agR5ShChGjwnDe/Nujbbb6w5SJ8/ttzb3Xq7V2kmdtDFt30nqRthe1GZPt8gf0RZUuSdxenWjlA==
+X-Received: by 2002:a05:6512:3d02:b0:498:f4d4:e246 with SMTP id d2-20020a0565123d0200b00498f4d4e246mr2147165lfv.115.1662737746822;
+        Fri, 09 Sep 2022 08:35:46 -0700 (PDT)
+Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id a2-20020a056512374200b00496693860dcsm117246lfs.232.2022.09.09.08.35.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 09 Sep 2022 08:35:46 -0700 (PDT)
+Message-ID: <54cc906d-0b79-e9fb-c025-2e361d1fa03c@linaro.org>
+Date:   Fri, 9 Sep 2022 17:35:44 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH net-next v4 4/5] net: dt-bindings: Introduce the Qualcomm
+ IPQESS Ethernet controller
+Content-Language: en-US
+To:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        davem@davemloft.net, Rob Herring <robh+dt@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
         Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -43,108 +69,69 @@ Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>,
         Luka Perkov <luka.perkov@sartura.hr>,
         Robert Marko <robert.marko@sartura.hr>
-Subject: [PATCH net-next v4 5/5] ARM: dts: qcom: ipq4019: Add description for the IPQESS Ethernet controller
-Date:   Fri,  9 Sep 2022 17:24:54 +0200
-Message-Id: <20220909152454.7462-6-maxime.chevallier@bootlin.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220909152454.7462-1-maxime.chevallier@bootlin.com>
 References: <20220909152454.7462-1-maxime.chevallier@bootlin.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+ <20220909152454.7462-5-maxime.chevallier@bootlin.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220909152454.7462-5-maxime.chevallier@bootlin.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Qualcomm IPQ4019 includes an internal 5 ports switch, which is
-connected to the CPU through the internal IPQESS Ethernet controller.
+On 09/09/2022 17:24, Maxime Chevallier wrote:
+> Add the DT binding for the IPQESS Ethernet Controller. This is a simple
+> controller, only requiring the phy-mode, interrupts, clocks, and
+> possibly a MAC address setting.
+> 
+> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+> ---
+> V3->V4:
+>  - Fix a binding typo in the compatible string
+> V2->V3:
+>  - Cleanup on reset and clock names
+> V1->V2:
+>  - Fixed the example
+>  - Added reset and clocks
+>  - Removed generic ethernet attributes
+> 
+>  .../devicetree/bindings/net/qcom,ipqess.yaml  | 95 +++++++++++++++++++
+>  1 file changed, 95 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/qcom,ipqess.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/net/qcom,ipqess.yaml b/Documentation/devicetree/bindings/net/qcom,ipqess.yaml
+> new file mode 100644
+> index 000000000000..3d2f790647cd
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/qcom,ipqess.yaml
+> @@ -0,0 +1,95 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/qcom,ipqess.yaml#
 
-This commit adds support for this internal interface, which is
-internally connected to a modified version of the QCA8K Ethernet switch.
+Filename based on the compatible, so qcom,ipq4019-ess-edma.yaml
 
-This Ethernet controller only support a specific internal interface mode
-for connection to the switch.
+Apologies for not bringing it up earlier...
 
-Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
----
-V3->V4:
- - No Changes
-V2->V3:
- - No Changes
-V1->V2:
- - Added clock and resets
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Qualcomm IPQ ESS EDMA Ethernet Controller
+> +
+> +maintainers:
+> +  - Maxime Chevallier <maxime.chevallier@bootlin.com>
+> +
+> +allOf:
+> +  - $ref: "ethernet-controller.yaml#"
 
- arch/arm/boot/dts/qcom-ipq4019.dtsi | 46 +++++++++++++++++++++++++++++
- 1 file changed, 46 insertions(+)
+Drop quotes.
 
-diff --git a/arch/arm/boot/dts/qcom-ipq4019.dtsi b/arch/arm/boot/dts/qcom-ipq4019.dtsi
-index bb307b8f678c..8cf1c5e6724f 100644
---- a/arch/arm/boot/dts/qcom-ipq4019.dtsi
-+++ b/arch/arm/boot/dts/qcom-ipq4019.dtsi
-@@ -38,6 +38,7 @@ aliases {
- 		spi1 = &blsp1_spi2;
- 		i2c0 = &blsp1_i2c3;
- 		i2c1 = &blsp1_i2c4;
-+		ethernet0 = &gmac;
- 	};
- 
- 	cpus {
-@@ -590,6 +591,51 @@ wifi1: wifi@a800000 {
- 			status = "disabled";
- 		};
- 
-+		gmac: ethernet@c080000 {
-+			compatible = "qcom,ipq4019-ess-edma";
-+			reg = <0xc080000 0x8000>;
-+			resets = <&gcc ESS_RESET>;
-+			reset-names = "ess";
-+			clocks = <&gcc GCC_ESS_CLK>;
-+			clock-names = "ess";
-+			interrupts = <GIC_SPI  65 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  66 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  67 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  68 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  69 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  70 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  71 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  72 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  73 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  74 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  75 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  76 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  77 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  78 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  79 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  80 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 240 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 241 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 242 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 243 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 244 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 245 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 246 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 247 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 248 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 249 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 250 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 251 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 252 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 253 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 254 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 255 IRQ_TYPE_EDGE_RISING>;
-+
-+			status = "disabled";
-+
-+			phy-mode = "internal";
-+		};
-+
- 		mdio: mdio@90000 {
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--- 
-2.37.2
 
+Best regards,
+Krzysztof
