@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D84C5B3BD7
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 17:27:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA1CC5B3BD6
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 17:27:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232429AbiIIPZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Sep 2022 11:25:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51232 "EHLO
+        id S232377AbiIIPZ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Sep 2022 11:25:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232369AbiIIPZQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 11:25:16 -0400
+        with ESMTP id S232353AbiIIPZU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 11:25:20 -0400
 Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1721491C4;
-        Fri,  9 Sep 2022 08:25:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 188E2754B0;
+        Fri,  9 Sep 2022 08:25:15 -0700 (PDT)
 Received: (Authenticated sender: maxime.chevallier@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id B083EFF809;
-        Fri,  9 Sep 2022 15:25:05 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 4B686FF80D;
+        Fri,  9 Sep 2022 15:25:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1662737109;
+        t=1662737113;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=V8wwhQrCmgpjbSaLVlROy+ILWKKLSXmxcfxd4i466SE=;
-        b=dCKetW+yu50tuNbo47NEL685F6HCbO8rlj0fiyfrPvqDDg0lV1FxIMq/TfJMTgUaNUf4wa
-        DTmSNIAXkqApE4HZ1oDF2CWLeZCsGZIgqIAYq+F5BpJUOVE2aGz9mB4p+kw3FGHB4CBlb8
-        7AjS9tDqpN613k2dUVXZlK8JwHJmp6c/9yrxGsfWvXGXQW7ZYRVluhTgQB26OdtOBLOhfj
-        mXMv8zNCV9KcPsPHXsWIr3syw+y9NSiWNv1h4mxzSIpb/+dwKeqV/7TWcwUmMmdOUZsgML
-        VC+VQggZ2ARamepwcL5GFReBSXoW3Zb4i0UQVB04b7iD9lOpZgdf3n64KMAUEg==
+        bh=59+6ULtGFNywxRd7fqK+8cW0a5MhZ6Z4qdRlVJWr/+Q=;
+        b=icbckqlVb77Vx5vubaXKqzdSEI9nGCBmHfqmGl+LEjIScMzJBb4H+SJ/0VHQHaDk/P+nyg
+        uimydJrx2gdq8CuFU83rePUP3sS3zmHMaEKFA2jwJnJER9pysUcegLvE1tF0usHeaVTq0C
+        9UfBYSNYcre78P7BLb67ukir/5+s4SWHMtv8f8gjLgeVu3bbDq/vY3+R9S/OH7IxFoVOnL
+        ZUDgRe4FSI1o0UYXr7C0zW3FmnR4RXM0idZeQtKYKKnJ8tg3w5vv2PzaelmnLAiIHn0jrX
+        hsucugBFTa/1Uu+jcotA/Na7/p+h+WIzDnvQjzA3Zpb2mEsSLVAKfKDkj/fd4Q==
 From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
 To:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
@@ -43,9 +43,9 @@ Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>,
         Luka Perkov <luka.perkov@sartura.hr>,
         Robert Marko <robert.marko@sartura.hr>
-Subject: [PATCH net-next v4 3/5] net: ipqess: Add out-of-band DSA tagging support
-Date:   Fri,  9 Sep 2022 17:24:52 +0200
-Message-Id: <20220909152454.7462-4-maxime.chevallier@bootlin.com>
+Subject: [PATCH net-next v4 4/5] net: dt-bindings: Introduce the Qualcomm IPQESS Ethernet controller
+Date:   Fri,  9 Sep 2022 17:24:53 +0200
+Message-Id: <20220909152454.7462-5-maxime.chevallier@bootlin.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220909152454.7462-1-maxime.chevallier@bootlin.com>
 References: <20220909152454.7462-1-maxime.chevallier@bootlin.com>
@@ -60,183 +60,126 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On the IPQ4019, there's an 5 ports switch connected to the CPU through
-the IPQESS Ethernet controller. The way the DSA tag is sent-out to that
-switch is through the DMA descriptor, due to how tightly it is
-integrated with the switch.
-
-This commit uses the out-of-band tagging protocol by getting the source
-port from the descriptor, push it into the skb, and have the tagger pull
-it to infer the destination netdev. The reverse process is done on the
-TX side, where the driver pulls the tag from the skb and builds the
-descriptor accordingly.
+Add the DT binding for the IPQESS Ethernet Controller. This is a simple
+controller, only requiring the phy-mode, interrupts, clocks, and
+possibly a MAC address setting.
 
 Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
 ---
 V3->V4:
- - No changes
+ - Fix a binding typo in the compatible string
 V2->V3:
- - No changes
+ - Cleanup on reset and clock names
 V1->V2:
- - Use the new tagger, and the dsa_oob_tag_* helpers
+ - Fixed the example
+ - Added reset and clocks
+ - Removed generic ethernet attributes
 
+ .../devicetree/bindings/net/qcom,ipqess.yaml  | 95 +++++++++++++++++++
+ 1 file changed, 95 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/qcom,ipqess.yaml
 
- drivers/net/ethernet/qualcomm/Kconfig         |  3 +-
- drivers/net/ethernet/qualcomm/ipqess/ipqess.c | 56 ++++++++++++++++++-
- drivers/net/ethernet/qualcomm/ipqess/ipqess.h |  4 ++
- 3 files changed, 61 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/qualcomm/Kconfig b/drivers/net/ethernet/qualcomm/Kconfig
-index a723ddbea248..eeb2c608d6b9 100644
---- a/drivers/net/ethernet/qualcomm/Kconfig
-+++ b/drivers/net/ethernet/qualcomm/Kconfig
-@@ -62,8 +62,9 @@ config QCOM_EMAC
- 
- config QCOM_IPQ4019_ESS_EDMA
- 	tristate "Qualcomm Atheros IPQ4019 ESS EDMA support"
--	depends on OF
-+	depends on OF && NET_DSA
- 	select PHYLINK
-+	select NET_DSA_TAG_OOB
- 	help
- 	  This driver supports the Qualcomm Atheros IPQ40xx built-in
- 	  ESS EDMA ethernet controller.
-diff --git a/drivers/net/ethernet/qualcomm/ipqess/ipqess.c b/drivers/net/ethernet/qualcomm/ipqess/ipqess.c
-index 4caa2dd3e8b1..26d5856f1276 100644
---- a/drivers/net/ethernet/qualcomm/ipqess/ipqess.c
-+++ b/drivers/net/ethernet/qualcomm/ipqess/ipqess.c
-@@ -9,6 +9,7 @@
- 
- #include <linux/bitfield.h>
- #include <linux/clk.h>
-+#include <linux/dsa/oob.h>
- #include <linux/if_vlan.h>
- #include <linux/interrupt.h>
- #include <linux/module.h>
-@@ -22,6 +23,7 @@
- #include <linux/skbuff.h>
- #include <linux/vmalloc.h>
- #include <net/checksum.h>
-+#include <net/dsa.h>
- #include <net/ip6_checksum.h>
- 
- #include "ipqess.h"
-@@ -330,6 +332,7 @@ static int ipqess_rx_poll(struct ipqess_rx_ring *rx_ring, int budget)
- 	tail &= IPQESS_RFD_CONS_IDX_MASK;
- 
- 	while (done < budget) {
-+		struct dsa_oob_tag_info tag_info;
- 		struct ipqess_rx_desc *rd;
- 		struct sk_buff *skb;
- 
-@@ -409,6 +412,12 @@ static int ipqess_rx_poll(struct ipqess_rx_ring *rx_ring, int budget)
- 			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021AD),
- 					       rd->rrd4);
- 
-+		if (rx_ring->ess->uses_dsa) {
-+			tag_info.dp = FIELD_GET(IPQESS_RRD_PORT_ID_MASK, rd->rrd1);
-+			tag_info.proto = DSA_TAG_PROTO_OOB;
-+			dsa_oob_tag_push(skb, &tag_info);
-+		}
+diff --git a/Documentation/devicetree/bindings/net/qcom,ipqess.yaml b/Documentation/devicetree/bindings/net/qcom,ipqess.yaml
+new file mode 100644
+index 000000000000..3d2f790647cd
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/qcom,ipqess.yaml
+@@ -0,0 +1,95 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/qcom,ipqess.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- 		napi_gro_receive(&rx_ring->napi_rx, skb);
- 
- 		rx_ring->ess->stats.rx_packets++;
-@@ -712,6 +721,22 @@ static void ipqess_rollback_tx(struct ipqess *eth,
- 	tx_ring->head = start_index;
- }
- 
-+static void ipqess_process_dsa_tag_sh(struct ipqess *ess, struct sk_buff *skb,
-+				      u32 *word3)
-+{
-+	struct dsa_oob_tag_info tag_info;
++title: Qualcomm IPQ ESS EDMA Ethernet Controller
 +
-+	if (!ess->uses_dsa)
-+		return;
++maintainers:
++  - Maxime Chevallier <maxime.chevallier@bootlin.com>
 +
-+	if (dsa_oob_tag_pop(skb, &tag_info))
-+		return;
++allOf:
++  - $ref: "ethernet-controller.yaml#"
 +
-+	*word3 |= tag_info.dp << IPQESS_TPD_PORT_BITMAP_SHIFT;
-+	*word3 |= BIT(IPQESS_TPD_FROM_CPU_SHIFT);
-+	*word3 |= 0x3e << IPQESS_TPD_PORT_BITMAP_SHIFT;
-+}
++properties:
++  compatible:
++    const: qcom,ipq4019-ess-edma
 +
- static int ipqess_tx_map_and_fill(struct ipqess_tx_ring *tx_ring,
- 				  struct sk_buff *skb)
- {
-@@ -722,6 +747,8 @@ static int ipqess_tx_map_and_fill(struct ipqess_tx_ring *tx_ring,
- 	u16 len;
- 	int i;
- 
-+	ipqess_process_dsa_tag_sh(tx_ring->ess, skb, &word3);
++  reg:
++    maxItems: 1
 +
- 	if (skb_is_gso(skb)) {
- 		if (skb_shinfo(skb)->gso_type & SKB_GSO_TCPV4) {
- 			lso_word1 |= IPQESS_TPD_IPV4_EN;
-@@ -923,6 +950,26 @@ static const struct net_device_ops ipqess_axi_netdev_ops = {
- 	.ndo_tx_timeout		= ipqess_tx_timeout,
- };
- 
-+static int ipqess_netdevice_event(struct notifier_block *nb,
-+				  unsigned long event, void *ptr)
-+{
-+	struct ipqess *ess = container_of(nb, struct ipqess, netdev_notifier);
-+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
++  interrupts:
++    minItems: 2
++    maxItems: 32
++    description: One interrupt per tx and rx queue, with up to 16 queues.
 +
-+	if (ess->netdev != dev)
-+		return NOTIFY_DONE;
++  clocks:
++    maxItems: 1
 +
-+	switch (event) {
-+	case NETDEV_CHANGEUPPER:
-+		if (netdev_uses_dsa(ess->netdev))
-+			ess->uses_dsa = true;
-+		else
-+			ess->uses_dsa = false;
-+		return NOTIFY_DONE;
-+	}
-+	return NOTIFY_OK;
-+}
++  resets:
++    maxItems: 1
 +
- static void ipqess_hw_stop(struct ipqess *ess)
- {
- 	int i;
-@@ -1194,12 +1241,19 @@ static int ipqess_axi_probe(struct platform_device *pdev)
- 			       64);
- 	}
- 
--	err = register_netdev(netdev);
-+	ess->netdev_notifier.notifier_call = ipqess_netdevice_event;
-+	err = register_netdevice_notifier(&ess->netdev_notifier);
- 	if (err)
- 		goto err_hw_stop;
- 
-+	err = register_netdev(netdev);
-+	if (err)
-+		goto err_notifier_unregister;
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++  - resets
++  - phy-mode
 +
- 	return 0;
- 
-+err_notifier_unregister:
-+	unregister_netdevice_notifier(&ess->netdev_notifier);
- err_hw_stop:
- 	ipqess_hw_stop(ess);
- 
-diff --git a/drivers/net/ethernet/qualcomm/ipqess/ipqess.h b/drivers/net/ethernet/qualcomm/ipqess/ipqess.h
-index 9a4ab6ce282a..f21515df3ded 100644
---- a/drivers/net/ethernet/qualcomm/ipqess/ipqess.h
-+++ b/drivers/net/ethernet/qualcomm/ipqess/ipqess.h
-@@ -171,6 +171,10 @@ struct ipqess {
- 	struct platform_device *pdev;
- 	struct phylink *phylink;
- 	struct phylink_config phylink_config;
++unevaluatedProperties: false
 +
-+	struct notifier_block netdev_notifier;
-+	bool uses_dsa;
++examples:
++  - |
++    #include <dt-bindings/clock/qcom,gcc-ipq4019.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++    gmac: ethernet@c080000 {
++        compatible = "qcom,ipq4019-ess-edma";
++        reg = <0xc080000 0x8000>;
++        resets = <&gcc ESS_RESET>;
++        clocks = <&gcc GCC_ESS_CLK>;
++        interrupts = <GIC_SPI  65 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI  66 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI  67 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI  68 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI  69 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI  70 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI  71 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI  72 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI  73 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI  74 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI  75 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI  76 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI  77 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI  78 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI  79 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI  80 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI 240 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI 241 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI 242 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI 243 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI 244 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI 245 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI 246 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI 247 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI 248 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI 249 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI 250 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI 251 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI 252 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI 253 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI 254 IRQ_TYPE_EDGE_RISING>,
++                     <GIC_SPI 255 IRQ_TYPE_EDGE_RISING>;
 +
- 	struct ipqess_tx_ring tx_ring[IPQESS_NETDEV_QUEUES];
- 
- 	struct ipqess_statistics ipqess_stats;
++        phy-mode = "internal";
++        fixed-link {
++            speed = <1000>;
++            full-duplex;
++            pause;
++            asym-pause;
++        };
++    };
++
++...
 -- 
 2.37.2
 
