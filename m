@@ -2,50 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7819F5B2BB1
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 03:36:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9955B5B2BC2
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 03:40:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229517AbiIIBgX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 21:36:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41652 "EHLO
+        id S229902AbiIIBkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 21:40:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229476AbiIIBgX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 21:36:23 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F26419C8CF
-        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 18:36:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=+oLShqtOajXShJ0Jbs2uhU1yRkUaNfAMrAQhdrdX3Bo=; b=QxLnf9x5+Y2Kq3N3pcI/7m4U0G
-        7kHORB4ucNf9NGQzC+lVkO4ZNFPh1w/A1vMjm8GPIMhBV4DxI19ewQ1fpOnzzXN8/NCV6aQIMTwCQ
-        jgMTedG3H93CTM46PTawBRQzeRqswYJjPNt+wJYKfNCGH0IaVVjUYTs7DqkMpbRmK40Y=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oWSwI-00G1xe-Dx; Fri, 09 Sep 2022 03:36:14 +0200
-Date:   Fri, 9 Sep 2022 03:36:14 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Mattias Forsblad <mattias.forsblad@gmail.com>
-Cc:     netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net-next v7 4/6] net: dsa: mv88e6xxxx: Add RMU
- functionality.
-Message-ID: <YxqYjoZeGhYIZ29b@lunn.ch>
-References: <20220908132109.3213080-1-mattias.forsblad@gmail.com>
- <20220908132109.3213080-5-mattias.forsblad@gmail.com>
+        with ESMTP id S229577AbiIIBka (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 21:40:30 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 777FC883FA;
+        Thu,  8 Sep 2022 18:40:24 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id 78so191178pgb.13;
+        Thu, 08 Sep 2022 18:40:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=opMHbhzPWlzvUgAliFnJJB8yW1hajJahD6Wqj7mMbYk=;
+        b=Sn7iMixibbOE9yShth3gvVIUPI7UDKY8s0dY1SUuYERNVmaNK4pam9mtQVru2ljfZ9
+         wyaXJnaz+85JZXLuViTO/L4kJ4a89qAgJ2mg3mb95lTRVIbKxbw6Vobs310AGlkULNn3
+         2weWbQB93QiqbSduQDNGtnQkC3vk8r8ihXRZAkvSWsIfPeJgCD7WxvfLjdEFs2S7MMo2
+         F8YJJKxzZvUOXvkuSX9zqNYf2XQSB07UE3TAVeB3hC8LjvKMAEhHJU+4cQ5n6VnBu/2v
+         jQohsYQSF8I6q8y49bHijSrHx7zC0h8h38rZ704TChD5Ykby1ye3YiJpYW9ZxHQ8F6Rw
+         yxlQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=opMHbhzPWlzvUgAliFnJJB8yW1hajJahD6Wqj7mMbYk=;
+        b=WEhNPhZj3SoCkVF5RhQVIPfJZdPWaRwkQJCZogSoS33jbWfjyWV1TpC6UouEc8lyuM
+         hijCB74yiqY4uOZbi+nfqLBOxdqhOkl9vrfoqzgA6NbQL8vpaRMQod+CMTp0thrJGL1t
+         93lGIQ0wJUwov+uSPZnqBWSEazeLrJeI7ZLkYLm16TsYOqmD7/o8pgMTwsaPy9XklDiH
+         S2zJuVi3QQ7TMGVJWK0MD/dVO3I29Mod/edWui+MxLbC8cB/OdcnsfJjFYMz4cqaeG7k
+         Uwq/5if3jHXSE2YxbuQ+q2tjuN923hcS7axlgitWfwF0aKImnU755VIYcSUEU+A2W+re
+         xDLw==
+X-Gm-Message-State: ACgBeo2J/pGSW9D0cYZzLR7xV/f1sNmwBJPzCLefUJMfw6EcDYCnYcVu
+        UAmO6AVyBQ5kAGYCuk7C15tYXB51fC0TNw==
+X-Google-Smtp-Source: AA6agR7Lb3R1nPNK7ief5X8jNpBPQ+MWDSH4uIIm1mvcJUyvI8lzhYnBzIC6Oi6NPjXF3cyOlop4ng==
+X-Received: by 2002:a63:d114:0:b0:429:f039:ccfc with SMTP id k20-20020a63d114000000b00429f039ccfcmr10311537pgg.95.1662687623767;
+        Thu, 08 Sep 2022 18:40:23 -0700 (PDT)
+Received: from [192.168.43.80] (subs32-116-206-28-47.three.co.id. [116.206.28.47])
+        by smtp.gmail.com with ESMTPSA id y66-20020a636445000000b00421841943dfsm135078pgb.12.2022.09.08.18.40.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 08 Sep 2022 18:40:23 -0700 (PDT)
+Message-ID: <d9c17e2a-48f4-e7fd-7cbb-c47e7cffcd72@gmail.com>
+Date:   Fri, 9 Sep 2022 08:40:17 +0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220908132109.3213080-5-mattias.forsblad@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [net-next v4 1/6] net: Documentation on QUIC kernel Tx crypto.
+Content-Language: en-US
+To:     Adel Abouchaev <adel.abushaev@gmail.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        corbet@lwn.net, dsahern@kernel.org, shuah@kernel.org,
+        paul@paul-moore.com, jmorris@namei.org, serge@hallyn.com,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org
+Cc:     kernel test robot <lkp@intel.com>
+References: <Adel Abouchaev <adel.abushaev@gmail.com>
+ <20220909001238.3965798-1-adel.abushaev@gmail.com>
+ <20220909001238.3965798-2-adel.abushaev@gmail.com>
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+In-Reply-To: <20220909001238.3965798-2-adel.abushaev@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -53,388 +80,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> @@ -410,6 +422,9 @@ struct mv88e6xxx_chip {
->  
->  	/* Bridge MST to SID mappings */
->  	struct list_head msts;
-> +
-> +	/* RMU resources */
-> +	struct mv88e6xxx_rmu rmu;
->  };
->  
->  struct mv88e6xxx_bus_ops {
-> @@ -805,4 +820,8 @@ static inline void mv88e6xxx_reg_unlock(struct mv88e6xxx_chip *chip)
->  
->  int mv88e6xxx_fid_map(struct mv88e6xxx_chip *chip, unsigned long *bitmap);
->  
-> +static inline bool mv88e6xxx_rmu_available(struct mv88e6xxx_chip *chip)
-> +{
-> +	return chip->rmu.master_netdev ? 1 : 0;
-> +}
->  #endif /* _MV88E6XXX_CHIP_H */
-> diff --git a/drivers/net/dsa/mv88e6xxx/rmu.c b/drivers/net/dsa/mv88e6xxx/rmu.c
-> new file mode 100644
-> index 000000000000..00526972014b
-> --- /dev/null
-> +++ b/drivers/net/dsa/mv88e6xxx/rmu.c
-> @@ -0,0 +1,353 @@
-> +// SPDX-License-Identifier: GPL-2.0-or-later
-> +/*
-> + * Marvell 88E6xxx Switch Remote Management Unit Support
-> + *
-> + * Copyright (c) 2022 Mattias Forsblad <mattias.forsblad@gmail.com>
-> + *
-> + */
-> +
-> +#include <asm/unaligned.h>
-> +#include "rmu.h"
-> +#include "global1.h"
-> +
-> +#define MV88E6XXX_DSA_HLEN	4
-> +
-> +#define MV88E6XXX_RMU_MAX_RMON			64
-> +
-> +#define MV88E6XXX_RMU_WAIT_TIME_MS		20
-> +
-> +static const u8 rmu_dest_addr[ETH_ALEN] = { 0x01, 0x50, 0x43, 0x00, 0x00, 0x00 };
-> +
-> +#define MV88E6XXX_RMU_L2_BYTE1_RESV_VAL		0x3e
-> +#define MV88E6XXX_RMU				1
-> +#define MV88E6XXX_RMU_PRIO			6
-> +#define MV88E6XXX_RMU_RESV2			0xf
-> +
-> +#define MV88E6XXX_SOURCE_PORT			GENMASK(6, 3)
-> +#define MV88E6XXX_SOURCE_DEV			GENMASK(5, 0)
-> +#define MV88E6XXX_CPU_CODE_MASK			GENMASK(7, 6)
-> +#define MV88E6XXX_TRG_DEV_MASK			GENMASK(4, 0)
-> +#define MV88E6XXX_RMU_CODE_MASK			GENMASK(1, 1)
-> +#define MV88E6XXX_RMU_PRIO_MASK			GENMASK(7, 5)
-> +#define MV88E6XXX_RMU_L2_BYTE1_RESV		GENMASK(7, 2)
-> +#define MV88E6XXX_RMU_L2_BYTE2_RESV		GENMASK(3, 0)
-> +
-> +#define MV88E6XXX_RMU_REQ_GET_ID		1
-> +#define MV88E6XXX_RMU_REQ_DUMP_MIB		2
-> +
-> +#define MV88E6XXX_RMU_REQ_FORMAT_GET_ID		0x0000
-> +#define MV88E6XXX_RMU_REQ_FORMAT_SOHO		0x0001
-> +#define MV88E6XXX_RMU_REQ_PAD			0x0000
-> +#define MV88E6XXX_RMU_REQ_CODE_GET_ID		0x0000
-> +#define MV88E6XXX_RMU_REQ_CODE_DUMP_MIB		0x1020
-> +#define MV88E6XXX_RMU_REQ_DATA			0x0000
-> +
-> +#define MV88E6XXX_RMU_REQ_DUMP_MIB_PORT_MASK	GENMASK(4, 0)
-> +
-> +#define MV88E6XXX_RMU_RESP_FORMAT_1		0x0001
-> +#define MV88E6XXX_RMU_RESP_FORMAT_2		0x0002
-> +#define MV88E6XXX_RMU_RESP_ERROR		0xffff
-> +
-> +#define MV88E6XXX_RMU_RESP_CODE_GOT_ID		0x0000
-> +#define MV88E6XXX_RMU_RESP_CODE_DUMP_MIB	0x1020
-> +
-> +struct rmu_header {
-> +	u16 format;
-> +	u16 prodnr;
-> +	u16 code;
-> +} __packed;
-> +
-> +struct dump_mib_resp {
-> +	struct rmu_header rmu_header;
-> +	u8 devnum;
-> +	u8 portnum;
-> +	u32 timestamp;
-> +	u32 mib[MV88E6XXX_RMU_MAX_RMON];
-> +} __packed;
+On 9/9/22 07:12, Adel Abouchaev wrote:
+> Add documentation for kernel QUIC code.
+> 
 
-I would mode all the #defines at least into rmu.h. If you look at the
-other .c files, few have any #defines in them, all the registers
-definitions are in the .h file.
+LGTM, thanks.
 
-> +static int mv88e6xxx_rmu_send_wait(struct mv88e6xxx_chip *chip, int port,
-> +				   const char *req, int req_len,
-> +				   char *resp, unsigned int resp_len)
+Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
 
-If you make these void *, not char * ....
-
-> +	ret = mv88e6xxx_rmu_send_wait(chip, port, (const char *)req, sizeof(req),
-> +				      (char *)&resp, sizeof(resp));
-
-you can avoid the casts here.
-
-> +{
-> +	struct dsa_port *dp;
-> +	struct sk_buff *skb;
-> +	unsigned char *data;
-> +	unsigned int len;
-> +	int ret = 0;
-> +
-> +	dp = dsa_to_port(chip->ds, port);
-> +	if (!dp)
-> +		return 0;
-
--EINVAL ?
-
-> +
-> +	skb = netdev_alloc_skb(chip->rmu.master_netdev, 64);
-> +	if (!skb)
-> +		return -ENOMEM;
-> +
-> +	/* Take height for an eventual EDSA header */
-> +	skb_reserve(skb, 2 * ETH_HLEN + 4);
-> +	skb_reset_network_header(skb);
-> +
-> +	/* Insert RMU request message */
-> +	data = skb_put(skb, req_len);
-> +	memcpy(data, req, req_len);
-> +
-> +	mv88e6xxx_rmu_create_l2(skb, dp);
-> +
-> +	mutex_lock(&chip->rmu.mutex);
-> +
-> +	ret = dsa_switch_inband_tx(dp->ds, skb, NULL, MV88E6XXX_RMU_WAIT_TIME_MS);
-> +	if (ret < 0)
-> +		dev_err(chip->dev, "RMU: timeout waiting for request (%pe) on port %d\n",
-> +			ERR_PTR(ret), port);
-> +
-> +	len = min(resp_len, chip->rmu.resp->len);
-> +	memcpy(resp, chip->rmu.resp->data, len);
-
-Are you sure it is safe to do this when dsa_switch_inband_tx()
-returned an error. It is probably better to have a goto out; to jump
-over the copy.
-
-The min can also result in problems. There has been issues in USB
-recently where a combination of a fuzzer and checker for accessing
-uninitialized memory has shown problems in code this like. Say the
-called expects there to be 16 bytes as response, but the packet only
-contains 6. If it does not check the actual number of bytes returned,
-it can go off the end of what was actually received and start
-interpreting junk.
-
-So if chip->rmu.resp->len < resp_len when i would return -EMSGSIZE.
-
-That should result in safer code.
-
-If chip->rmu.resp->len > resp_len then just copy as many bytes are
-requested.
-
-> +	kfree_skb(chip->rmu.resp);
-> +	chip->rmu.resp = NULL;
-> +
-> +	mutex_unlock(&chip->rmu.mutex);
-> +
-> +	return ret > 0 ? 0 : ret;
-> +}
-> +
-> +static int mv88e6xxx_rmu_get_id(struct mv88e6xxx_chip *chip, int port)
-> +{
-> +	const u16 req[4] = { MV88E6XXX_RMU_REQ_FORMAT_GET_ID,
-> +			     MV88E6XXX_RMU_REQ_PAD,
-> +			     MV88E6XXX_RMU_REQ_CODE_GET_ID,
-> +			     MV88E6XXX_RMU_REQ_DATA};
-> +	struct rmu_header resp;
-> +	int ret = -1;
-> +	u16 format;
-> +	u16 code;
-> +
-> +	ret = mv88e6xxx_rmu_send_wait(chip, port, (const char *)req, sizeof(req),
-> +				      (char *)&resp, sizeof(resp));
-> +	if (ret) {
-> +		dev_dbg(chip->dev, "RMU: error for command GET_ID %pe\n", ERR_PTR(ret));
-> +		return ret;
-> +	}
-> +
-> +	/* Got response */
-> +	format = get_unaligned_be16(&resp.format);
-> +	code = get_unaligned_be16(&resp.code);
-
-You don't need get_unaligned_be16() etc here, because resp is a stack
-variable, it is guaranteed to be aligned. You only need to use these
-helpers when you have no idea about alignment, like data in an skb.
-
-> +
-> +	if (format != MV88E6XXX_RMU_RESP_FORMAT_1 &&
-> +	    format != MV88E6XXX_RMU_RESP_FORMAT_2 &&
-> +	    code != MV88E6XXX_RMU_RESP_CODE_GOT_ID) {
-> +		net_dbg_ratelimited("RMU: received unknown format 0x%04x code 0x%04x",
-> +				    format, code);
-> +		return -EIO;
-> +	}
-> +
-> +	chip->rmu.prodnr = get_unaligned_be16(&resp.prodnr);
-> +
-> +	return 0;
-> +}
-> +
-> +static void mv88e6xxx_rmu_stats_get(struct mv88e6xxx_chip *chip, int port, uint64_t *data)
-
-I would split this into a separate patch. Add the core RMU handling in
-one patch, and then add users of it one patch at a time. There is too
-much going on in this patch, and it is not obviously correct.
-
-> +{
-> +	u16 req[4] = { MV88E6XXX_RMU_REQ_FORMAT_SOHO,
-> +		       MV88E6XXX_RMU_REQ_PAD,
-> +		       MV88E6XXX_RMU_REQ_CODE_DUMP_MIB,
-> +		       MV88E6XXX_RMU_REQ_DATA};
-> +	struct dump_mib_resp resp;
-> +	struct mv88e6xxx_port *p;
-> +	u8 resp_port;
-> +	u16 format;
-> +	u16 code;
-> +	int ret;
-> +	int i;
-> +
-> +	/* Populate port number in request */
-> +	req[3] = FIELD_PREP(MV88E6XXX_RMU_REQ_DUMP_MIB_PORT_MASK, port);
-> +
-> +	ret = mv88e6xxx_rmu_send_wait(chip, port, (const char *)req, sizeof(req),
-> +				      (char *)&resp, sizeof(resp));
-> +	if (ret) {
-> +		dev_dbg(chip->dev, "RMU: error for command DUMP_MIB %pe port %d\n",
-> +			ERR_PTR(ret), port);
-> +		return;
-> +	}
-
-I'm surprised this is a void function, since mv88e6xxx_rmu_send_wait()
-etc can return an error.
-
-> +	for (i = 0; i < MV88E6XXX_RMU_MAX_RMON; i++)
-> +		p->rmu_raw_stats[i] = get_unaligned_be32(&resp.mib[i]);
-> +
-> +	/* Update MIB for port */
-> +	if (chip->info->ops->stats_get_stats)
-> +		chip->info->ops->stats_get_stats(chip, port, data);
-> +}
-> +
-> +void mv88e6xxx_master_change(struct dsa_switch *ds, const struct net_device *master,
-> +			     bool operational)
-> +{
-> +	struct mv88e6xxx_chip *chip = ds->priv;
-> +	struct dsa_port *cpu_dp;
-> +	int port;
-> +	int ret;
-> +
-> +	cpu_dp = master->dsa_ptr;
-> +	port = dsa_towards_port(ds, cpu_dp->ds->index, cpu_dp->index);
-> +
-> +	mv88e6xxx_reg_lock(chip);
-> +
-> +	if (operational && chip->info->ops->rmu_enable) {
-> +		if (!chip->info->ops->rmu_enable(chip, port)) {
-
-You should probably differentiate on the error here. -EOPNOTSUPP you
-want to handle different to other errors, which are fatal.
-
-> +			dev_dbg(chip->dev, "RMU: Enabled on port %d", port);
-> +			chip->rmu.master_netdev = (struct net_device *)master;
-> +
-> +			/* Check if chip is alive */
-> +			ret = mv88e6xxx_rmu_get_id(chip, port);
-> +			if (!ret)
-> +				goto out;
-> +
-> +			chip->smi_ops = chip->rmu.rmu_ops;
-> +
-> +		} else {
-> +			dev_err(chip->dev, "RMU: Unable to enable on port %d", port);
-
-Don't you need a goto out; here?
-
-> +		}
-> +	}
-> +
-> +	chip->smi_ops = chip->rmu.smi_ops;
-> +	chip->rmu.master_netdev = NULL;
-> +	if (chip->info->ops->rmu_disable)
-> +		chip->info->ops->rmu_disable(chip);
-
-I would probably pull this function apart, break it up into helpers,
-to make the flow simpler.
-
-> +
-> +out:
-> +	mv88e6xxx_reg_unlock(chip);
-> +}
-> +
-> +static int mv88e6xxx_validate_mac(struct dsa_switch *ds, struct sk_buff *skb)
-> +{
-> +	struct mv88e6xxx_chip *chip = ds->priv;
-> +	unsigned char *ethhdr;
-> +
-> +	/* Check matching MAC */
-> +	ethhdr = skb_mac_header(skb);
-> +	if (!ether_addr_equal(chip->rmu.master_netdev->dev_addr, ethhdr)) {
-> +		dev_dbg_ratelimited(ds->dev, "RMU: mismatching MAC address for request. Rx %pM expecting %pM\n",
-> +				    ethhdr, chip->rmu.master_netdev->dev_addr);
-> +		return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +void mv88e6xxx_decode_frame2reg_handler(struct net_device *dev, struct sk_buff *skb)
-> +{
-> +	struct dsa_port *dp = dev->dsa_ptr;
-> +	struct dsa_switch *ds = dp->ds;
-> +	struct mv88e6xxx_chip *chip;
-> +	int source_device;
-> +	u8 *dsa_header;
-> +	u8 seqno;
-> +
-> +	/* Decode Frame2Reg DSA portion */
-> +	dsa_header = skb->data - 2;
-> +
-> +	source_device = FIELD_GET(MV88E6XXX_SOURCE_DEV, dsa_header[0]);
-> +	ds = dsa_switch_find(ds->dst->index, source_device);
-> +	if (!ds) {
-> +		net_err_ratelimited("RMU: Didn't find switch with index %d", source_device);
-> +		return;
-> +	}
-> +
-> +	if (mv88e6xxx_validate_mac(ds, skb))
-> +		return;
-> +
-> +	chip = ds->priv;
-> +	seqno = dsa_header[3];
-> +	if (seqno != chip->rmu.seqno) {
-> +		net_err_ratelimited("RMU: wrong seqno received. Was %d, expected %d",
-> +				    seqno, chip->rmu.seqno);
-> +		return;
-> +	}
-> +
-> +	/* Pull DSA L2 data */
-> +	skb_pull(skb, MV88E6XXX_DSA_HLEN);
-> +
-> +	/* Make an copy for further processing in initiator */
-> +	chip->rmu.resp = skb_copy(skb, GFP_ATOMIC);
-> +	if (!chip->rmu.resp)
-> +		return;
-
-I think this should be in the other order. First see if there is
-anybody interested in the skb, then make a copy of it.
-
-> +
-> +	dsa_switch_inband_complete(ds, NULL);
-> +}
-> +
-> +int mv88e6xxx_rmu_setup(struct mv88e6xxx_chip *chip)
-> +{
-> +	mutex_init(&chip->rmu.mutex);
-> +
-> +	/* Remember original ops for restore */
-> +	chip->rmu.smi_ops = chip->smi_ops;
-> +
-> +	/* Change rmu ops with our own pointer */
-> +	chip->rmu.rmu_ops = (struct mv88e6xxx_bus_ops *)chip->rmu.smi_ops;
-
-Why do you need a cast? In general, casts are wrong, it suggests your
-types are wrong.
-
-> +	chip->rmu.rmu_ops->get_rmon = mv88e6xxx_rmu_stats_get;
-> +
-> +	if (chip->info->ops->rmu_disable)
-> +		return chip->info->ops->rmu_disable(chip);
-
-Why is a setup function calling disable?
-
-    Andrew
+-- 
+An old man doll... just what I always wanted! - Clara
