@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2269A5B2B9B
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 03:30:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4ACA5B2BA6
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 03:30:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230005AbiIIB1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 21:27:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51444 "EHLO
+        id S230061AbiIIB14 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 21:27:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229808AbiIIB1k (ORCPT
+        with ESMTP id S229670AbiIIB1k (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 21:27:40 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 515C91177A8;
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E54621177AB;
         Thu,  8 Sep 2022 18:27:39 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MNywG0j8PznV5X;
-        Fri,  9 Sep 2022 09:25:02 +0800 (CST)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MNyx16cZ1zHnlY;
+        Fri,  9 Sep 2022 09:25:41 +0800 (CST)
 Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
  (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 9 Sep
@@ -28,9 +28,9 @@ To:     <linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <shuah@kernel.org>
 CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
         <shaozhengchao@huawei.com>
-Subject: [PATCH net-next 5/8] selftests/tc-testings: add ife action deleting test case
-Date:   Fri, 9 Sep 2022 09:29:33 +0800
-Message-ID: <20220909012936.268433-6-shaozhengchao@huawei.com>
+Subject: [PATCH net-next 6/8] selftests/tc-testings: add nat action deleting test case
+Date:   Fri, 9 Sep 2022 09:29:34 +0800
+Message-ID: <20220909012936.268433-7-shaozhengchao@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220909012936.268433-1-shaozhengchao@huawei.com>
 References: <20220909012936.268433-1-shaozhengchao@huawei.com>
@@ -49,71 +49,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Test a972: Delete ife encode action with valid index
-Test 1272: Delete ife encode action with invalid index
+Test b811: Delete nat action with valid index
+Test a521: Delete nat action with invalid index
 
 Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 ---
- .../tc-testing/tc-tests/actions/ife.json      | 50 +++++++++++++++++++
+ .../tc-testing/tc-tests/actions/nat.json      | 50 +++++++++++++++++++
  1 file changed, 50 insertions(+)
 
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/actions/ife.json b/tools/testing/selftests/tc-testing/tc-tests/actions/ife.json
-index c13a68b98fc7..459bcad35810 100644
---- a/tools/testing/selftests/tc-testing/tc-tests/actions/ife.json
-+++ b/tools/testing/selftests/tc-testing/tc-tests/actions/ife.json
-@@ -1085,5 +1085,55 @@
+diff --git a/tools/testing/selftests/tc-testing/tc-tests/actions/nat.json b/tools/testing/selftests/tc-testing/tc-tests/actions/nat.json
+index bc12c1ccad30..0a3c491edbc5 100644
+--- a/tools/testing/selftests/tc-testing/tc-tests/actions/nat.json
++++ b/tools/testing/selftests/tc-testing/tc-tests/actions/nat.json
+@@ -614,5 +614,55 @@
          "teardown": [
-             "$TC actions flush action ife"
+             "$TC actions flush action nat"
          ]
 +    },
 +    {
-+        "id": "a972",
-+        "name": "Delete ife encode action with valid index",
++        "id": "b811",
++        "name": "Delete nat action with valid index",
 +        "category": [
 +            "actions",
-+            "ife"
++            "nat"
 +        ],
 +        "setup": [
 +            [
-+                "$TC actions flush action ife",
++                "$TC actions flush action nat",
 +                0,
 +                1,
 +                255
 +            ],
-+	    "$TC actions add action ife encode allow mark pass index 20"
++            "$TC actions add action nat ingress 1.1.1.1 2.2.2.2 drop index 20"
 +        ],
-+        "cmdUnderTest": "$TC actions del action ife index 20",
++        "cmdUnderTest": "$TC actions del action nat index 20",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC actions ls action ife index 20",
-+        "matchPattern": "action order [0-9]*: ife encode action pass.*type 0[xX]ED3E.*allow mark.*index 20",
++        "verifyCmd": "$TC actions ls action nat index 20",
++        "matchPattern": "action order [0-9]+:  nat ingress 1.1.1.1/32 2.2.2.2 drop.*index 20 ref",
 +        "matchCount": "0",
 +        "teardown": [
-+            "$TC actions flush action ife"
++            "$TC actions flush action nat"
 +        ]
 +    },
 +    {
-+        "id": "1272",
-+        "name": "Delete ife encode action with invalid index",
++        "id": "a521",
++        "name": "Delete nat action with invalid index",
 +        "category": [
 +            "actions",
-+            "ife"
++            "nat"
 +        ],
 +        "setup": [
 +            [
-+                "$TC actions flush action ife",
++                "$TC actions flush action nat",
 +                0,
 +                1,
 +                255
 +            ],
-+            "$TC actions add action ife encode allow mark pass index 20"
++            "$TC actions add action nat ingress 1.1.1.1 2.2.2.2 drop index 20"
 +        ],
-+        "cmdUnderTest": "$TC actions del action ife index 10",
++        "cmdUnderTest": "$TC actions del action nat index 10",
 +        "expExitCode": "255",
-+        "verifyCmd": "$TC actions ls action ife index 20",
-+        "matchPattern": "action order [0-9]*: ife encode action pass.*type 0[xX]ED3E.*allow mark.*index 20",
++        "verifyCmd": "$TC actions ls action nat index 20",
++        "matchPattern": "action order [0-9]+:  nat ingress 1.1.1.1/32 2.2.2.2 drop.*index 20 ref",
 +        "matchCount": "1",
 +        "teardown": [
-+            "$TC actions flush action ife"
++            "$TC actions flush action nat"
 +        ]
      }
  ]
