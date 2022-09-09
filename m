@@ -2,119 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 82EA55B323E
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 10:51:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 388DC5B3254
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 10:53:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230292AbiIIIva (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Sep 2022 04:51:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54524 "EHLO
+        id S231354AbiIIIv4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Sep 2022 04:51:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230099AbiIIIv2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 04:51:28 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5917412D1A3
-        for <netdev@vger.kernel.org>; Fri,  9 Sep 2022 01:51:26 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id b17so1593987wrq.3
-        for <netdev@vger.kernel.org>; Fri, 09 Sep 2022 01:51:26 -0700 (PDT)
+        with ESMTP id S229943AbiIIIvq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 04:51:46 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 692F14BA54
+        for <netdev@vger.kernel.org>; Fri,  9 Sep 2022 01:51:44 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id 9so105984ljr.2
+        for <netdev@vger.kernel.org>; Fri, 09 Sep 2022 01:51:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=timebeat-app.20210112.gappssmtp.com; s=20210112;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:from:to:cc:subject:date;
-        bh=o4v6uYfzoD6KnQrl4PxPjL6EwrOq/CvYCb/SFc+M9hk=;
-        b=4qsgMxGQBzxi8xRAeJSp1NOZdrIJNFFgwvcH8DasvJ5ov0bHHSUInalrR5B7x6W7Sd
-         N2cWAun+FBsTxEtaYVqXzyyNJbTWc5xYCtXbQsy61ym3dhhKL1v616NizG3PhPZZA6SW
-         +BDvLEQQf8VnWzil37jZCGATImNYbWaw/lvLbO21GqyeO4XMn986GHXDhp7yA/6Y8b84
-         u4ouF5Sr6XD8f981mbDg1UvKzw1ijbp62mWjb3q1cUV4/JFucTMERJ9zXIIdcBxBfyU4
-         K95oLpcHsj4lSm2hr4RTv9rK3l+xXynDRzavBIt4sbx+hqusxw9xbwNsbBruvi5OIeFM
-         RnvQ==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=mIEe2RHBaQXXO21sk5xWelV8Zs6bssGhOzr4Z4X7I0o=;
+        b=U8yEkNbHt8Bv2HaAcXXOStiPEMpoX1ysubjwyts5VEbfC3q+aLP+Ab/VU5Fhxg4MSP
+         OYiFhYvA8EyQ/CdYeevmhFA86ivcBheJGPens+O8jpU3Qn62b1+mbOiSJFz0LfIilb74
+         jN6lhR/0v6ncLUi+Di+G5nPM+eCW7DSv2IMCftUYyGDQoaSxr2nHee9/hWQCJm1Na8iy
+         q3bpgDGNwCtfTodw1buAXWQmRQQrqmvaiVArpULaRPZXkRrX7nDn8lNAVWmjMOtihyQA
+         At6EVl4wISmFh5SctJenBI7sK32yPlcze+eLlt0qvy72DJwT6sLbu0mONRA1eA2/Psag
+         qIJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=o4v6uYfzoD6KnQrl4PxPjL6EwrOq/CvYCb/SFc+M9hk=;
-        b=FUXT+hb56GDq9+TP3r2s/ysldypda+nkH9Qwc1fqhq4mT2q30eilj9jql5D2IfhL3O
-         c5mWYEUGV92nuueIgqWoeJqJ+D2Po1Arlx0pR2JOJc8nrIJJTAMaQE3665Y0eZd66Xbr
-         /0dH8tgbZP12Y2soYWe44wq66rLxB7bqHsw7IvJSyl/GmZNwTHlfSTYZmyHnA+Zoo70Y
-         /v8mYkUafiABPmRsSBADOLubbOjXNvfzFt7Nu0qoOYLawdMSEsMtU9ml2MXqEOAKxhws
-         ESkERH2holJZYhXgJGcOHzl+De9tzS1UNugSgB94nenMsW7U38eQGvOlgyro41HME4ZR
-         pKTw==
-X-Gm-Message-State: ACgBeo079QrZtK4+wuM/o0EITPLgwrFqbZYMvuWJ4SinckrFZbjKhPiF
-        7t4vwAbnrLnkOKkW0kvHU9p46VMAhxKDbQ==
-X-Google-Smtp-Source: AA6agR7d9sZM83CRdd8a8NazT1kbJRBWId218y5wEBAaZAHG+9ZJCxf+b6B8Qi/k3L3ao26TR8ud1A==
-X-Received: by 2002:a05:6000:136b:b0:22a:3b92:4c05 with SMTP id q11-20020a056000136b00b0022a3b924c05mr1497171wrz.183.1662713484684;
-        Fri, 09 Sep 2022 01:51:24 -0700 (PDT)
-Received: from smtpclient.apple ([2a02:6b61:b014:9045:9d1b:aad0:1a2a:2fe6])
-        by smtp.gmail.com with ESMTPSA id n16-20020adfe790000000b002237fd66585sm1287410wrm.92.2022.09.09.01.51.23
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 09 Sep 2022 01:51:24 -0700 (PDT)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.120.41.1.1\))
-Subject: Re: [PATCH net-next 1/1] igc: ptp: Add 1-step functionality to igc
- driver
-From:   Lasse Johnsen <lasse@timebeat.app>
-In-Reply-To: <YxqqQDnNUITPLvlg@hoboy.vegasvil.org>
-Date:   Fri, 9 Sep 2022 09:51:23 +0100
-Cc:     netdev@vger.kernel.org, Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        "Stanton, Kevin B" <kevin.b.stanton@intel.com>,
-        Jonathan Lemon <bsd@fb.com>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <D9C2C300-C517-4904-ACDA-80681766F3E4@timebeat.app>
-References: <44B51F36-B54D-47EB-8CDD-9A63432E9B80@timebeat.app>
- <YxpsejCwi8SfoNIC@hoboy.vegasvil.org>
- <C4B215C0-52DA-4400-A6B0-D7736141ED37@timebeat.app>
- <YxqqQDnNUITPLvlg@hoboy.vegasvil.org>
-To:     Richard Cochran <richardcochran@gmail.com>
-X-Mailer: Apple Mail (2.3696.120.41.1.1)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
-        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=mIEe2RHBaQXXO21sk5xWelV8Zs6bssGhOzr4Z4X7I0o=;
+        b=QFDosYBbFDb8q+0hJtj64tk1N4egkLTHZnr3dUgiOFe0w/j76h3t+Cxqg8+NnyecMy
+         Nf9CACGQKAZxjNAvo3pe0lgzJbXHmSdAP+KBlJvRKBWgSRyLV2nU8AGz8o8bek19F2Xp
+         gAT247YvZ5lG7NfPlQ9FViyPTw1ucfH0UvTBnVRg1YncQeD1CUJh+kWf0mTgySP5K3az
+         G+vM34playX1/hKdsGel2OVozGzeYsPYQnH2EFf6UmmqgxSIw5Y6jWRJ4dvVIguUr/V1
+         JTKvi/L3QYFJS3ZpU+FvOI09AV9eUfRlBHLjPOB1KcgmSRJ7OMejGtPg65lWOGkXSpoj
+         smeg==
+X-Gm-Message-State: ACgBeo1+9GJ9MNYFYflnox64hHnS2dLyVwQSgTy0Qvq8i5x1x1kbfoCz
+        pFk+sWh87r8QZi2phdS174OTW0Q+Y96hE6gQ
+X-Google-Smtp-Source: AA6agR7BopiDktFzoyBndSCGSfs1qN6xrQ4Y1r5R+ac76GEgeGKU8THKzSIa4zUv4vvPVNq8YLh+uA==
+X-Received: by 2002:a05:651c:12ca:b0:261:df67:b76f with SMTP id 10-20020a05651c12ca00b00261df67b76fmr3362308lje.421.1662713502173;
+        Fri, 09 Sep 2022 01:51:42 -0700 (PDT)
+Received: from wse-c0089.raspi.local (h-98-128-229-160.NA.cust.bahnhof.se. [98.128.229.160])
+        by smtp.gmail.com with ESMTPSA id q17-20020a05651c055100b00262fae1ffe6sm193956ljp.110.2022.09.09.01.51.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Sep 2022 01:51:41 -0700 (PDT)
+From:   Mattias Forsblad <mattias.forsblad@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Mattias Forsblad <mattias.forsblad@gmail.com>
+Subject: [PATCH net-next v8 0/6] net: dsa: qca8k, mv88e6xxx: rmon: Add RMU support
+Date:   Fri,  9 Sep 2022 10:51:32 +0200
+Message-Id: <20220909085138.3539952-1-mattias.forsblad@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-My apologies, I will try and be more specific.
+The Marvell SOHO switches have the ability to receive and transmit
+Remote Management Frames (Frame2Reg) to the CPU through the
+attached network interface.
+This is handled by the Remote Management Unit (RMU) in the switch
+These frames can contain different payloads:
+single switch register read and writes, daisy chained switch
+register read and writes, RMON/MIB dump/dump clear and ATU dump.
+The dump functions are very costly over MDIO but it's
+only a couple of network packets via the RMU.
 
-This patch affects only skbs in the TX direction which upon being passed =
-to ptp_classify_raw are found=20
-to be of class PTP_CLASS_L2 and of class PTP_CLASS_V2, and on being =
-passed to ptp_msg_is_sync
-are found to be of type SYNC as well.
+Next step could be to implement ATU dump.
+We've found that the gain to use RMU for single register
+read and writes is neglible.
 
-So where the driver received an ioctl with tx config option =
-HWTSTAMP_TX_ONESTEP_SYNC it will process=20
-skbs not matching the above criteria (including  PTP_CLASS_IPV4) as it =
-would have had the tx config option=20
-been HWTSTAMP_TX_ON. This patch does not change the behaviour of the =
-latter in any way.
+qca8k
+=====
+There's a newly introduced convenience function for sending
+and waiting for frames. Changes have been made for the qca8k
+driver to use this. Please test for regressions.
 
-Therefore a user space application which has used the =
-HWTSTAMP_TX_ONESTEP_SYNC tx config option
-and is sending UDP messages will as usual receive those messages back in =
-the error queue with=20
-hardware timestamps in the normal fashion. (provided of course in the =
-case of this specific driver that
-another tx timestamping operation is not in progress.)
+RFC -> v1:
+  - Track master interface availability.
+  - Validate destination MAC for incoming frames.
+  - Rate limit outputs.
+  - Cleanup setup function validating upstream port on switch.
+  - Fix return values when setting up RMU.
+  - Prefix defines correctly.
+  - Fix aligned accesses.
+  - Validate that switch exists for incoming frames.
+  - Split RMON stats function.
 
-All the best,
+v1 -> v2:
+  - Remove unused variable.
 
-Lasse
+v2 -> v3:
+  - Rewrite after feedback. Use tagger_data to handle
+    frames more like qca8k.
+  - qca8k: Change to use convenience functions introduced.
+    Requesting test of this.
+    
+v3 -> v4:
+  - Separated patches more granular.
 
-> On 9 Sep 2022, at 03:51, Richard Cochran <richardcochran@gmail.com> =
-wrote:
->=20
-> On Thu, Sep 08, 2022 at 11:48:48PM +0100, Lasse Johnsen wrote:
->> PTP over UDPv4 can run as 2-step concurrently with PTP over Ethernet =
-as 1-step.
->=20
-> That is not my question.
->=20
-> What happens when user space dials one-step and UDP?
->=20
-> Thanks,
-> Richard
+v4 -> v5:
+  - Some small fixes after feedback.
+
+v5 -> v6:
+  - Rewrite of send_wait function to more adhere
+    to RPC standards
+  - Cleanup of ops handling
+  - Move get id to when master device is available.
+
+v6 -> v7:
+  - Some minor cleanups.
+
+v7 -> v8:
+  - Moved defines to header file.
+  - Check RMU response length and return actual
+    length received.
+  - Added disable/enable helpers for RMU.
+  - Fixed some error paths.
+
+Regards,
+Mattias Forsblad
+
+Mattias Forsblad (6):
+  net: dsa: mv88e6xxx: Add RMU enable for select switches.
+  net: dsa: Add convenience functions for frame handling
+  net: dsa: Introduce dsa tagger data operation.
+  net: dsa: mv88e6xxxx: Add RMU functionality.
+  net: dsa: mv88e6xxx: rmon: Use RMU for reading RMON data
+  net: dsa: qca8k: Use new convenience functions
+
+ drivers/net/dsa/mv88e6xxx/Makefile  |   1 +
+ drivers/net/dsa/mv88e6xxx/chip.c    |  70 ++++--
+ drivers/net/dsa/mv88e6xxx/chip.h    |  24 ++
+ drivers/net/dsa/mv88e6xxx/global1.c |  64 ++++++
+ drivers/net/dsa/mv88e6xxx/global1.h |   3 +
+ drivers/net/dsa/mv88e6xxx/rmu.c     | 333 ++++++++++++++++++++++++++++
+ drivers/net/dsa/mv88e6xxx/rmu.h     |  76 +++++++
+ drivers/net/dsa/mv88e6xxx/smi.c     |   3 +
+ drivers/net/dsa/qca/qca8k-8xxx.c    |  61 ++---
+ include/net/dsa.h                   |  19 ++
+ net/dsa/dsa.c                       |  17 ++
+ net/dsa/dsa2.c                      |   2 +
+ net/dsa/tag_dsa.c                   |  32 ++-
+ 13 files changed, 642 insertions(+), 63 deletions(-)
+ create mode 100644 drivers/net/dsa/mv88e6xxx/rmu.c
+ create mode 100644 drivers/net/dsa/mv88e6xxx/rmu.h
+
+-- 
+2.25.1
 
