@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A61065B2BA8
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 03:30:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10CE55B2B8F
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 03:30:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229962AbiIIB1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 21:27:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51436 "EHLO
+        id S229978AbiIIB1r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 21:27:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229778AbiIIB1k (ORCPT
+        with ESMTP id S229786AbiIIB1k (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 21:27:40 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C23961177A2;
-        Thu,  8 Sep 2022 18:27:37 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MNyv24qHDzmVK9;
-        Fri,  9 Sep 2022 09:23:58 +0800 (CST)
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 385B11177A6;
+        Thu,  8 Sep 2022 18:27:38 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MNytp10h4z14QTk;
+        Fri,  9 Sep 2022 09:23:46 +0800 (CST)
 Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
  (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 9 Sep
- 2022 09:27:35 +0800
+ 2022 09:27:36 +0800
 From:   Zhengchao Shao <shaozhengchao@huawei.com>
 To:     <linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
@@ -28,9 +28,9 @@ To:     <linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <shuah@kernel.org>
 CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
         <shaozhengchao@huawei.com>
-Subject: [PATCH net-next 2/8] selftests/tc-testings: add selftests for gate action
-Date:   Fri, 9 Sep 2022 09:29:30 +0800
-Message-ID: <20220909012936.268433-3-shaozhengchao@huawei.com>
+Subject: [PATCH net-next 3/8] selftests/tc-testings: add selftests for xt action
+Date:   Fri, 9 Sep 2022 09:29:31 +0800
+Message-ID: <20220909012936.268433-4-shaozhengchao@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220909012936.268433-1-shaozhengchao@huawei.com>
 References: <20220909012936.268433-1-shaozhengchao@huawei.com>
@@ -49,343 +49,243 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Test 5153: Add gate action with priority and sched-entry
-Test 7189: Add gate action with base-time
-Test a721: Add gate action with cycle-time
-Test c029: Add gate action with cycle-time-ext
-Test 3719: Replace gate base-time action
-Test d821: Delete gate action with valid index
-Test 3128: Delete gate action with invalid index
-Test 7837: List gate actions
-Test 9273: Flush gate actions
-Test c829: Add gate action with duplicate index
-Test 3043: Add gate action with invalid index
-Test 2930: Add gate action with cookie
+Test 2029: Add xt action with log-prefix
+Test 3562: Replace xt action log-prefix
+Test 8291: Delete xt action with valid index
+Test 5169: Delete xt action with invalid index
+Test 7284: List xt actions
+Test 5010: Flush xt actions
+Test 8437: Add xt action with duplicate index
+Test 2837: Add xt action with invalid index
 
 Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 ---
- .../tc-testing/tc-tests/actions/gate.json     | 315 ++++++++++++++++++
- 1 file changed, 315 insertions(+)
- create mode 100644 tools/testing/selftests/tc-testing/tc-tests/actions/gate.json
+ .../tc-testing/tc-tests/actions/xt.json       | 219 ++++++++++++++++++
+ 1 file changed, 219 insertions(+)
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/actions/xt.json
 
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/actions/gate.json b/tools/testing/selftests/tc-testing/tc-tests/actions/gate.json
+diff --git a/tools/testing/selftests/tc-testing/tc-tests/actions/xt.json b/tools/testing/selftests/tc-testing/tc-tests/actions/xt.json
 new file mode 100644
-index 000000000000..e16a4963fdd2
+index 000000000000..c9f002aea6d4
 --- /dev/null
-+++ b/tools/testing/selftests/tc-testing/tc-tests/actions/gate.json
-@@ -0,0 +1,315 @@
++++ b/tools/testing/selftests/tc-testing/tc-tests/actions/xt.json
+@@ -0,0 +1,219 @@
 +[
 +    {
-+        "id": "5153",
-+        "name": "Add gate action with priority and sched-entry",
++        "id": "2029",
++        "name": "Add xt action with log-prefix",
 +        "category": [
 +            "actions",
-+            "gate"
++            "xt"
 +        ],
 +        "setup": [
 +            [
-+                "$TC action flush action gate",
++                "$TC actions flush action xt",
 +                0,
 +                1,
 +                255
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC action add action gate priority 1 sched-entry close 100000000ns index 100",
++        "cmdUnderTest": "$TC action add action xt -j LOG --log-prefix PONG index 100",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC action get action gate index 100",
-+        "matchPattern": "action order [0-9]*: .*priority 1.*index 100 ref",
++        "verifyCmd": "$TC action ls action xt",
++        "matchPattern": "action order [0-9]*:.*target  LOG level warning prefix \"PONG\".*index 100 ref",
 +        "matchCount": "1",
 +        "teardown": [
-+            "$TC action flush action gate"
++            "$TC actions flush action xt"
 +        ]
 +    },
 +    {
-+        "id": "7189",
-+        "name": "Add gate action with base-time",
++        "id": "3562",
++        "name": "Replace xt action log-prefix",
 +        "category": [
 +            "actions",
-+            "gate"
++            "xt"
 +        ],
 +        "setup": [
 +            [
-+                "$TC actions flush action gate",
-+                0,
-+                1,
-+                255
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC action add action gate base-time 200000000000ns sched-entry close 100000000ns index 10",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC action ls action gate",
-+        "matchPattern": "action order [0-9]*: .*base-time 200s.*index 10 ref",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC actions flush action gate"
-+        ]
-+    },
-+    {
-+        "id": "a721",
-+        "name": "Add gate action with cycle-time",
-+        "category": [
-+            "actions",
-+            "gate"
-+        ],
-+        "setup": [
-+            [
-+                "$TC action flush action gate",
-+                0,
-+                1,
-+                255
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC action add action gate cycle-time 200000000000ns sched-entry close 100000000ns index 1000",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC action ls action gate",
-+        "matchPattern": "action order [0-9]*: .*cycle-time 200s.*index 1000 ref",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC action flush action gate"
-+        ]
-+    },
-+    {
-+        "id": "c029",
-+        "name": "Add gate action with cycle-time-ext",
-+        "category": [
-+            "actions",
-+            "gate"
-+        ],
-+        "setup": [
-+            [
-+                "$TC action flush action gate",
-+                0,
-+                1,
-+                255
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC action add action gate cycle-time-ext 20000000000ns sched-entry close 100000000ns index 1000",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC action get action gate index 1000",
-+        "matchPattern": "action order [0-9]*: .*cycle-time-ext 20s.*index 1000 ref",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC action flush action gate"
-+        ]
-+    },
-+    {
-+        "id": "3719",
-+        "name": "Replace gate base-time action",
-+        "category": [
-+            "actions",
-+            "gate"
-+        ],
-+        "setup": [
-+            [
-+                "$TC actions flush action gate",
++                "$TC actions flush action xt",
 +                0,
 +                1,
 +                255
 +            ],
 +            [
-+                "$TC action add action gate base-time 200000000000ns sched-entry open 200000000ns -1 8000000b index 20",
++                "$TC action add action xt -j LOG --log-prefix PONG index 1",
 +                0,
 +                1,
 +                255
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC action replace action gate base-time 400000000000ns index 20",
++        "cmdUnderTest": "$TC action replace action xt -j LOG --log-prefix WIN index 1",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC action get action gate index 20",
-+        "matchPattern": "action order [0-9]*: .*base-time 400s.*index 20 ref",
++        "verifyCmd": "$TC action get action xt index 1",
++        "matchPattern": "action order [0-9]*:.*target  LOG level warning prefix \"WIN\".*index 1 ref",
 +        "matchCount": "1",
 +        "teardown": [
-+            "$TC action flush action gate"
++            "$TC action flush action xt"
 +        ]
 +    },
 +    {
-+        "id": "d821",
-+        "name": "Delete gate action with valid index",
++        "id": "8291",
++        "name": "Delete xt action with valid index",
 +        "category": [
 +            "actions",
-+            "gate"
++            "xt"
 +        ],
 +        "setup": [
 +            [
-+                "$TC actions flush action gate",
++                "$TC actions flush action xt",
 +                0,
 +                1,
 +                255
 +            ],
 +            [
-+                "$TC action add action gate base-time 200000000000ns sched-entry open 200000000ns -1 8000000b index 302",
++                "$TC action add action xt -j LOG --log-prefix PONG index 1000",
 +                0,
 +                1,
 +                255
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC action delete action gate index 302",
++        "cmdUnderTest": "$TC action delete action xt index 1000",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC action get action bpf index 302",
-+        "matchPattern": "action order [0-9]*: .*base-time 200s.*index 302 ref",
++        "verifyCmd": "$TC action get action xt index 1000",
++        "matchPattern": "action order [0-9]*:.*target  LOG level warning prefix \"PONG\".*index 1000 ref",
 +        "matchCount": "0",
 +        "teardown": [
-+            "$TC action flush action gate"
++            "$TC action flush action xt"
 +        ]
 +    },
 +    {
-+        "id": "3128",
-+        "name": "Delete gate action with invalid index",
++        "id": "5169",
++        "name": "Delete xt action with invalid index",
 +        "category": [
 +            "actions",
-+            "gate"
++            "xt"
 +        ],
 +        "setup": [
 +            [
-+                "$TC actions flush action gate",
++                "$TC actions flush action xt",
 +                0,
 +                1,
 +                255
 +            ],
 +            [
-+                "$TC action add action gate base-time 600000000000ns sched-entry open 200000000ns -1 8000000b index 999",
++                "$TC action add action xt -j LOG --log-prefix PONG index 1000",
 +                0,
 +                1,
 +                255
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC action delete action gate index 333",
++        "cmdUnderTest": "$TC action delete action xt index 333",
 +        "expExitCode": "255",
-+        "verifyCmd": "$TC action get action gate index 999",
-+        "matchPattern": "action order [0-9]*: .*base-time 600s.*index 999 ref",
++        "verifyCmd": "$TC action get action xt index 1000",
++        "matchPattern": "action order [0-9]*:.*target  LOG level warning prefix \"PONG\".*index 1000 ref",
 +        "matchCount": "1",
 +        "teardown": [
-+            "$TC action flush action gate"
++            "$TC action flush action xt"
 +        ]
 +    },
 +    {
-+        "id": "7837",
-+        "name": "List gate actions",
++        "id": "7284",
++        "name": "List xt actions",
 +        "category": [
 +            "actions",
-+            "gate"
++            "xt"
 +        ],
 +        "setup": [
 +            [
-+                "$TC action flush action gate",
++                "$TC action flush action xt",
 +                0,
 +                1,
 +                255
 +            ],
-+            "$TC action add action gate base-time 600000000000ns sched-entry open 200000000ns -1 8000000b index 101",
-+            "$TC action add action gate cycle-time 600000000000ns sched-entry open 600000000ns -1 8000000b index 102",
-+            "$TC action add action gate cycle-time-ext 400000000000ns sched-entry close 100000000ns index 103"
++            "$TC action add action xt -j LOG --log-prefix PONG index 1001",
++            "$TC action add action xt -j LOG --log-prefix WIN index 1002",
++            "$TC action add action xt -j LOG --log-prefix LOSE index 1003"
 +        ],
-+        "cmdUnderTest": "$TC action list action gate",
++        "cmdUnderTest": "$TC action list action xt",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC action list action gate",
-+        "matchPattern": "action order [0-9]*:",
++        "verifyCmd": "$TC action list action xt",
++        "matchPattern": "action order [0-9]*: tablename:",
 +        "matchCount": "3",
 +        "teardown": [
-+            "$TC actions flush action gate"
++            "$TC actions flush action xt"
 +        ]
 +    },
 +    {
-+        "id": "9273",
-+        "name": "Flush gate actions",
++        "id": "5010",
++        "name": "Flush xt actions",
 +        "category": [
 +            "actions",
-+            "gate"
++            "xt"
 +        ],
 +        "setup": [
 +            [
-+                "$TC actions flush action gate",
++		"$TC actions flush action xt",
 +                0,
 +                1,
 +                255
 +            ],
-+            "$TC action add action gate base-time 600000000000ns sched-entry open 200000000ns -1 8000000b index 101",
-+            "$TC action add action gate cycle-time 600000000000ns sched-entry open 600000000ns -1 8000000b index 102",
-+            "$TC action add action gate cycle-time-ext 400000000000ns sched-entry close 100000000ns index 103"
++            "$TC action add action xt -j LOG --log-prefix PONG index 1001",
++            "$TC action add action xt -j LOG --log-prefix WIN index 1002",
++            "$TC action add action xt -j LOG --log-prefix LOSE index 1003"
 +	],
-+        "cmdUnderTest": "$TC action flush action gate",
++        "cmdUnderTest": "$TC action flush action xt",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC action list action gate",
-+        "matchPattern": "action order [0-9]*: .*priority",
++        "verifyCmd": "$TC action list action xt",
++        "matchPattern": "action order [0-9]*: tablename:",
 +        "matchCount": "0",
 +        "teardown": [
-+            "$TC actions flush action gate"
++            "$TC actions flush action xt"
 +        ]
 +    },
 +    {
-+        "id": "c829",
-+        "name": "Add gate action with duplicate index",
++        "id": "8437",
++        "name": "Add xt action with duplicate index",
 +        "category": [
 +            "actions",
-+            "gate"
++            "xt"
 +        ],
 +        "setup": [
 +            [
-+                "$TC actions flush action gate",
++                "$TC actions flush action xt",
 +                0,
 +                1,
 +                255
 +            ],
-+            "$TC action add action gate cycle-time 600000000000ns sched-entry open 600000000ns -1 8000000b index 4294967295"
++            "$TC action add action xt -j LOG --log-prefix PONG index 101"
 +        ],
-+        "cmdUnderTest": "$TC action add action gate cycle-time 600000000000ns sched-entry open 600000000ns -1 8000000b index 4294967295",
++        "cmdUnderTest": "$TC action add action xt -j LOG --log-prefix WIN index 101",
 +        "expExitCode": "255",
-+        "verifyCmd": "$TC action get action gate index 4294967295",
-+        "matchPattern": "action order [0-9]*: .*index 4294967295",
++        "verifyCmd": "$TC action get action xt index 101",
++        "matchPattern": "action order [0-9]*:.*target  LOG level warning prefix \"PONG\".*index 101",
 +        "matchCount": "1",
 +        "teardown": [
-+            "$TC action flush action gate"
++            "$TC action flush action xt"
 +        ]
 +    },
 +    {
-+        "id": "3043",
-+        "name": "Add gate action with invalid index",
++        "id": "2837",
++        "name": "Add xt action with invalid index",
 +        "category": [
 +            "actions",
-+            "gate"
++            "xt"
 +        ],
 +        "setup": [
 +            [
-+                "$TC actions flush action gate",
++                "$TC actions flush action xt",
 +                0,
 +                1,
 +                255
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC action add action gate cycle-time-ext 400000000000ns sched-entry close 100000000ns index 4294967296",
++        "cmdUnderTest": "$TC action add action xt -j LOG --log-prefix WIN index 4294967296",
 +        "expExitCode": "255",
-+        "verifyCmd": "$TC action ls action gate",
-+        "matchPattern": "action order [0-9]*:",
++        "verifyCmd": "$TC action ls action xt",
++        "matchPattern": "action order [0-9]*:*target  LOG level warning prefix \"WIN\"",
 +        "matchCount": "0",
 +        "teardown": [
-+            "$TC action flush action gate"
-+        ]
-+    },
-+    {
-+        "id": "2930",
-+        "name": "Add gate action with cookie",
-+        "category": [
-+            "actions",
-+            "gate"
-+        ],
-+        "setup": [
-+            [
-+                "$TC actions flush action gate",
-+                0,
-+                1,
-+                255
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC action add action gate cycle-time-ext 400000000000ns sched-entry close 100000000ns index 4294 cookie d0d0d0d0d0d0d0d0",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC action list action gate",
-+        "matchPattern": "action order [0-9]*: .*cookie d0d0d0d0d0d0d0",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC action flush action gate"
++            "$TC action flush action xt"
 +        ]
 +    }
 +]
