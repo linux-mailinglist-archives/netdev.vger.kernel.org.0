@@ -2,144 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 554F85B2DA8
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 06:45:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC6B15B2DED
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 07:05:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229529AbiIIEoz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Sep 2022 00:44:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60414 "EHLO
+        id S229788AbiIIFFX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Sep 2022 01:05:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229599AbiIIEov (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 00:44:51 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D18A3A15C;
-        Thu,  8 Sep 2022 21:44:49 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4MP3Lg1lZnz4xG8;
-        Fri,  9 Sep 2022 14:44:43 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1662698684;
-        bh=sm+WWIzGsWI5u8r+ZBU+o3ckddyGFvWK/U7hSkwsZxk=;
-        h=Date:From:To:Cc:Subject:From;
-        b=WbNqRXoBBsHOKrFuO15zdQLi0ugJX2sr0mDpnLffaQkCCoOCDk2ltDa1xSVR2hdo5
-         jFOIUs8IcZfZ0TdLHZDHJ7/uJKVUFrMsvvaT5SBygakBw92M5Pl1pJUPfu405MjnMh
-         ELOKnMWYI6+PoVb2mUrsrvKGaUvEdtuGlIbrsg30c8nbq+CU0mxtkkIpkXPt45iJm1
-         1mV+nVfzYs2iA8x+21n/SRVYG+oI5PYCLbrAXZYIxXjlp0rlxzjkluldkVK81Kxm4i
-         +5E6XM1efGslVwepE/j2SU9d2uizDrNGRXwbx3/w5hjnDe0MVg6J2vVJyYYejSBgQ2
-         odAEmNFnZ9KDw==
-Date:   Fri, 9 Sep 2022 14:44:36 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Alex Williamson <alex.williamson@redhat.com>,
-        David Miller <davem@davemloft.net>
-Cc:     Networking <netdev@vger.kernel.org>,
-        Leon Romanovsky <leon@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Lior Nahmanson <liorna@nvidia.com>,
-        Raed Salem <raeds@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Yishai Hadas <yishaih@nvidia.com>
-Subject: linux-next: manual merge of the vfio tree with the net-next tree
-Message-ID: <20220909144436.6c08b042@canb.auug.org.au>
+        with ESMTP id S229780AbiIIFFV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 01:05:21 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92AAD8B2CA
+        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 22:05:19 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id bh13so541141pgb.4
+        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 22:05:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date;
+        bh=w9AbUGKYjUl16LIHvyHLR0HuFbdUR3amjItc72AsuEo=;
+        b=VJzfE87EECeYM0q8zJLdLQfxu6j4lFqhCibUdHWWsAhuv0bA6jIzbtassfgiAm5VlS
+         vrcRJBe3NDAiPBpEBZOZX6pkD10RRbmPe8Z4zXzSJ56tBnuIfQKHPZWm+YDnXwilV4a3
+         Tk0IdmWPvN1gQnsVrCT30ljbeMTw/DeVrV3k8/WFKszUZV/tidGpmH8MY1HXAzVIMJdH
+         FBy3TiOAR7ZEVDp30ahUdXN22Se1lKYhTdKDGV/26UlM6yRk9xZT5AJ+ul4+dm8QdJG6
+         Ja3p7tyjwpVfzld86EV0iishWDQ0gV6OYLQduqMLD73JS9aoad/R565bJoO72wHPfKHb
+         qaag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=w9AbUGKYjUl16LIHvyHLR0HuFbdUR3amjItc72AsuEo=;
+        b=w3A9CfkRJlmawkmx6Uf1qdQfwe6pm8DFRn9citJujhLUyZhVGpfkwwJSRIhRu8/IqJ
+         QIUY9z+bgBMrXN1nVF9YNFZXxzGD/0Ul3n3NiZveGEnZfyNMlu9NmX+rxOpeofmzzmm6
+         z6JzwPmCnWxQWfIzY9R2DLWJObIIFfQ2CFAzlDlQ4sRhyZynjPDCmf901dNg1rKpK3Ne
+         hBwWc/QbuRqolKcpkE5UL8VBhNNhYmyO6NU6HmSBLaTbEGDoCgxjBPfRDrRc4nenbM7+
+         3g+nqBwofsyPFl+CecAfttmxG2dAwERR7y+7fVli00d0v6Mh8LC0IhaCXhuIACz4/Lb6
+         ZrIg==
+X-Gm-Message-State: ACgBeo36jr6m6fKxyhVcf5k0p1WS8/PktFzBdc/MW9djDLfd3umkLqKO
+        eIq/9lRglhtmPSIgvo2xmrlWUBOVDEBe+uLSyiwdBdOA9DI=
+X-Google-Smtp-Source: AA6agR4oY37dwaa5yh2/q3MvVUPthTWLZtK7T9SOCUCJA9jyyHle5w5LTGNKEkBjLj6cA49p3tk631JRyMNyPRl5zV4=
+X-Received: by 2002:a05:6a00:1307:b0:53a:9663:1bd6 with SMTP id
+ j7-20020a056a00130700b0053a96631bd6mr12420576pfu.55.1662699919093; Thu, 08
+ Sep 2022 22:05:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/V.6.KXDO5sCncmq/FpTf_Dp";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Fri, 9 Sep 2022 13:05:07 +0800
+Message-ID: <CADxym3aTrj_0ETtHzZg38y=JjOdNz+arYaCYTaHuhSvg+8rUhw@mail.gmail.com>
+Subject: net: mptcp: mptcp selftest cause page_counter underflow
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>, mptcp@lists.linux.dev,
+        Mengen Sun <mengensun@tencent.com>,
+        Biao Jiang <benbjiang@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/V.6.KXDO5sCncmq/FpTf_Dp
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hello,
 
-Hi all,
+I find a kernel warning when I run mptcp selftest with
+following print:
 
-Today's linux-next merge of the vfio tree got conflicts in:
+[  138.448383] ------------[ cut here ]------------
+[  138.448386] page_counter underflow: -4294952882 nr_pages=4294967289
+[  138.448396] WARNING: CPU: 36 PID: 13372 at mm/page_counter.c:56
+page_counter_uncharge+0x68/0x80
+[  138.448403] Modules linked in: nft_tproxy nf_tproxy_ipv6
+nf_tproxy_ipv4 nft_socket nf_socket_ipv4 nf_socket_ipv6 ipt_REJECT
+nf_reject_ipv4 sch_netem xt_mark veth tcp_diag udp_diag inet_diag tun
+nf_conntrack_netlink xt_addrtype nft_compat overlay binfmt_misc
+squashfs edac_core crc32_pclmul ghash_clmulni_intel aesni_intel
+crypto_simd cryptd virtio_balloon drm i2c_core backlight fuse autofs4
+btrfs blake2b_generic zstd_compress multipath crc32c_intel sr_mod
+cdrom floppy
+[  138.448429] CPU: 36 PID: 13372 Comm: mptcp_connect Kdump: loaded
+Not tainted 6.0.0-rc2-0008+ #60
+[  138.448431] Hardware name: Tencent Cloud CVM, BIOS
+seabios-1.9.1-qemu-project.org 04/01/2014
+[  138.448432] RIP: 0010:page_counter_uncharge+0x68/0x80
+[  138.448435] Code: 5b 41 5c 41 5d 5d e9 47 bf ee 00 80 3d 08 e4 0b
+02 00 75 18 48 89 da 48 c7 c7 78 ea 7f 82 c6 05 f5 e3 0b 02 01 e8 6d
+66 bd 00 <0f> 0b 49 c7 45 00 00 00 00 00 31 f6 eb b7 66 2e 0f 1f 84 00
+00 00
+[  138.448437] RSP: 0018:ffffc9000a143b18 EFLAGS: 00010086
+[  138.448439] RAX: 0000000000000000 RBX: 00000000fffffff9 RCX: 0000000000000000
+[  138.448440] RDX: 0000000000000202 RSI: ffffffff827e53f1 RDI: 00000000ffffffff
+[  138.448441] RBP: ffffc9000a143b30 R08: 0000000000013ffb R09: 00000000ffffbfff
+[  138.448442] R10: ffffffff830760a0 R11: ffffffff830760a0 R12: ffffffff00000007
+[  138.448443] R13: ffff8881229780d0 R14: ffff8882072a0f80 R15: 00000000084072b6
+[  138.448447] FS:  00007f886f30d740(0000) GS:ffff889fbf700000(0000)
+knlGS:0000000000000000
+[  138.448449] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  138.448450] CR2: 00007ffd8d488478 CR3: 0000000132088000 CR4: 00000000003506e0
+[  138.448451] Call Trace:
+[  138.448453]  <TASK>
+[  138.448456]  drain_stock+0x43/0xc0
+[  138.448459]  __refill_stock+0x62/0x90
+[  138.448461]  mem_cgroup_uncharge_skmem+0x4e/0x90
+[  138.448463]  __sk_mem_reduce_allocated+0x12e/0x1b0
+[  138.448467]  __mptcp_update_rmem+0x8e/0xb0
+[  138.448470]  mptcp_release_cb+0x23a/0x320
+[  138.448473]  release_sock+0x48/0xa0
+[  138.448475]  mptcp_recvmsg+0x448/0xb70
+[  138.448478]  ? balance_dirty_pages_ratelimited+0x10/0x20
+[  138.448481]  ? generic_perform_write+0x13c/0x1f0
+[  138.448484]  inet_recvmsg+0x120/0x130
+[  138.448488]  sock_recvmsg+0x6e/0x80
+[  138.448490]  sock_read_iter+0x8f/0xf0
+[  138.448492]  vfs_read+0x29f/0x2d0
+[  138.448495]  ksys_read+0xb9/0xf0
+[  138.448497]  __x64_sys_read+0x19/0x20
+[  138.448499]  do_syscall_64+0x42/0x90
+[  138.448501]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+[  138.448504] RIP: 0033:0x7f886f0f9a7e
+[  138.448506] Code: c0 e9 b6 fe ff ff 50 48 8d 3d be ec 0b 00 e8 d9
+f1 01 00 66 0f 1f 84 00 00 00 00 00 64 8b 04 25 18 00 00 00 85 c0 75
+14 0f 05 <48> 3d 00 f0 ff ff 77 5a c3 66 0f 1f 84 00 00 00 00 00 48 83
+ec 28
+[  138.448507] RSP: 002b:00007ffd8d488478 EFLAGS: 00000246 ORIG_RAX:
+0000000000000000
+[  138.448509] RAX: ffffffffffffffda RBX: 0000000000000feb RCX: 00007f886f0f9a7e
+[  138.448510] RDX: 0000000000000feb RSI: 00007ffd8d48e550 RDI: 0000000000000003
+[  138.448511] RBP: 0000000000000003 R08: 00007f886f1f2210 R09: 00007f886f1f2260
+[  138.448512] R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffd8d48e550
+[  138.448513] R13: 0000000000002000 R14: 0000000000000000 R15: 00007ffd8d48e550
+[  138.448516]  </TASK>
+[  138.448516] ---[ end trace 0000000000000000 ]---
 
-  drivers/net/ethernet/mellanox/mlx5/core/fw.c
-  drivers/net/ethernet/mellanox/mlx5/core/main.c
+It is easy to reproduce, just run mptcp_connect.sh, mptcp_sockopt.sh and
+mptcp_join.sh together.
 
-between commit:
+Hmm...I'm not good at kernel memory, so someone who
+is good at this part may have a look at this problem.
 
-  8ff0ac5be144 ("net/mlx5: Add MACsec offload Tx command support")
+You can add
+Reported-by: Menglong Dong <imagedong@tencent.com>
+when you fix this warning.
 
-from the net-next tree and commit:
-
-  939838632b91 ("net/mlx5: Query ADV_VIRTUALIZATION capabilities")
-
-from the vfio tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc drivers/net/ethernet/mellanox/mlx5/core/fw.c
-index c63ce03e79e0,483a51870505..000000000000
---- a/drivers/net/ethernet/mellanox/mlx5/core/fw.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fw.c
-@@@ -273,13 -273,12 +273,19 @@@ int mlx5_query_hca_caps(struct mlx5_cor
-  			return err;
-  	}
- =20
- +	if (MLX5_CAP_GEN_64(dev, general_obj_types) &
- +	    MLX5_GENERAL_OBJ_TYPES_CAP_MACSEC_OFFLOAD) {
- +		err =3D mlx5_core_get_caps(dev, MLX5_CAP_MACSEC);
- +		if (err)
- +			return err;
- +	}
- +
-+ 	if (MLX5_CAP_GEN(dev, adv_virtualization)) {
-+ 		err =3D mlx5_core_get_caps(dev, MLX5_CAP_ADV_VIRTUALIZATION);
-+ 		if (err)
-+ 			return err;
-+ 	}
-+=20
-  	return 0;
-  }
- =20
-diff --cc drivers/net/ethernet/mellanox/mlx5/core/main.c
-index b45cef89370e,de9c315a85fc..000000000000
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@@ -1507,7 -1488,7 +1507,8 @@@ static const int types[] =3D=20
-  	MLX5_CAP_IPSEC,
-  	MLX5_CAP_PORT_SELECTION,
-  	MLX5_CAP_DEV_SHAMPO,
- +	MLX5_CAP_MACSEC,
-+ 	MLX5_CAP_ADV_VIRTUALIZATION,
-  };
- =20
-  static void mlx5_hca_caps_free(struct mlx5_core_dev *dev)
-
---Sig_/V.6.KXDO5sCncmq/FpTf_Dp
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmMaxLQACgkQAVBC80lX
-0GwXkAf/T/ctlhzVwkBDFkrltaOcAu9kCrwx0bG9/GtSqRfhfRHdkOBDCWWKtpmL
-Q5K5vj5wPSM/PxSNg1cNL3fNCXSK87M+AtwxEfISPJpGrAbJKSwR/pAsRCR7I5KQ
-/wZJ2QSLGNQkKShdqZo6a896XmWGt3UCPttUwTTAy/HDdthxeXz2+vRSVtmuykcs
-rB6Nl/EIqFlmeHSm5VCAeMue9W63N1M2Orx1Y8a3s46n+tEeoGibudiYkuxsXcaP
-9LXjAcfkN8OxTbfUpRe8tZuNZJ5frrgsRvMH43DMNnJKnpRpDWqfzAAu4TrHSR3V
-klGVNDHoN7FH0Gvh9ZZbLYsLIK91vA==
-=Mm/o
------END PGP SIGNATURE-----
-
---Sig_/V.6.KXDO5sCncmq/FpTf_Dp--
+Thanks!
+Menglong Dong
