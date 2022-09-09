@@ -2,90 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B04275B4068
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 22:16:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF3A95B40AC
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 22:30:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232013AbiIIUQs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Sep 2022 16:16:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35498 "EHLO
+        id S232058AbiIIUaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Sep 2022 16:30:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232000AbiIIUQp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 16:16:45 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D88B9122384;
-        Fri,  9 Sep 2022 13:16:44 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id iw17so2837781plb.0;
-        Fri, 09 Sep 2022 13:16:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=9VcEOS6tYLKIyOQMQW0PNupq+2esyo3BxlMVIMYy3Es=;
-        b=goNX8ojnJkZ7wZ953PokHx25OK65eCiCsZEOFSuYyEvSNaASosD9UIFvl6jryTbyUn
-         cHQ5Dt7TYgPGDrlwus3gAIrmxkxwUlIodi94Ioay9uOc8ny/3FxB0+klzXQnaaYEpYNx
-         OQ+7S1Wp64x+ulKJ6J+JOgZtuchNr6mtnh7LkZG9Gsx4L0sIdYyG0guoPh4g/qw6eT43
-         wtrNQ6o+Mdk9vEDsLmdhK5Rdgq2CnWj6dE60LvGIBft1s1IoeCiFCt14TaxEybdYl3qA
-         twW6AefXXgN1g3i9p9rDPCzEx22RSZwOpKwYbSHuXw54D71vUqjjZTbvf43I7wUxpLxT
-         QYtg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=9VcEOS6tYLKIyOQMQW0PNupq+2esyo3BxlMVIMYy3Es=;
-        b=hhqd+bIb/UVVc2iHKSi34rSF/T2B66e0Z2lwNSbs6YbR8ReTJkxadRS6W7hZrYoKq3
-         w2YFdLrjg8/8cpesK7HIpHh2btWVZYUimLfCfmyx7Ns2K+pyUVo+yJsM273hNNEL3FxB
-         nR5qz62bhJ5TpRvt2i+f9lR8ppKFUHBDhTabz0IYF/AbBBO8kOOR6dNUibyxmxULbjjH
-         bfI2Gu8EK2AAz6p2GyZX4B6TQUaTmhTTsyZxWoMYHT/WJGzI5hRMg/ISyVX56fgNpaSJ
-         k7s/+UJrRVnaX3E3KamNxumoU57+YMto4+x/6djtnwKL4cHI3Rb3t/uyPIN6Oc9UYypM
-         AAwA==
-X-Gm-Message-State: ACgBeo3Qz1OQpAs4JyLFgTviz0jQV/XyrK8TVcdH3Dl6s4cAUbpAk2XE
-        RdTl/CvM2AYCcr1YF22wl0Hh7tgHW9XAqQ==
-X-Google-Smtp-Source: AA6agR4OibZJpiqzs7z/LQj2JCypTsO+jgnlq788FbbcRxXqsfvD2fBwkwmKM90B0D1Ny1GJfETGcQ==
-X-Received: by 2002:a17:90b:17c7:b0:202:95a2:e30f with SMTP id me7-20020a17090b17c700b0020295a2e30fmr2921283pjb.28.1662754604276;
-        Fri, 09 Sep 2022 13:16:44 -0700 (PDT)
-Received: from lvondent-mobl4.. (c-71-56-157-77.hsd1.or.comcast.net. [71.56.157.77])
-        by smtp.gmail.com with ESMTPSA id e12-20020a170902784c00b0016c78f9f024sm867987pln.104.2022.09.09.13.16.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Sep 2022 13:16:43 -0700 (PDT)
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: pull request: bluetooth 2022-09-09
-Date:   Fri,  9 Sep 2022 13:16:42 -0700
-Message-Id: <20220909201642.3810565-1-luiz.dentz@gmail.com>
-X-Mailer: git-send-email 2.37.2
+        with ESMTP id S231844AbiIIU3x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 16:29:53 -0400
+Received: from mx01.omp.ru (mx01.omp.ru [90.154.21.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21FCDF2954;
+        Fri,  9 Sep 2022 13:29:04 -0700 (PDT)
+Received: from [192.168.1.103] (178.176.72.240) by msexch01.omp.ru
+ (10.188.4.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.14; Fri, 9 Sep 2022
+ 23:28:54 +0300
+Subject: Re: [PATCH 1/2] dt-bindings: net: renesas,etheravb: R-Car V3U is
+ R-Car Gen4
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>
+CC:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-renesas-soc@vger.kernel.org>
+References: <cover.1662714607.git.geert+renesas@glider.be>
+ <5355709e0744680d792d1e57e43441cb0b7b7611.1662714607.git.geert+renesas@glider.be>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <6ad9d05d-ac87-28fa-2f80-7d87f62f9fa8@omp.ru>
+Date:   Fri, 9 Sep 2022 23:28:47 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <5355709e0744680d792d1e57e43441cb0b7b7611.1662714607.git.geert+renesas@glider.be>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [178.176.72.240]
+X-ClientProxiedBy: msexch01.omp.ru (10.188.4.12) To msexch01.omp.ru
+ (10.188.4.12)
+X-KSE-ServerInfo: msexch01.omp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 09/09/2022 20:02:47
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 59
+X-KSE-AntiSpam-Info: Lua profiles 172660 [Sep 09 2022]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: s.shtylyov@omp.ru
+X-KSE-AntiSpam-Info: LuaCore: 498 498 840112829f78e8dd3e3ddbbff8b15d552f4973a3
+X-KSE-AntiSpam-Info: {rep_avail}
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: {relay has no DNS name}
+X-KSE-AntiSpam-Info: {SMTP from is not routable}
+X-KSE-AntiSpam-Info: {Found in DNSBL: 178.176.72.240 in (user)
+ b.barracudacentral.org}
+X-KSE-AntiSpam-Info: {Found in DNSBL: 178.176.72.240 in (user)
+ dbl.spamhaus.org}
+X-KSE-AntiSpam-Info: 127.0.0.199:7.1.2;omp.ru:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
+X-KSE-AntiSpam-Info: ApMailHostAddress: 178.176.72.240
+X-KSE-AntiSpam-Info: {DNS response errors}
+X-KSE-AntiSpam-Info: Rate: 59
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dmarc=temperror header.from=omp.ru;spf=temperror
+ smtp.mailfrom=omp.ru;dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 09/09/2022 20:06:00
+X-KSE-AttachmentFiltering-Interceptor-Info: protection disabled
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 9/9/2022 6:08:00 PM
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit 64ae13ed478428135cddc2f1113dff162d8112d4:
+Hello!
 
-  net: core: fix flow symmetric hash (2022-09-09 12:48:00 +0100)
+On 9/9/22 12:13 PM, Geert Uytterhoeven wrote:
 
-are available in the Git repository at:
+> Despite the name, R-Car V3U is the first member of the R-Car Gen4
+> family.  Hence move its compatible value to the R-Car Gen4 section.
+> 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth.git tags/for-net-2022-09-09
+Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-for you to fetch changes up to 35e60f1aadf6c02d77fdf42180fbf205aec7e8fc:
+[...]
 
-  Bluetooth: Fix HCIGETDEVINFO regression (2022-09-09 12:25:18 -0700)
-
-----------------------------------------------------------------
-bluetooth pull request for net:
-
- -Fix HCIGETDEVINFO regression
-
-----------------------------------------------------------------
-Luiz Augusto von Dentz (1):
-      Bluetooth: Fix HCIGETDEVINFO regression
-
- include/net/bluetooth/hci_sock.h | 2 --
- 1 file changed, 2 deletions(-)
+MBR, Sergey
