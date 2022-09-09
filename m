@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C29865B3680
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 13:39:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2ABFD5B3684
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 13:39:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230525AbiIILiQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Sep 2022 07:38:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39478 "EHLO
+        id S230526AbiIILiT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Sep 2022 07:38:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230504AbiIILiO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 07:38:14 -0400
+        with ESMTP id S229970AbiIILiQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 07:38:16 -0400
 Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2057.outbound.protection.outlook.com [40.107.21.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DA211377A8;
-        Fri,  9 Sep 2022 04:38:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8452BB85E;
+        Fri,  9 Sep 2022 04:38:14 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cHfscxIs8uveC4JJ7R3etvX5fxFB8Wm0ErozAangdl6i7iySjK7YTtU/glg/RmjD+yREfQiyy1hLj0welMa5CjtQhnsW6h8zCGDAO01FhE2n/6LeWWbQByOxYshciCL245qNOekLiO9u/66FMAGzhjRbhx7jh9IaUbecAOZEQAjaVdiHjlYVZkyuJyYtdA7z2kEZFmPpAZcH2VL7RDToLOV5diySrSfXLkxb/ow+ZQyqV8mFvtxPlpUoPrm4UT1sgoSr5xgpsYD0aNgHFE+L71VIr9Ry5fPlRr29c8OSAn2aq5aUJdKDFOmGPcshl6OJZvLe6JhUlmgF3YgpYqpoIQ==
+ b=Y6bv/Fzd6flRKQRm07IM3wkU3EpsE1PUg3A7AtEjrgV7fZfeTpOLgKicUVQpvRFti7BhAzi/ItpjTgSXv0OGLg7bdiViDcX6c67BFP/Nu08cGg48NZwTROZsmzVHFYhPKyxavE82jNUPdq0saWsfxd2QOJ88KCX4un65DaOMRKzEVqKgIRXz7BRGbfNIRf3FSn5VeG4rbQLafQ8pDTseSjdxEAjYbfjvuYvfKRhJCzAqPwITMusVsRP01BsptgbUYWilvrfSSU8UVx8M9mezNHRmqdXxXQO4Dv54Q5JI5m+vNP5zo9QKrkSglvA0/4CMg/nVOAsgLQclvxa28uQDRw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zQVu8Ge8RRL0j1nB9+ZeojwEOS5Lml1IG2c043Uy1W0=;
- b=kMwpR+kSRAv/FAr2/sZOWVwWqyRpThMvVR2qoVM7LbjpF4nfJNamC0hZ0QPcYgKcwV+Qmib1k/xm36CRxRcFWILNJqofUwnnLg4l9rDKu1gHMIXox32U1qoTobJE0MmiOV5gyAihyT3f+2TGNBFr+8NZ7FArUdryIhjcpzIaGzUaV9KjoByaAQgsQGNFNgWpJRKA53OfCYZOQSQ7KAjFV35eOa9o+z/LnItO3VMVJBnt2DlBpyD+YQGyEQdxDr7Q9YvwObXu3bhFxpHobwuHah57zPBeZB0nTKYzLrfUmbFjObrVo3y2BVgzuRxzGHcsTaSrlUz7nu1Uw8NCtHA5Pw==
+ bh=OYPADy4MSWPSOTb28LEI785hWR7N6sS/n7BoTdXWthw=;
+ b=gjTmFW9MK1he+jQON1IhPw/50r3iJWTZGp365dv+h9HHxjmbI8e2JKOs6VZgirInLZAFTDKgncgKzFBhx1xlaFATUkgBUoF35CzbBKT2YfYVsKOPUPnLMuhPCsregu+Cezp4AUERXEKoMDPe6QGnA+Asqfq3AIc3BR31d2bIhd/lQC68p+sXhu7LlvAMySqTbJO7Z2ETxLVeGna+zO04kBgj2JzsfShUuJrBORjy8GopvKN4Xw0EG8i7+Y7LdPdG44wi62V7XSp74lmDVOcaONmkKP+4dBrK0jNx0vGUm7sDvfDP8gMfwmzRZA3UMflswLWd/v+hFY+MkMFm4ZMnng==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zQVu8Ge8RRL0j1nB9+ZeojwEOS5Lml1IG2c043Uy1W0=;
- b=PuWFZp1ypFvgf9QJ3Ee38K6BOL75pl3ybonRgfPhhLVUha9yXHRAqkfycZxpahJbAAmMYvx0wvx4g21v4Dy6ceiXnGHZ44LoX8lD61AkbZjv9Rbw0BuMYK7T3fo//22x8dklE4/kYMQ5m+QwLhVFqDh8ukqDFuwPR2NMo8mY7yo=
+ bh=OYPADy4MSWPSOTb28LEI785hWR7N6sS/n7BoTdXWthw=;
+ b=Egq9CMfyMsCTGh0JUO3a5Tg2N8nX6/lR9KR48BiF+eN9dobQoSGoK551RCdWpl0pt0tnZdgSlLalpsWwX8g9CG3mok90Nlz65ThuV7PNSJZKOhjy0mEAMI8C9UAVOJO5MxaXZLY51XaDomeLh9Uzyx1n/2GUWPyNslIjl17cG5o=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
@@ -38,7 +38,7 @@ Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3412:9d57:ec73:fef3]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3412:9d57:ec73:fef3%5]) with mapi id 15.20.5588.017; Fri, 9 Sep 2022
- 11:38:09 +0000
+ 11:38:10 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -49,10 +49,12 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Richie Pearn <richard.pearn@nxp.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 0/2] Standardized ethtool counters for NXP ENETC
-Date:   Fri,  9 Sep 2022 14:37:58 +0300
-Message-Id: <20220909113800.55225-1-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 1/2] net: enetc: parameterize port MAC stats to also cover the pMAC
+Date:   Fri,  9 Sep 2022 14:37:59 +0300
+Message-Id: <20220909113800.55225-2-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220909113800.55225-1-vladimir.oltean@nxp.com>
+References: <20220909113800.55225-1-vladimir.oltean@nxp.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: VI1P195CA0074.EURP195.PROD.OUTLOOK.COM
@@ -60,52 +62,52 @@ X-ClientProxiedBy: VI1P195CA0074.EURP195.PROD.OUTLOOK.COM
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b158e691-fe0f-4f0b-788b-08da9257c549
+X-MS-Office365-Filtering-Correlation-Id: b1695855-62d9-4d14-499b-08da9257c5be
 X-MS-TrafficTypeDiagnostic: AM6PR04MB6616:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 9EuIakD4xLXfKMFLAbtpRM9yI4cAXpkdUhtQhOinr6RKZAa6TSz6KdPmwyrQT5yp31AW3Hi7M27VtM0Br/byLPthiIOrvoL78Vzqv9JreC2IaLk7YooXJlzTR5L24ttqndQLG2L6kdzsoNs9ePVJpAlTZtzy51iyZLjbK8pLrRn6S5uD8qcqPH1jkxUxBXDiNLURYblm6STEaOQDpWlAiDkjq9dKU78koQzYKOe21XjjXIK6hxxcJj/f/r3oqXKElo5+ki/wGCwCyO8u69lmy5JUPFZm8ek1TwiwbSU4yFdpwagipRRkfRB/JNmtHWoknahWPfHY7YGKSMqEq3KOa8L+KCdx9v6+fEvxIwBqm2KtxzH6Pya3b65pFSF2Y+2Mh9QD6vA1w3zV3lHd9auxCCirnzRKzrslv3RPVDKTYh5OZ2gDg7rItV7pivncPCvxWK0MnY0Jchmey2n1AxI1a6n7uOvYadC9gELj/ZSNAAqMy1ihEeKFEjJOKTUIRjvwXOX76enHKpUe2s532Czyiq8L5txulR7WndVj4HafTBEEks2hrWNlqNyiGJZAq6zAxZQFHX7JynUhjG4LSVGl8Z+4f7QmP2RtpGskiiBYp/gZ2zfYxCESSK78pfUOrtrQjiohBvkQN7+o07427D3d3C2KRlMOAvXRGOOTCsJIH54PISRyWplIbFlIa0an/Cix2EEmFwpusU3ZKrbpTEcpyp2jyDihx8EYxo62uq9rLzIcWLFftHAPoktPfCkOwXd0sG1D/uKeZZsGACQtlYF+gQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(376002)(136003)(346002)(366004)(396003)(316002)(2616005)(83380400001)(66556008)(66476007)(4326008)(478600001)(36756003)(1076003)(186003)(44832011)(66946007)(4744005)(2906002)(52116002)(6512007)(6486002)(5660300002)(6506007)(54906003)(8936002)(26005)(86362001)(6666004)(8676002)(41300700001)(6916009)(38350700002)(38100700002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: PPhDttLJdFPXXLFKioNKECeVj8ooxQcwkMTIELv7phMLRp3AUnkqXwh8fStTuM2easFoj0/HXMei6yDMBRZri20CoEuuK5m63IGKyANZgiH1l0KVH+ZZODYBwixk6HJAsNGFBNE9vx7VE5oBQ+wip/xGT1jALNskBloQ92dpF2piT7bQVuseq4eIzPFRvGb5eOqrOm2Oxo+ggMKoAQSKx2qJk83CUuLT3q841gNdx331TvDXB0NiPG0ubMI3XLjfvYdycnvfVW3rE0nxMA7TCuRuUDv31CYNWfi0ho4+wO2Y4LipSceqMlGjWbahqvMimyprIvKII6Irq/UlRt27lAxiYUgzFppr8nj7SIyrDtD2x/I93LQdEv7hRyAHwe+sFZyN7RNz2ynqoPHz8A736ONcvjht0IjGl62AOO+hHQYCxr4+PPm8x+c8OqYZFu7nJqz+3/DudPyrfIHMlntPzUteoOIt36EhkMPsIimALsi9ILaz+P/Meq/8vmtSUPU+OgvFqKRd5QhVCQhu3prqYbqgJfeavTpGyocXAdW+6/FVOlM7FhQOhDarsNWMAqIaHtytefMPRe/pYLrBVGLTmN7dFLa4A7kevlSjUXIFnP6VD/kzI1M99IzU47AHP/rgXC7bBt/FxNjq8bNdAhjtnh3eILyDuw3GDrAMTVFUeb5QAErhMsz6QMnXkJ2W/yriBQXQtbHFJzGshhdlJTsy7XsMTSRyePkcTr51Hb+U1kPiofNFu1DCBfA5fe42MtU3TmKL1iPZNBBmBQ8+LBnJcw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(376002)(136003)(346002)(366004)(396003)(316002)(2616005)(83380400001)(66556008)(66476007)(4326008)(478600001)(30864003)(36756003)(1076003)(186003)(44832011)(66946007)(2906002)(52116002)(6512007)(6486002)(5660300002)(6506007)(54906003)(8936002)(26005)(86362001)(6666004)(8676002)(41300700001)(6916009)(38350700002)(38100700002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?gT2QdbNraX3DIV7cEy+I9sptk/kHrH8AFjcpmJuhSrRAJSgeqAh4QjP/G3O7?=
- =?us-ascii?Q?BYi1r8BjpRDHTWtZaJ/Sw9W39YmxClWJPFRgT1mfuPKTCpyhLOiOMQB6Nh9+?=
- =?us-ascii?Q?RVjzoSVJirxOUlHcu/++PsG2yvkmjOUTKtOJChQnUXlMyB8IefbvR02QckCd?=
- =?us-ascii?Q?fZvnvv+/DyJoTDNzz9bwiNfJeZRZpgUKZbB485F+JEp6C+vVRv88kVmCDRKi?=
- =?us-ascii?Q?eei4GTx+kS4pLARbFmc86Pk0r+kI7f3gpY3L4adjiYsG//jh+4i5T52EMmbU?=
- =?us-ascii?Q?GM/xBpPIREED5SIOqa8LDotzhdKUqo4l/y9hJRsq/3mFCYwhqoxKx4tgget6?=
- =?us-ascii?Q?xJgRRGsA5xIX73jJ9c8qur+HprAn7bqWzYe1NQG4ZCNa3VksQJJ1ABWAMtEl?=
- =?us-ascii?Q?ZjMcLdZ02rqUS7VezyzM8hZCB9VzyqDWXYBUJ7m/Dk5qjtSsM/px5g3hIo97?=
- =?us-ascii?Q?wZsLxk+z8OzMfeqJ3PwuvW6SSyrPugaTjeIQRGl3CMngR0LCs7qA7OfhbE3w?=
- =?us-ascii?Q?ZW2MeGB0wcbFf1vzGbtB5LUs18hGBN6mnoR7hAvyuwxb2zm79AqeeOFOxAsG?=
- =?us-ascii?Q?JDYN3R1XUY2Q4Dub0k03K1q5ZxngXoXigbNnh4tkZW1H/9OourakfHiAyLIz?=
- =?us-ascii?Q?ITrW7VgRNUwjmQZ7lY8fFhOG/IxeMNhS5CB73IrVJBG3GYFaPTwjEnOEWeVp?=
- =?us-ascii?Q?jBNhaJ4M+YE7NrMIyG3Ytd5GYHF0HILUfva8BP8YQuXzByTdwm2YsPsYx6/f?=
- =?us-ascii?Q?wJdkyL9sxmdvKBMeX1Y1bYR3JZMXJQjFHDbJgSwJU2ZP25hbzxnRp9cplBhd?=
- =?us-ascii?Q?ElJqXv6bkRPxJobJclB5X/cLfsRH5Vd51aAQfCSvZcBSVn2ov2BK2QfdLUwU?=
- =?us-ascii?Q?SeoXMmIJMfgRGMJpiHq4sWulpRe4yzJ06o3GxpX62O7qpMiZcDycKF7NVhnO?=
- =?us-ascii?Q?YGnpLJxLDvriaH1Zc+Thtc0rZqLg3jBYX8ScfJ3xcz0OshAdUps42YhOfBhg?=
- =?us-ascii?Q?q12mskDNNhOoz/R8ZcN85+DbbqEL6i7sQbMyMcOJ/1nPRo45azc6BKIfIsXe?=
- =?us-ascii?Q?GN/9w4u6uLk9tbAI0h33hNs1RSy7nVmMAzP6h/hsEWkaQISgpYCkl+J+mPhM?=
- =?us-ascii?Q?rsKsLQK4E87hzZtK58J0RHT0YUnKWcAzoni3iHueJKrb3mt+akempl0UwQO0?=
- =?us-ascii?Q?+WzbEzsNmvCVoWxcUzMwpMmjoDQBudPQ0jz5EC5d3fLVBJnxWaLjH+Tt0RXR?=
- =?us-ascii?Q?B7hCk5Um8jba0GeBPvwo6O0BNrYLGMcvkOaWa2g11RI6psu9qw7tlr5vvXYa?=
- =?us-ascii?Q?2YCPL/NForTvdQZK5eK4DJRfIdibZf+TRuFFfmL/WjPQ0oH29E2VDTrUNuBJ?=
- =?us-ascii?Q?bhcjk3l5/mhnO0fYVB7cxh0e7dq1bcKbfr092pDRHuNYsL7LbSWi4A2hG2u0?=
- =?us-ascii?Q?yNgnLRKwS4rPkz/sFRsuH1SSFzIKaCUtVNLiIblGY5EIHYm6pljfAXYvQdY1?=
- =?us-ascii?Q?6zuXiWrC6SX9gnKfhyDoRVDXUZHUymg6f3x2v7mshrdic3wfRc1cXhB3NB9S?=
- =?us-ascii?Q?qkmlv56Jwb/klTgAL4/fYCC42S/BBDaq8fufF0tEDRjgSty+95wAuGqpG0qC?=
- =?us-ascii?Q?Mg=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?83xzs4wy4xTm6uidJf7gr15VtKJvp2k+3K6+mrALDBGD3eD9a/uc1b2QM5Ca?=
+ =?us-ascii?Q?XWTIFlPvnzIJMXY8NmF/JWWgDjLiAvll21cQNB9Zn1t2WGCalel42wUPuzFh?=
+ =?us-ascii?Q?EWwdoJsf/Js1LMqVk231FpAZa+pb6EAfY1igezc+Zgt4zGjLMZbAZK/Hkp+y?=
+ =?us-ascii?Q?hh2WA34sB8aqNjRVzYW0pTMTW1J80L/4k5O5uVJpOKBpREECpzJ9rtghzN5R?=
+ =?us-ascii?Q?+pnw0ZYESeldD2PSz84VG6WfSf8Y8c3ff1z2cuijtTeUU7qXdK6gqqCkpl7l?=
+ =?us-ascii?Q?Ss3kTXYnejctjp5CAgJMkMDLwHwJpuohHn2qz4H7hJiv+Y97TV4GNhv9xTbE?=
+ =?us-ascii?Q?w0XEcxkTac+TJPoL7/lvYhS+wGV3APIr6FbRdGaPSb00HaASIIuxnVQnW0zq?=
+ =?us-ascii?Q?7oZ/s5f/bFcGlgdR+9FFUWudXhnPwjy2tAbOqHpCNCgvtd7H8QL3jSYBSSjO?=
+ =?us-ascii?Q?CcfSQRwz9BSdUD7p5nlLr9NGimXPKoBIBp+3bbrDgtU4AE5zY5DgLznGkcw4?=
+ =?us-ascii?Q?tsJQWIdRtrFTLRLakhdHomy107S5yZLtXEc+13VM5xoJQJeSlqGQG88oS5Cg?=
+ =?us-ascii?Q?MB8yh1ywqmRDOLRjotmnPBb3O45BexuNyzbK0QdMdAaa3wlwjjxSrLKJ7wgg?=
+ =?us-ascii?Q?jgQGBuHDlmUUY1aRpFZXx4Zdp3fJTZ+rz1QC1mDgHCb+MG6w4npVxlq9Repb?=
+ =?us-ascii?Q?8AN9l4B38iu0vo309R/dOT1CRWhQN/LEemFOp6bL4DC+ifQDwCdTkwxpSyqp?=
+ =?us-ascii?Q?9u66aWcadhbho+5RNGfo28INL2YfIrV7S2aQiFhmyI4FWq7Uq/m/deVU3FVu?=
+ =?us-ascii?Q?yWcqTk4Wx2kA/KdkIeH8oL3+0ov0YuBPdjl4FiSl7h0Oy2HJj4YWx/2ShzoV?=
+ =?us-ascii?Q?p7+D6UrMy9yVSOV/PPI5I6bXFlRkqCkYPZ1+ZuGx1aJkXlslUvlL5Q3xPwVR?=
+ =?us-ascii?Q?CaiGaw9fScnPz3wX+6ra9d5zJPIQXsVcFMYupAKG4rM+XscgSRDjacASTgOd?=
+ =?us-ascii?Q?RO7lM8B2JhjQItU1L0s8P34oSbnkXCtX7bjLTfDyQPZhcARX62SReBXuYUcC?=
+ =?us-ascii?Q?g/CEAMVqPMkGVDK8T6P9jMtX064/jqjaQ7nO1D3vb/B6Y719MKURaMJNZQp+?=
+ =?us-ascii?Q?cbazTV3/4YnUV174nijtJ/S95IqJVGby+tEEJS6FAWF8GhIhfsaORN5y1Kzt?=
+ =?us-ascii?Q?eBGHQsbddysVZnJrnGOOmqENGRxhC3wcP3et82tVc5ozodT/gObupxJ6xQbi?=
+ =?us-ascii?Q?U5IItGe+an/ckVgMWyYPsgkpuU8et4lZeaDdZPvQBW5T/tqXEcLrKPhaLeCz?=
+ =?us-ascii?Q?PQC7iW+ukwcpd3H6C8+xi+lQ3VsoK+ZqPa6GA/nbzQ7RS6+LBXD0pQo3saJh?=
+ =?us-ascii?Q?CB7qD/8csHDbIv+XJ/lPQCSE+ItvkJFAERZly0Q74P5++F8gmOzzwCb6+Pwj?=
+ =?us-ascii?Q?Gy4bc0LjYPwA2Ld2Bj/3fRLzo2zesDI4h71+MrVYyhVeaP3Z2S0k0c6eMw15?=
+ =?us-ascii?Q?mb8042sTY1PawnTnrJRNg0HmF1pwA0nRyOJRJz0J/pVkU+acz6sPTGMl6bsc?=
+ =?us-ascii?Q?LGFG0Y8xOObcl+I++NHQFN8aQsVgX+AOeY0FqNHQCHpGkmV4CxOxLtTlTs+c?=
+ =?us-ascii?Q?lA=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b158e691-fe0f-4f0b-788b-08da9257c549
+X-MS-Exchange-CrossTenant-Network-Message-Id: b1695855-62d9-4d14-499b-08da9257c5be
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Sep 2022 11:38:09.8582
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Sep 2022 11:38:10.5457
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: y4f+YINGE10ox8UBXQ3WJXnS5vDTqqDbaIlZOU+7uJ0Mx4fW2mFyTEH44ltaoQ/UojDIS4B+HyQEnJa43CDuKg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4OCHsl4pzLakwVZBQujWV0JyAs3bM1R1hnpllivGwZTXP9U1j80VIWiagp+oO9FGpvt2dNpefd09vFRGGo3XAA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB6616
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -117,19 +119,271 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is another preparation patch for the introduction of MAC Merge
-Layer statistics, this time for the enetc driver (endpoint ports on the
-NXP LS1028A). The same set of stats groups is supported as in the case
-of the Felix DSA switch.
+The ENETC has counters for the eMAC and for the pMAC exactly 0x1000
+apart from each other. The driver only contains definitions for PM0,
+the eMAC.
 
-Vladimir Oltean (2):
-  net: enetc: parameterize port MAC stats to also cover the pMAC
-  net: enetc: expose some standardized ethtool counters
+Rather than duplicating everything for PM1, modify the register
+definitions such that they take the MAC as argument.
 
- .../ethernet/freescale/enetc/enetc_ethtool.c  | 235 +++++++++++++-----
- .../net/ethernet/freescale/enetc/enetc_hw.h   | 106 ++++----
- 2 files changed, 227 insertions(+), 114 deletions(-)
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ .../ethernet/freescale/enetc/enetc_ethtool.c  | 124 +++++++++---------
+ .../net/ethernet/freescale/enetc/enetc_hw.h   | 106 +++++++--------
+ 2 files changed, 116 insertions(+), 114 deletions(-)
 
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
+index dec721e82938..b07139c97355 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
+@@ -125,68 +125,68 @@ static const struct {
+ 	int reg;
+ 	char name[ETH_GSTRING_LEN];
+ } enetc_port_counters[] = {
+-	{ ENETC_PM0_REOCT,  "MAC rx ethernet octets" },
+-	{ ENETC_PM0_RALN,   "MAC rx alignment errors" },
+-	{ ENETC_PM0_RXPF,   "MAC rx valid pause frames" },
+-	{ ENETC_PM0_RFRM,   "MAC rx valid frames" },
+-	{ ENETC_PM0_RFCS,   "MAC rx fcs errors" },
+-	{ ENETC_PM0_RVLAN,  "MAC rx VLAN frames" },
+-	{ ENETC_PM0_RERR,   "MAC rx frame errors" },
+-	{ ENETC_PM0_RUCA,   "MAC rx unicast frames" },
+-	{ ENETC_PM0_RMCA,   "MAC rx multicast frames" },
+-	{ ENETC_PM0_RBCA,   "MAC rx broadcast frames" },
+-	{ ENETC_PM0_RDRP,   "MAC rx dropped packets" },
+-	{ ENETC_PM0_RPKT,   "MAC rx packets" },
+-	{ ENETC_PM0_RUND,   "MAC rx undersized packets" },
+-	{ ENETC_PM0_R64,    "MAC rx 64 byte packets" },
+-	{ ENETC_PM0_R127,   "MAC rx 65-127 byte packets" },
+-	{ ENETC_PM0_R255,   "MAC rx 128-255 byte packets" },
+-	{ ENETC_PM0_R511,   "MAC rx 256-511 byte packets" },
+-	{ ENETC_PM0_R1023,  "MAC rx 512-1023 byte packets" },
+-	{ ENETC_PM0_R1522,  "MAC rx 1024-1522 byte packets" },
+-	{ ENETC_PM0_R1523X, "MAC rx 1523 to max-octet packets" },
+-	{ ENETC_PM0_ROVR,   "MAC rx oversized packets" },
+-	{ ENETC_PM0_RJBR,   "MAC rx jabber packets" },
+-	{ ENETC_PM0_RFRG,   "MAC rx fragment packets" },
+-	{ ENETC_PM0_RCNP,   "MAC rx control packets" },
+-	{ ENETC_PM0_RDRNTP, "MAC rx fifo drop" },
+-	{ ENETC_PM0_TEOCT,  "MAC tx ethernet octets" },
+-	{ ENETC_PM0_TOCT,   "MAC tx octets" },
+-	{ ENETC_PM0_TCRSE,  "MAC tx carrier sense errors" },
+-	{ ENETC_PM0_TXPF,   "MAC tx valid pause frames" },
+-	{ ENETC_PM0_TFRM,   "MAC tx frames" },
+-	{ ENETC_PM0_TFCS,   "MAC tx fcs errors" },
+-	{ ENETC_PM0_TVLAN,  "MAC tx VLAN frames" },
+-	{ ENETC_PM0_TERR,   "MAC tx frame errors" },
+-	{ ENETC_PM0_TUCA,   "MAC tx unicast frames" },
+-	{ ENETC_PM0_TMCA,   "MAC tx multicast frames" },
+-	{ ENETC_PM0_TBCA,   "MAC tx broadcast frames" },
+-	{ ENETC_PM0_TPKT,   "MAC tx packets" },
+-	{ ENETC_PM0_TUND,   "MAC tx undersized packets" },
+-	{ ENETC_PM0_T64,    "MAC tx 64 byte packets" },
+-	{ ENETC_PM0_T127,   "MAC tx 65-127 byte packets" },
+-	{ ENETC_PM0_T255,   "MAC tx 128-255 byte packets" },
+-	{ ENETC_PM0_T511,   "MAC tx 256-511 byte packets" },
+-	{ ENETC_PM0_T1023,  "MAC tx 512-1023 byte packets" },
+-	{ ENETC_PM0_T1522,  "MAC tx 1024-1522 byte packets" },
+-	{ ENETC_PM0_T1523X, "MAC tx 1523 to max-octet packets" },
+-	{ ENETC_PM0_TCNP,   "MAC tx control packets" },
+-	{ ENETC_PM0_TDFR,   "MAC tx deferred packets" },
+-	{ ENETC_PM0_TMCOL,  "MAC tx multiple collisions" },
+-	{ ENETC_PM0_TSCOL,  "MAC tx single collisions" },
+-	{ ENETC_PM0_TLCOL,  "MAC tx late collisions" },
+-	{ ENETC_PM0_TECOL,  "MAC tx excessive collisions" },
+-	{ ENETC_UFDMF,      "SI MAC nomatch u-cast discards" },
+-	{ ENETC_MFDMF,      "SI MAC nomatch m-cast discards" },
+-	{ ENETC_PBFDSIR,    "SI MAC nomatch b-cast discards" },
+-	{ ENETC_PUFDVFR,    "SI VLAN nomatch u-cast discards" },
+-	{ ENETC_PMFDVFR,    "SI VLAN nomatch m-cast discards" },
+-	{ ENETC_PBFDVFR,    "SI VLAN nomatch b-cast discards" },
+-	{ ENETC_PFDMSAPR,   "SI pruning discarded frames" },
+-	{ ENETC_PICDR(0),   "ICM DR0 discarded frames" },
+-	{ ENETC_PICDR(1),   "ICM DR1 discarded frames" },
+-	{ ENETC_PICDR(2),   "ICM DR2 discarded frames" },
+-	{ ENETC_PICDR(3),   "ICM DR3 discarded frames" },
++	{ ENETC_PM_REOCT(0),	"MAC rx ethernet octets" },
++	{ ENETC_PM_RALN(0),	"MAC rx alignment errors" },
++	{ ENETC_PM_RXPF(0),	"MAC rx valid pause frames" },
++	{ ENETC_PM_RFRM(0),	"MAC rx valid frames" },
++	{ ENETC_PM_RFCS(0),	"MAC rx fcs errors" },
++	{ ENETC_PM_RVLAN(0),	"MAC rx VLAN frames" },
++	{ ENETC_PM_RERR(0),	"MAC rx frame errors" },
++	{ ENETC_PM_RUCA(0),	"MAC rx unicast frames" },
++	{ ENETC_PM_RMCA(0),	"MAC rx multicast frames" },
++	{ ENETC_PM_RBCA(0),	"MAC rx broadcast frames" },
++	{ ENETC_PM_RDRP(0),	"MAC rx dropped packets" },
++	{ ENETC_PM_RPKT(0),	"MAC rx packets" },
++	{ ENETC_PM_RUND(0),	"MAC rx undersized packets" },
++	{ ENETC_PM_R64(0),	"MAC rx 64 byte packets" },
++	{ ENETC_PM_R127(0),	"MAC rx 65-127 byte packets" },
++	{ ENETC_PM_R255(0),	"MAC rx 128-255 byte packets" },
++	{ ENETC_PM_R511(0),	"MAC rx 256-511 byte packets" },
++	{ ENETC_PM_R1023(0),	"MAC rx 512-1023 byte packets" },
++	{ ENETC_PM_R1522(0),	"MAC rx 1024-1522 byte packets" },
++	{ ENETC_PM_R1523X(0),	"MAC rx 1523 to max-octet packets" },
++	{ ENETC_PM_ROVR(0),	"MAC rx oversized packets" },
++	{ ENETC_PM_RJBR(0),	"MAC rx jabber packets" },
++	{ ENETC_PM_RFRG(0),	"MAC rx fragment packets" },
++	{ ENETC_PM_RCNP(0),	"MAC rx control packets" },
++	{ ENETC_PM_RDRNTP(0),	"MAC rx fifo drop" },
++	{ ENETC_PM_TEOCT(0),	"MAC tx ethernet octets" },
++	{ ENETC_PM_TOCT(0),	"MAC tx octets" },
++	{ ENETC_PM_TCRSE(0),	"MAC tx carrier sense errors" },
++	{ ENETC_PM_TXPF(0),	"MAC tx valid pause frames" },
++	{ ENETC_PM_TFRM(0),	"MAC tx frames" },
++	{ ENETC_PM_TFCS(0),	"MAC tx fcs errors" },
++	{ ENETC_PM_TVLAN(0),	"MAC tx VLAN frames" },
++	{ ENETC_PM_TERR(0),	"MAC tx frame errors" },
++	{ ENETC_PM_TUCA(0),	"MAC tx unicast frames" },
++	{ ENETC_PM_TMCA(0),	"MAC tx multicast frames" },
++	{ ENETC_PM_TBCA(0),	"MAC tx broadcast frames" },
++	{ ENETC_PM_TPKT(0),	"MAC tx packets" },
++	{ ENETC_PM_TUND(0),	"MAC tx undersized packets" },
++	{ ENETC_PM_T64(0),	"MAC tx 64 byte packets" },
++	{ ENETC_PM_T127(0),	"MAC tx 65-127 byte packets" },
++	{ ENETC_PM_T255(0),	"MAC tx 128-255 byte packets" },
++	{ ENETC_PM_T511(0),	"MAC tx 256-511 byte packets" },
++	{ ENETC_PM_T1023(0),	"MAC tx 512-1023 byte packets" },
++	{ ENETC_PM_T1522(0),	"MAC tx 1024-1522 byte packets" },
++	{ ENETC_PM_T1523X(0),	"MAC tx 1523 to max-octet packets" },
++	{ ENETC_PM_TCNP(0),	"MAC tx control packets" },
++	{ ENETC_PM_TDFR(0),	"MAC tx deferred packets" },
++	{ ENETC_PM_TMCOL(0),	"MAC tx multiple collisions" },
++	{ ENETC_PM_TSCOL(0),	"MAC tx single collisions" },
++	{ ENETC_PM_TLCOL(0),	"MAC tx late collisions" },
++	{ ENETC_PM_TECOL(0),	"MAC tx excessive collisions" },
++	{ ENETC_UFDMF,		"SI MAC nomatch u-cast discards" },
++	{ ENETC_MFDMF,		"SI MAC nomatch m-cast discards" },
++	{ ENETC_PBFDSIR,	"SI MAC nomatch b-cast discards" },
++	{ ENETC_PUFDVFR,	"SI VLAN nomatch u-cast discards" },
++	{ ENETC_PMFDVFR,	"SI VLAN nomatch m-cast discards" },
++	{ ENETC_PBFDVFR,	"SI VLAN nomatch b-cast discards" },
++	{ ENETC_PFDMSAPR,	"SI pruning discarded frames" },
++	{ ENETC_PICDR(0),	"ICM DR0 discarded frames" },
++	{ ENETC_PICDR(1),	"ICM DR1 discarded frames" },
++	{ ENETC_PICDR(2),	"ICM DR2 discarded frames" },
++	{ ENETC_PICDR(3),	"ICM DR3 discarded frames" },
+ };
+ 
+ static const char rx_ring_stats[][ETH_GSTRING_LEN] = {
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_hw.h b/drivers/net/ethernet/freescale/enetc/enetc_hw.h
+index 647c87f73bf7..0b85e37a00eb 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_hw.h
++++ b/drivers/net/ethernet/freescale/enetc/enetc_hw.h
+@@ -276,58 +276,60 @@ enum enetc_bdr_type {TX, RX};
+ #define ENETC_PFMCAPR		0x1b38
+ #define ENETC_PFMCAPR_MSK	GENMASK(15, 0)
+ 
+-/* MAC counters */
+-#define ENETC_PM0_REOCT		0x8100
+-#define ENETC_PM0_RALN		0x8110
+-#define ENETC_PM0_RXPF		0x8118
+-#define ENETC_PM0_RFRM		0x8120
+-#define ENETC_PM0_RFCS		0x8128
+-#define ENETC_PM0_RVLAN		0x8130
+-#define ENETC_PM0_RERR		0x8138
+-#define ENETC_PM0_RUCA		0x8140
+-#define ENETC_PM0_RMCA		0x8148
+-#define ENETC_PM0_RBCA		0x8150
+-#define ENETC_PM0_RDRP		0x8158
+-#define ENETC_PM0_RPKT		0x8160
+-#define ENETC_PM0_RUND		0x8168
+-#define ENETC_PM0_R64		0x8170
+-#define ENETC_PM0_R127		0x8178
+-#define ENETC_PM0_R255		0x8180
+-#define ENETC_PM0_R511		0x8188
+-#define ENETC_PM0_R1023		0x8190
+-#define ENETC_PM0_R1522		0x8198
+-#define ENETC_PM0_R1523X	0x81A0
+-#define ENETC_PM0_ROVR		0x81A8
+-#define ENETC_PM0_RJBR		0x81B0
+-#define ENETC_PM0_RFRG		0x81B8
+-#define ENETC_PM0_RCNP		0x81C0
+-#define ENETC_PM0_RDRNTP	0x81C8
+-#define ENETC_PM0_TEOCT		0x8200
+-#define ENETC_PM0_TOCT		0x8208
+-#define ENETC_PM0_TCRSE		0x8210
+-#define ENETC_PM0_TXPF		0x8218
+-#define ENETC_PM0_TFRM		0x8220
+-#define ENETC_PM0_TFCS		0x8228
+-#define ENETC_PM0_TVLAN		0x8230
+-#define ENETC_PM0_TERR		0x8238
+-#define ENETC_PM0_TUCA		0x8240
+-#define ENETC_PM0_TMCA		0x8248
+-#define ENETC_PM0_TBCA		0x8250
+-#define ENETC_PM0_TPKT		0x8260
+-#define ENETC_PM0_TUND		0x8268
+-#define ENETC_PM0_T64		0x8270
+-#define ENETC_PM0_T127		0x8278
+-#define ENETC_PM0_T255		0x8280
+-#define ENETC_PM0_T511		0x8288
+-#define ENETC_PM0_T1023		0x8290
+-#define ENETC_PM0_T1522		0x8298
+-#define ENETC_PM0_T1523X	0x82A0
+-#define ENETC_PM0_TCNP		0x82C0
+-#define ENETC_PM0_TDFR		0x82D0
+-#define ENETC_PM0_TMCOL		0x82D8
+-#define ENETC_PM0_TSCOL		0x82E0
+-#define ENETC_PM0_TLCOL		0x82E8
+-#define ENETC_PM0_TECOL		0x82F0
++/* Port MAC counters: Port MAC 0 corresponds to the eMAC and
++ * Port MAC 1 to the pMAC.
++ */
++#define ENETC_PM_REOCT(mac)	(0x8100 + 0x1000 * (mac))
++#define ENETC_PM_RALN(mac)	(0x8110 + 0x1000 * (mac))
++#define ENETC_PM_RXPF(mac)	(0x8118 + 0x1000 * (mac))
++#define ENETC_PM_RFRM(mac)	(0x8120 + 0x1000 * (mac))
++#define ENETC_PM_RFCS(mac)	(0x8128 + 0x1000 * (mac))
++#define ENETC_PM_RVLAN(mac)	(0x8130 + 0x1000 * (mac))
++#define ENETC_PM_RERR(mac)	(0x8138 + 0x1000 * (mac))
++#define ENETC_PM_RUCA(mac)	(0x8140 + 0x1000 * (mac))
++#define ENETC_PM_RMCA(mac)	(0x8148 + 0x1000 * (mac))
++#define ENETC_PM_RBCA(mac)	(0x8150 + 0x1000 * (mac))
++#define ENETC_PM_RDRP(mac)	(0x8158 + 0x1000 * (mac))
++#define ENETC_PM_RPKT(mac)	(0x8160 + 0x1000 * (mac))
++#define ENETC_PM_RUND(mac)	(0x8168 + 0x1000 * (mac))
++#define ENETC_PM_R64(mac)	(0x8170 + 0x1000 * (mac))
++#define ENETC_PM_R127(mac)	(0x8178 + 0x1000 * (mac))
++#define ENETC_PM_R255(mac)	(0x8180 + 0x1000 * (mac))
++#define ENETC_PM_R511(mac)	(0x8188 + 0x1000 * (mac))
++#define ENETC_PM_R1023(mac)	(0x8190 + 0x1000 * (mac))
++#define ENETC_PM_R1522(mac)	(0x8198 + 0x1000 * (mac))
++#define ENETC_PM_R1523X(mac)	(0x81A0 + 0x1000 * (mac))
++#define ENETC_PM_ROVR(mac)	(0x81A8 + 0x1000 * (mac))
++#define ENETC_PM_RJBR(mac)	(0x81B0 + 0x1000 * (mac))
++#define ENETC_PM_RFRG(mac)	(0x81B8 + 0x1000 * (mac))
++#define ENETC_PM_RCNP(mac)	(0x81C0 + 0x1000 * (mac))
++#define ENETC_PM_RDRNTP(mac)	(0x81C8 + 0x1000 * (mac))
++#define ENETC_PM_TEOCT(mac)	(0x8200 + 0x1000 * (mac))
++#define ENETC_PM_TOCT(mac)	(0x8208 + 0x1000 * (mac))
++#define ENETC_PM_TCRSE(mac)	(0x8210 + 0x1000 * (mac))
++#define ENETC_PM_TXPF(mac)	(0x8218 + 0x1000 * (mac))
++#define ENETC_PM_TFRM(mac)	(0x8220 + 0x1000 * (mac))
++#define ENETC_PM_TFCS(mac)	(0x8228 + 0x1000 * (mac))
++#define ENETC_PM_TVLAN(mac)	(0x8230 + 0x1000 * (mac))
++#define ENETC_PM_TERR(mac)	(0x8238 + 0x1000 * (mac))
++#define ENETC_PM_TUCA(mac)	(0x8240 + 0x1000 * (mac))
++#define ENETC_PM_TMCA(mac)	(0x8248 + 0x1000 * (mac))
++#define ENETC_PM_TBCA(mac)	(0x8250 + 0x1000 * (mac))
++#define ENETC_PM_TPKT(mac)	(0x8260 + 0x1000 * (mac))
++#define ENETC_PM_TUND(mac)	(0x8268 + 0x1000 * (mac))
++#define ENETC_PM_T64(mac)	(0x8270 + 0x1000 * (mac))
++#define ENETC_PM_T127(mac)	(0x8278 + 0x1000 * (mac))
++#define ENETC_PM_T255(mac)	(0x8280 + 0x1000 * (mac))
++#define ENETC_PM_T511(mac)	(0x8288 + 0x1000 * (mac))
++#define ENETC_PM_T1023(mac)	(0x8290 + 0x1000 * (mac))
++#define ENETC_PM_T1522(mac)	(0x8298 + 0x1000 * (mac))
++#define ENETC_PM_T1523X(mac)	(0x82A0 + 0x1000 * (mac))
++#define ENETC_PM_TCNP(mac)	(0x82C0 + 0x1000 * (mac))
++#define ENETC_PM_TDFR(mac)	(0x82D0 + 0x1000 * (mac))
++#define ENETC_PM_TMCOL(mac)	(0x82D8 + 0x1000 * (mac))
++#define ENETC_PM_TSCOL(mac)	(0x82E0 + 0x1000 * (mac))
++#define ENETC_PM_TLCOL(mac)	(0x82E8 + 0x1000 * (mac))
++#define ENETC_PM_TECOL(mac)	(0x82F0 + 0x1000 * (mac))
+ 
+ /* Port counters */
+ #define ENETC_PICDR(n)		(0x0700 + (n) * 8) /* n = [0..3] */
 -- 
 2.34.1
 
