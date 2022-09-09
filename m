@@ -2,86 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 02E7D5B3B75
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 17:07:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 414265B3B8F
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 17:13:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231659AbiIIPGx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Sep 2022 11:06:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39590 "EHLO
+        id S232217AbiIIPNB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Sep 2022 11:13:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231844AbiIIPGf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 11:06:35 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9347F13BC68
-        for <netdev@vger.kernel.org>; Fri,  9 Sep 2022 08:06:33 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id 202so1824252pgc.8
-        for <netdev@vger.kernel.org>; Fri, 09 Sep 2022 08:06:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=h9ttlWCtYtVis0YY0hxzMY2qjTiD1pFXm2BQf608hzc=;
-        b=rJIVxZ9Jiyp9GZBMH7ltmn4ILM2XybGYMZrHq+cdRoQuteAuW5Gr9DPFCsvMAtHZO2
-         40Hnyne+KIB6cymtP7qrv3+KSHQqkM1h03oKOH/fHt/7/tGXKxxcnh4QrBqHh7L8XqzK
-         G46ksDEoWISDdrPLzO87/GHM7SY/1URmNLTFL84Z87hMUdsxbBe5CWWCGKSC8/zRGkCO
-         KxV9kppAvsCBbyPwDzSnuEvjtAcJ3y9MOFtbf8zgAHHzcCtASUlrnE8upV4+XaWnokuV
-         m2VBYnRksguKN3MAra1PR5YI/7kwdDx5ZUsryrri5+8jvFE3Iutszw7KZDoYBbDaAu2i
-         nV4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=h9ttlWCtYtVis0YY0hxzMY2qjTiD1pFXm2BQf608hzc=;
-        b=e2ms2lk+O1HtFbClA++k8PtsBOmQTqBPfDDBVnWPPAgYLbxBvtfF54ow5yqxm4LcZx
-         HDlSvCJGAYurtVe0QqB6GLcc5BWJwzj8S8I6UO6oiUef+u6kbwfdzx9q+QCHirlLC45C
-         G5Tg8plnwoHsHTei+qtBYh01a9QX+j0oOIHLlGZPlDhlGVOfyj0dlSG0NbjPPkCRTkXd
-         rAnG7PsGw1tPUarI+wtq6B/WpzkRehqeuS8Lz8ij1Tx7CCgSp/HtNYERqvGKQIFF3tHA
-         Va50488EAXr/2Qd7HZbTxrSu1ov9whuirdc9/M4vy61aHXvwC+IdpKketnsACgxp7C54
-         WYXw==
-X-Gm-Message-State: ACgBeo2BJ/u4ZnYUt1x98GrgxYvK7FEEGBPcHhKNTOSrk563wD4ed4PO
-        C0dOddGxNUON2T8Kt9FRSpPyJw==
-X-Google-Smtp-Source: AA6agR7sgH6dWxMQC1VO0bnY43VSvZArcC95HKpEjuEZ6GCaCv3csEQK1IC5+5mLsM73hylnAMI3SQ==
-X-Received: by 2002:a63:5747:0:b0:434:8606:b0a4 with SMTP id h7-20020a635747000000b004348606b0a4mr12246600pgm.529.1662735992788;
-        Fri, 09 Sep 2022 08:06:32 -0700 (PDT)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id h7-20020a170902f54700b001749381ed8csm559310plf.254.2022.09.09.08.06.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Sep 2022 08:06:32 -0700 (PDT)
-Date:   Fri, 9 Sep 2022 08:06:31 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Daniel Machon <daniel.machon@microchip.com>
-Cc:     <netdev@vger.kernel.org>, <Allan.Nielsen@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, <maxime.chevallier@bootlin.com>,
-        <vladimir.oltean@nxp.com>, <petrm@nvidia.com>, <kuba@kernel.org>,
-        <vinicius.gomes@intel.com>, <thomas.petazzoni@bootlin.com>
-Subject: Re: [RFC PATCH iproute2-next 2/2] dcb: add new subcommand for
- apptrust object
-Message-ID: <20220909080631.6941a770@hermes.local>
-In-Reply-To: <20220909103701.468717-3-daniel.machon@microchip.com>
-References: <20220909103701.468717-1-daniel.machon@microchip.com>
-        <20220909103701.468717-3-daniel.machon@microchip.com>
+        with ESMTP id S232192AbiIIPNA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 11:13:00 -0400
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8323014481B;
+        Fri,  9 Sep 2022 08:12:59 -0700 (PDT)
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 289CcH5m003011;
+        Fri, 9 Sep 2022 15:12:53 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=qcppdkim1;
+ bh=RvRKrqsQttx1Zi6dxZDppVSYR0cqHoNHiSGI0eesv14=;
+ b=h6t76apBzzJO7qfHAoOsly04tdoTR4iayzzaoT9pqHAtoOzbaPdCXCL0r1IfuMDV9/4b
+ SFsw9c4ijpGGpEncQws+U6QA62x7OLH+0Dd34Uqwa5awQqGXkvJotsRzhyJl+SuOiq4E
+ D8/QcXHbh5/psVlw17cgrWyaIlUNKBq6/obcOafB88WUU3P57t2cUe9BfGD0Y0etu4Ox
+ J653B1cEo9qAeOMWMd//LKKUuUI7Gwv1TYMUWrTIwEZo1BpYGdxez0Y9ZSpfgzaXf3Gy
+ oZk20e4aUbHZB72ztDo38QHXDTPed4PcByg6rXsmyAFkFgVJdQNuTHsNOwu8rzRWiuz7 dg== 
+Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3jfujq379h-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 09 Sep 2022 15:12:53 +0000
+Received: from pps.filterd (NALASPPMTA04.qualcomm.com [127.0.0.1])
+        by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 289FCPjH032306;
+        Fri, 9 Sep 2022 15:12:52 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by NALASPPMTA04.qualcomm.com (PPS) with ESMTPS id 3jeqrbhunp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 09 Sep 2022 15:12:52 +0000
+Received: from NALASPPMTA04.qualcomm.com (NALASPPMTA04.qualcomm.com [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 289F4Kf6024815;
+        Fri, 9 Sep 2022 15:12:52 GMT
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+        by NALASPPMTA04.qualcomm.com (PPS) with ESMTPS id 289FCpAC000403
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 09 Sep 2022 15:12:52 +0000
+Received: from quicinc.com (10.49.16.6) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Fri, 9 Sep 2022
+ 08:12:51 -0700
+From:   Jeff Johnson <quic_jjohnson@quicinc.com>
+To:     Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     <ath11k@lists.infradead.org>, <linux-wireless@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH] wifi: ath11k: Fix kernel-doc issues
+Date:   Fri, 9 Sep 2022 08:12:46 -0700
+Message-ID: <20220909151246.22961-1-quic_jjohnson@quicinc.com>
+X-Mailer: git-send-email 2.37.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.49.16.6]
+X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: 5NweDY4XGoOjIy2VO1aYGQJSaip9tO7E
+X-Proofpoint-GUID: 5NweDY4XGoOjIy2VO1aYGQJSaip9tO7E
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
+ definitions=2022-09-09_08,2022-09-09_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 clxscore=1015
+ priorityscore=1501 lowpriorityscore=0 malwarescore=0 impostorscore=0
+ suspectscore=0 mlxlogscore=946 adultscore=0 spamscore=0 phishscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2209090053
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 9 Sep 2022 12:37:01 +0200
-Daniel Machon <daniel.machon@microchip.com> wrote:
+Fix documentation issues reported by kernel-doc:
+- Incorrect use of /** for non-kernel-doc comments
+- Mismatch between documented and actual identifiers
+- Incorrect identifier syntax
 
->  	} else if (matches(*argv, "app") == 0) {
->  		return dcb_cmd_app(dcb, argc - 1, argv + 1);
-> +	} else if (matches(*argv, "apptrust") == 0) {
-> +		return dcb_cmd_apptrust(dcb, argc - 1, argv + 1);
->  	} else if (matches(*argv, "buffer") == 0) {
+Signed-off-by: Jeff Johnson <quic_jjohnson@quicinc.com>
+---
+ drivers/net/wireless/ath/ath11k/dp.h  | 12 ++++--------
+ drivers/net/wireless/ath/ath11k/hal.h | 15 +++++++--------
+ drivers/net/wireless/ath/ath11k/wmi.h | 20 ++++++++++----------
+ 3 files changed, 21 insertions(+), 26 deletions(-)
 
-Yet another example of why matches() is bad.
+diff --git a/drivers/net/wireless/ath/ath11k/dp.h b/drivers/net/wireless/ath/ath11k/dp.h
+index 31773b8281ca..f9a55f284493 100644
+--- a/drivers/net/wireless/ath/ath11k/dp.h
++++ b/drivers/net/wireless/ath/ath11k/dp.h
+@@ -993,8 +993,7 @@ struct htt_rx_ring_tlv_filter {
+ #define HTT_RX_FULL_MON_MODE_CFG_CMD_CFG_NON_ZERO_MPDUS_END	BIT(2)
+ #define HTT_RX_FULL_MON_MODE_CFG_CMD_CFG_RELEASE_RING		GENMASK(10, 3)
+ 
+-/**
+- * Enumeration for full monitor mode destination ring select
++/* Enumeration for full monitor mode destination ring select
+  * 0 - REO destination ring select
+  * 1 - FW destination ring select
+  * 2 - SW destination ring select
+@@ -1391,8 +1390,7 @@ struct htt_ppdu_stats_info {
+ 	struct list_head list;
+ };
+ 
+-/**
+- * @brief target -> host packet log message
++/* @brief target -> host packet log message
+  *
+  * @details
+  * The following field definitions describe the format of the packet log
+@@ -1430,8 +1428,7 @@ struct htt_pktlog_msg {
+ 	u8 payload[];
+ };
+ 
+-/**
+- * @brief host -> target FW extended statistics retrieve
++/* @brief host -> target FW extended statistics retrieve
+  *
+  * @details
+  * The following field definitions describe the format of the HTT host
+@@ -1566,8 +1563,7 @@ struct htt_ext_stats_cfg_params {
+ 	u32 cfg3;
+ };
+ 
+-/**
+- * @brief target -> host extended statistics upload
++/* @brief target -> host extended statistics upload
+  *
+  * @details
+  * The following field definitions describe the format of the HTT target
+diff --git a/drivers/net/wireless/ath/ath11k/hal.h b/drivers/net/wireless/ath/ath11k/hal.h
+index e18846dd963b..25a1dd9a691d 100644
+--- a/drivers/net/wireless/ath/ath11k/hal.h
++++ b/drivers/net/wireless/ath/ath11k/hal.h
+@@ -450,13 +450,13 @@ enum hal_ring_type {
+ 
+ /**
+  * enum hal_reo_cmd_type: Enum for REO command type
+- * @CMD_GET_QUEUE_STATS: Get REO queue status/stats
+- * @CMD_FLUSH_QUEUE: Flush all frames in REO queue
+- * @CMD_FLUSH_CACHE: Flush descriptor entries in the cache
+- * @CMD_UNBLOCK_CACHE: Unblock a descriptor's address that was blocked
++ * @HAL_REO_CMD_GET_QUEUE_STATS: Get REO queue status/stats
++ * @HAL_REO_CMD_FLUSH_QUEUE: Flush all frames in REO queue
++ * @HAL_REO_CMD_FLUSH_CACHE: Flush descriptor entries in the cache
++ * @HAL_REO_CMD_UNBLOCK_CACHE: Unblock a descriptor's address that was blocked
+  *      earlier with a 'REO_FLUSH_CACHE' command
+- * @CMD_FLUSH_TIMEOUT_LIST: Flush buffers/descriptors from timeout list
+- * @CMD_UPDATE_RX_REO_QUEUE: Update REO queue settings
++ * @HAL_REO_CMD_FLUSH_TIMEOUT_LIST: Flush buffers/descriptors from timeout list
++ * @HAL_REO_CMD_UPDATE_RX_QUEUE: Update REO queue settings
+  */
+ enum hal_reo_cmd_type {
+ 	HAL_REO_CMD_GET_QUEUE_STATS     = 0,
+@@ -873,8 +873,7 @@ struct hal_reo_status {
+ 	} u;
+ };
+ 
+-/**
+- * HAL context to be used to access SRNG APIs (currently used by data path
++/* HAL context to be used to access SRNG APIs (currently used by data path
+  * and transport (CE) modules)
+  */
+ struct ath11k_hal {
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.h b/drivers/net/wireless/ath/ath11k/wmi.h
+index e0eefcdb23bb..cc92f608b213 100644
+--- a/drivers/net/wireless/ath/ath11k/wmi.h
++++ b/drivers/net/wireless/ath/ath11k/wmi.h
+@@ -4820,9 +4820,9 @@ enum wmi_rate_preamble {
+ 
+ /**
+  * enum wmi_rtscts_prot_mode - Enable/Disable RTS/CTS and CTS2Self Protection.
+- * @WMI_RTS_CTS_DISABLED : RTS/CTS protection is disabled.
+- * @WMI_USE_RTS_CTS : RTS/CTS Enabled.
+- * @WMI_USE_CTS2SELF : CTS to self protection Enabled.
++ * @WMI_RTS_CTS_DISABLED: RTS/CTS protection is disabled.
++ * @WMI_USE_RTS_CTS: RTS/CTS Enabled.
++ * @WMI_USE_CTS2SELF: CTS to self protection Enabled.
+  */
+ enum wmi_rtscts_prot_mode {
+ 	WMI_RTS_CTS_DISABLED = 0,
+@@ -4833,13 +4833,13 @@ enum wmi_rtscts_prot_mode {
+ /**
+  * enum wmi_rtscts_profile - Selection of RTS CTS profile along with enabling
+  *                           protection mode.
+- * @WMI_RTSCTS_FOR_NO_RATESERIES - Neither of rate-series should use RTS-CTS
+- * @WMI_RTSCTS_FOR_SECOND_RATESERIES - Only second rate-series will use RTS-CTS
+- * @WMI_RTSCTS_ACROSS_SW_RETRIES - Only the second rate-series will use RTS-CTS,
+- *                                 but if there's a sw retry, both the rate
+- *                                 series will use RTS-CTS.
+- * @WMI_RTSCTS_ERP - RTS/CTS used for ERP protection for every PPDU.
+- * @WMI_RTSCTS_FOR_ALL_RATESERIES - Enable RTS-CTS for all rate series.
++ * @WMI_RTSCTS_FOR_NO_RATESERIES: Neither of rate-series should use RTS-CTS
++ * @WMI_RTSCTS_FOR_SECOND_RATESERIES: Only second rate-series will use RTS-CTS
++ * @WMI_RTSCTS_ACROSS_SW_RETRIES: Only the second rate-series will use RTS-CTS,
++ *                                but if there's a sw retry, both the rate
++ *                                series will use RTS-CTS.
++ * @WMI_RTSCTS_ERP: RTS/CTS used for ERP protection for every PPDU.
++ * @WMI_RTSCTS_FOR_ALL_RATESERIES: Enable RTS-CTS for all rate series.
+  */
+ enum wmi_rtscts_profile {
+ 	WMI_RTSCTS_FOR_NO_RATESERIES = 0,
+-- 
+2.37.0
 
-Perhaps this should be named trust instead of apptrust.
