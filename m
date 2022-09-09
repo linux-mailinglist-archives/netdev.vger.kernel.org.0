@@ -2,149 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E1735B37C4
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 14:30:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC8A05B37E2
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 14:36:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230213AbiIIM3z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Sep 2022 08:29:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50404 "EHLO
+        id S229789AbiIIMfw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Sep 2022 08:35:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229589AbiIIM3y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 08:29:54 -0400
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60087.outbound.protection.outlook.com [40.107.6.87])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0679B37182
-        for <netdev@vger.kernel.org>; Fri,  9 Sep 2022 05:29:53 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Sh6BZlRThMz7CgJN7WEeWxi9SAY2ftYz0Vh5rSzpmEwI3KfSzyd9JycXIwMyKIcqA4BbzhA4WkGX7zbvmw/rVHfHvL6tPH8OUO0GiPsxtNkP3pphOG9lKsS5R7T5IOiU8yFCr4w96W4v8EdqcSi5m1fJiEG8uEoSMtlP98Njk//B68nKDr8hoHdZeKbn20PnI2NQhj8Taz6W3vz8YJKFf5GvyQkuAOX2CeJSV/sKA1+vUqxkIHXMK+d/0KVCwQxEpa0knbNMsJHtVOfUO3s3YTuaUnbffrg2GIW9EQdemjBV0zaQSluqIDgb1WbmRuArPqPOsFJpnHQtI4fnQifxhw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=edFLgTVNr8di51rWIX/xgeRNMt55tKJ82yhZS8BfvCg=;
- b=T4injNFjYXBnWv8TISyB3hWiN1XKvfUiMDxdL9XyLZD7l3K+mlOGyNHhT9bJ4aPfv1RRi5J0RIfMqyyyWxm8rt/G90q2A2UpE8oUdAG3Z+d1/hSZPMBHI7bwNmjpfrByNqQrW1jEEiWQeNichwOb5xS/ZLWReGEGLW17rCa8qU21kWBVzW6vnznKgqVW49fnOkX4BqbttAVXVa4eaI2RjkK2Y/Eo9lN4iH6RTo8OlFen0k/PUcBXgYpQaWsn+3+4VS4hmdjJKIIsqsOe9U+Jl5kdXqudtROy/hu8gdRuom9bPc5UymmXANsa1o+5RE6KMT7ij3wObYAFNzwgqRqv7A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=edFLgTVNr8di51rWIX/xgeRNMt55tKJ82yhZS8BfvCg=;
- b=sRRvXS0vUSpkhZUeJZqTBYeurRrcb5C9TbpDFKU4VbmIQ6lOfPLH/twdpIG676C+NWm2cYBkGEILepiAA2g5xD38fTYtHwFPVBjQgtWqsGq6LYvL/VZPe9QgLe4RlP1x5Bg/2Hs5LbHX/B9nKIIxt/GJupMmZvmhmoIC30dW9RE=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by DB8PR04MB6971.eurprd04.prod.outlook.com (2603:10a6:10:113::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.14; Fri, 9 Sep
- 2022 12:29:50 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::3412:9d57:ec73:fef3]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::3412:9d57:ec73:fef3%5]) with mapi id 15.20.5588.017; Fri, 9 Sep 2022
- 12:29:50 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Daniel Machon <daniel.machon@microchip.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Allan.Nielsen@microchip.com" <Allan.Nielsen@microchip.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "maxime.chevallier@bootlin.com" <maxime.chevallier@bootlin.com>,
-        "petrm@nvidia.com" <petrm@nvidia.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "vinicius.gomes@intel.com" <vinicius.gomes@intel.com>,
-        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>
-Subject: Re: [RFC PATCH net-next 2/2] net: dcb: add new apptrust attribute
-Thread-Topic: [RFC PATCH net-next 2/2] net: dcb: add new apptrust attribute
-Thread-Index: AQHYw3oLFH1ClvQDs0ym2viLZxTp663XCMEA
-Date:   Fri, 9 Sep 2022 12:29:50 +0000
-Message-ID: <20220909122950.vbratqfgefm2qlhz@skbuf>
-References: <20220908120442.3069771-1-daniel.machon@microchip.com>
- <20220908120442.3069771-3-daniel.machon@microchip.com>
-In-Reply-To: <20220908120442.3069771-3-daniel.machon@microchip.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c2b4db33-529d-422b-ac7c-08da925efda7
-x-ms-traffictypediagnostic: DB8PR04MB6971:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: eEPQxj1flxvW9LiIUAUqbP3r/izbZ0SnFU+TxbvOQu01Ar69m1t1lhtX84dDv7LNO28BaVmdt5VDPGrx6VaVBOuN/XWS6E4aZXm7sHLq96P3VD/W6Yhrj43MUBuvGR4AFqFK3aKylN1KYg85TQITJdDfZ+blMhSK6cdnSji/Dday3ckLFIIRscH5zOTJjFHC+CLw9vC3bjdT7UtvNQv2CmS0oGjIdrSntSI/ExqAqP6Y/xrz/HZU4SLe8PXwNbRsEKCQZbj7v4tdufkkN8QrKK+thSfEGCGlDjXyKWI/zA4kv/8OFf8h7C1UmCLZaZ5cSKZhKxiRlinTMSiNvL6hcT7QSotO3on4Zh7PyPNhqIQOutX+xfoxiyAak3IKBUIWm5JlocHSpbj0QZ+a1uHIu5LCmYYBBIT+4sPaePNuBUeEDQQD9+lW/4OocOMA7k6ATwueKVSaxJ3sPjGrUmVX6ARYHtvVLs23rCKqMqw8A+zmj7K3/qSPMdBCJ7CVJQ7cNrdhL4PZ27xoB3wQXPxIOW7ZoNfI62fEzktn6l1rCZkAxrCvLI70dYee/qiizyDzAnberlqyDLB3ijLTNpZ0avAIMQxy9vnBCeWHiceew5jjDS+MOpwPQFUtaX7woAw01qdxULKAKUzr6oq1m1UfEft6HH72X2sXwVKyvhSU4WFsOwBhQ0zDafL07R8lXuQ5OZgp7fI0dII2KdP7YdOdrNByAeGUwl2zdwWRx6TJPiBoGwKJLYI0v2we2Ut4vcZoXX7sG7qosCfHsdcPgHmG7A==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(7916004)(136003)(366004)(346002)(396003)(376002)(39860400002)(478600001)(66446008)(66476007)(66946007)(8676002)(44832011)(76116006)(64756008)(41300700001)(4326008)(6486002)(8936002)(5660300002)(2906002)(6512007)(66556008)(6506007)(26005)(9686003)(38100700002)(316002)(186003)(86362001)(71200400001)(54906003)(122000001)(83380400001)(38070700005)(33716001)(91956017)(1076003)(6916009);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?zl81BcCE/HCW5KmcOKJgjLotbE5tD/huRuONj2qUwkZNu8e4zrcVzNjVWxfp?=
- =?us-ascii?Q?LMT8PrwnOiZ+bqVPrBmoxknzcW4Lp6ahY0zCtbqM7X0aBZhmKpqPr3WsswNf?=
- =?us-ascii?Q?THIeYxr/QDqYoxyUC/vZJfUIDcB7+2NzyudJrPAcGjmPYU+RQKXyYV0eyla/?=
- =?us-ascii?Q?rVx6/boohIuW43f9+5HkPEddZbe/VohUIChLqvf5gslEZlVUPcaRyCFVbE3P?=
- =?us-ascii?Q?Y00G+dPwp/cXbDuOmtlVUXyTH+WtcJaXcxoBYjhumEpS5sDXkjrdpigKgejB?=
- =?us-ascii?Q?VVQRTtqvdSO1uy4b9p6KJJg7HZJ2ymfjwBAqINI3kzBcVQMZd0TFuuB6oa5U?=
- =?us-ascii?Q?q6I8Fl2xpEvDSZ1STsSFN5c7zbGg/vpGDktu5jQXZntN412T66a+k1vFgqry?=
- =?us-ascii?Q?WTwCFZ5wQcYSkrSUGiINx2zIS2PeoRvY2M8HECB1a4Ju0kSkaWY5VUY5UBjp?=
- =?us-ascii?Q?efBnXy6gL48+w7U6rT6TZ1tCgzpkXWEu1NLFyx0C3bKl6Wkl1phJWZGIFA3E?=
- =?us-ascii?Q?+LR6LAH0OuRatvNOQwD2e1E2uzD6RSrMpvnIX1fLL1E9OSUJS+EEMMWPYca4?=
- =?us-ascii?Q?Vdn7wIn9kErXzIQTV4rGDRQEdDlrv2vmrb8Kac3S1YeOmhPxJh6RkoCOM0AE?=
- =?us-ascii?Q?y+5LOsLAj95AM3jyvNT4KcjdKSsV92AAat4ZGUf9invj/mOtct0DjElmIjj5?=
- =?us-ascii?Q?Hu58t6/KsgUJUT68nIKujX4yfMrzrUxewdhqmOxmnppeJk9tR0PvQ9DFKk1l?=
- =?us-ascii?Q?1PMr14KOfGcmjNPZsIT4qUxaymofIZZdq/lO90G/K2M3ZWpmWk7yRdabnx0k?=
- =?us-ascii?Q?qpI6CwQk2+AEii20ReWu53eXXac+2Rrho6KS9A7rlfbAx0D2AQUbHMt6FKZN?=
- =?us-ascii?Q?jdaa76fWN3VTrp/VcsGj+sCgGaDbHF1IhyQCW9bH0ydeUVOOKt+x8m7AK7f1?=
- =?us-ascii?Q?f+PGZblO+ITrC1prY2VJhuK0d+eXW9gpCNh87681xOCzOvTAlzqpDLCuDzH0?=
- =?us-ascii?Q?YDPpHCIxKGj37mtXzmACKIHChG5lNJ1Bal/6IRlYOWrQpZzQYiTLWZTGhHpg?=
- =?us-ascii?Q?QV8Lm/pPOYouxqcu+LgdTNXHXyznzB32YlTal0raoUYVyLQwRN1I+kcBovvS?=
- =?us-ascii?Q?/6JgSVfGZwnbWJyzeUXJ9Nvs9CqKyFwRSaRouByEIyX+HiK7I8cZl8krdZGD?=
- =?us-ascii?Q?yB0mxihHnvs1J1+s2q9WJuQOY0DdSwKPcMXcZ+CY4go6diYyM6MwfW/C8KtU?=
- =?us-ascii?Q?YumTJx+4uKIVcK/qxTBtc7ADjuUT0gJGoqrp5yZxqtrlze3mLjbr6tdoH9zv?=
- =?us-ascii?Q?0hwOfFJPQX6YU7qw/RkzKE6GASLMESBxdqA3Jpj1yMMJU3oP40n6F5TO9hi6?=
- =?us-ascii?Q?LWV/gApD8dnz0ZaCbMwtQpYvtc0R0Go0VhZumcxsBVC78KYxwwFHW4Uwy4kW?=
- =?us-ascii?Q?UUYVLsRDdhJcrSOK041M/5mHx6m6FlwdyumVxQl3R1XQFTsc3dI0I8+hUA3c?=
- =?us-ascii?Q?GcBrf7/oFv9PeArz9baB9qSQBAUQsLAPH18PmEqE2SaCKTaS9ZKNoPPePcOW?=
- =?us-ascii?Q?GsjaFgEiae0L61P81nddx6O+SkcwqmXdT8KnxtIvU476FsEcuWmHl2skB9mr?=
- =?us-ascii?Q?uA=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <057DFB9BAD4AA243926C60BBB54FC554@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S230396AbiIIMfr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 08:35:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6620113F80
+        for <netdev@vger.kernel.org>; Fri,  9 Sep 2022 05:35:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662726942;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=pGqx2u62hLKKX3N8RYLvbvUVmBm3+8IM9BjADWlLTPk=;
+        b=PAT9KSoV1v0cZ612R5k2DRr6Tzad+L+kSgV8+yefcJE2hIAPbK9QcNXgH/Ft9NuFC0zAPP
+        Z/ieWM4PYmSb/6Jhzak5c1gLMLy5zYOIDtR512qN3LzJk/qiiHTGwg9vaRWWweatcjyzzk
+        1hf/JtUJCiq1P3EaWnoERASPvI/qSPE=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-329-wiXzYFArMD28UMruCfky_w-1; Fri, 09 Sep 2022 08:35:41 -0400
+X-MC-Unique: wiXzYFArMD28UMruCfky_w-1
+Received: by mail-ej1-f71.google.com with SMTP id hp14-20020a1709073e0e00b00741a2093c4aso956156ejc.20
+        for <netdev@vger.kernel.org>; Fri, 09 Sep 2022 05:35:41 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:references:to
+         :content-language:subject:cc:user-agent:mime-version:date:message-id
+         :from:x-gm-message-state:from:to:cc:subject:date;
+        bh=pGqx2u62hLKKX3N8RYLvbvUVmBm3+8IM9BjADWlLTPk=;
+        b=z4VetCQTggbyYf6Wa3jZziYjW+tBduSDW6b9SCW2jVvyQKcE0LM6VKG0WwM4vnZqWQ
+         mc2YlOVrwQBxcgzo48NX1C4hKEI7SibFW6NhtlCwOgIYutshLoQp4SZX9UYRGmlYyzT8
+         GQrCFDrhl+WMYMcg4wFRmhMxAMrlI5Qgjo4I9ILxHhmZkRh8Et1+JuuTPgNrhoV0LX2r
+         RZz/4gI8b89mVbZ5ZgCeAgFtYpx9rSGAVf+GuFDFsmXCs3Rl2SvWM/wEUEMatLwAt2du
+         iElEhVOxU69glDjJTRTB8tDsybLrIL5o1dVv3dw41JmnJ/f9yThWCoZPkESyl7jTPW6B
+         MvSA==
+X-Gm-Message-State: ACgBeo1StUu2M93KYVN44+xtRFsRMAa71QUDAdABpGQFoR49tSbUbil0
+        j5q+EgTgVAsdZiL8bQhQGlVUC4tWZ4Q13u1WhuWRfCHBHyLHPxOcYiYMozzMoILjJhxIbVeKHnY
+        PJQuStbHgUMNb9lIu
+X-Received: by 2002:a17:906:730d:b0:73d:c8a1:a8ee with SMTP id di13-20020a170906730d00b0073dc8a1a8eemr9657489ejc.661.1662726939925;
+        Fri, 09 Sep 2022 05:35:39 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7xrdLT+WULchCpcxHkmJP6SFvHuAIXTrdsDzhV2eFGA/BoDIs1Xs3kBZx6e509ipV8zqUVew==
+X-Received: by 2002:a17:906:730d:b0:73d:c8a1:a8ee with SMTP id di13-20020a170906730d00b0073dc8a1a8eemr9657471ejc.661.1662726939652;
+        Fri, 09 Sep 2022 05:35:39 -0700 (PDT)
+Received: from [192.168.41.81] (83-90-141-187-cable.dk.customer.tdc.net. [83.90.141.187])
+        by smtp.gmail.com with ESMTPSA id h22-20020a1709067cd600b0072f112a6ad2sm217729ejp.97.2022.09.09.05.35.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 09 Sep 2022 05:35:39 -0700 (PDT)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <51f40ca1-ccf2-bcc3-d20d-931ad0d22526@redhat.com>
+Date:   Fri, 9 Sep 2022 14:35:37 +0200
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c2b4db33-529d-422b-ac7c-08da925efda7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Sep 2022 12:29:50.6083
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 2Ol8IA99uwvIZ518+/a6qK1KZjdPVwGtZuLm0kFmrDgPYV29vnvwJuE+RRQLIeTPH+lQ7huY0F8hRCUaV50sPg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6971
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.1
+Cc:     brouer@redhat.com, Maryam Tahhan <mtahhan@redhat.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org,
+        xdp-hints@xdp-project.net, larysa.zaremba@intel.com,
+        memxor@gmail.com, Lorenzo Bianconi <lorenzo@kernel.org>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        dave@dtucker.co.uk, Magnus Karlsson <magnus.karlsson@intel.com>,
+        bjorn@kernel.org, Alexander Lobakin <alexandr.lobakin@intel.com>
+Subject: Re: [xdp-hints] Re: [PATCH RFCv2 bpf-next 17/18] xsk: AF_XDP
+ xdp-hints support in desc options
+Content-Language: en-US
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Jesper Dangaard Brouer <jbrouer@redhat.com>
+References: <166256538687.1434226.15760041133601409770.stgit@firesoul>
+ <166256558657.1434226.7390735974413846384.stgit@firesoul>
+ <CAJ8uoz3UcC2tnMtG8W6a3HpCKgaYSzSCqowLFQVwCcsr+NKBOQ@mail.gmail.com>
+ <b5f0d10d-2d4e-34d6-1e45-c206cb6f5d26@redhat.com>
+ <9aab9ef1-446d-57ab-5789-afffe27801f4@redhat.com>
+ <CAJ8uoz0CD18RUYU4SMsubB8fhv3uOwp6wi_uKsZSu_aOV5piaA@mail.gmail.com>
+ <e1ab2141-03cc-f97c-3788-59923a029203@redhat.com>
+ <593cc1df-8b65-ae9e-37eb-091b19c4d00e@redhat.com>
+ <CAJ8uoz1omnp888MoZT4AgiPVWo=Ef5nkQApzz7fqnqdcGgR6NA@mail.gmail.com>
+In-Reply-To: <CAJ8uoz1omnp888MoZT4AgiPVWo=Ef5nkQApzz7fqnqdcGgR6NA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Daniel,
 
-On Thu, Sep 08, 2022 at 02:04:42PM +0200, Daniel Machon wrote:
-> Add a new apptrust extension attribute to the 8021Qaz APP managed
-> object.
->=20
-> The new attribute is meant to allow drivers, whose hw supports the
-> notion of trust, to be able to set whether a particular app selector is
-> to be trusted - and also the order of precedence of selectors.
->=20
-> A new structure ieee_apptrust has been created, which contains an array
-> of selectors, where lower indexes has higher precedence.
->=20
-> Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
-> ---
 
-Let's say I have a switch which only looks at VLAN PCP/DEI if the bridge
-vlan_filtering setting is enabled (otherwise, the switch is completely
-VLAN unaware, including for QoS purposes).
+On 09/09/2022 12.14, Magnus Karlsson wrote:
+> On Fri, Sep 9, 2022 at 11:42 AM Jesper Dangaard Brouer
+> <jbrouer@redhat.com> wrote:
+>>
+>>
+>> On 09/09/2022 10.12, Maryam Tahhan wrote:
+>>> <snip>
+>>>>>>>
+>>>>>>> * Instead encode this information into each metadata entry in the
+>>>>>>> metadata area, in some way so that a flags field is not needed (-1
+>>>>>>> signifies not valid, or whatever happens to make sense). This has the
+>>>>>>> drawback that the user might have to look at a large number of entries
+>>>>>>> just to find out there is nothing valid to read. To alleviate this, it
+>>>>>>> could be combined with the next suggestion.
+>>>>>>>
+>>>>>>> * Dedicate one bit in the options field to indicate that there is at
+>>>>>>> least one valid metadata entry in the metadata area. This could be
+>>>>>>> combined with the two approaches above. However, depending on what
+>>>>>>> metadata you have enabled, this bit might be pointless. If some
+>>>>>>> metadata is always valid, then it serves no purpose. But it might if
+>>>>>>> all enabled metadata is rarely valid, e.g., if you get an Rx timestamp
+>>>>>>> on one packet out of one thousand.
+>>>>>>>
+>>>>>
+>>>>> I like this option better! Except that I have hoped to get 2 bits ;-)
+>>>>
+>>>> I will give you two if you need it Jesper, no problem :-).
+>>>>
+>>>
+>>> Ok I will look at implementing and testing this and post an update.
+>>
+>> Perfect if you Maryam have cycles to work on this.
+>>
+>> Let me explain what I wanted the 2nd bit for.  I simply wanted to also
+>> transfer the XDP_FLAGS_HINTS_COMPAT_COMMON flag.  One could argue that
+>> is it redundant information as userspace AF_XDP will have to BTF decode
+>> all the know XDP-hints. Thus, it could know if a BTF type ID is
+>> compatible with the common struct.   This problem is performance as my
+>> userspace AF_XDP code will have to do more code (switch/jump-table or
+>> table lookup) to map IDs to common compat (to e.g. extract the RX-csum
+>> indication).  Getting this extra "common-compat" bit is actually a
+>> micro-optimization.  It is up to AF_XDP maintainers if they can spare
+>> this bit.
+>>
+>>
+>>> Thanks folks
+>>>
+>>>>> The performance advantage is that the AF_XDP descriptor bits will
+>>>>> already be cache-hot, and if it indicates no-metadata-hints the AF_XDP
+>>>>> application can avoid reading the metadata cache-line :-).
+>>>>
+>>>> Agreed. I prefer if we can keep it simple and fast like this.
+>>>>
+>>
+>> Great, lets proceed this way then.
+>>
+>>> <snip>
+>>>
+>>
+>> Thinking ahead: We will likely need 3 bits.
+>>
+>> The idea is that for TX-side, we set a bit indicating that AF_XDP have
+>> provided a valid XDP-hints layout (incl corresponding BTF ID). (I would
+>> overload and reuse "common-compat" bit if TX gets a common struct).
+> 
+> I think we should reuse the "Rx metadata valid" flag for this since
+> this will not be used in the Tx case by definition. In the Tx case,
+> this bit would instead mean that the user has provided a valid
+> XDP-hints layout. It has a nice symmetry, on Rx it is set by the
+> kernel when it has put something relevant in the metadata area. On Tx,
+> it is set by user-space if it has put something relevant in the
+> metadata area. 
 
-Would it be ok to report through ieee_getapptrust() that the PCP
-selector is trusted when under a vlan_filtering bridge, not trusted when
-not under a vlan_filtering bridge, and deny changes to ieee_setapptrust()
-for the PCP selector? I see the return value is not cached anywhere
-within the kernel, just passed to the user.=
+I generally like reusing the bit, *BUT* there is the problem of 
+(existing) applications ignoring the desc-options bit and forwarding 
+packets.  This would cause the "Rx metadata valid" flag to be seen as 
+userspace having set the "TX-hints-bit" and kernel would use what is 
+provided in metadata area (leftovers from RX-hints).  IMHO that will be 
+hard to debug for end-users and likely break existing applications.
+
+> We can also reuse this bit when we get a notification
+> in the completion queue to indicate if the kernel has produced some
+> metadata on tx completions. This could be a Tx timestamp for example.
+> 
+
+Big YES, reuse "Rx metadata valid" bit when we get a TX notification in 
+completion queue.  This will be okay because it cannot be forgotten and 
+misinterpreted as the kernel will have responsibility to update this bit.
+
+> So hopefully we could live with only two bits :-).
+> 
+
+I still think we need three bits ;-)
+That should be enough to cover the 6 states:
+  - RX hints
+  - RX hints and compat
+  - TX hints
+  - TX hints and compat
+  - TX completion
+  - TX completion and compat
+
+
+>> But lets land RX-side first, but make sure we can easily extend for the
+>> TX-side.
+
