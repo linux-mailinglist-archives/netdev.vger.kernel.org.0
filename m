@@ -2,137 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B0DB5B37A8
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 14:24:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E1735B37C4
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 14:30:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231774AbiIIMWV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Sep 2022 08:22:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57496 "EHLO
+        id S230213AbiIIM3z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Sep 2022 08:29:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231736AbiIIMWC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 08:22:02 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DC176B660
-        for <netdev@vger.kernel.org>; Fri,  9 Sep 2022 05:20:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662726052; x=1694262052;
-  h=message-id:date:mime-version:from:subject:cc:references:
-   to:in-reply-to:content-transfer-encoding;
-  bh=LOOofKyG6XlG77YPdUwRLfc4Vtgxg4xNzvmukZ3T7V0=;
-  b=gfEcyAczzywKMNRppZOBJypcnZVY/c+7wo6tBmEUfYXtDgkYQ0mEVvjc
-   kq2nYulpLADAiTD4KH7xq0A8dgpCHt2dDK+QVgDjR/kUug80sY0DtBVQj
-   NmX7G/i1bZ6KxaVnZ63zcxmGTJ7788AAw2viojxNXjlcyp+2rXMRzoRdW
-   W8cHQENlEZe8wvVHzhbPx4Dk0z2GZCoyRfxmAj97O3OWBit2gUQBUJQdQ
-   8GeLGalozOONglPWZNroDsyNMkFtJNvMYqjFm2xNiN8+6fodGkP1Q3b55
-   Be6Vw+L7DvcbmOpyQyh86bHeehV6EdfrgYv9e+L3JnGuiNjabIeiA01iQ
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10464"; a="295043979"
-X-IronPort-AV: E=Sophos;i="5.93,303,1654585200"; 
-   d="scan'208";a="295043979"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2022 05:20:51 -0700
-X-IronPort-AV: E=Sophos;i="5.93,303,1654585200"; 
-   d="scan'208";a="677140126"
-Received: from mckumar-mobl2.gar.corp.intel.com (HELO [10.213.87.132]) ([10.213.87.132])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2022 05:20:48 -0700
-Message-ID: <bb6ad043-a581-1157-8836-6277ebc69cd1@linux.intel.com>
-Date:   Fri, 9 Sep 2022 17:50:46 +0530
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-From:   "Kumar, M Chetan" <m.chetan.kumar@linux.intel.com>
-Subject: Re: [PATCH net-next 3/5] net: wwan: t7xx: PCIe reset rescan
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        "Sudi, Krishna C" <krishna.c.sudi@intel.com>,
-        Intel Corporation <linuxwwan@intel.com>,
-        Haijun Liu <haijun.liu@mediatek.com>,
-        Madhusmita Sahu <madhusmita.sahu@intel.com>,
-        Ricardo Martinez <ricardo.martinez@linux.intel.com>,
-        Devegowda Chandrashekar <chandrashekar.devegowda@intel.com>
-References: <20220816042353.2416956-1-m.chetan.kumar@intel.com>
- <CAHNKnsTVGZXF_kUU5YgWmM64_8yAE75=2w1H2A40Wb0y=n8YMg@mail.gmail.com>
- <56a42938-c746-9937-58cb-7a065815a93f@linux.intel.com>
- <CAHNKnsT7zC4fTmc_+17Vy05aP-=vfZhwjOhbYJLOd=OZNMVD0w@mail.gmail.com>
+        with ESMTP id S229589AbiIIM3y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 08:29:54 -0400
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60087.outbound.protection.outlook.com [40.107.6.87])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0679B37182
+        for <netdev@vger.kernel.org>; Fri,  9 Sep 2022 05:29:53 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Sh6BZlRThMz7CgJN7WEeWxi9SAY2ftYz0Vh5rSzpmEwI3KfSzyd9JycXIwMyKIcqA4BbzhA4WkGX7zbvmw/rVHfHvL6tPH8OUO0GiPsxtNkP3pphOG9lKsS5R7T5IOiU8yFCr4w96W4v8EdqcSi5m1fJiEG8uEoSMtlP98Njk//B68nKDr8hoHdZeKbn20PnI2NQhj8Taz6W3vz8YJKFf5GvyQkuAOX2CeJSV/sKA1+vUqxkIHXMK+d/0KVCwQxEpa0knbNMsJHtVOfUO3s3YTuaUnbffrg2GIW9EQdemjBV0zaQSluqIDgb1WbmRuArPqPOsFJpnHQtI4fnQifxhw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=edFLgTVNr8di51rWIX/xgeRNMt55tKJ82yhZS8BfvCg=;
+ b=T4injNFjYXBnWv8TISyB3hWiN1XKvfUiMDxdL9XyLZD7l3K+mlOGyNHhT9bJ4aPfv1RRi5J0RIfMqyyyWxm8rt/G90q2A2UpE8oUdAG3Z+d1/hSZPMBHI7bwNmjpfrByNqQrW1jEEiWQeNichwOb5xS/ZLWReGEGLW17rCa8qU21kWBVzW6vnznKgqVW49fnOkX4BqbttAVXVa4eaI2RjkK2Y/Eo9lN4iH6RTo8OlFen0k/PUcBXgYpQaWsn+3+4VS4hmdjJKIIsqsOe9U+Jl5kdXqudtROy/hu8gdRuom9bPc5UymmXANsa1o+5RE6KMT7ij3wObYAFNzwgqRqv7A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=edFLgTVNr8di51rWIX/xgeRNMt55tKJ82yhZS8BfvCg=;
+ b=sRRvXS0vUSpkhZUeJZqTBYeurRrcb5C9TbpDFKU4VbmIQ6lOfPLH/twdpIG676C+NWm2cYBkGEILepiAA2g5xD38fTYtHwFPVBjQgtWqsGq6LYvL/VZPe9QgLe4RlP1x5Bg/2Hs5LbHX/B9nKIIxt/GJupMmZvmhmoIC30dW9RE=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by DB8PR04MB6971.eurprd04.prod.outlook.com (2603:10a6:10:113::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.14; Fri, 9 Sep
+ 2022 12:29:50 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3412:9d57:ec73:fef3]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3412:9d57:ec73:fef3%5]) with mapi id 15.20.5588.017; Fri, 9 Sep 2022
+ 12:29:50 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Daniel Machon <daniel.machon@microchip.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Allan.Nielsen@microchip.com" <Allan.Nielsen@microchip.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "maxime.chevallier@bootlin.com" <maxime.chevallier@bootlin.com>,
+        "petrm@nvidia.com" <petrm@nvidia.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "vinicius.gomes@intel.com" <vinicius.gomes@intel.com>,
+        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>
+Subject: Re: [RFC PATCH net-next 2/2] net: dcb: add new apptrust attribute
+Thread-Topic: [RFC PATCH net-next 2/2] net: dcb: add new apptrust attribute
+Thread-Index: AQHYw3oLFH1ClvQDs0ym2viLZxTp663XCMEA
+Date:   Fri, 9 Sep 2022 12:29:50 +0000
+Message-ID: <20220909122950.vbratqfgefm2qlhz@skbuf>
+References: <20220908120442.3069771-1-daniel.machon@microchip.com>
+ <20220908120442.3069771-3-daniel.machon@microchip.com>
+In-Reply-To: <20220908120442.3069771-3-daniel.machon@microchip.com>
+Accept-Language: en-US
 Content-Language: en-US
-To:     Sergey Ryazanov <ryazanov.s.a@gmail.com>
-In-Reply-To: <CAHNKnsT7zC4fTmc_+17Vy05aP-=vfZhwjOhbYJLOd=OZNMVD0w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-9.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c2b4db33-529d-422b-ac7c-08da925efda7
+x-ms-traffictypediagnostic: DB8PR04MB6971:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: eEPQxj1flxvW9LiIUAUqbP3r/izbZ0SnFU+TxbvOQu01Ar69m1t1lhtX84dDv7LNO28BaVmdt5VDPGrx6VaVBOuN/XWS6E4aZXm7sHLq96P3VD/W6Yhrj43MUBuvGR4AFqFK3aKylN1KYg85TQITJdDfZ+blMhSK6cdnSji/Dday3ckLFIIRscH5zOTJjFHC+CLw9vC3bjdT7UtvNQv2CmS0oGjIdrSntSI/ExqAqP6Y/xrz/HZU4SLe8PXwNbRsEKCQZbj7v4tdufkkN8QrKK+thSfEGCGlDjXyKWI/zA4kv/8OFf8h7C1UmCLZaZ5cSKZhKxiRlinTMSiNvL6hcT7QSotO3on4Zh7PyPNhqIQOutX+xfoxiyAak3IKBUIWm5JlocHSpbj0QZ+a1uHIu5LCmYYBBIT+4sPaePNuBUeEDQQD9+lW/4OocOMA7k6ATwueKVSaxJ3sPjGrUmVX6ARYHtvVLs23rCKqMqw8A+zmj7K3/qSPMdBCJ7CVJQ7cNrdhL4PZ27xoB3wQXPxIOW7ZoNfI62fEzktn6l1rCZkAxrCvLI70dYee/qiizyDzAnberlqyDLB3ijLTNpZ0avAIMQxy9vnBCeWHiceew5jjDS+MOpwPQFUtaX7woAw01qdxULKAKUzr6oq1m1UfEft6HH72X2sXwVKyvhSU4WFsOwBhQ0zDafL07R8lXuQ5OZgp7fI0dII2KdP7YdOdrNByAeGUwl2zdwWRx6TJPiBoGwKJLYI0v2we2Ut4vcZoXX7sG7qosCfHsdcPgHmG7A==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(7916004)(136003)(366004)(346002)(396003)(376002)(39860400002)(478600001)(66446008)(66476007)(66946007)(8676002)(44832011)(76116006)(64756008)(41300700001)(4326008)(6486002)(8936002)(5660300002)(2906002)(6512007)(66556008)(6506007)(26005)(9686003)(38100700002)(316002)(186003)(86362001)(71200400001)(54906003)(122000001)(83380400001)(38070700005)(33716001)(91956017)(1076003)(6916009);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?zl81BcCE/HCW5KmcOKJgjLotbE5tD/huRuONj2qUwkZNu8e4zrcVzNjVWxfp?=
+ =?us-ascii?Q?LMT8PrwnOiZ+bqVPrBmoxknzcW4Lp6ahY0zCtbqM7X0aBZhmKpqPr3WsswNf?=
+ =?us-ascii?Q?THIeYxr/QDqYoxyUC/vZJfUIDcB7+2NzyudJrPAcGjmPYU+RQKXyYV0eyla/?=
+ =?us-ascii?Q?rVx6/boohIuW43f9+5HkPEddZbe/VohUIChLqvf5gslEZlVUPcaRyCFVbE3P?=
+ =?us-ascii?Q?Y00G+dPwp/cXbDuOmtlVUXyTH+WtcJaXcxoBYjhumEpS5sDXkjrdpigKgejB?=
+ =?us-ascii?Q?VVQRTtqvdSO1uy4b9p6KJJg7HZJ2ymfjwBAqINI3kzBcVQMZd0TFuuB6oa5U?=
+ =?us-ascii?Q?q6I8Fl2xpEvDSZ1STsSFN5c7zbGg/vpGDktu5jQXZntN412T66a+k1vFgqry?=
+ =?us-ascii?Q?WTwCFZ5wQcYSkrSUGiINx2zIS2PeoRvY2M8HECB1a4Ju0kSkaWY5VUY5UBjp?=
+ =?us-ascii?Q?efBnXy6gL48+w7U6rT6TZ1tCgzpkXWEu1NLFyx0C3bKl6Wkl1phJWZGIFA3E?=
+ =?us-ascii?Q?+LR6LAH0OuRatvNOQwD2e1E2uzD6RSrMpvnIX1fLL1E9OSUJS+EEMMWPYca4?=
+ =?us-ascii?Q?Vdn7wIn9kErXzIQTV4rGDRQEdDlrv2vmrb8Kac3S1YeOmhPxJh6RkoCOM0AE?=
+ =?us-ascii?Q?y+5LOsLAj95AM3jyvNT4KcjdKSsV92AAat4ZGUf9invj/mOtct0DjElmIjj5?=
+ =?us-ascii?Q?Hu58t6/KsgUJUT68nIKujX4yfMrzrUxewdhqmOxmnppeJk9tR0PvQ9DFKk1l?=
+ =?us-ascii?Q?1PMr14KOfGcmjNPZsIT4qUxaymofIZZdq/lO90G/K2M3ZWpmWk7yRdabnx0k?=
+ =?us-ascii?Q?qpI6CwQk2+AEii20ReWu53eXXac+2Rrho6KS9A7rlfbAx0D2AQUbHMt6FKZN?=
+ =?us-ascii?Q?jdaa76fWN3VTrp/VcsGj+sCgGaDbHF1IhyQCW9bH0ydeUVOOKt+x8m7AK7f1?=
+ =?us-ascii?Q?f+PGZblO+ITrC1prY2VJhuK0d+eXW9gpCNh87681xOCzOvTAlzqpDLCuDzH0?=
+ =?us-ascii?Q?YDPpHCIxKGj37mtXzmACKIHChG5lNJ1Bal/6IRlYOWrQpZzQYiTLWZTGhHpg?=
+ =?us-ascii?Q?QV8Lm/pPOYouxqcu+LgdTNXHXyznzB32YlTal0raoUYVyLQwRN1I+kcBovvS?=
+ =?us-ascii?Q?/6JgSVfGZwnbWJyzeUXJ9Nvs9CqKyFwRSaRouByEIyX+HiK7I8cZl8krdZGD?=
+ =?us-ascii?Q?yB0mxihHnvs1J1+s2q9WJuQOY0DdSwKPcMXcZ+CY4go6diYyM6MwfW/C8KtU?=
+ =?us-ascii?Q?YumTJx+4uKIVcK/qxTBtc7ADjuUT0gJGoqrp5yZxqtrlze3mLjbr6tdoH9zv?=
+ =?us-ascii?Q?0hwOfFJPQX6YU7qw/RkzKE6GASLMESBxdqA3Jpj1yMMJU3oP40n6F5TO9hi6?=
+ =?us-ascii?Q?LWV/gApD8dnz0ZaCbMwtQpYvtc0R0Go0VhZumcxsBVC78KYxwwFHW4Uwy4kW?=
+ =?us-ascii?Q?UUYVLsRDdhJcrSOK041M/5mHx6m6FlwdyumVxQl3R1XQFTsc3dI0I8+hUA3c?=
+ =?us-ascii?Q?GcBrf7/oFv9PeArz9baB9qSQBAUQsLAPH18PmEqE2SaCKTaS9ZKNoPPePcOW?=
+ =?us-ascii?Q?GsjaFgEiae0L61P81nddx6O+SkcwqmXdT8KnxtIvU476FsEcuWmHl2skB9mr?=
+ =?us-ascii?Q?uA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <057DFB9BAD4AA243926C60BBB54FC554@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c2b4db33-529d-422b-ac7c-08da925efda7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Sep 2022 12:29:50.6083
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 2Ol8IA99uwvIZ518+/a6qK1KZjdPVwGtZuLm0kFmrDgPYV29vnvwJuE+RRQLIeTPH+lQ7huY0F8hRCUaV50sPg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6971
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/7/2022 3:49 AM, Sergey Ryazanov wrote:
-> On Fri, Sep 2, 2022 at 7:50 AM Kumar, M Chetan
-> <m.chetan.kumar@linux.intel.com> wrote:
->> On 8/30/2022 7:32 AM, Sergey Ryazanov wrote:
->>> On Tue, Aug 16, 2022 at 7:12 AM <m.chetan.kumar@intel.com> wrote:
->>>> From: Haijun Liu <haijun.liu@mediatek.com>
->>>>
->>>> PCI rescan module implements "rescan work queue". In firmware flashing
->>>> or coredump collection procedure WWAN device is programmed to boot in
->>>> fastboot mode and a work item is scheduled for removal & detection.
->>>> The WWAN device is reset using APCI call as part driver removal flow.
->>>> Work queue rescans pci bus at fixed interval for device detection,
->>>> later when device is detect work queue exits.
->>>
->>> [skipped]
->>>
->>>> diff --git a/drivers/net/wwan/t7xx/t7xx_pci_rescan.c b/drivers/net/wwan/t7xx/t7xx_pci_rescan.c
->>>> new file mode 100644
->>>> index 000000000000..045777d8a843
->>>> --- /dev/null
->>>> +++ b/drivers/net/wwan/t7xx/t7xx_pci_rescan.c
->>>
->>> [skipped]
->>>
->>>> +static void t7xx_remove_rescan(struct work_struct *work)
->>>> +{
->>>> +       struct pci_dev *pdev;
->>>> +       int num_retries = RESCAN_RETRIES;
->>>> +       unsigned long flags;
->>>> +
->>>> +       spin_lock_irqsave(&g_mtk_rescan_context.dev_lock, flags);
->>>> +       g_mtk_rescan_context.rescan_done = 0;
->>>> +       pdev = g_mtk_rescan_context.dev;
->>>> +       spin_unlock_irqrestore(&g_mtk_rescan_context.dev_lock, flags);
->>>> +
->>>> +       if (pdev) {
->>>> +               pci_stop_and_remove_bus_device_locked(pdev);
->>>
->>> What is the purpose of removing the device then trying to find it by
->>> rescanning the bus? Would not it be easier to save a PCI device
->>> configuration, reset the device, and then restore the configuration?
->>
->> If hotplug is disabled, the device is not removed on reset. So in this
->> case driver need to handle the device removal and rescan.
-> 
-> I still can not understand this part and need a clue. Why should the
-> driver disable the hotplug?
+Hi Daniel,
 
-This is a platform configuration, it could be set to enable/disable.
-We can find this option in BIOS settings.
+On Thu, Sep 08, 2022 at 02:04:42PM +0200, Daniel Machon wrote:
+> Add a new apptrust extension attribute to the 8021Qaz APP managed
+> object.
+>=20
+> The new attribute is meant to allow drivers, whose hw supports the
+> notion of trust, to be able to set whether a particular app selector is
+> to be trusted - and also the order of precedence of selectors.
+>=20
+> A new structure ieee_apptrust has been created, which contains an array
+> of selectors, where lower indexes has higher precedence.
+>=20
+> Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
+> ---
 
-> And is there a more gentle way to reset the firmware without the
-> device object removing?
+Let's say I have a switch which only looks at VLAN PCP/DEI if the bridge
+vlan_filtering setting is enabled (otherwise, the switch is completely
+VLAN unaware, including for QoS purposes).
 
-Device reset causes WWAN device to fall off the BUS. If device had not 
-fallen off the bus then we could have reused.
-
-Without these changes, we need to manually execute device remove & 
-rescan commands.
-
-Could you please suggest how can we proceed here ?
-
--- 
-Chetan
+Would it be ok to report through ieee_getapptrust() that the PCP
+selector is trusted when under a vlan_filtering bridge, not trusted when
+not under a vlan_filtering bridge, and deny changes to ieee_setapptrust()
+for the PCP selector? I see the return value is not cached anywhere
+within the kernel, just passed to the user.=
