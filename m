@@ -2,163 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 243D05B3441
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 11:44:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC54A5B34B5
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 11:59:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229985AbiIIJmw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Sep 2022 05:42:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48622 "EHLO
+        id S229811AbiIIJ63 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Sep 2022 05:58:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230527AbiIIJmv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 05:42:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D65ED6B86
-        for <netdev@vger.kernel.org>; Fri,  9 Sep 2022 02:42:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662716569;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5iXKFaXwMwTj+qx5rpepg8IFprmEKxi1vIibj/a0OYc=;
-        b=bK/l9YBHQPDf1/4xPd8idtn2JE2He9aQWi1DPsLncv2sEaJGLjJZeOyIES3xYlaW8956DW
-        zKBZeGcTuSr4bZMwpVMePprOlUJqxSkJoZkX+D0nRaYjJ6Srzg4diT0RqUhOjF22nvXqnZ
-        QYhTD+OQhG9gTIIEnXpf0WFSnuP3Pik=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-347-4zGhDmt8NfGv_v8VL2htug-1; Fri, 09 Sep 2022 05:42:45 -0400
-X-MC-Unique: 4zGhDmt8NfGv_v8VL2htug-1
-Received: by mail-ed1-f71.google.com with SMTP id b16-20020a056402279000b0044f1102e6e2so885572ede.20
-        for <netdev@vger.kernel.org>; Fri, 09 Sep 2022 02:42:45 -0700 (PDT)
+        with ESMTP id S229561AbiIIJ6Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 05:58:16 -0400
+Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD79312D1A8;
+        Fri,  9 Sep 2022 02:58:15 -0700 (PDT)
+Received: by mail-qt1-f178.google.com with SMTP id z18so849168qts.7;
+        Fri, 09 Sep 2022 02:58:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :to:subject:cc:user-agent:mime-version:date:message-id:from
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=5iXKFaXwMwTj+qx5rpepg8IFprmEKxi1vIibj/a0OYc=;
-        b=hI5s9yWFjbimPYddyN0e49SENQq6cHNSc6EuLfTsjnTC1qLy2ZZPpr1RbBayOkRVkw
-         a+2AJYiQbam6Zv2Cdhh764Ieg8wJ7+5AcHycTgvalUnZqh3JqjW+IIXxZ9orieCoxn17
-         jtblVF/Mt3SWimYGPxN+e/rU3bMWZLDtAskP+4GLR1poY+U1knw4j49YTfSpK6biWpjs
-         ybpTjKMRlCRebAAGo8CRFMvlc/ljvZaOenKfc94XArLdcI17mw7ZmlM0EtYlOKmZKdwj
-         f5Su9Zzepg1V2giqo1xi9BKQgBUS6XxYbD1/rF0FX4Ifv5HUEXdD7XYVU/N/RuPAGibD
-         pIow==
-X-Gm-Message-State: ACgBeo2Y0QOAG1fqoaD0Xd1yvUhkEJ5E0wcL+nntpB+bKoDDIkklxlih
-        Zj157oy6Tq2WEHdaXmfixVW+TUBPtn+xzzfq0EwRWpU6eX1Gc6IShkNmWKXiB87Fpc7IDuDcVF3
-        otBoCQG8SgD3Xf1Oe
-X-Received: by 2002:a05:6402:351:b0:44e:1cd2:bd53 with SMTP id r17-20020a056402035100b0044e1cd2bd53mr10507099edw.364.1662716560197;
-        Fri, 09 Sep 2022 02:42:40 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7VORBRl+U9ThWWjUQ2G9Wxzqu4Djdg56wVHmV/d5FLJ5A38wxS4QWjJ3t06dJtL6JweATOcw==
-X-Received: by 2002:a05:6402:351:b0:44e:1cd2:bd53 with SMTP id r17-20020a056402035100b0044e1cd2bd53mr10507075edw.364.1662716559994;
-        Fri, 09 Sep 2022 02:42:39 -0700 (PDT)
-Received: from [192.168.41.81] (83-90-141-187-cable.dk.customer.tdc.net. [83.90.141.187])
-        by smtp.gmail.com with ESMTPSA id c19-20020a056402121300b0044f0f51f813sm17379edw.83.2022.09.09.02.42.28
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=hWCebKRgDhaHhUfpkk42XMQuZuZ9gpE4kq9orZDy92E=;
+        b=Q4BKoC4m4vBbtZwBDAjsxYTj/9n4dUPFJk3gsUo3d2bv+sb3Ff5s0ihRutTTh8W/MY
+         jSXXpbYfccx319z/bJc30LDZjtu85cKEVIN51Yqttk7KzfbMzHJ8/OZYwOTlkKuUDjoC
+         OfN/lF2lmvF+vfKyy2/7Uv9QZ8/V1FZYF2trhmm7271/23U5TTvqPYl6KqBGTlAi/rgt
+         JPKSR7KLjGoBeMwY68C5gAB8jCfZuaQzMNeg7CF6n313tubTTsRtJ4t8JEd0MvROWlJV
+         JxEmiTyf0QgQqYggU48/N73EoZDxZiZ9LCTHuSpIAJRUALCuaa6bXOyiYetYYW06wkMX
+         ieoA==
+X-Gm-Message-State: ACgBeo0z0zuONFAYLzklVRWJdFXEAtfXqjZU0S6sXGXbiyTVVb3rjGqf
+        UlHauU4DP6iNzDaARvi/6e3Oay02UTzLng==
+X-Google-Smtp-Source: AA6agR5hivwoGz4hivzSo3WanXgE8KkGNnmEKw59fsrl0JszPsDvN8KCAvql3HGAe2Hgq2Q9vmEDSQ==
+X-Received: by 2002:ac8:7f47:0:b0:344:8d2b:14a9 with SMTP id g7-20020ac87f47000000b003448d2b14a9mr11623752qtk.442.1662717494530;
+        Fri, 09 Sep 2022 02:58:14 -0700 (PDT)
+Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com. [209.85.219.175])
+        by smtp.gmail.com with ESMTPSA id m21-20020a05620a291500b006cbe10f2992sm34397qkp.135.2022.09.09.02.58.13
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 09 Sep 2022 02:42:32 -0700 (PDT)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <593cc1df-8b65-ae9e-37eb-091b19c4d00e@redhat.com>
-Date:   Fri, 9 Sep 2022 11:42:27 +0200
+        Fri, 09 Sep 2022 02:58:14 -0700 (PDT)
+Received: by mail-yb1-f175.google.com with SMTP id 130so1888590ybw.8;
+        Fri, 09 Sep 2022 02:58:13 -0700 (PDT)
+X-Received: by 2002:a25:8247:0:b0:6a9:443a:cc0b with SMTP id
+ d7-20020a258247000000b006a9443acc0bmr11239427ybn.89.1662717493485; Fri, 09
+ Sep 2022 02:58:13 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Cc:     brouer@redhat.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        xdp-hints@xdp-project.net, larysa.zaremba@intel.com,
-        memxor@gmail.com, Lorenzo Bianconi <lorenzo@kernel.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        dave@dtucker.co.uk, Magnus Karlsson <magnus.karlsson@intel.com>,
-        bjorn@kernel.org
-Subject: Re: [PATCH RFCv2 bpf-next 17/18] xsk: AF_XDP xdp-hints support in
- desc options
-To:     Maryam Tahhan <mtahhan@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Jesper Dangaard Brouer <jbrouer@redhat.com>
-References: <166256538687.1434226.15760041133601409770.stgit@firesoul>
- <166256558657.1434226.7390735974413846384.stgit@firesoul>
- <CAJ8uoz3UcC2tnMtG8W6a3HpCKgaYSzSCqowLFQVwCcsr+NKBOQ@mail.gmail.com>
- <b5f0d10d-2d4e-34d6-1e45-c206cb6f5d26@redhat.com>
- <9aab9ef1-446d-57ab-5789-afffe27801f4@redhat.com>
- <CAJ8uoz0CD18RUYU4SMsubB8fhv3uOwp6wi_uKsZSu_aOV5piaA@mail.gmail.com>
- <e1ab2141-03cc-f97c-3788-59923a029203@redhat.com>
-Content-Language: en-US
-In-Reply-To: <e1ab2141-03cc-f97c-3788-59923a029203@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+References: <cover.1662714607.git.geert+renesas@glider.be> <5355709e0744680d792d1e57e43441cb0b7b7611.1662714607.git.geert+renesas@glider.be>
+ <d670b3b1-8347-7131-6bed-4c946645c883@linaro.org>
+In-Reply-To: <d670b3b1-8347-7131-6bed-4c946645c883@linaro.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 9 Sep 2022 11:58:01 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdW63AVJ1eoAiVCAiemjH4MG3=mLakU4+MUvA_jepsjyvg@mail.gmail.com>
+Message-ID: <CAMuHMdW63AVJ1eoAiVCAiemjH4MG3=mLakU4+MUvA_jepsjyvg@mail.gmail.com>
+Subject: Re: [PATCH 1/2] dt-bindings: net: renesas,etheravb: R-Car V3U is
+ R-Car Gen4
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Krzysztof,
 
-On 09/09/2022 10.12, Maryam Tahhan wrote:
-> <snip>
->>>>>
->>>>> * Instead encode this information into each metadata entry in the
->>>>> metadata area, in some way so that a flags field is not needed (-1
->>>>> signifies not valid, or whatever happens to make sense). This has the
->>>>> drawback that the user might have to look at a large number of entries
->>>>> just to find out there is nothing valid to read. To alleviate this, it
->>>>> could be combined with the next suggestion.
->>>>>
->>>>> * Dedicate one bit in the options field to indicate that there is at
->>>>> least one valid metadata entry in the metadata area. This could be
->>>>> combined with the two approaches above. However, depending on what
->>>>> metadata you have enabled, this bit might be pointless. If some
->>>>> metadata is always valid, then it serves no purpose. But it might if
->>>>> all enabled metadata is rarely valid, e.g., if you get an Rx timestamp
->>>>> on one packet out of one thousand.
->>>>>
->>>
->>> I like this option better! Except that I have hoped to get 2 bits ;-)
->>
->> I will give you two if you need it Jesper, no problem :-).
->>
-> 
-> Ok I will look at implementing and testing this and post an update.
+On Fri, Sep 9, 2022 at 11:24 AM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+> On 09/09/2022 11:13, Geert Uytterhoeven wrote:
+> > Despite the name, R-Car V3U is the first member of the R-Car Gen4
+> > family.  Hence move its compatible value to the R-Car Gen4 section.
+> >
+> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Perfect if you Maryam have cycles to work on this.
+> > --- a/Documentation/devicetree/bindings/net/renesas,etheravb.yaml
+> > +++ b/Documentation/devicetree/bindings/net/renesas,etheravb.yaml
+> > @@ -40,9 +40,13 @@ properties:
+> >                - renesas,etheravb-r8a77980     # R-Car V3H
+> >                - renesas,etheravb-r8a77990     # R-Car E3
+> >                - renesas,etheravb-r8a77995     # R-Car D3
+> > -              - renesas,etheravb-r8a779a0     # R-Car V3U
+> >            - const: renesas,etheravb-rcar-gen3 # R-Car Gen3 and RZ/G2
+> >
+> > +      - items:
+> > +          - enum:
+> > +              - renesas,etheravb-r8a779a0     # R-Car V3U
+> > +          - const: renesas,etheravb-rcar-gen4 # R-Car Gen4
+> > +
+>
+> Don't you need changes in allOf:if:then section?
 
-Let me explain what I wanted the 2nd bit for.  I simply wanted to also
-transfer the XDP_FLAGS_HINTS_COMPAT_COMMON flag.  One could argue that
-is it redundant information as userspace AF_XDP will have to BTF decode
-all the know XDP-hints. Thus, it could know if a BTF type ID is
-compatible with the common struct.   This problem is performance as my
-userspace AF_XDP code will have to do more code (switch/jump-table or
-table lookup) to map IDs to common compat (to e.g. extract the RX-csum
-indication).  Getting this extra "common-compat" bit is actually a
-micro-optimization.  It is up to AF_XDP maintainers if they can spare
-this bit.
+No, as there is no logic involving renesas,etheravb-rcar-gen3.
 
+Gr{oetje,eeting}s,
 
-> Thanks folks
-> 
->>> The performance advantage is that the AF_XDP descriptor bits will
->>> already be cache-hot, and if it indicates no-metadata-hints the AF_XDP
->>> application can avoid reading the metadata cache-line :-).
->>
->> Agreed. I prefer if we can keep it simple and fast like this.
->>
+                        Geert
 
-Great, lets proceed this way then.
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-> <snip>
-> 
-
-Thinking ahead: We will likely need 3 bits.
-
-The idea is that for TX-side, we set a bit indicating that AF_XDP have
-provided a valid XDP-hints layout (incl corresponding BTF ID). (I would
-overload and reuse "common-compat" bit if TX gets a common struct).
-
-But lets land RX-side first, but make sure we can easily extend for the 
-TX-side.
-
---Jesper
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
