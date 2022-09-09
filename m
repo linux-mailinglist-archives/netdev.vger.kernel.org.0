@@ -2,125 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 507385B3B67
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 17:04:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02E7D5B3B75
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 17:07:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230368AbiIIPET (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Sep 2022 11:04:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60890 "EHLO
+        id S231659AbiIIPGx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Sep 2022 11:06:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229698AbiIIPES (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 11:04:18 -0400
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [81.169.146.167])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5AE79FAA0;
-        Fri,  9 Sep 2022 08:04:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1662735853;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
-    From:Subject:Sender;
-    bh=Luc36XRm6buQs3XXIJk3KbOcuPIEp2J/433bdIOlqi0=;
-    b=qxYbh3JjvhJQRoySG1IlFuHAPpdsHOwdkfsK86x/jmTm6nJTTC5flrx5ip4zltUJ8f
-    tTr1yYIUMZ8oaIkjPYOQZ1uidUE7HHn2FLnqWFJMOF0ygXxVqKoz/56Gvd1ILMgVdjTn
-    p7nAaqspEluwR74Euc4ec+AfFLYTLCoi/qtGTGkBszOnvXVDZRkyopMSRCDP8noiA8zw
-    IOb5oM3HB6zVDFg5iUiUdFa77Iyd5tAdoJsmb0HWaQyK0AHTaKYz1WJ/DHxZ5jExWbtq
-    7Q0xn3AFBMShlzmVCSYfCEAErnIxg23al+H7YnYUkOmmy1+AsMquDNxt/0CQc0qXexDf
-    YDPA==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdIrpKytISr6hZqJAw=="
-X-RZG-CLASS-ID: mo00
-Received: from [IPV6:2a00:6020:1cfd:d104::923]
-    by smtp.strato.de (RZmta 48.0.2 AUTH)
-    with ESMTPSA id wfa541y89F4CB2f
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Fri, 9 Sep 2022 17:04:12 +0200 (CEST)
-Message-ID: <d392c1f4-7ad3-59a4-1358-2c216c498402@hartkopp.net>
-Date:   Fri, 9 Sep 2022 17:04:06 +0200
+        with ESMTP id S231844AbiIIPGf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 11:06:35 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9347F13BC68
+        for <netdev@vger.kernel.org>; Fri,  9 Sep 2022 08:06:33 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id 202so1824252pgc.8
+        for <netdev@vger.kernel.org>; Fri, 09 Sep 2022 08:06:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=h9ttlWCtYtVis0YY0hxzMY2qjTiD1pFXm2BQf608hzc=;
+        b=rJIVxZ9Jiyp9GZBMH7ltmn4ILM2XybGYMZrHq+cdRoQuteAuW5Gr9DPFCsvMAtHZO2
+         40Hnyne+KIB6cymtP7qrv3+KSHQqkM1h03oKOH/fHt/7/tGXKxxcnh4QrBqHh7L8XqzK
+         G46ksDEoWISDdrPLzO87/GHM7SY/1URmNLTFL84Z87hMUdsxbBe5CWWCGKSC8/zRGkCO
+         KxV9kppAvsCBbyPwDzSnuEvjtAcJ3y9MOFtbf8zgAHHzcCtASUlrnE8upV4+XaWnokuV
+         m2VBYnRksguKN3MAra1PR5YI/7kwdDx5ZUsryrri5+8jvFE3Iutszw7KZDoYBbDaAu2i
+         nV4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=h9ttlWCtYtVis0YY0hxzMY2qjTiD1pFXm2BQf608hzc=;
+        b=e2ms2lk+O1HtFbClA++k8PtsBOmQTqBPfDDBVnWPPAgYLbxBvtfF54ow5yqxm4LcZx
+         HDlSvCJGAYurtVe0QqB6GLcc5BWJwzj8S8I6UO6oiUef+u6kbwfdzx9q+QCHirlLC45C
+         G5Tg8plnwoHsHTei+qtBYh01a9QX+j0oOIHLlGZPlDhlGVOfyj0dlSG0NbjPPkCRTkXd
+         rAnG7PsGw1tPUarI+wtq6B/WpzkRehqeuS8Lz8ij1Tx7CCgSp/HtNYERqvGKQIFF3tHA
+         Va50488EAXr/2Qd7HZbTxrSu1ov9whuirdc9/M4vy61aHXvwC+IdpKketnsACgxp7C54
+         WYXw==
+X-Gm-Message-State: ACgBeo2BJ/u4ZnYUt1x98GrgxYvK7FEEGBPcHhKNTOSrk563wD4ed4PO
+        C0dOddGxNUON2T8Kt9FRSpPyJw==
+X-Google-Smtp-Source: AA6agR7sgH6dWxMQC1VO0bnY43VSvZArcC95HKpEjuEZ6GCaCv3csEQK1IC5+5mLsM73hylnAMI3SQ==
+X-Received: by 2002:a63:5747:0:b0:434:8606:b0a4 with SMTP id h7-20020a635747000000b004348606b0a4mr12246600pgm.529.1662735992788;
+        Fri, 09 Sep 2022 08:06:32 -0700 (PDT)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id h7-20020a170902f54700b001749381ed8csm559310plf.254.2022.09.09.08.06.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Sep 2022 08:06:32 -0700 (PDT)
+Date:   Fri, 9 Sep 2022 08:06:31 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Daniel Machon <daniel.machon@microchip.com>
+Cc:     <netdev@vger.kernel.org>, <Allan.Nielsen@microchip.com>,
+        <UNGLinuxDriver@microchip.com>, <maxime.chevallier@bootlin.com>,
+        <vladimir.oltean@nxp.com>, <petrm@nvidia.com>, <kuba@kernel.org>,
+        <vinicius.gomes@intel.com>, <thomas.petazzoni@bootlin.com>
+Subject: Re: [RFC PATCH iproute2-next 2/2] dcb: add new subcommand for
+ apptrust object
+Message-ID: <20220909080631.6941a770@hermes.local>
+In-Reply-To: <20220909103701.468717-3-daniel.machon@microchip.com>
+References: <20220909103701.468717-1-daniel.machon@microchip.com>
+        <20220909103701.468717-3-daniel.machon@microchip.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH 1/2] can: bcm: registration process optimization in
- bcm_module_init()
-Content-Language: en-US
-To:     "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>,
-        mkl@pengutronix.de, edumazet@google.com, kuba@kernel.org,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org
-References: <cover.1662606045.git.william.xuanziyang@huawei.com>
- <823cff0ebec33fa9389eeaf8b8ded3217c32cb38.1662606045.git.william.xuanziyang@huawei.com>
- <381dd961-f786-2400-0977-9639c3f7006e@hartkopp.net>
- <c480bdd7-e35e-fbf9-6767-801e04703780@hartkopp.net>
- <7b063d38-311c-76d6-4e31-02f9cccc9bcb@huawei.com>
- <053c7de3-c76c-82fd-2d44-2e7c1673ae98@hartkopp.net>
- <9228b20a-3baa-32ad-6059-5cf0ffdb97a3@huawei.com>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-In-Reply-To: <9228b20a-3baa-32ad-6059-5cf0ffdb97a3@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, 9 Sep 2022 12:37:01 +0200
+Daniel Machon <daniel.machon@microchip.com> wrote:
 
+>  	} else if (matches(*argv, "app") == 0) {
+>  		return dcb_cmd_app(dcb, argc - 1, argv + 1);
+> +	} else if (matches(*argv, "apptrust") == 0) {
+> +		return dcb_cmd_apptrust(dcb, argc - 1, argv + 1);
+>  	} else if (matches(*argv, "buffer") == 0) {
 
-On 09.09.22 05:58, Ziyang Xuan (William) wrote:
->>
->>
->> On 9/8/22 13:14, Ziyang Xuan (William) wrote:
->>>> Just another reference which make it clear that the reordering of function calls in your patch is likely not correct:
->>>>
->>>> https://elixir.bootlin.com/linux/v5.19.7/source/net/packet/af_packet.c#L4734
->>>>
->>>> static int __init packet_init(void)
->>>> {
->>>>           int rc;
->>>>
->>>>           rc = proto_register(&packet_proto, 0);
->>>>           if (rc)
->>>>                   goto out;
->>>>           rc = sock_register(&packet_family_ops);
->>>>           if (rc)
->>>>                   goto out_proto;
->>>>           rc = register_pernet_subsys(&packet_net_ops);
->>>>           if (rc)
->>>>                   goto out_sock;
->>>>           rc = register_netdevice_notifier(&packet_netdev_notifier);
->>>>           if (rc)
->>>>                   goto out_pernet;
->>>>
->>>>           return 0;
->>>>
->>>> out_pernet:
->>>>           unregister_pernet_subsys(&packet_net_ops);
->>>> out_sock:
->>>>           sock_unregister(PF_PACKET);
->>>> out_proto:
->>>>           proto_unregister(&packet_proto);
->>>> out:
->>>>           return rc;
->>>> }
->>>>
+Yet another example of why matches() is bad.
 
-> Yes，all these socket operations need time, most likely, register_netdevice_notifier() and register_pernet_subsys() had been done.
-> But it maybe not for some reasons, for example, cpu# that runs {raw,bcm}_module_init() is stuck temporary,
-> or pernet_ops_rwsem lock competition in register_netdevice_notifier() and register_pernet_subsys().
-> 
-> If the condition which I pointed happens, I think my solution can solve.
-> 
-
-No, I don't think so.
-
-We need to maintain the exact order which is depicted in the af_packet.c 
-code from above as the notifier call references the sock pointer.
-
-Regards,
-Oliver
-
-
+Perhaps this should be named trust instead of apptrust.
