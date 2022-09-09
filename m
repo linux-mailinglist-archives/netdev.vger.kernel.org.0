@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A16285B367D
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 13:39:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F2F65B3687
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 13:39:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230505AbiIILiO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Sep 2022 07:38:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39466 "EHLO
+        id S230101AbiIILis (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Sep 2022 07:38:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229550AbiIILiN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 07:38:13 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D55A9138665
-        for <netdev@vger.kernel.org>; Fri,  9 Sep 2022 04:38:11 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id r126-20020a1c4484000000b003b3df9a5ecbso1196236wma.1
-        for <netdev@vger.kernel.org>; Fri, 09 Sep 2022 04:38:11 -0700 (PDT)
+        with ESMTP id S231180AbiIILie (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 07:38:34 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D00C13D787
+        for <netdev@vger.kernel.org>; Fri,  9 Sep 2022 04:38:19 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id k17so1172494wmr.2
+        for <netdev@vger.kernel.org>; Fri, 09 Sep 2022 04:38:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=isovalent-com.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date;
-        bh=84NGXoD+siLqQfDBPyHWMFsUfPe+akx9hJwN05YInGU=;
-        b=5VO91He75j4orh0w15oGO28lWGu/BzWTydVz0VppX4FrYx5vQUjTvqpgu/lwFvCzjU
-         ajXtM/En0mPjpyE15wtpLjfUptFj6kEx/O1EikHJkL9ScHbkY/TaCXaxUyGkSsYAwPq/
-         fJsywVsRjhafEhqbC+o4kzQhNJb5xw/idfJTeujfHYO5+wi9cYQb6QKfdUyZ+aNebd1/
-         aK6fRJCuRPPeuRqJj144NGSDqff/hc8G6kpbfD8nuNeIZKcVnUcodMuht6wxiECk8dBv
-         kqxJduyc7FzbzIEsJC5xjLVTjN7I3HM+dQ65u2fHsdixONoYULtwEe6s3BAhL2LBQGTb
-         eyeQ==
+        bh=HvNKBTw0L/lYKmZR35x7IEnP1bjDVpSzTqXAf0c4eyQ=;
+        b=hmTnARBjoVStgQoPxT+j+rNvvQExGkJUi8pElnu3loRhAvKdMMUnJGmzWir30PUFdv
+         qjpL2owE2PEG+kjT91XR1f47XCYDqVQuKNotrojQ64KoZuMEULKs1iE1G/yV6zV35RA2
+         9sRfFk/1Igbk6vL1pxVzIcoXDho55Mhc6HEU6Sx2Vj1JJeDdUXOsaa59A2vo6HZj5vbq
+         EczrmMLkIqcDxMpgpKyinY+pR/yjG7s+LMBO8fahuge8LD0DZERNkXqmULXwR3FMQoRr
+         VBmsFut3XZwiySh18vSk6VGcSrohbjasBSS1+DJqwpRYOXnx6ACSiZfxo74k1EKLCJWW
+         iyvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date;
-        bh=84NGXoD+siLqQfDBPyHWMFsUfPe+akx9hJwN05YInGU=;
-        b=AxiIAsp0cDOMOlYz5UZp5UKieF4ILDCv4zMByPp8Nu+22leSfNOIpVi6rnMnb3lsHg
-         AkKeTY7cCk1DW4a7NLG456mD5rC2s/kQ8+9CCVTAfCdzWVyAL1yL0SxJxMu2HpgAOpqQ
-         2wba+vKzGHj8fgMGmOHxsMOJfjTffrlKeFxa1hZb9ugASFDMhuA04tNYEpT705FZrDZ3
-         sBJbZk0wQGrXNhZyvKrcLs6VPrJW2eLF/ub7/I8xZLccB+4Fw/OGkypEm+uAfDknL2W+
-         xcdMQrWQZ7Tw8MwekyqLvMZnGI0YYZ+UVKX0mlQk11RU6Tc4Ib33VKbjX48C9eJRMuBZ
-         /f2w==
-X-Gm-Message-State: ACgBeo20SREnbEUHXTdchc0hXb+KPqflgrDCL9lUATdpTi6vd5p5mh+U
-        IAIUpcAfYAfbmtz3iNZSiVDuiQ==
-X-Google-Smtp-Source: AA6agR7VwZ2DkQWvnjj3EsVyS8g8kjr0MD/4/p4leojeDBq/Lgg5vjkpl+LzEtbqBCE9jLkAnEoGlQ==
-X-Received: by 2002:a05:600c:348d:b0:3a6:b4e:ff6d with SMTP id a13-20020a05600c348d00b003a60b4eff6dmr4904787wmq.95.1662723490285;
-        Fri, 09 Sep 2022 04:38:10 -0700 (PDT)
+        bh=HvNKBTw0L/lYKmZR35x7IEnP1bjDVpSzTqXAf0c4eyQ=;
+        b=pbLDfxuKNQH6NqGA+rE8WMKGEJGbivMs6padL5+Zt6Nq6COCuMteD0x5qUVNGEAn9K
+         oMax717IsDHnfa5b2XwW8ONd3zosaw7mGBPEz65DwSeVHyP3+yFd0KmHBO4ULkHHHWHX
+         cYYk80HscfFHpM2Ab5u6nsLXi7bnPtu1M5jYd6ODRJ71sNzh+Oy0bO3Y0nx9Tv4D8qkW
+         jpEurKCEa8CRZa2NeM500iSyuHq6WRQoVvX1cTpb14vyAt737GE5eQDG8dk0HymiBOh1
+         amBqSGhqu21BUXq1b7tObOplc2R/9/1UBjTOxUyy7veEY56hXojF3YEz5LmTJMWbrq/n
+         QTcg==
+X-Gm-Message-State: ACgBeo1lx2zmf6cKDIfTwjBNzzwWbMvyyN+NbnbVGSJC5ahzny86CoMs
+        SdzqogWbyzh3GgaAFPBA2PEh6Q==
+X-Google-Smtp-Source: AA6agR6ewvI4AXAvJtuQJzJV59HWk2gIoDBJ36WJdwkW12wvrg1/2LHRVT+8GbeMODjwSeXSCWlyLA==
+X-Received: by 2002:a05:600c:1497:b0:3a5:f608:d765 with SMTP id c23-20020a05600c149700b003a5f608d765mr4946577wmh.19.1662723497872;
+        Fri, 09 Sep 2022 04:38:17 -0700 (PDT)
 Received: from [192.168.178.32] ([51.155.200.13])
-        by smtp.gmail.com with ESMTPSA id h8-20020a05600c350800b003a608d69a64sm450511wmq.21.2022.09.09.04.38.09
+        by smtp.gmail.com with ESMTPSA id j12-20020a05600c190c00b003b332a7bf15sm550688wmq.7.2022.09.09.04.38.16
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 09 Sep 2022 04:38:09 -0700 (PDT)
-Message-ID: <f0d30049-72b1-0f54-8f2f-fd47e75f71c9@isovalent.com>
-Date:   Fri, 9 Sep 2022 12:38:08 +0100
+        Fri, 09 Sep 2022 04:38:17 -0700 (PDT)
+Message-ID: <eedd6f65-0fb1-de2e-1a7d-702cf4e6e342@isovalent.com>
+Date:   Fri, 9 Sep 2022 12:38:16 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.2.1
-Subject: Re: [bpf-next v3 1/2] bpftool: Add auto_attach for bpf prog
- load|loadall
+Subject: Re: [bpf-next v3 2/2] bpftool: Update doc (add auto_attach to prog
+ load)
 Content-Language: en-GB
 To:     Wang Yufen <wangyufen@huawei.com>, ast@kernel.org,
         daniel@iogearbox.net, andrii@kernel.org, martin.lau@linux.dev,
@@ -66,9 +66,9 @@ To:     Wang Yufen <wangyufen@huawei.com>, ast@kernel.org,
         trix@redhat.com
 Cc:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, llvm@lists.linux.dev
-References: <1662702807-591-1-git-send-email-wangyufen@huawei.com>
+References: <1662704233-8805-1-git-send-email-wangyufen@huawei.com>
 From:   Quentin Monnet <quentin@isovalent.com>
-In-Reply-To: <1662702807-591-1-git-send-email-wangyufen@huawei.com>
+In-Reply-To: <1662704233-8805-1-git-send-email-wangyufen@huawei.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -80,175 +80,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/09/2022 06:53, Wang Yufen wrote:
-> Add auto_attach optional to support one-step load-attach-pin_link.
+On 09/09/2022 07:17, Wang Yufen wrote:
+> Add auto_attach optional to prog load|loadall for supporting
+> one-step load-attach-pin_link.
 > 
-> For example,
->    $ bpftool prog loadall test.o /sys/fs/bpf/test auto_attach
-> 
->    $ bpftool link
->    26: tracing  name test1  tag f0da7d0058c00236  gpl
->    	loaded_at 2022-09-09T21:39:49+0800  uid 0
->    	xlated 88B  jited 55B  memlock 4096B  map_ids 3
->    	btf_id 55
->    28: kprobe  name test3  tag 002ef1bef0723833  gpl
->    	loaded_at 2022-09-09T21:39:49+0800  uid 0
->    	xlated 88B  jited 56B  memlock 4096B  map_ids 3
->    	btf_id 55
->    57: tracepoint  name oncpu  tag 7aa55dfbdcb78941  gpl
->    	loaded_at 2022-09-09T21:41:32+0800  uid 0
->    	xlated 456B  jited 265B  memlock 4096B  map_ids 17,13,14,15
->    	btf_id 82
-> 
->    $ bpftool link
->    1: tracing  prog 26
->    	prog_type tracing  attach_type trace_fentry
->    3: perf_event  prog 28
->    10: perf_event  prog 57
-> 
-> The auto_attach optional can support tracepoints, k(ret)probes,
-> u(ret)probes.
-> 
-> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
 > Signed-off-by: Wang Yufen <wangyufen@huawei.com>
-
-Thanks, looks better! I just have some minor comments, please see inline
-below.
-
 > ---
-> v2 -> v3: switch to extend prog load command instead of extend perf
-> v2: https://patchwork.kernel.org/project/netdevbpf/patch/20220824033837.458197-1-weiyongjun1@huawei.com/
-> v1: https://patchwork.kernel.org/project/netdevbpf/patch/20220816151725.153343-1-weiyongjun1@huawei.com/
->  tools/bpf/bpftool/prog.c | 76 ++++++++++++++++++++++++++++++++++++++++++++++--
->  1 file changed, 74 insertions(+), 2 deletions(-)
+>  tools/bpf/bpftool/Documentation/bpftool-prog.rst | 7 +++++--
+>  1 file changed, 5 insertions(+), 2 deletions(-)
 > 
-> diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
-> index c81362a..853a73e 100644
-> --- a/tools/bpf/bpftool/prog.c
-> +++ b/tools/bpf/bpftool/prog.c
-> @@ -1453,6 +1453,68 @@ static int do_run(int argc, char **argv)
->  	return ret;
->  }
+> diff --git a/tools/bpf/bpftool/Documentation/bpftool-prog.rst b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
+> index eb1b2a2..c640ad3 100644
+> --- a/tools/bpf/bpftool/Documentation/bpftool-prog.rst
+> +++ b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
+> @@ -31,7 +31,8 @@ PROG COMMANDS
+>  |	**bpftool** **prog dump xlated** *PROG* [{**file** *FILE* | **opcodes** | **visual** | **linum**}]
+>  |	**bpftool** **prog dump jited**  *PROG* [{**file** *FILE* | **opcodes** | **linum**}]
+>  |	**bpftool** **prog pin** *PROG* *FILE*
+> -|	**bpftool** **prog** { **load** | **loadall** } *OBJ* *PATH* [**type** *TYPE*] [**map** {**idx** *IDX* | **name** *NAME*} *MAP*] [**dev** *NAME*] [**pinmaps** *MAP_DIR*]
+> +|	**bpftool** **prog** { **load** | **loadall** } *OBJ* *PATH* [**type** *TYPE*] [**map** {**idx** *IDX* | **name** *NAME*} *MAP*] \
+> +|               [**dev** *NAME*] [**pinmaps** *MAP_DIR*] [**auto_attach**]
+
+Nit: Let's keep this on one line. Not necessary the best in the RST, but
+I prefer to leave it to man to wrap the line on the generated page.
+
+>  |	**bpftool** **prog attach** *PROG* *ATTACH_TYPE* [*MAP*]
+>  |	**bpftool** **prog detach** *PROG* *ATTACH_TYPE* [*MAP*]
+>  |	**bpftool** **prog tracelog**
+> @@ -131,7 +132,7 @@ DESCRIPTION
+>  		  contain a dot character ('.'), which is reserved for future
+>  		  extensions of *bpffs*.
 >  
-> +static int
-> +do_prog_attach_pin(struct bpf_program *prog, const char *path)
+> -	**bpftool prog { load | loadall }** *OBJ* *PATH* [**type** *TYPE*] [**map** {**idx** *IDX* | **name** *NAME*} *MAP*] [**dev** *NAME*] [**pinmaps** *MAP_DIR*]
+> +	**bpftool prog { load | loadall }** *OBJ* *PATH* [**type** *TYPE*] [**map** {**idx** *IDX* | **name** *NAME*} *MAP*] [**dev** *NAME*] [**pinmaps** *MAP_DIR*] [**auto_attach**]
+>  		  Load bpf program(s) from binary *OBJ* and pin as *PATH*.
+>  		  **bpftool prog load** pins only the first program from the
+>  		  *OBJ* as *PATH*. **bpftool prog loadall** pins all programs
+> @@ -149,6 +150,8 @@ DESCRIPTION
+>  		  given networking device (offload).
+>  		  Optional **pinmaps** argument can be provided to pin all
+>  		  maps under *MAP_DIR* directory.
+> +		  If **auto_attach** is specified program will be attached
+> +		  before pin.
 
-Can we rename this function please? The pattern "do_...()" looks like
-one of the names for the functions we use for the subcommands via the
-struct cmd. Maybe auto_attach_program()?
+I would like more precisions here, please. In particular, can you add
+that 1) in that case, only the link (representing the program attached
+to its hook) is pinned, not the program as such, so the path won't show
+in "bpftool prog show -f" (I think), and 2) this only works when bpftool
+(libbpf) is able to infer all necessary information from the object
+file, in particular, it's not supported for all program types. Probably
+worth adding an empty line before the description for auto_attach to
+have it in a dedicated paragraph.
 
-> +{
-> +	struct bpf_link *link = NULL;
-
-Nit: No need to initialise link
-
-> +	int err;
-> +
-> +	link = bpf_program__attach(prog);
-> +	err = libbpf_get_error(link);
-> +	if (err)
-> +		return err;
-> +
-> +	err = bpf_link__pin(link, path);
-> +	if (err) {
-> +		bpf_link__destroy(link);
-> +		return err;
-> +	}
-> +	return 0;
-> +}
-> +
-> +static int pathname_concat(const char *path, const char *name, char *buf)
-> +{
-> +	int len;
-> +
-> +	len = snprintf(buf, PATH_MAX, "%s/%s", path, name);
-> +	if (len < 0)
-> +		return -EINVAL;
-> +	else if (len >= PATH_MAX)
-
-Nit: "else" not necessary, you returned if len < 0.
-
-> +		return -ENAMETOOLONG;
-> +
-> +	return 0;
-> +}
-> +
-> +static int
-> +do_obj_attach_pin_programs(struct bpf_object *obj, const char *path)
-
-Same, can we rename this function please?
-
-> +{
-> +	struct bpf_program *prog;
-> +	char buf[PATH_MAX];
-> +	int err;
-> +
-> +	bpf_object__for_each_program(prog, obj) {
-> +		err = pathname_concat(path, bpf_program__name(prog), buf);
-> +		if (err)
-> +			goto err_unpin_programs;
-> +
-> +		err = do_prog_attach_pin(prog, buf);
-> +		if (err)
-> +			goto err_unpin_programs;
-> +	}
-> +
-> +	return 0;
-> +
-> +err_unpin_programs:
-> +	while ((prog = bpf_object__prev_program(obj, prog))) {
-> +		if (pathname_concat(path, bpf_program__name(prog), buf))
-> +			continue;
-> +
-> +		bpf_program__unpin(prog, buf);
-> +	}
-> +
-> +	return err;
-> +}
-> +
->  static int load_with_options(int argc, char **argv, bool first_prog_only)
->  {
->  	enum bpf_prog_type common_prog_type = BPF_PROG_TYPE_UNSPEC;
-> @@ -1464,6 +1526,7 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
->  	struct bpf_program *prog = NULL, *pos;
->  	unsigned int old_map_fds = 0;
->  	const char *pinmaps = NULL;
-> +	bool auto_attach = false;
->  	struct bpf_object *obj;
->  	struct bpf_map *map;
->  	const char *pinfile;
-> @@ -1583,6 +1646,9 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
->  				goto err_free_reuse_maps;
 >  
->  			pinmaps = GET_ARG();
-> +		} else if (is_prefix(*argv, "auto_attach")) {
-> +			auto_attach = true;
-> +			NEXT_ARG();
->  		} else {
->  			p_err("expected no more arguments, 'type', 'map' or 'dev', got: '%s'?",
->  			      *argv);
-> @@ -1692,14 +1758,20 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
->  			goto err_close_obj;
->  		}
->  
-> -		err = bpf_obj_pin(bpf_program__fd(prog), pinfile);
-> +		if (auto_attach)
-> +			err = do_prog_attach_pin(prog, pinfile);
-> +		else
-> +			err = bpf_obj_pin(bpf_program__fd(prog), pinfile);
->  		if (err) {
->  			p_err("failed to pin program %s",
->  			      bpf_program__section_name(prog));
->  			goto err_close_obj;
->  		}
->  	} else {
-> -		err = bpf_object__pin_programs(obj, pinfile);
-> +		if (auto_attach)
-> +			err = do_obj_attach_pin_programs(obj, pinfile);
-> +		else
-> +			err = bpf_object__pin_programs(obj, pinfile);
->  		if (err) {
->  			p_err("failed to pin all programs");
->  			goto err_close_obj;
+>  		  Note: *PATH* must be located in *bpffs* mount. It must not
+>  		  contain a dot character ('.'), which is reserved for future
 
-Please update the usage string in do_help() at the end of the file.
+Can you also update the bash completion, please? Just the following:
+
+
+diff --git a/tools/bpf/bpftool/bash-completion/bpftool
+b/tools/bpf/bpftool/bash-completion/bpftool
+index dc1641e3670e..3f6f4f9c3e80 100644
+--- a/tools/bpf/bpftool/bash-completion/bpftool
++++ b/tools/bpf/bpftool/bash-completion/bpftool
+@@ -505,6 +505,7 @@ _bpftool()
+                             _bpftool_once_attr 'type'
+                             _bpftool_once_attr 'dev'
+                             _bpftool_once_attr 'pinmaps'
++                            _bpftool_once_attr 'auto_attach'
+                             return 0
+                             ;;
+                     esac
+
