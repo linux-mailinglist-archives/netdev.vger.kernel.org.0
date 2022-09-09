@@ -2,103 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89D8C5B3917
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 15:37:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26B115B39C8
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 15:52:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231326AbiIINgC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Sep 2022 09:36:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52280 "EHLO
+        id S231668AbiIINqo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Sep 2022 09:46:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230460AbiIINgA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 09:36:00 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 978A612168F
-        for <netdev@vger.kernel.org>; Fri,  9 Sep 2022 06:35:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=k1; bh=d07l+9icoAhW5M8YCAxkQQTAXsCT
-        YpocxQfQ2osUfX0=; b=EMQF7bu4VopK5ivXXrgW0yGJsiDvG5UMaV6IIz1j2Be8
-        FY+/lsv52L266/MKTUcYV+TK6hcoDaL8j1ZRWxEd/tFaSX5SiXUoW3nmMlTqwt82
-        1HYoKGjrn2cw4764cuiEPlrPclrm/NWu56qfv1pvb6eFFsS/5pkliB4AP1dm/Yo=
-Received: (qmail 500285 invoked from network); 9 Sep 2022 15:35:57 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 9 Sep 2022 15:35:57 +0200
-X-UD-Smtp-Session: l3s3148p1@m5AzoD7oO+AucrSh
-Date:   Fri, 9 Sep 2022 15:35:56 +0200
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S231418AbiIINqf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 09:46:35 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95594131BEF
+        for <netdev@vger.kernel.org>; Fri,  9 Sep 2022 06:46:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662731185; x=1694267185;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=bOumJnRPkN+EhKWt0SJyT8pLZSEuGQcN/nu/jsJGYrY=;
+  b=muMsQtMpmstSC16iJ8v5c84Eq4byfg9ZfnfukuboulPTPtyvZ6jvWDOM
+   gp9+WKC9HMGQ7G5usWNcWk3EIAP7l5cuKRJigMCSt3TnDWXYeyMklEv9M
+   F/wbOqMGcKctwypKAaT52BnBMOc3Y0fxajguqB0jnmyOcJdRKHFhmpE5R
+   +WCtPxZHkaBmS+xVjMypVh+YAhxlGLpMQLtqpATzHkGk/jkFeI7hzaMTk
+   0vyMq+IKy2NMwjBS+N4dkzh+fJNDphezKzw3OjAD+maWefqxzE6jizw2i
+   eAjg28heeDQULll/b/qwWQ42A1GdRjT6O3JfrrmxUDj9kGht1esIGe+wT
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10464"; a="323684081"
+X-IronPort-AV: E=Sophos;i="5.93,303,1654585200"; 
+   d="scan'208";a="323684081"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2022 06:44:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,303,1654585200"; 
+   d="scan'208";a="592611147"
+Received: from lkp-server02.sh.intel.com (HELO b2938d2e5c5a) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 09 Sep 2022 06:44:26 -0700
+Received: from kbuild by b2938d2e5c5a with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oWeIz-0001F3-19;
+        Fri, 09 Sep 2022 13:44:25 +0000
+Date:   Fri, 9 Sep 2022 21:43:55 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Mattias Forsblad <mattias.forsblad@gmail.com>,
+        netdev@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org
-Subject: Re: [PATCH 2/2] dt-bindings: net: renesas,etheravb: Add r8a779g0
- support
-Message-ID: <YxtBPKg5zesFY3BE@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org
-References: <cover.1662714607.git.geert+renesas@glider.be>
- <cddb61cd9702ceefc702176bd8ff640c4ff59ffd.1662714607.git.geert+renesas@glider.be>
+        Mattias Forsblad <mattias.forsblad@gmail.com>
+Subject: Re: [PATCH net-next v8 4/6] net: dsa: mv88e6xxxx: Add RMU
+ functionality.
+Message-ID: <202209092151.xu08eXWH-lkp@intel.com>
+References: <20220909085138.3539952-5-mattias.forsblad@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="lm72HkNFIToI4sx6"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cddb61cd9702ceefc702176bd8ff640c4ff59ffd.1662714607.git.geert+renesas@glider.be>
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+In-Reply-To: <20220909085138.3539952-5-mattias.forsblad@gmail.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Mattias,
 
---lm72HkNFIToI4sx6
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Thank you for the patch! Perhaps something to improve:
 
-On Fri, Sep 09, 2022 at 11:13:23AM +0200, Geert Uytterhoeven wrote:
-> Document support for the Renesas Ethernet AVB (EtherAVB-IF) block in the
-> Renesas R-Car V4H (R8A779G0) SoC.
->=20
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+[auto build test WARNING on net-next/master]
 
-Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+url:    https://github.com/intel-lab-lkp/linux/commits/Mattias-Forsblad/net-dsa-qca8k-mv88e6xxx-rmon-Add-RMU-support/20220909-165609
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 34df6a8a50aa72c4ac4fd65033a2798fc321adf8
+config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220909/202209092151.xu08eXWH-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/5a8005d484d3a5d466c656f11cba47e951f7d264
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Mattias-Forsblad/net-dsa-qca8k-mv88e6xxx-rmon-Add-RMU-support/20220909-165609
+        git checkout 5a8005d484d3a5d466c656f11cba47e951f7d264
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   In file included from drivers/net/dsa/mv88e6xxx/chip.c:45:
+>> drivers/net/dsa/mv88e6xxx/rmu.h:20:17: warning: 'rmu_dest_addr' defined but not used [-Wunused-const-variable=]
+      20 | static const u8 rmu_dest_addr[ETH_ALEN] = { 0x01, 0x50, 0x43, 0x00, 0x00, 0x00 };
+         |                 ^~~~~~~~~~~~~
 
 
---lm72HkNFIToI4sx6
-Content-Type: application/pgp-signature; name="signature.asc"
+vim +/rmu_dest_addr +20 drivers/net/dsa/mv88e6xxx/rmu.h
 
------BEGIN PGP SIGNATURE-----
+    19	
+  > 20	static const u8 rmu_dest_addr[ETH_ALEN] = { 0x01, 0x50, 0x43, 0x00, 0x00, 0x00 };
+    21	
 
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmMbQTwACgkQFA3kzBSg
-KbaXYg/8CpZFPlX03GQFoX2v78TgVtUmEKVapnTyvJpgwQVsSVbl7Iozkai93L+P
-cBbbBJK2i2M3gA3LdoYZf9mPSahJfLoF6a/Q7pnGkxWU1HK2Vax6+sMAH7fCVYYJ
-WE1hJDqNj+ShFKvpgMaUCNGe6+WeLedP4l0HOoVkocFS4LKwjwxW0jMvNALB/w9w
-GZo/cVuX3p1Z1gZseoGQaG//xbfpM3R8DYyqO2sqXqD4nTuCVQ1Czc/ROL8PxANp
-XcleWmgAG67nen5KwmHyaRj4ToMLCevlOTRxgIWRUDGGKI4Pm2tCLKmIc7LuUMhw
-fAkixwfTmHFUw+QbZXNJZC9cBvj3LzgF5HJJZoIcvadI0hMuEe6zidbq5MsSElxs
-fRM0h1b0SaQuUVZGN80YRzn3G22Fyv6Rm4Mh6Of9MvMSS4n2KytMPpSH+5MFCH+B
-kV+FJfyaAD5bS1nqV4G1WjFAIhHeXHj9TO9YFBeyNcBqBnieSi04QUoHzylkTgSm
-v0BdDCg6u2WA+cE4akHlI9wE7nyMA/aYx87cw95YLUY8zNCXhqur6WuZNTb/nfGt
-Co+cgWB84RJxqZ6n+uTJ5kb3A0nMqJsNmf8xawfcrc937/5Cf9s4YAfsfbHIaIVj
-s7NBS1oO4XCGkfDzuGdZmLQ/ZCIHhY+8z5d5l2QHwK29BuQdqzg=
-=Wjn8
------END PGP SIGNATURE-----
-
---lm72HkNFIToI4sx6--
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
