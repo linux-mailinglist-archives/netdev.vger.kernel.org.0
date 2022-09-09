@@ -2,109 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 806AD5B2B2B
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 02:49:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E55E5B2B2C
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 02:50:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229628AbiIIAty (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 20:49:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49968 "EHLO
+        id S229658AbiIIAuJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 20:50:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229593AbiIIAtx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 20:49:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB7043629
-        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 17:49:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662684589;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=EDkvezHqKVwwq3RpBMzZM+g3RqI22B0rBBYbwFtaJvA=;
-        b=IV2F7IJpgER3pHCyql6bZp+fNvapUhtHuxBojSr5c5kEQhNbC33ucGDGM8C/15sRP/crmD
-        XRmrzSMmpC20Tn29PhyqoDE+faZVhzBhEEGohTS5Uo4XQPDKhu6nN4YONtxPtWgkpXfgUq
-        VR1xV0oBbWfbnre3c+onnidYV7nyZ+A=
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com
- [209.85.166.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-251-SbGtd12NPumlnGji2EtMyQ-1; Thu, 08 Sep 2022 20:49:48 -0400
-X-MC-Unique: SbGtd12NPumlnGji2EtMyQ-1
-Received: by mail-il1-f200.google.com with SMTP id l20-20020a056e02067400b002dfa7256498so122477ilt.4
-        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 17:49:48 -0700 (PDT)
+        with ESMTP id S229593AbiIIAuG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 20:50:06 -0400
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26B8C6566C
+        for <netdev@vger.kernel.org>; Thu,  8 Sep 2022 17:50:05 -0700 (PDT)
+Received: by mail-pg1-x549.google.com with SMTP id s68-20020a632c47000000b00434e0e75076so92793pgs.7
+        for <netdev@vger.kernel.org>; Thu, 08 Sep 2022 17:50:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date;
+        bh=UzC//+Yk70hj2hJqUtleEEzIXj0/R3c00YBdzJHLjn8=;
+        b=oLKZibQ7Xpojcs/uncAmpTMBxDPKAqywkflZvuGSE3Qz4DrVMgJJnwybZ7wbTny1HE
+         3rVRxOSXgHGMXdTjwFBSS2sueK7XeAQYphFQxr53Sxx0ZnOybWQvESCxY8QGHsSaB9xr
+         HUmvWw7xS/+vSgXdqXazIQ5Xa4GhLm6r88m4qyUfBI9cXULvULoqenuoF/lo5Xenk1x9
+         A/+3lxIrDyInfFHzWzi5B0rCULUcAHIVIQWKTyTx7PkZTGsaRFQrYzB1mHPjVHNzF+b/
+         zCk87rfwOY6E/xwj92CfBqmDE/wvmizDPXT2kpy02T/yKzui7wNKKIon2KILEQFT9pME
+         sG2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=EDkvezHqKVwwq3RpBMzZM+g3RqI22B0rBBYbwFtaJvA=;
-        b=o98jLgt8xSXiPyX45Fy1q3LcXKw9lLjBwaef3zfdBe/LcrwJQ5bYyzWJ80R7SEiXa3
-         tjV9s2NWcvX071+YOQnY24v7K9zkJEH4H2o+Mg49XT36zRXyKszS3dsoTnDYNWPYGlP+
-         8MJbTk4BxY1yFhdGUx0R4x1X+1n7HnPhBWjvLFMUt7RmG45uE3/FDwNfbbjW132gAIem
-         Bm4cyDDC8ridP4Id22jL97jkMGQYmKOigibdQJLDrLO7iTLVuZPXGorwecjGfYm671Ab
-         FFk/TNgtaU11dl/Be5P87v9s2HsP4sPY1K80FRGfF3Z6sNIehWDeFK9LzPhhI8azIJdF
-         DPfw==
-X-Gm-Message-State: ACgBeo3uioREiDdOa6SmIkyMIuPhQ3u5I6noClB0238TLbAUiDYOK/+P
-        fEZfExrJS/BdsiJWGmLxB+vzBaXDjdbBnnvH5sr7ndmiI+l5RK1UKfuCjfe7pzJvNZ7vo0oGYbb
-        8AbjuQUb9vmQ2iPU5BXXE4MwKg5o5RR2/
-X-Received: by 2002:a05:6602:2d8b:b0:688:ece0:e1da with SMTP id k11-20020a0566022d8b00b00688ece0e1damr5351259iow.18.1662684587753;
-        Thu, 08 Sep 2022 17:49:47 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR54vwkdF3+OlmpGtltB6FD9c/W1VgPD2j6EiEKC4If9aTc36WNrW2EXjP+N/AV26zzxm+P72dv6omhlcDXgw9U=
-X-Received: by 2002:a05:6602:2d8b:b0:688:ece0:e1da with SMTP id
- k11-20020a0566022d8b00b00688ece0e1damr5351242iow.18.1662684587496; Thu, 08
- Sep 2022 17:49:47 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220905203412.1322947-1-miquel.raynal@bootlin.com> <20220905203412.1322947-6-miquel.raynal@bootlin.com>
-In-Reply-To: <20220905203412.1322947-6-miquel.raynal@bootlin.com>
-From:   Alexander Aring <aahringo@redhat.com>
-Date:   Thu, 8 Sep 2022 20:49:36 -0400
-Message-ID: <CAK-6q+gH3dRj6szUV6Add7G5nh1-5rBUpVLrrdbkjS22tz3ueA@mail.gmail.com>
-Subject: Re: [PATCH wpan/next v3 5/9] net: mac802154: Drop IEEE802154_HW_RX_DROP_BAD_CKSUM
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org,
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=UzC//+Yk70hj2hJqUtleEEzIXj0/R3c00YBdzJHLjn8=;
+        b=0n4r7P6KBKarpIwEz4DbkxA+LsUI0BF65xH/xj8Lx25pTBLyzLtKGl2Y6f7442CKWI
+         HKpsmUlUj6rNYH2z2Jhlepkvie4c0H0h1Uy4geaasBgaBIRaB6Bw4Yv6lwjFXhx36wOx
+         2z/pqhuy2P/4PYekqPDW/DIrYd+xq2LMp4vGNLIvyAQt7Fx1hotalnPOYw5Gf2sKjCGH
+         1ffQ7TdJt/d9xVJNOVEfZH1Z3IP/WmKC8emL+fSH3g/d4AvY17w9l6dEi2LQRo/tk78A
+         l7/oVqjCczO1aYRhQSsNr6sZkmNn6lZluG+LYYjq6eZuLXuIu0Z5tFYPzCOWVZbQMiRQ
+         vC3A==
+X-Gm-Message-State: ACgBeo3KblCDhqSaWXqFYr0idgYrnx/er+z3a1QpEyNr+zdNG/CYVsNv
+        5LfJWshE3Jh1IX7E0WdJgiHeGaIdVt7O4g==
+X-Google-Smtp-Source: AA6agR59tJ1faHQghtsH7mhwtNJ+H7GjQXWBqcckySx7FEgQSBctBT2bgOBT1E6hEj1eT/zPqFPOmVOEWbxkxA==
+X-Received: from zhuyifei-kvm.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:2edc])
+ (user=zhuyifei job=sendgmr) by 2002:a05:6a00:a90:b0:530:2f3c:da43 with SMTP
+ id b16-20020a056a000a9000b005302f3cda43mr11595911pfl.50.1662684604707; Thu,
+ 08 Sep 2022 17:50:04 -0700 (PDT)
+Date:   Fri,  9 Sep 2022 00:49:38 +0000
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.2.789.g6183377224-goog
+Message-ID: <cover.1662682323.git.zhuyifei@google.com>
+Subject: [PATCH v4 bpf-next 0/3] cgroup/connect{4,6} programs for unprivileged
+ ICMP ping
+From:   YiFei Zhu <zhuyifei@google.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Stanislav Fomichev <sdf@google.com>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+        Paolo Abeni <pabeni@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Usually when a TCP/UDP connection is initiated, we can bind the socket
+to a specific IP attached to an interface in a cgroup/connect hook.
+But for pings, this is impossible, as the hook is not being called.
 
-On Mon, Sep 5, 2022 at 4:34 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
->
-> This IEEE802154_HW_RX_DROP_BAD_CKSUM flag was only used by hwsim to
-> reflect the fact that it would not validate the checksum (FCS). In other
-> words, the filtering level of hwsim is always "NONE" while the core
-> expects it to be higher.
->
-> Now that we have access to real filtering levels, we can actually use
-> them and always enforce the "NONE" level in hwsim. This case is already
-> correctly handled in the receive so we can drop the flag.
->
+This series adds the invocation for cgroup/connect{4,6} programs to
+unprivileged ICMP ping (i.e. ping sockets created with SOCK_DGRAM
+IPPROTO_ICMP(V6) as opposed to SOCK_RAW). This also adds a test to
+verify that the hooks are being called and invoking bpf_bind() from
+within the hook actually binds the socket.
 
-I would say the whole hwsim driver currently only works because we
-don't transmit wrong frames on a virtual hardware... However this can
-be improved, yes. In my opinion the hwsim driver should pretend to
-work like other transceivers sending frames to mac802154. That means
-the filtering level should be implemented in hwsim not in mac802154 as
-on real hardware the hardware would do filtering.
+Patch 1 adds the invocation of the hook.
+Patch 2 deduplicates write_sysctl in BPF test_progs.
+Patch 3 adds the tests for this hook.
 
-I think you should assume for now the previous behaviour that hwsim
-does not send bad frames out. Of course there is a bug but it was
-already there before, but the fix would be to change hwsim driver.
+v1 -> v2:
+* Added static to bindaddr_v6 in prog_tests/connect_ping.c
+* Deduplicated much of the test logic in prog_tests/connect_ping.c
+* Deduplicated write_sysctl() to test_progs.c
 
-- Alex
+v2 -> v3:
+* Renamed variable "obj" to "skel" for the BPF skeleton object in
+  prog_tests/connect_ping.c
+
+v3 -> v4:
+* Fixed error path to destroy skel in prog_tests/connect_ping.c
+
+YiFei Zhu (3):
+  bpf: Invoke cgroup/connect{4,6} programs for unprivileged ICMP ping
+  selftests/bpf: Deduplicate write_sysctl() to test_progs.c
+  selftests/bpf: Ensure cgroup/connect{4,6} programs can bind unpriv
+    ICMP ping
+
+ net/ipv4/ping.c                               |  15 ++
+ net/ipv6/ping.c                               |  16 ++
+ .../bpf/prog_tests/btf_skc_cls_ingress.c      |  20 --
+ .../selftests/bpf/prog_tests/connect_ping.c   | 178 ++++++++++++++++++
+ .../bpf/prog_tests/tcp_hdr_options.c          |  20 --
+ .../selftests/bpf/progs/connect_ping.c        |  53 ++++++
+ tools/testing/selftests/bpf/test_progs.c      |  17 ++
+ tools/testing/selftests/bpf/test_progs.h      |   1 +
+ 8 files changed, 280 insertions(+), 40 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/connect_ping.c
+ create mode 100644 tools/testing/selftests/bpf/progs/connect_ping.c
+
+-- 
+2.37.2.789.g6183377224-goog
 
