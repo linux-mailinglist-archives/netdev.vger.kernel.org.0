@@ -2,53 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EF7875B2D30
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 05:59:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BD105B2D4B
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 06:17:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229576AbiIID67 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 23:58:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47418 "EHLO
+        id S229761AbiIIERL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Sep 2022 00:17:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229546AbiIID66 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 23:58:58 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECB5F3122D;
-        Thu,  8 Sep 2022 20:58:55 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MP2FM4mtRz14QWk;
-        Fri,  9 Sep 2022 11:55:03 +0800 (CST)
-Received: from [10.174.179.200] (10.174.179.200) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 9 Sep 2022 11:58:53 +0800
-Subject: Re: [PATCH 1/2] can: bcm: registration process optimization in
- bcm_module_init()
-To:     Oliver Hartkopp <socketcan@hartkopp.net>, <mkl@pengutronix.de>,
-        <edumazet@google.com>, <kuba@kernel.org>,
-        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>
-References: <cover.1662606045.git.william.xuanziyang@huawei.com>
- <823cff0ebec33fa9389eeaf8b8ded3217c32cb38.1662606045.git.william.xuanziyang@huawei.com>
- <381dd961-f786-2400-0977-9639c3f7006e@hartkopp.net>
- <c480bdd7-e35e-fbf9-6767-801e04703780@hartkopp.net>
- <7b063d38-311c-76d6-4e31-02f9cccc9bcb@huawei.com>
- <053c7de3-c76c-82fd-2d44-2e7c1673ae98@hartkopp.net>
-From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
-Message-ID: <9228b20a-3baa-32ad-6059-5cf0ffdb97a3@huawei.com>
-Date:   Fri, 9 Sep 2022 11:58:53 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        with ESMTP id S229437AbiIIERK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 00:17:10 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB40F121129;
+        Thu,  8 Sep 2022 21:17:07 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id x1-20020a17090ab00100b001fda21bbc90so4207950pjq.3;
+        Thu, 08 Sep 2022 21:17:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=mTQeerp6vrMHbtmhw1xtF+7F71feU54gGWD+y0Ql+EQ=;
+        b=ieUxokWwlpFX4V1oPWfeXKPgp9sMWrIi9HvmN+/guLJDZ+1MMEd2sQgtffkyE54x6M
+         ECD7YfWvqIv1U9x5wrXaYnNZpZdAXGaGxePhcvgNo6q8Y3lS2e+0C+ikhetG5NLN2Ab0
+         GXHY/lXZvKyASTMh+3AMLdrawzTD2xjhnqYJurm6ZLEVpCcDBSOwnh4HRuGw5Tna4qZ/
+         RgyS7PS//xTPdKISycrzkiv4oL5TPkuZ39iu4MmfEKpkutbVUutdLQbdayCq25vqskMx
+         XiTxDUmFqZWheepj6mPqgVYDBVo+BdJjrYhnu+/F6yoyBBKf5U+jEfJX6VmMvHRwoxdt
+         HbSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=mTQeerp6vrMHbtmhw1xtF+7F71feU54gGWD+y0Ql+EQ=;
+        b=NMG/+GvVrSopuPljIV5VuMBAPdgadErxYZ5uWRlVE2OCZDMIBNWMBiOpNrfaIRlhh9
+         cSkTIx1YhF2bvO0R6Fh0GADB0snKVsGSX/SVHaBgO6sz29YwCuhrv+ceFbdDMFva4sMs
+         a0GcMQZyKJrxFsDHxcENAtjw1daJ5rhsJLeFHHPAdrzIU9fgLX2GlImByPqWinOqvfSb
+         rHjVOIXxMURyTYHtiimHKbiiVRe4Azed+924uhEuSqXiiIWQjBhQqOnFGNKlbtUtf8nG
+         BCyS6o1or4LHbbhm8kdWIUGxe/wG2wBrQau5l2T7zkX+lFkBz7WaGuoSxTDJwV0pWhcW
+         RNlw==
+X-Gm-Message-State: ACgBeo3NUohefAntrHYsVfijB49h1oVQ+47QIMJqgW54KrqVDRxM25iY
+        A8IhGZxC9CQE2OfLAdNvAF7iQwCOjEUx/Q==
+X-Google-Smtp-Source: AA6agR6tI5hZ/pdKzlFF9Xd6nDWbiwnsidZF0TRH5j/J4eIkqLrwjcxaG8BlA8Fjktf7uldjQj2USg==
+X-Received: by 2002:a17:90b:358e:b0:200:9d8a:7a70 with SMTP id mm14-20020a17090b358e00b002009d8a7a70mr7430140pjb.61.1662697027216;
+        Thu, 08 Sep 2022 21:17:07 -0700 (PDT)
+Received: from localhost.localdomain (lily-optiplex-3070.dynamic.ucsd.edu. [2607:f720:1300:3033::1:4dd])
+        by smtp.googlemail.com with ESMTPSA id 201-20020a6217d2000000b0053e5daf1a25sm476194pfx.45.2022.09.08.21.17.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Sep 2022 21:17:06 -0700 (PDT)
+From:   Li Zhong <floridsleeves@gmail.com>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org
+Cc:     pabeni@redhat.com, kuba@kernel.org, edumazet@google.com,
+        davem@davemloft.net, anthony.l.nguyen@intel.com,
+        jesse.brandeburg@intel.com, Li Zhong <floridsleeves@gmail.com>
+Subject: [PATCH net-next v1] drivers/net/ethernet/intel/e100: check the return value of e100_exec_cmd()
+Date:   Thu,  8 Sep 2022 21:16:45 -0700
+Message-Id: <20220909041645.2612842-1-floridsleeves@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <053c7de3-c76c-82fd-2d44-2e7c1673ae98@hartkopp.net>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.200]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,201 +69,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> 
-> 
-> On 9/8/22 13:14, Ziyang Xuan (William) wrote:
->>> Just another reference which make it clear that the reordering of function calls in your patch is likely not correct:
->>>
->>> https://elixir.bootlin.com/linux/v5.19.7/source/net/packet/af_packet.c#L4734
->>>
->>> static int __init packet_init(void)
->>> {
->>>          int rc;
->>>
->>>          rc = proto_register(&packet_proto, 0);
->>>          if (rc)
->>>                  goto out;
->>>          rc = sock_register(&packet_family_ops);
->>>          if (rc)
->>>                  goto out_proto;
->>>          rc = register_pernet_subsys(&packet_net_ops);
->>>          if (rc)
->>>                  goto out_sock;
->>>          rc = register_netdevice_notifier(&packet_netdev_notifier);
->>>          if (rc)
->>>                  goto out_pernet;
->>>
->>>          return 0;
->>>
->>> out_pernet:
->>>          unregister_pernet_subsys(&packet_net_ops);
->>> out_sock:
->>>          sock_unregister(PF_PACKET);
->>> out_proto:
->>>          proto_unregister(&packet_proto);
->>> out:
->>>          return rc;
->>> }
->>>
->>
->> I had a simple test with can_raw. kernel modification as following:
->>
->> --- a/net/can/af_can.c
->> +++ b/net/can/af_can.c
->> @@ -118,6 +118,8 @@ static int can_create(struct net *net, struct socket *sock, int protocol,
->>          const struct can_proto *cp;
->>          int err = 0;
->>
->> +       printk("%s: protocol: %d\n", __func__, protocol);
->> +
->>          sock->state = SS_UNCONNECTED;
->>
->>          if (protocol < 0 || protocol >= CAN_NPROTO)
->> diff --git a/net/can/raw.c b/net/can/raw.c
->> index 5dca1e9e44cf..6052fd0cc7b2 100644
->> --- a/net/can/raw.c
->> +++ b/net/can/raw.c
->> @@ -943,6 +943,9 @@ static __init int raw_module_init(void)
->>          pr_info("can: raw protocol\n");
->>
->>          err = can_proto_register(&raw_can_proto);
->> +       printk("%s: can_proto_register done\n", __func__);
->> +       msleep(5000); // 5s
->> +       printk("%s: to register_netdevice_notifier\n", __func__);
->>          if (err < 0)
->>                  pr_err("can: registration of raw protocol failed\n");
->>          else
->>
->> I added 5 seconds delay after can_proto_register() and some debugs.
->> Testcase codes just try to create a CAN_RAW socket in user space as following:
->>
->> int main(int argc, char **argv)
->> {
->>          int s;
->>
->>          s = socket(PF_CAN, SOCK_RAW, CAN_RAW);
->>          if (s < 0) {
->>                  perror("socket");
->>                  return 0;
->>          }
->>          close(s);
->>          return 0;
->> }
->>
->> Execute 'modprobe can_raw' and the testcase we can get message as following:
->>
->> [  109.312767] can: raw protocol
->> [  109.312772] raw_module_init: can_proto_register done
->> [  111.296178] can_create: protocol: 1
->> [  114.809141] raw_module_init: to register_netdevice_notifier
->>
->> It proved that it can create CAN_RAW socket and process socket once can_proto_register() successfully.
->> CAN_BCM is the same.
-> 
-> Well, opening a CAN_RAW socket is not a proof that you can delay register_netdevice_notifier() that much.
-> 
-> After creating the socket you need to set the netdevice and can add some CAN filters and execute bind() on that socket.
+Check the return value of e100_exec_cmd() which could return error code
+when execution fails.
 
-Yes，all these socket operations need time, most likely, register_netdevice_notifier() and register_pernet_subsys() had been done.
-But it maybe not for some reasons, for example, cpu# that runs {raw,bcm}_module_init() is stuck temporary,
-or pernet_ops_rwsem lock competition in register_netdevice_notifier() and register_pernet_subsys().
+Signed-off-by: Li Zhong <floridsleeves@gmail.com>
+---
+ drivers/net/ethernet/intel/e100.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-If the condition which I pointed happens, I think my solution can solve.
+diff --git a/drivers/net/ethernet/intel/e100.c b/drivers/net/ethernet/intel/e100.c
+index 11a884aa5082..3b84745376fe 100644
+--- a/drivers/net/ethernet/intel/e100.c
++++ b/drivers/net/ethernet/intel/e100.c
+@@ -1911,7 +1911,8 @@ static inline void e100_start_receiver(struct nic *nic, struct rx *rx)
+ 
+ 	/* (Re)start RU if suspended or idle and RFA is non-NULL */
+ 	if (rx->skb) {
+-		e100_exec_cmd(nic, ruc_start, rx->dma_addr);
++		if (!e100_exec_cmd(nic, ruc_start, rx->dma_addr))
++			return;
+ 		nic->ru_running = RU_RUNNING;
+ 	}
+ }
+-- 
+2.25.1
 
-> 
-> And these filters need to be removed be the netdev notifier when someone plugs out the USB CAN adapter.
-> 
->> In the vast majority of cases, creating protocol socket and operating it are after protocol module initialization.
->> The scenario that I pointed in my patch is a low probability.
->>
->> af_packet.c and af_key.c do like that doesn't mean it's very correct. I think so.
-> 
-> I'm not sure either and this is why I'm asking.
-> 
-> Maybe having the notifier enabled first does not have a negative effect when removing the USB CAN interface when there is CAN_RAW protocol has been registered.
-> 
-> But if so, the PF_PACKET code should be revisited too
-It is a low probability scenario. Maybe not everyone agrees that it is worth it. But I will try to speak my voice.
-
-Thank you.
-
-> 
-> Best regards,
-> Oliver
-> 
->>
->> Thank you for your prompt reply.
->>
->>>
->>>
->>> On 08.09.22 09:10, Oliver Hartkopp wrote:
->>>>
->>>>
->>>> On 08.09.22 05:04, Ziyang Xuan wrote:
->>>>> Now, register_netdevice_notifier() and register_pernet_subsys() are both
->>>>> after can_proto_register(). It can create CAN_BCM socket and process socket
->>>>> once can_proto_register() successfully, so it is possible missing notifier
->>>>> event or proc node creation because notifier or bcm proc directory is not
->>>>> registered or created yet. Although this is a low probability scenario, it
->>>>> is not impossible.
->>>>>
->>>>> Move register_pernet_subsys() and register_netdevice_notifier() to the
->>>>> front of can_proto_register(). In addition, register_pernet_subsys() and
->>>>> register_netdevice_notifier() may fail, check their results are necessary.
->>>>>
->>>>> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
->>>>> ---
->>>>>    net/can/bcm.c | 18 +++++++++++++++---
->>>>>    1 file changed, 15 insertions(+), 3 deletions(-)
->>>>>
->>>>> diff --git a/net/can/bcm.c b/net/can/bcm.c
->>>>> index e60161bec850..e2783156bfd1 100644
->>>>> --- a/net/can/bcm.c
->>>>> +++ b/net/can/bcm.c
->>>>> @@ -1744,15 +1744,27 @@ static int __init bcm_module_init(void)
->>>>>        pr_info("can: broadcast manager protocol\n");
->>>>> +    err = register_pernet_subsys(&canbcm_pernet_ops);
->>>>> +    if (err)
->>>>> +        return err;
->>>>
->>>> Analogue to your patch for the CAN_RAW socket here (which has been applied to can-next right now) ...
->>>>
->>>> https://lore.kernel.org/linux-can/7af9401f0d2d9fed36c1667b5ac9b8df8f8b87ee.1661584485.git.william.xuanziyang@huawei.com/T/#u
->>>>
->>>> ... I'm not sure whether this is the right sequence to acquire the different resources here.
->>>>
->>>> E.g. in ipsec_pfkey_init() in af_key.c
->>>>
->>>> https://elixir.bootlin.com/linux/v5.19.7/source/net/key/af_key.c#L3887
->>>>
->>>> proto_register() is executed before register_pernet_subsys()
->>>>
->>>> Which seems to be more natural to me.
->>>>
->>>> Best regards,
->>>> Oliver
->>>>
->>>>> +
->>>>> +    err = register_netdevice_notifier(&canbcm_notifier);
->>>>> +    if (err)
->>>>> +        goto register_notifier_failed;
->>>>> +
->>>>>        err = can_proto_register(&bcm_can_proto);
->>>>>        if (err < 0) {
->>>>>            printk(KERN_ERR "can: registration of bcm protocol failed\n");
->>>>> -        return err;
->>>>> +        goto register_proto_failed;
->>>>>        }
->>>>> -    register_pernet_subsys(&canbcm_pernet_ops);
->>>>> -    register_netdevice_notifier(&canbcm_notifier);
->>>>>        return 0;
->>>>> +
->>>>> +register_proto_failed:
->>>>> +    unregister_netdevice_notifier(&canbcm_notifier);
->>>>> +register_notifier_failed:
->>>>> +    unregister_pernet_subsys(&canbcm_pernet_ops);
->>>>> +    return err;
->>>>>    }
->>>>>    static void __exit bcm_module_exit(void)
->>> .
-> .
