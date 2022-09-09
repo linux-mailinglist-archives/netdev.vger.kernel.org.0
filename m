@@ -2,107 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CCE015B3E9F
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 20:14:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2777F5B3EBF
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 20:21:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231841AbiIISNx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Sep 2022 14:13:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44268 "EHLO
+        id S230384AbiIISVx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Sep 2022 14:21:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231826AbiIISNo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 14:13:44 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E59DDFF4B;
-        Fri,  9 Sep 2022 11:13:43 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id v1so2518038plo.9;
-        Fri, 09 Sep 2022 11:13:43 -0700 (PDT)
+        with ESMTP id S229546AbiIISVw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 14:21:52 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3529DFF0B9
+        for <netdev@vger.kernel.org>; Fri,  9 Sep 2022 11:21:51 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id e20so4171736wri.13
+        for <netdev@vger.kernel.org>; Fri, 09 Sep 2022 11:21:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=2rBWOVv3s+/BgGo/HoYIVzLUNrlvQyzpwbNtQsvWT2I=;
-        b=U0OPC7Mybv9nOmzkVZ0q7GdbU6DFYu/oD8m83e0oJa97abKroHSB2iIGEEiSDIcR4H
-         6lteeo0bBVNtmM8aK90o2FGhEbxQgVcJQUnx9ADdfUmgYuDYpWupqxNRqDCTFZoigLuh
-         DYf3JqdYTwYiPvDN4ex+2XEJLfeKns1FWGLRuLCUB0yspf5KOQaTIUcf95BxaCdCoR94
-         o6q4D2n2tPNMYEM09cMyKGDUNRn3fXrhHXzsiDitg1XYIISGpRp2ZkrU5xIcBCv7v+lh
-         9vCG5/ArewR1H8ZpXUbMn9Pad4i7P8zqfF4Re2bZbEs++Y6I+oe3j4ITF2FU1R1u5Vol
-         eTJA==
+        d=googlemail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=APQzmEt5NhFdc3UBI3DQ++zJAo3zX616AmktIupeadk=;
+        b=IiEBHjUN1IVrpkNhdaX/saFWQ/8xlrtnf1yA/QBkmXAxTuJdCKvdzHEBnxW2MoSmbr
+         dTnawqsnmxt0Xi1x6HB+Vh3WERzIzwg+w9moiiUdupHyw0NbB4r2MRKjO/OHLHwaJPWT
+         vxhWZsd6TriISVYcbSFUR2+04XZ7qX5jD6iL9z/xP1nWizftpykEBxW476Rv1K2bMa1X
+         KSFxUBUCrgqOCDc2aek1s/AIYuRNrYtNL8tKbhqLwmneLfS5nDRctAADhZWvEnWKpyzX
+         aLdVZDC88WGumEFswdbLzlfS5VXLeZS/bX1UMXrAOFayuZulNxxnCDKlGT/7adtOQDOQ
+         cVBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=2rBWOVv3s+/BgGo/HoYIVzLUNrlvQyzpwbNtQsvWT2I=;
-        b=WDX0tDyCC7jD3JlXmZHAPnFAsqsxV4EZDscjbGJfhHWrQcf0zGOb6zxIJgpgBHgt7A
-         RkNcQSeLctjQp8WmU7pz7J+IFFbkWtO6YlAzxoJoV+Kb8Uy2Eutt8I0mYX1/N+nJUgmF
-         GnkAkPK/mqqZmldg9J4hwqqozIymh5pVqBxdP4SxCVPgidZuv5zuf34zJwT+A5EcB4a1
-         sWypo1bG49htW5fJw9uBGGSrwIZn4KTqTr6AdC99eOmV1Ep2WBjHvtkg0GkKURi+Pbxw
-         +1SJDK7xZfiB8k4nHnvaG//5DJa9vtmtQHlCr52YX6kKNzFFClPp35Clte1Br7ZUdiAu
-         Y9DQ==
-X-Gm-Message-State: ACgBeo2io/kkorCR3/cH+UkehAlGVC9XLDaUtPrLakNzZyR+0CGfU3Is
-        8D6/qcZtWVXh4lAg3dSAUYw=
-X-Google-Smtp-Source: AA6agR5nPtj/Vphsk/4jmNa1U1Db4c4Gob5akLfQ/k0i0pA3yyn7H9N4iy3dQpAVK4lGKrHgWUINyg==
-X-Received: by 2002:a17:903:2104:b0:176:a9ef:418b with SMTP id o4-20020a170903210400b00176a9ef418bmr14719928ple.134.1662747222905;
-        Fri, 09 Sep 2022 11:13:42 -0700 (PDT)
-Received: from localhost ([208.71.200.116])
-        by smtp.gmail.com with ESMTPSA id i10-20020a170902c94a00b001768517f99esm745300pla.244.2022.09.09.11.13.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Sep 2022 11:13:42 -0700 (PDT)
-Date:   Fri, 9 Sep 2022 18:13:41 +0000
-From:   Bobby Eshleman <bobbyeshleman@gmail.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     Dexuan Cui <decui@microsoft.com>, Bryan Tan <bryantan@vmware.com>,
-        Vishnu Dasa <vdasa@vmware.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Bobby Eshleman <bobby.eshleman@gmail.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org
-Subject: Re: Call to discuss vsock netdev/sk_buff [was Re: [PATCH 0/6]
- virtio/vsock: introduce dgrams, sk_buff, and qdisc]
-Message-ID: <YxuCVfFcRdWHeeh8@bullseye>
-References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
- <YxdKiUzlfpHs3h3q@fedora>
- <Yv5PFz1YrSk8jxzY@bullseye>
- <20220908143652.tfyjjx2z6in6v66c@sgarzare-redhat>
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=APQzmEt5NhFdc3UBI3DQ++zJAo3zX616AmktIupeadk=;
+        b=UBpn9w/45A98bx6alhx7z0xjX1zXiInwzQJ0ULHfp7b3M0Wy1Su5ue0XSpVALuXLci
+         DU1sUp3vWLVWiHBDDzv0UrIMMkwRSa/mnypqToVC3XTx9/yn56DvYmXhahx/xbZzg7gI
+         mgVTOPiUhs8UCBNp6EbVvzqbbslBOdNf2RKeImV3UNGg4voeMxJ6yB8G79VHardM/8Dn
+         XUVfDQi+xSqYzcPwZK6moK+SvHURTpsY5CBD78hAz22aVW7mY3ip38z+EzjGmsJbkAO2
+         CshE8wkm8b1MYKY0XkFYIyu1HRjn2EjN1YWFwkAz1vfwxtkCG+xh6dj+DwoDUkpqGMjX
+         MT4A==
+X-Gm-Message-State: ACgBeo39aresy/M4qkGJOdKm2ndy+bypQApnQn1kaxZB098CbcvrOf3K
+        D7e+LB3tWPKYuANd3L9B14g=
+X-Google-Smtp-Source: AA6agR6UqHnbp7FWjnomBQSSUwkSbFaRVPYQrbI89yXNFDfuA3QjBWgwUCYxcUeHwfETGOgoQXXT5Q==
+X-Received: by 2002:a05:6000:1365:b0:22a:2ee9:4363 with SMTP id q5-20020a056000136500b0022a2ee94363mr5414299wrz.393.1662747709642;
+        Fri, 09 Sep 2022 11:21:49 -0700 (PDT)
+Received: from [192.168.1.10] (2e41ab4c.skybroadband.com. [46.65.171.76])
+        by smtp.googlemail.com with ESMTPSA id j13-20020adff54d000000b00229d55994e0sm1018024wrp.59.2022.09.09.11.21.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 09 Sep 2022 11:21:48 -0700 (PDT)
+Message-ID: <a3c79b7d-526f-92ce-144a-453ec3c200a5@googlemail.com>
+Date:   Fri, 9 Sep 2022 19:21:47 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220908143652.tfyjjx2z6in6v66c@sgarzare-redhat>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: b118509076b3 (probably) breaks my firewall
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        regressions@leemuis.info
+References: <e5d757d7-69bc-a92a-9d19-0f7ed0a81743@googlemail.com>
+ <20220908191925.GB16543@breakpoint.cc>
+ <78611fbd-434e-c948-5677-a0bdb66f31a5@googlemail.com>
+ <20220908214859.GD16543@breakpoint.cc> <YxsTMMFoaNSM9gLN@salvia>
+Content-Language: en-GB
+From:   Chris Clayton <chris2553@googlemail.com>
+In-Reply-To: <YxsTMMFoaNSM9gLN@salvia>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hey Stefano, thanks for sending this out.
 
-On Thu, Sep 08, 2022 at 04:36:52PM +0200, Stefano Garzarella wrote:
+
+On 09/09/2022 11:19, Pablo Neira Ayuso wrote:
+> On Thu, Sep 08, 2022 at 11:48:59PM +0200, Florian Westphal wrote:
+>> Chris Clayton <chris2553@googlemail.com> wrote:
+>>
+>> [ CC Pablo ]
+>>
+>>> On 08/09/2022 20:19, Florian Westphal wrote:
+>>>> Chris Clayton <chris2553@googlemail.com> wrote:
+>>>>> Just a heads up and a question...
+>>>>>
+>>>>> I've pulled the latest and greatest from Linus' tree and built and installed the kernel. git describe gives
+>>>>> v6.0-rc4-126-g26b1224903b3.
+>>>>>
+>>>>> I find that my firewall is broken because /proc/sys/net/netfilter/nf_conntrack_helper no longer exists. It existed on an
+>>>>> -rc4 kernel. Are changes like this supposed to be introduced at this stage of the -rc cycle?
+>>>>
+>>>> The problem is that the default-autoassign (nf_conntrack_helper=1) has
+>>>> side effects that most people are not aware of.
+>>>>
+>>>> The bug that propmpted this toggle from getting axed was that the irc (dcc) helper allowed
+>>>> a remote client to create a port forwarding to the local client.
+>>>
+>>>
+>>> Ok, but I still think it's not the sort of change that should be introduced at this stage of the -rc cycle.
+>>> The other problem is that the documentation (Documentation/networking/nf_conntrack-sysctl.rst) hasn't been updated. So I
+>>> know my firewall is broken but there's nothing I can find that tells me how to fix it.
+>>
+>> Pablo, I don't think revert+move the 'next' will avoid this kinds of
+>> problems, but at least the nf_conntrack-sysctl.rst should be amended to
+>> reflect that this was removed.
 > 
-> Looking better at the KVM forum sched, I found 1h slot for Sep 15 at 16:30
-> UTC.
+> I'll post a patch to amend the documentation.
 > 
-> Could this work for you?
+>> I'd keep it though because people that see an error wrt. this might be
+>> looking at nf_conntrack-sysctl.rst.
+>>
+>> Maybe just a link to
+>> https://home.regit.org/netfilter-en/secure-use-of-helpers/?
+>>
+but
+I'm afraid that document isn't much use to a "Joe User" like me. It's written by people who know a lot about the subject
+matter to be read by other people who know a lot about the subject matter.
 
-Unfortunately, I can't make this time slot.
+>> What do you think?
+> 
+> I'll update netfilter.org to host a copy of the github sources.
+> 
+> We have been announcing this going deprecated for 10 years...
 
-My schedule also opens up a lot the week of the 26th, especially between
-16:00 and 19:00 UTC, as well as after 22:00 UTC.
 
-Best,
-Bobby
+That may be the case, it should be broken before -rc1 is released. Breaking it at -rc4+ is, I think, a regression!
+Adding Thorsten Leemuis to cc list
