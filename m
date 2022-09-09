@@ -2,234 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 55EAB5B2F62
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 09:00:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A3415B2FAC
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 09:20:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231246AbiIIG76 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Sep 2022 02:59:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52604 "EHLO
+        id S231316AbiIIHT4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Sep 2022 03:19:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229973AbiIIG74 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 02:59:56 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C88C131EF3;
-        Thu,  8 Sep 2022 23:59:53 -0700 (PDT)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2896fV5O021022;
-        Fri, 9 Sep 2022 06:59:49 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=VdJGDocCkEAvlr/kbz4be9zCJIRrD+okGYvBOiKzKHs=;
- b=QyteU72vOXv3+XOBzc0c9AkFn8JWeR0QZpotlu33Sezw7Y6bRGHvvE3mFHAkeArRe3v6
- wxtDuGF7sZOhSKzkw5UdANQ42j2cBxOElpaidI23JnFQOkPidMy8Sud8fn7D5pnOAB41
- 6wGZm2vsED5NwYICyFrstItDD6r+HbudYRVRUVmJeMYY5Ccy5EczB/WYKJumLl+mfYf+
- BFNG2Y+dG9SeWWVqO+PN1dzbEIZBF95EI0swWj9dXG4j5SW3vlk1Nh4k7iNE9EWB/jn0
- yUzQkzIsUCmy7lwD9oT+5SMogqEmvAx/QdGcz3+NG840eUTVj9XsgA40YL93VzoBDBNZ TQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jg0ekgep6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 09 Sep 2022 06:59:48 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2896gHIg025382;
-        Fri, 9 Sep 2022 06:59:48 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jg0ekgen2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 09 Sep 2022 06:59:47 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2896oQLa005336;
-        Fri, 9 Sep 2022 06:59:45 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma01fra.de.ibm.com with ESMTP id 3jbxj8wknh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 09 Sep 2022 06:59:45 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 289706Go44499404
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 9 Sep 2022 07:00:06 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 285F652050;
-        Fri,  9 Sep 2022 06:59:42 +0000 (GMT)
-Received: from [9.171.44.45] (unknown [9.171.44.45])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id B671F5204F;
-        Fri,  9 Sep 2022 06:59:41 +0000 (GMT)
-Message-ID: <5a8a8032-e351-ec7e-a05f-693a4aa8bc6d@linux.ibm.com>
-Date:   Fri, 9 Sep 2022 08:59:41 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Subject: Re: [PATCH net-next v2 00/10] optimize the parallelism of SMC-R
- connections
-Content-Language: en-US
-To:     "D. Wythe" <alibuda@linux.alibaba.com>, kgraul@linux.ibm.com,
-        wenjia@linux.ibm.com
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-References: <cover.1661407821.git.alibuda@linux.alibaba.com>
-From:   Jan Karcher <jaka@linux.ibm.com>
-In-Reply-To: <cover.1661407821.git.alibuda@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 3y8Br9aSy_F4GYv8aMyIkIOuJfl2m9fE
-X-Proofpoint-ORIG-GUID: sV4NRSKIaX59OOSzfbKUt3iBqVrRvhQD
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        with ESMTP id S231313AbiIIHTx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 03:19:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC58052DCB
+        for <netdev@vger.kernel.org>; Fri,  9 Sep 2022 00:19:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662707986;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=aaeCnJa8gIbHFQzoDZnFvGzLYz113ntpfY0w/PvkMoo=;
+        b=B+T8WB3p+qy9UXJsjX43mzaPl4s+hXjH38bi0cB5XJ6gBcuyE5H2xbCVooK8o23wK4URo5
+        HWPgarH3ZV2MTCWK/QxFjy/2ZJt0vbYazlQIW26ZdVZbjOfgCC/LW+T1LVGqGRrW6MGb/F
+        6yL5ypm9eYKnNIBysIgDTk2DmwpwQaY=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-47-9DMa5LYRNx2nxyDaObrCYg-1; Fri, 09 Sep 2022 03:19:45 -0400
+X-MC-Unique: 9DMa5LYRNx2nxyDaObrCYg-1
+Received: by mail-wm1-f70.google.com with SMTP id i129-20020a1c3b87000000b003b33e6160bdso680982wma.7
+        for <netdev@vger.kernel.org>; Fri, 09 Sep 2022 00:19:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=aaeCnJa8gIbHFQzoDZnFvGzLYz113ntpfY0w/PvkMoo=;
+        b=etEe3fayKL1kwPpUTHXdkqjoalUn9jt7d7pRwvGGFSuV4tOF723c3VhCSu5fAIvEs+
+         r7U4Zm9Vpz7eFNVuXCcpTg4bJvJdQ3SXKs1ettPaU3YS0o38aGG/JtjiZkl50I2XQDaY
+         WtvmyaOxoEXyoVKqJevRFYgGaSnVGKkCD9uOluOs8QTG2SkpK/773r2sxGijpNbSCha3
+         YO64b6LNXEusVXZB1QbYG8nhhUCvc7VZz/qLvwCHs0tfBr0YB9haiqzyrCAOwExgAUlL
+         AezZI6dBvmTIgcgm5/kl039S8xr8m5M4LQBNthLBTBp7rrsIlsdPAVstlbZWWs4992R8
+         rItA==
+X-Gm-Message-State: ACgBeo0/ynIsKzn6k5pzzuO0p6amRLAieKPensWig6ofjhYFKFwzh/1D
+        wJRzuRVVO7sxy1xo2mWG2K7LKmE28rnLqsWDlK64WG2HN1swciM+zYugBEMaZmzZDJfdFj1NV+b
+        iwslmZsntNjk/skxL
+X-Received: by 2002:a05:600c:548a:b0:3b3:21b1:20ca with SMTP id iv10-20020a05600c548a00b003b321b120camr4021835wmb.77.1662707983199;
+        Fri, 09 Sep 2022 00:19:43 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4F5Cylfv8K6BRb3rTviXbFDOrt/+9tbv+5onKkEX6UVWSB0MHJA3hW4AJ/fwLd1cKGNPHTyQ==
+X-Received: by 2002:a05:600c:548a:b0:3b3:21b1:20ca with SMTP id iv10-20020a05600c548a00b003b321b120camr4021817wmb.77.1662707982830;
+        Fri, 09 Sep 2022 00:19:42 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-119-112.dyn.eolo.it. [146.241.119.112])
+        by smtp.gmail.com with ESMTPSA id g15-20020adffc8f000000b00228692033dcsm1131549wrr.91.2022.09.09.00.19.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Sep 2022 00:19:42 -0700 (PDT)
+Message-ID: <1a260c2c486c2c4bf60c7f953a17c820d4e8b4bc.camel@redhat.com>
+Subject: Re: net: mptcp: mptcp selftest cause page_counter underflow
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Menglong Dong <menglong8.dong@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>, mptcp@lists.linux.dev,
+        Mengen Sun <mengensun@tencent.com>,
+        Biao Jiang <benbjiang@tencent.com>
+Date:   Fri, 09 Sep 2022 09:19:40 +0200
+In-Reply-To: <CADxym3aTrj_0ETtHzZg38y=JjOdNz+arYaCYTaHuhSvg+8rUhw@mail.gmail.com>
+References: <CADxym3aTrj_0ETtHzZg38y=JjOdNz+arYaCYTaHuhSvg+8rUhw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
- definitions=2022-09-09_02,2022-09-09_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- lowpriorityscore=0 clxscore=1011 priorityscore=1501 mlxlogscore=999
- adultscore=0 suspectscore=0 spamscore=0 bulkscore=0 mlxscore=0
- phishscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2207270000 definitions=main-2209090021
-X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, 2022-09-09 at 13:05 +0800, Menglong Dong wrote:
+> Hello,
+> 
+> I find a kernel warning when I run mptcp selftest with
+> following print:
+> 
+> [  138.448383] ------------[ cut here ]------------
+> [  138.448386] page_counter underflow: -4294952882 nr_pages=4294967289
+> [  138.448396] WARNING: CPU: 36 PID: 13372 at mm/page_counter.c:56
+> page_counter_uncharge+0x68/0x80
+> [  138.448403] Modules linked in: nft_tproxy nf_tproxy_ipv6
+> nf_tproxy_ipv4 nft_socket nf_socket_ipv4 nf_socket_ipv6 ipt_REJECT
+> nf_reject_ipv4 sch_netem xt_mark veth tcp_diag udp_diag inet_diag tun
+> nf_conntrack_netlink xt_addrtype nft_compat overlay binfmt_misc
+> squashfs edac_core crc32_pclmul ghash_clmulni_intel aesni_intel
+> crypto_simd cryptd virtio_balloon drm i2c_core backlight fuse autofs4
+> btrfs blake2b_generic zstd_compress multipath crc32c_intel sr_mod
+> cdrom floppy
+> [  138.448429] CPU: 36 PID: 13372 Comm: mptcp_connect Kdump: loaded
+> Not tainted 6.0.0-rc2-0008+ #60
+> [  138.448431] Hardware name: Tencent Cloud CVM, BIOS
+> seabios-1.9.1-qemu-project.org 04/01/2014
+> [  138.448432] RIP: 0010:page_counter_uncharge+0x68/0x80
+> [  138.448435] Code: 5b 41 5c 41 5d 5d e9 47 bf ee 00 80 3d 08 e4 0b
+> 02 00 75 18 48 89 da 48 c7 c7 78 ea 7f 82 c6 05 f5 e3 0b 02 01 e8 6d
+> 66 bd 00 <0f> 0b 49 c7 45 00 00 00 00 00 31 f6 eb b7 66 2e 0f 1f 84 00
+> 00 00
+> [  138.448437] RSP: 0018:ffffc9000a143b18 EFLAGS: 00010086
+> [  138.448439] RAX: 0000000000000000 RBX: 00000000fffffff9 RCX: 0000000000000000
+> [  138.448440] RDX: 0000000000000202 RSI: ffffffff827e53f1 RDI: 00000000ffffffff
+> [  138.448441] RBP: ffffc9000a143b30 R08: 0000000000013ffb R09: 00000000ffffbfff
+> [  138.448442] R10: ffffffff830760a0 R11: ffffffff830760a0 R12: ffffffff00000007
+> [  138.448443] R13: ffff8881229780d0 R14: ffff8882072a0f80 R15: 00000000084072b6
+> [  138.448447] FS:  00007f886f30d740(0000) GS:ffff889fbf700000(0000)
+> knlGS:0000000000000000
+> [  138.448449] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [  138.448450] CR2: 00007ffd8d488478 CR3: 0000000132088000 CR4: 00000000003506e0
+> [  138.448451] Call Trace:
+> [  138.448453]  <TASK>
+> [  138.448456]  drain_stock+0x43/0xc0
+> [  138.448459]  __refill_stock+0x62/0x90
+> [  138.448461]  mem_cgroup_uncharge_skmem+0x4e/0x90
+> [  138.448463]  __sk_mem_reduce_allocated+0x12e/0x1b0
+> [  138.448467]  __mptcp_update_rmem+0x8e/0xb0
+> [  138.448470]  mptcp_release_cb+0x23a/0x320
+> [  138.448473]  release_sock+0x48/0xa0
+> [  138.448475]  mptcp_recvmsg+0x448/0xb70
+> [  138.448478]  ? balance_dirty_pages_ratelimited+0x10/0x20
+> [  138.448481]  ? generic_perform_write+0x13c/0x1f0
+> [  138.448484]  inet_recvmsg+0x120/0x130
+> [  138.448488]  sock_recvmsg+0x6e/0x80
+> [  138.448490]  sock_read_iter+0x8f/0xf0
+> [  138.448492]  vfs_read+0x29f/0x2d0
+> [  138.448495]  ksys_read+0xb9/0xf0
+> [  138.448497]  __x64_sys_read+0x19/0x20
+> [  138.448499]  do_syscall_64+0x42/0x90
+> [  138.448501]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> [  138.448504] RIP: 0033:0x7f886f0f9a7e
+> [  138.448506] Code: c0 e9 b6 fe ff ff 50 48 8d 3d be ec 0b 00 e8 d9
+> f1 01 00 66 0f 1f 84 00 00 00 00 00 64 8b 04 25 18 00 00 00 85 c0 75
+> 14 0f 05 <48> 3d 00 f0 ff ff 77 5a c3 66 0f 1f 84 00 00 00 00 00 48 83
+> ec 28
+> [  138.448507] RSP: 002b:00007ffd8d488478 EFLAGS: 00000246 ORIG_RAX:
+> 0000000000000000
+> [  138.448509] RAX: ffffffffffffffda RBX: 0000000000000feb RCX: 00007f886f0f9a7e
+> [  138.448510] RDX: 0000000000000feb RSI: 00007ffd8d48e550 RDI: 0000000000000003
+> [  138.448511] RBP: 0000000000000003 R08: 00007f886f1f2210 R09: 00007f886f1f2260
+> [  138.448512] R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffd8d48e550
+> [  138.448513] R13: 0000000000002000 R14: 0000000000000000 R15: 00007ffd8d48e550
+> [  138.448516]  </TASK>
+> [  138.448516] ---[ end trace 0000000000000000 ]---
+> 
+> It is easy to reproduce, just run mptcp_connect.sh, mptcp_sockopt.sh and
+> mptcp_join.sh together.
+> 
+> Hmm...I'm not good at kernel memory, so someone who
+> is good at this part may have a look at this problem.
+> 
+> You can add
+> Reported-by: Menglong Dong <imagedong@tencent.com>
+> when you fix this warning.
 
+Thank you for the report. We already got a similar one from the intel
+bot, but we did not find an easy way to reproduce it.
 
-On 26.08.2022 11:51, D. Wythe wrote:
-> From: "D. Wythe" <alibuda@linux.alibaba.com>
-> 
-> This patch set attempts to optimize the parallelism of SMC-R connections,
-> mainly to reduce unnecessary blocking on locks, and to fix exceptions that
-> occur after thoses optimization.
-> 
-> According to Off-CPU graph, SMC worker's off-CPU as that:
-> 
-> smc_close_passive_work			(1.09%)
-> 	smcr_buf_unuse			(1.08%)
-> 		smc_llc_flow_initiate	(1.02%)
-> 	
-> smc_listen_work 			(48.17%)
-> 	__mutex_lock.isra.11 		(47.96%)
-> 
-> 
-> An ideal SMC-R connection process should only block on the IO events
-> of the network, but it's quite clear that the SMC-R connection now is
-> queued on the lock most of the time.
-> 
-> The goal of this patchset is to achieve our ideal situation where
-> network IO events are blocked for the majority of the connection lifetime.
-> 
-> There are three big locks here:
-> 
-> 1. smc_client_lgr_pending & smc_server_lgr_pending
-> 
-> 2. llc_conf_mutex
-> 
-> 3. rmbs_lock & sndbufs_lock
-> 
-> And an implementation issue:
-> 
-> 1. confirm/delete rkey msg can't be sent concurrently while
-> protocol allows indeed.
-> 
-> Unfortunately,The above problems together affect the parallelism of
-> SMC-R connection. If any of them are not solved. our goal cannot
-> be achieved.
-> 
-> After this patch set, we can get a quite ideal off-CPU graph as
-> following:
-> 
-> smc_close_passive_work					(41.58%)
-> 	smcr_buf_unuse					(41.57%)
-> 		smc_llc_do_delete_rkey			(41.57%)
-> 
-> smc_listen_work						(39.10%)
-> 	smc_clc_wait_msg				(13.18%)
-> 		tcp_recvmsg_locked			(13.18)
-> 	smc_listen_find_device				(25.87%)
-> 		smcr_lgr_reg_rmbs			(25.87%)
-> 			smc_llc_do_confirm_rkey		(25.87%)
-> 
-> We can see that most of the waiting times are waiting for network IO
-> events. This also has a certain performance improvement on our
-> short-lived conenction wrk/nginx benchmark test:
-> 
-> +--------------+------+------+-------+--------+------+--------+
-> |conns/qps     |c4    | c8   |  c16  |  c32   | c64  |  c200  |
-> +--------------+------+------+-------+--------+------+--------+
-> |SMC-R before  |9.7k  | 10k  |  10k  |  9.9k  | 9.1k |  8.9k  |
-> +--------------+------+------+-------+--------+------+--------+
-> |SMC-R now     |13k   | 19k  |  18k  |  16k   | 15k  |  12k   |
-> +--------------+------+------+-------+--------+------+--------+
-> |TCP	       |15k   | 35k  |  51k  |  80k   | 100k |  162k  |
-> +--------------+------+------+-------+--------+------+--------+
-> 
-> The reason why the benefit is not obvious after the number of connections
-> has increased dues to workqueue. If we try to change workqueue to UNBOUND,
-> we can obtain at least 4-5 times performance improvement, reach up to half
-> of TCP. However, this is not an elegant solution, the optimization of it
-> will be much more complicated. But in any case, we will submit relevant
-> optimization patches as soon as possible.
-> 
-> Please note that the premise here is that the lock related problem
-> must be solved first, otherwise, no matter how we optimize the workqueue,
-> there won't be much improvement.
-> 
-> Because there are a lot of related changes to the code, if you have
-> any questions or suggestions, please let me know.
-> 
-> Thanks
-> D. Wythe
-> 
-> v1 -> v2:
-> 
-> 1. Fix panic in SMC-D scenario
-> 2. Fix lnkc related hashfn calculation exception, caused by operator
-> priority.
-> 3. Remove -EBUSY processing of rhashtable_insert_fast, see more details
-> in comments around smcr_link_get_or_create_cluster().
-> 4. Only wake up one connection if the link has not been active.
-> 5. Delete obsolete unlock logic in smc_listen_work().
-> 6. PATCH format, do Reverse Christmas tree.
-> 7. PATCH format, change all xxx_lnk_xxx function to xxx_link_xxx.
-> 8. PATCH format, add correct fix tag for the patches for fixes.
-> 9. PATCH format, fix some spelling error.
-> 10.PATCH format, rename slow to do_slow in smcr_lgr_reg_rmbs().
-> 
-> 
-> D. Wythe (10):
->    net/smc: remove locks smc_client_lgr_pending and
->      smc_server_lgr_pending
->    net/smc: fix SMC_CLC_DECL_ERR_REGRMB without smc_server_lgr_pending
->    net/smc: allow confirm/delete rkey response deliver multiplex
->    net/smc: make SMC_LLC_FLOW_RKEY run concurrently
->    net/smc: llc_conf_mutex refactor, replace it with rw_semaphore
->    net/smc: use read semaphores to reduce unnecessary blocking in
->      smc_buf_create() & smcr_buf_unuse()
->    net/smc: reduce unnecessary blocking in smcr_lgr_reg_rmbs()
->    net/smc: replace mutex rmbs_lock and sndbufs_lock with rw_semaphore
->    net/smc: Fix potential panic dues to unprotected
->      smc_llc_srv_add_link()
->    net/smc: fix application data exception
-> 
->   net/smc/af_smc.c   |  42 +++--
->   net/smc/smc_core.c | 443 +++++++++++++++++++++++++++++++++++++++++++++++------
->   net/smc/smc_core.h |  78 +++++++++-
->   net/smc/smc_llc.c  | 286 +++++++++++++++++++++++++---------
->   net/smc/smc_llc.h  |   6 +
->   net/smc/smc_wr.c   |  10 --
->   net/smc/smc_wr.h   |  10 ++
->   7 files changed, 725 insertions(+), 150 deletions(-)
-> 
+The issue should be addressed by this patch:
 
-D.,
+https://patchwork.kernel.org/project/netdevbpf/patch/20220906180404.1255873-1-matthieu.baerts@tessares.net/
 
-I'm sorry.
-I replied to the patch 01/10 with the test results and not the cover 
-letter. I have a filter on my inbox separating everything for "net/smc:" 
-and the keywords are missing on this cover letter.
-Mea culpa.
+Thanks,
 
-https://lore.kernel.org/netdev/1767b6e4-0053-728b-9722-add68da13781@linux.ibm.com/
+Paolo
 
-- Jan
