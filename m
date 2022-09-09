@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D77C5B3BD1
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 17:27:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D84C5B3BD7
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 17:27:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232347AbiIIPZz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Sep 2022 11:25:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49868 "EHLO
+        id S232429AbiIIPZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Sep 2022 11:25:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232367AbiIIPZQ (ORCPT
+        with ESMTP id S232369AbiIIPZQ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 11:25:16 -0400
 Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 832763C151;
-        Fri,  9 Sep 2022 08:25:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1721491C4;
+        Fri,  9 Sep 2022 08:25:10 -0700 (PDT)
 Received: (Authenticated sender: maxime.chevallier@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id B2DE6FF806;
-        Fri,  9 Sep 2022 15:25:03 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id B083EFF809;
+        Fri,  9 Sep 2022 15:25:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1662737105;
+        t=1662737109;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Y6Ss1uWIBXFrI/qcPJYGwF9CAZQSfwYTZorKlqe8ILw=;
-        b=ps4YXO1RCNNcTE1b6HG9NpgUOpgoGzpmsWPPSOa4D1Zl2ZeK7fhaF5tPj39q4vPWycFKMa
-        7QV6J6cinJpRJkij8KihlaQ7sbMj43unVttXfqrF2IjH+H+ZlJ531ZKPEev3+mq8P7DwW8
-        yYCSvjLBn0qnemjuott+53jSVM/WkRYtsu4QpNGYO1XWBIlhuaLKnO8xL1+rrLOBgu1EW6
-        jEzwc1zqL22826XwHtEyD9tNY5sehlzyKeiX6x7Gm+8kfUaI58ZrUFF3LTCWx9eIYbr6lI
-        wKJ87eFsXUwLtlpe0nW8Cv6bLjdBgu0uva/EKUTLKfow533+HW5YNeQoqBg5Ng==
+        bh=V8wwhQrCmgpjbSaLVlROy+ILWKKLSXmxcfxd4i466SE=;
+        b=dCKetW+yu50tuNbo47NEL685F6HCbO8rlj0fiyfrPvqDDg0lV1FxIMq/TfJMTgUaNUf4wa
+        DTmSNIAXkqApE4HZ1oDF2CWLeZCsGZIgqIAYq+F5BpJUOVE2aGz9mB4p+kw3FGHB4CBlb8
+        7AjS9tDqpN613k2dUVXZlK8JwHJmp6c/9yrxGsfWvXGXQW7ZYRVluhTgQB26OdtOBLOhfj
+        mXMv8zNCV9KcPsPHXsWIr3syw+y9NSiWNv1h4mxzSIpb/+dwKeqV/7TWcwUmMmdOUZsgML
+        VC+VQggZ2ARamepwcL5GFReBSXoW3Zb4i0UQVB04b7iD9lOpZgdf3n64KMAUEg==
 From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
 To:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
@@ -43,9 +43,9 @@ Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>,
         Luka Perkov <luka.perkov@sartura.hr>,
         Robert Marko <robert.marko@sartura.hr>
-Subject: [PATCH net-next v4 2/5] net: dsa: add out-of-band tagging protocol
-Date:   Fri,  9 Sep 2022 17:24:51 +0200
-Message-Id: <20220909152454.7462-3-maxime.chevallier@bootlin.com>
+Subject: [PATCH net-next v4 3/5] net: ipqess: Add out-of-band DSA tagging support
+Date:   Fri,  9 Sep 2022 17:24:52 +0200
+Message-Id: <20220909152454.7462-4-maxime.chevallier@bootlin.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220909152454.7462-1-maxime.chevallier@bootlin.com>
 References: <20220909152454.7462-1-maxime.chevallier@bootlin.com>
@@ -60,212 +60,183 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This tagging protocol is designed for the situation where the link
-between the MAC and the Switch is designed such that the Destination
-Port, which is usually embedded in some part of the Ethernet Header, is
-sent out-of-band, and isn't present at all in the Ethernet frame.
+On the IPQ4019, there's an 5 ports switch connected to the CPU through
+the IPQESS Ethernet controller. The way the DSA tag is sent-out to that
+switch is through the DMA descriptor, due to how tightly it is
+integrated with the switch.
 
-This can happen when the MAC and Switch are tightly integrated on an
-SoC, as is the case with the Qualcomm IPQ4019 for example, where the DSA
-tag is inserted directly into the DMA descriptors. In that case,
-the MAC driver is responsible for sending the tag to the switch using
-the out-of-band medium. To do so, the MAC driver needs to have the
-information of the destination port for that skb.
-
-This out-of-band tagging protocol is using the very beggining of the skb
-headroom to store the tag. The drawback of this approch is that the
-headroom isn't initialized upon allocating it, therefore we have a
-chance that the garbage data that lies there at allocation time actually
-ressembles a valid oob tag. This is only problematic if we are
-sending/receiving traffic on the master port, which isn't a valid DSA
-use-case from the beggining. When dealing from traffic to/from a slave
-port, then the oob tag will be initialized properly by the tagger or the
-mac driver through the use of the dsa_oob_tag_push() call.
+This commit uses the out-of-band tagging protocol by getting the source
+port from the descriptor, push it into the skb, and have the tagger pull
+it to infer the destination netdev. The reverse process is done on the
+TX side, where the driver pulls the tag from the skb and builds the
+descriptor accordingly.
 
 Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
 ---
-V3->V4 
+V3->V4:
  - No changes
-V3->V2:
- - No changes, as the discussion is ongoing
+V2->V3:
+ - No changes
 V1->V2:
- - Reworked the tagging method, putting the tag at skb->head instead
-   of putting it into skb->shinfo, as per Andrew, Florian and Vlad's
-   reviews
+ - Use the new tagger, and the dsa_oob_tag_* helpers
 
 
- include/linux/dsa/oob.h | 17 +++++++++
- include/net/dsa.h       |  2 +
- net/dsa/Kconfig         |  7 ++++
- net/dsa/Makefile        |  1 +
- net/dsa/tag_oob.c       | 84 +++++++++++++++++++++++++++++++++++++++++
- 5 files changed, 111 insertions(+)
- create mode 100644 include/linux/dsa/oob.h
- create mode 100644 net/dsa/tag_oob.c
+ drivers/net/ethernet/qualcomm/Kconfig         |  3 +-
+ drivers/net/ethernet/qualcomm/ipqess/ipqess.c | 56 ++++++++++++++++++-
+ drivers/net/ethernet/qualcomm/ipqess/ipqess.h |  4 ++
+ 3 files changed, 61 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/dsa/oob.h b/include/linux/dsa/oob.h
-new file mode 100644
-index 000000000000..dbb4a6fb1ce4
---- /dev/null
-+++ b/include/linux/dsa/oob.h
-@@ -0,0 +1,17 @@
-+/* SPDX-License-Identifier: GPL-2.0-only
-+ * Copyright (C) 2022 Maxime Chevallier <maxime.chevallier@bootlin.com>
-+ */
-+
-+#ifndef _NET_DSA_OOB_H
-+#define _NET_DSA_OOB_H
-+
-+#include <linux/skbuff.h>
-+
-+struct dsa_oob_tag_info {
-+	u16 proto;
-+	u16 dp;
-+};
-+
-+int dsa_oob_tag_push(struct sk_buff *skb, struct dsa_oob_tag_info *ti);
-+int dsa_oob_tag_pop(struct sk_buff *skb, struct dsa_oob_tag_info *ti);
-+#endif
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index f2ce12860546..8a63bb65b81b 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -55,6 +55,7 @@ struct phylink_link_state;
- #define DSA_TAG_PROTO_RTL8_4T_VALUE		25
- #define DSA_TAG_PROTO_RZN1_A5PSW_VALUE		26
- #define DSA_TAG_PROTO_LAN937X_VALUE		27
-+#define DSA_TAG_PROTO_OOB_VALUE			28
+diff --git a/drivers/net/ethernet/qualcomm/Kconfig b/drivers/net/ethernet/qualcomm/Kconfig
+index a723ddbea248..eeb2c608d6b9 100644
+--- a/drivers/net/ethernet/qualcomm/Kconfig
++++ b/drivers/net/ethernet/qualcomm/Kconfig
+@@ -62,8 +62,9 @@ config QCOM_EMAC
  
- enum dsa_tag_protocol {
- 	DSA_TAG_PROTO_NONE		= DSA_TAG_PROTO_NONE_VALUE,
-@@ -85,6 +86,7 @@ enum dsa_tag_protocol {
- 	DSA_TAG_PROTO_RTL8_4T		= DSA_TAG_PROTO_RTL8_4T_VALUE,
- 	DSA_TAG_PROTO_RZN1_A5PSW	= DSA_TAG_PROTO_RZN1_A5PSW_VALUE,
- 	DSA_TAG_PROTO_LAN937X		= DSA_TAG_PROTO_LAN937X_VALUE,
-+	DSA_TAG_PROTO_OOB		= DSA_TAG_PROTO_OOB_VALUE,
- };
- 
- struct dsa_switch;
-diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
-index 3eef72ce99a4..3e095041dcca 100644
---- a/net/dsa/Kconfig
-+++ b/net/dsa/Kconfig
-@@ -57,6 +57,13 @@ config NET_DSA_TAG_HELLCREEK
- 	  Say Y or M if you want to enable support for tagging frames
- 	  for the Hirschmann Hellcreek TSN switches.
- 
-+config NET_DSA_TAG_OOB
-+	tristate "Tag driver for Out-of-band tagging drivers"
-+	help
-+	  Say Y or M if you want to enable support for tagging out-of-band. In
-+	  that case, the MAC driver becomes responsible for sending the tag to
-+	  the switch, outside the inband data.
-+
- config NET_DSA_TAG_GSWIP
- 	tristate "Tag driver for Lantiq / Intel GSWIP switches"
+ config QCOM_IPQ4019_ESS_EDMA
+ 	tristate "Qualcomm Atheros IPQ4019 ESS EDMA support"
+-	depends on OF
++	depends on OF && NET_DSA
+ 	select PHYLINK
++	select NET_DSA_TAG_OOB
  	help
-diff --git a/net/dsa/Makefile b/net/dsa/Makefile
-index af28c24ead18..729acd0a5511 100644
---- a/net/dsa/Makefile
-+++ b/net/dsa/Makefile
-@@ -9,6 +9,7 @@ obj-$(CONFIG_NET_DSA_TAG_BRCM_COMMON) += tag_brcm.o
- obj-$(CONFIG_NET_DSA_TAG_DSA_COMMON) += tag_dsa.o
- obj-$(CONFIG_NET_DSA_TAG_GSWIP) += tag_gswip.o
- obj-$(CONFIG_NET_DSA_TAG_HELLCREEK) += tag_hellcreek.o
-+obj-$(CONFIG_NET_DSA_TAG_OOB) += tag_oob.o
- obj-$(CONFIG_NET_DSA_TAG_KSZ) += tag_ksz.o
- obj-$(CONFIG_NET_DSA_TAG_LAN9303) += tag_lan9303.o
- obj-$(CONFIG_NET_DSA_TAG_MTK) += tag_mtk.o
-diff --git a/net/dsa/tag_oob.c b/net/dsa/tag_oob.c
-new file mode 100644
-index 000000000000..45ee3df5a7f9
---- /dev/null
-+++ b/net/dsa/tag_oob.c
-@@ -0,0 +1,84 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+
-+/* Copyright (c) 2022, Maxime Chevallier <maxime.chevallier@bootlin.com> */
-+
-+#include <linux/bitfield.h>
+ 	  This driver supports the Qualcomm Atheros IPQ40xx built-in
+ 	  ESS EDMA ethernet controller.
+diff --git a/drivers/net/ethernet/qualcomm/ipqess/ipqess.c b/drivers/net/ethernet/qualcomm/ipqess/ipqess.c
+index 4caa2dd3e8b1..26d5856f1276 100644
+--- a/drivers/net/ethernet/qualcomm/ipqess/ipqess.c
++++ b/drivers/net/ethernet/qualcomm/ipqess/ipqess.c
+@@ -9,6 +9,7 @@
+ 
+ #include <linux/bitfield.h>
+ #include <linux/clk.h>
 +#include <linux/dsa/oob.h>
+ #include <linux/if_vlan.h>
+ #include <linux/interrupt.h>
+ #include <linux/module.h>
+@@ -22,6 +23,7 @@
+ #include <linux/skbuff.h>
+ #include <linux/vmalloc.h>
+ #include <net/checksum.h>
++#include <net/dsa.h>
+ #include <net/ip6_checksum.h>
+ 
+ #include "ipqess.h"
+@@ -330,6 +332,7 @@ static int ipqess_rx_poll(struct ipqess_rx_ring *rx_ring, int budget)
+ 	tail &= IPQESS_RFD_CONS_IDX_MASK;
+ 
+ 	while (done < budget) {
++		struct dsa_oob_tag_info tag_info;
+ 		struct ipqess_rx_desc *rd;
+ 		struct sk_buff *skb;
+ 
+@@ -409,6 +412,12 @@ static int ipqess_rx_poll(struct ipqess_rx_ring *rx_ring, int budget)
+ 			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021AD),
+ 					       rd->rrd4);
+ 
++		if (rx_ring->ess->uses_dsa) {
++			tag_info.dp = FIELD_GET(IPQESS_RRD_PORT_ID_MASK, rd->rrd1);
++			tag_info.proto = DSA_TAG_PROTO_OOB;
++			dsa_oob_tag_push(skb, &tag_info);
++		}
 +
-+#include "dsa_priv.h"
-+
-+#define DSA_OOB_TAG_LEN 4
-+
-+int dsa_oob_tag_push(struct sk_buff *skb, struct dsa_oob_tag_info *ti)
-+{
-+	struct dsa_oob_tag_info *tag_info;
-+
-+	tag_info = (struct dsa_oob_tag_info *)skb->head;
-+
-+	tag_info->proto = ti->proto;
-+	tag_info->dp = ti->dp;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(dsa_oob_tag_push);
-+
-+int dsa_oob_tag_pop(struct sk_buff *skb, struct dsa_oob_tag_info *ti)
-+{
-+	struct dsa_oob_tag_info *tag_info;
-+
-+	tag_info = (struct dsa_oob_tag_info *)skb->head;
-+
-+	if (tag_info->proto != DSA_TAG_PROTO_OOB)
-+		return -EINVAL;
-+
-+	ti->proto = tag_info->proto;
-+	ti->dp = tag_info->dp;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(dsa_oob_tag_pop);
-+
-+static struct sk_buff *oob_tag_xmit(struct sk_buff *skb,
-+				    struct net_device *dev)
-+{
-+	struct dsa_port *dp = dsa_slave_to_port(dev);
-+	struct dsa_oob_tag_info tag_info;
-+
-+	tag_info.dp = dp->index;
-+	tag_info.proto = DSA_TAG_PROTO_OOB;
-+
-+	if (dsa_oob_tag_push(skb, &tag_info))
-+		return NULL;
-+
-+	return skb;
-+}
-+
-+static struct sk_buff *oob_tag_rcv(struct sk_buff *skb,
-+				   struct net_device *dev)
+ 		napi_gro_receive(&rx_ring->napi_rx, skb);
+ 
+ 		rx_ring->ess->stats.rx_packets++;
+@@ -712,6 +721,22 @@ static void ipqess_rollback_tx(struct ipqess *eth,
+ 	tx_ring->head = start_index;
+ }
+ 
++static void ipqess_process_dsa_tag_sh(struct ipqess *ess, struct sk_buff *skb,
++				      u32 *word3)
 +{
 +	struct dsa_oob_tag_info tag_info;
++
++	if (!ess->uses_dsa)
++		return;
 +
 +	if (dsa_oob_tag_pop(skb, &tag_info))
-+		return NULL;
++		return;
 +
-+	skb->dev = dsa_master_find_slave(dev, 0, tag_info.dp);
-+	if (!skb->dev)
-+		return NULL;
-+
-+	return skb;
++	*word3 |= tag_info.dp << IPQESS_TPD_PORT_BITMAP_SHIFT;
++	*word3 |= BIT(IPQESS_TPD_FROM_CPU_SHIFT);
++	*word3 |= 0x3e << IPQESS_TPD_PORT_BITMAP_SHIFT;
 +}
 +
-+const struct dsa_device_ops oob_tag_dsa_ops = {
-+	.name	= "oob",
-+	.proto	= DSA_TAG_PROTO_OOB,
-+	.xmit	= oob_tag_xmit,
-+	.rcv	= oob_tag_rcv,
-+	.needed_headroom = DSA_OOB_TAG_LEN,
-+};
+ static int ipqess_tx_map_and_fill(struct ipqess_tx_ring *tx_ring,
+ 				  struct sk_buff *skb)
+ {
+@@ -722,6 +747,8 @@ static int ipqess_tx_map_and_fill(struct ipqess_tx_ring *tx_ring,
+ 	u16 len;
+ 	int i;
+ 
++	ipqess_process_dsa_tag_sh(tx_ring->ess, skb, &word3);
 +
-+MODULE_LICENSE("GPL");
-+MODULE_DESCRIPTION("DSA tag driver for out-of-band tagging");
-+MODULE_AUTHOR("Maxime Chevallier <maxime.chevallier@bootlin.com>");
-+MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_OOB);
+ 	if (skb_is_gso(skb)) {
+ 		if (skb_shinfo(skb)->gso_type & SKB_GSO_TCPV4) {
+ 			lso_word1 |= IPQESS_TPD_IPV4_EN;
+@@ -923,6 +950,26 @@ static const struct net_device_ops ipqess_axi_netdev_ops = {
+ 	.ndo_tx_timeout		= ipqess_tx_timeout,
+ };
+ 
++static int ipqess_netdevice_event(struct notifier_block *nb,
++				  unsigned long event, void *ptr)
++{
++	struct ipqess *ess = container_of(nb, struct ipqess, netdev_notifier);
++	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
 +
-+module_dsa_tag_driver(oob_tag_dsa_ops);
++	if (ess->netdev != dev)
++		return NOTIFY_DONE;
++
++	switch (event) {
++	case NETDEV_CHANGEUPPER:
++		if (netdev_uses_dsa(ess->netdev))
++			ess->uses_dsa = true;
++		else
++			ess->uses_dsa = false;
++		return NOTIFY_DONE;
++	}
++	return NOTIFY_OK;
++}
++
+ static void ipqess_hw_stop(struct ipqess *ess)
+ {
+ 	int i;
+@@ -1194,12 +1241,19 @@ static int ipqess_axi_probe(struct platform_device *pdev)
+ 			       64);
+ 	}
+ 
+-	err = register_netdev(netdev);
++	ess->netdev_notifier.notifier_call = ipqess_netdevice_event;
++	err = register_netdevice_notifier(&ess->netdev_notifier);
+ 	if (err)
+ 		goto err_hw_stop;
+ 
++	err = register_netdev(netdev);
++	if (err)
++		goto err_notifier_unregister;
++
+ 	return 0;
+ 
++err_notifier_unregister:
++	unregister_netdevice_notifier(&ess->netdev_notifier);
+ err_hw_stop:
+ 	ipqess_hw_stop(ess);
+ 
+diff --git a/drivers/net/ethernet/qualcomm/ipqess/ipqess.h b/drivers/net/ethernet/qualcomm/ipqess/ipqess.h
+index 9a4ab6ce282a..f21515df3ded 100644
+--- a/drivers/net/ethernet/qualcomm/ipqess/ipqess.h
++++ b/drivers/net/ethernet/qualcomm/ipqess/ipqess.h
+@@ -171,6 +171,10 @@ struct ipqess {
+ 	struct platform_device *pdev;
+ 	struct phylink *phylink;
+ 	struct phylink_config phylink_config;
++
++	struct notifier_block netdev_notifier;
++	bool uses_dsa;
++
+ 	struct ipqess_tx_ring tx_ring[IPQESS_NETDEV_QUEUES];
+ 
+ 	struct ipqess_statistics ipqess_stats;
 -- 
 2.37.2
 
