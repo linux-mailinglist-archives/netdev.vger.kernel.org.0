@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E6305B2B88
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 03:30:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A61065B2BA8
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 03:30:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229812AbiIIB1k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Sep 2022 21:27:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51424 "EHLO
+        id S229962AbiIIB1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Sep 2022 21:27:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbiIIB1i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 21:27:38 -0400
+        with ESMTP id S229778AbiIIB1k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Sep 2022 21:27:40 -0400
 Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DFCD1177A5;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C23961177A2;
         Thu,  8 Sep 2022 18:27:37 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MNyt01yGZzZcKg;
-        Fri,  9 Sep 2022 09:23:04 +0800 (CST)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MNyv24qHDzmVK9;
+        Fri,  9 Sep 2022 09:23:58 +0800 (CST)
 Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
  (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 9 Sep
- 2022 09:27:34 +0800
+ 2022 09:27:35 +0800
 From:   Zhengchao Shao <shaozhengchao@huawei.com>
 To:     <linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
@@ -28,9 +28,9 @@ To:     <linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <shuah@kernel.org>
 CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
         <shaozhengchao@huawei.com>
-Subject: [PATCH net-next 1/8] selftests/tc-testings: add selftests for ctinfo action
-Date:   Fri, 9 Sep 2022 09:29:29 +0800
-Message-ID: <20220909012936.268433-2-shaozhengchao@huawei.com>
+Subject: [PATCH net-next 2/8] selftests/tc-testings: add selftests for gate action
+Date:   Fri, 9 Sep 2022 09:29:30 +0800
+Message-ID: <20220909012936.268433-3-shaozhengchao@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220909012936.268433-1-shaozhengchao@huawei.com>
 References: <20220909012936.268433-1-shaozhengchao@huawei.com>
@@ -49,344 +49,343 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Test c826: Add ctinfo action with default setting
-Test 0286: Add ctinfo action with dscp
-Test 4938: Add ctinfo action with valid cpmark and zone
-Test 7593: Add ctinfo action with drop control
-Test 2961: Replace ctinfo action zone and action control
-Test e567: Delete ctinfo action with valid index
-Test 6a91: Delete ctinfo action with invalid index
-Test 5232: List ctinfo actions
-Test 7702: Flush ctinfo actions
-Test 3201: Add ctinfo action with duplicate index
-Test 8295: Add ctinfo action with invalid index
-Test 3964: Replace ctinfo action with invalid goto_chain control
+Test 5153: Add gate action with priority and sched-entry
+Test 7189: Add gate action with base-time
+Test a721: Add gate action with cycle-time
+Test c029: Add gate action with cycle-time-ext
+Test 3719: Replace gate base-time action
+Test d821: Delete gate action with valid index
+Test 3128: Delete gate action with invalid index
+Test 7837: List gate actions
+Test 9273: Flush gate actions
+Test c829: Add gate action with duplicate index
+Test 3043: Add gate action with invalid index
+Test 2930: Add gate action with cookie
 
 Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 ---
- .../tc-testing/tc-tests/actions/ctinfo.json   | 316 ++++++++++++++++++
- 1 file changed, 316 insertions(+)
- create mode 100644 tools/testing/selftests/tc-testing/tc-tests/actions/ctinfo.json
+ .../tc-testing/tc-tests/actions/gate.json     | 315 ++++++++++++++++++
+ 1 file changed, 315 insertions(+)
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/actions/gate.json
 
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/actions/ctinfo.json b/tools/testing/selftests/tc-testing/tc-tests/actions/ctinfo.json
+diff --git a/tools/testing/selftests/tc-testing/tc-tests/actions/gate.json b/tools/testing/selftests/tc-testing/tc-tests/actions/gate.json
 new file mode 100644
-index 000000000000..d9710c067eb7
+index 000000000000..e16a4963fdd2
 --- /dev/null
-+++ b/tools/testing/selftests/tc-testing/tc-tests/actions/ctinfo.json
-@@ -0,0 +1,316 @@
++++ b/tools/testing/selftests/tc-testing/tc-tests/actions/gate.json
+@@ -0,0 +1,315 @@
 +[
 +    {
-+        "id": "c826",
-+        "name": "Add ctinfo action with default setting",
++        "id": "5153",
++        "name": "Add gate action with priority and sched-entry",
 +        "category": [
 +            "actions",
-+            "ctinfo"
++            "gate"
 +        ],
 +        "setup": [
 +            [
-+                "$TC action flush action ctinfo",
++                "$TC action flush action gate",
 +                0,
 +                1,
 +                255
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC action add action ctinfo index 10",
++        "cmdUnderTest": "$TC action add action gate priority 1 sched-entry close 100000000ns index 100",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC action get action ctinfo index 10",
-+        "matchPattern": "action order [0-9]*: ctinfo zone 0 pipe.*index 10 ref",
++        "verifyCmd": "$TC action get action gate index 100",
++        "matchPattern": "action order [0-9]*: .*priority 1.*index 100 ref",
 +        "matchCount": "1",
 +        "teardown": [
-+            "$TC action flush action ctinfo"
++            "$TC action flush action gate"
 +        ]
 +    },
 +    {
-+        "id": "0286",
-+        "name": "Add ctinfo action with dscp",
++        "id": "7189",
++        "name": "Add gate action with base-time",
 +        "category": [
 +            "actions",
-+            "ctinfo"
++            "gate"
 +        ],
 +        "setup": [
 +            [
-+                "$TC actions flush action ctinfo",
++                "$TC actions flush action gate",
 +                0,
 +                1,
 +                255
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC action add action ctinfo dscp 0xfc000000 0x01000000 index 100",
++        "cmdUnderTest": "$TC action add action gate base-time 200000000000ns sched-entry close 100000000ns index 10",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC action ls action ctinfo",
-+        "matchPattern": "action order [0-9]*: ctinfo zone 0 pipe.*index 100 ref.*dscp 0xfc000000 0x01000000",
++        "verifyCmd": "$TC action ls action gate",
++        "matchPattern": "action order [0-9]*: .*base-time 200s.*index 10 ref",
 +        "matchCount": "1",
 +        "teardown": [
-+            "$TC actions flush action ctinfo"
++            "$TC actions flush action gate"
 +        ]
 +    },
 +    {
-+        "id": "4938",
-+        "name": "Add ctinfo action with valid cpmark and zone",
++        "id": "a721",
++        "name": "Add gate action with cycle-time",
 +        "category": [
 +            "actions",
-+            "ctinfo"
++            "gate"
 +        ],
 +        "setup": [
 +            [
-+                "$TC action flush action ctinfo",
++                "$TC action flush action gate",
 +                0,
 +                1,
 +                255
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC action add action ctinfo cpmark 0x01000000 zone 1 index 1",
++        "cmdUnderTest": "$TC action add action gate cycle-time 200000000000ns sched-entry close 100000000ns index 1000",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC action get action ctinfo index 1",
-+        "matchPattern": "action order [0-9]*: ctinfo zone 1 pipe.*index 1 ref.*cpmark 0x01000000",
++        "verifyCmd": "$TC action ls action gate",
++        "matchPattern": "action order [0-9]*: .*cycle-time 200s.*index 1000 ref",
 +        "matchCount": "1",
 +        "teardown": [
-+            "$TC action flush action ctinfo"
++            "$TC action flush action gate"
 +        ]
 +    },
 +    {
-+        "id": "7593",
-+        "name": "Add ctinfo action with drop control",
++        "id": "c029",
++        "name": "Add gate action with cycle-time-ext",
 +        "category": [
 +            "actions",
-+            "ctinfo"
++            "gate"
 +        ],
 +        "setup": [
 +            [
-+                "$TC action flush action ctinfo",
++                "$TC action flush action gate",
 +                0,
 +                1,
 +                255
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC action add action ctinfo drop index 1000",
++        "cmdUnderTest": "$TC action add action gate cycle-time-ext 20000000000ns sched-entry close 100000000ns index 1000",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC action ls action ctinfo",
-+        "matchPattern": "action order [0-9]*: ctinfo zone 0 drop.*index 1000 ref",
++        "verifyCmd": "$TC action get action gate index 1000",
++        "matchPattern": "action order [0-9]*: .*cycle-time-ext 20s.*index 1000 ref",
 +        "matchCount": "1",
 +        "teardown": [
-+            "$TC action flush action ctinfo"
++            "$TC action flush action gate"
 +        ]
 +    },
 +    {
-+        "id": "2961",
-+        "name": "Replace ctinfo action zone and action control",
++        "id": "3719",
++        "name": "Replace gate base-time action",
 +        "category": [
 +            "actions",
-+            "ctinfo"
++            "gate"
 +        ],
 +        "setup": [
 +            [
-+                "$TC actions flush action ctinfo",
++                "$TC actions flush action gate",
 +                0,
 +                1,
 +                255
 +            ],
 +            [
-+                "$TC action add action ctinfo zone 1 drop index 1",
++                "$TC action add action gate base-time 200000000000ns sched-entry open 200000000ns -1 8000000b index 20",
 +                0,
 +                1,
 +                255
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC action replace action ctinfo zone 200 pass index 1",
++        "cmdUnderTest": "$TC action replace action gate base-time 400000000000ns index 20",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC action get action ctinfo index 1",
-+        "matchPattern": "action order [0-9]*: ctinfo zone 200 pass.*index 1 ref",
++        "verifyCmd": "$TC action get action gate index 20",
++        "matchPattern": "action order [0-9]*: .*base-time 400s.*index 20 ref",
 +        "matchCount": "1",
 +        "teardown": [
-+            "$TC action flush action ctinfo"
++            "$TC action flush action gate"
 +        ]
 +    },
 +    {
-+        "id": "e567",
-+        "name": "Delete ctinfo action with valid index",
++        "id": "d821",
++        "name": "Delete gate action with valid index",
 +        "category": [
 +            "actions",
-+            "ctinfo"
++            "gate"
 +        ],
 +        "setup": [
 +            [
-+                "$TC actions flush action ctinfo",
++                "$TC actions flush action gate",
 +                0,
 +                1,
 +                255
 +            ],
 +            [
-+                "$TC action add action ctinfo zone 200 pass index 1",
++                "$TC action add action gate base-time 200000000000ns sched-entry open 200000000ns -1 8000000b index 302",
 +                0,
 +                1,
 +                255
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC action delete action ctinfo index 1",
++        "cmdUnderTest": "$TC action delete action gate index 302",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC action get action ctinfo index 1",
-+        "matchPattern": "action order [0-9]*: ctinfo zone 200 pass.*index 1 ref",
++        "verifyCmd": "$TC action get action bpf index 302",
++        "matchPattern": "action order [0-9]*: .*base-time 200s.*index 302 ref",
 +        "matchCount": "0",
 +        "teardown": [
-+            "$TC action flush action ctinfo"
++            "$TC action flush action gate"
 +        ]
 +    },
 +    {
-+        "id": "6a91",
-+        "name": "Delete ctinfo action with invalid index",
++        "id": "3128",
++        "name": "Delete gate action with invalid index",
 +        "category": [
 +            "actions",
-+            "ctinfo"
++            "gate"
 +        ],
 +        "setup": [
 +            [
-+                "$TC actions flush action ctinfo",
++                "$TC actions flush action gate",
 +                0,
 +                1,
 +                255
 +            ],
 +            [
-+                "$TC action add action ctinfo zone 200 pass index 1",
++                "$TC action add action gate base-time 600000000000ns sched-entry open 200000000ns -1 8000000b index 999",
 +                0,
 +                1,
 +                255
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC action delete action ctinfo index 333",
++        "cmdUnderTest": "$TC action delete action gate index 333",
 +        "expExitCode": "255",
-+        "verifyCmd": "$TC action get action ctinfo index 1",
-+        "matchPattern": "action order [0-9]*: ctinfo zone 200 pass.*index 1 ref",
++        "verifyCmd": "$TC action get action gate index 999",
++        "matchPattern": "action order [0-9]*: .*base-time 600s.*index 999 ref",
 +        "matchCount": "1",
 +        "teardown": [
-+            "$TC action flush action ctinfo"
++            "$TC action flush action gate"
 +        ]
 +    },
 +    {
-+        "id": "5232",
-+        "name": "List ctinfo actions",
++        "id": "7837",
++        "name": "List gate actions",
 +        "category": [
 +            "actions",
-+            "ctinfo"
++            "gate"
 +        ],
 +        "setup": [
 +            [
-+                "$TC action flush action ctinfo",
++                "$TC action flush action gate",
 +                0,
 +                1,
 +                255
 +            ],
-+            "$TC action add action ctinfo zone 20 pass index 101",
-+            "$TC action add action ctinfo cpmark 0x02000000 drop index 102",
-+            "$TC action add action ctinfo continue index 103"
++            "$TC action add action gate base-time 600000000000ns sched-entry open 200000000ns -1 8000000b index 101",
++            "$TC action add action gate cycle-time 600000000000ns sched-entry open 600000000ns -1 8000000b index 102",
++            "$TC action add action gate cycle-time-ext 400000000000ns sched-entry close 100000000ns index 103"
 +        ],
-+        "cmdUnderTest": "$TC action list action ctinfo",
++        "cmdUnderTest": "$TC action list action gate",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC action list action ctinfo",
-+        "matchPattern": "action order [0-9]*: ctinfo",
++        "verifyCmd": "$TC action list action gate",
++        "matchPattern": "action order [0-9]*:",
 +        "matchCount": "3",
 +        "teardown": [
-+            "$TC actions flush action ctinfo"
++            "$TC actions flush action gate"
 +        ]
 +    },
 +    {
-+        "id": "7702",
-+        "name": "Flush ctinfo actions",
++        "id": "9273",
++        "name": "Flush gate actions",
 +        "category": [
 +            "actions",
-+            "ctinfo"
++            "gate"
 +        ],
 +        "setup": [
 +            [
-+                "$TC actions flush action ctinfo",
++                "$TC actions flush action gate",
 +                0,
 +                1,
 +                255
 +            ],
-+	    "$TC action add action ctinfo zone 20 pass index 101",
-+            "$TC action add action ctinfo cpmark 0x02000000 drop index 102",
-+            "$TC action add action ctinfo continue index 103"
-+        ],
-+        "cmdUnderTest": "$TC action flush action ctinfo",
++            "$TC action add action gate base-time 600000000000ns sched-entry open 200000000ns -1 8000000b index 101",
++            "$TC action add action gate cycle-time 600000000000ns sched-entry open 600000000ns -1 8000000b index 102",
++            "$TC action add action gate cycle-time-ext 400000000000ns sched-entry close 100000000ns index 103"
++	],
++        "cmdUnderTest": "$TC action flush action gate",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC action list action ctinfo",
-+        "matchPattern": "action order [0-9]*: ctinfo",
++        "verifyCmd": "$TC action list action gate",
++        "matchPattern": "action order [0-9]*: .*priority",
 +        "matchCount": "0",
 +        "teardown": [
-+            "$TC actions flush action ctinfo"
++            "$TC actions flush action gate"
 +        ]
 +    },
 +    {
-+        "id": "3201",
-+        "name": "Add ctinfo action with duplicate index",
++        "id": "c829",
++        "name": "Add gate action with duplicate index",
 +        "category": [
 +            "actions",
-+            "ctinfo"
++            "gate"
 +        ],
 +        "setup": [
 +            [
-+                "$TC actions flush action ctinfo",
++                "$TC actions flush action gate",
 +                0,
 +                1,
 +                255
 +            ],
-+            "$TC action add action ctinfo zone 20 pass index 101"
++            "$TC action add action gate cycle-time 600000000000ns sched-entry open 600000000ns -1 8000000b index 4294967295"
 +        ],
-+        "cmdUnderTest": "$TC action add action ctinfo cpmark 0x02000000 drop index 101",
++        "cmdUnderTest": "$TC action add action gate cycle-time 600000000000ns sched-entry open 600000000ns -1 8000000b index 4294967295",
 +        "expExitCode": "255",
-+        "verifyCmd": "$TC action get action ctinfo index 101",
-+        "matchPattern": "action order [0-9]*: ctinfo zone 20 pass.*index 101",
++        "verifyCmd": "$TC action get action gate index 4294967295",
++        "matchPattern": "action order [0-9]*: .*index 4294967295",
 +        "matchCount": "1",
 +        "teardown": [
-+            "$TC action flush action ctinfo"
++            "$TC action flush action gate"
 +        ]
 +    },
 +    {
-+        "id": "8295",
-+        "name": "Add ctinfo action with invalid index",
++        "id": "3043",
++        "name": "Add gate action with invalid index",
 +        "category": [
 +            "actions",
-+            "ctinfo"
++            "gate"
 +        ],
 +        "setup": [
 +            [
-+                "$TC actions flush action ctinfo",
++                "$TC actions flush action gate",
 +                0,
 +                1,
 +                255
 +            ]
 +        ],
-+        "cmdUnderTest": "$TC action add action ctinfo zone 20 index 4294967296",
++        "cmdUnderTest": "$TC action add action gate cycle-time-ext 400000000000ns sched-entry close 100000000ns index 4294967296",
 +        "expExitCode": "255",
-+        "verifyCmd": "$TC action ls action ctinfo",
-+        "matchPattern": "action order [0-9]*: ctinfo",
++        "verifyCmd": "$TC action ls action gate",
++        "matchPattern": "action order [0-9]*:",
 +        "matchCount": "0",
 +        "teardown": [
-+            "$TC action flush action ctinfo"
++            "$TC action flush action gate"
 +        ]
 +    },
 +    {
-+        "id": "3964",
-+        "name": "Replace ctinfo action with invalid goto_chain control",
++        "id": "2930",
++        "name": "Add gate action with cookie",
 +        "category": [
 +            "actions",
-+            "ctinfo"
++            "gate"
 +        ],
 +        "setup": [
 +            [
-+                "$TC actions flush action ctinfo",
++                "$TC actions flush action gate",
 +                0,
 +                1,
 +                255
-+            ],
-+            "$TC action add action ctinfo pass index 90"
++            ]
 +        ],
-+        "cmdUnderTest": "$TC action replace action ctinfo goto chain 42 index 90",
-+        "expExitCode": "255",
-+        "verifyCmd": "$TC action list action ctinfo",
-+        "matchPattern": "action order [0-9]*: ctinfo.*pass.*index 90",
++        "cmdUnderTest": "$TC action add action gate cycle-time-ext 400000000000ns sched-entry close 100000000ns index 4294 cookie d0d0d0d0d0d0d0d0",
++        "expExitCode": "0",
++        "verifyCmd": "$TC action list action gate",
++        "matchPattern": "action order [0-9]*: .*cookie d0d0d0d0d0d0d0",
 +        "matchCount": "1",
 +        "teardown": [
-+            "$TC action flush action ctinfo"
++            "$TC action flush action gate"
 +        ]
 +    }
 +]
