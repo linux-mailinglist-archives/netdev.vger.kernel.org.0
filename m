@@ -2,45 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3502E5B40C3
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 22:34:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B0135B40CA
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 22:40:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229748AbiIIUeJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Sep 2022 16:34:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45396 "EHLO
+        id S229594AbiIIUkC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Sep 2022 16:40:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231205AbiIIUeD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 16:34:03 -0400
+        with ESMTP id S229527AbiIIUkB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 16:40:01 -0400
 Received: from mx01.omp.ru (mx01.omp.ru [90.154.21.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E32E290825;
-        Fri,  9 Sep 2022 13:34:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A52FF2AE39;
+        Fri,  9 Sep 2022 13:39:58 -0700 (PDT)
 Received: from [192.168.1.103] (178.176.72.240) by msexch01.omp.ru
  (10.188.4.12) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.14; Fri, 9 Sep 2022
- 23:33:53 +0300
-Subject: Re: [PATCH 2/2] dt-bindings: net: renesas,etheravb: Add r8a779g0
- support
+ 23:39:49 +0300
+Subject: Re: [PATCH] net: ravb: Add R-Car Gen4 support
 To:     Geert Uytterhoeven <geert+renesas@glider.be>,
         "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>
-CC:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-renesas-soc@vger.kernel.org>
-References: <cover.1662714607.git.geert+renesas@glider.be>
- <cddb61cd9702ceefc702176bd8ff640c4ff59ffd.1662714607.git.geert+renesas@glider.be>
+        Paolo Abeni <pabeni@redhat.com>
+CC:     <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>
+References: <2ee968890feba777e627d781128b074b2c43cddb.1662718171.git.geert+renesas@glider.be>
 From:   Sergey Shtylyov <s.shtylyov@omp.ru>
 Organization: Open Mobile Platform
-Message-ID: <c85c253d-512e-4396-b35b-077b08ab35fd@omp.ru>
-Date:   Fri, 9 Sep 2022 23:33:54 +0300
+Message-ID: <fe859186-ecfd-017e-f78a-60b65b5037c8@omp.ru>
+Date:   Fri, 9 Sep 2022 23:39:50 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.10.1
 MIME-Version: 1.0
-In-Reply-To: <cddb61cd9702ceefc702176bd8ff640c4ff59ffd.1662714607.git.geert+renesas@glider.be>
+In-Reply-To: <2ee968890feba777e627d781128b074b2c43cddb.1662718171.git.geert+renesas@glider.be>
 Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -49,7 +42,7 @@ X-ClientProxiedBy: msexch01.omp.ru (10.188.4.12) To msexch01.omp.ru
  (10.188.4.12)
 X-KSE-ServerInfo: msexch01.omp.ru, 9
 X-KSE-AntiSpam-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 09/09/2022 20:08:50
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 09/09/2022 20:18:54
 X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
 X-KSE-AntiSpam-Method: none
 X-KSE-AntiSpam-Rate: 59
@@ -65,7 +58,7 @@ X-KSE-AntiSpam-Info: {Found in DNSBL: 178.176.72.240 in (user)
  b.barracudacentral.org}
 X-KSE-AntiSpam-Info: {Found in DNSBL: 178.176.72.240 in (user)
  dbl.spamhaus.org}
-X-KSE-AntiSpam-Info: 127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;omp.ru:7.1.1
+X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;omp.ru:7.1.1;127.0.0.199:7.1.2
 X-KSE-AntiSpam-Info: ApMailHostAddress: 178.176.72.240
 X-KSE-AntiSpam-Info: {DNS response errors}
 X-KSE-AntiSpam-Info: Rate: 59
@@ -76,7 +69,7 @@ X-KSE-AntiSpam-Info: Auth:dmarc=temperror header.from=omp.ru;spf=temperror
 X-KSE-Antiphishing-Info: Clean
 X-KSE-Antiphishing-ScanningType: Heuristic
 X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 09/09/2022 20:13:00
+X-KSE-Antiphishing-Bases: 09/09/2022 20:22:00
 X-KSE-AttachmentFiltering-Interceptor-Info: protection disabled
 X-KSE-Antivirus-Interceptor-Info: scan successful
 X-KSE-Antivirus-Info: Clean, bases: 9/9/2022 6:08:00 PM
@@ -90,10 +83,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/9/22 12:13 PM, Geert Uytterhoeven wrote:
+On 9/9/22 1:10 PM, Geert Uytterhoeven wrote:
 
-> Document support for the Renesas Ethernet AVB (EtherAVB-IF) block in the
-> Renesas R-Car V4H (R8A779G0) SoC.
+> Add support for the Renesas Ethernet AVB (EtherAVB-IF) blocks on R-Car
+> Gen4 SoCs (e.g. R-Car V4H) by matching on a family-specific compatible
+> value.
+> 
+> These are treated the same as EtherAVB on R-Car Gen3.
 > 
 > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
