@@ -2,112 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 26B115B39C8
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 15:52:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F224B5B39AC
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 15:51:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231668AbiIINqo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Sep 2022 09:46:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50190 "EHLO
+        id S231872AbiIINtJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Sep 2022 09:49:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231418AbiIINqf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 09:46:35 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95594131BEF
-        for <netdev@vger.kernel.org>; Fri,  9 Sep 2022 06:46:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662731185; x=1694267185;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=bOumJnRPkN+EhKWt0SJyT8pLZSEuGQcN/nu/jsJGYrY=;
-  b=muMsQtMpmstSC16iJ8v5c84Eq4byfg9ZfnfukuboulPTPtyvZ6jvWDOM
-   gp9+WKC9HMGQ7G5usWNcWk3EIAP7l5cuKRJigMCSt3TnDWXYeyMklEv9M
-   F/wbOqMGcKctwypKAaT52BnBMOc3Y0fxajguqB0jnmyOcJdRKHFhmpE5R
-   +WCtPxZHkaBmS+xVjMypVh+YAhxlGLpMQLtqpATzHkGk/jkFeI7hzaMTk
-   0vyMq+IKy2NMwjBS+N4dkzh+fJNDphezKzw3OjAD+maWefqxzE6jizw2i
-   eAjg28heeDQULll/b/qwWQ42A1GdRjT6O3JfrrmxUDj9kGht1esIGe+wT
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10464"; a="323684081"
-X-IronPort-AV: E=Sophos;i="5.93,303,1654585200"; 
-   d="scan'208";a="323684081"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2022 06:44:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,303,1654585200"; 
-   d="scan'208";a="592611147"
-Received: from lkp-server02.sh.intel.com (HELO b2938d2e5c5a) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 09 Sep 2022 06:44:26 -0700
-Received: from kbuild by b2938d2e5c5a with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oWeIz-0001F3-19;
-        Fri, 09 Sep 2022 13:44:25 +0000
-Date:   Fri, 9 Sep 2022 21:43:55 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mattias Forsblad <mattias.forsblad@gmail.com>,
-        netdev@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Mattias Forsblad <mattias.forsblad@gmail.com>
-Subject: Re: [PATCH net-next v8 4/6] net: dsa: mv88e6xxxx: Add RMU
- functionality.
-Message-ID: <202209092151.xu08eXWH-lkp@intel.com>
-References: <20220909085138.3539952-5-mattias.forsblad@gmail.com>
+        with ESMTP id S232021AbiIINsw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 09:48:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7557613EE6D
+        for <netdev@vger.kernel.org>; Fri,  9 Sep 2022 06:48:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662731323;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=YImNobrFe/WhuWDTj42TmI0iV1ssLlERqxsuvNWDERI=;
+        b=GMkHSmjLujAvDBKa+wmelGRA2dVYsoI9ytmgYqU/EbS5UymzZufRbaIqZGwovKnDE5dJRC
+        7QehAbsOOIFgPzepCboNh0MfkIz3jhDvR8kvi53KD8n7AIa4ibuLwW4BmAwkn+mU13ys97
+        7swzjHFzSteYWX3FV/bVQzLTHGUDlao=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-296-wMmQOzBDOoy2kHzH0yMJ_Q-1; Fri, 09 Sep 2022 09:48:33 -0400
+X-MC-Unique: wMmQOzBDOoy2kHzH0yMJ_Q-1
+Received: by mail-ed1-f72.google.com with SMTP id y14-20020a056402440e00b0044301c7ccd9so1298655eda.19
+        for <netdev@vger.kernel.org>; Fri, 09 Sep 2022 06:48:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:references:to
+         :content-language:subject:cc:user-agent:mime-version:date:message-id
+         :from:x-gm-message-state:from:to:cc:subject:date;
+        bh=YImNobrFe/WhuWDTj42TmI0iV1ssLlERqxsuvNWDERI=;
+        b=6Dbtmh1nYhhVuQjgkMhxf9W7LngU9R85579aFmC8q9635p0URw+vBB2UaXDQjaVtXl
+         a87wagL5y3MZmkqDBDLALl9+720zl3HEdJJh6UENNZrsufXLmD3HiVzeJ+AXh45aJmpF
+         xxgqVldof7RFRjB0vKN0jgpvFjQOLoMwwANUKhkcQYDqtyHIM35dJ7vsXlgK88ynkcwa
+         +LwQSuShsG73+5Ja+RovNIImqHWJoaGUopiQb8c4d81PTKs8E9YqEz7iJZH0mtOIMuLY
+         PV7AUGHGidqkqt2esiqGICheRhAvRcYau4Gl5uegyegIOfc5tUQnI+nLNVcjzBa2DYNC
+         dDTQ==
+X-Gm-Message-State: ACgBeo0jRk4W/v25B3sr8e6xchLWGhJ5z7MXtvvsDmD2ZXAR5tkm8896
+        kfK3/zDaGKmevxO/1CJjuoRjYyoK0tx5+JfnjRUbAFNbPSIIjMApch1aURtxUEYjEJpzx8C3jFu
+        ObdP+vCFkWRbotjlB
+X-Received: by 2002:a05:6402:2786:b0:448:e15d:ab0e with SMTP id b6-20020a056402278600b00448e15dab0emr11602220ede.91.1662731311934;
+        Fri, 09 Sep 2022 06:48:31 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6N5xVGmsWUYQGhRgZqvZxQk2yqsaCgbYWlCDEXeY7sJ7OUl4WVZyP0sxTnug/6kY7xRheOcA==
+X-Received: by 2002:a05:6402:2786:b0:448:e15d:ab0e with SMTP id b6-20020a056402278600b00448e15dab0emr11602201ede.91.1662731311724;
+        Fri, 09 Sep 2022 06:48:31 -0700 (PDT)
+Received: from [192.168.41.81] (83-90-141-187-cable.dk.customer.tdc.net. [83.90.141.187])
+        by smtp.gmail.com with ESMTPSA id kw4-20020a170907770400b0073dcdf9b0bcsm338050ejc.17.2022.09.09.06.48.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 09 Sep 2022 06:48:31 -0700 (PDT)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <434a45f6-aaf6-3bf0-8efe-c28a6c8b604d@redhat.com>
+Date:   Fri, 9 Sep 2022 15:48:29 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220909085138.3539952-5-mattias.forsblad@gmail.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.1
+Cc:     brouer@redhat.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
+        xdp-hints@xdp-project.net, larysa.zaremba@intel.com,
+        memxor@gmail.com, Lorenzo Bianconi <lorenzo@kernel.org>,
+        mtahhan@redhat.com,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        dave@dtucker.co.uk, Magnus Karlsson <magnus.karlsson@intel.com>,
+        bjorn@kernel.org
+Subject: Re: [xdp-hints] [PATCH RFCv2 bpf-next 00/18] XDP-hints: XDP gaining
+ access to HW offload hints via BTF
+Content-Language: en-US
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+References: <166256538687.1434226.15760041133601409770.stgit@firesoul>
+ <20220908093043.274201-1-alexandr.lobakin@intel.com>
+In-Reply-To: <20220908093043.274201-1-alexandr.lobakin@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Mattias,
 
-Thank you for the patch! Perhaps something to improve:
+On 08/09/2022 11.30, Alexander Lobakin wrote:
+> From: Jesper Dangaard Brouer <brouer@redhat.com>
+> Date: Wed, 07 Sep 2022 17:45:00 +0200
+> 
+>> This patchset expose the traditional hardware offload hints to XDP and
+>> rely on BTF to expose the layout to users.
+>>
+[...]
+>> The main different from RFC-v1:
+>>   - Drop idea of BTF "origin" (vmlinux, module or local)
+>>   - Instead to use full 64-bit BTF ID that combine object+type ID
+>>
+>> I've taken some of Alexandr/Larysa's libbpf patches and integrated
+>> those.
+> 
+> Not sure if it's okay to inform the authors about the fact only
+> after sending? Esp from the eeeh... "incompatible" implementation?
 
-[auto build test WARNING on net-next/master]
+Just to be clear: I have made sure that developers of the patches
+maintain authorship (when applied to git via the From: line) and I've
+Cc'ed the developers directly.  I didn't Cc you directly as I knew you
+would be included via XDP-hints list, and I didn't directly use one of
+your patches.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Mattias-Forsblad/net-dsa-qca8k-mv88e6xxx-rmon-Add-RMU-support/20220909-165609
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 34df6a8a50aa72c4ac4fd65033a2798fc321adf8
-config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220909/202209092151.xu08eXWH-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/5a8005d484d3a5d466c656f11cba47e951f7d264
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Mattias-Forsblad/net-dsa-qca8k-mv88e6xxx-rmon-Add-RMU-support/20220909-165609
-        git checkout 5a8005d484d3a5d466c656f11cba47e951f7d264
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/
+> I realize it's open code, but this looks sorta depreciatingly.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+After discussions with Larysa on pre-patchset, I was convinced of the
+idea of a full 64-bit BTF ID.  Thus, I took those patches and carried
+them in my patchset, instead of reimplementing the same myself.
+Precisely out of respect for Larysa's work as I wanted to give her
+credit for coding this.
 
-All warnings (new ones prefixed by >>):
+I'm very interested in collaborating.  That is why I have picked up
+patches from your patchset and are carrying them forward.  I could just
+as easily reimplemented them myself.
 
-   In file included from drivers/net/dsa/mv88e6xxx/chip.c:45:
->> drivers/net/dsa/mv88e6xxx/rmu.h:20:17: warning: 'rmu_dest_addr' defined but not used [-Wunused-const-variable=]
-      20 | static const u8 rmu_dest_addr[ETH_ALEN] = { 0x01, 0x50, 0x43, 0x00, 0x00, 0x00 };
-         |                 ^~~~~~~~~~~~~
+--Jesper
 
-
-vim +/rmu_dest_addr +20 drivers/net/dsa/mv88e6xxx/rmu.h
-
-    19	
-  > 20	static const u8 rmu_dest_addr[ETH_ALEN] = { 0x01, 0x50, 0x43, 0x00, 0x00, 0x00 };
-    21	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
