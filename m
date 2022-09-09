@@ -2,93 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 83F665B2E72
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 08:06:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 137E35B2ED6
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 08:27:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230217AbiIIGGM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Sep 2022 02:06:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60898 "EHLO
+        id S230463AbiIIG0x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Sep 2022 02:26:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230209AbiIIGGK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 02:06:10 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85CC4F757A;
-        Thu,  8 Sep 2022 23:06:09 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MP55H1MQtznVFf;
-        Fri,  9 Sep 2022 14:03:15 +0800 (CST)
-Received: from localhost.localdomain (10.175.112.70) by
- canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 9 Sep 2022 14:05:50 +0800
-From:   Wang Yufen <wangyufen@huawei.com>
-To:     <quentin@isovalent.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <andrii@kernel.org>, <martin.lau@linux.dev>, <song@kernel.org>,
-        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
-        <sdf@google.com>, <haoluo@google.com>, <jolsa@kernel.org>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <hawk@kernel.org>,
-        <nathan@kernel.org>, <ndesaulniers@google.com>, <trix@redhat.com>
-CC:     <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <llvm@lists.linux.dev>
-Subject: [bpf-next v3 2/2] bpftool: Update doc (add auto_attach to prog load)
-Date:   Fri, 9 Sep 2022 14:17:13 +0800
-Message-ID: <1662704233-8805-1-git-send-email-wangyufen@huawei.com>
-X-Mailer: git-send-email 1.8.3.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.70]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S230426AbiIIG0w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 02:26:52 -0400
+Received: from mail.nfschina.com (mail.nfschina.com [124.16.136.209])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 647481269F7;
+        Thu,  8 Sep 2022 23:26:50 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id 6EDC61E80D5E;
+        Fri,  9 Sep 2022 14:25:19 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id qC0r7odWaN2A; Fri,  9 Sep 2022 14:25:16 +0800 (CST)
+Received: from localhost.localdomain (unknown [180.167.10.98])
+        (Authenticated sender: yuzhe@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id 50AF21E80D06;
+        Fri,  9 Sep 2022 14:25:16 +0800 (CST)
+From:   Yu Zhe <yuzhe@nfschina.com>
+To:     rafal@milecki.pl, bcm-kernel-feedback-list@broadcom.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, liqiong@nfschina.com,
+        Yu Zhe <yuzhe@nfschina.com>
+Subject: [PATCH] net: broadcom: bcm4908enet: add platform_get_irq_byname error checking
+Date:   Fri,  9 Sep 2022 14:25:45 +0800
+Message-Id: <20220909062545.16696-1-yuzhe@nfschina.com>
+X-Mailer: git-send-email 2.11.0
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add auto_attach optional to prog load|loadall for supporting
-one-step load-attach-pin_link.
+The platform_get_irq_byname() function returns negative error codes on error,
+check it.
 
-Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+Signed-off-by: Yu Zhe <yuzhe@nfschina.com>
 ---
- tools/bpf/bpftool/Documentation/bpftool-prog.rst | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/broadcom/bcm4908_enet.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-prog.rst b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
-index eb1b2a2..c640ad3 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-prog.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
-@@ -31,7 +31,8 @@ PROG COMMANDS
- |	**bpftool** **prog dump xlated** *PROG* [{**file** *FILE* | **opcodes** | **visual** | **linum**}]
- |	**bpftool** **prog dump jited**  *PROG* [{**file** *FILE* | **opcodes** | **linum**}]
- |	**bpftool** **prog pin** *PROG* *FILE*
--|	**bpftool** **prog** { **load** | **loadall** } *OBJ* *PATH* [**type** *TYPE*] [**map** {**idx** *IDX* | **name** *NAME*} *MAP*] [**dev** *NAME*] [**pinmaps** *MAP_DIR*]
-+|	**bpftool** **prog** { **load** | **loadall** } *OBJ* *PATH* [**type** *TYPE*] [**map** {**idx** *IDX* | **name** *NAME*} *MAP*] \
-+|               [**dev** *NAME*] [**pinmaps** *MAP_DIR*] [**auto_attach**]
- |	**bpftool** **prog attach** *PROG* *ATTACH_TYPE* [*MAP*]
- |	**bpftool** **prog detach** *PROG* *ATTACH_TYPE* [*MAP*]
- |	**bpftool** **prog tracelog**
-@@ -131,7 +132,7 @@ DESCRIPTION
- 		  contain a dot character ('.'), which is reserved for future
- 		  extensions of *bpffs*.
+diff --git a/drivers/net/ethernet/broadcom/bcm4908_enet.c b/drivers/net/ethernet/broadcom/bcm4908_enet.c
+index c131d8118489..d985056db6c2 100644
+--- a/drivers/net/ethernet/broadcom/bcm4908_enet.c
++++ b/drivers/net/ethernet/broadcom/bcm4908_enet.c
+@@ -705,6 +705,8 @@ static int bcm4908_enet_probe(struct platform_device *pdev)
+ 		return netdev->irq;
  
--	**bpftool prog { load | loadall }** *OBJ* *PATH* [**type** *TYPE*] [**map** {**idx** *IDX* | **name** *NAME*} *MAP*] [**dev** *NAME*] [**pinmaps** *MAP_DIR*]
-+	**bpftool prog { load | loadall }** *OBJ* *PATH* [**type** *TYPE*] [**map** {**idx** *IDX* | **name** *NAME*} *MAP*] [**dev** *NAME*] [**pinmaps** *MAP_DIR*] [**auto_attach**]
- 		  Load bpf program(s) from binary *OBJ* and pin as *PATH*.
- 		  **bpftool prog load** pins only the first program from the
- 		  *OBJ* as *PATH*. **bpftool prog loadall** pins all programs
-@@ -149,6 +150,8 @@ DESCRIPTION
- 		  given networking device (offload).
- 		  Optional **pinmaps** argument can be provided to pin all
- 		  maps under *MAP_DIR* directory.
-+		  If **auto_attach** is specified program will be attached
-+		  before pin.
+ 	enet->irq_tx = platform_get_irq_byname(pdev, "tx");
++	if (enet->irq_tx < 0)
++		return enet->irq_tx;
  
- 		  Note: *PATH* must be located in *bpffs* mount. It must not
- 		  contain a dot character ('.'), which is reserved for future
+ 	err = dma_set_coherent_mask(dev, DMA_BIT_MASK(32));
+ 	if (err)
 -- 
-1.8.3.1
+2.11.0
 
