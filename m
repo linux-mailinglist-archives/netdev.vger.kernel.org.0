@@ -2,102 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4ECCD5B406D
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 22:20:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC50C5B404E
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 22:05:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231205AbiIIUUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Sep 2022 16:20:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42932 "EHLO
+        id S231715AbiIIUE7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Sep 2022 16:04:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231406AbiIIUUl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 16:20:41 -0400
-X-Greylist: delayed 5547 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 09 Sep 2022 13:20:39 PDT
-Received: from dispatch1-us1.ppe-hosted.com (dispatch1-us1.ppe-hosted.com [148.163.129.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F248F7694F;
-        Fri,  9 Sep 2022 13:20:39 -0700 (PDT)
-Received: from dispatch1-us1.ppe-hosted.com (localhost.localdomain [127.0.0.1])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 3651D3338D;
-        Fri,  9 Sep 2022 18:48:14 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.64.31])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 4CEFC1C0087;
-        Fri,  9 Sep 2022 18:48:11 +0000 (UTC)
-Received: from mail3.candelatech.com (mail2.candelatech.com [208.74.158.173])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 3276D600077;
-        Fri,  9 Sep 2022 18:48:10 +0000 (UTC)
-Received: from [192.168.100.195] (50-251-239-81-static.hfc.comcastbusiness.net [50.251.239.81])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail3.candelatech.com (Postfix) with ESMTPSA id 4C9DD13C2B0;
-        Fri,  9 Sep 2022 11:48:09 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com 4C9DD13C2B0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
-        s=default; t=1662749289;
-        bh=OxEUMDoySFKOhq0UBTVO7cZL3nEq0r+AmeukrDSmFU8=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=jVKmEoZWvxt500qv4Qf+/OwLytJDXGCoAhJUbZ0HJ4idoSiFxgfA+Rq7cIuV7qHw9
-         48QxFrrYhK/ec+idHm/32urIFVAtDapJ1LQPxXQnZ10/K3fgTw7TZ1/erU5iLXNsLU
-         1wN1cjnMX2Db2IqR1u26qfSq2LYZy775f2wysx+g=
-Subject: Re: [PATCH AUTOSEL 5.4 06/16] wifi: mac80211: do not wake queues on a
- vif that is being stopped
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Cc:     Felix Fietkau <nbd@nbd.name>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@kernel.org>,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20220720011730.1025099-1-sashal@kernel.org>
- <20220720011730.1025099-6-sashal@kernel.org>
- <b43cfde3-7f33-9153-42ca-9e1ecf409d2a@candelatech.com>
- <ff30252059ae6a7a74c135f9fa9525d379f9e74a.camel@sipsolutions.net>
-From:   Ben Greear <greearb@candelatech.com>
-Organization: Candela Technologies
-Message-ID: <aafaf5f1-c8a1-2a13-2201-b83f65c77942@candelatech.com>
-Date:   Fri, 9 Sep 2022 11:48:08 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        with ESMTP id S231178AbiIIUE6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 16:04:58 -0400
+Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC46C26139
+        for <netdev@vger.kernel.org>; Fri,  9 Sep 2022 13:04:51 -0700 (PDT)
+Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-1280590722dso6785871fac.1
+        for <netdev@vger.kernel.org>; Fri, 09 Sep 2022 13:04:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=PBBkfqyKEKmoKSlfumXcfswFTGpWKdlelDU3j7TdrR4=;
+        b=MHywHitd5io7XuRWQ1rvvt5OziBwdtSQkH6YWIvZJXhDzI0hK+yn26ZtZ5AmtVG4Kn
+         HrSjUsuHgDOXfTP8N9TWP1x7NIkLdK3/t7GT0g6yajI4+GpgY/j5nwOq5W31DjCxx02e
+         zZqdEAnp7y1AUW/yFAsJvidtJ+MkBYVTCp5RIFpFktu/KdD4mPTB/H1E5VweTBovTVgg
+         8s4tsTJK5l4foiGE66je2O3u9GdFIaFWajCgl7jrckozwvMYP/rnSzwIilaQLxl2Wqbo
+         gXzk+Q//svkPmlif8IuOV2mdB32O1jMWIpjNAJl0YwB4Q645aETejfaBmjUNXUlDpm3C
+         mQQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=PBBkfqyKEKmoKSlfumXcfswFTGpWKdlelDU3j7TdrR4=;
+        b=XVkn19v+cfu1UnpIVswMRHxZjHFBqIm5fpSo8VRkilLBzP1PRen4R9GKryZ6CiaxQ2
+         PUpAo+V/eDu8rUiwwUvMgM7Ofm7pm1qXCHhvsViH8Mw3MViGEC0NEYHvHUPse9FaY6L5
+         7TzaPuYrxjwfDYx/AqOtKTwE6A4x7phuazgJ27nN4h8l+u4WZ5CvmooKzJYf/D4LgAf/
+         rO0s/8RZaXpZdUn7T8bEHYuSBLgYe8nGmo2W8SyM2wQUzqjJK2ylgVEkRBeJi0Gj1y9P
+         GhTzWA07R6I/H4/iBkIZUc6nsMCKKRoMt9GhKoT6PAr8bwM4bcVs3Wvdcz2u56nl+FSd
+         AUDw==
+X-Gm-Message-State: ACgBeo2rEzhCUCDt2TvseokHTVA7zWs7fiQepG8oGcrglV/KJ7V2r6MB
+        yQ+wczvMRfAT/+deNiXvG9ZT5A==
+X-Google-Smtp-Source: AA6agR5RYgasVurh3aZ6wjP27XeqkU/V82in/0/Rq3d0A0Fg9HJAYXaPlZLWbDr6iVRloG2uUuMB9A==
+X-Received: by 2002:a05:6870:a197:b0:128:4c:ffd7 with SMTP id a23-20020a056870a19700b00128004cffd7mr6050134oaf.176.1662753891117;
+        Fri, 09 Sep 2022 13:04:51 -0700 (PDT)
+Received: from ?IPV6:2804:1b3:7000:8f29:b747:519c:23a4:77ca? ([2804:1b3:7000:8f29:b747:519c:23a4:77ca])
+        by smtp.gmail.com with ESMTPSA id a65-20020a9d2647000000b006391bdbb361sm184640otb.31.2022.09.09.13.04.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 09 Sep 2022 13:04:50 -0700 (PDT)
+Message-ID: <6d627826-94ac-6c44-9a26-2e2662b58ee0@mojatatu.com>
+Date:   Fri, 9 Sep 2022 17:04:47 -0300
 MIME-Version: 1.0
-In-Reply-To: <ff30252059ae6a7a74c135f9fa9525d379f9e74a.camel@sipsolutions.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH net-next 0/8] add tc-testing test cases
 Content-Language: en-US
+To:     Zhengchao Shao <shaozhengchao@huawei.com>,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, shuah@kernel.org
+Cc:     weiyongjun1@huawei.com, yuehaibing@huawei.com
+References: <20220909012936.268433-1-shaozhengchao@huawei.com>
+From:   Victor Nogueira <victor@mojatatu.com>
+In-Reply-To: <20220909012936.268433-1-shaozhengchao@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-MDID: 1662749291-c0RrVeYq27PU
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/19/22 10:50 PM, Johannes Berg wrote:
-> On Tue, 2022-07-19 at 18:58 -0700, Ben Greear wrote:
->> I think this one had a regression and needs another init-lock-early patch to keep from causing
->> problems?
->>
+> For this patchset, test cases of the ctinfo, gate, and xt action modules
+> are added to the tc-testing test suite. Also add deleting test for
+> connmark, ife, nat, sample and tunnel_key action modules.
 > 
-> Yes, for now we should drop it from all stable trees. We'll re-assess
-> the situation later if it's needed there or not, I guess.
+> Zhengchao Shao (8):
+>    selftests/tc-testings: add selftests for ctinfo action
+>    selftests/tc-testings: add selftests for gate action
+>    selftests/tc-testings: add selftests for xt action
+>    selftests/tc-testings: add connmark action deleting test case
+>    selftests/tc-testings: add ife action deleting test case
+>    selftests/tc-testings: add nat action deleting test case
+>    selftests/tc-testings: add sample action deleting test case
+>    selftests/tc-testings: add tunnel_key action deleting test case
 > 
-> johannes
+>   .../tc-testing/tc-tests/actions/connmark.json |  50 +++
+>   .../tc-testing/tc-tests/actions/ctinfo.json   | 316 ++++++++++++++++++
+>   .../tc-testing/tc-tests/actions/gate.json     | 315 +++++++++++++++++
+>   .../tc-testing/tc-tests/actions/ife.json      |  50 +++
+>   .../tc-testing/tc-tests/actions/nat.json      |  50 +++
+>   .../tc-testing/tc-tests/actions/sample.json   |  50 +++
+>   .../tc-tests/actions/tunnel_key.json          |  50 +++
+>   .../tc-testing/tc-tests/actions/xt.json       | 219 ++++++++++++
+>   8 files changed, 1100 insertions(+)
+>   create mode 100644 tools/testing/selftests/tc-testing/tc-tests/actions/ctinfo.json
+>   create mode 100644 tools/testing/selftests/tc-testing/tc-tests/actions/gate.json
+>   create mode 100644 tools/testing/selftests/tc-testing/tc-tests/actions/xt.json
 > 
 
-I think there is a second problem with this patch:
-
-If I create multiple station vdevs (on mtk7916 radio, not sure that matters much or not),
-and admin up a few of them, but leave remainder down, then the queues on the originally-down-vdevs
-are never started and so tx-path-hang on those stations.
-
-I am not sure the best way to fix this.
-
-Thanks,
-Ben
-
--- 
-Ben Greear <greearb@candelatech.com>
-Candela Technologies Inc  http://www.candelatech.com
-
+Reviewed-by: Victor Nogueira <victor@mojatatu.com>
