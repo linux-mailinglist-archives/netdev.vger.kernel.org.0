@@ -2,168 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E5CA5B3F0E
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 20:50:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A209B5B3F2E
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 21:00:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229945AbiIISuw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Sep 2022 14:50:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58184 "EHLO
+        id S230114AbiIITAz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Sep 2022 15:00:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229847AbiIISut (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 14:50:49 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B1A39EA607;
-        Fri,  9 Sep 2022 11:50:46 -0700 (PDT)
-Received: from linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net (linux.microsoft.com [13.77.154.182])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 3003820B929D;
-        Fri,  9 Sep 2022 11:50:46 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 3003820B929D
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1662749446;
-        bh=EtvSqWtgoW9XjfTZfdIifuNdlSp5udD/dIkF7/nioQk=;
-        h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=X3IxfAszm2Tvg2c8SQfbLxujX6DJJ7U/jVNltwRSGOsrutaORNKRpBZc/MQpH2qN0
-         XyVl0zGQ7JtbG/7vA5KQeuzmNw1jTw99eRCjUD3S01EK+hkE7yYfA3KvSr9g3ahpI+
-         P1iQAId4gbeLJLl1KQ71x7kaYQ6GAMHFcDEA9v0I=
-From:   Easwar Hariharan <eahariha@linux.microsoft.com>
-To:     vkuznets@redhat.com, Deepak Rawat <drawat.floss@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Helge Deller <deller@gmx.de>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Easwar Hariharan <easwar.hariharan@microsoft.com>,
-        Colin Ian King <colin.i.king@googlemail.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hyperv@vger.kernel.org (open list:DRM DRIVER FOR HYPERV SYNTHETIC
-        VIDEO DEVICE),
-        dri-devel@lists.freedesktop.org (open list:DRM DRIVER FOR HYPERV
-        SYNTHETIC VIDEO DEVICE), linux-kernel@vger.kernel.org (open list),
-        netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
-        linux-fbdev@vger.kernel.org (open list:FRAMEBUFFER LAYER),
-        linux-pci@vger.kernel.org (open list:PCI SUBSYSTEM)
-Subject: [PATCH v2 2/2] pci_ids: Add the various Microsoft PCI device IDs
-Date:   Fri,  9 Sep 2022 11:50:25 -0700
-Message-Id: <1662749425-3037-3-git-send-email-eahariha@linux.microsoft.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1662749425-3037-1-git-send-email-eahariha@linux.microsoft.com>
-References: <87leqsr6im.fsf@redhat.com>
- <1662749425-3037-1-git-send-email-eahariha@linux.microsoft.com>
-X-Spam-Status: No, score=-19.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,
-        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S230064AbiIITAv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 15:00:51 -0400
+X-Greylist: delayed 367 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 09 Sep 2022 12:00:46 PDT
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07CC36CD17;
+        Fri,  9 Sep 2022 12:00:46 -0700 (PDT)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1oWj97-0000Gi-3A;
+        Fri, 09 Sep 2022 20:54:34 +0200
+Date:   Fri, 9 Sep 2022 19:54:27 +0100
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
+        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, matthias.bgg@gmail.com,
+        linux-mediatek@lists.infradead.org, lorenzo.bianconi@redhat.com,
+        Bo.Jiao@mediatek.com, sujuan.chen@mediatek.com,
+        ryder.Lee@mediatek.com, evelyn.tsai@mediatek.com,
+        devicetree@vger.kernel.org, robh@kernel.org
+Subject: Re: [PATCH net-next 08/12] net: ethernet: mtk_eth_soc: add foe info
+ in mtk_soc_data structure
+Message-ID: <YxuL45OghfKVGTrM@makrotopia.org>
+References: <cover.1662661555.git.lorenzo@kernel.org>
+ <0d0bfa99e313c0b00bf75f943f58b6fe552ed004.1662661555.git.lorenzo@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0d0bfa99e313c0b00bf75f943f58b6fe552ed004.1662661555.git.lorenzo@kernel.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Easwar Hariharan <easwar.hariharan@microsoft.com>
+On Thu, Sep 08, 2022 at 09:33:42PM +0200, Lorenzo Bianconi wrote:
+> Introduce foe struct in mtk_soc_data as a container for foe table chip
+> related definitions.
+> This is a preliminary patch to enable mt7986 wed support.
+> 
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  drivers/net/ethernet/mediatek/mtk_eth_soc.c   |  70 +++++++-
+>  drivers/net/ethernet/mediatek/mtk_eth_soc.h   |  27 ++-
+>  drivers/net/ethernet/mediatek/mtk_ppe.c       | 161 ++++++++++--------
+>  drivers/net/ethernet/mediatek/mtk_ppe.h       |  29 ++--
+>  .../net/ethernet/mediatek/mtk_ppe_offload.c   |  34 ++--
+>  5 files changed, 208 insertions(+), 113 deletions(-)
+> 
+> [...]
+> diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.h b/drivers/net/ethernet/mediatek/mtk_ppe.h
+> index 6d4c91acd1a5..a364f45edf38 100644
+> --- a/drivers/net/ethernet/mediatek/mtk_ppe.h
+> +++ b/drivers/net/ethernet/mediatek/mtk_ppe.h
+> @@ -61,6 +61,8 @@ enum {
+>  #define MTK_FOE_VLAN2_WINFO_WCID	GENMASK(13, 6)
+>  #define MTK_FOE_VLAN2_WINFO_RING	GENMASK(15, 14)
+>  
+> +#define MTK_FIELD_PREP(mask, val)	(((typeof(mask))(val) << __bf_shf(mask)) & (mask))
+> +#define MTK_FIELD_GET(mask, val)	((typeof(mask))(((val) & (mask)) >> __bf_shf(mask)))
 
-Signed-off-by: Easwar Hariharan <easwar.hariharan@microsoft.com>
----
- drivers/gpu/drm/hyperv/hyperv_drm_drv.c         | 2 +-
- drivers/net/ethernet/microsoft/mana/gdma.h      | 3 ---
- drivers/net/ethernet/microsoft/mana/gdma_main.c | 6 +++---
- drivers/video/fbdev/hyperv_fb.c                 | 4 ++--
- include/linux/pci_ids.h                         | 4 +++-
- 5 files changed, 9 insertions(+), 10 deletions(-)
+This seems to trigger a compiler bug on ARMv7 (e.g. MT7623) builds:
 
-diff --git a/drivers/gpu/drm/hyperv/hyperv_drm_drv.c b/drivers/gpu/drm/hyperv/hyperv_drm_drv.c
-index f84d397..24c2def 100644
---- a/drivers/gpu/drm/hyperv/hyperv_drm_drv.c
-+++ b/drivers/gpu/drm/hyperv/hyperv_drm_drv.c
-@@ -51,7 +51,7 @@ static void hyperv_pci_remove(struct pci_dev *pdev)
- static const struct pci_device_id hyperv_pci_tbl[] = {
- 	{
- 		.vendor = PCI_VENDOR_ID_MICROSOFT,
--		.device = PCI_DEVICE_ID_HYPERV_VIDEO,
-+		.device = PCI_DEVICE_ID_MICROSOFT_HYPERV_VIDEO,
- 	},
- 	{ /* end of list */ }
- };
-diff --git a/drivers/net/ethernet/microsoft/mana/gdma.h b/drivers/net/ethernet/microsoft/mana/gdma.h
-index 4a6efe6..9d3a9f7 100644
---- a/drivers/net/ethernet/microsoft/mana/gdma.h
-+++ b/drivers/net/ethernet/microsoft/mana/gdma.h
-@@ -476,9 +476,6 @@ struct gdma_eqe {
- 
- #define GDMA_SRIOV_REG_CFG_BASE_OFF	0x108
- 
--#define MANA_PF_DEVICE_ID 0x00B9
--#define MANA_VF_DEVICE_ID 0x00BA
--
- struct gdma_posted_wqe_info {
- 	u32 wqe_size_in_bu;
- };
-diff --git a/drivers/net/ethernet/microsoft/mana/gdma_main.c b/drivers/net/ethernet/microsoft/mana/gdma_main.c
-index 00d8198..18cf168 100644
---- a/drivers/net/ethernet/microsoft/mana/gdma_main.c
-+++ b/drivers/net/ethernet/microsoft/mana/gdma_main.c
-@@ -1333,7 +1333,7 @@ static void mana_gd_cleanup(struct pci_dev *pdev)
- 
- static bool mana_is_pf(unsigned short dev_id)
- {
--	return dev_id == MANA_PF_DEVICE_ID;
-+	return dev_id == PCI_DEVICE_ID_MICROSOFT_MANA_PF;
- }
- 
- static int mana_gd_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
-@@ -1466,8 +1466,8 @@ static void mana_gd_shutdown(struct pci_dev *pdev)
- }
- 
- static const struct pci_device_id mana_id_table[] = {
--	{ PCI_DEVICE(PCI_VENDOR_ID_MICROSOFT, MANA_PF_DEVICE_ID) },
--	{ PCI_DEVICE(PCI_VENDOR_ID_MICROSOFT, MANA_VF_DEVICE_ID) },
-+	{ PCI_DEVICE(PCI_VENDOR_ID_MICROSOFT, PCI_DEVICE_ID_MICROSOFT_MANA_PF) },
-+	{ PCI_DEVICE(PCI_VENDOR_ID_MICROSOFT, PCI_DEVICE_ID_MICROSOFT_MANA_VF) },
- 	{ }
- };
- 
-diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
-index b58b445..118e244 100644
---- a/drivers/video/fbdev/hyperv_fb.c
-+++ b/drivers/video/fbdev/hyperv_fb.c
-@@ -997,7 +997,7 @@ static int hvfb_getmem(struct hv_device *hdev, struct fb_info *info)
- 
- 	if (!gen2vm) {
- 		pdev = pci_get_device(PCI_VENDOR_ID_MICROSOFT,
--			PCI_DEVICE_ID_HYPERV_VIDEO, NULL);
-+			PCI_DEVICE_ID_MICROSOFT_HYPERV_VIDEO, NULL);
- 		if (!pdev) {
- 			pr_err("Unable to find PCI Hyper-V video\n");
- 			return -ENODEV;
-@@ -1311,7 +1311,7 @@ static int hvfb_resume(struct hv_device *hdev)
- static const struct pci_device_id pci_stub_id_table[] = {
- 	{
- 		.vendor      = PCI_VENDOR_ID_MICROSOFT,
--		.device      = PCI_DEVICE_ID_HYPERV_VIDEO,
-+		.device      = PCI_DEVICE_ID_MICROSOFT_HYPERV_VIDEO,
- 	},
- 	{ /* end of list */ }
- };
-diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
-index 15b49e6..fe3517f 100644
---- a/include/linux/pci_ids.h
-+++ b/include/linux/pci_ids.h
-@@ -2080,7 +2080,9 @@
- #define PCI_DEVICE_ID_VT1724		0x1724
- 
- #define PCI_VENDOR_ID_MICROSOFT		0x1414
--#define PCI_DEVICE_ID_HYPERV_VIDEO	0x5353
-+#define PCI_DEVICE_ID_MICROSOFT_HYPERV_VIDEO	0x5353
-+#define PCI_DEVICE_ID_MICROSOFT_MANA_PF  	0x00B9
-+#define PCI_DEVICE_ID_MICROSOFT_MANA_VF  	0x00BA
- 
- #define PCI_VENDOR_ID_OXSEMI		0x1415
- #define PCI_DEVICE_ID_OXSEMI_12PCI840	0x8403
--- 
-1.8.3.1
+  LD      .tmp_vmlinux.kallsyms1
+arm-openwrt-linux-muslgnueabi-ld: drivers/net/ethernet/mediatek/mtk_ppe.o: in function `mtk_flow_entry_match':
+/usr/src/lede/build_dir/target-arm_cortex-a7+neon-vfpv4_musl_eabi/linux-mediatek_mt7623/linux-5.15.67/drivers/net/ethernet/mediatek/mtk_ppe.c:406: undefined reference to `__ffsdi2'
+arm-openwrt-linux-muslgnueabi-ld: drivers/net/ethernet/mediatek/mtk_ppe.o: in function `__mtk_foe_entry_commit':
+/usr/src/lede/build_dir/target-arm_cortex-a7+neon-vfpv4_musl_eabi/linux-mediatek_mt7623/linux-5.15.67/drivers/net/ethernet/mediatek/mtk_ppe.c:533: undefined reference to `__ffsdi2'
+arm-openwrt-linux-muslgnueabi-ld: drivers/net/ethernet/mediatek/mtk_ppe.o: in function `mtk_foe_entry_l2':
+/usr/src/lede/build_dir/target-arm_cortex-a7+neon-vfpv4_musl_eabi/linux-mediatek_mt7623/linux-5.15.67/drivers/net/ethernet/mediatek/mtk_ppe.c:134: undefined reference to `__ffsdi2'
+arm-openwrt-linux-muslgnueabi-ld: drivers/net/ethernet/mediatek/mtk_ppe.o: in function `mtk_foe_entry_commit_subflow':
+/usr/src/lede/build_dir/target-arm_cortex-a7+neon-vfpv4_musl_eabi/linux-mediatek_mt7623/linux-5.15.67/drivers/net/ethernet/mediatek/mtk_ppe.c:611: undefined reference to `__ffsdi2'
+arm-openwrt-linux-muslgnueabi-ld: drivers/net/ethernet/mediatek/mtk_ppe.o: in function `mtk_foe_entry_ib2':
+/usr/src/lede/build_dir/target-arm_cortex-a7+neon-vfpv4_musl_eabi/linux-mediatek_mt7623/linux-5.15.67/drivers/net/ethernet/mediatek/mtk_ppe.c:148: undefined reference to `__ffsdi2'
+arm-openwrt-linux-muslgnueabi-ld: drivers/net/ethernet/mediatek/mtk_ppe.o:/usr/src/lede/build_dir/target-arm_cortex-a7+neon-vfpv4_musl_eabi/linux-mediatek_mt7623/linux-5.15.67/drivers/net/ethernet/mediatek/mtk_ppe.c:169: more undefined references to `__ffsdi2' follow
 
+
+>  enum {
+>  	MTK_FOE_STATE_INVALID,
+>  	MTK_FOE_STATE_UNBIND,
