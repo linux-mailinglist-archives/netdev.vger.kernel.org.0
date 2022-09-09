@@ -2,187 +2,247 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B470B5B3A62
-	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 16:09:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C6605B3A74
+	for <lists+netdev@lfdr.de>; Fri,  9 Sep 2022 16:14:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231779AbiIIOEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Sep 2022 10:04:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59252 "EHLO
+        id S229876AbiIIOOF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Sep 2022 10:14:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232304AbiIIOES (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 10:04:18 -0400
+        with ESMTP id S229668AbiIIOOD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 10:14:03 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46EAF14A51A
-        for <netdev@vger.kernel.org>; Fri,  9 Sep 2022 07:02:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ED4CAB405
+        for <netdev@vger.kernel.org>; Fri,  9 Sep 2022 07:14:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662732102;
+        s=mimecast20190719; t=1662732840;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=mmurUuPfY4CSsGXMopu3kXzx5e5l7+stCxGfg5MZbeg=;
-        b=hsm99hw1afdrSnTKRdeuLEzm4lXmpJvxctp6d6Eap0S9/bk2F5P2Bb3YZ5lFNQO+PCJVz/
-        Ksra4to1tgw3th0fKy2W6AKtFGITFa2XLjGRvYVRDIWT/xE4zO8/Vfu7d+ag+14DACmjKV
-        AotnPUWEgPlupJfxuWjtC3gwxiuKNkA=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=Xk32t8ThwwHLTdGdpwN3jqOuQlPi1iyqPkh3M3TzE+U=;
+        b=TOMosKMLMP+42LEJOZE1E8gYY9JWhzEqo/ublJR/1edOtUWhMPgFFgbNnAvj1cjFaNnrEH
+        lIS8JRytX1iHE9wOgYcS8WbswMohtGIrMs9O3MdE5IN/LKFtsGxiOPjJIvw6Y9he4p+0/J
+        /qI1dARprJf9XOLSKkYA0Lp5aylwkLs=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-269-6-92ToJtN0CN7qcaQheOHw-1; Fri, 09 Sep 2022 10:01:41 -0400
-X-MC-Unique: 6-92ToJtN0CN7qcaQheOHw-1
-Received: by mail-ej1-f70.google.com with SMTP id sb14-20020a1709076d8e00b0073d48a10e10so1074437ejc.16
-        for <netdev@vger.kernel.org>; Fri, 09 Sep 2022 07:01:41 -0700 (PDT)
+ us-mta-269-h-lhLuNeMYaKU0DSZfdSQQ-1; Fri, 09 Sep 2022 10:13:58 -0400
+X-MC-Unique: h-lhLuNeMYaKU0DSZfdSQQ-1
+Received: by mail-ed1-f69.google.com with SMTP id f18-20020a056402355200b0045115517911so1129631edd.14
+        for <netdev@vger.kernel.org>; Fri, 09 Sep 2022 07:13:56 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
+        h=content-transfer-encoding:in-reply-to:references:to
+         :content-language:subject:cc:user-agent:mime-version:date:message-id
          :from:x-gm-message-state:from:to:cc:subject:date;
-        bh=mmurUuPfY4CSsGXMopu3kXzx5e5l7+stCxGfg5MZbeg=;
-        b=BaRdyHmtGN15fJ1DxQYjhkLP/hHlPAnm84TUxnFwXNjm6bZtHeXcOhSNwI24Sh5HdZ
-         IJkmrPp6GUgC8bESr1Vb0bXwZi/JabOd5TPlMZA4V1V6tR9eEEtRIKIq10GUMhwJmfw2
-         lrtauLiVqn+bgFkdpEKDotqjfyJU1zyP0rNY0cvLPgc7oTrIl3LkqBJEzp1oNiEPV8KN
-         cqYhihVzpPqQo8gEjAbCyzx2345vwbL7rWsaaHjwZ7m0qFQ+rMpHuknKW2zH5VsELMuB
-         9aq9ki73pV8xw6UmNNyPTHvawTamfVPTRG5/xGwtYJWeOEeaQD+/n6DqqTyCaXRB+K8T
-         lEAA==
-X-Gm-Message-State: ACgBeo1omHyOxFviNC/Z/8TUcb1Pei4ekxCCVSW0cDE6yl6h3hY/ZSKI
-        pCignnEgGDmOVyrm4atICN9PTEAfQwNFNqaxrNY/XOh3fHpSWAonCgB2HljihaXtzxA8rvKcXP5
-        7NftyRZcA855UaMDE
-X-Received: by 2002:a17:906:846b:b0:770:82e5:1519 with SMTP id hx11-20020a170906846b00b0077082e51519mr9690596ejc.221.1662732100553;
-        Fri, 09 Sep 2022 07:01:40 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5cRBPXdEZPFZlONtBxXbkVKluQAB+eqr/N7QwxhdMBwFCwN/QJRPkdLZUifQ+2NbWPIwNn1Q==
-X-Received: by 2002:a17:906:846b:b0:770:82e5:1519 with SMTP id hx11-20020a170906846b00b0077082e51519mr9690572ejc.221.1662732100345;
-        Fri, 09 Sep 2022 07:01:40 -0700 (PDT)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id f4-20020a17090631c400b0073d6093ac93sm353806ejf.16.2022.09.09.07.01.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Sep 2022 07:01:39 -0700 (PDT)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     eahariha@linux.microsoft.com
-Cc:     Deepak Rawat <drawat.floss@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Helge Deller <deller@gmx.de>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Easwar Hariharan <easwar.hariharan@microsoft.com>,
-        Colin Ian King <colin.i.king@googlemail.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        "open list:DRM DRIVER FOR HYPERV SYNTHETIC VIDEO DEVICE" 
-        <linux-hyperv@vger.kernel.org>,
-        "open list:DRM DRIVER FOR HYPERV SYNTHETIC VIDEO DEVICE" 
-        <dri-devel@lists.freedesktop.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        "open list:FRAMEBUFFER LAYER" <linux-fbdev@vger.kernel.org>,
-        "open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>
-Subject: Re: [PATCH 2/3] pci_ids: Add Microsoft PCI Vendor ID, and remove
- redundant definitions
-In-Reply-To: <1662674757-31945-2-git-send-email-eahariha@linux.microsoft.com>
-References: <1662674757-31945-1-git-send-email-eahariha@linux.microsoft.com>
- <1662674757-31945-2-git-send-email-eahariha@linux.microsoft.com>
-Date:   Fri, 09 Sep 2022 16:01:37 +0200
-Message-ID: <87leqsr6im.fsf@redhat.com>
+        bh=Xk32t8ThwwHLTdGdpwN3jqOuQlPi1iyqPkh3M3TzE+U=;
+        b=XZa/k8MWG9t5WvTPbgubEbEGzlWqTeX7y/+VobkXYJ2fNtaoe1DZBe6GQDV0WvDtDW
+         mbWfE13lkpHXQqxp3Dfi/0F7jtPsOKiGl3oGbI+Wz9txW+gTUD9Tr7yG7T9c8H8Y1tSH
+         dstH9BVtGX+wSDlydrqoneVYzS4L2cp/DVO/qE2Z5HaEHD0K03X4S2azeUjp61TDlPRs
+         Y0c7u3DaBqcMmMrrEE4Q32R2wEx7M9IN7dznsDJbkDRmjAPh19a4pBTY5XByAQ5HjkBn
+         3QH6xdCNkSB3ACxqdgC5+GCgmwRxK+vq7zI3KKZS6axGldxPlCYSV91bA4GENzh2Wr1L
+         2VTA==
+X-Gm-Message-State: ACgBeo3evxOM0gxO0lS5tEiCrcchsSZB9tJmaRTbR//gvbGAxcD73gU5
+        lXhmEU7tmHJyCRKB0YYzX8X/nU8ktL5u2wC8ynQ313CdtAXb5CG74qUZFLo8XJSGYoFKb0njRhW
+        LH208oDwZ+uHzaGNY
+X-Received: by 2002:a17:907:2da6:b0:73d:d587:6213 with SMTP id gt38-20020a1709072da600b0073dd5876213mr10104226ejc.5.1662732835867;
+        Fri, 09 Sep 2022 07:13:55 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4EY90EagVDvuKxXzjyal5aWEq+43WPQ4My0vxpoU99rwNuKuJYIARjTDUjajUYtM6uM0Hqsw==
+X-Received: by 2002:a17:907:2da6:b0:73d:d587:6213 with SMTP id gt38-20020a1709072da600b0073dd5876213mr10104207ejc.5.1662732835573;
+        Fri, 09 Sep 2022 07:13:55 -0700 (PDT)
+Received: from [192.168.41.81] (83-90-141-187-cable.dk.customer.tdc.net. [83.90.141.187])
+        by smtp.gmail.com with ESMTPSA id r7-20020a056402018700b0044e96f11359sm473025edv.3.2022.09.09.07.13.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 09 Sep 2022 07:13:54 -0700 (PDT)
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
+Message-ID: <74a68399-35b2-c0f2-92cb-236a0773837e@redhat.com>
+Date:   Fri, 9 Sep 2022 16:13:53 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.1
+Cc:     brouer@redhat.com, netdev@vger.kernel.org,
+        xdp-hints@xdp-project.net, larysa.zaremba@intel.com,
+        memxor@gmail.com, Lorenzo Bianconi <lorenzo@kernel.org>,
+        mtahhan@redhat.com,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        dave@dtucker.co.uk, Magnus Karlsson <magnus.karlsson@intel.com>,
+        bjorn@kernel.org, Alexander Lobakin <alexandr.lobakin@intel.com>
+Subject: Re: [xdp-hints] Re: [PATCH RFCv2 bpf-next 04/18] net: create
+ xdp_hints_common and set functions
+Content-Language: en-US
+To:     "Burakov, Anatoly" <anatoly.burakov@intel.com>, bpf@vger.kernel.org
+References: <166256538687.1434226.15760041133601409770.stgit@firesoul>
+ <166256552083.1434226.577215984964402996.stgit@firesoul>
+ <f14c367b-fe4e-2956-b34e-8d54862a6393@intel.com>
+In-Reply-To: <f14c367b-fe4e-2956-b34e-8d54862a6393@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-eahariha@linux.microsoft.com writes:
 
-> From: Easwar Hariharan <easwar.hariharan@microsoft.com>
->
-> Move the Microsoft PCI Vendor ID from the various drivers to the pci_ids
-> file
->
-> Signed-off-by: Easwar Hariharan <easwar.hariharan@microsoft.com>
-> ---
->  drivers/gpu/drm/hyperv/hyperv_drm_drv.c         | 1 -
->  drivers/net/ethernet/microsoft/mana/gdma_main.c | 4 ----
->  drivers/video/fbdev/hyperv_fb.c                 | 3 ---
->  include/linux/pci_ids.h                         | 2 ++
->  4 files changed, 2 insertions(+), 8 deletions(-)
->
-> diff --git a/drivers/gpu/drm/hyperv/hyperv_drm_drv.c b/drivers/gpu/drm/hyperv/hyperv_drm_drv.c
-> index 6d11e79..61083c7 100644
-> --- a/drivers/gpu/drm/hyperv/hyperv_drm_drv.c
-> +++ b/drivers/gpu/drm/hyperv/hyperv_drm_drv.c
-> @@ -23,7 +23,6 @@
->  #define DRIVER_MAJOR 1
->  #define DRIVER_MINOR 0
->  
-> -#define PCI_VENDOR_ID_MICROSOFT 0x1414
->  #define PCI_DEVICE_ID_HYPERV_VIDEO 0x5353
->  
->  DEFINE_DRM_GEM_FOPS(hv_fops);
-> diff --git a/drivers/net/ethernet/microsoft/mana/gdma_main.c b/drivers/net/ethernet/microsoft/mana/gdma_main.c
-> index 5f92401..00d8198 100644
-> --- a/drivers/net/ethernet/microsoft/mana/gdma_main.c
-> +++ b/drivers/net/ethernet/microsoft/mana/gdma_main.c
-> @@ -1465,10 +1465,6 @@ static void mana_gd_shutdown(struct pci_dev *pdev)
->  	pci_disable_device(pdev);
->  }
->  
-> -#ifndef PCI_VENDOR_ID_MICROSOFT
-> -#define PCI_VENDOR_ID_MICROSOFT 0x1414
-> -#endif
-> -
->  static const struct pci_device_id mana_id_table[] = {
->  	{ PCI_DEVICE(PCI_VENDOR_ID_MICROSOFT, MANA_PF_DEVICE_ID) },
->  	{ PCI_DEVICE(PCI_VENDOR_ID_MICROSOFT, MANA_VF_DEVICE_ID) },
-> diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
-> index 886c564..a502c80 100644
-> --- a/drivers/video/fbdev/hyperv_fb.c
-> +++ b/drivers/video/fbdev/hyperv_fb.c
-> @@ -58,7 +58,6 @@
->  
->  #include <linux/hyperv.h>
->  
-> -
->  /* Hyper-V Synthetic Video Protocol definitions and structures */
->  #define MAX_VMBUS_PKT_SIZE 0x4000
->  
-> @@ -74,10 +73,8 @@
->  #define SYNTHVID_DEPTH_WIN8 32
->  #define SYNTHVID_FB_SIZE_WIN8 (8 * 1024 * 1024)
->  
-> -#define PCI_VENDOR_ID_MICROSOFT 0x1414
->  #define PCI_DEVICE_ID_HYPERV_VIDEO 0x5353
->  
-> -
->  enum pipe_msg_type {
->  	PIPE_MSG_INVALID,
->  	PIPE_MSG_DATA,
-> diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
-> index 6feade6..c008fda 100644
-> --- a/include/linux/pci_ids.h
-> +++ b/include/linux/pci_ids.h
-> @@ -2079,6 +2079,8 @@
->  #define PCI_DEVICE_ID_ICE_1712		0x1712
->  #define PCI_DEVICE_ID_VT1724		0x1724
->  
-> +#define PCI_VENDOR_ID_MICROSOFT  	0x1414
-> +
->  #define PCI_VENDOR_ID_OXSEMI		0x1415
->  #define PCI_DEVICE_ID_OXSEMI_12PCI840	0x8403
->  #define PCI_DEVICE_ID_OXSEMI_PCIe840		0xC000
 
-I've sent a similar patch recently:
-https://lore.kernel.org/linux-hyperv/20220827130345.1320254-2-vkuznets@redhat.com/
+On 09/09/2022 12.49, Burakov, Anatoly wrote:
+> On 07-Sep-22 4:45 PM, Jesper Dangaard Brouer wrote:
+>> XDP-hints via BTF are about giving drivers the ability to extend the
+>> common set of hardware offload hints in a flexible way.
+>>
+>> This patch start out with defining the common set, based on what is
+>> used available in the SKB. Having this as a common struct in core
+>> vmlinux makes it easier to implement xdp_frame to SKB conversion
+>> routines as normal C-code, see later patches.
+>>
+>> Drivers can redefine the layout of the entire metadata area, but are
+>> encouraged to use this common struct as the base, on which they can
+>> extend on top for their extra hardware offload hints. When doing so,
+>> drivers can mark the xdp_buff (and xdp_frame) with flags indicating
+>> this it compatible with the common struct.
+>>
+>> Patch also provides XDP-hints driver helper functions for updating the
+>> common struct. Helpers gets inlined and are defined for maximum
+>> performance, which does require some extra care in drivers, e.g. to
+>> keep track of flags to reduce data dependencies, see code DOC.
+>>
+>> Userspace and BPF-prog's MUST not consider the common struct UAPI.
+>> The common struct (and enum flags) are only exposed via BTF, which
+>> implies consumers must read and decode this BTF before using/consuming
+>> data layout.
+>>
+>> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+>> ---
+>>   include/net/xdp.h |  147 
+>> +++++++++++++++++++++++++++++++++++++++++++++++++++++
+>>   net/core/xdp.c    |    5 ++
+>>   2 files changed, 152 insertions(+)
+>>
+>> diff --git a/include/net/xdp.h b/include/net/xdp.h
+>> index 04c852c7a77f..ea5836ccee82 100644
+>> --- a/include/net/xdp.h
+>> +++ b/include/net/xdp.h
+>> @@ -8,6 +8,151 @@
+>>   #include <linux/skbuff.h> /* skb_shared_info */
+>> +/**
+>> + * struct xdp_hints_common - Common XDP-hints offloads shared with 
+>> netstack
+>> + * @btf_full_id: The modules BTF object + type ID for specific struct
+>> + * @vlan_tci: Hardware provided VLAN tag + proto type in 
+>> @xdp_hints_flags
+>> + * @rx_hash32: Hardware provided RSS hash value
+>> + * @xdp_hints_flags: see &enum xdp_hints_flags
+>> + *
+>> + * This structure contains the most commonly used hardware offloads 
+>> hints
+>> + * provided by NIC drivers and supported by the SKB.
+>> + *
+>> + * Driver are expected to extend this structure by include &struct
+>> + * xdp_hints_common as part of the drivers own specific xdp_hints 
+>> struct's, but
+>> + * at the end-of their struct given XDP metadata area grows backwards.
+>> + *
+>> + * The member @btf_full_id is populated by driver modules to uniquely 
+>> identify
+>> + * the BTF struct.  The high 32-bits store the modules BTF object ID 
+>> and the
+>> + * lower 32-bit the BTF type ID within that BTF object.
+>> + */
+>> +struct xdp_hints_common {
+>> +    union {
+>> +        __wsum        csum;
+>> +        struct {
+>> +            __u16    csum_start;
+>> +            __u16    csum_offset;
+>> +        };
+>> +    };
+>> +    u16 rx_queue;
+>> +    u16 vlan_tci;
+>> +    u32 rx_hash32;
+>> +    u32 xdp_hints_flags;
+>> +    u64 btf_full_id; /* BTF object + type ID */
+>> +} __attribute__((aligned(4))) __attribute__((packed));
+> 
+> I'm assuming any Tx metadata will have to go before the Rx checksum union?
+> 
 
-which Wei has already queued to hyperv/fixes. Moving
-PCI_DEVICE_ID_MICROSOFT_MANA_PF/VF definitions to 'pci_ids.h' does make
-sense but please rebase first.
+Nope.  The plan is that the TX metadata can reuse the same metadata area
+with its own layout.  I imagine a new xdp_buff->flags bit that tell us
+the layout is now TX-layout with xdp_hints_common_tx.
 
--- 
-Vitaly
+We could rename xdp_hints_common to xdp_hints_common_rx to anticipate
+and prepare for this. But that would be getting a head of ourselves,
+because someone in the community might have a smarter solution, e.g.
+that could combine common RX and TX in a single struct. e.g. overlapping
+csum and vlan_tci might make sense.
+
+>> +
+>> +
+>> +/**
+>> + * enum xdp_hints_flags - flags used by &struct xdp_hints_common
+>> + *
+>> + * The &enum xdp_hints_flags have reserved the first 16 bits for 
+>> common flags
+>> + * and drivers can introduce use their own flags bits from BIT(16). For
+>> + * BPF-progs to find these flags (via BTF) drivers should define an enum
+>> + * xdp_hints_flags_driver.
+>> + */
+>> +enum xdp_hints_flags {
+>> +    HINT_FLAG_CSUM_TYPE_BIT0  = BIT(0),
+>> +    HINT_FLAG_CSUM_TYPE_BIT1  = BIT(1),
+>> +    HINT_FLAG_CSUM_TYPE_MASK  = 0x3,
+>> +
+>> +    HINT_FLAG_CSUM_LEVEL_BIT0 = BIT(2),
+>> +    HINT_FLAG_CSUM_LEVEL_BIT1 = BIT(3),
+>> +    HINT_FLAG_CSUM_LEVEL_MASK = 0xC,
+>> +    HINT_FLAG_CSUM_LEVEL_SHIFT = 2,
+>> +
+>> +    HINT_FLAG_RX_HASH_TYPE_BIT0 = BIT(4),
+>> +    HINT_FLAG_RX_HASH_TYPE_BIT1 = BIT(5),
+>> +    HINT_FLAG_RX_HASH_TYPE_MASK = 0x30,
+>> +    HINT_FLAG_RX_HASH_TYPE_SHIFT = 0x4,
+>> +
+>> +    HINT_FLAG_RX_QUEUE = BIT(7),
+>> +
+>> +    HINT_FLAG_VLAN_PRESENT            = BIT(8),
+>> +    HINT_FLAG_VLAN_PROTO_ETH_P_8021Q  = BIT(9),
+>> +    HINT_FLAG_VLAN_PROTO_ETH_P_8021AD = BIT(10),
+>> +    /* Flags from BIT(16) can be used by drivers */
+> 
+> If we assumed we also have Tx section, would 16 bits be enough? For a 
+> basic implementation of UDP checksumming, AF_XDP would need 3x16 more 
+> bits (to store L2/L3/L4 offsets) plus probably a flag field indicating 
+> presence of each. Is there any way to expand common fields in the future 
+> (or is it at all intended to be expandable)?
+> 
+
+As above we could have separate flags for TX side, e.g.
+xdp_hints_flags_tx.  But some of the flags might still be valid for
+TX-side, so they could potentially share some.
+
+BUT it is also important to realize that I'm saying this is not UAPI
+flags being exposed (like in include/uapi/bpf.h).  The runtime value of
+these enum defined flags MUST be obtained via BTF (through help of
+libbpf CO-RE or in userspace by parsing BTF).
+
+Thus, in principle the kernel is free to change these structs and enums.
+In practice it will be very annoying for BPF-progs and AF_XDP userspace
+code if we change the names of the struct's and somewhat annoying if
+members change name.  CO-RE can deal with kernel changes and feature
+detection[1] down to the avail enums e.g. via using
+bpf_core_enum_value_exists().  But we should avoid too many changes as
+the code becomes harder to read.
+
+--Jesper
+
+[1] 
+https://nakryiko.com/posts/bpf-core-reference-guide/#bpf-core-enum-value-exists
 
