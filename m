@@ -2,49 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A53A65B49B1
-	for <lists+netdev@lfdr.de>; Sat, 10 Sep 2022 23:22:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 884675B49D5
+	for <lists+netdev@lfdr.de>; Sat, 10 Sep 2022 23:24:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230355AbiIJVWN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Sep 2022 17:22:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57216 "EHLO
+        id S230238AbiIJVYS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Sep 2022 17:24:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230250AbiIJVVb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Sep 2022 17:21:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBBB04C63C;
-        Sat, 10 Sep 2022 14:18:32 -0700 (PDT)
+        with ESMTP id S231246AbiIJVXt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Sep 2022 17:23:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B38B3C147;
+        Sat, 10 Sep 2022 14:20:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B725DB8085B;
-        Sat, 10 Sep 2022 21:18:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23DB4C43140;
-        Sat, 10 Sep 2022 21:18:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B6AB1B80953;
+        Sat, 10 Sep 2022 21:18:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18E05C433D6;
+        Sat, 10 Sep 2022 21:18:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662844708;
-        bh=yxmTmAmQYOY0Y1XhFJJ91Ijes9f9h/iULVvKrO+XC0U=;
+        s=k20201202; t=1662844724;
+        bh=uXI/ZyKVtS1AUDh9OrY6TKT5KHAbc2042q5xIiUSAZU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tZNvClECkgoPw56Ag4x1W63O7VVpYBQuR6WXoYttwokg7u1Xi5F/BuewHRvevyRSF
-         MEZtmPZK8nFGsXn75cesda/b+dyBWZ2NT7H1ge+gkZrj6/tOnPULdav6uWCYN+3cDf
-         44yPJWsZLMHs8sxm7Fp2TR3w5CZuj1qceDUWNz0Uax6c9V3jXo3yeMfz777rUI0gWe
-         rCrwJ+KTX5Eua4DHakNfOfCPEW9TVGs5F2798HwDth9rzxiKAdW189zdK9ZYAQZKTg
-         2Bha35NU7o0lMj+uhlCI1T9I2+cf8GftIv5KDphRtPOljV9FJ+nKVMiWgfMPcewsG0
-         GyRjvhCXwmbaQ==
+        b=Z2h3acAKcV1iRsC5up3qn2B3GrWpJJBxmdM53Trp1h3IQ3Vns2roiJRrDV4tUf7un
+         RKoupJMcW7IdrwdNQr6SqiCAZd5FxL9NaZIHtCQ5zmGR517CjmZZyM6u31SBb+oULL
+         nCaOs05lR+K1IOdgB5EwUMEovOsGLjCMPgKnDcXzMS7D+FJFPY6+OA7o/Ioas2Ozt0
+         fIwywFkl6i+lFy6WCZDJO1AWU09hUam85sG4EjuqQJv4YtBMAiyuN4QCrrMxdiNFB3
+         +E0vzNoaO8cz/xyXzfKRFaluqkUNOp4auX65uHPbOOkReTj1Sr7InhzzakiMv4zTi0
+         aacvQFskFr/Iw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kurt Kanzenbach <kurt@linutronix.de>, Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <olteanv@gmail.com>,
+Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        Michael Chan <michael.chan@broadcom.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 18/21] net: dsa: hellcreek: Print warning only once
-Date:   Sat, 10 Sep 2022 17:17:49 -0400
-Message-Id: <20220910211752.70291-18-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, siva.kallam@broadcom.com,
+        prashant@broadcom.com, mchan@broadcom.com, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 06/14] tg3: Disable tg3 device on system reboot to avoid triggering AER
+Date:   Sat, 10 Sep 2022 17:18:24 -0400
+Message-Id: <20220910211832.70579-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220910211752.70291-1-sashal@kernel.org>
-References: <20220910211752.70291-1-sashal@kernel.org>
+In-Reply-To: <20220910211832.70579-1-sashal@kernel.org>
+References: <20220910211832.70579-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -59,36 +60,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kurt Kanzenbach <kurt@linutronix.de>
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
-[ Upstream commit 52267ce25f60f37ae40ccbca0b21328ebae5ae75 ]
+[ Upstream commit 2ca1c94ce0b65a2ce7512b718f3d8a0fe6224bca ]
 
-In case the source port cannot be decoded, print the warning only once. This
-still brings attention to the user and does not spam the logs at the same time.
+Commit d60cd06331a3 ("PM: ACPI: reboot: Use S5 for reboot") caused a
+reboot hang on one Dell servers so the commit was reverted.
 
-Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-Link: https://lore.kernel.org/r/20220830163448.8921-1-kurt@linutronix.de
+Someone managed to collect the AER log and it's caused by MSI:
+[ 148.762067] ACPI: Preparing to enter system sleep state S5
+[ 148.794638] {1}[Hardware Error]: Hardware error from APEI Generic Hardware Error Source: 5
+[ 148.803731] {1}[Hardware Error]: event severity: recoverable
+[ 148.810191] {1}[Hardware Error]: Error 0, type: fatal
+[ 148.816088] {1}[Hardware Error]: section_type: PCIe error
+[ 148.822391] {1}[Hardware Error]: port_type: 0, PCIe end point
+[ 148.829026] {1}[Hardware Error]: version: 3.0
+[ 148.834266] {1}[Hardware Error]: command: 0x0006, status: 0x0010
+[ 148.841140] {1}[Hardware Error]: device_id: 0000:04:00.0
+[ 148.847309] {1}[Hardware Error]: slot: 0
+[ 148.852077] {1}[Hardware Error]: secondary_bus: 0x00
+[ 148.857876] {1}[Hardware Error]: vendor_id: 0x14e4, device_id: 0x165f
+[ 148.865145] {1}[Hardware Error]: class_code: 020000
+[ 148.870845] {1}[Hardware Error]: aer_uncor_status: 0x00100000, aer_uncor_mask: 0x00010000
+[ 148.879842] {1}[Hardware Error]: aer_uncor_severity: 0x000ef030
+[ 148.886575] {1}[Hardware Error]: TLP Header: 40000001 0000030f 90028090 00000000
+[ 148.894823] tg3 0000:04:00.0: AER: aer_status: 0x00100000, aer_mask: 0x00010000
+[ 148.902795] tg3 0000:04:00.0: AER: [20] UnsupReq (First)
+[ 148.910234] tg3 0000:04:00.0: AER: aer_layer=Transaction Layer, aer_agent=Requester ID
+[ 148.918806] tg3 0000:04:00.0: AER: aer_uncor_severity: 0x000ef030
+[ 148.925558] tg3 0000:04:00.0: AER: TLP Header: 40000001 0000030f 90028090 00000000
+
+The MSI is probably raised by incoming packets, so power down the device
+and disable bus mastering to stop the traffic, as user confirmed this
+approach works.
+
+In addition to that, be extra safe and cancel reset task if it's running.
+
+Cc: Josef Bacik <josef@toxicpanda.com>
+Link: https://lore.kernel.org/all/b8db79e6857c41dab4ef08bdf826ea7c47e3bafc.1615947283.git.josef@toxicpanda.com/
+BugLink: https://bugs.launchpad.net/bugs/1917471
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Reviewed-by: Michael Chan <michael.chan@broadcom.com>
+Link: https://lore.kernel.org/r/20220826002530.1153296-1-kai.heng.feng@canonical.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/dsa/tag_hellcreek.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/tg3.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/net/dsa/tag_hellcreek.c b/net/dsa/tag_hellcreek.c
-index eb204ad36eeec..846588c0070a5 100644
---- a/net/dsa/tag_hellcreek.c
-+++ b/net/dsa/tag_hellcreek.c
-@@ -45,7 +45,7 @@ static struct sk_buff *hellcreek_rcv(struct sk_buff *skb,
+diff --git a/drivers/net/ethernet/broadcom/tg3.c b/drivers/net/ethernet/broadcom/tg3.c
+index 5143cdd0eecad..be96116dc2ccb 100644
+--- a/drivers/net/ethernet/broadcom/tg3.c
++++ b/drivers/net/ethernet/broadcom/tg3.c
+@@ -18146,16 +18146,20 @@ static void tg3_shutdown(struct pci_dev *pdev)
+ 	struct net_device *dev = pci_get_drvdata(pdev);
+ 	struct tg3 *tp = netdev_priv(dev);
  
- 	skb->dev = dsa_master_find_slave(dev, 0, port);
- 	if (!skb->dev) {
--		netdev_warn(dev, "Failed to get source port: %d\n", port);
-+		netdev_warn_once(dev, "Failed to get source port: %d\n", port);
- 		return NULL;
- 	}
++	tg3_reset_task_cancel(tp);
++
+ 	rtnl_lock();
++
+ 	netif_device_detach(dev);
  
+ 	if (netif_running(dev))
+ 		dev_close(dev);
+ 
+-	if (system_state == SYSTEM_POWER_OFF)
+-		tg3_power_down(tp);
++	tg3_power_down(tp);
+ 
+ 	rtnl_unlock();
++
++	pci_disable_device(pdev);
+ }
+ 
+ /**
 -- 
 2.35.1
 
