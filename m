@@ -2,58 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA2225B4505
+	by mail.lfdr.de (Postfix) with ESMTP id 0D69E5B4503
 	for <lists+netdev@lfdr.de>; Sat, 10 Sep 2022 09:56:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229661AbiIJHzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Sep 2022 03:55:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58570 "EHLO
+        id S229577AbiIJHy6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Sep 2022 03:54:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229604AbiIJHyw (ORCPT
+        with ESMTP id S229610AbiIJHyw (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 10 Sep 2022 03:54:52 -0400
 Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A808E2495A;
-        Sat, 10 Sep 2022 00:54:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A309C25592;
+        Sat, 10 Sep 2022 00:54:46 -0700 (PDT)
 Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28A3ng0a021854;
-        Sat, 10 Sep 2022 00:54:31 -0700
+        by mx0a-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28A3ng0b021854;
+        Sat, 10 Sep 2022 00:54:34 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=Lqu4/M8Xc3uUwk929SLWUH3qpvL1/zOdNRRZ4v3K6jw=;
- b=QSlS/wYP7yVsM32f1QJJ3quAEBLtYau0qjnuQ3zuPDigiET/FRgO0uJtDV9a6aVSDRp8
- slTt+T84XKDDLYK9weogJ7T7hIrgQG2CKy98qr4pkahoSqd5FMsVqAVT97HnNwaVHiS1
- PUThxHi0gH6rqIc+l0cOAui1RI9MHTVmmAMsCWWGCgAsXbVBbbT3rUC/ffWHWfnu01HH
- hq8hbcnLsmnK31nQ5lS2N9IU2db4CWVpVm+qihCPRsdBMQnOeotUNmiTyc2zZymitDg7
- RIZxkKcaLyxncnbbzLMmO4xZVgYa75vbHJBgViK4tVWjKg6uFE+GiIqjJ7ucM1fo7moX sQ== 
+ content-type; s=pfpt0220; bh=sVX9PwxBRKnz7/OAA9gdPRlJbJf/Nr4NyRhduEfVjMM=;
+ b=kcsqGRQxgKmFdxQ/u5Z8bMu5blxRzzp3KHvdIvVyWBEzyTVKhHB6uAcI74yGtOL2JB/L
+ R9LbDzfqLkPyfF144zB6SUuBMayR0yV/cPaS4tpdhO0yoPdqZb5u2CiR4vgq1ZMSSOek
+ x+fKR+eBOqx8MKDtE3YnXcTqJGFpsO3HhYSZg4hwyEaX/rZzi5CrdWoKIhoonB0FF52v
+ yaTa8AqA9f06Z1zDxlqvK8HT/BxbiiHwdipeoCMic2tJtcUX9ufys5G5RVAfo0g13mYG
+ i9BOLyi1TjLxgWhlfIgtLddrMlnEMYNw9c/tJpPnP7LQ0Ie/3Im9+tavsnQcIIS/9yst SQ== 
 Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3jgjwm8h0e-1
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3jgjwm8h0g-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sat, 10 Sep 2022 00:54:31 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+        Sat, 10 Sep 2022 00:54:34 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
  (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Sat, 10 Sep
- 2022 00:54:29 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Sat, 10 Sep 2022 00:54:29 -0700
+ 2022 00:54:33 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sat, 10 Sep 2022 00:54:33 -0700
 Received: from #hyd1583.marvell.com (unknown [10.29.37.44])
-        by maili.marvell.com (Postfix) with ESMTP id 6E4D75B6937;
-        Sat, 10 Sep 2022 00:54:26 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id CC5AE3F7048;
+        Sat, 10 Sep 2022 00:54:29 -0700 (PDT)
 From:   Naveen Mamindlapalli <naveenm@marvell.com>
 To:     <kuba@kernel.org>, <davem@davemloft.net>, <edumazet@google.com>,
         <pabeni@redhat.com>, <richardcochran@gmail.com>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <sgoutham@marvell.com>, <hkelam@marvell.com>
-CC:     Naveen Mamindlapalli <naveenm@marvell.com>
-Subject: [net-next PATCH 2/4] octeontx2-pf: Add support for ptp 1-step mode on CN10K silicon
-Date:   Sat, 10 Sep 2022 13:24:14 +0530
-Message-ID: <20220910075416.22887-3-naveenm@marvell.com>
+CC:     Naveen Mamindlapalli <naveenm@marvell.com>,
+        Rakesh Babu Saladi <rsaladi2@marvell.com>
+Subject: [net-next PATCH 3/4] octeontx2-af: Add PTP PPS Errata workaround on CN10K silicon
+Date:   Sat, 10 Sep 2022 13:24:15 +0530
+Message-ID: <20220910075416.22887-4-naveenm@marvell.com>
 X-Mailer: git-send-email 2.16.5
 In-Reply-To: <20220910075416.22887-1-naveenm@marvell.com>
 References: <20220910075416.22887-1-naveenm@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Proofpoint-GUID: fvHNydoVymqvbgFDJnzAQhi-kfcZ6JGG
-X-Proofpoint-ORIG-GUID: fvHNydoVymqvbgFDJnzAQhi-kfcZ6JGG
+X-Proofpoint-GUID: OKxYQUX7kGuFppkTKltH_c_kmatBB0ot
+X-Proofpoint-ORIG-GUID: OKxYQUX7kGuFppkTKltH_c_kmatBB0ot
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
  definitions=2022-09-10_04,2022-09-09_01,2022-06-22_01
@@ -67,530 +68,261 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hariprasad Kelam <hkelam@marvell.com>
+Errata:
+The ptp_clock_hi rollsover to zero one clock cycle before it
+reaches one second boundary. As a result, the pps threshold
+comparison fails after one second and the pps output signal
+won't toggle further.
 
-Add support for ptp 1-step mode using timecounter. The seconds and
-nanoseconds to be updated in PTP header are calculated by adding the
-timecounter offset to the free running PTP clock counter time. The PF
-driver periodically gets the PTP clock time using AF mbox. The 1-step
-support uses HW feature to update correction field rather than
-OriginTimestamp field in PTP header.
+This patch workarounds the issue by programming the pps_lo_incr
+register to 500msec minus one clock cycle period, ensuring that
+the pps threshold comparison succeeds at one second rollover
+boundary and pps edge toggles. After that point, the driver will
+have enough time (~500msec) to reset the pps threshold value.
+After each one second boundary, hrtimer is invoked which resets
+the pps threshold value.
 
-Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
 Signed-off-by: Naveen Mamindlapalli <naveenm@marvell.com>
+Signed-off-by: Rakesh Babu Saladi <rsaladi2@marvell.com>
 Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/rpm.c    |  19 +++-
- drivers/net/ethernet/marvell/octeontx2/af/rpm.h    |   5 +
- .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    |   8 +-
- .../net/ethernet/marvell/octeontx2/af/rvu_reg.h    |   1 +
- .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  13 +++
- .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c  |   8 +-
- .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   |  11 +++
- .../net/ethernet/marvell/octeontx2/nic/otx2_ptp.c  |  90 +++++++++++------
- .../ethernet/marvell/octeontx2/nic/otx2_struct.h   |  11 ++-
- .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.c | 110 ++++++++++++++++++++-
- 10 files changed, 234 insertions(+), 42 deletions(-)
+ drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |  2 +
+ drivers/net/ethernet/marvell/octeontx2/af/ptp.c    | 82 +++++++++++++++++++++-
+ drivers/net/ethernet/marvell/octeontx2/af/ptp.h    |  3 +
+ .../net/ethernet/marvell/octeontx2/nic/otx2_ptp.c  | 27 +++++--
+ 4 files changed, 109 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-index ef59de43b11e..a70e1153fa04 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-@@ -415,11 +415,26 @@ void rpm_lmac_ptp_config(void *rpmd, int lmac_id, bool enable)
- 		return;
- 
- 	cfg = rpm_read(rpm, lmac_id, RPMX_CMRX_CFG);
--	if (enable)
-+	if (enable) {
- 		cfg |= RPMX_RX_TS_PREPEND;
--	else
-+		cfg |= RPMX_TX_PTP_1S_SUPPORT;
-+	} else {
- 		cfg &= ~RPMX_RX_TS_PREPEND;
-+		cfg &= ~RPMX_TX_PTP_1S_SUPPORT;
-+	}
-+
- 	rpm_write(rpm, lmac_id, RPMX_CMRX_CFG, cfg);
-+
-+	cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_XIF_MODE);
-+
-+	if (enable) {
-+		cfg |= RPMX_ONESTEP_ENABLE;
-+		cfg &= ~RPMX_TS_BINARY_MODE;
-+	} else {
-+		cfg &= ~RPMX_ONESTEP_ENABLE;
-+	}
-+
-+	rpm_write(rpm, lmac_id, RPMX_MTI_MAC100X_XIF_MODE, cfg);
- }
- 
- int rpm_lmac_pfc_config(void *rpmd, int lmac_id, u8 tx_pause, u8 rx_pause, u16 pfc_en)
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
-index c2bd6e54ea51..77f2ef9e1425 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
-@@ -16,6 +16,7 @@
- /* Registers */
- #define RPMX_CMRX_CFG			0x00
- #define RPMX_RX_TS_PREPEND              BIT_ULL(22)
-+#define RPMX_TX_PTP_1S_SUPPORT          BIT_ULL(17)
- #define RPMX_CMRX_SW_INT                0x180
- #define RPMX_CMRX_SW_INT_W1S            0x188
- #define RPMX_CMRX_SW_INT_ENA_W1S        0x198
-@@ -72,6 +73,10 @@
- #define RPMX_MTI_MAC100X_CL89_PAUSE_QUANTA		0x8108
- #define RPM_DEFAULT_PAUSE_TIME                          0x7FF
- 
-+#define RPMX_MTI_MAC100X_XIF_MODE		        0x8100
-+#define RPMX_ONESTEP_ENABLE				BIT_ULL(5)
-+#define RPMX_TS_BINARY_MODE				BIT_ULL(11)
-+
- /* Function Declarations */
- int rpm_get_nr_lmacs(void *rpmd);
- u8 rpm_get_lmac_type(void *rpmd, int lmac_id);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-index 0879a48411f3..7646bb2ec89b 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-@@ -4296,8 +4296,14 @@ static int rvu_nix_block_init(struct rvu *rvu, struct nix_hw *nix_hw)
- 	/* Restore CINT timer delay to HW reset values */
- 	rvu_write64(rvu, blkaddr, NIX_AF_CINT_DELAY, 0x0ULL);
- 
-+	cfg = rvu_read64(rvu, blkaddr, NIX_AF_SEB_CFG);
-+
- 	/* For better performance use NDC TX instead of NDC RX for SQ's SQEs" */
--	rvu_write64(rvu, blkaddr, NIX_AF_SEB_CFG, 0x1ULL);
-+	cfg |= 1ULL;
-+	if (!is_rvu_otx2(rvu))
-+		cfg |= NIX_PTP_1STEP_EN;
-+
-+	rvu_write64(rvu, blkaddr, NIX_AF_SEB_CFG, cfg);
- 
- 	if (is_block_implemented(hw, blkaddr)) {
- 		err = nix_setup_txschq(rvu, nix_hw, blkaddr);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
-index 77a9ade91f3e..0e0d536645ac 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
-@@ -266,6 +266,7 @@
- #define NIX_AF_TX_NPC_CAPTURE_CONFIG	(0x0660)
- #define NIX_AF_TX_NPC_CAPTURE_INFO	(0x0670)
- #define NIX_AF_SEB_CFG			(0x05F0)
-+#define NIX_PTP_1STEP_EN		BIT_ULL(2)
- 
- #define NIX_AF_DEBUG_NPC_RESP_DATAX(a)          (0x680 | (a) << 3)
- #define NIX_AF_SMQX_CFG(a)                      (0x700 | (a) << 16)
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index 23948626b1ef..4c7691a1a1ed 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -243,6 +243,7 @@ struct otx2_hw {
- #define CN10K_MBOX		1
- #define CN10K_LMTST		2
- #define CN10K_RPM		3
-+#define CN10K_PTP_ONESTEP	4
- 	unsigned long		cap_flag;
- 
- #define LMT_LINE_SIZE		128
-@@ -276,6 +277,13 @@ struct refill_work {
- 	struct otx2_nic *pf;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+index d7762577e285..e26c3b0c4dcb 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+@@ -1471,6 +1471,7 @@ enum ptp_op {
+ 	PTP_OP_GET_CLOCK = 1,
+ 	PTP_OP_GET_TSTMP = 2,
+ 	PTP_OP_SET_THRESH = 3,
++	PTP_OP_EXTTS_ON = 4,
  };
  
-+/* PTPv2 originTimestamp structure */
-+struct ptpv2_tstamp {
-+	__be16 seconds_msb; /* 16 bits + */
-+	__be32 seconds_lsb; /* 32 bits = 48 bits*/
-+	__be32 nanoseconds;
-+} __packed;
-+
- struct otx2_ptp {
- 	struct ptp_clock_info ptp_info;
- 	struct ptp_clock *ptp_clock;
-@@ -291,6 +299,9 @@ struct otx2_ptp {
- 	struct ptp_pin_desc extts_config;
- 	u64 (*convert_rx_ptp_tstmp)(u64 timestamp);
- 	u64 (*convert_tx_ptp_tstmp)(u64 timestamp);
-+	struct delayed_work synctstamp_work;
-+	u64 tstamp;
-+	u32 base_ns;
+ struct ptp_req {
+@@ -1478,6 +1479,7 @@ struct ptp_req {
+ 	u8 op;
+ 	s64 scaled_ppm;
+ 	u64 thresh;
++	int extts_on;
  };
  
- #define OTX2_HW_TIMESTAMP_LEN	8
-@@ -363,6 +374,7 @@ struct otx2_nic {
- #define OTX2_FLAG_TC_MATCHALL_EGRESS_ENABLED	BIT_ULL(12)
- #define OTX2_FLAG_TC_MATCHALL_INGRESS_ENABLED	BIT_ULL(13)
- #define OTX2_FLAG_DMACFLTR_SUPPORT		BIT_ULL(14)
-+#define OTX2_FLAG_PTP_ONESTEP_SYNC		BIT_ULL(15)
- #define OTX2_FLAG_ADPTV_INT_COAL_ENABLED BIT_ULL(16)
- 	u64			flags;
- 	u64			*cq_op_addr;
-@@ -494,6 +506,7 @@ static inline void otx2_setup_dev_hw_settings(struct otx2_nic *pfvf)
- 		__set_bit(CN10K_MBOX, &hw->cap_flag);
- 		__set_bit(CN10K_LMTST, &hw->cap_flag);
- 		__set_bit(CN10K_RPM, &hw->cap_flag);
-+		__set_bit(CN10K_PTP_ONESTEP, &hw->cap_flag);
- 	}
+ struct ptp_rsp {
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/ptp.c b/drivers/net/ethernet/marvell/octeontx2/af/ptp.c
+index b2c3527fe665..01f7dbad6b92 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/ptp.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/ptp.c
+@@ -9,6 +9,8 @@
+ #include <linux/device.h>
+ #include <linux/module.h>
+ #include <linux/pci.h>
++#include <linux/hrtimer.h>
++#include <linux/ktime.h>
+ 
+ #include "ptp.h"
+ #include "mbox.h"
+@@ -77,6 +79,43 @@ static bool is_ptp_tsfmt_sec_nsec(struct ptp *ptp)
+ 	return false;
  }
  
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-index 5bd16e95370b..0eb74e8c553d 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-@@ -963,10 +963,12 @@ static int otx2_get_ts_info(struct net_device *netdev,
++static enum hrtimer_restart ptp_reset_thresh(struct hrtimer *hrtimer)
++{
++	struct ptp *ptp = container_of(hrtimer, struct ptp, hrtimer);
++	ktime_t curr_ts = ktime_get();
++	ktime_t delta_ns, period_ns;
++	u64 ptp_clock_hi;
++
++	/* calculate the elapsed time since last restart */
++	delta_ns = ktime_to_ns(ktime_sub(curr_ts, ptp->last_ts));
++
++	/* if the ptp clock value has crossed 0.5 seconds,
++	 * its too late to update pps threshold value, so
++	 * update threshold after 1 second.
++	 */
++	ptp_clock_hi = readq(ptp->reg_base + PTP_CLOCK_HI);
++	if (ptp_clock_hi > 500000000) {
++		period_ns = ktime_set(0, (NSEC_PER_SEC + 100 - ptp_clock_hi));
++	} else {
++		writeq(500000000, ptp->reg_base + PTP_PPS_THRESH_HI);
++		period_ns = ktime_set(0, (NSEC_PER_SEC + 100 - delta_ns));
++	}
++
++	hrtimer_forward_now(hrtimer, period_ns);
++	ptp->last_ts = curr_ts;
++
++	return HRTIMER_RESTART;
++}
++
++static void ptp_hrtimer_start(struct ptp *ptp, ktime_t start_ns)
++{
++	ktime_t period_ns;
++
++	period_ns = ktime_set(0, (NSEC_PER_SEC + 100 - start_ns));
++	hrtimer_start(&ptp->hrtimer, period_ns, HRTIMER_MODE_REL);
++	ptp->last_ts = ktime_get();
++}
++
+ static u64 read_ptp_tstmp_sec_nsec(struct ptp *ptp)
+ {
+ 	u64 sec, sec1, nsec;
+@@ -275,6 +314,18 @@ void ptp_start(struct ptp *ptp, u64 sclk, u32 ext_clk_freq, u32 extts)
+ 	/* Set 50% duty cycle for 1Hz output */
+ 	writeq(0x1dcd650000000000, ptp->reg_base + PTP_PPS_HI_INCR);
+ 	writeq(0x1dcd650000000000, ptp->reg_base + PTP_PPS_LO_INCR);
++	if (cn10k_ptp_errata(ptp)) {
++		/* The ptp_clock_hi rollsover to zero once clock cycle before it
++		 * reaches one second boundary. so, program the pps_lo_incr in
++		 * such a way that the pps threshold value comparison at one
++		 * second boundary will succeed and pps edge changes. After each
++		 * one second boundary, the hrtimer handler will be invoked and
++		 * reprograms the pps threshold value.
++		 */
++		ptp->clock_period = NSEC_PER_SEC / ptp->clock_rate;
++		writeq((0x1dcd6500ULL - ptp->clock_period) << 32,
++		       ptp->reg_base + PTP_PPS_LO_INCR);
++	}
  
- 	info->phc_index = otx2_ptp_clock_index(pfvf);
+ 	if (cn10k_ptp_errata(ptp))
+ 		clock_comp = ptp_calc_adjusted_comp(ptp->clock_rate);
+@@ -301,7 +352,25 @@ static int ptp_get_tstmp(struct ptp *ptp, u64 *clk)
  
--	info->tx_types = (1 << HWTSTAMP_TX_OFF) | (1 << HWTSTAMP_TX_ON);
-+	info->tx_types = BIT(HWTSTAMP_TX_OFF) | BIT(HWTSTAMP_TX_ON);
-+	if (test_bit(CN10K_PTP_ONESTEP, &pfvf->hw.cap_flag))
-+		info->tx_types |= BIT(HWTSTAMP_TX_ONESTEP_SYNC);
- 
--	info->rx_filters = (1 << HWTSTAMP_FILTER_NONE) |
--			   (1 << HWTSTAMP_FILTER_ALL);
-+	info->rx_filters = BIT(HWTSTAMP_FILTER_NONE) |
-+			   BIT(HWTSTAMP_FILTER_ALL);
+ static int ptp_set_thresh(struct ptp *ptp, u64 thresh)
+ {
+-	writeq(thresh, ptp->reg_base + PTP_PPS_THRESH_HI);
++	if (!cn10k_ptp_errata(ptp))
++		writeq(thresh, ptp->reg_base + PTP_PPS_THRESH_HI);
++
++	return 0;
++}
++
++static int ptp_extts_on(struct ptp *ptp, int on)
++{
++	u64 ptp_clock_hi;
++
++	if (cn10k_ptp_errata(ptp)) {
++		if (on) {
++			ptp_clock_hi = readq(ptp->reg_base + PTP_CLOCK_HI);
++			ptp_hrtimer_start(ptp, (ktime_t)ptp_clock_hi);
++		} else {
++			if (hrtimer_active(&ptp->hrtimer))
++				hrtimer_cancel(&ptp->hrtimer);
++		}
++	}
  
  	return 0;
  }
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-index 49a4ff01cecb..8bf5274cd7e3 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-@@ -2038,8 +2038,19 @@ int otx2_config_hwtstamp(struct net_device *netdev, struct ifreq *ifr)
+@@ -341,6 +410,11 @@ static int ptp_probe(struct pci_dev *pdev,
+ 	else
+ 		ptp->read_ptp_tstmp = &read_ptp_tstmp_nsec;
  
- 	switch (config.tx_type) {
- 	case HWTSTAMP_TX_OFF:
-+		if (pfvf->flags & OTX2_FLAG_PTP_ONESTEP_SYNC)
-+			pfvf->flags &= ~OTX2_FLAG_PTP_ONESTEP_SYNC;
++	if (cn10k_ptp_errata(ptp)) {
++		hrtimer_init(&ptp->hrtimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
++		ptp->hrtimer.function = ptp_reset_thresh;
++	}
 +
-+		cancel_delayed_work(&pfvf->ptp->synctstamp_work);
- 		otx2_config_hw_tx_tstamp(pfvf, false);
+ 	return 0;
+ 
+ error_free:
+@@ -365,6 +439,9 @@ static void ptp_remove(struct pci_dev *pdev)
+ 	struct ptp *ptp = pci_get_drvdata(pdev);
+ 	u64 clock_cfg;
+ 
++	if (cn10k_ptp_errata(ptp) && hrtimer_active(&ptp->hrtimer))
++		hrtimer_cancel(&ptp->hrtimer);
++
+ 	if (IS_ERR_OR_NULL(ptp))
+ 		return;
+ 
+@@ -432,6 +509,9 @@ int rvu_mbox_handler_ptp_op(struct rvu *rvu, struct ptp_req *req,
+ 	case PTP_OP_SET_THRESH:
+ 		err = ptp_set_thresh(rvu->ptp, req->thresh);
  		break;
-+	case HWTSTAMP_TX_ONESTEP_SYNC:
-+		if (!test_bit(CN10K_PTP_ONESTEP, &pfvf->hw.cap_flag))
-+			return -ERANGE;
-+		pfvf->flags |= OTX2_FLAG_PTP_ONESTEP_SYNC;
-+		schedule_delayed_work(&pfvf->ptp->synctstamp_work,
-+				      msecs_to_jiffies(500));
-+		fallthrough;
- 	case HWTSTAMP_TX_ON:
- 		otx2_config_hw_tx_tstamp(pfvf, true);
++	case PTP_OP_EXTTS_ON:
++		err = ptp_extts_on(rvu->ptp, req->extts_on);
++		break;
+ 	default:
+ 		err = -EINVAL;
  		break;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/ptp.h b/drivers/net/ethernet/marvell/octeontx2/af/ptp.h
+index 95a955159f40..b9d92abc3844 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/ptp.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/ptp.h
+@@ -17,7 +17,10 @@ struct ptp {
+ 	void __iomem *reg_base;
+ 	u64 (*read_ptp_tstmp)(struct ptp *ptp);
+ 	spinlock_t ptp_lock; /* lock */
++	struct hrtimer hrtimer;
++	ktime_t last_ts;
+ 	u32 clock_rate;
++	u32 clock_period;
+ };
+ 
+ struct ptp *ptp_get(void);
 diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ptp.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ptp.c
-index fdc2c9315b91..743c8a6d5dad 100644
+index 743c8a6d5dad..896b2f9bac34 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ptp.c
 +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ptp.c
-@@ -10,6 +10,33 @@
- #include "otx2_common.h"
- #include "otx2_ptp.h"
+@@ -73,6 +73,23 @@ static int ptp_set_thresh(struct otx2_ptp *ptp, u64 thresh)
+ 	return otx2_sync_mbox_msg(&ptp->nic->mbox);
+ }
  
-+static u64 otx2_ptp_get_clock(struct otx2_ptp *ptp)
++static int ptp_extts_on(struct otx2_ptp *ptp, int on)
 +{
 +	struct ptp_req *req;
-+	struct ptp_rsp *rsp;
-+	int err;
 +
 +	if (!ptp->nic)
-+		return 0;
++		return -ENODEV;
 +
 +	req = otx2_mbox_alloc_msg_ptp_op(&ptp->nic->mbox);
 +	if (!req)
-+		return 0;
++		return -ENOMEM;
 +
-+	req->op = PTP_OP_GET_CLOCK;
++	req->op = PTP_OP_EXTTS_ON;
++	req->extts_on = on;
 +
-+	err = otx2_sync_mbox_msg(&ptp->nic->mbox);
-+	if (err)
-+		return 0;
-+
-+	rsp = (struct ptp_rsp *)otx2_mbox_get_rsp(&ptp->nic->mbox.mbox, 0,
-+						  &req->hdr);
-+	if (IS_ERR(rsp))
-+		return 0;
-+
-+	return rsp->clk;
++	return otx2_sync_mbox_msg(&ptp->nic->mbox);
 +}
 +
- static int otx2_ptp_adjfine(struct ptp_clock_info *ptp_info, long scaled_ppm)
- {
- 	struct otx2_ptp *ptp = container_of(ptp_info, struct otx2_ptp,
-@@ -49,29 +76,8 @@ static int ptp_set_thresh(struct otx2_ptp *ptp, u64 thresh)
  static u64 ptp_cc_read(const struct cyclecounter *cc)
  {
  	struct otx2_ptp *ptp = container_of(cc, struct otx2_ptp, cycle_counter);
--	struct ptp_req *req;
--	struct ptp_rsp *rsp;
--	int err;
+@@ -189,8 +206,6 @@ static void otx2_ptp_extts_check(struct work_struct *work)
+ 		event.index = 0;
+ 		event.timestamp = timecounter_cyc2time(&ptp->time_counter, tstmp);
+ 		ptp_clock_event(ptp->ptp_clock, &event);
+-		ptp->last_extts = tstmp;
 -
--	if (!ptp->nic)
--		return 0;
--
--	req = otx2_mbox_alloc_msg_ptp_op(&ptp->nic->mbox);
--	if (!req)
--		return 0;
- 
--	req->op = PTP_OP_GET_CLOCK;
--
--	err = otx2_sync_mbox_msg(&ptp->nic->mbox);
--	if (err)
--		return 0;
--
--	rsp = (struct ptp_rsp *)otx2_mbox_get_rsp(&ptp->nic->mbox.mbox, 0,
--						  &req->hdr);
--	if (IS_ERR(rsp))
--		return 0;
--
--	return rsp->clk;
-+	return otx2_ptp_get_clock(ptp);
- }
- 
- static u64 ptp_tstmp_read(struct otx2_ptp *ptp)
-@@ -101,6 +107,15 @@ static u64 ptp_tstmp_read(struct otx2_ptp *ptp)
- 	return rsp->clk;
- }
- 
-+static void otx2_get_ptpclock(struct otx2_ptp *ptp, u64 *tstamp)
-+{
-+	struct otx2_nic *pfvf = ptp->nic;
-+
-+	mutex_lock(&pfvf->mbox.lock);
-+	*tstamp = timecounter_read(&ptp->time_counter);
-+	mutex_unlock(&pfvf->mbox.lock);
-+}
-+
- static int otx2_ptp_adjtime(struct ptp_clock_info *ptp_info, s64 delta)
- {
- 	struct otx2_ptp *ptp = container_of(ptp_info, struct otx2_ptp,
-@@ -119,14 +134,10 @@ static int otx2_ptp_gettime(struct ptp_clock_info *ptp_info,
- {
- 	struct otx2_ptp *ptp = container_of(ptp_info, struct otx2_ptp,
- 					    ptp_info);
--	struct otx2_nic *pfvf = ptp->nic;
--	u64 nsec;
-+	u64 tstamp;
- 
--	mutex_lock(&pfvf->mbox.lock);
--	nsec = timecounter_read(&ptp->time_counter);
--	mutex_unlock(&pfvf->mbox.lock);
--
--	*ts = ns_to_timespec64(nsec);
-+	otx2_get_ptpclock(ptp, &tstamp);
-+	*ts = ns_to_timespec64(tstamp);
- 
- 	return 0;
- }
-@@ -191,6 +202,23 @@ static void otx2_ptp_extts_check(struct work_struct *work)
+ 		new_thresh = tstmp % 500000000;
+ 		if (ptp->thresh != new_thresh) {
+ 			mutex_lock(&ptp->nic->mbox.lock);
+@@ -198,6 +213,7 @@ static void otx2_ptp_extts_check(struct work_struct *work)
+ 			mutex_unlock(&ptp->nic->mbox.lock);
+ 			ptp->thresh = new_thresh;
+ 		}
++		ptp->last_extts = tstmp;
+ 	}
  	schedule_delayed_work(&ptp->extts_work, msecs_to_jiffies(200));
  }
- 
-+static void otx2_sync_tstamp(struct work_struct *work)
-+{
-+	struct otx2_ptp *ptp = container_of(work, struct otx2_ptp,
-+					    synctstamp_work.work);
-+	struct otx2_nic *pfvf = ptp->nic;
-+	u64 tstamp;
-+
-+	mutex_lock(&pfvf->mbox.lock);
-+	tstamp = otx2_ptp_get_clock(ptp);
-+	mutex_unlock(&pfvf->mbox.lock);
-+
-+	ptp->tstamp = timecounter_cyc2time(&pfvf->ptp->time_counter, tstamp);
-+	ptp->base_ns = tstamp % NSEC_PER_SEC;
-+
-+	schedule_delayed_work(&ptp->synctstamp_work, msecs_to_jiffies(250));
-+}
-+
- static int otx2_ptp_enable(struct ptp_clock_info *ptp_info,
- 			   struct ptp_clock_request *rq, int on)
- {
-@@ -302,6 +330,8 @@ int otx2_ptp_init(struct otx2_nic *pfvf)
- 		ptp_ptr->convert_tx_ptp_tstmp = &cn10k_ptp_convert_timestamp;
- 	}
- 
-+	INIT_DELAYED_WORK(&ptp_ptr->synctstamp_work, otx2_sync_tstamp);
-+
- 	pfvf->ptp = ptp_ptr;
- 
- error:
-@@ -316,6 +346,8 @@ void otx2_ptp_destroy(struct otx2_nic *pfvf)
- 	if (!ptp)
- 		return;
- 
-+	cancel_delayed_work(&pfvf->ptp->synctstamp_work);
-+
- 	ptp_clock_unregister(ptp->ptp_clock);
- 	kfree(ptp);
- 	pfvf->ptp = NULL;
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_struct.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_struct.h
-index 4bbd12ff26e6..aa205a0d158f 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_struct.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_struct.h
-@@ -236,8 +236,15 @@ struct nix_sqe_sg_s {
- 
- /* NIX send memory subdescriptor structure */
- struct nix_sqe_mem_s {
--	u64 offset        : 16; /* W0 */
--	u64 rsvd_51_16    : 36;
-+	u64 start_offset  : 8;
-+	u64 rsvd_11_8	  : 4;
-+	u64 rsvd_12	  : 1;
-+	u64 udp_csum_crt  : 1;
-+	u64 update64      : 1;
-+	u64 rsvd_15_16    : 1;
-+	u64 base_ns       : 32;
-+	u64 step_type     : 1;
-+	u64 rsvd_51_49    : 3;
- 	u64 per_lso_seg   : 1;
- 	u64 wmem          : 1;
- 	u64 dsz           : 2;
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-index a18e8efd0f1e..5ec11d71bf60 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-@@ -19,6 +19,12 @@
- #include "cn10k.h"
- 
- #define CQE_ADDR(CQ, idx) ((CQ)->cqe_base + ((CQ)->cqe_size * (idx)))
-+#define PTP_PORT	        0x13F
-+/* PTPv2 header Original Timestamp starts at byte offset 34 and
-+ * contains 6 byte seconds field and 4 byte nano seconds field.
-+ */
-+#define PTP_SYNC_SEC_OFFSET	34
-+
- static bool otx2_xdp_rcv_pkt_handler(struct otx2_nic *pfvf,
- 				     struct bpf_prog *prog,
- 				     struct nix_cqe_rx_s *cqe,
-@@ -686,7 +692,8 @@ static void otx2_sqe_add_ext(struct otx2_nic *pfvf, struct otx2_snd_queue *sq,
- }
- 
- static void otx2_sqe_add_mem(struct otx2_snd_queue *sq, int *offset,
--			     int alg, u64 iova)
-+			     int alg, u64 iova, int ptp_offset,
-+			     u64 base_ns, int udp_csum)
- {
- 	struct nix_sqe_mem_s *mem;
- 
-@@ -696,6 +703,13 @@ static void otx2_sqe_add_mem(struct otx2_snd_queue *sq, int *offset,
- 	mem->wmem = 1; /* wait for the memory operation */
- 	mem->addr = iova;
- 
-+	if (ptp_offset) {
-+		mem->start_offset = ptp_offset;
-+		mem->udp_csum_crt = udp_csum;
-+		mem->base_ns = base_ns;
-+		mem->step_type = 1;
-+	}
-+
- 	*offset += sizeof(*mem);
- }
- 
-@@ -952,16 +966,102 @@ static int otx2_get_sqe_count(struct otx2_nic *pfvf, struct sk_buff *skb)
- 	return skb_shinfo(skb)->gso_segs;
- }
- 
-+static bool otx2_validate_network_transport(struct sk_buff *skb)
-+{
-+	if ((ip_hdr(skb)->protocol == IPPROTO_UDP) ||
-+	    (ipv6_hdr(skb)->nexthdr == IPPROTO_UDP)) {
-+		struct udphdr *udph = udp_hdr(skb);
-+
-+		if (udph->source == htons(PTP_PORT) &&
-+		    udph->dest == htons(PTP_PORT))
-+			return true;
-+	}
-+
-+	return false;
-+}
-+
-+static bool otx2_ptp_is_sync(struct sk_buff *skb, int *offset, int *udp_csum)
-+{
-+	struct ethhdr *eth = (struct ethhdr *)(skb->data);
-+	u16 nix_offload_hlen = 0, inner_vhlen = 0;
-+	u8 *data = skb->data, *msgtype;
-+	__be16 proto = eth->h_proto;
-+	int network_depth = 0;
-+
-+	/* NIX is programmed to offload outer  VLAN header
-+	 * in case of single vlan protocol field holds Network header ETH_IP/V6
-+	 * in case of stacked vlan protocol field holds Inner vlan (8100)
-+	 */
-+	if (skb->dev->features & NETIF_F_HW_VLAN_CTAG_TX &&
-+	    skb->dev->features & NETIF_F_HW_VLAN_STAG_TX) {
-+		if (skb->vlan_proto == htons(ETH_P_8021AD)) {
-+			/* Get vlan protocol */
-+			proto = __vlan_get_protocol(skb, eth->h_proto, NULL);
-+			/* SKB APIs like skb_transport_offset does not include
-+			 * offloaded vlan header length. Need to explicitly add
-+			 * the length
-+			 */
-+			nix_offload_hlen = VLAN_HLEN;
-+			inner_vhlen = VLAN_HLEN;
-+		} else if (skb->vlan_proto == htons(ETH_P_8021Q)) {
-+			nix_offload_hlen = VLAN_HLEN;
-+		}
-+	} else if (eth_type_vlan(eth->h_proto)) {
-+		proto = __vlan_get_protocol(skb, eth->h_proto, &network_depth);
-+	}
-+
-+	switch (ntohs(proto)) {
-+	case ETH_P_1588:
-+		if (network_depth)
-+			*offset = network_depth;
-+		else
-+			*offset = ETH_HLEN + nix_offload_hlen +
-+				  inner_vhlen;
-+		break;
-+	case ETH_P_IP:
-+	case ETH_P_IPV6:
-+		if (!otx2_validate_network_transport(skb))
-+			return false;
-+
-+		*udp_csum = 1;
-+		*offset = nix_offload_hlen + skb_transport_offset(skb) +
-+			  sizeof(struct udphdr);
-+	}
-+
-+	msgtype = data + *offset;
-+
-+	/* Check PTP messageId is SYNC or not */
-+	return (*msgtype & 0xf) == 0;
-+}
-+
- static void otx2_set_txtstamp(struct otx2_nic *pfvf, struct sk_buff *skb,
- 			      struct otx2_snd_queue *sq, int *offset)
- {
-+	struct ptpv2_tstamp *origin_tstamp;
-+	int ptp_offset = 0, udp_csum = 0;
-+	struct timespec64 ts;
- 	u64 iova;
- 
--	if (!skb_shinfo(skb)->gso_size &&
--	    skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) {
--		skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
-+	if (unlikely(!skb_shinfo(skb)->gso_size &&
-+		     (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP))) {
-+		if (unlikely(pfvf->flags & OTX2_FLAG_PTP_ONESTEP_SYNC)) {
-+			if (otx2_ptp_is_sync(skb, &ptp_offset, &udp_csum)) {
-+				origin_tstamp = (struct ptpv2_tstamp *)
-+						((u8 *)skb->data + ptp_offset +
-+						 PTP_SYNC_SEC_OFFSET);
-+				ts = ns_to_timespec64(pfvf->ptp->tstamp);
-+				origin_tstamp->seconds_msb = htons((ts.tv_sec >> 32) & 0xffff);
-+				origin_tstamp->seconds_lsb = htonl(ts.tv_sec & 0xffffffff);
-+				origin_tstamp->nanoseconds = htonl(ts.tv_nsec);
-+				/* Point to correction field in PTP packet */
-+				ptp_offset += 8;
-+			}
+@@ -235,10 +251,13 @@ static int otx2_ptp_enable(struct ptp_clock_info *ptp_info,
+ 				   rq->extts.index);
+ 		if (pin < 0)
+ 			return -EBUSY;
+-		if (on)
++		if (on) {
++			ptp_extts_on(ptp, on);
+ 			schedule_delayed_work(&ptp->extts_work, msecs_to_jiffies(200));
+-		else
 +		} else {
-+			skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
++			ptp_extts_on(ptp, on);
+ 			cancel_delayed_work_sync(&ptp->extts_work);
 +		}
- 		iova = sq->timestamps->iova + (sq->head * sizeof(u64));
--		otx2_sqe_add_mem(sq, offset, NIX_SENDMEMALG_E_SETTSTMP, iova);
-+		otx2_sqe_add_mem(sq, offset, NIX_SENDMEMALG_E_SETTSTMP, iova,
-+				 ptp_offset, pfvf->ptp->base_ns, udp_csum);
- 	} else {
- 		skb_tx_timestamp(skb);
- 	}
+ 		return 0;
+ 	default:
+ 		break;
 -- 
 2.16.5
 
