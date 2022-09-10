@@ -2,109 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AF2ED5B4393
-	for <lists+netdev@lfdr.de>; Sat, 10 Sep 2022 03:12:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F21615B4398
+	for <lists+netdev@lfdr.de>; Sat, 10 Sep 2022 03:13:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231388AbiIJBMR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Sep 2022 21:12:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60328 "EHLO
+        id S231584AbiIJBNZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Sep 2022 21:13:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230509AbiIJBLp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 21:11:45 -0400
-Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6DD1109031
-        for <netdev@vger.kernel.org>; Fri,  9 Sep 2022 18:11:41 -0700 (PDT)
-Received: by mail-io1-xd2b.google.com with SMTP id i80so333158ioa.13
-        for <netdev@vger.kernel.org>; Fri, 09 Sep 2022 18:11:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=1LolOI6aGh7rm9r9ueAoq3mSQTbVxlrrckk6AM7E3uo=;
-        b=E7x02qSAEqC0nPJvyZO88UEgDKUmu+J+lP4YRcTnEKpuqWCqE8JKWTgAG22598cYI0
-         1CSe6uR3BxiRLseuBt0c0ZcnDEWhZFTgCViQtmlqgvvpGKjtV00H+0oRV3p9FY7XX71Q
-         O4TR6V2PQaCpw68EYs0X1ah7U9S4sLUeVFIExdJ38rd/w/PDUn38s4vc/sLvgG4MkRK/
-         +ZkwtzH6kuw+07sJ8dAuDJ74LVZ9rjGVf9SkivV3yl15pvYy0oTxu9nbyqN4LiTwTJ8d
-         0v2RsSizqcGnTOHUCKZaOwEDvBmhduEKE8u8aDGRTPbdD9WmSc/zQ1L2bQX4aLljzqxO
-         IShQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=1LolOI6aGh7rm9r9ueAoq3mSQTbVxlrrckk6AM7E3uo=;
-        b=Ff7WYp56NTl6FovTsBYe5/YiVThHIVTSPXiIrzPzWBv9OIvN+Sc5yB3mXPul4Rn8vP
-         wIgBEfmhtP0hq1SY00WsfXwrR2Xo4TgvhAuWVs1xyGyJj1RWcAlTKmqKRkGVcnIOlvKx
-         rsQAeKLZR5SPTMx6RPbhQsv6xQUW9m7VuUMy7SHpkmvp+KjTEpoKM7ptOwzEjOk5cOit
-         Y0SBZnU4g9YWrh9LSaEUf+/wRp8SQyaGobml8Y0GXHaJVUZsyL9SaTkmkz5vT/iuNLjE
-         3vZtcVUFYMUONkCQN0g5vRGGg2KSrpkiPLWw9rVPjWaada+F1AH/rlCdULSSLJ8cIw8P
-         zpbw==
-X-Gm-Message-State: ACgBeo0dJu6k9n1U4rNtoFn4NTNTmvBRFVXUH1QcDGHcxLUnj/c6XpMp
-        kYQdQduUK8pUysB4g7zOz9kENQ==
-X-Google-Smtp-Source: AA6agR5wrbtcdjGjJHlYeKI/sefWLcLhoWJoqcftUP45mj9i97qQaFPoX3oAslox+0AR3DvxXahDFQ==
-X-Received: by 2002:a02:c519:0:b0:358:4da5:4ad with SMTP id s25-20020a02c519000000b003584da504admr4062280jam.67.1662772301196;
-        Fri, 09 Sep 2022 18:11:41 -0700 (PDT)
-Received: from presto.localdomain ([98.61.227.136])
-        by smtp.gmail.com with ESMTPSA id u133-20020a02238b000000b00348e1a6491asm733064jau.137.2022.09.09.18.11.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Sep 2022 18:11:40 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     mka@chromium.org, evgreen@chromium.org, andersson@kernel.org,
-        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
-        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
-        elder@kernel.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 6/6] net: ipa: fix two symbol names
-Date:   Fri,  9 Sep 2022 20:11:31 -0500
-Message-Id: <20220910011131.1431934-7-elder@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220910011131.1431934-1-elder@linaro.org>
-References: <20220910011131.1431934-1-elder@linaro.org>
+        with ESMTP id S231628AbiIJBNB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 21:13:01 -0400
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C6F4146D11
+        for <netdev@vger.kernel.org>; Fri,  9 Sep 2022 18:12:29 -0700 (PDT)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1oWp2h-0001OX-2L;
+        Sat, 10 Sep 2022 03:12:19 +0200
+Date:   Sat, 10 Sep 2022 02:12:12 +0100
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     linux-mediatek@lists.infradead.org, netdev@vger.kernel.org
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Alexander 'lynxis' Couzens <lynxis@fe80.eu>
+Subject: [PATCH] net: dsa: mt7530: add support for in-band link status
+Message-ID: <YxvkbO9PoNi86BZa@makrotopia.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-All field mask symbols are defined with a "_FMASK" suffix, but
-EOT_COAL_GRANULARITY and DRBIP_ACL_ENABLE are defined without one.
-Fix that.
+Read link status from SGMII PCS for in-band managed 2500Base-X and
+1000Base-X connection on a MAC port of the MT7531. This is needed to
+get the SFP cage working which is connected to SGMII interface of
+port 5 of the MT7531 switch IC on the Bananapi BPi-R3 board.
 
-Signed-off-by: Alex Elder <elder@linaro.org>
+Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 ---
- drivers/net/ipa/ipa_reg.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/dsa/mt7530.c | 48 +++++++++++++++++++++++++++++-----------
+ 1 file changed, 35 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ipa/ipa_reg.h b/drivers/net/ipa/ipa_reg.h
-index b7b7fb553c445..3e24bddc682ef 100644
---- a/drivers/net/ipa/ipa_reg.h
-+++ b/drivers/net/ipa/ipa_reg.h
-@@ -254,7 +254,7 @@ static inline u32 proc_cntxt_base_addr_encoded(enum ipa_version version,
- /* The next register is not present for IPA v4.5+ */
- #define IPA_REG_COUNTER_CFG_OFFSET			0x000001f0
- /* The next field is not present for IPA v3.5+ */
--#define EOT_COAL_GRANULARITY			GENMASK(3, 0)
-+#define EOT_COAL_GRANULARITY_FMASK		GENMASK(3, 0)
- #define AGGR_GRANULARITY_FMASK			GENMASK(8, 4)
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -2703,9 +2703,6 @@ mt7531_mac_config(struct dsa_switch *ds,
+ 	case PHY_INTERFACE_MODE_NA:
+ 	case PHY_INTERFACE_MODE_1000BASEX:
+ 	case PHY_INTERFACE_MODE_2500BASEX:
+-		if (phylink_autoneg_inband(mode))
+-			return -EINVAL;
+-
+ 		return mt7531_sgmii_setup_mode_force(priv, port, interface);
+ 	default:
+ 		return -EINVAL;
+@@ -2781,13 +2778,6 @@ unsupported:
+ 		return;
+ 	}
  
- /* The next register is present for IPA v3.5+ */
-@@ -470,7 +470,7 @@ static inline u32 ipa_metadata_offset_encoded(enum ipa_version version,
- /* The next field is not present for IPA v4.5+ */
- #define HDR_FTCH_DISABLE_FMASK			GENMASK(30, 30)
- /* The next field is present for IPA v4.9+ */
--#define DRBIP_ACL_ENABLE			GENMASK(30, 30)
-+#define DRBIP_ACL_ENABLE_FMASK			GENMASK(30, 30)
+-	if (phylink_autoneg_inband(mode) &&
+-	    state->interface != PHY_INTERFACE_MODE_SGMII) {
+-		dev_err(ds->dev, "%s: in-band negotiation unsupported\n",
+-			__func__);
+-		return;
+-	}
+-
+ 	mcr_cur = mt7530_read(priv, MT7530_PMCR_P(port));
+ 	mcr_new = mcr_cur;
+ 	mcr_new &= ~PMCR_LINK_SETTINGS_MASK;
+@@ -2924,6 +2914,9 @@ static void mt753x_phylink_get_caps(stru
+ 	config->mac_capabilities = MAC_ASYM_PAUSE | MAC_SYM_PAUSE |
+ 				   MAC_10 | MAC_100 | MAC_1000FD;
  
- /** enum ipa_mode - ENDP_INIT_MODE register MODE field value */
- enum ipa_mode {
--- 
-2.34.1
-
++	if ((priv->id == ID_MT7531) && mt753x_is_mac_port(port))
++		config->mac_capabilities |= MAC_2500FD;
++
+ 	/* This driver does not make use of the speed, duplex, pause or the
+ 	 * advertisement in its mac_config, so it is safe to mark this driver
+ 	 * as non-legacy.
+@@ -3019,16 +3012,43 @@ mt7531_sgmii_pcs_get_state_an(struct mt7
+ 	return 0;
+ }
+ 
++static void
++mt7531_sgmii_pcs_get_state_inband(struct mt7530_priv *priv, int port,
++				  struct phylink_link_state *state)
++{
++	unsigned int val;
++
++	val = mt7530_read(priv, MT7531_PCS_CONTROL_1(port));
++	state->link = !!(val & MT7531_SGMII_LINK_STATUS);
++	if (!state->link)
++		return;
++
++	if (state->interface == PHY_INTERFACE_MODE_2500BASEX)
++		state->speed = SPEED_2500;
++	else
++		state->speed = SPEED_1000;
++
++	state->duplex = DUPLEX_FULL;
++	state->pause = 0;
++}
++
+ static void mt7531_pcs_get_state(struct phylink_pcs *pcs,
+ 				 struct phylink_link_state *state)
+ {
+ 	struct mt7530_priv *priv = pcs_to_mt753x_pcs(pcs)->priv;
+ 	int port = pcs_to_mt753x_pcs(pcs)->port;
++	unsigned int val;
+ 
+-	if (state->interface == PHY_INTERFACE_MODE_SGMII)
++	if (state->interface == PHY_INTERFACE_MODE_SGMII) {
+ 		mt7531_sgmii_pcs_get_state_an(priv, port, state);
+-	else
+-		state->link = false;
++		return;
++	} else if ((state->interface == PHY_INTERFACE_MODE_1000BASEX) ||
++		   (state->interface == PHY_INTERFACE_MODE_2500BASEX)) {
++		mt7531_sgmii_pcs_get_state_inband(priv, port, state);
++		return;
++	}
++
++	state->link = false;
+ }
+ 
+ static int mt753x_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
+@@ -3069,6 +3089,8 @@ mt753x_setup(struct dsa_switch *ds)
+ 		priv->pcs[i].pcs.ops = priv->info->pcs_ops;
+ 		priv->pcs[i].priv = priv;
+ 		priv->pcs[i].port = i;
++		if (mt753x_is_mac_port(i))
++			priv->pcs[i].pcs.poll = 1;
+ 	}
+ 
+ 	ret = priv->info->sw_setup(ds);
