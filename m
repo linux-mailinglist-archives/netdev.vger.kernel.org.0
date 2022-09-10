@@ -2,46 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F21615B4398
-	for <lists+netdev@lfdr.de>; Sat, 10 Sep 2022 03:13:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC21F5B43B3
+	for <lists+netdev@lfdr.de>; Sat, 10 Sep 2022 04:02:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231584AbiIJBNZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Sep 2022 21:13:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33590 "EHLO
+        id S229599AbiIJCC3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Sep 2022 22:02:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231628AbiIJBNB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 21:13:01 -0400
-Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C6F4146D11
-        for <netdev@vger.kernel.org>; Fri,  9 Sep 2022 18:12:29 -0700 (PDT)
-Received: from local
-        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
-         (Exim 4.96)
-        (envelope-from <daniel@makrotopia.org>)
-        id 1oWp2h-0001OX-2L;
-        Sat, 10 Sep 2022 03:12:19 +0200
-Date:   Sat, 10 Sep 2022 02:12:12 +0100
-From:   Daniel Golle <daniel@makrotopia.org>
-To:     linux-mediatek@lists.infradead.org, netdev@vger.kernel.org
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Alexander 'lynxis' Couzens <lynxis@fe80.eu>
-Subject: [PATCH] net: dsa: mt7530: add support for in-band link status
-Message-ID: <YxvkbO9PoNi86BZa@makrotopia.org>
+        with ESMTP id S229529AbiIJCC3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Sep 2022 22:02:29 -0400
+Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0B176B93;
+        Fri,  9 Sep 2022 19:02:27 -0700 (PDT)
+Date:   Sat, 10 Sep 2022 04:02:18 +0200
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Chris Clayton <chris2553@googlemail.com>
+Cc:     Florian Westphal <fw@strlen.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        regressions@lists.linux.dev, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org
+Subject: removing conntrack helper toggle to enable auto-assignment [was Re:
+ b118509076b3 (probably) breaks my firewall]
+Message-ID: <YxvwKlE+nyfUjHx8@salvia>
+References: <e5d757d7-69bc-a92a-9d19-0f7ed0a81743@googlemail.com>
+ <20220908191925.GB16543@breakpoint.cc>
+ <78611fbd-434e-c948-5677-a0bdb66f31a5@googlemail.com>
+ <20220908214859.GD16543@breakpoint.cc>
+ <YxsTMMFoaNSM9gLN@salvia>
+ <a3c79b7d-526f-92ce-144a-453ec3c200a5@googlemail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
+In-Reply-To: <a3c79b7d-526f-92ce-144a-453ec3c200a5@googlemail.com>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
         SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
@@ -51,105 +43,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Read link status from SGMII PCS for in-band managed 2500Base-X and
-1000Base-X connection on a MAC port of the MT7531. This is needed to
-get the SFP cage working which is connected to SGMII interface of
-port 5 of the MT7531 switch IC on the Bananapi BPi-R3 board.
+On Fri, Sep 09, 2022 at 07:21:47PM +0100, Chris Clayton wrote:
+> On 09/09/2022 11:19, Pablo Neira Ayuso wrote:
+> > On Thu, Sep 08, 2022 at 11:48:59PM +0200, Florian Westphal wrote:
+> >> Chris Clayton <chris2553@googlemail.com> wrote:
+> >>
+> >> [ CC Pablo ]
+> >>
+> >>> On 08/09/2022 20:19, Florian Westphal wrote:
+> >>>> Chris Clayton <chris2553@googlemail.com> wrote:
+> >>>>> Just a heads up and a question...
+> >>>>>
+> >>>>> I've pulled the latest and greatest from Linus' tree and built and installed the kernel. git describe gives
+> >>>>> v6.0-rc4-126-g26b1224903b3.
+> >>>>>
+> >>>>> I find that my firewall is broken because /proc/sys/net/netfilter/nf_conntrack_helper no longer exists. It existed on an
+> >>>>> -rc4 kernel. Are changes like this supposed to be introduced at this stage of the -rc cycle?
+> >>>>
+> >>>> The problem is that the default-autoassign (nf_conntrack_helper=1) has
+> >>>> side effects that most people are not aware of.
+> >>>>
+> >>>> The bug that propmpted this toggle from getting axed was that the irc (dcc) helper allowed
+> >>>> a remote client to create a port forwarding to the local client.
+> >>>
+> >>>
+> >>> Ok, but I still think it's not the sort of change that should be introduced at this stage of the -rc cycle.
+> >>> The other problem is that the documentation (Documentation/networking/nf_conntrack-sysctl.rst) hasn't been updated. So I
+> >>> know my firewall is broken but there's nothing I can find that tells me how to fix it.
+> >>
+> >> Pablo, I don't think revert+move the 'next' will avoid this kinds of
+> >> problems, but at least the nf_conntrack-sysctl.rst should be amended to
+> >> reflect that this was removed.
+> > 
+> > I'll post a patch to amend the documentation.
+> > 
+> >> I'd keep it though because people that see an error wrt. this might be
+> >> looking at nf_conntrack-sysctl.rst.
+> >>
+> >> Maybe just a link to
+> >> https://home.regit.org/netfilter-en/secure-use-of-helpers/?
+>
+> but
+> I'm afraid that document isn't much use to a "Joe User" like me. It's written by people who know a lot about the subject
+> matter to be read by other people who know a lot about the subject matter.
 
-Signed-off-by: Daniel Golle <daniel@makrotopia.org>
----
- drivers/net/dsa/mt7530.c | 48 +++++++++++++++++++++++++++++-----------
- 1 file changed, 35 insertions(+), 13 deletions(-)
+This is always an issue: deprecating stuff is problematic. After
+finally removing this toggle, there are chances that more users come
+to complain at the flag day to say they did not have enough time to
+update their setup to enable conntrack helpers by policy as the
+document recommends.
 
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -2703,9 +2703,6 @@ mt7531_mac_config(struct dsa_switch *ds,
- 	case PHY_INTERFACE_MODE_NA:
- 	case PHY_INTERFACE_MODE_1000BASEX:
- 	case PHY_INTERFACE_MODE_2500BASEX:
--		if (phylink_autoneg_inband(mode))
--			return -EINVAL;
--
- 		return mt7531_sgmii_setup_mode_force(priv, port, interface);
- 	default:
- 		return -EINVAL;
-@@ -2781,13 +2778,6 @@ unsupported:
- 		return;
- 	}
- 
--	if (phylink_autoneg_inband(mode) &&
--	    state->interface != PHY_INTERFACE_MODE_SGMII) {
--		dev_err(ds->dev, "%s: in-band negotiation unsupported\n",
--			__func__);
--		return;
--	}
--
- 	mcr_cur = mt7530_read(priv, MT7530_PMCR_P(port));
- 	mcr_new = mcr_cur;
- 	mcr_new &= ~PMCR_LINK_SETTINGS_MASK;
-@@ -2924,6 +2914,9 @@ static void mt753x_phylink_get_caps(stru
- 	config->mac_capabilities = MAC_ASYM_PAUSE | MAC_SYM_PAUSE |
- 				   MAC_10 | MAC_100 | MAC_1000FD;
- 
-+	if ((priv->id == ID_MT7531) && mt753x_is_mac_port(port))
-+		config->mac_capabilities |= MAC_2500FD;
-+
- 	/* This driver does not make use of the speed, duplex, pause or the
- 	 * advertisement in its mac_config, so it is safe to mark this driver
- 	 * as non-legacy.
-@@ -3019,16 +3012,43 @@ mt7531_sgmii_pcs_get_state_an(struct mt7
- 	return 0;
- }
- 
-+static void
-+mt7531_sgmii_pcs_get_state_inband(struct mt7530_priv *priv, int port,
-+				  struct phylink_link_state *state)
-+{
-+	unsigned int val;
-+
-+	val = mt7530_read(priv, MT7531_PCS_CONTROL_1(port));
-+	state->link = !!(val & MT7531_SGMII_LINK_STATUS);
-+	if (!state->link)
-+		return;
-+
-+	if (state->interface == PHY_INTERFACE_MODE_2500BASEX)
-+		state->speed = SPEED_2500;
-+	else
-+		state->speed = SPEED_1000;
-+
-+	state->duplex = DUPLEX_FULL;
-+	state->pause = 0;
-+}
-+
- static void mt7531_pcs_get_state(struct phylink_pcs *pcs,
- 				 struct phylink_link_state *state)
- {
- 	struct mt7530_priv *priv = pcs_to_mt753x_pcs(pcs)->priv;
- 	int port = pcs_to_mt753x_pcs(pcs)->port;
-+	unsigned int val;
- 
--	if (state->interface == PHY_INTERFACE_MODE_SGMII)
-+	if (state->interface == PHY_INTERFACE_MODE_SGMII) {
- 		mt7531_sgmii_pcs_get_state_an(priv, port, state);
--	else
--		state->link = false;
-+		return;
-+	} else if ((state->interface == PHY_INTERFACE_MODE_1000BASEX) ||
-+		   (state->interface == PHY_INTERFACE_MODE_2500BASEX)) {
-+		mt7531_sgmii_pcs_get_state_inband(priv, port, state);
-+		return;
-+	}
-+
-+	state->link = false;
- }
- 
- static int mt753x_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
-@@ -3069,6 +3089,8 @@ mt753x_setup(struct dsa_switch *ds)
- 		priv->pcs[i].pcs.ops = priv->info->pcs_ops;
- 		priv->pcs[i].priv = priv;
- 		priv->pcs[i].port = i;
-+		if (mt753x_is_mac_port(i))
-+			priv->pcs[i].pcs.poll = 1;
- 	}
- 
- 	ret = priv->info->sw_setup(ds);
+This is the history behind this toggle:
+
+- In 2012, the documentation above is released and a toggle is added
+  to disable the existing behaviour.
+
+- In 2016, this toggle is set off by default, _that was already
+  breaking existing setups_ as a way to attract users' attention on
+  this topic. Yes, that was a tough way to attract attention on this
+  topic.
+
+  Moreover, this warning message was also available via dmesg:
+
+        nf_conntrack: default automatic helper assignment
+                      has been turned off for security reasons and CT-based
+                      firewall rule not found. Use the iptables CT target
+                      to attach helpers instead.
+
+  There was a simple way to restore the previous behaviour
+  by simply:
+
+        echo 1 > /proc/sys/net/netfilter/nf_conntrack_helper
+
+  Still, maybe not many people look at this warning message.
+
+- In 2022, the toggle is removed. There is still a way to restore your
+  setup, which is to enable conntrack helpers via policy. Yes, it
+  requires a bit more effort, but there is documentation available on
+  how to do this.
+
+  Why at -rc stage? Someone reported a security issue related to
+  one of the conntrack helpers, and the reporter claims many users
+  still rely on the insecure configuration. This attracted again
+  our attention on this toggle, and we decided it was a good idea to
+  finally remove it, the sooner the better.
+
+> >> What do you think?
+> > 
+> > I'll update netfilter.org to host a copy of the github sources.
+> > 
+> > We have been announcing this going deprecated for 10 years...
+> 
+> That may be the case, it should be broken before -rc1 is released. Breaking it at -rc4+ is, I think, a regression!
+> Adding Thorsten Leemuis to cc list
+
+Disagreed, reverting and waiting for one more release cycle will just
+postpone the fact that users must adapt their policies, and that they
+rely on a configuration which is not secure.
