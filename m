@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AAAE5B4947
-	for <lists+netdev@lfdr.de>; Sat, 10 Sep 2022 23:18:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF4F25B497A
+	for <lists+netdev@lfdr.de>; Sat, 10 Sep 2022 23:20:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229854AbiIJVSc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Sep 2022 17:18:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57876 "EHLO
+        id S230208AbiIJVUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Sep 2022 17:20:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229777AbiIJVRz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Sep 2022 17:17:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D4D4D839;
-        Sat, 10 Sep 2022 14:17:17 -0700 (PDT)
+        with ESMTP id S230195AbiIJVTf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Sep 2022 17:19:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDE104E872;
+        Sat, 10 Sep 2022 14:17:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C098CB8091F;
-        Sat, 10 Sep 2022 21:17:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 504F0C433C1;
-        Sat, 10 Sep 2022 21:17:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2EDF9B8091F;
+        Sat, 10 Sep 2022 21:17:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1791C43470;
+        Sat, 10 Sep 2022 21:17:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662844626;
-        bh=aP6TAb15tNPi4eXC5gCwEOp7OPAJcLAkJ95Ukb8I0hg=;
+        s=k20201202; t=1662844650;
+        bh=yxmTmAmQYOY0Y1XhFJJ91Ijes9f9h/iULVvKrO+XC0U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iEsHow/L36XYycuVPB6DCfEQvFgRoBVHc2rpXTJYutsxYpwmOQvwlz+yB+I60MppD
-         tJ8B8I+b2+n0LsNH4akwEnTg8u6SvtCvijl+hD+8982QtUoFukXpk6TO/hNtIy0e17
-         8bzpfAUtovx63pfrAdaZsa3jf1Szu2JJVQoQ95qzFP7MaJ18JVVia17wtLtDOukzJf
-         N333a4HY/WASFTd30NvqZTCVmjBNWEV3iyqhWs3R4/ygbTv3fdrSDB1IW49WTlHV4f
-         qLdiaqHyNH9Li7jPIC1Jf/XoA7NU/URrz5YehjvspeISs2LrECHLRlYVRVyC46/05p
-         KlwOS0GChBuuQ==
+        b=bi42AhqN7a+vSNsfyaXBp1FJGq2C2KsVxHRoIjMwkfBXeYPTWgDUc3NFjtIzJ6KW3
+         QNyoNoRY3lP5/U+h8wdW8sG8FZT4K6dDDmA3fOLfXPObz1+G/+INeqDgSpFgPBcfb4
+         7S9ylDLPdwkvFV9AbnGs7+HgbXDUKyEpBnSvhjO+7o+FbW0fncW7uL8utt2EZewmiI
+         Ta/8SZuwqvRiWDOsCV+JkMxMiaKWQhQweup++I7LuxIgb+ppgIKx/BpYu0O2kE1nil
+         vufwlcy8YMQyg3T9faWRlkBB6sQ+KVyOL94TSM1V66VMS08P48M3cNWNQmYce+Wj2Q
+         ttdTileYzR5lw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Li Qiong <liqiong@nfschina.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        Sasha Levin <sashal@kernel.org>, varkabhadram@gmail.com,
-        alex.aring@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wpan@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 22/38] ieee802154: cc2520: add rc code in cc2520_tx()
-Date:   Sat, 10 Sep 2022 17:16:07 -0400
-Message-Id: <20220910211623.69825-22-sashal@kernel.org>
+Cc:     Kurt Kanzenbach <kurt@linutronix.de>, Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.19 29/38] net: dsa: hellcreek: Print warning only once
+Date:   Sat, 10 Sep 2022 17:16:14 -0400
+Message-Id: <20220910211623.69825-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220910211623.69825-1-sashal@kernel.org>
 References: <20220910211623.69825-1-sashal@kernel.org>
@@ -59,33 +59,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Li Qiong <liqiong@nfschina.com>
+From: Kurt Kanzenbach <kurt@linutronix.de>
 
-[ Upstream commit ffd7bdddaab193c38416fd5dd416d065517d266e ]
+[ Upstream commit 52267ce25f60f37ae40ccbca0b21328ebae5ae75 ]
 
-The rc code is 0 at the error path "status & CC2520_STATUS_TX_UNDERFLOW".
-Assign rc code with '-EINVAL' at this error path to fix it.
+In case the source port cannot be decoded, print the warning only once. This
+still brings attention to the user and does not spam the logs at the same time.
 
-Signed-off-by: Li Qiong <liqiong@nfschina.com>
-Link: https://lore.kernel.org/r/20220829071259.18330-1-liqiong@nfschina.com
-Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
+Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Link: https://lore.kernel.org/r/20220830163448.8921-1-kurt@linutronix.de
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ieee802154/cc2520.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/dsa/tag_hellcreek.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ieee802154/cc2520.c b/drivers/net/ieee802154/cc2520.c
-index 1e1f40f628a02..c69b87d3837da 100644
---- a/drivers/net/ieee802154/cc2520.c
-+++ b/drivers/net/ieee802154/cc2520.c
-@@ -504,6 +504,7 @@ cc2520_tx(struct ieee802154_hw *hw, struct sk_buff *skb)
- 		goto err_tx;
+diff --git a/net/dsa/tag_hellcreek.c b/net/dsa/tag_hellcreek.c
+index eb204ad36eeec..846588c0070a5 100644
+--- a/net/dsa/tag_hellcreek.c
++++ b/net/dsa/tag_hellcreek.c
+@@ -45,7 +45,7 @@ static struct sk_buff *hellcreek_rcv(struct sk_buff *skb,
  
- 	if (status & CC2520_STATUS_TX_UNDERFLOW) {
-+		rc = -EINVAL;
- 		dev_err(&priv->spi->dev, "cc2520 tx underflow exception\n");
- 		goto err_tx;
+ 	skb->dev = dsa_master_find_slave(dev, 0, port);
+ 	if (!skb->dev) {
+-		netdev_warn(dev, "Failed to get source port: %d\n", port);
++		netdev_warn_once(dev, "Failed to get source port: %d\n", port);
+ 		return NULL;
  	}
+ 
 -- 
 2.35.1
 
