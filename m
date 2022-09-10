@@ -2,354 +2,307 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 98FCC5B4784
-	for <lists+netdev@lfdr.de>; Sat, 10 Sep 2022 18:36:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F4C95B478C
+	for <lists+netdev@lfdr.de>; Sat, 10 Sep 2022 18:50:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229598AbiIJQg3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Sep 2022 12:36:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60182 "EHLO
+        id S229456AbiIJQue (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Sep 2022 12:50:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229578AbiIJQg0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Sep 2022 12:36:26 -0400
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70049.outbound.protection.outlook.com [40.107.7.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AAC7656B
-        for <netdev@vger.kernel.org>; Sat, 10 Sep 2022 09:36:24 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Wruhihgu4xmLUTnVU6t3bP8fatnB/dSNcoSgLk3MM3snTlFUsrF8TN2zddnMEFCCXeqNnM6S6MFDn2Ss37XDReLGcViNl0XUtOinLDa6ZUzY2eojfGmIHxLJwD8XV9Z43e1o4plAJAzwBDHlnlpPmYEzbFZGOm65rBZPCDOlqxpwILOTTMnnd1bEeVMjBGzsid6dzpgh/yYLL23WZn+17U4FfrzrEuZ2FzI1w4xGSiQ6XWCkG03Cx6Sf3knxPxs1ccaeciw6AceJi/GeWUdrBaJVo/aIk4tcp08/ZFsC2l03dEUnQHG4aTYxEV8OneKn8zUGN25tDUho7uRh6vjtSQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=h0kE7w9I05Q1vtqjgNbGZA3vmd6vQn8NiCjSJaDPiWQ=;
- b=eIzuO8JlbWEyXx/ZObT3CeXhh1stCC02ZEFZn2DHNh20mRhKMoANXIHK6cjY1CIGYyfjZf9O184wdhSA10KedD/3OvRsf2QWyVbo8Fm7G9KMMOL7fx6sx0g8MJv5Ag/bmV9IXgvlmsMCQpX8dd8TCmVBpAGpn3Gs13pXhCnAP7jOTRBowQWZZP5z/healYhayEPHp7e4aNI5SLnHjhiUqFscJ/HJRSsxRVWVEbUQE5pDUOTZ9aCAeEEfB0LocgnijByjMB2NNl+QzjsxLkTRF8DjFhAFTQEynaQ8grgPdeCswtcaCVhYdetA24hZgxQhoS3uu0/0w1yAy2x2zhZ1lA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=h0kE7w9I05Q1vtqjgNbGZA3vmd6vQn8NiCjSJaDPiWQ=;
- b=f/OJsAjZfoOHVyVe9964X53H19ltLKrJTp7IX8OPQEusC08PGXDRrY26Q5FlomvnATsq3vJOrFsD2gz7J1CkcPEGqB8vHIz0vNdySw2yvKHz4VnNluKLU5pgJxMdNg/Z0/hMSBvMjD/oFjwspIkisKMBR1e5BRMTi6eihXMsUo4=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by AS4PR04MB9314.eurprd04.prod.outlook.com (2603:10a6:20b:4e5::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.16; Sat, 10 Sep
- 2022 16:36:21 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::3412:9d57:ec73:fef3]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::3412:9d57:ec73:fef3%5]) with mapi id 15.20.5588.017; Sat, 10 Sep 2022
- 16:36:20 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Rui Sousa <rui.sousa@nxp.com>,
-        Ferenc Fejes <ferenc.fejes@ericsson.com>,
-        Richie Pearn <richard.pearn@nxp.com>
-Subject: Re: [RFC PATCH net-next 2/7] net: ethtool: add support for Frame
- Preemption and MAC Merge layer
-Thread-Topic: [RFC PATCH net-next 2/7] net: ethtool: add support for Frame
- Preemption and MAC Merge layer
-Thread-Index: AQHYsb+nXYtt3WXwKU2Qzt72A2WzpK2zuuaAgAKuqwCABtWsgIAXVhCAgANdNoCAARDlgA==
-Date:   Sat, 10 Sep 2022 16:36:20 +0000
-Message-ID: <20220910163619.fchn6kwgtvaszgcb@skbuf>
-References: <20220816222920.1952936-1-vladimir.oltean@nxp.com>
- <20220816222920.1952936-3-vladimir.oltean@nxp.com> <87bksi31j4.fsf@intel.com>
- <20220819161252.62kx5e7lw3rrvf3m@skbuf> <87mtbutr5s.fsf@intel.com>
- <20220907205711.hmvp7nbyyp7c73u5@skbuf> <87edwk3wtk.fsf@intel.com>
-In-Reply-To: <87edwk3wtk.fsf@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e6290c36-68fc-4777-17a5-08da934a979d
-x-ms-traffictypediagnostic: AS4PR04MB9314:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: eZbH+Iue2g+ejFpElfbcYKbHt2PnODxPynw4AtJZT8I5RLl74QRHeQc3jpyJI4+hynL4gjUSBvWsV/QcysDkfKyLHG4+ymjeRXvQ4FZIf82afwXMfhnRRojF/1sBfLL3ey5Ngq+sWn4cLkm+aHp5emS7anUsD72OZhjJzA8uY3iojM/OgUZmrg3/fHuCMO+hWJ63Z2cQNoE1e1wlEsf8jQaZQP+2qTmmG2NxT2YQOXqsiND42VSHpInukDux66zHXup2hp6ggPu1lC9jT7c2ixwb3F3t1UGjSIJ0i7WQ0PpGQGgdl048kcZKci2Sg8AEINIOZ8L0oDzGHP0ey64wN7JPotlsUf2trQOsPIHg0IYOc1ML+Zj1WHt1zuShBfE4rd78KUTmsJHWZAhx9HQwCb5VI/eUMgUTJakJtlJsr+tjMtR/d8acvvblUgGVVDpflP3krStPWVzwfmgxkAtIZcIuBs/xl58QdWVZElFvuxYRRDFNzU05VGGO04XL9B0JvzsEIUyPFiz7zuVG8XPSZO4bqPn+s4UZp+qEefztYSBnIRcaCoOvVIdmh0GPkwbX5g+dcDfXmNUdWZvQJ5rwQK056A+iL5fAxDr3JQRfnKu2gO7oQpvyYsKGFnCRWwMMrsUpYFjDhhwSEstPtSRlkI5VWeGHGeAY6IA4VMCZxNYDFPjzR08jRaLznJLaJc2jjbUoUVcEUX8zKziWtfbGZ2ybqB0CvdHuK43QfZZQspXD9MEYr3pfYjbA8SwtwAuBG0PUVgZJdFo1jgyb11r8WWlzJwMgc2ud/bLwZ7shgaE=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(39860400002)(136003)(366004)(396003)(376002)(346002)(6506007)(86362001)(83380400001)(38100700002)(122000001)(1076003)(186003)(76116006)(5660300002)(91956017)(316002)(54906003)(44832011)(30864003)(6916009)(64756008)(66446008)(8676002)(66476007)(8936002)(66556008)(33716001)(2906002)(4326008)(66946007)(26005)(71200400001)(6486002)(38070700005)(9686003)(6512007)(478600001)(41300700001)(966005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?dDZOZlpMOHhOZU44ZmRmMDNoNjZYRG9FY2ViOTRNSkJUWXVFRWppejU3YTY1?=
- =?utf-8?B?NmFGNDMrWlM4TVUwMFBCUjRyRFc3NkpGSlI2RVpJNStla3VwWjBOVldTUzN1?=
- =?utf-8?B?V2FrYlF1ZFFva2tCbCtOWlFIaFI0SkFUUmlIWFpSdkQrWCtEUlMvNXFINW5X?=
- =?utf-8?B?L2pZNjFPV0F3ZkFQYW1SMEI1U2FhNVBSQ3dyTkpNQWVnTTVPTjZWbzR0aTZK?=
- =?utf-8?B?MjRXaDJaUmJYMjFRT0NFTFgrVTJ3VmVDUFJWUk52TGpOL0EycCtBbjRpYjNE?=
- =?utf-8?B?U2pHRnl6Z3RlaENLcnBXOXl5akhoZlBVKzJwMEFKNWI4UkNCNGNLNUZma3Va?=
- =?utf-8?B?REdKL0tBdTBHd2xnSy9Pd1c4T3NBd2FrejNPbG80Y3B1OTBGbHpxTDFjUm5M?=
- =?utf-8?B?SHdvUkNUSnpNUDdPc29QcE1VTE9Jdk93RCt5dEVCbDFDTzlyNzRzYzBHcE1E?=
- =?utf-8?B?WG43NEk0MFFvL3hROHRpbyswc1IxT1JBaUNuRXNBNHRzc3RPNW5tbjJqZlVr?=
- =?utf-8?B?ZW01N1B0emtlYllFNmtSbXRzdWluR0QrTXl4ck5LZ1NoWm0zZGFPN1lmZThh?=
- =?utf-8?B?OE9IU0pMV0VBRm1iL2h4KzBBOTBHMk13bU0wYTdQeE4rL0wwZ3JKVVlDT2Jm?=
- =?utf-8?B?QWRFSm1rY2hXU0FJNzRBbkFlUWQrbDA3aDJINnd3alVPTXhGUjBuQWRoR1Bv?=
- =?utf-8?B?bGhTdzlwOUo2NlpzVG0wWlFrUkVmeFpoWUdBR2VEYjdFWVhLa3A1VFZ5Vk10?=
- =?utf-8?B?NmVmUVNDd01MdmsydmswNndPWi9icFY5dVdCT3ZPNlNEeWh4TXhZZC9vT2tH?=
- =?utf-8?B?OWk4eERhVXRkSHNQSk91ZEtYSWNyUEN4RC84UTh0YTJhUUJHelN5OTIzcVdY?=
- =?utf-8?B?WFd4SzJLWHoxcWQ3M2ZIWXNKRDJMVHlSVzJHZUxMaitxSUJ6dVlUUVlxOU9M?=
- =?utf-8?B?MnNyb2NDSWJDZEVBby94eGhPaHloWmZudUZGbkdWZnlvVWdtL2hJWEhkR0JC?=
- =?utf-8?B?cFVmQXhiOXZ0eGpqS0ZkNVRycGJ3ZWNoSld5aUlzQzYwMHAzN2hSUXVaK3R4?=
- =?utf-8?B?cm5KT1lEU1Vnc0xFZEFya200bTNtakJUWGFvdWJ1Sk9IUW1YTzNCZFZqVzAw?=
- =?utf-8?B?WXJ6WmpySzkzeEpodDUyTHh1Rzd0SGl6K3NCOFFWSC9rKzg1NWlNdFpqa05u?=
- =?utf-8?B?QWhRdUNJM3N0MXI1eE1KdjVUYURxT2ptQkMzbXF1dXVhZis4bzRhazJRbkxu?=
- =?utf-8?B?NytxREg5MWxwYzVJTWxreWhMaG9xclpjNE0yQ0E4Z3hJSmphL3pZNmY3NHJP?=
- =?utf-8?B?bXpKZHpMaTVnVHdzWFJua2xoaTdSYWY3YmNvSGZaWmdyd0ZRaENxZFpNWGNh?=
- =?utf-8?B?VTJuT1hveVQ4eXh6ZW0zM2pIalFrNThDd2NTajNmdnZBd0pKdWZ0L2NOR0Z4?=
- =?utf-8?B?UlMxbVkyMC9GVnpjYm9DbmZzWml6cG5zNzI3a0VvSFQwWC9GODNxMFBDWG1F?=
- =?utf-8?B?aTU3cis5ZXFXQmYxMjZ3Y295R0tqY3ZocHRwdnRzczFmejNKVE9SSSs2dURN?=
- =?utf-8?B?bmlaRGJIbjBxc0d1QmRVMi80d042dzhia0kyVm4xT2F3c0E3d3JPM0U1dU9a?=
- =?utf-8?B?SnhHWmxtMEFuSU0wNmkwNWg3TjZUM1Zid211R2M2TTVYZys1Z05JU0k1SDNL?=
- =?utf-8?B?RGQvRkJDdnlsTHZYSmg5UnYvWnlrY2ZTMnVkUGhrd0c3bnpGdUJKZnVUSG54?=
- =?utf-8?B?MXA2SnhIT0w5K3l2cXpibG95OXdKYW9rWGo1Y2dpSEZUYzVjSVJ5L2JRTXVw?=
- =?utf-8?B?U0RqeFpPbjFCcDVuM2xpVEJwRkVTeGwvK2VRU0lzYndtbExoNjRkTG9GekY0?=
- =?utf-8?B?QWU1am9hRTl1V1RqaTJtbXZuckVHa0JHbFYrTkZPVWxIMVdsQy9GY2hCeHJJ?=
- =?utf-8?B?ei9UbWFWQWFJYjZVMDBLYjMyMUVTYUZKWkRkRkJWSFl3SnpoSXB5SVlLbTN0?=
- =?utf-8?B?YXZBMGtVcHYzdXBVa1FTYnZyZ3hrdGJFVmUwb3BkemxYQkhNOXhDUUdqbk4r?=
- =?utf-8?B?RlJrenFaYVFZcjA5c0o2YklQenhLTnhUMlJyOEI0U0owS3hvNERnZDMvR2N1?=
- =?utf-8?B?RXdqQlEzZUtHUmFRNHRndy9HdlViZUZ6eTh3R0twSHVSdlh2ZWdPWEo3MEVV?=
- =?utf-8?B?NUE9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <39E6505E5ED84C4A87FFB95531A1129D@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        with ESMTP id S229464AbiIJQuc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Sep 2022 12:50:32 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A34D303FD;
+        Sat, 10 Sep 2022 09:50:25 -0700 (PDT)
+Received: from fraeml742-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MPzJd36Ctz67DfB;
+        Sun, 11 Sep 2022 00:46:09 +0800 (CST)
+Received: from lhrpeml500004.china.huawei.com (7.191.163.9) by
+ fraeml742-chm.china.huawei.com (10.206.15.223) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Sat, 10 Sep 2022 18:50:22 +0200
+Received: from [10.122.132.241] (10.122.132.241) by
+ lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Sat, 10 Sep 2022 17:50:22 +0100
+Message-ID: <71a51eaa-7c6b-edfa-b397-2597c06b32db@huawei.com>
+Date:   Sat, 10 Sep 2022 19:50:21 +0300
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e6290c36-68fc-4777-17a5-08da934a979d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Sep 2022 16:36:20.6239
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 6XUrUOJmS89uAdH4aQUg4/EqzTvmhuQ7jLSC1858Dx/BrhrktfAPUUjwZFqj5eybVJkVoBM23YvKy45f95W2hg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS4PR04MB9314
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v7 04/18] landlock: move helper functions
+Content-Language: ru
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+CC:     <willemdebruijn.kernel@gmail.com>, <gnoack3000@gmail.com>,
+        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>, <anton.sirazetdinov@huawei.com>
+References: <20220829170401.834298-1-konstantin.meskhidze@huawei.com>
+ <20220829170401.834298-5-konstantin.meskhidze@huawei.com>
+ <2299f034-e6f2-051c-97e3-bf93a0916a50@digikod.net>
+From:   "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
+In-Reply-To: <2299f034-e6f2-051c-97e3-bf93a0916a50@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.122.132.241]
+X-ClientProxiedBy: lhrpeml100002.china.huawei.com (7.191.160.241) To
+ lhrpeml500004.china.huawei.com (7.191.163.9)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gRnJpLCBTZXAgMDksIDIwMjIgYXQgMDU6MTk6MzVQTSAtMDcwMCwgVmluaWNpdXMgQ29zdGEg
-R29tZXMgd3JvdGU6DQo+IFZsYWRpbWlyIE9sdGVhbiA8dmxhZGltaXIub2x0ZWFuQG54cC5jb20+
-IHdyaXRlczoNCj4gDQo+ID4gT24gVHVlLCBBdWcgMjMsIDIwMjIgYXQgMDU6MzU6MTFQTSAtMDcw
-MCwgVmluaWNpdXMgQ29zdGEgR29tZXMgd3JvdGU6DQo+ID4+IFllcywgYXMgdGhlIGxpbWl0cyBh
-cmUgbm90IGluIHRoZSBVQVBJIHRoaXMgaXMgYSBtaW5vciBwb2ludCwgYWdyZWVkLg0KPiA+PiAN
-Cj4gPj4gV2hhdCBJIGFtIGNvbmNlcm5lZCBpcyBhYm91dCB1c2UgY2FzZXMgbm90IGhhbmRsZWQg
-YnkgSUVFRSA4MDIuMVEsIGZvcg0KPiA+PiBleGFtcGxlLCB0aGlua2luZyBhYm91dCB0aGF0IG90
-aGVyIHRocmVhZCBhYm91dCBQQ1AvRFNDUDogaG93IGFib3V0IGENCj4gPj4gbmV0d29yayB0aGF0
-IHdhbnRzIHRvIGhhdmUgYXMgbWFueSBwcmlvcml0aWVzIGFzIHRoZSBEU0NQIGZpZWxkICg2IGJp
-dHMpDQo+ID4+IGFsbG93cywgdG9nZXRoZXIgd2l0aCBmcmFtZSBwcmVlbXB0aW9uIChpbiB0aGUg
-ZnV0dXJlIHdlIG1heSBoYXZlDQo+ID4+IGhhcmR3YXJlIHRoYXQgc3VwcG9ydHMgdGhhdCkuIEkg
-YW0gb25seSB0aGlua2luZyB0aGF0IHdlIHNob3VsZCBub3QNCj4gPj4gY2xvc2UgdGhhdCBkb29y
-Lg0KPiA+PiANCj4gPj4gQWdhaW4sIG1pbm9yIHBvaW50Lg0KPiA+DQo+ID4gU2luY2UgTGludXgg
-c2VlbXMgdG8gaGF2ZSBzZXR0bGVkIG9uIFRDX1BSSU9fTUFYLCBUQ19RT1BUX01BWF9RVUVVRQ0K
-PiA+IGNvbnN0YW50cyBvZiAxNiByYXRoZXIgdGhhbiB0aGUgOCB5b3UnZCBleHBlY3QsIEkgZ3Vl
-c3MgSSBkb24ndCBoYXZlDQo+ID4gdGhhdCBiaWcgb2YgYSBwcm9ibGVtIHRvIGFsc28gZXhwb3Nl
-IDE2IGFkbWluLXN0YXR1cyB2YWx1ZXMgZm9yIEZQLg0KPiA+IEkgY2FuIGxpbWl0IHRoZSBkcml2
-ZXJzIEkgaGF2ZSB0byBvbmx5IGxvb2sgYXQgdGhlIGZpcnN0IDggZW50cmllcy4NCj4gPiBCdXQg
-d2hhdCBkbyAxNiBwcmlvcml0aWVzIG1lYW4gdG8gZXRodG9vbD8gMTYgcHJpb3JpdGllcyBhcmUg
-YSB0YyB0aGluZy4NCj4gPiBEb2VzIGV0aHRvb2wgZXZlbiBoYXZlIGEgaGlzdG9yeSBvZiBtZXNz
-aW5nIHdpdGggcGFja2V0IHByaW9yaXRpZXM/DQo+ID4gV2hhdCBhbSBJIGV2ZW4gZG9pbmc/IGxv
-bC4NCj4gDQo+IFRoYXQncyBhIGdvb2QgcG9pbnQuIGV0aHRvb2wgZG9lc24ndCBoYXMgYSBoaXN0
-b3J5IG9mIGtub3dpbmcgYWJvdXQNCj4gcHJpb3JpdGllcyAoYW5kIHdoYXQgdGhleSBldmVuIG1l
-YW4pLiBCdXQgSSBsaWtlIHRoZSBmbGV4aWJpbGl0eSB0aGF0DQo+IHRoaXMgYXBwcm9hY2ggcHJv
-dmlkZXMuDQoNCkZhaXIuIE9uIHRoZSBvdGhlciBoYW5kLCB3ZSBuZWVkIHRvIHdlaWdoIHRoZSBw
-cm9zIGFuZCBjb25zIG9mIG1vdmluZw0KdGhlIGFkbWluU3RhdHVzIHRvIG90aGVyIHBsYWNlcy4N
-Cg0KZGNibmwNCg0KLSBwcm86IGlzIGEgaGFyZHdhcmUtb25seSBpbnRlcmZhY2UsIGp1c3QgbGlr
-ZSBldGh0b29sLCB3aGljaCBpcw0KICBzdWl0YWJsZSBmb3IgYSBoYXJkd2FyZS1vbmx5IGZlYXR1
-cmUgbGlrZSBGUA0KDQotIHBybzoga25vd3MgYWJvdXQgcHJpb3JpdGllcyAoYXBwIHRhYmxlLCBQ
-RkMpLiBJIGtlZXAgY29taW5nIGJhY2sgdG8NCiAgUEZDIGFzIGFuIGV4YW1wbGUgYmVjYXVzZSBp
-dCBoYXMgdGhlIGFic29sdXRlIGV4YWN0IHNhbWUgcHJvYmxlbXMgYXMNCiAgRlAsIHdoaWNoIGlz
-IHRoYXQgaXQgaXMgZGVmaW5lZCBwZXIgcHJpb3JpdHksIGJ1dCB0aGVyZSBpcyBhICJOT1RFIDIg
-LQ0KICBNaXhpbmcgUEZDIGFuZCBub24tUEZDIHByaW9yaXRpZXMgaW4gdGhlIHNhbWUgcXVldWUg
-cmVzdWx0cyBpbiBub24tUEZDDQogIHRyYWZmaWMgYmVpbmcgcGF1c2VkIGNhdXNpbmcgY29uZ2Vz
-dGlvbiBzcHJlYWRpbmcsIGFuZCB0aGVyZWZvcmUgaXMNCiAgbm90IHJlY29tbWVuZGVkLiINCg0K
-LSBjb246IEkgdGhpbmsgdGhlIGRjYm5sIGFwcCB0YWJsZSBoYXMgdGhlIHNhbWUgbGltaXRhdGlv
-biB0aGF0DQogIHByaW9yaXRpZXMgZ28gb25seSB1cCB0byA4ICh0aGUgY29tbWVudCBhYm92ZSBz
-dHJ1Y3QgZGNiX2FwcCBzYXlzDQogICJAcHJpb3JpdHk6IDMtYml0IHVuc2lnbmVkIGludGVnZXIg
-aW5kaWNhdGluZyBwcmlvcml0eSBmb3IgSUVFRSIpDQoNCi0gY29uOiB3aGVyZSBkbyBkY2JubCdz
-IHJlc3BvbnNpYmlsaXRpZXMgYmVnaW4sIGFuZCB3aGVyZSBkbyB0aGV5IGVuZCwNCiAgZXhhY3Rs
-eT8gTXkgdW5kZXJzdGFuZGluZyBpcyB0aGF0IERDQiBhbmQgVFNOIGFyZSBleGFjdGx5IHRoZSBz
-YW1lDQogIGtpbmQgb2YgdGhpbmcsIGkuZS4gZXh0ZW5zaW9ucyB0byA4MDIuMVEgKGFuZCA4MDIu
-MywgaW4gY2FzZSBvZiBUU04pDQogIHdoaWNoIHdlcmUgbWFkZSBpbiBvcmRlciB0byBhbGlnbiBF
-dGhlcm5ldCAoYW5kIGJyaWRnZXMpIHdpdGggYSBzZXQgb2YNCiAgdmVydGljYWwgdXNlIGNhc2Vz
-IHdoaWNoIHdlcmVuJ3QgcXVpdGUgcG9zc2libGUgYmVmb3JlLiBBbGwgaXMgd2VsbCwNCiAgZXhj
-ZXB0IFRTTiB3YXMgaW50ZWdyYXRlZCBxdWl0ZSBkaWZmZXJlbnRseSBpbnRvIHRoZSBMaW51eCBr
-ZXJuZWwsDQogIGkuby53LiB3ZSBkb24ndCBoYXZlIGEgInRzbm5sIiBsaWtlIHRoZXJlIGlzIGEg
-ImRjYm5sIiwgYnV0IHRoaW5ncyBhcmUNCiAgbXVjaCBtb3JlIGZpbmUtZ3JhaW5lZCwgYW5kIGlu
-dGVncmF0ZWQgd2l0aCB0aGUgc3Vic3lzdGVtIHRoYXQgdGhleQ0KICBleHRlbmQsIHJhdGhlciB0
-aGFuIGNyZWF0aW5nIGEgc3Vic3lzdGVtIGFsaWduZWQgdG8gYSB1c2UgY2FzZS4gU28gdGhlDQog
-IHF1ZXN0aW9uIGJlY29tZXMsIGlzIGFueXRoaW5nIHdlJ3JlIGRvaW5nIGhlcmUsIGZvciBUU04s
-IGV4dGVuZGluZw0KICBEQ0I/IFdpdGggTWljcm9jaGlwJ3MgZGVzaXJlIHRvIGFkZCBub24tc3Rh
-bmRhcmQgQVBQIHRhYmxlIHNlbGVjdG9ycw0KICBmb3IgVkxBTiBQQ1AvREVJIHByaW9yaXRpemF0
-aW9uLCBJIHRoaW5rIHRoZSBnZW5lcmFsIG1vdmVtZW50IGlzDQogIHRvd2FyZHMgbW9yZSByZXVz
-ZSBvZiBkY2JubCBjb25zdHJ1Y3RzLCBhbmQgdG93YXJkcyBmb3JnZXR0aW5nIHRoYXQNCiAgZGNi
-bmwgaXMgZm9yIERDQi4gQnV0IHRoZXJlIGFyZSBtYW55IHRoaW5ncyBJIGRvbid0IHVuZGVyc3Rh
-bmQgYWJvdXQNCiAgZGNibmwsIGZvciBleGFtcGxlIHdoeSBpcyBpdCBwb3NzaWJsZSB0byBzZXQg
-YW4gaW50ZXJmYWNlJ3MgcHJpby10Yw0KICBtYXAgdXNpbmcgZGNiLCBhbmQgd2hhdCBkb2VzIGl0
-IGV2ZW4gbWVhbiBpbiByZWxhdGlvbnNoaXAgdG8NCiAgdGMtbXFwcmlvLCB0Yy10YXByaW8gZXRj
-IChvciBldmVuIHdpdGggInByaW9tYXAiIGZyb20gdGMtZXRzKS4NCg0KICAkIGRjYiBldHMgc2V0
-IGRldiBldGgwIHByaW8tdGMgMDowIDE6MSAyOjIgMzozIDQ6NCA1OjUgNjo2IDc6Nw0KDQogIEph
-a3ViIGhhZCBhbiBhbnN3ZXIgd2hpY2ggZXhwbGFpbmVkIHRoaXMgaW4gdGVybXMgb2YgQ29ud2F5
-J3MgbGF3Og0KICBodHRwczovL3BhdGNod29yay5rZXJuZWwub3JnL3Byb2plY3QvbmV0ZGV2YnBm
-L2NvdmVyLzIwMjIwNTIwMDExNTM4LjEwOTg4ODgtMS12aW5pY2l1cy5nb21lc0BpbnRlbC5jb20v
-IzI0ODcwMzI1DQogIGJ1dCBhcyBiZWF1dGlmdWwgdGhhdCBhbnN3ZXIgaXMsIGFzIG1hbnkgcXVl
-c3Rpb25zIGl0IHN0aWxsIGxlYXZlcyBmb3INCiAgbWUuIExpa2UgaWYgd2Ugd2VyZSB0byBhY2Nl
-cHQgZGNibmwgYXMgcGFydCBvZiB0aGUgVUFQSSBmb3IgVFNOLCBob3cNCiAgZG9lcyB0aGlzIGZh
-Y3QgZml0IHdpdGhpbiBvdXIgc3RvcnkgdGhhdCB0aGUgYWxyZWFkeSB1c2UgdGhlIHRjLXRhcHJp
-bw0KICBtYXAgdG8gbWFwIHByaW9yaXRpZXMgdG8gdHJhZmZpYyBjbGFzc2VzPw0KDQpldGh0b29s
-Og0KDQotIHBybzogaXMgaW4gdGhlIHNhbWUgc3Vic3lzdGVtIGFzIE1BQyBtZXJnZSBsYXllciBj
-b25maWd1cmF0aW9uIChmb3INCiAgd2hpY2ggSSBoYXZlIG5vIGRvdWJ0cyB0aGF0IGV0aHRvb2wg
-aXMgdGhlIHJpZ2h0IHBsYWNlKQ0KDQotIHBybzogaXMgbm90IGFsaWduZWQgdG8gYW55IHNwZWNp
-ZmljIHZlcnRpY2FsIHVzZSBjYXNlLCBsaWtlIGRjYm5sIGlzDQoNCi0gY29uOiBrbm93cyBub3Ro
-aW5nIGFib3V0IHByaW9yaXRpZXMNCg0KLSBjb246IGZvciBoYXJkd2FyZSB3aGVyZSBGUCBhZG1p
-blN0YXR1cyBpcyBwZXIgdHJhZmZpYyBjbGFzcyByYXRoZXINCiAgdGhhbiBwZXIgcHJpb3JpdHks
-IHdlJ2xsIGhhdmUgdG8gY2hhbmdlIHRoZSBhZG1pblN0YXR1cyBub3Qgb25seSBmcm9tDQogIGNo
-YW5nZXMgbWFkZSB2aWEgZXRodG9vbCB0byB0aGUgRlAgYWRtaW5TdGF0dXMsIGJ1dCBhbHNvIGZy
-b20gY2hhbmdlcw0KICBtYWRlIHRvIHRoZSBwcmlvX3RjX21hcCAodGMgSSBndWVzcz8pLiBCdXQg
-dGhpcyBtYXkgYWxzbyBiZSBhIHN1YnRsZQ0KICBwcm8gZm9yIGRjYm5sLCBzaW5jZSB0aGF0IGhh
-cyBpdHMgb3duIHByaW9fdGNfbWFwLCBzbyB3ZSdkIHJlbWFpbg0KICB3aXRoaW4gdGhlIHNhbWUg
-c3Vic3lzdGVtPw0KDQp0YyAocGFydCBvZiB0Yy1tcXByaW8gYW5kIHRjLXRhcHJpbyk6DQoNCi0g
-b3BlbiBxdWVzdGlvbjogZG9lcyB0aGUgRlAgYWRtaW5TdGF0dXMgaW5mbHVlbmNlIHNjaGVkdWxp
-bmcgb3Igbm90Pw0KICBOb3JtYWxseSBJJ2Qgc2F5IG5vLCBhZG1pblN0YXR1cyBvbmx5IGRlY2lk
-ZXMgd2hldGhlciB0aGUgZU1BQyBvciBwTUFDDQogIHdpbGwgYmUgdXNlZCB0byBzZW5kIGEgZnJh
-bWUsIGFuZCB0aGlzIGlzIG9ydGhvZ29uYWwgdG8gc2NoZWR1bGluZy4NCiAgQnV0IDgwMi4xUSBz
-YXlzIHRoYXQgIkl0IHNob3VsZCBiZSBub3RlZCB0aGF0LCBvdGhlciB0aGluZ3MgYmVpbmcNCiAg
-ZXF1YWwsIGRlc2lnbmF0aW5nIGEgcHJpb3JpdHkgYXMg4oCcZXhwcmVzc+KAnSBlZmZlY3RpdmVs
-eSBpbmNyZWFzZXMgaXRzDQogIHByaW9yaXR5IGFib3ZlIHRoYXQgb2YgYW55IHByaW9yaXR5IGRl
-c2lnbmF0ZWQgYXMg4oCccHJlZW1wdGlibGXigJ0uIg0KICBJcyB0aGlzIHBocmFzZSBlbm91Z2gg
-dG8ganVzdGlmeSBhIG1vZGlmaWNhdGlvbiBvZiB0aGUgcWRpc2MgZGVxdWV1ZQ0KICBtZXRob2Qg
-aW4sIHNheSwgdGFwcmlvLCB3aGljaCB3b3VsZCBwcmlvcml0aXplIGEgbG93ZXIgcHJpb3JpdHkg
-cWRpc2MNCiAgcXVldWUgQSBvdmVyIGEgaGlnaGVyIG9uZSBCLCBpZiBBIGlzIGV4cHJlc3MgYnV0
-IEIgaXMgcHJlZW1wdGFibGU/DQoNCi0gcHJvOiBhc3N1bWluZyB0aGF0IGluIGxhY2sgb2YgdGMt
-bXFwcmlvIG9yIHRjLXRhcHJpbywgYW4gaW50ZXJmYWNlJ3MNCiAgbnVtYmVyIG9mIHRyYWZmaWMg
-Y2xhc3NlcyB3aWxsIGNvbGxhcHNlIHRvIDEsIHRoZW4gcHV0dGluZyBGUA0KICBhZG1pblN0YXR1
-cyBoZXJlIG1ha2VzIGl0IHRyaXZpYWwgdG8gc3VwcG9ydCBoYXJkd2FyZSB3aXRoIEZQIHBlcg0K
-ICB0cmFmZmljIGNsYXNzDQoNCi0gY29uOiBtb3JlIGRpZmZpY3VsdCBmb3IgdXNlciBzcGFjZSB0
-byBjaGFuZ2UgRlAgYWRtaW5TdGF0dXMNCiAgaW5kZXBlbmRlbnRseSBvZiB0aGUgY3VycmVudCBx
-ZGlzYz8NCg0KPiA+PiA+IE5vOyBhcyBtZW50aW9uZWQsIGdvaW5nIHRocm91Z2ggbXFwcmlvJ3Mg
-Im1hcCIgYW5kICJxdWV1ZXMiIHRvIHJlc29sdmUNCj4gPj4gPiB0aGUgcHJpb3JpdHkgdG8gYSBx
-dWV1ZSBpcyBzb21ldGhpbmcgdGhhdCBJIGludGVuZGVkIHRvIGJlIHBvc3NpYmxlLg0KPiA+PiA+
-IFN1cmUsIGl0J3Mgbm90IGhhbmR5IGVpdGhlci4gSXQgd291bGQgaGF2ZSBiZWVuIGhhbmRpZXIg
-aWYgdGhlDQo+ID4+ID4gImFkbWluLXN0YXR1cyIgYXJyYXkgd2FzIHBhcnQgb2YgdGhlIHRjLW1x
-cHJpbyBjb25maWcsIGxpa2UgeW91IGRpZCBpbg0KPiA+PiA+IHlvdXIgUkZDLg0KPiA+PiANCj4g
-Pj4gSnVzdCB0byBiZSBzdXJlLCBzYXkgdGhhdCBteSBwbGFuIGlzIHRoYXQgSSBkb2N1bWVudCB0
-aGF0IGZvciB0aGUgaWdjDQo+ID4+IGRyaXZlciwgdGhlIG1hcHBpbmcgb2YgcHJpb3JpdGllcyBm
-b3IgdGhlICJGUCIgY29tbWFuZCBpcyBwcmlvICgwKSAtPg0KPiA+PiBxdWV1ZSAoMCksIHByaW8g
-KDEpIC0+IHF1ZXVlICgxKSwgYW5kIHNvIG9uLiBOb3RlIHRoYXQgdGhlIG1xcHJpbw0KPiA+PiBt
-YXBwaW5nIGNvdWxkIGJlIHRoYXQgInNrYi0+cHJpb3JpdHkiIDEwIGdvZXMgdG8gVEMgMSB3aGlj
-aCBpcyBtYXBwZWQgdG8NCj4gPj4gcXVldWUgMC4gV291bGQgdGhpcyBiZSBvaz8NCj4gPg0KPiA+
-IElmIHNrYi0+cHJpb3JpdHkgMTAgZ29lcyB0byBUQyAxIHZpYSB0aGUgcHJpb190Y19tYXAsIGFu
-ZCBmaW5hbGx5IGxhbmRzDQo+ID4gaW4gcXVldWUgMCB3aGVyZSB5b3VyIGFjdHVhbCBGUCBrbm9i
-IGlzLCB0aGVuIEknZCBleHBlY3QgdGhlIGRyaXZlciB0bw0KPiA+IGZvbGxvdyB0aGUgcmV2ZXJz
-ZSBwYXRoIGJldHdlZW4gcXVldWUgLT4gdGMgLT4gcHJpb3MgbWFwcGVkIHRvIHRoYXQgdGMuDQo+
-ID4gQW5kIEkgd291bGQgbm90IHN0YXRlIHRoYXQgcHJpbyAwIGlzIHF1ZXVlIDAgYW5kIHNrYi0+
-cHJpb3JpdHkgdmFsdWVzDQo+ID4gZnJvbSB0aGUgd2hvbGUgc3BlY3RydW0gbWF5IGxhbmQgdGhl
-cmUsIGt0aHhieWUuIEFsc28sIGRpZG4ndCB5b3Ugc2F5DQo+ID4gZWFybGllciB0aGF0ICJsb3dl
-c3QgcXVldWUgaW5kZXggKDApIGhhcyBoaWdoZXN0IHByaW9yaXR5Ij8gSW4gTGludXgsDQo+ID4g
-c2tiLT5wcmlvcml0eSAwIGhhcyBsb3dlciBwcmlvcml0eSB0aGF0IHNrYi0+cHJpb3JpdHkgMS4g
-SG93IGRvZXMgdGhhdA0KPiA+IHdvcmsgb3V0Pw0KPiA+DQo+IA0KPiBBaCwgc29ycnkgZm9yIHRo
-ZSBjb25mdXNpb24sIHdoZW4gSSBzYWlkICJsb3dlc3QgcXVldWUgaW5kZXggKDApIGhhcw0KPiBo
-aWdoZXN0IHByaW9yaXR5IiBpdCB3YXMgbW9yZSBpbiB0aGUgc2Vuc2UgdGhhdCBxdWV1ZSAwIGhh
-cyBoaWdoZXINCj4gcHJlY2VkZW5jZSwgcGFja2V0cyBmcm9tIGl0IGFyZSBmZXRjaGVkIGZpcnN0
-LCB0aGF0IGtpbmQgb2YgdGhpbmcuDQoNCkZldGNoZWQgZmlyc3QgYnkgd2hvbT8NCkluIEVORVRD
-LCB0aGUgdHJhbnNtaXNzaW9uIHNlbGVjdGlvbiBjaG9vc2VzIGJldHdlZW4gVFggQkQgcmluZ3Mg
-d2hvc2UNCmNvbmZpZ3VyZWQgcHJpb3JpdHkgbWFwcyB0byB0aGUgc2FtZSB0cmFmZmljIGNsYXNz
-IGJhc2VkIG9uIGEgd2VpZ2h0ZWQNCnJvdW5kIHJvYmluIGRlcXVldWluZyBwb2xpY3kuIEdyb3Vw
-cyBvZiBUWCBCRCByaW5ncyBvZiBkaWZmZXJlbnQNCnByaW9yaXRpZXMgYXJlIGluIHN0cmljdCBw
-cmlvcml0eSBkZXF1ZXVpbmcgcmVsYXRpdmUgdG8gZWFjaCBvdGhlci4NCkFuZCB0aGUgbnVtYmVy
-IG9mIHRoZSBUWCBCRCByaW5nIGhhcyBub3RoaW5nIHRvIGRvIHdpdGggaXRzIHByaW9yaXR5Lg0K
-DQo+ID4gSW4gZmFjdCwgZm9yIGJvdGggZW5ldGMgYW5kIGZlbGl4LCBJIGhhdmUgdG8gZG8gdGhp
-cyBleGFjdCB0aGluZyBhcyB5b3UsDQo+ID4gZXhjZXB0IHRoYXQgbXkgaGFyZHdhcmUga25vYnMg
-YXJlIGhhbGZ3YXkgaW4gdGhlIHBhdGggKHBlciB0Yywgbm90IHBlcg0KPiA+IHF1ZXVlKS4gVGhl
-IHJlYXNvbiB3aHkgSSdtIG5vdCBkb2luZyBpdCBpcyBiZWNhdXNlIHdlIG9ubHkgY29uc2lkZXIg
-dGhlDQo+ID4gMToxIHByaW9fdGNfbWFwLCBzbyB3ZSB1c2UgInByaW8iIGFuZCAidGMiIGludGVy
-Y2hhbmdlYWJseS4NCj4gPg0KPiANCj4gSG0sIHRoYXQncyBpbnRlcmVzdGluZy4gSSB0aGluayB0
-aGF0J3MgYSBkaWZmZXJlbmNlIG9uIGhvdyB3ZSBhcmUNCj4gbW9kZWxpbmcgb3VyIHRyYWZmaWMs
-IGhlcmUncyBvbmUgdmVyeSBjb21tb24gbXFwcmlvIGNvbmZpZyBmb3IgQVZCIHVzZQ0KPiBjYXNl
-czoNCj4gDQo+ICQgdGMgcWRpc2MgcmVwbGFjZSBkZXYgJElGQUNFIHBhcmVudCByb290IGhhbmRs
-ZSAxMDAgbXFwcmlvIFwNCj4gICAgICAgbnVtX3RjIDMgXA0KPiAgICAgICBtYXAgMiAyIDEgMCAy
-IDIgMiAyIDIgMiAyIDIgMiAyIDIgMiBcDQo+ICAgICAgIHF1ZXVlcyAxQDAgMUAxIDJAMiBcDQo+
-ICAgICAgIGh3IDANCj4gDQo+IE9uZSBwcmlvcml0eSBmb3IgQ2xhc3MgQSB0cmFmZmljLCBvbmUg
-cHJpb3JpdHkgZm9yIENsYXNzIEIgdHJhZmZpYyBhbmQNCj4gbXVsdGlwbGUgcHJpb3JpdGllcyBt
-YXBwZWQgdG8gYSBzaW5nbGUgVEMsIHRoZSByZXN0IGlzIEJlc3QgRWZmb3J0IGFuZA0KPiBpdCdz
-IG1hcHBlZCB0byBtdWx0aXBsZSBxdWV1ZXMuIFRoZSB3YXkgd2UgbW9kZWwgdHJhZmZpYywgVENz
-IGFuZA0KPiBwcmlvcml0aWVzIGFyZSBkaWZmZXJlbnQgY29uY2VwdHMuDQoNClNvIGhlcmUncyB3
-aGF0IEkgZG9uJ3QgdW5kZXJzdGFuZC4gV2h5IGRvIHlvdSBuZWVkIDE2IHByaW9yaXR5IHZhbHVl
-cywNCndoZW4gaW4gdGhlIGVuZCB5b3UnbGwgbWFwIHRoZW0gdG8gb25seSAzIGVncmVzcyB0cmFm
-ZmljIGNsYXNzZXMgYW55d2F5Pw0KDQo+IE9uZSBpbXBvcnRhbnQgZGV0YWlsIGlzIHRoYXQgaW4g
-VFNOIG1vZGUsIHdlIHVzZSB0aGUgInByaW9yaXR5IiAobWVhbmluZw0KPiBwcmVjZWRlbmNlIGlu
-IHRoaXMgY29udGV4dCkgZmV0Y2ggb3JkZXIgZm9yIHRoZSBxdWV1ZXM6IHF1ZXVlIDAgZmlyc3Qs
-DQo+IHRoZW4gcXVldWUgMSwgYW5kIHNvIG9uLg0KDQpTbyB0aGUgbnVtYmVyIG9mIHRoZSBxdWV1
-ZSBpcyB3aGF0IGFjdHVhbGx5IGNvbnRyaWJ1dGVzIHRvIHRoZSBlZ3Jlc3MNCnNjaGVkdWxpbmcg
-YWxnb3JpdGhtIG9mIHlvdXIgTklDPyBTdHJhbmdlLiBUZWxsIG1lIHNvbWV0aGluZyBzbyBJJ20g
-c3VyZQ0KSSdtIHVuZGVyc3RhbmRpbmcgeW91IHByb3Blcmx5LiBuZXRkZXZfcGlja190eCgpIHdp
-bGwgcGljayBhIFRYIHF1ZXVlDQp1c2luZyBza2JfdHhfaGFzaCgpLCB3aGljaCBoYXNoZXMgYmV0
-d2VlbiB0aGUgbmV0ZGV2IHF1ZXVlcyBtYXBwZWQgdG8NCnRoZSBzYW1lIHRyYWZmaWMgY2xhc3Mg
-YXMgdGhlIHRyYWZmaWMgY2xhc3MgdGhhdCBza2ItPnByaW9yaXR5IGlzIG1hcHBlZCB0by4NCklu
-IHlvdXIgY2FzZSwgeW91IGhhdmUgMkAyICgyIFRYIHF1ZXVlcyBmb3IgdHJhZmZpYyBjbGFzcyAy
-KSwgY2FsbCB0aGVzZQ0KcXVldWVzIDIgYW5kIDMuIFlvdSdyZSBzYXlpbmcgdGhhdCBoYXJkd2Fy
-ZSBwcmlvcml0aXplcyBxdWV1ZSAyIG92ZXIgMy4NCkJ1dCB0aGUgbmV0d29yayBzdGFjayBkb2Vz
-bid0IGtub3cgdGhhdC4gSXQgaGFzaGVzIGVxdWFsbHkgcGFja2V0cyB0aGF0DQpnbyB0byB0YyAy
-IGJldHdlZW4gcXVldWUgMiBhbmQgcXVldWUgMy4gSW4gb3VyIGNhc2UsIHRoaXMgbWlzY29uZmln
-dXJhdGlvbg0Kd291bGQgYmUgaW1tZWRpYXRlbHkgb2J2aW91cywgYmVjYXVzZSB3ZSBjb3VsZCBo
-YXZlIGFuIG9mZmxvYWRlZCB0Yy10YXByaW8NCnNjaGVkdWxlIGluIEVORVRDLCBhbmQgTGludXgg
-Y291bGQgYmUgZW5xdWV1aW5nIGludG8gYSByaW5nIHRoYXQgdWx0aW1hdGVseQ0KaGFzIGEgZGlm
-ZmVyZW50IHNjaGVkdWxlIHRoYW4gc29mdHdhcmUga25vd3MgYWJvdXQuIEhvdyBkb2VzIHRoaXMg
-d29yaw0Kb3V0IGZvciB5b3U/DQoNCj4gPiAqIFRoZSBlbmV0YyB2ZXJpZmljYXRpb24gc3RhdGUg
-bWFjaGluZSBpcyBvZmYgYnkgZGVmYXVsdC4gVGhlIGZlbGl4DQo+ID4gICB2ZXJpZmljYXRpb24g
-c3RhdGUgbWFjaGluZSBpcyBvbiBieSBkZWZhdWx0LiBJIGd1ZXNzIHdlIHNob3VsZCBmaWd1cmUN
-Cj4gPiAgIG91dCBhIHJlYXNvbmFibGUgZGVmYXVsdCBmb3IgYWxsIGRyaXZlcnMgb3V0IHRoZXJl
-Pw0KPiA+DQo+IA0KPiBGcm9tIHRoZSBsYW5ndWFnZSBvZiBJRUVFIDgwMi4zICgiZGlzYWJsZVZl
-cmlmeSIgYW5kIGZyaWVuZHMpLCBpdCBzZWVtcw0KPiB0aGF0IHRoZSBleHBlY3RhdGlvbiBpcyB0
-aGF0IHZlcmlmaWNhdGlvbiBpcyBlbmFibGVkIGJ5IGRlZmF1bHQuICpCdXQqDQo+IGZyb20gYSBp
-bnRlcm9wZXJhYmlsaXR5IHBvaW50IG9mIHZpZXcsIEkgd291bGQgb25seSBlbmFibGUgdmVyaWZp
-Y2F0aW9uDQo+IGJ5IGRlZmF1bHQgYWZ0ZXIgc29tZSB0ZXN0aW5nIGluIHRoZSB3aWxkLiBPciBv
-bmx5IHNlbmQgdGhlIHZlcmlmeQ0KPiBwYWNrZXQgaWYgZnJhbWUgcHJlZW1wdGlvbiBpcyBhbHNv
-IGVuYWJsZWQuIA0KDQpJIHdvbmRlciB3aGV0aGVyIHRoZSBhbnN3ZXIgdG8gdGhpcyBvbmUgaXMg
-YWN0dWFsbHkgIkFkZGl0aW9uYWwgRXRoZXJuZXQNCkNhcGFiaWxpdGllcyBUTFYiICg4MDIuMyBj
-bGF1c2UgNzkuMy43KS4gSXQgd291bGQgYmUgZ29vZCBpZiB3ZSBjb3VsZA0KYWxsIHN0YXJ0IG9m
-ZiB3aXRoIEZQL01NIGRpc2FibGVkLCB2ZXJpZmljYXRpb24gc3RhdGUgbWFjaGluZSBpbmNsdWRl
-ZCwNCnVudGlsIHRoZSBMTERQIGRhZW1vbiByZWNlaXZlcyBhIFRMViB0aGF0IHNheXMgUHJlZW1w
-dFN1cHBvcnRlZCBhbmQNClByZWVtcHRFbmFibGVkIGFyZSB0cnVlLiBJZiBib3RoIGxvY2FsIGFu
-ZCByZW1vdGUgcHJlZW1wdGlvbiBhcmUNCnN1cHBvcnRlZCBhbmQgZW5hYmxlZCwgd2UgdGVsbCB0
-aGUga2VybmVsIHRvIGVuYWJsZSB0aGUgTUFDIG1lcmdlIGxheWVyDQphbmQga2ljayBvZmYgdmVy
-aWZpY2F0aW9uLiBJbiB0dXJuIHRoaXMgd2lsbCBhbHRlciBQcmVlbXB0QWN0aXZlIHRoYXQNCmdl
-dHMgc2V0IGluIGZ1dHVyZSByZXBsaWVzLiBJIGRvbid0IGtub3csIHRoZSBmbG93IG1heSBiZSBk
-aWZmZXJlbnQuDQoNCj4gPiAqIEZvciBzb21lIHJlYXNvbiwgSSBub3RpY2UgdGhhdCB0aGUgdmVy
-aWZpY2F0aW9uIHN0YXRlIG1hY2hpbmUgcmVtYWlucw0KPiA+ICAgRkFJTEVEIG9uIGZlbGl4IHdo
-ZW4gaXQgbGlua3MgdG8gZW5ldGMgYW5kIHRoYXQgaGFzIHZlcmlmaWNhdGlvbg0KPiA+ICAgZW5h
-YmxlZC4gSSBuZWVkIHRvIGRpc2FibGUgaXQgb24gZW5ldGMsIGVuYWJsZSBpdCBhZ2FpbiwgYW5k
-IG9ubHkgdGhlbg0KPiA+ICAgd2lsbCB0aGUgTUFDIG1lcmdlIGludGVycnVwdCBvbiBmZWxpeCBz
-YXkgdGhhdCB2ZXJpZmljYXRpb24gY29tcGxldGVkDQo+ID4gICBzdWNjZXNzZnVsbHkuIEkgdGhp
-bmsgSSdsbCBuZWVkIHRvIHB1dCBhIHF1aXJrIGluIGVuZXRjX3BsX21hY19saW5rX3VwKCkNCj4g
-PiAgIHRvIHRvZ2dsZSB2ZXJpZmljYXRpb24gb2ZmIGFuZCBvbiwgaWYgaXQgd2FzIHJlcXVlc3Rl
-ZCwgaW4gb3JkZXIgZm9yDQo+ID4gICB0aGlzIHRvIGJlIHNlYW1sZXNzIHRvIHRoZSB1c2VyLg0K
-PiA+DQo+ID4gSWYgaXQncyBvbmx5IHRoZXNlLCBub3RoaW5nIHNlZW1zIGV4YWN0bHkgbWFqb3Iu
-IEhvd2V2ZXIsIEkgYXNzdW1lIHRoaXMNCj4gPiBpcyBvbmx5IHRoZSBiZWdpbm5pbmcuIEkgZnVs
-bHkgZXhwZWN0IHRoZXJlIHRvIGJlIG9uZSBtb3JlIHJvdW5kIG9mDQo+ID4gIndoeSBub3QgZGNi
-bmw/IHdoeSBub3QgdGM/IiBuaXRwaWNrcywgZm9yIHdoaWNoIEknbSBub3QgZXhhY3RseQ0KPiA+
-IG1lbnRhbGx5IHJlYWR5IChpZiBjcmVkaWJsZSBhcmd1bWVudHMgYXJlIHRvIGJlIHB1dCBmb3J3
-YXJkLCBJJ2QgcmF0aGVyDQo+ID4gaGF2ZSB0aGVtIG5vdyB3aGlsZSBJIGhhdmVuJ3QgeWV0IHB1
-dCBpbiB0aGUgZXh0cmEgd29yayBpbiB0aGUgZGlyZWN0aW9uDQo+ID4gSSdtIGFib3V0IHRvKS4N
-Cj4gDQo+IEkgcmVhbGx5IGtub3cgdGhlIGZlZWxpbmcgIm5vdCBtZW50YWxseSByZWFkeSIuDQo+
-IA0KPiBJIGFtIHN0aWxsIGluIHRoZSAidGMiIGNhbXAuIEJ1dCBJIGNhbm5vdCBkZW55IHRoYXQg
-dGhpcyBpbnRlcmZhY2Ugc2VlbXMNCj4gdG8gd29yayBmb3IgdGhlIHVzZXMgdGhhdCB3ZSBoYXZl
-IGluIG1pbmQuIFRoYXQncyAoYXQgbGVhc3QpIGdvb2QgZW5vdWdoDQo+IGZvciBtZSA7LSkNCg0K
-VG8gbWUgcmlnaHQgbm93LCBGUCBhZG1pblN0YXR1cyBpcyBub3QgZXhhY3RseSBzb21ldGhpbmcg
-dGhhdCB0aGUNCnNjaGVkdWxlciBpcyBjb25jZXJuZWQgd2l0aCwgYW5kIHRoaXMgaXMgd2h5IHRj
-IGlzIGtpbmQgb2YgbXkgbGFzdA0KY2hvaWNlLiBCdXQgSSBhZ3JlZSB0aGF0IGl0IG1ha2VzIGNl
-cnRhaW4gdGhpbmdzIHNpbXBsZXIuIFBsdXMsIGl0IHNlZW1zDQp0byBiZSB0aGUgb25seSBzdWJz
-eXN0ZW0gYXdhcmUgb2YgMTYgcHJpb3JpdGllcyBhbmQgMTYgdHJhZmZpYyBjbGFzc2VzLA0Kd2hp
-Y2ggeW91IHNlZW0gdG8gY2FyZSBhYm91dC4=
+
+
+9/6/2022 11:07 AM, Mickaël Salaün пишет:
+> You can make the subject more informative with "landlock: Move
+> unmask_layers() and init_layer_masks()".
+> 
+  Ok. Thanks.
+> 
+> On 29/08/2022 19:03, Konstantin Meskhidze wrote:
+>> This patch moves unmask_layers() and init_layer_masks() helpers
+>> to ruleset.c to share with landlock network implementation in
+>> following commits.
+>> 
+>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>> ---
+>> 
+>> Changes since v6:
+>> * Moves get_handled_accesses() helper from ruleset.c back to fs.c,
+>>    cause it's not used in coming network commits.
+>> 
+>> Changes since v5:
+>> * Splits commit.
+>> * Moves init_layer_masks() and get_handled_accesses() helpers
+>> to ruleset.c and makes then non-static.
+>> * Formats code with clang-format-14.
+>> 
+>> ---
+>>   security/landlock/fs.c      | 85 -------------------------------------
+>>   security/landlock/ruleset.c | 84 ++++++++++++++++++++++++++++++++++++
+>>   security/landlock/ruleset.h | 10 +++++
+>>   3 files changed, 94 insertions(+), 85 deletions(-)
+>> 
+>> diff --git a/security/landlock/fs.c b/security/landlock/fs.c
+>> index cca87fcd222d..b03d6153f628 100644
+>> --- a/security/landlock/fs.c
+>> +++ b/security/landlock/fs.c
+>> @@ -215,60 +215,6 @@ find_rule(const struct landlock_ruleset *const domain,
+>>   	return rule;
+>>   }
+>> 
+>> -/*
+>> - * @layer_masks is read and may be updated according to the access request and
+>> - * the matching rule.
+>> - *
+>> - * Returns true if the request is allowed (i.e. relevant layer masks for the
+>> - * request are empty).
+>> - */
+>> -static inline bool
+>> -unmask_layers(const struct landlock_rule *const rule,
+>> -	      const access_mask_t access_request,
+>> -	      layer_mask_t (*const layer_masks)[LANDLOCK_NUM_ACCESS_FS])
+>> -{
+>> -	size_t layer_level;
+>> -
+>> -	if (!access_request || !layer_masks)
+>> -		return true;
+>> -	if (!rule)
+>> -		return false;
+>> -
+>> -	/*
+>> -	 * An access is granted if, for each policy layer, at least one rule
+>> -	 * encountered on the pathwalk grants the requested access,
+>> -	 * regardless of its position in the layer stack.  We must then check
+>> -	 * the remaining layers for each inode, from the first added layer to
+>> -	 * the last one.  When there is multiple requested accesses, for each
+>> -	 * policy layer, the full set of requested accesses may not be granted
+>> -	 * by only one rule, but by the union (binary OR) of multiple rules.
+>> -	 * E.g. /a/b <execute> + /a <read> => /a/b <execute + read>
+>> -	 */
+>> -	for (layer_level = 0; layer_level < rule->num_layers; layer_level++) {
+>> -		const struct landlock_layer *const layer =
+>> -			&rule->layers[layer_level];
+>> -		const layer_mask_t layer_bit = BIT_ULL(layer->level - 1);
+>> -		const unsigned long access_req = access_request;
+>> -		unsigned long access_bit;
+>> -		bool is_empty;
+>> -
+>> -		/*
+>> -		 * Records in @layer_masks which layer grants access to each
+>> -		 * requested access.
+>> -		 */
+>> -		is_empty = true;
+>> -		for_each_set_bit(access_bit, &access_req,
+>> -				 ARRAY_SIZE(*layer_masks)) {
+>> -			if (layer->access & BIT_ULL(access_bit))
+>> -				(*layer_masks)[access_bit] &= ~layer_bit;
+>> -			is_empty = is_empty && !(*layer_masks)[access_bit];
+>> -		}
+>> -		if (is_empty)
+>> -			return true;
+>> -	}
+>> -	return false;
+>> -}
+>> -
+>>   /*
+>>    * Allows access to pseudo filesystems that will never be mountable (e.g.
+>>    * sockfs, pipefs), but can still be reachable through
+>> @@ -303,37 +249,6 @@ get_handled_accesses(const struct landlock_ruleset *const domain)
+>>   	return access_dom;
+>>   }
+>> 
+>> -static inline access_mask_t
+>> -init_layer_masks(const struct landlock_ruleset *const domain,
+>> -		 const access_mask_t access_request,
+>> -		 layer_mask_t (*const layer_masks)[LANDLOCK_NUM_ACCESS_FS])
+>> -{
+>> -	access_mask_t handled_accesses = 0;
+>> -	size_t layer_level;
+>> -
+>> -	memset(layer_masks, 0, sizeof(*layer_masks));
+>> -	/* An empty access request can happen because of O_WRONLY | O_RDWR. */
+>> -	if (!access_request)
+>> -		return 0;
+>> -
+>> -	/* Saves all handled accesses per layer. */
+>> -	for (layer_level = 0; layer_level < domain->num_layers; layer_level++) {
+>> -		const unsigned long access_req = access_request;
+>> -		unsigned long access_bit;
+>> -
+>> -		for_each_set_bit(access_bit, &access_req,
+>> -				 ARRAY_SIZE(*layer_masks)) {
+>> -			if (landlock_get_fs_access_mask(domain, layer_level) &
+>> -			    BIT_ULL(access_bit)) {
+>> -				(*layer_masks)[access_bit] |=
+>> -					BIT_ULL(layer_level);
+>> -				handled_accesses |= BIT_ULL(access_bit);
+>> -			}
+>> -		}
+>> -	}
+>> -	return handled_accesses;
+>> -}
+>> -
+>>   /*
+>>    * Check that a destination file hierarchy has more restrictions than a source
+>>    * file hierarchy.  This is only used for link and rename actions.
+>> diff --git a/security/landlock/ruleset.c b/security/landlock/ruleset.c
+>> index 3a5ef356aaa3..671a95e2a345 100644
+>> --- a/security/landlock/ruleset.c
+>> +++ b/security/landlock/ruleset.c
+>> @@ -564,3 +564,87 @@ landlock_find_rule(const struct landlock_ruleset *const ruleset,
+>>   	}
+>>   	return NULL;
+>>   }
+>> +
+>> +/*
+>> + * @layer_masks is read and may be updated according to the access request and
+>> + * the matching rule.
+>> + *
+>> + * Returns true if the request is allowed (i.e. relevant layer masks for the
+>> + * request are empty).
+>> + */
+>> +bool unmask_layers(const struct landlock_rule *const rule,
+>> +		   const access_mask_t access_request,
+>> +		   layer_mask_t (*const layer_masks)[LANDLOCK_NUM_ACCESS_FS])
+>> +{
+>> +	size_t layer_level;
+>> +
+>> +	if (!access_request || !layer_masks)
+>> +		return true;
+>> +	if (!rule)
+>> +		return false;
+>> +
+>> +	/*
+>> +	 * An access is granted if, for each policy layer, at least one rule
+>> +	 * encountered on the pathwalk grants the requested access,
+>> +	 * regardless of its position in the layer stack.  We must then check
+>> +	 * the remaining layers for each inode, from the first added layer to
+>> +	 * the last one.  When there is multiple requested accesses, for each
+>> +	 * policy layer, the full set of requested accesses may not be granted
+>> +	 * by only one rule, but by the union (binary OR) of multiple rules.
+>> +	 * E.g. /a/b <execute> + /a <read> => /a/b <execute + read>
+>> +	 */
+>> +	for (layer_level = 0; layer_level < rule->num_layers; layer_level++) {
+>> +		const struct landlock_layer *const layer =
+>> +			&rule->layers[layer_level];
+>> +		const layer_mask_t layer_bit = BIT_ULL(layer->level - 1);
+>> +		const unsigned long access_req = access_request;
+>> +		unsigned long access_bit;
+>> +		bool is_empty;
+>> +
+>> +		/*
+>> +		 * Records in @layer_masks which layer grants access to each
+>> +		 * requested access.
+>> +		 */
+>> +		is_empty = true;
+>> +		for_each_set_bit(access_bit, &access_req,
+>> +				 ARRAY_SIZE(*layer_masks)) {
+>> +			if (layer->access & BIT_ULL(access_bit))
+>> +				(*layer_masks)[access_bit] &= ~layer_bit;
+>> +			is_empty = is_empty && !(*layer_masks)[access_bit];
+>> +		}
+>> +		if (is_empty)
+>> +			return true;
+>> +	}
+>> +	return false;
+>> +}
+>> +
+>> +access_mask_t
+>> +init_layer_masks(const struct landlock_ruleset *const domain,
+>> +		 const access_mask_t access_request,
+>> +		 layer_mask_t (*const layer_masks)[LANDLOCK_NUM_ACCESS_FS])
+>> +{
+>> +	access_mask_t handled_accesses = 0;
+>> +	size_t layer_level;
+>> +
+>> +	memset(layer_masks, 0, sizeof(*layer_masks));
+>> +	/* An empty access request can happen because of O_WRONLY | O_RDWR. */
+>> +	if (!access_request)
+>> +		return 0;
+>> +
+>> +	/* Saves all handled accesses per layer. */
+>> +	for (layer_level = 0; layer_level < domain->num_layers; layer_level++) {
+>> +		const unsigned long access_req = access_request;
+>> +		unsigned long access_bit;
+>> +
+>> +		for_each_set_bit(access_bit, &access_req,
+>> +				 ARRAY_SIZE(*layer_masks)) {
+>> +			if (landlock_get_fs_access_mask(domain, layer_level) &
+>> +			    BIT_ULL(access_bit)) {
+>> +				(*layer_masks)[access_bit] |=
+>> +					BIT_ULL(layer_level);
+>> +				handled_accesses |= BIT_ULL(access_bit);
+>> +			}
+>> +		}
+>> +	}
+>> +	return handled_accesses;
+>> +}
+>> diff --git a/security/landlock/ruleset.h b/security/landlock/ruleset.h
+>> index bb1408cc8dd2..d7d9b987829c 100644
+>> --- a/security/landlock/ruleset.h
+>> +++ b/security/landlock/ruleset.h
+>> @@ -235,4 +235,14 @@ landlock_get_fs_access_mask(const struct landlock_ruleset *const ruleset,
+>>   		LANDLOCK_SHIFT_ACCESS_FS) &
+>>   	       LANDLOCK_MASK_ACCESS_FS;
+>>   }
+>> +
+>> +bool unmask_layers(const struct landlock_rule *const rule,
+>> +		   const access_mask_t access_request,
+>> +		   layer_mask_t (*const layer_masks)[LANDLOCK_NUM_ACCESS_FS]);
+>> +
+>> +access_mask_t
+>> +init_layer_masks(const struct landlock_ruleset *const domain,
+>> +		 const access_mask_t access_request,
+>> +		 layer_mask_t (*const layer_masks)[LANDLOCK_NUM_ACCESS_FS]);
+>> +
+>>   #endif /* _SECURITY_LANDLOCK_RULESET_H */
+>> --
+>> 2.25.1
+>> 
+> .
