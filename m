@@ -2,105 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 058FB5B535B
-	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 07:16:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 515B25B5593
+	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 09:54:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229512AbiILFPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Sep 2022 01:15:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44122 "EHLO
+        id S230022AbiILHy1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Sep 2022 03:54:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbiILFPf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 01:15:35 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 513D517050;
-        Sun, 11 Sep 2022 22:15:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1662959731; x=1694495731;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=kHjZUGKOIELCEpR9rLYYd64wZk3rM2bDxxUENZDLGa4=;
-  b=SCpsh/++VumAdEK/ZbjmfxHRsVWzZngCL4Tb56EUqx8t2XoriRLpdTCk
-   eH9+SneNJwf3hM+JjHNdnSqr3qw1HZsEIRTTruLL1ACC1mYxIIAQC7L13
-   ZS1w4qqGGXP+RKMQ3Pq58+5y9kqvT26eiwnGv7rK9mlAxQRg0f16mfym9
-   5G5kAeDXFWaoP3PFfnt/SdkQyCuyH8q1okVkXBq/p0Q+rSbZuZWrwL2W/
-   cUG2riX2Dtt0qL728QQhJT78w4lMyFo/QIMGiBeVOiOWyDVpDU4v+r5rW
-   Isn3o13UZGmNhEcckXFfUrGwEUmA2S1DQh0F9ek6LaHY/Y3MfXhw1u1Jl
-   w==;
-X-IronPort-AV: E=Sophos;i="5.93,308,1654585200"; 
-   d="scan'208";a="176642009"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Sep 2022 22:15:28 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Sun, 11 Sep 2022 22:15:25 -0700
-Received: from che-lt-i67786lx.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Sun, 11 Sep 2022 22:15:21 -0700
-From:   Rakesh Sankaranarayanan <rakesh.sankaranarayanan@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
-        <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <olteanv@gmail.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <arun.ramadoss@microchip.com>
-Subject: [Patch net] net: dsa: microchip: lan937x: fix maximum frame length check
-Date:   Mon, 12 Sep 2022 10:42:28 +0530
-Message-ID: <20220912051228.1306074-1-rakesh.sankaranarayanan@microchip.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229549AbiILHyZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 03:54:25 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69E95220C5;
+        Mon, 12 Sep 2022 00:54:24 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id wc11so3647302ejb.4;
+        Mon, 12 Sep 2022 00:54:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=SKzjbw9lRJgBcel5ZxP+EuDqjzgPYYKLm1vp+TeEmao=;
+        b=n+4YDeyora0QTIWMZOdeMAMixt9nmvLKpDxfVeUUkBvF4Ex9zyX41DuUAglc2eltdf
+         LWLE0hEE/8Rs81gOvk9UAzCiZvBys0amYrLicqrFiq7hDJajaf45axUmUMcnbO5BqrHw
+         lOJl3Iw/dmztLB0bE3zWt6lg12WzgEpFLNGz4YaeGfpHpblvap+WZyGlFOvhldZGCkmu
+         fKC/3/I2muEK9Za+KRGNZ8LzYQb6RZRe2PULuWJ8/Jt2ysgxZnQ6Vt6G2t1w0HMw/JKu
+         96yUeJqgAyogw9CBKBQsahfgdBWqNoaCW4q3bz7uJo6d9F8DBcYEadpPaPvZwPX+Bnt2
+         NI5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=SKzjbw9lRJgBcel5ZxP+EuDqjzgPYYKLm1vp+TeEmao=;
+        b=sMhpKczLUSc5RvN6WUUGrP5P2INQwcCcCnVDUlbjWtwoITynnln1VCeVbNEAmunvbC
+         lzYDrPlcgGOLHXYKrIhhmNLAGAIwPzY9r5LOPa5RUHybxWuHrK/FW8Zo/lfk1a1dDsjg
+         5H1LA6N4a/rgVL5sSsNZx0FQj9doH8h9aERINSo2tp0+DqGwDBiUwpL8rK4munRWvpX8
+         yNGqUdw07lQQRmmLrH05SJd9ihiajlRQvHvdEWTZm/zw4J4uuFcc/8UM5RoXtU6GsSU2
+         A6+B3AWIStb/D1BjXy5u5ilOKog9BtuSUPpd05uuMWipPzH5GvIlbZZkUinhn6eIYSUs
+         valA==
+X-Gm-Message-State: ACgBeo2qU4PWAL1xcZivFDQmnclg2E5eU87BmnT4eyxEiuLU3LnzeVti
+        vCfcuh7FmMr88nNbYeFg3U4=
+X-Google-Smtp-Source: AA6agR7gMSwOQYP5VpYpYYXjbopehskWuSprT2EJjXvJiS/M74ODUvx6J/6HlC3OTPnt33bw3Arcsw==
+X-Received: by 2002:a17:906:dc93:b0:742:133b:42c3 with SMTP id cs19-20020a170906dc9300b00742133b42c3mr18127101ejc.502.1662969262925;
+        Mon, 12 Sep 2022 00:54:22 -0700 (PDT)
+Received: from debian ([89.238.191.199])
+        by smtp.gmail.com with ESMTPSA id md10-20020a170906ae8a00b0073d753759fasm4052753ejb.172.2022.09.12.00.54.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Sep 2022 00:54:22 -0700 (PDT)
+Date:   Sun, 11 Sep 2022 13:54:52 +0200
+From:   Richard Gobert <richardbgobert@gmail.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Martin KaFai Lau <kafai@fb.com>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, linux-wpan@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
+Subject: Re: [PATCH 3/4] net-next: frags: add inetpeer frag_mem tracking
+Message-ID: <20220911115447.GA101734@debian>
+References: <20220829114648.GA2409@debian>
+ <CANn89iLkfMUK8n5w00naST9J+KrLaAqqg2r0X9Sd-L0XzpLzSQ@mail.gmail.com>
+ <20220901150115.GB31767@debian>
+ <CANn89iKMe7WZS-Q4rzqEUUD+ANL6Fmb6BnFo8TvX7y_EVi=HOw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANn89iKMe7WZS-Q4rzqEUUD+ANL6Fmb6BnFo8TvX7y_EVi=HOw@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DATE_IN_PAST_12_24,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Maximum frame length check is enabled in lan937x switch on POR, But it
-is found to be disabled on driver during port setup operation. Due to
-this, packets are not dropped when transmitted with greater than configured
-value. For testing, setup made for lan1->lan2 transmission and configured
-lan1 interface with a frame length (less than 1500 as mentioned in
-documentation) and transmitted packets with greater than configured value.
-Expected no packets at lan2 end, but packets observed at lan2.
+On Thu, Sep 01, 2022 at 09:06:59AM -0700, Eric Dumazet wrote:
+> It can be disabled if needed, by changing ipfrag_max_dist sysctl.
 
-Based on the documentation, packets should get discarded if the actual
-packet length doesn't match the frame length configured. Frame length check
-should be disabled only for cascaded ports due to tailtags.
+I understand your reluctance to add another dependency on inetpeer.
 
-This feature was disabled on ksz9477 series due to ptp issue, which is
-not in lan937x series. But since lan937x took ksz9477 as base, frame
-length check disabled here as well. Patch added to remove this portion
-from port setup so that maximum frame length check will be active for
-normal ports.
+> Quite frankly IPv4 reassembly unit is a toy, I am always surprised
+> some applications are still relying on IP fragments.
 
-Fixes: 55ab6ffaf378 ("net: dsa: microchip: add DSA support for microchip LAN937x")
-Signed-off-by: Rakesh Sankaranarayanan <rakesh.sankaranarayanan@microchip.com>
----
- drivers/net/dsa/microchip/lan937x_main.c | 4 ----
- 1 file changed, 4 deletions(-)
-
-diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
-index 4867aa62dd4c..7d06488d1eea 100644
---- a/drivers/net/dsa/microchip/lan937x_main.c
-+++ b/drivers/net/dsa/microchip/lan937x_main.c
-@@ -296,10 +296,6 @@ void lan937x_port_setup(struct ksz_device *dev, int port, bool cpu_port)
- 		lan937x_port_cfg(dev, port, REG_PORT_CTRL_0,
- 				 PORT_TAIL_TAG_ENABLE, true);
- 
--	/* disable frame check length field */
--	lan937x_port_cfg(dev, port, REG_PORT_MAC_CTRL_0, PORT_CHECK_LENGTH,
--			 false);
--
- 	/* set back pressure for half duplex */
- 	lan937x_port_cfg(dev, port, REG_PORT_MAC_CTRL_1, PORT_BACK_PRESSURE,
- 			 true);
--- 
-2.34.1
-
+Do you think there's any room for improvement in IP fragments? I
+believe that it is possible to make frags less fragile and prone
+to overload in real-world scenarios.
