@@ -1,98 +1,120 @@
 Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from out1.vger.email (unknown [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D2065B4C68
-	for <lists+netdev@lfdr.de>; Sun, 11 Sep 2022 09:00:57 +0200 (CEST)
+Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
+	by mail.lfdr.de (Postfix) with ESMTP id 38D6C5B4CA4
+	for <lists+netdev@lfdr.de>; Sun, 11 Sep 2022 10:37:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229558AbiIKGzI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Sep 2022 02:55:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47300 "EHLO
+        id S230005AbiIKIgE convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 11 Sep 2022 04:36:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229651AbiIKGzH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Sep 2022 02:55:07 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 916B61E3E6
-        for <netdev@vger.kernel.org>; Sat, 10 Sep 2022 23:55:06 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id v4so5394002pgi.10
-        for <netdev@vger.kernel.org>; Sat, 10 Sep 2022 23:55:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
-         :subject:date;
-        bh=B/bzVap7w2nbpPLUVaGrgo7Id2TJpqaHDpbbBhcEalA=;
-        b=e407K0bLjiLxvg0lhYQ4/47iPzNzRs0KgiQEwvDYjXQ1RQBr02JLGxLl3bCiNj12mw
-         HBU5eC44IHysEluHU7+WyZcHKlxy8UHFc46dECI7jFleIS635prk1lXSdbI3X1o0AQMF
-         Pt09VY3i+tm1mst8t88H85malW0LwI3nt/iS42gASzW061U3ObKUsKPoBEL28qWmqpeD
-         GGdev900tTpG0k3YXundT6GK1r6lqVzgy6yIz1AmBYPzAZUxjBCY2zhbI8dl5a/lBDqN
-         0Q5DwxPtlfsi+rYlDK+LSI+2wJAjwpIQIUm+PmwWxPHdx63TQyIgYFmGbD3y/19SbRtH
-         mRqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=B/bzVap7w2nbpPLUVaGrgo7Id2TJpqaHDpbbBhcEalA=;
-        b=cwyR1e3xiv9vLFbGzAsMUS+DmjuZekRlJe0b0ajshBjsxZwRbjnp0ttDRUFRlmZ3+P
-         FZRQPqYgEK038SHmeedR0iQk5oTYvefpzZ3M92vNTx1XS32t2a813aiCQd72dpAoFdWL
-         uygCyd12mOCzfdgnuIfec1GRSbW1S2STP4RabnhvI6en6CvF+ZnRnwbS9lEaBs/x3gTr
-         dgTd9vDSfSLeAIRF2tczo168cqN5EuFR2k0CsEHEytH/z2YIa4fPANMigBit5N25cZUQ
-         KP6Vq7892h7gvTzCYlfXtauzc/k9u9GppBd/Ec0EjlD9xXh+wGQSLlQnHnLADmMbzGQf
-         446Q==
-X-Gm-Message-State: ACgBeo0RWBBA3x051VM3cxzKG8q+JOgZhWtDGDwGPgShLR96aU3t5BYF
-        G9RED/Vzgo4j99L6p5heW9k9cVVvCQCs9BNU5Zg=
-X-Google-Smtp-Source: AA6agR4YZIxYwdKWlufYbX+QrB7Zrpw+w83vdcU2UCxh3eBmpfnBoORD32yxZhWaiHK7P3HQuuBzVdRRGo6sWgJKH34=
-X-Received: by 2002:a63:ea05:0:b0:434:9dc1:a59f with SMTP id
- c5-20020a63ea05000000b004349dc1a59fmr19303713pgi.374.1662879305190; Sat, 10
- Sep 2022 23:55:05 -0700 (PDT)
+        with ESMTP id S229925AbiIKIft (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Sep 2022 04:35:49 -0400
+Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [207.211.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90DAE3123A
+        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 01:35:43 -0700 (PDT)
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-269-TZ8FUoXYOmOqVVZ__SK0Fw-1; Sun, 11 Sep 2022 04:35:28 -0400
+X-MC-Unique: TZ8FUoXYOmOqVVZ__SK0Fw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DC2BF85A589;
+        Sun, 11 Sep 2022 08:35:27 +0000 (UTC)
+Received: from hog (unknown [10.39.192.71])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 8A02D4011A37;
+        Sun, 11 Sep 2022 08:35:26 +0000 (UTC)
+Date:   Sun, 11 Sep 2022 10:35:17 +0200
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     Emeel Hakim <ehakim@nvidia.com>
+Cc:     dsahern@kernel.org, netdev@vger.kernel.org, raeds@nvidia.com,
+        tariqt@nvidia.com
+Subject: Re: [PATCH main v4 1/2] macsec: add Extended Packet Number support
+Message-ID: <Yx2dxUxOt1Dlpy7f@hog>
+References: <20220908105338.30589-1-ehakim@nvidia.com>
 MIME-Version: 1.0
-Received: by 2002:a17:90b:1e03:0:0:0:0 with HTTP; Sat, 10 Sep 2022 23:55:04
- -0700 (PDT)
-Reply-To: daviesmarian100@gmail.com
-From:   Marian <afatchaoissa7@gmail.com>
-Date:   Sun, 11 Sep 2022 06:55:04 +0000
-Message-ID: <CALqa9Rb0gqytuPi+RV58gQ4WptAUaNM-XZLYFpqu7Fp6vGy6ZQ@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.2 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.4919]
-        * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:533 listed in]
-        [list.dnswl.org]
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [daviesmarian100[at]gmail.com]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [afatchaoissa7[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [afatchaoissa7[at]gmail.com]
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  3.1 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+In-Reply-To: <20220908105338.30589-1-ehakim@nvidia.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: queasysnail.net
+Content-Type: text/plain; charset=UTF-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+2022-09-08, 13:53:37 +0300, Emeel Hakim wrote:
+> This patch adds support for extended packet number (XPN).
+> XPN can be configured by passing 'xpn on' as part of the ip
+
+"cipher ..."
+
+> link add command using macsec type.
+> In addition, using 'xpn' keyword instead of the 'pn', passing a 12
+> bytes salt using the 'salt' keyword and passing short secure channel
+> id (ssci) using the 'ssci' keyword as part of the ip macsec command
+> is required (see example).
+> 
+> e.g:
+> 
+> create a MACsec device on link eth0 with enabled xpn
+>   # ip link add link eth0 macsec0 type macsec port 11
+> 	encrypt on xpn on
+
+                   cipher ...
+
+[...]
+> @@ -392,9 +439,21 @@ static int do_modify_nl(enum cmd c, enum macsec_nl_commands cmd, int ifindex,
+>  	addattr8(&req.n, MACSEC_BUFLEN, MACSEC_SA_ATTR_AN, sa->an);
+>  
+>  	if (c != CMD_DEL) {
+> -		if (sa->pn)
+> -			addattr32(&req.n, MACSEC_BUFLEN, MACSEC_SA_ATTR_PN,
+> -				  sa->pn);
+> +		if (sa->xpn) {
+> +			if (sa->pn.pn64)
+> +				addattr64(&req.n, MACSEC_BUFLEN, MACSEC_SA_ATTR_PN,
+> +					  sa->pn.pn64);
+> +			if (sa->salt[0] != '\0')
+
+                        if (sa->salt_set)
+
+> +				addattr_l(&req.n, MACSEC_BUFLEN, MACSEC_SA_ATTR_SALT,
+> +					  sa->salt, MACSEC_SALT_LEN);
+> +			if (sa->ssci != 0)
+
+                        if (sa->ssci_set)
+
+> +				addattr32(&req.n, MACSEC_BUFLEN, MACSEC_SA_ATTR_SSCI,
+> +					  sa->ssci);
+> +		} else {
+> +			if (sa->pn.pn32)
+> +				addattr32(&req.n, MACSEC_BUFLEN, MACSEC_SA_ATTR_PN,
+> +					  sa->pn.pn32);
+> +		}
+
+[...]
+> @@ -1251,6 +1339,7 @@ static void usage(FILE *f)
+>  		"                  [ send_sci { on | off } ]\n"
+>  		"                  [ end_station { on | off } ]\n"
+>  		"                  [ scb { on | off } ]\n"
+> +		"                  [ xpn { on | off } ]\n"
+
+That should be the new "cipher" options instead of "xpn on/off".
+
+>  		"                  [ protect { on | off } ]\n"
+>  		"                  [ replay { on | off} window { 0..2^32-1 } ]\n"
+>  		"                  [ validate { strict | check | disabled } ]\n"
+
 -- 
-Hello
+Sabrina
+
