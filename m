@@ -2,85 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C861E5B4EB8
-	for <lists+netdev@lfdr.de>; Sun, 11 Sep 2022 14:19:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98FAD5B4ED1
+	for <lists+netdev@lfdr.de>; Sun, 11 Sep 2022 14:42:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230247AbiIKMTN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Sep 2022 08:19:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49786 "EHLO
+        id S230274AbiIKMl5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Sep 2022 08:41:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230116AbiIKMTM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Sep 2022 08:19:12 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BB3C2ED49
-        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 05:19:10 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id t5so9018885edc.11
-        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 05:19:10 -0700 (PDT)
+        with ESMTP id S230103AbiIKMlz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Sep 2022 08:41:55 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A098C32ECD
+        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 05:41:52 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id y17so9241015ejo.6
+        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 05:41:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=ESNqHKzFYRbLllUT/xcQbfHQ8QXquEYLd9ELgyLatYk=;
-        b=hJuefVBhDOKbSlQyYiazURVRh/Nb88mHm5TVWlL6VefcMrKw35Q28GhrZ/PCNCX9e/
-         gF/DjaSTm4jOK1Umernv84uFlU03Zp0JaBAAwjsft5C2OhiS9hlgT0x1zy0tpURQYWpl
-         lYePskarJuZyf2ypHi5ncZzALjeYics3vyQqWP9509i+bG4TgvdJ4SBdCdXbe7j9kQzi
-         0ds9u01pjNnn1ABiteld3V22AnlCq/El9V+Mhuu7jkkYw3E3eeMrCYDzAypC1kL6g+0O
-         cLOhOMmH/9YBcA1A/GQuQtmTKkWvahNEv3sLg1jGZG2bU1CChHYLJmGT8tgFRSsci6tS
-         9FOA==
+        h=to:subject:message-id:date:from:sender:mime-version:from:to:cc
+         :subject:date;
+        bh=VXlBS00/GuegNihbP9LSEb4G+N9nTOzbXeMOhsINvjI=;
+        b=qFxBM+4WmE84b9kc42AjML7y/u79qDnKy/I3R05YmDaHugd3sJm0ErbEJibh/jSPji
+         6y1bg0o+pu35H3n2Re5/9Cq+QgAEL22L1Xab1dCakQu6XF/iVZKGbL5N2XXly/eqTnr9
+         JkrloLvEIL0pAPJ1FUx9fhbHlyPMfgq5M7J2bzOlu7WXA+zu9HLvgoiQafb9+8Uf2bDk
+         ovpSEVBiurmmku5vGgI41iMuvBBDkutOwnL0nw7IlmU6f0/PMOueGk+UKgsPulwLQNyq
+         UYfQAY9yWKkeCpWupwq4TcOhrqapeUbZ7J5gltMMKVtMCBOXR0iT93jPs/41qEhHBU6A
+         wJzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=ESNqHKzFYRbLllUT/xcQbfHQ8QXquEYLd9ELgyLatYk=;
-        b=bbsK1/EK2q6bQKlFwRSpN7zVv5tOGzd121MRwODfmk0Egw7xdTdaa3j9Zd/9WArYOj
-         +IUddGbq6c5zjFPYoE0NLY1cRV3Sf2TYa6vV5BqQ6J3vbad/Dwfbwp1kdPUuLEai+xWO
-         blYoigu7gQMv5AO3jYXkKvk8VVoll8vxRtT7NxoSUtxt6yG50Od5IIT1plu2dEN/ClU8
-         UfPMwKUA2Uo8zDPO8+mJlJJ2EMsICdMAKYQjkPtuJIUpQKYXedX5u3ux8Lk+r52zgh8Q
-         SgBUhX6zXvhTNoeNRZWVe0sPqj78mSZ1lbs3Sth26edARTcqhXp572letGE8VW7/Hpz5
-         Q+AQ==
-X-Gm-Message-State: ACgBeo10J3ySugY4W0x+VqxIOZeFI0mNwFemo3qzOxw8L9H7pGV2gNw0
-        pNa41B/awij48j64ZWTSjUb1Pi/QfEKnMVlT
-X-Google-Smtp-Source: AA6agR5nmGFg+8Hjqahjsc8MnyajDH9X1MZsIdwrVW5M4cihH+x8IYhT6SNQ54VlfBYFNDAQS4j2tA==
-X-Received: by 2002:aa7:d4cd:0:b0:44e:e3ab:a995 with SMTP id t13-20020aa7d4cd000000b0044ee3aba995mr18352703edr.166.1662898748741;
-        Sun, 11 Sep 2022 05:19:08 -0700 (PDT)
-Received: from skbuf ([188.27.184.197])
-        by smtp.gmail.com with ESMTPSA id l19-20020a170906645300b0073d9630cbafsm2854539ejn.126.2022.09.11.05.19.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 11 Sep 2022 05:19:07 -0700 (PDT)
-Date:   Sun, 11 Sep 2022 15:19:05 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Mattias Forsblad <mattias.forsblad@gmail.com>,
-        netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net-next v8 1/6] net: dsa: mv88e6xxx: Add RMU enable for
- select switches.
-Message-ID: <20220911121905.hhjauibp237r6dgk@skbuf>
-References: <20220909085138.3539952-1-mattias.forsblad@gmail.com>
- <20220909085138.3539952-2-mattias.forsblad@gmail.com>
- <ee6ac1f4-4c80-948e-4711-7e7843329a16@gmail.com>
+        h=to:subject:message-id:date:from:sender:mime-version
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=VXlBS00/GuegNihbP9LSEb4G+N9nTOzbXeMOhsINvjI=;
+        b=aoXppnrhjse0wexMLMZShfB+S9rTAJ3A+ILpE93sZxJ91OM2TLzyGlCWkkzqwZaKVw
+         x6WqY937n45YQmZWq6g7uhDAgGGsgLI+w0bA87PppPRugsUBaXW9uleAHrH4qyTeg1R2
+         Yh48lmGqNW8om1F43b4bhTYD2Ly8k4hFXh4S5uimt/jesc5nxtVgjaIzPFaDIynTF85D
+         HgHPay2KIcRe9L665urt08cEpGr1+8fLgTIJrIGvuThSFBuCjRQr8jsTlmcG5QoUkdcK
+         yIeS1gZ0ih9oMHCRwMSiWnFOrxg0xZEqzVsM1z1tEd9HEQpzwnJwGseOYvQJk4q5z/cA
+         qCqQ==
+X-Gm-Message-State: ACgBeo16W6SrSdb0XDxGnHfmMB7QDV7SQiZR6iSUEfiMB4smUGpMZCdv
+        jYaLtXs2fo7PHA7W1/ZoT8MCMCVpy3ObgHw+1r8=
+X-Google-Smtp-Source: AA6agR4HwaGiVvzSAOcg4mei3ZtJ+TXfr9Q0likya65KAprVU9U15MhWXWOAlk2p7qnWIdCDEWUMbl5oAnUWNDL927c=
+X-Received: by 2002:a17:907:2d14:b0:779:fa1d:1aac with SMTP id
+ gs20-20020a1709072d1400b00779fa1d1aacmr7440962ejc.585.1662900110865; Sun, 11
+ Sep 2022 05:41:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ee6ac1f4-4c80-948e-4711-7e7843329a16@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Sender: peppersben3@gmail.com
+Received: by 2002:a05:6402:1d55:b0:451:74ca:49f2 with HTTP; Sun, 11 Sep 2022
+ 05:41:50 -0700 (PDT)
+From:   Mrs Aisha Gaddafi <aishagaddafiaisha20@gmail.com>
+Date:   Sun, 11 Sep 2022 05:41:50 -0700
+X-Google-Sender-Auth: ddOE6hVQREXuYiUVQ-X5lPaQTfo
+Message-ID: <CAF6h66rvkmAjBKqNY8qmimnWPJ+gmWOarcZsvYZvTX7kYTfPyQ@mail.gmail.com>
+Subject: GOOD DAY MY DEAR.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=7.6 required=5.0 tests=BAYES_99,BAYES_999,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORM_FRAUD_5,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,LOTS_OF_MONEY,MILLION_HUNDRED,
+        MILLION_USD,MONEY_FORM_SHORT,MONEY_FRAUD_5,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,SUBJ_ALL_CAPS,T_FILL_THIS_FORM_SHORT,
+        T_HK_NAME_FM_MR_MRS,T_SCC_BODY_TEXT_LINE,UNDISC_MONEY,URG_BIZ
+        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2a00:1450:4864:20:0:0:0:632 listed in]
+        [list.dnswl.org]
+        *  3.5 BAYES_99 BODY: Bayes spam probability is 99 to 100%
+        *      [score: 1.0000]
+        *  0.2 BAYES_999 BODY: Bayes spam probability is 99.9 to 100%
+        *      [score: 1.0000]
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [aishagaddafiaisha20[at]gmail.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [peppersben3[at]gmail.com]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.5 SUBJ_ALL_CAPS Subject is all capitals
+        *  0.0 MILLION_USD BODY: Talks about millions of dollars
+        *  0.0 MILLION_HUNDRED BODY: Million "One to Nine" Hundred
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        *  0.0 LOTS_OF_MONEY Huge... sums of money
+        *  0.0 T_HK_NAME_FM_MR_MRS No description available.
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  0.6 URG_BIZ Contains urgent matter
+        *  0.0 T_FILL_THIS_FORM_SHORT Fill in a short form with personal
+        *      information
+        *  2.0 MONEY_FORM_SHORT Lots of money if you fill out a short form
+        *  0.0 UNDISC_MONEY Undisclosed recipients + money/fraud signs
+        *  0.0 MONEY_FRAUD_5 Lots of money and many fraud phrases
+        *  0.8 FORM_FRAUD_5 Fill a form and many fraud phrases
+X-Spam-Level: *******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 09, 2022 at 10:34:35AM -0700, Florian Fainelli wrote:
-> > +	int (*rmu_enable)(struct mv88e6xxx_chip *chip, int port);
-> 
-> Change the argument name to upstream_port to match the implementation for
-> each chip that you are adding?
+I'm writing this letter with tears  from my heart. Please let me use
+this medium to create a mutual conversation with you seeking for your
+acceptance towards investing in your country under your management as
+my  business partner, My name is Aisha  Gaddafi and presently living
+in Oman, i am a Widow and single Mother with three Children, the only
+biological Daughter of late Libyan President (Late Colonel Muammar
+Gaddafi) and presently i am under political asylum protection by the
+Omani Government.
 
-Or the implementations to "port", for that matter. But yes, please keep consistency.
+I have funds worth " Seven Million Five Hundred Thousand United State
+Dollars" [$7.500.000.00 US Dollars] which I want to entrust to you for
+investment projects in your country. If you are willing to handle this
+project on my behalf, kindly reply urgent to enable me provide you
+more details to start the transfer process, I will appreciate your
+urgent response through my private email address below:
+
+aishagaddafiaisha20@gmail.com
+
+You can know more through the BBC news links below:
+
+http://www.bbc.com/news/world-africa-19966059
+
+
+Thanks
+Yours Truly Aisha
+aishagaddafiaisha20@gmail.com
