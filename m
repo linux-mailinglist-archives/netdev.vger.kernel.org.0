@@ -2,146 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E83F5B5084
-	for <lists+netdev@lfdr.de>; Sun, 11 Sep 2022 20:20:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37E665B50F6
+	for <lists+netdev@lfdr.de>; Sun, 11 Sep 2022 21:59:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229562AbiIKSUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Sep 2022 14:20:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40286 "EHLO
+        id S229499AbiIKT6i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Sep 2022 15:58:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229604AbiIKSUK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Sep 2022 14:20:10 -0400
-Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E03A24BE1;
-        Sun, 11 Sep 2022 11:20:08 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id 6A8BB5C0126;
-        Sun, 11 Sep 2022 14:20:05 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Sun, 11 Sep 2022 14:20:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
-        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
-         s=fm1; t=1662920405; x=1663006805; bh=tIkFduerBzhi1PO+ItrLMhk8C
-        yvYof/UzzFiFOoLjiA=; b=B/1y9hArIf0tWv1GZhy++iSznnHaEztbnlSCAzgfB
-        T/flb+nCN/s804fuuQLnfAi8OFReB9WDIBGv6VBtQOxlVmKrcFTk+fH5DRSXdc8J
-        DRQMnwct/WcS/uYuol8dUS1dFZyJaHJ5ykqjtozsx12WmJXQgYge+D7WWVPaY66n
-        WN2ixuTySc9Mc7s0CUrokVN0bpKVE76JZ+Hv+NRXaFmjGCJ+76/YybkrZJj5cSmM
-        FQq4KxBVYt/fqDZux0NJvN95JxlXxu5yJ05oKM5BMiSftOyZkWvTvoHawCdjsSlx
-        YiEbTXudC16oHJqgcG3YPqwPwjxidliv8VY6bWUBXvghg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:message-id
-        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
-        1662920405; x=1663006805; bh=tIkFduerBzhi1PO+ItrLMhk8CyvYof/UzzF
-        iFOoLjiA=; b=vU7o7uMmWpyEnvxr5mfLiqJ/Sdv2CGRzANetYo/Rk1+AF0k4xT3
-        SOz6jzq8Foq71rgQ//K4xPBG7QwK3TASeRFyzz9XuSkdSD1zyGTKKrhqGwurP43y
-        iyCm7VKjpgk52xpqxz4rJplxz0pVU82GlA4F9lV7LLblnD76u+GkpAMyx66GQ9M0
-        9DVfYdOe6YapbrvVv/av0zmMYVx0dAr2jI9pnc7koTIEzhQoc00cLWmfXzG84VEA
-        lrAKPj7a3Ade7gvPF9j+40/KTFuCn/b/2mgOWhMjkblm3V41oXzOnAFnByfqvzg7
-        CMpcakxPOw9d+KUbHMM9JFGFdFOBCEmusqQ==
-X-ME-Sender: <xms:1SYeY3xcnTT9zWuxSDJVFTcj5Yq7rwMJ-gcDzxlIsS3gLdT-_b5s7A>
-    <xme:1SYeY_TkXdrYKlB86srQUZ4as15x5ifHfP_tpgxvMo9stFHhG1Gwwnzdwaq-x-GEf
-    9LzQoiEjEwbGqFfPQ>
-X-ME-Received: <xmr:1SYeYxUM_vW0N5nJe0UFrhBBvJnSOdzkTUTjQaBXctY5CpvS5T462YEQS7_-T0LFgIsZSDO4fZRIerZqlKYWjXrzcDx4rQZFfPgBlTQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfedutddguddvjecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecufghrlhcuvffnffculdejtddmnecujfgurhephf
-    fvvefufffkofgggfestdekredtredttdenucfhrhhomhepffgrnhhivghlucgiuhcuoegu
-    gihusegugihuuhhurdighiiiqeenucggtffrrghtthgvrhhnpedvgefgtefgleehhfeufe
-    ekuddvgfeuvdfhgeeljeduudfffffgteeuudeiieekjeenucevlhhushhtvghrufhiiigv
-    pedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegugihusegugihuuhhurdighiii
-X-ME-Proxy: <xmx:1SYeYxhvRZpLvXzWYnYtsiqp8yeY8P5Xucvs7WWRLqraE35OciNfqA>
-    <xmx:1SYeY5Chw4cCjt03HM-RhSI_B03hsoxPi4dd446BHrT5ul75itbbmg>
-    <xmx:1SYeY6LGGeO24e9uFyP5VsUaAjSX7wRnoslH-j4rXx-tPf8VJ09Zfw>
-    <xmx:1SYeY-LFFt0cjiZCQxZXme3na_zU8lSJzuAieDB04YDKkRNYU15d1g>
-Feedback-ID: i6a694271:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 11 Sep 2022 14:20:04 -0400 (EDT)
-From:   Daniel Xu <dxu@dxuuu.xyz>
-To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, memxor@gmail.com
-Cc:     Daniel Xu <dxu@dxuuu.xyz>, pablo@netfilter.org, fw@strlen.de,
-        toke@kernel.org, martin.lau@linux.dev,
-        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next] bpf: Move nf_conn extern declarations to filter.h
-Date:   Sun, 11 Sep 2022 12:19:53 -0600
-Message-Id: <c4cb11c8ffe732b91c175a0fc80d43b2547ca17e.1662920329.git.dxu@dxuuu.xyz>
-X-Mailer: git-send-email 2.37.1
+        with ESMTP id S229488AbiIKT6h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Sep 2022 15:58:37 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1628A27DD9
+        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 12:58:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=dBXcTqRXIyzn6/VpGTEqpFLugw8xANRV30xtPRjF4JM=; b=kgEnqC12NPmUW9Ab1FHNXV48HK
+        fJ5s/kqjoO97QIJAGaJ1ipS1CmsJPmyoyRjWBHvhhuXePuWMqk1PXWZXqMkQbnoDNlB74lrHLq17f
+        DukCVxbGvebqKAnLEJkljmbPBHBQZvQB9/IuIpse5n/2qTjKdLFfxeUTZwTco+uF3L0fde1xlyIG0
+        jiEST458X8TcQJwuHtd6FeBAkte3JlTc22WMx7RV9qyDE5uCwzKOmJX1ehDeLLjouaFnbRnCw6gqy
+        e4Wmh3qF9G7KLGhapLBTNoxmTkxV1j84c6fyClQoq8expCmYMriR6RQtXubHmuQ97qMRQiDqiwerS
+        R7wO7KFQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34244)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1oXT5z-0000uu-NL; Sun, 11 Sep 2022 20:58:23 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1oXT5r-0007P8-G9; Sun, 11 Sep 2022 20:58:15 +0100
+Date:   Sun, 11 Sep 2022 20:58:15 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Daniel Golle <daniel@makrotopia.org>
+Cc:     linux-mediatek@lists.infradead.org, netdev@vger.kernel.org,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Alexander 'lynxis' Couzens <lynxis@fe80.eu>
+Subject: Re: [PATCH] net: dsa: mt7530: add support for in-band link status
+Message-ID: <Yx4910YC6/Y7ghfm@shell.armlinux.org.uk>
+References: <YxvkbO9PoNi86BZa@makrotopia.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FROM_SUSPICIOUS_NTLD,
-        FROM_SUSPICIOUS_NTLD_FP,PDS_OTHER_BAD_TLD,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YxvkbO9PoNi86BZa@makrotopia.org>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We're seeing the following new warnings on netdev/build_32bit and
-netdev/build_allmodconfig_warn CI jobs:
+Hi,
 
-    ../net/core/filter.c:8608:1: warning: symbol
-    'nf_conn_btf_access_lock' was not declared. Should it be static?
-    ../net/core/filter.c:8611:5: warning: symbol 'nfct_bsa' was not
-    declared. Should it be static?
+Just two points please:
 
-Fix by ensuring extern declaration is present while compiling filter.o.
+On Sat, Sep 10, 2022 at 02:12:12AM +0100, Daniel Golle wrote:
+> +static void
+> +mt7531_sgmii_pcs_get_state_inband(struct mt7530_priv *priv, int port,
+> +				  struct phylink_link_state *state)
+> +{
+> +	unsigned int val;
+> +
+> +	val = mt7530_read(priv, MT7531_PCS_CONTROL_1(port));
+> +	state->link = !!(val & MT7531_SGMII_LINK_STATUS);
+> +	if (!state->link)
+> +		return;
+> +
+> +	if (state->interface == PHY_INTERFACE_MODE_2500BASEX)
+> +		state->speed = SPEED_2500;
+> +	else
+> +		state->speed = SPEED_1000;
+> +
+> +	state->duplex = DUPLEX_FULL;
+> +	state->pause = 0;
 
-Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
----
- include/linux/filter.h                   | 6 ++++++
- include/net/netfilter/nf_conntrack_bpf.h | 7 +------
- 2 files changed, 7 insertions(+), 6 deletions(-)
+MLO_PAUSE_NONE please.
 
-diff --git a/include/linux/filter.h b/include/linux/filter.h
-index 527ae1d64e27..96de256b2c8d 100644
---- a/include/linux/filter.h
-+++ b/include/linux/filter.h
-@@ -567,6 +567,12 @@ struct sk_filter {
- 
- DECLARE_STATIC_KEY_FALSE(bpf_stats_enabled_key);
- 
-+extern struct mutex nf_conn_btf_access_lock;
-+extern int (*nfct_bsa)(struct bpf_verifier_log *log, const struct btf *btf,
-+		       const struct btf_type *t, int off, int size,
-+		       enum bpf_access_type atype, u32 *next_btf_id,
-+		       enum bpf_type_flag *flag);
-+
- typedef unsigned int (*bpf_dispatcher_fn)(const void *ctx,
- 					  const struct bpf_insn *insnsi,
- 					  unsigned int (*bpf_func)(const void *,
-diff --git a/include/net/netfilter/nf_conntrack_bpf.h b/include/net/netfilter/nf_conntrack_bpf.h
-index a61a93d1c6dc..cf2c0423d174 100644
---- a/include/net/netfilter/nf_conntrack_bpf.h
-+++ b/include/net/netfilter/nf_conntrack_bpf.h
-@@ -5,6 +5,7 @@
- 
- #include <linux/bpf.h>
- #include <linux/btf.h>
-+#include <linux/filter.h>
- #include <linux/kconfig.h>
- #include <linux/mutex.h>
- 
-@@ -14,12 +15,6 @@
- extern int register_nf_conntrack_bpf(void);
- extern void cleanup_nf_conntrack_bpf(void);
- 
--extern struct mutex nf_conn_btf_access_lock;
--extern int (*nfct_bsa)(struct bpf_verifier_log *log, const struct btf *btf,
--		       const struct btf_type *t, int off, int size,
--		       enum bpf_access_type atype, u32 *next_btf_id,
--		       enum bpf_type_flag *flag);
--
- #else
- 
- static inline int register_nf_conntrack_bpf(void)
+Also, please set state->an_complete appropriately.
+
+
 -- 
-2.37.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
