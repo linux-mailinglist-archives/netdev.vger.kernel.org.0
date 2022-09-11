@@ -2,73 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 072705B4CD0
-	for <lists+netdev@lfdr.de>; Sun, 11 Sep 2022 11:03:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E22825B4CD5
+	for <lists+netdev@lfdr.de>; Sun, 11 Sep 2022 11:03:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230038AbiIKJCz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Sep 2022 05:02:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48852 "EHLO
+        id S229991AbiIKJDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Sep 2022 05:03:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230056AbiIKJCs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Sep 2022 05:02:48 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C68BC39BB8;
-        Sun, 11 Sep 2022 02:02:45 -0700 (PDT)
-Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MQNtB2JsbzNm9f;
-        Sun, 11 Sep 2022 16:58:10 +0800 (CST)
-Received: from cgs.huawei.com (10.244.148.83) by
- kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sun, 11 Sep 2022 17:02:42 +0800
-From:   Gaosheng Cui <cuigaosheng1@huawei.com>
-To:     <gregory.greenman@intel.com>, <kvalo@kernel.org>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <luciano.coelho@intel.com>,
-        <johannes.berg@intel.com>, <cuigaosheng1@huawei.com>
-CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: [PATCH 2/2] iwlwifi: remove unused no_sleep_autoadjust declaration
-Date:   Sun, 11 Sep 2022 17:02:41 +0800
-Message-ID: <20220911090241.3207201-3-cuigaosheng1@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220911090241.3207201-1-cuigaosheng1@huawei.com>
-References: <20220911090241.3207201-1-cuigaosheng1@huawei.com>
+        with ESMTP id S229967AbiIKJDl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Sep 2022 05:03:41 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C01A39B88;
+        Sun, 11 Sep 2022 02:03:40 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id iw17so5858274plb.0;
+        Sun, 11 Sep 2022 02:03:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:subject:cc:to:from:date:message-id:from:to
+         :cc:subject:date;
+        bh=Kr6/Om/0NREnjozpuGQOaVHKHAHxskJmGNV3oyHv3K8=;
+        b=msXX4pYXfjyDfjIuaiOnniF6JthsWkmdTST+DH5mh92HWV3HgPnM1O/iQyb6LKfWaV
+         fNtwT1sSXt9muX/OE7q5mZMwsFjxf7xTh/rtfJ4CCPRRHonLkdWWOBHG3LPRBYufWL/Z
+         HPlBrEIIDhHxcJNgy+6FslrCUO9OWRkEnsKCe0DptNcBWb0wUpGc9yJs4Az1Y0JPiYGv
+         X1tlWjbHZlUET+j+F00TyCNmo2imDrcK2UkHq9eLRO+E+4Xb7umTFXXEnX38Kdxm5CfU
+         5mvizvX+RtMvBDMKb/sE/mq4zOEBVjr/U0hrglC4ot3mUuxS6S4NZmjgd5l0Tv0PXCRF
+         X8vg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:subject:cc:to:from:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=Kr6/Om/0NREnjozpuGQOaVHKHAHxskJmGNV3oyHv3K8=;
+        b=WeOtL2iKRV9JXyIr9Cx160cwNMy3/he6MiO2YuU+fz68HgKc1QPKn+no8vyCjHMEqx
+         JI9jcmYlNEniXWVzMS293mH8DTu+6pfep6VI6JQrOPmwOeOpHwlGyVczNS5657TM4/Gc
+         ktiy8zJ+HSYEYvofB5gGd1DJiLnLi2uvr2RuJI0GO+DFGVM/3LPM2P9IUdvLBN19l1Mw
+         He0ECV14HcbhLMKXkm6w+QI+emfSq7u9ighZeMhSi2e/d6ildQq/57B8+BHIjF+BufDW
+         8yeMzolCO+YQJJtslg1SZnv7RF+E4hhxAh1d/Y2QWt9qF4qiEeXFecr3xrxoyn9NBkb4
+         iVWA==
+X-Gm-Message-State: ACgBeo2e5RYqwo/1I+r5jEkN1uQC6sLslg6zWn6PdKrBNSowdTBe5Ncz
+        00D0V644aX/y+c+zBKAp0QzATF57xRI=
+X-Google-Smtp-Source: AA6agR7N4TxeWC4P/k4VG+pSPItVs/dpsotDSIa5iCQMJNKkdKkJOcf11TKu4P7Q+u7rLPezEzkMBg==
+X-Received: by 2002:a17:90b:1bca:b0:1fb:7eaf:8955 with SMTP id oa10-20020a17090b1bca00b001fb7eaf8955mr18622511pjb.37.1662887020055;
+        Sun, 11 Sep 2022 02:03:40 -0700 (PDT)
+Received: from localhost ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id g186-20020a6252c3000000b00541e7922fa0sm1894940pfb.191.2022.09.11.02.03.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 11 Sep 2022 02:03:38 -0700 (PDT)
+Message-ID: <631da46a.620a0220.ebe5b.2b70@mx.google.com>
+X-Google-Original-Message-ID: <20220911090336.GA14537@cgel.zte@gmail.com>
+Date:   Sun, 11 Sep 2022 09:03:36 +0000
+From:   CGEL <cgel.zte@gmail.com>
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, xu.xin16@zte.com.cn,
+        Yunkai Zhang <zhang.yunkai@zte.com.cn>
+Subject: Re: [PATCH v3 3/3] ipv4: add documentation of two sysctls about icmp
+References: <20220830091453.286285-1-xu.xin16@zte.com.cn>
+ <20220830091718.286452-1-xu.xin16@zte.com.cn>
+ <fd70dbcd-961f-9edd-78e4-23a7ef20187b@6wind.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.244.148.83]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemi500012.china.huawei.com (7.221.188.12)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <fd70dbcd-961f-9edd-78e4-23a7ef20187b@6wind.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-no_sleep_autoadjust has been removed since
-commit 84965795b290 ("iwlwifi: remove no_sleep_autoadjust"),
-so remove it.
+On Fri, Sep 02, 2022 at 12:07:11PM +0200, Nicolas Dichtel wrote:
+> 
+> Le 30/08/2022 à 11:17, cgel.zte@gmail.com a écrit :
+> > From: xu xin <xu.xin16@zte.com.cn>
+> > 
+> > Add the descriptions of the sysctls of error_cost and error_burst in
+> > Documentation/networking/ip-sysctl.rst.
+> > 
+> > Signed-off-by: xu xin (CGEL ZTE) <xu.xin16@zte.com.cn>
+> > Reviewed-by: Yunkai Zhang (CGEL ZTE) <zhang.yunkai@zte.com.cn>
+> Maybe you could resubmit this one alone?
+> 
 
-Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
----
- drivers/net/wireless/intel/iwlwifi/dvm/power.h | 2 --
- 1 file changed, 2 deletions(-)
+Okay. did.
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/dvm/power.h b/drivers/net/wireless/intel/iwlwifi/dvm/power.h
-index f38201ce1e99..1a688d942bca 100644
---- a/drivers/net/wireless/intel/iwlwifi/dvm/power.h
-+++ b/drivers/net/wireless/intel/iwlwifi/dvm/power.h
-@@ -23,6 +23,4 @@ int iwl_power_set_mode(struct iwl_priv *priv, struct iwl_powertable_cmd *cmd,
- int iwl_power_update_mode(struct iwl_priv *priv, bool force);
- void iwl_power_initialize(struct iwl_priv *priv);
- 
--extern bool no_sleep_autoadjust;
--
- #endif  /* __iwl_power_setting_h__ */
--- 
-2.25.1
-
+> 
+> Thank you,
+> Nicolas
