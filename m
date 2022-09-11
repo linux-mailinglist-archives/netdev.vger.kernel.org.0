@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B1CA15B51FD
-	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 01:41:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34C9A5B51FE
+	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 01:41:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229457AbiIKXli (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Sep 2022 19:41:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55030 "EHLO
+        id S229598AbiIKXlk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Sep 2022 19:41:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229629AbiIKXlc (ORCPT
+        with ESMTP id S229633AbiIKXlc (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 11 Sep 2022 19:41:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8026275C0
-        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 16:41:29 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E3B8275C2
+        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 16:41:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A3A6FB80AE9
-        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 23:41:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17FD8C4347C;
-        Sun, 11 Sep 2022 23:41:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 968176113E
+        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 23:41:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A859BC433C1;
+        Sun, 11 Sep 2022 23:41:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662939686;
-        bh=g8F41O8qds/2t2nbQUaJJ9tNTSGWBY+JVi0T4PfGJe0=;
+        s=k20201202; t=1662939689;
+        bh=thg1EQKgEKB5vvFJy+hOWYba3oQMf3932WX9jAMnQy0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RkMFZLEcSgflhOBhHVD5QSRUEEPzQOOeLDrC1+AEK+FiZH+wNjMmOlFj4tG42Rqin
-         MrZthv+1oAsWN2PUHpIjObSAfHaDeF+ATKivzjtfyMqwxSoJVvpVicnJeXwo1msQWI
-         0p8DkWxrgPaMU13tG9UOOLLXZAQV4EknUwEnhqeahSHc6u1dHRJsUsSV0cHQyYspWE
-         r51gL4aYNTVSRlh4kABBWHa9UsTaFdGY9H2QQKf4eE+Rgdty5yFDgTRNMvKAcSzo9U
-         BI4NhA4ifsYBQ5NNHABtH3ryZZ5CZUOIV2yn0nRm6rvtnJV57bW39KBCNaz1lR8FXp
-         T2zRzng5cp/YQ==
+        b=EfdzuD8ejdL1y3g6kYn/CDkc8c9xU5RqWb1jCIK9yP57euh6C471dYBao+sK7jfJz
+         ZnEJ+dA4PZK2jXUKuwMcgLZNgNJmfWk0FnLLKG784LT5ZZxUK+UXI5aZPBXkobes+F
+         Fbpu+aauPtQXs2IoHEGZ1Wp4JOwQEmL6an9VxKpehkrV4u7wpf9uC/eIZETXRhPLTx
+         8+idhYQxTwwvNxvtp8ysuJbo0stqrFufmfgCP/IzDqAv1RnZ054DsgbR/rglvK0zLs
+         1QmF4NBkTGYRPTy2+hbzFifVV6ebItGDf/wBT35rcR/s8iBTMiqK+ivL8KKn8R6izE
+         2fK5JP7V08N/g==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -39,9 +39,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
         Emeel Hakim <ehakim@nvidia.com>
-Subject: [PATCH net-next 02/10] net/mlx5: Fix fields name prefix in MACsec
-Date:   Mon, 12 Sep 2022 00:40:51 +0100
-Message-Id: <20220911234059.98624-3-saeed@kernel.org>
+Subject: [PATCH net-next 03/10] net/mlx5e: Fix MACsec initialization error path
+Date:   Mon, 12 Sep 2022 00:40:52 +0100
+Message-Id: <20220911234059.98624-4-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220911234059.98624-1-saeed@kernel.org>
 References: <20220911234059.98624-1-saeed@kernel.org>
@@ -59,39 +59,40 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Emeel Hakim <ehakim@nvidia.com>
 
-Fix ifc fields name to be consistent with the device spec document.
+Currently MACsec initialization error path does not
+destroy sci hash table in case of failure.
+Fix by destroying hash table in case of failure.
 
-Fixes: 8385c51ff5bc ("net/mlx5: Introduce MACsec Connect-X offload hardware bits and structures")
+Fixes: 9515978eee0b ("net/mlx5e: Implement MACsec Tx data path using MACsec skb_metadata_dst")
 Signed-off-by: Emeel Hakim <ehakim@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- include/linux/mlx5/mlx5_ifc.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index 8decbf9a7bdd..da0ed11fcebd 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -11585,15 +11585,15 @@ struct mlx5_ifc_macsec_offload_obj_bits {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
+index d9d18b039d8c..7cbccc76798c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
+@@ -1284,7 +1284,7 @@ int mlx5e_macsec_init(struct mlx5e_priv *priv)
+ 	if (err) {
+ 		mlx5_core_err(mdev, "MACsec offload: Failed to init SCI hash table, err=%d\n",
+ 			      err);
+-		goto err_out;
++		goto err_hash;
+ 	}
  
- 	u8    confidentiality_en[0x1];
- 	u8    reserved_at_41[0x1];
--	u8    esn_en[0x1];
--	u8    esn_overlap[0x1];
-+	u8    epn_en[0x1];
-+	u8    epn_overlap[0x1];
- 	u8    reserved_at_44[0x2];
- 	u8    confidentiality_offset[0x2];
- 	u8    reserved_at_48[0x4];
- 	u8    aso_return_reg[0x4];
- 	u8    reserved_at_50[0x10];
+ 	xa_init_flags(&macsec->sc_xarray, XA_FLAGS_ALLOC1);
+@@ -1304,6 +1304,8 @@ int mlx5e_macsec_init(struct mlx5e_priv *priv)
+ 	return 0;
  
--	u8    esn_msb[0x20];
-+	u8    epn_msb[0x20];
- 
- 	u8    reserved_at_80[0x8];
- 	u8    dekn[0x18];
+ err_out:
++	rhashtable_destroy(&macsec->sci_hash);
++err_hash:
+ 	mlx5_core_dealloc_pd(priv->mdev, macsec->aso_pdn);
+ err_pd:
+ 	kfree(macsec);
 -- 
 2.37.3
 
