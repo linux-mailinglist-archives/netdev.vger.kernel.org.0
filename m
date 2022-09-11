@@ -2,429 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CA43D5B4B26
-	for <lists+netdev@lfdr.de>; Sun, 11 Sep 2022 03:10:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A0A75B4C32
+	for <lists+netdev@lfdr.de>; Sun, 11 Sep 2022 07:37:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230132AbiIKBKM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Sep 2022 21:10:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58642 "EHLO
+        id S229946AbiIKFhb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Sep 2022 01:37:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229977AbiIKBJI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Sep 2022 21:09:08 -0400
-Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2087.outbound.protection.outlook.com [40.107.104.87])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AC984DB03;
-        Sat, 10 Sep 2022 18:08:34 -0700 (PDT)
+        with ESMTP id S229599AbiIKFha (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Sep 2022 01:37:30 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2076.outbound.protection.outlook.com [40.107.223.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 498AF3ECF2;
+        Sat, 10 Sep 2022 22:37:29 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SUQo6TTkII9NDA4COBJQLaeWMVagToaDAQoNsYFjRrhRWIbd+omfvo5uyub5WzoWlfYTTN/irpvYri9zVWnLzf7j0h0fA8wQhk4n3uw09lvCjzlQZIaXO0dxxeacJ4utHWwXL/zHzFmAJPOPfu6+JvYp9UouIJ+AkgrUwHpYSHH8DBUhYrX0XG0r3pLwyD48zyJ7GZZdugQG1b4vr/cW5+iqlF4BgcvPqI2DXjAJ6hKvkKKA4e47ejfsn3Yn8OnWrNWBBFU54R3k70xk4TaimAJ0hXYGgm2I1zNjv/6Fd9dASayG5LskymtJIeZFLAkZdA/ROjYcRW8RrS+TkrqGJQ==
+ b=SrQ9X7Fg2a2jtIya7SpnUGm1QrzSKoyvoYB+UQ8VT4qJXQIudOg5lEjEerzY5nhFFisAe/5X4gtaerLIs19Uc1/yGKaxgjeGOfcw/gu0gJHcTrhhRUZoSyNdfVetEmBTFPVhCjnFAABFcS9uhDb0YlLhU8ybn6oqhNYPEb4p1apasAKL6sUMzSAHxejIC9gy0eoR3N2ZXr43bScySBvIpkwI5Bqz2evJbzOMPw6akmJRMEWGKUroH4qozmGo7we4VDFM8gJi2rwlWTUvmDPSZ4QCvxGRR7GVyPFYoMND4wPg/iBiGp8KsJ759/cok8N2VxJLJKwGv7V1qIiJ9W4uFg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sw6Pq9fAuMHXVbCrUOFl6qpdEOonBAGV652RMp/1rUc=;
- b=itY9x0c3JPu7NwbSoPiiRnnOcUeISMdPOMOdk70dwYBFILy3Evv8OGrZeIQDvrFeNP95efLmz4O8+JJWCRMP/xbU9DEy/54gAexY0r7QrVPP0NAuFmd633GCj3v2lmy+m6PuZW7IZiJyTCTz7MooSRZLkW0LPsE0v99bExk6fJ6oV69YwhVUJbh60hULKLxtvRmK7CJNaxqQ5bmYspT0lFn6borzC7jWAQYuuyQ9NNpI+bibZVMhOOvAeNsu3BNowwWeAZUQhDtno5v4u6fG/QqxhpMlujGfZ6FOoch2+R15L0Z6Qr4ApVHkas2ymP633S/mF912M8Qa7bNF3srI5g==
+ bh=XEBNMiM1X/YsDhRRdVRZTFrxdzmSnYcUYHRrH7gfSPQ=;
+ b=LHPoDgJFbqN0FL4CtsfjI9iZqp/LUaH9a46cyKxFaqj0fMzos8TY8MHvTviGPlQ3YAahuP0Gg/y42g+QHxkBG615U/WWH/X+/FnrmGJY3aaMJYFX4Kgzqw9iAG5fVMWdWXTgs02aeL/5A4uSP0g79m8jlIcnGBaru9Lrn28A7acnRYNOcWvlfFW/IPi+gYOwUdiwfVML/7+/gdCG/ri55nH9Y/v66kcyH+fpnmZ9zOBtKNNM26L4x4E+RK7zxoz+yXmq6EYgd59ycZ1M9z84jqy3m6KT9dgVtLIj/L0+F+ysP4/Z2JC1mCFmlaTFA6EyoRat0F/m8ukyCEG/iUwQqw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sw6Pq9fAuMHXVbCrUOFl6qpdEOonBAGV652RMp/1rUc=;
- b=NjkOxdQeR4R7Fw0Gn1XFg6p/jjktO539gpw18Zu8ue41ds9vAl8Ucw1B8lKDvE3JGrhYO34RdYiDwwuhT0wt2ihpgRVLx71hChYh3mcBdjKrFMrp5MjKycQzt+I5Weon65LyoSJahx5rjf1CfxUmJbP4n7BeJi4l2I+1aaj/Ru4=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM0PR04MB5121.eurprd04.prod.outlook.com (2603:10a6:208:c1::16)
- by DBBPR04MB7739.eurprd04.prod.outlook.com (2603:10a6:10:1eb::9) with
+ bh=XEBNMiM1X/YsDhRRdVRZTFrxdzmSnYcUYHRrH7gfSPQ=;
+ b=LkLWM0CHYYP/so/0ekei+WVevj2AvkAEltgJHL+zT4bcwv+47dMwo+9eLpn6DXE/E/061BBidVccN91pF7/AWRhos0mMbkhsJ/VaeGdqrH5DRWwkZUMBAMzO4kgq1bmqvQ6cOMM2lHtZB6a0msSrDRYxRzXrd3sG9k+4N3fvrkn4YqQdHkkdnGv+IAW2F57bu/lM3ghgz1O1ZdofndyuT+KGxmLg7SIsqXeiUpg8Z7bG7s0qV7HZdYiAHU4mdm6CzBjyFChG5YPBjPv4qSS1EhuRcD6D91zVLOPBhaGhJSJR9Pfuqzvrx9gEIcm2mHLU9uKeKeDfGU6SvGxLNJ/sJQ==
+Received: from DM4PR12MB5357.namprd12.prod.outlook.com (2603:10b6:5:39b::24)
+ by DM6PR12MB4187.namprd12.prod.outlook.com (2603:10b6:5:212::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.22; Sun, 11 Sep
- 2022 01:08:06 +0000
-Received: from AM0PR04MB5121.eurprd04.prod.outlook.com
- ([fe80::5d3b:4f24:dbeb:e292]) by AM0PR04MB5121.eurprd04.prod.outlook.com
- ([fe80::5d3b:4f24:dbeb:e292%5]) with mapi id 15.20.5612.020; Sun, 11 Sep 2022
- 01:08:06 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
+ 2022 05:37:27 +0000
+Received: from DM4PR12MB5357.namprd12.prod.outlook.com
+ ([fe80::ec0e:6950:ee5b:8066]) by DM4PR12MB5357.namprd12.prod.outlook.com
+ ([fe80::ec0e:6950:ee5b:8066%8]) with mapi id 15.20.5612.022; Sun, 11 Sep 2022
+ 05:37:27 +0000
+From:   Raed Salem <raeds@nvidia.com>
+To:     Tom Rix <trix@redhat.com>, Nathan Chancellor <nathan@kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        David Ahern <dsahern@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH v2 net-next 10/10] net: dsa: felix: add support for changing DSA master
-Date:   Sun, 11 Sep 2022 04:07:06 +0300
-Message-Id: <20220911010706.2137967-11-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220911010706.2137967-1-vladimir.oltean@nxp.com>
-References: <20220911010706.2137967-1-vladimir.oltean@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: VI1PR08CA0129.eurprd08.prod.outlook.com
- (2603:10a6:800:d4::31) To AM0PR04MB5121.eurprd04.prod.outlook.com
- (2603:10a6:208:c1::16)
+        Paolo Abeni <pabeni@redhat.com>
+CC:     Nick Desaulniers <ndesaulniers@google.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        Lior Nahmanson <liorna@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "llvm@lists.linux.dev" <llvm@lists.linux.dev>,
+        "patches@lists.linux.dev" <patches@lists.linux.dev>
+Subject: RE: [PATCH net-next] net/mlx5e: Ensure macsec_rule is always
+ initiailized in macsec_fs_{r,t}x_add_rule()
+Thread-Topic: [PATCH net-next] net/mlx5e: Ensure macsec_rule is always
+ initiailized in macsec_fs_{r,t}x_add_rule()
+Thread-Index: AQHYw5jCdqo7S6Fjp06+PFaLHx2lRK3VyqaAgAPpzIA=
+Date:   Sun, 11 Sep 2022 05:37:26 +0000
+Message-ID: <DM4PR12MB53570DA53F0DA74F132698EAC9459@DM4PR12MB5357.namprd12.prod.outlook.com>
+References: <20220908153207.4048871-1-nathan@kernel.org>
+ <43471538-22b3-b80e-a1c6-7f3e24bc414a@redhat.com>
+In-Reply-To: <43471538-22b3-b80e-a1c6-7f3e24bc414a@redhat.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DM4PR12MB5357:EE_|DM6PR12MB4187:EE_
+x-ms-office365-filtering-correlation-id: fec48ac2-29f0-4f63-e7ae-08da93b7b617
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Sx+vMEAPcGKftexoBwt5J/nDh89w2QZRv7xG9aAoGBZEUpSLoEftVunlURlUNobbb5X8ZmxoezEX2+W3lRiaUNQTlMnW1ZvsHLYhC2P+MHIFVVTKZ+tEvoGMdNFF8O0ETJgdrSNZQAfkzfhH8PHVD+Tyti9v0Go1RFNAXsMvHzV2yYSH9C7I+GjnigmBJ6R+TItFoDHSno+m1aRKrj/0GKtDAJ8ZoZtCFvzKpnBosr0Ciz7v0AXQ56o2BIMe4U1bGgejHTgc9l+p9NoneU+0pashp4XekyKfGH/UxAqkeY035/Su5f6Xjibf3994mB8mETTv80unUW44bBYNidqlIG5CBdF1NKIfA7C23eS/aDZ/xMoc8UcIswUSNY/FlEh475WOUXy9F26vtfexVzARPA2YYA3HH9I6Q7AD2AyQpBG7QdAO4jd5GxgJmO0TN/KAlDNxKBxnnw+FGHNOEXCGB4rr6xXoQuMib7d3cGDcHwAqP9GAG7z+LpMnEWtS6HFkGhZtvxx/nd33diCHmU2q8S3jnyGwjeJsfPuE1+4mDrNGz3JH6rAPutyFwTuu7aMcHbcNw6J+iuQwfpLqn5qA8OAUmrpEe0lZnhGBhPZD3hQT6Zy9EzYPIY6yUJ99kwmLpknzNtbl247BjrsfZS4hhd9WL4fEJxou7zZ5kbmuRYMU/w+JwTAp2UANeIhyMB74RwTCCAOr8Vvhxz+hXNgqtlK1qDhmPdzd3bdM76Tm5ouJFK36gTM4hXOmZ01rtUnDHxfrMRa4/eO1vS7LzYKT+UJF6zuYhsLzbKzIk0LyxOIxUcMkVgpXPJ6T4QFe8MxKoGaEt3X8WGOd+XIUGMUQTvT3fq4QNQfWgeKgVM/c7AY=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5357.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(366004)(346002)(396003)(376002)(136003)(26005)(38100700002)(9686003)(4326008)(66556008)(66946007)(64756008)(66476007)(66446008)(76116006)(122000001)(110136005)(54906003)(6506007)(41300700001)(86362001)(8676002)(55016003)(53546011)(7696005)(316002)(2906002)(38070700005)(8936002)(966005)(83380400001)(478600001)(52536014)(71200400001)(5660300002)(7416002)(33656002)(186003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?alVQbHZyaEZrTjdQajRhSU1iUHRtZGpqaTA0Wmtrd3djYlVPdHFJVi9TNW1Y?=
+ =?utf-8?B?cEVvTURWREZPTDk0Vk9vYzdGMTJ1RGhKd0kzdE1ML1UrVmF5Rm9UL0IrRFB1?=
+ =?utf-8?B?SDhseDZWelpDN1BrWTNka0ZRVnJoeWp4M2JWWUFCTkwwcTh0eFFRSTl6elJk?=
+ =?utf-8?B?NEFKVnJ2SVRYMHlISVlaVHFVekY5T0dYMGFlcW0xbklvbUcvZ1ZVbEh5S3pj?=
+ =?utf-8?B?ckV2Qkc1TlZrYmpDQ2gydGZnVXV2b2ZjOGZqcXYyc0FvTHFuVEU1eGRDTVEz?=
+ =?utf-8?B?a1VSQ3dqRjFvY2NabzV4L2xpS205aExsbjlVZUk1R25xUGJhankrUTlUR3ZT?=
+ =?utf-8?B?YnRBcHhOS2pWbkQ1Qyt0anIzdGl3djdrVm9lMFBmRkY0bkpzN21zVDRYNExB?=
+ =?utf-8?B?aWdIc3lEVTNXVWZnWlVYbDN3eUZqK1p3cGVrVUF3SU82Ti9Ea25zZTRubXFv?=
+ =?utf-8?B?U2J2QkI0VkFoNU1IeEdPaDYvL0NFUEthRlVpcTk2Rmhscjc2SGpjMVptaEIv?=
+ =?utf-8?B?T0tOQUcxZ3ZUQkNzNXFnRUlOSGYrVUJuS1VIRXV6RUorWlpveVUwcGczUEdz?=
+ =?utf-8?B?VGI3ak5Sc2hyeW9rVll1cW53WFltaEZ0cUUrUnMxS3hDV2ZaQzkzSkcxWUpH?=
+ =?utf-8?B?aWZNU1RWK1Z3Ums5RUMxbUJpQlcwV29xT0RSak9UbzBtc1ZkWFBOd21ZSm5M?=
+ =?utf-8?B?Z2g0QllHSUVVc0tYRjJJR0Q1Y0hrYnhNbVFtdDcxbHVQdEVta2d6ZWN0YzV3?=
+ =?utf-8?B?WGZUaElnekwrZUZOVmdPMFM1Q0ZkSk5UcWhhWDc3cENTeDgzZEdhODBxeWxH?=
+ =?utf-8?B?Kytzb1o5b1BTQ2hSYzdwNlZ3bS9YKzR5TDI3WDI3MWJHYVRBcURKYUtpc2xN?=
+ =?utf-8?B?b05BOGZJSTBJM0NTTjFzMzY2Y1VHbEthYTJmT3doUmFYTzdWYno5T1BJMTNk?=
+ =?utf-8?B?aEdKdzZWOVRKMTltTWZVQStkZ3FPdVJZLzlQbHJzY28yaTUzSnJUNTVWYXRQ?=
+ =?utf-8?B?Y1plQzRUYjMzL2hJWEh1VGFJcDF1VW4rS3E4cUhUR2dJY0s1M0dRVkJ1MkFr?=
+ =?utf-8?B?QmJUeWFLSDVjYzRhaWVwdlNpOVV6THdiU2lvazJaeVo2T1FqQnVkS0Zjdkd4?=
+ =?utf-8?B?cXNsTlRDNHZDbTdnOGt6SXM2YUFoSlFTdWw3VFErZGdkMHI4S2laRkc1OHpE?=
+ =?utf-8?B?NVF3YzNWYWorcEpxbEpPdmFOaThVT2ZORGlmQ0x5SElCR25MMjRCWjRWZytI?=
+ =?utf-8?B?K1BjZHJSUjBLT2pvNzhRSXQrTkZIekRURE00Q3FiT3lXQ2d0dnZ5ZndIODBK?=
+ =?utf-8?B?M0VSa0l1S2x5cCtySGJLZlhZZUJsMzg5RUYwV0xBNFF3UDN6SVFhOXJtSTBt?=
+ =?utf-8?B?WmdCcXlYbTlIVEZEZGFpaE8rOXVxamdVSFFITnpONmNnNFgzUFhKc0x1UDRF?=
+ =?utf-8?B?K1Q5KzR1MTlRVFIzaWZPcitjWnUvVVNYcm80eENXQmxhZFlLY2dzZG9pYnR5?=
+ =?utf-8?B?UkdoQmtUZ2cyOGxoU29IWjl2MXk3dUZzSWRvZStqdDE0a3BLOUZIcDBwTjRy?=
+ =?utf-8?B?UmFzcGF0bnNUT29BUzI1OHVIakxwblhIZm1ZSytKMVpidTI3L0ZOZE5qeGJx?=
+ =?utf-8?B?V2lXTkhuVHZVTW8zd1dlS3krSUhSOFBrQkIwUDJ0L1V6eHNlZjUwL3grYlJl?=
+ =?utf-8?B?T0Jqcld2WjY1WmhPNWdOakRKUXdad1QrTzF3M2tIRi9mM2V6VHNZZHllZ0tJ?=
+ =?utf-8?B?S1N6RjVNUTdIaFAvbkdqV3UvYVYzZXJDU0d1R3A1dzdpM2VNZFVpZVA5WVdv?=
+ =?utf-8?B?WXNCWUFkZU5qcldUL2x1YXpkeXFyU09SMnNLa0FaV2J4alk3cUpWcHhSeDIy?=
+ =?utf-8?B?RFEwMGplR0dIQ1ZJU0JFYzJhcmE1ZmE4ckJFNUpUQTh0YTN1YmFES2RkM2Np?=
+ =?utf-8?B?VDdzc29FUEdkaEhETy9TbU9OU1Nia0hOQndsN1dIK29hRlB1SmVpajJxNGh0?=
+ =?utf-8?B?Q3BLeVlmRU1icTl5Y2ZIeklSNERoZ2lqVWFLZVR5R2JPUnp0ajFGakYzUW5P?=
+ =?utf-8?B?cE1lQ0dOeExIVHlvUnhEd2tYSDVld0NyQytrL3lLcFhzZTdKeTRuODR5MXFJ?=
+ =?utf-8?Q?mS2U=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM0PR04MB5121:EE_|DBBPR04MB7739:EE_
-X-MS-Office365-Filtering-Correlation-Id: fdd786f9-63e1-4b23-5852-08da93921594
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 6D5bodeDO55lrqw9apM6DMp3CpERvooDw0i9gSEG3+LXzXsQtY5Rmtf2gX4FYOdkVwQOrQ7O9HGOpeifNbLy4rNlomIcaG1G19I1uN57kIdR/p54FMdQnhpHv4GCSNSl2VrZN6Dld9U3N21SbT5nJXA2hwoO0UthceymWe5tzmx2v8Sr83+EdAC+s8LdZn+nRHNFeeoxWnu0taMSAl+EBX1ezlDG7zhTQ5CvEuaqtbZAqaRDuVbB2onyBf4Fr5ztQdF9qf0kQhDng6oFK9WF17Nj2QdtGREqeaK2wkgwoBdXNkshg9qVXydSjyccv664do1i1nZBK6qVEtekXT39ACbVvFa/7zau+K+9ZkaqXvaXVrNCTzS7XVIdSJdv1Cj2Q0qmr4cl103gt7Tj3AkL7zghXbZssK2yGXNX4TAMtviSCbWqMMuKl/6Sv874W+gOVO5X18Kt5tCjl7yHVj4z94/TzpMwT7pvnFTUyQbQ9+EU+UPHZq1aeQWKn1YCHtTSnRkTj43L1E0UfJYDKrPevZr2KrfXdkPOqgQcw+vyOXkL+myLqTaH+jHaoE4nnEwHAkQG96j2MQwnZzGlADKqL1PGyoLeL0Iq+ezPK5GfT1DmetYZpXczLRXq+61LcCxDyt1bs2/5vzuf8ELcos+49gF2HXPpBF8KpJu5Rn9x7+A1w9vKXLX34TOpA+i+qezVZVsxEeEJuwoHPAgooUy9HaMdFjLR1HxuQZX/fExEVT+JXML9LQJKAw33AsIcyN2jZI+stRBQryb19F7F5BnSF5Z6TpUs7v9ve7BgSYb9S+A=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5121.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(136003)(376002)(39860400002)(396003)(366004)(38100700002)(38350700002)(30864003)(2906002)(44832011)(83380400001)(2616005)(186003)(1076003)(316002)(66476007)(66556008)(4326008)(8936002)(66946007)(8676002)(54906003)(6916009)(36756003)(7416002)(5660300002)(478600001)(41300700001)(52116002)(6486002)(26005)(6512007)(86362001)(6506007)(309714004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?GMyfJlvrxqzTiuBiurmIWOO5f/NuePGFC0l9ablap0ezJaBw3gHWCzSTCHyC?=
- =?us-ascii?Q?FiZSQSqKIgt/0iNnxJs/r1Riy/kkxHAFnRL5XU1FyWweSHCw+lEsu83b0QN8?=
- =?us-ascii?Q?9AeZA2uPIW9uB7BT8qRXfQbxb+aJxW2UJDjL+4TsrdnO+S7yMbBKT6uEwzGM?=
- =?us-ascii?Q?edBZ/hgGC6QkRy9guenskDKhpmKtlV97WoCqjyIGI5fZ8pg6+h/OE5neQaOC?=
- =?us-ascii?Q?MMZQvPHC+VUvxn4Op6VCfD1I9YUdPNg3rktPg8bl9ubLGstclnJzyftpp3Lj?=
- =?us-ascii?Q?xGjdXkCMH6SxsppaLf6S+H6VXy6iW+BYm67x/8yvmufVCsoBKcghi2MqtMdj?=
- =?us-ascii?Q?CbcytHaM5vvYII5F3194rymEQa6mpIDKSb3AIT/gnupRxQOFoPEoU1BtP2sq?=
- =?us-ascii?Q?szfZgGas1ArZFtHnXWqG5fq6r+LCObKfeOHYUYDWG9VfuPVnPbOwolFzIpSF?=
- =?us-ascii?Q?hkVuA0w+swkZFfbkoxBgOLKidIhThPT220lxM0EgpbEIewuZlRUTNjqxeq2C?=
- =?us-ascii?Q?FapTfspOI9eNnASYCkzUBeVE2a/Qx3k7YNFTkAkOuV/kngGPvWNplMQlsgG5?=
- =?us-ascii?Q?J6424xsQrGqv3yLP3apVeSMnLSGDLLIk3v1Hwk9OY6VZlewUfS1tsmlOaapX?=
- =?us-ascii?Q?rGAnKZ0dabgbnGWrU7RZ7S9nQNqk/fRBfgUm5v0lPOngeufz/UgVjYniMAJH?=
- =?us-ascii?Q?j7L7mPOFnJBIZZlEQjbVSM2HkR02hOikDjyNasm8N7EZRaJpD+R02I7GBxCT?=
- =?us-ascii?Q?YHAPRr0p4n26ywmWY3hh9V0aIRpfsKHapH0TJTq2/zERLtsjLn9J5JPX6cQA?=
- =?us-ascii?Q?DJp0T0WF6LrSb1tVH0KTivSWScMlOP6ZKzAb6FMIWrU2t6govoOxgKesVdYA?=
- =?us-ascii?Q?LNi2X/q9LFaDoUqaaQOa5MKiRTtRGOAw8QwS6KvMkMAfn3vW9ZYqtgtIACem?=
- =?us-ascii?Q?PsUyFzNreuMHxm2lqdCM7CL8K9KHavXbvF0V/Dv6kEtHFD6r4cppboCSGKVh?=
- =?us-ascii?Q?ne1k9EBddF4X4M04yJ0u5OJy1ryE/zKlI+kaU95EMxGq6fyyxe9My0igjJ6S?=
- =?us-ascii?Q?sH/eTNy8LxJGPuos4CI6vyz3L8rXGKbZ3VZGIZRVzwcv9kRTD7QpNZrHSkZW?=
- =?us-ascii?Q?Y4KhAEWDNQt0gcWp51lKh4m956TP+s3Ic7MVjIx2ZpgUr4aUABPhajIaX5Op?=
- =?us-ascii?Q?l0c/aKJ6hoa3Ek10yUYkibcpAXg7aVwUwu7GSbPZNn/t5AbFIjc2/QKKJJkT?=
- =?us-ascii?Q?1u/+8qxEYEeuDvMBy8dsIx694q7KdoOy0aU54S5WnVg2DQTJbCDT4Sqo2YVv?=
- =?us-ascii?Q?Hvxt5y19+/hUTrBqPfijUAN9VWJA7ZBYMXgwMKXIGwg/qI3IvaG/1l2DA72J?=
- =?us-ascii?Q?1PhUW5inR+p6wz59g0vt2rGCsug5DlLo30OZskXjdbnbigrFP2cNExTZFFjp?=
- =?us-ascii?Q?ZBtJheZGmI7p4j8yhwTIpFl9My3rjpwjpdgj3l+/gXvcEHGG6BLvJKwUd6GQ?=
- =?us-ascii?Q?Fsj6RQjRnJhviTyZeRnM2Rh1TYeIUltyZ9EP5e6RrJLZGEYFGrwlkdVQZyTP?=
- =?us-ascii?Q?T+y5riCcGhMQArRlw/HpFDbZQrfi5flwKR0w+m/0QFMt1NXSrp0tq2iE0dY+?=
- =?us-ascii?Q?5w=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fdd786f9-63e1-4b23-5852-08da93921594
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5121.eurprd04.prod.outlook.com
+X-OriginatorOrg: Nvidia.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Sep 2022 01:08:06.4304
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5357.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fec48ac2-29f0-4f63-e7ae-08da93b7b617
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Sep 2022 05:37:26.9196
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VBpGuRNAQXtwqyDq4aapfyxnXCYnd7ZhYKaRHXFIkAWqw4iAEXPvIIKP5YDt+EN267d8tG1nNgbwR3zJ5kYqOA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR04MB7739
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: yGaWEttscHGTCkn14L2sRMI0mLWBcyit8EE/gK5CMcoT8adISL98Vl8fmueOd9uR+cJ7B1NWdhR024VlAnk6Rw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4187
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Changing the DSA master means different things depending on the tagging
-protocol in use.
-
-For NPI mode ("ocelot" and "seville"), there is a single port which can
-be configured as NPI, but DSA only permits changing the CPU port
-affinity of user ports one by one. So changing a user port to a
-different NPI port globally changes what the NPI port is, and breaks the
-user ports still using the old one.
-
-To address this while still permitting the change of the NPI port,
-require that the user ports which are still affine to the old NPI port
-are down, and cannot be brought up until they are all affine to the same
-NPI port.
-
-The tag_8021q mode ("ocelot-8021q") is more flexible, in that each user
-port can be freely assigned to one CPU port or to the other. This works
-by filtering host addresses towards both tag_8021q CPU ports, and then
-restricting the forwarding from a certain user port only to one of the
-two tag_8021q CPU ports.
-
-Additionally, the 2 tag_8021q CPU ports can be placed in a LAG. This
-works by enabling forwarding via PGID_SRC from a certain user port
-towards the logical port ID containing both tag_8021q CPU ports, but
-then restricting forwarding per packet, via the LAG hash codes in
-PGID_AGGR, to either one or the other.
-
-When we change the DSA master to a LAG device, DSA guarantees us that
-the LAG has at least one lower interface as a physical DSA master.
-But DSA masters can come and go as lowers of that LAG, and
-ds->ops->port_change_master() will not get called, because the DSA
-master is still the same (the LAG). So we need to hook into the
-ds->ops->port_lag_{join,leave} calls on the CPU ports and update the
-logical port ID of the LAG that user ports are assigned to.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
-v1->v2: pass extack to felix_port_change_master() from felix_lag_join()
-
- drivers/net/dsa/ocelot/felix.c     | 118 ++++++++++++++++++++++++++++-
- drivers/net/dsa/ocelot/felix.h     |   3 +
- drivers/net/ethernet/mscc/ocelot.c |   3 +-
- include/soc/mscc/ocelot.h          |   1 +
- 4 files changed, 122 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index 82dcc21a7172..d2a9d292160c 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -42,6 +42,25 @@ static struct net_device *felix_classify_db(struct dsa_db db)
- 	}
- }
- 
-+static int felix_cpu_port_for_master(struct dsa_switch *ds,
-+				     struct net_device *master)
-+{
-+	struct ocelot *ocelot = ds->priv;
-+	struct dsa_port *cpu_dp;
-+	int lag;
-+
-+	if (netif_is_lag_master(master)) {
-+		mutex_lock(&ocelot->fwd_domain_lock);
-+		lag = ocelot_bond_get_id(ocelot, master);
-+		mutex_unlock(&ocelot->fwd_domain_lock);
-+
-+		return lag;
-+	}
-+
-+	cpu_dp = master->dsa_ptr;
-+	return cpu_dp->index;
-+}
-+
- /* Set up VCAP ES0 rules for pushing a tag_8021q VLAN towards the CPU such that
-  * the tagger can perform RX source port identification.
-  */
-@@ -422,6 +441,40 @@ static unsigned long felix_tag_npi_get_host_fwd_mask(struct dsa_switch *ds)
- 	return BIT(ocelot->num_phys_ports);
- }
- 
-+static int felix_tag_npi_change_master(struct dsa_switch *ds, int port,
-+				       struct net_device *master,
-+				       struct netlink_ext_ack *extack)
-+{
-+	struct dsa_port *dp = dsa_to_port(ds, port), *other_dp;
-+	struct ocelot *ocelot = ds->priv;
-+
-+	if (netif_is_lag_master(master)) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "LAG DSA master only supported using ocelot-8021q");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	/* Changing the NPI port breaks user ports still assigned to the old
-+	 * one, so only allow it while they're down, and don't allow them to
-+	 * come back up until they're all changed to the new one.
-+	 */
-+	dsa_switch_for_each_user_port(other_dp, ds) {
-+		struct net_device *slave = other_dp->slave;
-+
-+		if (other_dp != dp && (slave->flags & IFF_UP) &&
-+		    dsa_port_to_master(other_dp) != master) {
-+			NL_SET_ERR_MSG_MOD(extack,
-+					   "Cannot change while old master still has users");
-+			return -EOPNOTSUPP;
-+		}
-+	}
-+
-+	felix_npi_port_deinit(ocelot, ocelot->npi);
-+	felix_npi_port_init(ocelot, felix_cpu_port_for_master(ds, master));
-+
-+	return 0;
-+}
-+
- /* Alternatively to using the NPI functionality, that same hardware MAC
-  * connected internally to the enetc or fman DSA master can be configured to
-  * use the software-defined tag_8021q frame format. As far as the hardware is
-@@ -433,6 +486,7 @@ static const struct felix_tag_proto_ops felix_tag_npi_proto_ops = {
- 	.setup			= felix_tag_npi_setup,
- 	.teardown		= felix_tag_npi_teardown,
- 	.get_host_fwd_mask	= felix_tag_npi_get_host_fwd_mask,
-+	.change_master		= felix_tag_npi_change_master,
- };
- 
- static int felix_tag_8021q_setup(struct dsa_switch *ds)
-@@ -507,10 +561,24 @@ static unsigned long felix_tag_8021q_get_host_fwd_mask(struct dsa_switch *ds)
- 	return dsa_cpu_ports(ds);
- }
- 
-+static int felix_tag_8021q_change_master(struct dsa_switch *ds, int port,
-+					 struct net_device *master,
-+					 struct netlink_ext_ack *extack)
-+{
-+	int cpu = felix_cpu_port_for_master(ds, master);
-+	struct ocelot *ocelot = ds->priv;
-+
-+	ocelot_port_unassign_dsa_8021q_cpu(ocelot, port);
-+	ocelot_port_assign_dsa_8021q_cpu(ocelot, port, cpu);
-+
-+	return felix_update_trapping_destinations(ds, true);
-+}
-+
- static const struct felix_tag_proto_ops felix_tag_8021q_proto_ops = {
- 	.setup			= felix_tag_8021q_setup,
- 	.teardown		= felix_tag_8021q_teardown,
- 	.get_host_fwd_mask	= felix_tag_8021q_get_host_fwd_mask,
-+	.change_master		= felix_tag_8021q_change_master,
- };
- 
- static void felix_set_host_flood(struct dsa_switch *ds, unsigned long mask,
-@@ -673,6 +741,16 @@ static void felix_port_set_host_flood(struct dsa_switch *ds, int port,
- 			     !!felix->host_flood_mc_mask, true);
- }
- 
-+static int felix_port_change_master(struct dsa_switch *ds, int port,
-+				    struct net_device *master,
-+				    struct netlink_ext_ack *extack)
-+{
-+	struct ocelot *ocelot = ds->priv;
-+	struct felix *felix = ocelot_to_felix(ocelot);
-+
-+	return felix->tag_proto_ops->change_master(ds, port, master, extack);
-+}
-+
- static int felix_set_ageing_time(struct dsa_switch *ds,
- 				 unsigned int ageing_time)
- {
-@@ -865,8 +943,17 @@ static int felix_lag_join(struct dsa_switch *ds, int port,
- 			  struct netlink_ext_ack *extack)
- {
- 	struct ocelot *ocelot = ds->priv;
-+	int err;
- 
--	return ocelot_port_lag_join(ocelot, port, lag.dev, info, extack);
-+	err = ocelot_port_lag_join(ocelot, port, lag.dev, info, extack);
-+	if (err)
-+		return err;
-+
-+	/* Update the logical LAG port that serves as tag_8021q CPU port */
-+	if (!dsa_is_cpu_port(ds, port))
-+		return 0;
-+
-+	return felix_port_change_master(ds, port, lag.dev, extack);
- }
- 
- static int felix_lag_leave(struct dsa_switch *ds, int port,
-@@ -876,7 +963,11 @@ static int felix_lag_leave(struct dsa_switch *ds, int port,
- 
- 	ocelot_port_lag_leave(ocelot, port, lag.dev);
- 
--	return 0;
-+	/* Update the logical LAG port that serves as tag_8021q CPU port */
-+	if (!dsa_is_cpu_port(ds, port))
-+		return 0;
-+
-+	return felix_port_change_master(ds, port, lag.dev, NULL);
- }
- 
- static int felix_lag_change(struct dsa_switch *ds, int port)
-@@ -1014,6 +1105,27 @@ static void felix_phylink_mac_link_up(struct dsa_switch *ds, int port,
- 		felix->info->port_sched_speed_set(ocelot, port, speed);
- }
- 
-+static int felix_port_enable(struct dsa_switch *ds, int port,
-+			     struct phy_device *phydev)
-+{
-+	struct dsa_port *dp = dsa_to_port(ds, port);
-+	struct ocelot *ocelot = ds->priv;
-+
-+	if (!dsa_port_is_user(dp))
-+		return 0;
-+
-+	if (ocelot->npi >= 0) {
-+		struct net_device *master = dsa_port_to_master(dp);
-+
-+		if (felix_cpu_port_for_master(ds, master) != ocelot->npi) {
-+			dev_err(ds->dev, "Multiple masters are not allowed\n");
-+			return -EINVAL;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
- static void felix_port_qos_map_init(struct ocelot *ocelot, int port)
- {
- 	int i;
-@@ -1913,6 +2025,7 @@ const struct dsa_switch_ops felix_switch_ops = {
- 	.phylink_mac_select_pcs		= felix_phylink_mac_select_pcs,
- 	.phylink_mac_link_down		= felix_phylink_mac_link_down,
- 	.phylink_mac_link_up		= felix_phylink_mac_link_up,
-+	.port_enable			= felix_port_enable,
- 	.port_fast_age			= felix_port_fast_age,
- 	.port_fdb_dump			= felix_fdb_dump,
- 	.port_fdb_add			= felix_fdb_add,
-@@ -1968,6 +2081,7 @@ const struct dsa_switch_ops felix_switch_ops = {
- 	.port_add_dscp_prio		= felix_port_add_dscp_prio,
- 	.port_del_dscp_prio		= felix_port_del_dscp_prio,
- 	.port_set_host_flood		= felix_port_set_host_flood,
-+	.port_change_master		= felix_port_change_master,
- };
- 
- struct net_device *felix_port_to_netdev(struct ocelot *ocelot, int port)
-diff --git a/drivers/net/dsa/ocelot/felix.h b/drivers/net/dsa/ocelot/felix.h
-index deb8dde1fc19..e4fd5eef57a0 100644
---- a/drivers/net/dsa/ocelot/felix.h
-+++ b/drivers/net/dsa/ocelot/felix.h
-@@ -71,6 +71,9 @@ struct felix_tag_proto_ops {
- 	int (*setup)(struct dsa_switch *ds);
- 	void (*teardown)(struct dsa_switch *ds);
- 	unsigned long (*get_host_fwd_mask)(struct dsa_switch *ds);
-+	int (*change_master)(struct dsa_switch *ds, int port,
-+			     struct net_device *master,
-+			     struct netlink_ext_ack *extack);
- };
- 
- extern const struct dsa_switch_ops felix_switch_ops;
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 5c18f8986975..7a613b52787d 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -1382,7 +1382,7 @@ static u32 ocelot_get_bond_mask(struct ocelot *ocelot, struct net_device *bond)
- /* The logical port number of a LAG is equal to the lowest numbered physical
-  * port ID present in that LAG. It may change if that port ever leaves the LAG.
-  */
--static int ocelot_bond_get_id(struct ocelot *ocelot, struct net_device *bond)
-+int ocelot_bond_get_id(struct ocelot *ocelot, struct net_device *bond)
- {
- 	int bond_mask = ocelot_get_bond_mask(ocelot, bond);
- 
-@@ -1391,6 +1391,7 @@ static int ocelot_bond_get_id(struct ocelot *ocelot, struct net_device *bond)
- 
- 	return __ffs(bond_mask);
- }
-+EXPORT_SYMBOL_GPL(ocelot_bond_get_id);
- 
- /* Returns the mask of user ports assigned to this DSA tag_8021q CPU port.
-  * Note that when CPU ports are in a LAG, the user ports are assigned to the
-diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index ea19e8ef1f61..967ba30ea636 100644
---- a/include/soc/mscc/ocelot.h
-+++ b/include/soc/mscc/ocelot.h
-@@ -1234,6 +1234,7 @@ int ocelot_port_lag_join(struct ocelot *ocelot, int port,
- void ocelot_port_lag_leave(struct ocelot *ocelot, int port,
- 			   struct net_device *bond);
- void ocelot_port_lag_change(struct ocelot *ocelot, int port, bool lag_tx_active);
-+int ocelot_bond_get_id(struct ocelot *ocelot, struct net_device *bond);
- 
- int ocelot_devlink_sb_register(struct ocelot *ocelot);
- void ocelot_devlink_sb_unregister(struct ocelot *ocelot);
--- 
-2.34.1
-
+T24gOS84LzIyIDg6MzIgQU0sIE5hdGhhbiBDaGFuY2VsbG9yIHdyb3RlOg0KPj4gQ2xhbmcgd2Fy
+bnM6DQo+Pg0KPj4gICAgZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2Vu
+X2FjY2VsL21hY3NlY19mcy5jOjUzOTo2OiBlcnJvcjogdmFyaWFibGUgJ21hY3NlY19ydWxlJyBp
+cyB1c2VkIHVuaW5pdGlhbGl6ZWQgd2hlbmV2ZXIgJ2lmJyBjb25kaXRpb24gaXMgdHJ1ZSBbLVdl
+cnJvciwtV3NvbWV0aW1lcy11bmluaXRpYWxpemVkXQ0KPj4gICAgICAgICAgICBpZiAoZXJyKQ0K
+Pj4gICAgICAgICAgICAgICAgXn5+DQo+PiAgICBkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5v
+eC9tbHg1L2NvcmUvZW5fYWNjZWwvbWFjc2VjX2ZzLmM6NTk4Ojk6IG5vdGU6IHVuaW5pdGlhbGl6
+ZWQgdXNlIG9jY3VycyBoZXJlDQo+PiAgICAgICAgICAgIHJldHVybiBtYWNzZWNfcnVsZTsNCj4+
+ICAgICAgICAgICAgICAgICAgXn5+fn5+fn5+fn4NCj4+ICAgIGRyaXZlcnMvbmV0L2V0aGVybmV0
+L21lbGxhbm94L21seDUvY29yZS9lbl9hY2NlbC9tYWNzZWNfZnMuYzo1Mzk6Mjogbm90ZTogcmVt
+b3ZlIHRoZSAnaWYnIGlmIGl0cyBjb25kaXRpb24gaXMgYWx3YXlzIGZhbHNlDQo+PiAgICAgICAg
+ICAgIGlmIChlcnIpDQo+PiAgICAgICAgICAgIF5+fn5+fn5+DQo+PiAgICBkcml2ZXJzL25ldC9l
+dGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fYWNjZWwvbWFjc2VjX2ZzLmM6NTIzOjM4OiBu
+b3RlOiBpbml0aWFsaXplIHRoZSB2YXJpYWJsZSAnbWFjc2VjX3J1bGUnIHRvIHNpbGVuY2UgdGhp
+cyB3YXJuaW5nDQo+PiAgICAgICAgICAgIHVuaW9uIG1seDVlX21hY3NlY19ydWxlICptYWNzZWNf
+cnVsZTsNCj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+Xg0KPj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA9IE5V
+TEwNCj4+ICAgIGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbl9hY2Nl
+bC9tYWNzZWNfZnMuYzoxMTMxOjY6IGVycm9yOiB2YXJpYWJsZSAnbWFjc2VjX3J1bGUnIGlzIHVz
+ZWQgdW5pbml0aWFsaXplZCB3aGVuZXZlciAnaWYnIGNvbmRpdGlvbiBpcyB0cnVlIFstV2Vycm9y
+LC1Xc29tZXRpbWVzLXVuaW5pdGlhbGl6ZWRdDQo+PiAgICAgICAgICAgIGlmIChlcnIpDQo+PiAg
+ICAgICAgICAgICAgICBefn4NCj4+ICAgIGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21s
+eDUvY29yZS9lbl9hY2NlbC9tYWNzZWNfZnMuYzoxMjE1Ojk6IG5vdGU6IHVuaW5pdGlhbGl6ZWQg
+dXNlIG9jY3VycyBoZXJlDQo+PiAgICAgICAgICAgIHJldHVybiBtYWNzZWNfcnVsZTsNCj4+ICAg
+ICAgICAgICAgICAgICAgXn5+fn5+fn5+fn4NCj4+ICAgIGRyaXZlcnMvbmV0L2V0aGVybmV0L21l
+bGxhbm94L21seDUvY29yZS9lbl9hY2NlbC9tYWNzZWNfZnMuYzoxMTMxOjI6IG5vdGU6IHJlbW92
+ZSB0aGUgJ2lmJyBpZiBpdHMgY29uZGl0aW9uIGlzIGFsd2F5cyBmYWxzZQ0KPj4gICAgICAgICAg
+ICBpZiAoZXJyKQ0KPj4gICAgICAgICAgICBefn5+fn5+fg0KPj4gICAgZHJpdmVycy9uZXQvZXRo
+ZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX2FjY2VsL21hY3NlY19mcy5jOjExMTg6Mzg6IG5v
+dGU6IGluaXRpYWxpemUgdGhlIHZhcmlhYmxlICdtYWNzZWNfcnVsZScgdG8gc2lsZW5jZSB0aGlz
+IHdhcm5pbmcNCj4+ICAgICAgICAgICAgdW5pb24gbWx4NWVfbWFjc2VjX3J1bGUgKm1hY3NlY19y
+dWxlOw0KPj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBe
+DQo+PiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgID0gTlVM
+TA0KV2h5IG5vdCBkbyBhcyBzdWdnZXN0ZWQgYW5kIGluaXRpYWxpemUgdGhlIG1hY3NlY19ydWxl
+IHRvIE5VTEwgKGFuZCBjaGFuZ2UgcGxhY2VtZW50IHRvIGNvbXBseSB3aXRoIHJldmVyc2VkIENo
+cmlzdG1hcyB0cmVlIHBhcmFtZXRlcnMgb3JkZXIpID8NCml0IGlzIGNsZWFuZXIgYW5kIGFkaGVy
+aW5nIHRvIHNpbWlsYXIgZXJyb3IgcGF0aHMgaW4gdGhlIG1seDUgZHJpdmVyLCB0aGFua3MgZm9y
+IHRoZSBjYXRjaC4NCj4+ICAgIDIgZXJyb3JzIGdlbmVyYXRlZC4NCj4+DQo+PiBJZiBtYWNzZWNf
+ZnNfe3IsdH14X2Z0X2dldCgpIGZhaWwsIG1hY3NlY19ydWxlIHdpbGwgYmUgdW5pbml0aWFsaXpl
+ZC4NCj4+IFVzZSB0aGUgZXhpc3RpbmcgaW5pdGlhbGl6YXRpb24gdG8gTlVMTCBpbiB0aGUgZXhp
+c3RpbmcgZXJyb3IgcGF0aCB0byANCj4+IGVuc3VyZSBtYWNzZWNfcnVsZSBpcyBhbHdheXMgaW5p
+dGlhbGl6ZWQuDQo+Pg0KPj4gRml4ZXM6IGU0NjdiMjgzZmZkNSAoIm5ldC9tbHg1ZTogQWRkIE1B
+Q3NlYyBUWCBzdGVlcmluZyBydWxlcyIpDQo+PiBGaXhlczogM2IyMDk0OWNiMjFiICgibmV0L21s
+eDVlOiBBZGQgTUFDc2VjIFJYIHN0ZWVyaW5nIHJ1bGVzIikNCj4+IExpbms6IGh0dHBzOi8vZ2l0
+aHViLmNvbS9DbGFuZ0J1aWx0TGludXgvbGludXgvaXNzdWVzLzE3MDYNCj4+IFNpZ25lZC1vZmYt
+Ynk6IE5hdGhhbiBDaGFuY2VsbG9yIDxuYXRoYW5Aa2VybmVsLm9yZz4NCj5SZXZpZXdlZC1ieTog
+VG9tIFJpeCA8dHJpeEByZWRoYXQuY29tPg0KPj4gLS0tDQo+Pg0KPj4gVGhlIG90aGVyIGZpeCBJ
+IGNvbnNpZGVyZWQgd2FzIHNodWZmbGluZyB0aGUgdHdvIGlmIHN0YXRlbWVudHMgc28gdGhhdCAN
+Cj4+IHRoZSBhbGxvY2F0aW9uIG9mIG1hY3NlY19ydWxlIGNhbWUgYmVmb3JlIHRoZSBjYWxsIHRv
+DQo+PiBtYWNzZWNfZnNfe3IsdH14X2Z0X2dldCgpIGJ1dCBJIHdhcyBub3Qgc3VyZSB3aGF0IHRo
+ZSBpbXBsaWNhdGlvbnMgb2YgDQo+PiB0aGF0IGNoYW5nZSB3ZXJlLg0KPj4NCj4+IEFsc28sIEkg
+dGhvdWdodCBuZXRkZXYgd2FzIGRvaW5nIHRlc3Rpbmcgd2l0aCBjbGFuZyBzbyB0aGF0IG5ldyAN
+Cj4+IHdhcm5pbmdzIGRvIG5vdCBzaG93IHVwLiBEaWQgc29tZXRoaW5nIGJyZWFrIG9yIHN0b3Ag
+d29ya2luZyBzaW5jZSANCj4+IHRoaXMgaXMgdGhlIHNlY29uZCB0aW1lIGluIHR3byB3ZWVrcyB0
+aGF0IG5ldyB3YXJuaW5ncyBoYXZlIGFwcGVhcmVkIGluIC1uZXh0Pw0KPj4NCj4+ICAgLi4uL25l
+dC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW5fYWNjZWwvbWFjc2VjX2ZzLmMgICAgfCA2
+ICsrKystLQ0KPj4gICAxIGZpbGUgY2hhbmdlZCwgNCBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9u
+cygtKQ0KPj4NCj4+IGRpZmYgLS1naXQgDQo+PiBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxh
+bm94L21seDUvY29yZS9lbl9hY2NlbC9tYWNzZWNfZnMuYyANCj4+IGIvZHJpdmVycy9uZXQvZXRo
+ZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX2FjY2VsL21hY3NlY19mcy5jDQo+PiBpbmRleCA2
+MDhmYmJhYTVhNTguLjQ0NjdlODhkN2U3ZiAxMDA2NDQNCj4+IC0tLSBhL2RyaXZlcnMvbmV0L2V0
+aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbl9hY2NlbC9tYWNzZWNfZnMuYw0KPj4gKysrIGIv
+ZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX2FjY2VsL21hY3NlY19m
+cy5jDQo+PiBAQCAtNTM3LDcgKzUzNyw3IEBAIG1hY3NlY19mc190eF9hZGRfcnVsZShzdHJ1Y3Qg
+bWx4NWVfbWFjc2VjX2ZzIA0KPj4gKm1hY3NlY19mcywNCj4+DQo+PiAgICAgIGVyciA9IG1hY3Nl
+Y19mc190eF9mdF9nZXQobWFjc2VjX2ZzKTsNCj4+ICAgICAgIGlmIChlcnIpDQo+PiAtICAgICAg
+ICAgICAgIGdvdG8gb3V0X3NwZWM7DQo+PiArICAgICAgICAgICAgIGdvdG8gb3V0X3NwZWNfbm9f
+cnVsZTsNCj4+DQo+PiAgICAgICBtYWNzZWNfcnVsZSA9IGt6YWxsb2Moc2l6ZW9mKCptYWNzZWNf
+cnVsZSksIEdGUF9LRVJORUwpOw0KPj4gICAgICAgaWYgKCFtYWNzZWNfcnVsZSkgew0KPj4gQEAg
+LTU5MSw2ICs1OTEsNyBAQCBtYWNzZWNfZnNfdHhfYWRkX3J1bGUoc3RydWN0IG1seDVlX21hY3Nl
+Y19mcyANCj4+ICptYWNzZWNfZnMsDQo+Pg0KPj4gICBlcnI6DQo+PiAgICAgICBtYWNzZWNfZnNf
+dHhfZGVsX3J1bGUobWFjc2VjX2ZzLCB0eF9ydWxlKTsNCj4+ICtvdXRfc3BlY19ub19ydWxlOg0K
+Pj4gICAgICAgbWFjc2VjX3J1bGUgPSBOVUxMOw0KPj4gICBvdXRfc3BlYzoNCj4+ICAgICAgIGt2
+ZnJlZShzcGVjKTsNCj4+IEBAIC0xMTI5LDcgKzExMzAsNyBAQCBtYWNzZWNfZnNfcnhfYWRkX3J1
+bGUoc3RydWN0IG1seDVlX21hY3NlY19mcyANCj4+ICptYWNzZWNfZnMsDQo+Pg0KPj4gICAgICAg
+ZXJyID0gbWFjc2VjX2ZzX3J4X2Z0X2dldChtYWNzZWNfZnMpOw0KPj4gICAgICAgaWYgKGVycikN
+Cj4+IC0gICAgICAgICAgICAgZ290byBvdXRfc3BlYzsNCj4+ICsgICAgICAgICAgICAgZ290byBv
+dXRfc3BlY19ub19ydWxlOw0KPj4NCj4+ICAgICAgIG1hY3NlY19ydWxlID0ga3phbGxvYyhzaXpl
+b2YoKm1hY3NlY19ydWxlKSwgR0ZQX0tFUk5FTCk7DQo+PiAgICAgICBpZiAoIW1hY3NlY19ydWxl
+KSB7DQo+PiBAQCAtMTIwOSw2ICsxMjEwLDcgQEAgbWFjc2VjX2ZzX3J4X2FkZF9ydWxlKHN0cnVj
+dCBtbHg1ZV9tYWNzZWNfZnMgDQo+PiAqbWFjc2VjX2ZzLA0KPj4NCj4+ICAgZXJyOg0KPj4gICAg
+ICAgbWFjc2VjX2ZzX3J4X2RlbF9ydWxlKG1hY3NlY19mcywgcnhfcnVsZSk7DQo+PiArb3V0X3Nw
+ZWNfbm9fcnVsZToNCj4+ICAgICAgIG1hY3NlY19ydWxlID0gTlVMTDsNCj4+ICAgb3V0X3NwZWM6
+DQo+PiAgICAgICBrdmZyZWUoc3BlYyk7DQo+Pg0KPj4gYmFzZS1jb21taXQ6IDc1NTU0ZmUwMGY5
+NDFjM2MzZDkzNDRlODg3MDgwOTNhMTRkMmI0YjgNCg==
