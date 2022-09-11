@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 36BE75B5201
-	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 01:42:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1110D5B5202
+	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 01:42:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229700AbiIKXmB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Sep 2022 19:42:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55376 "EHLO
+        id S229620AbiIKXmD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Sep 2022 19:42:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229643AbiIKXlq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Sep 2022 19:41:46 -0400
+        with ESMTP id S229586AbiIKXl7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Sep 2022 19:41:59 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F290275C0
-        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 16:41:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E1E2275C3
+        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 16:41:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 85C576113A
-        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 23:41:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A193C4347C;
-        Sun, 11 Sep 2022 23:41:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 728CF61128
+        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 23:41:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50318C433C1;
+        Sun, 11 Sep 2022 23:41:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662939700;
-        bh=rovLl3unrz5tg8y5wdMbx3n2SNFLsbDNeSu4AxLOtc8=;
+        s=k20201202; t=1662939702;
+        bh=ZeBEBXBBPMyOlZnQ8pKNDMLa80JfWYMdwawEeUuC+wk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fo5/yxn+ovHS7X1tuF7NNkqhF0NDuKp/fEi2TWZ1D/Hk7AmZQO6S06apSHHcK64GU
-         xLJi/JmWcbWyYTfPyHGQD4fTTk2XFAibwAe7eopBIdzX7DvW3MKI3KYmZOln4E+eRk
-         QvZ/gsTabEiafej9cWAA9e/UEAyr+HMHRvNcEwOelYBANMa3nhLIdpL9o1Y9dtRo+7
-         qVYu0sx+NvEPN+xCWWp5+WNI3P7Nl/ubgS2HnrOUPuGk9PxCRyUgXE0SPtBvlqMzJp
-         q8s91r9TPP4JHhhjzTdO5hFnR218Me6qSjCM3fXkLPv2N5oLGvMocbbb8+5ktkB3hd
-         eLXqZFeJDsQew==
+        b=FXnyEXNGF9iUKrQ3+mwkascUsiGR7Gwnhd/PqMCpsH9EKhs36qdWGD7swTgs7/vGc
+         1Ww/ex19S5dDm2YB7dfDV4tbyu7MzZK9fEV9aps0a3W1SObv8z7elIH6fjXivTHFjs
+         Qew6T3RfnGKjzyrq/yXKYfXF9P807yuD4GHOXnfsH/HpyVSoaRN95WmE73KTGbWWxT
+         sYm3ZtvqFMUNpdf7oK5OsDrrVx2GMpeiUb6MI9h5dS+KrQaj3W5u90IgcJE2PGDORq
+         UAPvFD57uGgMd37RUJF99SrQSdkKky/BsXrl0l3SoRmBSWDGB+ygQRhjU5n+KkdhD+
+         znGFNSGrvfmcQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -39,9 +39,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
         Emeel Hakim <ehakim@nvidia.com>, Raed Salem <raeds@nvidia.com>
-Subject: [PATCH net-next 07/10] net/mlx5e: Create advanced steering operation (ASO) object for MACsec
-Date:   Mon, 12 Sep 2022 00:40:56 +0100
-Message-Id: <20220911234059.98624-8-saeed@kernel.org>
+Subject: [PATCH net-next 08/10] net/mlx5e: Move MACsec initialization from profile init stage to profile enable stage
+Date:   Mon, 12 Sep 2022 00:40:57 +0100
+Message-Id: <20220911234059.98624-9-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220911234059.98624-1-saeed@kernel.org>
 References: <20220911234059.98624-1-saeed@kernel.org>
@@ -59,266 +59,65 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Emeel Hakim <ehakim@nvidia.com>
 
-Add support for ASO work queue entry (WQE) data to allow reading
-data upon querying the ASO work queue (WQ).
-Register user mode memory registration (UMR) upon ASO WQ init,
-de-register UMR upon ASO WQ cleanup.
-MACsec uses UMR to determine the cause of the event triggered
-by the HW since different scenarios could trigger the same event.
-Setup MACsec ASO object to sync HW with SW about various macsec
-flow stateful features like: replay window, lifetime limits e.t.c
+Postpone MACsec initialization to the mlx5e profile enable stage to have
+user access region (UAR) pages and other resources ready before MACsec
+initialization to initialize advanced steering operation (ASO) hardware
+resources.
 
 Reviewed-by: Raed Salem <raeds@nvidia.com>
 Signed-off-by: Emeel Hakim <ehakim@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/en_accel/macsec.c      | 149 +++++++++++++++---
- 1 file changed, 130 insertions(+), 19 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-index 006c3bad69a0..f52c88599597 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-@@ -6,13 +6,11 @@
- #include <linux/xarray.h>
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index 905025a10a8a..4503de92ac80 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -5055,10 +5055,6 @@ static int mlx5e_nic_init(struct mlx5_core_dev *mdev,
+ 	}
+ 	priv->fs = fs;
  
- #include "en.h"
-+#include "lib/aso.h"
- #include "lib/mlx5.h"
- #include "en_accel/macsec.h"
- #include "en_accel/macsec_fs.h"
- 
--#define MLX5_MACSEC_ASO_INC_SN  0x2
--#define MLX5_MACSEC_ASO_REG_C_4_5 0x2
+-	err = mlx5e_macsec_init(priv);
+-	if (err)
+-		mlx5_core_err(mdev, "MACsec initialization failed, %d\n", err);
 -
- struct mlx5e_macsec_sa {
- 	bool active;
- 	u8  assoc_num;
-@@ -43,6 +41,23 @@ struct mlx5e_macsec_rx_sc {
- 	struct rcu_head rcu_head;
- };
- 
-+struct mlx5e_macsec_umr {
-+	dma_addr_t dma_addr;
-+	u8 ctx[MLX5_ST_SZ_BYTES(macsec_aso)];
-+	u32 mkey;
-+};
-+
-+struct mlx5e_macsec_aso {
-+	/* ASO */
-+	struct mlx5_aso *maso;
-+	/* Protects macsec ASO */
-+	struct mutex aso_lock;
-+	/* UMR */
-+	struct mlx5e_macsec_umr *umr;
-+
-+	u32 pdn;
-+};
-+
- static const struct rhashtable_params rhash_sci = {
- 	.key_len = sizeof_field(struct mlx5e_macsec_sa, sci),
- 	.key_offset = offsetof(struct mlx5e_macsec_sa, sci),
-@@ -65,9 +80,6 @@ struct mlx5e_macsec {
- 	struct mlx5e_macsec_fs *macsec_fs;
- 	struct mutex lock; /* Protects mlx5e_macsec internal contexts */
- 
--	/* Global PD for MACsec object ASO context */
--	u32 aso_pdn;
--
- 	/* Tx sci -> fs id mapping handling */
- 	struct rhashtable sci_hash;      /* sci -> mlx5e_macsec_sa */
- 
-@@ -78,6 +90,9 @@ struct mlx5e_macsec {
- 
- 	/* Stats manage */
- 	struct mlx5e_macsec_stats stats;
-+
-+	/* ASO */
-+	struct mlx5e_macsec_aso aso;
- };
- 
- struct mlx5_macsec_obj_attrs {
-@@ -88,6 +103,55 @@ struct mlx5_macsec_obj_attrs {
- 	bool encrypt;
- };
- 
-+static int mlx5e_macsec_aso_reg_mr(struct mlx5_core_dev *mdev, struct mlx5e_macsec_aso *aso)
-+{
-+	struct mlx5e_macsec_umr *umr;
-+	struct device *dma_device;
-+	dma_addr_t dma_addr;
-+	int err;
-+
-+	umr = kzalloc(sizeof(*umr), GFP_KERNEL);
-+	if (!umr) {
-+		err = -ENOMEM;
-+		return err;
-+	}
-+
-+	dma_device = &mdev->pdev->dev;
-+	dma_addr = dma_map_single(dma_device, umr->ctx, sizeof(umr->ctx), DMA_BIDIRECTIONAL);
-+	err = dma_mapping_error(dma_device, dma_addr);
-+	if (err) {
-+		mlx5_core_err(mdev, "Can't map dma device, err=%d\n", err);
-+		goto out_dma;
-+	}
-+
-+	err = mlx5e_create_mkey(mdev, aso->pdn, &umr->mkey);
-+	if (err) {
-+		mlx5_core_err(mdev, "Can't create mkey, err=%d\n", err);
-+		goto out_mkey;
-+	}
-+
-+	umr->dma_addr = dma_addr;
-+
-+	aso->umr = umr;
-+
-+	return 0;
-+
-+out_mkey:
-+	dma_unmap_single(dma_device, dma_addr, sizeof(umr->ctx), DMA_BIDIRECTIONAL);
-+out_dma:
-+	kfree(umr);
-+	return err;
-+}
-+
-+static void mlx5e_macsec_aso_dereg_mr(struct mlx5_core_dev *mdev, struct mlx5e_macsec_aso *aso)
-+{
-+	struct mlx5e_macsec_umr *umr = aso->umr;
-+
-+	mlx5_core_destroy_mkey(mdev, umr->mkey);
-+	dma_unmap_single(&mdev->pdev->dev, umr->dma_addr, sizeof(umr->ctx), DMA_BIDIRECTIONAL);
-+	kfree(umr);
-+}
-+
- static int mlx5e_macsec_create_object(struct mlx5_core_dev *mdev,
- 				      struct mlx5_macsec_obj_attrs *attrs,
- 				      bool is_tx,
-@@ -180,7 +244,7 @@ static int mlx5e_macsec_init_sa(struct macsec_context *ctx,
- 	obj_attrs.sci = cpu_to_be64((__force u64)sa->sci);
- 	obj_attrs.enc_key_id = sa->enc_key_id;
- 	obj_attrs.encrypt = encrypt;
--	obj_attrs.aso_pdn = macsec->aso_pdn;
-+	obj_attrs.aso_pdn = macsec->aso.pdn;
- 
- 	err = mlx5e_macsec_create_object(mdev, &obj_attrs, is_tx, &sa->macsec_obj_id);
+ 	err = mlx5e_ipsec_init(priv);
  	if (err)
-@@ -1121,6 +1185,54 @@ static int mlx5e_macsec_del_secy(struct macsec_context *ctx)
- 	return err;
+ 		mlx5_core_err(mdev, "IPSec initialization failed, %d\n", err);
+@@ -5076,7 +5072,6 @@ static void mlx5e_nic_cleanup(struct mlx5e_priv *priv)
+ 	mlx5e_health_destroy_reporters(priv);
+ 	mlx5e_ktls_cleanup(priv);
+ 	mlx5e_ipsec_cleanup(priv);
+-	mlx5e_macsec_cleanup(priv);
+ 	mlx5e_fs_cleanup(priv->fs);
  }
  
-+static int mlx5e_macsec_aso_init(struct mlx5e_macsec_aso *aso, struct mlx5_core_dev *mdev)
-+{
-+	struct mlx5_aso *maso;
+@@ -5202,9 +5197,14 @@ static void mlx5e_nic_enable(struct mlx5e_priv *priv)
+ {
+ 	struct net_device *netdev = priv->netdev;
+ 	struct mlx5_core_dev *mdev = priv->mdev;
 +	int err;
-+
-+	err = mlx5_core_alloc_pd(mdev, &aso->pdn);
-+	if (err) {
-+		mlx5_core_err(mdev,
-+			      "MACsec offload: Failed to alloc pd for MACsec ASO, err=%d\n",
-+			      err);
-+		return err;
-+	}
-+
-+	maso = mlx5_aso_create(mdev, aso->pdn);
-+	if (IS_ERR(maso)) {
-+		err = PTR_ERR(maso);
-+		goto err_aso;
-+	}
-+
-+	err = mlx5e_macsec_aso_reg_mr(mdev, aso);
+ 
+ 	mlx5e_fs_init_l2_addr(priv->fs, netdev);
+ 
++	err = mlx5e_macsec_init(priv);
 +	if (err)
-+		goto err_aso_reg;
++		mlx5_core_err(mdev, "MACsec initialization failed, %d\n", err);
 +
-+	mutex_init(&aso->aso_lock);
-+
-+	aso->maso = maso;
-+
-+	return 0;
-+
-+err_aso_reg:
-+	mlx5_aso_destroy(maso);
-+err_aso:
-+	mlx5_core_dealloc_pd(mdev, aso->pdn);
-+	return err;
-+}
-+
-+static void mlx5e_macsec_aso_cleanup(struct mlx5e_macsec_aso *aso, struct mlx5_core_dev *mdev)
-+{
-+	if (!aso)
-+		return;
-+
-+	mlx5e_macsec_aso_dereg_mr(mdev, aso);
-+
-+	mlx5_aso_destroy(aso->maso);
-+
-+	mlx5_core_dealloc_pd(mdev, aso->pdn);
-+}
-+
- bool mlx5e_is_macsec_device(const struct mlx5_core_dev *mdev)
- {
- 	if (!(MLX5_CAP_GEN_64(mdev, general_obj_types) &
-@@ -1271,14 +1383,6 @@ int mlx5e_macsec_init(struct mlx5e_priv *priv)
- 	INIT_LIST_HEAD(&macsec->macsec_device_list_head);
- 	mutex_init(&macsec->lock);
+ 	/* Marking the link as currently not needed by the Driver */
+ 	if (!netif_running(netdev))
+ 		mlx5e_modify_admin_state(mdev, MLX5_PORT_DOWN);
+@@ -5262,6 +5262,7 @@ static void mlx5e_nic_disable(struct mlx5e_priv *priv)
+ 	mlx5e_disable_async_events(priv);
+ 	mlx5_lag_remove_netdev(mdev, priv->netdev);
+ 	mlx5_vxlan_reset_to_default(mdev->vxlan);
++	mlx5e_macsec_cleanup(priv);
+ }
  
--	err = mlx5_core_alloc_pd(mdev, &macsec->aso_pdn);
--	if (err) {
--		mlx5_core_err(mdev,
--			      "MACsec offload: Failed to alloc pd for MACsec ASO, err=%d\n",
--			      err);
--		goto err_pd;
--	}
--
- 	err = rhashtable_init(&macsec->sci_hash, &rhash_sci);
- 	if (err) {
- 		mlx5_core_err(mdev, "MACsec offload: Failed to init SCI hash table, err=%d\n",
-@@ -1286,6 +1390,12 @@ int mlx5e_macsec_init(struct mlx5e_priv *priv)
- 		goto err_hash;
- 	}
- 
-+	err = mlx5e_macsec_aso_init(&macsec->aso, priv->mdev);
-+	if (err) {
-+		mlx5_core_err(mdev, "MACsec offload: Failed to init aso, err=%d\n", err);
-+		goto err_aso;
-+	}
-+
- 	xa_init_flags(&macsec->sc_xarray, XA_FLAGS_ALLOC1);
- 
- 	priv->macsec = macsec;
-@@ -1303,10 +1413,10 @@ int mlx5e_macsec_init(struct mlx5e_priv *priv)
- 	return 0;
- 
- err_out:
-+	mlx5e_macsec_aso_cleanup(&macsec->aso, priv->mdev);
-+err_aso:
- 	rhashtable_destroy(&macsec->sci_hash);
- err_hash:
--	mlx5_core_dealloc_pd(priv->mdev, macsec->aso_pdn);
--err_pd:
- 	kfree(macsec);
- 	priv->macsec = NULL;
- 	return err;
-@@ -1315,15 +1425,16 @@ int mlx5e_macsec_init(struct mlx5e_priv *priv)
- void mlx5e_macsec_cleanup(struct mlx5e_priv *priv)
- {
- 	struct mlx5e_macsec *macsec = priv->macsec;
-+	struct mlx5_core_dev *mdev = macsec->mdev;
- 
- 	if (!macsec)
- 		return;
- 
- 	mlx5e_macsec_fs_cleanup(macsec->macsec_fs);
- 
--	priv->macsec = NULL;
-+	mlx5e_macsec_aso_cleanup(&macsec->aso, mdev);
- 
--	mlx5_core_dealloc_pd(priv->mdev, macsec->aso_pdn);
-+	priv->macsec = NULL;
- 
- 	rhashtable_destroy(&macsec->sci_hash);
- 
+ int mlx5e_update_nic_rx(struct mlx5e_priv *priv)
 -- 
 2.37.3
 
