@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A00D5B5203
-	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 01:42:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C0F25B5204
+	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 01:42:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229456AbiIKXmF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Sep 2022 19:42:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55388 "EHLO
+        id S229660AbiIKXmS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Sep 2022 19:42:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229488AbiIKXmA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Sep 2022 19:42:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F7627B07
-        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 16:41:47 -0700 (PDT)
+        with ESMTP id S229697AbiIKXmB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Sep 2022 19:42:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 873EE26AFE
+        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 16:41:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F21F61128
-        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 23:41:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BBF5C433C1;
-        Sun, 11 Sep 2022 23:41:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BC7EEB80AE9
+        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 23:41:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CDABC433C1;
+        Sun, 11 Sep 2022 23:41:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662939705;
-        bh=s7pA7YGq0zR6H97L1k+uHXd7cV0PaB9Jp3m7fmhpZEs=;
+        s=k20201202; t=1662939708;
+        bh=ygjsiyjHJ6UJ4VeCROaruWtzXOSwa/EIHkRTmiyTdq8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cQn83YZZdrE9Be5CF+57tzK8W/5XyI5awCKKfWUsbFh1Oc2IsddVhpYfcXdg3EU7l
-         p8oexfwyZpLfrKzG3IUW1NoALJJkBmysCgmF2UMUXwSa7InUS/wyurt+cUjxbHS05L
-         OPB57VIa9ypUIC8f0Nic+goTRBdzH6CGXYWHuRIcxx0B8fruoy3V5wffjQJ4/NInSI
-         bCvH1klsiWtYIHvHzuD0pfLBfqk+kJp5Q2s+tYRCBuNnl+Tx5R33fKNQCcwYYE85m7
-         L+uGz5RMI/AIcaW88/WpfG5UAKOURRSWBTsStTGIemlZoeqvOLrV0h7uQkpS7S8Jza
-         F3/qwa2jZc9nw==
+        b=rSWyNUmPMTA0/u3fNfujiYmPLU6AzjMynVgm1QsxZ4qdYnDSYr3JeeCPvwp60KDfv
+         pwXJklli3/adextFh97JrHSoXIjNP5l7lXWH7VfrpBxAo3yXrmPLeD4ePXcdPxrwml
+         Ttm86lV3kUr6CRZ2vpns2trpokE4Q+my3LRMyk72WQv9sLKELmK7q1s/jHLtondozC
+         WdbgBqxgMs9Jc9hsLnC74ORxTf9LHx3+267UWlxWyDMEypWPqdHgHBHd9yMMP6MBzB
+         fqAxTjnxpXcJAnhCE8FG7O27wl0KeSDxKAlQlcfyORmlpDE94d+rhYPQrM4RtWxEw7
+         WOZuq7XvL/Zng==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -39,9 +39,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
         Emeel Hakim <ehakim@nvidia.com>, Raed Salem <raeds@nvidia.com>
-Subject: [PATCH net-next 09/10] net/mlx5e: Support MACsec offload extended packet number (EPN)
-Date:   Mon, 12 Sep 2022 00:40:58 +0100
-Message-Id: <20220911234059.98624-10-saeed@kernel.org>
+Subject: [PATCH net-next 10/10] net/mlx5e: Support MACsec offload replay window
+Date:   Mon, 12 Sep 2022 00:40:59 +0100
+Message-Id: <20220911234059.98624-11-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220911234059.98624-1-saeed@kernel.org>
 References: <20220911234059.98624-1-saeed@kernel.org>
@@ -59,712 +59,103 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Emeel Hakim <ehakim@nvidia.com>
 
-MACsec EPN splits the packet number (PN) into two 32-bits fields,
-epn_lsb (32 least significant bits (LSBs) of PN) and epn_msb (32
-most significant bits (MSBs) of PN).
-Epn_msb bits are managed by SW and for that HW is required to send
-an object change event of type EPN event notifying the SW to update
-the epn_msb in addition, once epn_msb is updated SW update HW with
-the new epn_msb value for HW to perform replay protection.
-To prevent HW from stopping while handling the event, SW manages
-another bit for HW called epn_overlap, HW uses the latter to get
-an indication regarding how to read the epn_msb value correctly
-while still receiving packets.
-Add epn event handling that updates the epn_overlap and epn_msb for
-every 2^31 packets according to the following logic:
-if epn_lsb crosses 2^31 (half sequence number wraparound) upon HW
-relevant event, SW updates the esn_overlap value to OLD (value = 1).
-When the epn_lsb crosses 2^32 (full sequence number wraparound)
-upon HW relevant event, SW updates the esn_overlap to NEW
-(value = 0) and increment the esn_msb.
-When using MACsec EPN a salt and short secure channel id (ssci)
-needs to be provided by the user, when offloading EPN need to pass
-this salt and ssci to the HW to be used in the initial vector (IV)
-calculations.
+Support setting replay window size for MACsec offload.
+Currently supported window size of 32, 64, 128 and 256
+bit. Other values will be returned as invalid parameter.
 
 Reviewed-by: Raed Salem <raeds@nvidia.com>
 Signed-off-by: Emeel Hakim <ehakim@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/en_accel/macsec.c      | 441 +++++++++++++++++-
- .../mellanox/mlx5/core/en_accel/macsec.h      |   1 -
- drivers/net/ethernet/mellanox/mlx5/core/eq.c  |   3 +
- .../net/ethernet/mellanox/mlx5/core/events.c  |   3 +
- .../net/ethernet/mellanox/mlx5/core/lib/aso.h |   3 +
- include/linux/mlx5/device.h                   |   8 +
- 6 files changed, 452 insertions(+), 7 deletions(-)
+ .../mellanox/mlx5/core/en_accel/macsec.c      | 46 ++++++++++++++++---
+ 1 file changed, 39 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-index f52c88599597..6f79f87b9930 100644
+index 6f79f87b9930..166dc4e42d74 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-@@ -11,6 +11,50 @@
- #include "en_accel/macsec.h"
- #include "en_accel/macsec_fs.h"
- 
-+#define MLX5_MACSEC_EPN_SCOPE_MID 0x80000000L
-+#define MLX5E_MACSEC_ASO_CTX_SZ MLX5_ST_SZ_BYTES(macsec_aso)
-+
-+enum mlx5_macsec_aso_event_arm {
-+	MLX5E_ASO_EPN_ARM = BIT(0),
-+};
-+
-+enum {
-+	MLX5_MACSEC_ASO_REMOVE_FLOW_PKT_CNT_OFFSET,
-+};
-+
-+struct mlx5e_macsec_handle {
-+	struct mlx5e_macsec *macsec;
-+	u32 obj_id;
-+	u8 idx;
-+};
-+
-+enum {
-+	MLX5_MACSEC_EPN,
-+};
-+
-+struct mlx5e_macsec_aso_out {
-+	u8 event_arm;
-+	u32 mode_param;
-+};
-+
-+struct mlx5e_macsec_aso_in {
-+	u8 mode;
-+	u32 obj_id;
-+};
-+
-+struct mlx5e_macsec_epn_state {
-+	u32 epn_msb;
-+	u8 epn_enabled;
-+	u8 overlap;
-+};
-+
-+struct mlx5e_macsec_async_work {
-+	struct mlx5e_macsec *macsec;
-+	struct mlx5_core_dev *mdev;
-+	struct work_struct work;
-+	u32 obj_id;
-+};
-+
- struct mlx5e_macsec_sa {
- 	bool active;
- 	u8  assoc_num;
-@@ -18,11 +62,13 @@ struct mlx5e_macsec_sa {
- 	u32 enc_key_id;
- 	u32 next_pn;
- 	sci_t sci;
-+	salt_t salt;
- 
- 	struct rhash_head hash;
- 	u32 fs_id;
- 	union mlx5e_macsec_rule *macsec_rule;
- 	struct rcu_head rcu_head;
-+	struct mlx5e_macsec_epn_state epn_state;
+@@ -153,6 +153,8 @@ struct mlx5_macsec_obj_attrs {
+ 	struct mlx5e_macsec_epn_state epn_state;
+ 	salt_t salt;
+ 	__be32 ssci;
++	bool replay_protect;
++	u32 replay_window;
  };
  
- struct mlx5e_macsec_rx_sc;
-@@ -93,6 +139,9 @@ struct mlx5e_macsec {
+ struct mlx5_aso_ctrl_param {
+@@ -220,6 +222,35 @@ static void mlx5e_macsec_aso_dereg_mr(struct mlx5_core_dev *mdev, struct mlx5e_m
+ 	kfree(umr);
+ }
  
- 	/* ASO */
- 	struct mlx5e_macsec_aso aso;
++static int macsec_set_replay_protection(struct mlx5_macsec_obj_attrs *attrs, void *aso_ctx)
++{
++	u8 window_sz;
 +
-+	struct notifier_block nb;
-+	struct workqueue_struct *wq;
- };
- 
- struct mlx5_macsec_obj_attrs {
-@@ -101,6 +150,25 @@ struct mlx5_macsec_obj_attrs {
- 	__be64 sci;
- 	u32 enc_key_id;
- 	bool encrypt;
-+	struct mlx5e_macsec_epn_state epn_state;
-+	salt_t salt;
-+	__be32 ssci;
-+};
++	if (!attrs->replay_protect)
++		return 0;
 +
-+struct mlx5_aso_ctrl_param {
-+	u8   data_mask_mode;
-+	u8   condition_0_operand;
-+	u8   condition_1_operand;
-+	u8   condition_0_offset;
-+	u8   condition_1_offset;
-+	u8   data_offset;
-+	u8   condition_operand;
-+	u32  condition_0_data;
-+	u32  condition_0_mask;
-+	u32  condition_1_data;
-+	u32  condition_1_mask;
-+	u64  bitwise_data;
-+	u64  data_mask;
- };
- 
- static int mlx5e_macsec_aso_reg_mr(struct mlx5_core_dev *mdev, struct mlx5e_macsec_aso *aso)
-@@ -168,11 +236,29 @@ static int mlx5e_macsec_create_object(struct mlx5_core_dev *mdev,
- 
- 	MLX5_SET(macsec_offload_obj, obj, confidentiality_en, attrs->encrypt);
- 	MLX5_SET(macsec_offload_obj, obj, dekn, attrs->enc_key_id);
--	MLX5_SET64(macsec_offload_obj, obj, sci, (__force u64)(attrs->sci));
- 	MLX5_SET(macsec_offload_obj, obj, aso_return_reg, MLX5_MACSEC_ASO_REG_C_4_5);
- 	MLX5_SET(macsec_offload_obj, obj, macsec_aso_access_pd, attrs->aso_pdn);
- 	MLX5_SET(macsec_aso, aso_ctx, mode_parameter, attrs->next_pn);
- 
-+	/* Epn */
-+	if (attrs->epn_state.epn_enabled) {
-+		void *salt_p;
-+		int i;
-+
-+		MLX5_SET(macsec_aso, aso_ctx, epn_event_arm, 1);
-+		MLX5_SET(macsec_offload_obj, obj, epn_en, 1);
-+		MLX5_SET(macsec_offload_obj, obj, epn_msb, attrs->epn_state.epn_msb);
-+		MLX5_SET(macsec_offload_obj, obj, epn_overlap, attrs->epn_state.overlap);
-+		MLX5_SET64(macsec_offload_obj, obj, sci, (__force u64)attrs->ssci);
-+		salt_p = MLX5_ADDR_OF(macsec_offload_obj, obj, salt);
-+		for (i = 0; i < 3 ; i++)
-+			memcpy((u32 *)salt_p + i, &attrs->salt.bytes[4 * (2 - i)], 4);
-+		if (!is_tx)
-+			MLX5_SET(macsec_aso, aso_ctx, mode, MLX5_MACSEC_ASO_REPLAY_PROTECTION);
-+	} else {
-+		MLX5_SET64(macsec_offload_obj, obj, sci, (__force u64)(attrs->sci));
++	switch (attrs->replay_window) {
++	case 256:
++		window_sz = MLX5_MACSEC_ASO_REPLAY_WIN_256BIT;
++		break;
++	case 128:
++		window_sz = MLX5_MACSEC_ASO_REPLAY_WIN_128BIT;
++		break;
++	case 64:
++		window_sz = MLX5_MACSEC_ASO_REPLAY_WIN_64BIT;
++		break;
++	case 32:
++		window_sz = MLX5_MACSEC_ASO_REPLAY_WIN_32BIT;
++		break;
++	default:
++		return -EINVAL;
 +	}
++	MLX5_SET(macsec_aso, aso_ctx, window_size, window_sz);
++	MLX5_SET(macsec_aso, aso_ctx, mode, MLX5_MACSEC_ASO_REPLAY_PROTECTION);
 +
- 	MLX5_SET(macsec_aso, aso_ctx, valid, 0x1);
- 	if (is_tx)
- 		MLX5_SET(macsec_aso, aso_ctx, mode, MLX5_MACSEC_ASO_INC_SN);
-@@ -238,6 +324,7 @@ static int mlx5e_macsec_init_sa(struct macsec_context *ctx,
- 	struct mlx5_core_dev *mdev = priv->mdev;
- 	struct mlx5_macsec_obj_attrs obj_attrs;
- 	union mlx5e_macsec_rule *macsec_rule;
-+	struct macsec_key *key;
- 	int err;
++	return 0;
++}
++
+ static int mlx5e_macsec_create_object(struct mlx5_core_dev *mdev,
+ 				      struct mlx5_macsec_obj_attrs *attrs,
+ 				      bool is_tx,
+@@ -253,8 +284,12 @@ static int mlx5e_macsec_create_object(struct mlx5_core_dev *mdev,
+ 		salt_p = MLX5_ADDR_OF(macsec_offload_obj, obj, salt);
+ 		for (i = 0; i < 3 ; i++)
+ 			memcpy((u32 *)salt_p + i, &attrs->salt.bytes[4 * (2 - i)], 4);
+-		if (!is_tx)
+-			MLX5_SET(macsec_aso, aso_ctx, mode, MLX5_MACSEC_ASO_REPLAY_PROTECTION);
++
++		if (!is_tx) {
++			err = macsec_set_replay_protection(attrs, aso_ctx);
++			if (err)
++				return err;
++		}
+ 	} else {
+ 		MLX5_SET64(macsec_offload_obj, obj, sci, (__force u64)(attrs->sci));
+ 	}
+@@ -343,6 +378,8 @@ static int mlx5e_macsec_init_sa(struct macsec_context *ctx,
+ 	}
  
- 	obj_attrs.next_pn = sa->next_pn;
-@@ -245,6 +332,17 @@ static int mlx5e_macsec_init_sa(struct macsec_context *ctx,
- 	obj_attrs.enc_key_id = sa->enc_key_id;
- 	obj_attrs.encrypt = encrypt;
- 	obj_attrs.aso_pdn = macsec->aso.pdn;
-+	obj_attrs.epn_state = sa->epn_state;
-+
-+	if (is_tx) {
-+		obj_attrs.ssci = cpu_to_be32((__force u32)ctx->sa.tx_sa->ssci);
-+		key = &ctx->sa.tx_sa->key;
-+	} else {
-+		obj_attrs.ssci = cpu_to_be32((__force u32)ctx->sa.rx_sa->ssci);
-+		key = &ctx->sa.rx_sa->key;
-+	}
-+
-+	memcpy(&obj_attrs.salt, &key->salt, sizeof(key->salt));
+ 	memcpy(&obj_attrs.salt, &key->salt, sizeof(key->salt));
++	obj_attrs.replay_window = ctx->secy->replay_window;
++	obj_attrs.replay_protect = ctx->secy->replay_protect;
  
  	err = mlx5e_macsec_create_object(mdev, &obj_attrs, is_tx, &sa->macsec_obj_id);
  	if (err)
-@@ -340,11 +438,6 @@ static bool mlx5e_macsec_secy_features_validate(struct macsec_context *ctx)
+@@ -438,11 +475,6 @@ static bool mlx5e_macsec_secy_features_validate(struct macsec_context *ctx)
  		return false;
  	}
  
--	if (secy->xpn) {
--		netdev_err(netdev, "MACsec offload: xpn is not supported\n");
+-	if (secy->replay_protect) {
+-		netdev_err(netdev, "MACsec offload: replay protection is not supported\n");
 -		return false;
 -	}
 -
- 	if (secy->replay_protect) {
- 		netdev_err(netdev, "MACsec offload: replay protection is not supported\n");
- 		return false;
-@@ -369,6 +462,17 @@ mlx5e_macsec_get_macsec_device_context(const struct mlx5e_macsec *macsec,
- 	return NULL;
+ 	return true;
  }
  
-+static void update_macsec_epn(struct mlx5e_macsec_sa *sa, const struct macsec_key *key,
-+			      const pn_t *next_pn_halves)
-+{
-+	struct mlx5e_macsec_epn_state *epn_state = &sa->epn_state;
-+
-+	sa->salt = key->salt;
-+	epn_state->epn_enabled = 1;
-+	epn_state->epn_msb = next_pn_halves->upper;
-+	epn_state->overlap = next_pn_halves->lower < MLX5_MACSEC_EPN_SCOPE_MID ? 0 : 1;
-+}
-+
- static int mlx5e_macsec_add_txsa(struct macsec_context *ctx)
- {
- 	const struct macsec_tx_sc *tx_sc = &ctx->secy->tx_sc;
-@@ -411,6 +515,10 @@ static int mlx5e_macsec_add_txsa(struct macsec_context *ctx)
- 	tx_sa->next_pn = ctx_tx_sa->next_pn_halves.lower;
- 	tx_sa->sci = secy->sci;
- 	tx_sa->assoc_num = assoc_num;
-+
-+	if (secy->xpn)
-+		update_macsec_epn(tx_sa, &ctx_tx_sa->key, &ctx_tx_sa->next_pn_halves);
-+
- 	err = mlx5_create_encryption_key(mdev, ctx->sa.key, secy->key_len,
- 					 MLX5_ACCEL_OBJ_MACSEC_KEY,
- 					 &tx_sa->enc_key_id);
-@@ -814,6 +922,9 @@ static int mlx5e_macsec_add_rxsa(struct macsec_context *ctx)
- 	rx_sa->assoc_num = assoc_num;
- 	rx_sa->fs_id = rx_sc->sc_xarray_element->fs_id;
- 
-+	if (ctx->secy->xpn)
-+		update_macsec_epn(rx_sa, &ctx_rx_sa->key, &ctx_rx_sa->next_pn_halves);
-+
- 	err = mlx5_create_encryption_key(mdev, ctx->sa.key, ctx->secy->key_len,
- 					 MLX5_ACCEL_OBJ_MACSEC_KEY,
- 					 &rx_sa->enc_key_id);
-@@ -1185,6 +1296,308 @@ static int mlx5e_macsec_del_secy(struct macsec_context *ctx)
- 	return err;
- }
- 
-+static void macsec_build_accel_attrs(struct mlx5e_macsec_sa *sa,
-+				     struct mlx5_macsec_obj_attrs *attrs)
-+{
-+	attrs->epn_state.epn_msb = sa->epn_state.epn_msb;
-+	attrs->epn_state.overlap = sa->epn_state.overlap;
-+}
-+
-+static void macsec_aso_build_wqe_ctrl_seg(struct mlx5e_macsec_aso *macsec_aso,
-+					  struct mlx5_wqe_aso_ctrl_seg *aso_ctrl,
-+					  struct mlx5_aso_ctrl_param *param)
-+{
-+	memset(aso_ctrl, 0, sizeof(*aso_ctrl));
-+	if (macsec_aso->umr->dma_addr) {
-+		aso_ctrl->va_l  = cpu_to_be32(macsec_aso->umr->dma_addr | ASO_CTRL_READ_EN);
-+		aso_ctrl->va_h  = cpu_to_be32(macsec_aso->umr->dma_addr >> 32);
-+		aso_ctrl->l_key = cpu_to_be32(macsec_aso->umr->mkey);
-+	}
-+
-+	if (!param)
-+		return;
-+
-+	aso_ctrl->data_mask_mode = param->data_mask_mode << 6;
-+	aso_ctrl->condition_1_0_operand = param->condition_1_operand |
-+						param->condition_0_operand << 4;
-+	aso_ctrl->condition_1_0_offset = param->condition_1_offset |
-+						param->condition_0_offset << 4;
-+	aso_ctrl->data_offset_condition_operand = param->data_offset |
-+						param->condition_operand << 6;
-+	aso_ctrl->condition_0_data = cpu_to_be32(param->condition_0_data);
-+	aso_ctrl->condition_0_mask = cpu_to_be32(param->condition_0_mask);
-+	aso_ctrl->condition_1_data = cpu_to_be32(param->condition_1_data);
-+	aso_ctrl->condition_1_mask = cpu_to_be32(param->condition_1_mask);
-+	aso_ctrl->bitwise_data = cpu_to_be64(param->bitwise_data);
-+	aso_ctrl->data_mask = cpu_to_be64(param->data_mask);
-+}
-+
-+static int mlx5e_macsec_modify_obj(struct mlx5_core_dev *mdev, struct mlx5_macsec_obj_attrs *attrs,
-+				   u32 macsec_id)
-+{
-+	u32 in[MLX5_ST_SZ_DW(modify_macsec_obj_in)] = {};
-+	u32 out[MLX5_ST_SZ_DW(query_macsec_obj_out)];
-+	u64 modify_field_select = 0;
-+	void *obj;
-+	int err;
-+
-+	/* General object fields set */
-+	MLX5_SET(general_obj_in_cmd_hdr, in, opcode, MLX5_CMD_OP_QUERY_GENERAL_OBJECT);
-+	MLX5_SET(general_obj_in_cmd_hdr, in, obj_type, MLX5_GENERAL_OBJECT_TYPES_MACSEC);
-+	MLX5_SET(general_obj_in_cmd_hdr, in, obj_id, macsec_id);
-+	err = mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
-+	if (err) {
-+		mlx5_core_err(mdev, "Query MACsec object failed (Object id %d), err = %d\n",
-+			      macsec_id, err);
-+		return err;
-+	}
-+
-+	obj = MLX5_ADDR_OF(query_macsec_obj_out, out, macsec_object);
-+	modify_field_select = MLX5_GET64(macsec_offload_obj, obj, modify_field_select);
-+
-+	/* EPN */
-+	if (!(modify_field_select & MLX5_MODIFY_MACSEC_BITMASK_EPN_OVERLAP) ||
-+	    !(modify_field_select & MLX5_MODIFY_MACSEC_BITMASK_EPN_MSB)) {
-+		mlx5_core_dbg(mdev, "MACsec object field is not modifiable (Object id %d)\n",
-+			      macsec_id);
-+		return -EOPNOTSUPP;
-+	}
-+
-+	obj = MLX5_ADDR_OF(modify_macsec_obj_in, in, macsec_object);
-+	MLX5_SET64(macsec_offload_obj, obj, modify_field_select,
-+		   MLX5_MODIFY_MACSEC_BITMASK_EPN_OVERLAP | MLX5_MODIFY_MACSEC_BITMASK_EPN_MSB);
-+	MLX5_SET(macsec_offload_obj, obj, epn_msb, attrs->epn_state.epn_msb);
-+	MLX5_SET(macsec_offload_obj, obj, epn_overlap, attrs->epn_state.overlap);
-+
-+	/* General object fields set */
-+	MLX5_SET(general_obj_in_cmd_hdr, in, opcode, MLX5_CMD_OP_MODIFY_GENERAL_OBJECT);
-+
-+	return mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
-+}
-+
-+static void macsec_aso_build_ctrl(struct mlx5e_macsec_aso *aso,
-+				  struct mlx5_wqe_aso_ctrl_seg *aso_ctrl,
-+				  struct mlx5e_macsec_aso_in *in)
-+{
-+	struct mlx5_aso_ctrl_param param = {};
-+
-+	param.data_mask_mode = MLX5_ASO_DATA_MASK_MODE_BITWISE_64BIT;
-+	param.condition_0_operand = MLX5_ASO_ALWAYS_TRUE;
-+	param.condition_1_operand = MLX5_ASO_ALWAYS_TRUE;
-+	if (in->mode == MLX5_MACSEC_EPN) {
-+		param.data_offset = MLX5_MACSEC_ASO_REMOVE_FLOW_PKT_CNT_OFFSET;
-+		param.bitwise_data = BIT(22) << 32;
-+		param.data_mask = param.bitwise_data;
-+	}
-+
-+	macsec_aso_build_wqe_ctrl_seg(aso, aso_ctrl, &param);
-+}
-+
-+static int macsec_aso_set_arm_event(struct mlx5_core_dev *mdev, struct mlx5e_macsec *macsec,
-+				    struct mlx5e_macsec_aso_in *in)
-+{
-+	struct mlx5e_macsec_aso *aso;
-+	struct mlx5_aso_wqe *aso_wqe;
-+	struct mlx5_aso *maso;
-+	int err;
-+
-+	aso = &macsec->aso;
-+	maso = aso->maso;
-+
-+	mutex_lock(&aso->aso_lock);
-+	aso_wqe = mlx5_aso_get_wqe(maso);
-+	mlx5_aso_build_wqe(maso, MLX5_MACSEC_ASO_DS_CNT, aso_wqe, in->obj_id,
-+			   MLX5_ACCESS_ASO_OPC_MOD_MACSEC);
-+	macsec_aso_build_ctrl(aso, &aso_wqe->aso_ctrl, in);
-+	mlx5_aso_post_wqe(maso, false, &aso_wqe->ctrl);
-+	err = mlx5_aso_poll_cq(maso, false, 10);
-+	mutex_unlock(&aso->aso_lock);
-+
-+	return err;
-+}
-+
-+static int macsec_aso_query(struct mlx5_core_dev *mdev, struct mlx5e_macsec *macsec,
-+			    struct mlx5e_macsec_aso_in *in, struct mlx5e_macsec_aso_out *out)
-+{
-+	struct mlx5e_macsec_aso *aso;
-+	struct mlx5_aso_wqe *aso_wqe;
-+	struct mlx5_aso *maso;
-+	int err;
-+
-+	aso = &macsec->aso;
-+	maso = aso->maso;
-+
-+	mutex_lock(&aso->aso_lock);
-+
-+	aso_wqe = mlx5_aso_get_wqe(maso);
-+	mlx5_aso_build_wqe(maso, MLX5_MACSEC_ASO_DS_CNT, aso_wqe, in->obj_id,
-+			   MLX5_ACCESS_ASO_OPC_MOD_MACSEC);
-+	macsec_aso_build_wqe_ctrl_seg(aso, &aso_wqe->aso_ctrl, NULL);
-+
-+	mlx5_aso_post_wqe(maso, false, &aso_wqe->ctrl);
-+	err = mlx5_aso_poll_cq(maso, false, 10);
-+	if (err)
-+		goto err_out;
-+
-+	if (MLX5_GET(macsec_aso, aso->umr->ctx, epn_event_arm))
-+		out->event_arm |= MLX5E_ASO_EPN_ARM;
-+
-+	out->mode_param = MLX5_GET(macsec_aso, aso->umr->ctx, mode_parameter);
-+
-+err_out:
-+	mutex_unlock(&aso->aso_lock);
-+	return err;
-+}
-+
-+static struct mlx5e_macsec_sa *get_macsec_tx_sa_from_obj_id(const struct mlx5e_macsec *macsec,
-+							    const u32 obj_id)
-+{
-+	const struct list_head *device_list;
-+	struct mlx5e_macsec_sa *macsec_sa;
-+	struct mlx5e_macsec_device *iter;
-+	int i;
-+
-+	device_list = &macsec->macsec_device_list_head;
-+
-+	list_for_each_entry(iter, device_list, macsec_device_list_element) {
-+		for (i = 0; i < MACSEC_NUM_AN; ++i) {
-+			macsec_sa = iter->tx_sa[i];
-+			if (!macsec_sa || !macsec_sa->active)
-+				continue;
-+			if (macsec_sa->macsec_obj_id == obj_id)
-+				return macsec_sa;
-+		}
-+	}
-+
-+	return NULL;
-+}
-+
-+static struct mlx5e_macsec_sa *get_macsec_rx_sa_from_obj_id(const struct mlx5e_macsec *macsec,
-+							    const u32 obj_id)
-+{
-+	const struct list_head *device_list, *sc_list;
-+	struct mlx5e_macsec_rx_sc *mlx5e_rx_sc;
-+	struct mlx5e_macsec_sa *macsec_sa;
-+	struct mlx5e_macsec_device *iter;
-+	int i;
-+
-+	device_list = &macsec->macsec_device_list_head;
-+
-+	list_for_each_entry(iter, device_list, macsec_device_list_element) {
-+		sc_list = &iter->macsec_rx_sc_list_head;
-+		list_for_each_entry(mlx5e_rx_sc, sc_list, rx_sc_list_element) {
-+			for (i = 0; i < MACSEC_NUM_AN; ++i) {
-+				macsec_sa = mlx5e_rx_sc->rx_sa[i];
-+				if (!macsec_sa || !macsec_sa->active)
-+					continue;
-+				if (macsec_sa->macsec_obj_id == obj_id)
-+					return macsec_sa;
-+			}
-+		}
-+	}
-+
-+	return NULL;
-+}
-+
-+static void macsec_epn_update(struct mlx5e_macsec *macsec, struct mlx5_core_dev *mdev,
-+			      struct mlx5e_macsec_sa *sa, u32 obj_id, u32 mode_param)
-+{
-+	struct mlx5_macsec_obj_attrs attrs = {};
-+	struct mlx5e_macsec_aso_in in = {};
-+
-+	/* When the bottom of the replay protection window (mode_param) crosses 2^31 (half sequence
-+	 * number wraparound) hence mode_param > MLX5_MACSEC_EPN_SCOPE_MID the SW should update the
-+	 * esn_overlap to OLD (1).
-+	 * When the bottom of the replay protection window (mode_param) crosses 2^32 (full sequence
-+	 * number wraparound) hence mode_param < MLX5_MACSEC_EPN_SCOPE_MID since it did a
-+	 * wraparound, the SW should update the esn_overlap to NEW (0), and increment the esn_msb.
-+	 */
-+
-+	if (mode_param < MLX5_MACSEC_EPN_SCOPE_MID) {
-+		sa->epn_state.epn_msb++;
-+		sa->epn_state.overlap = 0;
-+	} else {
-+		sa->epn_state.overlap = 1;
-+	}
-+
-+	macsec_build_accel_attrs(sa, &attrs);
-+	mlx5e_macsec_modify_obj(mdev, &attrs, obj_id);
-+
-+	/* Re-set EPN arm event */
-+	in.obj_id = obj_id;
-+	in.mode = MLX5_MACSEC_EPN;
-+	macsec_aso_set_arm_event(mdev, macsec, &in);
-+}
-+
-+static void macsec_async_event(struct work_struct *work)
-+{
-+	struct mlx5e_macsec_async_work *async_work;
-+	struct mlx5e_macsec_aso_out out = {};
-+	struct mlx5e_macsec_aso_in in = {};
-+	struct mlx5e_macsec_sa *macsec_sa;
-+	struct mlx5e_macsec *macsec;
-+	struct mlx5_core_dev *mdev;
-+	u32 obj_id;
-+
-+	async_work = container_of(work, struct mlx5e_macsec_async_work, work);
-+	macsec = async_work->macsec;
-+	mdev = async_work->mdev;
-+	obj_id = async_work->obj_id;
-+	macsec_sa = get_macsec_tx_sa_from_obj_id(macsec, obj_id);
-+	if (!macsec_sa) {
-+		macsec_sa = get_macsec_rx_sa_from_obj_id(macsec, obj_id);
-+		if (!macsec_sa) {
-+			mlx5_core_dbg(mdev, "MACsec SA is not found (SA object id %d)\n", obj_id);
-+			goto out_async_work;
-+		}
-+	}
-+
-+	/* Query MACsec ASO context */
-+	in.obj_id = obj_id;
-+	macsec_aso_query(mdev, macsec, &in, &out);
-+
-+	/* EPN case */
-+	if (macsec_sa->epn_state.epn_enabled && !(out.event_arm & MLX5E_ASO_EPN_ARM))
-+		macsec_epn_update(macsec, mdev, macsec_sa, obj_id, out.mode_param);
-+
-+out_async_work:
-+	kfree(async_work);
-+}
-+
-+static int macsec_obj_change_event(struct notifier_block *nb, unsigned long event, void *data)
-+{
-+	struct mlx5e_macsec *macsec = container_of(nb, struct mlx5e_macsec, nb);
-+	struct mlx5e_macsec_async_work *async_work;
-+	struct mlx5_eqe_obj_change *obj_change;
-+	struct mlx5_eqe *eqe = data;
-+	u16 obj_type;
-+	u32 obj_id;
-+
-+	if (event != MLX5_EVENT_TYPE_OBJECT_CHANGE)
-+		return NOTIFY_DONE;
-+
-+	obj_change = &eqe->data.obj_change;
-+	obj_type = be16_to_cpu(obj_change->obj_type);
-+	obj_id = be32_to_cpu(obj_change->obj_id);
-+
-+	if (obj_type != MLX5_GENERAL_OBJECT_TYPES_MACSEC)
-+		return NOTIFY_DONE;
-+
-+	async_work = kzalloc(sizeof(*async_work), GFP_ATOMIC);
-+	if (!async_work)
-+		return NOTIFY_DONE;
-+
-+	async_work->macsec = macsec;
-+	async_work->mdev = macsec->mdev;
-+	async_work->obj_id = obj_id;
-+
-+	INIT_WORK(&async_work->work, macsec_async_event);
-+
-+	WARN_ON(!queue_work(macsec->wq, &async_work->work));
-+
-+	return NOTIFY_OK;
-+}
-+
- static int mlx5e_macsec_aso_init(struct mlx5e_macsec_aso *aso, struct mlx5_core_dev *mdev)
- {
- 	struct mlx5_aso *maso;
-@@ -1396,6 +1809,12 @@ int mlx5e_macsec_init(struct mlx5e_priv *priv)
- 		goto err_aso;
- 	}
- 
-+	macsec->wq = alloc_ordered_workqueue("mlx5e_macsec_%s", 0, priv->netdev->name);
-+	if (!macsec->wq) {
-+		err = -ENOMEM;
-+		goto err_wq;
-+	}
-+
- 	xa_init_flags(&macsec->sc_xarray, XA_FLAGS_ALLOC1);
- 
- 	priv->macsec = macsec;
-@@ -1406,6 +1825,9 @@ int mlx5e_macsec_init(struct mlx5e_priv *priv)
- 	if (IS_ERR_OR_NULL(macsec_fs))
- 		goto err_out;
- 
-+	macsec->nb.notifier_call = macsec_obj_change_event;
-+	mlx5_notifier_register(mdev, &macsec->nb);
-+
- 	macsec->macsec_fs = macsec_fs;
- 
- 	mlx5_core_dbg(mdev, "MACsec attached to netdevice\n");
-@@ -1413,6 +1835,8 @@ int mlx5e_macsec_init(struct mlx5e_priv *priv)
- 	return 0;
- 
- err_out:
-+	destroy_workqueue(macsec->wq);
-+err_wq:
- 	mlx5e_macsec_aso_cleanup(&macsec->aso, priv->mdev);
- err_aso:
- 	rhashtable_destroy(&macsec->sci_hash);
-@@ -1430,8 +1854,13 @@ void mlx5e_macsec_cleanup(struct mlx5e_priv *priv)
- 	if (!macsec)
- 		return;
- 
-+	mlx5_notifier_unregister(mdev, &macsec->nb);
-+
- 	mlx5e_macsec_fs_cleanup(macsec->macsec_fs);
- 
-+	/* Cleanup workqueue */
-+	destroy_workqueue(macsec->wq);
-+
- 	mlx5e_macsec_aso_cleanup(&macsec->aso, mdev);
- 
- 	priv->macsec = NULL;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.h
-index ada557fc042d..d580b4a91253 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.h
-@@ -66,7 +66,6 @@ static inline void mlx5e_macsec_offload_handle_rx_skb(struct net_device *netdev,
- 						      struct mlx5_cqe64 *cqe)
- {}
- static inline bool mlx5e_is_macsec_device(const struct mlx5_core_dev *mdev) { return false; }
--
- #endif  /* CONFIG_MLX5_EN_MACSEC */
- 
- #endif	/* __MLX5_ACCEL_EN_MACSEC_H__ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-index 229728c80233..a0242dc15741 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-@@ -575,6 +575,9 @@ static void gather_async_events_mask(struct mlx5_core_dev *dev, u64 mask[4])
- 	if (MLX5_CAP_GEN_MAX(dev, vhca_state))
- 		async_event_mask |= (1ull << MLX5_EVENT_TYPE_VHCA_STATE_CHANGE);
- 
-+	if (MLX5_CAP_MACSEC(dev, log_max_macsec_offload))
-+		async_event_mask |= (1ull << MLX5_EVENT_TYPE_OBJECT_CHANGE);
-+
- 	mask[0] = async_event_mask;
- 
- 	if (MLX5_CAP_GEN(dev, event_cap))
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/events.c b/drivers/net/ethernet/mellanox/mlx5/core/events.c
-index a1ac3a654962..9459e56ee90a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/events.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/events.c
-@@ -36,6 +36,7 @@ static struct mlx5_nb events_nbs_ref[] = {
- 	/* Events to be forwarded (as is) to mlx5 core interfaces (mlx5e/mlx5_ib) */
- 	{.nb.notifier_call = forward_event,   .event_type = MLX5_EVENT_TYPE_PORT_CHANGE },
- 	{.nb.notifier_call = forward_event,   .event_type = MLX5_EVENT_TYPE_GENERAL_EVENT },
-+	{.nb.notifier_call = forward_event,   .event_type = MLX5_EVENT_TYPE_OBJECT_CHANGE },
- 	/* QP/WQ resource events to forward */
- 	{.nb.notifier_call = forward_event,   .event_type = MLX5_EVENT_TYPE_DCT_DRAINED },
- 	{.nb.notifier_call = forward_event,   .event_type = MLX5_EVENT_TYPE_PATH_MIG },
-@@ -132,6 +133,8 @@ static const char *eqe_type_str(u8 type)
- 		return "MLX5_EVENT_TYPE_MONITOR_COUNTER";
- 	case MLX5_EVENT_TYPE_DEVICE_TRACER:
- 		return "MLX5_EVENT_TYPE_DEVICE_TRACER";
-+	case MLX5_EVENT_TYPE_OBJECT_CHANGE:
-+		return "MLX5_EVENT_TYPE_OBJECT_CHANGE";
- 	default:
- 		return "Unrecognized event";
- 	}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.h b/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.h
-index b3bbf284fe71..d854e01d7fc5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/aso.h
-@@ -11,7 +11,9 @@
- 	(DIV_ROUND_UP(sizeof(struct mlx5_aso_wqe), MLX5_SEND_WQE_BB))
- #define MLX5_ASO_WQEBBS_DATA \
- 	(DIV_ROUND_UP(sizeof(struct mlx5_aso_wqe_data), MLX5_SEND_WQE_BB))
-+#define ASO_CTRL_READ_EN BIT(0)
- #define MLX5_WQE_CTRL_WQE_OPC_MOD_SHIFT 24
-+#define MLX5_MACSEC_ASO_DS_CNT (DIV_ROUND_UP(sizeof(struct mlx5_aso_wqe), MLX5_SEND_WQE_DS))
- 
- struct mlx5_wqe_aso_ctrl_seg {
- 	__be32  va_h;
-@@ -70,6 +72,7 @@ enum {
- 
- enum {
- 	MLX5_ACCESS_ASO_OPC_MOD_FLOW_METER = 0x2,
-+	MLX5_ACCESS_ASO_OPC_MOD_MACSEC = 0x5,
- };
- 
- struct mlx5_aso;
-diff --git a/include/linux/mlx5/device.h b/include/linux/mlx5/device.h
-index 2927810f172b..dcd60fb9e6b4 100644
---- a/include/linux/mlx5/device.h
-+++ b/include/linux/mlx5/device.h
-@@ -325,6 +325,7 @@ enum mlx5_event {
- 	MLX5_EVENT_TYPE_WQ_INVAL_REQ_ERROR = 0x10,
- 	MLX5_EVENT_TYPE_WQ_ACCESS_ERROR	   = 0x11,
- 	MLX5_EVENT_TYPE_SRQ_CATAS_ERROR	   = 0x12,
-+	MLX5_EVENT_TYPE_OBJECT_CHANGE	   = 0x27,
- 
- 	MLX5_EVENT_TYPE_INTERNAL_ERROR	   = 0x08,
- 	MLX5_EVENT_TYPE_PORT_CHANGE	   = 0x09,
-@@ -699,6 +700,12 @@ struct mlx5_eqe_temp_warning {
- 	__be64 sensor_warning_lsb;
- } __packed;
- 
-+struct mlx5_eqe_obj_change {
-+	u8      rsvd0[2];
-+	__be16  obj_type;
-+	__be32  obj_id;
-+} __packed;
-+
- #define SYNC_RST_STATE_MASK    0xf
- 
- enum sync_rst_state_type {
-@@ -737,6 +744,7 @@ union ev_data {
- 	struct mlx5_eqe_xrq_err		xrq_err;
- 	struct mlx5_eqe_sync_fw_update	sync_fw_update;
- 	struct mlx5_eqe_vhca_state	vhca_state;
-+	struct mlx5_eqe_obj_change	obj_change;
- } __packed;
- 
- struct mlx5_eqe {
 -- 
 2.37.3
 
