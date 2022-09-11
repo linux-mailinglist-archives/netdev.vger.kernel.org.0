@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 32B245B5111
-	for <lists+netdev@lfdr.de>; Sun, 11 Sep 2022 22:04:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42E975B510B
+	for <lists+netdev@lfdr.de>; Sun, 11 Sep 2022 22:04:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229846AbiIKUDi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Sep 2022 16:03:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50004 "EHLO
+        id S229786AbiIKUDg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Sep 2022 16:03:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229776AbiIKUDY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Sep 2022 16:03:24 -0400
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2095.outbound.protection.outlook.com [40.107.96.95])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53D0827FEE;
+        with ESMTP id S229783AbiIKUD2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Sep 2022 16:03:28 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2121.outbound.protection.outlook.com [40.107.243.121])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEB0627FF6;
         Sun, 11 Sep 2022 13:03:07 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=F4Dzs9PN0poK2bdW1Lizgd1NgG2BpzMKikJxr+0KycXByOd3YmR2c/pb24eIchERXmjhWWXxr5z6IU4xXDPheHb0/aHSsmG0sG55e/PFSm2XLHF88yaUykaGu3aUNU1UT/caaPNCTIf/273+nx1BbT9wZzoB2S4mpQAEtI6Sar0t9x1R3TUTXe6cGmHUVL0PrfO6Cw4eyofX+Brr2lnEgKZXqL9jfGhFV1Gc1iB04fmFxuSQxD5QWUZZEtOZYiNmvcRF8l5UNiPac2ZJJDfNVhEElQl8NlOu7IJHWW/quK7onlh7gwOKKgEdWGJ8mNJqIZHRd564Bhjx09NzyCNaJw==
+ b=MnYOPUFighvhhn2vRXrcAC3XT/OArnfQtKQrT112DGjtoUSMN8r5UTTNvMgM+cXA1CvPfGDgPrI8fY0ZvNkCLiPyRql/OHaCJu/Rskv9gLI/k6udEeUE1P47re3vGeAmm8ULu3K3U6VzkA58JulELZMZ5+off7a5mKaTbFRWJHbij6zS6h81mrdZxyH1UfV0oQA3BU8NL3o2S9NFl2eFVtr612r0iC1N7HYybdBUmGPEoR7JbbR8/ArQAk+fQQ0Iit995LtZCMJebETSwBiIT7lAl6fZ/C5QevhDzwwWx5wYlFDyG5VzQ7n7sF2q/7BXLgwdwotyDWDlav39QbahAw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=toccuXRpC9GIrGKziX5sBEWXnnDtbF9gLspgZwGNLTk=;
- b=j0iGE08zlFDKuHPmGhT3uFOw8DsH6N5YTZgvXg4rJAYQsj07LvzaF4qW/ceP/j/AVhEgMatzt0+lwQMWozhck6DAgiGmh2eT5jnz5KDvzOVbElwiIk3fn05G2TEpe8gBTdx5kVAZx7P3cjTWiZWPIYW+D/kduX8tDeVfpnVa3tnTL7M/YWUeYjfmF90bYrRoUiwIf3S9yLqr8/qol2U2q6avuuFvH2qyiNxyXOfhE3Z+BGQWBKQRELOkwWX9h1ipugCoX2TdsByV05lXV+rrtYQlv1wzQKc4a32sdT8+J6jD4bKuGbLR+8WkMYG0aeLMa4048lDxmbR8CgXT6P4byA==
+ bh=k1ejvkzCIE7FG4Jay3lKo7GnPZQe5dktKFz12kyRAPc=;
+ b=c4q3F/T7PFsNJO1DuGwcwU9Zi5MnD1FEzqcl9OgiFcWpPaR/2iIwgY02hv7Yqm0w/9BukunpPkB6zzxgYX/SqO+T5MdjQomx3qZYXToXNxjv1pp7TdP6j1jgtLSPSBNZzhtPPFoDe7n+yw/wnrhmS5BRLhtkq7dVhACK01udfuYHyWemYkJIdfs9OGt64bl1LiSxtw6sH3Rl7opFYcXkkWsbG17rylgv1t80LqzR/NZA+tmpPJZtRNB614b8Ae8UrbqJ9WKMrNxts6QZGLu0m+60GuJBdupZ2lkOKGLD1NNeaNVHyG2IDttnFOjnc+nMsBcgrZwmPj97ahO9mrmiRQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=in-advantage.com; dmarc=pass action=none
  header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=toccuXRpC9GIrGKziX5sBEWXnnDtbF9gLspgZwGNLTk=;
- b=VYhbE/SsIm0tfOBBlvnBLUvwvKa0/WiP611T5e5MFNTCedaqFBpF01s0mrlw3kj2lV7wWXU4PQZyicdK2cGUcu8ZQhSSPYMW6BcoIbOIq/1XZO4U08mCmHs9+VVcFZDtQxRBGF+dRsioVDY/CPKPb2epW+VgCKv4E9mkBKy114g=
+ bh=k1ejvkzCIE7FG4Jay3lKo7GnPZQe5dktKFz12kyRAPc=;
+ b=iN5Kas+JppsavaSPxp1MYLBbvK2OYV48IZ+X8zUfGToAt0vgLg60YZ1HxTWPI3fRMML88I5yBSW9ZOXloJnJIeqUZgRVY3gU0OFLq+r0qfo4vSrNeZgBetGLBG+FX6aHEZLbD6n/yweN2fOL/zCh4+zxgXX/xLELTypkt8MLA78=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=in-advantage.com;
 Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
  (2603:10b6:301:35::37) by BN0PR10MB5335.namprd10.prod.outlook.com
  (2603:10b6:408:127::23) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.14; Sun, 11 Sep
- 2022 20:02:59 +0000
+ 2022 20:03:01 +0000
 Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
  ([fe80::38ee:4bfb:c7b8:72e1]) by MWHPR1001MB2351.namprd10.prod.outlook.com
  ([fe80::38ee:4bfb:c7b8:72e1%7]) with mapi id 15.20.5588.020; Sun, 11 Sep 2022
- 20:02:59 +0000
+ 20:03:01 +0000
 From:   Colin Foster <colin.foster@in-advantage.com>
 To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Russell King <linux@armlinux.org.uk>,
@@ -54,9 +54,9 @@ Cc:     Russell King <linux@armlinux.org.uk>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>,
         Lee Jones <lee@kernel.org>
-Subject: [RFC v1 net-next 7/8] mfd: ocelot: add regmaps for ocelot_ext
-Date:   Sun, 11 Sep 2022 13:02:43 -0700
-Message-Id: <20220911200244.549029-8-colin.foster@in-advantage.com>
+Subject: [RFC v1 net-next 8/8] net: dsa: ocelot: add external ocelot switch control
+Date:   Sun, 11 Sep 2022 13:02:44 -0700
+Message-Id: <20220911200244.549029-9-colin.foster@in-advantage.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220911200244.549029-1-colin.foster@in-advantage.com>
 References: <20220911200244.549029-1-colin.foster@in-advantage.com>
@@ -67,52 +67,52 @@ X-ClientProxiedBy: MW4PR03CA0318.namprd03.prod.outlook.com
  (2603:10b6:301:35::37)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 411269ed-8e74-4608-ae74-08da94309f5c
+X-MS-Office365-Filtering-Correlation-Id: 132b27d4-6048-4088-33c7-08da94309fa4
 X-MS-TrafficTypeDiagnostic: BN0PR10MB5335:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: oZuCdRCmVBBXTgR0uWD7xyRAO40MryP/7D7XQsKb7gLKyghDXnvLo2jDtqS7sYgphJwf82Sj59I5B+6jy7PGiB7GN6wRf5nQ74E/EUCbXkrMfs+cHiPPyA51QvapR6+ShCEZRWm3qaEJVgPsPjIBgy4d3rMD4m+HfGTuPBuOLUv8RoUn9EG0uvQM1cnoNpf4U9rdJ1IxRWtndh+w7u7hFpyOJvEpeEg9Obml2JQoepmIAV4SWkebptod1Jw+IlxypjeQns1aFm3Hb1ZDKRMxpdosjy5uyfM9+QLXgsvprZMYj4hQ7xWLbaBxtJ8gQJRnL9/01Z+ooBHeUG73HqiBvsczRpXX2zbdKTwIXeUmUVnwXQntw5hpk0kagvUfAU0Q/ugbH9R87JxC8z2ZnVWHW2NE7lgQ5BvHOnoIiORKT5azZD/GHQ8ouRnTY4i+Xl3Mi9P7kheVMLa4+RG7mdG5pviONQPSR4Bwg7XinNzv0CkMaYA4/RkP7GhEB8bJfJ7FpPf97ja4illAHUDcKAa3ujlpiZueoivjts7jstUgEA3OamohaWgPHr/DhZLyQQAcxXpO52YhYgjG16Hu1tIi0rav/fVekDjyYWTfrIpJxNm+ZZvlSTSe+fbzND/szDW0XLFZ70hjcLF4cgRZ4yPJVNPGsjAKgrJuHZVIymUHY4iKatZ54bm1iQX/k8IUGeFy9n6+k82e5ABChhSlvWEr5MW0L7KRCUY7v59lgmTiXul5gWDXyB04jic1sa5v+YdHMtdlJKTL8cZytj0HTI5XOQ==
+X-Microsoft-Antispam-Message-Info: i4XtHKfdJexKCtb96tEuXMmON2cDAW3w30yNYAik1pRk5bxYss7STeG6ph1HtqulEz33K7TrdrYc282DAIMFvCn3t54Zf9Mrspt2FPasvaATMRHuH31bTkQvrdknXDYPFx0BNVB9c7xZQmWvIf2d5QaTOWBds4564ZM4bAYrCACy+NQ8sSeK4vseNCfbKiqJFY3vKo5u27RCaqiowQCqJ9JfdgIoVNWaqyqtp2SSqyXhKzKKZhvLLqMwl2LrBI5tArdXwpwQ/iiPjcdUIBe8ClkjHmOb22lDB/DHai4Hx4MgPcfYuNLZQhFwCxaPVbAQcyhYwAZzhhFjXb9BJZA0Np6y+T6VC+UcyN/LMEAkE+C2U2ZezKQv4judlKJMmJImF+f13ya91qLXw8FlQKI+kIDq7veKBkmRw99eijWMI5Jd0sLbYU1KfFFaPYPPRwQ+qatSHmN+OCXqU3UubU6rU7wU9kjE9AeRjOEalSohHFNEeE3oOmrR9SlNLBELGz2bpWrdv36K69MnjZ8g/OOe+ywLZJ+a1pNz8EdWJVBv+Ey2xHfhInXHuXlFr3628jTDFN1+QZQevnnNGVd2b0Nx2MWWryt+jYfCyFj1bbwMbhkN0wNnwFF4vfRBsMMTLyy8U9d1tlPCw1u8IMcW2bR+SX3O+SLg3QIzMXBV4jd1w96KtlMoPz7lr3bxZugGJB+IYGchpw+sBox2cWIlKD1/hywmtl1dTYnpo1Qpo6uQzKbTVf/u6XBjdG4uDRJhiElJ5p0cLyQkCLtgLzlR9T1ezQ==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(136003)(366004)(39830400003)(376002)(346002)(38350700002)(38100700002)(8676002)(4326008)(66946007)(36756003)(86362001)(66556008)(66476007)(2906002)(83380400001)(186003)(2616005)(6512007)(6506007)(1076003)(52116002)(478600001)(6486002)(6666004)(26005)(316002)(54906003)(44832011)(41300700001)(8936002)(5660300002)(7416002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?nZA4ZNXE/GHMPNx1Ms7D/onahZAodHQzvE+hcEzybbuUL9QdbPbLoVJAuKCc?=
- =?us-ascii?Q?+SFOl6kQczvNKljlMz+JX+cXK1yT1OsXoEJ82LhAc11bKs/NMKkQzLcX7Q1V?=
- =?us-ascii?Q?STYhkX4jP82rlzGVUKcytZ22geARyikAdk/7+TO1GmnJ9xMIL0G3cV83IEXS?=
- =?us-ascii?Q?irJNIaifosvpYfnJed42PUmInRz1mqcNF7175wVRBxMP3VbfjlKSNoAFL5kp?=
- =?us-ascii?Q?RK1Iv+/rnJdypo+PtwLpF1OyVkw24JEfEpaBxKzfl+BKPS7M9ME78Phjojrw?=
- =?us-ascii?Q?0shO1ShZGysX5Ji6Iq7OW+VIWFamMWYjXVZvZXFDddpf4XkqhR1VjYAmWBo7?=
- =?us-ascii?Q?2a4N9x+/TR0d6eKon31ricDZueAI7SoJJtK34wohraYueBWx/iD2FvEIg9R7?=
- =?us-ascii?Q?fukgcpsFuexe7hYADCCu27FIkE1+IhUfexncpvE7No0/1LvRxFUD8SJNuuBa?=
- =?us-ascii?Q?Fk/WwWqb4kU6mv8AkWSWD4TY0F5kmroklQ0pPvg+v6z4sDKl/6gFZOaEqQkC?=
- =?us-ascii?Q?jSdVJN/yeJKEwn6ZQBy/AxqxBU6nwxV0vnh/YeHhpKj9jbtFltLQeNlhbCWg?=
- =?us-ascii?Q?G3CoqshVuR1h80n9rjHSZ+kxG+dZltq9vuoC0JO5w7dOHlVvB3xevE9/m+Vq?=
- =?us-ascii?Q?9T3NUQmDYq7M93nvm0ZJg+JbB4Ig20SeEua1LhhUM5iX4aTZIbanguPdO0A0?=
- =?us-ascii?Q?XFVt/ksAArxlyBnwYOrLG3SpwF8kFYodYo6b4mB3SE8WFAy3TQuGq64PRQQ2?=
- =?us-ascii?Q?B/yIzMV6CQFXwD2kGR3pK0myazZlPyn+9KyKxBcssewDYEqFBSsnRbI1SiOr?=
- =?us-ascii?Q?JYUEYCMqZ50uMUWuKojunDvXxaAHW1e3GSYT1cgXizrsz5QYzZcOOPtq5CAK?=
- =?us-ascii?Q?yvwiBINlAfJOZf+Ke7J0CBuMEj7kMed+Safnm4rJ5Zrbu1qgQGGPWeMmOdo/?=
- =?us-ascii?Q?L5cwPZMo1S3HojAMws2B17eZ1p/paM8dzePRZMXfxHsuckYviGtJbZiz5E0d?=
- =?us-ascii?Q?LnJ/e3XpXu7jbZxrDZYnKkVlLfgtPRE/DRlP2SrkcxzoC8h+WfVTFsWbfi/w?=
- =?us-ascii?Q?sW9LZSNs25PIsJcJ23idnwyzcytCnSpI8xtUEk1yT9JqSwl6Vfghn546K3ZB?=
- =?us-ascii?Q?YWiKMDTiRNHuP0Z8NKmFGZUB9B30bYyzpRi8+Dwf+BdvinBOFY4e3ZHiArHq?=
- =?us-ascii?Q?k+Wc90xoi+Wv/4O6m+h/HG7dWGzOGtdmtJRbR9aBsyhIMTg9v3Q0qsjqRXze?=
- =?us-ascii?Q?A3A9uOzYzmwv0kQ8v71QK7iUQyXRHYLd4XClVjoO/gSJGqF5W5eqw6PBIEsG?=
- =?us-ascii?Q?6Cq9Jg2OiRK4bf9C409XUMKD8E1YV5XSrypYJwNQt6kpkVvRYzY1H4OL9b3h?=
- =?us-ascii?Q?laEP8hQWiVfkNpz+iSqsldg8YBoc391+NcUOGUQwKPk4do2M273PkYYukoj3?=
- =?us-ascii?Q?jkoDTyDwQGmFJBi60M2toJchWxv4DR0Q2OY22lL2ll4P3ILDQ2cp3z8OHvTL?=
- =?us-ascii?Q?9SaLNd3UBK5GWf4LmrvSpzW3KMBTyxHdJS9stBycwNYOR+c/ET8CONKAz8Yw?=
- =?us-ascii?Q?ybN2kWeRzwc33SE3xN2vKE5i1YNz1n3TzlWdNaOSBAxkuk53XenhUWFx5Iwm?=
- =?us-ascii?Q?xQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?BmmJHCkM4TqO6zmwhBEbqOHcZkeffczUAe5Gns3lXzLHkn3AvPmVSei03v0S?=
+ =?us-ascii?Q?r0hEal3Ztg4TyHoMmcIOGIznAbe1ly7+atPNbMWKAevLpBNzuWHFvBiUCZB8?=
+ =?us-ascii?Q?GEUEJMxhUxuAtBLLFvCPrp+PrVwejf5DRQHoj170gV19Jq6yNBf6tlvxkz6V?=
+ =?us-ascii?Q?MRTUk3ahXle5XIb15TCDSarRwLmnWlo69VX/RCYpalQxs4glRRteuIAETc7t?=
+ =?us-ascii?Q?wrxQ+G1PGROawsVv93+v+b0mZfQGBwH99Qi4t1YqGwrAd+yj+5Z4cxp4mK8O?=
+ =?us-ascii?Q?Dk7sf2rAaF5xul/t8PRzWbrLtFZzlmlkKvsIrv+ZCLLA3aGofXD0NsE/lYa7?=
+ =?us-ascii?Q?SKOX5yDVG0XhxGnpbBH/xQBSwhwitbyGJTEPih5sIGenOHN7n0NqtIyBHwXN?=
+ =?us-ascii?Q?Qt36cpg4Qn3mES9lmevrVGnvSmsYgVq8N3EZH2BK8inoCLSFkzIYk5km1luv?=
+ =?us-ascii?Q?E7o3fdv/Ihq/GpuKL3zqFfExD01r0koA5ulltXLQVKrXeBWQhSoTmbCxo7V5?=
+ =?us-ascii?Q?R5OjYgctJOb+t+GXWhfBnmb2+ryb2qV5taFRH/oWUt71BEkk+CD07Nu/j0+g?=
+ =?us-ascii?Q?wm4GpL6/nJdhNWmGmzxSn5HYKVpc3aEPZkktWTPaE6I3C9VEyCfJJHjGXtc3?=
+ =?us-ascii?Q?+DBOvrfcmoILWzCfQ+aVCRsvy71dis56ZQ1oQ3u+QxEKQQvKnWq+XEM5hAhn?=
+ =?us-ascii?Q?DlwpWvPRUWHv5HKuY3N2ayg5CMpETnyLMdaByy0ViGbajdqsoLNw8snWr5oK?=
+ =?us-ascii?Q?ZQn8LBQtFYPVuEI5iA6pLjeMcFHEvvqCJQD7sLmC2ZU3WLONqpcIShs7rHCM?=
+ =?us-ascii?Q?2VRx8CJ62dhHlIDynJU0mzWZ35HRcW0uetesQcC7az2y8ZzQFesMGPzrpOs0?=
+ =?us-ascii?Q?8tpDvSgSOCbHyUJRhK52g8hR6UW+fEehIoAqf7cV0dpIo2EPscT6z7maOzHM?=
+ =?us-ascii?Q?+AyxRhV6i7BhNZdg+MPjidhNLPQTeQ1+10iye4jdWtr40fvpSv/GaKN1ufSL?=
+ =?us-ascii?Q?IK2ycp9LIqC0y4Ls+1KfY+rQzaOY7NLBryiSKvP8tXUNzMPrYu9ysqQJWYZ/?=
+ =?us-ascii?Q?gqhiaJtoBgPwnWKdmhH3TvRXcwyhVGkvMKLBNJG/Uvvky6CZMv2VseM1u/rI?=
+ =?us-ascii?Q?1KeJ0Bo5q7mUO+UVwBuwppERqNOl9E/3SZ52lER91cNwD01PtiqaRoO9avB1?=
+ =?us-ascii?Q?JJeyXIjd+WS6I85lOoJID0zYnnQSV0MXSvbZIgsIwGLFwsgGiZT1DtpR9vpG?=
+ =?us-ascii?Q?E+PN9YLj8ImGxClEDmg5K0owlMU+S1gh2yGqHb4EmQJUafKEsRHm5BmjF/Pi?=
+ =?us-ascii?Q?ka1g1mwJj5gIIi4+dvOmQePeiRGR+1m+hBice4qWrBQXQEPY7SSmCtUw+Cxl?=
+ =?us-ascii?Q?V7xk46LBfn/8WNWdWb3vz6vgJ6tfEi8w/H5n+5MyHIBdnCpyfnuBt3ElTKWN?=
+ =?us-ascii?Q?cy7SXDVX9vC21bxcq8LwTZOIbWeenssE0uWepNMOeV+BQZw5+iZK14rkRkb5?=
+ =?us-ascii?Q?NRMtn+qzhlAx5EnUHl57eb2M4gsdMStdjdjBnFZXh0Kw7YabXf/6l0Wt5u1o?=
+ =?us-ascii?Q?XEhemBFoQW1caf4rtHhwQ/sRx2EASyxoKT8IQyGxmlOShiYpHSjCv5uveI5e?=
+ =?us-ascii?Q?0A8KknT4m8OV0htwWZ4LOKg=3D?=
 X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 411269ed-8e74-4608-ae74-08da94309f5c
+X-MS-Exchange-CrossTenant-Network-Message-Id: 132b27d4-6048-4088-33c7-08da94309fa4
 X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Sep 2022 20:02:58.0901
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Sep 2022 20:02:58.7463
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2mZWWhUm8uZbRC6cESMlZK0/660TCP5rdXT6Ykc+PI67i82EOwjVyNJQK+qGDgzdQSqrzdPGlBoIq+4ncyZaUa0HqsLKVVLqXjRujSTbpOk=
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0X2RyfCz7qvkYX7QpVGxdjhbk3VtBbohM9zrUf14CMOhVj3osD5GBXaYmyeVjL+9VQFrfaMIazVP93vVTzCULB9Bt5bhlbjHnYvGZ4vFEbY=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN0PR10MB5335
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
@@ -123,177 +123,368 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Ocelot switch core driver relies heavily on a fixed array of resources
-for both ports and peripherals. This is in contrast to existing peripherals
-- pinctrl for example - which have a one-to-one mapping of driver <>
-resource. As such, these regmaps must be created differently so that
-enumeration-based offsets are preserved.
+Add control of an external VSC7512 chip by way of the ocelot-mfd interface.
 
-Register the regmaps to the core MFD device unconditionally so they can be
-referenced by the Ocelot switch / Felix DSA systems.
+Currently the four copper phy ports are fully functional. Communication to
+external phys is also functional, but the SGMII / QSGMII interfaces are
+currently non-functional.
 
 Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
 ---
 
 v1 from previous RFC:
-    * New patch
+    * Remove unnecessary byteorder and kconfig header includes.
+    * Create OCELOT_EXT_PORT_MODE_SERDES macro to match vsc9959.
+    * Utilize readx_poll_timeout for SYS_RESET_CFG_MEM_INIT.
+    * *_io_res struct arrays have been moved to the MFD files.
+    * Changes to utilize phylink_generic_validate() have been squashed.
+    * dev_err_probe() is used in the probe function.
+    * Make ocelot_ext_switch_of_match static.
+    * Relocate ocelot_ext_ops structure to be next to vsc7512_info, to
+      match what was done in other felix drivers.
+    * Utilize dev_get_regmap() instead of the obsolete
+      ocelot_init_regmap_from_resource() routine.
 
 ---
- drivers/mfd/ocelot-core.c  | 88 +++++++++++++++++++++++++++++++++++---
- include/linux/mfd/ocelot.h |  5 +++
- 2 files changed, 88 insertions(+), 5 deletions(-)
+ drivers/mfd/ocelot-core.c           |   3 +
+ drivers/net/dsa/ocelot/Kconfig      |  14 ++
+ drivers/net/dsa/ocelot/Makefile     |   5 +
+ drivers/net/dsa/ocelot/ocelot_ext.c | 254 ++++++++++++++++++++++++++++
+ include/soc/mscc/ocelot.h           |   2 +
+ 5 files changed, 278 insertions(+)
+ create mode 100644 drivers/net/dsa/ocelot/ocelot_ext.c
 
 diff --git a/drivers/mfd/ocelot-core.c b/drivers/mfd/ocelot-core.c
-index 1816d52c65c5..aa7fa21b354c 100644
+index aa7fa21b354c..b7b9f6855f74 100644
 --- a/drivers/mfd/ocelot-core.c
 +++ b/drivers/mfd/ocelot-core.c
-@@ -34,16 +34,55 @@
- 
- #define VSC7512_MIIM0_RES_START		0x7107009c
- #define VSC7512_MIIM1_RES_START		0x710700c0
--#define VSC7512_MIIM_RES_SIZE		0x024
-+#define VSC7512_MIIM_RES_SIZE		0x00000024
- 
- #define VSC7512_PHY_RES_START		0x710700f0
--#define VSC7512_PHY_RES_SIZE		0x004
-+#define VSC7512_PHY_RES_SIZE		0x00000004
- 
- #define VSC7512_GPIO_RES_START		0x71070034
--#define VSC7512_GPIO_RES_SIZE		0x06c
-+#define VSC7512_GPIO_RES_SIZE		0x0000006c
- 
- #define VSC7512_SIO_CTRL_RES_START	0x710700f8
--#define VSC7512_SIO_CTRL_RES_SIZE	0x100
-+#define VSC7512_SIO_CTRL_RES_SIZE	0x00000100
-+
-+#define VSC7512_HSIO_RES_START		0x710d0000
-+#define VSC7512_HSIO_RES_SIZE		0x00000128
-+
-+#define VSC7512_ANA_RES_START		0x71880000
-+#define VSC7512_ANA_RES_SIZE		0x00010000
-+
-+#define VSC7512_QS_RES_START		0x71080000
-+#define VSC7512_QS_RES_SIZE		0x00000100
-+
-+#define VSC7512_QSYS_RES_START		0x71800000
-+#define VSC7512_QSYS_RES_SIZE		0x00200000
-+
-+#define VSC7512_REW_RES_START		0x71030000
-+#define VSC7512_REW_RES_SIZE		0x00010000
-+
-+#define VSC7512_SYS_RES_START		0x71010000
-+#define VSC7512_SYS_RES_SIZE		0x00010000
-+
-+#define VSC7512_S0_RES_START		0x71040000
-+#define VSC7512_S1_RES_START		0x71050000
-+#define VSC7512_S2_RES_START		0x71060000
-+#define VSC7512_S_RES_SIZE		0x00000400
-+
-+#define VSC7512_GCB_RES_START		0x71070000
-+#define VSC7512_GCB_RES_SIZE		0x0000022c
-+
-+#define VSC7512_PORT_0_RES_START	0x711e0000
-+#define VSC7512_PORT_1_RES_START	0x711f0000
-+#define VSC7512_PORT_2_RES_START	0x71200000
-+#define VSC7512_PORT_3_RES_START	0x71210000
-+#define VSC7512_PORT_4_RES_START	0x71220000
-+#define VSC7512_PORT_5_RES_START	0x71230000
-+#define VSC7512_PORT_6_RES_START	0x71240000
-+#define VSC7512_PORT_7_RES_START	0x71250000
-+#define VSC7512_PORT_8_RES_START	0x71260000
-+#define VSC7512_PORT_9_RES_START	0x71270000
-+#define VSC7512_PORT_10_RES_START	0x71280000
-+#define VSC7512_PORT_RES_SIZE		0x00010000
- 
- #define VSC7512_GCB_RST_SLEEP_US	100
- #define VSC7512_GCB_RST_TIMEOUT_US	100000
-@@ -96,6 +135,34 @@ static const struct resource vsc7512_sgpio_resources[] = {
- 	DEFINE_RES_REG_NAMED(VSC7512_SIO_CTRL_RES_START, VSC7512_SIO_CTRL_RES_SIZE, "gcb_sio"),
+@@ -188,6 +188,9 @@ static const struct mfd_cell vsc7512_devs[] = {
+ 		.use_of_reg = true,
+ 		.num_resources = ARRAY_SIZE(vsc7512_miim1_resources),
+ 		.resources = vsc7512_miim1_resources,
++	}, {
++		.name = "ocelot-ext-switch",
++		.of_compatible = "mscc,vsc7512-ext-switch",
+ 	},
  };
  
-+const struct resource vsc7512_target_io_res[TARGET_MAX] = {
-+	[ANA] = DEFINE_RES_REG_NAMED(VSC7512_ANA_RES_START, VSC7512_ANA_RES_SIZE, "ana"),
-+	[QS] = DEFINE_RES_REG_NAMED(VSC7512_QS_RES_START, VSC7512_QS_RES_SIZE, "qs"),
-+	[QSYS] = DEFINE_RES_REG_NAMED(VSC7512_QSYS_RES_START, VSC7512_QSYS_RES_SIZE, "qsys"),
-+	[REW] = DEFINE_RES_REG_NAMED(VSC7512_REW_RES_START, VSC7512_REW_RES_SIZE, "rew"),
-+	[SYS] = DEFINE_RES_REG_NAMED(VSC7512_SYS_RES_START, VSC7512_SYS_RES_SIZE, "sys"),
-+	[S0] = DEFINE_RES_REG_NAMED(VSC7512_S0_RES_START, VSC7512_S_RES_SIZE, "s0"),
-+	[S1] = DEFINE_RES_REG_NAMED(VSC7512_S1_RES_START, VSC7512_S_RES_SIZE, "s1"),
-+	[S2] = DEFINE_RES_REG_NAMED(VSC7512_S2_RES_START, VSC7512_S_RES_SIZE, "s2"),
-+	[GCB] = DEFINE_RES_REG_NAMED(VSC7512_GCB_RES_START, VSC7512_GCB_RES_SIZE, "devcpu_gcb"),
-+	[HSIO] = DEFINE_RES_REG_NAMED(VSC7512_HSIO_RES_START, VSC7512_HSIO_RES_SIZE, "hsio"),
-+};
+diff --git a/drivers/net/dsa/ocelot/Kconfig b/drivers/net/dsa/ocelot/Kconfig
+index 08db9cf76818..d8b224f8dc97 100644
+--- a/drivers/net/dsa/ocelot/Kconfig
++++ b/drivers/net/dsa/ocelot/Kconfig
+@@ -1,4 +1,18 @@
+ # SPDX-License-Identifier: GPL-2.0-only
++config NET_DSA_MSCC_OCELOT_EXT
++	tristate "Ocelot External Ethernet switch support"
++	depends on NET_DSA && SPI
++	depends on NET_VENDOR_MICROSEMI
++	select MDIO_MSCC_MIIM
++	select MFD_OCELOT_CORE
++	select MSCC_OCELOT_SWITCH_LIB
++	select NET_DSA_TAG_OCELOT_8021Q
++	select NET_DSA_TAG_OCELOT
++	help
++	  This driver supports the VSC7511, VSC7512, VSC7513 and VSC7514 chips
++	  when controlled through SPI. It can be used with the Microsemi dev
++	  boards and an external CPU or custom hardware.
 +
-+const struct resource vsc7512_port_io_res[] = {
-+	DEFINE_RES_REG_NAMED(VSC7512_PORT_0_RES_START, VSC7512_PORT_RES_SIZE, "port0"),
-+	DEFINE_RES_REG_NAMED(VSC7512_PORT_1_RES_START, VSC7512_PORT_RES_SIZE, "port1"),
-+	DEFINE_RES_REG_NAMED(VSC7512_PORT_2_RES_START, VSC7512_PORT_RES_SIZE, "port2"),
-+	DEFINE_RES_REG_NAMED(VSC7512_PORT_3_RES_START, VSC7512_PORT_RES_SIZE, "port3"),
-+	DEFINE_RES_REG_NAMED(VSC7512_PORT_4_RES_START, VSC7512_PORT_RES_SIZE, "port4"),
-+	DEFINE_RES_REG_NAMED(VSC7512_PORT_5_RES_START, VSC7512_PORT_RES_SIZE, "port5"),
-+	DEFINE_RES_REG_NAMED(VSC7512_PORT_6_RES_START, VSC7512_PORT_RES_SIZE, "port6"),
-+	DEFINE_RES_REG_NAMED(VSC7512_PORT_7_RES_START, VSC7512_PORT_RES_SIZE, "port7"),
-+	DEFINE_RES_REG_NAMED(VSC7512_PORT_8_RES_START, VSC7512_PORT_RES_SIZE, "port8"),
-+	DEFINE_RES_REG_NAMED(VSC7512_PORT_9_RES_START, VSC7512_PORT_RES_SIZE, "port9"),
-+	DEFINE_RES_REG_NAMED(VSC7512_PORT_10_RES_START, VSC7512_PORT_RES_SIZE, "port10"),
-+	{}
-+};
+ config NET_DSA_MSCC_FELIX
+ 	tristate "Ocelot / Felix Ethernet switch support"
+ 	depends on NET_DSA && PCI
+diff --git a/drivers/net/dsa/ocelot/Makefile b/drivers/net/dsa/ocelot/Makefile
+index f6dd131e7491..d7f3f5a4461c 100644
+--- a/drivers/net/dsa/ocelot/Makefile
++++ b/drivers/net/dsa/ocelot/Makefile
+@@ -1,11 +1,16 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ obj-$(CONFIG_NET_DSA_MSCC_FELIX) += mscc_felix.o
++obj-$(CONFIG_NET_DSA_MSCC_OCELOT_EXT) += mscc_ocelot_ext.o
+ obj-$(CONFIG_NET_DSA_MSCC_SEVILLE) += mscc_seville.o
+ 
+ mscc_felix-objs := \
+ 	felix.o \
+ 	felix_vsc9959.o
+ 
++mscc_ocelot_ext-objs := \
++	felix.o \
++	ocelot_ext.o
 +
- static const struct mfd_cell vsc7512_devs[] = {
- 	{
- 		.name = "ocelot-pinctrl",
-@@ -127,7 +194,7 @@ static const struct mfd_cell vsc7512_devs[] = {
- static void ocelot_core_try_add_regmap(struct device *dev,
- 				       const struct resource *res)
- {
--	if (dev_get_regmap(dev, res->name))
-+	if (!res->start || dev_get_regmap(dev, res->name))
- 		return;
- 
- 	ocelot_spi_init_regmap(dev, res);
-@@ -144,6 +211,7 @@ static void ocelot_core_try_add_regmaps(struct device *dev,
- 
- int ocelot_core_init(struct device *dev)
- {
-+	const struct resource *port_res;
- 	int i, ndevs;
- 
- 	ndevs = ARRAY_SIZE(vsc7512_devs);
-@@ -151,6 +219,16 @@ int ocelot_core_init(struct device *dev)
- 	for (i = 0; i < ndevs; i++)
- 		ocelot_core_try_add_regmaps(dev, &vsc7512_devs[i]);
- 
-+	/*
-+	 * Both the target_io_res and tbe port_io_res structs need to be referenced directly by
-+	 * the ocelot_ext driver, so they can't be attached to the dev directly
-+	 */
-+	for (i = 0; i < TARGET_MAX; i++)
-+		ocelot_core_try_add_regmap(dev, &vsc7512_target_io_res[i]);
+ mscc_seville-objs := \
+ 	felix.o \
+ 	seville_vsc9953.o
+diff --git a/drivers/net/dsa/ocelot/ocelot_ext.c b/drivers/net/dsa/ocelot/ocelot_ext.c
+new file mode 100644
+index 000000000000..c821cc963787
+--- /dev/null
++++ b/drivers/net/dsa/ocelot/ocelot_ext.c
+@@ -0,0 +1,254 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright 2021-2022 Innovative Advantage Inc.
++ */
 +
-+	for (port_res = vsc7512_port_io_res; port_res->start; port_res++)
-+		ocelot_core_try_add_regmap(dev, port_res);
-+
- 	return devm_mfd_add_devices(dev, PLATFORM_DEVID_AUTO, vsc7512_devs, ndevs, NULL, 0, NULL);
- }
- EXPORT_SYMBOL_NS(ocelot_core_init, MFD_OCELOT);
-diff --git a/include/linux/mfd/ocelot.h b/include/linux/mfd/ocelot.h
-index dd72073d2d4f..439ff5256cf0 100644
---- a/include/linux/mfd/ocelot.h
-+++ b/include/linux/mfd/ocelot.h
-@@ -11,8 +11,13 @@
- #include <linux/regmap.h>
- #include <linux/types.h>
- 
++#include <linux/iopoll.h>
++#include <linux/mfd/ocelot.h>
++#include <linux/phylink.h>
++#include <linux/platform_device.h>
++#include <linux/regmap.h>
++#include <soc/mscc/ocelot_ana.h>
++#include <soc/mscc/ocelot_dev.h>
++#include <soc/mscc/ocelot_qsys.h>
++#include <soc/mscc/ocelot_vcap.h>
++#include <soc/mscc/ocelot_ptp.h>
++#include <soc/mscc/ocelot_sys.h>
 +#include <soc/mscc/ocelot.h>
++#include <soc/mscc/vsc7514_regs.h>
++#include "felix.h"
 +
- struct resource;
- 
-+extern const struct resource vsc7512_target_io_res[TARGET_MAX];
-+extern const struct resource vsc7512_port_io_res[];
++#define VSC7512_NUM_PORTS		11
 +
- static inline struct regmap *
- ocelot_regmap_from_resource_optional(struct platform_device *pdev,
- 				     unsigned int index,
++#define OCELOT_EXT_MEM_INIT_SLEEP_US	1000
++#define OCELOT_EXT_MEM_INIT_TIMEOUT_US	100000
++
++#define OCELOT_EXT_PORT_MODE_SERDES	(OCELOT_PORT_MODE_SGMII | \
++					 OCELOT_PORT_MODE_QSGMII)
++
++static const u32 vsc7512_port_modes[VSC7512_NUM_PORTS] = {
++	OCELOT_PORT_MODE_INTERNAL,
++	OCELOT_PORT_MODE_INTERNAL,
++	OCELOT_PORT_MODE_INTERNAL,
++	OCELOT_PORT_MODE_INTERNAL,
++	OCELOT_EXT_PORT_MODE_SERDES,
++	OCELOT_EXT_PORT_MODE_SERDES,
++	OCELOT_EXT_PORT_MODE_SERDES,
++	OCELOT_EXT_PORT_MODE_SERDES,
++	OCELOT_EXT_PORT_MODE_SERDES,
++	OCELOT_EXT_PORT_MODE_SERDES,
++	OCELOT_PORT_MODE_SGMII,
++	OCELOT_EXT_PORT_MODE_SERDES,
++};
++
++static const u32 vsc7512_gcb_regmap[] = {
++	REG(GCB_SOFT_RST,			0x0008),
++	REG(GCB_MIIM_MII_STATUS,		0x009c),
++	REG(GCB_PHY_PHY_CFG,			0x00f0),
++	REG(GCB_PHY_PHY_STAT,			0x00f4),
++};
++
++static const u32 *vsc7512_regmap[TARGET_MAX] = {
++	[ANA] = vsc7514_ana_regmap,
++	[QS] = vsc7514_qs_regmap,
++	[QSYS] = vsc7514_qsys_regmap,
++	[REW] = vsc7514_rew_regmap,
++	[SYS] = vsc7514_sys_regmap,
++	[S0] = vsc7514_vcap_regmap,
++	[S1] = vsc7514_vcap_regmap,
++	[S2] = vsc7514_vcap_regmap,
++	[PTP] = vsc7514_ptp_regmap,
++	[GCB] = vsc7512_gcb_regmap,
++	[DEV_GMII] = vsc7514_dev_gmii_regmap,
++};
++
++static void ocelot_ext_reset_phys(struct ocelot *ocelot)
++{
++	ocelot_write(ocelot, 0, GCB_PHY_PHY_CFG);
++	ocelot_write(ocelot, 0x1ff, GCB_PHY_PHY_CFG);
++	mdelay(500);
++}
++
++static int ocelot_ext_mem_init_status(struct ocelot *ocelot)
++{
++	int val, err;
++
++	err = regmap_field_read(ocelot->regfields[SYS_RESET_CFG_MEM_INIT], &val);
++
++	return err ?: val;
++}
++
++static int ocelot_ext_reset(struct ocelot *ocelot)
++{
++	int err, val;
++
++	ocelot_ext_reset_phys(ocelot);
++
++	/* Initialize chip memories */
++	err = regmap_field_write(ocelot->regfields[SYS_RESET_CFG_MEM_ENA], 1);
++	if (err)
++		return err;
++
++	err = regmap_field_write(ocelot->regfields[SYS_RESET_CFG_MEM_INIT], 1);
++	if (err)
++		return err;
++
++	/* MEM_INIT is a self-clearing bit. Wait for it to be clear (should be
++	 * 100us) before enabling the switch core
++	 */
++	err = readx_poll_timeout(ocelot_ext_mem_init_status, ocelot, val, !val,
++				 OCELOT_EXT_MEM_INIT_SLEEP_US,
++				 OCELOT_EXT_MEM_INIT_TIMEOUT_US);
++
++	if (IS_ERR_VALUE(err))
++		return err;
++
++	return regmap_field_write(ocelot->regfields[SYS_RESET_CFG_CORE_ENA], 1);
++}
++
++static void ocelot_ext_phylink_validate(struct ocelot *ocelot, int port,
++					unsigned long *supported,
++					struct phylink_link_state *state)
++{
++	struct felix *felix = ocelot_to_felix(ocelot);
++	struct dsa_switch *ds = felix->ds;
++	struct phylink_config *pl_config;
++	struct dsa_port *dp;
++
++	dp = dsa_to_port(ds, port);
++	pl_config = &dp->pl_config;
++
++	phylink_generic_validate(pl_config, supported, state);
++}
++
++static struct regmap *ocelot_ext_regmap_init(struct ocelot *ocelot,
++					     struct resource *res)
++{
++	return dev_get_regmap(ocelot->dev->parent, res->name);
++}
++
++static const struct ocelot_ops ocelot_ext_ops = {
++	.reset		= ocelot_ext_reset,
++	.wm_enc		= ocelot_wm_enc,
++	.wm_dec		= ocelot_wm_dec,
++	.wm_stat	= ocelot_wm_stat,
++	.port_to_netdev	= felix_port_to_netdev,
++	.netdev_to_port	= felix_netdev_to_port,
++};
++
++static const struct felix_info vsc7512_info = {
++	.target_io_res			= vsc7512_target_io_res,
++	.port_io_res			= vsc7512_port_io_res,
++	.regfields			= vsc7514_regfields,
++	.map				= vsc7512_regmap,
++	.ops				= &ocelot_ext_ops,
++	.stats_layout			= vsc7514_stats_layout,
++	.vcap				= vsc7514_vcap_props,
++	.num_mact_rows			= 1024,
++	.num_ports			= VSC7512_NUM_PORTS,
++	.num_tx_queues			= OCELOT_NUM_TC,
++	.phylink_validate		= ocelot_ext_phylink_validate,
++	.port_modes			= vsc7512_port_modes,
++	.init_regmap			= ocelot_ext_regmap_init,
++};
++
++static int ocelot_ext_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct dsa_switch *ds;
++	struct ocelot *ocelot;
++	struct felix *felix;
++	int err;
++
++	felix = kzalloc(sizeof(*felix), GFP_KERNEL);
++	if (!felix)
++		return -ENOMEM;
++
++	dev_set_drvdata(dev, felix);
++
++	ocelot = &felix->ocelot;
++	ocelot->dev = dev;
++
++	ocelot->num_flooding_pgids = 1;
++
++	felix->info = &vsc7512_info;
++
++	ds = kzalloc(sizeof(*ds), GFP_KERNEL);
++	if (!ds) {
++		err = -ENOMEM;
++		dev_err_probe(dev, err, "Failed to allocate DSA switch\n");
++		goto err_free_felix;
++	}
++
++	ds->dev = dev;
++	ds->num_ports = felix->info->num_ports;
++	ds->num_tx_queues = felix->info->num_tx_queues;
++
++	ds->ops = &felix_switch_ops;
++	ds->priv = ocelot;
++	felix->ds = ds;
++	felix->tag_proto = DSA_TAG_PROTO_OCELOT;
++
++	err = dsa_register_switch(ds);
++	if (err) {
++		dev_err_probe(dev, err, "Failed to register DSA switch\n");
++		goto err_free_ds;
++	}
++
++	return 0;
++
++err_free_ds:
++	kfree(ds);
++err_free_felix:
++	kfree(felix);
++	return err;
++}
++
++static int ocelot_ext_remove(struct platform_device *pdev)
++{
++	struct felix *felix = dev_get_drvdata(&pdev->dev);
++
++	if (!felix)
++		return 0;
++
++	dsa_unregister_switch(felix->ds);
++
++	kfree(felix->ds);
++	kfree(felix);
++
++	dev_set_drvdata(&pdev->dev, NULL);
++
++	return 0;
++}
++
++static void ocelot_ext_shutdown(struct platform_device *pdev)
++{
++	struct felix *felix = dev_get_drvdata(&pdev->dev);
++
++	if (!felix)
++		return;
++
++	dsa_switch_shutdown(felix->ds);
++
++	dev_set_drvdata(&pdev->dev, NULL);
++}
++
++static const struct of_device_id ocelot_ext_switch_of_match[] = {
++	{ .compatible = "mscc,vsc7512-ext-switch" },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, ocelot_ext_switch_of_match);
++
++static struct platform_driver ocelot_ext_switch_driver = {
++	.driver = {
++		.name = "ocelot-ext-switch",
++		.of_match_table = of_match_ptr(ocelot_ext_switch_of_match),
++	},
++	.probe = ocelot_ext_probe,
++	.remove = ocelot_ext_remove,
++	.shutdown = ocelot_ext_shutdown,
++};
++module_platform_driver(ocelot_ext_switch_driver);
++
++MODULE_DESCRIPTION("External Ocelot Switch driver");
++MODULE_LICENSE("GPL");
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index 17dd61f36563..2ed38110a6cc 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -460,6 +460,8 @@ enum ocelot_reg {
+ 	GCB_MIIM_MII_STATUS,
+ 	GCB_MIIM_MII_CMD,
+ 	GCB_MIIM_MII_DATA,
++	GCB_PHY_PHY_CFG,
++	GCB_PHY_PHY_STAT,
+ 	DEV_CLOCK_CFG = DEV_GMII << TARGET_OFFSET,
+ 	DEV_PORT_MISC,
+ 	DEV_EVENTS,
 -- 
 2.25.1
 
