@@ -2,177 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ED37D5B5128
-	for <lists+netdev@lfdr.de>; Sun, 11 Sep 2022 22:46:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F2515B512B
+	for <lists+netdev@lfdr.de>; Sun, 11 Sep 2022 22:48:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229536AbiIKUqD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Sep 2022 16:46:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36974 "EHLO
+        id S229601AbiIKUs0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Sep 2022 16:48:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229492AbiIKUqC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Sep 2022 16:46:02 -0400
-Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E26922BFC
-        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 13:45:58 -0700 (PDT)
-Received: from local
-        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
-         (Exim 4.96)
-        (envelope-from <daniel@makrotopia.org>)
-        id 1oXTpl-0000Sd-1j;
-        Sun, 11 Sep 2022 22:45:41 +0200
-Date:   Sun, 11 Sep 2022 21:45:30 +0100
-From:   Daniel Golle <daniel@makrotopia.org>
-To:     Russell King <linux@armlinux.org.uk>,
-        linux-mediatek@lists.infradead.org, netdev@vger.kernel.org
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Alexander 'lynxis' Couzens <lynxis@fe80.eu>
-Subject: [PATCH v2] net: dsa: mt7530: add support for in-band link status
-Message-ID: <Yx5I6nRPxYIiC1ZT@makrotopia.org>
-References: <Yx4910YC6/Y7ghfm@shell.armlinux.org.uk>
+        with ESMTP id S229492AbiIKUsZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Sep 2022 16:48:25 -0400
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB46622BFC;
+        Sun, 11 Sep 2022 13:48:24 -0700 (PDT)
+Received: by mail-il1-x144.google.com with SMTP id l16so3626489ilj.2;
+        Sun, 11 Sep 2022 13:48:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=ZVQHM/37BbrOGPiFeLtiNZICTr76UsNj+DYuPTvsb8Q=;
+        b=RE50kfvR/4MBOCxWXWbyfeWyAOuv3CbuiaLU7BMsyghIreYzCGstvna7nzetMmdNVT
+         Gt0EnZWy+hhZWdPO/qkwuo1IP2xsnPHlAEpWuZmvZ6trJP6d/tnrBtQx7K1AW2CPgIq5
+         5Bj/9wvyD27kxFExBucubc/D8uCzJ9HCh3ndqqKBWAH1jjtfcz/4GVNoB+0GpyKNM2SR
+         MJYikIp66vTwOZ915PwxP5PZZIut6ucG7vZ7AdEbEC6IrdtU7vfewJQko5F91HrvvkDJ
+         jkPcVOAgFzg4tom5e4rFX85P+QjNKecE9ulprVilfILVcUKTiwnLI/m9F0CM0YEbnHkd
+         nrLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=ZVQHM/37BbrOGPiFeLtiNZICTr76UsNj+DYuPTvsb8Q=;
+        b=r/vMRqJ10U+tFhTIsWXAhu3tVUnqpxEcPOYuA5A3UpzJCTK/2dR6TT8L7E2L5D+v1X
+         x9WzNb3bNJhh/BLx4QSA7eV/EzeNU6AxuhuhpMJDF2ntc/tewcoqoauGBPbEIgGQyLu3
+         Iqf4i30Nhf4LjrFoMhWC6B7vxwWlB7DQumL6JM+EAs8YDu6WwXgJHiSipwHZxj9ZQu2K
+         SR4XORAnoQYegQjFQMK7yCSdUk41GcKb3DNTlGf/zkS3jueZ691xStVBDITCQTklUlSn
+         fABSorfMtRngwYilcjZsU958VSLeOywNFmZ5qZtHXQKb1rzcd0MzZL0XJAFtZWhOorkZ
+         PLPg==
+X-Gm-Message-State: ACgBeo0Wie0uJDl7gS3oBGx36YhYwfWJHjY23w83CH4Iq1V2lgEHXu1o
+        p3QuzMc1e/UJ6yBX57XWFZ4PpXNkUZo53AjN6bk=
+X-Google-Smtp-Source: AA6agR71aeFCzogjuFx7JGCncWwFSimJ0ZSs/t1MkvqU4gU1pAfSi8OsmEw+8k+rZI02d0TUsGGR7A74lK4B2C6WBv8=
+X-Received: by 2002:a92:cbcf:0:b0:2f3:b515:92d with SMTP id
+ s15-20020a92cbcf000000b002f3b515092dmr2734086ilq.91.1662929304245; Sun, 11
+ Sep 2022 13:48:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yx4910YC6/Y7ghfm@shell.armlinux.org.uk>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <c4cb11c8ffe732b91c175a0fc80d43b2547ca17e.1662920329.git.dxu@dxuuu.xyz>
+In-Reply-To: <c4cb11c8ffe732b91c175a0fc80d43b2547ca17e.1662920329.git.dxu@dxuuu.xyz>
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Date:   Sun, 11 Sep 2022 22:47:46 +0200
+Message-ID: <CAP01T74zOa=3uYJ_3YebAxzZTYRwAhF62Giy9ovuKwk++FpU0g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: Move nf_conn extern declarations to filter.h
+To:     Daniel Xu <dxu@dxuuu.xyz>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, pablo@netfilter.org, fw@strlen.de,
+        toke@kernel.org, martin.lau@linux.dev,
+        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Read link status from SGMII PCS for in-band managed 2500Base-X and
-1000Base-X connection on a MAC port of the MT7531. This is needed to
-get the SFP cage working which is connected to SGMII interface of
-port 5 of the MT7531 switch IC on the Bananapi BPi-R3 board.
+On Sun, 11 Sept 2022 at 20:20, Daniel Xu <dxu@dxuuu.xyz> wrote:
+>
+> We're seeing the following new warnings on netdev/build_32bit and
+> netdev/build_allmodconfig_warn CI jobs:
+>
+>     ../net/core/filter.c:8608:1: warning: symbol
+>     'nf_conn_btf_access_lock' was not declared. Should it be static?
+>     ../net/core/filter.c:8611:5: warning: symbol 'nfct_bsa' was not
+>     declared. Should it be static?
+>
+> Fix by ensuring extern declaration is present while compiling filter.o.
+>
+> Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
+> ---
 
-Signed-off-by: Daniel Golle <daniel@makrotopia.org>
----
-v2: Use MLO_PAUSE_NONE and read an_complete from SGMII status register.
+Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 
- drivers/net/dsa/mt7530.c | 50 +++++++++++++++++++++++++++++-----------
- drivers/net/dsa/mt7530.h |  1 +
- 2 files changed, 38 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 835807911be019..2e329881f461d9 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -2699,9 +2699,6 @@ mt7531_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
- 	case PHY_INTERFACE_MODE_NA:
- 	case PHY_INTERFACE_MODE_1000BASEX:
- 	case PHY_INTERFACE_MODE_2500BASEX:
--		if (phylink_autoneg_inband(mode))
--			return -EINVAL;
--
- 		return mt7531_sgmii_setup_mode_force(priv, port, interface);
- 	default:
- 		return -EINVAL;
-@@ -2777,13 +2774,6 @@ mt753x_phylink_mac_config(struct dsa_switch *ds, int port, unsigned int mode,
- 		return;
- 	}
- 
--	if (phylink_autoneg_inband(mode) &&
--	    state->interface != PHY_INTERFACE_MODE_SGMII) {
--		dev_err(ds->dev, "%s: in-band negotiation unsupported\n",
--			__func__);
--		return;
--	}
--
- 	mcr_cur = mt7530_read(priv, MT7530_PMCR_P(port));
- 	mcr_new = mcr_cur;
- 	mcr_new &= ~PMCR_LINK_SETTINGS_MASK;
-@@ -2922,6 +2912,9 @@ static void mt753x_phylink_get_caps(struct dsa_switch *ds, int port,
- 	config->mac_capabilities = MAC_ASYM_PAUSE | MAC_SYM_PAUSE |
- 				   MAC_10 | MAC_100 | MAC_1000FD;
- 
-+	if ((priv->id == ID_MT7531) && mt753x_is_mac_port(port))
-+		config->mac_capabilities |= MAC_2500FD;
-+
- 	/* This driver does not make use of the speed, duplex, pause or the
- 	 * advertisement in its mac_config, so it is safe to mark this driver
- 	 * as non-legacy.
-@@ -3017,16 +3010,45 @@ mt7531_sgmii_pcs_get_state_an(struct mt7530_priv *priv, int port,
- 	return 0;
- }
- 
-+static void
-+mt7531_sgmii_pcs_get_state_inband(struct mt7530_priv *priv, int port,
-+				  struct phylink_link_state *state)
-+{
-+	unsigned int val;
-+
-+	val = mt7530_read(priv, MT7531_PCS_CONTROL_1(port));
-+	state->link = !!(val & MT7531_SGMII_LINK_STATUS);
-+	if (!state->link)
-+		return;
-+
-+	state->an_complete = !!(val & MT7531_SGMII_AN_COMPLETE);
-+
-+	if (state->interface == PHY_INTERFACE_MODE_2500BASEX)
-+		state->speed = SPEED_2500;
-+	else
-+		state->speed = SPEED_1000;
-+
-+	state->duplex = DUPLEX_FULL;
-+	state->pause = MLO_PAUSE_NONE;
-+}
-+
- static void mt7531_pcs_get_state(struct phylink_pcs *pcs,
- 				 struct phylink_link_state *state)
- {
- 	struct mt7530_priv *priv = pcs_to_mt753x_pcs(pcs)->priv;
- 	int port = pcs_to_mt753x_pcs(pcs)->port;
-+	unsigned int val;
- 
--	if (state->interface == PHY_INTERFACE_MODE_SGMII)
-+	if (state->interface == PHY_INTERFACE_MODE_SGMII) {
- 		mt7531_sgmii_pcs_get_state_an(priv, port, state);
--	else
--		state->link = false;
-+		return;
-+	} else if ((state->interface == PHY_INTERFACE_MODE_1000BASEX) ||
-+		   (state->interface == PHY_INTERFACE_MODE_2500BASEX)) {
-+		mt7531_sgmii_pcs_get_state_inband(priv, port, state);
-+		return;
-+	}
-+
-+	state->link = false;
- }
- 
- static int mt753x_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
-@@ -3067,6 +3089,8 @@ mt753x_setup(struct dsa_switch *ds)
- 		priv->pcs[i].pcs.ops = priv->info->pcs_ops;
- 		priv->pcs[i].priv = priv;
- 		priv->pcs[i].port = i;
-+		if (mt753x_is_mac_port(i))
-+			priv->pcs[i].pcs.poll = 1;
- 	}
- 
- 	ret = priv->info->sw_setup(ds);
-diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
-index e509af95c35414..e8d9664353504f 100644
---- a/drivers/net/dsa/mt7530.h
-+++ b/drivers/net/dsa/mt7530.h
-@@ -373,6 +373,7 @@ enum mt7530_vlan_port_acc_frm {
- #define  MT7531_SGMII_LINK_STATUS	BIT(18)
- #define  MT7531_SGMII_AN_ENABLE		BIT(12)
- #define  MT7531_SGMII_AN_RESTART	BIT(9)
-+#define  MT7531_SGMII_AN_COMPLETE	BIT(21)
- 
- /* Register for SGMII PCS_SPPED_ABILITY */
- #define MT7531_PCS_SPEED_ABILITY(p)	MT7531_SGMII_REG(p, 0x08)
--- 
-2.37.2
+>  include/linux/filter.h                   | 6 ++++++
+>  include/net/netfilter/nf_conntrack_bpf.h | 7 +------
+>  2 files changed, 7 insertions(+), 6 deletions(-)
+>
+> diff --git a/include/linux/filter.h b/include/linux/filter.h
+> index 527ae1d64e27..96de256b2c8d 100644
+> --- a/include/linux/filter.h
+> +++ b/include/linux/filter.h
+> @@ -567,6 +567,12 @@ struct sk_filter {
+>
+>  DECLARE_STATIC_KEY_FALSE(bpf_stats_enabled_key);
+>
+> +extern struct mutex nf_conn_btf_access_lock;
+> +extern int (*nfct_bsa)(struct bpf_verifier_log *log, const struct btf *btf,
+> +                      const struct btf_type *t, int off, int size,
+> +                      enum bpf_access_type atype, u32 *next_btf_id,
+> +                      enum bpf_type_flag *flag);
+> +
+>  typedef unsigned int (*bpf_dispatcher_fn)(const void *ctx,
+>                                           const struct bpf_insn *insnsi,
+>                                           unsigned int (*bpf_func)(const void *,
+> diff --git a/include/net/netfilter/nf_conntrack_bpf.h b/include/net/netfilter/nf_conntrack_bpf.h
+> index a61a93d1c6dc..cf2c0423d174 100644
+> --- a/include/net/netfilter/nf_conntrack_bpf.h
+> +++ b/include/net/netfilter/nf_conntrack_bpf.h
+> @@ -5,6 +5,7 @@
+>
+>  #include <linux/bpf.h>
+>  #include <linux/btf.h>
+> +#include <linux/filter.h>
+>  #include <linux/kconfig.h>
+>  #include <linux/mutex.h>
+>
+> @@ -14,12 +15,6 @@
+>  extern int register_nf_conntrack_bpf(void);
+>  extern void cleanup_nf_conntrack_bpf(void);
+>
+> -extern struct mutex nf_conn_btf_access_lock;
+> -extern int (*nfct_bsa)(struct bpf_verifier_log *log, const struct btf *btf,
+> -                      const struct btf_type *t, int off, int size,
+> -                      enum bpf_access_type atype, u32 *next_btf_id,
+> -                      enum bpf_type_flag *flag);
+> -
+>  #else
+>
+>  static inline int register_nf_conntrack_bpf(void)
+> --
+> 2.37.1
+>
