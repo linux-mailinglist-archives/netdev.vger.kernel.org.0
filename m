@@ -2,97 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 328785B5056
-	for <lists+netdev@lfdr.de>; Sun, 11 Sep 2022 19:39:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E83F5B5084
+	for <lists+netdev@lfdr.de>; Sun, 11 Sep 2022 20:20:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229577AbiIKRjY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Sep 2022 13:39:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54966 "EHLO
+        id S229562AbiIKSUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Sep 2022 14:20:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229540AbiIKRjW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Sep 2022 13:39:22 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 329002A424;
-        Sun, 11 Sep 2022 10:39:17 -0700 (PDT)
-Received: from weisslap.fritz.box ([31.19.218.61]) by mrelayeu.kundenserver.de
- (mreue012 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1M5jA2-1oQGBJ1wgE-0079XX; Sun, 11 Sep 2022 19:39:03 +0200
-From:   =?UTF-8?q?Michael=20Wei=C3=9F?= <michael.weiss@aisec.fraunhofer.de>
-To:     michael.weiss@aisec.fraunhofer.de
-Cc:     Pravin B Shelar <pshelar@ovn.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        dev@openvswitch.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] net: openvswitch: allow conntrack in non-initial user namespace
-Date:   Sun, 11 Sep 2022 19:38:25 +0200
-Message-Id: <20220911173825.167352-3-michael.weiss@aisec.fraunhofer.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220911173825.167352-1-michael.weiss@aisec.fraunhofer.de>
-References: <20220911173825.167352-1-michael.weiss@aisec.fraunhofer.de>
+        with ESMTP id S229604AbiIKSUK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Sep 2022 14:20:10 -0400
+Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E03A24BE1;
+        Sun, 11 Sep 2022 11:20:08 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 6A8BB5C0126;
+        Sun, 11 Sep 2022 14:20:05 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Sun, 11 Sep 2022 14:20:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
+        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
+         s=fm1; t=1662920405; x=1663006805; bh=tIkFduerBzhi1PO+ItrLMhk8C
+        yvYof/UzzFiFOoLjiA=; b=B/1y9hArIf0tWv1GZhy++iSznnHaEztbnlSCAzgfB
+        T/flb+nCN/s804fuuQLnfAi8OFReB9WDIBGv6VBtQOxlVmKrcFTk+fH5DRSXdc8J
+        DRQMnwct/WcS/uYuol8dUS1dFZyJaHJ5ykqjtozsx12WmJXQgYge+D7WWVPaY66n
+        WN2ixuTySc9Mc7s0CUrokVN0bpKVE76JZ+Hv+NRXaFmjGCJ+76/YybkrZJj5cSmM
+        FQq4KxBVYt/fqDZux0NJvN95JxlXxu5yJ05oKM5BMiSftOyZkWvTvoHawCdjsSlx
+        YiEbTXudC16oHJqgcG3YPqwPwjxidliv8VY6bWUBXvghg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:message-id
+        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
+        1662920405; x=1663006805; bh=tIkFduerBzhi1PO+ItrLMhk8CyvYof/UzzF
+        iFOoLjiA=; b=vU7o7uMmWpyEnvxr5mfLiqJ/Sdv2CGRzANetYo/Rk1+AF0k4xT3
+        SOz6jzq8Foq71rgQ//K4xPBG7QwK3TASeRFyzz9XuSkdSD1zyGTKKrhqGwurP43y
+        iyCm7VKjpgk52xpqxz4rJplxz0pVU82GlA4F9lV7LLblnD76u+GkpAMyx66GQ9M0
+        9DVfYdOe6YapbrvVv/av0zmMYVx0dAr2jI9pnc7koTIEzhQoc00cLWmfXzG84VEA
+        lrAKPj7a3Ade7gvPF9j+40/KTFuCn/b/2mgOWhMjkblm3V41oXzOnAFnByfqvzg7
+        CMpcakxPOw9d+KUbHMM9JFGFdFOBCEmusqQ==
+X-ME-Sender: <xms:1SYeY3xcnTT9zWuxSDJVFTcj5Yq7rwMJ-gcDzxlIsS3gLdT-_b5s7A>
+    <xme:1SYeY_TkXdrYKlB86srQUZ4as15x5ifHfP_tpgxvMo9stFHhG1Gwwnzdwaq-x-GEf
+    9LzQoiEjEwbGqFfPQ>
+X-ME-Received: <xmr:1SYeYxUM_vW0N5nJe0UFrhBBvJnSOdzkTUTjQaBXctY5CpvS5T462YEQS7_-T0LFgIsZSDO4fZRIerZqlKYWjXrzcDx4rQZFfPgBlTQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfedutddguddvjecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecufghrlhcuvffnffculdejtddmnecujfgurhephf
+    fvvefufffkofgggfestdekredtredttdenucfhrhhomhepffgrnhhivghlucgiuhcuoegu
+    gihusegugihuuhhurdighiiiqeenucggtffrrghtthgvrhhnpedvgefgtefgleehhfeufe
+    ekuddvgfeuvdfhgeeljeduudfffffgteeuudeiieekjeenucevlhhushhtvghrufhiiigv
+    pedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegugihusegugihuuhhurdighiii
+X-ME-Proxy: <xmx:1SYeYxhvRZpLvXzWYnYtsiqp8yeY8P5Xucvs7WWRLqraE35OciNfqA>
+    <xmx:1SYeY5Chw4cCjt03HM-RhSI_B03hsoxPi4dd446BHrT5ul75itbbmg>
+    <xmx:1SYeY6LGGeO24e9uFyP5VsUaAjSX7wRnoslH-j4rXx-tPf8VJ09Zfw>
+    <xmx:1SYeY-LFFt0cjiZCQxZXme3na_zU8lSJzuAieDB04YDKkRNYU15d1g>
+Feedback-ID: i6a694271:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 11 Sep 2022 14:20:04 -0400 (EDT)
+From:   Daniel Xu <dxu@dxuuu.xyz>
+To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, memxor@gmail.com
+Cc:     Daniel Xu <dxu@dxuuu.xyz>, pablo@netfilter.org, fw@strlen.de,
+        toke@kernel.org, martin.lau@linux.dev,
+        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH bpf-next] bpf: Move nf_conn extern declarations to filter.h
+Date:   Sun, 11 Sep 2022 12:19:53 -0600
+Message-Id: <c4cb11c8ffe732b91c175a0fc80d43b2547ca17e.1662920329.git.dxu@dxuuu.xyz>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:gpLQ3c73SdDEYMlyQGcD2ju4281fFu829DmezQnPTBEZ4ckL7Dy
- o/GWcNeoeESSuI5LLfnTzuI9G3v79KI4adgJUA9SNSpFDHybQLkkkLOwaf2cuAUi1prG6s7
- 4KL7kXfmeoCGhyWTo7rPh0nOzg3TcCYj0OHWLHRVpCWrhQVLMZTOJRG+mBKs+qfWsJPLpQZ
- HaIv1wnUpoeueBYl/9OGQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:OL3ZAcrJl6A=:dAi/XX0PtUHUqZaCfv7ZUJ
- 4mgU7+DVleH4/NiRiBQ6pBXZQNTN8uTDTEcW0zqs3J+tJ3ILZf7GXtJwUbAM4i4aBGMtzk7vB
- aAKl7Ns7Qxq1e4lQupZ/IHbKR2VXHsaL7PiJ5E/PSbub/eSLCO5Qgpqs9iZ5DfpiIWrFdLZP5
- A7tnftiiL6t+8lEqy0cOQxxOPRa63V9BQlMVGVSTTuQ/GcQmRruwVxbd+s9N7lgljwqi5yltJ
- PQGCgs5Z6chGQXA76eRnbosS/WxrHHWlHEFEV8kJwKuntXLchSrGzgnJ9OxhIMGVupHQmlrJP
- xn4YirTwu973xrhxdrAZj1PPZfxRQtAOEh+/KUHaWs2q6KQnAzTxrnB/5l8zgLMnq/G6o/z6+
- NSmEpgnVUUZjFFQnyt8+TEAknLkv42+zRyisnzDqUC4t/Tmqmh5+dH1lTSPhroxq8NWjzskrU
- Ca4Vh5bDayDP7pxxqtaeoFmxe7lgUouQ0/7urupIjYLdKWREIDK4eBQlELz4o5EpodHaEvdIz
- mFHgc45eePlq1KGpPSr1+m/UnSjd4tistKJzOfXtoPcl8ttFNBTgOwWosctITsjYXwfex1Lb2
- zMECuLqKdHFhHwZsrR09ef6eD4cUmBEspSv06X9/UmCfBQ0cT+OG2URHstY7YtwZekAaX9jNc
- tsKJvH708i2n10MDAuyrH9j0CWgbJqVkGUAnB6jGuh3OwUXMakMsV51XrUj1Em4nNqEwfcx6l
- PzopeQu6I6vs071JnfPV4yFRMRXyLBe75W9mO6j5vr5n0wcsSDxOBL0wD6G8y5eJS4nVdTY2z
- 2lYFYhRHPabDWEZ1bTC0Ab/5axFfw==
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FROM_SUSPICIOUS_NTLD,
+        FROM_SUSPICIOUS_NTLD_FP,PDS_OTHER_BAD_TLD,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Similar to the previous commit, the Netlink interface of the OVS
-conntrack module was restricted to global CAP_NET_ADMIN by using
-GENL_ADMIN_PERM. This is changed to GENL_UNS_ADMIN_PERM to support
-unprivileged containers in non-initial user namespace.
+We're seeing the following new warnings on netdev/build_32bit and
+netdev/build_allmodconfig_warn CI jobs:
 
-Signed-off-by: Michael Weiß <michael.weiss@aisec.fraunhofer.de>
+    ../net/core/filter.c:8608:1: warning: symbol
+    'nf_conn_btf_access_lock' was not declared. Should it be static?
+    ../net/core/filter.c:8611:5: warning: symbol 'nfct_bsa' was not
+    declared. Should it be static?
+
+Fix by ensuring extern declaration is present while compiling filter.o.
+
+Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
 ---
- net/openvswitch/conntrack.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ include/linux/filter.h                   | 6 ++++++
+ include/net/netfilter/nf_conntrack_bpf.h | 7 +------
+ 2 files changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
-index 4e70df91d0f2..23f5b6261364 100644
---- a/net/openvswitch/conntrack.c
-+++ b/net/openvswitch/conntrack.c
-@@ -2252,14 +2252,14 @@ static int ovs_ct_limit_cmd_get(struct sk_buff *skb, struct genl_info *info)
- static const struct genl_small_ops ct_limit_genl_ops[] = {
- 	{ .cmd = OVS_CT_LIMIT_CMD_SET,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM, /* Requires CAP_NET_ADMIN
--					   * privilege. */
-+		.flags = GENL_UNS_ADMIN_PERM, /* Requires CAP_NET_ADMIN
-+					       * privilege. */
- 		.doit = ovs_ct_limit_cmd_set,
- 	},
- 	{ .cmd = OVS_CT_LIMIT_CMD_DEL,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM, /* Requires CAP_NET_ADMIN
--					   * privilege. */
-+		.flags = GENL_UNS_ADMIN_PERM, /* Requires CAP_NET_ADMIN
-+					       * privilege. */
- 		.doit = ovs_ct_limit_cmd_del,
- 	},
- 	{ .cmd = OVS_CT_LIMIT_CMD_GET,
+diff --git a/include/linux/filter.h b/include/linux/filter.h
+index 527ae1d64e27..96de256b2c8d 100644
+--- a/include/linux/filter.h
++++ b/include/linux/filter.h
+@@ -567,6 +567,12 @@ struct sk_filter {
+ 
+ DECLARE_STATIC_KEY_FALSE(bpf_stats_enabled_key);
+ 
++extern struct mutex nf_conn_btf_access_lock;
++extern int (*nfct_bsa)(struct bpf_verifier_log *log, const struct btf *btf,
++		       const struct btf_type *t, int off, int size,
++		       enum bpf_access_type atype, u32 *next_btf_id,
++		       enum bpf_type_flag *flag);
++
+ typedef unsigned int (*bpf_dispatcher_fn)(const void *ctx,
+ 					  const struct bpf_insn *insnsi,
+ 					  unsigned int (*bpf_func)(const void *,
+diff --git a/include/net/netfilter/nf_conntrack_bpf.h b/include/net/netfilter/nf_conntrack_bpf.h
+index a61a93d1c6dc..cf2c0423d174 100644
+--- a/include/net/netfilter/nf_conntrack_bpf.h
++++ b/include/net/netfilter/nf_conntrack_bpf.h
+@@ -5,6 +5,7 @@
+ 
+ #include <linux/bpf.h>
+ #include <linux/btf.h>
++#include <linux/filter.h>
+ #include <linux/kconfig.h>
+ #include <linux/mutex.h>
+ 
+@@ -14,12 +15,6 @@
+ extern int register_nf_conntrack_bpf(void);
+ extern void cleanup_nf_conntrack_bpf(void);
+ 
+-extern struct mutex nf_conn_btf_access_lock;
+-extern int (*nfct_bsa)(struct bpf_verifier_log *log, const struct btf *btf,
+-		       const struct btf_type *t, int off, int size,
+-		       enum bpf_access_type atype, u32 *next_btf_id,
+-		       enum bpf_type_flag *flag);
+-
+ #else
+ 
+ static inline int register_nf_conntrack_bpf(void)
 -- 
-2.30.2
+2.37.1
 
