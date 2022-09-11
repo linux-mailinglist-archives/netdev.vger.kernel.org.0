@@ -2,152 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 16DE45B4E94
-	for <lists+netdev@lfdr.de>; Sun, 11 Sep 2022 13:52:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C861E5B4EB8
+	for <lists+netdev@lfdr.de>; Sun, 11 Sep 2022 14:19:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230312AbiIKLvD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Sep 2022 07:51:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45320 "EHLO
+        id S230247AbiIKMTN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Sep 2022 08:19:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229977AbiIKLvB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Sep 2022 07:51:01 -0400
-Received: from smtp.smtpout.orange.fr (smtp-29.smtpout.orange.fr [80.12.242.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D6CB220DD
-        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 04:50:56 -0700 (PDT)
-Received: from pop-os.home ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id XLUDoCHEZJvOZXLUEoFLUg; Sun, 11 Sep 2022 13:50:55 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sun, 11 Sep 2022 13:50:55 +0200
-X-ME-IP: 90.11.190.129
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH] headers: Remove some left-over license text
-Date:   Sun, 11 Sep 2022 13:50:30 +0200
-Message-Id: <2a15aba72497e78ff08c8b8a8bfe3cf5a3e6ee18.1662897019.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S230116AbiIKMTM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Sep 2022 08:19:12 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BB3C2ED49
+        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 05:19:10 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id t5so9018885edc.11
+        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 05:19:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=ESNqHKzFYRbLllUT/xcQbfHQ8QXquEYLd9ELgyLatYk=;
+        b=hJuefVBhDOKbSlQyYiazURVRh/Nb88mHm5TVWlL6VefcMrKw35Q28GhrZ/PCNCX9e/
+         gF/DjaSTm4jOK1Umernv84uFlU03Zp0JaBAAwjsft5C2OhiS9hlgT0x1zy0tpURQYWpl
+         lYePskarJuZyf2ypHi5ncZzALjeYics3vyQqWP9509i+bG4TgvdJ4SBdCdXbe7j9kQzi
+         0ds9u01pjNnn1ABiteld3V22AnlCq/El9V+Mhuu7jkkYw3E3eeMrCYDzAypC1kL6g+0O
+         cLOhOMmH/9YBcA1A/GQuQtmTKkWvahNEv3sLg1jGZG2bU1CChHYLJmGT8tgFRSsci6tS
+         9FOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=ESNqHKzFYRbLllUT/xcQbfHQ8QXquEYLd9ELgyLatYk=;
+        b=bbsK1/EK2q6bQKlFwRSpN7zVv5tOGzd121MRwODfmk0Egw7xdTdaa3j9Zd/9WArYOj
+         +IUddGbq6c5zjFPYoE0NLY1cRV3Sf2TYa6vV5BqQ6J3vbad/Dwfbwp1kdPUuLEai+xWO
+         blYoigu7gQMv5AO3jYXkKvk8VVoll8vxRtT7NxoSUtxt6yG50Od5IIT1plu2dEN/ClU8
+         UfPMwKUA2Uo8zDPO8+mJlJJ2EMsICdMAKYQjkPtuJIUpQKYXedX5u3ux8Lk+r52zgh8Q
+         SgBUhX6zXvhTNoeNRZWVe0sPqj78mSZ1lbs3Sth26edARTcqhXp572letGE8VW7/Hpz5
+         Q+AQ==
+X-Gm-Message-State: ACgBeo10J3ySugY4W0x+VqxIOZeFI0mNwFemo3qzOxw8L9H7pGV2gNw0
+        pNa41B/awij48j64ZWTSjUb1Pi/QfEKnMVlT
+X-Google-Smtp-Source: AA6agR5nmGFg+8Hjqahjsc8MnyajDH9X1MZsIdwrVW5M4cihH+x8IYhT6SNQ54VlfBYFNDAQS4j2tA==
+X-Received: by 2002:aa7:d4cd:0:b0:44e:e3ab:a995 with SMTP id t13-20020aa7d4cd000000b0044ee3aba995mr18352703edr.166.1662898748741;
+        Sun, 11 Sep 2022 05:19:08 -0700 (PDT)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id l19-20020a170906645300b0073d9630cbafsm2854539ejn.126.2022.09.11.05.19.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 11 Sep 2022 05:19:07 -0700 (PDT)
+Date:   Sun, 11 Sep 2022 15:19:05 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Mattias Forsblad <mattias.forsblad@gmail.com>,
+        netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net-next v8 1/6] net: dsa: mv88e6xxx: Add RMU enable for
+ select switches.
+Message-ID: <20220911121905.hhjauibp237r6dgk@skbuf>
+References: <20220909085138.3539952-1-mattias.forsblad@gmail.com>
+ <20220909085138.3539952-2-mattias.forsblad@gmail.com>
+ <ee6ac1f4-4c80-948e-4711-7e7843329a16@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ee6ac1f4-4c80-948e-4711-7e7843329a16@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove some left-over from commit e2be04c7f995 ("License cleanup: add SPDX
-license identifier to uapi header files with a license")
+On Fri, Sep 09, 2022 at 10:34:35AM -0700, Florian Fainelli wrote:
+> > +	int (*rmu_enable)(struct mv88e6xxx_chip *chip, int port);
+> 
+> Change the argument name to upstream_port to match the implementation for
+> each chip that you are adding?
 
-When the SPDX-License-Identifier tag has been added, the corresponding
-license text has not been removed.
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
- include/uapi/linux/tc_act/tc_bpf.h        |  5 -----
- include/uapi/linux/tc_act/tc_skbedit.h    | 13 -------------
- include/uapi/linux/tc_act/tc_skbmod.h     |  7 +------
- include/uapi/linux/tc_act/tc_tunnel_key.h |  5 -----
- include/uapi/linux/tc_act/tc_vlan.h       |  5 -----
- 5 files changed, 1 insertion(+), 34 deletions(-)
-
-diff --git a/include/uapi/linux/tc_act/tc_bpf.h b/include/uapi/linux/tc_act/tc_bpf.h
-index 653c4f94f76e..fe6c8f8f3e8c 100644
---- a/include/uapi/linux/tc_act/tc_bpf.h
-+++ b/include/uapi/linux/tc_act/tc_bpf.h
-@@ -1,11 +1,6 @@
- /* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
- /*
-  * Copyright (c) 2015 Jiri Pirko <jiri@resnulli.us>
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License as published by
-- * the Free Software Foundation; either version 2 of the License, or
-- * (at your option) any later version.
-  */
- 
- #ifndef __LINUX_TC_BPF_H
-diff --git a/include/uapi/linux/tc_act/tc_skbedit.h b/include/uapi/linux/tc_act/tc_skbedit.h
-index 6cb6101208d0..64032513cc4c 100644
---- a/include/uapi/linux/tc_act/tc_skbedit.h
-+++ b/include/uapi/linux/tc_act/tc_skbedit.h
-@@ -2,19 +2,6 @@
- /*
-  * Copyright (c) 2008, Intel Corporation.
-  *
-- * This program is free software; you can redistribute it and/or modify it
-- * under the terms and conditions of the GNU General Public License,
-- * version 2, as published by the Free Software Foundation.
-- *
-- * This program is distributed in the hope it will be useful, but WITHOUT
-- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-- * more details.
-- *
-- * You should have received a copy of the GNU General Public License along with
-- * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
-- * Place - Suite 330, Boston, MA 02111-1307 USA.
-- *
-  * Author: Alexander Duyck <alexander.h.duyck@intel.com>
-  */
- 
-diff --git a/include/uapi/linux/tc_act/tc_skbmod.h b/include/uapi/linux/tc_act/tc_skbmod.h
-index af6ef2cfbf3d..ac62c9a993ea 100644
---- a/include/uapi/linux/tc_act/tc_skbmod.h
-+++ b/include/uapi/linux/tc_act/tc_skbmod.h
-@@ -1,12 +1,7 @@
- /* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
- /*
-  * Copyright (c) 2016, Jamal Hadi Salim
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License as published by
-- * the Free Software Foundation; either version 2 of the License, or
-- * (at your option) any later version.
--*/
-+ */
- 
- #ifndef __LINUX_TC_SKBMOD_H
- #define __LINUX_TC_SKBMOD_H
-diff --git a/include/uapi/linux/tc_act/tc_tunnel_key.h b/include/uapi/linux/tc_act/tc_tunnel_key.h
-index 3f10dc4e7a4b..49ad4033951b 100644
---- a/include/uapi/linux/tc_act/tc_tunnel_key.h
-+++ b/include/uapi/linux/tc_act/tc_tunnel_key.h
-@@ -2,11 +2,6 @@
- /*
-  * Copyright (c) 2016, Amir Vadai <amir@vadai.me>
-  * Copyright (c) 2016, Mellanox Technologies. All rights reserved.
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License as published by
-- * the Free Software Foundation; either version 2 of the License, or
-- * (at your option) any later version.
-  */
- 
- #ifndef __LINUX_TC_TUNNEL_KEY_H
-diff --git a/include/uapi/linux/tc_act/tc_vlan.h b/include/uapi/linux/tc_act/tc_vlan.h
-index 5b306fe815cc..3e1f8e57cdd2 100644
---- a/include/uapi/linux/tc_act/tc_vlan.h
-+++ b/include/uapi/linux/tc_act/tc_vlan.h
-@@ -1,11 +1,6 @@
- /* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
- /*
-  * Copyright (c) 2014 Jiri Pirko <jiri@resnulli.us>
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License as published by
-- * the Free Software Foundation; either version 2 of the License, or
-- * (at your option) any later version.
-  */
- 
- #ifndef __LINUX_TC_VLAN_H
--- 
-2.34.1
-
+Or the implementations to "port", for that matter. But yes, please keep consistency.
