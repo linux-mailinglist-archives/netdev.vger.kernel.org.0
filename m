@@ -2,129 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 928505B5040
-	for <lists+netdev@lfdr.de>; Sun, 11 Sep 2022 19:26:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33B4A5B5054
+	for <lists+netdev@lfdr.de>; Sun, 11 Sep 2022 19:39:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229529AbiIKR0u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Sep 2022 13:26:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46340 "EHLO
+        id S229546AbiIKRjW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Sep 2022 13:39:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiIKR0r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Sep 2022 13:26:47 -0400
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAE1C9FF8;
-        Sun, 11 Sep 2022 10:26:45 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id 628DD5C0114;
-        Sun, 11 Sep 2022 13:26:42 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Sun, 11 Sep 2022 13:26:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm1; t=1662917202; x=1663003602; bh=MBOUayWj+N
-        jcGUjEpse8JVxeT00YM4+lBCIWidSYzDI=; b=SthgmOhB7x2aMqLjnfZL+GIiSn
-        tJBcX95UVYaIm5U9fN48h5YtynuzLe6Wa/89UARX6Dn+BPJauBX7fNcdZUQNr1rJ
-        oNx1rn39XKyjkcFYwwxVoDaZtz4e2cuKau0SYuaMWcodwVH9wyO/9AS6SQGTf5mu
-        H0dJT5N4yGYCY2YXXwBnbzNSScnwY06Oyhw6PRFn0O0Vhg1o+V9T1nrtXXIElZVr
-        FvZ6Lg924HArftF4PBZCOrIuAg/ohRZ2abXiHc4zlkDiI1hCYuthmnOGtC3WBLIN
-        FXaVeAkTr0IWw+fdZmShVksY25jNJWCU+xar/+yKBeUyUIBS+IiseHTB9vqg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; t=1662917202; x=1663003602; bh=MBOUayWj+NjcGUjEpse8JVxeT00Y
-        M4+lBCIWidSYzDI=; b=qy7jrtjno6aZhG3s4pOt/EoCLQ/tyV9OlvTLqP0DoTJJ
-        /wdNmb/asuYe7MdZWE+UuAg+eE8qhPv1DUfDw2ybI3MFn5MVdxAnqUSJUgpj7Mbw
-        rbkA31NuhL5ZSMaTZ4dcgcIn9+3KzpNyYYL/99k1y6rki2+l9TkKtz/LmIKmtfVx
-        OCtnzaUF82ERc2C2L/uT42PL4DQ2LOU/Y4Znbup08dwkzVv2iLlz2HgxuZWjG7iF
-        oznlZJeFdZ4vMantZWQJJFVMZtiJhtWvsU9nXYRtIOABzhV6Jobrnt1n9f5ZrYiZ
-        OV/jOT2tW3DGggKSGqh0MQp7Jj8FTaiAN2/Q5RUVqQ==
-X-ME-Sender: <xms:URoeY7kMFJ5K8Uw5MxYqPQdAcSDaqHCICz8hN0g2kz9g0yD-gS1DZA>
-    <xme:URoeY-28ecJWIOyFXBhYdpeJ1TPSfmhWuMy1JSCd8eT2gtXKzBz3ryQZD43WCxJnN
-    oDgYxNDGIJhh5O5gA>
-X-ME-Received: <xmr:URoeYxq3btW0evAm1xePgyaCoKRN4OfXUVnlztEr9vlCaJX48SF_Jqr96Cs3LcTMPfd0ZnU1qwy3EHqIEih5H5Y9Gsk9fmY6YTMPy5g>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfedutddgudduiecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecufghrlhcuvffnffculdefhedmnecujfgurhepff
-    fhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepffgrnhhivghlucgiuhcu
-    oegugihusegugihuuhhurdighiiiqeenucggtffrrghtthgvrhhnpeevuddugeeihfdtff
-    ehgffgudeggeegheetgfevhfekkeeileeuieejleekiedvgfenucevlhhushhtvghrufhi
-    iigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegugihusegugihuuhhurdighiii
-X-ME-Proxy: <xmx:URoeYzm-gPU5ExdBLS1A04bwf_WLiDRoXhPDmg1i7TY6u4YgIt1cSQ>
-    <xmx:URoeY534hzlXyX-dp7Kd4xJUTJrIUiu_hzyVdujt_5w84ecQQl9n9w>
-    <xmx:URoeYyuF5H-bfcWd4P3O2wI4rT_HH25WyAdfh7qP1bMmq07837p-hA>
-    <xmx:UhoeYyvsAcNB1exoxpfqyL_ye9wJ2osVRfAJh57buTsEKCm96jRjiQ>
-Feedback-ID: i6a694271:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 11 Sep 2022 13:26:39 -0400 (EDT)
-Date:   Sun, 11 Sep 2022 11:26:36 -0600
-From:   Daniel Xu <dxu@dxuuu.xyz>
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, pablo@netfilter.org, fw@strlen.de,
-        toke@kernel.org, martin.lau@linux.dev,
-        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf-next v5 0/6] Support direct writes to nf_conn:mark
-Message-ID: <20220911172636.rq7makycmwvlwmhc@kashmir.localdomain>
-References: <cover.1662568410.git.dxu@dxuuu.xyz>
- <CAP01T77JFBiO84iezH4Jh++vu=EEDf63KepK_jKFmjgjrHPgmw@mail.gmail.com>
+        with ESMTP id S229539AbiIKRjV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Sep 2022 13:39:21 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED582A418;
+        Sun, 11 Sep 2022 10:39:17 -0700 (PDT)
+Received: from weisslap.fritz.box ([31.19.218.61]) by mrelayeu.kundenserver.de
+ (mreue012 [212.227.15.167]) with ESMTPSA (Nemesis) id
+ 1MJnnV-1onAOA3yMT-00KAO0; Sun, 11 Sep 2022 19:39:00 +0200
+From:   =?UTF-8?q?Michael=20Wei=C3=9F?= <michael.weiss@aisec.fraunhofer.de>
+To:     michael.weiss@aisec.fraunhofer.de
+Cc:     Pravin B Shelar <pshelar@ovn.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        dev@openvswitch.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] net: openvswitch: metering and conntrack in userns
+Date:   Sun, 11 Sep 2022 19:38:23 +0200
+Message-Id: <20220911173825.167352-1-michael.weiss@aisec.fraunhofer.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAP01T77JFBiO84iezH4Jh++vu=EEDf63KepK_jKFmjgjrHPgmw@mail.gmail.com>
-X-Spam-Status: No, score=-0.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FROM_SUSPICIOUS_NTLD,
-        PDS_OTHER_BAD_TLD,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:AhfznFilIVXcoGRvyKPUgYAuCNw3Wd2UL7Sj/tF9+KXiCF+KvxC
+ xeIjhWi92HO0Wj5CTthFC+9bHUnXdHzp4F1Btc96+jbyab/I4b6skqLxdcpH6LAVwLjWjZ4
+ L65SsCGYYgofDtoOoYqXEN30OvnKTEpuO6Os3EZujDOU3e3iPaKqhVl0N/qX0Y0khV8QpzH
+ cyteaEsfdXTFwpIrtRC4g==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:LyFaqgxewn8=:arNHfqIIk9Oz+5Gse3dhIu
+ xKYpukUpOvTPpNm/VAB4MGg5cKmB1bZ98JbQVi/Y8ofA1D2LHDW0TSRRwJC8efxLg5ooP3EEa
+ dJYxT3gsEOPiM0Pggx45XGHrJj5xSyf4QR5mZM36EcWzvHyd/T1MYn9oM1PX4RzSLCiGW3HZa
+ XBTlQ0HCeYW61D1Ti2KwR9RoPMcsUAky+kRYQtvHF084TzazrkZxIPTXngTSNkTcMbvNFr/wq
+ zHWL5ZmyQLvRoqKDHqxkmgejEC1ziHkfGqg83QWOsrsJTdYrdB+kqduJmr3/yMrzugibsAL+1
+ YnWlFZUAMhTGL5Yn/r/lZsJmYwbfSWAQrLUctWKfTK0tfLpM9LDOIAzsaEpqTmXz18Ym/sxct
+ T+cbduOg+3y8sBAotMaaLNaxqNBc0qTgTOi4vEGPQ1/VNPMnDGSxF2BeiJX6EDJfSyj+yaBWT
+ 94HaAbradqi9czvxgFdhMsjLLWW+8f7fUOyYSNNiQBQPxpMPE7n7jvlnR3wuwE9m7jPb5ZZd1
+ pS9TKXxzR1LyOz8VWPrC93FvUsPy0+AVwthL9pB01iMqzxRfe53rg0abBqDqQN2ymjyrXMH1o
+ THbp0WnWeKatj93E6tOEBViEuVT7SLYD/+QcAV1p3cOMie0zrhGl71ugL+HyNYtnPpZ/6a6AV
+ au7jDZZNPdCjPo88qdp75jZ2STY9L4FgNHaBkEFiD16rHXAtga3wGaKjFkA2BWIXkK7A/15vG
+ cnlPOew30SlTSrLnZmM+rQomZjaIK32f9hBqJzyAM4QMhwWqlYI7FimavTSZuHmn7FXddx/7R
+ fwMdqX/FQt9g5VTcQcoWdMB4jShuQ==
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Kumar,
+Currently using openvswitch in a non-inital user namespace, e.g., an
+unprivileged container, is possible but without metering and conntrack
+support. This is due to the restriction of the corresponding Netlink
+interfaces to the global CAP_NET_ADMIN.
 
-On Sat, Sep 10, 2022 at 02:27:38AM +0200, Kumar Kartikeya Dwivedi wrote:
-> On Wed, 7 Sept 2022 at 18:41, Daniel Xu <dxu@dxuuu.xyz> wrote:
-> >
-> > Support direct writes to nf_conn:mark from TC and XDP prog types. This
-> > is useful when applications want to store per-connection metadata. This
-> > is also particularly useful for applications that run both bpf and
-> > iptables/nftables because the latter can trivially access this metadata.
-> >
-> > One example use case would be if a bpf prog is responsible for advanced
-> > packet classification and iptables/nftables is later used for routing
-> > due to pre-existing/legacy code.
-> >
-> 
-> There are a couple of compile time warnings when conntrack is disabled,
-> 
-> ../net/core/filter.c:8608:1: warning: symbol 'nf_conn_btf_access_lock'
-> was not declared. Should it be static?
-> ../net/core/filter.c:8611:5: warning: symbol 'nfct_bsa' was not
-> declared. Should it be static?
-> 
-> Most likely because extern declaration is guarded by ifdefs. So just
-> moving those out of ifdef should work.
-> I guess you can send that as a follow up fix, or roll it in if you end
-> up respinning.
+This simple patches switch from GENL_ADMIN_PERM to GENL_UNS_ADMIN_PERM
+in several cases to allow this also for the unprivilegd container
+use case.
 
-Hmm, I don't see how filter.c ever #include's nf_conntrack_bpf.h. So
-you'd think that the warning would always be present regardless of
-CONFIG_NF_CONNTRACK setting.
+We tested this for unprivileged containers created by the container
+manager of GyroidOS (gyroidos.github.io). However, for other container
+managers such as LXC or systemd which provide unprivileged containers
+this should be apply equally.
 
-FWIW I can't reproduce the warning even with CONFIG_NF_CONNTRACK=n.
+Applies against v6.0-rc4
 
-Maybe the extern declarations should be in include/linux/filter.h
-anyways? Might be cleaner. WDYT?
+Michael Weiß (2):
+  net: openvswitch: allow metering in non-initial user namespace
+  net: openvswitch: allow conntrack in non-initial user namespace
 
-> Otherwise, for the series:
-> Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+ net/openvswitch/conntrack.c |  8 ++++----
+ net/openvswitch/meter.c     | 12 ++++++------
+ 2 files changed, 10 insertions(+), 10 deletions(-)
 
-Thanks!
+-- 
+2.30.2
 
-Daniel
