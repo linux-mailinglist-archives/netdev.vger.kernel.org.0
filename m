@@ -2,289 +2,319 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 42CF25B5F36
-	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 19:23:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08C125B5F49
+	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 19:28:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229718AbiILRXa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Sep 2022 13:23:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56730 "EHLO
+        id S229809AbiILR2O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Sep 2022 13:28:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229869AbiILRX3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 13:23:29 -0400
-Received: from smtp-bc0c.mail.infomaniak.ch (smtp-bc0c.mail.infomaniak.ch [IPv6:2001:1600:4:17::bc0c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FA783F30B
-        for <netdev@vger.kernel.org>; Mon, 12 Sep 2022 10:23:27 -0700 (PDT)
-Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
-        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4MRD2j4VqzzMpnkq;
-        Mon, 12 Sep 2022 19:23:25 +0200 (CEST)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4MRD2j0hcfzMpnPd;
-        Mon, 12 Sep 2022 19:23:25 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1663003405;
-        bh=26l4uJbZGY63ikPLu5MYAlLcQlyz8DXOoBBWrYuMDVw=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=ao9Fpnw7GY1zVFNcaLuy6lLFMfa5Qg6WyETFZF/pIiVHjQD+ak7FKpCwqgWVbbvnR
-         Bx6ROGs7+Ml8OWhPx4g1TZy4gKj6VETtQsANkTahmO15WhX1YxLpsDbkkl5H+RDXOq
-         loOFTZgOfRsAwAqvd6XcrINbdLmixRCuRbyY63qg=
-Message-ID: <62e35e94-cca0-a7d3-cbb4-6526ccf3dde0@digikod.net>
-Date:   Mon, 12 Sep 2022 19:23:24 +0200
+        with ESMTP id S229813AbiILR2N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 13:28:13 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94C3822E
+        for <netdev@vger.kernel.org>; Mon, 12 Sep 2022 10:28:11 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id x1-20020a17090ab00100b001fda21bbc90so13039656pjq.3
+        for <netdev@vger.kernel.org>; Mon, 12 Sep 2022 10:28:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=91oC9L+UtoW1ZWkUlTRm+aOVzjaXiSmvCYM3CW0SV5A=;
+        b=DpkaFJXL4q/e0JqF78ATfIH44tH4AYQYRVnxwp3FVGChnh8eNpFBWUYA5vSmAOipXs
+         llyTVZEfdupq1a+BwJ2yoiE26U/wDX+lUhySOOJSPi3jFx4kEyuRHcSlXcwkOwD4/ohb
+         EPXq9cG7aDzb7MFtuS0rOhCz3FgOGsj7m3BnIutVG+vL0cK5cfdZlCevUJobDyhwLj3Q
+         kAVgSfyIGz14FRgZ7S4kzPGvmiXYP6Lfa/qCNuSXzFiFdnp42aT/xmR8Za30gB4HX23+
+         ehgHnx25icf77xTh5khnBVHwooFDNtApDqcZDcKwtJ7LuljSiDru/ys/KURGj51/E8/5
+         zkhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=91oC9L+UtoW1ZWkUlTRm+aOVzjaXiSmvCYM3CW0SV5A=;
+        b=Fl6ANr5CLk2rK/r0OC52hztsy6GN3bO8gT6dQZuiH7KH3HKBEwpB6LNC8JjCrqHx99
+         jtXQmspAnyzZ4r9yTUdtz674MIXkph7X0z28GBmPHKXgmRFYbl/ijG6m4mpUe7mLL0Uz
+         c/E3vMfW3aeuyZwo9uBdpd+QighAnFQoWh87ESjZi3295IBjIel/EyHjm9ey9tMPK+jQ
+         qsAFGlFkKl31gHVpnUp8WRziiZPhIQj1fxOvTo7L7QHoRB748/iMe000V5ejryu1SCyg
+         IUvu+MZRFk+HV8Qt6KjIozmpGoPf7gtDwJcCrr0EVyfuQyvJZHIfqZPQuC1pz8hZ4qMU
+         akwA==
+X-Gm-Message-State: ACgBeo0He7KrWZ2GGhXiKKMP1cPJFt9nCB1W3wb7T53MRKeZNXeqrvVA
+        He2DqGWRk+c7SHbeb73WoMgtxg==
+X-Google-Smtp-Source: AA6agR6JVrI1vxKXP0TpK4SZRUSh6xzH/vGwaEnEjYby+4LmJniiB2X7aP7+jnaLMODaujw7gHAMFA==
+X-Received: by 2002:a17:90b:4d81:b0:202:d535:d324 with SMTP id oj1-20020a17090b4d8100b00202d535d324mr5578277pjb.133.1663003691020;
+        Mon, 12 Sep 2022 10:28:11 -0700 (PDT)
+Received: from ?IPV6:2401:4900:1c60:5362:9d7f:2354:1d0a:78e3? ([2401:4900:1c60:5362:9d7f:2354:1d0a:78e3])
+        by smtp.gmail.com with ESMTPSA id c12-20020aa7952c000000b0052e987c64efsm6012062pfp.174.2022.09.12.10.28.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 12 Sep 2022 10:28:10 -0700 (PDT)
+Message-ID: <ccd6f6c2-458d-832a-7299-d9d9ffb652a8@linaro.org>
+Date:   Mon, 12 Sep 2022 22:58:05 +0530
 MIME-Version: 1.0
-User-Agent: 
-Subject: Re: [PATCH v7 17/18] samples/landlock: add network demo
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 1/4] dt-bindings: net: qcom,ethqos: Convert bindings to
+ yaml
 Content-Language: en-US
-To:     "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>
-Cc:     willemdebruijn.kernel@gmail.com, gnoack3000@gmail.com,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, anton.sirazetdinov@huawei.com
-References: <20220829170401.834298-1-konstantin.meskhidze@huawei.com>
- <20220829170401.834298-18-konstantin.meskhidze@huawei.com>
- <fe3bc928-14f8-5e2b-359e-9a87d6cf5b01@digikod.net>
- <132e8423-adf5-3343-8a09-2d09719ff262@huawei.com>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-In-Reply-To: <132e8423-adf5-3343-8a09-2d09719ff262@huawei.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        devicetree@vger.kernel.org
+Cc:     linux-arm-msm@vger.kernel.org, agross@kernel.org,
+        bhupesh.linux@gmail.com, linux-kernel@vger.kernel.org,
+        robh+dt@kernel.org, netdev@vger.kernel.org,
+        Bjorn Andersson <andersson@kernel.org>,
+        Rob Herring <robh@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+        David Miller <davem@davemloft.net>
+References: <20220907204924.2040384-1-bhupesh.sharma@linaro.org>
+ <20220907204924.2040384-2-bhupesh.sharma@linaro.org>
+ <dcf449f5-ad28-d262-98d5-72c6ba2b7aea@linaro.org>
+From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
+In-Reply-To: <dcf449f5-ad28-d262-98d5-72c6ba2b7aea@linaro.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Krzysztof,
 
-On 10/09/2022 22:59, Konstantin Meskhidze (A) wrote:
+Thanks for your comments.
+
+On 9/8/22 8:08 PM, Krzysztof Kozlowski wrote:
+> On 07/09/2022 22:49, Bhupesh Sharma wrote:
+>> Convert Qualcomm ETHQOS Ethernet devicetree binding to YAML.
+>>
+>> Cc: Bjorn Andersson <andersson@kernel.org>
+>> Cc: Rob Herring <robh@kernel.org>
+>> Cc: Vinod Koul <vkoul@kernel.org>
+>> Cc: David Miller <davem@davemloft.net>
+>> Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
 > 
+> Thank you for your patch. There is something to discuss/improve.
 > 
-> 9/6/2022 11:10 AM, Mickaël Salaün пишет:
->>
->> On 29/08/2022 19:04, Konstantin Meskhidze wrote:
->>> This commit adds network demo. It's possible to allow a sandboxer to
->>> bind/connect to a list of particular ports restricting network
->>> actions to the rest of ports.
->>>
->>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
->>> ---
->>>
->>> Changes since v6:
->>> * Removes network support if ABI < 3.
->>>
->>> Changes since v5:
->>> * Makes network ports sandboxing optional.
->>> * Fixes some logic errors.
->>> * Formats code with clang-format-14.
->>>
->>> Changes since v4:
->>> * Adds ENV_TCP_BIND_NAME "LL_TCP_BIND" and
->>> ENV_TCP_CONNECT_NAME "LL_TCP_CONNECT" variables
->>> to insert TCP ports.
->>> * Renames populate_ruleset() to populate_ruleset_fs().
->>> * Adds populate_ruleset_net() and parse_port_num() helpers.
->>> * Refactors main() to support network sandboxing.
->>>
->>> ---
->>>    samples/landlock/sandboxer.c | 123 +++++++++++++++++++++++++++++++----
->>>    1 file changed, 112 insertions(+), 11 deletions(-)
->>>
->>> diff --git a/samples/landlock/sandboxer.c b/samples/landlock/sandboxer.c
->>> index 771b6b10d519..7f88067534df 100644
->>> --- a/samples/landlock/sandboxer.c
->>> +++ b/samples/landlock/sandboxer.c
->>> @@ -51,6 +51,8 @@ static inline int landlock_restrict_self(const int ruleset_fd,
->>>
->>>    #define ENV_FS_RO_NAME "LL_FS_RO"
->>>    #define ENV_FS_RW_NAME "LL_FS_RW"
->>> +#define ENV_TCP_BIND_NAME "LL_TCP_BIND"
->>> +#define ENV_TCP_CONNECT_NAME "LL_TCP_CONNECT"
->>>    #define ENV_PATH_TOKEN ":"
->>>
->>>    static int parse_path(char *env_path, const char ***const path_list)
->>> @@ -71,6 +73,20 @@ static int parse_path(char *env_path, const char ***const path_list)
->>>    	return num_paths;
->>>    }
->>>
->>> +static int parse_port_num(char *env_port)
->>> +{
->>> +	int i, num_ports = 0;
->>> +
->>> +	if (env_port) {
->>> +		num_ports++;
->>> +		for (i = 0; env_port[i]; i++) {
->>> +			if (env_port[i] == ENV_PATH_TOKEN[0])
->>> +				num_ports++;
->>> +		}
->>> +	}
->>> +	return num_ports;
->>> +}
->>> +
->>>    /* clang-format off */
->>>
->>>    #define ACCESS_FILE ( \
->>> @@ -81,8 +97,8 @@ static int parse_path(char *env_path, const char ***const path_list)
->>>
->>>    /* clang-format on */
->>>
->>> -static int populate_ruleset(const char *const env_var, const int ruleset_fd,
->>> -			    const __u64 allowed_access)
->>> +static int populate_ruleset_fs(const char *const env_var, const int ruleset_fd,
->>> +			       const __u64 allowed_access)
->>>    {
->>>    	int num_paths, i, ret = 1;
->>>    	char *env_path_name;
->>> @@ -143,6 +159,48 @@ static int populate_ruleset(const char *const env_var, const int ruleset_fd,
->>>    	return ret;
->>>    }
->>>
->>> +static int populate_ruleset_net(const char *const env_var, const int ruleset_fd,
->>> +				const __u64 allowed_access)
->>> +{
->>> +	int num_ports, i, ret = 1;
->>> +	char *env_port_name;
->>> +	struct landlock_net_service_attr net_service = {
->>> +		.allowed_access = 0,
->>> +		.port = 0,
->>> +	};
->>> +
->>> +	env_port_name = getenv(env_var);
->>> +	if (!env_port_name) {
->>> +		ret = 0;
->>> +		goto out_free_name;
->>> +	}
->>> +	env_port_name = strdup(env_port_name);
->>> +	unsetenv(env_var);
->>> +	num_ports = parse_port_num(env_port_name);
->>> +
->>> +	if (num_ports == 1 && (strtok(env_port_name, ENV_PATH_TOKEN) == NULL)) {
->>> +		ret = 0;
->>> +		goto out_free_name;
->>> +	}
->>> +
->>> +	for (i = 0; i < num_ports; i++) {
->>> +		net_service.allowed_access = allowed_access;
->>> +		net_service.port = atoi(strsep(&env_port_name, ENV_PATH_TOKEN));
->>> +		if (landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_SERVICE,
->>> +				      &net_service, 0)) {
->>> +			fprintf(stderr,
->>> +				"Failed to update the ruleset with port \"%d\": %s\n",
->>> +				net_service.port, strerror(errno));
->>> +			goto out_free_name;
->>> +		}
->>> +	}
->>> +	ret = 0;
->>> +
->>> +out_free_name:
->>> +	free(env_port_name);
->>> +	return ret;
->>> +}
->>> +
->>>    /* clang-format off */
->>>
->>>    #define ACCESS_FS_ROUGHLY_READ ( \
->>> @@ -171,32 +229,50 @@ int main(const int argc, char *const argv[], char *const *const envp)
->>>    	const char *cmd_path;
->>>    	char *const *cmd_argv;
->>>    	int ruleset_fd, abi;
->>> +	char *env_port_name;
->>>    	__u64 access_fs_ro = ACCESS_FS_ROUGHLY_READ,
->>> -	      access_fs_rw = ACCESS_FS_ROUGHLY_READ | ACCESS_FS_ROUGHLY_WRITE;
->>> +	      access_fs_rw = ACCESS_FS_ROUGHLY_READ | ACCESS_FS_ROUGHLY_WRITE,
->>> +	      access_net_tcp = 0;
->>>    	struct landlock_ruleset_attr ruleset_attr = {
->>>    		.handled_access_fs = access_fs_rw,
->>> +		.handled_access_net = access_net_tcp,
->>
->> Please follow the same logic as for handled_access_fs: by default
->> handles all accesses, then remove the ones that are not supported by the
->> kernel, then remove the ones that are not explicitly set by users (by
->> checking env_port_name).
->>
->    So at the beginning there will be full network ruleset attribute
-> supported:
->    .handled_access_net = LANDLOCK_ACCESS_NET_BIND_TCP |
->                          LANDLOCK_ACCESS_NET_CONNECT_TCP;
->    Correct?
-
-yes
-
-
+>> ---
+>>   .../devicetree/bindings/net/qcom,ethqos.txt   |  66 ---------
+>>   .../devicetree/bindings/net/qcom,ethqos.yaml  | 139 ++++++++++++++++++
 > 
->>
->>>    	};
->>>
->>>    	if (argc < 2) {
->>>    		fprintf(stderr,
->>> -			"usage: %s=\"...\" %s=\"...\" %s <cmd> [args]...\n\n",
->>> -			ENV_FS_RO_NAME, ENV_FS_RW_NAME, argv[0]);
->>> +			"usage: %s=\"...\" %s=\"...\" %s=\"...\" %s=\"...\"%s "
->>> +			"<cmd> [args]...\n\n",
->>> +			ENV_FS_RO_NAME, ENV_FS_RW_NAME, ENV_TCP_BIND_NAME,
->>> +			ENV_TCP_CONNECT_NAME, argv[0]);
->>>    		fprintf(stderr,
->>>    			"Launch a command in a restricted environment.\n\n");
->>> -		fprintf(stderr, "Environment variables containing paths, "
->>> -				"each separated by a colon:\n");
->>> +		fprintf(stderr,
->>> +			"Environment variables containing paths and ports "
->>> +			"each separated by a colon:\n");
->>>    		fprintf(stderr,
->>>    			"* %s: list of paths allowed to be used in a read-only way.\n",
->>>    			ENV_FS_RO_NAME);
->>>    		fprintf(stderr,
->>> -			"* %s: list of paths allowed to be used in a read-write way.\n",
->>> +			"* %s: list of paths allowed to be used in a read-write way.\n\n",
->>>    			ENV_FS_RW_NAME);
->>> +		fprintf(stderr,
->>> +			"Environment variables containing ports are optional "
->>> +			"and could be skipped.\n");
->>> +		fprintf(stderr,
->>> +			"* %s: list of ports allowed to bind (server).\n",
->>> +			ENV_TCP_BIND_NAME);
->>> +		fprintf(stderr,
->>> +			"* %s: list of ports allowed to connect (client).\n",
->>> +			ENV_TCP_CONNECT_NAME);
->>>    		fprintf(stderr,
->>>    			"\nexample:\n"
->>>    			"%s=\"/bin:/lib:/usr:/proc:/etc:/dev/urandom\" "
->>>    			"%s=\"/dev/null:/dev/full:/dev/zero:/dev/pts:/tmp\" "
->>> +			"%s=\"9418\" "
->>> +			"%s=\"80:443\" "
->>>    			"%s bash -i\n",
->>> -			ENV_FS_RO_NAME, ENV_FS_RW_NAME, argv[0]);
->>> +			ENV_FS_RO_NAME, ENV_FS_RW_NAME, ENV_TCP_BIND_NAME,
->>> +			ENV_TCP_CONNECT_NAME, argv[0]);
->>>    		return 1;
->>>    	}
->>>
->>> @@ -224,15 +300,32 @@ int main(const int argc, char *const argv[], char *const *const envp)
->>>    		}
->>>    		return 1;
->>>    	}
->>> +
->>> +	/* Adds optionally network bind() support. */
->>> +	env_port_name = getenv(ENV_TCP_BIND_NAME);
->>> +	if (env_port_name) {
->>> +		access_net_tcp |= LANDLOCK_ACCESS_NET_BIND_TCP;
->>> +	}
->>> +	/* Adds optionally network connect() support. */
->>> +	env_port_name = getenv(ENV_TCP_CONNECT_NAME);
->>> +	if (env_port_name) {
->>> +		access_net_tcp |= LANDLOCK_ACCESS_NET_CONNECT_TCP;
->>> +	}
->>> +	ruleset_attr.handled_access_net = access_net_tcp;
->>> +
->>>    	/* Best-effort security. */
->>>    	switch (abi) {
->>>    	case 1:
->>>    		/* Removes LANDLOCK_ACCESS_FS_REFER for ABI < 2 */
->>>    		ruleset_attr.handled_access_fs &= ~LANDLOCK_ACCESS_FS_REFER;
->>> +		/* Removes network support for ABI < 2 */
->>> +		ruleset_attr.handled_access_net = 0;
->>
->> Same issue as for the documentation.
-> 
->     So I need to add refactored code into documentation?
+> You need to update maintainers - old path.
 
-yes
+Sure, my bad. Will do in v2.
+
+>>   2 files changed, 139 insertions(+), 66 deletions(-)
+>>   delete mode 100644 Documentation/devicetree/bindings/net/qcom,ethqos.txt
+>>   create mode 100644 Documentation/devicetree/bindings/net/qcom,ethqos.yaml
+>>
+>> diff --git a/Documentation/devicetree/bindings/net/qcom,ethqos.txt b/Documentation/devicetree/bindings/net/qcom,ethqos.txt
+>> deleted file mode 100644
+>> index 1f5746849a71..000000000000
+>> --- a/Documentation/devicetree/bindings/net/qcom,ethqos.txt
+>> +++ /dev/null
+>> @@ -1,66 +0,0 @@
+>> -Qualcomm Ethernet ETHQOS device
+>> -
+>> -This documents dwmmac based ethernet device which supports Gigabit
+>> -ethernet for version v2.3.0 onwards.
+>> -
+>> -This device has following properties:
+>> -
+>> -Required properties:
+>> -
+>> -- compatible: Should be one of:
+>> -		"qcom,qcs404-ethqos"
+>> -		"qcom,sm8150-ethqos"
+>> -
+>> -- reg: Address and length of the register set for the device
+>> -
+>> -- reg-names: Should contain register names "stmmaceth", "rgmii"
+>> -
+>> -- clocks: Should contain phandle to clocks
+>> -
+>> -- clock-names: Should contain clock names "stmmaceth", "pclk",
+>> -		"ptp_ref", "rgmii"
+>> -
+>> -- interrupts: Should contain phandle to interrupts
+>> -
+>> -- interrupt-names: Should contain interrupt names "macirq", "eth_lpi"
+>> -
+>> -Rest of the properties are defined in stmmac.txt file in same directory
+>> -
+>> -
+>> -Example:
+>> -
+>> -ethernet: ethernet@7a80000 {
+>> -	compatible = "qcom,qcs404-ethqos";
+>> -	reg = <0x07a80000 0x10000>,
+>> -		<0x07a96000 0x100>;
+>> -	reg-names = "stmmaceth", "rgmii";
+>> -	clock-names = "stmmaceth", "pclk", "ptp_ref", "rgmii";
+>> -	clocks = <&gcc GCC_ETH_AXI_CLK>,
+>> -		<&gcc GCC_ETH_SLAVE_AHB_CLK>,
+>> -		<&gcc GCC_ETH_PTP_CLK>,
+>> -		<&gcc GCC_ETH_RGMII_CLK>;
+>> -	interrupts = <GIC_SPI 56 IRQ_TYPE_LEVEL_HIGH>,
+>> -			<GIC_SPI 55 IRQ_TYPE_LEVEL_HIGH>;
+>> -	interrupt-names = "macirq", "eth_lpi";
+>> -	snps,reset-gpio = <&tlmm 60 GPIO_ACTIVE_LOW>;
+>> -	snps,reset-active-low;
+>> -
+>> -	snps,txpbl = <8>;
+>> -	snps,rxpbl = <2>;
+>> -	snps,aal;
+>> -	snps,tso;
+>> -
+>> -	phy-handle = <&phy1>;
+>> -	phy-mode = "rgmii";
+>> -
+>> -	mdio {
+>> -		#address-cells = <0x1>;
+>> -		#size-cells = <0x0>;
+>> -		compatible = "snps,dwmac-mdio";
+>> -		phy1: phy@4 {
+>> -			device_type = "ethernet-phy";
+>> -			reg = <0x4>;
+>> -		};
+>> -	};
+>> -
+>> -};
+>> diff --git a/Documentation/devicetree/bindings/net/qcom,ethqos.yaml b/Documentation/devicetree/bindings/net/qcom,ethqos.yaml
+>> new file mode 100644
+>> index 000000000000..f05df9b0d106
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/net/qcom,ethqos.yaml
+>> @@ -0,0 +1,139 @@
+>> +# SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/net/qcom,ethqos.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: Qualcomm Ethernet ETHQOS device
+>> +
+>> +maintainers:
+>> +  - Bhupesh Sharma <bhupesh.sharma@linaro.org>
+>> +
+>> +description:
+>> +  This binding describes the dwmmac based Qualcomm ethernet devices which
+>> +  support Gigabit ethernet (version v2.3.0 onwards).
+>> +
+>> +  So, this file documents platform glue layer for dwmmac stmmac based Qualcomm
+>> +  ethernet devices.
+>> +
+>> +allOf:
+>> +  - $ref: "snps,dwmac.yaml#"
+> 
+> No need for quotes.
+
+Ok.
+
+>> +
+>> +properties:
+>> +  compatible:
+>> +    enum:
+>> +      - qcom,qcs404-ethqos
+>> +      - qcom,sm8150-ethqos
+>> +
+>> +  reg: true
+> 
+> I think both devices use two reg spaces.
+
+On this platform the two reg spaces are 64-bit, whereas for other
+platforms based on dwmmac, for e.g. stm32 have 32-bit address space.
+
+>> +
+>> +  reg-names:
+>> +    minItems: 1
+> 
+> Why allowing only one item?
+
+Ok, let me remove this in v2.
+
+>> +    items:
+>> +      - const: stmmaceth
+>> +      - const: rgmii
+>> +
+>> +  interrupts: true
+> 
+> This should be specific/fixed.
+> 
+>> +
+>> +  interrupt-names: true
+> 
+> This should be specific/fixed.
+
+These are same as in $ref: "snps,dwmac.yaml#", so
+do we really need to specify them here? I remember on the sdhci-msm
+YAML patch review, Rob mentioned that we should just set the property to 
+true, in such cases.
+
+Am I missing something here?
+
+>> +
+>> +  clocks:
+>> +    minItems: 1
+>> +    maxItems: 4
+> 
+> Why such flexibility?
+
+Ok, let me just keep 'maxItems: 4' here for now.
+
+>> +
+>> +  clock-names:
+>> +    minItems: 1
+>> +    items:
+>> +      - const: stmmaceth
+>> +      - const: pclk
+>> +      - const: ptp_ref
+>> +      - const: rgmii
+>> +
+>> +  iommus:
+>> +    minItems: 1
+>> +    maxItems: 2
+> 
+> Aren't we using only one MMU?
+
+It was just for future compatibility, but I get your point.
+Let me keep the 'maxItems: 1' here for now.
+
+>> +
+>> +  mdio: true
+>> +
+>> +  phy-handle: true
+>> +
+>> +  phy-mode: true
+>> +
+>> +  snps,reset-gpio: true
+>> +
+>> +  snps,tso:
+>> +    $ref: /schemas/types.yaml#/definitions/flag
+>> +    description:
+>> +      Enables the TSO feature otherwise it will be managed by MAC HW capability register.
+>> +
+>> +  power-domains: true
+>> +
+>> +  resets: true
+>> +
+>> +  rx-fifo-depth: true
+>> +
+>> +  tx-fifo-depth: true
+> 
+> You do not list all these properties, because you use
+> unevaluatedProperties. Drop all of these "xxx :true".
+
+Same query as above. May be I am missing something here.
+
+>> +
+>> +required:
+>> +  - compatible
+>> +  - clocks
+>> +  - clock-names
+
+Thanks,
+Bhupesh
+
