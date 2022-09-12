@@ -2,220 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C843D5B52F7
-	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 05:59:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D00065B533B
+	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 06:27:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229492AbiILD5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Sep 2022 23:57:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59778 "EHLO
+        id S229549AbiILE1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Sep 2022 00:27:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbiILD5h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Sep 2022 23:57:37 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EFF12314D
-        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 20:57:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662955054; x=1694491054;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=rYTPX+EL1YgJBaJsjbqTRejR1gPyzEuOTMOdAE5paXc=;
-  b=aFI1mMf9vikBLt0QcL+abGREKaR2gYcO5oAhqyD/vTiBESaXs4pm/UZ0
-   TA7ltCg5I5KqKyp8TmGuH1Nb1vCEvYq51EAsVx8qtop9CLH68KeJk/YNY
-   rE4AuE5C6y5r4CFjh7RCQFEMlm1mj6vqyTtWV+lQEeNvHTmoOgIH9hioF
-   a6XcUQBeYWqN8s/bJPhxWYrjKT208W2G3wr0YCaqokADMLDVSe+le1IPE
-   rLLyIpwqgzjr/w0aOub2nVopSF9pf262rHYK70VpXEJexiD2kT/uNRQT/
-   cO1nK3RBuQnqQ664Up+0meei/oyQRps5rrM3pb1fmHq+UnfDLrOp6JYoA
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10467"; a="280798504"
-X-IronPort-AV: E=Sophos;i="5.93,308,1654585200"; 
-   d="scan'208";a="280798504"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2022 20:57:33 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,308,1654585200"; 
-   d="scan'208";a="944470404"
-Received: from lkp-server02.sh.intel.com (HELO 4011df4f4fd3) ([10.239.97.151])
-  by fmsmga005.fm.intel.com with ESMTP; 11 Sep 2022 20:57:30 -0700
-Received: from kbuild by 4011df4f4fd3 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oXaZd-00028r-38;
-        Mon, 12 Sep 2022 03:57:29 +0000
-Date:   Mon, 12 Sep 2022 11:57:06 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Saeed Mahameed <saeed@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Emeel Hakim <ehakim@nvidia.com>, Raed Salem <raeds@nvidia.com>
-Subject: Re: [PATCH net-next 09/10] net/mlx5e: Support MACsec offload
- extended packet number (EPN)
-Message-ID: <202209121134.cIwqQMz7-lkp@intel.com>
-References: <20220911234059.98624-10-saeed@kernel.org>
+        with ESMTP id S229542AbiILE1f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 00:27:35 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CAE91CB0D
+        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 21:27:33 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id s15-20020a056e021a0f00b002f1760d1437so5600390ild.1
+        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 21:27:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=16yC2ygk9mZoAXYPBA0Bif3TAfj/BVSlCgkYb6seZeU=;
+        b=ud66DCssMj7J8j0BT7u/EWfL9XW7mA/Mxlr56Sz/xq7QY1OtfVuqNRlYcTcDRBBv2O
+         VHrDAYTEn21aIZEDbBSu7Yqyxi18UbiFE47TFyXRMpt5nNeSX0nQDjcWT8ZO98OBR89D
+         CyCcBE/paq9v3XJH9Mf2zm/oR3e86aStL2UMXNJpu2fscrRzo63aLmTpBrqw4fmt83rj
+         820GaMm2uW3mpyb2O3vdpdwKUZ+WSwh2eCo+pgXqScohLQMYSUYxNBj5TGkcNLZ8Qfdg
+         OSpKlYwPh37HHabXYONo/jgtK1JR4xWK14GaJd6I56NyExwBGqHWje2LkSHoQmvtUhAk
+         2giw==
+X-Gm-Message-State: ACgBeo0OS9H4zgDXYJjwV+ABn8sAdtbmJ391OoWWDo9szH4UsFfkxA4E
+        0QR5t1JuCsi8OaNr+gYzF5aGpgqGOKHIcFjoLWXojUnKHtVB
+X-Google-Smtp-Source: AA6agR6Ml96L2V6wdj/4IvzG8ov9MQiDcjCkGDfGFDH3A20lTENPH8EEeIAuxui69fo0IRwAtaY33G8Th6evr85SbIMBxTpFKYNZ
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220911234059.98624-10-saeed@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Received: by 2002:a05:6e02:1c4a:b0:2ed:c3de:c7c7 with SMTP id
+ d10-20020a056e021c4a00b002edc3dec7c7mr9618188ilg.261.1662956852834; Sun, 11
+ Sep 2022 21:27:32 -0700 (PDT)
+Date:   Sun, 11 Sep 2022 21:27:32 -0700
+In-Reply-To: <000000000000f537cc05ddef88db@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000007d793405e87350df@google.com>
+Subject: Re: [syzbot] BUG: Bad page map (5)
+From:   syzbot <syzbot+915f3e317adb0e85835f@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, andrii@kernel.org, ast@kernel.org,
+        bigeasy@linutronix.de, bpf@vger.kernel.org, brauner@kernel.org,
+        daniel@iogearbox.net, david@redhat.com, ebiederm@xmission.com,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org, luto@kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Saeed,
+syzbot has found a reproducer for the following issue on:
 
-Thank you for the patch! Perhaps something to improve:
+HEAD commit:    e47eb90a0a9a Add linux-next specific files for 20220901
+git tree:       linux-next
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=17330430880000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=7933882276523081
+dashboard link: https://syzkaller.appspot.com/bug?extid=915f3e317adb0e85835f
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13397b77080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1793564f080000
 
-[auto build test WARNING on net-next/master]
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+915f3e317adb0e85835f@syzkaller.appspotmail.com
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Saeed-Mahameed/mlx5-MACSec-Extended-packet-number-and-replay-window-offload/20220912-074318
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 169ccf0e40825d9e465863e4707d8e8546d3c3cb
-config: powerpc-allmodconfig (https://download.01.org/0day-ci/archive/20220912/202209121134.cIwqQMz7-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/2a128479cc7dc9483c0d677fdcb532ae2ea4b056
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Saeed-Mahameed/mlx5-MACSec-Extended-packet-number-and-replay-window-offload/20220912-074318
-        git checkout 2a128479cc7dc9483c0d677fdcb532ae2ea4b056
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash drivers/net/ethernet/mellanox/mlx5/core/
+BUG: Bad page map in process syz-executor198  pte:8000000071c00227 pmd:74b30067
+addr:0000000020563000 vm_flags:08100077 anon_vma:ffff8880547d2200 mapping:0000000000000000 index:20563
+file:(null) fault:0x0 mmap:0x0 read_folio:0x0
+CPU: 1 PID: 3614 Comm: syz-executor198 Not tainted 6.0.0-rc3-next-20220901-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 08/26/2022
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_bad_pte.cold+0x2a7/0x2d0 mm/memory.c:565
+ vm_normal_page+0x10c/0x2a0 mm/memory.c:636
+ hpage_collapse_scan_pmd+0x729/0x1da0 mm/khugepaged.c:1199
+ madvise_collapse+0x481/0x910 mm/khugepaged.c:2433
+ madvise_vma_behavior+0xd0a/0x1cc0 mm/madvise.c:1062
+ madvise_walk_vmas+0x1c7/0x2b0 mm/madvise.c:1236
+ do_madvise.part.0+0x24a/0x340 mm/madvise.c:1415
+ do_madvise mm/madvise.c:1428 [inline]
+ __do_sys_madvise mm/madvise.c:1428 [inline]
+ __se_sys_madvise mm/madvise.c:1426 [inline]
+ __x64_sys_madvise+0x113/0x150 mm/madvise.c:1426
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f770ba87929
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 11 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f770ba18308 EFLAGS: 00000246 ORIG_RAX: 000000000000001c
+RAX: ffffffffffffffda RBX: 00007f770bb0f3f8 RCX: 00007f770ba87929
+RDX: 0000000000000019 RSI: 0000000000600003 RDI: 0000000020000000
+RBP: 00007f770bb0f3f0 R08: 00007f770ba18700 R09: 0000000000000000
+R10: 00007f770ba18700 R11: 0000000000000246 R12: 00007f770bb0f3fc
+R13: 00007ffc2d8b62ef R14: 00007f770ba18400 R15: 0000000000022000
+ </TASK>
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   In file included from include/linux/byteorder/big_endian.h:5,
-                    from arch/powerpc/include/uapi/asm/byteorder.h:14,
-                    from include/asm-generic/bitops/le.h:6,
-                    from arch/powerpc/include/asm/bitops.h:336,
-                    from include/linux/bitops.h:68,
-                    from include/linux/bitmap.h:8,
-                    from include/linux/ethtool.h:16,
-                    from include/rdma/ib_verbs.h:15,
-                    from include/linux/mlx5/device.h:37,
-                    from drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c:4:
-   drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c: In function 'macsec_aso_build_wqe_ctrl_seg':
->> drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c:1313:73: warning: right shift count >= width of type [-Wshift-count-overflow]
-    1313 |                 aso_ctrl->va_h  = cpu_to_be32(macsec_aso->umr->dma_addr >> 32);
-         |                                                                         ^~
-   include/uapi/linux/byteorder/big_endian.h:40:51: note: in definition of macro '__cpu_to_be32'
-      40 | #define __cpu_to_be32(x) ((__force __be32)(__u32)(x))
-         |                                                   ^
-   drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c:1313:35: note: in expansion of macro 'cpu_to_be32'
-    1313 |                 aso_ctrl->va_h  = cpu_to_be32(macsec_aso->umr->dma_addr >> 32);
-         |                                   ^~~~~~~~~~~
-   drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c: In function 'macsec_aso_build_ctrl':
->> drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c:1389:46: warning: left shift count >= width of type [-Wshift-count-overflow]
-    1389 |                 param.bitwise_data = BIT(22) << 32;
-         |                                              ^~
-
-
-vim +1313 drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-
-  1305	
-  1306	static void macsec_aso_build_wqe_ctrl_seg(struct mlx5e_macsec_aso *macsec_aso,
-  1307						  struct mlx5_wqe_aso_ctrl_seg *aso_ctrl,
-  1308						  struct mlx5_aso_ctrl_param *param)
-  1309	{
-  1310		memset(aso_ctrl, 0, sizeof(*aso_ctrl));
-  1311		if (macsec_aso->umr->dma_addr) {
-  1312			aso_ctrl->va_l  = cpu_to_be32(macsec_aso->umr->dma_addr | ASO_CTRL_READ_EN);
-> 1313			aso_ctrl->va_h  = cpu_to_be32(macsec_aso->umr->dma_addr >> 32);
-  1314			aso_ctrl->l_key = cpu_to_be32(macsec_aso->umr->mkey);
-  1315		}
-  1316	
-  1317		if (!param)
-  1318			return;
-  1319	
-  1320		aso_ctrl->data_mask_mode = param->data_mask_mode << 6;
-  1321		aso_ctrl->condition_1_0_operand = param->condition_1_operand |
-  1322							param->condition_0_operand << 4;
-  1323		aso_ctrl->condition_1_0_offset = param->condition_1_offset |
-  1324							param->condition_0_offset << 4;
-  1325		aso_ctrl->data_offset_condition_operand = param->data_offset |
-  1326							param->condition_operand << 6;
-  1327		aso_ctrl->condition_0_data = cpu_to_be32(param->condition_0_data);
-  1328		aso_ctrl->condition_0_mask = cpu_to_be32(param->condition_0_mask);
-  1329		aso_ctrl->condition_1_data = cpu_to_be32(param->condition_1_data);
-  1330		aso_ctrl->condition_1_mask = cpu_to_be32(param->condition_1_mask);
-  1331		aso_ctrl->bitwise_data = cpu_to_be64(param->bitwise_data);
-  1332		aso_ctrl->data_mask = cpu_to_be64(param->data_mask);
-  1333	}
-  1334	
-  1335	static int mlx5e_macsec_modify_obj(struct mlx5_core_dev *mdev, struct mlx5_macsec_obj_attrs *attrs,
-  1336					   u32 macsec_id)
-  1337	{
-  1338		u32 in[MLX5_ST_SZ_DW(modify_macsec_obj_in)] = {};
-  1339		u32 out[MLX5_ST_SZ_DW(query_macsec_obj_out)];
-  1340		u64 modify_field_select = 0;
-  1341		void *obj;
-  1342		int err;
-  1343	
-  1344		/* General object fields set */
-  1345		MLX5_SET(general_obj_in_cmd_hdr, in, opcode, MLX5_CMD_OP_QUERY_GENERAL_OBJECT);
-  1346		MLX5_SET(general_obj_in_cmd_hdr, in, obj_type, MLX5_GENERAL_OBJECT_TYPES_MACSEC);
-  1347		MLX5_SET(general_obj_in_cmd_hdr, in, obj_id, macsec_id);
-  1348		err = mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
-  1349		if (err) {
-  1350			mlx5_core_err(mdev, "Query MACsec object failed (Object id %d), err = %d\n",
-  1351				      macsec_id, err);
-  1352			return err;
-  1353		}
-  1354	
-  1355		obj = MLX5_ADDR_OF(query_macsec_obj_out, out, macsec_object);
-  1356		modify_field_select = MLX5_GET64(macsec_offload_obj, obj, modify_field_select);
-  1357	
-  1358		/* EPN */
-  1359		if (!(modify_field_select & MLX5_MODIFY_MACSEC_BITMASK_EPN_OVERLAP) ||
-  1360		    !(modify_field_select & MLX5_MODIFY_MACSEC_BITMASK_EPN_MSB)) {
-  1361			mlx5_core_dbg(mdev, "MACsec object field is not modifiable (Object id %d)\n",
-  1362				      macsec_id);
-  1363			return -EOPNOTSUPP;
-  1364		}
-  1365	
-  1366		obj = MLX5_ADDR_OF(modify_macsec_obj_in, in, macsec_object);
-  1367		MLX5_SET64(macsec_offload_obj, obj, modify_field_select,
-  1368			   MLX5_MODIFY_MACSEC_BITMASK_EPN_OVERLAP | MLX5_MODIFY_MACSEC_BITMASK_EPN_MSB);
-  1369		MLX5_SET(macsec_offload_obj, obj, epn_msb, attrs->epn_state.epn_msb);
-  1370		MLX5_SET(macsec_offload_obj, obj, epn_overlap, attrs->epn_state.overlap);
-  1371	
-  1372		/* General object fields set */
-  1373		MLX5_SET(general_obj_in_cmd_hdr, in, opcode, MLX5_CMD_OP_MODIFY_GENERAL_OBJECT);
-  1374	
-  1375		return mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
-  1376	}
-  1377	
-  1378	static void macsec_aso_build_ctrl(struct mlx5e_macsec_aso *aso,
-  1379					  struct mlx5_wqe_aso_ctrl_seg *aso_ctrl,
-  1380					  struct mlx5e_macsec_aso_in *in)
-  1381	{
-  1382		struct mlx5_aso_ctrl_param param = {};
-  1383	
-  1384		param.data_mask_mode = MLX5_ASO_DATA_MASK_MODE_BITWISE_64BIT;
-  1385		param.condition_0_operand = MLX5_ASO_ALWAYS_TRUE;
-  1386		param.condition_1_operand = MLX5_ASO_ALWAYS_TRUE;
-  1387		if (in->mode == MLX5_MACSEC_EPN) {
-  1388			param.data_offset = MLX5_MACSEC_ASO_REMOVE_FLOW_PKT_CNT_OFFSET;
-> 1389			param.bitwise_data = BIT(22) << 32;
-  1390			param.data_mask = param.bitwise_data;
-  1391		}
-  1392	
-  1393		macsec_aso_build_wqe_ctrl_seg(aso, aso_ctrl, &param);
-  1394	}
-  1395	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
