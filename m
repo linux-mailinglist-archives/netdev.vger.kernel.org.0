@@ -2,70 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 92E595B62EE
-	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 23:44:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 781A75B62F1
+	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 23:45:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229992AbiILVo4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Sep 2022 17:44:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52542 "EHLO
+        id S230019AbiILVpR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Sep 2022 17:45:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229528AbiILVoy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 17:44:54 -0400
-Received: from mail-ua1-x949.google.com (mail-ua1-x949.google.com [IPv6:2607:f8b0:4864:20::949])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3528C10FCD
-        for <netdev@vger.kernel.org>; Mon, 12 Sep 2022 14:44:53 -0700 (PDT)
-Received: by mail-ua1-x949.google.com with SMTP id z44-20020a9f372f000000b00390af225beaso3087012uad.12
-        for <netdev@vger.kernel.org>; Mon, 12 Sep 2022 14:44:53 -0700 (PDT)
+        with ESMTP id S230005AbiILVpP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 17:45:15 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EF3219C15
+        for <netdev@vger.kernel.org>; Mon, 12 Sep 2022 14:45:07 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-31f5960500bso85251617b3.14
+        for <netdev@vger.kernel.org>; Mon, 12 Sep 2022 14:45:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:from:subject:message-id:mime-version:date:from:to:cc:subject
          :date;
-        bh=ZdDMxu/ZwxZ1kfijbUS9jX+Fr0880+xk0f4yDMu0NZI=;
-        b=TzmR12Pg0ciwHsSRilryLck3zq7AvCYzYIn5LknBVwADhQJbYBuVJhFfiRJzhoJGNl
-         qx+w7EWJwj4oOMa5VXVaHsMB6Bpz2AMxgzkvBwjQhY1yqpB7EbixMDE+n6ZtBm2G9SmZ
-         Mr4tW2dmGQE9SwT6bML7O7dwMaZp5Pc8e6SFkOMNyCA+JpuW+nktWMLc4CXT2hX8H3fL
-         uFSIWAGmRrgsJUUYvPq0MsC2zASQ713KJJzIJcx+vVE/1yzaAEpW6/J1YUY5D8lnhE5h
-         PE3/YgqQ9FxdoPMmnP97lybNvrzJXq4Odz6bFs6ajafdslKdNnJ5hpZ/iedjIuj4ykM7
-         OBsA==
+        bh=svnXtkM3VxepqSEU29BlbteQjSXrw1OiHP05DgD2OTE=;
+        b=cSiuqTmx400s/KFfx8exUIDTtsSBF+4IoXHY0dMeGOxNtYmvK0kzE1KPHnzi1YYKA1
+         okKa3qgpeddDmz1cICme6A9JcDEvAwoCsC4erOmWQyMpNwMB4pKO9PssQfwiPHCykzpm
+         ihBhYOrA5sG4HyiD9ZhcEwUmbBG1JGhAQ4kO7oUgXb39cgBGAnnsLinrnepILLOJuKy2
+         LuwDcZE7s7+2HTUrSvIZusmZVRtRW7jfYDc5b40sc8kjzhdHD0W4oWxrvrbf6IKCZeXz
+         mKic6hXSnNr9CBS221E7UTg834Psm6IgXL08SoLydXhKfqps3X0kwsP1fKqmitFeYi+W
+         MWhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:from:subject:message-id:mime-version:date:x-gm-message-state
          :from:to:cc:subject:date;
-        bh=ZdDMxu/ZwxZ1kfijbUS9jX+Fr0880+xk0f4yDMu0NZI=;
-        b=Q4tpB2J7sPlXJyzoaIkUokm6x8wgr9DCwiZD6e28hvS+ki9hoNMhL7/Xfunh5ljD44
-         WDnOS8XWHC/IRhdUuXMMIUFmxizdcfAfzNG7XKai9otMsKmrXexYXeo0cqyG6Yp1nSid
-         78F01VY3srBRX/lZhIRbUI/sN2/so8GGxNbddLWc46Cyl2b61BkH4yiC8IBIsXh6KPuD
-         MgLRc85rzRYne61eeyRRUwFoYrkZs6seGfIf7pE3jHNBrsu9ebAv1CAICve1GIAn65vM
-         6kDI+N9QW30cuIiuD+lGWEhEC2LEyv8hQS5bNPfKg7VGGbBgjG1Zq9y6CYf6tP/KSBaD
-         DFLw==
-X-Gm-Message-State: ACgBeo1fJkX8/nPEC0+bwZyhhsGohmRIWw8RGgXQJ8If8AGIR8a3R9jm
-        Dgakne/gD3cdhC8ybivImX5yLCrO+A==
-X-Google-Smtp-Source: AA6agR6zF9XNyhGeFJB3NgH+4XzRWF08FblJtq30Iirz1/CziA6jHADZJImizAICLxZzt9PWN/yccy8XUg==
+        bh=svnXtkM3VxepqSEU29BlbteQjSXrw1OiHP05DgD2OTE=;
+        b=gdm3tFDI5xEYk2eztl/AHWALiZ2kQGmoJ8wTjRDTAUAJc6L+OGX1L7LWA/dCG205D/
+         TQidMyGmB+e4qxB3GYhwxnrLULDacPWWYSR7k51msnxvZHFs8Z5L/eSOx7lwKpX6Q2Sk
+         u9wY2vTn/HRrAzBxbZ54oJ0BmN2kE3/JSohuVW0ALZdcpEPGZaxiwMftqUyX727J08ZP
+         AWVa/dl1sruzWbIY4DiXNX2GV/1toWl6OP0O2FhGvhD8RoTjLIkaovdC13p2PtS3xPEM
+         GQNv3wie4tz0KJMZs3TS70nV78uEfBPzLxbbQUajVJ0aCtPkMmT8bUEbaNeZ1YHfIWY8
+         AkPw==
+X-Gm-Message-State: ACgBeo1Db705bsEoZr04dVA7OnfnjAI4ujwZ9fenjqKm9DFjxcPf5720
+        fayTR2NUi6HMmqzae4rD+2a+kL5mzA==
+X-Google-Smtp-Source: AA6agR5AYHR/zt+Sj+LJE5nbkcAXQKcEzulFFGGAMAeZPz0T1K1BgaaPGpIgNiOXaGvh7yOVBAvnuYB8zw==
 X-Received: from nhuck.c.googlers.com ([fda3:e722:ac3:cc00:14:4d90:c0a8:39cc])
- (user=nhuck job=sendgmr) by 2002:a1f:6082:0:b0:3a2:1b57:795f with SMTP id
- u124-20020a1f6082000000b003a21b57795fmr3256154vkb.8.1663019092342; Mon, 12
- Sep 2022 14:44:52 -0700 (PDT)
-Date:   Mon, 12 Sep 2022 14:44:29 -0700
+ (user=nhuck job=sendgmr) by 2002:a0d:d84b:0:b0:345:342:2c57 with SMTP id
+ a72-20020a0dd84b000000b0034503422c57mr23200506ywe.168.1663019107314; Mon, 12
+ Sep 2022 14:45:07 -0700 (PDT)
+Date:   Mon, 12 Sep 2022 14:44:55 -0700
 Mime-Version: 1.0
 X-Mailer: git-send-email 2.37.2.789.g6183377224-goog
-Message-ID: <20220912214432.928989-1-nhuck@google.com>
-Subject: [PATCH] net: sparx5: Fix return type of sparx5_port_xmit_impl
+Message-ID: <20220912214455.929028-1-nhuck@google.com>
+Subject: [PATCH] net: wwan: iosm: Fix return type of ipc_wwan_link_transmit
 From:   Nathan Huckleberry <nhuck@google.com>
 Cc:     Nathan Huckleberry <nhuck@google.com>,
         Dan Carpenter <error27@gmail.com>, llvm@lists.linux.dev,
+        M Chetan Kumar <m.chetan.kumar@intel.com>,
+        Intel Corporation <linuxwwan@intel.com>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com,
         Nathan Chancellor <nathan@kernel.org>,
         Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Casper Andersson <casper.casan@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Tom Rix <trix@redhat.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
@@ -85,7 +84,7 @@ netdev_tx_t (*ndo_start_xmit)(struct sk_buff *skb, struct net_device *dev).
 The mismatched return type breaks forward edge kCFI since the underlying
 function definition does not match the function hook definition.
 
-The return type of sparx5_port_xmit_impl should be changed from int to
+The return type of ipc_wwan_link_transmit should be changed from int to
 netdev_tx_t.
 
 Reported-by: Dan Carpenter <error27@gmail.com>
@@ -93,29 +92,24 @@ Link: https://github.com/ClangBuiltLinux/linux/issues/1703
 Cc: llvm@lists.linux.dev
 Signed-off-by: Nathan Huckleberry <nhuck@google.com>
 ---
- drivers/net/ethernet/microchip/sparx5/sparx5_packet.c | 4 ++--
+ drivers/net/wwan/iosm/iosm_ipc_wwan.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
-index 21844beba72d..83c16ca5b30f 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
-@@ -222,13 +222,13 @@ static int sparx5_inject(struct sparx5 *sparx5,
- 	return NETDEV_TX_OK;
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_wwan.c b/drivers/net/wwan/iosm/iosm_ipc_wwan.c
+index 27151148c782..03757ad21d51 100644
+--- a/drivers/net/wwan/iosm/iosm_ipc_wwan.c
++++ b/drivers/net/wwan/iosm/iosm_ipc_wwan.c
+@@ -103,8 +103,8 @@ static int ipc_wwan_link_stop(struct net_device *netdev)
  }
  
--int sparx5_port_xmit_impl(struct sk_buff *skb, struct net_device *dev)
-+netdev_tx_t sparx5_port_xmit_impl(struct sk_buff *skb, struct net_device *dev)
+ /* Transmit a packet */
+-static int ipc_wwan_link_transmit(struct sk_buff *skb,
+-				  struct net_device *netdev)
++static netdev_tx_t ipc_wwan_link_transmit(struct sk_buff *skb,
++					  struct net_device *netdev)
  {
- 	struct net_device_stats *stats = &dev->stats;
- 	struct sparx5_port *port = netdev_priv(dev);
- 	struct sparx5 *sparx5 = port->sparx5;
- 	u32 ifh[IFH_LEN];
--	int ret;
-+	netdev_tx_t ret;
- 
- 	memset(ifh, 0, IFH_LEN * 4);
- 	sparx5_set_port_ifh(ifh, port->portno);
+ 	struct iosm_netdev_priv *priv = wwan_netdev_drvpriv(netdev);
+ 	struct iosm_wwan *ipc_wwan = priv->ipc_wwan;
 -- 
 2.37.2.789.g6183377224-goog
 
