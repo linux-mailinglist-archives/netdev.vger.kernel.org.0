@@ -2,69 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 86C925B5D90
-	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 17:44:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 387EC5B5D98
+	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 17:47:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229777AbiILPoF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Sep 2022 11:44:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48692 "EHLO
+        id S230059AbiILPrU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Sep 2022 11:47:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229577AbiILPoD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 11:44:03 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4E553122D
-        for <netdev@vger.kernel.org>; Mon, 12 Sep 2022 08:44:02 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id b75so3758718pfb.7
-        for <netdev@vger.kernel.org>; Mon, 12 Sep 2022 08:44:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=6WJMZkqzECuNlXYrbJHIhf2Iso7gO57IGnNjoxfryjs=;
-        b=ZgFjFJEu2lDiUaEupCyLGy9GEEo+awCHkj/NUTwFjNNDf7WvTYERs7Rf+Pao2ZEJzu
-         +VCrWTK2P9FQULhHVUQH7SfRiL97iEhwf5eVnkpJ0LpdPSiuP3rAztdYQEaqJ3KxQtiu
-         tU1bTmRRRp9yF0UsKEzOkEJluYiG9LmIOb/FcexDA3U66NWCFtIwzsXNzPrytGtAKTp5
-         JnMCPQouDlIap7j/tdbBJGk9aMGI/KO+Rfds5ZCXgNuesQEqe9HZ0SGEGXd1c+k5xWp0
-         S7WV3MIoavd39iW+zJjr2Gp9/VUPMWjb2WZHZPEBsfQXx/coPKg2f+E452CWgG3RpglI
-         LlAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=6WJMZkqzECuNlXYrbJHIhf2Iso7gO57IGnNjoxfryjs=;
-        b=Krh5eEvlgku8H/fx1kN0miZaqe5WjJhfxqOwEySx+7Um0TLmhFwblPqgLAzLda7zZz
-         OMQJqsZgd29sJx5P9ni++sLaii9xeuauETE9HRSGictJLsqEEth4zj9bGVK5hva8pxBz
-         V6U+rBcuMHnbUoP0sGzvdJ0j0WI2ZG8g3Qy/6nHOi4sU1G1SHQFQvY82aFRSltPcRPm1
-         Qax+4gyKfzoziY/eLmLUEAN26D23OgETrUvZGf3NLD6KXf4rq/wUbHzbAbKI29YIov6e
-         sStcUpiOmiQ9j1VuwvkFbap6NqbFFBi4Bk/GZI65I/3Pwk3pTMVO4F7BBs0jlZwxq2wm
-         7MDg==
-X-Gm-Message-State: ACgBeo0v7gVhLDKJIWesoYMkFAaboyUcRmj0odcZgobfpTOSe9ncViQU
-        NT/fsS2HaSjMYPltNy4H9Gw=
-X-Google-Smtp-Source: AA6agR58BIZpMZAKNJB61PSPcMHEAUUDWKhD4JbjMpGkhAtk9ZadRNW2Aqy2ne+RYrCWGmSvSzhkiw==
-X-Received: by 2002:a63:106:0:b0:430:805a:f1ad with SMTP id 6-20020a630106000000b00430805af1admr23674176pgb.284.1662997441983;
-        Mon, 12 Sep 2022 08:44:01 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id n18-20020a170903111200b00174d4fabe76sm6165000plh.214.2022.09.12.08.44.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Sep 2022 08:44:01 -0700 (PDT)
-Date:   Mon, 12 Sep 2022 08:43:59 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Lasse Johnsen <lasse@timebeat.app>
-Cc:     netdev@vger.kernel.org, Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        "Stanton, Kevin B" <kevin.b.stanton@intel.com>,
-        Jonathan Lemon <bsd@fb.com>
-Subject: Re: [PATCH net-next 1/1] igc: ptp: Add 1-step functionality to igc
- driver
-Message-ID: <Yx9Tv5IYqmcRFuz/@hoboy.vegasvil.org>
-References: <448285BC-C58E-475C-BAA2-001501503D6C@timebeat.app>
+        with ESMTP id S229577AbiILPrS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 11:47:18 -0400
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2081.outbound.protection.outlook.com [40.107.104.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 241302F392;
+        Mon, 12 Sep 2022 08:47:18 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=B81tyg6+9cBSzeyVM2prphAnOYxEl1+tzm0dgtTuWMZ+h1O14jx7Mlz27zIuSJnAXXjQGK5bCzoov+t+ttuFdMuvA0Eoh3JEJ8Yk9T87WnBV1QP+K1V1AmZoWhGm+3uHH7orq2VBQWkOPjFAETyMi1Us2uOHK3VaE7cgNAKh927ORBBSutqDFk/XY3YKbq9ChqtD40R/yrqN3r267FCSSfnLAwHnU1v2xWL/sNp99mY8PTs0x1nGxDLXsDUK15PROsCmrqm/0pstLrLqDkOsPXDUzKC7ZWeakOeE1jqvMS/k4+pFu68iInd7A56Y6WkkJfwcIV+Fmx3d6tAOQPTHsg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7kssGgwfhtfkvSDIBCC8t6Bm07+NLF1WRsmaZr3k6eY=;
+ b=PGx/o5O/DlK6DLEBM8H30YkBWH8o7NPm4hfOq+w5ByKD5ymlW/VzghfJMArdpKx4HvHkgIBNuW9DRTXDTzZUh1EMd+9dtmosh0aoxAi+CN7RNixUEo5qgleeyzIx7Z1e/6cjczEBcbWIRwfu7vDEaUEfo/3Vv6Na9ikX/CT77FWdxob/WTpO4KA+TW3VmjwDOdR3iYv7WcyiVl2TZK0POg9J2+Kvou0sTl42+4XukZ6ZAnu2SqzdWPyFtJuyClENaGMIZJa9tEOslYO9eWTZ325YE5gbm8eNp7DL7kQPZdrG7+y53ocRtM3OQCLIKEKmXYtK90p4QNKuSr2ohEEutA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7kssGgwfhtfkvSDIBCC8t6Bm07+NLF1WRsmaZr3k6eY=;
+ b=CfvuI0H8qgoalKWexi6hs/hFpf/yxJCwxULWtsJs+h5yfWKXDmlbkDYaRheaZrKb0Zp09sKEMTxPeLojPh4uHflofjLItgIaR4H5MiKr7B3bNukwqa1yDDkAYPB9gIOpqnL7ZF2WyYMeQ26Y37Kmd+7f944PASlhnv9pFenpp9Q=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AS8PR04MB8327.eurprd04.prod.outlook.com (2603:10a6:20b:3f1::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.22; Mon, 12 Sep
+ 2022 15:47:16 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::a67a:849c:aeff:cad1]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::a67a:849c:aeff:cad1%7]) with mapi id 15.20.5612.022; Mon, 12 Sep 2022
+ 15:47:16 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Colin Foster <colin.foster@in-advantage.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Lee Jones <lee@kernel.org>
+Subject: Re: [RFC v1 net-next 2/8] net: mscc: ocelot: expose regfield
+ definition to be used by other drivers
+Thread-Topic: [RFC v1 net-next 2/8] net: mscc: ocelot: expose regfield
+ definition to be used by other drivers
+Thread-Index: AQHYxhmAN1ERRaXlwk6n3S0yVpb9zQ==
+Date:   Mon, 12 Sep 2022 15:47:15 +0000
+Message-ID: <20220912154715.lrt4ynyhsfvdbyno@skbuf>
+References: <20220911200244.549029-1-colin.foster@in-advantage.com>
+ <20220911200244.549029-1-colin.foster@in-advantage.com>
+ <20220911200244.549029-3-colin.foster@in-advantage.com>
+ <20220911200244.549029-3-colin.foster@in-advantage.com>
+In-Reply-To: <20220911200244.549029-3-colin.foster@in-advantage.com>
+ <20220911200244.549029-3-colin.foster@in-advantage.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: VI1PR04MB5136:EE_|AS8PR04MB8327:EE_
+x-ms-office365-filtering-correlation-id: aa2d2680-7558-4407-e2a4-08da94d6113d
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: AX2wgmuw784nsrio2ejZhhpON+xh7L1TjXSaYGTHwBt3xa7NQ7mGwLYLtVdm7fg710d1eCDL1fBo+RYnf97eWluXcMwypELD3FGBceKLGspKGt34XNq/Le/hamubpGty4uIO4BxK6ThLlmIcUulNpmAOz6j/YbGJ2U5R0JWy3CnuBGfO86QzYwad/A+PBZl2ZA97IAiEvUvMq61R5o2EF39xN0DJyw3XjjjrfBJuhpKt8i8mERmpZHS/y37tAnO69p+NsqFmEtFYCihWBpBuDx61xA/UbSffW0YKxza628PKQdJG6DNmhSMcLkjyDkEEBPeC5Zy8xGe8GpQQAwXu4agxjYjHg4ZRqOQ4GRR+XcqCbY22ay28XNfp9lf0TiYA42MAmETqBWaqmAZRSkoooM44ChX+Ztr4m3+zMcHvNc0xsg79Z7aEIH3PVns8gKWb8xIkSg3ktlviBrYa98RhE4bMxDw4SgJ9t4VIw58/J6lTtYItngKVuG9SnUQBBn4D165jlD368UUWJzsl+E2EM6LtZ2Z9awMj3VgIVYXFb6tb6NKCfkvMFlVckFxLAiW8X/znIr1PJfuD5xUimA8U98/4loYRw5hn58jib8wpbxEXd50p3HzIjf+UUeXIJyYblV8UUdOKNGB/v0OxqLxGY0sKTJOkwQkXJQ6udQ8pa8y/y8YhErfKu+JS7lNrodDt6w9yt2RLiTrHFD/3caQ/s62kXplOp+oTMkt04OR3QmC9z4MDUvoNZvHxBmCcmZ1B89SUaf4bENJInd96lWuSrQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(136003)(346002)(376002)(366004)(396003)(39860400002)(38070700005)(38100700002)(122000001)(8676002)(64756008)(66476007)(66946007)(76116006)(66446008)(91956017)(4326008)(66556008)(86362001)(1076003)(9686003)(26005)(6506007)(41300700001)(186003)(71200400001)(6486002)(478600001)(316002)(6916009)(54906003)(2906002)(44832011)(6512007)(4744005)(33716001)(5660300002)(7416002)(8936002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?lenOMGJXnNiqNw/pEVBDv5fZOlj6JybE/j6On/ywsZraxZcZzwwSTaFNk5WE?=
+ =?us-ascii?Q?9nIfNgqdndy+C2YHgEa9evhJq25fd6jfyPiQa6uvxNdZRIdxaxoJ35EQf12Z?=
+ =?us-ascii?Q?JM7HRcqqrbaHQ8/OcYj/RSMn5zGoPRcJFc7MLPZsRz9UZF3+6QBexOjW1dAu?=
+ =?us-ascii?Q?3fmHj36IM0abqSeV+V/rwnuJ66L04HOVCFY7utlpFMC/q7GGF5cMGGWtqqfb?=
+ =?us-ascii?Q?Mc8NljzL/U5Nvn+jCw1t/d2xREzlMHKDUrr4vACNdMhXgKc3bDkm4BMCwNJk?=
+ =?us-ascii?Q?xtshtsh9OBxmVZ77ht7WBV37bP2vb+cD3lXnNygvELio8irN0ns5MdgWi8Nd?=
+ =?us-ascii?Q?AJgkdwKvAee+QH2zjpc0ZlIZirqoKnKrB8yc/G7d/awR4PoLwXA8ZV41RLaS?=
+ =?us-ascii?Q?o7ElIWM+6AII+li21IC2K6PTmXSCYJ9BMtw4UH0rMdG0Q8jWxM/RLxlCN1Nv?=
+ =?us-ascii?Q?UC/drO31VyGLZtQNkxZalXs6oRv3765+loSWzjEzKK4rlrAU4vlToiXVw+LO?=
+ =?us-ascii?Q?O3d6BAqAupY8Jl55qDuNgrIWHyOD+9bpWaNzd9Psnm/TcAGhSA1vrFjraNRX?=
+ =?us-ascii?Q?toa3/gmCYo0iIZyevIgVRZNmb1RmQ8GXw7coH++7AvM03JtDbPQmJksPVnQz?=
+ =?us-ascii?Q?Aya4zuJVl0UTAuoGaUQZnCXWD4xWqe6fCnpfsVDh35mhN3FPzhxRMzMYSARP?=
+ =?us-ascii?Q?rFbBmOgrUBl/YFzJV7USQCV7w3rdCR5sYpDLipxF8TZc8fFitassSLUrtAgm?=
+ =?us-ascii?Q?4q0YgU5wIl2+lQQYsGOA/MS8vMCCzJD2DAbCXhgtYiTUnOyjKrg5EU2ZpnLG?=
+ =?us-ascii?Q?5ta1622nKObkHpXVg5JXZ70Fbkz+daDC+RwzIqmJyAfgavaBHuEUqPh8N1Pw?=
+ =?us-ascii?Q?QF6/B4GZHGWG2wVbZnvS21lOTkMNYKxsDPrNsCs8JV4IIHaMPr77zsvyzKuG?=
+ =?us-ascii?Q?AA3FFFIDF4BEbRM5yPPM9FQJSoLMafuFTZTXPqCR5zsoCziTUv0K3/udsAFN?=
+ =?us-ascii?Q?11A8uQqA+RCMfG+6GHP/Yi1CpkRu9DhHKK08q2LloqBseLrSle5MR577ccZz?=
+ =?us-ascii?Q?aFJQONtVivMkq3QlTf0nOuhkoPrrzY6Vg443TRCOSsRIkNHO1ZxWEd5DRoo0?=
+ =?us-ascii?Q?ywIVxhB/wQW7XDcI2wNpN3D2K+xTDILvJDkWZn8QYkUrmCj8rYyHpw4Qvyge?=
+ =?us-ascii?Q?9xJ+VSxTKOKq7dcuY+jR9woPakbUI1DC3DSj1npdXrlAB+cpcdMApcDNgwkx?=
+ =?us-ascii?Q?I8DI7kpRDbAJeqQ+517sj+FgV4lbKY8lRox5/fFoZUZ8HKRAoRi2GBqXcDm6?=
+ =?us-ascii?Q?sCFozhsfVj7xp4vJT9dSk5IcIHBhj/yfdod6po8gpInNcK2ZIuG9Dt+pOa1p?=
+ =?us-ascii?Q?UVX8Trjp4Kf3lV9DOlGR1ojGo9Ul6GIoFodLgX3bJ270qnZelal+AgVXK8bV?=
+ =?us-ascii?Q?0BKKHtu06UUrVgi0hpOJWVglxFNIZ2yWElb3lNE5Z9aJxsCZHQysZmGFRY4V?=
+ =?us-ascii?Q?+MAfMH7TDZCdcOh1bxzxvexpZ8kgehK8Zkg2em9yM651e1r9fv/hJO150/9z?=
+ =?us-ascii?Q?2ZKCq2eTJWkOTjo+sZEmCmUrM92DfBylU4L5ICjGtTEerPZ3MkLDXmGz0GqM?=
+ =?us-ascii?Q?1g=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <3C97EE9D99D1754590DD438056644F22@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <448285BC-C58E-475C-BAA2-001501503D6C@timebeat.app>
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: aa2d2680-7558-4407-e2a4-08da94d6113d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Sep 2022 15:47:15.8902
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: CIUnOpTZ7Qb6wv+ra8Yez7BYmubnJa7ND0Xec9zXny/TyRc9k2cVJT92AkqZkkqt2LfZIbOzTN1ayIbFJUyA3g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8327
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,59 +134,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Sep 10, 2022 at 04:07:48PM +0100, Lasse Johnsen wrote:
-> Would you be amenable to an addition to the API so we can take advantage of 
-> hardware that offers only a subset of the options?
+On Sun, Sep 11, 2022 at 01:02:38PM -0700, Colin Foster wrote:
+> The ocelot_regfields struct is common between several different chips, so=
+me
+> of which can only be controlled externally. Export this structure so it
+> doesn't have to be duplicated in these other drivers.
+>=20
+> Rename the structure as well, to follow the conventions of other shared
+> resources.
+>=20
+> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> ---
 
-I think that is only user friendly option.  However, the question is
-whether this would find broad use, or would it remain an isolated hack
-for one borken hardware design?
-
-> We could for example extend granularity of the HWTSTAMP TX API to make requests 
-> for different features visible to the user space applications directly. So the TX side 
-> would become much more granular as is already the case with the RX side. We could 
-> add HWTSTAMP_TX_ONESTEP_SYNC_L2_V2, HWTSTAMP_TX_ONESTEP_SYNC_L4_V2 etc. 
-> 
-> My worry is that if we do not do this, then the ONESTEP option will continue 
-> to not see much use because so many permutations (L2, UDPv4, UDPv6, V1, V2, VLAN etc.)
-> currently have to be supported by the hardware.
-
-Actually IMO the opposite is true.  If the API nickel and dimes every
-last combination then:
-
-- that will only encourage even more broken hardware designs
-- no user space software will implement the combos
-
-Case in point:
-
-	/* PTP v1, UDP, any kind of event packet */
-	HWTSTAMP_FILTER_PTP_V1_L4_EVENT,
-	/* PTP v1, UDP, Sync packet */
-	HWTSTAMP_FILTER_PTP_V1_L4_SYNC,
-	/* PTP v1, UDP, Delay_req packet */
-	HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ,
-	/* PTP v2, UDP, any kind of event packet */
-	HWTSTAMP_FILTER_PTP_V2_L4_EVENT,
-	/* PTP v2, UDP, Sync packet */
-	HWTSTAMP_FILTER_PTP_V2_L4_SYNC,
-	/* PTP v2, UDP, Delay_req packet */
-	HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ,
-
-	/* 802.AS1, Ethernet, any kind of event packet */
-	HWTSTAMP_FILTER_PTP_V2_L2_EVENT,
-	/* 802.AS1, Ethernet, Sync packet */
-	HWTSTAMP_FILTER_PTP_V2_L2_SYNC,
-	/* 802.AS1, Ethernet, Delay_req packet */
-	HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ,
-
-This monstrosity came about because of ONE early, brain dead HW
-design.  Seriously, who would ever want to have just "PTP v1, UDP,
-Delay_req packet" and not the other event messages?
-
-This horrible API is now written in stone, but never, ever used.
-
-If hardware claims to implement PTP one-step, then it really should do
-so in a way that conforms to the published standards.
-
-Thanks,
-Richard
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>=
