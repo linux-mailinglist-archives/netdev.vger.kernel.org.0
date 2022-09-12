@@ -2,65 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A9FB5B5D8E
-	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 17:43:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86C925B5D90
+	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 17:44:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229762AbiILPnq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Sep 2022 11:43:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48446 "EHLO
+        id S229777AbiILPoF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Sep 2022 11:44:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229687AbiILPnp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 11:43:45 -0400
-Received: from smtp2.nicevt.ru (smtp2.nicevt.ru [82.97.198.8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 961E530565
-        for <netdev@vger.kernel.org>; Mon, 12 Sep 2022 08:43:44 -0700 (PDT)
-X-Virus-Scanned: amavisd-new at zimbra.nicevt.local
-Date:   Mon, 12 Sep 2022 19:43:14 +0400 (MSK)
-From:   =?utf-8?B?0JLQsNGB0LjQu9C40Lkg0KPQvNGA0LjRhdC40L0=?= 
-        <umrihin@nicevt.ru>
-To:     netdev <netdev@vger.kernel.org>
-Message-ID: <927100312.1863.1662997394065.JavaMail.zimbra@nicevt.ru>
-Subject: RFH, is it possible to set ndo_start_xmit() cpu affinity in
- ethernet driver?
+        with ESMTP id S229577AbiILPoD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 11:44:03 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4E553122D
+        for <netdev@vger.kernel.org>; Mon, 12 Sep 2022 08:44:02 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id b75so3758718pfb.7
+        for <netdev@vger.kernel.org>; Mon, 12 Sep 2022 08:44:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=6WJMZkqzECuNlXYrbJHIhf2Iso7gO57IGnNjoxfryjs=;
+        b=ZgFjFJEu2lDiUaEupCyLGy9GEEo+awCHkj/NUTwFjNNDf7WvTYERs7Rf+Pao2ZEJzu
+         +VCrWTK2P9FQULhHVUQH7SfRiL97iEhwf5eVnkpJ0LpdPSiuP3rAztdYQEaqJ3KxQtiu
+         tU1bTmRRRp9yF0UsKEzOkEJluYiG9LmIOb/FcexDA3U66NWCFtIwzsXNzPrytGtAKTp5
+         JnMCPQouDlIap7j/tdbBJGk9aMGI/KO+Rfds5ZCXgNuesQEqe9HZ0SGEGXd1c+k5xWp0
+         S7WV3MIoavd39iW+zJjr2Gp9/VUPMWjb2WZHZPEBsfQXx/coPKg2f+E452CWgG3RpglI
+         LlAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=6WJMZkqzECuNlXYrbJHIhf2Iso7gO57IGnNjoxfryjs=;
+        b=Krh5eEvlgku8H/fx1kN0miZaqe5WjJhfxqOwEySx+7Um0TLmhFwblPqgLAzLda7zZz
+         OMQJqsZgd29sJx5P9ni++sLaii9xeuauETE9HRSGictJLsqEEth4zj9bGVK5hva8pxBz
+         V6U+rBcuMHnbUoP0sGzvdJ0j0WI2ZG8g3Qy/6nHOi4sU1G1SHQFQvY82aFRSltPcRPm1
+         Qax+4gyKfzoziY/eLmLUEAN26D23OgETrUvZGf3NLD6KXf4rq/wUbHzbAbKI29YIov6e
+         sStcUpiOmiQ9j1VuwvkFbap6NqbFFBi4Bk/GZI65I/3Pwk3pTMVO4F7BBs0jlZwxq2wm
+         7MDg==
+X-Gm-Message-State: ACgBeo0v7gVhLDKJIWesoYMkFAaboyUcRmj0odcZgobfpTOSe9ncViQU
+        NT/fsS2HaSjMYPltNy4H9Gw=
+X-Google-Smtp-Source: AA6agR58BIZpMZAKNJB61PSPcMHEAUUDWKhD4JbjMpGkhAtk9ZadRNW2Aqy2ne+RYrCWGmSvSzhkiw==
+X-Received: by 2002:a63:106:0:b0:430:805a:f1ad with SMTP id 6-20020a630106000000b00430805af1admr23674176pgb.284.1662997441983;
+        Mon, 12 Sep 2022 08:44:01 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id n18-20020a170903111200b00174d4fabe76sm6165000plh.214.2022.09.12.08.44.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Sep 2022 08:44:01 -0700 (PDT)
+Date:   Mon, 12 Sep 2022 08:43:59 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Lasse Johnsen <lasse@timebeat.app>
+Cc:     netdev@vger.kernel.org, Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        "Stanton, Kevin B" <kevin.b.stanton@intel.com>,
+        Jonathan Lemon <bsd@fb.com>
+Subject: Re: [PATCH net-next 1/1] igc: ptp: Add 1-step functionality to igc
+ driver
+Message-ID: <Yx9Tv5IYqmcRFuz/@hoboy.vegasvil.org>
+References: <448285BC-C58E-475C-BAA2-001501503D6C@timebeat.app>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Mailer: Zimbra 8.5.1_GA_3056 (ZimbraWebClient - GC96 (Linux)/8.5.1_GA_3056)
-Thread-Topic: RFH, is it possible to set ndo_start_xmit() cpu affinity in ethernet driver?
-Thread-Index: jc0zj4Nxt84PCfonbi622av94aQZWQ==
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <448285BC-C58E-475C-BAA2-001501503D6C@timebeat.app>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi netdev,
+On Sat, Sep 10, 2022 at 04:07:48PM +0100, Lasse Johnsen wrote:
+> Would you be amenable to an addition to the API so we can take advantage of 
+> hardware that offers only a subset of the options?
 
-On the receiving side we have the opportunity to choose the CPU that will process the receive queue (RPS). 
-On the sender side XPS selects the send queue for the given CPU, but there is no way to select the CPU on which ndo_start_xmit() will be launched.
-Taskset is able to bind user task, but in ndo_start_xmit() binding differs.
-In my case CPU0 reserved for polling kthread, because our NIC have no interrupts, therefore it is necessary. I need nothing else to run on this CPU. 
+I think that is only user friendly option.  However, the question is
+whether this would find broad use, or would it remain an isolated hack
+for one borken hardware design?
 
-For example, setting CPU1 for RPS on both nodes:
+> We could for example extend granularity of the HWTSTAMP TX API to make requests 
+> for different features visible to the user space applications directly. So the TX side 
+> would become much more granular as is already the case with the RX side. We could 
+> add HWTSTAMP_TX_ONESTEP_SYNC_L2_V2, HWTSTAMP_TX_ONESTEP_SYNC_L4_V2 etc. 
+> 
+> My worry is that if we do not do this, then the ONESTEP option will continue 
+> to not see much use because so many permutations (L2, UDPv4, UDPv6, V1, V2, VLAN etc.)
+> currently have to be supported by the hardware.
 
-host1: echo 0x2 > /sys/class/net//queues/rx-0/rps_cpus 
-host2: echo 0x2 > /sys/class/net//queues/rx-0/rps_cpus 
+Actually IMO the opposite is true.  If the API nickel and dimes every
+last combination then:
 
-Then run iperf on two nodes: 
+- that will only encourage even more broken hardware designs
+- no user space software will implement the combos
 
-host1: taskset -c 1 iperf -s 
-host2: taskset -c 1 iperf -c host1 
+Case in point:
 
-After adding pr_info("cpu%d\n", smp_processor_id()); in my ndo_start_xmit() method, see in dmesg: 
+	/* PTP v1, UDP, any kind of event packet */
+	HWTSTAMP_FILTER_PTP_V1_L4_EVENT,
+	/* PTP v1, UDP, Sync packet */
+	HWTSTAMP_FILTER_PTP_V1_L4_SYNC,
+	/* PTP v1, UDP, Delay_req packet */
+	HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ,
+	/* PTP v2, UDP, any kind of event packet */
+	HWTSTAMP_FILTER_PTP_V2_L4_EVENT,
+	/* PTP v2, UDP, Sync packet */
+	HWTSTAMP_FILTER_PTP_V2_L4_SYNC,
+	/* PTP v2, UDP, Delay_req packet */
+	HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ,
 
-host1: dmesg | grep cpu0 | wc -l
-0 
-host2: dmesg | grep cpu0 | wc -l
-6512
+	/* 802.AS1, Ethernet, any kind of event packet */
+	HWTSTAMP_FILTER_PTP_V2_L2_EVENT,
+	/* 802.AS1, Ethernet, Sync packet */
+	HWTSTAMP_FILTER_PTP_V2_L2_SYNC,
+	/* 802.AS1, Ethernet, Delay_req packet */
+	HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ,
 
-Is it possible to choose the CPU on which ndo_start_xmit() will be launched on the sender side?
+This monstrosity came about because of ONE early, brain dead HW
+design.  Seriously, who would ever want to have just "PTP v1, UDP,
+Delay_req packet" and not the other event messages?
 
-Kind regards, Vasiliy
+This horrible API is now written in stone, but never, ever used.
+
+If hardware claims to implement PTP one-step, then it really should do
+so in a way that conforms to the published standards.
+
+Thanks,
+Richard
