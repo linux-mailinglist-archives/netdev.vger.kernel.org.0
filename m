@@ -2,160 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C0F25B5204
-	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 01:42:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 933BD5B5251
+	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 02:53:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229660AbiIKXmS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Sep 2022 19:42:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55796 "EHLO
+        id S229555AbiILAxA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Sep 2022 20:53:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229697AbiIKXmB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Sep 2022 19:42:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 873EE26AFE
-        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 16:41:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BC7EEB80AE9
-        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 23:41:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CDABC433C1;
-        Sun, 11 Sep 2022 23:41:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662939708;
-        bh=ygjsiyjHJ6UJ4VeCROaruWtzXOSwa/EIHkRTmiyTdq8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rSWyNUmPMTA0/u3fNfujiYmPLU6AzjMynVgm1QsxZ4qdYnDSYr3JeeCPvwp60KDfv
-         pwXJklli3/adextFh97JrHSoXIjNP5l7lXWH7VfrpBxAo3yXrmPLeD4ePXcdPxrwml
-         Ttm86lV3kUr6CRZ2vpns2trpokE4Q+my3LRMyk72WQv9sLKELmK7q1s/jHLtondozC
-         WdbgBqxgMs9Jc9hsLnC74ORxTf9LHx3+267UWlxWyDMEypWPqdHgHBHd9yMMP6MBzB
-         fqAxTjnxpXcJAnhCE8FG7O27wl0KeSDxKAlQlcfyORmlpDE94d+rhYPQrM4RtWxEw7
-         WOZuq7XvL/Zng==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Emeel Hakim <ehakim@nvidia.com>, Raed Salem <raeds@nvidia.com>
-Subject: [PATCH net-next 10/10] net/mlx5e: Support MACsec offload replay window
-Date:   Mon, 12 Sep 2022 00:40:59 +0100
-Message-Id: <20220911234059.98624-11-saeed@kernel.org>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220911234059.98624-1-saeed@kernel.org>
-References: <20220911234059.98624-1-saeed@kernel.org>
+        with ESMTP id S229459AbiILAw7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Sep 2022 20:52:59 -0400
+Received: from bat.birch.relay.mailchannels.net (bat.birch.relay.mailchannels.net [23.83.209.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 290F827CE2
+        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 17:52:58 -0700 (PDT)
+X-Sender-Id: techassets|x-authuser|leesusan2@ingodihop.com
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id 8412E8C0A10;
+        Mon, 12 Sep 2022 00:52:57 +0000 (UTC)
+Received: from vmcp128.myhostcenter.com (unknown [127.0.0.6])
+        (Authenticated sender: techassets)
+        by relay.mailchannels.net (Postfix) with ESMTPA id 39E988C08B2;
+        Mon, 12 Sep 2022 00:52:48 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1662943976; a=rsa-sha256;
+        cv=none;
+        b=abJuqCi2kMEj1MHWLfRedl7NBsTPE3EMoyOh7wBCCQ1HADe3oejxg5Oz9XwNf9TT+nv0O1
+        AN23NwKab8XQON4nmIPSZW2IESVs/uLvEyGw1RkxWOWty9R73E5hs8UjLocNqHN8j7kvWK
+        vPsNY5YSCUKkz0lPdP4trTiQCYgrqfUr+YhXkJrZs4f2c76n0Ha3CuhFmeojefW3cX6Lek
+        NI9pJMUhpZTSGNgoD+zQ34ac4g83RYFEVgF95GwOxvNNzRcLbByDyw9ELqxDf5HejvQXeZ
+        ML5N61PVOj4DfdZslG09VVb449S37MvwDtdX6xu0grsDAtZ0whadmjf/r0oquw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+        s=arc-2022; t=1662943976;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=hXLnhYIY6RPq2jPDah+snLlNw2/6UxQIEbgnwiMYIN0=;
+        b=TYp4h3M04nhq3poCpYW+qAcxVdun4SmfhynPoGoZ0KwAi6Zh0UOpCRteKbJsW6UCpJuaUU
+        /TPLGy9ZqPVCEENUM6FLAfauc44H8cNiAFgcIvsynG3r0zbr5pNj9MiWa2oFQLazsKdk5T
+        lwU9h+7PHldM1QNvreOxHcrcS1Y8U4kQ9YCTTRvFHEAlCwxFOqO9ob39oSBeFCyS0Td7fQ
+        qjcp0XbM0Sg3mYVztVSZC9D0ZqZ/nVMybxzci4z/2I1gtZk6h/fxSr83rUMtw18PGy6tfb
+        ZU2C4HUogHSFU2LKRizxLOFyy4UOMlh7wBZjF8UuB3RxXr9k6VqfJhwCfmbPnw==
+ARC-Authentication-Results: i=1;
+        rspamd-f776c45b8-w4rds;
+        auth=pass smtp.auth=techassets smtp.mailfrom=leesusan2@ingodihop.com
+X-Sender-Id: techassets|x-authuser|leesusan2@ingodihop.com
+X-MC-Relay: Junk
+X-MailChannels-SenderId: techassets|x-authuser|leesusan2@ingodihop.com
+X-MailChannels-Auth-Id: techassets
+X-Shelf-Illustrious: 3aeae3710ca1478d_1662943976926_232925731
+X-MC-Loop-Signature: 1662943976926:625991998
+X-MC-Ingress-Time: 1662943976926
+Received: from vmcp128.myhostcenter.com (vmcp128.myhostcenter.com
+ [66.84.29.18])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+        by 100.119.76.153 (trex/6.7.1);
+        Mon, 12 Sep 2022 00:52:56 +0000
+Received: from [::1] (port=42638 helo=vmcp128.myhostcenter.com)
+        by vmcp128.myhostcenter.com with esmtpa (Exim 4.95)
+        (envelope-from <leesusan2@ingodihop.com>)
+        id 1oXXgg-00Ap3H-TP;
+        Sun, 11 Sep 2022 20:52:34 -0400
 MIME-Version: 1.0
+Date:   Sun, 11 Sep 2022 20:52:20 -0400
+From:   "Mrs. Susan Lee Yu-Chen " <leesusan2@ingodihop.com>
+To:     undisclosed-recipients:;
+Subject: Mrs. Susan Lee Yu-Chen
+Reply-To: mrs.susanlee22@gmail.com
+Mail-Reply-To: mrs.susanlee22@gmail.com
+User-Agent: Roundcube Webmail/1.5.2
+Message-ID: <387269c4834afff3caaa853ac4ff63a6@ingodihop.com>
+X-Sender: leesusan2@ingodihop.com
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-AuthUser: leesusan2@ingodihop.com
+X-Originating-IP: ::1
+X-Spam-Status: Yes, score=6.9 required=5.0 tests=BAYES_50,
+        FREEMAIL_FORGED_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,HK_NAME_MR_MRS,
+        ODD_FREEM_REPTO,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        T_SCC_BODY_TEXT_LINE,T_SPF_PERMERROR autolearn=no autolearn_force=no
+        version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [23.83.209.13 listed in list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5000]
+        * -0.0 RCVD_IN_MSPIKE_H2 RBL: Average reputation (+2)
+        *      [23.83.209.13 listed in wl.mailspike.net]
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [mrs.susanlee22[at]gmail.com]
+        *  0.0 T_SPF_PERMERROR SPF: test of record failed (permerror)
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  2.7 ODD_FREEM_REPTO Has unusual reply-to header
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  1.0 HK_NAME_MR_MRS No description available.
+        *  2.1 FREEMAIL_FORGED_REPLYTO Freemail in Reply-To, but not From
+X-Spam-Level: ******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Emeel Hakim <ehakim@nvidia.com>
 
-Support setting replay window size for MACsec offload.
-Currently supported window size of 32, 64, 128 and 256
-bit. Other values will be returned as invalid parameter.
 
-Reviewed-by: Raed Salem <raeds@nvidia.com>
-Signed-off-by: Emeel Hakim <ehakim@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- .../mellanox/mlx5/core/en_accel/macsec.c      | 46 ++++++++++++++++---
- 1 file changed, 39 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-index 6f79f87b9930..166dc4e42d74 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-@@ -153,6 +153,8 @@ struct mlx5_macsec_obj_attrs {
- 	struct mlx5e_macsec_epn_state epn_state;
- 	salt_t salt;
- 	__be32 ssci;
-+	bool replay_protect;
-+	u32 replay_window;
- };
- 
- struct mlx5_aso_ctrl_param {
-@@ -220,6 +222,35 @@ static void mlx5e_macsec_aso_dereg_mr(struct mlx5_core_dev *mdev, struct mlx5e_m
- 	kfree(umr);
- }
- 
-+static int macsec_set_replay_protection(struct mlx5_macsec_obj_attrs *attrs, void *aso_ctx)
-+{
-+	u8 window_sz;
-+
-+	if (!attrs->replay_protect)
-+		return 0;
-+
-+	switch (attrs->replay_window) {
-+	case 256:
-+		window_sz = MLX5_MACSEC_ASO_REPLAY_WIN_256BIT;
-+		break;
-+	case 128:
-+		window_sz = MLX5_MACSEC_ASO_REPLAY_WIN_128BIT;
-+		break;
-+	case 64:
-+		window_sz = MLX5_MACSEC_ASO_REPLAY_WIN_64BIT;
-+		break;
-+	case 32:
-+		window_sz = MLX5_MACSEC_ASO_REPLAY_WIN_32BIT;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+	MLX5_SET(macsec_aso, aso_ctx, window_size, window_sz);
-+	MLX5_SET(macsec_aso, aso_ctx, mode, MLX5_MACSEC_ASO_REPLAY_PROTECTION);
-+
-+	return 0;
-+}
-+
- static int mlx5e_macsec_create_object(struct mlx5_core_dev *mdev,
- 				      struct mlx5_macsec_obj_attrs *attrs,
- 				      bool is_tx,
-@@ -253,8 +284,12 @@ static int mlx5e_macsec_create_object(struct mlx5_core_dev *mdev,
- 		salt_p = MLX5_ADDR_OF(macsec_offload_obj, obj, salt);
- 		for (i = 0; i < 3 ; i++)
- 			memcpy((u32 *)salt_p + i, &attrs->salt.bytes[4 * (2 - i)], 4);
--		if (!is_tx)
--			MLX5_SET(macsec_aso, aso_ctx, mode, MLX5_MACSEC_ASO_REPLAY_PROTECTION);
-+
-+		if (!is_tx) {
-+			err = macsec_set_replay_protection(attrs, aso_ctx);
-+			if (err)
-+				return err;
-+		}
- 	} else {
- 		MLX5_SET64(macsec_offload_obj, obj, sci, (__force u64)(attrs->sci));
- 	}
-@@ -343,6 +378,8 @@ static int mlx5e_macsec_init_sa(struct macsec_context *ctx,
- 	}
- 
- 	memcpy(&obj_attrs.salt, &key->salt, sizeof(key->salt));
-+	obj_attrs.replay_window = ctx->secy->replay_window;
-+	obj_attrs.replay_protect = ctx->secy->replay_protect;
- 
- 	err = mlx5e_macsec_create_object(mdev, &obj_attrs, is_tx, &sa->macsec_obj_id);
- 	if (err)
-@@ -438,11 +475,6 @@ static bool mlx5e_macsec_secy_features_validate(struct macsec_context *ctx)
- 		return false;
- 	}
- 
--	if (secy->replay_protect) {
--		netdev_err(netdev, "MACsec offload: replay protection is not supported\n");
--		return false;
--	}
--
- 	return true;
- }
- 
 -- 
-2.37.3
-
+Dear Friend,
+  It’s just my urgent need for foreign partner that made me to contact 
+you via your email. The details will send to you as soon as i heard from 
+you.
+Mrs. Susan Lee Yu-Chen
