@@ -2,547 +2,287 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DE175B5F1D
-	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 19:18:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61BA65B5F27
+	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 19:21:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230116AbiILRSn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Sep 2022 13:18:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50184 "EHLO
+        id S229582AbiILRVS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Sep 2022 13:21:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230131AbiILRSi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 13:18:38 -0400
-Received: from smtp-bc08.mail.infomaniak.ch (smtp-bc08.mail.infomaniak.ch [IPv6:2001:1600:4:17::bc08])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EEB43F1F2
-        for <netdev@vger.kernel.org>; Mon, 12 Sep 2022 10:18:30 -0700 (PDT)
-Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
-        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4MRCx04S0FzMpnfm;
-        Mon, 12 Sep 2022 19:18:28 +0200 (CEST)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4MRCwz6qmJzMpnPg;
-        Mon, 12 Sep 2022 19:18:27 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1663003108;
-        bh=2Uk30r8pmRe/ld776LvZpsq35ehKVpVP7n0A9IIQXW4=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=dr03yTryVL7CI4A8phwV/oBp2Ng2+9eoJNj/XWoQrafndGvMsGEm+vVpLC+Ud22+0
-         bSRPrX8tzg8FlTOcm7lh3bdxuvpZKj/lIXwOHcXfWMzvczYNs8TFWWe7b6d6qIJ0am
-         HgiDRuiwcEufRDlj8/qJK2fB1wkStt96k1oniE2o=
-Message-ID: <246d2e64-d8e8-c629-cb72-b81d673b3181@digikod.net>
-Date:   Mon, 12 Sep 2022 19:18:27 +0200
-MIME-Version: 1.0
-User-Agent: 
-Subject: Re: [PATCH v7 09/18] landlock: implement TCP network hooks
+        with ESMTP id S229456AbiILRVR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 13:21:17 -0400
+Received: from EUR02-HE1-obe.outbound.protection.outlook.com (mail-he1eur02on0613.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe05::613])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A25C96418;
+        Mon, 12 Sep 2022 10:21:15 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Rj4So4nJi0R+1ArGwmj/KltmZ48xs0vQ9aPSkqU1SUmYzRvA5D/zX6pKR5RPkC1m7dp/0DbMTQ4YoJ7qGAZ/0aWJTCjZ9SQiGYNAm2dzHH34MCA1Ldj04zQT2Ki3hFHHNOfyVryxb9sbLIYflLReukCECgB8gkbp/GJv1SZumQeADFAtccTZ6jndmoN6RTdHFQ0dZoA+2QHZ9VKrJxiXltN3c6G6Tm+e5kFoQOtTftiolxnra+OrFw549D6bZv8zSUUTP5ryrTmZIvtuXaMAJIK7ttmnj8/mZFUd9t2IAxe2cZCn4XpLWmUWsBMSMyYTS+VRcRn9OjUEszUJfZUUvw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Q7OixH6B23GyW7BsmnyEuotqfqBM23slwbeKe1MnmvA=;
+ b=cojJAtekjV4nFNvIkUWijUjSiB31CtGyuADE5w4oRdCa/7cSZYszy1kM+kLvmNDEgb6wzP6r88+6AFfR2q/nfp1Y8se5oszSsNd1X8sN9LJ0UzKeob9Ev7l3ryK+IDs429JFEifY9cR3FILSO6Yi6xaXpcrSJ6rf3NMpqeHL4St6kk734HrFHjIAJlzwZjthq7kPnsAqMKvuN4i2w7ZfZiOozAJGw9PggWshE36UVfJdqOvjjkLIUnd68JAzjEQr/OwfRDt5PAc9p4wwzFsKYdU5OM22H5nDaJxuC9vmCD2zYuOb2JCftHolGa6YLEfs/qTtaJn0NSXD9MoC6lyB+A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Q7OixH6B23GyW7BsmnyEuotqfqBM23slwbeKe1MnmvA=;
+ b=YdcvrIIVQ/dqT5glABxvpgTFic+0DUcfFg1G65uLBGjZoN7SvQCTCJBH3mfYjSvRkjUHc6OMJaTT/KxhOMGfe59JpgJFM5x1+P4nwfQzZJn/ZGPrz/kU2SFDE5Cb+L7xJa5NHoyltEH6HW7uyfM6rUZwWpenBDfHfo/Pds37Ajk=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AS8PR04MB7656.eurprd04.prod.outlook.com (2603:10a6:20b:29b::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.22; Mon, 12 Sep
+ 2022 17:21:10 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::a67a:849c:aeff:cad1]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::a67a:849c:aeff:cad1%7]) with mapi id 15.20.5612.022; Mon, 12 Sep 2022
+ 17:21:10 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Colin Foster <colin.foster@in-advantage.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Lee Jones <lee@kernel.org>
+Subject: Re: [RFC v1 net-next 8/8] net: dsa: ocelot: add external ocelot
+ switch control
+Thread-Topic: [RFC v1 net-next 8/8] net: dsa: ocelot: add external ocelot
+ switch control
+Thread-Index: AQHYxhmB6n7Dh7/720qmqJ9m50DC1Q==
+Date:   Mon, 12 Sep 2022 17:21:10 +0000
+Message-ID: <20220912172109.ezilo6su5w6dihrk@skbuf>
+References: <20220911200244.549029-1-colin.foster@in-advantage.com>
+ <20220911200244.549029-1-colin.foster@in-advantage.com>
+ <20220911200244.549029-9-colin.foster@in-advantage.com>
+ <20220911200244.549029-9-colin.foster@in-advantage.com>
+In-Reply-To: <20220911200244.549029-9-colin.foster@in-advantage.com>
+ <20220911200244.549029-9-colin.foster@in-advantage.com>
+Accept-Language: en-US
 Content-Language: en-US
-To:     "Konstantin Meskhidze (A)" <konstantin.meskhidze@huawei.com>,
-        gnoack3000@gmail.com
-Cc:     willemdebruijn.kernel@gmail.com,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, anton.sirazetdinov@huawei.com
-References: <20220829170401.834298-1-konstantin.meskhidze@huawei.com>
- <20220829170401.834298-10-konstantin.meskhidze@huawei.com>
- <71dd7517-4d3c-b644-18bd-cb792d68bcd8@digikod.net>
- <0a107eec-7dbc-e01c-e16c-00daa678d5df@huawei.com>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-In-Reply-To: <0a107eec-7dbc-e01c-e16c-00daa678d5df@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: VI1PR04MB5136:EE_|AS8PR04MB7656:EE_
+x-ms-office365-filtering-correlation-id: aa18f0c6-3b96-4c6c-2ef8-08da94e32fc8
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: /06qCfT6wOoUtxZu6tnGNhsOyfME1o+UGetwSHLavrHuQmIdJ8aUyMcxZTZHIKCpa15DgYKri3m2MDYoeRj7a/XVaUputm2qXDMVytVST/C7DugIupVqFc2XzelC+xA0GlfYp+OimUqWyOJ2GfvcE8fm7fiRo7IWrsq/RWWjll5ODoRhExXLzsT/pp+5G3gHH8ZdD+7Msy43ZIGpd9YsWBfcJPrC/b7vjfy3NrI8Ctv4RiAp1yIR9rk5yTprQWGRfX8dA60roKb3QFfH3DMcwKe/0q89hz/X3857mK79vIUIKNe9F/DxOdo5uSgrn6ycZ1oYGeoev+HBo+GFzQ304myRS2k5cF9Cg19Tf3WpOoPqt08TxcbAdlAyB484gWby+HzpXKQYPihEHk5YpjFB+3E1Efh0LAF7nMbRpeSCu6pZqbG5T92qJsezNcMxEOjJ79PFg+0DfgWBuVsUuoMw78Osx3ThO378SFcuUXm5FYV55TACqgTOOhpGVcAcngHUnR2pNPiWsbXIm5f3YNPNDfEf25XkWE1NAH5GUTyXPL7n3PZq0ZkblsbAuiV54HDGYNkkLDTdn37uxS9lz1epRgwSVu3MlC53r0wDo1Ur83CjkuVsvVvQ5nTY2fyby04hb55NZvWaZKEQTjnobnWSS2mu5A0cVXdQo9bWW+BnXquW/mImC6qOCVuqKJ/f8B0H9X5IeooFq6XOpvzteEQJ54h+ljteiSHD1sURdZAIDcfEbKNEPEYuRoTQJHn9ubqzz/EjdkjhAMq7p65TL0WYQw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230019)(7916004)(4636009)(366004)(376002)(396003)(39860400002)(136003)(346002)(451199012)(33716001)(38100700002)(9686003)(122000001)(1076003)(26005)(316002)(64756008)(66476007)(66946007)(6512007)(6916009)(91956017)(71200400001)(6486002)(66446008)(8676002)(76116006)(44832011)(4326008)(66556008)(2906002)(6506007)(54906003)(83380400001)(186003)(38070700005)(86362001)(8936002)(5660300002)(7416002)(41300700001)(478600001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?o0iuUDKGntDQvwgHrDdPIVnpXVsfAImrNJ2had4Y4WwN+pWXjCtxHbG/U0QQ?=
+ =?us-ascii?Q?nH6W8J0YNg74IZuDnUfhRk8/+JiIHK4lrZhw7qzehzsk+l6SYEaLlQv10VHJ?=
+ =?us-ascii?Q?tBIHrCgm7r9TyhiiU7l4mTtIGYYP4V1whbZXNKv9m5VWXJWe+jKmxwyG4XRG?=
+ =?us-ascii?Q?U8uyzAXoSij/3NLDsoUEUDq5vdCsJtr5Q/3bG8s2U74+5xFwwo8JznGucsbE?=
+ =?us-ascii?Q?vA7xMzIMfM/qiahJpjbGBUAJuCT0ahKvyrWWg9lBPpkSmP1UTL7t95y2tEKD?=
+ =?us-ascii?Q?B/oNRnkIzx9II+TizmAKTtR07LJgsIdNdWVStc45+OPI981MYD1lrIqFE42E?=
+ =?us-ascii?Q?UTbuHohqyLAGUIuc5sCoy9EBspvCZiJdqDa83CiL6NG5ltow8fLQxgFvAr9q?=
+ =?us-ascii?Q?Lj0rkA7aYv3gEf+y/w37PJ/8krByxLSOVvZzG6Q5HyLc85d8lNBMJ5DlK+ot?=
+ =?us-ascii?Q?gO6v6lDVJgX8JiIuxhI9O2l9Rnx2635QknZM3WWi+MoKOAJK1DL25NgKsKfd?=
+ =?us-ascii?Q?5vUYJxDl+KR4rM/UISuUYmczyLhlx6o0iQ+3IhZZxxHBq+WtErUxsP44U0pP?=
+ =?us-ascii?Q?AuU/p3Ef1RoIJMkxcl15ejQ10foFxIDZ0fJhDmgEin1RgfXxMu7BwRlS0Lza?=
+ =?us-ascii?Q?HRwtxoQbVrxELRyAbWTnf/KLtGiMrYXZu7dBTUK2PwzZbh7ZcIBACitsl0Cy?=
+ =?us-ascii?Q?IeWRowsiZoRtSaou6HkErIn9CK+6LWR55mtq6+0btX01hygid91l/+wMGvbG?=
+ =?us-ascii?Q?7AGirRD+dxNxk12iaObSFud2oMjVf+moS8Rq18Cn4xa9wU1YTLE4x0WCHtUc?=
+ =?us-ascii?Q?lwV7Yn0xoUcNBxOaQGffHZzS6Zal8ZhXx0aN45xayUkzVdnLrXCHmQ6PJgLm?=
+ =?us-ascii?Q?SlEtaWkXAeqxw8k81aMioZV9cqDaynlRkSP0R7CmfxDZh/tUZTg5bnb9qpE+?=
+ =?us-ascii?Q?u58pE3OzpLUTw4pj0JMru+kwcsCj7w78o4ZJ7nzOKNUB9RHwFgyIpqXNLBvO?=
+ =?us-ascii?Q?WgPj4jm0sRgPBMDsBOPQm+uPYvot2kyxEw7R4CvD58g65yDnu6woAGm09W9m?=
+ =?us-ascii?Q?GUSPtF80y/cnNl8hJwZMSigRLYPaqwSEAKrj2ma8xAS9XKwJQtvI4BpeeSfI?=
+ =?us-ascii?Q?4WpLv+kJ2gPsKKUEJXPlLxijkrHub1KV3oBDfXbKcSftJ1uq51jJ/JYP+LNC?=
+ =?us-ascii?Q?6LXsiBqMhGk4kbVxDl0phi5eLm6fGaMHNNdUu4+cy0eIgU5UO1NYm3GeSgn1?=
+ =?us-ascii?Q?uGjYg8XwsxxrL6t2NvGwsLXg4OTjP8kPBtQY4UpBchSybOllBite0FunO4n+?=
+ =?us-ascii?Q?ahpz2fcz0vMjR+DFq6tExemNvwAhcjm1fEBnXHw9bhspqDCDWRIh5qxOck3u?=
+ =?us-ascii?Q?32FirkAi8+VnS0rVtGBo4ZKgeu+BpMGJSGa1C5EcLpm7abHD7ELETuiMH616?=
+ =?us-ascii?Q?r8Z70ZeMdUKCheXhOgdAVgK5uSTjT6S7Fdt8F0dFsEToVFb649zYt482Ls8p?=
+ =?us-ascii?Q?r0ZhMaPBTBmNwo14XZvvGCOysrMk5iJfQGPxsuMVwWrRVOC8I8SGfXH4wRq4?=
+ =?us-ascii?Q?ZcXGG0vwaNIIESCRNgen8vT8Y5H7BGzHnTHqzQtBMritLiAAdG3CozHiK94Z?=
+ =?us-ascii?Q?ew=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <BBCCB19F5884DC4C9EA9FAB14B628551@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: aa18f0c6-3b96-4c6c-2ef8-08da94e32fc8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Sep 2022 17:21:10.6169
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: YAV87rDZvTuFqg4+Mi6aAVHPsanzstG/PkU090/GnSSkbIqT1vijVhRr04EQG08P+Q+ARRoqdpdgimsSwebrUA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB7656
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,SPF_HELO_PASS,
+        T_SCC_BODY_TEXT_LINE,T_SPF_PERMERROR autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sun, Sep 11, 2022 at 01:02:44PM -0700, Colin Foster wrote:
+> index 08db9cf76818..d8b224f8dc97 100644
+> --- a/drivers/net/dsa/ocelot/Kconfig
+> +++ b/drivers/net/dsa/ocelot/Kconfig
+> @@ -1,4 +1,18 @@
+>  # SPDX-License-Identifier: GPL-2.0-only
+> +config NET_DSA_MSCC_OCELOT_EXT
+> +	tristate "Ocelot External Ethernet switch support"
+> +	depends on NET_DSA && SPI
+> +	depends on NET_VENDOR_MICROSEMI
+> +	select MDIO_MSCC_MIIM
+> +	select MFD_OCELOT_CORE
+> +	select MSCC_OCELOT_SWITCH_LIB
+> +	select NET_DSA_TAG_OCELOT_8021Q
+> +	select NET_DSA_TAG_OCELOT
+> +	help
+> +	  This driver supports the VSC7511, VSC7512, VSC7513 and VSC7514 chips
+> +	  when controlled through SPI. It can be used with the Microsemi dev
+> +	  boards and an external CPU or custom hardware.
 
-On 10/09/2022 22:28, Konstantin Meskhidze (A) wrote:
-> 
-> 
-> 9/6/2022 11:08 AM, Mickaël Salaün пишет:
->>
->> On 29/08/2022 19:03, Konstantin Meskhidze wrote:
->>> This patch adds support of socket_bind() and socket_connect() hooks.
->>> It's possible to restrict binding and connecting of TCP types of
->>> sockets to particular ports. It's just basic idea of how Landlock
->>
->> I guess it's not a basic idea anymore.
-> 
->     Got it. Will be fixed.
->>
->>
->>> could support network confinement.
->>>
->>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
->>> ---
->>>
->>> Changes since v6:
->>> * Updates copyright.
->>> * Refactors landlock_append_net_rule() and check_socket_access()
->>>     functions with landlock_id type.
->>>
->>> Changes since v5:
->>> * Fixes some logic errors.
->>> * Formats code with clang-format-14.
->>>
->>> Changes since v4:
->>> * Factors out CONFIG_INET into make file.
->>> * Refactors check_socket_access().
->>> * Adds helper get_port().
->>> * Adds CONFIG_IPV6 in get_port(), hook_socket_bind/connect
->>> functions to support AF_INET6 family.
->>> * Adds AF_UNSPEC family support in hook_socket_bind/connect
->>> functions.
->>> * Refactors add_rule_net_service() and landlock_add_rule
->>> syscall to support network rule inserting.
->>> * Refactors init_layer_masks() to support network rules.
->>>
->>> Changes since v3:
->>> * Splits commit.
->>> * Adds SECURITY_NETWORK in config.
->>> * Adds IS_ENABLED(CONFIG_INET) if a kernel has no INET configuration.
->>> * Adds hook_socket_bind and hook_socket_connect hooks.
->>>
->>> ---
->>>    security/landlock/Kconfig    |   1 +
->>>    security/landlock/Makefile   |   2 +
->>>    security/landlock/net.c      | 161 +++++++++++++++++++++++++++++++++++
->>>    security/landlock/net.h      |  26 ++++++
->>>    security/landlock/setup.c    |   2 +
->>>    security/landlock/syscalls.c |  59 ++++++++++++-
->>>    6 files changed, 248 insertions(+), 3 deletions(-)
->>>    create mode 100644 security/landlock/net.c
->>>    create mode 100644 security/landlock/net.h
->>>
->>> diff --git a/security/landlock/Kconfig b/security/landlock/Kconfig
->>> index 8e33c4e8ffb8..10c099097533 100644
->>> --- a/security/landlock/Kconfig
->>> +++ b/security/landlock/Kconfig
->>> @@ -3,6 +3,7 @@
->>>    config SECURITY_LANDLOCK
->>>    	bool "Landlock support"
->>>    	depends on SECURITY && !ARCH_EPHEMERAL_INODES
->>> +	select SECURITY_NETWORK
->>>    	select SECURITY_PATH
->>>    	help
->>>    	  Landlock is a sandboxing mechanism that enables processes to restrict
->>> diff --git a/security/landlock/Makefile b/security/landlock/Makefile
->>> index 7bbd2f413b3e..53d3c92ae22e 100644
->>> --- a/security/landlock/Makefile
->>> +++ b/security/landlock/Makefile
->>> @@ -2,3 +2,5 @@ obj-$(CONFIG_SECURITY_LANDLOCK) := landlock.o
->>>
->>>    landlock-y := setup.o syscalls.o object.o ruleset.o \
->>>    	cred.o ptrace.o fs.o
->>> +
->>> +landlock-$(CONFIG_INET) += net.o
->>> \ No newline at end of file
->>> diff --git a/security/landlock/net.c b/security/landlock/net.c
->>> new file mode 100644
->>> index 000000000000..0d249ad619bf
->>> --- /dev/null
->>> +++ b/security/landlock/net.c
->>> @@ -0,0 +1,161 @@
->>> +// SPDX-License-Identifier: GPL-2.0-only
->>> +/*
->>> + * Landlock LSM - Network management and hooks
->>> + *
->>> + * Copyright © 2022 Huawei Tech. Co., Ltd.
->>> + * Copyright © 2022 Microsoft Corporation
->>> + */
->>> +
->>> +#include <linux/in.h>
->>> +#include <linux/net.h>
->>> +#include <linux/socket.h>
->>> +#include <net/ipv6.h>
->>> +
->>
->> #include "common.h"
-> 
->     This include is in net.h one.
+I would drop the sentence about Microsemi dev boards or custom hardware.
 
-There is no use of it in net.h it should only be here.
+> diff --git a/drivers/net/dsa/ocelot/ocelot_ext.c b/drivers/net/dsa/ocelot=
+/ocelot_ext.c
+> new file mode 100644
+> index 000000000000..c821cc963787
+> --- /dev/null
+> +++ b/drivers/net/dsa/ocelot/ocelot_ext.c
+> @@ -0,0 +1,254 @@
+> +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+> +/*
+> + * Copyright 2021-2022 Innovative Advantage Inc.
+> + */
+> +
+> +#include <linux/iopoll.h>
+> +#include <linux/mfd/ocelot.h>
+> +#include <linux/phylink.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/regmap.h>
+> +#include <soc/mscc/ocelot_ana.h>
+> +#include <soc/mscc/ocelot_dev.h>
+> +#include <soc/mscc/ocelot_qsys.h>
+> +#include <soc/mscc/ocelot_vcap.h>
+> +#include <soc/mscc/ocelot_ptp.h>
+> +#include <soc/mscc/ocelot_sys.h>
+> +#include <soc/mscc/ocelot.h>
+> +#include <soc/mscc/vsc7514_regs.h>
+> +#include "felix.h"
+> +
+> +#define VSC7512_NUM_PORTS		11
+> +
+> +#define OCELOT_EXT_MEM_INIT_SLEEP_US	1000
+> +#define OCELOT_EXT_MEM_INIT_TIMEOUT_US	100000
+> +
+> +#define OCELOT_EXT_PORT_MODE_SERDES	(OCELOT_PORT_MODE_SGMII | \
+> +					 OCELOT_PORT_MODE_QSGMII)
 
+There are places where OCELOT_EXT doesn't make too much sense, like here.
+The capabilities of the SERDES ports do not change depending on whether
+the switch is controlled externally or not. Same for the memory init
+delays. Maybe OCELOT_MEM_INIT_*, OCELOT_PORT_MODE_SERDES etc?
 
->>
->>> +#include "cred.h"
->>> +#include "limits.h"
->>> +#include "net.h"
->>
->> #include "ruleset.h"
-> 
->     The same as above.
+There are more places as well below in function names, I'll let you be
+the judge if whether ocelot is controlled externally is relevant to what
+they do in any way.
 
-ruleset.h should be included both in net.h and net.c because it is used 
-in both.
+> +static int ocelot_ext_reset(struct ocelot *ocelot)
+> +{
+> +	int err, val;
+> +
+> +	ocelot_ext_reset_phys(ocelot);
+> +
+> +	/* Initialize chip memories */
+> +	err =3D regmap_field_write(ocelot->regfields[SYS_RESET_CFG_MEM_ENA], 1)=
+;
+> +	if (err)
+> +		return err;
+> +
+> +	err =3D regmap_field_write(ocelot->regfields[SYS_RESET_CFG_MEM_INIT], 1=
+);
+> +	if (err)
+> +		return err;
+> +
+> +	/* MEM_INIT is a self-clearing bit. Wait for it to be clear (should be
+> +	 * 100us) before enabling the switch core
+> +	 */
+> +	err =3D readx_poll_timeout(ocelot_ext_mem_init_status, ocelot, val, !va=
+l,
+> +				 OCELOT_EXT_MEM_INIT_SLEEP_US,
+> +				 OCELOT_EXT_MEM_INIT_TIMEOUT_US);
+> +
 
+I think you can eliminate the newline between the err assignment and
+checking for it.
 
->>
->>> +
->>> +int landlock_append_net_rule(struct landlock_ruleset *const ruleset, u16 port,
->>> +			     u32 access_rights)
->>
->> Please constify all arguments, in this function and others.
-> 
->     Ok. Thanks.
->>
->>> +{
->>> +	int err;
->>> +	const struct landlock_id id = {
->>> +		.key.data = port,
->>> +		.type = LANDLOCK_KEY_NET_PORT,
->>> +	};
->>> +	BUILD_BUG_ON(sizeof(port) > sizeof(id.key.data));
->>> +
->>> +	/* Transforms relative access rights to absolute ones. */
->>> +	access_rights |= LANDLOCK_MASK_ACCESS_NET &
->>> +			 ~landlock_get_net_access_mask(ruleset, 0);
->>> +
->>> +	mutex_lock(&ruleset->lock);
->>> +	err = landlock_insert_rule(ruleset, id, access_rights);
->>> +	mutex_unlock(&ruleset->lock);
->>> +
->>> +	return err;
->>> +}
->>> +
->>> +static int check_socket_access(const struct landlock_ruleset *const domain,
->>> +			       u16 port, access_mask_t access_request)
->>> +{
->>> +	bool allowed = false;
->>> +	layer_mask_t layer_masks[LANDLOCK_NUM_ACCESS_NET] = {};
->>> +	const struct landlock_rule *rule;
->>> +	access_mask_t handled_access;
->>> +	const struct landlock_id id = {
->>> +		.key.data = port,
->>> +		.type = LANDLOCK_KEY_NET_PORT,
->>> +	};
->>> +
->>> +	if (WARN_ON_ONCE(!domain))
->>> +		return 0;
->>> +	if (WARN_ON_ONCE(domain->num_layers < 1))
->>> +		return -EACCES;
->>> +
->>> +	rule = landlock_find_rule(domain, id);
->>> +	handled_access = init_layer_masks(domain, access_request, &layer_masks,
->>> +					  LANDLOCK_KEY_NET_PORT);
->>> +	allowed = unmask_layers(rule, handled_access, &layer_masks,
->>> +				ARRAY_SIZE(layer_masks));
->>> +
->>> +	return allowed ? 0 : -EACCES;
->>> +}
->>> +
->>> +static u16 get_port(const struct sockaddr *const address)
->>> +{
->>> +	/* Gets port value in host byte order. */
->>> +	switch (address->sa_family) {
->>> +	case AF_UNSPEC:
->>> +	case AF_INET: {
->>> +		const struct sockaddr_in *const sockaddr =
->>> +			(struct sockaddr_in *)address;
->>> +		return ntohs(sockaddr->sin_port);
->>> +	}
->>> +#if IS_ENABLED(CONFIG_IPV6)
->>> +	case AF_INET6: {
->>> +		const struct sockaddr_in6 *const sockaddr_ip6 =
->>> +			(struct sockaddr_in6 *)address;
->>> +		return ntohs(sockaddr_ip6->sin6_port);
->>> +	}
->>> +#endif
->>> +	}
->>> +	WARN_ON_ONCE(1);
->>> +	return 0;
->>> +}
->>> +
->>> +static int hook_socket_bind(struct socket *sock, struct sockaddr *address,
->>> +			    int addrlen)
->>> +{
->>> +	const struct landlock_ruleset *const dom =
->>> +		landlock_get_current_domain();
->>> +
->>> +	if (!dom)
->>> +		return 0;
->>> +
->>> +	/* Check if it's a TCP socket. */
->>> +	if (sock->type != SOCK_STREAM)
->>> +		return 0;
->>> +
->>> +	switch (address->sa_family) {
->>> +	case AF_UNSPEC:
->>> +	case AF_INET:
->>> +#if IS_ENABLED(CONFIG_IPV6)
->>> +	case AF_INET6:
->>> +#endif
->>> +		return check_socket_access(dom, get_port(address),
->>> +					   LANDLOCK_ACCESS_NET_BIND_TCP);
->>> +	default:
->>> +		return 0;
->>> +	}
->>> +}
->>> +
->>> +static int hook_socket_connect(struct socket *sock, struct sockaddr *address,
->>> +			       int addrlen)
->>> +{
->>> +	const struct landlock_ruleset *const dom =
->>> +		landlock_get_current_domain();
->>> +
->>> +	if (!dom)
->>> +		return 0;
->>> +
->>> +	/* Check if it's a TCP socket. */
->>> +	if (sock->type != SOCK_STREAM)
->>> +		return 0;
->>> +
->>> +	/* Check if the hook is AF_INET* socket's action. */
->>> +	switch (address->sa_family) {
->>> +	case AF_INET:
->>> +#if IS_ENABLED(CONFIG_IPV6)
->>> +	case AF_INET6:
->>> +#endif
->>> +		return check_socket_access(dom, get_port(address),
->>> +					   LANDLOCK_ACCESS_NET_CONNECT_TCP);
->>> +	case AF_UNSPEC: {
->>> +		u16 i;
->>
->> break line
-> 
->     Do you mean adding empty line here?
+> +	if (IS_ERR_VALUE(err))
+> +		return err;
+> +
+> +	return regmap_field_write(ocelot->regfields[SYS_RESET_CFG_CORE_ENA], 1)=
+;
+> +}
+> +
+> +static void ocelot_ext_phylink_validate(struct ocelot *ocelot, int port,
+> +					unsigned long *supported,
+> +					struct phylink_link_state *state)
+> +{
+> +	struct felix *felix =3D ocelot_to_felix(ocelot);
+> +	struct dsa_switch *ds =3D felix->ds;
+> +	struct phylink_config *pl_config;
+> +	struct dsa_port *dp;
+> +
+> +	dp =3D dsa_to_port(ds, port);
+> +	pl_config =3D &dp->pl_config;
+> +
+> +	phylink_generic_validate(pl_config, supported, state);
 
-yes
+You could save 2 lines here (defining *pl_config and assigning it) if
+you would just call phylink_generic_validate(&dp->pl_config, ...);
 
+> +}
+> +
+> +static struct regmap *ocelot_ext_regmap_init(struct ocelot *ocelot,
+> +					     struct resource *res)
+> +{
+> +	return dev_get_regmap(ocelot->dev->parent, res->name);
+> +}
 
->>
->>> +		/*
->>> +		 * If just in a layer a mask supports connect access,
->>> +		 * the socket_connect() hook with AF_UNSPEC family flag
->>> +		 * must be banned. This prevents from disconnecting already
->>> +		 * connected sockets.
->>> +		 */
->>> +		for (i = 0; i < dom->num_layers; i++) {
->>> +			if (landlock_get_net_access_mask(dom, i) &
->>> +			    LANDLOCK_ACCESS_NET_CONNECT_TCP)
->>> +				return -EACCES;
->>> +		}
->>> +	}
->>> +	}
->>> +	return 0;
->>> +}
->>> +
->>> +static struct security_hook_list landlock_hooks[] __lsm_ro_after_init = {
->>> +	LSM_HOOK_INIT(socket_bind, hook_socket_bind),
->>> +	LSM_HOOK_INIT(socket_connect, hook_socket_connect),
->>> +};
->>> +
->>> +__init void landlock_add_net_hooks(void)
->>> +{
->>> +	security_add_hooks(landlock_hooks, ARRAY_SIZE(landlock_hooks),
->>> +			   LANDLOCK_NAME);
->>> +}
->>> diff --git a/security/landlock/net.h b/security/landlock/net.h
->>> new file mode 100644
->>> index 000000000000..2c63a8f1b258
->>> --- /dev/null
->>> +++ b/security/landlock/net.h
->>> @@ -0,0 +1,26 @@
->>> +/* SPDX-License-Identifier: GPL-2.0-only */
->>> +/*
->>> + * Landlock LSM - Network management and hooks
->>> + *
->>> + * Copyright © 2022 Huawei Tech. Co., Ltd.
->>> + */
->>> +
->>> +#ifndef _SECURITY_LANDLOCK_NET_H
->>> +#define _SECURITY_LANDLOCK_NET_H
->>> +
->>> +#include "common.h"
->>> +#include "ruleset.h"
->>> +#include "setup.h"
->>> +
->>> +#if IS_ENABLED(CONFIG_INET)
->>> +__init void landlock_add_net_hooks(void);
->>> +
->>> +int landlock_append_net_rule(struct landlock_ruleset *const ruleset, u16 port,
->>> +			     u32 access_hierarchy);
->>> +#else /* IS_ENABLED(CONFIG_INET) */
->>> +static inline void landlock_add_net_hooks(void)
->>> +{
->>> +}
->>> +#endif /* IS_ENABLED(CONFIG_INET) */
->>> +
->>> +#endif /* _SECURITY_LANDLOCK_NET_H */
->>> diff --git a/security/landlock/setup.c b/security/landlock/setup.c
->>> index f8e8e980454c..8059dc0b47d3 100644
->>> --- a/security/landlock/setup.c
->>> +++ b/security/landlock/setup.c
->>> @@ -14,6 +14,7 @@
->>>    #include "fs.h"
->>>    #include "ptrace.h"
->>>    #include "setup.h"
->>> +#include "net.h"
->>>
->>>    bool landlock_initialized __lsm_ro_after_init = false;
->>>
->>> @@ -28,6 +29,7 @@ static int __init landlock_init(void)
->>>    	landlock_add_cred_hooks();
->>>    	landlock_add_ptrace_hooks();
->>>    	landlock_add_fs_hooks();
->>> +	landlock_add_net_hooks();
->>>    	landlock_initialized = true;
->>>    	pr_info("Up and running.\n");
->>>    	return 0;
->>> diff --git a/security/landlock/syscalls.c b/security/landlock/syscalls.c
->>> index 641155f6f6f8..16880e951346 100644
->>> --- a/security/landlock/syscalls.c
->>> +++ b/security/landlock/syscalls.c
->>> @@ -29,6 +29,7 @@
->>>    #include "cred.h"
->>>    #include "fs.h"
->>>    #include "limits.h"
->>> +#include "net.h"
->>>    #include "ruleset.h"
->>>    #include "setup.h"
->>>
->>> @@ -74,7 +75,8 @@ static void build_check_abi(void)
->>>    {
->>>    	struct landlock_ruleset_attr ruleset_attr;
->>>    	struct landlock_path_beneath_attr path_beneath_attr;
->>> -	size_t ruleset_size, path_beneath_size;
->>> +	struct landlock_net_service_attr net_service_attr;
->>> +	size_t ruleset_size, path_beneath_size, net_service_size;
->>>
->>>    	/*
->>>    	 * For each user space ABI structures, first checks that there is no
->>> @@ -90,6 +92,11 @@ static void build_check_abi(void)
->>>    	path_beneath_size += sizeof(path_beneath_attr.parent_fd);
->>>    	BUILD_BUG_ON(sizeof(path_beneath_attr) != path_beneath_size);
->>>    	BUILD_BUG_ON(sizeof(path_beneath_attr) != 12);
->>> +
->>> +	net_service_size = sizeof(net_service_attr.allowed_access);
->>> +	net_service_size += sizeof(net_service_attr.port);
->>> +	BUILD_BUG_ON(sizeof(net_service_attr) != net_service_size);
->>> +	BUILD_BUG_ON(sizeof(net_service_attr) != 10);
->>>    }
->>>
->>>    /* Ruleset handling */
->>> @@ -322,13 +329,54 @@ static int add_rule_path_beneath(struct landlock_ruleset *const ruleset,
->>>    	return err;
->>>    }
->>>
->>> +static int add_rule_net_service(struct landlock_ruleset *ruleset,
->>> +				const void __user *const rule_attr)
->>> +{
->>> +#if IS_ENABLED(CONFIG_INET)
->>> +	struct landlock_net_service_attr net_service_attr;
->>> +	int res;
->>> +	u32 mask;
->>> +
->>> +	/* Copies raw user space buffer, only one type for now. */
->>> +	res = copy_from_user(&net_service_attr, rule_attr,
->>> +			     sizeof(net_service_attr));
->>> +	if (res)
->>> +		return -EFAULT;
->>> +
->>> +	/*
->>> +	 * Informs about useless rule: empty allowed_access (i.e. deny rules)
->>> +	 * are ignored by network actions.
->>> +	 */
->>> +	if (!net_service_attr.allowed_access)
->>> +		return -ENOMSG;
->>> +
->>> +	/*
->>> +	 * Checks that allowed_access matches the @ruleset constraints
->>> +	 * (ruleset->access_masks[0] is automatically upgraded to 64-bits).
->>> +	 */
->>> +	mask = landlock_get_net_access_mask(ruleset, 0);
->>> +	if ((net_service_attr.allowed_access | mask) != mask)
->>> +		return -EINVAL;
->>> +
->>> +	/* Denies inserting a rule with port 0. */
->>> +	if (net_service_attr.port == 0)
->>> +		return -EINVAL;
->>> +
->>> +	/* Imports the new rule. */
->>> +	return landlock_append_net_rule(ruleset, net_service_attr.port,
->>> +					net_service_attr.allowed_access);
->>> +#else /* IS_ENABLED(CONFIG_INET) */
->>> +	return -EAFNOSUPPORT;
->>
->> I think this is the right approach to return -EAFNOSUPPORT here instead
->> of with landlock_create_ruleset() because if some network features are
->> not available this means that they will be denied. Only allowing some
->> exception (i.e. with a rule) would not make sense because it could work
->> at the end. This should be explained in the documentation.
->>
->> Landlock libraries would have to handle this error type as not-an-error
->> most of the time though, except when users want to be sure the running
->> system support such network feature.
->>
->> Any though?
-> 
->     Yeah. I think the same - it's possible to create ruleset with network
-> access attributes but if INET is not configured, it would be impossible
-> to apply network rules and even try to call network syscalls
-> corresponding applied attributes.
-> 
->    Please could you explain more detailed about not-an-error handling logic?
+I have more fundamental questions about this one, which I've formulated
+on your patch 7/8. If nothing changes, at least I'd expect some comments
+here explaining where the resources actually come from, and the regmaps.
 
-It will depend on the best-effort level user space wants. Applications 
-should already know by that time that there is no network support from 
-the kernel.
+> +static const struct of_device_id ocelot_ext_switch_of_match[] =3D {
+> +	{ .compatible =3D "mscc,vsc7512-ext-switch" },
 
-Günther, what do you think about that?
+I think I've raised this before. How about removing "external" from the
+compatible string? You can figure out it's external, because it's on a
+SPI bus.
 
-
->>
->>
->>> +#endif /* IS_ENABLED(CONFIG_INET) */
->>> +}
->>> +
->>>    /**
->>>     * sys_landlock_add_rule - Add a new rule to a ruleset
->>>     *
->>>     * @ruleset_fd: File descriptor tied to the ruleset that should be extended
->>>     *		with the new rule.
->>> - * @rule_type: Identify the structure type pointed to by @rule_attr (only
->>> - *             LANDLOCK_RULE_PATH_BENEATH for now).
->>> + * @rule_type: Identify the structure type pointed to by @rule_attr:
->>> + *             LANDLOCK_RULE_PATH_BENEATH or LANDLOCK_RULE_NET_SERVICE.
->>
->> %LANDLOCK_RULE_PATH_BENEATH or %LANDLOCK_RULE_NET_SERVICE.
->>
->     Got it.
->>
->>>     * @rule_attr: Pointer to a rule (only of type &struct
->>>     *             landlock_path_beneath_attr for now).
->>>     * @flags: Must be 0.
->>> @@ -339,6 +387,8 @@ static int add_rule_path_beneath(struct landlock_ruleset *const ruleset,
->>>     * Possible returned errors are:
->>>     *
->>>     * - EOPNOTSUPP: Landlock is supported by the kernel but disabled at boot time;
->>> + * - EAFNOSUPPORT: @rule_type is LANDLOCK_RULE_NET_SERVICE but TCP/IP is not
->>
->> %EAFNOSUPPORT
->> %LANDLOCK_RULE_NET_SERVICE
->>
->> BTW, I'll send a patch soon to fix some documentation style
->> inconsistency, including the missing "%" for defined values (e.g. errno).
->>
->    That would be great. Thanks.
->>
->>> + *   supported by the running kernel;
->>>     * - EINVAL: @flags is not 0, or inconsistent access in the rule (i.e.
->>>     *   &landlock_path_beneath_attr.allowed_access is not a subset of the rule's
->>>     *   accesses);
->>> @@ -374,6 +424,9 @@ SYSCALL_DEFINE4(landlock_add_rule, const int, ruleset_fd,
->>>    	case LANDLOCK_RULE_PATH_BENEATH:
->>>    		err = add_rule_path_beneath(ruleset, rule_attr);
->>>    		break;
->>> +	case LANDLOCK_RULE_NET_SERVICE:
->>> +		err = add_rule_net_service(ruleset, rule_attr);
->>> +		break;
->>>    	default:
->>>    		err = -EINVAL;
->>>    		break;
->>> --
->>> 2.25.1
->>>
->> .
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(of, ocelot_ext_switch_of_match);
+> +
+> +static struct platform_driver ocelot_ext_switch_driver =3D {
+> +	.driver =3D {
+> +		.name =3D "ocelot-ext-switch",
+> +		.of_match_table =3D of_match_ptr(ocelot_ext_switch_of_match),
+> +	},
+> +	.probe =3D ocelot_ext_probe,
+> +	.remove =3D ocelot_ext_remove,
+> +	.shutdown =3D ocelot_ext_shutdown,
+> +};
+> +module_platform_driver(ocelot_ext_switch_driver);=
