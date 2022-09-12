@@ -2,58 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B06D45B61D0
-	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 21:41:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40C3A5B61D8
+	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 21:47:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229687AbiILTk7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Sep 2022 15:40:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35718 "EHLO
+        id S229702AbiILTrx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Sep 2022 15:47:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229542AbiILTk5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 15:40:57 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C1F1476FB
-        for <netdev@vger.kernel.org>; Mon, 12 Sep 2022 12:40:55 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id b14-20020a056902030e00b006a827d81fd8so8118330ybs.17
-        for <netdev@vger.kernel.org>; Mon, 12 Sep 2022 12:40:55 -0700 (PDT)
+        with ESMTP id S229520AbiILTrv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 15:47:51 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E529047BB8
+        for <netdev@vger.kernel.org>; Mon, 12 Sep 2022 12:47:50 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-345482ec6adso83372667b3.18
+        for <netdev@vger.kernel.org>; Mon, 12 Sep 2022 12:47:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:from:subject:message-id:mime-version:date:from:to:cc:subject
          :date;
-        bh=W9p0zgnz9HiTB/0UdjjdirPbtTvGNOenVCLlAeF5/ks=;
-        b=kIb9mKHmh4VQUbwYfXIeufs0L7HoYm3h9bYoHWm+YV/YM7E2S/kT/MuCBTJZhvsFUN
-         Y9bE2nnTCELd6Uo5Yb0KZV6NJYg4VmwjsPKZf24YSXT0fN1sJ7YNzv5LW4IvYS41tEMU
-         OImAFif75ZIAry74Xs/FhQVBm+/YKcNT0FevROVA26L/Ca0YSjMlfBRJjjGuEOSZijRp
-         T/oOJjfZtZ+z7WwqOR3IW2awHC2aQ93LrxI2nDWUjvBq7hzurTfhaYQXZfQE5NHYGXtk
-         npwMfzAwfFoFGUd4Cox7D4F100e0zQUkv5uRq8ocq1AzOMqg2wXE0/r+aD6W0S+hpfqh
-         KCAg==
+        bh=GgY4PD0XdGxMhCUuq3XqhucmQpNzXv+vjyVGjdIJj2M=;
+        b=V6C+VfKk/2QPgJkI01g/ulQ507A+EpfDlY95WsN1ZobPp77HMgvmJE1SJ63ZqKEqjm
+         O6wHz+82hTeMs+E5hAFLuFtGh0rpPXzVTzY3apHgwavbbEwmrPYjnYhr9XTnPkSoMXBM
+         x34E87UW41lC+Hevg6hT3L2/VuyRcpSH0bPrBPNKSmP9T92dWjQsQ5ts6WxPO5WSEgk8
+         8lxUULlr2f8AM+kLOdkjCnicwASkSWX/ShO7fJbyiklvH47HGWqUnX3ztRTW0ZyXUPUN
+         IV0YbiFzwztjTe2vya12UKYFWxWvfZQjf++rU9noncjlCfrkqp16oEM1XZJ2sxrWNLIh
+         u+CQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:from:subject:message-id:mime-version:date:x-gm-message-state
          :from:to:cc:subject:date;
-        bh=W9p0zgnz9HiTB/0UdjjdirPbtTvGNOenVCLlAeF5/ks=;
-        b=1i6qI/CIA6CsREheZSn/aszBlKy6A/UCilezM9L+7UCPMSAIAU3nsJCkT0/6bqTf1p
-         C3l6X3xQIvuTzKv569nTBKZprOpD657hSDjPa9P80QdRMtjmDky2I5p4SOwHgHSRMVrj
-         GqbjcbI4a4rFI2T5pMcwgT28URE/ECiB3fg0PsCUxFLjLgS4eV5QBH0WRp30PfLunSUG
-         Ph6934J4soFOa3ynJbghTlnv9bzmfRTugZgm5Ij3L9JbXC3p7Vkuw/4gxGwLvobdFzPd
-         bIZfyDdmhEgmNrs55srzy13+o4lS4MvUMdGBZI0p/V4j872bmdtWPh01jcPOPHjYgYXY
-         zoZA==
-X-Gm-Message-State: ACgBeo24MTtrO7MCmU5gTyqwMwii87CJO1EEp0Uh5xkMJq+SAxBuVtmT
-        YXx1VBvSrnFYA/yiXtt4AbV7YuZb7Q==
-X-Google-Smtp-Source: AA6agR5tT07BLedJkk78QlwL8aAcT2zOwZ+TyghN3uTLRGF5Uit5WEI7B1ycrzrVCbXp9ca7l8J/GIJPlg==
+        bh=GgY4PD0XdGxMhCUuq3XqhucmQpNzXv+vjyVGjdIJj2M=;
+        b=7Lb1chyhjkBXB6GvKS73owsIru1BIndHpi4NHQErh8EkfwGipXU4TPHVB1WJFllrGm
+         XyEVQpbS8sPdnzRFyyLkYG6QEdO0Qsw6IkRvFZwzV0brUkPu/pXjvwleOGt2Qy773ixQ
+         3tgh/bbAKbY+W3HozYc6ln60lWbXX+efoYERe9sQLKd/SgGwEi0Gki97IWpOdEpH4AG0
+         ZkI4n+HU/dnUn4G2Vxyw1Yya1juOyGr7ci/oFYStWtSndGvI+27kII7Fx/mtoDmWdlNp
+         /IVH/9bGY8yn6yE28hnP8r0Nkh0JZrIECUD6keV08vZxO50+4Cc72wcFHdFhaorTofw9
+         SSsQ==
+X-Gm-Message-State: ACgBeo3N1sWCB/5Ef92Avn79cvxfafEOnPSSWJ0JeSIvxcM8nqcIrff8
+        m+bF9PaeeHBO0d5UzAQpTXK55yaADA==
+X-Google-Smtp-Source: AA6agR5GPQr1uNUFoyJ5ver00tftXGD7aWRLmNZklbPxaADwNWwe0WJWzmPX/omhMP3EjY1GkbnBhuIDlg==
 X-Received: from nhuck.c.googlers.com ([fda3:e722:ac3:cc00:14:4d90:c0a8:39cc])
- (user=nhuck job=sendgmr) by 2002:a05:690c:812:b0:345:27dc:56e2 with SMTP id
- bx18-20020a05690c081200b0034527dc56e2mr23623616ywb.313.1663011654220; Mon, 12
- Sep 2022 12:40:54 -0700 (PDT)
-Date:   Mon, 12 Sep 2022 12:40:30 -0700
+ (user=nhuck job=sendgmr) by 2002:a05:6902:512:b0:6a8:24a1:5daf with SMTP id
+ x18-20020a056902051200b006a824a15dafmr22863793ybs.592.1663012070252; Mon, 12
+ Sep 2022 12:47:50 -0700 (PDT)
+Date:   Mon, 12 Sep 2022 12:47:19 -0700
 Mime-Version: 1.0
 X-Mailer: git-send-email 2.37.2.789.g6183377224-goog
-Message-ID: <20220912194031.808425-1-nhuck@google.com>
-Subject: [PATCH] net: ax88796c: Fix return type of ax88796c_start_xmit
+Message-ID: <20220912194722.809525-1-nhuck@google.com>
+Subject: [PATCH] net: davicom: Fix return type of dm9000_start_xmit
 From:   Nathan Huckleberry <nhuck@google.com>
 Cc:     Nathan Huckleberry <nhuck@google.com>,
         Dan Carpenter <error27@gmail.com>, llvm@lists.linux.dev,
-        "=?UTF-8?q?=C5=81ukasz=20Stelmach?=" <l.stelmach@samsung.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -80,7 +79,7 @@ netdev_tx_t (*ndo_start_xmit)(struct sk_buff *skb, struct net_device *dev).
 The mismatched return type breaks forward edge kCFI since the underlying
 function definition does not match the function hook definition.
 
-The return type of ax88796c_start_xmit should be changed from int to
+The return type of dm9000_start_xmit should be changed from int to
 netdev_tx_t.
 
 Reported-by: Dan Carpenter <error27@gmail.com>
@@ -88,22 +87,22 @@ Link: https://github.com/ClangBuiltLinux/linux/issues/1703
 Cc: llvm@lists.linux.dev
 Signed-off-by: Nathan Huckleberry <nhuck@google.com>
 ---
- drivers/net/ethernet/asix/ax88796c_main.c | 2 +-
+ drivers/net/ethernet/davicom/dm9000.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/asix/ax88796c_main.c b/drivers/net/ethernet/asix/ax88796c_main.c
-index 6ba5b024a7be..f1d610efd69e 100644
---- a/drivers/net/ethernet/asix/ax88796c_main.c
-+++ b/drivers/net/ethernet/asix/ax88796c_main.c
-@@ -381,7 +381,7 @@ static int ax88796c_hard_xmit(struct ax88796c_device *ax_local)
- 	return 1;
- }
- 
+diff --git a/drivers/net/ethernet/davicom/dm9000.c b/drivers/net/ethernet/davicom/dm9000.c
+index 0985ab216566..186a5e0a7862 100644
+--- a/drivers/net/ethernet/davicom/dm9000.c
++++ b/drivers/net/ethernet/davicom/dm9000.c
+@@ -1012,7 +1012,7 @@ static void dm9000_send_packet(struct net_device *dev,
+  *  Hardware start transmission.
+  *  Send a packet to media from the upper layer.
+  */
 -static int
 +static netdev_tx_t
- ax88796c_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+ dm9000_start_xmit(struct sk_buff *skb, struct net_device *dev)
  {
- 	struct ax88796c_device *ax_local = to_ax88796c_device(ndev);
+ 	unsigned long flags;
 -- 
 2.37.2.789.g6183377224-goog
 
