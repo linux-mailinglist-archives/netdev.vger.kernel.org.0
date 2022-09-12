@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 26B8D5B5FCB
-	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 20:05:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC1895B5FD1
+	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 20:05:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229956AbiILSFk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Sep 2022 14:05:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51294 "EHLO
+        id S229999AbiILSFq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Sep 2022 14:05:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229899AbiILSF3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 14:05:29 -0400
+        with ESMTP id S229943AbiILSFe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 14:05:34 -0400
 Received: from smtp.uniroma2.it (smtp.uniroma2.it [160.80.6.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 662BC2DAB5;
-        Mon, 12 Sep 2022 11:05:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E39B62FFF6;
+        Mon, 12 Sep 2022 11:05:29 -0700 (PDT)
 Received: from localhost.localdomain ([160.80.103.126])
-        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 28CHGubW031029
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 28CHGubX031029
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 12 Sep 2022 19:16:57 +0200
+        Mon, 12 Sep 2022 19:16:58 +0200
 From:   Andrea Mayer <andrea.mayer@uniroma2.it>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -32,9 +32,9 @@ Cc:     Stefano Salsano <stefano.salsano@uniroma2.it>,
         Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
         Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
         Andrea Mayer <andrea.mayer@uniroma2.it>
-Subject: [net-next v2 2/3] seg6: add NEXT-C-SID support for SRv6 End behavior
-Date:   Mon, 12 Sep 2022 19:16:18 +0200
-Message-Id: <20220912171619.16943-3-andrea.mayer@uniroma2.it>
+Subject: [net-next v2 3/3] selftests: seg6: add selftest for NEXT-C-SID flavor in SRv6 End behavior
+Date:   Mon, 12 Sep 2022 19:16:19 +0200
+Message-Id: <20220912171619.16943-4-andrea.mayer@uniroma2.it>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220912171619.16943-1-andrea.mayer@uniroma2.it>
 References: <20220912171619.16943-1-andrea.mayer@uniroma2.it>
@@ -51,508 +51,1194 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The NEXT-C-SID mechanism described in [1] offers the possibility of
-encoding several SRv6 segments within a single 128 bit SID address. Such
-a SID address is called a Compressed SID (C-SID) container. In this way,
-the length of the SID List can be drastically reduced.
+This selftest is designed for testing the support of NEXT-C-SID flavor
+for SRv6 End behavior. It instantiates a virtual network composed of
+several nodes: hosts and SRv6 routers. Each node is realized using a
+network namespace that is properly interconnected to others through veth
+pairs.
+The test considers SRv6 routers implementing IPv4/IPv6 L3 VPNs leveraged
+by hosts for communicating with each other. Such routers i) apply
+different SRv6 Policies to the traffic received from connected hosts,
+considering the IPv4 or IPv6 protocols; ii) use the NEXT-C-SID
+compression mechanism for encoding several SRv6 segments within a single
+128-bit SID address, referred to as a Compressed SID (C-SID) container.
 
-A SID instantiated with the NEXT-C-SID flavor considers an IPv6 address
-logically structured in three main blocks: i) Locator-Block; ii)
-Locator-Node Function; iii) Argument.
-
-                        C-SID container
-+------------------------------------------------------------------+
-|     Locator-Block      |Loc-Node|            Argument            |
-|                        |Function|                                |
-+------------------------------------------------------------------+
-<--------- B -----------> <- NF -> <------------- A --------------->
-
-   (i) The Locator-Block can be any IPv6 prefix available to the provider;
-
-  (ii) The Locator-Node Function represents the node and the function to
-       be triggered when a packet is received on the node;
-
- (iii) The Argument carries the remaining C-SIDs in the current C-SID
-       container.
-
-The NEXT-C-SID mechanism relies on the "flavors" framework defined in
-[2]. The flavors represent additional operations that can modify or
-extend a subset of the existing behaviors.
-
-This patch introduces the support for flavors in SRv6 End behavior
-implementing the NEXT-C-SID one. An SRv6 End behavior with NEXT-C-SID
-flavor works as an End behavior but it is capable of processing the
-compressed SID List encoded in C-SID containers.
-
-An SRv6 End behavior with NEXT-C-SID flavor can be configured to support
-user-provided Locator-Block and Locator-Node Function lengths. In this
-implementation, such lengths must be evenly divisible by 8 (i.e. must be
-byte-aligned), otherwise the kernel informs the user about invalid
-values with a meaningful error code and message through netlink_ext_ack.
-
-If Locator-Block and/or Locator-Node Function lengths are not provided
-by the user during configuration of an SRv6 End behavior instance with
-NEXT-C-SID flavor, the kernel will choose their default values i.e.,
-32-bit Locator-Block and 16-bit Locator-Node Function.
-
-[1] - https://datatracker.ietf.org/doc/html/draft-ietf-spring-srv6-srh-compression
-[2] - https://datatracker.ietf.org/doc/html/rfc8986
+The NEXT-C-SID is provided as a "flavor" of the SRv6 End behavior,
+enabling it to properly process the C-SID containers. The correct
+execution of the enabled NEXT-C-SID SRv6 End behavior is verified
+through reachability tests carried out between hosts belonging to the
+same VPN.
 
 Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
 ---
- include/uapi/linux/seg6_local.h |  24 +++
- net/ipv6/seg6_local.c           | 335 +++++++++++++++++++++++++++++++-
- 2 files changed, 356 insertions(+), 3 deletions(-)
+ tools/testing/selftests/net/Makefile          |    1 +
+ .../net/srv6_end_next_csid_l3vpn_test.sh      | 1145 +++++++++++++++++
+ 2 files changed, 1146 insertions(+)
+ create mode 100755 tools/testing/selftests/net/srv6_end_next_csid_l3vpn_test.sh
 
-diff --git a/include/uapi/linux/seg6_local.h b/include/uapi/linux/seg6_local.h
-index 332b18f318f8..4fdc424c9cb3 100644
---- a/include/uapi/linux/seg6_local.h
-+++ b/include/uapi/linux/seg6_local.h
-@@ -28,6 +28,7 @@ enum {
- 	SEG6_LOCAL_BPF,
- 	SEG6_LOCAL_VRFTABLE,
- 	SEG6_LOCAL_COUNTERS,
-+	SEG6_LOCAL_FLAVORS,
- 	__SEG6_LOCAL_MAX,
- };
- #define SEG6_LOCAL_MAX (__SEG6_LOCAL_MAX - 1)
-@@ -110,4 +111,27 @@ enum {
- 
- #define SEG6_LOCAL_CNT_MAX (__SEG6_LOCAL_CNT_MAX - 1)
- 
-+/* SRv6 End* Flavor attributes */
-+enum {
-+	SEG6_LOCAL_FLV_UNSPEC,
-+	SEG6_LOCAL_FLV_OPERATION,
-+	SEG6_LOCAL_FLV_LCBLOCK_BITS,
-+	SEG6_LOCAL_FLV_LCNODE_FN_BITS,
-+	__SEG6_LOCAL_FLV_MAX,
-+};
+diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
+index f5ac1433c301..d87e8739bb30 100644
+--- a/tools/testing/selftests/net/Makefile
++++ b/tools/testing/selftests/net/Makefile
+@@ -37,6 +37,7 @@ TEST_PROGS += srv6_end_dt4_l3vpn_test.sh
+ TEST_PROGS += srv6_end_dt6_l3vpn_test.sh
+ TEST_PROGS += srv6_hencap_red_l3vpn_test.sh
+ TEST_PROGS += srv6_hl2encap_red_l2vpn_test.sh
++TEST_PROGS += srv6_end_next_csid_l3vpn_test.sh
+ TEST_PROGS += vrf_strict_mode_test.sh
+ TEST_PROGS += arp_ndisc_evict_nocarrier.sh
+ TEST_PROGS += ndisc_unsolicited_na_test.sh
+diff --git a/tools/testing/selftests/net/srv6_end_next_csid_l3vpn_test.sh b/tools/testing/selftests/net/srv6_end_next_csid_l3vpn_test.sh
+new file mode 100755
+index 000000000000..87e414cc417c
+--- /dev/null
++++ b/tools/testing/selftests/net/srv6_end_next_csid_l3vpn_test.sh
+@@ -0,0 +1,1145 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++#
++# author: Andrea Mayer <andrea.mayer@uniroma2.it>
++#
++# This script is designed for testing the support of NEXT-C-SID flavor for SRv6
++# End behavior.
++# A basic knowledge of SRv6 architecture [1] and of the compressed SID approach
++# [2] is assumed for the reader.
++#
++# The network topology used in the selftest is depicted hereafter, composed by
++# two hosts and four routers. Hosts hs-1 and hs-2 are connected through an
++# IPv4/IPv6 L3 VPN service, offered by routers rt-1, rt-2, rt-3 and rt-4 using
++# the NEXT-C-SID flavor. The key components for such VPNs are:
++#
++#    i) The SRv6 H.Encaps/H.Encaps.Red behaviors [1] apply SRv6 Policies on
++#       traffic received by connected hosts, initiating the VPN tunnel;
++#
++#   ii) The SRv6 End behavior [1] advances the active SID in the SID List
++#       carried by the SRH;
++#
++#  iii) The NEXT-C-SID mechanism [2] offers the possibility of encoding several
++#       SRv6 segments within a single 128-bit SID address, referred to as a
++#       Compressed SID (C-SID) container. In this way, the length of the SID
++#       List can be drastically reduced.
++#       The NEXT-C-SID is provided as a "flavor" of the SRv6 End behavior
++#       which advances the current C-SID (i.e. the Locator-Node Function defined
++#       in [2]) with the next one carried in the Argument, if available.
++#       When no more C-SIDs are available in the Argument, the SRv6 End behavior
++#       will apply the End function selecting the next SID in the SID List.
++#
++#   iv) The SRv6 End.DT46 behavior [1] is used for removing the SRv6 Policy and,
++#       thus, it terminates the VPN tunnel. Such a behavior is capable of
++#       handling, at the same time, both tunneled IPv4 and IPv6 traffic.
++#
++# [1] https://datatracker.ietf.org/doc/html/rfc8986
++# [2] https://datatracker.ietf.org/doc/html/draft-ietf-spring-srv6-srh-compression
++#
++#
++#               cafe::1                      cafe::2
++#              10.0.0.1                     10.0.0.2
++#             +--------+                   +--------+
++#             |        |                   |        |
++#             |  hs-1  |                   |  hs-2  |
++#             |        |                   |        |
++#             +---+----+                   +----+---+
++#    cafe::/64    |                             |      cafe::/64
++#  10.0.0.0/24    |                             |    10.0.0.0/24
++#             +---+----+                   +----+---+
++#             |        |  fcf0:0:1:2::/64  |        |
++#             |  rt-1  +-------------------+  rt-2  |
++#             |        |                   |        |
++#             +---+----+                   +----+---+
++#                 |      .               .      |
++#                 |  fcf0:0:1:3::/64   .        |
++#                 |          .       .          |
++#                 |            .   .            |
++# fcf0:0:1:4::/64 |              .              | fcf0:0:2:3::/64
++#                 |            .   .            |
++#                 |          .       .          |
++#                 |  fcf0:0:2:4::/64   .        |
++#                 |      .               .      |
++#             +---+----+                   +----+---+
++#             |        |                   |        |
++#             |  rt-4  +-------------------+  rt-3  |
++#             |        |  fcf0:0:3:4::/64  |        |
++#             +---+----+                   +----+---+
++#
++# Every fcf0:0:x:y::/64 network interconnects the SRv6 routers rt-x with rt-y in
++# the selftest network.
++#
++# Local SID/C-SID table
++# =====================
++#
++# Each SRv6 router is configured with a Local SID/C-SID table in which
++# SIDs/C-SIDs are stored. Considering an SRv6 router rt-x, SIDs/C-SIDs are
++# configured in the Local SID/C-SIDs table as follows:
++#
++#   Local SID/C-SID table for SRv6 router rt-x
++#   +-----------------------------------------------------------+
++#   |fcff:x::d46 is associated with the non-compressed SRv6     |
++#   |   End.DT46 behavior                                       |
++#   +-----------------------------------------------------------+
++#   |fcbb:0:0x00::/48 is associated with the NEXT-C-SID flavor  |
++#   |   of SRv6 End behavior                                    |
++#   +-----------------------------------------------------------+
++#   |fcbb:0:0x00:d46::/64 is associated with the SRv6 End.DT46  |
++#   |   behavior when NEXT-C-SID compression is turned on       |
++#   +-----------------------------------------------------------+
++#
++# The fcff::/16 prefix is reserved for implementing SRv6 services with regular
++# (non compressed) SIDs. Reachability of SIDs is ensured by proper configuration
++# of the IPv6 routing tables in the routers.
++# Similarly, the fcbb:0::/32 prefix is reserved for implementing SRv6 VPN
++# services leveraging the NEXT-C-SID compression mechanism. Indeed, the
++# fcbb:0::/32 is used for encoding the Locator-Block while the Locator-Node
++# Function is encoded with 16 bits.
++#
++# Incoming traffic classification and application of SRv6 Policies
++# ================================================================
++#
++# An SRv6 ingress router applies different SRv6 Policies to the traffic received
++# from a connected host, considering the IPv4 or IPv6 destination address.
++# SRv6 policy enforcement consists of encapsulating the received traffic into a
++# new IPv6 packet with a given SID List contained in the SRH.
++# When the SID List contains only one SID, the SRH could be omitted completely
++# and that SID is stored directly in the IPv6 Destination Address (DA) (this is
++# called "reduced" encapsulation).
++#
++# Test cases for NEXT-C-SID
++# =========================
++#
++# We consider two test cases for NEXT-C-SID: i) single SID and ii) double SID.
++#
++# In the single SID test case we have a number of segments that are all
++# contained in a single Compressed SID (C-SID) container. Therefore the
++# resulting SID List has only one SID. Using the reduced encapsulation format
++# this will result in a packet with no SRH.
++#
++# In the double SID test case we have one segment carried in a Compressed SID
++# (C-SID) container, followed by a regular (non compressed) SID. The resulting
++# SID List has two segments and it is possible to test the advance to the next
++# SID when all the C-SIDs in a C-SID container have been processed. Using the
++# reduced encapsulation format this will result in a packet with an SRH
++# containing 1 segment.
++#
++# For the single SID test case, we use the IPv4 addresses of hs-1 and hs-2, for
++# the double SID test case, we use their IPv6 addresses. This is only done to
++# simplify the test setup and avoid adding other hosts or multiple addresses on
++# the same interface of a host.
++#
++# Traffic from hs-1 to hs-2
++# -------------------------
++#
++# Packets generated from hs-1 and directed towards hs-2 are handled by rt-1
++# which applies the SRv6 Policies as follows:
++#
++#   i) IPv6 DA=cafe::2, H.Encaps.Red with SID List=fcbb:0:0400:0300:0200:d46::
++#  ii) IPv4 DA=10.0.0.2, H.Encaps.Red with SID List=fcbb:0:0300::,fcff:2::d46
++#
++# ### i) single SID
++#
++# The router rt-1 is configured to enforce the given Policy through the SRv6
++# H.Encaps.Red behavior which avoids the presence of the SRH at all, since it
++# pushes the single SID directly in the IPv6 DA. Such a SID encodes a whole
++# C-SID container carrying several C-SIDs (e.g. 0400, 0300, etc).
++#
++# As the packet reaches the router rt-4, the enabled NEXT-C-SID SRv6 End
++# behavior (associated with fcbb:0:0400::/48) is triggered. This behavior
++# analyzes the IPv6 DA and checks whether the Argument of the C-SID container
++# is zero or not. In this case, the Argument is *NOT* zero and the IPv6 DA is
++# updated as follows:
++#
++# +---------------------------------------------------------------+
++# | Before applying the rt-4 enabled NEXT-C-SID SRv6 End behavior |
++# +---------------------------------------------------------------+
++# |                            +---------- Argument               |
++# |                     vvvvvvvvvvvvvvvv                          |
++# | IPv6 DA fcbb:0:0400:0300:0200:d46::                           |
++# |                ^^^^    <-- shifting                           |
++# |                  |                                            |
++# |          Locator-Node Function                                |
++# +---------------------------------------------------------------+
++# | After applying the rt-4 enabled NEXT-C-SID SRv6 End behavior  |
++# +---------------------------------------------------------------+
++# |                          +---------- Argument                 |
++# |                    vvvvvvvvvvvv                               |
++# | IPv6 DA fcbb:0:0300:0200:d46::                                |
++# |                ^^^^                                           |
++# |                  |                                            |
++# |          Locator-Node Function                                |
++# +---------------------------------------------------------------+
++#
++# After having applied the enabled NEXT-C-SID SRv6 End behavior, the packet is
++# sent to the next node, i.e. rt-3.
++#
++# The enabled NEXT-C-SID SRv6 End behavior on rt-3 is executed as the packet is
++# received. This behavior processes the packet and updates the IPv6 DA with
++# fcbb:0:0200:d46::, since the Argument is *NOT* zero. Then, the packet is sent
++# to the router rt-2.
++#
++# The router rt-2 is configured for decapsulating the inner IPv6 packet and,
++# for this reason, it applies the SRv6 End.DT46 behavior on the received
++# packet. It is worth noting that the SRv6 End.DT46 behavior does not require
++# the presence of the SRH: it is fully capable to operate properly on
++# IPv4/IPv6-in-IPv6 encapsulations.
++# At the end of the decap operation, the packet is sent to the
++# host hs-2.
++#
++# ### ii) double SID
++#
++# The router rt-1 is configured to enforce the given Policy through the SRv6
++# H.Encaps.Red. As a result, the first SID fcbb:0:0300:: is stored into the
++# IPv6 DA, while the SRH pushed into the packet is made of only one SID, i.e.
++# fcff:2::d46. Hence, the packet sent by hs-1 to hs-2 is encapsulated in an
++# outer IPv6 header plus the SRH.
++#
++# As the packet reaches the node rt-3, the router applies the enabled NEXT-C-SID
++# SRv6 End behavior.
++#
++# +---------------------------------------------------------------+
++# | Before applying the rt-3 enabled NEXT-C-SID SRv6 End behavior |
++# +---------------------------------------------------------------+
++# |                            +---------- Argument               |
++# |                      vvvv (Argument is all filled with zeros) |
++# | IPv6 DA fcbb:0:0300::                                         |
++# |                ^^^^                                           |
++# |                  |                                            |
++# |          Locator-Node Function                                |
++# +---------------------------------------------------------------+
++# | After applying the rt-3 enabled NEXT-C-SID SRv6 End behavior  |
++# +---------------------------------------------------------------+
++# |                                                               |
++# | IPv6 DA fcff:2::d46                                           |
++# |         ^^^^^^^^^^^                                           |
++# |              |                                                |
++# |        SID copied from the SID List contained in the SRH      |
++# +---------------------------------------------------------------+
++#
++# Since the Argument of the C-SID container is zero, the behavior can not
++# update the Locator-Node function with the next C-SID carried in the Argument
++# itself. Thus, the enabled NEXT-C-SID SRv6 End behavior operates as the
++# traditional End behavior: it updates the IPv6 DA by copying the next
++# available SID in the SID List carried by the SRH. After that, the packet is
++# sent to the node rt-2.
++#
++# Once the packet is received by rt-2, the router decapsulates the inner IPv6
++# packet using the SRv6 End.DT46 behavior (associated with the SID fcff:2::d46)
++# and sends it to the host hs-2.
++#
++# Traffic from hs-2 to hs-1
++# -------------------------
++#
++# Packets generated from hs-2 and directed towards hs-1 are handled by rt-2
++# which applies the SRv6 Policies as follows:
++#
++#   i) IPv6 DA=cafe::1, SID List=fcbb:0:0300:0400:0100:d46::
++#  ii) IPv4 DA=10.0.0.1, SID List=fcbb:0:0300::,fcff:1::d46
++#
++# For simplicity, such SRv6 Policies were chosen so that, in both use cases (i)
++# and (ii), the network paths crossed by traffic from hs-2 to hs-1 are the same
++# as those taken by traffic from hs-1 to hs-2.
++# In this way, traffic from hs-2 to hs-1 is processed similarly to traffic from
++# hs-1 to hs-2. So, the traffic processing scheme turns out to be the same as
++# that adopted in the use cases already examined (of course, it is necessary to
++# consider the different SIDs/C-SIDs).
 +
-+#define SEG6_LOCAL_FLV_MAX (__SEG6_LOCAL_FLV_MAX - 1)
++# Kselftest framework requirement - SKIP code is 4.
++readonly ksft_skip=4
 +
-+/* Designed flavor operations for SRv6 End* Behavior */
-+enum {
-+	SEG6_LOCAL_FLV_OP_UNSPEC,
-+	SEG6_LOCAL_FLV_OP_PSP,
-+	SEG6_LOCAL_FLV_OP_USP,
-+	SEG6_LOCAL_FLV_OP_USD,
-+	SEG6_LOCAL_FLV_OP_NEXT_CSID,
-+	__SEG6_LOCAL_FLV_OP_MAX
-+};
++readonly RDMSUFF="$(mktemp -u XXXXXXXX)"
++readonly DUMMY_DEVNAME="dum0"
++readonly VRF_TID=100
++readonly VRF_DEVNAME="vrf-${VRF_TID}"
++readonly RT2HS_DEVNAME="veth-t${VRF_TID}"
++readonly LOCALSID_TABLE_ID=90
++readonly IPv6_RT_NETWORK=fcf0:0
++readonly IPv6_HS_NETWORK=cafe
++readonly IPv4_HS_NETWORK=10.0.0
++readonly VPN_LOCATOR_SERVICE=fcff
++readonly DT46_FUNC=0d46
++readonly HEADEND_ENCAP="encap.red"
 +
-+#define SEG6_LOCAL_FLV_OP_MAX (__SEG6_LOCAL_FLV_OP_MAX - 1)
++# do not add ':' as separator
++readonly LCBLOCK_ADDR=fcbb0000
++readonly LCBLOCK_BLEN=32
++# do not add ':' as separator
++readonly LCNODEFUNC_FMT="0%d00"
++readonly LCNODEFUNC_BLEN=16
 +
- #endif
-diff --git a/net/ipv6/seg6_local.c b/net/ipv6/seg6_local.c
-index f43e6f0baac1..8370726ae7bf 100644
---- a/net/ipv6/seg6_local.c
-+++ b/net/ipv6/seg6_local.c
-@@ -73,6 +73,55 @@ struct bpf_lwt_prog {
- 	char *name;
- };
- 
-+/* default length values (expressed in bits) for both Locator-Block and
-+ * Locator-Node Function.
-+ *
-+ * Both SEG6_LOCAL_LCBLOCK_DBITS and SEG6_LOCAL_LCNODE_FN_DBITS *must* be:
-+ *    i) greater than 0;
-+ *   ii) evenly divisible by 8. In other terms, the lengths of the
-+ *	 Locator-Block and Locator-Node Function must be byte-aligned (we can
-+ *	 relax this constraint in the future if really needed).
-+ *
-+ * Moreover, a third condition must hold:
-+ *  iii) SEG6_LOCAL_LCBLOCK_DBITS + SEG6_LOCAL_LCNODE_FN_DBITS <= 128.
-+ *
-+ * The correctness of SEG6_LOCAL_LCBLOCK_DBITS and SEG6_LOCAL_LCNODE_FN_DBITS
-+ * values are checked during the kernel compilation. If the compilation stops,
-+ * check the value of these parameters to see if they meet conditions (i), (ii)
-+ * and (iii).
-+ */
-+#define SEG6_LOCAL_LCBLOCK_DBITS	32
-+#define SEG6_LOCAL_LCNODE_FN_DBITS	16
++readonly LCBLOCK_NODEFUNC_BLEN=$((LCBLOCK_BLEN + LCNODEFUNC_BLEN))
 +
-+/* The following next_csid_chk_{cntr,lcblock,lcblock_fn}_bits macros can be
-+ * used directly to check whether the lengths (in bits) of Locator-Block and
-+ * Locator-Node Function are valid according to (i), (ii), (iii).
-+ */
-+#define next_csid_chk_cntr_bits(blen, flen)		\
-+	((blen) + (flen) > 128)
++readonly CSID_CNTR_PREFIX="dead:beaf::/32"
++# ID of the router used for testing the C-SID container cfgs
++readonly CSID_CNTR_RT_ID_TEST=1
++# Routing table used for testing the C-SID container cfgs
++readonly CSID_CNTR_RT_TABLE=91
 +
-+#define next_csid_chk_lcblock_bits(blen)		\
-+({							\
-+	typeof(blen) __tmp = blen;			\
-+	(!__tmp || __tmp > 120 || (__tmp & 0x07));	\
-+})
++# C-SID container configurations to be tested
++#
++# An entry of the array is defined as "a,b,c" where:
++# - 'a' and 'b' elements represent respectively the Locator-Block length
++#   (lblen) in bits and the Locator-Node Function length (nflen) in bits.
++#   'a' and 'b' can be set to default values using the placeholder "d" which
++#   indicates the default kernel values (32 for lblen and 16 for nflen);
++#   otherwise, any numeric value is accepted;
++# - 'c' indicates whether the C-SID configuration provided by the values 'a'
++#   and 'b' should be considered valid ("y") or invalid ("n").
++declare -ra CSID_CONTAINER_CFGS=(
++	"d,d,y"
++	"d,16,y"
++	"16,d,y"
++	"16,32,y"
++	"32,16,y"
++	"48,8,y"
++	"8,48,y"
++	"d,0,n"
++	"0,d,n"
++	"32,0,n"
++	"0,32,n"
++	"17,d,n"
++	"d,17,n"
++	"120,16,n"
++	"16,120,n"
++	"0,128,n"
++	"128,0,n"
++	"130,0,n"
++	"0,130,n"
++	"0,0,n"
++)
 +
-+#define next_csid_chk_lcnode_fn_bits(flen)		\
-+	next_csid_chk_lcblock_bits(flen)
++PING_TIMEOUT_SEC=4
++PAUSE_ON_FAIL=${PAUSE_ON_FAIL:=no}
 +
-+/* Supported Flavor operations are reported in this bitmask */
-+#define SEG6_LOCAL_FLV_SUPP_OPS	(BIT(SEG6_LOCAL_FLV_OP_NEXT_CSID))
++# IDs of routers and hosts are initialized during the setup of the testing
++# network
++ROUTERS=''
++HOSTS=''
 +
-+struct seg6_flavors_info {
-+	/* Flavor operations */
-+	__u32 flv_ops;
++SETUP_ERR=1
 +
-+	/* Locator-Block length, expressed in bits */
-+	__u8 lcblock_bits;
-+	/* Locator-Node Function length, expressed in bits*/
-+	__u8 lcnode_func_bits;
-+};
++ret=${ksft_skip}
++nsuccess=0
++nfail=0
 +
- enum seg6_end_dt_mode {
- 	DT_INVALID_MODE	= -EINVAL,
- 	DT_LEGACY_MODE	= 0,
-@@ -136,6 +185,8 @@ struct seg6_local_lwt {
- #ifdef CONFIG_NET_L3_MASTER_DEV
- 	struct seg6_end_dt_info dt_info;
- #endif
-+	struct seg6_flavors_info flv_info;
-+
- 	struct pcpu_seg6_local_counters __percpu *pcpu_counters;
- 
- 	int headroom;
-@@ -271,8 +322,50 @@ int seg6_lookup_nexthop(struct sk_buff *skb,
- 	return seg6_lookup_any_nexthop(skb, nhaddr, tbl_id, false);
- }
- 
--/* regular endpoint function */
--static int input_action_end(struct sk_buff *skb, struct seg6_local_lwt *slwt)
-+static __u8 seg6_flv_lcblock_octects(const struct seg6_flavors_info *finfo)
++log_test()
 +{
-+	return finfo->lcblock_bits >> 3;
++	local rc="$1"
++	local expected="$2"
++	local msg="$3"
++
++	if [ "${rc}" -eq "${expected}" ]; then
++		nsuccess=$((nsuccess+1))
++		printf "\n    TEST: %-60s  [ OK ]\n" "${msg}"
++	else
++		ret=1
++		nfail=$((nfail+1))
++		printf "\n    TEST: %-60s  [FAIL]\n" "${msg}"
++		if [ "${PAUSE_ON_FAIL}" = "yes" ]; then
++			echo
++			echo "hit enter to continue, 'q' to quit"
++			read a
++			[ "$a" = "q" ] && exit 1
++		fi
++	fi
 +}
 +
-+static __u8 seg6_flv_lcnode_func_octects(const struct seg6_flavors_info *finfo)
++print_log_test_results()
 +{
-+	return finfo->lcnode_func_bits >> 3;
++	printf "\nTests passed: %3d\n" "${nsuccess}"
++	printf "Tests failed: %3d\n"   "${nfail}"
++
++	# when a test fails, the value of 'ret' is set to 1 (error code).
++	# Conversely, when all tests are passed successfully, the 'ret' value
++	# is set to 0 (success code).
++	if [ "${ret}" -ne 1 ]; then
++		ret=0
++	fi
 +}
 +
-+static bool seg6_next_csid_is_arg_zero(const struct in6_addr *addr,
-+				       const struct seg6_flavors_info *finfo)
++log_section()
 +{
-+	__u8 fnc_octects = seg6_flv_lcnode_func_octects(finfo);
-+	__u8 blk_octects = seg6_flv_lcblock_octects(finfo);
-+	__u8 arg_octects;
-+	int i;
-+
-+	arg_octects = 16 - blk_octects - fnc_octects;
-+	for (i = 0; i < arg_octects; ++i) {
-+		if (addr->s6_addr[blk_octects + fnc_octects + i] != 0x00)
-+			return false;
-+	}
-+
-+	return true;
++	echo
++	echo "################################################################################"
++	echo "TEST SECTION: $*"
++	echo "################################################################################"
 +}
 +
-+/* assume that DA.Argument length > 0 */
-+static void seg6_next_csid_advance_arg(struct in6_addr *addr,
-+				       const struct seg6_flavors_info *finfo)
++test_command_or_ksft_skip()
 +{
-+	__u8 fnc_octects = seg6_flv_lcnode_func_octects(finfo);
-+	__u8 blk_octects = seg6_flv_lcblock_octects(finfo);
++	local cmd="$1"
 +
-+	/* advance DA.Argument */
-+	memmove(&addr->s6_addr[blk_octects],
-+		&addr->s6_addr[blk_octects + fnc_octects],
-+		16 - blk_octects - fnc_octects);
-+
-+	memset(&addr->s6_addr[16 - fnc_octects], 0x00, fnc_octects);
++	if [ ! -x "$(command -v "${cmd}")" ]; then
++		echo "SKIP: Could not run test without \"${cmd}\" tool";
++		exit "${ksft_skip}"
++	fi
 +}
 +
-+static int input_action_end_core(struct sk_buff *skb,
-+				 struct seg6_local_lwt *slwt)
- {
- 	struct ipv6_sr_hdr *srh;
- 
-@@ -291,6 +384,38 @@ static int input_action_end(struct sk_buff *skb, struct seg6_local_lwt *slwt)
- 	return -EINVAL;
- }
- 
-+static int end_next_csid_core(struct sk_buff *skb, struct seg6_local_lwt *slwt)
++get_nodename()
 +{
-+	const struct seg6_flavors_info *finfo = &slwt->flv_info;
-+	struct in6_addr *daddr = &ipv6_hdr(skb)->daddr;
++	local name="$1"
 +
-+	if (seg6_next_csid_is_arg_zero(daddr, finfo))
-+		return input_action_end_core(skb, slwt);
-+
-+	/* update DA */
-+	seg6_next_csid_advance_arg(daddr, finfo);
-+
-+	seg6_lookup_nexthop(skb, NULL, 0);
-+
-+	return dst_input(skb);
++	echo "${name}-${RDMSUFF}"
 +}
 +
-+static bool seg6_next_csid_enabled(__u32 fops)
++get_rtname()
 +{
-+	return fops & BIT(SEG6_LOCAL_FLV_OP_NEXT_CSID);
++	local rtid="$1"
++
++	get_nodename "rt-${rtid}"
 +}
 +
-+/* regular endpoint function */
-+static int input_action_end(struct sk_buff *skb, struct seg6_local_lwt *slwt)
++get_hsname()
 +{
-+	const struct seg6_flavors_info *finfo = &slwt->flv_info;
++	local hsid="$1"
 +
-+	if (seg6_next_csid_enabled(finfo->flv_ops))
-+		return end_next_csid_core(skb, slwt);
-+
-+	return input_action_end_core(skb, slwt);
++	get_nodename "hs-${hsid}"
 +}
 +
- /* regular endpoint, and forward to specified nexthop */
- static int input_action_end_x(struct sk_buff *skb, struct seg6_local_lwt *slwt)
- {
-@@ -951,7 +1076,8 @@ static struct seg6_action_desc seg6_action_table[] = {
- 	{
- 		.action		= SEG6_LOCAL_ACTION_END,
- 		.attrs		= 0,
--		.optattrs	= SEG6_F_LOCAL_COUNTERS,
-+		.optattrs	= SEG6_F_LOCAL_COUNTERS |
-+				  SEG6_F_ATTR(SEG6_LOCAL_FLAVORS),
- 		.input		= input_action_end,
- 	},
- 	{
-@@ -1132,6 +1258,7 @@ static const struct nla_policy seg6_local_policy[SEG6_LOCAL_MAX + 1] = {
- 	[SEG6_LOCAL_OIF]	= { .type = NLA_U32 },
- 	[SEG6_LOCAL_BPF]	= { .type = NLA_NESTED },
- 	[SEG6_LOCAL_COUNTERS]	= { .type = NLA_NESTED },
-+	[SEG6_LOCAL_FLAVORS]	= { .type = NLA_NESTED },
- };
- 
- static int parse_nla_srh(struct nlattr **attrs, struct seg6_local_lwt *slwt,
-@@ -1551,6 +1678,192 @@ static void destroy_attr_counters(struct seg6_local_lwt *slwt)
- 	free_percpu(slwt->pcpu_counters);
- }
- 
-+static const
-+struct nla_policy seg6_local_flavors_policy[SEG6_LOCAL_FLV_MAX + 1] = {
-+	[SEG6_LOCAL_FLV_OPERATION]	= { .type = NLA_U32 },
-+	[SEG6_LOCAL_FLV_LCBLOCK_BITS]	= { .type = NLA_U8 },
-+	[SEG6_LOCAL_FLV_LCNODE_FN_BITS]	= { .type = NLA_U8 },
-+};
-+
-+/* check whether the lengths of the Locator-Block and Locator-Node Function
-+ * are compatible with the dimension of a C-SID container.
-+ */
-+static int seg6_chk_next_csid_cfg(__u8 block_len, __u8 func_len)
++__create_namespace()
 +{
-+	/* Locator-Block and Locator-Node Function cannot exceed 128 bits
-+	 * (i.e. C-SID container lenghts).
-+	 */
-+	if (next_csid_chk_cntr_bits(block_len, func_len))
-+		return -EINVAL;
++	local name="$1"
 +
-+	/* Locator-Block length must be greater than zero and evenly divisible
-+	 * by 8. There must be room for a Locator-Node Function, at least.
-+	 */
-+	if (next_csid_chk_lcblock_bits(block_len))
-+		return -EINVAL;
-+
-+	/* Locator-Node Function length must be greater than zero and evenly
-+	 * divisible by 8. There must be room for the Locator-Block.
-+	 */
-+	if (next_csid_chk_lcnode_fn_bits(func_len))
-+		return -EINVAL;
-+
-+	return 0;
++	ip netns add "${name}"
 +}
 +
-+static int seg6_parse_nla_next_csid_cfg(struct nlattr **tb,
-+					struct seg6_flavors_info *finfo,
-+					struct netlink_ext_ack *extack)
++create_router()
 +{
-+	__u8 func_len = SEG6_LOCAL_LCNODE_FN_DBITS;
-+	__u8 block_len = SEG6_LOCAL_LCBLOCK_DBITS;
-+	int rc;
++	local rtid="$1"
++	local nsname
 +
-+	if (tb[SEG6_LOCAL_FLV_LCBLOCK_BITS])
-+		block_len = nla_get_u8(tb[SEG6_LOCAL_FLV_LCBLOCK_BITS]);
++	nsname="$(get_rtname "${rtid}")"
 +
-+	if (tb[SEG6_LOCAL_FLV_LCNODE_FN_BITS])
-+		func_len = nla_get_u8(tb[SEG6_LOCAL_FLV_LCNODE_FN_BITS]);
-+
-+	rc = seg6_chk_next_csid_cfg(block_len, func_len);
-+	if (rc < 0) {
-+		NL_SET_ERR_MSG(extack,
-+			       "Invalid Locator Block/Node Function lengths");
-+		return rc;
-+	}
-+
-+	finfo->lcblock_bits = block_len;
-+	finfo->lcnode_func_bits = func_len;
-+
-+	return 0;
++	__create_namespace "${nsname}"
 +}
 +
-+static int parse_nla_flavors(struct nlattr **attrs, struct seg6_local_lwt *slwt,
-+			     struct netlink_ext_ack *extack)
++create_host()
 +{
-+	struct seg6_flavors_info *finfo = &slwt->flv_info;
-+	struct nlattr *tb[SEG6_LOCAL_FLV_MAX + 1];
-+	unsigned long fops;
-+	int rc;
++	local hsid="$1"
++	local nsname
 +
-+	rc = nla_parse_nested_deprecated(tb, SEG6_LOCAL_FLV_MAX,
-+					 attrs[SEG6_LOCAL_FLAVORS],
-+					 seg6_local_flavors_policy, NULL);
-+	if (rc < 0)
-+		return rc;
++	nsname="$(get_hsname "${hsid}")"
 +
-+	/* this attribute MUST always be present since it represents the Flavor
-+	 * operation(s) to be carried out.
-+	 */
-+	if (!tb[SEG6_LOCAL_FLV_OPERATION])
-+		return -EINVAL;
-+
-+	fops = nla_get_u32(tb[SEG6_LOCAL_FLV_OPERATION]);
-+	if (fops & ~SEG6_LOCAL_FLV_SUPP_OPS) {
-+		NL_SET_ERR_MSG(extack, "Unsupported Flavor operation(s)");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	finfo->flv_ops = fops;
-+
-+	if (seg6_next_csid_enabled(fops)) {
-+		/* Locator-Block and Locator-Node Function lengths can be
-+		 * provided by the user space. Otherwise, default values are
-+		 * applied.
-+		 */
-+		rc = seg6_parse_nla_next_csid_cfg(tb, finfo, extack);
-+		if (rc < 0)
-+			return rc;
-+	}
-+
-+	return 0;
++	__create_namespace "${nsname}"
 +}
 +
-+static int seg6_fill_nla_next_csid_cfg(struct sk_buff *skb,
-+				       struct seg6_flavors_info *finfo)
++cleanup()
 +{
-+	if (nla_put_u8(skb, SEG6_LOCAL_FLV_LCBLOCK_BITS, finfo->lcblock_bits))
-+		return -EMSGSIZE;
++	local nsname
++	local i
 +
-+	if (nla_put_u8(skb, SEG6_LOCAL_FLV_LCNODE_FN_BITS,
-+		       finfo->lcnode_func_bits))
-+		return -EMSGSIZE;
++	# destroy routers
++	for i in ${ROUTERS}; do
++		nsname="$(get_rtname "${i}")"
 +
-+	return 0;
++		ip netns del "${nsname}" &>/dev/null || true
++	done
++
++	# destroy hosts
++	for i in ${HOSTS}; do
++		nsname="$(get_hsname "${i}")"
++
++		ip netns del "${nsname}" &>/dev/null || true
++	done
++
++	# check whether the setup phase was completed successfully or not. In
++	# case of an error during the setup phase of the testing environment,
++	# the selftest is considered as "skipped".
++	if [ "${SETUP_ERR}" -ne 0 ]; then
++		echo "SKIP: Setting up the testing environment failed"
++		exit "${ksft_skip}"
++	fi
++
++	exit "${ret}"
 +}
 +
-+static int put_nla_flavors(struct sk_buff *skb, struct seg6_local_lwt *slwt)
++add_link_rt_pairs()
 +{
-+	struct seg6_flavors_info *finfo = &slwt->flv_info;
-+	__u32 fops = finfo->flv_ops;
-+	struct nlattr *nest;
-+	int rc;
++	local rt="$1"
++	local rt_neighs="$2"
++	local neigh
++	local nsname
++	local neigh_nsname
 +
-+	nest = nla_nest_start(skb, SEG6_LOCAL_FLAVORS);
-+	if (!nest)
-+		return -EMSGSIZE;
++	nsname="$(get_rtname "${rt}")"
 +
-+	if (nla_put_u32(skb, SEG6_LOCAL_FLV_OPERATION, fops)) {
-+		rc = -EMSGSIZE;
-+		goto err;
-+	}
++	for neigh in ${rt_neighs}; do
++		neigh_nsname="$(get_rtname "${neigh}")"
 +
-+	if (seg6_next_csid_enabled(fops)) {
-+		rc = seg6_fill_nla_next_csid_cfg(skb, finfo);
-+		if (rc < 0)
-+			goto err;
-+	}
-+
-+	return nla_nest_end(skb, nest);
-+
-+err:
-+	nla_nest_cancel(skb, nest);
-+	return rc;
++		ip link add "veth-rt-${rt}-${neigh}" netns "${nsname}" \
++			type veth peer name "veth-rt-${neigh}-${rt}" \
++			netns "${neigh_nsname}"
++	done
 +}
 +
-+static int seg6_cmp_nla_next_csid_cfg(struct seg6_flavors_info *finfo_a,
-+				      struct seg6_flavors_info *finfo_b)
++get_network_prefix()
 +{
-+	if (finfo_a->lcblock_bits != finfo_b->lcblock_bits)
-+		return 1;
++	local rt="$1"
++	local neigh="$2"
++	local p="${rt}"
++	local q="${neigh}"
 +
-+	if (finfo_a->lcnode_func_bits != finfo_b->lcnode_func_bits)
-+		return 1;
++	if [ "${p}" -gt "${q}" ]; then
++		p="${q}"; q="${rt}"
++	fi
 +
-+	return 0;
++	echo "${IPv6_RT_NETWORK}:${p}:${q}"
 +}
 +
-+static int cmp_nla_flavors(struct seg6_local_lwt *a, struct seg6_local_lwt *b)
++# Setup the basic networking for the routers
++setup_rt_networking()
 +{
-+	struct seg6_flavors_info *finfo_a = &a->flv_info;
-+	struct seg6_flavors_info *finfo_b = &b->flv_info;
++	local rt="$1"
++	local rt_neighs="$2"
++	local nsname
++	local net_prefix
++	local devname
++	local neigh
 +
-+	if (finfo_a->flv_ops != finfo_b->flv_ops)
-+		return 1;
++	nsname="$(get_rtname "${rt}")"
 +
-+	if (seg6_next_csid_enabled(finfo_a->flv_ops)) {
-+		if (seg6_cmp_nla_next_csid_cfg(finfo_a, finfo_b))
-+			return 1;
-+	}
++	for neigh in ${rt_neighs}; do
++		devname="veth-rt-${rt}-${neigh}"
 +
-+	return 0;
++		net_prefix="$(get_network_prefix "${rt}" "${neigh}")"
++
++		ip -netns "${nsname}" addr \
++			add "${net_prefix}::${rt}/64" dev "${devname}" nodad
++
++		ip -netns "${nsname}" link set "${devname}" up
++	done
++
++        ip -netns "${nsname}" link add "${DUMMY_DEVNAME}" type dummy
++
++        ip -netns "${nsname}" link set "${DUMMY_DEVNAME}" up
++	ip -netns "${nsname}" link set lo up
++
++	ip netns exec "${nsname}" sysctl -wq net.ipv6.conf.all.accept_dad=0
++	ip netns exec "${nsname}" sysctl -wq net.ipv6.conf.default.accept_dad=0
++	ip netns exec "${nsname}" sysctl -wq net.ipv6.conf.all.forwarding=1
++
++	ip netns exec "${nsname}" sysctl -wq net.ipv4.conf.all.rp_filter=0
++	ip netns exec "${nsname}" sysctl -wq net.ipv4.conf.default.rp_filter=0
++	ip netns exec "${nsname}" sysctl -wq net.ipv4.ip_forward=1
 +}
 +
-+static int encap_size_flavors(struct seg6_local_lwt *slwt)
++# build an ipv6 prefix/address based on the input string
++# Note that the input string does not contain ':' and '::' which are considered
++# to be implicit.
++# e.g.:
++#  - input:  fbcc00000400300
++#  - output: fbcc:0000:0400:0300:0000:0000:0000:0000
++#                                ^^^^^^^^^^^^^^^^^^^
++#                              fill the address with 0s
++build_ipv6_addr()
 +{
-+	struct seg6_flavors_info *finfo = &slwt->flv_info;
-+	int nlsize;
++	local addr="$1"
++	local out=""
++	local strlen="${#addr}"
++	local padn
++	local i
 +
-+	nlsize = nla_total_size(0) +	/* nest SEG6_LOCAL_FLAVORS */
-+		 nla_total_size(4);	/* SEG6_LOCAL_FLV_OPERATION */
++	# add ":" every 4 digits (16 bits)
++	for (( i = 0; i < strlen; i++ )); do
++		if (( i > 0 && i < 32 && (i % 4) == 0 )); then
++			out="${out}:"
++		fi
 +
-+	if (seg6_next_csid_enabled(finfo->flv_ops))
-+		nlsize += nla_total_size(1) + /* SEG6_LOCAL_FLV_LCBLOCK_BITS */
-+			  nla_total_size(1); /* SEG6_LOCAL_FLV_LCNODE_FN_BITS */
++		out="${out}${addr:$i:1}"
++	done
 +
-+	return nlsize;
++	# fill the remaining bits of the address with 0s
++	padn=$((32 - strlen))
++	for (( i = padn; i > 0; i-- )); do
++		if (( i > 0 && i < 32 && (i % 4) == 0 )); then
++			out="${out}:"
++		fi
++
++		out="${out}0"
++	done
++
++	printf "${out}"
 +}
 +
- struct seg6_action_param {
- 	int (*parse)(struct nlattr **attrs, struct seg6_local_lwt *slwt,
- 		     struct netlink_ext_ack *extack);
-@@ -1603,6 +1916,10 @@ static struct seg6_action_param seg6_action_params[SEG6_LOCAL_MAX + 1] = {
- 				    .put = put_nla_counters,
- 				    .cmp = cmp_nla_counters,
- 				    .destroy = destroy_attr_counters },
++build_csid()
++{
++	local nodeid="$1"
 +
-+	[SEG6_LOCAL_FLAVORS]	= { .parse = parse_nla_flavors,
-+				    .put = put_nla_flavors,
-+				    .cmp = cmp_nla_flavors },
- };
- 
- /* call the destroy() callback (if available) for each set attribute in
-@@ -1916,6 +2233,9 @@ static int seg6_local_get_encap_size(struct lwtunnel_state *lwt)
- 			  /* SEG6_LOCAL_CNT_ERRORS */
- 			  nla_total_size_64bit(sizeof(__u64));
- 
-+	if (attrs & SEG6_F_ATTR(SEG6_LOCAL_FLAVORS))
-+		nlsize += encap_size_flavors(slwt);
++	printf "${LCNODEFUNC_FMT}" "${nodeid}"
++}
 +
- 	return nlsize;
- }
- 
-@@ -1971,6 +2291,15 @@ int __init seg6_local_init(void)
- 	 */
- 	BUILD_BUG_ON(SEG6_LOCAL_MAX + 1 > BITS_PER_TYPE(unsigned long));
- 
-+	/* If the default NEXT-C-SID Locator-Block/Node Function lengths (in
-+	 * bits) have been changed with invalid values, kernel build stops
-+	 * here.
-+	 */
-+	BUILD_BUG_ON(next_csid_chk_cntr_bits(SEG6_LOCAL_LCBLOCK_DBITS,
-+					     SEG6_LOCAL_LCNODE_FN_DBITS));
-+	BUILD_BUG_ON(next_csid_chk_lcblock_bits(SEG6_LOCAL_LCBLOCK_DBITS));
-+	BUILD_BUG_ON(next_csid_chk_lcnode_fn_bits(SEG6_LOCAL_LCNODE_FN_DBITS));
++build_lcnode_func_prefix()
++{
++	local nodeid="$1"
++	local lcnodefunc
++	local prefix
++	local out
 +
- 	return lwtunnel_encap_add_ops(&seg6_local_ops,
- 				      LWTUNNEL_ENCAP_SEG6_LOCAL);
- }
++	lcnodefunc="$(build_csid "${nodeid}")"
++	prefix="$(build_ipv6_addr "${LCBLOCK_ADDR}${lcnodefunc}")"
++
++	out="${prefix}/${LCBLOCK_NODEFUNC_BLEN}"
++
++	echo "${out}"
++}
++
++# Setup local SIDs for an SRv6 router
++setup_rt_local_sids()
++{
++	local rt="$1"
++	local rt_neighs="$2"
++	local net_prefix
++	local devname
++	local nsname
++	local neigh
++	local lcnode_func_prefix
++	local lcblock_prefix
++
++	nsname="$(get_rtname "${rt}")"
++
++	for neigh in ${rt_neighs}; do
++		devname="veth-rt-${rt}-${neigh}"
++
++		net_prefix="$(get_network_prefix "${rt}" "${neigh}")"
++
++		# set underlay network routes for SIDs reachability
++		ip -netns "${nsname}" -6 route \
++			add "${VPN_LOCATOR_SERVICE}:${neigh}::/32" \
++			table "${LOCALSID_TABLE_ID}" \
++			via "${net_prefix}::${neigh}" dev "${devname}"
++
++		# set the underlay network for C-SIDs reachability
++		lcnode_func_prefix="$(build_lcnode_func_prefix "${neigh}")"
++
++		ip -netns "${nsname}" -6 route \
++			add "${lcnode_func_prefix}" \
++			table "${LOCALSID_TABLE_ID}" \
++			via "${net_prefix}::${neigh}" dev "${devname}"
++	done
++
++	lcnode_func_prefix="$(build_lcnode_func_prefix "${rt}")"
++
++	# enabled NEXT-C-SID SRv6 End behavior (note that "dev" is the dummy
++	# dum0 device chosen for the sake of simplicity).
++	ip -netns "${nsname}" -6 route \
++		add "${lcnode_func_prefix}" \
++		table "${LOCALSID_TABLE_ID}" \
++		encap seg6local action End flavors next-csid \
++		lblen "${LCBLOCK_BLEN}" nflen "${LCNODEFUNC_BLEN}" \
++		dev "${DUMMY_DEVNAME}"
++
++	# all SIDs for VPNs start with a common locator. Routes and SRv6
++	# Endpoint behavior instaces are grouped together in the 'localsid'
++	# table.
++	ip -netns "${nsname}" -6 rule \
++		add to "${VPN_LOCATOR_SERVICE}::/16" \
++		lookup "${LOCALSID_TABLE_ID}" prio 999
++
++	# common locator block for NEXT-C-SIDS compression mechanism.
++	lcblock_prefix="$(build_ipv6_addr "${LCBLOCK_ADDR}")"
++	ip -netns "${nsname}" -6 rule \
++		add to "${lcblock_prefix}/${LCBLOCK_BLEN}" \
++		lookup "${LOCALSID_TABLE_ID}" prio 999
++}
++
++# build and install the SRv6 policy into the ingress SRv6 router as well as the
++# decap SID in the egress one.
++# args:
++#  $1 - src host (evaluate automatically the ingress router)
++#  $2 - dst host (evaluate automatically the egress router)
++#  $3 - SRv6 routers configured for steering traffic (End behaviors)
++#  $4 - single SID or double SID
++#  $5 - traffic type (IPv6 or IPv4)
++__setup_l3vpn()
++{
++	local src="$1"
++	local dst="$2"
++	local end_rts="$3"
++	local mode="$4"
++	local traffic="$5"
++	local nsname
++	local policy
++	local container
++	local decapsid
++	local lcnfunc
++	local dt
++	local n
++	local rtsrc_nsname
++	local rtdst_nsname
++
++	rtsrc_nsname="$(get_rtname "${src}")"
++	rtdst_nsname="$(get_rtname "${dst}")"
++
++	container="${LCBLOCK_ADDR}"
++
++	# build first SID (C-SID container)
++	for n in ${end_rts}; do
++		lcnfunc="$(build_csid "${n}")"
++
++		container="${container}${lcnfunc}"
++	done
++
++	if [ "${mode}" -eq 1 ]; then
++		# single SID policy
++		dt="$(build_csid "${dst}")${DT46_FUNC}"
++		container="${container}${dt}"
++		# build the full ipv6 address for the container
++		policy="$(build_ipv6_addr "${container}")"
++
++		# build the decap SID used in the decap node
++		container="${LCBLOCK_ADDR}${dt}"
++		decapsid="$(build_ipv6_addr "${container}")"
++	else
++		# double SID policy
++		decapsid="${VPN_LOCATOR_SERVICE}:${dst}::${DT46_FUNC}"
++
++		policy="$(build_ipv6_addr "${container}"),${decapsid}"
++	fi
++
++	# apply encap policy
++	if [ "${traffic}" -eq 6 ]; then
++		ip -netns "${rtsrc_nsname}" -6 route \
++			add "${IPv6_HS_NETWORK}::${dst}" vrf "${VRF_DEVNAME}" \
++			encap seg6 mode "${HEADEND_ENCAP}" segs "${policy}" \
++			dev "${VRF_DEVNAME}"
++
++		ip -netns "${rtsrc_nsname}" -6 neigh \
++			add proxy "${IPv6_HS_NETWORK}::${dst}" \
++			dev "${RT2HS_DEVNAME}"
++	else
++		# "dev" must be different from the one where the packet is
++		# received, otherwise the proxy arp does not work.
++		ip -netns "${rtsrc_nsname}" -4 route \
++			add "${IPv4_HS_NETWORK}.${dst}" vrf "${VRF_DEVNAME}" \
++			encap seg6 mode "${HEADEND_ENCAP}" segs "${policy}" \
++			dev "${VRF_DEVNAME}"
++	fi
++
++	# apply decap
++	# Local End.DT46 behavior (decap)
++	ip -netns "${rtdst_nsname}" -6 route \
++		add "${decapsid}" \
++		table "${LOCALSID_TABLE_ID}" \
++		encap seg6local action End.DT46 vrftable "${VRF_TID}" \
++		dev "${VRF_DEVNAME}"
++}
++
++# see __setup_l3vpn()
++setup_ipv4_vpn_2sids()
++{
++	__setup_l3vpn "$1" "$2" "$3" 2 4
++}
++
++# see __setup_l3vpn()
++setup_ipv6_vpn_1sid()
++{
++	__setup_l3vpn "$1" "$2" "$3" 1 6
++}
++
++setup_hs()
++{
++	local hs="$1"
++	local rt="$2"
++	local hsname
++	local rtname
++
++	hsname="$(get_hsname "${hs}")"
++	rtname="$(get_rtname "${rt}")"
++
++	ip netns exec "${hsname}" sysctl -wq net.ipv6.conf.all.accept_dad=0
++	ip netns exec "${hsname}" sysctl -wq net.ipv6.conf.default.accept_dad=0
++
++	ip -netns "${hsname}" link add veth0 type veth \
++		peer name "${RT2HS_DEVNAME}" netns "${rtname}"
++
++	ip -netns "${hsname}" addr \
++		add "${IPv6_HS_NETWORK}::${hs}/64" dev veth0 nodad
++	ip -netns "${hsname}" addr add "${IPv4_HS_NETWORK}.${hs}/24" dev veth0
++
++	ip -netns "${hsname}" link set veth0 up
++	ip -netns "${hsname}" link set lo up
++
++	# configure the VRF on the router which is directly connected to the
++	# source host.
++	ip -netns "${rtname}" link \
++		add "${VRF_DEVNAME}" type vrf table "${VRF_TID}"
++	ip -netns "${rtname}" link set "${VRF_DEVNAME}" up
++
++	# enslave the veth interface connecting the router with the host to the
++	# VRF in the access router
++	ip -netns "${rtname}" link \
++		set "${RT2HS_DEVNAME}" master "${VRF_DEVNAME}"
++
++	# set default routes to unreachable for both ipv6 and ipv4
++	ip -netns "${rtname}" -6 route \
++		add unreachable default metric 4278198272 \
++		vrf "${VRF_DEVNAME}"
++	ip -netns "${rtname}" -4 route \
++		add unreachable default metric 4278198272 \
++		vrf "${VRF_DEVNAME}"
++
++	ip -netns "${rtname}" addr \
++		add "${IPv6_HS_NETWORK}::254/64" dev "${RT2HS_DEVNAME}" nodad
++	ip -netns "${rtname}" addr \
++		add "${IPv4_HS_NETWORK}.254/24" dev "${RT2HS_DEVNAME}"
++
++	ip -netns "${rtname}" link set "${RT2HS_DEVNAME}" up
++
++	ip netns exec "${rtname}" \
++		sysctl -wq net.ipv6.conf."${RT2HS_DEVNAME}".proxy_ndp=1
++	ip netns exec "${rtname}" \
++		sysctl -wq net.ipv4.conf."${RT2HS_DEVNAME}".proxy_arp=1
++
++	# disable the rp_filter otherwise the kernel gets confused about how
++	# to route decap ipv4 packets.
++	ip netns exec "${rtname}" \
++		sysctl -wq net.ipv4.conf."${RT2HS_DEVNAME}".rp_filter=0
++
++	ip netns exec "${rtname}" sh -c "echo 1 > /proc/sys/net/vrf/strict_mode"
++}
++
++setup()
++{
++	local i
++
++	# create routers
++	ROUTERS="1 2 3 4"; readonly ROUTERS
++	for i in ${ROUTERS}; do
++		create_router "${i}"
++	done
++
++	# create hosts
++	HOSTS="1 2"; readonly HOSTS
++	for i in ${HOSTS}; do
++		create_host "${i}"
++	done
++
++	# set up the links for connecting routers
++	add_link_rt_pairs 1 "2 3 4"
++	add_link_rt_pairs 2 "3 4"
++	add_link_rt_pairs 3 "4"
++
++	# set up the basic connectivity of routers and routes required for
++	# reachability of SIDs.
++	setup_rt_networking 1 "2 3 4"
++	setup_rt_networking 2 "1 3 4"
++	setup_rt_networking 3 "1 2 4"
++	setup_rt_networking 4 "1 2 3"
++
++	# set up the hosts connected to routers
++	setup_hs 1 1
++	setup_hs 2 2
++
++	# set up default SRv6 Endpoints (i.e. SRv6 End and SRv6 End.DT46)
++	setup_rt_local_sids 1 "2 3 4"
++	setup_rt_local_sids 2 "1 3 4"
++	setup_rt_local_sids 3 "1 2 4"
++	setup_rt_local_sids 4 "1 2 3"
++
++	# set up SRv6 Policies
++
++	# create an IPv6 VPN between hosts hs-1 and hs-2.
++	#
++	# Direction hs-1 -> hs-2
++	# - rt-1 encap (H.Encaps.Red)
++	# - rt-4 SRv6 End behavior (NEXT-C-SID flavor)
++	# - rt-3 SRv6 End behavior (NEXT-C-SID flavor)
++	# - rt-2 SRv6 End.DT46 behavior
++	setup_ipv6_vpn_1sid 1 2 "4 3"
++
++	# Direction hs2 -> hs-1
++	# - rt-2 encap (H.Encaps.Red)
++	# - rt-3 SRv6 End behavior (NEXT-C-SID flavor)
++	# - rt-4 SRv6 End behavior (NEXT-C-SID flavor)
++	# - rt-1 SRv6 End.DT46 behavior
++	setup_ipv6_vpn_1sid 2 1 "3 4"
++
++	# create an IPv4 VPN between hosts hs-1 and hs-2
++	#
++	# Direction hs-1 -> hs-2
++	# - rt-1 encap (H.Encaps.Red)
++	# - rt-3 SRv6 End behavior (NEXT-C-SID flavor)
++	# - rt-2 SRv6 End.DT46 behavior
++	setup_ipv4_vpn_2sids 1 2 "3"
++
++	# Direction hs-2 -> hs-1
++	# - rt-2 encap (H.Encaps.Red)
++	# - rt-3 SRv6 End behavior (NEXT-C-SID flavor)
++	# - rt-1 SRv6 End.DT46 behavior
++	setup_ipv4_vpn_2sids 2 1 "3"
++
++	# testing environment was set up successfully
++	SETUP_ERR=0
++}
++
++check_rt_connectivity()
++{
++	local rtsrc="$1"
++	local rtdst="$2"
++	local prefix
++	local rtsrc_nsname
++
++	rtsrc_nsname="$(get_rtname "${rtsrc}")"
++
++	prefix="$(get_network_prefix "${rtsrc}" "${rtdst}")"
++
++	ip netns exec "${rtsrc_nsname}" ping -c 1 -W "${PING_TIMEOUT_SEC}" \
++		"${prefix}::${rtdst}" >/dev/null 2>&1
++}
++
++check_and_log_rt_connectivity()
++{
++	local rtsrc="$1"
++	local rtdst="$2"
++
++	check_rt_connectivity "${rtsrc}" "${rtdst}"
++	log_test $? 0 "Routers connectivity: rt-${rtsrc} -> rt-${rtdst}"
++}
++
++check_hs_ipv6_connectivity()
++{
++	local hssrc="$1"
++	local hsdst="$2"
++	local hssrc_nsname
++
++	hssrc_nsname="$(get_hsname "${hssrc}")"
++
++	ip netns exec "${hssrc_nsname}" ping -c 1 -W "${PING_TIMEOUT_SEC}" \
++		"${IPv6_HS_NETWORK}::${hsdst}" >/dev/null 2>&1
++}
++
++check_hs_ipv4_connectivity()
++{
++	local hssrc="$1"
++	local hsdst="$2"
++	local hssrc_nsname
++
++	hssrc_nsname="$(get_hsname "${hssrc}")"
++
++	ip netns exec "${hssrc_nsname}" ping -c 1 -W "${PING_TIMEOUT_SEC}" \
++		"${IPv4_HS_NETWORK}.${hsdst}" >/dev/null 2>&1
++}
++
++check_and_log_hs2gw_connectivity()
++{
++	local hssrc="$1"
++
++	check_hs_ipv6_connectivity "${hssrc}" 254
++	log_test $? 0 "IPv6 Hosts connectivity: hs-${hssrc} -> gw"
++
++	check_hs_ipv4_connectivity "${hssrc}" 254
++	log_test $? 0 "IPv4 Hosts connectivity: hs-${hssrc} -> gw"
++}
++
++check_and_log_hs_ipv6_connectivity()
++{
++	local hssrc="$1"
++	local hsdst="$2"
++
++	check_hs_ipv6_connectivity "${hssrc}" "${hsdst}"
++	log_test $? 0 "IPv6 Hosts connectivity: hs-${hssrc} -> hs-${hsdst}"
++}
++
++check_and_log_hs_ipv4_connectivity()
++{
++	local hssrc="$1"
++	local hsdst="$2"
++
++	check_hs_ipv4_connectivity "${hssrc}" "${hsdst}"
++	log_test $? 0 "IPv4 Hosts connectivity: hs-${hssrc} -> hs-${hsdst}"
++}
++
++router_tests()
++{
++	local i
++	local j
++
++	log_section "IPv6 routers connectivity test"
++
++	for i in ${ROUTERS}; do
++		for j in ${ROUTERS}; do
++			if [ "${i}" -eq "${j}" ]; then
++				continue
++			fi
++
++			check_and_log_rt_connectivity "${i}" "${j}"
++		done
++	done
++}
++
++host2gateway_tests()
++{
++	local hs
++
++	log_section "IPv4/IPv6 connectivity test among hosts and gateways"
++
++	for hs in ${HOSTS}; do
++		check_and_log_hs2gw_connectivity "${hs}"
++	done
++}
++
++host_vpn_tests()
++{
++	log_section "SRv6 VPN connectivity test hosts (h1 <-> h2, IPv6)"
++
++	check_and_log_hs_ipv6_connectivity 1 2
++	check_and_log_hs_ipv6_connectivity 2 1
++
++	log_section "SRv6 VPN connectivity test hosts (h1 <-> h2, IPv4)"
++
++	check_and_log_hs_ipv4_connectivity 1 2
++	check_and_log_hs_ipv4_connectivity 2 1
++}
++
++__nextcsid_end_behavior_test()
++{
++	local nsname="$1"
++	local cmd="$2"
++	local blen="$3"
++	local flen="$4"
++	local layout=""
++
++	if [ "${blen}" != "d" ]; then
++		layout="${layout} lblen ${blen}"
++	fi
++
++	if [ "${flen}" != "d" ]; then
++		layout="${layout} nflen ${flen}"
++	fi
++
++	ip -netns "${nsname}" -6 route \
++		"${cmd}" "${CSID_CNTR_PREFIX}" \
++		table "${CSID_CNTR_RT_TABLE}" \
++		encap seg6local action End flavors next-csid ${layout} \
++		dev "${DUMMY_DEVNAME}" &>/dev/null
++
++	return "$?"
++}
++
++rt_x_nextcsid_end_behavior_test()
++{
++	local rt="$1"
++	local blen="$2"
++	local flen="$3"
++	local nsname
++	local ret
++
++	nsname="$(get_rtname "${rt}")"
++
++	__nextcsid_end_behavior_test "${nsname}" "add" "${blen}" "${flen}"
++	ret="$?"
++	__nextcsid_end_behavior_test "${nsname}" "del" "${blen}" "${flen}"
++
++	return "${ret}"
++}
++
++__parse_csid_container_cfg()
++{
++	local cfg="$1"
++	local index="$2"
++	local out
++
++	echo "${cfg}" | cut -d',' -f"${index}"
++}
++
++csid_container_cfg_tests()
++{
++	local valid
++	local blen
++	local flen
++	local cfg
++	local ret
++
++	log_section "C-SID Container config tests (legend: d='kernel default')"
++
++	for cfg in "${CSID_CONTAINER_CFGS[@]}"; do
++		blen="$(__parse_csid_container_cfg "${cfg}" 1)"
++		flen="$(__parse_csid_container_cfg "${cfg}" 2)"
++		valid="$(__parse_csid_container_cfg "${cfg}" 3)"
++
++		rt_x_nextcsid_end_behavior_test \
++			"${CSID_CNTR_RT_ID_TEST}" \
++			"${blen}" \
++			"${flen}"
++		ret="$?"
++
++		if [ "${valid}" == "y" ]; then
++			log_test "${ret}" 0 \
++				"Accept valid C-SID container cfg (lblen=${blen}, nflen=${flen})"
++		else
++			log_test "${ret}" 2 \
++				"Reject invalid C-SID container cfg (lblen=${blen}, nflen=${flen})"
++		fi
++	done
++}
++
++test_iproute2_supp_or_ksft_skip()
++{
++	if ! ip route help 2>&1 | grep -qo "next-csid"; then
++		echo "SKIP: Missing SRv6 NEXT-C-SID flavor support in iproute2"
++		exit "${ksft_skip}"
++	fi
++}
++
++test_dummy_dev_or_ksft_skip()
++{
++        local test_netns
++
++        test_netns="dummy-$(mktemp -u XXXXXXXX)"
++
++        if ! ip netns add "${test_netns}"; then
++                echo "SKIP: Cannot set up netns for testing dummy dev support"
++                exit "${ksft_skip}"
++        fi
++
++        modprobe dummy &>/dev/null || true
++        if ! ip -netns "${test_netns}" link \
++                add "${DUMMY_DEVNAME}" type dummy; then
++                echo "SKIP: dummy dev not supported"
++
++                ip netns del "${test_netns}"
++                exit "${ksft_skip}"
++        fi
++
++        ip netns del "${test_netns}"
++}
++
++test_vrf_or_ksft_skip()
++{
++	modprobe vrf &>/dev/null || true
++	if [ ! -e /proc/sys/net/vrf/strict_mode ]; then
++		echo "SKIP: vrf sysctl does not exist"
++		exit "${ksft_skip}"
++	fi
++}
++
++if [ "$(id -u)" -ne 0 ]; then
++	echo "SKIP: Need root privileges"
++	exit "${ksft_skip}"
++fi
++
++# required programs to carry out this selftest
++test_command_or_ksft_skip ip
++test_command_or_ksft_skip ping
++test_command_or_ksft_skip sysctl
++test_command_or_ksft_skip grep
++test_command_or_ksft_skip cut
++
++test_iproute2_supp_or_ksft_skip
++test_dummy_dev_or_ksft_skip
++test_vrf_or_ksft_skip
++
++set -e
++trap cleanup EXIT
++
++setup
++set +e
++
++csid_container_cfg_tests
++
++router_tests
++host2gateway_tests
++host_vpn_tests
++
++print_log_test_results
 -- 
 2.20.1
 
