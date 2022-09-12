@@ -2,319 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 08C125B5F49
-	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 19:28:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED5C15B5F6C
+	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 19:36:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229809AbiILR2O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Sep 2022 13:28:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36766 "EHLO
+        id S229760AbiILRgK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Sep 2022 13:36:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229813AbiILR2N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 13:28:13 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94C3822E
-        for <netdev@vger.kernel.org>; Mon, 12 Sep 2022 10:28:11 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id x1-20020a17090ab00100b001fda21bbc90so13039656pjq.3
-        for <netdev@vger.kernel.org>; Mon, 12 Sep 2022 10:28:11 -0700 (PDT)
+        with ESMTP id S229836AbiILRgH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 13:36:07 -0400
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91FA438475
+        for <netdev@vger.kernel.org>; Mon, 12 Sep 2022 10:36:03 -0700 (PDT)
+Received: by mail-qk1-x732.google.com with SMTP id o7so2889079qkj.10
+        for <netdev@vger.kernel.org>; Mon, 12 Sep 2022 10:36:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=91oC9L+UtoW1ZWkUlTRm+aOVzjaXiSmvCYM3CW0SV5A=;
-        b=DpkaFJXL4q/e0JqF78ATfIH44tH4AYQYRVnxwp3FVGChnh8eNpFBWUYA5vSmAOipXs
-         llyTVZEfdupq1a+BwJ2yoiE26U/wDX+lUhySOOJSPi3jFx4kEyuRHcSlXcwkOwD4/ohb
-         EPXq9cG7aDzb7MFtuS0rOhCz3FgOGsj7m3BnIutVG+vL0cK5cfdZlCevUJobDyhwLj3Q
-         kAVgSfyIGz14FRgZ7S4kzPGvmiXYP6Lfa/qCNuSXzFiFdnp42aT/xmR8Za30gB4HX23+
-         ehgHnx25icf77xTh5khnBVHwooFDNtApDqcZDcKwtJ7LuljSiDru/ys/KURGj51/E8/5
-         zkhA==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=++FcEJQ/W/MtAHDPHxofG8XpDMLkFGx/csr/y9/qQrQ=;
+        b=dxyUEYEoE6j0fJzqpQJrcOtGMEQO5vKH/08jqF2IQ7L5zSeMQkZtiwGR8X1nPNGJub
+         mryxt62WmGpRAJPgPzA3hptFsZSBOLXst/YifCEhudaCD6e6QZlBoQH5H1JQwAqzhz0E
+         fymaAjfE2u2jWEGnZLC364auxy6h7ZQrvFPUI5c9/NKDG7SZ2zCQyXqPBqsLfNQOJjzI
+         HwNyx69yVtCB0Czqd31eWfQGqze86IlxL2Q00vI3ukWa1Xd0fBiLmrVnAZfFLDz+nj5l
+         umxoDHYQL+og9qwgkz1i0k0ca/2oJ5RMQfiLEbJu6Fq16XPVfryXDghYFYg6KknMo7sb
+         TP8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=91oC9L+UtoW1ZWkUlTRm+aOVzjaXiSmvCYM3CW0SV5A=;
-        b=Fl6ANr5CLk2rK/r0OC52hztsy6GN3bO8gT6dQZuiH7KH3HKBEwpB6LNC8JjCrqHx99
-         jtXQmspAnyzZ4r9yTUdtz674MIXkph7X0z28GBmPHKXgmRFYbl/ijG6m4mpUe7mLL0Uz
-         c/E3vMfW3aeuyZwo9uBdpd+QighAnFQoWh87ESjZi3295IBjIel/EyHjm9ey9tMPK+jQ
-         qsAFGlFkKl31gHVpnUp8WRziiZPhIQj1fxOvTo7L7QHoRB748/iMe000V5ejryu1SCyg
-         IUvu+MZRFk+HV8Qt6KjIozmpGoPf7gtDwJcCrr0EVyfuQyvJZHIfqZPQuC1pz8hZ4qMU
-         akwA==
-X-Gm-Message-State: ACgBeo0He7KrWZ2GGhXiKKMP1cPJFt9nCB1W3wb7T53MRKeZNXeqrvVA
-        He2DqGWRk+c7SHbeb73WoMgtxg==
-X-Google-Smtp-Source: AA6agR6JVrI1vxKXP0TpK4SZRUSh6xzH/vGwaEnEjYby+4LmJniiB2X7aP7+jnaLMODaujw7gHAMFA==
-X-Received: by 2002:a17:90b:4d81:b0:202:d535:d324 with SMTP id oj1-20020a17090b4d8100b00202d535d324mr5578277pjb.133.1663003691020;
-        Mon, 12 Sep 2022 10:28:11 -0700 (PDT)
-Received: from ?IPV6:2401:4900:1c60:5362:9d7f:2354:1d0a:78e3? ([2401:4900:1c60:5362:9d7f:2354:1d0a:78e3])
-        by smtp.gmail.com with ESMTPSA id c12-20020aa7952c000000b0052e987c64efsm6012062pfp.174.2022.09.12.10.28.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 12 Sep 2022 10:28:10 -0700 (PDT)
-Message-ID: <ccd6f6c2-458d-832a-7299-d9d9ffb652a8@linaro.org>
-Date:   Mon, 12 Sep 2022 22:58:05 +0530
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=++FcEJQ/W/MtAHDPHxofG8XpDMLkFGx/csr/y9/qQrQ=;
+        b=XT5Kk7IFfSnMJwjqB1PvbIeiIkjDZWYC99NggK/Njr3itcx+1iEXmGX+bZyaVwfjso
+         +q78zGU1pHbZiUdE96AMY39vW9ygWxcSgLTJs0e2Q1DB6GvV1x90X0dYqfb1v8EqX0Zu
+         d7SbURp/50X66lGwhyqcNqHQWxBlAj33YWknaPRnBRsacHArkZ6ZKUQJY1RfBYZYJDdp
+         KPyA8IiGTp+IvzPmzeWMTEs0VxDlgRHzo1OtkeQRbA3f+epq+agSnQZyEH4AvPBudYg1
+         KZcm9kcUm1TO5PoknHVXja4oeE66/DXG3PPipHPK26QJurdwMPtqifLduCpNlqyH1+1Z
+         BXoA==
+X-Gm-Message-State: ACgBeo3jNj42klWDfPbIyIPFKiLecS0IOAbQUTeG84pMHJJh4TGr152I
+        MZruIPch/jP83+/sdELKvvcouR0xeeA=
+X-Google-Smtp-Source: AA6agR5IA8tgiuTWqWlzlxEAqol/7CtRLuVDKiXYKqxBQ0RsAPOqaykEfouAaTtLVzQxvXUF145F4g==
+X-Received: by 2002:a37:de09:0:b0:6c9:cac5:ceb7 with SMTP id h9-20020a37de09000000b006c9cac5ceb7mr19639713qkj.693.1663004162481;
+        Mon, 12 Sep 2022 10:36:02 -0700 (PDT)
+Received: from pop-os.attlocal.net ([2600:1700:65a0:ab60:db7a:361d:46fa:c628])
+        by smtp.gmail.com with ESMTPSA id f5-20020a05622a1a0500b003445bb107basm7454889qtb.75.2022.09.12.10.36.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Sep 2022 10:36:01 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Cong Wang <cong.wang@bytedance.com>,
+        Peilin Ye <peilin.ye@bytedance.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: [Patch net] tcp: read multiple skbs in tcp_read_skb()
+Date:   Mon, 12 Sep 2022 10:35:53 -0700
+Message-Id: <20220912173553.235838-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 1/4] dt-bindings: net: qcom,ethqos: Convert bindings to
- yaml
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        devicetree@vger.kernel.org
-Cc:     linux-arm-msm@vger.kernel.org, agross@kernel.org,
-        bhupesh.linux@gmail.com, linux-kernel@vger.kernel.org,
-        robh+dt@kernel.org, netdev@vger.kernel.org,
-        Bjorn Andersson <andersson@kernel.org>,
-        Rob Herring <robh@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-        David Miller <davem@davemloft.net>
-References: <20220907204924.2040384-1-bhupesh.sharma@linaro.org>
- <20220907204924.2040384-2-bhupesh.sharma@linaro.org>
- <dcf449f5-ad28-d262-98d5-72c6ba2b7aea@linaro.org>
-From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
-In-Reply-To: <dcf449f5-ad28-d262-98d5-72c6ba2b7aea@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Krzysztof,
+From: Cong Wang <cong.wang@bytedance.com>
 
-Thanks for your comments.
+Before we switched to ->read_skb(), ->read_sock() was passed with
+desc.count=1, which technically indicates we only read one skb per
+->sk_data_ready() call. However, for TCP, this is not true.
 
-On 9/8/22 8:08 PM, Krzysztof Kozlowski wrote:
-> On 07/09/2022 22:49, Bhupesh Sharma wrote:
->> Convert Qualcomm ETHQOS Ethernet devicetree binding to YAML.
->>
->> Cc: Bjorn Andersson <andersson@kernel.org>
->> Cc: Rob Herring <robh@kernel.org>
->> Cc: Vinod Koul <vkoul@kernel.org>
->> Cc: David Miller <davem@davemloft.net>
->> Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
-> 
-> Thank you for your patch. There is something to discuss/improve.
-> 
->> ---
->>   .../devicetree/bindings/net/qcom,ethqos.txt   |  66 ---------
->>   .../devicetree/bindings/net/qcom,ethqos.yaml  | 139 ++++++++++++++++++
-> 
-> You need to update maintainers - old path.
+TCP at least has sk_rcvlowat which intentionally holds skb's in
+receive queue until this watermark is reached. This means when
+->sk_data_ready() is invoked there could be multiple skb's in the
+queue, therefore we have to read multiple skbs in tcp_read_skb()
+instead of one.
 
-Sure, my bad. Will do in v2.
+Fixes: 965b57b469a5 ("net: Introduce a new proto_ops ->read_skb()")
+Reported-by: Peilin Ye <peilin.ye@bytedance.com>
+Cc: John Fastabend <john.fastabend@gmail.com>
+Cc: Jakub Sitnicki <jakub@cloudflare.com>
+Cc: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+---
+ net/ipv4/tcp.c | 29 +++++++++++++++++++----------
+ 1 file changed, 19 insertions(+), 10 deletions(-)
 
->>   2 files changed, 139 insertions(+), 66 deletions(-)
->>   delete mode 100644 Documentation/devicetree/bindings/net/qcom,ethqos.txt
->>   create mode 100644 Documentation/devicetree/bindings/net/qcom,ethqos.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/net/qcom,ethqos.txt b/Documentation/devicetree/bindings/net/qcom,ethqos.txt
->> deleted file mode 100644
->> index 1f5746849a71..000000000000
->> --- a/Documentation/devicetree/bindings/net/qcom,ethqos.txt
->> +++ /dev/null
->> @@ -1,66 +0,0 @@
->> -Qualcomm Ethernet ETHQOS device
->> -
->> -This documents dwmmac based ethernet device which supports Gigabit
->> -ethernet for version v2.3.0 onwards.
->> -
->> -This device has following properties:
->> -
->> -Required properties:
->> -
->> -- compatible: Should be one of:
->> -		"qcom,qcs404-ethqos"
->> -		"qcom,sm8150-ethqos"
->> -
->> -- reg: Address and length of the register set for the device
->> -
->> -- reg-names: Should contain register names "stmmaceth", "rgmii"
->> -
->> -- clocks: Should contain phandle to clocks
->> -
->> -- clock-names: Should contain clock names "stmmaceth", "pclk",
->> -		"ptp_ref", "rgmii"
->> -
->> -- interrupts: Should contain phandle to interrupts
->> -
->> -- interrupt-names: Should contain interrupt names "macirq", "eth_lpi"
->> -
->> -Rest of the properties are defined in stmmac.txt file in same directory
->> -
->> -
->> -Example:
->> -
->> -ethernet: ethernet@7a80000 {
->> -	compatible = "qcom,qcs404-ethqos";
->> -	reg = <0x07a80000 0x10000>,
->> -		<0x07a96000 0x100>;
->> -	reg-names = "stmmaceth", "rgmii";
->> -	clock-names = "stmmaceth", "pclk", "ptp_ref", "rgmii";
->> -	clocks = <&gcc GCC_ETH_AXI_CLK>,
->> -		<&gcc GCC_ETH_SLAVE_AHB_CLK>,
->> -		<&gcc GCC_ETH_PTP_CLK>,
->> -		<&gcc GCC_ETH_RGMII_CLK>;
->> -	interrupts = <GIC_SPI 56 IRQ_TYPE_LEVEL_HIGH>,
->> -			<GIC_SPI 55 IRQ_TYPE_LEVEL_HIGH>;
->> -	interrupt-names = "macirq", "eth_lpi";
->> -	snps,reset-gpio = <&tlmm 60 GPIO_ACTIVE_LOW>;
->> -	snps,reset-active-low;
->> -
->> -	snps,txpbl = <8>;
->> -	snps,rxpbl = <2>;
->> -	snps,aal;
->> -	snps,tso;
->> -
->> -	phy-handle = <&phy1>;
->> -	phy-mode = "rgmii";
->> -
->> -	mdio {
->> -		#address-cells = <0x1>;
->> -		#size-cells = <0x0>;
->> -		compatible = "snps,dwmac-mdio";
->> -		phy1: phy@4 {
->> -			device_type = "ethernet-phy";
->> -			reg = <0x4>;
->> -		};
->> -	};
->> -
->> -};
->> diff --git a/Documentation/devicetree/bindings/net/qcom,ethqos.yaml b/Documentation/devicetree/bindings/net/qcom,ethqos.yaml
->> new file mode 100644
->> index 000000000000..f05df9b0d106
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/net/qcom,ethqos.yaml
->> @@ -0,0 +1,139 @@
->> +# SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/net/qcom,ethqos.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Qualcomm Ethernet ETHQOS device
->> +
->> +maintainers:
->> +  - Bhupesh Sharma <bhupesh.sharma@linaro.org>
->> +
->> +description:
->> +  This binding describes the dwmmac based Qualcomm ethernet devices which
->> +  support Gigabit ethernet (version v2.3.0 onwards).
->> +
->> +  So, this file documents platform glue layer for dwmmac stmmac based Qualcomm
->> +  ethernet devices.
->> +
->> +allOf:
->> +  - $ref: "snps,dwmac.yaml#"
-> 
-> No need for quotes.
-
-Ok.
-
->> +
->> +properties:
->> +  compatible:
->> +    enum:
->> +      - qcom,qcs404-ethqos
->> +      - qcom,sm8150-ethqos
->> +
->> +  reg: true
-> 
-> I think both devices use two reg spaces.
-
-On this platform the two reg spaces are 64-bit, whereas for other
-platforms based on dwmmac, for e.g. stm32 have 32-bit address space.
-
->> +
->> +  reg-names:
->> +    minItems: 1
-> 
-> Why allowing only one item?
-
-Ok, let me remove this in v2.
-
->> +    items:
->> +      - const: stmmaceth
->> +      - const: rgmii
->> +
->> +  interrupts: true
-> 
-> This should be specific/fixed.
-> 
->> +
->> +  interrupt-names: true
-> 
-> This should be specific/fixed.
-
-These are same as in $ref: "snps,dwmac.yaml#", so
-do we really need to specify them here? I remember on the sdhci-msm
-YAML patch review, Rob mentioned that we should just set the property to 
-true, in such cases.
-
-Am I missing something here?
-
->> +
->> +  clocks:
->> +    minItems: 1
->> +    maxItems: 4
-> 
-> Why such flexibility?
-
-Ok, let me just keep 'maxItems: 4' here for now.
-
->> +
->> +  clock-names:
->> +    minItems: 1
->> +    items:
->> +      - const: stmmaceth
->> +      - const: pclk
->> +      - const: ptp_ref
->> +      - const: rgmii
->> +
->> +  iommus:
->> +    minItems: 1
->> +    maxItems: 2
-> 
-> Aren't we using only one MMU?
-
-It was just for future compatibility, but I get your point.
-Let me keep the 'maxItems: 1' here for now.
-
->> +
->> +  mdio: true
->> +
->> +  phy-handle: true
->> +
->> +  phy-mode: true
->> +
->> +  snps,reset-gpio: true
->> +
->> +  snps,tso:
->> +    $ref: /schemas/types.yaml#/definitions/flag
->> +    description:
->> +      Enables the TSO feature otherwise it will be managed by MAC HW capability register.
->> +
->> +  power-domains: true
->> +
->> +  resets: true
->> +
->> +  rx-fifo-depth: true
->> +
->> +  tx-fifo-depth: true
-> 
-> You do not list all these properties, because you use
-> unevaluatedProperties. Drop all of these "xxx :true".
-
-Same query as above. May be I am missing something here.
-
->> +
->> +required:
->> +  - compatible
->> +  - clocks
->> +  - clock-names
-
-Thanks,
-Bhupesh
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 3488388eea5d..e373dde1f46f 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -1761,19 +1761,28 @@ int tcp_read_skb(struct sock *sk, skb_read_actor_t recv_actor)
+ 	if (sk->sk_state == TCP_LISTEN)
+ 		return -ENOTCONN;
+ 
+-	skb = tcp_recv_skb(sk, seq, &offset);
+-	if (!skb)
+-		return 0;
++	while ((skb = tcp_recv_skb(sk, seq, &offset)) != NULL) {
++		u8 tcp_flags;
++		int used;
+ 
+-	__skb_unlink(skb, &sk->sk_receive_queue);
+-	WARN_ON_ONCE(!skb_set_owner_sk_safe(skb, sk));
+-	copied = recv_actor(sk, skb);
+-	if (copied >= 0) {
+-		seq += copied;
+-		if (TCP_SKB_CB(skb)->tcp_flags & TCPHDR_FIN)
++		__skb_unlink(skb, &sk->sk_receive_queue);
++		WARN_ON_ONCE(!skb_set_owner_sk_safe(skb, sk));
++		tcp_flags = TCP_SKB_CB(skb)->tcp_flags;
++		used = recv_actor(sk, skb);
++		consume_skb(skb);
++		if (used < 0) {
++			if (!copied)
++				copied = used;
++			break;
++		}
++		seq += used;
++		copied += used;
++
++		if (tcp_flags & TCPHDR_FIN) {
+ 			++seq;
++			break;
++		}
+ 	}
+-	consume_skb(skb);
+ 	WRITE_ONCE(tp->copied_seq, seq);
+ 
+ 	tcp_rcv_space_adjust(sk);
+-- 
+2.34.1
 
