@@ -2,56 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D00065B533B
-	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 06:27:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 058FB5B535B
+	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 07:16:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229549AbiILE1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Sep 2022 00:27:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56358 "EHLO
+        id S229512AbiILFPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Sep 2022 01:15:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229542AbiILE1f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 00:27:35 -0400
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CAE91CB0D
-        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 21:27:33 -0700 (PDT)
-Received: by mail-il1-f199.google.com with SMTP id s15-20020a056e021a0f00b002f1760d1437so5600390ild.1
-        for <netdev@vger.kernel.org>; Sun, 11 Sep 2022 21:27:33 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=16yC2ygk9mZoAXYPBA0Bif3TAfj/BVSlCgkYb6seZeU=;
-        b=ud66DCssMj7J8j0BT7u/EWfL9XW7mA/Mxlr56Sz/xq7QY1OtfVuqNRlYcTcDRBBv2O
-         VHrDAYTEn21aIZEDbBSu7Yqyxi18UbiFE47TFyXRMpt5nNeSX0nQDjcWT8ZO98OBR89D
-         CyCcBE/paq9v3XJH9Mf2zm/oR3e86aStL2UMXNJpu2fscrRzo63aLmTpBrqw4fmt83rj
-         820GaMm2uW3mpyb2O3vdpdwKUZ+WSwh2eCo+pgXqScohLQMYSUYxNBj5TGkcNLZ8Qfdg
-         OSpKlYwPh37HHabXYONo/jgtK1JR4xWK14GaJd6I56NyExwBGqHWje2LkSHoQmvtUhAk
-         2giw==
-X-Gm-Message-State: ACgBeo0OS9H4zgDXYJjwV+ABn8sAdtbmJ391OoWWDo9szH4UsFfkxA4E
-        0QR5t1JuCsi8OaNr+gYzF5aGpgqGOKHIcFjoLWXojUnKHtVB
-X-Google-Smtp-Source: AA6agR6Ml96L2V6wdj/4IvzG8ov9MQiDcjCkGDfGFDH3A20lTENPH8EEeIAuxui69fo0IRwAtaY33G8Th6evr85SbIMBxTpFKYNZ
+        with ESMTP id S229456AbiILFPf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 01:15:35 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 513D517050;
+        Sun, 11 Sep 2022 22:15:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1662959731; x=1694495731;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=kHjZUGKOIELCEpR9rLYYd64wZk3rM2bDxxUENZDLGa4=;
+  b=SCpsh/++VumAdEK/ZbjmfxHRsVWzZngCL4Tb56EUqx8t2XoriRLpdTCk
+   eH9+SneNJwf3hM+JjHNdnSqr3qw1HZsEIRTTruLL1ACC1mYxIIAQC7L13
+   ZS1w4qqGGXP+RKMQ3Pq58+5y9kqvT26eiwnGv7rK9mlAxQRg0f16mfym9
+   5G5kAeDXFWaoP3PFfnt/SdkQyCuyH8q1okVkXBq/p0Q+rSbZuZWrwL2W/
+   cUG2riX2Dtt0qL728QQhJT78w4lMyFo/QIMGiBeVOiOWyDVpDU4v+r5rW
+   Isn3o13UZGmNhEcckXFfUrGwEUmA2S1DQh0F9ek6LaHY/Y3MfXhw1u1Jl
+   w==;
+X-IronPort-AV: E=Sophos;i="5.93,308,1654585200"; 
+   d="scan'208";a="176642009"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Sep 2022 22:15:28 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Sun, 11 Sep 2022 22:15:25 -0700
+Received: from che-lt-i67786lx.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Sun, 11 Sep 2022 22:15:21 -0700
+From:   Rakesh Sankaranarayanan <rakesh.sankaranarayanan@microchip.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
+        <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <olteanv@gmail.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <arun.ramadoss@microchip.com>
+Subject: [Patch net] net: dsa: microchip: lan937x: fix maximum frame length check
+Date:   Mon, 12 Sep 2022 10:42:28 +0530
+Message-ID: <20220912051228.1306074-1-rakesh.sankaranarayanan@microchip.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1c4a:b0:2ed:c3de:c7c7 with SMTP id
- d10-20020a056e021c4a00b002edc3dec7c7mr9618188ilg.261.1662956852834; Sun, 11
- Sep 2022 21:27:32 -0700 (PDT)
-Date:   Sun, 11 Sep 2022 21:27:32 -0700
-In-Reply-To: <000000000000f537cc05ddef88db@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000007d793405e87350df@google.com>
-Subject: Re: [syzbot] BUG: Bad page map (5)
-From:   syzbot <syzbot+915f3e317adb0e85835f@syzkaller.appspotmail.com>
-To:     akpm@linux-foundation.org, andrii@kernel.org, ast@kernel.org,
-        bigeasy@linutronix.de, bpf@vger.kernel.org, brauner@kernel.org,
-        daniel@iogearbox.net, david@redhat.com, ebiederm@xmission.com,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org, luto@kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,50 +62,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+Maximum frame length check is enabled in lan937x switch on POR, But it
+is found to be disabled on driver during port setup operation. Due to
+this, packets are not dropped when transmitted with greater than configured
+value. For testing, setup made for lan1->lan2 transmission and configured
+lan1 interface with a frame length (less than 1500 as mentioned in
+documentation) and transmitted packets with greater than configured value.
+Expected no packets at lan2 end, but packets observed at lan2.
 
-HEAD commit:    e47eb90a0a9a Add linux-next specific files for 20220901
-git tree:       linux-next
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=17330430880000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=7933882276523081
-dashboard link: https://syzkaller.appspot.com/bug?extid=915f3e317adb0e85835f
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13397b77080000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1793564f080000
+Based on the documentation, packets should get discarded if the actual
+packet length doesn't match the frame length configured. Frame length check
+should be disabled only for cascaded ports due to tailtags.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+915f3e317adb0e85835f@syzkaller.appspotmail.com
+This feature was disabled on ksz9477 series due to ptp issue, which is
+not in lan937x series. But since lan937x took ksz9477 as base, frame
+length check disabled here as well. Patch added to remove this portion
+from port setup so that maximum frame length check will be active for
+normal ports.
 
-BUG: Bad page map in process syz-executor198  pte:8000000071c00227 pmd:74b30067
-addr:0000000020563000 vm_flags:08100077 anon_vma:ffff8880547d2200 mapping:0000000000000000 index:20563
-file:(null) fault:0x0 mmap:0x0 read_folio:0x0
-CPU: 1 PID: 3614 Comm: syz-executor198 Not tainted 6.0.0-rc3-next-20220901-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 08/26/2022
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_bad_pte.cold+0x2a7/0x2d0 mm/memory.c:565
- vm_normal_page+0x10c/0x2a0 mm/memory.c:636
- hpage_collapse_scan_pmd+0x729/0x1da0 mm/khugepaged.c:1199
- madvise_collapse+0x481/0x910 mm/khugepaged.c:2433
- madvise_vma_behavior+0xd0a/0x1cc0 mm/madvise.c:1062
- madvise_walk_vmas+0x1c7/0x2b0 mm/madvise.c:1236
- do_madvise.part.0+0x24a/0x340 mm/madvise.c:1415
- do_madvise mm/madvise.c:1428 [inline]
- __do_sys_madvise mm/madvise.c:1428 [inline]
- __se_sys_madvise mm/madvise.c:1426 [inline]
- __x64_sys_madvise+0x113/0x150 mm/madvise.c:1426
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f770ba87929
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 11 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f770ba18308 EFLAGS: 00000246 ORIG_RAX: 000000000000001c
-RAX: ffffffffffffffda RBX: 00007f770bb0f3f8 RCX: 00007f770ba87929
-RDX: 0000000000000019 RSI: 0000000000600003 RDI: 0000000020000000
-RBP: 00007f770bb0f3f0 R08: 00007f770ba18700 R09: 0000000000000000
-R10: 00007f770ba18700 R11: 0000000000000246 R12: 00007f770bb0f3fc
-R13: 00007ffc2d8b62ef R14: 00007f770ba18400 R15: 0000000000022000
- </TASK>
+Fixes: 55ab6ffaf378 ("net: dsa: microchip: add DSA support for microchip LAN937x")
+Signed-off-by: Rakesh Sankaranarayanan <rakesh.sankaranarayanan@microchip.com>
+---
+ drivers/net/dsa/microchip/lan937x_main.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
+index 4867aa62dd4c..7d06488d1eea 100644
+--- a/drivers/net/dsa/microchip/lan937x_main.c
++++ b/drivers/net/dsa/microchip/lan937x_main.c
+@@ -296,10 +296,6 @@ void lan937x_port_setup(struct ksz_device *dev, int port, bool cpu_port)
+ 		lan937x_port_cfg(dev, port, REG_PORT_CTRL_0,
+ 				 PORT_TAIL_TAG_ENABLE, true);
+ 
+-	/* disable frame check length field */
+-	lan937x_port_cfg(dev, port, REG_PORT_MAC_CTRL_0, PORT_CHECK_LENGTH,
+-			 false);
+-
+ 	/* set back pressure for half duplex */
+ 	lan937x_port_cfg(dev, port, REG_PORT_MAC_CTRL_1, PORT_BACK_PRESSURE,
+ 			 true);
+-- 
+2.34.1
 
