@@ -2,117 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D22B5B6001
-	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 20:13:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 169725B6008
+	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 20:14:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230081AbiILSNT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Sep 2022 14:13:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35308 "EHLO
+        id S230034AbiILSOt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Sep 2022 14:14:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230034AbiILSNQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 14:13:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 165D841D27
-        for <netdev@vger.kernel.org>; Mon, 12 Sep 2022 11:13:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1663006392;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=MIivuanKSjygaobAWTqz6Vlrz5BF6yE307kFzPCTliY=;
-        b=KhwxpNx5B3Ye2r8CCZQtWpI8BKNK6eFzYLr0q5HatB3YxE21/nwiqSIOXD4+3dVqXU6IeM
-        NqFCw05NnNP3n4xdm8t1Z/CCcAc1140aYszZGQHoSRH9sJHeBvk42lpjz1NlzOfDLjBAW6
-        ZbHNM6i9y6lcIrildlvF7jJo445MYaU=
-Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
- [209.85.167.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-361-uckVkaGCOSe7t1Cu3OZW1Q-1; Mon, 12 Sep 2022 14:13:11 -0400
-X-MC-Unique: uckVkaGCOSe7t1Cu3OZW1Q-1
-Received: by mail-lf1-f72.google.com with SMTP id a9-20020a19f809000000b00497d7267c2cso3119603lff.20
-        for <netdev@vger.kernel.org>; Mon, 12 Sep 2022 11:13:11 -0700 (PDT)
+        with ESMTP id S230022AbiILSOr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 14:14:47 -0400
+Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B2D76271;
+        Mon, 12 Sep 2022 11:14:46 -0700 (PDT)
+Received: by mail-qk1-x733.google.com with SMTP id u28so3720155qku.2;
+        Mon, 12 Sep 2022 11:14:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=YPKBe9B3XbC8RUfPOGArlb9dr+0GqBtfH24k5Otusrk=;
+        b=YacZ7pCFkqrvZCQtCIGbDt2MYK3i+sd3xi1qTDTf1RqY9UYfccxhJQwuo4vjytaVrV
+         LvCX0WexjcADJKv1qBmMPN/ovyIa+1a5ZV13RyU452y2Rt7Jh8lM24X5lmw701OWu1hU
+         P21rekXqi5mPPJWZ1Emm/j4CYCwUSVXdIzHVELNE4vT/TUrKmW9Hvxu69GESQ2rK3jsO
+         eaMp4Yo8i5cPA1GX+OFYToufY0+7aWTdgpnr0ALI3B+vUg7jgXHVzB1Zf81gry1D8YPH
+         MJ9NK5UXiSgdO7gj9jvgTPBxwTIHMZbOXFP68b6QZhK7o3hDKKUNptDkh2Vjcxrpo5Vn
+         5WAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=MIivuanKSjygaobAWTqz6Vlrz5BF6yE307kFzPCTliY=;
-        b=QwBHnFsiiGWKI41PoArJWYIYzTWtRDCadDAFLxjelaTv1aAMRVyrQ2Zb84zc2w28tk
-         9ZvLcmGH+UhV2S5p4IL8fL9pay1GkvGVxKVd79oxYhKmbw5v8+k+1btr40EGifn3ZBKe
-         aEROPiWzncittHr8DoCX7h1vTX65cwmqa/25Agft7XhitlVxSHiMTXG1X3D8QQaqx/yF
-         wsNV7mp3ytrDP/+qlYfRjCEN4oJpH86zHaz1qDkDEknZk4nsAqPEfeoU2PPyxJl6VWvR
-         86q7krKyFulvP/uO7b9bmCEXt9PU67J9kUHK0HRvQhcTz3N/hA0+QJhH1t+n9YqbZwLy
-         PUGA==
-X-Gm-Message-State: ACgBeo2rEPIK+pZCSV39XJI4ZJke+SK0j2suNODUb4lD+Swjo7BtLkR8
-        NM+LnMZQF8gTq1N/7bs2cSjgw4LGUl+2zQnOJjW9cnItvpTUp34NMNmxSdikf5jRyRFbLq+PFxt
-        1MySxwqKHzgRmuvlLPbLbRpeM6aaR96w2
-X-Received: by 2002:a05:6512:3b1e:b0:49b:49d9:cb9e with SMTP id f30-20020a0565123b1e00b0049b49d9cb9emr877197lfv.201.1663006390220;
-        Mon, 12 Sep 2022 11:13:10 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5ppAN5/qdHGxQeudg4Zh5HihxK1wLBPBp6mq9A3a1ed9G1ccE8gIbz65FRZyZtWK+AopezeLNQh/bU8TMuMvk=
-X-Received: by 2002:a05:6512:3b1e:b0:49b:49d9:cb9e with SMTP id
- f30-20020a0565123b1e00b0049b49d9cb9emr877188lfv.201.1663006389976; Mon, 12
- Sep 2022 11:13:09 -0700 (PDT)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=YPKBe9B3XbC8RUfPOGArlb9dr+0GqBtfH24k5Otusrk=;
+        b=zGTfv8dwjR//+61/3e4Zf/99Q+ZLuFGSlBhmGg4VtBaNpO/u+moHZGarIoGzwPbiEZ
+         qbgptA8XiYdInh5nV6tc4om424rr2a61CjJes51hd3reNIATMMfYD+S6XyiFwFflpk3g
+         O1JT2v2d0wyiKVEJGX6x23CBCfifqrr7FoHjr1OGTxzaLHtairaBlsloEjHO/09u5Lc4
+         Dy3CR+5ACo74wE6FE5gxjIJ5mqzAp945KtVGsDQZnsTc3v96ciQe9Ek+Sr+gS8AzcsIb
+         /Vf9/2Z7tDZzFA12GarAJ7cN3HH7m+A+ZXwW5hBEVDLb+ZFTs6aFjm8+W2ypw9o8GzQM
+         JWVA==
+X-Gm-Message-State: ACgBeo0ICPVOkd5shmFUptuKBoECMWyYCml9Rhnl8o9m6NPU+pON8TNJ
+        JDkmFf71+WFXCtrQEq4SX3o=
+X-Google-Smtp-Source: AA6agR7c8yiYGI7DfCu1B8qVctmxFMSXhsf+Q5RWzOlwmH2G0Mg5/eO01vwQ5HjoS3ZQmqA1jtGMaw==
+X-Received: by 2002:a05:620a:d8c:b0:6a7:91a4:2669 with SMTP id q12-20020a05620a0d8c00b006a791a42669mr20165762qkl.269.1663006485451;
+        Mon, 12 Sep 2022 11:14:45 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id d5-20020a05622a15c500b0035bb6298526sm2342497qty.17.2022.09.12.11.14.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 12 Sep 2022 11:14:44 -0700 (PDT)
+Message-ID: <2380c655-a6ba-7cdb-06d1-9c7856ff6cce@gmail.com>
+Date:   Mon, 12 Sep 2022 11:14:42 -0700
 MIME-Version: 1.0
-References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
- <YxdKiUzlfpHs3h3q@fedora> <Yv5PFz1YrSk8jxzY@bullseye> <20220908143652.tfyjjx2z6in6v66c@sgarzare-redhat>
- <YxuCVfFcRdWHeeh8@bullseye>
-In-Reply-To: <YxuCVfFcRdWHeeh8@bullseye>
-From:   Stefano Garzarella <sgarzare@redhat.com>
-Date:   Mon, 12 Sep 2022 20:12:58 +0200
-Message-ID: <CAGxU2F5HG_UouKzJNuvfeCASJ4j84qPY9-7-yFUpEtAJQSoxJg@mail.gmail.com>
-Subject: Re: Call to discuss vsock netdev/sk_buff [was Re: [PATCH 0/6]
- virtio/vsock: introduce dgrams, sk_buff, and qdisc]
-To:     Bobby Eshleman <bobbyeshleman@gmail.com>
-Cc:     Dexuan Cui <decui@microsoft.com>, Bryan Tan <bryantan@vmware.com>,
-        Vishnu Dasa <vdasa@vmware.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Bobby Eshleman <bobby.eshleman@gmail.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] net: broadcom: bcm4908enet: add platform_get_irq_byname
+ error checking
+Content-Language: en-US
+To:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Yu Zhe <yuzhe@nfschina.com>
+Cc:     rafal@milecki.pl, bcm-kernel-feedback-list@broadcom.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        liqiong@nfschina.com
+References: <20220909062545.16696-1-yuzhe@nfschina.com>
+ <Yx8YDUaxXBEFYyON@kadam>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <Yx8YDUaxXBEFYyON@kadam>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 9, 2022 at 8:13 PM Bobby Eshleman <bobbyeshleman@gmail.com> wrote:
->
-> Hey Stefano, thanks for sending this out.
->
-> On Thu, Sep 08, 2022 at 04:36:52PM +0200, Stefano Garzarella wrote:
-> >
-> > Looking better at the KVM forum sched, I found 1h slot for Sep 15 at 16:30
-> > UTC.
-> >
-> > Could this work for you?
->
-> Unfortunately, I can't make this time slot.
+On 9/12/22 04:29, Dan Carpenter wrote:
+> On Fri, Sep 09, 2022 at 02:25:45PM +0800, Yu Zhe wrote:
+>> The platform_get_irq_byname() function returns negative error codes on error,
+>> check it.
+>>
+>> Signed-off-by: Yu Zhe <yuzhe@nfschina.com>
+>> ---
+>>   drivers/net/ethernet/broadcom/bcm4908_enet.c | 2 ++
+>>   1 file changed, 2 insertions(+)
+>>
+>> diff --git a/drivers/net/ethernet/broadcom/bcm4908_enet.c b/drivers/net/ethernet/broadcom/bcm4908_enet.c
+>> index c131d8118489..d985056db6c2 100644
+>> --- a/drivers/net/ethernet/broadcom/bcm4908_enet.c
+>> +++ b/drivers/net/ethernet/broadcom/bcm4908_enet.c
+>> @@ -705,6 +705,8 @@ static int bcm4908_enet_probe(struct platform_device *pdev)
+>>   		return netdev->irq;
+>>   
+>>   	enet->irq_tx = platform_get_irq_byname(pdev, "tx");
+>> +	if (enet->irq_tx < 0)
+>> +		return enet->irq_tx;
+>>   
+> 
+> If you read the driver, then you will see that this is deliberate.
+> Search for irq_tx and read the comments.  I'm not a subsystem expert so
+> I don't know if this an ideal way to write the code, but it's done
+> deliberately so please don't change it unless you can test it.
 
-No problem at all!
+Yup, the transmit interrupt is deemed optional, or at least was up to 
+some point during the driver development. There is however a worthy bug 
+you could fix:
 
->
-> My schedule also opens up a lot the week of the 26th, especially between
-> 16:00 and 19:00 UTC, as well as after 22:00 UTC.
+   static int bcm4908_enet_stop(struct net_device *netdev)
+   {
+           struct bcm4908_enet *enet = netdev_priv(netdev);
+           struct bcm4908_enet_dma_ring *tx_ring = &enet->tx_ring;
+           struct bcm4908_enet_dma_ring *rx_ring = &enet->rx_ring;
 
-Great, that week works for me too.
-What about Sep 27 @ 16:00 UTC?
+           netif_stop_queue(netdev);
+           netif_carrier_off(netdev);
+           napi_disable(&rx_ring->napi);
+           napi_disable(&tx_ring->napi);
 
-Thanks,
-Stefano
+           bcm4908_enet_dma_rx_ring_disable(enet, &enet->rx_ring);
+           bcm4908_enet_dma_tx_ring_disable(enet, &enet->tx_ring);
 
+           bcm4908_enet_dma_uninit(enet);
+
+           free_irq(enet->irq_tx, enet);
+
+We might attempt to free an invalid interrupt here ^^
+
+           free_irq(enet->netdev->irq, enet);
+
+           return 0;
+-- 
+Florian
