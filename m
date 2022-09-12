@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B7D95B54F2
-	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 09:02:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D50055B54F0
+	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 09:02:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229991AbiILHCL convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 12 Sep 2022 03:02:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36948 "EHLO
+        id S229891AbiILHB7 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 12 Sep 2022 03:01:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229805AbiILHB7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 03:01:59 -0400
+        with ESMTP id S229815AbiILHBz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 03:01:55 -0400
 Received: from de-smtp-delivery-113.mimecast.com (de-smtp-delivery-113.mimecast.com [194.104.111.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D05A824BE0
-        for <netdev@vger.kernel.org>; Mon, 12 Sep 2022 00:01:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC20824965
+        for <netdev@vger.kernel.org>; Mon, 12 Sep 2022 00:01:52 -0700 (PDT)
 Received: from CHE01-GV0-obe.outbound.protection.outlook.com
- (mail-gv0che01lp2041.outbound.protection.outlook.com [104.47.22.41]) by
+ (mail-gv0che01lp2048.outbound.protection.outlook.com [104.47.22.48]) by
  relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- de-mta-32-r2zqvNjcMfKchLRYGNdouQ-3; Mon, 12 Sep 2022 09:01:51 +0200
-X-MC-Unique: r2zqvNjcMfKchLRYGNdouQ-3
+ de-mta-36-AoWTGfeNMCqUnBSmYmrIFg-1; Mon, 12 Sep 2022 09:01:50 +0200
+X-MC-Unique: AoWTGfeNMCqUnBSmYmrIFg-1
 Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:2e::8) by
  ZR0P278MB0744.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:43::5) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
@@ -40,63 +40,63 @@ To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
         Guenter Roeck <linux@roeck-us.net>,
         "Andrew Lunn" <andrew@lunn.ch>
 CC:     Francesco Dolcini <francesco.dolcini@toradex.com>
-Subject: [PATCH net 1/2] Revert "fec: Restart PPS after link state change"
-Date:   Mon, 12 Sep 2022 09:01:42 +0200
-Message-ID: <20220912070143.98153-2-francesco.dolcini@toradex.com>
+Subject: [PATCH net 2/2] Revert "net: fec: Use a spinlock to guard `fep->ptp_clk_on`"
+Date:   Mon, 12 Sep 2022 09:01:43 +0200
+Message-ID: <20220912070143.98153-3-francesco.dolcini@toradex.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220912070143.98153-1-francesco.dolcini@toradex.com>
 References: <20220912070143.98153-1-francesco.dolcini@toradex.com>
-X-ClientProxiedBy: MR1P264CA0204.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:501:57::20) To ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+X-ClientProxiedBy: MR1P264CA0055.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:501:3e::16) To ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
  (2603:10a6:910:2e::8)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: ZRAP278MB0495:EE_|ZR0P278MB0744:EE_
-X-MS-Office365-Filtering-Correlation-Id: e5ba9e4a-cc77-4359-5fa1-08da948ca8d0
+X-MS-Office365-Filtering-Correlation-Id: 8214c663-db57-47a9-5fa1-08da948ca8d0
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0
-X-Microsoft-Antispam-Message-Info: rou6ghUsd9tWB0PYsVf5JRgfkDqTI7f1uZjAEoKsd0iTjpVFMRRYVCdWgI+BhCQegmPBnBXLtkd0s5nzjuSSQQZuU+B3VWzSqUMExNUooJHE7t8Gs7GYuyzvSdOKyK38IncXjnxkCHzhkvZawe0XI4N906i3h9RL3oaCA6o8O0EZV/ju+F/hSQxEfPnbcXnC6AC+wApYccboVKWdcN0MFu4b7hWpeu96LvlO3Je8dNnDGagpSYz3MC35PJMifNyCSYz3LWCNT03JVshF7kKWY/zqYJk0boXYJakPKL25JvImtCA93coTQs5kBobGNHyzWjjzJXjIPiZPjKi8nVoMhNILu77Uq/3nosDFnBA8+SaffjOmFozb4KCPPPlGmPZ3J7FURmXzE/ztPKHf4ETX+YfN0dACReEFDdPLOdv/a35392GlQU04UaK5cesXHUQ9/8qnt6NlWVBQ3yWgNxmDgSGYOg/CMkQa3irRMChTqJ1Uwlf4cUxiZ+CfNxrWJnPIkukjd7Dbee0/rOoSxi4BC+BG5EHX8qAweNeEbb+jQ9jdnMkj4y4FNNXHtVSRVgAzXHPhvgQHYwUKFbWAEwZjcG4gmHGS+hg1wi3bVorNVxaDROem8P+jRnCxt3WNxhQBQ4IRCsJrNG5d0xZiDvNK4C13Fy/wzhFWyvgyQ7jDNKFXIYNs2Zb6BJeC+ndXy7Y0vtN+WAsN13XngCzRGT2Gun2BbWL6i1aOGT/ujrCeuxURz/9ekZ2/626sgtfXTYRbR21E6nnBHinkAjpcu48Zpsz+ELdrxyCIbez6ulYSdi0O2BN95R5mGeKuqsHlcXTn
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(136003)(39830400003)(376002)(396003)(346002)(38100700002)(38350700002)(4326008)(86362001)(66946007)(66476007)(66556008)(8676002)(36756003)(921005)(107886003)(26005)(186003)(83380400001)(2616005)(52116002)(6512007)(6506007)(41300700001)(966005)(478600001)(6486002)(6666004)(316002)(110136005)(44832011)(2906002)(8936002)(1076003)(7416002)(5660300002);DIR:OUT;SFP:1102
+X-Microsoft-Antispam-Message-Info: fjfNG7dVfLDpbqlPVa/qJMcB+jWgBxhizM+wFaAHQUQY5V0rwSFvWpfDk6/q8Nq2hd6/jyvW0FsjijtV0pwxwTDKWzPztEigNfmKmv0KxRAgQk38pjPWONjX4+lBoc0hNt9s2yQPhQWORb7SQcNPjyrCa0WO9r48eifMT/bwTo2ad9tkIbNQxb49D4OAfIc33T/gMZbIOihOVjkRLckGbQPvDG88/9JxPRTOW+sDTcXB+SOcaBRAmLvkkITdQIo3cipE4YjicyAEEZwuROjAVGu3fgWh/UntcKcRQXPrjVKSYtf5u4m0glPxCA+xdQ3ZA5TaKlL4nx3xZxD/BoJuPpHYWmpD0bO1hwzZ0Ks5bi8xiysSUK0WKnTURCjo9Ab4udd9eJ2uIaajTzQdvxJ6J+B8cXsV5OblZn2FSa0HAamIYuMGW8o/WrrYVk5B9EBGDG+Wyw15BfU31mK5RyBhWF2qoUHvGy19r6Aun6KVZnt0rVWnz6wK9Uhekdq15CmJmwygYVaWSl1kBFGx+8pC6xYuSawS6A1tgZSB6iMrHtpa+tvjKgg+MPkn+qxoa1xp03WoHU+K+jyCpIc0BbP35SE5ZVdIIFqueeMpP1AP1VQqR1z9eZN51mCkZXC/9aYyorb2qP45BnYsqJHZjfZckKXiNAosjo2GXGpgsrbUNGNw33nusfBMwCkF5UT81n59Q/rG22oyk1JVrsRo14CxHIbgf7ehxdZ6A2Ls38svYh5LB+pF4YMuLvRKj//AzX2wQ5X7Oi7mW3rI6IdLoQzDoGMCI+O0643Jbsbq2yf8d22NgWKrAXpJ6OTQ0fhKT2Z4yDg+1pLZlz0A5bC9ANbwAQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(136003)(39830400003)(376002)(396003)(346002)(38100700002)(38350700002)(4326008)(86362001)(66946007)(66476007)(66556008)(8676002)(36756003)(921005)(107886003)(26005)(186003)(83380400001)(2616005)(52116002)(6512007)(6506007)(41300700001)(966005)(478600001)(6486002)(6666004)(316002)(110136005)(44832011)(2906002)(8936002)(1076003)(7416002)(5660300002)(81973001);DIR:OUT;SFP:1102
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?XCf+dxxLFqFhcfIyPVZl+QrgBwRu9XwwNXpY3gW3RId8N/APLB4+ZNGSlaEy?=
- =?us-ascii?Q?ae6vP1WCFwh2OfokoCEA2+7ZeL7r1iZYeerdsYecBj+Y+u26tvOKQqbhauSP?=
- =?us-ascii?Q?oYD4cWC36Y1piPbWNPY/jgz9OgTRmXIrlADLARtE5EiaNno9Q/jfAO7ERaXt?=
- =?us-ascii?Q?USUMU4dm5vf+qbR1TL4rKKrM7ELnwvg4LmUee9vg8+fmNzfUKgpjtspUIDlu?=
- =?us-ascii?Q?D7NVXVMnzKgqwlVxmFkTMVd7JxvN8ezdKZ+ksD7mOvTFIzU1Vhlsn4Al7Zwx?=
- =?us-ascii?Q?ixImbPAN5vd+rLdJypRi7+NWC4Dtq+Xdg07NngfC9bC/fo740HMgispe3n8v?=
- =?us-ascii?Q?2L9M1jnOHXsUCWEOppY3dvDsShdIwlxcJIZyLu0Wcm4OL9mOS9W5+HGDlkbo?=
- =?us-ascii?Q?pgzeHug/eaJJd8Yu5LukOs65szevVcNan8k2mFtjyXmybdhVEab/jd5oJEVf?=
- =?us-ascii?Q?4NR1w2HsJbHJjZj0jaqT6sJqSZpYf9jq4drfb40T4FS4ZccitSDQ3hO6+Btc?=
- =?us-ascii?Q?VdGNfOAFL96RBLjbS9DrU44oqbDDJcoP/nbe6OyH1ShaxEctfZBhsSh1ue39?=
- =?us-ascii?Q?t2D38VOR1VM9Vgl1PqilQf/OgwyNnmoyBb3251swRhLUFYlZFFY+FDxnX+0M?=
- =?us-ascii?Q?9VmKzhyyZEkV5qYVETXPKP3WRqmGdMAaSkzq3cLHo9O7lU7DNx4GNqAxOwIU?=
- =?us-ascii?Q?m0CdWNbkfTF+rzzD0gioKfXrCqbE+3n7JXLYCpp0dLE364ywPBqQrRuPi36V?=
- =?us-ascii?Q?l2qKaaw+v1wx+G6/5YE6Rq37j29vFPxp12oQN/MHbemtxHP2H/gnDedwkJi/?=
- =?us-ascii?Q?LF+UjIPqe0zMcUkw8b/Ie3RQphx+AXo/VB0wlykmxmA6pWGqaeUAZ/Bc+Fbd?=
- =?us-ascii?Q?m8Jw2r2j7Y+lMGNQMS8kPdoz4c+lT1GmFq5dpK/MweC29/ALaqvtIFtD4oIK?=
- =?us-ascii?Q?rIeMvmHqv25V/EfnMlLmDthx4VuNZSaihG8dfr0yLVYde/0SOr1FedZH2eyv?=
- =?us-ascii?Q?NxLgmVYp06xNhHMzceOHpgEX2Pt7i7aY2gISXMGTjTKBUmgUITU43FymSPyS?=
- =?us-ascii?Q?RH29MQFqyR699yshGU5t6IE6hN+LdtX259bNs6G9hKsOswl6N2ypBk0NXAB0?=
- =?us-ascii?Q?GkQljkdu4U5HlVaV1YrdTmWoWtxqdOrwvXoELomJWsIRDLZeVLZYqEIhpF3y?=
- =?us-ascii?Q?EZuuV9/35oIQLvH6g2P2KwMzGvYz+Wxaxj7SzBKGX9bMAATQmQvoKAOaDHIP?=
- =?us-ascii?Q?YU2n3qOK5/l+OPo1H9prwM8nk347oekFrr0c+HQZrC+B8YTlDFVHDM5pzw3W?=
- =?us-ascii?Q?tXMyfWBAK3xYZJ5CxNzaGdMdE96EDk3/uFx3lVVcTD+o1AghMYi5ibp8+DPx?=
- =?us-ascii?Q?LayJosPV/v7YCZAPQD0bqcJ8zRSMjMDby6n1VbkMw0iE3SrMRqdoPGV37P60?=
- =?us-ascii?Q?SdDOp2nWgkLPQYVV1yKzjk01CO5N/Xsm5FNM0FfHwxjZaUgXkragVO0xd4K0?=
- =?us-ascii?Q?k1cbYnK70snA1JYvePmABspF/xSZUywnFNVAPki2YjZJv9jcQ/5zvqHJtSMh?=
- =?us-ascii?Q?cX3VeQYELpjAx8RU27sYXJnQnOEzqvCzAzPSjQJDEsQVSKZImfwinigMAQV7?=
- =?us-ascii?Q?DQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?yk9Aia9Qaw/vJdQikAp3ObKkpsqSxOV6iSfbSlh75W0nsiDfHu566dGKWunY?=
+ =?us-ascii?Q?D8LJIDjWNJY2yG0NPGDgOXgBUNhklA6lszZpxlFJItdhcryKnbB9zG8t+cPX?=
+ =?us-ascii?Q?IsXd+vhWrMEpTiRfuiSJZvsDLGVoS1Dv4YR/kAuMXztorAddfEVOmDht38RR?=
+ =?us-ascii?Q?2t6seDKP/o/o76gLAPl70POswjHhpsT9N9leWyqTRyrCsD4Vcx0+0jDb4qgw?=
+ =?us-ascii?Q?yW52p94dDoAU/pQw6kFFiIGdq9hB6dBACRVJnMmPfKLaUh1hCj9vbF63lnCe?=
+ =?us-ascii?Q?5TRVVld4ig98TK89PemZFaDMKxS4zNKU3YAa6j/i3sIvy6puLzMDGoQLJNuQ?=
+ =?us-ascii?Q?qO7ymqaWOPdVTMT4G+jJSGegFf86XIaYaYqJIEJUy5YkcO9SHmS0TCi/xsA5?=
+ =?us-ascii?Q?tbarsQ/z5wvm+zXyVMYur9WCqhvoSMGB1WPeC9IZHYEoTXoGC44pvhTDTqF9?=
+ =?us-ascii?Q?U9evEWBZgAM0Wj7C+hWAHqra/9HZPuLhTiIJsUj0+1r3sgQLqxmYMS3T2VHr?=
+ =?us-ascii?Q?jLXT5zbXn5UdjdnsIjGATawAxUnNMDbTY0pQXlafH/Nv0XSaAfPIn0H90KZn?=
+ =?us-ascii?Q?Twq0X8CvREwhgcVx4fuYB9XcGqesbPFAReLTUDQ9d5QkVKts8ahqfR8WmNRl?=
+ =?us-ascii?Q?2XwUWJ7Q8vGGLEOsQWbF5vYtX0BcFoF44hbK6J6HpJZHqovriz8YG9HmgG0v?=
+ =?us-ascii?Q?dA48utcz0No4f1e5AhBjxOMQwN/DB2XVqKPc71TECwLMRyaDqsCSFAy/5AR3?=
+ =?us-ascii?Q?b+rm4fMB19tprzRQcoDXt37Lh6u9h64P9IvomocmSOeJe2L3K3qahvO+DBN4?=
+ =?us-ascii?Q?Eck0dGmTMwzDqX8/1/asC8rb60Jk4dIB5a6eo5eNd7W+OKvQJCEXTW35wfML?=
+ =?us-ascii?Q?lgSxkC6KkSxsdNTHgOD90YnwMUEFC183gsQMeN9lglLKyJm6XmwaeR5XOiry?=
+ =?us-ascii?Q?E2lrwZ6m/Xys21SzF3BzXYOnHkl5qaKWf7G+BuhAEPWJs1zQENthYNj87a5X?=
+ =?us-ascii?Q?DWm9alO/JXwPY/TzgsMaB3mBEO9NX/PLmdqL7AigLHiRWxiOrt04OdLtmTDI?=
+ =?us-ascii?Q?f3fKnql5kmXwN856QTJ78cV/cBRSFe8t5eSoC6OJeTQLByUAeF1zRcLISzgm?=
+ =?us-ascii?Q?vwj42uIktpDpayQRnNucYb1rGCzm8vFl8pnWve9/1fiOvFB1cNa4z7idVl35?=
+ =?us-ascii?Q?vF+SRfXlVyC96SMd0u2PxJohRR1c2Wi/ATtLWQvr2wPVcYwQtJ8l2WGqplaP?=
+ =?us-ascii?Q?z3Kd0k6r65mlzemWYDkXBFG4+oczWgwVM2qnzqtoR0hZDLULHb2V//Yktige?=
+ =?us-ascii?Q?CgK/8HKdDSBpZffyoaVwEYITHIdc75Tk7farJjJDwnsaerND63PQJfdwy/BA?=
+ =?us-ascii?Q?zzHAGHo5Bbr85PplfG7sOTcMCgxjGQoivggdkTbIhdFN0ZcZnvqgXwHjUKPM?=
+ =?us-ascii?Q?jKfwrSOw4106h2oj250W+lO6Wa/N0gM8FnNxLfcMhr8EMNFAeqCILk05yXU8?=
+ =?us-ascii?Q?EPcK+EKZtu8sDUYMVkxfVIe2fx5S3hkJehVRlrPaC7TSCQG7n3Q4p7G4/RrC?=
+ =?us-ascii?Q?dWmOAzR9YX/gQYQX6b+pB9b2IWDxtF+MvhC0iaVDA1xm4v5Cj5LkPzZmQa4K?=
+ =?us-ascii?Q?vg=3D=3D?=
 X-OriginatorOrg: toradex.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e5ba9e4a-cc77-4359-5fa1-08da948ca8d0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8214c663-db57-47a9-5fa1-08da948ca8d0
 X-MS-Exchange-CrossTenant-AuthSource: ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Sep 2022 07:01:47.6781
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Sep 2022 07:01:47.6470
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tsaE0mMe13q0+sBB46wMmdjOY31O2sDsQwYG5IdYFw7IYsP+EquHQ1VEZiZmPBfc1lKaGbHLZzIEgd+urvCgetndms4LE3X8UeSenJbcZxw=
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4A8Ju3bicwfVR5rux6WsOdyeP8KeH9AN1ld09xcF61TvszXGCkVDU1PDCDIYefG/sAzRmCHXW4WoFN8VXMUJG4xn1plQkX8EZqXJ+LxnJPU=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: ZR0P278MB0744
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: toradex.com
@@ -111,187 +111,179 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit f79959220fa5fbda939592bf91c7a9ea90419040, this is
+This reverts commit b353b241f1eb9b6265358ffbe2632fdcb563354f, this is
 creating multiple issues, just not ready to be merged yet.
 
-Link: https://lore.kernel.org/all/20220905180542.GA3685102@roeck-us.net/
 Link: https://lore.kernel.org/all/CAHk-=wj1obPoTu1AHj9Bd_BGYjdjDyPP+vT5WMj8eheb3A9WHw@mail.gmail.com/
-Fixes: f79959220fa5 ("fec: Restart PPS after link state change")
+Link: https://lore.kernel.org/all/20220907143915.5w65kainpykfobte@pengutronix.de/
+Fixes: b353b241f1eb ("net: fec: Use a spinlock to guard `fep->ptp_clk_on`")
 Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
 ---
- drivers/net/ethernet/freescale/fec.h      | 10 ------
- drivers/net/ethernet/freescale/fec_main.c | 42 +++--------------------
- drivers/net/ethernet/freescale/fec_ptp.c  | 29 ----------------
- 3 files changed, 4 insertions(+), 77 deletions(-)
+ drivers/net/ethernet/freescale/fec.h      |  1 +
+ drivers/net/ethernet/freescale/fec_main.c | 17 +++++++-------
+ drivers/net/ethernet/freescale/fec_ptp.c  | 28 +++++++++++++++--------
+ 3 files changed, 27 insertions(+), 19 deletions(-)
 
 diff --git a/drivers/net/ethernet/freescale/fec.h b/drivers/net/ethernet/freescale/fec.h
-index d77ee8936c6a..dcfe63f9be06 100644
+index dcfe63f9be06..a5fed00cb971 100644
 --- a/drivers/net/ethernet/freescale/fec.h
 +++ b/drivers/net/ethernet/freescale/fec.h
-@@ -638,13 +638,6 @@ struct fec_enet_private {
- 	int pps_enable;
- 	unsigned int next_counter;
+@@ -561,6 +561,7 @@ struct fec_enet_private {
+ 	struct clk *clk_2x_txclk;
  
--	struct {
--		struct timespec64 ts_phc;
--		u64 ns_sys;
--		u32 at_corr;
--		u8 at_inc_corr;
--	} ptp_saved_state;
--
- 	u64 ethtool_stats[];
- };
+ 	bool ptp_clk_on;
++	struct mutex ptp_clk_mutex;
+ 	unsigned int num_tx_queues;
+ 	unsigned int num_rx_queues;
  
-@@ -655,8 +648,5 @@ void fec_ptp_disable_hwts(struct net_device *ndev);
- int fec_ptp_set(struct net_device *ndev, struct ifreq *ifr);
- int fec_ptp_get(struct net_device *ndev, struct ifreq *ifr);
- 
--void fec_ptp_save_state(struct fec_enet_private *fep);
--int fec_ptp_restore_state(struct fec_enet_private *fep);
--
- /****************************************************************************/
- #endif /* FEC_H */
 diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index 6152f6dbf1bc..4ccd74af09ae 100644
+index 4ccd74af09ae..92c55e1a5507 100644
 --- a/drivers/net/ethernet/freescale/fec_main.c
 +++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -286,11 +286,8 @@ MODULE_PARM_DESC(macaddr, "FEC Ethernet MAC address");
- #define FEC_MMFR_TA		(2 << 16)
- #define FEC_MMFR_DATA(v)	(v & 0xffff)
- /* FEC ECR bits definition */
--#define FEC_ECR_RESET   BIT(0)
--#define FEC_ECR_ETHEREN BIT(1)
--#define FEC_ECR_MAGICEN BIT(2)
--#define FEC_ECR_SLEEP   BIT(3)
--#define FEC_ECR_EN1588  BIT(4)
-+#define FEC_ECR_MAGICEN		(1 << 2)
-+#define FEC_ECR_SLEEP		(1 << 3)
- 
- #define FEC_MII_TIMEOUT		30000 /* us */
- 
-@@ -986,9 +983,6 @@ fec_restart(struct net_device *ndev)
- 	u32 temp_mac[2];
- 	u32 rcntl = OPT_FRAME_SIZE | 0x04;
- 	u32 ecntl = 0x2; /* ETHEREN */
--	struct ptp_clock_request ptp_rq = { .type = PTP_CLK_REQ_PPS };
--
--	fec_ptp_save_state(fep);
- 
- 	/* Whack a reset.  We should wait for this.
- 	 * For i.MX6SX SOC, enet use AXI bus, we use disable MAC
-@@ -1142,7 +1136,7 @@ fec_restart(struct net_device *ndev)
- 	}
- 
- 	if (fep->bufdesc_ex)
--		ecntl |= FEC_ECR_EN1588;
-+		ecntl |= (1 << 4);
- 
- 	if (fep->quirks & FEC_QUIRK_DELAYED_CLKS_SUPPORT &&
- 	    fep->rgmii_txc_dly)
-@@ -1163,14 +1157,6 @@ fec_restart(struct net_device *ndev)
- 	if (fep->bufdesc_ex)
- 		fec_ptp_start_cyclecounter(ndev);
- 
--	/* Restart PPS if needed */
--	if (fep->pps_enable) {
--		/* Clear flag so fec_ptp_enable_pps() doesn't return immediately */
--		fep->pps_enable = 0;
--		fec_ptp_restore_state(fep);
--		fep->ptp_caps.enable(&fep->ptp_caps, &ptp_rq, 1);
--	}
--
- 	/* Enable interrupts we wish to service */
- 	if (fep->link)
- 		writel(FEC_DEFAULT_IMASK, fep->hwp + FEC_IMASK);
-@@ -1221,8 +1207,6 @@ fec_stop(struct net_device *ndev)
+@@ -1995,7 +1995,6 @@ static void fec_enet_phy_reset_after_clk_enable(struct net_device *ndev)
+ static int fec_enet_clk_enable(struct net_device *ndev, bool enable)
+ {
  	struct fec_enet_private *fep = netdev_priv(ndev);
- 	u32 rmii_mode = readl(fep->hwp + FEC_R_CNTRL) & (1 << 8);
- 	u32 val;
--	struct ptp_clock_request ptp_rq = { .type = PTP_CLK_REQ_PPS };
--	u32 ecntl = 0;
+-	unsigned long flags;
+ 	int ret;
  
- 	/* We cannot expect a graceful transmit stop without link !!! */
- 	if (fep->link) {
-@@ -1232,8 +1216,6 @@ fec_stop(struct net_device *ndev)
- 			netdev_err(ndev, "Graceful transmit stop did not complete!\n");
+ 	if (enable) {
+@@ -2004,15 +2003,15 @@ static int fec_enet_clk_enable(struct net_device *ndev, bool enable)
+ 			return ret;
+ 
+ 		if (fep->clk_ptp) {
+-			spin_lock_irqsave(&fep->tmreg_lock, flags);
++			mutex_lock(&fep->ptp_clk_mutex);
+ 			ret = clk_prepare_enable(fep->clk_ptp);
+ 			if (ret) {
+-				spin_unlock_irqrestore(&fep->tmreg_lock, flags);
++				mutex_unlock(&fep->ptp_clk_mutex);
+ 				goto failed_clk_ptp;
+ 			} else {
+ 				fep->ptp_clk_on = true;
+ 			}
+-			spin_unlock_irqrestore(&fep->tmreg_lock, flags);
++			mutex_unlock(&fep->ptp_clk_mutex);
+ 		}
+ 
+ 		ret = clk_prepare_enable(fep->clk_ref);
+@@ -2027,10 +2026,10 @@ static int fec_enet_clk_enable(struct net_device *ndev, bool enable)
+ 	} else {
+ 		clk_disable_unprepare(fep->clk_enet_out);
+ 		if (fep->clk_ptp) {
+-			spin_lock_irqsave(&fep->tmreg_lock, flags);
++			mutex_lock(&fep->ptp_clk_mutex);
+ 			clk_disable_unprepare(fep->clk_ptp);
+ 			fep->ptp_clk_on = false;
+-			spin_unlock_irqrestore(&fep->tmreg_lock, flags);
++			mutex_unlock(&fep->ptp_clk_mutex);
+ 		}
+ 		clk_disable_unprepare(fep->clk_ref);
+ 		clk_disable_unprepare(fep->clk_2x_txclk);
+@@ -2043,10 +2042,10 @@ static int fec_enet_clk_enable(struct net_device *ndev, bool enable)
+ 		clk_disable_unprepare(fep->clk_ref);
+ failed_clk_ref:
+ 	if (fep->clk_ptp) {
+-		spin_lock_irqsave(&fep->tmreg_lock, flags);
++		mutex_lock(&fep->ptp_clk_mutex);
+ 		clk_disable_unprepare(fep->clk_ptp);
+ 		fep->ptp_clk_on = false;
+-		spin_unlock_irqrestore(&fep->tmreg_lock, flags);
++		mutex_unlock(&fep->ptp_clk_mutex);
+ 	}
+ failed_clk_ptp:
+ 	clk_disable_unprepare(fep->clk_enet_out);
+@@ -3881,7 +3880,7 @@ fec_probe(struct platform_device *pdev)
  	}
  
--	fec_ptp_save_state(fep);
--
- 	/* Whack a reset.  We should wait for this.
- 	 * For i.MX6SX SOC, enet use AXI bus, we use disable MAC
- 	 * instead of reset MAC itself.
-@@ -1253,28 +1235,12 @@ fec_stop(struct net_device *ndev)
- 	writel(fep->phy_speed, fep->hwp + FEC_MII_SPEED);
- 	writel(FEC_DEFAULT_IMASK, fep->hwp + FEC_IMASK);
+ 	fep->ptp_clk_on = false;
+-	spin_lock_init(&fep->tmreg_lock);
++	mutex_init(&fep->ptp_clk_mutex);
  
--	if (fep->bufdesc_ex)
--		ecntl |= FEC_ECR_EN1588;
--
- 	/* We have to keep ENET enabled to have MII interrupt stay working */
- 	if (fep->quirks & FEC_QUIRK_ENET_MAC &&
- 		!(fep->wol_flag & FEC_WOL_FLAG_SLEEP_ON)) {
--		ecntl |= FEC_ECR_ETHEREN;
-+		writel(2, fep->hwp + FEC_ECNTRL);
- 		writel(rmii_mode, fep->hwp + FEC_R_CNTRL);
- 	}
--
--	writel(ecntl, fep->hwp + FEC_ECNTRL);
--
--	if (fep->bufdesc_ex)
--		fec_ptp_start_cyclecounter(ndev);
--
--	/* Restart PPS if needed */
--	if (fep->pps_enable) {
--		/* Clear flag so fec_ptp_enable_pps() doesn't return immediately */
--		fep->pps_enable = 0;
--		fec_ptp_restore_state(fep);
--		fep->ptp_caps.enable(&fep->ptp_caps, &ptp_rq, 1);
--	}
- }
- 
- 
+ 	/* clk_ref is optional, depends on board */
+ 	fep->clk_ref = devm_clk_get_optional(&pdev->dev, "enet_clk_ref");
 diff --git a/drivers/net/ethernet/freescale/fec_ptp.c b/drivers/net/ethernet/freescale/fec_ptp.c
-index 8dd5a2615a89..af20aa237964 100644
+index af20aa237964..3dc3c0b626c2 100644
 --- a/drivers/net/ethernet/freescale/fec_ptp.c
 +++ b/drivers/net/ethernet/freescale/fec_ptp.c
-@@ -625,36 +625,7 @@ void fec_ptp_stop(struct platform_device *pdev)
- 	struct net_device *ndev = platform_get_drvdata(pdev);
- 	struct fec_enet_private *fep = netdev_priv(ndev);
+@@ -365,19 +365,21 @@ static int fec_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+  */
+ static int fec_ptp_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
+ {
+-	struct fec_enet_private *fep =
++	struct fec_enet_private *adapter =
+ 	    container_of(ptp, struct fec_enet_private, ptp_caps);
+ 	u64 ns;
+ 	unsigned long flags;
  
--	if (fep->pps_enable)
--		fec_ptp_enable_pps(fep, 0);
--
- 	cancel_delayed_work_sync(&fep->time_keep);
- 	if (fep->ptp_clock)
- 		ptp_clock_unregister(fep->ptp_clock);
+-	spin_lock_irqsave(&fep->tmreg_lock, flags);
++	mutex_lock(&adapter->ptp_clk_mutex);
+ 	/* Check the ptp clock */
+-	if (!fep->ptp_clk_on) {
+-		spin_unlock_irqrestore(&fep->tmreg_lock, flags);
++	if (!adapter->ptp_clk_on) {
++		mutex_unlock(&adapter->ptp_clk_mutex);
+ 		return -EINVAL;
+ 	}
+-	ns = timecounter_read(&fep->tc);
+-	spin_unlock_irqrestore(&fep->tmreg_lock, flags);
++	spin_lock_irqsave(&adapter->tmreg_lock, flags);
++	ns = timecounter_read(&adapter->tc);
++	spin_unlock_irqrestore(&adapter->tmreg_lock, flags);
++	mutex_unlock(&adapter->ptp_clk_mutex);
+ 
+ 	*ts = ns_to_timespec64(ns);
+ 
+@@ -402,10 +404,10 @@ static int fec_ptp_settime(struct ptp_clock_info *ptp,
+ 	unsigned long flags;
+ 	u32 counter;
+ 
+-	spin_lock_irqsave(&fep->tmreg_lock, flags);
++	mutex_lock(&fep->ptp_clk_mutex);
+ 	/* Check the ptp clock */
+ 	if (!fep->ptp_clk_on) {
+-		spin_unlock_irqrestore(&fep->tmreg_lock, flags);
++		mutex_unlock(&fep->ptp_clk_mutex);
+ 		return -EINVAL;
+ 	}
+ 
+@@ -415,9 +417,11 @@ static int fec_ptp_settime(struct ptp_clock_info *ptp,
+ 	 */
+ 	counter = ns & fep->cc.mask;
+ 
++	spin_lock_irqsave(&fep->tmreg_lock, flags);
+ 	writel(counter, fep->hwp + FEC_ATIME);
+ 	timecounter_init(&fep->tc, &fep->cc, ns);
+ 	spin_unlock_irqrestore(&fep->tmreg_lock, flags);
++	mutex_unlock(&fep->ptp_clk_mutex);
+ 	return 0;
  }
--
--void fec_ptp_save_state(struct fec_enet_private *fep)
--{
--	u32 atime_inc_corr;
--
--	fec_ptp_gettime(&fep->ptp_caps, &fep->ptp_saved_state.ts_phc);
--	fep->ptp_saved_state.ns_sys = ktime_get_ns();
--
--	fep->ptp_saved_state.at_corr = readl(fep->hwp + FEC_ATIME_CORR);
--	atime_inc_corr = readl(fep->hwp + FEC_ATIME_INC) & FEC_T_INC_CORR_MASK;
--	fep->ptp_saved_state.at_inc_corr = (u8)(atime_inc_corr >> FEC_T_INC_CORR_OFFSET);
--}
--
--int fec_ptp_restore_state(struct fec_enet_private *fep)
--{
--	u32 atime_inc = readl(fep->hwp + FEC_ATIME_INC) & FEC_T_INC_MASK;
--	u64 ns_sys;
--
--	writel(fep->ptp_saved_state.at_corr, fep->hwp + FEC_ATIME_CORR);
--	atime_inc |= ((u32)fep->ptp_saved_state.at_inc_corr) << FEC_T_INC_CORR_OFFSET;
--	writel(atime_inc, fep->hwp + FEC_ATIME_INC);
--
--	ns_sys = ktime_get_ns() - fep->ptp_saved_state.ns_sys;
--	timespec64_add_ns(&fep->ptp_saved_state.ts_phc, ns_sys);
--	return fec_ptp_settime(&fep->ptp_caps, &fep->ptp_saved_state.ts_phc);
--}
+ 
+@@ -514,11 +518,13 @@ static void fec_time_keep(struct work_struct *work)
+ 	struct fec_enet_private *fep = container_of(dwork, struct fec_enet_private, time_keep);
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&fep->tmreg_lock, flags);
++	mutex_lock(&fep->ptp_clk_mutex);
+ 	if (fep->ptp_clk_on) {
++		spin_lock_irqsave(&fep->tmreg_lock, flags);
+ 		timecounter_read(&fep->tc);
++		spin_unlock_irqrestore(&fep->tmreg_lock, flags);
+ 	}
+-	spin_unlock_irqrestore(&fep->tmreg_lock, flags);
++	mutex_unlock(&fep->ptp_clk_mutex);
+ 
+ 	schedule_delayed_work(&fep->time_keep, HZ);
+ }
+@@ -593,6 +599,8 @@ void fec_ptp_init(struct platform_device *pdev, int irq_idx)
+ 	}
+ 	fep->ptp_inc = NSEC_PER_SEC / fep->cycle_speed;
+ 
++	spin_lock_init(&fep->tmreg_lock);
++
+ 	fec_ptp_start_cyclecounter(ndev);
+ 
+ 	INIT_DELAYED_WORK(&fep->time_keep, fec_time_keep);
 -- 
 2.25.1
 
