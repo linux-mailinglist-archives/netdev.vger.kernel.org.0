@@ -2,497 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E3215B5FA2
-	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 19:55:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 826E65B5F8C
+	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 19:51:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229553AbiILRzH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Sep 2022 13:55:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39646 "EHLO
+        id S229826AbiILRvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Sep 2022 13:51:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbiILRzG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 13:55:06 -0400
-X-Greylist: delayed 918 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 12 Sep 2022 10:55:02 PDT
-Received: from smtp.uniroma2.it (smtp.uniroma2.it [160.80.6.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B274193C8
-        for <netdev@vger.kernel.org>; Mon, 12 Sep 2022 10:55:02 -0700 (PDT)
-Received: from localhost.localdomain ([160.80.103.126])
-        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 28CHdVKl032098
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 12 Sep 2022 19:39:32 +0200
-From:   Paolo Lungaroni <paolo.lungaroni@uniroma2.it>
-To:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Stefano Salsano <stefano.salsano@uniroma2.it>,
-        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
-        Andrea Mayer <andrea.mayer@uniroma2.it>,
-        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>
-Subject: [iproute2-next v2] seg6: add support for flavors in SRv6 End* behaviors
-Date:   Mon, 12 Sep 2022 19:39:23 +0200
-Message-Id: <20220912173923.595-1-paolo.lungaroni@uniroma2.it>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
+        with ESMTP id S229766AbiILRvQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 13:51:16 -0400
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2053.outbound.protection.outlook.com [40.107.22.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DA1620180;
+        Mon, 12 Sep 2022 10:51:15 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Og9mO7hQFjaDl6RUBoeJ+tEe42J8ChbIPmIme2tn775EsOJjvCGLhcfFMPX1E4pOrlxBCqE4ZGJHZWHsxGyaxGKSDyMcqUV/I0mS1BZJWDX8H9MwqbQsTjXQVAzmnBROBM1A4DA1sdTGdqakeQrBEiexDny3fiNLR+fKrHfNbvO38Ith0rPhTzDIvICCsPemaLbjwjCmQxuDyXbYdELEO27r+T/KoQ3Ag+FIGXc3pIfrNKalstsTkE8dbGio3qeIaqsA+5kGrnqqh1VhUBQ25Y2HXHPKPJIijJRRIFFiW6lacQQji3pollPCpjBGahpHZdMj4NlUqKzKMLjSw//Xgg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Y1rYEA0wToTLOz1wurSJMr3voKK79USIQen3JOPEz9M=;
+ b=cLSMZDQqw9SSJJvL5ENBXFBMx4AL42xWc5aW4MWVEhocUDd2Gs4lsjGPjSRqqfRJ18upLSY6Zwj1SpxHidQomtZdsTv+56i37jpabDmOFAwj7HKzIPmJIWGa24+eUlPOKsT98EGDboz4OiDt88MxuHZE0P224503Z6805ULavlVCB5ipAy7XvR+18a24/UXWTZp6GRWmd/ArL9h+SndQInHp86UhmgiwlHumsjeMqM9nkHeAucbdMbGKAWcUxZudG2h6Y4DVi2z2QT+yA6hnYJVcumJYhzuRGJL4vz424AQQecbcFTZJDnm7y/IBAuXOKnZfccooF6ZFpE2nGtUxYA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Y1rYEA0wToTLOz1wurSJMr3voKK79USIQen3JOPEz9M=;
+ b=CBscDcr1MdYo16EVsIiPfFhu4L4kBL378AeagthYJxGMOrUxWFlTrJttXo1ImGCG93OGAigGZXz28GxVki/qO/u4KdB70PECbq2IMncN54RG2AKKh1jLii53pBRCY1qv2poXM6h4tkrL475KRqnjtkSvy4vH7mo9+5H70NQctVs=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by PAXPR04MB8687.eurprd04.prod.outlook.com (2603:10a6:102:21e::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.22; Mon, 12 Sep
+ 2022 17:51:12 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::a67a:849c:aeff:cad1]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::a67a:849c:aeff:cad1%7]) with mapi id 15.20.5612.022; Mon, 12 Sep 2022
+ 17:51:11 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        George McCollister <george.mccollister@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Linus Walleij <linus.walleij@linaro.org>,
+        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Marek Vasut <marex@denx.de>, John Crispin <john@phrozen.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        linux-renesas-soc@vger.kernel.org
+Subject: [PATCH net-next 0/3] Remove label = "cpu" from DSA dt-bindings
+Date:   Mon, 12 Sep 2022 20:50:55 +0300
+Message-Id: <20220912175058.280386-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.34.1
 Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-ClientProxiedBy: BE0P281CA0002.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:b10:a::12) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|PAXPR04MB8687:EE_
+X-MS-Office365-Filtering-Correlation-Id: ecfe269f-9037-47d0-bd95-08da94e760ec
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: lnXG3TE984kLVhJSVmeEpNsq1cbQp3uBPU4URqJ+1e1BrMBY1nL5x0jGAln+RM1/z7OsmFHdbSBT0hKnof7TFX0V1wiWHclqv52gGCR/7oOW1xHetf/WbbdmdjpFhwP4nn2Mw+rbrGB+YJNdZfMY0q7tdCHcC7TXjjKzuoAm44n9IJ+ySafAZv97dm98csa2MnVy+WbIG0Tqes1M2hHfLoVRIvf2JK1iuG9oDuK+Xm1X4QsERQ6nKkqCc4Zxlud1aG8gpwMPhlx0QuLJkN3vnk6q9QVmALud4PMJchvqKk+5ffieQkd6Hwac0fkaAn/QPMqLbGuurxq/d6fw2NN8HP3d9mW9Hmfgi4YsYvTaMUxs72QoBLiNtGtqriVs3sKxngpadMWkzXzA0pZJCN/wAlPJXnD5EEeCFXKOKjp0b2Rj+l2Hfn3fY+guyQgdtks3RYX/5qzrvRfpKmF0yMZ947T8geuYBcSZ14jbHxCIvupoavdzJQ0GxecMAZQC8D2z3kavijUo+V36G2E3q65MWmqxEAdmPjVnDzQE36HI712fN5ZqvGifDcz38q98QWjndu2mvhvCAkizHVg4Mx3do+NmJNxYfxmRby+RQkAFH6If3JUW23YxXx5dFYQu5+bMmiR8KR1nq3i4khKu5c7hV8YxYrdUrKXCGHyRwe1S29cFa2uAmXswfswEGk9Rjc/b7zNwZp5Ft3CtbPWPH7CVhVK6KDQpRKrt8fMLvUn5nxER9RwWQ3MxxqZ2NyQldLcIC3MaLbGMOk5ofrbBzF39PQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(136003)(366004)(396003)(346002)(376002)(451199015)(6512007)(83380400001)(186003)(1076003)(6486002)(26005)(5660300002)(8936002)(6506007)(7406005)(52116002)(86362001)(41300700001)(478600001)(6666004)(2906002)(8676002)(38100700002)(2616005)(44832011)(54906003)(66946007)(38350700002)(66556008)(36756003)(7416002)(316002)(4326008)(66476007)(6916009);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?vkUP/bbzW9k5puzhgIQJRMzEqIx5O73QGIC+9lzBWFput1DqSQ9o5nosAIHg?=
+ =?us-ascii?Q?lOpwDAyPkwnUWYsBmbl9uaQKkY10JgawPuOrZhIrT+i6iUJJfzJWSLDDzleU?=
+ =?us-ascii?Q?PY4GsvhB4QjJN5kTFZ0C/IfVZ81TSK23fABtvOyPqk7BmFjcCZq2quIpyJ66?=
+ =?us-ascii?Q?bPIUPhSGivUysBsiUhTObTKeSTJl8j3H6VA2F2LVTBnjFEAvnSAigUlnjRTN?=
+ =?us-ascii?Q?84mtdHHfeJrT469ujNiV0sCXClSkKoUZtG1RodrXn3fKaP9kL04U7EBxvwzt?=
+ =?us-ascii?Q?hyh9clDaTHs64+yrY8OKdJ8ogzTGlkjKCV2wMrniXDzR2hubyqAkUcZEcmTR?=
+ =?us-ascii?Q?J/OOzvqiXyBC3hSvSul6xQB0JVdEnTu8C3VJbQzUE2TeThJoeIyKQMcVhV9r?=
+ =?us-ascii?Q?86UR2N5njuUrVLC+eOVkJxS8VSLkA1YtmdtKie3uBpg1kZJ/EWKx9b25mwnp?=
+ =?us-ascii?Q?VDFpohWv9Qy7b+LLmV2Y0ZpRmJ9RDuLqfzFmGwWyhCPBC6vtHurAVcMiXxHw?=
+ =?us-ascii?Q?ePEOVnKpHLTEzrkmx4QTXmJ3w2J1OJMstz6tOKq0kAeSIzG7gf7scT+bqeHl?=
+ =?us-ascii?Q?OFnzftXEUXqYe78t+a561G+6Ev+Th7AquR3ibE94x12laG5THXm4L/SvUWDc?=
+ =?us-ascii?Q?v4eeQ3k+Ekis/xUaTYyZn+90YPuWs8lHAsCb93W2Sn78MYYFA+tufW7hMWQ7?=
+ =?us-ascii?Q?VEEsEMYVx+n2soOrQEduFL/cuVRpZt26NrWrvzbw0+Q2ItLtrI+dcum0rzfD?=
+ =?us-ascii?Q?cJuw7Ql+quYj7BUKXUiQugCvAVvQQvlfaxg+EmwuZ01E5LYWAiLHrVHSCeQy?=
+ =?us-ascii?Q?u0UTRwQAqKbD9iYd5yfNvr5l11Mb50/C+GuvVJYuYVkqBd+nFKAujPCkYynA?=
+ =?us-ascii?Q?n9t22UU0zky8QPM7XUn+BzhVLNbOIM3Al6zDOQIsGny97xAKDU4hWI2lEKOl?=
+ =?us-ascii?Q?NsYIqR+J1NyNsR8QlYYPgFoAqAFJW6yM8kS5w66J3yF3Id3Jy5xXbx3/e8Gd?=
+ =?us-ascii?Q?icFKN5S4busagQX2v2VqZZySDILZVo2I3aO9xdTod7amOGeMALzr/fmFCT1C?=
+ =?us-ascii?Q?jwNO+24ovFGTUrRjU2/AsvI0XV+AJMOQH4qCToPYDG//29vRKS1nocUPzJQw?=
+ =?us-ascii?Q?5wl9wE2iMf8J4EWfPdcqQpvG4dFRpX69J5o7Tst6o0Us5OGbeSt3Ephb5tKP?=
+ =?us-ascii?Q?pPhbAeW4sMpTnb45GbwUEFPzsi8NWc/jNRTD4VduKvcY5VRB87CX9P/Ak4pN?=
+ =?us-ascii?Q?2dan4p379bA5Cjl39SHpo/EqokQ1cnHJg1K+SdBO7snBZ6lYgRhRATJX0lrH?=
+ =?us-ascii?Q?r8BsB+HGjJH0vLi++qlPeabGWNP5mTqcLBvuxB+lZ5JAq6cyT1JwFixWQ4Mu?=
+ =?us-ascii?Q?J4lELFCBxPIlLd4mhHvM+0VeMo5i/Ikd5D8tX+NU4NzycaUh9UOgk6OyBlFM?=
+ =?us-ascii?Q?+yd7D7FircLo20GyvXbF+Q1ekY3T224OAMiCjaW95TuqThCaqeh/DFgJeD/0?=
+ =?us-ascii?Q?EL5rM5N+UjNkJ6VGpff186yvXC/yJkD0VRBNc3bm48GyEq9xHJpJctQjOFy6?=
+ =?us-ascii?Q?fSECv3WaqZgk+wn+XAqkGRgOXXc6J0LkZK/ZGr9ZIaj4L5HJ4NFVyOn4qG+H?=
+ =?us-ascii?Q?eQ=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ecfe269f-9037-47d0-bd95-08da94e760ec
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Sep 2022 17:51:11.2549
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: lqNAZROk92iOOZIJLNrxXgXENB3p7PMnraE2hio9+B0Jh1aDEuhYXaWgI+WlpJwy9c7XHmrPDUj7Q1Cys8rUCA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8687
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As described in RFC 8986 [1], processing operations carried out by SRv6
-End, End.X and End.T (End* for short) behaviors can be modified or
-extended using the "flavors" mechanism. This patch adds the support for
-PSP,USP,USD flavors (defined in [1]) and for NEXT-C-SID flavor (defined
-in [2]) in SRv6 End* behaviors. Specifically, we add a new optional
-attribute named "flavors" that can be leveraged by the user to enable
-specific flavors while creating an SRv6 End* behavior instance.
-Multiple flavors can be specified together by separating them using
-commas.
+As explained in more detail in patch 1/3, label = "cpu" is not part of
+DSA's device tree bindings, yet we have some checks in the dt-schema for
+mt7530 which are written as if it was.
 
-If a specific flavor (or a combination of flavors) is not supported by the
-underlying Linux kernel, an error message is reported to the user and the
-creation of the specific behavior instance is aborted.
+Reformulate those checks, and remove all occurrences of this seemingly
+used, but actually unused, property from the binding examples.
 
-When the flavors attribute is omitted, the regular SRv6 End* behavior is
-performed.
+Vladimir Oltean (3):
+  dt-bindings: net: dsa: mt7530: replace label = "cpu" with proper
+    checks
+  dt-bindings: net: dsa: mt7530: stop requiring phy-mode on CPU ports
+  dt-bindings: net: dsa: remove label = "cpu" from examples
 
-Flavors such as PSP, USP and USD do not accept additional configuration
-attributes. Conversely, the NEXT-C-SID flavor can be configured to support
-user-provided Locator-Block and Locator-Node Function lengths using,
-respectively, the lblen and the nflen attributes.
+ .../devicetree/bindings/net/dsa/ar9331.txt    |  1 -
+ .../bindings/net/dsa/arrow,xrs700x.yaml       |  1 -
+ .../devicetree/bindings/net/dsa/brcm,b53.yaml |  2 --
+ .../net/dsa/hirschmann,hellcreek.yaml         |  1 -
+ .../devicetree/bindings/net/dsa/lan9303.txt   |  2 --
+ .../bindings/net/dsa/lantiq-gswip.txt         |  1 -
+ .../bindings/net/dsa/mediatek,mt7530.yaml     | 22 +++----------------
+ .../bindings/net/dsa/microchip,ksz.yaml       |  2 --
+ .../devicetree/bindings/net/dsa/qca8k.yaml    |  3 ---
+ .../devicetree/bindings/net/dsa/realtek.yaml  |  2 --
+ .../bindings/net/dsa/renesas,rzn1-a5psw.yaml  |  1 -
+ .../bindings/net/dsa/vitesse,vsc73xx.txt      |  2 --
+ 12 files changed, 3 insertions(+), 37 deletions(-)
 
-Both lblen and nflen values must be evenly divisible by 8 and their sum
-must not exceed 128 bit (i.e. the C-SID container size).
-
-If the lblen attribute is omitted, the default value chosen by the Linux
-kernel is 32-bit. If the nflen attribute is omitted, the default value
-chosen by the Linux kernel is 16-bit.
-
-Some examples:
-ip -6 route add 2001:db8::1 encap seg6local action End flavors next-csid dev eth0
-ip -6 route add 2001:db8::2 encap seg6local action End flavors next-csid lblen 48 nflen 16 dev eth0
-
-Standard Output:
-ip -6 route show 2001:db8::2
-2001:db8::2  encap seg6local action End flavors next-csid lblen 48 nflen 16 dev eth0 metric 1024 pref medium
-
-JSON Output:
-ip -6 -j -p route show 2001:db8::2
-[ {
-        "dst": "2001:db8::2",
-        "encap": "seg6local",
-        "action": "End",
-        "flavors": [ "next-csid" ],
-        "lblen": 48,
-        "nflen": 16,
-        "dev": "eth0",
-        "metric": 1024,
-        "flags": [ ],
-        "pref": "medium"
-} ]
-
-[1] - https://datatracker.ietf.org/doc/html/rfc8986
-[2] - https://datatracker.ietf.org/doc/html/draft-ietf-spring-srv6-srh-compression
-
-Signed-off-by: Paolo Lungaroni <paolo.lungaroni@uniroma2.it>
----
- include/uapi/linux/seg6_local.h |  24 +++++
- ip/iproute.c                    |   4 +-
- ip/iproute_lwtunnel.c           | 186 +++++++++++++++++++++++++++++++-
- man/man8/ip-route.8.in          |  71 +++++++++++-
- 4 files changed, 281 insertions(+), 4 deletions(-)
-
-diff --git a/include/uapi/linux/seg6_local.h b/include/uapi/linux/seg6_local.h
-index ab724498..6e71d97f 100644
---- a/include/uapi/linux/seg6_local.h
-+++ b/include/uapi/linux/seg6_local.h
-@@ -28,6 +28,7 @@ enum {
- 	SEG6_LOCAL_BPF,
- 	SEG6_LOCAL_VRFTABLE,
- 	SEG6_LOCAL_COUNTERS,
-+	SEG6_LOCAL_FLAVORS,
- 	__SEG6_LOCAL_MAX,
- };
- #define SEG6_LOCAL_MAX (__SEG6_LOCAL_MAX - 1)
-@@ -110,4 +111,27 @@ enum {
- 
- #define SEG6_LOCAL_CNT_MAX (__SEG6_LOCAL_CNT_MAX - 1)
- 
-+/* SRv6 End* Flavor attributes */
-+enum {
-+	SEG6_LOCAL_FLV_UNSPEC,
-+	SEG6_LOCAL_FLV_OPERATION,
-+	SEG6_LOCAL_FLV_LCBLOCK_BITS,
-+	SEG6_LOCAL_FLV_LCNODE_FN_BITS,
-+	__SEG6_LOCAL_FLV_MAX,
-+};
-+
-+#define SEG6_LOCAL_FLV_MAX (__SEG6_LOCAL_FLV_MAX - 1)
-+
-+/* Designed flavor operations for SRv6 End* Behavior */
-+enum {
-+	SEG6_LOCAL_FLV_OP_UNSPEC,
-+	SEG6_LOCAL_FLV_OP_PSP,
-+	SEG6_LOCAL_FLV_OP_USP,
-+	SEG6_LOCAL_FLV_OP_USD,
-+	SEG6_LOCAL_FLV_OP_NEXT_CSID,
-+	__SEG6_LOCAL_FLV_OP_MAX
-+};
-+
-+#define SEG6_LOCAL_FLV_OP_MAX (__SEG6_LOCAL_FLV_OP_MAX - 1)
-+
- #endif
-diff --git a/ip/iproute.c b/ip/iproute.c
-index a1cdf953..a8ad7d52 100644
---- a/ip/iproute.c
-+++ b/ip/iproute.c
-@@ -111,8 +111,10 @@ static void usage(void)
- 		"            End.DT6 | End.DT4 | End.DT46 | End.B6 | End.B6.Encaps |\n"
- 		"            End.BM | End.S | End.AS | End.AM | End.BPF }\n"
- 		"OPTIONS := OPTION [ OPTIONS ]\n"
--		"OPTION := { srh SEG6HDR | nh4 ADDR | nh6 ADDR | iif DEV | oif DEV |\n"
-+		"OPTION := { flavors FLAVORS | srh SEG6HDR | nh4 ADDR | nh6 ADDR | iif DEV | oif DEV |\n"
- 		"            table TABLEID | vrftable TABLEID | endpoint PROGNAME }\n"
-+		"FLAVORS := { FLAVOR[,FLAVOR] }\n"
-+		"FLAVOR := { psp | usp | usd | next-csid }\n"
- 		"IOAM6HDR := trace prealloc type IOAM6_TRACE_TYPE ns IOAM6_NAMESPACE size IOAM6_TRACE_SIZE\n"
- 		"ROUTE_GET_FLAGS := [ fibmatch ]\n");
- 	exit(-1);
-diff --git a/ip/iproute_lwtunnel.c b/ip/iproute_lwtunnel.c
-index 8ffca4f9..86128c9b 100644
---- a/ip/iproute_lwtunnel.c
-+++ b/ip/iproute_lwtunnel.c
-@@ -159,6 +159,100 @@ static int read_seg6mode_type(const char *mode)
- 	return -1;
- }
- 
-+static const char *seg6_flavor_names[SEG6_LOCAL_FLV_OP_MAX + 1] = {
-+	[SEG6_LOCAL_FLV_OP_PSP]		= "psp",
-+	[SEG6_LOCAL_FLV_OP_USP]		= "usp",
-+	[SEG6_LOCAL_FLV_OP_USD]		= "usd",
-+	[SEG6_LOCAL_FLV_OP_NEXT_CSID]	= "next-csid"
-+};
-+
-+static int read_seg6_local_flv_type(const char *name)
-+{
-+	int i;
-+
-+	for (i = 1; i < SEG6_LOCAL_FLV_OP_MAX + 1; ++i) {
-+		if (!seg6_flavor_names[i])
-+			continue;
-+
-+		if (strcasecmp(seg6_flavor_names[i], name) == 0)
-+			return i;
-+	}
-+
-+	return -1;
-+}
-+
-+static int parse_seg6local_flavors(const char *buf, __u32 *flv_mask)
-+{
-+	unsigned char flavor_ok[SEG6_LOCAL_FLV_OP_MAX + 1] = { 0, };
-+	char *wbuf;
-+	__u32 mask = 0;
-+	int index;
-+	char *s;
-+
-+	/* strtok changes first parameter, so we need to make a local copy */
-+	wbuf = strdupa(buf);
-+
-+	if (strlen(wbuf) == 0)
-+		return -1;
-+
-+	for (s = strtok(wbuf, ","); s; s = strtok(NULL, ",")) {
-+		index = read_seg6_local_flv_type(s);
-+		if (index < 0 || index > SEG6_LOCAL_FLV_OP_MAX)
-+			return -1;
-+		/* we check for duplicates */
-+		if (flavor_ok[index]++)
-+			return -1;
-+
-+		mask |= (1 << index);
-+	}
-+
-+	*flv_mask = mask;
-+	return 0;
-+}
-+
-+static void print_flavors(FILE *fp, __u32 flavors)
-+{
-+	int i, fnumber = 0;
-+	char *flv_name;
-+
-+	if (is_json_context())
-+		open_json_array(PRINT_JSON, "flavors");
-+	else
-+		print_string(PRINT_FP, NULL, "flavors ", NULL);
-+
-+	for (i = 0; i < SEG6_LOCAL_FLV_OP_MAX + 1; ++i) {
-+		if (flavors & (1 << i)) {
-+			flv_name = (char *) seg6_flavor_names[i];
-+			if (!flv_name)
-+				continue;
-+
-+			if (is_json_context())
-+				print_string(PRINT_JSON, NULL, NULL, flv_name);
-+			else {
-+				if (fnumber++ == 0)
-+					print_string(PRINT_FP, NULL, "%s", flv_name);
-+				else
-+					print_string(PRINT_FP, NULL, ",%s", flv_name);
-+			}
-+		}
-+	}
-+
-+	if (is_json_context())
-+		close_json_array(PRINT_JSON, NULL);
-+	else
-+		print_string(PRINT_FP, NULL, " ", NULL);
-+}
-+
-+static void print_flavors_attr(FILE *fp, const char *key, __u32 value)
-+{
-+	if (is_json_context()) {
-+		print_u64(PRINT_JSON, key, NULL, value);
-+	} else {
-+		print_string(PRINT_FP, NULL, "%s ", key);
-+		print_num(fp, 1, value);
-+	}
-+}
-+
- static void print_encap_seg6(FILE *fp, struct rtattr *encap)
- {
- 	struct rtattr *tb[SEG6_IPTUNNEL_MAX+1];
-@@ -376,6 +470,30 @@ static void print_seg6_local_counters(FILE *fp, struct rtattr *encap)
- 	}
- }
- 
-+static void print_seg6_local_flavors(FILE *fp, struct rtattr *encap)
-+{
-+	struct rtattr *tb[SEG6_LOCAL_FLV_MAX + 1];
-+	__u8 lbl = 0, nfl = 0;
-+	__u32 flavors = 0;
-+
-+	parse_rtattr_nested(tb, SEG6_LOCAL_FLV_MAX, encap);
-+
-+	if (tb[SEG6_LOCAL_FLV_OPERATION]) {
-+		flavors = rta_getattr_u32(tb[SEG6_LOCAL_FLV_OPERATION]);
-+		print_flavors(fp, flavors);
-+	}
-+
-+	if (tb[SEG6_LOCAL_FLV_LCBLOCK_BITS]) {
-+		lbl = rta_getattr_u8(tb[SEG6_LOCAL_FLV_LCBLOCK_BITS]);
-+		print_flavors_attr(fp, "lblen", lbl);
-+	}
-+
-+	if (tb[SEG6_LOCAL_FLV_LCNODE_FN_BITS]) {
-+		nfl = rta_getattr_u8(tb[SEG6_LOCAL_FLV_LCNODE_FN_BITS]);
-+		print_flavors_attr(fp, "nflen", nfl);
-+	}
-+}
-+
- static void print_encap_seg6local(FILE *fp, struct rtattr *encap)
- {
- 	struct rtattr *tb[SEG6_LOCAL_MAX + 1];
-@@ -438,6 +556,9 @@ static void print_encap_seg6local(FILE *fp, struct rtattr *encap)
- 
- 	if (tb[SEG6_LOCAL_COUNTERS] && show_stats)
- 		print_seg6_local_counters(fp, tb[SEG6_LOCAL_COUNTERS]);
-+
-+	if (tb[SEG6_LOCAL_FLAVORS])
-+		print_seg6_local_flavors(fp, tb[SEG6_LOCAL_FLAVORS]);
- }
- 
- static void print_encap_mpls(FILE *fp, struct rtattr *encap)
-@@ -1177,12 +1298,66 @@ static int seg6local_fill_counters(struct rtattr *rta, size_t len, int attr)
- 	return 0;
- }
- 
-+static int seg6local_parse_flavors(struct rtattr *rta, size_t len,
-+			 int *argcp, char ***argvp, int attr)
-+{
-+	int lbl_ok = 0, nfl_ok = 0;
-+	__u8 lbl = 0, nfl = 0;
-+	struct rtattr *nest;
-+	__u32 flavors = 0;
-+	int ret;
-+
-+	char **argv = *argvp;
-+	int argc = *argcp;
-+
-+	nest = rta_nest(rta, len, attr);
-+
-+	ret = parse_seg6local_flavors(*argv, &flavors);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = rta_addattr32(rta, len, SEG6_LOCAL_FLV_OPERATION, flavors);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (flavors & (1 << SEG6_LOCAL_FLV_OP_NEXT_CSID)) {
-+		NEXT_ARG_FWD();
-+		if (strcmp(*argv, "lblen") == 0){
-+			NEXT_ARG();
-+			if (lbl_ok++)
-+				duparg2("lblen", *argv);
-+			if (get_u8(&lbl, *argv, 0))
-+				invarg("\"locator-block length\" value is invalid\n", *argv);
-+			ret = rta_addattr8(rta, len, SEG6_LOCAL_FLV_LCBLOCK_BITS, lbl);
-+			NEXT_ARG_FWD();
-+		}
-+
-+		if (strcmp(*argv, "nflen") == 0){
-+			NEXT_ARG();
-+			if (nfl_ok++)
-+				duparg2("nflen", *argv);
-+			if (get_u8(&nfl, *argv, 0))
-+				invarg("\"locator-node function length\" value is invalid\n", *argv);
-+			ret = rta_addattr8(rta, len, SEG6_LOCAL_FLV_LCNODE_FN_BITS, nfl);
-+			NEXT_ARG_FWD();
-+		}
-+		PREV_ARG();
-+	}
-+
-+	rta_nest_end(rta, nest);
-+
-+	*argcp = argc;
-+	*argvp = argv;
-+
-+	return 0;
-+}
-+
- static int parse_encap_seg6local(struct rtattr *rta, size_t len, int *argcp,
- 				 char ***argvp)
- {
-+	int nh4_ok = 0, nh6_ok = 0, iif_ok = 0, oif_ok = 0, flavors_ok = 0;
- 	int segs_ok = 0, hmac_ok = 0, table_ok = 0, vrftable_ok = 0;
- 	int action_ok = 0, srh_ok = 0, bpf_ok = 0, counters_ok = 0;
--	int nh4_ok = 0, nh6_ok = 0, iif_ok = 0, oif_ok = 0;
- 	__u32 action = 0, table, vrftable, iif, oif;
- 	struct ipv6_sr_hdr *srh;
- 	char **argv = *argvp;
-@@ -1252,6 +1427,15 @@ static int parse_encap_seg6local(struct rtattr *rta, size_t len, int *argcp,
- 				duparg2("count", *argv);
- 			ret = seg6local_fill_counters(rta, len,
- 						      SEG6_LOCAL_COUNTERS);
-+		} else if (strcmp(*argv, "flavors") == 0) {
-+			NEXT_ARG();
-+			if (flavors_ok++)
-+				duparg2("flavors", *argv);
-+
-+			if (seg6local_parse_flavors(rta, len, &argc, &argv,
-+						    SEG6_LOCAL_FLAVORS))
-+				invarg("invalid \"flavors\" attribute\n",
-+					*argv);
- 		} else if (strcmp(*argv, "srh") == 0) {
- 			NEXT_ARG();
- 			if (srh_ok++)
-diff --git a/man/man8/ip-route.8.in b/man/man8/ip-route.8.in
-index 7fad2697..bd38b7d8 100644
---- a/man/man8/ip-route.8.in
-+++ b/man/man8/ip-route.8.in
-@@ -846,10 +846,14 @@ related to an action use the \fB-s\fR flag in the \fBshow\fR command.
- The following actions are currently supported (\fBLinux 4.14+ only\fR).
- .in +2
- 
--.B End
-+.BR End " [ " flavors
-+.IR FLAVORS " ] "
- - Regular SRv6 processing as intermediate segment endpoint.
- This action only accepts packets with a non-zero Segments Left
--value. Other matching packets are dropped.
-+value. Other matching packets are dropped. The presence of flavors
-+can change the regular processing of an End behavior according to
-+the user-provided Flavor operations and information carried in the packet.
-+See \fBFlavors parameters\fR section.
- 
- .B End.X nh6
- .I NEXTHOP
-@@ -929,8 +933,61 @@ Additionally, encapsulate the matching packet within an outer IPv6 header
- followed by the specified SRH. The destination address of the outer IPv6
- header is set to the first segment of the new SRH. The source
- address is set as described in \fBip-sr\fR(8).
-+
-+.B Flavors parameters
-+
-+The flavors represent additional operations that can modify or extend a
-+subset of the existing behaviors.
-+.in +2
-+
-+.B flavors
-+.IR OPERATION "[," OPERATION "] [" ATTRIBUTES "]"
-+.in +2
-+
-+.IR OPERATION " := { "
-+.BR psp " | "
-+.BR usp " | "
-+.BR usd " | "
-+.BR next-csid " }"
-+
-+.IR ATTRIBUTES " := {"
-+.IR "KEY VALUE" " } ["
-+.IR ATTRIBUTES " ]"
-+
-+.IR KEY " := { "
-+.BR lblen " | "
-+.BR nflen " } "
- .in -2
- 
-+.B psp
-+- Penultimate Segment Pop of the SRH (not yet supported in kernel)
-+
-+.B usp
-+- Ultimate Segment Pop of the SRH (not yet supported in kernel)
-+
-+.B usd
-+- Ultimate Segment Decapsulation (not yet supported in kernel)
-+
-+.B next-csid
-+- The NEXT-C-SID mechanism offers the possibility of encoding
-+several SRv6 segments within a single 128 bit SID address. The NEXT-C-SID
-+flavor can be configured to support user-provided Locator-Block and
-+Locator-Node Function lengths. If Locator-Block and/or Locator-Node Function
-+lengths are not provided by the user during configuration of an SRv6 End
-+behavior instance with NEXT-C-SID flavor, the default value is 32-bit for
-+Locator-Block and 16-bit for Locator-Node Function.
-+
-+.BI lblen " VALUE "
-+- defines the Locator-Block length for NEXT-C-SID flavor.
-+The Locator-Block length must be greater than 0 and evenly divisible by 8. This
-+attribute can be used only with NEXT-C-SID flavor.
-+
-+.BI nflen " VALUE "
-+- defines the Locator-Node Function length for NEXT-C-SID
-+flavors. The Locator-Node Function length must be greater than 0 and evenly
-+divisible by 8. This attribute can be used only with NEXT-C-SID flavor.
-+.in -4
-+
- .B ioam6
- .in +2
- .B freq K/N
-@@ -1291,6 +1348,16 @@ ip -6 route add 2001:db8:1::/64 encap seg6local action End.DT46 vrftable 100 dev
- Adds an IPv6 route with SRv6 decapsulation and forward with lookup in VRF table.
- .RE
- .PP
-+ip -6 route add 2001:db8:1::/64 encap seg6local action End flavors next-csid dev eth0
-+.RS 4
-+Adds an IPv6 route with SRv6 End behavior with next-csid flavor enabled.
-+.RE
-+.PP
-+ip -6 route add 2001:db8:1::/64 encap seg6local action End flavors next-csid lblen 48 nflen 16 dev eth0
-+.RS 4
-+Adds an IPv6 route with SRv6 End behavior with next-csid flavor enabled and user-provided Locator-Block and Locator-Node Function lengths.
-+.RE
-+.PP
- ip -6 route add 2001:db8:1::/64 encap ioam6 freq 2/5 mode encap tundst 2001:db8:42::1 trace prealloc type 0x800000 ns 1 size 12 dev eth0
- .RS 4
- Adds an IPv6 route with an IOAM Pre-allocated Trace encapsulation (ip6ip6) that only includes the hop limit and the node id, configured for the IOAM namespace 1 and a pre-allocated data block of 12 octets (will be injected in 2 packets every 5 packets).
 -- 
-2.20.1
+2.34.1
 
