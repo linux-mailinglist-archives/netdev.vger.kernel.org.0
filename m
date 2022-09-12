@@ -2,161 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D8485B5DE0
-	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 18:04:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F3785B5E33
+	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 18:26:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229631AbiILQES (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Sep 2022 12:04:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46190 "EHLO
+        id S229989AbiILQ00 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Sep 2022 12:26:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229629AbiILQEQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 12:04:16 -0400
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2115.outbound.protection.outlook.com [40.107.102.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 809CB3AB01;
-        Mon, 12 Sep 2022 09:04:14 -0700 (PDT)
+        with ESMTP id S229986AbiILQ0Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 12:26:24 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2084.outbound.protection.outlook.com [40.107.93.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 076361EC46
+        for <netdev@vger.kernel.org>; Mon, 12 Sep 2022 09:26:23 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kxNWRh6PUde10E3IFbiU4B9wUvU7i43SiyJ6mbFs0J76R7Kx4MA7vfNWvPm9vRgaN905L7nF03jDuDJF+yDjfUWzb8nO9Qs49TI2pes8kJd4s9libXzO+BtcCjbTpOha7fdy/G1adcU2aJN946dw3rUi09E+bzFMXEbV7ppoNM4IT25bZTmk3Q6xuImfIN84TtXGchad8c1QQRHqwMBb3ecZKfmVvO8Mml+7NHgL/mF5UpA31lTh1EmY0iiWAZQXrhQ/KmUWO5QjQ8FOTh7FzGiiu8o1rFhxbo/4U5jfaZcgo+TPxJdF8kAzDyEBDxhJebTsZgwRNbhzDm6tLgS9Qg==
+ b=AiuHkGEZ2VCfOJQQPW/jTdSiwFse5i1mdpYCgTvfizEtQbkOLxKQbtDRjwl70GaPC5Fb6S18M5WM6MgB4s6B07+DoXEhWV6j+0aUrCD6XZNRp5TpCwAkKl6FLsnE7nEvpCNN3LGKKExqLywhfPmpBhkHSxuyV7kQgqZvkzPrtQSgkoreFDiMAK5sCkynMdgDA0d0hAPThps5TDEsuNcnxGbWqWpuw3LgDxycxcPf4NbUZ11/xT83gtItSxFluvtuvUcweOy6S3XC6eVZ/qo8xHFIBHsJW1H6g59H2TtSugKQtjeWOr28I32dR9nRFccWjfG7oK+Dl4RzNQhru3qSEA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jwWP1tCiQfpXmADXkAnhf36v/4lAKx4/e1LVA77Mg/8=;
- b=kNVND7U5X+yhKI9AwSh72eKHccvPnRtEMbTVTY/o6YPfPxORr8V5lQJFCvBCjCfB/oO8IqsH8tt3+EsqATGplKZU8MA3szqjN97cJepmF1fHOVz7KexCKj8naXzzf716VxgxOzYaw+mRRcSamAl7Z4ewwcMu5VCRnKg64nzlX6nXkxS7eBwzoT9/jhvqWJXoQzbdx0OFP/v9wWFA8RrdGSvpVELe9Dy57X5dWM2UNpOUWzrWIw1tl1ppbobKKOGktI0F2PaWl2Hs6tZdBCYAqImRHv/4G05UZgbJzTiP1o1dr+I1rC3qRUnYca66WNqwRJ+bR1mvOGOu4o06ZOjFNQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=in-advantage.com; dmarc=pass action=none
- header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ bh=rGMm9XkFnFRWBLZud61JAd6bzFoW2cqRjQyBVphV4jU=;
+ b=PNbE7V3ceVpqU3TuhD/fbCH+c/UB2h+4FjwEeOUYdYF2H394M+OMFNc0gsMUrcmTEp8cmEB6oxyzRPszw6O8qG85k6vuA62GU7XJnizAIFCW8soeJ2ByydChe82peywe6Yk6yEBT7BrvPCAl+4U7A7C1xzobrm/dyg6aLq2mr3hslx+nAkD9Wa48EbtO0ucDFUvjVhiRsBsR4gvYO1NCbf0foMAA9p359hPMz2zoDCb95XrcGia1bz+jk/ODc50zW6CcRWSv/Nsjz8CFJ2HPdEsXAfSCv/n1sF5X6cFyBDYOT2ZrAb6lpD7WSR0GA06oO4rqw84OI+D8JrLcVvF5Rg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.236) smtp.rcpttodomain=microchip.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jwWP1tCiQfpXmADXkAnhf36v/4lAKx4/e1LVA77Mg/8=;
- b=FZdf6+ZuFNgoIhW5dpBkji01KPBhg67DuR3ChXIRr1uz9XGLe4Oi6obtHMJFDUktwxt1cmlVK10q8hojikxUVV1ZAFFUNC/8Yjg6EZwGPsvA8NuhD2mTXhin0uUrI+KXH47MeSc2C8zxcj/+SwEaE/auVgC3rGXadTeKqc6yUf0=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=in-advantage.com;
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37) by CH0PR10MB5068.namprd10.prod.outlook.com
- (2603:10b6:610:c7::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.16; Mon, 12 Sep
- 2022 16:04:11 +0000
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::38ee:4bfb:c7b8:72e1]) by MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::38ee:4bfb:c7b8:72e1%7]) with mapi id 15.20.5588.020; Mon, 12 Sep 2022
- 16:04:11 +0000
-Date:   Mon, 12 Sep 2022 09:04:06 -0700
-From:   Colin Foster <colin.foster@in-advantage.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Lee Jones <lee@kernel.org>
-Subject: Re: [RFC v1 net-next 6/8] net: dsa: felix: populate mac_capabilities
- for all ports
-Message-ID: <Yx9YdlrsLsBNPJzL@colin-ia-desktop>
-References: <20220911200244.549029-1-colin.foster@in-advantage.com>
- <20220911200244.549029-7-colin.foster@in-advantage.com>
- <Yx7yZESuK6Jh0Q8X@shell.armlinux.org.uk>
- <20220912101621.ttnsxmjmaor2cd7d@skbuf>
- <Yx9Uo9RiI7bRZvLC@colin-ia-desktop>
- <20220912155234.ds73xpn5ijjq3iif@skbuf>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220912155234.ds73xpn5ijjq3iif@skbuf>
-X-ClientProxiedBy: SJ0PR03CA0124.namprd03.prod.outlook.com
- (2603:10b6:a03:33c::9) To MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37)
+ bh=rGMm9XkFnFRWBLZud61JAd6bzFoW2cqRjQyBVphV4jU=;
+ b=e7cJXZR0eQ1SIvuIwp3ODdVJPpNmx2qnp8wDZ2pJGM/nJ3D3Rs1Tb72fkOaK6vaiIv4V7r92P38dbfBebrhAara0l4KZqJF6p9ZFczZg/xTvulN2959+jJZOf0k0R/EsAfA0ozh7y3Nd7mcAU3A8o3a06LwTOUmJAmQwXn4STNEm8IVd2gAJK5GdeAMxGeOBAGKJMzkr/XJeMDmtLv4ojy+tZiRD5IfbwbXJ2D+R7XzV/vXuqU4KVieUZIKMNHHldDNri0uVQGO9bW6Rjb22UUtd6wygxvz8Maev7glVYFYLmZyIzHgnbDdYIbN39qftld41AwWxo2IBDskWtlf6+A==
+Received: from SJ0PR13CA0114.namprd13.prod.outlook.com (2603:10b6:a03:2c5::29)
+ by MN0PR12MB5787.namprd12.prod.outlook.com (2603:10b6:208:376::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.22; Mon, 12 Sep
+ 2022 16:26:21 +0000
+Received: from CO1PEPF00001A5D.namprd05.prod.outlook.com
+ (2603:10b6:a03:2c5:cafe::1e) by SJ0PR13CA0114.outlook.office365.com
+ (2603:10b6:a03:2c5::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5632.12 via Frontend
+ Transport; Mon, 12 Sep 2022 16:26:20 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.236) by
+ CO1PEPF00001A5D.mail.protection.outlook.com (10.167.241.4) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5612.9 via Frontend Transport; Mon, 12 Sep 2022 16:26:19 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL109.nvidia.com
+ (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Mon, 12 Sep
+ 2022 16:26:19 +0000
+Received: from yaviefel (10.126.231.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Mon, 12 Sep
+ 2022 09:26:16 -0700
+References: <20220908120442.3069771-1-daniel.machon@microchip.com>
+ <20220908120442.3069771-2-daniel.machon@microchip.com>
+User-agent: mu4e 1.6.6; emacs 28.1
+From:   Petr Machata <petrm@nvidia.com>
+To:     Daniel Machon <daniel.machon@microchip.com>
+CC:     <netdev@vger.kernel.org>, <Allan.Nielsen@microchip.com>,
+        <UNGLinuxDriver@microchip.com>, <maxime.chevallier@bootlin.com>,
+        <vladimir.oltean@nxp.com>, <petrm@nvidia.com>, <kuba@kernel.org>,
+        <vinicius.gomes@intel.com>, <thomas.petazzoni@bootlin.com>
+Subject: Re: [RFC PATCH net-next 1/2] net: dcb: add new pcp selector to app
+ object
+Date:   Mon, 12 Sep 2022 18:15:01 +0200
+In-Reply-To: <20220908120442.3069771-2-daniel.machon@microchip.com>
+Message-ID: <878rmoeezf.fsf@nvidia.com>
 MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.126.231.35]
+X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 62f11276-aa51-4e21-812e-08da94d86e82
-X-MS-TrafficTypeDiagnostic: CH0PR10MB5068:EE_
+X-MS-TrafficTypeDiagnostic: CO1PEPF00001A5D:EE_|MN0PR12MB5787:EE_
+X-MS-Office365-Filtering-Correlation-Id: 94df583c-9eca-4a85-1b30-08da94db8672
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /cABzw8cjHZIEW2PPGJQvhTSD/U69kgfEDDfXkkRq4FEeQrQTSno5KFcTXw2lANbAt7Z9EnO0YBxQhApM8C0bIHGNqvm++jqUoCI9NZaI6uwNKYiEgfoudsL+t2enK1mb7C98cEfM0iDet07e5SaWpFCmXIDJGx9Rx7o0NKzzaNoa+a36z2vAZJdjGwWOcTViwCUMktLd0jaI4WJcusFFPfPktkqXgWmQNeyoj683wg6PlmbRyF+LYDGCQViO7WZfBOEiQI/L+rIVEjqPh1w8Md0wzOKqRGx8I0iXsNzst7+DmHx1/gnkpo3x96zbrlpua3aSn7wBAv0IpmnN3H0eD76eG1KVnvRAcmaqDXrr976LOxbC8CPKowvhpjg83jYzOVi9U65/n8dNuz3SjjvQtNto60dqHtTKIghifIafFEk9JI2JnQm0mWKJVAQBt4cS/oJUudxHDVpy9h2uBNOIR79CR1imGlS2REYMyr511u1RN3S5S95GnPuRHWkHkw7CibiLQNpzmk6ceKUA25dBY46HYcowA01vDj9k7pAvjRGAd3p+t7EOQM8FI/9IDfCG/SAa1br48wo9rijAHu7vgn7KRBAO10PU3xKbva4/nwEkpSlGgfSGXAlL2KwaE5zUBOcZVfs2MEjCort0tw6WHGMT8IeqsgqSzFUaFJ4gx17hkNejMq8GHAJmX3HE69rs8iM1O7sCgWpx14bVILk0H61hNU+wdZAIlcxedIZvEs=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(346002)(136003)(366004)(396003)(376002)(39840400004)(38100700002)(86362001)(8676002)(66556008)(66476007)(4326008)(66946007)(83380400001)(41300700001)(6512007)(6506007)(478600001)(6666004)(9686003)(26005)(6486002)(966005)(8936002)(316002)(54906003)(6916009)(186003)(2906002)(33716001)(44832011)(7416002)(5660300002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?QqNMICxe+ntKrZmJD5E97lLtM2Pp8025jxOq94O/1bX63AiFhJkzU8BF0TPS?=
- =?us-ascii?Q?sGkrAi04AUhCIxHzhy5xECWRP7HUjT87d36j2PkRd4/AMwPqcr/qB5RKEXrQ?=
- =?us-ascii?Q?vm5FSCp+nOH95ajPgU/WTawh5Spi9GpD5GZGJkyhF258uUZo8jaeF6LeVVMy?=
- =?us-ascii?Q?X6i8OKwvStXikztrbM+OdIZx7SX9A8NEUzIeiva1fnYNxgzrSu78r0U9LFgo?=
- =?us-ascii?Q?NAea5Otqony7Drn/SN+cAZNRfIVsoBFYpMuyqGBvaA/mU0tn3XqCsoxqsEjr?=
- =?us-ascii?Q?m+5/xBJ/fjJsofLvZGMFmDmd5VJrWp3UW746SNYQK1m9Y6USHxDuo8qdXsWB?=
- =?us-ascii?Q?JCNqoiDC5mOe1VudnEPz0osSTGGBnTR6O7YUEF4CA/K+0iPym30esxYpVm07?=
- =?us-ascii?Q?Q+8ay8zsKkTbMXCt4RZ+vFxtnRBCzjGqKRzHGhuvUGb2sLAL+j8aF/vm8+kA?=
- =?us-ascii?Q?281CWdZjuclaeOuwJxvmn994lmpU/Cj8npmlOiE4F3vSIvadl+3mL1hUy7iI?=
- =?us-ascii?Q?Hf1oVKfIMPy/fMuncbVjYDyYR4rC23BaVGcAfWdBQyzwzbyyk9GTT8029L1e?=
- =?us-ascii?Q?elqPBzRwBBckxJ+Ji3cx0udBoMcrNKOhMQAGnzTnJoVTEhYWBnMuimpSAFRf?=
- =?us-ascii?Q?akhjtTXgswcc/oTJOVeWQ9vJaJqeRqmd4+X8DgK9C/W20KFFSftylw4mjuQl?=
- =?us-ascii?Q?/nyD63tP+iJhRGntea2lfrlGuw0QvT8oyBWgzzzLcv+4+QiZ3TucRtzvyBrL?=
- =?us-ascii?Q?QhvewU7kdWM3SXhXLZThi9ZSaIWUG7fKp+Enlay7vyuW+/Px2RDyLcElSPOP?=
- =?us-ascii?Q?pGnsVMr6QuxZBUf6JwjE36oL762HSAhbn8C6wYNy8DrXBvFAWR7w7Sc0w2NA?=
- =?us-ascii?Q?HdlAjDLnJ6pQejVj8n+z745gJs3C9Is6IJ9QUE1GLQTMwHoxO7WXfciJ7DR1?=
- =?us-ascii?Q?GKJd9y6rkIqF5X9nlLm87e/+QjquCBTOrUDJlMAiNOLksSnfuLLCrZ0gktke?=
- =?us-ascii?Q?g2cut7leibaDxyzHQUCOfTJ3IHiAVLHlLyBADWL9wtui1r2chQHu0NshhABR?=
- =?us-ascii?Q?WEMQvNwfgYXR6r3c3q7ZyBN0PeC3EVfFK5drkO6vmSiGuo0CZy0dXgB5I/+F?=
- =?us-ascii?Q?QXupFGf3r1EjBmuQbBM305uPyaznxIOceQaDDDyv6Kc2IWdpjAKsqPPHxmRZ?=
- =?us-ascii?Q?GAkg5vQK8ST7pFtG0RHAsKLTJNlgvgn2dPAYDzWEApktxmqMDdtI+iaEKGjA?=
- =?us-ascii?Q?refW46dDDV9qwO1ASKoEDz13GiOmBYPEVJgS05NBoa7xFfZslVHWD/gCO0Ht?=
- =?us-ascii?Q?FX2xt4ThxAJ8Glb7bqSDH2PMwaLjOzwpu+1/YvIvDwc7OKV5N6m0MCqMUhhD?=
- =?us-ascii?Q?IcYKdXY9GM2EsP7OREzgGkL/owp23MZCYZZj1INIuyOD5Z1gXf9KNA9MHqCR?=
- =?us-ascii?Q?tR/i8hYSzJZnkWLqtFjeIe0DJ1K8TCXdHVKmE6sZl2WF0gl67F0ZUnjIDh/x?=
- =?us-ascii?Q?yVkn6IDWd0j9RM85jTZnRNh3TXqTPVYZKFz27wlDXLX4MVnnAa7wZfCGaCVr?=
- =?us-ascii?Q?0TM8oTcslxyJEns/1DYElF52stYJcd6lS94Gdkt68mLroo2S/+ffbhxe46iO?=
- =?us-ascii?Q?Tg=3D=3D?=
-X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 62f11276-aa51-4e21-812e-08da94d86e82
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Sep 2022 16:04:11.7052
+X-Microsoft-Antispam-Message-Info: +/nEWRBzGfk3N66/Iqmn81/AC9DYvVbrdxkJ9QmexTCCQk4zYFHrazx8a2NlVL4zn2L5R/zdszqfPnrouSUTvisnUo6cpYLgYls82lUra1Lk1wkZQQQntn8yPF21JStBNoSsXXdkrFas7RYJzP19uZUy7UiFyI0w+vCR/TdisiwwmR6Uh1e4wBaSVPvWWcNM/V7pqyVZEtrTe4NpRnMaS67DKddGelt0SCPw3ICyS19Y3+Zegs/r/ErWZFGqH8YprGx3/4yvhGSVzSKAQg9B2pa9dZsHtvdxeDWdOBdQTY+rYS97rf6CJzKKUTPSX9QDFrBkLKCyiiygkwxCewWaUWXl6xOgvWn931pxZotKMUu0pkY9zkJLmUz9mh/DhG0oU/KzrE9mf5CIB1QPZdxM9cf7YCsUML/UzfIC576dZPu772ZyeuqYvC+yESklLyQE9umt9NXkD62yhoUbzwCnFfMfQyOuHn0mamPOtq6eoERf/AScNuXxRB3vGdXy/5lwFhfnX/WR3jHM2Jw4NQNwfRvCbGk2EtfcBBAJ7IWHeI69yxE68oKL2B0+HqBdHpe4AfoUoWD7nbhs4HD75AQnJ0gbkMu0vtruD2CFhCFDC2jO6DzGZzygDHQV42ds7UsEbU1HfPp/octQMfh4hHONfsEUfIJGvTXPn8sBDqmNuvyPDZr6Kp87oOg6rgHpMwH2CCu7XIrmZjymGrYs2b1SVXN+wVpB4QxFp8LrzSizkBjgWecEOts+kyvAiSl2GY0/8d0kanTYpXYwmv+O7MDZO9FPkuEWI+TkDK6cPnFttJA=
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230017)(4636009)(346002)(376002)(39860400002)(136003)(396003)(36840700001)(46966006)(40470700004)(82310400005)(426003)(47076005)(478600001)(2616005)(16526019)(336012)(186003)(6666004)(40480700001)(40460700003)(86362001)(6916009)(54906003)(36756003)(316002)(4326008)(70206006)(8676002)(70586007)(36860700001)(83380400001)(82740400003)(81166007)(356005)(41300700001)(26005)(2906002)(8936002)(5660300002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Sep 2022 16:26:19.9625
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: DvZI57TIbt3V7Ml9CcWvm0IKvULVPmbNFQQIAcRBLipWlFWr/RH8okvPbh4pg/paQSV49y7SwcRpOYhpSX8p//s1JIFhoenwV6wQnjFelhQ=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR10MB5068
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-Network-Message-Id: 94df583c-9eca-4a85-1b30-08da94db8672
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1PEPF00001A5D.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB5787
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 12, 2022 at 03:52:35PM +0000, Vladimir Oltean wrote:
-> On Mon, Sep 12, 2022 at 08:47:47AM -0700, Colin Foster wrote:
-> > > This is true. I am also a bit surprised at Colin's choices to
-> > > (a) not ask the netdev maintainers to pull into net-next the immutable
-> > >     branch that Lee provided here:
-> > >     https://lore.kernel.org/lkml/YxrjyHcceLOFlT%2Fc@google.com/
-> > >     and instead send some patches for review which are difficult to
-> > >     apply directly to any tree
-> > 
-> > As mentioned in the cover letter, I don't expect this to necessarily be
-> > ready by the next merge window. But seemingly I misjudged whether
-> > merging the net-next and Lee's tree would be more tedious for the netdev
-> > maintainers than looking at the RFC for reviewers. I'm trying to create
-> > as little hassle for people as I can. Apologies.
-> 
-> What is it exactly that is keeping this patch set from being ready for 6.1?
-> There's still time...
-> 
-> It mostly looks ok to me, I'm in the process of reviewing it. You
-> mentioned documentation in the cover letter; I suppose you're talking
-> about dt-schema? If so, I just started off by converting ocelot.txt to
-> mscc,ocelot.yaml, since I know that the conversion process is typically
-> a bit daunting to even start.
-> https://patchwork.kernel.org/project/netdevbpf/patch/20220912153702.246206-1-vladimir.oltean@nxp.com/
 
-Yes - checkpatch correclty gave warnings about mscc,vsc7512-ext-switch being
-undocumented. Thanks for that patch - I just saw it! I'll wait for your
-review before I get optimistic. But if it boils down to separating the
-last patch (per Lee's suggestion) and adding the dt-bindings, maybe it
-could be ready in another round or two.
+Daniel Machon <daniel.machon@microchip.com> writes:
+
+> Add new PCP selector for the 8021Qaz APP managed object.
+>
+> The purpose of adding the PCP selector, is to be able to offload
+> PCP-based queue classification to the 8021Q Priority Code Point table,
+> see 6.9.3 of IEEE Std 802.1Q-2018.
+>
+> PCP and DEI is encoded in the protocol field as 8*dei+pcp, so that a
+> mapping of PCP 2 and DEI 1 to priority 3 is encoded as {255, 10, 3}.
+>
+> While PCP is not a standard 8021Qaz selector, it seems very convenient
+> to add it to the APP object, as this is where similar priority mapping
+> is handled, and it perfectly fits the {selector, protocol, priority}
+> triplet.
+>
+> Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
+> ---
+>  include/uapi/linux/dcbnl.h | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/include/uapi/linux/dcbnl.h b/include/uapi/linux/dcbnl.h
+> index a791a94013a6..8eab16e5bc13 100644
+> --- a/include/uapi/linux/dcbnl.h
+> +++ b/include/uapi/linux/dcbnl.h
+> @@ -217,6 +217,7 @@ struct cee_pfc {
+>  #define IEEE_8021QAZ_APP_SEL_DGRAM	3
+>  #define IEEE_8021QAZ_APP_SEL_ANY	4
+>  #define IEEE_8021QAZ_APP_SEL_DSCP       5
+> +#define IEEE_8021QAZ_APP_SEL_PCP	255
+>  
+>  /* This structure contains the IEEE 802.1Qaz APP managed object. This
+>   * object is also used for the CEE std as well.
+
+I'm thinking how to further isolate this from the IEEE standard values.
+I think it would be better to pass the non-standard APP contributions in
+a different attribute. IIUIC, this is how the APP table is passed:
+
+DCB_ATTR_IEEE_APP_TABLE {
+    DCB_ATTR_IEEE_APP {
+        struct dcb_app { ... };
+    }
+    DCB_ATTR_IEEE_APP {
+        struct dcb_app { ... };
+    }
+}
+
+Well, instead, the non-standard stuff could be passed in a different
+attribute:
+
+DCB_ATTR_IEEE_APP_TABLE {
+    DCB_ATTR_IEEE_APP {
+        struct dcb_app { ... }; // standard contribution to APP table
+    }
+    DCB_ATTR_DCB_APP {
+        struct dcb_app { ... }; // non-standard contribution
+    }
+}
+
+The new selector could still stay as 255. This will allow us to keep the
+internal bookkeeping simple for the likely case that 255 never becomes a
+valid IEEE selector. But if it ever does, the UAPI can stay the same,
+just the internals will need to be updated.
