@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C0DA5B5796
-	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 11:54:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5F975B579B
+	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 11:54:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230153AbiILJx5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Sep 2022 05:53:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50394 "EHLO
+        id S230103AbiILJyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Sep 2022 05:54:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230077AbiILJxi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 05:53:38 -0400
+        with ESMTP id S230017AbiILJxm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 05:53:42 -0400
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41BDA371A7;
-        Mon, 12 Sep 2022 02:53:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FC9A3844E;
+        Mon, 12 Sep 2022 02:53:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
         Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
         In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=Nv07mv2MpxUPTETUKi/5pGHsGikcrJct5kZhcHfYHKE=; b=yVG1f1tEceLNv22o8Pi+npFBJM
-        GtDbWKdLQ/f+/ITFCpvzI4pvKNjYv0+uyo3vLaCFuLlvWXBv5A2YpHMpXnNkSj8ejQVmwQhUapev+
-        n6w/DBX2XjTYXtjiqPQtWZ60pJqo2FXNqz+6BdJ0g3uiX10qbwfiQOx5Be1m9pt44INMO5D1QOPnd
-        +KGPJi5J/VfJ99XdxzBrnIChrtxazTFVWwXe5uDfDpUTf4EXjXLEXlOLazAPxXTVhh09dOD4e6jKk
-        Tpz2WkgS9vBKiaLumbIbqfgrxGyxasCcLfvmQWCtPc8nsAN5Wfr/jbYyWUUeAjbC16iESloiVhG1y
-        CJJxXHeg==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:51554 helo=rmk-PC.armlinux.org.uk)
+        bh=Iqv2ZNon/0V6qOMjnZaExwEfo5N/cA+0Vtwvr2YuKdI=; b=0VYJqPGXPmPKrgaFNBFpS44RNq
+        1kQEUZcU80lxKls6t5QmZldkQ3desg4NAWXZlNS0Pz06+kUihjmeP/ZKuoKgYoe34s9EsAbibvt1G
+        wQETFsvTRGrbmAfytJO/0bmcUF1FLpoprGOz4iMaDRxPKApW3v3xbaTX8SaSqu2QyvMlZdegRomGg
+        itnIIWNJJ2McjIX7F9QazyoC1pTART3Mp6MjxMh+pG7CasHdZKOpn1P4WR4CKF08g/hxaPwL5QDcE
+        X3MzPD1jtX6wqcIs74DPEnb1BgHlXRnjs3uTMSt5PAPexDs8Q+UeMjLgqulMT+YOj64DFr+LarnNE
+        UutnG+/w==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:60536 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1oXg7y-0001Tp-2e; Mon, 12 Sep 2022 10:53:18 +0100
+        id 1oXg83-0001UD-7a; Mon, 12 Sep 2022 10:53:23 +0100
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
         (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-        id 1oXg7x-0064vN-Cm; Mon, 12 Sep 2022 10:53:17 +0100
+        id 1oXg82-0064vT-HX; Mon, 12 Sep 2022 10:53:22 +0100
 In-Reply-To: <Yx8BQbjJT4I2oQ5K@shell.armlinux.org.uk>
 References: <Yx8BQbjJT4I2oQ5K@shell.armlinux.org.uk>
 From:   Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
@@ -54,15 +54,15 @@ Cc:     Alyssa Rosenzweig <alyssa@rosenzweig.io>, asahi@lists.linux.dev,
         "Rafa__ Mi__ecki" <zajec5@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
         SHA-cyfmac-dev-list@infineon.com, Sven Peter <sven@svenpeter.dev>
-Subject: [PATCH wireless-next v2 08/12] brcmfmac: firmware: Allow platform to
- override macaddr
+Subject: [PATCH wireless-next v2 09/12] brcmfmac: msgbuf: Increase RX ring
+ sizes to 1024
 MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1oXg7x-0064vN-Cm@rmk-PC.armlinux.org.uk>
+Message-Id: <E1oXg82-0064vT-HX@rmk-PC.armlinux.org.uk>
 Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Mon, 12 Sep 2022 10:53:17 +0100
+Date:   Mon, 12 Sep 2022 10:53:22 +0100
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
@@ -74,126 +74,35 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Hector Martin <marcan@marcan.st>
 
-On Device Tree platforms, it is customary to be able to set the MAC
-address via the Device Tree, as it is often stored in system firmware.
-This is particularly relevant for Apple ARM64 platforms, where this
-information comes from system configuration and passed through by the
-bootloader into the DT.
-
-Implement support for this by fetching the platform MAC address and
-adding or replacing the macaddr= property in nvram. This becomes the
-dongle's default MAC address.
-
-On platforms with an SROM MAC address, this overrides it. On platforms
-without one, such as Apple ARM64 devices, this is required for the
-firmware to boot (it will fail if it does not have a valid MAC at all).
+Newer chips used on Apple platforms have a max_rxbufpost greater than
+512, which causes warnings when brcmf_msgbuf_rxbuf_data_fill tries to
+put more entries in the ring than will fit. Increase the ring sizes
+to 1024.
 
 Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Hector Martin <marcan@marcan.st>
 Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 ---
- .../broadcom/brcm80211/brcmfmac/firmware.c    | 31 +++++++++++++++++--
- 1 file changed, 29 insertions(+), 2 deletions(-)
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/msgbuf.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
-index 371c086d1f48..c109e20fc5c6 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
-@@ -21,6 +21,8 @@
- #define BRCMF_FW_NVRAM_DEVPATH_LEN		19	/* devpath0=pcie/1/4/ */
- #define BRCMF_FW_NVRAM_PCIEDEV_LEN		10	/* pcie/1/4/ + \0 */
- #define BRCMF_FW_DEFAULT_BOARDREV		"boardrev=0xff"
-+#define BRCMF_FW_MACADDR_FMT			"macaddr=%pM"
-+#define BRCMF_FW_MACADDR_LEN			(7 + ETH_ALEN * 3)
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/msgbuf.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/msgbuf.h
+index 2e322edbb907..6a849f4a94dd 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/msgbuf.h
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/msgbuf.h
+@@ -8,10 +8,10 @@
+ #ifdef CONFIG_BRCMFMAC_PROTO_MSGBUF
  
- enum nvram_parser_state {
- 	IDLE,
-@@ -57,6 +59,7 @@ struct nvram_parser {
- 	bool multi_dev_v1;
- 	bool multi_dev_v2;
- 	bool boardrev_found;
-+	bool strip_mac;
- };
+ #define BRCMF_H2D_MSGRING_CONTROL_SUBMIT_MAX_ITEM	64
+-#define BRCMF_H2D_MSGRING_RXPOST_SUBMIT_MAX_ITEM	512
++#define BRCMF_H2D_MSGRING_RXPOST_SUBMIT_MAX_ITEM	1024
+ #define BRCMF_D2H_MSGRING_CONTROL_COMPLETE_MAX_ITEM	64
+ #define BRCMF_D2H_MSGRING_TX_COMPLETE_MAX_ITEM		1024
+-#define BRCMF_D2H_MSGRING_RX_COMPLETE_MAX_ITEM		512
++#define BRCMF_D2H_MSGRING_RX_COMPLETE_MAX_ITEM		1024
+ #define BRCMF_H2D_TXFLOWRING_MAX_ITEM			512
  
- /*
-@@ -121,6 +124,10 @@ static enum nvram_parser_state brcmf_nvram_handle_key(struct nvram_parser *nvp)
- 			nvp->multi_dev_v2 = true;
- 		if (strncmp(&nvp->data[nvp->entry], "boardrev", 8) == 0)
- 			nvp->boardrev_found = true;
-+		/* strip macaddr if platform MAC overrides */
-+		if (nvp->strip_mac &&
-+		    strncmp(&nvp->data[nvp->entry], "macaddr", 7) == 0)
-+			st = COMMENT;
- 	} else if (!is_nvram_char(c) || c == ' ') {
- 		brcmf_dbg(INFO, "warning: ln=%d:col=%d: '=' expected, skip invalid key entry\n",
- 			  nvp->line, nvp->column);
-@@ -209,6 +216,7 @@ static int brcmf_init_nvram_parser(struct nvram_parser *nvp,
- 		size = data_len;
- 	/* Add space for properties we may add */
- 	size += strlen(BRCMF_FW_DEFAULT_BOARDREV) + 1;
-+	size += BRCMF_FW_MACADDR_LEN + 1;
- 	/* Alloc for extra 0 byte + roundup by 4 + length field */
- 	size += 1 + 3 + sizeof(u32);
- 	nvp->nvram = kzalloc(size, GFP_KERNEL);
-@@ -368,22 +376,37 @@ static void brcmf_fw_add_defaults(struct nvram_parser *nvp)
- 	nvp->nvram_len++;
- }
- 
-+static void brcmf_fw_add_macaddr(struct nvram_parser *nvp, u8 *mac)
-+{
-+	int len;
-+
-+	len = scnprintf(&nvp->nvram[nvp->nvram_len], BRCMF_FW_MACADDR_LEN + 1,
-+			BRCMF_FW_MACADDR_FMT, mac);
-+	WARN_ON(len != BRCMF_FW_MACADDR_LEN);
-+	nvp->nvram_len += len + 1;
-+}
-+
- /* brcmf_nvram_strip :Takes a buffer of "<var>=<value>\n" lines read from a fil
-  * and ending in a NUL. Removes carriage returns, empty lines, comment lines,
-  * and converts newlines to NULs. Shortens buffer as needed and pads with NULs.
-  * End of buffer is completed with token identifying length of buffer.
-  */
- static void *brcmf_fw_nvram_strip(const u8 *data, size_t data_len,
--				  u32 *new_length, u16 domain_nr, u16 bus_nr)
-+				  u32 *new_length, u16 domain_nr, u16 bus_nr,
-+				  struct device *dev)
- {
- 	struct nvram_parser nvp;
- 	u32 pad;
- 	u32 token;
- 	__le32 token_le;
-+	u8 mac[ETH_ALEN];
- 
- 	if (brcmf_init_nvram_parser(&nvp, data, data_len) < 0)
- 		return NULL;
- 
-+	if (eth_platform_get_mac_address(dev, mac) == 0)
-+		nvp.strip_mac = true;
-+
- 	while (nvp.pos < data_len) {
- 		nvp.state = nv_parser_states[nvp.state](&nvp);
- 		if (nvp.state == END)
-@@ -404,6 +427,9 @@ static void *brcmf_fw_nvram_strip(const u8 *data, size_t data_len,
- 
- 	brcmf_fw_add_defaults(&nvp);
- 
-+	if (nvp.strip_mac)
-+		brcmf_fw_add_macaddr(&nvp, mac);
-+
- 	pad = nvp.nvram_len;
- 	*new_length = roundup(nvp.nvram_len + 1, 4);
- 	while (pad != *new_length) {
-@@ -538,7 +564,8 @@ static int brcmf_fw_request_nvram_done(const struct firmware *fw, void *ctx)
- 	if (data)
- 		nvram = brcmf_fw_nvram_strip(data, data_len, &nvram_length,
- 					     fwctx->req->domain_nr,
--					     fwctx->req->bus_nr);
-+					     fwctx->req->bus_nr,
-+					     fwctx->dev);
- 
- 	if (free_bcm47xx_nvram)
- 		bcm47xx_nvram_release_contents(data);
+ #define BRCMF_H2D_MSGRING_CONTROL_SUBMIT_ITEMSIZE	40
 -- 
 2.30.2
 
