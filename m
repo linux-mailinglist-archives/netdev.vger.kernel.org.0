@@ -2,109 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 362425B555E
-	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 09:30:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 679E15B554E
+	for <lists+netdev@lfdr.de>; Mon, 12 Sep 2022 09:25:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229890AbiILHaH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Sep 2022 03:30:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52664 "EHLO
+        id S230005AbiILHZD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Sep 2022 03:25:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229885AbiILHaB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 03:30:01 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBD0B1F628;
-        Mon, 12 Sep 2022 00:29:55 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id q15-20020a17090a304f00b002002ac83485so7343140pjl.0;
-        Mon, 12 Sep 2022 00:29:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=i/w8c1xKOSAuyskQENWzqnLbDpJZE0osAWdxMG+atXc=;
-        b=cLdMSuZ+xU07/FuUG+TZWlhV0PjtGyybA2RgIplZBM+YOxgiG08luMFr5eNk1gxmfx
-         olHbS2Ia2dPMuI7DhL8l0X/nb+0H5SISrrTfLHcamqzpq2JMj9czsR03vC/xM33xY+qn
-         SaYfr7wkbhee2zfXD+8dMVuDOJIdTw8YBVPK4GAWVxaEjJdj7C5ItpheZIVodKZYir5Y
-         W8SL3iflj4vss+WZ1oF7l7hpz881bU8R9UAWFQykEU44K9DdTWI2VsWcTa/hlxGKy+Ny
-         hKjC287NffM6zv52FYvkqp5zEN27JqIPgWAKx8aB4chlyPI0nPDB6IWrVjY4fNtEh07/
-         mghA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=i/w8c1xKOSAuyskQENWzqnLbDpJZE0osAWdxMG+atXc=;
-        b=QkzHThq0583/q5U2y/T684U3afJxtLLiny6K3k8bRctjFYE9b1f7yZkzqpGY5BJd/L
-         T6gXL8cu+m7e1slhO2DbGj3VL4Y7Cq7lwkEXEFZVwo0joBdc1hdP1JSS2hDXtPBX3YQe
-         CJrgQsuDlKVpiSbRLegExo+IeiVbE8HHRRrEzOb+yb8RT+XptvhenkvvNcI0lMn2IM82
-         qQm+usCPO2HhyWS/3BwL0XYnfW6NaZHrQQ6MRD5ZyqXd11YScCWGSOwSIiEW9YWqoaxs
-         t8YxxtBIetpLrKLK8gO3E/glm+aJR9tk6KdudXdmd1kL9Lg0iyLxChK46DPcxZqGfgvu
-         /kdw==
-X-Gm-Message-State: ACgBeo1Qi01tpQbij73QNSIEzIZdowzrtcl+yjV0TnZNQlhA7wPKi5fc
-        KVAdFNqKKbwnwnWsgiDKQM4=
-X-Google-Smtp-Source: AA6agR5Qd9DnjJ0MQsl9Pf8Dhd+zFzfIBNUnVK8cBkhC46UodN0IRp7e6f2kwH6xNdkdxfBmKq5Pzw==
-X-Received: by 2002:a17:903:32d1:b0:178:1cf0:5081 with SMTP id i17-20020a17090332d100b001781cf05081mr10260678plr.54.1662967795077;
-        Mon, 12 Sep 2022 00:29:55 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id cp19-20020a170902e79300b0016ef87334aesm5143642plb.162.2022.09.12.00.29.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Sep 2022 00:29:53 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: xu.panda@zte.com.cn
-To:     idosch@nvidia.com
-Cc:     petrm@nvidia.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xu Panda <xu.panda@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH linux-next] mlxsw: core: remove the unneeded result variable
-Date:   Mon, 12 Sep 2022 07:29:34 +0000
-Message-Id: <20220912072933.16994-1-xu.panda@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229665AbiILHYV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 03:24:21 -0400
+Received: from mail.sch.bme.hu (mail.sch.bme.hu [152.66.208.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61DBA303C0
+        for <netdev@vger.kernel.org>; Mon, 12 Sep 2022 00:21:51 -0700 (PDT)
+Received: from Exchange2016-1.sch.bme.hu (152.66.208.194) by
+ Exchange2016-1.sch.bme.hu (152.66.208.194) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.31; Mon, 12 Sep 2022 09:06:44 +0200
+Received: from Cognitio.sch.bme.hu (152.66.211.220) by
+ Exchange2016-1.sch.bme.hu (152.66.208.194) with Microsoft SMTP Server id
+ 15.1.2375.31 via Frontend Transport; Mon, 12 Sep 2022 09:06:44 +0200
+From:   =?UTF-8?q?Bence=20Cs=C3=B3k=C3=A1s?= <bence98@sch.bme.hu>
+To:     <netdev@vger.kernel.org>
+CC:     Richard Cochran <richardcochran@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Francesco Dolcini <francesco.dolcini@toradex.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Guenter Roeck <linux@roeck-us.net>, <kernel@pengutronix.de>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        =?UTF-8?q?Cs=C3=B3k=C3=A1s=20Bence?= <csokas.bence@prolan.hu>
+Subject: [PATCH 1/2] Revert "net: fec: Use a spinlock to guard `fep->ptp_clk_on`"
+Date:   Mon, 12 Sep 2022 07:31:04 +0000
+Message-ID: <20220912073106.2544207-1-bence98@sch.bme.hu>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xu Panda <xu.panda@zte.com.cn>
+From: Csókás Bence <csokas.bence@prolan.hu>
 
-Return the value mlxsw_core_bus_device_register() directly instead of
-storing it in another redundant variable.
+`clk_prepare_enable()` gets called in atomic context (holding a spinlock),
+which may sleep, causing a BUG on certain platforms.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Xu Panda <xu.panda@zte.com.cn>
+This reverts commit b353b241f1eb9b6265358ffbe2632fdcb563354f.
+
+Reported-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Link: https://lore.kernel.org/all/20220907143915.5w65kainpykfobte@pengutronix.de/
+Signed-off-by: Csókás Bence <csokas.bence@prolan.hu>
 ---
- drivers/net/ethernet/mellanox/mlxsw/core.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/freescale/fec.h      |  1 +
+ drivers/net/ethernet/freescale/fec_main.c | 17 ++++++++---------
+ drivers/net/ethernet/freescale/fec_ptp.c  | 20 ++++++++++++++------
+ 3 files changed, 23 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
-index e2a985ec2c76..8daedf6c4496 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
-@@ -1513,15 +1513,13 @@ mlxsw_devlink_core_bus_device_reload_up(struct devlink *devlink, enum devlink_re
-                                        struct netlink_ext_ack *extack)
+diff --git a/drivers/net/ethernet/freescale/fec.h b/drivers/net/ethernet/freescale/fec.h
+index 99cfe6ab41fc..b7b8c4ddac5b 100644
+--- a/drivers/net/ethernet/freescale/fec.h
++++ b/drivers/net/ethernet/freescale/fec.h
+@@ -563,6 +563,7 @@ struct fec_enet_private {
+ 	struct clk *clk_2x_txclk;
+ 
+ 	bool ptp_clk_on;
++	struct mutex ptp_clk_mutex;
+ 	unsigned int num_tx_queues;
+ 	unsigned int num_rx_queues;
+ 
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index ad01db156972..f5ba133468f5 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -2059,7 +2059,6 @@ static void fec_enet_phy_reset_after_clk_enable(struct net_device *ndev)
+ static int fec_enet_clk_enable(struct net_device *ndev, bool enable)
  {
-        struct mlxsw_core *mlxsw_core = devlink_priv(devlink);
--       int err;
-
-        *actions_performed = BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT) |
-                             BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE);
--       err = mlxsw_core_bus_device_register(mlxsw_core->bus_info,
--                                            mlxsw_core->bus,
--                                            mlxsw_core->bus_priv, true,
--                                            devlink, extack);
--       return err;
-+       return mlxsw_core_bus_device_register(mlxsw_core->bus_info,
-+                                             mlxsw_core->bus,
-+                                             mlxsw_core->bus_priv, true,
-+                                             devlink, extack);
+ 	struct fec_enet_private *fep = netdev_priv(ndev);
+-	unsigned long flags;
+ 	int ret;
+ 
+ 	if (enable) {
+@@ -2068,15 +2067,15 @@ static int fec_enet_clk_enable(struct net_device *ndev, bool enable)
+ 			return ret;
+ 
+ 		if (fep->clk_ptp) {
+-			spin_lock_irqsave(&fep->tmreg_lock, flags);
++			mutex_lock(&fep->ptp_clk_mutex);
+ 			ret = clk_prepare_enable(fep->clk_ptp);
+ 			if (ret) {
+-				spin_unlock_irqrestore(&fep->tmreg_lock, flags);
++				mutex_unlock(&fep->ptp_clk_mutex);
+ 				goto failed_clk_ptp;
+ 			} else {
+ 				fep->ptp_clk_on = true;
+ 			}
+-			spin_unlock_irqrestore(&fep->tmreg_lock, flags);
++			mutex_unlock(&fep->ptp_clk_mutex);
+ 		}
+ 
+ 		ret = clk_prepare_enable(fep->clk_ref);
+@@ -2091,10 +2090,10 @@ static int fec_enet_clk_enable(struct net_device *ndev, bool enable)
+ 	} else {
+ 		clk_disable_unprepare(fep->clk_enet_out);
+ 		if (fep->clk_ptp) {
+-			spin_lock_irqsave(&fep->tmreg_lock, flags);
++			mutex_lock(&fep->ptp_clk_mutex);
+ 			clk_disable_unprepare(fep->clk_ptp);
+ 			fep->ptp_clk_on = false;
+-			spin_unlock_irqrestore(&fep->tmreg_lock, flags);
++			mutex_unlock(&fep->ptp_clk_mutex);
+ 		}
+ 		clk_disable_unprepare(fep->clk_ref);
+ 		clk_disable_unprepare(fep->clk_2x_txclk);
+@@ -2107,10 +2106,10 @@ static int fec_enet_clk_enable(struct net_device *ndev, bool enable)
+ 		clk_disable_unprepare(fep->clk_ref);
+ failed_clk_ref:
+ 	if (fep->clk_ptp) {
+-		spin_lock_irqsave(&fep->tmreg_lock, flags);
++		mutex_lock(&fep->ptp_clk_mutex);
+ 		clk_disable_unprepare(fep->clk_ptp);
+ 		fep->ptp_clk_on = false;
+-		spin_unlock_irqrestore(&fep->tmreg_lock, flags);
++		mutex_unlock(&fep->ptp_clk_mutex);
+ 	}
+ failed_clk_ptp:
+ 	clk_disable_unprepare(fep->clk_enet_out);
+@@ -3949,7 +3948,7 @@ fec_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	fep->ptp_clk_on = false;
+-	spin_lock_init(&fep->tmreg_lock);
++	mutex_init(&fep->ptp_clk_mutex);
+ 
+ 	/* clk_ref is optional, depends on board */
+ 	fep->clk_ref = devm_clk_get_optional(&pdev->dev, "enet_clk_ref");
+diff --git a/drivers/net/ethernet/freescale/fec_ptp.c b/drivers/net/ethernet/freescale/fec_ptp.c
+index 7be97ab84e50..ae2c786dc130 100644
+--- a/drivers/net/ethernet/freescale/fec_ptp.c
++++ b/drivers/net/ethernet/freescale/fec_ptp.c
+@@ -370,14 +370,16 @@ static int fec_ptp_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
+ 	u64 ns;
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&fep->tmreg_lock, flags);
++	mutex_lock(&fep->ptp_clk_mutex);
+ 	/* Check the ptp clock */
+ 	if (!fep->ptp_clk_on) {
+-		spin_unlock_irqrestore(&fep->tmreg_lock, flags);
++		mutex_unlock(&fep->ptp_clk_mutex);
+ 		return -EINVAL;
+ 	}
++	spin_lock_irqsave(&fep->tmreg_lock, flags);
+ 	ns = timecounter_read(&fep->tc);
+ 	spin_unlock_irqrestore(&fep->tmreg_lock, flags);
++	mutex_unlock(&fep->ptp_clk_mutex);
+ 
+ 	*ts = ns_to_timespec64(ns);
+ 
+@@ -402,10 +404,10 @@ static int fec_ptp_settime(struct ptp_clock_info *ptp,
+ 	unsigned long flags;
+ 	u32 counter;
+ 
+-	spin_lock_irqsave(&fep->tmreg_lock, flags);
++	mutex_lock(&fep->ptp_clk_mutex);
+ 	/* Check the ptp clock */
+ 	if (!fep->ptp_clk_on) {
+-		spin_unlock_irqrestore(&fep->tmreg_lock, flags);
++		mutex_unlock(&fep->ptp_clk_mutex);
+ 		return -EINVAL;
+ 	}
+ 
+@@ -415,9 +417,11 @@ static int fec_ptp_settime(struct ptp_clock_info *ptp,
+ 	 */
+ 	counter = ns & fep->cc.mask;
+ 
++	spin_lock_irqsave(&fep->tmreg_lock, flags);
+ 	writel(counter, fep->hwp + FEC_ATIME);
+ 	timecounter_init(&fep->tc, &fep->cc, ns);
+ 	spin_unlock_irqrestore(&fep->tmreg_lock, flags);
++	mutex_unlock(&fep->ptp_clk_mutex);
+ 	return 0;
  }
-
- static int mlxsw_devlink_flash_update(struct devlink *devlink,
+ 
+@@ -514,11 +518,13 @@ static void fec_time_keep(struct work_struct *work)
+ 	struct fec_enet_private *fep = container_of(dwork, struct fec_enet_private, time_keep);
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&fep->tmreg_lock, flags);
++	mutex_lock(&fep->ptp_clk_mutex);
+ 	if (fep->ptp_clk_on) {
++		spin_lock_irqsave(&fep->tmreg_lock, flags);
+ 		timecounter_read(&fep->tc);
++		spin_unlock_irqrestore(&fep->tmreg_lock, flags);
+ 	}
+-	spin_unlock_irqrestore(&fep->tmreg_lock, flags);
++	mutex_unlock(&fep->ptp_clk_mutex);
+ 
+ 	schedule_delayed_work(&fep->time_keep, HZ);
+ }
+@@ -593,6 +599,8 @@ void fec_ptp_init(struct platform_device *pdev, int irq_idx)
+ 	}
+ 	fep->ptp_inc = NSEC_PER_SEC / fep->cycle_speed;
+ 
++	spin_lock_init(&fep->tmreg_lock);
++
+ 	fec_ptp_start_cyclecounter(ndev);
+ 
+ 	INIT_DELAYED_WORK(&fep->time_keep, fec_time_keep);
 -- 
-2.15.2
+2.37.3
 
