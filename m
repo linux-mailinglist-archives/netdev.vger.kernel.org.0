@@ -2,37 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B9785B737D
-	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 17:13:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D14ED5B77B1
+	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 19:23:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233574AbiIMPJb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 11:09:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60788 "EHLO
+        id S232501AbiIMRWO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 13:22:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235587AbiIMPIr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 11:08:47 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C01E76770;
-        Tue, 13 Sep 2022 07:31:26 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MRm2p15DnzNm6M;
-        Tue, 13 Sep 2022 22:25:22 +0800 (CST)
+        with ESMTP id S232013AbiIMRVq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 13:21:46 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4248C165B6;
+        Tue, 13 Sep 2022 09:09:18 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MRm3X5XfPzkWt4;
+        Tue, 13 Sep 2022 22:26:00 +0800 (CST)
 Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2375.24; Tue, 13 Sep 2022 22:29:57 +0800
 Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
  (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 13 Sep
- 2022 22:29:56 +0800
+ 2022 22:29:57 +0800
 From:   Yang Yingliang <yangyingliang@huawei.com>
 To:     <netdev@vger.kernel.org>, <linux-rdma@vger.kernel.org>
 CC:     <saeedm@nvidia.com>, <liorna@nvidia.com>, <raeds@nvidia.com>,
         <davem@davemloft.net>
-Subject: [PATCH -next 1/2] net/mlx5e: add missing error code in error path
-Date:   Tue, 13 Sep 2022 22:37:12 +0800
-Message-ID: <20220913143713.1998778-1-yangyingliang@huawei.com>
+Subject: [PATCH -next 2/2] net/mlx5e: Switch to kmemdup() when allocate dev_addr
+Date:   Tue, 13 Sep 2022 22:37:13 +0800
+Message-ID: <20220913143713.1998778-2-yangyingliang@huawei.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220913143713.1998778-1-yangyingliang@huawei.com>
+References: <20220913143713.1998778-1-yangyingliang@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -49,49 +51,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add missing error code when mlx5e_macsec_fs_add_rule() or
-mlx5e_macsec_fs_init() fails.
+Use kmemdup() helper instead of open-coding to
+simplify the code when allocate dev_addr.
 
-Fixes: e467b283ffd5 ("net/mlx5e: Add MACsec TX steering rules")
 Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
- .../ethernet/mellanox/mlx5/core/en_accel/macsec.c  | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-index d9d18b039d8c..5fa3e22c8918 100644
+index 5fa3e22c8918..0f7c5b9a3541 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-@@ -194,8 +194,13 @@ static int mlx5e_macsec_init_sa(struct macsec_context *ctx,
- 				      MLX5_ACCEL_MACSEC_ACTION_DECRYPT;
+@@ -934,14 +934,14 @@ static int mlx5e_macsec_add_secy(struct macsec_context *ctx)
+ 		goto out;
+ 	}
  
- 	macsec_rule = mlx5e_macsec_fs_add_rule(macsec->macsec_fs, ctx, &rule_attrs, &sa->fs_id);
--	if (IS_ERR_OR_NULL(macsec_rule))
-+	if (IS_ERR_OR_NULL(macsec_rule)) {
-+		if (!macsec_rule)
-+			err = -ENOMEM;
-+		else
-+			err = PTR_ERR(macsec_rule);
- 		goto destroy_macsec_object;
-+	}
+-	macsec_device->dev_addr = kzalloc(dev->addr_len, GFP_KERNEL);
++	macsec_device->dev_addr = kmemdup(dev->dev_addr, dev->addr_len,
++					  GFP_KERNEL);
+ 	if (!macsec_device->dev_addr) {
+ 		kfree(macsec_device);
+ 		err = -ENOMEM;
+ 		goto out;
+ 	}
  
- 	sa->macsec_rule = macsec_rule;
+-	memcpy(macsec_device->dev_addr, dev->dev_addr, dev->addr_len);
+ 	macsec_device->netdev = dev;
  
-@@ -1294,8 +1299,13 @@ int mlx5e_macsec_init(struct mlx5e_priv *priv)
- 	macsec->mdev = mdev;
- 
- 	macsec_fs = mlx5e_macsec_fs_init(mdev, priv->netdev);
--	if (IS_ERR_OR_NULL(macsec_fs))
-+	if (IS_ERR_OR_NULL(macsec_fs)) {
-+		if (!macsec_fs)
-+			err = -ENOMEM;
-+		else
-+			err = PTR_ERR(macsec_fs);
- 		goto err_out;
-+	}
- 
- 	macsec->macsec_fs = macsec_fs;
- 
+ 	INIT_LIST_HEAD_RCU(&macsec_device->macsec_rx_sc_list_head);
 -- 
 2.25.1
 
