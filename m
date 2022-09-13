@@ -2,245 +2,303 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A6C665B6C3B
-	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 13:09:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0870C5B6CA1
+	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 13:55:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231633AbiIMLJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 07:09:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53940 "EHLO
+        id S231750AbiIMLzi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 07:55:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231207AbiIMLJG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 07:09:06 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D6BB5F9B1
-        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 04:09:02 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1663067337; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=CETPnR8Ev251ZQ8ZhfVuB/riW8RFpyrrIFyYIGBfgEQuq2m5n4N9FlPpbhYzyB8L6cPDyMHQdWwaPCnNVic4vBAW/acHiRT6vjhepKhfKFM8drjOrpHcIo2TlZTtl2ISwBeB4mkRpT2sT+oqxOrHMP84eRB+9Kr6UboXRdk3aaA=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1663067337; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=LbHb4ucJ0FGJApse6nRvb8WXxHTJOMdfIbhs+3SSRhc=; 
-        b=J68tsPl+NXvmItQMI2eKUVMXeCBv6+sIEvFbvuz0Rlo0DDzt3+HmpQGtdl0AB4NowOWt/TEv4egYpuLHLSY4l5YyQrKrdP6Zfaz9nDqMRQFx1w+vHESX2yefxarwSgWG137pUtCeY8u4CJS/9ZuFME3G1fGDVfhgQpq4KRpAcxA=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1663067337;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=LbHb4ucJ0FGJApse6nRvb8WXxHTJOMdfIbhs+3SSRhc=;
-        b=fOeQ8jxQelqDTvs7+ukacZPfOStHzd6K+l15h4HAlJg6ys3nDJSMP7HGqpccN2ya
-        tE+f9qfEll9BFORIpKcK7sefiqnp0B2fU5b+UyX8vrIJ40W4Q6t3Dr5SsQHXmSwi8G0
-        wtrRER0HZL182xPvdjc3JVTAPEGkSMxZLLPDbxRo=
-Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 1663067336862754.0414853082491; Tue, 13 Sep 2022 04:08:56 -0700 (PDT)
-Message-ID: <693820e5-5e8c-fc36-5e5e-f7ca3bdcce72@arinc9.com>
-Date:   Tue, 13 Sep 2022 14:08:54 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: mtk_eth_soc for mt7621 won't work after 6.0-rc1
+        with ESMTP id S230323AbiIMLzf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 07:55:35 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC5815E66B
+        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 04:55:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1663070131; x=1694606131;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=oqfo2ALWpdwpXCfE4HO/kD7VYW2aox78ZSCWEeCGbP0=;
+  b=AULbcwvHAzRqXYqT1SUk01g+t4ieHeTHJhpKufFerHIao0wR5zP6MgIk
+   F1GEH5DxBkO46vT7xI9PK4wgAF8hnuwt5xeLd3n7TUgSk1h4XPFexceoq
+   gLl58jiQHI1PuqvnYnbJMjnzhU2vAPfX9i/gkdxrREuMZ8U4L5e63bhe3
+   Uwt/spRDZGDW2l7WAS119rcJ1WQwtWbxwfrDgTay48z5S91Q57QbNT2vu
+   CqzeKxbH8IvDikjqkKPFxKK5iFsHqDPoI4+F1ln63He4qDEwFE85ZkS5h
+   Cxga1cV4ba8t1ZrZ0ky635W4GEkMor9Z9eV6WCAvNtj+PPQFqIvDw4UKB
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10468"; a="281134971"
+X-IronPort-AV: E=Sophos;i="5.93,312,1654585200"; 
+   d="scan'208";a="281134971"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2022 04:55:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,312,1654585200"; 
+   d="scan'208";a="616431995"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by orsmga002.jf.intel.com with ESMTP; 13 Sep 2022 04:55:30 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 13 Sep 2022 04:55:30 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Tue, 13 Sep 2022 04:55:30 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.168)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.31; Tue, 13 Sep 2022 04:55:29 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Kbnc6uYqKyQZcJ+yb/iDcWy7ePAeO1YNo5MwT1Yetv9FNm0MWpeyZqhw1yngKo3YQ6ZVJObmZZejhOARIpUkWntuLeYa5S0Y10x+F7hsY4NdHYtM8xVhv0q1T3mTufRui3Z+9r7NTQ/CnY0pNG8Kyh3urijnR5l9jsrAyPxdQV1iOHo2kPiLidxNftojlAYG+/0ruLMxz9M9QxobyzDI+6jjw0xqGzuWq4agGi3BCNV9/fgo/CCPrP+XM7RN/PGhNJpRhpXwBpY+iueTg35vxyZG9L5++A+9AUGrQTe6J5uwwtwkenr4PIECgS6vvZ0gHurEmwW9JP0Pd5kNTBOm/g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=U/VMHluASivH1PSNz+/YmJAfjUkVaQUJoUcLHfyDy5U=;
+ b=YkrgSVYDix12wIxBaBbOKspX0RATsqZzrjiAAgxH8KFWghlyZ1TzSRnsmTmxtWP7KMmScatIOnuzZpu4+vv4HMC/1V4wms0Lpm2KB1gxIK7o/P3JdtUWRAkpd5r12JWwd6XjBdH+m83aINklA1GZpUKdMnvl1QLRjCgfrjz2aYtY1nS1Ir1dtqF7qzwZ/P7dr3rYLUs7vVLFbLVTzndsgPsGVF0Hav8WSPAXNuE84Fh0E7uaii1UgQQMRbAPY84K1mIwdd0VrqJ7vZO2JG+AuCkdVwZA/hx9Y88ABVFg5zCnyKwflmk8r2Q+lrNwnUk+tk5DhJO3cNvcm7p2v2Qmaw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from PH0PR11MB5611.namprd11.prod.outlook.com (2603:10b6:510:ed::9)
+ by MW3PR11MB4602.namprd11.prod.outlook.com (2603:10b6:303:52::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.18; Tue, 13 Sep
+ 2022 11:55:28 +0000
+Received: from PH0PR11MB5611.namprd11.prod.outlook.com
+ ([fe80::44a1:dd85:8d3b:56fd]) by PH0PR11MB5611.namprd11.prod.outlook.com
+ ([fe80::44a1:dd85:8d3b:56fd%6]) with mapi id 15.20.5612.022; Tue, 13 Sep 2022
+ 11:55:28 +0000
+From:   "Staikov, Andrii" <andrii.staikov@intel.com>
+To:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>
+CC:     "Gawin, JaroslawX" <jaroslawx.gawin@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "G, GurucharanX" <gurucharanx.g@intel.com>
+Subject: RE: [PATCH net-next 2/3] i40e: add description and modify interrupts
+ configuration procedure
+Thread-Topic: [PATCH net-next 2/3] i40e: add description and modify interrupts
+ configuration procedure
+Thread-Index: AQHYwjt/lu/S/S0+RUia6ZaY37kXqa3dSlzA
+Date:   Tue, 13 Sep 2022 11:55:27 +0000
+Message-ID: <PH0PR11MB5611B3C60DA630820565ED3685479@PH0PR11MB5611.namprd11.prod.outlook.com>
+References: <20220906215606.3501995-1-anthony.l.nguyen@intel.com>
+ <20220906215606.3501995-3-anthony.l.nguyen@intel.com>
+In-Reply-To: <20220906215606.3501995-3-anthony.l.nguyen@intel.com>
+Accept-Language: en-US
 Content-Language: en-US
-To:     Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>, paulmck@kernel.org
-References: <146b9607-ba1e-c7cf-9f56-05021642b320@arinc9.com>
- <Yx8thSbBKJhxv169@lore-desk> <Yx9z9Dm4vJFxGaJI@lore-desk>
- <170d725f-2146-f1fa-e570-4112972729df@arinc9.com>
- <Yx+W9EoEfoRsq1rt@lore-desk>
- <CAMhs-H8wWNrqb0RgQdcL4J+=oGws8pB8Uv_H=6Q8AyzXDgF89Q@mail.gmail.com>
- <CAMhs-H8Wsin67gTLPfv9x=hHM-prz4YYensNtyc=hZx+s4d=9Q@mail.gmail.com>
- <10e9ead9-5adc-5065-0c13-702aabd5dcb0@arinc9.com>
- <YyBibTHeSxwa31Cm@lore-desk>
- <CAMhs-H_oe-pCBBTDQT_uzyEYUoSvJB=DveZpyUUmdB2Sz--Hww@mail.gmail.com>
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <CAMhs-H_oe-pCBBTDQT_uzyEYUoSvJB=DveZpyUUmdB2Sz--Hww@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.6.500.17
+dlp-reaction: no-action
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR11MB5611:EE_|MW3PR11MB4602:EE_
+x-ms-office365-filtering-correlation-id: 70898b6d-6fe0-4832-6d87-08da957ed9e1
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: r9Qf3gJ9yI0pQA+Gn9ooC/mkwZSuyWL1Awcr7oZalX5CfTHaH9hjFYF/dNw5x5XqoVBX5XEqU1p46gBbY8b6f1k+Ol1BHwMK/NXcMh7yXuA2B3JfRH/Ckk70nedkn4O6BnP3BwfUmpVo2PN0TrOgu2OHizSk+Y+VizyuSxH0UVH0nM3TIVXXXrwvPMtyb71AmmzviQLutajd6i3KAi9lqx16G2GdpfLIe7Ie321qUxuDo7ZoS6RZlOlLKzF6AFS8FN3g9JUB64jY7hZGy0OMYpxp6jYEYcX//36ygyfs+S0uCjGQC3vUsO/GfrntWvTBUSv69fHxlrggOPSiSQQKSsevbJAlcsKWvwRq0fYmiPz+BXWANu2m77a1Ut//0cbfy+LvtacrT/kr+aQutjntlCC9pZVthYvDfpWTFHM8lCKP0r6n0XFk+7Qgv82HF8GylPPsqBHIc2SXEmSPXrG3wQZRTCT2AdGaUoMcJx7Zi72b/Hvbaf0koKYHoiQIMG+HqIXCeQylCPaR1fRPeIU+EK0OJq4NvHzwnQlzWKUbbjotriFituWOSb4NRy+csL8DUpSxdHaVNX1vKxBdKHNZ0+fVH+Gv9VfDqSbRelTOj0z6fVukSq5eBmhlR7aZUAa3sgVUExHQ9j/BtOi3osW53Cr856MG1eCwI6HUeK7mARtBPLG09SahDe+Qi4XrYyStycA+67puNEebcshqTBM/NMjoEIrcAkUOMQQaPAz7bcz3udcFRIfo54CsevqJ6OygHuW2EVDsoY9WkATngHxivA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5611.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(396003)(136003)(39860400002)(366004)(346002)(376002)(451199015)(107886003)(186003)(86362001)(9686003)(53546011)(316002)(41300700001)(71200400001)(478600001)(110136005)(7696005)(33656002)(122000001)(83380400001)(8936002)(54906003)(38100700002)(52536014)(4326008)(66446008)(76116006)(66556008)(6506007)(5660300002)(66946007)(26005)(82960400001)(64756008)(8676002)(66476007)(38070700005)(55016003)(2906002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?aiSarMqPl9s/9qBPw1WJ+gXWJxY0khfSjKnXfv/tO45koeVCZjUnCpv1+G9u?=
+ =?us-ascii?Q?OqR4x13BjqFG+AekqYEZAZVLb1BoS+cOd0MSLsVOdSqikPGyG3NSR3gTcqHX?=
+ =?us-ascii?Q?enJb8L5F6iDZTIb1xOzUPCZgvmXZxeH7omeo3JIfxGoLAl1oet+HAfi1Vlnf?=
+ =?us-ascii?Q?Jz4+7X5VfO8d2trAfsmPJIZmyL0c32xJX7ZtOJBMMjQm/thLmBb7rvV+xdHw?=
+ =?us-ascii?Q?VcglKiT0XME7GWhh69x2qBD6wxAo19BTXlRV5IhnADHryuzZB9newJ1bBUkD?=
+ =?us-ascii?Q?8k7TGOB2patBzgO9uUVUDM9VScdAe1jeUafCzWSQwNtt9KTyWkWFdMTPW+SX?=
+ =?us-ascii?Q?zzwM+sz42WU9YfJSqDETJmjQCz3Fmik1fnUmt6j73GnJyrojh7wjeK64AR0u?=
+ =?us-ascii?Q?UiUMLuQZdet7B4Bt5AuV9jGuHO7nStASSA58YmBRJZR39FMOKDezYcMHvO+S?=
+ =?us-ascii?Q?Xu8742jxDFc3zoxdyjWPMx9AXwSaxRvbZKf7Azw1AtrnaSyLkxu02LNGgrnm?=
+ =?us-ascii?Q?2r87WRgSZoBGharYuWRqbWE/tNJgl/KQNDjAG7QAM28c8RH3jP39kXOD1mKO?=
+ =?us-ascii?Q?yecZRam1N8Rt5b0v8d0DOFzjeS2EMyLwQmBr7AtPkWBKxxvncCKJ1oIdZx8l?=
+ =?us-ascii?Q?Vg98xrMUpShISiWE1ocGhKqXo7VlYIc+pa7he9Vr2N3jWn33Ihube0GhJizj?=
+ =?us-ascii?Q?suIWbEtQ5M8Gfpk0gFFgtif1OO8mk7namBpVsDs7qPFocKFUKRCXyyVeAqcq?=
+ =?us-ascii?Q?tX2CZ17LZ5dBUDZgnxU38GyxYsuxSRG5rSWVKQjV1drO7FvPbcdzY4uzzDNV?=
+ =?us-ascii?Q?LedkLFY/i9+BQ40ad5okZCWNevvgdbSSyV4Orb0dAWJ62s53f9XrtjgPDf6v?=
+ =?us-ascii?Q?rdUMB/E7DZQ5uj83KP2KqsXHi1j9+ee5l3Q5mk3j7Tdehhaz/JAKtwnnsyCL?=
+ =?us-ascii?Q?YXxLGsHVrXhWomEQUboElf5dn+GxNfM0gJPvI2RNIfOtuLDkc4dw3AcIB31G?=
+ =?us-ascii?Q?L6WVBuf36CPjorzYaNEgriGXnxMYGML5E+DD7wAMwU1j7AnekyrInNqOL77u?=
+ =?us-ascii?Q?aSI77aTxRi8xxvcoiO46Ko16tBsa3fP907NYZQ/fcvK+CX8AZ4ZOQyPgARnq?=
+ =?us-ascii?Q?R/1p7bpRBxaU+5PUgDY+dwL9XqPQUcmo5wxgMLwbwCCEg32OVe41fKCQQTUT?=
+ =?us-ascii?Q?k24qdShDNfwGFgiABLtYE/iqVoS/b7OOHKODlvNSjZidVQQJ0WXSoSn4yPtq?=
+ =?us-ascii?Q?UzvN/pXb2tsPhGGurgLhPhWeslq5jhOqxquRY/COauG05Ppwi1nToFYEVw47?=
+ =?us-ascii?Q?45/AZ/sX/JK/4IletLEggb7lgruIYuh3driPDF4ReS1jmTgDxUEJ0J+jYMO8?=
+ =?us-ascii?Q?6d3dodJZVnM8E8DlNjlw34X2xDzosW2LDvuoRX/yfaXPI5jbHpfb5nyin6eo?=
+ =?us-ascii?Q?qy3oXDT8/gsh+PDrq6WyR0Ew25mL4Dpoedee3zkle9VXhCB2y3AeyK5LBRKN?=
+ =?us-ascii?Q?H51t+Z6C71fUggSU4S9029qroGw7QafR4KuvixOcYcDvZQQTCKAU4hssTiHo?=
+ =?us-ascii?Q?U0dLuhzvGZVfP1FTdm+T4LKqIKoP+pyYXGuQcBWd?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5611.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 70898b6d-6fe0-4832-6d87-08da957ed9e1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Sep 2022 11:55:27.9724
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: HKhTp5OLTHrEo5zjncMoHn3VqrpqjfMO3nfvIuR5/Vdqjb6IaWJabw+8Na+DEjYK6RZabMbEzMWp5Lu2itYXPOkMUP+JVqw2/6Yo0ghCeuI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR11MB4602
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 13.09.2022 14:07, Sergio Paracuellos wrote:
-> Hi Lorenzo,
-> 
-> On Tue, Sep 13, 2022 at 12:58 PM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
->>
->>> On 13.09.2022 11:31, Sergio Paracuellos wrote:
->>>> Hi Lorenzo,
->>>>
->>>> On Tue, Sep 13, 2022 at 5:32 AM Sergio Paracuellos
->>>> <sergio.paracuellos@gmail.com> wrote:
->>>>>
->>>>> Hi Lorenzo,
->>>>>
->>>>> On Mon, Sep 12, 2022 at 10:30 PM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
->>>>>>
->>>>>>> Hi Lorenzo,
->>>>>>>
->>>>>>> On 12.09.2022 21:01, Lorenzo Bianconi wrote:
->>>>>>>>>> Ethernet for MT7621 SoCs no longer works after changes introduced to
->>>>>>>>>> mtk_eth_soc with 6.0-rc1. Ethernet interfaces initialise fine. Packets are
->>>>>>>>>> sent out from the interface fine but won't be received on the interface.
->>>>>>>>>>
->>>>>>>>>> Tested with MT7530 DSA switch connected to gmac0 and ICPlus IP1001 PHY
->>>>>>>>>> connected to gmac1 of the SoC.
->>>>>>>>>>
->>>>>>>>>> Last working kernel is 5.19. The issue is present on 6.0-rc5.
->>>>>>>>>>
->>>>>>>>>> Arınç
->>>>>>>>>
->>>>>>>>> Hi Arınç,
->>>>>>>>>
->>>>>>>>> thx for testing and reporting the issue. Can you please identify
->>>>>>>>> the offending commit running git bisect?
->>>>>>>>>
->>>>>>>>> Regards,
->>>>>>>>> Lorenzo
->>>>>>>>
->>>>>>>> Hi Arınç,
->>>>>>>>
->>>>>>>> just a small update. I tested a mt7621 based board (Buffalo WSR-1166DHP) with
->>>>>>>> OpenWrt master + my mtk_eth_soc series and it works fine. Can you please
->>>>>>>> provide more details about your development board/environment?
->>>>>>>
->>>>>>> I've got a GB-PC2, Sergio has got a GB-PC1. We both use Neil's gnubee-tools
->>>>>>> which makes an image with filesystem and any Linux kernel of choice with
->>>>>>> slight modifications (maybe not at all) on the kernel.
->>>>>>>
->>>>>>> https://github.com/neilbrown/gnubee-tools
->>>>>>>
->>>>>>> Sergio experiences the same problem on GB-PC1.
->>>>>>
->>>>>> ack, can you please run git bisect in order to identify the offending commit?
->>>>>> What is the latest kernel version that is working properly? 5.19.8?
->>>>>
->>>>> I'll try to get time today to properly bisect and identify the
->>>>> offending commit. I get a working platform with 5.19.8, yes but with
->>>>> v6-rc-1 my network is totally broken.
->>>>
->>>> + [cc: Paul E. McKenney <paulmck@kernel.org> as commit author]
->>>>
->>>> Ok, so I have bisected the issue to:
->>>> 1cf1144e8473e8c3180ac8b91309e29b6acfd95f] rcu-tasks: Be more patient
->>>> for RCU Tasks boot-time testing
->>>>
->>>> This is the complete bisect log:
->>>>
->>>> $ git bisect log
->>>> git bisect start
->>>> # good: [70cb6afe0e2ff1b7854d840978b1849bffb3ed21] Linux 5.19.8
->>>> git bisect good 70cb6afe0e2ff1b7854d840978b1849bffb3ed21
->>>> # bad: [568035b01cfb107af8d2e4bd2fb9aea22cf5b868] Linux 6.0-rc1
->>>> git bisect bad 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
->>>> # good: [3d7cb6b04c3f3115719235cc6866b10326de34cd] Linux 5.19
->>>> git bisect good 3d7cb6b04c3f3115719235cc6866b10326de34cd
->>>> # bad: [b44f2fd87919b5ae6e1756d4c7ba2cbba22238e1] Merge tag
->>>> 'drm-next-2022-08-03' of git://anongit.freedesktop.org/drm/drm
->>>> git bisect bad b44f2fd87919b5ae6e1756d4c7ba2cbba22238e1
->>>> # bad: [526942b8134cc34d25d27f95dfff98b8ce2f6fcd] Merge tag
->>>> 'ata-5.20-rc1' of
->>>> git://git.kernel.org/pub/scm/linux/kernel/git/dlemoal/libata
->>>> git bisect bad 526942b8134cc34d25d27f95dfff98b8ce2f6fcd
->>>> # good: [2e7a95156d64667a8ded606829d57c6fc92e41df] Merge tag
->>>> 'regmap-v5.20' of
->>>> git://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap
->>>> git bisect good 2e7a95156d64667a8ded606829d57c6fc92e41df
->>>> # good: [c013d0af81f60cc7dbe357c4e2a925fb6738dbfe] Merge tag
->>>> 'for-5.20/block-2022-07-29' of git://git.kernel.dk/linux-block
->>>> git bisect good c013d0af81f60cc7dbe357c4e2a925fb6738dbfe
->>>> # bad: [aad26f55f47a33d6de3df65f0b18e2886059ed6d] Merge tag 'docs-6.0'
->>>> of git://git.lwn.net/linux
->>>> git bisect bad aad26f55f47a33d6de3df65f0b18e2886059ed6d
->>>> # good: [c2a24a7a036b3bd3a2e6c66730dfc777cae6540a] Merge tag
->>>> 'v5.20-p1' of git://git.kernel.org/pub/scm/linux/kernel/git/herbert/crypto-2.6
->>>> git bisect good c2a24a7a036b3bd3a2e6c66730dfc777cae6540a
->>>> # bad: [34bc7b454dc31f75a0be7ee8ab378135523d7c51] Merge branch
->>>> 'ctxt.2022.07.05a' into HEAD
->>>> git bisect bad 34bc7b454dc31f75a0be7ee8ab378135523d7c51
->>>> # bad: [e72ee5e1a866b85cb6c3d4c80a1125976020a7e8] rcu-tasks: Use
->>>> delayed_work to delay rcu_tasks_verify_self_tests()
->>>> git bisect bad e72ee5e1a866b85cb6c3d4c80a1125976020a7e8
->>>> # good: [f90f19da88bfe32dd1fdfd104de4c0526a3be701] rcu-tasks: Make RCU
->>>> Tasks Trace stall warning handle idle offline tasks
->>>> git bisect good f90f19da88bfe32dd1fdfd104de4c0526a3be701
->>>> # good: [dc7d54b45170e1e3ced9f86718aa4274fd727790] rcu-tasks: Pull in
->>>> tasks blocked within RCU Tasks Trace readers
->>>> git bisect good dc7d54b45170e1e3ced9f86718aa4274fd727790
->>>> # good: [e386b6725798eec07facedf4d4bb710c079fd25c] rcu-tasks:
->>>> Eliminate RCU Tasks Trace IPIs to online CPUs
->>>> git bisect good e386b6725798eec07facedf4d4bb710c079fd25c
->>>> # good: [eea3423b162d5d5cdc08af23e8ee2c2d1134fd07] rcu-tasks: Update comments
->>>> git bisect good eea3423b162d5d5cdc08af23e8ee2c2d1134fd07
->>>> # bad: [1cf1144e8473e8c3180ac8b91309e29b6acfd95f] rcu-tasks: Be more
->>>> patient for RCU Tasks boot-time testing
->>>> git bisect bad 1cf1144e8473e8c3180ac8b91309e29b6acfd95f
->>>> # first bad commit: [1cf1144e8473e8c3180ac8b91309e29b6acfd95f]
->>>> rcu-tasks: Be more patient for RCU Tasks boot-time testing
->>>>
->>>> I don't really understand the relationship with my broken network
->>>> issue. I am using debian buster and the effect I see is that when the
->>>> network interface becomes up it hangs waiting for a "task running to
->>>> raise network interfaces". After about one minute the system boots,
->>>> the login prompt is shown but I cannot configure at all network
->>>> interfaces: dhclient does not respond and manually ifconfig does not
->>>> help also:
->>>>
->>>> root@gnubee:~#
->>>> root@gnubee:~# dhclient ethblack
->>>> ^C
->>>> root@gnubee:~# ifconfig ethblack 192.168.1.101
->>>> root@gnubee:~# ping 19^C
->>>> root@gnubee:~# ping 192.168.1.47
->>>> PING 192.168.1.47 (192.168.1.47) 56(84) bytes of data.
->>>> ^C
->>>> --- 192.168.1.47 ping statistics ---
->>>> 3 packets transmitted, 0 received, 100% packet loss, time 120ms
->>>>
->>>> I have tried to revert the bad commit directly in v6.0-rc1 but
->>>> conflicts appeared with the git revert command in
->>>> 'kernel/rcu/tasks.h', so I am not sure what I can do now.
->>>
->>> I've pinpointed the issue to 23233e577ef973c2c5d0dd757a0a4605e34ecb57 ("net:
->>> ethernet: mtk_eth_soc: rely on page_pool for single page buffers"). Ethernet
->>> works fine after reverting this and newer commits for mtk_eth_soc.
->>
->> Hi Arınç,
->>
->> yes, I run some bisect here as well and this seems the offending commit. Can
->> you please try the patch below?
->>
->> Regards,
->> Lorenzo
->>
->> diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
->> index ec617966c953..67a64a2272b9 100644
->> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
->> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
->> @@ -1470,7 +1470,7 @@ static void mtk_update_rx_cpu_idx(struct mtk_eth *eth)
->>
->>   static bool mtk_page_pool_enabled(struct mtk_eth *eth)
->>   {
->> -       return !eth->hwlro;
->> +       return MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2);
->>   }
->>
->>   static struct page_pool *mtk_create_page_pool(struct mtk_eth *eth,
-> 
-> I have applied this patch on the top of v6-0-rc5 and the network is
-> back, so this patch seems to fix the network issue for my GNUBee pC1:
-> 
-> Tested-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Hello!
 
-Can confirm the same behaviour on my GB-PC2.
+Do I have to take any additional care of this HSD or I may consider it read=
+y?
 
-Tested-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Regards,
+Staikov Andrii
 
-Arınç
+-----Original Message-----
+From: Nguyen, Anthony L <anthony.l.nguyen@intel.com>=20
+Sent: Tuesday, September 6, 2022 11:56 PM
+To: davem@davemloft.net; kuba@kernel.org; pabeni@redhat.com; edumazet@googl=
+e.com
+Cc: Gawin, JaroslawX <jaroslawx.gawin@intel.com>; netdev@vger.kernel.org; N=
+guyen, Anthony L <anthony.l.nguyen@intel.com>; Staikov, Andrii <andrii.stai=
+kov@intel.com>; G, GurucharanX <gurucharanx.g@intel.com>
+Subject: [PATCH net-next 2/3] i40e: add description and modify interrupts c=
+onfiguration procedure
+
+From: Jaroslaw Gawin <jaroslawx.gawin@intel.com>
+
+Add description for values written into registers QINT_XXXX and small cosme=
+tic changes for MSI/LEGACY interrupts configuration in the same way as for =
+MSI-X.
+Descriptions confirm the code is written correctly and make the code clear.=
+ Small cosmetic changes for MSI/LEGACY interrupts make code clear in the sa=
+me manner as for MSI-X interrupts.
+
+Signed-off-by: Jaroslaw Gawin <jaroslawx.gawin@intel.com>
+Signed-off-by: Andrii Staikov <andrii.staikov@intel.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Int=
+el)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+---
+ drivers/net/ethernet/intel/i40e/i40e.h      | 14 +++++++++
+ drivers/net/ethernet/intel/i40e/i40e_main.c | 34 ++++++++-------------
+ 2 files changed, 27 insertions(+), 21 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/i40e/i40e.h b/drivers/net/ethernet/=
+intel/i40e/i40e.h
+index d86b6d349ea9..9a60d6b207f7 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e.h
++++ b/drivers/net/ethernet/intel/i40e/i40e.h
+@@ -399,6 +399,20 @@ struct i40e_ddp_old_profile_list {
+ 				 I40E_FLEX_54_MASK | I40E_FLEX_55_MASK | \
+ 				 I40E_FLEX_56_MASK | I40E_FLEX_57_MASK)
+=20
++#define I40E_QINT_TQCTL_VAL(qp, vector, nextq_type) \
++	(I40E_QINT_TQCTL_CAUSE_ENA_MASK | \
++	(I40E_TX_ITR << I40E_QINT_TQCTL_ITR_INDX_SHIFT) | \
++	((vector) << I40E_QINT_TQCTL_MSIX_INDX_SHIFT) | \
++	((qp) << I40E_QINT_TQCTL_NEXTQ_INDX_SHIFT) | \
++	(I40E_QUEUE_TYPE_##nextq_type << I40E_QINT_TQCTL_NEXTQ_TYPE_SHIFT))
++
++#define I40E_QINT_RQCTL_VAL(qp, vector, nextq_type) \
++	(I40E_QINT_RQCTL_CAUSE_ENA_MASK | \
++	(I40E_RX_ITR << I40E_QINT_RQCTL_ITR_INDX_SHIFT) | \
++	((vector) << I40E_QINT_RQCTL_MSIX_INDX_SHIFT) | \
++	((qp) << I40E_QINT_RQCTL_NEXTQ_INDX_SHIFT) | \
++	(I40E_QUEUE_TYPE_##nextq_type << I40E_QINT_RQCTL_NEXTQ_TYPE_SHIFT))
++
+ struct i40e_flex_pit {
+ 	struct list_head list;
+ 	u16 src_offset;
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethe=
+rnet/intel/i40e/i40e_main.c
+index 89dd46130c03..9b2f18dfd0c4 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -3879,7 +3879,7 @@ static void i40e_vsi_configure_msix(struct i40e_vsi *=
+vsi)
+ 		wr32(hw, I40E_PFINT_RATEN(vector - 1),
+ 		     i40e_intrl_usec_to_reg(vsi->int_rate_limit));
+=20
+-		/* Linked list for the queuepairs assigned to this vector */
++		/* begin of linked list for RX queue assigned to this vector */
+ 		wr32(hw, I40E_PFINT_LNKLSTN(vector - 1), qp);
+ 		for (q =3D 0; q < q_vector->num_ringpairs; q++) {
+ 			u32 nextqp =3D has_xdp ? qp + vsi->alloc_queue_pairs : qp; @@ -3895,6 +=
+3895,7 @@ static void i40e_vsi_configure_msix(struct i40e_vsi *vsi)
+ 			wr32(hw, I40E_QINT_RQCTL(qp), val);
+=20
+ 			if (has_xdp) {
++				/* TX queue with next queue set to TX */
+ 				val =3D I40E_QINT_TQCTL_CAUSE_ENA_MASK |
+ 				      (I40E_TX_ITR << I40E_QINT_TQCTL_ITR_INDX_SHIFT) |
+ 				      (vector << I40E_QINT_TQCTL_MSIX_INDX_SHIFT) | @@ -3904,7 +3905,7=
+ @@ static void i40e_vsi_configure_msix(struct i40e_vsi *vsi)
+=20
+ 				wr32(hw, I40E_QINT_TQCTL(nextqp), val);
+ 			}
+-
++			/* TX queue with next RX or end of linked list */
+ 			val =3D I40E_QINT_TQCTL_CAUSE_ENA_MASK |
+ 			      (I40E_TX_ITR << I40E_QINT_TQCTL_ITR_INDX_SHIFT) |
+ 			      (vector << I40E_QINT_TQCTL_MSIX_INDX_SHIFT) | @@ -3973,7 +3974,6 =
+@@ static void i40e_configure_msi_and_legacy(struct i40e_vsi *vsi)
+ 	struct i40e_q_vector *q_vector =3D vsi->q_vectors[0];
+ 	struct i40e_pf *pf =3D vsi->back;
+ 	struct i40e_hw *hw =3D &pf->hw;
+-	u32 val;
+=20
+ 	/* set the ITR configuration */
+ 	q_vector->rx.next_update =3D jiffies + 1; @@ -3990,28 +3990,20 @@ static =
+void i40e_configure_msi_and_legacy(struct i40e_vsi *vsi)
+ 	/* FIRSTQ_INDX =3D 0, FIRSTQ_TYPE =3D 0 (rx) */
+ 	wr32(hw, I40E_PFINT_LNKLST0, 0);
+=20
+-	/* Associate the queue pair to the vector and enable the queue int */
+-	val =3D I40E_QINT_RQCTL_CAUSE_ENA_MASK		       |
+-	      (I40E_RX_ITR << I40E_QINT_RQCTL_ITR_INDX_SHIFT)  |
+-	      (nextqp	   << I40E_QINT_RQCTL_NEXTQ_INDX_SHIFT)|
+-	      (I40E_QUEUE_TYPE_TX << I40E_QINT_TQCTL_NEXTQ_TYPE_SHIFT);
+-
+-	wr32(hw, I40E_QINT_RQCTL(0), val);
++	/* Associate the queue pair to the vector and enable the queue
++	 * interrupt RX queue in linked list with next queue set to TX
++	 */
++	wr32(hw, I40E_QINT_RQCTL(0), I40E_QINT_RQCTL_VAL(nextqp, 0, TX));
+=20
+ 	if (i40e_enabled_xdp_vsi(vsi)) {
+-		val =3D I40E_QINT_TQCTL_CAUSE_ENA_MASK		     |
+-		      (I40E_TX_ITR << I40E_QINT_TQCTL_ITR_INDX_SHIFT)|
+-		      (I40E_QUEUE_TYPE_TX
+-		       << I40E_QINT_TQCTL_NEXTQ_TYPE_SHIFT);
+-
+-		wr32(hw, I40E_QINT_TQCTL(nextqp), val);
++		/* TX queue in linked list with next queue set to TX */
++		wr32(hw, I40E_QINT_TQCTL(nextqp),
++		     I40E_QINT_TQCTL_VAL(nextqp, 0, TX));
+ 	}
+=20
+-	val =3D I40E_QINT_TQCTL_CAUSE_ENA_MASK		      |
+-	      (I40E_TX_ITR << I40E_QINT_TQCTL_ITR_INDX_SHIFT) |
+-	      (I40E_QUEUE_END_OF_LIST << I40E_QINT_TQCTL_NEXTQ_INDX_SHIFT);
+-
+-	wr32(hw, I40E_QINT_TQCTL(0), val);
++	/* last TX queue so the next RX queue doesn't matter */
++	wr32(hw, I40E_QINT_TQCTL(0),
++	     I40E_QINT_TQCTL_VAL(I40E_QUEUE_END_OF_LIST, 0, RX));
+ 	i40e_flush(hw);
+ }
+=20
+--
+2.35.1
+
