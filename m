@@ -2,143 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 41E205B7C26
-	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 22:21:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFEB95B7C4A
+	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 22:47:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229678AbiIMUVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 16:21:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57976 "EHLO
+        id S229644AbiIMUrx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 16:47:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229552AbiIMUVf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 16:21:35 -0400
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1BAA642E9
-        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 13:21:32 -0700 (PDT)
-Received: by mail-io1-xd2f.google.com with SMTP id 138so9611706iou.9
-        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 13:21:32 -0700 (PDT)
+        with ESMTP id S229473AbiIMUrv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 16:47:51 -0400
+Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B9F274DCB
+        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 13:47:50 -0700 (PDT)
+Received: by mail-qv1-xf2f.google.com with SMTP id q8so10202475qvr.9
+        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 13:47:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ieee.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=hvA7f1e70eZNisribXBaUlpwC7EMEv0cHfgluSEMJ+0=;
-        b=VPYxLNq/A8L3gEZHrUwDcoUnPkNmYHwG9R7k93b4XkSnlgyVRTTuF0O77jbNmGZoIO
-         fdkM8HmeOpQpWtqZPyf/TvCIxnU02BuqCVAm/R7KpqMDY9pXP01TznUpG3VpHJ9t/OYj
-         eUOiHs7lGwCuJU0/YT9WAeKvqZ79yq/a06L8Q=
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=sIW0jOj9f2zyE3XbbwArWS7yU2vU8DbR4RLobl61rlE=;
+        b=W19uCO3pR1SMidtgHfI2O4k1qUJbea2ZLFaTiP0KGphrTeFlMLoWfLAqyba3T3gqeF
+         dEFpxJsRqVtLXCtxqDzQAOGCVN0Yxq4ZqfxC/qRxDbdfDrlqUH1Bzl2ojo47NXaGoq4h
+         oPGH9U3AupA0OVh9Ugk6917bb3ZPxCvjl2KRub1j+Gli78hK7lPmGJINicWKftGyVqsr
+         Zk2rd/A2eL7/uqErExT8IoUOuj2yGO3M5HRHEGOtnkstq2NN5cHkAZ/lSd6R8ofmo9wH
+         V9Vopl3ru4YRwy7gadCWVvNzNpIZJ/mqCBp03s5dEzKgccIJ1lcAz9BuW9po56qg4bz5
+         WxoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=hvA7f1e70eZNisribXBaUlpwC7EMEv0cHfgluSEMJ+0=;
-        b=Lk2c9LOkIKVwbLXBV+JibKDV4nV2rn7qxifzsjTVT+U3BPKD+K6631GMLIpGGJArxr
-         +MfMrs2c8WPNqe4kL1kb+sNtpM7WZgYwm/vcY1v5Lf15a70PqyOPwjbyPFTqmxLZk7X2
-         qjvXqp/3vb1lrqwBVAO0R+soinum4Nya6jZHEqkP+W4hgJkKFD3WH5/vjEaSVYnkA4vb
-         FpTVr9mjlZ7Qx5/3b6EOJtNsehZufL07xaymtDgC8wY/bWjPSrjuOEB6NyoEVWVkggip
-         GP4CR7gua7p/Htz28Rz182/U8eS3WYI6RHz+5LcpsJRXGMFSQCs+Anfzh4dwFeAh0ugP
-         ltbw==
-X-Gm-Message-State: ACgBeo3hU0qpZKkTzfuSFyxbBXLVupvc/mb6miIm7UTeINKEyovpVfuj
-        Ige3p4JuWcDqtPGIW+x85q8pSg==
-X-Google-Smtp-Source: AA6agR7bLInJc4dGlF3FU+bR5qg/fCB3+Slbgvu5j48T3Dz25FTGl4WwJnDiLCEX7WWA0v0QFQAfow==
-X-Received: by 2002:a05:6602:2f13:b0:6a1:730a:dd9d with SMTP id q19-20020a0566022f1300b006a1730add9dmr3702301iow.114.1663100492023;
-        Tue, 13 Sep 2022 13:21:32 -0700 (PDT)
-Received: from [172.22.22.4] ([98.61.227.136])
-        by smtp.googlemail.com with ESMTPSA id d4-20020a0566022be400b006a102cb4900sm5436906ioy.39.2022.09.13.13.21.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 13 Sep 2022 13:21:31 -0700 (PDT)
-Message-ID: <ac428312-745c-490e-dfb4-2208913c27c1@ieee.org>
-Date:   Tue, 13 Sep 2022 15:21:30 -0500
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=sIW0jOj9f2zyE3XbbwArWS7yU2vU8DbR4RLobl61rlE=;
+        b=NSaWqnGkQ8cCwbHGfvmtfYfBPbhraT5/TDhOnvyjvxXEssZFqalWc36xKccIhSVBL0
+         eQCKqB+4Vld4Z/mCDpABlFuzX65csl2Jxrkr5xjrdhZnO5tBzuCngdkcY9aI1YwO6l01
+         +i3FJSg1iP/iMXjIRaEbB/EqG3jr7LUfBMBcfGYktl4bkL2H/JmfZTc7nikff83kY0k2
+         dI9uanH1mA+BbVSunljCaEzjxn4e7sLlziKmCb9HfvZObDjOu0xUMbpGkRIMJjwk0bSk
+         QIP++lOr3tiyCXLevCuNNrQPVvzNmoyt9ueUUkWKj7W3oOj54uKVYgCusWodo76aXNBr
+         wM7A==
+X-Gm-Message-State: ACgBeo2OByBUGM9XbJqX8VLmo1GKTQQIbtEuG14ov7pqQrgag1HZs6xT
+        jWVfyxqU0id3sRX6LYqixkS+ZcLbCvyxrv9qbhFQAA==
+X-Google-Smtp-Source: AA6agR6xLK8C4qJdigsd8yEHH+TKpLgN5MT9yfh5GJuDfSkVGSo1vafy06eImNkjtngmdW4n+PDEfxLUFOM32v1oeZA=
+X-Received: by 2002:ad4:5ce9:0:b0:49f:ee02:50c7 with SMTP id
+ iv9-20020ad45ce9000000b0049fee0250c7mr28733575qvb.105.1663102069229; Tue, 13
+ Sep 2022 13:47:49 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 0/4] Make QMI message rules const
-Content-Language: en-US
-To:     Jeff Johnson <quic_jjohnson@quicinc.com>,
-        Alex Elder <elder@kernel.org>,
+References: <20220912214432.928989-1-nhuck@google.com> <20220913081548.gmngjwuagbt63j7h@wse-c0155>
+In-Reply-To: <20220913081548.gmngjwuagbt63j7h@wse-c0155>
+From:   Nathan Huckleberry <nhuck@google.com>
+Date:   Tue, 13 Sep 2022 13:46:00 -0700
+Message-ID: <CAJkfWY7dGXV=YPaCKqZ0YguRGTN2JA+n9jyVWk8LPj3dgtC=tA@mail.gmail.com>
+Subject: Re: [PATCH] net: sparx5: Fix return type of sparx5_port_xmit_impl
+To:     Casper Andersson <casper.casan@gmail.com>
+Cc:     Dan Carpenter <error27@gmail.com>, llvm@lists.linux.dev,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Kalle Valo <kvalo@kernel.org>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>
-Cc:     linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, alsa-devel@alsa-project.org,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-References: <20220912232526.27427-1-quic_jjohnson@quicinc.com>
- <f2fa19a1-4854-b270-0776-38993dece03f@ieee.org>
- <5b0543dc-4db8-aa33-d469-0e185c82b221@quicinc.com>
-From:   Alex Elder <elder@ieee.org>
-In-Reply-To: <5b0543dc-4db8-aa33-d469-0e185c82b221@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/13/22 1:51 PM, Jeff Johnson wrote:
-> On 9/13/2022 6:58 AM, Alex Elder wrote:
->> On 9/12/22 6:25 PM, Jeff Johnson wrote:
->>> Change ff6d365898d ("soc: qcom: qmi: use const for struct
->>> qmi_elem_info") allows QMI message encoding/decoding rules to be
->>> const. So now update the definitions in the various client to take
->>> advantage of this. Patches for ath10k and ath11k were perviously sent
->>> separately.
->>
->> I have had this on my "to-do list" for ages.
->> The commit you mention updates the code to be
->> explicit about not modifying this data, which
->> is great.
->>
->> I scanned over the changes, and I assume that
->> all you did was make every object having the
->> qmi_elem_info structure type be defined as
->> constant.
->>
->> Why aren't you changing the "ei_array" field in
->> the qmi_elem_info structure to be const?  Or the
->> "ei" field of the qmi_msg_handler structure?  And
->> the qmi_response_type_v01_ei array (and so on)?
->>
->> I like what you're doing, but can you comment
->> on what your plans are beyond this series?
->> Do you intend to make the rest of these fields
->> const?
-> 
-> Hi Alex,
-> My primary focus is the ath* wireless drivers, and my primary goal was 
-> to make the tables there const. So this series, along with the two 
-> out-of-series patches for ath10k and ath11k complete that scope of work.
-> 
-> The lack of the other changes to the QMI data structures is simply due 
-> to me not looking in depth at the QMI code beyond the registration 
-> interface.
-> 
-> I'll be happy to revisit this as a separate cleanup.
+Hey Casper,
 
-Sounds good to me.  Like I said I've wanted to do this
-myself, and as long as you've gotten this far I'd like
-to see it taken to completion.  Compile-testing is most
-likely sufficient to make sure you got it right.
+On Tue, Sep 13, 2022 at 1:15 AM Casper Andersson <casper.casan@gmail.com> wrote:
+>
+> Hi,
+>
+> On 2022-09-12 14:44, Nathan Huckleberry wrote:
+> > The ndo_start_xmit field in net_device_ops is expected to be of type
+> > netdev_tx_t (*ndo_start_xmit)(struct sk_buff *skb, struct net_device *dev).
+> >
+> > The mismatched return type breaks forward edge kCFI since the underlying
+> > function definition does not match the function hook definition.
+> >
+> > The return type of sparx5_port_xmit_impl should be changed from int to
+> > netdev_tx_t.
+>
+> I noticed that the functions that assign the return value inside
+> sparx5_port_xmit_impl also have return type int, which would ideally
+> also be changed. But a bigger issue might be that
+> sparx5_ptp_txtstamp_request and sparx5_inject (called inside
+> sparx5_port_xmit_impl) returns -EBUSY (-16), when they should return
+> NETDEV_TX_BUSY (16). If this is an issue then it also needs to be fixed.
 
-I cherry-picked the one commit, and downloaded the series
-and found no new build warnings.  Checkpatch would prefer
-you used "ff6d365898d4" rather than "ff6d365898d" for the
-commit ID, but that's OK.
+It's not clear to me what happens when returning an error vs
+NETDEV_TX_BUSY. The netdev_tx_t enum allows negative values, so
+returning an error might be valid. If anyone more familiar with this
+code has insight into why it's done like this, that'd be useful.
 
-Anyway, for the whole series:
+The important bit here for me is changing the return type on the
+hooked function since the current code will cause panics.
 
-Reviewed-by: Alex Elder <elder@linaro.org>
+>
+> sparx5_fdma_xmit also has int return type, but always returns
+> NETDEV_TX_OK right now.
+>
+> Best Regards,
+> Casper
+>
 
-
-> /jeff
-> 
-
+Thanks,
+Huck
