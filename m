@@ -2,135 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B08255B7B95
-	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 21:52:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29FB75B7C07
+	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 22:11:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229572AbiIMTvv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 15:51:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39236 "EHLO
+        id S229794AbiIMULc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 16:11:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbiIMTvr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 15:51:47 -0400
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 181BE6BCD9
-        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 12:51:43 -0700 (PDT)
-Received: by mail-il1-f199.google.com with SMTP id o5-20020a056e02102500b002ddcc65029cso9017052ilj.8
-        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 12:51:42 -0700 (PDT)
+        with ESMTP id S229520AbiIMULa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 16:11:30 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CBA3642F6
+        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 13:11:28 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id g3so1628467wrq.13
+        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 13:11:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=smile-fr.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=62zrroreV09z06pto3FC2TnPEa3QeqHeX1xMH+bNz9g=;
+        b=MuyXEmm6WaSkEfZJ6KsnaVU6RD9fxVm4FIrfdybwcF446nIdBmzX8mvZzvLcoZmDpK
+         IDMZuSYpJ+SjvvfIElWmxR8ywdC5FveAntzSy14nwv3i+lEwcxu2hkqolR7hjAgGvdLf
+         3Q+Hk/39hoPz56ktyfyGBNjZjt5z5Iotfk+7gznu5lwUhiMuk3brpJ3fB7RdhNSUVCk3
+         CUfhtvSXVQbGPbFsZLU8QvLtU9elDuUxUKzGjoY0UpbvbWKMiAYnVI18/7y6P3ppXAlT
+         4g3I3uVhcLOBDBtydyQA+xh/2piFpOGtW8MYXzGINFUJwf+RF4wNVQdciAWBTbdQDE2O
+         UZXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=4Ja416e6EJtl4Wt4k3rSUiNYJTMdEKf5Mdz7+oJMoaM=;
-        b=oq/ThVEz8ANJ5duV5S6S/riMvT/dLd9yz0yfNz1m4LXfv8zWrFfVLtubIqJzuIKgHk
-         P8dV8vaDg1WYo31Wyr96CJQNUDGaYi0kgDFDh180lfKyabEizWVGvMI28kBvoat5AIBU
-         AABuh5LEBOQR9+jFYyCbZMxbv9RaU1TQSGx2UWgOubcKlB5MFAS8FIgKK2msIp252sGg
-         w6DYtIS+yOIuFh46mDO0n6iTCNMYrR7+TnxbU8CWTKED2AzJmd/FZBT8xkW/dHfo4/Lk
-         VrlheLpgNdETwDDrQElku6N6401xecmfdEg/U/jwvw9Fw9WcKViI1HYler6GwaeqHqvK
-         zCpQ==
-X-Gm-Message-State: ACgBeo0oyxj8jFR7HSeTmF9MQDtDbL2+3vwnXP2Eu21vOG+bUxtrijid
-        tBAeo+j6J+KJQXmW5dxl8hnq4VQN6rXydy1r2qj8RwKCGMR4
-X-Google-Smtp-Source: AA6agR7PzI68sFAEeTK6kqc/EWQIZjiO+xUlEtke6HmJMklycsbSZgPtF3Lv8oRweEc5SEqc1AMHgWLOP1OApBKLU6KC8qd3kkhg
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=62zrroreV09z06pto3FC2TnPEa3QeqHeX1xMH+bNz9g=;
+        b=yo9Xuwk85hYRRemLR4xBb1VyBLUNdhpCd1hgrTAi3Pt9G+aFdmGuKzZCWLMWH6Otec
+         Y0B9gnnEvoxHdrQDJHJmkVSbQY6MldG0Uo8lqEFbDtWqrWyAaM0jlh/U54ZGYpb0n2sN
+         MNFXc56eot+uN5spO1QUsdeFhLTXsiC2XnvekacO+VBymihHASJCY46L7aN0qbbRyg3y
+         wjVGAbRNxj/N1v0LExDzU9Hx0fEkVUrBipWlM7EIpzL6MX23RNh38uuhn4TitQBVVMoW
+         pqK5bEnjnIWN3s0xexrKEBeCVdrvShNioU1xzYTnR2ZwRGz9mcFc+7rmfTYFmdpVCqKp
+         waMw==
+X-Gm-Message-State: ACgBeo0v9xFYjkki9a6zlk3zF75yCsZjvFLrSBSV6ZUbsutkD+12z+sz
+        Bd6r6YIE6vzSOY7RhTWCseIz3A==
+X-Google-Smtp-Source: AA6agR6zBUY0rKV6La+kg92fGbXvEHT+zLIxdYj5Uel7oNEZYcdtSOuwg3PULoIJ8Uo3A+mAgG8omQ==
+X-Received: by 2002:a05:6000:80a:b0:229:4632:d1d1 with SMTP id bt10-20020a056000080a00b002294632d1d1mr19798951wrb.73.1663099887113;
+        Tue, 13 Sep 2022 13:11:27 -0700 (PDT)
+Received: from ?IPV6:2a01:cb05:8f8a:1800:1c97:b8d1:b477:d53f? (2a01cb058f8a18001c97b8d1b477d53f.ipv6.abo.wanadoo.fr. [2a01:cb05:8f8a:1800:1c97:b8d1:b477:d53f])
+        by smtp.gmail.com with ESMTPSA id w21-20020a1cf615000000b003a63a3b55c3sm14262952wmc.14.2022.09.13.13.11.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 13 Sep 2022 13:11:26 -0700 (PDT)
+Message-ID: <c1a1f948-9d7a-b0cf-3c38-3455c4bd2f4a@smile.fr>
+Date:   Tue, 13 Sep 2022 22:11:25 +0200
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1688:b0:2f2:179b:a648 with SMTP id
- f8-20020a056e02168800b002f2179ba648mr13182154ila.201.1663098702306; Tue, 13
- Sep 2022 12:51:42 -0700 (PDT)
-Date:   Tue, 13 Sep 2022 12:51:42 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000060a74405e8945759@google.com>
-Subject: [syzbot] linux-next test error: WARNING in set_peer
-From:   syzbot <syzbot+a448cda4dba2dac50de5@syzkaller.appspotmail.com>
-To:     Jason@zx2c4.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-next@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, sfr@canb.auug.org.au,
-        syzkaller-bugs@googlegroups.com, wireguard@lists.zx2c4.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [Patch net-next 1/5] net: dsa: microchip: determine number of
+ port irq based on switch type
+Content-Language: fr
+To:     Arun Ramadoss <arun.ramadoss@microchip.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux@armlinux.org.uk,
+        Tristram.Ha@microchip.com, prasanna.vengateshan@microchip.com,
+        hkallweit1@gmail.com
+References: <20220913160427.12749-1-arun.ramadoss@microchip.com>
+ <20220913160427.12749-2-arun.ramadoss@microchip.com>
+From:   Romain Naour <romain.naour@smile.fr>
+In-Reply-To: <20220913160427.12749-2-arun.ramadoss@microchip.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi,
 
-syzbot found the following issue on:
+Le 13/09/2022 à 18:04, Arun Ramadoss a écrit :
+> Currently the number of port irqs is hard coded for the lan937x switch
+> as 6. In order to make the generic interrupt handler for ksz switches,
+> number of port irq supported by the switch is added to the
+> ksz_chip_data. It is 4 for ksz9477, 2 for ksz9897 and 3 for ksz9567.
 
-HEAD commit:    0caac1da9949 Add linux-next specific files for 20220913
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=172d78d8880000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=2fd6142ea1cf631c
-dashboard link: https://syzkaller.appspot.com/bug?extid=a448cda4dba2dac50de5
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+The ksz9896 has been added recently and it's close to the ksz9897.
+So it should get ".port_nirqs = 2" too?
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/4916ab25f774/disk-0caac1da.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/16dace3b273b/vmlinux-0caac1da.xz
+IIUC, to get the number of port irqs you have to look at table "Port Interrupt
+Mask Register" in the datasheet.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+a448cda4dba2dac50de5@syzkaller.appspotmail.com
+4 port irqs for the ksz9477: SGMII, PTP, PHY and ACL.
+2 port irqs for the ksz9897/ksz9896: PHY and ACL.
+3 port irqs for the ksz9567: PTP, PHY and ACL.
 
-netdevsim netdevsim0 netdevsim1: renamed from eth1
-netdevsim netdevsim0 netdevsim2: renamed from eth2
-netdevsim netdevsim0 netdevsim3: renamed from eth3
-------------[ cut here ]------------
-memcpy: detected field-spanning write (size 28) of single field "&endpoint.addr" at drivers/net/wireguard/netlink.c:446 (size 16)
-WARNING: CPU: 0 PID: 3616 at drivers/net/wireguard/netlink.c:446 set_peer+0x991/0x10c0 drivers/net/wireguard/netlink.c:446
-Modules linked in:
-CPU: 0 PID: 3616 Comm: syz-executor.0 Not tainted 6.0.0-rc5-next-20220913-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 08/26/2022
-RIP: 0010:set_peer+0x991/0x10c0 drivers/net/wireguard/netlink.c:446
-Code: 00 e8 63 30 b3 fc b9 10 00 00 00 48 c7 c2 00 4c 72 8a be 1c 00 00 00 48 c7 c7 60 4c 72 8a c6 05 d0 e7 02 09 01 e8 f1 d7 74 04 <0f> 0b e9 03 04 00 00 e8 33 30 b3 fc 89 ee 44 89 ef e8 79 2c b3 fc
-RSP: 0018:ffffc90003d4f540 EFLAGS: 00010282
-RAX: 0000000000000000 RBX: ffffc90003d4f6d8 RCX: 0000000000000000
-RDX: ffff888072ed57c0 RSI: ffffffff81611eb8 RDI: fffff520007a9e9a
-RBP: ffffc90003d4f5e8 R08: 0000000000000005 R09: 0000000000000000
-R10: 0000000080000000 R11: 7720676e696e6e6d R12: 000000000000001c
-R13: 0000000000000000 R14: ffff888072f1d104 R15: ffff888024cb0960
-FS:  000055555616b400(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fa5644d32c0 CR3: 000000006e43c000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- wg_set_device+0x8d7/0x11b0 drivers/net/wireguard/netlink.c:589
- genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:731
- genl_family_rcv_msg net/netlink/genetlink.c:778 [inline]
- genl_rcv_msg+0x3b7/0x630 net/netlink/genetlink.c:795
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2540
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:806
- netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
- netlink_unicast+0x543/0x7f0 net/netlink/af_netlink.c:1345
- netlink_sendmsg+0x917/0xe10 net/netlink/af_netlink.c:1921
- sock_sendmsg_nosec net/socket.c:714 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:734
- __sys_sendto+0x236/0x340 net/socket.c:2117
- __do_sys_sendto net/socket.c:2129 [inline]
- __se_sys_sendto net/socket.c:2125 [inline]
- __x64_sys_sendto+0xdd/0x1b0 net/socket.c:2125
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7fa56343c18c
-Code: fa fa ff ff 44 8b 4c 24 2c 4c 8b 44 24 20 89 c5 44 8b 54 24 28 48 8b 54 24 18 b8 2c 00 00 00 48 8b 74 24 10 8b 7c 24 08 0f 05 <48> 3d 00 f0 ff ff 77 34 89 ef 48 89 44 24 08 e8 20 fb ff ff 48 8b
-RSP: 002b:00007ffe4bc97580 EFLAGS: 00000293 ORIG_RAX: 000000000000002c
-RAX: ffffffffffffffda RBX: 00007fa5644d4320 RCX: 00007fa56343c18c
-RDX: 0000000000000170 RSI: 00007fa5644d4370 RDI: 0000000000000005
-RBP: 0000000000000000 R08: 00007ffe4bc975d4 R09: 000000000000000c
-R10: 0000000000000000 R11: 0000000000000293 R12: 0000000000000000
-R13: 00007fa5644d4370 R14: 0000000000000005 R15: 0000000000000000
- </TASK>
+Best regards,
+Romain
 
+> 
+> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> ---
+>  drivers/net/dsa/microchip/ksz_common.c   | 9 +++++++++
+>  drivers/net/dsa/microchip/ksz_common.h   | 1 +
+>  drivers/net/dsa/microchip/lan937x_main.c | 4 +---
+>  3 files changed, 11 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+> index fcaa71f66322..b91089a483e7 100644
+> --- a/drivers/net/dsa/microchip/ksz_common.c
+> +++ b/drivers/net/dsa/microchip/ksz_common.c
+> @@ -1168,6 +1168,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+>  		.num_statics = 16,
+>  		.cpu_ports = 0x7F,	/* can be configured as cpu port */
+>  		.port_cnt = 7,		/* total physical port count */
+> +		.port_nirqs = 4,
+>  		.ops = &ksz9477_dev_ops,
+>  		.phy_errata_9477 = true,
+>  		.mib_names = ksz9477_mib_names,
+> @@ -1230,6 +1231,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+>  		.num_statics = 16,
+>  		.cpu_ports = 0x7F,	/* can be configured as cpu port */
+>  		.port_cnt = 7,		/* total physical port count */
+> +		.port_nirqs = 2,
+>  		.ops = &ksz9477_dev_ops,
+>  		.phy_errata_9477 = true,
+>  		.mib_names = ksz9477_mib_names,
+> @@ -1259,6 +1261,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+>  		.num_statics = 16,
+>  		.cpu_ports = 0x07,	/* can be configured as cpu port */
+>  		.port_cnt = 3,		/* total port count */
+> +		.port_nirqs = 2,
+>  		.ops = &ksz9477_dev_ops,
+>  		.mib_names = ksz9477_mib_names,
+>  		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
+> @@ -1283,6 +1286,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+>  		.num_statics = 16,
+>  		.cpu_ports = 0x7F,	/* can be configured as cpu port */
+>  		.port_cnt = 7,		/* total physical port count */
+> +		.port_nirqs = 3,
+>  		.ops = &ksz9477_dev_ops,
+>  		.phy_errata_9477 = true,
+>  		.mib_names = ksz9477_mib_names,
+> @@ -1312,6 +1316,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+>  		.num_statics = 256,
+>  		.cpu_ports = 0x10,	/* can be configured as cpu port */
+>  		.port_cnt = 5,		/* total physical port count */
+> +		.port_nirqs = 6,
+>  		.ops = &lan937x_dev_ops,
+>  		.mib_names = ksz9477_mib_names,
+>  		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
+> @@ -1335,6 +1340,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+>  		.num_statics = 256,
+>  		.cpu_ports = 0x30,	/* can be configured as cpu port */
+>  		.port_cnt = 6,		/* total physical port count */
+> +		.port_nirqs = 6,
+>  		.ops = &lan937x_dev_ops,
+>  		.mib_names = ksz9477_mib_names,
+>  		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
+> @@ -1358,6 +1364,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+>  		.num_statics = 256,
+>  		.cpu_ports = 0x30,	/* can be configured as cpu port */
+>  		.port_cnt = 8,		/* total physical port count */
+> +		.port_nirqs = 6,
+>  		.ops = &lan937x_dev_ops,
+>  		.mib_names = ksz9477_mib_names,
+>  		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
+> @@ -1385,6 +1392,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+>  		.num_statics = 256,
+>  		.cpu_ports = 0x38,	/* can be configured as cpu port */
+>  		.port_cnt = 5,		/* total physical port count */
+> +		.port_nirqs = 6,
+>  		.ops = &lan937x_dev_ops,
+>  		.mib_names = ksz9477_mib_names,
+>  		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
+> @@ -1412,6 +1420,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+>  		.num_statics = 256,
+>  		.cpu_ports = 0x30,	/* can be configured as cpu port */
+>  		.port_cnt = 8,		/* total physical port count */
+> +		.port_nirqs = 6,
+>  		.ops = &lan937x_dev_ops,
+>  		.mib_names = ksz9477_mib_names,
+>  		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
+> diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+> index 6203dcd8c8f7..baa1e1bc1b7c 100644
+> --- a/drivers/net/dsa/microchip/ksz_common.h
+> +++ b/drivers/net/dsa/microchip/ksz_common.h
+> @@ -45,6 +45,7 @@ struct ksz_chip_data {
+>  	int num_statics;
+>  	int cpu_ports;
+>  	int port_cnt;
+> +	u8 port_nirqs;
+>  	const struct ksz_dev_ops *ops;
+>  	bool phy_errata_9477;
+>  	bool ksz87xx_eee_link_erratum;
+> diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
+> index 9b6760b1e572..7136d9c55315 100644
+> --- a/drivers/net/dsa/microchip/lan937x_main.c
+> +++ b/drivers/net/dsa/microchip/lan937x_main.c
+> @@ -20,8 +20,6 @@
+>  #include "ksz_common.h"
+>  #include "lan937x.h"
+>  
+> -#define LAN937x_PNIRQS 6
+> -
+>  static int lan937x_cfg(struct ksz_device *dev, u32 addr, u8 bits, bool set)
+>  {
+>  	return regmap_update_bits(dev->regmap[0], addr, bits, set ? bits : 0);
+> @@ -697,7 +695,7 @@ static int lan937x_pirq_setup(struct ksz_device *dev, u8 p)
+>  	int ret, irq;
+>  	int irq_num;
+>  
+> -	port->pirq.nirqs = LAN937x_PNIRQS;
+> +	port->pirq.nirqs = dev->info->port_nirqs;
+>  	port->pirq.domain = irq_domain_add_simple(dev->dev->of_node,
+>  						  port->pirq.nirqs, 0,
+>  						  &lan937x_pirq_domain_ops,
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
