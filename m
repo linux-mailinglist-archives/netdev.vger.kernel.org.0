@@ -2,112 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7195B5B6BBD
-	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 12:37:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 934EF5B6BCB
+	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 12:42:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231615AbiIMKhg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 06:37:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40104 "EHLO
+        id S230108AbiIMKmj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 06:42:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229866AbiIMKhf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 06:37:35 -0400
-Received: from mail-oa1-f46.google.com (mail-oa1-f46.google.com [209.85.160.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A1DD1A839;
-        Tue, 13 Sep 2022 03:37:34 -0700 (PDT)
-Received: by mail-oa1-f46.google.com with SMTP id 586e51a60fabf-1274ec87ad5so30981861fac.0;
-        Tue, 13 Sep 2022 03:37:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=message-id:date:subject:references:in-reply-to:cc:to:from
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=8+JGqRHJMWZ89HHRv12KwXXy6JtSzUYuKEfx3af7iOU=;
-        b=cbtcA2vAj4QXASqDXHPSTEpIDZaDAtmL7nS/z/5o/YeAYjtXV79/p+GSGLEGJMvuxK
-         DlkioSZ8DM7CkX55SqBoZITfMzMhf0FA5b4Rtgj0nduNa13D7MBeLdzrmtjGj4f2OrmZ
-         ys55tRx96NlPaP/lf2R5AESciCiQTy8+Hd4fqKd/bauIzM/bkeBebMPywfHV6EjEXJx3
-         grA5gfPRU/Gjso6BXZhOS6zwfpbd6hqn8BwSpGXdEiMvPnGPZuqD4uciBXY1iLTI4WRE
-         xl/z9DmqfuPwPPiRdnHcteKQpl25S27RTzLVP11rDo57Lo63Yl069PA+lg/cKEKczJOA
-         DrDA==
-X-Gm-Message-State: ACgBeo28/AAu/KvE+st8JydYrry7HGY/1kd4arAjygg9Pb14Pf3sk9Qn
-        fe/3SoQMi56ZqQrT8hO+0Q==
-X-Google-Smtp-Source: AA6agR6wzmXY5KYJRhhTfil+nFptqY6cyMGB2MN7hEDoVpAFs+verqPfjhE8phjFQDl/50HffUiPVg==
-X-Received: by 2002:a05:6808:e87:b0:345:49f2:a0c4 with SMTP id k7-20020a0568080e8700b0034549f2a0c4mr1120078oil.17.1663065453734;
-        Tue, 13 Sep 2022 03:37:33 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id i27-20020a056820013b00b0042859bebfebsm5145070ood.45.2022.09.13.03.37.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Sep 2022 03:37:33 -0700 (PDT)
-Received: (nullmailer pid 3153423 invoked by uid 1000);
-        Tue, 13 Sep 2022 10:37:32 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>, devicetree@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        netdev@vger.kernel.org
-In-Reply-To: <20220912153702.246206-1-vladimir.oltean@nxp.com>
-References: <20220912153702.246206-1-vladimir.oltean@nxp.com>
-Subject: Re: [PATCH net-next] dt-bindings: net: dsa: convert ocelot.txt to dt-schema
-Date:   Tue, 13 Sep 2022 05:37:32 -0500
-Message-Id: <1663065452.471744.3153422.nullmailer@robh.at.kernel.org>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+        with ESMTP id S229729AbiIMKmi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 06:42:38 -0400
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5925D5E339
+        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 03:42:37 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1663065752; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=JIAaQTxaL4JYA+gDL3bqHWwtYmffR5bValbAB74dHOT/ZU49Sj6qd9f1DtXjssfVZHoZMiz7gwgLDEmhEllu4a1JSTAZl2QNkbRmRCqFt1Xoxu+9jHAsqDHKmLaC1eMYQG+fWGv9EKhXeyhQ7ExX/pEpSyR0JEeBc6gsbfR8a2s=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1663065752; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=WsJgDWaE4ky9yW4PZCNpiI5DII5K4NP4gwU9e3/MzvA=; 
+        b=Abe+EnRYJlc174g8U9j+H9uRni+DQpFkq0OGSCyjcoqLbb4iA0ZzIOfEtbdRlHeNFxD2hTsxb3rdkOR3p0FNZcZJxaLQsGckK6cQI2mVmDieKFYYUg2leNirct4PNDrnDG/3ALjbFNlq2FDcqRt+vPXfPuI1SrwHgcdJLk7aH4A=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1663065752;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=WsJgDWaE4ky9yW4PZCNpiI5DII5K4NP4gwU9e3/MzvA=;
+        b=aK6xx0RDAfURxDzycui0TDKbr1RtC7Vm4Opbw0/kH6YGpOysRS37IWFWej9TZBbj
+        oUjqkMvR6V1cXVY7qHVcvcb9h051tDgmZkTPP7n/zwQqhyijX4/PBv8sz4aGDKjIhvI
+        txWvbM4QqXqEV3nkVq1Z8ClpYqNou5KuxrcV14y8=
+Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
+        with SMTPS id 1663065751145938.8696164925093; Tue, 13 Sep 2022 03:42:31 -0700 (PDT)
+Message-ID: <10e9ead9-5adc-5065-0c13-702aabd5dcb0@arinc9.com>
+Date:   Tue, 13 Sep 2022 13:42:28 +0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: mtk_eth_soc for mt7621 won't work after 6.0-rc1
+Content-Language: en-US
+To:     Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>, paulmck@kernel.org
+References: <146b9607-ba1e-c7cf-9f56-05021642b320@arinc9.com>
+ <Yx8thSbBKJhxv169@lore-desk> <Yx9z9Dm4vJFxGaJI@lore-desk>
+ <170d725f-2146-f1fa-e570-4112972729df@arinc9.com>
+ <Yx+W9EoEfoRsq1rt@lore-desk>
+ <CAMhs-H8wWNrqb0RgQdcL4J+=oGws8pB8Uv_H=6Q8AyzXDgF89Q@mail.gmail.com>
+ <CAMhs-H8Wsin67gTLPfv9x=hHM-prz4YYensNtyc=hZx+s4d=9Q@mail.gmail.com>
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <CAMhs-H8Wsin67gTLPfv9x=hHM-prz4YYensNtyc=hZx+s4d=9Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 12 Sep 2022 18:37:02 +0300, Vladimir Oltean wrote:
-> Replace the free-form description of device tree bindings for VSC9959
-> and VSC9953 with a YAML formatted dt-schema description. This contains
-> more or less the same information, but reworded to be a bit more
-> succint.
+On 13.09.2022 11:31, Sergio Paracuellos wrote:
+> Hi Lorenzo,
 > 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->  .../bindings/net/dsa/mscc,ocelot.yaml         | 239 ++++++++++++++++++
->  .../devicetree/bindings/net/dsa/ocelot.txt    | 213 ----------------
->  2 files changed, 239 insertions(+), 213 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/net/dsa/mscc,ocelot.yaml
->  delete mode 100644 Documentation/devicetree/bindings/net/dsa/ocelot.txt
+> On Tue, Sep 13, 2022 at 5:32 AM Sergio Paracuellos
+> <sergio.paracuellos@gmail.com> wrote:
+>>
+>> Hi Lorenzo,
+>>
+>> On Mon, Sep 12, 2022 at 10:30 PM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+>>>
+>>>> Hi Lorenzo,
+>>>>
+>>>> On 12.09.2022 21:01, Lorenzo Bianconi wrote:
+>>>>>>> Ethernet for MT7621 SoCs no longer works after changes introduced to
+>>>>>>> mtk_eth_soc with 6.0-rc1. Ethernet interfaces initialise fine. Packets are
+>>>>>>> sent out from the interface fine but won't be received on the interface.
+>>>>>>>
+>>>>>>> Tested with MT7530 DSA switch connected to gmac0 and ICPlus IP1001 PHY
+>>>>>>> connected to gmac1 of the SoC.
+>>>>>>>
+>>>>>>> Last working kernel is 5.19. The issue is present on 6.0-rc5.
+>>>>>>>
+>>>>>>> Arınç
+>>>>>>
+>>>>>> Hi Arınç,
+>>>>>>
+>>>>>> thx for testing and reporting the issue. Can you please identify
+>>>>>> the offending commit running git bisect?
+>>>>>>
+>>>>>> Regards,
+>>>>>> Lorenzo
+>>>>>
+>>>>> Hi Arınç,
+>>>>>
+>>>>> just a small update. I tested a mt7621 based board (Buffalo WSR-1166DHP) with
+>>>>> OpenWrt master + my mtk_eth_soc series and it works fine. Can you please
+>>>>> provide more details about your development board/environment?
+>>>>
+>>>> I've got a GB-PC2, Sergio has got a GB-PC1. We both use Neil's gnubee-tools
+>>>> which makes an image with filesystem and any Linux kernel of choice with
+>>>> slight modifications (maybe not at all) on the kernel.
+>>>>
+>>>> https://github.com/neilbrown/gnubee-tools
+>>>>
+>>>> Sergio experiences the same problem on GB-PC1.
+>>>
+>>> ack, can you please run git bisect in order to identify the offending commit?
+>>> What is the latest kernel version that is working properly? 5.19.8?
+>>
+>> I'll try to get time today to properly bisect and identify the
+>> offending commit. I get a working platform with 5.19.8, yes but with
+>> v6-rc-1 my network is totally broken.
 > 
+> + [cc: Paul E. McKenney <paulmck@kernel.org> as commit author]
+> 
+> Ok, so I have bisected the issue to:
+> 1cf1144e8473e8c3180ac8b91309e29b6acfd95f] rcu-tasks: Be more patient
+> for RCU Tasks boot-time testing
+> 
+> This is the complete bisect log:
+> 
+> $ git bisect log
+> git bisect start
+> # good: [70cb6afe0e2ff1b7854d840978b1849bffb3ed21] Linux 5.19.8
+> git bisect good 70cb6afe0e2ff1b7854d840978b1849bffb3ed21
+> # bad: [568035b01cfb107af8d2e4bd2fb9aea22cf5b868] Linux 6.0-rc1
+> git bisect bad 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
+> # good: [3d7cb6b04c3f3115719235cc6866b10326de34cd] Linux 5.19
+> git bisect good 3d7cb6b04c3f3115719235cc6866b10326de34cd
+> # bad: [b44f2fd87919b5ae6e1756d4c7ba2cbba22238e1] Merge tag
+> 'drm-next-2022-08-03' of git://anongit.freedesktop.org/drm/drm
+> git bisect bad b44f2fd87919b5ae6e1756d4c7ba2cbba22238e1
+> # bad: [526942b8134cc34d25d27f95dfff98b8ce2f6fcd] Merge tag
+> 'ata-5.20-rc1' of
+> git://git.kernel.org/pub/scm/linux/kernel/git/dlemoal/libata
+> git bisect bad 526942b8134cc34d25d27f95dfff98b8ce2f6fcd
+> # good: [2e7a95156d64667a8ded606829d57c6fc92e41df] Merge tag
+> 'regmap-v5.20' of
+> git://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap
+> git bisect good 2e7a95156d64667a8ded606829d57c6fc92e41df
+> # good: [c013d0af81f60cc7dbe357c4e2a925fb6738dbfe] Merge tag
+> 'for-5.20/block-2022-07-29' of git://git.kernel.dk/linux-block
+> git bisect good c013d0af81f60cc7dbe357c4e2a925fb6738dbfe
+> # bad: [aad26f55f47a33d6de3df65f0b18e2886059ed6d] Merge tag 'docs-6.0'
+> of git://git.lwn.net/linux
+> git bisect bad aad26f55f47a33d6de3df65f0b18e2886059ed6d
+> # good: [c2a24a7a036b3bd3a2e6c66730dfc777cae6540a] Merge tag
+> 'v5.20-p1' of git://git.kernel.org/pub/scm/linux/kernel/git/herbert/crypto-2.6
+> git bisect good c2a24a7a036b3bd3a2e6c66730dfc777cae6540a
+> # bad: [34bc7b454dc31f75a0be7ee8ab378135523d7c51] Merge branch
+> 'ctxt.2022.07.05a' into HEAD
+> git bisect bad 34bc7b454dc31f75a0be7ee8ab378135523d7c51
+> # bad: [e72ee5e1a866b85cb6c3d4c80a1125976020a7e8] rcu-tasks: Use
+> delayed_work to delay rcu_tasks_verify_self_tests()
+> git bisect bad e72ee5e1a866b85cb6c3d4c80a1125976020a7e8
+> # good: [f90f19da88bfe32dd1fdfd104de4c0526a3be701] rcu-tasks: Make RCU
+> Tasks Trace stall warning handle idle offline tasks
+> git bisect good f90f19da88bfe32dd1fdfd104de4c0526a3be701
+> # good: [dc7d54b45170e1e3ced9f86718aa4274fd727790] rcu-tasks: Pull in
+> tasks blocked within RCU Tasks Trace readers
+> git bisect good dc7d54b45170e1e3ced9f86718aa4274fd727790
+> # good: [e386b6725798eec07facedf4d4bb710c079fd25c] rcu-tasks:
+> Eliminate RCU Tasks Trace IPIs to online CPUs
+> git bisect good e386b6725798eec07facedf4d4bb710c079fd25c
+> # good: [eea3423b162d5d5cdc08af23e8ee2c2d1134fd07] rcu-tasks: Update comments
+> git bisect good eea3423b162d5d5cdc08af23e8ee2c2d1134fd07
+> # bad: [1cf1144e8473e8c3180ac8b91309e29b6acfd95f] rcu-tasks: Be more
+> patient for RCU Tasks boot-time testing
+> git bisect bad 1cf1144e8473e8c3180ac8b91309e29b6acfd95f
+> # first bad commit: [1cf1144e8473e8c3180ac8b91309e29b6acfd95f]
+> rcu-tasks: Be more patient for RCU Tasks boot-time testing
+> 
+> I don't really understand the relationship with my broken network
+> issue. I am using debian buster and the effect I see is that when the
+> network interface becomes up it hangs waiting for a "task running to
+> raise network interfaces". After about one minute the system boots,
+> the login prompt is shown but I cannot configure at all network
+> interfaces: dhclient does not respond and manually ifconfig does not
+> help also:
+> 
+> root@gnubee:~#
+> root@gnubee:~# dhclient ethblack
+> ^C
+> root@gnubee:~# ifconfig ethblack 192.168.1.101
+> root@gnubee:~# ping 19^C
+> root@gnubee:~# ping 192.168.1.47
+> PING 192.168.1.47 (192.168.1.47) 56(84) bytes of data.
+> ^C
+> --- 192.168.1.47 ping statistics ---
+> 3 packets transmitted, 0 received, 100% packet loss, time 120ms
+> 
+> I have tried to revert the bad commit directly in v6.0-rc1 but
+> conflicts appeared with the git revert command in
+> 'kernel/rcu/tasks.h', so I am not sure what I can do now.
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+I've pinpointed the issue to 23233e577ef973c2c5d0dd757a0a4605e34ecb57 
+("net: ethernet: mtk_eth_soc: rely on page_pool for single page 
+buffers"). Ethernet works fine after reverting this and newer commits 
+for mtk_eth_soc.
 
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/dsa/mscc,ocelot.example.dtb: ethernet-switch@0,5: Unevaluated properties are not allowed ('interrupts' was unexpected)
-	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/dsa/mscc,ocelot.yaml
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/dsa/mscc,ocelot.example.dtb: ethernet-switch@800000: Unevaluated properties are not allowed ('little-endian' was unexpected)
-	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/dsa/mscc,ocelot.yaml
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+Arınç
