@@ -2,109 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 71C065B6915
-	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 09:56:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1315F5B6924
+	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 10:00:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231265AbiIMH4G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 03:56:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42712 "EHLO
+        id S231335AbiIMIA1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 04:00:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230504AbiIMH4F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 03:56:05 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCC4C5A3EF
-        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 00:56:03 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id 198so11394559ybc.1
-        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 00:56:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=cLpbb86UrbdT6Fmy4lqyat3r0rgj69ADWnh5PWd/WeA=;
-        b=Nj+/nuQcfIknUGti4zXJEeziglp1/iJvtBvdYNeyVqEsJ5By9njKtfGlJBOOR8IQLV
-         q4K/oFuMhiGTt11Egdf6HPMlS/lMqPRvJj4Ks+BpEKzDFwuADOKLXOxtdMMOGigRxlQR
-         eXHrTwffRbxNKjrbpVCZtcx5ATMEwhNSP4a6pjOMMTR/ISP+8epFBSv+M2AdrAOx64XK
-         9ZnW/UQb6VO8R+6Qlwv/P0GeOTu0x9qhZicfiMqTcT+iXVH7JJveB3p3xnQcpAVRiDV9
-         SmjFX7g7ZhkLJKqKlwO7JqENZut5DQFC4/7YBzzrpHYWq+Nom+xIKfe8HhelApkgmcvI
-         fxZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=cLpbb86UrbdT6Fmy4lqyat3r0rgj69ADWnh5PWd/WeA=;
-        b=HN0WW5i4P7eOVRgBN46rWEE1q03NofPMUq7ONid7XzlWKhtDyUKFVUysEHEdD4wXRi
-         4mVjmiX4aIeksVYzwcJuk8EInJ2oE0EJvxeuXUAzVW7kHbp3NkZIT6id1CQrsyu3cti2
-         etWZfawH7gnVe6dSMLNinRy0tHHHM+icsO8Xr8gWZnaLl0vVVy90nEjrVJmwlEgJpIif
-         HMh39CeNZyeeTRJBF3vqtBVElRhcChEh+VJRt7hu3vDX+EaVbeDd/J22zNoQwK5UAesw
-         asIqjdC6MidiGjLM5RU1B+mCLf1cqhqPKNFH7yIIEfl4Ob0Ya1EBK2ta9PmjxVptFBZD
-         5ULg==
-X-Gm-Message-State: ACgBeo1+pGOjozWYcx11QlE//Vps1F3O3gNqDRzGBB+SY4APC01tpr+0
-        T9OecHfYvt6EsE6nTntIDkMsq5wdaZnL6i4YGnc=
-X-Google-Smtp-Source: AA6agR5tCkIemEq9F7BHd5gX7YHzj9YA4lfp0b/xqFnQt49xmGWGBv0Ee4/8dIvOwqxu4/ETWiTPNEnStCbHr2aXrT4=
-X-Received: by 2002:a25:8242:0:b0:6a9:1089:e68 with SMTP id
- d2-20020a258242000000b006a910890e68mr26634924ybn.452.1663055762369; Tue, 13
- Sep 2022 00:56:02 -0700 (PDT)
+        with ESMTP id S231330AbiIMIAT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 04:00:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A5F3248CC
+        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 01:00:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C86E1B80E29
+        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 08:00:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 870DFC43141;
+        Tue, 13 Sep 2022 08:00:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1663056015;
+        bh=c5EPj75D98P2LYMS6YUHH54KM/ypulBhsCgfF/NZQx4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=MOksJnwsCqxYtcZzzK63ZxszmlqfoHIB7qJM3LQrs09hjDPJHFKdMu0WHtdy4zCmY
+         PBL5cd1mTF+J7l/RKj8CkLU5TxoyOqOot3BWS4cTmzYElk1MSo6pHJ8bA7CA+qi3iH
+         YOQ4mpNubq/NV09nqD4rx/Cl30GVueR2iIOJ8JwcHRUH559hkPRjwp8gfA3wUC41IF
+         Bk1ATC3Glz2CDWzirxd6SmrxrLB3g/yLEKm3iD1MM3BGpw5M0oaRUK0g6asIcfWmou
+         864vBSeqGhS2cHktw1QeVz1JLnuc+5BGI7BsnT4L1rP4IEdosKIWkQ6fUP1nTvSzEX
+         RGl75kdJKdrlQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 66228C73FE9;
+        Tue, 13 Sep 2022 08:00:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220707101423.90106-1-jbrunet@baylibre.com> <00f1e968-c140-29b9-dc82-a6f831171d6f@gmail.com>
- <CACdvmAiyFQTUgEzkva9j8xYJYYBRXg_sfB562f3F515AHmkUoA@mail.gmail.com>
- <5c8f4cc4-9807-cfe5-7e0a-7961aef5057f@gmail.com> <1jfshftliz.fsf@starbuckisacylon.baylibre.com>
- <CAK4VdL0pWFga4V1jR8B4oHjXmbBm7dU6BB8pdh0Hymd2sAiqiw@mail.gmail.com> <99839201-6c30-b455-2f32-ea0f992427fc@gmail.com>
-In-Reply-To: <99839201-6c30-b455-2f32-ea0f992427fc@gmail.com>
-From:   Erico Nunes <nunes.erico@gmail.com>
-Date:   Tue, 13 Sep 2022 09:55:50 +0200
-Message-ID: <CAK4VdL2b+LjEsXtkDi=judJXj2gEjHL=6QxNFeiPjmdQq8NceQ@mail.gmail.com>
-Subject: Re: [RFC/RFT PATCH] net: stmmac: do not poke MAC_CTRL_REG twice on
- link up
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Jerome Brunet <jbrunet@baylibre.com>, Da Xue <da@lessconfused.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org,
-        linux-amlogic@lists.infradead.org,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Vyacheslav <adeep@lexina.in>, Qi Duan <qi.duan@amlogic.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] sfc: introduce shutdown entry point in efx pci
+ driver
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166305601539.22239.6689456371130393686.git-patchwork-notify@kernel.org>
+Date:   Tue, 13 Sep 2022 08:00:15 +0000
+References: <20220906105620.26179-1-pieter.jansen-van-vuuren@amd.com>
+In-Reply-To: <20220906105620.26179-1-pieter.jansen-van-vuuren@amd.com>
+To:     <pieter.jansen-van-vuuren@amd.com>
+Cc:     netdev@vger.kernel.org, linux-net-drivers@amd.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, ecree.xilinx@gmail.com,
+        habetsm.xilinx@gmail.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 8:25 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
->
-> On 29.08.2022 12:29, Erico Nunes wrote:
-> > On Mon, Aug 29, 2022 at 12:02 PM Jerome Brunet <jbrunet@baylibre.com> wrote:
-> >>>>> Jerome, can you confirm that after this commit the following is no longer needed?
-> >>>>> 2c87c6f9fbdd ("net: phy: meson-gxl: improve link-up behavior")
-> >>
-> >> This never had any meaningful impact for me. I have already reverted it
-> >> for testing.
-> >>
-> >> I'm all for reverting it
-> >>
-> >>>>>
-> >>>>> Then I'd revert it, referencing the successor workaround / fix in stmmac.
-> > If we are considering to revert that, I would like to trigger some
-> > tests on my S805X CI board farm as well, to ensure it won't regress
-> > later. That was one of the original reasons for that patch.
-> >
-> > Since there are some more changes referenced in this thread, can
-> > someone clarify what is the desired state to test? Just revert
-> > 2c87c6f9fbdd on top of linux-next, or also apply some other patch?
->
-> Yes, just revert 2c87c6f9fbdd on top of linux-next.
+Hello:
 
-I see that the revert is already applied.
-For what it's worth I ran have been running some test jobs on my CI
-farm with linux-next and the patch reverted and haven't reproduced the
-bug that originally prompted 2c87c6f9fbdd so far. So it seems to me
-that that patch is indeed no longer needed.
+This patch was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-Thanks
+On Tue, 6 Sep 2022 11:56:20 +0100 you wrote:
+> From: Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>
+> 
+> Make the device inactive when the system shutdown callback has been
+> invoked. This is achieved by freezing the driver and disabling the
+> PCI bus mastering.
+> 
+> Co-developed-by: Martin Habets <habetsm.xilinx@gmail.com>
+> Signed-off-by: Martin Habets <habetsm.xilinx@gmail.com>
+> Signed-off-by: Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>
+> 
+> [...]
 
-Erico
+Here is the summary with links:
+  - [net-next] sfc: introduce shutdown entry point in efx pci driver
+    https://git.kernel.org/netdev/net-next/c/41e3b0722f6c
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
