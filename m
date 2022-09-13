@@ -2,304 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB7755B6D1C
-	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 14:23:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EA555B6D36
+	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 14:27:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231879AbiIMMXT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 08:23:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56954 "EHLO
+        id S232013AbiIMM1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 08:27:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230408AbiIMMXS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 08:23:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B856D2E9E1
-        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 05:23:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B55B6145E
-        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 12:23:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02BF2C433C1;
-        Tue, 13 Sep 2022 12:23:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663071795;
-        bh=Ak4AMOcDKNoGI3Ras7I6sPVxXlXLSX+FHrWeFlXHJ/A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sFOswE4MWDm/SQ0dc+tkISLbVqwmZRWnOJ5gbvnCHIotuEwIYm3E/AOZTwwHoi+MS
-         Cw3VS7ImTKXZY6S0uwj+E/Jy3yCjMdHxXs49nEVr7ndz9topDYSvXrquZ50c1r4Yl4
-         jQAKNef7PVHvTjN/16KZ2mDrVWqb5oWHoYPsjJn9yhFMLxizP3Nc3JiLdPCPLYLJlU
-         HcPAYR/uXGGKaZyrDpQ4kn6jhtLZ0uNh4nyYYQBbpQY4mIcjmN6xpSR5dsVdnI9yZ8
-         IC9Uj4b4gKaiOCGU4BP9ip/1CQN0EatJYpaJfdJg7KNIPWGZvIhzE7plV0Idt4Mjmr
-         7uM5h6RpDHFhg==
-Date:   Tue, 13 Sep 2022 14:23:11 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-Cc:     Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        netdev <netdev@vger.kernel.org>, paulmck@kernel.org
-Subject: Re: mtk_eth_soc for mt7621 won't work after 6.0-rc1
-Message-ID: <YyB2L8dfnJfnrqWI@lore-desk>
-References: <Yx8thSbBKJhxv169@lore-desk>
- <Yx9z9Dm4vJFxGaJI@lore-desk>
- <170d725f-2146-f1fa-e570-4112972729df@arinc9.com>
- <Yx+W9EoEfoRsq1rt@lore-desk>
- <CAMhs-H8wWNrqb0RgQdcL4J+=oGws8pB8Uv_H=6Q8AyzXDgF89Q@mail.gmail.com>
- <CAMhs-H8Wsin67gTLPfv9x=hHM-prz4YYensNtyc=hZx+s4d=9Q@mail.gmail.com>
- <10e9ead9-5adc-5065-0c13-702aabd5dcb0@arinc9.com>
- <YyBibTHeSxwa31Cm@lore-desk>
- <CAMhs-H_oe-pCBBTDQT_uzyEYUoSvJB=DveZpyUUmdB2Sz--Hww@mail.gmail.com>
- <693820e5-5e8c-fc36-5e5e-f7ca3bdcce72@arinc9.com>
+        with ESMTP id S231814AbiIMM1I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 08:27:08 -0400
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80072.outbound.protection.outlook.com [40.107.8.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E0791E3E2;
+        Tue, 13 Sep 2022 05:27:03 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WPkBAdKgVCqDL/jPYqKD6ViYVola7TyWF1mt1feWyTpLgvAZrmPO6dbRoYrTldRY+4qsoFNRUADk6/BBh+5Xjd7ADJMPSpshXaSNUEY2l6cDyZav/xL19Hw69W4P2MB+TLWNOYeJsRNVANkt3kAlpltL052bzbx2fuPYpaGPyxT7t6/tlDWxSUnxt9tFgm5yWgP6LZa+JYTiH9SAW6k6E+VsPrOzaahoJd/gK7b2ZheRif/3k4PXdYnOXARLsh4MgVz8XGNlbnW63dgrP3ZbcNd4prgofP8peMtcfRD4sKs8ypug2bhKNQFt7vz12WnIGrXXM46ENgr6mlQk3MC1JQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=J8QHyX78UhinV67ehG3Im7DrSJrZBJKUTD5B7q806CA=;
+ b=e/sjLoPHWdDro+7VQphEQpzdDed3OJkShfJLoVqwYfIvSk5brUwWnk3dTEnEvuIvEMjzDfwgJzxGGt3jfL+5NGfW8uQMC2Yhy1ZmaEXOZGpipG+MzWPm2K075OJleDwAv4Gfthh8JWHAj8TYNBkb3CIL1VZwcFzvDXDni7o2XhVzQlZ8kqV3mLK5kei13ltAhLHscDxgBO0wjo8EGSJ0L99qIoGzdkBYC1Ad0fsMk01Ut9LRJQbtmMBqF+Q6ehEbF9cR/VS+0hwlLQxMuFMA9AV7x4FInALeH+KjQfRMW19O2qfVd5zU0cfggB7Il94zZ3ou55s/m/AEUBLXWcmmSw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=stud.acs.upb.ro; dmarc=pass action=none
+ header.from=stud.acs.upb.ro; dkim=pass header.d=stud.acs.upb.ro; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=stud.acs.upb.ro;
+Received: from VI1PR0102MB3166.eurprd01.prod.exchangelabs.com
+ (2603:10a6:803:e::11) by AM8PR01MB7931.eurprd01.prod.exchangelabs.com
+ (2603:10a6:20b:3da::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.22; Tue, 13 Sep
+ 2022 12:26:59 +0000
+Received: from VI1PR0102MB3166.eurprd01.prod.exchangelabs.com
+ ([fe80::1829:8b89:a9e5:da36]) by
+ VI1PR0102MB3166.eurprd01.prod.exchangelabs.com
+ ([fe80::1829:8b89:a9e5:da36%3]) with mapi id 15.20.5612.022; Tue, 13 Sep 2022
+ 12:26:59 +0000
+From:   andrei.tachici@stud.acs.upb.ro
+To:     linux-kernel@vger.kernel.org
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        vegard.nossum@oracle.com, joel@jms.id.au, l.stelmach@samsung.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        devicetree@vger.kernel.org
+Subject: [net-next v8 0/3] net: ethernet: adi: Add ADIN1110 support
+Date:   Tue, 13 Sep 2022 15:26:26 +0300
+Message-Id: <20220913122629.124546-1-andrei.tachici@stud.acs.upb.ro>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ClientProxiedBy: VI1PR07CA0287.eurprd07.prod.outlook.com
+ (2603:10a6:800:130::15) To VI1PR0102MB3166.eurprd01.prod.exchangelabs.com
+ (2603:10a6:803:e::11)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="dgOMXX22+ioQHa3u"
-Content-Disposition: inline
-In-Reply-To: <693820e5-5e8c-fc36-5e5e-f7ca3bdcce72@arinc9.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1PR0102MB3166:EE_|AM8PR01MB7931:EE_
+X-MS-Office365-Filtering-Correlation-Id: 865ff186-9225-4249-69f6-08da958340d2
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: l72XeLIj7a2oA7bSs+4D04y6ZXrKBxGSjyBX8d/6SuyYar933YGKyYAplK/c2qwiT0z3HBy5mMIP0QijHYF/aI0etibCuKWA+b1KUMoHAZ2XZkG7ZdwX5IPGAUJMFmPf9LxcTvI2F7W228eSe0tDZBBTeRTDYQ3TgW3loXqIygJGWfcNv+fODLGDlPEzR/syUZAuC7rVWXZVCtn4cU7xiEsAZTq0e7RsoI+fvcetByLmaozCsCAgCbZbGdEuC+x790Fti17an8EO7wjpNenUZBg+hZ4PYzs3toyWWNlPGWfxQfKO4fdVlJSPlEsdURiidWJ6bgyU8Xm56lGBce8xDij3EIikMUXMQL9LuqZKG5AfLH8BBBAfJI4fTK3MIaNhuvBWflcrDPl8rOUZ7inTafrDUoe2n6YfB/LEhKXOihXixW0bB5JPNao2bnoXy/T7OpSiumj49S9tJHW02fvtwULsEKS6V/78h/OXW683nf8OKw/a400YknJQBScC/TGShvZRKZFjgpS6e1ZPjEzX9sKtfMBkPaPwtihRfZu5v/IqRvZI46KFFjjTUFKYJ9iuIG6w07ozGSDRtQQCfJoK99h1P1cykZYN2Ac3T3+fOTvD9i7tMovYuetsMWQ4PPjHZn+UwNf5ciFr2mFfTxi0z3TWpFfmrTb8zGY3sSIF23SFU1ulhI6LQXh7EFz9Pfk5KROpMEEyRdtX+t12KOfRwuImW8nSKpsV8bDVOqftCB9zWuVzOhkSUsbAkInlxQlE
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0102MB3166.eurprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230022)(376002)(136003)(396003)(346002)(366004)(39860400002)(451199015)(38350700002)(6916009)(2906002)(66556008)(52116002)(86362001)(5660300002)(8676002)(6666004)(478600001)(66946007)(786003)(316002)(26005)(4326008)(6486002)(1076003)(7416002)(186003)(41300700001)(41320700001)(8936002)(9686003)(83380400001)(38100700002)(66476007)(6512007)(2616005)(6506007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?m6ckauCvt+EH7A565LyaxGdtX2ebRgtpUZueMfK1FIMTi2KcJ+6JG8Z3ePEU?=
+ =?us-ascii?Q?kxVzPycNDTQHM2kQn0QqYuu5npM9MqkJLmLISioHbznrWSiQK2FirxJBPB+J?=
+ =?us-ascii?Q?NHdVagqqzc4UcOLTT2R1k37zwxvEj8F7loMqJ5BfSax8Yf5neqBQvCPfWYMa?=
+ =?us-ascii?Q?EjcYtRFdNFEb+0kpLR824Z3TtTqAXCQu7jGLqafR5W91azz1U+6vhdQ5eaQf?=
+ =?us-ascii?Q?gp5G8FRJOCodPH0craPDj9JiQJGm0maUDsWoVoLzBJetT636nBtYjQhzaqqa?=
+ =?us-ascii?Q?h2sauNmanJNeaxJo4o4P1w49yGL+8gnAsoi0rO+nzkgqF8heT6ReHbe4trdN?=
+ =?us-ascii?Q?JE96bV8LLb99j/oiHwZ0copFo4kBeh1gsZM/MAI3fL+p3/0ahPygsEsBvJn2?=
+ =?us-ascii?Q?U4+nOoguZCDdidD+QZ/ToWPPy+8aeBRdyU+DFbhuSvMR9wCNe8mFa6rOHfoU?=
+ =?us-ascii?Q?s7H1mARPm4J9HQSGMNQqeJ+AEWthVI0I5IcfCoYLRR5RxGuR/hLPR+zndPWP?=
+ =?us-ascii?Q?aQBeD1PikTid7MmfUZDc+RuskV5TCcJ1Fm2nOMeG2+PWSc4lFxtyzkJEqJ+l?=
+ =?us-ascii?Q?xoPS1Ds9SWH9SbXQw+t1//AeQOJ0GfoUgt5SVotbMvGu31QlI/RVVwFDT6SK?=
+ =?us-ascii?Q?Xqwf9YVKfbty0LnKTseQSngjyOOEdIclSJuMx32xZOngpx61ThgLBNZPbZdp?=
+ =?us-ascii?Q?Najfu1zM69pNVySu7tc88Zog1YiBFvNxGtDsygAHErIuRhSX6rbOAdvh8Yfx?=
+ =?us-ascii?Q?dmORfq39V746hsN8GrhhwOdv7Dp/ViJwxUGk6n6BTRTnofE8GFtPkwsTNVRW?=
+ =?us-ascii?Q?Aa3vp94XHkekh3QkX1cU4lRRMBcQG2W+Qj8I8cwjLHT6ibj7utx4Jdeobzef?=
+ =?us-ascii?Q?iq9Qtd6VD4qFIpDcX0fdiFbDXEpYyN9+mWIJdT2QhZdMdZm8KISvU5mcF0YC?=
+ =?us-ascii?Q?NM9rXFHCl5yDkTGybM9a/uSQDNz0X0r5gIM0yDnNEAm+rnEbzeRlSFJLnC9x?=
+ =?us-ascii?Q?fGKQL4emLXA/ZhndswaI1N6XBweLWdqCh1bu6Z5DYK8x7+kqlkwB2rWDBEoC?=
+ =?us-ascii?Q?QBCI/aJKKsNJ9fXAfOYLGeYGI4Auv7r1Pr8OyNHtG2k/z+kZx0wtbnQWjFCh?=
+ =?us-ascii?Q?tcqusRqLymd7xHmHShTaXuobQzQhb4Fw1MFfNcr/wheep6ow00kR4cdeW7p3?=
+ =?us-ascii?Q?NPHgYCSIfl2Y8pth83+dX09rR310nLdiAToUghkBvVGYwZ+U1Gq0HAaSaqMB?=
+ =?us-ascii?Q?JxKSH9bfiin+TY7WL3pVoYMjjolwLFnHG6XfvC2CNonoQik3h/DVqpl247Az?=
+ =?us-ascii?Q?5DO7KQ3HW1vjMWxiVn8/urpw8t3IjutUjcgZ8wuZyety6n/KdOIixloPN/6j?=
+ =?us-ascii?Q?78lGIa1DS06bi4VnVdPVNeuXD7pRlcB9MDWvHxQB89sQ+n7Hy+FXxxB6QxTw?=
+ =?us-ascii?Q?U8jWXDMg1HO5Ovr8/VCIt3lFRWnYMhQTKjAGZo428r0XrA8qLgN0re8vauNw?=
+ =?us-ascii?Q?uLuw29AekBAcQXEmAgbu8Vy79vvK/1wLYjGCDSnrVXTgAiMJxIZUAeWV3jry?=
+ =?us-ascii?Q?My2mpsZ3jxxgq3mZdZFeZxZCkQzu+WhftU8iNcYfuvCaQ57HVIRHLdJ5Ez5L?=
+ =?us-ascii?Q?Eg=3D=3D?=
+X-OriginatorOrg: stud.acs.upb.ro
+X-MS-Exchange-CrossTenant-Network-Message-Id: 865ff186-9225-4249-69f6-08da958340d2
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR0102MB3166.eurprd01.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Sep 2022 12:26:59.0569
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 2d8cc8ba-8dda-4334-9e5c-fac2092e9bac
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: FMO5jwjWKdQTNlh93HT2Lkfbaj77Gww5Vfnog/dOFwSBP70C/+lHWKWF0fQ2q6Bkr7R/sUwS3z9hQLCQ0Z/h5qTEbhITrMRRmGtIYAUeSF4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR01MB7931
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Alexandru Tachici <alexandru.tachici@analog.com>
 
---dgOMXX22+ioQHa3u
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The ADIN1110 is a low power single port 10BASE-T1L MAC-PHY
+designed for industrial Ethernet applications. It integrates
+an Ethernet PHY core with a MAC and all the associated analog
+circuitry, input and output clock buffering.
 
-> On 13.09.2022 14:07, Sergio Paracuellos wrote:
-> > Hi Lorenzo,
-> >=20
-> > On Tue, Sep 13, 2022 at 12:58 PM Lorenzo Bianconi <lorenzo@kernel.org> =
-wrote:
-> > >=20
-> > > > On 13.09.2022 11:31, Sergio Paracuellos wrote:
-> > > > > Hi Lorenzo,
-> > > > >=20
-> > > > > On Tue, Sep 13, 2022 at 5:32 AM Sergio Paracuellos
-> > > > > <sergio.paracuellos@gmail.com> wrote:
-> > > > > >=20
-> > > > > > Hi Lorenzo,
-> > > > > >=20
-> > > > > > On Mon, Sep 12, 2022 at 10:30 PM Lorenzo Bianconi <lorenzo@kern=
-el.org> wrote:
-> > > > > > >=20
-> > > > > > > > Hi Lorenzo,
-> > > > > > > >=20
-> > > > > > > > On 12.09.2022 21:01, Lorenzo Bianconi wrote:
-> > > > > > > > > > > Ethernet for MT7621 SoCs no longer works after change=
-s introduced to
-> > > > > > > > > > > mtk_eth_soc with 6.0-rc1. Ethernet interfaces initial=
-ise fine. Packets are
-> > > > > > > > > > > sent out from the interface fine but won't be receive=
-d on the interface.
-> > > > > > > > > > >=20
-> > > > > > > > > > > Tested with MT7530 DSA switch connected to gmac0 and =
-ICPlus IP1001 PHY
-> > > > > > > > > > > connected to gmac1 of the SoC.
-> > > > > > > > > > >=20
-> > > > > > > > > > > Last working kernel is 5.19. The issue is present on =
-6.0-rc5.
-> > > > > > > > > > >=20
-> > > > > > > > > > > Ar=C4=B1n=C3=A7
-> > > > > > > > > >=20
-> > > > > > > > > > Hi Ar=C4=B1n=C3=A7,
-> > > > > > > > > >=20
-> > > > > > > > > > thx for testing and reporting the issue. Can you please=
- identify
-> > > > > > > > > > the offending commit running git bisect?
-> > > > > > > > > >=20
-> > > > > > > > > > Regards,
-> > > > > > > > > > Lorenzo
-> > > > > > > > >=20
-> > > > > > > > > Hi Ar=C4=B1n=C3=A7,
-> > > > > > > > >=20
-> > > > > > > > > just a small update. I tested a mt7621 based board (Buffa=
-lo WSR-1166DHP) with
-> > > > > > > > > OpenWrt master + my mtk_eth_soc series and it works fine.=
- Can you please
-> > > > > > > > > provide more details about your development board/environ=
-ment?
-> > > > > > > >=20
-> > > > > > > > I've got a GB-PC2, Sergio has got a GB-PC1. We both use Nei=
-l's gnubee-tools
-> > > > > > > > which makes an image with filesystem and any Linux kernel o=
-f choice with
-> > > > > > > > slight modifications (maybe not at all) on the kernel.
-> > > > > > > >=20
-> > > > > > > > https://github.com/neilbrown/gnubee-tools
-> > > > > > > >=20
-> > > > > > > > Sergio experiences the same problem on GB-PC1.
-> > > > > > >=20
-> > > > > > > ack, can you please run git bisect in order to identify the o=
-ffending commit?
-> > > > > > > What is the latest kernel version that is working properly? 5=
-=2E19.8?
-> > > > > >=20
-> > > > > > I'll try to get time today to properly bisect and identify the
-> > > > > > offending commit. I get a working platform with 5.19.8, yes but=
- with
-> > > > > > v6-rc-1 my network is totally broken.
-> > > > >=20
-> > > > > + [cc: Paul E. McKenney <paulmck@kernel.org> as commit author]
-> > > > >=20
-> > > > > Ok, so I have bisected the issue to:
-> > > > > 1cf1144e8473e8c3180ac8b91309e29b6acfd95f] rcu-tasks: Be more pati=
-ent
-> > > > > for RCU Tasks boot-time testing
-> > > > >=20
-> > > > > This is the complete bisect log:
-> > > > >=20
-> > > > > $ git bisect log
-> > > > > git bisect start
-> > > > > # good: [70cb6afe0e2ff1b7854d840978b1849bffb3ed21] Linux 5.19.8
-> > > > > git bisect good 70cb6afe0e2ff1b7854d840978b1849bffb3ed21
-> > > > > # bad: [568035b01cfb107af8d2e4bd2fb9aea22cf5b868] Linux 6.0-rc1
-> > > > > git bisect bad 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
-> > > > > # good: [3d7cb6b04c3f3115719235cc6866b10326de34cd] Linux 5.19
-> > > > > git bisect good 3d7cb6b04c3f3115719235cc6866b10326de34cd
-> > > > > # bad: [b44f2fd87919b5ae6e1756d4c7ba2cbba22238e1] Merge tag
-> > > > > 'drm-next-2022-08-03' of git://anongit.freedesktop.org/drm/drm
-> > > > > git bisect bad b44f2fd87919b5ae6e1756d4c7ba2cbba22238e1
-> > > > > # bad: [526942b8134cc34d25d27f95dfff98b8ce2f6fcd] Merge tag
-> > > > > 'ata-5.20-rc1' of
-> > > > > git://git.kernel.org/pub/scm/linux/kernel/git/dlemoal/libata
-> > > > > git bisect bad 526942b8134cc34d25d27f95dfff98b8ce2f6fcd
-> > > > > # good: [2e7a95156d64667a8ded606829d57c6fc92e41df] Merge tag
-> > > > > 'regmap-v5.20' of
-> > > > > git://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap
-> > > > > git bisect good 2e7a95156d64667a8ded606829d57c6fc92e41df
-> > > > > # good: [c013d0af81f60cc7dbe357c4e2a925fb6738dbfe] Merge tag
-> > > > > 'for-5.20/block-2022-07-29' of git://git.kernel.dk/linux-block
-> > > > > git bisect good c013d0af81f60cc7dbe357c4e2a925fb6738dbfe
-> > > > > # bad: [aad26f55f47a33d6de3df65f0b18e2886059ed6d] Merge tag 'docs=
--6.0'
-> > > > > of git://git.lwn.net/linux
-> > > > > git bisect bad aad26f55f47a33d6de3df65f0b18e2886059ed6d
-> > > > > # good: [c2a24a7a036b3bd3a2e6c66730dfc777cae6540a] Merge tag
-> > > > > 'v5.20-p1' of git://git.kernel.org/pub/scm/linux/kernel/git/herbe=
-rt/crypto-2.6
-> > > > > git bisect good c2a24a7a036b3bd3a2e6c66730dfc777cae6540a
-> > > > > # bad: [34bc7b454dc31f75a0be7ee8ab378135523d7c51] Merge branch
-> > > > > 'ctxt.2022.07.05a' into HEAD
-> > > > > git bisect bad 34bc7b454dc31f75a0be7ee8ab378135523d7c51
-> > > > > # bad: [e72ee5e1a866b85cb6c3d4c80a1125976020a7e8] rcu-tasks: Use
-> > > > > delayed_work to delay rcu_tasks_verify_self_tests()
-> > > > > git bisect bad e72ee5e1a866b85cb6c3d4c80a1125976020a7e8
-> > > > > # good: [f90f19da88bfe32dd1fdfd104de4c0526a3be701] rcu-tasks: Mak=
-e RCU
-> > > > > Tasks Trace stall warning handle idle offline tasks
-> > > > > git bisect good f90f19da88bfe32dd1fdfd104de4c0526a3be701
-> > > > > # good: [dc7d54b45170e1e3ced9f86718aa4274fd727790] rcu-tasks: Pul=
-l in
-> > > > > tasks blocked within RCU Tasks Trace readers
-> > > > > git bisect good dc7d54b45170e1e3ced9f86718aa4274fd727790
-> > > > > # good: [e386b6725798eec07facedf4d4bb710c079fd25c] rcu-tasks:
-> > > > > Eliminate RCU Tasks Trace IPIs to online CPUs
-> > > > > git bisect good e386b6725798eec07facedf4d4bb710c079fd25c
-> > > > > # good: [eea3423b162d5d5cdc08af23e8ee2c2d1134fd07] rcu-tasks: Upd=
-ate comments
-> > > > > git bisect good eea3423b162d5d5cdc08af23e8ee2c2d1134fd07
-> > > > > # bad: [1cf1144e8473e8c3180ac8b91309e29b6acfd95f] rcu-tasks: Be m=
-ore
-> > > > > patient for RCU Tasks boot-time testing
-> > > > > git bisect bad 1cf1144e8473e8c3180ac8b91309e29b6acfd95f
-> > > > > # first bad commit: [1cf1144e8473e8c3180ac8b91309e29b6acfd95f]
-> > > > > rcu-tasks: Be more patient for RCU Tasks boot-time testing
-> > > > >=20
-> > > > > I don't really understand the relationship with my broken network
-> > > > > issue. I am using debian buster and the effect I see is that when=
- the
-> > > > > network interface becomes up it hangs waiting for a "task running=
- to
-> > > > > raise network interfaces". After about one minute the system boot=
-s,
-> > > > > the login prompt is shown but I cannot configure at all network
-> > > > > interfaces: dhclient does not respond and manually ifconfig does =
-not
-> > > > > help also:
-> > > > >=20
-> > > > > root@gnubee:~#
-> > > > > root@gnubee:~# dhclient ethblack
-> > > > > ^C
-> > > > > root@gnubee:~# ifconfig ethblack 192.168.1.101
-> > > > > root@gnubee:~# ping 19^C
-> > > > > root@gnubee:~# ping 192.168.1.47
-> > > > > PING 192.168.1.47 (192.168.1.47) 56(84) bytes of data.
-> > > > > ^C
-> > > > > --- 192.168.1.47 ping statistics ---
-> > > > > 3 packets transmitted, 0 received, 100% packet loss, time 120ms
-> > > > >=20
-> > > > > I have tried to revert the bad commit directly in v6.0-rc1 but
-> > > > > conflicts appeared with the git revert command in
-> > > > > 'kernel/rcu/tasks.h', so I am not sure what I can do now.
-> > > >=20
-> > > > I've pinpointed the issue to 23233e577ef973c2c5d0dd757a0a4605e34ecb=
-57 ("net:
-> > > > ethernet: mtk_eth_soc: rely on page_pool for single page buffers").=
- Ethernet
-> > > > works fine after reverting this and newer commits for mtk_eth_soc.
-> > >=20
-> > > Hi Ar=C4=B1n=C3=A7,
-> > >=20
-> > > yes, I run some bisect here as well and this seems the offending comm=
-it. Can
-> > > you please try the patch below?
-> > >=20
-> > > Regards,
-> > > Lorenzo
-> > >=20
-> > > diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/ne=
-t/ethernet/mediatek/mtk_eth_soc.c
-> > > index ec617966c953..67a64a2272b9 100644
-> > > --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> > > +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> > > @@ -1470,7 +1470,7 @@ static void mtk_update_rx_cpu_idx(struct mtk_et=
-h *eth)
-> > >=20
-> > >   static bool mtk_page_pool_enabled(struct mtk_eth *eth)
-> > >   {
-> > > -       return !eth->hwlro;
-> > > +       return MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2);
-> > >   }
-> > >=20
-> > >   static struct page_pool *mtk_create_page_pool(struct mtk_eth *eth,
-> >=20
-> > I have applied this patch on the top of v6-0-rc5 and the network is
-> > back, so this patch seems to fix the network issue for my GNUBee pC1:
-> >=20
-> > Tested-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
->=20
-> Can confirm the same behaviour on my GB-PC2.
->=20
-> Tested-by: Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc9.com>
+ADIN1110 MAC-PHY encapsulates the ADIN1100 PHY. The PHY registers
+can be accessed through the MDIO MAC registers.
+We are registering an MDIO bus with custom read/write in order
+to let the PHY to be discovered by the PAL. This will let
+the ADIN1100 Linux driver to probe and take control of
+the PHY.
 
-I debugged a bit more the problem and the issue is due to a 2 bytes alignme=
-nt
-introduced by mt7621 on packet data.
-Since mt7621 is a low-end SoC and I do not have other SoCs for testing, I w=
-ill
-enable xdp support just for MT7986 for the moment. Thanks a lot for reporti=
-ng the
-issue and for testing.
+The ADIN2111 is a low power, low complexity, two-Ethernet ports
+switch with integrated 10BASE-T1L PHYs and one serial peripheral
+interface (SPI) port.
 
-Regards,
-Lorenzo
+The device is designed for industrial Ethernet applications using
+low power constrained nodes and is compliant with the IEEE 802.3cg-2019
+Ethernet standard for long reach 10 Mbps single pair Ethernet (SPE).
+The switch supports various routing configurations between
+the two Ethernet ports and the SPI host port providing a flexible
+solution for line, daisy-chain, or ring network topologies.
 
->=20
-> Ar=C4=B1n=C3=A7
+The ADIN2111 supports cable reach of up to 1700 meters with ultra
+low power consumption of 77 mW. The two PHY cores support the
+1.0 V p-p operating mode and the 2.4 V p-p operating mode defined
+in the IEEE 802.3cg standard.
 
---dgOMXX22+ioQHa3u
-Content-Type: application/pgp-signature; name="signature.asc"
+The device integrates the switch, two Ethernet physical layer (PHY)
+cores with a media access control (MAC) interface and all the
+associated analog circuitry, and input and output clock buffering.
 
------BEGIN PGP SIGNATURE-----
+The device also includes internal buffer queues, the SPI and
+subsystem registers, as well as the control logic to manage the reset
+and clock control and hardware pin configuration.
 
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYyB2LwAKCRA6cBh0uS2t
-rBk+AQDleg4TIm5HaxETcNIlMGj0yvLG2miE+nc3m5O7RXDn5AEAkEcTA9AzWbbj
-NQ+dIiwmSMjBlasz6OJxPvLLhAbGUwc=
-=jg4x
------END PGP SIGNATURE-----
+Access to the PHYs is exposed via an internal MDIO bus. Writes/reads
+can be performed by reading/writing to the ADIN2111 MDIO registers
+via SPI.
 
---dgOMXX22+ioQHa3u--
+On probe, for each port, a struct net_device is allocated and
+registered. When both ports are added to the same bridge, the driver
+will enable offloading of frame forwarding at the hardware level.
+
+Driver offers STP support. Normal operation on forwarding state.
+Allows only frames with the 802.1d DA to be passed to the host
+when in any of the other states.
+
+When both ports of ADIN2111 belong to the same SW bridge a maximum
+of 12 FDB entries will offloaded by the hardware and are marked as such.
+
+Alexandru Tachici (3):
+  net: phy: adin1100: add PHY IDs of adin1110/adin2111
+  net: ethernet: adi: Add ADIN1110 support
+  dt-bindings: net: adin1110: Add docs
+
+Changelog V7 -> V8:
+	- in adin1110_port_set_blocking_state(): fix possible path where mutex would remain
+	locked after return
+	- in adin1110_setup_notifiers(): switched to the goto format of error checking/cleanup
+	- where trivial, reduced lines under 80 columns
+	- fixed over 100 columns warnings
+
+ .../devicetree/bindings/net/adi,adin1110.yaml |   77 +
+ drivers/net/ethernet/Kconfig                  |    1 +
+ drivers/net/ethernet/Makefile                 |    1 +
+ drivers/net/ethernet/adi/Kconfig              |   28 +
+ drivers/net/ethernet/adi/Makefile             |    6 +
+ drivers/net/ethernet/adi/adin1110.c           | 1696 +++++++++++++++++
+ drivers/net/phy/adin1100.c                    |    7 +-
+ 7 files changed, 1815 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/net/adi,adin1110.yaml
+ create mode 100644 drivers/net/ethernet/adi/Kconfig
+ create mode 100644 drivers/net/ethernet/adi/Makefile
+ create mode 100644 drivers/net/ethernet/adi/adin1110.c
+
+-- 
+2.25.1
+
