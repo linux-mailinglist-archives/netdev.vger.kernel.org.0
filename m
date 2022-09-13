@@ -2,54 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 05E645B7D93
-	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 01:37:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88E2E5B7D94
+	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 01:37:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229851AbiIMXhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 19:37:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56608 "EHLO
+        id S229880AbiIMXh2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 19:37:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229852AbiIMXhW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 19:37:22 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C41A71BEE
-        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 16:37:19 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id bu13-20020a056902090d00b00671743601f1so11416236ybb.0
-        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 16:37:19 -0700 (PDT)
+        with ESMTP id S229870AbiIMXhX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 19:37:23 -0400
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 521B87199F
+        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 16:37:22 -0700 (PDT)
+Received: by mail-pg1-x54a.google.com with SMTP id s68-20020a632c47000000b00434e0e75076so6393683pgs.7
+        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 16:37:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date;
-        bh=NwGQODpxaIQjq2Q9i7xww6BX9L+zJmLaZqsIG4X4HwQ=;
-        b=o4kOxYovTq8PJdbtLFHNsCuRZnYOxfFbUklDCum1if7Egy/oOVrLZccjBiHzq5BXuR
-         HQFB4ufGVJe1EForw5n8XYdu13KQ21Jwpy0r8gcfLeBszXy1Phx3faimJZyxO37aXLOp
-         YUYAH3/1WvyO3nP8fCCVDCpiVONvC+o2oLf+5sLG/VvnPA8UotxYhrM4nCJ4+/Z1GEz7
-         XkEDwRlsiGrs8TsCQbv0cdQm8Oz6ibzUN3tKMehKP02NX/iFzuc8K6BUYYwhuF/pOyKD
-         xwc/6jQHuSnUGzzuBLKblrDN9Xv0hArYEZKA2TvN7tKApcijJ5Fd2qwZO6MBZy6cuSMN
-         nggQ==
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date;
+        bh=3R3kd3ajupj3cdm7/eN6SOKkue4SpZWOLdvBLhR9NOg=;
+        b=PD40MUF8Fbm96f+EH4eN6upE2dgzH6/V5FZ6SzuMdGoEo4HvZK+fJbXAWO9ldkK2lx
+         kzQSobzZo1PkoYHzVvsc4e9FM5Oe0qds/6+zWntw22zR4S8nBVNl0xisR46tkpiuNeF6
+         Qwjo6rOvh+Hm3kJRwyJmG9pkUFK9aQpTB0G+Wk2x+pNyqN3M8l1Rt0e3yxRZOYGpsM+b
+         zO+qdXeOuJ3TSuFJjZJlMoBRd21LP2UZQ8LZHym5g/lybtCFr/ReZhe7Fyg5JnOf8E2H
+         flQYwuHYKHqFGoR/HQKD4DtAsfVNxH29HqEtp4ooAqIc4K59hP2YIhJfnoLW6OUbii1P
+         tQpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=NwGQODpxaIQjq2Q9i7xww6BX9L+zJmLaZqsIG4X4HwQ=;
-        b=EEboIqU7yKictLI2tOWUIFSxl0G0Tl3s+AbTRwjipklTZS2Za0xCErF8sW+Ct4yfgy
-         Ug9H1jpgX4mSrM4a7ztYnvb+oubS2sWbHEfSO2IqHcF0b/HIomgrFY6gk7eUiWDh+9lq
-         g4wWvAPuef+yzDKvNEJ1nglvk6+QUzos6KKEfGFpxynD2vmlt4L4yApc/kyD0ebgkhGF
-         /blPKIMCjsn3553p3hrL1j2gPzkf5LoTgN0V2sdmLDOKVGejcUZfjf2AHixvefM+mSxM
-         2xShlkzVkPvFDAwX52y9RtfVm3gZojbuv9Uq0p+5Xm09V4IhuHkEf5dqZ2dhdr/uNzMK
-         1SqQ==
-X-Gm-Message-State: ACgBeo1wIRD7Nta/c5u2lT240L7ozKKIH/RV3cvt2psyo1qRvXFuqmPf
-        8Oh3a9pXTv7wTQwHY5etiodiJQRFR+CI
-X-Google-Smtp-Source: AA6agR4nHY/ALASaB6ML9Y/8f2p0m5sk2i47fc6sZmQCuiYN/l2jdLI3fj8Icd8/Bz5NvCRsPfMkWvqD2Yoj
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date;
+        bh=3R3kd3ajupj3cdm7/eN6SOKkue4SpZWOLdvBLhR9NOg=;
+        b=PE1TXzTrOD3+ltBcBDTzL1iEkl054GVMRad6bSPAx3Nv+ITXs/3aDRX1qyfFU5TNAe
+         vxsX6PFwFKUO8ZSueSLbFxrj+5rlDwE1jajSJ+drZ2XeQWGWvgIPtinium7Sx6mqsQ3P
+         qKwxidWwkTUBfol+vLS5mO4a+BlMC5pH69OxNsgC7rpkLfOjZfJzBFO52NqbvmrEHfQe
+         pK2M+Vn6DK6na8//Wj0Fa77RO3EWAA1y0eo7vk+75dIVbNrZJaqb3VJM8OVCMQ8Voktd
+         3/W+r1jcjFfY6D4w0tyQXvHJsSLdaqTXjav5T2bA2mbuCwPLHkQDnhy6nzLXJ3L9A1BK
+         Bj9w==
+X-Gm-Message-State: ACgBeo3WROQYfwsoBoDWaXWS0498Ms8Rv3iM/5/xkXhar2jK2ZsHB9Vp
+        cCNyaOj3JtPXoCX7UHsvd2Z9cstcc+Cu
+X-Google-Smtp-Source: AA6agR6Rx7aJ5ESWaikv/TsLescyNMcGIubGq9nFlHDf+hu7K3rAOvznwWK4PlXHlMg1lAROBMAWgzwevRQe
 X-Received: from jiangzp-glinux-dev.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:4c52])
- (user=jiangzp job=sendgmr) by 2002:a81:1353:0:b0:345:34b5:ad29 with SMTP id
- 80-20020a811353000000b0034534b5ad29mr27724101ywt.17.1663112238498; Tue, 13
- Sep 2022 16:37:18 -0700 (PDT)
-Date:   Tue, 13 Sep 2022 16:37:14 -0700
+ (user=jiangzp job=sendgmr) by 2002:a17:902:6943:b0:178:4751:a76b with SMTP id
+ k3-20020a170902694300b001784751a76bmr5349334plt.37.1663112241844; Tue, 13 Sep
+ 2022 16:37:21 -0700 (PDT)
+Date:   Tue, 13 Sep 2022 16:37:15 -0700
+In-Reply-To: <20220913233715.3323089-1-jiangzp@google.com>
 Mime-Version: 1.0
+References: <20220913233715.3323089-1-jiangzp@google.com>
 X-Mailer: git-send-email 2.37.2.789.g6183377224-goog
-Message-ID: <20220913233715.3323089-1-jiangzp@google.com>
-Subject: [kernel PATCH v2 0/1] Bluetooth: hci_sync: allow advertise when scan
+Message-ID: <20220913163710.kernel.v2.1.I54824fdfb8de716a1d7d9eccecbbfb6e45b116a8@changeid>
+Subject: [kernel PATCH v2 1/1] Bluetooth: hci_sync: allow advertise when scan
  without RPA
 From:   Zhengping Jiang <jiangzp@google.com>
 To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org
@@ -65,16 +67,22 @@ Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Address resolution will be paused during active scan to allow any
+advertising reports reach the host. If LL privacy is enabled,
+advertising will rely on the controller to generate new RPA.
 
-This patch allows the device to keep advertising during active scan when
-ll privacy is enabled, if the device is not using privacy mode.
+If host is not using RPA, there is no need to stop advertising during
+active scan because there is no need to generate RPA in the controller.
+
+Signed-off-by: Zhengping Jiang <jiangzp@google.com>
+---
 
 Changes in v2:
 - Modify title to reduce length within limit
@@ -82,12 +90,22 @@ Changes in v2:
 Changes in v1:
 - Check privacy flag when disable advertising
 
-Zhengping Jiang (1):
-  Bluetooth: hci_sync: allow advertise when scan without RPA
-
  net/bluetooth/hci_sync.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
+index 41b6d19c70b06..422f7c6911d9f 100644
+--- a/net/bluetooth/hci_sync.c
++++ b/net/bluetooth/hci_sync.c
+@@ -5351,7 +5351,7 @@ static int hci_active_scan_sync(struct hci_dev *hdev, uint16_t interval)
+ 	/* Pause advertising since active scanning disables address resolution
+ 	 * which advertising depend on in order to generate its RPAs.
+ 	 */
+-	if (use_ll_privacy(hdev)) {
++	if (use_ll_privacy(hdev) && hci_dev_test_flag(hdev, HCI_PRIVACY)) {
+ 		err = hci_pause_advertising_sync(hdev);
+ 		if (err) {
+ 			bt_dev_err(hdev, "pause advertising failed: %d", err);
 -- 
 2.37.2.789.g6183377224-goog
 
