@@ -2,118 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D75C5B6956
-	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 10:18:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81C2E5B695C
+	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 10:20:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230341AbiIMISX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 04:18:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39056 "EHLO
+        id S231383AbiIMIUB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 04:20:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230221AbiIMISW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 04:18:22 -0400
-Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F005E24973;
-        Tue, 13 Sep 2022 01:18:20 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id D4F35135F;
-        Tue, 13 Sep 2022 10:18:18 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1663057099;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=lQvQeAgjxqYSjCBCPv4uH0vSfQc2xCoC/J0gxV+KP7I=;
-        b=uVhboh596FH2yBLqUi1e0iXmW6/Px6RnnXGnJ7kY2BHZwi/PEGaRkVl2ClDGN/248sQLWV
-        Ay9WTamRlVr9my5knVSeSLCd1joTsdRrCtgA392Ok7en1uDmBbAfUV71YKGbcjqcblWW7y
-        HjZTmQUOfQKCadVlBRW7MH1sSNN4Q4pz1/qBtFxNBjFI8vyqyZmg3SpTnUpGpmzTcDAsqa
-        Ff/3LGYF1sKL4fEA0LOEClzEeYaEHh7ayTdH3dkmwo1l7LKhcwrg/LDGPzcGf0J3eeE+tH
-        MiQLeDbHjBHMacQUFZ4IwzQUOEdgX4b5XZC4mG9do3Wtu2hGfMQR7X0nzcAQew==
-From:   Michael Walle <michael@walle.cc>
-To:     horatiu.vultur@microchip.com
-Cc:     UNGLinuxDriver@microchip.com, andrew@lunn.ch, davem@davemloft.net,
-        edumazet@google.com, hkallweit1@gmail.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        Michael Walle <michael@walle.cc>
-Subject: Re: [PATCH net-next] net: phy: micrel: Add interrupts support for LAN8804 PHY
-Date:   Tue, 13 Sep 2022 10:18:14 +0200
-Message-Id: <20220913081814.212548-1-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220912195650.466518-1-horatiu.vultur@microchip.com>
-References: <20220912195650.466518-1-horatiu.vultur@microchip.com>
+        with ESMTP id S230498AbiIMIT7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 04:19:59 -0400
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 677F3BF64;
+        Tue, 13 Sep 2022 01:19:58 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1663057151; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=cbD2oH6qV+7f5NwVYgIJya2nvrNAGDpLFrbMwDhNRhRq0ADLO5oIbXtGn0ZFWg3c0wH64WMNrrxOmfk1KtU6Mn+04VafA9n4Uwt2U6R/iUCRywgzxhPUfYJ1msr6DG7vevuM2kEOPpI1sgPmC6EKMmlkjFFOyyqzCHOSFR5+aag=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1663057151; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=5ta8cGICr0VOJM3jC+pGpsMR/rkOeJqhzZDkRQ4xBHw=; 
+        b=ZrR99btLqzgG+9bJWWYITysE2GBxYdI5P2IhlexV2cyxX7ySwd+GhWnz9Yh9v/SYZCzkOPDSZDLj3AYqqY+juPsOv1RZu7Ogeojk8mb05opMb6v+7gIRXeCrJxb/1XxoRwASJcuErKWTcsR2CQi110VygrpKD0A9Ac8JDssjlWs=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1663057151;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=5ta8cGICr0VOJM3jC+pGpsMR/rkOeJqhzZDkRQ4xBHw=;
+        b=FIMUqSjX4QdqKRIUAo/ZmX4QYgTQV628cIf8ACY3Gc4sGipLUi5K8tD4+ZB2KbUZ
+        NMXt/GQc/Kiuj1GsXiEmqc1MhTkN7XiQOJC2tlZDwHVCFnmEa/oMThCUcOto7R+DpTy
+        O0cUbIdWZv4RXIaEFJXVXtE+0hTrXhlLyR6uBipY=
+Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
+        with SMTPS id 1663057148935836.8616576818519; Tue, 13 Sep 2022 01:19:08 -0700 (PDT)
+Message-ID: <a2dd3f5d-9d25-bb24-9db2-1587487c80a2@arinc9.com>
+Date:   Tue, 13 Sep 2022 11:19:01 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH net-next 1/3] dt-bindings: net: dsa: mt7530: replace label
+ = "cpu" with proper checks
+Content-Language: en-US
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        George McCollister <george.mccollister@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Linus Walleij <linus.walleij@linaro.org>,
+        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>,
+        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Marek Vasut <marex@denx.de>, John Crispin <john@phrozen.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        linux-renesas-soc@vger.kernel.org
+References: <20220912175058.280386-1-vladimir.oltean@nxp.com>
+ <20220912175058.280386-2-vladimir.oltean@nxp.com>
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <20220912175058.280386-2-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Add support for interrupts for LAN8804 PHY.
+On 12.09.2022 20:50, Vladimir Oltean wrote:
+> The fact that some DSA device trees use 'label = "cpu"' for the CPU port
+> is nothing but blind cargo cult copying. The 'label' property was never
+> part of the DSA DT bindings for anything except the user ports, where it
+> provided a hint as to what name the created netdevs should use.
 > 
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> DSA does use the "cpu" port label to identify a CPU port in dsa_port_parse(),
+> but this is only for non-OF code paths (platform data).
+> 
+> The proper way to identify a CPU port is to look at whether the
+> 'ethernet' phandle is present.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+
+Reviewed-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+
+Arınç
+
 > ---
->  drivers/net/phy/micrel.c | 55 ++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 55 insertions(+)
+>   .../devicetree/bindings/net/dsa/mediatek,mt7530.yaml | 12 +++---------
+>   1 file changed, 3 insertions(+), 9 deletions(-)
 > 
-> diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-> index 7b8c5c8d013e..98e9bc101d96 100644
-> --- a/drivers/net/phy/micrel.c
-> +++ b/drivers/net/phy/micrel.c
-> @@ -2676,6 +2676,59 @@ static int lan8804_config_init(struct phy_device *phydev)
->  	return 0;
->  }
->  
-> +static irqreturn_t lan8804_handle_interrupt(struct phy_device *phydev)
-> +{
-> +	int status;
-> +
-> +	status = phy_read(phydev, LAN8814_INTS);
-> +	if (status < 0) {
-> +		phy_error(phydev);
-> +		return IRQ_NONE;
-> +	}
-> +
-> +	if (status > 0)
-> +		phy_trigger_machine(phydev);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +#define LAN8804_OUTPUT_CONTROL			25
-> +#define LAN8804_OUTPUT_CONTROL_INTR_BUFFER	BIT(14)
-> +#define LAN8804_CONTROL				31
-> +#define LAN8804_CONTROL_INTR_POLARITY		BIT(14)
-> +
-> +static int lan8804_config_intr(struct phy_device *phydev)
-> +{
-> +	int err;
-> +
-> +	/* Change interrupt polarity */
-> +	phy_write(phydev, LAN8804_CONTROL, LAN8804_CONTROL_INTR_POLARITY);
-
-I assume you change the polarity to high active? Could you add a note?
-The LAN966x nor the LAN8804 datasheet describe this bit. You might also add
-a note, that this is an internal PHY and you cannot change the polarity on
-the GIC. Which begs the question, is this really only an internal PHY or
-can you actually buy it as a dedicated one. Then you'd change the polarity
-in a really unusual way.
-
-
-> +
-> +	/* Change interrupt buffer type */
-
-To what? Push-pull?
-
--michael
-
-> +	phy_write(phydev, LAN8804_OUTPUT_CONTROL,
-> +		  LAN8804_OUTPUT_CONTROL_INTR_BUFFER);
-> +
+> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> index f9e7b6e20b35..fa271ee16b5e 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> @@ -163,9 +163,7 @@ patternProperties:
+>           allOf:
+>             - $ref: dsa-port.yaml#
+>             - if:
+> -              properties:
+> -                label:
+> -                  const: cpu
+> +              required: [ ethernet ]
+>               then:
+>                 required:
+>                   - phy-mode
+> @@ -187,9 +185,7 @@ $defs:
+>           patternProperties:
+>             "^(ethernet-)?port@[0-9]+$":
+>               if:
+> -              properties:
+> -                label:
+> -                  const: cpu
+> +              required: [ ethernet ]
+>               then:
+>                 if:
+>                   properties:
+> @@ -215,9 +211,7 @@ $defs:
+>           patternProperties:
+>             "^(ethernet-)?port@[0-9]+$":
+>               if:
+> -              properties:
+> -                label:
+> -                  const: cpu
+> +              required: [ ethernet ]
+>               then:
+>                 if:
+>                   properties:
