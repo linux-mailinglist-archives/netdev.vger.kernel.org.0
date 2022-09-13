@@ -2,90 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 733715B7077
-	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 16:33:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB5835B7318
+	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 17:05:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233802AbiIMO1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 10:27:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39504 "EHLO
+        id S234552AbiIMO7r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 10:59:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232557AbiIMO0j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 10:26:39 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AB0167459
-        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 07:16:44 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1663078468; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=MzaZa2WQtlRdTzi8tOfC68cBb2Ceoq6HZIXuoCniI+UsmBlEUbgdTUFEOxA590gw9Pkcar2YZbgmIEmsMwzn1UDx4dLmZGbJpUClfgRoA/UizsILxKXFKZCTGCLfQuaKzp2mzW7Feuf4YthZSwMsgrph7tTMfCQEIxiYGXOAgI0=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1663078468; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=iRLdT3aU1LgBOiMK66KmiIjapaD8BSf3ORp6HQO/xhk=; 
-        b=Sj5M2WrMUU+xzkit+73aGwdT5nu/lb4tQWW2BkXNSiUw3IAWLUjAXu3yLzksNdXTOVQYcuswid9kOcnoOEqhK5IlWpdjn6Daazn4YVItxhN5Bl1dgN3caDWft4BkSv+U8i3VAkAa2Z3e+tI7i7unmqyNsFCTi1vGnMC0WM7d0kE=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1663078468;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=iRLdT3aU1LgBOiMK66KmiIjapaD8BSf3ORp6HQO/xhk=;
-        b=Z090IQ4OFjTbEZuFX9rMNBgs8TJ77OP+I4U3QyGJ6LrvNASxlc80n3qUxvS9b9Wb
-        Vcdv4RuDMGcAgUY6YQmt8UEF+2T+JJS0CKujOiF0PzkHo8EMTPZ6wfAb2tJKNCnXyr3
-        8B2kSgl5I/iPVFSPw0gFtcd3//DoDMQ2QfqTs43Y=
-Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 1663078466851413.63336965516294; Tue, 13 Sep 2022 07:14:26 -0700 (PDT)
-Message-ID: <8a323fc4-bf98-a808-899a-957438b0d792@arinc9.com>
-Date:   Tue, 13 Sep 2022 17:14:19 +0300
+        with ESMTP id S235092AbiIMO7L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 10:59:11 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BBFC63F13;
+        Tue, 13 Sep 2022 07:28:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1663079323; x=1694615323;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=r++yIB0Zi49RlX5j8upgavcrEl7RW8kP06fMbAaKCzc=;
+  b=T+RhTZ4CQ+tv6TyfQqYRHHv2AHu9iygKCxN5Dzi/YXkyxTC08ZGdg4cH
+   08BYxhsjs7S5f63sJkcS5zhHjYuTeok9q02DgfDgZdZ43GBqKyV9r8q1P
+   GU+tWJKcDRTdQ2Bf/lxUCp5WMjEcKL/VUxLi2n0ens+3E3brwNA548cJv
+   goZB2soJqGHEtPIKcfHIuP0/5E3G51M6h/tX3+bPCIoVPY24eGwJxPc8j
+   KDKpsP9vDgOw83k4/UEs2DaIMaUILbbe46/3iJr3x6gwjImv0+VJY+kU9
+   vQa6kIMUctzsn7/hkLqwOwa4XKYAxEyIqCc2iabtClYGRzQnUh2F8v9zU
+   A==;
+X-IronPort-AV: E=Sophos;i="5.93,313,1654585200"; 
+   d="scan'208";a="173638038"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Sep 2022 07:25:23 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Tue, 13 Sep 2022 07:25:15 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Tue, 13 Sep 2022 07:25:12 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <michael@walle.cc>,
+        <UNGLinuxDriver@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v2] net: phy: micrel: Add interrupts support for LAN8804 PHY
+Date:   Tue, 13 Sep 2022 16:29:26 +0200
+Message-ID: <20220913142926.816746-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net-next 3/3] dt-bindings: net: dsa: remove label = "cpu"
- from examples
-Content-Language: en-US
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        George McCollister <george.mccollister@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>,
-        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Marek Vasut <marex@denx.de>, John Crispin <john@phrozen.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-References: <20220912175058.280386-1-vladimir.oltean@nxp.com>
- <20220912175058.280386-4-vladimir.oltean@nxp.com>
- <b11e86c6-ff35-2103-cebe-ebe5f737d9de@arinc9.com>
- <20220913133122.gzs2uhuk626eazee@skbuf>
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <20220913133122.gzs2uhuk626eazee@skbuf>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -93,18 +62,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 13.09.2022 16:31, Vladimir Oltean wrote:
-> On Tue, Sep 13, 2022 at 11:20:04AM +0300, Arınç ÜNAL wrote:
->> Is there also a plan to remove this from every devicetree on mainline that
->> has got this property on the CPU port?
->>
->> I'd like to do the same on the DTs on OpenWrt.
-> 
-> I don't really have the time to split patches towards every individual
-> platform maintainer and follow up with them until such patches would get
-> accepted. I would encourage such an initiative coming from somebody else,
-> though.
+Add support for interrupts for LAN8804 PHY.
 
-Understood, I think I can deal with this.
+Tested-by: Michael Walle <michael@walle.cc> # on kontron-kswitch-d10
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+---
+v1->v2:
+- add Tested-by and Reviewed-by tags
+- add better comments
+---
+ drivers/net/phy/micrel.c | 62 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 62 insertions(+)
 
-Arınç
+diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+index 7b8c5c8d013e..6ec2d8fec78a 100644
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -2676,6 +2676,66 @@ static int lan8804_config_init(struct phy_device *phydev)
+ 	return 0;
+ }
+ 
++static irqreturn_t lan8804_handle_interrupt(struct phy_device *phydev)
++{
++	int status;
++
++	status = phy_read(phydev, LAN8814_INTS);
++	if (status < 0) {
++		phy_error(phydev);
++		return IRQ_NONE;
++	}
++
++	if (status > 0)
++		phy_trigger_machine(phydev);
++
++	return IRQ_HANDLED;
++}
++
++#define LAN8804_OUTPUT_CONTROL			25
++#define LAN8804_OUTPUT_CONTROL_INTR_BUFFER	BIT(14)
++#define LAN8804_CONTROL				31
++#define LAN8804_CONTROL_INTR_POLARITY		BIT(14)
++
++static int lan8804_config_intr(struct phy_device *phydev)
++{
++	int err;
++
++	/* This is an internal PHY of lan966x and is not possible to change the
++	 * polarity on the GIC found in lan966x, therefore change the polarity
++	 * of the interrupt in the PHY from being active low instead of active
++	 * high.
++	 */
++	phy_write(phydev, LAN8804_CONTROL, LAN8804_CONTROL_INTR_POLARITY);
++
++	/* By default interrupt buffer is open-drain in which case the interrupt
++	 * can be active only low. Therefore change the interrupt buffer to be
++	 * push-pull to be able to change interrupt polarity
++	 */
++	phy_write(phydev, LAN8804_OUTPUT_CONTROL,
++		  LAN8804_OUTPUT_CONTROL_INTR_BUFFER);
++
++	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
++		err = phy_read(phydev, LAN8814_INTS);
++		if (err < 0)
++			return err;
++
++		err =  phy_write(phydev, LAN8814_INTC, LAN8814_INT_LINK);
++		if (err)
++			return err;
++	} else {
++		err =  phy_write(phydev, LAN8814_INTC, 0);
++		if (err)
++			return err;
++
++		err = phy_read(phydev, LAN8814_INTS);
++		if (err < 0)
++			return err;
++	}
++
++	return 0;
++}
++
+ static irqreturn_t lan8814_handle_interrupt(struct phy_device *phydev)
+ {
+ 	int irq_status, tsu_irq_status;
+@@ -3137,6 +3197,8 @@ static struct phy_driver ksphy_driver[] = {
+ 	.get_stats	= kszphy_get_stats,
+ 	.suspend	= genphy_suspend,
+ 	.resume		= kszphy_resume,
++	.config_intr	= lan8804_config_intr,
++	.handle_interrupt = lan8804_handle_interrupt,
+ }, {
+ 	.phy_id		= PHY_ID_KSZ9131,
+ 	.phy_id_mask	= MICREL_PHY_ID_MASK,
+-- 
+2.33.0
+
