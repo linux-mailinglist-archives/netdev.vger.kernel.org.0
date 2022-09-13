@@ -2,116 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F8F45B795C
-	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 20:26:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C57275B79B4
+	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 20:37:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232124AbiIMS0C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 14:26:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48392 "EHLO
+        id S232777AbiIMSgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 14:36:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232023AbiIMSZj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 14:25:39 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55EBA659EA
-        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 10:42:28 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id az24-20020a05600c601800b003a842e4983cso10031932wmb.0
-        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 10:42:28 -0700 (PDT)
+        with ESMTP id S230237AbiIMSf6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 14:35:58 -0400
+Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C51F0FF7
+        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 10:58:29 -0700 (PDT)
+Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-1280590722dso34320516fac.1
+        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 10:58:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=XWi3vvHiUqJXCMHut9LqX+J95oZ0olTscmO96FreQ4s=;
-        b=rkXRdO9ONLQfsImq6bcaY+BN48zK9Kb5jsxoYd3cf0w50EhOd32X7+REX9bHy0/Ult
-         wdB374vMMX7Hv/IAaL5aowszLiQ5mGn4hD3j1Tcw8ZXHinXY8qp3wAUOK3vdgWtErc5w
-         hDSOiGPNuxO5nMsM3tUBYsy3LizfPd6hnCvREt3SZk3kd5moNt80b5aIEPHgksKFsRhE
-         PueSHFHYsHLMjieGRaMv83g660OOkscrOa0yO3iCZjD/5Ox6J0+Fmc6yPX65gewT+osq
-         GGI0EEr1jyt0CoDCfZlBWPMLNgkTAvM3waMmEZcTb1po7ObU46YtjcpxMfrG1/C0mRUI
-         zaBQ==
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=aaNSjGzXhkohc6W2mTDFVgJmx/qcTzuCH14ahIku08Q=;
+        b=b7pgvtF1JtUFn5bp8CblPf6xgylOdA7T3perJnk5Q6cfACJshrDbnvadetUZK+IHJX
+         1L5TUvCRz0oSNydaawjA06b1WFPXNBV/W1qVMQ4/0C9n5PW/6tFcnSCXoGP5YgJbX8gj
+         A4Fi1Np8K+LOGggS3dSODtGJBmR3Buzds3/ZRdBAnjsRDrYcD/k+MTgDa4zgu43xDETe
+         3lVe8SFhd/zCFwzKmGA9VqHSKvL69zhf3wPX1NXkEVug6yUk+SuAyiWu8Vrlg6pEYSzW
+         1lQGUtAipGsE2KhOMBVVwtb58QFX7aU6uDxz6QnYjzJaRtxiyoqEuP5/+iZ0RsGGN2X9
+         lLjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=XWi3vvHiUqJXCMHut9LqX+J95oZ0olTscmO96FreQ4s=;
-        b=pSijfAmMSn3Nih3zXeAZTDO6thXEDt4EpEWn90NwLeMHsiUV586fOeM+a+7vtJddH2
-         4L131ebcEfCuhX5VeFqG6MaAA8UfRs4Z57g6rhA1GPMALnGr0xVRKaTBkhPArHC2YDhd
-         dWOP14mDjelwPQraVUMEP5zEK3WQ5dit5XSXIDWyckxwrTXrsirpE/8+ZsoBp96Kgq2g
-         +BtmuOFg12VIrRuRlcUuHffQRW8Gm6VzO9pBFPu6WRqplLvcg0eMdLpVzHWXoVsSdyTE
-         iyBnDl7B+zvq7dMfNNljkH4ubGNBpy6NlHcM8DXgID0rT2vR0vM72PTDb+ecA8JkNCQK
-         adwg==
-X-Gm-Message-State: ACgBeo3baAjkgDR+ykmH5zl7czA6564VD95Fr+GXBAs8qbNkf+jGyUnn
-        nfQ25MUvHme3BBKE8R5dzlHoLFIP1JJpAw==
-X-Google-Smtp-Source: AA6agR7QMHbPQzJLbUoPypG9Ka4uZg6nA1r9gxBcXI1yj0J/2GKQQdEligpb+PQWilrxFZ8f04Oc0g==
-X-Received: by 2002:a05:600c:3b2a:b0:3b4:8300:593 with SMTP id m42-20020a05600c3b2a00b003b483000593mr294252wms.129.1663090946592;
-        Tue, 13 Sep 2022 10:42:26 -0700 (PDT)
-Received: from sagittarius-a.chello.ie (188-141-3-169.dynamic.upc.ie. [188.141.3.169])
-        by smtp.gmail.com with ESMTPSA id t6-20020a5d6906000000b00225239d9265sm11044572wru.74.2022.09.13.10.42.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Sep 2022 10:42:26 -0700 (PDT)
-From:   Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-To:     loic.poulain@linaro.org, kvalo@kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Cc:     wcn36xx@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, bryan.odonoghue@linaro.org,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH] wcn36xx: Add RX frame SNR as a source of system entropy
-Date:   Tue, 13 Sep 2022 18:42:24 +0100
-Message-Id: <20220913174224.1399480-1-bryan.odonoghue@linaro.org>
-X-Mailer: git-send-email 2.37.3
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=aaNSjGzXhkohc6W2mTDFVgJmx/qcTzuCH14ahIku08Q=;
+        b=xN9HdjEHNWOPyyrZsIAe8c/xlLApJ/3PfIHjPUU6PzE4ZDlSl6YcgthzLG9UzGb10a
+         8pX1F1rAnHFr8gntaaCGtf/DJ8zu6Ocp3ESwkFzAROcikQu377StLhhSXg/HomfNbN17
+         YqhhmVIikTBQcGgJZLqSb67E06u7vtTWfPyn5GOYV0+/DF8StOCVe70yKW/Or9/cALX/
+         prKNMZSIp5ZCl7v7jmCg9Z4DxmR6Car5MSShIKlYkBQd9Ab5EIuYJ4Xe8GCr2kLfG04w
+         5SHGMetlULfzOct46JP4M/3xKczEcH/lhysLCCprcP+RSvitTK6trSlHD6o6Zn0zpDrI
+         HOTQ==
+X-Gm-Message-State: ACgBeo0s9Dil6sOdwhpVni5GW7x4xxrwtgs8xtUKXTdWXa5qufbB2qlT
+        4atUTDTHAeVBpsW6KlcAxxD0ftpxHz73z+nNMsdT0wqCRj8+GQ==
+X-Google-Smtp-Source: AA6agR5VpOn9d0FVybpX9E/+sqIIHUUH30By06vJRG2inDVxVEuixCPiW5+j0Nu8UM9Yg6pXTDNrK1hPqiXxa8UPTIc=
+X-Received: by 2002:a05:6808:1491:b0:343:7543:1a37 with SMTP id
+ e17-20020a056808149100b0034375431a37mr252213oiw.106.1663091909198; Tue, 13
+ Sep 2022 10:58:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220909012936.268433-1-shaozhengchao@huawei.com> <6d627826-94ac-6c44-9a26-2e2662b58ee0@mojatatu.com>
+In-Reply-To: <6d627826-94ac-6c44-9a26-2e2662b58ee0@mojatatu.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Date:   Tue, 13 Sep 2022 13:58:18 -0400
+Message-ID: <CAM0EoMkE9vhMOHohCr-0H0ThH0o++4PTSNnaNbx18tYtnjikVg@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/8] add tc-testing test cases
+To:     Victor Nogueira <victor@mojatatu.com>
+Cc:     Zhengchao Shao <shaozhengchao@huawei.com>,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, shuah@kernel.org,
+        weiyongjun1@huawei.com, yuehaibing@huawei.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The signal-to-noise-ratio of a received frame is a representation of noise
-in a given received frame.
+On Fri, Sep 9, 2022 at 4:04 PM Victor Nogueira <victor@mojatatu.com> wrote:
+>
+> > For this patchset, test cases of the ctinfo, gate, and xt action modules
+> > are added to the tc-testing test suite. Also add deleting test for
+> > connmark, ife, nat, sample and tunnel_key action modules.
+> >
+> > Zhengchao Shao (8):
+> >    selftests/tc-testings: add selftests for ctinfo action
+> >    selftests/tc-testings: add selftests for gate action
+> >    selftests/tc-testings: add selftests for xt action
+> >    selftests/tc-testings: add connmark action deleting test case
+> >    selftests/tc-testings: add ife action deleting test case
+> >    selftests/tc-testings: add nat action deleting test case
+> >    selftests/tc-testings: add sample action deleting test case
+> >    selftests/tc-testings: add tunnel_key action deleting test case
+> >
+> >   .../tc-testing/tc-tests/actions/connmark.json |  50 +++
+> >   .../tc-testing/tc-tests/actions/ctinfo.json   | 316 ++++++++++++++++++
+> >   .../tc-testing/tc-tests/actions/gate.json     | 315 +++++++++++++++++
+> >   .../tc-testing/tc-tests/actions/ife.json      |  50 +++
+> >   .../tc-testing/tc-tests/actions/nat.json      |  50 +++
+> >   .../tc-testing/tc-tests/actions/sample.json   |  50 +++
+> >   .../tc-tests/actions/tunnel_key.json          |  50 +++
+> >   .../tc-testing/tc-tests/actions/xt.json       | 219 ++++++++++++
+> >   8 files changed, 1100 insertions(+)
+> >   create mode 100644 tools/testing/selftests/tc-testing/tc-tests/actions/ctinfo.json
+> >   create mode 100644 tools/testing/selftests/tc-testing/tc-tests/actions/gate.json
+> >   create mode 100644 tools/testing/selftests/tc-testing/tc-tests/actions/xt.json
+> >
+>
+> Reviewed-by: Victor Nogueira <victor@mojatatu.com>
 
-RSSI - received signal strength indication can appear pretty static
-frame-to-frame but noise will "bounce around" more depending on the EM
-environment, temperature or placement of obstacles between the transmitter
-and receiver.
+For this patchset:
+Tested-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
 
-Other WiFi drivers offer up the noise component of the FFT as an entropy
-source for the random pool i.e.
-
-Commit: 2aa56cca3571 ("ath9k: Mix the received FFT bins to the random pool")
-
-I attended Jason's talk on sources of randomness at Plumbers and it occured
-to me that SNR is a reasonable candidate to add.
-
-Cc: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
----
- drivers/net/wireless/ath/wcn36xx/txrx.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/net/wireless/ath/wcn36xx/txrx.c b/drivers/net/wireless/ath/wcn36xx/txrx.c
-index 8da3955995b6e..f3b77d7ffebe4 100644
---- a/drivers/net/wireless/ath/wcn36xx/txrx.c
-+++ b/drivers/net/wireless/ath/wcn36xx/txrx.c
-@@ -16,6 +16,7 @@
- 
- #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
- 
-+#include <linux/random.h>
- #include "txrx.h"
- 
- static inline int get_rssi0(struct wcn36xx_rx_bd *bd)
-@@ -297,6 +298,8 @@ static void wcn36xx_update_survey(struct wcn36xx *wcn, int rssi, int snr,
- 	wcn->chan_survey[idx].rssi = rssi;
- 	wcn->chan_survey[idx].snr = snr;
- 	spin_unlock(&wcn->survey_lock);
-+
-+	add_device_randomness(&snr, sizeof(int));
- }
- 
- int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
--- 
-2.37.3
-
+cheers,
+jamal
