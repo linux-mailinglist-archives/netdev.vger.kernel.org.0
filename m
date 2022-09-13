@@ -2,59 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A77255B64B1
-	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 02:56:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40C145B64B4
+	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 02:57:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229646AbiIMA4s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Sep 2022 20:56:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32926 "EHLO
+        id S229693AbiIMA53 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Sep 2022 20:57:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229489AbiIMA4q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 20:56:46 -0400
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1609A2CE02;
-        Mon, 12 Sep 2022 17:56:46 -0700 (PDT)
-Received: by mail-io1-xd2c.google.com with SMTP id v128so8370381ioe.12;
-        Mon, 12 Sep 2022 17:56:46 -0700 (PDT)
+        with ESMTP id S229489AbiIMA51 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 20:57:27 -0400
+Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB38D2CE04;
+        Mon, 12 Sep 2022 17:57:26 -0700 (PDT)
+Received: by mail-il1-x12e.google.com with SMTP id b17so5481120ilh.0;
+        Mon, 12 Sep 2022 17:57:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date;
-        bh=139dsmbsaAd8MZiK3fSYiaJDkYkfmCamFM0JQ/i2eFU=;
-        b=cLHxg5Gi5bsrTRwpBekrWl2BN8GhA/+EAQqn9bmiMpoMrKCmaE4enQIuIr/4ZzaqLT
-         /nhe4/8cQZOr86K23uXGuIHN8fYFuPfRgfJGMjggCke1fPnWsRmCP+0tXzU6Q2iIoF7I
-         pQLtqIcUXPBJCwRBvAITTiLM6BHwXS+RFbYXSvZ1vgPNCvzXLL6LqJiFPuZVyTS24/wg
-         7WOtOnNv0E1K8+LMeMpMVwuv2lIfYml4N6lyFmVuKiwfvF2UMR5t14VLxwdl2+wpjI1S
-         dq2Hy3ePWCVKVcOtXonYMeNn9k5PVJw4ix9kor+tPdkFWC8dhgt46oldlZqlGlYzF6rc
-         0kSA==
+        bh=3FYZZ9kIkwc/JXTwVRSMlvQxtVggGrYH2HuC/wMgOdI=;
+        b=NYFdQ/VJ7Ustan9+kh9NBj5xKkAcAprM+EvkVz+OEu9s2jc6odB1P1d9eCn3LB1BSF
+         HVwiHNCWN9cjxHJmBFkuGDtng69dDzlhKuC2jwgo4GQZxAVPJBs8HWj0t+V1LaxAxs0h
+         fFzq8E+L/Iwynedl8mokiGkDK8GhKaqxYO4+06Qzopn3UqEYs4e3QSLI98/TP93vRhnH
+         p/3tjR4/o30yQRI+pgkK66f9TPe2ty2CUVfUKB9vVPaN12bYG5fpQzr1r6zU60mkOa4r
+         tHT7faSnWb7dT6wgasw41T4hZHlyYGkxCRjjtSc6R2brP983LSm90ZpydP1mFqjapNg4
+         x0lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=139dsmbsaAd8MZiK3fSYiaJDkYkfmCamFM0JQ/i2eFU=;
-        b=Q5JnW3rwmPB17CTMandcBpNGLWRdC5YU+hQVOUA5gbe6vXr2RHYpw9BY70v/gm9dXm
-         E50HJ+gTrAH5hsHds7tVZJiJ0G4CrhOaQGj0PwI6uoej9j5j3hfZj4kV3Ibh0mTE8ICy
-         aPzqd85f006ZkjdWfTdfVgSc93dhhtqfzEurXMiEq0rlST8+Fmd20Ha1QYAbepBnw0Cp
-         Hu8LUBAIsYnwupBbBWskZ7ZiljIuuQnFoPBcdLbso3aevOhPmuToJFROv0hESAv6AbH+
-         r1DGiPa6g7fSCA2AYkhHxRTIVx2+rWUQyYToLc/zi/TxgjOVfiMsUE4BtVZvKQ2A5Nr/
-         civg==
-X-Gm-Message-State: ACgBeo1WXw5+HvDJTiC77gDn/WJrydRHZufNEr55TYu1eA1FHA8xVkyU
-        kZF56Vn9W4gj4XjkFwCB+6b9BlNIBPXJFmfLV+U=
-X-Google-Smtp-Source: AA6agR6E6N6UNnoe9DxzrJyWBdSoaS90BbaZ6XOn5MwMsTfUdg5oZYv/dYaycKs4WAY5hqDW3Gi55KONm1OWZ5/k+G0=
-X-Received: by 2002:a05:6638:1a12:b0:358:4c15:69a0 with SMTP id
- cd18-20020a0566381a1200b003584c1569a0mr10661537jab.15.1663030605494; Mon, 12
- Sep 2022 17:56:45 -0700 (PDT)
+        bh=3FYZZ9kIkwc/JXTwVRSMlvQxtVggGrYH2HuC/wMgOdI=;
+        b=TSMflBuMmn150lkQlQHIDJnawJu4ZhFFGLiV8f42iLWdclDGrHBuqftznKXyhyyQkN
+         A1JBkiW5/IUuMiIX4ZYji8n8pLWjOh5qqsoDoMe+Xs3GyzksCxEatKwzGD4E3J1TCJdZ
+         a5nNBMTKevuC7mjmkveJ184uQvTaz4fbLDvEEN30tMGZbwm4erEuViGWaVbfzc08RX4Z
+         iQ6U5IVX6Fjg5dWmPw1rLGpDizBXj8xy04Kr6JYB8HNm+OabvLpcKX88wGTTS2DDKtIS
+         yzEgA7EGxFjTQaM3z2sMhSMcgWA9TgYnWYX2oION8UodnzI6qQk4OppDBVPxTdI1D+mw
+         p/XQ==
+X-Gm-Message-State: ACgBeo0fEzwA8ZLsKel3MoJaC9/nYsQwgvHf0AR7S+uYspGWvitkMEgh
+        v2dsvN2et4KXXjVg9NGp+iHJnDag9BE0enaNw/4=
+X-Google-Smtp-Source: AA6agR6SJcFGOPeHNpTXOJTMM+Xw4YyKLch0Jy65glm5EtFs0KwR0qKARwrTjxI1ZMWWuta6h3Fz3P1HYwtmdRzoY7o=
+X-Received: by 2002:a92:ca0b:0:b0:2f1:da1d:c229 with SMTP id
+ j11-20020a92ca0b000000b002f1da1dc229mr12079489ils.145.1663030646372; Mon, 12
+ Sep 2022 17:57:26 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220912214455.929028-1-nhuck@google.com>
-In-Reply-To: <20220912214455.929028-1-nhuck@google.com>
+References: <20220912214510.929070-1-nhuck@google.com>
+In-Reply-To: <20220912214510.929070-1-nhuck@google.com>
 From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Tue, 13 Sep 2022 03:56:37 +0300
-Message-ID: <CAHNKnsR8jBbJ32mia_XaP3SLWfHNJsFknbrMa9MxZMQbnJ1-pQ@mail.gmail.com>
-Subject: Re: [PATCH] net: wwan: iosm: Fix return type of ipc_wwan_link_transmit
+Date:   Tue, 13 Sep 2022 03:57:17 +0300
+Message-ID: <CAHNKnsQFdd6uuqYfYcwLRY_RViOFWoT_mSK7v6sb02LeNvY5WQ@mail.gmail.com>
+Subject: Re: [PATCH] net: wwan: t7xx: Fix return type of t7xx_ccmni_start_xmit
 To:     Nathan Huckleberry <nhuck@google.com>
 Cc:     Dan Carpenter <error27@gmail.com>, llvm@lists.linux.dev,
-        M Chetan Kumar <m.chetan.kumar@intel.com>,
+        Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>,
         Intel Corporation <linuxwwan@intel.com>,
+        Chiranjeevi Rapolu <chiranjeevi.rapolu@linux.intel.com>,
+        Liu Haijun <haijun.liu@mediatek.com>,
+        M Chetan Kumar <m.chetan.kumar@linux.intel.com>,
+        Ricardo Martinez <ricardo.martinez@linux.intel.com>,
         Loic Poulain <loic.poulain@linaro.org>,
         Johannes Berg <johannes@sipsolutions.net>,
         "David S. Miller" <davem@davemloft.net>,
@@ -83,7 +87,7 @@ On Tue, Sep 13, 2022 at 12:45 AM Nathan Huckleberry <nhuck@google.com> wrote:
 > The mismatched return type breaks forward edge kCFI since the underlying
 > function definition does not match the function hook definition.
 >
-> The return type of ipc_wwan_link_transmit should be changed from int to
+> The return type of t7xx_ccmni_start_xmit should be changed from int to
 > netdev_tx_t.
 >
 > Reported-by: Dan Carpenter <error27@gmail.com>
