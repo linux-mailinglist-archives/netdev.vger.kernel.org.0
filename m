@@ -2,288 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 33A4E5B6BD4
-	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 12:43:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDE535B6BE2
+	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 12:46:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231664AbiIMKnr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 06:43:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46676 "EHLO
+        id S231716AbiIMKqQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 06:46:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230470AbiIMKnj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 06:43:39 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79BBE5D130
-        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 03:43:38 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id o2so17220894lfc.10
-        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 03:43:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=O651eX+vdQDwumo6UV5G0Dw+0xJjVRxHZkQh9754BII=;
-        b=X0xapZw1vPZtoIJFd/MD3r0REvyoshq9SqNPhhXhDbyzrPLBZNFjX4TuCoFe69pxKs
-         kbHkqEkz1ovi3Wa1FXlIU67Q9t4ZHlHLsi1mV9wRQvH6zx4hSi+B51ucDhIfS2YLgAcG
-         ebDCziaUOnax4Jhq6JymTkw3d9n8nhoz/1RyAIgpm4PoXI1H0xCCU3J6FCMN6Zaxqqah
-         595Qfr/n5KCZS1pJZm8b98lEKIoT/jgSSX3ep8RRl9MJUArYNbXKH2aGQlkAMK+v2BOA
-         sXB7zgXwx+EBgaGQFz5UfwhiAGnpYe5D6AQMZsU2ylH5smVMc7dhixDomcnkHTVbZx01
-         wIZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=O651eX+vdQDwumo6UV5G0Dw+0xJjVRxHZkQh9754BII=;
-        b=KY1m50a2cRX6d/ppHspAGyRCOSMN+9zXaRcbWaOi8TAsDmVNfZiTNSXQG+viz3qDUf
-         lWvb1QCGo2aX19Q4fMBFHHE4V01kvs6DO5CwlOoVpc5lWxPBOhgzCb9bI+zmpdvPHBdf
-         dNj5aDrF/HehXo6PbTfEawh9RXWWQJATlTUiI9o3cUhD2cJoA0jYbxhJR1X3Fw+3NMzS
-         UGCF5IXklD9UR4gHIWNkq9gHhnBs+6IZTIPrrbE+vHhiGdpGk9RAKHgXgcCAAgBrkaIJ
-         6335k+xhKh4PIumhuPxXCuj5S3luoSVXlSV5qTYiY/fCNOZeS2mm280XnUkiE6LWlJrL
-         ok9A==
-X-Gm-Message-State: ACgBeo3biUNpsAI+MUcP3rO3soe5ivEeCPp40pTYwTrCeOz5t7IosH2/
-        yfeneYexp9DqhxoJVldKzF6ghsi19vgQsgR5
-X-Google-Smtp-Source: AA6agR6XgTetaEHJg/jb6ZkPwP+Xr/Dqing41K8m/dkL4kkJZ9zxiyTIyMpRylGzoQ4IvvdLsuP/cw==
-X-Received: by 2002:a05:6512:3992:b0:493:e8c5:638c with SMTP id j18-20020a056512399200b00493e8c5638cmr10131151lfu.492.1663065816548;
-        Tue, 13 Sep 2022 03:43:36 -0700 (PDT)
-Received: from wse-c0089.westermo.com (h-98-128-229-160.NA.cust.bahnhof.se. [98.128.229.160])
-        by smtp.gmail.com with ESMTPSA id i2-20020a2ea362000000b0026bf27c7056sm1018946ljn.67.2022.09.13.03.43.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Sep 2022 03:43:36 -0700 (PDT)
-From:   Mattias Forsblad <mattias.forsblad@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux@armlinux.org.uk,
-        Mattias Forsblad <mattias.forsblad@gmail.com>
-Subject: [PATCH net-next v10 6/6] net: dsa: qca8k: Use new convenience functions
-Date:   Tue, 13 Sep 2022 12:43:20 +0200
-Message-Id: <20220913104320.471673-7-mattias.forsblad@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220913104320.471673-1-mattias.forsblad@gmail.com>
-References: <20220913104320.471673-1-mattias.forsblad@gmail.com>
+        with ESMTP id S231750AbiIMKqI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 06:46:08 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0B135F129
+        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 03:46:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1663065964; x=1694601964;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=cdOc/cHMFef7/HXHYe1CQ1aR0H+pJ64uy/MxfJ4qj/k=;
+  b=bPJVaAzMpLPpANnAFlJOS+OJygLY51Of0ASHmwhmp7peqfjHE+MmMseX
+   doR70mjLfTMQCevm9+CV9rPhXHrFCfkIL/UC+WUFpaAVvIp3YBg/1m9ud
+   vBZKQnNI9TNtwPf+kqO3ibrYlCNY7vhzT2vauoBwYGN4eAuB8G5oloh6K
+   exChJ09BLnvoBp1UOeoy551JjcJ5sbFpSzRVmb99u5V0ykzWLGGuYJa6A
+   nsJ2K2Tvy41vaDaL2wWWwC5JTZ112XJtZyCJX9mQIrazuolTNiGXYJ5ah
+   +3PcZvGLrruc+IaNJts0ldJyKNy0OcfyzMUEAEojFrYFIPxaMJP/j9DJR
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10468"; a="324349119"
+X-IronPort-AV: E=Sophos;i="5.93,312,1654585200"; 
+   d="scan'208";a="324349119"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2022 03:46:04 -0700
+X-IronPort-AV: E=Sophos;i="5.93,312,1654585200"; 
+   d="scan'208";a="678512542"
+Received: from calabres-mobl.ger.corp.intel.com ([10.252.47.42])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2022 03:46:00 -0700
+Date:   Tue, 13 Sep 2022 13:45:58 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Sreehari Kancharla <sreehari.kancharla@linux.intel.com>
+cc:     Netdev <netdev@vger.kernel.org>, kuba@kernel.org,
+        davem@davemloft.net, johannes@sipsolutions.net,
+        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
+        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
+        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
+        haijun.liu@mediatek.com, ricardo.martinez@linux.intel.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        dinesh.sharma@intel.com, moises.veleta@intel.com,
+        sreehari.kancharla@intel.com
+Subject: Re: [PATCH net-next 2/2] net: wwan: t7xx: Add NAPI support
+In-Reply-To: <20220909163500.5389-2-sreehari.kancharla@linux.intel.com>
+Message-ID: <5820620-6450-e3f5-4ac0-e235cbf5c838@linux.intel.com>
+References: <20220909163500.5389-1-sreehari.kancharla@linux.intel.com> <20220909163500.5389-2-sreehari.kancharla@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-7.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the new common convenience functions for sending and
-waiting for frames.
+On Fri, 9 Sep 2022, Sreehari Kancharla wrote:
 
-Signed-off-by: Mattias Forsblad <mattias.forsblad@gmail.com>
----
- drivers/net/dsa/qca/qca8k-8xxx.c | 61 +++++++++-----------------------
- 1 file changed, 17 insertions(+), 44 deletions(-)
+> From: Haijun Liu <haijun.liu@mediatek.com>
+> 
+> Replace the work queue based RX flow with a NAPI implementation
+> Remove rx_thread and dpmaif_rxq_work.
+> Introduce dummy network device. its responsibility is
+>     - Binds one NAPI object for each DL HW queue and acts as
+>       the agent of all those network devices.
+>     - Use NAPI object to poll DL packets.
+>     - Helps to dispatch each packet to the network interface.
 
-diff --git a/drivers/net/dsa/qca/qca8k-8xxx.c b/drivers/net/dsa/qca/qca8k-8xxx.c
-index c181346388a4..4e9bc103c0a5 100644
---- a/drivers/net/dsa/qca/qca8k-8xxx.c
-+++ b/drivers/net/dsa/qca/qca8k-8xxx.c
-@@ -160,7 +160,7 @@ static void qca8k_rw_reg_ack_handler(struct dsa_switch *ds, struct sk_buff *skb)
- 			       QCA_HDR_MGMT_DATA2_LEN);
- 	}
- 
--	complete(&mgmt_eth_data->rw_done);
-+	dsa_switch_inband_complete(ds, &mgmt_eth_data->rw_done);
- }
- 
- static struct sk_buff *qca8k_alloc_mdio_header(enum mdio_cmd cmd, u32 reg, u32 *val,
-@@ -228,6 +228,7 @@ static void qca8k_mdio_header_fill_seq_num(struct sk_buff *skb, u32 seq_num)
- static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
- {
- 	struct qca8k_mgmt_eth_data *mgmt_eth_data = &priv->mgmt_eth_data;
-+	struct dsa_switch *ds = priv->ds;
- 	struct sk_buff *skb;
- 	bool ack;
- 	int ret;
-@@ -248,17 +249,12 @@ static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
- 
- 	skb->dev = priv->mgmt_master;
- 
--	reinit_completion(&mgmt_eth_data->rw_done);
--
- 	/* Increment seq_num and set it in the mdio pkt */
- 	mgmt_eth_data->seq++;
- 	qca8k_mdio_header_fill_seq_num(skb, mgmt_eth_data->seq);
- 	mgmt_eth_data->ack = false;
- 
--	dev_queue_xmit(skb);
--
--	ret = wait_for_completion_timeout(&mgmt_eth_data->rw_done,
--					  msecs_to_jiffies(QCA8K_ETHERNET_TIMEOUT));
-+	ret = dsa_switch_inband_tx(ds, skb, &mgmt_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
- 
- 	*val = mgmt_eth_data->data[0];
- 	if (len > QCA_HDR_MGMT_DATA1_LEN)
-@@ -280,6 +276,7 @@ static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
- static int qca8k_write_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
- {
- 	struct qca8k_mgmt_eth_data *mgmt_eth_data = &priv->mgmt_eth_data;
-+	struct dsa_switch *ds = priv->ds;
- 	struct sk_buff *skb;
- 	bool ack;
- 	int ret;
-@@ -300,17 +297,12 @@ static int qca8k_write_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
- 
- 	skb->dev = priv->mgmt_master;
- 
--	reinit_completion(&mgmt_eth_data->rw_done);
--
- 	/* Increment seq_num and set it in the mdio pkt */
- 	mgmt_eth_data->seq++;
- 	qca8k_mdio_header_fill_seq_num(skb, mgmt_eth_data->seq);
- 	mgmt_eth_data->ack = false;
- 
--	dev_queue_xmit(skb);
--
--	ret = wait_for_completion_timeout(&mgmt_eth_data->rw_done,
--					  msecs_to_jiffies(QCA8K_ETHERNET_TIMEOUT));
-+	ret = dsa_switch_inband_tx(ds, skb, &mgmt_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
- 
- 	ack = mgmt_eth_data->ack;
- 
-@@ -441,24 +433,21 @@ static struct regmap_config qca8k_regmap_config = {
- };
- 
- static int
--qca8k_phy_eth_busy_wait(struct qca8k_mgmt_eth_data *mgmt_eth_data,
-+qca8k_phy_eth_busy_wait(struct qca8k_priv *priv,
- 			struct sk_buff *read_skb, u32 *val)
- {
-+	struct qca8k_mgmt_eth_data *mgmt_eth_data = &priv->mgmt_eth_data;
- 	struct sk_buff *skb = skb_copy(read_skb, GFP_KERNEL);
-+	struct dsa_switch *ds = priv->ds;
- 	bool ack;
- 	int ret;
- 
--	reinit_completion(&mgmt_eth_data->rw_done);
--
- 	/* Increment seq_num and set it in the copy pkt */
- 	mgmt_eth_data->seq++;
- 	qca8k_mdio_header_fill_seq_num(skb, mgmt_eth_data->seq);
- 	mgmt_eth_data->ack = false;
- 
--	dev_queue_xmit(skb);
--
--	ret = wait_for_completion_timeout(&mgmt_eth_data->rw_done,
--					  QCA8K_ETHERNET_TIMEOUT);
-+	ret = dsa_switch_inband_tx(ds, skb, &mgmt_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
- 
- 	ack = mgmt_eth_data->ack;
- 
-@@ -480,6 +469,7 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
- 	struct sk_buff *write_skb, *clear_skb, *read_skb;
- 	struct qca8k_mgmt_eth_data *mgmt_eth_data;
- 	u32 write_val, clear_val = 0, val;
-+	struct dsa_switch *ds = priv->ds;
- 	struct net_device *mgmt_master;
- 	int ret, ret1;
- 	bool ack;
-@@ -540,17 +530,12 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
- 	clear_skb->dev = mgmt_master;
- 	write_skb->dev = mgmt_master;
- 
--	reinit_completion(&mgmt_eth_data->rw_done);
--
- 	/* Increment seq_num and set it in the write pkt */
- 	mgmt_eth_data->seq++;
- 	qca8k_mdio_header_fill_seq_num(write_skb, mgmt_eth_data->seq);
- 	mgmt_eth_data->ack = false;
- 
--	dev_queue_xmit(write_skb);
--
--	ret = wait_for_completion_timeout(&mgmt_eth_data->rw_done,
--					  QCA8K_ETHERNET_TIMEOUT);
-+	ret = dsa_switch_inband_tx(ds, write_skb, &mgmt_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
- 
- 	ack = mgmt_eth_data->ack;
- 
-@@ -569,7 +554,7 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
- 	ret = read_poll_timeout(qca8k_phy_eth_busy_wait, ret1,
- 				!(val & QCA8K_MDIO_MASTER_BUSY), 0,
- 				QCA8K_BUSY_WAIT_TIMEOUT * USEC_PER_MSEC, false,
--				mgmt_eth_data, read_skb, &val);
-+				priv, read_skb, &val);
- 
- 	if (ret < 0 && ret1 < 0) {
- 		ret = ret1;
-@@ -577,17 +562,13 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
- 	}
- 
- 	if (read) {
--		reinit_completion(&mgmt_eth_data->rw_done);
--
- 		/* Increment seq_num and set it in the read pkt */
- 		mgmt_eth_data->seq++;
- 		qca8k_mdio_header_fill_seq_num(read_skb, mgmt_eth_data->seq);
- 		mgmt_eth_data->ack = false;
- 
--		dev_queue_xmit(read_skb);
--
--		ret = wait_for_completion_timeout(&mgmt_eth_data->rw_done,
--						  QCA8K_ETHERNET_TIMEOUT);
-+		ret = dsa_switch_inband_tx(ds, read_skb, &mgmt_eth_data->rw_done,
-+					   QCA8K_ETHERNET_TIMEOUT);
- 
- 		ack = mgmt_eth_data->ack;
- 
-@@ -606,17 +587,12 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
- 		kfree_skb(read_skb);
- 	}
- exit:
--	reinit_completion(&mgmt_eth_data->rw_done);
--
- 	/* Increment seq_num and set it in the clear pkt */
- 	mgmt_eth_data->seq++;
- 	qca8k_mdio_header_fill_seq_num(clear_skb, mgmt_eth_data->seq);
- 	mgmt_eth_data->ack = false;
- 
--	dev_queue_xmit(clear_skb);
--
--	wait_for_completion_timeout(&mgmt_eth_data->rw_done,
--				    QCA8K_ETHERNET_TIMEOUT);
-+	ret = dsa_switch_inband_tx(ds, clear_skb, &mgmt_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
- 
- 	mutex_unlock(&mgmt_eth_data->mutex);
- 
-@@ -1528,7 +1504,7 @@ static void qca8k_mib_autocast_handler(struct dsa_switch *ds, struct sk_buff *sk
- exit:
- 	/* Complete on receiving all the mib packet */
- 	if (refcount_dec_and_test(&mib_eth_data->port_parsed))
--		complete(&mib_eth_data->rw_done);
-+		dsa_switch_inband_complete(ds, &mib_eth_data->rw_done);
- }
- 
- static int
-@@ -1543,8 +1519,6 @@ qca8k_get_ethtool_stats_eth(struct dsa_switch *ds, int port, u64 *data)
- 
- 	mutex_lock(&mib_eth_data->mutex);
- 
--	reinit_completion(&mib_eth_data->rw_done);
--
- 	mib_eth_data->req_port = dp->index;
- 	mib_eth_data->data = data;
- 	refcount_set(&mib_eth_data->port_parsed, QCA8K_NUM_PORTS);
-@@ -1562,8 +1536,7 @@ qca8k_get_ethtool_stats_eth(struct dsa_switch *ds, int port, u64 *data)
- 	if (ret)
- 		goto exit;
- 
--	ret = wait_for_completion_timeout(&mib_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
--
-+	ret = dsa_switch_inband_tx(ds, NULL, &mib_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
- exit:
- 	mutex_unlock(&mib_eth_data->mutex);
- 
+It would be useful to mention that GRO is also enabled.
+
+>  static int t7xx_ccmni_open(struct net_device *dev)
+>  {
+>  	struct t7xx_ccmni *ccmni = wwan_netdev_drvpriv(dev);
+> +	struct t7xx_ccmni_ctrl *ccmni_ctl = ccmni->ctlb;
+>  
+>  	netif_carrier_on(dev);
+>  	netif_tx_start_all_queues(dev);
+> +	if (!atomic_read(&ccmni_ctl->napi_usr_refcnt)) {
+> +		t7xx_ccmni_enable_napi(ccmni_ctl);
+> +		atomic_set(&ccmni_ctl->napi_usr_refcnt, 1);
+> +	} else {
+> +		atomic_inc(&ccmni_ctl->napi_usr_refcnt);
+> +	}
+
+atomic_fetch_inc() ?
+
 -- 
-2.25.1
+ i.
 
