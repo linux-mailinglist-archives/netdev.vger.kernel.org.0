@@ -2,74 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BA215B79E7
-	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 20:45:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02D4E5B7923
+	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 20:09:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231836AbiIMSoU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 14:44:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52860 "EHLO
+        id S231872AbiIMSHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 14:07:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231486AbiIMSoB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 14:44:01 -0400
-X-Greylist: delayed 5491 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 13 Sep 2022 11:21:35 PDT
-Received: from m1550.mail.126.com (m1550.mail.126.com [220.181.15.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 47EA9E28
-        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 11:21:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=cfyVT
-        BQBOjLBhxQeTGWGA4RoBGV0BspF/SXXaWKTn/0=; b=LvOGcYqpUUmh3rs8KT3zl
-        xlJEUa7QzDSZ70ur0FRXT+G3yQaEe2Rg3K4DZlpcoUvp/lWeShi6OKBo4+icOl4z
-        /FoGz6hg/k9+gBBAt8PR8u+aqNuKChF85XT2SLA49f6Stfxd2qyHJiUHzLzclBij
-        JazzRaJCN5/q9Ukd8BKtug=
-Received: from windhl$126.com ( [117.136.0.43] ) by ajax-webmail-wmsvr50
- (Coremail) ; Tue, 13 Sep 2022 23:13:20 +0800 (CST)
-X-Originating-IP: [117.136.0.43]
-Date:   Tue, 13 Sep 2022 23:13:20 +0800 (CST)
-From:   "Liang He" <windhl@126.com>
-To:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org, linmq006@gmail.com
-Subject: Re:[PATCH v2] of: mdio: Add of_node_put() when breaking out of
- for_each_xx
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
- Copyright (c) 2002-2022 www.mailtech.cn 126com
-In-Reply-To: <20220913125659.3331969-1-windhl@126.com>
-References: <20220913125659.3331969-1-windhl@126.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
+        with ESMTP id S231370AbiIMSHN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 14:07:13 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBC89C5C;
+        Tue, 13 Sep 2022 10:11:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1663089068; x=1694625068;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=eLee7VFB2i1ceBLF9tn9Hcf09OVD35DhU3XPQpEwR8Q=;
+  b=Xk2XovAetQwKysJI4InYFil4Ovsh9BQEhAkEtTfcuWSSFSgiX7CdwaSD
+   RoEZV5wvwaS7Vh2TqAtgi49096zVnS+mB/6wUV6vrZKkA2WbP+OwFQB6z
+   G9sfo+X32Iwj9xKY+wgJW61GDw1VS9Fy+qFcHeAT2DAsj8sMWm7rz55ua
+   FDV9+38tFr5UOD+md0v1KqGh26kEaDNj1XYluvcaw3U1xw5nQHkJ5rx8h
+   Oqk4JP9IRg/UpJA3wiOhYXhIDjGjfnxv3wOhZ1EmZJcODtdh2lTdEMZNf
+   PUggf7mmYek/XaDB7YInc72/VRMceMY3IsyFOzmacCKZ3c1g72EpByMFD
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10469"; a="359920022"
+X-IronPort-AV: E=Sophos;i="5.93,313,1654585200"; 
+   d="scan'208";a="359920022"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2022 10:11:05 -0700
+X-IronPort-AV: E=Sophos;i="5.93,313,1654585200"; 
+   d="scan'208";a="758871608"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2022 10:11:00 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1oY9R3-001quU-0X;
+        Tue, 13 Sep 2022 20:10:57 +0300
+Date:   Tue, 13 Sep 2022 20:10:56 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Raul E Rangel <rrangel@chromium.org>
+Cc:     linux-acpi@vger.kernel.org, linux-input@vger.kernel.org,
+        jingle.wu@emc.com.tw, mario.limonciello@amd.com, timvp@google.com,
+        linus.walleij@linaro.org, hdegoede@redhat.com, rafael@kernel.org,
+        Asmaa Mnebhi <asmaa@nvidia.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        "David S. Miller" <davem@davemloft.net>,
+        David Thompson <davthompson@nvidia.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
+        Lu Wei <luwei32@huawei.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 05/13] gpiolib: acpi: Add wake_capable parameter to
+ acpi_dev_gpio_irq_get_by
+Message-ID: <YyC5oEH6NKCMTzzt@smile.fi.intel.com>
+References: <20220912221317.2775651-1-rrangel@chromium.org>
+ <20220912160931.v2.5.I4ff95ba7e884a486d7814ee888bf864be2ebdef4@changeid>
 MIME-Version: 1.0
-Message-ID: <622cae81.8543.18337696f77.Coremail.windhl@126.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: MsqowABHnfERniBjgkxsAA--.44452W
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbizhR7F18RP0pETwACsE
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
-X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,DATE_IN_PAST_03_06,
-        DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220912160931.v2.5.I4ff95ba7e884a486d7814ee888bf864be2ebdef4@changeid>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CgoKQXQgMjAyMi0wOS0xMyAyMDo1Njo1OSwgIkxpYW5nIEhlIiA8d2luZGhsQDEyNi5jb20+IHdy
-b3RlOgo+SW4gb2ZfbWRpb2J1c19yZWdpc3RlcigpLCB3ZSBzaG91bGQgY2FsbCBvZl9ub2RlX3B1
-dCgpIGZvciAnY2hpbGQnCj5lc2NhcGVkIG91dCBvZiBmb3JfZWFjaF9hdmFpbGFibGVfY2hpbGRf
-b2Zfbm9kZSgpLgo+Cj5GaXhlczogNjZiZGVkZTQ5NWM3ICgib2ZfbWRpbzogRml4IGJyb2tlbiBQ
-SFkgSVJRIGluIGNhc2Ugb2YgcHJvYmUgZGVmZXJyYWwiKQo+Q2M6IE1pYW9xaWFuIExpbiA8bGlu
-bXEwMDZAZ21haWwuY29tPgo+Q28tZGV2ZWxvcGVkLWJ5OiBNaWFvcWlhbiBMaW4gPGxpbm1xMDA2
-QGdtYWlsLmNvbT4KPlNpZ25lZC1vZmYtYnk6IExpYW5nIEhlIDx3aW5kaGxAMTI2LmNvbT4KPlNp
-Z25lZC1vZmYtYnk6IE1pYW9xaWFuIExpbiA8bGlubXEwMDZAZ21haWwuY29tPgoKSGksIE1pYW9x
-aWFuLCAKdGhpcyBTb2Igc2hvdWxkIGRpcmVjdGx5IGZyb20geW91LApwbGVhc2UgZG8gaXQhCgoK
-Pi0tLQo+IHYyOiB1c2UgcHJvcGVyIHRhZyBhZHZpc2VkIGJ5IEpha3ViIEtpY2luc2tpCj4gdjE6
-IGZpeCB0aGUgYnVnCj4KPiBkcml2ZXJzL25ldC9tZGlvL29mX21kaW8uYyB8IDEgKwo+IDEgZmls
-ZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKQo+Cj5kaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvbWRp
-by9vZl9tZGlvLmMgYi9kcml2ZXJzL25ldC9tZGlvL29mX21kaW8uYwo+aW5kZXggOWUzYzgxNWEw
-NzBmLi43OTZlOWM3ODU3ZDAgMTAwNjQ0Cj4tLS0gYS9kcml2ZXJzL25ldC9tZGlvL29mX21kaW8u
-Ywo+KysrIGIvZHJpdmVycy9uZXQvbWRpby9vZl9tZGlvLmMKPkBAIC0yMzEsNiArMjMxLDcgQEAg
-aW50IG9mX21kaW9idXNfcmVnaXN0ZXIoc3RydWN0IG1paV9idXMgKm1kaW8sIHN0cnVjdCBkZXZp
-Y2Vfbm9kZSAqbnApCj4gCXJldHVybiAwOwo+IAo+IHVucmVnaXN0ZXI6Cj4rCW9mX25vZGVfcHV0
-KGNoaWxkKTsKPiAJbWRpb2J1c191bnJlZ2lzdGVyKG1kaW8pOwo+IAlyZXR1cm4gcmM7Cj4gfQo+
-LS0gCj4yLjI1LjEK
+On Mon, Sep 12, 2022 at 04:13:09PM -0600, Raul E Rangel wrote:
+> The ACPI spec defines the SharedAndWake and ExclusiveAndWake share type
+> keywords. This is an indication that the GPIO IRQ can also be used as a
+> wake source. This change exposes the wake_capable bit so drivers can
+> correctly enable wake functionality instead of making an assumption.
+
+...
+
+> -	ret = acpi_dev_gpio_irq_get_by(ACPI_COMPANION(dev), "irq-gpios", 0);
+> +	ret = acpi_dev_gpio_irq_get_by(ACPI_COMPANION(dev), "irq-gpios", 0,
+> +				       NULL);
+>  	if (ret < 0)
+>  		return ret;
+
+Looking at these changes, can't we first introduce
+
+	int acpi_dev_gpio_irq_get_by_name(struct acpi_device *adev, const char *name);
+
+convert users, and then add wake stuff to the basic function.
+In such case you will make less invasive main part of the idea.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
