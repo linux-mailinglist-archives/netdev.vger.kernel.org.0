@@ -2,152 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6096F5B6DC7
-	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 14:55:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 530FB5B6DE6
+	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 15:04:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229936AbiIMMz1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 08:55:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42970 "EHLO
+        id S231892AbiIMNC5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 09:02:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231576AbiIMMzZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 08:55:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9861B80;
-        Tue, 13 Sep 2022 05:55:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 46B3C61463;
-        Tue, 13 Sep 2022 12:55:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34E3EC433D6;
-        Tue, 13 Sep 2022 12:55:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663073722;
-        bh=nVK1PpFpr3HrxHyxFHxXGkoi91E0D9INc8k4vrxLlO4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sQoTQw9b5uv42Gc79PBJk8gsxELlxcrDQhMhi8d3x3Y2H9xEos2A972w/zKyL1j/Q
-         y+/N5nIH7j3YYttsfXFwQL0GqSrEsQqgI1TBZIcIvwMM4fTpp/7nV8T31BKiOeHnq8
-         zT7WK4MG3gv74eeXFHhXSxDJkApJ5MJUIpox63pT4JL+LYxJpMcuI2gh17Blly0Xbq
-         GhrcN4ahEMfOCEEmF+PYYPrCfkw1mlryD7UDb4bFlCfh/99isAXsEJjs6dM6Nr26g0
-         PeLZjr8LXFSDl64K6lGbDQsHVflDJ4fUwvLSY04ZLge11E1g02kiEq46Q19SQPLuNI
-         q6bO4q8xV2/Mw==
-Date:   Tue, 13 Sep 2022 14:55:18 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
-        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, matthias.bgg@gmail.com,
-        linux-mediatek@lists.infradead.org, lorenzo.bianconi@redhat.com,
-        Bo.Jiao@mediatek.com, sujuan.chen@mediatek.com,
-        ryder.Lee@mediatek.com, evelyn.tsai@mediatek.com,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next 01/12] arm64: dts: mediatek: mt7986: add support
- for Wireless Ethernet Dispatch
-Message-ID: <YyB9tvD6+gQUe2tk@lore-desk>
-References: <cover.1662661555.git.lorenzo@kernel.org>
- <e034b4b71437bce747b128382f1504d5cdc6974b.1662661555.git.lorenzo@kernel.org>
- <20220913120950.GA3397630-robh@kernel.org>
+        with ESMTP id S231150AbiIMNCy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 09:02:54 -0400
+Received: from mail-m965.mail.126.com (mail-m965.mail.126.com [123.126.96.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 01BCB2228C
+        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 06:02:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=eLE7J
+        V8sdoWdXNWRx+SHN8kYX1iFjhmFEX+O0Muguig=; b=N7kN7BKJS9XNMQSgFLTbt
+        mYimHbD3JOxDAO7cni4eJJCja78hAtc6KVzFxo5x+fHKyZIeTCv4W18cH39nhUAP
+        O/z28iX0/1mAbdPJozhPddP55n33sK8c7Cl7gHzM24IdxsPR+FhpIyTJ6Hh9Mshb
+        PEydIYS2sPhyvp45OWHnzY=
+Received: from localhost.localdomain (unknown [124.16.139.61])
+        by smtp10 (Coremail) with SMTP id NuRpCgBHfe0dfiBjm_hGBg--.12793S2;
+        Tue, 13 Sep 2022 20:57:03 +0800 (CST)
+From:   Liang He <windhl@126.com>
+To:     windhl@126.com, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linmq006@gmail.com
+Subject: [PATCH v2] of: mdio: Add of_node_put() when breaking out of for_each_xx
+Date:   Tue, 13 Sep 2022 20:56:59 +0800
+Message-Id: <20220913125659.3331969-1-windhl@126.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ZB171Q3MrJkpLRzK"
-Content-Disposition: inline
-In-Reply-To: <20220913120950.GA3397630-robh@kernel.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: NuRpCgBHfe0dfiBjm_hGBg--.12793S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrZr4xXr17Ww1kXw4kGrW3Jrb_yoWfZFX_Ka
+        s5XF9rXF4DGr43KrsIkrW3Z3sYya18Wr40qa4SgrZ3tw40vr12gr1DZF13XrykXFZ7AFZr
+        tryqyF4Iy34xCjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRtAwIJUUUUU==
+X-Originating-IP: [124.16.139.61]
+X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi2gd7F1uwMurloAABsG
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+In of_mdiobus_register(), we should call of_node_put() for 'child'
+escaped out of for_each_available_child_of_node().
 
---ZB171Q3MrJkpLRzK
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Fixes: 66bdede495c7 ("of_mdio: Fix broken PHY IRQ in case of probe deferral")
+Cc: Miaoqian Lin <linmq006@gmail.com>
+Co-developed-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Liang He <windhl@126.com>
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+---
+ v2: use proper tag advised by Jakub Kicinski
+ v1: fix the bug
 
-On Sep 13, Rob Herring wrote:
-> On Thu, Sep 08, 2022 at 09:33:35PM +0200, Lorenzo Bianconi wrote:
-> > Introduce wed0 and wed1 nodes in order to enable offloading forwarding
-> > between ethernet and wireless devices on the mt7986 chipset.
-> >=20
-> > Co-developed-by: Bo Jiao <Bo.Jiao@mediatek.com>
-> > Signed-off-by: Bo Jiao <Bo.Jiao@mediatek.com>
-> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > ---
-> >  arch/arm64/boot/dts/mediatek/mt7986a.dtsi | 20 ++++++++++++++++++++
-> >  1 file changed, 20 insertions(+)
-> >=20
-> > diff --git a/arch/arm64/boot/dts/mediatek/mt7986a.dtsi b/arch/arm64/boo=
-t/dts/mediatek/mt7986a.dtsi
-> > index e3a407d03551..419d056b8369 100644
-> > --- a/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-> > +++ b/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-> > @@ -222,6 +222,25 @@ ethsys: syscon@15000000 {
-> >  			 #reset-cells =3D <1>;
-> >  		};
-> > =20
-> > +		wed_pcie: wed_pcie@10003000 {
-> > +			compatible =3D "mediatek,wed";
->=20
-> This is undocumented. It needs a binding.
+ drivers/net/mdio/of_mdio.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-ack I will fix it in v2.
+diff --git a/drivers/net/mdio/of_mdio.c b/drivers/net/mdio/of_mdio.c
+index 9e3c815a070f..796e9c7857d0 100644
+--- a/drivers/net/mdio/of_mdio.c
++++ b/drivers/net/mdio/of_mdio.c
+@@ -231,6 +231,7 @@ int of_mdiobus_register(struct mii_bus *mdio, struct device_node *np)
+ 	return 0;
+ 
+ unregister:
++	of_node_put(child);
+ 	mdiobus_unregister(mdio);
+ 	return rc;
+ }
+-- 
+2.25.1
 
->=20
-> > +			reg =3D <0 0x10003000 0 0x10>;
-> > +		};
-> > +
-> > +		wed0: wed@15010000 {
-> > +			compatible =3D "mediatek,wed", "syscon";
->=20
-> Some are syscon's and some are not?
-
-ack I will fix it in v2.
-
-Regards,
-Lorenzo
->=20
-> > +			reg =3D <0 0x15010000 0 0x1000>;
-> > +			interrupt-parent =3D <&gic>;
-> > +			interrupts =3D <GIC_SPI 205 IRQ_TYPE_LEVEL_HIGH>;
-> > +		};
-> > +
-> > +		wed1: wed@15011000 {
-> > +			compatible =3D "mediatek,wed", "syscon";
-> > +			reg =3D <0 0x15011000 0 0x1000>;
-> > +			interrupt-parent =3D <&gic>;
-> > +			interrupts =3D <GIC_SPI 206 IRQ_TYPE_LEVEL_HIGH>;
-> > +		};
-> > +
-> >  		eth: ethernet@15100000 {
-> >  			compatible =3D "mediatek,mt7986-eth";
-> >  			reg =3D <0 0x15100000 0 0x80000>;
-> > @@ -256,6 +275,7 @@ eth: ethernet@15100000 {
-> >  						 <&apmixedsys CLK_APMIXED_SGMPLL>;
-> >  			mediatek,ethsys =3D <&ethsys>;
-> >  			mediatek,sgmiisys =3D <&sgmiisys0>, <&sgmiisys1>;
-> > +			mediatek,wed =3D <&wed0>, <&wed1>;
-> >  			#reset-cells =3D <1>;
-> >  			#address-cells =3D <1>;
-> >  			#size-cells =3D <0>;
-> > --=20
-> > 2.37.3
-> >=20
-> >=20
-
---ZB171Q3MrJkpLRzK
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYyB9tgAKCRA6cBh0uS2t
-rEI/AP9/wgj2OBuhzFXTwuox6VAFFP2XrEoPs+UIwXt69PmD+gD/WvunCMCbUQC7
-V+zgy5wDDPTsNR0A6Wd+b8I6LYtAQg4=
-=Wi3g
------END PGP SIGNATURE-----
-
---ZB171Q3MrJkpLRzK--
