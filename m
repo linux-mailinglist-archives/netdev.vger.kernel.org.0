@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AFB95B6692
-	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 06:23:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFA075B6693
+	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 06:23:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230350AbiIMEXB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 00:23:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37878 "EHLO
+        id S230283AbiIMEXD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 00:23:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229986AbiIMEWD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 00:22:03 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16C7153D14;
-        Mon, 12 Sep 2022 21:20:32 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MRVYv0yhYzHnjF;
-        Tue, 13 Sep 2022 12:17:55 +0800 (CST)
+        with ESMTP id S230282AbiIMEWF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 00:22:05 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0CC8564F9;
+        Mon, 12 Sep 2022 21:20:34 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MRVWh4KK0zkWqx;
+        Tue, 13 Sep 2022 12:16:00 +0800 (CST)
 Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
  (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Tue, 13 Sep
- 2022 12:19:55 +0800
+ 2022 12:19:56 +0800
 From:   Zhengchao Shao <shaozhengchao@huawei.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
         <bpf@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
@@ -32,9 +32,9 @@ CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
         <john.fastabend@gmail.com>, <kpsingh@kernel.org>, <sdf@google.com>,
         <haoluo@google.com>, <jolsa@kernel.org>, <weiyongjun1@huawei.com>,
         <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
-Subject: [PATCH net-next 6/9] selftests/tc-testings: add selftests for route filter
-Date:   Tue, 13 Sep 2022 12:21:32 +0800
-Message-ID: <20220913042135.58342-7-shaozhengchao@huawei.com>
+Subject: [PATCH net-next 7/9] selftests/tc-testings: add selftests for rsvp filter
+Date:   Tue, 13 Sep 2022 12:21:33 +0800
+Message-ID: <20220913042135.58342-8-shaozhengchao@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220913042135.58342-1-shaozhengchao@huawei.com>
 References: <20220913042135.58342-1-shaozhengchao@huawei.com>
@@ -53,34 +53,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Test e122: Add route filter with from and to tag
-Test 6573: Add route filter with fromif and to tag
-Test 1362: Add route filter with to flag and reclassify action
-Test 4720: Add route filter with from flag and continue actions
-Test 2812: Add route filter with form tag and pipe action
-Test 7994: Add route filter with miltiple actions
-Test 4312: List route filters
-Test 2634: Delete route filters with pipe action
+Test 2141: Add rsvp filter with tcp proto and specific IP address
+Test 5267: Add rsvp filter with udp proto and specific IP address
+Test 2819: Add rsvp filter with src ip and src port
+Test c967: Add rsvp filter with tunnelid and continue action
+Test 5463: Add rsvp filter with tunnel and pipe action
+Test 2332: Add rsvp filter with miltiple actions
+Test 8879: Add rsvp filter with tunnel and skp flag
+Test 8261: List rsvp filters
+Test 8989: Delete rsvp filters
 
 Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 ---
- .../tc-testing/tc-tests/filters/route.json    | 181 ++++++++++++++++++
- 1 file changed, 181 insertions(+)
- create mode 100644 tools/testing/selftests/tc-testing/tc-tests/filters/route.json
+ .../tc-testing/tc-tests/filters/rsvp.json     | 203 ++++++++++++++++++
+ 1 file changed, 203 insertions(+)
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/filters/rsvp.json
 
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/filters/route.json b/tools/testing/selftests/tc-testing/tc-tests/filters/route.json
+diff --git a/tools/testing/selftests/tc-testing/tc-tests/filters/rsvp.json b/tools/testing/selftests/tc-testing/tc-tests/filters/rsvp.json
 new file mode 100644
-index 000000000000..7b22bfc9ce64
+index 000000000000..74ae88bf8be8
 --- /dev/null
-+++ b/tools/testing/selftests/tc-testing/tc-tests/filters/route.json
-@@ -0,0 +1,181 @@
++++ b/tools/testing/selftests/tc-testing/tc-tests/filters/rsvp.json
+@@ -0,0 +1,203 @@
 +[
 +    {
-+        "id": "e122",
-+        "name": "Add route filter with from and to tag",
++        "id": "2141",
++        "name": "Add rsvp filter with tcp proto and specific IP address",
 +        "category": [
 +            "filter",
-+            "route"
++            "rsvp"
 +        ],
 +	"plugins": {
 +            "requires": "nsPlugin"
@@ -88,21 +89,21 @@ index 000000000000..7b22bfc9ce64
 +        "setup": [
 +            "$TC qdisc add dev $DEV1 ingress"
 +        ],
-+        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: protocol ip prio 100 route from 1 to 10 classid 1:10",
++        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: protocol ip prio 1 rsvp ipproto tcp session 198.168.10.64",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC filter ls dev $DEV1 parent ffff:",
-+        "matchPattern": "flowid 1:10 to 10 from 1",
++        "verifyCmd": "$TC filter show dev $DEV1 parent ffff:",
++        "matchPattern": "^filter protocol ip pref [0-9]+ rsvp chain [0-9]+ fh 0x.*session 198.168.10.64 ipproto tcp",
 +        "matchCount": "1",
 +        "teardown": [
 +            "$TC qdisc del dev $DEV1 ingress"
 +        ]
 +    },
 +    {
-+        "id": "6573",
-+        "name": "Add route filter with fromif and to tag",
++        "id": "5267",
++        "name": "Add rsvp filter with udp proto and specific IP address",
 +        "category": [
 +            "filter",
-+            "route"
++            "rsvp"
 +        ],
 +	"plugins": {
 +            "requires": "nsPlugin"
@@ -110,21 +111,21 @@ index 000000000000..7b22bfc9ce64
 +        "setup": [
 +            "$TC qdisc add dev $DEV1 ingress"
 +        ],
-+        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: protocol ip prio 100 route fromif $DEV1 to 10 classid 1:10",
++        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: protocol ip prio 1 rsvp ipproto udp session 1.1.1.1",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC filter ls dev $DEV1 parent ffff:",
-+        "matchPattern": "flowid 1:10 to 10 fromif",
++        "verifyCmd": "$TC filter show dev $DEV1 parent ffff:",
++        "matchPattern": "^filter protocol ip pref [0-9]+ rsvp chain [0-9]+ fh 0x.*session 1.1.1.1 ipproto udp",
 +        "matchCount": "1",
 +        "teardown": [
 +            "$TC qdisc del dev $DEV1 ingress"
 +        ]
 +    },
 +    {
-+        "id": "1362",
-+        "name": "Add route filter with to flag and reclassify action",
++        "id": "2819",
++        "name": "Add rsvp filter with src ip and src port",
 +        "category": [
 +            "filter",
-+            "route"
++            "rsvp"
 +        ],
 +	"plugins": {
 +            "requires": "nsPlugin"
@@ -132,21 +133,21 @@ index 000000000000..7b22bfc9ce64
 +        "setup": [
 +            "$TC qdisc add dev $DEV1 ingress"
 +        ],
-+        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: protocol ip prio 2 route to 10 classid 1:20 action reclassify",
++        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: protocol ip prio 1 rsvp ipproto udp session 1.1.1.1 sender 2.2.2.2/5021 classid 1:1",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC filter ls dev $DEV1 parent ffff:",
-+        "matchPattern": "filter protocol ip pref.*route chain [0-9]+.*flowid 1:20 to 10.*action order [0-9]+: gact action reclassify",
++        "verifyCmd": "$TC filter show dev $DEV1 parent ffff:",
++        "matchPattern": "^filter protocol ip pref [0-9]+ rsvp chain [0-9]+ fh 0x.*flowid 1:1 session 1.1.1.1 ipproto udp sender  2.2.2.2/5021",
 +        "matchCount": "1",
 +        "teardown": [
 +            "$TC qdisc del dev $DEV1 ingress"
 +        ]
 +    },
 +    {
-+        "id": "4720",
-+        "name": "Add route filter with from flag and continue actions",
++        "id": "c967",
++        "name": "Add rsvp filter with tunnelid and continue action",
 +        "category": [
 +            "filter",
-+            "route"
++            "rsvp"
 +        ],
 +	"plugins": {
 +            "requires": "nsPlugin"
@@ -154,21 +155,21 @@ index 000000000000..7b22bfc9ce64
 +        "setup": [
 +            "$TC qdisc add dev $DEV1 ingress"
 +        ],
-+        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: protocol ip prio 2 route from 10 classid 1:100 action continue",
++        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: protocol ip prio 1 rsvp ipproto udp session 1.1.1.1 tunnelid 2 classid 1:1 action continue",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC filter ls dev $DEV1 parent ffff:",
-+        "matchPattern": "filter protocol ip pref.*route chain [0-9]+.*flowid 1:100 from 10.*action continue",
++        "verifyCmd": "$TC filter show dev $DEV1 parent ffff:",
++        "matchPattern": "^filter protocol ip pref [0-9]+ rsvp chain [0-9]+ fh 0x.*flowid 1:1 session 1.1.1.1 ipproto udp tunnelid 2.*action order [0-9]+: gact action continue",
 +        "matchCount": "1",
 +        "teardown": [
 +            "$TC qdisc del dev $DEV1 ingress"
 +        ]
 +    },
 +    {
-+        "id": "2812",
-+        "name": "Add route filter with form tag and pipe action",
++        "id": "5463",
++        "name": "Add rsvp filter with tunnel and pipe action",
 +        "category": [
 +            "filter",
-+            "route"
++            "rsvp"
 +        ],
 +	"plugins": {
 +            "requires": "nsPlugin"
@@ -176,21 +177,21 @@ index 000000000000..7b22bfc9ce64
 +        "setup": [
 +            "$TC qdisc add dev $DEV1 ingress"
 +        ],
-+        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: protocol ip prio 2 route from 10 to 2 classid 1:1 action pipe",
++        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: protocol ip prio 1 rsvp ipproto udp session 1.1.1.1 tunnel 2 skip 1 action pipe",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC filter ls dev $DEV1 parent ffff:",
-+        "matchPattern": "filter protocol ip pref.*route chain [0-9]+.*flowid 1:1 to 2 from 10.*action pipe",
++        "verifyCmd": "$TC filter show dev $DEV1 parent ffff:",
++        "matchPattern": "^filter protocol ip pref [0-9]+ rsvp chain [0-9]+ fh 0x.*tunnel 2 skip 1 session 1.1.1.1 ipproto udp.*action order [0-9]+: gact action pipe",
 +        "matchCount": "1",
 +        "teardown": [
 +            "$TC qdisc del dev $DEV1 ingress"
 +        ]
 +    },
 +    {
-+        "id": "7994",
-+        "name": "Add route filter with miltiple actions",
++        "id": "2332",
++        "name": "Add rsvp filter with miltiple actions",
 +        "category": [
 +            "filter",
-+            "route"
++            "rsvp"
 +        ],
 +	"plugins": {
 +            "requires": "nsPlugin"
@@ -198,57 +199,79 @@ index 000000000000..7b22bfc9ce64
 +        "setup": [
 +            "$TC qdisc add dev $DEV1 ingress"
 +        ],
-+        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: protocol ip prio 2 route from 10 to 2 classid 1:1 action skbedit mark 7 pipe action gact drop",
++        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: protocol ip prio 7 rsvp ipproto udp session 1.1.1.1 classid 1:1 action skbedit mark 7 pipe action gact drop",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC filter ls dev $DEV1 parent ffff:",
-+        "matchPattern": "filter protocol ip pref.*route chain [0-9]+.*flowid 1:1 to 2 from 10.*action order [0-9]+: skbedit  mark 7 pipe.*action order [0-9]+: gact action drop",
++        "verifyCmd": "$TC filter show dev $DEV1 parent ffff:",
++        "matchPattern": "^filter protocol ip pref [0-9]+ rsvp chain [0-9]+ fh 0x.*flowid 1:1 session 1.1.1.1 ipproto udp.*action order [0-9]+: skbedit  mark 7 pipe.*action order [0-9]+: gact action drop",
 +        "matchCount": "1",
 +        "teardown": [
 +            "$TC qdisc del dev $DEV1 ingress"
 +        ]
 +    },
 +    {
-+        "id": "4312",
-+        "name": "List route filters",
++        "id": "8879",
++        "name": "Add rsvp filter with tunnel and skp flag",
 +        "category": [
 +            "filter",
-+            "route"
++            "rsvp"
++        ],
++	"plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$TC qdisc add dev $DEV1 ingress"
++        ],
++        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: protocol ip prio 1 rsvp ipproto udp session 1.1.1.1 tunnel 2 skip 1 action pipe",
++        "expExitCode": "0",
++        "verifyCmd": "$TC filter show dev $DEV1 parent ffff:",
++        "matchPattern": "^filter protocol ip pref [0-9]+ rsvp chain [0-9]+ fh 0x.*tunnel 2 skip 1 session 1.1.1.1 ipproto udp.*action order [0-9]+: gact action pipe",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DEV1 ingress"
++        ]
++    },
++    {
++        "id": "8261",
++        "name": "List rsvp filters",
++        "category": [
++            "filter",
++            "rsvp"
 +        ],
 +	"plugins": {
 +            "requires": "nsPlugin"
 +        },
 +        "setup": [
 +            "$TC qdisc add dev $DEV1 ingress",
-+            "$TC filter add dev $DEV1 parent ffff: protocol ip prio 2 route from 10 to 2 classid 1:1 action pipe",
-+	    "$TC filter add dev $DEV1 parent ffff: protocol ip prio 2 route from 20 to 1 classid 1:20 action pipe"
-+	],
++            "$TC filter add dev $DEV1 parent ffff: protocol ip prio 1 rsvp ipproto udp session 1.1.1.1/1234 classid 1:1",
++	    "$TC filter add dev $DEV1 parent ffff: protocol ip prio 1 rsvp ipproto tcp session 2.2.2.2/1234 classid 2:1"
++        ],
 +        "cmdUnderTest": "$TC filter show dev $DEV1 parent ffff:",
 +        "expExitCode": "0",
 +        "verifyCmd": "$TC filter show dev $DEV1 parent ffff:",
-+        "matchPattern": "action order [0-9]+: gact action pipe",
++        "matchPattern": "^filter protocol ip pref [0-9]+ rsvp chain [0-9]+ fh",
 +        "matchCount": "2",
 +        "teardown": [
 +            "$TC qdisc del dev $DEV1 ingress"
 +        ]
 +    },
 +    {
-+        "id": "2634",
-+        "name": "Delete route filters with pipe action",
++        "id": "8989",
++        "name": "Delete rsvp filters",
 +        "category": [
 +            "filter",
-+            "route"
++            "rsvp"
 +        ],
 +	"plugins": {
 +            "requires": "nsPlugin"
 +        },
 +        "setup": [
 +            "$TC qdisc add dev $DEV1 ingress",
-+            "$TC filter add dev $DEV1 parent ffff: protocol ip prio 2 route from 10 to 2 classid 1:1 action pipe"
++            "$TC filter add dev $DEV1 parent ffff: protocol ip prio 1 rsvp ipproto udp session 1.1.1.1/1234 tunnelid 9 classid 2:1"
 +        ],
-+        "cmdUnderTest": "$TC filter del dev $DEV1 parent ffff: protocol ip prio 2 route from 10 to 2 classid 1:1 action pipe",
++        "cmdUnderTest": "$TC filter del dev $DEV1 parent ffff: protocol ip prio 1 rsvp ipproto udp session 1.1.1.1/1234 tunnelid 9 classid 2:1",
 +        "expExitCode": "0",
 +        "verifyCmd": "$TC filter show dev $DEV1 parent ffff:",
-+        "matchPattern": "filter protocol ip pref.*route chain [0-9]+.*flowid 1:1 to 2 from 10.*action pipe",
++        "matchPattern": "filter protocol ip pref [0-9]+ rsvp chain [0-9]+ fh 0x.*flowid 2:1 session 1.1.1.1/1234 ipproto udp tunnelid 9",
 +        "matchCount": "0",
 +        "teardown": [
 +            "$TC qdisc del dev $DEV1 ingress"
