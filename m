@@ -2,121 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CAA95B6B90
-	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 12:26:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7195B5B6BBD
+	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 12:37:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231428AbiIMK01 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 06:26:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54150 "EHLO
+        id S231615AbiIMKhg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 06:37:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231224AbiIMK0G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 06:26:06 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4EEF5A2D9;
-        Tue, 13 Sep 2022 03:26:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663064762; x=1694600762;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ARgoLmEbhTA7goAGgTKJDoKZwOFyACEiJhXaXvPcn+4=;
-  b=KdXS8FaZ+vo6T/5hCWIksLuwBH8PDMqbETvyIhOM6CCP+H7Of99znozS
-   vlLiGDBKZlqAWH6jFYxZieVyHEjSc1P5Td/hID1sNN739bDGCZ87r7DBj
-   jutysx4uZAoolU1+XVAM1WIJRx2bmrD7XLgLKCpIntE0qyydkScX6cQTW
-   mgXJT1OJbYtkETtFs1JMxknEgSF7eFaECK5BILLaZWWs5rZCvOdDGnRH1
-   Pv9yA7wZyb0F73DnUNXjFM9BLvj/qHOKOSjzpN+xpeW4qAi+7ljndW/O6
-   GxN+L3yy/Us19t9mgFb2UYw5oHVJnKZiuOtjpJ2q2xeobuvdzXCe2RsPH
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10468"; a="359827124"
-X-IronPort-AV: E=Sophos;i="5.93,312,1654585200"; 
-   d="scan'208";a="359827124"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2022 03:26:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,312,1654585200"; 
-   d="scan'208";a="649609317"
-Received: from lkp-server02.sh.intel.com (HELO 4011df4f4fd3) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 13 Sep 2022 03:26:00 -0700
-Received: from kbuild by 4011df4f4fd3 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oY379-0003U3-1K;
-        Tue, 13 Sep 2022 10:25:59 +0000
-Date:   Tue, 13 Sep 2022 18:25:10 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jianglei Nie <niejianglei2021@163.com>, irusskikh@marvell.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Jianglei Nie <niejianglei2021@163.com>
-Subject: Re: [PATCH] net: atlantic: fix potential memory leak in
- aq_ndev_close()
-Message-ID: <202209131828.hYRSPYF2-lkp@intel.com>
-References: <20220913063941.83611-1-niejianglei2021@163.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220913063941.83611-1-niejianglei2021@163.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S229866AbiIMKhf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 06:37:35 -0400
+Received: from mail-oa1-f46.google.com (mail-oa1-f46.google.com [209.85.160.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A1DD1A839;
+        Tue, 13 Sep 2022 03:37:34 -0700 (PDT)
+Received: by mail-oa1-f46.google.com with SMTP id 586e51a60fabf-1274ec87ad5so30981861fac.0;
+        Tue, 13 Sep 2022 03:37:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:date:subject:references:in-reply-to:cc:to:from
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=8+JGqRHJMWZ89HHRv12KwXXy6JtSzUYuKEfx3af7iOU=;
+        b=cbtcA2vAj4QXASqDXHPSTEpIDZaDAtmL7nS/z/5o/YeAYjtXV79/p+GSGLEGJMvuxK
+         DlkioSZ8DM7CkX55SqBoZITfMzMhf0FA5b4Rtgj0nduNa13D7MBeLdzrmtjGj4f2OrmZ
+         ys55tRx96NlPaP/lf2R5AESciCiQTy8+Hd4fqKd/bauIzM/bkeBebMPywfHV6EjEXJx3
+         grA5gfPRU/Gjso6BXZhOS6zwfpbd6hqn8BwSpGXdEiMvPnGPZuqD4uciBXY1iLTI4WRE
+         xl/z9DmqfuPwPPiRdnHcteKQpl25S27RTzLVP11rDo57Lo63Yl069PA+lg/cKEKczJOA
+         DrDA==
+X-Gm-Message-State: ACgBeo28/AAu/KvE+st8JydYrry7HGY/1kd4arAjygg9Pb14Pf3sk9Qn
+        fe/3SoQMi56ZqQrT8hO+0Q==
+X-Google-Smtp-Source: AA6agR6wzmXY5KYJRhhTfil+nFptqY6cyMGB2MN7hEDoVpAFs+verqPfjhE8phjFQDl/50HffUiPVg==
+X-Received: by 2002:a05:6808:e87:b0:345:49f2:a0c4 with SMTP id k7-20020a0568080e8700b0034549f2a0c4mr1120078oil.17.1663065453734;
+        Tue, 13 Sep 2022 03:37:33 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id i27-20020a056820013b00b0042859bebfebsm5145070ood.45.2022.09.13.03.37.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Sep 2022 03:37:33 -0700 (PDT)
+Received: (nullmailer pid 3153423 invoked by uid 1000);
+        Tue, 13 Sep 2022 10:37:32 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>, devicetree@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        netdev@vger.kernel.org
+In-Reply-To: <20220912153702.246206-1-vladimir.oltean@nxp.com>
+References: <20220912153702.246206-1-vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net-next] dt-bindings: net: dsa: convert ocelot.txt to dt-schema
+Date:   Tue, 13 Sep 2022 05:37:32 -0500
+Message-Id: <1663065452.471744.3153422.nullmailer@robh.at.kernel.org>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jianglei,
+On Mon, 12 Sep 2022 18:37:02 +0300, Vladimir Oltean wrote:
+> Replace the free-form description of device tree bindings for VSC9959
+> and VSC9953 with a YAML formatted dt-schema description. This contains
+> more or less the same information, but reworded to be a bit more
+> succint.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+>  .../bindings/net/dsa/mscc,ocelot.yaml         | 239 ++++++++++++++++++
+>  .../devicetree/bindings/net/dsa/ocelot.txt    | 213 ----------------
+>  2 files changed, 239 insertions(+), 213 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/net/dsa/mscc,ocelot.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/net/dsa/ocelot.txt
+> 
 
-Thank you for the patch! Perhaps something to improve:
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-[auto build test WARNING on net-next/master]
-[also build test WARNING on net/master linus/master v6.0-rc5 next-20220912]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+yamllint warnings/errors:
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Jianglei-Nie/net-atlantic-fix-potential-memory-leak-in-aq_ndev_close/20220913-144300
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 169ccf0e40825d9e465863e4707d8e8546d3c3cb
-config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220913/202209131828.hYRSPYF2-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/e1ce8c41446db3a7dd59206ff9c8a75baf7be067
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Jianglei-Nie/net-atlantic-fix-potential-memory-leak-in-aq_ndev_close/20220913-144300
-        git checkout e1ce8c41446db3a7dd59206ff9c8a75baf7be067
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/
+dtschema/dtc warnings/errors:
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/dsa/mscc,ocelot.example.dtb: ethernet-switch@0,5: Unevaluated properties are not allowed ('interrupts' was unexpected)
+	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/dsa/mscc,ocelot.yaml
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/dsa/mscc,ocelot.example.dtb: ethernet-switch@800000: Unevaluated properties are not allowed ('little-endian' was unexpected)
+	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/dsa/mscc,ocelot.yaml
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+doc reference errors (make refcheckdocs):
 
-All warnings (new ones prefixed by >>):
+See https://patchwork.ozlabs.org/patch/
 
-   drivers/net/ethernet/aquantia/atlantic/aq_main.c: In function 'aq_ndev_close':
->> drivers/net/ethernet/aquantia/atlantic/aq_main.c:99:1: warning: label 'err_exit' defined but not used [-Wunused-label]
-      99 | err_exit:
-         | ^~~~~~~~
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
 
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
 
-vim +/err_exit +99 drivers/net/ethernet/aquantia/atlantic/aq_main.c
+pip3 install dtschema --upgrade
 
-97bde5c4f909a5 David VomLehn  2017-01-23   90  
-97bde5c4f909a5 David VomLehn  2017-01-23   91  static int aq_ndev_close(struct net_device *ndev)
-97bde5c4f909a5 David VomLehn  2017-01-23   92  {
-97bde5c4f909a5 David VomLehn  2017-01-23   93  	struct aq_nic_s *aq_nic = netdev_priv(ndev);
-7b0c342f1f6754 Nikita Danilov 2019-11-07   94  	int err = 0;
-97bde5c4f909a5 David VomLehn  2017-01-23   95  
-97bde5c4f909a5 David VomLehn  2017-01-23   96  	err = aq_nic_stop(aq_nic);
-837c637869bef2 Nikita Danilov 2019-11-07   97  	aq_nic_deinit(aq_nic, true);
-97bde5c4f909a5 David VomLehn  2017-01-23   98  
-97bde5c4f909a5 David VomLehn  2017-01-23  @99  err_exit:
-97bde5c4f909a5 David VomLehn  2017-01-23  100  	return err;
-97bde5c4f909a5 David VomLehn  2017-01-23  101  }
-97bde5c4f909a5 David VomLehn  2017-01-23  102  
+Please check and re-submit.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
