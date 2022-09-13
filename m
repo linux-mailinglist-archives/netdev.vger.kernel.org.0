@@ -2,90 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DD165B6D08
-	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 14:19:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64DC65B6D0B
+	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 14:19:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231685AbiIMMSp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 08:18:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50790 "EHLO
+        id S231620AbiIMMSq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 08:18:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231664AbiIMMSn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 08:18:43 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22EA811A25;
-        Tue, 13 Sep 2022 05:18:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=syUTFhmlYLXNMEub8AP0jCYjs8fuJAQSeGGBybDD1wk=; b=pHwcPmWVvpxARLiqyjmHPh27Ol
-        5Kx0a5lp3qeFonq2bw7EhPMD0lU1Q22eJvlRTod5/u8C/htu+8VSSQCVDLUq8SOvRu6rNQEzAU+1p
-        4DoNqVmdZoI6yXS490otr6Ixa+Izq+/HaDW4xnC/iwyXYksqEJQDx52dHT3OysXnwhbM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oY4rm-00GaaW-6n; Tue, 13 Sep 2022 14:18:14 +0200
-Date:   Tue, 13 Sep 2022 14:18:14 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Arun.Ramadoss@microchip.com
-Cc:     olteanv@gmail.com, linux-kernel@vger.kernel.org,
-        UNGLinuxDriver@microchip.com, vivien.didelot@gmail.com,
-        linux@armlinux.org.uk, Tristram.Ha@microchip.com,
-        f.fainelli@gmail.com, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        Woojung.Huh@microchip.com, davem@davemloft.net
-Subject: Re: [RFC Patch net-next 0/4] net: dsa: microchip: ksz9477: enable
- interrupt for internal phy link detection
-Message-ID: <YyB1BjN+lFcZL1kW@lunn.ch>
-References: <20220909160120.9101-1-arun.ramadoss@microchip.com>
- <Yx+lsOg3f3PVbcGZ@lunn.ch>
- <4a14a0226b5cb0067fb63e69b87bc0f8a2b50a45.camel@microchip.com>
+        with ESMTP id S230487AbiIMMSo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 08:18:44 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF7EAE0EC;
+        Tue, 13 Sep 2022 05:18:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1663071520; x=1694607520;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=RbOTHa0oab0x7q8xNIhJEDOAprgx4UxPU54rnf2GoxU=;
+  b=2T1RUyOurtMbbXsCfo4H4JnCizwZSkz9QdbUqL6tg5wogU/RlDVrPlbs
+   32+/jE32/aQ6IowRM797m23fqnW60OU3nHnJMk35sbehNn66r3ptC6gMe
+   IRBVJep1CjDkzZtB77Uz0MoTkT9BQLCf78Dk4aiFHn8V/gLX1bM51Cuj1
+   loQxTIpAhasRm/YZ+pzlkKu36amzVefG5kH3xzY4d9IkAF/s5/BwYDB3k
+   N+SF2GXLVVHM2tBrMXMyK+PUbZv86ROpEZeZe73MRuDrHP82jqUm7Nd80
+   cKQx6rdA42XF+26VOJprhsqrt7JOm5kQStPTZFi5FzpaA2PASg+2ppd3k
+   A==;
+X-IronPort-AV: E=Sophos;i="5.93,312,1654585200"; 
+   d="scan'208";a="176905062"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Sep 2022 05:18:39 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Tue, 13 Sep 2022 05:18:39 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
+ Transport; Tue, 13 Sep 2022 05:18:39 -0700
+Date:   Tue, 13 Sep 2022 14:23:01 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Michael Walle <michael@walle.cc>
+CC:     <UNGLinuxDriver@microchip.com>, <andrew@lunn.ch>,
+        <davem@davemloft.net>, <edumazet@google.com>,
+        <hkallweit1@gmail.com>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux@armlinux.org.uk>,
+        <netdev@vger.kernel.org>, <pabeni@redhat.com>
+Subject: Re: [PATCH net-next] net: phy: micrel: Add interrupts support for
+ LAN8804 PHY
+Message-ID: <20220913122301.362ap6zghpdpluci@soft-dev3-1.localhost>
+References: <20220912195650.466518-1-horatiu.vultur@microchip.com>
+ <20220913081814.212548-1-michael@walle.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <4a14a0226b5cb0067fb63e69b87bc0f8a2b50a45.camel@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220913081814.212548-1-michael@walle.cc>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 13, 2022 at 04:21:47AM +0000, Arun.Ramadoss@microchip.com wrote:
-> Hi Andrew, 
-> On Mon, 2022-09-12 at 23:33 +0200, Andrew Lunn wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you
-> > know the content is safe
-> > 
-> > On Fri, Sep 09, 2022 at 09:31:16PM +0530, Arun Ramadoss wrote:
-> > > This patch series implements the common interrupt handling for
-> > > ksz9477 based
-> > > switches and lan937x. The ksz9477 and lan937x has similar interrupt
-> > > registers
-> > > except ksz9477 has 4 port based interrupts whereas lan937x has 6
-> > > interrupts.
-> > > The patch moves the phy interrupt hanler implemented in
-> > > lan937x_main.c to
-> > > ksz_common.c, along with the mdio_register functionality.
-> > 
-> > It is a good idea to state why it is an RFC. What sort of comments do
-> > you want?
+The 09/13/2022 10:18, Michael Walle wrote:
 > 
-> In the arch/arm/boot/dts/at91-sama5d3_ksz9477_evb.dts file, they
-> haven't specified the phy-handle. If I use that dts file with this
-> patch, during the mdio_register I get the error *no mdio bus node* and
-> the ksz probe fails. If I update the dts file with phy-handle  and mdio
-> node, the mdio_register is successfull and interrupt handling works
-> fine. Do I need to add any checks before mdio_register or updating the
-> dts file is enough?
+> > Add support for interrupts for LAN8804 PHY.
+> >
+> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> > ---
+> >  drivers/net/phy/micrel.c | 55 ++++++++++++++++++++++++++++++++++++++++
+> >  1 file changed, 55 insertions(+)
+> >
+> > diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+> > index 7b8c5c8d013e..98e9bc101d96 100644
+> > --- a/drivers/net/phy/micrel.c
+> > +++ b/drivers/net/phy/micrel.c
+> > @@ -2676,6 +2676,59 @@ static int lan8804_config_init(struct phy_device *phydev)
+> >       return 0;
+> >  }
+> >
+> > +static irqreturn_t lan8804_handle_interrupt(struct phy_device *phydev)
+> > +{
+> > +     int status;
+> > +
+> > +     status = phy_read(phydev, LAN8814_INTS);
+> > +     if (status < 0) {
+> > +             phy_error(phydev);
+> > +             return IRQ_NONE;
+> > +     }
+> > +
+> > +     if (status > 0)
+> > +             phy_trigger_machine(phydev);
+> > +
+> > +     return IRQ_HANDLED;
+> > +}
+> > +
+> > +#define LAN8804_OUTPUT_CONTROL                       25
+> > +#define LAN8804_OUTPUT_CONTROL_INTR_BUFFER   BIT(14)
+> > +#define LAN8804_CONTROL                              31
+> > +#define LAN8804_CONTROL_INTR_POLARITY                BIT(14)
+> > +
+> > +static int lan8804_config_intr(struct phy_device *phydev)
+> > +{
+> > +     int err;
+> > +
+> > +     /* Change interrupt polarity */
+> > +     phy_write(phydev, LAN8804_CONTROL, LAN8804_CONTROL_INTR_POLARITY);
+> 
+> I assume you change the polarity to high active? Could you add a note?
+> The LAN966x nor the LAN8804 datasheet describe this bit. You might also add
+> a note, that this is an internal PHY and you cannot change the polarity on
+> the GIC. Which begs the question, is this really only an internal PHY or
+> can you actually buy it as a dedicated one. Then you'd change the polarity
+> in a really unusual way.
 
-Drivers are supposed to remain backwards compatible to older DT blobs.
-So you need to support the phy-handle not being present.
+That is correct, as you described it, I change the polarity to high.
+From what I know, you can't buy a dedicated PHY.
+I will add these notes in the next version.
 
-You can however still add it to at91-sama5d3_ksz9477_evb.dts, have the
-yaml binding indicate it is a required property, and maybe in 2 years
-change the driver to make it required.
+> 
+> 
+> > +
+> > +     /* Change interrupt buffer type */
+> 
+> To what? Push-pull?
 
-    Andrew
+Yes, I have changed it to push-pull.
+I will add a node in the next version.
+
+> 
+> -michael
+> 
+> > +     phy_write(phydev, LAN8804_OUTPUT_CONTROL,
+> > +               LAN8804_OUTPUT_CONTROL_INTR_BUFFER);
+> > +
+
+-- 
+/Horatiu
