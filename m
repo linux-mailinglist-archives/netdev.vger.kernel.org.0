@@ -2,138 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E4CB5B6E89
-	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 15:45:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E02E5B6EB5
+	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 15:59:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232027AbiIMNpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 09:45:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52974 "EHLO
+        id S232349AbiIMN6k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 09:58:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231279AbiIMNpS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 09:45:18 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D490275E7
-        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 06:45:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1663076706;
-        bh=91Bl+tuVj/8AQ7QmfZGkgMNtlc8tOwDknSx8fOF1txA=;
-        h=X-UI-Sender-Class:Date:From:To:CC:Subject:Reply-to:In-Reply-To:
-         References;
-        b=bybnj6YpOIFGKqYk05V2fhw89r+WdabEbQzqkqVUpLYy7Ru9hcBnH2h5BYj7yTDq+
-         2VSrlPFFV+1Embyq/AyXP3WGwXIcYrxtGbTsNBTsEZ10S+cReHZFf4C5d79RhhzwRo
-         ZbQnQR5+JG6qnpudRpXSlJVPnkhZHvAsd8PYr/KI=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [127.0.0.1] ([80.245.76.82]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MFbVu-1oXbBc0Fvq-00H4DA; Tue, 13
- Sep 2022 15:45:06 +0200
-Date:   Tue, 13 Sep 2022 15:45:05 +0200
-From:   Frank Wunderlich <frank-w@public-files.de>
-To:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        netdev <netdev@vger.kernel.org>
-CC:     Lorenzo Bianconi <lorenzo@kernel.org>,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>
-Subject: =?US-ASCII?Q?Re=3A_gmac1_issues_with_mtk=5Feth=5Fsoc_=26_?= =?US-ASCII?Q?port_5_issues_with_MT7530_DSA_driver?=
-User-Agent: K-9 Mail for Android
-Reply-to: frank-w@public-files.de
-In-Reply-To: <e75cece2-b0d5-89e3-b1dc-cd647986732f@arinc9.com>
-References: <146b9607-ba1e-c7cf-9f56-05021642b320@arinc9.com> <e75cece2-b0d5-89e3-b1dc-cd647986732f@arinc9.com>
-Message-ID: <84BAEBE0-0026-45A4-89AB-FB20E9F9063B@public-files.de>
+        with ESMTP id S232338AbiIMN6g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 09:58:36 -0400
+Received: from mail-oo1-xc2b.google.com (mail-oo1-xc2b.google.com [IPv6:2607:f8b0:4864:20::c2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A14501A4
+        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 06:58:32 -0700 (PDT)
+Received: by mail-oo1-xc2b.google.com with SMTP id u19-20020a4a9e93000000b004757198549cso982300ook.0
+        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 06:58:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ieee.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=j4b3AwKXnbNOc68U591Ba49SYpbjEmsPStwHugruFXY=;
+        b=IY8xOwXpGjE0SdIJPzybMxmP4m2T8KAbKGM7JrPns4diuJRzQQdTrR9uBMLZMZ1lZO
+         K/HcgHm2G7ER+vdjQDjBa7FWLUTbtkNCQz2jT5oIF9qIbknckvE+l63mEgLKqMIJlf5J
+         fC+8+JnPKboKqHH/11hZPFYExWokI2U45amkI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=j4b3AwKXnbNOc68U591Ba49SYpbjEmsPStwHugruFXY=;
+        b=vqpM0zF8ugka6MHndacM4qsb5H7KyTF5+oEcc2XROCT19wB7EG8Vf4RaFuW7X3B+fZ
+         m59SeM7CLE2RXMb9AilyN4GKzqnrnUJiYXBSfUgb27q3xgHblWiIOxDmNwPYKbqHJhuH
+         LMqukSARXfaDGo7NutTmzAov6TlwgWRBsk6fKn6POhq6jCghjSw7ndQvV7LgdqGJscK/
+         Q8FZev08lF2KAxCEf5Z+P1FByJjZDc7iQgR/xKrEzgB1n1bcg4BPSGZsHYZ68bpreMRe
+         IOvUerdMhF4fSR/z0eVtydeZA4LEb8noU+ko6aWg7/SNcDa9AeKhV0u3RC0RwplL+yRc
+         +aGw==
+X-Gm-Message-State: ACgBeo1Gv9Iz/BV+zDm2aM8Bqxpg7eqXTAtXTW8XdT4eClrL29oxDddb
+        lAQt8hVNwiRIyqRvLeAZU1zZAQ==
+X-Google-Smtp-Source: AA6agR6Tr6upEAKirqfcck1pCLrIPjxxEXBfXhURgmYde0fXkAmfIiiM2LtbTbWlyIGlUU6Bd09Etg==
+X-Received: by 2002:a4a:8e81:0:b0:475:811f:3f9e with SMTP id p1-20020a4a8e81000000b00475811f3f9emr2603836ook.35.1663077511837;
+        Tue, 13 Sep 2022 06:58:31 -0700 (PDT)
+Received: from [172.22.22.4] ([98.61.227.136])
+        by smtp.googlemail.com with ESMTPSA id k26-20020a056808069a00b0033a11fcb23bsm5212658oig.27.2022.09.13.06.58.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 13 Sep 2022 06:58:31 -0700 (PDT)
+Message-ID: <f2fa19a1-4854-b270-0776-38993dece03f@ieee.org>
+Date:   Tue, 13 Sep 2022 08:58:29 -0500
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:/ktzAebFFSm2bblEroLEWi17pm4JXzMjBkHLOS++akffL72FQ4a
- oAuB/i+6SeutHHKCqsf5Vl2hh1vdsFnAY44+Weq6zNMcgB5lQmtOLMfyO44RU2AIdpiCxGA
- /Ec5RAdn4/+24/mPQHXCrkPCk+lctGL4TNGMfT3ZT8vifdmGIexJNCD2U+aPKw7EhKVCMjE
- ol9F6m0aVi57SPb+v1n3A==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:3+TO2EqFtG0=:Wibh4jqSwAYhpANjVeJx24
- nPiXsXD4ytx9XeT1sRZ9ev9sY7ktYNWykY03TehmNr7Gx5kaEBW7iiSK14AAUGlTEY9d5VSOL
- 3GVajz2IjFpnyWF7Kx21A1Nk3SlQlDNjQWfQa/xFffMOPrLwM8WYBJ/aHSNSXchWLO+hHrR4z
- t2G9d0adyl3flWaS1sA96jfley41NIutOAucoVqx9fSu9aMO6HRc7a1H0ynXOn6FdfWdLv2PN
- E4J9wg7QVYjc3r9SNTcpTcFdNToJRjKdlpR4ETA1ZgGluSOQLA/SH5KM+knshjHFdr1z6TMnT
- oC10Bk82KR5OJ4LJtqCFlaAI3x18DSRckx/QHyK4ruhRbjfT/Rddc3Efx1wn8bbmOguHbvnvu
- 7X9q8bLNOKx91ChqCHMwGC6SFn88w8s9wMc6bs+kyKSWOwEiSywe4JhQhYJigoxSkfPRlk/ap
- RZ4gunjTPamleKgRrLIsrYRtSVm3PV40MDCCQVdmAoqy5NZK6FFLEOTZX0jM4uUdL7eJGukfT
- DdUKY0DayIa1ekJKQQlM3hmoyG3n2OO57WMoTw+1oB8KMThXl99hPwqkUk/sjnT8mhe+cg5Ix
- ZRr4n3jhccDKW3tczBgtsGKrEgY+zJ/2W9TfyLXljJ0LhuYaKTMCd2GsCvGKXkX+lzwmvfOHq
- fyHan2y+qm1ZdwnaB7KoZ8v+74hEOk2N70+ibjhBUFKCO5jRLsQ7k5dxKfhOOOHEs9hYCdQHB
- iTh4qTLv1XcjiiuoIkZAanccsTh30Fn6YmhrRc2PdQHDm4ZRf5B081oBo3oKBopdcJdDVMck0
- tcuY+L38mKyFlnGGeDUK2jTnE1tXnAu0RC6RgHO8BkCn1k4Q74vlZRyqbKPyXXgPlMn6SsK+T
- V125JIYvlMuuQOVb0H6iYNw4T0F+FQJ2O43l1JayYTkSNbxRP2Ak5Zy4zCTMHvgYa5QA3C/bt
- a6KhxoiLIKBmhCWxzRRtr+Xl/ZZCoFNJkeq3lWsa14/ZvVERdEuEg87jhZuqhngpud8nYOPIp
- w+Tl3EilWjDyKSM5kHsbnkjW3EKYQ4IKT5P/ZC9gCt18xLqXRQ7deyhWQC+xjnimFyEJ7K5/a
- fsdThQbUkQxlGkFwk3ZS6+IHyY2h305qx/jx/mvo7E0/9AWqOC/OMceHbgW7AXw90xhQJCvqh
- U8AE1loNTncgr76mJDAnqHsE7M
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 0/4] Make QMI message rules const
+Content-Language: en-US
+To:     Jeff Johnson <quic_jjohnson@quicinc.com>,
+        Alex Elder <elder@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Kalle Valo <kvalo@kernel.org>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>
+Cc:     linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+References: <20220912232526.27427-1-quic_jjohnson@quicinc.com>
+From:   Alex Elder <elder@ieee.org>
+In-Reply-To: <20220912232526.27427-1-quic_jjohnson@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 13=2E September 2022 14:54:20 MESZ schrieb "Ar=C4=B1n=C3=A7 =C3=9CNAL" <=
-arinc=2Eunal@arinc9=2Ecom>:
->I'd like to post a few more issues I stumbled upon on mtk_eth_soc and MT7=
-530 DSA drivers=2E All of this is tested on vanilla 6=2E0-rc5 on GB-PC2=2E
->
->## MT7621 Ethernet gmac1 won=E2=80=99t work when gmac1 is used as DSA mas=
-ter for MT7530 switch
->
->There=E2=80=99s recently been changes on the MT7530 DSA driver by Frank t=
-o support using port 5 as a CPU port=2E
->
->The MT7530 switch=E2=80=99s port 5 is wired to the MT7621 SoC=E2=80=99s g=
-mac1=2E
->
->Master eth1 and slave interfaces initialise fine=2E Packets are sent out =
-from eth1 fine but won't be received on eth1=2E
->
->This issue existed before Lorenzo=E2=80=99s changes on 6=2E0-rc1=2E
->
->I=E2=80=99m not sure if this is an issue with mtk_eth_soc or the MT7530 D=
-SA driver=2E
->
->---
->
->## MT7530 sends malformed packets to/from CPU at port 5 when port 6 is no=
-t defined on devicetree
->
->In this case, I can see eth1 receiving traffic as the receive counter on =
-ifconfig goes up with the ARP packets sent to the mt7621 CPU=2E
->
->I see the mt7621 CPU not responding to the ARP packets (no malformed pack=
-ets or anything), which likely means ARP packets received on the mt7621 CPU=
- side are also malformed=2E
->
->I think this confirms that the above issue is related to the MT7530 DSA d=
-river as I can see eth1 receiving traffic in this case=2E
->
->Packet capture of the malformed packets are in the attachments=2E
->
->---
->
->## MT7621 Ethernet gmac1 won=E2=80=99t work when gmac0 is not defined on =
-devicetree
->
->eth0 interface is initalised even though it=E2=80=99s not defined on the =
-devicetree, eth1 interface is not created at all=2E
->
->This is likely not related to the MT7530 DSA driver=2E
->
->Ar=C4=B1n=C3=A7
-There are some patches fixing ethernet and dsa driver for getting sfps to =
-work=2E
+On 9/12/22 6:25 PM, Jeff Johnson wrote:
+> Change ff6d365898d ("soc: qcom: qmi: use const for struct
+> qmi_elem_info") allows QMI message encoding/decoding rules to be
+> const. So now update the definitions in the various client to take
+> advantage of this. Patches for ath10k and ath11k were perviously sent
+> separately.
 
-https://git=2Eopenwrt=2Eorg/?p=3Dopenwrt/staging/dangole=2Egit;a=3Dcommit;=
-h=3D9469ba3568d7d9de31dc63de5269c848a1cc1dc7
+I have had this on my "to-do list" for ages.
+The commit you mention updates the code to be
+explicit about not modifying this data, which
+is great.
 
-And on dsa side imho only to support sfp
+I scanned over the changes, and I assume that
+all you did was make every object having the
+qmi_elem_info structure type be defined as
+constant.
 
-https://github=2Ecom/openwrt/openwrt/commit/bd6783f4fb8f6171927e9067c0005a=
-6d69fc13fe
+Why aren't you changing the "ei_array" field in
+the qmi_elem_info structure to be const?  Or the
+"ei" field of the qmi_msg_handler structure?  And
+the qmi_response_type_v01_ei array (and so on)?
 
-Hope the first patches help you with your issue
+I like what you're doing, but can you comment
+on what your plans are beyond this series?
+Do you intend to make the rest of these fields
+const?
 
-regards Frank
+Thanks.
+
+					-Alex
+
+> This series depends upon:
+> https://git.kernel.org/pub/scm/linux/kernel/git/qcom/linux.git/commit/?h=for-next&id=ff6d365898d4d31bd557954c7fc53f38977b491c
+> 
+> This is in the for-next banch of:
+> git.kernel.org/pub/scm/linux/kernel/git/qcom/linux.git
+> 
+> Hence this series is also based upon that tree/branch.
+> 
+> Jeff Johnson (4):
+>    net: ipa: Make QMI message rules const
+>    remoteproc: sysmon: Make QMI message rules const
+>    slimbus: qcom-ngd-ctrl: Make QMI message rules const
+>    soc: qcom: pdr: Make QMI message rules const
+> 
+>   drivers/net/ipa/ipa_qmi_msg.c    | 20 ++++++++++----------
+>   drivers/net/ipa/ipa_qmi_msg.h    | 20 ++++++++++----------
+>   drivers/remoteproc/qcom_sysmon.c |  8 ++++----
+>   drivers/slimbus/qcom-ngd-ctrl.c  |  8 ++++----
+>   drivers/soc/qcom/pdr_internal.h  | 20 ++++++++++----------
+>   5 files changed, 38 insertions(+), 38 deletions(-)
+> 
+
