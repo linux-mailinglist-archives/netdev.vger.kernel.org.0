@@ -2,107 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C9D35B7A33
-	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 20:54:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C06945B7A31
+	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 20:54:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232001AbiIMSxE convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 13 Sep 2022 14:53:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42798 "EHLO
+        id S233000AbiIMSxZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 14:53:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232984AbiIMSw2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 14:52:28 -0400
-Received: from mail.lixid.net (lixid.tarent.de [193.107.123.118])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 328C247BA1
-        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 11:38:02 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.lixid.net (MTA) with ESMTP id 525911410D3;
-        Tue, 13 Sep 2022 20:38:00 +0200 (CEST)
-Received: from mail.lixid.net ([127.0.0.1])
-        by localhost (mail.lixid.net [127.0.0.1]) (MFA, port 10024) with LMTP
-        id anxBlDDJCDL0; Tue, 13 Sep 2022 20:37:54 +0200 (CEST)
-Received: from x61w.mirbsd.org (vpn-172-34-0-14.dynamic.tarent.de [172.34.0.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.lixid.net (MTA) with ESMTPS id 28AF31403CD;
-        Tue, 13 Sep 2022 20:37:54 +0200 (CEST)
-Received: by x61w.mirbsd.org (Postfix, from userid 1000)
-        id 36B3B61666; Tue, 13 Sep 2022 20:37:53 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by x61w.mirbsd.org (Postfix) with ESMTP id 2F30960094;
-        Tue, 13 Sep 2022 20:37:53 +0200 (CEST)
-Date:   Tue, 13 Sep 2022 20:37:53 +0200 (CEST)
-From:   Thorsten Glaser <t.glaser@tarent.de>
-To:     Haye.Haehne@telekom.de
-cc:     netdev@vger.kernel.org
-Subject: Re: RFH, where did I go wrong?
-In-Reply-To: <FR2P281MB29597303CA232BBEF6E328DF90479@FR2P281MB2959.DEUP281.PROD.OUTLOOK.COM>
-Message-ID: <d0755144-c038-8332-1084-b62cc9c6499@tarent.de>
-References: <FR2P281MB2959684780DC911876D2465590419@FR2P281MB2959.DEUP281.PROD.OUTLOOK.COM> <FR2P281MB2959EBC7E6CE9A1A8D01A01F90419@FR2P281MB2959.DEUP281.PROD.OUTLOOK.COM> <42776059-242c-cf49-c3ed-31e311b91f1c@tarent.de> <CAHNKnsQGwV9Z9dSrKusLV7qE+Xw_4eqEDtHKTVJxuuy6H+pWRA@mail.gmail.com>
- <cd3867e0-b645-c6cd-3464-29ffb142de5e@tarent.de> <FR2P281MB29597303CA232BBEF6E328DF90479@FR2P281MB2959.DEUP281.PROD.OUTLOOK.COM>
-Content-Language: de-DE-1901
+        with ESMTP id S231305AbiIMSwx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 14:52:53 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E35301112
+        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 11:39:09 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id w20so647201ply.12
+        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 11:39:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=orbJhFxE5HOptaUTrwjclSlFPR4aOjesoJrXhy8Wtts=;
+        b=nxcB8lDUCl73YdcfRhMEAqDdCUdLG4SLHkeUiNjkBu1FXJYofVBUFa3b707o90XVoQ
+         dNihqZ1DF3x6fZK+7ed5nOm30GRdc8KQhyxvICRIrCs3q5fbHr7gvEcj9BxAKrVt5ura
+         Eyp2ZTlMCeGGRfTF61nOW4+zycbvSDifROf38oAULgtsPWtZws7s+52oUGkNUPMi15Ot
+         Elik2yEVEjeh2DhorPYPsoeAn1sUZ8/mZUAvcOOrI4HMR12OCP1bWQ/20ATKVAUw8l8U
+         qO/Cu44DX012kPCxBcmORr7Lw4WNaCmPA7gmm2yupvUnKdABmng93qFfAHFEkIX3YiR9
+         8GDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=orbJhFxE5HOptaUTrwjclSlFPR4aOjesoJrXhy8Wtts=;
+        b=wKk5x5AuNax1bW0e5qQqkDGc3GvlBU9Bg8AieX+dtLoXLd+/ACWazAwLjgWFLuF4Pq
+         Vm1Ee+dMDquZvn+X20iR3rgCRX8mQINYc+F9rOids8Ylu4kBhreftu+gTozvD/Siq32s
+         nwcls244KGikMHZ7Ufn75uvBEkiFkdK4K0wHEiKBmj4mUybcqPBtPeAxw6iQoiZL2Cc5
+         lkFO/sXWQjyH9iBn6e0zWbKTQ0aAxTrKxRlaHeCFPPJAY/qBFv6nQpI0N+8oneeQIga/
+         wSGc1PKgV/RkS6e2MzQ0uWXwjTr9n45vrdX0Y4tfRJ1E4z129q5QKmsN2A8jzxJ4iaan
+         j01g==
+X-Gm-Message-State: ACgBeo2jaa/QF/9NCdsagqP8Qeo0C93P8+Ncz9La+qvPoPN4Ka59aFWc
+        8+JUjyX/XzGS4whrKlkBrh3W5g==
+X-Google-Smtp-Source: AA6agR61gyqGv+L8wy1gCw1IQiL+Enkebzh35P2+foq3IsCkwYcjENVQSf0fRVd990XYSixuJQXJIQ==
+X-Received: by 2002:a17:902:e2d3:b0:176:e97a:d3eb with SMTP id l19-20020a170902e2d300b00176e97ad3ebmr31754197plc.172.1663094349141;
+        Tue, 13 Sep 2022 11:39:09 -0700 (PDT)
+Received: from google.com (33.5.83.34.bc.googleusercontent.com. [34.83.5.33])
+        by smtp.gmail.com with ESMTPSA id p67-20020a625b46000000b00540d03f3792sm8193827pfb.81.2022.09.13.11.39.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Sep 2022 11:39:08 -0700 (PDT)
+Date:   Tue, 13 Sep 2022 11:39:05 -0700
+From:   Zach O'Keefe <zokeefe@google.com>
+To:     Yang Shi <shy828301@gmail.com>
+Cc:     syzbot <syzbot+915f3e317adb0e85835f@syzkaller.appspotmail.com>,
+        akpm@linux-foundation.org, andrii@kernel.org, ast@kernel.org,
+        bigeasy@linutronix.de, bpf@vger.kernel.org, brauner@kernel.org,
+        daniel@iogearbox.net, david@redhat.com, ebiederm@xmission.com,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org, luto@kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de, yhs@fb.com
+Subject: Re: [syzbot] BUG: Bad page map (5)
+Message-ID: <YyDOSbLrUx6KbX+R@google.com>
+References: <000000000000f537cc05ddef88db@google.com>
+ <0000000000007d793405e87350df@google.com>
+ <CAHbLzkp6BEaM8cFwLsCiYmGaR-LxbG8z-f_bz2ijL+K27zR4GQ@mail.gmail.com>
+ <CAHbLzkrr3PvKjs2vanVi5JFTQQ3R7hSNRWoHhAw+gBWOcFurcw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHbLzkrr3PvKjs2vanVi5JFTQQ3R7hSNRWoHhAw+gBWOcFurcw@mail.gmail.com>
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Haye,
+On Sep 13 09:14, Yang Shi wrote:
+> On Mon, Sep 12, 2022 at 2:47 PM Yang Shi <shy828301@gmail.com> wrote:
+> >
+> > On Sun, Sep 11, 2022 at 9:27 PM syzbot
+> > <syzbot+915f3e317adb0e85835f@syzkaller.appspotmail.com> wrote:
+> > >
+> > > syzbot has found a reproducer for the following issue on:
+> > >
+> > > HEAD commit:    e47eb90a0a9a Add linux-next specific files for 20220901
+> > > git tree:       linux-next
+> > > console+strace: https://syzkaller.appspot.com/x/log.txt?x=17330430880000
+> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=7933882276523081
+> > > dashboard link: https://syzkaller.appspot.com/bug?extid=915f3e317adb0e85835f
+> > > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13397b77080000
+> > > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1793564f080000
+> > >
+> > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > > Reported-by: syzbot+915f3e317adb0e85835f@syzkaller.appspotmail.com
+> > >
+> > > BUG: Bad page map in process syz-executor198  pte:8000000071c00227 pmd:74b30067
+> > > addr:0000000020563000 vm_flags:08100077 anon_vma:ffff8880547d2200 mapping:0000000000000000 index:20563
+> > > file:(null) fault:0x0 mmap:0x0 read_folio:0x0
+> > > CPU: 1 PID: 3614 Comm: syz-executor198 Not tainted 6.0.0-rc3-next-20220901-syzkaller #0
+> > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 08/26/2022
+> > > Call Trace:
+> > >  <TASK>
+> > >  __dump_stack lib/dump_stack.c:88 [inline]
+> > >  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+> > >  print_bad_pte.cold+0x2a7/0x2d0 mm/memory.c:565
+> > >  vm_normal_page+0x10c/0x2a0 mm/memory.c:636
+> > >  hpage_collapse_scan_pmd+0x729/0x1da0 mm/khugepaged.c:1199
+> > >  madvise_collapse+0x481/0x910 mm/khugepaged.c:2433
+> > >  madvise_vma_behavior+0xd0a/0x1cc0 mm/madvise.c:1062
+> > >  madvise_walk_vmas+0x1c7/0x2b0 mm/madvise.c:1236
+> > >  do_madvise.part.0+0x24a/0x340 mm/madvise.c:1415
+> > >  do_madvise mm/madvise.c:1428 [inline]
+> > >  __do_sys_madvise mm/madvise.c:1428 [inline]
+> > >  __se_sys_madvise mm/madvise.c:1426 [inline]
+> > >  __x64_sys_madvise+0x113/0x150 mm/madvise.c:1426
+> > >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> > >  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+> > >  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> > > RIP: 0033:0x7f770ba87929
+> > > Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 11 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+> > > RSP: 002b:00007f770ba18308 EFLAGS: 00000246 ORIG_RAX: 000000000000001c
+> > > RAX: ffffffffffffffda RBX: 00007f770bb0f3f8 RCX: 00007f770ba87929
+> > > RDX: 0000000000000019 RSI: 0000000000600003 RDI: 0000000020000000
+> > > RBP: 00007f770bb0f3f0 R08: 00007f770ba18700 R09: 0000000000000000
+> > > R10: 00007f770ba18700 R11: 0000000000000246 R12: 00007f770bb0f3fc
+> > > R13: 00007ffc2d8b62ef R14: 00007f770ba18400 R15: 0000000000022000
+> > >  </TASK>
+> >
+> > I think I figured out the problem. The reproducer actually triggered
+> > the below race in madvise_collapse():
+> >
+> >              CPU A
+> >         CPU B
+> > mmap 0x20000000 - 0x21000000 as anon
+> >
+> >        madvise_collapse is called on this area
+> >
+> >            Retrieve start and end address from the vma (NEVER updated
+> > later!)
+> >
+> >            Collapsed the first 2M area and dropped mmap_lock
+> > Acquire mmap_lock
+> > mmap io_uring file at 0x20563000
+> > Release mmap_lock
+> >
+> >             Reacquire mmap_lock
+> >
+> >             revalidate vma pass since 0x20200000 + 0x200000 >
+> > 0x20563000
+> >
+> >             scan the next 2M (0x20200000 - 0x20400000), but due to
+> > whatever reason it didn't release mmap_lock
+> >
+> >             scan the 3rd 2M area (start from 0x20400000)
+> >
+> >               actually scan the new vma created by io_uring since the
+> > end was never updated
+> >
+> > The below patch should be able to fix the problem (untested):
+> >
+> > diff --git a/mm/khugepaged.c b/mm/khugepaged.c
+> > index 5f7c60b8b269..e708c5d62325 100644
+> > --- a/mm/khugepaged.c
+> > +++ b/mm/khugepaged.c
+> > @@ -2441,8 +2441,10 @@ int madvise_collapse(struct vm_area_struct
+> > *vma, struct vm_area_struct **prev,
+> >                 memset(cc->node_load, 0, sizeof(cc->node_load));
+> >                 result = hpage_collapse_scan_pmd(mm, vma, addr, &mmap_locked,
+> >                                                  cc);
+> > -               if (!mmap_locked)
+> > +               if (!mmap_locked) {
+> >                         *prev = NULL;  /* Tell caller we dropped mmap_lock */
+> > +                       hend = vma->end & HPAGE_PMD_MASK;
+> > +               }
+> 
+> This is wrong. We should refetch the vma end after
+> hugepage_vma_revalidate() otherwise the vma is still the old one.
+> 
+> diff --git a/mm/khugepaged.c b/mm/khugepaged.c
+> index a3acd3e5e0f3..1860be232a26 100644
+> --- a/mm/khugepaged.c
+> +++ b/mm/khugepaged.c
+> @@ -2592,6 +2592,8 @@ int madvise_collapse(struct vm_area_struct *vma,
+> struct vm_area_struct **prev,
+>                                 last_fail = result;
+>                                 goto out_nolock;
+>                         }
+> +
+> +                       hend = vma->vm_end & HPAGE_PMD_MASK;
+>                 }
+>                 mmap_assert_locked(mm);
+>                 memset(cc->node_load, 0, sizeof(cc->node_load));
+> 
+> 
+> >
+> >                 switch (result) {
+> >                 case SCAN_SUCCEED:
+> >
+> >
 
-> I could retest the crash scenario of the qdisc, it occurs in the
-> context of tc change /reconfiguration. When I define a static qdisc
-> setup, the iperf udp stream with 50M (qdisc rate 20M) is stable.
+Hey Yang,
 
-thanks. (By the way, gstscream/scripts/sysctl.sh from SCReAM indeed
-allows me to fill the queue fully with locally originating traffic.)
+Thanks for triaging this, and apologies for intro'ing this bug.
 
-> So you should indeed take a deeper look into the processing during
-> reconfiguration.
+Also thank you for the repro explanation - I believe you are correct here.
 
-I did have a look. I could not reproduce the crash just with changing
-qdisc things, not even a lot of times (100 Hz).
+Generalizing the issue of:
 
-I tried:
+	1) hugepage_vma_revalidate() pmd X
+	2) collapse of pmd X doesn't drop mmap_lock
+	3) don't revalidate pmd X+1
+	4) attempt collapse of pmd X+1
 
-$ sudo mksh -c 'qq=0; while sleep 0.01; do
-	if (( ++qq == 500 )); then lim=50; qq=0; else lim=10240; fi
-	tc qdisc change dev eth1 handle 1: janz rate 20mbit limit $lim
-    done'
+I think the only problem is that
 
-(changing the qdisc 100 times a second; every five seconds the limit
-goes WAY down, to show the dropping code isn’t the cause either)
+	hugepage_vma_revalidate()
+		transhuge_vma_suitable()
 
-3x $ iperf -u -c 10.82.222.129 -t 600 -b 40M -S 0x01
+only checks if a single hugepage-sized/aligned region properly fits / is aligned
+in the VMA (i.e. the issue you found here).  All other checks should be
+intrinsic to the VMA itself and should be safe to skip if mmap_lock isn't
+dropped since last hugepage_vma_revalidate().
 
-(for some reason, IPv6 did not work with iperf for me)
+As for the fix, I think your fix will work.  If a VMA's size changes inside the
+main for-loop of madvise_collapse, then at some point we will lock mmap_lock and
+call hugepage_vma_revalidate(), which might fail itself if the next
+hugepage-aligned/sized region is now not contained in the VMA.  By updating
+"hend" as you propose (i.e. using vma->m_end of the just-found VMA), we also
+ensure that for "addr" < "hend", the hugepage-aligned/sized region at "addr"
+will fit into the VMA.  Note that we don't need to worry about the VMA being
+shrank from the other direction, so updating "hend" should be enough.
 
-$ sudo mksh -c 'while sleep 0.25; do tc -s qdisc show dev eth1 | fgrep backlog; done'
+I think the fix is fine as-is.  I briefly thought a comment would be nice, but I
+think the code is self evident.  The alternative is introing another
+transhuge_vma_suitable() call in the "if (!mmap_locked) { .. } else { .. }"
+failure path, but I think your approach is easier to read.
 
-(for monitoring)
+Thanks again for taking the time to debug this, and hopefully I can be more
+careful in the future.
 
+Best,
+Zach
 
-Evidently, what I’m changing, or how often, isn’t sufficient to trigger
-the issue. Let’s phone tomorrow to try to figure out a good reproducer,
-I might need to use jenscli with the data rate pattern you use, which is
-less self-contained than I would normally prefer in a reproducer…
+Reviewed-by: Zach O'Keefe <zokeefe@google.com>
 
-bye,
-//mirabilos
--- 
-Infrastrukturexperte • tarent solutions GmbH
-Am Dickobskreuz 10, D-53121 Bonn • http://www.tarent.de/
-Telephon +49 228 54881-393 • Fax: +49 228 54881-235
-HRB AG Bonn 5168 • USt-ID (VAT): DE122264941
-Geschäftsführer: Dr. Stefan Barth, Kai Ebenrett, Boris Esser, Alexander Steeg
-
-                        ****************************************************
-/⁀\ The UTF-8 Ribbon
-╲ ╱ Campaign against      Mit dem tarent-Newsletter nichts mehr verpassen:
- ╳  HTML eMail! Also,     https://www.tarent.de/newsletter
-╱ ╲ header encryption!
-                        ****************************************************
