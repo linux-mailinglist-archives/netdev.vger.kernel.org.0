@@ -2,110 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EF29A5B694B
-	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 10:15:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D75C5B6956
+	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 10:18:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231358AbiIMIPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 04:15:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37074 "EHLO
+        id S230341AbiIMISX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 04:18:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230108AbiIMIPy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 04:15:54 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 229851E3D4;
-        Tue, 13 Sep 2022 01:15:53 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id l12so13435241ljg.9;
-        Tue, 13 Sep 2022 01:15:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references
-         :organization:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date;
-        bh=4ZZv5xCVVnY4y6rYdm7dulVMSoOLJlOJUQL0RHpll98=;
-        b=qgXNIR8wAXAwWAJ6ChzaJEDc385w5xU5sTXNBOhucQiH7k5wNMoSwB+UxHaKcZZca9
-         9krr/Mg5miP2No270CtLt0pKUNXHRG8hI/g7x2kFsYLe96seFldobIDrg95T2EzxCE9p
-         XRcO2Z2AZn2ZC5h6pCCyeoVQ0o1xSti1hCS6pAbqo74OKoOjaplPCCkzhhWK32Uxn8rz
-         hPk7hBPwY29iCrn+8fgA85kxNCEWwJJdCtLAyOtczPRP3z0Swvxc2hHaNbtjxmgQ60+K
-         ppmTlRRcp5OlWHj1x4Qp+HCuM04ogniDaKSHnU/V/AnzwsMCJL5OqEd6kdoyzaEL7fqu
-         89eQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references
-         :organization:message-id:subject:cc:to:from:date:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=4ZZv5xCVVnY4y6rYdm7dulVMSoOLJlOJUQL0RHpll98=;
-        b=xzjXcnFgMhSORDcCd8UmbW3m6amifJiotAwJG/zB83doZnYO9mpaVJ0uRgZzg2jJQC
-         KIrHXAZRTGyjR+uKR6QtNZ1jHL7fm8iapnwqpcJHUvbNZCzhDCp1FcUbbPVHDDq3qwDW
-         uc6A9ATP/qcm1IsOCnmi+5RP6x1FdUDs3VNdoYqC4hc9Cii0lAR/VRaecbkg2ARUJSr4
-         hOPQuAqcP7MOLyjPqD9A8w1tpxH81qsvqkfvBSfs2p7mTAhxYDVNjtBd9SoPYV1UfVbH
-         MbTA8kb4EJDxWVCvXh16Tw3JbLooa7pgGyHspH0MsioTEENh/sJhGCckWLeBFpd5kzSU
-         i+Cw==
-X-Gm-Message-State: ACgBeo1WD2felYGf+NRovvk8XyQg1xucXDeMOWSRUGWAHlhrU7mCsx/N
-        FM43q7ooSZ60vCK2BNEaB9k=
-X-Google-Smtp-Source: AA6agR6yJVHuuaqQSsevIAm5TLHRMUDcbyGPp84h0+Qeu7rIxl3UujxKPvj36ABCMA9af+8S+DeYlA==
-X-Received: by 2002:a2e:3e13:0:b0:26b:e6f1:ce14 with SMTP id l19-20020a2e3e13000000b0026be6f1ce14mr5735525lja.454.1663056951361;
-        Tue, 13 Sep 2022 01:15:51 -0700 (PDT)
-Received: from wse-c0155 (c90-143-177-32.bredband.tele2.se. [90.143.177.32])
-        by smtp.gmail.com with ESMTPSA id p39-20020a05651213a700b0048a9e18ae67sm1554255lfa.84.2022.09.13.01.15.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Sep 2022 01:15:50 -0700 (PDT)
-Date:   Tue, 13 Sep 2022 10:15:48 +0200
-From:   Casper Andersson <casper.casan@gmail.com>
-To:     Nathan Huckleberry <nhuck@google.com>
-Cc:     Dan Carpenter <error27@gmail.com>, llvm@lists.linux.dev,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: sparx5: Fix return type of sparx5_port_xmit_impl
-Message-ID: <20220913081548.gmngjwuagbt63j7h@wse-c0155>
-Organization: Westermo Network Technologies AB
-References: <20220912214432.928989-1-nhuck@google.com>
+        with ESMTP id S230221AbiIMISW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 04:18:22 -0400
+Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F005E24973;
+        Tue, 13 Sep 2022 01:18:20 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.3ffe.de (Postfix) with ESMTPSA id D4F35135F;
+        Tue, 13 Sep 2022 10:18:18 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
+        t=1663057099;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=lQvQeAgjxqYSjCBCPv4uH0vSfQc2xCoC/J0gxV+KP7I=;
+        b=uVhboh596FH2yBLqUi1e0iXmW6/Px6RnnXGnJ7kY2BHZwi/PEGaRkVl2ClDGN/248sQLWV
+        Ay9WTamRlVr9my5knVSeSLCd1joTsdRrCtgA392Ok7en1uDmBbAfUV71YKGbcjqcblWW7y
+        HjZTmQUOfQKCadVlBRW7MH1sSNN4Q4pz1/qBtFxNBjFI8vyqyZmg3SpTnUpGpmzTcDAsqa
+        Ff/3LGYF1sKL4fEA0LOEClzEeYaEHh7ayTdH3dkmwo1l7LKhcwrg/LDGPzcGf0J3eeE+tH
+        MiQLeDbHjBHMacQUFZ4IwzQUOEdgX4b5XZC4mG9do3Wtu2hGfMQR7X0nzcAQew==
+From:   Michael Walle <michael@walle.cc>
+To:     horatiu.vultur@microchip.com
+Cc:     UNGLinuxDriver@microchip.com, andrew@lunn.ch, davem@davemloft.net,
+        edumazet@google.com, hkallweit1@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        Michael Walle <michael@walle.cc>
+Subject: Re: [PATCH net-next] net: phy: micrel: Add interrupts support for LAN8804 PHY
+Date:   Tue, 13 Sep 2022 10:18:14 +0200
+Message-Id: <20220913081814.212548-1-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220912195650.466518-1-horatiu.vultur@microchip.com>
+References: <20220912195650.466518-1-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220912214432.928989-1-nhuck@google.com>
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On 2022-09-12 14:44, Nathan Huckleberry wrote:
-> The ndo_start_xmit field in net_device_ops is expected to be of type
-> netdev_tx_t (*ndo_start_xmit)(struct sk_buff *skb, struct net_device *dev).
+> Add support for interrupts for LAN8804 PHY.
 > 
-> The mismatched return type breaks forward edge kCFI since the underlying
-> function definition does not match the function hook definition.
+> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> ---
+>  drivers/net/phy/micrel.c | 55 ++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 55 insertions(+)
 > 
-> The return type of sparx5_port_xmit_impl should be changed from int to
-> netdev_tx_t.
+> diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+> index 7b8c5c8d013e..98e9bc101d96 100644
+> --- a/drivers/net/phy/micrel.c
+> +++ b/drivers/net/phy/micrel.c
+> @@ -2676,6 +2676,59 @@ static int lan8804_config_init(struct phy_device *phydev)
+>  	return 0;
+>  }
+>  
+> +static irqreturn_t lan8804_handle_interrupt(struct phy_device *phydev)
+> +{
+> +	int status;
+> +
+> +	status = phy_read(phydev, LAN8814_INTS);
+> +	if (status < 0) {
+> +		phy_error(phydev);
+> +		return IRQ_NONE;
+> +	}
+> +
+> +	if (status > 0)
+> +		phy_trigger_machine(phydev);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +#define LAN8804_OUTPUT_CONTROL			25
+> +#define LAN8804_OUTPUT_CONTROL_INTR_BUFFER	BIT(14)
+> +#define LAN8804_CONTROL				31
+> +#define LAN8804_CONTROL_INTR_POLARITY		BIT(14)
+> +
+> +static int lan8804_config_intr(struct phy_device *phydev)
+> +{
+> +	int err;
+> +
+> +	/* Change interrupt polarity */
+> +	phy_write(phydev, LAN8804_CONTROL, LAN8804_CONTROL_INTR_POLARITY);
 
-I noticed that the functions that assign the return value inside
-sparx5_port_xmit_impl also have return type int, which would ideally
-also be changed. But a bigger issue might be that
-sparx5_ptp_txtstamp_request and sparx5_inject (called inside
-sparx5_port_xmit_impl) returns -EBUSY (-16), when they should return
-NETDEV_TX_BUSY (16). If this is an issue then it also needs to be fixed.
+I assume you change the polarity to high active? Could you add a note?
+The LAN966x nor the LAN8804 datasheet describe this bit. You might also add
+a note, that this is an internal PHY and you cannot change the polarity on
+the GIC. Which begs the question, is this really only an internal PHY or
+can you actually buy it as a dedicated one. Then you'd change the polarity
+in a really unusual way.
 
-sparx5_fdma_xmit also has int return type, but always returns
-NETDEV_TX_OK right now.
 
-Best Regards,
-Casper
+> +
+> +	/* Change interrupt buffer type */
 
+To what? Push-pull?
+
+-michael
+
+> +	phy_write(phydev, LAN8804_OUTPUT_CONTROL,
+> +		  LAN8804_OUTPUT_CONTROL_INTR_BUFFER);
+> +
