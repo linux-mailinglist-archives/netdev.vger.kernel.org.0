@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF0CF5B6BD3
-	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 12:43:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B16745B6BCF
+	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 12:43:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231626AbiIMKnn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 06:43:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46660 "EHLO
+        id S231447AbiIMKnl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 06:43:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231667AbiIMKnh (ORCPT
+        with ESMTP id S231666AbiIMKnh (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 06:43:37 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BF785E338
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7BE85D130
         for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 03:43:35 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id r20so1638311ljj.0
+Received: by mail-lf1-x130.google.com with SMTP id w8so19378486lft.12
         for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 03:43:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=ygTxP1R89jRodLSMaZ5umXgwdbn+zdw9an2P2JOV6+Q=;
-        b=YuQeszK+YlFNyRJz1qqimkEw6qXRamJ/zHVESAJ2UTA/JMXyv7lGyYkOzJiK4WmFoC
-         0SBlsp3zDmrV71raLwNScBTcPZM14Tr8/lPs0I+zdZE/D/qogSClM6SIhCNqjge2UhI2
-         EgSxY4OS2drZ5Fib7lers9yVvWYIGDBrWoRD8VGhuR3dVNhdBhyP082Z6MHRDymh6Q7a
-         kZxPEcNAj03KxtTNx8r4IjfPFqsHLLFzmykP8mQBdbaY/IF+Rkkv7tkYPvlQ+Pw/OhiO
-         FY/gKFso7BcM3NZD/cMoXAFi4HATHsFIEzxHRvvfH163llzmaL80Vj7/p1FzwYER8aKp
-         PEgA==
+        bh=gYr4/+/VXuVJL9MDBujFWj6YWYU745SughITazFnTEI=;
+        b=W/vhTRZWGKf/0iPcB5gThyQztdOqqXEss3a4E7k7G+o+zl7+b0rd7/5/5+Cd6fBllT
+         y+W4v9NA0FQRkDJ8hYTjO1O/q+T29inUgd1Uy2TbOl3c6LD4Zl0GPnv2wXPRwReMHxMp
+         Tj02Z2kDFNdPXnFRkOxPDC/NLfH8ciUxLD5BdwhyjMCgBS5hN7sK8530UWjJxVwBijNO
+         ZZAFVDLNbDmuC9eUZI2ECe9JWgLUP6AlkZgSYrdEr5lOZ9VNYDAzvsIZ2Se5owk7Y4dT
+         QG28CXqacear4kA8Nw0ORHXHejAndAXhbu/PPMGRLmHVhFB9inqCDxkxrOWJtheHYpSn
+         /wQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=ygTxP1R89jRodLSMaZ5umXgwdbn+zdw9an2P2JOV6+Q=;
-        b=VTBu+SIckQh4JCTOSMH0VnYLzR0ixkkfbWRqDxG1FWZ7yVEW0vkOQBtZxjot5Aflt8
-         qbMrBunHit7qVVjuszmk0Fwzxtsgecul9rurwGSpDW+7f2wtguw/fBatfLvpLgiH+5BX
-         ISKZ4vkfoDJWSGIbysOVXx6T/dvlliAVAbD1wPW6MM9oHsxAlo6N9LcYDG1olQWxvxxz
-         eLJayGMKyC3kjcuR6xcPX/LBLU6J19Qr1qUGtNLXNhdg6FJkr/QRTL+Pa8Yx6wBzhpzk
-         glGkmjdgQ0t2seHwwdo+WnUwZSJO4Bt/U3vDw92uPJX+CX+WsuuEcW6R++Je0r9unD8r
-         yY4g==
-X-Gm-Message-State: ACgBeo2Tb6GMwUgkdamBf+5LRFaNFAUB2tOxApBZcXc/2iNnTFGsa9V7
-        aU1issDZERu0vCKd5bQzT+D/WOAFu5IXBrIX
-X-Google-Smtp-Source: AA6agR6QZvijUhG2foC6l80vwNr4OdXSTjlu2sl9uDPRD62JFLXkTQPFBEL5Vd7nVdQVQiKnIJOdZQ==
-X-Received: by 2002:a2e:b24f:0:b0:26b:a653:1e3b with SMTP id n15-20020a2eb24f000000b0026ba6531e3bmr7260143ljm.382.1663065813195;
-        Tue, 13 Sep 2022 03:43:33 -0700 (PDT)
+        bh=gYr4/+/VXuVJL9MDBujFWj6YWYU745SughITazFnTEI=;
+        b=yBHHFSfd6v6NVC9eFYOxFcs6cnMyt45+FyRcWR5ahFb8ijpuBs6pg2JNL/d36SJM5W
+         jnwLDk7GYicmQAkvOh+MHHvUbaxBt5i2aT0LLGMLQdKG2mhOk90qfBWHX+Mfp/Be6FHM
+         3IGKnnLAsTUejXYTT+o8kyfHiEuKVwanEQrSU9wXcyUhUoq+FTApDhndU3GdtoDS0TC0
+         LZ1Cudu5M/YBR961k9WMG3UxKzBumO59HeDShtUko6lPz+BFtUxTpmjjyYyhPmpMzbNB
+         s075+TLS9in8pz/6x4DAhoAymo4ANsf9RkYuqbJBXYhUGs41VO4pc3cb9BoVl/qcRGeS
+         QGLA==
+X-Gm-Message-State: ACgBeo2sAAuOLybwQA5yeFmtFdBwXUyhms7gqFszW7DMgPqD7M3ZBP4K
+        boe64A3iJYvyMs+T1qubtfqbI2DfWc2rYZ5h
+X-Google-Smtp-Source: AA6agR7LsB0v/LzxPDidN+R7hXPEwTVykWDYLpRiDmVCB98eb7U1YSQjJE4KxakGqUqC5WIOnZScEQ==
+X-Received: by 2002:a05:6512:1155:b0:49b:e2c9:e8c3 with SMTP id m21-20020a056512115500b0049be2c9e8c3mr1091748lfg.650.1663065814055;
+        Tue, 13 Sep 2022 03:43:34 -0700 (PDT)
 Received: from wse-c0089.westermo.com (h-98-128-229-160.NA.cust.bahnhof.se. [98.128.229.160])
-        by smtp.gmail.com with ESMTPSA id i2-20020a2ea362000000b0026bf27c7056sm1018946ljn.67.2022.09.13.03.43.32
+        by smtp.gmail.com with ESMTPSA id i2-20020a2ea362000000b0026bf27c7056sm1018946ljn.67.2022.09.13.03.43.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Sep 2022 03:43:32 -0700 (PDT)
+        Tue, 13 Sep 2022 03:43:33 -0700 (PDT)
 From:   Mattias Forsblad <mattias.forsblad@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -59,9 +59,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, linux@armlinux.org.uk,
         Mattias Forsblad <mattias.forsblad@gmail.com>
-Subject: [PATCH net-next v10 2/6] net: dsa: Add convenience functions for frame handling
-Date:   Tue, 13 Sep 2022 12:43:16 +0200
-Message-Id: <20220913104320.471673-3-mattias.forsblad@gmail.com>
+Subject: [PATCH net-next v10 3/6] net: dsa: Introduce dsa tagger data operation.
+Date:   Tue, 13 Sep 2022 12:43:17 +0200
+Message-Id: <20220913104320.471673-4-mattias.forsblad@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220913104320.471673-1-mattias.forsblad@gmail.com>
 References: <20220913104320.471673-1-mattias.forsblad@gmail.com>
@@ -77,87 +77,139 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add common control functions for drivers that need
-to send and wait for control frames.
+Support connecting dsa tagger for frame2reg decoding
+with its associated hookup functions.
 
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Mattias Forsblad <mattias.forsblad@gmail.com>
 ---
- include/net/dsa.h | 11 +++++++++++
- net/dsa/dsa.c     | 17 +++++++++++++++++
- net/dsa/dsa2.c    |  2 ++
- 3 files changed, 30 insertions(+)
+ include/linux/dsa/mv88e6xxx.h |  6 ++++++
+ net/dsa/dsa_priv.h            |  2 ++
+ net/dsa/tag_dsa.c             | 40 +++++++++++++++++++++++++++++++----
+ 3 files changed, 44 insertions(+), 4 deletions(-)
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index f2ce12860546..08f3fff5f4df 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -495,6 +495,8 @@ struct dsa_switch {
- 	unsigned int		max_num_bridges;
+diff --git a/include/linux/dsa/mv88e6xxx.h b/include/linux/dsa/mv88e6xxx.h
+index 8c3d45eca46b..a8b6f3c110e5 100644
+--- a/include/linux/dsa/mv88e6xxx.h
++++ b/include/linux/dsa/mv88e6xxx.h
+@@ -5,9 +5,15 @@
+ #ifndef _NET_DSA_TAG_MV88E6XXX_H
+ #define _NET_DSA_TAG_MV88E6XXX_H
  
- 	unsigned int		num_ports;
++#include <net/dsa.h>
+ #include <linux/if_vlan.h>
+ 
+ #define MV88E6XXX_VID_STANDALONE	0
+ #define MV88E6XXX_VID_BRIDGED		(VLAN_N_VID - 1)
+ 
++struct dsa_tagger_data {
++	void (*decode_frame2reg)(struct dsa_switch *ds,
++				 struct sk_buff *skb);
++};
 +
-+	struct completion	inband_done;
+ #endif
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index 614fbba8fe39..3b23b37eb0f4 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -17,6 +17,8 @@
+ 
+ #define DSA_MAX_NUM_OFFLOADING_BRIDGES		BITS_PER_LONG
+ 
++#define DSA_FRAME2REG_SOURCE_DEV		GENMASK(5, 0)
++
+ enum {
+ 	DSA_NOTIFIER_AGEING_TIME,
+ 	DSA_NOTIFIER_BRIDGE_JOIN,
+diff --git a/net/dsa/tag_dsa.c b/net/dsa/tag_dsa.c
+index e4b6e3f2a3db..e7fdf3b5cb4a 100644
+--- a/net/dsa/tag_dsa.c
++++ b/net/dsa/tag_dsa.c
+@@ -198,8 +198,11 @@ static struct sk_buff *dsa_xmit_ll(struct sk_buff *skb, struct net_device *dev,
+ static struct sk_buff *dsa_rcv_ll(struct sk_buff *skb, struct net_device *dev,
+ 				  u8 extra)
+ {
++	struct dsa_port *cpu_dp = dev->dsa_ptr;
++	struct dsa_tagger_data *tagger_data;
+ 	bool trap = false, trunk = false;
+ 	int source_device, source_port;
++	struct dsa_switch *ds;
+ 	enum dsa_code code;
+ 	enum dsa_cmd cmd;
+ 	u8 *dsa_header;
+@@ -218,9 +221,16 @@ static struct sk_buff *dsa_rcv_ll(struct sk_buff *skb, struct net_device *dev,
+ 
+ 		switch (code) {
+ 		case DSA_CODE_FRAME2REG:
+-			/* Remote management is not implemented yet,
+-			 * drop.
+-			 */
++			source_device = FIELD_GET(DSA_FRAME2REG_SOURCE_DEV, dsa_header[0]);
++			ds = dsa_switch_find(cpu_dp->dst->index, source_device);
++			if (ds) {
++				tagger_data = ds->tagger_data;
++				if (likely(tagger_data->decode_frame2reg))
++					tagger_data->decode_frame2reg(ds, skb);
++			} else {
++				net_err_ratelimited("RMU: Didn't find switch with index %d",
++						    source_device);
++			}
+ 			return NULL;
+ 		case DSA_CODE_ARP_MIRROR:
+ 		case DSA_CODE_POLICY_MIRROR:
+@@ -254,7 +264,6 @@ static struct sk_buff *dsa_rcv_ll(struct sk_buff *skb, struct net_device *dev,
+ 	source_port = (dsa_header[1] >> 3) & 0x1f;
+ 
+ 	if (trunk) {
+-		struct dsa_port *cpu_dp = dev->dsa_ptr;
+ 		struct dsa_lag *lag;
+ 
+ 		/* The exact source port is not available in the tag,
+@@ -323,6 +332,25 @@ static struct sk_buff *dsa_rcv_ll(struct sk_buff *skb, struct net_device *dev,
+ 	return skb;
+ }
+ 
++static int dsa_tag_connect(struct dsa_switch *ds)
++{
++	struct dsa_tagger_data *tagger_data;
++
++	tagger_data = kzalloc(sizeof(*tagger_data), GFP_KERNEL);
++	if (!tagger_data)
++		return -ENOMEM;
++
++	ds->tagger_data = tagger_data;
++
++	return 0;
++}
++
++static void dsa_tag_disconnect(struct dsa_switch *ds)
++{
++	kfree(ds->tagger_data);
++	ds->tagger_data = NULL;
++}
++
+ #if IS_ENABLED(CONFIG_NET_DSA_TAG_DSA)
+ 
+ static struct sk_buff *dsa_xmit(struct sk_buff *skb, struct net_device *dev)
+@@ -343,6 +371,8 @@ static const struct dsa_device_ops dsa_netdev_ops = {
+ 	.proto	  = DSA_TAG_PROTO_DSA,
+ 	.xmit	  = dsa_xmit,
+ 	.rcv	  = dsa_rcv,
++	.connect  = dsa_tag_connect,
++	.disconnect = dsa_tag_disconnect,
+ 	.needed_headroom = DSA_HLEN,
  };
  
- static inline struct dsa_port *dsa_to_port(struct dsa_switch *ds, int p)
-@@ -1390,6 +1392,15 @@ void dsa_tag_drivers_register(struct dsa_tag_driver *dsa_tag_driver_array[],
- void dsa_tag_drivers_unregister(struct dsa_tag_driver *dsa_tag_driver_array[],
- 				unsigned int count);
+@@ -385,6 +415,8 @@ static const struct dsa_device_ops edsa_netdev_ops = {
+ 	.proto	  = DSA_TAG_PROTO_EDSA,
+ 	.xmit	  = edsa_xmit,
+ 	.rcv	  = edsa_rcv,
++	.connect  = dsa_tag_connect,
++	.disconnect = dsa_tag_disconnect,
+ 	.needed_headroom = EDSA_HLEN,
+ };
  
-+int dsa_switch_inband_tx(struct dsa_switch *ds, struct sk_buff *skb,
-+			 struct completion *completion, unsigned long timeout);
-+
-+static inline void dsa_switch_inband_complete(struct dsa_switch *ds, struct completion *completion)
-+{
-+	/* Custom completion? */
-+	complete(completion ?: &ds->inband_done);
-+}
-+
- #define dsa_tag_driver_module_drivers(__dsa_tag_drivers_array, __count)	\
- static int __init dsa_tag_driver_module_init(void)			\
- {									\
-diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
-index be7b320cda76..ad870494d68b 100644
---- a/net/dsa/dsa.c
-+++ b/net/dsa/dsa.c
-@@ -324,6 +324,23 @@ int dsa_switch_resume(struct dsa_switch *ds)
- EXPORT_SYMBOL_GPL(dsa_switch_resume);
- #endif
- 
-+int dsa_switch_inband_tx(struct dsa_switch *ds, struct sk_buff *skb,
-+			 struct completion *completion, unsigned long timeout)
-+{
-+	struct completion *com;
-+
-+	/* Custom completion? */
-+	com = completion ? : &ds->inband_done;
-+
-+	reinit_completion(com);
-+
-+	if (skb)
-+		dev_queue_xmit(skb);
-+
-+	return wait_for_completion_timeout(com, msecs_to_jiffies(timeout));
-+}
-+EXPORT_SYMBOL_GPL(dsa_switch_inband_tx);
-+
- static struct packet_type dsa_pack_type __read_mostly = {
- 	.type	= cpu_to_be16(ETH_P_XDSA),
- 	.func	= dsa_switch_rcv,
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index ed56c7a554b8..a048a6200789 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -874,6 +874,8 @@ static int dsa_switch_setup(struct dsa_switch *ds)
- 	if (ds->setup)
- 		return 0;
- 
-+	init_completion(&ds->inband_done);
-+
- 	/* Initialize ds->phys_mii_mask before registering the slave MDIO bus
- 	 * driver and before ops->setup() has run, since the switch drivers and
- 	 * the slave MDIO bus driver rely on these values for probing PHY
 -- 
 2.25.1
 
