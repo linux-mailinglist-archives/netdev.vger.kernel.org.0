@@ -2,92 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD4965B77A8
-	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 19:20:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FEAC5B77DA
+	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 19:27:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232817AbiIMRTN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 13:19:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44600 "EHLO
+        id S231331AbiIMR0h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 13:26:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232871AbiIMRSi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 13:18:38 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51DFF98378;
-        Tue, 13 Sep 2022 09:05:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1663085139; x=1694621139;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ID9kqtBpMi1grFQ2zHt3THgmOxztjFaV2cZKdBQla2Q=;
-  b=VI2R0pZks4R2BrztBK/lCpMSKCTg2U0gvfLKUbLz7piqXqlbi2piX1Ah
-   r6bb7KPbQrCGeQxFemXzO2bswUjFev6BIgZcxb+ppLtZtEnXhvEFFZQMA
-   jvkRz4OfYHkwmHZZOt9pn9ezSNngnpTvbtyK3aRUuFdilMVph95X6xB6y
-   zuqxdLexfTRvLdEpSwmdacSCFFbFAJv2mpya+dEaPNiyKeGK8BdCj2ii1
-   t97uAsNdumRncbVGBSWTP93jvKfNPp+G7Zg4O/WUXqNlLs8w3wAf46WCK
-   hzsTDDgAgTa5WxyBKryy76jln3gs/b7KvrlPz+0l5WCGZhzF4wry97Otc
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.93,313,1654585200"; 
-   d="scan'208";a="173660068"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Sep 2022 09:05:37 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 13 Sep 2022 09:05:35 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Tue, 13 Sep 2022 09:05:29 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
-        <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <olteanv@gmail.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <linux@armlinux.org.uk>, <Tristram.Ha@microchip.com>,
-        <arun.ramadoss@microchip.com>,
-        <prasanna.vengateshan@microchip.com>, <hkallweit1@gmail.com>
-Subject: [Patch net-next 5/5] net: phy: micrel: enable interrupt for ksz9477 phy
-Date:   Tue, 13 Sep 2022 21:34:27 +0530
-Message-ID: <20220913160427.12749-6-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220913160427.12749-1-arun.ramadoss@microchip.com>
-References: <20220913160427.12749-1-arun.ramadoss@microchip.com>
+        with ESMTP id S232973AbiIMR0K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 13:26:10 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E82AF7675B;
+        Tue, 13 Sep 2022 09:13:39 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id ge9so286216pjb.1;
+        Tue, 13 Sep 2022 09:13:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=WIjnJzlalSckDp9pFCpxMQjOJBvL82/YyMrE8wcCUgY=;
+        b=lTAJlyNFBwfjezsZ03CEWOEpeKJkjFnZWGydK8jAn/FaGf1a7kuedeLEJgp9WP9GHC
+         d/SAvA34Vd/6U0+2v8xs1hvZVdgFzRBMslEHjPZgQj4zA6893+yIO+yVQHpgU81NPokY
+         0qo43QILGPiut83fa8PSG+y6vUXLQe+8m1pKLaP3oJZQrgM+LC+M9GaxxBFr31zikndB
+         RvDFe11FcY1X5LT7ID4+x3G5qxAklbpqPIDXlzJ98yILWRTPyyZcBLbsvob2bACmD/L4
+         SicSEgGTPWoXS1NshMPQikRbaNfE0gcjMoj8TuGR1YeVB7pJJdBxwT2TC5yQfDhEy6m0
+         CVtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=WIjnJzlalSckDp9pFCpxMQjOJBvL82/YyMrE8wcCUgY=;
+        b=yTKTJAxHDJ8U9vsh5U+qff9RGdt/mPPZOHMq8wEGbJRnH0xJAGdcKBf0KK/ZI6Ityw
+         +BKuhx/rSgVC7hBfashQX8CALgRR8w70IbS7omqH0VcXDXF8A3ylQvT3X8R7mOFEYXxj
+         izOakVkHH+bu25Q5SxThxpm13/mB2D0ODiqWiO7dPWw8StNISmAaxQoepHJxlsznv9Jp
+         nxONn0SSJ5+70v5/13YXK8NPcoIpcyF/ynqKmH702BPEWt68m9TrOPA+N5XR6d8GxWqf
+         7QjOF06198pK6DEsCNSP6LPseLPQLvi7QLH3FeqcFxJVfNfYvnnpIc0uig77Ygwt+iFR
+         mqyg==
+X-Gm-Message-State: ACgBeo2UHkDjIS6lSIgmXU/Iu3rtGZkWWUv6aF4AykIbXNgYkm96b49u
+        iDMch0X+SzLy+X6X+P3AVVunhbV2Oqo=
+X-Google-Smtp-Source: AA6agR6Nb11vn7vxLfz1Soi3h4XadGrMtG2mwC1+mLEcle1kVWQgRazJqQhq7dCeQ9vRtFSH82BHlQ==
+X-Received: by 2002:a17:902:ea11:b0:176:b283:9596 with SMTP id s17-20020a170902ea1100b00176b2839596mr31861623plg.69.1663085619415;
+        Tue, 13 Sep 2022 09:13:39 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id o188-20020a625ac5000000b005289a50e4c2sm8093794pfb.23.2022.09.13.09.13.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Sep 2022 09:13:38 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: cui.jinpeng2@zte.com.cn
+To:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net
+Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jinpeng Cui <cui.jinpeng2@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH linux-next] net: sched: act_ct: remove redundant variable err
+Date:   Tue, 13 Sep 2022 16:13:26 +0000
+Message-Id: <20220913161326.21399-1-cui.jinpeng2@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Config_intr and handle_interrupt are enabled for ksz9477 phy. It is
-similar to all other phys in the micrel phys.
+From: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Return value directly from pskb_trim_rcsum() instead of
+getting value from redundant variable err.
+
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
 ---
- drivers/net/phy/micrel.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/sched/act_ct.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index 7b8c5c8d013e..09f2bef5d96c 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -3191,6 +3191,8 @@ static struct phy_driver ksphy_driver[] = {
- 	.name		= "Microchip KSZ9477",
- 	/* PHY_GBIT_FEATURES */
- 	.config_init	= kszphy_config_init,
-+	.config_intr	= kszphy_config_intr,
-+	.handle_interrupt = kszphy_handle_interrupt,
- 	.suspend	= genphy_suspend,
- 	.resume		= genphy_resume,
- } };
+diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+index 4dd3fac42504..9d19710835b0 100644
+--- a/net/sched/act_ct.c
++++ b/net/sched/act_ct.c
+@@ -696,7 +696,6 @@ static bool tcf_ct_skb_nfct_cached(struct net *net, struct sk_buff *skb,
+ static int tcf_ct_skb_network_trim(struct sk_buff *skb, int family)
+ {
+ 	unsigned int len;
+-	int err;
+ 
+ 	switch (family) {
+ 	case NFPROTO_IPV4:
+@@ -710,9 +709,7 @@ static int tcf_ct_skb_network_trim(struct sk_buff *skb, int family)
+ 		len = skb->len;
+ 	}
+ 
+-	err = pskb_trim_rcsum(skb, len);
+-
+-	return err;
++	return pskb_trim_rcsum(skb, len);
+ }
+ 
+ static u8 tcf_ct_skb_nf_family(struct sk_buff *skb)
 -- 
-2.36.1
+2.25.1
 
