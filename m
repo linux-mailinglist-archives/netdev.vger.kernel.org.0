@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E3455B6BD1
-	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 12:43:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33A4E5B6BD4
+	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 12:43:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231678AbiIMKnq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 06:43:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46670 "EHLO
+        id S231664AbiIMKnr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 06:43:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231691AbiIMKni (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 06:43:38 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ABBE5E306
-        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 03:43:37 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id o2so17220837lfc.10
-        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 03:43:37 -0700 (PDT)
+        with ESMTP id S230470AbiIMKnj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 06:43:39 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79BBE5D130
+        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 03:43:38 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id o2so17220894lfc.10
+        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 03:43:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=/OApzMapfMzOLbd6sKsMHZFgaTEweXQQvS5umrNIFN4=;
-        b=pr7x0EfbzC9sQ9OnoF0A8FbBUJTb7A0J0Lxa4CDDER+J+pMlwDpGoO9WfPQ2eoEWNL
-         H2n7JpXTOu/t1lqbEE0E+fQef/L5YJsPvTB0MHJF2Fo4tOl8Am/JHFvlYzlnYdtPO+aJ
-         a/QnS2DU6nAXV9D9xCNYo1exW20FgjDwsNA9zbwCIhtE6e+4mEyZIxHdKjq3JvR2sS74
-         PRC9h6rKwi17Idf5BMPbuPPJL+mj4FywY2PxawG9OOJATc1ux2KljtCdHC423zHlTZ41
-         kV0QW+t5MqKEqCcu+YnPln47a4076Ic62krQVxGFOnB9RU85vkUEaQtDpMzfnyC7teuz
-         Zp0A==
+        bh=O651eX+vdQDwumo6UV5G0Dw+0xJjVRxHZkQh9754BII=;
+        b=X0xapZw1vPZtoIJFd/MD3r0REvyoshq9SqNPhhXhDbyzrPLBZNFjX4TuCoFe69pxKs
+         kbHkqEkz1ovi3Wa1FXlIU67Q9t4ZHlHLsi1mV9wRQvH6zx4hSi+B51ucDhIfS2YLgAcG
+         ebDCziaUOnax4Jhq6JymTkw3d9n8nhoz/1RyAIgpm4PoXI1H0xCCU3J6FCMN6Zaxqqah
+         595Qfr/n5KCZS1pJZm8b98lEKIoT/jgSSX3ep8RRl9MJUArYNbXKH2aGQlkAMK+v2BOA
+         sXB7zgXwx+EBgaGQFz5UfwhiAGnpYe5D6AQMZsU2ylH5smVMc7dhixDomcnkHTVbZx01
+         wIZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=/OApzMapfMzOLbd6sKsMHZFgaTEweXQQvS5umrNIFN4=;
-        b=EgvBNToJCalVDvapJ/CiglCSXUfYlkTb3ryg0iPSgi7nFBiEH01YamEueRxxwP0WmR
-         IiLRF0Q2Zth22seDMmhuZbpjbrsr5ZJ2iH9CTzRSwCLqDMkIwuhzkVWgzK+4bgj+KfoI
-         GS/d8wKZ7KvkZ++RBtCSj0un7jcmSj36s/yrc3SjwMJI/gXJSOUr3y5D81TPaDzgAcel
-         dletaeDehQ1ps6CCcBmjEDpKAWSk1tnJovlIsI2LLvS6pFEI8kd4fLvdHQWMSbwOxvGK
-         of9Mo2iG44+QSMxQo3/1EESoAiiMK8k4jncFwuzq9UGfUJzVtVOUEGRdnXmtQln/rXSS
-         1Vzw==
-X-Gm-Message-State: ACgBeo2jp3K7gUYST1RdCrNuHAFZ57Di/N4su71l17+9Z3OHz3GLpXL2
-        qdVPlItqF2Iw3cjOYt5WT4jeqwTZcEpaChAK
-X-Google-Smtp-Source: AA6agR4Cu3OTInePEXL871AcX1SJL4p4XbbPvFG+n4dk0JxIeo5iRnM5w9pCLe3rsD1CJIvTSDdT/Q==
-X-Received: by 2002:a05:6512:3f05:b0:497:9e06:255b with SMTP id y5-20020a0565123f0500b004979e06255bmr9685805lfa.175.1663065815705;
-        Tue, 13 Sep 2022 03:43:35 -0700 (PDT)
+        bh=O651eX+vdQDwumo6UV5G0Dw+0xJjVRxHZkQh9754BII=;
+        b=KY1m50a2cRX6d/ppHspAGyRCOSMN+9zXaRcbWaOi8TAsDmVNfZiTNSXQG+viz3qDUf
+         lWvb1QCGo2aX19Q4fMBFHHE4V01kvs6DO5CwlOoVpc5lWxPBOhgzCb9bI+zmpdvPHBdf
+         dNj5aDrF/HehXo6PbTfEawh9RXWWQJATlTUiI9o3cUhD2cJoA0jYbxhJR1X3Fw+3NMzS
+         UGCF5IXklD9UR4gHIWNkq9gHhnBs+6IZTIPrrbE+vHhiGdpGk9RAKHgXgcCAAgBrkaIJ
+         6335k+xhKh4PIumhuPxXCuj5S3luoSVXlSV5qTYiY/fCNOZeS2mm280XnUkiE6LWlJrL
+         ok9A==
+X-Gm-Message-State: ACgBeo3biUNpsAI+MUcP3rO3soe5ivEeCPp40pTYwTrCeOz5t7IosH2/
+        yfeneYexp9DqhxoJVldKzF6ghsi19vgQsgR5
+X-Google-Smtp-Source: AA6agR6XgTetaEHJg/jb6ZkPwP+Xr/Dqing41K8m/dkL4kkJZ9zxiyTIyMpRylGzoQ4IvvdLsuP/cw==
+X-Received: by 2002:a05:6512:3992:b0:493:e8c5:638c with SMTP id j18-20020a056512399200b00493e8c5638cmr10131151lfu.492.1663065816548;
+        Tue, 13 Sep 2022 03:43:36 -0700 (PDT)
 Received: from wse-c0089.westermo.com (h-98-128-229-160.NA.cust.bahnhof.se. [98.128.229.160])
-        by smtp.gmail.com with ESMTPSA id i2-20020a2ea362000000b0026bf27c7056sm1018946ljn.67.2022.09.13.03.43.34
+        by smtp.gmail.com with ESMTPSA id i2-20020a2ea362000000b0026bf27c7056sm1018946ljn.67.2022.09.13.03.43.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Sep 2022 03:43:35 -0700 (PDT)
+        Tue, 13 Sep 2022 03:43:36 -0700 (PDT)
 From:   Mattias Forsblad <mattias.forsblad@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -59,9 +59,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, linux@armlinux.org.uk,
         Mattias Forsblad <mattias.forsblad@gmail.com>
-Subject: [PATCH net-next v10 5/6] net: dsa: mv88e6xxx: rmon: Use RMU for reading RMON data
-Date:   Tue, 13 Sep 2022 12:43:19 +0200
-Message-Id: <20220913104320.471673-6-mattias.forsblad@gmail.com>
+Subject: [PATCH net-next v10 6/6] net: dsa: qca8k: Use new convenience functions
+Date:   Tue, 13 Sep 2022 12:43:20 +0200
+Message-Id: <20220913104320.471673-7-mattias.forsblad@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220913104320.471673-1-mattias.forsblad@gmail.com>
 References: <20220913104320.471673-1-mattias.forsblad@gmail.com>
@@ -77,125 +77,213 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the Remote Management Unit for efficiently accessing
-the RMON data.
+Use the new common convenience functions for sending and
+waiting for frames.
 
 Signed-off-by: Mattias Forsblad <mattias.forsblad@gmail.com>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 36 +++++++++++++++++++++++++-------
- drivers/net/dsa/mv88e6xxx/chip.h |  2 ++
- drivers/net/dsa/mv88e6xxx/smi.c  |  3 +++
- 3 files changed, 33 insertions(+), 8 deletions(-)
+ drivers/net/dsa/qca/qca8k-8xxx.c | 61 +++++++++-----------------------
+ 1 file changed, 17 insertions(+), 44 deletions(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 294bf9bbaf3f..c9cfe935715c 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -1234,16 +1234,30 @@ static int mv88e6xxx_stats_get_stats(struct mv88e6xxx_chip *chip, int port,
- 				     u16 bank1_select, u16 histogram)
- {
- 	struct mv88e6xxx_hw_stat *stat;
-+	int offset = 0;
-+	u64 high;
- 	int i, j;
+diff --git a/drivers/net/dsa/qca/qca8k-8xxx.c b/drivers/net/dsa/qca/qca8k-8xxx.c
+index c181346388a4..4e9bc103c0a5 100644
+--- a/drivers/net/dsa/qca/qca8k-8xxx.c
++++ b/drivers/net/dsa/qca/qca8k-8xxx.c
+@@ -160,7 +160,7 @@ static void qca8k_rw_reg_ack_handler(struct dsa_switch *ds, struct sk_buff *skb)
+ 			       QCA_HDR_MGMT_DATA2_LEN);
+ 	}
  
- 	for (i = 0, j = 0; i < ARRAY_SIZE(mv88e6xxx_hw_stats); i++) {
- 		stat = &mv88e6xxx_hw_stats[i];
- 		if (stat->type & types) {
--			mv88e6xxx_reg_lock(chip);
--			data[j] = _mv88e6xxx_get_ethtool_stat(chip, stat, port,
--							      bank1_select,
--							      histogram);
--			mv88e6xxx_reg_unlock(chip);
-+			if (mv88e6xxx_rmu_available(chip) &&
-+			    !(stat->type & STATS_TYPE_PORT)) {
-+				if (stat->type & STATS_TYPE_BANK1)
-+					offset = 32;
-+
-+				data[j] = chip->ports[port].rmu_raw_stats[stat->reg + offset];
-+				if (stat->size == 8) {
-+					high = chip->ports[port].rmu_raw_stats[stat->reg + offset
-+							+ 1];
-+					data[j] += (high << 32);
-+				}
-+			} else {
-+				mv88e6xxx_reg_lock(chip);
-+				data[j] = _mv88e6xxx_get_ethtool_stat(chip, stat, port,
-+								      bank1_select, histogram);
-+				mv88e6xxx_reg_unlock(chip);
-+			}
- 
- 			j++;
- 		}
-@@ -1312,10 +1326,9 @@ static void mv88e6xxx_get_stats(struct mv88e6xxx_chip *chip, int port,
- 	mv88e6xxx_reg_unlock(chip);
+-	complete(&mgmt_eth_data->rw_done);
++	dsa_switch_inband_complete(ds, &mgmt_eth_data->rw_done);
  }
  
--static void mv88e6xxx_get_ethtool_stats(struct dsa_switch *ds, int port,
--					uint64_t *data)
-+void mv88e6xxx_get_ethtool_stats_mdio(struct mv88e6xxx_chip *chip, int port,
-+				      uint64_t *data)
+ static struct sk_buff *qca8k_alloc_mdio_header(enum mdio_cmd cmd, u32 reg, u32 *val,
+@@ -228,6 +228,7 @@ static void qca8k_mdio_header_fill_seq_num(struct sk_buff *skb, u32 seq_num)
+ static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
  {
--	struct mv88e6xxx_chip *chip = ds->priv;
+ 	struct qca8k_mgmt_eth_data *mgmt_eth_data = &priv->mgmt_eth_data;
++	struct dsa_switch *ds = priv->ds;
+ 	struct sk_buff *skb;
+ 	bool ack;
+ 	int ret;
+@@ -248,17 +249,12 @@ static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
+ 
+ 	skb->dev = priv->mgmt_master;
+ 
+-	reinit_completion(&mgmt_eth_data->rw_done);
+-
+ 	/* Increment seq_num and set it in the mdio pkt */
+ 	mgmt_eth_data->seq++;
+ 	qca8k_mdio_header_fill_seq_num(skb, mgmt_eth_data->seq);
+ 	mgmt_eth_data->ack = false;
+ 
+-	dev_queue_xmit(skb);
+-
+-	ret = wait_for_completion_timeout(&mgmt_eth_data->rw_done,
+-					  msecs_to_jiffies(QCA8K_ETHERNET_TIMEOUT));
++	ret = dsa_switch_inband_tx(ds, skb, &mgmt_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
+ 
+ 	*val = mgmt_eth_data->data[0];
+ 	if (len > QCA_HDR_MGMT_DATA1_LEN)
+@@ -280,6 +276,7 @@ static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
+ static int qca8k_write_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
+ {
+ 	struct qca8k_mgmt_eth_data *mgmt_eth_data = &priv->mgmt_eth_data;
++	struct dsa_switch *ds = priv->ds;
+ 	struct sk_buff *skb;
+ 	bool ack;
+ 	int ret;
+@@ -300,17 +297,12 @@ static int qca8k_write_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
+ 
+ 	skb->dev = priv->mgmt_master;
+ 
+-	reinit_completion(&mgmt_eth_data->rw_done);
+-
+ 	/* Increment seq_num and set it in the mdio pkt */
+ 	mgmt_eth_data->seq++;
+ 	qca8k_mdio_header_fill_seq_num(skb, mgmt_eth_data->seq);
+ 	mgmt_eth_data->ack = false;
+ 
+-	dev_queue_xmit(skb);
+-
+-	ret = wait_for_completion_timeout(&mgmt_eth_data->rw_done,
+-					  msecs_to_jiffies(QCA8K_ETHERNET_TIMEOUT));
++	ret = dsa_switch_inband_tx(ds, skb, &mgmt_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
+ 
+ 	ack = mgmt_eth_data->ack;
+ 
+@@ -441,24 +433,21 @@ static struct regmap_config qca8k_regmap_config = {
+ };
+ 
+ static int
+-qca8k_phy_eth_busy_wait(struct qca8k_mgmt_eth_data *mgmt_eth_data,
++qca8k_phy_eth_busy_wait(struct qca8k_priv *priv,
+ 			struct sk_buff *read_skb, u32 *val)
+ {
++	struct qca8k_mgmt_eth_data *mgmt_eth_data = &priv->mgmt_eth_data;
+ 	struct sk_buff *skb = skb_copy(read_skb, GFP_KERNEL);
++	struct dsa_switch *ds = priv->ds;
+ 	bool ack;
  	int ret;
  
- 	mv88e6xxx_reg_lock(chip);
-@@ -1327,7 +1340,14 @@ static void mv88e6xxx_get_ethtool_stats(struct dsa_switch *ds, int port,
- 		return;
+-	reinit_completion(&mgmt_eth_data->rw_done);
+-
+ 	/* Increment seq_num and set it in the copy pkt */
+ 	mgmt_eth_data->seq++;
+ 	qca8k_mdio_header_fill_seq_num(skb, mgmt_eth_data->seq);
+ 	mgmt_eth_data->ack = false;
  
- 	mv88e6xxx_get_stats(chip, port, data);
-+}
-+
-+static void mv88e6xxx_get_ethtool_stats(struct dsa_switch *ds, int port,
-+					uint64_t *data)
-+{
-+	struct mv88e6xxx_chip *chip = ds->priv;
+-	dev_queue_xmit(skb);
+-
+-	ret = wait_for_completion_timeout(&mgmt_eth_data->rw_done,
+-					  QCA8K_ETHERNET_TIMEOUT);
++	ret = dsa_switch_inband_tx(ds, skb, &mgmt_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
  
-+	chip->smi_ops->get_rmon(chip, port, data);
+ 	ack = mgmt_eth_data->ack;
+ 
+@@ -480,6 +469,7 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
+ 	struct sk_buff *write_skb, *clear_skb, *read_skb;
+ 	struct qca8k_mgmt_eth_data *mgmt_eth_data;
+ 	u32 write_val, clear_val = 0, val;
++	struct dsa_switch *ds = priv->ds;
+ 	struct net_device *mgmt_master;
+ 	int ret, ret1;
+ 	bool ack;
+@@ -540,17 +530,12 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
+ 	clear_skb->dev = mgmt_master;
+ 	write_skb->dev = mgmt_master;
+ 
+-	reinit_completion(&mgmt_eth_data->rw_done);
+-
+ 	/* Increment seq_num and set it in the write pkt */
+ 	mgmt_eth_data->seq++;
+ 	qca8k_mdio_header_fill_seq_num(write_skb, mgmt_eth_data->seq);
+ 	mgmt_eth_data->ack = false;
+ 
+-	dev_queue_xmit(write_skb);
+-
+-	ret = wait_for_completion_timeout(&mgmt_eth_data->rw_done,
+-					  QCA8K_ETHERNET_TIMEOUT);
++	ret = dsa_switch_inband_tx(ds, write_skb, &mgmt_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
+ 
+ 	ack = mgmt_eth_data->ack;
+ 
+@@ -569,7 +554,7 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
+ 	ret = read_poll_timeout(qca8k_phy_eth_busy_wait, ret1,
+ 				!(val & QCA8K_MDIO_MASTER_BUSY), 0,
+ 				QCA8K_BUSY_WAIT_TIMEOUT * USEC_PER_MSEC, false,
+-				mgmt_eth_data, read_skb, &val);
++				priv, read_skb, &val);
+ 
+ 	if (ret < 0 && ret1 < 0) {
+ 		ret = ret1;
+@@ -577,17 +562,13 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
+ 	}
+ 
+ 	if (read) {
+-		reinit_completion(&mgmt_eth_data->rw_done);
+-
+ 		/* Increment seq_num and set it in the read pkt */
+ 		mgmt_eth_data->seq++;
+ 		qca8k_mdio_header_fill_seq_num(read_skb, mgmt_eth_data->seq);
+ 		mgmt_eth_data->ack = false;
+ 
+-		dev_queue_xmit(read_skb);
+-
+-		ret = wait_for_completion_timeout(&mgmt_eth_data->rw_done,
+-						  QCA8K_ETHERNET_TIMEOUT);
++		ret = dsa_switch_inband_tx(ds, read_skb, &mgmt_eth_data->rw_done,
++					   QCA8K_ETHERNET_TIMEOUT);
+ 
+ 		ack = mgmt_eth_data->ack;
+ 
+@@ -606,17 +587,12 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
+ 		kfree_skb(read_skb);
+ 	}
+ exit:
+-	reinit_completion(&mgmt_eth_data->rw_done);
+-
+ 	/* Increment seq_num and set it in the clear pkt */
+ 	mgmt_eth_data->seq++;
+ 	qca8k_mdio_header_fill_seq_num(clear_skb, mgmt_eth_data->seq);
+ 	mgmt_eth_data->ack = false;
+ 
+-	dev_queue_xmit(clear_skb);
+-
+-	wait_for_completion_timeout(&mgmt_eth_data->rw_done,
+-				    QCA8K_ETHERNET_TIMEOUT);
++	ret = dsa_switch_inband_tx(ds, clear_skb, &mgmt_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
+ 
+ 	mutex_unlock(&mgmt_eth_data->mutex);
+ 
+@@ -1528,7 +1504,7 @@ static void qca8k_mib_autocast_handler(struct dsa_switch *ds, struct sk_buff *sk
+ exit:
+ 	/* Complete on receiving all the mib packet */
+ 	if (refcount_dec_and_test(&mib_eth_data->port_parsed))
+-		complete(&mib_eth_data->rw_done);
++		dsa_switch_inband_complete(ds, &mib_eth_data->rw_done);
  }
  
- static int mv88e6xxx_get_regs_len(struct dsa_switch *ds, int port)
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index ea1789feeacf..5459037067e6 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.h
-+++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -809,6 +809,8 @@ int mv88e6xxx_wait_mask(struct mv88e6xxx_chip *chip, int addr, int reg,
- int mv88e6xxx_wait_bit(struct mv88e6xxx_chip *chip, int addr, int reg,
- 		       int bit, int val);
- struct mii_bus *mv88e6xxx_default_mdio_bus(struct mv88e6xxx_chip *chip);
-+void mv88e6xxx_get_ethtool_stats_mdio(struct mv88e6xxx_chip *chip, int port,
-+				      uint64_t *data);
+ static int
+@@ -1543,8 +1519,6 @@ qca8k_get_ethtool_stats_eth(struct dsa_switch *ds, int port, u64 *data)
  
- static inline void mv88e6xxx_reg_lock(struct mv88e6xxx_chip *chip)
- {
-diff --git a/drivers/net/dsa/mv88e6xxx/smi.c b/drivers/net/dsa/mv88e6xxx/smi.c
-index a990271b7482..ae805c449b85 100644
---- a/drivers/net/dsa/mv88e6xxx/smi.c
-+++ b/drivers/net/dsa/mv88e6xxx/smi.c
-@@ -83,6 +83,7 @@ static int mv88e6xxx_smi_direct_wait(struct mv88e6xxx_chip *chip,
- static const struct mv88e6xxx_bus_ops mv88e6xxx_smi_direct_ops = {
- 	.read = mv88e6xxx_smi_direct_read,
- 	.write = mv88e6xxx_smi_direct_write,
-+	.get_rmon = mv88e6xxx_get_ethtool_stats_mdio,
- };
+ 	mutex_lock(&mib_eth_data->mutex);
  
- static int mv88e6xxx_smi_dual_direct_read(struct mv88e6xxx_chip *chip,
-@@ -100,6 +101,7 @@ static int mv88e6xxx_smi_dual_direct_write(struct mv88e6xxx_chip *chip,
- static const struct mv88e6xxx_bus_ops mv88e6xxx_smi_dual_direct_ops = {
- 	.read = mv88e6xxx_smi_dual_direct_read,
- 	.write = mv88e6xxx_smi_dual_direct_write,
-+	.get_rmon = mv88e6xxx_get_ethtool_stats_mdio,
- };
+-	reinit_completion(&mib_eth_data->rw_done);
+-
+ 	mib_eth_data->req_port = dp->index;
+ 	mib_eth_data->data = data;
+ 	refcount_set(&mib_eth_data->port_parsed, QCA8K_NUM_PORTS);
+@@ -1562,8 +1536,7 @@ qca8k_get_ethtool_stats_eth(struct dsa_switch *ds, int port, u64 *data)
+ 	if (ret)
+ 		goto exit;
  
- /* Offset 0x00: SMI Command Register
-@@ -166,6 +168,7 @@ static const struct mv88e6xxx_bus_ops mv88e6xxx_smi_indirect_ops = {
- 	.read = mv88e6xxx_smi_indirect_read,
- 	.write = mv88e6xxx_smi_indirect_write,
- 	.init = mv88e6xxx_smi_indirect_init,
-+	.get_rmon = mv88e6xxx_get_ethtool_stats_mdio,
- };
+-	ret = wait_for_completion_timeout(&mib_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
+-
++	ret = dsa_switch_inband_tx(ds, NULL, &mib_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
+ exit:
+ 	mutex_unlock(&mib_eth_data->mutex);
  
- int mv88e6xxx_smi_init(struct mv88e6xxx_chip *chip,
 -- 
 2.25.1
 
