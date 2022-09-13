@@ -2,107 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D9D35B7CDD
-	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 00:05:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2616F5B7CFB
+	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 00:19:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229614AbiIMWEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 18:04:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59126 "EHLO
+        id S229666AbiIMWTr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 18:19:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229665AbiIMWEo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 18:04:44 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3272AB48D
-        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 15:04:43 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id q14-20020a6557ce000000b0041da9c3c244so6382639pgr.22
-        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 15:04:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date;
-        bh=0/mpIJ2sZEnqGQU+eeGOiHwYV7wmza8JoOszk+ZskGw=;
-        b=La2UwnxAwzAIGGTRGxRY2aTrW3UyWe1vYGqQwnejHW/RqXhDz1yh045Mn5/TmsTyFn
-         PREzALzxxhe7wqsvV2a1r5msIKw6sh1z8ZWKRJ5DNUVYmntdMUA9YrYV6j06/m7A080i
-         epGrr40YmEFv3o+fBQzzB1Fpr3Qy9Iky4VNXrVsFtYVHU3yNQpO1m5j53EiNBDM0dpz8
-         nIxflgGMf6LG82a3G3gUhuBwzMrWb9jsiGf4tFbXP9duQ1vMSiKDLe8GBCuZ7atCjw+E
-         Keh51/YMhMoHFIqCkDl8sZLYfh3Kt73sC5xg2D6iUPAyZJ9hbWyA3JmmMvVIsSfHi40e
-         2WJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date;
-        bh=0/mpIJ2sZEnqGQU+eeGOiHwYV7wmza8JoOszk+ZskGw=;
-        b=6sEad95YD+jG87xHuwfli7o0PoreDIOrljylEJE4mZ1l5eQi0InyE6twsNYcM+d1Nm
-         xyqakAIF2ZLEeGNAKNKB90QZqJnUx98fIUl+0er4SjcUk8rOd0CVvmJIxk4Eu69TVZvd
-         r6+tOmGb/fYIMO+FEPZW1eCur05oMQJ1QfmOaMFGtgv5ChxDOyNPJnRVQ+YGmIQIFUij
-         4sCo+6Ap/3EetPjI3+QH4YKRJcXbvk3nMQpuuvxvOW9B2C+ertYgGe2XOj8MQ+UWNDZU
-         UDJAoLwBJn3s83U7OY3aEQ+Hb8InaUdVw5xKjv5/djwdJKSizp0J8FGFI/vQH3K+gNDn
-         +nUg==
-X-Gm-Message-State: ACrzQf2mBMSZ90n1UZbKvYmutYNkIc1GL28HnJOfzYLyqTFzL2t+EzLZ
-        7vNMjO3Ut7cNPUFqo/Dsx6+oamuQT8TL
-X-Google-Smtp-Source: AMsMyM67wH92vPtBbRZur6xn/xAJQLsTNPKQnIQuXSlrC9cCXreVggMRolS4xlStq9OL3cYYQ8CiMAMqWSAf
-X-Received: from jiangzp-glinux-dev.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:4c52])
- (user=jiangzp job=sendgmr) by 2002:a17:90b:1b12:b0:200:5dbd:adff with SMTP id
- nu18-20020a17090b1b1200b002005dbdadffmr1364786pjb.43.1663106682689; Tue, 13
- Sep 2022 15:04:42 -0700 (PDT)
-Date:   Tue, 13 Sep 2022 15:04:33 -0700
-In-Reply-To: <20220913220433.3308871-1-jiangzp@google.com>
-Mime-Version: 1.0
-References: <20220913220433.3308871-1-jiangzp@google.com>
-X-Mailer: git-send-email 2.37.2.789.g6183377224-goog
-Message-ID: <20220913150420.kernel.v1.1.I54824fdfb8de716a1d7d9eccecbbfb6e45b116a8@changeid>
-Subject: [kernel PATCH v1 1/1] Bluetooth: hci_sync: allow advertising during
- active scan without privacy
-From:   Zhengping Jiang <jiangzp@google.com>
-To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org
-Cc:     Zhengping Jiang <jiangzp@google.com>,
+        with ESMTP id S229601AbiIMWTo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 18:19:44 -0400
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E371D18B0F;
+        Tue, 13 Sep 2022 15:19:39 -0700 (PDT)
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28DLjgDe004063;
+        Tue, 13 Sep 2022 22:19:23 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=yzzZB1SxLFlIvl1Xn7ozpnDBNdbA2+CmLlEXeuuFAdc=;
+ b=eizo4ukjNNJrHLlrqwZuBVI7en3QTz0RVVFrrNwGb88hJlVdyUB8DqMUDtM0MG/4Rmf2
+ J1GJ6oPyDkmsqhzqo1Ley5kKMtNEtuvd9xleVBCK5znZDdPdfpLHENcl0b/dI4dJ76vE
+ GUF9I7Zvg2NOOMu1JEoSmF1IebQGVZpvISNfK7yuc1e8otq5DGb3DkiPSv0SlFrf46y7
+ wY9E+KC91pyfd96JhlbiCQTktlA+0THj8jPYOa203qBLRaAuy9g58MCPycmNbayZn4Re
+ SQpJXF+JRQJJ+i9/FFy+mY0m17PNsFy4PlGWbgf2mLRnaM7us+O62wbIBH2roDbxZjhj hA== 
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3jjxyu8h10-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 13 Sep 2022 22:19:23 +0000
+Received: from pps.filterd (NALASPPMTA02.qualcomm.com [127.0.0.1])
+        by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 28DMJNDl007615;
+        Tue, 13 Sep 2022 22:19:23 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by NALASPPMTA02.qualcomm.com (PPS) with ESMTPS id 3jj1uby63r-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 13 Sep 2022 22:19:23 +0000
+Received: from NALASPPMTA02.qualcomm.com (NALASPPMTA02.qualcomm.com [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 28DMJMtM007607;
+        Tue, 13 Sep 2022 22:19:22 GMT
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+        by NALASPPMTA02.qualcomm.com (PPS) with ESMTPS id 28DMJMAF007606
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 13 Sep 2022 22:19:22 +0000
+Received: from [10.110.52.115] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Tue, 13 Sep
+ 2022 15:19:21 -0700
+Message-ID: <9928eb0a-ffa2-8798-315c-1de6c2de20e4@quicinc.com>
+Date:   Tue, 13 Sep 2022 15:19:20 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [PATCH 0/4] Make QMI message rules const
+Content-Language: en-US
+To:     Alex Elder <elder@ieee.org>, Alex Elder <elder@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Kalle Valo <kvalo@kernel.org>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>
+CC:     <linux-arm-msm@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-remoteproc@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220912232526.27427-1-quic_jjohnson@quicinc.com>
+ <f2fa19a1-4854-b270-0776-38993dece03f@ieee.org>
+ <5b0543dc-4db8-aa33-d469-0e185c82b221@quicinc.com>
+ <ac428312-745c-490e-dfb4-2208913c27c1@ieee.org>
+From:   Jeff Johnson <quic_jjohnson@quicinc.com>
+In-Reply-To: <ac428312-745c-490e-dfb4-2208913c27c1@ieee.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: Rjs1ao0nM8fb0h5knp2-TA3UDknUCU8n
+X-Proofpoint-ORIG-GUID: Rjs1ao0nM8fb0h5knp2-TA3UDknUCU8n
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
+ definitions=2022-09-13_10,2022-09-13_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=919 bulkscore=0
+ clxscore=1015 adultscore=0 mlxscore=0 suspectscore=0 malwarescore=0
+ spamscore=0 impostorscore=0 priorityscore=1501 phishscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2208220000 definitions=main-2209130103
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Address resolution will be paused during active scan to allow any
-advertising reports reach the host. If LL privacy is enabled,
-advertising will rely on the controller to generate new RPA.
+On 9/13/2022 1:21 PM, Alex Elder wrote:
+> I cherry-picked the one commit, and downloaded the series
+> and found no new build warnings.  Checkpatch would prefer
+> you used "ff6d365898d4" rather than "ff6d365898d" for the
+> commit ID, but that's OK.
 
-If host is not using RPA, there is no need to stop advertising during
-active scan because there is no need to generate RPA in the controller.
+I'll clean that up in a v2
 
-Signed-off-by: Zhengping Jiang <jiangzp@google.com>
----
+> 
+> Anyway, for the whole series:
+> 
+> Reviewed-by: Alex Elder <elder@linaro.org>
 
-Changes in v1:
-- Check privacy flag when disable advertising
+Thanks!
 
- net/bluetooth/hci_sync.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-index 41b6d19c70b06..422f7c6911d9f 100644
---- a/net/bluetooth/hci_sync.c
-+++ b/net/bluetooth/hci_sync.c
-@@ -5351,7 +5351,7 @@ static int hci_active_scan_sync(struct hci_dev *hdev, uint16_t interval)
- 	/* Pause advertising since active scanning disables address resolution
- 	 * which advertising depend on in order to generate its RPAs.
- 	 */
--	if (use_ll_privacy(hdev)) {
-+	if (use_ll_privacy(hdev) && hci_dev_test_flag(hdev, HCI_PRIVACY)) {
- 		err = hci_pause_advertising_sync(hdev);
- 		if (err) {
- 			bt_dev_err(hdev, "pause advertising failed: %d", err);
--- 
-2.37.2.789.g6183377224-goog
 
