@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EE555B718C
-	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 16:44:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E40DB5B72E5
+	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 17:05:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229933AbiIMOod (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 10:44:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58298 "EHLO
+        id S232401AbiIMO7p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 10:59:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232186AbiIMOma (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 10:42:30 -0400
+        with ESMTP id S234811AbiIMO6Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 10:58:25 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2277C6E2F8;
-        Tue, 13 Sep 2022 07:22:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FAE972ED7;
+        Tue, 13 Sep 2022 07:28:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 946D1614B4;
-        Tue, 13 Sep 2022 14:22:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F581C433D6;
-        Tue, 13 Sep 2022 14:22:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BCD0614DF;
+        Tue, 13 Sep 2022 14:25:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED121C433C1;
+        Tue, 13 Sep 2022 14:25:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1663078968;
+        s=korg; t=1663079156;
         bh=wgRZma+e4X5kCGxfMKh1BxeU5ur5lm00SFY+zuuMEMI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S8rvj3AXknWMYQUZC6KaPcz4pTUlOSmBgJHq5GoZQLq6cj93Cxk1j2p6WOO+7aPa8
-         K6bzKMMJkZBOnv1xzoa4TzDN7oYmyV57+VdmzbJeN3pFWs+icpbxakIOehXVqqoli0
-         N+RzOXtB/P/co9EUVCeZPh5smLGDPU5a3o/3AyIU=
+        b=FXlvOu2Btte/WRKzQqz0dUYWWn9OLN74zBYGnqyJuke8zWzwZ92Ds4KlQJ7HaYTHT
+         66oQOgTcE+RpLl5yrCjWx9e7rTXff0IZ+GAVi/sEf0todN5fP2S7q6nutGUOUgL0LR
+         3GyIGlCdmIfXt+TQ6pG0VdrnB/GyLuiRjEySFxG4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -38,12 +38,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
         stable <stable@kernel.org>
-Subject: [PATCH 5.10 08/79] net: mvpp2: debugfs: fix memory leak when using debugfs_lookup()
-Date:   Tue, 13 Sep 2022 16:04:13 +0200
-Message-Id: <20220913140350.695792494@linuxfoundation.org>
+Subject: [PATCH 5.4 003/108] net: mvpp2: debugfs: fix memory leak when using debugfs_lookup()
+Date:   Tue, 13 Sep 2022 16:05:34 +0200
+Message-Id: <20220913140353.699050835@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220913140350.291927556@linuxfoundation.org>
-References: <20220913140350.291927556@linuxfoundation.org>
+In-Reply-To: <20220913140353.549108748@linuxfoundation.org>
+References: <20220913140353.549108748@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
