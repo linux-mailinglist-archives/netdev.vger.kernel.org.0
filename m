@@ -2,134 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 71DEF5B698F
-	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 10:30:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3F715B6996
+	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 10:31:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230386AbiIMIaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 04:30:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56588 "EHLO
+        id S231453AbiIMIbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 04:31:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231194AbiIMIaQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 04:30:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF0DF201BC;
-        Tue, 13 Sep 2022 01:30:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E9EB6135A;
-        Tue, 13 Sep 2022 08:30:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B36A5C433D7;
-        Tue, 13 Sep 2022 08:30:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663057814;
-        bh=f8cbvegniSre6PNiF0ogaPf3CaNWmNQWhQF7CWp+T3s=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=bxnivyGRxio2Hsbge/ByEzeeqeH2LnPnkIljsIeeqGVJZJBxwJECdZpfyVNNwMGXN
-         hdPu5/aaL4Pm3kqJODp+dJWMySO/bwhu8sEypLYM4qGlFSA9DcNFLKHfL7bKvUa2Nz
-         B9+zrqh/LZzluhxH2G9+AXcZ/uFooVn2Z5D58yxQHTvD+J1wtOBjhNjt25cOrMdFQz
-         gSRGopcWCvGy+ARREr4AJK/aZXh8E93oC2svNte2CBNexWSSMx4+JH8BK11/LMbJn+
-         OFWleXas6te8T+NbnMhobs9+F05JhrJrzNMFvDDqVbc1Ya+Gdlq0AUmXFsa1FfVfCt
-         oK+BImdmZSkbw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8F11BC73FED;
-        Tue, 13 Sep 2022 08:30:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S231437AbiIMIb3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 04:31:29 -0400
+Received: from mail-oa1-x31.google.com (mail-oa1-x31.google.com [IPv6:2001:4860:4864:20::31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7B4C3340A
+        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 01:31:26 -0700 (PDT)
+Received: by mail-oa1-x31.google.com with SMTP id 586e51a60fabf-12803ac8113so30140132fac.8
+        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 01:31:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date;
+        bh=eS0keHrwLMEGvIjO+pY5ygqjHB/SPNncDJUPziHs85o=;
+        b=eIFW7eRfPGy5TSSbF8w75Av3OVeC6Go3WJYZ9yZ9cMRMed1DrlbWdVx+NAS/W8rkdn
+         uhJCroUNgmjz6x+drtcGIEfSLsA17rgtdJRaCZmch87rp4coLI2nGVD2Lvqo0kZTF1Y3
+         Oc9UXefLqEnB5kcb+S+xMgI/OvtdjcmTC7VA8BTYQLECIij4gobDNlx573aRu/NkzPSQ
+         dgxmukm5eF7190OS+gbcoOp7o+1otfIujaaIP/f415U+5X3YYpyZ3H0s8gyLip1AL+5c
+         q0caD106ZuqSUIRjUmkR4pu/IVIXQmQbXt7sEEaoA9RVO/MEXsx6bwtnVDTo52Kc6n3Q
+         hYzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=eS0keHrwLMEGvIjO+pY5ygqjHB/SPNncDJUPziHs85o=;
+        b=V+SIrkhPzL1yumI3crQoMxV4ur/OYy84qrlQ9SAuZXng/6DXervRuLwAvr7u//LnmN
+         E9gSc7ogMD114KQSjaVmzigsMM9WDMrTKr4b+roV8ZmetSMHbnNgacTmrXbbTQZ1zckw
+         6BkEgSa4GHLw0boyvlHJT1pZ6r6/yD/anHYYPrs0TG97g5pCqGwaZGNsrw96dTmOqhnA
+         VCBBD17xa61qK+2UOFy2Qgkvy/j8avfHBg5griBDq92tj9onpu6XLjpah6p/4RM/oNgO
+         9raKSgUQdNLsYHtw2U2rvyhM5RDWWETRgga2uyNiGJOKqiPPI3hHlcBUpd9bKOQYBIfc
+         EHrA==
+X-Gm-Message-State: ACgBeo1krWV1GuT11PT2M5Jupw8xaBXFIaxM1AbDZywLmslYbpK1NE/I
+        TE0L9RWaG3p8I5jEP3iCKX7TY9HMtSrXhfg4v0BKc9Sk8b0=
+X-Google-Smtp-Source: AA6agR4tHCyOH1HiHm2Z5zwcPpz6epQRwbVeI95Cd/JV4FC3Tnr8Fnw4sK88ZsEaNM2pD6jWKwkFdgZSSMkEMnJKoto=
+X-Received: by 2002:a05:6808:1b22:b0:34f:7879:53cc with SMTP id
+ bx34-20020a0568081b2200b0034f787953ccmr1005686oib.144.1663057885965; Tue, 13
+ Sep 2022 01:31:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 1/2] mptcp: fix fwd memory accounting on coalesce
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166305781458.5487.11715290784826413918.git-patchwork-notify@kernel.org>
-Date:   Tue, 13 Sep 2022 08:30:14 +0000
-References: <20220906180404.1255873-1-matthieu.baerts@tessares.net>
-In-Reply-To: <20220906180404.1255873-1-matthieu.baerts@tessares.net>
-To:     Matthieu Baerts <matthieu.baerts@tessares.net>
-Cc:     mathew.j.martineau@linux.intel.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        oliver.sang@intel.com, netdev@vger.kernel.org,
-        mptcp@lists.linux.dev, linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <146b9607-ba1e-c7cf-9f56-05021642b320@arinc9.com>
+ <Yx8thSbBKJhxv169@lore-desk> <Yx9z9Dm4vJFxGaJI@lore-desk> <170d725f-2146-f1fa-e570-4112972729df@arinc9.com>
+ <Yx+W9EoEfoRsq1rt@lore-desk> <CAMhs-H8wWNrqb0RgQdcL4J+=oGws8pB8Uv_H=6Q8AyzXDgF89Q@mail.gmail.com>
+In-Reply-To: <CAMhs-H8wWNrqb0RgQdcL4J+=oGws8pB8Uv_H=6Q8AyzXDgF89Q@mail.gmail.com>
+From:   Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Date:   Tue, 13 Sep 2022 10:31:14 +0200
+Message-ID: <CAMhs-H8Wsin67gTLPfv9x=hHM-prz4YYensNtyc=hZx+s4d=9Q@mail.gmail.com>
+Subject: Re: mtk_eth_soc for mt7621 won't work after 6.0-rc1
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        netdev <netdev@vger.kernel.org>, paulmck@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi Lorenzo,
 
-This series was applied to netdev/net.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+On Tue, Sep 13, 2022 at 5:32 AM Sergio Paracuellos
+<sergio.paracuellos@gmail.com> wrote:
+>
+> Hi Lorenzo,
+>
+> On Mon, Sep 12, 2022 at 10:30 PM Lorenzo Bianconi <lorenzo@kernel.org> wr=
+ote:
+> >
+> > > Hi Lorenzo,
+> > >
+> > > On 12.09.2022 21:01, Lorenzo Bianconi wrote:
+> > > > > > Ethernet for MT7621 SoCs no longer works after changes introduc=
+ed to
+> > > > > > mtk_eth_soc with 6.0-rc1. Ethernet interfaces initialise fine. =
+Packets are
+> > > > > > sent out from the interface fine but won't be received on the i=
+nterface.
+> > > > > >
+> > > > > > Tested with MT7530 DSA switch connected to gmac0 and ICPlus IP1=
+001 PHY
+> > > > > > connected to gmac1 of the SoC.
+> > > > > >
+> > > > > > Last working kernel is 5.19. The issue is present on 6.0-rc5.
+> > > > > >
+> > > > > > Ar=C4=B1n=C3=A7
+> > > > >
+> > > > > Hi Ar=C4=B1n=C3=A7,
+> > > > >
+> > > > > thx for testing and reporting the issue. Can you please identify
+> > > > > the offending commit running git bisect?
+> > > > >
+> > > > > Regards,
+> > > > > Lorenzo
+> > > >
+> > > > Hi Ar=C4=B1n=C3=A7,
+> > > >
+> > > > just a small update. I tested a mt7621 based board (Buffalo WSR-116=
+6DHP) with
+> > > > OpenWrt master + my mtk_eth_soc series and it works fine. Can you p=
+lease
+> > > > provide more details about your development board/environment?
+> > >
+> > > I've got a GB-PC2, Sergio has got a GB-PC1. We both use Neil's gnubee=
+-tools
+> > > which makes an image with filesystem and any Linux kernel of choice w=
+ith
+> > > slight modifications (maybe not at all) on the kernel.
+> > >
+> > > https://github.com/neilbrown/gnubee-tools
+> > >
+> > > Sergio experiences the same problem on GB-PC1.
+> >
+> > ack, can you please run git bisect in order to identify the offending c=
+ommit?
+> > What is the latest kernel version that is working properly? 5.19.8?
+>
+> I'll try to get time today to properly bisect and identify the
+> offending commit. I get a working platform with 5.19.8, yes but with
+> v6-rc-1 my network is totally broken.
 
-On Tue,  6 Sep 2022 20:04:01 +0200 you wrote:
-> From: Paolo Abeni <pabeni@redhat.com>
-> 
-> The intel bot reported a memory accounting related splat:
-> 
-> [  240.473094] ------------[ cut here ]------------
-> [  240.478507] page_counter underflow: -4294828518 nr_pages=4294967290
-> [  240.485500] WARNING: CPU: 2 PID: 14986 at mm/page_counter.c:56 page_counter_cancel+0x96/0xc0
-> [  240.570849] CPU: 2 PID: 14986 Comm: mptcp_connect Tainted: G S                5.19.0-rc4-00739-gd24141fe7b48 #1
-> [  240.581637] Hardware name: HP HP Z240 SFF Workstation/802E, BIOS N51 Ver. 01.63 10/05/2017
-> [  240.590600] RIP: 0010:page_counter_cancel+0x96/0xc0
-> [  240.596179] Code: 00 00 00 45 31 c0 48 89 ef 5d 4c 89 c6 41 5c e9 40 fd ff ff 4c 89 e2 48 c7 c7 20 73 39 84 c6 05 d5 b1 52 04 01 e8 e7 95 f3
-> 01 <0f> 0b eb a9 48 89 ef e8 1e 25 fc ff eb c3 66 66 2e 0f 1f 84 00 00
-> [  240.615639] RSP: 0018:ffffc9000496f7c8 EFLAGS: 00010082
-> [  240.621569] RAX: 0000000000000000 RBX: ffff88819c9c0120 RCX: 0000000000000000
-> [  240.629404] RDX: 0000000000000027 RSI: 0000000000000004 RDI: fffff5200092deeb
-> [  240.637239] RBP: ffff88819c9c0120 R08: 0000000000000001 R09: ffff888366527a2b
-> [  240.645069] R10: ffffed106cca4f45 R11: 0000000000000001 R12: 00000000fffffffa
-> [  240.652903] R13: ffff888366536118 R14: 00000000fffffffa R15: ffff88819c9c0000
-> [  240.660738] FS:  00007f3786e72540(0000) GS:ffff888366500000(0000) knlGS:0000000000000000
-> [  240.669529] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  240.675974] CR2: 00007f966b346000 CR3: 0000000168cea002 CR4: 00000000003706e0
-> [  240.683807] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> [  240.691641] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> [  240.699468] Call Trace:
-> [  240.702613]  <TASK>
-> [  240.705413]  page_counter_uncharge+0x29/0x80
-> [  240.710389]  drain_stock+0xd0/0x180
-> [  240.714585]  refill_stock+0x278/0x580
-> [  240.718951]  __sk_mem_reduce_allocated+0x222/0x5c0
-> [  240.729248]  __mptcp_update_rmem+0x235/0x2c0
-> [  240.734228]  __mptcp_move_skbs+0x194/0x6c0
-> [  240.749764]  mptcp_recvmsg+0xdfa/0x1340
-> [  240.763153]  inet_recvmsg+0x37f/0x500
-> [  240.782109]  sock_read_iter+0x24a/0x380
-> [  240.805353]  new_sync_read+0x420/0x540
-> [  240.838552]  vfs_read+0x37f/0x4c0
-> [  240.842582]  ksys_read+0x170/0x200
-> [  240.864039]  do_syscall_64+0x5c/0x80
-> [  240.872770]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> [  240.878526] RIP: 0033:0x7f3786d9ae8e
-> [  240.882805] Code: c0 e9 b6 fe ff ff 50 48 8d 3d 6e 18 0a 00 e8 89 e8 01 00 66 0f 1f 84 00 00 00 00 00 64 8b 04 25 18 00 00 00 85 c0 75 14 0f 05 <48> 3d 00 f0 ff ff 77 5a c3 66 0f 1f 84 00 00 00 00 00 48 83 ec 28
-> [  240.902259] RSP: 002b:00007fff7be81e08 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
-> [  240.910533] RAX: ffffffffffffffda RBX: 0000000000002000 RCX: 00007f3786d9ae8e
-> [  240.918368] RDX: 0000000000002000 RSI: 00007fff7be87ec0 RDI: 0000000000000005
-> [  240.926206] RBP: 0000000000000005 R08: 00007f3786e6a230 R09: 00007f3786e6a240
-> [  240.934046] R10: fffffffffffff288 R11: 0000000000000246 R12: 0000000000002000
-> [  240.941884] R13: 00007fff7be87ec0 R14: 00007fff7be87ec0 R15: 0000000000002000
-> [  240.949741]  </TASK>
-> [  240.952632] irq event stamp: 27367
-> [  240.956735] hardirqs last  enabled at (27366): [<ffffffff81ba50ea>] mem_cgroup_uncharge_skmem+0x6a/0x80
-> [  240.966848] hardirqs last disabled at (27367): [<ffffffff81b8fd42>] refill_stock+0x282/0x580
-> [  240.976017] softirqs last  enabled at (27360): [<ffffffff83a4d8ef>] mptcp_recvmsg+0xaf/0x1340
-> [  240.985273] softirqs last disabled at (27364): [<ffffffff83a4d30c>] __mptcp_move_skbs+0x18c/0x6c0
-> [  240.994872] ---[ end trace 0000000000000000 ]---
-> 
-> [...]
++ [cc: Paul E. McKenney <paulmck@kernel.org> as commit author]
 
-Here is the summary with links:
-  - [net,1/2] mptcp: fix fwd memory accounting on coalesce
-    https://git.kernel.org/netdev/net/c/7288ff6ec795
-  - [net,2/2] Documentation: mptcp: fix pm_type formatting
-    https://git.kernel.org/netdev/net/c/0727a9a5fbc1
+Ok, so I have bisected the issue to:
+1cf1144e8473e8c3180ac8b91309e29b6acfd95f] rcu-tasks: Be more patient
+for RCU Tasks boot-time testing
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+This is the complete bisect log:
 
+$ git bisect log
+git bisect start
+# good: [70cb6afe0e2ff1b7854d840978b1849bffb3ed21] Linux 5.19.8
+git bisect good 70cb6afe0e2ff1b7854d840978b1849bffb3ed21
+# bad: [568035b01cfb107af8d2e4bd2fb9aea22cf5b868] Linux 6.0-rc1
+git bisect bad 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
+# good: [3d7cb6b04c3f3115719235cc6866b10326de34cd] Linux 5.19
+git bisect good 3d7cb6b04c3f3115719235cc6866b10326de34cd
+# bad: [b44f2fd87919b5ae6e1756d4c7ba2cbba22238e1] Merge tag
+'drm-next-2022-08-03' of git://anongit.freedesktop.org/drm/drm
+git bisect bad b44f2fd87919b5ae6e1756d4c7ba2cbba22238e1
+# bad: [526942b8134cc34d25d27f95dfff98b8ce2f6fcd] Merge tag
+'ata-5.20-rc1' of
+git://git.kernel.org/pub/scm/linux/kernel/git/dlemoal/libata
+git bisect bad 526942b8134cc34d25d27f95dfff98b8ce2f6fcd
+# good: [2e7a95156d64667a8ded606829d57c6fc92e41df] Merge tag
+'regmap-v5.20' of
+git://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap
+git bisect good 2e7a95156d64667a8ded606829d57c6fc92e41df
+# good: [c013d0af81f60cc7dbe357c4e2a925fb6738dbfe] Merge tag
+'for-5.20/block-2022-07-29' of git://git.kernel.dk/linux-block
+git bisect good c013d0af81f60cc7dbe357c4e2a925fb6738dbfe
+# bad: [aad26f55f47a33d6de3df65f0b18e2886059ed6d] Merge tag 'docs-6.0'
+of git://git.lwn.net/linux
+git bisect bad aad26f55f47a33d6de3df65f0b18e2886059ed6d
+# good: [c2a24a7a036b3bd3a2e6c66730dfc777cae6540a] Merge tag
+'v5.20-p1' of git://git.kernel.org/pub/scm/linux/kernel/git/herbert/crypto-=
+2.6
+git bisect good c2a24a7a036b3bd3a2e6c66730dfc777cae6540a
+# bad: [34bc7b454dc31f75a0be7ee8ab378135523d7c51] Merge branch
+'ctxt.2022.07.05a' into HEAD
+git bisect bad 34bc7b454dc31f75a0be7ee8ab378135523d7c51
+# bad: [e72ee5e1a866b85cb6c3d4c80a1125976020a7e8] rcu-tasks: Use
+delayed_work to delay rcu_tasks_verify_self_tests()
+git bisect bad e72ee5e1a866b85cb6c3d4c80a1125976020a7e8
+# good: [f90f19da88bfe32dd1fdfd104de4c0526a3be701] rcu-tasks: Make RCU
+Tasks Trace stall warning handle idle offline tasks
+git bisect good f90f19da88bfe32dd1fdfd104de4c0526a3be701
+# good: [dc7d54b45170e1e3ced9f86718aa4274fd727790] rcu-tasks: Pull in
+tasks blocked within RCU Tasks Trace readers
+git bisect good dc7d54b45170e1e3ced9f86718aa4274fd727790
+# good: [e386b6725798eec07facedf4d4bb710c079fd25c] rcu-tasks:
+Eliminate RCU Tasks Trace IPIs to online CPUs
+git bisect good e386b6725798eec07facedf4d4bb710c079fd25c
+# good: [eea3423b162d5d5cdc08af23e8ee2c2d1134fd07] rcu-tasks: Update commen=
+ts
+git bisect good eea3423b162d5d5cdc08af23e8ee2c2d1134fd07
+# bad: [1cf1144e8473e8c3180ac8b91309e29b6acfd95f] rcu-tasks: Be more
+patient for RCU Tasks boot-time testing
+git bisect bad 1cf1144e8473e8c3180ac8b91309e29b6acfd95f
+# first bad commit: [1cf1144e8473e8c3180ac8b91309e29b6acfd95f]
+rcu-tasks: Be more patient for RCU Tasks boot-time testing
 
+I don't really understand the relationship with my broken network
+issue. I am using debian buster and the effect I see is that when the
+network interface becomes up it hangs waiting for a "task running to
+raise network interfaces". After about one minute the system boots,
+the login prompt is shown but I cannot configure at all network
+interfaces: dhclient does not respond and manually ifconfig does not
+help also:
+
+root@gnubee:~#
+root@gnubee:~# dhclient ethblack
+^C
+root@gnubee:~# ifconfig ethblack 192.168.1.101
+root@gnubee:~# ping 19^C
+root@gnubee:~# ping 192.168.1.47
+PING 192.168.1.47 (192.168.1.47) 56(84) bytes of data.
+^C
+--- 192.168.1.47 ping statistics ---
+3 packets transmitted, 0 received, 100% packet loss, time 120ms
+
+I have tried to revert the bad commit directly in v6.0-rc1 but
+conflicts appeared with the git revert command in
+'kernel/rcu/tasks.h', so I am not sure what I can do now.
+
+Thanks,
+    Sergio Paracuellos
+
+>
+> Thanks,
+>     Sergio Paracuellos
+>
+> >
+> > Regards,
+> > Lorenzo
+> >
+> > >
+> > > Ar=C4=B1n=C3=A7
