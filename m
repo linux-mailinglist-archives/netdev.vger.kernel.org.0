@@ -2,111 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EF3AF5B6B83
-	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 12:20:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CAA95B6B90
+	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 12:26:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231252AbiIMKUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 06:20:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47638 "EHLO
+        id S231428AbiIMK01 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 06:26:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231143AbiIMKUt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 06:20:49 -0400
-Received: from mail-ua1-x941.google.com (mail-ua1-x941.google.com [IPv6:2607:f8b0:4864:20::941])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 047F756BB7
-        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 03:20:48 -0700 (PDT)
-Received: by mail-ua1-x941.google.com with SMTP id e1so114175uaa.1
-        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 03:20:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:sender:mime-version:from:to:cc
-         :subject:date;
-        bh=oFPao6+FHTUKOYc11RmLF8YTaUlvFn2TAMXlqT2wmEQ=;
-        b=WhsN42FS4i6EfAqH3OahtsyH68bc7obC623uOE8DFUexKmksEbpz8tSegdbDrnWzNJ
-         9f7AQ2hdFQU0afEOLhSMXZrZjuScZruVLZF/MlLkDV4q1v7JaunqkW91sUhMWoq//dAi
-         12cTgUmY8MHemf5Ih9bSzw3MOT5RvClqkDjEHq8aO4n/IP4/ppDAGk1qwQxHgnF4ug9h
-         ICQ5d/iddD4s7oogwPc1HUOXD+ucOHK0LriOMzq1d4QpS9nPfC+HoyQ8LzyHFak4UZjH
-         uo5AFhAxtZ5p/qmUOAaLSkhxb2sgKYlctyNUWx3gy4uBiYnuMAFEfWFfRRXcgwyWnMgB
-         TDKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:sender:mime-version
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=oFPao6+FHTUKOYc11RmLF8YTaUlvFn2TAMXlqT2wmEQ=;
-        b=wU1F21spHcBZudxrgCQlzX9lepQ9GhCWEz/HJofITcXGWri3qj+m13yYEpMRj8ueYC
-         j3aGyQyqj8g4F9d6J6UpD5w9biWAJKO00BZHvl+FCh/1DejD8ANd0wFg99l2hXQ5f67+
-         BFyewnoxLh7GM39nZpvqp5WztXzNkCC5ZaZHywk5Fqm86W2EMgEzuEzj5iQ4NdGcax2J
-         d7hcK48SFJjiKyyCSZvRas4yJGqRw4cO0pFt0AVzcXy/jr0cg8e4OPKRCGAZb2lTURDt
-         +a5K3dWEGhQdEMrFNi+E3pSmasBZIXqBuO1zC5OTYKdZiV8yfOXAiJrMpXPKh1D42qDo
-         xG8A==
-X-Gm-Message-State: ACgBeo37PayHUjLCN1TYOmpf3GJjZWjIs8s3pwFFy0sFlgRUSKDvJyrg
-        LKgHOJdnIQGmko4FIMFqD3uilUqY/5bJ5C+/5Wg=
-X-Google-Smtp-Source: AA6agR4/2AaohCCwZf0vOa0A8tanlFaQk1j6bLK2/RJuTXeVJxOuFpElc1cMFXK6fQsDZjhMtqCYe6KB4Ld6+0JCOd0=
-X-Received: by 2002:ab0:2784:0:b0:3b6:5d2b:9a37 with SMTP id
- t4-20020ab02784000000b003b65d2b9a37mr5344026uap.22.1663064446908; Tue, 13 Sep
- 2022 03:20:46 -0700 (PDT)
+        with ESMTP id S231224AbiIMK0G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 06:26:06 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4EEF5A2D9;
+        Tue, 13 Sep 2022 03:26:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1663064762; x=1694600762;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ARgoLmEbhTA7goAGgTKJDoKZwOFyACEiJhXaXvPcn+4=;
+  b=KdXS8FaZ+vo6T/5hCWIksLuwBH8PDMqbETvyIhOM6CCP+H7Of99znozS
+   vlLiGDBKZlqAWH6jFYxZieVyHEjSc1P5Td/hID1sNN739bDGCZ87r7DBj
+   jutysx4uZAoolU1+XVAM1WIJRx2bmrD7XLgLKCpIntE0qyydkScX6cQTW
+   mgXJT1OJbYtkETtFs1JMxknEgSF7eFaECK5BILLaZWWs5rZCvOdDGnRH1
+   Pv9yA7wZyb0F73DnUNXjFM9BLvj/qHOKOSjzpN+xpeW4qAi+7ljndW/O6
+   GxN+L3yy/Us19t9mgFb2UYw5oHVJnKZiuOtjpJ2q2xeobuvdzXCe2RsPH
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10468"; a="359827124"
+X-IronPort-AV: E=Sophos;i="5.93,312,1654585200"; 
+   d="scan'208";a="359827124"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2022 03:26:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,312,1654585200"; 
+   d="scan'208";a="649609317"
+Received: from lkp-server02.sh.intel.com (HELO 4011df4f4fd3) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 13 Sep 2022 03:26:00 -0700
+Received: from kbuild by 4011df4f4fd3 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oY379-0003U3-1K;
+        Tue, 13 Sep 2022 10:25:59 +0000
+Date:   Tue, 13 Sep 2022 18:25:10 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jianglei Nie <niejianglei2021@163.com>, irusskikh@marvell.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jianglei Nie <niejianglei2021@163.com>
+Subject: Re: [PATCH] net: atlantic: fix potential memory leak in
+ aq_ndev_close()
+Message-ID: <202209131828.hYRSPYF2-lkp@intel.com>
+References: <20220913063941.83611-1-niejianglei2021@163.com>
 MIME-Version: 1.0
-Sender: guillezakalik@gmail.com
-Received: by 2002:a59:c6d0:0:b0:2ee:ca22:4742 with HTTP; Tue, 13 Sep 2022
- 03:20:46 -0700 (PDT)
-From:   Ibrahim idewu <ibrahimidewu4@gmail.com>
-Date:   Tue, 13 Sep 2022 11:20:46 +0100
-X-Google-Sender-Auth: mYwcOiYmzXKwFSVttb7tWzMFAyc
-Message-ID: <CAER-mvRbadN8s7Gq1-Rww+yZn1=rFfO2ghb0ObaPhYnJPRCVJA@mail.gmail.com>
-Subject: GREETINGS
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=4.6 required=5.0 tests=ADVANCE_FEE_5_NEW_FRM_MNY,
-        BAYES_80,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        FILL_THIS_FORM,FREEMAIL_FROM,HK_SCAM,LOTS_OF_MONEY,MONEY_FORM,
-        MONEY_FRAUD_8,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_MONEY_PERCENT,T_SCC_BODY_TEXT_LINE,UNDISC_MONEY autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Level: ****
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220913063941.83611-1-niejianglei2021@163.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear,
-                       Can you trust a financial relationship that is
-mutually beneficial to us both? I have received your name and contact
-information from your country's banking data Information, hoping that
-you are interested in what I am going to tell you.
+Hi Jianglei,
 
-I'm Mr. Ibrahim idewu from Ouagadougou, here in Burkina Faso. I work
-for coris bank international. I am writing to you about a business
-proposal that will be of great benefit to both of us. In my
-department, as a banker, I discovered $19,300,000 in the account of
-one of our deceased foreign clients.
-The choice to contact you depends on the sensitivity of the
-transaction and the confidentiality it contains. Now our bank has been
-waiting for one of the family members to file the application, but
-nobody has done so. Personally, I have not found family members for a
-long time. I ask for permission to present you as the next of kin /
-beneficiary of the deceased, so the proceeds of this account are worth
-$19,300,000 to you.
+Thank you for the patch! Perhaps something to improve:
 
-This is paid or shared in these percentages, 60% for me and 40% for
-you. I have secured legal documents that can be used to substantiate
-this claim. The only thing I have to do is put your names in the
-documents and legalize them here in court to prove you as the rightful
-beneficiary. All I need now is your honest cooperation,
-confidentiality and your trust, so that we can complete this
-transaction. I guarantee that this transaction is 100% risk-free, as
-the transfer is subject to international banking law
+[auto build test WARNING on net-next/master]
+[also build test WARNING on net/master linus/master v6.0-rc5 next-20220912]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Please give me this as we have 5 days to work through this. This is very urgent.
+url:    https://github.com/intel-lab-lkp/linux/commits/Jianglei-Nie/net-atlantic-fix-potential-memory-leak-in-aq_ndev_close/20220913-144300
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 169ccf0e40825d9e465863e4707d8e8546d3c3cb
+config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220913/202209131828.hYRSPYF2-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/e1ce8c41446db3a7dd59206ff9c8a75baf7be067
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Jianglei-Nie/net-atlantic-fix-potential-memory-leak-in-aq_ndev_close/20220913-144300
+        git checkout e1ce8c41446db3a7dd59206ff9c8a75baf7be067
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/
 
-1. Full Name:
-2. Your direct mobile number:
-3. Your contact address:
-4. Your job:
-5. Your nationality:
-6. Your gender / age:
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Please confirm your message and interest to provide further
-information. Please do get back to me on time.
+All warnings (new ones prefixed by >>):
 
-Best regards
-Mr. Ibrahim idewu
+   drivers/net/ethernet/aquantia/atlantic/aq_main.c: In function 'aq_ndev_close':
+>> drivers/net/ethernet/aquantia/atlantic/aq_main.c:99:1: warning: label 'err_exit' defined but not used [-Wunused-label]
+      99 | err_exit:
+         | ^~~~~~~~
+
+
+vim +/err_exit +99 drivers/net/ethernet/aquantia/atlantic/aq_main.c
+
+97bde5c4f909a5 David VomLehn  2017-01-23   90  
+97bde5c4f909a5 David VomLehn  2017-01-23   91  static int aq_ndev_close(struct net_device *ndev)
+97bde5c4f909a5 David VomLehn  2017-01-23   92  {
+97bde5c4f909a5 David VomLehn  2017-01-23   93  	struct aq_nic_s *aq_nic = netdev_priv(ndev);
+7b0c342f1f6754 Nikita Danilov 2019-11-07   94  	int err = 0;
+97bde5c4f909a5 David VomLehn  2017-01-23   95  
+97bde5c4f909a5 David VomLehn  2017-01-23   96  	err = aq_nic_stop(aq_nic);
+837c637869bef2 Nikita Danilov 2019-11-07   97  	aq_nic_deinit(aq_nic, true);
+97bde5c4f909a5 David VomLehn  2017-01-23   98  
+97bde5c4f909a5 David VomLehn  2017-01-23  @99  err_exit:
+97bde5c4f909a5 David VomLehn  2017-01-23  100  	return err;
+97bde5c4f909a5 David VomLehn  2017-01-23  101  }
+97bde5c4f909a5 David VomLehn  2017-01-23  102  
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
