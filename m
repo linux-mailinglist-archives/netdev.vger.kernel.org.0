@@ -2,97 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 40C145B64B4
-	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 02:57:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E8E75B64F1
+	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 03:10:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229693AbiIMA53 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Sep 2022 20:57:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33354 "EHLO
+        id S229831AbiIMBKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Sep 2022 21:10:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229489AbiIMA51 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 20:57:27 -0400
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB38D2CE04;
-        Mon, 12 Sep 2022 17:57:26 -0700 (PDT)
-Received: by mail-il1-x12e.google.com with SMTP id b17so5481120ilh.0;
-        Mon, 12 Sep 2022 17:57:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=3FYZZ9kIkwc/JXTwVRSMlvQxtVggGrYH2HuC/wMgOdI=;
-        b=NYFdQ/VJ7Ustan9+kh9NBj5xKkAcAprM+EvkVz+OEu9s2jc6odB1P1d9eCn3LB1BSF
-         HVwiHNCWN9cjxHJmBFkuGDtng69dDzlhKuC2jwgo4GQZxAVPJBs8HWj0t+V1LaxAxs0h
-         fFzq8E+L/Iwynedl8mokiGkDK8GhKaqxYO4+06Qzopn3UqEYs4e3QSLI98/TP93vRhnH
-         p/3tjR4/o30yQRI+pgkK66f9TPe2ty2CUVfUKB9vVPaN12bYG5fpQzr1r6zU60mkOa4r
-         tHT7faSnWb7dT6wgasw41T4hZHlyYGkxCRjjtSc6R2brP983LSm90ZpydP1mFqjapNg4
-         x0lw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=3FYZZ9kIkwc/JXTwVRSMlvQxtVggGrYH2HuC/wMgOdI=;
-        b=TSMflBuMmn150lkQlQHIDJnawJu4ZhFFGLiV8f42iLWdclDGrHBuqftznKXyhyyQkN
-         A1JBkiW5/IUuMiIX4ZYji8n8pLWjOh5qqsoDoMe+Xs3GyzksCxEatKwzGD4E3J1TCJdZ
-         a5nNBMTKevuC7mjmkveJ184uQvTaz4fbLDvEEN30tMGZbwm4erEuViGWaVbfzc08RX4Z
-         iQ6U5IVX6Fjg5dWmPw1rLGpDizBXj8xy04Kr6JYB8HNm+OabvLpcKX88wGTTS2DDKtIS
-         yzEgA7EGxFjTQaM3z2sMhSMcgWA9TgYnWYX2oION8UodnzI6qQk4OppDBVPxTdI1D+mw
-         p/XQ==
-X-Gm-Message-State: ACgBeo0fEzwA8ZLsKel3MoJaC9/nYsQwgvHf0AR7S+uYspGWvitkMEgh
-        v2dsvN2et4KXXjVg9NGp+iHJnDag9BE0enaNw/4=
-X-Google-Smtp-Source: AA6agR6SJcFGOPeHNpTXOJTMM+Xw4YyKLch0Jy65glm5EtFs0KwR0qKARwrTjxI1ZMWWuta6h3Fz3P1HYwtmdRzoY7o=
-X-Received: by 2002:a92:ca0b:0:b0:2f1:da1d:c229 with SMTP id
- j11-20020a92ca0b000000b002f1da1dc229mr12079489ils.145.1663030646372; Mon, 12
- Sep 2022 17:57:26 -0700 (PDT)
+        with ESMTP id S229591AbiIMBKp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Sep 2022 21:10:45 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6348651421;
+        Mon, 12 Sep 2022 18:10:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1663031443; x=1694567443;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=IBMJmz447i1H4VhdQmfyA8wQOBBhYHA3uOT0vcuYxlg=;
+  b=i7N9zxGzOUIPTfXuMbOlBz6KrzA+sJ3sjm+1DAL27BysZ8aopqATTQp9
+   qOTO2Ga8oEWRw0kShSw39H4OwcEDYK6F8panx66uQqmGroKHTVvAEHEJn
+   g+XIhUdc7a7dx+15aqsTgyvyHuc+/kLsQw/BgegMaP47cZA0D5Ocn5ICq
+   QUBYAJ66rzVlMLa6IIDS++JMSX+6UTVcUBFmmLgqUtwjy2cjHGDEvvmD0
+   eUNXZ3djlrt3+72YcUJXha58jDQC4/YdoSd2/YbCuoaaoDvxaU+Ar+cNC
+   ihvf8jf+4hPkcG/X19Rux+q94kLRTPTOaNubWdmPjZTXbifU4awLPgUwM
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10468"; a="361959331"
+X-IronPort-AV: E=Sophos;i="5.93,311,1654585200"; 
+   d="scan'208";a="361959331"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2022 18:10:42 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,311,1654585200"; 
+   d="scan'208";a="684655572"
+Received: from lkp-server02.sh.intel.com (HELO 4011df4f4fd3) ([10.239.97.151])
+  by fmsmga004.fm.intel.com with ESMTP; 12 Sep 2022 18:10:38 -0700
+Received: from kbuild by 4011df4f4fd3 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oXuRh-00033D-2t;
+        Tue, 13 Sep 2022 01:10:37 +0000
+Date:   Tue, 13 Sep 2022 09:10:22 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, nbd@nbd.name, john@phrozen.org,
+        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, matthias.bgg@gmail.com,
+        linux-mediatek@lists.infradead.org, lorenzo.bianconi@redhat.com,
+        Bo.Jiao@mediatek.com, sujuan.chen@mediatek.com,
+        ryder.Lee@mediatek.com, evelyn.tsai@mediatek.com,
+        devicetree@vger.kernel.org, robh@kernel.org
+Subject: Re: [PATCH net-next 08/12] net: ethernet: mtk_eth_soc: add foe info
+ in mtk_soc_data structure
+Message-ID: <202209130841.kze95Xi6-lkp@intel.com>
+References: <0d0bfa99e313c0b00bf75f943f58b6fe552ed004.1662661555.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-References: <20220912214510.929070-1-nhuck@google.com>
-In-Reply-To: <20220912214510.929070-1-nhuck@google.com>
-From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Tue, 13 Sep 2022 03:57:17 +0300
-Message-ID: <CAHNKnsQFdd6uuqYfYcwLRY_RViOFWoT_mSK7v6sb02LeNvY5WQ@mail.gmail.com>
-Subject: Re: [PATCH] net: wwan: t7xx: Fix return type of t7xx_ccmni_start_xmit
-To:     Nathan Huckleberry <nhuck@google.com>
-Cc:     Dan Carpenter <error27@gmail.com>, llvm@lists.linux.dev,
-        Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>,
-        Intel Corporation <linuxwwan@intel.com>,
-        Chiranjeevi Rapolu <chiranjeevi.rapolu@linux.intel.com>,
-        Liu Haijun <haijun.liu@mediatek.com>,
-        M Chetan Kumar <m.chetan.kumar@linux.intel.com>,
-        Ricardo Martinez <ricardo.martinez@linux.intel.com>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0d0bfa99e313c0b00bf75f943f58b6fe552ed004.1662661555.git.lorenzo@kernel.org>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 13, 2022 at 12:45 AM Nathan Huckleberry <nhuck@google.com> wrote:
-> The ndo_start_xmit field in net_device_ops is expected to be of type
-> netdev_tx_t (*ndo_start_xmit)(struct sk_buff *skb, struct net_device *dev).
->
-> The mismatched return type breaks forward edge kCFI since the underlying
-> function definition does not match the function hook definition.
->
-> The return type of t7xx_ccmni_start_xmit should be changed from int to
-> netdev_tx_t.
->
-> Reported-by: Dan Carpenter <error27@gmail.com>
-> Link: https://github.com/ClangBuiltLinux/linux/issues/1703
-> Cc: llvm@lists.linux.dev
-> Signed-off-by: Nathan Huckleberry <nhuck@google.com>
+Hi Lorenzo,
 
-Acked-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+I love your patch! Yet something to improve:
+
+[auto build test ERROR on net-next/master]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Lorenzo-Bianconi/Add-WED-support-for-MT7986-chipset/20220909-033910
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 9f8f1933dce555d3c246f447f54fca8de8889da9
+config: arm-randconfig-r005-20220911 (https://download.01.org/0day-ci/archive/20220913/202209130841.kze95Xi6-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/8500175ee61539b6c5cb7acb854ce592e78cf639
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Lorenzo-Bianconi/Add-WED-support-for-MT7986-chipset/20220909-033910
+        git checkout 8500175ee61539b6c5cb7acb854ce592e78cf639
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>, old ones prefixed by <<):
+
+>> ERROR: modpost: "__ffsdi2" [drivers/net/ethernet/mediatek/mtk_eth.ko] undefined!
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
