@@ -2,115 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA4775B7D83
-	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 01:26:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10AB45B7D8D
+	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 01:35:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229739AbiIMX0N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 19:26:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44960 "EHLO
+        id S229827AbiIMXfT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 19:35:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbiIMX0M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 19:26:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4907171701;
-        Tue, 13 Sep 2022 16:26:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F2D9BB8117D;
-        Tue, 13 Sep 2022 23:26:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA731C433D6;
-        Tue, 13 Sep 2022 23:26:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663111568;
-        bh=MKctTCCNB0zUHFjYAFLnoWEYFaMOJC3oZ8vlBp9GnrQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=En+foSMdKI8Cm8iTxy3UXjB0XEFCrepqECzxWueLigjoRHXBzHkbaVNaKVMpRJTYF
-         gYiLEZb4sVQLj0BkH3s9jiXTtX/QZjTVnZnABCaW8/4OubH+THJrxKF1Gd9WUnOCMS
-         Y/sMQ8XW18aKmN52aVxdeoVh2igiNs0bZM5ixvYd5GCP/eUNbwVl2e/hsNTV+uOjYo
-         u24C4q72ArBYHA+blb6JhpKCZvb8rDjdZxmCEQuRm6wUXn6JlbqA6pVswoxoC4mj1V
-         7JJS+nXBHr125rUu874rnRQHdVIh+lTZgyNx+17Z4kpDfohOrEol6lj34kfqG4kVDt
-         49X9IX4ziNShg==
-Date:   Tue, 13 Sep 2022 16:26:06 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Nathan Huckleberry <nhuck@google.com>
-Cc:     Dan Carpenter <error27@gmail.com>, llvm@lists.linux.dev,
-        Pravin B Shelar <pshelar@ovn.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, netdev@vger.kernel.org,
-        dev@openvswitch.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] openvswitch: Change the return type for vport_ops.send
- function hook to int
-Message-ID: <YyERjpSlz+MVCULd@dev-arch.thelio-3990X>
-References: <20220913230739.228313-1-nhuck@google.com>
+        with ESMTP id S229838AbiIMXfQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 19:35:16 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C4E248CC;
+        Tue, 13 Sep 2022 16:35:15 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id q21so22595901lfo.0;
+        Tue, 13 Sep 2022 16:35:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=bVO5S1zqxCUqEffUTNU9S9hb7fEK6sMCdeDDGuu+tF4=;
+        b=LLIi2I6hGcC1og6iBhKeCPdObNijf2mtxrvlHGUtk5kkENdn5W40sZo3L1OUbgwNRC
+         N6xTVIHWe8v1/kVgOlzZTeh75XFxGK3+5O8MES7PUd561EjnipbQkTS2ZABO4YAMYevc
+         A8JfD/jpYpG5PFg1YH6yywv4atNiwMyJORaTRaD2/QMF1rfokygCEZsn/1acanRK8aBa
+         xgplgm/gBT7rlOwElBcqttKrUibV9vxvdbRYZvk5MKCGhQJglwGpG9hjbpWjyOks9rDW
+         nZjnlr6/lreUfkloJom+fAu/0uDi88VzCIIYj2W/1YES2Az7lUHfv8TjV/WQjUfpLz2B
+         dIcg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=bVO5S1zqxCUqEffUTNU9S9hb7fEK6sMCdeDDGuu+tF4=;
+        b=7XWIGYM/qf/7PaKJr7duuHZpE3bfUXxMZTLAgYWYhkvORFQDkZr348+yBOxfuOFmqq
+         yaSXa8NXMBjbvr9MklxPWg1OWUchmsSiTDts583BIrerpWdvHmvp03MVaJ9jI49wd76M
+         QymjlA+4vMT7Cq/wzTyJcFYuGNG9R5rcp/2BFMum2TppIv+NZWynaSc2qEw2wCr2p+Xz
+         X1K56paQb0FZTlfLitZSc5AICMnaHfy573mcxa8SLG+yIK9Mj16CDWWhGG14++/fQKl5
+         KPkYnwQnkSDZVQFIU1GAL0DyqsSwLeiPIdmQBLzt0tAaQIvNNgsopWQfkqX9depZ169P
+         fR/A==
+X-Gm-Message-State: ACgBeo1ebuie5ofOJRgDTgRpGVLgfYOJnLaYAh3LcNAnGekzocF2XNmc
+        /fhRgsCin5P9hcJBmcWuQwSbw/RVwSCSdubD11X5xrJc3xorDQ==
+X-Google-Smtp-Source: AA6agR7DM93EKmXg5btQfskEOqxJWN4grRXJjLusdHfbZ7eBUCBF/vWHr0IwRClqz+sx5WNL1PXyUrNLvbGZf2jjbVQ=
+X-Received: by 2002:ac2:5cb9:0:b0:498:eb6f:740d with SMTP id
+ e25-20020ac25cb9000000b00498eb6f740dmr8791526lfq.106.1663112113269; Tue, 13
+ Sep 2022 16:35:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220913230739.228313-1-nhuck@google.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220909201642.3810565-1-luiz.dentz@gmail.com>
+In-Reply-To: <20220909201642.3810565-1-luiz.dentz@gmail.com>
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Tue, 13 Sep 2022 16:35:01 -0700
+Message-ID: <CABBYNZKHUbqYyevHRZ=6rLA0GAE20mLRHAj9JnFNuRn7VHrEeA@mail.gmail.com>
+Subject: Re: pull request: bluetooth 2022-09-09
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 13, 2022 at 04:07:38PM -0700, Nathan Huckleberry wrote:
-> All usages of the vport_ops struct have the .send field set to
-> dev_queue_xmit or internal_dev_recv.  Since most usages are set to
-> dev_queue_xmit, the function hook should match the signature of
-> dev_queue_xmit.
-> 
-> The only call to vport_ops->send() is in net/openvswitch/vport.c and it
-> throws away the return value.
-> 
-> This mismatched return type breaks forward edge kCFI since the underlying
-> function definition does not match the function hook definition.
-> 
-> Reported-by: Dan Carpenter <error27@gmail.com>
-> Link: https://github.com/ClangBuiltLinux/linux/issues/1703
-> Cc: llvm@lists.linux.dev
-> Signed-off-by: Nathan Huckleberry <nhuck@google.com>
+Hi Jakub,
 
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+On Fri, Sep 9, 2022 at 1:16 PM Luiz Augusto von Dentz
+<luiz.dentz@gmail.com> wrote:
+>
+> The following changes since commit 64ae13ed478428135cddc2f1113dff162d8112d4:
+>
+>   net: core: fix flow symmetric hash (2022-09-09 12:48:00 +0100)
+>
+> are available in the Git repository at:
+>
+>   git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth.git tags/for-net-2022-09-09
+>
+> for you to fetch changes up to 35e60f1aadf6c02d77fdf42180fbf205aec7e8fc:
+>
+>   Bluetooth: Fix HCIGETDEVINFO regression (2022-09-09 12:25:18 -0700)
+>
+> ----------------------------------------------------------------
+> bluetooth pull request for net:
+>
+>  -Fix HCIGETDEVINFO regression
+>
+> ----------------------------------------------------------------
+> Luiz Augusto von Dentz (1):
+>       Bluetooth: Fix HCIGETDEVINFO regression
+>
+>  include/net/bluetooth/hci_sock.h | 2 --
+>  1 file changed, 2 deletions(-)
 
-> ---
->  net/openvswitch/vport-internal_dev.c | 2 +-
->  net/openvswitch/vport.h              | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/openvswitch/vport-internal_dev.c b/net/openvswitch/vport-internal_dev.c
-> index 35f42c9821c2..74c88a6baa43 100644
-> --- a/net/openvswitch/vport-internal_dev.c
-> +++ b/net/openvswitch/vport-internal_dev.c
-> @@ -190,7 +190,7 @@ static void internal_dev_destroy(struct vport *vport)
->  	rtnl_unlock();
->  }
->  
-> -static netdev_tx_t internal_dev_recv(struct sk_buff *skb)
-> +static int internal_dev_recv(struct sk_buff *skb)
->  {
->  	struct net_device *netdev = skb->dev;
->  
-> diff --git a/net/openvswitch/vport.h b/net/openvswitch/vport.h
-> index 7d276f60c000..6ff45e8a0868 100644
-> --- a/net/openvswitch/vport.h
-> +++ b/net/openvswitch/vport.h
-> @@ -132,7 +132,7 @@ struct vport_ops {
->  	int (*set_options)(struct vport *, struct nlattr *);
->  	int (*get_options)(const struct vport *, struct sk_buff *);
->  
-> -	netdev_tx_t (*send) (struct sk_buff *skb);
-> +	int (*send)(struct sk_buff *skb);
->  	struct module *owner;
->  	struct list_head list;
->  };
-> -- 
-> 2.37.2.789.g6183377224-goog
-> 
+Looks like this still hasn't been applied, is there any problem that
+needs to be fixed?
+
+
+
+-- 
+Luiz Augusto von Dentz
