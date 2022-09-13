@@ -2,57 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB9A75B6663
-	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 06:17:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C40BE5B667E
+	for <lists+netdev@lfdr.de>; Tue, 13 Sep 2022 06:21:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229926AbiIMERR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 00:17:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36668 "EHLO
+        id S230298AbiIMEVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 00:21:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229939AbiIMERN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 00:17:13 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 559D950708
-        for <netdev@vger.kernel.org>; Mon, 12 Sep 2022 21:17:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1663042628;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=EE2N+OtcNs7l0++EJCzDtasBuUPUkg6w+6EIRiv9SSU=;
-        b=FzI/eUngFIolSzOE2NdFZ9n0K4OZP6GGcPAKydCuvUX/CqAi2mPwcLPiJ4oj8cfeFHQ6g7
-        984NlbcBx72a43Ho5Kztb/5rxj+azoDJCjhtns7RCcinY76pYsVONg2+7qrDUDGBz3KS7e
-        zmOcG2I93r2ApMOUHIzEKujGPLhv8Io=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-138-zJLNlAjvMhusTMnJWTB6MA-1; Tue, 13 Sep 2022 00:17:06 -0400
-X-MC-Unique: zJLNlAjvMhusTMnJWTB6MA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 303B21C06EC3;
-        Tue, 13 Sep 2022 04:17:06 +0000 (UTC)
-Received: from jtoppins.rdu.csb (unknown [10.22.8.165])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D0A51140EBF3;
-        Tue, 13 Sep 2022 04:17:05 +0000 (UTC)
-From:   Jonathan Toppins <jtoppins@redhat.com>
-To:     "netdev @ vger . kernel . org" <netdev@vger.kernel.org>
-Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: [RFC PATCH] bonding: cause oops on aarch64 architecture in bond_rr_gen_slave_id
-Date:   Tue, 13 Sep 2022 00:16:51 -0400
-Message-Id: <7565deb870649ba6b5995034695f1b498245617a.1663042611.git.jtoppins@redhat.com>
+        with ESMTP id S230047AbiIMEU2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 00:20:28 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 147E2E32;
+        Mon, 12 Sep 2022 21:20:01 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MRVYn24kBzHnjS;
+        Tue, 13 Sep 2022 12:17:49 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
+ (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Tue, 13 Sep
+ 2022 12:19:49 +0800
+From:   Zhengchao Shao <shaozhengchao@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <jhs@mojatatu.com>, <jiri@resnulli.us>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <shuah@kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <martin.lau@linux.dev>, <song@kernel.org>, <yhs@fb.com>,
+        <john.fastabend@gmail.com>, <kpsingh@kernel.org>, <sdf@google.com>,
+        <haoluo@google.com>, <jolsa@kernel.org>, <weiyongjun1@huawei.com>,
+        <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
+Subject: [PATCH net-next 0/9] refactor duplicate codes in the tc cls walk function
+Date:   Tue, 13 Sep 2022 12:21:26 +0800
+Message-ID: <20220913042135.58342-1-shaozhengchao@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
 Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,158 +51,218 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This bonding selftest causes the following kernel oops on aarch64 and
-possibly ppc64le architectures. This was reproduced on net/master commit
-64ae13ed478428135cddc2f1113dff162d8112d4 net: core: fix flow symmetric hash
+The walk implementation of most tc cls modules is basically the same.
+That is, the values of count and skip are checked first. If count is
+greater than or equal to skip, the registered fn function is executed.
+Otherwise, increase the value of count. So the code can be refactored.
+Then use helper function to replace the code of each cls module in
+alphabetical order.
 
-[  329.805838] kselftest: Running tests in drivers/net/bonding
-[  330.011028] eth0: renamed from link1_2
-[  330.220846] eth0: renamed from link1_1
-[  330.387755] bond0: (slave eth0): making interface the new active one
-[  330.394165] bond0: (slave eth0): Enslaving as an active interface with an up link
-[  330.401867] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
-[  334.586619] bond0: (slave eth0): Releasing backup interface
-[  334.671065] bond0: (slave eth0): Enslaving as an active interface with an up link
-[  334.686773] Unable to handle kernel paging request at virtual address ffff2c91ac905000
-[  334.694703] Mem abort info:
-[  334.697486]   ESR = 0x0000000096000004
-[  334.701234]   EC = 0x25: DABT (current EL), IL = 32 bits
-[  334.706536]   SET = 0, FnV = 0
-[  334.709579]   EA = 0, S1PTW = 0
-[  334.712719]   FSC = 0x04: level 0 translation fault
-[  334.717586] Data abort info:
-[  334.720454]   ISV = 0, ISS = 0x00000004
-[  334.724288]   CM = 0, WnR = 0
-[  334.727244] swapper pgtable: 4k pages, 48-bit VAs, pgdp=000008044d662000
-[  334.733944] [ffff2c91ac905000] pgd=0000000000000000, p4d=0000000000000000
-[  334.740734] Internal error: Oops: 96000004 [#1] SMP
-[  334.745602] Modules linked in: bonding tls veth rfkill sunrpc arm_spe_pmu vfat fat acpi_ipmi ipmi_ssif ixgbe igb i40e mdio ipmi_devintf ipmi_msghandler arm_cmn arm_dsu_pmu cppc_cpufreq acpi_tad fuse zram crct10dif_ce ast ghash_ce sbsa_gwdt nvme drm_vram_helper drm_ttm_helper nvme_core ttm xgene_hwmon
-[  334.772217] CPU: 7 PID: 2214 Comm: ping Not tainted 6.0.0-rc4-00133-g64ae13ed4784 #4
-[  334.779950] Hardware name: GIGABYTE R272-P31-00/MP32-AR1-00, BIOS F18v (SCP: 1.08.20211002) 12/01/2021
-[  334.789244] pstate: 60400009 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[  334.796196] pc : bond_rr_gen_slave_id+0x40/0x124 [bonding]
-[  334.801691] lr : bond_xmit_roundrobin_slave_get+0x38/0xdc [bonding]
-[  334.807962] sp : ffff8000221733e0
-[  334.811265] x29: ffff8000221733e0 x28: ffffdbac8572d198 x27: ffff80002217357c
-[  334.818392] x26: 000000000000002a x25: ffffdbacb33ee000 x24: ffff07ff980fa000
-[  334.825519] x23: ffffdbacb2e398ba x22: ffff07ff98102000 x21: ffff07ff981029c0
-[  334.832646] x20: 0000000000000001 x19: ffff07ff981029c0 x18: 0000000000000014
-[  334.839773] x17: 0000000000000000 x16: ffffdbacb1004364 x15: 0000aaaabe2f5a62
-[  334.846899] x14: ffff07ff8e55d968 x13: ffff07ff8e55db30 x12: 0000000000000000
-[  334.854026] x11: ffffdbacb21532e8 x10: 0000000000000001 x9 : ffffdbac857178ec
-[  334.861153] x8 : ffff07ff9f6e5a28 x7 : 0000000000000000 x6 : 000000007c2b3742
-[  334.868279] x5 : ffff2c91ac905000 x4 : ffff2c91ac905000 x3 : ffff07ff9f554400
-[  334.875406] x2 : ffff2c91ac905000 x1 : 0000000000000001 x0 : ffff07ff981029c0
-[  334.882532] Call trace:
-[  334.884967]  bond_rr_gen_slave_id+0x40/0x124 [bonding]
-[  334.890109]  bond_xmit_roundrobin_slave_get+0x38/0xdc [bonding]
-[  334.896033]  __bond_start_xmit+0x128/0x3a0 [bonding]
-[  334.901001]  bond_start_xmit+0x54/0xb0 [bonding]
-[  334.905622]  dev_hard_start_xmit+0xb4/0x220
-[  334.909798]  __dev_queue_xmit+0x1a0/0x720
-[  334.913799]  arp_xmit+0x3c/0xbc
-[  334.916932]  arp_send_dst+0x98/0xd0
-[  334.920410]  arp_solicit+0xe8/0x230
-[  334.923888]  neigh_probe+0x60/0xb0
-[  334.927279]  __neigh_event_send+0x3b0/0x470
-[  334.931453]  neigh_resolve_output+0x70/0x90
-[  334.935626]  ip_finish_output2+0x158/0x514
-[  334.939714]  __ip_finish_output+0xac/0x1a4
-[  334.943800]  ip_finish_output+0x40/0xfc
-[  334.947626]  ip_output+0xf8/0x1a4
-[  334.950931]  ip_send_skb+0x5c/0x100
-[  334.954410]  ip_push_pending_frames+0x3c/0x60
-[  334.958758]  raw_sendmsg+0x458/0x6d0
-[  334.962325]  inet_sendmsg+0x50/0x80
-[  334.965805]  sock_sendmsg+0x60/0x6c
-[  334.969286]  __sys_sendto+0xc8/0x134
-[  334.972853]  __arm64_sys_sendto+0x34/0x4c
-[  334.976854]  invoke_syscall+0x78/0x100
-[  334.980594]  el0_svc_common.constprop.0+0x4c/0xf4
-[  334.985287]  do_el0_svc+0x38/0x4c
-[  334.988591]  el0_svc+0x34/0x10c
-[  334.991724]  el0t_64_sync_handler+0x11c/0x150
-[  334.996072]  el0t_64_sync+0x190/0x194
-[  334.999726] Code: b9001062 f9403c02 d53cd044 8b040042 (b8210040)
-[  335.005810] ---[ end trace 0000000000000000 ]---
-[  335.010416] Kernel panic - not syncing: Oops: Fatal exception in interrupt
-[  335.017279] SMP: stopping secondary CPUs
-[  335.021374] Kernel Offset: 0x5baca8eb0000 from 0xffff800008000000
-[  335.027456] PHYS_OFFSET: 0x80000000
-[  335.030932] CPU features: 0x0000,0085c029,19805c82
-[  335.035713] Memory Limit: none
-[  335.038756] Rebooting in 180 seconds..
+The walk function is invoked during dump. Therefore, test cases related
+ to the tdc filter need to be added.
 
-Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
----
- .../selftests/drivers/net/bonding/Makefile    |  1 +
- .../bonding/bond-arp-interval-causes-panic.sh | 46 +++++++++++++++++++
- 2 files changed, 47 insertions(+)
- create mode 100755 tools/testing/selftests/drivers/net/bonding/bond-arp-interval-causes-panic.sh
+Add test cases locally and perform the test. The test results are listed
+below:
 
-diff --git a/tools/testing/selftests/drivers/net/bonding/Makefile b/tools/testing/selftests/drivers/net/bonding/Makefile
-index ab6c54b12098..79bb06fd386a 100644
---- a/tools/testing/selftests/drivers/net/bonding/Makefile
-+++ b/tools/testing/selftests/drivers/net/bonding/Makefile
-@@ -2,5 +2,6 @@
- # Makefile for net selftests
- 
- TEST_PROGS := bond-break-lacpdu-tx.sh
-+TEST_PROGS += bond-arp-interval-causes-panic.sh
- 
- include ../../../lib.mk
-diff --git a/tools/testing/selftests/drivers/net/bonding/bond-arp-interval-causes-panic.sh b/tools/testing/selftests/drivers/net/bonding/bond-arp-interval-causes-panic.sh
-new file mode 100755
-index 000000000000..0c3e5d486193
---- /dev/null
-+++ b/tools/testing/selftests/drivers/net/bonding/bond-arp-interval-causes-panic.sh
-@@ -0,0 +1,46 @@
-+#!/bin/sh
-+
-+# cause kernel oops in bond_rr_gen_slave_id on aarch64 and ppcle
-+# architectures
-+DEBUG=${DEBUG:-0}
-+
-+set -e
-+test ${DEBUG} -ne 0 && set -x
-+
-+function finish()
-+{
-+	ip -all netns delete
-+	ip link del link1_1 || true
-+}
-+
-+trap finish EXIT
-+
-+client_ip4=192.168.1.198
-+server_ip4=192.168.1.254
-+
-+# setup kernel so it reboots after causing the panic
-+echo 180 >/proc/sys/kernel/panic
-+
-+# build namespaces
-+ip link add dev link1_1 type veth peer name link1_2
-+
-+ip netns add "server"
-+ip link set dev link1_2 netns server up name eth0
-+ip netns exec server ip addr add ${server_ip4}/24 dev eth0
-+
-+ip netns add "client"
-+ip link set dev link1_1 netns client down name eth0
-+ip netns exec client ip link add dev bond0 down type bond mode 1 miimon 100 all_slaves_active 1
-+ip netns exec client ip link set dev eth0 down master bond0
-+ip netns exec client ip link set dev bond0 up
-+ip netns exec client ip addr add ${client_ip4}/24 dev bond0
-+ip netns exec client ping -c 5 $server_ip4 >/dev/null
-+
-+ip netns exec client ip link set dev eth0 down nomaster
-+ip netns exec client ip link set dev bond0 down
-+ip netns exec client ip link set dev bond0 type bond mode 0 arp_interval 1000 arp_ip_target "+${server_ip4}"
-+ip netns exec client ip link set dev eth0 down master bond0
-+ip netns exec client ip link set dev bond0 up
-+ip netns exec client ping -c 5 $server_ip4 >/dev/null
-+
-+exit 0
+./tdc.py -e 0811
+ok 1 0811 - Add multiple basic filter with cmp ematch u8/link layer and
+default action and dump them
+
+./tdc.py -e 5129
+ok 1 5129 - List basic filters
+
+./tdc.py -c filters bpf
+ok 13 23c3 - Add cBPF filter with valid bytecode
+ok 14 1563 - Add cBPF filter with invalid bytecode
+ok 15 2334 - Add eBPF filter with valid object-file
+ok 16 2373 - Add eBPF filter with invalid object-file
+ok 17 4423 - Replace cBPF bytecode
+ok 18 5122 - Delete cBPF filter
+ok 19 e0a9 - List cBPF filters
+
+./tdc.py -c filters cgroup
+ok 1 6273 - Add cgroup filter with cmp ematch u8/link layer and drop
+action
+ok 2 4721 - Add cgroup filter with cmp ematch u8/link layer with trans
+flag and pass action
+ok 3 d392 - Add cgroup filter with cmp ematch u16/link layer and pipe
+action
+ok 4 0234 - Add cgroup filter with cmp ematch u32/link layer and miltiple
+actions
+ok 5 8499 - Add cgroup filter with cmp ematch u8/network layer and pass
+action
+ok 6 b273 - Add cgroup filter with cmp ematch u8/network layer with trans
+flag and drop action
+ok 7 1934 - Add cgroup filter with cmp ematch u16/network layer and pipe
+action
+ok 8 2733 - Add cgroup filter with cmp ematch u32/network layer and
+miltiple actions
+ok 9 3271 - Add cgroup filter with NOT cmp ematch rule and pass action
+ok 10 2362 - Add cgroup filter with two ANDed cmp ematch rules and single
+action
+ok 11 9993 - Add cgroup filter with two ORed cmp ematch rules and single
+action
+ok 12 2331 - Add cgroup filter with two ANDed cmp ematch rules and one
+ORed ematch rule and single action
+ok 13 3645 - Add cgroup filter with two ANDed cmp ematch rules and one
+NOT ORed ematch rule and single action
+ok 14 b124 - Add cgroup filter with u32 ematch u8/zero offset and drop
+action
+ok 15 7381 - Add cgroup filter with u32 ematch u8/zero offset and invalid
+value >0xFF
+ok 16 2231 - Add cgroup filter with u32 ematch u8/positive offset and
+drop action
+ok 17 1882 - Add cgroup filter with u32 ematch u8/invalid mask >0xFF
+ok 18 1237 - Add cgroup filter with u32 ematch u8/missing offset
+ok 19 3812 - Add cgroup filter with u32 ematch u8/missing AT keyword
+ok 20 1112 - Add cgroup filter with u32 ematch u8/missing value
+ok 21 3241 - Add cgroup filter with u32 ematch u8/non-numeric value
+ok 22 e231 - Add cgroup filter with u32 ematch u8/non-numeric mask
+ok 23 4652 - Add cgroup filter with u32 ematch u8/negative offset and
+pass action
+ok 24 1331 - Add cgroup filter with u32 ematch u16/zero offset and pipe
+action
+ok 25 e354 - Add cgroup filter with u32 ematch u16/zero offset and
+invalid value >0xFFFF
+ok 26 3538 - Add cgroup filter with u32 ematch u16/positive offset and
+drop action
+ok 27 4576 - Add cgroup filter with u32 ematch u16/invalid mask >0xFFFF
+ok 28 b842 - Add cgroup filter with u32 ematch u16/missing offset
+ok 29 c924 - Add cgroup filter with u32 ematch u16/missing AT keyword
+ok 30 cc93 - Add cgroup filter with u32 ematch u16/missing value
+ok 31 123c - Add cgroup filter with u32 ematch u16/non-numeric value
+ok 32 3675 - Add cgroup filter with u32 ematch u16/non-numeric mask
+ok 33 1123 - Add cgroup filter with u32 ematch u16/negative offset and
+drop action
+ok 34 4234 - Add cgroup filter with u32 ematch u16/nexthdr+ offset and
+pass action
+ok 35 e912 - Add cgroup filter with u32 ematch u32/zero offset and pipe
+action
+ok 36 1435 - Add cgroup filter with u32 ematch u32/positive offset and
+drop action
+ok 37 1282 - Add cgroup filter with u32 ematch u32/missing offset
+ok 38 6456 - Add cgroup filter with u32 ematch u32/missing AT keyword
+ok 39 4231 - Add cgroup filter with u32 ematch u32/missing value
+ok 40 2131 - Add cgroup filter with u32 ematch u32/non-numeric value
+ok 41 f125 - Add cgroup filter with u32 ematch u32/non-numeric mask
+ok 42 4316 - Add cgroup filter with u32 ematch u32/negative offset and
+drop action
+ok 43 23ae - Add cgroup filter with u32 ematch u32/nexthdr+ offset and
+pipe action
+ok 44 23a1 - Add cgroup filter with canid ematch and single SFF
+ok 45 324f - Add cgroup filter with canid ematch and single SFF with mask
+ok 46 2576 - Add cgroup filter with canid ematch and multiple SFF
+ok 47 4839 - Add cgroup filter with canid ematch and multiple SFF with
+masks
+ok 48 6713 - Add cgroup filter with canid ematch and single EFF
+ok 49 4572 - Add cgroup filter with canid ematch and single EFF with mask
+ok 50 8031 - Add cgroup filter with canid ematch and multiple EFF
+ok 51 ab9d - Add cgroup filter with canid ematch and multiple EFF with
+masks
+ok 52 5349 - Add cgroup filter with canid ematch and a combination of
+SFF/EFF
+ok 53 c934 - Add cgroup filter with canid ematch and a combination of
+SFF/EFF with masks
+ok 54 4319 - Replace cgroup filter with diffferent match
+ok 55 4636 - Detele cgroup filter
+
+./tdc.py -c filters flow
+ok 1 5294 - Add flow filter with map key and ops
+ok 2 3514 - Add flow filter with map key or ops
+ok 3 7534 - Add flow filter with map key xor ops
+ok 4 4524 - Add flow filter with map key rshift ops
+ok 5 0230 - Add flow filter with map key addend ops
+ok 6 2344 - Add flow filter with src map key
+ok 7 9304 - Add flow filter with proto map key
+ok 8 9038 - Add flow filter with proto-src map key
+ok 9 2a03 - Add flow filter with proto-dst map key
+ok 10 a073 - Add flow filter with iif map key
+ok 11 3b20 - Add flow filter with priority map key
+ok 12 8945 - Add flow filter with mark map key
+ok 13 c034 - Add flow filter with nfct map key
+ok 14 0205 - Add flow filter with nfct-src map key
+ok 15 5315 - Add flow filter with nfct-src map key
+ok 16 7849 - Add flow filter with nfct-proto-src map key
+ok 17 9902 - Add flow filter with nfct-proto-dst map key
+ok 18 6742 - Add flow filter with rt-classid map key
+ok 19 5432 - Add flow filter with sk-uid map key
+ok 20 4234 - Add flow filter with sk-gid map key
+ok 21 4522 - Add flow filter with vlan-tag map key
+ok 22 4253 - Add flow filter with rxhash map key
+ok 23 4452 - Add flow filter with hash key list
+ok 24 4341 - Add flow filter with muliple ops
+ok 25 4322 - List flow filters
+ok 26 2320 - Replace flow filter with map key num
+ok 27 3213 - Delete flow filter with map key num
+
+./tdc.py -c filters route
+ok 1 e122 - Add route filter with from and to tag
+ok 2 6573 - Add route filter with fromif and to tag
+ok 3 1362 - Add route filter with to flag and reclassify action
+ok 4 4720 - Add route filter with from flag and continue actions
+ok 5 2812 - Add route filter with form tag and pipe action
+ok 6 7994 - Add route filter with miltiple actions
+ok 7 4312 - List route filters
+ok 8 2634 - Delete route filters with pipe action
+
+./tdc.py -c filters rsvp
+ok 1 2141 - Add rsvp filter with tcp proto and specific IP address
+ok 2 5267 - Add rsvp filter with udp proto and specific IP address
+ok 3 2819 - Add rsvp filter with src ip and src port
+ok 4 c967 - Add rsvp filter with tunnelid and continue action
+ok 5 5463 - Add rsvp filter with tunnel and pipe action
+ok 6 2332 - Add rsvp filter with miltiple actions
+ok 7 8879 - Add rsvp filter with tunnel and skp flag
+ok 8 8261 - List rsvp filters
+ok 9 8989 - Delete rsvp filters
+
+./tdc.py -c filters tcindex
+ok 1 8293 - Add tcindex filter with default action
+ok 2 7281 - Add tcindex filter with hash size and pass action
+ok 3 b294 - Add tcindex filter with mask shift and reclassify action
+ok 4 0532 - Add tcindex filter with pass_on and continue actions
+ok 5 d473 - Add tcindex filter with pipe action
+ok 6 2940 - Add tcindex filter with miltiple actions
+ok 7 1893 - List tcindex filters
+ok 8 2041 - Change tcindex filters with pass action
+ok 9 9203 - Replace tcindex filters with pass action
+ok 10 7957 - Delete tcindex filters with drop action
+
+Zhengchao Shao (9):
+  net/sched: cls_api: add helper for tc cls walker stats updating
+  net/sched: use tc_cls_stats_update() in filter
+  selftests/tc-testings: add selftests for bpf filter
+  selftests/tc-testings: add selftests for cgroup filter
+  selftests/tc-testings: add selftests for flow filter
+  selftests/tc-testings: add selftests for route filter
+  selftests/tc-testings: add selftests for rsvp filter
+  selftests/tc-testings: add selftests for tcindex filter
+  selftests/tc-testings: add list case for basic filter
+
+ include/net/pkt_cls.h                         |   13 +
+ net/sched/cls_basic.c                         |    9 +-
+ net/sched/cls_bpf.c                           |    8 +-
+ net/sched/cls_flow.c                          |    8 +-
+ net/sched/cls_fw.c                            |    9 +-
+ net/sched/cls_route.c                         |    9 +-
+ net/sched/cls_rsvp.h                          |    9 +-
+ net/sched/cls_tcindex.c                       |   18 +-
+ net/sched/cls_u32.c                           |   20 +-
+ .../tc-testing/tc-tests/filters/basic.json    |   47 +
+ .../tc-testing/tc-tests/filters/bpf.json      |  171 +++
+ .../tc-testing/tc-tests/filters/cgroup.json   | 1236 +++++++++++++++++
+ .../tc-testing/tc-tests/filters/flow.json     |  623 +++++++++
+ .../tc-testing/tc-tests/filters/route.json    |  181 +++
+ .../tc-testing/tc-tests/filters/rsvp.json     |  203 +++
+ .../tc-testing/tc-tests/filters/tcindex.json  |  227 +++
+ 16 files changed, 2716 insertions(+), 75 deletions(-)
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/filters/bpf.json
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/filters/cgroup.json
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/filters/flow.json
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/filters/route.json
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/filters/rsvp.json
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/filters/tcindex.json
+
 -- 
-2.31.1
+2.17.1
 
