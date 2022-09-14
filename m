@@ -2,99 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7400E5B87A5
-	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 13:56:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 125CB5B87C6
+	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 14:03:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229786AbiINL4w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Sep 2022 07:56:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48502 "EHLO
+        id S229693AbiINMDa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Sep 2022 08:03:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229490AbiINL4v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 07:56:51 -0400
-Received: from mail-oa1-f41.google.com (mail-oa1-f41.google.com [209.85.160.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 972482F03E;
-        Wed, 14 Sep 2022 04:56:49 -0700 (PDT)
-Received: by mail-oa1-f41.google.com with SMTP id 586e51a60fabf-1274ec87ad5so40335254fac.0;
-        Wed, 14 Sep 2022 04:56:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=JxLgOu6mpwnw6SY29Fdqty2Ik/m+3DmPqodTz8p4N7c=;
-        b=bcJEqOtNAatRINLla1+kNIoiKJNMMPW4lw+YuXyAnOKSP9Dij2+fySL9C4jk9kHzj/
-         6ZI5pUNbpXHvkr6z4PmlvTNOeyu2Cu00FbZQCng2PS14g0kzcGZUUAd/qs/rRJeEeMdL
-         NR9LgDTFpaOYMAFCI8i4QALlpr4sOCZtw+YyXf5dA63XwE6NAc95u7Vjkh+XGib1y6n0
-         PHrhwk9f6BrKQluZr077+fK2ZDVRYQJY5EpaEfhLn0HWZeCECEYnfLnxiBQ2swFcQDNM
-         aKMMv+sgEEe9udupLHagnPt8iG5xbMgxdkNc00MtYS8n9Ti3uO4RIeIvYHTmpLhWsYMf
-         DICw==
-X-Gm-Message-State: ACgBeo16XE7jYTBOm4iPvw/VwFeA9jO800syK3gGk9ftY6omCFkkob2B
-        yJ078+Qwb9hrjW9Sxvw+vQ==
-X-Google-Smtp-Source: AA6agR6iZ+uJtt57/qlMbscIjcVecG6JevOV1N1fEvnEnVqYWCqmEO8HGbz9r0g/xhTHzye7sagkSw==
-X-Received: by 2002:aca:add2:0:b0:34f:6883:5878 with SMTP id w201-20020acaadd2000000b0034f68835878mr1690227oie.260.1663156608789;
-        Wed, 14 Sep 2022 04:56:48 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id y19-20020a4acb93000000b0044b02c62872sm6431880ooq.10.2022.09.14.04.56.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Sep 2022 04:56:48 -0700 (PDT)
-Received: (nullmailer pid 1837080 invoked by uid 1000);
-        Wed, 14 Sep 2022 11:56:47 -0000
-Date:   Wed, 14 Sep 2022 06:56:47 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH v2 net-next] dt-bindings: net: dsa: convert ocelot.txt to
- dt-schema
-Message-ID: <20220914115647.GA1837019-robh@kernel.org>
-References: <20220913125806.524314-1-vladimir.oltean@nxp.com>
+        with ESMTP id S229490AbiINMD2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 08:03:28 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60B252E692;
+        Wed, 14 Sep 2022 05:03:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=AGiS0RJTIfvi76lZW3pl+xDVDO1sAPMtoNwFdsbw634=; b=vjqzDyEsUkoDI9FWKQ04N1BR2s
+        lD59yHKCy3WGtuA1rDc+Q0YxLU6LluESH/a1B1rKF7jjIl4zL6XTDb1DUlT6qdXEXikhXG3HMTXLJ
+        HNykcBcCSnQN9qaBKbb6R5fja2iq16eQKNYD0inuCUT3zrAyI3+Aldk025u4Gul/K7M8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oYR6g-00Gh3A-SF; Wed, 14 Sep 2022 14:03:06 +0200
+Date:   Wed, 14 Sep 2022 14:03:06 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "geert+renesas@glider.be" <geert+renesas@glider.be>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>
+Subject: Re: [PATCH 3/5] net: ethernet: renesas: Add Ethernet Switch driver
+Message-ID: <YyHC+r3uP7s15kny@lunn.ch>
+References: <20220909132614.1967276-1-yoshihiro.shimoda.uh@renesas.com>
+ <20220909132614.1967276-4-yoshihiro.shimoda.uh@renesas.com>
+ <Yx+9OrYDxKjVUutF@lunn.ch>
+ <TYBPR01MB5341F0C51EB2EBEF5A7107E7D8469@TYBPR01MB5341.jpnprd01.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220913125806.524314-1-vladimir.oltean@nxp.com>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+In-Reply-To: <TYBPR01MB5341F0C51EB2EBEF5A7107E7D8469@TYBPR01MB5341.jpnprd01.prod.outlook.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 13 Sep 2022 15:58:06 +0300, Vladimir Oltean wrote:
-> Replace the free-form description of device tree bindings for VSC9959
-> and VSC9953 with a YAML formatted dt-schema description. This contains
-> more or less the same information, but reworded to be a bit more
-> succint.
+> > > +static void rswitch_adjust_link(struct net_device *ndev)
+> > > +{
+> > > +	struct rswitch_device *rdev = netdev_priv(ndev);
+> > > +	struct phy_device *phydev = ndev->phydev;
+> > > +
+> > > +	if (phydev->link != rdev->etha->link) {
+> > > +		phy_print_status(phydev);
+> > > +		rdev->etha->link = phydev->link;
+> > > +	}
+> > 
+> > Given that the SERDES supports 100 and 1G, it seems odd you don't need
+> > to do anything here.
 > 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> Reviewed-by: Maxim Kochetkov <fido_max@inbox.ru>
-> ---
-> v1->v2:
-> - provide a more detailed description of the DT binding
-> - allow little-endian and big-endian properties
-> - allow interrupts property and make it required for vsc9959
-> - describe the meaning of the interrupts property
-> - reduce indentation in examples from 8 spaces to 4
-> - change license so it matches the driver
-> 
->  .../bindings/net/dsa/mscc,ocelot.yaml         | 260 ++++++++++++++++++
->  .../devicetree/bindings/net/dsa/ocelot.txt    | 213 --------------
->  2 files changed, 260 insertions(+), 213 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/net/dsa/mscc,ocelot.yaml
->  delete mode 100644 Documentation/devicetree/bindings/net/dsa/ocelot.txt
-> 
+> Indeed. However, unfortunately, the current hardware cannot change the speed at runtime...
+> So, I'll add such comments here.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Then you need to tell phylib about this. MAC drivers with limitations
+often call phy_set_max_speed() to remove higher speeds which the PHY
+can support, but the MAC cannot. You need to go further and remove
+lower speeds as well. The autoneg in the PHY should then only work for
+the speeds you actually support.
+
+> > > +static int rswitch_serdes_common_setting(void __iomem *addr0,
+> > > +					 enum rswitch_serdes_mode mode)
+> > > +{
+> > > +	switch (mode) {
+> > > +	case SGMII:
+> > > +		rswitch_serdes_write32(addr0, 0x0244, 0x180, 0x97);
+> > > +		rswitch_serdes_write32(addr0, 0x01d0, 0x180, 0x60);
+> > > +		rswitch_serdes_write32(addr0, 0x01d8, 0x180, 0x2200);
+> > > +		rswitch_serdes_write32(addr0, 0x01d4, 0x180, 0);
+> > > +		rswitch_serdes_write32(addr0, 0x01e0, 0x180, 0x3d);
+> > 
+> > Please add #defines for all these magic numbers.
+> 
+> I should have added comments before though, the datasheet also describes
+> such magic numbers like below...
+> Step S.4.1	bank 0x180	address = 0x0244		data = 0x00000097
+> Step S.4.2	bank 0x180	address = 0x01d0		data = 0x00000060
+> ...
+> 
+> So, perhaps we can define like the followings:
+> #define	SERDES_BANK_180		0x180
+> 
+> #define	SERDES_STEP_S_4_1_ADDR	0x0244
+> #define	SERDES_STEP_S_4_1_DATA	0x00000097
+
+Not really any better. Better to comment that you have no idea what
+any of this does, it is all black magic.
+
+    Andrew
