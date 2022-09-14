@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F56B5B8C7B
-	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 18:07:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 451885B8C7D
+	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 18:09:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229533AbiINQHM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Sep 2022 12:07:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40640 "EHLO
+        id S229463AbiINQJH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Sep 2022 12:09:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbiINQHK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 12:07:10 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2105.outbound.protection.outlook.com [40.107.223.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3F3E52FF2
-        for <netdev@vger.kernel.org>; Wed, 14 Sep 2022 09:07:09 -0700 (PDT)
+        with ESMTP id S229489AbiINQJG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 12:09:06 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2127.outbound.protection.outlook.com [40.107.94.127])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3A8173309
+        for <netdev@vger.kernel.org>; Wed, 14 Sep 2022 09:09:04 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HXPSHhC25vTmgSImqrwG8rko4Z2C1CdQ4SvlB8DPZduYpes8d+GziEpSWrLyXnqfmRV74cto9h3p6BZ8wP0xHqXm3zVTkfeXp6EfaNTqVrzH22zXg83y9zD/vwXLpcCUsHKEmV3DASurcOo13DAjMGknKp0bhlrYANGx2NSrHjbTYcf0xpPnzhTL/kbmmUkHIhN9WxA7HgVmcwhLqtIzjJcF+XmmG/XvUfZS6+dqNbbyqi79ccsySJQpXQR8PToxUtk2wbyWt99WLnrm6JV8nI4o+D4VPBY7m5Ba75Ah84fajKI3SfMaGvZO8wiknsMkniPcAuk3DOQobIorK+p6yA==
+ b=SZW9T+bIh1Sn0RdtnVeQHQg5rK9KIhuRWGeGo8DANsm+dGOSrCaKZC0vN2jUF2Spsm2+G7yrau4bE2QhZZ60VlSRBRw5eAAjq3Cu95iI/nSnirT7s7I7i95q/GoxX+PtTaiZ85o6WQZHl6J1jEmi1kcXqJf3teLs3u0k9ZgFIiX53TdaAMvTwGmRK2jCLnKUWVKd7aXTjBk/F50R18goyhNlkFGLycwWO/JwiRvp7VGepNF7ukbDClX95adQ5PVyGa3p/1iyu52V5J3WUhgENE9KRWC4WUw7U/K7IexzlOGMeLBS738JqyUSb1rGJYZQsR6UZ0/varoLEoKylPi+Mg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IkY1+SWxCPVSX7d2/QpwrYCvRG2qGad/TLbfl+lz2Pg=;
- b=llSprZajrPged7R1He9Yz3ohca9CyJZx0gjMxerE/pXs07l0VsQfzN/hbCU1KDSR3NxrMgUwWLE8AXDGCuDXtuugZxyOzlQf1yl3vQ0pkW83ezCusmTtg9Bi1aJU4FT+9HOdZw+K4UUl9eu30RFCO6w8ShSCYLZX9ZE9Qc5M4W7CTL2chucq/zrM5PZ8nmRVhbS8TV6Pdu+c4upQO5PYeyfXfdC84tHMQ5c6RGbwbIgDX0ub4FxacHwKMLYpiIludb6tLfjUYQiHdLyuDwPK5NNeUcFVcWQhkYEiFckXQyYdWHSEqo6Xe9jIxNWnRnTfS5m27ZEjeGxYOOtTggPWOg==
+ bh=uhAhpQubq5qNBrVm4I0jAcrGfDPmHtuGUD2lNxE5KTE=;
+ b=XNkBnrI/eQ8lGIpmnEvVNZygkl3g8e0YZo1ZV7KAGGhu0IQdksMtlGBmrbBHvaka9TjFn12Egl0wzm23xL5S8FZH2haTKS0GHmdWBK3W2ahXILYpgdUpaphflxrljxgBFeGmh6NxtFQQEGHDS2euyqUpgv9JfWVReqr32Y+fmqtnS5ut96I6P68T3IL2dnXjaDuHvZMU3AY4hsN1R6mSxkLqyMsOxC6BoiWp/g94Yh15O73GfMMdhMymiK1uRwGXwaG3zANDMPX/Y5QP/pHjH417VpWggO2ccmvSafXu/J9XfuJvmnJ1Y+vsxR0pcxV8rloZeWny0bj9u51kk9987g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IkY1+SWxCPVSX7d2/QpwrYCvRG2qGad/TLbfl+lz2Pg=;
- b=Hzv9wF9A8pLZSZzudn98QMFMZd3eQruEv4Fzs9Qb6KmO9kJOZhNgqLJQMOV9swuey3xw/crKJxAOKHO6TJb/Sai0vEPWXcmeLw1RzH23wPkzSBfQm20Xxm2oKXA4HveAvLMt/pw8oIKbbedv8aHGAjnCVRktGf03NQ66Onpx7Uc=
+ bh=uhAhpQubq5qNBrVm4I0jAcrGfDPmHtuGUD2lNxE5KTE=;
+ b=lX5r87Pda8g0X2WWmk5GrTBsPFhyWRrnL6cRweP+AYAb/qSkr8DOLrKdDIhATMqv0T7gPjxbdNds7e2U+qMfIJZmv/JOxRsbkBG64WVwYhZgy/MKiDGsZHo/tRqKelUEPZSRtXnkY4HKXRzbuhzlMLCelwottxQgJn5Pomp5uTw=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH0PR13MB5018.namprd13.prod.outlook.com (2603:10b6:510:91::15) with
+ by MW5PR13MB5462.namprd13.prod.outlook.com (2603:10b6:303:195::19) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.5; Wed, 14 Sep
- 2022 16:07:03 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5632.12; Wed, 14 Sep
+ 2022 16:09:02 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::2cbf:e4b1:5bbf:3e54]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::2cbf:e4b1:5bbf:3e54%4]) with mapi id 15.20.5632.012; Wed, 14 Sep 2022
- 16:07:03 +0000
+ 16:09:01 +0000
 From:   Simon Horman <simon.horman@corigine.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -47,10 +47,12 @@ To:     David Miller <davem@davemloft.net>,
 Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
         Hui Zhou <hui.zhou@corigine.com>,
         Ziyang Chen <ziyang.chen@corigine.com>
-Subject: [PATCH net-next 0/3] nfp: flower: police validation and ct enhancements
-Date:   Wed, 14 Sep 2022 17:06:01 +0100
-Message-Id: <20220914160604.1740282-1-simon.horman@corigine.com>
+Subject: [PATCH net-next 1/3] nfp: flower: add validation of for police actions which are independent of flows
+Date:   Wed, 14 Sep 2022 17:06:02 +0100
+Message-Id: <20220914160604.1740282-2-simon.horman@corigine.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220914160604.1740282-1-simon.horman@corigine.com>
+References: <20220914160604.1740282-1-simon.horman@corigine.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: LO4P123CA0368.GBRP123.PROD.OUTLOOK.COM
@@ -58,44 +60,44 @@ X-ClientProxiedBy: LO4P123CA0368.GBRP123.PROD.OUTLOOK.COM
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|PH0PR13MB5018:EE_
-X-MS-Office365-Filtering-Correlation-Id: 774648a7-60d4-4aba-965b-08da966b299b
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|MW5PR13MB5462:EE_
+X-MS-Office365-Filtering-Correlation-Id: e47006aa-fae2-4d9c-12e8-08da966b7057
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: s2TREtfMvM7Tfb/3huitFW4uf60EZNFZGThnpKuT7c2Qomcj7KHGxano0U1y2OdUwIn/Ifi+cWY8Mxy9FlMH/hyXBr4WwVFUqT97tqorDp8KNHxQDLlV041tS/mC7DXNkhQfUnqnLJqMfl+mV0G3XYf2dZqaOTPWSPec/9Gmhax78OBJTs7OP9ePRMGGiTkGtCBU8v3VMc0QcNVgPYW6mnlC1wn1GHAXai1ui6FWdtxm/uu6U8zWj963sDtVRsPMx5VmiUJoA+iALasCO6+45n59ur3SjOaiSmktv1CCi/EKP37/KDFXu7kAPb3ZMu9E6HbGTF0NP+6nBFtszqoFYPUQGqBwlQsTVLvH0Nl83nQi9+Zkjnm1TXQOyU5nnlvHrw/Ye1wCgwm79GQ7JtDX49I/Lih6v4NecBSRCXsij+gtX95i2aalDIopdBVThYos7R/JNJ7gLYJ7TUIrt9bNpnD2U8mS2m+mkXNDbngM2w4nouulVnujLxLRePOkF8GVEikPcM5CnGUYsJ01W2I8c7UveNRDszxZ8/7Nu9ceTIZW76n03GCD4HsJopOTGLAapIOVmZrLvKEW7ztb+PlUJa4Ut1X8JGfTX7Ny4scnNRVgKqGF3PdfuRJT4T5yKtvjGaK/evraR90aBq5pPB55oUSXzVf+pGVwdWrejHVrMl/COtSLHOC92NL01zKQoJZ/sKKNgtFpAQlBhR4+0qyX0zO1/EcxfxW/WuOt3ISWIAzYegeGDwxGhtLStxC81U5vREkyqbRrTLMVZ+ls12t/Iw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(366004)(39830400003)(136003)(376002)(396003)(451199015)(38100700002)(38350700002)(66476007)(36756003)(52116002)(6486002)(41300700001)(26005)(4744005)(6512007)(44832011)(6506007)(4326008)(110136005)(83380400001)(8676002)(478600001)(107886003)(66556008)(54906003)(66946007)(8936002)(1076003)(186003)(2906002)(2616005)(5660300002)(86362001)(316002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: FaLOQ271YSkayFjRxsciDWoV0KosoVNkPw7cU7Amdyerx1Ex6t2iEoPu7luASg0rTQlSqkbx1uhWHQ80jbJfjpU03oTyNpoJBm4t5CAzv/RsHGAsaNzRfELhCG+voR8sqPCLGsz/DjtEsNZWiDg4T2tGRqt+8s6r7I7+epUG6XPPzmdyQzK0s3wzUNW1Oz8t7DRDbUulN+bneCGbFqNd4qa/O7m43dnhiVsqzF0WTtN9n5U9GJC5ULZ4VepKsoVUZ4tmScwYmHi31WfM+1e9EpTkBL1q6H54LAfG7lTn84whEAVSlI5EEiwEJBg527nv4ghlDSJgYtrUNSuG6RhyKXm5MVHu3qhqvElf4WBl7KZcykxHEJU/Duj9IaonuhSjYba3TryZwLLQzYvRcBLv8axUPSN1Sb68rkNyNggESGDdBwyxv8tBgsbz2hQCQHrq1DkCAwH61M5N5tlrs6jkueE/fniNzdTBh1CaJco6zJ0A+YFufbpWBQsfUt/46Zqshv6Gs+QNkCqzYiLxGBxv2wzhCf/ABD0ZaOPyR9uny/FSz8tk+pvccPh1NU68TbVcCjc0FUpkPwiNQlIm9f7VEl4LmTvvxyllMqRzHWnxBSbtROOT6ytogh1S4bl8gpZi46driRw+jh6wFjs+mr6GFZNxKGA9rzvR55ZKvaezzN+9VrJPOvzDQ3pIGKKfWrTL75R0GYGqrOFt935ds41jiX3QOSGJV9MPCqG/4saTgXo3yqZkhyQ3oYqr9SVjwBWuYPVVYes74f29+TjD2SQsoQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(136003)(39840400004)(366004)(396003)(346002)(451199015)(6512007)(41300700001)(478600001)(83380400001)(38350700002)(316002)(6486002)(54906003)(36756003)(110136005)(2906002)(38100700002)(107886003)(52116002)(26005)(6506007)(86362001)(2616005)(1076003)(186003)(44832011)(8676002)(4326008)(8936002)(66556008)(66476007)(66946007)(5660300002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?xejJ/K42reftG1kI3NqJjfKvo6JH8ikPVSuayZ4QJESsuosFlj175SBr89OE?=
- =?us-ascii?Q?cfRRSe5PKbEhEHg5+pH5Febl1Pf3fSNg11MmsIgNiLaZj/xX3DCyfCqKA6FR?=
- =?us-ascii?Q?/V+g4ZaBLAZolhYi6cCaAq9UtxKh9SKTBRUsInVvCf5BhVSEBcwtJMM/4Q6T?=
- =?us-ascii?Q?l2JdQWGfEjapi3L7TuAK8eWON9lwtXmr0dsJOuUX35aSD7Scf4S0QlKrUGUD?=
- =?us-ascii?Q?VfCb1NBzsfvQmS4AOYV4Pibdbia99BLu8KGU/tm1/Z6xIk4dOn088+Iph3Jc?=
- =?us-ascii?Q?7dWuFL7yR39gVucFyy/8Z9rpfqOXkdUuQsMsI6vkgfoGVhWIdDqaRWeY38Ms?=
- =?us-ascii?Q?Xu6DOMcrdN7OvtrT6pUghDByYVYUlOj7Ox1O3MV91EYRNkp3rgUk/1x/4ofI?=
- =?us-ascii?Q?1YHHHfCwZ/q1jCZZcNsQqm0Yq2G1KvW8St8Uhy3V+roPaxLdjVQq1GWLqUkM?=
- =?us-ascii?Q?5QjnBUWFYTPaoTbkmVLiPZFAJBM8/0mTms5UCxbvaSiJFg4xr+NOwGhz32hB?=
- =?us-ascii?Q?T7V1FvXfFGMALJ7MUPERVkab6KNlzlO963oO8Oww8TMoSPh/uwB/2rBWereH?=
- =?us-ascii?Q?VFnNCjdeqkRXym8TsniHqyFqMlW0qlMTCZ2ha93XLZwkPsA3P+LzrrTF7DNi?=
- =?us-ascii?Q?3uBl88OgwgFF5mZ4F1ekkAeYry2BwPfDdFSNuSLEoxJ54rYrUs2fUDVXnGmy?=
- =?us-ascii?Q?Casl7CAGiGtxViJMsRrGy7ZJqAGc2SfawVQgC9ZAkXnthxAH8WjPcSKwJdPu?=
- =?us-ascii?Q?Zi6bXu2DFWZtvsFGOu2YYUeoWZgRoxA5aGT2DPSP2aMt9LJzcvEwHDNkkHA6?=
- =?us-ascii?Q?y9y571gFb/BKS6r64YPPxCr5TqdTRcvsbOVhCvkUEDJhK+mn8Woq9tn4bSho?=
- =?us-ascii?Q?4Y9qf1QjDb2NYI43Ta0SyJwJnMpKJzT1WDoH3gN5e45rIR+TBrl0uzThH83P?=
- =?us-ascii?Q?Opr/xVD8tL0ZLQ5XpvVthbpv1z3+5+xpmfQvN75anCLczBlULWVN3NML/+JT?=
- =?us-ascii?Q?3KCY+EWl0WIAMtyGcNo/pgKYP7AZX81DsCCHYAXGxSJnMReCzELBjPrDc7IH?=
- =?us-ascii?Q?nfmZhpgPgzgaZw5YcZ6updjAlHuwoIPhSxQjaMHZWqY7hW5c2T/U26jpyfjx?=
- =?us-ascii?Q?XXqFd/+YjMVoApw0eZZ2Walp7CNokfc5LfLq9nBhMc+fVXJDGrDycw4POB2n?=
- =?us-ascii?Q?XTBfbLxT7S6Dc9ecWGQRxY6UiLnOdNM/YXKcJSetRB+tX5/le/yzc6ZU9DFB?=
- =?us-ascii?Q?7GqSxiU4lGk8+IcEGLCmUNETTVeDFfC1BlQo924kLS4PjBEccINHpi/2Hh0G?=
- =?us-ascii?Q?3SIOmwjnqMg/7+k20htWqTjuZd0B35NDPM6EejW5B/UzsHMQsPv8OHSFZ3Wt?=
- =?us-ascii?Q?S21ZEIC1jek04RIT9q2ngY2yi6l+JXmttg2bLtux8nLgQv/3NcfwkTzf0oGj?=
- =?us-ascii?Q?Y9hxVKA0k9dUupTRpTwFTjrORiKdT3cYR8oZjBOy2G9XngB2pc4ngrKbWLlu?=
- =?us-ascii?Q?muB2cRO3ASW5tG0x3CN6bVau1Oay290pd5DJSLozOlYvCesIFxFigat0IkqT?=
- =?us-ascii?Q?WGiZFPdro0HklYDGjByVr0trhNiHBnEdm6tLbQVc46Yu9tfe5MBOL7oGUu0K?=
- =?us-ascii?Q?7w=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?krZbfmkRFeaEjcJKy2lGFv0fpw7JCdKnCsPbAZmWbav0nQQ3Ss5PTVYo3AJv?=
+ =?us-ascii?Q?CfGfGXXk0BqLkxnsEw5JOEDl8Hn7Vkwb1RfXSaWnjWIOMlMMGYoAgPh4IYbN?=
+ =?us-ascii?Q?R3fnnu6ScTIUY3FmiSe5AFuFA6OtKuwV+gjfmqBjK3euYchl3r4XC9M3s4ZN?=
+ =?us-ascii?Q?7HTuBVjzrOZVCjaMeO4O0Q95SFMUrTnRta0i6ONnfWdE+Mjyw90KHzZ46aA0?=
+ =?us-ascii?Q?xcuq1VWbzqWTZbVidUbMMcL0vCHRGvYbU+1gcIAIrcr2iRMzJVlDlVUSGGQD?=
+ =?us-ascii?Q?NJqETGxC4XKyL2yfqdR5rOFLFFpiJsZ6glae7PINhDiDBnwLKz5jvrj8cB84?=
+ =?us-ascii?Q?5B33yPpica/j+fgSKBhjKJP9WLWrYlJ9ADiq7hAYoBvg2zR9OdJVyPRgfsEx?=
+ =?us-ascii?Q?og7Hm+H4gDVpY7Fbw/S/KHc3sVrTAcLPePHTcmNQuUalb25fgZjN2XeII2Hy?=
+ =?us-ascii?Q?ucHGrAu7pDT6iHd35Bf8DtpeRXXte/IOe164OufNn1XumAX8f7iyXsXwH1EW?=
+ =?us-ascii?Q?suBkAmAQqRXcJnQ+rTTtIT93JXPhL8kN0RGkXpjPCpNePuGNgL8wbLzSn6nV?=
+ =?us-ascii?Q?PTb1C3Fzq9E9b69lj8Wa2z2IcvOXPbiYWMBqQyNEmP3rfAlkDlyEf2+4ja34?=
+ =?us-ascii?Q?OCCXVFB8ZLzCCZExpktT0bZ0PgA/qa5DoPEyPIJiN7qpluXEJONPIhbKd03+?=
+ =?us-ascii?Q?jLZAH4TYDH7ylp+PpgxQS7LAA4N2nSfIpp9LMwk8l5DxVQxCJ1/XnQhOSGUV?=
+ =?us-ascii?Q?mTmPJhned5jRscAUpkmF8os6WQ81hizkrbA4pcl1wI9zCt5MHNo0eQZ0bYrr?=
+ =?us-ascii?Q?2QcjsIqIaCL5A3xV73b59+rdQi7dALZ6QX6W9GfEMb6KJDtSxo3dH12BoFzQ?=
+ =?us-ascii?Q?GjmELHbc5yNgP9xwHHUT/46CvlT71PQkChhvWTWHKNwi6xbS+9cZr5bqa3V1?=
+ =?us-ascii?Q?dXjQLxMyzz5gAWD//srX3NrEus77X0m7fQxG3gp+HZnV1FlQkNYv3Hut00Oy?=
+ =?us-ascii?Q?aDqpVflncPX8U9/2KqPbwQgwr6I9CEQCr3N9bPD1Y7XJ7U++H8aZn1n0vqI2?=
+ =?us-ascii?Q?uR6+vIR9goiy0pD77IyPaTrGdKuV1ljBKA1mapAIG5tx7W5s+JnZuYcLbuyr?=
+ =?us-ascii?Q?dlKkTyXedLPJeYpDijOfHORlxLKIPwSRAeSzkPPzsjS8hmpRvU+ll8ktvQZE?=
+ =?us-ascii?Q?oHjxHHx0NSu+3NOHa8EKkfRvgaVYv+qoP/Y+iPZO12EqjQRSBAGbT3rvztIv?=
+ =?us-ascii?Q?CdKC2CKFaC89PgBbeNnzT5mW0qubmm7yEYxcchddRVqwr7iH4wk1OA9o0xqw?=
+ =?us-ascii?Q?b0s8NLXJDuikz+3DDW0vyj8v6OSXmHR852tThlwHlVj4NqfSALM8Z6mZR2AJ?=
+ =?us-ascii?Q?B5QAjftuU9RTp5SF8Ypl6B6HwUhLX0xSX+CCWoWq5EVAbA4TmhSTI7Bv5sYs?=
+ =?us-ascii?Q?QYwugJzncOLESMjvAHJb6L8GzFXOA5jr4oveWoGRyNhRE0hhsIV6YglvFMg/?=
+ =?us-ascii?Q?Gc/MMcvhaa3ygEwu4fP0pkPrR8wxVf+DJi1n/PZrDtza81edTysRu+D28UYU?=
+ =?us-ascii?Q?67dx+js3cQJZDPW7Q8qgK+wpr+FvBGHw9T40rA+3EK/3ESLaI/zmE2UkeS0I?=
+ =?us-ascii?Q?3A=3D=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB5018
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW5PR13MB5462
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
@@ -105,31 +107,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Ziyang Chen <ziyang.chen@corigine.com>
 
-this series enhances the flower hardware offload
-facility provided by the nfp driver.
+Validation of police actions was added to offload drivers in
+commit d97b4b105ce7 ("flow_offload: reject offload for all drivers with
+invalid police parameters")
 
-1. Add validation of police actions created independently of flows
+This patch extends that validation in the nfp driver to include
+police actions which are created independently of flows.
 
-2. Add support offload of ct NAT action
+Signed-off-by: Ziyang Chen <ziyang.chen@corigine.com>
+Reviewed-by: Baowen Zheng <baowen.zheng@corigine.com>
+Reviewed-by: Louis Peens <louis.peens@corigine.com>
+Signed-off-by: Simon Horman <simon.horman@corigine.com>
+---
+ .../ethernet/netronome/nfp/flower/qos_conf.c  | 31 ++++++++++++++-----
+ 1 file changed, 23 insertions(+), 8 deletions(-)
 
-3. Support offload of rule which has both vlan push/pop/mangle
-   and ct action
-
-Hui Zhou (2):
-  nfp: flower: support hw offload for ct nat action
-  nfp: flower: support vlan action in pre_ct
-
-Ziyang Chen (1):
-  nfp: flower: add validation of for police actions which are
-    independent of flows
-
- .../ethernet/netronome/nfp/flower/conntrack.c | 242 +++++++++++++++++-
- .../ethernet/netronome/nfp/flower/conntrack.h |   6 +
- .../ethernet/netronome/nfp/flower/qos_conf.c  |  31 ++-
- 3 files changed, 263 insertions(+), 16 deletions(-)
-
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/qos_conf.c b/drivers/net/ethernet/netronome/nfp/flower/qos_conf.c
+index 7b92026e1a6f..99052a925d9e 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/qos_conf.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/qos_conf.c
+@@ -119,7 +119,8 @@ int nfp_flower_offload_one_police(struct nfp_app *app, bool ingress,
+ 
+ static int nfp_policer_validate(const struct flow_action *action,
+ 				const struct flow_action_entry *act,
+-				struct netlink_ext_ack *extack)
++				struct netlink_ext_ack *extack,
++				bool ingress)
+ {
+ 	if (act->police.exceed.act_id != FLOW_ACTION_DROP) {
+ 		NL_SET_ERR_MSG_MOD(extack,
+@@ -127,12 +128,20 @@ static int nfp_policer_validate(const struct flow_action *action,
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+-	if (act->police.notexceed.act_id != FLOW_ACTION_CONTINUE &&
+-	    act->police.notexceed.act_id != FLOW_ACTION_PIPE &&
+-	    act->police.notexceed.act_id != FLOW_ACTION_ACCEPT) {
+-		NL_SET_ERR_MSG_MOD(extack,
+-				   "Offload not supported when conform action is not continue, pipe or ok");
+-		return -EOPNOTSUPP;
++	if (ingress) {
++		if (act->police.notexceed.act_id != FLOW_ACTION_CONTINUE &&
++		    act->police.notexceed.act_id != FLOW_ACTION_ACCEPT) {
++			NL_SET_ERR_MSG_MOD(extack,
++					   "Offload not supported when conform action is not continue or ok");
++			return -EOPNOTSUPP;
++		}
++	} else {
++		if (act->police.notexceed.act_id != FLOW_ACTION_PIPE &&
++		    act->police.notexceed.act_id != FLOW_ACTION_ACCEPT) {
++			NL_SET_ERR_MSG_MOD(extack,
++					   "Offload not supported when conform action is not pipe or ok");
++			return -EOPNOTSUPP;
++		}
+ 	}
+ 
+ 	if (act->police.notexceed.act_id == FLOW_ACTION_ACCEPT &&
+@@ -218,7 +227,7 @@ nfp_flower_install_rate_limiter(struct nfp_app *app, struct net_device *netdev,
+ 			return -EOPNOTSUPP;
+ 		}
+ 
+-		err = nfp_policer_validate(&flow->rule->action, action, extack);
++		err = nfp_policer_validate(&flow->rule->action, action, extack, true);
+ 		if (err)
+ 			return err;
+ 
+@@ -687,6 +696,7 @@ nfp_act_install_actions(struct nfp_app *app, struct flow_offload_action *fl_act,
+ 	bool pps_support, pps;
+ 	bool add = false;
+ 	u64 rate;
++	int err;
+ 
+ 	pps_support = !!(fl_priv->flower_ext_feats & NFP_FL_FEATS_QOS_PPS);
+ 
+@@ -698,6 +708,11 @@ nfp_act_install_actions(struct nfp_app *app, struct flow_offload_action *fl_act,
+ 					   "unsupported offload: qos rate limit offload requires police action");
+ 			continue;
+ 		}
++
++		err = nfp_policer_validate(&fl_act->action, action, extack, false);
++		if (err)
++			return err;
++
+ 		if (action->police.rate_bytes_ps > 0) {
+ 			rate = action->police.rate_bytes_ps;
+ 			burst = action->police.burst;
 -- 
 2.30.2
 
