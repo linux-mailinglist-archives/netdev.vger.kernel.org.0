@@ -2,87 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C4AE65B8C8B
-	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 18:09:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79CCF5B8CBC
+	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 18:20:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229665AbiINQJp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Sep 2022 12:09:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42458 "EHLO
+        id S229936AbiINQUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Sep 2022 12:20:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229658AbiINQJl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 12:09:41 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62439B1EE;
-        Wed, 14 Sep 2022 09:09:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=QVO1O0z/BVH8CRjnCLTwDu7rIPy+uXeBW2E/ilPBWno=; b=B2/82eOjpp5kGPJ3gicZLvcslo
-        QBukfSq7IeJwyf5AQjq/KaReUSxCdVPyl/RSVR7iMZyvhR7Tx5uiB5ylx3fiNB/l7zuHdSklwMXPN
-        otNS4cXf1oDLYjcUWh/KTjWmdjBSqv+nkJ1Qw+zuOyByIU6RXsh/CyOggBTGFD64ybklslqYt0CBZ
-        EsJmnaHsbi0YtwnmOf4Ak7ypuBaL0M0rH3dzUaebwIXtSB36UIb78RnQV+5kuzXACBChmp4Mv5Ndj
-        qofeUadkOAfR8SR5navbrKqDJFymrRWB72YfRhY1Sgm7vhdzf5V+fTG5Kam9kr1TYVI3b3wjccpxJ
-        xr7CAeLw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34332)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oYUxA-0004b6-4h; Wed, 14 Sep 2022 17:09:32 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oYUx8-0001nP-JK; Wed, 14 Sep 2022 17:09:30 +0100
-Date:   Wed, 14 Sep 2022 17:09:30 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+        with ESMTP id S229928AbiINQUJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 12:20:09 -0400
+Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D4003E759;
+        Wed, 14 Sep 2022 09:20:06 -0700 (PDT)
+Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-127d10b4f19so42292303fac.9;
+        Wed, 14 Sep 2022 09:20:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=nXLhEVGz1qMo8aImbTGN6nLiSfBsJOREM/Vz/U5qmX8=;
+        b=b/aiH/LXrB96+WSTfnQZme2JgcaYpeDJ28PT381kMINMTaTM0Z4ApFiXBp9KtpuTMm
+         Lnj7HOj3n4M+phUOn8gZvG6BN+NhihCb2Jj9JupfvhLVBM0p100wApRX9FJqtvSg+Jl7
+         SQLvRzz50vWQcb2YqAJkf7ujtiCgevOu3G3tBt0tOb+QAURDlRlXTVf5y76VZ2juJ9yO
+         Asg2YK1a0QJxwWeOQc5CJVRK4bieTxbReN5lfAJez4taJjFCc84NK7/BM1snkk8NcAUG
+         Qn9uBdrVwZhtubbQ0f1TQ8Z6kt1JgXHOXc4PmxzIetfIBHxyFfsqV2cbt3fQUXbcm4Gl
+         FRlw==
+X-Gm-Message-State: ACgBeo37G1OP4RC0aTo/XSPPSaicGAavTyqGJUuhX/5inQdkWUDYgNE4
+        2Xn1L+7cROCo03XxOrivoA==
+X-Google-Smtp-Source: AA6agR5RYHCagG3o1f6+CTby/sjSQ+8CfTLBxsLk+r37c+5y+Q1ZyAWXz8zlIpAZlh7jKaNdGgEKXQ==
+X-Received: by 2002:a05:6870:82a8:b0:126:8942:24e3 with SMTP id q40-20020a05687082a800b00126894224e3mr2751959oae.133.1663172405607;
+        Wed, 14 Sep 2022 09:20:05 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id z17-20020a9d62d1000000b00655d20b2b76sm6035651otk.33.2022.09.14.09.20.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Sep 2022 09:20:05 -0700 (PDT)
+Received: (nullmailer pid 2461881 invoked by uid 1000);
+        Wed, 14 Sep 2022 16:20:04 -0000
+Date:   Wed, 14 Sep 2022 11:20:04 -0500
+From:   Rob Herring <robh@kernel.org>
 To:     Siddharth Vadapalli <s-vadapalli@ti.com>
 Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski@linaro.org, krzysztof.kozlowski+dt@linaro.org,
+        pabeni@redhat.com, krzysztof.kozlowski@linaro.org,
+        krzysztof.kozlowski+dt@linaro.org, linux@armlinux.org.uk,
         vladimir.oltean@nxp.com, grygorii.strashko@ti.com, vigneshr@ti.com,
         nsekhar@ti.com, netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         kishon@ti.com
-Subject: Re: [PATCH 5/8] net: ethernet: ti: am65-cpsw: Add support for
- fixed-link configuration
-Message-ID: <YyH8us424n3dyLYT@shell.armlinux.org.uk>
+Subject: Re: [PATCH 1/8] dt-bindings: net: ti: k3-am654-cpsw-nuss: Update
+ bindings for J721e CPSW9G
+Message-ID: <20220914162004.GA2433106-robh@kernel.org>
 References: <20220914095053.189851-1-s-vadapalli@ti.com>
- <20220914095053.189851-6-s-vadapalli@ti.com>
+ <20220914095053.189851-2-s-vadapalli@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220914095053.189851-6-s-vadapalli@ti.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220914095053.189851-2-s-vadapalli@ti.com>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 14, 2022 at 03:20:50PM +0530, Siddharth Vadapalli wrote:
-> Check for fixed-link in am65_cpsw_nuss_mac_config() using struct
-> am65_cpsw_slave_data's phy_node property to obtain fwnode. Since
-> am65_cpsw_nuss_mac_link_up() is not invoked in fixed-link mode, perform
-> the relevant operations in am65_cpsw_nuss_mac_config() itself.
+On Wed, Sep 14, 2022 at 03:20:46PM +0530, Siddharth Vadapalli wrote:
+> Update bindings for TI K3 J721e SoC which contains 9 ports (8 external
+> ports) CPSW9G module and add compatible for it.
+> 
+> Changes made:
+>     - Add new compatible ti,j721e-cpswxg-nuss for CPSW9G.
+>     - Extend pattern properties for new compatible.
+>     - Change maximum number of CPSW ports to 8 for new compatible.
+> 
+> Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
+> ---
+>  .../bindings/net/ti,k3-am654-cpsw-nuss.yaml   | 23 +++++++++++++++++--
+>  1 file changed, 21 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
+> index 821974815dec..868b7fb58b06 100644
+> --- a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
+> +++ b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
+> @@ -57,6 +57,7 @@ properties:
+>        - ti,am654-cpsw-nuss
+>        - ti,j7200-cpswxg-nuss
+>        - ti,j721e-cpsw-nuss
+> +      - ti,j721e-cpswxg-nuss
+>        - ti,am642-cpsw-nuss
+>  
+>    reg:
+> @@ -111,7 +112,7 @@ properties:
+>          const: 0
+>  
+>      patternProperties:
+> -      "^port@[1-4]$":
+> +      "^port@[1-8]$":
+>          type: object
+>          description: CPSWxG NUSS external ports
+>  
+> @@ -121,7 +122,7 @@ properties:
+>          properties:
+>            reg:
+>              minimum: 1
+> -            maximum: 4
+> +            maximum: 8
+>              description: CPSW port number
+>  
+>            phys:
+> @@ -181,6 +182,21 @@ required:
+>    - '#size-cells'
+>  
+>  allOf:
+> +  - if:
+> +      not:
+> +        properties:
+> +          compatible:
+> +            contains:
+> +              const: ti,j721e-cpswxg-nuss
+> +    then:
+> +      properties:
+> +        ethernet-ports:
+> +          patternProperties:
+> +            "^port@[5-8]$": false
+> +            properties:
+> +              reg:
+> +                maximum: 4
 
-Further to my other comments, you also fail to explain that, when in
-fixed-link SGMII mode, you _emulate_ being a PHY - which I deduce
-since you are sending the duplex setting and speed settings via the
-SGMII control word. Also, as SGMII was invented for a PHY to be able
-to communicate the media negotiation resolution to the MAC, SGMII
-defines that the PHY fills in the speed and duplex information in
-the control word to pass it to the MAC, and the MAC acknowledges this
-information. There is no need (and SGMII doesn't permit) the MAC to
-advertise what it's doing.
+Your indentation is off. 'properties' here is under patternProperties 
+making it a DT property.
 
-Maybe this needs to be explained in the commit message?
+> +
+>    - if:
+>        not:
+>          properties:
+> @@ -192,6 +208,9 @@ allOf:
+>          ethernet-ports:
+>            patternProperties:
+>              "^port@[3-4]$": false
+> +            properties:
+> +              reg:
+> +                maximum: 2
 
-This doesn't have any bearing on the other comments I've made.
+Same here.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+>  
+>  additionalProperties: false
+>  
+> -- 
+> 2.25.1
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> 
