@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EB395B9029
-	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 23:43:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7B8C5B9030
+	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 23:47:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229810AbiINVnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Sep 2022 17:43:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42364 "EHLO
+        id S229821AbiINVrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Sep 2022 17:47:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229473AbiINVnG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 17:43:06 -0400
+        with ESMTP id S229701AbiINVrK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 17:47:10 -0400
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5D367E31B;
-        Wed, 14 Sep 2022 14:43:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13B6E81695;
+        Wed, 14 Sep 2022 14:47:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663191785; x=1694727785;
+  t=1663192029; x=1694728029;
   h=from:to:cc:subject:in-reply-to:references:date:
    message-id:mime-version;
-  bh=2lkQHmD5bo9pnv773sWW8cwWNIi3heVNLCQ8vVphs1Q=;
-  b=Jm+2m89q3CuMXqc7UOTSnGviyNV3Sm+73umWqbjIxfXp9AQV7mlHCHRD
-   WC699oiLZwa/8EvjqRb311Ai2OU71ht9Ki2LvAt67/E8HRXjGp8s3ONF+
-   m+groG7iqoLIJhH8/70L2Za3x2fE/MIGXKgLbAtrdByYBNbCiWRl4uwSf
-   F6Tov0kT+00qwW/Wg530E0aKbmIg4zJb+xEwYtImnSr3KOFhJfrwCXI9S
-   iDuf69ojgi09BeZMFvz3SNdzBBJQMueP2ImqELkSm8t7KjlpJWvOmKJh7
-   JkqijOGxsO+Nnby8Y651O/TJLB6saxA57OuASkhBeakxoPq2RFe/lGr8H
+  bh=cbnXqtf2TMDhDBxTiSWRd+F7VowQpmqU+RCKBnbHXtk=;
+  b=FXoTuvP1cr9qwBNJx8u5qjAXvrV+lZjFWEWNJoRWOCO/nyHuez+cB9NH
+   xXQHLk4SckczThTWuSpLUgk5013fgoqr+u2N0KBfRuFIl2CT+KfrWi9vh
+   Nl++MEPA48x7QyC1kf3V1N10M545v94k7zNTn4KBvhUfRw4Ge7c0nlaNF
+   mvkaPr00IvXi0hed+9331kaFpGcoULh7LL+zJJCXHNWLHOiClyb5vK8wH
+   goxHX0noXA1YYI9rg2EHtm4RZAs++dcGTykUGKTFKcPdVnfXz5MXwRjSo
+   mau+NU9bxO7Uj+RGpkF++xqXs3QjcAO281MA/GC2MGrP7WncmC8APhESD
    A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10470"; a="384841386"
+X-IronPort-AV: E=McAfee;i="6500,9779,10470"; a="384842037"
 X-IronPort-AV: E=Sophos;i="5.93,315,1654585200"; 
-   d="scan'208";a="384841386"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2022 14:43:05 -0700
+   d="scan'208";a="384842037"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2022 14:47:08 -0700
 X-IronPort-AV: E=Sophos;i="5.93,315,1654585200"; 
-   d="scan'208";a="706100523"
+   d="scan'208";a="568172315"
 Received: from vcostago-desk1.jf.intel.com (HELO vcostago-desk1) ([10.54.70.10])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2022 14:43:03 -0700
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2022 14:47:08 -0700
 From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -66,13 +66,11 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Gerhard Engleder <gerhard@engleder-embedded.com>,
         Grygorii Strashko <grygorii.strashko@ti.com>,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 04/13] net/sched: taprio: allow user input of
- per-tc max SDU
-In-Reply-To: <20220914153303.1792444-5-vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net-next 00/13] Add tc-taprio support for queueMaxSDU
+In-Reply-To: <20220914153303.1792444-1-vladimir.oltean@nxp.com>
 References: <20220914153303.1792444-1-vladimir.oltean@nxp.com>
- <20220914153303.1792444-5-vladimir.oltean@nxp.com>
-Date:   Wed, 14 Sep 2022 14:43:02 -0700
-Message-ID: <87k065iqe1.fsf@intel.com>
+Date:   Wed, 14 Sep 2022 14:47:08 -0700
+Message-ID: <87edwdiq77.fsf@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -87,279 +85,73 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Vladimir Oltean <vladimir.oltean@nxp.com> writes:
 
-> IEEE 802.1Q clause 12.29.1.1 "The queueMaxSDUTable structure and data
-> types" and 8.6.8.4 "Enhancements for scheduled traffic" talk about the
-> existence of a per traffic class limitation of maximum frame sizes, with
-> a fallback on the port-based MTU.
+> Michael and Xiaoliang will probably be aware that the tc-taprio offload
+> mode supported by the Felix DSA driver has limitations surrounding its
+> guard bands.
 >
-> As far as I am able to understand, the 802.1Q Service Data Unit (SDU)
-> represents the MAC Service Data Unit (MSDU, i.e. L2 payload), excluding
-> any number of prepended VLAN headers which may be otherwise present in
-> the MSDU. Therefore, the queueMaxSDU is directly comparable to the
-> device MTU (1500 means L2 payload sizes are accepted, or frame sizes of
-> 1518 octets, or 1522 plus one VLAN header). Drivers which offload this
-> are directly responsible of translating into other units of measurement.
+> The initial discussion was at:
+> https://lore.kernel.org/netdev/c7618025da6723418c56a54fe4683bd7@walle.cc/
 >
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->  include/net/pkt_sched.h        |   1 +
->  include/uapi/linux/pkt_sched.h |  11 +++
->  net/sched/sch_taprio.c         | 122 ++++++++++++++++++++++++++++++++-
->  3 files changed, 133 insertions(+), 1 deletion(-)
+> with the latest status being that we now have a vsc9959_tas_guard_bands_update()
+> method which makes a best-guess attempt at how much useful space to
+> reserve for packet scheduling in a taprio interval, and how much to
+> reserve for guard bands.
 >
-> diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
-> index 29f65632ebc5..88080998557b 100644
-> --- a/include/net/pkt_sched.h
-> +++ b/include/net/pkt_sched.h
-> @@ -168,6 +168,7 @@ struct tc_taprio_qopt_offload {
->  	ktime_t base_time;
->  	u64 cycle_time;
->  	u64 cycle_time_extension;
-> +	u32 max_sdu[TC_MAX_QUEUE];
->  
->  	size_t num_entries;
->  	struct tc_taprio_sched_entry entries[];
-> diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
-> index f292b467b27f..000eec106856 100644
-> --- a/include/uapi/linux/pkt_sched.h
-> +++ b/include/uapi/linux/pkt_sched.h
-> @@ -1232,6 +1232,16 @@ enum {
->  #define TCA_TAPRIO_ATTR_FLAG_TXTIME_ASSIST	_BITUL(0)
->  #define TCA_TAPRIO_ATTR_FLAG_FULL_OFFLOAD	_BITUL(1)
->  
-> +enum {
-> +	TCA_TAPRIO_TC_ENTRY_UNSPEC,
-> +	TCA_TAPRIO_TC_ENTRY_INDEX,		/* u32 */
-> +	TCA_TAPRIO_TC_ENTRY_MAX_SDU,		/* u32 */
-> +
-> +	/* add new constants above here */
-> +	__TCA_TAPRIO_TC_ENTRY_CNT,
-> +	TCA_TAPRIO_TC_ENTRY_MAX = (__TCA_TAPRIO_TC_ENTRY_CNT - 1)
-> +};
-> +
->  enum {
->  	TCA_TAPRIO_ATTR_UNSPEC,
->  	TCA_TAPRIO_ATTR_PRIOMAP, /* struct tc_mqprio_qopt */
-> @@ -1245,6 +1255,7 @@ enum {
->  	TCA_TAPRIO_ATTR_SCHED_CYCLE_TIME_EXTENSION, /* s64 */
->  	TCA_TAPRIO_ATTR_FLAGS, /* u32 */
->  	TCA_TAPRIO_ATTR_TXTIME_DELAY, /* u32 */
-> +	TCA_TAPRIO_ATTR_TC_ENTRY, /* nest */
->  	__TCA_TAPRIO_ATTR_MAX,
->  };
->  
-> diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-> index 2a4b8f59f444..834cbed88e4f 100644
-> --- a/net/sched/sch_taprio.c
-> +++ b/net/sched/sch_taprio.c
-> @@ -79,6 +79,7 @@ struct taprio_sched {
->  	struct sched_gate_list __rcu *admin_sched;
->  	struct hrtimer advance_timer;
->  	struct list_head taprio_list;
-> +	u32 max_sdu[TC_MAX_QUEUE];
->  	u32 txtime_delay;
->  };
->  
-> @@ -416,6 +417,9 @@ static int taprio_enqueue_one(struct sk_buff *skb, struct Qdisc *sch,
->  			      struct Qdisc *child, struct sk_buff **to_free)
->  {
->  	struct taprio_sched *q = qdisc_priv(sch);
-> +	struct net_device *dev = qdisc_dev(sch);
-> +	int prio = skb->priority;
-> +	u8 tc;
->  
->  	/* sk_flags are only safe to use on full sockets. */
->  	if (skb->sk && sk_fullsock(skb->sk) && sock_flag(skb->sk, SOCK_TXTIME)) {
-> @@ -427,6 +431,12 @@ static int taprio_enqueue_one(struct sk_buff *skb, struct Qdisc *sch,
->  			return qdisc_drop(skb, sch, to_free);
->  	}
->  
-> +	/* Devices with full offload are expected to honor this in hardware */
-> +	tc = netdev_get_prio_tc_map(dev, prio);
-> +	if (q->max_sdu[tc] &&
-> +	    q->max_sdu[tc] < max_t(int, 0, skb->len - skb_mac_header_len(skb)))
-> +		return qdisc_drop(skb, sch, to_free);
-> +
+> IEEE 802.1Q actually does offer a tunable variable (queueMaxSDU) which
+> can determine the max MTU supported per traffic class. In turn we can
+> determine the size we need for the guard bands, depending on the
+> queueMaxSDU. This way we can make the guard band of small taprio
+> intervals smaller than one full MTU worth of transmission time, if we
+> know that said traffic class will transport only smaller packets.
+>
+> Allow input of queueMaxSDU through netlink into tc-taprio, offload it to
+> the hardware I have access to (LS1028A), and deny non-default values to
+> everyone else.
+>
+> First 3 patches are some cleanups I made while figuring out what exactly
+> gets called for taprio software mode, and what gets called for offload
+> mode.
+>
+> Vladimir Oltean (13):
+>   net/sched: taprio: remove redundant FULL_OFFLOAD_IS_ENABLED check in
+>     taprio_enqueue
+>   net/sched: taprio: stop going through private ops for dequeue and peek
+>   net/sched: taprio: add extack messages in taprio_init
 
-One minor idea, perhaps if you initialize q->max_sdu[] with a value that
-you could use to compare here (2^32 - 1), this comparison could be
-simplified. The issue is that that value would become invalid for a
-maximum SDU, not a problem for ethernet.
+Indeed. I think the first three patches can be in a separate series.
 
->  	qdisc_qstats_backlog_inc(sch, skb);
->  	sch->q.qlen++;
->  
-> @@ -761,6 +771,11 @@ static const struct nla_policy entry_policy[TCA_TAPRIO_SCHED_ENTRY_MAX + 1] = {
->  	[TCA_TAPRIO_SCHED_ENTRY_INTERVAL]  = { .type = NLA_U32 },
->  };
->  
-> +static const struct nla_policy taprio_tc_policy[TCA_TAPRIO_TC_ENTRY_MAX + 1] = {
-> +	[TCA_TAPRIO_TC_ENTRY_INDEX]	   = { .type = NLA_U32 },
-> +	[TCA_TAPRIO_TC_ENTRY_MAX_SDU]	   = { .type = NLA_U32 },
-> +};
-> +
->  static const struct nla_policy taprio_policy[TCA_TAPRIO_ATTR_MAX + 1] = {
->  	[TCA_TAPRIO_ATTR_PRIOMAP]	       = {
->  		.len = sizeof(struct tc_mqprio_qopt)
-> @@ -773,6 +788,7 @@ static const struct nla_policy taprio_policy[TCA_TAPRIO_ATTR_MAX + 1] = {
->  	[TCA_TAPRIO_ATTR_SCHED_CYCLE_TIME_EXTENSION] = { .type = NLA_S64 },
->  	[TCA_TAPRIO_ATTR_FLAGS]                      = { .type = NLA_U32 },
->  	[TCA_TAPRIO_ATTR_TXTIME_DELAY]		     = { .type = NLA_U32 },
-> +	[TCA_TAPRIO_ATTR_TC_ENTRY]		     = { .type = NLA_NESTED },
->  };
->  
->  static int fill_sched_entry(struct taprio_sched *q, struct nlattr **tb,
-> @@ -1236,7 +1252,7 @@ static int taprio_enable_offload(struct net_device *dev,
->  {
->  	const struct net_device_ops *ops = dev->netdev_ops;
->  	struct tc_taprio_qopt_offload *offload;
-> -	int err = 0;
-> +	int tc, err = 0;
->  
->  	if (!ops->ndo_setup_tc) {
->  		NL_SET_ERR_MSG(extack,
-> @@ -1253,6 +1269,9 @@ static int taprio_enable_offload(struct net_device *dev,
->  	offload->enable = 1;
->  	taprio_sched_to_offload(dev, sched, offload);
->  
-> +	for (tc = 0; tc < TC_MAX_QUEUE; tc++)
-> +		offload->max_sdu[tc] = q->max_sdu[tc];
-> +
->  	err = ops->ndo_setup_tc(dev, TC_SETUP_QDISC_TAPRIO, offload);
->  	if (err < 0) {
->  		NL_SET_ERR_MSG(extack,
-> @@ -1387,6 +1406,73 @@ static int taprio_parse_clockid(struct Qdisc *sch, struct nlattr **tb,
->  	return err;
->  }
->  
-> +static int taprio_parse_tc_entry(struct Qdisc *sch,
-> +				 struct nlattr *opt,
-> +				 unsigned long *seen_tcs,
-> +				 struct netlink_ext_ack *extack)
-> +{
-> +	struct nlattr *tb[TCA_TAPRIO_TC_ENTRY_MAX + 1] = { };
-> +	struct taprio_sched *q = qdisc_priv(sch);
-> +	struct net_device *dev = qdisc_dev(sch);
-> +	u32 max_sdu = 0;
-> +	int err, tc;
-> +
-> +	err = nla_parse_nested(tb, TCA_TAPRIO_TC_ENTRY_MAX, opt,
-> +			       taprio_tc_policy, extack);
-> +	if (err < 0)
-> +		return err;
-> +
-> +	if (!tb[TCA_TAPRIO_TC_ENTRY_INDEX]) {
-> +		NL_SET_ERR_MSG_MOD(extack, "TC entry index missing");
-> +		return -EINVAL;
-> +	}
-> +
-> +	tc = nla_get_u32(tb[TCA_TAPRIO_TC_ENTRY_INDEX]);
-> +	if (tc >= TC_QOPT_MAX_QUEUE) {
-> +		NL_SET_ERR_MSG_MOD(extack, "TC entry index out of range");
-> +		return -ERANGE;
-> +	}
-> +
-> +	if (*seen_tcs & BIT(tc)) {
-> +		NL_SET_ERR_MSG_MOD(extack, "Duplicate TC entry");
-> +		return -EINVAL;
-> +	}
-> +
-> +	*seen_tcs |= BIT(tc);
-> +
-> +	if (tb[TCA_TAPRIO_TC_ENTRY_MAX_SDU])
-> +		max_sdu = nla_get_u32(tb[TCA_TAPRIO_TC_ENTRY_MAX_SDU]);
-> +
-> +	if (max_sdu > dev->max_mtu) {
-> +		NL_SET_ERR_MSG_MOD(extack, "TC max SDU exceeds device max MTU");
-> +		return -ERANGE;
-> +	}
-> +
-> +	q->max_sdu[tc] = max_sdu;
-> +
-> +	return 0;
-> +}
-> +
-> +static int taprio_parse_tc_entries(struct Qdisc *sch,
-> +				   struct nlattr *opt,
-> +				   struct netlink_ext_ack *extack)
-> +{
-> +	unsigned long seen_tcs = 0;
-> +	struct nlattr *n;
-> +	int err = 0, rem;
-> +
-> +	nla_for_each_nested(n, opt, rem) {
-> +		if (nla_type(n) != TCA_TAPRIO_ATTR_TC_ENTRY)
-> +			continue;
-> +
-> +		err = taprio_parse_tc_entry(sch, n, &seen_tcs, extack);
-> +		if (err)
-> +			break;
-> +	}
-> +
-> +	return err;
-> +}
-> +
->  static int taprio_mqprio_cmp(const struct net_device *dev,
->  			     const struct tc_mqprio_qopt *mqprio)
->  {
-> @@ -1465,6 +1551,10 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
->  	if (err < 0)
->  		return err;
->  
-> +	err = taprio_parse_tc_entries(sch, opt, extack);
-> +	if (err)
-> +		return err;
-> +
->  	new_admin = kzalloc(sizeof(*new_admin), GFP_KERNEL);
->  	if (!new_admin) {
->  		NL_SET_ERR_MSG(extack, "Not enough memory for a new schedule");
-> @@ -1855,6 +1945,33 @@ static int dump_schedule(struct sk_buff *msg,
->  	return -1;
->  }
->  
-> +static int taprio_dump_tc_entries(struct taprio_sched *q, struct sk_buff *skb)
-> +{
-> +	struct nlattr *n;
-> +	int tc;
-> +
-> +	for (tc = 0; tc < TC_MAX_QUEUE; tc++) {
-> +		n = nla_nest_start(skb, TCA_TAPRIO_ATTR_TC_ENTRY);
-> +		if (!n)
-> +			return -EMSGSIZE;
-> +
-> +		if (nla_put_u32(skb, TCA_TAPRIO_TC_ENTRY_INDEX, tc))
-> +			goto nla_put_failure;
-> +
-> +		if (nla_put_u32(skb, TCA_TAPRIO_TC_ENTRY_MAX_SDU,
-> +				q->max_sdu[tc]))
-> +			goto nla_put_failure;
-> +
-> +		nla_nest_end(skb, n);
-> +	}
-> +
-> +	return 0;
-> +
-> +nla_put_failure:
-> +	nla_nest_cancel(skb, n);
-> +	return -EMSGSIZE;
-> +}
-> +
->  static int taprio_dump(struct Qdisc *sch, struct sk_buff *skb)
->  {
->  	struct taprio_sched *q = qdisc_priv(sch);
-> @@ -1894,6 +2011,9 @@ static int taprio_dump(struct Qdisc *sch, struct sk_buff *skb)
->  	    nla_put_u32(skb, TCA_TAPRIO_ATTR_TXTIME_DELAY, q->txtime_delay))
->  		goto options_error;
->  
-> +	if (taprio_dump_tc_entries(q, skb))
-> +		goto options_error;
-> +
->  	if (oper && dump_schedule(skb, oper))
->  		goto options_error;
->  
+>   net/sched: taprio: allow user input of per-tc max SDU
+>   net: dsa: felix: offload per-tc max SDU from tc-taprio
+>   net: enetc: cache accesses to &priv->si->hw
+>   net: enetc: offload per-tc max SDU from tc-taprio
+>   net: dsa: hellcreek: deny tc-taprio changes to per-tc max SDU
+>   net: dsa: sja1105: deny tc-taprio changes to per-tc max SDU
+>   tsnep: deny tc-taprio changes to per-tc max SDU
+>   igc: deny tc-taprio changes to per-tc max SDU
+>   net: stmmac: deny tc-taprio changes to per-tc max SDU
+>   net: am65-cpsw: deny tc-taprio changes to per-tc max SDU
+>
+>  drivers/net/dsa/hirschmann/hellcreek.c        |   5 +
+>  drivers/net/dsa/ocelot/felix_vsc9959.c        |  20 +-
+>  drivers/net/dsa/sja1105/sja1105_tas.c         |   6 +-
+>  drivers/net/ethernet/engleder/tsnep_tc.c      |   6 +-
+>  drivers/net/ethernet/freescale/enetc/enetc.c  |  28 ++-
+>  drivers/net/ethernet/freescale/enetc/enetc.h  |  12 +-
+>  .../net/ethernet/freescale/enetc/enetc_pf.c   |  25 ++-
+>  .../net/ethernet/freescale/enetc/enetc_qos.c  |  70 +++----
+>  drivers/net/ethernet/intel/igc/igc_main.c     |   6 +-
+>  .../net/ethernet/stmicro/stmmac/stmmac_tc.c   |   6 +-
+>  drivers/net/ethernet/ti/am65-cpsw-qos.c       |   6 +-
+>  include/net/pkt_sched.h                       |   1 +
+>  include/uapi/linux/pkt_sched.h                |  11 +
+>  net/sched/sch_taprio.c                        | 194 +++++++++++++-----
+>  14 files changed, 283 insertions(+), 113 deletions(-)
+>
 > -- 
 > 2.34.1
 >
 
+
+Cheers,
 -- 
 Vinicius
