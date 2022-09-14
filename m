@@ -2,78 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B5445B8BA6
-	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 17:19:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B8A75B8BAB
+	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 17:21:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230152AbiINPTz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Sep 2022 11:19:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53514 "EHLO
+        id S230238AbiINPVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Sep 2022 11:21:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229609AbiINPTx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 11:19:53 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68EE61056E;
-        Wed, 14 Sep 2022 08:19:48 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1663168748; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=d18h0VCuUcQlrCNVzd8EEARixB3LaiEII5NJ/cAhdM+pS/xi7tIBSgiQy3ka5+ZSrVuT4UyAe/KNYmZjtCurviNkdscz28ErI9nIFS1dr/FB1R3XMNkdVh++Ieu/ny1Osr06f01k4/FbH+EeNTBJB8u5xHLmj13skdfm1vUxM2I=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1663168748; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=wloC/J0F6yZhG8fSrhhIFOYeY4PZYcuw8/qw0WLhmts=; 
-        b=Kc35hLPDHHRFNBPdLXsB7ca2ooQ2Qh4pt8u+B4zDSzcdOFr2dO98x1/5wnc/95ocK86DfkAWYueARithEsUoJw8419JkhhCX9bQxYfLk36pGSZDkvMOAsdRZCvWV0U2f63wA7zsEE7dzvCoT2tS/EVy+MCqMnKwxabPm3g6Tuus=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1663168748;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=wloC/J0F6yZhG8fSrhhIFOYeY4PZYcuw8/qw0WLhmts=;
-        b=HYRqQgZnOA5dUMeMQZnjRkWq2q5fiZVvdxsATLGvgufw/k6xNHAFIdJOJyDF3HvH
-        sMLAyZz5GVqPkarxZt/Kxxx3lH1axtLnS5Xo3Yi6tN0WmasIP1k7FsR6aW5C9AWvtzB
-        SPqc6KtvrFFWWLMhVRRmgRphHUwJ60k8lxnGDHvI=
-Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 1663168746065958.7172933428667; Wed, 14 Sep 2022 08:19:06 -0700 (PDT)
-Message-ID: <44045164-692d-c8f5-3216-b043fb821634@arinc9.com>
-Date:   Wed, 14 Sep 2022 18:18:58 +0300
+        with ESMTP id S229559AbiINPVf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 11:21:35 -0400
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E668F2F02D
+        for <netdev@vger.kernel.org>; Wed, 14 Sep 2022 08:21:32 -0700 (PDT)
+Received: by mail-qt1-x831.google.com with SMTP id z18so11413116qts.7
+        for <netdev@vger.kernel.org>; Wed, 14 Sep 2022 08:21:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=8sVnRYf4lRZtHclJFM/PYgijezwVHsVwJUa/M1F9Nfw=;
+        b=aU+pRvep+sXGVRr01+jPV7M1KGeUuIOdGm/7Imgv2e35rdbyXzmARUq1pX7NbUK31d
+         P7JnZtuwOHE1Y3V+NSrCkrjcfy/IVgYVBkLzYROVFEJ2rN4QRKzlug+IhDRBgsnblfD/
+         z6gvdEo890XqggiMeBDVIPT5KAcHLF/iLDo5o=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=8sVnRYf4lRZtHclJFM/PYgijezwVHsVwJUa/M1F9Nfw=;
+        b=hxJWELQe7TqvLHsUZbc1jeQocSOmRB4wOh2ZHXRh9M5Xk1GVHNxFkbAd+EmpatOvCR
+         BYbi3189RhaE5TXUwkJnWbP5ONttACCz7NqM/Srkeg+cq0VE4BqylUCny1MpenrQhn4g
+         zHJOOVAJpy/teuTit6gAlJXlTxND6QaAFvmsaOw6g4V5h8nioJbKFlc442KdIv5LbM+b
+         eGt77slofV1weLyeKGxZBkhH/xPyLaolP+D/nzFQKs6fI6dWw3TGWL3ZistY0plKYq0Q
+         BKQMxFVwJ1h/GVASs1qQVqk/hOmlyZ2BM/yPpsWO2jWfBuXo3bbFEwnr3alDguJ5DBbw
+         vXhg==
+X-Gm-Message-State: ACgBeo2l9q+5M64c0UIJ4uykxqGUMAQYBAxrgcDf1bXwCFBfooZ1Bc9j
+        +SBH1ZT/JVDE9zS6Jv59+Frd8eeyNWnACQ==
+X-Google-Smtp-Source: AA6agR7ZNSK0Wj6yfxk79XJBZFAA1MTWPQ476wlMRinCM4BZ0UnCvklfLiJOYGy/JdFBeTehewHncw==
+X-Received: by 2002:a05:622a:2cc:b0:35c:ba98:a026 with SMTP id a12-20020a05622a02cc00b0035cba98a026mr2708655qtx.160.1663168891742;
+        Wed, 14 Sep 2022 08:21:31 -0700 (PDT)
+Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com. [209.85.160.177])
+        by smtp.gmail.com with ESMTPSA id h2-20020ac87762000000b0034454d0c8f3sm1594370qtu.93.2022.09.14.08.21.31
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 14 Sep 2022 08:21:31 -0700 (PDT)
+Received: by mail-qt1-f177.google.com with SMTP id j10so8597240qtv.4
+        for <netdev@vger.kernel.org>; Wed, 14 Sep 2022 08:21:31 -0700 (PDT)
+X-Received: by 2002:a02:9509:0:b0:349:b6cb:9745 with SMTP id
+ y9-20020a029509000000b00349b6cb9745mr18869971jah.281.1663168880396; Wed, 14
+ Sep 2022 08:21:20 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 04/10] dt-bindings: memory: mt7621: add syscon as
- compatible string
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+References: <20220912221317.2775651-1-rrangel@chromium.org>
+ <20220912160931.v2.5.I4ff95ba7e884a486d7814ee888bf864be2ebdef4@changeid> <YyFs5q67RYR2aAy7@black.fi.intel.com>
+In-Reply-To: <YyFs5q67RYR2aAy7@black.fi.intel.com>
+From:   Raul Rangel <rrangel@chromium.org>
+Date:   Wed, 14 Sep 2022 09:21:08 -0600
+X-Gmail-Original-Message-ID: <CAHQZ30CU2-YtOfGYXJq3c=-1ttyw=hKZvViOfWGAKkxXO1C5Gw@mail.gmail.com>
+Message-ID: <CAHQZ30CU2-YtOfGYXJq3c=-1ttyw=hKZvViOfWGAKkxXO1C5Gw@mail.gmail.com>
+Subject: Re: [PATCH v2 05/13] gpiolib: acpi: Add wake_capable parameter to acpi_dev_gpio_irq_get_by
+To:     Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc:     Linux ACPI <linux-acpi@vger.kernel.org>,
+        linux-input <linux-input@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "jingle.wu" <jingle.wu@emc.com.tw>,
+        "Limonciello, Mario" <mario.limonciello@amd.com>,
+        Tim Van Patten <timvp@google.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Asmaa Mnebhi <asmaa@nvidia.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        "David S. Miller" <davem@davemloft.net>,
+        David Thompson <davthompson@nvidia.com>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org
-References: <20220914085451.11723-1-arinc.unal@arinc9.com>
- <20220914085451.11723-5-arinc.unal@arinc9.com>
- <20220914151414.GA2233841-robh@kernel.org>
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <20220914151414.GA2233841-robh@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        Jakub Kicinski <kuba@kernel.org>, Len Brown <lenb@kernel.org>,
+        Lu Wei <luwei32@huawei.com>, Paolo Abeni <pabeni@redhat.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,16 +90,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14.09.2022 18:14, Rob Herring wrote:
-> On Wed, Sep 14, 2022 at 11:54:45AM +0300, Arınç ÜNAL wrote:
->> Add syscon as a constant string on the compatible property as it's required
->> for the SoC to work. Update the example accordingly.
-> 
-> It's not required. It's required to automagically create a regmap. That
-> can be done yourself as well. The downside to adding 'syscon' is it
-> requires a DT update. Maybe that's fine for this platform? I don't know.
+On Tue, Sep 13, 2022 at 11:55 PM Mika Westerberg
+<mika.westerberg@linux.intel.com> wrote:
+>
+> Hi,
+>
+> On Mon, Sep 12, 2022 at 04:13:09PM -0600, Raul E Rangel wrote:
+> > +int acpi_dev_gpio_irq_get_by(struct acpi_device *adev, const char *name,
+> > +                          int index, int *wake_capable)
+>
+> Here too bool.
 
-My GB-PC2 won't boot without syscon on mt7621.dtsi. This string was 
-always there on the memory controller node on mt7621.dtsi.
-
-Arınç
+I've incorporated both of your suggestions. I instead added
+`acpi_dev_gpio_irq_wake_get_by` as the basic function and left
+`acpi_dev_gpio_irq_get_by` the same. THis way I don't have to update
+any of the callers.
