@@ -2,179 +2,321 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A9265B8F78
-	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 22:06:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF4455B8F7A
+	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 22:07:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229629AbiINUGv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Sep 2022 16:06:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50936 "EHLO
+        id S229459AbiINUHV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Sep 2022 16:07:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbiINUGt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 16:06:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76D2246224;
-        Wed, 14 Sep 2022 13:06:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2C94AB81208;
-        Wed, 14 Sep 2022 20:06:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 845FEC433D6;
-        Wed, 14 Sep 2022 20:06:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663186004;
-        bh=IW0lL6nPwj10l7SHvx4A+45oQBhv/wWsJR8P6cTBFKU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=E7j0qYFVH2t1zHjxAlzGTLvgddXXvwSqKUm14jSZisvk9lQUWLRDLsYeY6vBcLyNn
-         YEoCLHbcelmzXKUE57UOLe/LP5WKByGt5He6+2zfQ+sEGLIbpR9t8zbOfwD4oDpojD
-         WFQ8twXDxDZbEB5poiJjZSiLW0Q1TJDCG69S4o+W4UI21R1r84A7+9P5CL+Vr2XLBe
-         s9iyqoDaXQCy5KsjqraUVK4bSCG2NWSLi8qeuCciOwAHF/9ajlyIJjXKAMviW17VjR
-         2mtpvV5zq4tmuJfgM6GsZ/W+YrMFBtBeyoZOzwyvfPG6xQriAd0v3gdqMuEI9/kd2N
-         h/Bo2QmsAnSYg==
-Received: by pali.im (Postfix)
-        id A51F77B8; Wed, 14 Sep 2022 22:06:41 +0200 (CEST)
-Date:   Wed, 14 Sep 2022 22:06:41 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Christian Marangi <ansuelsmth@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Regression: qca8k_sw_probe crashes (Was: Re: [net-next PATCH v5
- 01/14] net: dsa: qca8k: cache match data to speed up access)
-Message-ID: <20220914200641.zvib2kpo2t26u6ai@pali>
-References: <20220727113523.19742-1-ansuelsmth@gmail.com>
- <20220727113523.19742-2-ansuelsmth@gmail.com>
+        with ESMTP id S229608AbiINUHU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 16:07:20 -0400
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2086.outbound.protection.outlook.com [40.107.22.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF33D46602
+        for <netdev@vger.kernel.org>; Wed, 14 Sep 2022 13:07:18 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aN8x8f7dH5HM+QNyyR6IDLUyKcBBzrUytLrQDcCBhreXyJlxjky9G/JbZ3bTUDL8ESJtKpjNBVDL72Ui7ILaCt+qiKp4Odem+cbtLXL/YbFGg6evoTmkEemGdzgeRRQtQWjfRWS4pAcD73y/lRP892+apXh3k+qvD2est+/Y02jdSKPreSP6wA3EOFPd9j4sGa2MukL6zTUilo1LmVwqmb/XvA1/HU7uCg3kto5kkmytYhQ45waB4xp0K2zbrm62voB4DLjp5oBhDAJc1nAaXcMXbk1waRYh8yxmuz8olzwWq81fOUAQqByQ5l3aZDe5YjHkEY84DDIaUmXyLXEwUw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=DAIN4CsSTsufxBHjKGAqRejSigzTn9GUNxN1bK3ubws=;
+ b=CASPJuFDDzn53R0qg6bhTGQHp2E3YAKRh8I4ebKPx1wv9PeoqFq4sK292o9P6zP2Cm/FObdTG7ZQib3Zmt9JVVuS0JP+ZbRwIQeFEi8ag7QXuyoJeFbPcPcHLMv8RAYyd/sOxg7oZqN3iO086MxZv/w59jXcIWeozT2zHU5egZo9RvT87yjvsI6rNZeEsvm5uiUvtjsRoZ7Z5WhrjFQV1ICQB4OmZ6s5+i1IGpT1UBUhP0Z80H5YMA0fjzsWsXroYpmEvDbJ9CyiHZZB2mb/Nfs45QVXco1bDwYNSpdQLW7OipGzCKbmhT3p1u3whz+IJjoRZpsUp4cbu6JuLKJpXA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DAIN4CsSTsufxBHjKGAqRejSigzTn9GUNxN1bK3ubws=;
+ b=ZUuJ7N5yUSESZzboL5P9MOLWltVMH7PmbhTJFawYldXxjQc+eKFqGX4UScREl68AQhSgThuCclToosTpF7t+uv6JH0tSd3Rp40+ZGP/LCFu+c5FMKQETju9vEiLQuo4/syaYc4Se+ljGQ+MUyjU4dcsfiIq/HUuu3MmjeC1LHZI=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by DB9PR04MB8137.eurprd04.prod.outlook.com (2603:10a6:10:244::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.22; Wed, 14 Sep
+ 2022 20:07:16 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::a67a:849c:aeff:cad1]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::a67a:849c:aeff:cad1%7]) with mapi id 15.20.5612.022; Wed, 14 Sep 2022
+ 20:07:16 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     David Ahern <dsahern@kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: [PATCH iproute2] taprio: support dumping and setting per-tc max SDU
+Date:   Wed, 14 Sep 2022 23:07:06 +0300
+Message-Id: <20220914200706.1961613-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.34.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: AM3PR05CA0113.eurprd05.prod.outlook.com
+ (2603:10a6:207:2::15) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220727113523.19742-2-ansuelsmth@gmail.com>
-User-Agent: NeoMutt/20180716
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|DB9PR04MB8137:EE_
+X-MS-Office365-Filtering-Correlation-Id: ecec5a12-e904-4761-65f1-08da968cb87b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: O3PEUVk3CYmhtNMgfUZHI2LDXBNBq7cCBnY78uo3aVoCGgNNRKWS+YzfpUwuLRX7M77J5nft/pOklGSIgLrCPK2dMhyvMZ8xwA5D/AwDrNFUpkd8pecE0txQ8UwbPPGiiWrms0HOcRhd2F5J2i7tK9Tegsjhw3jfec7RBAoEHFUIbWUxRUQ83VCEMw9jR/vD8n5to7L49ARUkLT5VQLtBfnIJ+BYc5NA8FdpBDXLvUjqiiYoTZWwjf1uyYuCpgu+3eU8KCNWaWnUcyVrekZ1nmJz1IOVXeAoXnJzuFzw8IcL+H+Q7lNpzJaqYDORZprSmD3zgmXB/7/iaQbdQnuTiHQfOrF12k1Nn8GFjB07UYOJcKLI/SrfVQd0ZfJmMGO3UqAWkPUFAq3BQ+2zkIpCoSu6ASgvJsHXygI+B+Yy7eyl+sAcg7e2nTy5xEJNJIGxvghZnhzVtIP3wyLUIvSUfBmPpVXZ4DlC0mGVGqR1m+3o/+iKLEJT+XmvG8Vuge/6zLmXMvRpVWDUaHqRLD3y5tim5T4701/nIH0tgFiu1glFkC6EcAYb29PzYiMcXZqiua4CP6G+qIcQmAotwZOniADLemf5Vk5fyMLmkpREmlQcTAM6+GHP0f5KQhOlTcGphie1Wi393yb7jRlguUFKpkumzEhO4EdssAI5s3smjaYUjZC23SdEEZqh518RecLj1CX23ddT4c94tyFSwvrw3BFgW2i/PhhIWv3+c+4OF15oFP4fn18JABdt0OVg7lslB77VtNcmL8I2T7r42GkXH/phLVrKy3uJmGAZuKCWqMc=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(39860400002)(396003)(376002)(136003)(346002)(451199015)(66476007)(2616005)(6506007)(8676002)(6486002)(2906002)(36756003)(6512007)(54906003)(186003)(86362001)(1076003)(52116002)(83380400001)(8936002)(38100700002)(38350700002)(5660300002)(6666004)(6916009)(44832011)(66556008)(316002)(66946007)(26005)(41300700001)(478600001)(966005)(4326008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?D3kFZfKfqGvERCsjlBKX+kz2Jz8zgv8qecZ44reRydeJgHTsyuALAFs/DocS?=
+ =?us-ascii?Q?OfQprwfa8wVt+Nx5oIpuTt2s5d4gF3a2dmO9wCPZWDmqFN6BuIsC0HIN+0Uq?=
+ =?us-ascii?Q?OGJsqcli5TuQEwkq4lB82WRPmRKzAaHfr2dgOk04hMwWnXI3VkpOlp89lXIr?=
+ =?us-ascii?Q?i7Y95IKvR4l7/Vm1XYTnxgY0oAlWw8Oj9sfcTx1Xjq5Cgxo6rEPEHtnTsWlh?=
+ =?us-ascii?Q?TjqkFnAL5Jcj1wx4b+shourIMxeG3zxXCyvp0lBtVbiRbYUvlUh9FwHTJAOK?=
+ =?us-ascii?Q?KMeAR1AhwNSMMHPDCLas3dhAGsgvtYQh0hYs4EeGnQwLruePayufLbwRE1R+?=
+ =?us-ascii?Q?dC/7OLNyEBhzZFsZDSg/+CRuXoubO2CLfbLpNdssHhHMuY4soMLqCUpGvQat?=
+ =?us-ascii?Q?/cZ1rudtM7lUkWBLfwHO2igeqWYwi2zB+gyOgCBRbOYXKpyrl4d2JXyyCNib?=
+ =?us-ascii?Q?zzGsmZG9Wu4JaU9MYFqC7Dy4Q/Yzhb4xKt4o/TUvTmHrgS7t9elMM7N5tDYQ?=
+ =?us-ascii?Q?IaSwsOlaXH+i9ZnjTzJnSZG/zd0UAFG0Q61PaaBsTrJ8iBeTT3dTG4lNJLv2?=
+ =?us-ascii?Q?50wYw08af6Ky2m7fLiE36VyQHUdmibFz3H0T/t7QnskkhidEAoGGroSrvmJ0?=
+ =?us-ascii?Q?Tr4m+KneuYSOFnKswrnpJ+lHmg90XoGqLNJ3Ui1p/MN+3OH7yGr5ABhjvuVi?=
+ =?us-ascii?Q?O85eH8q23d3Ovs+Q3l9LP/EgIehaAvF5ZjwsUi0eHFjdDgH00H9EWs9bZAIl?=
+ =?us-ascii?Q?9nlht3pSvj8dZwEsWcbXf2NBo6Eh0IDLWz76yVNucZ4R3YtiFrMNKvtgBRek?=
+ =?us-ascii?Q?0ccGMALc5bCEuNqxZLRH+ACSF1eCLgZweTWKH2kyHiq8I6MqnWbc3WKF7kcR?=
+ =?us-ascii?Q?fvFaTi6uSjsw6+qhGrCkRRLMebceuIUWXEL7s+fov7kfno9oRpogABJeQVLE?=
+ =?us-ascii?Q?fW+y6/gCrg78pwojXGlrB1CSHo1NfRZCx+/BDP2oLfsOJkNhqUZCLD3LTreJ?=
+ =?us-ascii?Q?DNWhMzeDwkWLUK57q6ckAD0W2nIDYRFoTI1m6GzCGuCmhh34icM+r8TeZuGN?=
+ =?us-ascii?Q?uiQKgo5jvlUTDMIFXnU2OPYNNseUEiKGQxzpwo6UhSgvodac8a6OpWk6F0Ox?=
+ =?us-ascii?Q?WoyO5OKrexFdBmow9iKuCROq0wz0HgZJ+XGEvL6BX2pwUrBlrj+GDq1VDIZc?=
+ =?us-ascii?Q?Lh70SiM8axPSHdm31Q2tZXAUuZKr7wfGviBMHpqkRBncReeM4mhlztNUkZTK?=
+ =?us-ascii?Q?HQl4Cq3+FXBuG+ej2ZBZaF7OEll+iq89zf4d4HZcj0RW2vGw3Qi6mB5Y6861?=
+ =?us-ascii?Q?FigbdIMKONyoYT8nts+PzJQxlhyn6iMDLyGjUIpt1G6WQwryZEDKJR+qXqEr?=
+ =?us-ascii?Q?V94YTiZzOf0NJdfqFjdPi0VxkTp3inkHyuistsWRcNzchioHvriK4CNCKxOY?=
+ =?us-ascii?Q?FIl/0O1PQbypf5+uQOxpMkDJTjvkNYm90pLNlokcOiVlwH3PlIeskQEQiNrK?=
+ =?us-ascii?Q?Dqb0emgvkjhHSJyfrTmPtROj/zTgmjVKzLGPkQFf1tpc5QX4B0WXdcJTsIFO?=
+ =?us-ascii?Q?cwwudleFZzw4kqDhLCqqF0zPtfVReO5EKKr1xazyhEuJvJy7OX93szwqPLO/?=
+ =?us-ascii?Q?eA=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ecec5a12-e904-4761-65f1-08da968cb87b
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Sep 2022 20:07:16.3216
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: isqDNfb71gfX5NTrT7zUPpfowqlLU8CO/9uM4OPlvm4YZ1qomxSRMPYu7O+ujhwTshrrlWkQuz0JcjMH4qvGkA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR04MB8137
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wednesday 27 July 2022 13:35:10 Christian Marangi wrote:
-> Using of_device_get_match_data is expensive. Cache match data to speed
-> up access and rework user of match data to use the new cached value.
-> 
-> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> ---
->  drivers/net/dsa/qca/qca8k.c | 35 +++++++++++------------------------
->  drivers/net/dsa/qca/qca8k.h |  1 +
->  2 files changed, 12 insertions(+), 24 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/qca/qca8k.c b/drivers/net/dsa/qca/qca8k.c
-> index 1cbb05b0323f..64524a721221 100644
+The 802.1Q queueMaxSDU table is technically implemented in Linux as
+the TCA_TAPRIO_TC_ENTRY_MAX_SDU attribute of the TCA_TAPRIO_ATTR_TC_ENTRY
+nest. Multiple TCA_TAPRIO_ATTR_TC_ENTRY nests may appear in the netlink
+message, one per traffic class. Other configuration items that are per
+traffic class are also supposed to go there.
 
-Hello! This commit is causing kernel crash on powerpc P2020 based board
-with QCA8337N-AL3C switch.
+This is done for future extensibility of the netlink interface (I have
+the feeling that the struct tc_mqprio_qopt passed through
+TCA_TAPRIO_ATTR_PRIOMAP is not exactly extensible, which kind of defeats
+the purpose of using netlink). But otherwise, the max-sdu is parsed from
+the user, and printed, just like any other fixed-size 16 element array.
 
-[    1.901926] Kernel attempted to read user page (38) - exploit attempt? (uid: 0)
-[    1.909264] BUG: Kernel NULL pointer dereference on read at 0x00000038
-[    1.915793] Faulting instruction address: 0xc079adec
-[    1.920756] Oops: Kernel access of bad area, sig: 11 [#1]
-[    1.926154] BE PAGE_SIZE=4K SMP NR_CPUS=2 P2020RDB-PC
-[    1.931207] Modules linked in:
-[    1.934260] CPU: 1 PID: 1 Comm: swapper/0 Not tainted 6.0.0-rc2-0caacb197b677410bdac81bc34f05235+ #123
-[    1.943576] NIP:  c079adec LR: c06b8920 CTR: 00000000
-[    1.948626] REGS: c146f970 TRAP: 0300   Not tainted  (6.0.0-rc2-0caacb197b677410bdac81bc34f05235+)
-[    1.957591] MSR:  00029000 <CE,EE,ME>  CR: 84228842  XER: 20000000
-[    1.963786] DEAR: 00000038 ESR: 00000000 
-[    1.963786] GPR00: c06b8920 c146fa60 c14a8000 00000000 00000000 00000000 c1c957fc 00000004 
-[    1.963786] GPR08: c174f6e8 00000000 c1c95700 c18c2e40 84228848 00000000 c0004548 00000000 
-[    1.963786] GPR16: 00000000 c174f600 00000000 fffff000 c0c06504 c0c05c3c efff8b9c efff8b9c 
-[    1.963786] GPR24: 00000001 efff8bb0 efff8bac 00000000 00000000 c174f600 00000000 c1c95718 
-[    2.001278] NIP [c079adec] of_device_get_match_data+0x10/0x38
-[    2.007040] LR [c06b8920] qca8k_sw_probe+0x40/0x224
-[    2.011927] Call Trace:
-[    2.014368] [c146fa60] [c174f600] 0xc174f600 (unreliable)
-[    2.019774] [c146fa70] [c06b8920] qca8k_sw_probe+0x40/0x224
-[    2.025354] [c146faa0] [c06b2ef0] mdio_probe+0x40/0x8c
-[    2.030497] [c146fac0] [c060ddb8] really_probe+0x250/0x340
-[    2.035990] [c146faf0] [c060dfb0] driver_probe_device+0x44/0xfc
-[    2.041916] [c146fb20] [c060e440] __device_attach_driver+0xa4/0x114
-[    2.048190] [c146fb40] [c060b83c] bus_for_each_drv+0x8c/0xe8
-[    2.053855] [c146fb70] [c060db04] __device_attach+0x110/0x164
-[    2.059607] [c146fba0] [c060c8ec] bus_probe_device+0xb0/0xd4
-[    2.065271] [c146fbc0] [c0609654] device_add+0x438/0x8c8
-[    2.070595] [c146fc20] [c06b3018] mdio_device_register+0x48/0x70
-[    2.076608] [c146fc40] [c06b4c98] of_mdiobus_register+0x310/0x398
-[    2.082707] [c146fca0] [c06ba7d4] fsl_pq_mdio_probe+0x1f0/0x374
-[    2.088636] [c146fd10] [c0610708] platform_probe+0x48/0xac
-[    2.094129] [c146fd30] [c060dc40] really_probe+0xd8/0x340
-[    2.099533] [c146fd60] [c060dfb0] driver_probe_device+0x44/0xfc
-[    2.105459] [c146fd90] [c060e534] __driver_attach+0x84/0x154
-[    2.111124] [c146fdb0] [c060b73c] bus_for_each_dev+0x88/0xe0
-[    2.116789] [c146fde0] [c060cc80] bus_add_driver+0x1f0/0x22c
-[    2.122453] [c146fe10] [c060eca8] driver_register+0x88/0x16c
-[    2.128118] [c146fe30] [c0004150] do_one_initcall+0x80/0x284
-[    2.133785] [c146fea0] [c10012d0] kernel_init_freeable+0x1f4/0x2a0
-[    2.139973] [c146fee0] [c000456c] kernel_init+0x24/0x154
-[    2.145289] [c146ff00] [c001426c] ret_from_kernel_thread+0x5c/0x64
-[    2.151479] Instruction dump:
-[    2.154444] 71290020 40820010 7d445378 38210010 4bffe068 38600000 38210010 4e800020
-[    2.162211] 9421fff0 7c0802a6 7c641b78 90010014 <81230038> 80690018 4bffffad 2c030000
-[    2.170156] ---[ end trace 0000000000000000 ]---
-[    2.174770]
-[    3.176268] Kernel panic - not syncing: Fatal exception
-[    3.181497] Rebooting in 1 seconds..
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+This is the user space counterpart of:
+https://patchwork.kernel.org/project/netdevbpf/cover/20220914153303.1792444-1-vladimir.oltean@nxp.com/
 
+ include/uapi/linux/pkt_sched.h | 11 +++++
+ man/man8/tc-taprio.8           |  9 ++++
+ tc/q_taprio.c                  | 89 ++++++++++++++++++++++++++++++++++
+ 3 files changed, 109 insertions(+)
 
-> --- a/drivers/net/dsa/qca/qca8k.c
-> +++ b/drivers/net/dsa/qca/qca8k.c
-
-There is line:
-	priv = devm_kzalloc(&mdiodev->dev, sizeof(*priv), GFP_KERNEL);
-and after that follows chunk:
-
-> @@ -3134,6 +3120,7 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
->  	if (!priv)
->  		return -ENOMEM;
->  
-> +	priv->info = of_device_get_match_data(priv->dev);
-
-So function of_device_get_match_data() takes as its argument NULL
-pointer as 'priv' structure is at this stage zeroed, and which cause
-above kernel crash. priv->dev is filled lines below:
-
->  	priv->bus = mdiodev->bus;
->  	priv->dev = &mdiodev->dev;
->  
-
-I would propose following patch:
-
-diff --git a/drivers/net/dsa/qca/qca8k-8xxx.c b/drivers/net/dsa/qca/qca8k-8xxx.c
-index 1d3e7782a71f..614950a5878a 100644
---- a/drivers/net/dsa/qca/qca8k-8xxx.c
-+++ b/drivers/net/dsa/qca/qca8k-8xxx.c
-@@ -1887,13 +1887,13 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
- 	 */
- 	priv = devm_kzalloc(&mdiodev->dev, sizeof(*priv), GFP_KERNEL);
- 	if (!priv)
- 		return -ENOMEM;
+diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
+index f292b467b27f..000eec106856 100644
+--- a/include/uapi/linux/pkt_sched.h
++++ b/include/uapi/linux/pkt_sched.h
+@@ -1232,6 +1232,16 @@ enum {
+ #define TCA_TAPRIO_ATTR_FLAG_TXTIME_ASSIST	_BITUL(0)
+ #define TCA_TAPRIO_ATTR_FLAG_FULL_OFFLOAD	_BITUL(1)
  
-+	priv->dev = &mdiodev->dev;
- 	priv->info = of_device_get_match_data(priv->dev);
- 	priv->bus = mdiodev->bus;
--	priv->dev = &mdiodev->dev;
++enum {
++	TCA_TAPRIO_TC_ENTRY_UNSPEC,
++	TCA_TAPRIO_TC_ENTRY_INDEX,		/* u32 */
++	TCA_TAPRIO_TC_ENTRY_MAX_SDU,		/* u32 */
++
++	/* add new constants above here */
++	__TCA_TAPRIO_TC_ENTRY_CNT,
++	TCA_TAPRIO_TC_ENTRY_MAX = (__TCA_TAPRIO_TC_ENTRY_CNT - 1)
++};
++
+ enum {
+ 	TCA_TAPRIO_ATTR_UNSPEC,
+ 	TCA_TAPRIO_ATTR_PRIOMAP, /* struct tc_mqprio_qopt */
+@@ -1245,6 +1255,7 @@ enum {
+ 	TCA_TAPRIO_ATTR_SCHED_CYCLE_TIME_EXTENSION, /* s64 */
+ 	TCA_TAPRIO_ATTR_FLAGS, /* u32 */
+ 	TCA_TAPRIO_ATTR_TXTIME_DELAY, /* u32 */
++	TCA_TAPRIO_ATTR_TC_ENTRY, /* nest */
+ 	__TCA_TAPRIO_ATTR_MAX,
+ };
  
- 	priv->reset_gpio = devm_gpiod_get_optional(priv->dev, "reset",
- 						   GPIOD_ASIS);
- 	if (IS_ERR(priv->reset_gpio))
- 		return PTR_ERR(priv->reset_gpio);
+diff --git a/man/man8/tc-taprio.8 b/man/man8/tc-taprio.8
+index d13c86f779b7..086b8f10c1c8 100644
+--- a/man/man8/tc-taprio.8
++++ b/man/man8/tc-taprio.8
+@@ -150,6 +150,15 @@ value should always be greater than the delta specified in the
+ .BR etf(8)
+ qdisc.
+ 
++.TP
++max-sdu
++.br
++Specifies an array containing at most 16 elements, one per traffic class, which
++corresponds to the queueMaxSDU table from IEEE 802.1Q-2018. Each array element
++represents the maximum L2 payload size that can egress that traffic class.
++Elements that are not filled in default to 0. The value 0 means that the
++traffic class can send packets up to the port's maximum MTU in size.
++
+ .SH EXAMPLES
+ 
+ The following example shows how an traffic schedule with three traffic
+diff --git a/tc/q_taprio.c b/tc/q_taprio.c
+index e43db9d0e952..034428e7eaaa 100644
+--- a/tc/q_taprio.c
++++ b/tc/q_taprio.c
+@@ -151,13 +151,32 @@ static struct sched_entry *create_entry(uint32_t gatemask, uint32_t interval, ui
+ 	return e;
+ }
+ 
++static void add_tc_entries(struct nlmsghdr *n,
++			   __u32 max_sdu[TC_QOPT_MAX_QUEUE])
++{
++	struct rtattr *l;
++	__u32 tc;
++
++	for (tc = 0; tc < TC_QOPT_MAX_QUEUE; tc++) {
++		l = addattr_nest(n, 1024, TCA_TAPRIO_ATTR_TC_ENTRY | NLA_F_NESTED);
++
++		addattr_l(n, 1024, TCA_TAPRIO_TC_ENTRY_INDEX, &tc, sizeof(tc));
++		addattr_l(n, 1024, TCA_TAPRIO_TC_ENTRY_MAX_SDU,
++			  &max_sdu[tc], sizeof(max_sdu[tc]));
++
++		addattr_nest_end(n, l);
++	}
++}
++
+ static int taprio_parse_opt(struct qdisc_util *qu, int argc,
+ 			    char **argv, struct nlmsghdr *n, const char *dev)
+ {
++	__u32 max_sdu[TC_QOPT_MAX_QUEUE] = { };
+ 	__s32 clockid = CLOCKID_INVALID;
+ 	struct tc_mqprio_qopt opt = { };
+ 	__s64 cycle_time_extension = 0;
+ 	struct list_head sched_entries;
++	bool have_tc_entries = false;
+ 	struct rtattr *tail, *l;
+ 	__u32 taprio_flags = 0;
+ 	__u32 txtime_delay = 0;
+@@ -211,6 +230,18 @@ static int taprio_parse_opt(struct qdisc_util *qu, int argc,
+ 				free(tmp);
+ 				idx++;
+ 			}
++		} else if (strcmp(*argv, "max-sdu") == 0) {
++			while (idx < TC_QOPT_MAX_QUEUE && NEXT_ARG_OK()) {
++				NEXT_ARG();
++				if (get_u32(&max_sdu[idx], *argv, 10)) {
++					PREV_ARG();
++					break;
++				}
++				idx++;
++			}
++			for ( ; idx < TC_QOPT_MAX_QUEUE; idx++)
++				max_sdu[idx] = 0;
++			have_tc_entries = true;
+ 		} else if (strcmp(*argv, "sched-entry") == 0) {
+ 			uint32_t mask, interval;
+ 			struct sched_entry *e;
+@@ -341,6 +372,9 @@ static int taprio_parse_opt(struct qdisc_util *qu, int argc,
+ 		addattr_l(n, 1024, TCA_TAPRIO_ATTR_SCHED_CYCLE_TIME_EXTENSION,
+ 			  &cycle_time_extension, sizeof(cycle_time_extension));
+ 
++	if (have_tc_entries)
++		add_tc_entries(n, max_sdu);
++
+ 	l = addattr_nest(n, 1024, TCA_TAPRIO_ATTR_SCHED_ENTRY_LIST | NLA_F_NESTED);
+ 
+ 	err = add_sched_list(&sched_entries, n);
+@@ -430,6 +464,59 @@ static int print_schedule(FILE *f, struct rtattr **tb)
+ 	return 0;
+ }
+ 
++static void dump_tc_entry(__u32 max_sdu[TC_QOPT_MAX_QUEUE],
++			  struct rtattr *item, bool *have_tc_entries)
++{
++	struct rtattr *tb[TCA_TAPRIO_TC_ENTRY_MAX + 1];
++	__u32 tc, val = 0;
++
++	parse_rtattr_nested(tb, TCA_TAPRIO_TC_ENTRY_MAX, item);
++
++	if (!tb[TCA_TAPRIO_TC_ENTRY_INDEX]) {
++		fprintf(stderr, "Missing tc entry index\n");
++		return;
++	}
++
++	tc = rta_getattr_u32(tb[TCA_TAPRIO_TC_ENTRY_INDEX]);
++
++	if (tb[TCA_TAPRIO_TC_ENTRY_MAX_SDU])
++		val = rta_getattr_u32(tb[TCA_TAPRIO_TC_ENTRY_MAX_SDU]);
++
++	max_sdu[tc] = val;
++
++	*have_tc_entries = true;
++}
++
++static void dump_tc_entries(FILE *f, struct rtattr *opt)
++{
++	__u32 max_sdu[TC_QOPT_MAX_QUEUE] = {};
++	bool have_tc_entries = false;
++	struct rtattr *i;
++	int tc, rem;
++
++	for (tc = 0; tc < TC_QOPT_MAX_QUEUE; tc++)
++		max_sdu[tc] = 0;
++
++	rem = RTA_PAYLOAD(opt);
++
++	for (i = RTA_DATA(opt); RTA_OK(i, rem); i = RTA_NEXT(i, rem)) {
++		if (i->rta_type != (TCA_TAPRIO_ATTR_TC_ENTRY | NLA_F_NESTED))
++			continue;
++
++		dump_tc_entry(max_sdu, i, &have_tc_entries);
++	}
++
++	if (!have_tc_entries)
++		return;
++
++	open_json_array(PRINT_ANY, "max-sdu");
++	for (tc = 0; tc < TC_QOPT_MAX_QUEUE; tc++)
++		print_uint(PRINT_ANY, NULL, " %u", max_sdu[tc]);
++	close_json_array(PRINT_ANY, "");
++
++	print_nl();
++}
++
+ static int taprio_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ {
+ 	struct rtattr *tb[TCA_TAPRIO_ATTR_MAX + 1];
+@@ -501,6 +588,8 @@ static int taprio_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ 		close_json_object();
+ 	}
+ 
++	dump_tc_entries(f, opt);
++
+ 	return 0;
+ }
+ 
+-- 
+2.34.1
 
-which fixes above crash.
