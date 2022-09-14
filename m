@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 70ED65B8BE0
-	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 17:34:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C12705B8BE3
+	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 17:34:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229459AbiINPdf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Sep 2022 11:33:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43566 "EHLO
+        id S230037AbiINPdl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Sep 2022 11:33:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230057AbiINPd1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 11:33:27 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2081.outbound.protection.outlook.com [40.107.22.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF0BF4CA28;
-        Wed, 14 Sep 2022 08:33:26 -0700 (PDT)
+        with ESMTP id S230298AbiINPdc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 11:33:32 -0400
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2055.outbound.protection.outlook.com [40.107.22.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D390048CAB;
+        Wed, 14 Sep 2022 08:33:30 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Lgd4MhsVG3Niv39W7gBrZ/sQ7JppvVPgtQzG1Ifyhym5wzhIb/ZA+4hi7ye81oMebSB0yNUqhxKkY/p+qUxezqvPTB+cDj5r4SrGJymHIq4ECrJAwUmIlSQPJr0xiMEgBeLpd6magO4CbKH7EeEYqFFX7lzPlOVSwVAjWdQxPdnfekaUlMKYvqKJjgx3Sez21ElKYTg7NA+xfOAoU1kIAcZRNpuQlUTzXSjnWFylW8lBRCUcpby0BuE+UkAaAR1c6ORHYTd8FkSWhWrzsD5E/bcjjzIp8LichfvpG0Sy2uxSeUsjUtUwhmxFH8mBlOfKDx3CDfvE+GpItV8tvNxLMA==
+ b=a43AXo6QwtxTKroNPO6LORG9Mr61A85cNFMFHUS6VA+B9v6buIIw1mYzbk2h2V+3W/Fk938VD8TaXM7WrYdOWRvwXeJUO+wCU5zDm5v0XcVPUiSZStUeQbymHbEv7BPngDjO9sYSb3Vrv+Eq0axgqCAnZ0PiGHD2e1zKyBrj1UKJOckALujWVk6xoxur0EQZCFzi8BkL3NfScwIKsWMPTnSJLWaQYpeW5nnD5sflDkSOcl8/PnODTbreY8TmV3gJ50SLh24VvBTmvi1q8a2sUVVMkWWMwZ3NFlrRzvmFS6BGPAh+XQHFLCf7tVxxnz/yaQUkr+FK6AnxiWyEKGB0ig==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=X5+VtOqX+XGLZL2ynn/k/BcYJSS7PHKoAvPzcr0u+Z8=;
- b=fvNeg2i3xR2flwTO/rxYe7lmsHrSLg5weLPj/F6i7R4K9ATnQ55qlid2kKBqRkL8m6Nhs7Y7qqHMMv6yFpiL+/Ctq0aG7qjIw2lFxzT107TDRxjN5HppJ2hxLtV6S7wqQd29Ll80rLuJTTI6y9zKV0wvKydDIZwmvLz01TG73Qe9hK5cB46fcNKE3ByCgGIC820QdKmm6v5RY07OFoanEMQ2+zerB66tJ7wDqAob80RNHVJujOK6BGm3XdO0mR6D/o2Ad1gfkOYitHmAlmYwN665iHiuCC2g3xgpr6/Q4nprGS+Kp6W9SYWFlXUn9tkjsAOh2L5TmCoqA2Yt227WNw==
+ bh=AMFm3xsYutYgfDjln+tMhvPVKymV8/hLvpohHGGAHAw=;
+ b=nKGUsCm1haVnTzzrTDFs71xCmVrR+5svYhfg0xixApmC+Wq/N1zKew3rW5RN0i4G0QCD7B/Ef9hfWZkh1uoY7FwMRgkqxjYOBYjK7yoEHGdmVxRfIwL0AIYFmNOygmYBctFLMLkbZS4fPJEuIUpdGcHlNfn3bWd1PM9qgsBe0+bFtzIidSLfaDRkHjkgDoOmEU/KMAy1WSdKqnOAoBTu5UBC6APHmMmqPLqkX0eYJoip8Tk/grcohr4Q/SsDYP7PGEqiaJYDB83usujlRB+9Rxmhzsj+KtVAlwWzSm2vmSOgWeOjMwvy2B0Kk60oj67jTMKNPAPtqprZ1JwPDzzztg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=X5+VtOqX+XGLZL2ynn/k/BcYJSS7PHKoAvPzcr0u+Z8=;
- b=VavxdbA5RCVP7r44F494ZzQreIAw4Ax4k39RHxdNeXWQ1Ctj8mZs50FQWyNTYsJp7w0GLJlQ9KtYz28XUq4hl7YGKoNgzSjkasABP+/S36BQsd6QZSQYLbJvsRYCOAY7L5eUgqWoo004KTrdLS7ry2AsPFTK343KNwOszt0sEk0=
+ bh=AMFm3xsYutYgfDjln+tMhvPVKymV8/hLvpohHGGAHAw=;
+ b=pJ47g+7pDYooIJgRLSExcUEl3Sdcypl3ISHVOdrBBA2tJ0CeLfYIi5xq201GSuyDVV73mI0CO0r6v7udjn0e748I7KxZj09FVAX6bOnbE/NdI7dw92uEZ7tk6vGb7hdYxYIkhC9Z4Xj6VMPqsYh+a8KnqL3VyDSwTz+XqJKrKzk=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by DU2PR04MB8949.eurprd04.prod.outlook.com (2603:10a6:10:2e0::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.22; Wed, 14 Sep
- 2022 15:33:25 +0000
+ 2022 15:33:28 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::a67a:849c:aeff:cad1]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::a67a:849c:aeff:cad1%7]) with mapi id 15.20.5612.022; Wed, 14 Sep 2022
- 15:33:25 +0000
+ 15:33:28 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -70,9 +70,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Gerhard Engleder <gerhard@engleder-embedded.com>,
         Grygorii Strashko <grygorii.strashko@ti.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 01/13] net/sched: taprio: remove redundant FULL_OFFLOAD_IS_ENABLED check in taprio_enqueue
-Date:   Wed, 14 Sep 2022 18:32:51 +0300
-Message-Id: <20220914153303.1792444-2-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 02/13] net/sched: taprio: stop going through private ops for dequeue and peek
+Date:   Wed, 14 Sep 2022 18:32:52 +0300
+Message-Id: <20220914153303.1792444-3-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220914153303.1792444-1-vladimir.oltean@nxp.com>
 References: <20220914153303.1792444-1-vladimir.oltean@nxp.com>
@@ -84,51 +84,51 @@ X-ClientProxiedBy: AS4P250CA0023.EURP250.PROD.OUTLOOK.COM
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|DU2PR04MB8949:EE_
-X-MS-Office365-Filtering-Correlation-Id: 771ad24b-6240-4707-037c-08da966676dd
+X-MS-Office365-Filtering-Correlation-Id: aa015005-a344-49e1-beab-08da966678a6
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: IRN6tYDLcaaFco1i2/jjx3B4/LEdzWP5sHyhL8S9v5/MIqMC5RXBUAsru7Kpk7AFGnrP7NAakPEwx/j4rr6Ximfma3Hj1Y0pZixINWvHg02tzo6+Or6wXNROCdJARuB8SX8mqfcDbOrvTOH68LXeRBYgy9hvWB+8/9OEjXoStEPko3x0U62O3BF3IcWTs5+h10UTXKQEMu+XVvSDwaoc45hUutxTTYlkDVEP7VRSRTguh69wUKkGpt8Hat0+8mdcnaDvNGNSPRXbEz3G5skGrDEVxH1D7PvWPv5bsyQAG5OL0hXM5qWJN7WvKvlOhWPcWc+c/qoivBUT1qTcWyxSoBlZ9XtyTk7Uj2o9NWVkCu9SsnuCzdZng+2S70JpwurE41NgITQZoXvU/FUkloGJw7MAfC3YeF0oPf6NZUuAhUYVau23uhTxloSu6KqbXRzyqMnFwZ0L1KxFMVUBhYzSBafPs7VDc+erwGl2Ki6mTcGBI4wbELa9KMvHgjeZlmv7IpcI6dkqln7AIWJogBeNLqkMIngp5ZHOJEkRznfZzojjBhQQdJWb9waF+F5zbpuSKcHzhblA6AuR80H01MObiQCG+lhnyP91SaCQP+N5rpu7dRKOsPoGOk78mtrkYotAPYdlq2QGzlvyXFhNbJgv0SHYvrIQbzoHz1PpppJydQjj4uCWd09gdPsqwJqvPf+Lx+oVmn1twlMUReoM7wY+FCDcUMSYOj86v2eS99RJWa6o52kJj7Vv54RYYAbgvYZmWUSPKHFduTnez14vcvpFJA==
+X-Microsoft-Antispam-Message-Info: khG2ZerjYFMdRo8mL+wzLVvMJDdxiUTxl/c70jEKhf4lLy5FF82y25VNzbe48e+1JNoH3LdpNyOH0EKjG/2gphXjiReNV6SU/RoseuZHwek43dTk0yT5DjhecGdnmAaoYrH2dvPNBz1kivoAF8R7yUM01LHdFrn7Se9IsL6tbJaTdfKpggQv9I4HcNFsbLFp0/WOXocsj3vdJvHYBbFCkUkyHG9BhOiEIlyt5HVgGA0qml6vGju7OIQ19mXZ+vv3YWuOdchdNf1T7VMJ6CicSqQNG9l9Wvo8SutdzYXZNBN9c8F/JHfGvUdKL/TJKeglF6aMn5/6BrUUr94RnTgiZ1c5S6IWXXdZJLK+YYUcfdpXewQb1WcMEw2ggl4Fvsvjr4VKMo40Gpn+D3mJjzctwAnQc4KiloHUe48QNvskMOguWNu1X6qJlObAydnttVq1A3rzbBXan89+N4W+UuEvYSO68+R2bDvg31r1mN5v2WPlZ1y9lPKYAsZb4p8fsXm5SOxLM/bcHbumrjtXAvDIw6nPm2B8oTQ+lzPMFeR/J+vTVg8zUcrNOY5R5bxa3ELJ8zpiBCVs6OIJIFEG01zaIglQ467LfTut0oTPjg/zSaKI7kI6nNYJa56vzC5huMBToocxCiVnpuJxRtgy6LD5bCf5uGwy9pTOjQGcynMVnMUhZHZcJu4Y2UUcMPXHFOcozKPbdsJ78pTZuQ8h6RrZDYzPwe0yytAkYeztjmAoBn35DlQoxIf6c8Xv2gYAtG7FUI3h5ZyByi9AocnL9qG6Pg==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(376002)(136003)(396003)(366004)(39860400002)(451199015)(6512007)(2616005)(52116002)(66476007)(44832011)(4326008)(41300700001)(66946007)(316002)(26005)(8936002)(2906002)(36756003)(6916009)(54906003)(6666004)(86362001)(38350700002)(1076003)(38100700002)(5660300002)(6486002)(186003)(66556008)(7416002)(478600001)(83380400001)(6506007)(8676002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?32rWqVyS6pNjiV4YCY80QBiPbIVfXhJdKVtweKZwnmQoyNM7J5ix8NXLZk6S?=
- =?us-ascii?Q?RVPJkvMSwL6jImdexU29lf8C/QLIN2Wk7ftJEXjre1lv2FBSuueWqB1OKdgK?=
- =?us-ascii?Q?d/IPxe7mlcLWNWrE1BBEsknWOA1UKpF2oir2vAADC2W+4Zseeb+C0hyRoVak?=
- =?us-ascii?Q?zK54z8pxc6PUAOIiL/0WCFAYww2dldA858FZf0NRpwQS+6QIMA2P5AcvlBAH?=
- =?us-ascii?Q?cioDOisco64TpQL8o9tN3JyOQQP8sReLWZGpuTTylTfjqBwqPR9wXRE1eo0E?=
- =?us-ascii?Q?VbHH78+ChjjVYnUXpnbeOs1MFHTZ62yAfdK98qcGvrasmpL0ZuayIxTT7HKR?=
- =?us-ascii?Q?o+LAuA3T9P+qxqHU7ILP61dJRrWZznGTImXpZ/9UaFmtr2DDV+abyemPp5t2?=
- =?us-ascii?Q?h0jcukcGKuAU8cf+xcYDT2PQ5mFsxEo9aEWK2wfz8hOCjJLV5y6/glxsmpHR?=
- =?us-ascii?Q?et4ZuCOR2C2m814ETDeNNe1gh8AdwrLuU4YRQhSopABlrC1LhMJ+smzjW3RW?=
- =?us-ascii?Q?Da9e799k+/kJTatoQEtlNBJul1z56ZyY70/D4KntwihHgCq8UarJTWyI5D5X?=
- =?us-ascii?Q?oeymJltYxbk/bLtJThuireR3eUS/bfnfzp1paimEehWmToIsDuONrUOVNSPL?=
- =?us-ascii?Q?pzIh2D53c2VoqS2jRhMCUtIyjFUJr8lMKUO273iHondUWlyCpi7ihihEgxks?=
- =?us-ascii?Q?dEW92LL1ykhoBwswpGdDUoObuJVV9/6N4QMBypeY5qNc9uuJ0b5uw75JEdT7?=
- =?us-ascii?Q?elpaV64dAYW74npx14djhOGYmWjcCrwXgIq0wW3OwOOj+eMSWdsPtw85tKtM?=
- =?us-ascii?Q?KsF2cJb2+5U9nge8QgpcIUb8Cr7yN3C/lEvbC0estDDXK/mUmkknteoG78oQ?=
- =?us-ascii?Q?wlHQsIGYliDIPypgEtkgwEGzKPZOtth2lZcmH/XzKVBWjkXKTG4KDGQN7KGD?=
- =?us-ascii?Q?glU84PjRmFnI7IFoLyNjmhdHdDbaDSq1oQAlzhQaPwAheBeFJvkOKWLzcZzJ?=
- =?us-ascii?Q?EBMmRIANTGS4Wf0WVNH3bU9iQMI58+1FwhNdoAFt7NE+tmN6Zm+T9yYw2BIf?=
- =?us-ascii?Q?BDm+m7btU0w3+oUlm4qBNCmmJ0CuC+yXmV3bjuSU3dWRqhHat8vu2DV+G91v?=
- =?us-ascii?Q?cjSPSux/lX6nRUNfowJ5Qdh+On+2m0DL1tWwyQMgt7cmKraL2603jUoeCce/?=
- =?us-ascii?Q?CLWcxkU8egG8hDXfP+BRlgDVkKr3ZSLxwomy1aI9ElUyfteGDcdpxhwMwGUS?=
- =?us-ascii?Q?lvMU6hbcPPHn2KUcB+zY7ntXe4fLWD9LQvOMpMAxosdBYuTWMvgxZ2f/7LEY?=
- =?us-ascii?Q?Ht3l1xsj0An7sSU4dCpd9nVMtwjigTqRsnzxGTkVorHKTMgN7a6nkLqEXAVB?=
- =?us-ascii?Q?EQZLGMHW1Fj7DuUPdylds1NhziQUWKCxXRj3Ch3rB7ddKgMK+TFHkKkA1HuG?=
- =?us-ascii?Q?6ULMZl46DcXyoqkbYrYS8eDAkvUGzXrIEb2/eBved6rT7AmGPI+Os0yeOPnp?=
- =?us-ascii?Q?yu/i7IPqjO7VK7zBS2NPCQ9N4XYE0jiQvygizr6cR3ZuN3PaxIa0DEsC6rwe?=
- =?us-ascii?Q?Rj5I9KxWYr8D5aowlpZoyucRydKroqNjs7ttatrifJwICyphqQDuFWsBecIh?=
- =?us-ascii?Q?Ag=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?RW53V8WgBmbiLqSWhpODjwJya7NhR/ADHGgCNccdIiOSojMB1hNtM1C/BOIT?=
+ =?us-ascii?Q?KS1wxuvamC0PjC4HaVFYE+e5VOecbAXxrSUKI9VnuJOMsTwt7XaKQM55SMcz?=
+ =?us-ascii?Q?Q5PalYTUBkOdxj6kNAT/xQWJ/6QPo2vFvNikenJyoSONjsXH/7XDYCX/rUwG?=
+ =?us-ascii?Q?6YUnFNJqWhjSCMWzWfQogOl6zV8jxUyIEX7lZo22OyFYH374umqFkRO3UBGR?=
+ =?us-ascii?Q?re1ESKLLoPsKZu1693FV1qriQeKV0cuhRoVUcUteXihzpt4JCEm2TAvBHBBE?=
+ =?us-ascii?Q?kSsx4MF+j6A4ur7A41WzjXbzfkjGJuAR+XfqonfwLvSpBvFfpCEvMHv5mfV8?=
+ =?us-ascii?Q?xEIRLnoCBau0Q7LE5wdssk1rHFPAnQ5VzvbBnSSYBgYzjQz++BdSkQnFm2Mw?=
+ =?us-ascii?Q?hoZvWyQlf4ayQfmLVmtQqJ0hVOyBIJ/A+DD/mwyRMsKBbR1wJ24ziVGJVDQY?=
+ =?us-ascii?Q?Od3aEbsCcxsfa+AiMM4Z8q7YIX/tuYfUzHLLH5ObMLss/wP2iRyyk1fRFtjr?=
+ =?us-ascii?Q?Yvrhzh7R5tSxA4YF6R90ipSYAo5JMEEuWx8noQjucEnqiWRW+E8dLQ5LG9qK?=
+ =?us-ascii?Q?PHWHcUmL0lUjggcu8/1VfTeEhmEN/SuYpe/GHtmd7nSR7elWC0p1N+U4TT3G?=
+ =?us-ascii?Q?iY8ycZWEckmEZy2LcwjUQCzGHHknikZRWSpnT8UcJaQ4JL3Y9hsydFVC1vp4?=
+ =?us-ascii?Q?NJJn1skUPs/SoKBlv+bVMirEJaSTCxVVFuVnMDD9eBuD7CAhdbgUDxm37B0S?=
+ =?us-ascii?Q?MkIm2Jlcshak3w0uRjA9N6DyEM0iPK7o/ToQ0EmWE+LT/laEzL7HTboxAlOy?=
+ =?us-ascii?Q?LjvH9SM0j9/d0wuWxk1I1tFZy2DjfOgX2igSs3yQBXvMFp8qj2RZ/qKp5OEV?=
+ =?us-ascii?Q?yeiZFvQr2YJoqdhZws+5yzigmSI+fafWNAVnF4v/pX527ugGFjd5L3YhItiP?=
+ =?us-ascii?Q?0bD2nAaXXXheuB3fh2DlxCWUwkO2E4bR38sHdJdCDMKHIPJN4jN8WxygRmI5?=
+ =?us-ascii?Q?4xMcoONr0KlcfmsbVOIqYuMSqfT2QSnxi08RUrBBIAUwXN3I4IwvgCka6EQr?=
+ =?us-ascii?Q?2jOiG160lrP1vlxJZFoh4ZHdRRkOPMzDe9jAUPOJLTG/3LBI0tSbNL9pfHGS?=
+ =?us-ascii?Q?w7DiaeTZAGLNiAXQHyldS990iiQQjuYc4sXVvBgGg7fDeY+D2WtGPyoolgdV?=
+ =?us-ascii?Q?UXaqra9OlKppZlo+tE6mJJBvoRKtPDBPIFN6l4xBdOW8dc2X6rYGLG0U5bD7?=
+ =?us-ascii?Q?8MBOGE/xqS1GUmVYaJckCLyae866ij2cNv01XV83oobSRPrTSwwMhxcfVqNp?=
+ =?us-ascii?Q?afqGPUAmXnddyHsr64v2ZAP6Q8rHBgcucIFnu9VaGpVfdyX2os7Mmrwu+jUY?=
+ =?us-ascii?Q?7xg+r0lSrSpg7cb5vpXAdQSEKrGDg83UE/YLing3vNZYnlx8x7dmDBxwjEI2?=
+ =?us-ascii?Q?fOOjuEgCmv2FTx4aPhxBOUNaWd/GkZZiJ0Wn4fIx1jLSuEzKyfMpRIyWprfZ?=
+ =?us-ascii?Q?DdBBnq7bbtCZf3QItzBCbX9kaUeilv1dVm/JW4F5usfz9I6p2JoKHmqJYs9U?=
+ =?us-ascii?Q?scOuGVyoiKO4Mo8a8OtGLGGTWvvoYZG76lEk3i68zOtJJIEnzxa9gkzX7Vd+?=
+ =?us-ascii?Q?jw=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 771ad24b-6240-4707-037c-08da966676dd
+X-MS-Exchange-CrossTenant-Network-Message-Id: aa015005-a344-49e1-beab-08da966678a6
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Sep 2022 15:33:25.4341
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Sep 2022 15:33:28.3870
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9Fjds1iepYKwkCsVuIIQ2o+bukVsbgR3DTizxnnr/9mfXmfsSuAJhUmznn44RbR2YD0XrCNYEWfzq5s8/P5r6Q==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 01TLLxxTg7WOHVnj493uj4cOmT9UFH651hYcfRTKJRchiPAF1d7ho2GWSXZcEgzkMKEXL5iVUjHi0L+jiGN0TA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR04MB8949
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -141,39 +141,150 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Since commit 13511704f8d7 ("net: taprio offload: enforce qdisc to netdev
-queue mapping"), __dev_queue_xmit() will select a txq->qdisc for the
-full offload case of taprio which isn't the root taprio qdisc, so
-qdisc enqueues will never pass through taprio_enqueue().
+queue mapping"), taprio_dequeue_soft() and taprio_peek_soft() are de
+facto the only implementations for Qdisc_ops :: dequeue and Qdisc_ops ::
+peek that taprio provides.
 
-That commit already introduced one safety precaution check for
-FULL_OFFLOAD_IS_ENABLED(); a second one is really not needed, so
-simplify the conditional for entering into the GSO segmentation logic.
-Also reword the comment a little, to appear more natural after the code
-change.
+This is because in full offload mode, __dev_queue_xmit() will select a
+txq->qdisc which is never root taprio qdisc. So if nothing is enqueued
+in the root qdisc, it will never be run and nothing will get dequeued
+from it.
+
+Therefore, we can remove the private indirection from taprio, and always
+point Qdisc_ops :: dequeue to taprio_dequeue_soft (now simply named
+taprio_dequeue) and Qdisc_ops :: peek to taprio_peek_soft (now simply
+named taprio_peek).
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/sched/sch_taprio.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ net/sched/sch_taprio.c | 58 +++++++++---------------------------------
+ 1 file changed, 12 insertions(+), 46 deletions(-)
 
 diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index fbf84404408f..a172c1eba995 100644
+index a172c1eba995..226aa6efb365 100644
 --- a/net/sched/sch_taprio.c
 +++ b/net/sched/sch_taprio.c
-@@ -455,10 +455,10 @@ static int taprio_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+@@ -79,8 +79,6 @@ struct taprio_sched {
+ 	struct sched_gate_list __rcu *admin_sched;
+ 	struct hrtimer advance_timer;
+ 	struct list_head taprio_list;
+-	struct sk_buff *(*dequeue)(struct Qdisc *sch);
+-	struct sk_buff *(*peek)(struct Qdisc *sch);
+ 	u32 txtime_delay;
+ };
  
- 	/* Large packets might not be transmitted when the transmission duration
- 	 * exceeds any configured interval. Therefore, segment the skb into
--	 * smaller chunks. Skip it for the full offload case, as the driver
--	 * and/or the hardware is expected to handle this.
-+	 * smaller chunks. Drivers with full offload are expected to handle
-+	 * this in hardware.
- 	 */
--	if (skb_is_gso(skb) && !FULL_OFFLOAD_IS_ENABLED(q->flags)) {
-+	if (skb_is_gso(skb)) {
- 		unsigned int slen = 0, numsegs = 0, len = qdisc_pkt_len(skb);
- 		netdev_features_t features = netif_skb_features(skb);
- 		struct sk_buff *segs, *nskb;
+@@ -492,7 +490,7 @@ static int taprio_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 	return taprio_enqueue_one(skb, sch, child, to_free);
+ }
+ 
+-static struct sk_buff *taprio_peek_soft(struct Qdisc *sch)
++static struct sk_buff *taprio_peek(struct Qdisc *sch)
+ {
+ 	struct taprio_sched *q = qdisc_priv(sch);
+ 	struct net_device *dev = qdisc_dev(sch);
+@@ -501,6 +499,11 @@ static struct sk_buff *taprio_peek_soft(struct Qdisc *sch)
+ 	u32 gate_mask;
+ 	int i;
+ 
++	if (unlikely(FULL_OFFLOAD_IS_ENABLED(q->flags))) {
++		WARN_ONCE(1, "Trying to peek into the root of a taprio qdisc configured with full offload\n");
++		return NULL;
++	}
++
+ 	rcu_read_lock();
+ 	entry = rcu_dereference(q->current_entry);
+ 	gate_mask = entry ? entry->gate_mask : TAPRIO_ALL_GATES_OPEN;
+@@ -536,20 +539,6 @@ static struct sk_buff *taprio_peek_soft(struct Qdisc *sch)
+ 	return NULL;
+ }
+ 
+-static struct sk_buff *taprio_peek_offload(struct Qdisc *sch)
+-{
+-	WARN_ONCE(1, "Trying to peek into the root of a taprio qdisc configured with full offload\n");
+-
+-	return NULL;
+-}
+-
+-static struct sk_buff *taprio_peek(struct Qdisc *sch)
+-{
+-	struct taprio_sched *q = qdisc_priv(sch);
+-
+-	return q->peek(sch);
+-}
+-
+ static void taprio_set_budget(struct taprio_sched *q, struct sched_entry *entry)
+ {
+ 	atomic_set(&entry->budget,
+@@ -557,7 +546,7 @@ static void taprio_set_budget(struct taprio_sched *q, struct sched_entry *entry)
+ 			     atomic64_read(&q->picos_per_byte)));
+ }
+ 
+-static struct sk_buff *taprio_dequeue_soft(struct Qdisc *sch)
++static struct sk_buff *taprio_dequeue(struct Qdisc *sch)
+ {
+ 	struct taprio_sched *q = qdisc_priv(sch);
+ 	struct net_device *dev = qdisc_dev(sch);
+@@ -566,6 +555,11 @@ static struct sk_buff *taprio_dequeue_soft(struct Qdisc *sch)
+ 	u32 gate_mask;
+ 	int i;
+ 
++	if (unlikely(FULL_OFFLOAD_IS_ENABLED(q->flags))) {
++		WARN_ONCE(1, "Trying to dequeue from the root of a taprio qdisc configured with full offload\n");
++		return NULL;
++	}
++
+ 	rcu_read_lock();
+ 	entry = rcu_dereference(q->current_entry);
+ 	/* if there's no entry, it means that the schedule didn't
+@@ -645,20 +639,6 @@ static struct sk_buff *taprio_dequeue_soft(struct Qdisc *sch)
+ 	return skb;
+ }
+ 
+-static struct sk_buff *taprio_dequeue_offload(struct Qdisc *sch)
+-{
+-	WARN_ONCE(1, "Trying to dequeue from the root of a taprio qdisc configured with full offload\n");
+-
+-	return NULL;
+-}
+-
+-static struct sk_buff *taprio_dequeue(struct Qdisc *sch)
+-{
+-	struct taprio_sched *q = qdisc_priv(sch);
+-
+-	return q->dequeue(sch);
+-}
+-
+ static bool should_restart_cycle(const struct sched_gate_list *oper,
+ 				 const struct sched_entry *entry)
+ {
+@@ -1565,17 +1545,6 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+ 		q->advance_timer.function = advance_sched;
+ 	}
+ 
+-	if (FULL_OFFLOAD_IS_ENABLED(q->flags)) {
+-		q->dequeue = taprio_dequeue_offload;
+-		q->peek = taprio_peek_offload;
+-	} else {
+-		/* Be sure to always keep the function pointers
+-		 * in a consistent state.
+-		 */
+-		q->dequeue = taprio_dequeue_soft;
+-		q->peek = taprio_peek_soft;
+-	}
+-
+ 	err = taprio_get_start_time(sch, new_admin, &start);
+ 	if (err < 0) {
+ 		NL_SET_ERR_MSG(extack, "Internal error: failed get start time");
+@@ -1694,9 +1663,6 @@ static int taprio_init(struct Qdisc *sch, struct nlattr *opt,
+ 	hrtimer_init(&q->advance_timer, CLOCK_TAI, HRTIMER_MODE_ABS);
+ 	q->advance_timer.function = advance_sched;
+ 
+-	q->dequeue = taprio_dequeue_soft;
+-	q->peek = taprio_peek_soft;
+-
+ 	q->root = sch;
+ 
+ 	/* We only support static clockids. Use an invalid value as default
 -- 
 2.34.1
 
