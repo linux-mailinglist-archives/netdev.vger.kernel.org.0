@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 900135B8AAD
-	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 16:35:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF7995B8AAF
+	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 16:35:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230134AbiINOfD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Sep 2022 10:35:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60518 "EHLO
+        id S230149AbiINOfE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Sep 2022 10:35:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230111AbiINOfB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 10:35:01 -0400
+        with ESMTP id S230121AbiINOfC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 10:35:02 -0400
 Received: from EUR02-VE1-obe.outbound.protection.outlook.com (mail-eopbgr20070.outbound.protection.outlook.com [40.107.2.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0E511BEAC;
-        Wed, 14 Sep 2022 07:34:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FC721573D;
+        Wed, 14 Sep 2022 07:35:01 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mAqv/l/FeF0/8A67f9u38lSIq1Ta27yUpcb866DEh4Od8NRdTg9ovVEw/jK/yAO8uGwsKzlIcZRqHDF5nm/TtEQxSLfZDShqgY2UzUovWmPH86X4j7nogEMLsAfhHwZGf4+clk5a1f3r2x2cPGR5lOop/jv/ayTCMUZks3pWBe36GlPzWQVHdEXBnj4wDf5z/oj11wU+V4ut6EXtkX6yl3LWj21mnTEqExv+dc2B0EbJpNyYKE4oeHdFH65VUFjRnjZSmIZU4k9kNseTKP26gnmUQxZv9DsJGu9IzvxHUQf7T5KgYngJz0macdImpr8WkawxSxZ5YG3C2bdIJadfxQ==
+ b=lBGZ5KR9X97ClaYubKd3HFUtdFtizzOZHB3JgQHwyqQA/F7KiCtY6VKRpkhzexzmMeBefzCL5Ls8djJuAK4zbhwfYZq9EgRM8LBigMHl1wSqspPpUJCJR773+KKE4n4xqeVu2Y2Pul6dEKQneWrq9acJ8HIyqHT2Acd5WPBuWAYwqfxbEM3ZhtRTiiV4IEI6cw/mnM5293JoFwAZmBwdmNZ+Me9dGkPuO1wIL1c40Ao4ENiT5OCDc0+nWldnXLyZiet895HcavDJhPsdXQzYFzDgjLwx70f3UafUuUMZ9czowU5BsI/jucHdq0q1PvdzyHGxuRFTfzBQeZA0pZ2EJg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ERrYvNueZ8fSeXzxwlCPF0l8KXoyFKMy82vN+ixONLs=;
- b=fReKmhnBzB4Y/SRZXKQCfz0n2VN+NXICaJJ0jrMkTGGSF1Sggx3aKWjlLotRur31AF1U/ZepZrDKWYNANQDNHkbVNarLWAKQuRst9vzjLdAFdoGIJqA06hhH/iyH9NoA4HQs0pxGcTuBWGPlBu6LIsmUHAGyYuqUy1eQZiWOYmna9VgbqAqwQzw2HCQA80GnwCeznPN+TykhD0YMdK/4KqzLp/qo+CXuk42dNlqgverRYxD4YlDv1dpYg9Eqn2S2kYNN02tEJmy3Z5lkiTTHF0jX3Onu1+ZF7VDgnivWWI6gjaXoTp9PMVk9ao/JbgFh8myKCtBsuPw5EAzoLXb1aQ==
+ bh=kaw/TwpbWuqLR/n8jJbVh7aNWJ4BEk19ku3HInWWwA0=;
+ b=N+EIwX1HDdX8g8q53L8wDupFNZH7mv88mnskhOBHQ5no7a21Fj8CVihF0kpZGqMP0W0ShHX7s690ScacrcIky6dod8ZBOpk3A6xQTSX95HvinY6fmO4VaBSJWPi4hXbirZ3QTjmX9WMdfDS9bVX5WINbN1b4QKrNOIKlUosx+F9thOPDQE/A6Vb52C5V5hgsV/X8Dq5WcCCb72JmVFl5VdnPL0xt0PIg/0wHH8PhvRH5r0hevppRZZrKeqWCXFPfTiOBFCwYELt2xeIQ58twJGv0BpVdeqf8q1CWd/++Ez6Xt3Bzjgyvdba1c6k8s7SmZI5IvUxaDEsQxLh1C4Bw0w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ERrYvNueZ8fSeXzxwlCPF0l8KXoyFKMy82vN+ixONLs=;
- b=sjx88SRmqe3xqZ7IoXOoteFKx73aMYsmT3HwuxYH+uUUT44LG9dDDoJ9jjEqENh63xYik6ady9Xmzpw60zUvKcwlNhw/rbmSRFbX0X1CZDT7QcG2R7fVanwHpQ3zlMFVts0cxjshInNKtumWDrRtuKX/i6TQARCfrWi629bfJCY=
+ bh=kaw/TwpbWuqLR/n8jJbVh7aNWJ4BEk19ku3HInWWwA0=;
+ b=icq+R8agagIO/A3U57SATTTI7aq5zok4XMpWWvUGcR3Hf3H98Zxqg7TN76dnZT7ldyLUBK+5F12wVwh5a1w6BPn9ftOgyW1lm+1AhI1Wl8iY2Qb3DawQFmwUY9zAoroLcxspF5MSLCn64DF5+J4oYLCNzaL0x/GYnAJBAs248aA=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by DB8PR04MB6777.eurprd04.prod.outlook.com (2603:10a6:10:11f::10) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.22; Wed, 14 Sep
- 2022 14:34:57 +0000
+ 2022 14:34:59 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::a67a:849c:aeff:cad1]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::a67a:849c:aeff:cad1%7]) with mapi id 15.20.5612.022; Wed, 14 Sep 2022
- 14:34:57 +0000
+ 14:34:59 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
@@ -53,10 +53,12 @@ Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         Kurt Kanzenbach <kurt@linutronix.de>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net 0/3] Fixes for tc-taprio software mode
-Date:   Wed, 14 Sep 2022 17:34:36 +0300
-Message-Id: <20220914143439.1544363-1-vladimir.oltean@nxp.com>
+Subject: [PATCH net 1/3] net/sched: taprio: avoid disabling offload when it was never enabled
+Date:   Wed, 14 Sep 2022 17:34:37 +0300
+Message-Id: <20220914143439.1544363-2-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220914143439.1544363-1-vladimir.oltean@nxp.com>
+References: <20220914143439.1544363-1-vladimir.oltean@nxp.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: AS4P191CA0029.EURP191.PROD.OUTLOOK.COM
@@ -65,51 +67,51 @@ X-ClientProxiedBy: AS4P191CA0029.EURP191.PROD.OUTLOOK.COM
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|DB8PR04MB6777:EE_
-X-MS-Office365-Filtering-Correlation-Id: a8426d42-d03f-4286-8bf4-08da965e4bab
+X-MS-Office365-Filtering-Correlation-Id: 37a62248-6897-4c1f-5124-08da965e4cda
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ADHzLE7fDssPqV2XtV62kk6Kkiz1pCrxOb/LSdJ/DWYYOWwpwkofwHQBJEZXmTNpOC4UpmZLRGcKqQtcurSN1UAYO1MlLJEcb8bbJi2P2tqlS6VvuRPm9Td/Tv4IJrhK9Y/Jm6qMOS2/eSE2FWiQ7zZeyDyciyppR5fy+BAymgW2OCW4OWyIYJvn6lKo6nVOrnRRbQzWlisDdkZ2dnPGnAOBiZIJJTgpM5iqMexXGYmiiJFIkYSKKwtK1DUsrDhricQPT3JaZx3jm9swf19nPcLSnb4SnRki7z1dNHvLLMGhJWsM4XVRJ2grfMwnqJtZZLfE/1vNrwUnL2wfjGbXXSEwIXqbUSlsWlenYHvZimZe/sKFk99JdIelFXLbaTrsNda1p38vlBvJlb8qmQSAzIWJtIIdwDll5FOcIgGpQhMX7gSEoGJvq5w0r2f2u9CfeUL+bKZ6sFoE+v1jYIiYu9S5bjivq85hJEAOJYGe6xvkUscMepU46GCNujFzzioP5CYF7F+z7Rj7nO8xzz/XD+amrZqYUnsMWDfMNnyY1IoYzl3rESdA8dw2mxdqXTYtnTki9f/zcAPavLJBtpLQM7PcUIqhlbS9NWG0ssR1cPT/ju6M83AywhzFVWBV+HeuxtVoAidgx49xA8EIsPm83q5g0bmJBvDzmYOgOlMtdjL6KP54FtFRETHJKRzIGsSU1Em6vCg1fG2tZfdB49LuOBkBMEGKkwa9EqVzuYNoija7CDW+H4s0GRgTV+AbCYtO1QIn+ThmSvG0ZdVoRC9fKA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(39860400002)(366004)(376002)(346002)(396003)(451199015)(6486002)(4326008)(38350700002)(66946007)(5660300002)(6916009)(6512007)(7416002)(6506007)(2616005)(1076003)(66556008)(52116002)(36756003)(41300700001)(26005)(83380400001)(86362001)(66476007)(186003)(8936002)(44832011)(8676002)(4744005)(38100700002)(2906002)(316002)(6666004)(478600001)(54906003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: pu7SfbI68u/5pW/Ej8TjbHp6X6RnSMVZLIaS0ETeJNPdfap1hiCFZRpfDybCXVE58FYg4k/zhVz2Us0nEhRHAwp0Wq0ozaPoz002gokoQ2khfAMb973ZMye5aaAB3evMfSRkzJQFNKQzltKRL2EbWzbYOLJmZQ2lF9UpaCC3UaOHaTYb2tWRXmVi5wHzowUGlgZlq9Txm7yFj2VzwkfhuEdVYhT0NKBiTp3abXgn6hqrnDJ/FDlakGLpy+8g9wQsV5njnXkJ6oP9AX36yPxGXj6SkqGFR+NVj8+yg98tpSOYORTKJKEGfNaH/5Jd6rgyJoCjt6+r2weHqyCUUfggVyMtLBAudhK8AqvQWjX4qEb/pQZ9fseqXoCrW9TF2AKUAPaHZ7RXlh/RWz+uHTO3QEFl3eFwCwQc+H0ltw+Ktzod3G+YOzpRBMJOzU00zUU8/t5sVKBbI4vtdfhGW72evCo2+Cc/gT7rtzY8DRkgSRfaqSBlnJWC5GZPiIQdfIh9QYsRrqlJepBFYe8a3/eo6TA0JEf19okl14LTTU57Z9SsWmSVlG19lJc4aXAMuiDO8yb2UUoXiky3EMMX508VqR7/UrXbohgLyxKmG//ynrP5LFiY/Y5JMxIBI5H4YwMMy0NYJ3DD5da6boRVbNBP/am2yiCE3Z+CNEtvBbxRrSveEefxrj1I7zgN+EGRgyQf/zJcplnmGlOuL8If++ScaFdm9H6aUL7+4dsNUIDOx97ikWuMcD6eQe1G+EgfTw6vpU2wdGQAjAIdzy1ZfC4HGfTu+nQcbsvJXwYjJqM8ynE=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(39860400002)(366004)(376002)(346002)(396003)(451199015)(6486002)(4326008)(38350700002)(66946007)(5660300002)(6916009)(6512007)(7416002)(6506007)(2616005)(1076003)(66556008)(52116002)(36756003)(41300700001)(26005)(83380400001)(86362001)(66476007)(186003)(8936002)(44832011)(8676002)(38100700002)(2906002)(316002)(6666004)(478600001)(54906003)(21314003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ZtrRQhu9J1gny5VqQ855e4XMXHdsfeTiq8cpQQphAcDkXZWDCDPlOFhI+aYL?=
- =?us-ascii?Q?cKO3Tdmq5vOZu24C76AtsnQ39lqKYDhWKWHxDjzdepq7XJmZY9sPyT05MaWD?=
- =?us-ascii?Q?Pp6gOBeDAwtBS8J8EoyAN74JUtpH8okVAOF7ZbZ8r1lNLwVcTq7QX3V4XzFt?=
- =?us-ascii?Q?rCjmx0yn2YlNpMbJ5HGgC3PyuvgYtwfGjZolu/wsMqXFLXyhy+u5ed2xegjp?=
- =?us-ascii?Q?ZiFxV96R/sX9pxvWbmFPpWY31Z6AgJJxrSHfZNNq6ErhERsNuAn2SAfT5M8w?=
- =?us-ascii?Q?hZfxGNyNgKCbJiQnmnOn5J+GWERRrh/73H/V1dMDvoPeeJPr9PVfu0l7IXxz?=
- =?us-ascii?Q?V/DM1ucLVfvBQrN0g/stIq4BeXnWuaPKge0j/75SryhH9E71/nbGdCUjHJzI?=
- =?us-ascii?Q?Jrbof4AaMW8vqCfHP2pOZ6bK3wslYwDdnX956WszAbOjTUQpXeipmp28jDF5?=
- =?us-ascii?Q?IMTm5uaSPpQFguQjq2A9jgfNevfytthUbNG9BjH1I0dJiFB8ELp3XaMmHmCJ?=
- =?us-ascii?Q?E1OecNvJ2jb60WU1z7byA8ZOI5lClO0sV4AxtG1KB8tzDA51S94X/sDVUpA6?=
- =?us-ascii?Q?VXXk2qOfT/zEsXU8fnljcm2ZHDBSxWne4DMQacaGnDab9VgjhBSMVVprGsxQ?=
- =?us-ascii?Q?L8rEGstHGJAp/qEdfHFmS3uvrXuJ/bn5TDksqfMm9hgdxWrxs+yV9o40xM39?=
- =?us-ascii?Q?UaDlse91eUHBbKJXCwXE9ll+XV2sIwQRU5smzUcsidknqjgY1h4PMBLWMEN9?=
- =?us-ascii?Q?033aKNNr5Iz9Xa6P9GjkIz+uIzoCcePtjlTs6DLSHyCgJ+mbzV3HMGM8t7jo?=
- =?us-ascii?Q?fA2XHmcRWayTdVdjFQwGNtYL57sfFgnMea34ruHw+UTrvnrvq+cnN2sp50Xa?=
- =?us-ascii?Q?WV6kOF6AcMVUqI7j/Zg8uEDuWQiLfLSnm/BsYH/tl72a6QuCdV2Ca7VwoKEK?=
- =?us-ascii?Q?VxJTPUZUEWvKmX+N9l6KwLtlXoQj/38asCCyCbr95f5DT7pEnNdbMrvSuH+5?=
- =?us-ascii?Q?cOmvZV2Nj2vr2x2QEBQCZY93HrqtsfqZvkomq4rR1wBWjUIm8wltDHC5iv0h?=
- =?us-ascii?Q?e/YeZepBYGpAWsOEwG164kUrwIByi0XB4s67Vog4h7JaQUoasKNf40FpdRI2?=
- =?us-ascii?Q?9EQI3KwbAATEZZ9uhYoGG+5ffs09uklZGqBWNDpk4voDPK6oom4ZVS1Fy11D?=
- =?us-ascii?Q?Qlwy1BU7KzRz7aTIXNC1ycltX+LweuEWG8QbLsoQ/iJix2L9GjxWKfZfJwa8?=
- =?us-ascii?Q?5HhJ6SwhS+3aDlCWiwDfkyqKMHSkAdxJzNwbsr/141+4Q0qOQlQVIV0NeQLQ?=
- =?us-ascii?Q?0cduOgGzHrVuthRNKEHwEEgWlGzBlRXN3QaNLRIQ44XNqI+H3yXp3tNAr/1/?=
- =?us-ascii?Q?IsV1D5HRQO0CAv3/MEIGHAmMqbq3R7F0hAPeQw7gmhADatlxcKKsvCH3q0Wd?=
- =?us-ascii?Q?d1ZrNMe69IArKAprzP+UGuJemrcsaCRfEw3347qdv7EE2VxMiYxXqknoQph+?=
- =?us-ascii?Q?LetQ7kRPVPX61cNKPLYGDGg/vPlfPK0FihKgWhY4LHLOmP0zWLdyYpDLe4vK?=
- =?us-ascii?Q?5430oqvqHyGxexp3mEkwz0LCSraNEUz+QuHP5E/VVWWw5erCtz0Kmn15CRnE?=
- =?us-ascii?Q?gg=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?1BnE4FkYyGZ6RAIimw9c60DBX7CgnvOp0rKSP6LZjKW2YW/qzpx97h1KZ6Y/?=
+ =?us-ascii?Q?TDPvatFAd3HlRnShtu3HV/ELs+Cnmor2s972PKZ9PSc8geabzPaEbTop5lkW?=
+ =?us-ascii?Q?COOg0nQTtTGOq3Z/Ns55o5D6C8Tzg9DF0auFlxL/6M7sBqYnId94HzTyybwH?=
+ =?us-ascii?Q?vm3wVWrid9+A506H/LjH5OBtEjSlBkfMNl+XUAG+mJNLGECfYh0aoCNhycXT?=
+ =?us-ascii?Q?uq6m41I6gb+6tHnfwyP3Gvi/RJswcVACaQulx8moWpJp1tQKN3YXRMqsQlXw?=
+ =?us-ascii?Q?lqfD293BfhLOD/Z+NVfLAcmkkunfL8tSacw7c84caYPlefvzC/evudSjcVNB?=
+ =?us-ascii?Q?iZBl+aUzkBZzZ5ECXzZRB6h5hygY6cJOjohIFq2gO14nmg9aVa5PsZWCQRLV?=
+ =?us-ascii?Q?2b7H+h4UIVNbg3aJ1bBnBMqtCIqsyJ3Ocv0Q8NgBtQzj+/trJ9uJQehV5K2N?=
+ =?us-ascii?Q?rXjdXrnEBBoeh2dJzyE/I9r9mDP2kW+akwoXBbrM8U2BAZR7ts9aG7cjtS0U?=
+ =?us-ascii?Q?jdK6v9QV539lpj7lOdU7YH1DGKNoXczTyToeQylcQQoD/oFWvZf7my4p/U8M?=
+ =?us-ascii?Q?kVNHa9WH0mmcif1N6mbt3taETTOjDyhP9tXnYzPuuafEqPYSop3r5NzvNEpv?=
+ =?us-ascii?Q?fEBQMNWJk0jUx99Wln+CSMayqDLgwtTnPY30PCYpXuz0aWckckq+t2zr8uho?=
+ =?us-ascii?Q?JTSqMAtP2SWSfOnQZB8ZrMxcQqyzdizhcCGmilwJb8EWkzu03aGAf/vhC5Dq?=
+ =?us-ascii?Q?iHO5aQJTLqEwX8fHStdflAfSMwFGvH3Q9g1jqcDNMP9FD5f3l8TI4iauYCBl?=
+ =?us-ascii?Q?K/SCjnVV78bgcRQ3sYPh5u3zFauHKHELgru00TCFu0ahEDWNELKzJyYzbuA3?=
+ =?us-ascii?Q?d6T8n6mjrynAlvTgHBfnxzAnd2Oak216HyUqhweAOU903ZA89p/tcLBNBFP1?=
+ =?us-ascii?Q?KQo9TGXRdybdKy2z3PtpqiH3XZySocYjWWYWrEeNZ7GK2tPaMzYn8HQ7aela?=
+ =?us-ascii?Q?0OAqyCtbeBdJz/9UR8h6TkwFgZgRon4zoBBzRdDX73riD3JYzozAzFey8KK9?=
+ =?us-ascii?Q?eXst8gf5JMjlSeVJP+y4deg6qHhvq27OW0neS1LNKJ7Bm6wDrFm/z+pijonv?=
+ =?us-ascii?Q?ccgvC34FtXfDg7XJ3wWNXkdjpmG0yIIN3xvQn0fOcF2T6qsPDAVX12LadlhM?=
+ =?us-ascii?Q?YrHKdispkqmNlRG43VDjIEe8LssSBcw6VqZNn6UtHnixjb+b6BV9tdjd6wC/?=
+ =?us-ascii?Q?C+BsMoiPPGK2XYKmd+R1C/04vZOyROZL3S77w9QkbX7l17asI/qIuX4JGWLD?=
+ =?us-ascii?Q?PrKsnPL1nvYG2A0Yxb1dodENfEPZfPo8NPjT1dD3Sn74qqC4TtPFRfYiJgYL?=
+ =?us-ascii?Q?f5Q5EIim+rOgZwdMJ1QWJ7g/e7GB+TPnEoYHbQinoHJhCd+usNghMLNFzeQ0?=
+ =?us-ascii?Q?isXJilRdJEwSrYNS+bRs0Mi2YdCYKzQM/KjhSu68B1cP5gVY7S0aNZZ/HScj?=
+ =?us-ascii?Q?aJN7kOu15gbGUF2onxdiupi9WtbD3OOHCjRWAdVxr9Ulu8Laiyurg+kacOYH?=
+ =?us-ascii?Q?K9JN2zversnD14wOsJY9RwRMsmv8y/K1XxagHTT5yDWM4GVsPvuooGVCiJz/?=
+ =?us-ascii?Q?2Q=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a8426d42-d03f-4286-8bf4-08da965e4bab
+X-MS-Exchange-CrossTenant-Network-Message-Id: 37a62248-6897-4c1f-5124-08da965e4cda
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Sep 2022 14:34:57.3378
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Sep 2022 14:34:58.9627
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QVEM7Au7Yzowf64o8iFyhYkDvR6DvRDp5gHKUdSFcbufP2DEwtQIuk/miFfsyx3EsdVQr0ECHDrBbLHjliEUFg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5uTvK3i9Iyg86YpjPxlkjzxJCFVvZ9ezFVTl9Qj+11Al/JHK4TMabqgzLwSBZzWv6TxuHdQM4AEeBFglZAVMlg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6777
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -121,21 +123,137 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While working on some new features for tc-taprio, I found some strange
-behavior which looked like bugs. I was able to eventually trigger a NULL
-pointer dereference. This patch set fixes 3 issues I saw. Detailed
-explanation in patches.
+In an incredibly strange API design decision, qdisc->destroy() gets
+called even if qdisc->init() never succeeded, not exclusively since
+commit 87b60cfacf9f ("net_sched: fix error recovery at qdisc creation"),
+but apparently also earlier (in the case of qdisc_create_dflt()).
 
-Vladimir Oltean (3):
-  net/sched: taprio: avoid disabling offload when it was never enabled
-  net/sched: taprio: make qdisc_leaf() see the per-netdev-queue pfifo
-    child qdiscs
-  net/sched: taprio: dereference oper and admin sched under RCU in
-    taprio_destroy
+The taprio qdisc does not fully acknowledge this when it attempts full
+offload, because it starts off with q->flags = TAPRIO_FLAGS_INVALID in
+taprio_init(), then it replaces q->flags with TCA_TAPRIO_ATTR_FLAGS
+parsed from netlink (in taprio_change(), tail called from taprio_init()).
 
- net/sched/sch_taprio.c | 34 +++++++++++++++++++++++-----------
- 1 file changed, 23 insertions(+), 11 deletions(-)
+But in taprio_destroy(), we call taprio_disable_offload(), and this
+determines what to do based on FULL_OFFLOAD_IS_ENABLED(q->flags).
 
+But looking at the implementation of FULL_OFFLOAD_IS_ENABLED()
+(a bitwise check of bit 1 in q->flags), it is invalid to call this macro
+on q->flags when it contains TAPRIO_FLAGS_INVALID, because that is set
+to U32_MAX, and therefore FULL_OFFLOAD_IS_ENABLED() will return true on
+an invalid set of flags.
+
+As a result, it is possible to crash the kernel if user space forces an
+error between setting q->flags = TAPRIO_FLAGS_INVALID, and the calling
+of taprio_enable_offload(). This is because drivers do not expect the
+offload to be disabled when it was never enabled.
+
+The error that we force here is to attach taprio as a non-root qdisc,
+but instead as child of an mqprio root qdisc:
+
+$ tc qdisc add dev swp0 root handle 1: \
+	mqprio num_tc 8 map 0 1 2 3 4 5 6 7 \
+	queues 1@0 1@1 1@2 1@3 1@4 1@5 1@6 1@7 hw 0
+$ tc qdisc replace dev swp0 parent 1:1 \
+	taprio num_tc 8 map 0 1 2 3 4 5 6 7 \
+	queues 1@0 1@1 1@2 1@3 1@4 1@5 1@6 1@7 base-time 0 \
+	sched-entry S 0x7f 990000 sched-entry S 0x80 100000 \
+	flags 0x0 clockid CLOCK_TAI
+Unable to handle kernel paging request at virtual address fffffffffffffff8
+[fffffffffffffff8] pgd=0000000000000000, p4d=0000000000000000
+Internal error: Oops: 96000004 [#1] PREEMPT SMP
+Call trace:
+ taprio_dump+0x27c/0x310
+ vsc9959_port_setup_tc+0x1f4/0x460
+ felix_port_setup_tc+0x24/0x3c
+ dsa_slave_setup_tc+0x54/0x27c
+ taprio_disable_offload.isra.0+0x58/0xe0
+ taprio_destroy+0x80/0x104
+ qdisc_create+0x240/0x470
+ tc_modify_qdisc+0x1fc/0x6b0
+ rtnetlink_rcv_msg+0x12c/0x390
+ netlink_rcv_skb+0x5c/0x130
+ rtnetlink_rcv+0x1c/0x2c
+
+Fix this by keeping track of the operations we made, and undo the
+offload only if we actually did it.
+
+I've added "bool offloaded" inside a 4 byte hole between "int clockid"
+and "atomic64_t picos_per_byte". Now the first cache line looks like
+below:
+
+$ pahole -C taprio_sched net/sched/sch_taprio.o
+struct taprio_sched {
+        struct Qdisc * *           qdiscs;               /*     0     8 */
+        struct Qdisc *             root;                 /*     8     8 */
+        u32                        flags;                /*    16     4 */
+        enum tk_offsets            tk_offset;            /*    20     4 */
+        int                        clockid;              /*    24     4 */
+        bool                       offloaded;            /*    28     1 */
+
+        /* XXX 3 bytes hole, try to pack */
+
+        atomic64_t                 picos_per_byte;       /*    32     0 */
+
+        /* XXX 8 bytes hole, try to pack */
+
+        spinlock_t                 current_entry_lock;   /*    40     0 */
+
+        /* XXX 8 bytes hole, try to pack */
+
+        struct sched_entry *       current_entry;        /*    48     8 */
+        struct sched_gate_list *   oper_sched;           /*    56     8 */
+        /* --- cacheline 1 boundary (64 bytes) --- */
+
+Fixes: 9c66d1564676 ("taprio: Add support for hardware offloading")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ net/sched/sch_taprio.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index db88a692ef81..a3b4f92a9937 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -67,6 +67,7 @@ struct taprio_sched {
+ 	u32 flags;
+ 	enum tk_offsets tk_offset;
+ 	int clockid;
++	bool offloaded;
+ 	atomic64_t picos_per_byte; /* Using picoseconds because for 10Gbps+
+ 				    * speeds it's sub-nanoseconds per byte
+ 				    */
+@@ -1279,6 +1280,8 @@ static int taprio_enable_offload(struct net_device *dev,
+ 		goto done;
+ 	}
+ 
++	q->offloaded = true;
++
+ done:
+ 	taprio_offload_free(offload);
+ 
+@@ -1293,12 +1296,9 @@ static int taprio_disable_offload(struct net_device *dev,
+ 	struct tc_taprio_qopt_offload *offload;
+ 	int err;
+ 
+-	if (!FULL_OFFLOAD_IS_ENABLED(q->flags))
++	if (!q->offloaded)
+ 		return 0;
+ 
+-	if (!ops->ndo_setup_tc)
+-		return -EOPNOTSUPP;
+-
+ 	offload = taprio_offload_alloc(0);
+ 	if (!offload) {
+ 		NL_SET_ERR_MSG(extack,
+@@ -1314,6 +1314,8 @@ static int taprio_disable_offload(struct net_device *dev,
+ 		goto out;
+ 	}
+ 
++	q->offloaded = false;
++
+ out:
+ 	taprio_offload_free(offload);
+ 
 -- 
 2.34.1
 
