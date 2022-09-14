@@ -2,111 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 125CB5B87C6
-	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 14:03:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 516D85B87C9
+	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 14:07:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229693AbiINMDa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Sep 2022 08:03:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60100 "EHLO
+        id S229767AbiINMHE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Sep 2022 08:07:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229490AbiINMD2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 08:03:28 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60B252E692;
-        Wed, 14 Sep 2022 05:03:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=AGiS0RJTIfvi76lZW3pl+xDVDO1sAPMtoNwFdsbw634=; b=vjqzDyEsUkoDI9FWKQ04N1BR2s
-        lD59yHKCy3WGtuA1rDc+Q0YxLU6LluESH/a1B1rKF7jjIl4zL6XTDb1DUlT6qdXEXikhXG3HMTXLJ
-        HNykcBcCSnQN9qaBKbb6R5fja2iq16eQKNYD0inuCUT3zrAyI3+Aldk025u4Gul/K7M8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oYR6g-00Gh3A-SF; Wed, 14 Sep 2022 14:03:06 +0200
-Date:   Wed, 14 Sep 2022 14:03:06 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "geert+renesas@glider.be" <geert+renesas@glider.be>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Subject: Re: [PATCH 3/5] net: ethernet: renesas: Add Ethernet Switch driver
-Message-ID: <YyHC+r3uP7s15kny@lunn.ch>
-References: <20220909132614.1967276-1-yoshihiro.shimoda.uh@renesas.com>
- <20220909132614.1967276-4-yoshihiro.shimoda.uh@renesas.com>
- <Yx+9OrYDxKjVUutF@lunn.ch>
- <TYBPR01MB5341F0C51EB2EBEF5A7107E7D8469@TYBPR01MB5341.jpnprd01.prod.outlook.com>
+        with ESMTP id S229725AbiINMHC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 08:07:02 -0400
+Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF057F257;
+        Wed, 14 Sep 2022 05:07:00 -0700 (PDT)
+Received: by mail-qv1-xf2d.google.com with SMTP id s13so11500450qvq.10;
+        Wed, 14 Sep 2022 05:07:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=2seAi8p9cHTQ5grUkwewK+XdzcnHWiXhnN5EOp8ed1M=;
+        b=dwVpg4cqBY0+c9XrNnlYb7uyYW8DoeEJtl5JT2pRFd16SN6bHT7Cl20p6HTwD8cR4P
+         +3DmJ/tjHNIGlq4usUb/aMaDOZtRKeAhnuZMJLSB84JCtPLk9K+ExSEhWd6pV/K9j9hF
+         QX/nqvHMFBz0rT8Wfbc3hwvmjwEziEvweO1XoqmVAD2tLonoTF+3w5kIQ0x7OKVJrihv
+         lwS27Tjndm+nR7G3gp4DZJpFqKVI2fpWuvk9N1JVrHDjB9pwD+0HSQwu1IP4RFtLCohW
+         jer/4LYVGMXOHKdtpsDCCOHTgo4LZVl3dAYiZNgR+c7GA/Ek2rYIReSwvmTObibAySzv
+         VFfA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=2seAi8p9cHTQ5grUkwewK+XdzcnHWiXhnN5EOp8ed1M=;
+        b=lxE1mF6muEG7B3X2PsylvCQMyruwPkJL7Eq+PSriDiPXi2TXpkl9DFXnX1bJRLExMN
+         vEuJFnlY6HcU8q48djGG+Oz8u1G95beS9GRvyQSlAo9gRzmI4tWuV4k2+3IyWZr+bAyB
+         pZ18H2V87drbF4BUKj4R0fcy0Xk1myvOlKaQBiXSuku7/hl4xaTNKnWG4PLw/dVNMIyX
+         hy/1NNpkS/01dpNGjGaG36RFbr79HWTw71K1Mk2r4G7yROK06oC60eoQjO3kBsxi3nyP
+         rj4rl+FALY27CIhZVsFN6Q4O/kzpn/+OHaNVZhY+UMsFbAxtpWMKpudGVmQUg5j7qjqG
+         xcVg==
+X-Gm-Message-State: ACgBeo0dPrzvuHH9dwoP0cjvfatt7tAPdkyZyTpH+ps9FnuU84ej8j1/
+        lQnqbJhoIiiQDZmJaIEV8tsun1CFPAbv5Q==
+X-Google-Smtp-Source: AA6agR4qM8+4xZ8JfYFrFjrKKP+AQwRkgUoluvJ40CPzqYuFfl1kgsgy8xlZMg6+Rjj/AkbVhMNsOA==
+X-Received: by 2002:a0c:e152:0:b0:4ac:8080:215c with SMTP id c18-20020a0ce152000000b004ac8080215cmr24791308qvl.2.1663157219360;
+        Wed, 14 Sep 2022 05:06:59 -0700 (PDT)
+Received: from errol.ini.cmu.edu (pool-72-77-81-136.pitbpa.fios.verizon.net. [72.77.81.136])
+        by smtp.gmail.com with ESMTPSA id i10-20020ac84f4a000000b0031eb5648b86sm1452330qtw.41.2022.09.14.05.06.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Sep 2022 05:06:58 -0700 (PDT)
+Date:   Wed, 14 Sep 2022 08:06:56 -0400
+From:   "Gabriel L. Somlo" <gsomlo@gmail.com>
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     Nathan Huckleberry <nhuck@google.com>,
+        Dan Carpenter <error27@gmail.com>, llvm@lists.linux.dev,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: ethernet: litex: Fix return type of
+ liteeth_start_xmit
+Message-ID: <YyHD4MX0Pvckb6XW@errol.ini.cmu.edu>
+References: <20220912195307.812229-1-nhuck@google.com>
+ <YyEErzoi9+8NMRCP@dev-arch.thelio-3990X>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <TYBPR01MB5341F0C51EB2EBEF5A7107E7D8469@TYBPR01MB5341.jpnprd01.prod.outlook.com>
+In-Reply-To: <YyEErzoi9+8NMRCP@dev-arch.thelio-3990X>
+X-Clacks-Overhead: GNU Terry Pratchett
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > +static void rswitch_adjust_link(struct net_device *ndev)
-> > > +{
-> > > +	struct rswitch_device *rdev = netdev_priv(ndev);
-> > > +	struct phy_device *phydev = ndev->phydev;
-> > > +
-> > > +	if (phydev->link != rdev->etha->link) {
-> > > +		phy_print_status(phydev);
-> > > +		rdev->etha->link = phydev->link;
-> > > +	}
+On Tue, Sep 13, 2022 at 03:31:11PM -0700, Nathan Chancellor wrote:
+> On Mon, Sep 12, 2022 at 12:53:07PM -0700, Nathan Huckleberry wrote:
+> > The ndo_start_xmit field in net_device_ops is expected to be of type
+> > netdev_tx_t (*ndo_start_xmit)(struct sk_buff *skb, struct net_device *dev).
 > > 
-> > Given that the SERDES supports 100 and 1G, it seems odd you don't need
-> > to do anything here.
-> 
-> Indeed. However, unfortunately, the current hardware cannot change the speed at runtime...
-> So, I'll add such comments here.
-
-Then you need to tell phylib about this. MAC drivers with limitations
-often call phy_set_max_speed() to remove higher speeds which the PHY
-can support, but the MAC cannot. You need to go further and remove
-lower speeds as well. The autoneg in the PHY should then only work for
-the speeds you actually support.
-
-> > > +static int rswitch_serdes_common_setting(void __iomem *addr0,
-> > > +					 enum rswitch_serdes_mode mode)
-> > > +{
-> > > +	switch (mode) {
-> > > +	case SGMII:
-> > > +		rswitch_serdes_write32(addr0, 0x0244, 0x180, 0x97);
-> > > +		rswitch_serdes_write32(addr0, 0x01d0, 0x180, 0x60);
-> > > +		rswitch_serdes_write32(addr0, 0x01d8, 0x180, 0x2200);
-> > > +		rswitch_serdes_write32(addr0, 0x01d4, 0x180, 0);
-> > > +		rswitch_serdes_write32(addr0, 0x01e0, 0x180, 0x3d);
+> > The mismatched return type breaks forward edge kCFI since the underlying
+> > function definition does not match the function hook definition.
 > > 
-> > Please add #defines for all these magic numbers.
+> > The return type of liteeth_start_xmit should be changed from int to
+> > netdev_tx_t.
+> > 
+> > Reported-by: Dan Carpenter <error27@gmail.com>
+> > Link: https://github.com/ClangBuiltLinux/linux/issues/1703
+> > Cc: llvm@lists.linux.dev
+> > Signed-off-by: Nathan Huckleberry <nhuck@google.com>
 > 
-> I should have added comments before though, the datasheet also describes
-> such magic numbers like below...
-> Step S.4.1	bank 0x180	address = 0x0244		data = 0x00000097
-> Step S.4.2	bank 0x180	address = 0x01d0		data = 0x00000060
-> ...
-> 
-> So, perhaps we can define like the followings:
-> #define	SERDES_BANK_180		0x180
-> 
-> #define	SERDES_STEP_S_4_1_ADDR	0x0244
-> #define	SERDES_STEP_S_4_1_DATA	0x00000097
+> Reviewed-by: Nathan Chancellor <nathan@kernel.org>
 
-Not really any better. Better to comment that you have no idea what
-any of this does, it is all black magic.
+Acked-by: Gabriel Somlo <gsomlo@gmail.com>
 
-    Andrew
+Thanks,
+--G
+
+ 
+> > ---
+> >  drivers/net/ethernet/litex/litex_liteeth.c | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/net/ethernet/litex/litex_liteeth.c b/drivers/net/ethernet/litex/litex_liteeth.c
+> > index fdd99f0de424..35f24e0f0934 100644
+> > --- a/drivers/net/ethernet/litex/litex_liteeth.c
+> > +++ b/drivers/net/ethernet/litex/litex_liteeth.c
+> > @@ -152,7 +152,8 @@ static int liteeth_stop(struct net_device *netdev)
+> >  	return 0;
+> >  }
+> >  
+> > -static int liteeth_start_xmit(struct sk_buff *skb, struct net_device *netdev)
+> > +static netdev_tx_t liteeth_start_xmit(struct sk_buff *skb,
+> > +				      struct net_device *netdev)
+> >  {
+> >  	struct liteeth *priv = netdev_priv(netdev);
+> >  	void __iomem *txbuffer;
+> > -- 
+> > 2.37.2.789.g6183377224-goog
+> > 
