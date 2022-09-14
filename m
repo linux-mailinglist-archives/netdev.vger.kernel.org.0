@@ -2,142 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E18F55B82BE
-	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 10:16:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5B155B832A
+	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 10:39:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230262AbiINIPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Sep 2022 04:15:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36114 "EHLO
+        id S229826AbiINIi6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Sep 2022 04:38:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230058AbiINIPv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 04:15:51 -0400
-Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A828710549;
-        Wed, 14 Sep 2022 01:15:50 -0700 (PDT)
-Received: by mail-qv1-xf2f.google.com with SMTP id y9so11155665qvo.4;
-        Wed, 14 Sep 2022 01:15:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=E3uwB8CqWVlPJdmYFGu1eVYpx1JpXqpegdhCF2Dn9pA=;
-        b=G2z63NBey6mFbnL8i3cvE83J02RhQqveqTl3DsSMswps6rOR1S+R32HI4mouP30Va9
-         FPdAZ7eSLooqa+81j0vK4CfzcQMic1WPM/hllalMM0TUO7d5MXvknHP+00ogn8uqIxlw
-         FqguQlFwXnV8gNoYShd2TWwXPOPPGXkG6cffddCojrNQeNzv6630pcr1ktrs/Azls8/U
-         mYl4XOEZNY1fbAI2JFYW2dHLjsRY3hd7gn0Gje5C2iMCOS9JMW0oAMAwRfPGSIUe2uwW
-         uYj9jFT2jPLRa79KEVigywAKb2naNzBZ4cyJ2tMilZEyrI5uslIlqtOK4Yr2NzVyoxpS
-         QrNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=E3uwB8CqWVlPJdmYFGu1eVYpx1JpXqpegdhCF2Dn9pA=;
-        b=l+M30Tf4Nj0NXqc7pLWNl3MkNZSj2/6JhqjGgxiPg1LG4Ab5Z5sXWZexdNF5A6jGrV
-         EN9ymc9++9H3FvXuepID1MZbjP6UN2RqGQhkJGkn0sWnwKFHNbI4cRw6wSXqgkV6Roao
-         mogJ8cLiWJxxUGA3eR9va08gmM0JxOXjOQcSKOd70G5iqRwBbnCp/CtKwWmt8nOIKRjd
-         iLwnQW+KNYuTRjBOF4mWHBi1wBhhzkPiDsnnEU7LzNISbD5tdZtWHCGKOsHUheEoW9uc
-         BEl+Y1btTHGb68l47yxQsB70TiuA1NmqcHbGgsKwgojnQARReIA477AxH9ZpGfRcoaSt
-         peHg==
-X-Gm-Message-State: ACgBeo0ikN0Sd8hwPKKfbbpPazaZsj2YxzitWG9AxRbKLZvSB3J+IG4F
-        AwGrR7+8ssBB45o2cmiMfg==
-X-Google-Smtp-Source: AA6agR7rdHdEUwpC6EDdkr/XMbUlHMbf7/uf60vpJEPcZOfplJpDoROA7mtkkbfAddJlh5KQMk38mQ==
-X-Received: by 2002:a05:6214:5181:b0:478:69bd:38c5 with SMTP id kl1-20020a056214518100b0047869bd38c5mr30478259qvb.59.1663143349792;
-        Wed, 14 Sep 2022 01:15:49 -0700 (PDT)
-Received: from bytedance.attlocal.net (ec2-52-52-7-82.us-west-1.compute.amazonaws.com. [52.52.7.82])
-        by smtp.gmail.com with ESMTPSA id r18-20020a05620a299200b006ce7cd81359sm1497995qkp.110.2022.09.14.01.15.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Sep 2022 01:15:47 -0700 (PDT)
-From:   Peilin Ye <yepeilin.cs@gmail.com>
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
+        with ESMTP id S229757AbiINIi4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 04:38:56 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3725F6BCE6
+        for <netdev@vger.kernel.org>; Wed, 14 Sep 2022 01:38:48 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1oYNuZ-000867-N9; Wed, 14 Sep 2022 10:38:23 +0200
+Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:956:4247:55d:c7ae])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 1F845E2B21;
+        Wed, 14 Sep 2022 08:38:17 +0000 (UTC)
+Date:   Wed, 14 Sep 2022 10:38:11 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     =?utf-8?B?Q3PDs2vDoXM=?= Bence <Csokas.Bence@prolan.hu>
+Cc:     Bence =?utf-8?B?Q3PDs2vDoXM=?= <bence98@sch.bme.hu>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Peilin Ye <peilin.ye@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Peilin Ye <yepeilin.cs@gmail.com>
-Subject: [PATCH net-next 2/2] af_unix: Refactor unix_read_skb()
-Date:   Wed, 14 Sep 2022 01:15:41 -0700
-Message-Id: <6fd03b42db6b44142e517f85902e99c720277586.1663143016.git.peilin.ye@bytedance.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <03db9765fe1ef0f61bfc87fc68b5a95b4126aa4e.1663143016.git.peilin.ye@bytedance.com>
-References: <03db9765fe1ef0f61bfc87fc68b5a95b4126aa4e.1663143016.git.peilin.ye@bytedance.com>
+        Francesco Dolcini <francesco.dolcini@toradex.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Guenter Roeck <linux@roeck-us.net>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>
+Subject: Re: [PATCH 1/2] Revert "net: fec: Use a spinlock to guard
+ `fep->ptp_clk_on`"
+Message-ID: <20220914083811.rjb2epj5icgvo62y@pengutronix.de>
+References: <20220912073106.2544207-1-bence98@sch.bme.hu>
+ <20220912103818.j2u6afz66tcxvnr6@pengutronix.de>
+ <3f2824bc776f4383b84e4137f6c740de@prolan.hu>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="hpsd3nm6cgsavjs2"
+Content-Disposition: inline
+In-Reply-To: <3f2824bc776f4383b84e4137f6c740de@prolan.hu>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
 
-Similar to udp_read_skb(), delete the unnecessary while loop in
-unix_read_skb() for readability.  Since recv_actor() cannot return a
-value greater than skb->len (see sk_psock_verdict_recv()), remove the
-redundant check.
+--hpsd3nm6cgsavjs2
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Suggested-by: Cong Wang <cong.wang@bytedance.com>
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
----
- net/unix/af_unix.c | 34 ++++++++++------------------------
- 1 file changed, 10 insertions(+), 24 deletions(-)
+On 13.09.2022 19:04:56, Cs=C3=B3k=C3=A1s Bence wrote:
+> > This is not a 100% revert.
+> >=20
+> > In b353b241f1eb ("net: fec: Use a spinlock to guard `fep->ptp_clk_on`")
+> > the "struct fec_enet_private *fep" was renamed to "struct
+> > fec_enet_private *adapter" for no apparent reason. The driver uses "fep"
+> > everywhere else. This revert doesn't restore the original state.
+>=20
+> You got that backwards. b353b241f1eb renamed `adapter` to `fep` to align
+> it with the rest of the driver.
 
-diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index dea2972c8178..c955c7253d4b 100644
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -2536,32 +2536,18 @@ static int unix_dgram_recvmsg(struct socket *sock, struct msghdr *msg, size_t si
- 
- static int unix_read_skb(struct sock *sk, skb_read_actor_t recv_actor)
- {
--	int copied = 0;
--
--	while (1) {
--		struct unix_sock *u = unix_sk(sk);
--		struct sk_buff *skb;
--		int used, err;
--
--		mutex_lock(&u->iolock);
--		skb = skb_recv_datagram(sk, MSG_DONTWAIT, &err);
--		mutex_unlock(&u->iolock);
--		if (!skb)
--			return err;
-+	struct unix_sock *u = unix_sk(sk);
-+	struct sk_buff *skb;
-+	int err, copied;
- 
--		used = recv_actor(sk, skb);
--		if (used <= 0) {
--			if (!copied)
--				copied = used;
--			kfree_skb(skb);
--			break;
--		} else if (used <= skb->len) {
--			copied += used;
--		}
-+	mutex_lock(&u->iolock);
-+	skb = skb_recv_datagram(sk, MSG_DONTWAIT, &err);
-+	mutex_unlock(&u->iolock);
-+	if (!skb)
-+		return err;
- 
--		kfree_skb(skb);
--		break;
--	}
-+	copied = recv_actor(sk, skb);
-+	kfree_skb(skb);
- 
- 	return copied;
- }
--- 
-2.20.1
+Doh! You're right - sorry about that.
 
+> I decided to amend the revert to keep this renaming.
+> `adapter` was introduced in 6605b73 when `fec_ptp.c` was created.
+>=20
+> > This leads to the following diff against a 100% revert.
+> >=20
+> > diff --git a/drivers/net/ethernet/freescale/fec_ptp.c b/drivers/net/eth=
+ernet/freescale/fec_ptp.c
+> > index c99dff3c3422..c74d04f4b2fd 100644
+> > --- a/drivers/net/ethernet/freescale/fec_ptp.c
+> > +++ b/drivers/net/ethernet/freescale/fec_ptp.c
+> > @@ -365,21 +365,21 @@ static int fec_ptp_adjtime(struct ptp_clock_info =
+*ptp, s64 delta)
+> > =C2=A0 */
+> > =C2=A0static int fec_ptp_gettime(struct ptp_clock_info *ptp, struct tim=
+espec64 *ts)
+> > =C2=A0{
+> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct fec_enet_private *fep =3D
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct fec_enet_private *adapter =
+=3D
+>=20
+> Here you can clearly see the nature of my amend.=20
+
+Please don't mix fixes and especially reverts with cleanups.
+
+> I thought I added this to the commit message,
+> but it seems I have forgot.
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--hpsd3nm6cgsavjs2
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmMhkvEACgkQrX5LkNig
+010tfQf+MW4jVkjbvCVIqj9i4HCU5ajU2CEu0+Nh5/PZyseZPdZS4vz/dTb520kQ
+dQ7/NI3xCafRL3xSkeXbJ3xWUqZLmO+v/39W0vZsXdJPbGkDH5BN/KyQonK9bPWV
+vkmF0zO697fEmaxlrAjqhIfqGi1ricF5ofh3b9jbBJgdSNhnH+N94K4Kn2k7qSiD
+6fYAPeP7F0NmYtV7M0RkJbH8nvzpxeISj4D11qXKosWCDKn3hRR2V2XUVuEayXgT
+18EiNFTPdmD0J7p/vL1MuI20IhzY7PBefHJOSmcqcTXjWVRy1c54HkoB5Kkz5PwD
+82guEXs2ZZb94qEsHnC4jO8JVbFGMg==
+=FjwR
+-----END PGP SIGNATURE-----
+
+--hpsd3nm6cgsavjs2--
