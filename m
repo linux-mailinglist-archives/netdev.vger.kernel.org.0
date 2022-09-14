@@ -2,69 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C253C5B9019
-	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 23:29:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EB395B9029
+	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 23:43:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229809AbiINV2u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Sep 2022 17:28:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57304 "EHLO
+        id S229810AbiINVnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Sep 2022 17:43:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229644AbiINV2s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 17:28:48 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B51286707
-        for <netdev@vger.kernel.org>; Wed, 14 Sep 2022 14:28:47 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id t7so27662275wrm.10
-        for <netdev@vger.kernel.org>; Wed, 14 Sep 2022 14:28:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=hMumSe1XLGX5Rh+d8Q9A6pKAL+6adHOGZWqxSoKEP48=;
-        b=OaACCVfJTP4oPIY6n4y12IN4NsIXhcu+XbxqCMGmbHYlH39phCeLZB3GlWXvxO85yo
-         oZ+6Yp1V46U/ouoqNqu3wwZ8lX4CCCtIcyPWnfc+HauaMtdSki0x0YPd7OfUqWLi5KAM
-         t2CJT/p7qM8M5TMWauuUk8COEtddaSg4weXsDhnOk1RLPZ8lEJ6nmu8ECf6Q8AOYnop+
-         BwoZdD914OaUAlClEeD9p9Uswsj/pOOnmhVY0rn5mkWhBeQbZKnerPcOo1PzkiopTUvu
-         dbS6z2lW91DrOh1r+Rj9zsfVWIup+AaHuzpF4pN82Ak3I3DGv1CxSw1QKNP0B7PPzkJt
-         a+jw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=hMumSe1XLGX5Rh+d8Q9A6pKAL+6adHOGZWqxSoKEP48=;
-        b=solJSfAs70lA9ba955Cfhj0GTpzlbyF9G7i7PgK9xuaqipss/lJ/MgLq7EtbyaDSKf
-         KeJELi2H0Osw1UC4XospF4w7S2Y3EIr8sfUQDN6uQLexXJwPNJuQkXIzR8hgb+YHyeEY
-         u2qLat1LgcMQUzo9C1oHabUPGqIadTA0VlO5oxu7y6h4oaR0JQnjltKyirEHj2pYBByC
-         kYG1NTwSdgQzGZQ/e4owtlCIjdcuFEbA3Oh+Xs/XGEbyseS+vhG325Tu13McZ+TdDea8
-         +YuEqxbOs6G0XiKa5JMB+oIvTiBpl6U6BTRtApzZtAgx5omqkXiWNW3k7bd/ANbhdCOk
-         ywMw==
-X-Gm-Message-State: ACgBeo35YkX/+CswmaBfRg77nH9rX+ruz8hDFwSfjgCDTvkf5UAeF0WF
-        JT/3pozDQdwiQ8TW+E+Ph16cxg==
-X-Google-Smtp-Source: AA6agR6mFue7kmEotmNvPBv7f3MqkKOlWyuaSJE+g4cf9ahOwa21RLJ2XvNNvO3q6I1xY83C93KRYA==
-X-Received: by 2002:adf:ef52:0:b0:22a:6ec5:a0fd with SMTP id c18-20020adfef52000000b0022a6ec5a0fdmr12427141wrp.190.1663190926059;
-        Wed, 14 Sep 2022 14:28:46 -0700 (PDT)
-Received: from sagittarius-a.chello.ie (188-141-3-169.dynamic.upc.ie. [188.141.3.169])
-        by smtp.gmail.com with ESMTPSA id e28-20020adf9bdc000000b00228c375d81bsm350898wrc.2.2022.09.14.14.28.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Sep 2022 14:28:45 -0700 (PDT)
-From:   Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-To:     loic.poulain@linaro.org, kvalo@kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Cc:     wcn36xx@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, bryan.odonoghue@linaro.org,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH v2] wcn36xx: Add RX frame SNR as a source of system entropy
-Date:   Wed, 14 Sep 2022 22:28:41 +0100
-Message-Id: <20220914212841.1407497-2-bryan.odonoghue@linaro.org>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220914212841.1407497-1-bryan.odonoghue@linaro.org>
-References: <20220914212841.1407497-1-bryan.odonoghue@linaro.org>
+        with ESMTP id S229473AbiINVnG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 17:43:06 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5D367E31B;
+        Wed, 14 Sep 2022 14:43:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1663191785; x=1694727785;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=2lkQHmD5bo9pnv773sWW8cwWNIi3heVNLCQ8vVphs1Q=;
+  b=Jm+2m89q3CuMXqc7UOTSnGviyNV3Sm+73umWqbjIxfXp9AQV7mlHCHRD
+   WC699oiLZwa/8EvjqRb311Ai2OU71ht9Ki2LvAt67/E8HRXjGp8s3ONF+
+   m+groG7iqoLIJhH8/70L2Za3x2fE/MIGXKgLbAtrdByYBNbCiWRl4uwSf
+   F6Tov0kT+00qwW/Wg530E0aKbmIg4zJb+xEwYtImnSr3KOFhJfrwCXI9S
+   iDuf69ojgi09BeZMFvz3SNdzBBJQMueP2ImqELkSm8t7KjlpJWvOmKJh7
+   JkqijOGxsO+Nnby8Y651O/TJLB6saxA57OuASkhBeakxoPq2RFe/lGr8H
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10470"; a="384841386"
+X-IronPort-AV: E=Sophos;i="5.93,315,1654585200"; 
+   d="scan'208";a="384841386"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2022 14:43:05 -0700
+X-IronPort-AV: E=Sophos;i="5.93,315,1654585200"; 
+   d="scan'208";a="706100523"
+Received: from vcostago-desk1.jf.intel.com (HELO vcostago-desk1) ([10.54.70.10])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2022 14:43:03 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Rui Sousa <rui.sousa@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Michael Walle <michael@walle.cc>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Richie Pearn <richard.pearn@nxp.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Gerhard Engleder <gerhard@engleder-embedded.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 04/13] net/sched: taprio: allow user input of
+ per-tc max SDU
+In-Reply-To: <20220914153303.1792444-5-vladimir.oltean@nxp.com>
+References: <20220914153303.1792444-1-vladimir.oltean@nxp.com>
+ <20220914153303.1792444-5-vladimir.oltean@nxp.com>
+Date:   Wed, 14 Sep 2022 14:43:02 -0700
+Message-ID: <87k065iqe1.fsf@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,53 +85,281 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The signal-to-noise-ratio SNR is returned by the wcn36xx firmware for each
-received frame. SNR represents all of the unwanted interference signal
-after filtering out the fundamental frequency and harmonics of the
-frequency.
+Vladimir Oltean <vladimir.oltean@nxp.com> writes:
 
-Noise can come from various electromagnetic sources, from temperature
-affecting the performance hardware components or quantization effects
-converting from analog to digital domains.
+> IEEE 802.1Q clause 12.29.1.1 "The queueMaxSDUTable structure and data
+> types" and 8.6.8.4 "Enhancements for scheduled traffic" talk about the
+> existence of a per traffic class limitation of maximum frame sizes, with
+> a fallback on the port-based MTU.
+>
+> As far as I am able to understand, the 802.1Q Service Data Unit (SDU)
+> represents the MAC Service Data Unit (MSDU, i.e. L2 payload), excluding
+> any number of prepended VLAN headers which may be otherwise present in
+> the MSDU. Therefore, the queueMaxSDU is directly comparable to the
+> device MTU (1500 means L2 payload sizes are accepted, or frame sizes of
+> 1518 octets, or 1522 plus one VLAN header). Drivers which offload this
+> are directly responsible of translating into other units of measurement.
+>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+>  include/net/pkt_sched.h        |   1 +
+>  include/uapi/linux/pkt_sched.h |  11 +++
+>  net/sched/sch_taprio.c         | 122 ++++++++++++++++++++++++++++++++-
+>  3 files changed, 133 insertions(+), 1 deletion(-)
+>
+> diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
+> index 29f65632ebc5..88080998557b 100644
+> --- a/include/net/pkt_sched.h
+> +++ b/include/net/pkt_sched.h
+> @@ -168,6 +168,7 @@ struct tc_taprio_qopt_offload {
+>  	ktime_t base_time;
+>  	u64 cycle_time;
+>  	u64 cycle_time_extension;
+> +	u32 max_sdu[TC_MAX_QUEUE];
+>  
+>  	size_t num_entries;
+>  	struct tc_taprio_sched_entry entries[];
+> diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
+> index f292b467b27f..000eec106856 100644
+> --- a/include/uapi/linux/pkt_sched.h
+> +++ b/include/uapi/linux/pkt_sched.h
+> @@ -1232,6 +1232,16 @@ enum {
+>  #define TCA_TAPRIO_ATTR_FLAG_TXTIME_ASSIST	_BITUL(0)
+>  #define TCA_TAPRIO_ATTR_FLAG_FULL_OFFLOAD	_BITUL(1)
+>  
+> +enum {
+> +	TCA_TAPRIO_TC_ENTRY_UNSPEC,
+> +	TCA_TAPRIO_TC_ENTRY_INDEX,		/* u32 */
+> +	TCA_TAPRIO_TC_ENTRY_MAX_SDU,		/* u32 */
+> +
+> +	/* add new constants above here */
+> +	__TCA_TAPRIO_TC_ENTRY_CNT,
+> +	TCA_TAPRIO_TC_ENTRY_MAX = (__TCA_TAPRIO_TC_ENTRY_CNT - 1)
+> +};
+> +
+>  enum {
+>  	TCA_TAPRIO_ATTR_UNSPEC,
+>  	TCA_TAPRIO_ATTR_PRIOMAP, /* struct tc_mqprio_qopt */
+> @@ -1245,6 +1255,7 @@ enum {
+>  	TCA_TAPRIO_ATTR_SCHED_CYCLE_TIME_EXTENSION, /* s64 */
+>  	TCA_TAPRIO_ATTR_FLAGS, /* u32 */
+>  	TCA_TAPRIO_ATTR_TXTIME_DELAY, /* u32 */
+> +	TCA_TAPRIO_ATTR_TC_ENTRY, /* nest */
+>  	__TCA_TAPRIO_ATTR_MAX,
+>  };
+>  
+> diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+> index 2a4b8f59f444..834cbed88e4f 100644
+> --- a/net/sched/sch_taprio.c
+> +++ b/net/sched/sch_taprio.c
+> @@ -79,6 +79,7 @@ struct taprio_sched {
+>  	struct sched_gate_list __rcu *admin_sched;
+>  	struct hrtimer advance_timer;
+>  	struct list_head taprio_list;
+> +	u32 max_sdu[TC_MAX_QUEUE];
+>  	u32 txtime_delay;
+>  };
+>  
+> @@ -416,6 +417,9 @@ static int taprio_enqueue_one(struct sk_buff *skb, struct Qdisc *sch,
+>  			      struct Qdisc *child, struct sk_buff **to_free)
+>  {
+>  	struct taprio_sched *q = qdisc_priv(sch);
+> +	struct net_device *dev = qdisc_dev(sch);
+> +	int prio = skb->priority;
+> +	u8 tc;
+>  
+>  	/* sk_flags are only safe to use on full sockets. */
+>  	if (skb->sk && sk_fullsock(skb->sk) && sock_flag(skb->sk, SOCK_TXTIME)) {
+> @@ -427,6 +431,12 @@ static int taprio_enqueue_one(struct sk_buff *skb, struct Qdisc *sch,
+>  			return qdisc_drop(skb, sch, to_free);
+>  	}
+>  
+> +	/* Devices with full offload are expected to honor this in hardware */
+> +	tc = netdev_get_prio_tc_map(dev, prio);
+> +	if (q->max_sdu[tc] &&
+> +	    q->max_sdu[tc] < max_t(int, 0, skb->len - skb_mac_header_len(skb)))
+> +		return qdisc_drop(skb, sch, to_free);
+> +
 
-The SNR value returned by the WiFi firmware then is a good source of
-entropy.
+One minor idea, perhaps if you initialize q->max_sdu[] with a value that
+you could use to compare here (2^32 - 1), this comparison could be
+simplified. The issue is that that value would become invalid for a
+maximum SDU, not a problem for ethernet.
 
-Other WiFi drivers offer up the noise component of the FFT as an entropy
-source for the random pool e.g.
+>  	qdisc_qstats_backlog_inc(sch, skb);
+>  	sch->q.qlen++;
+>  
+> @@ -761,6 +771,11 @@ static const struct nla_policy entry_policy[TCA_TAPRIO_SCHED_ENTRY_MAX + 1] = {
+>  	[TCA_TAPRIO_SCHED_ENTRY_INTERVAL]  = { .type = NLA_U32 },
+>  };
+>  
+> +static const struct nla_policy taprio_tc_policy[TCA_TAPRIO_TC_ENTRY_MAX + 1] = {
+> +	[TCA_TAPRIO_TC_ENTRY_INDEX]	   = { .type = NLA_U32 },
+> +	[TCA_TAPRIO_TC_ENTRY_MAX_SDU]	   = { .type = NLA_U32 },
+> +};
+> +
+>  static const struct nla_policy taprio_policy[TCA_TAPRIO_ATTR_MAX + 1] = {
+>  	[TCA_TAPRIO_ATTR_PRIOMAP]	       = {
+>  		.len = sizeof(struct tc_mqprio_qopt)
+> @@ -773,6 +788,7 @@ static const struct nla_policy taprio_policy[TCA_TAPRIO_ATTR_MAX + 1] = {
+>  	[TCA_TAPRIO_ATTR_SCHED_CYCLE_TIME_EXTENSION] = { .type = NLA_S64 },
+>  	[TCA_TAPRIO_ATTR_FLAGS]                      = { .type = NLA_U32 },
+>  	[TCA_TAPRIO_ATTR_TXTIME_DELAY]		     = { .type = NLA_U32 },
+> +	[TCA_TAPRIO_ATTR_TC_ENTRY]		     = { .type = NLA_NESTED },
+>  };
+>  
+>  static int fill_sched_entry(struct taprio_sched *q, struct nlattr **tb,
+> @@ -1236,7 +1252,7 @@ static int taprio_enable_offload(struct net_device *dev,
+>  {
+>  	const struct net_device_ops *ops = dev->netdev_ops;
+>  	struct tc_taprio_qopt_offload *offload;
+> -	int err = 0;
+> +	int tc, err = 0;
+>  
+>  	if (!ops->ndo_setup_tc) {
+>  		NL_SET_ERR_MSG(extack,
+> @@ -1253,6 +1269,9 @@ static int taprio_enable_offload(struct net_device *dev,
+>  	offload->enable = 1;
+>  	taprio_sched_to_offload(dev, sched, offload);
+>  
+> +	for (tc = 0; tc < TC_MAX_QUEUE; tc++)
+> +		offload->max_sdu[tc] = q->max_sdu[tc];
+> +
+>  	err = ops->ndo_setup_tc(dev, TC_SETUP_QDISC_TAPRIO, offload);
+>  	if (err < 0) {
+>  		NL_SET_ERR_MSG(extack,
+> @@ -1387,6 +1406,73 @@ static int taprio_parse_clockid(struct Qdisc *sch, struct nlattr **tb,
+>  	return err;
+>  }
+>  
+> +static int taprio_parse_tc_entry(struct Qdisc *sch,
+> +				 struct nlattr *opt,
+> +				 unsigned long *seen_tcs,
+> +				 struct netlink_ext_ack *extack)
+> +{
+> +	struct nlattr *tb[TCA_TAPRIO_TC_ENTRY_MAX + 1] = { };
+> +	struct taprio_sched *q = qdisc_priv(sch);
+> +	struct net_device *dev = qdisc_dev(sch);
+> +	u32 max_sdu = 0;
+> +	int err, tc;
+> +
+> +	err = nla_parse_nested(tb, TCA_TAPRIO_TC_ENTRY_MAX, opt,
+> +			       taprio_tc_policy, extack);
+> +	if (err < 0)
+> +		return err;
+> +
+> +	if (!tb[TCA_TAPRIO_TC_ENTRY_INDEX]) {
+> +		NL_SET_ERR_MSG_MOD(extack, "TC entry index missing");
+> +		return -EINVAL;
+> +	}
+> +
+> +	tc = nla_get_u32(tb[TCA_TAPRIO_TC_ENTRY_INDEX]);
+> +	if (tc >= TC_QOPT_MAX_QUEUE) {
+> +		NL_SET_ERR_MSG_MOD(extack, "TC entry index out of range");
+> +		return -ERANGE;
+> +	}
+> +
+> +	if (*seen_tcs & BIT(tc)) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Duplicate TC entry");
+> +		return -EINVAL;
+> +	}
+> +
+> +	*seen_tcs |= BIT(tc);
+> +
+> +	if (tb[TCA_TAPRIO_TC_ENTRY_MAX_SDU])
+> +		max_sdu = nla_get_u32(tb[TCA_TAPRIO_TC_ENTRY_MAX_SDU]);
+> +
+> +	if (max_sdu > dev->max_mtu) {
+> +		NL_SET_ERR_MSG_MOD(extack, "TC max SDU exceeds device max MTU");
+> +		return -ERANGE;
+> +	}
+> +
+> +	q->max_sdu[tc] = max_sdu;
+> +
+> +	return 0;
+> +}
+> +
+> +static int taprio_parse_tc_entries(struct Qdisc *sch,
+> +				   struct nlattr *opt,
+> +				   struct netlink_ext_ack *extack)
+> +{
+> +	unsigned long seen_tcs = 0;
+> +	struct nlattr *n;
+> +	int err = 0, rem;
+> +
+> +	nla_for_each_nested(n, opt, rem) {
+> +		if (nla_type(n) != TCA_TAPRIO_ATTR_TC_ENTRY)
+> +			continue;
+> +
+> +		err = taprio_parse_tc_entry(sch, n, &seen_tcs, extack);
+> +		if (err)
+> +			break;
+> +	}
+> +
+> +	return err;
+> +}
+> +
+>  static int taprio_mqprio_cmp(const struct net_device *dev,
+>  			     const struct tc_mqprio_qopt *mqprio)
+>  {
+> @@ -1465,6 +1551,10 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+>  	if (err < 0)
+>  		return err;
+>  
+> +	err = taprio_parse_tc_entries(sch, opt, extack);
+> +	if (err)
+> +		return err;
+> +
+>  	new_admin = kzalloc(sizeof(*new_admin), GFP_KERNEL);
+>  	if (!new_admin) {
+>  		NL_SET_ERR_MSG(extack, "Not enough memory for a new schedule");
+> @@ -1855,6 +1945,33 @@ static int dump_schedule(struct sk_buff *msg,
+>  	return -1;
+>  }
+>  
+> +static int taprio_dump_tc_entries(struct taprio_sched *q, struct sk_buff *skb)
+> +{
+> +	struct nlattr *n;
+> +	int tc;
+> +
+> +	for (tc = 0; tc < TC_MAX_QUEUE; tc++) {
+> +		n = nla_nest_start(skb, TCA_TAPRIO_ATTR_TC_ENTRY);
+> +		if (!n)
+> +			return -EMSGSIZE;
+> +
+> +		if (nla_put_u32(skb, TCA_TAPRIO_TC_ENTRY_INDEX, tc))
+> +			goto nla_put_failure;
+> +
+> +		if (nla_put_u32(skb, TCA_TAPRIO_TC_ENTRY_MAX_SDU,
+> +				q->max_sdu[tc]))
+> +			goto nla_put_failure;
+> +
+> +		nla_nest_end(skb, n);
+> +	}
+> +
+> +	return 0;
+> +
+> +nla_put_failure:
+> +	nla_nest_cancel(skb, n);
+> +	return -EMSGSIZE;
+> +}
+> +
+>  static int taprio_dump(struct Qdisc *sch, struct sk_buff *skb)
+>  {
+>  	struct taprio_sched *q = qdisc_priv(sch);
+> @@ -1894,6 +2011,9 @@ static int taprio_dump(struct Qdisc *sch, struct sk_buff *skb)
+>  	    nla_put_u32(skb, TCA_TAPRIO_ATTR_TXTIME_DELAY, q->txtime_delay))
+>  		goto options_error;
+>  
+> +	if (taprio_dump_tc_entries(q, skb))
+> +		goto options_error;
+> +
+>  	if (oper && dump_schedule(skb, oper))
+>  		goto options_error;
+>  
+> -- 
+> 2.34.1
+>
 
-commit 2aa56cca3571 ("ath9k: Mix the received FFT bins to the random pool")
-
-I attended Jason's talk on sources of randomness at Plumbers and it
-occurred to me that SNR is a reasonable candidate to add.
-
-Cc: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
----
- drivers/net/wireless/ath/wcn36xx/txrx.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/net/wireless/ath/wcn36xx/txrx.c b/drivers/net/wireless/ath/wcn36xx/txrx.c
-index 8da3955995b6e..b73229776af8b 100644
---- a/drivers/net/wireless/ath/wcn36xx/txrx.c
-+++ b/drivers/net/wireless/ath/wcn36xx/txrx.c
-@@ -16,6 +16,7 @@
- 
- #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
- 
-+#include <linux/random.h>
- #include "txrx.h"
- 
- static inline int get_rssi0(struct wcn36xx_rx_bd *bd)
-@@ -297,6 +298,8 @@ static void wcn36xx_update_survey(struct wcn36xx *wcn, int rssi, int snr,
- 	wcn->chan_survey[idx].rssi = rssi;
- 	wcn->chan_survey[idx].snr = snr;
- 	spin_unlock(&wcn->survey_lock);
-+
-+	add_device_randomness(&snr, sizeof(s8));
- }
- 
- int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
 -- 
-2.37.3
-
+Vinicius
