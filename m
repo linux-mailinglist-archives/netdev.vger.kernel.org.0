@@ -2,43 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5ED175B90BE
-	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 01:04:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C40735B90C1
+	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 01:04:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229861AbiINXDg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Sep 2022 19:03:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44728 "EHLO
+        id S229880AbiINXDw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Sep 2022 19:03:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229863AbiINXDa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 19:03:30 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9865A86C2A;
-        Wed, 14 Sep 2022 16:03:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663196608; x=1694732608;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=okFxm6J6JgAWD25P1QvzLpwm/ooPbFnL+ZgqoSOVW1s=;
-  b=TLiVU3vt+d/cwBFHkRur2nxyvHdTQpA+n4x4/hHEalf0VOvDXbnru1c0
-   OVd7aB+32yDy6uwLDBXZ7TxP7Z7fqyheBWeYxTrpTs1YxmzDgU921p7K2
-   CHk+KuMqbM7dMTC62G8buJ9hbZNuzj7E0G5oXRdxJ02eQ6KDaleFUR/3S
-   e8/Krxk6rIj3PydHgh84qdslTihFh55ViQCO0ongHR4D/qdQvzMzr6xuR
-   jK4GSSuJKwH8Yfr1PWNGCsRes29OX+CNINBneogmfUxriUi1Y1BMjI0u8
-   vSggDYgXA7xHGPnZgJKUq4g0fCK0StoWIVA/bNY947kb9dJHIowZOeInl
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10470"; a="299374103"
-X-IronPort-AV: E=Sophos;i="5.93,316,1654585200"; 
-   d="scan'208";a="299374103"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2022 16:03:28 -0700
-X-IronPort-AV: E=Sophos;i="5.93,316,1654585200"; 
-   d="scan'208";a="945700062"
-Received: from vcostago-desk1.jf.intel.com (HELO vcostago-desk1) ([10.54.70.10])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2022 16:03:26 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229884AbiINXDk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 19:03:40 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2043.outbound.protection.outlook.com [40.107.21.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6C8986FF7;
+        Wed, 14 Sep 2022 16:03:38 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WkYEcrfAy0C8mJXY1BB+CDuH7pKJ6h5HhIaRYftWi13SQ4IX4Hxze3l4RUYJIPElI0FNU2oY1pqa6Ujj54ut/GLEXlMG2JQMsPhyXKf0yj2DrSrTtvAKxDK/vX/SsK9g1WotP+fI2gVlKCnBuIRH0SQr9JPNfuSu0iQLc457CoCHeCM6LJJ2O8xMcAtdsdppipI7zQtfwCAhp3ZTnNEt3Kyulyp0xh9a/u8SeT7+4ebAQVeIdW0TS/L+Ort7bLkeFqqluJJX9R1jHzlebelKs+LiVh87G6MaJ1LhVHtbh//R8k7K0kUH/EzFkUeYCI0Vp0rDLlrSRVE8Iheeem9tbQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=TEEnJ6HNmRky2CwyBept2oiRHqNMlkOu+IsEVxObGOE=;
+ b=fzP3wIsS/hf3bP4xdUzU4LZvItJvmLNpA3SyJNDoZtBlnSUDTQHH0y/TCqLYIyvgHe/fu+YwIlgYDTHuYCxwax9Zm2P0bBA2w5BQkGHY3ePnVjlea6C1/m7+HTUx/ujVx0TBCWDx9s4a8vGGSiv2MG2a6FRN7Wu3uxUbFB9345YnARoIN5giq8fajo9Wuxx3r2s3ieepqq8WV/kzEemIw0tz8jSz8Fo4v54ZWjvhJl5LfXs+erLhaD0twKig3gOvwe/QfewwqV563sDYGeJi9/CQdJ9vLzlKaugLAWaYQDfT7hebeBeaYq0s2AIfXal86oDK8zf5BJydEHSuElyBMQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TEEnJ6HNmRky2CwyBept2oiRHqNMlkOu+IsEVxObGOE=;
+ b=Gg/Bt29HAXag31QrjBeUmbLnKaa3D4eB0bWtJbrLBd9RgWAcc5aTMLCyNTTaOSfKMVd/sJrQuVkjTidrJBWC9sj7QouhBEpZj3ggyTHsgF3/J1eN3NbZNMpmgJbcwrcaCX51iB0nDVEEpce86rnQ1cOs2yzgDuz8UcbNTcgb3H0=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AS4PR04MB9435.eurprd04.prod.outlook.com (2603:10a6:20b:4eb::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.22; Wed, 14 Sep
+ 2022 23:03:36 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::a67a:849c:aeff:cad1]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::a67a:849c:aeff:cad1%7]) with mapi id 15.20.5612.022; Wed, 14 Sep 2022
+ 23:03:36 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
@@ -46,7 +48,8 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Rui Sousa <rui.sousa@nxp.com>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Michael Walle <michael@walle.cc>,
@@ -65,303 +68,98 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Jiri Pirko <jiri@resnulli.us>,
         Gerhard Engleder <gerhard@engleder-embedded.com>,
         Grygorii Strashko <grygorii.strashko@ti.com>,
-        linux-kernel@vger.kernel.org
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Subject: Re: [PATCH net-next 04/13] net/sched: taprio: allow user input of
  per-tc max SDU
-In-Reply-To: <20220914153303.1792444-5-vladimir.oltean@nxp.com>
+Thread-Topic: [PATCH net-next 04/13] net/sched: taprio: allow user input of
+ per-tc max SDU
+Thread-Index: AQHYyE9ZfT5bo6uCkEmd6s08JFlY763fdU4AgAAHuwCAAA3PgIAAAPiA
+Date:   Wed, 14 Sep 2022 23:03:35 +0000
+Message-ID: <20220914230335.lioxtjxbjiyd7ds4@skbuf>
 References: <20220914153303.1792444-1-vladimir.oltean@nxp.com>
- <20220914153303.1792444-5-vladimir.oltean@nxp.com>
-Date:   Wed, 14 Sep 2022 16:03:26 -0700
-Message-ID: <87r10dh83l.fsf@intel.com>
+ <20220914153303.1792444-5-vladimir.oltean@nxp.com> <87k065iqe1.fsf@intel.com>
+ <20220914221042.oenxhxacgt2xsb2k@skbuf> <871qsdimtk.fsf@intel.com>
+In-Reply-To: <871qsdimtk.fsf@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: VI1PR04MB5136:EE_|AS4PR04MB9435:EE_
+x-ms-office365-filtering-correlation-id: b7dd0e74-faec-4aa4-cd9c-08da96a55a83
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 0BVGsLdAZbpqF5qypSri4Jug9S26Qm8icWRM8I4ot5Mg+UqWQBedEkOQLNlV1wEdqznKQNTWfsra3Chuq4weBAB/S8MVVfHSEaXLtjhiZWOIemifWdQWvpc8OsTGCAn3fyop1T5iqv2pPvRsel/IZRhubEZE2lr41LlQFpgY7lQdmGb4YiFoqWBludWLl0jDisGXj4KPtrx3A3CL7jJl/LurZK9ewz8Y+JWWngOyupqJLD5KrCPXY/RIUNAo522golkFCdsGT4K/XHwwY3vqAYJEqA31q8CV82jxQUfqcEvrR7MwciTA0aAEV5NBgZ4Sq9dARvoSQJYlBynVoFxqUZD4g7HiNqiMndtBxQnoGOjK2NLAYYhSo5f8I3KpjTbtLQalP8LbWawnrhlTCyBXxmg32N2X2lRat1fK/qbMxTBSVbohJtt9Bhawey7PdXJ4PS96Nn2jjmHZlJM+Yoyx4OnsRC2pCfm9bFKCGlSt+M2c13h+qTVH+6vX2TJkjygWkud+e0Z/iyGMompYUPlZbvNwjXL3CCJ7XupmggeGabv7Fo6+0l5fqc96WeWKgh/ANE3lAkqYwlRo0mBIutfwA7XpYeGE6K5h42YM58SeRyQtymMoJKcT53gy4udAwrc1iDZ3tJuEHw5MI5JyQcts0h/xRi7cHw/uPhX0BevW6sleBQiq2ZbY3na/7oUoww3o7j8Q4i4dCjBQI0+YzzZZS9jfD5w3wOUKrOv437kRhOWS4kLf66e1CIfwxA0Mmp8+oEfR3OaFTv4RPDVe31H0NqrOWKnGx2NxvIExMVnLGtc=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(7916004)(136003)(366004)(346002)(396003)(39860400002)(376002)(451199015)(4744005)(478600001)(5660300002)(8676002)(33716001)(8936002)(66476007)(6486002)(66556008)(76116006)(186003)(26005)(41300700001)(66446008)(6506007)(44832011)(1076003)(64756008)(54906003)(83380400001)(71200400001)(38100700002)(9686003)(38070700005)(7416002)(4326008)(86362001)(2906002)(66946007)(122000001)(966005)(91956017)(316002)(6916009)(6512007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?11HsqE4lfR1AWruTUK0d01VWSe+SGRd6ZBVtZ3y+pO0h0TgjVk8+ZUihi0EG?=
+ =?us-ascii?Q?d5u20t6SdJzqibA5qOBofIohfBMQWqJqNDracHBShN48Tvwj86eyWKhP0dmw?=
+ =?us-ascii?Q?lXXEVYpvcZeG2h5LD5AB9JYGM5skaJJNZsEo+JSrqEaBA46PEVXkjV92koNj?=
+ =?us-ascii?Q?hlNbBb76H53KsRC3L6qzKX63Fp8/SwsKGbNLL10rlbMwWn0Q1oTv2Vg4q5dK?=
+ =?us-ascii?Q?lxSy4iLZuUDTyuOs0+wukmzqqPXIIwxNpA7DIWtma2rgSRsXDhnMBR5XTmT5?=
+ =?us-ascii?Q?c+NGw/fFYGQSdOnlI8UJI91EfppshIYZDc5LCwzqOBRaT4vBae78zG4+fMYp?=
+ =?us-ascii?Q?IZJHp0GKeOXxnVGXl41IVZgN2C4u7v07LEQnurr96Wani9eHO6jfBz9HwUmK?=
+ =?us-ascii?Q?z1aV5EZ6d48pqtjybAFSY9YJAOhry+7JREHxuZ4F376XMOIwftyAAcmqwMyb?=
+ =?us-ascii?Q?9iMAUP799796nyYiIqZb7G2jrSsMpzmStOfAbwm8mVVaToWaKoGGRoBggpHL?=
+ =?us-ascii?Q?bwbekVl3ztHMT/HgptAVwrq/borOKis2sHhoZj1OJO4F25WOAaJELz62re99?=
+ =?us-ascii?Q?cstqxgP6RTQ6tGRd5ZxknY/dT+Zs5v2c34mRn/v9BdpRI4/qNeU8+jFkYlGR?=
+ =?us-ascii?Q?E9k28tOJETSi0q3N+SeShicPx75zq6KmZPaBfP319r4986PSyc+T5BrAsBGC?=
+ =?us-ascii?Q?itWWtRapI9VRCnPT3vlgW4hWqG6yiwaduAZ6jsM9n1na9b9qXQkUGKYJw6hW?=
+ =?us-ascii?Q?zbjMHT5jwGg8RIcKxnMIR5NUK7HLxujcWjmo6rCgYKT+F2wv78ZSumuwdXuG?=
+ =?us-ascii?Q?3e62wanWZyed7uxdcIpmIFQW/dgEGJ8lnOjU06ET9if//CwnSj6m2+e+pX0Q?=
+ =?us-ascii?Q?BYhUMwM+MeQVYlI/hbrCv+gIPpy+3PA4Bo3ay3tTw3abiM8vb/k9IZbSn/lg?=
+ =?us-ascii?Q?Ty9K7kXGDBJInmIGgmI8+udecr3lsyFw1iI8uObPQiYZxdqKi8ZSzjqCBMvO?=
+ =?us-ascii?Q?lfxrNXnp3bf0l20Y+1S6osZAVJ217OAbpUb/yLofwxiTz9qrlrYlwQMit2c1?=
+ =?us-ascii?Q?82v9t68WenwhMLoxG3bKmpHrU/0vYCWVB0W9gqoccKqaXn1bySpFOKzLwcml?=
+ =?us-ascii?Q?Cf3wQb6OND/ACo9v+r5q4niNzDg4Ea8Qn6bSVwIHzeNMhgnePPK9U6IVJ/Pz?=
+ =?us-ascii?Q?zX/QrLvQWv2T3VF2dQYYvH1lXoos5au9GKS2eQhVEmXK57LL6NUjWMrGQwHU?=
+ =?us-ascii?Q?FbpOhAABb/2UiKedMqrLBBzgSSxyuim8QTYWqcNsPGdXVB4+U55SOL9LsNWn?=
+ =?us-ascii?Q?Po1DZxkJ9OHp8WwKt4UNCPe634+wCXpP+lJPaDaFUGm8pZKVKD5i8ApSwfjc?=
+ =?us-ascii?Q?dnsgfYAY9xWl3NBQk5IdHEdZPHPJVf9ys4LCHfHo7y/mz0TCm0amiMfnYW52?=
+ =?us-ascii?Q?IhVIOvcEG8JPrgpwO5baHsmZgE6ncbvY8NIhQzfTt+/6JVwFIp1hHTATClhn?=
+ =?us-ascii?Q?YZ/Tw3a2dqa8pH3xJq5WL1D32wzT2clQVYuiTSDwkyU5xWbjNl/VT1brgwhw?=
+ =?us-ascii?Q?0XxIVC8jhM0Q78nfxWfgxhlwETBscbUQOvjxuzOYjiRAhx8gfbKn26OdX9SL?=
+ =?us-ascii?Q?0A=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <06BE951E467DC2458BFA512A40152A4D@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b7dd0e74-faec-4aa4-cd9c-08da96a55a83
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Sep 2022 23:03:35.8547
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: rjmr9zvLP9xAxiXgMf9sEcwg1RSXVwqT+mrow9tP2sFmQ8sN2D4L1fxwk5I2p5BUQPCf2NV17erHs1KJRLqQ3w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS4PR04MB9435
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Vladimir Oltean <vladimir.oltean@nxp.com> writes:
+On Wed, Sep 14, 2022 at 04:00:07PM -0700, Vinicius Costa Gomes wrote:
+> Hm, I just noticed something.
+>=20
+> During parse the user only sets the max-sdu for the traffic classes she
+> is interested on. During dump you are showing all of them, the unset
+> ones will be shown as zero, that seems a bit confusing, which could mean
+> that you would have to add some checks anyway.
+>=20
+> For the offload side, you could just document that U32_MAX means unset.
 
-> IEEE 802.1Q clause 12.29.1.1 "The queueMaxSDUTable structure and data
-> types" and 8.6.8.4 "Enhancements for scheduled traffic" talk about the
-> existence of a per traffic class limitation of maximum frame sizes, with
-> a fallback on the port-based MTU.
->
-> As far as I am able to understand, the 802.1Q Service Data Unit (SDU)
-> represents the MAC Service Data Unit (MSDU, i.e. L2 payload), excluding
-> any number of prepended VLAN headers which may be otherwise present in
-> the MSDU. Therefore, the queueMaxSDU is directly comparable to the
-> device MTU (1500 means L2 payload sizes are accepted, or frame sizes of
-> 1518 octets, or 1522 plus one VLAN header). Drivers which offload this
-> are directly responsible of translating into other units of measurement.
->
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
-
-Could you please add an example of the 'tc' command syntax you are
-thinking about?
-
-Another point to think about: does it make sense to allow 'only' the
-max-sdu to be changed, i.e. the user doesn't set an a schedule, nor a
-map, only the max-sdu information.
-
->  include/net/pkt_sched.h        |   1 +
->  include/uapi/linux/pkt_sched.h |  11 +++
->  net/sched/sch_taprio.c         | 122 ++++++++++++++++++++++++++++++++-
->  3 files changed, 133 insertions(+), 1 deletion(-)
->
-> diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
-> index 29f65632ebc5..88080998557b 100644
-> --- a/include/net/pkt_sched.h
-> +++ b/include/net/pkt_sched.h
-> @@ -168,6 +168,7 @@ struct tc_taprio_qopt_offload {
->  	ktime_t base_time;
->  	u64 cycle_time;
->  	u64 cycle_time_extension;
-> +	u32 max_sdu[TC_MAX_QUEUE];
->  
->  	size_t num_entries;
->  	struct tc_taprio_sched_entry entries[];
-> diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
-> index f292b467b27f..000eec106856 100644
-> --- a/include/uapi/linux/pkt_sched.h
-> +++ b/include/uapi/linux/pkt_sched.h
-> @@ -1232,6 +1232,16 @@ enum {
->  #define TCA_TAPRIO_ATTR_FLAG_TXTIME_ASSIST	_BITUL(0)
->  #define TCA_TAPRIO_ATTR_FLAG_FULL_OFFLOAD	_BITUL(1)
->  
-> +enum {
-> +	TCA_TAPRIO_TC_ENTRY_UNSPEC,
-> +	TCA_TAPRIO_TC_ENTRY_INDEX,		/* u32 */
-> +	TCA_TAPRIO_TC_ENTRY_MAX_SDU,		/* u32 */
-> +
-> +	/* add new constants above here */
-> +	__TCA_TAPRIO_TC_ENTRY_CNT,
-> +	TCA_TAPRIO_TC_ENTRY_MAX = (__TCA_TAPRIO_TC_ENTRY_CNT - 1)
-> +};
-> +
->  enum {
->  	TCA_TAPRIO_ATTR_UNSPEC,
->  	TCA_TAPRIO_ATTR_PRIOMAP, /* struct tc_mqprio_qopt */
-> @@ -1245,6 +1255,7 @@ enum {
->  	TCA_TAPRIO_ATTR_SCHED_CYCLE_TIME_EXTENSION, /* s64 */
->  	TCA_TAPRIO_ATTR_FLAGS, /* u32 */
->  	TCA_TAPRIO_ATTR_TXTIME_DELAY, /* u32 */
-> +	TCA_TAPRIO_ATTR_TC_ENTRY, /* nest */
->  	__TCA_TAPRIO_ATTR_MAX,
->  };
->  
-> diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-> index 2a4b8f59f444..834cbed88e4f 100644
-> --- a/net/sched/sch_taprio.c
-> +++ b/net/sched/sch_taprio.c
-> @@ -79,6 +79,7 @@ struct taprio_sched {
->  	struct sched_gate_list __rcu *admin_sched;
->  	struct hrtimer advance_timer;
->  	struct list_head taprio_list;
-> +	u32 max_sdu[TC_MAX_QUEUE];
->  	u32 txtime_delay;
->  };
->  
-> @@ -416,6 +417,9 @@ static int taprio_enqueue_one(struct sk_buff *skb, struct Qdisc *sch,
->  			      struct Qdisc *child, struct sk_buff **to_free)
->  {
->  	struct taprio_sched *q = qdisc_priv(sch);
-> +	struct net_device *dev = qdisc_dev(sch);
-> +	int prio = skb->priority;
-> +	u8 tc;
->  
->  	/* sk_flags are only safe to use on full sockets. */
->  	if (skb->sk && sk_fullsock(skb->sk) && sock_flag(skb->sk, SOCK_TXTIME)) {
-> @@ -427,6 +431,12 @@ static int taprio_enqueue_one(struct sk_buff *skb, struct Qdisc *sch,
->  			return qdisc_drop(skb, sch, to_free);
->  	}
->  
-> +	/* Devices with full offload are expected to honor this in hardware */
-> +	tc = netdev_get_prio_tc_map(dev, prio);
-> +	if (q->max_sdu[tc] &&
-> +	    q->max_sdu[tc] < max_t(int, 0, skb->len - skb_mac_header_len(skb)))
-> +		return qdisc_drop(skb, sch, to_free);
-> +
->  	qdisc_qstats_backlog_inc(sch, skb);
->  	sch->q.qlen++;
->  
-> @@ -761,6 +771,11 @@ static const struct nla_policy entry_policy[TCA_TAPRIO_SCHED_ENTRY_MAX + 1] = {
->  	[TCA_TAPRIO_SCHED_ENTRY_INTERVAL]  = { .type = NLA_U32 },
->  };
->  
-> +static const struct nla_policy taprio_tc_policy[TCA_TAPRIO_TC_ENTRY_MAX + 1] = {
-> +	[TCA_TAPRIO_TC_ENTRY_INDEX]	   = { .type = NLA_U32 },
-> +	[TCA_TAPRIO_TC_ENTRY_MAX_SDU]	   = { .type = NLA_U32 },
-> +};
-> +
->  static const struct nla_policy taprio_policy[TCA_TAPRIO_ATTR_MAX + 1] = {
->  	[TCA_TAPRIO_ATTR_PRIOMAP]	       = {
->  		.len = sizeof(struct tc_mqprio_qopt)
-> @@ -773,6 +788,7 @@ static const struct nla_policy taprio_policy[TCA_TAPRIO_ATTR_MAX + 1] = {
->  	[TCA_TAPRIO_ATTR_SCHED_CYCLE_TIME_EXTENSION] = { .type = NLA_S64 },
->  	[TCA_TAPRIO_ATTR_FLAGS]                      = { .type = NLA_U32 },
->  	[TCA_TAPRIO_ATTR_TXTIME_DELAY]		     = { .type = NLA_U32 },
-> +	[TCA_TAPRIO_ATTR_TC_ENTRY]		     = { .type = NLA_NESTED },
->  };
->  
->  static int fill_sched_entry(struct taprio_sched *q, struct nlattr **tb,
-> @@ -1236,7 +1252,7 @@ static int taprio_enable_offload(struct net_device *dev,
->  {
->  	const struct net_device_ops *ops = dev->netdev_ops;
->  	struct tc_taprio_qopt_offload *offload;
-> -	int err = 0;
-> +	int tc, err = 0;
->  
->  	if (!ops->ndo_setup_tc) {
->  		NL_SET_ERR_MSG(extack,
-> @@ -1253,6 +1269,9 @@ static int taprio_enable_offload(struct net_device *dev,
->  	offload->enable = 1;
->  	taprio_sched_to_offload(dev, sched, offload);
->  
-> +	for (tc = 0; tc < TC_MAX_QUEUE; tc++)
-> +		offload->max_sdu[tc] = q->max_sdu[tc];
-> +
->  	err = ops->ndo_setup_tc(dev, TC_SETUP_QDISC_TAPRIO, offload);
->  	if (err < 0) {
->  		NL_SET_ERR_MSG(extack,
-> @@ -1387,6 +1406,73 @@ static int taprio_parse_clockid(struct Qdisc *sch, struct nlattr **tb,
->  	return err;
->  }
->  
-> +static int taprio_parse_tc_entry(struct Qdisc *sch,
-> +				 struct nlattr *opt,
-> +				 unsigned long *seen_tcs,
-> +				 struct netlink_ext_ack *extack)
-> +{
-> +	struct nlattr *tb[TCA_TAPRIO_TC_ENTRY_MAX + 1] = { };
-> +	struct taprio_sched *q = qdisc_priv(sch);
-> +	struct net_device *dev = qdisc_dev(sch);
-> +	u32 max_sdu = 0;
-> +	int err, tc;
-> +
-> +	err = nla_parse_nested(tb, TCA_TAPRIO_TC_ENTRY_MAX, opt,
-> +			       taprio_tc_policy, extack);
-> +	if (err < 0)
-> +		return err;
-> +
-> +	if (!tb[TCA_TAPRIO_TC_ENTRY_INDEX]) {
-> +		NL_SET_ERR_MSG_MOD(extack, "TC entry index missing");
-> +		return -EINVAL;
-> +	}
-> +
-> +	tc = nla_get_u32(tb[TCA_TAPRIO_TC_ENTRY_INDEX]);
-> +	if (tc >= TC_QOPT_MAX_QUEUE) {
-> +		NL_SET_ERR_MSG_MOD(extack, "TC entry index out of range");
-> +		return -ERANGE;
-> +	}
-> +
-> +	if (*seen_tcs & BIT(tc)) {
-> +		NL_SET_ERR_MSG_MOD(extack, "Duplicate TC entry");
-> +		return -EINVAL;
-> +	}
-> +
-> +	*seen_tcs |= BIT(tc);
-> +
-> +	if (tb[TCA_TAPRIO_TC_ENTRY_MAX_SDU])
-> +		max_sdu = nla_get_u32(tb[TCA_TAPRIO_TC_ENTRY_MAX_SDU]);
-> +
-> +	if (max_sdu > dev->max_mtu) {
-> +		NL_SET_ERR_MSG_MOD(extack, "TC max SDU exceeds device max MTU");
-> +		return -ERANGE;
-> +	}
-> +
-> +	q->max_sdu[tc] = max_sdu;
-> +
-> +	return 0;
-> +}
-> +
-> +static int taprio_parse_tc_entries(struct Qdisc *sch,
-> +				   struct nlattr *opt,
-> +				   struct netlink_ext_ack *extack)
-> +{
-> +	unsigned long seen_tcs = 0;
-> +	struct nlattr *n;
-> +	int err = 0, rem;
-> +
-> +	nla_for_each_nested(n, opt, rem) {
-> +		if (nla_type(n) != TCA_TAPRIO_ATTR_TC_ENTRY)
-> +			continue;
-> +
-> +		err = taprio_parse_tc_entry(sch, n, &seen_tcs, extack);
-> +		if (err)
-> +			break;
-> +	}
-> +
-> +	return err;
-> +}
-> +
->  static int taprio_mqprio_cmp(const struct net_device *dev,
->  			     const struct tc_mqprio_qopt *mqprio)
->  {
-> @@ -1465,6 +1551,10 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
->  	if (err < 0)
->  		return err;
->  
-> +	err = taprio_parse_tc_entries(sch, opt, extack);
-> +	if (err)
-> +		return err;
-> +
->  	new_admin = kzalloc(sizeof(*new_admin), GFP_KERNEL);
->  	if (!new_admin) {
->  		NL_SET_ERR_MSG(extack, "Not enough memory for a new schedule");
-> @@ -1855,6 +1945,33 @@ static int dump_schedule(struct sk_buff *msg,
->  	return -1;
->  }
->  
-> +static int taprio_dump_tc_entries(struct taprio_sched *q, struct sk_buff *skb)
-> +{
-> +	struct nlattr *n;
-> +	int tc;
-> +
-> +	for (tc = 0; tc < TC_MAX_QUEUE; tc++) {
-> +		n = nla_nest_start(skb, TCA_TAPRIO_ATTR_TC_ENTRY);
-> +		if (!n)
-> +			return -EMSGSIZE;
-> +
-> +		if (nla_put_u32(skb, TCA_TAPRIO_TC_ENTRY_INDEX, tc))
-> +			goto nla_put_failure;
-> +
-> +		if (nla_put_u32(skb, TCA_TAPRIO_TC_ENTRY_MAX_SDU,
-> +				q->max_sdu[tc]))
-> +			goto nla_put_failure;
-> +
-> +		nla_nest_end(skb, n);
-> +	}
-> +
-> +	return 0;
-> +
-> +nla_put_failure:
-> +	nla_nest_cancel(skb, n);
-> +	return -EMSGSIZE;
-> +}
-> +
->  static int taprio_dump(struct Qdisc *sch, struct sk_buff *skb)
->  {
->  	struct taprio_sched *q = qdisc_priv(sch);
-> @@ -1894,6 +2011,9 @@ static int taprio_dump(struct Qdisc *sch, struct sk_buff *skb)
->  	    nla_put_u32(skb, TCA_TAPRIO_ATTR_TXTIME_DELAY, q->txtime_delay))
->  		goto options_error;
->  
-> +	if (taprio_dump_tc_entries(q, skb))
-> +		goto options_error;
-> +
->  	if (oper && dump_schedule(skb, oper))
->  		goto options_error;
->  
-> -- 
-> 2.34.1
->
-
--- 
-Vinicius
+Yes, choosing '0' rather than other value, to mean 'default to port MTU'
+was intentional. It is also in line with what other places, like the
+YANG models, expect to see:
+https://github.com/YangModels/yang/blob/main/standard/ieee/draft/802.1/Qcw/=
+ieee802-dot1q-sched.yang#L128=
