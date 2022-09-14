@@ -2,64 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 792865B8522
-	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 11:36:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84CE75B856A
+	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 11:45:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231153AbiINJgp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Sep 2022 05:36:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46862 "EHLO
+        id S230063AbiINJpc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Sep 2022 05:45:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231586AbiINJgP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 05:36:15 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48CB822B1D;
-        Wed, 14 Sep 2022 02:34:13 -0700 (PDT)
+        with ESMTP id S229908AbiINJpS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 05:45:18 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C778912ADF
+        for <netdev@vger.kernel.org>; Wed, 14 Sep 2022 02:45:16 -0700 (PDT)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id E3E6222522;
-        Wed, 14 Sep 2022 09:34:11 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 59B3F5CBED;
+        Wed, 14 Sep 2022 09:45:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1663148051; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:
+        t=1663148715; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=Mr7DJ+rONRlRTlvy+2ELh9/7A7OmuCGJ3+umwNNxXgM=;
-        b=tZzq81NRhCyFGpPkYMpW4W43Ly6vzEB2hgOXxn7bnVELKQ8dmLSKQbl9jYKSentCuH3lRE
-        ct3qtreOfAzXTSOAR95EOTP35/NEe3V6HmcxUK7FDtkDXx746sayJ3K8JlFP739GWppbv1
-        Qs7Knp/3YS1/fL3SjhQxyPboocM6Jz0=
+        bh=yKfeJbs5hDA1o+ehIbGNBCxMhbUIcPjrCsvY/2cHkGk=;
+        b=gooCARLUKZSIjud7D9AvrBfUKSxeZksVlb1RPSheoj5JXZuC6n4xxoF2y/Bl2cLj/9vkCS
+        Csxu/Vg/YTJmb1z73Vk/AfJYgj4NJ3QRg9WewurGmr3JC2oHB9IMwDqIjLDMNQCuithW2e
+        iXb91qGHh60wkR8BwkvqSMgYBt3URJ8=
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 9900F134B3;
-        Wed, 14 Sep 2022 09:34:11 +0000 (UTC)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 1D32E134B3;
+        Wed, 14 Sep 2022 09:45:15 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
         by imap2.suse-dmz.suse.de with ESMTPSA
-        id r2T8IxOgIWM/LQAAMHmgww
-        (envelope-from <jgross@suse.com>); Wed, 14 Sep 2022 09:34:11 +0000
-Message-ID: <739b7b48-c488-5216-064d-ff7fd77e76a6@suse.com>
-Date:   Wed, 14 Sep 2022 11:34:11 +0200
+        id n/4WBKuiIWM8NAAAMHmgww
+        (envelope-from <jgross@suse.com>); Wed, 14 Sep 2022 09:45:15 +0000
+Message-ID: <f42951ae-bbca-bd19-d2aa-e82a6e6d5396@suse.com>
+Date:   Wed, 14 Sep 2022 11:45:14 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.12.0
-Subject: Re: [PATCH -next] xen-netfront: make bounce_skb static
+Subject: Re: [PATCH net] xen-netback: only remove 'hotplug-status' when the
+ vif is actually destroyed
 Content-Language: en-US
-To:     ruanjinjie <ruanjinjie@huawei.com>, sstabellini@kernel.org,
-        oleksandr_tyshchenko@epam.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220914064339.49841-1-ruanjinjie@huawei.com>
+To:     Paul Durrant <pdurrant@amazon.com>, netdev@vger.kernel.org,
+        xen-devel@lists.xenproject.org
+Cc:     Wei Liu <wei.liu@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        =?UTF-8?Q?Marek_Marczykowski-G=c3=b3recki?= 
+        <marmarek@invisiblethingslab.com>
+References: <20220901115554.16996-1-pdurrant@amazon.com>
 From:   Juergen Gross <jgross@suse.com>
-In-Reply-To: <20220914064339.49841-1-ruanjinjie@huawei.com>
+In-Reply-To: <20220901115554.16996-1-pdurrant@amazon.com>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="------------z297QInJ2eAbukrn83P9heiv"
-X-Spam-Status: No, score=-6.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+ boundary="------------mKgRau0TPHWuTQ3U8s6OtcMJ"
+X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -67,34 +72,45 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------z297QInJ2eAbukrn83P9heiv
-Content-Type: multipart/mixed; boundary="------------FTlzLylkOtqjiWteUcsK9JYi";
+--------------mKgRau0TPHWuTQ3U8s6OtcMJ
+Content-Type: multipart/mixed; boundary="------------CFFRyEQ0whO2VsENi2DVBvXQ";
  protected-headers="v1"
 From: Juergen Gross <jgross@suse.com>
-To: ruanjinjie <ruanjinjie@huawei.com>, sstabellini@kernel.org,
- oleksandr_tyshchenko@epam.com, davem@davemloft.net, edumazet@google.com,
- kuba@kernel.org, pabeni@redhat.com, xen-devel@lists.xenproject.org,
- netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-ID: <739b7b48-c488-5216-064d-ff7fd77e76a6@suse.com>
-Subject: Re: [PATCH -next] xen-netfront: make bounce_skb static
-References: <20220914064339.49841-1-ruanjinjie@huawei.com>
-In-Reply-To: <20220914064339.49841-1-ruanjinjie@huawei.com>
+To: Paul Durrant <pdurrant@amazon.com>, netdev@vger.kernel.org,
+ xen-devel@lists.xenproject.org
+Cc: Wei Liu <wei.liu@kernel.org>, "David S. Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>,
+ =?UTF-8?Q?Marek_Marczykowski-G=c3=b3recki?= <marmarek@invisiblethingslab.com>
+Message-ID: <f42951ae-bbca-bd19-d2aa-e82a6e6d5396@suse.com>
+Subject: Re: [PATCH net] xen-netback: only remove 'hotplug-status' when the
+ vif is actually destroyed
+References: <20220901115554.16996-1-pdurrant@amazon.com>
+In-Reply-To: <20220901115554.16996-1-pdurrant@amazon.com>
 
---------------FTlzLylkOtqjiWteUcsK9JYi
-Content-Type: multipart/mixed; boundary="------------EOkORFmsPIA8fXrPfo0M0WHn"
+--------------CFFRyEQ0whO2VsENi2DVBvXQ
+Content-Type: multipart/mixed; boundary="------------Ku6rUqdbMST8shpZCHASxAtE"
 
---------------EOkORFmsPIA8fXrPfo0M0WHn
+--------------Ku6rUqdbMST8shpZCHASxAtE
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: base64
 
-T24gMTQuMDkuMjIgMDg6NDMsIHJ1YW5qaW5qaWUgd3JvdGU6DQo+IFRoZSBzeW1ib2wgaXMg
-bm90IHVzZWQgb3V0c2lkZSBvZiB0aGUgZmlsZSwgc28gbWFyayBpdCBzdGF0aWMuDQo+IA0K
-PiBGaXhlcyB0aGUgZm9sbG93aW5nIHdhcm5pbmc6DQo+IA0KPiAuL2RyaXZlcnMvbmV0L3hl
-bi1uZXRmcm9udC5jOjY3NjoxNjogd2FybmluZzogc3ltYm9sICdib3VuY2Vfc2tiJyB3YXMg
-bm90IGRlY2xhcmVkLiBTaG91bGQgaXQgYmUgc3RhdGljPw0KPiANCj4gU2lnbmVkLW9mZi1i
-eTogcnVhbmppbmppZSA8cnVhbmppbmppZUBodWF3ZWkuY29tPg0KDQpSZXZpZXdlZC1ieTog
-SnVlcmdlbiBHcm9zcyA8amdyb3NzQHN1c2UuY29tPg0KDQoNCkp1ZXJnZW4NCg==
---------------EOkORFmsPIA8fXrPfo0M0WHn
+T24gMDEuMDkuMjIgMTM6NTUsIFBhdWwgRHVycmFudCB3cm90ZToNCj4gUmVtb3ZpbmcgJ2hv
+dHBsdWctc3RhdHVzJyBpbiBiYWNrZW5kX2Rpc2Nvbm5lY3RlZCgpIG1lYW5zIHRoYXQgaXQg
+d2lsbCBiZQ0KPiByZW1vdmVkIGV2ZW4gaW4gdGhlIGNhc2UgdGhhdCB0aGUgZnJvbnRlbmQg
+dW5pbGF0ZXJhbGx5IGRpc2Nvbm5lY3RzICh3aGljaA0KPiBpdCBpcyBmcmVlIHRvIGRvIGF0
+IGFueSB0aW1lKS4gVGhlIGNvbnNlcXVlbmNlIG9mIHRoaXMgaXMgdGhhdCwgd2hlbiB0aGUN
+Cj4gZnJvbnRlbmQgYXR0ZW1wdHMgdG8gcmUtY29ubmVjdCwgdGhlIGJhY2tlbmQgZ2V0cyBz
+dHVjayBpbiAnSW5pdFdhaXQnDQo+IHJhdGhlciB0aGFuIG1vdmluZyBzdHJhaWdodCB0byAn
+Q29ubmVjdGVkJyAod2hpY2ggaXQgY2FuIGRvIGJlY2F1c2UgdGhlDQo+IGhvdHBsdWcgc2Ny
+aXB0IGhhcyBhbHJlYWR5IHJ1bikuDQo+IEluc3RlYWQsIHRoZSAnaG90cGx1Zy1zdGF0dXMn
+IG1vZGUgc2hvdWxkIGJlIHJlbW92ZWQgaW4gbmV0YmFja19yZW1vdmUoKQ0KPiBpLmUuIHdo
+ZW4gdGhlIHZpZiByZWFsbHkgaXMgZ29pbmcgYXdheS4NCj4gDQo+IEZpeGVzOiAwZjQ1NThh
+ZTkxODcgKCJSZXZlcnQgInhlbi1uZXRiYWNrOiByZW1vdmUgJ2hvdHBsdWctc3RhdHVzJyBv
+bmNlIGl0IGhhcyBzZXJ2ZWQgaXRzIHB1cnBvc2UiIikNCj4gU2lnbmVkLW9mZi1ieTogUGF1
+bCBEdXJyYW50IDxwZHVycmFudEBhbWF6b24uY29tPg0KDQpSZXZpZXdlZC1ieTogSnVlcmdl
+biBHcm9zcyA8amdyb3NzQHN1c2UuY29tPg0KDQoNCkp1ZXJnZW4NCg==
+--------------Ku6rUqdbMST8shpZCHASxAtE
 Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
 Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
 Content-Description: OpenPGP public key
@@ -152,24 +168,24 @@ jR/i1DG86lem3iBDXzXsZDn8R38=3D
 =3D2wuH
 -----END PGP PUBLIC KEY BLOCK-----
 
---------------EOkORFmsPIA8fXrPfo0M0WHn--
+--------------Ku6rUqdbMST8shpZCHASxAtE--
 
---------------FTlzLylkOtqjiWteUcsK9JYi--
+--------------CFFRyEQ0whO2VsENi2DVBvXQ--
 
---------------z297QInJ2eAbukrn83P9heiv
+--------------mKgRau0TPHWuTQ3U8s6OtcMJ
 Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="OpenPGP_signature"
 
 -----BEGIN PGP SIGNATURE-----
 
-wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmMhoBMFAwAAAAAACgkQsN6d1ii/Ey8a
-lwgAicNZRZqQAoZQeWQld5M/oFJQWydKiMEX0CTzhggmt6K5qGhDAh5S6fCjySBusrq2r9+q8U74
-SmBvrKl4QpI8CyBtPXAdQo5nWjab5N8gOC7crIWqYwCgQf2YOOXFbGz5m0b0ufm1rXaSP/3dapOT
-NTKjcRBBX9Zhr01eJ0Zwga3A7m17gc8eTmAlS5U2JKicbfKpywOeLgqfoQz5mxDuZWysjuPg3Twc
-xALkdxjYAHSKGlvs68GNzM5dwReCB6pSTsr21+xvX0afp+DJ7qE32A/p8aV1SQ0tguo9QyWSmNi/
-1MeYehvVMY5u1TMH5SCwtHiMsCMgG9U/V9iZNNdV3Q==
-=SRkQ
+wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmMhoqoFAwAAAAAACgkQsN6d1ii/Ey8Z
+Xgf+Pl5pBGReldtMqSYSmITrQFpThIYU5cj2ulvyltkDXipWyYnAUcPbt00S5TUfmno+hNcLL/tj
+nZHMmmacifcOMWTVmLc2y9BC6DRITsBFukQRZFVOXGm7CwW/U+Nm497MeRXqKYz8O6l8G/DP3nLc
+Etkn2lcT0pyyWfwG7xOlYE0VhhWkRf++agkpVbwUbvnMS+lng3T6qJWcaijMAxrk2cge9QSQ9FNp
+io8vrNHT2jfcyYXsd/7koB0eQC8AVPSrky89/U31dbkhlO8PU+RpeXQ/75AZyB6kG1SuJrwPOnJc
+55k883J/k5MrgmaoLMNp8kOzFN2+cyzVnuKhPGkEhA==
+=LrKm
 -----END PGP SIGNATURE-----
 
---------------z297QInJ2eAbukrn83P9heiv--
+--------------mKgRau0TPHWuTQ3U8s6OtcMJ--
