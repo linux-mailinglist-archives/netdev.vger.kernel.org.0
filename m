@@ -2,86 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8123D5B90F1
-	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 01:17:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B3685B9106
+	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 01:40:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229833AbiINXRS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Sep 2022 19:17:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35384 "EHLO
+        id S229943AbiINXku (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Sep 2022 19:40:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229634AbiINXRR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 19:17:17 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07BDF816BC;
-        Wed, 14 Sep 2022 16:17:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663197437; x=1694733437;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=Qiox5wufUKovIQD2LwljILtoHEckzqBMuDeL94CnBYs=;
-  b=eutH8J40ctUU+bVBFrZrRUo/z14Bz6uFNLUsH1P6mSBLOe//l5P9yxRh
-   E9FRAIqjl7M7QqwbuEuNL69J/GT/nSYAgJuKwk1C3l3YG8zrY02FSSRKN
-   ziMB/kQQ74YXsRRhNNsxe3hwTcWFvdQvzoiIVPIZHartCorDUjjWhkdVQ
-   /MvAxpbm4RasqZz3HoBKjCxIwsag27irjvwrgqd9q3ZP4wg49EhNKzyCM
-   F32R0fe8s0Qtoi51WANvictIY0pFTcxN/oSgdfIbUJUFsAwm0GfnzT/EN
-   XbvSEvM0BbbsrNyJEHi3VkhF6CnnHGwRNWdMWhfl/nP2Kyw9AwQvMNVGC
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10470"; a="299922687"
-X-IronPort-AV: E=Sophos;i="5.93,316,1654585200"; 
-   d="scan'208";a="299922687"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2022 16:17:16 -0700
-X-IronPort-AV: E=Sophos;i="5.93,316,1654585200"; 
-   d="scan'208";a="594581982"
-Received: from vcostago-desk1.jf.intel.com (HELO vcostago-desk1) ([10.54.70.10])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2022 16:17:16 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        with ESMTP id S229913AbiINXkq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 19:40:46 -0400
+Received: from mxd1.seznam.cz (mxd1.seznam.cz [IPv6:2a02:598:a::78:210])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC8E8402E5;
+        Wed, 14 Sep 2022 16:40:43 -0700 (PDT)
+Received: from email.seznam.cz
+        by email-smtpc17a.ko.seznam.cz (email-smtpc17a.ko.seznam.cz [10.53.18.18])
+        id 239c9d3ac7304e0422413c54;
+        Thu, 15 Sep 2022 01:40:07 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seznam.cz; s=beta;
+        t=1663198807; bh=hBUgfXVIXBf5ZVa/8FImGGTzXRmXJS7KVcNoi1eZrPo=;
+        h=Received:From:To:Cc:Subject:Date:Message-Id:X-Mailer:MIME-Version:
+         Content-Transfer-Encoding;
+        b=PQWkOAYgMoWsHtrx93bH1P4HcTfOiUj006D6OzdRfyfZwe7VHkxDSwAezlHgH3vk0
+         n+Jlwq8Wvert4Hq947ags7ciioC0w4pzoVyhGEyUkDYX2rK4gexch2epNwXVxSceRt
+         dHuupjLcrzRh+g943RX1RGu/pssVNJ1ecxEdf6qk=
+Received: from localhost.localdomain (2a02:8308:900d:2400:4bcc:f22e:1266:5194 [2a02:8308:900d:2400:4bcc:f22e:1266:5194])
+        by email-relay10.ng.seznam.cz (Seznam SMTPD 1.3.137) with ESMTP;
+        Thu, 15 Sep 2022 01:40:05 +0200 (CEST)  
+From:   Matej Vasilevski <matej.vasilevski@seznam.cz>
+To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>,
+        Ondrej Ille <ondrej.ille@gmail.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Rui Sousa <rui.sousa@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Michael Walle <michael@walle.cc>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Richie Pearn <richard.pearn@nxp.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Gerhard Engleder <gerhard@engleder-embedded.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 04/13] net/sched: taprio: allow user input of
- per-tc max SDU
-In-Reply-To: <20220914230335.lioxtjxbjiyd7ds4@skbuf>
-References: <20220914153303.1792444-1-vladimir.oltean@nxp.com>
- <20220914153303.1792444-5-vladimir.oltean@nxp.com>
- <87k065iqe1.fsf@intel.com> <20220914221042.oenxhxacgt2xsb2k@skbuf>
- <871qsdimtk.fsf@intel.com> <20220914230335.lioxtjxbjiyd7ds4@skbuf>
-Date:   Wed, 14 Sep 2022 16:17:16 -0700
-Message-ID: <87illph7gj.fsf@intel.com>
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        Matej Vasilevski <matej.vasilevski@seznam.cz>
+Subject: [PATCH v4 0/3] can: ctucanfd: hardware rx timestamps reporting
+Date:   Thu, 15 Sep 2022 01:39:41 +0200
+Message-Id: <20220914233944.598298-1-matej.vasilevski@seznam.cz>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -89,27 +58,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Vladimir Oltean <vladimir.oltean@nxp.com> writes:
+Hello,
 
-> On Wed, Sep 14, 2022 at 04:00:07PM -0700, Vinicius Costa Gomes wrote:
->> Hm, I just noticed something.
->> 
->> During parse the user only sets the max-sdu for the traffic classes she
->> is interested on. During dump you are showing all of them, the unset
->> ones will be shown as zero, that seems a bit confusing, which could mean
->> that you would have to add some checks anyway.
->> 
->> For the offload side, you could just document that U32_MAX means unset.
->
-> Yes, choosing '0' rather than other value, to mean 'default to port MTU'
-> was intentional. It is also in line with what other places, like the
-> YANG models, expect to see:
-> https://github.com/YangModels/yang/blob/main/standard/ieee/draft/802.1/Qcw/ieee802-dot1q-sched.yang#L128
+this is the v4 patch for CTU CAN FD hardware timestamps reporting.
+Excuse my mistake, I'm sorry for the double post, but minutes after posting
+patch v3 I've realized I forgot to update the pm_runtime method in error counter routine.
 
-Oh, I see. My bad. So, only that comment about thinking about making the
-comparison simpler is still valid.
+Even though pm_runtime_resume_and_get and pm_runtime_get_sync should be equivalent,
+I want to have the code consistent.
+
+Changes since v3: https://lore.kernel.org/all/20220914231249.593643-1-matej.vasilevski@seznam.cz/t/#u
+- use pm_runtime_resume_and_get in error counter routine ctucan_get_berr_counter
+
+Changes since v2: https://lore.kernel.org/all/20220801184656.702930-1-matej.vasilevski@seznam.cz/t/#u
+- proper timestamping clock handling
+	- clocks manually enabled using clk_prepare_enable, then managed
+	  by runtime PM (if runtime PM is enabled)
+	- driver should work even without CONFIG_PM
+- access to the timecounter is now protected by a spinlock
+- harmonized with Vincent's patch - TX timestamping capability is now
+  correctly reported
+- work_delay_jiffies stored as unsigned long instead of u32
+- max work delay limited to 3600 seconds (instead of 86k seconds)
+- adressed the rest of the comments from the patch V2 review
+
+Changes since v1: https://lore.kernel.org/all/20220512232706.24575-1-matej.vasilevski@seznam.cz/
+- Removed kconfig option to enable/disable timestamps.
+- Removed dt parameters ts-frequency and ts-used-bits. Now the user
+  only needs to add the timestamping clock phandle to clocks, and even
+  that is optional.
+- Added SIOCSHWTSTAMP ioctl to enable/disable timestamps.
+- Adressed comments from the RFC review.
+
+Matej Vasilevski (3):
+  dt-bindings: can: ctucanfd: add another clock for HW timestamping
+  can: ctucanfd: add HW timestamps to RX and error CAN frames
+  doc: ctucanfd: RX frames timestamping for platform devices
+
+ .../bindings/net/can/ctu,ctucanfd.yaml        |  19 +-
+ .../can/ctu/ctucanfd-driver.rst               |  13 +-
+ drivers/net/can/ctucanfd/Makefile             |   2 +-
+ drivers/net/can/ctucanfd/ctucanfd.h           |  20 ++
+ drivers/net/can/ctucanfd/ctucanfd_base.c      | 239 ++++++++++++++++--
+ drivers/net/can/ctucanfd/ctucanfd_pci.c       |   5 +-
+ drivers/net/can/ctucanfd/ctucanfd_platform.c  |   5 +-
+ drivers/net/can/ctucanfd/ctucanfd_timestamp.c |  70 +++++
+ 8 files changed, 344 insertions(+), 29 deletions(-)
+ create mode 100644 drivers/net/can/ctucanfd/ctucanfd_timestamp.c
 
 
-Cheers,
--- 
-Vinicius
+base-commit: c9ae520ac3faf2f272b5705b085b3778c7997ec8
+--
+2.25.1
