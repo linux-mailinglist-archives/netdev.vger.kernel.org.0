@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 301D55B82BB
-	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 10:15:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E18F55B82BE
+	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 10:16:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230246AbiINIPw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Sep 2022 04:15:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33236 "EHLO
+        id S230262AbiINIPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Sep 2022 04:15:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230250AbiINIPj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 04:15:39 -0400
-Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9D6D422E9;
-        Wed, 14 Sep 2022 01:15:38 -0700 (PDT)
-Received: by mail-qk1-x733.google.com with SMTP id 3so9893496qka.5;
-        Wed, 14 Sep 2022 01:15:38 -0700 (PDT)
+        with ESMTP id S230058AbiINIPv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 04:15:51 -0400
+Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A828710549;
+        Wed, 14 Sep 2022 01:15:50 -0700 (PDT)
+Received: by mail-qv1-xf2f.google.com with SMTP id y9so11155665qvo.4;
+        Wed, 14 Sep 2022 01:15:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=+wbG6fgMQYUO57P7KRa54jq5kT0uHMNGp+ISOp5Std4=;
-        b=BVdW/9lvb4MCtpvq2YiPmv3poClN+V/2D1tsWD0FOgTQf33mx3xSsfh+lrefRHXfgY
-         6ynJesxowPfHFkXWEnaF4obCfX6oa24cAKlw89geXK9vj/7+Etrq2RvXVJ6EwQF2Pv5P
-         kH3tZ/r0qDSMgN2tU32xCoylwQ2y3rl4fe+w+87xxMR1CDRdN8/2b8swrtvmjWIiB2t/
-         1b/BbNxCiD4nnBZygOstkCRifYVDSWgjgyMljUjBbXTGFM69q/eoN0TxZEecrbyLrwSE
-         7Quagg2MHpCS6RAHNqpaM00uBbAQqLxi+gTGl6LZjcpHRdhXVMK8k4B3s6SKJhgfnpqD
-         ygWQ==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=E3uwB8CqWVlPJdmYFGu1eVYpx1JpXqpegdhCF2Dn9pA=;
+        b=G2z63NBey6mFbnL8i3cvE83J02RhQqveqTl3DsSMswps6rOR1S+R32HI4mouP30Va9
+         FPdAZ7eSLooqa+81j0vK4CfzcQMic1WPM/hllalMM0TUO7d5MXvknHP+00ogn8uqIxlw
+         FqguQlFwXnV8gNoYShd2TWwXPOPPGXkG6cffddCojrNQeNzv6630pcr1ktrs/Azls8/U
+         mYl4XOEZNY1fbAI2JFYW2dHLjsRY3hd7gn0Gje5C2iMCOS9JMW0oAMAwRfPGSIUe2uwW
+         uYj9jFT2jPLRa79KEVigywAKb2naNzBZ4cyJ2tMilZEyrI5uslIlqtOK4Yr2NzVyoxpS
+         QrNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=+wbG6fgMQYUO57P7KRa54jq5kT0uHMNGp+ISOp5Std4=;
-        b=vrbh48nZfOxkRePA5/DZUqG39F4ubj+SsMZQPLQyLigFQHNia7bL4OYa+ruTc5Dgxj
-         W6dqNJ6Npi6yYT6Wt7b+VlCkfD+xpSp8D6mgd0POkjscOJagLitXBpjFE86Twg+pe1hj
-         39flg9JteBkPx5D60CCY7TpOqGjSnn1ooRnOpx0Smxaoej8wZLykpcm+UGfAzm7Ak79P
-         jdO9nPydcjoiFan7De7PGPcW/xnIfxtsfacpDg3xVDcAdOYTY3vJZ7CImV5FgbC6r7k/
-         jkLGZSvv39Z48q9+xwHjf7HtO6IYHH5lehBZrYs313ubjvMOrgrsXgKd8kprN74IcK3/
-         3kPw==
-X-Gm-Message-State: ACgBeo0fzaCcEF1we1SeBCJs04bJZ21H64ngYqaEWTCabjTZkzfWc25a
-        HcEbSbC7Crtk2JEDrEMAaA==
-X-Google-Smtp-Source: AA6agR7CWYMUN5cuud5i1c1eeHLQy7Xu8LpQszP6idvygrLPyCXOtvbyAERwXX+v0iF5INjNVQGZmA==
-X-Received: by 2002:a05:620a:284c:b0:6b8:6e70:cd95 with SMTP id h12-20020a05620a284c00b006b86e70cd95mr25052613qkp.247.1663143337943;
-        Wed, 14 Sep 2022 01:15:37 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=E3uwB8CqWVlPJdmYFGu1eVYpx1JpXqpegdhCF2Dn9pA=;
+        b=l+M30Tf4Nj0NXqc7pLWNl3MkNZSj2/6JhqjGgxiPg1LG4Ab5Z5sXWZexdNF5A6jGrV
+         EN9ymc9++9H3FvXuepID1MZbjP6UN2RqGQhkJGkn0sWnwKFHNbI4cRw6wSXqgkV6Roao
+         mogJ8cLiWJxxUGA3eR9va08gmM0JxOXjOQcSKOd70G5iqRwBbnCp/CtKwWmt8nOIKRjd
+         iLwnQW+KNYuTRjBOF4mWHBi1wBhhzkPiDsnnEU7LzNISbD5tdZtWHCGKOsHUheEoW9uc
+         BEl+Y1btTHGb68l47yxQsB70TiuA1NmqcHbGgsKwgojnQARReIA477AxH9ZpGfRcoaSt
+         peHg==
+X-Gm-Message-State: ACgBeo0ikN0Sd8hwPKKfbbpPazaZsj2YxzitWG9AxRbKLZvSB3J+IG4F
+        AwGrR7+8ssBB45o2cmiMfg==
+X-Google-Smtp-Source: AA6agR7rdHdEUwpC6EDdkr/XMbUlHMbf7/uf60vpJEPcZOfplJpDoROA7mtkkbfAddJlh5KQMk38mQ==
+X-Received: by 2002:a05:6214:5181:b0:478:69bd:38c5 with SMTP id kl1-20020a056214518100b0047869bd38c5mr30478259qvb.59.1663143349792;
+        Wed, 14 Sep 2022 01:15:49 -0700 (PDT)
 Received: from bytedance.attlocal.net (ec2-52-52-7-82.us-west-1.compute.amazonaws.com. [52.52.7.82])
-        by smtp.gmail.com with ESMTPSA id g26-20020ac842da000000b0035bb4805309sm1191561qtm.42.2022.09.14.01.15.34
+        by smtp.gmail.com with ESMTPSA id r18-20020a05620a299200b006ce7cd81359sm1497995qkp.110.2022.09.14.01.15.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Sep 2022 01:15:36 -0700 (PDT)
+        Wed, 14 Sep 2022 01:15:47 -0700 (PDT)
 From:   Peilin Ye <yepeilin.cs@gmail.com>
 To:     Eric Dumazet <edumazet@google.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -59,10 +60,12 @@ Cc:     Peilin Ye <peilin.ye@bytedance.com>,
         Kuniyuki Iwashima <kuniyu@amazon.com>,
         Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Peilin Ye <yepeilin.cs@gmail.com>
-Subject: [PATCH net-next 1/2] udp: Refactor udp_read_skb()
-Date:   Wed, 14 Sep 2022 01:15:30 -0700
-Message-Id: <03db9765fe1ef0f61bfc87fc68b5a95b4126aa4e.1663143016.git.peilin.ye@bytedance.com>
+Subject: [PATCH net-next 2/2] af_unix: Refactor unix_read_skb()
+Date:   Wed, 14 Sep 2022 01:15:41 -0700
+Message-Id: <6fd03b42db6b44142e517f85902e99c720277586.1663143016.git.peilin.ye@bytedance.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <03db9765fe1ef0f61bfc87fc68b5a95b4126aa4e.1663143016.git.peilin.ye@bytedance.com>
+References: <03db9765fe1ef0f61bfc87fc68b5a95b4126aa4e.1663143016.git.peilin.ye@bytedance.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -77,59 +80,41 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Peilin Ye <peilin.ye@bytedance.com>
 
-Delete the unnecessary while loop in udp_read_skb() for readability.
-Additionally, since recv_actor() cannot return a value greater than
-skb->len (see sk_psock_verdict_recv()), remove the redundant check.
+Similar to udp_read_skb(), delete the unnecessary while loop in
+unix_read_skb() for readability.  Since recv_actor() cannot return a
+value greater than skb->len (see sk_psock_verdict_recv()), remove the
+redundant check.
 
 Suggested-by: Cong Wang <cong.wang@bytedance.com>
 Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
 ---
-Depends on:
+ net/unix/af_unix.c | 34 ++++++++++------------------------
+ 1 file changed, 10 insertions(+), 24 deletions(-)
 
-"[PATCH net v2] net: Use WARN_ON_ONCE() in {tcp,udp}_read_skb()"
-https://lore.kernel.org/all/20220913184016.16095-1-yepeilin.cs@gmail.com/
-
-Thanks,
-Peilin Ye
-
- net/ipv4/udp.c | 46 +++++++++++++++++-----------------------------
- 1 file changed, 17 insertions(+), 29 deletions(-)
-
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 560d9eadeaa5..d63118ce5900 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -1801,41 +1801,29 @@ EXPORT_SYMBOL(__skb_recv_udp);
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index dea2972c8178..c955c7253d4b 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -2536,32 +2536,18 @@ static int unix_dgram_recvmsg(struct socket *sock, struct msghdr *msg, size_t si
  
- int udp_read_skb(struct sock *sk, skb_read_actor_t recv_actor)
+ static int unix_read_skb(struct sock *sk, skb_read_actor_t recv_actor)
  {
 -	int copied = 0;
 -
 -	while (1) {
+-		struct unix_sock *u = unix_sk(sk);
 -		struct sk_buff *skb;
--		int err, used;
+-		int used, err;
 -
--		skb = skb_recv_udp(sk, MSG_DONTWAIT, &err);
+-		mutex_lock(&u->iolock);
+-		skb = skb_recv_datagram(sk, MSG_DONTWAIT, &err);
+-		mutex_unlock(&u->iolock);
 -		if (!skb)
 -			return err;
++	struct unix_sock *u = unix_sk(sk);
 +	struct sk_buff *skb;
 +	int err, copied;
  
--		if (udp_lib_checksum_complete(skb)) {
--			__UDP_INC_STATS(sock_net(sk), UDP_MIB_CSUMERRORS,
--					IS_UDPLITE(sk));
--			__UDP_INC_STATS(sock_net(sk), UDP_MIB_INERRORS,
--					IS_UDPLITE(sk));
--			atomic_inc(&sk->sk_drops);
--			kfree_skb(skb);
--			continue;
--		}
-+try_again:
-+	skb = skb_recv_udp(sk, MSG_DONTWAIT, &err);
-+	if (!skb)
-+		return err;
- 
--		WARN_ON_ONCE(!skb_set_owner_sk_safe(skb, sk));
 -		used = recv_actor(sk, skb);
 -		if (used <= 0) {
 -			if (!copied)
@@ -139,25 +124,20 @@ index 560d9eadeaa5..d63118ce5900 100644
 -		} else if (used <= skb->len) {
 -			copied += used;
 -		}
-+	if (udp_lib_checksum_complete(skb)) {
-+		int is_udplite = IS_UDPLITE(sk);
-+		struct net *net = sock_net(sk);
++	mutex_lock(&u->iolock);
++	skb = skb_recv_datagram(sk, MSG_DONTWAIT, &err);
++	mutex_unlock(&u->iolock);
++	if (!skb)
++		return err;
  
-+		__UDP_INC_STATS(net, UDP_MIB_CSUMERRORS, is_udplite);
-+		__UDP_INC_STATS(net, UDP_MIB_INERRORS, is_udplite);
-+		atomic_inc(&sk->sk_drops);
- 		kfree_skb(skb);
+-		kfree_skb(skb);
 -		break;
-+		goto try_again;
- 	}
- 
-+	WARN_ON_ONCE(!skb_set_owner_sk_safe(skb, sk));
+-	}
 +	copied = recv_actor(sk, skb);
 +	kfree_skb(skb);
-+
+ 
  	return copied;
  }
- EXPORT_SYMBOL(udp_read_skb);
 -- 
 2.20.1
 
