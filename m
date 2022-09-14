@@ -2,198 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C41405B8BC6
-	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 17:27:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75D5F5B8BE2
+	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 17:34:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229925AbiINP1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Sep 2022 11:27:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36636 "EHLO
+        id S229920AbiINPdh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Sep 2022 11:33:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229696AbiINP1n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 11:27:43 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2113.outbound.protection.outlook.com [40.107.243.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7629F7C32E
-        for <netdev@vger.kernel.org>; Wed, 14 Sep 2022 08:27:42 -0700 (PDT)
+        with ESMTP id S229979AbiINPd0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 11:33:26 -0400
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2081.outbound.protection.outlook.com [40.107.22.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37A0948CAB;
+        Wed, 14 Sep 2022 08:33:25 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kiXa5nGHjX2F1rCxVOfmCiGYjb1G6L2pdCiBXBoFnFCUl2ukRLud5xkdkvXcEdb7gpzi0Ky0rr8qrd3T3BN2ecnwlXLd3UzkgABNz4i/zbZZ6CRZYZuKX/lRISkG9HvYzR5wKltfq0vR9+zdipn7zXSlxPlyHznTuKBk3lVSLpZGkIbLgLaRPD/HQJLeVANdNnQD/j4i/CWSH5xSiuF+fDLnotXQwKq/3TPmMSaaL3oy+AY8tZ1877xmz1NPzK7RywvDujzNr7Pbmkekt746Z8n5yuOvFhdtQsm4Tui354nRt4J6NcEGEXmu1QFjoEbTXw7K78wZ95TKuQihb9pchg==
+ b=JnYGJvzYvjQAjQEEoOQ/Doo0gzollFaahaChpCZrXCy+eSNf65HAlouP7oTkeBw9dJp/bC4hiObN6vcidNoCwJ7jvmc2YCZ+Gq5crl9zPkMIaD1Efqjk2lsVspUI7oE7ezDpGPrfNyw61eXh6wtIFe2N+KB8qAxYQzdqOjlm7yAKLVhRNwzQfgB67g7ekxfxg7xDuUzgUD+aDa7HldUKKuFi2xLyzetCwBjrpXc395hd6mhPNJplyeNJjf0kKDwpianxGAUTpz/mlx2fBG7gx1psTw1pS4UXOiKNhGs6iBU/3wW3FGFcdA7G1TLHQEJ9e78jGTDhsplorYcAF14Dpw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=paxd4pJoN128mUKqyiWodXLS2ohU4Nfdzgk0R+Hyx3Q=;
- b=DHLG0aeLlzQY+zeY0X6C5m+n/8WtV298/+3AtT9m4U4fORyuJZ+V1i1Jg8qX/u2h+r45H2qyTcQVrwUEamKKBIW3QTUUW4h9lD8DMK56sWsjGOtl9VNSq4Zpoq5JUZFyMpYUQSX2nHckYvW2ge/RSoFd76IXd746l2cod2LZy0N7+ZBWdu6SAbsoiDPG09zzee/YBBHuYELDuIlMuKacVC5J9uUOMlC+5T2HLCqw3b2CxIlMuN7KNtzMdiC28gco4eIJuCdXjKMhvxv2oGPvCWzQoEkPnk0f19ftdJJREXlcsYHGx7xWNUcOrvotnbGsxi2ceF08+bT2Xam7Hoar9g==
+ bh=OMTASKZ06hMuifUmUjeHutjNyYdDt06RQmTbtM6+Q5A=;
+ b=MhI0kT2gPb5GfYXbn61GD/MKgpjZ05qiyiSU+7IWOkY9bwmHg2FoWtv1XPH3zZNjtc2fS5gjLh8SnQ585LqbGd4IYfZDrYsOFNxv4esfV2A4KQr2R1Hh6nZAqqQ4J5L2ZM8Mw5D+CgujxJnuSy/xuSRLZxmzKQ4NEbp6qTCMpbbIYdXNyiaJq//AyPgHLEcdSjR+2PuRfhvPsTTwHEDC1SHQ6gE+lLgWVSNvQWsZljI+zz5vaCMUsjfiz3dOn1RBIVt++fUWyLFkFumCs5loCwjxqfZodJNXgBRW9r4b9P1LQlvUQRMD7UtH6MTKBeVU996Xl1qMruOje4nAL0ImwA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=in-advantage.com; dmarc=pass action=none
- header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=paxd4pJoN128mUKqyiWodXLS2ohU4Nfdzgk0R+Hyx3Q=;
- b=QY2EyewhaHBqet2eIHnsWMi/3rsKlTQ0Mwn5VO9PLw7MP7ovR/lgSzlQ+Bq4Mm1cqTbsKXzPB5qakmDOFme8NF4QYpK3Y8/e5ySXlSzhDNa3EUsREC2Hvs/2psDdQdEsqEAOall6Fzeo1Qt+UNyxZqs+PO1YhdLv/NCiZxeOZdo=
+ bh=OMTASKZ06hMuifUmUjeHutjNyYdDt06RQmTbtM6+Q5A=;
+ b=E/GEcayJqxirsN4S/hiTZ0/wOsHsaQppTFmO10Cz89nhs+zL57T4lBgwh3+UWklhk5iVE160A+R0GQUUuLR9ulNQj4pcX2/4hZWKmZy5Hw6KMxhKvkrAZmsLaT7CGCPzHyrO3MKrhl0NxrU9wCjgwvtPN1YXKm9hY2sOqYbonpY=
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=in-advantage.com;
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37) by PH7PR10MB6377.namprd10.prod.outlook.com
- (2603:10b6:510:1a7::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.12; Wed, 14 Sep
- 2022 15:27:39 +0000
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::dcf2:ddbd:b18d:bb49]) by MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::dcf2:ddbd:b18d:bb49%3]) with mapi id 15.20.5612.022; Wed, 14 Sep 2022
- 15:27:38 +0000
-Date:   Wed, 14 Sep 2022 08:27:35 -0700
-From:   Colin Foster <colin.foster@in-advantage.com>
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by DU2PR04MB8949.eurprd04.prod.outlook.com (2603:10a6:10:2e0::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.22; Wed, 14 Sep
+ 2022 15:33:22 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::a67a:849c:aeff:cad1]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::a67a:849c:aeff:cad1%7]) with mapi id 15.20.5612.022; Wed, 14 Sep 2022
+ 15:33:22 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [lee@kernel.org: [GIT PULL] Immutable branch between MFD, Net and
- Pinctrl due for the v6.0 merge window]
-Message-ID: <YyHy53kHEMIhaoFb@euler>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Rui Sousa <rui.sousa@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Michael Walle <michael@walle.cc>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Richie Pearn <richard.pearn@nxp.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Gerhard Engleder <gerhard@engleder-embedded.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 00/13] Add tc-taprio support for queueMaxSDU
+Date:   Wed, 14 Sep 2022 18:32:50 +0300
+Message-Id: <20220914153303.1792444-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.34.1
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SJ0PR13CA0165.namprd13.prod.outlook.com
- (2603:10b6:a03:2c7::20) To MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37)
+Content-Type: text/plain
+X-ClientProxiedBy: AS4P250CA0023.EURP250.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5e3::11) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MWHPR1001MB2351:EE_|PH7PR10MB6377:EE_
-X-MS-Office365-Filtering-Correlation-Id: da489102-17c2-4198-3be7-08da9665a84b
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|DU2PR04MB8949:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5fc9c83f-9f0d-4e0c-e3f1-08da9666752f
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 3KU3s5rKiRUkvZoAMYVdzrHkxQtTpVjmeUavp1X2Mr073snglFWoM53RcQT7mzVS3IyxuqlddlYgLhve3XssiHeIRFpkEYK46R2IFwAWYY9thzh+C7bwDq7afXeu8eUlz4bq4+kl22JYMP39/D6ff/kmJmAYBLERamYHPUT0o1dQkrjn3RpUzu9L4//qm+x0Pt/rWgKlSsTy4h6w946wwG1DYWL5yX0eGV/kXFjE0w2KqHoD5y+TT/jGOubCf0hkVT+UIoLR8ahJih+ssMCEfQ3sqpF4DzveD1wW2englWLpdEbiPxYvwb82aKVj6SS1+lYgePoZtvgaSEjnTfRHDjNokSAzHbU6ZDRlouC2CoXyGw76cr5PfsQQ2xbIs2C9RrxOU8cgwx/Ch07kOTciwJ+JD/UYTzLA+Jyu4l8RXzh7oSs/T30xKrUD9MJJIK3T6be16SdY8W5/9WtJWfah/fmUi3vPYy+usLJyJqslnTaXiKPYh1fRFqogHf1CW0aZ/8LF8vncG4+BeYcewVfGrZKNz4btM9DhKYQmbgZiEx2ieEDskom+52ICtMId/hPxGifb5KIxIbC2IRAmB7T4S4a4eWs1HoubQxyp8qfTbsAfRsHf4dnrmhhM3RvJCV8nn+v6AP5YZNcmtiwrzAKVpubigPC+s/fFSACFI2xljNdCz6l+1K9jzZj+yHCkyIZ7rhD1VYnYhAw5koFr9DAUPQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(39830400003)(366004)(396003)(136003)(376002)(346002)(451199015)(66946007)(33716001)(54906003)(6916009)(8936002)(6666004)(26005)(6486002)(478600001)(66476007)(8676002)(41300700001)(86362001)(4326008)(9686003)(5660300002)(38100700002)(316002)(83380400001)(6512007)(44832011)(66556008)(2906002)(6506007)(186003);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: 4FhxvCsNFHNxJQSyG+yPt9QUWS7Gi94Un731oJ97M3oWL5Qv741ocM41LLcg5DnNwPI3MRelA6VTdSxeh5GeFtocQGzZemwv6ZIecbh8GuzYBfdU8qxV2NrybNA4tDi43ozppDv8tKyeGVAt/ZfoyOWCCB3Fa9LVjbBsJAhqxAZOUtwnoA4xUsGE++7YAmhCEK++cSHpAECpOUO8DSIZYMsm+4B2zW0gfe3UhbqqG+BArJ43jwYJ4tpahu+DupgFiUksdZP+nQCtu8O0h1fwuwT165vIrHsKUf4tYz0k3s3XXpdZbPn0HbDzDNgqY0tD4rPJcIEOYh8LwM3bTDVbd+bpeyLyFdW51uijdKWGROvvlFjdDL0MVB+rhaLoh5yQCmNeMbKhHxyB/M5NJ/Cebq3L2q8p+oAR3KynwzP03K87JiHxQUH6a9J+s4QjcgfRxDw/0PkUZJe6qzAb4Q/lg1yXnb6qIEFSHkyobv4U6Z/Onra7N1IQTiTYHhX1lNGKinMQ1ha+PVDGHHRIwBERwa+vEKOkESHhsRl0wz8nM47weqEiftW3+6cFTOQOiqHwF9YX+TlOdwMEJ5fUZiogZFy0K8tITPkq+tr9Zn1NPRTDoo/ZTDTA7BbiMcgUr9Q9Be5E4TEfXkBpZxXCSlh4kEEEE2DlsPvWttF8GKMlODQeDhvvHOWiQwFn5FrzP4CpkE58rzTd7oniAs6r0o8bEAB0wcgo5A3OD7oR2hzV75Hs8fjZIuxHq6t8pbAeEoQdBw6UknNPSLWwpCb5z+UGHfAQCHQjrvo7hdHrGiFdCfw=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(376002)(136003)(396003)(366004)(39860400002)(451199015)(6512007)(2616005)(52116002)(66476007)(44832011)(4326008)(41300700001)(66946007)(316002)(26005)(8936002)(2906002)(966005)(36756003)(6916009)(54906003)(6666004)(86362001)(38350700002)(1076003)(38100700002)(5660300002)(6486002)(186003)(66556008)(7416002)(478600001)(83380400001)(6506007)(8676002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?OWdVV3ZOUzZNUWM3ZHNKOVNYeEwvTGdFaTJBMDltZ1VJN3R0cHBVcmdSSThD?=
- =?utf-8?B?Sk14bXdHYTd4S2J2K1lpMkVRaVRISWcvaTRvRWJrVGpRbFY1dWNoYWxlR0lu?=
- =?utf-8?B?NVhpaFJQVjJGNFE5cTJ3TC9xRkZSNFhXNGNqRU9LMFh2WjJFdllYQmQwZmJI?=
- =?utf-8?B?NGNjUmNxNXF2NEduZDdNcEw1OE9hVHErdktRTlBLS0Q1U3JwQ085OU02ZHBm?=
- =?utf-8?B?ZFVRbG1CRFpWTGhmdEpkUFNsTzVrUmhSWW05eFlFQmVoZGdLdjFXamh4TXhZ?=
- =?utf-8?B?REpQOFJFSFN1RVp6Ri9aT0Y4YVdtTHZ5aDVVWExSQUxoTzNIaWMrbjNIbHll?=
- =?utf-8?B?UzBiRVNEanZkaVIzeEhpUlV0SUwyZ1BWZnFCQnFHZGhYTEZ3ajRLakU2L0dG?=
- =?utf-8?B?Rjk0d0tKU3hUWW1DenB0c3FYbTBkUzhJa3ladXYwUTRQdlhwRFUrb2FIb0Mw?=
- =?utf-8?B?bzRDc08ySnRZc2hLSDZNME5UTHZLZDVBb2lvUW1yY2tMRzVjRkRseHpUNVVy?=
- =?utf-8?B?bDBoejBTSHBZVVJTZW1DVkVOZnk0aGJidmY5Wm81ZG11SlAydml5ajZnQ3Nu?=
- =?utf-8?B?eVV4cnJXRUR0ZHN5UGVnQmNoMGFzNW1BLzF5ZDcxc1I4djB2emkrYjdnMk1L?=
- =?utf-8?B?c2ErcHJxRDlsekxQdWczYmhsU3o5b3dKYXJ0bmlTUm9GNno3WVNwVmZycWs0?=
- =?utf-8?B?RnZZYUtTRzgzYzlCNStQL3BPRy84elQ4U09QQjRXOUhrS1dTeUt4ay9LT2xv?=
- =?utf-8?B?VEl0OUw5NmJSSWdRM24rdklzSXIrZnVXTmJRYmljSXQ1bVRES3hqd0NRa0Vl?=
- =?utf-8?B?Yk85eGNiTE9CWkJXK2h2cGRCT3VJWHZXTllTNXZHUXpYSm5LK0d3aGxHTXcx?=
- =?utf-8?B?ZG5QYzBVYkpYTCt4cVJMd1B2clR1K05EcDNyUHJHOHowdDlxMmticUdMWm56?=
- =?utf-8?B?YzhQalRvbWsvbGJvT0wrVDlmOXBqNW1QQmhjUEFuaW84M1pzekNkZkNvUU1E?=
- =?utf-8?B?TFBwckNWVnRPVjd1bnB5U0FsVHRuTXJ2cVUwMlk0THorNkdQOUovVUloU3B6?=
- =?utf-8?B?bm9zd2s3Q1o3WVVOYlRYZ2dnclU4TmJLS2RyV2lwekpqbFFHak1CSVhUYSt2?=
- =?utf-8?B?T0F4Mkc5SHh6RzNSVlA3MDNmVVRRbDRmb2JUV3krL2tyeUEvSk11K1RUQUJP?=
- =?utf-8?B?NGxRN3U4ZWRRamVwOExSRi82SWdvN1ZXckwzWE9kMnlEdjQ3U204NVNYYitO?=
- =?utf-8?B?WHFFQVBxNXVzQ3ZWcDZxZ1lkVVJrdjhXajlVNEgyRFJMamxvYk9aQWp3RGF4?=
- =?utf-8?B?aVFPVUMrdWdsYXVoamhCQmJUeUN0Szdhb0RQOE1BWm5DSlk1bXlCcmFjSnRZ?=
- =?utf-8?B?NmRFbDVQODF2d3h5VGgvakZlOG9ZZENCK2RPZlgvN3VEUG9OTTBFM2JjSnJO?=
- =?utf-8?B?V2xqZHZpc2doQkhyR3RCL2FNemJuYm9VMDdkRk1aa3JUcFludGpHQ2FsWWRr?=
- =?utf-8?B?UUw1Tlg0cXlTSkhBVVFjdmdsZGxnOXZQb0lxNnYyalMxdnhvNDZ5eGVqQ3N0?=
- =?utf-8?B?TmNzRXREeHY4U0prVXY0MnM1WGRlVUZpTkd6TlJmanM4YStWUHVxakprTkZv?=
- =?utf-8?B?Nks3VlluZ1hnSDBZb1Z3eTlPWms5RGJIdnZJeVpmYTJWT2dkbm9FWFQwVW1r?=
- =?utf-8?B?S2d4Zko4aWFyanVGcGV3Zlp6ZGRYeVVKMWhYR1NLTXlXK3RhZnBTREo4d1cv?=
- =?utf-8?B?QmpuQTdXQlNSVVJRTlArdlpScGduYzFrMmMyNEVaQ05FKzlBaDI1WXpKZmps?=
- =?utf-8?B?T2lsM1pNY09HcWNLdTNocGlRbU1qdEtJcWJkemxqZkVEZTFaNlFzRnh0SXlV?=
- =?utf-8?B?ZjdVSEM3ZWhnVXFxSzBZdFRUU0Z1ME16czlYcW9ES1FUUVpsVGkzeXphbUJj?=
- =?utf-8?B?TjFWeG9jVkl2SEhQOEVpUzVYc2labkFXRWxZVnFGaGFOR01BeVBkRDJuR0pz?=
- =?utf-8?B?c1hZVjc3bjRDb2plbDEzbU5tZXN3dEtCSUZEK0tXMDFLR0pFNnVxK0IyQ3ls?=
- =?utf-8?B?eWpSSXlibmkxa1lzS044S0Q2ck9yL0FLWUJRdEdsMWJVczNhUFV0K0hhZ05V?=
- =?utf-8?B?REZUNm51eHZjQWFQb0J0aWh6Wm02cXltVU1xLzUrejk2RnNwcDdEUVZRZnpi?=
- =?utf-8?B?TlE9PQ==?=
-X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: da489102-17c2-4198-3be7-08da9665a84b
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?JKmA8desCA+jkapzpItgaXMzjqOwYyjlIfDp3Vf70oheo7t4ND7R/YJDKz57?=
+ =?us-ascii?Q?zXXP1D3w+d1S4U9+BVY/ivsYj+B/QKRQyvaOcYt9+glOCWp1bdFvqi8CyzX7?=
+ =?us-ascii?Q?0CD3RvZnw/nMXDXwbkrVjHX2kxGFBVaizcS300aTqT+FYQeylqnIERaiJO/q?=
+ =?us-ascii?Q?XJlfSYlLBqdE9/sThJ/qbU8iSzX5rBmegSPh4IFHydJ1q7jLQugyahjNCfl+?=
+ =?us-ascii?Q?pBuQxcBvpUYymSA53DWv7P9R7otexSY5FvtsdbyWFbGGMe/YRpj/8QRY1orQ?=
+ =?us-ascii?Q?m4e5zr3Io2BMLIR62Dhc0bYJwjosgpTs/TMooJ3vHeduNPQEessqTxE5g0Tu?=
+ =?us-ascii?Q?1FhEQ7OP+QgMUFt3XVLdxn+Z+yRvD8RpFOKC5ykGURiiqmX/OdzcajhAd7ve?=
+ =?us-ascii?Q?kha+yqPswzVS0X83c2FkwAeNRhhMzj628KYx6jnsVaM8x9xlwkApRtPhbigl?=
+ =?us-ascii?Q?qt3aGh+iEOLXIc86PTGE/TUtUqAZJllP48VeCPKG/bh82aOVsSVFHdQLA84B?=
+ =?us-ascii?Q?2arxor0vdCtKxHY3XC8OrMTP68uMU9l7UxnbbBBPD9BmFKrJrnGLMXZvdXRq?=
+ =?us-ascii?Q?mn9A/Xr3kpIUcCGU5vh+9Bbs4la6UNBiRxMaBDKydTyGMW93w8I5xEaIiT1Z?=
+ =?us-ascii?Q?N10on453glnHwUiWQq+pqIfUMfI4OoIAUidGXNGf3/Sl4sGbraw0XN2DZeJ/?=
+ =?us-ascii?Q?LafBIKXDZx1YI9OGzbDAGLCpW7sIGRb1qmlFjy4/QhM4co7/ZOMBM0s8q2Lw?=
+ =?us-ascii?Q?rpyJWL5yKJjqKQSmixKUGjlUtxukvYNeBFoiY/ebGk4sHDt50b4TIBjTjaGv?=
+ =?us-ascii?Q?kBp9zrUEQ494526dgZSHcsjPAVQp/FwdmKz2jyDWYOgQAqmnse8wtvFVPUUB?=
+ =?us-ascii?Q?A8/7rJpLbd1XfWOjRjncpior8Vtv5EdwwDPPPxLH855NpT/NArFfy5CbTZzM?=
+ =?us-ascii?Q?fJBK+6RBkTbH1VyrMF49Lp3HVJBFAZDSlyrrcxtpEudWDS218b0bg41zbrcA?=
+ =?us-ascii?Q?25kZKJ4GEdmVc1SQKakHa4rCMwzXxIEriuQ9+W4b1U9PeAwIXZK/lHA87QaQ?=
+ =?us-ascii?Q?YNOmR+8vXFmPY3+y4wutelEorBvZHEXiSgrGu5UrDvyPBScPRgIGhHsu0hOB?=
+ =?us-ascii?Q?E6uV2oNfGPUPC2lk8bDofD9CX4c9iDEdRVDPxr//KGkVAnlP3ws6dLYMl6YZ?=
+ =?us-ascii?Q?xv9BpGSwaHx20fG+vNMfKOX6zq40muHbNDz9Ea1RTG6nCYqVz9Rhm/s1lG96?=
+ =?us-ascii?Q?QBQGafaTcFSO3Beqrd8bhMmzit9hefDSdJhYnvajwPENk4A+ltT12xnFhoAU?=
+ =?us-ascii?Q?JOPtL4eoVaDIsSUaVLv0JgbRB2+SAAr974f+WlLfbJ5i4DVVtaP2dqO+y9U8?=
+ =?us-ascii?Q?q97GBf421609awndpYJ0pSqxVvrgJR/IQ+WW5L0DKDwccpJME4+kjcLx5KeL?=
+ =?us-ascii?Q?+A4J8aDlpW2PVdGSyS0dSojnFKX2uxnIfLer1KNkwZl2fOtLsofivwqwM4jb?=
+ =?us-ascii?Q?zWv0yxeUUDRqyMLNcvio81f9ptuIoEWmh2AuHnp4nWQ83oQrfX2E6OMrO8M0?=
+ =?us-ascii?Q?4H3L14QC6I0FumQ22PzJ1SIa7hCOcn7jSqPSLhsBjBXckTefEvPGiQjEBidL?=
+ =?us-ascii?Q?zQ=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5fc9c83f-9f0d-4e0c-e3f1-08da9666752f
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Sep 2022 15:27:38.7899
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Sep 2022 15:33:22.5124
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: G3d+myYgYZHqAJ9AeBMeJ+f6ZxtO+3+4OkIi8QG6Xvv9uPwe6l3EiZc8Oid/Kkh6ffIT8I5owQNcie5EU15QaVaigM0hN1bkWSOZsHg33ms=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR10MB6377
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: vYZPO9UaONfFuHci73+1/Pqs4mJbyub3ACVc26ynH6C06v82J5z/TBoSGm5tn/xKsPImGnc67CvaQjxlN/hSSA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR04MB8949
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub, David, netdev maintainers,
+Michael and Xiaoliang will probably be aware that the tc-taprio offload
+mode supported by the Felix DSA driver has limitations surrounding its
+guard bands.
 
-Could you kindly pull in this branch to net-next? If this set and a
-quick Documentation patch Vladimir sent both get brought in, I can
-actually submit the networking portion for v6.1.
+The initial discussion was at:
+https://lore.kernel.org/netdev/c7618025da6723418c56a54fe4683bd7@walle.cc/
 
-Thanks!
+with the latest status being that we now have a vsc9959_tas_guard_bands_update()
+method which makes a best-guess attempt at how much useful space to
+reserve for packet scheduling in a taprio interval, and how much to
+reserve for guard bands.
 
------ Forwarded message from Lee Jones <lee@kernel.org> -----
+IEEE 802.1Q actually does offer a tunable variable (queueMaxSDU) which
+can determine the max MTU supported per traffic class. In turn we can
+determine the size we need for the guard bands, depending on the
+queueMaxSDU. This way we can make the guard band of small taprio
+intervals smaller than one full MTU worth of transmission time, if we
+know that said traffic class will transport only smaller packets.
 
-Date: Fri, 9 Sep 2022 07:57:12 +0100
-From: Lee Jones <lee@kernel.org>
-To: Colin Foster <colin.foster@in-advantage.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Terry Bowman
-	<terry.bowman@amd.com>, Vladimir Oltean <vladimir.oltean@nxp.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, Dan
-	Williams <dan.j.williams@intel.com>, Jonathan Cameron <Jonathan.Cameron@huawei.com>, UNGLinuxDriver@microchip.com, Steen Hegelund <Steen.Hegelund@microchip.com>, Lars
-	Povlsen <lars.povlsen@microchip.com>, Linus Walleij <linus.walleij@linaro.org>, Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>, Eric Dumazet
-	<edumazet@google.com>, "David S. Miller" <davem@davemloft.net>, Russell King <linux@armlinux.org.uk>, Heiner Kallweit <hkallweit1@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Rob Herring <robh+dt@kernel.org>, katie.morris@in-advantage.com
-Subject: [GIT PULL] Immutable branch between MFD, Net and Pinctrl due for the v6.0 merge window
+Allow input of queueMaxSDU through netlink into tc-taprio, offload it to
+the hardware I have access to (LS1028A), and deny non-default values to
+everyone else.
 
-Enjoy!
+First 3 patches are some cleanups I made while figuring out what exactly
+gets called for taprio software mode, and what gets called for offload
+mode.
 
-[ Well done Colin !! ]
+Vladimir Oltean (13):
+  net/sched: taprio: remove redundant FULL_OFFLOAD_IS_ENABLED check in
+    taprio_enqueue
+  net/sched: taprio: stop going through private ops for dequeue and peek
+  net/sched: taprio: add extack messages in taprio_init
+  net/sched: taprio: allow user input of per-tc max SDU
+  net: dsa: felix: offload per-tc max SDU from tc-taprio
+  net: enetc: cache accesses to &priv->si->hw
+  net: enetc: offload per-tc max SDU from tc-taprio
+  net: dsa: hellcreek: deny tc-taprio changes to per-tc max SDU
+  net: dsa: sja1105: deny tc-taprio changes to per-tc max SDU
+  tsnep: deny tc-taprio changes to per-tc max SDU
+  igc: deny tc-taprio changes to per-tc max SDU
+  net: stmmac: deny tc-taprio changes to per-tc max SDU
+  net: am65-cpsw: deny tc-taprio changes to per-tc max SDU
 
-The following changes since commit 568035b01cfb107af8d2e4bd2fb9aea22cf5b868:
-
-  Linux 6.0-rc1 (2022-08-14 15:50:18 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git ib-mfd-net-pinctrl-v6.0
-
-for you to fetch changes up to f3e893626abeac3cdd9ba41d3395dc6c1b7d5ad6:
-
-  mfd: ocelot: Add support for the vsc7512 chip via spi (2022-09-09 07:54:47 +0100)
-
-----------------------------------------------------------------
-Immutable branch between MFD Net and Pinctrl due for the v6.0 merge window
-
-----------------------------------------------------------------
-Colin Foster (8):
-      mfd: ocelot: Add helper to get regmap from a resource
-      net: mdio: mscc-miim: add ability to be used in a non-mmio configuration
-      pinctrl: ocelot: add ability to be used in a non-mmio configuration
-      pinctrl: microchip-sgpio: allow sgpio driver to be used as a module
-      pinctrl: microchip-sgpio: add ability to be used in a non-mmio configuration
-      resource: add define macro for register address resources
-      dt-bindings: mfd: ocelot: Add bindings for VSC7512
-      mfd: ocelot: Add support for the vsc7512 chip via spi
-
- .../devicetree/bindings/mfd/mscc,ocelot.yaml       | 160 +++++++++++
- MAINTAINERS                                        |   7 +
- drivers/mfd/Kconfig                                |  21 ++
- drivers/mfd/Makefile                               |   3 +
- drivers/mfd/ocelot-core.c                          | 161 +++++++++++
- drivers/mfd/ocelot-spi.c                           | 299 +++++++++++++++++++++
- drivers/mfd/ocelot.h                               |  49 ++++
- drivers/net/mdio/mdio-mscc-miim.c                  |  42 +--
- drivers/pinctrl/Kconfig                            |   5 +-
- drivers/pinctrl/pinctrl-microchip-sgpio.c          |  14 +-
- drivers/pinctrl/pinctrl-ocelot.c                   |  16 +-
- include/linux/ioport.h                             |   5 +
- include/linux/mfd/ocelot.h                         |  62 +++++
- 13 files changed, 795 insertions(+), 49 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/mfd/mscc,ocelot.yaml
- create mode 100644 drivers/mfd/ocelot-core.c
- create mode 100644 drivers/mfd/ocelot-spi.c
- create mode 100644 drivers/mfd/ocelot.h
- create mode 100644 include/linux/mfd/ocelot.h
+ drivers/net/dsa/hirschmann/hellcreek.c        |   5 +
+ drivers/net/dsa/ocelot/felix_vsc9959.c        |  20 +-
+ drivers/net/dsa/sja1105/sja1105_tas.c         |   6 +-
+ drivers/net/ethernet/engleder/tsnep_tc.c      |   6 +-
+ drivers/net/ethernet/freescale/enetc/enetc.c  |  28 ++-
+ drivers/net/ethernet/freescale/enetc/enetc.h  |  12 +-
+ .../net/ethernet/freescale/enetc/enetc_pf.c   |  25 ++-
+ .../net/ethernet/freescale/enetc/enetc_qos.c  |  70 +++----
+ drivers/net/ethernet/intel/igc/igc_main.c     |   6 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_tc.c   |   6 +-
+ drivers/net/ethernet/ti/am65-cpsw-qos.c       |   6 +-
+ include/net/pkt_sched.h                       |   1 +
+ include/uapi/linux/pkt_sched.h                |  11 +
+ net/sched/sch_taprio.c                        | 194 +++++++++++++-----
+ 14 files changed, 283 insertions(+), 113 deletions(-)
 
 -- 
-Lee Jones [李琼斯]
+2.34.1
 
------ End forwarded message -----
