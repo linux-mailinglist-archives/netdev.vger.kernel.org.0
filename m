@@ -2,89 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 239EE5B8CCB
-	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 18:23:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CDDC5B8CD1
+	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 18:24:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229616AbiINQXG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Sep 2022 12:23:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35078 "EHLO
+        id S229904AbiINQYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Sep 2022 12:24:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229587AbiINQXF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 12:23:05 -0400
-Received: from mail-oa1-f43.google.com (mail-oa1-f43.google.com [209.85.160.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7959CDB;
-        Wed, 14 Sep 2022 09:23:04 -0700 (PDT)
-Received: by mail-oa1-f43.google.com with SMTP id 586e51a60fabf-1279948d93dso42308424fac.10;
-        Wed, 14 Sep 2022 09:23:04 -0700 (PDT)
+        with ESMTP id S229657AbiINQYb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 12:24:31 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94489E55;
+        Wed, 14 Sep 2022 09:24:29 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id m10-20020a17090a730a00b001fa986fd8eeso19603228pjk.0;
+        Wed, 14 Sep 2022 09:24:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=1xfAttjBNPJfxtb2E9TpigfOTCC44pqkuTF09xMIE/Y=;
+        b=ZUmP/LWkJ80NgeLZCrUctArN9tCXv0/OhrqrK2V9652lwfpuzNs4ulKzj4AcaPkTfT
+         r0VmZULDVvnjei/QQjGZvetTEzPY1F6XrcO2cxrycBrbMK1z9rHqrM8DwF1XU2qm80Nx
+         GrbHiYBoGxHRdUg0UFrHddTacogLdVUJgAEngbyJzmaSGpFS2Iyw+wkWhl3YW1y1tZLm
+         kpjhnZesqgz3KahFwkPvFoL4yDEdeK7ZGH0RQwU1LnwM9zIT4mieaa5GNtStug+0cVy8
+         QvJrZay0fsDowrUepq9wa2CvEnr+ix3krWCpmTzVTARlDldtYE/vrP+rilVZELt5RPzz
+         GKPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=kkiJ2QjkXnMB41sUfUeccKp4SNjAEkQI5boRWjBFc08=;
-        b=GZ6hj7oAVUSMzR9c1KUH6Pfzg/nafDv7Ncsg/WVWXd9dVrb2j8gTZG/C4rnUqxg+mc
-         rEHovf7PWeVstBeSZH+8VOSQOFgvvuFUHA1WJ5K3m8+lPJrESv2tT/7J50zZXA9MwVbm
-         Wa3YvdGICNhxP5vGajMwfNbC1Y/NzV+xuWXEqwvrydo9TPd6S86OrS8IrB5uQCr4yTok
-         Amm/5bL2zl7JGkEuJhSubPedfQcgbbaFOkukRwdBnzCN7zbsyP0+rekdX98a6x4cbdIC
-         /Yt7DWrJ0ZNDvecw9h4g6fd7u78mQBPFc9wNoKfrl/1XiB/MHZowZYY5+JhiBvK/o2mt
-         gNqQ==
-X-Gm-Message-State: ACgBeo2OzcG0UU5dxT1T0yiCq4qqvG72uaIYxn4aNPB2K6wgaXvdReDe
-        2NncP/HjvVV6Y1JrSCXNiA==
-X-Google-Smtp-Source: AA6agR4yXmDTUtpS5negz9/3cRnAaZwJa9iYI3g67nuCBTVaTrtcngEtf+aypRfug1+79wQ4Acy6zw==
-X-Received: by 2002:a05:6870:568b:b0:127:9fdd:f31b with SMTP id p11-20020a056870568b00b001279fddf31bmr2926635oao.79.1663172583965;
-        Wed, 14 Sep 2022 09:23:03 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id t35-20020a05687063a300b00127c03b39cesm8601649oap.35.2022.09.14.09.23.02
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=1xfAttjBNPJfxtb2E9TpigfOTCC44pqkuTF09xMIE/Y=;
+        b=6sz33LPWmRvfPxH2JcqdiNsypBQDw8qCpY2qGF16IdfRQnC3azGbM8EV3kb/bP2C69
+         DT07i8YzO7QSdiu9MmvCIslKrAGJZGZcSFMadGLuOLO2sq4AT+tG2NXvSAzIDVOxQR/l
+         51Qn6Z/8qpcHAeDdU8gINyCev75wvcnmPTYsFPnmjAAul0dZh1rFJ70EqwZA21JigAu1
+         q3qu2fiNREOX4640LOOo7o7jZgp9PZEDHg9YQfUsFIIGSQSxoIrE56BOfB7tFnYGe9Za
+         SFtO9t5cq35C/6qLNAwkw7YTZW+RR7Wgu39lzK51/pq+fD1t+F3xnY+R0FqvshuVPRCR
+         0QNQ==
+X-Gm-Message-State: ACgBeo0mdsiPREaV4HCpsrD0U3ayCmyTV/8G1kbL53TzVoxndDk5BO0P
+        Vun2heSd6Kg1o9zMT9ZhBtc=
+X-Google-Smtp-Source: AA6agR6yqUO2xlxnDZIsxZUQ1iiTrfUkJpZoGwYNT/mYAHZk1/oWXAceWvhjUUWuegu4XCccv1M7lw==
+X-Received: by 2002:a17:902:ebcb:b0:168:e3ba:4b5a with SMTP id p11-20020a170902ebcb00b00168e3ba4b5amr37498461plg.11.1663172669034;
+        Wed, 14 Sep 2022 09:24:29 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id s14-20020a65644e000000b00438fe64d61esm6701672pgv.0.2022.09.14.09.24.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Sep 2022 09:23:03 -0700 (PDT)
-Received: (nullmailer pid 2478210 invoked by uid 1000);
-        Wed, 14 Sep 2022 16:23:02 -0000
-Date:   Wed, 14 Sep 2022 11:23:02 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Siddharth Vadapalli <s-vadapalli@ti.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, krzysztof.kozlowski@linaro.org,
-        krzysztof.kozlowski+dt@linaro.org, linux@armlinux.org.uk,
-        vladimir.oltean@nxp.com, grygorii.strashko@ti.com, vigneshr@ti.com,
-        nsekhar@ti.com, netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kishon@ti.com
-Subject: Re: [PATCH 1/8] dt-bindings: net: ti: k3-am654-cpsw-nuss: Update
- bindings for J721e CPSW9G
-Message-ID: <20220914162302.GA2468487-robh@kernel.org>
-References: <20220914095053.189851-1-s-vadapalli@ti.com>
- <20220914095053.189851-2-s-vadapalli@ti.com>
+        Wed, 14 Sep 2022 09:24:27 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: cui.jinpeng2@zte.com.cn
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, hayeswang@realtek.com
+Cc:     aaron.ma@canonical.com, jflf_kernel@gmx.com, dober6023@gmail.com,
+        svenva@chromium.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jinpeng Cui <cui.jinpeng2@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH linux-next] r8152: Replace conditional statement with min() function
+Date:   Wed, 14 Sep 2022 16:23:26 +0000
+Message-Id: <20220914162326.23880-1-cui.jinpeng2@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220914095053.189851-2-s-vadapalli@ti.com>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 14, 2022 at 03:20:46PM +0530, Siddharth Vadapalli wrote:
-> Update bindings for TI K3 J721e SoC which contains 9 ports (8 external
-> ports) CPSW9G module and add compatible for it.
-> 
-> Changes made:
->     - Add new compatible ti,j721e-cpswxg-nuss for CPSW9G.
->     - Extend pattern properties for new compatible.
->     - Change maximum number of CPSW ports to 8 for new compatible.
-> 
-> Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
-> ---
->  .../bindings/net/ti,k3-am654-cpsw-nuss.yaml   | 23 +++++++++++++++++--
->  1 file changed, 21 insertions(+), 2 deletions(-)
+From: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
 
-What's the base for this patch? It didn't apply for me.
+Use the min() function instead of "if else" to get the minimum value.
 
-Run 'make dt_binding_check'. It should point out the issue I did. If 
-not, let me know.
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
+---
+ drivers/net/usb/r8152.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-Rob
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index a51d8ded60f3..6cead36aef56 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -4829,10 +4829,7 @@ static void rtl_ram_code_speed_up(struct r8152 *tp, struct fw_phy_speed_up *phy,
+ 		u32 ocp_data, size;
+ 		int i;
+ 
+-		if (len < 2048)
+-			size = len;
+-		else
+-			size = 2048;
++		size = min(2048, len);
+ 
+ 		ocp_data = ocp_read_word(tp, MCU_TYPE_USB, USB_GPHY_CTRL);
+ 		ocp_data |= GPHY_PATCH_DONE | BACKUP_RESTRORE;
+-- 
+2.25.1
+
