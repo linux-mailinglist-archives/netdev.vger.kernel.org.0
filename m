@@ -2,673 +2,292 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ED185B8ACD
-	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 16:39:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A95D5B8AD4
+	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 16:41:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229561AbiINOjV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Sep 2022 10:39:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40226 "EHLO
+        id S229538AbiINOk5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Sep 2022 10:40:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229706AbiINOjT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 10:39:19 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBA4E2BE
-        for <netdev@vger.kernel.org>; Wed, 14 Sep 2022 07:39:17 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id o70-20020a17090a0a4c00b00202f898fa86so5212819pjo.2
-        for <netdev@vger.kernel.org>; Wed, 14 Sep 2022 07:39:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=6hIahX9ga8taHahQCv1ANQlzGHe6P3BGHrWIS8IfLN4=;
-        b=TwZFvA+GUwFkeFaVdYy+lNuqPY9OvTGADng4e2j/BXa7G3ek4RHUv3ObgkaSiJv+d7
-         v05Sk5jase6YDsLQ0Zf6TORQg14t4JtTmzz3zi2M1TLklekEpbRg32WYwLPAcCXb86Rw
-         veLUV/xzjqoJnJyCxSreDxSIpo925rreCRf8C8MNMQb9oCDxTq4M8DUpC/+vfJ7TqF/b
-         fHllJhHsvxS6DfJPFO3FqxNKa+K16zromzorxU3egjtvzf595wsIrT28ITH6KuGL+aDH
-         5l5PRywarUcRExn37kpZYaH50h2DOpA3gb+yYMu+l/GI2Y3mEYYHpCRt/lJ2NBtn+dOo
-         zqyA==
+        with ESMTP id S229616AbiINOkz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 10:40:55 -0400
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 328005B06B
+        for <netdev@vger.kernel.org>; Wed, 14 Sep 2022 07:40:52 -0700 (PDT)
+Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com [209.85.216.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 1853F3F12F
+        for <netdev@vger.kernel.org>; Wed, 14 Sep 2022 14:40:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1663166450;
+        bh=SIyAiZxHZhjhhg6XuK5Tq4n/RcjpHTbx2lOqKDUkWXs=;
+        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
+         Content-Type:Date:Message-ID;
+        b=fzjEi1CNOb/xrry9L3SMq9KJrNutbBFbbzkju/4h1OaA1BhY1KJ2ShcS/0I90129E
+         ODLXC0Qt5jgEgjVygx6P8undv4SDtd0adzqeJmt4xEquN/1jP/qCJdrxnXD9wVKy7U
+         AaZwE0gO1Z4qaQoE4CtS7eijOVA81NMQP5x7xQ1hsPJeiGNQa2+/Y2c/zOS8jOD29C
+         97aZFErKBTf5aZaKjwWnua3CEMJfAoTUfx0/t9IOTfDeLltgsj1zWsaea3u6ovKr3y
+         oDtu+LVZpwx1QP41LUjdldqGycjNxJVpW054Yzrs+VgoZ4F2gPrdTafa21wdxQ+RsF
+         fA0tO6AQlie5Q==
+Received: by mail-pj1-f72.google.com with SMTP id x4-20020a17090a294400b002007b5f5fabso6181094pjf.7
+        for <netdev@vger.kernel.org>; Wed, 14 Sep 2022 07:40:50 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=6hIahX9ga8taHahQCv1ANQlzGHe6P3BGHrWIS8IfLN4=;
-        b=3NxhgSG752jyNpS402AiaftOHPzVXcV20tgDIFaHU0aaajtZ9NJHJU4Odp9FO+hjXl
-         W2CCk2k4GdDpual9WhNZVSH9ADGwT4fkqgHDNXm0sJdEMHCxeSXsGa1N/K1JmAVxnuNg
-         Bc78S6UJZzl6ZhW9hexlvtg+Wm3j4pzv5jpO94GTjjcHeL6kEs7H5DD8m+aqgf6Tt9ni
-         7hrtIBglTy738IL+kbdNm+cAUNEf3UoptFEMVRjEbcOis0MLCgQ/3bmPGcBUPxVddrZo
-         mHrPNLlu1PmOQwCcUYG9CCUIqjwx4KbfCK9AGIPpXM2n5qkRaGH2TpCBCyqej3/0iKbx
-         b7yA==
-X-Gm-Message-State: ACgBeo3Kh23lFwTa4BE+1UfJihPTlNIMFSiS/dAivQfH95WVIy4A3u7v
-        P0pPyzEtLc4Ad2qU3qPTqMYn/lnXB92oXwccnoCYpPfioKE=
-X-Google-Smtp-Source: AA6agR63+6uHbsfO9cKEOoazgSB0KEH2XGTfX+EBFK7YdUQn5VcxBOjjh6cpAtSNPmXwHypzbKjXIJyttpgwlh3x9xo=
-X-Received: by 2002:a17:902:e74c:b0:177:f3be:2812 with SMTP id
- p12-20020a170902e74c00b00177f3be2812mr30456024plf.123.1663166357075; Wed, 14
- Sep 2022 07:39:17 -0700 (PDT)
+        h=message-id:date:content-transfer-encoding:content-id:mime-version
+         :comments:references:in-reply-to:subject:cc:to:from
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=SIyAiZxHZhjhhg6XuK5Tq4n/RcjpHTbx2lOqKDUkWXs=;
+        b=rxo2ugVrPMAvHgn0YYsdJZlCCyCWMXAz8hAaMcN6qRLcbQ0tBo4nCtCuTUV+FHehcN
+         /9HIycsoqOmmqS3m1pvQAXlwKPgQQXA0X0B1ev0sOGUFAb7OifceuwRAtUjw2+yEO0r/
+         njkI5gYWI1ik5J6zXbeI8uLehTki8dDgB5H8tlvDhEjbMsAW09WCreC6b9s1IbSSe2If
+         8+QoN7GvmHn6olozKkaVFKGd9KSI5d7piVFEOimpiCfkpNnhuXJFigpbitpCYlAmPk0N
+         ZAAhPlWaU7cp1rAfCTzsfXi34mLACdRJeZAWw4TR5/Ou10pHsaPS3SiXefhgArDZR7SI
+         glAA==
+X-Gm-Message-State: ACrzQf0PyJMm64cVO5f2XYoegFEqg0rQHyn5csi5r9t9L8v2I3KmnlL3
+        ZCt2av7IgYQhlzqH4+IAH3hUZX4u5610vyoiZ+DIiIkAsuA+FElgfTzyDm0yP/78ygIzHU94+0S
+        fsujian/Rt6geOGafxycN4pZGsLzjVQRhwQ==
+X-Received: by 2002:a17:90b:3e87:b0:203:b9c:f9b7 with SMTP id rj7-20020a17090b3e8700b002030b9cf9b7mr5101373pjb.93.1663166448744;
+        Wed, 14 Sep 2022 07:40:48 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM4KcA/wDL2ETtUprVMLzZFQ9CJlYKiZHg134AU3wdDyb76XoU93l3Dr1YzrfPEQphivE/m/Hg==
+X-Received: by 2002:a17:90b:3e87:b0:203:b9c:f9b7 with SMTP id rj7-20020a17090b3e8700b002030b9cf9b7mr5101352pjb.93.1663166448389;
+        Wed, 14 Sep 2022 07:40:48 -0700 (PDT)
+Received: from famine.localdomain ([50.125.80.157])
+        by smtp.gmail.com with ESMTPSA id g12-20020aa79f0c000000b005380c555ba1sm10626567pfr.13.2022.09.14.07.40.47
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 14 Sep 2022 07:40:48 -0700 (PDT)
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id 88E0860DBF; Wed, 14 Sep 2022 07:40:47 -0700 (PDT)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id 82B38A0101;
+        Wed, 14 Sep 2022 07:40:47 -0700 (PDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Jonathan Toppins <jtoppins@redhat.com>
+cc:     "netdev @ vger . kernel . org" <netdev@vger.kernel.org>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [RFC PATCH] bonding: cause oops on aarch64 architecture in bond_rr_gen_slave_id
+In-reply-to: <7565deb870649ba6b5995034695f1b498245617a.1663042611.git.jtoppins@redhat.com>
+References: <7565deb870649ba6b5995034695f1b498245617a.1663042611.git.jtoppins@redhat.com>
+Comments: In-reply-to Jonathan Toppins <jtoppins@redhat.com>
+   message dated "Tue, 13 Sep 2022 00:16:51 -0400."
+X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
 MIME-Version: 1.0
-References: <20220906052129.104507-1-saeed@kernel.org> <20220906052129.104507-8-saeed@kernel.org>
-In-Reply-To: <20220906052129.104507-8-saeed@kernel.org>
-From:   sundeep subbaraya <sundeep.lkml@gmail.com>
-Date:   Wed, 14 Sep 2022 20:09:04 +0530
-Message-ID: <CALHRZuq962PeU0OJ0pLrnW=tkaBd8T+iFSkT3mfWr2ArYKdO8A@mail.gmail.com>
-Subject: Re: [PATCH net-next V2 07/17] net/mlx5: Add MACsec offload Tx command support
-To:     Saeed Mahameed <saeed@kernel.org>, liorna@nvidia.com
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Raed Salem <raeds@nvidia.com>, antoine.tenart@bootlin.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <27974.1663166447.1@famine>
+Content-Transfer-Encoding: quoted-printable
+Date:   Wed, 14 Sep 2022 07:40:47 -0700
+Message-ID: <27975.1663166447@famine>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Saeed and Lior,
+Jonathan Toppins <jtoppins@redhat.com> wrote:
 
-Your mdo_ops can fail in the commit phase and do not validate input
-params in the prepare phase.
-Is that okay? I am developing MACSEC offload driver for Marvell CN10K
-and I had to write some clever code
-to honour that :). Please someone help me understand why two phase
-init was needed for offloading.
+>This bonding selftest causes the following kernel oops on aarch64 and
+>possibly ppc64le architectures. This was reproduced on net/master commit
+>64ae13ed478428135cddc2f1113dff162d8112d4 net: core: fix flow symmetric ha=
+sh
+>
+>[  329.805838] kselftest: Running tests in drivers/net/bonding
+>[  330.011028] eth0: renamed from link1_2
+>[  330.220846] eth0: renamed from link1_1
+>[  330.387755] bond0: (slave eth0): making interface the new active one
+>[  330.394165] bond0: (slave eth0): Enslaving as an active interface with=
+ an up link
+>[  330.401867] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+>[  334.586619] bond0: (slave eth0): Releasing backup interface
+>[  334.671065] bond0: (slave eth0): Enslaving as an active interface with=
+ an up link
+>[  334.686773] Unable to handle kernel paging request at virtual address =
+ffff2c91ac905000
+>[  334.694703] Mem abort info:
+>[  334.697486]   ESR =3D 0x0000000096000004
+>[  334.701234]   EC =3D 0x25: DABT (current EL), IL =3D 32 bits
+>[  334.706536]   SET =3D 0, FnV =3D 0
+>[  334.709579]   EA =3D 0, S1PTW =3D 0
+>[  334.712719]   FSC =3D 0x04: level 0 translation fault
+>[  334.717586] Data abort info:
+>[  334.720454]   ISV =3D 0, ISS =3D 0x00000004
+>[  334.724288]   CM =3D 0, WnR =3D 0
+>[  334.727244] swapper pgtable: 4k pages, 48-bit VAs, pgdp=3D000008044d66=
+2000
+>[  334.733944] [ffff2c91ac905000] pgd=3D0000000000000000, p4d=3D000000000=
+0000000
+>[  334.740734] Internal error: Oops: 96000004 [#1] SMP
+>[  334.745602] Modules linked in: bonding tls veth rfkill sunrpc arm_spe_=
+pmu vfat fat acpi_ipmi ipmi_ssif ixgbe igb i40e mdio ipmi_devintf ipmi_msg=
+handler arm_cmn arm_dsu_pmu cppc_cpufreq acpi_tad fuse zram crct10dif_ce a=
+st ghash_ce sbsa_gwdt nvme drm_vram_helper drm_ttm_helper nvme_core ttm xg=
+ene_hwmon
+>[  334.772217] CPU: 7 PID: 2214 Comm: ping Not tainted 6.0.0-rc4-00133-g6=
+4ae13ed4784 #4
+>[  334.779950] Hardware name: GIGABYTE R272-P31-00/MP32-AR1-00, BIOS F18v=
+ (SCP: 1.08.20211002) 12/01/2021
+>[  334.789244] pstate: 60400009 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYP=
+E=3D--)
+>[  334.796196] pc : bond_rr_gen_slave_id+0x40/0x124 [bonding]
+>[  334.801691] lr : bond_xmit_roundrobin_slave_get+0x38/0xdc [bonding]
 
-Thanks,
-Sundeep
+	What line in the source code is that?  Looking at the function,
+I don't really see anything that's arch specific, unless perhaps the
+rr_tx_counter assignment isn't visible for some ARM cache reason (i.e.,
+the dcache on the relevant cpu already had a populated cache line that's
+out of date, and wasn't flushed).
 
-On Tue, Sep 6, 2022 at 11:20 AM Saeed Mahameed <saeed@kernel.org> wrote:
+	-J
+
+>[  334.807962] sp : ffff8000221733e0
+>[  334.811265] x29: ffff8000221733e0 x28: ffffdbac8572d198 x27: ffff80002=
+217357c
+>[  334.818392] x26: 000000000000002a x25: ffffdbacb33ee000 x24: ffff07ff9=
+80fa000
+>[  334.825519] x23: ffffdbacb2e398ba x22: ffff07ff98102000 x21: ffff07ff9=
+81029c0
+>[  334.832646] x20: 0000000000000001 x19: ffff07ff981029c0 x18: 000000000=
+0000014
+>[  334.839773] x17: 0000000000000000 x16: ffffdbacb1004364 x15: 0000aaaab=
+e2f5a62
+>[  334.846899] x14: ffff07ff8e55d968 x13: ffff07ff8e55db30 x12: 000000000=
+0000000
+>[  334.854026] x11: ffffdbacb21532e8 x10: 0000000000000001 x9 : ffffdbac8=
+57178ec
+>[  334.861153] x8 : ffff07ff9f6e5a28 x7 : 0000000000000000 x6 : 000000007=
+c2b3742
+>[  334.868279] x5 : ffff2c91ac905000 x4 : ffff2c91ac905000 x3 : ffff07ff9=
+f554400
+>[  334.875406] x2 : ffff2c91ac905000 x1 : 0000000000000001 x0 : ffff07ff9=
+81029c0
+>[  334.882532] Call trace:
+>[  334.884967]  bond_rr_gen_slave_id+0x40/0x124 [bonding]
+>[  334.890109]  bond_xmit_roundrobin_slave_get+0x38/0xdc [bonding]
+>[  334.896033]  __bond_start_xmit+0x128/0x3a0 [bonding]
+>[  334.901001]  bond_start_xmit+0x54/0xb0 [bonding]
+>[  334.905622]  dev_hard_start_xmit+0xb4/0x220
+>[  334.909798]  __dev_queue_xmit+0x1a0/0x720
+>[  334.913799]  arp_xmit+0x3c/0xbc
+>[  334.916932]  arp_send_dst+0x98/0xd0
+>[  334.920410]  arp_solicit+0xe8/0x230
+>[  334.923888]  neigh_probe+0x60/0xb0
+>[  334.927279]  __neigh_event_send+0x3b0/0x470
+>[  334.931453]  neigh_resolve_output+0x70/0x90
+>[  334.935626]  ip_finish_output2+0x158/0x514
+>[  334.939714]  __ip_finish_output+0xac/0x1a4
+>[  334.943800]  ip_finish_output+0x40/0xfc
+>[  334.947626]  ip_output+0xf8/0x1a4
+>[  334.950931]  ip_send_skb+0x5c/0x100
+>[  334.954410]  ip_push_pending_frames+0x3c/0x60
+>[  334.958758]  raw_sendmsg+0x458/0x6d0
+>[  334.962325]  inet_sendmsg+0x50/0x80
+>[  334.965805]  sock_sendmsg+0x60/0x6c
+>[  334.969286]  __sys_sendto+0xc8/0x134
+>[  334.972853]  __arm64_sys_sendto+0x34/0x4c
+>[  334.976854]  invoke_syscall+0x78/0x100
+>[  334.980594]  el0_svc_common.constprop.0+0x4c/0xf4
+>[  334.985287]  do_el0_svc+0x38/0x4c
+>[  334.988591]  el0_svc+0x34/0x10c
+>[  334.991724]  el0t_64_sync_handler+0x11c/0x150
+>[  334.996072]  el0t_64_sync+0x190/0x194
+>[  334.999726] Code: b9001062 f9403c02 d53cd044 8b040042 (b8210040)
+>[  335.005810] ---[ end trace 0000000000000000 ]---
+>[  335.010416] Kernel panic - not syncing: Oops: Fatal exception in inter=
+rupt
+>[  335.017279] SMP: stopping secondary CPUs
+>[  335.021374] Kernel Offset: 0x5baca8eb0000 from 0xffff800008000000
+>[  335.027456] PHYS_OFFSET: 0x80000000
+>[  335.030932] CPU features: 0x0000,0085c029,19805c82
+>[  335.035713] Memory Limit: none
+>[  335.038756] Rebooting in 180 seconds..
 >
-> From: Lior Nahmanson <liorna@nvidia.com>
+>Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
+>---
+> .../selftests/drivers/net/bonding/Makefile    |  1 +
+> .../bonding/bond-arp-interval-causes-panic.sh | 46 +++++++++++++++++++
+> 2 files changed, 47 insertions(+)
+> create mode 100755 tools/testing/selftests/drivers/net/bonding/bond-arp-=
+interval-causes-panic.sh
 >
-> This patch adds support for Connect-X MACsec offload Tx SA commands:
-> add, update and delete.
->
-> In Connect-X MACsec, a Security Association (SA) is added or deleted
-> via allocating a HW context of an encryption/decryption key and
-> a HW context of a matching SA (MACsec object).
->
-> When new SA is added:
-> - Use a separate crypto key HW context.
-> - Create a separate MACsec context in HW to include the SA properties.
->
-> Introduce a new compilation flag MLX5_EN_MACSEC for it.
->
-> Follow-up patches will implement the Tx steering.
->
-> Signed-off-by: Lior Nahmanson <liorna@nvidia.com>
-> Reviewed-by: Raed Salem <raeds@nvidia.com>
-> Signed-off-by: Raed Salem <raeds@nvidia.com>
-> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-> ---
->  .../net/ethernet/mellanox/mlx5/core/Kconfig   |   8 +
->  .../net/ethernet/mellanox/mlx5/core/Makefile  |   2 +
->  drivers/net/ethernet/mellanox/mlx5/core/en.h  |   3 +
->  .../mellanox/mlx5/core/en_accel/macsec.c      | 385 ++++++++++++++++++
->  .../mellanox/mlx5/core/en_accel/macsec.h      |  26 ++
->  .../net/ethernet/mellanox/mlx5/core/en_main.c |   7 +
->  drivers/net/ethernet/mellanox/mlx5/core/fw.c  |   7 +
->  .../ethernet/mellanox/mlx5/core/lib/mlx5.h    |   1 +
->  .../net/ethernet/mellanox/mlx5/core/main.c    |   1 +
->  9 files changed, 440 insertions(+)
->  create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
->  create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.h
->
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Kconfig b/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
-> index bfc0cd5ec423..26685fd0fdaa 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
-> @@ -139,6 +139,14 @@ config MLX5_CORE_IPOIB
->         help
->           MLX5 IPoIB offloads & acceleration support.
->
-> +config MLX5_EN_MACSEC
-> +       bool "Connect-X support for MACSec offload"
-> +       depends on MLX5_CORE_EN
-> +       depends on MACSEC
-> +       default n
-> +       help
-> +         Build support for MACsec cryptography-offload acceleration in the NIC.
-> +
->  config MLX5_EN_IPSEC
->         bool "Mellanox Technologies IPsec Connect-X support"
->         depends on MLX5_CORE_EN
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-> index a3773a8177ed..dd4b44a54712 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-> @@ -92,6 +92,8 @@ mlx5_core-$(CONFIG_MLX5_CORE_IPOIB) += ipoib/ipoib.o ipoib/ethtool.o ipoib/ipoib
->  #
->  mlx5_core-$(CONFIG_MLX5_FPGA) += fpga/cmd.o fpga/core.o fpga/conn.o fpga/sdk.o
->
-> +mlx5_core-$(CONFIG_MLX5_EN_MACSEC) += en_accel/macsec.o
-> +
->  mlx5_core-$(CONFIG_MLX5_EN_IPSEC) += en_accel/ipsec.o en_accel/ipsec_rxtx.o \
->                                      en_accel/ipsec_stats.o en_accel/ipsec_fs.o \
->                                      en_accel/ipsec_offload.o
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-> index e464024481b4..13aac5131ff7 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-> @@ -954,6 +954,9 @@ struct mlx5e_priv {
->
->         const struct mlx5e_profile *profile;
->         void                      *ppriv;
-> +#ifdef CONFIG_MLX5_EN_MACSEC
-> +       struct mlx5e_macsec       *macsec;
-> +#endif
->  #ifdef CONFIG_MLX5_EN_IPSEC
->         struct mlx5e_ipsec        *ipsec;
->  #endif
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-> new file mode 100644
-> index 000000000000..f23ff25b2a1b
-> --- /dev/null
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.c
-> @@ -0,0 +1,385 @@
-> +// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-> +/* Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
-> +
-> +#include <linux/mlx5/device.h>
-> +#include <linux/mlx5/mlx5_ifc.h>
-> +
-> +#include "en.h"
-> +#include "lib/mlx5.h"
-> +#include "en_accel/macsec.h"
-> +
-> +#define MLX5_MACSEC_ASO_INC_SN  0x2
-> +#define MLX5_MACSEC_ASO_REG_C_4_5 0x2
-> +
-> +struct mlx5e_macsec_sa {
-> +       bool active;
-> +       u8  assoc_num;
-> +       u32 macsec_obj_id;
-> +       u32 enc_key_id;
-> +       u32 next_pn;
-> +       sci_t sci;
-> +};
-> +
-> +struct mlx5e_macsec {
-> +       struct mlx5e_macsec_sa *tx_sa[MACSEC_NUM_AN];
-> +       struct mutex lock; /* Protects mlx5e_macsec internal contexts */
-> +
-> +       /* Global PD for MACsec object ASO context */
-> +       u32 aso_pdn;
-> +
-> +       struct mlx5_core_dev *mdev;
-> +};
-> +
-> +struct mlx5_macsec_obj_attrs {
-> +       u32 aso_pdn;
-> +       u32 next_pn;
-> +       __be64 sci;
-> +       u32 enc_key_id;
-> +       bool encrypt;
-> +};
-> +
-> +static int mlx5e_macsec_create_object(struct mlx5_core_dev *mdev,
-> +                                     struct mlx5_macsec_obj_attrs *attrs,
-> +                                     u32 *macsec_obj_id)
-> +{
-> +       u32 in[MLX5_ST_SZ_DW(create_macsec_obj_in)] = {};
-> +       u32 out[MLX5_ST_SZ_DW(general_obj_out_cmd_hdr)];
-> +       void *aso_ctx;
-> +       void *obj;
-> +       int err;
-> +
-> +       obj = MLX5_ADDR_OF(create_macsec_obj_in, in, macsec_object);
-> +       aso_ctx = MLX5_ADDR_OF(macsec_offload_obj, obj, macsec_aso);
-> +
-> +       MLX5_SET(macsec_offload_obj, obj, confidentiality_en, attrs->encrypt);
-> +       MLX5_SET(macsec_offload_obj, obj, dekn, attrs->enc_key_id);
-> +       MLX5_SET64(macsec_offload_obj, obj, sci, (__force u64)(attrs->sci));
-> +       MLX5_SET(macsec_offload_obj, obj, aso_return_reg, MLX5_MACSEC_ASO_REG_C_4_5);
-> +       MLX5_SET(macsec_offload_obj, obj, macsec_aso_access_pd, attrs->aso_pdn);
-> +
-> +       MLX5_SET(macsec_aso, aso_ctx, valid, 0x1);
-> +       MLX5_SET(macsec_aso, aso_ctx, mode, MLX5_MACSEC_ASO_INC_SN);
-> +       MLX5_SET(macsec_aso, aso_ctx, mode_parameter, attrs->next_pn);
-> +
-> +       /* general object fields set */
-> +       MLX5_SET(general_obj_in_cmd_hdr, in, opcode, MLX5_CMD_OP_CREATE_GENERAL_OBJECT);
-> +       MLX5_SET(general_obj_in_cmd_hdr, in, obj_type, MLX5_GENERAL_OBJECT_TYPES_MACSEC);
-> +
-> +       err = mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
-> +       if (err) {
-> +               mlx5_core_err(mdev,
-> +                             "MACsec offload: Failed to create MACsec object (err = %d)\n",
-> +                             err);
-> +               return err;
-> +       }
-> +
-> +       *macsec_obj_id = MLX5_GET(general_obj_out_cmd_hdr, out, obj_id);
-> +
-> +       return err;
-> +}
-> +
-> +static void mlx5e_macsec_destroy_object(struct mlx5_core_dev *mdev, u32 macsec_obj_id)
-> +{
-> +       u32 in[MLX5_ST_SZ_DW(general_obj_in_cmd_hdr)] = {};
-> +       u32 out[MLX5_ST_SZ_DW(general_obj_out_cmd_hdr)];
-> +
-> +       MLX5_SET(general_obj_in_cmd_hdr, in, opcode, MLX5_CMD_OP_DESTROY_GENERAL_OBJECT);
-> +       MLX5_SET(general_obj_in_cmd_hdr, in, obj_type, MLX5_GENERAL_OBJECT_TYPES_MACSEC);
-> +       MLX5_SET(general_obj_in_cmd_hdr, in, obj_id, macsec_obj_id);
-> +
-> +       mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
-> +}
-> +
-> +static void mlx5e_macsec_cleanup_object(struct mlx5e_macsec *macsec,
-> +                                       struct mlx5e_macsec_sa *sa)
-> +{
-> +       mlx5e_macsec_destroy_object(macsec->mdev, sa->macsec_obj_id);
-> +}
-> +
-> +static int mlx5e_macsec_init_object(struct macsec_context *ctx,
-> +                                   struct mlx5e_macsec_sa *sa,
-> +                                   bool encrypt)
-> +{
-> +       struct mlx5e_priv *priv = netdev_priv(ctx->netdev);
-> +       struct mlx5e_macsec *macsec = priv->macsec;
-> +       struct mlx5_core_dev *mdev = priv->mdev;
-> +       struct mlx5_macsec_obj_attrs obj_attrs;
-> +       int err;
-> +
-> +       obj_attrs.next_pn = sa->next_pn;
-> +       obj_attrs.sci = cpu_to_be64((__force u64)sa->sci);
-> +       obj_attrs.enc_key_id = sa->enc_key_id;
-> +       obj_attrs.encrypt = encrypt;
-> +       obj_attrs.aso_pdn = macsec->aso_pdn;
-> +
-> +       err = mlx5e_macsec_create_object(mdev, &obj_attrs, &sa->macsec_obj_id);
-> +       if (err)
-> +               return err;
-> +
-> +       return 0;
-> +}
-> +
-> +static int mlx5e_macsec_add_txsa(struct macsec_context *ctx)
-> +{
-> +       const struct macsec_tx_sc *tx_sc = &ctx->secy->tx_sc;
-> +       const struct macsec_tx_sa *ctx_tx_sa = ctx->sa.tx_sa;
-> +       struct mlx5e_priv *priv = netdev_priv(ctx->netdev);
-> +       const struct macsec_secy *secy = ctx->secy;
-> +       struct mlx5_core_dev *mdev = priv->mdev;
-> +       u8 assoc_num = ctx->sa.assoc_num;
-> +       struct mlx5e_macsec_sa *tx_sa;
-> +       struct mlx5e_macsec *macsec;
-> +       int err = 0;
-> +
-> +       if (ctx->prepare)
-> +               return 0;
-> +
-> +       mutex_lock(&priv->macsec->lock);
-> +
-> +       macsec = priv->macsec;
-> +
-> +       if (macsec->tx_sa[assoc_num]) {
-> +               netdev_err(ctx->netdev, "MACsec offload tx_sa: %d already exist\n", assoc_num);
-> +               err = -EEXIST;
-> +               goto out;
-> +       }
-> +
-> +       tx_sa = kzalloc(sizeof(*tx_sa), GFP_KERNEL);
-> +       if (!tx_sa) {
-> +               err = -ENOMEM;
-> +               goto out;
-> +       }
-> +
-> +       macsec->tx_sa[assoc_num] = tx_sa;
-> +
-> +       tx_sa->active = ctx_tx_sa->active;
-> +       tx_sa->next_pn = ctx_tx_sa->next_pn_halves.lower;
-> +       tx_sa->sci = secy->sci;
-> +       tx_sa->assoc_num = assoc_num;
-> +
-> +       err = mlx5_create_encryption_key(mdev, ctx->sa.key, secy->key_len,
-> +                                        MLX5_ACCEL_OBJ_MACSEC_KEY,
-> +                                        &tx_sa->enc_key_id);
-> +       if (err)
-> +               goto destroy_sa;
-> +
-> +       if (!secy->operational ||
-> +           assoc_num != tx_sc->encoding_sa ||
-> +           !tx_sa->active)
-> +               goto out;
-> +
-> +       err = mlx5e_macsec_init_object(ctx, tx_sa, tx_sc->encrypt);
-> +       if (err)
-> +               goto destroy_encryption_key;
-> +
-> +       mutex_unlock(&macsec->lock);
-> +
-> +       return 0;
-> +
-> +destroy_encryption_key:
-> +       mlx5_destroy_encryption_key(mdev, tx_sa->enc_key_id);
-> +destroy_sa:
-> +       kfree(tx_sa);
-> +       macsec->tx_sa[assoc_num] = NULL;
-> +out:
-> +       mutex_unlock(&macsec->lock);
-> +
-> +       return err;
-> +}
-> +
-> +static int mlx5e_macsec_upd_txsa(struct macsec_context *ctx)
-> +{
-> +       const struct macsec_tx_sc *tx_sc = &ctx->secy->tx_sc;
-> +       const struct macsec_tx_sa *ctx_tx_sa = ctx->sa.tx_sa;
-> +       struct mlx5e_priv *priv = netdev_priv(ctx->netdev);
-> +       u8 assoc_num = ctx->sa.assoc_num;
-> +       struct mlx5e_macsec_sa *tx_sa;
-> +       struct mlx5e_macsec *macsec;
-> +       struct net_device *netdev;
-> +       int err = 0;
-> +
-> +       if (ctx->prepare)
-> +               return 0;
-> +
-> +       mutex_lock(&priv->macsec->lock);
-> +
-> +       macsec = priv->macsec;
-> +       tx_sa = macsec->tx_sa[assoc_num];
-> +       netdev = ctx->netdev;
-> +
-> +       if (!tx_sa) {
-> +               netdev_err(netdev, "MACsec offload: TX sa 0x%x doesn't exist\n", assoc_num);
-> +
-> +               err = -EEXIST;
-> +               goto out;
-> +       }
-> +
-> +       if (tx_sa->next_pn != ctx_tx_sa->next_pn_halves.lower) {
-> +               netdev_err(netdev, "MACsec offload: update TX sa %d PN isn't supported\n",
-> +                          assoc_num);
-> +               err = -EINVAL;
-> +               goto out;
-> +       }
-> +
-> +       if (tx_sa->active == ctx_tx_sa->active)
-> +               goto out;
-> +
-> +       if (tx_sa->assoc_num != tx_sc->encoding_sa)
-> +               goto out;
-> +
-> +       if (ctx_tx_sa->active) {
-> +               err = mlx5e_macsec_init_object(ctx, tx_sa, tx_sc->encrypt);
-> +               if (err)
-> +                       goto out;
-> +       } else {
-> +               mlx5e_macsec_cleanup_object(macsec, tx_sa);
-> +       }
-> +
-> +       tx_sa->active = ctx_tx_sa->active;
-> +
-> +out:
-> +       mutex_unlock(&macsec->lock);
-> +
-> +       return err;
-> +}
-> +
-> +static int mlx5e_macsec_del_txsa(struct macsec_context *ctx)
-> +{
-> +       struct mlx5e_priv *priv = netdev_priv(ctx->netdev);
-> +       struct mlx5_core_dev *mdev = priv->mdev;
-> +       u8 assoc_num = ctx->sa.assoc_num;
-> +       struct mlx5e_macsec_sa *tx_sa;
-> +       struct mlx5e_macsec *macsec;
-> +       int err = 0;
-> +
-> +       if (ctx->prepare)
-> +               return 0;
-> +
-> +       mutex_lock(&priv->macsec->lock);
-> +
-> +       macsec = priv->macsec;
-> +       tx_sa = macsec->tx_sa[ctx->sa.assoc_num];
-> +
-> +       if (!tx_sa) {
-> +               netdev_err(ctx->netdev, "MACsec offload: TX sa 0x%x doesn't exist\n", assoc_num);
-> +               err = -EEXIST;
-> +               goto out;
-> +       }
-> +
-> +       mlx5e_macsec_cleanup_object(macsec, tx_sa);
-> +
-> +       mlx5_destroy_encryption_key(mdev, tx_sa->enc_key_id);
-> +
-> +       kfree(tx_sa);
-> +       macsec->tx_sa[assoc_num] = NULL;
-> +
-> +out:
-> +       mutex_unlock(&macsec->lock);
-> +
-> +       return err;
-> +}
-> +
-> +static bool mlx5e_is_macsec_device(const struct mlx5_core_dev *mdev)
-> +{
-> +       if (!(MLX5_CAP_GEN_64(mdev, general_obj_types) &
-> +           MLX5_GENERAL_OBJ_TYPES_CAP_MACSEC_OFFLOAD))
-> +               return false;
-> +
-> +       if (!MLX5_CAP_GEN(mdev, log_max_dek))
-> +               return false;
-> +
-> +       if (!MLX5_CAP_MACSEC(mdev, log_max_macsec_offload))
-> +               return false;
-> +
-> +       if (!MLX5_CAP_FLOWTABLE_NIC_RX(mdev, macsec_decrypt) ||
-> +           !MLX5_CAP_FLOWTABLE_NIC_RX(mdev, reformat_remove_macsec))
-> +               return false;
-> +
-> +       if (!MLX5_CAP_FLOWTABLE_NIC_TX(mdev, macsec_encrypt) ||
-> +           !MLX5_CAP_FLOWTABLE_NIC_TX(mdev, reformat_add_macsec))
-> +               return false;
-> +
-> +       if (!MLX5_CAP_MACSEC(mdev, macsec_crypto_esp_aes_gcm_128_encrypt) &&
-> +           !MLX5_CAP_MACSEC(mdev, macsec_crypto_esp_aes_gcm_256_encrypt))
-> +               return false;
-> +
-> +       if (!MLX5_CAP_MACSEC(mdev, macsec_crypto_esp_aes_gcm_128_decrypt) &&
-> +           !MLX5_CAP_MACSEC(mdev, macsec_crypto_esp_aes_gcm_256_decrypt))
-> +               return false;
-> +
-> +       return true;
-> +}
-> +
-> +static const struct macsec_ops macsec_offload_ops = {
-> +       .mdo_add_txsa = mlx5e_macsec_add_txsa,
-> +       .mdo_upd_txsa = mlx5e_macsec_upd_txsa,
-> +       .mdo_del_txsa = mlx5e_macsec_del_txsa,
-> +};
-> +
-> +void mlx5e_macsec_build_netdev(struct mlx5e_priv *priv)
-> +{
-> +       struct net_device *netdev = priv->netdev;
-> +
-> +       if (!mlx5e_is_macsec_device(priv->mdev))
-> +               return;
-> +
-> +       /* Enable MACsec */
-> +       mlx5_core_dbg(priv->mdev, "mlx5e: MACsec acceleration enabled\n");
-> +       netdev->macsec_ops = &macsec_offload_ops;
-> +       netdev->features |= NETIF_F_HW_MACSEC;
-> +       netif_keep_dst(netdev);
-> +}
-> +
-> +int mlx5e_macsec_init(struct mlx5e_priv *priv)
-> +{
-> +       struct mlx5_core_dev *mdev = priv->mdev;
-> +       struct mlx5e_macsec *macsec = NULL;
-> +       int err;
-> +
-> +       if (!mlx5e_is_macsec_device(priv->mdev)) {
-> +               mlx5_core_dbg(mdev, "Not a MACsec offload device\n");
-> +               return 0;
-> +       }
-> +
-> +       macsec = kzalloc(sizeof(*macsec), GFP_KERNEL);
-> +       if (!macsec)
-> +               return -ENOMEM;
-> +
-> +       mutex_init(&macsec->lock);
-> +
-> +       err = mlx5_core_alloc_pd(mdev, &macsec->aso_pdn);
-> +       if (err) {
-> +               mlx5_core_err(mdev,
-> +                             "MACsec offload: Failed to alloc pd for MACsec ASO, err=%d\n",
-> +                             err);
-> +               goto err_pd;
-> +       }
-> +
-> +       priv->macsec = macsec;
-> +
-> +       macsec->mdev = mdev;
-> +
-> +       mlx5_core_dbg(mdev, "MACsec attached to netdevice\n");
-> +
-> +       return 0;
-> +
-> +err_pd:
-> +       kfree(macsec);
-> +       return err;
-> +}
-> +
-> +void mlx5e_macsec_cleanup(struct mlx5e_priv *priv)
-> +{
-> +       struct mlx5e_macsec *macsec = priv->macsec;
-> +
-> +       if (!macsec)
-> +               return;
-> +
-> +       priv->macsec = NULL;
-> +
-> +       mlx5_core_dealloc_pd(priv->mdev, macsec->aso_pdn);
-> +
-> +       mutex_destroy(&macsec->lock);
-> +
-> +       kfree(macsec);
-> +}
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.h
-> new file mode 100644
-> index 000000000000..1ef1f3e3932f
-> --- /dev/null
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec.h
-> @@ -0,0 +1,26 @@
-> +/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-> +/* Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
-> +
-> +#ifndef __MLX5_EN_ACCEL_MACSEC_H__
-> +#define __MLX5_EN_ACCEL_MACSEC_H__
-> +
-> +#ifdef CONFIG_MLX5_EN_MACSEC
-> +
-> +#include <linux/mlx5/driver.h>
-> +#include <net/macsec.h>
-> +
-> +struct mlx5e_priv;
-> +
-> +void mlx5e_macsec_build_netdev(struct mlx5e_priv *priv);
-> +int mlx5e_macsec_init(struct mlx5e_priv *priv);
-> +void mlx5e_macsec_cleanup(struct mlx5e_priv *priv);
-> +
-> +#else
-> +
-> +static inline void mlx5e_macsec_build_netdev(struct mlx5e_priv *priv) {}
-> +static inline int mlx5e_macsec_init(struct mlx5e_priv *priv) { return 0; }
-> +static inline void mlx5e_macsec_cleanup(struct mlx5e_priv *priv) {}
-> +
-> +#endif  /* CONFIG_MLX5_EN_MACSEC */
-> +
-> +#endif /* __MLX5_ACCEL_EN_MACSEC_H__ */
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> index 7c1a13738a58..905025a10a8a 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> @@ -45,6 +45,7 @@
->  #include "en_tc.h"
->  #include "en_rep.h"
->  #include "en_accel/ipsec.h"
-> +#include "en_accel/macsec.h"
->  #include "en_accel/en_accel.h"
->  #include "en_accel/ktls.h"
->  #include "lib/vxlan.h"
-> @@ -4990,6 +4991,7 @@ static void mlx5e_build_nic_netdev(struct net_device *netdev)
->
->         netif_set_tso_max_size(netdev, GSO_MAX_SIZE);
->         mlx5e_set_netdev_dev_addr(netdev);
-> +       mlx5e_macsec_build_netdev(priv);
->         mlx5e_ipsec_build_netdev(priv);
->         mlx5e_ktls_build_netdev(priv);
->  }
-> @@ -5053,6 +5055,10 @@ static int mlx5e_nic_init(struct mlx5_core_dev *mdev,
->         }
->         priv->fs = fs;
->
-> +       err = mlx5e_macsec_init(priv);
-> +       if (err)
-> +               mlx5_core_err(mdev, "MACsec initialization failed, %d\n", err);
-> +
->         err = mlx5e_ipsec_init(priv);
->         if (err)
->                 mlx5_core_err(mdev, "IPSec initialization failed, %d\n", err);
-> @@ -5070,6 +5076,7 @@ static void mlx5e_nic_cleanup(struct mlx5e_priv *priv)
->         mlx5e_health_destroy_reporters(priv);
->         mlx5e_ktls_cleanup(priv);
->         mlx5e_ipsec_cleanup(priv);
-> +       mlx5e_macsec_cleanup(priv);
->         mlx5e_fs_cleanup(priv->fs);
->  }
->
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw.c b/drivers/net/ethernet/mellanox/mlx5/core/fw.c
-> index 079fa44ada71..c63ce03e79e0 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/fw.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/fw.c
-> @@ -273,6 +273,13 @@ int mlx5_query_hca_caps(struct mlx5_core_dev *dev)
->                         return err;
->         }
->
-> +       if (MLX5_CAP_GEN_64(dev, general_obj_types) &
-> +           MLX5_GENERAL_OBJ_TYPES_CAP_MACSEC_OFFLOAD) {
-> +               err = mlx5_core_get_caps(dev, MLX5_CAP_MACSEC);
-> +               if (err)
-> +                       return err;
-> +       }
-> +
->         return 0;
->  }
->
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h b/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h
-> index 2f536c5d30b1..032adb21ad4b 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h
-> @@ -83,6 +83,7 @@ int mlx5_notifier_call_chain(struct mlx5_events *events, unsigned int event, voi
->  enum {
->         MLX5_ACCEL_OBJ_TLS_KEY = MLX5_GENERAL_OBJECT_TYPE_ENCRYPTION_KEY_TYPE_TLS,
->         MLX5_ACCEL_OBJ_IPSEC_KEY = MLX5_GENERAL_OBJECT_TYPE_ENCRYPTION_KEY_TYPE_IPSEC,
-> +       MLX5_ACCEL_OBJ_MACSEC_KEY = MLX5_GENERAL_OBJECT_TYPE_ENCRYPTION_KEY_TYPE_MACSEC,
->  };
->
->  int mlx5_create_encryption_key(struct mlx5_core_dev *mdev,
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-> index c085b031abfc..1986f1c715b5 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-> @@ -1488,6 +1488,7 @@ static const int types[] = {
->         MLX5_CAP_IPSEC,
->         MLX5_CAP_PORT_SELECTION,
->         MLX5_CAP_DEV_SHAMPO,
-> +       MLX5_CAP_MACSEC,
->  };
->
->  static void mlx5_hca_caps_free(struct mlx5_core_dev *dev)
-> --
-> 2.37.2
+>diff --git a/tools/testing/selftests/drivers/net/bonding/Makefile b/tools=
+/testing/selftests/drivers/net/bonding/Makefile
+>index ab6c54b12098..79bb06fd386a 100644
+>--- a/tools/testing/selftests/drivers/net/bonding/Makefile
+>+++ b/tools/testing/selftests/drivers/net/bonding/Makefile
+>@@ -2,5 +2,6 @@
+> # Makefile for net selftests
+> =
+
+> TEST_PROGS :=3D bond-break-lacpdu-tx.sh
+>+TEST_PROGS +=3D bond-arp-interval-causes-panic.sh
+> =
+
+> include ../../../lib.mk
+>diff --git a/tools/testing/selftests/drivers/net/bonding/bond-arp-interva=
+l-causes-panic.sh b/tools/testing/selftests/drivers/net/bonding/bond-arp-i=
+nterval-causes-panic.sh
+>new file mode 100755
+>index 000000000000..0c3e5d486193
+>--- /dev/null
+>+++ b/tools/testing/selftests/drivers/net/bonding/bond-arp-interval-cause=
+s-panic.sh
+>@@ -0,0 +1,46 @@
+>+#!/bin/sh
+>+
+>+# cause kernel oops in bond_rr_gen_slave_id on aarch64 and ppcle
+>+# architectures
+>+DEBUG=3D${DEBUG:-0}
+>+
+>+set -e
+>+test ${DEBUG} -ne 0 && set -x
+>+
+>+function finish()
+>+{
+>+	ip -all netns delete
+>+	ip link del link1_1 || true
+>+}
+>+
+>+trap finish EXIT
+>+
+>+client_ip4=3D192.168.1.198
+>+server_ip4=3D192.168.1.254
+>+
+>+# setup kernel so it reboots after causing the panic
+>+echo 180 >/proc/sys/kernel/panic
+>+
+>+# build namespaces
+>+ip link add dev link1_1 type veth peer name link1_2
+>+
+>+ip netns add "server"
+>+ip link set dev link1_2 netns server up name eth0
+>+ip netns exec server ip addr add ${server_ip4}/24 dev eth0
+>+
+>+ip netns add "client"
+>+ip link set dev link1_1 netns client down name eth0
+>+ip netns exec client ip link add dev bond0 down type bond mode 1 miimon =
+100 all_slaves_active 1
+>+ip netns exec client ip link set dev eth0 down master bond0
+>+ip netns exec client ip link set dev bond0 up
+>+ip netns exec client ip addr add ${client_ip4}/24 dev bond0
+>+ip netns exec client ping -c 5 $server_ip4 >/dev/null
+>+
+>+ip netns exec client ip link set dev eth0 down nomaster
+>+ip netns exec client ip link set dev bond0 down
+>+ip netns exec client ip link set dev bond0 type bond mode 0 arp_interval=
+ 1000 arp_ip_target "+${server_ip4}"
+>+ip netns exec client ip link set dev eth0 down master bond0
+>+ip netns exec client ip link set dev bond0 up
+>+ip netns exec client ping -c 5 $server_ip4 >/dev/null
+>+
+>+exit 0
+>-- =
+
+>2.31.1
 >
