@@ -2,102 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D3E55B8698
-	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 12:50:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6DB25B870B
+	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 13:11:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229615AbiINKut (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Sep 2022 06:50:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38916 "EHLO
+        id S229632AbiINLLx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Sep 2022 07:11:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229511AbiINKur (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 06:50:47 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB61A4661B;
-        Wed, 14 Sep 2022 03:50:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663152646; x=1694688646;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=FJYMs62ascLSw9OHOfFlHvVTgyDpbA2c8qbkQOb1Nks=;
-  b=Ivb6PcF/NUgvu7ZigV/+XyLR54nCeiGMWXmpwgBBwY3AF2SiAL1lf9To
-   1AYNOynCya0x2Ah4ApyxuFxerysMDylHcyLUHlBf0uqp0z47PxLJci62L
-   LdKQ69iQKeLbZXvxqhUQa2NTatLqeqRGUsk/sptJe3lzy72218FgFhn3Y
-   CWU8sUtcdrcebLOv+zWcv9Jr24nM8CupSG4uAuOBKbOlhmE7pJ2GfQHAn
-   QCX/5mwoGfxL48p0cOg9MDJhW9VssQTeaRFSezuaGGFzQutzMRychMlaG
-   5Wg6k1M8/jaKfdcbrh99815bs7V3eIOPFvnvfdzr3pASjTWzVpPJon0zV
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10469"; a="297127793"
-X-IronPort-AV: E=Sophos;i="5.93,315,1654585200"; 
-   d="scan'208";a="297127793"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2022 03:50:46 -0700
-X-IronPort-AV: E=Sophos;i="5.93,315,1654585200"; 
-   d="scan'208";a="705918476"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2022 03:50:42 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1oYPyY-002A7j-1g;
-        Wed, 14 Sep 2022 13:50:38 +0300
-Date:   Wed, 14 Sep 2022 13:50:38 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Gene Chen <gene_chen@richtek.com>,
-        Andrew Jeffery <andrew@aj.id.au>, linux-leds@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     Pavel Machek <pavel@ucw.cz>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Lee Jones <lee@kernel.org>
-Subject: Re: [PATCH v3 00/11] leds: deduplicate led_init_default_state_get()
-Message-ID: <YyGx/t8rLY59HXju@smile.fi.intel.com>
-References: <20220906135004.14885-1-andriy.shevchenko@linux.intel.com>
+        with ESMTP id S229472AbiINLLw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 07:11:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7543B5E643
+        for <netdev@vger.kernel.org>; Wed, 14 Sep 2022 04:11:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1663153910;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=kX+pi/HvCDp+oQlA12cx7MP2R0GtvFwa5Le5qJ2HSwg=;
+        b=Y9i1ua/44Z0uoNLPi5k3fMsAhgG2/US2gfx0HHclxIkdPN2l+CYD2WOHQSxPM0R2KdnWIW
+        zZfNVd77oo5jABt8YgzLhXzF94WT7Zjo/eSymkrMVhq0KLPbV0u8cpMAg+F9W1mhHVIbJw
+        KRmUVMR71AZSuO8kaUiNkc7kdDQ98QI=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-372-LTLFTFDuMkmlSLn1A2rf2w-1; Wed, 14 Sep 2022 07:11:40 -0400
+X-MC-Unique: LTLFTFDuMkmlSLn1A2rf2w-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9531A3C025C7;
+        Wed, 14 Sep 2022 11:11:39 +0000 (UTC)
+Received: from ihuguet-laptop.redhat.com (unknown [10.39.195.55])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E81791759E;
+        Wed, 14 Sep 2022 11:11:37 +0000 (UTC)
+From:   =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+To:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
+        Tianhao Zhao <tizhao@redhat.com>
+Subject: [PATCH net] sfc: fix null pointer dereference in efx_hard_start_xmit
+Date:   Wed, 14 Sep 2022 13:11:35 +0200
+Message-Id: <20220914111135.21038-1-ihuguet@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220906135004.14885-1-andriy.shevchenko@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.5
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 06, 2022 at 04:49:53PM +0300, Andy Shevchenko wrote:
-> There are several users of LED framework that reimplement the
-> functionality of led_init_default_state_get(). In order to
-> deduplicate them move the declaration to the global header
-> (patch 2) and convert users (patche 3-11).
+Trying to get the channel from the tx_queue variable here is wrong
+because we can only be here if tx_queue is NULL, so we shouldn't
+dereference it. As the above comment in the code says, this is very
+unlikely to happen, but it's wrong anyway so let's fix it.
 
-Can this be applied now?
+I hit this issue because of a different bug that caused tx_queue to be
+NULL. If that happens, this is the error message that we get here:
+  BUG: unable to handle kernel NULL pointer dereference at 0000000000000020
+  [...]
+  RIP: 0010:efx_hard_start_xmit+0x153/0x170 [sfc]
 
-Lee, Pavel, what do you think?
+Fixes: 12804793b17c ("sfc: decouple TXQ type from label")
+Reported-by: Tianhao Zhao <tizhao@redhat.com>
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+---
+ drivers/net/ethernet/sfc/tx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> Changelog v3:
-> - added tag to patch 11 (Kurt)
-> - Cc'ed to Lee, who might help with LED subsystem maintenance
-> 
-> Changelog v2:
-> - added missed patch 2 and hence make it the series
-> - appended tag to patch 7
-> - new patch 1
-
+diff --git a/drivers/net/ethernet/sfc/tx.c b/drivers/net/ethernet/sfc/tx.c
+index d12474042c84..c5f88f7a7a04 100644
+--- a/drivers/net/ethernet/sfc/tx.c
++++ b/drivers/net/ethernet/sfc/tx.c
+@@ -549,7 +549,7 @@ netdev_tx_t efx_hard_start_xmit(struct sk_buff *skb,
+ 		 * previous packets out.
+ 		 */
+ 		if (!netdev_xmit_more())
+-			efx_tx_send_pending(tx_queue->channel);
++			efx_tx_send_pending(efx_get_tx_channel(efx, index));
+ 		return NETDEV_TX_OK;
+ 	}
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.34.1
 
