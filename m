@@ -2,323 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CBBE25B8608
-	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 12:14:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 699CD5B8617
+	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 12:19:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229626AbiINKNr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Sep 2022 06:13:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34110 "EHLO
+        id S229688AbiINKTJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Sep 2022 06:19:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229640AbiINKNf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 06:13:35 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B15C21267;
-        Wed, 14 Sep 2022 03:13:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=SMMfDV/qgPfXjoJXWylOHL4DAz4NjIRd7Xc11YJj6/Q=; b=oNRHdDrL51DpaHi8SeVV4Iy42o
-        BlI4ijdxy1JU4PGz81FIE3Zmj56jgwGJwQfVhEDTSHxvceBAQUtlidYSWGcL2ytq1A2fio2bsMwjQ
-        8JEv1tW+yLFtutLxz0qMYSW4okJaPufz/D/0haDbfeSK8YbZMCVUgYCxz73donkviVg7YcUmycW5M
-        1g9AhV9Y0560G4kkkJg+Iwztqh/TbYdnCc9OREQbY8C4/NuDitc27pOAufj/2wDm9ReCfjtm0KIPj
-        rALpztv95ln1AhfWClYdume4GbQZD01WrrZ7L55nRXyTZ6rRqLTVvngpg3vu8sui7AaCNyWffEFAe
-        zgZJ5xDg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34314)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oYPOQ-0004Eg-If; Wed, 14 Sep 2022 11:13:18 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oYPOL-0001Yj-Tc; Wed, 14 Sep 2022 11:13:13 +0100
-Date:   Wed, 14 Sep 2022 11:13:13 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Frank <Frank.Sae@motor-comm.com>
-Cc:     Peter Geis <pgwipeout@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S229633AbiINKTH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 06:19:07 -0400
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CB89786DE;
+        Wed, 14 Sep 2022 03:19:06 -0700 (PDT)
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28EAEmUd001145;
+        Wed, 14 Sep 2022 10:18:52 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=TauJo4S33vubiSKMJ8vkdsBpJE36madk8or1JdPhPtE=;
+ b=owEMl6AOMvp0gM+XCVPA+DAuIvwts+9qcvs5p0+ATTATOxq5gsI042eFqY3LtH6lW817
+ pazqUs6PZly1aKhS4XTQj4/EABeCeCyOVKdSWEjDXgPazjGeEg4yj56VdilzP5ljGKdE
+ ThPo8/22y9trmcxzqg9tGSqoKXG5pnFV8zKgPD30+NLaYTedY+PvDwTZGWfG2DZXD7xT
+ zIDZnjpNumcuFIDG8S7r1EHd8ypefjrlt5B5cW1bgu+yeZqjX7pQd8ZLuxY8pDp9mxxA
+ 4kVSo6jOk2c9mcBvUUIAPSmx9RRr25DzMe1mFj4idKfc78UTMEwagkaBpGGb1HpJSMNw aw== 
+Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3jjxyva6be-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 14 Sep 2022 10:18:52 +0000
+Received: from pps.filterd (NALASPPMTA05.qualcomm.com [127.0.0.1])
+        by NALASPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 28EAIp5D031835;
+        Wed, 14 Sep 2022 10:18:51 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by NALASPPMTA05.qualcomm.com (PPS) with ESMTPS id 3jjqbt4rfh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 14 Sep 2022 10:18:51 +0000
+Received: from NALASPPMTA05.qualcomm.com (NALASPPMTA05.qualcomm.com [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 28EAIpIO031830;
+        Wed, 14 Sep 2022 10:18:51 GMT
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+        by NALASPPMTA05.qualcomm.com (PPS) with ESMTPS id 28EAIooi031829
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 14 Sep 2022 10:18:50 +0000
+Received: from [10.79.43.230] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Wed, 14 Sep
+ 2022 03:18:46 -0700
+Subject: Re: [PATCH 4/4] soc: qcom: pdr: Make QMI message rules const
+To:     Jeff Johnson <quic_jjohnson@quicinc.com>,
+        Alex Elder <elder@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, yinghong.zhang@motor-comm.com,
-        fei.zhang@motor-comm.com, hua.sun@motor-comm.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v6] net: phy: Add driver for Motorcomm yt8521
- gigabit ethernet phy
-Message-ID: <YyGpORi7l1F0to2M@shell.armlinux.org.uk>
-References: <20220914093209.1960-1-Frank.Sae@motor-comm.com>
+        Paolo Abeni <pabeni@redhat.com>,
+        "Mathieu Poirier" <mathieu.poirier@linaro.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Kalle Valo <kvalo@kernel.org>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "Konrad Dybcio" <konrad.dybcio@somainline.org>
+CC:     <linux-arm-msm@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-remoteproc@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220912232526.27427-1-quic_jjohnson@quicinc.com>
+ <20220912232526.27427-2-quic_jjohnson@quicinc.com>
+ <20220912232526.27427-3-quic_jjohnson@quicinc.com>
+ <20220912232526.27427-4-quic_jjohnson@quicinc.com>
+ <20220912232526.27427-5-quic_jjohnson@quicinc.com>
+From:   Sibi Sankar <quic_sibis@quicinc.com>
+Message-ID: <f8f43b22-bb13-71ff-15fc-a323d0b56ead@quicinc.com>
+Date:   Wed, 14 Sep 2022 15:48:43 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220914093209.1960-1-Frank.Sae@motor-comm.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220912232526.27427-5-quic_jjohnson@quicinc.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: bMVDI2dAzz-eh0sNk3DHpUhUOHYrziiX
+X-Proofpoint-ORIG-GUID: bMVDI2dAzz-eh0sNk3DHpUhUOHYrziiX
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
+ definitions=2022-09-14_03,2022-09-14_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 adultscore=0
+ mlxlogscore=999 suspectscore=0 mlxscore=0 bulkscore=0 spamscore=0
+ phishscore=0 priorityscore=1501 clxscore=1011 malwarescore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2208220000 definitions=main-2209140050
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 14, 2022 at 05:32:09PM +0800, Frank wrote:
-> +static int ytphy_modify_ext(struct phy_device *phydev, u16 regnum, u16 mask,
-> +			    u16 set)
-> +{
-> +	u16 val;
-> +	int ret;
-> +
-> +	ret = ytphy_read_ext(phydev, regnum);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	val = ret & 0xffff;
-> +	val &= ~mask;
-> +	val |= set;
-> +
-> +	return ytphy_write_ext(phydev, regnum, val);
 
-Is there a reason not to implement this as:
 
-	ret = __phy_write(phydev, YTPHY_PAGE_SELECT, regnum);
-	if (ret < 0)
-		return ret;
+On 9/13/22 4:55 AM, Jeff Johnson wrote:
+> Commit ff6d365898d ("soc: qcom: qmi: use const for struct
+> qmi_elem_info") allows QMI message encoding/decoding rules to be
+> const, so do that for QCOM PDR.
+> 
+> Signed-off-by: Jeff Johnson <quic_jjohnson@quicinc.com>
 
-	return __phy_modify(phydev, YTPHY_PAGE_DATA, mask, set);
+Reviewed-by: Sibi Sankar <quic_sibis@quicinc.com>
 
-The considerations would be:
-1) Does the page select register need to be written prior to every access?
-2) Do we always have to write the value back even when the value hasn't
-   changed by action of the mask and set parameters?
-
-> +/**
-> + * yt8521_read_status() -  determines the negotiated speed and duplex
-> + * @phydev: a pointer to a &struct phy_device
-> + *
-> + * returns 0 or negative errno code
-> + */
-> +static int yt8521_read_status(struct phy_device *phydev)
-> +{
-> +	struct yt8521_priv *priv = phydev->priv;
-> +	int link_utp = 0;
-> +	int link_fiber;
-> +	int link;
-> +	int ret;
-> +
-> +	if (priv->reg_page != YT8521_RSSR_TO_BE_ARBITRATED) {
-> +		link = yt8521_read_status_paged(phydev, priv->reg_page);
-> +		if (link < 0)
-> +			return link;
-> +	} else {
-> +		/* when page is YT8521_RSSR_TO_BE_ARBITRATED, arbitration is
-> +		 * needed. by default, fiber is of higher priority.
-> +		 */
-> +
-> +		link_fiber = yt8521_read_status_paged(phydev,
-> +						      YT8521_RSSR_FIBER_SPACE);
-> +		if (link_fiber < 0)
-> +			return link_fiber;
-> +
-> +		if (!link_fiber) {
-> +			link_utp = yt8521_read_status_paged(phydev,
-> +							    YT8521_RSSR_UTP_SPACE);
-> +			if (link_utp < 0)
-> +				return link_utp;
-> +		}
-> +
-> +		link = link_utp || link_fiber;
-> +	}
-> +
-> +	if (link) {
-> +		if (phydev->link == 0) {
-> +			/* arbitrate reg space based on linkup media type. */
-> +			if (priv->polling_mode == YT8521_MODE_POLL &&
-> +			    priv->reg_page == YT8521_RSSR_TO_BE_ARBITRATED) {
-> +				if (link_fiber)
-> +					priv->reg_page =
-> +						YT8521_RSSR_FIBER_SPACE;
-> +				else
-> +					priv->reg_page = YT8521_RSSR_UTP_SPACE;
-> +
-> +				ret = ytphy_write_ext_with_lock(phydev,
-> +								YT8521_REG_SPACE_SELECT_REG,
-> +								priv->reg_page);
-> +				if (ret < 0)
-> +					return ret;
-> +
-> +				phydev->port = link_fiber ? PORT_FIBRE : PORT_TP;
-> +
-> +				phydev_info(phydev,
-> +					    "%s, phy addr: %d, link up, media: %s\n",
-> +					    __func__, phydev->mdio.addr,
-> +					    (phydev->port == PORT_TP) ?
-> +					    "UTP" : "Fiber");
-
-Why do you need to print the PHY address? Isn't the driver model's
-printing of the device and driver name by phydev_info() sufficient?
-The same comment applies elsewhere.
-
-> +static int yt8521_modify_bmcr_paged(struct phy_device *phydev, int page,
-> +				    u16 mask, u16 set)
-> +{
-> +	int max_cnt = 500; /* the max wait time of reset ~ 500 ms */
-> +	int old_page;
-> +	int ret = 0;
-> +
-> +	old_page = phy_select_page(phydev, page & YT8521_RSSR_SPACE_MASK);
-> +	if (old_page < 0)
-> +		goto err_restore_page;
-> +
-> +	ret = __phy_modify(phydev, MII_BMCR, mask, set);
-> +	if (ret < 0)
-> +		goto err_restore_page;
-> +
-> +	/* If it is reset, need to wait for the reset to complete */
-> +	if (set == BMCR_RESET) {
-> +		while (max_cnt--) {
-> +			/* unlock mdio bus during sleep */
-> +			phy_unlock_mdio_bus(phydev);
-> +			usleep_range(1000, 1100);
-> +			phy_lock_mdio_bus(phydev);
-
-Dropping the lock makes phy_select_page()..phy_restore_page() unsafe
-since some other code path could change the page selection register
-while you're sleeping here. If you need to do this, then use
-phy_restore_page() and re-acquire using phy_select_page() afterwards.
-
-The same comment applies everywhere where you drop the mdio bus
-lock while in a phy_select_page()..phy_restore_page() region. Every
-case of that is buggy.
-
-> +static int yt8521_fiber_setup_forced(struct phy_device *phydev)
-> +{
-> +	int max_cnt = 500; /* the max wait time of reset ~ 500 ms */
-> +	u16 val;
-> +	int ret;
-> +
-> +	if (phydev->speed == SPEED_1000)
-> +		val = YTPHY_MCR_FIBER_1000BX;
-> +	else if (phydev->speed == SPEED_100)
-> +		val = YTPHY_MCR_FIBER_100FX;
-> +	else
-> +		return -EINVAL;
-> +
-> +	ret =  phy_modify(phydev,  MII_BMCR, BMCR_ANENABLE, 0);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* disable Fiber auto sensing */
-> +	ret =  ytphy_modify_ext_with_lock(phydev, YT8521_LINK_TIMER_CFG2_REG,
-> +					  YT8521_LTCR_EN_AUTOSEN, 0);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	phydev->pause = 0;
-> +	phydev->asym_pause = 0;
-
-Isn't that the responsibility of read_status() ?
-
-> +/**
-> + * yt8521_config_aneg_paged() - switch reg space then call genphy_config_aneg
-> + * of one page
-> + * @phydev: a pointer to a &struct phy_device
-> + * @page: The reg page(YT8521_RSSR_FIBER_SPACE/YT8521_RSSR_UTP_SPACE) to
-> + * operate.
-> + *
-> + * returns 0 or negative errno code
-> + */
-> +static int yt8521_config_aneg_paged(struct phy_device *phydev, int page)
-> +{
-> +	__ETHTOOL_DECLARE_LINK_MODE_MASK(fiber_supported);
-> +	struct yt8521_priv *priv = phydev->priv;
-> +	int old_page;
-> +	int ret = 0;
-> +
-> +	page &= YT8521_RSSR_SPACE_MASK;
-> +
-> +	old_page = phy_select_page(phydev, page);
-> +	if (old_page < 0)
-> +		goto err_restore_page;
-> +
-> +	/* If reg_page is YT8521_RSSR_TO_BE_ARBITRATED,
-> +	 * phydev->advertising should be updated.
-> +	 */
-> +	if (priv->reg_page == YT8521_RSSR_TO_BE_ARBITRATED) {
-> +		linkmode_zero(fiber_supported);
-> +		yt8521_prepare_fiber_features(phydev, fiber_supported);
-> +
-> +		/* prepare fiber_supported, then setup advertising. */
-> +		if (page == YT8521_RSSR_FIBER_SPACE) {
-> +			linkmode_set_bit(ETHTOOL_LINK_MODE_Pause_BIT,
-> +					 fiber_supported);
-> +			linkmode_set_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
-> +					 fiber_supported);
-> +			linkmode_and(phydev->advertising,
-> +				     priv->combo_advertising, fiber_supported);
-> +		} else {
-> +			/* ETHTOOL_LINK_MODE_Autoneg_BIT is also used in utp */
-> +			linkmode_clear_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
-> +					   fiber_supported);
-> +			linkmode_andnot(phydev->advertising,
-> +					priv->combo_advertising,
-> +					fiber_supported);
-> +		}
-> +	}
-> +
-> +	/* unlock mdio bus during genphy_config_aneg/yt8521_fiber_config_aneg,
-> +	 * because it will operate this lock.
-> +	 */
-> +	phy_unlock_mdio_bus(phydev);
-> +	if (page == YT8521_RSSR_FIBER_SPACE)
-> +		ret = yt8521_fiber_config_aneg(phydev);
-> +	else
-> +		ret = genphy_config_aneg(phydev);
-> +
-> +	phy_lock_mdio_bus(phydev);
-
-As previously pointed out, dropping the MDIO bus lock in a
-phy_select_page()..phy_restore_page() region unsafe. I think you need
-to ensure that yt8521_fiber_config_aneg() is safe to be called under
-the lock, and I suspect having a version of genphy_config_aneg() which
-can be called with the lock held would be a better approach.
-
-> +/**
-> + * yt8521_get_features_paged() -  read supported link modes for one page
-> + * @phydev: a pointer to a &struct phy_device
-> + * @page: The reg page(YT8521_RSSR_FIBER_SPACE/YT8521_RSSR_UTP_SPACE) to
-> + * operate.
-> + *
-> + * returns 0 or negative errno code
-> + */
-> +static int yt8521_get_features_paged(struct phy_device *phydev, int page)
-> +{
-> +	int old_page;
-> +	int ret = 0;
-> +
-> +	page &= YT8521_RSSR_SPACE_MASK;
-> +	if (page == YT8521_RSSR_FIBER_SPACE) {
-> +		linkmode_zero(phydev->supported);
-> +		yt8521_prepare_fiber_features(phydev, phydev->supported);
-> +		return 0;
-> +	}
-> +
-> +	old_page = phy_select_page(phydev, page);
-> +	if (old_page < 0)
-> +		goto err_restore_page;
-> +
-> +	/* unlock mdio bus during genphy_read_abilities,
-> +	 * because it will operate this lock.
-> +	 */
-> +	phy_unlock_mdio_bus(phydev);
-> +	ret = genphy_read_abilities(phydev);
-> +	phy_lock_mdio_bus(phydev);
-
-As previously pointed out, this makes the page select/page restore unsafe.
-
-Thanks.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+> ---
+>   drivers/soc/qcom/pdr_internal.h | 20 ++++++++++----------
+>   1 file changed, 10 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/soc/qcom/pdr_internal.h b/drivers/soc/qcom/pdr_internal.h
+> index a30422214943..03c282b7f17e 100644
+> --- a/drivers/soc/qcom/pdr_internal.h
+> +++ b/drivers/soc/qcom/pdr_internal.h
+> @@ -28,7 +28,7 @@ struct servreg_location_entry {
+>   	u32 instance;
+>   };
+>   
+> -static struct qmi_elem_info servreg_location_entry_ei[] = {
+> +static const struct qmi_elem_info servreg_location_entry_ei[] = {
+>   	{
+>   		.data_type      = QMI_STRING,
+>   		.elem_len       = SERVREG_NAME_LENGTH + 1,
+> @@ -74,7 +74,7 @@ struct servreg_get_domain_list_req {
+>   	u32 domain_offset;
+>   };
+>   
+> -static struct qmi_elem_info servreg_get_domain_list_req_ei[] = {
+> +static const struct qmi_elem_info servreg_get_domain_list_req_ei[] = {
+>   	{
+>   		.data_type      = QMI_STRING,
+>   		.elem_len       = SERVREG_NAME_LENGTH + 1,
+> @@ -116,7 +116,7 @@ struct servreg_get_domain_list_resp {
+>   	struct servreg_location_entry domain_list[SERVREG_DOMAIN_LIST_LENGTH];
+>   };
+>   
+> -static struct qmi_elem_info servreg_get_domain_list_resp_ei[] = {
+> +static const struct qmi_elem_info servreg_get_domain_list_resp_ei[] = {
+>   	{
+>   		.data_type      = QMI_STRUCT,
+>   		.elem_len       = 1,
+> @@ -199,7 +199,7 @@ struct servreg_register_listener_req {
+>   	char service_path[SERVREG_NAME_LENGTH + 1];
+>   };
+>   
+> -static struct qmi_elem_info servreg_register_listener_req_ei[] = {
+> +static const struct qmi_elem_info servreg_register_listener_req_ei[] = {
+>   	{
+>   		.data_type      = QMI_UNSIGNED_1_BYTE,
+>   		.elem_len       = 1,
+> @@ -227,7 +227,7 @@ struct servreg_register_listener_resp {
+>   	enum servreg_service_state curr_state;
+>   };
+>   
+> -static struct qmi_elem_info servreg_register_listener_resp_ei[] = {
+> +static const struct qmi_elem_info servreg_register_listener_resp_ei[] = {
+>   	{
+>   		.data_type      = QMI_STRUCT,
+>   		.elem_len       = 1,
+> @@ -263,7 +263,7 @@ struct servreg_restart_pd_req {
+>   	char service_path[SERVREG_NAME_LENGTH + 1];
+>   };
+>   
+> -static struct qmi_elem_info servreg_restart_pd_req_ei[] = {
+> +static const struct qmi_elem_info servreg_restart_pd_req_ei[] = {
+>   	{
+>   		.data_type      = QMI_STRING,
+>   		.elem_len       = SERVREG_NAME_LENGTH + 1,
+> @@ -280,7 +280,7 @@ struct servreg_restart_pd_resp {
+>   	struct qmi_response_type_v01 resp;
+>   };
+>   
+> -static struct qmi_elem_info servreg_restart_pd_resp_ei[] = {
+> +static const struct qmi_elem_info servreg_restart_pd_resp_ei[] = {
+>   	{
+>   		.data_type      = QMI_STRUCT,
+>   		.elem_len       = 1,
+> @@ -300,7 +300,7 @@ struct servreg_state_updated_ind {
+>   	u16 transaction_id;
+>   };
+>   
+> -static struct qmi_elem_info servreg_state_updated_ind_ei[] = {
+> +static const struct qmi_elem_info servreg_state_updated_ind_ei[] = {
+>   	{
+>   		.data_type      = QMI_SIGNED_4_BYTE_ENUM,
+>   		.elem_len       = 1,
+> @@ -336,7 +336,7 @@ struct servreg_set_ack_req {
+>   	u16 transaction_id;
+>   };
+>   
+> -static struct qmi_elem_info servreg_set_ack_req_ei[] = {
+> +static const struct qmi_elem_info servreg_set_ack_req_ei[] = {
+>   	{
+>   		.data_type      = QMI_STRING,
+>   		.elem_len       = SERVREG_NAME_LENGTH + 1,
+> @@ -362,7 +362,7 @@ struct servreg_set_ack_resp {
+>   	struct qmi_response_type_v01 resp;
+>   };
+>   
+> -static struct qmi_elem_info servreg_set_ack_resp_ei[] = {
+> +static const struct qmi_elem_info servreg_set_ack_resp_ei[] = {
+>   	{
+>   		.data_type      = QMI_STRUCT,
+>   		.elem_len       = 1,
+> 
