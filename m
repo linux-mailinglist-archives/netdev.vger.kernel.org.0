@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE86F5B9049
-	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 23:50:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28D095B904B
+	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 23:52:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229600AbiINVuu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Sep 2022 17:50:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55454 "EHLO
+        id S229510AbiINVwy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Sep 2022 17:52:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229510AbiINVut (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 17:50:49 -0400
+        with ESMTP id S229436AbiINVwx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 17:52:53 -0400
 Received: from mail.sconnect.com.au (mail.sconnect.com.au [103.101.168.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DEBF2712
-        for <netdev@vger.kernel.org>; Wed, 14 Sep 2022 14:50:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66F1BB4B7
+        for <netdev@vger.kernel.org>; Wed, 14 Sep 2022 14:52:52 -0700 (PDT)
 Received: from localhost (localhost [127.0.0.1])
-        by mail.sconnect.com.au (Postfix) with ESMTP id 7376A22C8EBE;
-        Thu, 15 Sep 2022 17:48:28 +1000 (AEST)
+        by mail.sconnect.com.au (Postfix) with ESMTP id 8BE8E22BC212;
+        Thu, 15 Sep 2022 17:50:07 +1000 (AEST)
 Received: from mail.sconnect.com.au ([127.0.0.1])
         by localhost (mail.sconnect.com.au [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id RXRQYl2BM5NC; Thu, 15 Sep 2022 17:48:28 +1000 (AEST)
+        with ESMTP id pN6PhAFxC4IY; Thu, 15 Sep 2022 17:50:07 +1000 (AEST)
 Received: from localhost (localhost [127.0.0.1])
-        by mail.sconnect.com.au (Postfix) with ESMTP id 9E680273A7F6;
-        Thu, 15 Sep 2022 17:48:27 +1000 (AEST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.sconnect.com.au 9E680273A7F6
+        by mail.sconnect.com.au (Postfix) with ESMTP id 65B96271176C;
+        Thu, 15 Sep 2022 17:50:05 +1000 (AEST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.sconnect.com.au 65B96271176C
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mail.sconnect.com.au; s=39ABBFB6-EEE4-11E8-B0D6-3EF6B7190DB6;
-        t=1663228107; bh=XxUjnCNvcWuK9m0cuofYLIDz0BRlqJ+Syb/fNAQ9jpw=;
+        t=1663228205; bh=DMJpZ8Cb9we3J/fFtIgFbtLrPflE1UukOuJcVJtNj6o=;
         h=MIME-Version:To:From:Date:Message-Id;
-        b=hGXwMkij2NPmcu44URx4A5YeJFKufttbqrbclwcDvjwAPhJwRos0FKtsoVMd0oo78
-         TzhcH2l/1JAD2de7XF7GWZYSj1E/g4NjhBZNGF/lPWDHfiZUUGCfbxp4AFX8lp8wiv
-         NkcBme+L3xRcHYakRQio7MA4MryyN7QDU3OT05sDttEHuOPccPr/CfCl9J8ybF3Hko
-         bXBi0nYtpUdDsWcEHkvyxuDmSK5U3s74Edfksk/RY2TWE4PqjVWyz3r8eueF1jgi1e
-         /HpEe1pFwE3mGzGlRPHtcp2RKegP9VirW+tfyJrWkn/jB1/nbYT4SRAgBep+kDQigO
-         NoUCPQxD8xZ9Q==
+        b=hiq6RgZ3m+R7pNSPNMEfTFawhiI2m5d8GoJc6Oe5WuTuOTWdsjFdbVmDt8B7K6hfw
+         dOpQQ2QL7PehbdjK/bj5aibz2Ml5elKNVC7J3G7bJ0ioPnx38iywEQEj2On5K+ReX+
+         jELiwRN/B/1jQlG8ZO9GERbvyH2JvtT777QgjldIgiivW26y8RoUS4F9JQeQwWsAbL
+         KTnYoCQTJUT3XLbOEZ/RNuOWHlt6ueLipDqhHB+RaQx8cOore0nH21nn3HWhvQ9566
+         7OyJV8X4W6NcRlOGJqpM+eK0DGO05lsbtpA/4r09ubVGw9cIrHicIRzOYlOoTMDMHh
+         lrggoYwxwQJXg==
 X-Virus-Scanned: amavisd-new at mail.sconnect.com.au
 Received: from mail.sconnect.com.au ([127.0.0.1])
         by localhost (mail.sconnect.com.au [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id icTBsXoRXqn3; Thu, 15 Sep 2022 17:48:27 +1000 (AEST)
-Received: from [46.148.40.140] (unknown [46.148.40.140])
-        by mail.sconnect.com.au (Postfix) with ESMTPA id D798C2732A6E;
-        Thu, 15 Sep 2022 17:48:15 +1000 (AEST)
-Content-Type: multipart/mixed; boundary="===============0691349416=="
+        with ESMTP id szFoDV6kRTAQ; Thu, 15 Sep 2022 17:50:05 +1000 (AEST)
+Received: from [103.145.254.221] (unknown [103.145.254.221])
+        by mail.sconnect.com.au (Postfix) with ESMTPA id 4A3E723487F1;
+        Thu, 15 Sep 2022 17:49:59 +1000 (AEST)
+Content-Type: multipart/mixed; boundary="===============1966252423=="
 MIME-Version: 1.0
-Subject: PCH Payment Notice
+Subject: Payment Notice
 To:     Recipients <Publishers@mail.sconnect.com.au>
 From:   Publishers@mail.sconnect.com.au, Clearing@mail.sconnect.com.au,
         House@mail.sconnect.com.au, dean@mail.sconnect.com.au
-Date:   Wed, 14 Sep 2022 13:48:10 -0700
-Reply-To: infopch@europe.com
-Message-Id: <20220915074815.D798C2732A6E@mail.sconnect.com.au>
-X-Spam-Status: No, score=2.8 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_REPLYTO,SPF_HELO_PASS,
-        SPF_PASS,T_PDS_TO_EQ_FROM_NAME,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Level: **
+Date:   Wed, 14 Sep 2022 13:49:59 -0700
+Reply-To: PCH-INFO@usa.com
+Message-Id: <20220915074959.4A3E723487F1@mail.sconnect.com.au>
+X-Spam-Status: No, score=4.1 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_REPLYTO,
+        RCVD_IN_BL_SPAMCOP_NET,SPF_HELO_PASS,SPF_PASS,T_PDS_TO_EQ_FROM_NAME,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -62,25 +62,25 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 You will not see this in a MIME-aware mail reader.
---===============0691349416==
+--===============1966252423==
 Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Content-Description: Mail message body
 
 PUBLISHERS CLEARING HOUSE INC
-330 Jericho Quadrangle Ste 300 Jericho NY 11753
+300 Jericho Quadrangle Ste 300 Jericho NY 11753
 PAYMENT AND FINAL NOTICE.
  =
 
 This is your Publishers Clearing House payment notice. For more information=
- and claim, please read the attached pdf file.
+, please read the attached pdf file.
  =
 
 Yours sincerely,
 Todd Sloan
 Publishers Clearing House
---===============0691349416==
+--===============1966252423==
 Content-Type: application/pdf
 MIME-Version: 1.0
 Content-Transfer-Encoding: base64
@@ -2100,4 +2100,4 @@ NjZFPgo8QTgwRjZDMjFENTU2RTI4QzQxQjBCRDM3Njk0ODA2NkU+IF0KL0RvY0NoZWNrc3VtIC8z
 MUU5N0JFRkVDMzlGQ0MzNjQyNEE3MzMxRjc3QzNENgo+PgpzdGFydHhyZWYKMTEzOTYwCiUlRU9G
 Cg==
 
---===============0691349416==--
+--===============1966252423==--
