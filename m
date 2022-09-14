@@ -2,151 +2,270 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D3955B8C1C
-	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 17:42:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D37215B8B1C
+	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 16:55:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229568AbiINPmj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Sep 2022 11:42:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34542 "EHLO
+        id S230005AbiINOzw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Sep 2022 10:55:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229557AbiINPmi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 11:42:38 -0400
-X-Greylist: delayed 1498 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 14 Sep 2022 08:42:37 PDT
-Received: from gateway34.websitewelcome.com (gateway34.websitewelcome.com [192.185.150.114])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BF131D7
-        for <netdev@vger.kernel.org>; Wed, 14 Sep 2022 08:42:36 -0700 (PDT)
-Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
-        by gateway34.websitewelcome.com (Postfix) with ESMTP id A815A471F2
-        for <netdev@vger.kernel.org>; Wed, 14 Sep 2022 09:53:22 -0500 (CDT)
-Received: from 162-215-252-169.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id YTlSosdUISQZkYTlSoLHMp; Wed, 14 Sep 2022 09:53:22 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=In-Reply-To:Content-Transfer-Encoding:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-        Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=yc4GbKCmfz1uq0X2PP3ip3zWoSdSKRh1Q7yx/y5ppGU=; b=DfXKRlMrMK5BK1o7cjMY16YfUH
-        UYERFMkgkHcsLlcYiyBB0pgBbpw7+ETkPzlTU0inw1+3DOQpzs/6csZLXgp/1i+QvqAg+C3knxy82
-        FovLEaIfNuo+T0xexJhch4shpNs3h3CPMOID5Va3LMayy19x91FSXOGtW5/tmP4mMxSsmOSwvaxAx
-        pnUkhFg+QniGLzq3r6rcYfJqqL38lNW8xzPcf6HFifIB4BklKkHI+ym85Q+v2X/bX9S7WOlE2XQdd
-        bUqiNQ2OCK8ur6FEOLg5N0ptMcm1azVFt+2p2R4gRrQHAg33MNJo7ocu0VMhc41u8d7gqU8SzuEWt
-        SOctVMJQ==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:39164 helo=localhost)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.95)
-        (envelope-from <linux@roeck-us.net>)
-        id 1oYTlR-002cQR-FB;
-        Wed, 14 Sep 2022 14:53:21 +0000
-Date:   Wed, 14 Sep 2022 07:53:17 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     =?iso-8859-1?B?Q3Pza+Fz?= Bence <csokas.bence@prolan.hu>
-Cc:     netdev@vger.kernel.org, Richard Cochran <richardcochran@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Francesco Dolcini <francesco.dolcini@toradex.com>,
-        Andrew Lunn <andrew@lunn.ch>, kernel@pengutronix.de,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        regressions@lists.linux.dev
-Subject: [REGRESSION] Re: [PATCH v2] net: fec: Use a spinlock to guard
- `fep->ptp_clk_on`
-Message-ID: <20220914145317.GA1868385@roeck-us.net>
-References: <20220901140402.64804-1-csokas.bence@prolan.hu>
+        with ESMTP id S229962AbiINOzt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 10:55:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D74366A46
+        for <netdev@vger.kernel.org>; Wed, 14 Sep 2022 07:55:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1663167345;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WLEkI//iqZSrPMfTs6GoYtZujvPTMQonmFtzUkWUMVI=;
+        b=iKiDvkURsrp8G5soLH5z7dR8+Gsev+DuRGxWaJLhZ1EabRJgrEWZfNXI/D3bXaQWidj0FF
+        IrKf1f0sQxRNUbfX9m/WMcYzW76AIQo4w+HTkjliEUW2O0UPtM7ZtIkyiUywXW5DsC8FK4
+        P1Jm6o+rdt8XmPj6D0+9zbbH9mpSDg0=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-6-uQpf9bzcPh2X9F-bf2v_aQ-1; Wed, 14 Sep 2022 10:55:44 -0400
+X-MC-Unique: uQpf9bzcPh2X9F-bf2v_aQ-1
+Received: by mail-qk1-f198.google.com with SMTP id l15-20020a05620a28cf00b006b46997c070so13329258qkp.20
+        for <netdev@vger.kernel.org>; Wed, 14 Sep 2022 07:55:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=WLEkI//iqZSrPMfTs6GoYtZujvPTMQonmFtzUkWUMVI=;
+        b=IoYm3biW7K0F/wIosT/ZZE5y3qxJL/Em8d2ImQapUE85OuZFTTS4jgn8c8+2OOoaww
+         3udEqeSOYryB0xKEq3vo1SaoB0oIL1ZP50tGkLyFZw0XPvw/TNHtKsH+fVhr4GH7VCT6
+         Om0t+RJ2PpknFvDc445vi1mZwwIqqEwSZSEZ+iGJbRXtVi9a77/Z7EJuZPENDh4ciE+8
+         xrU5B4b1ro3Tl1xRfZCmlIHpZTPNVSJNFslflF/nv0HPYn2YrYZOxZWk2eTsfEG7RU2c
+         79YiBXjhTh3IaoELBtzh0Sd1ti5Z8t7uuiA40x/sD4Fani0J013UNg1aE+qPCS3ZDaBr
+         GUfA==
+X-Gm-Message-State: ACgBeo3/R4/iMGOsFu24zC+0+AzdfQrISR9XXFMLga0Of3kCiieu4VXl
+        j0UTwhbhY8adZgG/LucE9tJvmHx5WbnEtwZWdxDn8iDqiKwSH5gnvzjyJs2KOvR7gahpRN/fr3d
+        HhIqu5J2DPG3pBdW8
+X-Received: by 2002:a05:620a:199d:b0:6cd:4638:7fdd with SMTP id bm29-20020a05620a199d00b006cd46387fddmr18642287qkb.201.1663167343048;
+        Wed, 14 Sep 2022 07:55:43 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4OraEoH8nQK5sSjwRhI+2IypQ8xR43Dh80DqrCL8nEkJ+FCRWcBQjxF+iBLR3FTp4qgELN4A==
+X-Received: by 2002:a05:620a:199d:b0:6cd:4638:7fdd with SMTP id bm29-20020a05620a199d00b006cd46387fddmr18642270qkb.201.1663167342626;
+        Wed, 14 Sep 2022 07:55:42 -0700 (PDT)
+Received: from [192.168.98.18] ([107.12.98.143])
+        by smtp.gmail.com with ESMTPSA id q26-20020ac8451a000000b003445b83de67sm1736834qtn.3.2022.09.14.07.55.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 14 Sep 2022 07:55:42 -0700 (PDT)
+Message-ID: <9822aa27-25a0-234d-0a9d-3c3c75dd40fa@redhat.com>
+Date:   Wed, 14 Sep 2022 10:55:41 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220901140402.64804-1-csokas.bence@prolan.hu>
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1oYTlR-002cQR-FB
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:39164
-X-Source-Auth: guenter@roeck-us.net
-X-Email-Count: 27
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [RFC PATCH] bonding: cause oops on aarch64 architecture in
+ bond_rr_gen_slave_id
+Content-Language: en-US
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc:     "netdev @ vger . kernel . org" <netdev@vger.kernel.org>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+References: <7565deb870649ba6b5995034695f1b498245617a.1663042611.git.jtoppins@redhat.com>
+ <27975.1663166447@famine>
+From:   Jonathan Toppins <jtoppins@redhat.com>
+In-Reply-To: <27975.1663166447@famine>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 01, 2022 at 04:04:03PM +0200, Csókás Bence wrote:
-> Mutexes cannot be taken in a non-preemptible context,
-> causing a panic in `fec_ptp_save_state()`. Replacing
-> `ptp_clk_mutex` by `tmreg_lock` fixes this.
+On 9/14/22 10:40, Jay Vosburgh wrote:
+> Jonathan Toppins <jtoppins@redhat.com> wrote:
 > 
-> Fixes: 6a4d7234ae9a ("net: fec: ptp: avoid register access when ipg clock is disabled")
-> Fixes: f79959220fa5 ("fec: Restart PPS after link state change")
-> Reported-by: Marc Kleine-Budde <mkl@pengutronix.de>
-> Link: https://lore.kernel.org/all/20220827160922.642zlcd5foopozru@pengutronix.de/
-> Signed-off-by: Csókás Bence <csokas.bence@prolan.hu>
+>> This bonding selftest causes the following kernel oops on aarch64 and
+>> possibly ppc64le architectures. This was reproduced on net/master commit
+>> 64ae13ed478428135cddc2f1113dff162d8112d4 net: core: fix flow symmetric hash
+>>
+>> [  329.805838] kselftest: Running tests in drivers/net/bonding
+>> [  330.011028] eth0: renamed from link1_2
+>> [  330.220846] eth0: renamed from link1_1
+>> [  330.387755] bond0: (slave eth0): making interface the new active one
+>> [  330.394165] bond0: (slave eth0): Enslaving as an active interface with an up link
+>> [  330.401867] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+>> [  334.586619] bond0: (slave eth0): Releasing backup interface
+>> [  334.671065] bond0: (slave eth0): Enslaving as an active interface with an up link
+>> [  334.686773] Unable to handle kernel paging request at virtual address ffff2c91ac905000
+>> [  334.694703] Mem abort info:
+>> [  334.697486]   ESR = 0x0000000096000004
+>> [  334.701234]   EC = 0x25: DABT (current EL), IL = 32 bits
+>> [  334.706536]   SET = 0, FnV = 0
+>> [  334.709579]   EA = 0, S1PTW = 0
+>> [  334.712719]   FSC = 0x04: level 0 translation fault
+>> [  334.717586] Data abort info:
+>> [  334.720454]   ISV = 0, ISS = 0x00000004
+>> [  334.724288]   CM = 0, WnR = 0
+>> [  334.727244] swapper pgtable: 4k pages, 48-bit VAs, pgdp=000008044d662000
+>> [  334.733944] [ffff2c91ac905000] pgd=0000000000000000, p4d=0000000000000000
+>> [  334.740734] Internal error: Oops: 96000004 [#1] SMP
+>> [  334.745602] Modules linked in: bonding tls veth rfkill sunrpc arm_spe_pmu vfat fat acpi_ipmi ipmi_ssif ixgbe igb i40e mdio ipmi_devintf ipmi_msghandler arm_cmn arm_dsu_pmu cppc_cpufreq acpi_tad fuse zram crct10dif_ce ast ghash_ce sbsa_gwdt nvme drm_vram_helper drm_ttm_helper nvme_core ttm xgene_hwmon
+>> [  334.772217] CPU: 7 PID: 2214 Comm: ping Not tainted 6.0.0-rc4-00133-g64ae13ed4784 #4
+>> [  334.779950] Hardware name: GIGABYTE R272-P31-00/MP32-AR1-00, BIOS F18v (SCP: 1.08.20211002) 12/01/2021
+>> [  334.789244] pstate: 60400009 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+>> [  334.796196] pc : bond_rr_gen_slave_id+0x40/0x124 [bonding]
+>> [  334.801691] lr : bond_xmit_roundrobin_slave_get+0x38/0xdc [bonding]
+> 
+> 	What line in the source code is that?  Looking at the function,
+> I don't really see anything that's arch specific, unless perhaps the
+> rr_tx_counter assignment isn't visible for some ARM cache reason (i.e.,
+> the dcache on the relevant cpu already had a populated cache line that's
+> out of date, and wasn't flushed).
 
-For regzbot:
 
-This patch results in the following backtrace.
+$ printf "%#x\n" $((0x$(nm drivers/net/bonding/bonding.ko | grep 
+bond_rr_gen_slave_id | awk '{print $1}') + 0x40))
+0x47d0
+$ eu-addr2line -e drivers/net/bonding/bonding.ko 0x47d0
+/home/jtoppins/projects/linux/./arch/arm64/include/asm/percpu.h:130:1
 
-[   18.401688] BUG: sleeping function called from invalid context at drivers/clk/imx/clk-pllv3.c:68
-[   18.402277] in_atomic(): 1, irqs_disabled(): 128, non_block: 0, pid: 1, name: swapper/0
-[   18.402531] preempt_count: 1, expected: 0
-[   18.402781] 3 locks held by swapper/0/1:
-[   18.402967]  #0: c423ac8c (&dev->mutex){....}-{3:3}, at: __driver_attach+0x80/0x158
-[   18.404364]  #1: c40dc8e8 (&fep->tmreg_lock){....}-{2:2}, at: fec_enet_clk_enable+0x58/0x250
-[   18.404752]  #2: c1a71af8 (prepare_lock){+.+.}-{3:3}, at: clk_prepare_lock+0xc/0xd4
-[   18.405246] irq event stamp: 129384
-[   18.405403] hardirqs last  enabled at (129383): [<c10850b0>] _raw_spin_unlock_irqrestore+0x50/0x64
-[   18.405667] hardirqs last disabled at (129384): [<c1084e70>] _raw_spin_lock_irqsave+0x64/0x68
-[   18.405915] softirqs last  enabled at (129218): [<c01017bc>] __do_softirq+0x2ac/0x604
-[   18.406255] softirqs last disabled at (129209): [<c012eee4>] __irq_exit_rcu+0x138/0x17c
-[   18.406792] CPU: 0 PID: 1 Comm: swapper/0 Tainted: G                 N 6.0.0-rc5 #1
-[   18.407131] Hardware name: Freescale i.MX7 Dual (Device Tree)
-[   18.407590]  unwind_backtrace from show_stack+0x10/0x14
-[   18.407890]  show_stack from dump_stack_lvl+0x68/0x90
-[   18.408097]  dump_stack_lvl from __might_resched+0x17c/0x284
-[   18.408328]  __might_resched from clk_pllv3_wait_lock+0x4c/0xcc
-[   18.408557]  clk_pllv3_wait_lock from clk_core_prepare+0xc4/0x328
-[   18.408783]  clk_core_prepare from clk_core_prepare+0x50/0x328
-[   18.408986]  clk_core_prepare from clk_core_prepare+0x50/0x328
-[   18.409205]  clk_core_prepare from clk_core_prepare+0x50/0x328
-[   18.409416]  clk_core_prepare from clk_core_prepare+0x50/0x328
-[   18.409631]  clk_core_prepare from clk_core_prepare+0x50/0x328
-[   18.409847]  clk_core_prepare from clk_core_prepare+0x50/0x328
-[   18.410065]  clk_core_prepare from clk_core_prepare+0x50/0x328
-[   18.410284]  clk_core_prepare from clk_core_prepare+0x50/0x328
-[   18.410513]  clk_core_prepare from clk_core_prepare+0x50/0x328
-[   18.410729]  clk_core_prepare from clk_prepare+0x20/0x30
-[   18.410936]  clk_prepare from fec_enet_clk_enable+0x68/0x250
-[   18.411143]  fec_enet_clk_enable from fec_probe+0x32c/0x1430
-[   18.411352]  fec_probe from platform_probe+0x58/0xbc
-[   18.411558]  platform_probe from really_probe+0xc4/0x2f4
-[   18.411772]  really_probe from __driver_probe_device+0x80/0xe4
-[   18.411983]  __driver_probe_device from driver_probe_device+0x2c/0xc4
-[   18.412203]  driver_probe_device from __driver_attach+0x8c/0x158
-[   18.412418]  __driver_attach from bus_for_each_dev+0x74/0xc0
-[   18.412631]  bus_for_each_dev from bus_add_driver+0x154/0x1e8
-[   18.412844]  bus_add_driver from driver_register+0x88/0x11c
-[   18.413055]  driver_register from do_one_initcall+0x68/0x428
-[   18.413271]  do_one_initcall from kernel_init_freeable+0x18c/0x240
-[   18.413502]  kernel_init_freeable from kernel_init+0x14/0x144
-[   18.413721]  kernel_init from ret_from_fork+0x14/0x28
-[   18.414036] Exception stack(0xd0825fb0 to 0xd0825ff8)
-[   18.414523] 5fa0:                                     00000000 00000000 00000000 00000000
-[   18.414792] 5fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-[   18.415032] 5fe0: 00000000 00000000 00000000 00000000 00000013 00000000
+It appears to be a percpu arch specific issue. The cache line idea is a 
+thought, not sure how to go about debugging on arm. I also have a report 
+with a similar stack trace on ppc64le, but do not have a box to test on 
+at this moment. I mention this as maybe someone else might see a generic 
+non arch specific issue.
 
+I could not reproduce the issue on x86_64 using a Fedora 36 kernel and 
+this same test-case, I have not tested this specific upstream hash on 
+x86_64. That was the plan for today.
+
+>> [  334.807962] sp : ffff8000221733e0
+>> [  334.811265] x29: ffff8000221733e0 x28: ffffdbac8572d198 x27: ffff80002217357c
+>> [  334.818392] x26: 000000000000002a x25: ffffdbacb33ee000 x24: ffff07ff980fa000
+>> [  334.825519] x23: ffffdbacb2e398ba x22: ffff07ff98102000 x21: ffff07ff981029c0
+>> [  334.832646] x20: 0000000000000001 x19: ffff07ff981029c0 x18: 0000000000000014
+>> [  334.839773] x17: 0000000000000000 x16: ffffdbacb1004364 x15: 0000aaaabe2f5a62
+>> [  334.846899] x14: ffff07ff8e55d968 x13: ffff07ff8e55db30 x12: 0000000000000000
+>> [  334.854026] x11: ffffdbacb21532e8 x10: 0000000000000001 x9 : ffffdbac857178ec
+>> [  334.861153] x8 : ffff07ff9f6e5a28 x7 : 0000000000000000 x6 : 000000007c2b3742
+>> [  334.868279] x5 : ffff2c91ac905000 x4 : ffff2c91ac905000 x3 : ffff07ff9f554400
+>> [  334.875406] x2 : ffff2c91ac905000 x1 : 0000000000000001 x0 : ffff07ff981029c0
+>> [  334.882532] Call trace:
+>> [  334.884967]  bond_rr_gen_slave_id+0x40/0x124 [bonding]
+>> [  334.890109]  bond_xmit_roundrobin_slave_get+0x38/0xdc [bonding]
+>> [  334.896033]  __bond_start_xmit+0x128/0x3a0 [bonding]
+>> [  334.901001]  bond_start_xmit+0x54/0xb0 [bonding]
+>> [  334.905622]  dev_hard_start_xmit+0xb4/0x220
+>> [  334.909798]  __dev_queue_xmit+0x1a0/0x720
+>> [  334.913799]  arp_xmit+0x3c/0xbc
+>> [  334.916932]  arp_send_dst+0x98/0xd0
+>> [  334.920410]  arp_solicit+0xe8/0x230
+>> [  334.923888]  neigh_probe+0x60/0xb0
+>> [  334.927279]  __neigh_event_send+0x3b0/0x470
+>> [  334.931453]  neigh_resolve_output+0x70/0x90
+>> [  334.935626]  ip_finish_output2+0x158/0x514
+>> [  334.939714]  __ip_finish_output+0xac/0x1a4
+>> [  334.943800]  ip_finish_output+0x40/0xfc
+>> [  334.947626]  ip_output+0xf8/0x1a4
+>> [  334.950931]  ip_send_skb+0x5c/0x100
+>> [  334.954410]  ip_push_pending_frames+0x3c/0x60
+>> [  334.958758]  raw_sendmsg+0x458/0x6d0
+>> [  334.962325]  inet_sendmsg+0x50/0x80
+>> [  334.965805]  sock_sendmsg+0x60/0x6c
+>> [  334.969286]  __sys_sendto+0xc8/0x134
+>> [  334.972853]  __arm64_sys_sendto+0x34/0x4c
+>> [  334.976854]  invoke_syscall+0x78/0x100
+>> [  334.980594]  el0_svc_common.constprop.0+0x4c/0xf4
+>> [  334.985287]  do_el0_svc+0x38/0x4c
+>> [  334.988591]  el0_svc+0x34/0x10c
+>> [  334.991724]  el0t_64_sync_handler+0x11c/0x150
+>> [  334.996072]  el0t_64_sync+0x190/0x194
+>> [  334.999726] Code: b9001062 f9403c02 d53cd044 8b040042 (b8210040)
+>> [  335.005810] ---[ end trace 0000000000000000 ]---
+>> [  335.010416] Kernel panic - not syncing: Oops: Fatal exception in interrupt
+>> [  335.017279] SMP: stopping secondary CPUs
+>> [  335.021374] Kernel Offset: 0x5baca8eb0000 from 0xffff800008000000
+>> [  335.027456] PHYS_OFFSET: 0x80000000
+>> [  335.030932] CPU features: 0x0000,0085c029,19805c82
+>> [  335.035713] Memory Limit: none
+>> [  335.038756] Rebooting in 180 seconds..
+>>
+>> Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
+>> ---
+>> .../selftests/drivers/net/bonding/Makefile    |  1 +
+>> .../bonding/bond-arp-interval-causes-panic.sh | 46 +++++++++++++++++++
+>> 2 files changed, 47 insertions(+)
+>> create mode 100755 tools/testing/selftests/drivers/net/bonding/bond-arp-interval-causes-panic.sh
+>>
+>> diff --git a/tools/testing/selftests/drivers/net/bonding/Makefile b/tools/testing/selftests/drivers/net/bonding/Makefile
+>> index ab6c54b12098..79bb06fd386a 100644
+>> --- a/tools/testing/selftests/drivers/net/bonding/Makefile
+>> +++ b/tools/testing/selftests/drivers/net/bonding/Makefile
+>> @@ -2,5 +2,6 @@
+>> # Makefile for net selftests
+>>
+>> TEST_PROGS := bond-break-lacpdu-tx.sh
+>> +TEST_PROGS += bond-arp-interval-causes-panic.sh
+>>
+>> include ../../../lib.mk
+>> diff --git a/tools/testing/selftests/drivers/net/bonding/bond-arp-interval-causes-panic.sh b/tools/testing/selftests/drivers/net/bonding/bond-arp-interval-causes-panic.sh
+>> new file mode 100755
+>> index 000000000000..0c3e5d486193
+>> --- /dev/null
+>> +++ b/tools/testing/selftests/drivers/net/bonding/bond-arp-interval-causes-panic.sh
+>> @@ -0,0 +1,46 @@
+>> +#!/bin/sh
+>> +
+>> +# cause kernel oops in bond_rr_gen_slave_id on aarch64 and ppcle
+>> +# architectures
+>> +DEBUG=${DEBUG:-0}
+>> +
+>> +set -e
+>> +test ${DEBUG} -ne 0 && set -x
+>> +
+>> +function finish()
+>> +{
+>> +	ip -all netns delete
+>> +	ip link del link1_1 || true
+>> +}
+>> +
+>> +trap finish EXIT
+>> +
+>> +client_ip4=192.168.1.198
+>> +server_ip4=192.168.1.254
+>> +
+>> +# setup kernel so it reboots after causing the panic
+>> +echo 180 >/proc/sys/kernel/panic
+>> +
+>> +# build namespaces
+>> +ip link add dev link1_1 type veth peer name link1_2
+>> +
+>> +ip netns add "server"
+>> +ip link set dev link1_2 netns server up name eth0
+>> +ip netns exec server ip addr add ${server_ip4}/24 dev eth0
+>> +
+>> +ip netns add "client"
+>> +ip link set dev link1_1 netns client down name eth0
+>> +ip netns exec client ip link add dev bond0 down type bond mode 1 miimon 100 all_slaves_active 1
+>> +ip netns exec client ip link set dev eth0 down master bond0
+>> +ip netns exec client ip link set dev bond0 up
+>> +ip netns exec client ip addr add ${client_ip4}/24 dev bond0
+>> +ip netns exec client ping -c 5 $server_ip4 >/dev/null
+>> +
+>> +ip netns exec client ip link set dev eth0 down nomaster
+>> +ip netns exec client ip link set dev bond0 down
+>> +ip netns exec client ip link set dev bond0 type bond mode 0 arp_interval 1000 arp_ip_target "+${server_ip4}"
+>> +ip netns exec client ip link set dev eth0 down master bond0
+>> +ip netns exec client ip link set dev bond0 up
+>> +ip netns exec client ping -c 5 $server_ip4 >/dev/null
+>> +
+>> +exit 0
+>> -- 
+>> 2.31.1
+>>
+> 
 
