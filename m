@@ -2,69 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E65B5B7FAA
-	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 05:47:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 150705B7FD4
+	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 05:54:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229802AbiINDrQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 23:47:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60438 "EHLO
+        id S229446AbiINDyR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 23:54:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229667AbiINDrO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 23:47:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B47506EF3F
-        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 20:47:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1663127232;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=fwI4pxFaOpyghP4nKqCzlpD4iYPI4aC9XKzX8S9lXFE=;
-        b=HhqvSICIzTLqGn9mreFaJS8PycNfJx6SKdh9sr8eTWnhg3EqmDHVjNPx82JLyPfrdVSush
-        FF8nl6o9hYTctg9I7KiBv14Qf6Z5wZEw8kkdt0Ngnf7PjWtYmiR1v4UkJcFZwN1/O6qmuQ
-        u5w33asrSWV2HcS8P212tlAV8/B4Ap0=
-Received: from mail-ua1-f71.google.com (mail-ua1-f71.google.com
- [209.85.222.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-607-QUEOYPAUP4iKY-UXcsOdvQ-1; Tue, 13 Sep 2022 23:47:08 -0400
-X-MC-Unique: QUEOYPAUP4iKY-UXcsOdvQ-1
-Received: by mail-ua1-f71.google.com with SMTP id r33-20020a9f3624000000b0039efb8959e3so3980841uad.0
-        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 20:47:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=fwI4pxFaOpyghP4nKqCzlpD4iYPI4aC9XKzX8S9lXFE=;
-        b=5JDMqy6lXI8h+ipsePxUpVIB4BxNbvh2ms4wooBdiNwbjA/3wWx0vfhONUjl3Shcel
-         YtUpaLVHx9zmWA2GQz/G6k1D+MZkoaBjp2xWbZEhfTidXZUsQQfjjECyiqdpyLY0TQCx
-         f6jmbW4DRcROu5jx/lNPNFfEOChqYi/ycVqZjGWWeA9pYbcm4eApwoR+dQzP8zef7kcy
-         FzHju5yp69wvUjhFFUvdsTgurEQnolotgR3G+Q7nnqXluhKUUX1gAqQVdrUy+s8p//OY
-         BDgMbUchBZy5wErqTWhCBS7JpjWrbdj0uvWIhNstLkJWcK8vULuSs6P0R2vw5AIFhOAo
-         xV/Q==
-X-Gm-Message-State: ACgBeo0WiP18GQoP25ITN/J32RRvZqRwJdMpxL2N9LT4H7d9Wq4mSqDP
-        arYlkz1DIlhqFxCewS9k8elg5s3wH+1bqzCSCfexhE0yu3QKMn14c7Lfa/CtFGwWkU3do50k1FA
-        +S9wXvsrZi/IDQsxGPGFv4Ni1Pd++RjA3
-X-Received: by 2002:a05:6102:1341:b0:398:889e:7f28 with SMTP id j1-20020a056102134100b00398889e7f28mr4865563vsl.21.1663127227530;
-        Tue, 13 Sep 2022 20:47:07 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5Ha3KMq4e+ZRq90AitAHpMvWzaF8YgV8fHH5lOzOSmrBmP4SuDkkqvhsU03bmmRyugK+A88DC7xMXq7SvjUso=
-X-Received: by 2002:a05:6102:1341:b0:398:889e:7f28 with SMTP id
- j1-20020a056102134100b00398889e7f28mr4865558vsl.21.1663127227296; Tue, 13 Sep
- 2022 20:47:07 -0700 (PDT)
+        with ESMTP id S229457AbiINDyP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 23:54:15 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4750A6F56A;
+        Tue, 13 Sep 2022 20:54:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1663127655; x=1694663655;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=CMQzYDRDA8hvu9Na0dMDyZtAGCnoBzQdZ7cCirM8EWQ=;
+  b=0jb4u0SCr4pMgKuQ+m1/dHNIbe9zuZ+dy8A/B68yiZ9jOMxJxHXmrDR+
+   DqJrKk4yDAZcnzNhGj4el6WG+a8DHRcGRrZI3a7Jno563g3X6suA98grI
+   U6GVGx3Br0jyRettld+H9eit731j/KWl3r5ymKDxWT13sN/tt6i1A6cOa
+   kIb8MYbmufN/eobU+87xszV1jIXOXVOdnLvqjntICwFVdzwykkNL1Crh6
+   YGeBgUvZR/irKCHEkfVD1IL9c35O3AbX18itNqijwAlRllA5mWXUYKgda
+   rzJmbLI96N1153Ehj6Ts+lYt4pn/Q6AVUylDvNYWWLaWHOdi0CbbsNFqP
+   w==;
+X-IronPort-AV: E=Sophos;i="5.93,313,1654585200"; 
+   d="scan'208";a="173755919"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Sep 2022 20:54:14 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Tue, 13 Sep 2022 20:54:13 -0700
+Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Tue, 13 Sep 2022 20:54:07 -0700
+From:   Arun Ramadoss <arun.ramadoss@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
+        <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <olteanv@gmail.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <linux@armlinux.org.uk>, <Tristram.Ha@microchip.com>,
+        <arun.ramadoss@microchip.com>,
+        <prasanna.vengateshan@microchip.com>, <hkallweit1@gmail.com>
+Subject: [Patch net-next v2 0/5] net: dsa: microchip: ksz9477: enable interrupt for internal phy link detection
+Date:   Wed, 14 Sep 2022 09:22:18 +0530
+Message-ID: <20220914035223.31702-1-arun.ramadoss@microchip.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <CADZGycYUH=j80zmJVr7dfVtoJ+BrbAEPJE8Nvf3HR5oimJR+UQ@mail.gmail.com>
-In-Reply-To: <CADZGycYUH=j80zmJVr7dfVtoJ+BrbAEPJE8Nvf3HR5oimJR+UQ@mail.gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Wed, 14 Sep 2022 11:46:56 +0800
-Message-ID: <CACGkMEvNMDG=9tYAWDOqdYKMy-Sk3qShQX3PWGQZBcdvZ7y3Tw@mail.gmail.com>
-Subject: Re: [Q] packet truncated after enabling ip_forward for virtio-net in guest
-To:     Wei Yang <richard.weiyang@gmail.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,42 +64,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 13, 2022 at 11:43 PM Wei Yang <richard.weiyang@gmail.com> wrote:
->
-> Hi, I am running a guest with vhost-net as backend. After I enable
-> ip_forward, the packet received is truncated.
->
-> Host runs a 5.10 kernel, while guest kernel is v5.11 which doesn't
-> include this commit:
->
->   virtio-net: use NETIF_F_GRO_HW instead of NETIF_F_LRO
->
-> After applying this commit, the issue is gone. I guess the reason is
-> this device doesn't have NETIF_F_GRO_HW set,
+This patch series implements the common interrupt handling for ksz9477 based
+switches and lan937x. The ksz9477 and lan937x has similar interrupt registers
+except ksz9477 has 4 port based interrupts whereas lan937x has 6 interrupts.
+The patch moves the phy interrupt hanler implemented in lan937x_main.c to
+ksz_common.c, along with the mdio_register functionality.
 
-Note that form device POV, it should be VIRTIO_NET_F_GUEST_TSOX.
+v1 -> v2
+- Added the .port_nirqs = 2 for ksz9896
 
-> so
-> virtnet_set_guest_offloads is not called.
->
-> I am wondering why packet is truncated without this fix. I follow
-> virtnet_set_guest_offloads and just see virtio_net_handle_ctrl in qemu
-> handles VIRTIO_NET_CTRL_GUEST_OFFLOADS. Since we use a tap dev, then I
-> follow tap_fd_set_offload to ioctl(fd, TUNSETOFFLOAD, offload).
->
-> But I am lost here. tap_ioctl -> set_offload(). Since we use a normal
-> tap device instead of ipvtap/macvtap, update_features is empty. So I
-> don't get how the device's behavior is changed after set LRO.
->
-> Do I follow the wrong path? Any suggestions on investigation?
+Changes in RFC -> v1
+- modified the return -ENODEV to 0 if mdio node not present
 
-Note that if you are using tuntap, you should refert driver/net/tun.c
-instead of tap.c. Where it calls netdev_update_features() that will
-change the TX offloading.
+Arun Ramadoss (5):
+  net: dsa: microchip: determine number of port irq based on switch type
+  net: dsa: microchip: enable phy interrupts only if interrupt enabled
+    in dts
+  net: dsa: microchip: lan937x: return zero if mdio node not present
+  net: dsa: microchip: move interrupt handling logic from lan937x to
+    ksz_common
+  net: phy: micrel: enable interrupt for ksz9477 phy
 
-Thanks
+ drivers/net/dsa/microchip/ksz_common.c   | 436 +++++++++++++++++++++++
+ drivers/net/dsa/microchip/ksz_common.h   |  10 +
+ drivers/net/dsa/microchip/lan937x_main.c | 425 ----------------------
+ drivers/net/phy/micrel.c                 |   2 +
+ 4 files changed, 448 insertions(+), 425 deletions(-)
 
->
-> I'd appreciate it if someone could give a hint :-)
->
+
+base-commit: c9ae520ac3faf2f272b5705b085b3778c7997ec8
+-- 
+2.36.1
 
