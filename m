@@ -2,139 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD2D75B7E08
-	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 02:55:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A0775B7E1D
+	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 03:11:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229573AbiINAzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Sep 2022 20:55:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55346 "EHLO
+        id S229881AbiINBLH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Sep 2022 21:11:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229487AbiINAzn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 20:55:43 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D6EA25591
-        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 17:55:42 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id c198so13313545pfc.13
-        for <netdev@vger.kernel.org>; Tue, 13 Sep 2022 17:55:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date;
-        bh=5vV4CilzLiWjPs5xReufWS8ipvCGneLgr8C9TBkLjw0=;
-        b=nhcftbz0F+5FieX2xbd8segHsRucGIuOwKvgYMu9lmxrssK8PpwDOXEh1Rw+Esp+dz
-         MilZoQWwJc4vabWLbqbTFAMTOE7qQ9msTC0w/k0ZfPeJCRS1vgzLelZxU3M2p0uFJ5QU
-         Cx6QDJlBXVOWNqdDgdJ4l/sQx4KTcvP2b1hrc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=5vV4CilzLiWjPs5xReufWS8ipvCGneLgr8C9TBkLjw0=;
-        b=pSONI7cIvm5a8Nudfv2AjKX2ZXgOmEIFJhNfsKHo1nvmxIY8zTY2l99ofp2QRXzhGX
-         s7HJpiptDsiiVnqX4QYwuxjJCxDWwqdEJ/qTwdO6pO3KW7See2X3zA3PPpGtdoH9EpTV
-         6guf1z3ku4fpf5uSwqvB0VNoVSKebe8pDhWjVLabMcVPx6IaBWl6JaK661+5pVzz+i9T
-         IeCO1TM2uh3xSYUIn8x4+67z411szWleGNaEDJaRuZ7sSnfbUSizWXavWoym74dPBz6E
-         27628P3F75jYTkr8KA+tLGYzrrKrNnG20shb6BvRfY9Mk6sHSv/7BYHxIcUv62+3IUDe
-         UDhw==
-X-Gm-Message-State: ACgBeo1jTFAPVFwA+QMDqHdoNQjeijM2jNU08HaljttA9lJKwHMIjYrG
-        f6fPdHmxBjnWlUpQsdy/PQJ5+qOEXUyQbJoH
-X-Google-Smtp-Source: AA6agR48k91enu7+uh/AQ4joZbHAihyt0j9hntaWvaNHhQzbmNpt+4siuaaNR8At8OdvW016llHErg==
-X-Received: by 2002:a63:fb0e:0:b0:434:efad:10c8 with SMTP id o14-20020a63fb0e000000b00434efad10c8mr28905882pgh.316.1663116941537;
-        Tue, 13 Sep 2022 17:55:41 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id i32-20020a17090a3da300b001fbb0f0b00fsm7846674pjc.35.2022.09.13.17.55.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Sep 2022 17:55:40 -0700 (PDT)
-Date:   Tue, 13 Sep 2022 17:55:39 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Jason@zx2c4.com
-Cc:     syzbot <syzbot+a448cda4dba2dac50de5@syzkaller.appspotmail.com>,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-next@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com, sfr@canb.auug.org.au,
-        syzkaller-bugs@googlegroups.com, wireguard@lists.zx2c4.com
-Subject: Re: [syzbot] linux-next test error: WARNING in set_peer
-Message-ID: <202209131753.D1BDA803@keescook>
-References: <00000000000060a74405e8945759@google.com>
+        with ESMTP id S229487AbiINBLG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Sep 2022 21:11:06 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2FF311C0F;
+        Tue, 13 Sep 2022 18:11:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1663117861; x=1694653861;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=4hhTqP0/V+vCzPJZLXM7LRMMWx5tpU/aTziqBSnlTo8=;
+  b=nBxSzZc3/JklAAX6kYsVStTdm2YqA47f0CzheQgl0ooAppKAFLAbSekT
+   P+vrc4c/ugE16ZhwpLqhHYEyyb3K+G2sCpgQKKav4ts4ADRH8Xm3ihjDp
+   Xtmdzpro+xd7w9+7xciKc5J/Cmiy3Yt2gPNhOLGs8MBtCNZrS0h5/T7fE
+   rGzNXYtpjZWBH0yUtHI8X1DIWlsQ7fw/9eEwFoMeNf2zxaOOJl8jgdncq
+   wW7DdCwMlIG7kCWS2CXZoLNeRusM1funVBZX8R26l+lkBSX7H/d6N2pBX
+   OyZfY0R11i+MvTE923pWwu6XThUrvi5a/8EkvXimOxSXO6/T615zJs/Ch
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10469"; a="299656716"
+X-IronPort-AV: E=Sophos;i="5.93,313,1654585200"; 
+   d="scan'208";a="299656716"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2022 18:11:01 -0700
+X-IronPort-AV: E=Sophos;i="5.93,313,1654585200"; 
+   d="scan'208";a="567809005"
+Received: from jiaqingz-mobl.ccr.corp.intel.com (HELO [10.255.29.56]) ([10.255.29.56])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2022 18:10:59 -0700
+Message-ID: <5346c9f6-1b7e-3c65-80a7-b06408bd95f3@linux.intel.com>
+Date:   Wed, 14 Sep 2022 09:10:57 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <00000000000060a74405e8945759@google.com>
-X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [PATCH] net/ncsi: Add Intel OS2BMC OEM command
+Content-Language: en-US
+To:     Sam Mendoza-Jonas <sam@mendozajonas.com>,
+        Paul Fertser <fercerpav@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        openbmc@lists.ozlabs.org, linux-kernel@vger.kernel.org
+References: <20220909025716.2610386-1-jiaqing.zhao@linux.intel.com>
+ <YxrWPfErV7tKRjyQ@home.paul.comp>
+ <8eabb29b-7302-d0a2-5949-d7aa6bc59809@linux.intel.com>
+ <Yxrun9LRcFv2QntR@home.paul.comp>
+ <36c12486-57d4-c11d-474f-f26a7de8e59a@linux.intel.com>
+ <F7F5AD32-901B-440A-8B1D-30C4283F18CD@mendozajonas.com>
+From:   Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
+In-Reply-To: <F7F5AD32-901B-440A-8B1D-30C4283F18CD@mendozajonas.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 13, 2022 at 12:51:42PM -0700, syzbot wrote:
-> memcpy: detected field-spanning write (size 28) of single field "&endpoint.addr" at drivers/net/wireguard/netlink.c:446 (size 16)
-
-This is one way to fix it:
-
-diff --git a/drivers/net/wireguard/netlink.c b/drivers/net/wireguard/netlink.c
-index 0c0644e762e5..dbbeba216530 100644
---- a/drivers/net/wireguard/netlink.c
-+++ b/drivers/net/wireguard/netlink.c
-@@ -434,16 +434,16 @@ static int set_peer(struct wg_device *wg, struct nlattr **attrs)
- 	}
- 
- 	if (attrs[WGPEER_A_ENDPOINT]) {
--		struct sockaddr *addr = nla_data(attrs[WGPEER_A_ENDPOINT]);
-+		struct endpoint *raw = nla_data(attrs[WGPEER_A_ENDPOINT]);
- 		size_t len = nla_len(attrs[WGPEER_A_ENDPOINT]);
- 
- 		if ((len == sizeof(struct sockaddr_in) &&
--		     addr->sa_family == AF_INET) ||
-+		     raw->addr.sa_family == AF_INET) ||
- 		    (len == sizeof(struct sockaddr_in6) &&
--		     addr->sa_family == AF_INET6)) {
-+		     raw->addr.sa_family == AF_INET6)) {
- 			struct endpoint endpoint = { { { 0 } } };
- 
--			memcpy(&endpoint.addr, addr, len);
-+			memcpy(&endpoint.addrs, &raw->addrs, len);
- 			wg_socket_set_peer_endpoint(peer, &endpoint);
- 		}
- 	}
-diff --git a/drivers/net/wireguard/peer.h b/drivers/net/wireguard/peer.h
-index 76e4d3128ad4..4fbe7940828b 100644
---- a/drivers/net/wireguard/peer.h
-+++ b/drivers/net/wireguard/peer.h
-@@ -19,11 +19,13 @@
- struct wg_device;
- 
- struct endpoint {
--	union {
--		struct sockaddr addr;
--		struct sockaddr_in addr4;
--		struct sockaddr_in6 addr6;
--	};
-+	struct_group(addrs,
-+		union {
-+			struct sockaddr addr;
-+			struct sockaddr_in addr4;
-+			struct sockaddr_in6 addr6;
-+		};
-+	);
- 	union {
- 		struct {
- 			struct in_addr src4;
 
 
-diffoscope shows the bounds check gets updated to the full union size:
-│ -     cmp    $0x11,%edx
-│ +     cmp    $0x1d,%edx
+On 2022-09-13 21:35, Sam Mendoza-Jonas wrote:
+> On September 13, 2022 3:12:06 AM GMT+01:00, Jiaqing Zhao <jiaqing.zhao@linux.intel.com> wrote:
+>>
+>>
+>> On 2022-09-09 15:43, Paul Fertser wrote:
+>>> Hello,
+>>>
+>>> On Fri, Sep 09, 2022 at 03:34:53PM +0800, Jiaqing Zhao wrote:
+>>>>> Can you please outline some particular use cases for this feature?
+>>>>>
+>>>> It enables access between host and BMC when BMC shares the network connection
+>>>> with host using NCSI, like accessing BMC via HTTP or SSH from host. 
+>>>
+>>> Why having a compile time kernel option here more appropriate than
+>>> just running something like "/usr/bin/ncsi-netlink --package 0
+>>> --channel 0 --index 3 --oem-payload 00000157200001" (this example uses
+>>> another OEM command) on BMC userspace startup?
+>>>
+>>
+>> Using ncsi-netlink is one way, but the package and channel id is undetermined
+>> as it is selected at runtime. Calling the netlink command on a nonexistent
+>> package/channel may lead to kernel panic.
+> 
+> If so, that would be a bug :)
 
-and the field name changes in the warning:
-$ strings clang/drivers/net/wireguard/netlink.o.after | grep ^field
-field "&endpoint.addrs" at drivers/net/wireguard/netlink.c:446
+Yes but I haven't found the root cause so far, it only panics with some specific
+NICs I remember.
 
+>>
+>> Why I prefer the kernel option is that it applies the config to all ncsi
+>> devices by default when setting up them. This reduces the effort and keeps
+>> compatibility. Lots of things in current ncsi kernel driver can be done via
+>> commands from userspace, but I think it is not a good idea to have a driver
+>> resides on both kernel and userspace.
+> 
+> BMCs are of course in their own world and there's already some examples of the config option, but how would a system owner be able to disable this without reflashing the BMC?
 
--- 
-Kees Cook
+Given that ncsi driver is a driver binding to the PHY driver, it seems to be unable
+to make it a module and have some module options. So far build option seems to be
+the only way. Maybe in future sysfs entries can be added to make it configurable at
+runtime.
