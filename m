@@ -2,32 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B3685B9106
-	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 01:40:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC31F5B910B
+	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 01:40:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229943AbiINXku (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Sep 2022 19:40:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55922 "EHLO
+        id S229957AbiINXkx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Sep 2022 19:40:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229913AbiINXkq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 19:40:46 -0400
-Received: from mxd1.seznam.cz (mxd1.seznam.cz [IPv6:2a02:598:a::78:210])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC8E8402E5;
-        Wed, 14 Sep 2022 16:40:43 -0700 (PDT)
+        with ESMTP id S229940AbiINXkt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 19:40:49 -0400
+X-Greylist: delayed 1585 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 14 Sep 2022 16:40:48 PDT
+Received: from mxd2.seznam.cz (mxd2.seznam.cz [IPv6:2a02:598:2::210])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 188AD402E5;
+        Wed, 14 Sep 2022 16:40:47 -0700 (PDT)
 Received: from email.seznam.cz
-        by email-smtpc17a.ko.seznam.cz (email-smtpc17a.ko.seznam.cz [10.53.18.18])
-        id 239c9d3ac7304e0422413c54;
-        Thu, 15 Sep 2022 01:40:07 +0200 (CEST)
+        by email-smtpc1a.ng.seznam.cz (email-smtpc1a.ng.seznam.cz [10.23.10.15])
+        id 77ea57b49346848a7637f6da;
+        Thu, 15 Sep 2022 01:40:12 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seznam.cz; s=beta;
-        t=1663198807; bh=hBUgfXVIXBf5ZVa/8FImGGTzXRmXJS7KVcNoi1eZrPo=;
-        h=Received:From:To:Cc:Subject:Date:Message-Id:X-Mailer:MIME-Version:
-         Content-Transfer-Encoding;
-        b=PQWkOAYgMoWsHtrx93bH1P4HcTfOiUj006D6OzdRfyfZwe7VHkxDSwAezlHgH3vk0
-         n+Jlwq8Wvert4Hq947ags7ciioC0w4pzoVyhGEyUkDYX2rK4gexch2epNwXVxSceRt
-         dHuupjLcrzRh+g943RX1RGu/pssVNJ1ecxEdf6qk=
+        t=1663198812; bh=KfzDDufQO0EmyWPeN8vROr7WTX1Av+h27clBNarB/G0=;
+        h=Received:From:To:Cc:Subject:Date:Message-Id:X-Mailer:In-Reply-To:
+         References:MIME-Version:Content-Transfer-Encoding;
+        b=HebwmnAmfNwyXXrU0O1OpA1luvqCT5y7zJOKbFL4VXy1DplhKqvUj/vT5LqPbxMO6
+         KHax8sGxyMusmS8d0iVxb6LgbfxIJZVSrEgOLKJqa3xpml2buYKJcvERtb9g0bwNQs
+         HfgeWbFx/Yl81qjynyhnSG/sL8C0GSzrh9xw5bvM=
 Received: from localhost.localdomain (2a02:8308:900d:2400:4bcc:f22e:1266:5194 [2a02:8308:900d:2400:4bcc:f22e:1266:5194])
         by email-relay10.ng.seznam.cz (Seznam SMTPD 1.3.137) with ESMTP;
-        Thu, 15 Sep 2022 01:40:05 +0200 (CEST)  
+        Thu, 15 Sep 2022 01:40:11 +0200 (CEST)  
 From:   Matej Vasilevski <matej.vasilevski@seznam.cz>
 To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>,
         Ondrej Ille <ondrej.ille@gmail.com>,
@@ -42,10 +43,12 @@ To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>,
 Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
         devicetree@vger.kernel.org,
         Matej Vasilevski <matej.vasilevski@seznam.cz>
-Subject: [PATCH v4 0/3] can: ctucanfd: hardware rx timestamps reporting
-Date:   Thu, 15 Sep 2022 01:39:41 +0200
-Message-Id: <20220914233944.598298-1-matej.vasilevski@seznam.cz>
+Subject: [PATCH v4 1/3] dt-bindings: can: ctucanfd: add another clock for HW timestamping
+Date:   Thu, 15 Sep 2022 01:39:42 +0200
+Message-Id: <20220914233944.598298-2-matej.vasilevski@seznam.cz>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220914233944.598298-1-matej.vasilevski@seznam.cz>
+References: <20220914233944.598298-1-matej.vasilevski@seznam.cz>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -58,55 +61,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Add second clock phandle to specify the timestamping clock.
 
-this is the v4 patch for CTU CAN FD hardware timestamps reporting.
-Excuse my mistake, I'm sorry for the double post, but minutes after posting
-patch v3 I've realized I forgot to update the pm_runtime method in error counter routine.
+Signed-off-by: Matej Vasilevski <matej.vasilevski@seznam.cz>
+---
+ .../bindings/net/can/ctu,ctucanfd.yaml        | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
 
-Even though pm_runtime_resume_and_get and pm_runtime_get_sync should be equivalent,
-I want to have the code consistent.
-
-Changes since v3: https://lore.kernel.org/all/20220914231249.593643-1-matej.vasilevski@seznam.cz/t/#u
-- use pm_runtime_resume_and_get in error counter routine ctucan_get_berr_counter
-
-Changes since v2: https://lore.kernel.org/all/20220801184656.702930-1-matej.vasilevski@seznam.cz/t/#u
-- proper timestamping clock handling
-	- clocks manually enabled using clk_prepare_enable, then managed
-	  by runtime PM (if runtime PM is enabled)
-	- driver should work even without CONFIG_PM
-- access to the timecounter is now protected by a spinlock
-- harmonized with Vincent's patch - TX timestamping capability is now
-  correctly reported
-- work_delay_jiffies stored as unsigned long instead of u32
-- max work delay limited to 3600 seconds (instead of 86k seconds)
-- adressed the rest of the comments from the patch V2 review
-
-Changes since v1: https://lore.kernel.org/all/20220512232706.24575-1-matej.vasilevski@seznam.cz/
-- Removed kconfig option to enable/disable timestamps.
-- Removed dt parameters ts-frequency and ts-used-bits. Now the user
-  only needs to add the timestamping clock phandle to clocks, and even
-  that is optional.
-- Added SIOCSHWTSTAMP ioctl to enable/disable timestamps.
-- Adressed comments from the RFC review.
-
-Matej Vasilevski (3):
-  dt-bindings: can: ctucanfd: add another clock for HW timestamping
-  can: ctucanfd: add HW timestamps to RX and error CAN frames
-  doc: ctucanfd: RX frames timestamping for platform devices
-
- .../bindings/net/can/ctu,ctucanfd.yaml        |  19 +-
- .../can/ctu/ctucanfd-driver.rst               |  13 +-
- drivers/net/can/ctucanfd/Makefile             |   2 +-
- drivers/net/can/ctucanfd/ctucanfd.h           |  20 ++
- drivers/net/can/ctucanfd/ctucanfd_base.c      | 239 ++++++++++++++++--
- drivers/net/can/ctucanfd/ctucanfd_pci.c       |   5 +-
- drivers/net/can/ctucanfd/ctucanfd_platform.c  |   5 +-
- drivers/net/can/ctucanfd/ctucanfd_timestamp.c |  70 +++++
- 8 files changed, 344 insertions(+), 29 deletions(-)
- create mode 100644 drivers/net/can/ctucanfd/ctucanfd_timestamp.c
-
-
-base-commit: c9ae520ac3faf2f272b5705b085b3778c7997ec8
---
+diff --git a/Documentation/devicetree/bindings/net/can/ctu,ctucanfd.yaml b/Documentation/devicetree/bindings/net/can/ctu,ctucanfd.yaml
+index 4635cb96fc64..432f0e3ed828 100644
+--- a/Documentation/devicetree/bindings/net/can/ctu,ctucanfd.yaml
++++ b/Documentation/devicetree/bindings/net/can/ctu,ctucanfd.yaml
+@@ -44,9 +44,19 @@ properties:
+ 
+   clocks:
+     description: |
+-      phandle of reference clock (100 MHz is appropriate
+-      for FPGA implementation on Zynq-7000 system).
+-    maxItems: 1
++      Phandle of reference clock (100 MHz is appropriate for FPGA
++      implementation on Zynq-7000 system). Optionally add a phandle to
++      the timestamping clock connected to timestamping counter, if used.
++    minItems: 1
++    items:
++      - description: core clock
++      - description: timestamping clock
++
++  clock-names:
++    minItems: 1
++    items:
++      - const: core-clk
++      - const: ts-clk
+ 
+ required:
+   - compatible
+@@ -61,6 +71,7 @@ examples:
+     ctu_can_fd_0: can@43c30000 {
+       compatible = "ctu,ctucanfd";
+       interrupts = <0 30 4>;
+-      clocks = <&clkc 15>;
++      clocks = <&clkc 15>, <&clkc 16>;
++      clock-names = "core-clk", "ts-clk";
+       reg = <0x43c30000 0x10000>;
+     };
+-- 
 2.25.1
+
