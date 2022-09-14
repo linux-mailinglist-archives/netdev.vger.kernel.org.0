@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 117F95B8589
-	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 11:51:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60C1A5B8594
+	for <lists+netdev@lfdr.de>; Wed, 14 Sep 2022 11:52:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231404AbiINJvq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Sep 2022 05:51:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52832 "EHLO
+        id S231687AbiINJwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Sep 2022 05:52:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231348AbiINJvl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 05:51:41 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C14F65567;
-        Wed, 14 Sep 2022 02:51:38 -0700 (PDT)
+        with ESMTP id S231624AbiINJv4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 05:51:56 -0400
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CB2266138;
+        Wed, 14 Sep 2022 02:51:50 -0700 (PDT)
 Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 28E9p0IM101243;
-        Wed, 14 Sep 2022 04:51:00 -0500
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 28E9p5nN006774;
+        Wed, 14 Sep 2022 04:51:05 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1663149060;
-        bh=G5JJSLPgnGzsnxIH7JQUb1JFnlgikFlcJPmPUeJjPUw=;
-        h=From:To:CC:Subject:Date;
-        b=s3Znpfhb4NmL5yzgyXSqQIR4gSlAVIN5T/1oiDJndb7JK0H8FZJ6e4gpBi26uBGgc
-         Z0Tf89GbH2FFVlgk0tRdtGAK2WhPTYnMH7e9vQgMo2yXEKspatsZDcr/FxU/VHsV/O
-         7XLzMYbUPmLCnNdyWtKUX+X+czsVGXOZ9DDLaonY=
-Received: from DFLE103.ent.ti.com (dfle103.ent.ti.com [10.64.6.24])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 28E9p0X8010181
+        s=ti-com-17Q1; t=1663149065;
+        bh=CL2cbBVuEBtxASYb7DpsxyZqCktdhjJgBmatAHDUBeQ=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=yLuqpJ04LtErmTj1lZBXz/FmzWqKn48YD1w4vT/t/G5cFY4q7nrbLWxytz+xHaqCa
+         WTzSXLruFOEaO1qO1KBLrSSGuE2VRY8srVyzh9L0Po/3mODK8lSloureiBSE4s1RRQ
+         5kAqme2dwmsTTe+vNiTKB6JNqgLfSuRYq6oglKV0=
+Received: from DLEE108.ent.ti.com (dlee108.ent.ti.com [157.170.170.38])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 28E9p5Mj010314
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 14 Sep 2022 04:51:00 -0500
-Received: from DFLE108.ent.ti.com (10.64.6.29) by DFLE103.ent.ti.com
- (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
+        Wed, 14 Sep 2022 04:51:05 -0500
+Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Wed, 14
- Sep 2022 04:50:59 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE108.ent.ti.com
- (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
+ Sep 2022 04:51:05 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE101.ent.ti.com
+ (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
- Frontend Transport; Wed, 14 Sep 2022 04:50:59 -0500
+ Frontend Transport; Wed, 14 Sep 2022 04:51:05 -0500
 Received: from uda0492258.dhcp.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 28E9osD0046564;
-        Wed, 14 Sep 2022 04:50:55 -0500
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 28E9osD1046564;
+        Wed, 14 Sep 2022 04:51:00 -0500
 From:   Siddharth Vadapalli <s-vadapalli@ti.com>
 To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
         <pabeni@redhat.com>, <robh+dt@kernel.org>,
@@ -50,10 +50,12 @@ CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>, <kishon@ti.com>,
         <s-vadapalli@ti.com>
-Subject: [PATCH 0/8] Add support for J721e CPSW9G and SGMII mode 
-Date:   Wed, 14 Sep 2022 15:20:45 +0530
-Message-ID: <20220914095053.189851-1-s-vadapalli@ti.com>
+Subject: [PATCH 1/8] dt-bindings: net: ti: k3-am654-cpsw-nuss: Update bindings for J721e CPSW9G
+Date:   Wed, 14 Sep 2022 15:20:46 +0530
+Message-ID: <20220914095053.189851-2-s-vadapalli@ti.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220914095053.189851-1-s-vadapalli@ti.com>
+References: <20220914095053.189851-1-s-vadapalli@ti.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -68,28 +70,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add compatible for J721e CPSW9G.
+Update bindings for TI K3 J721e SoC which contains 9 ports (8 external
+ports) CPSW9G module and add compatible for it.
 
-Add support to power on and configure SERDES PHY.
+Changes made:
+    - Add new compatible ti,j721e-cpswxg-nuss for CPSW9G.
+    - Extend pattern properties for new compatible.
+    - Change maximum number of CPSW ports to 8 for new compatible.
 
-Add support for SGMII mode for J7200 CPSW5G and J721e CPSW9G.
+Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
+---
+ .../bindings/net/ti,k3-am654-cpsw-nuss.yaml   | 23 +++++++++++++++++--
+ 1 file changed, 21 insertions(+), 2 deletions(-)
 
-Siddharth Vadapalli (8):
-  dt-bindings: net: ti: k3-am654-cpsw-nuss: Update bindings for J721e
-    CPSW9G
-  net: ethernet: ti: am65-cpsw: Add support for SERDES configuration
-  net: ethernet: ti: am65-cpsw: Add mac control function
-  net: ethernet: ti: am65-cpsw: Add mac enable link function
-  net: ethernet: ti: am65-cpsw: Add support for fixed-link configuration
-  net: ethernet: ti: am65-cpsw: Add support for SGMII mode for J7200
-    CPSW5G
-  net: ethernet: ti: am65-cpsw: Add support for J721e CPSW9G
-  net: ethernet: ti: am65-cpsw: Enable SGMII mode for J721e CPSW9G
-
- .../bindings/net/ti,k3-am654-cpsw-nuss.yaml   |  23 ++-
- drivers/net/ethernet/ti/am65-cpsw-nuss.c      | 186 +++++++++++++++---
- 2 files changed, 178 insertions(+), 31 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
+index 821974815dec..868b7fb58b06 100644
+--- a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
++++ b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
+@@ -57,6 +57,7 @@ properties:
+       - ti,am654-cpsw-nuss
+       - ti,j7200-cpswxg-nuss
+       - ti,j721e-cpsw-nuss
++      - ti,j721e-cpswxg-nuss
+       - ti,am642-cpsw-nuss
+ 
+   reg:
+@@ -111,7 +112,7 @@ properties:
+         const: 0
+ 
+     patternProperties:
+-      "^port@[1-4]$":
++      "^port@[1-8]$":
+         type: object
+         description: CPSWxG NUSS external ports
+ 
+@@ -121,7 +122,7 @@ properties:
+         properties:
+           reg:
+             minimum: 1
+-            maximum: 4
++            maximum: 8
+             description: CPSW port number
+ 
+           phys:
+@@ -181,6 +182,21 @@ required:
+   - '#size-cells'
+ 
+ allOf:
++  - if:
++      not:
++        properties:
++          compatible:
++            contains:
++              const: ti,j721e-cpswxg-nuss
++    then:
++      properties:
++        ethernet-ports:
++          patternProperties:
++            "^port@[5-8]$": false
++            properties:
++              reg:
++                maximum: 4
++
+   - if:
+       not:
+         properties:
+@@ -192,6 +208,9 @@ allOf:
+         ethernet-ports:
+           patternProperties:
+             "^port@[3-4]$": false
++            properties:
++              reg:
++                maximum: 2
+ 
+ additionalProperties: false
+ 
 -- 
 2.25.1
 
