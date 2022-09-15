@@ -2,182 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BB6A5B9561
-	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 09:28:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E05B85B956E
+	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 09:30:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230080AbiIOH2L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Sep 2022 03:28:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52594 "EHLO
+        id S230064AbiIOHaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Sep 2022 03:30:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229732AbiIOH12 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 03:27:28 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8501D93205;
-        Thu, 15 Sep 2022 00:27:02 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1663226756; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=Zf0RkVlLGHXKl8ZCuBUFuXyD2Rs48ubT3CqDFtg/KK0kgOxY7Zvo+p0587fG9u1QbJr6TClsRL14h6DCul5gflkJzGVwhlxooWCGt9nbI4CVMyp5rqrI1FtyAsHQGKyS62Tsdi/XNMgkCYTUcr8eTQDLI5Rfvg6Z0OYZPVy5fkA=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1663226756; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=jQcUnE175UgPwnG9DUeOUoA4mKHCkNGSqfNYbiRshhA=; 
-        b=Z3SDnKNdXslLMdbOqSirSnIqpxZYvXumwG54Ulwp/GcKx+EjF3/3+O9d1uiJXZ0A2o3LUWCrpyRtTiDyMSIR7Ag+2syNI/+l9YCI1wfmIWYSHjXQiLIH1qtjr1CxPa432Yc4c7CB2DqdldHdWk70O+P5dLcXRWB6353KaTz8VaI=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1663226756;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Content-Type:Content-Transfer-Encoding:From:From:Mime-Version:Subject:Subject:Date:Date:Message-Id:Message-Id:References:Cc:Cc:In-Reply-To:To:To:Reply-To;
-        bh=jQcUnE175UgPwnG9DUeOUoA4mKHCkNGSqfNYbiRshhA=;
-        b=DRTg/uP0tvuv85Mcylii770DvKWETLAwB1nyMFz6mRT6ujs2bIqdhJ7Hv74n2SUR
-        6MzeR/E/DwzW81UTYcBEHbmYXq63KD/A+rYpPSwx18eGR12CwfQ863oR3VnQFK7od7k
-        qhLbvjxJ71mCPnRDt0xciORHXaGqcioiecLGna8A=
-Received: from [10.10.9.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 1663226754115994.2599106423463; Thu, 15 Sep 2022 00:25:54 -0700 (PDT)
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-From:   =?utf-8?Q?Ar=C4=B1n=C3=A7_=C3=9CNAL?= <arinc.unal@arinc9.com>
-Mime-Version: 1.0 (1.0)
-Subject: Re: [PATCH v2 net-next 05/10] mips: dts: ralink: mt7621: fix some dtc warnings
-Date:   Thu, 15 Sep 2022 10:25:44 +0300
-Message-Id: <17638FC4-A129-4620-9BD3-E47AA653A113@arinc9.com>
-References: <CAMhs-H87WFJJgFEkZ7XeBsBMJKfZdzUjVChqb3_KbRqPodwTrg@mail.gmail.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, erkin.bozoglu@xeront.com,
-        netdev <netdev@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, linux-arm-kernel@lists.infradead.org,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "open list:MIPS" <linux-mips@vger.kernel.org>
-In-Reply-To: <CAMhs-H87WFJJgFEkZ7XeBsBMJKfZdzUjVChqb3_KbRqPodwTrg@mail.gmail.com>
-To:     Sergio Paracuellos <sergio.paracuellos@gmail.com>
-X-Mailer: iPhone Mail (17H35)
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S230009AbiIOH35 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 03:29:57 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 367CD13E12;
+        Thu, 15 Sep 2022 00:29:42 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 28F7T0Dv004698;
+        Thu, 15 Sep 2022 02:29:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1663226940;
+        bh=kK3MFPKNCAR0l9Tkn5PBHDwUH9L6G+mhGZnNZrSdX1A=;
+        h=Date:CC:Subject:To:References:From:In-Reply-To;
+        b=x8uvcSgB81Unk5UGB9mpQOB66hsSep6s8mt1L6w8k+X8tHXkOgwvwDvHiKdRFuZCD
+         a5KYW/7lhG2fEqkvkDT5gBixwb/0eo7exnmH4sMwIlAZWCQgC12auNUca1qVAZ13j2
+         He1KUrB8hobi49LvXtFQ2pYSuU8Q3UeGMTs+iT2I=
+Received: from DLEE106.ent.ti.com (dlee106.ent.ti.com [157.170.170.36])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 28F7T0af017667
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 15 Sep 2022 02:29:00 -0500
+Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE106.ent.ti.com
+ (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Thu, 15
+ Sep 2022 02:28:59 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE101.ent.ti.com
+ (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
+ Frontend Transport; Thu, 15 Sep 2022 02:28:59 -0500
+Received: from [10.24.69.241] (ileaxei01-snat2.itg.ti.com [10.180.69.6])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 28F7SrQY016573;
+        Thu, 15 Sep 2022 02:28:54 -0500
+Message-ID: <2b21b163-0a70-4786-4314-20743178a2e2@ti.com>
+Date:   Thu, 15 Sep 2022 12:58:53 +0530
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <krzysztof.kozlowski@linaro.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <linux@armlinux.org.uk>,
+        <vladimir.oltean@nxp.com>, <grygorii.strashko@ti.com>,
+        <vigneshr@ti.com>, <nsekhar@ti.com>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <kishon@ti.com>,
+        <s-vadapalli@ti.com>
+Subject: Re: [PATCH 1/8] dt-bindings: net: ti: k3-am654-cpsw-nuss: Update
+ bindings for J721e CPSW9G
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>
+References: <20220914095053.189851-1-s-vadapalli@ti.com>
+ <20220914095053.189851-2-s-vadapalli@ti.com>
+ <20220914162004.GA2433106-robh@kernel.org>
+From:   Siddharth Vadapalli <s-vadapalli@ti.com>
+In-Reply-To: <20220914162004.GA2433106-robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On 15 Sep 2022, at 10:17, Sergio Paracuellos <sergio.paracuellos@gmail.com=
-> wrote:
->=20
-> =EF=BB=BFHi Arinc,
->=20
->> On Thu, Sep 15, 2022 at 8:56 AM Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@ari=
-nc9.com> wrote:
->>=20
->> Fix the dtc warnings below.
->>=20
->> uartlite@c00: $nodename:0: 'uartlite@c00' does not match '^serial(@.*)?$'=
+Hello Rob,
 
->>        =46rom schema: /home/arinc9/Documents/linux/Documentation/devicetr=
-ee/bindings/serial/8250.yaml
->> uartlite@c00: Unevaluated properties are not allowed ('clock-names' was u=
-nexpected)
->>        =46rom schema: /home/arinc9/Documents/linux/Documentation/devicetr=
-ee/bindings/serial/8250.yaml
->> sdhci@1e130000: $nodename:0: 'sdhci@1e130000' does not match '^mmc(@.*)?$=
-'
->>        =46rom schema: /home/arinc9/Documents/linux/Documentation/devicetr=
-ee/bindings/mmc/mtk-sd.yaml
->> sdhci@1e130000: Unevaluated properties are not allowed ('bus-width', 'cap=
--mmc-highspeed', 'cap-sd-highspeed', 'disable-wp', 'max-frequency', 'vmmc-su=
-pply', 'vqmmc-supply' were unexpected)
->>        =46rom schema: /home/arinc9/Documents/linux/Documentation/devicetr=
-ee/bindings/mmc/mtk-sd.yaml
->> xhci@1e1c0000: $nodename:0: 'xhci@1e1c0000' does not match '^usb(@.*)?'
->>        =46rom schema: /home/arinc9/Documents/linux/Documentation/devicetr=
-ee/bindings/usb/mediatek,mtk-xhci.yaml
->> xhci@1e1c0000: compatible: ['mediatek,mt8173-xhci'] is too short
->>        =46rom schema: /home/arinc9/Documents/linux/Documentation/devicetr=
-ee/bindings/usb/mediatek,mtk-xhci.yaml
->> switch0@0: $nodename:0: 'switch0@0' does not match '^(ethernet-)?switch(@=
-.*)?$'
->>        =46rom schema: /home/arinc9/Documents/linux/Documentation/devicetr=
-ee/bindings/net/dsa/mediatek,mt7530.yaml
->> port@1: status:0: 'off' is not one of ['okay', 'disabled', 'reserved']
->>        =46rom schema: /home/arinc9/.local/lib/python3.10/site-packages/dt=
-schema/schemas/dt-core.yaml
->> port@2: status:0: 'off' is not one of ['okay', 'disabled', 'reserved']
->>        =46rom schema: /home/arinc9/.local/lib/python3.10/site-packages/dt=
-schema/schemas/dt-core.yaml
->> port@3: status:0: 'off' is not one of ['okay', 'disabled', 'reserved']
->>        =46rom schema: /home/arinc9/.local/lib/python3.10/site-packages/dt=
-schema/schemas/dt-core.yaml
->>=20
->> - Change "uartlite: uartlite@c00" to "serial0: serial@c00" and remove the=
+On 14/09/22 21:50, Rob Herring wrote:
+> On Wed, Sep 14, 2022 at 03:20:46PM +0530, Siddharth Vadapalli wrote:
+>> Update bindings for TI K3 J721e SoC which contains 9 ports (8 external
+>> ports) CPSW9G module and add compatible for it.
+>>
+>> Changes made:
+>>     - Add new compatible ti,j721e-cpswxg-nuss for CPSW9G.
+>>     - Extend pattern properties for new compatible.
+>>     - Change maximum number of CPSW ports to 8 for new compatible.
+>>
+>> Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
+>> ---
+>>  .../bindings/net/ti,k3-am654-cpsw-nuss.yaml   | 23 +++++++++++++++++--
+>>  1 file changed, 21 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
+>> index 821974815dec..868b7fb58b06 100644
+>> --- a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
+>> +++ b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
+>> @@ -57,6 +57,7 @@ properties:
+>>        - ti,am654-cpsw-nuss
+>>        - ti,j7200-cpswxg-nuss
+>>        - ti,j721e-cpsw-nuss
+>> +      - ti,j721e-cpswxg-nuss
+>>        - ti,am642-cpsw-nuss
+>>  
+>>    reg:
+>> @@ -111,7 +112,7 @@ properties:
+>>          const: 0
+>>  
+>>      patternProperties:
+>> -      "^port@[1-4]$":
+>> +      "^port@[1-8]$":
+>>          type: object
+>>          description: CPSWxG NUSS external ports
+>>  
+>> @@ -121,7 +122,7 @@ properties:
+>>          properties:
+>>            reg:
+>>              minimum: 1
+>> -            maximum: 4
+>> +            maximum: 8
+>>              description: CPSW port number
+>>  
+>>            phys:
+>> @@ -181,6 +182,21 @@ required:
+>>    - '#size-cells'
+>>  
+>>  allOf:
+>> +  - if:
+>> +      not:
+>> +        properties:
+>> +          compatible:
+>> +            contains:
+>> +              const: ti,j721e-cpswxg-nuss
+>> +    then:
+>> +      properties:
+>> +        ethernet-ports:
+>> +          patternProperties:
+>> +            "^port@[5-8]$": false
+>> +            properties:
+>> +              reg:
+>> +                maximum: 4
+> 
+> Your indentation is off. 'properties' here is under patternProperties 
+> making it a DT property.
+> 
+>> +
+>>    - if:
+>>        not:
+>>          properties:
+>> @@ -192,6 +208,9 @@ allOf:
+>>          ethernet-ports:
+>>            patternProperties:
+>>              "^port@[3-4]$": false
+>> +            properties:
+>> +              reg:
+>> +                maximum: 2
+> 
+> Same here.
 
->> aliases node.
->> - Remove "clock-names" from the serial0 node. The property doesn't exist o=
-n
->> the 8250.yaml schema.
->> - Change "sdhci: sdhci@1e130000" to "mmc: mmc@1e130000".
->> - Change "xhci: xhci@1e1c0000" to "usb: usb@1e1c0000".
->> - Add "mediatek,mtk-xhci" as the second compatible string on the usb node=
-.
->> - Change "switch0: switch0@0" to "switch0: switch@0"
->> - Change "off" to "disabled" for disabled nodes.
->>=20
->> Remaining warnings are caused by the lack of json-schema documentation.
->=20
-> The followings needs to be ported to yaml schema but exist in its
-> previous txt format:
->=20
->>=20
->> /cpuintc: failed to match any schema with compatible: ['mti,cpu-interrupt=
--controller']
->=20
-> https://elixir.bootlin.com/linux/v6.0-rc5/source/Documentation/devicetree/=
-bindings/mips/cpu_irq.txt#L13
->=20
->> /palmbus@1e000000/wdt@100: failed to match any schema with compatible: ['=
-mediatek,mt7621-wdt']
->=20
-> https://elixir.bootlin.com/linux/v6.0-rc5/source/Documentation/devicetree/=
-bindings/watchdog/mt7621-wdt.txt#L4
->=20
->> /palmbus@1e000000/i2c@900: failed to match any schema with compatible: ['=
-mediatek,mt7621-i2c']
->=20
-> https://elixir.bootlin.com/linux/v6.0-rc5/source/Documentation/devicetree/=
-bindings/i2c/i2c-mt7621.txt#L6
->=20
->> /palmbus@1e000000/spi@b00: failed to match any schema with compatible: ['=
-ralink,mt7621-spi']
->=20
-> https://elixir.bootlin.com/linux/v6.0-rc5/source/Documentation/devicetree/=
-bindings/spi/spi-mt7621.txt#L5
->=20
->> /ethernet@1e100000: failed to match any schema with compatible: ['mediate=
-k,mt7621-eth']
->=20
-> https://elixir.bootlin.com/linux/v6.0-rc5/source/Documentation/devicetree/=
-bindings/net/ralink,rt2880-net.txt#L15
+Thank you for reviewing the patch. Sorry for the indentation errors. I
+will fix them in the v2 series.
 
-This binding is old and does not represent the current mtk_eth_soc driver. I=
- already remove this with the first patch in the series so I=E2=80=99d rathe=
-r do a new schema from scratch.
-
-Ar=C4=B1n=C3=A7
-
+Regards,
+Siddharth.
