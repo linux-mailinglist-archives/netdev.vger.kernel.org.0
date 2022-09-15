@@ -2,115 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF6EE5B986A
-	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 12:01:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60C035B987D
+	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 12:07:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230159AbiIOKBa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Sep 2022 06:01:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41428 "EHLO
+        id S229685AbiIOKHp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Sep 2022 06:07:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229727AbiIOKAg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 06:00:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D6F533A17
-        for <netdev@vger.kernel.org>; Thu, 15 Sep 2022 02:58:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1663235890;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mGvd9tOaiGgoI73BcMUDvU/wRhCgiH1mvFcKV3hzfHg=;
-        b=X3wvBwO5BCgyAPCrQfPhnSnQleMZrAOLDOksV1RFpt1V56mpG8l2Eg4fT8rM7NcSzRXsoa
-        0j+q+gk1G+UUs3CTWXVipUhyvOJ1wUrwmekYP/SO6s3OCEWtkEYeJNzdRb6IwkT/rZ9w5/
-        3BAzBwvOQhAwHL4ZhozvVXk1hTlL7FY=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-614-sKHwuOleMuaikL4UuprsoA-1; Thu, 15 Sep 2022 05:58:08 -0400
-X-MC-Unique: sKHwuOleMuaikL4UuprsoA-1
-Received: by mail-wr1-f72.google.com with SMTP id q17-20020adfab11000000b0022a44f0c5d9so4290554wrc.2
-        for <netdev@vger.kernel.org>; Thu, 15 Sep 2022 02:58:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=mGvd9tOaiGgoI73BcMUDvU/wRhCgiH1mvFcKV3hzfHg=;
-        b=vodbW9l4V5lY4Z9UdFHG3BuIJVReOnt6Obu7DZs+Wp+bb9dj094EuBew09bZp83gwJ
-         E6zlY1jy10UbNUCqG24S53WXi5OXszDaPth2fRdeD9SF+MilmX2EMQZUUMp8TptD6YIO
-         XjAoZzpBkYBm0tT1cPzNUevKFQ5AV4OAXHp+q99MoWMnTYkjGqYM5jcWGwFGV61QrKuh
-         nObGGWhl8RMSsiAmdsmtdIkXRg8k6bz6z1Gto0OsP2xsHkU5D4JRTLTPmf4SFEZEjoN4
-         Ije/f3l1JW+3XFuARhC+EXxbC0mU77uqKBqOjM4FtCjgkhGkjbXkUu391lF1n0O+5J+c
-         Tkag==
-X-Gm-Message-State: ACgBeo2enIiy2dhbzDuE9bz+wZ/6ncG/gdaNpBTnF6zO+i0XWDxq4NCn
-        ZGqmmfpVXOpPC8Jo1YFNNLEMnd7ucv8bOYHObPVANZAw9O1zkgu1D8gFnGdt1/LHeBNEanyQjLj
-        2TwYAFvrjuFdC3FhN
-X-Received: by 2002:a5d:628e:0:b0:228:6961:aa6f with SMTP id k14-20020a5d628e000000b002286961aa6fmr25454717wru.36.1663235887422;
-        Thu, 15 Sep 2022 02:58:07 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR77khIjrZ/VrrFBgy3PGrRTawhQua93lXo36YchQhSYV3T98xPVo5WMrU0DOdJgVSarD/WWxA==
-X-Received: by 2002:a5d:628e:0:b0:228:6961:aa6f with SMTP id k14-20020a5d628e000000b002286961aa6fmr25454693wru.36.1663235887053;
-        Thu, 15 Sep 2022 02:58:07 -0700 (PDT)
-Received: from gerbillo.redhat.com ([212.2.180.165])
-        by smtp.gmail.com with ESMTPSA id z4-20020a05600c0a0400b003a540fef440sm2731476wmp.1.2022.09.15.02.58.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Sep 2022 02:58:06 -0700 (PDT)
-Message-ID: <3f25f8fa3ba1aa13ac0779ca48020ab63405c7c7.camel@redhat.com>
-Subject: Re: [PATCH 1/3] net: davicom: dm9000: switch to using gpiod API
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Thu, 15 Sep 2022 11:58:05 +0200
-In-Reply-To: <YxnawswbdbTtx9WQ@lunn.ch>
-References: <20220906204922.3789922-1-dmitry.torokhov@gmail.com>
-         <CACRpkdaUK7SQ9BoR0C2=8XeKWCsjbwd-KdowN5ee_BU+Jhzeqw@mail.gmail.com>
-         <YxnawswbdbTtx9WQ@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S229479AbiIOKHo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 06:07:44 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A0C967457;
+        Thu, 15 Sep 2022 03:07:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=lEcKAUl8uQYq+qOdV2UzEHdm6WUdIBi8uUUItFAWIow=; b=T6UvT04L11Ek3OkV3KRUdqTMBf
+        yjoZrmtDvQ/81H8keWnDPKiXL76sDSLOBJ/WfNnjyQb7NlTMTbs14Ev/debcGweG8qatDja/Z9NAg
+        DfVhm4dbsGOXdw4xMZEOk3xrZIHo8u3uvFTrZs5N5RRvxVwSQTQK5yqXcgTnr73EPBQZ9AYBeP3cD
+        TLrF5WrwMvGqMC8wXFMc1kSduuCXbFybJzrtAxyvyVLA+dx0Ij1nCtWyzYOPrAcMvjg/n0/53f1O1
+        UY156jdceqeLqbhOCyCRWuj4xrkSh/UhFqjcn+sf42oWgwlZYrdrbzGPSVQ47uRBidfylhiOiixiI
+        CB0/Y0bw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34344)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1oYlmJ-0005RV-Vj; Thu, 15 Sep 2022 11:07:28 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1oYlmG-0002Wd-0t; Thu, 15 Sep 2022 11:07:24 +0100
+Date:   Thu, 15 Sep 2022 11:07:23 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Siddharth Vadapalli <s-vadapalli@ti.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski@linaro.org, krzysztof.kozlowski+dt@linaro.org,
+        vladimir.oltean@nxp.com, grygorii.strashko@ti.com, vigneshr@ti.com,
+        nsekhar@ti.com, netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        kishon@ti.com
+Subject: Re: [PATCH 5/8] net: ethernet: ti: am65-cpsw: Add support for
+ fixed-link configuration
+Message-ID: <YyL5WyA74/QRe/Y4@shell.armlinux.org.uk>
+References: <20220914095053.189851-1-s-vadapalli@ti.com>
+ <20220914095053.189851-6-s-vadapalli@ti.com>
+ <YyH8us424n3dyLYT@shell.armlinux.org.uk>
+ <ab683d52-d469-35cf-b3b5-50c9edfc173b@ti.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ab683d52-d469-35cf-b3b5-50c9edfc173b@ti.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2022-09-08 at 14:06 +0200, Andrew Lunn wrote:
-> On Wed, Sep 07, 2022 at 11:45:48PM +0200, Linus Walleij wrote:
-> > On Tue, Sep 6, 2022 at 10:49 PM Dmitry Torokhov
-> > <dmitry.torokhov@gmail.com> wrote:
-> > 
-> > > This patch switches the driver away from legacy gpio/of_gpio API to
-> > > gpiod API, and removes use of of_get_named_gpio_flags() which I want to
-> > > make private to gpiolib.
-> > > 
-> > > Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-> > 
-> > Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> > 
-> > I think net patches need [PATCH net-next] in the subject to get
-> > applied.
+Hi,
+
+On Thu, Sep 15, 2022 at 02:58:52PM +0530, Siddharth Vadapalli wrote:
+> Hello Russell,
 > 
-> Correct.
+> On 14/09/22 21:39, Russell King (Oracle) wrote:
+> > On Wed, Sep 14, 2022 at 03:20:50PM +0530, Siddharth Vadapalli wrote:
+> >> Check for fixed-link in am65_cpsw_nuss_mac_config() using struct
+> >> am65_cpsw_slave_data's phy_node property to obtain fwnode. Since
+> >> am65_cpsw_nuss_mac_link_up() is not invoked in fixed-link mode, perform
+> >> the relevant operations in am65_cpsw_nuss_mac_config() itself.
+> > 
+> > Further to my other comments, you also fail to explain that, when in
+> > fixed-link SGMII mode, you _emulate_ being a PHY - which I deduce
+> > since you are sending the duplex setting and speed settings via the
+> > SGMII control word. Also, as SGMII was invented for a PHY to be able
+> > to communicate the media negotiation resolution to the MAC, SGMII
+> > defines that the PHY fills in the speed and duplex information in
+> > the control word to pass it to the MAC, and the MAC acknowledges this
+> > information. There is no need (and SGMII doesn't permit) the MAC to
+> > advertise what it's doing.
+> > 
+> > Maybe this needs to be explained in the commit message?
 > 
-> https://docs.kernel.org/process/maintainer-netdev.html
-> 
-> For the odd drive by patch, the Maintainers often do accept patches
-> without it. So wait and see.
+> I had tested SGMII fixed-link mode using a bootstrapped ethernet layer-1
+> PHY. Based on your clarification in the previous mails that there is an
+> issue with the fixed-link mode which I need to debug, I assume that what
+> you are referring to here also happens to be a consequence of that.
+> Please let me know if I have misunderstood what you meant to convey.
 
-Due to a series of unfortunate coincidences the netdev backlog has
-grown unusually long. Since the patches LGMT I'm going to apply them to
-net-next without asking a repost.
+I think what you're saying is that you have this setup:
 
-@Dmitry: next time, please add the relevant tag, thanks!
+  ethernet MAC <--SGMII link--> ethernet PHY <---> media
 
-Paolo
+which you are operating in fixed link mode?
 
+From the SGMII specification: "This is achieved by using the Auto-
+Negotiation functionality defined in Clause 37 of the IEEE
+Specification 802.3z. Instead of the ability advertisement, the PHY
+sends the control information via its tx_config_Reg[15:0] as specified
+in Table 1 whenever the control information changes. Upon receiving
+control information, the MAC acknowledges the update of the control
+information by asserting bit 14 of its tx_config_reg{15:0] as specified
+in Table 1."
+
+For the control word sent from the MAC to the PHY, table 1 specifies a
+value of 0x4001. All the zero bits in that word which are zero are
+marked as "Reserved for future use." There are no fields for speed and
+duplex in this acknowledgement word to the PHY.
+
+I hope this clears up my point.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
