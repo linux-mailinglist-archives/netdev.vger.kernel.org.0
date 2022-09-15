@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A01AD5B93D3
-	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 07:09:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3E5E5B93D7
+	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 07:09:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229647AbiIOFI2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Sep 2022 01:08:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60100 "EHLO
+        id S229665AbiIOFJ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Sep 2022 01:09:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229657AbiIOFIZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 01:08:25 -0400
-Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57FDB85F8F;
-        Wed, 14 Sep 2022 22:08:23 -0700 (PDT)
-Received: by mail-oi1-x233.google.com with SMTP id s140so898175oie.0;
-        Wed, 14 Sep 2022 22:08:23 -0700 (PDT)
+        with ESMTP id S229635AbiIOFJ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 01:09:28 -0400
+Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 156974BA7E;
+        Wed, 14 Sep 2022 22:09:26 -0700 (PDT)
+Received: by mail-oi1-x22d.google.com with SMTP id t62so900875oie.10;
+        Wed, 14 Sep 2022 22:09:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date;
-        bh=HDYs7vs+thMMDY6yodcXDXhWOMLfZv2S6AqnKaCcDRk=;
-        b=fjRmEANxa4Ci2C8NGJiFGaRrqPV7/+Nt5aUx0ywwlww2acQv/sYHN5d6AolkIP0DQX
-         KqHyfAMrtRvGjnMHQjlU16OpHm+pdfyJRF2NicOj8VwEAcRByvQ0M5vG32FM+Hg8CRn/
-         n0i6jEQKIS6D5fzEKN9CyVZv2AMrh6vaCgd55CiltFeLPSAXi9K7Hebvtfiq3Zt7ZgfT
-         Ab522y4Lxwh2mf5KWWtJxdH2h6M5ZOfo5Urpbcf+wdjJkuAbk6dkDReLh05/97W5lk84
-         TI9bfIKW2MLl5tSkw/By4VeksO1HwfGNfh1R4llpWrhD5vz6uoAOPS0vfQhMu/WYXlUy
-         CvhQ==
+        bh=Z1u0N1ZJfcMPueq2SWcO4i8OlPSVWclmpIeRHJIVStU=;
+        b=JBIj0fTNeLAKOYOxmzHscUM5+aL1yw70MnW5/dh4qZt+6ZsxY+3J6EwLHZJmvtQ2ip
+         Z64u7zK5t9lOjjkZ74nGP7wpPh+iBg41jE3CqJXAsXHzX195IOemhLPsfiDjrWdFW9iJ
+         lJeAXwXii8LAcHZTJRKSAFy4xUD6uFHQx44HwX41zw2RLkBxwhnrJRJNLZ0SBBHUgrp7
+         AaDk9+VY/aFtnQMMQrvVUHAsYWXnNPxJfBwG4PywLUMgR8a0GeQxlhW/+Ezj6XJOtv7e
+         4E5Y0Gwu/IdTrGuaiG4BAzgmbIBgeWt3lgKdg6WOSpqbOkBCw5YfyDvVKTkNZU3GI4cq
+         9dWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=HDYs7vs+thMMDY6yodcXDXhWOMLfZv2S6AqnKaCcDRk=;
-        b=UCy3JB/+EknL61wfEjVmZP6Q2EKZiWKDhym1Dkfat1Xg/6uet4FTMskvaCjbYsEBM/
-         lfuFDSZpUwbDxXliK9QpOsJmddEvf3QTDd5GDn0lZIGLzJQBgMslk92B0RdvEYT6VIgK
-         3Ab+Xhnsjev3+5IzBlT2hAXhsUuRsfOEJgdEEH09r5+1y5eZ2OUhdfrKE8DHaZaR7UFG
-         2gP7HylAEiND8JjlrUvWNr1KsF4MT+ju/UwSmatW0eKVN6V331oX93x13TFWZ+J0G2pR
-         H1nwPJk1AhHX82xpqISYeVmw23PNeHXk6P0SX24ik6vFSgJnZDv7MYkjmah5wsAhVO5J
-         rMBQ==
-X-Gm-Message-State: ACgBeo1llZJjTDBWYxCuSQIBKiS4bvMtW2k1gwM/in0D8JhSxjjKPugm
-        +wRQw71SCG79nPvLyIVeFVfcugqIL56CednJjnQfzh6Ys0mrEEBC
-X-Google-Smtp-Source: AA6agR7bm8mPpUUJY4ncvftwWMu/7VrdSYwhN+VZHkwkeVNOVpRT4cvzU/rsGAzLjl6BjtlpzTZ33WDL/s/fD5kAklc=
-X-Received: by 2002:a05:6808:1b22:b0:34f:7879:53cc with SMTP id
- bx34-20020a0568081b2200b0034f787953ccmr3378456oib.144.1663218502705; Wed, 14
- Sep 2022 22:08:22 -0700 (PDT)
+        bh=Z1u0N1ZJfcMPueq2SWcO4i8OlPSVWclmpIeRHJIVStU=;
+        b=XUTuHbtFXkFI37pxJrJZLW8keRUgNGPDXAEJs8H41/RiftWB/drVauvXpxmAR8kHyM
+         jylDqi4ZegeiFLgE6NRQ1enCEvbXihY6B3Tw5Rtberm7VO9bCbEBshOW4znQanhna3tj
+         A7dqevHO20rjFssHAgzVQE6PCbvkub1yojdjPkzYtZ7Nw6y3Lq8ac7xQA8/JGFhhiunb
+         AIHdyPGSdGQshcJdeCtMa/tbq2h0ysKGwm0sT2gfjuIeEHC4a6exu4o5/VFvshOI0f8T
+         Up5bObTy8UHLOlGgT+lhrfMgW2xAzBCAaovKTyEyW9WNoQIuvtkrwcAewqEPcQadD8fX
+         4gCw==
+X-Gm-Message-State: ACgBeo1l+2KF0yOhKpP8SGvVfcI57DyxqvPmfkBlfEMG8cQ3YmlAVXbo
+        M6XyP3ANuTzJhruvznJQJdZLvAy4WpfodSnfBVI=
+X-Google-Smtp-Source: AA6agR5i/Bh3pO/9k18kWiTkxaxJwPRYNQzlq1eA12nfEuyi040sOX1UtxWgnNRcqiPP8+KBdgABsT/lEkeVGexV2sI=
+X-Received: by 2002:a05:6808:bcb:b0:345:aa85:6f33 with SMTP id
+ o11-20020a0568080bcb00b00345aa856f33mr3479669oik.83.1663218565430; Wed, 14
+ Sep 2022 22:09:25 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220914085451.11723-1-arinc.unal@arinc9.com> <20220914085451.11723-11-arinc.unal@arinc9.com>
-In-Reply-To: <20220914085451.11723-11-arinc.unal@arinc9.com>
+References: <20220914085451.11723-1-arinc.unal@arinc9.com> <20220914085451.11723-9-arinc.unal@arinc9.com>
+In-Reply-To: <20220914085451.11723-9-arinc.unal@arinc9.com>
 From:   Sergio Paracuellos <sergio.paracuellos@gmail.com>
-Date:   Thu, 15 Sep 2022 07:08:10 +0200
-Message-ID: <CAMhs-H-Nxub7==J0gTO9A+Lw_hurWaUeR+ZoqnS5KrJcJs6S_A@mail.gmail.com>
-Subject: Re: [PATCH 10/10] mips: dts: ralink: mt7621: add GB-PC2 LEDs
+Date:   Thu, 15 Sep 2022 07:09:13 +0200
+Message-ID: <CAMhs-H-zYdjHX99vXpeDerhMNbX10BWtUq6WSeAHyDNG8ruXCA@mail.gmail.com>
+Subject: Re: [PATCH 08/10] mips: dts: ralink: mt7621: change mt7530 switch address
 To:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -76,7 +76,7 @@ Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         <linux-mediatek@lists.infradead.org>,
         linux-kernel <linux-kernel@vger.kernel.org>,
         "open list:MIPS" <linux-mips@vger.kernel.org>,
-        Petr Louda <petr.louda@outlook.cz>
+        Sungbo Eo <mans0n@gorani.run>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -92,21 +92,20 @@ X-Mailing-List: netdev@vger.kernel.org
 On Wed, Sep 14, 2022 at 10:56 AM Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arin=
 c9.com> wrote:
 >
-> Add the missing LEDs for GB-PC2. The ethblack-green, ethblue-green, power
-> and system LEDs weren't added previously, because they don't exist on the
-> device schematics. Tests on a GB-PC2 by me and Petr proved otherwise.
+> In the case of muxing phy0 of the MT7530 switch, the switch and the phy
+> will have the same address on the mdio bus, 0. This causes the ethernet
+> driver to fail since devices on the mdio bus cannot share an address.
 >
-> The i2c bus cannot be used on GB-PC2 as its pins are wired to LEDs instea=
-d,
-> and GB-PC1 does not use it. Therefore, do not enable it on both devices.
+> Any address can be used for the switch, therefore, change the switch
+> address to 0x1f.
 >
-> Link: https://github.com/ngiger/GnuBee_Docs/blob/master/GB-PCx/Documents/=
-GB-PC2_V1.1_schematic.pdf
-> Tested-by: Petr Louda <petr.louda@outlook.cz>
+> Suggested-by: Sungbo Eo <mans0n@gorani.run>
 > Signed-off-by: Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc9.com>
 > ---
->  .../boot/dts/ralink/mt7621-gnubee-gb-pc1.dts  |  6 ---
->  .../boot/dts/ralink/mt7621-gnubee-gb-pc2.dts  | 42 ++++++++++++++++---
->  2 files changed, 36 insertions(+), 12 deletions(-)
+>  arch/mips/boot/dts/ralink/mt7621.dtsi | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
 Reviewed-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
+
+Thanks,
+    Sergio Paracuellos
