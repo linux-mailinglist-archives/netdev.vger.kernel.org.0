@@ -2,104 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F66E5B9B9B
-	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 15:09:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C046B5B9BD4
+	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 15:30:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229796AbiIONJo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Sep 2022 09:09:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45630 "EHLO
+        id S229541AbiIONaf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Sep 2022 09:30:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiIONJm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 09:09:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C538DBCAC;
-        Thu, 15 Sep 2022 06:09:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 88A88B81FC9;
-        Thu, 15 Sep 2022 13:09:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 426E6C433D6;
-        Thu, 15 Sep 2022 13:09:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663247377;
-        bh=voBOspV7bMcyAOeL4IXlWZdmHt1ofLGAWeFr9pfd3M4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=FcSEB4Tu2M7hJtZN17ny7jw+FIqagkELjq6XkReA+6TvW2/pXT9ZtXAHbgO/LZbhm
-         OoZfZaIRT0dk6GSM3C0ae0MOlpPBbmovziyTkFgM/YlTCzxyTevh3oaopIslBUziB4
-         gwS+HJYwTjcFOYQQX6DyoCCK4ewTi7skLGH5HYGhHw1CUyO1rKb/j8YYuDqnJhqOKK
-         cF1d4z0tr3bjhR5n9zwrEkepBbCHj6afLDe1QkZtzOLxbMVJLU8kTgMyUvZiBaA/gp
-         JH6UBPG2B6PalwKfdGYtcPAsCVJ3De9e938M6EJbwPl1AvmgERkat4KXcKrqqNOzUi
-         oS60f2AwuICRQ==
-Received: by mail-vs1-f46.google.com with SMTP id 129so19217668vsi.10;
-        Thu, 15 Sep 2022 06:09:37 -0700 (PDT)
-X-Gm-Message-State: ACgBeo3wZccEcc8Koq2R3uN6a1uuPpLVV99rqytpw3x/yaTf+r05hTn6
-        Oo32B5y8NVe3itdtzN25ZhwyFemG8sO8uhJNhQ==
-X-Google-Smtp-Source: AA6agR4BIfzeSUOkNKwBmMYoVvW5yb/Z1HSv0FwqqEWLBeGrUkIu+Mdpm6vlUlMr86ifsZh2UV/yNNG8p8uNEyrklF0=
-X-Received: by 2002:a67:ad12:0:b0:398:3d57:33e0 with SMTP id
- t18-20020a67ad12000000b003983d5733e0mr11010446vsl.6.1663247375551; Thu, 15
- Sep 2022 06:09:35 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220907170935.11757-1-sven@svenpeter.dev> <20220907170935.11757-3-sven@svenpeter.dev>
- <bcb799ea-d58e-70dc-c5c2-daaff1b19bf5@linaro.org> <20220912211226.GA1847448-robh@kernel.org>
-In-Reply-To: <20220912211226.GA1847448-robh@kernel.org>
-From:   Rob Herring <robh@kernel.org>
-Date:   Thu, 15 Sep 2022 08:09:24 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqL96Er9JuDajHWtf=i7bvzrf7PLzk-G-Qm4wTxTr5BStg@mail.gmail.com>
-Message-ID: <CAL_JsqL96Er9JuDajHWtf=i7bvzrf7PLzk-G-Qm4wTxTr5BStg@mail.gmail.com>
-Subject: Re: [PATCH v2 2/5] dt-bindings: net: Add Broadcom BCM4377 family PCIe Bluetooth
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Sven Peter <sven@svenpeter.dev>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229533AbiIONae (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 09:30:34 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0CCE6C110
+        for <netdev@vger.kernel.org>; Thu, 15 Sep 2022 06:30:32 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id bj12so42093844ejb.13
+        for <netdev@vger.kernel.org>; Thu, 15 Sep 2022 06:30:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=IiwEvg7xStdXEy9AQ0RZ+E2bttEkvsFzPBzCVZl4qtU=;
+        b=b11uXZdeBFK+BRYosGI3lneIDFvqKuCTZsgNk6WRklBhFQKU2f5vYNhQpCGfgI0XBR
+         S6f/mR5VY/SomF7NPL3lRlwM3c9LcZ4gicncvNQ18AkJDj4yo8SDMYm2PZnjVotQrrhW
+         qEg0EXMgev9z0t3TiLG2zyGYKpxwOid7n946o4hJkR4gUjAe/R2XEpQmKYP2FtuM1jPE
+         LGZxHdbQTW1c6aDlVbEo+cRKdsmXCG3QZwB+vo3bi8GBejH/tanpdVh+tYZELyHRcFIq
+         bXjc7njAPtStZHeSov90SdJV9VlKWkoL96+wvajlTMUc4SrKHn2mRTI1wSG7vdtIpr+6
+         rtCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=IiwEvg7xStdXEy9AQ0RZ+E2bttEkvsFzPBzCVZl4qtU=;
+        b=1VuyNxNzpZcCLQdRYXXEyj1cRjQ0V/9vwsEeqIse9xet4LeRIGZw8vQ3IJljc49CcU
+         YFo9/JTOs7GU2ewUE970FZwGxnSJE8QgGKIsvfLZiDvaFV88j3pmaQeMeyDv+htIBTNO
+         LUymI60mNW9yFxxB4c4I6cHdlIEuHlbRvJzDV5qw2lrSxVMwWKrFL2A3XGXpHg7O9G4u
+         VUMvs4bNoySp1zBt9ekfRT/7i6+4XmXdm/fKMSD9xWs92nLMz238k5t+DjlWad2QZJYo
+         E+bUFAdp+uiGiCzHIdCtu7ctMHzUGeivi7NdfJZ/wjwoD0L8etoLEAZParmewoSPXyCm
+         7PeA==
+X-Gm-Message-State: ACgBeo2MGHc/WUDPsHqPdvOLsxz50z1992xwSzmsXhAqYwb799gwHizK
+        k+5fq531zMoT/Kj65gqt2K8=
+X-Google-Smtp-Source: AA6agR7w5qGuaTqXlsgyYBuIXL/BLn7XIJifONA4lCD0frpOzThBYyzUAXmeZKdijDoQmIrkcng31w==
+X-Received: by 2002:a17:906:974d:b0:780:2c07:7617 with SMTP id o13-20020a170906974d00b007802c077617mr6414134ejy.707.1663248631366;
+        Thu, 15 Sep 2022 06:30:31 -0700 (PDT)
+Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.gmail.com with ESMTPSA id d4-20020a056402000400b0044e7c20d7a9sm11802619edu.37.2022.09.15.06.30.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Sep 2022 06:30:30 -0700 (PDT)
+From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hector Martin <marcan@marcan.st>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        asahi@lists.linux.dev, netdev <netdev@vger.kernel.org>,
-        devicetree@vger.kernel.org,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
+Subject: [PATCH] net: broadcom: bcm4908_enet: handle -EPROBE_DEFER when getting MAC
+Date:   Thu, 15 Sep 2022 15:30:13 +0200
+Message-Id: <20220915133013.2243-1-zajec5@gmail.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 12, 2022 at 4:12 PM Rob Herring <robh@kernel.org> wrote:
->
-> On Thu, Sep 08, 2022 at 01:19:17PM +0200, Krzysztof Kozlowski wrote:
-> > On 07/09/2022 19:09, Sven Peter wrote:
-> > > These chips are combined Wi-Fi/Bluetooth radios which expose a
-> > > PCI subfunction for the Bluetooth part.
-> > > They are found in Apple machines such as the x86 models with the T2
-> > > chip or the arm64 models with the M1 or M2 chips.
-> > >
-> > > Signed-off-by: Sven Peter <sven@svenpeter.dev>
-> > > ---
+From: Rafał Miłecki <rafal@milecki.pl>
 
-> > > +examples:
-> > > +  - |
-> > > +    pcie {
-> > > +      #address-cells = <3>;
-> > > +      #size-cells = <2>;
-> > > +
-> > > +      bluetooth@0,1 {
-> >
-> > The unit address seems to be different than reg.
->
-> Right, this says dev 0, func 1.
+Reading MAC from OF may return -EPROBE_DEFER if underlaying NVMEM device
+isn't ready yet. In such case pass that error code up and "wait" to be
+probed later.
 
-Actually, the reg value of 0x100 is correct. func is bits 8-10. dev
-starts in bit 11.
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+---
+ drivers/net/ethernet/broadcom/bcm4908_enet.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-Rob
+diff --git a/drivers/net/ethernet/broadcom/bcm4908_enet.c b/drivers/net/ethernet/broadcom/bcm4908_enet.c
+index e5e17a182f9d..489367fa5748 100644
+--- a/drivers/net/ethernet/broadcom/bcm4908_enet.c
++++ b/drivers/net/ethernet/broadcom/bcm4908_enet.c
+@@ -716,6 +716,8 @@ static int bcm4908_enet_probe(struct platform_device *pdev)
+ 
+ 	SET_NETDEV_DEV(netdev, &pdev->dev);
+ 	err = of_get_ethdev_address(dev->of_node, netdev);
++	if (err == -EPROBE_DEFER)
++		goto err_dma_free;
+ 	if (err)
+ 		eth_hw_addr_random(netdev);
+ 	netdev->netdev_ops = &bcm4908_enet_netdev_ops;
+@@ -726,14 +728,17 @@ static int bcm4908_enet_probe(struct platform_device *pdev)
+ 	netif_napi_add(netdev, &enet->rx_ring.napi, bcm4908_enet_poll_rx, NAPI_POLL_WEIGHT);
+ 
+ 	err = register_netdev(netdev);
+-	if (err) {
+-		bcm4908_enet_dma_free(enet);
+-		return err;
+-	}
++	if (err)
++		goto err_dma_free;
+ 
+ 	platform_set_drvdata(pdev, enet);
+ 
+ 	return 0;
++
++err_dma_free:
++	bcm4908_enet_dma_free(enet);
++
++	return err;
+ }
+ 
+ static int bcm4908_enet_remove(struct platform_device *pdev)
+-- 
+2.34.1
+
