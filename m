@@ -2,38 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FD075B92DB
-	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 05:02:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1313B5B92DF
+	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 05:05:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230031AbiIODCl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Sep 2022 23:02:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37798 "EHLO
+        id S230073AbiIODFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Sep 2022 23:05:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229533AbiIODCj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 23:02:39 -0400
+        with ESMTP id S229931AbiIODE6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Sep 2022 23:04:58 -0400
 Received: from bg4.exmail.qq.com (bg4.exmail.qq.com [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E345082D2C;
-        Wed, 14 Sep 2022 20:02:36 -0700 (PDT)
-X-QQ-mid: bizesmtp87t1663210930tjzhd6id
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA608DEAC;
+        Wed, 14 Sep 2022 20:04:53 -0700 (PDT)
+X-QQ-mid: bizesmtp91t1663211076tb7b2oju
 Received: from localhost.localdomain ( [125.70.163.64])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 15 Sep 2022 11:02:08 +0800 (CST)
+        id ; Thu, 15 Sep 2022 11:04:34 +0800 (CST)
 X-QQ-SSF: 01000000000000E0G000000A0000000
-X-QQ-FEAT: TXoNPSSaW4mVgLg2YDrhMFuGn4LzoBRZT1PkMkucYEJKxuewN7194FuIfGHsz
-        dlB0DvX4VRj+9QPmtnk2Fmpe8v88SzHT9u9gg6jeXADNFcwePDZxHxvImBPJmihlrX3D9vO
-        vX0TXJSx6yErl+6mI9/jhoi7yC3t3vNE1UsYfXxZcHMYqhSlxBGYU117Wwon6WQU2JTkjvM
-        YWPiI5Yet3Wbb3cshtbcrNLa1EPn7YOysSze9nii+ijMxCAXC9pNnuIF8TeuM8rfjUmoJFN
-        RVxlF+8o8SCSgmeXvsT2gPNLS1l42HyGEgvvlI9oGGRhZw/I/XSaxsNX8PlmXy2le5xhvVG
-        7UYNHS8tjJQmX5KShKjJtBKpxajmuU/TZ6xd/2xoXr9Wjtpy0M=
+X-QQ-FEAT: +Fw3Sd5mYDUkX6DJ5ZqqH/iEztTkWmHnrm8bwtLY8K4MEdqWfmaUtja/2Ejig
+        3tmPAXsRh0vT8IzGwIirS41QDMwnJF+P4C3R1qu3on4/IT+yDiZGh0DHUzK5Wv0sEWSzE7N
+        6ShLEgDDC7SpcG6vG/89d6DPJXubTEtaTWT40CCWMwKbviFy9H3jr806Sservzytkm2PQEy
+        y268angtlV+2Ncg3xmI933K1VVDhZop7vpdL1UBp4+qd0kDngx11kPu38sLFL6qgUfkWo/1
+        wpOPQbkAFZ5NJe5gEPUhbWZYrbplBrCwJMC7MdNc6xCYMmdwsoAxg4zUr8/9hn/Ztk+Fu+k
+        9b9t1MgkfFSueSCxj8BvQa7nEyDckYOqXIRKYX7bY/I1G+0j0LNLXlgxWN/ZG5giNgOfo+i
 X-QQ-GoodBg: 0
 From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] orinoco: fix repeated words in comments
-Date:   Thu, 15 Sep 2022 11:02:01 +0800
-Message-Id: <20220915030201.35984-1-yuanjilin@cdjrlc.com>
+To:     loic.poulain@linaro.org, kvalo@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Cc:     wcn36xx@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jilin Yuan <yuanjilin@cdjrlc.com>
+Subject: [PATCH] wifi: wcn36xx: fix repeated words in comments
+Date:   Thu, 15 Sep 2022 11:04:28 +0800
+Message-Id: <20220915030428.38510-1-yuanjilin@cdjrlc.com>
 X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -49,26 +50,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Delete the redundant word 'this'.
+Delete the redundant word 'that'.
 
 Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
 ---
- drivers/net/wireless/intersil/orinoco/main.h | 2 +-
+ drivers/net/wireless/ath/wcn36xx/hal.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intersil/orinoco/main.h b/drivers/net/wireless/intersil/orinoco/main.h
-index 5a8fec26136e..852e1643dad2 100644
---- a/drivers/net/wireless/intersil/orinoco/main.h
-+++ b/drivers/net/wireless/intersil/orinoco/main.h
-@@ -12,7 +12,7 @@
- /* Compile time configuration and compatibility stuff               */
- /********************************************************************/
+diff --git a/drivers/net/wireless/ath/wcn36xx/hal.h b/drivers/net/wireless/ath/wcn36xx/hal.h
+index f1a43fd1d957..d3a9d00e65e1 100644
+--- a/drivers/net/wireless/ath/wcn36xx/hal.h
++++ b/drivers/net/wireless/ath/wcn36xx/hal.h
+@@ -2677,7 +2677,7 @@ struct ani_global_security_stats {
+ 	 * management information base (MIB) object is enabled */
+ 	u32 rx_wep_unencrypted_frm_cnt;
  
--/* We do this this way to avoid ifdefs in the actual code */
-+/* We do this way to avoid ifdefs in the actual code */
- #ifdef WIRELESS_SPY
- #define SPY_NUMBER(priv)	(priv->spy_data.spy_number)
- #else
+-	/* The number of received MSDU packets that that the 802.11 station
++	/* The number of received MSDU packets that the 802.11 station
+ 	 * discarded because of MIC failures */
+ 	u32 rx_mic_fail_cnt;
+ 
 -- 
 2.36.1
 
