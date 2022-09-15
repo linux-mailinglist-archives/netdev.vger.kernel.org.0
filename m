@@ -2,92 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8444C5B9939
-	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 13:00:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 142C45B998D
+	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 13:28:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229580AbiIOLAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Sep 2022 07:00:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46496 "EHLO
+        id S229682AbiIOL2T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Sep 2022 07:28:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiIOLAV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 07:00:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B214A79A5D;
-        Thu, 15 Sep 2022 04:00:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ECC0EB81D67;
-        Thu, 15 Sep 2022 11:00:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 981FAC433C1;
-        Thu, 15 Sep 2022 11:00:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663239617;
-        bh=acLkAUMk8BizKu7cs/NDP4722gLa3JtenovpxYO3Tr8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=gmgro/xCWfp0Ze/EGnC+VKSQMF6UT+HP8vRhQUthN2sRBWRbOqsBoQpALOJGiJ/10
-         cUwOVAMciz0g0KcBweDX2hfDVvb+hIGPGdJgXG3P0rcXtkpRPyodGlXfN9iefDrCpY
-         aNs+hiXkrgySSxOm7bL8H+BQMw8vmcs9u1omb+criFevg9Sm4arCrtBNm9tcu6+slD
-         DvcdT3mzYo8UJpcBLcdFz7HDk2eCI46Ux2Ze/mBS9ZW85U/3Da2X5qxyxhAN3mEagX
-         U+kjBGC0sf47cgTi4PtAbDI4CmsRt1WxBbYue8Vc5Y115JdCxcZyLB2CqYsv0MoxPq
-         sJXDx1FtsgnKQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 73AF2C73FFC;
-        Thu, 15 Sep 2022 11:00:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229636AbiIOL2R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 07:28:17 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EE91895DC
+        for <netdev@vger.kernel.org>; Thu, 15 Sep 2022 04:28:16 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id b75so12503680pfb.7
+        for <netdev@vger.kernel.org>; Thu, 15 Sep 2022 04:28:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=8BbJuqttJ/4fV8VqdOXoHInPzBrkD/Iy1FYpvE30g1c=;
+        b=Bi8jW5stvM7E/VS68FDwwRlwNAFRPBXV03tcB7arf/SAHExnJ59XJtmwUg1wqr8cLk
+         ZxfITpFvHJjzKL1jH6pyhGJ3dNSb8QL6ifnIVCJkkKEs0J3jgAs11uovByFus/9sN8VT
+         RQOzvYx6dKEDrjNeUyvPRA6CQqTl7+TVJIIIiul6tiopmX0X9aJHOu70hjdYjFoNtQzR
+         qv/HRulxb3D0RRFrWD3LPye8mCexxByJw6+z6S53VtGMpD3tpIy0Y06VsHdQ5yX+EesX
+         +7sz03IGYRhYXarssSJBeQAVjtF5rF3CI0JiZdcH4e/sbPsqovWhVbywvbCoKGeT7AlO
+         80GQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=8BbJuqttJ/4fV8VqdOXoHInPzBrkD/Iy1FYpvE30g1c=;
+        b=DPZRdyQnuCksxDxHrhFRvk+UlBsrJwXaZaK5sFbNCwpX+CsUkj7pcBwOLRVYHdVlPG
+         NhY5x6KfL8iftbj135XyA5a+dq5As82KTX6RgPa6NH0ZlDtMm/CAke7g1EJE6l/Uikxf
+         TEHGZdUKcq2TRTNd+1RahdncVu5uH141u7WohyHiUcxpG9VCSZxA3QhZmmNrXbpMZO69
+         UjICNUDlOQNZCgHn2EQnCP7IInE+vNhXrZYGRwAq9aTQPOMdLL49vGS7w2HpF7iQ4M4E
+         JcRv2MuKDLllmgSCYifzUQG/nzQvo7e0Yz18n0j/Zf9FbbUYIM32jcCi74BinPXJOXJE
+         kVDQ==
+X-Gm-Message-State: ACgBeo2LqZvJR6lzCDIN0IMRKcxleJPlVSiUUv1E++bQvJSLsOFiNTQk
+        MDf+2qOU9VVk4gRpuuDgrpnLoH5XEppBkg==
+X-Google-Smtp-Source: AA6agR4B/IutwaBDZel5D+SGqN4y4Z0TKVPo8Zo/Vm2Hwunv3YSwj0n9BBt71rBKTNLWw0ZyHbex6A==
+X-Received: by 2002:a63:778d:0:b0:438:5c5b:f2ac with SMTP id s135-20020a63778d000000b004385c5bf2acmr29736269pgc.401.1663241295529;
+        Thu, 15 Sep 2022 04:28:15 -0700 (PDT)
+Received: from localhost.localdomain ([2401:4900:1c61:6535:ca5f:67d1:670d:e188])
+        by smtp.gmail.com with ESMTPSA id m17-20020a170902db1100b001782751833bsm9214157plx.223.2022.09.15.04.28.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Sep 2022 04:28:15 -0700 (PDT)
+From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
+To:     netdev@vger.kernel.org
+Cc:     linux-arm-msm@vger.kernel.org, bhupesh.sharma@linaro.org,
+        bhupesh.linux@gmail.com, linux-kernel@vger.kernel.org,
+        Vinod Koul <vkoul@kernel.org>,
+        David Miller <davem@davemloft.net>
+Subject: [PATCH] MAINTAINERS: Add myself as a reviewer for Qualcomm ETHQOS Ethernet driver
+Date:   Thu, 15 Sep 2022 16:58:04 +0530
+Message-Id: <20220915112804.3950680-1-bhupesh.sharma@linaro.org>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v3 0/2] net: ftgmac100: support fixed link
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166323961746.5581.16008979446604456337.git-patchwork-notify@kernel.org>
-Date:   Thu, 15 Sep 2022 11:00:17 +0000
-References: <20220907054453.20016-1-rentao.bupt@gmail.com>
-In-Reply-To: <20220907054453.20016-1-rentao.bupt@gmail.com>
-To:     Tao Ren <rentao.bupt@gmail.com>
-Cc:     andrew@lunn.ch, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, guoheyi@linux.alibaba.com,
-        dylan_hung@aspeedtech.com, huangguangbin2@huawei.com,
-        windhl@126.com, chenhao288@hisilicon.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, joel@jms.id.au, andrew@aj.id.au,
-        taoren@fb.com, netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+As suggested by Vinod, adding myself as the reviewer
+for the Qualcomm ETHQOS Ethernet driver.
 
-This series was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+Recently I have enabled this driver on a few Qualcomm
+SoCs / boards and hence trying to keep a close eye on
+it.
 
-On Tue,  6 Sep 2022 22:44:51 -0700 you wrote:
-> From: Tao Ren <rentao.bupt@gmail.com>
-> 
-> The patch series adds fixed link support to ftgmac100 driver.
-> 
-> Patch #1 adds fixed link logic into ftgmac100 driver.
-> 
-> Patch #2 enables mac3 controller in Elbert dts: Elbert mac3 is connected
-> to the onboard switch BCM53134P's IMP_RGMII port directly (no PHY
-> between BMC MAC and BCM53134P).
-> 
-> [...]
+Cc: Vinod Koul <vkoul@kernel.org>
+Cc: David Miller <davem@davemloft.net>
+Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+---
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
-Here is the summary with links:
-  - [net-next,v3,1/2] net: ftgmac100: support fixed link
-    https://git.kernel.org/netdev/net-next/c/38561ded50d0
-  - [net-next,v3,2/2] ARM: dts: aspeed: elbert: Enable mac3 controller
-    https://git.kernel.org/netdev/net-next/c/ce6ce9176975
-
-You are awesome, thank you!
+diff --git a/MAINTAINERS b/MAINTAINERS
+index c26a5c573a5d..e8b58d4afce5 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -16943,6 +16943,7 @@ F:	drivers/net/ethernet/qualcomm/emac/
+ 
+ QUALCOMM ETHQOS ETHERNET DRIVER
+ M:	Vinod Koul <vkoul@kernel.org>
++R:	Bhupesh Sharma <bhupesh.sharma@linaro.org>
+ L:	netdev@vger.kernel.org
+ S:	Maintained
+ F:	Documentation/devicetree/bindings/net/qcom,ethqos.txt
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.37.1
 
