@@ -2,104 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D7CC55B9B3D
-	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 14:45:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD31B5B9B44
+	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 14:47:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230352AbiIOMoW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Sep 2022 08:44:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38644 "EHLO
+        id S229768AbiIOMrJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Sep 2022 08:47:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230343AbiIOMoD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 08:44:03 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87D579D66B;
-        Thu, 15 Sep 2022 05:43:30 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id bj12so41782708ejb.13;
-        Thu, 15 Sep 2022 05:43:30 -0700 (PDT)
+        with ESMTP id S229625AbiIOMrI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 08:47:08 -0400
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D850C5A880
+        for <netdev@vger.kernel.org>; Thu, 15 Sep 2022 05:47:06 -0700 (PDT)
+Received: by mail-oi1-x235.google.com with SMTP id m130so2059994oif.6
+        for <netdev@vger.kernel.org>; Thu, 15 Sep 2022 05:47:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=TDMqV8jd9ZVkraZ743M/cYSftD7zrCBSdtq16DscRdA=;
-        b=NjUHjKrnVE6z0qVMx9Lmpt5IWZ/JwwGBhgQAosJvm0wb5tArmQSMFyjhGEkY5gwQ9V
-         Fedi7tG37Pn9txSLtaXt8G87KTRzIZ2KxIP11yXIoIShRc2AdudYXqB3mzI0c3ofYYm5
-         TKOvRj3Uf3aRJIW4j54CyUDlXDs8aY2fIqV2uTKG4ObG3RzqWsHo7t1WaR/46dIRTz6w
-         fWC90UXceAfXqliI3cG0iuYXQo5OJXjoY3ODnMhm++c9HsEWLPgbF3vS/3cZ8IaIGte5
-         HAuWemK3A8X6loBeaikQYQhvivDPxmFQN+lY/MLfWAO08YAE3gu6Jypr4vxiGmkZArFs
-         DzGw==
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
+         :subject:date;
+        bh=beB8LSzEsaNR2CbcQc81rNfenwmrBfiEq78JjolS3qY=;
+        b=HeLkuDhCh2ab7xIUnoVYq5SWV1kj7EOQj/DMwk6m83PD4FKQm+HsTuIYUajD+0UmNQ
+         ocwVtG7Blzs76dbFqYgSgCTKr7ZDLuBwVQfZwPJGgkfISDlWwDm4DmdpgHXJB3M481DT
+         O7tBWGZZD+4scgQnmmVWkyffqRNctyXNXkbDBp9fEXzxyR/YE2/u+IVYs7MMvL+xo1BG
+         u+4e+QUFS1TUID/X1gO2/qIHVRdf/tVBiqJZNJdWy0CyB1PVBn+cFdDSht8P8pUpJaVO
+         Tkr3Og/izmRot7DEPej63stndp5EvF6BVKbJ3t0GhG7i8i0atECAANmitXfqnQnFFneX
+         3/Pw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=TDMqV8jd9ZVkraZ743M/cYSftD7zrCBSdtq16DscRdA=;
-        b=09J/rQOPsekp5eaSofcOwp/+cdfRc1i3NrzhNKuK5uWyUfVpQ8pG1vXI7QvhqyNNlB
-         A3flEfrPCgaw8VN5RDNBg3agPgcEYy5y/R+oetQLuabceIZArSYsful94c8zSUYp62ad
-         xvQLRhJpaWMMiKSBazN2yGKxIvDZl0jogP1V9+Ecepm+0EUXzmGZRJxqmrzlZv2Ds2Q9
-         SjbIRR0kq8hPZdAc2GxmKbxERUgnupFFVc1p+KRv1/rIws/QG8Gyonp2QqVV9R4ACvS6
-         25XDAlAw4Y48WXn2fDW1qEHNTADqYWATzSRHQmVBpQHwfG/0LBp2ZHUhKFIr0HUVGlET
-         5Y0g==
-X-Gm-Message-State: ACgBeo0XdyWA90cCrVkBUzKQfvTw6amRhmgjus1LtrQz4ISMFwzGlzeR
-        JXrls6o7grfnHRqcXBjKNz/dbmKl3Ao=
-X-Google-Smtp-Source: AA6agR7cLXugsarc+YEMBqkl2NURgIat4trFJmOpyT0sAw0/AWyet1ViOlTua4opslXfXObUnLpptA==
-X-Received: by 2002:a17:907:7205:b0:770:86f1:ae6e with SMTP id dr5-20020a170907720500b0077086f1ae6emr28480322ejc.396.1663245808641;
-        Thu, 15 Sep 2022 05:43:28 -0700 (PDT)
-Received: from felia.fritz.box (200116b826f3da0059c93176b530e0d5.dip.versatel-1u1.de. [2001:16b8:26f3:da00:59c9:3176:b530:e0d5])
-        by smtp.gmail.com with ESMTPSA id u16-20020a170906069000b007414152ec4asm9046503ejb.163.2022.09.15.05.43.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Sep 2022 05:43:28 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] net: make NET_(DEV|NS)_REFCNT_TRACKER depend on NET
-Date:   Thu, 15 Sep 2022 14:42:56 +0200
-Message-Id: <20220915124256.32512-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=beB8LSzEsaNR2CbcQc81rNfenwmrBfiEq78JjolS3qY=;
+        b=6xMLnzc3dJGtaY8AdU/Vck9/RSa9yzaVzfeL0NBzO7vYlmpH6V+Dpf6SuIoBwn0fMz
+         1LnPjyn7pi4Ea2id9Rrk0XVLdvlE3fRSVXikVzunpfF96dvfGiS22edbaDY9tRCIDXF9
+         nOONgXZ6Du0NCZusXYQE71lzfpUzn3yW8FCh2Kb3MkHDK1dsBDslKKj0n342LnSyihUQ
+         lfBe1BDkGGFD5DA/Lvu2b9coV54Zd3ta4sGCk6w9EbBwZ7LL7VqNDRrA59yyTMC/blzh
+         gYBpKIMpk6SDLSJkIi5tndCjsf8OHLei+xkeh+QRBuOuHCKeeZXANRNXRktz8/kBlTBt
+         CvHA==
+X-Gm-Message-State: ACgBeo1gOrw2qFRkvjTvqio1iL+HE7BnxZayL7foXzgogxyiHtuJmYfE
+        tglMvXsG3ThoPG2Nie6QBZkih9X95Ssz9vYTtyc=
+X-Google-Smtp-Source: AA6agR5tu2Kgr84k0MJkl67WoeSv1iCB+7b03HnN+szMIIeO+EeVVMjO4r80ZPhOy8yF1U6BeSUsaZgrSXoJGNHnZtE=
+X-Received: by 2002:a05:6808:13cc:b0:34f:951e:2422 with SMTP id
+ d12-20020a05680813cc00b0034f951e2422mr4036806oiw.160.1663246025885; Thu, 15
+ Sep 2022 05:47:05 -0700 (PDT)
+MIME-Version: 1.0
+Received: by 2002:a05:6358:2920:b0:b2:49cc:c892 with HTTP; Thu, 15 Sep 2022
+ 05:47:05 -0700 (PDT)
+Reply-To: miltonleo137@gmail.com
+From:   Milton Leo <guynancy96@gmail.com>
+Date:   Thu, 15 Sep 2022 05:47:05 -0700
+Message-ID: <CAP15NF4PqFvZmMk5Yzpxom9mPOht6sQDt+7BxEVh4ujqJfuvuw@mail.gmail.com>
+Subject: Hello my good friend,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=5.2 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UNDISC_FREEM autolearn=no
         autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:235 listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5508]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [guynancy96[at]gmail.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [miltonleo137[at]gmail.com]
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [guynancy96[at]gmail.com]
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        *  3.1 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It makes little sense to ask if networking namespace or net device refcount
-tracking shall be enabled for debug kernel builds without network support.
+How are you? Hope you are fine,
+It is my great pleasure to contact you,
+My name is Mr milton leo,
+I have an obligation that I would like you and i to complete ASAP.
+if you dont mind.Hoping to hear from you.
+Regards,
 
-This is similar to the commit eb0b39efb7d9 ("net: CONFIG_DEBUG_NET depends
-on CONFIG_NET").
-
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
----
- net/Kconfig.debug | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/Kconfig.debug b/net/Kconfig.debug
-index e6ae11cc2fb7..5e3fffe707dd 100644
---- a/net/Kconfig.debug
-+++ b/net/Kconfig.debug
-@@ -2,7 +2,7 @@
- 
- config NET_DEV_REFCNT_TRACKER
- 	bool "Enable net device refcount tracking"
--	depends on DEBUG_KERNEL && STACKTRACE_SUPPORT
-+	depends on DEBUG_KERNEL && STACKTRACE_SUPPORT && NET
- 	select REF_TRACKER
- 	default n
- 	help
-@@ -11,7 +11,7 @@ config NET_DEV_REFCNT_TRACKER
- 
- config NET_NS_REFCNT_TRACKER
- 	bool "Enable networking namespace refcount tracking"
--	depends on DEBUG_KERNEL && STACKTRACE_SUPPORT
-+	depends on DEBUG_KERNEL && STACKTRACE_SUPPORT && NET
- 	select REF_TRACKER
- 	default n
- 	help
--- 
-2.17.1
-
+Mr milton leo
