@@ -2,47 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A26C5B946A
-	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 08:29:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C6C25B948E
+	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 08:43:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229714AbiIOG3h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Sep 2022 02:29:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57868 "EHLO
+        id S229562AbiIOGnu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Sep 2022 02:43:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229698AbiIOG3O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 02:29:14 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 201F695ACC;
-        Wed, 14 Sep 2022 23:29:03 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MSnKt4jlkzBsJy;
-        Thu, 15 Sep 2022 14:26:58 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Thu, 15 Sep
- 2022 14:28:59 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>, <jhs@mojatatu.com>,
-        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <shuah@kernel.org>
-CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <martin.lau@linux.dev>, <song@kernel.org>, <yhs@fb.com>,
-        <john.fastabend@gmail.com>, <kpsingh@kernel.org>, <sdf@google.com>,
-        <haoluo@google.com>, <jolsa@kernel.org>, <weiyongjun1@huawei.com>,
-        <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
-Subject: [PATCH net-next,v3 9/9] selftests/tc-testings: add list case for basic filter
-Date:   Thu, 15 Sep 2022 14:30:38 +0800
-Message-ID: <20220915063038.20010-10-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220915063038.20010-1-shaozhengchao@huawei.com>
-References: <20220915063038.20010-1-shaozhengchao@huawei.com>
+        with ESMTP id S229462AbiIOGns (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 02:43:48 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9437CDFDF
+        for <netdev@vger.kernel.org>; Wed, 14 Sep 2022 23:43:47 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MSnbx314CzNmGN;
+        Thu, 15 Sep 2022 14:39:09 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 15 Sep 2022 14:43:45 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 15 Sep
+ 2022 14:43:45 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <netdev@vger.kernel.org>
+CC:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>
+Subject: [PATCH -next 1/3] net: mdio: mux-meson-g12a: Switch to use dev_err_probe() helper
+Date:   Thu, 15 Sep 2022 14:50:41 +0800
+Message-ID: <20220915065043.665138-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpeml500026.china.huawei.com (7.185.36.106)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
 X-CFilter-Loop: Reflected
 X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -53,73 +49,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Test 0811: Add multiple basic filter with cmp ematch u8/link layer and
-default action and dump them
-Test 5129: List basic filters
+dev_err() can be replace with dev_err_probe() which will check if error
+code is -EPROBE_DEFER.
 
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
-Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
- .../tc-testing/tc-tests/filters/basic.json    | 47 +++++++++++++++++++
- 1 file changed, 47 insertions(+)
+ drivers/net/mdio/mdio-mux-meson-g12a.c | 20 +++++++-------------
+ 1 file changed, 7 insertions(+), 13 deletions(-)
 
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/filters/basic.json b/tools/testing/selftests/tc-testing/tc-tests/filters/basic.json
-index e788c114a484..d1278de8ebc3 100644
---- a/tools/testing/selftests/tc-testing/tc-tests/filters/basic.json
-+++ b/tools/testing/selftests/tc-testing/tc-tests/filters/basic.json
-@@ -1274,5 +1274,52 @@
-         "teardown": [
-             "$TC qdisc del dev $DEV1 ingress"
-         ]
-+    },
-+    {
-+        "id": "0811",
-+        "name": "Add multiple basic filter with cmp ematch u8/link layer and default action and dump them",
-+        "category": [
-+            "filter",
-+            "basic"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$TC qdisc add dev $DEV1 ingress",
-+            "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 basic match 'cmp(u8 at 0 layer link mask 0xff gt 10)' classid 1:1"
-+        ],
-+        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 2 protocol ip prio 1 basic match 'cmp(u8 at 0 layer link mask 0xff gt 10)' classid 1:1",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC filter show dev $DEV1 parent ffff:",
-+        "matchPattern": "^filter protocol ip pref 1 basic",
-+        "matchCount": "3",
-+        "teardown": [
-+            "$TC qdisc del dev $DEV1 ingress"
-+        ]
-+    },
-+    {
-+        "id": "5129",
-+        "name": "List basic filters",
-+        "category": [
-+            "filter",
-+            "basic"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$TC qdisc add dev $DEV1 ingress",
-+            "$TC filter add dev $DEV1 parent ffff: handle 1 protocol ip prio 1 basic match 'cmp(u8 at 0 layer link mask 0xff gt 10)' classid 1:1",
-+            "$TC filter add dev $DEV1 parent ffff: handle 2 protocol ip prio 1 basic match 'cmp(u8 at 0 layer link mask 0xff gt 10)' classid 1:1"
-+        ],
-+        "cmdUnderTest": "$TC filter show dev $DEV1 parent ffff:",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC filter show dev $DEV1 parent ffff:",
-+        "matchPattern": "cmp\\(u8 at 0 layer 0 mask 0xff gt 10\\)",
-+        "matchCount": "2",
-+        "teardown": [
-+            "$TC qdisc del dev $DEV1 ingress"
-+        ]
-     }
- ]
+diff --git a/drivers/net/mdio/mdio-mux-meson-g12a.c b/drivers/net/mdio/mdio-mux-meson-g12a.c
+index b8866bc3f2e8..4a2e94faf57e 100644
+--- a/drivers/net/mdio/mdio-mux-meson-g12a.c
++++ b/drivers/net/mdio/mdio-mux-meson-g12a.c
+@@ -233,11 +233,9 @@ static int g12a_ephy_glue_clk_register(struct device *dev)
+ 
+ 		snprintf(in_name, sizeof(in_name), "clkin%d", i);
+ 		clk = devm_clk_get(dev, in_name);
+-		if (IS_ERR(clk)) {
+-			if (PTR_ERR(clk) != -EPROBE_DEFER)
+-				dev_err(dev, "Missing clock %s\n", in_name);
+-			return PTR_ERR(clk);
+-		}
++		if (IS_ERR(clk))
++			return dev_err_probe(dev, PTR_ERR(clk),
++					     "Missing clock %s\n", in_name);
+ 
+ 		parent_names[i] = __clk_get_name(clk);
+ 	}
+@@ -317,12 +315,9 @@ static int g12a_mdio_mux_probe(struct platform_device *pdev)
+ 		return PTR_ERR(priv->regs);
+ 
+ 	priv->pclk = devm_clk_get(dev, "pclk");
+-	if (IS_ERR(priv->pclk)) {
+-		ret = PTR_ERR(priv->pclk);
+-		if (ret != -EPROBE_DEFER)
+-			dev_err(dev, "failed to get peripheral clock\n");
+-		return ret;
+-	}
++	if (IS_ERR(priv->pclk))
++		return dev_err_probe(dev, PTR_ERR(priv->pclk),
++				     "failed to get peripheral clock\n");
+ 
+ 	/* Make sure the device registers are clocked */
+ 	ret = clk_prepare_enable(priv->pclk);
+@@ -339,8 +334,7 @@ static int g12a_mdio_mux_probe(struct platform_device *pdev)
+ 	ret = mdio_mux_init(dev, dev->of_node, g12a_mdio_switch_fn,
+ 			    &priv->mux_handle, dev, NULL);
+ 	if (ret) {
+-		if (ret != -EPROBE_DEFER)
+-			dev_err(dev, "mdio multiplexer init failed: %d", ret);
++		dev_err_probe(dev, ret, "mdio multiplexer init failed\n");
+ 		goto err;
+ 	}
+ 
 -- 
-2.17.1
+2.25.1
 
