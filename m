@@ -2,72 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC5615BA31F
-	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 01:24:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A8865BA358
+	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 01:42:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229771AbiIOXXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Sep 2022 19:23:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36312 "EHLO
+        id S229542AbiIOXl6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Sep 2022 19:41:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229473AbiIOXXO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 19:23:14 -0400
-Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAB4D7CA8F;
-        Thu, 15 Sep 2022 16:23:13 -0700 (PDT)
-Received: by mail-qv1-xf33.google.com with SMTP id i15so15421548qvp.5;
-        Thu, 15 Sep 2022 16:23:13 -0700 (PDT)
+        with ESMTP id S229457AbiIOXl5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 19:41:57 -0400
+Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B592C326CA;
+        Thu, 15 Sep 2022 16:41:56 -0700 (PDT)
+Received: by mail-qv1-xf2a.google.com with SMTP id m9so15450632qvv.7;
+        Thu, 15 Sep 2022 16:41:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=1QrCyzzwTfUJwLj3S6cxRWluHW2svGs+HhM9SBpAePE=;
-        b=KqmVkpIAbDwHrCcz/+17YNfdK8pPZ2kpbOanusQsqLSovcj0Sj0cx1YpV52/VoL+Th
-         aUqd4zDweolb8nIucDWd37S2o4VfPYkC+1bmzUlxNphQ2a3nV9Ak26blluBbRIkNgANR
-         bANHNgt1/rg0CMKPve7qmIZE+PhrMa2jBri+JYHpA0QOd1eF4HQDrsz2OEpDFpjbBcPU
-         LcTrjy2BU7VqVIbrXuSh/GdRD85LFpOMe8GfzjkEWAToZt6fg3sqWZixsgha7DI/7tUK
-         2A68HaTkKT5+tbGzFXc5B+E1yBmCcsjNMGN3etvqVYFLHiu7H95oG5VkPgT2PzOwfhzZ
-         yFBA==
+        bh=sHMR97DN2FQYRWVlG2zH0x9z7vHfZEf3PBRE1At7yLg=;
+        b=bQdvfLd48/sT/hQnm27udtvEdZR5/FpluiY3Tv+g4vpPkKc6elu1J6GH5kd8xu3E3i
+         fDDq3Xk8b6XrQBOgVGCObEuDiWGDoqO6EEYt348jmQ0n8iNU1QUX2uyX/77gVD4ZxfcA
+         atRSK8ZviD/MPR5b/81xTOADewcrHGjoNcBgbdR0msmaLzoc6CNDvje6MTxrMub+0IFe
+         kAhwBN5ekIot7M8alcWYbXWkgHUlvGOEOaJ9M5W2EbNDTb8GEalt7SA3Opu0JhsxD3dL
+         8Y6wYHx8RF8rRDwTE47TG8hL4YikLlHK/o1kYz6LAJuviHnDwQHue5ZZhllFXusqHYoP
+         L84g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=1QrCyzzwTfUJwLj3S6cxRWluHW2svGs+HhM9SBpAePE=;
-        b=c8h0KGrYCjSTcYkV+C9N+5QPwNj9WMEZrK+I7QUrvE5fuFcLphg41C4JXTrhrhexfZ
-         BGJEtWN53TfeGFADBMGzcTepsySTCMdo8+OCAhUqBwiZX+ogJgYuMxUGz87eE2ggffqv
-         wsLK/Jj7TvzAbAQt5lOyD8x+Tme9jZKkE+YxDYOs5kG7etelruO9d9vsEHYjGUTfE7tC
-         7R9gMPNxORNKX0bMmk2MnKLCi46SEf5/WELqYRUw9NSvteWXq2LhrPcZpVhTOHvuUQsr
-         u5N3j8OsVK+vbljbbnuHdfhVOjhnmz0e6BQaSTYaX9ArTWIMbWUVna+7t2MNWOlPaPJN
-         o+5w==
-X-Gm-Message-State: ACrzQf26lteT9OKUO9iYfTFmuZgbx2EnPUJFOT2CUN6pe2KBKingglc8
-        6nBP9Q+Y3+CWZ7vkjMJagbo=
-X-Google-Smtp-Source: AMsMyM6+1hmP35AruDorcXQm3QRKD7aRMMfVX2bqHBh0nOLbYPetC8uLp3aGwW71JA2eK/k/OnOrWg==
-X-Received: by 2002:ad4:5ba7:0:b0:4a9:33e4:2801 with SMTP id 7-20020ad45ba7000000b004a933e42801mr1824874qvq.87.1663284193003;
-        Thu, 15 Sep 2022 16:23:13 -0700 (PDT)
-Received: from localhost ([2600:1700:65a0:ab60:3158:855c:7b19:dc49])
-        by smtp.gmail.com with ESMTPSA id u12-20020a05620a454c00b006cc190f627bsm5175794qkp.63.2022.09.15.16.23.11
+        bh=sHMR97DN2FQYRWVlG2zH0x9z7vHfZEf3PBRE1At7yLg=;
+        b=hVXLq49jw0Sks07gbrj7MgKUtXElA1DdjlM4t59C+cLv9P/LbHJYpyPieDQUUziM+7
+         Y7jiauWXH6VDZUenECgg0KPe0U37cL6x5ZVmXgbjaCBFO8eJPLl1w6BG4A6M5B6+RZnU
+         oNTZjq5RMvIsgE6O7rMoEdbdNirX5QIovHnsO8WbyoEtYc8JmR4QZgVvAmrfx2UU5q+V
+         wJhXjNpGjx4/nhFwORz7eZYr4Q+6kYNzHUmavbz+dXhDQFE6EuzcayStPx/3diPFhkiC
+         EU9ityljJs1vSkumNuiZtHMo5SILHdD758yVhPTuTmgrweghTQ+cYyvufBkxRKAG3EkY
+         YkKA==
+X-Gm-Message-State: ACrzQf2z7h89PXmUsX5dgrpGCPNE5/t5aac47kuuIOlmV9r7B4kqUkoE
+        WvzKjSLkw6J/zdmBnp7NF7A=
+X-Google-Smtp-Source: AMsMyM79hdLjkPH/SfQZUJXn/UwmDJjg+YJzT3QOemoVr1K+bdstNMxfSfxsPjjBvFdMp76/yxfUMA==
+X-Received: by 2002:a05:6214:301a:b0:4ac:a4ec:b8b1 with SMTP id ke26-20020a056214301a00b004aca4ecb8b1mr1743897qvb.122.1663285315814;
+        Thu, 15 Sep 2022 16:41:55 -0700 (PDT)
+Received: from riccipc ([31.187.109.46])
+        by smtp.gmail.com with ESMTPSA id i18-20020a05620a405200b006bb9125363fsm4529300qko.121.2022.09.15.16.41.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Sep 2022 16:23:12 -0700 (PDT)
-Date:   Thu, 15 Sep 2022 16:23:10 -0700
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     Zhengchao Shao <shaozhengchao@huawei.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, jhs@mojatatu.com,
-        jiri@resnulli.us, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, shuah@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, weiyongjun1@huawei.com,
-        yuehaibing@huawei.com
-Subject: Re: [PATCH net-next,v3 1/9] net/sched: cls_api: add helper for tc
- cls walker stats updating
-Message-ID: <YyOz3qLWTS3raNpe@pop-os.localdomain>
-References: <20220915063038.20010-1-shaozhengchao@huawei.com>
- <20220915063038.20010-2-shaozhengchao@huawei.com>
+        Thu, 15 Sep 2022 16:41:55 -0700 (PDT)
+Date:   Fri, 16 Sep 2022 01:41:51 +0200
+From:   Roberto Ricci <rroberto2r@gmail.com>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     edumazet@google.com, davem@davemloft.net, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: BUG: unable to handle page fault for address, with ipv6.disable=1
+Message-ID: <YyO4P50YeI0wlGM2@riccipc>
+References: <YyD0kMC7qIBNOE3j@riccipc>
+ <YyH3gBoUNT9yqrUx@shredder>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220915063038.20010-2-shaozhengchao@huawei.com>
+In-Reply-To: <YyH3gBoUNT9yqrUx@shredder>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -78,30 +71,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 15, 2022 at 02:30:30PM +0800, Zhengchao Shao wrote:
-> The walk implementation of most tc cls modules is basically the same.
-> That is, the values of count and skip are checked first. If count is
-> greater than or equal to skip, the registered fn function is executed.
-> Otherwise, increase the value of count. So we can reconstruct them.
+On 2022-09-14 Wed 18:47:12 +0300, Ido Schimmel wrote:
+> This is most likely caused by commit 0daf07e52709 ("raw: convert raw
+> sockets to RCU") which is being back ported to stable kernels.
 > 
-> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
-> Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
-> ---
->  include/net/pkt_cls.h | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
+> It made the initialization of 'raw_v6_hashinfo' conditional on IPv6
+> being enabled. Can you try the following patch (works on my end)?
 > 
-> diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
-> index d9d90e6925e1..d3cbbabf7592 100644
-> --- a/include/net/pkt_cls.h
-> +++ b/include/net/pkt_cls.h
-> @@ -81,6 +81,19 @@ int tcf_classify(struct sk_buff *skb,
->  		 const struct tcf_proto *tp, struct tcf_result *res,
->  		 bool compat_mode);
+> diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
+> index 19732b5dce23..d40b7d60e00e 100644
+> --- a/net/ipv6/af_inet6.c
+> +++ b/net/ipv6/af_inet6.c
+> @@ -1072,13 +1072,13 @@ static int __init inet6_init(void)
+>  	for (r = &inetsw6[0]; r < &inetsw6[SOCK_MAX]; ++r)
+>  		INIT_LIST_HEAD(r);
 >  
-> +static inline bool tc_cls_stats_update(struct tcf_proto *tp,
+> +	raw_hashinfo_init(&raw_v6_hashinfo);
+> +
+>  	if (disable_ipv6_mod) {
+>  		pr_info("Loaded, but administratively disabled, reboot required to enable\n");
+>  		goto out;
+>  	}
+>  
+> -	raw_hashinfo_init(&raw_v6_hashinfo);
+> -
+>  	err = proto_register(&tcpv6_prot, 1);
+>  	if (err)
+>  		goto out;
+> 
+> Another approach is the following, but I prefer the first:
+> 
+> diff --git a/net/ipv4/raw_diag.c b/net/ipv4/raw_diag.c
+> index 999321834b94..4fbdd69a2be8 100644
+> --- a/net/ipv4/raw_diag.c
+> +++ b/net/ipv4/raw_diag.c
+> @@ -20,7 +20,7 @@ raw_get_hashinfo(const struct inet_diag_req_v2 *r)
+>  	if (r->sdiag_family == AF_INET) {
+>  		return &raw_v4_hashinfo;
+>  #if IS_ENABLED(CONFIG_IPV6)
+> -	} else if (r->sdiag_family == AF_INET6) {
+> +	} else if (r->sdiag_family == AF_INET6 && ipv6_mod_enabled()) {
+>  		return &raw_v6_hashinfo;
+>  #endif
+>  	} else {
 
-This function name is confusing, I don't think it updates anything,
-probably we only dump stats when calling ->walk(). Please use a better
-name here, like tc_cls_stats_dump().
-
-Thanks.
+Both the solutions you proposed work for me. Thanks.
