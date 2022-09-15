@@ -2,228 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DEB65B9831
-	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 11:52:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF6EE5B986A
+	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 12:01:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230144AbiIOJwK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Sep 2022 05:52:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58004 "EHLO
+        id S230159AbiIOKBa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Sep 2022 06:01:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230146AbiIOJvf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 05:51:35 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9B8063FD
-        for <netdev@vger.kernel.org>; Thu, 15 Sep 2022 02:49:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1663235375; x=1694771375;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=io1IH4Xu1EcTG4ruCCsj7kpMT7olyb6SnqA2sc/qKqI=;
-  b=oydoyu39gvH2OpKDdqG5eV8EgMWbIz0RLbH8JciWmqJq6RUQ7gmVQkAZ
-   B15TJQD66H4a3RauCV6qat36PUETzAb05i6th9QHdPtsI0KFeCLChVvrK
-   kNgsAcMatyliG9c2qI9XrbU6v/KtwiQyhBpqHqyX7P9jnszGAZeEoAN8v
-   yGAzJLSZyw/MAicujAdMDYY7n1lQrFags1Q94A1XWZS0a2zfp9PMxFzgF
-   WZTh0b/6F+px4wgShxFInFmjG0CTCwvvR88q/n64bxQfaL7rrqXmBGK2l
-   z7WjO0UZM4USJl2o4vqXaKG+/h95AfDcdVjY6YUE0Nx8ojaZtRvy83Vcx
-   A==;
-X-IronPort-AV: E=Sophos;i="5.93,317,1654585200"; 
-   d="scan'208";a="177279634"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Sep 2022 02:49:11 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Thu, 15 Sep 2022 02:49:09 -0700
-Received: from DEN-LT-70577.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Thu, 15 Sep 2022 02:49:07 -0700
-From:   Daniel Machon <daniel.machon@microchip.com>
-To:     <netdev@vger.kernel.org>
-CC:     <Allan.Nielsen@microchip.com>, <UNGLinuxDriver@microchip.com>,
-        <maxime.chevallier@bootlin.com>, <vladimir.oltean@nxp.com>,
-        <petrm@nvidia.com>, <kuba@kernel.org>, <vinicius.gomes@intel.com>,
-        <thomas.petazzoni@bootlin.com>,
-        Daniel Machon <daniel.machon@microchip.com>
-Subject: [RFC PATCH v2 net-next 2/2] net: dcb: add new apptrust attribute
-Date:   Thu, 15 Sep 2022 11:57:57 +0200
-Message-ID: <20220915095757.2861822-3-daniel.machon@microchip.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220915095757.2861822-1-daniel.machon@microchip.com>
-References: <20220915095757.2861822-1-daniel.machon@microchip.com>
+        with ESMTP id S229727AbiIOKAg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 06:00:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D6F533A17
+        for <netdev@vger.kernel.org>; Thu, 15 Sep 2022 02:58:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1663235890;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mGvd9tOaiGgoI73BcMUDvU/wRhCgiH1mvFcKV3hzfHg=;
+        b=X3wvBwO5BCgyAPCrQfPhnSnQleMZrAOLDOksV1RFpt1V56mpG8l2Eg4fT8rM7NcSzRXsoa
+        0j+q+gk1G+UUs3CTWXVipUhyvOJ1wUrwmekYP/SO6s3OCEWtkEYeJNzdRb6IwkT/rZ9w5/
+        3BAzBwvOQhAwHL4ZhozvVXk1hTlL7FY=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-614-sKHwuOleMuaikL4UuprsoA-1; Thu, 15 Sep 2022 05:58:08 -0400
+X-MC-Unique: sKHwuOleMuaikL4UuprsoA-1
+Received: by mail-wr1-f72.google.com with SMTP id q17-20020adfab11000000b0022a44f0c5d9so4290554wrc.2
+        for <netdev@vger.kernel.org>; Thu, 15 Sep 2022 02:58:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=mGvd9tOaiGgoI73BcMUDvU/wRhCgiH1mvFcKV3hzfHg=;
+        b=vodbW9l4V5lY4Z9UdFHG3BuIJVReOnt6Obu7DZs+Wp+bb9dj094EuBew09bZp83gwJ
+         E6zlY1jy10UbNUCqG24S53WXi5OXszDaPth2fRdeD9SF+MilmX2EMQZUUMp8TptD6YIO
+         XjAoZzpBkYBm0tT1cPzNUevKFQ5AV4OAXHp+q99MoWMnTYkjGqYM5jcWGwFGV61QrKuh
+         nObGGWhl8RMSsiAmdsmtdIkXRg8k6bz6z1Gto0OsP2xsHkU5D4JRTLTPmf4SFEZEjoN4
+         Ije/f3l1JW+3XFuARhC+EXxbC0mU77uqKBqOjM4FtCjgkhGkjbXkUu391lF1n0O+5J+c
+         Tkag==
+X-Gm-Message-State: ACgBeo2enIiy2dhbzDuE9bz+wZ/6ncG/gdaNpBTnF6zO+i0XWDxq4NCn
+        ZGqmmfpVXOpPC8Jo1YFNNLEMnd7ucv8bOYHObPVANZAw9O1zkgu1D8gFnGdt1/LHeBNEanyQjLj
+        2TwYAFvrjuFdC3FhN
+X-Received: by 2002:a5d:628e:0:b0:228:6961:aa6f with SMTP id k14-20020a5d628e000000b002286961aa6fmr25454717wru.36.1663235887422;
+        Thu, 15 Sep 2022 02:58:07 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR77khIjrZ/VrrFBgy3PGrRTawhQua93lXo36YchQhSYV3T98xPVo5WMrU0DOdJgVSarD/WWxA==
+X-Received: by 2002:a5d:628e:0:b0:228:6961:aa6f with SMTP id k14-20020a5d628e000000b002286961aa6fmr25454693wru.36.1663235887053;
+        Thu, 15 Sep 2022 02:58:07 -0700 (PDT)
+Received: from gerbillo.redhat.com ([212.2.180.165])
+        by smtp.gmail.com with ESMTPSA id z4-20020a05600c0a0400b003a540fef440sm2731476wmp.1.2022.09.15.02.58.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Sep 2022 02:58:06 -0700 (PDT)
+Message-ID: <3f25f8fa3ba1aa13ac0779ca48020ab63405c7c7.camel@redhat.com>
+Subject: Re: [PATCH 1/3] net: davicom: dm9000: switch to using gpiod API
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Thu, 15 Sep 2022 11:58:05 +0200
+In-Reply-To: <YxnawswbdbTtx9WQ@lunn.ch>
+References: <20220906204922.3789922-1-dmitry.torokhov@gmail.com>
+         <CACRpkdaUK7SQ9BoR0C2=8XeKWCsjbwd-KdowN5ee_BU+Jhzeqw@mail.gmail.com>
+         <YxnawswbdbTtx9WQ@lunn.ch>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add new apptrust extension attributes to the 8021Qaz APP managed
-object.
+On Thu, 2022-09-08 at 14:06 +0200, Andrew Lunn wrote:
+> On Wed, Sep 07, 2022 at 11:45:48PM +0200, Linus Walleij wrote:
+> > On Tue, Sep 6, 2022 at 10:49 PM Dmitry Torokhov
+> > <dmitry.torokhov@gmail.com> wrote:
+> > 
+> > > This patch switches the driver away from legacy gpio/of_gpio API to
+> > > gpiod API, and removes use of of_get_named_gpio_flags() which I want to
+> > > make private to gpiolib.
+> > > 
+> > > Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> > 
+> > Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+> > 
+> > I think net patches need [PATCH net-next] in the subject to get
+> > applied.
+> 
+> Correct.
+> 
+> https://docs.kernel.org/process/maintainer-netdev.html
+> 
+> For the odd drive by patch, the Maintainers often do accept patches
+> without it. So wait and see.
 
-Two new attributes, DCB_ATTR_DCB_APP_TRUST_TABLE and
-DCB_ATTR_DCB_APP_TRUST, has been added. Trusted selectors are passed in
-the nested attribute (TRUST_TABLE), in order of precedence.
+Due to a series of unfortunate coincidences the netdev backlog has
+grown unusually long. Since the patches LGMT I'm going to apply them to
+net-next without asking a repost.
 
-The new attributes are meant to allow drivers, whose hw supports the
-notion of trust, to be able to set whether a particular app selector is
-to be trusted - and also the order of precedence of selectors.
+@Dmitry: next time, please add the relevant tag, thanks!
 
-Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
----
- include/net/dcbnl.h        |  4 +++
- include/uapi/linux/dcbnl.h |  4 +++
- net/dcb/dcbnl.c            | 64 ++++++++++++++++++++++++++++++++++++--
- 3 files changed, 69 insertions(+), 3 deletions(-)
-
-diff --git a/include/net/dcbnl.h b/include/net/dcbnl.h
-index 2b2d86fb3131..8841ab6c2de7 100644
---- a/include/net/dcbnl.h
-+++ b/include/net/dcbnl.h
-@@ -109,6 +109,10 @@ struct dcbnl_rtnl_ops {
- 	/* buffer settings */
- 	int (*dcbnl_getbuffer)(struct net_device *, struct dcbnl_buffer *);
- 	int (*dcbnl_setbuffer)(struct net_device *, struct dcbnl_buffer *);
-+
-+	/* apptrust */
-+	int (*dcbnl_setapptrust)(struct net_device *, u8 *, int);
-+	int (*dcbnl_getapptrust)(struct net_device *, u8 *, int *);
- };
- 
- #endif /* __NET_DCBNL_H__ */
-diff --git a/include/uapi/linux/dcbnl.h b/include/uapi/linux/dcbnl.h
-index 8eab16e5bc13..ede72aefd88f 100644
---- a/include/uapi/linux/dcbnl.h
-+++ b/include/uapi/linux/dcbnl.h
-@@ -248,6 +248,8 @@ struct dcb_app {
- 	__u16	protocol;
- };
- 
-+#define IEEE_8021QAZ_APP_SEL_MAX 255
-+
- /**
-  * struct dcb_peer_app_info - APP feature information sent by the peer
-  *
-@@ -419,6 +421,8 @@ enum ieee_attrs {
- 	DCB_ATTR_IEEE_QCN,
- 	DCB_ATTR_IEEE_QCN_STATS,
- 	DCB_ATTR_DCB_BUFFER,
-+	DCB_ATTR_DCB_APP_TRUST_TABLE,
-+	DCB_ATTR_DCB_APP_TRUST,
- 	__DCB_ATTR_IEEE_MAX
- };
- #define DCB_ATTR_IEEE_MAX (__DCB_ATTR_IEEE_MAX - 1)
-diff --git a/net/dcb/dcbnl.c b/net/dcb/dcbnl.c
-index dc4fb699b56c..6f5d2b295d09 100644
---- a/net/dcb/dcbnl.c
-+++ b/net/dcb/dcbnl.c
-@@ -166,6 +166,7 @@ static const struct nla_policy dcbnl_ieee_policy[DCB_ATTR_IEEE_MAX + 1] = {
- 	[DCB_ATTR_IEEE_QCN]         = {.len = sizeof(struct ieee_qcn)},
- 	[DCB_ATTR_IEEE_QCN_STATS]   = {.len = sizeof(struct ieee_qcn_stats)},
- 	[DCB_ATTR_DCB_BUFFER]       = {.len = sizeof(struct dcbnl_buffer)},
-+	[DCB_ATTR_DCB_APP_TRUST_TABLE] = {.type = NLA_NESTED},
- };
- 
- /* DCB number of traffic classes nested attributes. */
-@@ -1030,11 +1031,11 @@ static int dcbnl_build_peer_app(struct net_device *netdev, struct sk_buff* skb,
- /* Handle IEEE 802.1Qaz/802.1Qau/802.1Qbb GET commands. */
- static int dcbnl_ieee_fill(struct sk_buff *skb, struct net_device *netdev)
- {
--	struct nlattr *ieee, *app;
-+	struct nlattr *ieee, *app, *apptrust;
- 	struct dcb_app_type *itr;
- 	const struct dcbnl_rtnl_ops *ops = netdev->dcbnl_ops;
- 	int dcbx;
--	int err;
-+	int err, i;
- 
- 	if (nla_put_string(skb, DCB_ATTR_IFNAME, netdev->name))
- 		return -EMSGSIZE;
-@@ -1133,6 +1134,24 @@ static int dcbnl_ieee_fill(struct sk_buff *skb, struct net_device *netdev)
- 	spin_unlock_bh(&dcb_lock);
- 	nla_nest_end(skb, app);
- 
-+	if (ops->dcbnl_getapptrust) {
-+		u8 selectors[IEEE_8021QAZ_APP_SEL_MAX + 1] = {0};
-+		int nselectors;
-+
-+		apptrust = nla_nest_start_noflag(skb,
-+						 DCB_ATTR_DCB_APP_TRUST_TABLE);
-+		if (!app)
-+			return -EMSGSIZE;
-+
-+		err = ops->dcbnl_getapptrust(netdev, selectors, &nselectors);
-+		if (err)
-+			return -EMSGSIZE;
-+
-+		for (i = 0; i < nselectors; i++)
-+			nla_put_u8(skb, DCB_ATTR_DCB_APP_TRUST, selectors[i]);
-+		nla_nest_end(skb, apptrust);
-+	}
-+
- 	/* get peer info if available */
- 	if (ops->ieee_peer_getets) {
- 		struct ieee_ets ets;
-@@ -1427,7 +1446,7 @@ static int dcbnl_ieee_set(struct net_device *netdev, struct nlmsghdr *nlh,
- 	const struct dcbnl_rtnl_ops *ops = netdev->dcbnl_ops;
- 	struct nlattr *ieee[DCB_ATTR_IEEE_MAX + 1];
- 	int prio;
--	int err;
-+	int err, i;
- 
- 	if (!ops)
- 		return -EOPNOTSUPP;
-@@ -1513,6 +1532,45 @@ static int dcbnl_ieee_set(struct net_device *netdev, struct nlmsghdr *nlh,
- 		}
- 	}
- 
-+	if (ieee[DCB_ATTR_DCB_APP_TRUST_TABLE]) {
-+		u8 selectors[IEEE_8021QAZ_APP_SEL_MAX + 1] = {0};
-+		struct nlattr *attr;
-+		int nselectors = 0;
-+		u8 selector;
-+
-+		int rem;
-+
-+		if (!ops->dcbnl_setapptrust) {
-+			err = -EOPNOTSUPP;
-+			goto err;
-+		}
-+
-+		nla_for_each_nested(attr, ieee[DCB_ATTR_DCB_APP_TRUST_TABLE],
-+				    rem) {
-+			if (nla_type(attr) != DCB_ATTR_DCB_APP_TRUST ||
-+			    nla_len(attr) != 1 ||
-+			    nselectors >= sizeof(selectors)) {
-+				err = -EINVAL;
-+				goto err;
-+			}
-+
-+			selector = nla_get_u8(attr);
-+			/* Duplicate selector ? */
-+			for (i = 0; i < nselectors; i++) {
-+				if (selectors[i] == selector) {
-+					err = -EINVAL;
-+					goto err;
-+				}
-+			}
-+
-+			selectors[nselectors++] = selector;
-+		}
-+
-+		err = ops->dcbnl_setapptrust(netdev, selectors, nselectors);
-+		if (err)
-+			goto err;
-+	}
-+
- err:
- 	err = nla_put_u8(skb, DCB_ATTR_IEEE, err);
- 	dcbnl_ieee_notify(netdev, RTM_SETDCB, DCB_CMD_IEEE_SET, seq, 0);
--- 
-2.34.1
+Paolo
 
