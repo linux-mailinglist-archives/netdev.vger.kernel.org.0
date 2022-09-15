@@ -2,123 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BDCC5B96F6
-	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 11:05:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51F585B976B
+	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 11:29:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229564AbiIOJFk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Sep 2022 05:05:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38904 "EHLO
+        id S229625AbiIOJ3Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Sep 2022 05:29:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229452AbiIOJFj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 05:05:39 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6688795AC1;
-        Thu, 15 Sep 2022 02:05:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663232738; x=1694768738;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=PQd9NG7r7Qh0xrNlLQSODxX4esx5SIk8ks2+Gn/DQwQ=;
-  b=KfPdLIr+BFwpyRNqB5cPfftsyc3zS7TRFers/ZXkwm6XfqyvRFyJjRtS
-   tnYKZR4KogyoWkoo83swzz1Vm2DL1gXJvejAMfhM/oC/uCZIAXegwP2E6
-   IBUM56sAJJ17RSPfNlSSFG7BaGvCIexcAUQg1iLx+zskK9QdklSrbcdI1
-   lFjZNiuGwbMBYdHpV9GuNO734vTSOkcHb1Hq0rbvhd6mEcmoaVgXdtg26
-   zfwq0EYnXXl4JIxPD4tfpKrTzmAvnBXKUCoNtCzWEuUedEvdGXhQRZTVW
-   0Yy/+v2gogzMbz/68jH/lR6L1v0vJKzYVRd5ahwd+WncfsBeC/T5vwi78
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10470"; a="299471889"
-X-IronPort-AV: E=Sophos;i="5.93,317,1654585200"; 
-   d="scan'208";a="299471889"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2022 02:05:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,317,1654585200"; 
-   d="scan'208";a="679424415"
-Received: from yongliang-ubuntu20-ilbpg12.png.intel.com ([10.88.229.33])
-  by fmsmga008.fm.intel.com with ESMTP; 15 Sep 2022 02:05:33 -0700
-From:   Choong Yong Liang <yong.liang.choong@linux.intel.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Dan Murphy <dmurphy@ti.com>
-Cc:     Song Yoong Siang <yoong.siang.song@intel.com>,
-        Cacho Gerome <g-cacho@ti.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net 1/1] net: phy: dp83867: perform phy reset after modifying auto-neg setting
-Date:   Thu, 15 Sep 2022 05:02:58 -0400
-Message-Id: <20220915090258.2154767-1-yong.liang.choong@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229473AbiIOJ3V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 05:29:21 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 436A680F70;
+        Thu, 15 Sep 2022 02:29:20 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 28F9Sx4k123160;
+        Thu, 15 Sep 2022 04:28:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1663234139;
+        bh=I2K32vA2lgUmiXzBYb3fBHYBUakCcdVOGjJp84HLIok=;
+        h=Date:CC:Subject:To:References:From:In-Reply-To;
+        b=dd3iJHo8sI5xKsMtmCSyf21XC0+DBvQIT4J0MMsy+3ntAmtHHbtG8J6ALgs3V7y4B
+         K/q1ptHc2mmAkFLSsFwfm61U7eVupHnaq78vci0xtmqh0PpRoHFJ69MCJswooHI4j9
+         A6iIyZ1YtGzaVRaQI/o24d/EY2TBDGzKRT/Kapkk=
+Received: from DLEE104.ent.ti.com (dlee104.ent.ti.com [157.170.170.34])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 28F9SxZo016129
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 15 Sep 2022 04:28:59 -0500
+Received: from DLEE105.ent.ti.com (157.170.170.35) by DLEE104.ent.ti.com
+ (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Thu, 15
+ Sep 2022 04:28:58 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE105.ent.ti.com
+ (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
+ Frontend Transport; Thu, 15 Sep 2022 04:28:58 -0500
+Received: from [10.24.69.241] (ileaxei01-snat.itg.ti.com [10.180.69.5])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 28F9SrSC079482;
+        Thu, 15 Sep 2022 04:28:53 -0500
+Message-ID: <ab683d52-d469-35cf-b3b5-50c9edfc173b@ti.com>
+Date:   Thu, 15 Sep 2022 14:58:52 +0530
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.3 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
-        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski@linaro.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <vladimir.oltean@nxp.com>,
+        <grygorii.strashko@ti.com>, <vigneshr@ti.com>, <nsekhar@ti.com>,
+        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <kishon@ti.com>,
+        <s-vadapalli@ti.com>
+Subject: Re: [PATCH 5/8] net: ethernet: ti: am65-cpsw: Add support for
+ fixed-link configuration
+Content-Language: en-US
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+References: <20220914095053.189851-1-s-vadapalli@ti.com>
+ <20220914095053.189851-6-s-vadapalli@ti.com>
+ <YyH8us424n3dyLYT@shell.armlinux.org.uk>
+From:   Siddharth Vadapalli <s-vadapalli@ti.com>
+In-Reply-To: <YyH8us424n3dyLYT@shell.armlinux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Song Yoong Siang <yoong.siang.song@intel.com>
+Hello Russell,
 
-In the case where TI DP83867 is connected back-to-back with another TI
-DP83867, SEEDs match will occurs when advertised link speed is changed from
-100 Mbps to 1 Gbps, which causing Master/Slave resolution fails and restart
-of the auto-negotiation. As a result, TI DP83867 copper auto-negotiation
-completion will takes up to 15 minutes.
+On 14/09/22 21:39, Russell King (Oracle) wrote:
+> On Wed, Sep 14, 2022 at 03:20:50PM +0530, Siddharth Vadapalli wrote:
+>> Check for fixed-link in am65_cpsw_nuss_mac_config() using struct
+>> am65_cpsw_slave_data's phy_node property to obtain fwnode. Since
+>> am65_cpsw_nuss_mac_link_up() is not invoked in fixed-link mode, perform
+>> the relevant operations in am65_cpsw_nuss_mac_config() itself.
+> 
+> Further to my other comments, you also fail to explain that, when in
+> fixed-link SGMII mode, you _emulate_ being a PHY - which I deduce
+> since you are sending the duplex setting and speed settings via the
+> SGMII control word. Also, as SGMII was invented for a PHY to be able
+> to communicate the media negotiation resolution to the MAC, SGMII
+> defines that the PHY fills in the speed and duplex information in
+> the control word to pass it to the MAC, and the MAC acknowledges this
+> information. There is no need (and SGMII doesn't permit) the MAC to
+> advertise what it's doing.
+> 
+> Maybe this needs to be explained in the commit message?
 
-To resolve the issue, this patch implemented phy reset (software restart
-which perform a full reset, but not including registers) immediately after
-modifying auto-negotiation setting. By applying reset to the phy, it would
-also reset the lfsr which would increase the probability of SEEDS being
-different and help in Master/Slave resolution. Gerome from TI has confirmed
-that there is no harm in adding soft restart in auto-negotiation
-programming flow, even though the system is not facing SEEDs match issue.
+I had tested SGMII fixed-link mode using a bootstrapped ethernet layer-1
+PHY. Based on your clarification in the previous mails that there is an
+issue with the fixed-link mode which I need to debug, I assume that what
+you are referring to here also happens to be a consequence of that.
+Please let me know if I have misunderstood what you meant to convey.
 
-Fixes: 2a10154abcb7 ("net: phy: dp83867: Add TI dp83867 phy")
-Cc: <stable@vger.kernel.org> # 5.4.x
-Signed-off-by: Song Yoong Siang <yoong.siang.song@intel.com>
-Reviewed-by: Cacho Gerome <g-cacho@ti.com>
-Signed-off-by: Choong Yong Liang <yong.liang.choong@linux.intel.com>
----
- drivers/net/phy/dp83867.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
-diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
-index 6939563d3b7c..6e4b10f35696 100644
---- a/drivers/net/phy/dp83867.c
-+++ b/drivers/net/phy/dp83867.c
-@@ -925,6 +925,17 @@ static void dp83867_link_change_notify(struct phy_device *phydev)
- 	}
- }
- 
-+static int dp83867_config_aneg(struct phy_device *phydev)
-+{
-+	int err;
-+
-+	err = genphy_config_aneg(phydev);
-+	if (err < 0)
-+		return err;
-+
-+	return dp83867_phy_reset(phydev);
-+}
-+
- static struct phy_driver dp83867_driver[] = {
- 	{
- 		.phy_id		= DP83867_PHY_ID,
-@@ -951,6 +962,7 @@ static struct phy_driver dp83867_driver[] = {
- 		.resume		= genphy_resume,
- 
- 		.link_change_notify = dp83867_link_change_notify,
-+		.config_aneg	= dp83867_config_aneg,
- 	},
- };
- module_phy_driver(dp83867_driver);
--- 
-2.25.1
-
+Regards,
+Siddharth.
