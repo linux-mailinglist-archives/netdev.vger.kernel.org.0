@@ -2,45 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DFF15B9616
-	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 10:20:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 215425B961F
+	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 10:21:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230224AbiIOIU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Sep 2022 04:20:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57204 "EHLO
+        id S230236AbiIOIUc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Sep 2022 04:20:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230062AbiIOIUZ (ORCPT
+        with ESMTP id S230214AbiIOIUZ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 04:20:25 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BCB995ACA
-        for <netdev@vger.kernel.org>; Thu, 15 Sep 2022 01:20:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18EC689CF5
+        for <netdev@vger.kernel.org>; Thu, 15 Sep 2022 01:20:23 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1oYk6d-0004Ap-BZ
-        for netdev@vger.kernel.org; Thu, 15 Sep 2022 10:20:19 +0200
+        id 1oYk6f-0004BU-2i
+        for netdev@vger.kernel.org; Thu, 15 Sep 2022 10:20:21 +0200
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id DFD3CE395D
-        for <netdev@vger.kernel.org>; Thu, 15 Sep 2022 08:20:16 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id 3995CE3965
+        for <netdev@vger.kernel.org>; Thu, 15 Sep 2022 08:20:17 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 74817E392B;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 88897E392E;
         Thu, 15 Sep 2022 08:20:15 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 2575f472;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 97fd6411;
         Thu, 15 Sep 2022 08:20:14 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        kernel@pengutronix.de, Kenneth Lee <klee33@uw.edu>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net-next 03/23] can: rcar_canfd: Use dev_err_probe() to simplify code and better handle -EPROBE_DEFER
-Date:   Thu, 15 Sep 2022 10:19:53 +0200
-Message-Id: <20220915082013.369072-4-mkl@pengutronix.de>
+Subject: [PATCH net-next 04/23] can: kvaser_usb: kvaser_usb_hydra: Use kzalloc for allocating only one element
+Date:   Thu, 15 Sep 2022 10:19:54 +0200
+Message-Id: <20220915082013.369072-5-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220915082013.369072-1-mkl@pengutronix.de>
 References: <20220915082013.369072-1-mkl@pengutronix.de>
@@ -59,75 +58,115 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Kenneth Lee <klee33@uw.edu>
 
-devm_clk_get() can return -EPROBE_DEFER, so use dev_err_probe() instead of
-dev_err() in order to be less verbose in the log.
+Use kzalloc(...) rather than kcalloc(1, ...) since because the number of
+elements we are specifying in this case is 1, kzalloc would accomplish the
+same thing and we can simplify. Also refactor how we calculate the sizeof()
+as checkstyle for kzalloc() prefers using the variable we are assigning
+to versus the type of that variable for calculating the size to allocate.
 
-This also saves a few LoC.
-
-While at it, turn a "goto fail_dev;" at the beginning of the function into
-a direct return in order to avoid mixing goto and return, which looks
-spurious.
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/all/f5bf0b8f757bd3bc9b391094ece3548cc2f96456.1659858686.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Kenneth Lee <klee33@uw.edu>
+Link: https://lore.kernel.org/all/20220807051656.1991446-1-klee33@uw.edu
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/rcar/rcar_canfd.c | 26 ++++++++++----------------
- 1 file changed, 10 insertions(+), 16 deletions(-)
+ .../net/can/usb/kvaser_usb/kvaser_usb_hydra.c | 20 +++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
-index 27085b796e75..567620d215f8 100644
---- a/drivers/net/can/rcar/rcar_canfd.c
-+++ b/drivers/net/can/rcar/rcar_canfd.c
-@@ -1880,10 +1880,9 @@ static int rcar_canfd_probe(struct platform_device *pdev)
+diff --git a/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c b/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
+index dd65c101bfb8..6871d474dabf 100644
+--- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
++++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c
+@@ -534,7 +534,7 @@ static int kvaser_usb_hydra_send_simple_cmd(struct kvaser_usb *dev,
+ 	struct kvaser_cmd *cmd;
+ 	int err;
  
- 	/* Global controller context */
- 	gpriv = devm_kzalloc(&pdev->dev, sizeof(*gpriv), GFP_KERNEL);
--	if (!gpriv) {
--		err = -ENOMEM;
--		goto fail_dev;
--	}
-+	if (!gpriv)
-+		return -ENOMEM;
-+
- 	gpriv->pdev = pdev;
- 	gpriv->channels_mask = channels_mask;
- 	gpriv->fdmode = fdmode;
-@@ -1904,12 +1903,9 @@ static int rcar_canfd_probe(struct platform_device *pdev)
+-	cmd = kcalloc(1, sizeof(struct kvaser_cmd), GFP_KERNEL);
++	cmd = kzalloc(sizeof(*cmd), GFP_KERNEL);
+ 	if (!cmd)
+ 		return -ENOMEM;
  
- 	/* Peripheral clock */
- 	gpriv->clkp = devm_clk_get(&pdev->dev, "fck");
--	if (IS_ERR(gpriv->clkp)) {
--		err = PTR_ERR(gpriv->clkp);
--		dev_err(&pdev->dev, "cannot get peripheral clock, error %d\n",
--			err);
--		goto fail_dev;
--	}
-+	if (IS_ERR(gpriv->clkp))
-+		return dev_err_probe(&pdev->dev, PTR_ERR(gpriv->clkp),
-+				     "cannot get peripheral clock\n");
+@@ -573,7 +573,7 @@ kvaser_usb_hydra_send_simple_cmd_async(struct kvaser_usb_net_priv *priv,
+ 	struct kvaser_usb *dev = priv->dev;
+ 	int err;
  
- 	/* fCAN clock: Pick External clock. If not available fallback to
- 	 * CANFD clock
-@@ -1917,12 +1913,10 @@ static int rcar_canfd_probe(struct platform_device *pdev)
- 	gpriv->can_clk = devm_clk_get(&pdev->dev, "can_clk");
- 	if (IS_ERR(gpriv->can_clk) || (clk_get_rate(gpriv->can_clk) == 0)) {
- 		gpriv->can_clk = devm_clk_get(&pdev->dev, "canfd");
--		if (IS_ERR(gpriv->can_clk)) {
--			err = PTR_ERR(gpriv->can_clk);
--			dev_err(&pdev->dev,
--				"cannot get canfd clock, error %d\n", err);
--			goto fail_dev;
--		}
-+		if (IS_ERR(gpriv->can_clk))
-+			return dev_err_probe(&pdev->dev, PTR_ERR(gpriv->can_clk),
-+					     "cannot get canfd clock\n");
-+
- 		gpriv->fcan = RCANFD_CANFDCLK;
+-	cmd = kcalloc(1, sizeof(struct kvaser_cmd), GFP_ATOMIC);
++	cmd = kzalloc(sizeof(*cmd), GFP_ATOMIC);
+ 	if (!cmd)
+ 		return -ENOMEM;
  
- 	} else {
+@@ -694,7 +694,7 @@ static int kvaser_usb_hydra_map_channel(struct kvaser_usb *dev, u16 transid,
+ 	struct kvaser_cmd *cmd;
+ 	int err;
+ 
+-	cmd = kcalloc(1, sizeof(struct kvaser_cmd), GFP_KERNEL);
++	cmd = kzalloc(sizeof(*cmd), GFP_KERNEL);
+ 	if (!cmd)
+ 		return -ENOMEM;
+ 
+@@ -735,7 +735,7 @@ static int kvaser_usb_hydra_get_single_capability(struct kvaser_usb *dev,
+ 	int err;
+ 	int i;
+ 
+-	cmd = kcalloc(1, sizeof(struct kvaser_cmd), GFP_KERNEL);
++	cmd = kzalloc(sizeof(*cmd), GFP_KERNEL);
+ 	if (!cmd)
+ 		return -ENOMEM;
+ 
+@@ -1394,7 +1394,7 @@ kvaser_usb_hydra_frame_to_cmd_ext(const struct kvaser_usb_net_priv *priv,
+ 	u32 kcan_id;
+ 	u32 kcan_header;
+ 
+-	cmd = kcalloc(1, sizeof(struct kvaser_cmd_ext), GFP_ATOMIC);
++	cmd = kzalloc(sizeof(*cmd), GFP_ATOMIC);
+ 	if (!cmd)
+ 		return NULL;
+ 
+@@ -1468,7 +1468,7 @@ kvaser_usb_hydra_frame_to_cmd_std(const struct kvaser_usb_net_priv *priv,
+ 	u32 flags;
+ 	u32 id;
+ 
+-	cmd = kcalloc(1, sizeof(struct kvaser_cmd), GFP_ATOMIC);
++	cmd = kzalloc(sizeof(*cmd), GFP_ATOMIC);
+ 	if (!cmd)
+ 		return NULL;
+ 
+@@ -1533,7 +1533,7 @@ static int kvaser_usb_hydra_set_bittiming(struct net_device *netdev)
+ 	int sjw = bt->sjw;
+ 	int err;
+ 
+-	cmd = kcalloc(1, sizeof(struct kvaser_cmd), GFP_KERNEL);
++	cmd = kzalloc(sizeof(*cmd), GFP_KERNEL);
+ 	if (!cmd)
+ 		return -ENOMEM;
+ 
+@@ -1567,7 +1567,7 @@ static int kvaser_usb_hydra_set_data_bittiming(struct net_device *netdev)
+ 	int sjw = dbt->sjw;
+ 	int err;
+ 
+-	cmd = kcalloc(1, sizeof(struct kvaser_cmd), GFP_KERNEL);
++	cmd = kzalloc(sizeof(*cmd), GFP_KERNEL);
+ 	if (!cmd)
+ 		return -ENOMEM;
+ 
+@@ -1711,7 +1711,7 @@ static int kvaser_usb_hydra_get_software_details(struct kvaser_usb *dev)
+ 	u32 flags;
+ 	struct kvaser_usb_dev_card_data *card_data = &dev->card_data;
+ 
+-	cmd = kcalloc(1, sizeof(struct kvaser_cmd), GFP_KERNEL);
++	cmd = kzalloc(sizeof(*cmd), GFP_KERNEL);
+ 	if (!cmd)
+ 		return -ENOMEM;
+ 
+@@ -1851,7 +1851,7 @@ static int kvaser_usb_hydra_set_opt_mode(const struct kvaser_usb_net_priv *priv)
+ 		return -EINVAL;
+ 	}
+ 
+-	cmd = kcalloc(1, sizeof(struct kvaser_cmd), GFP_KERNEL);
++	cmd = kzalloc(sizeof(*cmd), GFP_KERNEL);
+ 	if (!cmd)
+ 		return -ENOMEM;
+ 
 -- 
 2.35.1
 
