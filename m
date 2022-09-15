@@ -2,118 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C928C5BA223
-	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 23:02:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 905A45BA26F
+	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 23:53:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229679AbiIOVCC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Sep 2022 17:02:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56610 "EHLO
+        id S229579AbiIOVwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Sep 2022 17:52:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229483AbiIOVCA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 17:02:00 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 505DC84EDD
-        for <netdev@vger.kernel.org>; Thu, 15 Sep 2022 14:01:58 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id l17so3284800wru.2
-        for <netdev@vger.kernel.org>; Thu, 15 Sep 2022 14:01:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc
-         :subject:date;
-        bh=x9HhMb/EH064ugR86JndAz/Kpq64oWfSDEuu8XvaFWc=;
-        b=KVA1UrUIlLmu9hOk6CS0Z30eQMAs5A1zLQQyZLuBJC2fEW9E++Lcws+ivyjAgF5pzE
-         3pbkCdVhA5P2LbRILZWFXtWANlyeCSuc8EavDJrg3MEcLq0shAmgOhFNwgd1RmQaSh4+
-         jJoNsiJ1YJVY+CHPSzMtataMeuu+vhl2cA49tv8UJufsRDxpfmgaIUmjpW/Fv/1vjL33
-         qmig719qjlEnuRM7+GROnOFDqgb3Gab5ILJJUTqpxayWgU0G9OzAvqxUU63eBD9ZjL3U
-         vTnEvFIMjf3CO6FsZA0mWQ6C/ni+2vccRp6d0UiikJC5urZTrPIES4mT9We83oWfocP7
-         /sOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=x9HhMb/EH064ugR86JndAz/Kpq64oWfSDEuu8XvaFWc=;
-        b=JlIAZKl8a0S0pgI7TxXtqqWQ0cH1XUmoEsB+srDFhfsTZPT5JBXa7w/4IpC3glzZAz
-         1MC6OnISDCuRavT+BJ+l1D1NTvUYxbWn7EGJvAkzLizERTIr4jR9ji9KJI5UA/XEH87Q
-         cXBG5b2+P4qviKrP+2Clg397xeXKDWr6xx2DIVDspSOtvRaqdlP1WmWnxm5jQH9B3SR/
-         ixBpKEAvEMa0PDT411KeiiKf8O9K2BoID3oFua3A6nyN3P7nCHj1cwGVyD6F0ChtP5AY
-         hV9xUQ5pxB7ThNDmNcu1Rr9pyb5AixPw3t/deFjE/TMISWIqj7u8Ny8zWPoE4uANbX3n
-         vgow==
-X-Gm-Message-State: ACrzQf1Jf6BE4uXfM8j5ghHOZKX/uPSy8HHTvg9EIi/TJM9nn45z26gb
-        Yx0IfuUHOREdx2l7fUjAvYKk0HMiqOI=
-X-Google-Smtp-Source: AMsMyM491tlNUu+Yjmez2qeavEDXk77W1QwvRyXQnuskcK3k4FY3wMze6DTNtEc4kgaHWOndSZiffA==
-X-Received: by 2002:a5d:59a6:0:b0:22a:c822:f961 with SMTP id p6-20020a5d59a6000000b0022ac822f961mr931242wrr.608.1663275716741;
-        Thu, 15 Sep 2022 14:01:56 -0700 (PDT)
-Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
-        by smtp.gmail.com with ESMTPSA id n13-20020a7bcbcd000000b003a60bc8ae8fsm133642wmi.21.2022.09.15.14.01.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 15 Sep 2022 14:01:56 -0700 (PDT)
-Subject: Re: [RFC PATCH net-next v4 2/6] devlink: Extend devlink-rate api with
- queues and new parameters
-To:     "Wilczynski, Michal" <michal.wilczynski@intel.com>,
-        netdev@vger.kernel.org
-Cc:     alexandr.lobakin@intel.com, dchumak@nvidia.com, maximmi@nvidia.com,
-        jiri@resnulli.us, simon.horman@corigine.com,
-        jacob.e.keller@intel.com, jesse.brandeburg@intel.com,
-        przemyslaw.kitszel@intel.com
-References: <20220915134239.1935604-1-michal.wilczynski@intel.com>
- <20220915134239.1935604-3-michal.wilczynski@intel.com>
- <f17166c7-312d-ac13-989e-b064cddcb49e@gmail.com>
- <401d70a9-5f6d-ed46-117b-de0b82a5f52c@intel.com>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <df4cd224-fc1b-dcd0-b7d4-22b80e6c1821@gmail.com>
-Date:   Thu, 15 Sep 2022 22:01:55 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        with ESMTP id S229462AbiIOVwb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 17:52:31 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECCDB5071C;
+        Thu, 15 Sep 2022 14:52:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1663278751; x=1694814751;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=aC8XDko2Od/oVihXmArEE30uN77ZIMmtAMndXQ2rO3A=;
+  b=UBiuXLFKz7UeArYnrImTVwfdwN0dD/qNcUar7BxO8RMJ1drvmEJDrf0H
+   ZQ0FsMjvyB+TBuzRmGiCD12ALBL6LQz1JDCbYSaNTRaR4HfK8O1u5Hda+
+   Yru8OPcgujS65zgzYffLj65TE9N5Kra/Tfi3ye9M8xB3N+30mcUh+lXcB
+   Oaj7VwXf5be/0Bpftu8GIigSqRASW/eZNRukuKKoLP+GXI87iQZfcuIXx
+   8IpUAdcpr5yMHizps5x7g5oJbjEk///+RAu2iERdolODYzmRB2pgihkQq
+   5T1f5vCKde7TjktDqBKpz67VlidBD/c+wjBglPAKCYqMhW/PD6xJK3HBp
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10471"; a="281876910"
+X-IronPort-AV: E=Sophos;i="5.93,319,1654585200"; 
+   d="scan'208";a="281876910"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2022 14:52:30 -0700
+X-IronPort-AV: E=Sophos;i="5.93,319,1654585200"; 
+   d="scan'208";a="862510330"
+Received: from vcostago-desk1.jf.intel.com (HELO vcostago-desk1) ([10.54.70.10])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2022 14:52:29 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 net 1/2] net/sched: taprio: avoid disabling offload
+ when it was never enabled
+In-Reply-To: <20220915100802.2308279-2-vladimir.oltean@nxp.com>
+References: <20220915100802.2308279-1-vladimir.oltean@nxp.com>
+ <20220915100802.2308279-2-vladimir.oltean@nxp.com>
+Date:   Thu, 15 Sep 2022 14:52:29 -0700
+Message-ID: <877d24gvaa.fsf@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <401d70a9-5f6d-ed46-117b-de0b82a5f52c@intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15/09/2022 19:41, Wilczynski, Michal wrote:
-> Hi,
-> Previously we discussed adding queues to devlink-rate in this thread:
-> https://lore.kernel.org/netdev/20220704114513.2958937-1-michal.wilczynski@intel.com/T/#u
-> In our use case we are trying to find a way to expose hardware Tx scheduler tree that is defined
-> per port to user. Obviously if the tree is defined per physical port, all the scheduling nodes will reside
-> on the same tree.
-> 
-> Our customer is trying to send different types of traffic that require different QoS levels on the same
-> VM, but on a different queues. This requires completely different rate setups for that queue - in the
-> implementation that you're mentioning we wouldn't be able to arbitrarily reassign the queue to any node.
+Vladimir Oltean <vladimir.oltean@nxp.com> writes:
 
-I'm not sure I 100% understand what you're describing, but I get the
- impression it's maybe a layering violation — the hypervisor should only
- be responsible for shaping the VM's overall traffic, it should be up to
- the VM to decide how to distribute that bandwidth between traffic types.
-But if it's what your customer needs then presumably there's some reason
- for it that I'm not seeing.  I'm not a QoS expert by any means — I just
- get antsy that every time I look at devlink it's gotten bigger and keeps
- escaping further out of the "device-wide configuration" concept it was
- originally sold as :(
+> In an incredibly strange API design decision, qdisc->destroy() gets
+> called even if qdisc->init() never succeeded, not exclusively since
+> commit 87b60cfacf9f ("net_sched: fix error recovery at qdisc creation"),
+> but apparently also earlier (in the case of qdisc_create_dflt()).
+>
+> The taprio qdisc does not fully acknowledge this when it attempts full
+> offload, because it starts off with q->flags = TAPRIO_FLAGS_INVALID in
+> taprio_init(), then it replaces q->flags with TCA_TAPRIO_ATTR_FLAGS
+> parsed from netlink (in taprio_change(), tail called from taprio_init()).
+>
+> But in taprio_destroy(), we call taprio_disable_offload(), and this
+> determines what to do based on FULL_OFFLOAD_IS_ENABLED(q->flags).
+>
+> But looking at the implementation of FULL_OFFLOAD_IS_ENABLED()
+> (a bitwise check of bit 1 in q->flags), it is invalid to call this macro
+> on q->flags when it contains TAPRIO_FLAGS_INVALID, because that is set
+> to U32_MAX, and therefore FULL_OFFLOAD_IS_ENABLED() will return true on
+> an invalid set of flags.
+>
+> As a result, it is possible to crash the kernel if user space forces an
+> error between setting q->flags = TAPRIO_FLAGS_INVALID, and the calling
+> of taprio_enable_offload(). This is because drivers do not expect the
+> offload to be disabled when it was never enabled.
+>
+> The error that we force here is to attach taprio as a non-root qdisc,
+> but instead as child of an mqprio root qdisc:
+>
+> $ tc qdisc add dev swp0 root handle 1: \
+> 	mqprio num_tc 8 map 0 1 2 3 4 5 6 7 \
+> 	queues 1@0 1@1 1@2 1@3 1@4 1@5 1@6 1@7 hw 0
+> $ tc qdisc replace dev swp0 parent 1:1 \
+> 	taprio num_tc 8 map 0 1 2 3 4 5 6 7 \
+> 	queues 1@0 1@1 1@2 1@3 1@4 1@5 1@6 1@7 base-time 0 \
+> 	sched-entry S 0x7f 990000 sched-entry S 0x80 100000 \
+> 	flags 0x0 clockid CLOCK_TAI
+> Unable to handle kernel paging request at virtual address fffffffffffffff8
+> [fffffffffffffff8] pgd=0000000000000000, p4d=0000000000000000
+> Internal error: Oops: 96000004 [#1] PREEMPT SMP
+> Call trace:
+>  taprio_dump+0x27c/0x310
+>  vsc9959_port_setup_tc+0x1f4/0x460
+>  felix_port_setup_tc+0x24/0x3c
+>  dsa_slave_setup_tc+0x54/0x27c
+>  taprio_disable_offload.isra.0+0x58/0xe0
+>  taprio_destroy+0x80/0x104
+>  qdisc_create+0x240/0x470
+>  tc_modify_qdisc+0x1fc/0x6b0
+>  rtnetlink_rcv_msg+0x12c/0x390
+>  netlink_rcv_skb+0x5c/0x130
+>  rtnetlink_rcv+0x1c/0x2c
+>
+> Fix this by keeping track of the operations we made, and undo the
+> offload only if we actually did it.
+>
+> I've added "bool offloaded" inside a 4 byte hole between "int clockid"
+> and "atomic64_t picos_per_byte". Now the first cache line looks like
+> below:
+>
+> $ pahole -C taprio_sched net/sched/sch_taprio.o
+> struct taprio_sched {
+>         struct Qdisc * *           qdiscs;               /*     0     8 */
+>         struct Qdisc *             root;                 /*     8     8 */
+>         u32                        flags;                /*    16     4 */
+>         enum tk_offsets            tk_offset;            /*    20     4 */
+>         int                        clockid;              /*    24     4 */
+>         bool                       offloaded;            /*    28     1 */
+>
+>         /* XXX 3 bytes hole, try to pack */
+>
+>         atomic64_t                 picos_per_byte;       /*    32     0 */
+>
+>         /* XXX 8 bytes hole, try to pack */
+>
+>         spinlock_t                 current_entry_lock;   /*    40     0 */
+>
+>         /* XXX 8 bytes hole, try to pack */
+>
+>         struct sched_entry *       current_entry;        /*    48     8 */
+>         struct sched_gate_list *   oper_sched;           /*    56     8 */
+>         /* --- cacheline 1 boundary (64 bytes) --- */
+>
+> Fixes: 9c66d1564676 ("taprio: Add support for hardware offloading")
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
 
-> Those queues would still need to share a single parent - their netdev. This wouldn't allow us to fully take
-> advantage of the HQoS and would introduce arbitrary limitations.
+Reviewed-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
 
-Oh, so you need a hierarchy within which the VF's queues don't form a
- clade (subtree)?  That sounds like something worth calling out in the
- commit message as the reason why you've designed it this way.
 
-> Regarding the documentation,  sure. I just wanted to get all the feedback from the mailing list and arrive at the final
-> solution before writing the docs.
-
-Fair.  But you might get better feedback on the code if people have the
- docs to better understand the intent; just a suggestion.
-
--ed
+Cheers,
+-- 
+Vinicius
