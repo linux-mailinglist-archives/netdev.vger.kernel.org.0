@@ -2,121 +2,306 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2705D5B9F1E
-	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 17:44:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77F3D5B9F52
+	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 18:01:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229708AbiIOPoV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Sep 2022 11:44:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53614 "EHLO
+        id S229892AbiIOQAe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Sep 2022 12:00:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229682AbiIOPoG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 11:44:06 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BB1483BFD;
-        Thu, 15 Sep 2022 08:44:05 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id s10so22056958ljp.5;
-        Thu, 15 Sep 2022 08:44:05 -0700 (PDT)
+        with ESMTP id S230080AbiIOQAT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 12:00:19 -0400
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AAC240566
+        for <netdev@vger.kernel.org>; Thu, 15 Sep 2022 09:00:17 -0700 (PDT)
+Received: by mail-oi1-x22e.google.com with SMTP id v130so2763949oie.2
+        for <netdev@vger.kernel.org>; Thu, 15 Sep 2022 09:00:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=MTL0p90qhzvaa9Qy56q//m1syQEZ7USkfPoHOhnC+Jk=;
-        b=i4LRwgaaHJksuuObJshFcKX+A8JNBcL+Ao+YGHOdxMOCYShEucRokxxF6gOHrXTJHa
-         YR++plI15/TCx9YyE0mL8MbPscbkG/3bNcqcD/mxXVj529K9j/K9KTWdux7g41+xi+9z
-         iUyusKCJEGpkr+pq8hcndXL9cm2FKfIlZ56kRietnjgf6/RHtWfr2yX4SKFtejcaDBYE
-         7GWawXejycAX8ArJ6fTbFNJVMFJfgc1tNZZcK6haqy2n3KE/aeC6bZWaGoVZ+snXWL0d
-         Ei8vmUclBUcceGA+2uKXNCDSP1QlaN3mX9FfXne5aS2EGTkpfntCGVADIHE5MSVMf2En
-         xCmA==
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=DxzMiPMhforlytOmRSkizFz8ynx+/7o6P0N+FvxElZY=;
+        b=dmEiSXZLw/EIFybxxz+JRwArOhvSt4dHisLcfWTnkJQyYtJd7z4avZY6KaancznrVT
+         j4IRPNNDfp71eue9dXFPLyk8zQYt73ZwAeXEyFEudCEFAwFAfZ67WHYzB4K/SNPwh0QS
+         qzs1OmVHmICBwCK/WiktSjosSB4aeUkov4Pfz0xpDfkkgN3LEP2KpFIWvQOJCbiP+qBL
+         CiqVe1Jzn56m55SRSQLudDxj7zGiaFSamkEcKSGgn33Unr1enTEmV2vZCK9mtQ3GtNOt
+         OnjArCEfxyiM4V7pfLDMx7qvertfqTUdvv4vfVmFnSJqS9b0yx4urfwfu9IDPk6Cfp29
+         UrVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=MTL0p90qhzvaa9Qy56q//m1syQEZ7USkfPoHOhnC+Jk=;
-        b=nUtEUWcbRtQ4+7cD/oE5nndkYOG+JJ8SYOXQP4QLtAZ9id3/jYqx4qHKDJ22Kcn3b5
-         uTxS9gZK1b2rZ28WnDAmDAEwEf5eCfbrvwjTyXZEjSuCeeSx7yg+eaTP2IJDCZZjdeRY
-         vbIcv8NPjtF0XDodp3sWJ3Cdd7tYUB1P6GvZSfcIFmRoJ5dyl/R/eDHmwQw9cujkvl0M
-         1uTBScVVdBAi3XKWBRgqUTulsBj2lRU7wXwZinLK9W9WsbC/Wz/HqPaq946K7RxWskiu
-         inUC1kXx/9+2RrcLCk3Yb1WBZxmLjgGCq/2pPRIEUJlioJEWKbh+Z/4sWiee/9p85tfD
-         0kBQ==
-X-Gm-Message-State: ACrzQf22t8MH8D2c+gZ8uGYYX9meRE61OJizk4Qh2inqaJr/PHba00oa
-        EIlXlnmPMyPuaOX8XhgQZx8=
-X-Google-Smtp-Source: AMsMyM4mMip9R4TrOPWPmHEJYLs0UBjYnWs4kk4CsebSxVXPFnhwWHIwh1bmvU/AflVI3wAdUerAFg==
-X-Received: by 2002:a05:651c:1611:b0:261:e11c:c2ef with SMTP id f17-20020a05651c161100b00261e11cc2efmr108775ljq.340.1663256643779;
-        Thu, 15 Sep 2022 08:44:03 -0700 (PDT)
-Received: from home.paul.comp (paulfertser.info. [2001:470:26:54b:226:9eff:fe70:80c2])
-        by smtp.gmail.com with ESMTPSA id o20-20020ac24bd4000000b0049c29292250sm1748961lfq.149.2022.09.15.08.44.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Sep 2022 08:44:03 -0700 (PDT)
-Received: from home.paul.comp (home.paul.comp [IPv6:0:0:0:0:0:0:0:1])
-        by home.paul.comp (8.15.2/8.15.2/Debian-22) with ESMTP id 28FFi0gJ021928;
-        Thu, 15 Sep 2022 18:44:01 +0300
-Received: (from paul@localhost)
-        by home.paul.comp (8.15.2/8.15.2/Submit) id 28FFhwaf021927;
-        Thu, 15 Sep 2022 18:43:58 +0300
-Date:   Thu, 15 Sep 2022 18:43:58 +0300
-From:   Paul Fertser <fercerpav@gmail.com>
-To:     Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
-Cc:     Samuel Mendoza-Jonas <sam@mendozajonas.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        openbmc@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net/ncsi: Add Intel OS2BMC OEM command
-Message-ID: <YyNIPjNX9MCI3zkK@home.paul.comp>
-References: <20220909025716.2610386-1-jiaqing.zhao@linux.intel.com>
- <YxrWPfErV7tKRjyQ@home.paul.comp>
- <8eabb29b-7302-d0a2-5949-d7aa6bc59809@linux.intel.com>
- <Yxrun9LRcFv2QntR@home.paul.comp>
- <36c12486-57d4-c11d-474f-f26a7de8e59a@linux.intel.com>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=DxzMiPMhforlytOmRSkizFz8ynx+/7o6P0N+FvxElZY=;
+        b=tnX8XlSKiiEQwsQW1YVMQEGWvwobzgeEKwwn1snvFydPjtCuDbStOINZgm/yg3dlDG
+         ijlzhpNYavcJYlsMM3zRU56g5aJVDTiAumPfkHmgx0nEETbeWwaFYm+Z1IV69mLQBVeV
+         Yv3f/i1JqU9ZjGVHKJUhCZZB66/ofEnPM2fw1DU3Ao7Lx3O8bKZLKaFUUdmHQObrKlF7
+         eYnsgP9zoJCiPIG0qvBjgM/SKPk5LMDFJOITFHhHqacZdf2f6hlrFWmOK0s/avs47e++
+         LUrnHMStEWgqwB8s2c11ZPX0xzaba8x7IUt6t2HfG1xtPfS57xbWci6Xhsu+3/L+bKP+
+         6+CQ==
+X-Gm-Message-State: ACrzQf37YuFFmddbEpUXIZkvXYpSbhq1xMJ/erK3JigUROE4MajIxzhu
+        SLXlgVZI92Xpq3a9k0ta4z+yMQ==
+X-Google-Smtp-Source: AMsMyM4wlmqL995bfrjHej3EjaF/2atZOozLmGccNjzj36RlEExbBlaQfQM1zOgTdvIDLdCzm5S9zg==
+X-Received: by 2002:a05:6808:3b1:b0:350:3412:d3ab with SMTP id n17-20020a05680803b100b003503412d3abmr276233oie.134.1663257616504;
+        Thu, 15 Sep 2022 09:00:16 -0700 (PDT)
+Received: from ?IPV6:2804:1b3:7000:d095:41f2:210c:b643:8576? ([2804:1b3:7000:d095:41f2:210c:b643:8576])
+        by smtp.gmail.com with ESMTPSA id s10-20020acadb0a000000b0034d14c6ce3dsm7949188oig.16.2022.09.15.09.00.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 15 Sep 2022 09:00:15 -0700 (PDT)
+Message-ID: <1ca0fbfe-bdc6-2a98-9f31-48ab7d9d886d@mojatatu.com>
+Date:   Thu, 15 Sep 2022 13:00:09 -0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <36c12486-57d4-c11d-474f-f26a7de8e59a@linux.intel.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH net-next,v3 0/9] refactor duplicate codes in the tc cls
+ walk function
+Content-Language: en-US
+To:     Zhengchao Shao <shaozhengchao@huawei.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, shuah@kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
+        haoluo@google.com, jolsa@kernel.org, weiyongjun1@huawei.com,
+        yuehaibing@huawei.com
+References: <20220915063038.20010-1-shaozhengchao@huawei.com>
+From:   Victor Nogueira <victor@mojatatu.com>
+In-Reply-To: <20220915063038.20010-1-shaozhengchao@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-On Tue, Sep 13, 2022 at 10:12:06AM +0800, Jiaqing Zhao wrote:
-> On 2022-09-09 15:43, Paul Fertser wrote:
-> > On Fri, Sep 09, 2022 at 03:34:53PM +0800, Jiaqing Zhao wrote:
-> >>> Can you please outline some particular use cases for this feature?
-> >>>
-> >> It enables access between host and BMC when BMC shares the network connection
-> >> with host using NCSI, like accessing BMC via HTTP or SSH from host. 
-> > 
-> > Why having a compile time kernel option here more appropriate than
-> > just running something like "/usr/bin/ncsi-netlink --package 0
-> > --channel 0 --index 3 --oem-payload 00000157200001" (this example uses
-> > another OEM command) on BMC userspace startup?
-> > 
+On 15/09/2022 03:30, Zhengchao Shao wrote:
+> The walk implementation of most tc cls modules is basically the same.
+> That is, the values of count and skip are checked first. If count is
+> greater than or equal to skip, the registered fn function is executed.
+> Otherwise, increase the value of count. So the code can be refactored.
+> Then use helper function to replace the code of each cls module in
+> alphabetical order.
 > 
-> Using ncsi-netlink is one way, but the package and channel id is undetermined
-> as it is selected at runtime. Calling the netlink command on a nonexistent
-> package/channel may lead to kernel panic.
+> The walk function is invoked during dump. Therefore, test cases related
+>   to the tdc filter need to be added.
+> 
+> Last, thanks to Jamal and Victor for their review.
+> 
+> Add test cases locally and perform the test. The test results are listed
+> below:
+> 
+> ./tdc.py -e 0811
+> ok 1 0811 - Add multiple basic filter with cmp ematch u8/link layer and
+> default action and dump them
+> 
+> ./tdc.py -e 5129
+> ok 1 5129 - List basic filters
+> 
+> ./tdc.py -c bpf-filter
+> ok 1 23c3 - Add cBPF filter with valid bytecode
+> ok 2 1563 - Add cBPF filter with invalid bytecode
+> ok 3 2334 - Add eBPF filter with valid object-file
+> ok 4 2373 - Add eBPF filter with invalid object-file
+> ok 5 4423 - Replace cBPF bytecode
+> ok 6 5122 - Delete cBPF filter
+> ok 7 e0a9 - List cBPF filters
+> 
+> ./tdc.py -c cgroup
+> ok 1 6273 - Add cgroup filter with cmp ematch u8/link layer and drop
+> action
+> ok 2 4721 - Add cgroup filter with cmp ematch u8/link layer with trans
+> flag and pass action
+> ok 3 d392 - Add cgroup filter with cmp ematch u16/link layer and pipe
+> action
+> ok 4 0234 - Add cgroup filter with cmp ematch u32/link layer and miltiple
+> actions
+> ok 5 8499 - Add cgroup filter with cmp ematch u8/network layer and pass
+> action
+> ok 6 b273 - Add cgroup filter with cmp ematch u8/network layer with trans
+> flag and drop action
+> ok 7 1934 - Add cgroup filter with cmp ematch u16/network layer and pipe
+> action
+> ok 8 2733 - Add cgroup filter with cmp ematch u32/network layer and
+> miltiple actions
+> ok 9 3271 - Add cgroup filter with NOT cmp ematch rule and pass action
+> ok 10 2362 - Add cgroup filter with two ANDed cmp ematch rules and single
+> action
+> ok 11 9993 - Add cgroup filter with two ORed cmp ematch rules and single
+> action
+> ok 12 2331 - Add cgroup filter with two ANDed cmp ematch rules and one
+> ORed ematch rule and single action
+> ok 13 3645 - Add cgroup filter with two ANDed cmp ematch rules and one
+> NOT ORed ematch rule and single action
+> ok 14 b124 - Add cgroup filter with u32 ematch u8/zero offset and drop
+> action
+> ok 15 7381 - Add cgroup filter with u32 ematch u8/zero offset and invalid
+> value >0xFF
+> ok 16 2231 - Add cgroup filter with u32 ematch u8/positive offset and
+> drop action
+> ok 17 1882 - Add cgroup filter with u32 ematch u8/invalid mask >0xFF
+> ok 18 1237 - Add cgroup filter with u32 ematch u8/missing offset
+> ok 19 3812 - Add cgroup filter with u32 ematch u8/missing AT keyword
+> ok 20 1112 - Add cgroup filter with u32 ematch u8/missing value
+> ok 21 3241 - Add cgroup filter with u32 ematch u8/non-numeric value
+> ok 22 e231 - Add cgroup filter with u32 ematch u8/non-numeric mask
+> ok 23 4652 - Add cgroup filter with u32 ematch u8/negative offset and
+> pass action
+> ok 24 1331 - Add cgroup filter with u32 ematch u16/zero offset and pipe
+> action
+> ok 25 e354 - Add cgroup filter with u32 ematch u16/zero offset and
+> invalid value >0xFFFF
+> ok 26 3538 - Add cgroup filter with u32 ematch u16/positive offset and
+> drop action
+> ok 27 4576 - Add cgroup filter with u32 ematch u16/invalid mask >0xFFFF
+> ok 28 b842 - Add cgroup filter with u32 ematch u16/missing offset
+> ok 29 c924 - Add cgroup filter with u32 ematch u16/missing AT keyword
+> ok 30 cc93 - Add cgroup filter with u32 ematch u16/missing value
+> ok 31 123c - Add cgroup filter with u32 ematch u16/non-numeric value
+> ok 32 3675 - Add cgroup filter with u32 ematch u16/non-numeric mask
+> ok 33 1123 - Add cgroup filter with u32 ematch u16/negative offset and
+> drop action
+> ok 34 4234 - Add cgroup filter with u32 ematch u16/nexthdr+ offset and
+> pass action
+> ok 35 e912 - Add cgroup filter with u32 ematch u32/zero offset and pipe
+> action
+> ok 36 1435 - Add cgroup filter with u32 ematch u32/positive offset and
+> drop action
+> ok 37 1282 - Add cgroup filter with u32 ematch u32/missing offset
+> ok 38 6456 - Add cgroup filter with u32 ematch u32/missing AT keyword
+> ok 39 4231 - Add cgroup filter with u32 ematch u32/missing value
+> ok 40 2131 - Add cgroup filter with u32 ematch u32/non-numeric value
+> ok 41 f125 - Add cgroup filter with u32 ematch u32/non-numeric mask
+> ok 42 4316 - Add cgroup filter with u32 ematch u32/negative offset and
+> drop action
+> ok 43 23ae - Add cgroup filter with u32 ematch u32/nexthdr+ offset and
+> pipe action
+> ok 44 23a1 - Add cgroup filter with canid ematch and single SFF
+> ok 45 324f - Add cgroup filter with canid ematch and single SFF with mask
+> ok 46 2576 - Add cgroup filter with canid ematch and multiple SFF
+> ok 47 4839 - Add cgroup filter with canid ematch and multiple SFF with
+> masks
+> ok 48 6713 - Add cgroup filter with canid ematch and single EFF
+> ok 49 4572 - Add cgroup filter with canid ematch and single EFF with mask
+> ok 50 8031 - Add cgroup filter with canid ematch and multiple EFF
+> ok 51 ab9d - Add cgroup filter with canid ematch and multiple EFF with
+> masks
+> ok 52 5349 - Add cgroup filter with canid ematch and a combination of
+> SFF/EFF
+> ok 53 c934 - Add cgroup filter with canid ematch and a combination of
+> SFF/EFF with masks
+> ok 54 4319 - Replace cgroup filter with diffferent match
+> ok 55 4636 - Detele cgroup filter
+> 
+> ./tdc.py -c flow
+> ok 1 5294 - Add flow filter with map key and ops
+> ok 2 3514 - Add flow filter with map key or ops
+> ok 3 7534 - Add flow filter with map key xor ops
+> ok 4 4524 - Add flow filter with map key rshift ops
+> ok 5 0230 - Add flow filter with map key addend ops
+> ok 6 2344 - Add flow filter with src map key
+> ok 7 9304 - Add flow filter with proto map key
+> ok 8 9038 - Add flow filter with proto-src map key
+> ok 9 2a03 - Add flow filter with proto-dst map key
+> ok 10 a073 - Add flow filter with iif map key
+> ok 11 3b20 - Add flow filter with priority map key
+> ok 12 8945 - Add flow filter with mark map key
+> ok 13 c034 - Add flow filter with nfct map key
+> ok 14 0205 - Add flow filter with nfct-src map key
+> ok 15 5315 - Add flow filter with nfct-src map key
+> ok 16 7849 - Add flow filter with nfct-proto-src map key
+> ok 17 9902 - Add flow filter with nfct-proto-dst map key
+> ok 18 6742 - Add flow filter with rt-classid map key
+> ok 19 5432 - Add flow filter with sk-uid map key
+> ok 20 4234 - Add flow filter with sk-gid map key
+> ok 21 4522 - Add flow filter with vlan-tag map key
+> ok 22 4253 - Add flow filter with rxhash map key
+> ok 23 4452 - Add flow filter with hash key list
+> ok 24 4341 - Add flow filter with muliple ops
+> ok 25 4392 - List flow filters
+> ok 26 4322 - Change flow filter with map key num
+> ok 27 2320 - Replace flow filter with map key num
+> ok 28 3213 - Delete flow filter with map key num
+> 
+> ./tdc.py -c route
+> ok 1 e122 - Add route filter with from and to tag
+> ok 2 6573 - Add route filter with fromif and to tag
+> ok 3 1362 - Add route filter with to flag and reclassify action
+> ok 4 4720 - Add route filter with from flag and continue actions
+> ok 5 2812 - Add route filter with form tag and pipe action
+> ok 6 7994 - Add route filter with miltiple actions
+> ok 7 4312 - List route filters
+> ok 8 2634 - Delete route filter with pipe action
+> 
+> ./tdc.py -c rsvp
+> ok 1 2141 - Add rsvp filter with tcp proto and specific IP address
+> ok 2 5267 - Add rsvp filter with udp proto and specific IP address
+> ok 3 2819 - Add rsvp filter with src ip and src port
+> ok 4 c967 - Add rsvp filter with tunnelid and continue action
+> ok 5 5463 - Add rsvp filter with tunnel and pipe action
+> ok 6 2332 - Add rsvp filter with miltiple actions
+> ok 7 8879 - Add rsvp filter with tunnel and skp flag
+> ok 8 8261 - List rsvp filters
+> ok 9 8989 - Delete rsvp filter
+> 
+> ./tdc.py -c tcindex
+> ok 1 8293 - Add tcindex filter with default action
+> ok 2 7281 - Add tcindex filter with hash size and pass action
+> ok 3 b294 - Add tcindex filter with mask shift and reclassify action
+> ok 4 0532 - Add tcindex filter with pass_on and continue actions
+> ok 5 d473 - Add tcindex filter with pipe action
+> ok 6 2940 - Add tcindex filter with miltiple actions
+> ok 7 1893 - List tcindex filters
+> ok 8 2041 - Change tcindex filter with pass action
+> ok 9 9203 - Replace tcindex filter with pass action
+> ok 10 7957 - Delete tcindex filter with drop action
+> 
+> ---
+> v3: Modify the test case format alignment
+> v2: rectify spelling error; The category name bpf in filters file
+>      is renamed to bpf-filter
+> ---
+> 
+> Zhengchao Shao (9):
+>    net/sched: cls_api: add helper for tc cls walker stats updating
+>    net/sched: use tc_cls_stats_update() in filter
+>    selftests/tc-testings: add selftests for bpf filter
+>    selftests/tc-testings: add selftests for cgroup filter
+>    selftests/tc-testings: add selftests for flow filter
+>    selftests/tc-testings: add selftests for route filter
+>    selftests/tc-testings: add selftests for rsvp filter
+>    selftests/tc-testings: add selftests for tcindex filter
+>    selftests/tc-testings: add list case for basic filter
+> 
+>   include/net/pkt_cls.h                         |   13 +
+>   net/sched/cls_basic.c                         |    9 +-
+>   net/sched/cls_bpf.c                           |    8 +-
+>   net/sched/cls_flow.c                          |    8 +-
+>   net/sched/cls_fw.c                            |    9 +-
+>   net/sched/cls_route.c                         |    9 +-
+>   net/sched/cls_rsvp.h                          |    9 +-
+>   net/sched/cls_tcindex.c                       |   18 +-
+>   net/sched/cls_u32.c                           |   20 +-
+>   .../tc-testing/tc-tests/filters/basic.json    |   47 +
+>   .../tc-testing/tc-tests/filters/bpf.json      |  171 +++
+>   .../tc-testing/tc-tests/filters/cgroup.json   | 1236 +++++++++++++++++
+>   .../tc-testing/tc-tests/filters/flow.json     |  623 +++++++++
+>   .../tc-testing/tc-tests/filters/route.json    |  181 +++
+>   .../tc-testing/tc-tests/filters/rsvp.json     |  203 +++
+>   .../tc-testing/tc-tests/filters/tcindex.json  |  227 +++
+>   16 files changed, 2716 insertions(+), 75 deletions(-)
+>   create mode 100644 tools/testing/selftests/tc-testing/tc-tests/filters/bpf.json
+>   create mode 100644 tools/testing/selftests/tc-testing/tc-tests/filters/cgroup.json
+>   create mode 100644 tools/testing/selftests/tc-testing/tc-tests/filters/flow.json
+>   create mode 100644 tools/testing/selftests/tc-testing/tc-tests/filters/route.json
+>   create mode 100644 tools/testing/selftests/tc-testing/tc-tests/filters/rsvp.json
+>   create mode 100644 tools/testing/selftests/tc-testing/tc-tests/filters/tcindex.json
 
-That sounds like a bug all right. If you can reproduce, it's likely
-the fix is reasonably easy, please consider doing it.
-
-> Why I prefer the kernel option is that it applies the config to all ncsi
-> devices by default when setting up them. This reduces the effort and keeps
-> compatibility. Lots of things in current ncsi kernel driver can be done via
-> commands from userspace, but I think it is not a good idea to have a driver
-> resides on both kernel and userspace.
-
-How should the developer decide whether to enable this compile-time
-option for a platform or not? If it's always nice to have why not
-add the code unconditionally? And if not, are you sure kernel compile
-time is the right decision point? So far I get an impression a sysfs
-runtime knob would be more useful.
-
--- 
-Be free, use free (http://www.gnu.org/philosophy/free-sw.html) software!
-mailto:fercerpav@gmail.com
+Sorry for the nit-picking, but you're still using tabs in some places.
+More precisely, in the bpf, cgroup, flow and route tests.
