@@ -2,128 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 581A85B93DF
-	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 07:14:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CF9C5B93E1
+	for <lists+netdev@lfdr.de>; Thu, 15 Sep 2022 07:14:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229637AbiIOFOL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Sep 2022 01:14:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38004 "EHLO
+        id S229693AbiIOFO4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Sep 2022 01:14:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229503AbiIOFOJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 01:14:09 -0400
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24CA88A1F6;
-        Wed, 14 Sep 2022 22:14:08 -0700 (PDT)
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28F53oDc016130;
-        Thu, 15 Sep 2022 05:14:01 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : from : to : cc : references : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=O1T5Rv/IOA3EgvUgCYRv4xkjxw1fabI14/nllGEHE8g=;
- b=AgNBHA6AVpi5v9OPaMQs4jpt+Xu+0IR2l7Pzh/tf5BHaI4QpmZao0j342vJDFkomH/KU
- /SZ7S8Hfm0Ul1mVYCBwS66qQkshGyrWvdD3sPBIep6bpu2Q9NL3iZppJE60CN6xvu7dY
- G244qD+DksEe+JzAPhKiihxOympgwOiJj/z5jMwUks1OiaHhxCPu4ByTQpQ+7g/wavvQ
- c2fsP7I2bsqQvdhkir9kndc6w+ku41u1A6rptGZeR0dGAPuJI1p0jJzLFXzlJdlY5C4l
- F55bKpjkN24nzc8tjAMaNO6sDQXWOUiE0VWchUDiWUBuvGdpjj3VpD40LXSiwD079XAF Jw== 
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3jkwjer0r4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 15 Sep 2022 05:14:01 +0000
-Received: from pps.filterd (NALASPPMTA01.qualcomm.com [127.0.0.1])
-        by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 28F5BNxc015481;
-        Thu, 15 Sep 2022 05:14:00 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by NALASPPMTA01.qualcomm.com (PPS) with ESMTPS id 3jh45krfmm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 15 Sep 2022 05:14:00 +0000
-Received: from NALASPPMTA01.qualcomm.com (NALASPPMTA01.qualcomm.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 28F5E0s4020104;
-        Thu, 15 Sep 2022 05:14:00 GMT
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA01.qualcomm.com (PPS) with ESMTPS id 28F5DxuG020100
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 15 Sep 2022 05:14:00 +0000
-Received: from [10.110.52.115] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Wed, 14 Sep
- 2022 22:13:58 -0700
-Message-ID: <4fe4736d-ccc2-de00-8bb0-992382644fe6@quicinc.com>
-Date:   Wed, 14 Sep 2022 22:13:57 -0700
+        with ESMTP id S229531AbiIOFOv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 01:14:51 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73CF115A38
+        for <netdev@vger.kernel.org>; Wed, 14 Sep 2022 22:14:50 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id e68so16957059pfe.1
+        for <netdev@vger.kernel.org>; Wed, 14 Sep 2022 22:14:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=QcMGBXDRBBZJSGaerWnru9bzxwV8hCMkljMjrSB40r0=;
+        b=o8xV8nKtEKAbxr0WFUn0Bx4nbEG40n0ZeV0JxTcYUmu+DkJY5M33y1RSa3g0nZCRUM
+         JzFN3rfcrD6NOFKW2xlrBwSEvm4z8VkEys1zvw0HcnPLTXZMfZrX5PtMCcO2rEv4bGol
+         T4K7nHBVzDHTSwEJxGhf32pugW3Rx64iSlZz7Lu6j3yylt7dgHZFBsZkF9BYVZSG2D6G
+         6HOQU9T5t54RewsHIG7kJY8DnGZXinwL8LzQakjGSGi1SF4B1AYEWwI5M5MLD7E+K8/7
+         bEj+CjZDKYEe6523Cpk7aggYpZJ82rmijPCYutkfwDOYiaD1mSOrGJzcitMsRgVSDaIx
+         Z0mg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=QcMGBXDRBBZJSGaerWnru9bzxwV8hCMkljMjrSB40r0=;
+        b=4oLuFjVLDYF6guY0G4BpK/X+FlPcV0no0BxSoEXKh08hNFOqT34OSKTQNC44Tr6o5d
+         bd1SSJn6hKtkYOpMpaPu3AAcx4e7uLVeMXvIM+xFox8oTg0jkgTdljF9wJt8IrJMWbP6
+         vXUiOfKSDlmbcuRZ8blCkHqLIi5OOkH0gFd009LPvUTNuEMCxw91+Ga2JVp5pyuVkMar
+         rT3IU/3daRocP4SKs4PZs6uLUlJb8+9YMwhSIgnEILFW24/dMbHCYUYuu31uWBYjp032
+         4hNdjRTUs+2l6hA5oLM/npf+M0gSZYQlR/dRR++NN/MlacbWCo1IhqHKJRXPZYgUIRT0
+         7IKw==
+X-Gm-Message-State: ACgBeo01ycq8UNmwEYLIjFqCnT2JUbU7J5U6q20cgIws9kyV8LZtfQP1
+        tUpTJhneS0Exu/Mf39vpxMMgNLKjOuSeHEThEi0=
+X-Google-Smtp-Source: AA6agR5VyJMfgqMkDy5N+vonuNnfoND8kJCjCV8WKt49J9C8LMxhS4yqUafjtBch/S9/pHyoStivFAK/Tmy4PY/J4RI=
+X-Received: by 2002:a65:5688:0:b0:3c2:1015:988e with SMTP id
+ v8-20020a655688000000b003c21015988emr34826090pgs.280.1663218889528; Wed, 14
+ Sep 2022 22:14:49 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [PATCH] orinoco: fix repeated words in comments
-Content-Language: en-US
-From:   Jeff Johnson <quic_jjohnson@quicinc.com>
-To:     Jilin Yuan <yuanjilin@cdjrlc.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
-CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220915030201.35984-1-yuanjilin@cdjrlc.com>
- <caf04e03-6cf3-5f56-da0b-ab68d58e7409@quicinc.com>
-In-Reply-To: <caf04e03-6cf3-5f56-da0b-ab68d58e7409@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: A7Z2T8GWv3D9DdZdbO0lBd0FSyCUOatQ
-X-Proofpoint-GUID: A7Z2T8GWv3D9DdZdbO0lBd0FSyCUOatQ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
- definitions=2022-09-15_02,2022-09-14_04,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 phishscore=0
- priorityscore=1501 mlxlogscore=750 clxscore=1015 impostorscore=0
- adultscore=0 spamscore=0 malwarescore=0 lowpriorityscore=0 mlxscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2208220000 definitions=main-2209150026
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220906052129.104507-1-saeed@kernel.org> <20220906052129.104507-8-saeed@kernel.org>
+ <CALHRZuq962PeU0OJ0pLrnW=tkaBd8T+iFSkT3mfWr2ArYKdO8A@mail.gmail.com> <20220914203849.fn45bvuem2l3ppqq@sx1>
+In-Reply-To: <20220914203849.fn45bvuem2l3ppqq@sx1>
+From:   sundeep subbaraya <sundeep.lkml@gmail.com>
+Date:   Thu, 15 Sep 2022 10:44:37 +0530
+Message-ID: <CALHRZup8+nSNoD_=wSKGym3=EPMKoU+1UxbVReOv8xnBnTeRiw@mail.gmail.com>
+Subject: Re: [PATCH net-next V2 07/17] net/mlx5: Add MACsec offload Tx command support
+To:     Saeed Mahameed <saeedm@nvidia.com>
+Cc:     Saeed Mahameed <saeed@kernel.org>, liorna@nvidia.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Raed Salem <raeds@nvidia.com>, antoine.tenart@bootlin.com,
+        Subbaraya Sundeep <sbhatta@marvell.com>, naveenm@marvell.com,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/14/2022 8:54 PM, Jeff Johnson wrote:
-> On 9/14/2022 8:02 PM, Jilin Yuan wrote:
->> Delete the redundant word 'this'.
->>
->> Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
->> ---
->>   drivers/net/wireless/intersil/orinoco/main.h | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/net/wireless/intersil/orinoco/main.h 
->> b/drivers/net/wireless/intersil/orinoco/main.h
->> index 5a8fec26136e..852e1643dad2 100644
->> --- a/drivers/net/wireless/intersil/orinoco/main.h
->> +++ b/drivers/net/wireless/intersil/orinoco/main.h
->> @@ -12,7 +12,7 @@
->>   /* Compile time configuration and compatibility stuff               */
->>   /********************************************************************/
->> -/* We do this this way to avoid ifdefs in the actual code */
->> +/* We do this way to avoid ifdefs in the actual code */
-> 
-> In this case the two instances of "this" are not a repetition, they are 
-> different parts of speech.
-> 
-> The existing sentence is correct English; the modified sentence is not.
-> 
-> If the repeated word really bothers you then insert "in": We do this in 
-> this way...
-> 
-> 
->>   #ifdef WIRELESS_SPY
->>   #define SPY_NUMBER(priv)    (priv->spy_data.spy_number)
->>   #else
-> 
-In addition the patch subject of all files in drivers/net/wireless 
-should now begin with "wifi: "
+On Thu, Sep 15, 2022 at 2:08 AM Saeed Mahameed <saeedm@nvidia.com> wrote:
+>
+> On 14 Sep 20:09, sundeep subbaraya wrote:
+> >Hi Saeed and Lior,
+> >
+> >Your mdo_ops can fail in the commit phase and do not validate input
+> >params in the prepare phase.
+> >Is that okay? I am developing MACSEC offload driver for Marvell CN10K
+>
+> It's ok since i think there is no reason to have the two steps system ! it
+> doesn't make any sense to me ! prepare and commit are invoked consecutively
+> one after the other for all mdo_ops and in every offload flow, with no extra
+> step in between! so it's totally redundant.
+>
+> when i reviewed the series initially i was hesitant to check params
+> on prepare step but i didn't see any reason since commit can still fail in
+> the firmware anyways and there is nothing we can do about it !
+
+Yes, same with us where messages sent to the AF driver can fail in the
+commit phase.
+
+> so we've decide to keep all the flows in one context for better readability
+> and since the prepare/commit phases are confusing.
+>
+Okay. I will do the whole init in the prepare phase only and return 0
+in the commit phase.
+
+> >and I had to write some clever code
+> >to honour that :). Please someone help me understand why two phase
+> >init was needed for offloading.
+> >
+>
+> I don't know, let's ask the original author, Antoine ?
+> CC: Antoine Tenart <atenart@kernel.org>
+
+Thanks. I added antoine.tenart@bootlin.com in my previous mail but bounced back.
+
+Sundeep
+>
+>
