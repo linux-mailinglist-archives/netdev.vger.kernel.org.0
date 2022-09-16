@@ -2,148 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F6005BA655
-	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 07:24:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB9EC5BA6D5
+	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 08:30:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229952AbiIPFYZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Sep 2022 01:24:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59220 "EHLO
+        id S229844AbiIPGa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Sep 2022 02:30:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229935AbiIPFYY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 01:24:24 -0400
-Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B01941D0A;
-        Thu, 15 Sep 2022 22:24:21 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VPvei5g_1663305858;
-Received: from 30.221.149.4(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VPvei5g_1663305858)
-          by smtp.aliyun-inc.com;
-          Fri, 16 Sep 2022 13:24:19 +0800
-Message-ID: <93eddaa5-082c-c3d2-8bc0-f6aa912c9398@linux.alibaba.com>
-Date:   Fri, 16 Sep 2022 13:24:17 +0800
+        with ESMTP id S229639AbiIPGax (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 02:30:53 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFDA75467A;
+        Thu, 15 Sep 2022 23:30:52 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id p1-20020a17090a2d8100b0020040a3f75eso19434248pjd.4;
+        Thu, 15 Sep 2022 23:30:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=kh3qx/CMyciqDvsEcGf9GgOfMAvKQrxqFwrNuTVKiI8=;
+        b=XW6yjn79h0txPYQ9/waG7CV5bMeEwTtTaiBKevHif29ILiLR20UjPv3KQS+oT+nd5/
+         ZjYRf16T2UBs8T31VKkOO4l3/SrANUR9YnMK3rEft3gdxLgS84LQfYa8fhy3Qq7rdFuq
+         Bh4xgi/5/kwA6Y2t3ydDleZ1/Z0X39ewF1DMgkJnzTrt6wacqyVjsI7j7V/GK7zC12ou
+         PlxzKimu1wYdjIQb68jJ7KhIY1CgkJV/3jibe6ptAVZELf0L/pn6vQQI6JSJj4KVs+wu
+         Se+PYnSxhjO3Lu3ZzLSXXRFmpn0Du5rUbmO3OA87QaUJdj/jkd89YnKGVjSRMKeh98nA
+         sVIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=kh3qx/CMyciqDvsEcGf9GgOfMAvKQrxqFwrNuTVKiI8=;
+        b=JotUgCqtddftZgWtUc9E5fJnhP9OkZCyqL3Eb1QHfdy42lAo4TNSDoNVf3acvqW7o7
+         K3rdU6vi6rBoepDLUd3BTR3eeF+Pwc+R5cLt1fSb4rw6n8LFrmYFzeoBLELKqRbrh1y1
+         8dCp+mmH2bt1BB0AoX3/cgQASJykrRDDxoEEmzU0eEFvWfNoVBHgA7cm05BwYrBQcXuQ
+         zMg/60HunI1Yvg7VRfkOc951BjK7KTfFVy8qXgdnB1MrkGR8vIpKUFDrDxwV06JEGp8s
+         0zleyhMpcPR1DPmjsn9I/M6cYm49XrcdqgiLOvB2XEpxJbz+f0X6R6XHZStKhofXr0pJ
+         PkXg==
+X-Gm-Message-State: ACrzQf2sYNlCVDu0gspsY9B15ol3AGvrQyHlB/ZVq4SW3j9ceozKItAs
+        OWFZBG2hjiIe0LmvmDhTL6A39QUyWHg=
+X-Google-Smtp-Source: AMsMyM5/iWsbG6Wc9fZRTipzPEu0saoviPmDVg/k4+GI+qrAZV9o7/wtqE6vvIKNM4CtsqFyurCszw==
+X-Received: by 2002:a17:90b:180a:b0:202:ae1f:328a with SMTP id lw10-20020a17090b180a00b00202ae1f328amr14957464pjb.78.1663309852099;
+        Thu, 15 Sep 2022 23:30:52 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id b9-20020a170902d40900b0016bedcced2fsm13927410ple.35.2022.09.15.23.30.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Sep 2022 23:30:51 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     chunkeey@googlemail.com
+Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] carl9170: use strscpy() is more robust and safer
+Date:   Fri, 16 Sep 2022 06:30:47 +0000
+Message-Id: <20220916063047.155021-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH net-next v2 10/10] net/smc: fix application data exception
-Content-Language: en-US
-To:     Wen Gu <guwen@linux.alibaba.com>, kgraul@linux.ibm.com,
-        wenjia@linux.ibm.com
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-References: <cover.1661407821.git.alibuda@linux.alibaba.com>
- <e590ca91e24d002608df29d100d4139977d0bcb6.1661407821.git.alibuda@linux.alibaba.com>
- <9f67d8b3-e813-6bc6-ca1f-e387288e9df4@linux.alibaba.com>
-From:   "D. Wythe" <alibuda@linux.alibaba.com>
-In-Reply-To: <9f67d8b3-e813-6bc6-ca1f-e387288e9df4@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-10.5 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,NORMAL_HTTP_TO_IP,NUMERIC_HTTP_ADDR,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-Hi, Wen Gu
+The implementation of strscpy() is more robust and safer.
 
-This is indeed same issues, I will fix it in the next version.
+That's now the recommended way to copy NUL terminated strings.
 
-Thanks
-D. Wythe
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+---
+ drivers/net/wireless/ath/carl9170/fw.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-
-On 9/8/22 5:37 PM, Wen Gu wrote:
-> 
-> 
-> On 2022/8/26 17:51, D. Wythe wrote:
-> 
->> From: "D. Wythe" <alibuda@linux.alibaba.com>
->>
->> After we optimize the parallel capability of SMC-R connection
->> establishment, There is a certain probability that following
->> exceptions will occur in the wrk benchmark test:
->>
->> Running 10s test @ http://11.213.45.6:80
->>    8 threads and 64 connections
->>    Thread Stats   Avg      Stdev     Max   +/- Stdev
->>      Latency     3.72ms   13.94ms 245.33ms   94.17%
->>      Req/Sec     1.96k   713.67     5.41k    75.16%
->>    155262 requests in 10.10s, 23.10MB read
->> Non-2xx or 3xx responses: 3
->>
->> We will find that the error is HTTP 400 error, which is a serious
->> exception in our test, which means the application data was
->> corrupted.
->>
->> Consider the following scenarios:
->>
->> CPU0                            CPU1
->>
->> buf_desc->used = 0;
->>                                  cmpxchg(buf_desc->used, 0, 1)
->>                                  deal_with(buf_desc)
->>
->> memset(buf_desc->cpu_addr,0);
->>
->> This will cause the data received by a victim connection to be cleared,
->> thus triggering an HTTP 400 error in the server.
->>
->> This patch exchange the order between clear used and memset, add
->> barrier to ensure memory consistency.
->>
->> Fixes: 1c5526968e27 ("net/smc: Clear memory when release and reuse buffer")
->> Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
->> ---
->>   net/smc/smc_core.c | 5 +++--
->>   1 file changed, 3 insertions(+), 2 deletions(-)
->>
->> diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
->> index 84bf84c..fdad953 100644
->> --- a/net/smc/smc_core.c
->> +++ b/net/smc/smc_core.c
->> @@ -1380,8 +1380,9 @@ static void smcr_buf_unuse(struct smc_buf_desc *buf_desc, bool is_rmb,
->>           smc_buf_free(lgr, is_rmb, buf_desc);
->>       } else {
->> -        buf_desc->used = 0;
->> -        memset(buf_desc->cpu_addr, 0, buf_desc->len);
->> +        /* memzero_explicit provides potential memory barrier semantics */
->> +        memzero_explicit(buf_desc->cpu_addr, buf_desc->len);
->> +        WRITE_ONCE(buf_desc->used, 0);
->>       }
->>   }
-> 
-> It seems that the same issue exists in smc_buf_unuse(), Maybe it also needs to be fixed?
-> 
-> 
-> static void smc_buf_unuse(struct smc_connection *conn,
->                struct smc_link_group *lgr)
-> {
->      if (conn->sndbuf_desc) {
->          if (!lgr->is_smcd && conn->sndbuf_desc->is_vm) {
->              smcr_buf_unuse(conn->sndbuf_desc, false, lgr);
->          } else {
->              conn->sndbuf_desc->used = 0;
->              memset(conn->sndbuf_desc->cpu_addr, 0,
->                     conn->sndbuf_desc->len);
->                          ^...................
->          }
->      }
->      if (conn->rmb_desc) {
->          if (!lgr->is_smcd) {
->              smcr_buf_unuse(conn->rmb_desc, true, lgr);
->          } else {
->              conn->rmb_desc->used = 0;
->              memset(conn->rmb_desc->cpu_addr, 0,
->                     conn->rmb_desc->len +
->                     sizeof(struct smcd_cdc_msg));
->                          ^...................
->          }
->      }
-> }
-> 
-> Thanks,
-> Wen Gu
+diff --git a/drivers/net/wireless/ath/carl9170/fw.c b/drivers/net/wireless/ath/carl9170/fw.c
+index 1ab09e1c9ec5..4c1aecd1163c 100644
+--- a/drivers/net/wireless/ath/carl9170/fw.c
++++ b/drivers/net/wireless/ath/carl9170/fw.c
+@@ -105,7 +105,7 @@ static void carl9170_fw_info(struct ar9170 *ar)
+ 			 CARL9170FW_GET_MONTH(fw_date),
+ 			 CARL9170FW_GET_DAY(fw_date));
+ 
+-		strlcpy(ar->hw->wiphy->fw_version, motd_desc->release,
++		strscpy(ar->hw->wiphy->fw_version, motd_desc->release,
+ 			sizeof(ar->hw->wiphy->fw_version));
+ 	}
+ }
+-- 
+2.25.1
