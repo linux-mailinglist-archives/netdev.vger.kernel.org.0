@@ -2,95 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 000335BB12B
-	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 18:42:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E08F55BB12E
+	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 18:43:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229628AbiIPQmL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Sep 2022 12:42:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59020 "EHLO
+        id S229704AbiIPQnG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Sep 2022 12:43:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229579AbiIPQmK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 12:42:10 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E4FD15FD0
-        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 09:42:09 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id 207so12453410pgc.7
-        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 09:42:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date;
-        bh=LEDsCQxg94Ho/eSvAXdsw7dBF4zL19ANIEnTAH5+po8=;
-        b=zTYYsWG2PwhmbAyvgkK6bo8KmNvqXUMkrcoqnoeKOPAkmTjw0VkOHdf3CR3UagVMAS
-         1yPP/O+QqYyWPdORQyguxxwh3bC9A8rYmFym65+nhzKErWIUquKhTp/gBV7Tz5aIbe/r
-         IyUI9CL4D9uQvbINQSIqsqm9x528vlqldvtI/kg6eu6YaWSeodUcw+weRcT5bcWtPoCL
-         E6tgPXrppmk9kC7l5AKwF1STKgv1RanxnOFXUSoc7U7kc0J+Azyl+gaYKa8QNLw1wI5W
-         ZDJf+X1vyls+0Asa4owaigwZLJjMT8nhDxr/poQ6kG5xgZLzSeK14bWdnyMdwe2QqSEz
-         Xg4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=LEDsCQxg94Ho/eSvAXdsw7dBF4zL19ANIEnTAH5+po8=;
-        b=zlQS0VVgGj1kJ+FVofBc+dtbA7zglCUzWp8fbPQHPlGzkuy9dXHcUdv9wKX9VTLZ8i
-         1aU80uKQ5inU3pp4D1q/fV+qz1FAmsmN3Q1IyaPdijeipT+DidVOV5IMYqnCEYsyg8sZ
-         KhgOm2q4DR9xV3otXU4tCZOxFZ5F6HlyFK/+lK6SMfafttiJO5LqLnBrZjmKvXC3Xmh2
-         rRFSSHNUFsZHFF+a7+fazLH0KXU8ZKrfd3xupljQBXQNWwh/zITqDq2VCgoJ+MDfSvX9
-         y2aRgK1qy6pv84bDqIUI0z7BITwJbtHWDMRHZNusWmMUIWp9lGI7JCZzcYTCZOZKtPSH
-         7D5w==
-X-Gm-Message-State: ACrzQf14sQEYxODVK77YKYEYY0JG2zG3yWdrB2MiPuAuSteU7ih4F4r+
-        X+BYdJLiAuq2GWnyfJLm4a664rX1PrGrl1QlKWPGiQ==
-X-Google-Smtp-Source: AMsMyM6AxlzL2A98zdX6EJeu5CT29YoSqGXQTMp6kFIoV9p5CjQ8UX6T01Qfr5U8fhir2FL3+ygLrPrF0cmX8CTMWmg=
-X-Received: by 2002:a63:1d1a:0:b0:433:f6ea:dce6 with SMTP id
- d26-20020a631d1a000000b00433f6eadce6mr5188833pgd.178.1663346528832; Fri, 16
- Sep 2022 09:42:08 -0700 (PDT)
+        with ESMTP id S229454AbiIPQnE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 12:43:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E59915FD0;
+        Fri, 16 Sep 2022 09:43:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B06AE62C22;
+        Fri, 16 Sep 2022 16:43:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A0A9C433D7;
+        Fri, 16 Sep 2022 16:43:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1663346583;
+        bh=UmsHj7RKIsPQ6Gwcuw/nAlwsZUANyOdOwRkhC5DlIlA=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Q+MvSDJNvYsAGXBuFUlrG09/stqFoapplIlPRQgFQVvJgfC6rMy5NLwQB77CQxul4
+         qYB640QLfxErr8XyvX5D5Qp3xIUAbqEAYOnsS13/oqpie38U9F/4SLT1HD8AkHH+o9
+         It5PVx1zS9qRi6Gr3t0UzhtbAypW1Z4T6uS/aBcrp9ji1iNmnfd120OhHYaI04+pGj
+         KeipG5t8Eus87efmYVmlp2qvLEh1GHKF3dnrKSDg0w+7aoEykM3zTVB/CeWwUMkLN3
+         HkWLSeOmV25HJtnfqZNSX0d7CVG1syTqh7QfXcNq9BdyajzQGGD47bjRMYeniUNPMV
+         s60eUtxyA/ZcA==
+Message-ID: <75585c26-b4bc-8004-dc45-cedba6b8b392@kernel.org>
+Date:   Fri, 16 Sep 2022 10:43:01 -0600
 MIME-Version: 1.0
-Received: by 2002:a05:7300:8b26:b0:78:c13b:6a7a with HTTP; Fri, 16 Sep 2022
- 09:42:08 -0700 (PDT)
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Fri, 16 Sep 2022 18:42:08 +0200
-Message-ID: <CAMZdPi_+zQe41xSx+LHj_FDeHu7rs=TEgbWGBaMxcoSrOvXLRQ@mail.gmail.com>
-Subject: Re: [PATCH v3 1/1] wcn36xx: Add RX frame SNR as a source of system entropy
-To:     "Bryan O'Donoghue" <bryan.odonoghue@linaro.org>
-Cc:     "Jason A . Donenfeld" <Jason@zx2c4.com>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, kvalo@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, wcn36xx@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.13.0
+Subject: Re: [net-next v2 1/3] seg6: add netlink_ext_ack support in parsing
+ SRv6 behavior attributes
+Content-Language: en-US
+To:     Andrea Mayer <andrea.mayer@uniroma2.it>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>
+References: <20220912171619.16943-1-andrea.mayer@uniroma2.it>
+ <20220912171619.16943-2-andrea.mayer@uniroma2.it>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20220912171619.16943-2-andrea.mayer@uniroma2.it>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 15 Sept 2022 at 02:41, Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-wrote:
->
-> The signal-to-noise-ratio SNR is returned by the wcn36xx firmware for each
-> received frame. SNR represents all of the unwanted interference signal
-> after filtering out the fundamental frequency and harmonics of the
-> frequency.
->
-> Noise can come from various electromagnetic sources, from temperature
-> affecting the performance hardware components or quantization effects
-> converting from analog to digital domains.
->
-> The SNR value returned by the WiFi firmware then is a good source of
-> entropy.
->
-> Other WiFi drivers offer up the noise component of the FFT as an entropy
-> source for the random pool e.g.
->
-> commit 2aa56cca3571 ("ath9k: Mix the received FFT bins to the random
-pool")
->
-> I attended Jason's talk on sources of randomness at Plumbers and it
-> occurred to me that SNR is a reasonable candidate to add.
->
-> Cc: Jason A. Donenfeld <Jason@zx2c4.com>
-> Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+On 9/12/22 11:16 AM, Andrea Mayer wrote:
+> An SRv6 behavior instance can be set up using mandatory and/or optional
+> attributes.
+> In the setup phase, each supplied attribute is parsed and processed. If
+> the parsing operation fails, the creation of the behavior instance stops
+> and an error number/code is reported to the user.  In many cases, it is
+> challenging for the user to figure out exactly what happened by relying
+> only on the error code.
+> 
+> For this reason, we add the support for netlink_ext_ack in parsing SRv6
+> behavior attributes. In this way, when an SRv6 behavior attribute is
+> parsed and an error occurs, the kernel can send a message to the
+> userspace describing the error through a meaningful text message in
+> addition to the classic error code.
+> 
+> Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
+> ---
+>  net/ipv6/seg6_local.c | 44 +++++++++++++++++++++++++++----------------
+>  1 file changed, 28 insertions(+), 16 deletions(-)
+> 
 
-Acked-by: Loic Poulain <loic.poulain@linaro.org>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+
+
