@@ -2,79 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CDF55BA365
-	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 02:00:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B7F25BA379
+	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 02:24:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229503AbiIOX7u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Sep 2022 19:59:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46246 "EHLO
+        id S229588AbiIPAYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Sep 2022 20:24:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbiIOX7t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 19:59:49 -0400
-X-Greylist: delayed 573 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 15 Sep 2022 16:59:46 PDT
-Received: from novek.ru (unknown [213.148.174.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B16AE27CC0
-        for <netdev@vger.kernel.org>; Thu, 15 Sep 2022 16:59:45 -0700 (PDT)
-Received: from nat1.ooonet.ru (gw.zelenaya.net [91.207.137.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id EC7E1500593;
-        Fri, 16 Sep 2022 02:46:37 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru EC7E1500593
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1663285599; bh=6aPt9MBf7COfRh3LQByXEguEH6aFizaZg7+ISOaVtQQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=0K/qPShUrzNRlShGv3UEPnGFQhBRPDdIZBMOasJ15NIb79MblabU4WhifNNBgziRb
-         g3a65oeXWgZ5mJGtzz/V6n7lgCt9JVQDXXUOUKsRG6j77Oi0em9Dj9yIYjKyDLxe5u
-         ZUBbMR7cF8Mbxg/hqLXCerNTvMoDIMKXdsfGgbzk=
-From:   Vadim Fedorenko <vfedorenko@novek.ru>
-To:     Michael Chan <michael.chan@broadcom.com>,
-        Pavan Chebbi <pavan.chebbi@broadcom.com>,
-        netdev@vger.kernel.org
-Cc:     Vadim Fedorenko <vfedorenko@novek.ru>,
-        Richard Cochran <richardcochran@gmail.com>
-Subject: [PATCH] bnxt_en: fix flags to check for supported fw version
-Date:   Fri, 16 Sep 2022 02:49:32 +0300
-Message-Id: <20220915234932.25497-1-vfedorenko@novek.ru>
-X-Mailer: git-send-email 2.27.0
+        with ESMTP id S229457AbiIPAYI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 20:24:08 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90CEB474DC;
+        Thu, 15 Sep 2022 17:24:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1663287846; x=1694823846;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=cAdd5+vVt/BW9KNFn2eov/Wj/eJTa5EkJwrQunlSkfY=;
+  b=E/WsYcLL5FxHqXnDOvSq/QFq8wTC5l5unjCEMZRkNJ361fyVQGJrlJRQ
+   zx0/ELfn9Itys0VPXPl08nKAaMrOWffEXZZeJKZOEwQLSprR3NfWwwBt5
+   wyoyIz2RKgiv8HmG0PiEDKqH7nn79aZIPwlBi2ZK0LLSBAf/+i1o13rK4
+   AbrDLovpXsq5eN0VPd1A+T4ywcelwdDy0IO7ikzkugVuIkIkTGHaslrt0
+   0uKZgnkLy9QKLt97VStTVvktXX6b0nyqzWNDaJnbowqsIcBn0mz1qsYM/
+   ncjKfUUiOKWTvp7dkAqlB8ttHwcrR/ypmNhUuwLN4KMPh2nAFFAmDDPG5
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10471"; a="362840653"
+X-IronPort-AV: E=Sophos;i="5.93,319,1654585200"; 
+   d="scan'208";a="362840653"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2022 17:24:03 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,319,1654585200"; 
+   d="scan'208";a="706566192"
+Received: from lkp-server02.sh.intel.com (HELO 41300c7200ea) ([10.239.97.151])
+  by FMSMGA003.fm.intel.com with ESMTP; 15 Sep 2022 17:23:58 -0700
+Received: from kbuild by 41300c7200ea with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oYz9C-0001DR-05;
+        Fri, 16 Sep 2022 00:23:58 +0000
+Date:   Fri, 16 Sep 2022 08:22:58 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Richie Pearn <richard.pearn@nxp.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] net: enetc: deny offload of tc-based TSN features on
+ VF interfaces
+Message-ID: <202209160845.t6gOLc8N-lkp@intel.com>
+References: <20220915173813.2759394-1-vladimir.oltean@nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220915173813.2759394-1-vladimir.oltean@nxp.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The warning message of unsupported FW appears every time RX timestamps
-are disabled on the interface. The patch fixes the flags to correct set
-for the check.
+Hi Vladimir,
 
-Fixes: 66ed81dcedc6 ("bnxt_en: Enable packet timestamping for all RX packets")
-Cc: Richard Cochran <richardcochran@gmail.com>
-Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
----
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+I love your patch! Yet something to improve:
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-index 7f3c0875b6f5..8e316367f6ce 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-@@ -317,9 +317,9 @@ void bnxt_ptp_cfg_tstamp_filters(struct bnxt *bp)
- 
- 	if (!(bp->fw_cap & BNXT_FW_CAP_RX_ALL_PKT_TS) && (ptp->tstamp_filters &
- 	    (PORT_MAC_CFG_REQ_FLAGS_ALL_RX_TS_CAPTURE_ENABLE |
--	     PORT_MAC_CFG_REQ_FLAGS_PTP_RX_TS_CAPTURE_DISABLE))) {
-+	     PORT_MAC_CFG_REQ_FLAGS_ALL_RX_TS_CAPTURE_DISABLE))) {
- 		ptp->tstamp_filters &= ~(PORT_MAC_CFG_REQ_FLAGS_ALL_RX_TS_CAPTURE_ENABLE |
--					 PORT_MAC_CFG_REQ_FLAGS_PTP_RX_TS_CAPTURE_DISABLE);
-+					 PORT_MAC_CFG_REQ_FLAGS_ALL_RX_TS_CAPTURE_DISABLE);
- 		netdev_warn(bp->dev, "Unsupported FW for all RX pkts timestamp filter\n");
- 	}
- 
+[auto build test ERROR on net/master]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Vladimir-Oltean/net-enetc-deny-offload-of-tc-based-TSN-features-on-VF-interfaces/20220916-013912
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 0727a9a5fbc1151fcaebfa9772e9f68f5e38ba9e
+config: powerpc-allmodconfig (https://download.01.org/0day-ci/archive/20220916/202209160845.t6gOLc8N-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/1f0bd337274106be7953b9b310312bafb2ae3618
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Vladimir-Oltean/net-enetc-deny-offload-of-tc-based-TSN-features-on-VF-interfaces/20220916-013912
+        git checkout 1f0bd337274106be7953b9b310312bafb2ae3618
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>, old ones prefixed by <<):
+
+>> ERROR: modpost: "enetc_psfp_clean" [drivers/net/ethernet/freescale/enetc/fsl-enetc-vf.ko] undefined!
+>> ERROR: modpost: "enetc_psfp_init" [drivers/net/ethernet/freescale/enetc/fsl-enetc-vf.ko] undefined!
+
 -- 
-2.27.0
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
