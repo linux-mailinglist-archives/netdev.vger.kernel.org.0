@@ -2,97 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 47DBA5BAF1B
-	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 16:19:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29B125BAF76
+	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 16:38:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231648AbiIPOS5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Sep 2022 10:18:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60894 "EHLO
+        id S230449AbiIPOiA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Sep 2022 10:38:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231284AbiIPOSn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 10:18:43 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46AEC923C9
-        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 07:18:42 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id cc5so26423056wrb.6
-        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 07:18:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
-         :subject:date;
-        bh=FcyQcUXi9xALQQ6Lm7VNXiWYStBjH/LCUTADg6v4m+k=;
-        b=XV3slIZ87yRUbCAc8CGl2al65c1iLbMw9wYykT7rlqbSyL3bYJRIYaCZexkWgMqrvB
-         9cRc8lli/M8W3UlVqUEZ4noMQkF8GlVr9teBBn8qZYhfT1QNRBs/gR3Qt3V/SXXepFft
-         /NkLc/2zDgaAqSgEgJKqvoYaOyfSEZs0zfbuNTHYPrOdR6ADBIRUjlDfKtvnEvDOKQXK
-         ei/wjXwDpP5blmLDIuc7eCqbnOffIN7kGsRqmwpohxxDuJwAwfiqH814C9hgQS1RzXl2
-         fy05AHuwq7TCyYIhShoUn9vJ6j6Vroe7Wxeg75xnKtIinnPsTn1z0wRF0wdb5quefxKr
-         BRlg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=FcyQcUXi9xALQQ6Lm7VNXiWYStBjH/LCUTADg6v4m+k=;
-        b=V4RXlBwsBzaQrJa6geTm1bciq3hnClAjHY2Ho8OIg399jq+D1TUuzFfxiQrUJh07ll
-         1UaQbJ14zGoMXQ7+nWBwtOUF2yiY+sG8ksea9D2eQV7iE07X88vH9KV+H5Npu7QX4YKP
-         l/pesAEF8d8q8YDc49ea7ryxRfkK9xLPsGJR7AIL9wrh861GV1cvDpX+zqahj1IdrH3c
-         EnzeZ2ssit6o0tkWSWAnEz2XtPQbFBiyw3pN3L+IsctEsWo673VXwpjNm5oSMb2S+FeF
-         BRIM/7w+1AP0snrTeHRmNv0mWsbVstWKZBiiH96DcTWX8pErtWuEsYu10eYPtkIg5lrj
-         3x9A==
-X-Gm-Message-State: ACrzQf2tOImTY3rTw4lPew8LWArgGwQ4+1QW9vZzAq6hXYISROVRU3Hq
-        yaLM1mSnzUbQ+bCwpMVnZ8icjyeIsmnpZOZSgjXGqTKu
-X-Google-Smtp-Source: AMsMyM6LGJpJtEn5YKfeDjbpKMxAcsMCiXjnwWlZoJ6LQ4yicHm73MFlR6Ba6ahUqKwAuU10WHF1XXrD6AX5m5j9hdU=
-X-Received: by 2002:a5d:584d:0:b0:22a:4713:2e23 with SMTP id
- i13-20020a5d584d000000b0022a47132e23mr3117197wrf.57.1663337920566; Fri, 16
- Sep 2022 07:18:40 -0700 (PDT)
+        with ESMTP id S230338AbiIPOh7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 10:37:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CAC4B2848
+        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 07:37:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0AE69B82782
+        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 14:37:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F242BC433D6;
+        Fri, 16 Sep 2022 14:37:54 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="IG52wGiT"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1663339073;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=EqxUU8srYM8AxvnyJq7oLNg9aK+p/iVJDzhFLIx+fpw=;
+        b=IG52wGiTAWs/wo6Mz2wGSrl93Dk/L/gbAw5KcIqL5PscfB+SDoxG+0veUOXCKwpNQSZMQa
+        8PUGt5Cm64Fwsexbl62bvmphVZTJ8mVXus46ptf8wJQ+ks4LwF/y7sudhUH7oO9qFWsqt9
+        B0/SnyOiOzLygyE4vSLtlnr/OGUbpKA=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 87e98913 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Fri, 16 Sep 2022 14:37:52 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     kuba@kernel.org, pablo@netfilter.org, davem@davemloft.net,
+        netdev@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH net 0/3] wireguard patches for 6.0-rc6
+Date:   Fri, 16 Sep 2022 15:37:37 +0100
+Message-Id: <20220916143740.831881-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Received: by 2002:a5d:4804:0:0:0:0:0 with HTTP; Fri, 16 Sep 2022 07:18:39
- -0700 (PDT)
-Reply-To: maryalbertt00045@gmail.com
-From:   Mary Albert <edithbrown072@gmail.com>
-Date:   Fri, 16 Sep 2022 15:18:39 +0100
-Message-ID: <CADV9g=utM1E=7RD0DLxO7YmpE_-xiMN-nUuwuON4mjmdbTkjTA@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.2 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UNDISC_FREEM autolearn=no
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:443 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.4992]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [edithbrown072[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [maryalbertt00045[at]gmail.com]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [edithbrown072[at]gmail.com]
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  3.1 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hey guys,
+
+Sorry we didn't get a chance to talk at Plumbers. I saw some of you very
+briefly in passing but never had the opportunity to chat. Next time, I
+hope.
+
+Please pull the following fixes:
+
+1) The ratelimiter timing test doesn't help outside of development, yet
+   it is currently preventing the module from being inserted on some
+   kernels when it flakes at insertion time. So we disable it.
+
+2) A fix for a build error on UML, caused by a recent change in a
+   different tree.
+
+3) A WARN_ON() is triggered by Kees' new fortified memcpy() patch, due
+   to memcpy()ing over a sockaddr pointer with the size of a
+   sockaddr_in[6]. The type safe fix is pretty simple. Given how classic
+   of a thing sockaddr punning is, I suspect this may be the first in a
+   few patches like this throughout the net tree, once Kees' fortify
+   series is more widely deployed (current it's just in next).
+
+Thanks,
+Jason
+
+Jason A. Donenfeld (3):
+  wireguard: ratelimiter: disable timings test by default
+  wireguard: selftests: do not install headers on UML
+  wireguard: netlink: avoid variable-sized memcpy on sockaddr
+
+ drivers/net/wireguard/netlink.c               | 13 +++++-----
+ drivers/net/wireguard/selftest/ratelimiter.c  | 25 ++++++++-----------
+ .../testing/selftests/wireguard/qemu/Makefile |  2 ++
+ 3 files changed, 18 insertions(+), 22 deletions(-)
+
 -- 
-Hello,
-how are you?
+2.37.3
+
