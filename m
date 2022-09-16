@@ -2,67 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB9EC5BA6D5
-	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 08:30:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BF8B5BA6E9
+	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 08:37:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229844AbiIPGa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Sep 2022 02:30:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40076 "EHLO
+        id S229606AbiIPGhz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Sep 2022 02:37:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229639AbiIPGax (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 02:30:53 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFDA75467A;
-        Thu, 15 Sep 2022 23:30:52 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id p1-20020a17090a2d8100b0020040a3f75eso19434248pjd.4;
-        Thu, 15 Sep 2022 23:30:52 -0700 (PDT)
+        with ESMTP id S229454AbiIPGhy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 02:37:54 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1042A2873
+        for <netdev@vger.kernel.org>; Thu, 15 Sep 2022 23:37:53 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id r12so23301475ljg.10
+        for <netdev@vger.kernel.org>; Thu, 15 Sep 2022 23:37:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=kh3qx/CMyciqDvsEcGf9GgOfMAvKQrxqFwrNuTVKiI8=;
-        b=XW6yjn79h0txPYQ9/waG7CV5bMeEwTtTaiBKevHif29ILiLR20UjPv3KQS+oT+nd5/
-         ZjYRf16T2UBs8T31VKkOO4l3/SrANUR9YnMK3rEft3gdxLgS84LQfYa8fhy3Qq7rdFuq
-         Bh4xgi/5/kwA6Y2t3ydDleZ1/Z0X39ewF1DMgkJnzTrt6wacqyVjsI7j7V/GK7zC12ou
-         PlxzKimu1wYdjIQb68jJ7KhIY1CgkJV/3jibe6ptAVZELf0L/pn6vQQI6JSJj4KVs+wu
-         Se+PYnSxhjO3Lu3ZzLSXXRFmpn0Du5rUbmO3OA87QaUJdj/jkd89YnKGVjSRMKeh98nA
-         sVIw==
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=V7a7DmLJePV6Oy8QTu0208RWWmWReJ/1f2el+0ICliw=;
+        b=pbUFZonz+Sz4E1SgqZSM005AHGAa2legXgitPSor5Hwe8jIcnTHl9Qt1QaEb6fIqk4
+         ehuQBV/Zen1UO/rliaoWX/xeGToLw9pF8KfDfUvpKiHw4GvnW/wT7ufty6oCvjvPQYAI
+         Ftj6PwvTiEfGOYzRpjiBeaBWXwEVl0GgaYInoOC+PM9r+iQUK1UHMDfja2oBEK7Oe9Di
+         NDYjlNw8hXG4xTj5h1kJIxQfQHpVfd2uAeUVc8pCAMGKefL5rGTJozi+4I2baFXN/LHf
+         9hhP3RzcfgqAjc9uVOBZPnvr4UOFmmanEovQty4RLO6ppS3ioWxdd8YUTHPCqzZIbfiJ
+         LLFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=kh3qx/CMyciqDvsEcGf9GgOfMAvKQrxqFwrNuTVKiI8=;
-        b=JotUgCqtddftZgWtUc9E5fJnhP9OkZCyqL3Eb1QHfdy42lAo4TNSDoNVf3acvqW7o7
-         K3rdU6vi6rBoepDLUd3BTR3eeF+Pwc+R5cLt1fSb4rw6n8LFrmYFzeoBLELKqRbrh1y1
-         8dCp+mmH2bt1BB0AoX3/cgQASJykrRDDxoEEmzU0eEFvWfNoVBHgA7cm05BwYrBQcXuQ
-         zMg/60HunI1Yvg7VRfkOc951BjK7KTfFVy8qXgdnB1MrkGR8vIpKUFDrDxwV06JEGp8s
-         0zleyhMpcPR1DPmjsn9I/M6cYm49XrcdqgiLOvB2XEpxJbz+f0X6R6XHZStKhofXr0pJ
-         PkXg==
-X-Gm-Message-State: ACrzQf2sYNlCVDu0gspsY9B15ol3AGvrQyHlB/ZVq4SW3j9ceozKItAs
-        OWFZBG2hjiIe0LmvmDhTL6A39QUyWHg=
-X-Google-Smtp-Source: AMsMyM5/iWsbG6Wc9fZRTipzPEu0saoviPmDVg/k4+GI+qrAZV9o7/wtqE6vvIKNM4CtsqFyurCszw==
-X-Received: by 2002:a17:90b:180a:b0:202:ae1f:328a with SMTP id lw10-20020a17090b180a00b00202ae1f328amr14957464pjb.78.1663309852099;
-        Thu, 15 Sep 2022 23:30:52 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id b9-20020a170902d40900b0016bedcced2fsm13927410ple.35.2022.09.15.23.30.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Sep 2022 23:30:51 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     chunkeey@googlemail.com
-Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] carl9170: use strscpy() is more robust and safer
-Date:   Fri, 16 Sep 2022 06:30:47 +0000
-Message-Id: <20220916063047.155021-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=V7a7DmLJePV6Oy8QTu0208RWWmWReJ/1f2el+0ICliw=;
+        b=yl3frLc4VtMBO7QLijNsZxEXleBrSSeQib+gBggOCdAzDwedpTe4Qcf7OJWRYIlG/u
+         dcHMNiZBtSSCmZqOdn6gmY3lHWlXg4waeDwlJj3Xx2wELN3UUeDZ2v6Nza09ECaJXJgI
+         n/OHrAjkmFYWJvb6lL3TVh7aMltwTOhLHYjJHSs4Jjalst87Q3FN8GC0nZYx1FMY0E0e
+         5Fki/SqeaGhSmzTD605C8YVXWh0JHuM/DpxbNUTVSimNPv9CbkpPcVVZQeRtoe1pSsmv
+         eTWQ72IIrJ9TufvWQ3T34CE/dB+o+J4IYCeYjYpFD8l6EaCEqZ08E5hs6fueBnpscYHA
+         m6TQ==
+X-Gm-Message-State: ACrzQf1LvCGa9/k/VxLhguMjC7zDQMrAV9j++jMYtsTR8Z7uQEOZZ96K
+        7Im/hdbTl/ofyDLcU6U/WLpD+5xVXB2C3eOc7I4=
+X-Google-Smtp-Source: AMsMyM5sUelFcgUA1XPNrIQ/NOtptKQYcSAKXX6GoyrfQSv+KjH0nOF9F6yPJIkXv2e1ASZuG7hCqA==
+X-Received: by 2002:a2e:bd84:0:b0:261:e43c:bac3 with SMTP id o4-20020a2ebd84000000b00261e43cbac3mr1055052ljq.198.1663310272241;
+        Thu, 15 Sep 2022 23:37:52 -0700 (PDT)
+Received: from [10.0.1.14] (h-98-128-229-160.NA.cust.bahnhof.se. [98.128.229.160])
+        by smtp.gmail.com with ESMTPSA id v19-20020ac258f3000000b00494747ba5f7sm3331080lfo.272.2022.09.15.23.37.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 15 Sep 2022 23:37:51 -0700 (PDT)
+Message-ID: <86100715-7db4-7ea6-09c2-345ae5693e9d@gmail.com>
+Date:   Fri, 16 Sep 2022 08:37:50 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH net-next v12 5/6] net: dsa: mv88e6xxx: rmon: Use RMU for
+ reading RMON data
+Content-Language: en-US
+To:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux@armlinux.org.uk,
+        ansuelsmth@gmail.com
+References: <20220915143658.3377139-1-mattias.forsblad@gmail.com>
+ <20220915143658.3377139-6-mattias.forsblad@gmail.com>
+ <22592ab8-ad68-0aca-c23c-72954b043ac0@gmail.com>
+From:   Mattias Forsblad <mattias.forsblad@gmail.com>
+In-Reply-To: <22592ab8-ad68-0aca-c23c-72954b043ac0@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -71,30 +83,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+On 2022-09-15 22:11, Florian Fainelli wrote:
+> On 9/15/22 07:36, Mattias Forsblad wrote:
+>> Use the Remote Management Unit for efficiently accessing
+>> the RMON data.
+>>
+>> Signed-off-by: Mattias Forsblad <mattias.forsblad@gmail.com>
+> 
+> Seems a bit wasteful to add a rmu_reg field for each statistics member when there are only 6 STATS_TYPE_PORT that could be read over RMU.
+> 
+> Maybe what you could do is that the offset in the "reg" member could be split into a lower half that is used to encore the existing offset, and you use the upper half to encode the RMU-offset.
 
-The implementation of strscpy() is more robust and safer.
+As it's only three port statistics counter, I'll make a switch statement per Andrew suggestion. Thanks.
 
-That's now the recommended way to copy NUL terminated strings.
+/Mattias
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
----
- drivers/net/wireless/ath/carl9170/fw.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/carl9170/fw.c b/drivers/net/wireless/ath/carl9170/fw.c
-index 1ab09e1c9ec5..4c1aecd1163c 100644
---- a/drivers/net/wireless/ath/carl9170/fw.c
-+++ b/drivers/net/wireless/ath/carl9170/fw.c
-@@ -105,7 +105,7 @@ static void carl9170_fw_info(struct ar9170 *ar)
- 			 CARL9170FW_GET_MONTH(fw_date),
- 			 CARL9170FW_GET_DAY(fw_date));
- 
--		strlcpy(ar->hw->wiphy->fw_version, motd_desc->release,
-+		strscpy(ar->hw->wiphy->fw_version, motd_desc->release,
- 			sizeof(ar->hw->wiphy->fw_version));
- 	}
- }
--- 
-2.25.1
