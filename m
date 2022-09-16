@@ -2,62 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 01AA95BB22A
-	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 20:32:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39CB15BB237
+	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 20:35:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229458AbiIPScA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Sep 2022 14:32:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49584 "EHLO
+        id S229505AbiIPSfz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Sep 2022 14:35:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229509AbiIPSb6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 14:31:58 -0400
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4627B6D68
-        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 11:31:57 -0700 (PDT)
-Received: by mail-qv1-xf2c.google.com with SMTP id s13so17250744qvq.10
-        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 11:31:57 -0700 (PDT)
+        with ESMTP id S229604AbiIPSfx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 14:35:53 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04586658B
+        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 11:35:52 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id q21so32776853edc.9
+        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 11:35:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=in-reply-to:mime-version:references:message-id:subject:cc:to:date
-         :from:from:to:cc:subject:date;
-        bh=ERGoYxp2mxhlqeTISNnodxhab0xcujWoT/21pAAropU=;
-        b=QqkNbwaqTiic2j1ieJRRkpbnMvtmf17rEYgRYpVBib4rHCaP0uDtF50eC1FBpvWH9V
-         Zxwxs6t9wUrBzffx+h3uYqP/KjVv8ugKeXlRc70M5kjgYUDxKD592FQDJx3kMp5DCLdp
-         bHvSn5ojRIEy7p5T/uGr7foDYyJCrCzicts4A=
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=rfM8uClo9J8Ff/LVH22Z0gqrgSbAmlyI5QpD5+07QM4=;
+        b=SZ5uI2KOVEW88KibtuiPFWDe0EZnfM5RjX7yyCa4BQaDs7waUEG3TH9FOz9zGUW50z
+         frnrJ/3sZlXJ+40PUVbZ1I8fDZnp/3nRQHg1fJcyyDojygHdfZsOe6EnemCmQLN0YHjU
+         fMkIs8CSJms5XPVdFFGrYzr5wKtobdQr5u0NI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:mime-version:references:message-id:subject:cc:to:date
-         :from:x-gm-message-state:from:to:cc:subject:date;
-        bh=ERGoYxp2mxhlqeTISNnodxhab0xcujWoT/21pAAropU=;
-        b=I9WlFbij+UDF4AMl41LG7+HCh+y5xkVOxiyI71/ZOc2sjR2Ie/Tsk6lyfoHBN8uB+t
-         VPgxpW/B66XD4lY6rkCmsVzHOPm8QVUZv6EXu3fw0rcfXR4xKhx+SA4B+cPBA3IYV9OF
-         cG2pYNTmpws6Bcb13U1PWKr8woVDjmc/E6bJ2hxdbmn/J3TgddwvoaXT8buqlm9YgAeE
-         oPVVHO/lx/fhsbSJ86Oxk5pGX+ccbJxRUOdW6gsX6ic9sq9BslEW1JrDI4d7mW+pd1Cx
-         p2uqHD560A9lfyNHPkfTpG/TbWUzJjSY3BjtpsjGJXqQ5f6Qb+0SOUjrOBieNq5GnYdB
-         uW9A==
-X-Gm-Message-State: ACrzQf0t5nLwSwjZtCx4bzSF4Fz1u43jDEJKm6QUNigDKFDDuUlwUHsg
-        Q1NrPWNtIHTMM07CdIK3M+cxGQ==
-X-Google-Smtp-Source: AMsMyM53+uq8PYNR6evUvIeAq54HrtIVFc99iam2C0JArqAK6OqbMu+3RsCfXSi5xE+Q85FBA6Hfww==
-X-Received: by 2002:a05:6214:e8e:b0:4ad:ad6:1ee7 with SMTP id hf14-20020a0562140e8e00b004ad0ad61ee7mr5203543qvb.28.1663353116936;
-        Fri, 16 Sep 2022 11:31:56 -0700 (PDT)
-Received: from C02YVCJELVCG.dhcp.broadcom.net ([192.19.144.250])
-        by smtp.gmail.com with ESMTPSA id i14-20020a05620a248e00b006bac157ec19sm6734924qkn.123.2022.09.16.11.31.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Sep 2022 11:31:56 -0700 (PDT)
-From:   Andy Gospodarek <andrew.gospodarek@broadcom.com>
-X-Google-Original-From: Andy Gospodarek <gospo@broadcom.com>
-Date:   Fri, 16 Sep 2022 14:31:50 -0400
-To:     Vadim Fedorenko <vfedorenko@novek.ru>
-Cc:     Michael Chan <michael.chan@broadcom.com>,
-        Pavan Chebbi <pavan.chebbi@broadcom.com>,
-        netdev@vger.kernel.org, Richard Cochran <richardcochran@gmail.com>
-Subject: Re: [PATCH] bnxt_en: fix flags to check for supported fw version
-Message-ID: <YyTBFpZcPU6w3qST@C02YVCJELVCG.dhcp.broadcom.net>
-References: <20220915234932.25497-1-vfedorenko@novek.ru>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=rfM8uClo9J8Ff/LVH22Z0gqrgSbAmlyI5QpD5+07QM4=;
+        b=vGUQJHloqbILuqLOMimhba+cbnGtsMjd7+H9L4m3FZlYWdaHivcw7+UjUDNqt/OmDl
+         IQ6+L81ktwXExJL+cP426wsk0QKj8IfSlegG2y1NEWr75afVFAtkwlhYZlDFqjOBSBZU
+         hMeDPO6YfYnf37NAoVqqDoe04mMm6KnN9wAO61Oljkxrk/6jetD0TG6bptFeXBqbJOj8
+         alJG9MjjkOoM9cqlVl1VaKX1t1GtFpWoRENEaRi03IjAz+fyyPPtP4K53ePs2zL7DHLp
+         +Rt/Ef6SRD+VwCyY4FLBrfZk+Yd9Hbx+v+bgEU5785bjc3tC0BNg8BAjZF8Tg1GVL5MB
+         Wmcg==
+X-Gm-Message-State: ACrzQf0ckmkEhaI+siIZyVJB2JusYLg30wfs1mYSvvvMwv1ZI2YiJcPi
+        N8PFoWxhVxd1fDzS5D84Ew8AcsnaY4fjsDrb5xiB6Q==
+X-Google-Smtp-Source: AMsMyM5L8XEqdB5FXQurPgBNQMXmDw5ucUjgM1zf4ZIlkxJHni1js/o9VtrMuYBIfZp9tNYjBZPkB0b7QSUecQ9MIMg=
+X-Received: by 2002:a05:6402:440d:b0:450:de54:3fcf with SMTP id
+ y13-20020a056402440d00b00450de543fcfmr4935193eda.312.1663353350488; Fri, 16
+ Sep 2022 11:35:50 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20220915234932.25497-1-vfedorenko@novek.ru>
+References: <20220915234932.25497-1-vfedorenko@novek.ru> <YyTBFpZcPU6w3qST@C02YVCJELVCG.dhcp.broadcom.net>
+In-Reply-To: <YyTBFpZcPU6w3qST@C02YVCJELVCG.dhcp.broadcom.net>
+From:   Michael Chan <michael.chan@broadcom.com>
+Date:   Fri, 16 Sep 2022 11:35:39 -0700
+Message-ID: <CACKFLi=V+kxsumdOP5yFwtZUU-NwbsOpWBsOXWwLuy26LOMmhA@mail.gmail.com>
+Subject: Re: [PATCH] bnxt_en: fix flags to check for supported fw version
+To:     Andy Gospodarek <andrew.gospodarek@broadcom.com>
+Cc:     Vadim Fedorenko <vfedorenko@novek.ru>,
+        Pavan Chebbi <pavan.chebbi@broadcom.com>,
+        Netdev <netdev@vger.kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000b01f0e05e8cf9315"
+        boundary="0000000000009b7f6605e8cfa1e6"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
@@ -67,50 +64,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000b01f0e05e8cf9315
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+--0000000000009b7f6605e8cfa1e6
+Content-Type: text/plain; charset="UTF-8"
 
-On Fri, Sep 16, 2022 at 02:49:32AM +0300, Vadim Fedorenko wrote:
-> The warning message of unsupported FW appears every time RX timestamps
-> are disabled on the interface. The patch fixes the flags to correct set
-> for the check.
-Looks good to me.  Thanks for sending this.
+On Fri, Sep 16, 2022 at 11:31 AM Andy Gospodarek
+<andrew.gospodarek@broadcom.com> wrote:
+>
+> On Fri, Sep 16, 2022 at 02:49:32AM +0300, Vadim Fedorenko wrote:
+> > The warning message of unsupported FW appears every time RX timestamps
+> > are disabled on the interface. The patch fixes the flags to correct set
+> > for the check.
+> Looks good to me.  Thanks for sending this.
+>
+> > Fixes: 66ed81dcedc6 ("bnxt_en: Enable packet timestamping for all RX packets")
+> > Cc: Richard Cochran <richardcochran@gmail.com>
+> > Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
+> Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
+Thanks.
 
-> Fixes: 66ed81dcedc6 ("bnxt_en: Enable packet timestamping for all RX packets")
-> Cc: Richard Cochran <richardcochran@gmail.com>
-> Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
-Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
+Reviewed-by: Michael Chan <michael.chan@broadcom.com>
 
-> ---
->  drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-> index 7f3c0875b6f5..8e316367f6ce 100644
-> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-> @@ -317,9 +317,9 @@ void bnxt_ptp_cfg_tstamp_filters(struct bnxt *bp)
->  
->  	if (!(bp->fw_cap & BNXT_FW_CAP_RX_ALL_PKT_TS) && (ptp->tstamp_filters &
->  	    (PORT_MAC_CFG_REQ_FLAGS_ALL_RX_TS_CAPTURE_ENABLE |
-> -	     PORT_MAC_CFG_REQ_FLAGS_PTP_RX_TS_CAPTURE_DISABLE))) {
-> +	     PORT_MAC_CFG_REQ_FLAGS_ALL_RX_TS_CAPTURE_DISABLE))) {
->  		ptp->tstamp_filters &= ~(PORT_MAC_CFG_REQ_FLAGS_ALL_RX_TS_CAPTURE_ENABLE |
-> -					 PORT_MAC_CFG_REQ_FLAGS_PTP_RX_TS_CAPTURE_DISABLE);
-> +					 PORT_MAC_CFG_REQ_FLAGS_ALL_RX_TS_CAPTURE_DISABLE);
->  		netdev_warn(bp->dev, "Unsupported FW for all RX pkts timestamp filter\n");
->  	}
->  
-
---000000000000b01f0e05e8cf9315
+--0000000000009b7f6605e8cfa1e6
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Description: S/MIME Cryptographic Signature
 
-MIIQegYJKoZIhvcNAQcCoIIQazCCEGcCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
-gg3RMIIFDTCCA/WgAwIBAgIQeEqpED+lv77edQixNJMdADANBgkqhkiG9w0BAQsFADBMMSAwHgYD
+MIIQbQYJKoZIhvcNAQcCoIIQXjCCEFoCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
+gg3EMIIFDTCCA/WgAwIBAgIQeEqpED+lv77edQixNJMdADANBgkqhkiG9w0BAQsFADBMMSAwHgYD
 VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
 AxMKR2xvYmFsU2lnbjAeFw0yMDA5MTYwMDAwMDBaFw0yODA5MTYwMDAwMDBaMFsxCzAJBgNVBAYT
 AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBS
@@ -148,40 +129,39 @@ M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
 Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
 14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
 a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
-XzCCBVkwggRBoAMCAQICDBPdG+g0KtOPKKsBCTANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
+XzCCBUwwggQ0oAMCAQICDF5AaMOe0cZvaJpCQjANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
 RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
-UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMTAyMjIxNDAyMzhaFw0yMjA5MjIxNDExNTVaMIGW
+UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMjA5MTAwODIxMzhaFw0yNTA5MTAwODIxMzhaMIGO
 MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
-BgNVBAoTDUJyb2FkY29tIEluYy4xGDAWBgNVBAMTD0FuZHkgR29zcG9kYXJlazEtMCsGCSqGSIb3
-DQEJARYeYW5kcmV3Lmdvc3BvZGFyZWtAYnJvYWRjb20uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC
-AQ8AMIIBCgKCAQEAp9JFtMqwgpbnvA3lNVCpnR5ehv0kWK9zMpw2VWslbEZq4WxlXr1zZLZEFo9Y
-rdIZ0jlxwJ4QGYCvxE093p9easqc7NMemeMg7JpF63hhjCksrGnsxb6jCVUreXPSpBDD0cjaE409
-9yo/J5OQORNPelDd4Ihod6g0XlcxOLtlTk1F0SOODSjBZvaDm0zteqiVZb+7xgle3NOSZm3kiCby
-iRuyS0gMTdQN3gdgwal9iC3cSXHMZFBXyQz+JGSHomhPC66L6j4t6dUqSTdSP07wg38ZPV6ct/Sv
-/O2HcK+E/yYkdMXrDBgcOelO4t8AYHhmedCIvFVp4pFb2oit9tBuFQIDAQABo4IB3zCCAdswDgYD
-VR0PAQH/BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3Vy
-ZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEG
-CCsGAQUFBzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWdu
-MmNhMjAyMDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93
-d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6
-hjhodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNy
-bDApBgNVHREEIjAggR5hbmRyZXcuZ29zcG9kYXJla0Bicm9hZGNvbS5jb20wEwYDVR0lBAwwCgYI
-KwYBBQUHAwQwHwYDVR0jBBgwFoAUljPR5lgXWzR1ioFWZNW+SN6hj88wHQYDVR0OBBYEFKARn7Ud
-RlGu+rBdUDirYE+Ee4TeMA0GCSqGSIb3DQEBCwUAA4IBAQAcWqh4fdwhDN0+MKyH7Mj0vS10E7xg
-mDetQhQ+twwKk5qPe3tJXrjD/NyZzrUgguNaE+X97jRsEbszO7BqdnM0j5vLDOmzb7d6qeNluJvk
-OYyzItlqZk9cJPoP9sD8w3lr2GRcajj5JCKV4pd2PX/i7r30Qco0VnloXpiesFmNTXQqD6lguUyn
-nb7IGM3v/Nb7NTFH8/KUVg33xw829ztuGrOvfrHfBbeVcUoOHEHObXoaofYOJjtmSOQdMeJIiBgP
-XEpJG8/HB8t4FF6A8W++4cHhv0+ayyEnznrbOCn6WUmIvV2WiJymRpvRG7Hhdlk0zA97MRpqK5yn
-ai3dQ6VvMYICbTCCAmkCAQEwazBbMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBu
-di1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMgUGVyc29uYWxTaWduIDIgQ0EgMjAyMAIM
-E90b6DQq048oqwEJMA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCATaAduu0E2kGfX
-hNErd7iuLyGWePgL3o1VxzQBKF7/nzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3
-DQEJBTEPFw0yMjA5MTYxODMxNTdaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEqMAsGCWCG
-SAFlAwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsGCSqGSIb3DQEB
-BzALBglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAFnonruZtjrKvU5uYpho7iiF9EuKac0Jt
-1EJkN4inrzXB2gZjEybXQ+dc4maTg/CRK4hLAHKlNygGrR6qKzgW6cNo36rhI8aP4baBfFSndkhb
-HtystX9/T/BHKhdNqKna3p21Jo0Kruz9xOapVlRz+u+TjIJ+RLH+AIFpnGhNiBeP9fHG5wiiiTFA
-6DX3NwDGr/Y3THnYIXPpC+Ql9Jq5SXlAgEEc1mMAm3Bk4Mi62Z+PR15lG8vycBPg1FER9Eh9S1Mw
-BKoQ1vW9rqqGbMNNzC/BqZlke8x43B3/NpM3u1VbiujK7MgldDIoQ9MyGzqDIANQHqEHYspokGeS
-2kMWuw==
---000000000000b01f0e05e8cf9315--
+BgNVBAoTDUJyb2FkY29tIEluYy4xFTATBgNVBAMTDE1pY2hhZWwgQ2hhbjEoMCYGCSqGSIb3DQEJ
+ARYZbWljaGFlbC5jaGFuQGJyb2FkY29tLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC
+ggEBALhEmG7egFWvPKcrDxuNhNcn2oHauIHc8AzGhPyJxU4S6ZUjHM/psoNo5XxlMSRpYE7g7vLx
+J4NBefU36XTEWVzbEkAuOSuJTuJkm98JE3+wjeO+aQTbNF3mG2iAe0AZbAWyqFxZulWitE8U2tIC
+9mttDjSN/wbltcwuti7P57RuR+WyZstDlPJqUMm1rJTbgDqkF2pnvufc4US2iexnfjGopunLvioc
+OnaLEot1MoQO7BIe5S9H4AcCEXXcrJJiAtMCl47ARpyHmvQFQFFTrHgUYEd9V+9bOzY7MBIGSV1N
+/JfsT1sZw6HT0lJkSQefhPGpBniAob62DJP3qr11tu8CAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
+AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
+c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
+AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
+TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
+bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
+L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
+BB0wG4EZbWljaGFlbC5jaGFuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
+HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQU31rAyTdZweIF0tJTFYwfOv2w
+L4QwDQYJKoZIhvcNAQELBQADggEBACcuyaGmk0NSZ7Kio7O7WSZ0j0f9xXcBnLbJvQXFYM7JI5uS
+kw5ozATEN5gfmNIe0AHzqwoYjAf3x8Dv2w7HgyrxWdpjTKQFv5jojxa3A5LVuM8mhPGZfR/L5jSk
+5xc3llsKqrWI4ov4JyW79p0E99gfPA6Waixoavxvv1CZBQ4Stu7N660kTu9sJrACf20E+hdKLoiU
+hd5wiQXo9B2ncm5P3jFLYLBmPltIn/uzdiYpFj+E9kS9XYDd+boBZhN1Vh0296zLQZobLfKFzClo
+E6IFyTTANonrXvCRgodKS+QJEH8Syu2jSKe023aVemkuZjzvPK7o9iU7BKkPG2pzLPgxggJtMIIC
+aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
+EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxeQGjDntHGb2iaQkIw
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIDJ3N1zLPU2uVwhWY0NayaEPC9YHh0BG
+OaDM+cHJGJDNMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDkx
+NjE4MzU1MFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
+ATANBgkqhkiG9w0BAQEFAASCAQC3lrh2c5gKz0D1majRMPYFePc9+5jJyGl7GUQjdMcOOefTYbfi
+SMvH4tXyAEzhYx/SxnNKIJXNYvMtHjop8+qiGs+tq4vEoNmNWbTAWx2CDPk7PD0giPlDuyGVPd8C
+hps1iqG3E/TOTKezzz+TGNhow/tfLeqVeq5+xX9NSRSWisxtoucgYKfFIfJbXcXe7XGDPVjn+FCW
+8mIsNF9ATEj73rXQt7zqQcbdD7iM6W8rpcJ/d1D1WuOrQ++0FSo9Nm8gJNeIOa1T6cpSuu+E0hfY
+E+FEd/cBMw27dtaFeuE7GhUvWB1gSM+cLFBcslF/HSR9Ju5HSB6DblHMYyc7dvXA
+--0000000000009b7f6605e8cfa1e6--
