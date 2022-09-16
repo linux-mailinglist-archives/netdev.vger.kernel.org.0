@@ -2,92 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 94CB35BB452
-	for <lists+netdev@lfdr.de>; Sat, 17 Sep 2022 00:14:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70EC65BB450
+	for <lists+netdev@lfdr.de>; Sat, 17 Sep 2022 00:13:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230095AbiIPWN4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Sep 2022 18:13:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46042 "EHLO
+        id S230046AbiIPWNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Sep 2022 18:13:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230096AbiIPWNx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 18:13:53 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC9BEBBA71
-        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 15:13:51 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id s206so21582784pgs.3
-        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 15:13:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=worldwidemarketdata.com; s=google;
-        h=thread-index:content-language:content-transfer-encoding
-         :mime-version:message-id:date:subject:in-reply-to:references:to:from
-         :from:to:cc:subject:date;
-        bh=r7aZyyleLHjXdGdlkJWYkfL2PvY4y1yGX/Jdwf9NK1Q=;
-        b=GtYBAZw10k5rJS+lKTrAebzybQZABuv8CViS3UzphYauetc4MI56sDTOI1U45ES30d
-         ey72Bxsu1j+huS+GAdMeMsoXf0laH0ojXpzWWrRfw6MfIYHkruUObXjHL1SHh4fEc4CS
-         FMyPr4Ph/tqnMGPfXKhpud2pkZ7+/Gqpl/ylScl6pNfsrYv/CkZkP1Ibys7qgqAtcz11
-         OW+DhcvWYHmJ9+T0jL5kRjdZkdmvGjgbQMC9PLUSpUMSZnXAQgrCc5FokqX8uM5o9vhr
-         04BXKahs4VIXHaWTGxwa+gBnkabuo+jJF5zbRe5j7nMTQVxqYqqMZRBetyXCQOLbLcs5
-         CL/Q==
+        with ESMTP id S230077AbiIPWNf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 18:13:35 -0400
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D87F3BBA4A
+        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 15:13:34 -0700 (PDT)
+Received: by mail-il1-f198.google.com with SMTP id z9-20020a921a49000000b002f0f7fb57e3so14997932ill.2
+        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 15:13:34 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=thread-index:content-language:content-transfer-encoding
-         :mime-version:message-id:date:subject:in-reply-to:references:to:from
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
          :x-gm-message-state:from:to:cc:subject:date;
-        bh=r7aZyyleLHjXdGdlkJWYkfL2PvY4y1yGX/Jdwf9NK1Q=;
-        b=SkqEK9VqBsDIWbeoza2PgWl1Z8+cFaNH8sjKhaKNF8p/8zKuqPdIJ2qdpZOJlCXKXr
-         Am+zhtaXOpVQe36dOzjCt+EHzCN/7nHSqfKC6tSplF35LDQkckX3fBmPpA3XVyMN1svb
-         h84MrFjQml4z2+ApUYzQ4x6NCJn+9xtpGtmuPfxhKmrGDQ21Yt/sYWrr1c2gHfvYXh+g
-         3EFdLByV2eP2WGQENkfEEJgIEw0kyYLyzf72SAJ0YmhDdXa6VQ3nnl78RffV7LLwPh8s
-         hr+1hGzlwF3xZewzG97Gw9PCEYQWUKHd0+/rTTguq1NSy+hCrE1CV3vZ79TFyuEWZa3V
-         eq4Q==
-X-Gm-Message-State: ACrzQf0/dAe8v380+on8sOvWV0LPkxVIUyAaVkJijEvFfPzWVsi1t/hj
-        AK+wnDB8uvHh5IHNTtjVYPOf1Q==
-X-Google-Smtp-Source: AMsMyM7CNQxWEuvJBOwEzNtIq76NfEh+zKMKWckRrwzAgVdY/Um7Ipe6m9zgY+aDeKT+lXaQSDeDQA==
-X-Received: by 2002:a63:1605:0:b0:434:4748:44bd with SMTP id w5-20020a631605000000b00434474844bdmr6285321pgl.470.1663366431241;
-        Fri, 16 Sep 2022 15:13:51 -0700 (PDT)
-Received: from DESKTOPR3SMN2M ([49.207.231.67])
-        by smtp.gmail.com with ESMTPSA id y6-20020aa79e06000000b00540a346477csm14987107pfq.76.2022.09.16.15.13.30
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 16 Sep 2022 15:13:49 -0700 (PDT)
-From:   "Martha Terry" <martha@worldwidemarketdata.com>
-To:     <martha@worldwidemarketdata.com>
-References: 
-In-Reply-To: 
-Subject: RE: IBC Attendees Email List
-Date:   Fri, 16 Sep 2022 17:10:46 -0500
-Message-ID: <a10601d8ca19$9843e850$c8cbb8f0$@worldwidemarketdata.com>
+        bh=EqMgv96S6WOApHkV1NNQhBVATR9B3h0BGCpG14NXv7E=;
+        b=Yzn4To+yahdRcO8bMUB4rv7x4axiWmhGJH8XVhJVjN8Z5zSTs9wTgHddY+mfk5difR
+         3IlarrvdVwhQK84JQivcYDvB0NDtEAN4PXL977YcV+gwDIOBMzbyL+ZElVVjpeMePC66
+         Z4VjPSjofoJWviAGi/Zv/HagSYYVX3Vuk+M+l/VJjLI47h2yepUDT0KUMYzGBSArkCtI
+         hkRU+yKJwIftLodQOJhp9hcn/Xyw+P8B74VmiCQ2A7rAl0IafDB2tVLW2vT8wNVtdjyQ
+         Ndw01OH5xo5BHEAMpE4SNTJKO9CAw392qDkWmglb5Ko2YUHim0LXZjwuRKBpnXYbgTqH
+         ZreA==
+X-Gm-Message-State: ACrzQf0A+eV0+OsoDrvTdk9CuUomug/w+H+GVMTBQ+rg2NBkH+iJJlMo
+        Kkhkndh92684IeiyLG0bC4uEr+iEzJFw/qHfWl/WUU7VgoNk
+X-Google-Smtp-Source: AMsMyM6+Auj0NFS3XWN08knoqKP1R6D6Hg0acSp2RtRUzfCLPUJTUYyFzAUmxaEGrYertHxCWX8cPSe1znjm9opSFyEQdBAK9uzP
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 14.0
-Content-Language: en-us
-Thread-Index: AdjKF1e/ejYE1jwrTQ2QN7eRjkze8AAAAHDQAAAAESAAAAAM4AAAAAoQAAAACUAAAAAHEAAAAAigAAAACkAAAAAQoA==
-X-Spam-Status: No, score=0.6 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a05:6e02:1748:b0:2eb:e656:8123 with SMTP id
+ y8-20020a056e02174800b002ebe6568123mr3055166ill.15.1663366414212; Fri, 16 Sep
+ 2022 15:13:34 -0700 (PDT)
+Date:   Fri, 16 Sep 2022 15:13:34 -0700
+In-Reply-To: <0000000000006b15c805c7fbd885@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000004027ca05e8d2ac0a@google.com>
+Subject: Re: [syzbot] memory leak in mld_newpack
+From:   syzbot <syzbot+dcd3e13cf4472f2e0ba1@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dsahern@kernel.org, edumazet@google.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com, phind.uet@gmail.com,
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+syzbot has found a reproducer for the following issue on:
 
-I hope you're doing great and staying healthy!
+HEAD commit:    6879c2d3b960 Merge tag 'pinctrl-v6.0-2' of git://git.kerne..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1053435d080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a4afe4efcad47dde
+dashboard link: https://syzkaller.appspot.com/bug?extid=dcd3e13cf4472f2e0ba1
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11842b37080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15078ed5080000
 
-Would you be interested in acquiring IBC Attendees Data List 2022?
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/0e68bb9c6cf9/disk-6879c2d3.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/bf179217db31/vmlinux-6879c2d3.xz
 
-List contains: Company Name, Contact Name, First Name, Middle Name, Last
-Name, Title, Address, Street, City, Zip code, State, Country, Telephone,
-Email address and more,
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+dcd3e13cf4472f2e0ba1@syzkaller.appspotmail.com
 
-No of Contacts:- 35,028
-Cost: $ 1,881
+BUG: memory leak
+unreferenced object 0xffff88810bb0bb00 (size 240):
+  comm "kworker/0:2", pid 143, jiffies 4294946271 (age 15.640s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 bb b0 0b 81 88 ff ff  ................
+    00 70 aa 11 81 88 ff ff 80 10 e9 44 81 88 ff ff  .p.........D....
+  backtrace:
+    [<ffffffff8387bb59>] __alloc_skb+0x1f9/0x270 net/core/skbuff.c:422
+    [<ffffffff8388255a>] alloc_skb include/linux/skbuff.h:1257 [inline]
+    [<ffffffff8388255a>] alloc_skb_with_frags+0x6a/0x340 net/core/skbuff.c:6021
+    [<ffffffff8387508f>] sock_alloc_send_pskb+0x39f/0x3d0 net/core/sock.c:2665
+    [<ffffffff83d4eb01>] sock_alloc_send_skb include/net/sock.h:1866 [inline]
+    [<ffffffff83d4eb01>] mld_newpack.isra.0+0x81/0x200 net/ipv6/mcast.c:1748
+    [<ffffffff83d4ed26>] add_grhead+0xa6/0xc0 net/ipv6/mcast.c:1851
+    [<ffffffff83d4f4fc>] add_grec+0x7bc/0x820 net/ipv6/mcast.c:1989
+    [<ffffffff83d514e3>] mld_send_cr net/ipv6/mcast.c:2115 [inline]
+    [<ffffffff83d514e3>] mld_ifc_work+0x273/0x750 net/ipv6/mcast.c:2653
+    [<ffffffff8127afca>] process_one_work+0x2ba/0x5f0 kernel/workqueue.c:2289
+    [<ffffffff8127b8e9>] worker_thread+0x59/0x5b0 kernel/workqueue.c:2436
+    [<ffffffff81284c95>] kthread+0x125/0x160 kernel/kthread.c:376
+    [<ffffffff8100224f>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
 
-Looking forward for your response,
-
-Kind Regards,
-Martha Terry
-Marketing Coordinator
 
