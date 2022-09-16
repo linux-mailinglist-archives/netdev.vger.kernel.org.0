@@ -2,172 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 98B0C5BA75A
-	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 09:20:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CC285BA773
+	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 09:27:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229967AbiIPHU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Sep 2022 03:20:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47046 "EHLO
+        id S230077AbiIPH1k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Sep 2022 03:27:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229916AbiIPHU0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 03:20:26 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C3F04054E;
-        Fri, 16 Sep 2022 00:20:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=Fl6ET6q/kbHiqTOyvXh8EjJEoX+zyv0K+cWNPYPO57Q=; b=orytNymywAhcDPQP1HJw7tGUBw
-        +093CDRGXe1l1oW8uzIVhrwGv+L/VtF1QTjqE+xyJjTZdUHwIg59Zgz6IiQStj8DH4TdkSbVYcR3I
-        dEkteknaCNUwk7zNJFEwW+FgIC27FwZSARWokHRyilCeJFAvOrfCIlgzdshX8jHor1JH9Z81p8Z9I
-        cOCt9k9hcfHTKNEPvf2xPes3Tv+cxjY13fM6QITPytjXrO3bAjFv6L3evQW/tfreBXSo4PKZcXtgu
-        tX2j4Ux3505K1k2nHFnkZD6tQOcuo886gFKI5uK+d4KnHhKjjUu0XYbzrhe4gkQGYH9g39ha99rSz
-        O3NhwKtQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34358)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oZ5e1-0006M8-KM; Fri, 16 Sep 2022 08:20:13 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oZ5dx-0003NT-Id; Fri, 16 Sep 2022 08:20:09 +0100
-Date:   Fri, 16 Sep 2022 08:20:09 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Siddharth Vadapalli <s-vadapalli@ti.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski@linaro.org, krzysztof.kozlowski+dt@linaro.org,
-        vladimir.oltean@nxp.com, grygorii.strashko@ti.com, vigneshr@ti.com,
-        nsekhar@ti.com, netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kishon@ti.com
-Subject: Re: [PATCH 5/8] net: ethernet: ti: am65-cpsw: Add support for
- fixed-link configuration
-Message-ID: <YyQjqU7O5WRfrush@shell.armlinux.org.uk>
-References: <20220914095053.189851-1-s-vadapalli@ti.com>
- <20220914095053.189851-6-s-vadapalli@ti.com>
- <YyH8us424n3dyLYT@shell.armlinux.org.uk>
- <ab683d52-d469-35cf-b3b5-50c9edfc173b@ti.com>
- <YyL5WyA74/QRe/Y4@shell.armlinux.org.uk>
- <c76fdb7a-a95f-53c6-6e0e-d9283dd2de2d@ti.com>
+        with ESMTP id S229994AbiIPH1i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 03:27:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6E232ACC;
+        Fri, 16 Sep 2022 00:27:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 560A4628CB;
+        Fri, 16 Sep 2022 07:27:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D51CC433D6;
+        Fri, 16 Sep 2022 07:27:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1663313256;
+        bh=2WqayeGnpq9LSlXKGZr91PvrT3313VfKYLAgW4Oxn7E=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=GOMH1U1yysGahJvuCohw4unZCtzL6fWPSCwN9QJUNaioNQHLiTUIqvlgXLuQo2iO4
+         22cLwZ3dWZGwom8NwMqZBr4JKU3CZ9wCqJaH5M32eF+mXDsfMPfP7MvYWirue+AJmy
+         V+G8dSXisy5RFmpsl3TLj1QhL2zprt59yEmBPCQgQHssceqaZapkOg+4W6srX8+G5Y
+         65xDYMYLRKw8VkDZmneWIPxg1elIbEKHgnKS5uJ+c3WPA2ybndouQ5H0K7JApu8OAq
+         BmzGJDJ0tv9Uu9eL8AiQ/EpY5i76xzLRgdnDIHD8WfKd0sSi3+eatvqZ7JyxVNrw4i
+         +0IXM5lYPeYrA==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     "Russell King \(Oracle\)" <linux@armlinux.org.uk>
+Cc:     Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        asahi@lists.linux.dev, brcm80211-dev-list.pdl@broadcom.com,
+        "David S. Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Hector Martin <marcan@marcan.st>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rafa__ Mi__ecki <zajec5@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        SHA-cyfmac-dev-list@infineon.com, Sven Peter <sven@svenpeter.dev>
+Subject: Re: [PATCH net-next 12/12] arm64: dts: apple: Add WiFi module and antenna properties
+References: <YxhMaYOfnM+7FG+W@shell.armlinux.org.uk>
+        <E1oVpne-005LCR-RJ@rmk-PC.armlinux.org.uk> <87zgfb8uqx.fsf@kernel.org>
+        <YyCvkrDgsFLYNZ9t@shell.armlinux.org.uk>
+Date:   Fri, 16 Sep 2022 10:27:31 +0300
+In-Reply-To: <YyCvkrDgsFLYNZ9t@shell.armlinux.org.uk> (Russell King's message
+        of "Tue, 13 Sep 2022 17:28:02 +0100")
+Message-ID: <87edwbaie4.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c76fdb7a-a95f-53c6-6e0e-d9283dd2de2d@ti.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 16, 2022 at 10:24:48AM +0530, Siddharth Vadapalli wrote:
-> On 15/09/22 15:37, Russell King (Oracle) wrote:
-> > Hi,
-> > 
-> > On Thu, Sep 15, 2022 at 02:58:52PM +0530, Siddharth Vadapalli wrote:
-> >> Hello Russell,
-> >>
-> >> On 14/09/22 21:39, Russell King (Oracle) wrote:
-> >>> On Wed, Sep 14, 2022 at 03:20:50PM +0530, Siddharth Vadapalli wrote:
-> >>>> Check for fixed-link in am65_cpsw_nuss_mac_config() using struct
-> >>>> am65_cpsw_slave_data's phy_node property to obtain fwnode. Since
-> >>>> am65_cpsw_nuss_mac_link_up() is not invoked in fixed-link mode, perform
-> >>>> the relevant operations in am65_cpsw_nuss_mac_config() itself.
-> >>>
-> >>> Further to my other comments, you also fail to explain that, when in
-> >>> fixed-link SGMII mode, you _emulate_ being a PHY - which I deduce
-> >>> since you are sending the duplex setting and speed settings via the
-> >>> SGMII control word. Also, as SGMII was invented for a PHY to be able
-> >>> to communicate the media negotiation resolution to the MAC, SGMII
-> >>> defines that the PHY fills in the speed and duplex information in
-> >>> the control word to pass it to the MAC, and the MAC acknowledges this
-> >>> information. There is no need (and SGMII doesn't permit) the MAC to
-> >>> advertise what it's doing.
-> >>>
-> >>> Maybe this needs to be explained in the commit message?
-> >>
-> >> I had tested SGMII fixed-link mode using a bootstrapped ethernet layer-1
-> >> PHY. Based on your clarification in the previous mails that there is an
-> >> issue with the fixed-link mode which I need to debug, I assume that what
-> >> you are referring to here also happens to be a consequence of that.
-> >> Please let me know if I have misunderstood what you meant to convey.
-> > 
-> > I think what you're saying is that you have this setup:
-> > 
-> >   ethernet MAC <--SGMII link--> ethernet PHY <---> media
-> > 
-> > which you are operating in fixed link mode?
-> 
-> Yes, and the other end is connected to my PC's ethernet port.
-> 
-> > 
-> > From the SGMII specification: "This is achieved by using the Auto-
-> > Negotiation functionality defined in Clause 37 of the IEEE
-> > Specification 802.3z. Instead of the ability advertisement, the PHY
-> > sends the control information via its tx_config_Reg[15:0] as specified
-> > in Table 1 whenever the control information changes. Upon receiving
-> > control information, the MAC acknowledges the update of the control
-> > information by asserting bit 14 of its tx_config_reg{15:0] as specified
-> > in Table 1."
-> > 
-> > For the control word sent from the MAC to the PHY, table 1 specifies a
-> > value of 0x4001. All the zero bits in that word which are zero are
-> > marked as "Reserved for future use." There are no fields for speed and
-> > duplex in this acknowledgement word to the PHY.
-> > 
-> > I hope this clears up my point.
-> 
-> Thank you for the detailed explanation. After reading the above, my
-> understanding is that even in the fixed-link mode, the ethernet MAC is
-> not supposed to advertise the speed and duplex settings. The ethernet
-> MACs present on both ends of the connection are supposed to be set to
-> the same speed and duplex settings via the devicetree node. Thus, only
-> for my setup which happens to be a special case of fixed-link mode where
-> the ethernet PHY is present, I am having to send the control word due to
-> the presence of a PHY in between.
+"Russell King (Oracle)" <linux@armlinux.org.uk> writes:
 
-In SGMII, the control word is only passed between the ethernet MAC and
-the ethernet PHY. It is not conveyed across the media.
+> On Wed, Sep 07, 2022 at 11:16:22AM +0300, Kalle Valo wrote:
+>> Russell King (Oracle) <rmk+kernel@armlinux.org.uk> writes:
+>> 
+>> > From: Hector Martin <marcan@marcan.st>
+>> >
+>> > Add the new module-instance/antenna-sku properties required to select
+>> > WiFi firmwares properly to all board device trees.
+>> >
+>> > Signed-off-by: Hector Martin <marcan@marcan.st>
+>> > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+>> > ---
+>> >  arch/arm64/boot/dts/apple/t8103-j274.dts  | 4 ++++
+>> >  arch/arm64/boot/dts/apple/t8103-j293.dts  | 4 ++++
+>> >  arch/arm64/boot/dts/apple/t8103-j313.dts  | 4 ++++
+>> >  arch/arm64/boot/dts/apple/t8103-j456.dts  | 4 ++++
+>> >  arch/arm64/boot/dts/apple/t8103-j457.dts  | 4 ++++
+>> >  arch/arm64/boot/dts/apple/t8103-jxxx.dtsi | 2 ++
+>> >  6 files changed, 22 insertions(+)
+>> 
+>> Is it ok to take this via wireless-next? Can I get an ack from the
+>> maintainers of these files?
+>
+> I'm not sure who you're expecting to get an ack from.
 
-> And, I am supposed to mention this in
-> the commit message, which I haven't done. Please let me know if this is
-> what I was supposed to understand.
+The problem is that I don't know how .dts files are merged, that's why
+I'm extra careful that I'm not breaking the normal flow for them.
 
-If you implement this conventionally, then you don't need to mention it
-in the commit message, because you're following the standard.
+> If it's the maintainers of these files, that'll be Hector himself, and
+> as he authored the change, there seems to be little point in also
+> having an Acked-by from him too.
+>
+> I just asked Hector on #asahi-dev:
+> 17:21 < rmk> also, I think Kalle Valo is waiting on an answer on the arm64 DTS
+>              changes for brcmfmac:
+> 17:21 < rmk> Is it ok to take this via wireless-next? Can I get an ack from the
+> 17:21 < rmk> maintainers of these files?
+> 17:21 <@marcan> ah yeah, merging via wireless-next is fine, let me give you an
+>                 ack
 
-> I am planning to change to a proper fixed-link setup without any
-> ethernet PHY between the MACs, for debugging the driver's fixed-link
-> mode where the "mac_link_up()" is not invoked.
-
-SGMII is designed for the setup in the diagram I provided in my previous
-email. It is not designed for two MACs to talk direct to each other
-without any ethernet PHY because of the asymmetric nature of the control
-word.
-
-The PHY sends e.g. a control word of 0x9801 for 1G full duplex. On
-reception of that, the MAC responds with 0x4001. Finally, the PHY
-responds with 0xd801 to acknowledge the receipt of the MAC response.
-
-If both ends of the link are SGMII, both ends will be waiting for
-the control word from a PHY which is not present, and the link will
-not come up.
-
-1000base-X is a symmetric protocol where both ends of the link
-advertise their capabilities, acknowledge each others abilities and
-resolve the duplex and pause settings.
-
-SGMII is a Cisco proprietary modification of 1000base-X designed for
-communicating the results of media autonegotiation between an
-ethernet PHY and ethernet MAC.
+That sounds good to me, thanks!
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
