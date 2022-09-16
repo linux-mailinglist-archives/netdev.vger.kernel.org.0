@@ -2,110 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 31AC45BA5A9
-	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 06:17:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D837F5BA5F9
+	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 06:39:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229629AbiIPER2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Sep 2022 00:17:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42200 "EHLO
+        id S229711AbiIPEjx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Sep 2022 00:39:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229544AbiIPER0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 00:17:26 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1D4C9F74A;
-        Thu, 15 Sep 2022 21:17:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=MEez9kK9Q97P1sNxTGr3lx3ZTRfEr4B4CaTzZ35o3+U=; b=YIWUCsCzoDIpAz4Rd/l7Q5gAp1
-        h05ASEEwsY6s/Y348jsKaoQMlveis882eVIUvW8Nfk4v/Y1fMCQoZ0WaxoLwRvYPz5Q6z6uVQuO6F
-        EPApgKdv1xYkkm2Z48VDd7Sia5UTpDeni2zylLp4+K679Pfi0vep6z3AP3yFryI5tZHREqT9qNdyI
-        71xwY6UiAgxUUsEDGWO8LUuIwdrQ6cusT+sQ2HJGPPWflXg7pLPOC0YTDdcq0S3+Jx3CDJEAO0ajv
-        yNQUS5oXVQyNo8PPzTSuCOSymv7RaEdqFuqSOZm4tJjFFtcSCshAQGRpehpKeVeJ5TjHA4wx1TWyR
-        sxFt+A3g==;
-Received: from [2601:1c2:d80:3110::c55a]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oZ2mq-001qML-Dj; Fri, 16 Sep 2022 04:17:08 +0000
-Message-ID: <293d8d5b-8423-a8bc-a42f-34b08ee65717@infradead.org>
-Date:   Thu, 15 Sep 2022 21:17:00 -0700
+        with ESMTP id S229497AbiIPEjv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 00:39:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68BBD2EF28;
+        Thu, 15 Sep 2022 21:39:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DBCACB8238E;
+        Fri, 16 Sep 2022 04:39:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8A5CC433C1;
+        Fri, 16 Sep 2022 04:39:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1663303187;
+        bh=qaWzNt16Fu0APLvunyNPiTVzoCIa9T/+oRGyO0EdnU8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ATXjEz1AuxWXLtKk29PT67fyWtC6khPZD59WAd/D0oyCrQ/p99CqRE1aySG46fVJd
+         hAiye+gYYnkoB+KCtvKbU/gEsL/RB42hnHcgsWydaXiU2RWr/vjdnheyO3tEwJNORo
+         04TZ53De6AXfD4D9q+puq5MUd5WCpZsGUeN8c/BTFa65oJmQ5042MPH+USYgEVtT4M
+         R9s1O8ljmW/5sJcex1h8YSIEf/swd8W/xFV7kZaYd+7cc/u4iGiv1uDbLb5+tYQrNv
+         7MlHuQ0B/sq9EngMXNBrR49MpOan65UdS1UxrwfuHkCVpa/AUnGohk3kmwtKC0/Ie8
+         PDoqjZepVS1fQ==
+Date:   Fri, 16 Sep 2022 10:09:43 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>
+Cc:     netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        bhupesh.linux@gmail.com, linux-kernel@vger.kernel.org,
+        David Miller <davem@davemloft.net>
+Subject: Re: [PATCH] MAINTAINERS: Add myself as a reviewer for Qualcomm
+ ETHQOS Ethernet driver
+Message-ID: <YyP+D/JUrXd8fDwn@matsya>
+References: <20220915112804.3950680-1-bhupesh.sharma@linaro.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [PATCH] liquidio: CN23XX: delete repeated words
-To:     Ruffalo Lavoisier <ruffalolavoisier@gmail.com>,
-        Derek Chickles <dchickles@marvell.com>,
-        Satanand Burla <sburla@marvell.com>,
-        Felix Manlunas <fmanlunas@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220915084637.5165-1-RuffaloLavoisier@gmail.com>
-Content-Language: en-US
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220915084637.5165-1-RuffaloLavoisier@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220915112804.3950680-1-bhupesh.sharma@linaro.org>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi--
-
-There are several other problems here also.
-Preferably fix all of them.
-
-On 9/15/22 01:46, Ruffalo Lavoisier wrote:
-> - Delete the repeated word 'to' in the comment
+On 15-09-22, 16:58, Bhupesh Sharma wrote:
+> As suggested by Vinod, adding myself as the reviewer
+> for the Qualcomm ETHQOS Ethernet driver.
 > 
-> Signed-off-by: Ruffalo Lavoisier <RuffaloLavoisier@gmail.com>
+> Recently I have enabled this driver on a few Qualcomm
+> SoCs / boards and hence trying to keep a close eye on
+> it.
+
+Thanks Bhupesh for helping out.
+
+Acked-By: Vinod Koul <vkoul@kernel.org>
+
+> 
+> Cc: Vinod Koul <vkoul@kernel.org>
+> Cc: David Miller <davem@davemloft.net>
+> Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
 > ---
->   drivers/net/ethernet/cavium/liquidio/cn23xx_pf_regs.h | 2 +-
->   drivers/net/ethernet/cavium/liquidio/cn23xx_vf_regs.h | 2 +-
->   2 files changed, 2 insertions(+), 2 deletions(-)
+>  MAINTAINERS | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> diff --git a/drivers/net/ethernet/cavium/liquidio/cn23xx_pf_regs.h b/drivers/net/ethernet/cavium/liquidio/cn23xx_pf_regs.h
-> index 3f1c189646f4..9a994b5bfff5 100644
-> --- a/drivers/net/ethernet/cavium/liquidio/cn23xx_pf_regs.h
-> +++ b/drivers/net/ethernet/cavium/liquidio/cn23xx_pf_regs.h
-> @@ -88,7 +88,7 @@
->   #define    CN23XX_SLI_PKT_IN_JABBER                0x29170
->   /* The input jabber is used to determine the TSO max size.
->    * Due to H/W limitation, this need to be reduced to 60000
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index c26a5c573a5d..e8b58d4afce5 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -16943,6 +16943,7 @@ F:	drivers/net/ethernet/qualcomm/emac/
+>  
+>  QUALCOMM ETHQOS ETHERNET DRIVER
+>  M:	Vinod Koul <vkoul@kernel.org>
+> +R:	Bhupesh Sharma <bhupesh.sharma@linaro.org>
+>  L:	netdev@vger.kernel.org
+>  S:	Maintained
+>  F:	Documentation/devicetree/bindings/net/qcom,ethqos.txt
+> -- 
+> 2.37.1
 
-                               this needs
-
-> - * in order to to H/W TSO and avoid the WQE malfarmation > + * in order to H/W TSO and avoid the WQE malfarmation
-
-Now it is missing some word. Something like
-       in order to use H/W TSO
-makes some sense.
-
-Also, s/malfarmation/malformation/
-
->    * PKO_BUG_24989_WQE_LEN
->    */
->   #define    CN23XX_DEFAULT_INPUT_JABBER             0xEA60 /*60000*/
-> diff --git a/drivers/net/ethernet/cavium/liquidio/cn23xx_vf_regs.h b/drivers/net/ethernet/cavium/liquidio/cn23xx_vf_regs.h
-> index d33dd8f4226f..19894b7c1ce8 100644
-> --- a/drivers/net/ethernet/cavium/liquidio/cn23xx_vf_regs.h
-> +++ b/drivers/net/ethernet/cavium/liquidio/cn23xx_vf_regs.h
-> @@ -37,7 +37,7 @@
->   
->   /* The input jabber is used to determine the TSO max size.
->    * Due to H/W limitation, this need to be reduced to 60000
-> - * in order to to H/W TSO and avoid the WQE malfarmation
-> + * in order to H/W TSO and avoid the WQE malfarmation
-
-Same as comments above.
-
->    * PKO_BUG_24989_WQE_LEN
->    */
->   #define    CN23XX_DEFAULT_INPUT_JABBER             0xEA60 /*60000*/
+-- 
+~Vinod
