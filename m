@@ -2,125 +2,519 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A3AB5BB307
-	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 21:54:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5733B5BB359
+	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 22:17:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229885AbiIPTyc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Sep 2022 15:54:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44628 "EHLO
+        id S229556AbiIPURn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Sep 2022 16:17:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230357AbiIPTyX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 15:54:23 -0400
-Received: from mx06lb.world4you.com (mx06lb.world4you.com [81.19.149.116])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E299B99FC;
-        Fri, 16 Sep 2022 12:54:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=vFiZ6J6rKleWghPafAo9+rN4nJo/ie0UFtGpkuXvE18=; b=IpiW7HKn1yvZMBBTCQ0QCCGW9q
-        0WHcGrM1WPfNg4Kcwta9mynVdqSovYgsH/48fWxxaQX/2Wx8cF+86xKJ1+Ctwi4J5nY+TEVvdZaHI
-        ba5YHAdFvWQ7HLY8o3OB8zB0LuAxtXcq5YUOUHa60RJQdrh0vt4A28LVtLflsoM0aALE=;
-Received: from [88.117.54.199] (helo=[10.0.0.160])
-        by mx06lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <gerhard@engleder-embedded.com>)
-        id 1oZHPR-0005s5-F9; Fri, 16 Sep 2022 21:53:57 +0200
-Message-ID: <7f09367e-2236-692c-4adf-cb262ff1c109@engleder-embedded.com>
-Date:   Fri, 16 Sep 2022 21:53:56 +0200
+        with ESMTP id S229540AbiIPURm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 16:17:42 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21672BA16D
+        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 13:17:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1663359458; x=1694895458;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=NFpTq6fc7AfT/ooDWExTRm76beOoVt12T1NuQ9qELV0=;
+  b=I7XrBkeBrpTJ88izNNNIAQkSVBec7Bk4C59zQsbaNdJE8C9hhGN5agPs
+   F5r2OtMEscSDfGmvGsh4x9g1B8xxQ35AowSFqrkU9JE4M2BGjPW7zajT/
+   uxQ/gtVdzz5GPfqx8RMHEruLVvWzC49AMGKBvwoof2b7Y81QvCErR9rWG
+   M6z0LhfdaHQs0cV5MmytwHnfE3Oj/HAd3IOXMgM/PtvcR7z+hVGy5U4r0
+   Ynr82kC3zUPuQo2fDfylcZc0A26S48VaYNkA5HExzor+mP3bgnP5sigXZ
+   QxVl1THhMVbrSZj5f9m5AHkQtYrbSjwBkYfOrJ8cMObppNO2ociJdU4oH
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10472"; a="278800658"
+X-IronPort-AV: E=Sophos;i="5.93,321,1654585200"; 
+   d="scan'208";a="278800658"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2022 13:17:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,321,1654585200"; 
+   d="scan'208";a="760170896"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by fmsmga001.fm.intel.com with ESMTP; 16 Sep 2022 13:17:36 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
+Cc:     Karol Kolacinski <karol.kolacinski@intel.com>,
+        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+        richardcochran@gmail.com, Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH net-next 1/1] ice: Add low latency Tx timestamp read
+Date:   Fri, 16 Sep 2022 13:17:28 -0700
+Message-Id: <20220916201728.241510-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH net-next 10/13] tsnep: deny tc-taprio changes to per-tc
- max SDU
-Content-Language: en-US
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Rui Sousa <rui.sousa@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Michael Walle <michael@walle.cc>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Richie Pearn <richard.pearn@nxp.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20220914153303.1792444-1-vladimir.oltean@nxp.com>
- <20220914153303.1792444-11-vladimir.oltean@nxp.com>
- <ecf497e3-8934-1046-818e-4ee5dc5889eb@engleder-embedded.com>
- <20220916135752.abmpagmyjt4gnolk@skbuf>
-From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-In-Reply-To: <20220916135752.abmpagmyjt4gnolk@skbuf>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AV-Do-Run: Yes
-X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 16.09.22 15:57, Vladimir Oltean wrote:
-> On Thu, Sep 15, 2022 at 09:01:19PM +0200, Gerhard Engleder wrote:
->> Does it make any difference if the MAC already guarantees that too
->> long frames, which would violate the next taprio interval, will not
->> be transmitted?
-> 
-> This is not, in essence, about gate overruns, but about transmitting
-> packets larger than X bytes for a traffic class. It also becomes about
-> overruns and guard bands to avoid them, only in relation to certain
-> hardware implementations.
-> 
-> But it could also be useful for reducing latency in a given time slot
-> with mixed traffic classes where you don't have frame preemption.
-> 
->> MACs are able to do that, switches not.
-> 
-> Switches could in principle be able to do that too, but just in store
-> and forward mode (not cut-through).
-> 
->> The user could be informed, that the MAC is considering the length of the
->> frames by accepting any max_sdu value lower than the MTU of the netdev.
-> 
-> By accepting any max_sdu lower than the MTU of the netdev, I would
-> expect that the observable behavior is that the netdev will not send any
-> frame for this traffic class that is larger than max_sdu. But if you
-> accept the config as valid and not act on it, this will not be enforced
-> by anyone. This is because of the way in which the taprio qdisc works in
-> full offload mode.
+From: Karol Kolacinski <karol.kolacinski@intel.com>
 
-Ok, denying max_sdu makes sense. It can be used to prevent too large
-frames for a traffic class by discarding them.
+E810 products can support low latency Tx timestamp register read.
+This requires usage of threaded IRQ instead of kthread to reduce the
+kthread start latency (spikes up to 20 ms).
+Add a check for the device capability and use the new method if
+supported.
 
-In my opinion for MACs a software implementation would make sense even
-in full offload mode, because it would prevent copying frames from RAM
-to MAC which are discarded anyway. But that should be decided driver
-specific.
+Signed-off-by: Karol Kolacinski <karol.kolacinski@intel.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+---
+ drivers/net/ethernet/intel/ice/ice_common.c |  4 +
+ drivers/net/ethernet/intel/ice/ice_main.c   | 32 +++++--
+ drivers/net/ethernet/intel/ice/ice_ptp.c    | 47 +++++-----
+ drivers/net/ethernet/intel/ice/ice_ptp.h    |  9 +-
+ drivers/net/ethernet/intel/ice/ice_ptp_hw.c | 98 ++++++++++++++++++---
+ drivers/net/ethernet/intel/ice/ice_ptp_hw.h |  7 ++
+ drivers/net/ethernet/intel/ice/ice_type.h   |  2 +
+ 7 files changed, 154 insertions(+), 45 deletions(-)
 
-Thanks for your explanations!
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
+index bec770e34f39..3cbfe0bf8e74 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.c
++++ b/drivers/net/ethernet/intel/ice/ice_common.c
+@@ -2519,6 +2519,8 @@ ice_parse_1588_dev_caps(struct ice_hw *hw, struct ice_hw_dev_caps *dev_p,
+ 	info->tmr1_owned = ((number & ICE_TS_TMR1_OWND_M) != 0);
+ 	info->tmr1_ena = ((number & ICE_TS_TMR1_ENA_M) != 0);
+ 
++	info->ts_ll_read = ((number & ICE_TS_LL_TX_TS_READ_M) != 0);
++
+ 	info->ena_ports = logical_id;
+ 	info->tmr_own_map = phys_id;
+ 
+@@ -2536,6 +2538,8 @@ ice_parse_1588_dev_caps(struct ice_hw *hw, struct ice_hw_dev_caps *dev_p,
+ 		  info->tmr1_owned);
+ 	ice_debug(hw, ICE_DBG_INIT, "dev caps: tmr1_ena = %u\n",
+ 		  info->tmr1_ena);
++	ice_debug(hw, ICE_DBG_INIT, "dev caps: ts_ll_read = %u\n",
++		  info->ts_ll_read);
+ 	ice_debug(hw, ICE_DBG_INIT, "dev caps: ieee_1588 ena_ports = %u\n",
+ 		  info->ena_ports);
+ 	ice_debug(hw, ICE_DBG_INIT, "dev caps: tmr_own_map = %u\n",
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 7f59050e4122..aa26672b7205 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -3095,7 +3095,8 @@ static irqreturn_t ice_misc_intr(int __always_unused irq, void *data)
+ 
+ 	if (oicr & PFINT_OICR_TSYN_TX_M) {
+ 		ena_mask &= ~PFINT_OICR_TSYN_TX_M;
+-		ice_ptp_process_ts(pf);
++		if (!hw->reset_ongoing)
++			ret = IRQ_WAKE_THREAD;
+ 	}
+ 
+ 	if (oicr & PFINT_OICR_TSYN_EVNT_M) {
+@@ -3130,7 +3131,8 @@ static irqreturn_t ice_misc_intr(int __always_unused irq, void *data)
+ 			ice_service_task_schedule(pf);
+ 		}
+ 	}
+-	ret = IRQ_HANDLED;
++	if (!ret)
++		ret = IRQ_HANDLED;
+ 
+ 	ice_service_task_schedule(pf);
+ 	ice_irq_dynamic_ena(hw, NULL, NULL);
+@@ -3138,6 +3140,24 @@ static irqreturn_t ice_misc_intr(int __always_unused irq, void *data)
+ 	return ret;
+ }
+ 
++/**
++ * ice_misc_intr_thread_fn - misc interrupt thread function
++ * @irq: interrupt number
++ * @data: pointer to a q_vector
++ */
++static irqreturn_t ice_misc_intr_thread_fn(int __always_unused irq, void *data)
++{
++	irqreturn_t ret = IRQ_HANDLED;
++	struct ice_pf *pf = data;
++	bool irq_handled;
++
++	irq_handled = ice_ptp_process_ts(pf);
++	if (!irq_handled)
++		ret = IRQ_WAKE_THREAD;
++
++	return ret;
++}
++
+ /**
+  * ice_dis_ctrlq_interrupts - disable control queue interrupts
+  * @hw: pointer to HW structure
+@@ -3250,10 +3270,12 @@ static int ice_req_irq_msix_misc(struct ice_pf *pf)
+ 	pf->num_avail_sw_msix -= 1;
+ 	pf->oicr_idx = (u16)oicr_idx;
+ 
+-	err = devm_request_irq(dev, pf->msix_entries[pf->oicr_idx].vector,
+-			       ice_misc_intr, 0, pf->int_name, pf);
++	err = devm_request_threaded_irq(dev,
++					pf->msix_entries[pf->oicr_idx].vector,
++					ice_misc_intr, ice_misc_intr_thread_fn,
++					0, pf->int_name, pf);
+ 	if (err) {
+-		dev_err(dev, "devm_request_irq for %s failed: %d\n",
++		dev_err(dev, "devm_request_threaded_irq for %s failed: %d\n",
+ 			pf->int_name, err);
+ 		ice_free_res(pf->irq_tracker, 1, ICE_RES_MISC_VEC_ID);
+ 		pf->num_avail_sw_msix += 1;
+diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
+index 26020f3f0a43..5e41e99e91a5 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ptp.c
++++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
+@@ -600,8 +600,8 @@ static u64 ice_ptp_extend_40b_ts(struct ice_pf *pf, u64 in_tstamp)
+ }
+ 
+ /**
+- * ice_ptp_tx_tstamp_work - Process Tx timestamps for a port
+- * @work: pointer to the kthread_work struct
++ * ice_ptp_tx_tstamp - Process Tx timestamps for a port
++ * @tx: the PTP Tx timestamp tracker
+  *
+  * Process timestamps captured by the PHY associated with this port. To do
+  * this, loop over each index with a waiting skb.
+@@ -614,11 +614,11 @@ static u64 ice_ptp_extend_40b_ts(struct ice_pf *pf, u64 in_tstamp)
+  * 2) extend the 40b timestamp value to get a 64bit timestamp
+  * 3) send that timestamp to the stack
+  *
+- * After looping, if we still have waiting SKBs, then re-queue the work. This
+- * may cause us effectively poll even when not strictly necessary. We do this
+- * because it's possible a new timestamp was requested around the same time as
+- * the interrupt. In some cases hardware might not interrupt us again when the
+- * timestamp is captured.
++ * After looping, if we still have waiting SKBs, return true. This may cause us
++ * effectively poll even when not strictly necessary. We do this because it's
++ * possible a new timestamp was requested around the same time as the interrupt.
++ * In some cases hardware might not interrupt us again when the timestamp is
++ * captured.
+  *
+  * Note that we only take the tracking lock when clearing the bit and when
+  * checking if we need to re-queue this task. The only place where bits can be
+@@ -627,27 +627,24 @@ static u64 ice_ptp_extend_40b_ts(struct ice_pf *pf, u64 in_tstamp)
+  * thread. If the cleanup thread clears a bit we're processing we catch it
+  * when we lock to clear the bit and then grab the SKB pointer. If a Tx thread
+  * starts a new timestamp, we might not begin processing it right away but we
+- * will notice it at the end when we re-queue the work item. If a Tx thread
+- * starts a new timestamp just after this function exits without re-queuing,
++ * will notice it at the end when we re-queue the task. If a Tx thread starts
++ * a new timestamp just after this function exits without re-queuing,
+  * the interrupt when the timestamp finishes should trigger. Avoiding holding
+  * the lock for the entire function is important in order to ensure that Tx
+  * threads do not get blocked while waiting for the lock.
+  */
+-static void ice_ptp_tx_tstamp_work(struct kthread_work *work)
++static bool ice_ptp_tx_tstamp(struct ice_ptp_tx *tx)
+ {
+ 	struct ice_ptp_port *ptp_port;
+-	struct ice_ptp_tx *tx;
++	bool ts_handled = true;
+ 	struct ice_pf *pf;
+-	struct ice_hw *hw;
+ 	u8 idx;
+ 
+-	tx = container_of(work, struct ice_ptp_tx, work);
+ 	if (!tx->init)
+-		return;
++		return false;
+ 
+ 	ptp_port = container_of(tx, struct ice_ptp_port, tx);
+ 	pf = ptp_port_to_pf(ptp_port);
+-	hw = &pf->hw;
+ 
+ 	for_each_set_bit(idx, tx->in_use, tx->len) {
+ 		struct skb_shared_hwtstamps shhwtstamps = {};
+@@ -658,7 +655,7 @@ static void ice_ptp_tx_tstamp_work(struct kthread_work *work)
+ 
+ 		ice_trace(tx_tstamp_fw_req, tx->tstamps[idx].skb, idx);
+ 
+-		err = ice_read_phy_tstamp(hw, tx->quad, phy_idx,
++		err = ice_read_phy_tstamp(&pf->hw, tx->quad, phy_idx,
+ 					  &raw_tstamp);
+ 		if (err)
+ 			continue;
+@@ -702,8 +699,10 @@ static void ice_ptp_tx_tstamp_work(struct kthread_work *work)
+ 	 */
+ 	spin_lock(&tx->lock);
+ 	if (!bitmap_empty(tx->in_use, tx->len))
+-		kthread_queue_work(pf->ptp.kworker, &tx->work);
++		ts_handled = false;
+ 	spin_unlock(&tx->lock);
++
++	return ts_handled;
+ }
+ 
+ /**
+@@ -728,7 +727,6 @@ ice_ptp_alloc_tx_tracker(struct ice_ptp_tx *tx)
+ 	}
+ 
+ 	spin_lock_init(&tx->lock);
+-	kthread_init_work(&tx->work, ice_ptp_tx_tstamp_work);
+ 
+ 	tx->init = 1;
+ 
+@@ -775,8 +773,6 @@ ice_ptp_release_tx_tracker(struct ice_pf *pf, struct ice_ptp_tx *tx)
+ {
+ 	tx->init = 0;
+ 
+-	kthread_cancel_work_sync(&tx->work);
+-
+ 	ice_ptp_flush_tx_tracker(pf, tx);
+ 
+ 	kfree(tx->tstamps);
+@@ -2405,16 +2401,17 @@ s8 ice_ptp_request_ts(struct ice_ptp_tx *tx, struct sk_buff *skb)
+ }
+ 
+ /**
+- * ice_ptp_process_ts - Spawn kthread work to handle timestamps
++ * ice_ptp_process_ts - Process the PTP Tx timestamps
+  * @pf: Board private structure
+  *
+- * Queue work required to process the PTP Tx timestamps outside of interrupt
+- * context.
++ * Returns true if timestamps are processed.
+  */
+-void ice_ptp_process_ts(struct ice_pf *pf)
++bool ice_ptp_process_ts(struct ice_pf *pf)
+ {
+ 	if (pf->ptp.port.tx.init)
+-		kthread_queue_work(pf->ptp.kworker, &pf->ptp.port.tx.work);
++		return ice_ptp_tx_tstamp(&pf->ptp.port.tx);
++
++	return false;
+ }
+ 
+ static void ice_ptp_periodic_work(struct kthread_work *work)
+diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.h b/drivers/net/ethernet/intel/ice/ice_ptp.h
+index d53dcd03e36b..a224b5e90386 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ptp.h
++++ b/drivers/net/ethernet/intel/ice/ice_ptp.h
+@@ -105,7 +105,6 @@ struct ice_tx_tstamp {
+ 
+ /**
+  * struct ice_ptp_tx - Tracking structure for all Tx timestamp requests on a port
+- * @work: work function to handle processing of Tx timestamps
+  * @lock: lock to prevent concurrent write to in_use bitmap
+  * @tstamps: array of len to store outstanding requests
+  * @in_use: bitmap of len to indicate which slots are in use
+@@ -117,7 +116,6 @@ struct ice_tx_tstamp {
+  *               window, timestamps are temporarily disabled.
+  */
+ struct ice_ptp_tx {
+-	struct kthread_work work;
+ 	spinlock_t lock; /* lock protecting in_use bitmap */
+ 	struct ice_tx_tstamp *tstamps;
+ 	unsigned long *in_use;
+@@ -249,7 +247,7 @@ void ice_ptp_cfg_timestamp(struct ice_pf *pf, bool ena);
+ int ice_get_ptp_clock_index(struct ice_pf *pf);
+ 
+ s8 ice_ptp_request_ts(struct ice_ptp_tx *tx, struct sk_buff *skb);
+-void ice_ptp_process_ts(struct ice_pf *pf);
++bool ice_ptp_process_ts(struct ice_pf *pf);
+ 
+ void
+ ice_ptp_rx_hwtstamp(struct ice_rx_ring *rx_ring,
+@@ -282,7 +280,10 @@ ice_ptp_request_ts(struct ice_ptp_tx *tx, struct sk_buff *skb)
+ 	return -1;
+ }
+ 
+-static inline void ice_ptp_process_ts(struct ice_pf *pf) { }
++static inline bool ice_ptp_process_ts(struct ice_pf *pf)
++{
++	return true;
++}
+ static inline void
+ ice_ptp_rx_hwtstamp(struct ice_rx_ring *rx_ring,
+ 		    union ice_32b_rx_flex_desc *rx_desc, struct sk_buff *skb) { }
+diff --git a/drivers/net/ethernet/intel/ice/ice_ptp_hw.c b/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
+index 6dff97d53d81..772b1f566d6e 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
++++ b/drivers/net/ethernet/intel/ice/ice_ptp_hw.c
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /* Copyright (C) 2021, Intel Corporation. */
+ 
++#include <linux/delay.h>
+ #include "ice_common.h"
+ #include "ice_ptp_hw.h"
+ #include "ice_ptp_consts.h"
+@@ -2587,38 +2588,113 @@ static int ice_write_phy_reg_e810(struct ice_hw *hw, u32 addr, u32 val)
+ }
+ 
+ /**
+- * ice_read_phy_tstamp_e810 - Read a PHY timestamp out of the external PHY
++ * ice_read_phy_tstamp_ll_e810 - Read a PHY timestamp registers through the FW
++ * @hw: pointer to the HW struct
++ * @idx: the timestamp index to read
++ * @hi: 8 bit timestamp high value
++ * @lo: 32 bit timestamp low value
++ *
++ * Read a 8bit timestamp high value and 32 bit timestamp low value out of the
++ * timestamp block of the external PHY on the E810 device using the low latency
++ * timestamp read.
++ */
++static int
++ice_read_phy_tstamp_ll_e810(struct ice_hw *hw, u8 idx, u8 *hi, u32 *lo)
++{
++	u32 val;
++	u8 i;
++
++	/* Write TS index to read to the PF register so the FW can read it */
++	val = FIELD_PREP(TS_LL_READ_TS_IDX, idx) | TS_LL_READ_TS;
++	wr32(hw, PF_SB_ATQBAL, val);
++
++	/* Read the register repeatedly until the FW provides us the TS */
++	for (i = TS_LL_READ_RETRIES; i > 0; i--) {
++		val = rd32(hw, PF_SB_ATQBAL);
++
++		/* When the bit is cleared, the TS is ready in the register */
++		if (!(FIELD_GET(TS_LL_READ_TS, val))) {
++			/* High 8 bit value of the TS is on the bits 16:23 */
++			*hi = FIELD_GET(TS_LL_READ_TS_HIGH, val);
++
++			/* Read the low 32 bit value and set the TS valid bit */
++			*lo = rd32(hw, PF_SB_ATQBAH) | TS_VALID;
++			return 0;
++		}
++
++		udelay(10);
++	}
++
++	/* FW failed to provide the TS in time */
++	ice_debug(hw, ICE_DBG_PTP, "Failed to read PTP timestamp using low latency read\n");
++	return -EINVAL;
++}
++
++/**
++ * ice_read_phy_tstamp_sbq_e810 - Read a PHY timestamp registers through the sbq
+  * @hw: pointer to the HW struct
+  * @lport: the lport to read from
+  * @idx: the timestamp index to read
+- * @tstamp: on return, the 40bit timestamp value
++ * @hi: 8 bit timestamp high value
++ * @lo: 32 bit timestamp low value
+  *
+- * Read a 40bit timestamp value out of the timestamp block of the external PHY
+- * on the E810 device.
++ * Read a 8bit timestamp high value and 32 bit timestamp low value out of the
++ * timestamp block of the external PHY on the E810 device using sideband queue.
+  */
+ static int
+-ice_read_phy_tstamp_e810(struct ice_hw *hw, u8 lport, u8 idx, u64 *tstamp)
++ice_read_phy_tstamp_sbq_e810(struct ice_hw *hw, u8 lport, u8 idx, u8 *hi,
++			     u32 *lo)
+ {
+-	u32 lo_addr, hi_addr, lo, hi;
++	u32 hi_addr = TS_EXT(HIGH_TX_MEMORY_BANK_START, lport, idx);
++	u32 lo_addr = TS_EXT(LOW_TX_MEMORY_BANK_START, lport, idx);
++	u32 lo_val, hi_val;
+ 	int err;
+ 
+-	lo_addr = TS_EXT(LOW_TX_MEMORY_BANK_START, lport, idx);
+-	hi_addr = TS_EXT(HIGH_TX_MEMORY_BANK_START, lport, idx);
+-
+-	err = ice_read_phy_reg_e810(hw, lo_addr, &lo);
++	err = ice_read_phy_reg_e810(hw, lo_addr, &lo_val);
+ 	if (err) {
+ 		ice_debug(hw, ICE_DBG_PTP, "Failed to read low PTP timestamp register, err %d\n",
+ 			  err);
+ 		return err;
+ 	}
+ 
+-	err = ice_read_phy_reg_e810(hw, hi_addr, &hi);
++	err = ice_read_phy_reg_e810(hw, hi_addr, &hi_val);
+ 	if (err) {
+ 		ice_debug(hw, ICE_DBG_PTP, "Failed to read high PTP timestamp register, err %d\n",
+ 			  err);
+ 		return err;
+ 	}
+ 
++	*lo = lo_val;
++	*hi = (u8)hi_val;
++
++	return 0;
++}
++
++/**
++ * ice_read_phy_tstamp_e810 - Read a PHY timestamp out of the external PHY
++ * @hw: pointer to the HW struct
++ * @lport: the lport to read from
++ * @idx: the timestamp index to read
++ * @tstamp: on return, the 40bit timestamp value
++ *
++ * Read a 40bit timestamp value out of the timestamp block of the external PHY
++ * on the E810 device.
++ */
++static int
++ice_read_phy_tstamp_e810(struct ice_hw *hw, u8 lport, u8 idx, u64 *tstamp)
++{
++	u32 lo = 0;
++	u8 hi = 0;
++	int err;
++
++	if (hw->dev_caps.ts_dev_info.ts_ll_read)
++		err = ice_read_phy_tstamp_ll_e810(hw, idx, &hi, &lo);
++	else
++		err = ice_read_phy_tstamp_sbq_e810(hw, lport, idx, &hi, &lo);
++
++	if (err)
++		return err;
++
+ 	/* For E810 devices, the timestamp is reported with the lower 32 bits
+ 	 * in the low register, and the upper 8 bits in the high register.
+ 	 */
+diff --git a/drivers/net/ethernet/intel/ice/ice_ptp_hw.h b/drivers/net/ethernet/intel/ice/ice_ptp_hw.h
+index 1246e4ee4b5d..2bda64c76abc 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ptp_hw.h
++++ b/drivers/net/ethernet/intel/ice/ice_ptp_hw.h
+@@ -402,6 +402,7 @@ bool ice_is_pca9575_present(struct ice_hw *hw);
+ #define INCVAL_HIGH_M			0xFF
+ 
+ /* Timestamp block macros */
++#define TS_VALID			BIT(0)
+ #define TS_LOW_M			0xFFFFFFFF
+ #define TS_HIGH_M			0xFF
+ #define TS_HIGH_S			32
+@@ -413,6 +414,12 @@ bool ice_is_pca9575_present(struct ice_hw *hw);
+ #define BYTES_PER_IDX_ADDR_L_U		8
+ #define BYTES_PER_IDX_ADDR_L		4
+ 
++/* Tx timestamp low latency read definitions */
++#define TS_LL_READ_RETRIES		200
++#define TS_LL_READ_TS_HIGH		GENMASK(23, 16)
++#define TS_LL_READ_TS_IDX		GENMASK(29, 24)
++#define TS_LL_READ_TS			BIT(31)
++
+ /* Internal PHY timestamp address */
+ #define TS_L(a, idx) ((a) + ((idx) * BYTES_PER_IDX_ADDR_L_U))
+ #define TS_H(a, idx) ((a) + ((idx) * BYTES_PER_IDX_ADDR_L_U +		\
+diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
+index 6ea54a3fad2c..e1abfcee96dc 100644
+--- a/drivers/net/ethernet/intel/ice/ice_type.h
++++ b/drivers/net/ethernet/intel/ice/ice_type.h
+@@ -347,6 +347,7 @@ struct ice_ts_func_info {
+ #define ICE_TS_DEV_ENA_M		BIT(24)
+ #define ICE_TS_TMR0_ENA_M		BIT(25)
+ #define ICE_TS_TMR1_ENA_M		BIT(26)
++#define ICE_TS_LL_TX_TS_READ_M		BIT(28)
+ 
+ struct ice_ts_dev_info {
+ 	/* Device specific info */
+@@ -359,6 +360,7 @@ struct ice_ts_dev_info {
+ 	u8 ena;
+ 	u8 tmr0_ena;
+ 	u8 tmr1_ena;
++	u8 ts_ll_read;
+ };
+ 
+ /* Function specific capabilities */
+-- 
+2.35.1
+
