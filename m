@@ -2,129 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 483585BB411
-	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 23:43:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 112B85BB41B
+	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 23:48:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229604AbiIPVnZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Sep 2022 17:43:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37002 "EHLO
+        id S229901AbiIPVsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Sep 2022 17:48:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229675AbiIPVnY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 17:43:24 -0400
-Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 454EE3AB36;
-        Fri, 16 Sep 2022 14:43:23 -0700 (PDT)
-Message-ID: <f49f8f26-a3e5-3dbc-4a56-7a6207c6224c@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1663364601;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Kpcy6xE+hoJ6Z7Js7vjtjG5zaLoZcXbvE4FkKjHLjW8=;
-        b=dXv4yUqynNdDu0JYThD/Ope57pmDvRqY7zdW3RmwWlWfA0J1D6pj8HgRt4R/Y/tdyMbNTG
-        cjQEzCn5qiD6s0ICmSjcI2IN8YlMZhVSU+MP0nYdImpzDzmK57MTMqRyA68TdKuz+5LFIa
-        heTbyqCHRCxSKNHdn77XncVv0KTmZ8A=
-Date:   Fri, 16 Sep 2022 14:43:18 -0700
+        with ESMTP id S229501AbiIPVso (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 17:48:44 -0400
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF984BB684;
+        Fri, 16 Sep 2022 14:48:42 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1663364891; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=JLDt2/kFU7PEotggDN6j70oCTJcAHSNiwJtnJ1rZreVe/BBDf5r+1CV56T1eNKPU5d9NAH6+M7hl/yI+IMt3H1vlDspeZkffUpMV85tUqjpahNVK75vSlnPJPhdHEsr/CictAMNkcmgUyss2Wxodr1WwPbHNBfSjyIw2fJ3jpyw=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1663364891; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=4GuRfMhQm5Rn+M8LeHVMrehMbznHw6jGuLiFJ01zG90=; 
+        b=dJakwSFQqzlM+viBJlYBIek0BmV9zBFURPWIoqrwq+zimAd/A4aJEQT+rrF31JZbRq3PAcQZu7TCHX7n155j3507EvDOw5lk1OaXxdAr9n348QoblStf5kS73xGOn6w4Eo8IfZ++piDDlUH7WbtmBonWuU9aRDFX6HQn7OtmlOU=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1663364891;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=4GuRfMhQm5Rn+M8LeHVMrehMbznHw6jGuLiFJ01zG90=;
+        b=LQoYNqy7ViPr/6u6w5K5bvlvGOtK8xyG6VcNvYCqeoLe11wbFdwuCn2ZqvlHTCpn
+        hRzyOKvjoj1NnsK3vwvEdPem9Z+rJvDJy86QqmUuNVswWyAZXsHxmLAwA/1D0eVChvp
+        kqXB4x6YxoKx1529sEx75tRjnZJoa6M1lQO7xa6g=
+Received: from [10.10.10.122] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
+        with SMTPS id 1663364890239371.4567564648436; Fri, 16 Sep 2022 14:48:10 -0700 (PDT)
+Message-ID: <bc066578-e229-7f08-d6c0-5dc2fede6be7@arinc9.com>
+Date:   Sat, 17 Sep 2022 00:48:00 +0300
 MIME-Version: 1.0
-Subject: Re: [PATCH bpf-next] bpf: Move nf_conn extern declarations to
- filter.h
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 net-next 04/10] dt-bindings: memory: mt7621: add syscon
+ as compatible string
 Content-Language: en-US
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Martin KaFai Lau <martin.lau@linux.dev>
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     Daniel Xu <dxu@dxuuu.xyz>, pablo@netfilter.org, fw@strlen.de,
-        toke@kernel.org, netfilter-devel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org
-References: <c4cb11c8ffe732b91c175a0fc80d43b2547ca17e.1662920329.git.dxu@dxuuu.xyz>
- <ada17021-83c9-3dad-5992-4885e824ecac@linux.dev>
- <CAP01T74=btUEPDrz0EVm9wNuMmbbqc2wRvtpJ-Qq45OtasMBZQ@mail.gmail.com>
- <a774a513-284c-eb1f-7578-bb6d475b0509@linux.dev>
-In-Reply-To: <a774a513-284c-eb1f-7578-bb6d475b0509@linux.dev>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org
+References: <20220915065542.13150-1-arinc.unal@arinc9.com>
+ <20220915065542.13150-5-arinc.unal@arinc9.com>
+ <20220916194127.GA1139257-robh@kernel.org>
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <20220916194127.GA1139257-robh@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/16/22 2:31 PM, Martin KaFai Lau wrote:
-> On 9/16/22 1:35 PM, Kumar Kartikeya Dwivedi wrote:
->> On Fri, 16 Sept 2022 at 22:20, Martin KaFai Lau <martin.lau@linux.dev> 
->> wrote:
->>>
->>> On 9/11/22 11:19 AM, Daniel Xu wrote:
->>>> We're seeing the following new warnings on netdev/build_32bit and
->>>> netdev/build_allmodconfig_warn CI jobs:
->>>>
->>>>       ../net/core/filter.c:8608:1: warning: symbol
->>>>       'nf_conn_btf_access_lock' was not declared. Should it be static?
->>>>       ../net/core/filter.c:8611:5: warning: symbol 'nfct_bsa' was not
->>>>       declared. Should it be static?
->>>>
->>>> Fix by ensuring extern declaration is present while compiling filter.o.
->>>>
->>>> Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
->>>> ---
->>>>    include/linux/filter.h                   | 6 ++++++
->>>>    include/net/netfilter/nf_conntrack_bpf.h | 7 +------
->>>>    2 files changed, 7 insertions(+), 6 deletions(-)
->>>>
->>>> diff --git a/include/linux/filter.h b/include/linux/filter.h
->>>> index 527ae1d64e27..96de256b2c8d 100644
->>>> --- a/include/linux/filter.h
->>>> +++ b/include/linux/filter.h
->>>> @@ -567,6 +567,12 @@ struct sk_filter {
->>>>
->>>>    DECLARE_STATIC_KEY_FALSE(bpf_stats_enabled_key);
->>>>
->>>> +extern struct mutex nf_conn_btf_access_lock;
->>>> +extern int (*nfct_bsa)(struct bpf_verifier_log *log, const struct 
->>>> btf *btf,
->>>> +                    const struct btf_type *t, int off, int size,
->>>> +                    enum bpf_access_type atype, u32 *next_btf_id,
->>>> +                    enum bpf_type_flag *flag);
->>>
->>> Can it avoid leaking the nfct specific details like
->>> 'nf_conn_btf_access_lock' and the null checking on 'nfct_bsa' to
->>> filter.c?  In particular, this code snippet in filter.c:
->>>
->>>           mutex_lock(&nf_conn_btf_access_lock);
->>>           if (nfct_bsa)
->>>                   ret = nfct_bsa(log, btf, ....);
->>>          mutex_unlock(&nf_conn_btf_access_lock);
->>>
->>>
->>> Can the lock and null check be done as one function (eg.
->>> nfct_btf_struct_access()) in nf_conntrack_bpf.c and use it in filter.c
->>> instead?
->>
->> Don't think so, no. Because we want nf_conntrack to work as a module 
->> as well.
-> Ah, got it.
+On 16.09.2022 22:41, Rob Herring wrote:
+> On Thu, Sep 15, 2022 at 09:55:36AM +0300, Arınç ÜNAL wrote:
+>> Add syscon as a constant string on the compatible property as it's required
+>> for the SoC to work. Update the example accordingly.
 > 
-> I don't see nf_conntrack_btf_struct_access() in nf_conntrack_bpf.h is 
-> used anywhere.  Can be removed?
+> I read this and start to give you the same reply as v1. Then I remember
+> saying this already...
 > 
->> I was the one who suggested nf_conn specific names for now. There is
->> no other user of such module supplied
->> btf_struct_access callbacks yet, when one appears, we should instead
->> make registration of such callbacks properly generic (i.e. also
->> enforce it is only for module BTF ID etc.).
->> But that would be a lot of code without any users right now.
-> 
-> The lock is the only one needed to be in btf.c and 
-> nfct_btf_struct_access() can be an inline in nf_conntrack_bpf.h instead?
+> Update the commit message such that it answers my question and I don't
+> think you just ignored me and have to go find v1. The fact that this
+> change makes the binding match what is already in use in dts files is an
+> important detail.
 
+Sure Rob, will do.
 
-nm. brain leaks.  nfct_bsa pointer is still needed :(  I was just 
-thinking if it can avoid this nfct specific bits here.
-
+Arınç
