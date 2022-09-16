@@ -2,101 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B7F25BA379
-	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 02:24:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 329745BA413
+	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 03:39:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229588AbiIPAYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Sep 2022 20:24:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39402 "EHLO
+        id S229588AbiIPBjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Sep 2022 21:39:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbiIPAYI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 20:24:08 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90CEB474DC;
-        Thu, 15 Sep 2022 17:24:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663287846; x=1694823846;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=cAdd5+vVt/BW9KNFn2eov/Wj/eJTa5EkJwrQunlSkfY=;
-  b=E/WsYcLL5FxHqXnDOvSq/QFq8wTC5l5unjCEMZRkNJ361fyVQGJrlJRQ
-   zx0/ELfn9Itys0VPXPl08nKAaMrOWffEXZZeJKZOEwQLSprR3NfWwwBt5
-   wyoyIz2RKgiv8HmG0PiEDKqH7nn79aZIPwlBi2ZK0LLSBAf/+i1o13rK4
-   AbrDLovpXsq5eN0VPd1A+T4ywcelwdDy0IO7ikzkugVuIkIkTGHaslrt0
-   0uKZgnkLy9QKLt97VStTVvktXX6b0nyqzWNDaJnbowqsIcBn0mz1qsYM/
-   ncjKfUUiOKWTvp7dkAqlB8ttHwcrR/ypmNhUuwLN4KMPh2nAFFAmDDPG5
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10471"; a="362840653"
-X-IronPort-AV: E=Sophos;i="5.93,319,1654585200"; 
-   d="scan'208";a="362840653"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2022 17:24:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,319,1654585200"; 
-   d="scan'208";a="706566192"
-Received: from lkp-server02.sh.intel.com (HELO 41300c7200ea) ([10.239.97.151])
-  by FMSMGA003.fm.intel.com with ESMTP; 15 Sep 2022 17:23:58 -0700
-Received: from kbuild by 41300c7200ea with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oYz9C-0001DR-05;
-        Fri, 16 Sep 2022 00:23:58 +0000
-Date:   Fri, 16 Sep 2022 08:22:58 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S229510AbiIPBjT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Sep 2022 21:39:19 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8FDF4054F
+        for <netdev@vger.kernel.org>; Thu, 15 Sep 2022 18:39:15 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id s18so14090353plr.4
+        for <netdev@vger.kernel.org>; Thu, 15 Sep 2022 18:39:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=4olRgDhsI5nQOVJRspipuq+EQBZGo/q5MF/2KuVRJ68=;
+        b=Eg+tA2FUwxcK4ZmdF/9OJ3DPGYDU4c7pAre27wWFT3pCP4Cj8uOdE7yamhW/ZQCa3O
+         CiDBfDJvoGUwgaI97DBjGa3xEY86n/B8rqveQpr2Neybjr10kuxV8SJdCKiQgg6Dvu0W
+         M3oVJEA3F9EsHIyR6k5YJ3pt+cSjJM0QVZ97pPEJnvqPmjBrtbmHKgpG7CfpPEYq3wsx
+         9BKmspu6zF0vU4whQWfNQlw+LO+XzVrAmHGLALTfQIkOG1gu46V2n9iMs/3WOvCDDaIF
+         OLnGU8jnFspcyOBtpPsESnd0VxlhvFgWdEoYlGiV24Zj+xMLdVgjl/bChO1URRVk1mxi
+         rFQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=4olRgDhsI5nQOVJRspipuq+EQBZGo/q5MF/2KuVRJ68=;
+        b=M1p1/mK8GzX0PXnrIA3CiZRsc5UlTUKRj4VXjU7ulwDTmhvHW0GqZy+5pjaJFKbTTx
+         u1Dm2yfsw9D5cl9bNsH7AWzs1AIqyUABOpfFYZFJ3s3lb0AXZoCfuH0Tbo9IWi04sUbd
+         HDIabFZhs3XxuYnnTumkxIE11pm93xdm05Uc7ITtlGwaY1bFX9UFZMKgoZLW37YxctmW
+         PsDZ47TQq+XFSf62Fifii6LnqA02JXbwAkXPSkcboNNltRAG+4E7zIMKwRCk1w/6Jhn4
+         AOYfzeNC0JIgiJuRGbcnkEpA6Bo7zITixLgdfRPq6fqgmVh26+gFdXLP4h7ueG0tWkcW
+         ISug==
+X-Gm-Message-State: ACrzQf2hNLKsm5AwYZGV8T9Aaf/kG41yJ5P8w6QlpkpQEvG/rhM50m4n
+        WDNg+ghh3ucywk6IEUWYkxGHddbTmQUioQ==
+X-Google-Smtp-Source: AMsMyM5HD3b5wSg6BgSyv+XwecWxuQPVWcYjDFsKoWbuNh7+p2/gHVbqDJJ0QVWbldHIOvu0fa115Q==
+X-Received: by 2002:a17:902:ef50:b0:170:9f15:b998 with SMTP id e16-20020a170902ef5000b001709f15b998mr2297081plx.102.1663292354908;
+        Thu, 15 Sep 2022 18:39:14 -0700 (PDT)
+Received: from Laptop-X1 ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id l6-20020a170903120600b00176677a893bsm13870963plh.82.2022.09.15.18.39.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Sep 2022 18:39:14 -0700 (PDT)
+Date:   Fri, 16 Sep 2022 09:39:09 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Richie Pearn <richard.pearn@nxp.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: enetc: deny offload of tc-based TSN features on
- VF interfaces
-Message-ID: <202209160845.t6gOLc8N-lkp@intel.com>
-References: <20220915173813.2759394-1-vladimir.oltean@nxp.com>
+        David Ahern <dsahern@gmail.com>,
+        Jonathan Toppins <jtoppins@redhat.com>
+Subject: Re: [PATCH net] selftests/bonding: add a test for bonding lladdr
+ target
+Message-ID: <YyPTvVzFWoVdf3D8@Laptop-X1>
+References: <20220915094202.335636-1-liuhangbin@gmail.com>
+ <970039e7-1c13-e6d7-cb70-53af92eb9958@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220915173813.2759394-1-vladimir.oltean@nxp.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <970039e7-1c13-e6d7-cb70-53af92eb9958@redhat.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vladimir,
+On Thu, Sep 15, 2022 at 10:09:05AM -0400, Jonathan Toppins wrote:
+> On 9/15/22 05:42, Hangbin Liu wrote:
+> > This is a regression test for commit 592335a4164c ("bonding: accept
+> > unsolicited NA message") and commit b7f14132bf58 ("bonding: use unspecified
+> > address if no available link local address"). When the bond interface
+> > up and no available link local address, unspecified address(::) is used to
+> > send the NS message. The unsolicited NA message should also be accepted
+> > for validation.
+> > 
+> > Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+> Acked-by: Jonathan Toppins <jtoppins@redhat.com>
 
-I love your patch! Yet something to improve:
+Hi David, Jakub, Paolo,
 
-[auto build test ERROR on net/master]
+I saw the patch checking failed[1] as there is no fixes tag.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Vladimir-Oltean/net-enetc-deny-offload-of-tc-based-TSN-features-on-VF-interfaces/20220916-013912
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 0727a9a5fbc1151fcaebfa9772e9f68f5e38ba9e
-config: powerpc-allmodconfig (https://download.01.org/0day-ci/archive/20220916/202209160845.t6gOLc8N-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/1f0bd337274106be7953b9b310312bafb2ae3618
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Vladimir-Oltean/net-enetc-deny-offload-of-tc-based-TSN-features-on-VF-interfaces/20220916-013912
-        git checkout 1f0bd337274106be7953b9b310312bafb2ae3618
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash
+I post the patch to net tree as the testing commits are in net tree. I'm
+not sure if this patch should go net-next? Any suggestion?
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+[1] https://patchwork.kernel.org/project/netdevbpf/patch/20220915094202.335636-1-liuhangbin@gmail.com/
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
-
->> ERROR: modpost: "enetc_psfp_clean" [drivers/net/ethernet/freescale/enetc/fsl-enetc-vf.ko] undefined!
->> ERROR: modpost: "enetc_psfp_init" [drivers/net/ethernet/freescale/enetc/fsl-enetc-vf.ko] undefined!
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks
+Hangbin
