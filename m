@@ -2,97 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 112B85BB41B
-	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 23:48:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E8015BB44D
+	for <lists+netdev@lfdr.de>; Sat, 17 Sep 2022 00:10:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229901AbiIPVsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Sep 2022 17:48:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43808 "EHLO
+        id S230019AbiIPWKw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Sep 2022 18:10:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbiIPVso (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 17:48:44 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF984BB684;
-        Fri, 16 Sep 2022 14:48:42 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1663364891; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=JLDt2/kFU7PEotggDN6j70oCTJcAHSNiwJtnJ1rZreVe/BBDf5r+1CV56T1eNKPU5d9NAH6+M7hl/yI+IMt3H1vlDspeZkffUpMV85tUqjpahNVK75vSlnPJPhdHEsr/CictAMNkcmgUyss2Wxodr1WwPbHNBfSjyIw2fJ3jpyw=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1663364891; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=4GuRfMhQm5Rn+M8LeHVMrehMbznHw6jGuLiFJ01zG90=; 
-        b=dJakwSFQqzlM+viBJlYBIek0BmV9zBFURPWIoqrwq+zimAd/A4aJEQT+rrF31JZbRq3PAcQZu7TCHX7n155j3507EvDOw5lk1OaXxdAr9n348QoblStf5kS73xGOn6w4Eo8IfZ++piDDlUH7WbtmBonWuU9aRDFX6HQn7OtmlOU=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1663364891;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=4GuRfMhQm5Rn+M8LeHVMrehMbznHw6jGuLiFJ01zG90=;
-        b=LQoYNqy7ViPr/6u6w5K5bvlvGOtK8xyG6VcNvYCqeoLe11wbFdwuCn2ZqvlHTCpn
-        hRzyOKvjoj1NnsK3vwvEdPem9Z+rJvDJy86QqmUuNVswWyAZXsHxmLAwA/1D0eVChvp
-        kqXB4x6YxoKx1529sEx75tRjnZJoa6M1lQO7xa6g=
-Received: from [10.10.10.122] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 1663364890239371.4567564648436; Fri, 16 Sep 2022 14:48:10 -0700 (PDT)
-Message-ID: <bc066578-e229-7f08-d6c0-5dc2fede6be7@arinc9.com>
-Date:   Sat, 17 Sep 2022 00:48:00 +0300
+        with ESMTP id S229675AbiIPWKu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 18:10:50 -0400
+X-Greylist: delayed 1803 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 16 Sep 2022 15:10:48 PDT
+Received: from phjyjlzx.tgpchicks.com (unknown [85.217.145.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C22C9A61D8
+        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 15:10:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; s=dkim; d=tgpchicks.com;
+ h=Reply-To:From:To:Subject:Date:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding; i=zaa.hea@tgpchicks.com;
+ bh=53L9s3P2/EOaZ2sxBbxl+ASjrrQ=;
+ b=wY1Tsq15RwCZbcKSYZX++bShXNHjCMMV6PQkoewtaam6l1SOWjTz1C4EsW4PnJNORgLfyBdVYdqN
+   eQpvABJpuNRIffFHP1JpG3FuSlWBTcr0+g+N0gZf6YWq/phr7RmJcNAThNbz5A5xlslDqfZfXZmL
+   LMC1i/yYZnvcoXlD6TzYR4kVOAQ64j4I7fvZCmCJ1Oqr4DjEx6/h1Alr3k8y119o9t/+CE8gNnYB
+   Y7Vqg8Cmddcr0nm0/TjKR+bijFJKZDZ+WpsD0JH3xVddgh0l3M1iZY7AlXee/UKlFobWxnYn0dt3
+   axohzuO17BMoW5BRi0ZKTNyTO/QeHiN5bC29vQ==
+DomainKey-Signature: a=rsa-sha1; c=nofws; q=dns; s=dkim; d=tgpchicks.com;
+ b=DCqo8+sfkBM4lcvQYvXD5Ec+Ai2bFt6nvQ7LdXKgUclh/u1g4Em4M30ySaivzw1a4Gti/EJ+exOn
+   xEreSTqzFtjjy4hDkgCBfu1CUG+D+IhrfOrkSN0d+4VQkmT9X2Dpgz1Y0jD7Gj3sxYjdzViLPauU
+   NlWDbCedYyU3djT7ooCRxwQijYW+I3csmosleGma9PtXQE1qwfXC2A+fhJK6T7zBJg1G0XsWDEp8
+   wdsaF9hioTwArUdjFN5usIo40xHTuhYglSo6QoZHy9XeBWYsqqdTrGB4J9MYwNeCDC8cp0w3QnW+
+   Q2yLKQcCxDK+E5i4Ns4htvOGOSZzbjAViIopDQ==;
+Reply-To: webster_donation@zohomail.com
+From:   <zaa.hea@tgpchicks.com>
+To:     netdev@vger.kernel.org
+Subject: Congratulations!!!
+Date:   16 Sep 2022 23:40:43 +0200
+Message-ID: <20220916234043.F9C754A77CE8AA90@tgpchicks.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 net-next 04/10] dt-bindings: memory: mt7621: add syscon
- as compatible string
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        erkin.bozoglu@xeront.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org
-References: <20220915065542.13150-1-arinc.unal@arinc9.com>
- <20220915065542.13150-5-arinc.unal@arinc9.com>
- <20220916194127.GA1139257-robh@kernel.org>
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <20220916194127.GA1139257-robh@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: Yes, score=7.5 required=5.0 tests=BAYES_95,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,LOTS_OF_MONEY,RDNS_NONE,
+        SPF_HELO_NONE,SPF_PASS,URIBL_ABUSE_SURBL,URIBL_BLACK,XFER_LOTSA_MONEY
+        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Report: *  1.7 URIBL_BLACK Contains an URL listed in the URIBL blacklist
+        *      [URIs: tgpchicks.com]
+        *  3.0 BAYES_95 BODY: Bayes spam probability is 95 to 99%
+        *      [score: 0.9547]
+        *  1.2 URIBL_ABUSE_SURBL Contains an URL listed in the ABUSE SURBL
+        *      blocklist
+        *      [URIs: tgpchicks.com]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        *  0.0 LOTS_OF_MONEY Huge... sums of money
+        *  0.8 RDNS_NONE Delivered to internal network by a host with no rDNS
+        *  1.0 XFER_LOTSA_MONEY Transfer a lot of money
+X-Spam-Level: *******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 16.09.2022 22:41, Rob Herring wrote:
-> On Thu, Sep 15, 2022 at 09:55:36AM +0300, Arınç ÜNAL wrote:
->> Add syscon as a constant string on the compatible property as it's required
->> for the SoC to work. Update the example accordingly.
-> 
-> I read this and start to give you the same reply as v1. Then I remember
-> saying this already...
-> 
-> Update the commit message such that it answers my question and I don't
-> think you just ignored me and have to go find v1. The fact that this
-> change makes the binding match what is already in use in dts files is an
-> important detail.
-
-Sure Rob, will do.
-
-Arınç
+Six hundred thousand dollars has been donated to you by Tammy and=20
+Cliff Webster, who won a jackpot-winning Powerball ticket of=20
+$316.3 Million on January 5, 2022.Reply to this email for more=20
+information:
