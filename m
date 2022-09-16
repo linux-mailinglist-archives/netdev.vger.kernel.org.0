@@ -2,92 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 254ED5BA9C8
-	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 11:58:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF0485BA9DD
+	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 12:00:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229718AbiIPJ5j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Sep 2022 05:57:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44608 "EHLO
+        id S230337AbiIPKAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Sep 2022 06:00:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229994AbiIPJ5h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 05:57:37 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9261AAA340
-        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 02:57:36 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id n23-20020a7bc5d7000000b003a62f19b453so19526715wmk.3
-        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 02:57:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=e9qNivKSI+tAk7Ilr6w1jOZ6tyxRUOCiEDIpnIGeBlU=;
-        b=HlF6DXwpJx3AWLaPS6HAhAFEpFY1m9+upNd6MVNMYJeAjiAmK53vh89r4jHSuccefK
-         No/y1hQQkpF+2fmKnE1vN4GG2O9aRhKrjQ/pryJ9e7dsB9dxRrGtzsR7KGLpkuchI6/w
-         GOELy8hPz+nokB469JK44vntfzTkPwCS9cTj3VuYdZAaS4yN49Hm+R73UoXFd96bI/oG
-         a75JVutzGgDaSp5jPlIbg2LReCOkp+F7nnglH3R5tL0o6YV6EnSv245dfimdW9nFajvE
-         p2w5PJfApKI2Ea4KGDT2MUt9tnfVUpIDbKMBCv0SbOl31EsSC/knIcHgWWG4e/jCsHG8
-         96gw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=e9qNivKSI+tAk7Ilr6w1jOZ6tyxRUOCiEDIpnIGeBlU=;
-        b=luLLPwKHbn8I1Ic8/vfLSNdmYTLnVUFsFaQGHQf61fDe3PAMnpf3+ZXEnKXLbrCmUx
-         zMjySJdPV7s30TMTepO9kixgHKQ4J/kWj2TjQln2H2eINKvQABRnQKmr5RBI0Vno8gV1
-         g7CLuZW43vdfwDsbl2k2nOxhBxhIAjcBUPo1GH8nG+cYSpLIIQZa+mwP6X2+omSZVu5Y
-         UlC2iuhObaM6zkFru8P0l2nmA5eWrwwjyNPkBkJSg1bC3d97MDFMyeuZHvg6JcuC+CPm
-         eB+yUJc96SRG5J70Uy+FzoEG4MRKV2UKzJfTDGJnQBDhK1fVcEewotm2sb6Fc5+2xu9M
-         qtnw==
-X-Gm-Message-State: ACgBeo3QyHPGeKL/YipMRD40jSWtMX0cE2ou16+jd1TB+1IpYVgUFbXv
-        e5YKXGawArEUKbSuTRzlubTeTw==
-X-Google-Smtp-Source: AA6agR7eSH//h3ZELnIxOVv6NmxFqhex5WBRBuKkg+SLN97rZWOlrtpdSOGBnKDYBF73LfFEIo6gMA==
-X-Received: by 2002:a05:600c:1e13:b0:3b4:74c3:620b with SMTP id ay19-20020a05600c1e1300b003b474c3620bmr9884551wmb.168.1663322255099;
-        Fri, 16 Sep 2022 02:57:35 -0700 (PDT)
-Received: from [10.119.22.201] ([89.101.193.73])
-        by smtp.gmail.com with ESMTPSA id v12-20020adfebcc000000b00229b76f872asm5507798wrn.27.2022.09.16.02.57.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 16 Sep 2022 02:57:34 -0700 (PDT)
-Message-ID: <e6ecf9a3-4e8a-ff2a-aa82-5e65f99d76ac@linaro.org>
-Date:   Fri, 16 Sep 2022 10:57:33 +0100
+        with ESMTP id S230320AbiIPKAT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 06:00:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 113564F682;
+        Fri, 16 Sep 2022 03:00:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B1730B824F9;
+        Fri, 16 Sep 2022 10:00:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5B4C9C433D7;
+        Fri, 16 Sep 2022 10:00:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1663322415;
+        bh=QuN1eFfsxYnLSx52QF1elJ0nSrhnmiSFkSaL18VzHXo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=XoPrHj/duaNWxUjOW9FfXrhCmmljRQt2sxjao+fcz5b1EQ5mTNrg1EJRKkBX+gQvu
+         AhRNEHnxNHANgPzjuwbCOpvzQ6C8Pw2RyPXc8WdhTh5DpHOZ0g9IyfOmH1z99spmEc
+         4SunBai/37v7OrpvXdXOkQ/HlIl+1BN7TjSBHBSoUIIjGLirdJlfmxqyYV6cHGzdNJ
+         xOncBznbmKW7mK34U1S6b8jIlYkOPEBvrsHWZL2t3zRgBIlFIGgiwynumtOcZttWBr
+         rVbjeWf2lHa82soJzHphbece8wrth2Ujwle1HJ2yw9Rl5MZf5EZKXnL/pOOB5KbAcJ
+         +41hd842AUrUg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 36973C73FFC;
+        Fri, 16 Sep 2022 10:00:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH 0/8] Add support for J721e CPSW9G and SGMII mode
-Content-Language: en-US
-To:     Siddharth Vadapalli <s-vadapalli@ti.com>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        linux@armlinux.org.uk, vladimir.oltean@nxp.com,
-        grygorii.strashko@ti.com, vigneshr@ti.com, nsekhar@ti.com
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kishon@ti.com
-References: <20220914095053.189851-1-s-vadapalli@ti.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220914095053.189851-1-s-vadapalli@ti.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH V3] net/ieee802154: fix uninit value bug in dgram_sendmsg
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166332241521.3955.11710579399956062313.git-patchwork-notify@kernel.org>
+Date:   Fri, 16 Sep 2022 10:00:15 +0000
+References: <20220908121927.3074843-1-tcs_kernel@tencent.com>
+In-Reply-To: <20220908121927.3074843-1-tcs_kernel@tencent.com>
+To:     Haimin Zhang <tcs.kernel@gmail.com>
+Cc:     alex.aring@gmail.com, stefan@datenfreihafen.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-wpan@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tcs_kernel@tencent.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14/09/2022 10:50, Siddharth Vadapalli wrote:
-> Add compatible for J721e CPSW9G.
-> 
-> Add support to power on and configure SERDES PHY.
-> 
-> Add support for SGMII mode for J7200 CPSW5G and J721e CPSW9G.
+Hello:
 
-I got two same patchsets from you... version your patches instead. See
-submitting-patches doc.
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Best regards,
-Krzysztof
+On Thu,  8 Sep 2022 20:19:27 +0800 you wrote:
+> There is uninit value bug in dgram_sendmsg function in
+> net/ieee802154/socket.c when the length of valid data pointed by the
+> msg->msg_name isn't verified.
+> 
+> We introducing a helper function ieee802154_sockaddr_check_size to
+> check namelen. First we check there is addr_type in ieee802154_addr_sa.
+> Then, we check namelen according to addr_type.
+> 
+> [...]
+
+Here is the summary with links:
+  - [V3] net/ieee802154: fix uninit value bug in dgram_sendmsg
+    https://git.kernel.org/netdev/net/c/94160108a70c
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
