@@ -2,114 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BAD25BB130
-	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 18:43:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B4395BB13F
+	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 18:48:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229743AbiIPQna (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Sep 2022 12:43:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59832 "EHLO
+        id S229599AbiIPQsr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Sep 2022 12:48:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229454AbiIPQn3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 12:43:29 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DCB96B66F;
-        Fri, 16 Sep 2022 09:43:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
-        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=VIQTp/mMAJwvm8srHrgUT5jXYUVcFNlxqKlrpAKS8/Q=; b=TTsMrOU/Q99WvPzchvMwiLdj56
-        WqQD05hCi3BbaE/9SZlJWjHfa7Lp8GRCJliWOVkcYlRUx0QHBvUYT9ZmdE1DCIuVBSPbbL/S2mOtx
-        kSKKJNhS1DStBFP64mlrvvnRwUkWWfnyiIJ5LpYR5256qj9RWtn4OItdVLrdncfJKIEP9vj3Hgd2c
-        XCijfTeqziTcgHKdQyAYNLmJqWsi8YBvgSbwixcrM1aV90Y2LfP1gtqgLpEk5DxpnpTJMB5Z8u+DJ
-        aA385crkIMafEB4qwxD3MGHddMXeKFmfIDYmQSdgUnrWZPraDJ+d06hF8300c1f8XSPADUnge5dsm
-        YNpsybQg==;
-Received: from [2601:1c2:d80:3110::c55a]
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oZEQn-00D9WO-QY; Fri, 16 Sep 2022 16:43:10 +0000
-Message-ID: <b2144e21-4c51-2f71-eed7-1d78305c3bec@infradead.org>
-Date:   Fri, 16 Sep 2022 09:43:03 -0700
+        with ESMTP id S229454AbiIPQsq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 12:48:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAE38A6C3A;
+        Fri, 16 Sep 2022 09:48:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 89050B82868;
+        Fri, 16 Sep 2022 16:48:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80A2CC433C1;
+        Fri, 16 Sep 2022 16:48:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1663346923;
+        bh=+vXVK5L4p89KIlITqarB2UspkycCjrgWVBIxqSVqJSg=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=F9NHWnPKvRTk/oHjbrf4w8BlNCdDH/00/QdaSC4EbBi9iuIuIeRvciiKkFZa3t/BE
+         by7Rg0ZLyJWCb7Bhxkfx5K9UPlTOQSoedD/+VlIlLDBU1u/rKIKEXNH26YdyQQT8lZ
+         b232Vh0jmhSAb74LWvV/iYCuMpX6wKJsPC4/OutUgfsD7OI/ITff7SgROdC+aKue/8
+         Qepx5cJ+fDM8PzH8ooq4NfUjy3icUFUxASvpm8ulTIO7qFGhws8KXDXk1vkReRqQ79
+         dzoC31HgdklpA9YES5dI6bCWEsTIUpyaCn/JTJ1mGVkcYk69e1pA9a+rUk5qiMsBIJ
+         o8SqxiDkwfrVA==
+Message-ID: <c7ef0978-ffa3-8e67-98db-12ffd58a1e7d@kernel.org>
+Date:   Fri, 16 Sep 2022 10:48:41 -0600
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [PATCH 2] liquidio: CN23XX: delete repeated words, add missing
- words and fix typo in comment
-To:     Ruffalo Lavoisier <ruffalolavoisier@gmail.com>,
-        Derek Chickles <dchickles@marvell.com>,
-        Satanand Burla <sburla@marvell.com>,
-        Felix Manlunas <fmanlunas@marvell.com>,
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.13.0
+Subject: Re: [net-next v2 2/3] seg6: add NEXT-C-SID support for SRv6 End
+ behavior
+Content-Language: en-US
+To:     Andrea Mayer <andrea.mayer@uniroma2.it>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220916150709.19975-1-RuffaloLavoisier@gmail.com>
-Content-Language: en-US
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220916150709.19975-1-RuffaloLavoisier@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        Paolo Abeni <pabeni@redhat.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>
+References: <20220912171619.16943-1-andrea.mayer@uniroma2.it>
+ <20220912171619.16943-3-andrea.mayer@uniroma2.it>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20220912171619.16943-3-andrea.mayer@uniroma2.it>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-8.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-You missed one comment from v1 (see below).
-
-Also, the Subject: should be in the format
-[PATCH v3]
-on your next version, please.
-
-On 9/16/22 08:07, Ruffalo Lavoisier wrote:
-> - Delete the repeated word 'to' in the comment.
+On 9/12/22 11:16 AM, Andrea Mayer wrote:
+> The NEXT-C-SID mechanism described in [1] offers the possibility of
+> encoding several SRv6 segments within a single 128 bit SID address. Such
+> a SID address is called a Compressed SID (C-SID) container. In this way,
+> the length of the SID List can be drastically reduced.
 > 
-> - Add the missing 'use' word within the sentence.
+> A SID instantiated with the NEXT-C-SID flavor considers an IPv6 address
+> logically structured in three main blocks: i) Locator-Block; ii)
+> Locator-Node Function; iii) Argument.
 > 
-> - Correct spelling on 'malformation'.
+>                         C-SID container
+> +------------------------------------------------------------------+
+> |     Locator-Block      |Loc-Node|            Argument            |
+> |                        |Function|                                |
+> +------------------------------------------------------------------+
+> <--------- B -----------> <- NF -> <------------- A --------------->
 > 
-> Signed-off-by: Ruffalo Lavoisier <RuffaloLavoisier@gmail.com>
+>    (i) The Locator-Block can be any IPv6 prefix available to the provider;
+> 
+>   (ii) The Locator-Node Function represents the node and the function to
+>        be triggered when a packet is received on the node;
+> 
+>  (iii) The Argument carries the remaining C-SIDs in the current C-SID
+>        container.
+> 
+> The NEXT-C-SID mechanism relies on the "flavors" framework defined in
+> [2]. The flavors represent additional operations that can modify or
+> extend a subset of the existing behaviors.
+> 
+> This patch introduces the support for flavors in SRv6 End behavior
+> implementing the NEXT-C-SID one. An SRv6 End behavior with NEXT-C-SID
+> flavor works as an End behavior but it is capable of processing the
+> compressed SID List encoded in C-SID containers.
+> 
+> An SRv6 End behavior with NEXT-C-SID flavor can be configured to support
+> user-provided Locator-Block and Locator-Node Function lengths. In this
+> implementation, such lengths must be evenly divisible by 8 (i.e. must be
+> byte-aligned), otherwise the kernel informs the user about invalid
+> values with a meaningful error code and message through netlink_ext_ack.
+> 
+> If Locator-Block and/or Locator-Node Function lengths are not provided
+> by the user during configuration of an SRv6 End behavior instance with
+> NEXT-C-SID flavor, the kernel will choose their default values i.e.,
+> 32-bit Locator-Block and 16-bit Locator-Node Function.
+> 
+> [1] - https://datatracker.ietf.org/doc/html/draft-ietf-spring-srv6-srh-compression
+> [2] - https://datatracker.ietf.org/doc/html/rfc8986
+> 
+> Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
 > ---
-> I have reflected all the reviews. Thanks !
+>  include/uapi/linux/seg6_local.h |  24 +++
+>  net/ipv6/seg6_local.c           | 335 +++++++++++++++++++++++++++++++-
+>  2 files changed, 356 insertions(+), 3 deletions(-)
 > 
->   drivers/net/ethernet/cavium/liquidio/cn23xx_pf_regs.h | 2 +-
->   drivers/net/ethernet/cavium/liquidio/cn23xx_vf_regs.h | 2 +-
->   2 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/cavium/liquidio/cn23xx_pf_regs.h b/drivers/net/ethernet/cavium/liquidio/cn23xx_pf_regs.h
-> index 3f1c189646f4..244e27ea079c 100644
-> --- a/drivers/net/ethernet/cavium/liquidio/cn23xx_pf_regs.h
-> +++ b/drivers/net/ethernet/cavium/liquidio/cn23xx_pf_regs.h
-> @@ -88,7 +88,7 @@
->   #define    CN23XX_SLI_PKT_IN_JABBER                0x29170
->   /* The input jabber is used to determine the TSO max size.
->    * Due to H/W limitation, this need to be reduced to 60000
 
-                               this needs
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
-> - * in order to to H/W TSO and avoid the WQE malfarmation
-> + * in order to use H/W TSO and avoid the WQE malformation
->    * PKO_BUG_24989_WQE_LEN
->    */
->   #define    CN23XX_DEFAULT_INPUT_JABBER             0xEA60 /*60000*/
-> diff --git a/drivers/net/ethernet/cavium/liquidio/cn23xx_vf_regs.h b/drivers/net/ethernet/cavium/liquidio/cn23xx_vf_regs.h
-> index d33dd8f4226f..e85449249670 100644
-> --- a/drivers/net/ethernet/cavium/liquidio/cn23xx_vf_regs.h
-> +++ b/drivers/net/ethernet/cavium/liquidio/cn23xx_vf_regs.h
-> @@ -37,7 +37,7 @@
->   
->   /* The input jabber is used to determine the TSO max size.
->    * Due to H/W limitation, this need to be reduced to 60000
-
-                               this needs
-
-> - * in order to to H/W TSO and avoid the WQE malfarmation
-> + * in order to use H/W TSO and avoid the WQE malformation
->    * PKO_BUG_24989_WQE_LEN
->    */
->   #define    CN23XX_DEFAULT_INPUT_JABBER             0xEA60 /*60000*/
