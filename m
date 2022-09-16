@@ -2,97 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 53A735BAE25
-	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 15:30:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3B085BAE28
+	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 15:30:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229636AbiIPN34 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Sep 2022 09:29:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35052 "EHLO
+        id S229987AbiIPNaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Sep 2022 09:30:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229718AbiIPN3z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 09:29:55 -0400
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA0641A040
-        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 06:29:53 -0700 (PDT)
-Received: by mail-oi1-x235.google.com with SMTP id j188so3807763oih.0
-        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 06:29:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
-         :subject:date;
-        bh=FcyQcUXi9xALQQ6Lm7VNXiWYStBjH/LCUTADg6v4m+k=;
-        b=V+084zmGRyVKaznUUr4TuQQRjYavNffTtqEl3D71MGwV0qB1wo1YmHDbVZcQ9d3jnX
-         yTZn5xaSR3Lkfne0/QdP5BsRGaibt+DYsH+fUOtOjzxQfSlCQlBbq9AzE2SzBmCSUpaD
-         SMWbnFwkNLD0YWVG4ilr1tIOjrr2Xn/oN62svFb4O07zKMZR6J9PYQDUJRbPiIKj8vIs
-         cVfXG88yYDvbGy6kVYYGKdYoaICwduz0zcWt/Tp1GFUvHUpdbMZVMcjs4LGEuW8RBV0H
-         Jx5qfvXJ6sBJfTKK6FXbtolWT/Xz1iOf629+jhuYg2f4e7ecVgZq7Lm11uymI9dYW+KA
-         N/DA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=FcyQcUXi9xALQQ6Lm7VNXiWYStBjH/LCUTADg6v4m+k=;
-        b=d88TyO1fT2+WyUAfY6zx6CsBiKyEasph3X+fYihwvtkVDutA0D3uH16ZoNEKFoPZZS
-         TOXqLtDjJPbbdONV8UtMmbeDdslGFLDgyoa0LJmF7cRZXgGSrmM52X1B/6IC3INUNlN7
-         H99Q/M+fvmzRTKGzQD7TkNzAyA+sTfohIDQYTE1WP1BXqYCIVbInZuUP5173NT9PLSiI
-         gDV1yOl8chlv/Tu7ix/wcUISOAW/2bUq9H0JOnsvtwzj3jW1wWogfPGLt4eKqCBKGu7G
-         e1q5t06zyNaO32TySsN6brckagBw6VMttQGTwVc2XmyK04DLyOLMLQwduSIBEMDUbEL2
-         rUBQ==
-X-Gm-Message-State: ACrzQf0qK/73eH1KK+tWUZGA6gwdkWJGEpnjlz1b26A7yLkcw53nDvy2
-        FrY2WsldF6dyxYBXf3Zok3wq9+h0epw6wfiwses=
-X-Google-Smtp-Source: AMsMyM7wFbFAOAyVIVGM8Q8f+SMifQKFhrq0rY7cImI6HKine3zzuy3JRpHn3GC1TgXbZrDDpsxjRTv9TCjT+sLHeMs=
-X-Received: by 2002:a05:6808:1117:b0:350:653c:fa5f with SMTP id
- e23-20020a056808111700b00350653cfa5fmr770593oih.164.1663334993316; Fri, 16
- Sep 2022 06:29:53 -0700 (PDT)
+        with ESMTP id S229718AbiIPNaW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 09:30:22 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D2C93AB09;
+        Fri, 16 Sep 2022 06:30:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id DC8B8CE1E61;
+        Fri, 16 Sep 2022 13:30:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 15B09C433D6;
+        Fri, 16 Sep 2022 13:30:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1663335018;
+        bh=13EYRbgoJfqB810DYW91+jUD6de99QdJ4UHxA+u/ogM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=S0pf8mLhAexZn60Vy3wXLDe8bSqLH07fDqxJATALXBhnSHBhfZBDTwfjA1bOVK42X
+         oqkp4wL9RiX16P4UkrawDpTzx7PasCwgWdetqunWqdQILG6SVQTsiQSsUPvsjXWvwk
+         eCxKESQque6fns273L374etVyWuytzUWla2pmjATO+1D4nvzWsjft02qJtaxM+iDrr
+         OMijvjft3Hi4tkKcRc9m1hnRRXVxPgaqSfS+OnIE9rBi9XxILaX/Z6fF6PjMfCAqkl
+         2hv/7YcE9iKpFBvSOv4a1QogdkhIwi9jF62CSrhiv0sk/0ouXfGDYxuvm/I6NLCakH
+         3A1VyxmdAzNNA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E53EEC73FEF;
+        Fri, 16 Sep 2022 13:30:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Received: by 2002:a05:6358:3186:b0:b9:63db:12bd with HTTP; Fri, 16 Sep 2022
- 06:29:52 -0700 (PDT)
-Reply-To: maryalbertt00045@gmail.com
-From:   Mary Albert <edithbrown045@gmail.com>
-Date:   Fri, 16 Sep 2022 14:29:52 +0100
-Message-ID: <CAKCEZ_pYvxpNro=Y9m8MwwBZtWZudZqPSuuEEm20TiCt9Q9C0Q@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.2 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UNDISC_FREEM autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:235 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5002]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [edithbrown045[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [maryalbertt00045[at]gmail.com]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [edithbrown045[at]gmail.com]
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  3.1 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/8] add tc-testing test cases
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166333501793.14457.4751472061963307047.git-patchwork-notify@kernel.org>
+Date:   Fri, 16 Sep 2022 13:30:17 +0000
+References: <20220909012936.268433-1-shaozhengchao@huawei.com>
+In-Reply-To: <20220909012936.268433-1-shaozhengchao@huawei.com>
+To:     Zhengchao Shao <shaozhengchao@huawei.com>
+Cc:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, shuah@kernel.org,
+        weiyongjun1@huawei.com, yuehaibing@huawei.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
+
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Fri, 9 Sep 2022 09:29:28 +0800 you wrote:
+> For this patchset, test cases of the ctinfo, gate, and xt action modules
+> are added to the tc-testing test suite. Also add deleting test for
+> connmark, ife, nat, sample and tunnel_key action modules.
+> 
+> After a test case is added locally, the test result is as follows:
+> 
+> ./tdc.py -c action ctinfo
+> considering category action
+> considering category ctinfo
+> Test c826: Add ctinfo action with default setting
+> Test 0286: Add ctinfo action with dscp
+> Test 4938: Add ctinfo action with valid cpmark and zone
+> Test 7593: Add ctinfo action with drop control
+> Test 2961: Replace ctinfo action zone and action control
+> Test e567: Delete ctinfo action with valid index
+> Test 6a91: Delete ctinfo action with invalid index
+> Test 5232: List ctinfo actions
+> Test 7702: Flush ctinfo actions
+> Test 3201: Add ctinfo action with duplicate index
+> Test 8295: Add ctinfo action with invalid index
+> Test 3964: Replace ctinfo action with invalid goto_chain control
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,1/8] selftests/tc-testings: add selftests for ctinfo action
+    https://git.kernel.org/netdev/net-next/c/77cba3879f1b
+  - [net-next,2/8] selftests/tc-testings: add selftests for gate action
+    https://git.kernel.org/netdev/net-next/c/4a1db5251cfa
+  - [net-next,3/8] selftests/tc-testings: add selftests for xt action
+    https://git.kernel.org/netdev/net-next/c/910d504bc187
+  - [net-next,4/8] selftests/tc-testings: add connmark action deleting test case
+    https://git.kernel.org/netdev/net-next/c/0fc8674663f6
+  - [net-next,5/8] selftests/tc-testings: add ife action deleting test case
+    https://git.kernel.org/netdev/net-next/c/af649e7a6a53
+  - [net-next,6/8] selftests/tc-testings: add nat action deleting test case
+    https://git.kernel.org/netdev/net-next/c/043b16435f3d
+  - [net-next,7/8] selftests/tc-testings: add sample action deleting test case
+    https://git.kernel.org/netdev/net-next/c/a32a4fa447f5
+  - [net-next,8/8] selftests/tc-testings: add tunnel_key action deleting test case
+    https://git.kernel.org/netdev/net-next/c/eed791d3ca95
+
+You are awesome, thank you!
 -- 
-Hello,
-how are you?
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
