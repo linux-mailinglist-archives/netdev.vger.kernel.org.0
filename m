@@ -2,150 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B99BC5BA722
-	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 09:05:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98B0C5BA75A
+	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 09:20:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229935AbiIPHE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Sep 2022 03:04:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52120 "EHLO
+        id S229967AbiIPHU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Sep 2022 03:20:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229685AbiIPHEz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 03:04:55 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E831113E2C
-        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 00:04:51 -0700 (PDT)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MTQ4j5QfrzBsPJ;
-        Fri, 16 Sep 2022 15:02:45 +0800 (CST)
-Received: from canpemm500010.china.huawei.com (7.192.105.118) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 16 Sep 2022 15:04:49 +0800
-Received: from canpemm500010.china.huawei.com ([7.192.105.118]) by
- canpemm500010.china.huawei.com ([7.192.105.118]) with mapi id 15.01.2375.031;
- Fri, 16 Sep 2022 15:04:49 +0800
-From:   "liujian (CE)" <liujian56@huawei.com>
-To:     Jason Wang <jasowang@redhat.com>
-CC:     davem <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Jesper Dangaard Brouer" <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev <netdev@vger.kernel.org>
-Subject: RE: [PATCH net v2] tun: Check tun device queue status in
- tun_chr_write_iter
-Thread-Topic: [PATCH net v2] tun: Check tun device queue status in
- tun_chr_write_iter
-Thread-Index: AQHYyP9nvmBFbYGOpkqq8SJtjCePoa3gxwqAgADYWAA=
-Date:   Fri, 16 Sep 2022 07:04:49 +0000
-Message-ID: <fa004a0ba281415a886f2e93d4da8f85@huawei.com>
-References: <20220915123539.35956-1-liujian56@huawei.com>
- <CACGkMEsXYAHTb40jbtr35=O2NgJHHNkC_E2b8bqxygrmLOtRbQ@mail.gmail.com>
-In-Reply-To: <CACGkMEsXYAHTb40jbtr35=O2NgJHHNkC_E2b8bqxygrmLOtRbQ@mail.gmail.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.176.93]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        with ESMTP id S229916AbiIPHU0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 03:20:26 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C3F04054E;
+        Fri, 16 Sep 2022 00:20:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Fl6ET6q/kbHiqTOyvXh8EjJEoX+zyv0K+cWNPYPO57Q=; b=orytNymywAhcDPQP1HJw7tGUBw
+        +093CDRGXe1l1oW8uzIVhrwGv+L/VtF1QTjqE+xyJjTZdUHwIg59Zgz6IiQStj8DH4TdkSbVYcR3I
+        dEkteknaCNUwk7zNJFEwW+FgIC27FwZSARWokHRyilCeJFAvOrfCIlgzdshX8jHor1JH9Z81p8Z9I
+        cOCt9k9hcfHTKNEPvf2xPes3Tv+cxjY13fM6QITPytjXrO3bAjFv6L3evQW/tfreBXSo4PKZcXtgu
+        tX2j4Ux3505K1k2nHFnkZD6tQOcuo886gFKI5uK+d4KnHhKjjUu0XYbzrhe4gkQGYH9g39ha99rSz
+        O3NhwKtQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34358)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1oZ5e1-0006M8-KM; Fri, 16 Sep 2022 08:20:13 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1oZ5dx-0003NT-Id; Fri, 16 Sep 2022 08:20:09 +0100
+Date:   Fri, 16 Sep 2022 08:20:09 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Siddharth Vadapalli <s-vadapalli@ti.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski@linaro.org, krzysztof.kozlowski+dt@linaro.org,
+        vladimir.oltean@nxp.com, grygorii.strashko@ti.com, vigneshr@ti.com,
+        nsekhar@ti.com, netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        kishon@ti.com
+Subject: Re: [PATCH 5/8] net: ethernet: ti: am65-cpsw: Add support for
+ fixed-link configuration
+Message-ID: <YyQjqU7O5WRfrush@shell.armlinux.org.uk>
+References: <20220914095053.189851-1-s-vadapalli@ti.com>
+ <20220914095053.189851-6-s-vadapalli@ti.com>
+ <YyH8us424n3dyLYT@shell.armlinux.org.uk>
+ <ab683d52-d469-35cf-b3b5-50c9edfc173b@ti.com>
+ <YyL5WyA74/QRe/Y4@shell.armlinux.org.uk>
+ <c76fdb7a-a95f-53c6-6e0e-d9283dd2de2d@ti.com>
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c76fdb7a-a95f-53c6-6e0e-d9283dd2de2d@ti.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFzb24gV2FuZyBbbWFp
-bHRvOmphc293YW5nQHJlZGhhdC5jb21dDQo+IFNlbnQ6IEZyaWRheSwgU2VwdGVtYmVyIDE2LCAy
-MDIyIDk6NTcgQU0NCj4gVG86IGxpdWppYW4gKENFKSA8bGl1amlhbjU2QGh1YXdlaS5jb20+DQo+
-IENjOiBkYXZlbSA8ZGF2ZW1AZGF2ZW1sb2Z0Lm5ldD47IEVyaWMgRHVtYXpldA0KPiA8ZWR1bWF6
-ZXRAZ29vZ2xlLmNvbT47IEpha3ViIEtpY2luc2tpIDxrdWJhQGtlcm5lbC5vcmc+OyBQYW9sbyBB
-YmVuaQ0KPiA8cGFiZW5pQHJlZGhhdC5jb20+OyBBbGV4ZWkgU3Rhcm92b2l0b3YgPGFzdEBrZXJu
-ZWwub3JnPjsgRGFuaWVsDQo+IEJvcmttYW5uIDxkYW5pZWxAaW9nZWFyYm94Lm5ldD47IEplc3Bl
-ciBEYW5nYWFyZCBCcm91ZXINCj4gPGhhd2tAa2VybmVsLm9yZz47IEpvaG4gRmFzdGFiZW5kIDxq
-b2huLmZhc3RhYmVuZEBnbWFpbC5jb20+OyBuZXRkZXYNCj4gPG5ldGRldkB2Z2VyLmtlcm5lbC5v
-cmc+DQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggbmV0IHYyXSB0dW46IENoZWNrIHR1biBkZXZpY2Ug
-cXVldWUgc3RhdHVzIGluDQo+IHR1bl9jaHJfd3JpdGVfaXRlcg0KPiANCj4gT24gVGh1LCBTZXAg
-MTUsIDIwMjIgYXQgODozNCBQTSBMaXUgSmlhbiA8bGl1amlhbjU2QGh1YXdlaS5jb20+IHdyb3Rl
-Og0KPiA+DQo+ID4gc3l6Ym90IGZvdW5kIGJlbG93IHdhcm5pbmc6DQo+ID4NCj4gPiAtLS0tLS0t
-LS0tLS1bIGN1dCBoZXJlIF0tLS0tLS0tLS0tLS0NCj4gPiBnZW5ldmUwIHJlY2VpdmVkIHBhY2tl
-dCBvbiBxdWV1ZSAzLCBidXQgbnVtYmVyIG9mIFJYIHF1ZXVlcyBpcyAzDQo+ID4gV0FSTklORzog
-Q1BVOiAxIFBJRDogMjk3MzQgYXQgbmV0L2NvcmUvZGV2LmM6NDYxMSBuZXRpZl9nZXRfcnhxdWV1
-ZQ0KPiA+IG5ldC9jb3JlL2Rldi5jOjQ2MTEgW2lubGluZV0NCj4gPiBXQVJOSU5HOiBDUFU6IDEg
-UElEOiAyOTczNCBhdCBuZXQvY29yZS9kZXYuYzo0NjExDQo+ID4gbmV0aWZfcmVjZWl2ZV9nZW5l
-cmljX3hkcCsweGIxMC8weGI1MCBuZXQvY29yZS9kZXYuYzo0NjgzIE1vZHVsZXMNCj4gbGlua2Vk
-IGluOg0KPiA+IENQVTogMSBQSUQ6IDI5NzM0IENvbW06IHN5ei1leGVjdXRvci4wIE5vdCB0YWlu
-dGVkIDUuMTAuMCAjNSBIYXJkd2FyZQ0KPiA+IG5hbWU6IGxpbnV4LGR1bW15LXZpcnQgKERUKQ0K
-PiA+IHBzdGF0ZTogNjA0MDAwMDUgKG5aQ3YgZGFpZiArUEFOIC1VQU8gLVRDTyBCVFlQRT0tLSkg
-cGMgOg0KPiA+IG5ldGlmX2dldF9yeHF1ZXVlIG5ldC9jb3JlL2Rldi5jOjQ2MTEgW2lubGluZV0g
-cGMgOg0KPiA+IG5ldGlmX3JlY2VpdmVfZ2VuZXJpY194ZHArMHhiMTAvMHhiNTAgbmV0L2NvcmUv
-ZGV2LmM6NDY4MyBsciA6DQo+ID4gbmV0aWZfZ2V0X3J4cXVldWUgbmV0L2NvcmUvZGV2LmM6NDYx
-MSBbaW5saW5lXSBsciA6DQo+ID4gbmV0aWZfcmVjZWl2ZV9nZW5lcmljX3hkcCsweGIxMC8weGI1
-MCBuZXQvY29yZS9kZXYuYzo0NjgzIHNwIDoNCj4gPiBmZmZmYTAwMDE2MTI3NzcwDQo+ID4geDI5
-OiBmZmZmYTAwMDE2MTI3NzcwIHgyODogZmZmZjNmNDYwN2Q2YWNiNA0KPiA+IHgyNzogZmZmZjNm
-NDYwN2Q2YWNiMCB4MjY6IGZmZmYzZjQ2MDdkNmFkMjANCj4gPiB4MjU6IGZmZmYzZjQ2MWRlM2Mw
-MDAgeDI0OiBmZmZmM2Y0NjA3ZDZhZDI4DQo+ID4geDIzOiBmZmZmYTAwMDEwMDU5MDAwIHgyMjog
-ZmZmZjNmNDYwODcxOTEwMA0KPiA+IHgyMTogMDAwMDAwMDAwMDAwMDAwMyB4MjA6IGZmZmZhMDAw
-MTYxMjc4YTANCj4gPiB4MTk6IGZmZmYzZjQ2MDdkNmFjNDAgeDE4OiAwMDAwMDAwMDAwMDAwMDAw
-DQo+ID4geDE3OiAwMDAwMDAwMDAwMDAwMDAwIHgxNjogMDAwMDAwMDBmMmYyZjIwNA0KPiA+IHgx
-NTogMDAwMDAwMDBmMmYyMDAwMCB4MTQ6IDY0NjU3NjY5NjU2MzY1NzINCj4gPiB4MTM6IDIwMzA2
-NTc2NjU2ZTY1NjcgeDEyOiBmZmZmOThiOGVkM2I5MjRkDQo+ID4geDExOiAxZmZmZjhiOGVkM2I5
-MjRjIHgxMDogZmZmZjk4YjhlZDNiOTI0Yw0KPiA+IHg5IDogZmZmZmM1Yzc2NTI1YzljNCB4OCA6
-IDAwMDAwMDAwMDAwMDAwMDANCj4gPiB4NyA6IDAwMDAwMDAwMDAwMDAwMDEgeDYgOiBmZmZmOThi
-OGVkM2I5MjRjDQo+ID4geDUgOiBmZmZmM2Y0NjBmM2IyOWMwIHg0IDogZGZmZmEwMDAwMDAwMDAw
-MA0KPiA+IHgzIDogZmZmZmM1Yzc2NTAwMDAwMCB4MiA6IDAwMDAwMDAwMDAwMDAwMDANCj4gPiB4
-MSA6IDAwMDAwMDAwMDAwMDAwMDAgeDAgOiBmZmZmM2Y0NjBmM2IyOWMwIENhbGwgdHJhY2U6DQo+
-ID4gIG5ldGlmX2dldF9yeHF1ZXVlIG5ldC9jb3JlL2Rldi5jOjQ2MTEgW2lubGluZV0NCj4gPiAg
-bmV0aWZfcmVjZWl2ZV9nZW5lcmljX3hkcCsweGIxMC8weGI1MCBuZXQvY29yZS9kZXYuYzo0Njgz
-DQo+ID4gZG9feGRwX2dlbmVyaWMgbmV0L2NvcmUvZGV2LmM6NDc3NyBbaW5saW5lXQ0KPiA+ICBk
-b194ZHBfZ2VuZXJpYysweDljLzB4MTkwIG5ldC9jb3JlL2Rldi5jOjQ3NzANCj4gPiAgdHVuX2dl
-dF91c2VyKzB4ZDk0LzB4MjAxMCBkcml2ZXJzL25ldC90dW4uYzoxOTM4DQo+ID4gIHR1bl9jaHJf
-d3JpdGVfaXRlcisweDk4LzB4MTAwIGRyaXZlcnMvbmV0L3R1bi5jOjIwMzYgIGNhbGxfd3JpdGVf
-aXRlcg0KPiA+IGluY2x1ZGUvbGludXgvZnMuaDoxOTYwIFtpbmxpbmVdDQo+ID4gIG5ld19zeW5j
-X3dyaXRlKzB4MjYwLzB4MzcwIGZzL3JlYWRfd3JpdGUuYzo1MTUgIHZmc193cml0ZSsweDUxYy8w
-eDYxYw0KPiA+IGZzL3JlYWRfd3JpdGUuYzo2MDINCj4gPiAga3N5c193cml0ZSsweGZjLzB4MjAw
-IGZzL3JlYWRfd3JpdGUuYzo2NTUgIF9fZG9fc3lzX3dyaXRlDQo+ID4gZnMvcmVhZF93cml0ZS5j
-OjY2NyBbaW5saW5lXSAgX19zZV9zeXNfd3JpdGUgZnMvcmVhZF93cml0ZS5jOjY2NA0KPiA+IFtp
-bmxpbmVdDQo+ID4gIF9fYXJtNjRfc3lzX3dyaXRlKzB4NTAvMHg2MCBmcy9yZWFkX3dyaXRlLmM6
-NjY0ICBfX2ludm9rZV9zeXNjYWxsDQo+ID4gYXJjaC9hcm02NC9rZXJuZWwvc3lzY2FsbC5jOjM2
-IFtpbmxpbmVdICBpbnZva2Vfc3lzY2FsbA0KPiA+IGFyY2gvYXJtNjQva2VybmVsL3N5c2NhbGwu
-Yzo0OCBbaW5saW5lXQ0KPiA+ICBlbDBfc3ZjX2NvbW1vbi5jb25zdHByb3AuMCsweGY0LzB4NDE0
-IGFyY2gvYXJtNjQva2VybmVsL3N5c2NhbGwuYzoxNTUNCj4gPiBkb19lbDBfc3ZjKzB4NTAvMHgx
-MWMgYXJjaC9hcm02NC9rZXJuZWwvc3lzY2FsbC5jOjIxNw0KPiA+ICBlbDBfc3ZjKzB4MjAvMHgz
-MCBhcmNoL2FybTY0L2tlcm5lbC9lbnRyeS1jb21tb24uYzozNTMNCj4gPiAgZWwwX3N5bmNfaGFu
-ZGxlcisweGU0LzB4MWUwIGFyY2gvYXJtNjQva2VybmVsL2VudHJ5LWNvbW1vbi5jOjM2OQ0KPiA+
-ICBlbDBfc3luYysweDE0OC8weDE4MCBhcmNoL2FybTY0L2tlcm5lbC9lbnRyeS5TOjY4Mw0KPiA+
-DQo+ID4gVGhpcyBpcyBiZWNhdXNlIHRoZSBkZXRhY2hlZCBxdWV1ZSBpcyB1c2VkIHRvIHNlbmQg
-ZGF0YS4gVGhlcmVmb3JlLCB3ZQ0KPiA+IG5lZWQgdG8gY2hlY2sgdGhlIHF1ZXVlIHN0YXR1cyBp
-biB0aGUgdHVuX2Nocl93cml0ZV9pdGVyIGZ1bmN0aW9uLg0KPiA+DQo+ID4gRml4ZXM6IGNkZThi
-MTVmMWFhYiAoInR1bnRhcDogYWRkIGlvY3RsIHRvIGF0dGFjaCBvciBkZXRhY2ggYSBmaWxlDQo+
-ID4gZm9ybSB0dW50YXAgZGV2aWNlIikNCj4gDQo+IE5vdCBzdXJlIHRoaXMgZGVzZXJ2ZXMgYSBz
-dGFibGUuDQo+IA0KPiA+IFNpZ25lZC1vZmYtYnk6IExpdSBKaWFuIDxsaXVqaWFuNTZAaHVhd2Vp
-LmNvbT4NCj4gPiAtLS0NCj4gPiB2MS0+djI6IGFkZCBmaXhlcyB0YWcNCj4gPiAgZHJpdmVycy9u
-ZXQvdHVuLmMgfCA1ICsrKysrDQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCA1IGluc2VydGlvbnMoKykN
-Cj4gPg0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC90dW4uYyBiL2RyaXZlcnMvbmV0L3R1
-bi5jIGluZGV4DQo+ID4gMjU5YjJiODRiMmIzLi4yNjE0MTFjMWE2YmIgMTAwNjQ0DQo+ID4gLS0t
-IGEvZHJpdmVycy9uZXQvdHVuLmMNCj4gPiArKysgYi9kcml2ZXJzL25ldC90dW4uYw0KPiA+IEBA
-IC0yMDE5LDYgKzIwMTksMTEgQEAgc3RhdGljIHNzaXplX3QgdHVuX2Nocl93cml0ZV9pdGVyKHN0
-cnVjdCBraW9jYg0KPiAqaW9jYiwgc3RydWN0IGlvdl9pdGVyICpmcm9tKQ0KPiA+ICAgICAgICAg
-aWYgKCF0dW4pDQo+ID4gICAgICAgICAgICAgICAgIHJldHVybiAtRUJBREZEOw0KPiA+DQo+ID4g
-KyAgICAgICBpZiAodGZpbGUtPmRldGFjaGVkKSB7DQo+IA0KPiB0ZmlsZS0+ZGV0YWNoZWQgaXMg
-c3luY2hyb25pemVkIHRocm91Z2ggcnRubF9sb2NrIHdoaWNoIGlzIHByb2JhYmx5DQo+IG5vdCBz
-dWl0YWJsZSBmb3IgdGhlIGRhdGFwYXRoLiBXZSBwcm9iYWJseSBuZWVkIHRvIHJjdWlmeSB0aGlz
-Lg0KPiANCj4gPiArICAgICAgICAgICAgICAgdHVuX3B1dCh0dW4pOw0KPiA+ICsgICAgICAgICAg
-ICAgICByZXR1cm4gLUVORVRET1dOOw0KPiANCj4gQW5vdGhlciBxdWVzdGlvbiBpcyB0aGF0IGNh
-biBzb21lIHVzZXIgc3BhY2UgZGVwZW5kIG9uIHRoaXMgYmVoYXZpb3VyPw0KPiBJIHdvbmRlciBp
-ZiBpdCdzIG1vcmUgc2FmZSB0byBwcmV0ZW5kIHRoZSBwYWNrZXQgd2FzIHJlY2VpdmVkIGhlcmU/
-DQo+IA0KVGhhbmtzIGZvciB5b3VyIHJldmlldy4gSSBkb24ndCBrbm93IHdoZXRoZXIgdGhlcmUg
-d2FzIGFueSBkZXBlbmQgb24gdGhpcyBiZWhhdmlvci4NCklmIHRoYXQncyB0aGUgY2FzZSwgSSB0
-aGluayBpdCdzIGJldHRlciB0byBrZWVwIHRoaXMgd2FybmluZy4NCldoYXQgaXMgeW91ciBvcGlu
-aW9uIG9uIHRoaXMgd2FybmluZz8NCg0KPiBUaGFua3MNCj4gDQo+ID4gKyAgICAgICB9DQo+ID4g
-Kw0KPiA+ICAgICAgICAgaWYgKChmaWxlLT5mX2ZsYWdzICYgT19OT05CTE9DSykgfHwgKGlvY2It
-PmtpX2ZsYWdzICYgSU9DQl9OT1dBSVQpKQ0KPiA+ICAgICAgICAgICAgICAgICBub2Jsb2NrID0g
-MTsNCj4gPg0KPiA+IC0tDQo+ID4gMi4xNy4xDQo+ID4NCg0K
+On Fri, Sep 16, 2022 at 10:24:48AM +0530, Siddharth Vadapalli wrote:
+> On 15/09/22 15:37, Russell King (Oracle) wrote:
+> > Hi,
+> > 
+> > On Thu, Sep 15, 2022 at 02:58:52PM +0530, Siddharth Vadapalli wrote:
+> >> Hello Russell,
+> >>
+> >> On 14/09/22 21:39, Russell King (Oracle) wrote:
+> >>> On Wed, Sep 14, 2022 at 03:20:50PM +0530, Siddharth Vadapalli wrote:
+> >>>> Check for fixed-link in am65_cpsw_nuss_mac_config() using struct
+> >>>> am65_cpsw_slave_data's phy_node property to obtain fwnode. Since
+> >>>> am65_cpsw_nuss_mac_link_up() is not invoked in fixed-link mode, perform
+> >>>> the relevant operations in am65_cpsw_nuss_mac_config() itself.
+> >>>
+> >>> Further to my other comments, you also fail to explain that, when in
+> >>> fixed-link SGMII mode, you _emulate_ being a PHY - which I deduce
+> >>> since you are sending the duplex setting and speed settings via the
+> >>> SGMII control word. Also, as SGMII was invented for a PHY to be able
+> >>> to communicate the media negotiation resolution to the MAC, SGMII
+> >>> defines that the PHY fills in the speed and duplex information in
+> >>> the control word to pass it to the MAC, and the MAC acknowledges this
+> >>> information. There is no need (and SGMII doesn't permit) the MAC to
+> >>> advertise what it's doing.
+> >>>
+> >>> Maybe this needs to be explained in the commit message?
+> >>
+> >> I had tested SGMII fixed-link mode using a bootstrapped ethernet layer-1
+> >> PHY. Based on your clarification in the previous mails that there is an
+> >> issue with the fixed-link mode which I need to debug, I assume that what
+> >> you are referring to here also happens to be a consequence of that.
+> >> Please let me know if I have misunderstood what you meant to convey.
+> > 
+> > I think what you're saying is that you have this setup:
+> > 
+> >   ethernet MAC <--SGMII link--> ethernet PHY <---> media
+> > 
+> > which you are operating in fixed link mode?
+> 
+> Yes, and the other end is connected to my PC's ethernet port.
+> 
+> > 
+> > From the SGMII specification: "This is achieved by using the Auto-
+> > Negotiation functionality defined in Clause 37 of the IEEE
+> > Specification 802.3z. Instead of the ability advertisement, the PHY
+> > sends the control information via its tx_config_Reg[15:0] as specified
+> > in Table 1 whenever the control information changes. Upon receiving
+> > control information, the MAC acknowledges the update of the control
+> > information by asserting bit 14 of its tx_config_reg{15:0] as specified
+> > in Table 1."
+> > 
+> > For the control word sent from the MAC to the PHY, table 1 specifies a
+> > value of 0x4001. All the zero bits in that word which are zero are
+> > marked as "Reserved for future use." There are no fields for speed and
+> > duplex in this acknowledgement word to the PHY.
+> > 
+> > I hope this clears up my point.
+> 
+> Thank you for the detailed explanation. After reading the above, my
+> understanding is that even in the fixed-link mode, the ethernet MAC is
+> not supposed to advertise the speed and duplex settings. The ethernet
+> MACs present on both ends of the connection are supposed to be set to
+> the same speed and duplex settings via the devicetree node. Thus, only
+> for my setup which happens to be a special case of fixed-link mode where
+> the ethernet PHY is present, I am having to send the control word due to
+> the presence of a PHY in between.
+
+In SGMII, the control word is only passed between the ethernet MAC and
+the ethernet PHY. It is not conveyed across the media.
+
+> And, I am supposed to mention this in
+> the commit message, which I haven't done. Please let me know if this is
+> what I was supposed to understand.
+
+If you implement this conventionally, then you don't need to mention it
+in the commit message, because you're following the standard.
+
+> I am planning to change to a proper fixed-link setup without any
+> ethernet PHY between the MACs, for debugging the driver's fixed-link
+> mode where the "mac_link_up()" is not invoked.
+
+SGMII is designed for the setup in the diagram I provided in my previous
+email. It is not designed for two MACs to talk direct to each other
+without any ethernet PHY because of the asymmetric nature of the control
+word.
+
+The PHY sends e.g. a control word of 0x9801 for 1G full duplex. On
+reception of that, the MAC responds with 0x4001. Finally, the PHY
+responds with 0xd801 to acknowledge the receipt of the MAC response.
+
+If both ends of the link are SGMII, both ends will be waiting for
+the control word from a PHY which is not present, and the link will
+not come up.
+
+1000base-X is a symmetric protocol where both ends of the link
+advertise their capabilities, acknowledge each others abilities and
+resolve the duplex and pause settings.
+
+SGMII is a Cisco proprietary modification of 1000base-X designed for
+communicating the results of media autonegotiation between an
+ethernet PHY and ethernet MAC.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
