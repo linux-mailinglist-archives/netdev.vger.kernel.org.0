@@ -2,129 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FC945BB3B6
-	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 22:59:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB9525BB3F0
+	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 23:31:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229538AbiIPU74 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Sep 2022 16:59:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46296 "EHLO
+        id S229765AbiIPVbp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Sep 2022 17:31:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229454AbiIPU7z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 16:59:55 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 327F125C52;
-        Fri, 16 Sep 2022 13:59:52 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id d8so15444948iof.11;
-        Fri, 16 Sep 2022 13:59:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date;
-        bh=RTjHwZzVFFIPsI+xjg1bVcHgu8K60VOSv7DG5lHU+jc=;
-        b=VJLRbUX+BAArnP3l2mLbXpMxM26Hh/3Ptv6M2kHFWv8XmNzI0Ll1RcytluI17ij1R/
-         mFsD6Kxl0JiubuV/81k5D9pJ52DxbXc6bWnCHvfZhz+vLNjmac37Y6YJ0c+CRFjw2IY+
-         efLIINQ8Rz35+13GdyF3kI048UIET+D0fLnGzZGzd/HqYw0VGHIOPeoerQzwMnfDS2GI
-         MqBMfmiqXT3hQEwtcHSHVvttvgxFTBshC//qYwKFkr0iLxvvZuniNMEG6W5+dzhhTodO
-         OpWGhRbTLBrifQE3GnZh3DRlXcQUhk9A8pCP5Yn8BbhjIYcvO9tIDDj+O5imrJ3cvwO9
-         p9Wg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=RTjHwZzVFFIPsI+xjg1bVcHgu8K60VOSv7DG5lHU+jc=;
-        b=jP7jUL8zBCguFNx/11lUtES8i660cRNMtHuqcqVV/yQROyYL6oddengCMb2vtXFolY
-         UEYaL+SyNaqVZqvpkqL9tTgKR9JfqO1ebsmsCRqJmiWYhQkemmx1sWz/tb6ROxrqRv22
-         6tVTcTp3i2wuHmoJbr/uywolBilgIOYI0xAYBIJ433sVzn1uFLpMESnW9JCE4IBOc8Xp
-         Scg4+hEmZGVlxAVv/r65J9qjci4mC055zeEnxtoYtefPgtMajj9+aODvDEkHMFWyt8lw
-         LMStrlrNRT4Xny2Ebh41q7MwqRvCq6/kNG/KleEN2MH4bMhDKZ4YbOV6FvQf06tKmYp0
-         biqQ==
-X-Gm-Message-State: ACrzQf0BhJ7du365AD3n3nrRS9gqhjKkqEcBIocUZgFlBysSpaH8HBYx
-        vJwI/UTE8SnWJV/M9X1VD6+uZJUB3+/21D/aYwU=
-X-Google-Smtp-Source: AMsMyM7xZVZYYciCNObsvBYXiU1tVmTWTvhv+YFfsT0pRUF1Qaks/NY2smiUCw/hI2fnweKRkqLYh34npPT6SLYXXac=
-X-Received: by 2002:a6b:670b:0:b0:6a0:d9db:5ae5 with SMTP id
- b11-20020a6b670b000000b006a0d9db5ae5mr2617836ioc.62.1663361991525; Fri, 16
- Sep 2022 13:59:51 -0700 (PDT)
+        with ESMTP id S229570AbiIPVbn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 17:31:43 -0400
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA54ABB02C;
+        Fri, 16 Sep 2022 14:31:38 -0700 (PDT)
+Message-ID: <a774a513-284c-eb1f-7578-bb6d475b0509@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1663363896;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=aUusDOzWHis+2UidmSCMnHqSklJAdLsrWVsXfECqtNY=;
+        b=lYsuwfgmyLGn2XjImpB5vaLtD4AB1q+UrezIaQ0GKOgaOkdxm3boMHN3iUPQze3ccbED6y
+        4WUW/rKFNqS0sNy2YL/JSoshVWp0CkTvIWHzlzohUxPUjCNo7pSBsaUi1w+fO95jrSP7WT
+        271VolouyUTVNjdHfEroAJd1Xzco07A=
+Date:   Fri, 16 Sep 2022 14:31:25 -0700
 MIME-Version: 1.0
-References: <20220905193359.969347-1-toke@redhat.com> <5e97c1e8-e7e4-27c4-aee7-ffa5958c6144@iogearbox.net>
-In-Reply-To: <5e97c1e8-e7e4-27c4-aee7-ffa5958c6144@iogearbox.net>
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Date:   Fri, 16 Sep 2022 22:59:15 +0200
-Message-ID: <CAP01T755oQVY+ySm+SEh+xDgbYURTFa8AdLHsoE1M-aS15npKg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 0/3] A couple of small refactorings of BPF
- program call sites
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Subject: Re: [PATCH bpf-next] bpf: Move nf_conn extern declarations to
+ filter.h
+Content-Language: en-US
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     Daniel Xu <dxu@dxuuu.xyz>, pablo@netfilter.org, fw@strlen.de,
+        toke@kernel.org, netfilter-devel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org
+References: <c4cb11c8ffe732b91c175a0fc80d43b2547ca17e.1662920329.git.dxu@dxuuu.xyz>
+ <ada17021-83c9-3dad-5992-4885e824ecac@linux.dev>
+ <CAP01T74=btUEPDrz0EVm9wNuMmbbqc2wRvtpJ-Qq45OtasMBZQ@mail.gmail.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Martin KaFai Lau <martin.lau@linux.dev>
+In-Reply-To: <CAP01T74=btUEPDrz0EVm9wNuMmbbqc2wRvtpJ-Qq45OtasMBZQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 16 Sept 2022 at 22:58, Daniel Borkmann <daniel@iogearbox.net> wrote=
-:
->
-> On 9/5/22 9:33 PM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> > Stanislav suggested[0] that these small refactorings could be split out=
- from the
-> > XDP queueing RFC series and merged separately. The first change is a sm=
-all
-> > repacking of struct softnet_data, the others change the BPF call sites =
-to
-> > support full 64-bit values as arguments to bpf_redirect_map() and as th=
-e return
-> > value of a BPF program, relying on the fact that BPF registers are alwa=
-ys 64-bit
-> > wide to maintain backwards compatibility.
->
-> Looks like might still be issues on s390 [0] around retval checking, e.g.=
-:
->
->    [...]
->    #122     pe_preserve_elems:FAIL
->    test_raw_tp_test_run:PASS:parse_cpu_mask_file 0 nsec
->    test_raw_tp_test_run:PASS:skel_open 0 nsec
->    test_raw_tp_test_run:PASS:skel_attach 0 nsec
->    test_raw_tp_test_run:PASS:open /proc/self/comm 0 nsec
->    test_raw_tp_test_run:PASS:task rename 0 nsec
->    test_raw_tp_test_run:PASS:check_count 0 nsec
->    test_raw_tp_test_run:PASS:check_on_cpu 0 nsec
->    test_raw_tp_test_run:PASS:test_run should fail for too small ctx 0 nse=
-c
->    test_raw_tp_test_run:PASS:test_run 0 nsec
->    test_raw_tp_test_run:FAIL:check_retval unexpected check_retval: actual=
- 0 !=3D expected 26796
->    test_raw_tp_test_run:PASS:test_run_opts 0 nsec
->    test_raw_tp_test_run:PASS:check_on_cpu 0 nsec
->    test_raw_tp_test_run:FAIL:check_retval unexpected check_retval: actual=
- 0 !=3D expected 26796
->    test_raw_tp_test_run:PASS:test_run_opts 0 nsec
->    test_raw_tp_test_run:PASS:check_on_cpu 0 nsec
->    test_raw_tp_test_run:FAIL:check_retval unexpected check_retval: actual=
- 0 !=3D expected 26796
->    test_raw_tp_test_run:PASS:test_run_opts should fail with ENXIO 0 nsec
->    test_raw_tp_test_run:PASS:test_run_opts_fail 0 nsec
->    test_raw_tp_test_run:PASS:test_run_opts should fail with EINVAL 0 nsec
->    test_raw_tp_test_run:PASS:test_run_opts_fail 0 nsec
->    [...]
->
+On 9/16/22 1:35 PM, Kumar Kartikeya Dwivedi wrote:
+> On Fri, 16 Sept 2022 at 22:20, Martin KaFai Lau <martin.lau@linux.dev> wrote:
+>>
+>> On 9/11/22 11:19 AM, Daniel Xu wrote:
+>>> We're seeing the following new warnings on netdev/build_32bit and
+>>> netdev/build_allmodconfig_warn CI jobs:
+>>>
+>>>       ../net/core/filter.c:8608:1: warning: symbol
+>>>       'nf_conn_btf_access_lock' was not declared. Should it be static?
+>>>       ../net/core/filter.c:8611:5: warning: symbol 'nfct_bsa' was not
+>>>       declared. Should it be static?
+>>>
+>>> Fix by ensuring extern declaration is present while compiling filter.o.
+>>>
+>>> Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
+>>> ---
+>>>    include/linux/filter.h                   | 6 ++++++
+>>>    include/net/netfilter/nf_conntrack_bpf.h | 7 +------
+>>>    2 files changed, 7 insertions(+), 6 deletions(-)
+>>>
+>>> diff --git a/include/linux/filter.h b/include/linux/filter.h
+>>> index 527ae1d64e27..96de256b2c8d 100644
+>>> --- a/include/linux/filter.h
+>>> +++ b/include/linux/filter.h
+>>> @@ -567,6 +567,12 @@ struct sk_filter {
+>>>
+>>>    DECLARE_STATIC_KEY_FALSE(bpf_stats_enabled_key);
+>>>
+>>> +extern struct mutex nf_conn_btf_access_lock;
+>>> +extern int (*nfct_bsa)(struct bpf_verifier_log *log, const struct btf *btf,
+>>> +                    const struct btf_type *t, int off, int size,
+>>> +                    enum bpf_access_type atype, u32 *next_btf_id,
+>>> +                    enum bpf_type_flag *flag);
+>>
+>> Can it avoid leaking the nfct specific details like
+>> 'nf_conn_btf_access_lock' and the null checking on 'nfct_bsa' to
+>> filter.c?  In particular, this code snippet in filter.c:
+>>
+>>           mutex_lock(&nf_conn_btf_access_lock);
+>>           if (nfct_bsa)
+>>                   ret = nfct_bsa(log, btf, ....);
+>>          mutex_unlock(&nf_conn_btf_access_lock);
+>>
+>>
+>> Can the lock and null check be done as one function (eg.
+>> nfct_btf_struct_access()) in nf_conntrack_bpf.c and use it in filter.c
+>> instead?
+> 
+> Don't think so, no. Because we want nf_conntrack to work as a module as well.
+Ah, got it.
 
-Thanks, I'll take a look.
+I don't see nf_conntrack_btf_struct_access() in nf_conntrack_bpf.h is 
+used anywhere.  Can be removed?
 
-> Thanks,
-> Daniel
->
->    [0] https://github.com/kernel-patches/bpf/actions/runs/3059535631/jobs=
-/4939404438
+> I was the one who suggested nf_conn specific names for now. There is
+> no other user of such module supplied
+> btf_struct_access callbacks yet, when one appears, we should instead
+> make registration of such callbacks properly generic (i.e. also
+> enforce it is only for module BTF ID etc.).
+> But that would be a lot of code without any users right now.
+
+The lock is the only one needed to be in btf.c and 
+nfct_btf_struct_access() can be an inline in nf_conntrack_bpf.h instead?
+
