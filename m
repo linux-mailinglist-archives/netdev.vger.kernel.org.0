@@ -2,59 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 39CB15BB237
-	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 20:35:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5995D5BB260
+	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 20:46:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229505AbiIPSfz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Sep 2022 14:35:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57246 "EHLO
+        id S229765AbiIPSqL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Sep 2022 14:46:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229604AbiIPSfx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 14:35:53 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04586658B
-        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 11:35:52 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id q21so32776853edc.9
-        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 11:35:51 -0700 (PDT)
+        with ESMTP id S229744AbiIPSqK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 14:46:10 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F176B81F8
+        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 11:46:09 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id z13so18817100edb.13
+        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 11:46:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date;
-        bh=rfM8uClo9J8Ff/LVH22Z0gqrgSbAmlyI5QpD5+07QM4=;
-        b=SZ5uI2KOVEW88KibtuiPFWDe0EZnfM5RjX7yyCa4BQaDs7waUEG3TH9FOz9zGUW50z
-         frnrJ/3sZlXJ+40PUVbZ1I8fDZnp/3nRQHg1fJcyyDojygHdfZsOe6EnemCmQLN0YHjU
-         fMkIs8CSJms5XPVdFFGrYzr5wKtobdQr5u0NI=
+        bh=V00aPDgAVb5ryVWEIiab+qMajdMMrTMNmPKLDV+PTW4=;
+        b=ILdP9jAsIgapu1Zy6mm79MgRBCf2+MzWhM0q+Y6MKKzCTRZ1M5ejMwz4/jiWuh5SEB
+         GPcJO8YNM7QtznmwBrkK8HmN0LtOi4yRx2ilDssR07xUE8Ym5x8hv47ZCmPTwG48fQk9
+         NgMdoQiWFwYJEFxcJEdpPF2IvrxwTEDkE6xxc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=rfM8uClo9J8Ff/LVH22Z0gqrgSbAmlyI5QpD5+07QM4=;
-        b=vGUQJHloqbILuqLOMimhba+cbnGtsMjd7+H9L4m3FZlYWdaHivcw7+UjUDNqt/OmDl
-         IQ6+L81ktwXExJL+cP426wsk0QKj8IfSlegG2y1NEWr75afVFAtkwlhYZlDFqjOBSBZU
-         hMeDPO6YfYnf37NAoVqqDoe04mMm6KnN9wAO61Oljkxrk/6jetD0TG6bptFeXBqbJOj8
-         alJG9MjjkOoM9cqlVl1VaKX1t1GtFpWoRENEaRi03IjAz+fyyPPtP4K53ePs2zL7DHLp
-         +Rt/Ef6SRD+VwCyY4FLBrfZk+Yd9Hbx+v+bgEU5785bjc3tC0BNg8BAjZF8Tg1GVL5MB
-         Wmcg==
-X-Gm-Message-State: ACrzQf0ckmkEhaI+siIZyVJB2JusYLg30wfs1mYSvvvMwv1ZI2YiJcPi
-        N8PFoWxhVxd1fDzS5D84Ew8AcsnaY4fjsDrb5xiB6Q==
-X-Google-Smtp-Source: AMsMyM5L8XEqdB5FXQurPgBNQMXmDw5ucUjgM1zf4ZIlkxJHni1js/o9VtrMuYBIfZp9tNYjBZPkB0b7QSUecQ9MIMg=
-X-Received: by 2002:a05:6402:440d:b0:450:de54:3fcf with SMTP id
- y13-20020a056402440d00b00450de543fcfmr4935193eda.312.1663353350488; Fri, 16
- Sep 2022 11:35:50 -0700 (PDT)
+        bh=V00aPDgAVb5ryVWEIiab+qMajdMMrTMNmPKLDV+PTW4=;
+        b=49mL76lMRjHUSvhBexePeT+zHqedSQrEVgNTl3lMBcflOdZBj4L1FHnUMGEPt/OOxc
+         wSwQO8/bx+4/tRT+kzlmvHTowkHVJxQOZLLDMhLZv6fwAPGSTpeKdZ0VODizVkt7Mo/S
+         ypJ0s/S0aFnEb35et41GMcgPnCThQ9yH6E/H+qIw5VllgzehuAQ+jRV0QhEp3zin9YAa
+         +iQkPQQb60p/EfpSfHwRm1MoMAqSKbhV7/JMWuJOor31Q4IpSo8Oyw8sCCjR6HGIqRr9
+         FEd5EicRxIqaZzvVZWWS7gvkT3hJ1Ns7pYUnEwxZyQ5ANMNRfO5bbhjwOfdmXukHvK2W
+         hkJg==
+X-Gm-Message-State: ACrzQf0+xgu7j/EcLmy8cmQlG947wUfpNL6kDLSW6YJWyb8lxfxYUQNr
+        rrITRAjG7qyd3eGXPFScgQMstmdpoiLeMn05GkMOJ9PAqvgeyA==
+X-Google-Smtp-Source: AMsMyM52y32jXwANOiOsDGfJBaZB2RFQSNx/ATxMIGSRSno9rSVFyMCIakpyzS9PzjrbOE9eTHFnd56P/OFAM9xkg2w=
+X-Received: by 2002:a50:c042:0:b0:44e:7582:366 with SMTP id
+ u2-20020a50c042000000b0044e75820366mr4951389edd.235.1663353967577; Fri, 16
+ Sep 2022 11:46:07 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220915234932.25497-1-vfedorenko@novek.ru> <YyTBFpZcPU6w3qST@C02YVCJELVCG.dhcp.broadcom.net>
-In-Reply-To: <YyTBFpZcPU6w3qST@C02YVCJELVCG.dhcp.broadcom.net>
+References: <PH0PR18MB4021AF3BD0091453908A44EA81489@PH0PR18MB4021.namprd18.prod.outlook.com>
+ <PH0PR18MB402161E5489BC47F30FF681E81489@PH0PR18MB4021.namprd18.prod.outlook.com>
+In-Reply-To: <PH0PR18MB402161E5489BC47F30FF681E81489@PH0PR18MB4021.namprd18.prod.outlook.com>
 From:   Michael Chan <michael.chan@broadcom.com>
-Date:   Fri, 16 Sep 2022 11:35:39 -0700
-Message-ID: <CACKFLi=V+kxsumdOP5yFwtZUU-NwbsOpWBsOXWwLuy26LOMmhA@mail.gmail.com>
-Subject: Re: [PATCH] bnxt_en: fix flags to check for supported fw version
-To:     Andy Gospodarek <andrew.gospodarek@broadcom.com>
-Cc:     Vadim Fedorenko <vfedorenko@novek.ru>,
-        Pavan Chebbi <pavan.chebbi@broadcom.com>,
+Date:   Fri, 16 Sep 2022 11:45:56 -0700
+Message-ID: <CACKFLikGdN9XPtWk-fdrzxdcD=+bv-GHBvfVfSpJzHY7hrW39g@mail.gmail.com>
+Subject: Re: tg3 (5720) PTP sync problems
+To:     Simon White <Simon.White@viavisolutions.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        Stephen Hill <Stephen.Hill@viavisolutions.com>,
         Netdev <netdev@vger.kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>
+        Pavan Chebbi <pavan.chebbi@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000009b7f6605e8cfa1e6"
+        boundary="00000000000064083105e8cfc6c7"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
@@ -64,27 +66,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000009b7f6605e8cfa1e6
+--00000000000064083105e8cfc6c7
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Sep 16, 2022 at 11:31 AM Andy Gospodarek
-<andrew.gospodarek@broadcom.com> wrote:
+CC netdev instead of lkml and converting to plain text email
+
+On Fri, Sep 16, 2022 at 8:54 AM Simon White
+<Simon.White@viavisolutions.com> wrote:
 >
-> On Fri, Sep 16, 2022 at 02:49:32AM +0300, Vadim Fedorenko wrote:
-> > The warning message of unsupported FW appears every time RX timestamps
-> > are disabled on the interface. The patch fixes the flags to correct set
-> > for the check.
-> Looks good to me.  Thanks for sending this.
+> In a running setup PTP sync problems were observed when the server provid=
+ing the PTP grand master performed other high load network transmissions.  =
+Sync errors ranging in the 10s of milli seconds could be experienced by the=
+ PTP slaves.
+
+Thanks for reporting the issue.  One of my colleagues will look into this.
+
 >
-> > Fixes: 66ed81dcedc6 ("bnxt_en: Enable packet timestamping for all RX packets")
-> > Cc: Richard Cochran <richardcochran@gmail.com>
-> > Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
-> Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
-Thanks.
+>
+>
+> Simplifying the setup and test conditions to two servers (Dell R7527 dual=
+ socket servers with 64 core Milans) utilising iperf, we were able to repli=
+cate the problem.  Multiple TX rings were tried, where the PTP traffic only=
+ was given its own TX ring and set to use a high priority, however that mad=
+e no difference.  Examination of the problem led to the following code:
+>
+>
+>
+> static void tg3_tx(struct tg3_napi *tnapi)
+>
+> {
+>
+> [snip]
+>
+>                 if (tnapi->tx_ring[sw_idx].len_flags & TXD_FLAG_HWTSTAMP)=
+ {
+>
+>                         struct skb_shared_hwtstamps timestamp;
+>
+>                         u64 hwclock =3D tr32(TG3_TX_TSTAMP_LSB);
+>
+>                         hwclock |=3D (u64)tr32(TG3_TX_TSTAMP_MSB) << 32;
+>
+>
+>
+>                         tg3_hwclock_to_timestamp(tp, hwclock, &timestamp)=
+;
+>
+>
+>
+>                         skb_tstamp_tx(skb, &timestamp);
+>
+>                 }
+>
+>
+>
+> This assumes that the timestamp will have been updated by the time this d=
+escriptor in the tx ring has been marked as consumed.  We observe when the =
+interface is under TX load that this nolonger holds true.  Changing tg3_sta=
+rt_xmit to record the timestamp where TXD_FLAG_HWTSTAMP is set and spinning=
+ in the above code to ensure the timestamp had updated appears to address t=
+he PTP delay calculation.  A patch covering the change described has been a=
+ttached for reference but am not suggesting it as the solution to the probl=
+em.
+>
+>
+>
+> Adding printks to record the spinning loop duration showed it could take =
+around 150us for the timestamp to update after the descriptor was marked as=
+ being consumed.  It can be speculated how this could come about from BCM57=
+18 Family Programmer=E2=80=99s Reference Guide (broadcom.com) figure 30 (Tr=
+ansmit Flow Diagram) on page 132, however could it be confirmed whether the=
+ assumption the tg3.c code makes is correct?
+>
+>
+>
+> Part:
+>
+>
+>
+> [   24.311626] tg3 0000:e1:00.0 eth0: Tigon3 [partno(BCM95720) rev 572000=
+0] (PCI Express) MAC address xxxxxx
+>
+> [   24.311630] tg3 0000:e1:00.0 eth0: attached PHY is 5720C (10/100/1000B=
+ase-T Ethernet) (WireSpeed[1], EEE[1])
+>
+>
+>
+> Kind Regards,
+>
+> Simon White
 
-Reviewed-by: Michael Chan <michael.chan@broadcom.com>
-
---0000000000009b7f6605e8cfa1e6
+--00000000000064083105e8cfc6c7
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -155,13 +228,13 @@ hd5wiQXo9B2ncm5P3jFLYLBmPltIn/uzdiYpFj+E9kS9XYDd+boBZhN1Vh0296zLQZobLfKFzClo
 E6IFyTTANonrXvCRgodKS+QJEH8Syu2jSKe023aVemkuZjzvPK7o9iU7BKkPG2pzLPgxggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxeQGjDntHGb2iaQkIw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIDJ3N1zLPU2uVwhWY0NayaEPC9YHh0BG
-OaDM+cHJGJDNMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDkx
-NjE4MzU1MFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIElOOUBzZfVn++vR9X5yyfTnOo544hmx
+MdI0pwTewuSrMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDkx
+NjE4NDYwN1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQC3lrh2c5gKz0D1majRMPYFePc9+5jJyGl7GUQjdMcOOefTYbfi
-SMvH4tXyAEzhYx/SxnNKIJXNYvMtHjop8+qiGs+tq4vEoNmNWbTAWx2CDPk7PD0giPlDuyGVPd8C
-hps1iqG3E/TOTKezzz+TGNhow/tfLeqVeq5+xX9NSRSWisxtoucgYKfFIfJbXcXe7XGDPVjn+FCW
-8mIsNF9ATEj73rXQt7zqQcbdD7iM6W8rpcJ/d1D1WuOrQ++0FSo9Nm8gJNeIOa1T6cpSuu+E0hfY
-E+FEd/cBMw27dtaFeuE7GhUvWB1gSM+cLFBcslF/HSR9Ju5HSB6DblHMYyc7dvXA
---0000000000009b7f6605e8cfa1e6--
+ATANBgkqhkiG9w0BAQEFAASCAQAoEEQhycQ4Kqc/AJOTtabCmthTuZ2H2zr7bs9/0ZXNPJnAtdL2
+xAVAAiSMZzo1gzW+6M28a8wgqEfyK58N6zFVo7IXRTj/bxfLBo6Mb1AIXmMi/OfqhYcjFcEVlsaA
+O1MhTXw02xrqUeCDxZxAFNwL1CsmGQluSAfJE53f3XJmoX11OaliDsrFRz7XAJ4OgjhQAhXlPAiW
+/EVq24k1sle0wfNrgDCeg+9puIh2RlCSAlcqXWMINFYMTUL02wwMVWW0+G2qRFV+rOWNXTwl8Igk
+5OO/cYn1NUg2UFEVnHqQddXVfQqHSg8E2Tr5B+oT0YuQ66OEd8BveJhgV+unFFlC
+--00000000000064083105e8cfc6c7--
