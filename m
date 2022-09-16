@@ -2,96 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 442455BAF8E
-	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 16:43:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D274E5BAFCE
+	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 17:02:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231485AbiIPOnp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Sep 2022 10:43:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44034 "EHLO
+        id S231416AbiIPPCG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Sep 2022 11:02:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231372AbiIPOnm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 10:43:42 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B685F221;
-        Fri, 16 Sep 2022 07:43:41 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id go34so49941185ejc.2;
-        Fri, 16 Sep 2022 07:43:41 -0700 (PDT)
+        with ESMTP id S230483AbiIPPCF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 11:02:05 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E40CB8A6C4
+        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 08:02:02 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id u132so21494712pfc.6
+        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 08:02:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=ot7dgyB+KtHLDN7Xyqgw/4QKfFL14qXZyomQmyozivc=;
-        b=TBL9jjzQgiXJcDlPnuYA0DP07U23BwTRwfRHAOhLJt/wUIozpDKbBdwxSdYrxtzZNX
-         1gwg2rs5lAZnRaTMpYlR/fEVejvKMoY9mplZz5Oux0xqY/sgLqMuPOduMedGkqwJakGU
-         Oo0LTT2C2xFS4/rmCaxLU4gplP5/MR0Wj5eIGlJqBYXdzD73OC7aotFdtXdRUlgfJzpW
-         l9mstCpFOFw9owE6zxP0Zbptb/WGBbL1ceXt/pENXR1VW/jnQbLlSfd0HJVydM/zhNT+
-         om8nkdTPcDxE/J8l171h9JUw2g5M66ZhYC0vkqWbYpH66pKNuxNNPjsylp0mJYOmxPR2
-         Gm9w==
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=izfqvSHT07bmauJJnncWn7aTa0Y1sFSQsExFZJ1Yduw=;
+        b=RkSbXqU77kgF73MzkxiKVVx8b4tthqwirz2R3A9X8MLspDsqIRXK7GT2GWNSe2e1ih
+         E+kgT813ZcD5S3q04T29NJghLx/v2lmci1JjMUXOvIhqDECMxYUT+kuR1EjkFpEeBNfP
+         /maCJ4zINiSa5FZiFMKBaqyLMxH4zF4819tCE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=ot7dgyB+KtHLDN7Xyqgw/4QKfFL14qXZyomQmyozivc=;
-        b=7RYqLKgGJ7wCvCtAHukE3QMCu8xH6E8TQOiy88m+MjS3smkwvKcydCQA59GHZe6gni
-         8LPfZK4Z9X3M0ZA4Aa2V8dbqera8QqjcRDCMv4HTFccTsYhRCskplzjkFtdTwcQ2o1ee
-         3K0qWyxEyuOd8dhFe49CSrWKOMpLGkB1yKKBcRaVa0Eije+h5I6bW8+FFoL/Wt0+ou2L
-         B6+ohL1ot7HAzbOUlNAcSSAyxy6tL3p0E2zbwjo3ro0dsWVH25FpSEMevAro7IrApQ5W
-         WpUFBeObVSi/lSZjtJ1lbAs7qb7EXrUS4xaVBdkOP+xZy0p/0XS0kw1hgmGTbQZj95sT
-         1d8A==
-X-Gm-Message-State: ACrzQf2aj6bIFvsF7+D5y0aciZyaVFg91n6Wl9f1H41gZiLxfm5/q/SQ
-        eJS3HOiq3lGKkcUvPckoDiY=
-X-Google-Smtp-Source: AMsMyM4dkscApZ9i0ayoK9S6XBYFSlZGHUE4c8o92NL9XHVxUl7n8gZKN152nsNzzBO6NPSSKDVplQ==
-X-Received: by 2002:a17:907:e9e:b0:77f:9688:2714 with SMTP id ho30-20020a1709070e9e00b0077f96882714mr3915614ejc.208.1663339418500;
-        Fri, 16 Sep 2022 07:43:38 -0700 (PDT)
-Received: from labdl-itc-sw06.tmt.telital.com (static-82-85-31-68.clienti.tiscali.it. [82.85.31.68])
-        by smtp.gmail.com with ESMTPSA id b15-20020aa7cd0f000000b004527eb874ebsm6273792edw.40.2022.09.16.07.43.36
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=izfqvSHT07bmauJJnncWn7aTa0Y1sFSQsExFZJ1Yduw=;
+        b=VhmmVkz7VmqnaIg4eOwpF4KLsNAvEXRQW90ag0gue9rJ7k95RJUa03zW/LrQ3JKelR
+         HFxs6qhTN/UnmbInDwHf66EWZ+KeZDjisDi91h1vqLrZK60UWU/N9kt+ICcrqMyqfW6/
+         nb4ubfoY9Qi4BNGDiINAijInWsnQv7X6gbDv8GHsTT4OULJ/njlsb2Aa/PzTb8iMip0O
+         cU5ZNMu0yhSfc9Pz1fbpsKlzQTotOrdH5KVBf6UOi7/Ksj6c4nY5ebXMNyP+x7IbqoSh
+         qPesqJcsMi+xs7vqOnUVAcHoyESmCEG5WKkenpIq3Yx/Bk/f+GfKL/sdJ/LPZiEx3rjT
+         qzQg==
+X-Gm-Message-State: ACrzQf1MuaqQh5lghHr/LtzDtTWGRV8IuwYYuiwAF70LZ4acaEit51+a
+        3LIY2PIpZUWWisHeAN+GoU7Ltw==
+X-Google-Smtp-Source: AMsMyM6Dqkj/fmEvUY9GlAeBcJhGA7ZHq3jh4t+LYjXIvM6e9pllccBvkzgY3UMMnVz++MBaBGfTNQ==
+X-Received: by 2002:a05:6a00:84d:b0:542:4254:17ef with SMTP id q13-20020a056a00084d00b00542425417efmr5827589pfk.31.1663340522396;
+        Fri, 16 Sep 2022 08:02:02 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id b27-20020aa7951b000000b0053e6eae9665sm15105664pfp.140.2022.09.16.08.02.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Sep 2022 07:43:37 -0700 (PDT)
-From:   Fabio Porcedda <fabio.porcedda@gmail.com>
-To:     mhi@lists.linux.dev, linux-arm-msm@vger.kernel.org,
-        netdev@vger.kernel.org, mani@kernel.org, loic.poulain@linaro.org,
-        ryazanov.s.a@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
-Cc:     dnlplm@gmail.com
-Subject: [PATCH 2/2] bus: mhi: host: pci_generic: Add a secondary AT port to Telit FN990
-Date:   Fri, 16 Sep 2022 16:43:29 +0200
-Message-Id: <20220916144329.243368-3-fabio.porcedda@gmail.com>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220916144329.243368-1-fabio.porcedda@gmail.com>
-References: <20220916144329.243368-1-fabio.porcedda@gmail.com>
+        Fri, 16 Sep 2022 08:02:01 -0700 (PDT)
+Date:   Fri, 16 Sep 2022 08:02:00 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     kuba@kernel.org, pablo@netfilter.org, davem@davemloft.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net 3/3] wireguard: netlink: avoid variable-sized memcpy
+ on sockaddr
+Message-ID: <202209160743.C860E8700@keescook>
+References: <20220916143740.831881-1-Jason@zx2c4.com>
+ <20220916143740.831881-4-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220916143740.831881-4-Jason@zx2c4.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a secondary AT port using one of OEM reserved channel.
+On Fri, Sep 16, 2022 at 03:37:40PM +0100, Jason A. Donenfeld wrote:
+> Doing a variable-sized memcpy is slower, and the compiler isn't smart
+> enough to turn this into a constant-size assignment.
+> 
+> Further, Kees' latest fortified memcpy will actually bark, because the
+> destination pointer is type sockaddr, not explicitly sockaddr_in or
+> sockaddr_in6, so it thinks there's an overflow:
+> 
+>     memcpy: detected field-spanning write (size 28) of single field
+>     "&endpoint.addr" at drivers/net/wireguard/netlink.c:446 (size 16)
+> 
+> Fix this by just assigning by using explicit casts for each checked
+> case.
+> 
+> Cc: Kees Cook <keescook@chromium.org>
+> Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> ---
+>  drivers/net/wireguard/netlink.c | 13 ++++++-------
+>  1 file changed, 6 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/net/wireguard/netlink.c b/drivers/net/wireguard/netlink.c
+> index d0f3b6d7f408..5c804bcabfe6 100644
+> --- a/drivers/net/wireguard/netlink.c
+> +++ b/drivers/net/wireguard/netlink.c
+> @@ -436,14 +436,13 @@ static int set_peer(struct wg_device *wg, struct nlattr **attrs)
+>  	if (attrs[WGPEER_A_ENDPOINT]) {
+>  		struct sockaddr *addr = nla_data(attrs[WGPEER_A_ENDPOINT]);
+>  		size_t len = nla_len(attrs[WGPEER_A_ENDPOINT]);
+> +		struct endpoint endpoint = { { { 0 } } };
 
-Signed-off-by: Fabio Porcedda <fabio.porcedda@gmail.com>
----
- drivers/bus/mhi/host/pci_generic.c | 2 ++
- 1 file changed, 2 insertions(+)
+FWIW, this is equivalent[1] on all our compiler versions now:
 
-diff --git a/drivers/bus/mhi/host/pci_generic.c b/drivers/bus/mhi/host/pci_generic.c
-index 51e2b901bae0..caa4ce28cf9e 100644
---- a/drivers/bus/mhi/host/pci_generic.c
-+++ b/drivers/bus/mhi/host/pci_generic.c
-@@ -507,6 +507,8 @@ static const struct mhi_channel_config mhi_telit_fn990_channels[] = {
- 	MHI_CHANNEL_CONFIG_DL(13, "MBIM", 32, 0),
- 	MHI_CHANNEL_CONFIG_UL(32, "DUN", 32, 0),
- 	MHI_CHANNEL_CONFIG_DL(33, "DUN", 32, 0),
-+	MHI_CHANNEL_CONFIG_UL(92, "DUN2", 32, 1),
-+	MHI_CHANNEL_CONFIG_DL(93, "DUN2", 32, 1),
- 	MHI_CHANNEL_CONFIG_HW_UL(100, "IP_HW0_MBIM", 128, 2),
- 	MHI_CHANNEL_CONFIG_HW_DL(101, "IP_HW0_MBIM", 128, 3),
- };
++		struct endpoint endpoint = { };
+
+>  
+> -		if ((len == sizeof(struct sockaddr_in) &&
+> -		     addr->sa_family == AF_INET) ||
+> -		    (len == sizeof(struct sockaddr_in6) &&
+> -		     addr->sa_family == AF_INET6)) {
+> -			struct endpoint endpoint = { { { 0 } } };
+> -
+> -			memcpy(&endpoint.addr, addr, len);
+> +		if (len == sizeof(struct sockaddr_in) && addr->sa_family == AF_INET) {
+> +			endpoint.addr4 = *(struct sockaddr_in *)addr;
+> +			wg_socket_set_peer_endpoint(peer, &endpoint);
+> +		} else if (len == sizeof(struct sockaddr_in6) && addr->sa_family == AF_INET6) {
+> +			endpoint.addr6 = *(struct sockaddr_in6 *)addr;
+>  			wg_socket_set_peer_endpoint(peer, &endpoint);
+>  		}
+>  	}
+
+Ah, sneaky! I like it. :)
+
+Reviewed-by: Kees Cook <keescook@chromium.org>
+
+
+I wonder if we need a "converter" struct to help with this -- this isn't
+the only place this code pattern exists.
+
+struct sockaddr_decode {
+	union {
+		struct sockaddr		addr;
+		struct sockaddr_in	addr4;
+		struct sockaddr_in6	addr6;
+		DECLARE_FLEX_ARRAY(u8,	content);
+	};
+};
+
+	struct sockaddr_decode *addr = nla_data(attrs[WGPEER_A_ENDPOINT]);
+	...
+	if (len == sizeof(addr->addr4) && addr->addr.sa_family == AF_INET) {
+		endpoint.addr4 = addr->addr4;
+	...
+
+
+This looks a lot like these open issues we've had for a while:
+https://github.com/KSPP/linux/issues/169
+https://github.com/KSPP/linux/issues/140
+
+-Kees
+
+[1] https://lore.kernel.org/lkml/20210910225207.3272766-1-keescook@chromium.org/
+
 -- 
-2.37.3
-
+Kees Cook
