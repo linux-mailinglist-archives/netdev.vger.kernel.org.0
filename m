@@ -2,84 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C3CFB5BAF80
-	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 16:40:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 584365BAF8B
+	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 16:43:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231328AbiIPOkU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Sep 2022 10:40:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41128 "EHLO
+        id S231376AbiIPOnn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Sep 2022 10:43:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231326AbiIPOkT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 10:40:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59F4A36DFB;
-        Fri, 16 Sep 2022 07:40:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D24AD62C1E;
-        Fri, 16 Sep 2022 14:40:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 39D14C433D7;
-        Fri, 16 Sep 2022 14:40:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663339215;
-        bh=BMgQBKNJt/brrMvAlgA6oyjbl+rWt/iab8EHKpRf06M=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=CiGtpE9mOyb+CgnWFA6VOOMy4xKG26cXtDCNpvWZCNY83XaZCooWP0WcxqIfoviub
-         1ZQ60ure++mQKwPfklJh5biO9+vht9aZtdx7YoR36ZOvEg7yT0OuMN6nGvTdh4GSmo
-         5USZCr9fZJHnKUoO8gVgSzpiYajXwy+Y/dJ7plhhXqElWtIFqaB/mk3GsvhOn+kHGm
-         xJ2gWgU2ZW37twisubr3i4Z4aIOyAnlug+UNEhnEyqDf57q+vCj31W1x9YO9mgBJ3h
-         iz54nW3B6EJXiJyGS2J4wHknABymek/j5CSIeJ7dKbqGSl3z+9wf2f+BdS6tfHTWJK
-         beEvmG9GW4g6w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 160F8C59A58;
-        Fri, 16 Sep 2022 14:40:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S231616AbiIPOnh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 10:43:37 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17DC15F221;
+        Fri, 16 Sep 2022 07:43:36 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id bj12so49840120ejb.13;
+        Fri, 16 Sep 2022 07:43:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=LKoaZ5We1TGLeFod6UTJMH7q09dtJndCh1W2gfaDfzM=;
+        b=FPZdopoGGaFUGRqTDSLf/mbn0u3wwg02p7UxOEwbSG5bvv6s1++oPirhDM2S8KDyD3
+         Be4kaXWPqfFNLq2WkV+3glORMuZGdpg1KhtQloZrB3q+fLSD6ftqJGEgYYjBh/wBd3eE
+         eIuCY02i9QkxVIJ4CbywRVkrJM2CNGcmWwjFWBY9/VggqGJEfPMkOg73aeUsYNqc11Nk
+         BSpoheNWqki6kQX/hPBNjmaOV9wmEYoonf2nu8mYsDV4yu7o3NB1BDKYhzVXyVPip/ve
+         8UoGeR9+5GsN6d3gary881TBLdzmIfsEcLA5ilkgjX6j1j7bK6TaBbXKy6ba9TUBhjZV
+         NCjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=LKoaZ5We1TGLeFod6UTJMH7q09dtJndCh1W2gfaDfzM=;
+        b=fuB89yp6QwMSgMXJyaWttiGFhkLJoGPCn0pLCkWp+6RCkufhRcZJiQhxhfvq0CwhRU
+         FKK7HAuIo7TwaQybiNLlSWgZgBmM1MRPQqfXTHzFk1pux0kl6xFEe4zFTphPk8NoUTc6
+         ym+DEc9zWQ/onJ8RmUHGW0j6tGAglAKnZYqAu12m4q6a0VXgxkU9Yi4PJUPoyhnilmEL
+         Rg8MsOEoN/XEBYuu6kVqVKG5Ue6hREkFAnFLGMu0gecrHlt/QoSNQIBDabSyBzLTtNMb
+         yRYMMcviPgvc6oU1hstuDxdDfScPoSq49YBJrAQwyi9gwNTxx1yMAk6LM3oLCG/gmcmp
+         KBDw==
+X-Gm-Message-State: ACrzQf1b2mymPay0SlCyEI9Gk2pMEC/X7w4lBGD+hvLlMay5pLa2nPye
+        WbeX2ELqr1VA2rRT3NwiW4M=
+X-Google-Smtp-Source: AMsMyM7zIcoW0FRIFKPApyLHgN4mHUuTE5bIgYjHNY9NOwwKb46Fr6t/zkSgRGUmnFvAOxGKYq84kA==
+X-Received: by 2002:a17:906:7944:b0:73c:838:ac3d with SMTP id l4-20020a170906794400b0073c0838ac3dmr3838252ejo.242.1663339414462;
+        Fri, 16 Sep 2022 07:43:34 -0700 (PDT)
+Received: from labdl-itc-sw06.tmt.telital.com (static-82-85-31-68.clienti.tiscali.it. [82.85.31.68])
+        by smtp.gmail.com with ESMTPSA id b15-20020aa7cd0f000000b004527eb874ebsm6273792edw.40.2022.09.16.07.43.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Sep 2022 07:43:31 -0700 (PDT)
+From:   Fabio Porcedda <fabio.porcedda@gmail.com>
+To:     mhi@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+        netdev@vger.kernel.org, mani@kernel.org, loic.poulain@linaro.org,
+        ryazanov.s.a@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     dnlplm@gmail.com
+Subject: [PATCH 0/2] Add a secondary AT port to the Telit FN990
+Date:   Fri, 16 Sep 2022 16:43:27 +0200
+Message-Id: <20220916144329.243368-1-fabio.porcedda@gmail.com>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] tcp: Use WARN_ON_ONCE() in tcp_read_skb()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166333921508.20219.3065242215536407480.git-patchwork-notify@kernel.org>
-Date:   Fri, 16 Sep 2022 14:40:15 +0000
-References: <20220908231523.8977-1-yepeilin.cs@gmail.com>
-In-Reply-To: <20220908231523.8977-1-yepeilin.cs@gmail.com>
-To:     Peilin Ye <yepeilin.cs@gmail.com>
-Cc:     edumazet@google.com, davem@davemloft.net, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com,
-        peilin.ye@bytedance.com, cong.wang@bytedance.com,
-        jakub@cloudflare.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+In order to add a secondary AT port to the Telit FN990 first add "DUN2"
+to mhi_wwan_ctrl.c, after that add a seconday AT port to the
+Telit FN990 in pci_generic.c
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+Fabio Porcedda (2):
+  net: wwan: mhi_wwan_ctrl: Add DUN2 to have a secondary AT port
+  bus: mhi: host: pci_generic: Add a secondary AT port to Telit FN990
 
-On Thu,  8 Sep 2022 16:15:23 -0700 you wrote:
-> From: Peilin Ye <peilin.ye@bytedance.com>
-> 
-> Prevent tcp_read_skb() from flooding the syslog.
-> 
-> Suggested-by: Jakub Sitnicki <jakub@cloudflare.com>
-> Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
-> 
-> [...]
+ drivers/bus/mhi/host/pci_generic.c | 2 ++
+ drivers/net/wwan/mhi_wwan_ctrl.c   | 1 +
+ 2 files changed, 3 insertions(+)
 
-Here is the summary with links:
-  - [net] tcp: Use WARN_ON_ONCE() in tcp_read_skb()
-    https://git.kernel.org/netdev/net/c/96628951869c
-
-You are awesome, thank you!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.37.3
 
