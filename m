@@ -2,93 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B75C5BAFD2
-	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 17:04:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EEFF5BAFE5
+	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 17:07:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230368AbiIPPEG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Sep 2022 11:04:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39182 "EHLO
+        id S231511AbiIPPHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Sep 2022 11:07:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231446AbiIPPEF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 11:04:05 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A086D90196
-        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 08:04:03 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id j12so21486560pfi.11
-        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 08:04:03 -0700 (PDT)
+        with ESMTP id S230329AbiIPPHV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 11:07:21 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80F4AA8CEE;
+        Fri, 16 Sep 2022 08:07:20 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id e5so21525737pfl.2;
+        Fri, 16 Sep 2022 08:07:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=8AWsuZeHHO0fTr7SMH5yzyE+p153cQFgu5EbTNcp2aQ=;
-        b=J5xFUKI+kPTmczQ08Dpkfe91zrTGB6dS68kHAI7EaFrXhLvQZV4DPxt94be3ZNNzO4
-         BubkpbjXrRrOitGm0w+q/2dpPXIdzqYX0Q202gxFnI2KbQ6r+PjAWjsm7pjTyH92Z0/2
-         H+ghNJ7o+tPb5RnF4ItkNqW+HmuEYLwVssiFQ=
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=1A6ga4kHyY0A/iGdWq+fEtERzLuG2ECuSfJthR6YX8M=;
+        b=aq5y/9owXzU7RrxOBlk9W7pnbPVNW5Qp6zaNBOZ9XkyTKoA7H3u1NIjpGCxcp+fOta
+         wvsMmDtuJcHKqYEj/DA8Xs24FbnbqDTmrF/Esg51fkJ+oLeK0eDKsXIN0zFJFHSJ+hrl
+         1NEM/ZjIVBaAiqQd/Q/MkFln8gUGBG9t6BOvng4QcpFv1I5UpkZeHHw3FYek8xl57qFV
+         q8qxfHutYlX7f7xdDZY7GbhXXDSplI0mCwVjQpzYKk5M50lJdPllB6fxKGunfsHYcCki
+         RJ2TCaXhQcbs3KpxpSE4QZHIG3iQpsU84Vt1xdBKLU5nALGz+Ac1VRJZmnoP9+uKPy7J
+         wxZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=8AWsuZeHHO0fTr7SMH5yzyE+p153cQFgu5EbTNcp2aQ=;
-        b=Vi+NT5jt4l1UEEsr2xu2hsYjg1JtJQfveLNcdiYPD/n8n9L/wqaKgqb4jx8WMU6pig
-         saMLTPO4+beJWqg3WgQH2Kcm3awgURfekHWsExcGqiaNvYpZGeb/Uay6QA2yLjZgpN2P
-         4HqDz6hoPNbrdhSsq7LJNHJgJ21KC/ZQz/e1ajGVAIdP+3jRVao2yJeXd8t2e42OgXxq
-         t6/ckOxUcaDfS5d2+qw5vQ0TLAFq1LqNugIqYe3zlgIx4GX0ijRRN5Bsah6dSHUOJp1k
-         wL8cE2/U+rmlFBzcUMJm9IdKCDg13gIAGYFGaH0Rq2rf3Kby/RH4YdZgjlH8X6Jdi7tk
-         PGcg==
-X-Gm-Message-State: ACrzQf3qqPBrOVKlgsU0L61q6lSCOyIt8LdiGQcnJaPl3nkjXIE9W9/i
-        mMmjcfb5mxOkh/jdmz2uaXlf4g==
-X-Google-Smtp-Source: AMsMyM5m8WD4MmZWptcMkSLLjG6uON8+pNTeQGVU1aJcIf2cADqJNCE7k5oI7h+pC5Wb13A66R6A0w==
-X-Received: by 2002:a05:6a00:1947:b0:536:6730:7d33 with SMTP id s7-20020a056a00194700b0053667307d33mr5669335pfk.10.1663340643093;
-        Fri, 16 Sep 2022 08:04:03 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id n5-20020a63e045000000b0041cd2417c66sm13475398pgj.18.2022.09.16.08.04.02
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=1A6ga4kHyY0A/iGdWq+fEtERzLuG2ECuSfJthR6YX8M=;
+        b=6kZzB596SPlXeeACPAEzP0gihOoYJUqukJ5+DnV81aCof5Re1yAQklDhI/YVgyhf0k
+         TfE6ICABsAMkg0hX5D9IS3cZxYXQmxEQH3OOeb3CkPKJ8DKnkWS+IStMyYDF3Dyn6PxC
+         XI9s5V/iHBl2Dnc5BO+E+WsjySfTVW635/VOxYJ62Hq5hUq9tgG3jVbGaMVfguJKrOl7
+         2h/dyCd9QPu62+NGhKdDXxVbU/dlFOR5fStzxbs6Gg8k3RBv9hZfcW+foRf1UKzp8QVk
+         q3pBqb+KtI4kZxETsP+I7oqs32Kt9JSUBAHysVTrOdlKu4nVQHJN7gmYCE1b4xQyRsDh
+         57Wg==
+X-Gm-Message-State: ACrzQf0OhL9h0r61x8z6WCwqtKOBbRJohUPAF/RN8awo7yKSFLn/cvcC
+        bJyNXt8JE6YfHD/U8ERUyfw=
+X-Google-Smtp-Source: AMsMyM5sO6Np80jaydyQwMYW0UVTDQmEtWzcfq8yULy37H1Ucg5Ocob07JMkHK9Y+jKZupAKqQ8AKw==
+X-Received: by 2002:a63:eb0a:0:b0:438:a46b:5632 with SMTP id t10-20020a63eb0a000000b00438a46b5632mr4857086pgh.305.1663340839953;
+        Fri, 16 Sep 2022 08:07:19 -0700 (PDT)
+Received: from rfl-device.localdomain ([39.124.24.102])
+        by smtp.gmail.com with ESMTPSA id m6-20020a63ed46000000b0042ba1a95235sm13455861pgk.86.2022.09.16.08.07.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Sep 2022 08:04:02 -0700 (PDT)
-Date:   Fri, 16 Sep 2022 08:04:01 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     kuba@kernel.org, pablo@netfilter.org, davem@davemloft.net,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net 3/3] wireguard: netlink: avoid variable-sized memcpy
- on sockaddr
-Message-ID: <202209160802.60021AF07@keescook>
-References: <20220916143740.831881-1-Jason@zx2c4.com>
- <20220916143740.831881-4-Jason@zx2c4.com>
+        Fri, 16 Sep 2022 08:07:19 -0700 (PDT)
+From:   Ruffalo Lavoisier <ruffalolavoisier@gmail.com>
+X-Google-Original-From: Ruffalo Lavoisier <RuffaloLavoisier@gmail.com>
+To:     Derek Chickles <dchickles@marvell.com>,
+        Satanand Burla <sburla@marvell.com>,
+        Felix Manlunas <fmanlunas@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Ruffalo Lavoisier <RuffaloLavoisier@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 2] liquidio: CN23XX: delete repeated words, add missing words and fix typo in comment
+Date:   Sat, 17 Sep 2022 00:07:08 +0900
+Message-Id: <20220916150709.19975-1-RuffaloLavoisier@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220916143740.831881-4-Jason@zx2c4.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 16, 2022 at 03:37:40PM +0100, Jason A. Donenfeld wrote:
-> Doing a variable-sized memcpy is slower, and the compiler isn't smart
-> enough to turn this into a constant-size assignment.
-> 
-> Further, Kees' latest fortified memcpy will actually bark, because the
-> destination pointer is type sockaddr, not explicitly sockaddr_in or
-> sockaddr_in6, so it thinks there's an overflow:
-> 
->     memcpy: detected field-spanning write (size 28) of single field
->     "&endpoint.addr" at drivers/net/wireguard/netlink.c:446 (size 16)
-> 
-> Fix this by just assigning by using explicit casts for each checked
-> case.
-> 
-> Cc: Kees Cook <keescook@chromium.org>
-> Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+- Delete the repeated word 'to' in the comment.
 
-Oh, also, please include reporter details:
+- Add the missing 'use' word within the sentence.
 
-Reported-by: syzbot+a448cda4dba2dac50de5@syzkaller.appspotmail.com
+- Correct spelling on 'malformation'.
 
+Signed-off-by: Ruffalo Lavoisier <RuffaloLavoisier@gmail.com>
+---
+I have reflected all the reviews. Thanks !
 
+ drivers/net/ethernet/cavium/liquidio/cn23xx_pf_regs.h | 2 +-
+ drivers/net/ethernet/cavium/liquidio/cn23xx_vf_regs.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/cavium/liquidio/cn23xx_pf_regs.h b/drivers/net/ethernet/cavium/liquidio/cn23xx_pf_regs.h
+index 3f1c189646f4..244e27ea079c 100644
+--- a/drivers/net/ethernet/cavium/liquidio/cn23xx_pf_regs.h
++++ b/drivers/net/ethernet/cavium/liquidio/cn23xx_pf_regs.h
+@@ -88,7 +88,7 @@
+ #define    CN23XX_SLI_PKT_IN_JABBER                0x29170
+ /* The input jabber is used to determine the TSO max size.
+  * Due to H/W limitation, this need to be reduced to 60000
+- * in order to to H/W TSO and avoid the WQE malfarmation
++ * in order to use H/W TSO and avoid the WQE malformation
+  * PKO_BUG_24989_WQE_LEN
+  */
+ #define    CN23XX_DEFAULT_INPUT_JABBER             0xEA60 /*60000*/
+diff --git a/drivers/net/ethernet/cavium/liquidio/cn23xx_vf_regs.h b/drivers/net/ethernet/cavium/liquidio/cn23xx_vf_regs.h
+index d33dd8f4226f..e85449249670 100644
+--- a/drivers/net/ethernet/cavium/liquidio/cn23xx_vf_regs.h
++++ b/drivers/net/ethernet/cavium/liquidio/cn23xx_vf_regs.h
+@@ -37,7 +37,7 @@
+ 
+ /* The input jabber is used to determine the TSO max size.
+  * Due to H/W limitation, this need to be reduced to 60000
+- * in order to to H/W TSO and avoid the WQE malfarmation
++ * in order to use H/W TSO and avoid the WQE malformation
+  * PKO_BUG_24989_WQE_LEN
+  */
+ #define    CN23XX_DEFAULT_INPUT_JABBER             0xEA60 /*60000*/
 -- 
-Kees Cook
+2.25.1
+
