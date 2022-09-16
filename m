@@ -2,311 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 83DCB5BB160
-	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 18:56:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC8C95BB1B7
+	for <lists+netdev@lfdr.de>; Fri, 16 Sep 2022 19:45:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229473AbiIPQ4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Sep 2022 12:56:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50296 "EHLO
+        id S229507AbiIPRpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Sep 2022 13:45:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229608AbiIPQ4O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 12:56:14 -0400
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C690ABD61
-        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 09:56:13 -0700 (PDT)
-Received: by mail-ot1-x32a.google.com with SMTP id u6-20020a056830118600b006595e8f9f3fso3088134otq.1
-        for <netdev@vger.kernel.org>; Fri, 16 Sep 2022 09:56:12 -0700 (PDT)
+        with ESMTP id S229458AbiIPRpE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 13:45:04 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2129.outbound.protection.outlook.com [40.107.220.129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CDCA2B268;
+        Fri, 16 Sep 2022 10:45:02 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZJ2f02iqwRGXsueP8Ky2A8W2lzzVWtqNBNG0ZunTOknN8tHVqMYKj8z/2OApL7WIvIpfiw1spdk6ROpP5p8UAv9qW0tw6wG2coaKv3efrs5wAHbs6wf8e6syZCD25sxSHzl5vKOJbb0kqimDXSuGdgXdkueEIkAfUMnLF6mYV4g1ZusK6VNcZdTBKZ5uNc24f/NQAs/bJ3NnO211ZMUA1U9dn0kNZ6xPoE48Iwh3FBnqn0Rki68Bg3uckstFBJtdO4fT02VwNam2YftqrADNkklEj7QSLzEeiRlh+TBlRmHm71FsDp+KFgJ0uAtHmqwTAIbOOIUJveg8zPKK8swVJA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=XuUa3By/D310LXSGkf2KyyjkN8xPdXGkxp27frlS5GY=;
+ b=YquxfLb00pzKTygrJY0tRnmKjWrclPwGPbKQaqUt7MwwxzYyA0O5Saw9Xa9QI/BrvTHweLJBDrXDS8emB9mcQ5jlAUtNWlX4WFKcEnZdMK87SCZTILmD326Aj+TFNgH7H0JriIKU1c432cupUWOXnf0zNAh0Bnl7GG9rB/bc534l9ZG5nPtrnXXX1EWhKQli2wjtqkoRtZUdE14SPHEACChHmbB9ZbY/dWG/T7AYAUeOOmD55i5FVOnCLRLqSZJL8vTiTqUJJFo2GUnH0bE0asJaUCCHr+ibLCbXntW2R1aRzod1Qvr+C/VhU6PVD8Ca4iXVP1Q04UwQNtk702KpGw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=YNaYuOOmFHI2Yz2Gd6/GwPSAug2OW9NMCIjxVKbN/u0=;
-        b=26/a9oeh4HQuQ+d2ufKFxps9+Vfq5hOhqC5m8So8xBeKLY+PzzKzeUEzZ2qDBdKSyq
-         f8WLyb5X3sl/AcePxgPlSM310CRrUIY8Kvl1jU8J7ctJyXXREyrJD5ZhKgokzIgArksS
-         XPeGi0/5yS6yp0W0mXQu3ytVHmF1zr0QK2IiuevncBato/Jbpgi7sHpAF1QMAWZmdGBj
-         7D3pUQNpGeBapygpleSKl5btaKnOHkcbju95PFzBbb7K2LcABJs3fFAahr9NPbpa3rqm
-         Rg+Z0Qm7xxkzDo/xZmmZCEr/Hb6jlNz86QLm3uLGrkQUcIhBu+8BcadFzc3+EDdF8I8a
-         fE9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=YNaYuOOmFHI2Yz2Gd6/GwPSAug2OW9NMCIjxVKbN/u0=;
-        b=Vn4jWuq6nHauYTVT8+p9/KrOZsJ9072gf3gowj2cavPMWLPFS3IjzYlvpMxOAcB3H2
-         Y87hCN4eJQU2my4keExp6LG5F/fpfDnyNh8soEeCCM3cES5iNXBtP0IDvt0PKDix4l3F
-         sE4H6UA3+PF97fEVK5BCq8NY1SDbUO9CYMWu+VE817B9D+t2snSjZLm+Ek0SMiqXqxw/
-         UCV7yG79srMbs7jIkfU8JNQ11hO/NU4ZWes4OhG5wCQ/10NyuPimzuNF4yfaqhn9ThOI
-         jrB3PK2bmLVaPamFNZSjyqvpNyow/ygt2w09kZo2LBaZSm2RlHmpdmn73bFZHnHhg1Wo
-         mS6g==
-X-Gm-Message-State: ACrzQf1/lWDkxhKXAAEbRn6Xcnsc0auBVeqOvXr5OM00hM6w+ZmwyYiJ
-        p+tK6O0vDdOF95o1fUGWGP2lHw==
-X-Google-Smtp-Source: AMsMyM4XKacNv14jUjMk05R2uWttyg3ZNWSFGVjQRfz4CDAFLnTq21XdDMEz+3HDGs6Xoh3uwYAOug==
-X-Received: by 2002:a9d:48a:0:b0:656:7d8:c37e with SMTP id 10-20020a9d048a000000b0065607d8c37emr2696983otm.163.1663347372011;
-        Fri, 16 Sep 2022 09:56:12 -0700 (PDT)
-Received: from ?IPV6:2804:1b3:7001:2c5:8b07:2c04:e4b7:4d82? ([2804:1b3:7001:2c5:8b07:2c04:e4b7:4d82])
-        by smtp.gmail.com with ESMTPSA id i4-20020a9d53c4000000b00654625c0c4dsm10032039oth.17.2022.09.16.09.56.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 16 Sep 2022 09:56:11 -0700 (PDT)
-Message-ID: <f0fa2b91-cebf-0997-1074-d1ba35bf77a9@mojatatu.com>
-Date:   Fri, 16 Sep 2022 13:56:05 -0300
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XuUa3By/D310LXSGkf2KyyjkN8xPdXGkxp27frlS5GY=;
+ b=o5h2z7cLfCImryE2FydmMoosD19xUOCdlfRO8BTHJfo4x4QuBI24jtt8j1kj/sH6FDcSElgfTlpyJOhvI4+lfTTgKmbZc9Y7PKypzd2uFkmEp6XJWA70cvUYrpMfMS6mfYOjHpU/F10viwGd/QFXUmgam4PhDh3OCXCaEa9QYDM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by CH0PR10MB5228.namprd10.prod.outlook.com
+ (2603:10b6:610:db::5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5632.17; Fri, 16 Sep
+ 2022 17:45:00 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::dcf2:ddbd:b18d:bb49]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::dcf2:ddbd:b18d:bb49%3]) with mapi id 15.20.5632.015; Fri, 16 Sep 2022
+ 17:45:00 +0000
+Date:   Fri, 16 Sep 2022 10:44:56 -0700
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Lee Jones <lee@kernel.org>
+Subject: Re: [RFC v1 net-next 2/8] net: mscc: ocelot: expose regfield
+ definition to be used by other drivers
+Message-ID: <YyS2GHqAxczc73f+@euler>
+References: <20220911200244.549029-1-colin.foster@in-advantage.com>
+ <20220911200244.549029-1-colin.foster@in-advantage.com>
+ <20220911200244.549029-3-colin.foster@in-advantage.com>
+ <20220911200244.549029-3-colin.foster@in-advantage.com>
+ <20220912154715.lrt4ynyhsfvdbyno@skbuf>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220912154715.lrt4ynyhsfvdbyno@skbuf>
+X-ClientProxiedBy: SJ0PR03CA0251.namprd03.prod.outlook.com
+ (2603:10b6:a03:3a0::16) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [PATCH net-next,v4 0/9] refactor duplicate codes in the tc cls
- walk function
-To:     Zhengchao Shao <shaozhengchao@huawei.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, shuah@kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, weiyongjun1@huawei.com,
-        yuehaibing@huawei.com
-References: <20220916020251.190097-1-shaozhengchao@huawei.com>
-Content-Language: en-US
-From:   Victor Nogueira <victor@mojatatu.com>
-In-Reply-To: <20220916020251.190097-1-shaozhengchao@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MWHPR1001MB2351:EE_|CH0PR10MB5228:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9d0b6953-5476-4bf4-f5d0-08da980b2d9e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: E2sLfARqrGENjq5Sy+mIfjUUv2R7CvgSuMplhkkUuoTdX7mLdrrh9IA4HvmvKSclRumIh2ze3nyzDEJgbOtAbz1VWTgkG/kEPrbb+Ew/qsAyYJTTsxQy7HnDQhwCIyEwqvikqAc+k1twX35A2/GEBOIkIG27qwUYS38iC4NjDVqmDQ22wecyASo/GMiDEUXokKq43kNMdYDvhXYNsC1zc4ZlZVSYZ5CmtFeB/rAGZ9DSLA/2QrKgJ9kNmGFqhAMryCA1qUGUQ0LBvEb9Xe8acLs9rjbByYr6Y8o4nndyZlrpPoUqvkZEtMr+sxNFsxBNS43yK2vJp8UWQQ4oBdhTqZPnYpTLUKh63i/KI0pTNkJqjYFvUKjcbDSRUom99ZDjdZD8EiQSxotZiFsR5+er0UO15AMboo/LkGUzcSYY1e/0W5vH2+WUS6uun982i4b7oCvlgnsjWRNzfdC7Jax46Wmctn5Im3nOqYBSF0IrFpptuicwq1g+cCSBQz1MqC8rytxMHD6UgPuPMGDe1NfOR7MH7fV6HGqCNtVS5FT73FLBsIMwnBnrfrnR1tS96X2Uu0+x4yt9TIir1I8BgBisJjg760UdFI7xnYEjvolnFMa9aMYvQp4ij/Sqs1+aHxiagTa6/cJQZFNVmSBWL3MMBGMd2uqVjUyXji/glUaZ9AVIVD5LYCsSh7C1IvBJa7SZNbNjEMN6U6egQxoE6eE5HQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(346002)(136003)(396003)(376002)(39840400004)(366004)(451199015)(7416002)(4744005)(44832011)(41300700001)(5660300002)(8936002)(4326008)(66556008)(66476007)(66946007)(6916009)(316002)(54906003)(8676002)(2906002)(6506007)(6666004)(186003)(33716001)(9686003)(26005)(6512007)(6486002)(86362001)(478600001)(38100700002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?djpS3l/PZUv8rfHIEUTqFBc+GSk0rUDwQ53i401N2wst8NWFm7+nYq30Yt55?=
+ =?us-ascii?Q?Nz57N6WG2Hjquwwy8AqMUEflbQSoJn10yzPhM4WK4OZhrFv4RQZ2IsGUeM4X?=
+ =?us-ascii?Q?rZTVSIiIhAuUhZ3A1IxDHwBSDtJvyCbnVlQ6iVlLCWe14XmtNc1q3TGZ8B9p?=
+ =?us-ascii?Q?8QhzOYAxqFYAKLeLofH+a+ngGIt3RbypKKKpaLAVakICTAtNNXJ9H+nhnoII?=
+ =?us-ascii?Q?18LbEdL5A+aZ0GpNFES4AmY5DgQZSvQ6N6+gTchqAKZToXoUDuK6zSiQpJ2m?=
+ =?us-ascii?Q?O0sJwRirEXSTWR841y0ZjZkMnDdZbwiqLKaBLxYaz8k1HxZCK4nrRBgbf0bw?=
+ =?us-ascii?Q?vcguP1YwnF+IdxrpQk9rjrA4JOw4XahxGK9Pyykc/p9gibQLx0z4MHzM8ioD?=
+ =?us-ascii?Q?4A3YeeYWiwi4NuaO+gpx4hae9Pr1gDhGSNRSaWHpcf6Xn+S41aLeMWR9zlps?=
+ =?us-ascii?Q?YeR98GIZHE8VNFYxI8/wdxRN1wtioulmxJWlX8VL142fncOsdFdA78EV2N5Q?=
+ =?us-ascii?Q?ywjvChI5vBjprIqhnB0LI3fzEdJUDHWpe/sxT3QMlGR9jvu8Jsb2beWAj/9X?=
+ =?us-ascii?Q?zsfNLBouMKnLrl02xwqL+tVKezZM/7aC2W+aIBQrH/pqziqAld9uXUf0KKap?=
+ =?us-ascii?Q?cCiRhzFc0jpHzNDUmFTJ3cLgq0gm/yXx3FHP8Xyg46v7WnlXO8IX8wq7Bq+8?=
+ =?us-ascii?Q?D1phfl2SUjnqOxlTFBAK7H1zo0ZbgYuvFmZ8TqlutcGmBsiomn42fIgKFS1G?=
+ =?us-ascii?Q?WhBr1rZAGkpECKoIOGVI77V5kPdzemPdOvpm5sRIo+eGqRZlZZXuF6SqYPlu?=
+ =?us-ascii?Q?iPhw/CkOAhOdrKieedTV71RK41OI9Qyg1WDoDU17SYGH4kblFmokOSV7TCC6?=
+ =?us-ascii?Q?UjtKnro/NoeaxCU9CeFt86Jfdj9mqj2IcfznGMK90nCwJSE/AwZnTRdNMQHy?=
+ =?us-ascii?Q?eNCiBHkzhd+NVHkX+yr3kqtRuMN8XITyVLpEJmfHpjtenISP8a/hJ1Ifayph?=
+ =?us-ascii?Q?Bugv4pUvssYvOuyWa9Q8/d8NxkIZF2ih1e/8lBPZNZdzKCH7boREg2RcbB87?=
+ =?us-ascii?Q?9a8UQedWFoN1em8NEEAZgiuzCUNl/lwLOlAsVFjOXBU43LDBXR79kFK5DNuj?=
+ =?us-ascii?Q?7hOWvAZZPK8VUBAuueHGinrvhDxVYGxc//L6zngsX7556ufgf9ybOa5WqyS4?=
+ =?us-ascii?Q?gVUVenGIF/7lM8YgC5ScCSMlokj/zlafBG96kmnmljj1XYlC+/ejv3ZiCAZ2?=
+ =?us-ascii?Q?P6cJFtwQ+IZfGktXKfkW79PbOmmsyqd871IEfQzZBwKCX32OW1XMVoiS+0n1?=
+ =?us-ascii?Q?7V1/G8riS3rms/uj0zXlpzNQ4OycOSsrHiEGAmMeX2viYeolOefLUz8U8Fd7?=
+ =?us-ascii?Q?Jx/sTn1nlXk20S0s+iy7uR37iq70XTwUVPfc0qMfk0XV6foWUDAvWCZ3YzGE?=
+ =?us-ascii?Q?jUYjhzLTzQbcnyHK/kwaEIbPhM7mmzQxSnuvqyJDd+f3Bzb7TCWZmd7yTR0R?=
+ =?us-ascii?Q?vT9skw/REpX7CNvYj/ABmrpZVz1mkH+G9hRgKgDht094ZWihKvZzLP40Wflp?=
+ =?us-ascii?Q?229keYg7F6KitJ+HWhfGEWPZWkorCp5Kr0LIaP9iy6YU0hXLge52nStooHMH?=
+ =?us-ascii?Q?3g=3D=3D?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9d0b6953-5476-4bf4-f5d0-08da980b2d9e
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Sep 2022 17:45:00.5675
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: +E0VZ9rJIKUqtWFf3JeiE9jmYOBrRRJrf/GrBAoP2VWufyVZwB/Jgj+iuHq+QRT4nm99DYUzs0ytMaZqeGPoXm2gHeP6yoI0DPyq3s4o1TM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR10MB5228
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Sep 12, 2022 at 03:47:15PM +0000, Vladimir Oltean wrote:
+> On Sun, Sep 11, 2022 at 01:02:38PM -0700, Colin Foster wrote:
+> > The ocelot_regfields struct is common between several different chips, some
+> > of which can only be controlled externally. Export this structure so it
+> > doesn't have to be duplicated in these other drivers.
+> > 
+> > Rename the structure as well, to follow the conventions of other shared
+> > resources.
+> > 
+> > Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> > ---
+> 
+> Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-On 15/09/2022 23:02, Zhengchao Shao wrote:
-> The walk implementation of most tc cls modules is basically the same.
-> That is, the values of count and skip are checked first. If count is
-> greater than or equal to skip, the registered fn function is executed.
-> Otherwise, increase the value of count. So the code can be refactored.
-> Then use helper function to replace the code of each cls module in
-> alphabetical order.
->
-> The walk function is invoked during dump. Therefore, test cases related
->   to the tdc filter need to be added.
->
-> Last, thanks to Jamal, Victor and Wang for their review.
->
-> Add test cases locally and perform the test. The test results are listed
-> below:
->
-> ./tdc.py -e 0811
-> ok 1 0811 - Add multiple basic filter with cmp ematch u8/link layer and
-> default action and dump them
->
-> ./tdc.py -e 5129
-> ok 1 5129 - List basic filters
->
-> ./tdc.py -c bpf-filter
-> ok 1 23c3 - Add cBPF filter with valid bytecode
-> ok 2 1563 - Add cBPF filter with invalid bytecode
-> ok 3 2334 - Add eBPF filter with valid object-file
-> ok 4 2373 - Add eBPF filter with invalid object-file
-> ok 5 4423 - Replace cBPF bytecode
-> ok 6 5122 - Delete cBPF filter
-> ok 7 e0a9 - List cBPF filters
->
-> ./tdc.py -c cgroup
-> ok 1 6273 - Add cgroup filter with cmp ematch u8/link layer and drop
-> action
-> ok 2 4721 - Add cgroup filter with cmp ematch u8/link layer with trans
-> flag and pass action
-> ok 3 d392 - Add cgroup filter with cmp ematch u16/link layer and pipe
-> action
-> ok 4 0234 - Add cgroup filter with cmp ematch u32/link layer and miltiple
-> actions
-> ok 5 8499 - Add cgroup filter with cmp ematch u8/network layer and pass
-> action
-> ok 6 b273 - Add cgroup filter with cmp ematch u8/network layer with trans
-> flag and drop action
-> ok 7 1934 - Add cgroup filter with cmp ematch u16/network layer and pipe
-> action
-> ok 8 2733 - Add cgroup filter with cmp ematch u32/network layer and
-> miltiple actions
-> ok 9 3271 - Add cgroup filter with NOT cmp ematch rule and pass action
-> ok 10 2362 - Add cgroup filter with two ANDed cmp ematch rules and single
-> action
-> ok 11 9993 - Add cgroup filter with two ORed cmp ematch rules and single
-> action
-> ok 12 2331 - Add cgroup filter with two ANDed cmp ematch rules and one
-> ORed ematch rule and single action
-> ok 13 3645 - Add cgroup filter with two ANDed cmp ematch rules and one
-> NOT ORed ematch rule and single action
-> ok 14 b124 - Add cgroup filter with u32 ematch u8/zero offset and drop
-> action
-> ok 15 7381 - Add cgroup filter with u32 ematch u8/zero offset and invalid
-> value >0xFF
-> ok 16 2231 - Add cgroup filter with u32 ematch u8/positive offset and
-> drop action
-> ok 17 1882 - Add cgroup filter with u32 ematch u8/invalid mask >0xFF
-> ok 18 1237 - Add cgroup filter with u32 ematch u8/missing offset
-> ok 19 3812 - Add cgroup filter with u32 ematch u8/missing AT keyword
-> ok 20 1112 - Add cgroup filter with u32 ematch u8/missing value
-> ok 21 3241 - Add cgroup filter with u32 ematch u8/non-numeric value
-> ok 22 e231 - Add cgroup filter with u32 ematch u8/non-numeric mask
-> ok 23 4652 - Add cgroup filter with u32 ematch u8/negative offset and
-> pass action
-> ok 24 1331 - Add cgroup filter with u32 ematch u16/zero offset and pipe
-> action
-> ok 25 e354 - Add cgroup filter with u32 ematch u16/zero offset and
-> invalid value >0xFFFF
-> ok 26 3538 - Add cgroup filter with u32 ematch u16/positive offset and
-> drop action
-> ok 27 4576 - Add cgroup filter with u32 ematch u16/invalid mask >0xFFFF
-> ok 28 b842 - Add cgroup filter with u32 ematch u16/missing offset
-> ok 29 c924 - Add cgroup filter with u32 ematch u16/missing AT keyword
-> ok 30 cc93 - Add cgroup filter with u32 ematch u16/missing value
-> ok 31 123c - Add cgroup filter with u32 ematch u16/non-numeric value
-> ok 32 3675 - Add cgroup filter with u32 ematch u16/non-numeric mask
-> ok 33 1123 - Add cgroup filter with u32 ematch u16/negative offset and
-> drop action
-> ok 34 4234 - Add cgroup filter with u32 ematch u16/nexthdr+ offset and
-> pass action
-> ok 35 e912 - Add cgroup filter with u32 ematch u32/zero offset and pipe
-> action
-> ok 36 1435 - Add cgroup filter with u32 ematch u32/positive offset and
-> drop action
-> ok 37 1282 - Add cgroup filter with u32 ematch u32/missing offset
-> ok 38 6456 - Add cgroup filter with u32 ematch u32/missing AT keyword
-> ok 39 4231 - Add cgroup filter with u32 ematch u32/missing value
-> ok 40 2131 - Add cgroup filter with u32 ematch u32/non-numeric value
-> ok 41 f125 - Add cgroup filter with u32 ematch u32/non-numeric mask
-> ok 42 4316 - Add cgroup filter with u32 ematch u32/negative offset and
-> drop action
-> ok 43 23ae - Add cgroup filter with u32 ematch u32/nexthdr+ offset and
-> pipe action
-> ok 44 23a1 - Add cgroup filter with canid ematch and single SFF
-> ok 45 324f - Add cgroup filter with canid ematch and single SFF with mask
-> ok 46 2576 - Add cgroup filter with canid ematch and multiple SFF
-> ok 47 4839 - Add cgroup filter with canid ematch and multiple SFF with
-> masks
-> ok 48 6713 - Add cgroup filter with canid ematch and single EFF
-> ok 49 4572 - Add cgroup filter with canid ematch and single EFF with mask
-> ok 50 8031 - Add cgroup filter with canid ematch and multiple EFF
-> ok 51 ab9d - Add cgroup filter with canid ematch and multiple EFF with
-> masks
-> ok 52 5349 - Add cgroup filter with canid ematch and a combination of
-> SFF/EFF
-> ok 53 c934 - Add cgroup filter with canid ematch and a combination of
-> SFF/EFF with masks
-> ok 54 4319 - Replace cgroup filter with diffferent match
-> ok 55 4636 - Detele cgroup filter
->
-> ./tdc.py -c flow
-> ok 1 5294 - Add flow filter with map key and ops
-> ok 2 3514 - Add flow filter with map key or ops
-> ok 3 7534 - Add flow filter with map key xor ops
-> ok 4 4524 - Add flow filter with map key rshift ops
-> ok 5 0230 - Add flow filter with map key addend ops
-> ok 6 2344 - Add flow filter with src map key
-> ok 7 9304 - Add flow filter with proto map key
-> ok 8 9038 - Add flow filter with proto-src map key
-> ok 9 2a03 - Add flow filter with proto-dst map key
-> ok 10 a073 - Add flow filter with iif map key
-> ok 11 3b20 - Add flow filter with priority map key
-> ok 12 8945 - Add flow filter with mark map key
-> ok 13 c034 - Add flow filter with nfct map key
-> ok 14 0205 - Add flow filter with nfct-src map key
-> ok 15 5315 - Add flow filter with nfct-src map key
-> ok 16 7849 - Add flow filter with nfct-proto-src map key
-> ok 17 9902 - Add flow filter with nfct-proto-dst map key
-> ok 18 6742 - Add flow filter with rt-classid map key
-> ok 19 5432 - Add flow filter with sk-uid map key
-> ok 20 4234 - Add flow filter with sk-gid map key
-> ok 21 4522 - Add flow filter with vlan-tag map key
-> ok 22 4253 - Add flow filter with rxhash map key
-> ok 23 4452 - Add flow filter with hash key list
-> ok 24 4341 - Add flow filter with muliple ops
-> ok 25 4392 - List flow filters
-> ok 26 4322 - Change flow filter with map key num
-> ok 27 2320 - Replace flow filter with map key num
-> ok 28 3213 - Delete flow filter with map key num
->
-> ./tdc.py -c route
-> ok 1 e122 - Add route filter with from and to tag
-> ok 2 6573 - Add route filter with fromif and to tag
-> ok 3 1362 - Add route filter with to flag and reclassify action
-> ok 4 4720 - Add route filter with from flag and continue actions
-> ok 5 2812 - Add route filter with form tag and pipe action
-> ok 6 7994 - Add route filter with miltiple actions
-> ok 7 4312 - List route filters
-> ok 8 2634 - Delete route filter with pipe action
->
-> ./tdc.py -c rsvp
-> ok 1 2141 - Add rsvp filter with tcp proto and specific IP address
-> ok 2 5267 - Add rsvp filter with udp proto and specific IP address
-> ok 3 2819 - Add rsvp filter with src ip and src port
-> ok 4 c967 - Add rsvp filter with tunnelid and continue action
-> ok 5 5463 - Add rsvp filter with tunnel and pipe action
-> ok 6 2332 - Add rsvp filter with miltiple actions
-> ok 7 8879 - Add rsvp filter with tunnel and skp flag
-> ok 8 8261 - List rsvp filters
-> ok 9 8989 - Delete rsvp filter
->
-> ./tdc.py -c tcindex
-> ok 1 8293 - Add tcindex filter with default action
-> ok 2 7281 - Add tcindex filter with hash size and pass action
-> ok 3 b294 - Add tcindex filter with mask shift and reclassify action
-> ok 4 0532 - Add tcindex filter with pass_on and continue actions
-> ok 5 d473 - Add tcindex filter with pipe action
-> ok 6 2940 - Add tcindex filter with miltiple actions
-> ok 7 1893 - List tcindex filters
-> ok 8 2041 - Change tcindex filter with pass action
-> ok 9 9203 - Replace tcindex filter with pass action
-> ok 10 7957 - Delete tcindex filter with drop action
->
-> ---
-> v4: rename tc_cls_stats_update to tc_cls_stats_dump and modify the
->      test case format alignment
-> v3: modify the test case format alignment
-> v2: rectify spelling error; The category name bpf in filters file
->      is renamed to bpf-filter
-> ---
->
-> Zhengchao Shao (9):
->    net/sched: cls_api: add helper for tc cls walker stats dump
->    net/sched: use tc_cls_stats_dump() in filter
->    selftests/tc-testings: add selftests for bpf filter
->    selftests/tc-testings: add selftests for cgroup filter
->    selftests/tc-testings: add selftests for flow filter
->    selftests/tc-testings: add selftests for route filter
->    selftests/tc-testings: add selftests for rsvp filter
->    selftests/tc-testings: add selftests for tcindex filter
->    selftests/tc-testings: add list case for basic filter
->
->   include/net/pkt_cls.h                         |   13 +
->   net/sched/cls_basic.c                         |    9 +-
->   net/sched/cls_bpf.c                           |    8 +-
->   net/sched/cls_flow.c                          |    8 +-
->   net/sched/cls_fw.c                            |    9 +-
->   net/sched/cls_route.c                         |    9 +-
->   net/sched/cls_rsvp.h                          |    9 +-
->   net/sched/cls_tcindex.c                       |   18 +-
->   net/sched/cls_u32.c                           |   20 +-
->   .../tc-testing/tc-tests/filters/basic.json    |   47 +
->   .../tc-testing/tc-tests/filters/bpf.json      |  171 +++
->   .../tc-testing/tc-tests/filters/cgroup.json   | 1236 +++++++++++++++++
->   .../tc-testing/tc-tests/filters/flow.json     |  623 +++++++++
->   .../tc-testing/tc-tests/filters/route.json    |  181 +++
->   .../tc-testing/tc-tests/filters/rsvp.json     |  203 +++
->   .../tc-testing/tc-tests/filters/tcindex.json  |  227 +++
->   16 files changed, 2716 insertions(+), 75 deletions(-)
->   create mode 100644 tools/testing/selftests/tc-testing/tc-tests/filters/bpf.json
->   create mode 100644 tools/testing/selftests/tc-testing/tc-tests/filters/cgroup.json
->   create mode 100644 tools/testing/selftests/tc-testing/tc-tests/filters/flow.json
->   create mode 100644 tools/testing/selftests/tc-testing/tc-tests/filters/route.json
->   create mode 100644 tools/testing/selftests/tc-testing/tc-tests/filters/rsvp.json
->   create mode 100644 tools/testing/selftests/tc-testing/tc-tests/filters/tcindex.json
+I'm assuming you'll agree with my a-ha moment regarding ocelot_reset()
+being in the ocelot_lib.
 
-
-Reviewed-by: Victor Nogueira <victor@mojatatu.com>
-Tested-by: Victor Nogueira <victor@mojatatu.com>
-
+There might be a few others as well. Should I add them as more "export
+function X" commits, or squash them (and these already-reviewed commits)
+in a larger "export a bunch of resources and symbols" type commit to
+keep the patch count low?
