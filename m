@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AE895BBA41
-	for <lists+netdev@lfdr.de>; Sat, 17 Sep 2022 22:18:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB1335BBA3E
+	for <lists+netdev@lfdr.de>; Sat, 17 Sep 2022 22:18:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229558AbiIQUSJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Sep 2022 16:18:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37888 "EHLO
+        id S229633AbiIQUSS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Sep 2022 16:18:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229492AbiIQUSI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Sep 2022 16:18:08 -0400
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64FAF2E9EE;
-        Sat, 17 Sep 2022 13:18:07 -0700 (PDT)
-Received: by mail-qt1-x82c.google.com with SMTP id h21so18285162qta.3;
-        Sat, 17 Sep 2022 13:18:07 -0700 (PDT)
+        with ESMTP id S229608AbiIQUSM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Sep 2022 16:18:12 -0400
+Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9575F2E9F0;
+        Sat, 17 Sep 2022 13:18:11 -0700 (PDT)
+Received: by mail-qk1-x72f.google.com with SMTP id o7so14439671qkj.10;
+        Sat, 17 Sep 2022 13:18:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=EnLNkzzS7uvp8qzIOHofbmM/lr6EdUZwCfdgBKsBFIA=;
-        b=WnJNpsrV7HdjGnzo2nkpOIxfT2GxSQjATwHQe5v3dxoDnhipC0pkWqvbDRaaAkHUQl
-         BjuI5IHPTPKLxcBGbBky4ToOKprKzwbMjyJdETPc++bA6kflYiSa0oVI5YALYKtStEuX
-         s1AF/+zVhqgaqkyDkFWxaQAq6J2FxoK8ra3/X/7zVu9rmMsb+T//OX3VmA7rJq+gLfEe
-         gOxjRTSUCB8XAqhqASuiItzDRhGM19ybGOKOn2CR581W61gTdJ96XBxuQCX63STtniZn
-         E1DEGEdZCY7FTpS43bWkkxm1MTCoN7tiTtmtCzJmyvIzjeVwjJ6IEahZE+9GSiOCGeZT
-         m3uA==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=rA1J3wNnURwjVaQRzDPJJFo52izXeQrMGO3evzyuiQ0=;
+        b=KxoD7xykKYyawuxkaTKHAsD+UHEKwbfX7XWCNBZe6i7Mgrw0YCsTjl+qKqObCTg6p0
+         Act4uRMpeCSYfygeT7s2GPeEMjBiZx2NKzesoXaO38hnh+dFLYZeuerbOgD0h7aQpNpA
+         BE4nMBe9E5K6ppuDhZupAYJkurPuEAOIjfUZ3+DIvrYkNz1HBb92lc8uK22slSLy1SkN
+         K4enAfXoM/6wWBxcp/GQlLS2x0PwMU9qyFLWxt9HMB5rFG9TCu0npvbhSMJ6bSsDJQbL
+         VAFQv4WIJnvs+PQX1jJ0r3ctc7FpQRnlvPxkuOLp2BkxE+s7ZRcARsOyU0XsW5DugsVW
+         drZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=EnLNkzzS7uvp8qzIOHofbmM/lr6EdUZwCfdgBKsBFIA=;
-        b=lAekH1cEknlXhiFVU/lH+nJOLa1g0+I537s6mOYY6iYHJx9wO4S5E0dbWc2IF9uwjs
-         IeFFz2QscCkIAJ1Sq82+KowRaiwWBWtvH5dVr7/IoPtdG1W3+Q6gwPQ1TRZCO69Gsoap
-         pyIAs/On0jeGTYTnu1Xe0PhzDsQQKQiuJl6GSRT/Sl1t9ss7yRM3RCQiD5WbILHIBn6O
-         elg/gvgB5oreF5EI19+w1eKlRtNdZf5Hzoc2hHkJ0D/r0KKfDfRiAB2hkjRVEzdzZBHv
-         P/foMGW7/wAeYZnW2FAHd7hPulyxxHGRn0kTNXGlOuYfLGbjdgLyTtmLeBpAYFTNDHkg
-         PKCw==
-X-Gm-Message-State: ACrzQf0d2jrCjT+lV4szkjenHSaImLP1xLuxxRR8kslTJo/XZvuqChKx
-        wLT7OH2WXuHZUFO6bgWYI74=
-X-Google-Smtp-Source: AMsMyM7cM/HW3xBioBWezl3X+3QEZQyJkj85m12XBnHv7oTpjrxgZgVMCPyE7emse7IXOB0C/oO1Kg==
-X-Received: by 2002:ac8:57ca:0:b0:35b:b51f:94fc with SMTP id w10-20020ac857ca000000b0035bb51f94fcmr9524213qta.276.1663445886429;
-        Sat, 17 Sep 2022 13:18:06 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=rA1J3wNnURwjVaQRzDPJJFo52izXeQrMGO3evzyuiQ0=;
+        b=IOX6Ow5BxJNwiZTEDdZqbXKg/svCFq68o6I+YwOj8qU2ibpH3GTRXgcrV2Gv05XYXv
+         mrC959nLvp4fbekBXZGOCAd0HianQtglbEJH2wmH7lkOjaLl8/NS16tgMluyTzu997aw
+         r0i4rx/p9HRLDX/F9qULiNgrhKmSRgKVei7UH0HJW0ZZZrzVKUqNJsBAZDGEJCmfAH2t
+         dSVF0aM5ZX5oUFeNg9q/d0TYtdCo+uZpdimtbJ3GSpjdMvNsmJUFbKYGdN8/T9+g/Zbp
+         OgXfsC15PpI3QmQUNWeMTOCF2L5CBay0TxzuQNkXSLMMZ0+NQnNoyaZMuKfq3oM/jbf5
+         6SzA==
+X-Gm-Message-State: ACrzQf2kTILqB/88KuEPmxPgzolfSkyqcdWm2uFm8x8x8YiUpCPRapog
+        qUEUPX7OstR9Kv+rbnFKPAI=
+X-Google-Smtp-Source: AMsMyM5ob17a28YWQup5oSo+fcrgZBzZZvGQMtPbfQahiNyXRukM2fBEkogohQnFZJLUANcC9Ea8Nw==
+X-Received: by 2002:a05:620a:1aa4:b0:6ce:6105:dc3f with SMTP id bl36-20020a05620a1aa400b006ce6105dc3fmr8340523qkb.632.1663445890697;
+        Sat, 17 Sep 2022 13:18:10 -0700 (PDT)
 Received: from euclid ([71.58.109.160])
-        by smtp.gmail.com with ESMTPSA id l2-20020a37f902000000b006b9c355ed75sm8826647qkj.70.2022.09.17.13.18.05
+        by smtp.gmail.com with ESMTPSA id y30-20020a37f61e000000b006a6ebde4799sm8579191qkj.90.2022.09.17.13.18.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 17 Sep 2022 13:18:06 -0700 (PDT)
+        Sat, 17 Sep 2022 13:18:10 -0700 (PDT)
 From:   Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>, aroulin@nvidia.com,
@@ -57,12 +58,13 @@ Cc:     "David S. Miller" <davem@davemloft.net>, aroulin@nvidia.com,
         Nikolay Aleksandrov <razor@blackwall.org>,
         linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
         Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
-Subject: [PATCH RFC net-next 0/5] net: vlan: fix bridge binding behavior and add selftests
-Date:   Sat, 17 Sep 2022 16:17:56 -0400
-Message-Id: <cover.1663445339.git.sevinj.aghayeva@gmail.com>
+Subject: [PATCH RFC net-next 1/5] net: core: export call_netdevice_notifiers_info
+Date:   Sat, 17 Sep 2022 16:17:57 -0400
+Message-Id: <d6eaa0453446118ead2912bea6ef7b25c136b01c.1663445339.git.sevinj.aghayeva@gmail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <cover.1663445339.git.sevinj.aghayeva@gmail.com>
+References: <cover.1663445339.git.sevinj.aghayeva@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -74,51 +76,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When bridge binding is enabled for a vlan interface, it is expected
-that the link state of the vlan interface will track the subset of the
-ports that are also members of the corresponding vlan, rather than
-that of all ports.
+The function call_netdevice_notifiers_info will be used by the vlan
+module for sending link-type-specific information to other modules.
 
-Currently, this feature works as expected when a vlan interface is
-created with bridge binding enabled:
+Signed-off-by: Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
+---
+ include/linux/netdevice.h | 2 ++
+ net/core/dev.c            | 5 ++---
+ 2 files changed, 4 insertions(+), 3 deletions(-)
 
-  ip link add link br name vlan10 type vlan id 10 protocol 802.1q \
-        bridge_binding on
-
-However, the feature does not work when a vlan interface is created
-with bridge binding disabled, and then enabled later:
-
-  ip link add link br name vlan10 type vlan id 10 protocol 802.1q \
-        bridge_binding off
-  ip link set vlan10 type vlan bridge_binding on
-
-After these two commands, the link state of the vlan interface
-continues to track that of all ports, which is inconsistent and
-confusing to users. This series fixes this bug and introduces two
-tests for the valid behavior.
-
-Sevinj Aghayeva (5):
-  net: core: export call_netdevice_notifiers_info
-  net: core: introduce a new notifier for link-type-specific changes
-  net: 8021q: notify bridge module of bridge-binding flag change
-  net: bridge: handle link-type-specific changes in the bridge module
-  selftests: net: tests for bridge binding behavior
-
- include/linux/if_vlan.h                       |   4 +
- include/linux/netdevice.h                     |   3 +
- include/linux/notifier_info.h                 |  21 +++
- net/8021q/vlan.h                              |   2 +-
- net/8021q/vlan_dev.c                          |  20 ++-
- net/bridge/br.c                               |   5 +
- net/bridge/br_private.h                       |   7 +
- net/bridge/br_vlan.c                          |  18 +++
- net/core/dev.c                                |   7 +-
- tools/testing/selftests/net/Makefile          |   1 +
- .../selftests/net/bridge_vlan_binding_test.sh | 143 ++++++++++++++++++
- 11 files changed, 223 insertions(+), 8 deletions(-)
- create mode 100644 include/linux/notifier_info.h
- create mode 100755 tools/testing/selftests/net/bridge_vlan_binding_test.sh
-
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index f0068c1ff1df..56b96b1e4c4c 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -2906,6 +2906,8 @@ netdev_notifier_info_to_extack(const struct netdev_notifier_info *info)
+ }
+ 
+ int call_netdevice_notifiers(unsigned long val, struct net_device *dev);
++int call_netdevice_notifiers_info(unsigned long val,
++				  struct netdev_notifier_info *info);
+ 
+ 
+ extern rwlock_t				dev_base_lock;		/* Device list lock */
+diff --git a/net/core/dev.c b/net/core/dev.c
+index d66c73c1c734..e233145d1452 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -160,8 +160,6 @@ struct list_head ptype_base[PTYPE_HASH_SIZE] __read_mostly;
+ struct list_head ptype_all __read_mostly;	/* Taps */
+ 
+ static int netif_rx_internal(struct sk_buff *skb);
+-static int call_netdevice_notifiers_info(unsigned long val,
+-					 struct netdev_notifier_info *info);
+ static int call_netdevice_notifiers_extack(unsigned long val,
+ 					   struct net_device *dev,
+ 					   struct netlink_ext_ack *extack);
+@@ -1927,7 +1925,7 @@ static void move_netdevice_notifiers_dev_net(struct net_device *dev,
+  *	are as for raw_notifier_call_chain().
+  */
+ 
+-static int call_netdevice_notifiers_info(unsigned long val,
++int call_netdevice_notifiers_info(unsigned long val,
+ 					 struct netdev_notifier_info *info)
+ {
+ 	struct net *net = dev_net(info->dev);
+@@ -1944,6 +1942,7 @@ static int call_netdevice_notifiers_info(unsigned long val,
+ 		return ret;
+ 	return raw_notifier_call_chain(&netdev_chain, val, info);
+ }
++EXPORT_SYMBOL_GPL(call_netdevice_notifiers_info);
+ 
+ /**
+  *	call_netdevice_notifiers_info_robust - call per-netns notifier blocks
 -- 
 2.34.1
 
