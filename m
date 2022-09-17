@@ -2,73 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E26A35BBA44
-	for <lists+netdev@lfdr.de>; Sat, 17 Sep 2022 22:20:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91E2A5BBA65
+	for <lists+netdev@lfdr.de>; Sat, 17 Sep 2022 22:34:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229722AbiIQUSf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Sep 2022 16:18:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38096 "EHLO
+        id S229578AbiIQUeU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Sep 2022 16:34:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229676AbiIQUSW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Sep 2022 16:18:22 -0400
-Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 782302ED51;
-        Sat, 17 Sep 2022 13:18:20 -0700 (PDT)
-Received: by mail-qv1-xf2d.google.com with SMTP id z9so7710876qvn.9;
-        Sat, 17 Sep 2022 13:18:20 -0700 (PDT)
+        with ESMTP id S229455AbiIQUeS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Sep 2022 16:34:18 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5242C2F002
+        for <netdev@vger.kernel.org>; Sat, 17 Sep 2022 13:34:16 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id r7so170186wrm.2
+        for <netdev@vger.kernel.org>; Sat, 17 Sep 2022 13:34:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=00Tw4Iguiga6FIJOQTAU2+b9Codsgvfv3AG/3wKNVqM=;
-        b=FZ7G+W/tFDZsg5m8et+ZfWZX+4PjaCgi1eksG5u4CCRchWpmUEt0I9eG42xBA6HxzT
-         QrStOK1km8P3bBa6dBMtGK8g5roVU03R/aPWl2v+GNYPN+NQAXum8o6fWr6UGnN4DEKS
-         4pUa6MJqvPGMaE95CrmUwMhtL9PlDy6kvS+rWlujoGhNcCMe/rfMjIwSYeTQ8/SvcOud
-         gGCSxfMpapJPzvRqtt+CXvjcoc5ftKp/egs1LDyErvMbwJs9/yyUVmyDqyU0d6To4HQy
-         JudEstUVnQdsOG3q55dmFOlfRmqZa6iEMFQ9CiVeeil4neoDiRXj1IlqAi4mxb1KAJCl
-         TxnA==
+        h=message-id:in-reply-to:to:references:date:subject:mime-version
+         :content-transfer-encoding:from:from:to:cc:subject:date;
+        bh=B89EGstKMjyJPRZQutPTGslF1FXxHpPL5tbfYC9ZDzI=;
+        b=cuB7qdGzqin+9+js23X5eKiyS2zMgvrtOEj8/MAk0PplX+BIa0o6RAVxWd/2EcCkJM
+         EYTkwZmno9IogYgTr/fdMgax8rSufAjsO62BXMtqSxSSudqEOnl2SDkpaMBPSgBnBMMK
+         q0ePt6NKs5Y+8i9Dh8lN0pGrRnbZrOXQD5SXFn/G7BPB+I7uzpakJXg1p4z4uL7gg5zV
+         pDsn9ERHzx0cvODKfHHbaT+KPVKR3Fpd9KEI3CxrObexAyGLZlodcGfo6YF+8gilgBkE
+         H1B9t5dxikekUxG9seEvFx9wXY57my+43mlIiiopsSnxSBtyTu6O8h3GOuQ4gDC1X9oq
+         5eqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+        h=message-id:in-reply-to:to:references:date:subject:mime-version
+         :content-transfer-encoding:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=00Tw4Iguiga6FIJOQTAU2+b9Codsgvfv3AG/3wKNVqM=;
-        b=4dMWhpYphs84DQ+D6Hd91Zf5W1fazsw+gVJsRz1YTiTc82SVWYYtDnP9OcEOPEHKUQ
-         yqpObK9vxOyuDsAKUL5LH0Yn/aLsLo4fVP43+ZH/263Yoqs/+V9S7RSMILeqqMiXOrLm
-         ORPyeuxFUxuvcW6H1Os9opzC4DdHjxXjffECe398Ki9cqXA4y9EFWevODtmoFkEs7ph6
-         Y8PjyPJrtyaYrGF67OpDiq8jVls1tWpG48g0m294LzoNRaYMl0rZXRbhUROQ0nvHIrhO
-         79z0GJrzRizJV+VJe58cV81AFNTzSk9UjC3iCOiRNj4/Iy0ahcFNoehzc6uteM4ovK8G
-         GIrA==
-X-Gm-Message-State: ACrzQf1stkA4kDJhNCblbLeBXcv6+xPwUpaCt+FeEPZ16/3JaeObtpBp
-        IwJ113C/NYbTxG6kt4cTkT8=
-X-Google-Smtp-Source: AMsMyM6idTlZ53YB1hY5TEa6/BimH2eRTDY7cE0gD3aQdMJGBGm3G32SrIhP0qOGJiE3SkIvTMSUtA==
-X-Received: by 2002:a05:6214:4006:b0:48d:3f52:52e7 with SMTP id kd6-20020a056214400600b0048d3f5252e7mr9262865qvb.113.1663445899504;
-        Sat, 17 Sep 2022 13:18:19 -0700 (PDT)
-Received: from euclid ([71.58.109.160])
-        by smtp.gmail.com with ESMTPSA id x8-20020ac85388000000b0035bafecff78sm7280790qtp.74.2022.09.17.13.18.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 17 Sep 2022 13:18:19 -0700 (PDT)
-From:   Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>, aroulin@nvidia.com,
-        sbrivio@redhat.com, roopa@nvidia.com,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
-Subject: [PATCH RFC net-next 5/5] selftests: net: tests for bridge binding behavior
-Date:   Sat, 17 Sep 2022 16:18:01 -0400
-Message-Id: <eaf0aa288dcfee4e36fcfa6ba7c3b8bcc584f0bf.1663445339.git.sevinj.aghayeva@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1663445339.git.sevinj.aghayeva@gmail.com>
-References: <cover.1663445339.git.sevinj.aghayeva@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        bh=B89EGstKMjyJPRZQutPTGslF1FXxHpPL5tbfYC9ZDzI=;
+        b=Mkc76BDdceZ17xsv46NNogwyaDJyE93sFTOm02FYahhcA0rc38EKZsOV3UyszYq8MW
+         UBv4IHgME/n5PZNfsvURoSc7nN4DWGhHH/XqecbvOU5uDAZzWmLpIImgoJ8Qv/eVUGsR
+         iyrVEa0R0GuuPwi41KWiIQyXNeYwpqR2OHikSExzzRjvKp7c53VhyLKQD/rZk/cu7Ebp
+         uuBGKkqg0JfQLSC0pzfcMtjQ1bMecsEqkYJg7pt7lM6RmVQnWZfTmKmyOiyyJ4yRP2bO
+         SqQZ2rc1Xbb8mv177yuqqZdgdWkixHeH7H8HHXrRUIlvdFHJDL5ESP/2ClWnbktwTEZx
+         CL7w==
+X-Gm-Message-State: ACrzQf2KdDxNie/8dl+uPi0pzilU+jNi9vLhK318ebVG2Yh8eFc37jsC
+        H//P3sRZpCpth0PBR6WjbC4DRDiQ0yk=
+X-Google-Smtp-Source: AMsMyM5a3s6VUH6ZOHGvoHMn5195cauljLM5bUyCi7siRRp7Wg4ryDQfHwb6+Jqa1HZ1bAgaiBT8Aw==
+X-Received: by 2002:a5d:508c:0:b0:228:de49:b808 with SMTP id a12-20020a5d508c000000b00228de49b808mr6410127wrt.23.1663446854729;
+        Sat, 17 Sep 2022 13:34:14 -0700 (PDT)
+Received: from smtpclient.apple ([178.254.237.20])
+        by smtp.gmail.com with ESMTPSA id h130-20020a1c2188000000b003a682354f63sm7164843wmh.11.2022.09.17.13.34.13
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 17 Sep 2022 13:34:14 -0700 (PDT)
+From:   Martin Zaharinov <micron10@gmail.com>
+Content-Type: text/plain;
+        charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.120.0.1.13\))
+Subject: Re: Bug Report kernel 5.19.9 Networking NAT 
+Date:   Sat, 17 Sep 2022 23:34:12 +0300
+References: <7D92694E-62A2-4030-8420-31271F865844@gmail.com>
+To:     Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Florian Westphal <fw@strlen.de>,
+        netdev <netdev@vger.kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>, pablo@netfilter.org
+In-Reply-To: <7D92694E-62A2-4030-8420-31271F865844@gmail.com>
+Message-Id: <E0E441FF-D5F7-4E80-B01C-2643B23BAC98@gmail.com>
+X-Mailer: Apple Mail (2.3654.120.0.1.13)
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,186 +74,197 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds two tests in a single file. The first of these is in
-function run_test_late_bridge_binding_set, which tests that when a
-vlan interface is created with bridge binding turned off, and later
-bridge binding is turned on (using ip link set... command), the vlan
-interface behaves accordingly, that is, it tracks the status of the
-ports in its vlan.
+One more update :
 
-The second test, which is in function run_test_multiple_vlan, tests
-that when there are two vlan interfaces with bridge binding turned on,
-turning off the bridge binding in one of the vlan interfaces does not
-affect the bridge binding on the other interface.
 
-Signed-off-by: Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
----
- tools/testing/selftests/net/Makefile          |   1 +
- .../selftests/net/bridge_vlan_binding_test.sh | 143 ++++++++++++++++++
- 2 files changed, 144 insertions(+)
- create mode 100755 tools/testing/selftests/net/bridge_vlan_binding_test.sh
+[81463.921129] softirq: huh, entered softirq 3 NET_RX 000000001471e2c3 =
+with preempt_count 00000100, exited with 7fffff00?
+[81466.401421] softirq: huh, entered softirq 3 NET_RX 000000001471e2c3 =
+with preempt_count 00000100, exited with 7fffff00?
+[81485.314601] softirq: huh, entered softirq 3 NET_RX 000000001471e2c3 =
+with preempt_count 00000100, exited with 7fffff00?
+[81488.241055] softirq: huh, entered softirq 3 NET_RX 000000001471e2c3 =
+with preempt_count 00000100, exited with 7fffff00?
+[81490.982605] softirq: huh, entered softirq 3 NET_RX 000000001471e2c3 =
+with preempt_count 00000100, exited with 7fffff00?
+[81499.225338] softirq: huh, entered softirq 3 NET_RX 000000001471e2c3 =
+with preempt_count 00000100, exited with 7fffff00?
+[81508.272738] softirq: huh, entered softirq 3 NET_RX 000000001471e2c3 =
+with preempt_count 00000100, exited with 7fffff00?
+[81526.742498] softirq: huh, entered softirq 3 NET_RX 000000001471e2c3 =
+with preempt_count 00000100, exited with 7fffff00?
+[81539.072597] softirq: huh, entered softirq 3 NET_RX 000000001471e2c3 =
+with preempt_count 00000100, exited with 7fffff00?
+[81542.472532] softirq: huh, entered softirq 3 NET_RX 000000001471e2c3 =
+with preempt_count 00000100, exited with 7fffff00?
+[81544.781057] softirq: huh, entered softirq 3 NET_RX 000000001471e2c3 =
+with preempt_count 00000100, exited with 7fffff00?
+[81547.931925] softirq: huh, entered softirq 3 NET_RX 000000001471e2c3 =
+with preempt_count 00000100, exited with 7fffff00?
+[81561.741816] softirq: huh, entered softirq 3 NET_RX 000000001471e2c3 =
+with preempt_count 00000100, exited with 7fffff00?
+[81561.741816] softirq: huh, entered softirq 3 NET_RX 000000001471e2c3 =
+with preempt_count 00000100, exited with 7fffff00?
+[81572.312282] softirq: huh, entered softirq 3 NET_RX 000000001471e2c3 =
+with preempt_count 00000100, exited with 7fffff00?
+[81575.764512] softirq: huh, entered softirq 3 NET_RX 000000001471e2c3 =
+with preempt_count 00000100, exited with 7fffff00?
+[81575.764512] softirq: huh, entered softirq 3 NET_RX 000000001471e2c3 =
+with preempt_count 00000100, exited with 7fffff00?
+[81577.486948] softirq: huh, entered softirq 3 NET_RX 000000001471e2c3 =
+with preempt_count 00000100, exited with 7fffff00?
+[81577.486948] softirq: huh, entered softirq 3 NET_RX 000000001471e2c3 =
+with preempt_count 00000100, exited with 7fffff00?
+[81580.855781] softirq: huh, entered softirq 3 NET_RX 000000001471e2c3 =
+with preempt_count 00000100, exited with 7fffff00?
+[81580.958084] softirq: huh, entered softirq 3 NET_RX 000000001471e2c3 =
+with preempt_count 00000100, exited with 7fffff00?
+[81583.501366] softirq: huh, entered softirq 3 NET_RX 000000001471e2c3 =
+with preempt_count 00000100, exited with 7fffff00?
+[81583.501366] softirq: huh, entered softirq 3 NET_RX 000000001471e2c3 =
+with preempt_count 00000100, exited with 7fffff00?
 
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index f5ac1433c301..48443928c3dd 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -44,6 +44,7 @@ TEST_PROGS += arp_ndisc_untracked_subnets.sh
- TEST_PROGS += stress_reuseport_listen.sh
- TEST_PROGS += l2_tos_ttl_inherit.sh
- TEST_PROGS += bind_bhash.sh
-+TEST_PROGS += bridge_vlan_binding_test.sh
- TEST_PROGS_EXTENDED := in_netns.sh setup_loopback.sh setup_veth.sh
- TEST_PROGS_EXTENDED += toeplitz_client.sh toeplitz.sh
- TEST_GEN_FILES =  socket nettest
-diff --git a/tools/testing/selftests/net/bridge_vlan_binding_test.sh b/tools/testing/selftests/net/bridge_vlan_binding_test.sh
-new file mode 100755
-index 000000000000..d094d847800c
---- /dev/null
-+++ b/tools/testing/selftests/net/bridge_vlan_binding_test.sh
-@@ -0,0 +1,143 @@
-+#!/bin/sh
-+# SPDX-License-Identifier: GPL-2.0-or-later
-+
-+cleanup() {
-+	# Remove interfaces created by the previous run
-+	ip link delete veth10 2>/dev/null
-+	ip link delete veth20 2>/dev/null
-+	ip link delete veth30 2>/dev/null
-+	ip link delete br_default 2>/dev/null
-+}
-+
-+trap cleanup EXIT
-+
-+setup() {
-+	cleanup
-+
-+	# Create a bridge and add three ports to it.
-+	ip link add dev br_default type bridge
-+	ip link add dev veth10 type veth peer name veth11
-+	ip link add dev veth20 type veth peer name veth21
-+	ip link add dev veth30 type veth peer name veth31
-+	ip link set dev veth10 master br_default
-+	ip link set dev veth20 master br_default
-+	ip link set dev veth30 master br_default
-+
-+	# Create VLAN 10 and VLAN 20.
-+	bridge vlan add vid 10 dev br_default self
-+	bridge vlan add vid 20 dev br_default self
-+
-+	# Add veth10 to VLAN 10 and veth20 to VLAN 20.
-+	bridge vlan add vid 10 dev veth10
-+	bridge vlan add vid 20 dev veth20
-+
-+	# Bring up the ports and the bridge.
-+	ip link set veth10 up
-+	ip link set veth11 up
-+	ip link set veth20 up
-+	ip link set veth21 up
-+	ip link set veth30 up
-+	ip link set veth31 up
-+	ip link set br_default up
-+}
-+
-+# This test checks that when a vlan interface is created with bridge
-+# binding off, and then bridge binding turned on using "ip link set"
-+# command, bridge binding is actually turned on -- this hasn't been
-+# the case in the past.
-+run_test_late_bridge_binding_set() {
-+	setup
-+
-+	# Add VLAN interface vlan10 to VLAN 10 with bridge binding off.
-+	ip link add link br_default name vlan10 type vlan id 10 protocol \
-+		802.1q bridge_binding off
-+
-+	# Bring up  VLAN interface.
-+	ip link set vlan10 up
-+
-+	# Turn bridge binding on for vlan10.
-+	ip link set vlan10 type vlan bridge_binding on
-+
-+	# Bring down the port in vlan 10.
-+	ip link set veth10 down
-+
-+	# Since bridge binding is turned on for vlan10 interface, it
-+	# should be tracking only the port, veth10 in its vlan. Since
-+	# veth10 is down, vlan10 should be down as well.
-+	if ! ip link show vlan10 | grep -q 'state LOWERLAYERDOWN'; then
-+	    echo "FAIL - vlan10 should be LOWERLAYERDOWN but it is not"
-+	    exit 1
-+	fi
-+
-+	# Bringe the port back up.
-+	ip link set veth10 up
-+
-+	# The vlan 10 interface should be up now.
-+	if ! ip link show vlan10 | grep -q 'state UP'; then
-+	    echo "FAIL - vlan10 should be UP but it is not"
-+	    exit 1
-+	fi
-+
-+	echo "OK"
-+}
-+
-+# This test checks that when there are multiple vlan interfaces with
-+# bridge binding on, turning off bride binding in one of the vlan
-+# interfaces does not affect the bridge binding of the other
-+# interface.
-+run_test_multiple_vlan() {
-+	setup
-+
-+	# Add VLAN interface vlan10 to VLAN 10 with bridge binding on.
-+	ip link add link br_default name vlan10 type vlan id 10 protocol \
-+		802.1q bridge_binding on
-+	# Add VLAN interface vlan20 to VLAN 20 with bridge binding on.
-+	ip link add link br_default name vlan20 type vlan id 20 protocol \
-+		802.1q bridge_binding on
-+
-+	# Bring up  VLAN interfaces.
-+	ip link set vlan10 up
-+	ip link set vlan20 up
-+
-+	# Turn bridge binding off for vlan10.
-+	ip link set vlan10 type vlan bridge_binding off
-+
-+	# Bring down the ports in vlans 10 and 20.
-+	ip link set veth10 down
-+	ip link set veth20 down
-+
-+	# Since bridge binding is off for vlan10 interface, it should
-+	# be tracking all of the ports in the bridge; since veth30 is
-+	# still up, vlan10 should also be up.
-+	if ! ip link show vlan10 | grep -q 'state UP'; then
-+	    echo "FAIL - vlan10 should be UP but it is not"
-+	    exit 1
-+	fi
-+
-+	# Since bridge binding is on for vlan20 interface, it should
-+	# be tracking only the ports in its vlan. This port is veth20,
-+	# and it is down; therefore, vlan20 should be down as well.
-+	if ! ip link show vlan20 | grep -q 'state LOWERLAYERDOWN'; then
-+	    echo "FAIL - vlan20 should be LOWERLAYERDOWN but it is not"
-+	    exit 1
-+	fi
-+
-+	# Bring the ports back up.
-+	ip link set veth10 up
-+	ip link set veth20 up
-+
-+	# Both vlan interfaces should be up now.
-+	if ! ip link show vlan10 | grep -q 'state UP'; then
-+	    echo "FAIL - vlan10 should be UP but it is not"
-+	    exit 1
-+	fi
-+	if ! ip link show vlan20 | grep -q 'state UP' ; then
-+	    echo "FAIL - vlan20 should be UP but it is not"
-+	    exit 1
-+	fi
-+
-+	echo "OK"
-+}
-+
-+run_test_late_bridge_binding_set
-+run_test_multiple_vlan
--- 
-2.34.1
+
+
+
+> On 17 Sep 2022, at 11:03, Martin Zaharinov <micron10@gmail.com> wrote:
+>=20
+> HI team
+>=20
+> This is NAT server with 2gb/s traffic have 2x 10Gb 82599 in Bonding=20
+>=20
+> one report if find any solution write me :
+>=20
+>=20
+> [35857.548356] ------------[ cut here ]------------
+> [35857.548358] WARNING: CPU: 28 PID: 0 at net/core/skbuff.c:728 =
+skb_release_head_state+0x8d/0xa0
+> [35857.548364] Modules linked in: nft_limit nf_conntrack_netlink  =
+pppoe pppox ppp_generic slhc nft_nat nft_masq nft_chain_nat nf_nat xt_CT =
+nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 nft_compat nf_tables =
+netconsole coretemp bonding i40e xt_NAT(O) acpi_ipmi ipmi_si =
+ipmi_devintf ipmi_msghandler rtc_cmos
+> [35857.548379] CPU: 28 PID: 0 Comm: swapper/28 Tainted: G        W  O  =
+    5.19.9 #1
+> [35857.548381] Hardware name: Supermicro SYS-5038MR-H8TRF/X10SRD-F, =
+BIOS 3.3 10/28/2020
+> [35857.548383] RIP: 0010:skb_release_head_state+0x8d/0xa0
+> [35857.548385] Code: 8b bb d8 00 00 00 5b e9 21 e8 ff ff e8 ec 30 08 =
+00 eb d4 be 03 00 00 00 e8 60 b4 d2 ff eb c8 48 83 e7 fe e8 85 e4 01 00 =
+eb cb <0f> 0b eb 94 66 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 85 =
+ff
+> [35857.548387] RSP: 0018:ffffb484406c0d30 EFLAGS: 00010206
+> [35857.548388] RAX: ffffffffb55b7480 RBX: ffff9f01b19f4800 RCX: =
+000000000002e288
+> [35857.548389] RDX: 00000000000f0000 RSI: 0000000000000001 RDI: =
+0000000000000000
+> [35857.548390] RBP: ffff9f0146a812d0 R08: 0000000000000000 R09: =
+00000000000000ed
+> [35857.548391] R10: 0000000000000001 R11: ffff9f01fdc63710 R12: =
+ffff9f01d6b750e2
+> [35857.548392] R13: 0000000000000000 R14: 0000000000000000 R15: =
+ffff9f01d6b750ce
+> [35857.548393] FS:  0000000000000000(0000) GS:ffff9f089fd00000(0000) =
+knlGS:0000000000000000
+> [35857.548394] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [35857.548395] CR2: 00007f4d25bcb38c CR3: 000000010dd1a005 CR4: =
+00000000003706e0
+> [35857.548396] DR0: 0000000000000000 DR1: 0000000000000000 DR2: =
+0000000000000000
+> [35857.548397] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: =
+0000000000000400
+> [35857.548398] Call Trace:
+> [35857.548400]  <IRQ>
+> [35857.548401]  kfree_skb_reason+0x1c/0x70
+> [35857.548404]  sk_stream_kill_queues+0x52/0xe0
+> [35857.548408]  inet_csk_destroy_sock+0x46/0xf0
+> [35857.548410]  tcp_fin+0xdf/0x150
+> [35857.548414]  tcp_data_queue+0x374/0x510
+> [35857.548417]  tcp_rcv_state_process+0x259/0x6f0
+> [35857.548419]  tcp_v4_do_rcv+0xa9/0x1e0
+> [35857.548422]  tcp_v4_rcv+0xcb9/0xd60
+> [35857.548424]  ip_protocol_deliver_rcu+0x1b/0x1a0
+> [35857.548428]  ip_local_deliver_finish+0x68/0x90
+> [35857.548431]  ? ip_protocol_deliver_rcu+0x1a0/0x1a0
+> [35857.548434]  __netif_receive_skb_one_core+0x3f/0x50
+> [35857.548438]  process_backlog+0x7c/0x110
+> [35857.548440]  __napi_poll+0x20/0x100
+> [35857.548443]  net_rx_action+0x26d/0x330
+> [35857.548446]  __do_softirq+0xaf/0x1d7
+> [35857.548449]  do_softirq+0x5a/0x80
+> [35857.548453]  </IRQ>
+> [35857.548453]  <TASK>
+> [35857.548454]  flush_smp_call_function_queue+0x3f/0x60
+> [35857.548459]  do_idle+0xa6/0xc0
+> [35857.548464]  cpu_startup_entry+0x14/0x20
+> [35857.548467]  start_secondary+0xd6/0xe0
+> [35857.548472]  secondary_startup_64_no_verify+0xd3/0xdb
+> [35857.548475]  </TASK>
+> [35857.548475] ---[ end trace 0000000000000000 ]=E2=80=94
+>=20
+>=20
+>=20
+>=20
+> [35936.566314] ------------[ cut here ]------------
+> [35936.566315] WARNING: CPU: 8 PID: 0 at kernel/time/timer.c:1425 =
+del_timer_sync+0xce/0xe0
+> [35936.566324] Modules linked in: nft_limit nf_conntrack_netlink pppoe =
+pppox ppp_generic slhc nft_nat nft_masq nft_chain_nat nf_nat xt_CT =
+nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 nft_compat nf_tables =
+netconsole coretemp bonding i40e xt_NAT(O) acpi_ipmi ipmi_si =
+ipmi_devintf ipmi_msghandler rtc_cmos
+> [35936.566341] CPU: 8 PID: 0 Comm: swapper/8 Tainted: G        W  O    =
+  5.19.9 #1
+> [35936.566343] Hardware name: Supermicro SYS-5038MR-H8TRF/X10SRD-F, =
+BIOS 3.3 10/28/2020
+> [35936.566344] RIP: 0010:del_timer_sync+0xce/0xe0
+> [35936.566349] Code: 8b 34 24 e8 44 71 6e 00 0f ae e8 e9 6c ff ff ff =
+48 0f b3 4f 28 c6 47 24 01 48 8b 03 48 8b 53 08 48 89 02 48 85 c0 74 87 =
+eb 81 <0f> 0b e9 4b ff ff ff 66 66 2e 0f 1f 84 00 00 00 00 00 53 48 89 =
+fb
+> [35936.566351] RSP: 0018:ffffb48440350d50 EFLAGS: 00010246
+> [35936.566353] RAX: 00000000ffffff00 RBX: ffff9f01424beee0 RCX: =
+0000000000000001
+> [35936.566355] RDX: ffffffffb685d680 RSI: ffff9f01424bee50 RDI: =
+ffff9f01424beee0
+> [35936.566357] RBP: ffff9f014bc4a200 R08: 000000000000ca34 R09: =
+ffffb48440350d50
+> [35936.566358] R10: 0000000000000000 R11: 0000000000000000 R12: =
+ffff9f01be40ea00
+> [35936.566360] R13: ffff9f01be40ea00 R14: 0000000000001000 R15: =
+0000000000001000
+> [35936.566362] FS:  0000000000000000(0000) GS:ffff9f089f800000(0000) =
+knlGS:0000000000000000
+> [35936.566364] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [35936.566365] CR2: 00007f645362a38c CR3: 00000001d77b0001 CR4: =
+00000000003706e0
+> [35936.566366] DR0: 0000000000000000 DR1: 0000000000000000 DR2: =
+0000000000000000
+> [35936.566367] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: =
+0000000000000400
+> [35936.566368] Call Trace:
+> [35936.566369]  <IRQ>
+> [35936.566370]  ? inet_ehash_nolisten+0xa/0x60
+> [35936.566376]  inet_csk_reqsk_queue_drop+0x5a/0x230
+> [35936.566379]  inet_csk_complete_hashdance+0x23/0x3c0
+> [35936.566380]  tcp_check_req+0x18f/0x600
+> [35936.566384]  tcp_v4_rcv+0x99a/0xd60
+> [35936.566386]  ip_protocol_deliver_rcu+0x1b/0x1a0
+> [35936.566388]  ip_local_deliver_finish+0x68/0x90
+> [35936.566391]  ? ip_protocol_deliver_rcu+0x1a0/0x1a0
+> [35936.566393]  __netif_receive_skb_one_core+0x3f/0x50
+> [35936.566398]  process_backlog+0x7c/0x110
+> [35936.566400]  __napi_poll+0x20/0x100
+> [35936.566403]  net_rx_action+0x26d/0x330
+> [35936.566405]  __do_softirq+0xaf/0x1d7
+> [35936.566409]  do_softirq+0x5a/0x80
+> [35936.566412]  </IRQ>
+> [35936.566413]  <TASK>
+> [35936.566413]  flush_smp_call_function_queue+0x3f/0x60
+> [35936.566418]  do_idle+0xa6/0xc0
+> [35936.566423]  cpu_startup_entry+0x14/0x20
+> [35936.566425]  start_secondary+0xd6/0xe0
+> [35936.566430]  secondary_startup_64_no_verify+0xd3/0xdb
+> [35936.566433]  </TASK>
+> [35936.566433] ---[ end trace 0000000000000000 ]---
 
