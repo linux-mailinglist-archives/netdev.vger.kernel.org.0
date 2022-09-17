@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E9E025BB66B
-	for <lists+netdev@lfdr.de>; Sat, 17 Sep 2022 07:03:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB6E05BB66D
+	for <lists+netdev@lfdr.de>; Sat, 17 Sep 2022 07:03:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229613AbiIQFDS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Sep 2022 01:03:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54086 "EHLO
+        id S229507AbiIQFDa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Sep 2022 01:03:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229452AbiIQFDR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Sep 2022 01:03:17 -0400
+        with ESMTP id S229518AbiIQFD3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Sep 2022 01:03:29 -0400
 Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22247B6D01;
-        Fri, 16 Sep 2022 22:03:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B479CB6D06;
+        Fri, 16 Sep 2022 22:03:27 -0700 (PDT)
 Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MTzHg5jFdzlVrL;
-        Sat, 17 Sep 2022 12:59:11 +0800 (CST)
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MTzKP5Nm0zpStx;
+        Sat, 17 Sep 2022 13:00:41 +0800 (CST)
 Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
  (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Sat, 17 Sep
- 2022 13:03:12 +0800
+ 2022 13:03:25 +0800
 From:   Zhengchao Shao <shaozhengchao@huawei.com>
 To:     <netdev@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
         <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
@@ -30,9 +30,9 @@ To:     <netdev@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
         <victor@mojatatu.com>
 CC:     <zhijianx.li@intel.com>, <weiyongjun1@huawei.com>,
         <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
-Subject: [PATCH net-next,v2 11/18] selftests/tc-testings: add selftests for mqprio qdisc
-Date:   Sat, 17 Sep 2022 13:04:40 +0800
-Message-ID: <20220917050440.131962-1-shaozhengchao@huawei.com>
+Subject: [PATCH net-next,v2 12/18] selftests/tc-testings: add selftests for multiq qdisc
+Date:   Sat, 17 Sep 2022 13:05:09 +0800
+Message-ID: <20220917050509.132195-1-shaozhengchao@huawei.com>
 X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
 Content-Type: text/plain
@@ -48,31 +48,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Test 9903: Add mqprio Qdisc to multi-queue device (8 queues)
-Test 453a: Delete nonexistent mqprio Qdisc
-Test 5292: Delete mqprio Qdisc twice
-Test 45a9: Add mqprio Qdisc to single-queue device
-Test 2ba9: Show mqprio class
+Test 20ba: Add multiq Qdisc to multi-queue device (8 queues)
+Test 4301: List multiq Class
+Test 7832: Delete nonexistent multiq Qdisc
+Test 2891: Delete multiq Qdisc twice
+Test 1329: Add multiq Qdisc to single-queue device
 
 Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 ---
- .../tc-testing/tc-tests/qdiscs/mqprio.json    | 114 ++++++++++++++++++
+ .../tc-testing/tc-tests/qdiscs/multiq.json    | 114 ++++++++++++++++++
  1 file changed, 114 insertions(+)
- create mode 100644 tools/testing/selftests/tc-testing/tc-tests/qdiscs/mqprio.json
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/qdiscs/multiq.json
 
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/qdiscs/mqprio.json b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/mqprio.json
+diff --git a/tools/testing/selftests/tc-testing/tc-tests/qdiscs/multiq.json b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/multiq.json
 new file mode 100644
-index 000000000000..6e1973f731e9
+index 000000000000..12c0af7a145d
 --- /dev/null
-+++ b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/mqprio.json
++++ b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/multiq.json
 @@ -0,0 +1,114 @@
 +[
 +    {
-+        "id": "9903",
-+        "name": "Add mqprio Qdisc to multi-queue device (8 queues)",
++        "id": "20ba",
++        "name": "Add multiq Qdisc to multi-queue device (8 queues)",
 +        "category": [
 +            "qdisc",
-+            "mqprio"
++            "multiq"
 +        ],
 +        "plugins": {
 +            "requires": "nsPlugin"
@@ -80,21 +80,43 @@ index 000000000000..6e1973f731e9
 +        "setup": [
 +            "echo \"1 1 8\" > /sys/bus/netdevsim/new_device"
 +        ],
-+        "cmdUnderTest": "$TC qdisc add dev $ETH root handle 1: mqprio num_tc 8 map 0 1 2 3 4 5 6 7 queues 1@0 1@1 1@2 1@3 1@4 1@5 1@6 1@7 hw 0",
++        "cmdUnderTest": "$TC qdisc add dev $ETH root handle 1: multiq",
 +        "expExitCode": "0",
 +        "verifyCmd": "$TC qdisc show dev $ETH",
-+        "matchPattern": "qdisc mqprio 1: root tc 8 map 0 1 2 3 4 5 6 7 0 0 0 0 0 0 0 0.*queues:\\(0:0\\) \\(1:1\\) \\(2:2\\) \\(3:3\\) \\(4:4\\) \\(5:5\\) \\(6:6\\) \\(7:7\\)",
++        "matchPattern": "qdisc multiq 1: root refcnt [0-9]+ bands 8",
 +        "matchCount": "1",
 +        "teardown": [
 +            "echo \"1\" > /sys/bus/netdevsim/del_device"
 +        ]
 +    },
 +    {
-+        "id": "453a",
-+        "name": "Delete nonexistent mqprio Qdisc",
++        "id": "4301",
++        "name": "List multiq Class",
 +        "category": [
 +            "qdisc",
-+            "mqprio"
++            "multiq"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "echo \"1 1 8\" > /sys/bus/netdevsim/new_device"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $ETH root handle 1: multiq",
++        "expExitCode": "0",
++        "verifyCmd": "$TC class show dev $ETH",
++        "matchPattern": "class multiq 1:[0-9]+ parent 1:",
++        "matchCount": "8",
++        "teardown": [
++            "echo \"1\" > /sys/bus/netdevsim/del_device"
++        ]
++    },
++    {
++        "id": "7832",
++        "name": "Delete nonexistent multiq Qdisc",
++        "category": [
++            "qdisc",
++            "multiq"
 +        ],
 +        "plugins": {
 +            "requires": "nsPlugin"
@@ -102,28 +124,28 @@ index 000000000000..6e1973f731e9
 +        "setup": [
 +            "echo \"1 1 4\" > /sys/bus/netdevsim/new_device"
 +        ],
-+        "cmdUnderTest": "$TC qdisc del dev $ETH root handle 1: mqprio",
++        "cmdUnderTest": "$TC qdisc del dev $ETH root handle 1: multiq",
 +        "expExitCode": "2",
 +        "verifyCmd": "$TC qdisc show dev $ETH",
-+        "matchPattern": "qdisc mqprio 1: root",
++        "matchPattern": "qdisc multiq 1: root",
 +        "matchCount": "0",
 +        "teardown": [
 +            "echo \"1\" > /sys/bus/netdevsim/del_device"
 +        ]
 +    },
 +    {
-+        "id": "5292",
-+        "name": "Delete mqprio Qdisc twice",
++        "id": "2891",
++        "name": "Delete multiq Qdisc twice",
 +        "category": [
 +            "qdisc",
-+            "mqprio"
++            "multiq"
 +        ],
 +        "plugins": {
 +            "requires": "nsPlugin"
 +        },
 +        "setup": [
 +            "echo \"1 1 8\" > /sys/bus/netdevsim/new_device",
-+            "$TC qdisc add dev $ETH root handle 1: mqprio num_tc 8 map 0 1 2 3 4 5 6 7 queues 1@0 1@1 1@2 1@3 1@4 1@5 1@6 1@7 hw 0",
++            "$TC qdisc add dev $ETH root handle 1: multiq",
 +            "$TC qdisc del dev $ETH root handle 1:"
 +        ],
 +        "cmdUnderTest": "$TC qdisc del dev $ETH root handle 1:",
@@ -136,11 +158,11 @@ index 000000000000..6e1973f731e9
 +        ]
 +    },
 +    {
-+        "id": "45a9",
-+        "name": "Add mqprio Qdisc to single-queue device",
++        "id": "1329",
++        "name": "Add multiq Qdisc to single-queue device",
 +        "category": [
 +            "qdisc",
-+            "mqprio"
++            "multiq"
 +        ],
 +        "plugins": {
 +            "requires": "nsPlugin"
@@ -148,33 +170,11 @@ index 000000000000..6e1973f731e9
 +        "setup": [
 +            "echo \"1 1\" > /sys/bus/netdevsim/new_device"
 +        ],
-+        "cmdUnderTest": "$TC qdisc add dev $ETH root handle 1: mqprio num_tc 8 map 0 1 2 3 4 5 6 7 queues 1@0 1@1 1@2 1@3 1@4 1@5 1@6 1@7 hw 0",
++        "cmdUnderTest": "$TC qdisc add dev $ETH root handle 1: multiq",
 +        "expExitCode": "2",
 +        "verifyCmd": "$TC qdisc show dev $ETH",
-+        "matchPattern": "qdisc mqprio 1: root",
++        "matchPattern": "qdisc multiq 1: root",
 +        "matchCount": "0",
-+        "teardown": [
-+            "echo \"1\" > /sys/bus/netdevsim/del_device"
-+        ]
-+    },
-+    {
-+        "id": "2ba9",
-+        "name": "Show mqprio class",
-+        "category": [
-+            "qdisc",
-+            "mqprio"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "echo \"1 1 8\" > /sys/bus/netdevsim/new_device"
-+        ],
-+        "cmdUnderTest": "$TC qdisc add dev $ETH root handle 1: mqprio num_tc 8 map 0 1 2 3 4 5 6 7 queues 1@0 1@1 1@2 1@3 1@4 1@5 1@6 1@7 hw 0",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC class show dev $ETH",
-+        "matchPattern": "class mqprio 1:",
-+        "matchCount": "16",
 +        "teardown": [
 +            "echo \"1\" > /sys/bus/netdevsim/del_device"
 +        ]
