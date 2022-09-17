@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2258F5BBA3C
+	by mail.lfdr.de (Postfix) with ESMTP id 6E55D5BBA3D
 	for <lists+netdev@lfdr.de>; Sat, 17 Sep 2022 22:18:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229678AbiIQUSW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Sep 2022 16:18:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38030 "EHLO
+        id S229681AbiIQUSX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Sep 2022 16:18:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229618AbiIQUSR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Sep 2022 16:18:17 -0400
-Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85C542ED4C;
-        Sat, 17 Sep 2022 13:18:16 -0700 (PDT)
-Received: by mail-qk1-x72f.google.com with SMTP id g2so15288286qkk.1;
-        Sat, 17 Sep 2022 13:18:16 -0700 (PDT)
+        with ESMTP id S229635AbiIQUST (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Sep 2022 16:18:19 -0400
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67D1A2ED44;
+        Sat, 17 Sep 2022 13:18:18 -0700 (PDT)
+Received: by mail-qk1-x729.google.com with SMTP id h28so18150612qka.0;
+        Sat, 17 Sep 2022 13:18:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=KD38OQmgSaziFwz483qpbZ1Z/wABtZJQ/6K4DXA6e78=;
-        b=gs9ODi1SU9Kl9RMZdfPPVTL92g9U582A3QyiLLRHk0DP7aMRekW1vpxaCY0DuFyIy4
-         Gmc4JC2MEREo4YrkmPICVj1cRladnhz9FRB9fiEK9D3+BIlyLccZYLnCIxuHqHwdrsGD
-         dW8uzY5Nr3tOyjePNVIUQBANY0ZAZjFX1So6C4mK1nQlfAAJBFmtz6jCoNsXy7zttZND
-         jKfX1evavoNcmyB5HmuMkKAb5ycpNjp8o+OKvklksejBqwuCTi0YqGk2/+C1AXLVvmLd
-         o8ma7WJJpQUuFiae7662YPBheSg92Qu7bruwrCCM5boqvzkYdsq1aBWq0QBXeiPfQ6Js
-         14Xw==
+        bh=W7xcUTJ+Xi3/2c+HEMlnIJrwY7Px5v+GX+wSId5EDcY=;
+        b=MWAjhl+xoCtoaOvlX5qq05l39uxVSoxvIlUaU55ko4WaCeYDNkn0oncD0EiX46yoQt
+         ccbjdN3leY+2tL2T1iPG0AqZri5cOUHdEloinZbEdwtjquCkGvhnn6olCwK9n6KsuZc9
+         PfzXa7Z7yvrCO3hT97TvsXKKFkl9MwxaWwpfFP3ODGWKl7nlHsnh2OpBrCQw7O6inAho
+         8Bl/kbDWxvu9mez4VtcPkke48/0Chbnh/gzTRZtox9jwpEeuNfWbOc7DWXTxRSsLtBVz
+         hgpo8sQOTKAOI+JTFU9jiRXpul6ILHO7TxsHOtmbdgSRAf0vEleLgFrP1p2S301/TlZV
+         QoPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=KD38OQmgSaziFwz483qpbZ1Z/wABtZJQ/6K4DXA6e78=;
-        b=d296d2ejuUjMHgNskUsDjSaet5STLOVCEJhdn1+6UYCng6RB7IRHBpg7DWhSul6Utr
-         LkJrdZYXUB8qtv+2iENLpAkVYC/3k0shl1qgHxrzKVf9DgHYCRX1+No+qKcYldR5NeBG
-         bDwC++VBP3x0M4oHOshbne9lflIt2sstLpYT6x4RIgtRjg6zzSSrfiZwzv/22jwv0lzX
-         a9KpUAAzoj3tJi3cq7TqvWV2xe5KlV9oKiBcrel+TdlSvUunP60TC+KhdVQNq4ZfAPwL
-         d4abinUpPWb4C77ZygqoR7kl2kj9H8cnWVoRfGW3SFtNECk7EQ+29T94RXJBb7z3+pEy
-         qAiw==
-X-Gm-Message-State: ACrzQf01lk10JtAbIV7dcUX+hRo7OvTFUw9PvspJBZwSAAMVszUDydnB
-        jELo/Kvf/8WnOwchgoK1fAm9X/FaDUEHTyxF
-X-Google-Smtp-Source: AMsMyM6Ok6WmHv6IRGK6yGFxMFRo9CdplvCq2/ELeU5O7Zh8aUDcrdFmWFDh2DR4PhIfiFuVbfsnHg==
-X-Received: by 2002:a05:620a:254f:b0:6bc:5763:de4b with SMTP id s15-20020a05620a254f00b006bc5763de4bmr8083968qko.207.1663445895626;
-        Sat, 17 Sep 2022 13:18:15 -0700 (PDT)
+        bh=W7xcUTJ+Xi3/2c+HEMlnIJrwY7Px5v+GX+wSId5EDcY=;
+        b=wat/1XZnmMB8jB0nzHLFiRgl24KkLCia6XqtMsXCHxyRfJmhIFAbPRHr06bxp6sA+m
+         QNsS1Fn6GLCt44e9LnTzKqgWEpkikKFZlEtJsbTKrgnb4KTYX2Zi08x3FcWP4Euu/Evw
+         4/CqLXxJodszqN7OqjEZdfgie7CC4ypayDi65plCTTXwg05VRw065sYF/SxtzPF9G1+L
+         lus+7aybSdjsiLpILtrjyxhDbqKnCFG/TOKtOepeMGfY7tm4/a5zLgpqMH2kKfdvwQ5L
+         A+ePE9PyNbLQtqWF4tI7NzvW/gPzjJuZZOgi0zT3uY7BI0oYjLMUo2YmJf5asKwqc08M
+         U1yQ==
+X-Gm-Message-State: ACrzQf3dsQh/oGFDT8s1iWUXeD4AecKax4XXJ0VmV5nDmdMmRBe3WATb
+        qZtm+vGmApyG/r1j/eEnCLo=
+X-Google-Smtp-Source: AMsMyM6iUxZzKpNhK/xvKNJBH21tgFbn0d8acYZSQ3UJuauQl/86HAVdFvqViqcHMOKe4c6+4ROcrA==
+X-Received: by 2002:a05:620a:2681:b0:6b5:b60c:1e66 with SMTP id c1-20020a05620a268100b006b5b60c1e66mr8303008qkp.99.1663445897521;
+        Sat, 17 Sep 2022 13:18:17 -0700 (PDT)
 Received: from euclid ([71.58.109.160])
-        by smtp.gmail.com with ESMTPSA id q13-20020a37f70d000000b006b8e63dfffbsm8769539qkj.58.2022.09.17.13.18.15
+        by smtp.gmail.com with ESMTPSA id s21-20020a05620a0bd500b006bb7ccf6855sm10374577qki.76.2022.09.17.13.18.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 17 Sep 2022 13:18:15 -0700 (PDT)
+        Sat, 17 Sep 2022 13:18:17 -0700 (PDT)
 From:   Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>, aroulin@nvidia.com,
@@ -58,9 +58,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>, aroulin@nvidia.com,
         Nikolay Aleksandrov <razor@blackwall.org>,
         linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
         Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
-Subject: [PATCH RFC net-next 3/5] net: 8021q: notify bridge module of bridge-binding flag change
-Date:   Sat, 17 Sep 2022 16:17:59 -0400
-Message-Id: <d6500b2caf726437fad97d37c728708755791c0e.1663445339.git.sevinj.aghayeva@gmail.com>
+Subject: [PATCH RFC net-next 4/5] net: bridge: handle link-type-specific changes in the bridge module
+Date:   Sat, 17 Sep 2022 16:18:00 -0400
+Message-Id: <8ef43d44ebdebe90783325cb68edb70a7c80c038.1663445339.git.sevinj.aghayeva@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <cover.1663445339.git.sevinj.aghayeva@gmail.com>
 References: <cover.1663445339.git.sevinj.aghayeva@gmail.com>
@@ -76,87 +76,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Notify the bridge module when a user changes the bridge-binding flag
-of a VLAN interface using "ip link set ... vlan bridge_binding on"
-command, so that the bridge module can take the appropriate action for
-this change.
+Introduce a handler to bridge module for handling vlan-specific
+events.
 
 Signed-off-by: Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
 ---
- net/8021q/vlan.h     |  2 +-
- net/8021q/vlan_dev.c | 20 +++++++++++++++++---
- 2 files changed, 18 insertions(+), 4 deletions(-)
+ net/bridge/br.c         |  5 +++++
+ net/bridge/br_private.h |  7 +++++++
+ net/bridge/br_vlan.c    | 18 ++++++++++++++++++
+ 3 files changed, 30 insertions(+)
 
-diff --git a/net/8021q/vlan.h b/net/8021q/vlan.h
-index 5eaf38875554..71947cdcfaaa 100644
---- a/net/8021q/vlan.h
-+++ b/net/8021q/vlan.h
-@@ -130,7 +130,7 @@ void vlan_dev_set_ingress_priority(const struct net_device *dev,
- int vlan_dev_set_egress_priority(const struct net_device *dev,
- 				 u32 skb_prio, u16 vlan_prio);
- void vlan_dev_free_egress_priority(const struct net_device *dev);
--int vlan_dev_change_flags(const struct net_device *dev, u32 flag, u32 mask);
-+int vlan_dev_change_flags(struct net_device *dev, u32 flag, u32 mask);
- void vlan_dev_get_realdev_name(const struct net_device *dev, char *result,
- 			       size_t size);
- 
-diff --git a/net/8021q/vlan_dev.c b/net/8021q/vlan_dev.c
-index e1bb41a443c4..7c61b813e654 100644
---- a/net/8021q/vlan_dev.c
-+++ b/net/8021q/vlan_dev.c
-@@ -22,6 +22,7 @@
- #include <linux/skbuff.h>
- #include <linux/netdevice.h>
- #include <linux/net_tstamp.h>
-+#include <linux/notifier_info.h>
- #include <linux/etherdevice.h>
- #include <linux/ethtool.h>
- #include <linux/phy.h>
-@@ -211,8 +212,9 @@ int vlan_dev_set_egress_priority(const struct net_device *dev,
- /* Flags are defined in the vlan_flags enum in
-  * include/uapi/linux/if_vlan.h file.
-  */
--int vlan_dev_change_flags(const struct net_device *dev, u32 flags, u32 mask)
-+int vlan_dev_change_flags(struct net_device *dev, u32 flags, u32 mask)
- {
-+	struct netdev_notifier_change_details_info details;
- 	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
- 	u32 old_flags = vlan->flags;
- 
-@@ -223,19 +225,31 @@ int vlan_dev_change_flags(const struct net_device *dev, u32 flags, u32 mask)
- 
- 	vlan->flags = (old_flags & ~mask) | (flags & mask);
- 
--	if (netif_running(dev) && (vlan->flags ^ old_flags) & VLAN_FLAG_GVRP) {
-+	if (!netif_running(dev))
-+		return 0;
-+
-+	if ((vlan->flags ^ old_flags) & VLAN_FLAG_GVRP) {
- 		if (vlan->flags & VLAN_FLAG_GVRP)
- 			vlan_gvrp_request_join(dev);
- 		else
- 			vlan_gvrp_request_leave(dev);
+diff --git a/net/bridge/br.c b/net/bridge/br.c
+index 96e91d69a9a8..62e939c6a3f0 100644
+--- a/net/bridge/br.c
++++ b/net/bridge/br.c
+@@ -51,6 +51,11 @@ static int br_device_event(struct notifier_block *unused, unsigned long event, v
+ 		}
  	}
  
--	if (netif_running(dev) && (vlan->flags ^ old_flags) & VLAN_FLAG_MVRP) {
-+	if ((vlan->flags ^ old_flags) & VLAN_FLAG_MVRP) {
- 		if (vlan->flags & VLAN_FLAG_MVRP)
- 			vlan_mvrp_request_join(dev);
- 		else
- 			vlan_mvrp_request_leave(dev);
- 	}
-+
-+	if ((vlan->flags ^ old_flags) & VLAN_FLAG_BRIDGE_BINDING &&
-+	    netif_is_bridge_master(vlan->real_dev)) {
-+		details.info.dev = dev;
-+		details.vlan.bridge_binding =
-+		    !!(vlan->flags & VLAN_FLAG_BRIDGE_BINDING);
-+		call_netdevice_notifiers_info(NETDEV_CHANGE_DETAILS, &details.info);
++	if (is_vlan_dev(dev)) {
++		br_vlan_device_event(dev, event, ptr);
++		return NOTIFY_DONE;
 +	}
 +
+ 	/* not a port of a bridge */
+ 	p = br_port_get_rtnl(dev);
+ 	if (!p)
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index 06e5f6faa431..a9a08e49c76c 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -1470,6 +1470,8 @@ void br_vlan_get_stats(const struct net_bridge_vlan *v,
+ void br_vlan_port_event(struct net_bridge_port *p, unsigned long event);
+ int br_vlan_bridge_event(struct net_device *dev, unsigned long event,
+ 			 void *ptr);
++void br_vlan_device_event(struct net_device *dev, unsigned long event,
++ 			  void *ptr);
+ void br_vlan_rtnl_init(void);
+ void br_vlan_rtnl_uninit(void);
+ void br_vlan_notify(const struct net_bridge *br,
+@@ -1701,6 +1703,11 @@ static inline int br_vlan_bridge_event(struct net_device *dev,
  	return 0;
  }
  
++static void br_vlan_device_event(struct net_device *dev,
++				 unsigned long event, void *ptr)
++{
++}
++
+ static inline void br_vlan_rtnl_init(void)
+ {
+ }
+diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
+index 6e53dc991409..ba4e3c7a5f03 100644
+--- a/net/bridge/br_vlan.c
++++ b/net/bridge/br_vlan.c
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ #include <linux/kernel.h>
+ #include <linux/netdevice.h>
++#include <linux/notifier_info.h>
+ #include <linux/rtnetlink.h>
+ #include <linux/slab.h>
+ #include <net/switchdev.h>
+@@ -1768,6 +1769,23 @@ void br_vlan_port_event(struct net_bridge_port *p, unsigned long event)
+ 	}
+ }
+ 
++void br_vlan_device_event(struct net_device *dev,
++			  unsigned long event, void *ptr)
++{
++	struct netdev_notifier_change_details_info *details;
++	struct net_device *br_dev;
++
++	switch (event) {
++	case NETDEV_CHANGE_DETAILS:
++		details = ptr;
++		if (!netif_is_bridge_master(vlan_dev_priv(dev)->real_dev))
++			break;
++		br_dev = vlan_dev_priv(dev)->real_dev;
++		br_vlan_upper_change(br_dev, dev, details->vlan.bridge_binding);
++		break;
++	}
++}
++
+ static bool br_vlan_stats_fill(struct sk_buff *skb,
+ 			       const struct net_bridge_vlan *v)
+ {
 -- 
 2.34.1
 
