@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB1335BBA3E
-	for <lists+netdev@lfdr.de>; Sat, 17 Sep 2022 22:18:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E54D5BBA40
+	for <lists+netdev@lfdr.de>; Sat, 17 Sep 2022 22:18:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229633AbiIQUSS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Sep 2022 16:18:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37916 "EHLO
+        id S229613AbiIQUSV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Sep 2022 16:18:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229608AbiIQUSM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Sep 2022 16:18:12 -0400
-Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9575F2E9F0;
-        Sat, 17 Sep 2022 13:18:11 -0700 (PDT)
-Received: by mail-qk1-x72f.google.com with SMTP id o7so14439671qkj.10;
-        Sat, 17 Sep 2022 13:18:11 -0700 (PDT)
+        with ESMTP id S229586AbiIQUSP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Sep 2022 16:18:15 -0400
+Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BB1B2ED44;
+        Sat, 17 Sep 2022 13:18:14 -0700 (PDT)
+Received: by mail-qv1-xf34.google.com with SMTP id l14so10735221qvq.8;
+        Sat, 17 Sep 2022 13:18:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=rA1J3wNnURwjVaQRzDPJJFo52izXeQrMGO3evzyuiQ0=;
-        b=KxoD7xykKYyawuxkaTKHAsD+UHEKwbfX7XWCNBZe6i7Mgrw0YCsTjl+qKqObCTg6p0
-         Act4uRMpeCSYfygeT7s2GPeEMjBiZx2NKzesoXaO38hnh+dFLYZeuerbOgD0h7aQpNpA
-         BE4nMBe9E5K6ppuDhZupAYJkurPuEAOIjfUZ3+DIvrYkNz1HBb92lc8uK22slSLy1SkN
-         K4enAfXoM/6wWBxcp/GQlLS2x0PwMU9qyFLWxt9HMB5rFG9TCu0npvbhSMJ6bSsDJQbL
-         VAFQv4WIJnvs+PQX1jJ0r3ctc7FpQRnlvPxkuOLp2BkxE+s7ZRcARsOyU0XsW5DugsVW
-         drZg==
+        bh=XwRURR16o8IU6+jA9ItEJoRw2ePOvsnk2WOjALj1ZLc=;
+        b=DR6GSoqK3SF1nT3MGrQtB/w9LqHLwFXcSX8bTXMJdecy6L4PTdYMHDmY60jhjLZjgR
+         obsBHNDbljWwVIZ3qfIZ5cQtuLxZGJNXHdL+27mtzzC0UYujs4U2ZU+GAr1RXbfd+A1m
+         1K/Byn2FoZ+PdItsh+lgCLBB0UlUAgj6vVnxXaWUysi6ZzofsFtL0/iCZhFHgrU5miWU
+         NkMoIEHbrcOXCM4f16+mhM0MyszJl4Db/ywTI4U3msepTQwWoo+obpNDdaIgEKZbdg0/
+         wRbSgOp8mpS7ZlqHgsTc40AqiiIGYYPP7WqQQrE3/sGDCxFn2g10x/tCYlSvb//kKk/1
+         oD8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=rA1J3wNnURwjVaQRzDPJJFo52izXeQrMGO3evzyuiQ0=;
-        b=IOX6Ow5BxJNwiZTEDdZqbXKg/svCFq68o6I+YwOj8qU2ibpH3GTRXgcrV2Gv05XYXv
-         mrC959nLvp4fbekBXZGOCAd0HianQtglbEJH2wmH7lkOjaLl8/NS16tgMluyTzu997aw
-         r0i4rx/p9HRLDX/F9qULiNgrhKmSRgKVei7UH0HJW0ZZZrzVKUqNJsBAZDGEJCmfAH2t
-         dSVF0aM5ZX5oUFeNg9q/d0TYtdCo+uZpdimtbJ3GSpjdMvNsmJUFbKYGdN8/T9+g/Zbp
-         OgXfsC15PpI3QmQUNWeMTOCF2L5CBay0TxzuQNkXSLMMZ0+NQnNoyaZMuKfq3oM/jbf5
-         6SzA==
-X-Gm-Message-State: ACrzQf2kTILqB/88KuEPmxPgzolfSkyqcdWm2uFm8x8x8YiUpCPRapog
-        qUEUPX7OstR9Kv+rbnFKPAI=
-X-Google-Smtp-Source: AMsMyM5ob17a28YWQup5oSo+fcrgZBzZZvGQMtPbfQahiNyXRukM2fBEkogohQnFZJLUANcC9Ea8Nw==
-X-Received: by 2002:a05:620a:1aa4:b0:6ce:6105:dc3f with SMTP id bl36-20020a05620a1aa400b006ce6105dc3fmr8340523qkb.632.1663445890697;
-        Sat, 17 Sep 2022 13:18:10 -0700 (PDT)
+        bh=XwRURR16o8IU6+jA9ItEJoRw2ePOvsnk2WOjALj1ZLc=;
+        b=YdvkOWOkphNtFa7QxY9kytc334Jy930D6FTsYyxdgt9GTurkP0K9f9L2nnNEXSNPDe
+         JKYZEwy8OJXTqsfcDpYz0OPMgWyF7NJzRE+hyGSuoOyZMjGnY4tWp2a+iPOhccCP2J5Y
+         Q3GjyGyOzgQDhbsGnOkz+nX1IyE8h7dCe7my51rwwzzd3kUVN+SUqpyuBVQq2fgQoWz1
+         vOw/BhGdT7iTMW3uu8LbBfGp+M0z9IZvfZRhhEUn5qC8r6hcAbqF11GqfzSy61sCPW6f
+         tvAUAegPy2dVVeTeB9w+szno4424mjp0S75ng0xiaFcT88H5f3WpIij4g2B2U6QyB/TQ
+         xP2Q==
+X-Gm-Message-State: ACrzQf3K3jvQzQv2zLmRQNv0xbEEpGzUluC2p1kjYxaJhK8rZutUq1tr
+        yg0ETkQFEhALItyojkmLmqI=
+X-Google-Smtp-Source: AMsMyM6kpA6kK7/4ITcDIIujrBRqXvPKin1oTiH6aVt/sl5nnK6zp0+UCBzwn+I5hDvMyShWhUWifg==
+X-Received: by 2002:a05:6214:21ee:b0:4ac:7107:4c23 with SMTP id p14-20020a05621421ee00b004ac71074c23mr8950360qvj.86.1663445893566;
+        Sat, 17 Sep 2022 13:18:13 -0700 (PDT)
 Received: from euclid ([71.58.109.160])
-        by smtp.gmail.com with ESMTPSA id y30-20020a37f61e000000b006a6ebde4799sm8579191qkj.90.2022.09.17.13.18.10
+        by smtp.gmail.com with ESMTPSA id do53-20020a05620a2b3500b006cea2984c9bsm6791961qkb.100.2022.09.17.13.18.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 17 Sep 2022 13:18:10 -0700 (PDT)
+        Sat, 17 Sep 2022 13:18:13 -0700 (PDT)
 From:   Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>, aroulin@nvidia.com,
@@ -58,13 +58,14 @@ Cc:     "David S. Miller" <davem@davemloft.net>, aroulin@nvidia.com,
         Nikolay Aleksandrov <razor@blackwall.org>,
         linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
         Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
-Subject: [PATCH RFC net-next 1/5] net: core: export call_netdevice_notifiers_info
-Date:   Sat, 17 Sep 2022 16:17:57 -0400
-Message-Id: <d6eaa0453446118ead2912bea6ef7b25c136b01c.1663445339.git.sevinj.aghayeva@gmail.com>
+Subject: [PATCH RFC net-next 2/5] net: core: introduce a new notifier for link-type-specific changes
+Date:   Sat, 17 Sep 2022 16:17:58 -0400
+Message-Id: <31aa2b6c1eb53812abeaf75f8c01017713eb3cbf.1663445339.git.sevinj.aghayeva@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <cover.1663445339.git.sevinj.aghayeva@gmail.com>
 References: <cover.1663445339.git.sevinj.aghayeva@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -76,58 +77,106 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The function call_netdevice_notifiers_info will be used by the vlan
-module for sending link-type-specific information to other modules.
+The netdev notification subsystem is lacking a generic notifier than
+can pass link-type-specific information alongside the device. For
+example, the VLAN subsystem needs to notify the bridge of a change in
+the VLAN bridge brinding flag. This flag change might result in the
+bridge setting VLAN devices UP or DOWN depending on the state of the
+bridge ports.
+
+Instead of introducing one new NETDEV_* notification just for this
+specific use-case, introduce a generic notifier which can pass
+link-type specific information. The notification’s target can decode
+the union type by checking the type of the target device.  That way,
+other link types will be able to reuse this notification type to
+notify with their own specific link specific struct. As this
+notification is only for internal use, there’s no need to export it to
+userspace.
+
+Other NETDEV_* notifiers have also been looked at to see if it is
+possible to consolidate:
+
+ * NETDEV_CHANGEINFODATA: this notification needs to be sent to
+   userspace; keep it separate from NETDEV_CHANGE_DETAILS.
+ * NETDEV_CHANGE: this is to notify net_device->flags change; it is
+   not link-type specific.
 
 Signed-off-by: Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
 ---
- include/linux/netdevice.h | 2 ++
- net/core/dev.c            | 5 ++---
- 2 files changed, 4 insertions(+), 3 deletions(-)
+ include/linux/if_vlan.h       |  4 ++++
+ include/linux/netdevice.h     |  1 +
+ include/linux/notifier_info.h | 21 +++++++++++++++++++++
+ net/core/dev.c                |  2 +-
+ 4 files changed, 27 insertions(+), 1 deletion(-)
+ create mode 100644 include/linux/notifier_info.h
 
+diff --git a/include/linux/if_vlan.h b/include/linux/if_vlan.h
+index e00c4ee81ff7..38ffd2ee5112 100644
+--- a/include/linux/if_vlan.h
++++ b/include/linux/if_vlan.h
+@@ -37,6 +37,10 @@ struct vlan_hdr {
+ 	__be16	h_vlan_encapsulated_proto;
+ };
+ 
++struct vlan_change_details {
++	bool bridge_binding;
++};
++
+ /**
+  *	struct vlan_ethhdr - vlan ethernet header (ethhdr + vlan_hdr)
+  *	@h_dest: destination ethernet address
 diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index f0068c1ff1df..56b96b1e4c4c 100644
+index 56b96b1e4c4c..912c04b09ebb 100644
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -2906,6 +2906,8 @@ netdev_notifier_info_to_extack(const struct netdev_notifier_info *info)
- }
- 
- int call_netdevice_notifiers(unsigned long val, struct net_device *dev);
-+int call_netdevice_notifiers_info(unsigned long val,
-+				  struct netdev_notifier_info *info);
- 
- 
- extern rwlock_t				dev_base_lock;		/* Device list lock */
+@@ -2770,6 +2770,7 @@ enum netdev_cmd {
+ 	NETDEV_UNREGISTER,
+ 	NETDEV_CHANGEMTU,	/* notify after mtu change happened */
+ 	NETDEV_CHANGEADDR,	/* notify after the address change */
++	NETDEV_CHANGE_DETAILS,
+ 	NETDEV_PRE_CHANGEADDR,	/* notify before the address change */
+ 	NETDEV_GOING_DOWN,
+ 	NETDEV_CHANGENAME,
+diff --git a/include/linux/notifier_info.h b/include/linux/notifier_info.h
+new file mode 100644
+index 000000000000..3e53f18c6da1
+--- /dev/null
++++ b/include/linux/notifier_info.h
+@@ -0,0 +1,21 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++#ifndef _LINUX_NOTIFIER_INFO_H_
++#define _LINUX_NOTIFIER_INFO_H_
++
++#include <linux/netdevice.h>
++#include <linux/if_vlan.h>
++
++/*
++ * This struct is used for passing link-type-specific information to
++ * the device.
++ */
++
++struct netdev_notifier_change_details_info {
++	struct netdev_notifier_info info; /* must be first */
++	union {
++		struct vlan_change_details vlan;
++	};
++};
++
++#endif /* !(_LINUX_NOTIFIER_INFO_H_) */
 diff --git a/net/core/dev.c b/net/core/dev.c
-index d66c73c1c734..e233145d1452 100644
+index e233145d1452..b50470378994 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -160,8 +160,6 @@ struct list_head ptype_base[PTYPE_HASH_SIZE] __read_mostly;
- struct list_head ptype_all __read_mostly;	/* Taps */
- 
- static int netif_rx_internal(struct sk_buff *skb);
--static int call_netdevice_notifiers_info(unsigned long val,
--					 struct netdev_notifier_info *info);
- static int call_netdevice_notifiers_extack(unsigned long val,
- 					   struct net_device *dev,
- 					   struct netlink_ext_ack *extack);
-@@ -1927,7 +1925,7 @@ static void move_netdevice_notifiers_dev_net(struct net_device *dev,
-  *	are as for raw_notifier_call_chain().
-  */
- 
--static int call_netdevice_notifiers_info(unsigned long val,
-+int call_netdevice_notifiers_info(unsigned long val,
- 					 struct netdev_notifier_info *info)
- {
- 	struct net *net = dev_net(info->dev);
-@@ -1944,6 +1942,7 @@ static int call_netdevice_notifiers_info(unsigned long val,
- 		return ret;
- 	return raw_notifier_call_chain(&netdev_chain, val, info);
- }
-+EXPORT_SYMBOL_GPL(call_netdevice_notifiers_info);
- 
- /**
-  *	call_netdevice_notifiers_info_robust - call per-netns notifier blocks
+@@ -1622,7 +1622,7 @@ const char *netdev_cmd_to_name(enum netdev_cmd cmd)
+ 	N(POST_INIT) N(RELEASE) N(NOTIFY_PEERS) N(JOIN) N(CHANGEUPPER)
+ 	N(RESEND_IGMP) N(PRECHANGEMTU) N(CHANGEINFODATA) N(BONDING_INFO)
+ 	N(PRECHANGEUPPER) N(CHANGELOWERSTATE) N(UDP_TUNNEL_PUSH_INFO)
+-	N(UDP_TUNNEL_DROP_INFO) N(CHANGE_TX_QUEUE_LEN)
++	N(UDP_TUNNEL_DROP_INFO) N(CHANGE_TX_QUEUE_LEN) N(CHANGE_DETAILS)
+ 	N(CVLAN_FILTER_PUSH_INFO) N(CVLAN_FILTER_DROP_INFO)
+ 	N(SVLAN_FILTER_PUSH_INFO) N(SVLAN_FILTER_DROP_INFO)
+ 	N(PRE_CHANGEADDR) N(OFFLOAD_XSTATS_ENABLE) N(OFFLOAD_XSTATS_DISABLE)
 -- 
 2.34.1
 
