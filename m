@@ -2,86 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 645EA5BB7BC
-	for <lists+netdev@lfdr.de>; Sat, 17 Sep 2022 12:25:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19AD45BB7D0
+	for <lists+netdev@lfdr.de>; Sat, 17 Sep 2022 12:39:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229539AbiIQKZD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Sep 2022 06:25:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46632 "EHLO
+        id S229583AbiIQKjd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Sep 2022 06:39:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229454AbiIQKZA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Sep 2022 06:25:00 -0400
-Received: from hr2.samba.org (hr2.samba.org [IPv6:2a01:4f8:192:486::2:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C0111902A;
-        Sat, 17 Sep 2022 03:24:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=samba.org;
-        s=42; h=From:Cc:To:Date:Message-ID;
-        bh=3omZ2Rg8+frEkZ+9fNsOjhga0U9rM3HhhW1pA3cCK0M=; b=iM+v5OTzosTONLQkyD3wDG42bP
-        zunYhiJO4rxUxOwR7y9LzMT4e1phJbo6NoIxKJnP8TQXCm5s1sivW7JJJr1rw4pbNaDFNWkr8hl1b
-        +fORtZHANGwDLTZlPEIKxl7wXdnkU4JsOY5Og49NCw4aSQikvhbgJwenb9VYlL2MJLdQmPVn6qEH8
-        2eYD1VgcYR9RDGHSucZZBZ3yyPy1OMOnFjLP2+N5ALtuHl5JIpwbUzgXh8pkzx/0aC9TKfXLpfu7G
-        sipjX9PJZFBWmtlEU4+eMFCqn+aOwoT0/awqCUaltEMGm0syxF99AD6utLJGebNveo1ipqiG4JG4+
-        VEbZv8mQwm1zmiq/13H1ioDQ2i8eIIuCvQuUpnbgcn51GxFAYv/C+g2tncohC0xCSGnHeVOMAd40v
-        EDWfLuLD2v1gnVpZcc/d2u38HJMFQO2Hc/VGXMCikMjrkzwRrF7+wHrGBwzF5dfGA6xNeaSrmKKtF
-        NG7GGAXR5+dp2BG473uSzDRS;
-Received: from [127.0.0.2] (localhost [127.0.0.1])
-        by hr2.samba.org with esmtpsa (TLS1.3:ECDHE_SECP256R1__ECDSA_SECP256R1_SHA256__CHACHA20_POLY1305:256)
-        (Exim)
-        id 1oZV0K-000nuC-4A; Sat, 17 Sep 2022 10:24:56 +0000
-Message-ID: <aa7d5f95-06d0-7e87-b41f-92fe07440b47@samba.org>
-Date:   Sat, 17 Sep 2022 12:24:48 +0200
+        with ESMTP id S229436AbiIQKjb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Sep 2022 06:39:31 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA031C1B;
+        Sat, 17 Sep 2022 03:39:29 -0700 (PDT)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MV6nt42SzzHnYN;
+        Sat, 17 Sep 2022 18:37:22 +0800 (CST)
+Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 17 Sep 2022 18:39:27 +0800
+Received: from localhost.localdomain (10.67.165.2) by
+ kwepemm600013.china.huawei.com (7.193.23.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Sat, 17 Sep 2022 18:39:27 +0800
+From:   Haoyue Xu <xuhaoyue1@hisilicon.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <michal.simek@xilinx.com>
+CC:     <huangdaode@huawei.com>, <liyangyang20@huawei.com>,
+        <xuhaoyue1@hisilicon.com>, <huangjunxian6@hisilicon.com>,
+        <linuxarm@huawei.com>, <liangwenpeng@huawei.com>
+Subject: [PATCH net-next 0/7] net: ll_temac: Cleanup for clearing static warnings
+Date:   Sat, 17 Sep 2022 18:38:36 +0800
+Message-ID: <20220917103843.526877-1-xuhaoyue1@hisilicon.com>
+X-Mailer: git-send-email 2.30.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Content-Language: en-US
-To:     Pavel Begunkov <asml.silence@gmail.com>, io-uring@vger.kernel.org,
-        axboe@kernel.dk
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-References: <cover.1663363798.git.metze@samba.org>
- <76cdd53f618e2793e1ec298c837bb17c3b9f12ee.1663363798.git.metze@samba.org>
- <5f4059ca-cec6-e44a-ac61-b9c034b1be77@gmail.com>
-From:   Stefan Metzmacher <metze@samba.org>
-Subject: Re: [PATCH 5/5] io_uring/notif: let userspace know how effective the
- zero copy usage was
-In-Reply-To: <5f4059ca-cec6-e44a-ac61-b9c034b1be77@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.2]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600013.china.huawei.com (7.193.23.68)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,HK_RANDOM_ENVFROM,
+        HK_RANDOM_FROM,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Most static warnings are detected by Checkpatch.pl, mainly about:
+(1) #1: About the comments.
+(2) #2: About function name in a string.
+(3) #3: About the open parenthesis.
+(4) #4: About the else branch.
+(6) #6: About trailing statements.
+(7) #5,#7: About blank lines and spaces.
 
-Am 17.09.22 um 11:22 schrieb Pavel Begunkov:
-> On 9/16/22 22:36, Stefan Metzmacher wrote:
->> The 2nd cqe for IORING_OP_SEND_ZC has IORING_CQE_F_NOTIF set in cqe->flags
->> and it will now have the number of successful completed
->> io_uring_tx_zerocopy_callback() callbacks in the lower 31-bits
->> of cqe->res, the high bit (0x80000000) is set when
->> io_uring_tx_zerocopy_callback() was called with success=false.
-> 
-> It has a couple of problems, and because that "simplify uapi"
-> patch is transitional it doesn't go well with what I'm queuing
-> for 6.1, let's hold it for a while.
+Haoyue Xu (1):
+  net: ll_temac: Cleanup for function name in a string
 
-Once the current behavior gets released stable, we're no
-longer able to change the meaning of cqe.res.
+huangjunxian (6):
+  net: ll_temac: fix the format of block comments
+  net: ll_temac: axienet: align with open parenthesis
+  net: ll_temac: delete unnecessary else branch
+  net: ll_temac: fix the missing spaces around '='
+  net: ll_temac: move trailing statements to next line
+  net: ll_temac: axienet: delete unnecessary blank lines and spaces
 
-As cqe.res == 0 would mean zero copy wasn't used at all,
-which would be the indication for userspace to avoid using SEND_ZC.
+ drivers/net/ethernet/xilinx/ll_temac.h        | 181 +++++++++---------
+ drivers/net/ethernet/xilinx/ll_temac_main.c   |  65 ++++---
+ drivers/net/ethernet/xilinx/ll_temac_mdio.c   |   6 +-
+ drivers/net/ethernet/xilinx/xilinx_axienet.h  |   2 +-
+ .../net/ethernet/xilinx/xilinx_axienet_main.c |   6 +-
+ .../net/ethernet/xilinx/xilinx_axienet_mdio.c |   2 +-
+ 6 files changed, 139 insertions(+), 123 deletions(-)
 
-But if 6.0 would always return cqe.res = 0, there's no chance for
-userspace to have a detection strategy.
+-- 
+2.30.0
 
-And I don't think it will cause a lot of trouble for your 6.1 stuff (assuming
-you mean your SENDMSG_ZC code), I was already having that on top
-of my test branches, the current one is:
-https://git.samba.org/?p=metze/linux/wip.git;a=shortlog;h=refs/heads/io_uring-6.0.0-rc5-metze.08
-
-I plan to test SENDMSG_ZC with Samba next week.
-
-metze
