@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C92765BB671
-	for <lists+netdev@lfdr.de>; Sat, 17 Sep 2022 07:03:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2768D5BB673
+	for <lists+netdev@lfdr.de>; Sat, 17 Sep 2022 07:04:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229566AbiIQFDy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Sep 2022 01:03:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54650 "EHLO
+        id S229548AbiIQFEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Sep 2022 01:04:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229538AbiIQFDw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Sep 2022 01:03:52 -0400
+        with ESMTP id S229724AbiIQFEC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Sep 2022 01:04:02 -0400
 Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E396B941A;
-        Fri, 16 Sep 2022 22:03:51 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MTzHg2zKqzMmxK;
-        Sat, 17 Sep 2022 12:59:11 +0800 (CST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CEF0B6D09;
+        Fri, 16 Sep 2022 22:04:01 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MTzHs67h9zMmxR;
+        Sat, 17 Sep 2022 12:59:21 +0800 (CST)
 Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
  (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Sat, 17 Sep
- 2022 13:03:48 +0800
+ 2022 13:03:59 +0800
 From:   Zhengchao Shao <shaozhengchao@huawei.com>
 To:     <netdev@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
         <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
@@ -30,14 +30,14 @@ To:     <netdev@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
         <victor@mojatatu.com>
 CC:     <zhijianx.li@intel.com>, <weiyongjun1@huawei.com>,
         <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
-Subject: [PATCH net-next,v2 14/18] selftests/tc-testings: add selftests for qfq qdisc
-Date:   Sat, 17 Sep 2022 13:05:32 +0800
-Message-ID: <20220917050532.132485-1-shaozhengchao@huawei.com>
+Subject: [PATCH net-next,v2 15/18] selftests/tc-testings: add show class case for ingress qdisc
+Date:   Sat, 17 Sep 2022 13:05:43 +0800
+Message-ID: <20220917050543.132615-1-shaozhengchao@huawei.com>
 X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
  dggpeml500026.china.huawei.com (7.185.36.106)
 X-CFilter-Loop: Reflected
 X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
@@ -48,170 +48,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Test 0582: Create QFQ with default setting
-Test c9a3: Create QFQ with class weight setting
-Test 8452: Create QFQ with class maxpkt setting
-Test d920: Create QFQ with multiple class setting
-Test 0548: Delete QFQ with handle
-Test 5901: Show QFQ class
+Test 0521: Show ingress class
 
 Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 ---
- .../tc-testing/tc-tests/qdiscs/qfq.json       | 145 ++++++++++++++++++
- 1 file changed, 145 insertions(+)
- create mode 100644 tools/testing/selftests/tc-testing/tc-tests/qdiscs/qfq.json
+ .../tc-testing/tc-tests/qdiscs/ingress.json   | 20 +++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/qdiscs/qfq.json b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/qfq.json
-new file mode 100644
-index 000000000000..330f1a25e0ab
---- /dev/null
-+++ b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/qfq.json
-@@ -0,0 +1,145 @@
-+[
+diff --git a/tools/testing/selftests/tc-testing/tc-tests/qdiscs/ingress.json b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/ingress.json
+index d99dba6e2b1a..11d33362408c 100644
+--- a/tools/testing/selftests/tc-testing/tc-tests/qdiscs/ingress.json
++++ b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/ingress.json
+@@ -98,5 +98,25 @@
+         "teardown": [
+             "$IP link del dev $DUMMY type dummy"
+         ]
++    },
 +    {
-+        "id": "0582",
-+        "name": "Create QFQ with default setting",
++        "id": "0521",
++        "name": "Show ingress class",
 +        "category": [
 +            "qdisc",
-+            "qfq"
++            "ingress"
 +        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
 +        "setup": [
 +            "$IP link add dev $DUMMY type dummy || /bin/true"
 +        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root qfq",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc qfq 1: root refcnt [0-9]+",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DUMMY handle 1: root",
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    },
-+    {
-+        "id": "c9a3",
-+        "name": "Create QFQ with class weight setting",
-+        "category": [
-+            "qdisc",
-+            "qfq"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true",
-+            "$TC qdisc add dev $DUMMY handle 1: root qfq"
-+        ],
-+        "cmdUnderTest": "$TC class add dev $DUMMY parent 1: classid 1:1 qfq weight 100",
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY ingress",
 +        "expExitCode": "0",
 +        "verifyCmd": "$TC class show dev $DUMMY",
-+        "matchPattern": "class qfq 1:1 root weight 100 maxpkt",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DUMMY handle 1: root",
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    },
-+    {
-+        "id": "8452",
-+        "name": "Create QFQ with class maxpkt setting",
-+        "category": [
-+            "qdisc",
-+            "qfq"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true",
-+            "$TC qdisc add dev $DUMMY handle 1: root qfq"
-+        ],
-+        "cmdUnderTest": "$TC class add dev $DUMMY parent 1: classid 1:1 qfq maxpkt 2000",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC class show dev $DUMMY",
-+        "matchPattern": "class qfq 1:1 root weight 1 maxpkt 2000",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DUMMY handle 1: root",
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    },
-+    {
-+        "id": "d920",
-+        "name": "Create QFQ with multiple class setting",
-+        "category": [
-+            "qdisc",
-+            "qfq"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true",
-+            "$TC qdisc add dev $DUMMY handle 1: root qfq",
-+            "$TC class add dev $DUMMY parent 1: classid 1:1 qfq weight 100"
-+        ],
-+        "cmdUnderTest": "$TC class add dev $DUMMY parent 1: classid 1:2 qfq weight 200",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC class show dev $DUMMY",
-+        "matchPattern": "class qfq 1:[0-9]+ root weight [0-9]+00 maxpkt",
-+        "matchCount": "2",
-+        "teardown": [
-+            "$TC qdisc del dev $DUMMY handle 1: root",
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    },
-+    {
-+        "id": "0548",
-+        "name": "Delete QFQ with handle",
-+        "category": [
-+            "qdisc",
-+            "qfq"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true",
-+            "$TC qdisc add dev $DUMMY handle 1: root qfq",
-+            "$TC class add dev $DUMMY parent 1: classid 1:1 qfq weight 100"
-+        ],
-+        "cmdUnderTest": "$TC qdisc del dev $DUMMY handle 1: root",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC class show dev $DUMMY",
-+        "matchPattern": "qdisc qfq 1: root refcnt [0-9]+",
++        "matchPattern": "class ingress",
 +        "matchCount": "0",
 +        "teardown": [
++            "$TC qdisc del dev $DUMMY ingress",
 +            "$IP link del dev $DUMMY type dummy"
 +        ]
-+    },
-+    {
-+        "id": "5901",
-+        "name": "Show QFQ class",
-+        "category": [
-+            "qdisc",
-+            "qfq"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true"
-+        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root qfq",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC class show dev $DUMMY",
-+        "matchPattern": "class qfq 1:",
-+        "matchCount": "0",
-+        "teardown": [
-+            "$TC qdisc del dev $DUMMY handle 1: root",
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    }
-+]
+     }
+ ]
 -- 
 2.17.1
 
