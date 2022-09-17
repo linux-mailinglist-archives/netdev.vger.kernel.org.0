@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC4E05BB659
-	for <lists+netdev@lfdr.de>; Sat, 17 Sep 2022 07:00:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C16105BB65B
+	for <lists+netdev@lfdr.de>; Sat, 17 Sep 2022 07:01:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229648AbiIQFA5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Sep 2022 01:00:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51920 "EHLO
+        id S229532AbiIQFBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Sep 2022 01:01:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229558AbiIQFAz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Sep 2022 01:00:55 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFE2977570;
-        Fri, 16 Sep 2022 22:00:53 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MTzHB3lBnzBsPh;
-        Sat, 17 Sep 2022 12:58:46 +0800 (CST)
+        with ESMTP id S229593AbiIQFB1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Sep 2022 01:01:27 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 554715A3F4;
+        Fri, 16 Sep 2022 22:01:24 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MTzFn06N9zmVQg;
+        Sat, 17 Sep 2022 12:57:33 +0800 (CST)
 Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
  (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Sat, 17 Sep
- 2022 13:00:50 +0800
+ 2022 13:01:21 +0800
 From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <netdev@vger.kernel.org>, <cake@lists.bufferbloat.net>,
-        <linux-kselftest@vger.kernel.org>, <jhs@mojatatu.com>,
-        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+To:     <netdev@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
         <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
         <pabeni@redhat.com>, <toke@toke.dk>, <vinicius.gomes@intel.com>,
         <stephen@networkplumber.org>, <shuah@kernel.org>,
         <victor@mojatatu.com>
 CC:     <zhijianx.li@intel.com>, <weiyongjun1@huawei.com>,
         <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
-Subject: [PATCH net-next,v2 02/18] net/sched: use tc_qdisc_stats_dump() in qdisc
-Date:   Sat, 17 Sep 2022 13:02:34 +0800
-Message-ID: <20220917050234.127492-1-shaozhengchao@huawei.com>
+Subject: [PATCH net-next,v2 03/18] selftests/tc-testings: add selftests for cake qdisc
+Date:   Sat, 17 Sep 2022 13:03:04 +0800
+Message-ID: <20220917050304.127729-1-shaozhengchao@huawei.com>
 X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
 Content-Type: text/plain
@@ -49,480 +48,527 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-use tc_qdisc_stats_dump() in qdisc.
+Test 1212: Create CAKE with default setting
+Test 3281: Create CAKE with bandwidth limit
+Test c940: Create CAKE with autorate-ingress flag
+Test 2310: Create CAKE with rtt time
+Test 2385: Create CAKE with besteffort flag
+Test a032: Create CAKE with diffserv8 flag
+Test 2349: Create CAKE with diffserv4 flag
+Test 8472: Create CAKE with flowblind flag
+Test 2341: Create CAKE with dsthost and nat flag
+Test 5134: Create CAKE with wash flag
+Test 2302: Create CAKE with flowblind and no-split-gso flag
+Test 0768: Create CAKE with dual-srchost and ack-filter flag
+Test 0238: Create CAKE with dual-dsthost and ack-filter-aggressive flag
+Test 6572: Create CAKE with memlimit and ptm flag
+Test 2436: Create CAKE with fwmark and atm flag
+Test 3984: Create CAKE with overhead and mpu
+Test 5421: Create CAKE with conservative and ingress flag
+Test 6854: Delete CAKE with conservative and ingress flag
+Test 2342: Replace CAKE with mpu
+Test 2313: Change CAKE with mpu
+Test 4365: Show CAKE class
 
 Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 ---
- net/sched/sch_atm.c      |  6 +-----
- net/sched/sch_cake.c     |  9 +++------
- net/sched/sch_cbq.c      |  9 +--------
- net/sched/sch_cbs.c      |  8 +-------
- net/sched/sch_drr.c      |  9 +--------
- net/sched/sch_dsmark.c   | 14 +++++---------
- net/sched/sch_ets.c      |  9 +--------
- net/sched/sch_fq_codel.c |  8 ++------
- net/sched/sch_hfsc.c     |  9 +--------
- net/sched/sch_htb.c      |  9 +--------
- net/sched/sch_mq.c       |  5 +----
- net/sched/sch_mqprio.c   |  5 +----
- net/sched/sch_multiq.c   |  9 +--------
- net/sched/sch_netem.c    |  8 ++------
- net/sched/sch_prio.c     |  9 +--------
- net/sched/sch_qfq.c      |  9 +--------
- net/sched/sch_red.c      |  7 +------
- net/sched/sch_sfb.c      |  7 +------
- net/sched/sch_sfq.c      |  8 ++------
- net/sched/sch_skbprio.c  |  9 +--------
- net/sched/sch_taprio.c   |  5 +----
- net/sched/sch_tbf.c      |  7 +------
- 22 files changed, 31 insertions(+), 147 deletions(-)
+ .../tc-testing/tc-tests/qdiscs/cake.json      | 487 ++++++++++++++++++
+ 1 file changed, 487 insertions(+)
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/qdiscs/cake.json
 
-diff --git a/net/sched/sch_atm.c b/net/sched/sch_atm.c
-index 816fd0d7ba38..b6c45ca60e78 100644
---- a/net/sched/sch_atm.c
-+++ b/net/sched/sch_atm.c
-@@ -354,12 +354,8 @@ static void atm_tc_walk(struct Qdisc *sch, struct qdisc_walker *walker)
- 	if (walker->stop)
- 		return;
- 	list_for_each_entry(flow, &p->flows, list) {
--		if (walker->count >= walker->skip &&
--		    walker->fn(sch, (unsigned long)flow, walker) < 0) {
--			walker->stop = 1;
-+		if (!tc_qdisc_stats_dump(sch, walker, (unsigned long)flow))
- 			break;
--		}
--		walker->count++;
- 	}
- }
- 
-diff --git a/net/sched/sch_cake.c b/net/sched/sch_cake.c
-index 36acc95d611e..cab9ff213d92 100644
---- a/net/sched/sch_cake.c
-+++ b/net/sched/sch_cake.c
-@@ -3061,16 +3061,13 @@ static void cake_walk(struct Qdisc *sch, struct qdisc_walker *arg)
- 		struct cake_tin_data *b = &q->tins[q->tin_order[i]];
- 
- 		for (j = 0; j < CAKE_QUEUES; j++) {
--			if (list_empty(&b->flows[j].flowchain) ||
--			    arg->count < arg->skip) {
-+			if (list_empty(&b->flows[j].flowchain)) {
- 				arg->count++;
- 				continue;
- 			}
--			if (arg->fn(sch, i * CAKE_QUEUES + j + 1, arg) < 0) {
--				arg->stop = 1;
-+			if (!tc_qdisc_stats_dump(sch, arg,
-+						 i * CAKE_QUEUES + j + 1))
- 				break;
--			}
--			arg->count++;
- 		}
- 	}
- }
-diff --git a/net/sched/sch_cbq.c b/net/sched/sch_cbq.c
-index ba99ce05cd52..4897329f9412 100644
---- a/net/sched/sch_cbq.c
-+++ b/net/sched/sch_cbq.c
-@@ -1676,15 +1676,8 @@ static void cbq_walk(struct Qdisc *sch, struct qdisc_walker *arg)
- 
- 	for (h = 0; h < q->clhash.hashsize; h++) {
- 		hlist_for_each_entry(cl, &q->clhash.hash[h], common.hnode) {
--			if (arg->count < arg->skip) {
--				arg->count++;
--				continue;
--			}
--			if (arg->fn(sch, (unsigned long)cl, arg) < 0) {
--				arg->stop = 1;
-+			if (!tc_qdisc_stats_dump(sch, arg, (unsigned long)cl))
- 				return;
--			}
--			arg->count++;
- 		}
- 	}
- }
-diff --git a/net/sched/sch_cbs.c b/net/sched/sch_cbs.c
-index 459cc240eda9..270d517e492d 100644
---- a/net/sched/sch_cbs.c
-+++ b/net/sched/sch_cbs.c
-@@ -520,13 +520,7 @@ static unsigned long cbs_find(struct Qdisc *sch, u32 classid)
- static void cbs_walk(struct Qdisc *sch, struct qdisc_walker *walker)
- {
- 	if (!walker->stop) {
--		if (walker->count >= walker->skip) {
--			if (walker->fn(sch, 1, walker) < 0) {
--				walker->stop = 1;
--				return;
--			}
--		}
--		walker->count++;
-+		tc_qdisc_stats_dump(sch, walker, 1);
- 	}
- }
- 
-diff --git a/net/sched/sch_drr.c b/net/sched/sch_drr.c
-index 4e5b1cf11b85..d75ea3e35fcc 100644
---- a/net/sched/sch_drr.c
-+++ b/net/sched/sch_drr.c
-@@ -284,15 +284,8 @@ static void drr_walk(struct Qdisc *sch, struct qdisc_walker *arg)
- 
- 	for (i = 0; i < q->clhash.hashsize; i++) {
- 		hlist_for_each_entry(cl, &q->clhash.hash[i], common.hnode) {
--			if (arg->count < arg->skip) {
--				arg->count++;
--				continue;
--			}
--			if (arg->fn(sch, (unsigned long)cl, arg) < 0) {
--				arg->stop = 1;
-+			if (!tc_qdisc_stats_dump(sch, arg, (unsigned long)cl))
- 				return;
--			}
--			arg->count++;
- 		}
- 	}
- }
-diff --git a/net/sched/sch_dsmark.c b/net/sched/sch_dsmark.c
-index 7da6dc38a382..5cf944ab20b6 100644
---- a/net/sched/sch_dsmark.c
-+++ b/net/sched/sch_dsmark.c
-@@ -176,16 +176,12 @@ static void dsmark_walk(struct Qdisc *sch, struct qdisc_walker *walker)
- 		return;
- 
- 	for (i = 0; i < p->indices; i++) {
--		if (p->mv[i].mask == 0xff && !p->mv[i].value)
--			goto ignore;
--		if (walker->count >= walker->skip) {
--			if (walker->fn(sch, i + 1, walker) < 0) {
--				walker->stop = 1;
--				break;
--			}
-+		if (p->mv[i].mask == 0xff && !p->mv[i].value) {
-+			walker->count++;
-+			continue;
- 		}
--ignore:
--		walker->count++;
-+		if (!tc_qdisc_stats_dump(sch, walker, i + 1))
-+			break;
- 	}
- }
- 
-diff --git a/net/sched/sch_ets.c b/net/sched/sch_ets.c
-index a3aea22ef09d..7e3b16c342d2 100644
---- a/net/sched/sch_ets.c
-+++ b/net/sched/sch_ets.c
-@@ -341,15 +341,8 @@ static void ets_qdisc_walk(struct Qdisc *sch, struct qdisc_walker *arg)
- 		return;
- 
- 	for (i = 0; i < q->nbands; i++) {
--		if (arg->count < arg->skip) {
--			arg->count++;
--			continue;
--		}
--		if (arg->fn(sch, i + 1, arg) < 0) {
--			arg->stop = 1;
-+		if (!tc_qdisc_stats_dump(sch, arg, i + 1))
- 			break;
--		}
--		arg->count++;
- 	}
- }
- 
-diff --git a/net/sched/sch_fq_codel.c b/net/sched/sch_fq_codel.c
-index eeea8c6d54e2..59a60ce5b7ef 100644
---- a/net/sched/sch_fq_codel.c
-+++ b/net/sched/sch_fq_codel.c
-@@ -673,16 +673,12 @@ static void fq_codel_walk(struct Qdisc *sch, struct qdisc_walker *arg)
- 		return;
- 
- 	for (i = 0; i < q->flows_cnt; i++) {
--		if (list_empty(&q->flows[i].flowchain) ||
--		    arg->count < arg->skip) {
-+		if (list_empty(&q->flows[i].flowchain)) {
- 			arg->count++;
- 			continue;
- 		}
--		if (arg->fn(sch, i + 1, arg) < 0) {
--			arg->stop = 1;
-+		if (!tc_qdisc_stats_dump(sch, arg, i + 1))
- 			break;
--		}
--		arg->count++;
- 	}
- }
- 
-diff --git a/net/sched/sch_hfsc.c b/net/sched/sch_hfsc.c
-index c8bef923c79c..815599f94ad9 100644
---- a/net/sched/sch_hfsc.c
-+++ b/net/sched/sch_hfsc.c
-@@ -1349,15 +1349,8 @@ hfsc_walk(struct Qdisc *sch, struct qdisc_walker *arg)
- 	for (i = 0; i < q->clhash.hashsize; i++) {
- 		hlist_for_each_entry(cl, &q->clhash.hash[i],
- 				     cl_common.hnode) {
--			if (arg->count < arg->skip) {
--				arg->count++;
--				continue;
--			}
--			if (arg->fn(sch, (unsigned long)cl, arg) < 0) {
--				arg->stop = 1;
-+			if (!tc_qdisc_stats_dump(sch, arg, (unsigned long)cl))
- 				return;
--			}
--			arg->count++;
- 		}
- 	}
- }
-diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
-index 78d0c7549c74..e9fee0b5706f 100644
---- a/net/sched/sch_htb.c
-+++ b/net/sched/sch_htb.c
-@@ -2119,15 +2119,8 @@ static void htb_walk(struct Qdisc *sch, struct qdisc_walker *arg)
- 
- 	for (i = 0; i < q->clhash.hashsize; i++) {
- 		hlist_for_each_entry(cl, &q->clhash.hash[i], common.hnode) {
--			if (arg->count < arg->skip) {
--				arg->count++;
--				continue;
--			}
--			if (arg->fn(sch, (unsigned long)cl, arg) < 0) {
--				arg->stop = 1;
-+			if (!tc_qdisc_stats_dump(sch, arg, (unsigned long)cl))
- 				return;
--			}
--			arg->count++;
- 		}
- 	}
- }
-diff --git a/net/sched/sch_mq.c b/net/sched/sch_mq.c
-index 83d2e54bf303..c544e9d8e79e 100644
---- a/net/sched/sch_mq.c
-+++ b/net/sched/sch_mq.c
-@@ -247,11 +247,8 @@ static void mq_walk(struct Qdisc *sch, struct qdisc_walker *arg)
- 
- 	arg->count = arg->skip;
- 	for (ntx = arg->skip; ntx < dev->num_tx_queues; ntx++) {
--		if (arg->fn(sch, ntx + 1, arg) < 0) {
--			arg->stop = 1;
-+		if (!tc_qdisc_stats_dump(sch, arg, ntx + 1))
- 			break;
--		}
--		arg->count++;
- 	}
- }
- 
-diff --git a/net/sched/sch_mqprio.c b/net/sched/sch_mqprio.c
-index b29f3453c6ea..55b965dbf3bc 100644
---- a/net/sched/sch_mqprio.c
-+++ b/net/sched/sch_mqprio.c
-@@ -558,11 +558,8 @@ static void mqprio_walk(struct Qdisc *sch, struct qdisc_walker *arg)
- 	/* Walk hierarchy with a virtual class per tc */
- 	arg->count = arg->skip;
- 	for (ntx = arg->skip; ntx < netdev_get_num_tc(dev); ntx++) {
--		if (arg->fn(sch, ntx + TC_H_MIN_PRIORITY, arg) < 0) {
--			arg->stop = 1;
-+		if (!tc_qdisc_stats_dump(sch, arg, ntx + TC_H_MIN_PRIORITY))
- 			return;
--		}
--		arg->count++;
- 	}
- 
- 	/* Pad the values and skip over unused traffic classes */
-diff --git a/net/sched/sch_multiq.c b/net/sched/sch_multiq.c
-index f28050c7f12d..c8a649a24696 100644
---- a/net/sched/sch_multiq.c
-+++ b/net/sched/sch_multiq.c
-@@ -353,15 +353,8 @@ static void multiq_walk(struct Qdisc *sch, struct qdisc_walker *arg)
- 		return;
- 
- 	for (band = 0; band < q->bands; band++) {
--		if (arg->count < arg->skip) {
--			arg->count++;
--			continue;
--		}
--		if (arg->fn(sch, band + 1, arg) < 0) {
--			arg->stop = 1;
-+		if (!tc_qdisc_stats_dump(sch, arg, band + 1))
- 			break;
--		}
--		arg->count++;
- 	}
- }
- 
-diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
-index b70ac04110dd..5a7f41a61fe2 100644
---- a/net/sched/sch_netem.c
-+++ b/net/sched/sch_netem.c
-@@ -1251,12 +1251,8 @@ static unsigned long netem_find(struct Qdisc *sch, u32 classid)
- static void netem_walk(struct Qdisc *sch, struct qdisc_walker *walker)
- {
- 	if (!walker->stop) {
--		if (walker->count >= walker->skip)
--			if (walker->fn(sch, 1, walker) < 0) {
--				walker->stop = 1;
--				return;
--			}
--		walker->count++;
-+		if (!tc_qdisc_stats_dump(sch, walker, 1))
-+			return;
- 	}
- }
- 
-diff --git a/net/sched/sch_prio.c b/net/sched/sch_prio.c
-index 298794c04836..6bfabc4ba4b5 100644
---- a/net/sched/sch_prio.c
-+++ b/net/sched/sch_prio.c
-@@ -376,15 +376,8 @@ static void prio_walk(struct Qdisc *sch, struct qdisc_walker *arg)
- 		return;
- 
- 	for (prio = 0; prio < q->bands; prio++) {
--		if (arg->count < arg->skip) {
--			arg->count++;
--			continue;
--		}
--		if (arg->fn(sch, prio + 1, arg) < 0) {
--			arg->stop = 1;
-+		if (!tc_qdisc_stats_dump(sch, arg, prio + 1))
- 			break;
--		}
--		arg->count++;
- 	}
- }
- 
-diff --git a/net/sched/sch_qfq.c b/net/sched/sch_qfq.c
-index 13246a9dc5c1..35bb772abbee 100644
---- a/net/sched/sch_qfq.c
-+++ b/net/sched/sch_qfq.c
-@@ -659,15 +659,8 @@ static void qfq_walk(struct Qdisc *sch, struct qdisc_walker *arg)
- 
- 	for (i = 0; i < q->clhash.hashsize; i++) {
- 		hlist_for_each_entry(cl, &q->clhash.hash[i], common.hnode) {
--			if (arg->count < arg->skip) {
--				arg->count++;
--				continue;
--			}
--			if (arg->fn(sch, (unsigned long)cl, arg) < 0) {
--				arg->stop = 1;
-+			if (!tc_qdisc_stats_dump(sch, arg, (unsigned long)cl))
- 				return;
--			}
--			arg->count++;
- 		}
- 	}
- }
-diff --git a/net/sched/sch_red.c b/net/sched/sch_red.c
-index 4952406f70b9..99c30542823c 100644
---- a/net/sched/sch_red.c
-+++ b/net/sched/sch_red.c
-@@ -516,12 +516,7 @@ static unsigned long red_find(struct Qdisc *sch, u32 classid)
- static void red_walk(struct Qdisc *sch, struct qdisc_walker *walker)
- {
- 	if (!walker->stop) {
--		if (walker->count >= walker->skip)
--			if (walker->fn(sch, 1, walker) < 0) {
--				walker->stop = 1;
--				return;
--			}
--		walker->count++;
-+		tc_qdisc_stats_dump(sch, walker, 1);
- 	}
- }
- 
-diff --git a/net/sched/sch_sfb.c b/net/sched/sch_sfb.c
-index 1be8d04d69dc..001927b31eab 100644
---- a/net/sched/sch_sfb.c
-+++ b/net/sched/sch_sfb.c
-@@ -659,12 +659,7 @@ static int sfb_delete(struct Qdisc *sch, unsigned long cl,
- static void sfb_walk(struct Qdisc *sch, struct qdisc_walker *walker)
- {
- 	if (!walker->stop) {
--		if (walker->count >= walker->skip)
--			if (walker->fn(sch, 1, walker) < 0) {
--				walker->stop = 1;
--				return;
--			}
--		walker->count++;
-+		tc_qdisc_stats_dump(sch, walker, 1);
- 	}
- }
- 
-diff --git a/net/sched/sch_sfq.c b/net/sched/sch_sfq.c
-index f8e569f79f13..a82d844b02d0 100644
---- a/net/sched/sch_sfq.c
-+++ b/net/sched/sch_sfq.c
-@@ -888,16 +888,12 @@ static void sfq_walk(struct Qdisc *sch, struct qdisc_walker *arg)
- 		return;
- 
- 	for (i = 0; i < q->divisor; i++) {
--		if (q->ht[i] == SFQ_EMPTY_SLOT ||
--		    arg->count < arg->skip) {
-+		if (q->ht[i] == SFQ_EMPTY_SLOT) {
- 			arg->count++;
- 			continue;
- 		}
--		if (arg->fn(sch, i + 1, arg) < 0) {
--			arg->stop = 1;
-+		if (!tc_qdisc_stats_dump(sch, arg, i + 1))
- 			break;
--		}
--		arg->count++;
- 	}
- }
- 
-diff --git a/net/sched/sch_skbprio.c b/net/sched/sch_skbprio.c
-index df72fb83d9c7..3b2cdd0fa66a 100644
---- a/net/sched/sch_skbprio.c
-+++ b/net/sched/sch_skbprio.c
-@@ -265,15 +265,8 @@ static void skbprio_walk(struct Qdisc *sch, struct qdisc_walker *arg)
- 		return;
- 
- 	for (i = 0; i < SKBPRIO_MAX_PRIORITY; i++) {
--		if (arg->count < arg->skip) {
--			arg->count++;
--			continue;
--		}
--		if (arg->fn(sch, i + 1, arg) < 0) {
--			arg->stop = 1;
-+		if (!tc_qdisc_stats_dump(sch, arg, i + 1))
- 			break;
--		}
--		arg->count++;
- 	}
- }
- 
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index db88a692ef81..d98d6a8b271a 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -2000,11 +2000,8 @@ static void taprio_walk(struct Qdisc *sch, struct qdisc_walker *arg)
- 
- 	arg->count = arg->skip;
- 	for (ntx = arg->skip; ntx < dev->num_tx_queues; ntx++) {
--		if (arg->fn(sch, ntx + 1, arg) < 0) {
--			arg->stop = 1;
-+		if (!tc_qdisc_stats_dump(sch, arg, ntx + 1))
- 			break;
--		}
--		arg->count++;
- 	}
- }
- 
-diff --git a/net/sched/sch_tbf.c b/net/sched/sch_tbf.c
-index e031c1a41ea6..e852db4079c4 100644
---- a/net/sched/sch_tbf.c
-+++ b/net/sched/sch_tbf.c
-@@ -580,12 +580,7 @@ static unsigned long tbf_find(struct Qdisc *sch, u32 classid)
- static void tbf_walk(struct Qdisc *sch, struct qdisc_walker *walker)
- {
- 	if (!walker->stop) {
--		if (walker->count >= walker->skip)
--			if (walker->fn(sch, 1, walker) < 0) {
--				walker->stop = 1;
--				return;
--			}
--		walker->count++;
-+		tc_qdisc_stats_dump(sch, walker, 1);
- 	}
- }
- 
+diff --git a/tools/testing/selftests/tc-testing/tc-tests/qdiscs/cake.json b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/cake.json
+new file mode 100644
+index 000000000000..1134b72d281d
+--- /dev/null
++++ b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/cake.json
+@@ -0,0 +1,487 @@
++[
++    {
++        "id": "1212",
++        "name": "Create CAKE with default setting",
++        "category": [
++            "qdisc",
++            "cake"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root cake",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc cake 1: root refcnt [0-9]+ bandwidth unlimited diffserv3 triple-isolate nonat nowash no-ack-filter split-gso rtt 100ms raw overhead",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "3281",
++        "name": "Create CAKE with bandwidth limit",
++        "category": [
++            "qdisc",
++            "cake"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root cake bandwidth 1000",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc cake 1: root refcnt [0-9]+ bandwidth 1Kbit diffserv3 triple-isolate nonat nowash no-ack-filter split-gso rtt 100ms raw overhead",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "c940",
++        "name": "Create CAKE with autorate-ingress flag",
++        "category": [
++            "qdisc",
++            "cake"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root cake autorate-ingress",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc cake 1: root refcnt [0-9]+ bandwidth unlimited autorate-ingress diffserv3 triple-isolate nonat nowash no-ack-filter split-gso rtt 100ms raw overhead",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "2310",
++        "name": "Create CAKE with rtt time",
++        "category": [
++            "qdisc",
++            "cake"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root cake rtt 200",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc cake 1: root refcnt [0-9]+ bandwidth unlimited diffserv3 triple-isolate nonat nowash no-ack-filter split-gso rtt 200us raw overhead",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "2385",
++        "name": "Create CAKE with besteffort flag",
++        "category": [
++            "qdisc",
++            "cake"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root cake besteffort",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc cake 1: root refcnt [0-9]+ bandwidth unlimited besteffort triple-isolate nonat nowash no-ack-filter split-gso rtt 100ms raw overhead",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "a032",
++        "name": "Create CAKE with diffserv8 flag",
++        "category": [
++            "qdisc",
++            "cake"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root cake diffserv8",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc cake 1: root refcnt [0-9]+ bandwidth unlimited diffserv8 triple-isolate nonat nowash no-ack-filter split-gso rtt 100ms raw overhead",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "2349",
++        "name": "Create CAKE with diffserv4 flag",
++        "category": [
++            "qdisc",
++            "cake"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root cake diffserv4",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc cake 1: root refcnt [0-9]+ bandwidth unlimited diffserv4 triple-isolate nonat nowash no-ack-filter split-gso rtt 100ms raw overhead",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "8472",
++        "name": "Create CAKE with flowblind flag",
++        "category": [
++            "qdisc",
++            "cake"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root cake flowblind",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc cake 1: root refcnt [0-9]+ bandwidth unlimited diffserv3 flowblind nonat nowash no-ack-filter split-gso rtt 100ms raw overhead",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "2341",
++        "name": "Create CAKE with dsthost and nat flag",
++        "category": [
++            "qdisc",
++            "cake"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root cake dsthost nat",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc cake 1: root refcnt [0-9]+ bandwidth unlimited diffserv3 dsthost nat nowash no-ack-filter split-gso rtt 100ms raw overhead",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "5134",
++        "name": "Create CAKE with wash flag",
++        "category": [
++            "qdisc",
++            "cake"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root cake hosts wash",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc cake 1: root refcnt [0-9]+ bandwidth unlimited diffserv3 hosts nonat wash no-ack-filter split-gso rtt 100ms raw overhead",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "2302",
++        "name": "Create CAKE with flowblind and no-split-gso flag",
++        "category": [
++            "qdisc",
++            "cake"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root cake flowblind no-split-gso",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc cake 1: root refcnt [0-9]+ bandwidth unlimited diffserv3 flowblind nonat nowash no-ack-filter no-split-gso rtt 100ms raw overhead",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "0768",
++        "name": "Create CAKE with dual-srchost and ack-filter flag",
++        "category": [
++            "qdisc",
++            "cake"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root cake dual-srchost ack-filter",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc cake 1: root refcnt [0-9]+ bandwidth unlimited diffserv3 dual-srchost nonat nowash ack-filter split-gso rtt 100ms raw overhead",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "0238",
++        "name": "Create CAKE with dual-dsthost and ack-filter-aggressive flag",
++        "category": [
++            "qdisc",
++            "cake"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root cake dual-dsthost ack-filter-aggressive",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc cake 1: root refcnt [0-9]+ bandwidth unlimited diffserv3 dual-dsthost nonat nowash ack-filter-aggressive split-gso rtt 100ms raw overhead",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "6572",
++        "name": "Create CAKE with memlimit and ptm flag",
++        "category": [
++            "qdisc",
++            "cake"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root cake memlimit 10000 ptm",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc cake 1: root refcnt [0-9]+ bandwidth unlimited diffserv3 triple-isolate nonat nowash no-ack-filter split-gso rtt 100ms raw ptm overhead 0 memlimit 10000b",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "2436",
++        "name": "Create CAKE with fwmark and atm flag",
++        "category": [
++            "qdisc",
++            "cake"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root cake fwmark 8 atm",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc cake 1: root refcnt [0-9]+ bandwidth unlimited diffserv3 triple-isolate nonat nowash no-ack-filter split-gso rtt 100ms raw atm overhead 0 fwmark 0x8",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "3984",
++        "name": "Create CAKE with overhead and mpu",
++        "category": [
++            "qdisc",
++            "cake"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root cake overhead 128 mpu 256",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc cake 1: root refcnt [0-9]+ bandwidth unlimited diffserv3 triple-isolate nonat nowash no-ack-filter split-gso rtt 100ms noatm overhead 128 mpu 256",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "5421",
++        "name": "Create CAKE with conservative and ingress flag",
++        "category": [
++            "qdisc",
++            "cake"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root cake conservative ingress",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc cake 1: root refcnt [0-9]+ bandwidth unlimited diffserv3 triple-isolate nonat nowash ingress no-ack-filter split-gso rtt 100ms atm overhead 48",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "6854",
++        "name": "Delete CAKE with conservative and ingress flag",
++        "category": [
++            "qdisc",
++            "cake"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true",
++            "$TC qdisc add dev $DUMMY handle 1: root cake conservative ingress"
++        ],
++        "cmdUnderTest": "$TC qdisc del dev $DUMMY handle 1: root",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc cake 1: root refcnt [0-9]+ bandwidth unlimited diffserv3 triple-isolate nonat nowash ingress no-ack-filter split-gso rtt 100ms atm overhead 48",
++        "matchCount": "0",
++        "teardown": [
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "2342",
++        "name": "Replace CAKE with mpu",
++        "category": [
++            "qdisc",
++            "cake"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true",
++            "$TC qdisc add dev $DUMMY handle 1: root cake overhead 128 mpu 256"
++        ],
++        "cmdUnderTest": "$TC qdisc replace dev $DUMMY handle 1: root cake mpu 128",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc cake 1: root refcnt [0-9]+ bandwidth unlimited diffserv3 triple-isolate nonat nowash no-ack-filter split-gso rtt 100ms noatm overhead 128 mpu 128",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "2313",
++        "name": "Change CAKE with mpu",
++        "category": [
++            "qdisc",
++            "cake"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true",
++            "$TC qdisc add dev $DUMMY handle 1: root cake overhead 128 mpu 256"
++        ],
++        "cmdUnderTest": "$TC qdisc change dev $DUMMY handle 1: root cake mpu 128",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc cake 1: root refcnt [0-9]+ bandwidth unlimited diffserv3 triple-isolate nonat nowash no-ack-filter split-gso rtt 100ms noatm overhead 128 mpu 128",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "4365",
++        "name": "Show CAKE class",
++        "category": [
++            "qdisc",
++            "cake"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root cake",
++        "expExitCode": "0",
++        "verifyCmd": "$TC class show dev $DUMMY",
++        "matchPattern": "class cake",
++        "matchCount": "0",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    }
++]
 -- 
 2.17.1
 
