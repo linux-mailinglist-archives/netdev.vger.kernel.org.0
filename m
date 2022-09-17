@@ -2,139 +2,289 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E71C45BB5FC
-	for <lists+netdev@lfdr.de>; Sat, 17 Sep 2022 06:07:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 922FF5BB655
+	for <lists+netdev@lfdr.de>; Sat, 17 Sep 2022 07:00:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229581AbiIQEGB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Sep 2022 00:06:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50966 "EHLO
+        id S229517AbiIQFAa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Sep 2022 01:00:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229495AbiIQEF7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Sep 2022 00:05:59 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 216F165562;
-        Fri, 16 Sep 2022 21:05:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663387558; x=1694923558;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=8egC0iJIchIflEUw3SgvHUHfLLT8j/1o/nymXrl1Dz0=;
-  b=Y/T0koT0RalL/dLfFWb93lVnLTdiG0yNz8mdEQH083anTZzv1no26ttx
-   9u2ws4uSFaY74weCnGPZtg0torkqwVskYSz4UzUcPJZue+1nefKWojvvW
-   dEy/5lkdLhdWOIPAoScYsJtLB75rHppIm1T2kgzdyAuN13SAoQdUFOhaz
-   Fpt+mLHxVRMwnjnIgtfdFD4xNCzTPM5eeDYmY9Im+49Zn6pVjwkh9HhMm
-   phKcl/WlpSVNCPTuQdbVwPmX5tyEekCClOqKFH/nmuywDN8UEX6nbmLt0
-   lKitGXvJ6xkVunwGlEJtIWYIKIjsgHszbME98sEZvL66Eh2yarWUi0GEy
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10472"; a="286163637"
-X-IronPort-AV: E=Sophos;i="5.93,322,1654585200"; 
-   d="scan'208";a="286163637"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2022 21:05:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,322,1654585200"; 
-   d="scan'208";a="686366464"
-Received: from lkp-server02.sh.intel.com (HELO 41300c7200ea) ([10.239.97.151])
-  by fmsmga004.fm.intel.com with ESMTP; 16 Sep 2022 21:05:54 -0700
-Received: from kbuild by 41300c7200ea with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oZP5V-0002Sg-2x;
-        Sat, 17 Sep 2022 04:05:53 +0000
-Date:   Sat, 17 Sep 2022 12:05:04 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Colin Foster <colin.foster@in-advantage.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH v1 net-next 1/2] net: mscc: ocelot: utilize
- readx_poll_timeout() for chip reset
-Message-ID: <202209171105.95JOLHu6-lkp@intel.com>
-References: <20220916191349.1659269-2-colin.foster@in-advantage.com>
+        with ESMTP id S229450AbiIQFA2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Sep 2022 01:00:28 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5E7C52E56;
+        Fri, 16 Sep 2022 22:00:24 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MTzDN520YzlVnH;
+        Sat, 17 Sep 2022 12:56:20 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
+ (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Sat, 17 Sep
+ 2022 13:00:21 +0800
+From:   Zhengchao Shao <shaozhengchao@huawei.com>
+To:     <netdev@vger.kernel.org>, <cake@lists.bufferbloat.net>,
+        <linux-kselftest@vger.kernel.org>, <jhs@mojatatu.com>,
+        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <toke@toke.dk>, <vinicius.gomes@intel.com>,
+        <stephen@networkplumber.org>, <shuah@kernel.org>,
+        <victor@mojatatu.com>
+CC:     <zhijianx.li@intel.com>, <weiyongjun1@huawei.com>,
+        <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
+Subject: [PATCH net-next,v2 00/18] refactor duplicate codes in the qdisc class walk function
+Date:   Sat, 17 Sep 2022 13:02:04 +0800
+Message-ID: <20220917050204.127191-1-shaozhengchao@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220916191349.1659269-2-colin.foster@in-advantage.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Colin,
+The walk implementation of most qdisc class modules is basically the
+same. That is, the values of count and skip are checked first. If count
+is greater than or equal to skip, the registered fn function is
+executed. Otherwise, increase the value of count. So the code can be
+refactored.
 
-Thank you for the patch! Perhaps something to improve:
+The walk function is invoked during dump. Therefore, test cases related
+ to the tdc filter need to be added.
 
-[auto build test WARNING on net-next/master]
+Last, thanks to Victor for his review.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Colin-Foster/clean-up-ocelot_reset-routine/20220917-031554
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 862deb68c1bc19783ab7a98ba17a441aa76eba52
-config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220917/202209171105.95JOLHu6-lkp@intel.com/config)
-compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/11df0e8e7af298721b4bb1af286571272dd0d56e
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Colin-Foster/clean-up-ocelot_reset-routine/20220917-031554
-        git checkout 11df0e8e7af298721b4bb1af286571272dd0d56e
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/ethernet/mscc/
+Add test cases locally and perform the test. The test results are listed
+below:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+./tdc.py -c cake
+ok 1 1212 - Create CAKE with default setting
+ok 2 3281 - Create CAKE with bandwidth limit
+ok 3 c940 - Create CAKE with autorate-ingress flag
+ok 4 2310 - Create CAKE with rtt time
+ok 5 2385 - Create CAKE with besteffort flag
+ok 6 a032 - Create CAKE with diffserv8 flag
+ok 7 2349 - Create CAKE with diffserv4 flag
+ok 8 8472 - Create CAKE with flowblind flag
+ok 9 2341 - Create CAKE with dsthost and nat flag
+ok 10 5134 - Create CAKE with wash flag
+ok 11 2302 - Create CAKE with flowblind and no-split-gso flag
+ok 12 0768 - Create CAKE with dual-srchost and ack-filter flag
+ok 13 0238 - Create CAKE with dual-dsthost and ack-filter-aggressive flag
+ok 14 6572 - Create CAKE with memlimit and ptm flag
+ok 15 2436 - Create CAKE with fwmark and atm flag
+ok 16 3984 - Create CAKE with overhead and mpu
+ok 17 5421 - Create CAKE with conservative and ingress flag
+ok 18 6854 - Delete CAKE with conservative and ingress flag
+ok 19 2342 - Replace CAKE with mpu
+ok 20 2313 - Change CAKE with mpu
+ok 21 4365 - Show CAKE class
 
-All warnings (new ones prefixed by >>):
+./tdc.py -c cbq
+ok 1 3460 - Create CBQ with default setting
+ok 2 0592 - Create CBQ with mpu
+ok 3 4684 - Create CBQ with valid cell num
+ok 4 4345 - Create CBQ with invalid cell num
+ok 5 4525 - Create CBQ with valid ewma
+ok 6 6784 - Create CBQ with invalid ewma
+ok 7 5468 - Delete CBQ with handle
+ok 8 492a - Show CBQ class
 
->> drivers/net/ethernet/mscc/ocelot_vsc7514.c:222:6: warning: cast to 'void *' from smaller integer type 'int' [-Wint-to-void-pointer-cast]
-           if (IS_ERR_VALUE(err))
-               ^~~~~~~~~~~~~~~~~
-   include/linux/err.h:22:49: note: expanded from macro 'IS_ERR_VALUE'
-   #define IS_ERR_VALUE(x) unlikely((unsigned long)(void *)(x) >= (unsigned long)-MAX_ERRNO)
-                           ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/compiler.h:78:42: note: expanded from macro 'unlikely'
-   # define unlikely(x)    __builtin_expect(!!(x), 0)
-                                               ^
-   1 warning generated.
+./tdc.py -c cbs
+ok 1 1820 - Create CBS with default setting
+ok 2 1532 - Create CBS with hicredit setting
+ok 3 2078 - Create CBS with locredit setting
+ok 4 9271 - Create CBS with sendslope setting
+ok 5 0482 - Create CBS with idleslope setting
+ok 6 e8f3 - Create CBS with multiple setting
+ok 7 23c9 - Replace CBS with sendslope setting
+ok 8 a07a - Change CBS with idleslope setting
+ok 9 43b3 - Delete CBS with handle
+ok 10 9472 - Show CBS class
 
+./tdc.py -c drr
+ok 1 0385 - Create DRR with default setting
+ok 2 2375 - Delete DRR with handle
+ok 3 3092 - Show DRR class
 
-vim +222 drivers/net/ethernet/mscc/ocelot_vsc7514.c
+./tdc.py -c dsmark
+ok 1 6345 - Create DSMARK with default setting
+ok 2 3462 - Create DSMARK with default_index setting
+ok 3 ca95 - Create DSMARK with set_tc_index flag
+ok 4 a950 - Create DSMARK with multiple setting
+ok 5 4092 - Delete DSMARK with handle
+ok 6 5930 - Show DSMARK class
 
-   208	
-   209	static int ocelot_reset(struct ocelot *ocelot)
-   210	{
-   211		int err;
-   212		u32 val;
-   213	
-   214		regmap_field_write(ocelot->regfields[SYS_RESET_CFG_MEM_INIT], 1);
-   215		regmap_field_write(ocelot->regfields[SYS_RESET_CFG_MEM_ENA], 1);
-   216	
-   217		/* MEM_INIT is a self-clearing bit. Wait for it to be cleared (should be
-   218		 * 100us) before enabling the switch core.
-   219		 */
-   220		err = readx_poll_timeout(ocelot_mem_init_status, ocelot, val, !val,
-   221					 MEM_INIT_SLEEP_US, MEM_INIT_TIMEOUT_US);
- > 222		if (IS_ERR_VALUE(err))
-   223			return err;
-   224	
-   225		regmap_field_write(ocelot->regfields[SYS_RESET_CFG_MEM_ENA], 1);
-   226		regmap_field_write(ocelot->regfields[SYS_RESET_CFG_CORE_ENA], 1);
-   227	
-   228		return 0;
-   229	}
-   230	
+./tdc.py -c fq_codel
+ok 1 4957 - Create FQ_CODEL with default setting
+ok 2 7621 - Create FQ_CODEL with limit setting
+ok 3 6871 - Create FQ_CODEL with memory_limit setting
+ok 4 5636 - Create FQ_CODEL with target setting
+ok 5 630a - Create FQ_CODEL with interval setting
+ok 6 4324 - Create FQ_CODEL with quantum setting
+ok 7 b190 - Create FQ_CODEL with noecn flag
+ok 8 5381 - Create FQ_CODEL with ce_threshold setting
+ok 9 c9d2 - Create FQ_CODEL with drop_batch setting
+ok 10 523b - Create FQ_CODEL with multiple setting
+ok 11 9283 - Replace FQ_CODEL with noecn setting
+ok 12 3459 - Change FQ_CODEL with limit setting
+ok 13 0128 - Delete FQ_CODEL with handle
+ok 14 0435 - Show FQ_CODEL class
+
+./tdc.py -c hfsc
+ok 1 3254 - Create HFSC with default setting
+ok 2 0289 - Create HFSC with class sc and ul rate setting
+ok 3 846a - Create HFSC with class sc umax and dmax setting
+ok 4 5413 - Create HFSC with class rt and ls rate setting
+ok 5 9312 - Create HFSC with class rt umax and dmax setting
+ok 6 6931 - Delete HFSC with handle
+ok 7 8436 - Show HFSC class
+
+./tdc.py -c htb
+ok 1 0904 - Create HTB with default setting
+ok 2 3906 - Create HTB with default-N setting
+ok 3 8492 - Create HTB with r2q setting
+ok 4 9502 - Create HTB with direct_qlen setting
+ok 5 b924 - Create HTB with class rate and burst setting
+ok 6 4359 - Create HTB with class mpu setting
+ok 7 9048 - Create HTB with class prio setting
+ok 8 4994 - Create HTB with class ceil setting
+ok 9 9523 - Create HTB with class cburst setting
+ok 10 5353 - Create HTB with class mtu setting
+ok 11 346a - Create HTB with class quantum setting
+ok 12 303a - Delete HTB with handle
+
+./tdc.py -c mqprio
+ok 1 9903 - Add mqprio Qdisc to multi-queue device (8 queues)
+ok 2 453a - Delete nonexistent mqprio Qdisc
+ok 3 5292 - Delete mqprio Qdisc twice
+ok 4 45a9 - Add mqprio Qdisc to single-queue device
+ok 5 2ba9 - Show mqprio class
+
+./tdc.py -c multiq
+ok 1 20ba - Add multiq Qdisc to multi-queue device (8 queues)
+ok 2 4301 - List multiq Class
+ok 3 7832 - Delete nonexistent multiq Qdisc
+ok 4 2891 - Delete multiq Qdisc twice
+ok 5 1329 - Add multiq Qdisc to single-queue device
+
+./tdc.py -c netem
+ok 1 cb28 - Create NETEM with default setting
+ok 2 a089 - Create NETEM with limit flag
+ok 3 3449 - Create NETEM with delay time
+ok 4 3782 - Create NETEM with distribution and corrupt flag
+ok 5 2b82 - Create NETEM with distribution and duplicate flag
+ok 6 a932 - Create NETEM with distribution and loss flag
+ok 7 e01a - Create NETEM with distribution and loss state flag
+ok 8 ba29 - Create NETEM with loss gemodel flag
+ok 9 0492 - Create NETEM with reorder flag
+ok 10 7862 - Create NETEM with rate limit
+ok 11 7235 - Create NETEM with multiple slot rate
+ok 12 5439 - Create NETEM with multiple slot setting
+ok 13 5029 - Change NETEM with loss state
+ok 14 3785 - Replace NETEM with delay time
+ok 15 4502 - Delete NETEM with handle
+ok 16 0785 - Show NETEM class
+
+./tdc.py -c qfq
+ok 1 0582 - Create QFQ with default setting
+ok 2 c9a3 - Create QFQ with class weight setting
+ok 3 8452 - Create QFQ with class maxpkt setting
+ok 4 d920 - Create QFQ with multiple class setting
+ok 5 0548 - Delete QFQ with handle
+ok 6 5901 - Show QFQ class
+
+./tdc.py -e 0521
+ok 1 0521 - Show ingress class
+
+./tdc.py -e 1023
+ok 1 1023 - Show mq class
+
+./tdc.py -e 2410
+ok 1 2410 - Show prio class
+
+./tdc.py -e 290a
+ok 1 290a - Show RED class
+
+Zhengchao Shao (18):
+  net/sched: sch_api: add helper for tc qdisc walker stats dump
+  net/sched: use tc_qdisc_stats_dump() in qdisc
+  selftests/tc-testings: add selftests for cake qdisc
+  selftests/tc-testings: add selftests for cbq qdisc
+  selftests/tc-testings: add selftests for cbs qdisc
+  selftests/tc-testings: add selftests for drr qdisc
+  selftests/tc-testings: add selftests for dsmark qdisc
+  selftests/tc-testings: add selftests for fq_codel qdisc
+  selftests/tc-testings: add selftests for hfsc qdisc
+  selftests/tc-testings: add selftests for htb qdisc
+  selftests/tc-testings: add selftests for mqprio qdisc
+  selftests/tc-testings: add selftests for multiq qdisc
+  selftests/tc-testings: add selftests for netem qdisc
+  selftests/tc-testings: add selftests for qfq qdisc
+  selftests/tc-testings: add show class case for ingress qdisc
+  selftests/tc-testings: add show class case for mq qdisc
+  selftests/tc-testings: add show class case for prio qdisc
+  selftests/tc-testings: add show class case for red qdisc
+
+ include/net/pkt_sched.h                       |  13 +
+ net/sched/sch_atm.c                           |   6 +-
+ net/sched/sch_cake.c                          |   9 +-
+ net/sched/sch_cbq.c                           |   9 +-
+ net/sched/sch_cbs.c                           |   8 +-
+ net/sched/sch_drr.c                           |   9 +-
+ net/sched/sch_dsmark.c                        |  14 +-
+ net/sched/sch_ets.c                           |   9 +-
+ net/sched/sch_fq_codel.c                      |   8 +-
+ net/sched/sch_hfsc.c                          |   9 +-
+ net/sched/sch_htb.c                           |   9 +-
+ net/sched/sch_mq.c                            |   5 +-
+ net/sched/sch_mqprio.c                        |   5 +-
+ net/sched/sch_multiq.c                        |   9 +-
+ net/sched/sch_netem.c                         |   8 +-
+ net/sched/sch_prio.c                          |   9 +-
+ net/sched/sch_qfq.c                           |   9 +-
+ net/sched/sch_red.c                           |   7 +-
+ net/sched/sch_sfb.c                           |   7 +-
+ net/sched/sch_sfq.c                           |   8 +-
+ net/sched/sch_skbprio.c                       |   9 +-
+ net/sched/sch_taprio.c                        |   5 +-
+ net/sched/sch_tbf.c                           |   7 +-
+ .../tc-testing/tc-tests/qdiscs/cake.json      | 487 ++++++++++++++++++
+ .../tc-testing/tc-tests/qdiscs/cbq.json       | 184 +++++++
+ .../tc-testing/tc-tests/qdiscs/cbs.json       | 234 +++++++++
+ .../tc-testing/tc-tests/qdiscs/drr.json       |  71 +++
+ .../tc-testing/tc-tests/qdiscs/dsmark.json    | 140 +++++
+ .../tc-testing/tc-tests/qdiscs/fq_codel.json  | 326 ++++++++++++
+ .../tc-testing/tc-tests/qdiscs/hfsc.json      | 167 ++++++
+ .../tc-testing/tc-tests/qdiscs/htb.json       | 285 ++++++++++
+ .../tc-testing/tc-tests/qdiscs/ingress.json   |  20 +
+ .../tc-testing/tc-tests/qdiscs/mq.json        |  24 +-
+ .../tc-testing/tc-tests/qdiscs/mqprio.json    | 114 ++++
+ .../tc-testing/tc-tests/qdiscs/multiq.json    | 114 ++++
+ .../tc-testing/tc-tests/qdiscs/netem.json     | 372 +++++++++++++
+ .../tc-testing/tc-tests/qdiscs/prio.json      |  20 +
+ .../tc-testing/tc-tests/qdiscs/qfq.json       | 145 ++++++
+ .../tc-testing/tc-tests/qdiscs/red.json       |  23 +
+ 39 files changed, 2769 insertions(+), 148 deletions(-)
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/qdiscs/cake.json
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/qdiscs/cbq.json
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/qdiscs/cbs.json
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/qdiscs/drr.json
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/qdiscs/dsmark.json
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/qdiscs/fq_codel.json
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/qdiscs/hfsc.json
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/qdiscs/htb.json
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/qdiscs/mqprio.json
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/qdiscs/multiq.json
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/qdiscs/netem.json
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/qdiscs/qfq.json
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.17.1
+
