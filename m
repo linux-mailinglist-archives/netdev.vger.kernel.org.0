@@ -2,93 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BEB585BB51F
-	for <lists+netdev@lfdr.de>; Sat, 17 Sep 2022 03:00:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B1175BB4E3
+	for <lists+netdev@lfdr.de>; Sat, 17 Sep 2022 02:11:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229679AbiIQBAI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Sep 2022 21:00:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54556 "EHLO
+        id S229667AbiIQAK7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Sep 2022 20:10:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229479AbiIQBAG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 21:00:06 -0400
-X-Greylist: delayed 2552 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 16 Sep 2022 18:00:02 PDT
-Received: from mail.base45.de (mail.base45.de [80.241.60.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D83BA6383;
-        Fri, 16 Sep 2022 18:00:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=fe80.eu;
-        s=20190804; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=IkyT/SH0Avq5x9pAHQMFR5EvWvl2e975Bdszn8X9P9s=; b=S54Kp3bJO79v4211GDHYBIU+zV
-        jL4e6Kja0mIZtuKhYb1cRkkeMIonNJEhCBWwuJ0t0JZs2F/R1XvxH1q3vxwuDYPZJXNO084kWy0um
-        AlWk/CNQgTbt5NlPEWtmEV0kpiIBsUxNmRfzfNNe4mWnwPpNFb2v07r1VCgrVrBI5j5U8JQtkCvrY
-        7cH5FhJjm7IEosL5ErHj0P/THGgTtwjERmZDd4rs/MnMQOi4x1z8OYBMuIXh1xeYheF6Iai1xV2Gw
-        bjGN5PsS5W4i/5dyVTBKZ2w3rImDsxJzkYVzgK3K27MND4jvM0/2HTtyr7LNMPrYUFhuTGIsbcjmk
-        aSG5Fj2Q==;
-Received: from p4fd2bf05.dip0.t-ipconnect.de ([79.210.191.5] helo=localhost.localdomain)
-        by mail.base45.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <lynxis@fe80.eu>)
-        id 1oZLNF-000nP7-FD; Sat, 17 Sep 2022 00:07:57 +0000
-From:   Alexander Couzens <lynxis@fe80.eu>
-To:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Alexander Couzens <lynxis@fe80.eu>,
-        Landen Chao <landen.chao@mediatek.com>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net v2 2/2] net: mt7531: ensure all MACs are powered down before reset
-Date:   Sat, 17 Sep 2022 02:07:34 +0200
-Message-Id: <20220917000734.520253-3-lynxis@fe80.eu>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220917000734.520253-1-lynxis@fe80.eu>
-References: <20220917000734.520253-1-lynxis@fe80.eu>
+        with ESMTP id S229557AbiIQAK4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Sep 2022 20:10:56 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56A6772FDF;
+        Fri, 16 Sep 2022 17:10:55 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id y136so22727803pfb.3;
+        Fri, 16 Sep 2022 17:10:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=KFW8Lrz6qD+umd1mS93Z94RJAGOU/7BuklYES2+tlvc=;
+        b=S95XJ2h2Yh/uY9gQVigHf5hGkQGVe0J9Tj8MSR8adO647oBGzf/84YU+IAySuCQ5mp
+         wlHZ8JXl7AX8P4wcHea7TQgV86TSdMoYQe5NybR0gYEtM1vAQnzxL2gzzvszg+9xeATh
+         VggxVJeSI+WETjVLlqARja3Jh7reXGk7t8ZLZ82Q7aDxUrq8h6AgdVr21qKVc1rJzRzV
+         DsjO4th/qWFnTNy3hfd/OKBS6d3AYsZrCAmbUAup+fI+UAcs/PO6ea2bCk55NHVxGke3
+         7pJ8KPiCn8WMfn9sG0DN1eCaVlYO1kMMIY/XJO4nizzphuahDNoDbxDvtpmG95yd7cAC
+         Syrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=KFW8Lrz6qD+umd1mS93Z94RJAGOU/7BuklYES2+tlvc=;
+        b=m2RdIPdxdcwAFNcNsVyZfJFTjyTsXWXdMh7hDP2/HLo+KQMwEIyLx2HCyDzAaJmY8I
+         GwBil8i5hF2iaAWSKZgsBn3G3D6XJDSbCk3eG4AdJCxWdi1qKSEa0l+Bg8LkDB7UIiHO
+         UXYB3y3namM5knouUjbtXzRNAAI2/OAK5oANC9a5ZATOwRdytUai65kj3y9/8RtN0I+c
+         MIvztiV4Ct5qWRrCBBSt2NsSpwHjMAIhCEDtc0CYIcWeUC/Wdx0UbrT2I2eqmns1XbJP
+         /+b34aAxwugOjSq6bPWJarmYeOUKKnXtLAadCPguNV27USrN4+HQsPSPYP5JfGm4nWRJ
+         97GA==
+X-Gm-Message-State: ACrzQf3Zl5jytI6gH8sLVHopeHLLRLqBHphD2nHwYyEDJ3tWh/H2EXOp
+        G4gq+Xo72dcsvEB9Oo27NO2xhvnZ4f4sUg==
+X-Google-Smtp-Source: AMsMyM4OTX8idl0VD6igHHYK4x6jOOquNrCi3+1u78eYaUGk2HxEcyhIuyMjxNmPUDs9UsjzhTGDng==
+X-Received: by 2002:a05:6a02:309:b0:434:efcb:ccf4 with SMTP id bn9-20020a056a02030900b00434efcbccf4mr6615874pgb.304.1663373454281;
+        Fri, 16 Sep 2022 17:10:54 -0700 (PDT)
+Received: from localhost.localdomain (lily-optiplex-3070.dynamic.ucsd.edu. [2607:f720:1300:3033::1:4dd])
+        by smtp.googlemail.com with ESMTPSA id p67-20020a625b46000000b00540d03f3792sm15002041pfb.81.2022.09.16.17.10.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Sep 2022 17:10:53 -0700 (PDT)
+From:   Li Zhong <floridsleeves@gmail.com>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org
+Cc:     pabeni@redhat.com, kuba@kernel.org, edumazet@google.com,
+        davem@davemloft.net, anthony.l.nguyen@intel.com,
+        jesse.brandeburg@intel.com, Li Zhong <floridsleeves@gmail.com>
+Subject: [PATCH v2] drivers/net/ethernet/intel/e100: check the return value of e100_exec_cmd()
+Date:   Fri, 16 Sep 2022 17:10:27 -0700
+Message-Id: <20220917001027.3799634-1-floridsleeves@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The datasheet [1] explicit describes it as requirement for a reset.
+Check the return value of e100_exec_cmd() which could return error code
+when execution fails.
 
-[1] MT7531 Reference Manual for Development Board rev 1.0, page 735
-
-Signed-off-by: Alexander Couzens <lynxis@fe80.eu>
+Signed-off-by: Li Zhong <floridsleeves@gmail.com>
 ---
- drivers/net/dsa/mt7530.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/intel/e100.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 95a57aeb466e..409d5c3d76ea 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -2329,6 +2329,10 @@ mt7531_setup(struct dsa_switch *ds)
- 		return -ENODEV;
- 	}
+diff --git a/drivers/net/ethernet/intel/e100.c b/drivers/net/ethernet/intel/e100.c
+index 11a884aa5082..0d133cd4d01b 100644
+--- a/drivers/net/ethernet/intel/e100.c
++++ b/drivers/net/ethernet/intel/e100.c
+@@ -1911,7 +1911,9 @@ static inline void e100_start_receiver(struct nic *nic, struct rx *rx)
  
-+	/* all MACs must be forced link-down before sw reset */
-+	for (i = 0; i < MT7530_NUM_PORTS; i++)
-+		mt7530_write(priv, MT7530_PMCR_P(i), MT7531_FORCE_LNK);
-+
- 	/* Reset the switch through internal reset */
- 	mt7530_write(priv, MT7530_SYS_CTRL,
- 		     SYS_CTRL_PHY_RST | SYS_CTRL_SW_RST |
+ 	/* (Re)start RU if suspended or idle and RFA is non-NULL */
+ 	if (rx->skb) {
+-		e100_exec_cmd(nic, ruc_start, rx->dma_addr);
++		if (e100_exec_cmd(nic, ruc_start, rx->dma_addr))
++			netif_printk(nic, tx_err, KERN_DEBUG, nic->netdev,
++			     "exec ruc_start failed\n");
+ 		nic->ru_running = RU_RUNNING;
+ 	}
+ }
 -- 
-2.37.3
+2.25.1
 
