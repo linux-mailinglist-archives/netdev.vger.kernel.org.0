@@ -2,80 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B9495BBA18
-	for <lists+netdev@lfdr.de>; Sat, 17 Sep 2022 21:20:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AE895BBA41
+	for <lists+netdev@lfdr.de>; Sat, 17 Sep 2022 22:18:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229702AbiIQTU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Sep 2022 15:20:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48254 "EHLO
+        id S229558AbiIQUSJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Sep 2022 16:18:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229553AbiIQTUZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Sep 2022 15:20:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71595275F2;
-        Sat, 17 Sep 2022 12:20:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 08891B80DCD;
-        Sat, 17 Sep 2022 19:20:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C09D5C433D7;
-        Sat, 17 Sep 2022 19:20:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663442421;
-        bh=UQfXo29y9NbqLAQN1NnMX4RCp1VnZdXZ2n97AO2/IHk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=rYr8Yf5GP+CqS4DxvlU55ytm9008m2dcl5K6gJo44Eo1gQDp4PW6ZNpqtfkkZm3lj
-         dDNkhTS7dBmMEiHJJj7PQTxsidkeJfGp0BEqUnKT8zLaOXrleRdDr2Z982fU/d0RKD
-         w1IEPX2in4YMp9k8CKLrS+Hjm8VMhJSs7MNPJdoVzuX2I84Q6loxsOv7KN5Ps7EtRh
-         Zd8oiRGpC3K+Gb0sGPy1BgFQhHI9y1yuNpFA9yhc4EDCdCS79Ocxnf8Qb79wZbx/UW
-         DdL31Kwa+tx3kS95S0zKFgnYwy2PHuzOkZ1/9h5cKx/ZqAtu5ys7kt20xCapAviAuj
-         PcQhaPIXIMBuw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A7639C04E59;
-        Sat, 17 Sep 2022 19:20:21 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229492AbiIQUSI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Sep 2022 16:18:08 -0400
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64FAF2E9EE;
+        Sat, 17 Sep 2022 13:18:07 -0700 (PDT)
+Received: by mail-qt1-x82c.google.com with SMTP id h21so18285162qta.3;
+        Sat, 17 Sep 2022 13:18:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=EnLNkzzS7uvp8qzIOHofbmM/lr6EdUZwCfdgBKsBFIA=;
+        b=WnJNpsrV7HdjGnzo2nkpOIxfT2GxSQjATwHQe5v3dxoDnhipC0pkWqvbDRaaAkHUQl
+         BjuI5IHPTPKLxcBGbBky4ToOKprKzwbMjyJdETPc++bA6kflYiSa0oVI5YALYKtStEuX
+         s1AF/+zVhqgaqkyDkFWxaQAq6J2FxoK8ra3/X/7zVu9rmMsb+T//OX3VmA7rJq+gLfEe
+         gOxjRTSUCB8XAqhqASuiItzDRhGM19ybGOKOn2CR581W61gTdJ96XBxuQCX63STtniZn
+         E1DEGEdZCY7FTpS43bWkkxm1MTCoN7tiTtmtCzJmyvIzjeVwjJ6IEahZE+9GSiOCGeZT
+         m3uA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=EnLNkzzS7uvp8qzIOHofbmM/lr6EdUZwCfdgBKsBFIA=;
+        b=lAekH1cEknlXhiFVU/lH+nJOLa1g0+I537s6mOYY6iYHJx9wO4S5E0dbWc2IF9uwjs
+         IeFFz2QscCkIAJ1Sq82+KowRaiwWBWtvH5dVr7/IoPtdG1W3+Q6gwPQ1TRZCO69Gsoap
+         pyIAs/On0jeGTYTnu1Xe0PhzDsQQKQiuJl6GSRT/Sl1t9ss7yRM3RCQiD5WbILHIBn6O
+         elg/gvgB5oreF5EI19+w1eKlRtNdZf5Hzoc2hHkJ0D/r0KKfDfRiAB2hkjRVEzdzZBHv
+         P/foMGW7/wAeYZnW2FAHd7hPulyxxHGRn0kTNXGlOuYfLGbjdgLyTtmLeBpAYFTNDHkg
+         PKCw==
+X-Gm-Message-State: ACrzQf0d2jrCjT+lV4szkjenHSaImLP1xLuxxRR8kslTJo/XZvuqChKx
+        wLT7OH2WXuHZUFO6bgWYI74=
+X-Google-Smtp-Source: AMsMyM7cM/HW3xBioBWezl3X+3QEZQyJkj85m12XBnHv7oTpjrxgZgVMCPyE7emse7IXOB0C/oO1Kg==
+X-Received: by 2002:ac8:57ca:0:b0:35b:b51f:94fc with SMTP id w10-20020ac857ca000000b0035bb51f94fcmr9524213qta.276.1663445886429;
+        Sat, 17 Sep 2022 13:18:06 -0700 (PDT)
+Received: from euclid ([71.58.109.160])
+        by smtp.gmail.com with ESMTPSA id l2-20020a37f902000000b006b9c355ed75sm8826647qkj.70.2022.09.17.13.18.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 17 Sep 2022 13:18:06 -0700 (PDT)
+From:   Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>, aroulin@nvidia.com,
+        sbrivio@redhat.com, roopa@nvidia.com,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
+        Sevinj Aghayeva <sevinj.aghayeva@gmail.com>
+Subject: [PATCH RFC net-next 0/5] net: vlan: fix bridge binding behavior and add selftests
+Date:   Sat, 17 Sep 2022 16:17:56 -0400
+Message-Id: <cover.1663445339.git.sevinj.aghayeva@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH -next] can: flexcan: Switch to use dev_err_probe() helper
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166344242168.31603.12470053140330012834.git-patchwork-notify@kernel.org>
-Date:   Sat, 17 Sep 2022 19:20:21 +0000
-References: <20220914134030.3782754-1-yangyingliang@huawei.com>
-In-Reply-To: <20220914134030.3782754-1-yangyingliang@huawei.com>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        wg@grandegger.com, mkl@pengutronix.de
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+When bridge binding is enabled for a vlan interface, it is expected
+that the link state of the vlan interface will track the subset of the
+ports that are also members of the corresponding vlan, rather than
+that of all ports.
 
-This patch was applied to netdev/net-next.git (master)
-by Marc Kleine-Budde <mkl@pengutronix.de>:
+Currently, this feature works as expected when a vlan interface is
+created with bridge binding enabled:
 
-On Wed, 14 Sep 2022 21:40:30 +0800 you wrote:
-> dev_err() can be replace with dev_err_probe() which will check if error
-> code is -EPROBE_DEFER.
-> 
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> ---
->  drivers/net/can/flexcan/flexcan-core.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
+  ip link add link br name vlan10 type vlan id 10 protocol 802.1q \
+        bridge_binding on
 
-Here is the summary with links:
-  - [-next] can: flexcan: Switch to use dev_err_probe() helper
-    https://git.kernel.org/netdev/net-next/c/1c679f917397
+However, the feature does not work when a vlan interface is created
+with bridge binding disabled, and then enabled later:
 
-You are awesome, thank you!
+  ip link add link br name vlan10 type vlan id 10 protocol 802.1q \
+        bridge_binding off
+  ip link set vlan10 type vlan bridge_binding on
+
+After these two commands, the link state of the vlan interface
+continues to track that of all ports, which is inconsistent and
+confusing to users. This series fixes this bug and introduces two
+tests for the valid behavior.
+
+Sevinj Aghayeva (5):
+  net: core: export call_netdevice_notifiers_info
+  net: core: introduce a new notifier for link-type-specific changes
+  net: 8021q: notify bridge module of bridge-binding flag change
+  net: bridge: handle link-type-specific changes in the bridge module
+  selftests: net: tests for bridge binding behavior
+
+ include/linux/if_vlan.h                       |   4 +
+ include/linux/netdevice.h                     |   3 +
+ include/linux/notifier_info.h                 |  21 +++
+ net/8021q/vlan.h                              |   2 +-
+ net/8021q/vlan_dev.c                          |  20 ++-
+ net/bridge/br.c                               |   5 +
+ net/bridge/br_private.h                       |   7 +
+ net/bridge/br_vlan.c                          |  18 +++
+ net/core/dev.c                                |   7 +-
+ tools/testing/selftests/net/Makefile          |   1 +
+ .../selftests/net/bridge_vlan_binding_test.sh | 143 ++++++++++++++++++
+ 11 files changed, 223 insertions(+), 8 deletions(-)
+ create mode 100644 include/linux/notifier_info.h
+ create mode 100755 tools/testing/selftests/net/bridge_vlan_binding_test.sh
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.34.1
 
