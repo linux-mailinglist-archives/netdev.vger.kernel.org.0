@@ -2,45 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D1E165BB6A6
-	for <lists+netdev@lfdr.de>; Sat, 17 Sep 2022 08:31:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FBE65BB6B0
+	for <lists+netdev@lfdr.de>; Sat, 17 Sep 2022 08:37:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229538AbiIQGbI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Sep 2022 02:31:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54282 "EHLO
+        id S229587AbiIQGhd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Sep 2022 02:37:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229452AbiIQGbG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Sep 2022 02:31:06 -0400
-Received: from mail-m974.mail.163.com (mail-m974.mail.163.com [123.126.97.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 518FD4A117;
-        Fri, 16 Sep 2022 23:31:01 -0700 (PDT)
+        with ESMTP id S229436AbiIQGhc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Sep 2022 02:37:32 -0400
+Received: from mail-m971.mail.163.com (mail-m971.mail.163.com [123.126.97.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1BFED4D804;
+        Fri, 16 Sep 2022 23:37:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=Lgdgq
-        /H/nA5I76joSevima0XH/B50fVoyAmtV+SUmos=; b=FgI44wACuIF23ZEdhRjuu
-        TSNhgHbTPeyVCN9Aj0deZgfG6huDrXm4oeQuPx08tmZhywKLUzaK2F5DnR858P0t
-        BcdXDst+4AelDhibTdAUM18kvYEFcQqr0N7q6Zq50W7YJN9QTSWfLi/1P63p9zrf
-        U8kYYkT3mDhmNb305JgOZY=
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=Sk8f4
+        Kor53nWiBGSEmFzBqgX0mraGX2YhwieIB+TDYs=; b=NxzlnFNpobHkDsGao33WU
+        LxW+U3LWG00FRtuIgiqlzlH4sUD6nWwbDUL5l2GDjyEkJafxyPjsTjmPxIFF31cO
+        tpecLU288sIBeCf5u3fFRtTjYpbfCeQ21GS+c3qyZWLJFjQS+EsSQupL6HFxSRUK
+        dDaQg4tvmmA7sjIZ1Hpev4=
 Received: from DESKTOP-CE2KKHI.localdomain (unknown [124.160.210.227])
-        by smtp4 (Coremail) with SMTP id HNxpCgDHeN+KaSVjeUn+dg--.624S2;
-        Sat, 17 Sep 2022 14:30:35 +0800 (CST)
+        by smtp1 (Coremail) with SMTP id GdxpCgDHzp7OaiVj3yvhdQ--.64650S2;
+        Sat, 17 Sep 2022 14:35:59 +0800 (CST)
 From:   williamsukatube@163.com
-To:     dsahern@kernel.org, davem@davemloft.net, yoshfuji@linux-ipv6.org,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+To:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Cc:     William Dean <williamsukatube@163.com>
-Subject: [PATCH -next] nexthop: simplify code in nh_valid_get_bucket_req
-Date:   Sat, 17 Sep 2022 14:30:31 +0800
-Message-Id: <20220917063031.2172-1-williamsukatube@163.com>
+Subject: [PATCH -next] net: sched: simplify code in mall_reoffload
+Date:   Sat, 17 Sep 2022 14:35:56 +0800
+Message-Id: <20220917063556.2673-1-williamsukatube@163.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: HNxpCgDHeN+KaSVjeUn+dg--.624S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7GFWkWw1UKrWUtr45uFykXwb_yoW3Arg_Gr
-        n7XrZrXrsFqFyfCw4UCF45Aa4xKr4ruFWrua92qa97Ja47AFsY9w4kGF98CrZ7WrWkGry7
-        WF1fKrWjyF9rZjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xR_8nY3UUUUU==
+X-CM-TRANSID: GdxpCgDHzp7OaiVj3yvhdQ--.64650S2
+X-Coremail-Antispam: 1Uf129KBjvdXoW7GF17KFy5Gr4UuF4fJr17trb_yoW3Arg_Ca
+        48Xr4xWFn7JF1UG3yIqr4vy34SqFZFvFWYqrs2grW7Ga18KF4kZan8K3Z5ArZ3WryxtF1U
+        CrZY9Fy5Cr47ujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xR_byZUUUUUU==
 X-Originating-IP: [124.160.210.227]
-X-CM-SenderInfo: xzlozx5dpv3yxdwxuvi6rwjhhfrp/xtbBiAt-g1aECq0k2gAAs0
+X-CM-SenderInfo: xzlozx5dpv3yxdwxuvi6rwjhhfrp/xtbBiA9-g1aECq0sqgAAsI
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -53,31 +54,34 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: William Dean <williamsukatube@163.com>
 
-It could directly return 'nh_valid_get_bucket_req_res_bucket' to simplify code.
+such expression:
+	if (err)
+		return err;
+	return 0;
+can simplify to:
+	return err;
 
 Signed-off-by: William Dean <williamsukatube@163.com>
 ---
- net/ipv4/nexthop.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ net/sched/cls_matchall.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
-index 853a75a8fbaf..1556961cf153 100644
---- a/net/ipv4/nexthop.c
-+++ b/net/ipv4/nexthop.c
-@@ -3489,12 +3489,8 @@ static int nh_valid_get_bucket_req(const struct nlmsghdr *nlh,
- 		return -EINVAL;
- 	}
+diff --git a/net/sched/cls_matchall.c b/net/sched/cls_matchall.c
+index 06cf22adbab7..63b99ffb7dbc 100644
+--- a/net/sched/cls_matchall.c
++++ b/net/sched/cls_matchall.c
+@@ -313,10 +313,7 @@ static int mall_reoffload(struct tcf_proto *tp, bool add, flow_setup_cb_t *cb,
+ 	tc_cleanup_offload_action(&cls_mall.rule->action);
+ 	kfree(cls_mall.rule);
 
--	err = nh_valid_get_bucket_req_res_bucket(tb[NHA_RES_BUCKET],
-+	return nh_valid_get_bucket_req_res_bucket(tb[NHA_RES_BUCKET],
- 						 bucket_index, extack);
 -	if (err)
 -		return err;
 -
 -	return 0;
++	return err;
  }
 
- /* rtnl */
+ static void mall_stats_hw_filter(struct tcf_proto *tp,
 --
 2.25.1
 
