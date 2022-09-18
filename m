@@ -2,105 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F0A7D5BBEBD
-	for <lists+netdev@lfdr.de>; Sun, 18 Sep 2022 17:48:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 063E95BBEC5
+	for <lists+netdev@lfdr.de>; Sun, 18 Sep 2022 17:53:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229614AbiIRPsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Sep 2022 11:48:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51262 "EHLO
+        id S229657AbiIRPwy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Sep 2022 11:52:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229602AbiIRPsG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Sep 2022 11:48:06 -0400
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C1C2219E
-        for <netdev@vger.kernel.org>; Sun, 18 Sep 2022 08:48:05 -0700 (PDT)
-Received: by mail-io1-xd2d.google.com with SMTP id n81so20687863iod.6
-        for <netdev@vger.kernel.org>; Sun, 18 Sep 2022 08:48:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=alKaJeFUirn/GS0sxz9rF9sOMRImHjlQaIjBcCvM/Uc=;
-        b=NGgOHXIXQIilG9xywqXVUKmTnvtHJ9ahVprG9PmiMNnk00HR138sMnQeEj5D/4JMrA
-         YGUGMEp5Z1S5uMAFdE2lcxOHLFXLRL2/ABxAtiPtDOb8soFf4vfsOfLtCOLP/HkoPnzj
-         jheKbcxFq6gf9rFTIV/SrLrALLOTgQ4ICPu2OUMkZh+AUSzuqUD/DlGOZPLjLBZOMI7D
-         a3DQV9j7j31g0sVEiOhqV5c0mnNbpNHCGqRKQqAxOLiGbE9NoZ5j31iksGQIDLYv24d5
-         ghxBrIjcwLCeSCqb5Vcs4+L30VhFKvE/HMiTg922SgeDEPJy+a9WPXQXQq2McOVHfDzV
-         kRSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=alKaJeFUirn/GS0sxz9rF9sOMRImHjlQaIjBcCvM/Uc=;
-        b=n8DVe73/uFqh6pyB6mTgrryCY3kASAAiFSB/xETJAvKNNfc84sGmSH9OZa6OAF/trm
-         /gfsocyezjlur4KvdqqC1kfbnvWWOG9pUDfKckJ6APK6NESya3S7WhXMFFnmi5cTOtHl
-         TAYXNI93FAJbrzUP+PQvAJF9G3Ef+7VgDqdDpWsPoAE2I5MNNSTw9L4BCu86s1RaRMqG
-         Kn94tlqKwJn9YWOpExu79XFlEanNVU17CcNXCy/VI8EddrJVyZIzq8meG5AMKbKzn13A
-         7nz7Z0EsSR4+THQDbYJXmGJmZCkEV8/PoA311QYy90c8BWGARJV0X4BbsiPynd9QPLkS
-         fEsg==
-X-Gm-Message-State: ACrzQf08QoCGOYv0KwRi4QHKyaKUWQlAHcqvBE/AVU9Y/4N4+QgkU0uB
-        RRS5N1S+6oJHnmxE6R+bXum6Vp82ahoE2w==
-X-Google-Smtp-Source: AMsMyM6ZPoNbzvhM9OMi9BabeXStdhUEOw23inAvjLr3eOa7YsVGgiN50tV2FS5MBiHmglTNuMh+hA==
-X-Received: by 2002:a05:6638:1487:b0:35a:ba3d:ba16 with SMTP id j7-20020a056638148700b0035aba3dba16mr2006274jak.188.1663516084774;
-        Sun, 18 Sep 2022 08:48:04 -0700 (PDT)
-Received: from ?IPV6:2601:282:800:dc80:c55c:7867:c653:4c0e? ([2601:282:800:dc80:c55c:7867:c653:4c0e])
-        by smtp.googlemail.com with ESMTPSA id m29-20020a02a15d000000b0035671c2e249sm4559797jah.146.2022.09.18.08.48.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 18 Sep 2022 08:48:04 -0700 (PDT)
-Message-ID: <f1e4b8c6-84bd-5746-b89b-02dc781f23c9@gmail.com>
-Date:   Sun, 18 Sep 2022 09:48:03 -0600
+        with ESMTP id S229671AbiIRPww (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Sep 2022 11:52:52 -0400
+Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F08A31EAEF
+        for <netdev@vger.kernel.org>; Sun, 18 Sep 2022 08:52:50 -0700 (PDT)
+Received: from fsav313.sakura.ne.jp (fsav313.sakura.ne.jp [153.120.85.144])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 28IFqmkS092637;
+        Mon, 19 Sep 2022 00:52:49 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav313.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav313.sakura.ne.jp);
+ Mon, 19 Sep 2022 00:52:48 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav313.sakura.ne.jp)
+Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 28IFqmON092633
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+        Mon, 19 Sep 2022 00:52:48 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Message-ID: <693b572a-6436-14e6-442c-c8f2f361ed94@I-love.SAKURA.ne.jp>
+Date:   Mon, 19 Sep 2022 00:52:45 +0900
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.13.0
-Subject: Re: [RESEND net-next PATCH] net: rtnetlink: Enslave device before
- bringing it up
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: WARNING: locking bug in inet_autobind
 Content-Language: en-US
-To:     Phil Sutter <phil@nwl.cc>, David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org
-References: <20220914150623.24152-1-phil@nwl.cc>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20220914150623.24152-1-phil@nwl.cc>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+References: <00000000000033a0120588fac894@google.com>
+Cc:     netdev@vger.kernel.org,
+        syzbot <syzbot+94cc2a66fc228b23f360@syzkaller.appspotmail.com>,
+        syzkaller-bugs@googlegroups.com
+From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+In-Reply-To: <00000000000033a0120588fac894@google.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/14/22 9:06 AM, Phil Sutter wrote:
-> Unlike with bridges, one can't add an interface to a bond and set it up
-> at the same time:
-> 
-> | # ip link set dummy0 down
-> | # ip link set dummy0 master bond0 up
-> | Error: Device can not be enslaved while up.
-> 
-> Of all drivers with ndo_add_slave callback, bond and team decline if
-> IFF_UP flag is set, vrf cycles the interface (i.e., sets it down and
-> immediately up again) and the others just don't care.
-> 
-> Support the common notion of setting the interface up after enslaving it
-> by sorting the operations accordingly.
-> 
-> Signed-off-by: Phil Sutter <phil@nwl.cc>
-> ---
-> Resubmitting this after review, concerns uttered in original discussion
-> three years ago do not apply: Any flag changes happening during
-> do_set_master() call are preserved, unless user space intended to change
-> them. I verified that a team device in promisc mode still correctly
-> propagates the flag to a new slave after applying this patch.
-> ---
->  net/core/rtnetlink.c | 14 +++++++-------
->  1 file changed, 7 insertions(+), 7 deletions(-)
-> 
+syzbot is reporting locking bug in inet_autobind(), for
+commit 37159ef2c1ae1e69 ("l2tp: fix a lockdep splat") started
+calling 
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+  lockdep_set_class_and_name(&sk->sk_lock.slock, &l2tp_socket_class, "l2tp_sock")
 
+in l2tp_tunnel_create() (which is currently in l2tp_tunnel_register()).
+How can we fix this problem?
+
+  ------------[ cut here ]------------
+  class->name=slock-AF_INET6 lock->name=l2tp_sock lock->key=l2tp_socket_class
+  WARNING: CPU: 2 PID: 9237 at kernel/locking/lockdep.c:940 look_up_lock_class+0xcc/0x140
+  Modules linked in:
+  CPU: 2 PID: 9237 Comm: a.out Not tainted 6.0.0-rc5-00094-ga335366bad13-dirty #860
+  Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+  RIP: 0010:look_up_lock_class+0xcc/0x140
+
+On 2019/05/16 14:46, syzbot wrote:
+> HEAD commit:    35c99ffa Merge tag 'for_linus' of git://git.kernel.org/pub..
+> git tree:       net-next
+> console output: https://syzkaller.appspot.com/x/log.txt?x=10e970f4a00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=82f0809e8f0a8c87
+> dashboard link: https://syzkaller.appspot.com/bug?extid=94cc2a66fc228b23f360
+> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+
+C reproducer is available at
+https://syzkaller.appspot.com/text?tag=ReproC&x=15062310080000 .
 
