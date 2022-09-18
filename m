@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 537EF5BBE2B
-	for <lists+netdev@lfdr.de>; Sun, 18 Sep 2022 15:44:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDB635BBE24
+	for <lists+netdev@lfdr.de>; Sun, 18 Sep 2022 15:44:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230008AbiIRNoJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Sep 2022 09:44:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55160 "EHLO
+        id S229761AbiIRNoA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Sep 2022 09:44:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229804AbiIRNnj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Sep 2022 09:43:39 -0400
+        with ESMTP id S229910AbiIRNnd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Sep 2022 09:43:33 -0400
 Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 318301D0D3;
-        Sun, 18 Sep 2022 06:43:03 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1663508538; cv=none; 
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 914861A06D;
+        Sun, 18 Sep 2022 06:42:59 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1663508542; cv=none; 
         d=zohomail.com; s=zohoarc; 
-        b=nGcW+J7cUl4Npm7YylRYVaY3x4tmLfXLCiDmXgrD+BTVs7jiUqFCMLu4KOk1qAcvcIhL11nHer5DxIHmSGsGPtELImuHWBKfGUYV7JbmblLKYMXltIS46CVmRTefzmkRCNMbqEFjo8Z9gn/Nu+pGWcnO958DjGyNldx2AzDCbfg=
+        b=lzC9OyE4SdeU+WHI+HJQPnuR6SNA/a4bDr5p25ts36fXO4XekJRYyeUoDp1tuo6fJXrnEZ9sRcyXiBmQwRgG8witGIrlRKAH7lP8tCbQnX6oxoCG0u8RS4EoPBRNmYjJ1XKc2vQqNBfCiomDPwqPzS1CThwP9hbS/nXiQBvhPBo=
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1663508538; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=Sk44jnot7uocJ4arpLBcXWdU4CoMjGzCainAQsmuR8w=; 
-        b=DYez03mXmCqDDj/u6CGPeakJaFNwIuXUGabjpp8k8q5xpGFWiFRvs+FN/1EH/gJKdfeOT81v77yHoszmRdgayhBic+CL6v3KrPmArmJplNlPQ1kvBWVEKQdBkAJyf4OC87uw7CLJh6yGxifYU4CrYan9ayY1bkoEz1HWObDXJc0=
+        t=1663508542; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=WnMkSdF0tA1GdTHDMgmHnwzHooD42TxLI0BpN/jcsQw=; 
+        b=Rwh2hCoceZmf1oQvwWG98roEt7YbjWYTQPKhvd7VMJ2Vz5RnnYIi9impFQMSOTGZIbk+MoDo+b3wMYdYgwbOJtRGpW1hJaXe/qEHlVwx2spEF5vMvak25YABb+C7Ix8rSH2/Dqb9CduoumuBO2og4UGN3MW2eMnpkWrdBFjUlL8=
 ARC-Authentication-Results: i=1; mx.zohomail.com;
         dkim=pass  header.i=arinc9.com;
         spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
         dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1663508538;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1663508542;
         s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
         h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:In-Reply-To:References:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
-        bh=Sk44jnot7uocJ4arpLBcXWdU4CoMjGzCainAQsmuR8w=;
-        b=EEP8sUuGCCt0h+GgcCvIr7ye+zABBtJ5LF9oJzskblPhpAIM6rYbbo+S6J4mbWAG
-        Y3qgQq86EjPZZ0gjzMGBKvlPTv5m4E1DJrIcaCNY6MA79hM4NPYqojCUTofKXgwgUgs
-        SvYWeyUQjT1xX19++IQ33AcufY9mK7YE23bQUsK8=
+        bh=WnMkSdF0tA1GdTHDMgmHnwzHooD42TxLI0BpN/jcsQw=;
+        b=aFXn9iUnaodFNc0Xnk5PV4QR32Bfo2VbjVzkq35oqmztmK4Z895CE3GrmdUatGVR
+        Zrx4Fs6HxmCxL7k1EHjHW1GwI1Ophmh1X+XIPwOdlfbBdFkrEQyI0bC3eDh0abG928C
+        kBEmIbTIS7WUUALecGuJlhpHxTxBp/fgWkI3Udms=
 Received: from arinc9-PC.lan (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 1663508536708451.20108562227756; Sun, 18 Sep 2022 06:42:16 -0700 (PDT)
+        with SMTPS id 1663508542510955.9731257449251; Sun, 18 Sep 2022 06:42:22 -0700 (PDT)
 From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -57,11 +57,10 @@ Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-mips@vger.kernel.org,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
-        Sungbo Eo <mans0n@gorani.run>
-Subject: [PATCH v3 net-next 08/10] mips: dts: ralink: mt7621: change mt7530 switch address
-Date:   Sun, 18 Sep 2022 16:41:16 +0300
-Message-Id: <20220918134118.554813-9-arinc.unal@arinc9.com>
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
+Subject: [PATCH v3 net-next 09/10] mips: dts: ralink: mt7621: fix external phy on GB-PC2
+Date:   Sun, 18 Sep 2022 16:41:17 +0300
+Message-Id: <20220918134118.554813-10-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220918134118.554813-1-arinc.unal@arinc9.com>
 References: <20220918134118.554813-1-arinc.unal@arinc9.com>
@@ -78,36 +77,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the case of muxing phy0 of the MT7530 switch, the switch and the phy
-will have the same address on the mdio bus, 0. This causes the ethernet
-driver to fail since devices on the mdio bus cannot share an address.
+The address of the external phy on the mdio bus is 5. Update the devicetree
+for GB-PC2 accordingly.
 
-Any address can be used for the switch, therefore, change the switch
-address to 0x1f.
-
-Suggested-by: Sungbo Eo <mans0n@gorani.run>
+Fixes: 5bc148649cf3 ("staging: mt7621-dts: fix GB-PC2 devicetree")
 Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 Reviewed-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
 ---
- arch/mips/boot/dts/ralink/mt7621.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc2.dts | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/mips/boot/dts/ralink/mt7621.dtsi b/arch/mips/boot/dts/ralink/mt7621.dtsi
-index 3d4a8e4bd4f8..7900760212c9 100644
---- a/arch/mips/boot/dts/ralink/mt7621.dtsi
-+++ b/arch/mips/boot/dts/ralink/mt7621.dtsi
-@@ -340,9 +340,9 @@ mdio: mdio-bus {
- 			#address-cells = <1>;
- 			#size-cells = <0>;
+diff --git a/arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc2.dts b/arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc2.dts
+index 2e534ea5bab7..5f52193a4c37 100644
+--- a/arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc2.dts
++++ b/arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc2.dts
+@@ -83,12 +83,12 @@ &pcie {
  
--			switch0: switch@0 {
-+			switch0: switch@1f {
- 				compatible = "mediatek,mt7621";
--				reg = <0>;
-+				reg = <0x1f>;
- 				mediatek,mcm;
- 				resets = <&sysc MT7621_RST_MCM>;
- 				reset-names = "mcm";
+ &gmac1 {
+ 	status = "okay";
+-	phy-handle = <&ethphy7>;
++	phy-handle = <&ethphy5>;
+ };
+ 
+ &mdio {
+-	ethphy7: ethernet-phy@7 {
+-		reg = <7>;
++	ethphy5: ethernet-phy@5 {
++		reg = <5>;
+ 		phy-mode = "rgmii-rxid";
+ 	};
+ };
 -- 
 2.34.1
 
