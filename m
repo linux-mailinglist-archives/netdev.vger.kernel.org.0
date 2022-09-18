@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0753C5BC08C
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 01:26:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFB925BC08B
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 01:26:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229639AbiIRX0h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Sep 2022 19:26:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58688 "EHLO
+        id S229685AbiIRX0j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Sep 2022 19:26:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229542AbiIRX0e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Sep 2022 19:26:34 -0400
-Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E644015FEE;
-        Sun, 18 Sep 2022 16:26:32 -0700 (PDT)
-Received: by mail-qv1-xf34.google.com with SMTP id s13so20746099qvq.10;
-        Sun, 18 Sep 2022 16:26:32 -0700 (PDT)
+        with ESMTP id S229579AbiIRX0f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Sep 2022 19:26:35 -0400
+Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2863A15FCA;
+        Sun, 18 Sep 2022 16:26:34 -0700 (PDT)
+Received: by mail-qk1-x72b.google.com with SMTP id g2so16668536qkk.1;
+        Sun, 18 Sep 2022 16:26:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=f+EB9tqLDfuk22q0YdPsKDLRjPXinWklcbx8HraxOVo=;
-        b=I2+xccWvrZ0XXRNZEQITFL2gQNhv4pJwsGkZzOhgnZ1qNYUG+tgOoYAD6QmoRjEXs4
-         U9i6/ZMQnIuLzpXXCRNt9ozzsatN7H/6bwgCr/vSR77KtS7eLCDDX6/9rV3n04GOIxxa
-         g/TrLrOrW1GXyaxTexrI6gJMnGbmTganmfgYLTpqW/fqruEUXzPrBWT7i5+gHkn+Y3Fw
-         HOUdWxSkAKguN1hI8cjYc+OyJpDCrq+VfPAdfbjB95sd9QgrEFxt0f2ZhTICkFescMD6
-         DE/mKWRz8mQgyGMuo8yMcirzZ3GNhdJJ7TwvcV6loxmnxDtnR8Es3MaZZJ5ZFF+Ab+hx
-         PwxA==
+        bh=8EAn0cvdlfoIPExkywDlAWVYcfVTv9+DcRGm06t9Xe0=;
+        b=iW6tucCCgZ5pZY72nI38Eu2AUCumKfVLIqoaDS2hX5URAg5jqvPLE9VLTtRdEYYd90
+         5w7Nfx+C9vgKRRN31+AbjvVFURwJJZzGHkGyEzLGu3/P6E5J1kEZXrz4yKSy2r/h5pt0
+         ++D1N3q1IR2bCmgPECOy3BvLE++gxTi/UB0GwznzP5YycquEdqfeQp5hNx5g988/g5XX
+         lLxMwvPscvOylDyZ5H0NKJ5xACaNAN4ytNIElbWIoODOGBepbmlMDUuhy2T60mCjxPf0
+         G+QXiVu6IR0yIg8zNMW6cwUnHqUULCuKO/ZaQZXnygMkHZN7yhJ2U13BEYwBR0o0DkkA
+         5i6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=f+EB9tqLDfuk22q0YdPsKDLRjPXinWklcbx8HraxOVo=;
-        b=VW51kJ/yr+3636WUDEEEw0xMGhBeobcd2WcHUeGwgH/SEb2yW4P8N5XzIz3MTG/fdR
-         W1S6lF6NWIre/SgdD9eawUBiCTcPHWN0q97Ty6ZIf3sfm7NbthK+uFfPynKfj3fLnTKu
-         XZ5xrbXZZ/I0ZCOCKzIYN5iwqaypqYKStHe6QuymRwpbOmxeQd9zqID5LGGlQ+VpCq7V
-         Ed0eY3wzmm/b6lPnwVUGjsNVmTL+gmPaORMusBmp9D2luIgLyhaDrUizRzbwNMAVTUOw
-         8AZCw3OcAdp2k3yUgBe6ysZR9GsJ0ccIcn6s3GeeNtNY+NoqYgSAhvnF9zxtv6aEC0D3
-         cHlA==
-X-Gm-Message-State: ACrzQf3XySCWdGiJyYck6iLD7I5wdOyO7s6rgnuKSXP3BdSkZy74GIov
-        AMFW92Wt3MbwyrY6x0ELHXA=
-X-Google-Smtp-Source: AMsMyM6bfOdqaOW1K2DcyF3MARq9SuQrZvAU6Vaf6Cc+JBM5haTVHrhRFCvmveQQ7VKwW5RYJX+EJQ==
-X-Received: by 2002:ad4:5de2:0:b0:4ac:c356:2605 with SMTP id jn2-20020ad45de2000000b004acc3562605mr12950372qvb.50.1663543592143;
-        Sun, 18 Sep 2022 16:26:32 -0700 (PDT)
+        bh=8EAn0cvdlfoIPExkywDlAWVYcfVTv9+DcRGm06t9Xe0=;
+        b=D21d07mm+f2JuVkHkvENWwxk+OYdbPcTkjCCCbdM7WXlRgr5W51J6z2kShWktb52Gp
+         jRtb1iT9VQvKl2CTklrnKrV1fJ/m9uKpM0krZpn3lHi/us0gnICjTBOsuXdbn63U3YsN
+         kpFI8qHiiYUT0MFVFKzT7HUz+A1wpnQmy44EGT7dVGHH1V0vXJaSJF+OISIyQq4h2qBs
+         RuaMjzHMNOtAVf/etTgtNJZfdXATkisqVK06CeEkLsdpKQ6ec0TzCH+7zEczsDSVG/Jx
+         uOKtylRTXKt8NRDUT6KtesKu+XU5zlLodo9ogTsv5RWrEnJnQXqtRPs7Hr9B1TpdZ56F
+         RXwQ==
+X-Gm-Message-State: ACrzQf2xxG3Vey6flG7m5UrcOXrvBjHXJjMloOVwAfWmXTqGEo38J3PC
+        TMIHuFAiYFcxD5njw4GDM3A=
+X-Google-Smtp-Source: AMsMyM7hM1MM7LF1QdJVTos4SleSEL5rhfJ3Ek6St9qQNr2e/LRqf7tOpo+FGJsh6PIXiZeqN/aKNw==
+X-Received: by 2002:ae9:c105:0:b0:6ce:e3d8:73af with SMTP id z5-20020ae9c105000000b006cee3d873afmr5306664qki.105.1663543593335;
+        Sun, 18 Sep 2022 16:26:33 -0700 (PDT)
 Received: from localhost (pool-173-73-95-180.washdc.fios.verizon.net. [173.73.95.180])
-        by smtp.gmail.com with UTF8SMTPSA id bs22-20020ac86f16000000b0035cdd7a42d0sm3357339qtb.22.2022.09.18.16.26.31
+        by smtp.gmail.com with UTF8SMTPSA id de42-20020a05620a372a00b006b945519488sm11637265qkb.88.2022.09.18.16.26.32
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 18 Sep 2022 16:26:31 -0700 (PDT)
+        Sun, 18 Sep 2022 16:26:33 -0700 (PDT)
 From:   Sean Anderson <seanga2@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -58,9 +58,9 @@ Cc:     linux-kernel@vger.kernel.org (open list),
         Nick Bowler <nbowler@draconx.ca>,
         Rolf Eike Beer <eike-kernel@sf-tec.de>,
         Sean Anderson <seanga2@gmail.com>
-Subject: [PATCH net-next 02/13] sunhme: Remove version
-Date:   Sun, 18 Sep 2022 19:26:15 -0400
-Message-Id: <20220918232626.1601885-3-seanga2@gmail.com>
+Subject: [PATCH net-next 03/13] sunhme: forward the error code from pci_enable_device()
+Date:   Sun, 18 Sep 2022 19:26:16 -0400
+Message-Id: <20220918232626.1601885-4-seanga2@gmail.com>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220918232626.1601885-1-seanga2@gmail.com>
 References: <20220918232626.1601885-1-seanga2@gmail.com>
@@ -76,73 +76,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Module versions are not very useful:
+From: Rolf Eike Beer <eike-kernel@sf-tec.de>
 
-> The basic problem is, the version string does not identify the sources
-> with enough accuracy. It says nothing about back ported fixes in
-> stable kernels. It tells you nothing about vendor patches to the
-> network core, etc.
+This already returns a proper error value, so pass it to the caller.
 
-https://lore.kernel.org/all/Yf6mtvA1zO7cdzr7@lunn.ch/
-
-While we're at it, inline the author and use the driver name a bit more.
-
+Signed-off-by: Rolf Eike Beer <eike-kernel@sf-tec.de>
 Signed-off-by: Sean Anderson <seanga2@gmail.com>
 ---
 
- drivers/net/ethernet/sun/sunhme.c | 17 ++---------------
- 1 file changed, 2 insertions(+), 15 deletions(-)
+ drivers/net/ethernet/sun/sunhme.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
-index 987f4c7338f5..7340d0f2ef93 100644
+index 7340d0f2ef93..1fc16801f520 100644
 --- a/drivers/net/ethernet/sun/sunhme.c
 +++ b/drivers/net/ethernet/sun/sunhme.c
-@@ -61,15 +61,8 @@
- #include "sunhme.h"
+@@ -2940,11 +2940,12 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+ 		strcpy(prom_name, "SUNW,hme");
+ #endif
  
- #define DRV_NAME	"sunhme"
--#define DRV_VERSION	"3.10"
--#define DRV_RELDATE	"August 26, 2008"
--#define DRV_AUTHOR	"David S. Miller (davem@davemloft.net)"
+-	err = -ENODEV;
++	err = pci_enable_device(pdev);
  
--static char version[] =
--	DRV_NAME ".c:v" DRV_VERSION " " DRV_RELDATE " " DRV_AUTHOR "\n";
--
--MODULE_VERSION(DRV_VERSION);
--MODULE_AUTHOR(DRV_AUTHOR);
-+MODULE_AUTHOR("David S. Miller (davem@davemloft.net)");
- MODULE_DESCRIPTION("Sun HappyMealEthernet(HME) 10/100baseT ethernet driver");
- MODULE_LICENSE("GPL");
- 
-@@ -2451,8 +2444,7 @@ static void hme_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info
- {
- 	struct happy_meal *hp = netdev_priv(dev);
- 
--	strscpy(info->driver, "sunhme", sizeof(info->driver));
--	strscpy(info->version, "2.02", sizeof(info->version));
-+	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
- 	if (hp->happy_flags & HFLAG_PCI) {
- 		struct pci_dev *pdev = hp->happy_dev;
- 		strscpy(info->bus_info, pci_name(pdev), sizeof(info->bus_info));
-@@ -2488,8 +2480,6 @@ static const struct ethtool_ops hme_ethtool_ops = {
- 	.set_link_ksettings	= hme_set_link_ksettings,
- };
- 
--static int hme_version_printed;
--
- #ifdef CONFIG_SBUS
- /* Given a happy meal sbus device, find it's quattro parent.
-  * If none exist, allocate and return a new one.
-@@ -2973,9 +2963,6 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+-	if (pci_enable_device(pdev))
++	if (err)
  		goto err_out;
- 	SET_NETDEV_DEV(dev, &pdev->dev);
+ 	pci_set_master(pdev);
++	err = -ENODEV;
  
--	if (hme_version_printed++ == 0)
--		printk(KERN_INFO "%s", version);
--
- 	hp = netdev_priv(dev);
- 
- 	hp->happy_dev = pdev;
+ 	if (!strcmp(prom_name, "SUNW,qfe") || !strcmp(prom_name, "qfe")) {
+ 		qp = quattro_pci_find(pdev);
 -- 
 2.37.1
 
