@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB3CE5BBF90
-	for <lists+netdev@lfdr.de>; Sun, 18 Sep 2022 21:48:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC4ED5BBF8D
+	for <lists+netdev@lfdr.de>; Sun, 18 Sep 2022 21:48:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229689AbiIRTro (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Sep 2022 15:47:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49538 "EHLO
+        id S229602AbiIRTrq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Sep 2022 15:47:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229645AbiIRTrZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Sep 2022 15:47:25 -0400
+        with ESMTP id S229663AbiIRTr1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Sep 2022 15:47:27 -0400
 Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80102.outbound.protection.outlook.com [40.107.8.102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD41A17A8D;
-        Sun, 18 Sep 2022 12:47:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BDED17AAD;
+        Sun, 18 Sep 2022 12:47:25 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jir3/J6UTMwZjsx9ps9rBnGbOTL6Zg5EF3a+1CKWxuYw2CzNjFlh1P0XR2jxEIjYyQK03kuzsbw92SYvl7ODXIEWlYR96oPnGJHQYeUsFG+sO03ZFGWTl+fXZjPOgigkFkyCEqbLmtK+oTXNVqCdAhI1HXzspDHHX0oxU+DbohhTbOJmivQAW29DycOlUKQlPvKoFW5Fj/krDZRKFVQoObxd/yX2h8VSrjq1+C6trLM7opShjXdTJlSG7A7tEYrFMWF6QtIQ6o1UOiYheqYGK7hkH2U8gD23B4dCMn+yiHPnG96BQMRD0tUwJn3XEkQViL7xuqd0U2lvnEMWQlth3Q==
+ b=f9wRCY6IAUcOQTH3an25Un8KbzdUTIf/zJcWNYySq3eKBKz9lu8RqBI16h9hK9Xo/hLUtpVXJwWJ0jL2rWocjk0aYYk8hDGEdZYC3N1YSYMvml0HcvNHe+5CLmSqhQSdCmoLfUKJ5YTxKq0MSi1oUfHvXMs5grmixEG/g5lOeUJNPHZaa3GaEPdy0YUyDa86zGSN8WjXg+CfLoxc3uhsjFYNz+hO0rmX8vitW9B9iYXR7mNuwCdXjDqjgwSJEDO7uq4g0eDtJ4XIwOJA3Y6eKcqdG/w/lkLJepK8RTkmTYbsYpNdzxx92DRTRoFtaG8foTYrfSSubUUxR01Ai2uAew==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hn+vllKNqCDrzvCy3JLN63DRNdTmAlku1u/GsZVezaU=;
- b=D4G8K2bNf/dPckmfCRyVUfIwFI+0AGJh8fR0MuDPqTtaaI9z0sJTSwJZhg4GShZy2CgChL7MXVvVPKRYLIc0oRs3ZawIPeKhzARdp2GhizMZWGpB6oylBbQ2qwqPSQMzn0f72GSVUWAjpIIqPuHwBdKkUIXdmFOWlI2gUC4I/PW8gK85UOF3ZejvKT3ELPHJVShdF3maLQllWD1sKz16b9S/d72ozSD251WVtrxEQtCeHRPrtCGM++1JREygF2CCkgXhfBVPWhrkFQrM6SnpO9M1dY9ZBQ2b+7ljdPNWORhjEFOEohuP+BTGMxTybEt5HXB+aG/hUIqnwuVRo5Apow==
+ bh=H+d13HuuiJuhC6xOlB1N15/82FVK3LEbjcNI1Io4CUA=;
+ b=eSPe2+tSh7cWxHKFp/PKsASrUUskzkdIwlfe5q9tX7/9wXVeLcpj0zB1hJTPfCISPTcDygcDd20n2KTe/ZPmDpMIZNWfvdGUc9yWJHvLReh7SrLPuDhzXswA55NbR/n3XWTVWCCp4nFsoq9kHmwmBnMMD47m+XtePHmfWR79vOhsZB7V0Agxdi5/62+1CZCZT77BXj8zYygPJXjoovdnpEQ2EL/ZwXEpClgiyTiqN8b8gqfmuEFLAvbjEndMi4f4rAMRJKTDfAmxbtq9R1LvFdPsdFL6OKm2YrJroqSVNuonX6j+JZvrztXMN6eo9VrQbKY/AgvYmqCWSplG0/39hg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
  dkim=pass header.d=plvision.eu; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hn+vllKNqCDrzvCy3JLN63DRNdTmAlku1u/GsZVezaU=;
- b=E/PWlyCKp4ZHnwkMKal9mO4ddUTIaWoYyUX81HVh3u2Fdnl10R4ZJ7xdwgRdbvI65n6SqDokSWtPHQmAuwOdpxWs7+dG1Wau1xItkWEYrcHQKYRUYFfG/LX/dYHX5iMXDsAWnCPR3/eZYC4dcDq49II7B9O9wuECNUKS74n8XJU=
+ bh=H+d13HuuiJuhC6xOlB1N15/82FVK3LEbjcNI1Io4CUA=;
+ b=rc99juD+CbAjtg3ZXc+R1e24JKGOXPT87JnIhTh+/Bjy0DVI2dyzUfsSVrc0QhJRXP9AJOL2/K/KaBqFqcfAO7M9NGnHyUdn5Mv4/cnvxOeVR4897XhCT459c/Cw0dxHJQwz/ebXjhYjg6V/uXD/F6NcKNSiI3LhB/TigPyRR30=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=plvision.eu;
 Received: from PAXP190MB1789.EURP190.PROD.OUTLOOK.COM (2603:10a6:102:283::6)
  by AS4P190MB1927.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:513::18) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5632.19; Sun, 18 Sep
- 2022 19:47:20 +0000
+ 2022 19:47:21 +0000
 Received: from PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
  ([fe80::75d9:ce33:75f0:d49f]) by PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
  ([fe80::75d9:ce33:75f0:d49f%5]) with mapi id 15.20.5632.018; Sun, 18 Sep 2022
- 19:47:19 +0000
+ 19:47:21 +0000
 From:   Yevhen Orlov <yevhen.orlov@plvision.eu>
 To:     netdev@vger.kernel.org
 Cc:     Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
@@ -52,10 +52,12 @@ Cc:     Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
         Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
         Stephen Hemminger <stephen@networkplumber.org>,
         linux-kernel@vger.kernel.org,
-        Yevhen Orlov <yevhen.orlov@plvision.eu>
-Subject: [PATCH net-next v6 3/9] net: marvell: prestera: Add strict cleanup of fib arbiter
-Date:   Sun, 18 Sep 2022 22:46:54 +0300
-Message-Id: <20220918194700.19905-4-yevhen.orlov@plvision.eu>
+        Yevhen Orlov <yevhen.orlov@plvision.eu>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+Subject: [PATCH net-next v6 4/9] net: marvell: prestera: add delayed wq and flush wq on deinit
+Date:   Sun, 18 Sep 2022 22:46:55 +0300
+Message-Id: <20220918194700.19905-5-yevhen.orlov@plvision.eu>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220918194700.19905-1-yevhen.orlov@plvision.eu>
 References: <20220918194700.19905-1-yevhen.orlov@plvision.eu>
@@ -66,51 +68,51 @@ X-ClientProxiedBy: AM6PR08CA0006.eurprd08.prod.outlook.com
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: PAXP190MB1789:EE_|AS4P190MB1927:EE_
-X-MS-Office365-Filtering-Correlation-Id: 08159167-61ea-4208-2889-08da99ae990b
+X-MS-Office365-Filtering-Correlation-Id: 59b38e52-faed-4881-59e0-08da99ae99d8
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: r8iBoHYSpDt8woIk78655dGEnz6C60BVyFNUBFwFSix9AjhcDyc4n8IUHLF7dj0f05sfK8pG+0ODKt3HYjrOyr0BiuGinIMbnujkNNqA8kIviIzA22G6Al/uX5RQd5gYI/t2AaeRzPoCoBPsnKb68z2wPHd0NgoJ+QU6ItZBsfW6rZ4Zr2VIMSd2R5PFN22thA6O6sRs1b3zQSpyl4wNz7f9RnzopXqEx5ehRN3jCxkGJUpeLFOLHgQcYqeiCpmp4JF3yysrpzKfw9wP79DjN8oj//bJ6LT4ikOP6tJSgWXgY3wBTnHESf2JQ4Cb/Kbkpm0sF1Ry5rv5OEGAUuTXPhFZ8iWWoBql5mDHSMNS8YAQmfKjHqAD6BQJLM/Ogy9plmvTf7ip+yiuZVmCDmbVcxltxm/Bl/PhntrMlbm7f9WII1VJ6f8gzu2/E5aGBiLZGFGJlYmyoKxSYDsPXUjqu13XczvjFF7u48JuNwwlG8ttURlG8/PP94pfoBJ7r4+UMFbcXa6gm0iZqaTvUYgC/2bEx2rCALIkrxAiNRa9K08tM3Hwly1O8tAmZnlyKiEpxrZ61P/VAPZ1tE8CEX0Nle0zGEI4XbreWgpXmtruDoUqLSqC04AOOsJDsxKwllrgUWfVA498utFFm2LgApC5ZLQnJ5yIBwYRew+3OlbSkztVryVneoJ4p2A+Cc/wygRhdD9qpM4mP+Pf/UNwZW5lp5wtUn0Dm3wIPqrGt1FqyXK9EF/x2N49Qesu9xbuJE3N
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXP190MB1789.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(346002)(366004)(39830400003)(396003)(136003)(451199015)(478600001)(6486002)(316002)(36756003)(83380400001)(66574015)(186003)(1076003)(2616005)(86362001)(38100700002)(38350700002)(26005)(6916009)(54906003)(52116002)(6512007)(6506007)(6666004)(107886003)(66946007)(66556008)(41300700001)(44832011)(5660300002)(8936002)(66476007)(2906002)(8676002)(4326008);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: pkN4+4Mk9faycHswhb0RtICf8S76vLo16WLKpa3nWyDXUW0utF3GGAXIxlXejo1GDO7dl17cXIXFMK5H380eDWPLeG2r9lIP9WXUNF42cHysLY+ZvR9BoW2ADD6VqVsXDqdjNC441KhIwxGLvWcZoVH+GtKoHDvh041zhdXwKOD7qd1/DtMGNLWEeMiy/numpZiqsW5/QKWBBJg6fKRD9g54jNc3dkvqVzEwO8pBeY4oPVcr3IGsoNXdxuyFm5Kh/LPfCQntFRjgF2HkV7ASFk0klEEvjWBDDB0753shSNYR5dW/OE6eS00GAaqRqHvc9NCdZazj0mFjkciDQ+M4raHlxoWjX9vaRwofKYkLCrPGuz+eW5Yf+7dFhqPbwOICE2m37Pvwn9Rlv0Qm2rei0Y+h/xXH1I6VsWznm5p81ifdG8zgsM1mDMoGcscjNk4wlkyUAtw7py1ooOx7rcuBlomzJCCWBAzSZ4ywJveRS43pbMgQvPai9wou7LTv9XA2nD5Q0v5hl4N+/RdGRgbEoKEnobfwWYEQ3au0SfOcKb3AcfdD4K+i9XQcfilwVzDIrtmTy8M57zlkVaBakEOdL3Xbp7RJBizzG/DEimz5Nv3VIQUzHcc1kdJIOU27rO6Ad78dRB7ZSdmDAqIysFqhM5LilmcJKYAfuPnl4E04ThYbpPyM8F+JL6TJKcCvFUSH9To7IJLMyuk7HEnCCwhynkrQfRQS0NzN5bI/nGFKsA3uQDvU8U3RYsmBgsm/EY3k
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXP190MB1789.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(346002)(366004)(39830400003)(396003)(136003)(451199015)(478600001)(6486002)(316002)(36756003)(66574015)(186003)(1076003)(2616005)(86362001)(38100700002)(38350700002)(26005)(6916009)(54906003)(52116002)(6512007)(6506007)(6666004)(107886003)(66946007)(66556008)(41300700001)(44832011)(5660300002)(8936002)(7416002)(66476007)(2906002)(8676002)(4326008);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?vlA1JDRlvojTisd0ZlunHPGL/cLyURYZ3ocuPrKUkBCbiWSlQNC6tvX/rFF0?=
- =?us-ascii?Q?xptv9i9AqhRFcRE8TpAtro3W9g1YpvgRAONbCcf41x8zS80kEgWN/CgdUj3u?=
- =?us-ascii?Q?MidbS/PODt7DsPuLpY8m8jU4IBf8pfUauFM07UqxOqNoOqdMdf9spcJzKuh0?=
- =?us-ascii?Q?pwzFNDO+xN862YJJXRey1jgWSVYcVp/hI7MaU72zP9Ctl+zioCUoDVUcaIyU?=
- =?us-ascii?Q?ewz9FNuL2ugc51SAhQQcZw2rK72pdjF6ox1xZc2OxdvRywjSxJMk0AShBHnv?=
- =?us-ascii?Q?+Rv2+rA7h28xP7cqt/qwHEszxC/UpmKE5/5roRc5keHJaVCLfZETHbK/yc23?=
- =?us-ascii?Q?0/+K6o+wxcvZJ17+vqeBbUAgOzEzdtO1mWm5H0kc2JD5GDca3/4q6fEjhOWP?=
- =?us-ascii?Q?3I5vrx7oiAkR6kd83qEFsghXCiX9MA4PIRDLNq7X0kzz36uC/K0qnXFRIcjo?=
- =?us-ascii?Q?FoWD0cspnLd7x2/WkuOtTTX1Jzh5wfTfBQYHAvPcwLtb6UYZ6dn3sU0bqYid?=
- =?us-ascii?Q?G4Kw0wqcyzbaEJOiEeGL/LT8Mxfrd5zd7Ni6s8ctdEKawYGMlGWAe59dGS5Z?=
- =?us-ascii?Q?VbYptor5YB8530EEukZHkgwpYcI1290U1E7i+mVPKvI/GYLsEn/OcMoa6+oV?=
- =?us-ascii?Q?PG0izMmj5Dso2xdl3V/0fJ4i9IcMRsypsHZfqaKI3+ac0IjmvhaVqEU38Me9?=
- =?us-ascii?Q?nuVb7bWrUDBTMShSFE8j+SqMT6v9RQYa/HI8VvoG830futPCjc1fTCOMdh5W?=
- =?us-ascii?Q?CCNS7p4G7GCLym0CO1bjqjQyD8z2bF8vILTwCcs3D0ARAlQw87zuCKBqw+dn?=
- =?us-ascii?Q?XP+pZo/JQsjtUeYnIDYyxQ2jk/ACU53xio58Y9pDgL5Y5TfqdfNbQSke6BII?=
- =?us-ascii?Q?plbU9Nksj9PBpgadttzY2LoB71oS7jDCcPVsTbOM31EE4yRgyGJ1CuhQ8rWF?=
- =?us-ascii?Q?G+QHi60SyXr4utvZa3hK+11CCSR0P6K49EtOujdBVhMVGwcUrjYS8jpfjL/Y?=
- =?us-ascii?Q?JWbv7f3aG4ivLArnbP2hMhbhX9+UA3WCczUDdZW4nVT9HxHgh8BdRH75+RN8?=
- =?us-ascii?Q?D2nKtXb21HV7gTPOHRMZ3ZHIH2KNBiEvC5Rf4qxyKqTtsaNKq5linsGMPV29?=
- =?us-ascii?Q?HoXJH0LC/jxx5wGUG6FeXakdjxUUGy9KFK8CuGwQacu9BygZBdVo/RzLlPkX?=
- =?us-ascii?Q?PyUGjqyU5J3p/jzDggQDcrDjTq6bFyVjuJtzEHv72W6jnHpz8S3I46g3NKzA?=
- =?us-ascii?Q?JrFcArBvwE0CtyYi/dwLDW9LR0cjRCInR+keNyiPyd6Ia7xNaoCVUSH+fbJ0?=
- =?us-ascii?Q?VxxE8YADo2Y8BROJrzuM3KUyvwT9isPVFX2/KGZhJ3MyTtz949kfGtZMxquS?=
- =?us-ascii?Q?rHiEhJzSD5/6ITJ+s+yuuxg/A5oWOk787avgTg3styRc4ATHAQ5aDq6kurqs?=
- =?us-ascii?Q?OtonS+raxubw2TH7DAyxIdpQ2zhRdgwMkg874FMQVDDFMuu5IQjfeGHeDUbw?=
- =?us-ascii?Q?myVTDB+xJbxVHcJ/kbkuG2JLZyaLNhcPO+cV6qQPYvEEiHSt/4BIDl7zVbnd?=
- =?us-ascii?Q?HkR/Szms0ZHAWjD7tRsazm95loAu082uNS6C8p9FWHfNRWagnqVdiM6Yv/Fy?=
- =?us-ascii?Q?uQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?2rRStmM3IinfKo0aWxK9XvKgQltTPhxRwC+WSLZdmZTN/O+cd38Tq9J065gT?=
+ =?us-ascii?Q?RD9jpqMUt22tcri7OZiABrXOrNXC8ZqjUO+RJipuvuwKiNiYBjvroc6jl2fw?=
+ =?us-ascii?Q?nGeJvoFBuGYIgNQY18AO8X3vxkmtV055h/jpOWus1AKWIL6BisfogPRG8syT?=
+ =?us-ascii?Q?gxI6MChSzab3JoZ8GVNOYn0DNrE29jA8svTlo4kT3pnX8CsKExCOZ7hfr2fR?=
+ =?us-ascii?Q?L94ls+yChIWflz+fYxV0x/q/SFtwN1eSERv6MWuqvGOO026lYLelegk4plkm?=
+ =?us-ascii?Q?VHQr6dC1IXJKUOEMCRDFswOFIA+IjZ50kgsAeUvmO1mLfp/A9f4FS9JYmV0q?=
+ =?us-ascii?Q?je+5bVPx5qK0nx11I5JeHwWQbvyioE9mWbT6TJU1LCQxSVjumbpc4BWyWdLX?=
+ =?us-ascii?Q?V+zZUi5WDs4ZoMgWQFMr067kGiWGusLM1iS3WN9bXg8Xo/6aDicHk+hOAipF?=
+ =?us-ascii?Q?+38XWX9gVSXlgSP6YzuuYdvTmdqg9NSLLzm2UAxIqgesNj0oWpWhZl+FbJ0Q?=
+ =?us-ascii?Q?bC6PeR9yS0xfTCjfeBEG1G7gYFoCahRKTO6ZWI61IIfXvITYS0e3zy/4OBrS?=
+ =?us-ascii?Q?q3GK5zsn5NbQpN3bTz10gw2+j45mQCqJ7yG+QUizzHWSucUcKI6WDTtL0Ddk?=
+ =?us-ascii?Q?wocJM8vyviQNPYcsOV8YMep5piPgQlSA2+uCr2CGGrPW24eoVzb0XC5/n51N?=
+ =?us-ascii?Q?RBMIMMtgW0bpkY5eGweEnAYPaaptVV4CrmPM8ShqUuTPSZdrkEc0PmXEyPBK?=
+ =?us-ascii?Q?xF+vXBV8z64RTrwvqXk0XaakQEe+xQtLgHq2Z4T1bEDzJ20e5YWAKp+Grchs?=
+ =?us-ascii?Q?z0UYJU3Z2Qjt2Y90C9R9e4Z0g0FA4OhB6C3ld0mGByjOdgcOmFi0DJyQX+Ac?=
+ =?us-ascii?Q?KldQ1KuLl4g/pqkVSgWognwb09Wlp2sGmI7SZ+F4UunVzRTIr5/0kfDrDXCR?=
+ =?us-ascii?Q?H2ycBGF940lmUJOHoY2UlpXKGYyZbWOIU/mTX7ujsGBZkEdRRP1uA5Mq0vXW?=
+ =?us-ascii?Q?dqTuYp1b1VGW78ngl6sasEdv0Y7czoIL5Es9Or8eyv03yT5t2eJzIjVTQNSz?=
+ =?us-ascii?Q?bO3d7JxDVLGL8V7daoP+uq8EkN3grRGAv5RJ5+rSfXi1e3j8WpQYg7qCdR0G?=
+ =?us-ascii?Q?4iVnHHmwsx/oN5bxQc+4X6fDd56kewJ1+fIGfwVL3S9oet2y7nZ/yw4D1NcZ?=
+ =?us-ascii?Q?3QbqooRH8T0JK8ZCX+8QanuavbX1kIFi8ftwDNOTWhygk6xbjtnZgUZYnu+B?=
+ =?us-ascii?Q?iuTixMMf6/R/ZwkAqTI94X86OV9Ef9wEOj8JAPullgvmuuaJdnyf4NkHa1BX?=
+ =?us-ascii?Q?sbgVe1R6NAeesKXk2dfXzmcJeHvFFADgnjO8EAobbOj3kxrHgqEnMjmyxKBu?=
+ =?us-ascii?Q?IrmAXLVSoI07lG7e/V37dzyGNf3WakGbcI3BUSYfz3atuCfLuG14G2idSQum?=
+ =?us-ascii?Q?VNgA4XnQU6u8tifhgqy696PdtyiRVzTTMjIJKo7CI9ERmVHn8j+8gffbp2K0?=
+ =?us-ascii?Q?/It0u9KRwQIrfcgpWMpcKqfDLG0bO8u22z08C2dFfPSwPzDwmBgnkWqupj4b?=
+ =?us-ascii?Q?gA4ATRz4MOIT3207P/2xsP5TLGEUF+Vd58Mn6koaF1/+5Re4e7fZZY+lxY+W?=
+ =?us-ascii?Q?wA=3D=3D?=
 X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 08159167-61ea-4208-2889-08da99ae990b
+X-MS-Exchange-CrossTenant-Network-Message-Id: 59b38e52-faed-4881-59e0-08da99ae99d8
 X-MS-Exchange-CrossTenant-AuthSource: PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Sep 2022 19:47:19.8756
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Sep 2022 19:47:21.2048
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QuNbyXwWmuoIhB9w4NYoH+slvpMhhYK/2p92UASmoPFobloJ+5h5V7L1Xl/WHLlNa7zH/e3QFdWMDrumih2NbHha2CVDQdN+xugUBRzSSdA=
+X-MS-Exchange-CrossTenant-UserPrincipalName: JuIYPa5TV27NBesmMCY3bA/OgmzTcmSgwjvvIVF/Yj5jHw+ihHFtELdOQLYTdjvOnBCW3wJvTtJ1/NteIveS87g/Ho0DchQeNIS6VYCJQXU=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS4P190MB1927
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -122,80 +124,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This will, ensure, that there is no more, preciously allocated fib_cache
-entries left after deinit.
-Will be used to free allocated resources of nexthop routes, that points
-to "not our" port (e.g. eth0).
+Flushing workqueues ensures, that no more pending works, related to just
+unregistered or deinitialized notifiers. After that we can free memory.
 
+Delayed wq will be used for neighbours in next patches.
+
+Co-developed-by: Taras Chornyi <tchornyi@marvell.com>
+Signed-off-by: Taras Chornyi <tchornyi@marvell.com>
+Co-developed-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
 Signed-off-by: Yevhen Orlov <yevhen.orlov@plvision.eu>
 ---
- .../marvell/prestera/prestera_router.c        | 46 +++++++++++++++++++
- 1 file changed, 46 insertions(+)
+ drivers/net/ethernet/marvell/prestera/prestera.h      |  2 ++
+ drivers/net/ethernet/marvell/prestera/prestera_main.c | 11 +++++++++++
+ .../net/ethernet/marvell/prestera/prestera_router.c   |  1 +
+ 3 files changed, 14 insertions(+)
 
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_router.c b/drivers/net/ethernet/marvell/prestera/prestera_router.c
-index a8548b9f9cf1..bd0b21597676 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_router.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_router.c
-@@ -336,6 +336,49 @@ prestera_k_arb_fib_evt(struct prestera_switch *sw,
- 	return 0;
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera.h b/drivers/net/ethernet/marvell/prestera/prestera.h
+index 903e2e13e687..fe0d6001a6b6 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera.h
++++ b/drivers/net/ethernet/marvell/prestera/prestera.h
+@@ -367,6 +367,8 @@ int prestera_port_cfg_mac_write(struct prestera_port *port,
+ struct prestera_port *prestera_port_dev_lower_find(struct net_device *dev);
+ 
+ void prestera_queue_work(struct work_struct *work);
++void prestera_queue_delayed_work(struct delayed_work *work, unsigned long delay);
++void prestera_queue_drain(void);
+ 
+ int prestera_port_learning_set(struct prestera_port *port, bool learn_enable);
+ int prestera_port_uc_flood_set(struct prestera_port *port, bool flood);
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_main.c b/drivers/net/ethernet/marvell/prestera/prestera_main.c
+index 3956d6d5df3c..c0794603a733 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_main.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_main.c
+@@ -36,6 +36,17 @@ void prestera_queue_work(struct work_struct *work)
+ 	queue_work(prestera_owq, work);
  }
  
-+static void __prestera_k_arb_abort_fib(struct prestera_switch *sw)
++void prestera_queue_delayed_work(struct delayed_work *work, unsigned long delay)
 +{
-+	struct prestera_kern_fib_cache *fib_cache;
-+	struct rhashtable_iter iter;
-+
-+	while (1) {
-+		rhashtable_walk_enter(&sw->router->kern_fib_cache_ht, &iter);
-+		rhashtable_walk_start(&iter);
-+
-+		fib_cache = rhashtable_walk_next(&iter);
-+
-+		rhashtable_walk_stop(&iter);
-+		rhashtable_walk_exit(&iter);
-+
-+		if (!fib_cache) {
-+			break;
-+		} else if (IS_ERR(fib_cache)) {
-+			continue;
-+		} else if (fib_cache) {
-+			__prestera_k_arb_fib_lpm_offload_set(sw, fib_cache,
-+							     false, false,
-+							     false);
-+			/* No need to destroy lpm.
-+			 * It will be aborted by destroy_ht
-+			 */
-+			prestera_kern_fib_cache_destroy(sw, fib_cache);
-+		}
-+	}
++	queue_delayed_work(prestera_wq, work, delay);
 +}
 +
-+static void prestera_k_arb_abort(struct prestera_switch *sw)
++void prestera_queue_drain(void)
 +{
-+	/* Function to remove all arbiter entries and related hw objects. */
-+	/* Sequence:
-+	 *   1) Clear arbiter tables, but don't touch hw
-+	 *   2) Clear hw
-+	 * We use such approach, because arbiter object is not directly mapped
-+	 * to hw. So deletion of one arbiter object may even lead to creation of
-+	 * hw object (e.g. in case of overlapped routes).
-+	 */
-+	__prestera_k_arb_abort_fib(sw);
++	drain_workqueue(prestera_wq);
++	drain_workqueue(prestera_owq);
 +}
 +
- static int __prestera_inetaddr_port_event(struct net_device *port_dev,
- 					  unsigned long event,
- 					  struct netlink_ext_ack *extack)
-@@ -602,6 +645,9 @@ void prestera_router_fini(struct prestera_switch *sw)
+ int prestera_port_learning_set(struct prestera_port *port, bool learn)
+ {
+ 	return prestera_hw_port_learning_set(port, learn);
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_router.c b/drivers/net/ethernet/marvell/prestera/prestera_router.c
+index bd0b21597676..c8ef32f9171b 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_router.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_router.c
+@@ -645,6 +645,7 @@ void prestera_router_fini(struct prestera_switch *sw)
  	unregister_fib_notifier(&init_net, &sw->router->fib_nb);
  	unregister_inetaddr_notifier(&sw->router->inetaddr_nb);
  	unregister_inetaddr_validator_notifier(&sw->router->inetaddr_valid_nb);
-+
-+	prestera_k_arb_abort(sw);
-+
- 	kfree(sw->router->nhgrp_hw_state_cache);
- 	rhashtable_destroy(&sw->router->kern_fib_cache_ht);
- 	prestera_router_hw_fini(sw);
++	prestera_queue_drain();
+ 
+ 	prestera_k_arb_abort(sw);
+ 
 -- 
 2.17.1
 
