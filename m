@@ -2,73 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E2FF5BBE64
-	for <lists+netdev@lfdr.de>; Sun, 18 Sep 2022 16:31:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 615CB5BBEA8
+	for <lists+netdev@lfdr.de>; Sun, 18 Sep 2022 17:30:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229680AbiIRObm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Sep 2022 10:31:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44762 "EHLO
+        id S229593AbiIRPa1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Sep 2022 11:30:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbiIRObl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Sep 2022 10:31:41 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAF471AD9D
-        for <netdev@vger.kernel.org>; Sun, 18 Sep 2022 07:31:40 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id go34so59085555ejc.2
-        for <netdev@vger.kernel.org>; Sun, 18 Sep 2022 07:31:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:from:to:cc:subject:date;
-        bh=Tdb4uBYHGKqcCBGH9t1Nznox3MFYvtzmoPZEjJD5iyU=;
-        b=lpjM4hmJWq0vhBNDoKIrfKdVnEk2HQEjs9g6xVJN0zxQstscP/lUH0kuxr//JSnznB
-         WlE2FdSLzgh8q1epVAp8RK24UcwlWK55qsbrn+fvmfH/L2hbZEY0fEh1r8HXPhgLWYKD
-         SQ2889BdBAKPhcTZa48GZod22c19FWpCsbq7ax55EPgnMfiZLa2cnP16U60AHnEepvTt
-         ltsYxdXOA8LKpjn8xqU7XHZDv3pyTaRb2eo7x49Ua3kfSlDvPA6duMcKSk7DM4jueA08
-         LbpomnRc6LqT1vJH1PdcCgFFwQUcuX83+RvYoKaJ+cGoDbdXp5dz1O1U/I6A2LgwhoTW
-         fU5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=Tdb4uBYHGKqcCBGH9t1Nznox3MFYvtzmoPZEjJD5iyU=;
-        b=d1Q6bdMzb5GqziNVyw64+f56bzkT0Vj1r7XaH6eYjHsgn5QIiWNLoc0ZDJOzyvEeMI
-         /gVYnmteATRtDucgwAhLecEdRnk+N2C6dqZnyO4ZwBocNekgQla1BRY6AAZlYuwUJ2/D
-         gG5+VHHum8iSgDHF2sPIKMQAh2JXVDbrQ86QTw8BjN74VEULXngS6LTF4QE/KFhmxkMr
-         b1jGtnTcPc1H2qcxOCLN+AMfZS1iGigB1KnY3a9cS7guSNvaZUXGN6kxmMAqwPEqAuxY
-         TrbPg1oq3Mnr2UsuarT2cToTkdBYToDmorWy5eigDe4ra/mw2BPnZfh19enAvYfzqkGS
-         SigA==
-X-Gm-Message-State: ACrzQf35ceZ5F4DNT4n4ACxQ5vVXzxZEijYoJX92cj1Ax8yrYj6pQUX8
-        1QLWUcT5eVwvrV1qg4iFItM=
-X-Google-Smtp-Source: AMsMyM65n4XEeVQZatjrOvfG3jadA+wTUIpRLMtTdBYqxqarjh1t1F8XNk2VlQKmaWUF5DVkAOiNug==
-X-Received: by 2002:a17:907:ea6:b0:77e:156d:b07b with SMTP id ho38-20020a1709070ea600b0077e156db07bmr9592125ejc.435.1663511499263;
-        Sun, 18 Sep 2022 07:31:39 -0700 (PDT)
-Received: from smtpclient.apple ([178.254.237.20])
-        by smtp.gmail.com with ESMTPSA id p8-20020aa7d308000000b00443d657d8a4sm17773180edq.61.2022.09.18.07.31.38
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 18 Sep 2022 07:31:38 -0700 (PDT)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.120.0.1.13\))
-Subject: Re: Bug Report kernel 5.19.9 Networking NAT
-From:   Martin Zaharinov <micron10@gmail.com>
-In-Reply-To: <YycrJqcuQJOVCvr6@kroah.com>
-Date:   Sun, 18 Sep 2022 17:31:37 +0300
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Florian Westphal <fw@strlen.de>,
-        netdev <netdev@vger.kernel.org>, pablo@netfilter.org
+        with ESMTP id S229579AbiIRPa0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Sep 2022 11:30:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B7651AD92
+        for <netdev@vger.kernel.org>; Sun, 18 Sep 2022 08:30:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 04B1FB81057
+        for <netdev@vger.kernel.org>; Sun, 18 Sep 2022 15:30:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62464C433C1;
+        Sun, 18 Sep 2022 15:30:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1663515022;
+        bh=EQ3FUZipllq04TfMzQSP7mtwHMu+ssXrH9a3NQtDCSo=;
+        h=Date:Subject:To:References:From:In-Reply-To:From;
+        b=LkJ+44f9dGLyXfS97f9qbK/ohyvU0eO3+0+u5Ixwi8eDTp1thp7mkHB/AEHdfCDs0
+         BYFsnugivhlG8bQYtNoRysF3IBN3+vp0k3o6ThMb680RfAVwcOpJGCLa0fkBrD0di5
+         EgstcPBQ9w523uqiydnDKr/7x6QwFEaWFZNeD8Go8T08E7+3xdXdS/MWpU3oPrynib
+         oPfB/I1jDxlD3Fb7bUDD1IaaOKjqtnYtO4wufGAugzlCwQG/t5iuMuj6LYkmpUCVJA
+         olLIHZwaeDpWzXhDCubbeydwpwe+elMm6Ea1oCOTY4ZOekS6BKiFyRfExjg6vznu1r
+         jTy9PNSGrG0Tg==
+Message-ID: <69a43dc8-c545-1187-7185-4b85215b726d@kernel.org>
+Date:   Sun, 18 Sep 2022 09:30:21 -0600
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.13.0
+Subject: Re: [PATCH] ipv4: ping: Fix potential use-after-free bug
+Content-Language: en-US
+To:     Liang He <windhl@126.com>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org
+References: <20220916100727.4096852-1-windhl@126.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20220916100727.4096852-1-windhl@126.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Message-Id: <02A88BC2-8A0F-4E7F-B5FB-5FB5CFFD018C@gmail.com>
-References: <7D92694E-62A2-4030-8420-31271F865844@gmail.com>
- <YybvTYO2pCwlDr2f@kroah.com> <91719698-62E7-4447-8220-CBA64F0BB5C9@gmail.com>
- <YycrJqcuQJOVCvr6@kroah.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-X-Mailer: Apple Mail (2.3654.120.0.1.13)
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-10.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,29 +56,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi
+On 9/16/22 4:07 AM, Liang He wrote:
+> In ping_unhash(), we should move sock_put(sk) after any possible
+> access point as the put function may free the object.
 
-now it started giving it, I think it was always here
-And yes is new for me .
+unhash handlers are called from sk_common_release which still has a
+reference on the sock, so not really going to hit a UAF.
 
-what can cause it?
+I do agree that it does not read correctly to 'put' a reference then
+continue using the object. ie., the put should be moved to the end like
+you have here. This is more of a tidiness exercise than a need to
+backport to stable kernels.
 
-m.
-
-
-> On 18 Sep 2022, at 17:28, Greg KH <gregkh@linuxfoundation.org> wrote:
 > 
-> On Sun, Sep 18, 2022 at 04:49:26PM +0300, Martin Zaharinov wrote:
->> Hi Greg
->> 
->> Yes still receive this message in dmesg this is kernel 5.19.9 : 
+> Fixes: c319b4d76b9e ("net: ipv4: add IPPROTO_ICMP socket kind")
+> Signed-off-by: Liang He <windhl@126.com>
+> ---
 > 
-> Wait, but that's not what I asked, I said:
+>  I have found other places containing similar code patterns.
 > 
->>> Is this new?  If so, can you use 'git bisect' to find the problem?  Or
->>> has this always been there?
+>  net/ipv4/ping.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> thanks,
-> 
-> greg k-h
+> diff --git a/net/ipv4/ping.c b/net/ipv4/ping.c
+> index b83c2bd9d722..f90c86d37ffc 100644
+> --- a/net/ipv4/ping.c
+> +++ b/net/ipv4/ping.c
+> @@ -157,10 +157,10 @@ void ping_unhash(struct sock *sk)
+>  	spin_lock(&ping_table.lock);
+>  	if (sk_hashed(sk)) {
+>  		hlist_nulls_del_init_rcu(&sk->sk_nulls_node);
+> -		sock_put(sk);
+>  		isk->inet_num = 0;
+>  		isk->inet_sport = 0;
+>  		sock_prot_inuse_add(sock_net(sk), sk->sk_prot, -1);
+> +		sock_put(sk);
+>  	}
+>  	spin_unlock(&ping_table.lock);
+>  }
 
