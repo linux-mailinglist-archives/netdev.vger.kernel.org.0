@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 273675BBCEE
-	for <lists+netdev@lfdr.de>; Sun, 18 Sep 2022 11:50:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73CA05BBD1D
+	for <lists+netdev@lfdr.de>; Sun, 18 Sep 2022 11:55:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229715AbiIRJt5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Sep 2022 05:49:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48756 "EHLO
+        id S229667AbiIRJuO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Sep 2022 05:50:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229711AbiIRJty (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Sep 2022 05:49:54 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45E9D11C03
+        with ESMTP id S229727AbiIRJt4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Sep 2022 05:49:56 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4611811C0A
         for <netdev@vger.kernel.org>; Sun, 18 Sep 2022 02:49:49 -0700 (PDT)
 Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MVjf54l04zHnlH;
-        Sun, 18 Sep 2022 17:47:41 +0800 (CST)
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MVjbr6w52zlVll;
+        Sun, 18 Sep 2022 17:45:44 +0800 (CST)
 Received: from localhost.localdomain (10.67.165.24) by
  dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Sun, 18 Sep 2022 17:49:47 +0800
+ 15.1.2375.31; Sun, 18 Sep 2022 17:49:48 +0800
 From:   Jian Shen <shenjian15@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <ecree.xilinx@gmail.com>,
         <andrew@lunn.ch>, <hkallweit1@gmail.com>,
         <alexandr.lobakin@intel.com>, <saeed@kernel.org>, <leon@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linuxarm@huawei.com>
-Subject: [RFCv8 PATCH net-next 08/55] ravb: replace const features initialization with NETDEV_FEATURE_SET
-Date:   Sun, 18 Sep 2022 09:42:49 +0000
-Message-ID: <20220918094336.28958-9-shenjian15@huawei.com>
+Subject: [RFCv8 PATCH net-next 09/55] test_bpf: replace const features initialization with NETDEV_FEATURE_SET
+Date:   Sun, 18 Sep 2022 09:42:50 +0000
+Message-ID: <20220918094336.28958-10-shenjian15@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220918094336.28958-1-shenjian15@huawei.com>
 References: <20220918094336.28958-1-shenjian15@huawei.com>
@@ -46,108 +46,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ravb driver use netdev features in global structure
+The test_bpf uses netdev features in global structure
 initialization. Changed the netdev_features_t memeber to
 netdev_features_t *, and make it refer to a global constant
 netdev_features_t variable.
 
 Signed-off-by: Jian Shen <shenjian15@huawei.com>
 ---
- drivers/net/ethernet/renesas/ravb.h      |  4 ++--
- drivers/net/ethernet/renesas/ravb_main.c | 23 +++++++++++++++--------
- 2 files changed, 17 insertions(+), 10 deletions(-)
+ lib/test_bpf.c | 39 ++++++++++++++++++++++++++++++---------
+ 1 file changed, 30 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
-index b980bce763d3..efd3c32b9e46 100644
---- a/drivers/net/ethernet/renesas/ravb.h
-+++ b/drivers/net/ethernet/renesas/ravb.h
-@@ -1014,8 +1014,8 @@ struct ravb_hw_info {
- 	void (*emac_init)(struct net_device *ndev);
- 	const char (*gstrings_stats)[ETH_GSTRING_LEN];
- 	size_t gstrings_size;
--	netdev_features_t net_hw_features;
--	netdev_features_t net_features;
-+	const netdev_features_t *net_hw_features;
-+	const netdev_features_t *net_features;
- 	int stats_len;
- 	size_t max_rx_len;
- 	u32 tccr_mask;
-diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-index b357ac4c56c5..d7ca2bf7cf3b 100644
---- a/drivers/net/ethernet/renesas/ravb_main.c
-+++ b/drivers/net/ethernet/renesas/ravb_main.c
-@@ -19,6 +19,7 @@
- #include <linux/kernel.h>
- #include <linux/list.h>
- #include <linux/module.h>
+diff --git a/lib/test_bpf.c b/lib/test_bpf.c
+index 5820704165a6..84073b768558 100644
+--- a/lib/test_bpf.c
++++ b/lib/test_bpf.c
+@@ -13,6 +13,7 @@
+ #include <linux/bpf.h>
+ #include <linux/skbuff.h>
+ #include <linux/netdevice.h>
 +#include <linux/netdev_feature_helpers.h>
- #include <linux/net_tstamp.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
-@@ -50,6 +51,9 @@ static const char *ravb_tx_irqs[NUM_TX_QUEUE] = {
- 	"ch19", /* RAVB_NC */
+ #include <linux/if_vlan.h>
+ #include <linux/random.h>
+ #include <linux/highmem.h>
+@@ -14718,27 +14719,45 @@ static __init struct sk_buff *build_test_skb_linear_no_head_frag(void)
+ struct skb_segment_test {
+ 	const char *descr;
+ 	struct sk_buff *(*build_skb)(void);
+-	netdev_features_t features;
++	const netdev_features_t *features;
  };
  
-+static netdev_features_t ravb_default_features;
-+static netdev_features_t ravb_empty_features;
++static netdev_features_t gso_frags_features __ro_after_init;
++static netdev_features_t gso_linear_feature_features __ro_after_init;
 +
- void ravb_modify(struct net_device *ndev, enum ravb_reg reg, u32 clear,
- 		 u32 set)
+ static struct skb_segment_test skb_segment_tests[] __initconst = {
+ 	{
+ 		.descr = "gso_with_rx_frags",
+ 		.build_skb = build_test_skb,
+-		.features = NETIF_F_SG | NETIF_F_GSO_PARTIAL | NETIF_F_IP_CSUM |
+-			    NETIF_F_IPV6_CSUM | NETIF_F_RXCSUM
++		.features = &gso_frags_features
+ 	},
+ 	{
+ 		.descr = "gso_linear_no_head_frag",
+ 		.build_skb = build_test_skb_linear_no_head_frag,
+-		.features = NETIF_F_SG | NETIF_F_FRAGLIST |
+-			    NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_GSO |
+-			    NETIF_F_LLTX | NETIF_F_GRO |
+-			    NETIF_F_IPV6_CSUM | NETIF_F_RXCSUM |
+-			    NETIF_F_HW_VLAN_STAG_TX
++		.features = &gso_linear_feature_features
+ 	}
+ };
+ 
++static void __init test_skb_features_init(void)
++{
++	netdev_features_set_set(gso_frags_features,
++				NETIF_F_SG_BIT,
++				NETIF_F_GSO_PARTIAL_BIT,
++				NETIF_F_IP_CSUM_BIT,
++				NETIF_F_IPV6_CSUM_BIT,
++				NETIF_F_RXCSUM_BIT);
++	netdev_features_set_set(gso_linear_feature_features,
++				NETIF_F_SG_BIT,
++				NETIF_F_FRAGLIST_BIT,
++				NETIF_F_HW_VLAN_CTAG_TX_BIT,
++				NETIF_F_GSO_BIT,
++				NETIF_F_LLTX_BIT,
++				NETIF_F_GRO_BIT,
++				NETIF_F_IPV6_CSUM_BIT,
++				NETIF_F_RXCSUM_BIT,
++				NETIF_F_HW_VLAN_STAG_TX_BIT);
++}
++
+ static __init int test_skb_segment_single(const struct skb_segment_test *test)
  {
-@@ -2422,8 +2426,8 @@ static const struct ravb_hw_info ravb_gen3_hw_info = {
- 	.emac_init = ravb_emac_init_rcar,
- 	.gstrings_stats = ravb_gstrings_stats,
- 	.gstrings_size = sizeof(ravb_gstrings_stats),
--	.net_hw_features = NETIF_F_RXCSUM,
--	.net_features = NETIF_F_RXCSUM,
-+	.net_hw_features = &ravb_default_features,
-+	.net_features = &ravb_default_features,
- 	.stats_len = ARRAY_SIZE(ravb_gstrings_stats),
- 	.max_rx_len = RX_BUF_SZ + RAVB_ALIGN - 1,
- 	.tccr_mask = TCCR_TSRQ0 | TCCR_TSRQ1 | TCCR_TSRQ2 | TCCR_TSRQ3,
-@@ -2448,8 +2452,8 @@ static const struct ravb_hw_info ravb_gen2_hw_info = {
- 	.emac_init = ravb_emac_init_rcar,
- 	.gstrings_stats = ravb_gstrings_stats,
- 	.gstrings_size = sizeof(ravb_gstrings_stats),
--	.net_hw_features = NETIF_F_RXCSUM,
--	.net_features = NETIF_F_RXCSUM,
-+	.net_hw_features = &ravb_default_features,
-+	.net_features = &ravb_default_features,
- 	.stats_len = ARRAY_SIZE(ravb_gstrings_stats),
- 	.max_rx_len = RX_BUF_SZ + RAVB_ALIGN - 1,
- 	.tccr_mask = TCCR_TSRQ0 | TCCR_TSRQ1 | TCCR_TSRQ2 | TCCR_TSRQ3,
-@@ -2471,8 +2475,8 @@ static const struct ravb_hw_info ravb_rzv2m_hw_info = {
- 	.emac_init = ravb_emac_init_rcar,
- 	.gstrings_stats = ravb_gstrings_stats,
- 	.gstrings_size = sizeof(ravb_gstrings_stats),
--	.net_hw_features = NETIF_F_RXCSUM,
--	.net_features = NETIF_F_RXCSUM,
-+	.net_hw_features = &ravb_default_features,
-+	.net_features = &ravb_default_features,
- 	.stats_len = ARRAY_SIZE(ravb_gstrings_stats),
- 	.max_rx_len = RX_BUF_SZ + RAVB_ALIGN - 1,
- 	.tccr_mask = TCCR_TSRQ0 | TCCR_TSRQ1 | TCCR_TSRQ2 | TCCR_TSRQ3,
-@@ -2496,6 +2500,8 @@ static const struct ravb_hw_info gbeth_hw_info = {
- 	.emac_init = ravb_emac_init_gbeth,
- 	.gstrings_stats = ravb_gstrings_stats_gbeth,
- 	.gstrings_size = sizeof(ravb_gstrings_stats_gbeth),
-+	.net_hw_features = &ravb_empty_features,
-+	.net_features = &ravb_empty_features,
- 	.stats_len = ARRAY_SIZE(ravb_gstrings_stats_gbeth),
- 	.max_rx_len = ALIGN(GBETH_RX_BUFF_MAX, RAVB_ALIGN),
- 	.tccr_mask = TCCR_TSRQ0,
-@@ -2639,8 +2645,9 @@ static int ravb_probe(struct platform_device *pdev)
+ 	struct sk_buff *skb, *segs;
+@@ -14750,7 +14769,7 @@ static __init int test_skb_segment_single(const struct skb_segment_test *test)
+ 		goto done;
+ 	}
  
- 	info = of_device_get_match_data(&pdev->dev);
+-	segs = skb_segment(skb, test->features);
++	segs = skb_segment(skb, *test->features);
+ 	if (!IS_ERR(segs)) {
+ 		kfree_skb_list(segs);
+ 		ret = 0;
+@@ -14764,6 +14783,8 @@ static __init int test_skb_segment(void)
+ {
+ 	int i, err_cnt = 0, pass_cnt = 0;
  
--	ndev->features = info->net_features;
--	ndev->hw_features = info->net_hw_features;
-+	netdev_feature_add(NETIF_F_RXCSUM_BIT, ravb_default_features);
-+	ndev->features = *info->net_features;
-+	ndev->hw_features = *info->net_hw_features;
++	test_skb_features_init();
++
+ 	for (i = 0; i < ARRAY_SIZE(skb_segment_tests); i++) {
+ 		const struct skb_segment_test *test = &skb_segment_tests[i];
  
- 	reset_control_deassert(rstc);
- 	pm_runtime_enable(&pdev->dev);
 -- 
 2.33.0
 
