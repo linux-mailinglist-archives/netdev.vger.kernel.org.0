@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5026C5BC099
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 01:28:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE5275BC0A0
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 01:28:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229724AbiIRX0y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Sep 2022 19:26:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58838 "EHLO
+        id S229768AbiIRX0w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Sep 2022 19:26:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229711AbiIRX0m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Sep 2022 19:26:42 -0400
-Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A6F61707B;
+        with ESMTP id S229704AbiIRX0l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Sep 2022 19:26:41 -0400
+Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A9321707C;
         Sun, 18 Sep 2022 16:26:39 -0700 (PDT)
-Received: by mail-qv1-xf2f.google.com with SMTP id ml1so20785365qvb.1;
+Received: by mail-qv1-xf34.google.com with SMTP id s13so20746206qvq.10;
         Sun, 18 Sep 2022 16:26:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=X8YgwES7TplqCHtmD/bT0wPe1Le0GpgV8HcbaL2Xf2c=;
-        b=TuMahUO6YCoa0PcCUTFfEVN0UbSFNo7tJRaLy8z+V4F8pYr8y5f/TDhGsew4o9NMKM
-         p2oxRM19oDIZBnJ3OZAowMyF8s6Mo48AB3o+J5cLFBC770t1V2wCUG+Fab2he7/2uE97
-         KQsfbYyc8aolhNg0wiVUACS3Yvtwmi4EKudUs72AUL67cy8MnSek4XfI8E4o8KyPtzcp
-         a18EsBbJ8iTE1o2Zm7BDz7CJtaEJXAjl8UjOzsdBQNLU1MKwbZx7j9t2HvlzNV7BsH1E
-         rJAUSxo1Whvw7gCF5RTxtDsxyNoGBMM93/wkerPTrupENi7ZXjWsmCX5tLHSiYl5aau4
-         1tRQ==
+        bh=8N8HEycdLAoSNsPU4lmWCROhFmQPZjZr+OJRW3/rKd0=;
+        b=K9q7paqQVbU9FYFCjsqXw5JEKel5oFfCe/cAO14DeKrFeNFaGDIaxSrPbFa9ppUU14
+         4u792xWpJlprz1y4TG2CloFYhNXcCg1LPgkzKADNAxBmS9fHT5NA4dkTOnf9XkJ/Xxjs
+         eLHLo2OPDorUvao9s/r4laxP5FxNSoEWRODKPsOyBTQ7Ebn0Q5RIxq/trBu6WKO5Kt5q
+         Mr9KhIA8FoKPYUQIyP9w5DrhjW3QijskZeDWxV6wUE+mX5YypNAKMCjIVg8msOTzJaT3
+         4+jH0eYZ+ARCoFVijJKFuNp2YSSA1tEeQn7C5jEd28MpsawWaTGi4/1jqKw6KXeGQn0x
+         JgxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=X8YgwES7TplqCHtmD/bT0wPe1Le0GpgV8HcbaL2Xf2c=;
-        b=tDx4pO+h3B9hJW2uLFnDahFTUBaIsLpJnE/1cLcul+00G6TmwTiHup8wP8r08/Wd5o
-         s2Qbv8oXSbESp3C8y9esz41W/dgPtDW0QooiCFbd3yArYCF2Ur/Sx43m6l7emp+iBAaW
-         Hsu086HfzB5KhgxdJ+I/KPfgyQaF4xcjTyFXRnc6S/dBW9ak/IRQQ8wsrUUB2YrBJDVz
-         cOPhqm/I06qWHyOQMKZG1aLLEuNrCxUFv3bUuClYDU/XXMebjeiDJrXA18DF/liC1gKo
-         SEJtbr7NNvXrUhHEYDtal5kaJ2Xdcg1ijfJP3TbuwJnL1vbY3ot3aNa5qffSC0UONt3a
-         8NdQ==
-X-Gm-Message-State: ACrzQf3iTiv06gaq58yFrXuBciLNN0oLkjBVJq1Y5itAmWCx6rr9VS+O
-        SHVd1xlINpI0PN2mQZMlK5c=
-X-Google-Smtp-Source: AMsMyM4sw3xSbYcbSOD8OEi2jhQj+hy74WHs7CodVWDQZwGr6XgVyDUDsBG9I6SmnTQxDR1SQcwd4A==
-X-Received: by 2002:a0c:aa9e:0:b0:4a0:4909:6742 with SMTP id f30-20020a0caa9e000000b004a049096742mr12989761qvb.100.1663543598088;
-        Sun, 18 Sep 2022 16:26:38 -0700 (PDT)
+        bh=8N8HEycdLAoSNsPU4lmWCROhFmQPZjZr+OJRW3/rKd0=;
+        b=kol6MmNIgHbH5f0FjxwAO1UfACYvbmiOkZEOCOMpr9NOf+hdjO5mOUB4xJYfDOf6tu
+         g+MDfFj8+cAPyscAsZKnCz6Jd5SQjEpjUti+2/ARtPy/JUaCBeLqjNxWvBEUo/UqW5F5
+         qgpcFJUPxmCi/Xr+6p0TsWxcWUfnmr+EHC7b1vmn/vZ/wGELR/uJTJXBFa1lpUEc1cDg
+         Pyt22xgBZyFpedF9lS7XEhHIrxAX9WflEETnKL42LzIMlSI5R3gHNmu7hneq38gHvvBB
+         lhr3N3KPUBJ0JIrQtlVj322pOx3QNxl/RL0C5UxArRH0Ym7CoFXR7QIPvNNuK3d12sQB
+         H62g==
+X-Gm-Message-State: ACrzQf0aNNxPhXACYLaH1f0DAiFj4wi5LD0h5TTwyDsRuPTgEtXDQySO
+        ZgulnBHU71wSten29vk3S8Q=
+X-Google-Smtp-Source: AMsMyM5sz+3JPn51EcZhPgX4aUtfLiBqg2O6Hjj2HytisO/DNPN4iS6e6bJkMU/xJVApqS50GsDvyg==
+X-Received: by 2002:a05:6214:508b:b0:4ac:bb3f:dcc3 with SMTP id kk11-20020a056214508b00b004acbb3fdcc3mr12347403qvb.8.1663543599330;
+        Sun, 18 Sep 2022 16:26:39 -0700 (PDT)
 Received: from localhost (pool-173-73-95-180.washdc.fios.verizon.net. [173.73.95.180])
-        by smtp.gmail.com with UTF8SMTPSA id hg20-20020a05622a611400b00304fe5247bfsm9140932qtb.36.2022.09.18.16.26.37
+        by smtp.gmail.com with UTF8SMTPSA id s14-20020ac85ece000000b00339b8a5639csm9350216qtx.95.2022.09.18.16.26.38
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 18 Sep 2022 16:26:37 -0700 (PDT)
+        Sun, 18 Sep 2022 16:26:38 -0700 (PDT)
 From:   Sean Anderson <seanga2@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -58,9 +58,9 @@ Cc:     linux-kernel@vger.kernel.org (open list),
         Nick Bowler <nbowler@draconx.ca>,
         Rolf Eike Beer <eike-kernel@sf-tec.de>,
         Sean Anderson <seanga2@gmail.com>
-Subject: [PATCH net-next 07/13] sumhme: Convert FOO((...)) to FOO(...)
-Date:   Sun, 18 Sep 2022 19:26:20 -0400
-Message-Id: <20220918232626.1601885-8-seanga2@gmail.com>
+Subject: [PATCH net-next 08/13] sunhme: Clean up debug infrastructure
+Date:   Sun, 18 Sep 2022 19:26:21 -0400
+Message-Id: <20220918232626.1601885-9-seanga2@gmail.com>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220918232626.1601885-1-seanga2@gmail.com>
 References: <20220918232626.1601885-1-seanga2@gmail.com>
@@ -76,865 +76,129 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With the power of variadic macros, double parentheses are unnecessary.
+Remove all the single-use debug conditionals, and just collect the debug
+defines at the top of the file. HMD seems like it is used for general debug
+info, so just redefine it as pr_debug. Additionally, instead of using the
+default loglevel, use the debug loglevel for debugging.
 
 Signed-off-by: Sean Anderson <seanga2@gmail.com>
 ---
 
- drivers/net/ethernet/sun/sunhme.c | 272 +++++++++++++++---------------
- 1 file changed, 136 insertions(+), 136 deletions(-)
+ drivers/net/ethernet/sun/sunhme.c | 72 ++++++++++++++-----------------
+ 1 file changed, 32 insertions(+), 40 deletions(-)
 
 diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
-index cde0d8062fd3..16b81beb3ffb 100644
+index 16b81beb3ffb..ae206d552c27 100644
 --- a/drivers/net/ethernet/sun/sunhme.c
 +++ b/drivers/net/ethernet/sun/sunhme.c
-@@ -134,17 +134,17 @@ static __inline__ void tx_dump_log(void)
+@@ -80,13 +80,37 @@ static struct quattro *qfe_sbus_list;
+ static struct quattro *qfe_pci_list;
  #endif
  
- #ifdef HMEDEBUG
--#define HMD(x)  printk x
-+#define HMD printk
- #else
--#define HMD(x)
-+#define HMD(...)
- #endif
+-#undef HMEDEBUG
+-#undef SXDEBUG
+-#undef RXDEBUG
+-#undef TXDEBUG
+-#undef TXLOGGING
++#define HMD pr_debug
  
- /* #define AUTO_SWITCH_DEBUG */
- 
- #ifdef AUTO_SWITCH_DEBUG
--#define ASD(x)  printk x
-+#define ASD printk
- #else
--#define ASD(x)
+-#ifdef TXLOGGING
++/* "Auto Switch Debug" aka phy debug */
++#if 0
++#define ASD pr_debug
++#else
 +#define ASD(...)
++#endif
++
++/* Transmit debug */
++#if 0
++#define TXD pr_debug
++#else
++#define TXD(...)
++#endif
++
++/* Skid buffer debug */
++#if 0
++#define SXD pr_debug
++#else
++#define SXD(...)
++#endif
++
++/* Receive debug */
++#if 0
++#define RXD pr_debug
++#else
++#define RXD(...)
++#endif
++
++#if 0
+ struct hme_tx_logent {
+ 	unsigned int tstamp;
+ 	int tx_new, tx_old;
+@@ -129,22 +153,8 @@ static __inline__ void tx_dump_log(void)
+ 	}
+ }
+ #else
+-#define tx_add_log(hp, a, s)		do { } while(0)
+-#define tx_dump_log()			do { } while(0)
+-#endif
+-
+-#ifdef HMEDEBUG
+-#define HMD printk
+-#else
+-#define HMD(...)
+-#endif
+-
+-/* #define AUTO_SWITCH_DEBUG */
+-
+-#ifdef AUTO_SWITCH_DEBUG
+-#define ASD printk
+-#else
+-#define ASD(...)
++#define tx_add_log(hp, a, s)
++#define tx_dump_log()
  #endif
  
  #define DEFAULT_IPG0      16 /* For lance-mode only */
-@@ -320,7 +320,7 @@ static int happy_meal_bb_read(struct happy_meal *hp,
- 	int retval = 0;
- 	int i;
- 
--	ASD(("happy_meal_bb_read: reg=%d ", reg));
-+	ASD("happy_meal_bb_read: reg=%d ", reg);
- 
- 	/* Enable the MIF BitBang outputs. */
- 	hme_write32(hp, tregs + TCVR_BBOENAB, 1);
-@@ -355,7 +355,7 @@ static int happy_meal_bb_read(struct happy_meal *hp,
- 	(void) BB_GET_BIT2(hp, tregs, (hp->tcvr_type == internal));
- 	(void) BB_GET_BIT2(hp, tregs, (hp->tcvr_type == internal));
- 	(void) BB_GET_BIT2(hp, tregs, (hp->tcvr_type == internal));
--	ASD(("value=%x\n", retval));
-+	ASD("value=%x\n", retval);
- 	return retval;
- }
- 
-@@ -366,7 +366,7 @@ static void happy_meal_bb_write(struct happy_meal *hp,
- 	u32 tmp;
- 	int i;
- 
--	ASD(("happy_meal_bb_write: reg=%d value=%x\n", reg, value));
-+	ASD("happy_meal_bb_write: reg=%d value=%x\n", reg, value);
- 
- 	/* Enable the MIF BitBang outputs. */
- 	hme_write32(hp, tregs + TCVR_BBOENAB, 1);
-@@ -410,14 +410,14 @@ static int happy_meal_tcvr_read(struct happy_meal *hp,
- 	int tries = TCVR_READ_TRIES;
- 	int retval;
- 
--	ASD(("happy_meal_tcvr_read: reg=0x%02x ", reg));
-+	ASD("happy_meal_tcvr_read: reg=0x%02x ", reg);
- 	if (hp->tcvr_type == none) {
--		ASD(("no transceiver, value=TCVR_FAILURE\n"));
-+		ASD("no transceiver, value=TCVR_FAILURE\n");
- 		return TCVR_FAILURE;
- 	}
- 
- 	if (!(hp->happy_flags & HFLAG_FENABLE)) {
--		ASD(("doing bit bang\n"));
-+		ASD("doing bit bang\n");
- 		return happy_meal_bb_read(hp, tregs, reg);
- 	}
- 
-@@ -430,7 +430,7 @@ static int happy_meal_tcvr_read(struct happy_meal *hp,
- 		return TCVR_FAILURE;
- 	}
- 	retval = hme_read32(hp, tregs + TCVR_FRAME) & 0xffff;
--	ASD(("value=%04x\n", retval));
-+	ASD("value=%04x\n", retval);
- 	return retval;
- }
- 
-@@ -442,7 +442,7 @@ static void happy_meal_tcvr_write(struct happy_meal *hp,
- {
- 	int tries = TCVR_WRITE_TRIES;
- 
--	ASD(("happy_meal_tcvr_write: reg=0x%02x value=%04x\n", reg, value));
-+	ASD("happy_meal_tcvr_write: reg=0x%02x value=%04x\n", reg, value);
- 
- 	/* Welcome to Sun Microsystems, can I take your order please? */
- 	if (!(hp->happy_flags & HFLAG_FENABLE)) {
-@@ -807,7 +807,7 @@ static void happy_meal_tx_reset(struct happy_meal *hp, void __iomem *bregs)
- {
- 	int tries = TX_RESET_TRIES;
- 
--	HMD(("happy_meal_tx_reset: reset, "));
-+	HMD("happy_meal_tx_reset: reset, ");
- 
- 	/* Would you like to try our SMCC Delux? */
- 	hme_write32(hp, bregs + BMAC_TXSWRESET, 0);
-@@ -819,7 +819,7 @@ static void happy_meal_tx_reset(struct happy_meal *hp, void __iomem *bregs)
- 		printk(KERN_ERR "happy meal: Transceiver BigMac ATTACK!");
- 
- 	/* Take care. */
--	HMD(("done\n"));
-+	HMD("done\n");
- }
- 
- /* hp->happy_lock must be held */
-@@ -827,7 +827,7 @@ static void happy_meal_rx_reset(struct happy_meal *hp, void __iomem *bregs)
- {
- 	int tries = RX_RESET_TRIES;
- 
--	HMD(("happy_meal_rx_reset: reset, "));
-+	HMD("happy_meal_rx_reset: reset, ");
- 
- 	/* We have a special on GNU/Viking hardware bugs today. */
- 	hme_write32(hp, bregs + BMAC_RXSWRESET, 0);
-@@ -839,7 +839,7 @@ static void happy_meal_rx_reset(struct happy_meal *hp, void __iomem *bregs)
- 		printk(KERN_ERR "happy meal: Receiver BigMac ATTACK!");
- 
- 	/* Don't forget your vik_1137125_wa.  Have a nice day. */
--	HMD(("done\n"));
-+	HMD("done\n");
- }
- 
- #define STOP_TRIES         16
-@@ -849,7 +849,7 @@ static void happy_meal_stop(struct happy_meal *hp, void __iomem *gregs)
- {
- 	int tries = STOP_TRIES;
- 
--	HMD(("happy_meal_stop: reset, "));
-+	HMD("happy_meal_stop: reset, ");
- 
- 	/* We're consolidating our STB products, it's your lucky day. */
- 	hme_write32(hp, gregs + GREG_SWRESET, GREG_RESET_ALL);
-@@ -861,7 +861,7 @@ static void happy_meal_stop(struct happy_meal *hp, void __iomem *gregs)
- 		printk(KERN_ERR "happy meal: Fry guys.");
- 
- 	/* Remember: "Different name, same old buggy as shit hardware." */
--	HMD(("done\n"));
-+	HMD("done\n");
- }
- 
- /* hp->happy_lock must be held */
-@@ -890,21 +890,21 @@ static void happy_meal_get_counters(struct happy_meal *hp, void __iomem *bregs)
- /* hp->happy_lock must be held */
- static void happy_meal_poll_stop(struct happy_meal *hp, void __iomem *tregs)
- {
--	ASD(("happy_meal_poll_stop: "));
-+	ASD("happy_meal_poll_stop: ");
- 
- 	/* If polling disabled or not polling already, nothing to do. */
- 	if ((hp->happy_flags & (HFLAG_POLLENABLE | HFLAG_POLL)) !=
- 	   (HFLAG_POLLENABLE | HFLAG_POLL)) {
--		HMD(("not polling, return\n"));
-+		HMD("not polling, return\n");
- 		return;
- 	}
- 
- 	/* Shut up the MIF. */
--	ASD(("were polling, mif ints off, "));
-+	ASD("were polling, mif ints off, ");
- 	hme_write32(hp, tregs + TCVR_IMASK, 0xffff);
- 
- 	/* Turn off polling. */
--	ASD(("polling off, "));
-+	ASD("polling off, ");
- 	hme_write32(hp, tregs + TCVR_CFG,
- 		    hme_read32(hp, tregs + TCVR_CFG) & ~(TCV_CFG_PENABLE));
- 
-@@ -913,7 +913,7 @@ static void happy_meal_poll_stop(struct happy_meal *hp, void __iomem *tregs)
- 
- 	/* Let the bits set. */
- 	udelay(200);
--	ASD(("done\n"));
-+	ASD("done\n");
- }
- 
- /* Only Sun can take such nice parts and fuck up the programming interface
-@@ -929,44 +929,44 @@ static int happy_meal_tcvr_reset(struct happy_meal *hp, void __iomem *tregs)
- 	int result, tries = TCVR_RESET_TRIES;
- 
- 	tconfig = hme_read32(hp, tregs + TCVR_CFG);
--	ASD(("happy_meal_tcvr_reset: tcfg<%08lx> ", tconfig));
-+	ASD("happy_meal_tcvr_reset: tcfg<%08lx> ", tconfig);
- 	if (hp->tcvr_type == external) {
--		ASD(("external<"));
-+		ASD("external<");
- 		hme_write32(hp, tregs + TCVR_CFG, tconfig & ~(TCV_CFG_PSELECT));
- 		hp->tcvr_type = internal;
- 		hp->paddr = TCV_PADDR_ITX;
--		ASD(("ISOLATE,"));
-+		ASD("ISOLATE,");
- 		happy_meal_tcvr_write(hp, tregs, MII_BMCR,
- 				      (BMCR_LOOPBACK|BMCR_PDOWN|BMCR_ISOLATE));
- 		result = happy_meal_tcvr_read(hp, tregs, MII_BMCR);
- 		if (result == TCVR_FAILURE) {
--			ASD(("phyread_fail>\n"));
-+			ASD("phyread_fail>\n");
- 			return -1;
- 		}
--		ASD(("phyread_ok,PSELECT>"));
-+		ASD("phyread_ok,PSELECT>");
- 		hme_write32(hp, tregs + TCVR_CFG, tconfig | TCV_CFG_PSELECT);
- 		hp->tcvr_type = external;
- 		hp->paddr = TCV_PADDR_ETX;
- 	} else {
- 		if (tconfig & TCV_CFG_MDIO1) {
--			ASD(("internal<PSELECT,"));
-+			ASD("internal<PSELECT,");
- 			hme_write32(hp, tregs + TCVR_CFG, (tconfig | TCV_CFG_PSELECT));
--			ASD(("ISOLATE,"));
-+			ASD("ISOLATE,");
- 			happy_meal_tcvr_write(hp, tregs, MII_BMCR,
- 					      (BMCR_LOOPBACK|BMCR_PDOWN|BMCR_ISOLATE));
- 			result = happy_meal_tcvr_read(hp, tregs, MII_BMCR);
- 			if (result == TCVR_FAILURE) {
--				ASD(("phyread_fail>\n"));
-+				ASD("phyread_fail>\n");
- 				return -1;
- 			}
--			ASD(("phyread_ok,~PSELECT>"));
-+			ASD("phyread_ok,~PSELECT>");
- 			hme_write32(hp, tregs + TCVR_CFG, (tconfig & ~(TCV_CFG_PSELECT)));
- 			hp->tcvr_type = internal;
- 			hp->paddr = TCV_PADDR_ITX;
- 		}
- 	}
- 
--	ASD(("BMCR_RESET "));
-+	ASD("BMCR_RESET ");
- 	happy_meal_tcvr_write(hp, tregs, MII_BMCR, BMCR_RESET);
- 
- 	while (--tries) {
-@@ -979,10 +979,10 @@ static int happy_meal_tcvr_reset(struct happy_meal *hp, void __iomem *tregs)
- 		udelay(20);
- 	}
- 	if (!tries) {
--		ASD(("BMCR RESET FAILED!\n"));
-+		ASD("BMCR RESET FAILED!\n");
- 		return -1;
- 	}
--	ASD(("RESET_OK\n"));
-+	ASD("RESET_OK\n");
- 
- 	/* Get fresh copies of the PHY registers. */
- 	hp->sw_bmsr      = happy_meal_tcvr_read(hp, tregs, MII_BMSR);
-@@ -990,7 +990,7 @@ static int happy_meal_tcvr_reset(struct happy_meal *hp, void __iomem *tregs)
- 	hp->sw_physid2   = happy_meal_tcvr_read(hp, tregs, MII_PHYSID2);
- 	hp->sw_advertise = happy_meal_tcvr_read(hp, tregs, MII_ADVERTISE);
- 
--	ASD(("UNISOLATE"));
-+	ASD("UNISOLATE");
- 	hp->sw_bmcr &= ~(BMCR_ISOLATE);
- 	happy_meal_tcvr_write(hp, tregs, MII_BMCR, hp->sw_bmcr);
- 
-@@ -1004,10 +1004,10 @@ static int happy_meal_tcvr_reset(struct happy_meal *hp, void __iomem *tregs)
- 		udelay(20);
- 	}
- 	if (!tries) {
--		ASD((" FAILED!\n"));
-+		ASD(" FAILED!\n");
- 		return -1;
- 	}
--	ASD((" SUCCESS and CSCONFIG_DFBYPASS\n"));
-+	ASD(" SUCCESS and CSCONFIG_DFBYPASS\n");
- 	if (!is_lucent_phy(hp)) {
- 		result = happy_meal_tcvr_read(hp, tregs,
- 					      DP83840_CSCONFIG);
-@@ -1025,60 +1025,60 @@ static void happy_meal_transceiver_check(struct happy_meal *hp, void __iomem *tr
- {
- 	unsigned long tconfig = hme_read32(hp, tregs + TCVR_CFG);
- 
--	ASD(("happy_meal_transceiver_check: tcfg=%08lx ", tconfig));
-+	ASD("happy_meal_transceiver_check: tcfg=%08lx ", tconfig);
- 	if (hp->happy_flags & HFLAG_POLL) {
- 		/* If we are polling, we must stop to get the transceiver type. */
--		ASD(("<polling> "));
-+		ASD("<polling> ");
- 		if (hp->tcvr_type == internal) {
- 			if (tconfig & TCV_CFG_MDIO1) {
--				ASD(("<internal> <poll stop> "));
-+				ASD("<internal> <poll stop> ");
- 				happy_meal_poll_stop(hp, tregs);
- 				hp->paddr = TCV_PADDR_ETX;
- 				hp->tcvr_type = external;
--				ASD(("<external>\n"));
-+				ASD("<external>\n");
- 				tconfig &= ~(TCV_CFG_PENABLE);
- 				tconfig |= TCV_CFG_PSELECT;
- 				hme_write32(hp, tregs + TCVR_CFG, tconfig);
- 			}
- 		} else {
- 			if (hp->tcvr_type == external) {
--				ASD(("<external> "));
-+				ASD("<external> ");
- 				if (!(hme_read32(hp, tregs + TCVR_STATUS) >> 16)) {
--					ASD(("<poll stop> "));
-+					ASD("<poll stop> ");
- 					happy_meal_poll_stop(hp, tregs);
- 					hp->paddr = TCV_PADDR_ITX;
- 					hp->tcvr_type = internal;
--					ASD(("<internal>\n"));
-+					ASD("<internal>\n");
- 					hme_write32(hp, tregs + TCVR_CFG,
- 						    hme_read32(hp, tregs + TCVR_CFG) &
- 						    ~(TCV_CFG_PSELECT));
- 				}
--				ASD(("\n"));
-+				ASD("\n");
- 			} else {
--				ASD(("<none>\n"));
-+				ASD("<none>\n");
- 			}
- 		}
- 	} else {
- 		u32 reread = hme_read32(hp, tregs + TCVR_CFG);
- 
- 		/* Else we can just work off of the MDIO bits. */
--		ASD(("<not polling> "));
-+		ASD("<not polling> ");
- 		if (reread & TCV_CFG_MDIO1) {
- 			hme_write32(hp, tregs + TCVR_CFG, tconfig | TCV_CFG_PSELECT);
- 			hp->paddr = TCV_PADDR_ETX;
- 			hp->tcvr_type = external;
--			ASD(("<external>\n"));
-+			ASD("<external>\n");
- 		} else {
- 			if (reread & TCV_CFG_MDIO0) {
- 				hme_write32(hp, tregs + TCVR_CFG,
- 					    tconfig & ~(TCV_CFG_PSELECT));
- 				hp->paddr = TCV_PADDR_ITX;
- 				hp->tcvr_type = internal;
--				ASD(("<internal>\n"));
-+				ASD("<internal>\n");
- 			} else {
- 				printk(KERN_ERR "happy meal: Transceiver and a coke please.");
- 				hp->tcvr_type = none; /* Grrr... */
--				ASD(("<none>\n"));
-+				ASD("<none>\n");
- 			}
- 		}
- 	}
-@@ -1185,15 +1185,15 @@ static void happy_meal_init_rings(struct happy_meal *hp)
- 	struct hmeal_init_block *hb = hp->happy_block;
- 	int i;
- 
--	HMD(("happy_meal_init_rings: counters to zero, "));
-+	HMD("happy_meal_init_rings: counters to zero, ");
- 	hp->rx_new = hp->rx_old = hp->tx_new = hp->tx_old = 0;
- 
- 	/* Free any skippy bufs left around in the rings. */
--	HMD(("clean, "));
-+	HMD("clean, ");
- 	happy_meal_clean_rings(hp);
- 
- 	/* Now get new skippy bufs for the receive ring. */
--	HMD(("init rxring, "));
-+	HMD("init rxring, ");
- 	for (i = 0; i < RX_RING_SIZE; i++) {
- 		struct sk_buff *skb;
- 		u32 mapping;
-@@ -1220,11 +1220,11 @@ static void happy_meal_init_rings(struct happy_meal *hp)
- 		skb_reserve(skb, RX_OFFSET);
- 	}
- 
--	HMD(("init txring, "));
-+	HMD("init txring, ");
- 	for (i = 0; i < TX_RING_SIZE; i++)
- 		hme_write_txd(hp, &hb->happy_meal_txd[i], 0, 0);
- 
--	HMD(("done\n"));
-+	HMD("done\n");
- }
- 
- /* hp->happy_lock must be held */
-@@ -1272,15 +1272,15 @@ happy_meal_begin_auto_negotiation(struct happy_meal *hp,
- 		 */
- 
- #ifdef AUTO_SWITCH_DEBUG
--		ASD(("%s: Advertising [ ", hp->dev->name));
-+		ASD("%s: Advertising [ ", hp->dev->name);
- 		if (hp->sw_advertise & ADVERTISE_10HALF)
--			ASD(("10H "));
-+			ASD("10H ");
- 		if (hp->sw_advertise & ADVERTISE_10FULL)
--			ASD(("10F "));
-+			ASD("10F ");
- 		if (hp->sw_advertise & ADVERTISE_100HALF)
--			ASD(("100H "));
-+			ASD("100H ");
- 		if (hp->sw_advertise & ADVERTISE_100FULL)
--			ASD(("100F "));
-+			ASD("100F ");
- #endif
- 
- 		/* Enable Auto-Negotiation, this is usually on already... */
-@@ -1364,65 +1364,65 @@ static int happy_meal_init(struct happy_meal *hp)
- 	/* If auto-negotiation timer is running, kill it. */
- 	del_timer(&hp->happy_timer);
- 
--	HMD(("happy_meal_init: happy_flags[%08x] ",
--	     hp->happy_flags));
-+	HMD("happy_meal_init: happy_flags[%08x] ",
-+	    hp->happy_flags);
- 	if (!(hp->happy_flags & HFLAG_INIT)) {
--		HMD(("set HFLAG_INIT, "));
-+		HMD("set HFLAG_INIT, ");
- 		hp->happy_flags |= HFLAG_INIT;
- 		happy_meal_get_counters(hp, bregs);
- 	}
- 
- 	/* Stop polling. */
--	HMD(("to happy_meal_poll_stop\n"));
-+	HMD("to happy_meal_poll_stop\n");
+@@ -1842,12 +1852,6 @@ static void happy_meal_mif_interrupt(struct happy_meal *hp)
  	happy_meal_poll_stop(hp, tregs);
- 
- 	/* Stop transmitter and receiver. */
--	HMD(("happy_meal_init: to happy_meal_stop\n"));
-+	HMD("happy_meal_init: to happy_meal_stop\n");
- 	happy_meal_stop(hp, gregs);
- 
- 	/* Alloc and reset the tx/rx descriptor chains. */
--	HMD(("happy_meal_init: to happy_meal_init_rings\n"));
-+	HMD("happy_meal_init: to happy_meal_init_rings\n");
- 	happy_meal_init_rings(hp);
- 
- 	/* Shut up the MIF. */
--	HMD(("happy_meal_init: Disable all MIF irqs (old[%08x]), ",
--	     hme_read32(hp, tregs + TCVR_IMASK)));
-+	HMD("happy_meal_init: Disable all MIF irqs (old[%08x]), ",
-+	    hme_read32(hp, tregs + TCVR_IMASK));
- 	hme_write32(hp, tregs + TCVR_IMASK, 0xffff);
- 
- 	/* See if we can enable the MIF frame on this card to speak to the DP83840. */
- 	if (hp->happy_flags & HFLAG_FENABLE) {
--		HMD(("use frame old[%08x], ",
--		     hme_read32(hp, tregs + TCVR_CFG)));
-+		HMD("use frame old[%08x], ",
-+		    hme_read32(hp, tregs + TCVR_CFG));
- 		hme_write32(hp, tregs + TCVR_CFG,
- 			    hme_read32(hp, tregs + TCVR_CFG) & ~(TCV_CFG_BENABLE));
- 	} else {
--		HMD(("use bitbang old[%08x], ",
--		     hme_read32(hp, tregs + TCVR_CFG)));
-+		HMD("use bitbang old[%08x], ",
-+		    hme_read32(hp, tregs + TCVR_CFG));
- 		hme_write32(hp, tregs + TCVR_CFG,
- 			    hme_read32(hp, tregs + TCVR_CFG) | TCV_CFG_BENABLE);
- 	}
- 
- 	/* Check the state of the transceiver. */
--	HMD(("to happy_meal_transceiver_check\n"));
-+	HMD("to happy_meal_transceiver_check\n");
- 	happy_meal_transceiver_check(hp, tregs);
- 
- 	/* Put the Big Mac into a sane state. */
--	HMD(("happy_meal_init: "));
-+	HMD("happy_meal_init: ");
- 	switch(hp->tcvr_type) {
- 	case none:
- 		/* Cannot operate if we don't know the transceiver type! */
--		HMD(("AAIEEE no transceiver type, EAGAIN"));
-+		HMD("AAIEEE no transceiver type, EAGAIN");
- 		return -EAGAIN;
- 
- 	case internal:
- 		/* Using the MII buffers. */
--		HMD(("internal, using MII, "));
-+		HMD("internal, using MII, ");
- 		hme_write32(hp, bregs + BMAC_XIFCFG, 0);
- 		break;
- 
- 	case external:
- 		/* Not using the MII, disable it. */
--		HMD(("external, disable MII, "));
-+		HMD("external, disable MII, ");
- 		hme_write32(hp, bregs + BMAC_XIFCFG, BIGMAC_XCFG_MIIDISAB);
- 		break;
- 	}
-@@ -1431,18 +1431,18 @@ static int happy_meal_init(struct happy_meal *hp)
- 		return -EAGAIN;
- 
- 	/* Reset the Happy Meal Big Mac transceiver and the receiver. */
--	HMD(("tx/rx reset, "));
-+	HMD("tx/rx reset, ");
- 	happy_meal_tx_reset(hp, bregs);
- 	happy_meal_rx_reset(hp, bregs);
- 
- 	/* Set jam size and inter-packet gaps to reasonable defaults. */
--	HMD(("jsize/ipg1/ipg2, "));
-+	HMD("jsize/ipg1/ipg2, ");
- 	hme_write32(hp, bregs + BMAC_JSIZE, DEFAULT_JAMSIZE);
- 	hme_write32(hp, bregs + BMAC_IGAP1, DEFAULT_IPG1);
- 	hme_write32(hp, bregs + BMAC_IGAP2, DEFAULT_IPG2);
- 
- 	/* Load up the MAC address and random seed. */
--	HMD(("rseed/macaddr, "));
-+	HMD("rseed/macaddr, ");
- 
- 	/* The docs recommend to use the 10LSB of our MAC here. */
- 	hme_write32(hp, bregs + BMAC_RSEED, ((e[5] | e[4]<<8)&0x3ff));
-@@ -1451,7 +1451,7 @@ static int happy_meal_init(struct happy_meal *hp)
- 	hme_write32(hp, bregs + BMAC_MACADDR1, ((e[2] << 8) | e[3]));
- 	hme_write32(hp, bregs + BMAC_MACADDR0, ((e[0] << 8) | e[1]));
- 
--	HMD(("htable, "));
-+	HMD("htable, ");
- 	if ((hp->dev->flags & IFF_ALLMULTI) ||
- 	    (netdev_mc_count(hp->dev) > 64)) {
- 		hme_write32(hp, bregs + BMAC_HTABLE0, 0xffff);
-@@ -1481,9 +1481,9 @@ static int happy_meal_init(struct happy_meal *hp)
- 	}
- 
- 	/* Set the RX and TX ring ptrs. */
--	HMD(("ring ptrs rxr[%08x] txr[%08x]\n",
--	     ((__u32)hp->hblock_dvma + hblock_offset(happy_meal_rxd, 0)),
--	     ((__u32)hp->hblock_dvma + hblock_offset(happy_meal_txd, 0))));
-+	HMD("ring ptrs rxr[%08x] txr[%08x]\n",
-+	    ((__u32)hp->hblock_dvma + hblock_offset(happy_meal_rxd, 0)),
-+	    ((__u32)hp->hblock_dvma + hblock_offset(happy_meal_txd, 0)));
- 	hme_write32(hp, erxregs + ERX_RING,
- 		    ((__u32)hp->hblock_dvma + hblock_offset(happy_meal_rxd, 0)));
- 	hme_write32(hp, etxregs + ETX_RING,
-@@ -1501,8 +1501,8 @@ static int happy_meal_init(struct happy_meal *hp)
- 			    | 0x4);
- 
- 	/* Set the supported burst sizes. */
--	HMD(("happy_meal_init: old[%08x] bursts<",
--	     hme_read32(hp, gregs + GREG_CFG)));
-+	HMD("happy_meal_init: old[%08x] bursts<",
-+	    hme_read32(hp, gregs + GREG_CFG));
- 
- #ifndef CONFIG_SPARC
- 	/* It is always PCI and can handle 64byte bursts. */
-@@ -1531,34 +1531,34 @@ static int happy_meal_init(struct happy_meal *hp)
- 		}
- #endif
- 
--		HMD(("64>"));
-+		HMD("64>");
- 		hme_write32(hp, gregs + GREG_CFG, gcfg);
- 	} else if (hp->happy_bursts & DMA_BURST32) {
--		HMD(("32>"));
-+		HMD("32>");
- 		hme_write32(hp, gregs + GREG_CFG, GREG_CFG_BURST32);
- 	} else if (hp->happy_bursts & DMA_BURST16) {
--		HMD(("16>"));
-+		HMD("16>");
- 		hme_write32(hp, gregs + GREG_CFG, GREG_CFG_BURST16);
- 	} else {
--		HMD(("XXX>"));
-+		HMD("XXX>");
- 		hme_write32(hp, gregs + GREG_CFG, 0);
- 	}
- #endif /* CONFIG_SPARC */
- 
- 	/* Turn off interrupts we do not want to hear. */
--	HMD((", enable global interrupts, "));
-+	HMD(", enable global interrupts, ");
- 	hme_write32(hp, gregs + GREG_IMASK,
- 		    (GREG_IMASK_GOTFRAME | GREG_IMASK_RCNTEXP |
- 		     GREG_IMASK_SENTFRAME | GREG_IMASK_TXPERR));
- 
- 	/* Set the transmit ring buffer size. */
--	HMD(("tx rsize=%d oreg[%08x], ", (int)TX_RING_SIZE,
--	     hme_read32(hp, etxregs + ETX_RSIZE)));
-+	HMD("tx rsize=%d oreg[%08x], ", (int)TX_RING_SIZE,
-+	    hme_read32(hp, etxregs + ETX_RSIZE));
- 	hme_write32(hp, etxregs + ETX_RSIZE, (TX_RING_SIZE >> ETX_RSIZE_SHIFT) - 1);
- 
- 	/* Enable transmitter DVMA. */
--	HMD(("tx dma enable old[%08x], ",
--	     hme_read32(hp, etxregs + ETX_CFG)));
-+	HMD("tx dma enable old[%08x], ",
-+	    hme_read32(hp, etxregs + ETX_CFG));
- 	hme_write32(hp, etxregs + ETX_CFG,
- 		    hme_read32(hp, etxregs + ETX_CFG) | ETX_CFG_DMAENABLE);
- 
-@@ -1567,8 +1567,8 @@ static int happy_meal_init(struct happy_meal *hp)
- 	 * properly.  I cannot think of a sane way to provide complete
- 	 * coverage for this hardware bug yet.
- 	 */
--	HMD(("erx regs bug old[%08x]\n",
--	     hme_read32(hp, erxregs + ERX_CFG)));
-+	HMD("erx regs bug old[%08x]\n",
-+	    hme_read32(hp, erxregs + ERX_CFG));
- 	hme_write32(hp, erxregs + ERX_CFG, ERX_CFG_DEFAULT(RX_OFFSET));
- 	regtmp = hme_read32(hp, erxregs + ERX_CFG);
- 	hme_write32(hp, erxregs + ERX_CFG, ERX_CFG_DEFAULT(RX_OFFSET));
-@@ -1580,8 +1580,8 @@ static int happy_meal_init(struct happy_meal *hp)
- 	}
- 
- 	/* Enable Big Mac hash table filter. */
--	HMD(("happy_meal_init: enable hash rx_cfg_old[%08x], ",
--	     hme_read32(hp, bregs + BMAC_RXCFG)));
-+	HMD("happy_meal_init: enable hash rx_cfg_old[%08x], ",
-+	    hme_read32(hp, bregs + BMAC_RXCFG));
- 	rxcfg = BIGMAC_RXCFG_HENABLE | BIGMAC_RXCFG_REJME;
- 	if (hp->dev->flags & IFF_PROMISC)
- 		rxcfg |= BIGMAC_RXCFG_PMISC;
-@@ -1591,7 +1591,7 @@ static int happy_meal_init(struct happy_meal *hp)
- 	udelay(10);
- 
- 	/* Ok, configure the Big Mac transmitter. */
--	HMD(("BIGMAC init, "));
-+	HMD("BIGMAC init, ");
- 	regtmp = 0;
- 	if (hp->happy_flags & HFLAG_FULL)
- 		regtmp |= BIGMAC_TXCFG_FULLDPLX;
-@@ -1615,14 +1615,14 @@ static int happy_meal_init(struct happy_meal *hp)
- 	if (hp->tcvr_type == external)
- 		regtmp |= BIGMAC_XCFG_MIIDISAB;
- 
--	HMD(("XIF config old[%08x], ",
--	     hme_read32(hp, bregs + BMAC_XIFCFG)));
-+	HMD("XIF config old[%08x], ",
-+	    hme_read32(hp, bregs + BMAC_XIFCFG));
- 	hme_write32(hp, bregs + BMAC_XIFCFG, regtmp);
- 
- 	/* Start things up. */
--	HMD(("tx old[%08x] and rx [%08x] ON!\n",
--	     hme_read32(hp, bregs + BMAC_TXCFG),
--	     hme_read32(hp, bregs + BMAC_RXCFG)));
-+	HMD("tx old[%08x] and rx [%08x] ON!\n",
-+	    hme_read32(hp, bregs + BMAC_TXCFG),
-+	    hme_read32(hp, bregs + BMAC_RXCFG));
- 
- 	/* Set larger TX/RX size to allow for 802.1q */
- 	hme_write32(hp, bregs + BMAC_TXMAX, ETH_FRAME_LEN + 8);
-@@ -1843,9 +1843,9 @@ static void happy_meal_mif_interrupt(struct happy_meal *hp)
  }
  
- #ifdef TXDEBUG
--#define TXD(x) printk x
-+#define TXD printk
- #else
--#define TXD(x)
-+#define TXD(...)
- #endif
- 
+-#ifdef TXDEBUG
+-#define TXD printk
+-#else
+-#define TXD(...)
+-#endif
+-
  /* hp->happy_lock must be held */
-@@ -1857,13 +1857,13 @@ static void happy_meal_tx(struct happy_meal *hp)
- 	int elem;
- 
- 	elem = hp->tx_old;
--	TXD(("TX<"));
-+	TXD("TX<");
- 	while (elem != hp->tx_new) {
- 		struct sk_buff *skb;
- 		u32 flags, dma_addr, dma_len;
- 		int frag;
- 
--		TXD(("[%d]", elem));
-+		TXD("[%d]", elem);
- 		this = &txbase[elem];
- 		flags = hme_read_desc32(hp, &this->tx_flags);
- 		if (flags & TXFLAG_OWN)
-@@ -1899,7 +1899,7 @@ static void happy_meal_tx(struct happy_meal *hp)
- 		dev->stats.tx_packets++;
- 	}
- 	hp->tx_old = elem;
--	TXD((">"));
-+	TXD(">");
- 
- 	if (netif_queue_stopped(dev) &&
- 	    TX_BUFFS_AVAIL(hp) > (MAX_SKB_FRAGS + 1))
-@@ -1907,9 +1907,9 @@ static void happy_meal_tx(struct happy_meal *hp)
+ static void happy_meal_tx(struct happy_meal *hp)
+ {
+@@ -1906,12 +1910,6 @@ static void happy_meal_tx(struct happy_meal *hp)
+ 		netif_wake_queue(dev);
  }
  
- #ifdef RXDEBUG
--#define RXD(x) printk x
-+#define RXD printk
- #else
--#define RXD(x)
-+#define RXD(...)
- #endif
- 
+-#ifdef RXDEBUG
+-#define RXD printk
+-#else
+-#define RXD(...)
+-#endif
+-
  /* Originally I used to handle the allocation failure by just giving back just
-@@ -1928,7 +1928,7 @@ static void happy_meal_rx(struct happy_meal *hp, struct net_device *dev)
- 	int elem = hp->rx_new, drops = 0;
- 	u32 flags;
- 
--	RXD(("RX<"));
-+	RXD("RX<");
- 	this = &rxbase[elem];
- 	while (!((flags = hme_read_desc32(hp, &this->rx_flags)) & RXFLAG_OWN)) {
- 		struct sk_buff *skb;
-@@ -1936,11 +1936,11 @@ static void happy_meal_rx(struct happy_meal *hp, struct net_device *dev)
- 		u16 csum = flags & RXFLAG_CSUM;
- 		u32 dma_addr = hme_read_desc32(hp, &this->rx_addr);
- 
--		RXD(("[%d ", elem));
-+		RXD("[%d ", elem);
- 
- 		/* Check for errors. */
- 		if ((len < ETH_ZLEN) || (flags & RXFLAG_OVERFLOW)) {
--			RXD(("ERR(%08x)]", flags));
-+			RXD("ERR(%08x)]", flags);
- 			dev->stats.rx_errors++;
- 			if (len < ETH_ZLEN)
- 				dev->stats.rx_length_errors++;
-@@ -2012,7 +2012,7 @@ static void happy_meal_rx(struct happy_meal *hp, struct net_device *dev)
- 		skb->csum = csum_unfold(~(__force __sum16)htons(csum));
- 		skb->ip_summed = CHECKSUM_COMPLETE;
- 
--		RXD(("len=%d csum=%4x]", len, csum));
-+		RXD("len=%d csum=%4x]", len, csum);
- 		skb->protocol = eth_type_trans(skb, dev);
- 		netif_rx(skb);
- 
-@@ -2025,7 +2025,7 @@ static void happy_meal_rx(struct happy_meal *hp, struct net_device *dev)
- 	hp->rx_new = elem;
- 	if (drops)
- 		printk(KERN_INFO "%s: Memory squeeze, deferring packet.\n", hp->dev->name);
--	RXD((">"));
-+	RXD(">");
+  * that one ring buffer to the happy meal.  Problem is that usually when that
+  * condition is triggered, the happy meal expects you to do something reasonable
+@@ -2173,12 +2171,6 @@ static int happy_meal_close(struct net_device *dev)
+ 	return 0;
  }
  
- static irqreturn_t happy_meal_interrupt(int irq, void *dev_id)
-@@ -2034,32 +2034,32 @@ static irqreturn_t happy_meal_interrupt(int irq, void *dev_id)
- 	struct happy_meal *hp  = netdev_priv(dev);
- 	u32 happy_status       = hme_read32(hp, hp->gregs + GREG_STAT);
- 
--	HMD(("happy_meal_interrupt: status=%08x ", happy_status));
-+	HMD("happy_meal_interrupt: status=%08x ", happy_status);
- 
- 	spin_lock(&hp->happy_lock);
- 
- 	if (happy_status & GREG_STAT_ERRORS) {
--		HMD(("ERRORS "));
-+		HMD("ERRORS ");
- 		if (happy_meal_is_not_so_happy(hp, /* un- */ happy_status))
- 			goto out;
- 	}
- 
- 	if (happy_status & GREG_STAT_MIFIRQ) {
--		HMD(("MIFIRQ "));
-+		HMD("MIFIRQ ");
- 		happy_meal_mif_interrupt(hp);
- 	}
- 
- 	if (happy_status & GREG_STAT_TXALL) {
--		HMD(("TXALL "));
-+		HMD("TXALL ");
- 		happy_meal_tx(hp);
- 	}
- 
- 	if (happy_status & GREG_STAT_RXTOHOST) {
--		HMD(("RXTOHOST "));
-+		HMD("RXTOHOST ");
- 		happy_meal_rx(hp, dev);
- 	}
- 
--	HMD(("done\n"));
-+	HMD("done\n");
- out:
- 	spin_unlock(&hp->happy_lock);
- 
-@@ -2077,7 +2077,7 @@ static irqreturn_t quattro_sbus_interrupt(int irq, void *cookie)
- 		struct happy_meal *hp  = netdev_priv(dev);
- 		u32 happy_status       = hme_read32(hp, hp->gregs + GREG_STAT);
- 
--		HMD(("quattro_interrupt: status=%08x ", happy_status));
-+		HMD("quattro_interrupt: status=%08x ", happy_status);
- 
- 		if (!(happy_status & (GREG_STAT_ERRORS |
- 				      GREG_STAT_MIFIRQ |
-@@ -2088,30 +2088,30 @@ static irqreturn_t quattro_sbus_interrupt(int irq, void *cookie)
- 		spin_lock(&hp->happy_lock);
- 
- 		if (happy_status & GREG_STAT_ERRORS) {
--			HMD(("ERRORS "));
-+			HMD("ERRORS ");
- 			if (happy_meal_is_not_so_happy(hp, happy_status))
- 				goto next;
- 		}
- 
- 		if (happy_status & GREG_STAT_MIFIRQ) {
--			HMD(("MIFIRQ "));
-+			HMD("MIFIRQ ");
- 			happy_meal_mif_interrupt(hp);
- 		}
- 
- 		if (happy_status & GREG_STAT_TXALL) {
--			HMD(("TXALL "));
-+			HMD("TXALL ");
- 			happy_meal_tx(hp);
- 		}
- 
- 		if (happy_status & GREG_STAT_RXTOHOST) {
--			HMD(("RXTOHOST "));
-+			HMD("RXTOHOST ");
- 			happy_meal_rx(hp, dev);
- 		}
- 
- 	next:
- 		spin_unlock(&hp->happy_lock);
- 	}
--	HMD(("done\n"));
-+	HMD("done\n");
- 
- 	return IRQ_HANDLED;
- }
-@@ -2122,7 +2122,7 @@ static int happy_meal_open(struct net_device *dev)
- 	struct happy_meal *hp = netdev_priv(dev);
- 	int res;
- 
--	HMD(("happy_meal_open: "));
-+	HMD("happy_meal_open: ");
- 
- 	/* On SBUS Quattro QFE cards, all hme interrupts are concentrated
- 	 * into a single source which we register handling at probe time.
-@@ -2131,7 +2131,7 @@ static int happy_meal_open(struct net_device *dev)
- 		res = request_irq(hp->irq, happy_meal_interrupt, IRQF_SHARED,
- 				  dev->name, dev);
- 		if (res) {
--			HMD(("EAGAIN\n"));
-+			HMD("EAGAIN\n");
- 			printk(KERN_ERR "happy_meal(SBUS): Can't order irq %d to go.\n",
- 			       hp->irq);
- 
-@@ -2139,7 +2139,7 @@ static int happy_meal_open(struct net_device *dev)
- 		}
- 	}
- 
--	HMD(("to happy_meal_init\n"));
-+	HMD("to happy_meal_init\n");
- 
- 	spin_lock_irq(&hp->happy_lock);
- 	res = happy_meal_init(hp);
-@@ -2174,9 +2174,9 @@ static int happy_meal_close(struct net_device *dev)
- }
- 
- #ifdef SXDEBUG
--#define SXD(x) printk x
-+#define SXD printk
- #else
--#define SXD(x)
-+#define SXD(...)
- #endif
- 
+-#ifdef SXDEBUG
+-#define SXD printk
+-#else
+-#define SXD(...)
+-#endif
+-
  static void happy_meal_tx_timeout(struct net_device *dev, unsigned int txqueue)
-@@ -2244,7 +2244,7 @@ static netdev_tx_t happy_meal_start_xmit(struct sk_buff *skb,
- 	}
- 
- 	entry = hp->tx_new;
--	SXD(("SX<l[%d]e[%d]>", len, entry));
-+	SXD("SX<l[%d]e[%d]>", len, entry);
- 	hp->tx_skbs[entry] = skb;
- 
- 	if (skb_shinfo(skb)->nr_frags == 0) {
+ {
+ 	struct happy_meal *hp = netdev_priv(dev);
 -- 
 2.37.1
 
