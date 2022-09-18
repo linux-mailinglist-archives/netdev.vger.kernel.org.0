@@ -2,69 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 10B555BBE48
-	for <lists+netdev@lfdr.de>; Sun, 18 Sep 2022 16:12:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DA2A5BBE4B
+	for <lists+netdev@lfdr.de>; Sun, 18 Sep 2022 16:14:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229827AbiIROMx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Sep 2022 10:12:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56582 "EHLO
+        id S229722AbiIROOM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Sep 2022 10:14:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229495AbiIROMv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Sep 2022 10:12:51 -0400
+        with ESMTP id S229572AbiIROOK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Sep 2022 10:14:10 -0400
 Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB88C20BE7;
-        Sun, 18 Sep 2022 07:12:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A7E923BF5;
+        Sun, 18 Sep 2022 07:14:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
         s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
         References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
         Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
         Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=vgMvcabAponECpj7LkBelpsJYBmHvShrlJGOD0sG9pE=; b=TTCkZr67oCPEg4W6TAiKui93RE
-        zGjwqVg2v7U28Zq7BmtnJIFeyKD3RT6oaLMZytqo0SmjtEi4xnnUZqEBIbo/sn14Qf049AyKT6vg+
-        qUbhrl6Ky7sFlpcv9Vb6f5aUY6b6Bx1pNiCwBOZ8OP0fTxR/8WA7ez8BWfoMquFKgo8U+n+Yf9GPd
-        Ma9bQpq2RIHh0j96uScSPjHqUWY76MvQPZs/tqV0JGBh+7TxIEM4PTR3LajWg0nZipmu/MTHquGn4
-        HYm5FoWXA1hIeNeFC4M3jrSlTjfoWBmKP+f1HGX54rU4kAEWX4QGbCqjXseT9yyCLWET4dvJcyPXF
-        oWj2nxOQ==;
+        bh=aDVyle5G3wtqIccxn/cBaHSZXXYVPnL6YNcpcqqbsXA=; b=I91NEcebw/ZpGroEZ11QU1CmBe
+        qxInUn7rIoCX3CLVXGhhGfuz+ZmBv0nnIWJh9TyhqERtkoI6T0q2tisSnIhmcbyHxJNdNYDBf6A1N
+        gTXmzClAfzBC6LtN7rIjPVIzVgYFHk9nHdF582Rl4jILjOuN6k+loxnoLdkCmi5LdumVTOSZpDK+q
+        Y9ZtTZSPLNeG5QmwQkdpsdADSwd10DInYUGS44hH9YkaF7zoTcmDEKMFJKQSo+EaCUbjvmfZRaOT+
+        Fslvq1PhA/2XIP1FVDJ6gsObNe9jSJWV0qymX9tQ4eqaV/F9OhxifebTXFFT52vNbBeWX0rN5rjcI
+        bBzgCpTg==;
 Received: from 201-27-35-168.dsl.telesp.net.br ([201.27.35.168] helo=[192.168.1.60])
         by fanzine2.igalia.com with esmtpsa 
         (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1oZv2N-0081tk-VV; Sun, 18 Sep 2022 16:12:48 +0200
-Message-ID: <89f8fb2d-3f39-4591-190c-f134c4c173a6@igalia.com>
-Date:   Sun, 18 Sep 2022 11:12:15 -0300
+        id 1oZv3a-0081yC-2g; Sun, 18 Sep 2022 16:14:02 +0200
+Message-ID: <09016e20-5b38-3650-24bf-5fd649ee9b93@igalia.com>
+Date:   Sun, 18 Sep 2022 11:13:28 -0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.12.0
-Subject: Re: [PATCH V3 09/11] video/hyperv_fb: Avoid taking busy spinlock on
- panic path
+Subject: Re: [PATCH V3 11/11] panic: Fixes the panic_print NMI backtrace
+ setting
 Content-Language: en-US
-To:     linux-hyperv@vger.kernel.org, mikelley@microsoft.com
-Cc:     kexec@lists.infradead.org, pmladek@suse.com, bhe@redhat.com,
-        akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, x86@kernel.org, kernel-dev@igalia.com,
-        kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com,
+To:     akpm@linux-foundation.org, kexec@lists.infradead.org
+Cc:     bhe@redhat.com, pmladek@suse.com, linux-kernel@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
+        halves@canonical.com, fabiomirmar@gmail.com,
         alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
         arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
         d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
         dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
-        hidehiro.kawai.ez@hitachi.com, jgross@suse.com,
-        john.ogness@linutronix.de, keescook@chromium.org, luto@kernel.org,
-        mhiramat@kernel.org, mingo@redhat.com, paulmck@kernel.org,
-        peterz@infradead.org, rostedt@goodmis.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
         senozhatsky@chromium.org, stern@rowland.harvard.edu,
         tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, xuqiang36@huawei.com,
-        Andrea Parri <parri.andrea@gmail.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>
+        will@kernel.org, xuqiang36@huawei.com
 References: <20220819221731.480795-1-gpiccoli@igalia.com>
- <20220819221731.480795-10-gpiccoli@igalia.com>
+ <20220819221731.480795-12-gpiccoli@igalia.com>
 From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <20220819221731.480795-10-gpiccoli@igalia.com>
+In-Reply-To: <20220819221731.480795-12-gpiccoli@igalia.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-5.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -77,50 +70,57 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 19/08/2022 19:17, Guilherme G. Piccoli wrote:
-> The Hyper-V framebuffer code registers a panic notifier in order
-> to try updating its fbdev if the kernel crashed. The notifier
-> callback is straightforward, but it calls the vmbus_sendpacket()
-> routine eventually, and such function takes a spinlock for the
-> ring buffer operations.
+> Commit 8d470a45d1a6 ("panic: add option to dump all CPUs backtraces in panic_print")
+> introduced a setting for the "panic_print" kernel parameter to allow
+> users to request a NMI backtrace on panic. Problem is that the panic_print
+> handling happens after the secondary CPUs are already disabled, hence
+> this option ended-up being kind of a no-op - kernel skips the NMI trace
+> in idling CPUs, which is the case of offline CPUs.
 > 
-> Panic path runs in atomic context, with local interrupts and
-> preemption disabled, and all secondary CPUs shutdown. That said,
-> taking a spinlock might cause a lockup if a secondary CPU was
-> disabled with such lock taken. Fix it here by checking if the
-> ring buffer spinlock is busy on Hyper-V framebuffer panic notifier;
-> if so, bail-out avoiding the potential lockup scenario.
+> Fix it by checking the NMI backtrace bit in the panic_print prior to
+> the CPU disabling function.
 > 
-> Cc: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-> Cc: Dexuan Cui <decui@microsoft.com>
-> Cc: Haiyang Zhang <haiyangz@microsoft.com>
-> Cc: "K. Y. Srinivasan" <kys@microsoft.com>
-> Cc: Michael Kelley <mikelley@microsoft.com>
-> Cc: Stephen Hemminger <sthemmin@microsoft.com>
-> Cc: Tianyu Lan <Tianyu.Lan@microsoft.com>
-> Cc: Wei Liu <wei.liu@kernel.org>
-> Tested-by: Fabio A M Martins <fabiomirmar@gmail.com>
+> Fixes: 8d470a45d1a6 ("panic: add option to dump all CPUs backtraces in panic_print")
+> Cc: Feng Tang <feng.tang@intel.com>
+> Cc: Petr Mladek <pmladek@suse.com>
 > Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
 > 
 > ---
 > 
 > V3:
-> - simplified the code based on Michael's suggestion - thanks!
+> - No changes.
 > 
 > V2:
-> - new patch, based on the discussion in [0].
-> [0] https://lore.kernel.org/lkml/2787b476-6366-1c83-db80-0393da417497@igalia.com/
+> - new patch, there was no V1 of this one.
+> 
+> Hi folks, thanks upfront for reviews. This is a new patch, fixing an issue
+> I found in my tests, so I shoved it into this fixes series.
+> 
+> Notice that while at it, I got rid of the "crash_kexec_post_notifiers"
+> local copy in panic(). This was introduced by commit b26e27ddfd2a
+> ("kexec: use core_param for crash_kexec_post_notifiers boot option"),
+> but it is not clear from comments or commit message why this local copy
+> is required.
+> 
+> My understanding is that it's a mechanism to prevent some concurrency,
+> in case some other CPU modify this variable while panic() is running.
+> I find it very unlikely, hence I removed it - but if people consider
+> this copy needed, I can respin this patch and keep it, even providing a
+> comment about that, in order to be explict about its need.
+> 
+> Let me know your thoughts! Cheers,
+> 
+> Guilherme
 > 
 > 
->  drivers/hv/ring_buffer.c        | 13 +++++++++++++
->  drivers/video/fbdev/hyperv_fb.c |  8 +++++++-
->  include/linux/hyperv.h          |  2 ++
->  3 files changed, 22 insertions(+), 1 deletion(-)
+>  kernel/panic.c | 47 +++++++++++++++++++++++++++--------------------
+>  1 file changed, 27 insertions(+), 20 deletions(-)
 > [...]
 
-Hi Michael, apologies for the ping.
-Any reviews/comments on this one are greatly appreciated!
+Hi Andrew, sorry for the ping.
 
-Cheers,
+Does the patch makes sense for you? Any comments are much appreciated!
+Tnx in advance,
 
 
 Guilherme
