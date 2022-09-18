@@ -2,191 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC7645BBD98
-	for <lists+netdev@lfdr.de>; Sun, 18 Sep 2022 13:29:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E31CF5BBDBA
+	for <lists+netdev@lfdr.de>; Sun, 18 Sep 2022 14:17:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229669AbiIRL3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Sep 2022 07:29:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60180 "EHLO
+        id S229686AbiIRMRr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Sep 2022 08:17:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229652AbiIRL3d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Sep 2022 07:29:33 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1634BF3A;
-        Sun, 18 Sep 2022 04:29:32 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1663500538; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=ZH7AKVMOwTy5jgBEvz7C3Kikf6uqzifTon+tLb0MxZ1Bh4l1grbzh/fDYOtZRpT6WLW2uxNeAc4ZBQmRSs9OnVytgibE/Lfuw78bA6QU0jA+JUWezJtN0fTMvxXUdene6fsP0DKiIBx02P6PnePnU2eMynSRpge72njjPqDYUA8=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1663500538; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=04ijFyWpNqjr0mVAOzrs4qWtbJFIYTunE57Md0QH6jc=; 
-        b=GDHTfDz40RfWjuq1bTxO5t3NcQewILiyk4XH4qRKUP7jgpIOEI4vu2vdhsB4RmA/ZOuI2lFnupswcm6pR7fqUvufEbx2phgZvFx+C1LE/WUtz7gNPVzvpmuQnlw0RC8pFmJLSGPk0a//NJImIBZwIIKPZjyxZJsDXteIgZDjY/s=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1663500538;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=04ijFyWpNqjr0mVAOzrs4qWtbJFIYTunE57Md0QH6jc=;
-        b=RHVPFeYv1mkXd2h3PfKWfNC6B6r6Y7JA7LZ1jNOfBNIkvzX9H+YQ2J9O8wikP1aO
-        14HHjb9/fXn8wwtX/8gZNqIF3OLor+/vOkM6Hl/lgm+AkjMtQPvXm700edpJgYezO8N
-        i8l2SpzUUE2xKLYyh6m4G5ZB/jNNvMaXS+N84hK8=
-Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 1663500536617106.7364888322121; Sun, 18 Sep 2022 04:28:56 -0700 (PDT)
-Message-ID: <4a291389-105a-6288-1347-4f02171b0dd0@arinc9.com>
-Date:   Sun, 18 Sep 2022 14:28:50 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: Move MT7530 phy muxing from DSA to PHY driver
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Thibaut <hacks@slashdirt.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        with ESMTP id S229501AbiIRMRq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Sep 2022 08:17:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C8501D0E2
+        for <netdev@vger.kernel.org>; Sun, 18 Sep 2022 05:17:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1663503464;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=YIbilycgQyjenY282EZwIsPOR3PFZL895xpYAyq5afo=;
+        b=YERIaMD3wuYcnSSHE5rUpWiQjkG8gGRR1lrtqwN26ySuPA3SXyOQXrtzXfk6ZlP/qdL2zq
+        Wi8TSV4I/i5XFho/xPp5yJ51WtA/+yetS5HTmPeOqMVq2AQh4d2sAzk1UrI/UTaUTIJmFJ
+        UAemRQH+Sj8Bz5IoUntKUlqtiwZCbBI=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-387-MTLXidMRNJ6ojV0Z7zADYQ-1; Sun, 18 Sep 2022 08:17:42 -0400
+X-MC-Unique: MTLXidMRNJ6ojV0Z7zADYQ-1
+Received: by mail-wr1-f69.google.com with SMTP id r23-20020adfb1d7000000b002286358a916so5899932wra.3
+        for <netdev@vger.kernel.org>; Sun, 18 Sep 2022 05:17:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=YIbilycgQyjenY282EZwIsPOR3PFZL895xpYAyq5afo=;
+        b=z69Y8kHBRlDKpfUFTlT5rdTPao8qveISt/OR/dmJ7LFyViWIvA8PWneLprXbnflVkJ
+         J7OTrDnk62lglXr8y0dNMC3Na6nsvYGmBOxq14roFRcRWScb76stWEKI1EUWHkwi7JSR
+         HemihESMOHECsyBXwQ2mwKmiwB0xW4jrIYucACjxp1RVM1jiK74+BP1YKtU6gH//OKaz
+         rNfZViGbuA1g8WCsZcKqxx5IDm9SRbmLlEh20zzVNRvPeuGj2iFSdaNFKtVZrfGMOdwn
+         0jq5/PgVGZMowHf+6yg2tAPPVgRbExlrOWmdNPOHmSIDoxXQi/ZSe06JIU9RhUEeoLZu
+         7ZVQ==
+X-Gm-Message-State: ACrzQf3OdVy7wMpDeFwdFpVgyf4U6+rLZClHBP60IxGnO8/Swdlh97dT
+        krntSEuu/mYSTer1ZiEdSx4vQRJrtO2HXZXSDtf6KpKh3cuX0iJQtlAIIqa+s/dY89UumCv+Kiq
+        VZg8pzlipYUaxniE/
+X-Received: by 2002:a5d:4742:0:b0:22a:3a88:d9e6 with SMTP id o2-20020a5d4742000000b0022a3a88d9e6mr8183466wrs.438.1663503461618;
+        Sun, 18 Sep 2022 05:17:41 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM6OgKAiHsRIMsNcvcQlSELq9pAaD49wvj8xve/5Xz8Q2YgoqvtA0Jk9oZfbBvYoMf3nUdnFOQ==
+X-Received: by 2002:a5d:4742:0:b0:22a:3a88:d9e6 with SMTP id o2-20020a5d4742000000b0022a3a88d9e6mr8183456wrs.438.1663503461375;
+        Sun, 18 Sep 2022 05:17:41 -0700 (PDT)
+Received: from redhat.com ([2.52.4.6])
+        by smtp.gmail.com with ESMTPSA id i7-20020a05600c354700b003b4cba4ef71sm4421682wmq.41.2022.09.18.05.17.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 18 Sep 2022 05:17:40 -0700 (PDT)
+Date:   Sun, 18 Sep 2022 08:17:36 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Junbo <junbo4242@gmail.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>
-References: <0e3ca573-2190-57b0-0e98-7f5b890d328e@arinc9.com>
- <YyKQKRIYDIVeczl1@lunn.ch> <dad09430-4f33-7f1d-76c7-4dbd0710e950@arinc9.com>
- <YyXiswbZfDh8aZHN@lunn.ch>
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <YyXiswbZfDh8aZHN@lunn.ch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH] Do not name control queue for virtio-net
+Message-ID: <20220918081713-mutt-send-email-mst@kernel.org>
+References: <20220917092857.3752357-1-junbo4242@gmail.com>
+ <20220918025033-mutt-send-email-mst@kernel.org>
+ <CACvn-oGUj0mDxBO2yV1mwvz4PzhN3rDnVpUh12NA5jLKTqRT3A@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-5.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <CACvn-oGUj0mDxBO2yV1mwvz4PzhN3rDnVpUh12NA5jLKTqRT3A@mail.gmail.com>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 17.09.2022 18:07, Andrew Lunn wrote:
->>> Where in the address range is the mux register? Officially, PHY
->>> drivers only have access to PHY registers, via MDIO. If the mux
->>> register is in the switch address space, it would be better if the
->>> switch did the mux configuration. An alternative might be to represent
->>> the mux in DT somewhere, and have a mux driver.
->>
->> I don't know this part very well but it's in the register for hw trap
->> modification which, I think, is in the switch address space.
->>
->> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/drivers/net/dsa/mt7530.c?id=1f9a6abecf538cc73635f6082677a2f4dc9c89a4#n941
->>
->> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/drivers/net/dsa/mt7530.h?id=1f9a6abecf538cc73635f6082677a2f4dc9c89a4#n500
->>
->> Like you said, I don't think we can move away from the DSA driver, and would
->> rather keep the driver do the mux configuration.
->>
->> We could change the check for phy muxing to define the phy muxing bindings
->> in the DSA node instead. If I understand correctly, the mdio address for
->> PHYs is fake, it's for the sole purpose of making the driver check if
->> there's request for phy muxing and which phy to mux. I'm saying this because
->> the MT7530 switch works fine at address 0 while also using phy0 as a slave
->> interface.
->>
->> A property could be introduced on the DSA node for the MT7530 DSA driver:
->>
->>      mdio {
->>          #address-cells = <1>;
->>          #size-cells = <0>;
->>
->>          switch@0 {
->>              compatible = "mediatek,mt7530";
->>              reg = <0>;
->>
->>              reset-gpios = <&pio 33 0>;
->>
->>              core-supply = <&mt6323_vpa_reg>;
->>              io-supply = <&mt6323_vemc3v3_reg>;
->>
->>              mt7530,mux-phy = <&sw0_p0>;
->>
->>              ethernet-ports {
->>                  #address-cells = <1>;
->>                  #size-cells = <0>;
->>
->>                  sw0_p0: port@0 {
->>                      reg = <0>;
->>                  };
->>              };
->>          };
->>      };
->>
->> This would also allow using the phy muxing feature with any ethernet mac.
->> Currently, phy muxing check wants the ethernet mac to be gmac1 of a MediaTek
->> SoC. However, on a standalone MT7530, the switch can be wired to any SoC's
->> ethernet mac.
->>
->> For the port which is set for PHY muxing, do not bring it as a slave
->> interface, just do the phy muxing operation.
->>
->> Do not fail because there's no CPU port (ethernet property) defined when
->> there's only one port defined and it's set for PHY muxing.
->>
->> I don't know if the ethernet mac needs phy-handle defined in this case.
+On Sun, Sep 18, 2022 at 05:00:20PM +0800, Junbo wrote:
+> hi Michael
 > 
->  From mediatek,mt7530.yaml:
+> in virtio-net.c
+>     /* Parameters for control virtqueue, if any */
+>     if (vi->has_cvq) {
+>         callbacks[total_vqs - 1] = NULL;
+>         names[total_vqs - 1] = "control";
+>     }
 > 
->    Port 5 modes/configurations:
->    1. Port 5 is disabled and isolated: An external phy can interface to the 2nd
->       GMAC of the SOC.
->       In the case of a build-in MT7530 switch, port 5 shares the RGMII bus with 2nd
->       GMAC and an optional external phy. Mind the GPIO/pinctl settings of the SOC!
->    2. Port 5 is muxed to PHY of port 0/4: Port 0/4 interfaces with 2nd GMAC.
->       It is a simple MAC to PHY interface, port 5 needs to be setup for xMII mode
->       and RGMII delay.
->    3. Port 5 is muxed to GMAC5 and can interface to an external phy.
->       Port 5 becomes an extra switch port.
->       Only works on platform where external phy TX<->RX lines are swapped.
->       Like in the Ubiquiti ER-X-SFP.
->    4. Port 5 is muxed to GMAC5 and interfaces with the 2nd GAMC as 2nd CPU port.
->       Currently a 2nd CPU port is not supported by DSA code.
-> 
-> So this mux has a scope bigger than the switch, it also affects one of
-> the SoCs MACs.
-> 
-> The phy-handle should have all the information you need, but it is
-> scattered over multiple locations. It could be in switch port 5, or it
-> could be in the SoC GMAC node.
-> 
-> Although the mux is in the switches address range, could you have a
-> tiny driver using that address range. Have this tiny driver export a
-> function to set the mux. Both the GMAC and the DSA driver make use of
-> the function, which should be enough to force the tiny driver to load
-> first. The GMAC and the DSA driver can then look at there phy-handle,
-> and determine how the mux should be set. The GMAC should probably do
-> that before register_netdev. The DSA driver before it registers the
-> switch with the DSA core.
-> 
-> Does that solve all your ordering issues?
+> I think the Author who write the code
 
-I believe it does.
+wait, that was not you?
 
+> maybe want to name the control queue to
+> 'virtioX-control', but it never worked, we can see the name still be
+> 'virtioX-config' in /proc/interrupts, for example 
+>  43:          0          0          0          0          0          0        
+>  0          0   PCI-MSI-edge      virtio0-config
+>  44:         64          0          0          0          0          0      
+> 1845          0   PCI-MSI-edge      virtio0-input.0
+>  45:          1          0          0          0          0          0        
+>  0          0   PCI-MSI-edge      virtio0-output.0
 > 
-> By using the phy-handle, you don't need any additional properties, so
-> backwards compatibility should not be a problem. You can change driver
-> code as much as you want, but ABI like DT is fixed.
+> Because in function vp_request_msix_vectors, it just allocate 'xxxx-config' to
+> every virtio devices, even the virtio device do not need it. in /proc/
+> interrupts, we can see that each virtio device's first interrupt always named
+> 'virtioX-config'.
+> 
+> So I think it's better to not explicitly give the "control" here, it's
+> useless...  
+> 
+> 
+> Michael S. Tsirkin <mst@redhat.com> 于2022年9月18日周日 14:56写道：
+> 
+>     On Sat, Sep 17, 2022 at 09:28:57AM +0000, junbo4242@gmail.com wrote:
+>     > From: Junbo <junbo4242@gmail.com>
+>     >
+>     > In virtio drivers, the control queue always named <virtioX>-config.
+>     >
+>     > Signed-off-by: Junbo <junbo4242@gmail.com>
+> 
+>     I don't think that's right. config is the config interrupt.
+> 
+> 
+> 
+>     > ---
+>     >  drivers/net/virtio_net.c | 3 ++-
+>     >  1 file changed, 2 insertions(+), 1 deletion(-)
+>     >
+>     > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+>     > index 9cce7dec7366..0b3e74cfe201 100644
+>     > --- a/drivers/net/virtio_net.c
+>     > +++ b/drivers/net/virtio_net.c
+>     > @@ -3469,7 +3469,8 @@ static int virtnet_find_vqs(struct virtnet_info
+>     *vi)
+>     >       /* Parameters for control virtqueue, if any */
+>     >       if (vi->has_cvq) {
+>     >               callbacks[total_vqs - 1] = NULL;
+>     > -             names[total_vqs - 1] = "control";
+>     > +             /* control virtqueue always named <virtioX>-config */
+>     > +             names[total_vqs - 1] = "";
+>     >       }
+>     > 
+>     >       /* Allocate/initialize parameters for send/receive virtqueues */
+>     > --
+>     > 2.31.1
+> 
+> 
 
-Understood, thanks Andrew!
-
-Arınç
