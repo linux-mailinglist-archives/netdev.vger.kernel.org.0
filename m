@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 83CE05BBCF4
-	for <lists+netdev@lfdr.de>; Sun, 18 Sep 2022 11:50:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB2D15BBD02
+	for <lists+netdev@lfdr.de>; Sun, 18 Sep 2022 11:55:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229774AbiIRJuI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Sep 2022 05:50:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48810 "EHLO
+        id S229879AbiIRJuk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Sep 2022 05:50:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229723AbiIRJtz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Sep 2022 05:49:55 -0400
+        with ESMTP id S229745AbiIRJuM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Sep 2022 05:50:12 -0400
 Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63E1112A85
-        for <netdev@vger.kernel.org>; Sun, 18 Sep 2022 02:49:51 -0700 (PDT)
-Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MVjf76D01zHnfC;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C431D13E8D
+        for <netdev@vger.kernel.org>; Sun, 18 Sep 2022 02:49:56 -0700 (PDT)
+Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MVjf76w91zHnmn;
         Sun, 18 Sep 2022 17:47:43 +0800 (CST)
 Received: from localhost.localdomain (10.67.165.24) by
  dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
@@ -26,9 +26,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>, <ecree.xilinx@gmail.com>,
         <andrew@lunn.ch>, <hkallweit1@gmail.com>,
         <alexandr.lobakin@intel.com>, <saeed@kernel.org>, <leon@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linuxarm@huawei.com>
-Subject: [RFCv8 PATCH net-next 21/55] net: iavf: adjust net device features relative macroes
-Date:   Sun, 18 Sep 2022 09:43:02 +0000
-Message-ID: <20220918094336.28958-22-shenjian15@huawei.com>
+Subject: [RFCv8 PATCH net-next 22/55] net: core: adjust netdev_sync_xxx_features
+Date:   Sun, 18 Sep 2022 09:43:03 +0000
+Message-ID: <20220918094336.28958-23-shenjian15@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220918094336.28958-1-shenjian15@huawei.com>
 References: <20220918094336.28958-1-shenjian15@huawei.com>
@@ -46,68 +46,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The macro IAVF_NETDEV_VLAN_FEATURE_ALLOWED use NETIF_F_XXX as
-parameter directly, change it to use NETIF_F_XXX_BIT, for all
-the macroes NETIF_F_XXX will be removed later.
+The functions netdev_sync_upper_features() and
+netdev_sync_lower_features() use NETIF_F_XXX as input parameter
+directly, change them to use NETIF_F_XXX_BIT, for all macroes
+NETIF_F_XXX will be removed later.
 
 Signed-off-by: Jian Shen <shenjian15@huawei.com>
 ---
- drivers/net/ethernet/intel/iavf/iavf_main.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ net/core/dev.c | 29 +++++++++++++----------------
+ 1 file changed, 13 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 39fbfe6e18e9..31d4825c8a6c 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -4601,8 +4601,8 @@ iavf_get_netdev_vlan_features(struct iavf_adapter *adapter)
- }
+diff --git a/net/core/dev.c b/net/core/dev.c
+index cdfe1a0608a1..61e0a9f99ff8 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -9564,16 +9564,14 @@ static netdev_features_t netdev_sync_upper_features(struct net_device *lower,
+ 	struct net_device *upper, netdev_features_t features)
+ {
+ 	netdev_features_t upper_disables = NETIF_F_UPPER_DISABLES;
+-	netdev_features_t feature;
+ 	int feature_bit;
  
- #define IAVF_NETDEV_VLAN_FEATURE_ALLOWED(requested, allowed, feature_bit) \
--	(!(((requested) & (feature_bit)) && \
--	   !((allowed) & (feature_bit))))
-+	(!(netdev_feature_test(feature_bit, requested) && \
-+	   !netdev_feature_test(feature_bit, allowed)))
+ 	for_each_netdev_feature(upper_disables, feature_bit) {
+-		feature = __NETIF_F_BIT(feature_bit);
+-		if (!(upper->wanted_features & feature)
+-		    && (features & feature)) {
+-			netdev_dbg(lower, "Dropping feature %pNF, upper dev %s has it off.\n",
+-				   &feature, upper->name);
+-			features &= ~feature;
++		if (!netdev_wanted_feature_test(upper, feature_bit) &&
++		    netdev_feature_test(feature_bit, features)) {
++			netdev_dbg(lower, "Dropping feature bit %d, upper dev %s has it off.\n",
++				   feature_bit, upper->name);
++			netdev_feature_del(feature_bit, features);
+ 		}
+ 	}
  
- /**
-  * iavf_fix_netdev_vlan_features - fix NETDEV VLAN features based on support
-@@ -4620,31 +4620,31 @@ iavf_fix_netdev_vlan_features(struct iavf_adapter *adapter,
+@@ -9584,20 +9582,19 @@ static void netdev_sync_lower_features(struct net_device *upper,
+ 	struct net_device *lower, netdev_features_t features)
+ {
+ 	netdev_features_t upper_disables = NETIF_F_UPPER_DISABLES;
+-	netdev_features_t feature;
+ 	int feature_bit;
  
- 	if (!IAVF_NETDEV_VLAN_FEATURE_ALLOWED(requested_features,
- 					      allowed_features,
--					      NETIF_F_HW_VLAN_CTAG_TX))
-+					      NETIF_F_HW_VLAN_CTAG_TX_BIT))
- 		requested_features &= ~NETIF_F_HW_VLAN_CTAG_TX;
+ 	for_each_netdev_feature(upper_disables, feature_bit) {
+-		feature = __NETIF_F_BIT(feature_bit);
+-		if (!(features & feature) && (lower->features & feature)) {
+-			netdev_dbg(upper, "Disabling feature %pNF on lower dev %s.\n",
+-				   &feature, lower->name);
+-			lower->wanted_features &= ~feature;
++		if (!netdev_feature_test(feature_bit, features) &&
++		    netdev_active_feature_test(lower, feature_bit)) {
++			netdev_dbg(upper, "Disabling feature bit %d on lower dev %s.\n",
++				   feature_bit, lower->name);
++			netdev_wanted_feature_del(lower, feature_bit);
+ 			__netdev_update_features(lower);
  
- 	if (!IAVF_NETDEV_VLAN_FEATURE_ALLOWED(requested_features,
- 					      allowed_features,
--					      NETIF_F_HW_VLAN_CTAG_RX))
-+					      NETIF_F_HW_VLAN_CTAG_RX_BIT))
- 		requested_features &= ~NETIF_F_HW_VLAN_CTAG_RX;
- 
- 	if (!IAVF_NETDEV_VLAN_FEATURE_ALLOWED(requested_features,
- 					      allowed_features,
--					      NETIF_F_HW_VLAN_STAG_TX))
-+					      NETIF_F_HW_VLAN_STAG_TX_BIT))
- 		requested_features &= ~NETIF_F_HW_VLAN_STAG_TX;
- 	if (!IAVF_NETDEV_VLAN_FEATURE_ALLOWED(requested_features,
- 					      allowed_features,
--					      NETIF_F_HW_VLAN_STAG_RX))
-+					      NETIF_F_HW_VLAN_STAG_RX_BIT))
- 		requested_features &= ~NETIF_F_HW_VLAN_STAG_RX;
- 
- 	if (!IAVF_NETDEV_VLAN_FEATURE_ALLOWED(requested_features,
- 					      allowed_features,
--					      NETIF_F_HW_VLAN_CTAG_FILTER))
-+					      NETIF_F_HW_VLAN_CTAG_FILTER_BIT))
- 		requested_features &= ~NETIF_F_HW_VLAN_CTAG_FILTER;
- 
- 	if (!IAVF_NETDEV_VLAN_FEATURE_ALLOWED(requested_features,
- 					      allowed_features,
--					      NETIF_F_HW_VLAN_STAG_FILTER))
-+					      NETIF_F_HW_VLAN_STAG_FILTER_BIT))
- 		requested_features &= ~NETIF_F_HW_VLAN_STAG_FILTER;
- 
- 	if ((requested_features & netdev_ctag_vlan_offload_features) &&
+-			if (unlikely(lower->features & feature))
+-				netdev_WARN(upper, "failed to disable %pNF on %s!\n",
+-					    &feature, lower->name);
++			if (unlikely(netdev_active_feature_test(lower, feature_bit)))
++				netdev_WARN(upper, "failed to disable feature bit %d on %s!\n",
++					    feature_bit, lower->name);
+ 			else
+ 				netdev_features_change(lower);
+ 		}
 -- 
 2.33.0
 
