@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 527875BD61D
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 23:06:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D7F95BD61F
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 23:06:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229970AbiISVGj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 17:06:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41268 "EHLO
+        id S229984AbiISVGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 17:06:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229872AbiISVGX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 17:06:23 -0400
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBF8B4AD4A;
-        Mon, 19 Sep 2022 14:06:22 -0700 (PDT)
-Received: by mail-qt1-x82c.google.com with SMTP id f26so432790qto.11;
-        Mon, 19 Sep 2022 14:06:22 -0700 (PDT)
+        with ESMTP id S229739AbiISVGh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 17:06:37 -0400
+Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A3CD4BA49;
+        Mon, 19 Sep 2022 14:06:23 -0700 (PDT)
+Received: by mail-qv1-xf30.google.com with SMTP id v15so648950qvi.11;
+        Mon, 19 Sep 2022 14:06:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:from:to:cc:subject:date;
-        bh=niDsSZ0B4tRMkQqyG3c14j4OPhIREF3CmeN5buhV29M=;
-        b=Ch27sSQXSwnH+NUftLwAC/4CoQcRgvlBZg90Bfrz6v/yc1Q+GEgN2bNbahOcQXsOYW
-         XLaMXx7XyH0yuq5/jExx5bSKaDrmHoZYvGNib4u/Hjuc/Qp/ZjUURSrnGxgGGlfMHoDA
-         pMCRdhZ8flK1oX6mnbKKpX94PQ8oZwAuqtWMOGeInnaJetpqBUwUPWCEuvu5SR4cca/N
-         X0+Lx/Oj2a56HfdInvLscNLRB95Z0WSJ9Vlak1EKHpzraxwvW7hkwPMVtF3HKzrTAEVP
-         vxVDKkUGiz7/bMbxMEkmH+7z+QrPwHzu6wIDqXzlmpU5VX/yzzfPq4z1ee53QJ+2NQFw
-         BaVQ==
+        bh=6fETi1H2mTKvLVxOg8aLwhhuuPaALbYAFKdOKdv20oU=;
+        b=gGKgpl2P00UIkv2Mu0jWezXMmi4npggcQ6MSKUqMK75AfZ0tq1UsRu6wETliNBwH0w
+         xM9bMrK2ozauJIHbqvUdsk4TZh3ghoyuYM8YFUIIiMHzfi6w5m2JbU5Azi3LmBvUpnfH
+         ta/rDc0HFJTsTTkfQutrkvDzFJJgAbRVk6xETfNAAE5gqOfUUMWDuKE3WXUFOKbkzc/o
+         ON1GD9SmW8O/g7Bee9S+97fv/BVKx+JHiKW07g3ae2ffFxqfycfq3G8TC43PGSThXOnX
+         dAeN/RdOLvpqrphF0cTw6TfdbNJrSYQjNpIzX3ZLI312/5RnDCDAG59c5aNaFKq4wTNs
+         0UQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=niDsSZ0B4tRMkQqyG3c14j4OPhIREF3CmeN5buhV29M=;
-        b=5F6waT0ZoANETQJu4W32LCWoX+HmrqcMDyQ2h1AaKcs1jnVUHJbAvJGxRvpiaWMF34
-         D72U1hYOH1tDjY5HEH41gYmzQt5n4nBnc+FaksPhAXOpVwOG6p/FHUUMTbIlNCvYRR6t
-         cKN78K+ujwkHUgO/QexuC5TxcjPMcmVk1MbR5FUu2EmmVRCxE2Bz11T2OFNOoC280ifF
-         cbgS99EWPBBNOboPoFH2Q5ThID9Nenc4z5Oomd0o3bILyAfPGbwbh0NLskU/b6z1Rvb5
-         pMpsGH/PTa8Gn6m5z94u4Ci2Ac9rkqv2o6loW5ddk/qtd+XZwQ0dMhn8GdHluuiEjrVR
-         9GCA==
-X-Gm-Message-State: ACrzQf23Z44wm2PEfglFmdY87BCq4HpnxKUW2ECqQav6hWIQCBD8R2PU
-        C6KK5p4yo5iacn8LoK7DhTTFloNq7R0=
-X-Google-Smtp-Source: AMsMyM6HpzGnWLWB9U8P7UD+3E9W0tuvCzoOs7/arzCwPYPy+2dtHuyHjlKlTUApV4tklUF6Dxjlbw==
-X-Received: by 2002:a05:622a:2cb:b0:35c:c034:314f with SMTP id a11-20020a05622a02cb00b0035cc034314fmr16597733qtx.641.1663621581596;
-        Mon, 19 Sep 2022 14:06:21 -0700 (PDT)
+        bh=6fETi1H2mTKvLVxOg8aLwhhuuPaALbYAFKdOKdv20oU=;
+        b=L+I2Rt70c6TAL2tqGliyELTkbAeJqHrBrNadr8P59UUgrOco3c0OlT9QB9Hqtt7K0m
+         AL2i/ZZgxU+fSWhkmVPKRzQ0TNC57fL2quUrRRkjRQKAyZqVQVs4sDqm/fHpG9CFr6on
+         RBGwfxtjBTKokDQTKaURpP/42WamcGeJBuV7jj26jqV877i9Frw2ydwC3pwLuXrR8uC2
+         UvLskLAB6xPsH2KZCxgT4+JnVdjaNHGzlS+nO3rkuje5FDGvmhKKflgi10VVTYCw4LIl
+         ozoyy/F3QWir2p33sYa28V3JiOk3rmGqEhHnUSS7MVIhLo5YB/agIQTwiGzAyQC+U4n5
+         ctLA==
+X-Gm-Message-State: ACrzQf3k945jVNH/GPomHgSPY3d/B9rspwq1JZR28MMFpmj/NIAtX+TY
+        a3rM9OfJRy/CvDrp30y/4qxVKIipowk=
+X-Google-Smtp-Source: AMsMyM5Byg6loTEYHrcOaeK8MSQTszoOSTk0zHhQ3hE5pvA1kWNVArOhJBplZkwrdc6t7WAVs5zzyQ==
+X-Received: by 2002:a05:6214:29cc:b0:4ad:40e0:97da with SMTP id gh12-20020a05621429cc00b004ad40e097damr5814717qvb.31.1663621582725;
+        Mon, 19 Sep 2022 14:06:22 -0700 (PDT)
 Received: from localhost ([2601:4c1:c100:2270:bb7d:3b54:df44:5476])
-        by smtp.gmail.com with ESMTPSA id x5-20020a05620a258500b006bc1512986esm13793917qko.97.2022.09.19.14.06.21
+        by smtp.gmail.com with ESMTPSA id y11-20020a37f60b000000b006a65c58db99sm13110819qkj.64.2022.09.19.14.06.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Sep 2022 14:06:21 -0700 (PDT)
+        Mon, 19 Sep 2022 14:06:22 -0700 (PDT)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -57,9 +57,9 @@ To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Paolo Abeni <pabeni@redhat.com>,
         Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         Yury Norov <yury.norov@gmail.com>
-Subject: [PATCH 4/7] lib/find_bit: add find_next{,_and}_bit_wrap
-Date:   Mon, 19 Sep 2022 14:05:56 -0700
-Message-Id: <20220919210559.1509179-5-yury.norov@gmail.com>
+Subject: [PATCH 5/7] lib/bitmap: introduce for_each_set_bit_wrap() macro
+Date:   Mon, 19 Sep 2022 14:05:57 -0700
+Message-Id: <20220919210559.1509179-6-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220919210559.1509179-1-yury.norov@gmail.com>
 References: <20220919210559.1509179-1-yury.norov@gmail.com>
@@ -75,108 +75,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The helper is better optimized for the worst case: in case of empty
-cpumask, current code traverses 2 * size:
-
-  next = cpumask_next_and(prev, src1p, src2p);
-  if (next >= nr_cpu_ids)
-  	next = cpumask_first_and(src1p, src2p);
-
-At bitmap level we can stop earlier after checking 'size + offset' bits.
+Add for_each_set_bit_wrap() macro and use it in for_each_cpu_wrap(). The
+new macro is based on __for_each_wrap() iterator, which is simpler and
+smaller than cpumask_next_wrap().
 
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- include/linux/find.h | 46 ++++++++++++++++++++++++++++++++++++++++++++
- lib/cpumask.c        | 12 +++---------
- 2 files changed, 49 insertions(+), 9 deletions(-)
+ include/linux/cpumask.h |  6 ++----
+ include/linux/find.h    | 39 +++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 41 insertions(+), 4 deletions(-)
 
+diff --git a/include/linux/cpumask.h b/include/linux/cpumask.h
+index 3a9566f1373a..286804bfe3b7 100644
+--- a/include/linux/cpumask.h
++++ b/include/linux/cpumask.h
+@@ -286,10 +286,8 @@ unsigned int __pure cpumask_next_wrap(int n, const struct cpumask *mask, int sta
+  *
+  * After the loop, cpu is >= nr_cpu_ids.
+  */
+-#define for_each_cpu_wrap(cpu, mask, start)					\
+-	for ((cpu) = cpumask_next_wrap((start)-1, (mask), (start), false);	\
+-	     (cpu) < nr_cpumask_bits;						\
+-	     (cpu) = cpumask_next_wrap((cpu), (mask), (start), true))
++#define for_each_cpu_wrap(cpu, mask, start)				\
++	for_each_set_bit_wrap(cpu, cpumask_bits(mask), nr_cpumask_bits, start)
+ 
+ /**
+  * for_each_cpu_and - iterate over every cpu in both masks
 diff --git a/include/linux/find.h b/include/linux/find.h
-index 128615a3f93e..77c087b7a451 100644
+index 77c087b7a451..3b746a183216 100644
 --- a/include/linux/find.h
 +++ b/include/linux/find.h
-@@ -290,6 +290,52 @@ unsigned long find_last_bit(const unsigned long *addr, unsigned long size)
+@@ -336,6 +336,32 @@ unsigned long find_next_bit_wrap(const unsigned long *addr,
+ 	return bit < offset ? bit : size;
  }
- #endif
  
-+/**
-+ * find_next_and_bit_wrap - find the next set bit in both memory regions
-+ * @addr1: The first address to base the search on
-+ * @addr2: The second address to base the search on
-+ * @size: The bitmap size in bits
-+ * @offset: The bitnumber to start searching at
-+ *
-+ * Returns the bit number for the next set bit, or first set bit up to @offset
-+ * If no bits are set, returns @size.
++/*
++ * Helper for for_each_set_bit_wrap(). Make sure you're doing right thing
++ * before using it alone.
 + */
 +static inline
-+unsigned long find_next_and_bit_wrap(const unsigned long *addr1,
-+					const unsigned long *addr2,
-+					unsigned long size, unsigned long offset)
++unsigned long __for_each_wrap(const unsigned long *bitmap, unsigned long size,
++				 unsigned long start, unsigned long n)
 +{
-+	unsigned long bit = find_next_and_bit(addr1, addr2, size, offset);
++	unsigned long bit;
 +
-+	if (bit < size)
-+		return bit;
++	/* If not wrapped around */
++	if (n > start) {
++		/* and have a bit, just return it. */
++		bit = find_next_bit(bitmap, size, n);
++		if (bit < size)
++			return bit;
 +
-+	bit = find_first_and_bit(addr1, addr2, offset);
-+	return bit < offset ? bit : size;
-+}
++		/* Otherwise, wrap around and ... */
++		n = 0;
++	}
 +
-+/**
-+ * find_next_bit_wrap - find the next set bit in both memory regions
-+ * @addr: The first address to base the search on
-+ * @size: The bitmap size in bits
-+ * @offset: The bitnumber to start searching at
-+ *
-+ * Returns the bit number for the next set bit, or first set bit up to @offset
-+ * If no bits are set, returns @size.
-+ */
-+static inline
-+unsigned long find_next_bit_wrap(const unsigned long *addr,
-+					unsigned long size, unsigned long offset)
-+{
-+	unsigned long bit = find_next_bit(addr, size, offset);
-+
-+	if (bit < size)
-+		return bit;
-+
-+	bit = find_first_bit(addr, offset);
-+	return bit < offset ? bit : size;
++	/* Search the other part. */
++	bit = find_next_bit(bitmap, start, n);
++	return bit < start ? bit : size;
 +}
 +
  /**
   * find_next_clump8 - find next 8-bit clump with set bits in a memory region
   * @clump: location to store copy of found clump
-diff --git a/lib/cpumask.c b/lib/cpumask.c
-index 2c4a63b6f03f..c7c392514fd3 100644
---- a/lib/cpumask.c
-+++ b/lib/cpumask.c
-@@ -166,10 +166,8 @@ unsigned int cpumask_any_and_distribute(const struct cpumask *src1p,
- 	/* NOTE: our first selection will skip 0. */
- 	prev = __this_cpu_read(distribute_cpu_mask_prev);
+@@ -514,6 +540,19 @@ unsigned long find_next_bit_le(const void *addr, unsigned
+ 	     (b) = find_next_zero_bit((addr), (size), (e) + 1),	\
+ 	     (e) = find_next_bit((addr), (size), (b) + 1))
  
--	next = cpumask_next_and(prev, src1p, src2p);
--	if (next >= nr_cpu_ids)
--		next = cpumask_first_and(src1p, src2p);
--
-+	next = find_next_and_bit_wrap(cpumask_bits(src1p), cpumask_bits(src2p),
-+					nr_cpumask_bits, prev + 1);
- 	if (next < nr_cpu_ids)
- 		__this_cpu_write(distribute_cpu_mask_prev, next);
- 
-@@ -183,11 +181,7 @@ unsigned int cpumask_any_distribute(const struct cpumask *srcp)
- 
- 	/* NOTE: our first selection will skip 0. */
- 	prev = __this_cpu_read(distribute_cpu_mask_prev);
--
--	next = cpumask_next(prev, srcp);
--	if (next >= nr_cpu_ids)
--		next = cpumask_first(srcp);
--
-+	next = find_next_bit_wrap(cpumask_bits(srcp), nr_cpumask_bits, prev + 1);
- 	if (next < nr_cpu_ids)
- 		__this_cpu_write(distribute_cpu_mask_prev, next);
- 
++/**
++ * for_each_set_bit_wrap - iterate over all set bits starting from @start, and
++ * wrapping around the end of bitmap.
++ * @bit: offset for current iteration
++ * @addr: bitmap address to base the search on
++ * @size: bitmap size in number of bits
++ * @start: Starting bit for bitmap traversing, wrapping around the bitmap end
++ */
++#define for_each_set_bit_wrap(bit, addr, size, start) \
++	for ((bit) = find_next_bit_wrap((addr), (size), (start));		\
++	     (bit) < (size);							\
++	     (bit) = __for_each_wrap((addr), (size), (start), (bit) + 1))
++
+ /**
+  * for_each_set_clump8 - iterate over bitmap for each 8-bit clump with set bits
+  * @start: bit offset to start search and to store the current iteration offset
 -- 
 2.34.1
 
