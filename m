@@ -2,73 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6254D5BCFBC
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 16:59:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A8485BD018
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 17:12:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229773AbiISO7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 10:59:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43944 "EHLO
+        id S229725AbiISPM1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 11:12:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230083AbiISO6v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 10:58:51 -0400
-Received: from mail-qv1-f49.google.com (mail-qv1-f49.google.com [209.85.219.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37AEF1C107;
-        Mon, 19 Sep 2022 07:58:50 -0700 (PDT)
-Received: by mail-qv1-f49.google.com with SMTP id c6so22008095qvn.6;
-        Mon, 19 Sep 2022 07:58:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=FO5wWOn3ONwax1YxwjpQU9wWpYS3F4tNurhG31VaKKQ=;
-        b=hG8syZiLpluIy/oVGfIWQL61BcoVqNSWDPLToJ2YdmpeUZ0lzS+XeX43yp2qN6QIMr
-         mlFv6Ya9bg8GefoFA2WZBEPwUBC3XWB9bK6myO4/Db19IpCt3WCFJc+Rt0FzZHiXd7QF
-         anaR6H0fNcxw1M0gOqQXtRPQOZzCuzMZGr/RRJuXJkrdPDZX883B95qSgG6xq5XpGF/W
-         TpHVT0sHBc873mWm6Uw9PSPtlkzUjHfWl/0wjfnPsiP5+rkKB/VKW4PhYvk5tp+4tfIc
-         WJTahj9+FkG0AEaEt/DAXHPCnB72bR67DGz/7Ho+M3drip2XJyjaRg/rfCatamrEW+lY
-         xhIg==
-X-Gm-Message-State: ACrzQf0qZvGfzWyLWs/v2aFz46BUYixRqrDbcvikiTbvAZ8t7SQzuC5u
-        bCO1udUbN9MeFwKw9vWY6OvF38L4jQ4M2A==
-X-Google-Smtp-Source: AMsMyM6kjLuA5nYgqvMlKY19FFmGZixm4EyyrXABIC8EgWEkAR/8bk1PlcsJ2fiy9taZqWuiS8eZIg==
-X-Received: by 2002:a05:6214:763:b0:4ac:85f8:84c with SMTP id f3-20020a056214076300b004ac85f8084cmr15191249qvz.123.1663599529202;
-        Mon, 19 Sep 2022 07:58:49 -0700 (PDT)
-Received: from mail-yb1-f181.google.com (mail-yb1-f181.google.com. [209.85.219.181])
-        by smtp.gmail.com with ESMTPSA id e12-20020ac8670c000000b0035bb6298526sm10633511qtp.17.2022.09.19.07.58.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 19 Sep 2022 07:58:49 -0700 (PDT)
-Received: by mail-yb1-f181.google.com with SMTP id 125so21607102ybt.12;
-        Mon, 19 Sep 2022 07:58:48 -0700 (PDT)
-X-Received: by 2002:a0d:dd09:0:b0:344:fca5:9b44 with SMTP id
- g9-20020a0ddd09000000b00344fca59b44mr14741007ywe.358.1663599116003; Mon, 19
- Sep 2022 07:51:56 -0700 (PDT)
+        with ESMTP id S229734AbiISPM0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 11:12:26 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2053.outbound.protection.outlook.com [40.107.92.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E1402F008
+        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 08:12:25 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bMoke9GAXkTAuHdLL4cVTv6rdG5izM/u7SHLE2VW5kne4rdUs0kG/KMJiT/2tB5VtH5v0So8NPqczPbz6+0M7IRS9mncoGswjka2T1zqkocQbq45aIA0tgcq6Jmz61TBLwS8T+7Vhyn3J4GUQbCV/YgZuKG+P3hagDffXqlJF6S0SYNXiTJRv768qUOuFsMlWvn243TdBo6qOsFQT9DSJ2xaEfCjUBaiZ+xZj04rXx+7ZFQAE5921SlQl1AkhhDMl63+ALqygA4zu+bTxoLMfDf2j59SMsV7nHbqSx1piwcc9HOewx2g5WLr7s0I21WY7emxnLepmJFnmI0B+MjuaQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=JRA/B8kd4FZBLa8P25DCnp4LOPV8ita+jhUiIcd1X4s=;
+ b=MVweXtMSMpUpT49VVyUofPmWNZxcLbGZFpmCZoQgCaEsPF5d2q6cMT+lR26yOp3qGzDA2SVCbYlTiMMSabCxKKFEC9/6SIcereF4wI07V3Yt6x76s1eZ+CX4cZdWPMqwEy3t5m8241d2UYInfvrbT0v33AORWNYk3KAETX/R4H3QjT1FuR4lh8Xoge1E4+/u0s+rHf3PTjkL3QOJGkia8u4hK5NCWRJP/RuUFpeS7oE364l/Wg2UcitlD1lmPQftMstR0m4N6p5FJ+wtu4PA+v6FX2dh6bV5DSZuqLmEtF+a3HdmBy66xbJlloZyyWyeyRQmlkT9sAAeprMMvQYqpQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=bootlin.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JRA/B8kd4FZBLa8P25DCnp4LOPV8ita+jhUiIcd1X4s=;
+ b=p+HsMEI28AsWHQ87uXCbxcnl4PKw/Ui1DfHL9TBl11kN4HTbzoHza+ALYLBik308ven2PQ7UbMm3t/1Ek9mv4NEwBWKMGCIeAaOLNptisHCF8KINSGWi/lVhPctS7W9eok6GHHAa0kDe/5KbvjpXx5Pgwd0rTPpIMF++24E+Diw56pvVklrWtkbRtRyeuTKmFfNq+U3kz5d3mmjrvkAlFcY/RBvZAH7BiwpmN803QFJiYYhqx71xDkA39p2tNahpMHlqnYcDjizuQV+xlsPhyU+i56AqX/3AI3+xb+M0VlI67lKRbtqNlEKuX3S1dx+dsgTAhR8bi2Rh2fiCKA8u1Q==
+Received: from BN0PR04CA0073.namprd04.prod.outlook.com (2603:10b6:408:ea::18)
+ by BL1PR12MB5255.namprd12.prod.outlook.com (2603:10b6:208:315::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5632.21; Mon, 19 Sep
+ 2022 15:12:23 +0000
+Received: from BN8NAM11FT109.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:ea:cafe::5) by BN0PR04CA0073.outlook.office365.com
+ (2603:10b6:408:ea::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5632.21 via Frontend
+ Transport; Mon, 19 Sep 2022 15:12:23 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ BN8NAM11FT109.mail.protection.outlook.com (10.13.176.221) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5632.12 via Frontend Transport; Mon, 19 Sep 2022 15:12:23 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Mon, 19 Sep
+ 2022 08:12:08 -0700
+Received: from yaviefel (10.126.231.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Mon, 19 Sep
+ 2022 08:12:05 -0700
+References: <20220915095757.2861822-1-daniel.machon@microchip.com>
+ <87illjyeui.fsf@nvidia.com> <Yygm/ZjoIc3yhPso@DEN-LT-70577>
+User-agent: mu4e 1.6.6; emacs 28.1
+From:   Petr Machata <petrm@nvidia.com>
+To:     <Daniel.Machon@microchip.com>
+CC:     <petrm@nvidia.com>, <netdev@vger.kernel.org>,
+        <Allan.Nielsen@microchip.com>, <UNGLinuxDriver@microchip.com>,
+        <maxime.chevallier@bootlin.com>, <vladimir.oltean@nxp.com>,
+        <kuba@kernel.org>, <vinicius.gomes@intel.com>,
+        <thomas.petazzoni@bootlin.com>
+Subject: Re: [RFC PATCH v2 net-next 0/2] Add PCP selector and new APPTRUST
+ attribute
+Date:   Mon, 19 Sep 2022 17:11:33 +0200
+In-Reply-To: <Yygm/ZjoIc3yhPso@DEN-LT-70577>
+Message-ID: <87a66vxut9.fsf@nvidia.com>
 MIME-Version: 1.0
-References: <20220801233403.258871-1-f.fainelli@gmail.com> <CGME20220812111948eucas1p2bf97e7f4558eb024f419346367a87b45@eucas1p2.samsung.com>
- <27016cc0-f228-748b-ea03-800dda4e5f0c@samsung.com> <8c21e530-8e8f-ce2a-239e-9d3a354996cf@gmail.com>
- <CAMuHMdV8vsbFx+nikAwn1po1-PeZVhzotMaLLk+wXNquZceaRQ@mail.gmail.com>
-In-Reply-To: <CAMuHMdV8vsbFx+nikAwn1po1-PeZVhzotMaLLk+wXNquZceaRQ@mail.gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 19 Sep 2022 16:51:44 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWwdKJQT9aoGmkc7RkeOfGtzO7fKAgH4=x-5fckrOR7tA@mail.gmail.com>
-Message-ID: <CAMuHMdWwdKJQT9aoGmkc7RkeOfGtzO7fKAgH4=x-5fckrOR7tA@mail.gmail.com>
-Subject: Re: [PATCH net] net: phy: Warn about incorrect mdio_bus_phy_resume() state
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
-        netdev <netdev@vger.kernel.org>,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        Doug Berger <opendmb@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+Content-Type: text/plain
+X-Originating-IP: [10.126.231.35]
+X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT109:EE_|BL1PR12MB5255:EE_
+X-MS-Office365-Filtering-Correlation-Id: d11ded4d-a3cf-400c-ada0-08da9a515ae5
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: JhDVpKSuAsp90cIf5TNSlNf6vgNnORMkAZRaz/X34nFWBOoklKp1CySdxtJbeigOVvJOqSKCKRS/DFteQARsiwbPrtqZyBywSC1zeE9y5QitDZST8gCrdzlVxCpmvgtQ01SViyNssPGfm6QbGj831Qhc6moWo7G80QbUnbOx3MlAXAgB+JsC7rPh/Wa4i679TAZ6yga/WdXqOeYxlsBvGCpvRwQiWI99aMO8rpTYS+bRESN1sFJgQadxHnXR2P50KKjjW2vql85v/Bps60wIwMFqw3/Mu4F7JN9YQeQdWvNVm+wB4eNrlOI3E8TZ/FY5aJjUHHQ9zBpPoXCL2xj6rF8cTr36KgnjpUT+HJMwDJF1Q2NFmvdNTSZ4ESVLFreiwkx8S+CKaB6Ijspv+20ERvsc5Dg5nU8fW6/CJgpf2LbsnLsEYnHPIptCHlTR0aFDaoCkULtyWCcvwxFBJD2JfD2mpAvfLt3UPhf8PPAbrnBPDI+1m/7jIAlNgNqhuwtClC/S+dvCRkvvdJ11MT3LbBGt250C9WbJOyH+MOkZOwqa1RK3imxiYwODBYT/z6PgIZLFeMdbhdNEZ1g2/FKnP5zL+cvg7K5pFzhQ3+mg0KpTRBGty8y1BiZQuA2kfWdKosVbGiAODXMUFiBswTfqGUiM2MvyCYYNQgL5x4DTFnw1SWbU5Fr5kY6q9OfELOd38uA6abSJ6yc+SUHgEWfBcKkwl8IWaL1NxScmDd40+0TxXwleiDKqaiSWojZWy5HG4TbiY8S+krK05huo+yluQA==
+X-Forefront-Antispam-Report: CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(346002)(396003)(376002)(136003)(451199015)(46966006)(40470700004)(36840700001)(36860700001)(36756003)(86362001)(82740400003)(7636003)(40480700001)(356005)(6916009)(316002)(8676002)(40460700003)(54906003)(2906002)(4744005)(4326008)(5660300002)(41300700001)(8936002)(70206006)(70586007)(426003)(336012)(82310400005)(186003)(16526019)(6666004)(47076005)(2616005)(478600001)(26005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Sep 2022 15:12:23.2345
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: d11ded4d-a3cf-400c-ada0-08da9a515ae5
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT109.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5255
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
         autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,61 +107,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 3:20 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> On Fri, Aug 12, 2022 at 6:39 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
-> > On 8/12/22 04:19, Marek Szyprowski wrote:
-> > > On 02.08.2022 01:34, Florian Fainelli wrote:
-> > >> Calling mdio_bus_phy_resume() with neither the PHY state machine set to
-> > >> PHY_HALTED nor phydev->mac_managed_pm set to true is a good indication
-> > >> that we can produce a race condition looking like this:
-> > >>
-> > >> CPU0                                         CPU1
-> > >> bcmgenet_resume
-> > >>    -> phy_resume
-> > >>      -> phy_init_hw
-> > >>    -> phy_start
-> > >>      -> phy_resume
-> > >>                                                   phy_start_aneg()
-> > >> mdio_bus_phy_resume
-> > >>    -> phy_resume
-> > >>       -> phy_write(..., BMCR_RESET)
-> > >>        -> usleep()                                  -> phy_read()
-> > >>
-> > >> with the phy_resume() function triggering a PHY behavior that might have
-> > >> to be worked around with (see bf8bfc4336f7 ("net: phy: broadcom: Fix
-> > >> brcm_fet_config_init()") for instance) that ultimately leads to an error
-> > >> reading from the PHY.
-> > >>
-> > >> Fixes: fba863b81604 ("net: phy: make PHY PM ops a no-op if MAC driver manages PHY PM")
-> > >> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> > >
-> > > This patch, as probably intended, triggers a warning during system
-> > > suspend/resume cycle in the SMSC911x driver. I've observed it on ARM
-> > > Juno R1 board on the kernel compiled from next-202208010:
-> > >
-> > >    ------------[ cut here ]------------
-> > >    WARNING: CPU: 1 PID: 398 at drivers/net/phy/phy_device.c:323
-> > > mdio_bus_phy_resume+0x34/0xc8
+
+<Daniel.Machon@microchip.com> writes:
+
+> Den Mon, Sep 19, 2022 at 09:54:23AM +0200 skrev Petr Machata:
+>> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+>> 
+>> Thanks, this looks good to me overall, despite the several points
+>> Vladimir and I raised. I think it would be good to send this as non-RFC.
+>> 
+>> Note that for the non-RFC version, an actual user of the interface needs
+>> to be present as well. So one of the offloading drivers should be
+>> adapted to make use of the APP_TRUST and the new PCP selector.
+>> mlxsw would like to make use of both, but I don't know when I will have
+>> time to implement that.
 >
-> I am seeing the same on the ape6evm and kzm9g development
-> boards with smsc911x Ethernet, and on various boards with Renesas
+> Sounds good, and thanks for reviewing to you both.
+> I will go ahead and add support for this in the sparx5 driver - most of it
+> is already implemented during the tests anyway.
+>
+> Should the driver support be posted together with said non-RFC patch
+> series?
 
-So the smsc911x issue was fixed by commit 3ce9f2bef7552893
-("net: smsc911x: Stop and start PHY during suspend and resume").
-
-> Ethernet (sh_eth or ravb) if Wake-on-LAN is disabled.
-
-The issue is still seen with sh_eth and ravb.  I have sent to fixes:
-https://lore.kernel.org/r/c6e1331b9bef61225fa4c09db3ba3e2e7214ba2d.1663598886.git.geert+renesas@glider.be
-https://lore.kernel.org/r/c6e1331b9bef61225fa4c09db3ba3e2e7214ba2d.1663598886.git.geert+renesas@glider.be
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Yes.
