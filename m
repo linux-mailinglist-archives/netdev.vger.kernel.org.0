@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 764B55BD4DF
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 20:41:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 673665BD4E2
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 20:43:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229727AbiISSlx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 14:41:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42426 "EHLO
+        id S229704AbiISSn0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 14:43:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229542AbiISSlv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 14:41:51 -0400
+        with ESMTP id S229542AbiISSnZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 14:43:25 -0400
 Received: from mx01.omp.ru (mx01.omp.ru [90.154.21.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F99146204;
-        Mon, 19 Sep 2022 11:41:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B8DE474E0;
+        Mon, 19 Sep 2022 11:43:24 -0700 (PDT)
 Received: from [192.168.1.103] (178.176.74.120) by msexch01.omp.ru
  (10.188.4.12) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.14; Mon, 19 Sep
- 2022 21:41:41 +0300
-Subject: Re: [PATCH] net: ravb: Fix PHY state warning splat during system
+ 2022 21:43:16 +0300
+Subject: Re: [PATCH] net: sh_eth: Fix PHY state warning splat during system
  resume
 To:     Geert Uytterhoeven <geert+renesas@glider.be>,
         "David S . Miller" <davem@davemloft.net>,
@@ -29,15 +29,15 @@ To:     Geert Uytterhoeven <geert+renesas@glider.be>,
         Florian Fainelli <f.fainelli@gmail.com>
 CC:     <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
-References: <8ec796f47620980fdd0403e21bd8b7200b4fa1d4.1663598796.git.geert+renesas@glider.be>
+References: <c6e1331b9bef61225fa4c09db3ba3e2e7214ba2d.1663598886.git.geert+renesas@glider.be>
 From:   Sergey Shtylyov <s.shtylyov@omp.ru>
 Organization: Open Mobile Platform
-Message-ID: <55afa524-a159-b7d1-e942-289ad5a9b752@omp.ru>
-Date:   Mon, 19 Sep 2022 21:41:38 +0300
+Message-ID: <8dd018ac-1c08-2a33-5728-1c0b76e60d56@omp.ru>
+Date:   Mon, 19 Sep 2022 21:43:15 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.10.1
 MIME-Version: 1.0
-In-Reply-To: <8ec796f47620980fdd0403e21bd8b7200b4fa1d4.1663598796.git.geert+renesas@glider.be>
+In-Reply-To: <c6e1331b9bef61225fa4c09db3ba3e2e7214ba2d.1663598886.git.geert+renesas@glider.be>
 Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -92,10 +92,10 @@ On 9/19/22 5:48 PM, Geert Uytterhoeven wrote:
 > mdio_bus_phy_resume() state"), a warning splat is printed during system
 > resume with Wake-on-LAN disabled:
 > 
->         WARNING: CPU: 0 PID: 1197 at drivers/net/phy/phy_device.c:323 mdio_bus_phy_resume+0xbc/0xc8
+> 	WARNING: CPU: 0 PID: 626 at drivers/net/phy/phy_device.c:323 mdio_bus_phy_resume+0xbc/0xe4
 > 
-> As the Renesas Ethernet AVB driver already calls phy_{stop,start}() in
-> its suspend/resume callbacks, it is sufficient to just mark the MAC
+> As the Renesas SuperH Ethernet driver already calls phy_{stop,start}()
+> in its suspend/resume callbacks, it is sufficient to just mark the MAC
 > responsible for managing the power state of the PHY.
 > 
 > Fixes: fba863b816049b03 ("net: phy: make PHY PM ops a no-op if MAC driver manages PHY PM")
@@ -105,19 +105,19 @@ Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
 
 [...]
 
-> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-> index d013cc1c8a0ad007..abe6f570fe102636 100644
-> --- a/drivers/net/ethernet/renesas/ravb_main.c
-> +++ b/drivers/net/ethernet/renesas/ravb_main.c
-> @@ -1449,6 +1449,8 @@ static int ravb_phy_init(struct net_device *ndev)
->  		phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_100baseT_Half_BIT);
->  	}
+> diff --git a/drivers/net/ethernet/renesas/sh_eth.c b/drivers/net/ethernet/renesas/sh_eth.c
+> index 67ade78fb7671c4a..7fd8828d3a846169 100644
+> --- a/drivers/net/ethernet/renesas/sh_eth.c
+> +++ b/drivers/net/ethernet/renesas/sh_eth.c
+> @@ -2029,6 +2029,8 @@ static int sh_eth_phy_init(struct net_device *ndev)
+>  	if (mdp->cd->register_type != SH_ETH_REG_GIGABIT)
+>  		phy_set_max_speed(phydev, SPEED_100);
 >  
 > +	/* Indicate that the MAC is responsible for managing PHY PM */
+
+   Again, this field is declared as *unsigned*...
+
 > +	phydev->mac_managed_pm = true;
-
-   Hm, this field is declared as *unsigned*...
-
 >  	phy_attached_info(phydev);
 [...]
 
