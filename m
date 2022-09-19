@@ -2,102 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F41E5BCE13
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 16:09:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 980515BCE42
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 16:14:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229509AbiISOJq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 10:09:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57536 "EHLO
+        id S229581AbiISOOk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 10:14:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229473AbiISOJn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 10:09:43 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B870663FC
-        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 07:09:40 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id 130so42634452ybw.8
-        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 07:09:40 -0700 (PDT)
+        with ESMTP id S229437AbiISOOi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 10:14:38 -0400
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 079E5FD3C;
+        Mon, 19 Sep 2022 07:14:37 -0700 (PDT)
+Received: by mail-qk1-x72a.google.com with SMTP id i3so15831258qkl.3;
+        Mon, 19 Sep 2022 07:14:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
-         :subject:date;
-        bh=0VQuOBOAInh/oCFmAgnHFTRx83AeymR8zc8R+S3NTFU=;
-        b=Rz/445BWfA4PJkfKPU4WKmiiYtEb7/PZiZ6CCMlszgG80zuaiqfxRmoT6rkQ3hQiZL
-         A8y4K8rtKaXUZAocgZKd4GDWYKDLV0EXI9YYKBjB84AOi0jy1p0Vo+ojCL9BI+qWSXv2
-         E+lBVeV58n4eNHka3gEXYfn+A6Rnhtsi9XRPQq5Bhi/U8bpd/OUccH7K50qmo0KGXRml
-         MkpIpChgPGyIHhYqq2R0j7EM4zKwYe4JbKklzr9d/qsckbd1VKfCSpwtN03XGtW8vSLd
-         BGQWWkEXTuf2zUcvAQWxP1pcBfbH1XAxJtOdom8fGEdjUE7l51G5SCEdTOmFqox9pt6n
-         oswA==
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=y29nOjjE0WdGENdKB5VrsUJIzw7HpcrkvaNq9Rldol0=;
+        b=NSzXi5cwKPoLbx17l7nM7lkVqW0fSNqt6xEcU1FJdKLrgaRNKgocf4h9h05ebjaL/g
+         fIs+Kpi8n7dEVlwb4epyjFe+gBoYPi3HIVFM7DhapIvcp+TlcEj6PRidBtwojDUSjLLR
+         IHKDwLv9lzzun2gpv/osSxSTQvqGk5WfNW98qVtYmI0Wdk7/xyhCLNnpZissc+DAdApj
+         Dd7E6/kvtPlthyUZBhidRosdJynO+z2yCNwhRy916B+Lp8L8m0S4ROsjRFE0Sm+cwopC
+         klnwL1o21qcVJ6cWONhWxYiZeH3rl4NNGfp6W1zd6UQCjHe8oRiSbfuvpa+PrTYrrNPl
+         UR1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date;
-        bh=0VQuOBOAInh/oCFmAgnHFTRx83AeymR8zc8R+S3NTFU=;
-        b=YhMH68vqZm4KQGdDFycU3bcIOWf26q2ij0aJJnJHl+NtfhqQkWvV+4JJrzdBvEwLkv
-         0UZ40iJUMRB6BZCl1LBJzZXVet9J8QHpxrXe5qMa/GMmdfxSHtdQDeIeIr5fKjNorKG6
-         Zvs7lQjl/VOjkvP9kNOED2yWt9VW9RPBPFfFuc041RiEdILW/L2uxTY4V3XfK7gbBtzz
-         M/qWN0K+iFicPgwFn45lRIhUCuW4h82cqykiCi7WmueJ2R+rYm5QAV8TDdKi8bgq0js6
-         2XEStnraC+gPXs2rgAplnheCkU+d2X8T/t8SeIEiNvhjo8zLgue+KNt22e5neTDS3BwG
-         sEPQ==
-X-Gm-Message-State: ACrzQf3AXXsd9SHlmsIyeIY1GJS4XCqoLdI2oFckN+FgvOl/4zrQjxc1
-        11k3fQLjZIF2cQhhh2EibZQT+If1xZKgBMbrnnU=
-X-Google-Smtp-Source: AMsMyM7cEOYu5ehiOXv8FBAWRTs8M1hxnMSvPRjGav3ZMWFIiXRKmaZiCb+7gfTiJdgtVXryB8GNHQElsTJGk+ROFw4=
-X-Received: by 2002:a25:2441:0:b0:6ae:bb37:3db3 with SMTP id
- k62-20020a252441000000b006aebb373db3mr15315384ybk.213.1663596579877; Mon, 19
- Sep 2022 07:09:39 -0700 (PDT)
+        bh=y29nOjjE0WdGENdKB5VrsUJIzw7HpcrkvaNq9Rldol0=;
+        b=0KE0sMI6UGb8+Od+SLPyqguc7dYEI6nyvpIavVjAQMEa9LPpbtIeW6kqP95FKJXIvr
+         YFeL6GRCakE6CqGKO8MKTvzbLbQOVJ4gVFPvYq7Cu5yPxuBc0ucJW+MrntaewwwbKsuw
+         1IzHjl+pGvnb9pfmQwWEQyGqdoEphaQepkhiGuFnxkLdnoyaAWgt46akaUwmATdFNvDp
+         BIBE+l8BetBRW6ugw2TX3HzTrZEPgZCA52O5uRrXlmp3YEk5EI+7beHxwcxiOI2V96zH
+         WsJY4EgzEo2qPHtiychdYd7uT/zczAUOQF8Coot+9xwsdVD8R/SJ1pk3PjzGmniR+K4F
+         3bXw==
+X-Gm-Message-State: ACrzQf2m9jBR0gSmsPvqhXHSOAf8Pmo8+1+D0W7FVnBPyWhsAiwYeYbn
+        FoWMjNRIzbimcYc8JZpKJHQ=
+X-Google-Smtp-Source: AMsMyM4gveLiWAaqvLci47PbACdG11Fhi19tMQGDyUhlp4016ZHrh3pI5rQlJMvZRLGcIjR0pHIPog==
+X-Received: by 2002:a05:620a:4807:b0:6cf:55d:e4c3 with SMTP id eb7-20020a05620a480700b006cf055de4c3mr3968308qkb.563.1663596876017;
+        Mon, 19 Sep 2022 07:14:36 -0700 (PDT)
+Received: from [192.168.1.201] (pool-173-73-95-180.washdc.fios.verizon.net. [173.73.95.180])
+        by smtp.gmail.com with ESMTPSA id t13-20020a37ea0d000000b006ce60296f97sm101724qkj.68.2022.09.19.07.14.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 19 Sep 2022 07:14:35 -0700 (PDT)
+Message-ID: <cf05390e-a69b-ad34-8c61-c5e9bbdaf5e3@gmail.com>
+Date:   Mon, 19 Sep 2022 10:14:34 -0400
 MIME-Version: 1.0
-Received: by 2002:a05:7000:1845:b0:3ba:c80e:5a6f with HTTP; Mon, 19 Sep 2022
- 07:09:39 -0700 (PDT)
-Reply-To: davidbeames02@gmail.com
-From:   David Beames <info.globalreourceaid021@gmail.com>
-Date:   Mon, 19 Sep 2022 16:09:39 +0200
-Message-ID: <CAFjUfKME5KBcUryb+vP06UGjwrjNrU-MyKuNt6MKvMYJsLFsgg@mail.gmail.com>
-Subject: REF/UPDATE
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=7.5 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH net-next 11/13] sunhme: Combine continued messages
+Content-Language: en-US
+To:     Rolf Eike Beer <eike-kernel@sf-tec.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Nick Bowler <nbowler@draconx.ca>
+References: <20220918232626.1601885-1-seanga2@gmail.com>
+ <20220918232626.1601885-12-seanga2@gmail.com>
+ <14992029.3CObj9AJNb@eto.sf-tec.de>
+From:   Sean Anderson <seanga2@gmail.com>
+In-Reply-To: <14992029.3CObj9AJNb@eto.sf-tec.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UNCLAIMED_MONEY,UNDISC_FREEM
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [info.globalreourceaid021[at]gmail.com]
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [davidbeames02[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [info.globalreourceaid021[at]gmail.com]
-        * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:b2f listed in]
-        [list.dnswl.org]
-        *  2.4 UNCLAIMED_MONEY BODY: People just leave money laying around
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  3.0 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *******
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Good Day
+On 9/19/22 09:23, Rolf Eike Beer wrote:
+> Am Montag, 19. September 2022, 01:26:24 CEST schrieb Sean Anderson:
+>> This driver seems to have been written under the assumption that messages
+>> can be continued arbitrarily. I'm not when this changed (if ever), but such
+>> ad-hoc continuations are liable to be rudely interrupted. Convert all such
+>> instances to single prints. This loses a bit of timing information (such as
+>> when a line was constructed piecemeal as the function executed), but it's
+>> easy to add a few prints if necessary. This also adds newlines to the ends
+>> of any prints without them.
+> 
+> I have a similar patch around, but yours catches more places.
+> 
+>> diff --git a/drivers/net/ethernet/sun/sunhme.c
+>> b/drivers/net/ethernet/sun/sunhme.c index 98c38e213bab..9965c9c872a6 100644
+>> --- a/drivers/net/ethernet/sun/sunhme.c
+>> +++ b/drivers/net/ethernet/sun/sunhme.c
+>> @@ -330,7 +331,6 @@ static int happy_meal_bb_read(struct happy_meal *hp,
+>>   	int retval = 0;
+>>   	int i;
+>>
+>> -	ASD("happy_meal_bb_read: reg=%d ", reg);
+>>
+>>   	/* Enable the MIF BitBang outputs. */
+>>   	hme_write32(hp, tregs + TCVR_BBOENAB, 1);
+> 
+> You can remove one of the empty lines here.
 
-Reply by Email to confirm names, last name, and phone number,
-in-respect to an unclaimed Fund in our claims file record,
+OK
 
-Yours Sincerely,
-David Beames
+>> @@ -1196,15 +1182,15 @@ static void happy_meal_init_rings(struct happy_meal
+>> *hp) struct hmeal_init_block *hb = hp->happy_block;
+>>   	int i;
+>>
+>> -	HMD("happy_meal_init_rings: counters to zero, ");
+>> +	HMD("counters to zero\n");
+>>   	hp->rx_new = hp->rx_old = hp->tx_new = hp->tx_old = 0;
+>>
+>>   	/* Free any skippy bufs left around in the rings. */
+>> -	HMD("clean, ");
+>> +	HMD("clean\n");
+> 
+> I don't think this one is actually needed, there isn't much than can happen in
+> between these 2 prints.
+
+OK
+
+>> @@ -1282,17 +1268,11 @@ happy_meal_begin_auto_negotiation(struct happy_meal
+>> *hp, * XXX so I completely skip checking for it in the BMSR for now. */
+>>
+>> -#ifdef AUTO_SWITCH_DEBUG
+>> -		ASD("%s: Advertising [ ");
+>> -		if (hp->sw_advertise & ADVERTISE_10HALF)
+>> -			ASD("10H ");
+>> -		if (hp->sw_advertise & ADVERTISE_10FULL)
+>> -			ASD("10F ");
+>> -		if (hp->sw_advertise & ADVERTISE_100HALF)
+>> -			ASD("100H ");
+>> -		if (hp->sw_advertise & ADVERTISE_100FULL)
+>> -			ASD("100F ");
+>> -#endif
+>> +		ASD("Advertising [ %s%s%s%s]\n",
+>> +		    hp->sw_advertise & ADVERTISE_10HALF ? "10H " : "",
+>> +		    hp->sw_advertise & ADVERTISE_10FULL ? "10F " : "",
+>> +		    hp->sw_advertise & ADVERTISE_100HALF ? "100H " : "",
+>> +		    hp->sw_advertise & ADVERTISE_100FULL ? "100F " :
+> "");
+>>
+>>   		/* Enable Auto-Negotiation, this is usually on
+> already... */
+>>   		hp->sw_bmcr |= BMCR_ANENABLE;
+> 
+> Completely independent of this driver, but I wonder if there is no generic
+> function to print these 10/100/* full/half duplex strings? There are several
+> drivers doing this as a quick grep shows.
+
+There's some functions to print just one link mode, but I think generally the
+full advertising word is printed in debugs. I'm not too worried since this is
+just for debug.
+
+One of my goals is to convert this driver to phylib, but I haven't dived very
+deep into it.
+
+--Sean
