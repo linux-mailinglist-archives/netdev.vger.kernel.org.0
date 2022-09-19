@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 72BC45BCA66
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 13:11:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 300985BCA70
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 13:11:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230220AbiISLLG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 07:11:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48568 "EHLO
+        id S230226AbiISLLH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 07:11:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230204AbiISLKe (ORCPT
+        with ESMTP id S230208AbiISLKe (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 07:10:34 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D2DC140E0;
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98FD314D2F;
         Mon, 19 Sep 2022 04:10:30 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MWMMx4jtZzpSyc;
-        Mon, 19 Sep 2022 19:07:41 +0800 (CST)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MWMKm68XfzMn0l;
+        Mon, 19 Sep 2022 19:05:48 +0800 (CST)
 Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
  (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Mon, 19 Sep
- 2022 19:10:27 +0800
+ 2022 19:10:28 +0800
 From:   Zhengchao Shao <shaozhengchao@huawei.com>
 To:     <netdev@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
         <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
         <shuah@kernel.org>, <victor@mojatatu.com>
 CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
         <shaozhengchao@huawei.com>
-Subject: [PATCH net-next 10/15] selftests/tc-testings: add selftests for sfb qdisc
-Date:   Mon, 19 Sep 2022 19:11:54 +0800
-Message-ID: <20220919111159.86998-11-shaozhengchao@huawei.com>
+Subject: [PATCH net-next 11/15] selftests/tc-testings: add selftests for sfq qdisc
+Date:   Mon, 19 Sep 2022 19:11:55 +0800
+Message-ID: <20220919111159.86998-12-shaozhengchao@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220919111159.86998-1-shaozhengchao@huawei.com>
 References: <20220919111159.86998-1-shaozhengchao@huawei.com>
@@ -47,38 +47,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Test 3294: Create SFB with default setting
-Test 430a: Create SFB with rehash setting
-Test 3410: Create SFB with db setting
-Test 49a0: Create SFB with limit setting
-Test 1241: Create SFB with max setting
-Test 3249: Create SFB with target setting
-Test 30a9: Create SFB with increment setting
-Test 239a: Create SFB with decrement setting
-Test 9301: Create SFB with penalty_rate setting
-Test 2a01: Create SFB with penalty_burst setting
-Test 3209: Change SFB with rehash setting
-Test 5447: Show SFB class
+Test 7482: Create SFQ with default setting
+Test c186: Create SFQ with limit setting
+Test ae23: Create SFQ with perturb setting
+Test a430: Create SFQ with quantum setting
+Test 4539: Create SFQ with divisor setting
+Test b089: Create SFQ with flows setting
+Test 99a0: Create SFQ with depth setting
+Test 7389: Create SFQ with headdrop setting
+Test 6472: Create SFQ with redflowlimit setting
+Test 8929: Show SFQ class
 
 Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 ---
- .../tc-testing/tc-tests/qdiscs/sfb.json       | 279 ++++++++++++++++++
- 1 file changed, 279 insertions(+)
- create mode 100644 tools/testing/selftests/tc-testing/tc-tests/qdiscs/sfb.json
+ .../tc-testing/tc-tests/qdiscs/sfq.json       | 232 ++++++++++++++++++
+ 1 file changed, 232 insertions(+)
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/qdiscs/sfq.json
 
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/qdiscs/sfb.json b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/sfb.json
+diff --git a/tools/testing/selftests/tc-testing/tc-tests/qdiscs/sfq.json b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/sfq.json
 new file mode 100644
-index 000000000000..ba2f5e79cdbf
+index 000000000000..b6be718a174a
 --- /dev/null
-+++ b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/sfb.json
-@@ -0,0 +1,279 @@
++++ b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/sfq.json
+@@ -0,0 +1,232 @@
 +[
 +    {
-+        "id": "3294",
-+        "name": "Create SFB with default setting",
++        "id": "7482",
++        "name": "Create SFQ with default setting",
 +        "category": [
 +            "qdisc",
-+            "sfb"
++            "sfq"
 +        ],
 +        "plugins": {
 +            "requires": "nsPlugin"
@@ -86,10 +84,10 @@ index 000000000000..ba2f5e79cdbf
 +        "setup": [
 +            "$IP link add dev $DUMMY type dummy || /bin/true"
 +        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root sfb",
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root sfq",
 +        "expExitCode": "0",
 +        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc sfb 1: root refcnt [0-9]+ rehash 600s db 60s",
++        "matchPattern": "qdisc sfq 1: root refcnt [0-9]+ limit 127p quantum.*depth 127 divisor 1024",
 +        "matchCount": "1",
 +        "teardown": [
 +            "$TC qdisc del dev $DUMMY handle 1: root",
@@ -97,11 +95,11 @@ index 000000000000..ba2f5e79cdbf
 +        ]
 +    },
 +    {
-+        "id": "430a",
-+        "name": "Create SFB with rehash setting",
++        "id": "c186",
++        "name": "Create SFQ with limit setting",
 +        "category": [
 +            "qdisc",
-+            "sfb"
++            "sfq"
 +        ],
 +        "plugins": {
 +            "requires": "nsPlugin"
@@ -109,10 +107,10 @@ index 000000000000..ba2f5e79cdbf
 +        "setup": [
 +            "$IP link add dev $DUMMY type dummy || /bin/true"
 +        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root sfb rehash 60",
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root sfq limit 8",
 +        "expExitCode": "0",
 +        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc sfb 1: root refcnt [0-9]+ rehash 60ms db 60s",
++        "matchPattern": "qdisc sfq 1: root refcnt [0-9]+ limit 8p",
 +        "matchCount": "1",
 +        "teardown": [
 +            "$TC qdisc del dev $DUMMY handle 1: root",
@@ -120,11 +118,11 @@ index 000000000000..ba2f5e79cdbf
 +        ]
 +    },
 +    {
-+        "id": "3410",
-+        "name": "Create SFB with db setting",
++        "id": "ae23",
++        "name": "Create SFQ with perturb setting",
 +        "category": [
 +            "qdisc",
-+            "sfb"
++            "sfq"
 +        ],
 +        "plugins": {
 +            "requires": "nsPlugin"
@@ -132,10 +130,10 @@ index 000000000000..ba2f5e79cdbf
 +        "setup": [
 +            "$IP link add dev $DUMMY type dummy || /bin/true"
 +        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root sfb db 10",
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root sfq perturb 10",
 +        "expExitCode": "0",
 +        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc sfb 1: root refcnt [0-9]+ rehash 600s db 10ms",
++        "matchPattern": "depth 127 divisor 1024 perturb 10sec",
 +        "matchCount": "1",
 +        "teardown": [
 +            "$TC qdisc del dev $DUMMY handle 1: root",
@@ -143,11 +141,11 @@ index 000000000000..ba2f5e79cdbf
 +        ]
 +    },
 +    {
-+        "id": "49a0",
-+        "name": "Create SFB with limit setting",
++        "id": "a430",
++        "name": "Create SFQ with quantum setting",
 +        "category": [
 +            "qdisc",
-+            "sfb"
++            "sfq"
 +        ],
 +        "plugins": {
 +            "requires": "nsPlugin"
@@ -155,10 +153,10 @@ index 000000000000..ba2f5e79cdbf
 +        "setup": [
 +            "$IP link add dev $DUMMY type dummy || /bin/true"
 +        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root sfb limit 100",
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root sfq quantum 9000",
 +        "expExitCode": "0",
 +        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc sfb 1: root refcnt [0-9]+ rehash 600s db 60s limit 100p",
++        "matchPattern": "qdisc sfq 1: root refcnt [0-9]+ limit 127p quantum 9000b depth 127 divisor 1024",
 +        "matchCount": "1",
 +        "teardown": [
 +            "$TC qdisc del dev $DUMMY handle 1: root",
@@ -166,11 +164,11 @@ index 000000000000..ba2f5e79cdbf
 +        ]
 +    },
 +    {
-+        "id": "1241",
-+        "name": "Create SFB with max setting",
++        "id": "4539",
++        "name": "Create SFQ with divisor setting",
 +        "category": [
 +            "qdisc",
-+            "sfb"
++            "sfq"
 +        ],
 +        "plugins": {
 +            "requires": "nsPlugin"
@@ -178,10 +176,10 @@ index 000000000000..ba2f5e79cdbf
 +        "setup": [
 +            "$IP link add dev $DUMMY type dummy || /bin/true"
 +        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root sfb max 100",
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root sfq divisor 512",
 +        "expExitCode": "0",
 +        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc sfb 1: root refcnt 2 rehash 600s db 60s.*max 100p",
++        "matchPattern": "qdisc sfq 1: root refcnt [0-9]+ limit 127p quantum 1514b depth 127 divisor 512",
 +        "matchCount": "1",
 +        "teardown": [
 +            "$TC qdisc del dev $DUMMY handle 1: root",
@@ -189,11 +187,11 @@ index 000000000000..ba2f5e79cdbf
 +        ]
 +    },
 +    {
-+        "id": "3249",
-+        "name": "Create SFB with target setting",
++        "id": "b089",
++        "name": "Create SFQ with flows setting",
 +        "category": [
 +            "qdisc",
-+            "sfb"
++            "sfq"
 +        ],
 +        "plugins": {
 +            "requires": "nsPlugin"
@@ -201,10 +199,10 @@ index 000000000000..ba2f5e79cdbf
 +        "setup": [
 +            "$IP link add dev $DUMMY type dummy || /bin/true"
 +        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root sfb target 100",
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root sfq flows 20",
 +        "expExitCode": "0",
 +        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc sfb 1: root refcnt 2 rehash 600s db 60s.*target 100p",
++        "matchPattern": "qdisc sfq 1: root refcnt",
 +        "matchCount": "1",
 +        "teardown": [
 +            "$TC qdisc del dev $DUMMY handle 1: root",
@@ -212,11 +210,11 @@ index 000000000000..ba2f5e79cdbf
 +        ]
 +    },
 +    {
-+        "id": "30a9",
-+        "name": "Create SFB with increment setting",
++        "id": "99a0",
++        "name": "Create SFQ with depth setting",
 +        "category": [
 +            "qdisc",
-+            "sfb"
++            "sfq"
 +        ],
 +        "plugins": {
 +            "requires": "nsPlugin"
@@ -224,10 +222,10 @@ index 000000000000..ba2f5e79cdbf
 +        "setup": [
 +            "$IP link add dev $DUMMY type dummy || /bin/true"
 +        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root sfb increment 0.1",
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root sfq depth 64",
 +        "expExitCode": "0",
 +        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc sfb 1: root refcnt 2 rehash 600s db 60s.*increment 0.1",
++        "matchPattern": "qdisc sfq 1: root refcnt [0-9]+ limit 127p quantum 1514b depth 64 divisor 1024",
 +        "matchCount": "1",
 +        "teardown": [
 +            "$TC qdisc del dev $DUMMY handle 1: root",
@@ -235,11 +233,11 @@ index 000000000000..ba2f5e79cdbf
 +        ]
 +    },
 +    {
-+        "id": "239a",
-+        "name": "Create SFB with decrement setting",
++        "id": "7389",
++        "name": "Create SFQ with headdrop setting",
 +        "category": [
 +            "qdisc",
-+            "sfb"
++            "sfq"
 +        ],
 +        "plugins": {
 +            "requires": "nsPlugin"
@@ -247,10 +245,10 @@ index 000000000000..ba2f5e79cdbf
 +        "setup": [
 +            "$IP link add dev $DUMMY type dummy || /bin/true"
 +        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root sfb decrement 0.1",
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root sfq headdrop",
 +        "expExitCode": "0",
 +        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc sfb 1: root refcnt 2 rehash 600s db 60s.*decrement 0.1",
++        "matchPattern": "qdisc sfq 1: root refcnt [0-9]+ limit 127p quantum 1514b depth 127 headdrop divisor 1024",
 +        "matchCount": "1",
 +        "teardown": [
 +            "$TC qdisc del dev $DUMMY handle 1: root",
@@ -258,11 +256,11 @@ index 000000000000..ba2f5e79cdbf
 +        ]
 +    },
 +    {
-+        "id": "9301",
-+        "name": "Create SFB with penalty_rate setting",
++        "id": "6472",
++        "name": "Create SFQ with redflowlimit setting",
 +        "category": [
 +            "qdisc",
-+            "sfb"
++            "sfq"
 +        ],
 +        "plugins": {
 +            "requires": "nsPlugin"
@@ -270,10 +268,10 @@ index 000000000000..ba2f5e79cdbf
 +        "setup": [
 +            "$IP link add dev $DUMMY type dummy || /bin/true"
 +        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root sfb penalty_rate 4000",
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root sfq redflowlimit 100000 min 8000 max 60000 probability 0.20 ecn headdrop",
 +        "expExitCode": "0",
 +        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc sfb 1: root refcnt 2 rehash 600s db 60s.*penalty_rate 4000pps",
++        "matchPattern": "qdisc sfq 1: root refcnt [0-9]+ limit 127p quantum 1514b depth 127 headdrop divisor 1024 ewma 6 min 8000b max 60000b probability 0.2 ecn",
 +        "matchCount": "1",
 +        "teardown": [
 +            "$TC qdisc del dev $DUMMY handle 1: root",
@@ -281,11 +279,11 @@ index 000000000000..ba2f5e79cdbf
 +        ]
 +    },
 +    {
-+        "id": "2a01",
-+        "name": "Create SFB with penalty_burst setting",
++        "id": "8929",
++        "name": "Show SFQ class",
 +        "category": [
 +            "qdisc",
-+            "sfb"
++            "sfq"
 +        ],
 +        "plugins": {
 +            "requires": "nsPlugin"
@@ -293,57 +291,10 @@ index 000000000000..ba2f5e79cdbf
 +        "setup": [
 +            "$IP link add dev $DUMMY type dummy || /bin/true"
 +        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root sfb penalty_burst 64",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc sfb 1: root refcnt 2 rehash 600s db 60s.*penalty_burst 64p",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DUMMY handle 1: root",
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    },
-+    {
-+        "id": "3209",
-+        "name": "Change SFB with rehash setting",
-+        "category": [
-+            "qdisc",
-+            "sfb"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true",
-+            "$TC qdisc add dev $DUMMY handle 1: root sfb penalty_burst 64"
-+        ],
-+        "cmdUnderTest": "$TC qdisc change dev $DUMMY handle 1: root sfb rehash 100",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc sfb 1: root refcnt 2 rehash 100ms db 60s",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DUMMY handle 1: root",
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    },
-+    {
-+        "id": "5447",
-+        "name": "Show SFB class",
-+        "category": [
-+            "qdisc",
-+            "sfb"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true"
-+        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root sfb",
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root sfq",
 +        "expExitCode": "0",
 +        "verifyCmd": "$TC class show dev $DUMMY",
-+        "matchPattern": "class sfb 1:",
++        "matchPattern": "class sfq 1:",
 +        "matchCount": "0",
 +        "teardown": [
 +            "$TC qdisc del dev $DUMMY handle 1: root",
