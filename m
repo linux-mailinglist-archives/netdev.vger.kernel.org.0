@@ -2,147 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D8A15BD556
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 21:45:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AE205BD596
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 22:17:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229793AbiISTpD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 15:45:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42048 "EHLO
+        id S229630AbiISURv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 16:17:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229743AbiISTo5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 15:44:57 -0400
-Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FEF012D2C;
-        Mon, 19 Sep 2022 12:44:55 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id 88BBA5C0485;
-        Mon, 19 Sep 2022 15:44:54 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Mon, 19 Sep 2022 15:44:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
-        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm1; t=1663616694; x=1663703094; bh=Aj
-        GZWBeIHap1TSOlC1jQFkXlGehltvgA5iuog4FuANs=; b=V9NsluUDfaYIExb0xU
-        8poarDcLEc7ArDyzW+SlA+RkGMGh9p6SBynMSp5IlqxB5vW8Diie3iaSXOzqSJAG
-        oEQXSIvu2au++nlvGhhB4YFbcIkFoznupmgvxaHiYbegOhMYFtFDjhaGhnFtraM6
-        3ukN55LBuKGrDV8OoM3TIa4ZX+wov2iJd2IQFmqnSGpC38WY6mvuYv8CT2RByy28
-        BZN1gjx09pXbzSvxzQOlcuRZWcwEslPdzoP8tKoGfchHCw2+rPCK4oLjsPawIuAA
-        K4WYQ4iyW3Iwq97USEgSvXE4UUUELS0PvyLgF2Afp1gGYVumeRqXBacPvvcXTLhV
-        TvFw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; t=1663616694; x=1663703094; bh=AjGZWBeIHap1T
-        SOlC1jQFkXlGehltvgA5iuog4FuANs=; b=0hzcvi5ARKh3+oiYP3LVgEJ742IJZ
-        0dEyXbA8WGaDBnYmDKcO0ojZGbpT4U2wbOdImigVd4HQLFcTUP1Osf/3oXMtX8a6
-        5m3Tk1jaRorFbtjfbUMDjSURi/c4XRi86g1UNsX3yGYWf5t6k9hHh20UyCyM0aAg
-        6RET41DUPhB4869r3xKiORUDoOjxSUVbNuDKGEYFTvOTDHBd4YMaR6hyxwdif4Eg
-        D1c3GcLy9KPo3Z5z9yXCgD022lDXEw7deZ/raS/1wfC75V5ofI6Q3RK5o8eEd4+Y
-        i9PO8OWQzdqlctHcafYY6sXpvaMjx4DL4fCHbD8VGh9gyiUb0FmjbLTUg==
-X-ME-Sender: <xms:tsYoYwKbvOwThjicKO8kXlMtTIKHyBzo1vfzwcZ4wHEvr0nK4Jazbw>
-    <xme:tsYoYwLoXyl2XPVfJt24Df2rJIxaUEqxTX7RU4z6ys4JoXN6Tv1kaaY4gmQyvJBpZ
-    fEQ33jjzMrRuxZJOQ>
-X-ME-Received: <xmr:tsYoYwvtf127-HyqKJLSg92om8tDUVeVE2DNVUR6PEnS4PHM8yIXAYGwKr7fP7p2WRO4vgl-bAeC7DkQLEibvn7ORCiHV2LkOjFpiWY>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfedvjedgudegfecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecufghrlhcuvffnffculdejtddmnecujfgurhephf
-    fvvefufffkofgjfhgggfestdekredtredttdenucfhrhhomhepffgrnhhivghlucgiuhcu
-    oegugihusegugihuuhhurdighiiiqeenucggtffrrghtthgvrhhnpefgfefggeejhfduie
-    ekvdeuteffleeifeeuvdfhheejleejjeekgfffgefhtddtteenucevlhhushhtvghrufhi
-    iigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegugihusegugihuuhhurdighiii
-X-ME-Proxy: <xmx:tsYoY9Y7dxNTzasnhS46Uo3ithrVjaJUZ7EGNMDvMi0nCsPtLyA2oA>
-    <xmx:tsYoY3aCEmOjzrOEMmyUFiNzaXb-GxMxsfrNBu_j2GuwYac4G8VJHQ>
-    <xmx:tsYoY5AsxuluTniRnzrQpPng_0BHNTiBSG7UYVDitvGiHSs28kTqEg>
-    <xmx:tsYoY1CDgFdHXvZWMOTnbPObkFV-TBq6qyTKmgkziWZWcfGHT_acEg>
-Feedback-ID: i6a694271:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 19 Sep 2022 15:44:53 -0400 (EDT)
-From:   Daniel Xu <dxu@dxuuu.xyz>
-To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, memxor@gmail.com, martin.lau@linux.dev
-Cc:     Daniel Xu <dxu@dxuuu.xyz>, pablo@netfilter.org, fw@strlen.de,
-        toke@kernel.org, netfilter-devel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next v2 3/3] bpf: Move nf_conn extern declarations to filter.h
-Date:   Mon, 19 Sep 2022 13:44:37 -0600
-Message-Id: <3c00fb8d15d543ae3b5df928c191047145c6b5fe.1663616584.git.dxu@dxuuu.xyz>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <cover.1663616584.git.dxu@dxuuu.xyz>
-References: <cover.1663616584.git.dxu@dxuuu.xyz>
+        with ESMTP id S229577AbiISURl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 16:17:41 -0400
+Received: from mail-yw1-x1142.google.com (mail-yw1-x1142.google.com [IPv6:2607:f8b0:4864:20::1142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BA014A125
+        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 13:17:41 -0700 (PDT)
+Received: by mail-yw1-x1142.google.com with SMTP id 00721157ae682-3450a7358baso2937727b3.13
+        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 13:17:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
+         :subject:date;
+        bh=YeEFrOpnueqp49lpSsCtkyhW66cD5QzqZPU5hyS5TkM=;
+        b=PbJaF2Xe298LcCrOkcxIMTcsECcWtDqVMCE1wJTlLLqlpDgrajBJjmUpZkHJ5yLfbC
+         /LGC9/KYQQM070TpkkueuxRRKg4Jxjw1sx9pBxy2kTO66/36BX35CnTwIGKcEafDLgFb
+         nq7e3isWyU4nIUmoS1uAI65RcqgSXSR1ZYw+xP6B3Udk8ymyfSq3sph9dyQp5RyvSdSR
+         TD5tcNu4ag3wZM/m+opYGbrS8tSo2tmLLAqINEr9Nqeld2lS8tZ3hj4zZdm1qU+Asn73
+         ccjQxztkgpN0xZnS0cXXHKdlN4ZVsGudjrKRR0hXpBHoHDqPM3jV4m7Q3a3bDyqLEamh
+         7puw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=YeEFrOpnueqp49lpSsCtkyhW66cD5QzqZPU5hyS5TkM=;
+        b=AQfbZTwQyJ3XfMXN7zPriK+uViJRpshkQ21pA4muPb9+u3gNbpug5qNNdimiABt/DN
+         4bQkjaZel4js2JJ36KhQ9UfufAQwuazGTX/GjBu5K23sOBxp5OrVFZeu6L1qcgeXhioo
+         fbI/7y2gl1k2uNUPjAWFBspIFAn5t7GkUZrGvBG/+pycv0u8909bRVxCxMwXm94qNb4Z
+         EoNsFughIDI4RdLLUjbVIT+3xR60vfwpJMKYnkeW0Ymp2a290Egp6hJy3/QjiCa58yu0
+         hBpW873LGSZfBtInk6O6ncVlkYrMa1Ozj3ZgVwhnt3/J4rYmCdmHCA5eyeoO5EoblwOj
+         osYw==
+X-Gm-Message-State: ACrzQf0GdASmI4toe0wLHkHnlQtBqjKlkxFWjHvOSQmcnhHe06SCqWLB
+        vacVk1IA/fhNV52Qmrvne4LIkxtQlcUZhbkZ8+0=
+X-Google-Smtp-Source: AMsMyM4l/cEHTrnHtsS+JRoHlDgVoveiQs09//JBgZ3QTEXxMMGDIpQBqPJUSqi5k2zFD9d4l34Um5BIJynlAkijEQU=
+X-Received: by 2002:a81:2555:0:b0:34d:dfb:48b with SMTP id l82-20020a812555000000b0034d0dfb048bmr3686575ywl.390.1663618660104;
+ Mon, 19 Sep 2022 13:17:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FROM_SUSPICIOUS_NTLD,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_PASS,T_PDS_OTHER_BAD_TLD
-        autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:a05:7010:289:b0:2f0:1279:d56 with HTTP; Mon, 19 Sep 2022
+ 13:17:39 -0700 (PDT)
+Reply-To: lisawilliams46655@yahoo.com
+From:   Dr Lisa Williams <daouda76104963@gmail.com>
+Date:   Mon, 19 Sep 2022 13:17:39 -0700
+Message-ID: <CACGepZU90h8e3CnO4Qh3dnSB61PiDfSp+NFPqK51VvuizuNg5g@mail.gmail.com>
+Subject: Hi Dear
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=5.1 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UNDISC_FREEM autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:1142 listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5002]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [daouda76104963[at]gmail.com]
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [lisawilliams46655[at]yahoo.com]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [daouda76104963[at]gmail.com]
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        *  3.0 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We're seeing the following new warnings on netdev/build_32bit and
-netdev/build_allmodconfig_warn CI jobs:
+Hi Dear,
 
-    ../net/core/filter.c:8608:1: warning: symbol
-    'nf_conn_btf_access_lock' was not declared. Should it be static?
-    ../net/core/filter.c:8611:5: warning: symbol 'nfct_bsa' was not
-    declared. Should it be static?
+My name is Dr Lisa Williams from the United States.I am a French and
+American nationality (dual) living in the U.S and sometimes in France
+for Work Purpose.
 
-Fix by ensuring extern declaration is present while compiling filter.o.
+I hope you consider my friend request. I will share some of my pics
+and more details about myself when I get your response.
 
-Fixes: 864b656f82cc ("bpf: Add support for writing to nf_conn:mark")
-Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
----
- include/linux/filter.h                   | 6 ++++++
- include/net/netfilter/nf_conntrack_bpf.h | 7 +------
- 2 files changed, 7 insertions(+), 6 deletions(-)
+Thanks
 
-diff --git a/include/linux/filter.h b/include/linux/filter.h
-index 75335432fcbc..98e28126c24b 100644
---- a/include/linux/filter.h
-+++ b/include/linux/filter.h
-@@ -567,6 +567,12 @@ struct sk_filter {
- 
- DECLARE_STATIC_KEY_FALSE(bpf_stats_enabled_key);
- 
-+extern struct mutex nf_conn_btf_access_lock;
-+extern int (*nfct_btf_struct_access)(struct bpf_verifier_log *log, const struct btf *btf,
-+				     const struct btf_type *t, int off, int size,
-+				     enum bpf_access_type atype, u32 *next_btf_id,
-+				     enum bpf_type_flag *flag);
-+
- typedef unsigned int (*bpf_dispatcher_fn)(const void *ctx,
- 					  const struct bpf_insn *insnsi,
- 					  unsigned int (*bpf_func)(const void *,
-diff --git a/include/net/netfilter/nf_conntrack_bpf.h b/include/net/netfilter/nf_conntrack_bpf.h
-index d1087e4da440..24d1ccc1f8df 100644
---- a/include/net/netfilter/nf_conntrack_bpf.h
-+++ b/include/net/netfilter/nf_conntrack_bpf.h
-@@ -5,6 +5,7 @@
- 
- #include <linux/bpf.h>
- #include <linux/btf.h>
-+#include <linux/filter.h>
- #include <linux/kconfig.h>
- #include <linux/mutex.h>
- 
-@@ -14,12 +15,6 @@
- extern int register_nf_conntrack_bpf(void);
- extern void cleanup_nf_conntrack_bpf(void);
- 
--extern struct mutex nf_conn_btf_access_lock;
--extern int (*nfct_btf_struct_access)(struct bpf_verifier_log *log, const struct btf *btf,
--				     const struct btf_type *t, int off, int size,
--				     enum bpf_access_type atype, u32 *next_btf_id,
--				     enum bpf_type_flag *flag);
--
- #else
- 
- static inline int register_nf_conntrack_bpf(void)
--- 
-2.37.1
-
+With love
+Lisa
