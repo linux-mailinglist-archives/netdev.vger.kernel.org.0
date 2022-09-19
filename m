@@ -2,88 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3166D5BD5AE
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 22:23:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FCC45BD5C3
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 22:39:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229602AbiISUXT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 16:23:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51392 "EHLO
+        id S229666AbiISUjY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 16:39:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229461AbiISUXS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 16:23:18 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 932723ECC9;
-        Mon, 19 Sep 2022 13:23:17 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1oaNIM-0002Cv-PR; Mon, 19 Sep 2022 22:23:10 +0200
-Date:   Mon, 19 Sep 2022 22:23:10 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Chris Clayton <chris2553@googlemail.com>,
-        Florian Westphal <fw@strlen.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        regressions@lists.linux.dev, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org
-Subject: Re: removing conntrack helper toggle to enable auto-assignment [was
- Re: b118509076b3 (probably) breaks my firewall]
-Message-ID: <20220919202310.GA3498@breakpoint.cc>
-References: <e5d757d7-69bc-a92a-9d19-0f7ed0a81743@googlemail.com>
- <20220908191925.GB16543@breakpoint.cc>
- <78611fbd-434e-c948-5677-a0bdb66f31a5@googlemail.com>
- <20220908214859.GD16543@breakpoint.cc>
- <YxsTMMFoaNSM9gLN@salvia>
- <a3c79b7d-526f-92ce-144a-453ec3c200a5@googlemail.com>
- <YxvwKlE+nyfUjHx8@salvia>
- <20220919124024.0c341af4@kernel.org>
+        with ESMTP id S229546AbiISUjX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 16:39:23 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 913D745F64;
+        Mon, 19 Sep 2022 13:39:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=9a5eFcihQUq7qy0i7HSgljUqDP86sFxHsEy34RhOaEc=; b=RgDwR82rK1dtGtdMvjGJDG0xb1
+        jVNfbiEFzydQWYnJMbomUOd+PhU3g5fFQmPSoCDbh5zNig7MlRovJA8YLtgqzMhgPGOgo2W7f1/p7
+        PmKNhLohVvohRGTrMCzlu/+CjDAzAIDS8F99YXE5RqJpjTbmYcEeUcSG5wllP0AHKNnI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oaNXn-00HAtX-RS; Mon, 19 Sep 2022 22:39:07 +0200
+Date:   Mon, 19 Sep 2022 22:39:07 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Sean Anderson <seanga2@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Zheyu Ma <zheyuma97@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Rolf Eike Beer <eike-kernel@sf-tec.de>,
+        Nick Bowler <nbowler@draconx.ca>
+Subject: Re: [PATCH] net: sunhme: Fix packet reception for len <
+ RX_COPY_THRESHOLD
+Message-ID: <YyjTa1qtt7kPqEaZ@lunn.ch>
+References: <20220918215534.1529108-1-seanga2@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220919124024.0c341af4@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220918215534.1529108-1-seanga2@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> wrote:
-> On Sat, 10 Sep 2022 04:02:18 +0200 Pablo Neira Ayuso wrote:
-> > > > I'll update netfilter.org to host a copy of the github sources.
-> > > > 
-> > > > We have been announcing this going deprecated for 10 years...  
-> > > 
-> > > That may be the case, it should be broken before -rc1 is released. Breaking it at -rc4+ is, I think, a regression!
-> > > Adding Thorsten Leemuis to cc list  
-> > 
-> > Disagreed, reverting and waiting for one more release cycle will just
-> > postpone the fact that users must adapt their policies, and that they
-> > rely on a configuration which is not secure.
+On Sun, Sep 18, 2022 at 05:55:34PM -0400, Sean Anderson wrote:
+> There is a separate receive path for small packets (under 256 bytes).
+> Instead of allocating a new dma-capable skb to be used for the next packet,
+> this path allocates a skb and copies the data into it (reusing the existing
+> sbk for the next packet). There are two bytes of junk data at the beginning
+> of every packet. I believe these are inserted in order to allow aligned
+> DMA and IP headers. We skip over them using skb_reserve. Before copying
+> over the data, we must use a barrier to ensure we see the whole packet. The
+> current code only synchronizes len bytes, starting from the beginning of
+> the packet, including the junk bytes. However, this leaves off the final
+> two bytes in the packet. Synchronize the whole packet.
 > 
-> What are the chances the firewall actually needs the functionality?
+> To reproduce this problem, ping a HME with a payload size between 17 and 214
+> 
+> 	$ ping -s 17 <hme_address>
+> 
+> which will complain rather loudly about the data mismatch. Small packets
+> (below 60 bytes on the wire) do not have this issue. I suspect this is
+> related to the padding added to increase the minimum packet size.
+> 
+> Signed-off-by: Sean Anderson <seanga2@gmail.com>
 
-Unknown, there is no way to tell.
+Hi Sean
 
-In old times, it was enough (not tested, just for illustration):
+> Patch-prefix: net
 
-iptables -A FORWARD -p tcp -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+This should be in the Subject of the email. Various tools look for the
+netdev tree there. Please try to remember that for future patches.
 
-and load nf_conntrack_ftp (or whatever).  Module will auto-snoop traffic
-on tcp port 21 for ftp commands, if it finds some, it auto-installs dynamic
-'expectation entries', so when data connection comes it will hit RELATED rule
-above.
+Please could you add a Fixes: tag indicating when the problem was
+introduced. Its O.K. if that was when the driver was added. It just
+helps getting the patch back ported to older stable kernels.
 
-This stopped working years ago, unless you did set the (now removed)
-knob back to 1.
+I think patchwork allows you to just reply to your post, and it will
+automagically append the Fixes: tag when the Maintainer actually
+applies the patch.
 
-Assuming iptables, users would need to do something like
-iptables -t raw -A PREROUTING -p tcp --dport 21 -d $ftpaddr -j CT --helper "ftp"
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-to tell that packets/connections on tcp:21 need to be examined for ftp commands.
-
-> Perhaps we can add the file back but have it do nothing?
-
-I think its even worse, users would think that auto-assign is enabled.
+    Andrew
