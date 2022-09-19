@@ -2,115 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CFE155BD2B5
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 18:56:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7BA75BD2B0
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 18:56:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230131AbiISQ4b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 12:56:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37880 "EHLO
+        id S230078AbiISQ43 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 12:56:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230110AbiISQ4T (ORCPT
+        with ESMTP id S230107AbiISQ4T (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 12:56:19 -0400
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A0A62D1D8;
-        Mon, 19 Sep 2022 09:56:16 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id F2EBF5C03F5;
-        Mon, 19 Sep 2022 12:56:15 -0400 (EDT)
-Received: from imap47 ([10.202.2.97])
-  by compute2.internal (MEProxy); Mon, 19 Sep 2022 12:56:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
-         h=cc:cc:content-type:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm2; t=1663606575; x=1663692975; bh=Lt
-        Q0DLuSXvYNpp6h6u8UcE3CM907DFTu5M1mUT8X5J8=; b=hQD3O5xw7mveu5YLDL
-        vmdvFfjUn7VEveiuegGdwWh+IVhRKde7r4yf7YkDU1P1WHMXDC1Lc2bHnQu24jL7
-        Se+/jGA6JvdexhWgsr84V/iYjwWNEV2TQ4qGfXX5bbwDAs+rJQx7fAKIkDinAZz9
-        rUhKhCSngkW8hPez5UknVLx2tXU1RJ/DOapmGUxN94yVoUcOVXOpldyra+P9RmZD
-        eVpiKeLkZQ8Tc4kc1WwasnTFCKU4JjIHJtOC60NOBmclnCplNUqAUKYhfmADzpFh
-        eQZo0ksA2QX4EZ7Dgiwy1K2/lpxYITwy7aaW+FizGyb3LplKe34dE23yUod3KQVg
-        +rwA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; t=1663606575; x=1663692975; bh=LtQ0DLuSXvYNpp6h6u8UcE3CM907
-        DFTu5M1mUT8X5J8=; b=PW5Q+G5BpLu8W+HJM+9RogC1e1vTA+z0Skq59YfcwDC4
-        PMQMk56C9srehJ8ibVpy72D96OTkGB4Wok1T8Y+qXqafsnjD9WgfOaMKoXDEEHyV
-        Ao6k1I9jVXfsZtNndIAkxcoWEUCK+wyWpJPwptqJ6bAjteiq+Fc+0IexaHmey8X3
-        asoavoAQTUMHLqosDiAvhWZm34eTW0q3G80k+s384W6pGNVHnIE6NOKCw0Vo7sBm
-        vxg5q/Ei//fcnnWHHWJYABK1d8d6uGvmnHZd5Na/Pok+9vZZjmdZvo2A5j4uEfqj
-        px9Rnqp4IHcLjdOgmcMQ/AT3K8S7ZONassas9nAiWg==
-X-ME-Sender: <xms:L58oY7x92uJP0wA96kefexThi9fP_avH7-Ezt9-cATFmXQ6IAreoKA>
-    <xme:L58oYzSNRB0ye8viq0m1rVY6IRGXmT8CQZYO3c2I03sOIi5RGFkZpBn9XEyde4uWR
-    y-tCvNgKmnt4l_IP0Y>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfedvjedguddtlecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdfu
-    vhgvnhcurfgvthgvrhdfuceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtf
-    frrghtthgvrhhnpeekleekudelvddvhfefhfelgffffefgvdehjeegjefhheejjefgffef
-    ieejtdetjeenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuih
-    iivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshhvvghnsehsvhgvnhhpvghtvghr
-    rdguvghv
-X-ME-Proxy: <xmx:L58oY1UvXUj5_qinYbzuqFXjoZ-DlplIiIqHdM7VT107cwqSkqfptw>
-    <xmx:L58oY1jxciWTPHI6Cl3UAAdsj187O-gD0e9YnRXI8GggNgQR2-1-sg>
-    <xmx:L58oY9CWKUDPLDfKLg2Ynzlrsupyg3jqts01hStBxaMoSNt00iCMBA>
-    <xmx:L58oY1YUZAM0sebk1OEOBf3sZoDr55IneDB877oKpz2YP_qByVadBQ>
-Feedback-ID: i51094778:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id A7601A6007C; Mon, 19 Sep 2022 12:56:15 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-935-ge4ccd4c47b-fm-20220914.001-ge4ccd4c4
-Mime-Version: 1.0
-Message-Id: <4910f728-843a-4546-8aa8-69d5faadc92f@app.fastmail.com>
-In-Reply-To: <20220919164834.62739-1-sven@svenpeter.dev>
-References: <20220919164834.62739-1-sven@svenpeter.dev>
-Date:   Mon, 19 Sep 2022 18:55:55 +0200
-From:   "Sven Peter" <sven@svenpeter.dev>
-To:     "Marcel Holtmann" <marcel@holtmann.org>,
-        "Johan Hedberg" <johan.hedberg@gmail.com>,
-        "Luiz Augusto von Dentz" <luiz.dentz@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        "Eric Dumazet" <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        "Hector Martin" <marcan@marcan.st>,
-        "Alyssa Rosenzweig" <alyssa@rosenzweig.io>, asahi@lists.linux.dev,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 0/7] Broadcom/Apple Bluetooth driver for Apple Silicon
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACCF438441;
+        Mon, 19 Sep 2022 09:56:14 -0700 (PDT)
+Received: by mail-qk1-x733.google.com with SMTP id u28so17967419qku.2;
+        Mon, 19 Sep 2022 09:56:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=L3VLCiIuu2QtRF2usLH4Yr+4/9+bBwP+dMGRVINQnT0=;
+        b=Ux/ooIZr2cPsebSbPjlA6qKVB5oGSdZwBlCWliA0jkuCngyxXifXwOoX5M04A+Qsdm
+         wZkzJLHvJgmMS/RxAufnxWcuAroZC5MJ9S0Vu1WfI/P2E3n+6JbjJ8C8RP6xShexFHEc
+         ISP1BEIu6cute/tm6D+f+puJateqsIh0Wvmuh8tBisz66J04OlNEplkML+bKFdfvLuly
+         TZTcHIygOI+mMOE19Xb4wT9F6iESui1spXhlw6y3cJ3J4gv3CTtT1cNaQm04nu41tZtg
+         0WoXs6Lynd4KN6hflzgPKmdkcsPA/AQRQnWToMa+FOixc5luM25RfAgd+po6sle0tpWc
+         UqlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=L3VLCiIuu2QtRF2usLH4Yr+4/9+bBwP+dMGRVINQnT0=;
+        b=TZfw+J+ZV1PR6rqP+AQ3fV90ehGMSW8DW6DkU8R25977YDFq51tTwd/PDGBSwBpNbm
+         rnQwa9epThF4OPTM9UfDMGwcpcpCzFCyggDf9wO4NX3P8UiMCoQi8m5daU99rpsMSU73
+         +jYplJDpokFTzqtNdeRvMTs0GqLuv3FXFt0oG6/uaYd5FcnCQbrDxcUZXTvGFZORdYLH
+         iwlEz90EqlZ8MkeynT+ImNMc1DmrdiQadgpXgYbJQIiTFYKKMoKyar7Kklm4hU3+1KOC
+         EmPMxkFRVLZch13+54jI7GWVd1ZmNiHYTsU/1Qg7spk0jQ6YsyhZe60ZBrT/ORaUJq4i
+         DAEw==
+X-Gm-Message-State: ACrzQf3vKMGlb0XBjDWw5+Mjbla8+TNsrMI54UiPQzP00XucPuBG/qdC
+        7jJojzU1c/rmWFRxjhOYP/M=
+X-Google-Smtp-Source: AMsMyM5z7SJFTesrc0ORSWgSYk/DUy6lDZHCp3BuzNNJE0mkMCeAtrrdsQABAjscQSYvs1JQsMbZWg==
+X-Received: by 2002:a05:620a:2b86:b0:6ce:ee47:f733 with SMTP id dz6-20020a05620a2b8600b006ceee47f733mr6991717qkb.398.1663606573745;
+        Mon, 19 Sep 2022 09:56:13 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id fz16-20020a05622a5a9000b00359961365f1sm10552848qtb.68.2022.09.19.09.56.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 19 Sep 2022 09:56:13 -0700 (PDT)
+Message-ID: <0bee971d-ad4a-b7fa-56c7-80ca2b58edc7@gmail.com>
+Date:   Mon, 19 Sep 2022 09:56:10 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] net: sh_eth: Fix PHY state warning splat during system
+ resume
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <c6e1331b9bef61225fa4c09db3ba3e2e7214ba2d.1663598886.git.geert+renesas@glider.be>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <c6e1331b9bef61225fa4c09db3ba3e2e7214ba2d.1663598886.git.geert+renesas@glider.be>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 19, 2022, at 18:48, Sven Peter wrote:
-> Hi,
->
-> v1: https://lore.kernel.org/asahi/20220801103633.27772-1-sven@svenpeter.dev/
-> v2: https://lore.kernel.org/asahi/20220907170935.11757-1-sven@svenpeter.dev/
->
-> Here's v3 of the Apple/Broadcom Bluetooth series. Again most changes are
-> to the device tree bindings. I've also included the changes to the dts files
-> that I forgot for the last two versions.
->
-> Additionally I had to introduce another quirk since these controllers also claim
-> to support MWS Pattern Configuration but then simply disallow that command. This
+On 9/19/22 07:48, Geert Uytterhoeven wrote:
+> Since commit 744d23c71af39c7d ("net: phy: Warn about incorrect
+> mdio_bus_phy_resume() state"), a warning splat is printed during system
+> resume with Wake-on-LAN disabled:
+> 
+> 	WARNING: CPU: 0 PID: 626 at drivers/net/phy/phy_device.c:323 mdio_bus_phy_resume+0xbc/0xe4
+> 
+> As the Renesas SuperH Ethernet driver already calls phy_{stop,start}()
+> in its suspend/resume callbacks, it is sufficient to just mark the MAC
+> responsible for managing the power state of the PHY.
+> 
+> Fixes: fba863b816049b03 ("net: phy: make PHY PM ops a no-op if MAC driver manages PHY PM")
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Apologies! This was supposed to be "MWS Transport Layer Configuration" instead
-of "MWS Pattern Configuration". I just miscounted bits originally and
-forgot to update the cover letter. The actual commit has the correct name
-though.
-
-
-Sven
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
