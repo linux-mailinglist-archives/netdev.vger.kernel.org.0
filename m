@@ -2,106 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AE205BD596
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 22:17:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3166D5BD5AE
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 22:23:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229630AbiISURv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 16:17:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45262 "EHLO
+        id S229602AbiISUXT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 16:23:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229577AbiISURl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 16:17:41 -0400
-Received: from mail-yw1-x1142.google.com (mail-yw1-x1142.google.com [IPv6:2607:f8b0:4864:20::1142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BA014A125
-        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 13:17:41 -0700 (PDT)
-Received: by mail-yw1-x1142.google.com with SMTP id 00721157ae682-3450a7358baso2937727b3.13
-        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 13:17:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
-         :subject:date;
-        bh=YeEFrOpnueqp49lpSsCtkyhW66cD5QzqZPU5hyS5TkM=;
-        b=PbJaF2Xe298LcCrOkcxIMTcsECcWtDqVMCE1wJTlLLqlpDgrajBJjmUpZkHJ5yLfbC
-         /LGC9/KYQQM070TpkkueuxRRKg4Jxjw1sx9pBxy2kTO66/36BX35CnTwIGKcEafDLgFb
-         nq7e3isWyU4nIUmoS1uAI65RcqgSXSR1ZYw+xP6B3Udk8ymyfSq3sph9dyQp5RyvSdSR
-         TD5tcNu4ag3wZM/m+opYGbrS8tSo2tmLLAqINEr9Nqeld2lS8tZ3hj4zZdm1qU+Asn73
-         ccjQxztkgpN0xZnS0cXXHKdlN4ZVsGudjrKRR0hXpBHoHDqPM3jV4m7Q3a3bDyqLEamh
-         7puw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=YeEFrOpnueqp49lpSsCtkyhW66cD5QzqZPU5hyS5TkM=;
-        b=AQfbZTwQyJ3XfMXN7zPriK+uViJRpshkQ21pA4muPb9+u3gNbpug5qNNdimiABt/DN
-         4bQkjaZel4js2JJ36KhQ9UfufAQwuazGTX/GjBu5K23sOBxp5OrVFZeu6L1qcgeXhioo
-         fbI/7y2gl1k2uNUPjAWFBspIFAn5t7GkUZrGvBG/+pycv0u8909bRVxCxMwXm94qNb4Z
-         EoNsFughIDI4RdLLUjbVIT+3xR60vfwpJMKYnkeW0Ymp2a290Egp6hJy3/QjiCa58yu0
-         hBpW873LGSZfBtInk6O6ncVlkYrMa1Ozj3ZgVwhnt3/J4rYmCdmHCA5eyeoO5EoblwOj
-         osYw==
-X-Gm-Message-State: ACrzQf0GdASmI4toe0wLHkHnlQtBqjKlkxFWjHvOSQmcnhHe06SCqWLB
-        vacVk1IA/fhNV52Qmrvne4LIkxtQlcUZhbkZ8+0=
-X-Google-Smtp-Source: AMsMyM4l/cEHTrnHtsS+JRoHlDgVoveiQs09//JBgZ3QTEXxMMGDIpQBqPJUSqi5k2zFD9d4l34Um5BIJynlAkijEQU=
-X-Received: by 2002:a81:2555:0:b0:34d:dfb:48b with SMTP id l82-20020a812555000000b0034d0dfb048bmr3686575ywl.390.1663618660104;
- Mon, 19 Sep 2022 13:17:40 -0700 (PDT)
+        with ESMTP id S229461AbiISUXS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 16:23:18 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 932723ECC9;
+        Mon, 19 Sep 2022 13:23:17 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1oaNIM-0002Cv-PR; Mon, 19 Sep 2022 22:23:10 +0200
+Date:   Mon, 19 Sep 2022 22:23:10 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Chris Clayton <chris2553@googlemail.com>,
+        Florian Westphal <fw@strlen.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        regressions@lists.linux.dev, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org
+Subject: Re: removing conntrack helper toggle to enable auto-assignment [was
+ Re: b118509076b3 (probably) breaks my firewall]
+Message-ID: <20220919202310.GA3498@breakpoint.cc>
+References: <e5d757d7-69bc-a92a-9d19-0f7ed0a81743@googlemail.com>
+ <20220908191925.GB16543@breakpoint.cc>
+ <78611fbd-434e-c948-5677-a0bdb66f31a5@googlemail.com>
+ <20220908214859.GD16543@breakpoint.cc>
+ <YxsTMMFoaNSM9gLN@salvia>
+ <a3c79b7d-526f-92ce-144a-453ec3c200a5@googlemail.com>
+ <YxvwKlE+nyfUjHx8@salvia>
+ <20220919124024.0c341af4@kernel.org>
 MIME-Version: 1.0
-Received: by 2002:a05:7010:289:b0:2f0:1279:d56 with HTTP; Mon, 19 Sep 2022
- 13:17:39 -0700 (PDT)
-Reply-To: lisawilliams46655@yahoo.com
-From:   Dr Lisa Williams <daouda76104963@gmail.com>
-Date:   Mon, 19 Sep 2022 13:17:39 -0700
-Message-ID: <CACGepZU90h8e3CnO4Qh3dnSB61PiDfSp+NFPqK51VvuizuNg5g@mail.gmail.com>
-Subject: Hi Dear
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.1 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UNDISC_FREEM autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:1142 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5002]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [daouda76104963[at]gmail.com]
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [lisawilliams46655[at]yahoo.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [daouda76104963[at]gmail.com]
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  3.0 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220919124024.0c341af4@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dear,
+Jakub Kicinski <kuba@kernel.org> wrote:
+> On Sat, 10 Sep 2022 04:02:18 +0200 Pablo Neira Ayuso wrote:
+> > > > I'll update netfilter.org to host a copy of the github sources.
+> > > > 
+> > > > We have been announcing this going deprecated for 10 years...  
+> > > 
+> > > That may be the case, it should be broken before -rc1 is released. Breaking it at -rc4+ is, I think, a regression!
+> > > Adding Thorsten Leemuis to cc list  
+> > 
+> > Disagreed, reverting and waiting for one more release cycle will just
+> > postpone the fact that users must adapt their policies, and that they
+> > rely on a configuration which is not secure.
+> 
+> What are the chances the firewall actually needs the functionality?
 
-My name is Dr Lisa Williams from the United States.I am a French and
-American nationality (dual) living in the U.S and sometimes in France
-for Work Purpose.
+Unknown, there is no way to tell.
 
-I hope you consider my friend request. I will share some of my pics
-and more details about myself when I get your response.
+In old times, it was enough (not tested, just for illustration):
 
-Thanks
+iptables -A FORWARD -p tcp -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 
-With love
-Lisa
+and load nf_conntrack_ftp (or whatever).  Module will auto-snoop traffic
+on tcp port 21 for ftp commands, if it finds some, it auto-installs dynamic
+'expectation entries', so when data connection comes it will hit RELATED rule
+above.
+
+This stopped working years ago, unless you did set the (now removed)
+knob back to 1.
+
+Assuming iptables, users would need to do something like
+iptables -t raw -A PREROUTING -p tcp --dport 21 -d $ftpaddr -j CT --helper "ftp"
+
+to tell that packets/connections on tcp:21 need to be examined for ftp commands.
+
+> Perhaps we can add the file back but have it do nothing?
+
+I think its even worse, users would think that auto-assign is enabled.
