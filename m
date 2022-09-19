@@ -2,61 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 962F55BCDC5
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 15:58:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E21FC5BCE14
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 16:09:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231207AbiISN6z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 09:58:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42304 "EHLO
+        id S229749AbiISOJB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 10:09:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231175AbiISN6o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 09:58:44 -0400
-Received: from mail.base45.de (mail.base45.de [80.241.60.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 075352A70A;
-        Mon, 19 Sep 2022 06:58:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=fe80.eu;
-        s=20190804; h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:
-        In-Reply-To:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=y2eZFXkRGCADI8G4ZiLU6FZ1217+LNWKnbyMSfFCMqI=; b=PUEX4Jv/i8vf9eVrlZywyq7r2w
-        v8LyfhzVohWEZO/2zG+eaIOicaQP+CCg//8Fb94L+jEIEhJ12jwKfMUppiOycjx8yTp6I4xpwpMnH
-        d1KxHVjLEk6UXxOXbQnYFTZEX50gkc0xs2YiPEhEWazgQ76NnQZys81tqUnwW8enHzr2eTRML7Fnd
-        3c+Ypffp8Dl/RduZn5Iqc9rJ4KL8YcxnACcfVfUWS+5VaR8KVMAmDhB/MBoGDciXMa6JYYzgu3fp7
-        dgnoXFE7PIhE4EdtipcheQM/wy9SLTMalG41KwAAwBzcF6pgze96CsVjCsIKyb3PyrGMbHIs9HG7+
-        HELNZOeA==;
-Received: from [92.206.252.27] (helo=javelin)
-        by mail.base45.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <lynxis@fe80.eu>)
-        id 1oaHFn-0018kh-Hc; Mon, 19 Sep 2022 13:56:07 +0000
-Date:   Mon, 19 Sep 2022 15:56:06 +0200
-From:   Alexander 'lynxis' Couzens <lynxis@fe80.eu>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229509AbiISOI7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 10:08:59 -0400
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A8682A96B;
+        Mon, 19 Sep 2022 07:08:58 -0700 (PDT)
+Received: by mail-qk1-x731.google.com with SMTP id d17so19743134qko.13;
+        Mon, 19 Sep 2022 07:08:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=8LaIJ9LDHeewPQEIhj9bZ79DH+Uk0uNLtUcy0IwGtC4=;
+        b=m8SwXeoH1c6RAKlYGdWljLxCDDojvoHe1KR2RWkFgr7VjFxl6Zl2dJ6HRVFK93a1Q4
+         oxS1YGplZraKQbB5IKZeAK6sBUiO7WGmPyK+OQ70/8szjjJJwIlyI1W/33DrunU/1HOi
+         NHdXxh3rHprIvxVU8bPHhohAlR8xEhOCUk9uDwj6mVAQXmBd1VQnOcDpCtIzzmgj9Kn9
+         PrI+/M4BZ3jcs1nETZfue8agBJXkKlA1mVXsrazUBjEZ1rdk15f3ylh9BgddfjzIyjOd
+         tepj8k6LHHYgRahNli9mBzhm+ZL/4u1BqO2jxrfDhI3ckcyxywLpE1PPPB3Xr4md124p
+         TX9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=8LaIJ9LDHeewPQEIhj9bZ79DH+Uk0uNLtUcy0IwGtC4=;
+        b=IVaIOnF7g6/+FFlbljudP7aaUZ31hAYbKCx0zOF75+AXQruSK4UIgE+XVgFrxr1+TQ
+         vH1W8M+oJIRc+JqYs4WKF50YMnBhEJN/n6yOzz5mx5oZPPd3UlYtm4JVR6AmxjkEy2mx
+         I7jec8lMiDbtUp5cQweHDHVVYEYVtZlfO+dIGrTCkiopYF1pBthCefIZ63P6yQSCjnDl
+         CIvIMCZRO+wNlnsfivAkA2GkHcQmF5F76iUKmhJSkCL5r7WbQRC7U4AHx4z/uXf3pCW3
+         aYm24r3vucXF87PwIvIPkrn0Fhlos89Lbkx6CnG2PxGXoRSYmRqVZ7K5DEa8OqWoFfDB
+         2yQw==
+X-Gm-Message-State: ACrzQf18We8E5jTEutg9V27HOT2IhfBy2QO3QkzIj1R5PyT5N2pT5H17
+        NdLO35+i9tNUxTiwuxKqN7g=
+X-Google-Smtp-Source: AMsMyM6dy8hgXORB128fW4j9eG2171xGW3bn8pBRaZcBk1oB2KAwKDh9QrRDT2uQMuyEhVTf3KxbLw==
+X-Received: by 2002:a05:620a:1917:b0:6ce:ee57:efb3 with SMTP id bj23-20020a05620a191700b006ceee57efb3mr6446108qkb.633.1663596537465;
+        Mon, 19 Sep 2022 07:08:57 -0700 (PDT)
+Received: from [192.168.1.201] (pool-173-73-95-180.washdc.fios.verizon.net. [173.73.95.180])
+        by smtp.gmail.com with ESMTPSA id y6-20020a05620a25c600b006ccc96c78easm13436893qko.134.2022.09.19.07.08.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 19 Sep 2022 07:08:56 -0700 (PDT)
+Message-ID: <0ffba41b-3808-c2d8-e180-d865c8d5d306@gmail.com>
+Date:   Mon, 19 Sep 2022 10:08:55 -0400
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH net-next 04/13] sunhme: Return an ERR_PTR from
+ quattro_pci_find
+Content-Language: en-US
+To:     Rolf Eike Beer <eike-kernel@sf-tec.de>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Daniel Golle <daniel@makrotopia.org>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2 5/5] net: mediatek: sgmii: refactor power
- cycling into mtk_pcs_config()
-Message-ID: <20220919155606.3270478d@javelin>
-In-Reply-To: <YyhRTV7mh9emXl4v@shell.armlinux.org.uk>
-References: <20220919083713.730512-1-lynxis@fe80.eu>
-        <20220919083713.730512-6-lynxis@fe80.eu>
-        <YyhRTV7mh9emXl4v@shell.armlinux.org.uk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Nick Bowler <nbowler@draconx.ca>
+References: <20220918232626.1601885-1-seanga2@gmail.com>
+ <20220918232626.1601885-5-seanga2@gmail.com>
+ <14346017.muaEW6z1dk@eto.sf-tec.de>
+From:   Sean Anderson <seanga2@gmail.com>
+In-Reply-To: <14346017.muaEW6z1dk@eto.sf-tec.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -64,74 +81,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > -	/* PHYA power down */
-> > -	regmap_write(mpcs->regmap, SGMSYS_QPHY_PWR_STATE_CTRL,
-> > SGMII_PHYA_PWD); -
-> >  	/* Set SGMII phy speed */
-> >  	regmap_read(mpcs->regmap, mpcs->ana_rgc3, &val);
-> >  	val &= ~RG_PHY_SPEED_MASK;
-> > @@ -72,9 +57,6 @@ static int mtk_pcs_setup_mode_force(struct
-> > mtk_pcs *mpcs, {
-> >  	unsigned int val;
-> >  
-> > -	/* PHYA power down */
-> > -	regmap_write(mpcs->regmap, SGMSYS_QPHY_PWR_STATE_CTRL,
-> > SGMII_PHYA_PWD); -
-> >  	regmap_read(mpcs->regmap, mpcs->ana_rgc3, &val);
-> >  	val &= ~RG_PHY_SPEED_MASK;
-> >  	if (interface == PHY_INTERFACE_MODE_2500BASEX)  
+On 9/19/22 09:11, Rolf Eike Beer wrote:
+> Am Montag, 19. September 2022, 01:26:17 CEST schrieb Sean Anderson:
+>> In order to differentiate between a missing bridge and an OOM condition,
+>> return ERR_PTRs from quattro_pci_find. This also does some general linting
+>> in the area.
+>>
+>> Signed-off-by: Sean Anderson <seanga2@gmail.com>
+>> ---
+>>
+>>   drivers/net/ethernet/sun/sunhme.c | 33 +++++++++++++++++++------------
+>>   1 file changed, 20 insertions(+), 13 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/sun/sunhme.c
+>> b/drivers/net/ethernet/sun/sunhme.c index 1fc16801f520..52247505d08e 100644
+>> --- a/drivers/net/ethernet/sun/sunhme.c
+>> +++ b/drivers/net/ethernet/sun/sunhme.c
+>> @@ -2569,30 +2569,33 @@ static void quattro_sbus_free_irqs(void)
+>>   #ifdef CONFIG_PCI
+>>   static struct quattro *quattro_pci_find(struct pci_dev *pdev)
+>>   {
+>> +	int i;
+>>   	struct pci_dev *bdev = pdev->bus->self;
+>>   	struct quattro *qp;
+>>
+>> -	if (!bdev) return NULL;
+>> +	if (!bdev)
+>> +		return ERR_PTR(-ENODEV);
+>> +
+>>   	for (qp = qfe_pci_list; qp != NULL; qp = qp->next) {
+>>   		struct pci_dev *qpdev = qp->quattro_dev;
+>>
+>>   		if (qpdev == bdev)
+>>   			return qp;
+>>   	}
+>> +
+>>   	qp = kmalloc(sizeof(struct quattro), GFP_KERNEL);
+>> -	if (qp != NULL) {
+>> -		int i;
+>> +	if (!qp)
+>> +		return ERR_PTR(-ENOMEM);
+>>
+>> -		for (i = 0; i < 4; i++)
+>> -			qp->happy_meals[i] = NULL;
+>> +	for (i = 0; i < 4; i++)
+>> +		qp->happy_meals[i] = NULL;
 > 
-> After powering the PHY down, the next thing that is done is to
-> configure the speed. Even with my comments on patch 4, this can still
-> be consolidated.
+> I know you are only reindenting it, but I dislike moving the variable up to
+> the top of the function. Since the kernel is C99 meanwhile the variable could
+> be declared just in the for loop. 
 
-I'll move more code out of the functions.
+Hm, I thought this style was discouraged.
 
-> 
-> > @@ -115,12 +85,27 @@ static int mtk_pcs_config(struct phylink_pcs
-> > *pcs, unsigned int mode, struct mtk_pcs *mpcs =
-> > pcs_to_mtk_pcs(pcs);  
-> 
-> 	unsigned int val;
-> 
-> >  	int err = 0;
-> >  
-> > +	/* PHYA power down */
-> > +	regmap_write(mpcs->regmap, SGMSYS_QPHY_PWR_STATE_CTRL,
-> > SGMII_PHYA_PWD);
-> > +  
-> 
-> 	regmap_read(mpcs->regmap, mpcs->ana_rgc3, &val);
-> 	val &= ~RG_PHY_SPEED_MASK;
-> 	if (interface == PHY_INTERFACE_MODE_2500BASEX)
-> 		val |= RG_PHY_SPEED_3_125G;
-> 	regmap_write(mpcs->regmap, mpcs->ana_rgc3, val);
-> 
-> which would make logical sense to do here, so we always configure the
-> speed for the PCS correctly.
-> 
-> That then leaves the configuration of SGMSYS_PCS_CONTROL_1 and
-> SGMSYS_SGMII_MODE, which I think could also be consolidated, but I'll
-> leave that to those with the hardware to make that decision.
-> 
-> Reading between the lines of the code in this driver, it looks to me
-> like this hardware supports only SGMII, but doesn't actually support
-> 1000base-X and 2500base-X with negotiation. Is that correct? If so,
-> it would be good to add a mtk_pcs_validate() function that clears
-> ETHTOOL_LINK_MODE_Autoneg_BIT for these modes.
+> And when touching this anyway I think we
+> could get rid of the magic "4" by using ARRAY_SIZE(qp->happy_meals). Or just
+> replace the whole thing with memset(qp->happy_meals, 0, sizeof(qp-
+>> happy_meals)).
 
-I don't know. I don't have hardware to debug
-the serdes interface further. I only have a test board with mt7622 soc
-connect via SGMII/2500basex to a realtek phy (rtl8221).
+Yeah, that avoids the whole problem.
 
-Maybe the maintainers from mediatek could share some knowledge if the
-SGMII block supports 1000/2500basex autoneg?
+--Sean
 
-At least with the public available datasheets (mt7531, mt7622) doesn't
-explain it further.
-I could also imagine we need to modify the page register
-(PCS_SPEED_ABILITY) and link timer to get autoneg for
-1000basex/2500basex working.
-
-Best,
-lynxis
