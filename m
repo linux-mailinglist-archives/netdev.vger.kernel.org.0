@@ -2,96 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D23425BCD02
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 15:23:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 444C05BCD06
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 15:23:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230416AbiISNXB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 09:23:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51136 "EHLO
+        id S230450AbiISNXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 09:23:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230419AbiISNW4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 09:22:56 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0B402B60C
-        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 06:22:55 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id j12so28051318pfi.11
-        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 06:22:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=rB2efXodZAeYQuXLadLjMv2cW1RkQIyx3Ihg+D/gw2c=;
-        b=ET0WcksjYR3a5lAHYU8+chKDBmAmJUMY/Uu3b21tpvzYK0jUQWxMHtwZHRmkwUvHKB
-         Lw7wMkYLcE8Nti9KSDCttDqOOINaGyZVjXporEHIGgyetB0FX0KMOGFMwWzSKIEk0KR8
-         pjTTy+PrMFDI6zLRdSAfgkC/Sx6UGa5Ie/XTt4rJ8pHSu955+XXaMqjIsjvuZzbD7yoV
-         BISYEg/W7/O+MS9Ize574hxM8RMy8Duwk+l0eQnGdz0S8PB2WVajd7a0jeEmXiB4yfzX
-         Q8k3YdX2qqW4PNRjMRTFwOgzHzinvWa1+8g+TAYNZUlmLYGE5ptFCNf6Xwsf7vIOnWRq
-         Bqfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=rB2efXodZAeYQuXLadLjMv2cW1RkQIyx3Ihg+D/gw2c=;
-        b=GB3+eRSyr5fjzKTDRxihhgQaYYrWr/NNaC5B0RLv/68JYONafznfpZG+cSWoiV4QLF
-         KIcJVQNfYV9P1dLJu8cMTqPH5nctJtbi4C+f4nXrOk0ewZhYNIuR3lUn6YH0rMFOBBea
-         0KteZGAWY7bupf3cEpcL1DKDs4zDPr8tY98ly9zDJ9Hqq+Fo5xGolt0Z9ewN55voNrAM
-         FS0/Qks1JGza1eWFZ0m2lWYYfRCuaLe6lOEbevqmNlQIY00aTc4+bH3werNe8TZDh8qF
-         j1BBRoNKqT4ewRLqUc/B7wHb4Tb91OAmdd2PQIrOAFlvo6Z50WtELLVRiHU0QkvhVXhQ
-         DSpQ==
-X-Gm-Message-State: ACrzQf0kwfTcz0qdizMMhRfdtYmRzllcp/cYzI+6rlUy0zOFQqgGD0Ol
-        s3pPWVQp2ZubPU42hZC233UBjTVR2ajexlenCFfXEA==
-X-Google-Smtp-Source: AMsMyM7qX8JaivH+pU9JLjukCe0RRS9uuMlO5zhLeRj22V7Arc9eQv7VeHLlk1eIIGd7/vgHW1i6xYshGo7yqPUtWKo=
-X-Received: by 2002:a05:6a00:acc:b0:530:e79e:fc27 with SMTP id
- c12-20020a056a000acc00b00530e79efc27mr18886647pfl.61.1663593775199; Mon, 19
- Sep 2022 06:22:55 -0700 (PDT)
+        with ESMTP id S230340AbiISNXw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 09:23:52 -0400
+Received: from mail.sf-mail.de (mail.sf-mail.de [IPv6:2a01:4f8:1c17:6fae:616d:6c69:616d:6c69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF13E2CCAD
+        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 06:23:50 -0700 (PDT)
+Received: (qmail 14798 invoked from network); 19 Sep 2022 13:24:11 -0000
+Received: from p200300cf070fe30076d435fffeb7be92.dip0.t-ipconnect.de ([2003:cf:70f:e300:76d4:35ff:feb7:be92]:34684 HELO eto.sf-tec.de) (auth=eike@sf-mail.de)
+        by mail.sf-mail.de (Qsmtpd 0.38dev) with (TLS_AES_256_GCM_SHA384 encrypted) ESMTPSA
+        for <davem@davemloft.net>; Mon, 19 Sep 2022 15:24:11 +0200
+From:   Rolf Eike Beer <eike-kernel@sf-tec.de>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Sean Anderson <seanga2@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Nick Bowler <nbowler@draconx.ca>,
+        Sean Anderson <seanga2@gmail.com>
+Subject: Re: [PATCH net-next 11/13] sunhme: Combine continued messages
+Date:   Mon, 19 Sep 2022 15:23:46 +0200
+Message-ID: <14992029.3CObj9AJNb@eto.sf-tec.de>
+In-Reply-To: <20220918232626.1601885-12-seanga2@gmail.com>
+References: <20220918232626.1601885-1-seanga2@gmail.com> <20220918232626.1601885-12-seanga2@gmail.com>
 MIME-Version: 1.0
-References: <20220916144329.243368-1-fabio.porcedda@gmail.com> <20220916144329.243368-3-fabio.porcedda@gmail.com>
-In-Reply-To: <20220916144329.243368-3-fabio.porcedda@gmail.com>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Mon, 19 Sep 2022 15:22:18 +0200
-Message-ID: <CAMZdPi8gGrbkKnDR+WLadF92shJbwH-ksQY+dbpgfZ21iAp9ug@mail.gmail.com>
-Subject: Re: [PATCH 2/2] bus: mhi: host: pci_generic: Add a secondary AT port
- to Telit FN990
-To:     Fabio Porcedda <fabio.porcedda@gmail.com>
-Cc:     mhi@lists.linux.dev, linux-arm-msm@vger.kernel.org,
-        netdev@vger.kernel.org, mani@kernel.org, ryazanov.s.a@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, dnlplm@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="nextPart1735805.g2cWb5fM6b"; micalg="pgp-sha1"; protocol="application/pgp-signature"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 16 Sept 2022 at 16:43, Fabio Porcedda <fabio.porcedda@gmail.com> wrote:
->
-> Add a secondary AT port using one of OEM reserved channel.
->
-> Signed-off-by: Fabio Porcedda <fabio.porcedda@gmail.com>
+--nextPart1735805.g2cWb5fM6b
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
+From: Rolf Eike Beer <eike-kernel@sf-tec.de>
+Subject: Re: [PATCH net-next 11/13] sunhme: Combine continued messages
+Date: Mon, 19 Sep 2022 15:23:46 +0200
+Message-ID: <14992029.3CObj9AJNb@eto.sf-tec.de>
+In-Reply-To: <20220918232626.1601885-12-seanga2@gmail.com>
+MIME-Version: 1.0
 
-Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
+Am Montag, 19. September 2022, 01:26:24 CEST schrieb Sean Anderson:
+> This driver seems to have been written under the assumption that messages
+> can be continued arbitrarily. I'm not when this changed (if ever), but such
+> ad-hoc continuations are liable to be rudely interrupted. Convert all such
+> instances to single prints. This loses a bit of timing information (such as
+> when a line was constructed piecemeal as the function executed), but it's
+> easy to add a few prints if necessary. This also adds newlines to the ends
+> of any prints without them.
 
-> ---
->  drivers/bus/mhi/host/pci_generic.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/drivers/bus/mhi/host/pci_generic.c b/drivers/bus/mhi/host/pci_generic.c
-> index 51e2b901bae0..caa4ce28cf9e 100644
-> --- a/drivers/bus/mhi/host/pci_generic.c
-> +++ b/drivers/bus/mhi/host/pci_generic.c
-> @@ -507,6 +507,8 @@ static const struct mhi_channel_config mhi_telit_fn990_channels[] = {
->         MHI_CHANNEL_CONFIG_DL(13, "MBIM", 32, 0),
->         MHI_CHANNEL_CONFIG_UL(32, "DUN", 32, 0),
->         MHI_CHANNEL_CONFIG_DL(33, "DUN", 32, 0),
-> +       MHI_CHANNEL_CONFIG_UL(92, "DUN2", 32, 1),
-> +       MHI_CHANNEL_CONFIG_DL(93, "DUN2", 32, 1),
->         MHI_CHANNEL_CONFIG_HW_UL(100, "IP_HW0_MBIM", 128, 2),
->         MHI_CHANNEL_CONFIG_HW_DL(101, "IP_HW0_MBIM", 128, 3),
->  };
-> --
-> 2.37.3
->
+I have a similar patch around, but yours catches more places.
+
+> diff --git a/drivers/net/ethernet/sun/sunhme.c
+> b/drivers/net/ethernet/sun/sunhme.c index 98c38e213bab..9965c9c872a6 100644
+> --- a/drivers/net/ethernet/sun/sunhme.c
+> +++ b/drivers/net/ethernet/sun/sunhme.c
+> @@ -330,7 +331,6 @@ static int happy_meal_bb_read(struct happy_meal *hp,
+>  	int retval = 0;
+>  	int i;
+> 
+> -	ASD("happy_meal_bb_read: reg=%d ", reg);
+> 
+>  	/* Enable the MIF BitBang outputs. */
+>  	hme_write32(hp, tregs + TCVR_BBOENAB, 1);
+
+You can remove one of the empty lines here.
+
+> @@ -1196,15 +1182,15 @@ static void happy_meal_init_rings(struct happy_meal
+> *hp) struct hmeal_init_block *hb = hp->happy_block;
+>  	int i;
+> 
+> -	HMD("happy_meal_init_rings: counters to zero, ");
+> +	HMD("counters to zero\n");
+>  	hp->rx_new = hp->rx_old = hp->tx_new = hp->tx_old = 0;
+> 
+>  	/* Free any skippy bufs left around in the rings. */
+> -	HMD("clean, ");
+> +	HMD("clean\n");
+
+I don't think this one is actually needed, there isn't much than can happen in 
+between these 2 prints.
+
+> @@ -1282,17 +1268,11 @@ happy_meal_begin_auto_negotiation(struct happy_meal
+> *hp, * XXX so I completely skip checking for it in the BMSR for now. */
+> 
+> -#ifdef AUTO_SWITCH_DEBUG
+> -		ASD("%s: Advertising [ ");
+> -		if (hp->sw_advertise & ADVERTISE_10HALF)
+> -			ASD("10H ");
+> -		if (hp->sw_advertise & ADVERTISE_10FULL)
+> -			ASD("10F ");
+> -		if (hp->sw_advertise & ADVERTISE_100HALF)
+> -			ASD("100H ");
+> -		if (hp->sw_advertise & ADVERTISE_100FULL)
+> -			ASD("100F ");
+> -#endif
+> +		ASD("Advertising [ %s%s%s%s]\n",
+> +		    hp->sw_advertise & ADVERTISE_10HALF ? "10H " : "",
+> +		    hp->sw_advertise & ADVERTISE_10FULL ? "10F " : "",
+> +		    hp->sw_advertise & ADVERTISE_100HALF ? "100H " : "",
+> +		    hp->sw_advertise & ADVERTISE_100FULL ? "100F " : 
+"");
+> 
+>  		/* Enable Auto-Negotiation, this is usually on 
+already... */
+>  		hp->sw_bmcr |= BMCR_ANENABLE;
+
+Completely independent of this driver, but I wonder if there is no generic 
+function to print these 10/100/* full/half duplex strings? There are several 
+drivers doing this as a quick grep shows.
+
+Eike
+--nextPart1735805.g2cWb5fM6b
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQSaYVDeqwKa3fTXNeNcpIk+abn8TgUCYyhtYwAKCRBcpIk+abn8
+TvVeAJ91F4hWkWpO9XheZpyJjHFLNBXP9gCeLBuiqlPLLsMyu7mUbZrevXOXdAQ=
+=3qv+
+-----END PGP SIGNATURE-----
+
+--nextPart1735805.g2cWb5fM6b--
+
+
+
