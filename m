@@ -2,73 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 547DE5BC0A2
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 01:28:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25CB35BC0E1
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 03:04:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229901AbiIRX2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Sep 2022 19:28:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59408 "EHLO
+        id S229568AbiISBEV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Sep 2022 21:04:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229792AbiIRX06 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Sep 2022 19:26:58 -0400
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 022B218361;
-        Sun, 18 Sep 2022 16:26:46 -0700 (PDT)
-Received: by mail-qv1-xf29.google.com with SMTP id j8so9838469qvt.13;
-        Sun, 18 Sep 2022 16:26:46 -0700 (PDT)
+        with ESMTP id S229505AbiISBET (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Sep 2022 21:04:19 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C686913D68;
+        Sun, 18 Sep 2022 18:04:18 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id q62-20020a17090a17c400b00202a3497516so4650794pja.1;
+        Sun, 18 Sep 2022 18:04:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=+WHyUg/3fPOf0tvuBkaVWxhr5RVI5uDGWpfIxZnn/5A=;
-        b=D9OR9hB1I3e8PywGWEUW5fHz/j9AVs9Y8bD1XA/q4K+iSf0bY/l06DAZWQAf/eJFkY
-         7AtdNTe+6LOTMyySsWjHy/Q3uZPTv8Sqc8DCZ5IrPjryYIEHeeUFH4JUUQxAIioXSvlQ
-         J6OAN343q4xczn7xIwgg0FxtADu6twiWwFxBIst47ogbFPIYU+3NhTkcoRhdGV/i9uMl
-         2qB3kPw/LX8uWg65FchiCCSNACFtJWu+G40fiENxDTh/lI3RHbf+uTOYzRy8yvkLuLXY
-         ZTHCuDDq/mIO7OrAhLMfliHBZSJkN89b+6H5H19Yl30rLC7HgOpfqkYqBM9unRdr3Wby
-         v7sQ==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=jUwOpqo/BKxzYsEAqMc5DTa4e7zgkceNk79Yq/88PNQ=;
+        b=PVVAw2HxpX0fYEW7l+h8u8PiDVwWlYpDPQ2i2wpajO5gWOtjob9d3snyb8VHTNiql7
+         hd0m2LsuL/VHDZW9Ndf6f+1W3yf8itWFaMYuDNnHydaaJWQy4MDOr7O2SSpR1GBE2NJ7
+         ad7loYP/I8sz47NmBmk3+VnWC4+HKphjgW3vkTUot/GfE0OInYHnhePqDPD/gWPdOyjG
+         GlWWI5//H20ZHoRYN4wyc79h35ZnkZEpXnVIgg7i6nQZ4pnDWq9qRGrgW4bpFUmMHEKA
+         CS4fsUEBrAXvBJ6838xq326TTAWoKxZGrdL9iDth9wYLFk86bAgXzY3LHjTJDPvBCSfi
+         bXcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=+WHyUg/3fPOf0tvuBkaVWxhr5RVI5uDGWpfIxZnn/5A=;
-        b=ONqWpcX0strTVML7VtzHhjtWI+HA/tU9f7+wcYiiOB3w7SDFi1BuoQc7/rbfVIIA4A
-         GCkl8ZFm+R+hLUI1rn6yWs5lk36+7cXzw1SP4Wyt1AcNHW/xCRHmEqEfOnwfVWeYVN4y
-         lJ7tnXuFYW1MXxX8FgoVyDEoZe/+QTe8QjPWZwLG3wBClf18td9cX5mBM4gcnKVXJKPA
-         klDxFDdewnoDnkkkrRrW8WqPfSzOClG649VStgzTpmfAhNVhe7R7Emd2EZrFNoLLW+zO
-         mrEh6ke6siYP2LRjkkf6/VlQBIMBwcJfHxYHZBsfroNhLdx91f7W7qzcct885jRtL7y/
-         lpKA==
-X-Gm-Message-State: ACrzQf1eh8ed1Z4oqXBWhMus0e/ECZqH2clPWpbieRwyPMhiP7VPd3Pl
-        trTrhTzV1NhNf1cINAMu8ZY=
-X-Google-Smtp-Source: AMsMyM4MAqGyqAze9Cw5ZFpjl9sDST4Ovz9Y2TGOpIQy/y64eH9GpikgNZPe74ivPsu3/+5gN2Bfyg==
-X-Received: by 2002:ad4:5b8b:0:b0:4ad:2b21:3390 with SMTP id 11-20020ad45b8b000000b004ad2b213390mr5450789qvp.20.1663543605554;
-        Sun, 18 Sep 2022 16:26:45 -0700 (PDT)
-Received: from localhost (pool-173-73-95-180.washdc.fios.verizon.net. [173.73.95.180])
-        by smtp.gmail.com with UTF8SMTPSA id de42-20020a05620a372a00b006b945519488sm11637556qkb.88.2022.09.18.16.26.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 18 Sep 2022 16:26:45 -0700 (PDT)
-From:   Sean Anderson <seanga2@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=jUwOpqo/BKxzYsEAqMc5DTa4e7zgkceNk79Yq/88PNQ=;
+        b=IeRbdQPN22xC7a8zi1e0kD6+wc3pixGoGkqGHWNTo6/UCLzF9kYHoGwAcnMOslcGRP
+         5Wq+MuGbiC/sxEEVCBbSJU4IliW5z/a4XoFO+5LEZnZtbxY3VhxJcdDNuwep15h6P8Rf
+         KQpNSm1fm6fgAmtRcXSLJLHPJJ/9x6Is0/QHeJo3ouwYsClw3mcYTKqElVFwYTwjuNFM
+         9v7td9/PUIJgLs/fRUgFG6mZKNCrqrDrAKGWIkFsEvZA69y5SjV3xpI/M5Igfj2yKJuq
+         Cge/Gfwi+0nRcxkEnTPxzqrt6jkyX9p8i3Qz6dFnVZ6o3pgnSFCa0yCltLA5/RfULKag
+         wL5A==
+X-Gm-Message-State: ACrzQf2OpMLsK+uKj6bBKXakreER8fl+ZBr4ewFQn4a/j3QUXi5OUFiy
+        pu8K1J04XvCrWgMERS3GKDU=
+X-Google-Smtp-Source: AMsMyM78dt2xwmM91h5FXM/uLqGzhsxnoo4uGhSdfr+VVODgDWUqtRy0t13ni+8w9Ob2q4HEKGhY6A==
+X-Received: by 2002:a17:902:f78d:b0:174:f7aa:921b with SMTP id q13-20020a170902f78d00b00174f7aa921bmr10507027pln.37.1663549458152;
+        Sun, 18 Sep 2022 18:04:18 -0700 (PDT)
+Received: from rfl-device.localdomain ([110.11.251.111])
+        by smtp.gmail.com with ESMTPSA id 185-20020a6308c2000000b00439c1e13112sm4616627pgi.22.2022.09.18.18.04.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 18 Sep 2022 18:04:17 -0700 (PDT)
+From:   Ruffalo Lavoisier <ruffalolavoisier@gmail.com>
+X-Google-Original-From: Ruffalo Lavoisier <RuffaloLavoisier@gmail.com>
+To:     Derek Chickles <dchickles@marvell.com>,
+        Satanand Burla <sburla@marvell.com>,
+        Felix Manlunas <fmanlunas@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org (open list),
-        Zheyu Ma <zheyuma97@gmail.com>,
-        Nick Bowler <nbowler@draconx.ca>,
-        Rolf Eike Beer <eike-kernel@sf-tec.de>,
-        Sean Anderson <seanga2@gmail.com>
-Subject: [PATCH net-next 13/13] sunhme: Add myself as a maintainer
-Date:   Sun, 18 Sep 2022 19:26:26 -0400
-Message-Id: <20220918232626.1601885-14-seanga2@gmail.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220918232626.1601885-1-seanga2@gmail.com>
-References: <20220918232626.1601885-1-seanga2@gmail.com>
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Ruffalo Lavoisier <RuffaloLavoisier@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3] liquidio: CN23XX: delete repeated words, add missing words and fix typo in comment
+Date:   Mon, 19 Sep 2022 10:04:08 +0900
+Message-Id: <20220919010410.6081-1-RuffaloLavoisier@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,30 +74,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I have the hardware so at the very least I can test things.
+- Delete the repeated word 'to' in the comment.
 
-Signed-off-by: Sean Anderson <seanga2@gmail.com>
+- Add the missing 'use' word within the sentence.
+
+- Correct spelling on 'malformation'.
+
+Signed-off-by: Ruffalo Lavoisier <RuffaloLavoisier@gmail.com>
 ---
+Please check if it has been corrected properly!
 
- MAINTAINERS | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/ethernet/cavium/liquidio/cn23xx_pf_regs.h | 2 +-
+ drivers/net/ethernet/cavium/liquidio/cn23xx_vf_regs.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 74036b51911d..381e1457f601 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -19491,6 +19491,11 @@ L:	netdev@vger.kernel.org
- S:	Maintained
- F:	drivers/net/ethernet/dlink/sundance.c
+diff --git a/drivers/net/ethernet/cavium/liquidio/cn23xx_pf_regs.h b/drivers/net/ethernet/cavium/liquidio/cn23xx_pf_regs.h
+index 3f1c189646f4..244e27ea079c 100644
+--- a/drivers/net/ethernet/cavium/liquidio/cn23xx_pf_regs.h
++++ b/drivers/net/ethernet/cavium/liquidio/cn23xx_pf_regs.h
+@@ -88,7 +88,7 @@
+ #define    CN23XX_SLI_PKT_IN_JABBER                0x29170
+ /* The input jabber is used to determine the TSO max size.
+  * Due to H/W limitation, this need to be reduced to 60000
+- * in order to to H/W TSO and avoid the WQE malfarmation
++ * in order to use H/W TSO and avoid the WQE malformation
+  * PKO_BUG_24989_WQE_LEN
+  */
+ #define    CN23XX_DEFAULT_INPUT_JABBER             0xEA60 /*60000*/
+diff --git a/drivers/net/ethernet/cavium/liquidio/cn23xx_vf_regs.h b/drivers/net/ethernet/cavium/liquidio/cn23xx_vf_regs.h
+index d33dd8f4226f..e85449249670 100644
+--- a/drivers/net/ethernet/cavium/liquidio/cn23xx_vf_regs.h
++++ b/drivers/net/ethernet/cavium/liquidio/cn23xx_vf_regs.h
+@@ -37,7 +37,7 @@
  
-+SUN HAPPY MEAL ETHERNET DRIVER
-+M:	Sean Anderson <seanga2@gmail.com>
-+S:	Maintained
-+F:	drivers/net/ethernet/sun/sunhme.*
-+
- SUNPLUS ETHERNET DRIVER
- M:	Wells Lu <wellslutw@gmail.com>
- L:	netdev@vger.kernel.org
+ /* The input jabber is used to determine the TSO max size.
+  * Due to H/W limitation, this need to be reduced to 60000
+- * in order to to H/W TSO and avoid the WQE malfarmation
++ * in order to use H/W TSO and avoid the WQE malformation
+  * PKO_BUG_24989_WQE_LEN
+  */
+ #define    CN23XX_DEFAULT_INPUT_JABBER             0xEA60 /*60000*/
 -- 
-2.37.1
+2.25.1
 
