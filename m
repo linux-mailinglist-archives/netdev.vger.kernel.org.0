@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 497D85BD27B
+	by mail.lfdr.de (Postfix) with ESMTP id 943B15BD27C
 	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 18:50:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230109AbiISQtm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 12:49:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52978 "EHLO
+        id S229937AbiISQty (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 12:49:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230078AbiISQth (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 12:49:37 -0400
-Received: from new1-smtp.messagingengine.com (new1-smtp.messagingengine.com [66.111.4.221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D4526E5;
-        Mon, 19 Sep 2022 09:49:35 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailnew.nyi.internal (Postfix) with ESMTP id D781258034C;
-        Mon, 19 Sep 2022 12:49:33 -0400 (EDT)
+        with ESMTP id S230099AbiISQtl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 12:49:41 -0400
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8992B2DC4;
+        Mon, 19 Sep 2022 09:49:37 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id 7ACD05C0402;
+        Mon, 19 Sep 2022 12:49:36 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Mon, 19 Sep 2022 12:49:33 -0400
+  by compute5.internal (MEProxy); Mon, 19 Sep 2022 12:49:36 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
          h=cc:cc:content-transfer-encoding:date:date:from:from
         :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm2; t=1663606173; x=
-        1663613373; bh=WY1oTPCX29Sg6WaZxih3jkcx9HGBoylBzzxcehqaLFs=; b=s
-        N/kdIzh3Su3yvFe3pWf3qYncxV75euZDXXa03QXfcPb7U1LbWAoxcMfNRauq52OK
-        YHvZUZt+A7xnIdeW3Ylhfgdmv+o2X7D7ys9L1RPRMVYH6FNH35kx3TajY+gEp3J+
-        PqNAphtHq8dMtzJW0W7ElB+r68Lcve6WZkTq2seU36l+qsucB6AcNMAMni2nC4Tq
-        uBi/okLiUx0MN7UJP8+8/fKNhFQYuer6Czl7F6hN/lQzYKa6HgF89TcKoB7Zs7ZP
-        RU3sHgUp3B6dkongE+BfMypyvZvsVL1oG6GiLxS1Pxke5gwhUCgyVMv4N2w3dPAW
-        xfGJTZ4Sw34o/IAp7v4ng==
+        :reply-to:sender:subject:subject:to:to; s=fm2; t=1663606176; x=
+        1663692576; bh=AmcPpL+YdlnNYyjYJ3VxXFyfHrEQ8EiR8TRALxe0DkA=; b=u
+        7KZtU7ZHza237+I29eDNRdipYUgLqHnGTrpI2ULpqTgljGIEH2/YIUqq4fr+ojf3
+        JpMiCo9cAcVyypPuXe5uHfCn9r0CS1Ntf5VB63iOfykP4e6RXt7DkIVqhKTY7B0p
+        9h4e3Ll5iE1pygcvOnuiY+Jljm7BAW/JbrkLc4I+4x7qBC8VL6cdI71tPkga2cUh
+        5r7bjBTgzmERsDkUnU5F8wAzTt+zc8EQiZr1tLbloHeiW/37NLIkCmaQebJBF2+U
+        BJRzTnZ+fnTC0Vl0X0H09KafFqdu4TFlpEAGh57tmpU7tl0hHeHuWdYHotYPhbMM
+        EEuLDN/pOJ1h/OV/UPQVQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
         :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
         :message-id:mime-version:references:reply-to:sender:subject
         :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; t=1663606173; x=1663613373; bh=WY1oTPCX29Sg6
-        WaZxih3jkcx9HGBoylBzzxcehqaLFs=; b=OVN3lOGVN4g6PA7oqBhC2Yu/mgZLO
-        6LxgU5irL14lbOOxkBnFzkDiUKQ1Uiluio0JBNwTLJpceaV1rrlCPdWU5M6GqWIe
-        WO78AWa3OP6wnM4ifs2hQrnHUxDTVifl4XHi6mNe5MTLaFnCdCHAY6A04hYVaDZx
-        khnZLwAcCf2sy3Xox/YrlMbqiJQ4mSQ4gB0LLlG90cyAtLiRfDZAcLL8hBXcdx4F
-        5wrimX11nafgcIt5C3XOK60+nb6xQG7RogH+RzpQoSKR9CIm/CtQTG461/jELra2
-        icS8ll6NvBDLIjt2r7ZphY4EJyFgulsAd0zYMim+SfuGdm8d3+F9j8SIw==
-X-ME-Sender: <xms:nJ0oY91OD_29Op6t-9gockrdYmfEHfhBg6lIgaC79EKNxEt5Ub_vVw>
-    <xme:nJ0oY0E-ESKtTKHM7MwDYa8FWcwt2JPgYqNn_5faISbVuSwtozjjwOivJFoAO-tDr
-    dzFAEXwZPd1kZ1S1PI>
-X-ME-Received: <xmr:nJ0oY94_krixzgHNgdaMX7AfVQ2RTKm6ajVQ17_4IL5XDfPWlzqhrUKjaEI-PbAWNRTtQu1TsnHeaKZ8WyM5bxqWOuTlVbN6YJ3uL5QQmF8krsxGklg9hlo>
+        :x-sasl-enc; s=fm2; t=1663606176; x=1663692576; bh=AmcPpL+YdlnNY
+        yjYJ3VxXFyfHrEQ8EiR8TRALxe0DkA=; b=PojaSPq1463dksscJWobpuezbbgCB
+        oVECiPL3EUDpirp05Nes2cERUa4XgCEOKdP12aNiYsMWB+SKX3mUW29PObuTUm8N
+        wb5dHDkZBdIlAN5HqQgKuwIsPaG9LudSdF4a+hNIUrj8AuLu88fhAyTejvQnfMKQ
+        jeAOP4PSGTZXnJI2CoWQBFGYPlUA7pyakIIkw6YHMjc4l7j36M7rlDg5/L47DT49
+        rRixKo2B1A3eaIT9c/31CRcGvsWLeDH1p1esMo6pKGa00WzbvEeT2bfE+v7QkHaW
+        V9f4KhDxX3wAHG+DY+vLv1kE10++jiprJJRlIMSjEKNvIjWZ1bw32cNRw==
+X-ME-Sender: <xms:oJ0oY8m7Gu-192Sib3mz7BqI0LLL2bya-hPNzW6xUnaJqSWh_ZJiMg>
+    <xme:oJ0oY72mWoYjpu32U2BiMgM2GlVBeaWOrRTs90HxGm2tU5ygub4kQ6RIUPflajtl2
+    0Je5Ij8uFl_WVeEkFM>
+X-ME-Received: <xmr:oJ0oY6okAzpeuRhLahUrT8bh9r9wGcCCUT6VL-1qKUTa96UzvNdHMoTx7Ac7R_HGxKFZ8C6T1pzN22ulSU_9Rq4dEN3Qx9qAYcI0gleXzYhwOb5-e9oldAY>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfedvjedguddtkecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
@@ -55,13 +55,13 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfedvjedguddtkecutefuodetgg
     ieelnecuffhomhgrihhnpeguvghvihgtvghtrhgvvgdrohhrghenucevlhhushhtvghruf
     hiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehsvhgvnhesshhvvghnphgvthgv
     rhdruggvvh
-X-ME-Proxy: <xmx:nJ0oY60RMqVE5E9bD2yQhp6rANSibCoNwTOd8xjrJAzJS-hTBiEmhQ>
-    <xmx:nJ0oYwG58t-lAcbvQ1yv3wKG6_JPCapkwo0L4tkDB8O-JXoez6cAxQ>
-    <xmx:nJ0oY79HYlj6iTKGa6EqtpiUPCDvzpbEZq4xkXtViv-SGpPpbf9dvA>
-    <xmx:nZ0oY4LCMYSI83ICOy0odVQomIom3pg_56Y3Cztpc0Vip-0_i21uug>
+X-ME-Proxy: <xmx:oJ0oY4nE4gNHYdWP3U_54h0nsSmQhZAbQFYRi0NYVye2gISIiXSWQA>
+    <xmx:oJ0oY62IsJzT9C-0pnIMDOWKAQMX4xSTo0flJss_J2ZzWMYmhDCDvA>
+    <xmx:oJ0oY_s7WNhDUv671o6Z5_PccJF8GfU3RmCcLk_kw8RSfnKvZfma7A>
+    <xmx:oJ0oYzH6gTrc491PTFTkpxRTW4PQVEAGRfkpAglyNj1Pc_H-QIH1Jg>
 Feedback-ID: i51094778:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 19 Sep 2022 12:49:29 -0400 (EDT)
+ 19 Sep 2022 12:49:34 -0400 (EDT)
 From:   Sven Peter <sven@svenpeter.dev>
 To:     Marcel Holtmann <marcel@holtmann.org>,
         Johan Hedberg <johan.hedberg@gmail.com>,
@@ -77,156 +77,147 @@ Cc:     Sven Peter <sven@svenpeter.dev>,
         Alyssa Rosenzweig <alyssa@rosenzweig.io>,
         asahi@lists.linux.dev, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        linux-arm-msm@vger.kernel.org
-Subject: [PATCH v3 1/7] dt-bindings: net: Add generic Bluetooth controller
-Date:   Mon, 19 Sep 2022 18:48:28 +0200
-Message-Id: <20220919164834.62739-2-sven@svenpeter.dev>
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 2/7] dt-bindings: net: Add Broadcom BCM4377 family PCIe Bluetooth
+Date:   Mon, 19 Sep 2022 18:48:29 +0200
+Message-Id: <20220919164834.62739-3-sven@svenpeter.dev>
 X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 In-Reply-To: <20220919164834.62739-1-sven@svenpeter.dev>
 References: <20220919164834.62739-1-sven@svenpeter.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bluetooth controllers share the common local-bd-address property.
-Add a generic YAML schema to replace bluetooth.txt for those.
+These chips are combined Wi-Fi/Bluetooth radios which expose a
+PCI subfunction for the Bluetooth part.
+They are found in Apple machines such as the x86 models with the T2
+chip or the arm64 models with the M1 or M2 chips.
 
 Signed-off-by: Sven Peter <sven@svenpeter.dev>
 ---
 changes from v2:
-  - added new bluetooth subdirectory and moved files there
-  - removed minItems from local-bd-address
-  - dropped bjorn.andersson@linaro.org, bgodavar@codeaurora.org and
-    rjliao@codeaurora.org due to bouncing emails from the CC list
+  - extended example to include parent pcie node to make
+    node name validation work
+  - moved to bluetooth/ subdirectory
+  - added maxItems to reg and dropped description
+  - moved bluetooth-controller.yaml reference after description
 
 changes from v1:
-  - removed blueetooth.txt instead of just replacing it with a
-    deprecation note
-  - replaced references to bluetooth.txt
+  - added apple,* pattern to brcm,board-type
+  - s/PCI/PCIe/
+  - fixed 1st reg cell inside the example to not contain the bus number
 
- .../devicetree/bindings/net/bluetooth.txt     |  5 ----
- .../net/bluetooth/bluetooth-controller.yaml   | 29 +++++++++++++++++++
- .../{ => bluetooth}/qualcomm-bluetooth.yaml   |  6 ++--
- .../bindings/soc/qcom/qcom,wcnss.yaml         |  8 ++---
- 4 files changed, 35 insertions(+), 13 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/net/bluetooth.txt
- create mode 100644 Documentation/devicetree/bindings/net/bluetooth/bluetooth-controller.yaml
- rename Documentation/devicetree/bindings/net/{ => bluetooth}/qualcomm-bluetooth.yaml (96%)
+ .../net/bluetooth/brcm,bcm4377-bluetooth.yaml | 81 +++++++++++++++++++
+ MAINTAINERS                                   |  1 +
+ 2 files changed, 82 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/bluetooth/brcm,bcm4377-bluetooth.yaml
 
-diff --git a/Documentation/devicetree/bindings/net/bluetooth.txt b/Documentation/devicetree/bindings/net/bluetooth.txt
-deleted file mode 100644
-index 94797df751b8..000000000000
---- a/Documentation/devicetree/bindings/net/bluetooth.txt
-+++ /dev/null
-@@ -1,5 +0,0 @@
--The following properties are common to the Bluetooth controllers:
--
--- local-bd-address: array of 6 bytes, specifies the BD address that was
--  uniquely assigned to the Bluetooth device, formatted with least significant
--  byte first (little-endian).
-diff --git a/Documentation/devicetree/bindings/net/bluetooth/bluetooth-controller.yaml b/Documentation/devicetree/bindings/net/bluetooth/bluetooth-controller.yaml
+diff --git a/Documentation/devicetree/bindings/net/bluetooth/brcm,bcm4377-bluetooth.yaml b/Documentation/devicetree/bindings/net/bluetooth/brcm,bcm4377-bluetooth.yaml
 new file mode 100644
-index 000000000000..9309dc40f54f
+index 000000000000..37cb39a3a62e
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/net/bluetooth/bluetooth-controller.yaml
-@@ -0,0 +1,29 @@
++++ b/Documentation/devicetree/bindings/net/bluetooth/brcm,bcm4377-bluetooth.yaml
+@@ -0,0 +1,81 @@
 +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/net/bluetooth/bluetooth-controller.yaml#
++$id: http://devicetree.org/schemas/net/bluetooth/brcm,bcm4377-bluetooth.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Bluetooth Controller Generic Binding
++title: Broadcom BCM4377 family PCIe Bluetooth Chips
 +
 +maintainers:
-+  - Marcel Holtmann <marcel@holtmann.org>
-+  - Johan Hedberg <johan.hedberg@gmail.com>
-+  - Luiz Augusto von Dentz <luiz.dentz@gmail.com>
++  - Sven Peter <sven@svenpeter.dev>
++
++description:
++  This binding describes Broadcom BCM4377 family PCIe-attached bluetooth chips
++  usually found in Apple machines. The Wi-Fi part of the chip is described in
++  bindings/net/wireless/brcm,bcm4329-fmac.yaml.
++
++allOf:
++  - $ref: bluetooth-controller.yaml#
 +
 +properties:
-+  $nodename:
-+    pattern: "^bluetooth(@.*)?$"
++  compatible:
++    enum:
++      - pci14e4,5fa0 # BCM4377
++      - pci14e4,5f69 # BCM4378
++      - pci14e4,5f71 # BCM4387
 +
-+  local-bd-address:
++  reg:
++    maxItems: 1
++
++  brcm,board-type:
++    $ref: /schemas/types.yaml#/definitions/string
++    description: Board type of the Bluetooth chip. This is used to decouple
++      the overall system board from the Bluetooth module and used to construct
++      firmware and calibration data filenames.
++      On Apple platforms, this should be the Apple module-instance codename
++      prefixed by "apple,", e.g. "apple,atlantisb".
++    pattern: '^apple,.*'
++
++  brcm,taurus-cal-blob:
 +    $ref: /schemas/types.yaml#/definitions/uint8-array
-+    maxItems: 6
-+    description:
-+      Specifies the BD address that was uniquely assigned to the Bluetooth
-+      device. Formatted with least significant byte first (little-endian), e.g.
-+      in order to assign the address 00:11:22:33:44:55 this property must have
-+      the value [55 44 33 22 11 00].
++    description: A per-device calibration blob for the Bluetooth radio. This
++      should be filled in by the bootloader from platform configuration
++      data, if necessary, and will be uploaded to the device.
++      This blob is used if the chip stepping of the Bluetooth module does not
++      support beamforming.
 +
-+additionalProperties: true
++  brcm,taurus-bf-cal-blob:
++    $ref: /schemas/types.yaml#/definitions/uint8-array
++    description: A per-device calibration blob for the Bluetooth radio. This
++      should be filled in by the bootloader from platform configuration
++      data, if necessary, and will be uploaded to the device.
++      This blob is used if the chip stepping of the Bluetooth module supports
++      beamforming.
 +
-+...
-diff --git a/Documentation/devicetree/bindings/net/qualcomm-bluetooth.yaml b/Documentation/devicetree/bindings/net/bluetooth/qualcomm-bluetooth.yaml
-similarity index 96%
-rename from Documentation/devicetree/bindings/net/qualcomm-bluetooth.yaml
-rename to Documentation/devicetree/bindings/net/bluetooth/qualcomm-bluetooth.yaml
-index f93c6e7a1b59..a6a6b0e4df7a 100644
---- a/Documentation/devicetree/bindings/net/qualcomm-bluetooth.yaml
-+++ b/Documentation/devicetree/bindings/net/bluetooth/qualcomm-bluetooth.yaml
-@@ -1,7 +1,7 @@
- # SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
- %YAML 1.2
- ---
--$id: http://devicetree.org/schemas/net/qualcomm-bluetooth.yaml#
-+$id: http://devicetree.org/schemas/net/bluetooth/qualcomm-bluetooth.yaml#
- $schema: http://devicetree.org/meta-schemas/core.yaml#
- 
- title: Qualcomm Bluetooth Chips
-@@ -79,8 +79,7 @@ properties:
-   firmware-name:
-     description: specify the name of nvm firmware to load
- 
--  local-bd-address:
--    description: see Documentation/devicetree/bindings/net/bluetooth.txt
 +  local-bd-address: true
- 
- 
- required:
-@@ -89,6 +88,7 @@ required:
- additionalProperties: false
- 
- allOf:
-+  - $ref: bluetooth-controller.yaml#
-   - if:
-       properties:
-         compatible:
-diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,wcnss.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,wcnss.yaml
-index 5320504bb5e0..0e6fd57d658d 100644
---- a/Documentation/devicetree/bindings/soc/qcom/qcom,wcnss.yaml
-+++ b/Documentation/devicetree/bindings/soc/qcom/qcom,wcnss.yaml
-@@ -42,15 +42,13 @@ properties:
-   bluetooth:
-     type: object
-     additionalProperties: false
-+    allOf:
-+      - $ref: /schemas/net/bluetooth/bluetooth-controller.yaml#
-     properties:
-       compatible:
-         const: qcom,wcnss-bt
- 
--      local-bd-address:
--        $ref: /schemas/types.yaml#/definitions/uint8-array
--        maxItems: 6
--        description:
--          See Documentation/devicetree/bindings/net/bluetooth.txt
-+      local-bd-address: true
- 
-     required:
-       - compatible
++
++required:
++  - compatible
++  - reg
++  - local-bd-address
++  - brcm,board-type
++
++additionalProperties: false
++
++examples:
++  - |
++    pcie@a0000000 {
++      #address-cells = <3>;
++      #size-cells = <2>;
++      reg = <0xa0000000 0x1000000>;
++      device_type = "pci";
++      ranges = <0x43000000 0x6 0xa0000000 0xa0000000 0x0 0x20000000>;
++
++      bluetooth@0,1 {
++        compatible = "pci14e4,5f69";
++        reg = <0x100 0x0 0x0 0x0 0x0>;
++        brcm,board-type = "apple,honshu";
++        /* To be filled by the bootloader */
++        local-bd-address = [00 00 00 00 00 00];
++      };
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 9ae989b32ebb..74463bc5e1cb 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1875,6 +1875,7 @@ F:	Documentation/devicetree/bindings/interrupt-controller/apple,*
+ F:	Documentation/devicetree/bindings/iommu/apple,dart.yaml
+ F:	Documentation/devicetree/bindings/iommu/apple,sart.yaml
+ F:	Documentation/devicetree/bindings/mailbox/apple,mailbox.yaml
++F:	Documentation/devicetree/bindings/net/bluetooth/brcm,bcm4377-bluetooth.yaml
+ F:	Documentation/devicetree/bindings/nvme/apple,nvme-ans.yaml
+ F:	Documentation/devicetree/bindings/nvmem/apple,efuses.yaml
+ F:	Documentation/devicetree/bindings/pci/apple,pcie.yaml
 -- 
 2.25.1
 
