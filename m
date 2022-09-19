@@ -2,185 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A1FD05BC494
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 10:44:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE5A45BC4E6
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 11:02:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230033AbiISIot (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 04:44:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39010 "EHLO
+        id S229904AbiISJB4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 05:01:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229695AbiISIop (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 04:44:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9D1E5F5F;
-        Mon, 19 Sep 2022 01:44:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80A31B816B8;
-        Mon, 19 Sep 2022 08:44:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DE61C433C1;
-        Mon, 19 Sep 2022 08:44:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1663577080;
-        bh=Vd83dSwOxxVSmijrL/0T0PlkhSMj1d5PUkUDnXOIUyE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dlSngLTIaXTUHmuHDJgtMdbNwSHKqUJq9SLyDbvIvDthukzpSXHybBsTRhVVyFNJ2
-         1qqCtuHfpcMr/GliCB6rzwJjMLC2MHRH03VKiFCffo41yXNOwwmKRS/fEC1f2Cxj7R
-         DLEvYnlAXyJ2KzF8cFOljKYCXKTJeMmqp7ByoylE=
-Date:   Mon, 19 Sep 2022 10:45:06 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Olof Johansson <olof@lixom.net>
-Cc:     Saravana Kannan <saravanak@google.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Al Cooper <alcooperx@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Tobias Klauser <tklauser@distanz.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        Vineet Gupta <vgupta@kernel.org>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Alexander Shiyan <shc_work@mail.ru>,
-        Baruch Siach <baruch@tkos.co.il>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Gabriel Somlo <gsomlo@gmail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Taichi Sugaya <sugaya.taichi@socionext.com>,
-        Takao Orito <orito.takao@socionext.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Pali Rohar <pali@kernel.org>,
-        Andreas Farber <afaerber@suse.de>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hammer Hsieh <hammerh0314@gmail.com>,
-        Peter Korsgaard <jacmet@sunsite.dk>,
-        Timur Tabi <timur@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Rob Herring <robh@kernel.org>,
-        sascha hauer <sha@pengutronix.de>, peng fan <peng.fan@nxp.com>,
-        kevin hilman <khilman@kernel.org>,
-        ulf hansson <ulf.hansson@linaro.org>,
-        len brown <len.brown@intel.com>, pavel machek <pavel@ucw.cz>,
-        joerg roedel <joro@8bytes.org>, will deacon <will@kernel.org>,
-        andrew lunn <andrew@lunn.ch>,
-        heiner kallweit <hkallweit1@gmail.com>,
-        eric dumazet <edumazet@google.com>,
-        jakub kicinski <kuba@kernel.org>,
-        paolo abeni <pabeni@redhat.com>,
-        linus walleij <linus.walleij@linaro.org>,
-        hideaki yoshifuji <yoshfuji@linux-ipv6.org>,
-        david ahern <dsahern@kernel.org>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org,
-        linux-rpi-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-tegra@vger.kernel.org,
-        linux-snps-arc@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-actions@lists.infradead.org,
-        linux-unisoc@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        sparclinux@vger.kernel.org
-Subject: Re: [PATCH v2 0/2] Fix console probe delay when stdout-path isn't set
-Message-ID: <YygsEtxKz8dsEstc@kroah.com>
-References: <20220701012647.2007122-1-saravanak@google.com>
- <YwS5J3effuHQJRZ5@kroah.com>
- <CAOesGMivJ5Q-jdeGKw32yhjmNiYctHjpEAnoMMRghYqWD2m2tw@mail.gmail.com>
+        with ESMTP id S229966AbiISJBw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 05:01:52 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40DDE1EACE
+        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 02:01:51 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id w20so15249698ply.12
+        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 02:01:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=ZyBh2EWWrvGOUGs/CdnvlxE/mZhbjQ0C7IY5yfchJ18=;
+        b=Se1edUQHinkb2VrSPj9AEaOkI3qX3bnTI1MH2p01G2eLzH37jO8CEmwls4M9ZyJHKU
+         a+VMhdcy9CKTJtwByAKk6lvAikCojy0OvpEOp7yg2kXsW68EiiWYbz/L1fF5z4cFMBjs
+         6ANh/V9N7RMF/s5uRyO/2tBx946Y16C0t68z+/e9vOrclcGxdcu8iR69ITTS/DetUWUD
+         cRAlWN2ZITVV5/Wf289b5MpBQMwiuH08cZG4qzpyqiV5kGmnlt1Ik4ItVG4+az+DQ8SX
+         Xqobtt0BuNB2dE6sV08XYkm9QmAbLrVhDcVuDot+jJa5FD3gFzmAFbelwJ0JqZm7PL5f
+         VZPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=ZyBh2EWWrvGOUGs/CdnvlxE/mZhbjQ0C7IY5yfchJ18=;
+        b=kYqxzYtmBoguRyRtR4QgXjByW+t3098mFo+dBeTQ5rj0w0kRSwiEZ91RYAru7RKS2Z
+         cH1pTrspahZ7RAUrcLFQdnzwHHcJgDkzh6lRXcBR3+PnA2CNenDH6btEwlFhEKDbd2wP
+         IXgRdkKyHJAXVQkFrIaF+zWuxg696rYL4co/rzd9Es40IUU7roKaQbyugQwkKK32MQd0
+         gc3P0AzqpCwbuYM44UzW4tfCeFuvRo2K+tWiqTaHPqJ73nyO3zmECSiWvohRhLveF/Aa
+         UIEbGmQL2GyFvUsaeCqhrrvurHE1B8fXibMhGzM3o/IFQkV8EVpQdR2DAtGlNnh/U5G4
+         j9IA==
+X-Gm-Message-State: ACrzQf1jHmWlKOCZAOdCbGclxB/eq3DAZwjSIif4YtL32XeONK3Ae+LJ
+        jLkIncelWXsF2zO19sh6drdRfQDEeL1cfssPWdU=
+X-Google-Smtp-Source: AMsMyM4bTsCyOJva27NAcmPBa1jZoiKrjsFnuk5pZM9SD7y8zKr3zFD7eYueqspZNeo+C3iBJjv8MW8af9+PNn6obJ4=
+X-Received: by 2002:a17:902:8302:b0:178:3881:c7b7 with SMTP id
+ bd2-20020a170902830200b001783881c7b7mr11741447plb.22.1663578110710; Mon, 19
+ Sep 2022 02:01:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAOesGMivJ5Q-jdeGKw32yhjmNiYctHjpEAnoMMRghYqWD2m2tw@mail.gmail.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20220906052129.104507-1-saeed@kernel.org> <20220906052129.104507-8-saeed@kernel.org>
+ <CALHRZuq962PeU0OJ0pLrnW=tkaBd8T+iFSkT3mfWr2ArYKdO8A@mail.gmail.com>
+ <20220914203849.fn45bvuem2l3ppqq@sx1> <CALHRZup8+nSNoD_=wSKGym3=EPMKoU+1UxbVReOv8xnBnTeRiw@mail.gmail.com>
+ <CALHRZuqKjpr+u237dtE3+0b4mQrJKxDLhA=SKbiNjd0Fo5h1Nw@mail.gmail.com> <166322893264.61080.12133865599607623050@kwain>
+In-Reply-To: <166322893264.61080.12133865599607623050@kwain>
+From:   sundeep subbaraya <sundeep.lkml@gmail.com>
+Date:   Mon, 19 Sep 2022 14:31:37 +0530
+Message-ID: <CALHRZurLscR15y48fzJXC4pAWe+wen8JZVCwk2fwT4wujqSdRQ@mail.gmail.com>
+Subject: Re: [PATCH net-next V2 07/17] net/mlx5: Add MACsec offload Tx command support
+To:     Antoine Tenart <atenart@kernel.org>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        Saeed Mahameed <saeed@kernel.org>, liorna@nvidia.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Raed Salem <raeds@nvidia.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>, naveenm@marvell.com,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>, andrew@lunn.ch
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 18, 2022 at 08:44:27PM -0700, Olof Johansson wrote:
-> On Tue, Aug 23, 2022 at 8:37 AM Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Thu, Jun 30, 2022 at 06:26:38PM -0700, Saravana Kannan wrote:
-> > > These patches are on top of driver-core-next.
+On Thu, Sep 15, 2022 at 1:32 PM Antoine Tenart <atenart@kernel.org> wrote:
+>
+> Quoting sundeep subbaraya (2022-09-15 07:20:05)
+> > On Thu, Sep 15, 2022 at 10:44 AM sundeep subbaraya
+> > <sundeep.lkml@gmail.com> wrote:
+> > > On Thu, Sep 15, 2022 at 2:08 AM Saeed Mahameed <saeedm@nvidia.com> wrote:
+> > > > On 14 Sep 20:09, sundeep subbaraya wrote:
+> > > > >Hi Saeed and Lior,
+> > > > >
+> > > > >Your mdo_ops can fail in the commit phase and do not validate input
+> > > > >params in the prepare phase.
+> > > > >Is that okay? I am developing MACSEC offload driver for Marvell CN10K
+> > > >
+> > > > It's ok since i think there is no reason to have the two steps system ! it
+> > > > doesn't make any sense to me ! prepare and commit are invoked consecutively
+> > > > one after the other for all mdo_ops and in every offload flow, with no extra
+> > > > step in between! so it's totally redundant.
+> > > >
+> > > > when i reviewed the series initially i was hesitant to check params
+> > > > on prepare step but i didn't see any reason since commit can still fail in
+> > > > the firmware anyways and there is nothing we can do about it !
 > > >
-> > > Even if stdout-path isn't set in DT, this patch should take console
-> > > probe times back to how they were before the deferred_probe_timeout
-> > > clean up series[1].
-> >
-> > Now dropped from my queue due to lack of a response to other reviewer's
-> > questions.
-> 
-> What happened to this patch? I have a 10 second timeout on console
-> probe on my SiFive Unmatched, and I don't see this flag being set for
-> the serial driver. In fact, I don't see it anywhere in-tree. I can't
-> seem to locate another patchset from Saravana around this though, so
-> I'm not sure where to look for a missing piece for the sifive serial
-> driver.
-> 
-> This is the second boot time regression (this one not fatal, unlike
-> the Layerscape PCIe one) from the fw_devlink patchset.
-> 
-> Greg, can you revert the whole set for 6.0, please? It's obviously
-> nowhere near tested enough to go in and I expect we'll see a bunch of
-> -stable fixups due to this if we let it remain in.
+> > > Yes, same with us where messages sent to the AF driver can fail in the
+> > > commit phase.
+> > >
+> > > > so we've decide to keep all the flows in one context for better readability
+> > > > and since the prepare/commit phases are confusing.
+>
+> > > > >and I had to write some clever code
+> > > > >to honour that :). Please someone help me understand why two phase
+> > > > >init was needed for offloading.
+> > > >
+> > > > I don't know, let's ask the original author, Antoine ?
+>
+> This two steps configuration wasn't part of the initial RFC and there
+> was a suggestion to go this way as it could allow the hardware to reject
+> some configurations and have an easier s/w fallback (w/ phase 1 error
+> being ignored but not phase 2). This mapped ~quite well to the first
+> device supporting this so I tried it. But looking back, this wasn't
+> discussed anymore nor improved and stayed this way. As you can see the
+> offloading doesn't fallback to s/w currently and I'd say if we want that
+> we should discuss it first; not sure if that is wanted after all.
+>
+I could not think of advantages we have with two phase init for
+software fallback.
+As of now we will send the new driver to do all the init in the
+prepare phase and
+commit phase will return 0 always.
 
-What exactly is "the whole set"?  I have the default option fix queued
-up and will send that to Linus later this week (am traveling back from
-Plumbers still), but have not heard any problems about any other issues
-at all other than your report.
+Thanks,
+Sundeep
 
-thnaks,
 
-greg k-h
+> If in the end all drivers ignore the first phase, or can't do much, it's
+> probably an indication the pattern doesn't fit well. We can still change
+> this, especially considering there are not that many drivers
+> implementing MACsec h/w offload for now. Now is a good time to discuss
+> this, thanks for raising that point.
+>
+> [Adding Andrew who IIRC looked at the initial RFC; in case he wants to
+> add something].
+>
+> Thanks,
+> Antoine
