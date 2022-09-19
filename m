@@ -2,165 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B346E5BCA6A
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 13:11:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21F0C5BCA7F
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 13:16:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229923AbiISLLS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 07:11:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48452 "EHLO
+        id S229799AbiISLQK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 07:16:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230230AbiISLKi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 07:10:38 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48904140CD;
-        Mon, 19 Sep 2022 04:10:33 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MWMLV3nfQzlVwv;
-        Mon, 19 Sep 2022 19:06:26 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Mon, 19 Sep
- 2022 19:10:30 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <netdev@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <shuah@kernel.org>, <victor@mojatatu.com>
-CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
-        <shaozhengchao@huawei.com>
-Subject: [PATCH net-next 15/15] selftests/tc-testings: add selftests for teql qdisc
-Date:   Mon, 19 Sep 2022 19:11:59 +0800
-Message-ID: <20220919111159.86998-16-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220919111159.86998-1-shaozhengchao@huawei.com>
-References: <20220919111159.86998-1-shaozhengchao@huawei.com>
+        with ESMTP id S229808AbiISLQJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 07:16:09 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3352D101E8;
+        Mon, 19 Sep 2022 04:16:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=YKIMbyBd6IxrYdJrLOS4dKO9Osny5oknx5qOjXOku6A=; b=PMlXkKi9U/nQtThWYCKYmdGKPk
+        oD1BZJQEVOCRaQjFboOvk91o80FgT8rqXPr8sO7rmfBCw3uCcBvsHaskN6786FIsnCr2R9c2u5Us2
+        8ox2jbAKJMq17DZ+ZZmPfzPc7E0c9JENCrk1426mWmdXHZd8FizZjBPEejvBGj6npzy+9BtNUw50X
+        CWvvO1FPQ3OP8rK4DQvoGTXPBQHDLJv/3EWZaNt0LAVXduaTCuhIg/2TduauC8NZMfCI6FrMlHlHl
+        9iIO3UR8NKo5VA8nTpeis0NLti4hROIxXzKwW0F+8RXXfme/MFA1bUY0ICE/biBWelDXzwzXqaloP
+        gdiiOKHg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34398)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1oaEkf-0000mu-1J; Mon, 19 Sep 2022 12:15:49 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1oaEkZ-0006LY-JK; Mon, 19 Sep 2022 12:15:43 +0100
+Date:   Mon, 19 Sep 2022 12:15:43 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Alexander Couzens <lynxis@fe80.eu>
+Cc:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Daniel Golle <daniel@makrotopia.org>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2 4/5] net: mediatek: sgmii: set the speed
+ according to the phy interface in AN
+Message-ID: <YyhPX33PPbV/XyoY@shell.armlinux.org.uk>
+References: <20220919083713.730512-1-lynxis@fe80.eu>
+ <20220919083713.730512-5-lynxis@fe80.eu>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220919083713.730512-5-lynxis@fe80.eu>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Test 84a0: Create TEQL with default setting
-Test 7734: Create TEQL with multiple device
-Test 34a9: Delete TEQL with valid handle
-Test 6289: Show TEQL stats
+On Mon, Sep 19, 2022 at 10:37:11AM +0200, Alexander Couzens wrote:
+> The non auto-negotioting code path is setting the correct speed for the
+> interface. Ensure auto-negotiation code path is doing it as well.
 
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
----
- .../tc-testing/tc-tests/qdiscs/teql.json      | 97 +++++++++++++++++++
- 1 file changed, 97 insertions(+)
- create mode 100644 tools/testing/selftests/tc-testing/tc-tests/qdiscs/teql.json
+While I see the logic in doing this in the autoneg path, if you look
+at mtk_pcs_config(), you'll notice that this code you're adding is
+unreachable.
 
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/qdiscs/teql.json b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/teql.json
-new file mode 100644
-index 000000000000..0082be0e93ac
---- /dev/null
-+++ b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/teql.json
-@@ -0,0 +1,97 @@
-+[
-+    {
-+        "id": "84a0",
-+        "name": "Create TEQL with default setting",
-+        "category": [
-+            "qdisc",
-+            "teql"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true"
-+        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root teql0",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc teql0 1: root refcnt",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DUMMY handle 1: root",
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    },
-+    {
-+        "id": "7734",
-+        "name": "Create TEQL with multiple device",
-+        "category": [
-+            "qdisc",
-+            "teql"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true",
-+            "echo \"1 1 4\" > /sys/bus/netdevsim/new_device",
-+            "$TC qdisc add dev $ETH root handle 1: teql0"
-+        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root teql0",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc teql0 1: root refcnt",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DUMMY handle 1: root",
-+            "echo \"1\" > /sys/bus/netdevsim/del_device",
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    },
-+    {
-+        "id": "34a9",
-+        "name": "Delete TEQL with valid handle",
-+        "category": [
-+            "qdisc",
-+            "teql"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true",
-+            "$TC qdisc add dev $DUMMY handle 1: root teql0"
-+        ],
-+        "cmdUnderTest": "$TC qdisc del dev $DUMMY handle 1: root",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc teql0 1: root refcnt",
-+        "matchCount": "0",
-+        "teardown": [
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    },
-+    {
-+        "id": "6289",
-+        "name": "Show TEQL stats",
-+        "category": [
-+            "qdisc",
-+            "teql"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true"
-+        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root teql0",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC -s qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc teql0 1: root refcnt",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DUMMY handle 1: root",
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    }
-+]
+If interface is PHY_INTERFACE_MODE_2500BASEX, then we will call
+mtk_pcs_setup_mode_force(). We only call mtk_pcs_setup_mode_an() for
+the PHY_INTERFACE_MODE_SGMII case when in-band mode is selected, so
+this can become:
+
+	regmap_read(mpcs->regmap, mpcs->ana_rgc3, &val);
+	val &= ~RG_PHY_SPEED_MASK;
+	regmap_write(mpcs->regmap, mpcs->ana_rgc3, val);
+
+Thanks.
+
 -- 
-2.17.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
