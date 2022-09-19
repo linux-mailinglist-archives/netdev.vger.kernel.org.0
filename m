@@ -2,130 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 429745BCD6C
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 15:41:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3D245BCDBF
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 15:58:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229624AbiISNlv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 09:41:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50094 "EHLO
+        id S230490AbiISN57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 09:57:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229962AbiISNlu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 09:41:50 -0400
-Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DB0915FF4
-        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 06:41:49 -0700 (PDT)
-Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-324ec5a9e97so339761587b3.7
-        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 06:41:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :mime-version:from:to:cc:subject:date;
-        bh=aQgi6Pu6LKQ4LFLczUoYz5yG9aB8B6oMSsmY4zlXGcQ=;
-        b=lZ64I0JTTbdboJhfDIbfviGM5K0rtx4L079kU9kHBAVDmiJLODVcIMGq8fCc/OpiwV
-         ySPE5X9cY7JVDS58SoIgYc3Lo+pkdJj5SLyP6ly9zC9MnBiQCG0cge2p7tHWfyPexK5a
-         t2v7PfBtq2VhtVpHIUqd86QTE9rrlyhcGg6D6oyIf8scsakyRiLma1G+fWPoT69vTG0B
-         Ucc+t56J6I+xIkqsEupPs/0p45/hPHiF538lqOHaXI8NHShV7B5ZXNMuEf9v3KdrzMsb
-         iB8rCOZGgXkPy36REbpkrswWQhX5BdwBL1aMdYpgBEcI/uRSOpb8klhboaGRkSadetLa
-         A5Fg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=aQgi6Pu6LKQ4LFLczUoYz5yG9aB8B6oMSsmY4zlXGcQ=;
-        b=XQRvgfoP2adsyIE0/oDYG+fKh9C3WjsMAvRV5pbrXshuMHvWNuV0XWsNxsnTWbXTQx
-         eweuREZsk0nOji+0Y3g52cplAFVKxdKY7L1PmMHN7Bt1qyd+VOtwgtCbytQzjglxB3zm
-         X3igqJyEv1+Om53+BkTMhyIRaSangG3imWhbmTkVEh98KPYDgcDAjiRIuLdK0NAnxTFk
-         IeZ5hEiCee2CtVtZpFiwdO1R+UzG9FXGPZUq+9maQUa1CezpesgdtU+4TXykocUOTF/T
-         YI66pUCWFI/MqJehe3yH6+tglt/N+YJeTpxDIKaJZ6d5EmJNtINwa8JhO34vHzOTz+nZ
-         mNIA==
-X-Gm-Message-State: ACrzQf2N4rdxyBQhZgfIrgIpE7q1zc4t2GI7q0hznHpFbLck7L0AkvO5
-        julRQICQs+iip68EoGStuvB9Fs4/mcx6lEJAv0CaNQ==
-X-Google-Smtp-Source: AMsMyM4xrGbMfRdNPW+/V5EyahlE5SlrAAk8oqjkr9xNKtdgxhlTGCfbVn2KSCFFsP+tugn3qlRzusp5yHDI0H/7NVw=
-X-Received: by 2002:a81:1409:0:b0:349:e8bb:1fdb with SMTP id
- 9-20020a811409000000b00349e8bb1fdbmr14923270ywu.299.1663594908316; Mon, 19
- Sep 2022 06:41:48 -0700 (PDT)
+        with ESMTP id S229750AbiISN5z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 09:57:55 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A6C92A70A;
+        Mon, 19 Sep 2022 06:57:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1663595874; x=1695131874;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=rVLwnepZShLYi0CxrPl67f1ZjluOas+qgi/tbAoa+DM=;
+  b=QsODZRDhEmbnPLDuHuYJO8Z7MCPXj2O2fPHdotIMhQPQ+OkMwi+OB0kr
+   UbQq857x09Cq2uHWgNF7RLYPpTfUKNzPsCz5oezoQAiFqfD5+GuqPK51t
+   dNGQOjq1DvjWnbNOkYHqQU5mDdditILdhixFai/D6Wde8GJcFdMc36kRt
+   FzJ/kJkda8asXk8rbqGU0Dwn9FYtO6+W3RCTUQfsI8RfAL4f5BFlilZJK
+   Hex3IyrvG6p3PsSpyC32gkc3eENocfOLYb9oxWYleQ8dTvqm9tDLjmP3z
+   Ci2YrXYqNMJ17Oxt7E9mcPviqJyHxOMoi1pKmRDW3T+Wb+AF7esbwt5NV
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10475"; a="279786502"
+X-IronPort-AV: E=Sophos;i="5.93,327,1654585200"; 
+   d="scan'208";a="279786502"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Sep 2022 06:57:54 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,327,1654585200"; 
+   d="scan'208";a="722306733"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga002.fm.intel.com with ESMTP; 19 Sep 2022 06:57:46 -0700
+Received: from lincoln.igk.intel.com (lincoln.igk.intel.com [10.102.21.235])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 28JDvi5X023980;
+        Mon, 19 Sep 2022 14:57:44 +0100
+From:   Larysa Zaremba <larysa.zaremba@intel.com>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, Larysa Zaremba <larysa.zaremba@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>
+Subject: [PATCH net] ice: Fix ice_xdp_xmit() when XDP TX queue number is not sufficient
+Date:   Mon, 19 Sep 2022 15:43:46 +0200
+Message-Id: <20220919134346.25030-1-larysa.zaremba@intel.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-From:   Alexander Potapenko <glider@google.com>
-Date:   Mon, 19 Sep 2022 15:41:12 +0200
-Message-ID: <CAG_fn=Ud3zSW7AZWXc+asfMhZVL5ETnvuY44Pmyv4NPv-ijN-A@mail.gmail.com>
-Subject: Use of uninit value in inet_bind2_bucket_find
-To:     joannelkoong@gmail.com, Jakub Kicinski <kuba@kernel.org>
-Cc:     Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Joanne, Jakub et al.,
+The original patch added the static branch to handle the situation,
+when assigning an XDP TX queue to every CPU is not possible,
+so they have to be shared.
 
-When building next-20220919 with KMSAN I am seeing the following error
-at boot time:
+However, in the XDP transmit handler ice_xdp_xmit(), an error was
+returned in such cases even before static condition was checked,
+thus making queue sharing still impossible.
 
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D
-BUG: KMSAN: uninit-value in inet_bind2_bucket_find+0x71f/0x790
-net/ipv4/inet_hashtables.c:827
- inet_bind2_bucket_find+0x71f/0x790 net/ipv4/inet_hashtables.c:827
- inet_csk_get_port+0x2415/0x32e0 net/ipv4/inet_connection_sock.c:529
- __inet6_bind+0x1474/0x1a20 net/ipv6/af_inet6.c:406
- inet6_bind+0x176/0x360 net/ipv6/af_inet6.c:465
- __sys_bind+0x5b3/0x750 net/socket.c:1776
- __do_sys_bind net/socket.c:1787
- __se_sys_bind net/socket.c:1785
- __x64_sys_bind+0x8d/0xe0 net/socket.c:1785
- do_syscall_x64 arch/x86/entry/common.c:50
- do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd ??:?
+Fixes: 22bf877e528f ("ice: introduce XDP_TX fallback path")
+Signed-off-by: Larysa Zaremba <larysa.zaremba@intel.com>
+Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+---
+ drivers/net/ethernet/intel/ice/ice_txrx.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-Uninit was created at:
- slab_post_alloc_hook+0x156/0xb40 mm/slab.h:759
- slab_alloc_node mm/slub.c:3331
- slab_alloc mm/slub.c:3339
- __kmem_cache_alloc_lru mm/slub.c:3346
- kmem_cache_alloc+0x47e/0x9f0 mm/slub.c:3355
- inet_bind2_bucket_create+0x4b/0x3b0 net/ipv4/inet_hashtables.c:128
- inet_csk_get_port+0x2513/0x32e0 net/ipv4/inet_connection_sock.c:533
- __inet_bind+0xbd2/0x1040 net/ipv4/af_inet.c:525
- inet_bind+0x184/0x360 net/ipv4/af_inet.c:456
- __sys_bind+0x5b3/0x750 net/socket.c:1776
- __do_sys_bind net/socket.c:1787
- __se_sys_bind net/socket.c:1785
- __x64_sys_bind+0x8d/0xe0 net/socket.c:1785
- do_syscall_x64 arch/x86/entry/common.c:50
- do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd ??:?
+diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
+index 42b42f4b21ef..a5a0c9706b5a 100644
+--- a/drivers/net/ethernet/intel/ice/ice_txrx.c
++++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
+@@ -610,7 +610,7 @@ ice_xdp_xmit(struct net_device *dev, int n, struct xdp_frame **frames,
+ 	if (test_bit(ICE_VSI_DOWN, vsi->state))
+ 		return -ENETDOWN;
+ 
+-	if (!ice_is_xdp_ena_vsi(vsi) || queue_index >= vsi->num_xdp_txq)
++	if (!ice_is_xdp_ena_vsi(vsi))
+ 		return -ENXIO;
+ 
+ 	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK))
+@@ -621,6 +621,9 @@ ice_xdp_xmit(struct net_device *dev, int n, struct xdp_frame **frames,
+ 		xdp_ring = vsi->xdp_rings[queue_index];
+ 		spin_lock(&xdp_ring->tx_lock);
+ 	} else {
++		/* Generally, should not happen */
++		if (unlikely(queue_index >= vsi->num_xdp_txq))
++			return -ENXIO;
+ 		xdp_ring = vsi->xdp_rings[queue_index];
+ 	}
+ 
+-- 
+2.35.3
 
-CPU: 3 PID: 5983 Comm: sshd Not tainted 6.0.0-rc6-next-20220919 #211
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-1.16.0-debian-1.16.0-4 04/01/2014
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D
-
-I think this is related to "net: Add a bhash2 table hashed by port and
-address", could you please take a look?
-This error is not reported on v6.0-rc5 (note that KMSAN only exists in
--next and as a v6.0-rc5 fork at https://github.com/google/kmsan).
-
-Alex
-
---=20
-Alexander Potapenko
-Software Engineer
-
-Google Germany GmbH
-Erika-Mann-Stra=C3=9Fe, 33
-80636 M=C3=BCnchen
-
-Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Liana Sebastian
-Registergericht und -nummer: Hamburg, HRB 86891
-Sitz der Gesellschaft: Hamburg
