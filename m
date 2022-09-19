@@ -2,47 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 69D205BD69E
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 23:50:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59AC05BD6A3
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 23:52:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229655AbiISVuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 17:50:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32982 "EHLO
+        id S229482AbiISVwU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 17:52:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229568AbiISVuG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 17:50:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C24B3E763;
-        Mon, 19 Sep 2022 14:50:05 -0700 (PDT)
+        with ESMTP id S229570AbiISVwT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 17:52:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42E9043608
+        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 14:52:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1D3DEB80C9A;
-        Mon, 19 Sep 2022 21:50:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24260C433C1;
-        Mon, 19 Sep 2022 21:50:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DD9F3B81A6A
+        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 21:52:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E655C433C1;
+        Mon, 19 Sep 2022 21:52:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663624202;
-        bh=YjhFCbjQzUSrXxdUwrttST24fO5cqS2ALKtCxlBllvI=;
+        s=k20201202; t=1663624335;
+        bh=voQJTyzoC/3PzDgIMHhnzw24jCQzAjuuIiYLI8hvkN8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=t5j2gFeoaY/CEGtEYqIX8DZgUg3y5A+A6NOuW45gNegOGwHZ0czoelxNn7OlKS4C+
-         6jh/KsRMCTn2BCTiH0pheLLX+Ax/NtVwGdeQHqCAcPEdeo8c9taLz8qLwrhkEN5aO7
-         vrC7Z0bp3NuxWD1m8cilkl/toG4cNxFbK8I3VhdkGM6+jDV3T9cUvj9YEkEu4hpLQk
-         3SRhHdlHdlpbjaWGQgBpzi7oQyfTbIBpiMcA3Bc1MIkEpGIk3aynxFxdlOYIfBezLS
-         CynOoCh0p+7ZdQE55m6QHrQkukqrFVlff4PmV17TQNKKtWWHAmrK2aJ/JnGDpSxir9
-         qzhdXi3nS7xKg==
-Date:   Mon, 19 Sep 2022 14:50:01 -0700
+        b=g4PGcd27JHq/+iMC014YiPInIf47zAM4cwXe1QL6lsM3BEmLdde16ZO46NUDNtykg
+         MwZdsk1eJWKJyz01Bp/eE5+lpvXR/lN8u7fhbS9JJ5sDF/99EryNQWWnXU5DwaxidV
+         oUWPRU97nJ8CRCSH4Z6R8szxUjbyxF0EpKOsCnDEJMxoEQFK+vjSjf8fWUKR2oPUST
+         2AJsP0Uik8xqKylh1YhgVq/71ms4Gt8c9ZTk6xaCqPX+KzB7bwy1Eo3SPEYPniOuyo
+         n+avvZSl5eWMIwPAgEQ4p1VSXDoZEbjnPqrnL9CtSvpcIQ2kUVmXtz1AhfUlqQ9boQ
+         icdokA1+/jxZg==
+Date:   Mon, 19 Sep 2022 14:52:14 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     cgel.zte@gmail.com
-Cc:     idosch@nvidia.com, petrm@nvidia.com, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xu Panda <xu.panda@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH linux-next] mlxsw: core: remove the unneeded result
- variable
-Message-ID: <20220919145001.4aa47af1@kernel.org>
-In-Reply-To: <20220912072933.16994-1-xu.panda@zte.com.cn>
-References: <20220912072933.16994-1-xu.panda@zte.com.cn>
+Cc:     woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, linux@armlinux.org.uk, netdev@vger.kernel.org,
+        Xu Panda <xu.panda@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>
+Subject: Re: [PATCH linux-next] net: dsa: microchip: remove the unneeded
+ result variable
+ -------------------------------------------------------------------------
+Message-ID: <20220919145214.366b7cd4@kernel.org>
+In-Reply-To: <20220912075045.17060-1-xu.panda@zte.com.cn>
+References: <20220912075045.17060-1-xu.panda@zte.com.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -55,10 +57,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 12 Sep 2022 07:29:34 +0000 cgel.zte@gmail.com wrote:
-> From: Xu Panda <xu.panda@zte.com.cn>
-> 
-> Return the value mlxsw_core_bus_device_register() directly instead of
-> storing it in another redundant variable.
+On Mon, 12 Sep 2022 07:50:46 +0000 cgel.zte@gmail.com wrote:
+> Subject: [PATCH linux-next] net: dsa: microchip: remove the unneeded result variable -------------------------------------------------------------------------
+> Date: Mon, 12 Sep 2022 07:50:46 +0000
 
-This patch does not apply cleanly to net-next, please rebase.
+> Return the value ksz_get_xmii() directly instead of storing it in
+> another redundant variable.
+
+Does not apply either, also the subject is off.
