@@ -2,188 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 937F95BD7D2
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 01:09:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F7055BD801
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 01:16:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229810AbiISXJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 19:09:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58110 "EHLO
+        id S229749AbiISXQY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 19:16:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229932AbiISXJH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 19:09:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AA644DB5D
-        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 16:09:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1663628944;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8XtIN7tYHuR/gYIs8LpFfK7Y/fF2eBAeB7zp3qSwwc0=;
-        b=EF0NylvYuMCCuLq36lXDqx853Ovq4cz722eOcnlM+GABDhEdYQlYOrQkeXBL5EJpkrp1ld
-        Szjc2bzcu14imPDba9TPlUTAGM6ROBq/kOMRP/SOAwZSHYmhpKcRF/3K12Ta1BrOW7MZVW
-        GLjn7XJK+nLT2dd+LaJDwszEEwNdl4M=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-182-AWcPVcKfMOCOhqVtIW1cEw-1; Mon, 19 Sep 2022 19:08:59 -0400
-X-MC-Unique: AWcPVcKfMOCOhqVtIW1cEw-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C3A41185A78F;
-        Mon, 19 Sep 2022 23:08:58 +0000 (UTC)
-Received: from jtoppins.rdu.csb (unknown [10.22.8.155])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 608E2140EBF3;
-        Mon, 19 Sep 2022 23:08:58 +0000 (UTC)
-From:   Jonathan Toppins <jtoppins@redhat.com>
-To:     "netdev @ vger . kernel . org" <netdev@vger.kernel.org>
-Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jussi Maki <joamaki@gmail.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH net 2/2] bonding: fix NULL deref in bond_rr_gen_slave_id
-Date:   Mon, 19 Sep 2022 19:08:46 -0400
-Message-Id: <3cd65bdf26ba7b64c8ade801820562c426b90109.1663628505.git.jtoppins@redhat.com>
-In-Reply-To: <cover.1663628505.git.jtoppins@redhat.com>
-References: <cover.1663628505.git.jtoppins@redhat.com>
+        with ESMTP id S229566AbiISXQW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 19:16:22 -0400
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2040.outbound.protection.outlook.com [40.107.20.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29562386BD
+        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 16:16:22 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kunfdGaY8ruMk9ShAGVN3MgrUlocPKdH7tp+ZbB5da5hXQbYFoc2jrV0duqSGlPg7sxDcXtHFyZhs9dWKv+efx3UaAm22HY4/CKtbAY2b1lDPYi20Pjd9gaPCYybVnrz3gnpDA1YufrW5/tPxeUm/CNu3w49Drpt9POj7d2dNcouNf6F2Jmdu8J+KSpfRYnZOkdM4feaLUkutkjN3O2wDa7/a9MPrgZjLJwdQ49bxWvRhONcEtxPxeshu4FQVZoebCAl+a+6ajUdV9JSjCzUjbCKT+FAh+814K5Gr79Alw92AEt5587Xa0SZZTGifNXhmBovDJuJpORxcJB6BORdtA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=CdWN3VHS1RqjXFPepRxWhTQZ9TNck7pZmWQCF4ZYQxE=;
+ b=gwvphsflUNANKG/I9FwhattTM1BmC4h2LeZKNZx4r8cq0M2wCjZ0eczzX3CkqKzxDlpwYV3X8vlyj+MLo/EmJBiQn0VVv/WmfYihPaSRTa0F2PIWBbg4DF8tbHLnqSRmvcgG+UT9fsqOSiG/aNDEA6p/t9kgdvkPvxra2d1RKgV2YZMMWQsG8hcPZfWNcADBiJPCSw/eoz9JfDzTlGCJ13XSev9oaVy5YKdYRUiUdrD/PbftclCfSAn8EijTnOCKG6ajpjAjKigUO5o73Cfx3V3ANQLFynrHAbjob6gf2DeerdTrqFhIxPGbnenCLU1ljvznydGAjsnuEWFyWtu2BA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CdWN3VHS1RqjXFPepRxWhTQZ9TNck7pZmWQCF4ZYQxE=;
+ b=Tnb6h9mvWEVyWX5LnEGXKQ1AvOOfGyj6CO2eIFRr9EVFJ2VL54tB8NvarW27p1PVoLBTbZ/6cJkPrJqGW50wD2u51xgaz486jOoCjaLqC6j8bCAd6ObnaKoBOqIn02V8emuh+eN0KGnTwbliWJIf2K2+yPXihIghudg2WW+dhvw=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by DBAPR04MB7318.eurprd04.prod.outlook.com (2603:10a6:10:1ab::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5632.21; Mon, 19 Sep
+ 2022 23:16:20 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::a67a:849c:aeff:cad1]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::a67a:849c:aeff:cad1%7]) with mapi id 15.20.5632.021; Mon, 19 Sep 2022
+ 23:16:20 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "mattias.forsblad@gmail.com" <mattias.forsblad@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Christian Marangi <ansuelsmth@gmail.com>
+Subject: Re: [PATCH rfc v0 4/9] net: dsa: qca8k: dsa_inband_request: More
+ normal return values
+Thread-Topic: [PATCH rfc v0 4/9] net: dsa: qca8k: dsa_inband_request: More
+ normal return values
+Thread-Index: AQHYzHXUsyedrDPnEEqlmyAuzhGWP63nYrqA
+Date:   Mon, 19 Sep 2022 23:16:19 +0000
+Message-ID: <20220919231619.f3vyzq2acbtkh7ok@skbuf>
+References: <20220919110847.744712-3-mattias.forsblad@gmail.com>
+ <20220919221853.4095491-1-andrew@lunn.ch>
+ <20220919221853.4095491-5-andrew@lunn.ch>
+In-Reply-To: <20220919221853.4095491-5-andrew@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: VI1PR04MB5136:EE_|DBAPR04MB7318:EE_
+x-ms-office365-filtering-correlation-id: 10ed08fb-a713-4f49-a608-08da9a94f60e
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: D4yYu98vbptHwX3WhZilVHLSJrtPPHTmRox2ANzGVEQjKvPYFx5onyzxmxgpf0fMkZS1vYbEzNY8FxM5XF/fk5Xzg4uBSRyVG/TaMYQC9qR3VSzRYHoWBZZV5PlQzXLKIhP5UXUCG3q89l8eFvZE+mM+iZUWPmRLVirkKYSvzxnfTFOQhRFhglJioFwSqtJ6ouCW4R+6Tk67H9k0c8V9xChETg3tqx8+Vq/PbbPnZCx+MDizFmoOBY8U9Q9sOtoyfrOHfx9GVLHr7wc0mwGqVt0tLITTKuU8buu3N8veV2CI/bM6POLtkQStWVPyupmT6XwozbFRaqFMk6OfiOej8xsZgmWAVfgA8nMOtPBlAR8GyJS0CK/ijwCjvo7zgbR609X+IJyrKKfs2tkcEYwC0cv6nw5B2K40spxOSY0cX2uNnBVKTOlvXkytCc21XhpGidf05aNK6jCg7S2r+njdBdTGS9vxcaJgCewsHy0keoejV/eOrr0UoFrv5m1lJfhcKNNL3Tp5rArZ+34O3eKo8XO0fYizOls5XuPYmXvREx6MnPMWJaelXcAMkKMwtHBfRiVHKkcXQm0QA07mJKpdcKt7jGrNF1d+egAZPhbOrVN0XDM0euD7XY8bNY7x2Q6vS1SoWX7Sg5vSEb6S70XevBKh4WlEgQ3RUdiOW1jbrz89Itc65C64JeoRvcBbOYhVRo2OYkXYMs9tauBdTM1CQJR1QwAbt9a1C+7SmGCBE/8MpyRN5x+TMx7WM5kvKdYjNUFZRuJuvxMqhgcifVr/kH31bfz+Tt1vQhYkdvq0c1k=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(7916004)(346002)(396003)(376002)(136003)(366004)(39860400002)(451199015)(44832011)(33716001)(4744005)(2906002)(122000001)(316002)(8676002)(38100700002)(4326008)(66476007)(76116006)(64756008)(5660300002)(66556008)(66946007)(66446008)(91956017)(6916009)(54906003)(8936002)(86362001)(1076003)(186003)(478600001)(38070700005)(9686003)(6512007)(26005)(6506007)(83380400001)(6486002)(71200400001)(41300700001)(32563001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?AV20pxIr0ozcj4Vutyf8iL0NaF2BGlLNVN4nNw8kf138pwSjrr6uYUE3TxGA?=
+ =?us-ascii?Q?Wv0FIHFfnMMvY/gkX7NzKOJ6M5g6Yk0M/cWGvdGzafzH9vHkhGGXtbO5lgJB?=
+ =?us-ascii?Q?Se0aj5as2N/YBRTF0bL7UKsvAqfqVhxipfLOjWPv8lCA5XMoVcdizeX04Rqr?=
+ =?us-ascii?Q?uSdkJdh+RTR5B8wmeuwkU5F0FDM4EAqPnLgOegCPj1FlFKla4MaHNfhAU7SZ?=
+ =?us-ascii?Q?zQab3vnYYzeVXq1Z+1jgGEnEKEiLZ9+8NvSZEyMDxzxtR293lHza2euFL3+R?=
+ =?us-ascii?Q?5FDsjexzikUVYSInmrSCdfKEJVtI5MvqCPzOudzrX1Y9ptbV5pouFsdK+GbG?=
+ =?us-ascii?Q?oeizpXxqD8ZWgH2PaQ8boGBptCiiI+288/NCKaNRpskKdrdeB9GZiUhcC8c8?=
+ =?us-ascii?Q?W/rWRKVrmNY3H9bflijlQoM6luWFtA2iQJbpmwKW8a3Zc1+FNyt3l5YDYQkH?=
+ =?us-ascii?Q?Cn6lSBxoFaiKXv/LGTsE73//p+FxSHo0rH3lv3rw0JZwCAGDAcyHYJmuTeY0?=
+ =?us-ascii?Q?R+C4tTSKLEo56geK2NRs/0T0GATME7ynL3VjPGrOeQmijpRODFWY4I/NZnxg?=
+ =?us-ascii?Q?Qf1oXtGC0hAu5Sh4mnax3eS83QHVE9YVmSP1uETmfccbSFQ6qKrKE6oU1OcV?=
+ =?us-ascii?Q?oTRgSD9jf4/U/wc1LZ5N+tbm/xSocFCas9vsszjiTCzDhUh4Li2qAz5aRVkn?=
+ =?us-ascii?Q?bhZn9nNy6ngAtJM2dUPBDfYUEgm7pvWeduOFXb8CEyX7wFjmema4ZzdddIZ1?=
+ =?us-ascii?Q?xbqo/2Vi3TClerEQScTBtEMe2DbJ/vugwW+qKVWMlBex88GvOQSM+vTXOXaM?=
+ =?us-ascii?Q?3Fg+GHzd23v6Str1KlNu0Mt62bms7wzvpLveVtW/WhSOJzP+RMdXbicRdXDy?=
+ =?us-ascii?Q?wCbIzYcK4+JUERxGPdlVlWXokoy04oZtWwecg/Pa4iIdvzrDkCcOx0DZGfK0?=
+ =?us-ascii?Q?YGVVmmNFSZY41xN4ASW2Of70+Dp3rSSXONgVl5v+jetLmCv/nj247xLXi5Vu?=
+ =?us-ascii?Q?fq31jDcyfHG69NOzCwoYg/ZN/3g9AVFcAWA7JPPA+tHuOoaxOg/7Ur0gJEUG?=
+ =?us-ascii?Q?ZycaG8KgVf7BhPILX2xqiFyDrs6CS9gIQoPaJaP3c6ZBwRT/mvv+gGbf2KmG?=
+ =?us-ascii?Q?OBETFaugs27A1IP0QnsXw6uWVVAwKrZ3R5BrfogT3DircZnJvp5GgcRjthR8?=
+ =?us-ascii?Q?p6FYo8AF0WGPQk3MWGk0e/7eSpWtHz8avfDvy/m52GZ+7GSzAsocZmkcfKjX?=
+ =?us-ascii?Q?lzkVYQ6JHWYoQMUiYfBHr0s4ZHmdj85mI7LN4zwdgI/uymH5FQC9v5SM8LUj?=
+ =?us-ascii?Q?MqTkhPpvDa8bNL8mAhpdgPn9AK15mm0A0qbdffz+XSiyrIc6Zvkc2ro0GEZ1?=
+ =?us-ascii?Q?uj6+a+wtuCni1k/BeZJNM/VkgOkS4BHn1eJpVjZQH40HIFkwKtORi7koXqvv?=
+ =?us-ascii?Q?5nWi2KyiB7PkvR2EGpEi8a1LIaRnwJBuuJfcilLHhE2ZYpX7oik9A6ZQwyRP?=
+ =?us-ascii?Q?WNDnVHUAzs5NOy3saQ3Xs5fRGvZu0rS85I96YEFdAsXvRSogy8wVpNgoqD7w?=
+ =?us-ascii?Q?G9fUr2ngoyXokJexLFRZnoPPuzoViqHs9PnQTKrINumrbrYHAx0Pg2U+0edq?=
+ =?us-ascii?Q?BA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <7CFF478BB0FD194C8EBB0C64E9B86778@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 10ed08fb-a713-4f49-a608-08da9a94f60e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Sep 2022 23:16:20.0182
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 8CnKb4KVzwqwjSLz27sZjhA8s0NHswoDSQEK/W7e4fgTupn8zxVQ/SFnwvmCOgCzQK0i7WRRFO9XMasKTLLrDg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR04MB7318
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix a NULL dereference of the struct bonding.rr_tx_counter member because
-if a bond is initially created with an initial mode != zero (Round Robin)
-the memory required for the counter is never created and when the mode is
-changed there is never any attempt to verify the memory is allocated upon
-switching modes.
+On Tue, Sep 20, 2022 at 12:18:48AM +0200, Andrew Lunn wrote:
+> wait_for_completion_timeout() has unusual return values.  It can
+> @@ -591,8 +588,8 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool r=
+ead, int phy,
+>  	qca8k_mdio_header_fill_seq_num(clear_skb, mgmt_eth_data->seq);
+>  	mgmt_eth_data->ack =3D false;
+> =20
+> -	dsa_inband_wait_for_completion(&mgmt_eth_data->inband,
+> -				       QCA8K_ETHERNET_TIMEOUT);
+> +	ret =3D dsa_inband_request(&mgmt_eth_data->inband, clear_skb,
+> +				 QCA8K_ETHERNET_TIMEOUT);
 
-This causes the following Oops on an aarch64 machine:
-    [  334.686773] Unable to handle kernel paging request at virtual address ffff2c91ac905000
-    [  334.694703] Mem abort info:
-    [  334.697486]   ESR = 0x0000000096000004
-    [  334.701234]   EC = 0x25: DABT (current EL), IL = 32 bits
-    [  334.706536]   SET = 0, FnV = 0
-    [  334.709579]   EA = 0, S1PTW = 0
-    [  334.712719]   FSC = 0x04: level 0 translation fault
-    [  334.717586] Data abort info:
-    [  334.720454]   ISV = 0, ISS = 0x00000004
-    [  334.724288]   CM = 0, WnR = 0
-    [  334.727244] swapper pgtable: 4k pages, 48-bit VAs, pgdp=000008044d662000
-    [  334.733944] [ffff2c91ac905000] pgd=0000000000000000, p4d=0000000000000000
-    [  334.740734] Internal error: Oops: 96000004 [#1] SMP
-    [  334.745602] Modules linked in: bonding tls veth rfkill sunrpc arm_spe_pmu vfat fat acpi_ipmi ipmi_ssif ixgbe igb i40e mdio ipmi_devintf ipmi_msghandler arm_cmn arm_dsu_pmu cppc_cpufreq acpi_tad fuse zram crct10dif_ce ast ghash_ce sbsa_gwdt nvme drm_vram_helper drm_ttm_helper nvme_core ttm xgene_hwmon
-    [  334.772217] CPU: 7 PID: 2214 Comm: ping Not tainted 6.0.0-rc4-00133-g64ae13ed4784 #4
-    [  334.779950] Hardware name: GIGABYTE R272-P31-00/MP32-AR1-00, BIOS F18v (SCP: 1.08.20211002) 12/01/2021
-    [  334.789244] pstate: 60400009 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-    [  334.796196] pc : bond_rr_gen_slave_id+0x40/0x124 [bonding]
-    [  334.801691] lr : bond_xmit_roundrobin_slave_get+0x38/0xdc [bonding]
-    [  334.807962] sp : ffff8000221733e0
-    [  334.811265] x29: ffff8000221733e0 x28: ffffdbac8572d198 x27: ffff80002217357c
-    [  334.818392] x26: 000000000000002a x25: ffffdbacb33ee000 x24: ffff07ff980fa000
-    [  334.825519] x23: ffffdbacb2e398ba x22: ffff07ff98102000 x21: ffff07ff981029c0
-    [  334.832646] x20: 0000000000000001 x19: ffff07ff981029c0 x18: 0000000000000014
-    [  334.839773] x17: 0000000000000000 x16: ffffdbacb1004364 x15: 0000aaaabe2f5a62
-    [  334.846899] x14: ffff07ff8e55d968 x13: ffff07ff8e55db30 x12: 0000000000000000
-    [  334.854026] x11: ffffdbacb21532e8 x10: 0000000000000001 x9 : ffffdbac857178ec
-    [  334.861153] x8 : ffff07ff9f6e5a28 x7 : 0000000000000000 x6 : 000000007c2b3742
-    [  334.868279] x5 : ffff2c91ac905000 x4 : ffff2c91ac905000 x3 : ffff07ff9f554400
-    [  334.875406] x2 : ffff2c91ac905000 x1 : 0000000000000001 x0 : ffff07ff981029c0
-    [  334.882532] Call trace:
-    [  334.884967]  bond_rr_gen_slave_id+0x40/0x124 [bonding]
-    [  334.890109]  bond_xmit_roundrobin_slave_get+0x38/0xdc [bonding]
-    [  334.896033]  __bond_start_xmit+0x128/0x3a0 [bonding]
-    [  334.901001]  bond_start_xmit+0x54/0xb0 [bonding]
-    [  334.905622]  dev_hard_start_xmit+0xb4/0x220
-    [  334.909798]  __dev_queue_xmit+0x1a0/0x720
-    [  334.913799]  arp_xmit+0x3c/0xbc
-    [  334.916932]  arp_send_dst+0x98/0xd0
-    [  334.920410]  arp_solicit+0xe8/0x230
-    [  334.923888]  neigh_probe+0x60/0xb0
-    [  334.927279]  __neigh_event_send+0x3b0/0x470
-    [  334.931453]  neigh_resolve_output+0x70/0x90
-    [  334.935626]  ip_finish_output2+0x158/0x514
-    [  334.939714]  __ip_finish_output+0xac/0x1a4
-    [  334.943800]  ip_finish_output+0x40/0xfc
-    [  334.947626]  ip_output+0xf8/0x1a4
-    [  334.950931]  ip_send_skb+0x5c/0x100
-    [  334.954410]  ip_push_pending_frames+0x3c/0x60
-    [  334.958758]  raw_sendmsg+0x458/0x6d0
-    [  334.962325]  inet_sendmsg+0x50/0x80
-    [  334.965805]  sock_sendmsg+0x60/0x6c
-    [  334.969286]  __sys_sendto+0xc8/0x134
-    [  334.972853]  __arm64_sys_sendto+0x34/0x4c
-    [  334.976854]  invoke_syscall+0x78/0x100
-    [  334.980594]  el0_svc_common.constprop.0+0x4c/0xf4
-    [  334.985287]  do_el0_svc+0x38/0x4c
-    [  334.988591]  el0_svc+0x34/0x10c
-    [  334.991724]  el0t_64_sync_handler+0x11c/0x150
-    [  334.996072]  el0t_64_sync+0x190/0x194
-    [  334.999726] Code: b9001062 f9403c02 d53cd044 8b040042 (b8210040)
-    [  335.005810] ---[ end trace 0000000000000000 ]---
-    [  335.010416] Kernel panic - not syncing: Oops: Fatal exception in interrupt
-    [  335.017279] SMP: stopping secondary CPUs
-    [  335.021374] Kernel Offset: 0x5baca8eb0000 from 0xffff800008000000
-    [  335.027456] PHYS_OFFSET: 0x80000000
-    [  335.030932] CPU features: 0x0000,0085c029,19805c82
-    [  335.035713] Memory Limit: none
-    [  335.038756] Rebooting in 180 seconds..
+Ansuel commented in Message-ID 12edaefc-89a2-f231-156e-5dbe198ae6f6@gmail.c=
+om
+that not checking the error code here was deliberate, and that when Mattias
+did check the error code, things broke.
 
-The is to allocate the memory in bond_open() which is guaranteed to be
-called before any packets are processed.
-
-Fixes: 848ca9182a7d ("net: bonding: Use per-cpu rr_tx_counter")
-Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
----
- drivers/net/bonding/bond_main.c | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index bc6d8b0aa6fb..86d42306aa5e 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -4182,6 +4182,12 @@ static int bond_open(struct net_device *bond_dev)
- 	struct list_head *iter;
- 	struct slave *slave;
- 
-+	if (BOND_MODE(bond) == BOND_MODE_ROUNDROBIN && !bond->rr_tx_counter) {
-+		bond->rr_tx_counter = alloc_percpu(u32);
-+		if (!bond->rr_tx_counter)
-+			return -ENOMEM;
-+	}
-+
- 	/* reset slave->backup and slave->inactive */
- 	if (bond_has_slaves(bond)) {
- 		bond_for_each_slave(bond, slave, iter) {
-@@ -6243,15 +6249,6 @@ static int bond_init(struct net_device *bond_dev)
- 	if (!bond->wq)
- 		return -ENOMEM;
- 
--	if (BOND_MODE(bond) == BOND_MODE_ROUNDROBIN) {
--		bond->rr_tx_counter = alloc_percpu(u32);
--		if (!bond->rr_tx_counter) {
--			destroy_workqueue(bond->wq);
--			bond->wq = NULL;
--			return -ENOMEM;
--		}
--	}
--
- 	spin_lock_init(&bond->stats_lock);
- 	netdev_lockdep_set_classes(bond_dev);
- 
--- 
-2.31.1
-
+> =20
+>  	mutex_unlock(&mgmt_eth_data->mutex);
+>  =
