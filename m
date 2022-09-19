@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C95E5BD616
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 23:06:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6D295BD618
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 23:06:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229782AbiISVGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 17:06:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41174 "EHLO
+        id S229865AbiISVGW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 17:06:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229617AbiISVGT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 17:06:19 -0400
-Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87318201A2;
-        Mon, 19 Sep 2022 14:06:18 -0700 (PDT)
-Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-1274ec87ad5so1361029fac.0;
-        Mon, 19 Sep 2022 14:06:18 -0700 (PDT)
+        with ESMTP id S229783AbiISVGU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 17:06:20 -0400
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE7D1E82;
+        Mon, 19 Sep 2022 14:06:19 -0700 (PDT)
+Received: by mail-qk1-x735.google.com with SMTP id i3so379484qkl.3;
+        Mon, 19 Sep 2022 14:06:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:to
-         :from:from:to:cc:subject:date;
-        bh=PaGTi8M5dY/2A2R9W9sSYECJnPcMh78ygGFvCU097mc=;
-        b=Re8xlqSlDQVJLgMFuNLu3pRUrxl3Aj2FGVekiqV4X+hUycTLy0o7AoheeNKLixBGWc
-         sQRhXNynE5Vu6SErWcskzSbTZEYf5MGkZ4UM9V15CXy+XRHRZiP5fVXmae8mt2/3WbgB
-         S6qQbP7huAYRmwwMSYgDbNHS2fRyS/CtmfYZV6zA06Ax1X/MFAPNLZ65JL8sU3frGwUs
-         7edZgloP1lQr0U7MMfwQ/B2WYN5PWkMNOte7+Be0zwUnoXtdwA8xM6CTM49WWCfIzM02
-         5Y+EyZowyAM1NxxW+7Jhw7ZFL5vfOXMsxWNmE7wx2EYIVWGAmqlMbba2XMvvjGF/xnq5
-         /sDg==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:to:from:from:to:cc:subject:date;
+        bh=i+YbDv67G8LotfUM9oVF+1zCzZ8Q2PBCNdqV7Fv3SSs=;
+        b=XvizBUqTaZHLGwniEtLDcQ8fTNvupZjxri9ST9XDNKoy8R9WBWbpiGtkKO14VVHWdp
+         5OdQM3cDqQrqUOgmEoewC2W4Zwa3THiaYYIqDNkaqEIzPgADE7df69pD7wpiAcEB945b
+         9dZMQ57yChyKm2ptCOlk6Izsi5I6JcTsCo4UPcidsn3ppFo8PP38FwnjsrjGcEUQXgcG
+         VI0ccTMUF3TuhI/54zPshHNDE7hpTF4OfxMR3D1rGwQcBhZG23WjKYTohd8W3fp3EiwI
+         nYBlAABn1wsLble7eFr7odR+y6r55FLhK5O4X6OGpe5LF2G3rkvggd1W778QyL7zJY+o
+         YhLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:to
-         :from:x-gm-message-state:from:to:cc:subject:date;
-        bh=PaGTi8M5dY/2A2R9W9sSYECJnPcMh78ygGFvCU097mc=;
-        b=SYR4exYVnFcdFQBOTnH+uWIJydgcoDUMGThs7j6rN6U8Qb0z8LYvtLkkHTWtmh2ZWK
-         OMkse3/n+HAxH5doSqp6TP4idYkvs3pKpjoDIZNTFhFvVIrDDzMsfX7UZDaVpyrejZxT
-         h55ORXugQ3FDT3xWW/sDoXopOlV82ELN1ztbLHNo9khgEhxKXjLIbatM/RNd4BHMGPKV
-         +byOkTmJzGQcoUjujnSwKqf/cbhT50/0b80e8OQggYPv+xG25jjldxjxFmAgMsUC/CNG
-         OVneGI7LYC0UChUjdkI97DXbcxfZuqGPSmoWkvisxLBQ9bxOPY6ahh0gBVxjcWD4kV75
-         Slng==
-X-Gm-Message-State: ACrzQf37+xRopMD8FsmNEDLuBYJdyVfb8da19itkbrGS6D+fZtQySnWD
-        XQJfXNLOkR+aozcqWJo3KHnpKx3q7Kk=
-X-Google-Smtp-Source: AMsMyM57VvK3wmcusSoKCXI0U91XyI0ethAntOuPkk7aPr+7wwJOIooFRhvr4H4Z4zwQjFaAME/c/w==
-X-Received: by 2002:a05:6871:294:b0:12d:1f91:3e75 with SMTP id i20-20020a056871029400b0012d1f913e75mr70360oae.142.1663621577605;
-        Mon, 19 Sep 2022 14:06:17 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=i+YbDv67G8LotfUM9oVF+1zCzZ8Q2PBCNdqV7Fv3SSs=;
+        b=muGAIYzpc9LVjY1kK9BH8ZuTrDuwNdDW6byNosNmsLIEAu/lNNUXlo5oydDsEdr6l9
+         driE/Ep4n4ToN5nnZjhaNfCUOwi5V6By33OpWW8oC4LG0h0RTK3G/XUcGKpdirpwrjnb
+         cRpe/sglRLD+U2EI5HS3+ws53+zofOQcQSOslIG/px+ctXRouWTKWA88mN5+GBz+eBMM
+         9ImQ+JA9MYsK9qsoIZ0JfXiWoy2dbKOuozMxxqum8+Gozm0o1l0+UxCEX6x+NTkCzYyd
+         jx6QyFKbvt9o9peSaWumvjinhp4GjA0OT1Ytabk68ezt7Wcm1WfoCSWV3JdigdgYA7hJ
+         Y6+w==
+X-Gm-Message-State: ACrzQf3eMfo0aIUedkBbUyQaVQ7kgrz+zplmPyCFu5KQViVcZ0L832/o
+        B8sFDyWBfd6CGkE13KhSLjEEpTLmkr8=
+X-Google-Smtp-Source: AMsMyM6AnoCFRT2WphLU9NjB2k6zkhfc82gC0Z5/g51Tdjr8eqzeB0kdHzXuIIdPw/f7twURsaX7zA==
+X-Received: by 2002:a05:620a:424a:b0:6be:74ee:f093 with SMTP id w10-20020a05620a424a00b006be74eef093mr14409054qko.175.1663621578697;
+        Mon, 19 Sep 2022 14:06:18 -0700 (PDT)
 Received: from localhost ([2601:4c1:c100:2270:bb7d:3b54:df44:5476])
-        by smtp.gmail.com with ESMTPSA id h20-20020a9d6414000000b0061d31170573sm14676119otl.20.2022.09.19.14.06.16
+        by smtp.gmail.com with ESMTPSA id x26-20020a05620a0b5a00b006ce3e4fb328sm13101014qkg.42.2022.09.19.14.06.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Sep 2022 14:06:17 -0700 (PDT)
+        Mon, 19 Sep 2022 14:06:18 -0700 (PDT)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -56,10 +57,12 @@ To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Paolo Abeni <pabeni@redhat.com>,
         Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         Yury Norov <yury.norov@gmail.com>
-Subject: [PATCH 0/7] cpumask: repair cpumask_check()
-Date:   Mon, 19 Sep 2022 14:05:52 -0700
-Message-Id: <20220919210559.1509179-1-yury.norov@gmail.com>
+Subject: [PATCH 1/7] cpumask: fix checking valid cpu range
+Date:   Mon, 19 Sep 2022 14:05:53 -0700
+Message-Id: <20220919210559.1509179-2-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220919210559.1509179-1-yury.norov@gmail.com>
+References: <20220919210559.1509179-1-yury.norov@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -72,31 +75,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After switching cpumask to use nr_cpu_ids in [1], cpumask_check() started
-generating many false-positive warnings. There are some more issues with
-the cpumask_check() that brake it.
+The range of valid CPUs is [0, nr_cpu_ids). Some cpumask functions are
+passed with a shifted CPU index, and for them, the valid range is
+[-1, nr_cpu_ids-1). Currently for those functions, we check the index
+against [-1, nr_cpu_ids), which is wrong.
 
-This series fixes cpumask_check() mess and addresses most of the
-false-positive warnings observed on boot of x86_64 and arm64.
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+---
+ include/linux/cpumask.h | 19 ++++++++-----------
+ 1 file changed, 8 insertions(+), 11 deletions(-)
 
-[1] https://lore.kernel.org/lkml/20220905230820.3295223-4-yury.norov@gmail.com/T/
-
-Yury Norov (7):
-  cpumask: fix checking valid cpu range
-  net: fix cpu_max_bits_warn() usage in netif_attrmask_next{,_and}
-  cpumask: switch for_each_cpu{,_not} to use for_each_bit()
-  lib/find_bit: add find_next{,_and}_bit_wrap
-  lib/bitmap: introduce for_each_set_bit_wrap() macro
-  lib/find: optimize for_each() macros
-  lib/bitmap: add tests for for_each() iterators
-
- include/linux/cpumask.h   |  37 ++----
- include/linux/find.h      | 140 +++++++++++++++++-----
- include/linux/netdevice.h |  10 +-
- lib/cpumask.c             |  12 +-
- lib/test_bitmap.c         | 244 +++++++++++++++++++++++++++++++++++++-
- 5 files changed, 375 insertions(+), 68 deletions(-)
-
+diff --git a/include/linux/cpumask.h b/include/linux/cpumask.h
+index e4f9136a4a63..a1cd4eb1a3d6 100644
+--- a/include/linux/cpumask.h
++++ b/include/linux/cpumask.h
+@@ -174,9 +174,8 @@ static inline unsigned int cpumask_last(const struct cpumask *srcp)
+ static inline
+ unsigned int cpumask_next(int n, const struct cpumask *srcp)
+ {
+-	/* -1 is a legal arg here. */
+-	if (n != -1)
+-		cpumask_check(n);
++	/* n is a prior cpu */
++	cpumask_check(n + 1);
+ 	return find_next_bit(cpumask_bits(srcp), nr_cpumask_bits, n + 1);
+ }
+ 
+@@ -189,9 +188,8 @@ unsigned int cpumask_next(int n, const struct cpumask *srcp)
+  */
+ static inline unsigned int cpumask_next_zero(int n, const struct cpumask *srcp)
+ {
+-	/* -1 is a legal arg here. */
+-	if (n != -1)
+-		cpumask_check(n);
++	/* n is a prior cpu */
++	cpumask_check(n + 1);
+ 	return find_next_zero_bit(cpumask_bits(srcp), nr_cpumask_bits, n+1);
+ }
+ 
+@@ -231,9 +229,8 @@ static inline
+ unsigned int cpumask_next_and(int n, const struct cpumask *src1p,
+ 		     const struct cpumask *src2p)
+ {
+-	/* -1 is a legal arg here. */
+-	if (n != -1)
+-		cpumask_check(n);
++	/* n is a prior cpu */
++	cpumask_check(n + 1);
+ 	return find_next_and_bit(cpumask_bits(src1p), cpumask_bits(src2p),
+ 		nr_cpumask_bits, n + 1);
+ }
+@@ -267,8 +264,8 @@ static inline
+ unsigned int cpumask_next_wrap(int n, const struct cpumask *mask, int start, bool wrap)
+ {
+ 	cpumask_check(start);
+-	if (n != -1)
+-		cpumask_check(n);
++	/* n is a prior cpu */
++	cpumask_check(n + 1);
+ 
+ 	/*
+ 	 * Return the first available CPU when wrapping, or when starting before cpu0,
 -- 
 2.34.1
 
