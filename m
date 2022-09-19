@@ -2,110 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 491545BC318
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 08:50:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6ABC55BC321
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 08:53:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229847AbiISGuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 02:50:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56950 "EHLO
+        id S229819AbiISGw7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 02:52:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229578AbiISGuS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 02:50:18 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 569D7DCA
-        for <netdev@vger.kernel.org>; Sun, 18 Sep 2022 23:50:16 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id q17so18836677lji.11
-        for <netdev@vger.kernel.org>; Sun, 18 Sep 2022 23:50:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=AgUTiKhBujn05TxXhChEqalF/68tJs4eQO8QBl9KDLA=;
-        b=u/00MNl+D+cPo1LMA53PEjTlV1YyUFDISGSKO7fmcY8jJtG4osxrevg1ir2oZrMlAY
-         KGoplI+L/szE5gXN1gy6tWxgb8djvpTAMpmzrd85685XR5XmIEHg4wzs8n1hyba1cAQk
-         I/x2ASViQlamzdlRcYMvL1kVNN2fiTRnVIwyf36fPouyWZxzGeAwbiX6xvyKcUqMTiyr
-         RgCU7a8Q/7D4dzss6xuN1oQgVs1t96f98DmNZyqKy9boypscFwNBnl21DO23cIHuGuCt
-         mJKe7X0zl5pd2YP1NseYOlHYs0mFIa1OSPjuL8I7Xd00n2kdRHhVVDg6/Ec8n3zf+Oq1
-         9Fgw==
+        with ESMTP id S229561AbiISGw5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 02:52:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3257FDFEA
+        for <netdev@vger.kernel.org>; Sun, 18 Sep 2022 23:52:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1663570374;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=b4SOIpoYOSBm9TsWI3MKoroEbbgZpa1shCQXKtpD3iM=;
+        b=UmaQ0v62315rD+xhUhxPzl5HBsaOlWGHhXp9dR844ysLjrEyHvg8OkhkLe6k/J/7FulJA6
+        hN9lJZ07IV1YtwVUqDetfcrwhexpjx3txgvayD932TqijFFMgFH0qrbFOjhVhOho/c8Fqa
+        Lmsi2R7eOYC60yfKWklOqXWaAB2Vm4s=
+Received: from mail-ua1-f72.google.com (mail-ua1-f72.google.com
+ [209.85.222.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-377-zdzVEPJIPyOpIbKthbqJPA-1; Mon, 19 Sep 2022 02:52:52 -0400
+X-MC-Unique: zdzVEPJIPyOpIbKthbqJPA-1
+Received: by mail-ua1-f72.google.com with SMTP id n8-20020a9f3148000000b0039f22c5b291so8965111uab.1
+        for <netdev@vger.kernel.org>; Sun, 18 Sep 2022 23:52:52 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=AgUTiKhBujn05TxXhChEqalF/68tJs4eQO8QBl9KDLA=;
-        b=ThIvC44ryHL8bgcyZbkGJO1Bn3nucpBl61svktcTCec9mMjFpCYfcA6uKIBW0qNYk9
-         LsAMU1MmpCc2MPEbvgkNKdcvN8MNiW9NJvD5LforPm0aREALfOJuVzwdrPW8+qhJ6asa
-         pRvBj/7us3LVcE7Lirvnmb/0dxLy10erPaebVuclpd3rGIeiFG5bBqF8CnoGFC0/UFy6
-         rSpomEHBPQyqIiGIkVvuBiCqGbjLq7Nwf6LSjpP7ZBeWUuQIvgntdpPKqffxT0ofkZRv
-         JcJOYA+mmt/noOsV4k+UhotUuSH+hJHQk9bEmcfbm3Aej46ZKhi+AyuWaKSXnvMffxhO
-         jl4A==
-X-Gm-Message-State: ACrzQf3qUrmcjOkWatRQc0Qk8JXSluCj62K5B8We0nwNoFPdiLOAhwlC
-        u/aMhDNWGNG52S0JtYBW8+kFBg==
-X-Google-Smtp-Source: AMsMyM5BXYEND5jV85kw4nwQ041fTS/U3XG4Jie4d8jTejwhbLVGJErLR5uyBRT4JJIIgVqcoO6YPw==
-X-Received: by 2002:a2e:9d88:0:b0:26a:95c1:218f with SMTP id c8-20020a2e9d88000000b0026a95c1218fmr4722063ljj.223.1663570214700;
-        Sun, 18 Sep 2022 23:50:14 -0700 (PDT)
-Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id m7-20020a056512114700b0048960b581e3sm5049900lfg.8.2022.09.18.23.50.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 18 Sep 2022 23:50:14 -0700 (PDT)
-Message-ID: <d0630c9e-22c6-48a8-35ed-024949782cbd@linaro.org>
-Date:   Mon, 19 Sep 2022 08:50:13 +0200
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=b4SOIpoYOSBm9TsWI3MKoroEbbgZpa1shCQXKtpD3iM=;
+        b=v9aYMpAIPh1T5oaSb1X+9+32LO10PUj5UgdKyf23Mx5s00+ZkYuIUqgDa2yMz8zUh6
+         gki+IygceapmMQ2jV6gymIaW5lh3HYM7mTlthhNPzYfpsYP09PT0GY4MkH4jA2NFoheW
+         5j90L1k0/a5DGGPrOGe5v05HiWtI4v/XWv7DVPqIKD0UpGUYbGf5nwdvZAg67M0Wm6Pc
+         MIat+m1i0pIq2q+BjrkdSX66JrwoxxNkE+Vd8FItBW+X8JXZbnjQGvVtPuFhj+ehgnOq
+         mReEVKs+mjMwWPnmK4SwAOzsFada0wWYzMX1blFDTC+Y+sM88sOEqI1DtHq9yrNryd9F
+         hHcg==
+X-Gm-Message-State: ACrzQf0UzK24GdWeBFYSWgYjV/dfo43O2DBU4ZlQXZn7wLFxubUZ+Qo8
+        /1zEUS9HSw0Onzrcdzb6qTFtvXDRfrnMmgmKCVGHaFzGZ70MvyJAP0y304BKBMcja7ehzU6VEBj
+        GyHN6Rs+nBJ/eVNRFrSyICfAFYcnVPl2B
+X-Received: by 2002:a1f:9cc5:0:b0:3a2:bd20:8fc6 with SMTP id f188-20020a1f9cc5000000b003a2bd208fc6mr5399438vke.22.1663570371889;
+        Sun, 18 Sep 2022 23:52:51 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM7ee3yJ4drFWySXlqQJuwUBHQrcp4MB8jSJULTSFh/f3l6llFnUPi2FbiiluVep87CqWfMzkBuQAff56dhi2Z8=
+X-Received: by 2002:a1f:9cc5:0:b0:3a2:bd20:8fc6 with SMTP id
+ f188-20020a1f9cc5000000b003a2bd208fc6mr5399431vke.22.1663570371709; Sun, 18
+ Sep 2022 23:52:51 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH v3 net-next 00/10] dt-bindings and mt7621 devicetree
- changes
-Content-Language: en-US
-To:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        erkin.bozoglu@xeront.com
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org
-References: <20220918134118.554813-1-arinc.unal@arinc9.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220918134118.554813-1-arinc.unal@arinc9.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20220916234552.3388360-1-prohr@google.com>
+In-Reply-To: <20220916234552.3388360-1-prohr@google.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Mon, 19 Sep 2022 14:52:40 +0800
+Message-ID: <CACGkMEv8Y09r1t=F9_Sinb=W=PETii6u+2DT5xnMXFunMhXJ5A@mail.gmail.com>
+Subject: Re: [PATCH] tun: support not enabling carrier in TUNSETIFF
+To:     Patrick Rohr <prohr@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>,
+        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
+        Lorenzo Colitti <lorenzo@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18/09/2022 15:41, Arınç ÜNAL wrote:
-> Hello there!
-> 
-> This patch series removes old MediaTek bindings, improves mediatek,mt7530
-> and mt7621 memory controller bindings and improves mt7621 DTs.
-> 
-> v3:
-> - Explain the mt7621 memory controller binding change in more details.
-> - Remove explaining the remaining DTC warnings from the patch log as there
-> are new schemas submitted for them.
+On Sat, Sep 17, 2022 at 7:46 AM Patrick Rohr <prohr@google.com> wrote:
+>
+> This change adds support for not enabling carrier during TUNSETIFF
+> interface creation by specifying the IFF_NO_CARRIER flag.
+>
+> Our tests make heavy use of tun interfaces. In some scenarios, the test
+> process creates the interface but another process brings it up after the
+> interface is discovered via netlink notification. In that case, it is
+> not possible to create a tun/tap interface with carrier off without it
+> racing against the bring up. Immediately setting carrier off via
+> TUNSETCARRIER is still too late.
+>
+> Since ifr_flags is only a short, the value for IFF_DETACH_QUEUE is
+> reused for IFF_NO_CARRIER. IFF_DETACH_QUEUE has currently no meaning in
+> TUNSETIFF.
+>
+> Signed-off-by: Patrick Rohr <prohr@google.com>
+> Cc: Maciej =C5=BBenczykowski <maze@google.com>
+> Cc: Lorenzo Colitti <lorenzo@google.com>
+> Cc: Jason Wang <jasowang@redhat.com>
 
-Please always describe dependencies. Otherwise I am free to take memory
-controllers patch and I expect it will not hurt bisectability.
+Acked-by: Jason Wang <jasowang@redhat.com>
 
-Best regards,
-Krzysztof
+> ---
+>  drivers/net/tun.c           | 15 ++++++++++++---
+>  include/uapi/linux/if_tun.h |  2 ++
+>  2 files changed, 14 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+> index 259b2b84b2b3..502f56095650 100644
+> --- a/drivers/net/tun.c
+> +++ b/drivers/net/tun.c
+> @@ -2709,6 +2709,12 @@ static int tun_set_iff(struct net *net, struct fil=
+e *file, struct ifreq *ifr)
+>         struct net_device *dev;
+>         int err;
+>
+> +       /* Do not save the IFF_NO_CARRIER flag as it uses the same value =
+as
+> +        * IFF_DETACH_QUEUE.
+> +        */
+> +       bool no_carrier =3D ifr->ifr_flags & IFF_NO_CARRIER;
+> +       ifr->ifr_flags &=3D ~IFF_NO_CARRIER;
+> +
+>         if (tfile->detached)
+>                 return -EINVAL;
+>
+> @@ -2828,7 +2834,10 @@ static int tun_set_iff(struct net *net, struct fil=
+e *file, struct ifreq *ifr)
+>                 rcu_assign_pointer(tfile->tun, tun);
+>         }
+>
+> -       netif_carrier_on(tun->dev);
+> +       if (no_carrier)
+> +               netif_carrier_off(tun->dev);
+> +       else
+> +               netif_carrier_on(tun->dev);
+>
+>         /* Make sure persistent devices do not get stuck in
+>          * xoff state.
+> @@ -3056,8 +3065,8 @@ static long __tun_chr_ioctl(struct file *file, unsi=
+gned int cmd,
+>                  * This is needed because we never checked for invalid fl=
+ags on
+>                  * TUNSETIFF.
+>                  */
+> -               return put_user(IFF_TUN | IFF_TAP | TUN_FEATURES,
+> -                               (unsigned int __user*)argp);
+> +               return put_user(IFF_TUN | IFF_TAP | IFF_NO_CARRIER |
+> +                               TUN_FEATURES, (unsigned int __user*)argp)=
+;
+>         } else if (cmd =3D=3D TUNSETQUEUE) {
+>                 return tun_set_queue(file, &ifr);
+>         } else if (cmd =3D=3D SIOCGSKNS) {
+> diff --git a/include/uapi/linux/if_tun.h b/include/uapi/linux/if_tun.h
+> index 2ec07de1d73b..12dde91957a5 100644
+> --- a/include/uapi/linux/if_tun.h
+> +++ b/include/uapi/linux/if_tun.h
+> @@ -75,6 +75,8 @@
+>  #define IFF_MULTI_QUEUE 0x0100
+>  #define IFF_ATTACH_QUEUE 0x0200
+>  #define IFF_DETACH_QUEUE 0x0400
+> +/* Used in TUNSETIFF to bring up tun/tap without carrier */
+> +#define IFF_NO_CARRIER IFF_DETACH_QUEUE
+>  /* read-only flag */
+>  #define IFF_PERSIST    0x0800
+>  #define IFF_NOFILTER   0x1000
+> --
+> 2.37.3.968.ga6b4b080e4-goog
+>
+
