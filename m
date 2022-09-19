@@ -2,99 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BD5F5BD36F
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 19:15:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E8DC5BD37D
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 19:18:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230039AbiISRPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 13:15:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47506 "EHLO
+        id S229913AbiISRSH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 13:18:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229745AbiISRO7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 13:14:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45BAE64F3;
-        Mon, 19 Sep 2022 10:14:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F160CB81EDA;
-        Mon, 19 Sep 2022 17:14:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F62DC433D7;
-        Mon, 19 Sep 2022 17:14:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663607695;
-        bh=qR1pUIp0+X38P59+eh0IdZBlLkL3ISJbPk0aQb93FSo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lM4lKurbpX+U+QY2+LEwRUwqORyBnT0oK/SwdU4Y3Hfl25JAj6L+qz1qPiav924Un
-         n4qRTqYyZSKqsSZ9gkW8Atdq2RBf26Ef7BLNM6OWjSwx8vIrTrn1uXSGhPva3wuJbn
-         wmYuhdXCMKWePvgxzfiC9wHBOcTYT5IRP+u2L9a4zCsIPfrz175h5n82VzIPFVfyrJ
-         ZutPFWYx0spw6WoDRwnGf2ALz36Y6rcCaXTEC/Smf4AttHClNzzzsvg6Bx8hTFsdIE
-         nyge9Sz9U+zkUICmooYVFal78EEkF87vODY5U1FUw3dVi+sa8mcneSnQVAZs3qNXd5
-         /QA9sCraskSWg==
-Date:   Mon, 19 Sep 2022 10:14:53 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Lee Jones <lee@kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Terry Bowman <terry.bowman@amd.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "katie.morris@in-advantage.com" <katie.morris@in-advantage.com>
-Subject: Re: [RESEND PATCH v16 mfd 1/8] mfd: ocelot: add helper to get
- regmap from a resource
-Message-ID: <20220919101453.43f0a4d5@kernel.org>
-In-Reply-To: <YxoEbfq6YKx/4Vko@colin-ia-desktop>
-References: <20220905162132.2943088-1-colin.foster@in-advantage.com>
-        <20220905162132.2943088-2-colin.foster@in-advantage.com>
-        <Yxm4oMq8dpsFg61b@google.com>
-        <20220908142256.7aad25k553sqfgbm@skbuf>
-        <YxoEbfq6YKx/4Vko@colin-ia-desktop>
+        with ESMTP id S229724AbiISRSG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 13:18:06 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07BB812636
+        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 10:18:05 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id s14-20020a17090a6e4e00b0020057c70943so8012511pjm.1
+        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 10:18:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=UvF3ChZ5CPia+qy6sW6VFFCUj20iQ5Qoy4ycYXn5ik0=;
+        b=otZn0oZxT1Qijj6pytiCU/JnRuXtd8mM9m8F0RnNkaTQrF7+VTpUmaEzW7YQw+JBkj
+         jOpCLnAFvH2auDV8EhiZtVQz5H5i8OzgROTpTchp2Y1zE8/fQBi1bHR124urZK7lH5xx
+         iGGWocMsbTXIMdz+/uaZldH7uKlbP8ts4YCSW5X4EWi2Bx3aZhNsKekLSS3DIw2FbNtN
+         P2OxoIYyjeh14+fZHIzUUCQvOB5WXu5jDUR0hVIQggW995k/xnFw9AbnDeBi8LyNZOwU
+         pHrttan/6idth7aOxBNgWm7JS6QbaGL57tPRSgyKWBcrMKQHF4q4bt6rYmJCuPzFtYKD
+         Zz2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=UvF3ChZ5CPia+qy6sW6VFFCUj20iQ5Qoy4ycYXn5ik0=;
+        b=5JEb0hDhdQ+wz9gTtQisdtryTD86hn07JNW/Ut+LaSBNoXVT7WuKUaEcegGu3+MJ3E
+         ITAFX8T1M3ChMs8BjxEvqQZsJDE8fK2hsKI8Xa5SE0bLJ8RcBsd1PoIvoNK8z15rkuVe
+         NxlJc3bkRTT1QF/BGXJDPf2OVkAaHsgkj/emjGlG/OgooOMHiRf7eGwVUSHTpm7IsxCm
+         zVO3q/6isa0Iy9QPKpz30f+bzTVoqB7VWfYq4ivNXIt6cDaH/3Gx2a6fMdY5PYikSsx5
+         yCvC+IcIhvhi+l3LmqHySbY6qW01TucvmqUAgu3jbPeL7LxUGAXKySg9z95/ZrQKHpTo
+         uFKg==
+X-Gm-Message-State: ACrzQf13w0IWNyENOU0GUiLoeAO7hQuGp5Ha4rzbdCH923RUep2uaEiG
+        MAGAOiFomTzhFRzFj/LWhdsbRw==
+X-Google-Smtp-Source: AMsMyM48dXu+c0+/2TGKMOAVU3rcHgR8dmZhvCmBqnf5kKavR3I0ueEqf6P54qFRkZXeorjv4AP1HA==
+X-Received: by 2002:a17:90a:641:b0:202:8568:4180 with SMTP id q1-20020a17090a064100b0020285684180mr21384606pje.227.1663607884490;
+        Mon, 19 Sep 2022 10:18:04 -0700 (PDT)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id x15-20020a170902a38f00b001785dddc703sm11864039pla.120.2022.09.19.10.18.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Sep 2022 10:18:04 -0700 (PDT)
+Date:   Mon, 19 Sep 2022 10:18:02 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Patrick Rohr <prohr@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>,
+        "Maciej =?UTF-8?B?xbtlbmN6eWtvd3Nr?= =?UTF-8?B?aQ==?=" 
+        <maze@google.com>, Lorenzo Colitti <lorenzo@google.com>,
+        Jason Wang <jasowang@redhat.com>
+Subject: Re: [PATCH] tun: support not enabling carrier in TUNSETIFF
+Message-ID: <20220919101802.4f4d1a86@hermes.local>
+In-Reply-To: <20220916234552.3388360-1-prohr@google.com>
+References: <20220916234552.3388360-1-prohr@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 8 Sep 2022 08:04:13 -0700 Colin Foster wrote:
-> My plan was to start sending RFCs on the internal copper phys and get
-> some feedback there. I assume there'll be a couple rounds and I don't
-> expect to hit this next release (if I'm being honest).
-> 
-> So I'll turn this question around to the net people: would a round or
-> two of RFCs that don't cleanly apply to net-next be acceptable? Then I
-> could submit a patch right after the next merge window? I've been
-> dragging these patches around for quite some time, I can do it for
-> another month :-)
+On Fri, 16 Sep 2022 16:45:52 -0700
+Patrick Rohr <prohr@google.com> wrote:
 
-FWIW RFC patches which don't apply cleanly seem perfectly fine to me.
-Perhaps note the base in the cover letter for those who may want to 
-test them.
+> diff --git a/include/uapi/linux/if_tun.h b/include/uapi/linux/if_tun.h
+> index 2ec07de1d73b..12dde91957a5 100644
+> --- a/include/uapi/linux/if_tun.h
+> +++ b/include/uapi/linux/if_tun.h
+> @@ -75,6 +75,8 @@
+>  #define IFF_MULTI_QUEUE 0x0100
+>  #define IFF_ATTACH_QUEUE 0x0200
+>  #define IFF_DETACH_QUEUE 0x0400
+> +/* Used in TUNSETIFF to bring up tun/tap without carrier */
+> +#define IFF_NO_CARRIER IFF_DETACH_QUEUE
 
-We can pull Lee's branch (thanks!) if it turns out the code is ready
-long before the MW.
+Overloading a flag in existing user API is likely to break
+some application somewhere...
