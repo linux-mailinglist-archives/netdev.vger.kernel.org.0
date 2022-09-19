@@ -2,79 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BD395BC27A
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 07:18:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0964A5BC289
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 07:35:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229610AbiISFSd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 01:18:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39988 "EHLO
+        id S229624AbiISFfJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 01:35:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229779AbiISFSb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 01:18:31 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94B4B1A075
-        for <netdev@vger.kernel.org>; Sun, 18 Sep 2022 22:18:27 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id i26so45127983lfp.11
-        for <netdev@vger.kernel.org>; Sun, 18 Sep 2022 22:18:27 -0700 (PDT)
+        with ESMTP id S229601AbiISFfH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 01:35:07 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CD85B4B9;
+        Sun, 18 Sep 2022 22:35:04 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id q62-20020a17090a17c400b00202a3497516so5057519pja.1;
+        Sun, 18 Sep 2022 22:35:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=nvDETwO+D5Y2NBD6uRk39J5iQEEocd32pfaDUVkrGO8=;
-        b=bCJH+Y+GzHh6K+L+bHrXZZOaLtdzwpWwFyK+xJBbc9NE8/mDS5g1rnUXj+nAre6Kvo
-         csDLr2DW4tJB3eJJTHUykOrQ6qxschbxlYwKFp0ow1e49xa2//5TGoRQwLwThBY3x2Yb
-         cOGEwSKiZ+FoXBdzfvh6HY09QRhdtwmJI0KYTgQ1xl163NICuBL+jqV1dBaHaoMdAzot
-         FRgaYvTQGfgEec1fUXtOoPsuGovTRC9OcA77a8v6Xm5EZBW286UzhUFbVgZOdgcG+Aaw
-         GQOyJjAcSMpeeT/rBwVneYDaSgJ2u4nvj3VzT8BM1t7dT7srvD5IcCQJpKDb6TcqBHHr
-         ZCQw==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=0QtEN2K/GWQrkGXkiVMaJ2FghoxmUb6zTRh0w9WCrNM=;
+        b=ecXDzQxwsMjJZjpUvHM66046cuxiVhli05zOr4VuAtLAblpCAYdgwhwnBxS29g38oI
+         qjOE6NjAYlmFlC3FvrE6qcBaMaVinJFwgZq5nug2/p44Y5SZiP8IlR00D0+GqbNucX6e
+         LTYuwYGROZ4UWON0NCtCg9ruddlOFVs6KWi1PmA9r/RTNsdiFKhfMORRrlAAIt7vVRf0
+         k8kHgJoI0717ZyWx32ZepaUNo5U0RMAKNPfge9LcAvy/fw7kQ5bTzBBGFX8Ds2Z1vi2D
+         GoDXh8ooe80zo2pJc77GQ1yyIuOGDdTExBc20LRmg4u/lD4Rox/+hl7Uebe9stlyhfZe
+         smig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=nvDETwO+D5Y2NBD6uRk39J5iQEEocd32pfaDUVkrGO8=;
-        b=M3QLQhmtAn5ZLzCq9Vb/HYQZEH/KGQEXyysJPIDNLG3DPN+VMDULqNrdL6iD47pgj2
-         1fv36bEn/NhIpjV5JGFXVVpCnz4PmY3lXMDP5jN0RflyWV8tEpTpbQxRBRW/ViIg7eSF
-         yoASRBm9Vzi7NQ3TlGrrNCadNgR/UcUFBeTJc6grQHoZQn1oKsWXnUvGHclm+J/V3tmp
-         m8qaHGX2ZW6oEwvW2rRULuBqERs0UzccZmd5YPxC2r/Or3UffBTKhIeNBlILukAHlzzO
-         9Tq4buBspfNqY5tDArRPl05wM+tFsz34uTB+hCbnggeQKeRlwiM6RKARIq1YSfAafz9m
-         kjWg==
-X-Gm-Message-State: ACrzQf2eKQunl8VEnsH24S+HrZfqOHpd+jazre43t9/2dExcKRC1OypY
-        W1GYp8Uf5+9fO1kVDSF602s=
-X-Google-Smtp-Source: AMsMyM7DOs6+HtK8BcuQ2UvZYLgvcTeQjBzDQR2JR/slhuDOUbxbxBNxNO3Zx4OwN514meyMnO+39g==
-X-Received: by 2002:a05:6512:3b9d:b0:498:fc06:320b with SMTP id g29-20020a0565123b9d00b00498fc06320bmr5352963lfv.21.1663564705690;
-        Sun, 18 Sep 2022 22:18:25 -0700 (PDT)
-Received: from [10.0.1.14] (h-98-128-229-160.NA.cust.bahnhof.se. [98.128.229.160])
-        by smtp.gmail.com with ESMTPSA id cf11-20020a056512280b00b00499b232875dsm4919631lfb.171.2022.09.18.22.18.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 18 Sep 2022 22:18:25 -0700 (PDT)
-Message-ID: <12edaefc-89a2-f231-156e-5dbe198ae6f6@gmail.com>
-Date:   Mon, 19 Sep 2022 07:18:24 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net-next v13 6/6] net: dsa: qca8k: Use new convenience
- functions
-Content-Language: en-US
-To:     Christian Marangi <ansuelsmth@gmail.com>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=0QtEN2K/GWQrkGXkiVMaJ2FghoxmUb6zTRh0w9WCrNM=;
+        b=AB7FwdfGidQR6ryEdCNe3yeW/8mbVQUNXAswzC6QCOxvwMsPxk1YZEPT2MG6a+T1+y
+         fdENv37c/TjZkclPfoe3v6u0nnqAqAMYjk2H8CClIxqNDzOCgY8ft7L7o5XxDq13vkHQ
+         pAZLIr4bvK+DEAf8lZZ4F/AMj1YcMFIgx6trm5lq6PODfaDVFTbR98E1nVV12KvRXKUl
+         VZWh+o3oyAdfivkBqH7QJrjGTlKuPNNM0Dxv/t26XHR2fYtULB3dg1bCUO8rBQzU/Dok
+         HyQpP6x4FA7RomThP4gv1XBXr80fYEFPzNY3AT4fswnDahv10dGX/bmVsr0eV8RV9C48
+         dazQ==
+X-Gm-Message-State: ACrzQf2XFAPMvziIlzRdeqtIDwAuXvCxPxnM5hC38mSahg3Bms+8nv75
+        YVz9iIIB8W4lTZATVRzGPHU=
+X-Google-Smtp-Source: AMsMyM7pXSSS6HBX1b6C9yMJgHUXqiuLI/BH2iWZKKCd0KWJP8L4Fd7X4RgeqWKOpSGgS//JdfFsjg==
+X-Received: by 2002:a17:902:f314:b0:178:a6ca:4852 with SMTP id c20-20020a170902f31400b00178a6ca4852mr406513ple.116.1663565703663;
+        Sun, 18 Sep 2022 22:35:03 -0700 (PDT)
+Received: from rfl-device.localdomain ([110.11.251.111])
+        by smtp.gmail.com with ESMTPSA id w2-20020a1709026f0200b0016d4f05eb95sm19372878plk.272.2022.09.18.22.34.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 18 Sep 2022 22:35:03 -0700 (PDT)
+From:   Ruffalo Lavoisier <ruffalolavoisier@gmail.com>
+X-Google-Original-From: Ruffalo Lavoisier <RuffaloLavoisier@gmail.com>
+To:     Derek Chickles <dchickles@marvell.com>,
+        Satanand Burla <sburla@marvell.com>,
+        Felix Manlunas <fmanlunas@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux@armlinux.org.uk
-References: <20220916121817.4061532-1-mattias.forsblad@gmail.com>
- <20220916121817.4061532-7-mattias.forsblad@gmail.com>
- <63247c75.5d0a0220.e6823.b58e@mx.google.com>
-From:   Mattias Forsblad <mattias.forsblad@gmail.com>
-In-Reply-To: <63247c75.5d0a0220.e6823.b58e@mx.google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Ruffalo Lavoisier <RuffaloLavoisier@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v5] liquidio: CN23XX: delete repeated words, add missing words and fix typo in comment
+Date:   Mon, 19 Sep 2022 14:34:46 +0900
+Message-Id: <20220919053447.5702-1-RuffaloLavoisier@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -83,80 +74,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-09-16 08:09, Christian Marangi wrote:
->> @@ -606,17 +587,12 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
->>  		kfree_skb(read_skb);
->>  	}
->>  exit:
->> -	reinit_completion(&mgmt_eth_data->rw_done);
->> -
->>  	/* Increment seq_num and set it in the clear pkt */
->>  	mgmt_eth_data->seq++;
->>  	qca8k_mdio_header_fill_seq_num(clear_skb, mgmt_eth_data->seq);
->>  	mgmt_eth_data->ack = false;
->>  
->> -	dev_queue_xmit(clear_skb);
->> -
->> -	wait_for_completion_timeout(&mgmt_eth_data->rw_done,
->> -				    QCA8K_ETHERNET_TIMEOUT);
->> +	ret = dsa_switch_inband_tx(ds, clear_skb, &mgmt_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
-> 
-> This cause the breakage of qca8k!
-> 
-> The clear_skb is used to clean a state but is optional and we should not
-> check exit value.
-> 
-> On top of that this overwrites the mdio return value from the read
-> condition.
-> 
-> ret = mgmt_eth_data->data[0] & QCA8K_MDIO_MASTER_DATA_MASK;
-> 
-> This should be changed to just
-> 
-> dsa_switch_inband_tx(ds, clear_skb, &mgmt_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
-> 
-> Also considering the majority of the driver is alligned to 80 column can
-> you wrap these new function to that? (personal taste)
->
+- Delete the repeated word 'to' in the comment.
 
-Thanks for the testing, I'll fix the issue you've found and do a respin.
+- Add the missing 'use' word within the sentence.
 
-/Mattias
+- Correct spelling on 'malformation', 'needs'.
 
+Signed-off-by: Ruffalo Lavoisier <RuffaloLavoisier@gmail.com>
+---
+ drivers/net/ethernet/cavium/liquidio/cn23xx_pf_regs.h | 4 ++--
+ drivers/net/ethernet/cavium/liquidio/cn23xx_vf_regs.h | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/cavium/liquidio/cn23xx_pf_regs.h b/drivers/net/ethernet/cavium/liquidio/cn23xx_pf_regs.h
+index 3f1c189646f4..a0fd32476225 100644
+--- a/drivers/net/ethernet/cavium/liquidio/cn23xx_pf_regs.h
++++ b/drivers/net/ethernet/cavium/liquidio/cn23xx_pf_regs.h
+@@ -87,8 +87,8 @@
+  */
+ #define    CN23XX_SLI_PKT_IN_JABBER                0x29170
+ /* The input jabber is used to determine the TSO max size.
+- * Due to H/W limitation, this need to be reduced to 60000
+- * in order to to H/W TSO and avoid the WQE malfarmation
++ * Due to H/W limitation, this needs to be reduced to 60000
++ * in order to use H/W TSO and avoid the WQE malformation
+  * PKO_BUG_24989_WQE_LEN
+  */
+ #define    CN23XX_DEFAULT_INPUT_JABBER             0xEA60 /*60000*/
+diff --git a/drivers/net/ethernet/cavium/liquidio/cn23xx_vf_regs.h b/drivers/net/ethernet/cavium/liquidio/cn23xx_vf_regs.h
+index d33dd8f4226f..e956109415cd 100644
+--- a/drivers/net/ethernet/cavium/liquidio/cn23xx_vf_regs.h
++++ b/drivers/net/ethernet/cavium/liquidio/cn23xx_vf_regs.h
+@@ -36,8 +36,8 @@
+ #define     CN23XX_CONFIG_PCIE_FLTMSK              0x720
  
->>  
->>  	mutex_unlock(&mgmt_eth_data->mutex);
->>  
->> @@ -1528,7 +1504,7 @@ static void qca8k_mib_autocast_handler(struct dsa_switch *ds, struct sk_buff *sk
->>  exit:
->>  	/* Complete on receiving all the mib packet */
->>  	if (refcount_dec_and_test(&mib_eth_data->port_parsed))
->> -		complete(&mib_eth_data->rw_done);
->> +		dsa_switch_inband_complete(ds, &mib_eth_data->rw_done);
->>  }
->>  
->>  static int
->> @@ -1543,8 +1519,6 @@ qca8k_get_ethtool_stats_eth(struct dsa_switch *ds, int port, u64 *data)
->>  
->>  	mutex_lock(&mib_eth_data->mutex);
->>  
->> -	reinit_completion(&mib_eth_data->rw_done);
->> -
->>  	mib_eth_data->req_port = dp->index;
->>  	mib_eth_data->data = data;
->>  	refcount_set(&mib_eth_data->port_parsed, QCA8K_NUM_PORTS);
->> @@ -1562,8 +1536,7 @@ qca8k_get_ethtool_stats_eth(struct dsa_switch *ds, int port, u64 *data)
->>  	if (ret)
->>  		goto exit;
->>  
->> -	ret = wait_for_completion_timeout(&mib_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
->> -
->> +	ret = dsa_switch_inband_tx(ds, NULL, &mib_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
->>  exit:
->>  	mutex_unlock(&mib_eth_data->mutex);
->>  
->> -- 
->> 2.25.1
->>
-> 
+ /* The input jabber is used to determine the TSO max size.
+- * Due to H/W limitation, this need to be reduced to 60000
+- * in order to to H/W TSO and avoid the WQE malfarmation
++ * Due to H/W limitation, this needs to be reduced to 60000
++ * in order to use H/W TSO and avoid the WQE malformation
+  * PKO_BUG_24989_WQE_LEN
+  */
+ #define    CN23XX_DEFAULT_INPUT_JABBER             0xEA60 /*60000*/
+-- 
+2.25.1
 
