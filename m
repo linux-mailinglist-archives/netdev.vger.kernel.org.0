@@ -2,146 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D05C5BC5E2
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 11:56:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D9DA5BC5EC
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 12:00:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230128AbiISJ4s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 05:56:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54042 "EHLO
+        id S229769AbiISKAw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 06:00:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230098AbiISJ4p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 05:56:45 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABE7A30B;
-        Mon, 19 Sep 2022 02:56:37 -0700 (PDT)
-X-UUID: 101d3b21a1dc457199d685683f194011-20220919
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=dPMTiREpH/Df3NZCKHTlKTh2R54/xEmjH9I8g+NM+/4=;
-        b=KE0V/xRyxbGADXlo3T21L8BshSv1CfdKR5VJRseYYDa4VRdcgdwxJryrF8WI9mAPfbKjzSJXhHAB9ZRxJzVJ6MmJKSBMGRepnJYO6uAVf7rW1NPhRmNqp54v5PCjguDf5Pz/qLba533JCqcNGGWC7EBiQqgwwDPfi8AGWf5Y+Mk=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.11,REQID:5b87dbec-6f38-4589-8e94-6d8670d076a5,IP:0,U
-        RL:0,TC:0,Content:0,EDM:0,RT:0,SF:22,FILE:0,BULK:0,RULE:Release_Ham,ACTION
-        :release,TS:22
-X-CID-INFO: VERSION:1.1.11,REQID:5b87dbec-6f38-4589-8e94-6d8670d076a5,IP:0,URL
-        :0,TC:0,Content:0,EDM:0,RT:0,SF:22,FILE:0,BULK:0,RULE:Release_Ham,ACTION:r
-        elease,TS:22
-X-CID-META: VersionHash:39a5ff1,CLOUDID:915bdc18-0314-4ae7-b2d1-7295be49255e,B
-        ulkID:220919161938HV8SMIES,BulkQuantity:277,Recheck:0,SF:28|100|17|19|48|1
-        01|823|824,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil,Bulk:40,QS:nil,BE
-        C:nil,COL:0
-X-UUID: 101d3b21a1dc457199d685683f194011-20220919
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <jianguo.zhang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1207044010; Mon, 19 Sep 2022 17:56:33 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Mon, 19 Sep 2022 17:56:31 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 19 Sep 2022 17:56:31 +0800
-Message-ID: <f72e133e9aec70724702054e5f6a8712b649d34f.camel@mediatek.com>
-Subject: Re: [PATCH 1/2] stmmac: dwmac-mediatek: add support for mt8188
-From:   Jianguo Zhang <jianguo.zhang@mediatek.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "Biao Huang" <biao.huang@mediatek.com>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>
-Date:   Mon, 19 Sep 2022 17:56:30 +0800
-In-Reply-To: <88412fcc-96be-cd9d-8805-086c7f09c03b@linaro.org>
-References: <20220919080410.11270-1-jianguo.zhang@mediatek.com>
-         <20220919080410.11270-2-jianguo.zhang@mediatek.com>
-         <d28ce676-ed6e-98da-9761-ed46f2fa4a95@linaro.org>
-         <4c537b63f609ae974dfb468ebc31225d45f785e8.camel@mediatek.com>
-         <88412fcc-96be-cd9d-8805-086c7f09c03b@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        with ESMTP id S229484AbiISKAt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 06:00:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEFE810D;
+        Mon, 19 Sep 2022 03:00:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4609F61828;
+        Mon, 19 Sep 2022 10:00:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E3AFC433B5;
+        Mon, 19 Sep 2022 10:00:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1663581647;
+        bh=+17s6Wtbdo4L7stYi4UorDpOJxEGDGV29FM19sqxEbs=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=bX04CSGo0ee0hnFdJp+TMvEDLAKINbbX05Mg+qSjcOZ/sNT5zqzNbuP8okLs8NFqq
+         vYcb5e/UFd5k73NSEMDy/7LSaRf6aDaCkfuJCayU+8RZwGECoYw8L92tIGOzA+XDaE
+         W3yJmBOixQjwfsSuXj1Jxcld0DFgD6boIjo35PkoikQxFoswnYk0JxoIfqKJ/lQObQ
+         W+becfcJWP/kffx8skuE14osfd1Z/VciUue9rtEW6tMxRHOjsrSV7Vjkh8YTvKLISk
+         o/pUU2RweAGV/B8hVM9By7v/5WEVMBCa3y7hRtzqPC7S1QGvuA4+HpYw4Ub7junJJ/
+         DDisqcNS1BGRQ==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
-X-Spam-Status: No, score=-0.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,MAY_BE_FORGED,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        T_SPF_TEMPERROR,UNPARSEABLE_RELAY autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH wireless-next v3 01/12] dt-bindings: net: bcm4329-fmac:
+ Add
+ Apple properties & chips
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <E1oZDnO-0077Zy-18@rmk-PC.armlinux.org.uk>
+References: <E1oZDnO-0077Zy-18@rmk-PC.armlinux.org.uk>
+To:     Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Cc:     Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        asahi@lists.linux.dev, brcm80211-dev-list.pdl@broadcom.com,
+        "David S. Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Hector Martin <marcan@marcan.st>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Rafa__ Mi__ecki" <zajec5@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        SHA-cyfmac-dev-list@infineon.com, Sven Peter <sven@svenpeter.dev>,
+        van Spriel <arend@broadcom.com>
+User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <166358162603.24821.1105605322984506505.kvalo@kernel.org>
+Date:   Mon, 19 Sep 2022 10:00:42 +0000 (UTC)
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Krzysztof,
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk> wrote:
 
-On Mon, 2022-09-19 at 11:27 +0200, Krzysztof Kozlowski wrote:
-> On 19/09/2022 10:37, Jianguo Zhang wrote:
-> > Dear Krzysztof,
-> > 
-> > 	Thanks for your comments.
-> > 
-> > 
-> > On Mon, 2022-09-19 at 10:19 +0200, Krzysztof Kozlowski wrote:
-> > > On 19/09/2022 10:04, Jianguo Zhang wrote:
-> > > > Add ethernet support for MediaTek SoCs from mt8188 family.
-> > > > As mt8188 and mt8195 have same ethernet design, so private data
-> > > > "mt8195_gmac_variant" can be reused for mt8188.
-> > > > 
-> > > > Signed-off-by: Jianguo Zhang <jianguo.zhang@mediatek.com>
-> > > > ---
-> > > >  drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c | 2 ++
-> > > >  1 file changed, 2 insertions(+)
-> > > > 
-> > > > diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-
-> > > > mediatek.c
-> > > > b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-> > > > index d42e1afb6521..f45be440b6d0 100644
-> > > > --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-> > > > +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-> > > > @@ -720,6 +720,8 @@ static const struct of_device_id
-> > > > mediatek_dwmac_match[] = {
-> > > >  	  .data = &mt2712_gmac_variant },
-> > > >  	{ .compatible = "mediatek,mt8195-gmac",
-> > > >  	  .data = &mt8195_gmac_variant },
-> > > > +	{ .compatible = "mediatek,mt8188-gmac",
-> > > > +	  .data = &mt8195_gmac_variant },
-> > > 
-> > > It's the same. No need for new entry.
-> > > 
-> > 
-> > mt8188 and mt8195 are different SoCs and we need to distinguish
-> > mt8188
-> > from mt8195, so I think a new entry is needed for mt8188 with the
-> > specific "compatiable".
+> From: Hector Martin <marcan@marcan.st>
 > 
-> No, this does not justify new entry. You need specific compatible,
-> but
-> not new entry.
+> This binding is currently used for SDIO devices, but these chips are
+> also used as PCIe devices on DT platforms and may be represented in the
+> DT. Re-use the existing binding and add chip compatibles used by Apple
+> T2 and M1 platforms (the T2 ones are not known to be used in DT
+> platforms, but we might as well document them).
 > 
-> > On the other hand, mt8188 and mt8195 have same ethernet design, so
-> > the
-> > private data "mt8195_gmac_variant" can be resued to reduce
-> > redundant
-> > info in driver.
+> Then, add properties required for firmware selection and calibration on
+> M1 machines.
 > 
-> And you do not need new entry in the driver.
-Do you mean that I can use "mediatek,mt8195-gmac" as compatible for
-ethernet in mt8188 DTS file?
-> 
-> Best regards,
-> Krzysztof
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+> Signed-off-by: Hector Martin <marcan@marcan.st>
+> Reviewed-by: Mark Kettenis <kettenis@openbsd.org>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> Reviewed-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-BRS
-Jianguo
+12 patches applied to wireless-next.git, thanks.
+
+e2e37224e8b3 dt-bindings: net: bcm4329-fmac: Add Apple properties & chips
+e263d7229411 wifi: brcmfmac: firmware: Handle per-board clm_blob files
+a1b5a9022436 wifi: brcmfmac: pcie/sdio/usb: Get CLM blob via standard firmware mechanism
+7cb46e721417 wifi: brcmfmac: firmware: Support passing in multiple board_types
+e63efbcaba7d wifi: brcmfmac: pcie: Read Apple OTP information
+7682de8b3351 wifi: brcmfmac: of: Fetch Apple properties
+6bad3eeab6d3 wifi: brcmfmac: pcie: Perform firmware selection for Apple platforms
+687f767d6fab wifi: brcmfmac: firmware: Allow platform to override macaddr
+f48476780ce3 wifi: brcmfmac: msgbuf: Increase RX ring sizes to 1024
+e01d7a546981 wifi: brcmfmac: pcie: Support PCIe core revisions >= 64
+e8b80bf2fbd7 wifi: brcmfmac: pcie: Add IDs/properties for BCM4378
+4302b3fba12a arm64: dts: apple: Add WiFi module and antenna properties
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/E1oZDnO-0077Zy-18@rmk-PC.armlinux.org.uk/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
