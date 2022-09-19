@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3867B5BD722
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 00:19:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12B445BD725
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 00:19:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229873AbiISWTO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 18:19:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38050 "EHLO
+        id S229904AbiISWTX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 18:19:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229774AbiISWTF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 18:19:05 -0400
+        with ESMTP id S229819AbiISWTI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 18:19:08 -0400
 Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFD234DF2A
-        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 15:19:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 657E2419B3
+        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 15:19:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:From:Sender:Reply-To:Subject:Date:
         Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Gy6Y78/sd6dWowkaXHqVSk3fONB8c3dj7iEzbU5pNyI=; b=vuq7dtNOLMyPT9zFJykdPRB6RP
-        an4lO02iZh085aGrlJMSS1SZ4AsUqW4QckdKjyKsgaut7W+GxNWYWj6xfxsx019/EdBBz35r+eVin
-        XkY95uQ6vFcyvvD24SMq7y4T3c5QmRgDtGDzvMux1RNQI8AeLpmD8dLwdKCjMMbNuoNY=;
+        bh=ZYwyGzSbjhrFtr/cLHjJzkRxxh7VJAWFZdu32z6tn0s=; b=vLAIapLgilpaGU7LSWHO+mI1U8
+        Yl1Hkv09045KkSwKKBA1grP7b3Q+Q0he8UNK1x8J2h9+X1jIss012Zyo/tEmG70JAl2/SmCZjCyo8
+        2Jr9vRokE7sll+unA6HDTTbgyW8AX8amb2xnwS1cFs0TQMqvX0NAS0Z0+cPb8roAQOzA=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1oaP6R-00HBRI-3C; Tue, 20 Sep 2022 00:18:59 +0200
+        id 1oaP6R-00HBRL-5W; Tue, 20 Sep 2022 00:18:59 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     mattias.forsblad@gmail.com
 Cc:     netdev <netdev@vger.kernel.org>,
@@ -32,9 +32,9 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Vladimir Oltean <vladimir.oltean@nxp.com>,
         Christian Marangi <ansuelsmth@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH rfc v0 5/9] net: dsa: qca8k: Move request sequence number handling into core
-Date:   Tue, 20 Sep 2022 00:18:49 +0200
-Message-Id: <20220919221853.4095491-6-andrew@lunn.ch>
+Subject: [PATCH rfc v0 6/9] net: dsa: qca8k: Refactor sequence number mismatch to use error code
+Date:   Tue, 20 Sep 2022 00:18:50 +0200
+Message-Id: <20220919221853.4095491-7-andrew@lunn.ch>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220919221853.4095491-1-andrew@lunn.ch>
 References: <20220919110847.744712-3-mattias.forsblad@gmail.com>
@@ -50,224 +50,213 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Each request/reply frame is likely to have a sequence number so that
-request and the reply can be matched together. Move this sequence
-number into the inband structure. The driver must provide a helper to
-insert the sequence number into the skb, and the core will perform the
-increment.
+Replace the boolean that the sequence numbers matches with an error
+code. Set the error code to -EINVAL if the sequence numbers are wrong,
+otherwise 0.
 
-To allow different devices to have different size sequence numbers, a
-mask is provided. This can be used for example to reduce the u32
-sequence number down to a u8.
+The value is only safe to us if the completion happens. Ensure the
+return from the completion is always considered, and if it fails, a
+timeout error is returned.
+
+This is a preparation step to moving the error tracking into the DSA
+core.
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/dsa/qca/qca8k-8xxx.c | 35 +++++++++-----------------------
- drivers/net/dsa/qca/qca8k.h      |  1 -
- include/net/dsa.h                |  6 +++++-
- net/dsa/dsa.c                    | 16 ++++++++++++++-
- 4 files changed, 30 insertions(+), 28 deletions(-)
+ drivers/net/dsa/qca/qca8k-8xxx.c | 50 ++++++++++++++------------------
+ drivers/net/dsa/qca/qca8k.h      |  2 +-
+ 2 files changed, 23 insertions(+), 29 deletions(-)
 
 diff --git a/drivers/net/dsa/qca/qca8k-8xxx.c b/drivers/net/dsa/qca/qca8k-8xxx.c
-index 9481a248273a..a354ba070d33 100644
+index a354ba070d33..69b807d87367 100644
 --- a/drivers/net/dsa/qca/qca8k-8xxx.c
 +++ b/drivers/net/dsa/qca/qca8k-8xxx.c
-@@ -146,7 +146,7 @@ static void qca8k_rw_reg_ack_handler(struct dsa_switch *ds, struct sk_buff *skb)
- 	len = FIELD_GET(QCA_HDR_MGMT_LENGTH, mgmt_ethhdr->command);
+@@ -147,7 +147,9 @@ static void qca8k_rw_reg_ack_handler(struct dsa_switch *ds, struct sk_buff *skb)
  
  	/* Make sure the seq match the requested packet */
--	if (mgmt_ethhdr->seq == mgmt_eth_data->seq)
-+	if (mgmt_ethhdr->seq == dsa_inband_seqno(&mgmt_eth_data->inband))
- 		mgmt_eth_data->ack = true;
+ 	if (mgmt_ethhdr->seq == dsa_inband_seqno(&mgmt_eth_data->inband))
+-		mgmt_eth_data->ack = true;
++		mgmt_eth_data->err = 0;
++	else
++		mgmt_eth_data->err = -EINVAL;
  
  	if (cmd == MDIO_READ) {
-@@ -247,14 +247,11 @@ static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
- 	}
- 
- 	skb->dev = priv->mgmt_master;
--
--	/* Increment seq_num and set it in the mdio pkt */
--	mgmt_eth_data->seq++;
--	qca8k_mdio_header_fill_seq_num(skb, mgmt_eth_data->seq);
- 	mgmt_eth_data->ack = false;
- 
- 	ret = dsa_inband_request(&mgmt_eth_data->inband, skb,
--				 QCA8K_ETHERNET_TIMEOUT);
-+			      qca8k_mdio_header_fill_seq_num,
-+			      QCA8K_ETHERNET_TIMEOUT);
- 
- 	*val = mgmt_eth_data->data[0];
- 	if (len > QCA_HDR_MGMT_DATA1_LEN)
-@@ -295,13 +292,10 @@ static int qca8k_write_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
- 	}
- 
- 	skb->dev = priv->mgmt_master;
--
--	/* Increment seq_num and set it in the mdio pkt */
--	mgmt_eth_data->seq++;
--	qca8k_mdio_header_fill_seq_num(skb, mgmt_eth_data->seq);
- 	mgmt_eth_data->ack = false;
- 
- 	ret = dsa_inband_request(&mgmt_eth_data->inband, skb,
-+				 qca8k_mdio_header_fill_seq_num,
- 				 QCA8K_ETHERNET_TIMEOUT);
- 
- 	ack = mgmt_eth_data->ack;
-@@ -440,12 +434,10 @@ qca8k_phy_eth_busy_wait(struct qca8k_mgmt_eth_data *mgmt_eth_data,
- 	bool ack;
+ 		mgmt_eth_data->data[0] = mgmt_ethhdr->mdio_data;
+@@ -229,7 +231,7 @@ static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
+ {
+ 	struct qca8k_mgmt_eth_data *mgmt_eth_data = &priv->mgmt_eth_data;
+ 	struct sk_buff *skb;
+-	bool ack;
++	int err;
  	int ret;
  
--	/* Increment seq_num and set it in the copy pkt */
--	mgmt_eth_data->seq++;
--	qca8k_mdio_header_fill_seq_num(skb, mgmt_eth_data->seq);
- 	mgmt_eth_data->ack = false;
+ 	skb = qca8k_alloc_mdio_header(MDIO_READ, reg, NULL,
+@@ -247,7 +249,6 @@ static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
+ 	}
+ 
+ 	skb->dev = priv->mgmt_master;
+-	mgmt_eth_data->ack = false;
  
  	ret = dsa_inband_request(&mgmt_eth_data->inband, skb,
-+				 qca8k_mdio_header_fill_seq_num,
+ 			      qca8k_mdio_header_fill_seq_num,
+@@ -257,15 +258,15 @@ static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
+ 	if (len > QCA_HDR_MGMT_DATA1_LEN)
+ 		memcpy(val + 1, mgmt_eth_data->data + 1, len - QCA_HDR_MGMT_DATA1_LEN);
+ 
+-	ack = mgmt_eth_data->ack;
++	err = mgmt_eth_data->err;
+ 
+ 	mutex_unlock(&mgmt_eth_data->mutex);
+ 
+ 	if (ret)
+ 		return ret;
+ 
+-	if (!ack)
+-		return -EINVAL;
++	if (err)
++		return -ret;
+ 
+ 	return 0;
+ }
+@@ -274,7 +275,7 @@ static int qca8k_write_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
+ {
+ 	struct qca8k_mgmt_eth_data *mgmt_eth_data = &priv->mgmt_eth_data;
+ 	struct sk_buff *skb;
+-	bool ack;
++	int err;
+ 	int ret;
+ 
+ 	skb = qca8k_alloc_mdio_header(MDIO_WRITE, reg, val,
+@@ -292,21 +293,20 @@ static int qca8k_write_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
+ 	}
+ 
+ 	skb->dev = priv->mgmt_master;
+-	mgmt_eth_data->ack = false;
+ 
+ 	ret = dsa_inband_request(&mgmt_eth_data->inband, skb,
+ 				 qca8k_mdio_header_fill_seq_num,
  				 QCA8K_ETHERNET_TIMEOUT);
  
- 	ack = mgmt_eth_data->ack;
-@@ -527,13 +519,10 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
+-	ack = mgmt_eth_data->ack;
++	err = mgmt_eth_data->err;
+ 
+ 	mutex_unlock(&mgmt_eth_data->mutex);
+ 
+ 	if (ret)
+ 		return ret;
+ 
+-	if (!ack)
+-		return -EINVAL;
++	if (err)
++		return err;
+ 
+ 	return 0;
+ }
+@@ -431,22 +431,20 @@ qca8k_phy_eth_busy_wait(struct qca8k_mgmt_eth_data *mgmt_eth_data,
+ 			struct sk_buff *read_skb, u32 *val)
+ {
+ 	struct sk_buff *skb = skb_copy(read_skb, GFP_KERNEL);
+-	bool ack;
++	int err;
+ 	int ret;
+ 
+-	mgmt_eth_data->ack = false;
+-
+ 	ret = dsa_inband_request(&mgmt_eth_data->inband, skb,
+ 				 qca8k_mdio_header_fill_seq_num,
+ 				 QCA8K_ETHERNET_TIMEOUT);
+ 
+-	ack = mgmt_eth_data->ack;
++	err = mgmt_eth_data->err;
+ 
+ 	if (ret)
+ 		return ret;
+ 
+-	if (!ack)
+-		return -EINVAL;
++	if (err)
++		return err;
+ 
+ 	*val = mgmt_eth_data->data[0];
+ 
+@@ -462,7 +460,7 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
+ 	u32 write_val, clear_val = 0, val;
+ 	struct net_device *mgmt_master;
+ 	int ret, ret1;
+-	bool ack;
++	int err;
+ 
+ 	if (regnum >= QCA8K_MDIO_MASTER_MAX_REG)
+ 		return -EINVAL;
+@@ -519,21 +517,20 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
  	read_skb->dev = mgmt_master;
  	clear_skb->dev = mgmt_master;
  	write_skb->dev = mgmt_master;
--
--	/* Increment seq_num and set it in the write pkt */
--	mgmt_eth_data->seq++;
--	qca8k_mdio_header_fill_seq_num(write_skb, mgmt_eth_data->seq);
- 	mgmt_eth_data->ack = false;
+-	mgmt_eth_data->ack = false;
  
  	ret = dsa_inband_request(&mgmt_eth_data->inband, write_skb,
-+				 qca8k_mdio_header_fill_seq_num,
+ 				 qca8k_mdio_header_fill_seq_num,
  				 QCA8K_ETHERNET_TIMEOUT);
  
- 	ack = mgmt_eth_data->ack;
-@@ -560,12 +549,10 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
+-	ack = mgmt_eth_data->ack;
++	err = mgmt_eth_data->err;
+ 
+ 	if (ret) {
+ 		kfree_skb(read_skb);
+ 		goto exit;
+ 	}
+ 
+-	if (!ack) {
+-		ret = -EINVAL;
++	if (err) {
++		ret = err;
+ 		kfree_skb(read_skb);
+ 		goto exit;
+ 	}
+@@ -549,19 +546,17 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
  	}
  
  	if (read) {
--		/* Increment seq_num and set it in the read pkt */
--		mgmt_eth_data->seq++;
--		qca8k_mdio_header_fill_seq_num(read_skb, mgmt_eth_data->seq);
- 		mgmt_eth_data->ack = false;
- 
+-		mgmt_eth_data->ack = false;
+-
  		ret = dsa_inband_request(&mgmt_eth_data->inband, read_skb,
-+					 qca8k_mdio_header_fill_seq_num,
+ 					 qca8k_mdio_header_fill_seq_num,
  					 QCA8K_ETHERNET_TIMEOUT);
  
- 		ack = mgmt_eth_data->ack;
-@@ -583,12 +570,10 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
+-		ack = mgmt_eth_data->ack;
++		err = mgmt_eth_data->err;
+ 
+ 		if (ret)
+ 			goto exit;
+ 
+-		if (!ack) {
+-			ret = -EINVAL;
++		if (err) {
++			ret = err;
+ 			goto exit;
+ 		}
+ 
+@@ -570,7 +565,6 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
  		kfree_skb(read_skb);
  	}
  exit:
--	/* Increment seq_num and set it in the clear pkt */
--	mgmt_eth_data->seq++;
--	qca8k_mdio_header_fill_seq_num(clear_skb, mgmt_eth_data->seq);
- 	mgmt_eth_data->ack = false;
+-	mgmt_eth_data->ack = false;
  
  	ret = dsa_inband_request(&mgmt_eth_data->inband, clear_skb,
-+				 qca8k_mdio_header_fill_seq_num,
- 				 QCA8K_ETHERNET_TIMEOUT);
- 
- 	mutex_unlock(&mgmt_eth_data->mutex);
-@@ -1901,10 +1886,10 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
- 		return -ENOMEM;
- 
- 	mutex_init(&priv->mgmt_eth_data.mutex);
--	dsa_inband_init(&priv->mgmt_eth_data.inband);
-+	dsa_inband_init(&priv->mgmt_eth_data.inband, U32_MAX);
- 
- 	mutex_init(&priv->mib_eth_data.mutex);
--	dsa_inband_init(&priv->mib_eth_data.inband);
-+	dsa_inband_init(&priv->mib_eth_data.inband, U32_MAX);
- 
- 	priv->ds->dev = &mdiodev->dev;
- 	priv->ds->num_ports = QCA8K_NUM_PORTS;
+ 				 qca8k_mdio_header_fill_seq_num,
 diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
-index 685628716ed2..a5abc340471c 100644
+index a5abc340471c..79f7197a1790 100644
 --- a/drivers/net/dsa/qca/qca8k.h
 +++ b/drivers/net/dsa/qca/qca8k.h
-@@ -349,7 +349,6 @@ struct qca8k_mgmt_eth_data {
+@@ -348,7 +348,7 @@ enum {
+ struct qca8k_mgmt_eth_data {
  	struct dsa_inband inband;
  	struct mutex mutex; /* Enforce one mdio read/write at time */
- 	bool ack;
--	u32 seq;
+-	bool ack;
++	int err;
  	u32 data[4];
  };
  
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 50c319832939..2d6b7c7f158b 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -1282,13 +1282,17 @@ bool dsa_mdb_present_in_other_db(struct dsa_switch *ds, int port,
- */
- struct dsa_inband {
- 	struct completion completion;
-+	u32 seqno;
-+	u32 seqno_mask;
- };
- 
--void dsa_inband_init(struct dsa_inband *inband);
-+void dsa_inband_init(struct dsa_inband *inband, u32 seqno_mask);
- void dsa_inband_complete(struct dsa_inband *inband);
- int dsa_inband_request(struct dsa_inband *inband, struct sk_buff *skb,
-+		       void (*insert_seqno)(struct sk_buff *skb, u32 seqno),
- 		       int timeout_ms);
- int dsa_inband_wait_for_completion(struct dsa_inband *inband, int timeout_ms);
-+u32 dsa_inband_seqno(struct dsa_inband *inband);
- 
- /* Keep inline for faster access in hot path */
- static inline bool netdev_uses_dsa(const struct net_device *dev)
-diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
-index 68576f1c5b02..5a8d95f8acec 100644
---- a/net/dsa/dsa.c
-+++ b/net/dsa/dsa.c
-@@ -518,9 +518,11 @@ bool dsa_mdb_present_in_other_db(struct dsa_switch *ds, int port,
- }
- EXPORT_SYMBOL_GPL(dsa_mdb_present_in_other_db);
- 
--void dsa_inband_init(struct dsa_inband *inband)
-+void dsa_inband_init(struct dsa_inband *inband, u32 seqno_mask)
- {
- 	init_completion(&inband->completion);
-+	inband->seqno_mask = seqno_mask;
-+	inband->seqno = 0;
- }
- EXPORT_SYMBOL_GPL(dsa_inband_init);
- 
-@@ -544,6 +546,7 @@ EXPORT_SYMBOL_GPL(dsa_inband_wait_for_completion);
-  * reinitialized before the skb is queue to avoid races.
-  */
- int dsa_inband_request(struct dsa_inband *inband, struct sk_buff *skb,
-+		       void (*insert_seqno)(struct sk_buff *skb, u32 seqno),
- 		       int timeout_ms)
- {
- 	unsigned long jiffies = msecs_to_jiffies(timeout_ms);
-@@ -551,6 +554,11 @@ int dsa_inband_request(struct dsa_inband *inband, struct sk_buff *skb,
- 
- 	reinit_completion(&inband->completion);
- 
-+	if (insert_seqno) {
-+		inband->seqno++;
-+		insert_seqno(skb, inband->seqno & inband->seqno_mask);
-+	}
-+
- 	dev_queue_xmit(skb);
- 
- 	ret = wait_for_completion_timeout(&inband->completion, jiffies);
-@@ -562,6 +570,12 @@ int dsa_inband_request(struct dsa_inband *inband, struct sk_buff *skb,
- }
- EXPORT_SYMBOL_GPL(dsa_inband_request);
- 
-+u32 dsa_inband_seqno(struct dsa_inband *inband)
-+{
-+	return inband->seqno & inband->seqno_mask;
-+}
-+EXPORT_SYMBOL_GPL(dsa_inband_seqno);
-+
- static int __init dsa_init_module(void)
- {
- 	int rc;
 -- 
 2.37.2
 
