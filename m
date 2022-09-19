@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 90EB05BCB1A
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 13:53:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBB2D5BCB27
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 13:54:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229997AbiISLxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 07:53:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45442 "EHLO
+        id S230051AbiISLxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 07:53:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229935AbiISLxL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 07:53:11 -0400
+        with ESMTP id S229941AbiISLxO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 07:53:14 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530E72B270;
-        Mon, 19 Sep 2022 04:53:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E31602B266;
+        Mon, 19 Sep 2022 04:53:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1663588390; x=1695124390;
+  t=1663588393; x=1695124393;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Qbukx3qf1IM8ITrfV7Uk6zZZN+zzo2s2msSilYCaRxw=;
-  b=sqMSGh+wQSShxQRvDgFhp8+bpqJY4Qdp/Ce3glF80Y8eC1ojvvoWCnSz
-   +u3pW09Zg6382zvfNihm4+A0RlVk6W2CbS4i+LGRe9Xv7/7o8joeeP4aT
-   pm3BTCVsXEi1c8jVwHZ/ZBw/smUcoHok5vivR1CVSuq08X+GVp+i71uoQ
-   JmA3/DHmOxJ5ok5M4A9uo+EDzDL3ggC66fNJHbCPgt4zqrCwzpKlauiQO
-   eqVgkD7aOXsqsH48bkKV+wXhJF4kpvwbz6GVnNfFX+QiSUxyX8PcbOaL4
-   ZFbxyte9swNOSzoastD6NT6rVwgmVh+RrgwGlwx5EjxDDkSf5y+/DSH9S
-   Q==;
+  bh=rHW9t9TQn2uh3sa62ewhOuu+5xa7ifx2R3qiACjUOB4=;
+  b=HuHQn4rbA7X8XRHUfSiT8347kMo/dlKWGGzKYuoGp5xQyKNWSULTBqVf
+   s6/wmY7HIGiDwSiNe6D54ha1kc8U6/BREvTWvc56+fk9nADRU5Ljr8EFI
+   SWnqKhbUH5FY1XBHkOdnTu5+aI5AOcPAxuhDrHZFRAFyCcoJRWG4S6V4I
+   F4T7fjQmdnKgtuMm/h+ozGCPR92aiTKGZTlrmvLIAVvFeGb0xIdFlzkJq
+   xvQiLVQyOokY1XLgVwJnLO1GECwc24vg+SO/6Ew1f2OwA62SDp2sZxOGj
+   xW2KwwBTA5GhYx9s2KdKbXBj/80jNPONPvCDoerWXt87TRB+KB6caXmpw
+   g==;
 X-IronPort-AV: E=Sophos;i="5.93,327,1654585200"; 
-   d="scan'208";a="191423427"
+   d="scan'208";a="181069816"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Sep 2022 04:53:09 -0700
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Sep 2022 04:53:13 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Mon, 19 Sep 2022 04:53:09 -0700
+ 15.1.2507.12; Mon, 19 Sep 2022 04:53:12 -0700
 Received: from DEN-LT-70577.microchip.com (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Mon, 19 Sep 2022 04:53:06 -0700
+ 15.1.2507.12 via Frontend Transport; Mon, 19 Sep 2022 04:53:10 -0700
 From:   Daniel Machon <daniel.machon@microchip.com>
 To:     <netdev@vger.kernel.org>
 CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
@@ -48,9 +48,9 @@ CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
         <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         "Steen Hegelund" <steen.hegelund@microchip.com>
-Subject: [PATCH net-next 1/5] net: microchip: sparx5: add tc setup hook
-Date:   Mon, 19 Sep 2022 14:02:11 +0200
-Message-ID: <20220919120215.3815696-2-daniel.machon@microchip.com>
+Subject: [PATCH net-next 2/5] net: microchip: sparx5: add support for offloading mqprio qdisc
+Date:   Mon, 19 Sep 2022 14:02:12 +0200
+Message-ID: <20220919120215.3815696-3-daniel.machon@microchip.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220919120215.3815696-1-daniel.machon@microchip.com>
 References: <20220919120215.3815696-1-daniel.machon@microchip.com>
@@ -66,95 +66,153 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add tc setup hook for QoS features.
+Add support for offloading mqprio qdisc to sparx5 switch.
+
+The offloaded mqprio qdisc currently does nothing by itself, but serves
+as an attachment point for other qdiscs (tbf, ets etc.)
 
 Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
 Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
 ---
  .../net/ethernet/microchip/sparx5/Makefile    |  2 +-
- .../ethernet/microchip/sparx5/sparx5_netdev.c |  2 ++
- .../net/ethernet/microchip/sparx5/sparx5_tc.c | 19 +++++++++++++++++++
- .../net/ethernet/microchip/sparx5/sparx5_tc.h | 15 +++++++++++++++
- 4 files changed, 37 insertions(+), 1 deletion(-)
- create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_tc.c
- create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_tc.h
+ .../ethernet/microchip/sparx5/sparx5_netdev.c |  6 ++-
+ .../ethernet/microchip/sparx5/sparx5_qos.c    | 38 +++++++++++++++++++
+ .../ethernet/microchip/sparx5/sparx5_qos.h    | 16 ++++++++
+ .../net/ethernet/microchip/sparx5/sparx5_tc.c | 16 ++++++++
+ 5 files changed, 76 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_qos.c
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_qos.h
 
 diff --git a/drivers/net/ethernet/microchip/sparx5/Makefile b/drivers/net/ethernet/microchip/sparx5/Makefile
-index 4402c3ed1dc5..1d21d8ef891a 100644
+index 1d21d8ef891a..d1c6ad966747 100644
 --- a/drivers/net/ethernet/microchip/sparx5/Makefile
 +++ b/drivers/net/ethernet/microchip/sparx5/Makefile
 @@ -8,4 +8,4 @@ obj-$(CONFIG_SPARX5_SWITCH) += sparx5-switch.o
  sparx5-switch-objs  := sparx5_main.o sparx5_packet.o \
   sparx5_netdev.o sparx5_phylink.o sparx5_port.o sparx5_mactable.o sparx5_vlan.o \
   sparx5_switchdev.o sparx5_calendar.o sparx5_ethtool.o sparx5_fdma.o \
-- sparx5_ptp.o sparx5_pgid.o
-+ sparx5_ptp.o sparx5_pgid.o sparx5_tc.o
+- sparx5_ptp.o sparx5_pgid.o sparx5_tc.o
++ sparx5_ptp.o sparx5_pgid.o sparx5_tc.o sparx5_qos.o
 diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c b/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c
-index af4d3e1f1a6d..c1a357f45a06 100644
+index c1a357f45a06..19516ccad533 100644
 --- a/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c
 +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c
-@@ -7,6 +7,7 @@
- #include "sparx5_main_regs.h"
- #include "sparx5_main.h"
- #include "sparx5_port.h"
-+#include "sparx5_tc.h"
+@@ -242,10 +242,14 @@ struct net_device *sparx5_create_netdev(struct sparx5 *sparx5, u32 portno)
+ 	struct sparx5_port *spx5_port;
+ 	struct net_device *ndev;
  
- /* The IFH bit position of the first VSTAX bit. This is because the
-  * VSTAX bit positions in Data sheet is starting from zero.
-@@ -228,6 +229,7 @@ static const struct net_device_ops sparx5_port_netdev_ops = {
- 	.ndo_get_stats64        = sparx5_get_stats64,
- 	.ndo_get_port_parent_id = sparx5_get_port_parent_id,
- 	.ndo_eth_ioctl          = sparx5_port_ioctl,
-+	.ndo_setup_tc           = sparx5_port_setup_tc,
- };
+-	ndev = devm_alloc_etherdev(sparx5->dev, sizeof(struct sparx5_port));
++	ndev = devm_alloc_etherdev_mqs(sparx5->dev, sizeof(struct sparx5_port),
++				       SPX5_PRIOS, 1);
+ 	if (!ndev)
+ 		return ERR_PTR(-ENOMEM);
  
- bool sparx5_netdevice_check(const struct net_device *dev)
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_tc.c b/drivers/net/ethernet/microchip/sparx5/sparx5_tc.c
++	ndev->hw_features |= NETIF_F_HW_TC;
++	ndev->features |= NETIF_F_HW_TC;
++
+ 	SET_NETDEV_DEV(ndev, sparx5->dev);
+ 	spx5_port = netdev_priv(ndev);
+ 	spx5_port->ndev = ndev;
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_qos.c b/drivers/net/ethernet/microchip/sparx5/sparx5_qos.c
 new file mode 100644
-index 000000000000..1bafca0be795
+index 000000000000..1febc3cdc571
 --- /dev/null
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_tc.c
-@@ -0,0 +1,19 @@
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_qos.c
+@@ -0,0 +1,38 @@
 +// SPDX-License-Identifier: GPL-2.0+
 +/* Microchip Sparx5 Switch driver
 + *
 + * Copyright (c) 2022 Microchip Technology Inc. and its subsidiaries.
 + */
 +
-+#include "sparx5_tc.h"
 +#include "sparx5_main.h"
 +
-+int sparx5_port_setup_tc(struct net_device *ndev, enum tc_setup_type type,
-+			 void *type_data)
++int sparx5_tc_mqprio_add(struct net_device *ndev, u8 num_tc)
 +{
-+	switch (type) {
-+	default:
-+		return -EOPNOTSUPP;
++	int i;
++
++	if (num_tc != SPX5_PRIOS) {
++		netdev_err(ndev, "Only %d traffic classes supported\n",
++			   SPX5_PRIOS);
++		return -EINVAL;
 +	}
++
++	netdev_set_num_tc(ndev, num_tc);
++
++	for (i = 0; i < num_tc; i++)
++		netdev_set_tc_queue(ndev, i, 1, i);
++
++	netdev_dbg(ndev, "dev->num_tc %u dev->real_num_tx_queues %u\n",
++		   ndev->num_tc, ndev->real_num_tx_queues);
 +
 +	return 0;
 +}
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_tc.h b/drivers/net/ethernet/microchip/sparx5/sparx5_tc.h
++
++int sparx5_tc_mqprio_del(struct net_device *ndev)
++{
++	netdev_reset_tc(ndev);
++
++	netdev_dbg(ndev, "dev->num_tc %u dev->real_num_tx_queues %u\n",
++		   ndev->num_tc, ndev->real_num_tx_queues);
++
++	return 0;
++}
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_qos.h b/drivers/net/ethernet/microchip/sparx5/sparx5_qos.h
 new file mode 100644
-index 000000000000..5b55e11b77e1
+index 000000000000..0572fb41c949
 --- /dev/null
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_tc.h
-@@ -0,0 +1,15 @@
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_qos.h
+@@ -0,0 +1,16 @@
 +/* SPDX-License-Identifier: GPL-2.0+ */
 +/* Microchip Sparx5 Switch driver
 + *
 + * Copyright (c) 2022 Microchip Technology Inc. and its subsidiaries.
 + */
 +
-+#ifndef __SPARX5_TC_H__
-+#define __SPARX5_TC_H__
++#ifndef __SPARX5_QOS_H__
++#define __SPARX5_QOS_H__
 +
 +#include <linux/netdevice.h>
 +
-+int sparx5_port_setup_tc(struct net_device *ndev, enum tc_setup_type type,
-+			 void *type_data);
++/* Multi-Queue Priority */
++int sparx5_tc_mqprio_add(struct net_device *ndev, u8 num_tc);
++int sparx5_tc_mqprio_del(struct net_device *ndev);
 +
-+#endif	/* __SPARX5_TC_H__ */
++#endif	/* __SPARX5_QOS_H__ */
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_tc.c b/drivers/net/ethernet/microchip/sparx5/sparx5_tc.c
+index 1bafca0be795..6e01a7c7c821 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_tc.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_tc.c
+@@ -4,13 +4,29 @@
+  * Copyright (c) 2022 Microchip Technology Inc. and its subsidiaries.
+  */
+ 
++#include <net/pkt_cls.h>
++
+ #include "sparx5_tc.h"
+ #include "sparx5_main.h"
++#include "sparx5_qos.h"
++
++static int sparx5_tc_setup_qdisc_mqprio(struct net_device *ndev,
++					struct tc_mqprio_qopt_offload *m)
++{
++	m->qopt.hw = TC_MQPRIO_HW_OFFLOAD_TCS;
++
++	if (m->qopt.num_tc == 0)
++		return sparx5_tc_mqprio_del(ndev);
++	else
++		return sparx5_tc_mqprio_add(ndev, m->qopt.num_tc);
++}
+ 
+ int sparx5_port_setup_tc(struct net_device *ndev, enum tc_setup_type type,
+ 			 void *type_data)
+ {
+ 	switch (type) {
++	case TC_SETUP_QDISC_MQPRIO:
++		return sparx5_tc_setup_qdisc_mqprio(ndev, type_data);
+ 	default:
+ 		return -EOPNOTSUPP;
+ 	}
 -- 
 2.34.1
 
