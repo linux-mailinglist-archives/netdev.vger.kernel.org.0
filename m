@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AEC245BD4D9
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 20:40:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 764B55BD4DF
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 20:41:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229581AbiISSkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 14:40:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40874 "EHLO
+        id S229727AbiISSlx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 14:41:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbiISSkQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 14:40:16 -0400
+        with ESMTP id S229542AbiISSlv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 14:41:51 -0400
 Received: from mx01.omp.ru (mx01.omp.ru [90.154.21.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F59118379;
-        Mon, 19 Sep 2022 11:40:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F99146204;
+        Mon, 19 Sep 2022 11:41:50 -0700 (PDT)
 Received: from [192.168.1.103] (178.176.74.120) by msexch01.omp.ru
  (10.188.4.12) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.14; Mon, 19 Sep
- 2022 21:40:02 +0300
+ 2022 21:41:41 +0300
 Subject: Re: [PATCH] net: ravb: Fix PHY state warning splat during system
  resume
 To:     Geert Uytterhoeven <geert+renesas@glider.be>,
@@ -32,8 +32,8 @@ CC:     <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
 References: <8ec796f47620980fdd0403e21bd8b7200b4fa1d4.1663598796.git.geert+renesas@glider.be>
 From:   Sergey Shtylyov <s.shtylyov@omp.ru>
 Organization: Open Mobile Platform
-Message-ID: <00e5b86b-fe51-98c9-92b7-349b6a03fc1b@omp.ru>
-Date:   Mon, 19 Sep 2022 21:40:03 +0300
+Message-ID: <55afa524-a159-b7d1-e942-289ad5a9b752@omp.ru>
+Date:   Mon, 19 Sep 2022 21:41:38 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.10.1
 MIME-Version: 1.0
@@ -60,6 +60,8 @@ X-KSE-AntiSpam-Info: {relay has no DNS name}
 X-KSE-AntiSpam-Info: {SMTP from is not routable}
 X-KSE-AntiSpam-Info: {Found in DNSBL: 178.176.74.120 in (user)
  b.barracudacentral.org}
+X-KSE-AntiSpam-Info: {Found in DNSBL: 178.176.74.120 in (user)
+ dbl.spamhaus.org}
 X-KSE-AntiSpam-Info: omp.ru:7.1.1;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
 X-KSE-AntiSpam-Info: ApMailHostAddress: 178.176.74.120
 X-KSE-AntiSpam-Info: {DNS response errors}
