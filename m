@@ -2,67 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A74BF5BD3FB
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 19:41:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECDE95BD402
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 19:44:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229992AbiISRlz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 13:41:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55956 "EHLO
+        id S229733AbiISRoj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 13:44:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229727AbiISRlw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 13:41:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B772839B8B;
-        Mon, 19 Sep 2022 10:41:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        with ESMTP id S229602AbiISRoi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 13:44:38 -0400
+Received: from novek.ru (unknown [213.148.174.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6690C1124
+        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 10:44:33 -0700 (PDT)
+Received: from nat1.ooonet.ru (gw.zelenaya.net [91.207.137.40])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 70298B81E89;
-        Mon, 19 Sep 2022 17:41:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B452C433C1;
-        Mon, 19 Sep 2022 17:41:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663609309;
-        bh=OvVnROzD0otzKIOfupvYy7oKYylHoLKLR1yjrRi0+Jg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mpDfuGKMmQ9eRKBxRG0FUHvLIXGgTkhDTMVAmEZ6IdfW6P0bvcHzyaPvnofJtTI2U
-         WvF0+nI3vPfMYhbDwqzelJejOeP9mhrVP1mUGnCuqhfzWDc+nqF6UxOt23kmlx1Bb/
-         4cvpONlA6W08Hd42GcUJlSW5Y3bEtxTcXPP8L4Zn97pJyKUeDvnXYeZU3Tllzw76I5
-         0WFtSiB6EFQ1IcNzHQ+phuKYJVUB1ieY1wSwERvM0OAEXspfZY+PEqKk16MuFTRwwK
-         ICj+SUts7pCz/xLNHfg8Q7Qd2rTLEDUU96WO3zviOsJwphCqkREfEzkja+3Z/FShVD
-         hYqbr0u7ha/Og==
-Date:   Mon, 19 Sep 2022 10:41:47 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     vdasa@vmware.com
-Cc:     vbhakta@vmware.com, namit@vmware.com, bryantan@vmware.com,
-        zackr@vmware.com, linux-graphics-maintainer@vmware.com,
-        doshir@vmware.com, sgarzare@redhat.com, gregkh@linuxfoundation.org,
-        davem@davemloft.net, pv-drivers@vmware.com, joe@perches.com,
-        netdev@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        linux-rdma@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH 0/3] MAINTAINERS: Update entries for some VMware drivers
-Message-ID: <20220919104147.1373eac1@kernel.org>
-In-Reply-To: <20220906172722.19862-1-vdasa@vmware.com>
-References: <20220906172722.19862-1-vdasa@vmware.com>
+        by novek.ru (Postfix) with ESMTPSA id BB2CE504D10;
+        Mon, 19 Sep 2022 20:41:25 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru BB2CE504D10
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1663609287; bh=oCIxLB7BJvm+vLnP4ng1MykNGUgiK9pidDma3iIsBR8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=N2OD+pllFGjRdMAbOlzrpEoJf7sPkzERw9NljaiECe4lyEN79EASp1Jc6JuA9bPVt
+         YupH5dqD9ybNCUU0iB/rHDJxdhyI3qKXAyCu5IuX8rEMIZ3YIzyrzu8tmRxKTIfqAr
+         vE15X27ozKhxi0GYgVKJRWNMfGnw5vAAJpZZLHWE=
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+To:     Michael Chan <michael.chan@broadcom.com>,
+        Pavan Chebbi <pavan.chebbi@broadcom.com>,
+        netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vadim Fedorenko <vfedorenko@novek.ru>
+Subject: [PATCH net] net: bnxt: replace reset with config timestamps
+Date:   Mon, 19 Sep 2022 20:44:23 +0300
+Message-Id: <20220919174423.31146-1-vfedorenko@novek.ru>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  6 Sep 2022 10:27:19 -0700 vdasa@vmware.com wrote:
-> From: Vishnu Dasa <vdasa@vmware.com>
-> 
-> This series updates a few existing maintainer entries for VMware
-> supported drivers and adds a new entry for vsock vmci transport
-> driver.
+Any change to the hardware timestamps configuration triggers nic restart,
+which breaks transmition and reception of network packets for a while.
+But there is no need to fully restart the device because while configuring
+hardware timestamps. The code for changing configuration runs after all
+of the initialisation, when the NIC is actually up and running. This patch
+changes the code that ioctl will only update configuration registers and
+will not trigger carrier status change. Tested on BCM57504.
 
-Just to be sure - who are you expecting to take these in?
+Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+index 8e316367f6ce..36e9148468b5 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+@@ -505,10 +505,8 @@ static int bnxt_hwrm_ptp_cfg(struct bnxt *bp)
+ 	ptp->tstamp_filters = flags;
+ 
+ 	if (netif_running(bp->dev)) {
+-		rc = bnxt_close_nic(bp, false, false);
+-		if (!rc)
+-			rc = bnxt_open_nic(bp, false, false);
+-		if (!rc && !ptp->tstamp_filters)
++		bnxt_ptp_cfg_tstamp_filters(bp);
++		if (!ptp->tstamp_filters)
+ 			rc = -EIO;
+ 	}
+ 
+-- 
+2.27.0
+
