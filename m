@@ -2,248 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CD565BCCA6
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 15:12:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFE175BCCB8
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 15:15:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229880AbiISNMo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 09:12:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34270 "EHLO
+        id S230041AbiISNPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 09:15:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230062AbiISNMm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 09:12:42 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F7B41DA6D
-        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 06:12:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663593160; x=1695129160;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=7F+kMmJ33cel6zHKAkQ7bCV6KQ9v+ByrclRbSTzZrzI=;
-  b=UozyqD0T5eA0ON+u/TtzsNV7KQDSbW60Jb7cCMBvZ+CApDfp03qjzMiz
-   TmYIc/+/9AxDkj4c0TwKaQBroH4q9/wR6cCr44PcUCdeGH82tzqqIpwq4
-   OYq1ftjeRoYaVEUNyfPTUl8mJyqDeepeR6p06rM1FNM4tJ00o+H65/Ohx
-   /f0dZUIpdwVhhl/wRWSMv7hE7IMB4eWEy6ei1+2jndE2vRXMf/PQOA0dD
-   ga4dDF6KPKzZiGc9dMEN1HvwelPkK5AQmJM34YAnuBaE+ZtjBuVF3NnS/
-   SvkZwYlbN6CYSD8LSrnP7W9SR7f08daHaVrOpDuserhB8bOvs+jqYDgBD
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10475"; a="363352864"
-X-IronPort-AV: E=Sophos;i="5.93,327,1654585200"; 
-   d="scan'208";a="363352864"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Sep 2022 06:12:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,327,1654585200"; 
-   d="scan'208";a="947215215"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by fmsmga005.fm.intel.com with ESMTP; 19 Sep 2022 06:12:38 -0700
-Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Mon, 19 Sep 2022 06:12:38 -0700
-Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
- fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Mon, 19 Sep 2022 06:12:37 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Mon, 19 Sep 2022 06:12:37 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.45) by
- edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Mon, 19 Sep 2022 06:12:36 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EV4F2h284tzUhv/GL0bTuvgYysUFmEMsyML5BOOX5cDqTYiv042npy2JhhrxUjzla235wHQoBC2qaq8BOJ70/YCFhuxRAT8UdwPhQ2gymrhfnhAxK9MSV3FDfGPnxawNEil9KXm2W+4FbQMdvaNEzAIwoFYyzuNIVwxQIuOkcizvI7uQuIaarhRx0a5S//9zZZ+6wynjFzlDSwJUys/ete2GSlYZT9wE1jHU02ssGWe1JhZRMSb9F+6PLo/wwQAGk1NsnYWu4gttDAhOz2+Jd68Mt7AO0Pfx8eC5CHE6oW1Cilzr4A6WIHE+YwGBKC5V1Pi9Slbp78TTPfp5lAqoNw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=b6faLvzh3dPeT5ncYc0m7sKaG7rPWDYxqkEmX+pMHYw=;
- b=Ci5N+NJ1TrvjAc7d4ohIOOaly80fTmXZcgKhc8dbLh0j85uYtUN3OmI+jCzwKuCQ/o0kOj1q8aLVfM2W+mCnEx36qGoNsAO58tuaLnFgzUM+S5gyvy5GgcZQ9rAYshJ6rklZyS8HcaU7+M3YwpjDGLgrsCOpDNMw7o1jPApnXzgfXEiQaa4GoHw9nP9+0g/GakxYg/+ZGH5mRiFb9YQm5FCulZwm2TsG7LlXxSZS8rxQq+xzdQNmfnu5V2rPx79/8e+YoJiRBkrSf0yDKb2SYjgloDZ4IIo0qNvhkRBbSdORagSjcTCzgP78MhExFCIG9Uu2LOLd69MDkPo6NthoEg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from CO6PR11MB5603.namprd11.prod.outlook.com (2603:10b6:5:35c::12)
- by PH7PR11MB6793.namprd11.prod.outlook.com (2603:10b6:510:1b7::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5632.17; Mon, 19 Sep
- 2022 13:12:35 +0000
-Received: from CO6PR11MB5603.namprd11.prod.outlook.com
- ([fe80::6c59:792:6379:8f9]) by CO6PR11MB5603.namprd11.prod.outlook.com
- ([fe80::6c59:792:6379:8f9%6]) with mapi id 15.20.5632.021; Mon, 19 Sep 2022
- 13:12:34 +0000
-Message-ID: <7ce70b9f-23dc-03c9-f83a-4b620cdc8a7d@intel.com>
-Date:   Mon, 19 Sep 2022 15:12:27 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [RFC PATCH net-next v4 2/6] devlink: Extend devlink-rate api with
- queues and new parameters
-Content-Language: en-US
-To:     Edward Cree <ecree.xilinx@gmail.com>, <netdev@vger.kernel.org>
-CC:     <alexandr.lobakin@intel.com>, <dchumak@nvidia.com>,
-        <maximmi@nvidia.com>, <jiri@resnulli.us>,
-        <simon.horman@corigine.com>, <jacob.e.keller@intel.com>,
-        <jesse.brandeburg@intel.com>, <przemyslaw.kitszel@intel.com>
-References: <20220915134239.1935604-1-michal.wilczynski@intel.com>
- <20220915134239.1935604-3-michal.wilczynski@intel.com>
- <f17166c7-312d-ac13-989e-b064cddcb49e@gmail.com>
- <401d70a9-5f6d-ed46-117b-de0b82a5f52c@intel.com>
- <df4cd224-fc1b-dcd0-b7d4-22b80e6c1821@gmail.com>
-From:   "Wilczynski, Michal" <michal.wilczynski@intel.com>
-In-Reply-To: <df4cd224-fc1b-dcd0-b7d4-22b80e6c1821@gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: AM5PR0502CA0011.eurprd05.prod.outlook.com
- (2603:10a6:203:91::21) To CO6PR11MB5603.namprd11.prod.outlook.com
- (2603:10b6:5:35c::12)
+        with ESMTP id S230131AbiISNPf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 09:15:35 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A85C826AE6
+        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 06:15:34 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oaGcS-00064g-Tm; Mon, 19 Sep 2022 15:15:28 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oaGcS-001frZ-V7; Mon, 19 Sep 2022 15:15:27 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oaGcQ-001yXb-Me; Mon, 19 Sep 2022 15:15:26 +0200
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, kernel@pengutronix.de
+Subject: [PATCH net-next] ethernet: tundra: Drop forward declaration of static functions
+Date:   Mon, 19 Sep 2022 15:15:15 +0200
+Message-Id: <20220919131515.885361-1-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO6PR11MB5603:EE_|PH7PR11MB6793:EE_
-X-MS-Office365-Filtering-Correlation-Id: 73ff875e-d46c-488f-7839-08da9a409e01
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: kAo2XpKT8ZNCQBg9JjSK11CUoRyzDDfEdhUF4s3bhQiYaIADsGFmVCzwCijSmDOzEpC/ftwKRVOwrrD2XXQpxP6xsc+CL3YxDYNFBPJXAnvX6aQq+NVjQ775YL8oulArL47Hz/CSWgVO5uni8E/Gll3qRsFKxA5jxakc3q0PHllEiVblGacDuYu2qriXHMb+jNbMB15wgnx+rNNytqWwnhvQYjr3WFXK5cA2jdOICoFiAK9ggwiPHFPfdjkBnNguTJWdISZxW9LsJiphi4AgBKKBs8PdhCS0LVOf0LWzEiEnZ9gfxBOKL3qKD6OB2nqPJS8aod8tAYPCBb5phK+mR9PtCpR5Hk43m4cxnaLbQhUc/iGQdbIbdQ1N3fvEN6GWGk6v257nOf2GgOI0e/jL0nwzDKKKJDY4vCSmlpk5UB8+DXJTMAsUiEx6OLWxWAtI72YtFvB9v+dswDVDQm8CmMjlYn+eZt8+EDbrK6iK/icwacEm6hijVuBblJ75A4csq+PIhBGoLCj3yBUpGt5cbQ+5iai+wp7KcvngSsHy4HHrULhznKFjTRmxzWa17kXA4oSGXN5xEXcVqnXtWK9/V1qXAHyjA8XvoO7RT6s1z8cps4PB6TULGE4r1Xb9ZGzSkT1CfiI20bem4PEng+oJYEcH2SNzvdNFbQ+MxMw1PznOlbLcmMRKtq71HCp6oP3sdYJJ6/jWyuq+Wd1lALaGCU1AW0XLd3WMEfhYbG5WQSLaZhyEKcL5m0KMBV18TJRi5+g3Dp2WUAxry3hui6IXVZNvPnwptRSSHmf2U4fXHBD9HkseSV7+d1s/7BOxFiB8
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR11MB5603.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(396003)(366004)(39860400002)(136003)(346002)(376002)(451199015)(2906002)(36756003)(186003)(107886003)(31696002)(2616005)(38100700002)(53546011)(6512007)(6666004)(82960400001)(6506007)(8936002)(83380400001)(8676002)(66476007)(4326008)(66946007)(41300700001)(66556008)(478600001)(26005)(6486002)(966005)(316002)(86362001)(5660300002)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MUdpZHhmc3FJVzNrRXF3S1NhNmh2Q3J4OVhEZ1hsUjBwQnlncjJUSzd4RjJQ?=
- =?utf-8?B?RGpLY0dnRUpPZG5rZzB2clFHZnQ0NzV0WC9LUDJqcm1DaFNYaEdoZHJ2d203?=
- =?utf-8?B?NnpYYi9Mb3BCSEN6Q0o5di91SkVkcXlSdE1TYkxrQUNwWHhPQ1V5QnVRY3pS?=
- =?utf-8?B?MkZjZTVmaU9xYjZVL2VMcEJpaTFBTU5zUDhOWlFhbE9kMU5PZjhGU2lpZEc0?=
- =?utf-8?B?U0FGRVpmTnVKRlpqK0JUSWRZSk53aWlKYmVhN0FDL3psVmxET2twZUcyOCtn?=
- =?utf-8?B?R3oxTCtaVXM5eHJZcjBnRnQ1dURLZytzWjlKNnNuNXhsMWtwVnpiUzY4emR3?=
- =?utf-8?B?T3l1dDNJblkyWUxMNHhsRTZpQ1NBd1UvTW5NenBOSU8xall4aVdKYjd3Wi8y?=
- =?utf-8?B?ZGNrcVh0amhWV1d5Z1VUdzFFTXU2d0YzWjBXRXJpTW5DR3pMREpEeElZM0tF?=
- =?utf-8?B?MnNuT1JKMHk5aTBJNUp2b3N2Tzlnay9CMWtqY0pJZ0liRkZHNjhBMFhEWW5Y?=
- =?utf-8?B?dXVsRE1oUnNwL2IyUkpLNk9UY282YnR5eE4rRno2a0ozS213c2Q2L2s3Rkk4?=
- =?utf-8?B?ZnJ0MnJUOHF0M1NRNzFtODl3WUIvODk3SkRNUWk4MnJyajZ5L2VyemxMSXMw?=
- =?utf-8?B?UWwxTnQ2SHNjQ0hhQWUxUkxhOFhPZzRtc2tBUGhNc25uMzhGSWlBUWxWV1hT?=
- =?utf-8?B?TWxjTyt3QWFaeWpYMGdwak1RWENNOVV2em1oYUdBVDRwQWhhSmcyUVhUYzJz?=
- =?utf-8?B?ckd0dUZ1WEhDejc2Vk5hVCt3cURHZWRQOG5naXNqYm8wZVQwdDJsWU0vc2Nz?=
- =?utf-8?B?UjMyZzJFdWM5azA0M055SWtEaUtCdDllczB5TXZmYTN1TUd3QUhEYVoraG1t?=
- =?utf-8?B?bWgwdnBOdDVrUHVsdCtoTDg4Q1hEclJSeGNMV05NUkhma3pEY21kY09aTzdh?=
- =?utf-8?B?cVg3aXJCdEpUd2YwTTNxQ2pGd1JETzVaSW5yTnlxNTUyMlErVUM1cDh4VzF0?=
- =?utf-8?B?SHREcWpJbnE1WWppb3phbVNZejVIblBoMU9ZVUh4R3VxNXprK0JZaVN3bjF1?=
- =?utf-8?B?SmVZOWhGKzdVSzhhV01hWXJZV0U5SG9LdWJnampQUi9KZ2N5cHE0bmN1QkhZ?=
- =?utf-8?B?T1EyUVRsVEIrY29yVHJ0djEzQkNIbnp4YUdDYzRJcXNZU2l6UnA2c1VveVlm?=
- =?utf-8?B?R3IwNWZ5elduRDIxUUY3c3RZU2hZSStBQVdxVnBRZlNoVjIyclg4NzFjMTZ6?=
- =?utf-8?B?MGtvbFEzUnEvQUtiaHFReTU2TWdWMERKd0lRQ3hJVUx6NGpKSFZxTWU5UlZj?=
- =?utf-8?B?Q2QyQXRZbzM2dkFJVXo4b0VEbkNsTFFsTEhXRzl4MzhqS3VGcXVSUTdtSUc0?=
- =?utf-8?B?a1M0dzYvaTZod2JHcFk4M1FZTXZ1OW5IN0FkYXczVlk4aDBBcnhEWllaaG9r?=
- =?utf-8?B?RlI2SE9LQzJYdStOUFRDUS9wOHRxajVVQWIzM0pHTWJPZE1ncUxIMkZabjJk?=
- =?utf-8?B?bDZoeGpDSHMwaDI3ZnlJdXIrRGZRak9GT3pMcHRyZWt0S0xHUDVobnlxSVo3?=
- =?utf-8?B?YmRudEtEQ3Jia1FNVE85czk4K1V6NXNENmpEdE5FUlNsVTVXT09jNi9zcGZh?=
- =?utf-8?B?VW5tZUlNOGVhUlFkaUVkTUh1L09LMnVHckx5WFluKzNETU9FcEVDTHFDWHBP?=
- =?utf-8?B?MTFoQWpBRUxKODhiMFNCQ2pXNG1obmcwVWVIbUZBYS90a21XZHBIdUtsTEI5?=
- =?utf-8?B?THdkNDdqZnFrVkpRSHBnVlJFWlFlSkgxSHJHOVh6czhGNnlDQ0JEeVM1czlF?=
- =?utf-8?B?N0kwVFcwY0tKcmo1Z2gvNGlMb3NnVUZpQ2Foa3hyR3ZYbDdZdVd2emVOMHVp?=
- =?utf-8?B?bm1vcTlCYnNwRy9tTElHTStVbXBjQnV5VHJNRG5XQWZ6UlVGNFN0TkVXaVUw?=
- =?utf-8?B?WW5RM3NiQTVaT1FSdlMyaGQrM3VGQjg0UStSc2ZMMzFBaHk2d0RHZ1M1eEdN?=
- =?utf-8?B?NTdBZmtuYytyYzA1M1lIVVlXdEVkZVh5cmtWUG1pMU53SW9GaUluTFFjNDJK?=
- =?utf-8?B?anV6eGN6T3hzSDJSK3EyYlBSOUU2NFpENHloZ3NRT2pMYTl0S3FRaE8reVR0?=
- =?utf-8?B?clVXZmw5cUMxWDFtSkF6cU56aVBTZUt4NGZMSy9LVFNDS2pTZzh2Q0g1U1lY?=
- =?utf-8?B?bmc9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 73ff875e-d46c-488f-7839-08da9a409e01
-X-MS-Exchange-CrossTenant-AuthSource: CO6PR11MB5603.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Sep 2022 13:12:34.8795
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: CsQhE3Wqx4GJfu5Ofs0PikKBa1uce/6++bnebXGGXq61ppmMFwCzGB6xCJLy/0YG7MWJOsrL713BwoktFY+UlUWUWAxyvc8fk//kcqdu/Ko=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB6793
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1887; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=EumqiZJCBJD8dBCW3pjyWwjh/Ul+EjR64ydtACjzAoY=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBjKGtf8Yexl+e4/YtedqLM5zZpIg5bTFaiFsmPNg7y 7yZh+fuJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYyhrXwAKCRDB/BR4rcrsCV2JCA CLsq2QZ/NwVT7NdGO+PzvwEs9KU8ZRkDWabKol9yV4GtTPJ/jnW6B6grFCAmSwqIhqvqpnO7wD1e19 67n3I/O5cOSV2DbiF7sNoLHedNweEjM6bU5K9cbHYPBFOIx2dnoCASY44sz1UhvbJxqkGSmpaRSe5W 9YznfA8Z2TNg4Fts3InQrnMmXKS5qoh/BCx8+ah+5VyGGnlqG0wNGgZixsypKJ1OGe9vXV2zg5KTAS emcwSSyTdCHiFMqRvR9U2NihBlAhgpV2uIhfz7onSlx6ctmZLLbRsQmMUiECvdk5grswbPtPRS4A5H skQLUhsXWPEempC4uDmraG1v9x/cAt
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Usually it's not necessary to declare static functions if the symbols are
+in the right order. Moving the definition of tsi_eth_driver down in the
+compilation unit allows to drop two such declarations.
 
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/net/ethernet/tundra/tsi108_eth.c | 23 ++++++++++-------------
+ 1 file changed, 10 insertions(+), 13 deletions(-)
 
-On 9/15/2022 11:01 PM, Edward Cree wrote:
-> On 15/09/2022 19:41, Wilczynski, Michal wrote:
->> Hi,
->> Previously we discussed adding queues to devlink-rate in this thread:
->> https://lore.kernel.org/netdev/20220704114513.2958937-1-michal.wilczynski@intel.com/T/#u
->> In our use case we are trying to find a way to expose hardware Tx scheduler tree that is defined
->> per port to user. Obviously if the tree is defined per physical port, all the scheduling nodes will reside
->> on the same tree.
->>
->> Our customer is trying to send different types of traffic that require different QoS levels on the same
->> VM, but on a different queues. This requires completely different rate setups for that queue - in the
->> implementation that you're mentioning we wouldn't be able to arbitrarily reassign the queue to any node.
-> I'm not sure I 100% understand what you're describing, but I get the
->   impression it's maybe a layering violation — the hypervisor should only
->   be responsible for shaping the VM's overall traffic, it should be up to
->   the VM to decide how to distribute that bandwidth between traffic types.
+diff --git a/drivers/net/ethernet/tundra/tsi108_eth.c b/drivers/net/ethernet/tundra/tsi108_eth.c
+index 5251fc324221..c0b26b5cefe4 100644
+--- a/drivers/net/ethernet/tundra/tsi108_eth.c
++++ b/drivers/net/ethernet/tundra/tsi108_eth.c
+@@ -59,9 +59,6 @@
+ /* Check the phy status every half a second. */
+ #define CHECK_PHY_INTERVAL (HZ/2)
+ 
+-static int tsi108_init_one(struct platform_device *pdev);
+-static int tsi108_ether_remove(struct platform_device *pdev);
+-
+ struct tsi108_prv_data {
+ 	void  __iomem *regs;	/* Base of normal regs */
+ 	void  __iomem *phyregs;	/* Base of register bank used for PHY access */
+@@ -144,16 +141,6 @@ struct tsi108_prv_data {
+ 	struct platform_device *pdev;
+ };
+ 
+-/* Structure for a device driver */
+-
+-static struct platform_driver tsi_eth_driver = {
+-	.probe = tsi108_init_one,
+-	.remove = tsi108_ether_remove,
+-	.driver	= {
+-		.name = "tsi-ethernet",
+-	},
+-};
+-
+ static void tsi108_timed_checker(struct timer_list *t);
+ 
+ #ifdef DEBUG
+@@ -1683,6 +1670,16 @@ static int tsi108_ether_remove(struct platform_device *pdev)
+ 
+ 	return 0;
+ }
++
++/* Structure for a device driver */
++
++static struct platform_driver tsi_eth_driver = {
++	.probe = tsi108_init_one,
++	.remove = tsi108_ether_remove,
++	.driver	= {
++		.name = "tsi-ethernet",
++	},
++};
+ module_platform_driver(tsi_eth_driver);
+ 
+ MODULE_AUTHOR("Tundra Semiconductor Corporation");
 
-Maybe a switchdev case would be a good parallel here. When you enable 
-switchdev, you get port representors on
-the host for each VF that is already attached to the VM. Something that 
-gives the host power to configure
-netdev that it doesn't 'own'. So it seems to me like giving user more 
-power to configure things from the host
-is acceptable.
-
-
-> But if it's what your customer needs then presumably there's some reason
->   for it that I'm not seeing.  I'm not a QoS expert by any means — I just
->   get antsy that every time I look at devlink it's gotten bigger and keeps
->   escaping further out of the "device-wide configuration" concept it was
->   originally sold as :(
-
-I understand the concern, and sympathize with the desire to keep things 
-small, but this is the least
-evil method I've found, that would enable the customer to achieve 
-optimal configuration. I've experimented
-with tc-htb in the previous thread, but there are multiple problems with 
-that approach - I tried to describe them
-there.
-
-In my mind this is a device-wide configuration, since the ice driver 
-registers each port as a separate pci device.
-And each of this devices have their own hardware Tx Scheduler tree 
-global to that port. Queues that we're
-discussing are actually hardware queues, and are identified by hardware 
-assigned txq_id.
-
-The use-case is basically enabling user to fully utilize hardware 
-Hierarchical QoS accounting for every queue
-in the system. The current kernel interfaces doesn't allow us to do so, 
-so we figured that least amount of duplication
-would be to teach devlink about queues, and let user configure the 
-desired tree using devlink-rate.
-
->
->> Those queues would still need to share a single parent - their netdev. This wouldn't allow us to fully take
->> advantage of the HQoS and would introduce arbitrary limitations.
-> Oh, so you need a hierarchy within which the VF's queues don't form a
->   clade (subtree)?  That sounds like something worth calling out in the
->   commit message as the reason why you've designed it this way.
-
-This is one of possible supported scenarios. Will include this in a 
-commit message, thanks for the tip.
-
->
->> Regarding the documentation,  sure. I just wanted to get all the feedback from the mailing list and arrive at the final
->> solution before writing the docs.
-> Fair.  But you might get better feedback on the code if people have the
->   docs to better understand the intent; just a suggestion.
-
-Thanks for the advice :)
-
-
-BR,
-Michał
-
->
-> -ed
+base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
+-- 
+2.37.2
 
