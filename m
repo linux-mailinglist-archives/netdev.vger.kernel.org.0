@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 673665BD4E2
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 20:43:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78EB35BD4E6
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 20:43:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229704AbiISSn0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 14:43:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43630 "EHLO
+        id S229825AbiISSnn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 14:43:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229542AbiISSnZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 14:43:25 -0400
+        with ESMTP id S229773AbiISSnk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 14:43:40 -0400
 Received: from mx01.omp.ru (mx01.omp.ru [90.154.21.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B8DE474E0;
-        Mon, 19 Sep 2022 11:43:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63CDF476CB;
+        Mon, 19 Sep 2022 11:43:39 -0700 (PDT)
 Received: from [192.168.1.103] (178.176.74.120) by msexch01.omp.ru
  (10.188.4.12) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.14; Mon, 19 Sep
- 2022 21:43:16 +0300
+ 2022 21:43:31 +0300
 Subject: Re: [PATCH] net: sh_eth: Fix PHY state warning splat during system
  resume
 To:     Geert Uytterhoeven <geert+renesas@glider.be>,
@@ -32,8 +32,8 @@ CC:     <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
 References: <c6e1331b9bef61225fa4c09db3ba3e2e7214ba2d.1663598886.git.geert+renesas@glider.be>
 From:   Sergey Shtylyov <s.shtylyov@omp.ru>
 Organization: Open Mobile Platform
-Message-ID: <8dd018ac-1c08-2a33-5728-1c0b76e60d56@omp.ru>
-Date:   Mon, 19 Sep 2022 21:43:15 +0300
+Message-ID: <817f9c27-70d6-55bd-a201-e54f3f08bbec@omp.ru>
+Date:   Mon, 19 Sep 2022 21:43:31 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.10.1
 MIME-Version: 1.0
@@ -114,10 +114,10 @@ Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
 >  		phy_set_max_speed(phydev, SPEED_100);
 >  
 > +	/* Indicate that the MAC is responsible for managing PHY PM */
+> +	phydev->mac_managed_pm = true;
 
    Again, this field is declared as *unsigned*...
 
-> +	phydev->mac_managed_pm = true;
 >  	phy_attached_info(phydev);
 [...]
 
