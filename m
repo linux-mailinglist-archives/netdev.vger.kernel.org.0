@@ -2,84 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B722B5BD82A
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 01:21:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA86F5BD83D
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 01:27:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229521AbiISXVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 19:21:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51220 "EHLO
+        id S229821AbiISX1o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 19:27:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229519AbiISXVg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 19:21:36 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43D7E65A8
-        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 16:21:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=29TVA0MJVbhhoPx+mD8WeQoGQlpziwpDsCSlNvpR8pY=; b=uXCflug5MqQiyhqCAV0FZb0i11
-        7u4aaIzql8JpZDOzMrg78i8/sUONHsGzvHJyvHYPNofD+yhnAF03Dbbp8EXy8Koo41zA5C98dmq2i
-        vS5/ufsitoWUHGNUjDrGHqm/wkbCWeiJKawmTL+vcVvD+2mUsS8wMqjDY4WVDMoSnlOg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oaQ4w-00HBnI-78; Tue, 20 Sep 2022 01:21:30 +0200
-Date:   Tue, 20 Sep 2022 01:21:30 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "mattias.forsblad@gmail.com" <mattias.forsblad@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Christian Marangi <ansuelsmth@gmail.com>
-Subject: Re: [PATCH rfc v0 4/9] net: dsa: qca8k: dsa_inband_request: More
- normal return values
-Message-ID: <Yyj5emcw/VIrfaan@lunn.ch>
-References: <20220919110847.744712-3-mattias.forsblad@gmail.com>
- <20220919221853.4095491-1-andrew@lunn.ch>
- <20220919221853.4095491-5-andrew@lunn.ch>
- <20220919230213.yize724zrpiaipgu@skbuf>
+        with ESMTP id S229715AbiISX1m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 19:27:42 -0400
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 548DC4E866
+        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 16:27:39 -0700 (PDT)
+Received: by mail-il1-f200.google.com with SMTP id w10-20020a056e021a6a00b002f5f24e56aeso516625ilv.19
+        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 16:27:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=QcDADadZBFn2stVq46mmrKDcyHCKkZFC4s8yQUc8C/I=;
+        b=qpCU/FLFqi2Rifdh6nDAD+AuLp2tMqbo6aUZfJPRs+wfkjZmbBioMHtrgjF2FGgBj4
+         jz2vSov/U8Y8PVMgSrKmXwT/Ueer+tUw5Xtx5ipLOxQCl+fpYlbcZHVjLnN0d2jcGHwv
+         1V+FPIyRvH6cxpiUUPtbJHLjcYyaA2Mv34yrLfief4FQxH8sviwxPHxvz+oTxGXmxBkr
+         ThC0mBwPZkF95JyG2BIvcZEJFcvULfpAyLk4t0X5ZDON3858cHtmhlxZgyRkgpL7Nr27
+         pfBZWP7wNn8IMJ6CLfa31L1uAnFcrp77LWwCkcgmz8LVXEF4vDBsgWhk6aYg3RavdE53
+         TJCg==
+X-Gm-Message-State: ACrzQf2i9Rlp+ctYX9BldnxqT17qhNHBHdcEDnIzX8NsB4hhfj6shr/p
+        RRP7hGJQpNm71VEzxmkPT6VeatKDWHG8qoU8pEUp0SoxFS4E
+X-Google-Smtp-Source: AMsMyM7PZX8XNoVmOsMUB4zWdDvfVHmxf5heips0o6pfeb/pk5VnKxrKYxlVA0hTE6CeIhPMImoiFa665BtAybSm9ylUDI5LaRsv
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220919230213.yize724zrpiaipgu@skbuf>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a05:6602:490:b0:678:d781:446d with SMTP id
+ y16-20020a056602049000b00678d781446dmr8343778iov.115.1663630058719; Mon, 19
+ Sep 2022 16:27:38 -0700 (PDT)
+Date:   Mon, 19 Sep 2022 16:27:38 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000b010bd05e9100e11@google.com>
+Subject: [syzbot] memory leak in do_replace
+From:   syzbot <syzbot+a24c5252f3e3ab733464@syzkaller.appspotmail.com>
+To:     bridge@lists.linux-foundation.org, coreteam@netfilter.org,
+        davem@davemloft.net, edumazet@google.com, fw@strlen.de,
+        kadlec@netfilter.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pabeni@redhat.com,
+        pablo@netfilter.org, razor@blackwall.org, roopa@nvidia.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 19, 2022 at 11:02:14PM +0000, Vladimir Oltean wrote:
-> On Tue, Sep 20, 2022 at 12:18:48AM +0200, Andrew Lunn wrote:
-> > wait_for_completion_timeout() has unusual return values.  It can
-> > return negative error conditions. If it times out, it returns 0, and
-> > on success it returns the number of remaining jiffies for the timeout.
-> 
-> The one that also returns negative errors is wait_for_completion_interruptible()
-> (and its variants).  In my experience the interruptible version is also
-> a huge foot gun, since user space can kill the process waiting for the
-> RMU response, and the RMU response can still come afterwards, while no
-> one is waiting for it.  The noninterruptible wait that we use here
-> really returns an unsigned long, so no negatives.
+Hello,
 
-The driver needs to handle the reply coming later independent of ^C
-handling, etc. The qca8k has a timeout of 5ms. I don't know if that is
-actually enough, if 1G of traffic is being passed over the interface,
-and the TX queue is full, and the request frame does not get put at
-the head of the queue.  And if there is 1G of traffic also being
-received from the switch, how long are the queues for the reply? Does
-the switch put the reply at the head of the queue?
+syzbot found the following issue on:
 
-This is one thing i want to play with sometime soon, heavily load the
-CPU link and see how well the RMU interface to mv88e6xxx works, are
-the timeouts big enough? Do frames get dropped and are retires needed?
-Do we need to play with the QoS bits of the skb to make Linux put the
-RMU packets at the head of the queue etc.
+HEAD commit:    3245cb65fd91 Merge tag 'devicetree-fixes-for-6.0-2' of git..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=17a88ef7080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a4afe4efcad47dde
+dashboard link: https://syzkaller.appspot.com/bug?extid=a24c5252f3e3ab733464
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14b0e87f080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1100f1d8880000
 
-I would also like to have another look at the code and make sure it is
-sane for exactly this case.
+Downloadable assets:
+disk image: https://storage.googleapis.com/2d6c9d59c55a/disk-3245cb65.raw.xz
+vmlinux: https://storage.googleapis.com/0f52632026ad/vmlinux-3245cb65.xz
 
-     Andrew
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+a24c5252f3e3ab733464@syzkaller.appspotmail.com
+
+executing program
+executing program
+executing program
+executing program
+BUG: memory leak
+unreferenced object 0xffffc90000ded000 (size 4096):
+  comm "syz-executor317", pid 3615, jiffies 4294946120 (age 22.550s)
+  hex dump (first 32 bytes):
+    90 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff8153105f>] __vmalloc_node_range+0xb3f/0xbd0 mm/vmalloc.c:3224
+    [<ffffffff81531239>] __vmalloc_node mm/vmalloc.c:3261 [inline]
+    [<ffffffff81531239>] __vmalloc+0x49/0x50 mm/vmalloc.c:3275
+    [<ffffffff83e28027>] do_replace+0x197/0x340 net/bridge/netfilter/ebtables.c:1131
+    [<ffffffff83e2880c>] do_ebt_set_ctl+0x22c/0x310 net/bridge/netfilter/ebtables.c:2520
+    [<ffffffff83a3fb68>] nf_setsockopt+0x68/0xa0 net/netfilter/nf_sockopt.c:101
+    [<ffffffff83bb5d69>] ip_setsockopt+0x259/0x2040 net/ipv4/ip_sockglue.c:1444
+    [<ffffffff83bcbe10>] tcp_setsockopt+0x70/0x1430 net/ipv4/tcp.c:3789
+    [<ffffffff8425d1d8>] smc_setsockopt+0xd8/0x5c0 net/smc/af_smc.c:2941
+    [<ffffffff8386dd2b>] __sys_setsockopt+0x1ab/0x380 net/socket.c:2252
+    [<ffffffff8386df22>] __do_sys_setsockopt net/socket.c:2263 [inline]
+    [<ffffffff8386df22>] __se_sys_setsockopt net/socket.c:2260 [inline]
+    [<ffffffff8386df22>] __x64_sys_setsockopt+0x22/0x30 net/socket.c:2260
+    [<ffffffff845eab35>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+    [<ffffffff845eab35>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+    [<ffffffff84800087>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+BUG: memory leak
+unreferenced object 0xffffc90000df5000 (size 4096):
+  comm "syz-executor317", pid 3615, jiffies 4294946120 (age 22.550s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff8153105f>] __vmalloc_node_range+0xb3f/0xbd0 mm/vmalloc.c:3224
+    [<ffffffff81531239>] __vmalloc_node mm/vmalloc.c:3261 [inline]
+    [<ffffffff81531239>] __vmalloc+0x49/0x50 mm/vmalloc.c:3275
+    [<ffffffff83e28071>] do_replace+0x1e1/0x340 net/bridge/netfilter/ebtables.c:1138
+    [<ffffffff83e2880c>] do_ebt_set_ctl+0x22c/0x310 net/bridge/netfilter/ebtables.c:2520
+    [<ffffffff83a3fb68>] nf_setsockopt+0x68/0xa0 net/netfilter/nf_sockopt.c:101
+    [<ffffffff83bb5d69>] ip_setsockopt+0x259/0x2040 net/ipv4/ip_sockglue.c:1444
+    [<ffffffff83bcbe10>] tcp_setsockopt+0x70/0x1430 net/ipv4/tcp.c:3789
+    [<ffffffff8425d1d8>] smc_setsockopt+0xd8/0x5c0 net/smc/af_smc.c:2941
+    [<ffffffff8386dd2b>] __sys_setsockopt+0x1ab/0x380 net/socket.c:2252
+    [<ffffffff8386df22>] __do_sys_setsockopt net/socket.c:2263 [inline]
+    [<ffffffff8386df22>] __se_sys_setsockopt net/socket.c:2260 [inline]
+    [<ffffffff8386df22>] __x64_sys_setsockopt+0x22/0x30 net/socket.c:2260
+    [<ffffffff845eab35>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+    [<ffffffff845eab35>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+    [<ffffffff84800087>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
