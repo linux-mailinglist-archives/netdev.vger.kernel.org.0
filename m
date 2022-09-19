@@ -2,114 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B0AF5BC3D7
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 10:00:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DD685BC3E0
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 10:04:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229494AbiISIAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 04:00:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36394 "EHLO
+        id S229683AbiISIEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 04:04:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229758AbiISIAI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 04:00:08 -0400
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2081.outbound.protection.outlook.com [40.107.95.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7123864E2
-        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 00:59:42 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=h/keOf/0McoQLL1m/Yiy9ixrQbvgdyZZ32D6WD+IlqwuOwyiCIS9+Gq8wIZGEb+DdIwRDe9fAfpnBDNr8Xvgf7m0pS7lUU9BftZwG/W8jYiAmlu8Gd+7aHFOxF6ppeL4Fe4eD6EacwV3vxlaTwSKbpsmC6wTbGuYGYiSi689MjT7Jvq3gijpSJNfZ1oUg2KZ/zerYNoGKkuOYdI8qH6fjsZ87i/t2TavMRcRJkKLCKsVoEc5U3ieL/ckTa8wg2m8Pk4/sZK31gAzezLWmXsyExAj9ivhWe8E9q89hqGeTi4D6bEb7hE0D0k7uK1/2a/c80fPYgxQWOyp+jsDiThKcA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UrSF4xFb9Tl0YgJWjemNa7Q2qEb8uW2nqKi62zEsQi4=;
- b=RtOfTM3I6eIlJblnmmB3DcDqaugfjmydNjSMQ6ldnrKJY+7Pfdz4JuXWxzZ085cBwNlP43J35wz2F0tSFp4rKvbleBPdR46Nk+vP7OhYqOtxphKtq0JeFmX/In/a8c/ajCwNyzeBDwOtXHTiTAWYS0gPbHngzt10tKmaILUAewZ2ahOpnLgzAJyjDM4VsyNw6rdG7UQmOmbvKr/TIq9fz00TPnPzUl2C08WuYdlE3nQR27mtegIpJ2dt516wiOij0RaP1I9zM4bGOya3r2zPicktUED6WbrtcKxZVzdIqTVBrDc0dDkYbVtYU+8ZEkLeL5PFUor9e60NvbQNAlob6Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=bootlin.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UrSF4xFb9Tl0YgJWjemNa7Q2qEb8uW2nqKi62zEsQi4=;
- b=kq4EsJ8pENcnX/Ss0W8s0OoiVm/nt+ejqZu+9DGW9UmC1YUspcJzqDHli3EcEbV2pePoCgAKOrR7SkIP7lNAh3nyDp3cXf3njmr44i6DuTmUIv63BqNpiBPLZW+U0LwDjTjD1mGaO2G50bCxT4YARn8yZqwqlmcEORuiDssKJ7uPmjl9bPiAiHSlUvQXPaOmrAKR/0fpxW1RcRpK64A09DQP0RWTV0gpZLD/hoMuEdlI1AYiwb+WlNiNHfVS9RO4dZN9SF17ZafJca5qTLIzDld+l9uktDjYvSegH6BQGrtYHKP9cHjPK89us0VKEL+7wJYbiebX0Hf3DalqKZp6Ng==
-Received: from MW2PR2101CA0001.namprd21.prod.outlook.com (2603:10b6:302:1::14)
- by PH7PR12MB6586.namprd12.prod.outlook.com (2603:10b6:510:212::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5632.19; Mon, 19 Sep
- 2022 07:59:40 +0000
-Received: from CO1NAM11FT007.eop-nam11.prod.protection.outlook.com
- (2603:10b6:302:1:cafe::b3) by MW2PR2101CA0001.outlook.office365.com
- (2603:10b6:302:1::14) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.4 via Frontend
- Transport; Mon, 19 Sep 2022 07:59:40 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- CO1NAM11FT007.mail.protection.outlook.com (10.13.174.131) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5632.12 via Frontend Transport; Mon, 19 Sep 2022 07:59:39 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Mon, 19 Sep
- 2022 00:59:22 -0700
-Received: from yaviefel (10.126.230.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Mon, 19 Sep
- 2022 00:59:20 -0700
-References: <20220915095757.2861822-1-daniel.machon@microchip.com>
-User-agent: mu4e 1.6.6; emacs 28.1
-From:   Petr Machata <petrm@nvidia.com>
-To:     Daniel Machon <daniel.machon@microchip.com>
-CC:     <netdev@vger.kernel.org>, <Allan.Nielsen@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, <maxime.chevallier@bootlin.com>,
-        <vladimir.oltean@nxp.com>, <petrm@nvidia.com>, <kuba@kernel.org>,
-        <vinicius.gomes@intel.com>, <thomas.petazzoni@bootlin.com>
-Subject: Re: [RFC PATCH v2 net-next 0/2] Add PCP selector and new APPTRUST
- attribute
-Date:   Mon, 19 Sep 2022 09:54:23 +0200
-In-Reply-To: <20220915095757.2861822-1-daniel.machon@microchip.com>
-Message-ID: <87illjyeui.fsf@nvidia.com>
+        with ESMTP id S229529AbiISIEd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 04:04:33 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12932C19;
+        Mon, 19 Sep 2022 01:04:28 -0700 (PDT)
+X-UUID: 2ff053399f9041e88f8d7bfaf6421044-20220919
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=+SQybGqqP70WeluDFjb9PRoBalSlPkIRRoVy+auTYjM=;
+        b=oRPJODa66QW8ROkckDmzZpiiWasFG5zlugbkuEBA7kZg7c/KSPnrZL2LWfcort7rtH0f2vWy9idGNWMfuNLrgi8UVxv2O+OE0zzaY6fUY8HcOnNskjle6s4857/Kkzb60uHFvic+VaZl+xeHCaDRmKfFJddwVlhdkaPGl9ImFrE=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.11,REQID:72450d11-e9b1-425d-9d0e-ba17d614ecbf,IP:0,U
+        RL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Release_Ham,ACTION
+        :release,TS:95
+X-CID-INFO: VERSION:1.1.11,REQID:72450d11-e9b1-425d-9d0e-ba17d614ecbf,IP:0,URL
+        :0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Spam_GS981B3D,ACTION
+        :quarantine,TS:95
+X-CID-META: VersionHash:39a5ff1,CLOUDID:eb911f5e-5ed4-4e28-8b00-66ed9f042fbd,B
+        ulkID:2209191604241A9JFACV,BulkQuantity:0,Recheck:0,SF:28|17|19|48|823|824
+        ,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL
+        :0
+X-UUID: 2ff053399f9041e88f8d7bfaf6421044-20220919
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        (envelope-from <jianguo.zhang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 2032979656; Mon, 19 Sep 2022 16:04:21 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Mon, 19 Sep 2022 16:04:19 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 19 Sep 2022 16:04:18 +0800
+From:   Jianguo Zhang <jianguo.zhang@mediatek.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>
+CC:     Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "Biao Huang" <biao.huang@mediatek.com>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        Jianguo Zhang <jianguo.zhang@mediatek.com>
+Subject: [PATCH 0/2] Mediatek ethernet patchs for mt8188
+Date:   Mon, 19 Sep 2022 16:04:08 +0800
+Message-ID: <20220919080410.11270-1-jianguo.zhang@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.126.230.35]
-X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT007:EE_|PH7PR12MB6586:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7b6dba2f-3f6a-4198-16b4-08da9a14e772
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: D2CD7MymzfBW/BJGasAPNNbkmGJa1E1AUCh3oAT9qLSdi2CV6epRDaVIyviaWGp+xhyclDE1sTdYZA4GJos/MpuGb8a9Xii3ESSLXn7DxGNFl+jS0/T8O8FPhOpKDz39Ffr82pBj4kt4IeF9ZaAXlwErCxMObtbQVH5ii7p1rQ3vL9A/BLt/YQHl6w0BnmGykA5RKBwdhP+vUBDxFweN05JQQ+TJ5b962wp3krF9Y7Ubx1mlOuPhIzuBpIpCsN4lcApkJXTqS0KUXuo29epIOmgfjtAJO27FJn4cwsN4ylTsama3FQEoIajLrBicaWaPvcN4ZwXn0MnApG+nN3ndRgEyo/H9mAnseABddxgXbS6YDShfuj+2H98tKtf6c/fDfQyK6fEMrZP7V1X61R3Gre2WxPRIAivm2fn9snbvY8zuqVMp3lpmre6uFGqW58I/cB7tOx/jW3dTu5SIXf525Wyh4yOUUk9rBnI4DMeBm6vP852VfT3yUbHyQ5Xd++K08JA3RskjOXRBWKO/tovH7YhQbX8yogioQapVpqS2x9cEa3YCmVnoLQMHMAe4AiHuB/GLp0muLls16sCLNackqRn7LkfieoVWVQSnF0xqZyxbdiofga2mFvSAUwW87fvpoCtVRPHyMEM7+WZCq8X9WrFunsPckgs51WvruKeVX5xir3rrez1NjA289q77+wSLLxqHG8qV5Lh78EaDnI3FeeBhrrMTVZy7fudD9N4Xl/Gy3VVTw6rF41YjAzjFZlBOhygkXDgE09GJnlupakRdvg==
-X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(376002)(39860400002)(136003)(346002)(396003)(451199015)(40470700004)(36840700001)(46966006)(41300700001)(5660300002)(4744005)(8936002)(8676002)(36860700001)(2906002)(4326008)(70206006)(70586007)(6916009)(316002)(36756003)(82740400003)(2616005)(54906003)(7636003)(356005)(82310400005)(26005)(16526019)(86362001)(426003)(336012)(186003)(47076005)(478600001)(40480700001)(40460700003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Sep 2022 07:59:39.7821
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7b6dba2f-3f6a-4198-16b4-08da9a14e772
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT007.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6586
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+X-MTK:  N
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_PASS,UNPARSEABLE_RELAY autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks, this looks good to me overall, despite the several points
-Vladimir and I raised. I think it would be good to send this as non-RFC.
+This series includes 2 patchs:
+1. add ethenet driver entry for mt8188
+2. add binding document for the ethernet on mt8188
 
-Note that for the non-RFC version, an actual user of the interface needs
-to be present as well. So one of the offloading drivers should be
-adapted to make use of the APP_TRUST and the new PCP selector.
-mlxsw would like to make use of both, but I don't know when I will have
-time to implement that.
+
+Jianguo Zhang (2):
+  stmmac: dwmac-mediatek: add support for mt8188
+  net: dt-bindings: dwmac: add support for mt8188
+
+ Documentation/devicetree/bindings/net/mediatek-dwmac.yaml | 6 ++++--
+ drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c      | 2 ++
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+--
+2.25.1
+
+
