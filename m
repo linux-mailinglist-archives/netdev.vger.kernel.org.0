@@ -2,117 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AFE175BCCB8
-	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 15:15:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 219B05BCCEA
+	for <lists+netdev@lfdr.de>; Mon, 19 Sep 2022 15:21:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230041AbiISNPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 09:15:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39670 "EHLO
+        id S230335AbiISNVE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 09:21:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230131AbiISNPf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 09:15:35 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A85C826AE6
-        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 06:15:34 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1oaGcS-00064g-Tm; Mon, 19 Sep 2022 15:15:28 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1oaGcS-001frZ-V7; Mon, 19 Sep 2022 15:15:27 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1oaGcQ-001yXb-Me; Mon, 19 Sep 2022 15:15:26 +0200
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S230339AbiISNVD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 09:21:03 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 205372B191
+        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 06:20:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1663593657;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=pJzkF9UKJ0JT/guvrtnnYyhgP8leVpTS5h5H8IUyZjs=;
+        b=gj1H4nqkDcxH1Hyfkxo2LOMjrmTbm7k8Vd67pteVttXR0i1KXORXlABMqK5SgI6b2qg+nq
+        NIy7Ag3m5Gjyelk35paKG6mNu7mF0Xuvtn9Zxiw6LJXqum50eS++L/EVFtuCuQsPMNEnvj
+        tyon3OrXkXA+HQOjj5x6/0ENEiBO68k=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-330-3uaM08jpP6edonpiAi1Q1w-1; Mon, 19 Sep 2022 09:20:56 -0400
+X-MC-Unique: 3uaM08jpP6edonpiAi1Q1w-1
+Received: by mail-ed1-f72.google.com with SMTP id t13-20020a056402524d00b00452c6289448so10834995edd.17
+        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 06:20:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:references:in-reply-to:message-id:date:subject:cc:to
+         :from:x-gm-message-state:from:to:cc:subject:date;
+        bh=pJzkF9UKJ0JT/guvrtnnYyhgP8leVpTS5h5H8IUyZjs=;
+        b=uJgvV6vlzNxheLPxADMNbQtGjpmQjRyebtEXWUY9qtgdou/iyeZf45TXQ2PjqBc5XY
+         iq5jc3yQCb8cvn2kna5CHmtR2AVST0XxhXEn5BTCtMFYLX6hWkbqO8JSf8m3lAU5PZzQ
+         /+WQLVtCf4nHG8mqWdT71fS9/4jiSosd22P3faGcUgyTcpFUzIhPwBRJaqvcDgO5W3B+
+         DHyLTqAZ5iuV7xAWSkDeb/cUbMo/v5t2ysM01hKFbmRIP+nX/xkWBDALKk8y6LKcXQ3X
+         NimksRR60ZyBAGorUvLqwJdjek4MLNHEHgZLrY+QfpTdKFMcDlCp0HnkleyjEGWRsSl4
+         lIcQ==
+X-Gm-Message-State: ACrzQf0ADy1F+pHcmycNwWlAghu4EnM6t5G2genrbNyylDCwjgCZN/gx
+        9qgnW/eVIKFr56Z9MlLiWaF1LHaSWEs0EEcx6Bag9PK5+y6BrbmckLWSb4+LPW9v5iZM/+3x1a1
+        y/6VGuj1E31sxQUjI
+X-Received: by 2002:a05:6402:379:b0:450:dc5c:f536 with SMTP id s25-20020a056402037900b00450dc5cf536mr15713189edw.298.1663593655495;
+        Mon, 19 Sep 2022 06:20:55 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM769VhH9Ku3KP+FHMxt8AEvuX3TK5FYd3+2H7UhJ2/p7rIGwNNqM0Ah27nVjjauTwJTTEotvQ==
+X-Received: by 2002:a05:6402:379:b0:450:dc5c:f536 with SMTP id s25-20020a056402037900b00450dc5cf536mr15713162edw.298.1663593655264;
+        Mon, 19 Sep 2022 06:20:55 -0700 (PDT)
+Received: from [10.39.192.161] (5920ab7b.static.cust.trined.nl. [89.32.171.123])
+        by smtp.gmail.com with ESMTPSA id s25-20020aa7cb19000000b004531b137e4bsm9551948edt.67.2022.09.19.06.20.54
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 19 Sep 2022 06:20:54 -0700 (PDT)
+From:   Eelco Chaudron <echaudro@redhat.com>
+To:     Nathan Huckleberry <nhuck@google.com>
+Cc:     Dan Carpenter <error27@gmail.com>, llvm@lists.linux.dev,
+        Pravin B Shelar <pshelar@ovn.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH net-next] ethernet: tundra: Drop forward declaration of static functions
-Date:   Mon, 19 Sep 2022 15:15:15 +0200
-Message-Id: <20220919131515.885361-1-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.37.2
+        Paolo Abeni <pabeni@redhat.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, netdev@vger.kernel.org,
+        dev@openvswitch.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] openvswitch: Change the return type for vport_ops.send
+ function hook to int
+Date:   Mon, 19 Sep 2022 15:20:53 +0200
+X-Mailer: MailMate (1.14r5915)
+Message-ID: <1A1ECEC1-5CCE-4D86-A116-D291C88743C0@redhat.com>
+In-Reply-To: <20220913230739.228313-1-nhuck@google.com>
+References: <20220913230739.228313-1-nhuck@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1887; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=EumqiZJCBJD8dBCW3pjyWwjh/Ul+EjR64ydtACjzAoY=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBjKGtf8Yexl+e4/YtedqLM5zZpIg5bTFaiFsmPNg7y 7yZh+fuJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYyhrXwAKCRDB/BR4rcrsCV2JCA CLsq2QZ/NwVT7NdGO+PzvwEs9KU8ZRkDWabKol9yV4GtTPJ/jnW6B6grFCAmSwqIhqvqpnO7wD1e19 67n3I/O5cOSV2DbiF7sNoLHedNweEjM6bU5K9cbHYPBFOIx2dnoCASY44sz1UhvbJxqkGSmpaRSe5W 9YznfA8Z2TNg4Fts3InQrnMmXKS5qoh/BCx8+ah+5VyGGnlqG0wNGgZixsypKJ1OGe9vXV2zg5KTAS emcwSSyTdCHiFMqRvR9U2NihBlAhgpV2uIhfz7onSlx6ctmZLLbRsQmMUiECvdk5grswbPtPRS4A5H skQLUhsXWPEempC4uDmraG1v9x/cAt
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Usually it's not necessary to declare static functions if the symbols are
-in the right order. Moving the definition of tsi_eth_driver down in the
-compilation unit allows to drop two such declarations.
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/net/ethernet/tundra/tsi108_eth.c | 23 ++++++++++-------------
- 1 file changed, 10 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/tundra/tsi108_eth.c b/drivers/net/ethernet/tundra/tsi108_eth.c
-index 5251fc324221..c0b26b5cefe4 100644
---- a/drivers/net/ethernet/tundra/tsi108_eth.c
-+++ b/drivers/net/ethernet/tundra/tsi108_eth.c
-@@ -59,9 +59,6 @@
- /* Check the phy status every half a second. */
- #define CHECK_PHY_INTERVAL (HZ/2)
- 
--static int tsi108_init_one(struct platform_device *pdev);
--static int tsi108_ether_remove(struct platform_device *pdev);
--
- struct tsi108_prv_data {
- 	void  __iomem *regs;	/* Base of normal regs */
- 	void  __iomem *phyregs;	/* Base of register bank used for PHY access */
-@@ -144,16 +141,6 @@ struct tsi108_prv_data {
- 	struct platform_device *pdev;
- };
- 
--/* Structure for a device driver */
--
--static struct platform_driver tsi_eth_driver = {
--	.probe = tsi108_init_one,
--	.remove = tsi108_ether_remove,
--	.driver	= {
--		.name = "tsi-ethernet",
--	},
--};
--
- static void tsi108_timed_checker(struct timer_list *t);
- 
- #ifdef DEBUG
-@@ -1683,6 +1670,16 @@ static int tsi108_ether_remove(struct platform_device *pdev)
- 
- 	return 0;
- }
-+
-+/* Structure for a device driver */
-+
-+static struct platform_driver tsi_eth_driver = {
-+	.probe = tsi108_init_one,
-+	.remove = tsi108_ether_remove,
-+	.driver	= {
-+		.name = "tsi-ethernet",
-+	},
-+};
- module_platform_driver(tsi_eth_driver);
- 
- MODULE_AUTHOR("Tundra Semiconductor Corporation");
+On 14 Sep 2022, at 1:07, Nathan Huckleberry wrote:
 
-base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
--- 
-2.37.2
+> All usages of the vport_ops struct have the .send field set to
+> dev_queue_xmit or internal_dev_recv.  Since most usages are set to
+> dev_queue_xmit, the function hook should match the signature of
+> dev_queue_xmit.
+>
+> The only call to vport_ops->send() is in net/openvswitch/vport.c and it
+> throws away the return value.
+>
+> This mismatched return type breaks forward edge kCFI since the underlying
+> function definition does not match the function hook definition.
+>
+> Reported-by: Dan Carpenter <error27@gmail.com>
+> Link: https://github.com/ClangBuiltLinux/linux/issues/1703
+> Cc: llvm@lists.linux.dev
+> Signed-off-by: Nathan Huckleberry <nhuck@google.com>
+
+The changes look good to me.
+
+Acked-by: Eelco Chaudron <echaudro@redhat.com>
 
