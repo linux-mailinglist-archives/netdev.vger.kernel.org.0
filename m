@@ -2,103 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 17D5E5BE9CD
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 17:14:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B4A65BE9D0
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 17:14:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230291AbiITPOG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 11:14:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55296 "EHLO
+        id S230377AbiITPOT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 11:14:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229710AbiITPOF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 11:14:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D3233ED7A;
-        Tue, 20 Sep 2022 08:14:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 429F0B82028;
-        Tue, 20 Sep 2022 15:14:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50D09C433C1;
-        Tue, 20 Sep 2022 15:14:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663686842;
-        bh=pjUFPROfrsBivzzwFMzntYSBLyxNj0LcihqzEYOuZa8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=E5/Jj0nHZ+EN8964yg6WHW9lnxNvX32DRxrc5mFsoPiPD28R4QF2+tyEOoPw85MtV
-         XpAjdTJYWe4aVlxfCdwm1iFBMdBFh3RMcY8vOHvEftYHcb7B8LdJEDzMwpgf8edIli
-         8roQsJIwT4eihWzQJftczG2s90cJJbCT8LwnJicX6jkLvIIh7ygeYEZ6QqeZs66/By
-         3/yoXm2ksRlCGjnbzxQfyIa2pDvi7+ruNJhHQBWA6qzJ4UcWbXHqDZVmESitLNEV4p
-         n4dcle8c849b0y2vVDwMv1TtaBbre5EIsgJoOfjZCSaFOyF5eWGoO2x0ZllybxjaxZ
-         wFJoAOP+DXA4w==
-Date:   Tue, 20 Sep 2022 08:14:00 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alex Elder <elder@linaro.org>
-Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        mka@chromium.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
-        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
-        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
-        elder@kernel.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v2] net: ipa: properly limit modem routing table use
-Message-ID: <20220920081400.0cbe44ff@kernel.org>
-In-Reply-To: <20220913204602.1803004-1-elder@linaro.org>
-References: <20220913204602.1803004-1-elder@linaro.org>
+        with ESMTP id S230374AbiITPOR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 11:14:17 -0400
+Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 685B65AC6C;
+        Tue, 20 Sep 2022 08:14:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1663686857;
+  x=1695222857;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=RDguGnCJWx2LYWh0w/V/PjZ1+JkfuIMZE53nxHj5EEY=;
+  b=qJII7PAzH5OomoWyWgIVMhlUa2jOmteYqBxot9vWrGJwGdBgI+OdjAhG
+   35ZNFrZRgZ8yOVY++FXurUwLMFx9kJRQh9QIwGrVMz0pHlNQIOgxDMVjp
+   JAe1uuVf0Wvnjr26fVt45d8t+vfcO7H0d7kFALd0ozOUH5+4mbSeHBvH6
+   T4r2MU1dyl6qKboraCD+x/nZMDyBhx/IG6eiWCD8Zdy7n4Kcf2p8cu1tW
+   l+18MexznJ+jpGknJg0EZ7VAf0NVqs78+3GFTbTPnc+wosRCN2vArHfnq
+   BY9GFNyxN3XDSqfv2LjnbDI0KgbG4esQbXmd3htny3AR4wlFvoyP5H6Lg
+   g==;
+From:   Marcus Carlberg <marcus.carlberg@axis.com>
+To:     <lxu@maxlinear.com>, <andrew@lunn.ch>
+CC:     <linux-kernel@vger.kernel.org>, <kernel@axis.com>,
+        Marcus Carlberg <marcus.carlberg@axis.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        <devicetree@vger.kernel.org>, Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>
+Subject: [PATCH net-next 0/2] net: phy: mxl-gpy: Add mode for 2 leds
+Date:   Tue, 20 Sep 2022 17:14:09 +0200
+Message-ID: <20220920151411.12523-1-marcus.carlberg@axis.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 13 Sep 2022 15:46:02 -0500 Alex Elder wrote:
-> IPA can route packets between IPA-connected entities.  The AP and
-> modem are currently the only such entities supported, and no routing
-> is required to transfer packets between them.
-> 
-> The number of entries in each routing table is fixed, and defined at
-> initialization time.  Some of these entries are designated for use
-> by the modem, and the rest are available for the AP to use.  The AP
-> sends a QMI message to the modem which describes (among other
-> things) information about routing table memory available for the
-> modem to use.
-> 
-> Currently the QMI initialization packet gives wrong information in
-> its description of routing tables.  What *should* be supplied is the
-> maximum index that the modem can use for the routing table memory
-> located at a given location.  The current code instead supplies the
-> total *number* of routing table entries.  Furthermore, the modem is
-> granted the entire table, not just the subset it's supposed to use.
-> 
-> This patch fixes this.  First, the ipa_mem_bounds structure is
-> generalized so its "end" field can be interpreted either as a final
-> byte offset, or a final array index.  Second, the IPv4 and IPv6
-> (non-hashed and hashed) table information fields in the QMI
-> ipa_init_modem_driver_req structure are changed to be ipa_mem_bounds
-> rather than ipa_mem_array structures.  Third, we set the "end" value
-> for each routing table to be the last index, rather than setting the
-> "count" to be the number of indices.  Finally, instead of allowing
-> the modem to use all of a routing table's memory, it is limited to
-> just the portion meant to be used by the modem.  In all versions of
-> IPA currently supported, that is IPA_ROUTE_MODEM_COUNT (8) entries.
-> 
-> Update a few comments for clarity.
-> 
-> Fixes: 530f9216a9537 ("soc: qcom: ipa: AP/modem communications")
-> Signed-off-by: Alex Elder <elder@linaro.org>
-> ---
-> v2: Update the element info arrays defining the modified QMI message
->     so it uses the ipa_mem_bounds_ei structure rather than the
->     ipa_mem_array_ei structure.  The message format is identical,
->     but the code was incorrect without that change.
+GPY211 phy default to using all four led pins.
+Hardwares using only two leds where led0 is used as the high
+network speed led and led1 the low network speed led will not
+get the correct behaviour since 1Gbit and 2.5Gbit will not be
+represented at all in the existing leds.
 
-Unclear to me why, ipa_mem_bounds_ei and ipa_mem_array_ei seem
-identical, other than s/end/count/. Overall the patch feels 
-a touch too verbose for a fix, makes it harder to grasp the key
-functional change IMHO. I could be misunderstanding but please
-keep the goal of making fixes small and crisp in mind for the future.
+
+Marcus Carlberg (2):
+  dt-bindings: net: Add mxl,gpy
+  net: phy: mxl-gpy: Add mode for 2 leds
+
+ .../devicetree/bindings/net/mxl,gpy.yaml      | 39 ++++++++++++++++
+ .../devicetree/bindings/vendor-prefixes.yaml  |  2 +
+ MAINTAINERS                                   |  1 +
+ drivers/net/phy/mxl-gpy.c                     | 45 +++++++++++++++++++
+ 4 files changed, 87 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/mxl,gpy.yaml
+
+--
+2.20.1
+
