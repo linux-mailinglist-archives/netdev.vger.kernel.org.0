@@ -2,82 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 491D55BE291
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 12:00:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 372A05BE297
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 12:02:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230393AbiITKAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 06:00:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53770 "EHLO
+        id S230438AbiITKCE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 06:02:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230429AbiITKAT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 06:00:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8B9661B24
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 03:00:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        with ESMTP id S229985AbiITKCB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 06:02:01 -0400
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B54994D16B;
+        Tue, 20 Sep 2022 03:02:00 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id DB151205CD;
+        Tue, 20 Sep 2022 12:01:58 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Bo3VPAwjhi2n; Tue, 20 Sep 2022 12:01:58 +0200 (CEST)
+Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A7B96289E
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 10:00:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 72BDBC433C1;
-        Tue, 20 Sep 2022 10:00:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663668015;
-        bh=KTaTBWs3e7JzFRyWJPZEZMvUKpnB0mOT4xrm40D0knE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=g0BJEdi4KBR+dVrho1K0J6+Yscysb15d+9qFz8GEas0U8gTZHV8wsepY+QSLqPlc1
-         JKwkimvnq+N0PK55u0NpiHhIo5FYXnF+/A9kwaSZNaUu0EVb3IOuEF27bjkj797q58
-         eaDPk0aVStJxVbtsw5gVK3UOSbYS1ZBHe6tqQJkSlEwiY9q3hnJTikPn7kH5dgIBzI
-         fTWGVsYRo15/x/hrvkH+FLuojx43YM4502/Q4D4j2ABbeWINpaEbY2Fdk9LcJnyopX
-         MnpTUKwHuYjnXlo1jgVWBlqBiq9WiJ+GaQMUCdMAft5OWFEjLO2qiewhNSKkLA82pQ
-         0cBjCPbMPG2Vg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 47998E21EE0;
-        Tue, 20 Sep 2022 10:00:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by a.mx.secunet.com (Postfix) with ESMTPS id 6695D2052E;
+        Tue, 20 Sep 2022 12:01:58 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout1.secunet.com (Postfix) with ESMTP id 549A580004A;
+        Tue, 20 Sep 2022 12:01:58 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 20 Sep 2022 12:01:58 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Tue, 20 Sep
+ 2022 12:01:57 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id B086E31829FB; Tue, 20 Sep 2022 12:01:57 +0200 (CEST)
+Date:   Tue, 20 Sep 2022 12:01:57 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Li Zhong <floridsleeves@gmail.com>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <f.fainelli@gmail.com>, <pabeni@redhat.com>, <kuba@kernel.org>,
+        <edumazet@google.com>, <davem@davemloft.net>, <klassert@kernel.org>
+Subject: Re: [PATCH v1] drivers/net/ethernet/3com: check the return value of
+ vortex_up()
+Message-ID: <20220920100157.GV2950045@gauss3.secunet.de>
+References: <20220919073631.1574577-1-floridsleeves@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net-next: gro: Fix use of skb_gro_header_slow
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166366801528.32034.7624093546615460254.git-patchwork-notify@kernel.org>
-Date:   Tue, 20 Sep 2022 10:00:15 +0000
-References: <20220911184835.GA105063@debian>
-In-Reply-To: <20220911184835.GA105063@debian>
-To:     Richard Gobert <richardbgobert@gmail.com>
-Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220919073631.1574577-1-floridsleeves@gmail.com>
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
-
-On Sun, 11 Sep 2022 20:48:49 +0200 you wrote:
-> In the cited commit, the function ipv6_gro_receive was accidentally
-> changed to use skb_gro_header_slow, without attempting the fast path.
-> Fix it.
+On Mon, Sep 19, 2022 at 12:36:31AM -0700, Li Zhong wrote:
+> Check the return value of vortex_up(), which could be error code when
+> the rx ring is not full.
 > 
-> Fixes: 35ffb6654729 ("net: gro: skb_gro_header helper function")
-> Signed-off-by: Richard Gobert <richardbgobert@gmail.com>
+> Signed-off-by: Li Zhong <floridsleeves@gmail.com>
+> ---
+>  drivers/net/ethernet/3com/3c59x.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
 > 
-> [...]
+> diff --git a/drivers/net/ethernet/3com/3c59x.c b/drivers/net/ethernet/3com/3c59x.c
+> index ccf07667aa5e..7806c5f60ac8 100644
+> --- a/drivers/net/ethernet/3com/3c59x.c
+> +++ b/drivers/net/ethernet/3com/3c59x.c
+> @@ -1942,6 +1942,7 @@ vortex_error(struct net_device *dev, int status)
+>  	void __iomem *ioaddr = vp->ioaddr;
+>  	int do_tx_reset = 0, reset_mask = 0;
+>  	unsigned char tx_status = 0;
+> +	int err;
+>  
+>  	if (vortex_debug > 2) {
+>  		pr_err("%s: vortex_error(), status=0x%x\n", dev->name, status);
+> @@ -2016,7 +2017,9 @@ vortex_error(struct net_device *dev, int status)
+>  			/* Must not enter D3 or we can't legally issue the reset! */
+>  			vortex_down(dev, 0);
+>  			issue_and_wait(dev, TotalReset | 0xff);
+> -			vortex_up(dev);		/* AKPM: bug.  vortex_up() assumes that the rx ring is full. It may not be. */
+> +			err = vortex_up(dev);
+> +			if (err)
+> +				return;
 
-Here is the summary with links:
-  - net-next: gro: Fix use of skb_gro_header_slow
-    https://git.kernel.org/netdev/net-next/c/cb628a9a7ef6
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+Why does that fix the bug mentioned in the above comment?
 
