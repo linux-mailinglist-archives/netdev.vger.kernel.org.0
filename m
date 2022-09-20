@@ -2,140 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 538C55BE263
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 11:51:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 877715BE267
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 11:52:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230015AbiITJvL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 05:51:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39164 "EHLO
+        id S229960AbiITJvX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 05:51:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229599AbiITJvK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 05:51:10 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 314372C117
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 02:51:09 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <jbe@pengutronix.de>)
-        id 1oaZuF-0001Zg-Hg; Tue, 20 Sep 2022 11:51:07 +0200
-Received: from [2a0a:edc0:0:900:1d::45] (helo=ginster)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <jbe@pengutronix.de>)
-        id 1oaZuG-001pf8-9T; Tue, 20 Sep 2022 11:51:06 +0200
-Received: from jbe by ginster with local (Exim 4.94.2)
-        (envelope-from <jbe@pengutronix.de>)
-        id 1oaZuE-000HQD-24; Tue, 20 Sep 2022 11:51:06 +0200
-From:   Juergen Borleis <jbe@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH] net: fec: limit register access on i.MX6UL
-Date:   Tue, 20 Sep 2022 11:51:06 +0200
-Message-Id: <20220920095106.66924-1-jbe@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S229801AbiITJvW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 05:51:22 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63D766AA15
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 02:51:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1663667480;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7sRu5eFKZGmIxnr7DYKSnzGauzTFG6ySgN2OFRnN+7c=;
+        b=KY9IeDrmEtgfaoIyaWhKMkDr70/tagbt/8MTNr774zavhbh3chGMLv+Rp1QoGtNezapuri
+        ADgca/9s/yRpejEkhnnnrU58SzEYENhvEvcJHMtaJGrppkSElbJQnt7pTQhyYnrXpF1+na
+        Eixgy4PM+jPQA/f3syVRdasyu/Yz9bM=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-196-zM-qFI47Pqm3-zmhNPdpJA-1; Tue, 20 Sep 2022 05:51:19 -0400
+X-MC-Unique: zM-qFI47Pqm3-zmhNPdpJA-1
+Received: by mail-qk1-f198.google.com with SMTP id d18-20020a05620a241200b006ce80a4d74aso1485162qkn.6
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 02:51:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=7sRu5eFKZGmIxnr7DYKSnzGauzTFG6ySgN2OFRnN+7c=;
+        b=0klCK2bvKekELStl752MGNB8PTHdIKdKHv5UrXlVci4k3TuE+WzSMfnuVYWQV3DnIW
+         +Kg8ig+JHfnMBoynl4lCU6BU1V4DrjwaqZmYeO9dPtPqpykaFxq3AF81zpMjZXgVDV0g
+         HD4v6qP1cuO9ykN2dGf5tuN5t72NMrn+Hw2+6ZebMkJT1GUcaS6wMVJD2qsE11859PXz
+         MdF0zvicd5mkK2kT5MLTHpRoZMHbWb/DcdwYGH7kplS7jJna66HsaPJ2ghVheVLwLv9e
+         xFzynRB1RfYAY6JJ5QeBJwRy2UjzdFl5VijTGp9zIRKuqRWuj70/lu1qQub5yE1YXQvn
+         +nTw==
+X-Gm-Message-State: ACrzQf14ovLWTPmAdwWBXRyb0Prs9zCDXcu6SoNEu8dVFfbv3CEsaL6Q
+        U23J6uICLMSkXbFyzlxHn8M/STFF9+UIq7rrDrihS8LSensLqRhvf5isOxBwALjSGqQ2PswV0BM
+        RdyxXKFwDNb7uBTqo
+X-Received: by 2002:a05:620a:4723:b0:6ce:9a32:52a9 with SMTP id bs35-20020a05620a472300b006ce9a3252a9mr15985080qkb.673.1663667478662;
+        Tue, 20 Sep 2022 02:51:18 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM56mBNffswy/l5r7QVEtCSGWqSS3Rp5r4j8Wehz4PGbuCXL+babe7KhKFaSRJRZ1uBrlOzziw==
+X-Received: by 2002:a05:620a:4723:b0:6ce:9a32:52a9 with SMTP id bs35-20020a05620a472300b006ce9a3252a9mr15985060qkb.673.1663667478310;
+        Tue, 20 Sep 2022 02:51:18 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-114-90.dyn.eolo.it. [146.241.114.90])
+        by smtp.gmail.com with ESMTPSA id u6-20020ae9c006000000b006ce51b541dfsm750095qkk.36.2022.09.20.02.51.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Sep 2022 02:51:17 -0700 (PDT)
+Message-ID: <855e9d047fba033af54c2368091d0c6e102d6f86.camel@redhat.com>
+Subject: Re: [PATCH net 0/2] Revert fec PTP changes
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Thorsten Leemhuis <regressions@leemhuis.info>,
+        Francesco Dolcini <francesco.dolcini@toradex.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        =?ISO-8859-1?Q?Cs=F3k=E1s?= Bence <csokas.bence@prolan.hu>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Guenter Roeck <linux@roeck-us.net>,
+        Andrew Lunn <andrew@lunn.ch>
+Date:   Tue, 20 Sep 2022 11:51:13 +0200
+In-Reply-To: <9165d763-ec2c-3014-cebf-121934ad93f3@leemhuis.info>
+References: <20220912070143.98153-1-francesco.dolcini@toradex.com>
+         <20220912122857.b6g7r23esks43b3t@pengutronix.de>
+         <20220912123833.GA4303@francesco-nb.int.toradex.com>
+         <9165d763-ec2c-3014-cebf-121934ad93f3@leemhuis.info>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: jbe@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Using 'ethtool -d […]' on an i.MX6UL leads to a kernel crash:
+On Tue, 2022-09-20 at 09:45 +0200, Thorsten Leemhuis wrote:
+> On 12.09.22 14:38, Francesco Dolcini wrote:
+> > On Mon, Sep 12, 2022 at 02:28:57PM +0200, Marc Kleine-Budde wrote:
+> > > On 12.09.2022 09:01:41, Francesco Dolcini wrote:
+> > > > Revert the last 2 FEC PTP changes from Csókás Bence, they are causing multiple
+> > > > issues and we are at 6.0-rc5.
+> > > > 
+> > > > Francesco Dolcini (2):
+> > > >   Revert "fec: Restart PPS after link state change"
+> > > >   Revert "net: fec: Use a spinlock to guard `fep->ptp_clk_on`"
+> > > 
+> > > Nitpick: I would revert "net: fec: Use a spinlock to guard
+> > > `fep->ptp_clk_on`" first, as it's the newer patch.
+> > 
+> > Shame on me, I do 100% agree, I inverted the 2 patches last second.
+> 
+> What's the status of this patchset? It seems it didn't make any progress
+> in the past few days, or am I missing something?
 
-   Unhandled fault: external abort on non-linefetch (0x1008) at […]
+Due to some unfortunate circumstances, we have quite a bit of backlog
+in the netdev patchwork. We are working to process it, and the above
+revert will be processed before the next rc.
 
-due to this SoC has less registers in its FEC implementation compared to other
-i.MX6 variants. Thus, a run-time decision is required to avoid access to
-non-existing registers.
+Cheers,
 
-Signed-off-by: Juergen Borleis <jbe@pengutronix.de>
----
- drivers/net/ethernet/freescale/fec_main.c | 50 +++++++++++++++++++++--
- 1 file changed, 47 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index 6152f6d..ab620b4 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -2382,6 +2382,31 @@ static u32 fec_enet_register_offset[] = {
- 	IEEE_R_DROP, IEEE_R_FRAME_OK, IEEE_R_CRC, IEEE_R_ALIGN, IEEE_R_MACERR,
- 	IEEE_R_FDXFC, IEEE_R_OCTETS_OK
- };
-+/* for i.MX6ul */
-+static u32 fec_enet_register_offset_6ul[] = {
-+	FEC_IEVENT, FEC_IMASK, FEC_R_DES_ACTIVE_0, FEC_X_DES_ACTIVE_0,
-+	FEC_ECNTRL, FEC_MII_DATA, FEC_MII_SPEED, FEC_MIB_CTRLSTAT, FEC_R_CNTRL,
-+	FEC_X_CNTRL, FEC_ADDR_LOW, FEC_ADDR_HIGH, FEC_OPD, FEC_TXIC0, FEC_RXIC0,
-+	FEC_HASH_TABLE_HIGH, FEC_HASH_TABLE_LOW, FEC_GRP_HASH_TABLE_HIGH,
-+	FEC_GRP_HASH_TABLE_LOW, FEC_X_WMRK, FEC_R_DES_START_0,
-+	FEC_X_DES_START_0, FEC_R_BUFF_SIZE_0, FEC_R_FIFO_RSFL, FEC_R_FIFO_RSEM,
-+	FEC_R_FIFO_RAEM, FEC_R_FIFO_RAFL, FEC_RACC,
-+	RMON_T_DROP, RMON_T_PACKETS, RMON_T_BC_PKT, RMON_T_MC_PKT,
-+	RMON_T_CRC_ALIGN, RMON_T_UNDERSIZE, RMON_T_OVERSIZE, RMON_T_FRAG,
-+	RMON_T_JAB, RMON_T_COL, RMON_T_P64, RMON_T_P65TO127, RMON_T_P128TO255,
-+	RMON_T_P256TO511, RMON_T_P512TO1023, RMON_T_P1024TO2047,
-+	RMON_T_P_GTE2048, RMON_T_OCTETS,
-+	IEEE_T_DROP, IEEE_T_FRAME_OK, IEEE_T_1COL, IEEE_T_MCOL, IEEE_T_DEF,
-+	IEEE_T_LCOL, IEEE_T_EXCOL, IEEE_T_MACERR, IEEE_T_CSERR, IEEE_T_SQE,
-+	IEEE_T_FDXFC, IEEE_T_OCTETS_OK,
-+	RMON_R_PACKETS, RMON_R_BC_PKT, RMON_R_MC_PKT, RMON_R_CRC_ALIGN,
-+	RMON_R_UNDERSIZE, RMON_R_OVERSIZE, RMON_R_FRAG, RMON_R_JAB,
-+	RMON_R_RESVD_O, RMON_R_P64, RMON_R_P65TO127, RMON_R_P128TO255,
-+	RMON_R_P256TO511, RMON_R_P512TO1023, RMON_R_P1024TO2047,
-+	RMON_R_P_GTE2048, RMON_R_OCTETS,
-+	IEEE_R_DROP, IEEE_R_FRAME_OK, IEEE_R_CRC, IEEE_R_ALIGN, IEEE_R_MACERR,
-+	IEEE_R_FDXFC, IEEE_R_OCTETS_OK
-+};
- #else
- static __u32 fec_enet_register_version = 1;
- static u32 fec_enet_register_offset[] = {
-@@ -2406,7 +2431,26 @@ static void fec_enet_get_regs(struct net_device *ndev,
- 	u32 *buf = (u32 *)regbuf;
- 	u32 i, off;
- 	int ret;
--
-+#if defined(CONFIG_M523x) || defined(CONFIG_M527x) || defined(CONFIG_M528x) || \
-+	defined(CONFIG_M520x) || defined(CONFIG_M532x) || defined(CONFIG_ARM) || \
-+	defined(CONFIG_ARM64) || defined(CONFIG_COMPILE_TEST)
-+	struct platform_device_id *dev_info =
-+			(struct platform_device_id *)fep->pdev->id_entry;
-+	u32 *reg_list;
-+	u32 reg_cnt;
-+
-+	if (strcmp(dev_info->name, "imx6ul-fec")) {
-+		reg_list = fec_enet_register_offset;
-+		reg_cnt = ARRAY_SIZE(fec_enet_register_offset);
-+	} else {
-+		reg_list = fec_enet_register_offset_6ul;
-+		reg_cnt = ARRAY_SIZE(fec_enet_register_offset_6ul);
-+	}
-+#else
-+	/* coldfire */
-+	static u32 *reg_list = fec_enet_register_offset;
-+	static const u32 reg_cnt = ARRAY_SIZE(fec_enet_register_offset);
-+#endif
- 	ret = pm_runtime_resume_and_get(dev);
- 	if (ret < 0)
- 		return;
-@@ -2415,8 +2459,8 @@ static void fec_enet_get_regs(struct net_device *ndev,
- 
- 	memset(buf, 0, regs->len);
- 
--	for (i = 0; i < ARRAY_SIZE(fec_enet_register_offset); i++) {
--		off = fec_enet_register_offset[i];
-+	for (i = 0; i < reg_cnt; i++) {
-+		off = reg_list[i];
- 
- 		if ((off == FEC_R_BOUND || off == FEC_R_FSTART) &&
- 		    !(fep->quirks & FEC_QUIRK_HAS_FRREG))
--- 
-2.30.2
+Paolo
 
