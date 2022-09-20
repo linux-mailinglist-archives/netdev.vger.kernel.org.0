@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C13F5BEDDB
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 21:36:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDFCC5BEDE5
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 21:37:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231490AbiITTgs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 15:36:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58820 "EHLO
+        id S229825AbiITTha (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 15:37:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230463AbiITTgn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 15:36:43 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BA137285E;
-        Tue, 20 Sep 2022 12:36:42 -0700 (PDT)
+        with ESMTP id S231477AbiITThK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 15:37:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F63B76745;
+        Tue, 20 Sep 2022 12:37:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 52DD7CE1818;
-        Tue, 20 Sep 2022 19:36:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C9BAC433D6;
-        Tue, 20 Sep 2022 19:36:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B98FAB82CA4;
+        Tue, 20 Sep 2022 19:36:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03BA5C433D7;
+        Tue, 20 Sep 2022 19:36:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663702598;
-        bh=4ZpzzM0pT1v5jAnKUiINLrDLktKeYd1gJkLXgUwydEA=;
+        s=k20201202; t=1663702617;
+        bh=vc+69lGHPMCCcLxrixDCEv244+sZsDSrdGTsQ1p30gc=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=keOkbiAdYB+4hivymCR3mlUc273Ihc3cNdwCzFyPDi2h9wdNeU953uc7RcXVoQKVL
-         eK/Q1Ai70jBosUTCuHoULUQAk7bwn+BEGklv87O6dVniTjT0809IDykPFORuqRi5PW
-         uMT+t4p8MNdXVLwGkJMvuiDnQefAA4qsK75+XPMNi8Lj61J5VrY78gOLaNpRp9xPyJ
-         i9AW6aGHma2brcLP4wsgpJkaoGGm+VE5W8Nieq/ul/uh0FiUsSNS7DExuVbjOxumpY
-         3pUoErkRo6RSBTj1maplblL85Zo/8RFxl3Qjm3HT9NFEI7ixiglVds1YtS12VbMAxq
-         rpRYpoM04vn9g==
-Date:   Tue, 20 Sep 2022 12:36:37 -0700
+        b=WqyZcGF2dTF31x0/Utp0jJm3AMsPT77ZDQl9NWgsxOMAaLpPVERQVT9n/Ag/J7atv
+         d3U16UVjZEkEhNOLlpxlHHSWg4ppZSHfODBL52DjhLOQ35X0yZKe8dwJLuCpWSW3nl
+         9E1ePxPH17cdMdJiS6djeeW7xJ7jr2EzCDplJnm0k0gHCcCO+iQZ1OiUg05LnOqqO/
+         zyTd7lwDHGeYu/VMAB+fhz2xxsgvYHGWU3YETguDc+9SMIW9L24a1PLmI6VIoHXgsO
+         /FA9IivYi9Sz3ab17Sl97iGIGhdF1HhUCFiT2EnZIUyBFGXv4EWoYr0L1np9LlPK++
+         KizMO6Eofzqvg==
+Date:   Tue, 20 Sep 2022 12:36:56 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Sean Anderson <seanga2@gmail.com>
 Cc:     "David S . Miller" <davem@davemloft.net>,
@@ -41,11 +41,12 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Zheyu Ma <zheyuma97@gmail.com>,
         Nick Bowler <nbowler@draconx.ca>,
         Rolf Eike Beer <eike-kernel@sf-tec.de>
-Subject: Re: [PATCH net-next 05/13] sunhme: Regularize probe errors
-Message-ID: <20220920123637.1ade6b2d@kernel.org>
-In-Reply-To: <20220918232626.1601885-6-seanga2@gmail.com>
+Subject: Re: [PATCH net-next 04/13] sunhme: Return an ERR_PTR from
+ quattro_pci_find
+Message-ID: <20220920123656.2647c7cd@kernel.org>
+In-Reply-To: <20220918232626.1601885-5-seanga2@gmail.com>
 References: <20220918232626.1601885-1-seanga2@gmail.com>
-        <20220918232626.1601885-6-seanga2@gmail.com>
+        <20220918232626.1601885-5-seanga2@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -58,12 +59,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 18 Sep 2022 19:26:18 -0400 Sean Anderson wrote:
-> -	err = -ENODEV;
-> +	err = -EINVAL;
->  	if ((pci_resource_flags(pdev, 0) & IORESOURCE_IO) != 0) {
->  		printk(KERN_ERR "happymeal(PCI): Cannot find proper PCI device base address.\n");
->  		goto err_out_clear_quattro;
->  	}
+On Sun, 18 Sep 2022 19:26:17 -0400 Sean Anderson wrote:
+> +	int i;
+>  	struct pci_dev *bdev = pdev->bus->self;
+>  	struct quattro *qp;
 
-Why not move it inside the if?
+reverse xmas tree variable ordering please
