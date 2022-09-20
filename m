@@ -2,81 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CDFC5BEA8C
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 17:51:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7466D5BEA99
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 17:55:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231641AbiITPui (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 11:50:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52532 "EHLO
+        id S231480AbiITPzs convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 20 Sep 2022 11:55:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230346AbiITPuU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 11:50:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 146AC5142E
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 08:50:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S229706AbiITPzq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 11:55:46 -0400
+Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD13558507
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 08:55:43 -0700 (PDT)
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-670-bgoSSUozMEKEBKeXfUGgZw-1; Tue, 20 Sep 2022 11:55:39 -0400
+X-MC-Unique: bgoSSUozMEKEBKeXfUGgZw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AB4F7B82AEE
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 15:50:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5F255C4347C;
-        Tue, 20 Sep 2022 15:50:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663689016;
-        bh=NtppUyx74jjZFVs3sPz1pV7FltkCYdQULomg61H/OoQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=gkVe2uOygte0RxtNvCXBlvwNmYSbKInE6AvcXXdbuQFYmKxKKtDLJt+XUqAHHYFt+
-         ynz3RykSlrIo4jRTuPoWihAdqyR4F0xlHn2jXgFucFAMARUzNLJGPmSqXzftN5xCD0
-         LSXxYYWOeszcJyl7BF+zVVFFGeOXnYV3XzyNvV9uJT6SBAIDUmylCYcWGhDrPLomlR
-         +HnY+1DPAEnC4LD0866ep5dTFHSMMmhrFC86DFBdjRADE/7bg+/27s2OAkzqGKPWOz
-         aap9I8HF8N0oQy93B1pAXcDZWmaou2JER8dbjkC4/Camn8p1vd5/TB9JI8e562w4gd
-         L7u2SN2P7poAg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 442E9E21EE1;
-        Tue, 20 Sep 2022 15:50:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 19B8B185A7A3;
+        Tue, 20 Sep 2022 15:55:39 +0000 (UTC)
+Received: from hog (unknown [10.39.194.132])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0F9B41121314;
+        Tue, 20 Sep 2022 15:55:37 +0000 (UTC)
+Date:   Tue, 20 Sep 2022 17:55:28 +0200
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, steffen.klassert@secunet.com
+Subject: Re: [PATCH ipsec-next 1/7] xfrm: add extack support to
+ verify_newsa_info
+Message-ID: <YynicFZpq2Z64u86@hog>
+References: <cover.1663103634.git.sd@queasysnail.net>
+ <b492239e903e8491abfd91178b572b59a48851e3.1663103634.git.sd@queasysnail.net>
+ <20220919170038.23b6d58e@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [RESEND net-next PATCH] net: rtnetlink: Enslave device before
- bringing it up
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166368901627.16825.8941636217857352725.git-patchwork-notify@kernel.org>
-Date:   Tue, 20 Sep 2022 15:50:16 +0000
-References: <20220914150623.24152-1-phil@nwl.cc>
-In-Reply-To: <20220914150623.24152-1-phil@nwl.cc>
-To:     Phil Sutter <phil@nwl.cc>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, dsahern@gmail.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220919170038.23b6d58e@kernel.org>
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: queasysnail.net
+Content-Type: text/plain; charset=UTF-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Wed, 14 Sep 2022 17:06:23 +0200 you wrote:
-> Unlike with bridges, one can't add an interface to a bond and set it up
-> at the same time:
+2022-09-19, 17:00:38 -0700, Jakub Kicinski wrote:
+> On Wed, 14 Sep 2022 19:04:00 +0200 Sabrina Dubroca wrote:
+> >  	case IPPROTO_COMP:
+> > +		if (!attrs[XFRMA_ALG_COMP]) {
+> > +			NL_SET_ERR_MSG(extack, "Missing required attribute for COMP: COMP");
+> > +			goto out;
+> > +		}
 > 
-> | # ip link set dummy0 down
-> | # ip link set dummy0 master bond0 up
-> | Error: Device can not be enslaved while up.
-> 
-> [...]
+> Did NL_SET_ERR_ATTR_MISS() make it to the xfrm tree?
 
-Here is the summary with links:
-  - [RESEND,net-next] net: rtnetlink: Enslave device before bringing it up
-    https://git.kernel.org/netdev/net-next/c/a4abfa627c38
+No, it hasn't. Thanks for the note, I hadn't seen those patches.
 
-You are awesome, thank you!
+It would only solve part of the problem here, since some cases need
+one of two possible attributes (AH needs AUTH or AUTH_TRUNC, ESP needs
+AEAD or CRYPT).
+
+In this particular case, it's also a bit confusing because which
+attribute is required (or not allowed) depends on other parts of the
+configuration, so there isn't a way to express most of it outside of
+strings -- short of having netlink policies or extacks that can
+describe logical formulas, I guess.
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+Sabrina
 
