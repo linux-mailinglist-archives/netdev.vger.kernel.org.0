@@ -2,172 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D38165BEBCE
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 19:23:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DD0E5BEBDC
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 19:27:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230274AbiITRWu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 13:22:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41538 "EHLO
+        id S230374AbiITR06 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 13:26:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230243AbiITRWq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 13:22:46 -0400
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EF8C6D577
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 10:22:43 -0700 (PDT)
-Received: by mail-il1-f198.google.com with SMTP id n4-20020a056e02100400b002f09be72a53so1990795ilj.18
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 10:22:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=TPpFjDdK+tXhcMGIoZNSG+9qAkjbhonLlwvMuddDuMg=;
-        b=irwzz5tGItcNoakVyzDXm9bd2JOskJPG1V5YIsank0lsOQ7+I6jkuvKjsINbZgcDCA
-         BU/03Ih6SocpeiPUiJA7P8Iw1t8VPo48QpgxdFbAx0En2XcslbX2zy5RXp/jPpdg+8Ni
-         LJ5WBevwiruX6NzqWtNsV0vhZo/7DpQfQ48mZLdMVlkWC7xW8AaiquGNlHc5WNeeHVLu
-         hAselj/eXFaY2paC8rIHETd6YJz4xkC0W6xCik+93ibPvfvX3fvfmQ3+G3wsOPOTwRth
-         dq/3p5q02nu6wpRf1El/0DHlZCb3LyluUlQN7ey+j8SxF1lTlsNwL2BpDW/2quqtweIl
-         R+oQ==
-X-Gm-Message-State: ACrzQf1p6THxHtlAdSZjkWcF/R8e4x8sO55RQOUPAqJVZc6C3BdOE36W
-        iLjv//E6ogAi505veN/K0/BFAA3rCtfWtB0DTMePfbaCKg0b
-X-Google-Smtp-Source: AMsMyM6dyCOrnTYZ33Wleyed7+hZ9ahQ3n8Q5RUEObniknXSOWu8M2hBPWPOd+pHx47BkMLn2rsi3yP969ubFyx0T5IhvAgK66wS
+        with ESMTP id S230345AbiITR05 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 13:26:57 -0400
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7180658DC7;
+        Tue, 20 Sep 2022 10:26:55 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1663694782; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=S2KQStHwuKEd4+hBYLoZ5gUngnG4E9dNJi7vvVnWj0tSadFLUIQmXAMvddt1j0SChdE6lHDIZOMhvxBtZCU2RaDzPq05bCMRHWL3z74muFiXyU+7a204lKVjVnIGrtmndoH6gpn0OEgdMzRdhkki9hjoCfcPvuJbI/l46AKAl8Q=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1663694782; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
+        bh=loETMcYAL4ROIG1xQMzWE1mjbgbUJ8t+eJJu11sOFyI=; 
+        b=UZiYNvlmjUi3L5PX4HM7seS0fLf9iAPe3lACnIXtoCZbfep6g4WALNQRAKXWCDrzm8oNNjz56JcWZzHLqof1hH0e4XHLmuKNa3IzorDIntYNoxJJrCTM7Ol1NEDVsQ40p5z0+2C6lGHdxCLLMtntBPbIsJnhiv5/+krE6FZUMFA=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1663694782;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
+        bh=loETMcYAL4ROIG1xQMzWE1mjbgbUJ8t+eJJu11sOFyI=;
+        b=BxFzmi/d14yBqIP++BxD98r4FRYTlFhMkcRY9nzLy/DnZpoBs9xn+x4yASVXly/c
+        +Omd/ZZVafNOLiV56TkCKDwr4aK+yh3F4f6rmjtbZIhWNk2T5s6mWPbUA3Qo02zI4fv
+        D167GusK1Bc++aY6xGMS0zxeRQqFT2lfe4MjK2Lk=
+Received: from arinc9-Xeront.fusolab.local (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
+        with SMTPS id 1663694780726325.1013179736344; Tue, 20 Sep 2022 10:26:20 -0700 (PDT)
+From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        erkin.bozoglu@xeront.com
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
+Subject: [PATCH v4 net-next 00/10] dt-bindings and mt7621 devicetree changes
+Date:   Tue, 20 Sep 2022 20:25:46 +0300
+Message-Id: <20220920172556.16557-1-arinc.unal@arinc9.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:216f:b0:2eb:9bcc:1649 with SMTP id
- s15-20020a056e02216f00b002eb9bcc1649mr10342108ilv.226.1663694562604; Tue, 20
- Sep 2022 10:22:42 -0700 (PDT)
-Date:   Tue, 20 Sep 2022 10:22:42 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000006b49ea05e91f13e2@google.com>
-Subject: [syzbot] WARNING in cake_dequeue
-From:   syzbot <syzbot+1a58ef288b4f7a56adbf@syzkaller.appspotmail.com>
-To:     cake@lists.bufferbloat.net, davem@davemloft.net,
-        edumazet@google.com, jhs@mojatatu.com, jiri@resnulli.us,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com, toke@toke.dk,
-        xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hello there!
 
-syzbot found the following issue on:
+This patch series removes old MediaTek bindings, improves mediatek,mt7530
+and mt7621 memory controller bindings and improves mt7621 DTs.
 
-HEAD commit:    521a547ced64 Linux 6.0-rc6
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1267c108880000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=122d7bd4fc8e0ecb
-dashboard link: https://syzkaller.appspot.com/bug?extid=1a58ef288b4f7a56adbf
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+v4:
+- Keep memory-controller node name.
+- Change syscon to memory-controller on mt7621.dtsi.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+v3:
+- Explain the mt7621 memory controller binding change in more details.
+- Remove explaining the remaining DTC warnings from the patch log as there
+are new schemas submitted for them.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+1a58ef288b4f7a56adbf@syzkaller.appspotmail.com
+v2:
+- Change memory controller node name to syscon on the schema example.
+- Keep cpu compatible string and syscon on the memory controller node.
+- Add Rob and Sergio's tags.
 
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 12003 at net/sched/sch_cake.c:2093 cake_dequeue+0x2188/0x3cb0 net/sched/sch_cake.c:2093
-Modules linked in:
-CPU: 0 PID: 12003 Comm: syz-executor.4 Not tainted 6.0.0-rc6-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 08/26/2022
-RIP: 0010:cake_dequeue+0x2188/0x3cb0 net/sched/sch_cake.c:2093
-Code: 66 39 c5 0f 42 e8 e8 a7 a1 f1 f9 89 ee bf 00 04 00 00 e8 3b 9e f1 f9 66 81 fd 00 04 0f b7 dd 0f 86 a1 ef ff ff e8 88 a1 f1 f9 <0f> 0b e9 95 ef ff ff 31 ed e9 83 e8 ff ff e8 75 a1 f1 f9 48 8b 84
-RSP: 0018:ffffc90000007cf0 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: 000000000000ffff RCX: 0000000000000100
-RDX: ffff888033c15880 RSI: ffffffff878a6798 RDI: 0000000000000003
-RBP: 000000000000ffff R08: 0000000000000003 R09: 0000000000000400
-R10: 000000000000ffff R11: 0000000000000001 R12: 0000000000000001
-R13: dffffc0000000000 R14: ffff88803ef01aa0 R15: ffff88803ef00000
-FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000001b2eb23000 CR3: 000000000bc8e000 CR4: 0000000000350ef0
-Call Trace:
- <IRQ>
- dequeue_skb net/sched/sch_generic.c:292 [inline]
- qdisc_restart net/sched/sch_generic.c:397 [inline]
- __qdisc_run+0x1ae/0x1710 net/sched/sch_generic.c:415
- qdisc_run include/net/pkt_sched.h:126 [inline]
- qdisc_run include/net/pkt_sched.h:123 [inline]
- net_tx_action+0x71f/0xd20 net/core/dev.c:5086
- __do_softirq+0x1d3/0x9c6 kernel/softirq.c:571
- invoke_softirq kernel/softirq.c:445 [inline]
- __irq_exit_rcu+0x123/0x180 kernel/softirq.c:650
- irq_exit_rcu+0x5/0x20 kernel/softirq.c:662
- sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1106
- </IRQ>
- <TASK>
- asm_sysvec_apic_timer_interrupt+0x16/0x20 arch/x86/include/asm/idtentry.h:649
-RIP: 0010:check_kcov_mode kernel/kcov.c:166 [inline]
-RIP: 0010:__sanitizer_cov_trace_pc+0xd/0x60 kernel/kcov.c:200
-Code: 00 00 e9 86 c0 81 02 66 0f 1f 44 00 00 48 8b be a8 01 00 00 e8 b4 ff ff ff 31 c0 c3 90 65 8b 05 19 66 86 7e 89 c1 48 8b 34 24 <81> e1 00 01 00 00 65 48 8b 14 25 80 6f 02 00 a9 00 01 ff 00 74 0e
-RSP: 0018:ffffc9000a98f758 EFLAGS: 00000246
-RAX: 0000000080000001 RBX: 00007fee55929000 RCX: 0000000080000001
-RDX: ffff888033c15880 RSI: ffffffff81b45ece RDI: 0000000000000001
-RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: ffffea0001b5bac8
-R13: ffffea0001b5bac0 R14: dffffc0000000000 R15: ffff888077a6a940
- zap_pte_range mm/memory.c:1508 [inline]
- zap_pmd_range mm/memory.c:1575 [inline]
- zap_pud_range mm/memory.c:1604 [inline]
- zap_p4d_range mm/memory.c:1625 [inline]
- unmap_page_range+0xd1e/0x3cc0 mm/memory.c:1646
- unmap_single_vma+0x196/0x360 mm/memory.c:1694
- unmap_vmas+0x18c/0x310 mm/memory.c:1731
- exit_mmap+0x1b8/0x490 mm/mmap.c:3116
- __mmput+0x122/0x4b0 kernel/fork.c:1187
- mmput+0x56/0x60 kernel/fork.c:1208
- exit_mm kernel/exit.c:510 [inline]
- do_exit+0x9e2/0x29b0 kernel/exit.c:782
- do_group_exit+0xd2/0x2f0 kernel/exit.c:925
- get_signal+0x238c/0x2610 kernel/signal.c:2857
- arch_do_signal_or_restart+0x82/0x2300 arch/x86/kernel/signal.c:869
- exit_to_user_mode_loop kernel/entry/common.c:166 [inline]
- exit_to_user_mode_prepare+0x15f/0x250 kernel/entry/common.c:201
- __syscall_exit_to_user_mode_work kernel/entry/common.c:283 [inline]
- syscall_exit_to_user_mode+0x19/0x50 kernel/entry/common.c:294
- do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7fee55a89409
-Code: Unable to access opcode bytes at RIP 0x7fee55a893df.
-RSP: 002b:00007fee56bfb218 EFLAGS: 00000246 ORIG_RAX: 00000000000000ca
-RAX: fffffffffffffe00 RBX: 00007fee55b9bf88 RCX: 00007fee55a89409
-RDX: 0000000000000000 RSI: 0000000000000080 RDI: 00007fee55b9bf88
-RBP: 00007fee55b9bf80 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007fee55b9bf8c
-R13: 00007fffab12ee9f R14: 00007fee56bfb300 R15: 0000000000022000
- </TASK>
-----------------
-Code disassembly (best guess):
-   0:	00 00                	add    %al,(%rax)
-   2:	e9 86 c0 81 02       	jmpq   0x281c08d
-   7:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
-   d:	48 8b be a8 01 00 00 	mov    0x1a8(%rsi),%rdi
-  14:	e8 b4 ff ff ff       	callq  0xffffffcd
-  19:	31 c0                	xor    %eax,%eax
-  1b:	c3                   	retq
-  1c:	90                   	nop
-  1d:	65 8b 05 19 66 86 7e 	mov    %gs:0x7e866619(%rip),%eax        # 0x7e86663d
-  24:	89 c1                	mov    %eax,%ecx
-  26:	48 8b 34 24          	mov    (%rsp),%rsi
-* 2a:	81 e1 00 01 00 00    	and    $0x100,%ecx <-- trapping instruction
-  30:	65 48 8b 14 25 80 6f 	mov    %gs:0x26f80,%rdx
-  37:	02 00
-  39:	a9 00 01 ff 00       	test   $0xff0100,%eax
-  3e:	74 0e                	je     0x4e
+Arınç ÜNAL (10):
+  dt-bindings: net: drop old mediatek bindings
+  dt-bindings: net: dsa: mediatek,mt7530: change mt7530 switch address
+  dt-bindings: net: dsa: mediatek,mt7530: expand gpio-controller
+    description
+  dt-bindings: memory: mt7621: add syscon as compatible string
+  mips: dts: ralink: mt7621: fix some dtc warnings
+  mips: dts: ralink: mt7621: remove interrupt-parent from switch node
+  mips: dts: ralink: mt7621: change phy-mode of gmac1 to rgmii
+  mips: dts: ralink: mt7621: change mt7530 switch address
+  mips: dts: ralink: mt7621: fix external phy on GB-PC2
+  mips: dts: ralink: mt7621: add GB-PC2 LEDs
+
+ .../mediatek,mt7621-memc.yaml                   |  6 +-
+ .../bindings/net/dsa/mediatek,mt7530.yaml       | 34 ++++++-----
+ .../bindings/net/mediatek,mt7620-gsw.txt        | 24 --------
+ .../bindings/net/ralink,rt2880-net.txt          | 59 --------------------
+ .../bindings/net/ralink,rt3050-esw.txt          | 30 ----------
+ .../boot/dts/ralink/mt7621-gnubee-gb-pc1.dts    |  8 +--
+ .../boot/dts/ralink/mt7621-gnubee-gb-pc2.dts    | 50 +++++++++++++----
+ arch/mips/boot/dts/ralink/mt7621.dtsi           | 35 +++++-------
+ 8 files changed, 80 insertions(+), 166 deletions(-)
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
