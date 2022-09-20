@@ -2,48 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3426F5BE9F0
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 17:19:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AD175BE9FE
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 17:21:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231154AbiITPTS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 11:19:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37952 "EHLO
+        id S231443AbiITPUk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 11:20:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231391AbiITPTQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 11:19:16 -0400
+        with ESMTP id S231566AbiITPUT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 11:20:19 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F37E5AC72
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 08:19:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75BD5606B0;
+        Tue, 20 Sep 2022 08:20:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E449EB82A9A
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 15:19:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 758F3C433C1;
-        Tue, 20 Sep 2022 15:19:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3486FB82AA0;
+        Tue, 20 Sep 2022 15:20:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D52E9C433D6;
+        Tue, 20 Sep 2022 15:20:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663687152;
-        bh=UaJFrj8sWLzJ3OiH1q1T+G/LrXcSY/5FUZ7yEbTtsxk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SteGs08ki02SSSMjQd1NBHCgNdLOF85q8Yu6ws8GNTkTtoZ/h2VkhcDYg2wO4MdFp
-         l8mlSQXnZPlAEmbggdGpzYNMVocCWTTuJZCnzRyNPwe0wITbeaPxZ/DchdyWyjg0S4
-         JL+/IV0w2qLiITHW20xlG+EfCTGwrXj6BcFuoWYvu8E3gFRkjd2h+SbsinhCwVHuQ9
-         +UitxgE8awfM681K/Inhu2T4zQx/SNbiarybRA+sGvlxYpah+T4TUnpbrGJFM9eqoE
-         R3IDZVGpFiLnOMZhNR+NXL6EJp+7OVizYhRQ1lJ2U04vISX6NHqB01oR1Vpc3EEoG8
-         XOeCC53VIKjqA==
-Date:   Tue, 20 Sep 2022 08:19:11 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Russell King <linux@armlinux.org.uk>
-Cc:     Baruch Siach <baruch@tkos.co.il>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Baruch Siach <baruch.siach@siklu.com>
-Subject: Re: [PATCH v2] net: sfp: workaround GPIO input signals bounce
-Message-ID: <20220920081911.619ffeef@kernel.org>
-In-Reply-To: <931ac53e9d6421f71f776190b2039abaa69f7d43.1663133795.git.baruch@tkos.co.il>
-References: <931ac53e9d6421f71f776190b2039abaa69f7d43.1663133795.git.baruch@tkos.co.il>
+        s=k20201202; t=1663687214;
+        bh=fX+wSiZy+n8JLCjfuIS2tthx3hDm7uGH6Lz+t8/r1G0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=IHnwRa6fUf/CCSuIOqkIC5mB8NiZ8GMaRiQgx1IAIKa+cM19fp7n+d4HnKVIFql/B
+         uUfRSu4itg4ElPvN20fRd06N8Voa2/jDge51n7KjgGKXvsMvd3s4mOYfrsz+QhqFyH
+         ZPlIr2Xi3fO5UBXD3VToKUw6xjn1C0yA0kt0apIWS18jSFO9MgHKd2uqKvb3C3O2K8
+         K8xR5AuW6qLHryW4nOj5Fski6Y4uQqHgrgbyieI+GVIZ9M/qE2LOjtEJ2usPBHL8l0
+         D0jpOegnme8O2F6+ItwaJjcZcTyHwWCVj+1ySEQ/30qenOJT8NPGBQE7XdNFpZ9pQH
+         HVORCI66bScYA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B509AC43141;
+        Tue, 20 Sep 2022 15:20:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net v2] net: ipa: properly limit modem routing table use
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166368721473.32154.1711335581514313209.git-patchwork-notify@kernel.org>
+Date:   Tue, 20 Sep 2022 15:20:14 +0000
+References: <20220913204602.1803004-1-elder@linaro.org>
+In-Reply-To: <20220913204602.1803004-1-elder@linaro.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, mka@chromium.org, evgreen@chromium.org,
+        bjorn.andersson@linaro.org, quic_cpratapa@quicinc.com,
+        quic_avuyyuru@quicinc.com, quic_jponduru@quicinc.com,
+        quic_subashab@quicinc.com, elder@kernel.org,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -53,53 +60,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 14 Sep 2022 08:36:35 +0300 Baruch Siach wrote:
-> From: Baruch Siach <baruch.siach@siklu.com>
-> 
-> Add a trivial debounce to avoid miss of state changes when there is no
-> proper hardware debounce on the input signals. Otherwise a GPIO might
-> randomly indicate high level when the signal is actually going down,
-> and vice versa.
-> 
-> This fixes observed miss of link up event when LOS signal goes down on
-> Armada 8040 based system with an optical SFP module.
-> 
-> Signed-off-by: Baruch Siach <baruch.siach@siklu.com>
-> ---
-> v2:
->   Skip delay in the polling case (RMK)
+Hello:
 
-Is this acceptable now, Russell?
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-> diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-> index 63f90fe9a4d2..b0ba144c9633 100644
-> --- a/drivers/net/phy/sfp.c
-> +++ b/drivers/net/phy/sfp.c
-> @@ -313,7 +313,9 @@ static unsigned long poll_jiffies;
->  static unsigned int sfp_gpio_get_state(struct sfp *sfp)
->  {
->  	unsigned int i, state, v;
-> +	int repeat = 10;
->  
-> +again:
->  	for (i = state = 0; i < GPIO_MAX; i++) {
->  		if (gpio_flags[i] != GPIOD_IN || !sfp->gpio[i])
->  			continue;
-> @@ -323,6 +325,16 @@ static unsigned int sfp_gpio_get_state(struct sfp *sfp)
->  			state |= BIT(i);
->  	}
->  
-> +	/* Trivial debounce for the interrupt case. When no state change is
-> +	 * detected, wait for up to a limited bound time interval for the
-> +	 * signal state to settle.
-> +	 */
-> +	if (state == sfp->state && !sfp->need_poll && repeat > 0) {
-> +		udelay(10);
-> +		repeat--;
-> +		goto again;
-> +	}
-> +
->  	return state;
->  }
->  
+On Tue, 13 Sep 2022 15:46:02 -0500 you wrote:
+> IPA can route packets between IPA-connected entities.  The AP and
+> modem are currently the only such entities supported, and no routing
+> is required to transfer packets between them.
+> 
+> The number of entries in each routing table is fixed, and defined at
+> initialization time.  Some of these entries are designated for use
+> by the modem, and the rest are available for the AP to use.  The AP
+> sends a QMI message to the modem which describes (among other
+> things) information about routing table memory available for the
+> modem to use.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,v2] net: ipa: properly limit modem routing table use
+    https://git.kernel.org/netdev/net/c/cf412ec33325
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
