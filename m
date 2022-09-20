@@ -2,133 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E6225BD8CB
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 02:31:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C07B5BD8DB
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 02:42:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229449AbiITAb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 20:31:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35326 "EHLO
+        id S229826AbiITAmd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 20:42:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229597AbiITAb0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 20:31:26 -0400
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174B551A2D;
-        Mon, 19 Sep 2022 17:31:26 -0700 (PDT)
-Received: by mail-qt1-x833.google.com with SMTP id y2so735716qtv.5;
-        Mon, 19 Sep 2022 17:31:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=zR2Q4QyS+Tbvo76GqnO7ltxu1VimNHBe8fxFKg919ww=;
-        b=LKpGlipgDxDA1WUXqy9+tksIPJRTp1SvWisllhpCivdFLoApqRAqFK0f6aw84ymcNr
-         2vTkBfKGI5r2RVD+FXF6elJRg6Isz8aKL4EGvWW0822JTYKHh7Nk8m8KbWZjVmJBX195
-         9eK5A4QHjBhbhi5cFIUXvU3A1EvkKuAsyIvs6bqwoVmp4NwfTXq6B3lOuCGRLRTnf8Hq
-         Qmhy7LLbouKt6aMoQGOH2ZP9R47x7vXrDzIn6rf4IP7dCiySMgMHuOkDr0DTOLEMVhY4
-         oZcMD8rnKardQOXzankIryIo8jGY8WdXGlXpNw5fh6QEsWj+9T6704IMmulGlbJ5e/qE
-         KrCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=zR2Q4QyS+Tbvo76GqnO7ltxu1VimNHBe8fxFKg919ww=;
-        b=KRHsyEItE9nVRME8iNAA0rtkm3HpgCgks8dCeZnSBMm6D7zIIcoz3Sy7NfEKuZk+3v
-         QK7GVa7zobxPjNG+jOGYqHCtyoc7vbFHymMXUaxLzTKywIMcvyFCZOfOsvthaVYPfyKu
-         BDZ29eL+X0Mqm6CYPlev8Qyuag4Smu3jDUQsF2y/KSDhTc7Lsztc1UscdjAuJM53OqaO
-         ij5dCE7DGE9B5Gd5r4onk1OHtnTiaSxxv1pM0e3pO8NixqPynsknQZ+T1JgG+BXRfsb6
-         T3XCIecQ3fk+IJfEAxRGsobTqvYw8M0B+3IG8uRDqlJiTmgNZ2enUeiFwLU3Do9STNuf
-         3qBA==
-X-Gm-Message-State: ACrzQf3I8ensmEWzrINiJHgMXOAoQ1hRs2lcZksAyCUAyZkQ+pBUr7Eq
-        ziMa4ze7mKcOinEaYUqJSA0=
-X-Google-Smtp-Source: AMsMyM5cHFbPeIkstTYcLMvF34ln71+chVB5pyQuT174Kvk4jOcjte1o+r/pGB2SHLVbfj3SfVuF6g==
-X-Received: by 2002:a05:622a:454:b0:35c:e1a7:5348 with SMTP id o20-20020a05622a045400b0035ce1a75348mr8980919qtx.604.1663633885205;
-        Mon, 19 Sep 2022 17:31:25 -0700 (PDT)
-Received: from [192.168.1.201] (pool-173-73-95-180.washdc.fios.verizon.net. [173.73.95.180])
-        by smtp.gmail.com with ESMTPSA id v4-20020a05620a090400b006bbf85cad0fsm13266252qkv.20.2022.09.19.17.31.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 19 Sep 2022 17:31:24 -0700 (PDT)
-Message-ID: <ab2ce38a-313b-7e87-aaf5-cfc2b6e0cb28@gmail.com>
-Date:   Mon, 19 Sep 2022 20:31:23 -0400
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] net: sunhme: Fix packet reception for len <
- RX_COPY_THRESHOLD
+        with ESMTP id S229488AbiITAm0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 20:42:26 -0400
+Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16A7752819;
+        Mon, 19 Sep 2022 17:42:21 -0700 (PDT)
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.17.1.5/8.17.1.5) with ESMTP id 28JMsstE012842;
+        Mon, 19 Sep 2022 17:42:18 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=olRSHUSkMARB2EPJ60joK5kVkw59ec6sGOdNuYJo2Eg=;
+ b=mMCbJsmAADY/oKPml1ENwtKmgxPFUTFKp9GQwVRJMyVmytMIgOQC8grG5nB+RPf/H7Jt
+ tP1WZvrw+yIiBL85rlhP/IgJe9+Px2+6xrzbLu5c3q4rHUP9MJ2olBnWasyeG19zMmf2
+ +Gpo+PSSB2+h0R3eRYclHSv/5FNLK+lGbJQ= 
+Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2173.outbound.protection.outlook.com [104.47.57.173])
+        by m0089730.ppops.net (PPS) with ESMTPS id 3jpm35esph-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 19 Sep 2022 17:42:18 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=i76Sbwe/0fYhnA6LAwk/MT2BmLZUPrhniL63p0kzWV0iq0UIB2kOrrf+g7Lq+H2EmKxAGfNicMYU2ENJlNIYDDNRwZdWZ6Y7vLlmsCBSegFIQUlFMEy39UeSCdiWRYnTBkZUv4W1/e6tZseOprc56UR9PaitsYh3Jcka/85ywnukYBalEtF3tY/gE3k8YhRfloLCeRfYwXHDz8MvhNvIYJttae+6BMvBHf5rAmD45ptCFerRxpqWWGjqzXcAYQM/69OKc4jyzbA+wbPBp47vJSknquvJv0r1P23fvqrAndsAAQMloX9mCfukk2zDTpJA4R0V3E+IL4n85wXRu2W/qw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=olRSHUSkMARB2EPJ60joK5kVkw59ec6sGOdNuYJo2Eg=;
+ b=BiD5HKM/R5w52v1sbhjPbWDCrde/DKZ5tP4UGsunen/iCdVTatIbXykBrtsNvA0oW6uAe+NCD5bEb7CAUWsmwtGRb6Y7H5o30EghaC72+v64VmaM4PFIzX05OQ7Z7dlzEdXXy9RXqJRodY4LFJ2j21fZM1x19eQ+S5qjkXGE2pHGhvAbMagwh6D5oGeQKWjdkvEuZ7MD65diF7PLSNfn8JklvEtAZHu0ICTFta81R23w3jRveZPwjlpPPpo8dWxc+5bQPqZUT2UDF8rmqH5xc8qIqs+79mMdlSCr27qiRpy3cnf+swhWJ/zBKrWvgn6IOutMweOPUBIfotYf6YLxzQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
+ by BN6PR15MB1108.namprd15.prod.outlook.com (2603:10b6:404:eb::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5632.21; Tue, 20 Sep
+ 2022 00:42:16 +0000
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::cdbe:b85f:3620:2dff]) by SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::cdbe:b85f:3620:2dff%4]) with mapi id 15.20.5632.021; Tue, 20 Sep 2022
+ 00:42:16 +0000
+Message-ID: <1f965bad-1116-371c-87e1-1250fd8c9603@fb.com>
+Date:   Mon, 19 Sep 2022 17:42:12 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.2.2
+Subject: Re: [PATCH] headers: Remove some left-over license text
 Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Zheyu Ma <zheyuma97@gmail.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        Rolf Eike Beer <eike-kernel@sf-tec.de>,
-        Nick Bowler <nbowler@draconx.ca>
-References: <20220918215534.1529108-1-seanga2@gmail.com>
- <YyjTa1qtt7kPqEaZ@lunn.ch>
-From:   Sean Anderson <seanga2@gmail.com>
-In-Reply-To: <YyjTa1qtt7kPqEaZ@lunn.ch>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <2a15aba72497e78ff08c8b8a8bfe3cf5a3e6ee18.1662897019.git.christophe.jaillet@wanadoo.fr>
+From:   Yonghong Song <yhs@fb.com>
+In-Reply-To: <2a15aba72497e78ff08c8b8a8bfe3cf5a3e6ee18.1662897019.git.christophe.jaillet@wanadoo.fr>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+X-ClientProxiedBy: MN2PR16CA0036.namprd16.prod.outlook.com
+ (2603:10b6:208:134::49) To SN6PR1501MB2064.namprd15.prod.outlook.com
+ (2603:10b6:805:d::27)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SN6PR1501MB2064:EE_|BN6PR15MB1108:EE_
+X-MS-Office365-Filtering-Correlation-Id: fc821f2a-b07c-458f-e8a6-08da9aa0f761
+X-FB-Source: Internal
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Mk0SUY0NBGCrPi0Y7yaks2NBWfvokXWsqoB0KqWux2zYwJGZudXl8BwpcTtZVrQn2tlbdHXD8RoxHl4rfHBuxrNgqslXCmXPH5NiEgtRE7Aj6a/JagrBCKxwZxWeoutv1nW5EgcD1T9jVg7Fyb1DbdeTx6SWefyLfNg8Jy63s34j807lwG2JeLi69KuDd7BCFREfWaFv0ZxFVn17PqxFvhCfqGfbYbK9uJLh+oS543GcyAiXA5XgpAmT9qGrgnDHhT5pV16Y3eMMqQC1NWcpN/q2da/XDnU4GSKd09QLsbnEqaon/8Z4Uk5F7xlSNoSXDpxVlSc4WPG8oxZtXWarTZA97BvUO29fMqo6IkBL2g6qzJ23bJLdlP3X8eTnK2/5n7iLWMX2lEUzE90hbjA6zYjY1uh06qlfT31mlyUwjsY7feHNSNTgz9+KWBFJjheUR0Ak4joVHUQb/NpM2kMPpPYWwlFJlKa7XAVYJGSYtD3fpoRL3eCy5Qak2j+Ri9U0Sqjy77mF906ycrpI5TVcyKjcF+Jx7AMqgcfKxQvC/IKa0IX7R5KKwUQbiDfVZPGGx5iEij9wu6/c2v+79HC/lhqSKsBS3wIEZ+Js/rZRhWluYxu4EhuyjhFacULyUrH8yp4eyi/FC7LlohENq8Mgw/jc+TGWbsgzXoaPguyXy64oYcpqjuJUp/jlUJ621g2IzoVbXbzLqOQJtMCcXBzXscVYs3CM2YpJLC5h8btuJBd7VACqxjc9L+A07h9muMAB8XSY8QrxeZV5jVH79vm4Fe393aDTK0+Ucq3aS1jLG7wvAAW1TkEBXQLqCRL0iDNW
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(376002)(366004)(39860400002)(136003)(396003)(451199015)(31686004)(186003)(83380400001)(2616005)(2906002)(38100700002)(6486002)(316002)(31696002)(4326008)(110136005)(86362001)(6506007)(8936002)(53546011)(478600001)(6666004)(41300700001)(36756003)(6512007)(66556008)(66476007)(66946007)(8676002)(5660300002)(2004002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?YTBTRW5YUy9zYmsxSDJtUEtTaEhFZ0JWVDhuMzlBeHVlOHhJWlluRkhHM0o0?=
+ =?utf-8?B?ZmVZeG84Y29jWGJndllPS2JJVXVoRUE0TnlQMGFCY1lNcWdjYXl4UkcxZlJU?=
+ =?utf-8?B?dU9EbkFMYjFxdUcydm1UdTd3UE9rdXJiRDJNOXJ5ZnR0RDdaT2hSMXoyeUZM?=
+ =?utf-8?B?VmdvbHNtejNUWlIydzF6SXJuL0JuZ0VYeVBWbFlYSkdrUU1tUEUrOXVQVHQ3?=
+ =?utf-8?B?MitRRnIvUUdmVVZ4YzlHYkhVakFGdjRFbmlSZzNQTS9QcUhtak9ibVp3MHRy?=
+ =?utf-8?B?WFdpaEZ6UXF4RDcrcVdhclArZVhEbHcxbHVWNE9keXdzcnI2czBKdnJZamNY?=
+ =?utf-8?B?QWJDbnRRM21EN3lXOTIrL2M0M0FnU3V6djU0bWFJNDhPNU5NTUFSVGxZNUF2?=
+ =?utf-8?B?K0o3b3BhZXBHZ2N5T1loOVZ1Yk8vUjE0WjVnWEk4ZmQ5U1k1cHM3Z0pUTzJ3?=
+ =?utf-8?B?MTY0c3NvVWpiMEhFbUhlOU9GeXVSbStkNyt5MHVSV1NiaVJ4clhjUTZIdzVo?=
+ =?utf-8?B?aG1wWFpUQkdPWFRVRzI0U2h2T2h0Tjk4U3lpSDZ4WjFrbTRJNkI1eTlvNnNi?=
+ =?utf-8?B?Y2VMT2dhUlZVOXBRUzNtQUtrMVEydnpueHl4MkhSN2RvUmdZbytUK1hvY1M1?=
+ =?utf-8?B?dnBhMWNwVTJTUUFkbThzYzIzWk4zZGdZY2tXVHY3T2tyalNEZ1FlZTI5aWsx?=
+ =?utf-8?B?QktBcjNBK1NkQW10Vk9QQmFLbms0OWdnL0FTR0E1ZHY4Z3JlbjZhVDJ3dHhG?=
+ =?utf-8?B?Qk8wMkRpZVRYNWQyVHd0MlYxbmhTeWJlOUVIbEU5cThsTlhPbHhlTGlYaGlu?=
+ =?utf-8?B?cE1Pa3FTa1gwcG1jak12cDFDc3VCWk9pWWIwY3Fnd2l0U0dZUS9FaThKd05i?=
+ =?utf-8?B?MmlndWlzN0VoTFBRYnVFK2pvTXJEV3dDUFdaV0lwSXdhVVFWaW5VdXpBem1q?=
+ =?utf-8?B?NU40U0hpUXBBMjB2KzY4MG1HeWN0bFNjbzdTVHI5WWFLc1BOUTREV3Z2dkFQ?=
+ =?utf-8?B?TVEyWnNTYlpZTm5RYTFWcU9Jdk1LdjB5eHpaRU10a1VsRWdxeCtmczhMN1Bp?=
+ =?utf-8?B?Q3dqdUpJWEdRWWV5NkdjalBoQ3hPelpqeTRDak9kMUlQYk4zUzBHQXdtRzJv?=
+ =?utf-8?B?SjJheGlCcHJMRkU1UU92SUFqZUNHMml1RDM0NmN4QTJwYWtTNjJLUDVBQklY?=
+ =?utf-8?B?VlRPQjdhM1JmdWJIbVlRVDM5ZkxwUWR2SUdIVlpWZWM0SDBteEZoY2FBN09I?=
+ =?utf-8?B?OW04UFEzUXp2UGxUVGpFZmphNzdmN0t5UHZ0bko5R0dUMXcrU2dCbGl6czFl?=
+ =?utf-8?B?Zlk1QVBrRThyYUdEamkzN3FUdnVpejVJc0t1Tis0bzZxWFg0Y2FYVkthWjlr?=
+ =?utf-8?B?czZPeEVOaXcwMnV4bWRvcEQ1akZHZGVGQVVwQjAzcFpTSlBqaktDcjM2YTdQ?=
+ =?utf-8?B?UEFoTEJFSjZKTXJPdERSTTNaRHZzZkVqY0MxYzZnclhuc2sxRDY5OUFlZER0?=
+ =?utf-8?B?VzRjQzZiVjEwWGdIQk93YWNTLzhZc01aYlk0d1ZlRktzRnRMdHNWSFdWUnFy?=
+ =?utf-8?B?alEwaDVKQnNabjAxMFpJd3FUMGNFdTh3Z2R6aEE1dndzYzNQRFZNLzlBeTR2?=
+ =?utf-8?B?MytvZ1phZU1GNXcvV1phU1BSQzBjZVN0dU1SRExLL0VwcUhrZmtZMUJobVdj?=
+ =?utf-8?B?dVhaalQrL0F4WlMvcUhFY0gxSjE4S2lRUUI5cTh5MVVGWi9LbFRqdnNDOFhs?=
+ =?utf-8?B?S2RZZjlmUlRWNDJGUFBCUEFGem9xTk9ybTFBK2V3dnRSK2RrNkd3Mmw0dndQ?=
+ =?utf-8?B?YzRsZ3BETXgzcnlLcDBra0xFWGhsQWZVN0U3YnFWK1RPcVdEdjQvbVVuSkJN?=
+ =?utf-8?B?T1FuL1ZZVjRnbTVwazgrcU9McVI5VVZkcDhrM3pTUHlhdzFIUW51dyswaEtE?=
+ =?utf-8?B?dzdEN2xjYWtCaGtXMWgyempMOHQvb1o5bWlMcFNEbVFEYVR1QmFqYm53aks4?=
+ =?utf-8?B?cUlqTmpMVHQzTHRLSlgwN0Z6MlB0WUlRZ3U4Yk9VRjJvQkY2R25DSWRGS2dh?=
+ =?utf-8?B?blhyNzI0K2lva0tHdmFicDgvUXRZQlB1UXl3WFJoditLN2ZOY3FWb2NWbldY?=
+ =?utf-8?Q?5lMw0i818Yb3ddUr9v/dX0jvP?=
+X-OriginatorOrg: fb.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fc821f2a-b07c-458f-e8a6-08da9aa0f761
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Sep 2022 00:42:16.3742
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: lQlOun5tnYoTFEES55bLMyC4Y7RnHLZdYScyFUwXm9OI+zN+fCj/0BMrgqnfnnSc
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR15MB1108
+X-Proofpoint-ORIG-GUID: Viv5pNCuOpklzXcArMDkSIwvhIYU798g
+X-Proofpoint-GUID: Viv5pNCuOpklzXcArMDkSIwvhIYU798g
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
+ definitions=2022-09-19_05,2022-09-16_01,2022-06-22_01
+X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/19/22 16:39, Andrew Lunn wrote:
-> On Sun, Sep 18, 2022 at 05:55:34PM -0400, Sean Anderson wrote:
->> There is a separate receive path for small packets (under 256 bytes).
->> Instead of allocating a new dma-capable skb to be used for the next packet,
->> this path allocates a skb and copies the data into it (reusing the existing
->> sbk for the next packet). There are two bytes of junk data at the beginning
->> of every packet. I believe these are inserted in order to allow aligned
->> DMA and IP headers. We skip over them using skb_reserve. Before copying
->> over the data, we must use a barrier to ensure we see the whole packet. The
->> current code only synchronizes len bytes, starting from the beginning of
->> the packet, including the junk bytes. However, this leaves off the final
->> two bytes in the packet. Synchronize the whole packet.
->>
->> To reproduce this problem, ping a HME with a payload size between 17 and 214
->>
->> 	$ ping -s 17 <hme_address>
->>
->> which will complain rather loudly about the data mismatch. Small packets
->> (below 60 bytes on the wire) do not have this issue. I suspect this is
->> related to the padding added to increase the minimum packet size.
->>
->> Signed-off-by: Sean Anderson <seanga2@gmail.com>
+
+
+On 9/11/22 4:50 AM, Christophe JAILLET wrote:
+> Remove some left-over from commit e2be04c7f995 ("License cleanup: add SPDX
+> license identifier to uapi header files with a license")
 > 
-> Hi Sean
+> When the SPDX-License-Identifier tag has been added, the corresponding
+> license text has not been removed.
 > 
->> Patch-prefix: net
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+>   include/uapi/linux/tc_act/tc_bpf.h        |  5 -----
+>   include/uapi/linux/tc_act/tc_skbedit.h    | 13 -------------
+>   include/uapi/linux/tc_act/tc_skbmod.h     |  7 +------
+>   include/uapi/linux/tc_act/tc_tunnel_key.h |  5 -----
+>   include/uapi/linux/tc_act/tc_vlan.h       |  5 -----
+>   5 files changed, 1 insertion(+), 34 deletions(-)
 > 
-> This should be in the Subject of the email. Various tools look for the
-> netdev tree there. Please try to remember that for future patches.
+> diff --git a/include/uapi/linux/tc_act/tc_bpf.h b/include/uapi/linux/tc_act/tc_bpf.h
+> index 653c4f94f76e..fe6c8f8f3e8c 100644
+> --- a/include/uapi/linux/tc_act/tc_bpf.h
+> +++ b/include/uapi/linux/tc_act/tc_bpf.h
+> @@ -1,11 +1,6 @@
+>   /* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
+>   /*
+>    * Copyright (c) 2015 Jiri Pirko <jiri@resnulli.us>
+> - *
+> - * This program is free software; you can redistribute it and/or modify
+> - * it under the terms of the GNU General Public License as published by
+> - * the Free Software Foundation; either version 2 of the License, or
+> - * (at your option) any later version.
+>    */
+>   
+>   #ifndef __LINUX_TC_BPF_H
 
-Sorry, it should have been "Series-postfix".
+Could you also update tools/include/uapi/linux/tc_act/tc_bpf.h?
 
-> Please could you add a Fixes: tag indicating when the problem was
-> introduced. Its O.K. if that was when the driver was added. It just
-> helps getting the patch back ported to older stable kernels.
-
-Well, the driver was added before git was started...
-
-I suppose I could blame 1da177e4c3f4 ("Linux-2.6.12-rc2"), but maybe I
-should just CC the stable list?
-
-> I think patchwork allows you to just reply to your post, and it will
-> automagically append the Fixes: tag when the Maintainer actually
-> applies the patch.
-> 
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> 
->      Andrew
-
---Sean
+> diff --git a/include/uapi/linux/tc_act/tc_skbedit.h b/include/uapi/linux/tc_act/tc_skbedit.h
+> index 6cb6101208d0..64032513cc4c 100644
+> --- a/include/uapi/linux/tc_act/tc_skbedit.h
+> +++ b/include/uapi/linux/tc_act/tc_skbedit.h
+> @@ -2,19 +2,6 @@
+>   /*
+>    * Copyright (c) 2008, Intel Corporation.
+>    *
+> - * This program is free software; you can redistribute it and/or modify it
+> - * under the terms and conditions of the GNU General Public License,
+> - * version 2, as published by the Free Software Foundation.
+> - *
+> - * This program is distributed in the hope it will be useful, but WITHOUT
+> - * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+> - * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+> - * more details.
+> - *
+> - * You should have received a copy of the GNU General Public License along with
+> - * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+> - * Place - Suite 330, Boston, MA 02111-1307 USA.
+> - *
+>    * Author: Alexander Duyck <alexander.h.duyck@intel.com>
+>    */
+>   
+[...]
