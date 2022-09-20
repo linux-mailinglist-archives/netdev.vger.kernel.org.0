@@ -2,50 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DFA095BED40
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 21:00:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2F3D5BED92
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 21:23:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230255AbiITTAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 15:00:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42972 "EHLO
+        id S231389AbiITTXS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 15:23:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230518AbiITTA1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 15:00:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60CE165543
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 12:00:24 -0700 (PDT)
+        with ESMTP id S231438AbiITTXD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 15:23:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4535A419B8;
+        Tue, 20 Sep 2022 12:22:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 22149B82CA5
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 19:00:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E32F6C4314A;
-        Tue, 20 Sep 2022 19:00:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ECED7B82CA6;
+        Tue, 20 Sep 2022 19:22:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6162AC433C1;
+        Tue, 20 Sep 2022 19:22:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663700421;
-        bh=ingXBgzoyV/GzmzXqQi4XLuNxUYmqWID6OhXK+Jb9go=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=RB4l8user+h+uRY5qLWeWlF+P5YSEd8sCV2VF/kFTA88wU1doqef0JjK5ZjXerZ5V
-         /jDAv1QiOhSqV/BM6nb6epegvKvhefuROMG409T5vN2v6XmIIM4jbCPkqptIg/SHdZ
-         +p+vG4GxmV2E4Rg0eg2Q7qRTbpv7hUzyiuuxQ9nTb0HLDW+JuVUduj7YOAWOsqO4nA
-         K0L1CWGdX7zDN5bla1Kj/NQpf/tEAhFh4BZMuHeE3GEMB+Jq7GlTd0/570LCzZcRGa
-         G6zg76s5GaXsdFJ7drXOe+fPNYOsU9lUWSSUIpTwh5pAu+AYhSl+gBaipKDB78ufmG
-         PwOywERK92unQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CE9FEE5250A;
-        Tue, 20 Sep 2022 19:00:21 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1663701767;
+        bh=kfIpyROBoZ8yrJKq+vs/PmB1xO92sG3Xj30E9xJMJ7Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KwXKDptMpumbNkk1+kXEy/9YEDq309IWc4VIcejBE2f+aPnBABLhdrIHdOJbUOJDC
+         GMFQiatKjbLRkywoHez+Qx9FyI96J2J7jeaH5knjn4W5qGZ1xUR/12PWDX6uOe340V
+         8dXQL8bMAPTplJTafL2ALiHUpLaYxSAvfPe9d1Us0i8/eQMqxGhSHSBqR0IqIKcKV1
+         C17KCdp6ekmz0cgyC14B8ANEXSedu7iBc27Wx6n8J31/60TcY7SbcDHVp4kHh5SxQt
+         lP8gJ/wIn5V0wV2d9w5tNGkyiHPzAaB6qbHyaOHxPdtBZU+xjfB3LaKH8r1kNt9aj0
+         lXs7NBLJA2jOg==
+Date:   Tue, 20 Sep 2022 12:22:46 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        linux-can@vger.kernel.org, kernel@pengutronix.de
+Subject: Re: [PATCH net 0/17] pull-request: can 2022-09-20
+Message-ID: <20220920122246.00dbe946@kernel.org>
+In-Reply-To: <20220920092915.921613-1-mkl@pengutronix.de>
+References: <20220920092915.921613-1-mkl@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v6 net-next 0/6] tcp: Introduce optional per-netns ehash.
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166370042183.20640.3960141192085780845.git-patchwork-notify@kernel.org>
-Date:   Tue, 20 Sep 2022 19:00:21 +0000
-References: <20220908011022.45342-1-kuniyu@amazon.com>
-In-Reply-To: <20220908011022.45342-1-kuniyu@amazon.com>
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, kuni1840@gmail.com, netdev@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -55,39 +52,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Tue, 20 Sep 2022 11:28:58 +0200 Marc Kleine-Budde wrote:
+> The next 15 patches are by Anssi Hannula and Jimmy Assarsson and fix
+> various problem in the kvaser_usb CAN driver.
 
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+These are large patches which don't clearly justify the classification
+as a fix. Patches 6 and 8 for example leave me asking "what does this
+fix?" It's good to report errors, but the absence of error reporting
+is not necessarily a bug worthy of stable.
 
-On Wed, 7 Sep 2022 18:10:16 -0700 you wrote:
-> The more sockets we have in the hash table, the longer we spend looking
-> up the socket.  While running a number of small workloads on the same
-> host, they penalise each other and cause performance degradation.
-> 
-> The root cause might be a single workload that consumes much more
-> resources than the others.  It often happens on a cloud service where
-> different workloads share the same computing resource.
-> 
-> [...]
-
-Here is the summary with links:
-  - [v6,net-next,1/6] tcp: Clean up some functions.
-    https://git.kernel.org/netdev/net-next/c/08eaef904031
-  - [v6,net-next,2/6] tcp: Don't allocate tcp_death_row outside of struct netns_ipv4.
-    https://git.kernel.org/netdev/net-next/c/e9bd0cca09d1
-  - [v6,net-next,3/6] tcp: Set NULL to sk->sk_prot->h.hashinfo.
-    https://git.kernel.org/netdev/net-next/c/429e42c1c54e
-  - [v6,net-next,4/6] tcp: Access &tcp_hashinfo via net.
-    https://git.kernel.org/netdev/net-next/c/4461568aa4e5
-  - [v6,net-next,5/6] tcp: Save unnecessary inet_twsk_purge() calls.
-    https://git.kernel.org/netdev/net-next/c/edc12f032a5a
-  - [v6,net-next,6/6] tcp: Introduce optional per-netns ehash.
-    https://git.kernel.org/netdev/net-next/c/d1e5e6408b30
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Can we get the commit messages beefed up?
