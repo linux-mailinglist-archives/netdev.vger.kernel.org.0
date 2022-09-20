@@ -2,65 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 201E85BDD22
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 08:27:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF2A65BDD7E
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 08:41:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230095AbiITG1u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 02:27:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33304 "EHLO
+        id S229581AbiITGlv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 02:41:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229472AbiITG1r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 02:27:47 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48B4C14036;
-        Mon, 19 Sep 2022 23:27:46 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id r23so1574695pgr.6;
-        Mon, 19 Sep 2022 23:27:46 -0700 (PDT)
+        with ESMTP id S229505AbiITGlf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 02:41:35 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6756BC28
+        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 23:41:34 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id j16so2196145lfg.1
+        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 23:41:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=hVjUCDSaCdPdJ7NXLFSifGsFadRadfOQWil7zKYvxLI=;
-        b=c125V8QjD5o5L+Aqok+dbsA1xQu0n25dsto6FuFHTGqhuM7a30ssy9Bs6qo8NNXIJy
-         lYGrqv/UeUKStJwtecVoceKViRqnHW+DfaHZIo7g5ALU1AL2IPxzDLJPoXW9xjoHVrsM
-         8x0ZHzaag8QtoAdsJvAD4JTkiMOmgBXcy9UwwJz/TCGwZG7H4UIFiaR18ePdxTgt23GT
-         H76eLZ8X1YFQBgMPJ5W/gkScCjmgjeS+PoXSc5PNQZoyFOy4de5ghPSQcAnHWs/tyWHd
-         PXqQLUyWa8B0HTxw2CAzWCXoWPIcZtdg734JqkletsmF3w0oX1D54xT/U25BGdZEOYf7
-         JRbA==
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=I6f9Xu3oOm5TQPGLHRpxuXeF0ks4IclqsW8C47l8Xio=;
+        b=QjLLgww6CE7ZipTONAP2xFqbAogSsR2DSlOCQ31cOBoxjPywHXMA7TpCiieIaqLPF+
+         Tm2h8WnMMKyClLaas8GUJu6DlDGQXzDbjXPKduLDavCMOzoHy0lgEPVDdpAZnpSWx81A
+         4DlmszrABSPKKLZUmslEOPX2LhzCRgATQhrSUaFwHxFQG3ADw/UwgoGHV4R0yHVpfuzf
+         pw79RTA0AjQI/TMbcpV8jOgXyJwZTrMLBV43yQ/zEG9qxjZPbma5+kUSnFOcOuDJpFl9
+         XJtYPJXzE+1lN0dTT10Pd/cR+ZKrhF2EMMWLrU+1nf5pS/l861zhr+L3FXQrsqg9Xqk7
+         HQIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=hVjUCDSaCdPdJ7NXLFSifGsFadRadfOQWil7zKYvxLI=;
-        b=AWAJuouVQ0/sjkzYjOeGykglNt73gSA3J7dQu9ZBFdre5SgdgWBwfk3fQc9o+fXrW0
-         yx5gtFaEVOzfsRWfMydq14QvW3Y9n39aN/GzNv360xug23hCrtRjNomUz0ClSsxMoKTF
-         +wkA3+ABTHuVJKFWY9tDq5vdAw2BP/cH0qPOQoMeNIg7CF8PqNg9cbLc3AMQc1V6QPAP
-         D1CaByETEiR5czEn/jlYh4dZXTj3jDO+j31hH1eIW88S0+Byka4Ww+kA1+UCtqvx5B3C
-         bOCy6DGhxte3hNVrfh7ISrK1MpQX1xDjr/9xtPAFl43+YRrvjpUkcUBcwkFsgp2UfDCU
-         tOQw==
-X-Gm-Message-State: ACrzQf1bujblJ85mwElZ7r6N2IMk8stk1AFF2C7wFIEPhp3c1HADqAzE
-        9WpEwb7XF6rDEDiPn7FojjDDYyNWzqFarPs2csY=
-X-Google-Smtp-Source: AMsMyM5s4t8RXN2/xwtdUU0gK/TFlYQcykuRGozpzIEPl1arwy8c3Q8rsEQyaBnVdQYh7nqPZL3CP6d7nL3hQ92w7NE=
-X-Received: by 2002:a63:3409:0:b0:438:c9c9:5582 with SMTP id
- b9-20020a633409000000b00438c9c95582mr18570186pga.69.1663655265597; Mon, 19
- Sep 2022 23:27:45 -0700 (PDT)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=I6f9Xu3oOm5TQPGLHRpxuXeF0ks4IclqsW8C47l8Xio=;
+        b=QgAqQ/bnhhEs2Gk5Smc1x9EgdLDGHc4iZ60GvCeFKHlnlomaZtRJ6zvijj5+K1/eIV
+         +lxvFX+LMGir9VlQHLLAONt7aPVJCkRzkuLVrUjn147Us1rVyWDX/FVvWVrCnmo85ZLR
+         H71aVv2mFF+1hq8lI550eF12UWMnGhY0FL/IKDcSjfTOYGHLH579tpSaJqHmSqHMw0Ri
+         lxdvU6mWMI0QU7W5+3tCSmKi4cYxJOmC/UUhzBeDviXnyW1VY5PevdVlqic150CcewYl
+         BNijrx2NRG3FBQ/+SNLklEG5ChIGGQXMr8LkHSRXhFGftDZCIDsan90vRcHOuCFxRjxY
+         O6aA==
+X-Gm-Message-State: ACrzQf3n/q+ir6+5DdhBaqUvBOg+levCsPqlMt1LZnBG/D7mR9wmWpec
+        qO1CAx37jkzVLerio3KmnZYWTFuinkPYeQ==
+X-Google-Smtp-Source: AMsMyM6kHe3KuIzh56/0FHg+bJC9lo6AjenxHp/LgUYS9DH0nUssOYtvBFaIqM8Dl4s81jUYFTBvyA==
+X-Received: by 2002:a05:6512:b81:b0:494:78cc:ca9c with SMTP id b1-20020a0565120b8100b0049478ccca9cmr7240841lfv.564.1663656092510;
+        Mon, 19 Sep 2022 23:41:32 -0700 (PDT)
+Received: from [10.0.1.14] (h-98-128-229-160.NA.cust.bahnhof.se. [98.128.229.160])
+        by smtp.gmail.com with ESMTPSA id m2-20020ac24242000000b00499f700430fsm149999lfl.224.2022.09.19.23.41.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 19 Sep 2022 23:41:32 -0700 (PDT)
+Message-ID: <3f29e40e-1a3b-8580-3fbd-6fba8fc02f1f@gmail.com>
+Date:   Tue, 20 Sep 2022 08:41:30 +0200
 MIME-Version: 1.0
-References: <YyjCBjJch24OT+Ia@ipe420-102>
-In-Reply-To: <YyjCBjJch24OT+Ia@ipe420-102>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Tue, 20 Sep 2022 08:27:34 +0200
-Message-ID: <CAJ8uoz3G05BsmafrkP93sO--3S2MBgA96Dh_40iM8svuPU5qxA@mail.gmail.com>
-Subject: Re: [PATCH bpf] xsk: inherit need_wakeup flag for shared sockets
-To:     Jalal Mostafa <jalal.a.mostapha@gmail.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, bjorn@kernel.org,
-        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
-        jonathan.lemon@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
-        linux-kernel@vger.kernel.org, jalal.mostafa@kit.edu
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH net-next v14 3/7] net: dsa: Introduce dsa tagger data
+ operation.
+Content-Language: en-US
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux@armlinux.org.uk,
+        ansuelsmth@gmail.com
+References: <20220919110847.744712-1-mattias.forsblad@gmail.com>
+ <20220919110847.744712-1-mattias.forsblad@gmail.com>
+ <20220919110847.744712-4-mattias.forsblad@gmail.com>
+ <20220919110847.744712-4-mattias.forsblad@gmail.com>
+ <20220919220056.dactchsdzhcb5sev@skbuf>
+From:   Mattias Forsblad <mattias.forsblad@gmail.com>
+In-Reply-To: <20220919220056.dactchsdzhcb5sev@skbuf>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -69,98 +85,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 19, 2022 at 9:27 PM Jalal Mostafa
-<jalal.a.mostapha@gmail.com> wrote:
->
-> The flag for need_wakeup is not set for xsks with `XDP_SHARED_UMEM`
-> flag and of different queue ids and/or devices. They should inherit
-> the flag from the first socket buffer pool since no flags can be
-> specified once `XDP_SHARED_UMEM` is specified. The issue is fixed
-> by creating a new function `xp_create_and_assign_umem_shared` to
-> create xsk_buff_pool for xsks with the shared umem flag set.
+On 2022-09-20 00:00, Vladimir Oltean wrote:
+>> diff --git a/net/dsa/tag_dsa.c b/net/dsa/tag_dsa.c
+>> index e4b6e3f2a3db..e7fdf3b5cb4a 100644
+>> --- a/net/dsa/tag_dsa.c
+>> +++ b/net/dsa/tag_dsa.c
+>> @@ -198,8 +198,11 @@ static struct sk_buff *dsa_xmit_ll(struct sk_buff *skb, struct net_device *dev,
+>>  static struct sk_buff *dsa_rcv_ll(struct sk_buff *skb, struct net_device *dev,
+>>  				  u8 extra)
+>>  {
+>> +	struct dsa_port *cpu_dp = dev->dsa_ptr;
+>> +	struct dsa_tagger_data *tagger_data;
+>>  	bool trap = false, trunk = false;
+>>  	int source_device, source_port;
+>> +	struct dsa_switch *ds;
+>>  	enum dsa_code code;
+>>  	enum dsa_cmd cmd;
+>>  	u8 *dsa_header;
+>> @@ -218,9 +221,16 @@ static struct sk_buff *dsa_rcv_ll(struct sk_buff *skb, struct net_device *dev,
+>>  
+>>  		switch (code) {
+>>  		case DSA_CODE_FRAME2REG:
+>> -			/* Remote management is not implemented yet,
+>> -			 * drop.
+>> -			 */
+>> +			source_device = FIELD_GET(DSA_FRAME2REG_SOURCE_DEV, dsa_header[0]);
+>> +			ds = dsa_switch_find(cpu_dp->dst->index, source_device);
+>> +			if (ds) {
+>> +				tagger_data = ds->tagger_data;
+> 
+> Can you please also parse the sequence number here, so the
+> decode_frame2reg() data consumer doesn't have to concern itself with the
+> dsa_header at all?
+> 
 
-Thanks for spotting this Jalal. Though I think we should aim for a
-simpler fix. The uses_need_wakeup flag is set by xp_assign_dev(). The
-problem here is the function xp_assign_dev_shared() that prepares the
-flag parameter for xp_assign_dev().
+The sequence number is in the chip structure which isn't available here.
+Should we really access that here in the dsa layer?
 
-if (pool->uses_need_wakeup)
-                flags |= XDP_USE_NEED_WAKEUP;
+/Mattias
 
-Should really be:
+>> +				if (likely(tagger_data->decode_frame2reg))
+>> +					tagger_data->decode_frame2reg(ds, skb);
+>> +			} else {
+>> +				net_err_ratelimited("RMU: Didn't find switch with index %d",
+>> +						    source_device);
+>> +			}
+>>  			return NULL;
+>>  		case DSA_CODE_ARP_MIRROR:
+>>  		case DSA_CODE_POLICY_MIRROR:
+>> @@ -254,7 +264,6 @@ static struct sk_buff *dsa_rcv_ll(struct sk_buff *skb, struct net_device *dev,
+>>  	source_port = (dsa_header[1] >> 3) & 0x1f;
+>>  
+>>  	if (trunk) {
+>> -		struct dsa_port *cpu_dp = dev->dsa_ptr;
+>>  		struct dsa_lag *lag;
+>>  
+>>  		/* The exact source port is not available in the tag,
+>> @@ -323,6 +332,25 @@ static struct sk_buff *dsa_rcv_ll(struct sk_buff *skb, struct net_device *dev,
+>>  	return skb;
+>>  }
+>>  
+>> +static int dsa_tag_connect(struct dsa_switch *ds)
+>> +{
+>> +	struct dsa_tagger_data *tagger_data;
+>> +
+>> +	tagger_data = kzalloc(sizeof(*tagger_data), GFP_KERNEL);
+>> +	if (!tagger_data)
+>> +		return -ENOMEM;
+>> +
+>> +	ds->tagger_data = tagger_data;
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static void dsa_tag_disconnect(struct dsa_switch *ds)
+>> +{
+>> +	kfree(ds->tagger_data);
+>> +	ds->tagger_data = NULL;
+>> +}
+>> +
+>>  #if IS_ENABLED(CONFIG_NET_DSA_TAG_DSA)
+>>  
+>>  static struct sk_buff *dsa_xmit(struct sk_buff *skb, struct net_device *dev)
+>> @@ -343,6 +371,8 @@ static const struct dsa_device_ops dsa_netdev_ops = {
+>>  	.proto	  = DSA_TAG_PROTO_DSA,
+>>  	.xmit	  = dsa_xmit,
+>>  	.rcv	  = dsa_rcv,
+>> +	.connect  = dsa_tag_connect,
+>> +	.disconnect = dsa_tag_disconnect,
+>>  	.needed_headroom = DSA_HLEN,
+>>  };
+>>  
+>> @@ -385,6 +415,8 @@ static const struct dsa_device_ops edsa_netdev_ops = {
+>>  	.proto	  = DSA_TAG_PROTO_EDSA,
+>>  	.xmit	  = edsa_xmit,
+>>  	.rcv	  = edsa_rcv,
+>> +	.connect  = dsa_tag_connect,
+>> +	.disconnect = dsa_tag_disconnect,
+>>  	.needed_headroom = EDSA_HLEN,
+>>  };
+>>  
+>> -- 
+>> 2.25.1
+>>
+> 
 
-if (umem_xs->pool->uses_need_wakeup)
-                flags |= XDP_USE_NEED_WAKEUP;
-
-So change the function parameter *umem to *umem_xs, use that in the
-function call and do:
-
-flags = umem_xs->umem->zc ? XDP_ZEROCOPY : XDP_COPY;
-if (umem_xs->pool->uses_need_wakeup)
-          flags |= XDP_USE_NEED_WAKEUP;
-
-What do you think?
-
-> Signed-off-by: Jalal Mostafa <jalal.a.mostapha@gmail.com>
-> ---
->  include/net/xsk_buff_pool.h |  2 ++
->  net/xdp/xsk.c               |  3 +--
->  net/xdp/xsk_buff_pool.c     | 15 +++++++++++++++
->  3 files changed, 18 insertions(+), 2 deletions(-)
->
-> diff --git a/include/net/xsk_buff_pool.h b/include/net/xsk_buff_pool.h
-> index 647722e847b4..917cfef9d355 100644
-> --- a/include/net/xsk_buff_pool.h
-> +++ b/include/net/xsk_buff_pool.h
-> @@ -93,6 +93,8 @@ struct xsk_buff_pool {
->  /* AF_XDP core. */
->  struct xsk_buff_pool *xp_create_and_assign_umem(struct xdp_sock *xs,
->                                                 struct xdp_umem *umem);
-> +struct xsk_buff_pool *xp_create_and_assign_umem_shared(struct xdp_sock *xs,
-> +                                                      struct xdp_sock *umem_xs);
->  int xp_assign_dev(struct xsk_buff_pool *pool, struct net_device *dev,
->                   u16 queue_id, u16 flags);
->  int xp_assign_dev_shared(struct xsk_buff_pool *pool, struct xdp_umem *umem,
-> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> index 5b4ce6ba1bc7..a415db88e8e5 100644
-> --- a/net/xdp/xsk.c
-> +++ b/net/xdp/xsk.c
-> @@ -946,8 +946,7 @@ static int xsk_bind(struct socket *sock, struct sockaddr *addr, int addr_len)
->                         /* Share the umem with another socket on another qid
->                          * and/or device.
->                          */
-> -                       xs->pool = xp_create_and_assign_umem(xs,
-> -                                                            umem_xs->umem);
-> +                       xs->pool = xp_create_and_assign_umem_shared(xs, umem_xs);
->                         if (!xs->pool) {
->                                 err = -ENOMEM;
->                                 sockfd_put(sock);
-> diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
-> index a71a8c6edf55..7d5b0bd8d953 100644
-> --- a/net/xdp/xsk_buff_pool.c
-> +++ b/net/xdp/xsk_buff_pool.c
-> @@ -112,6 +112,21 @@ struct xsk_buff_pool *xp_create_and_assign_umem(struct xdp_sock *xs,
->         return NULL;
->  }
->
-> +struct xsk_buff_pool *xp_create_and_assign_umem_shared(struct xdp_sock *xs,
-> +                                                      struct xdp_sock *umem_xs)
-> +{
-> +       struct xdp_umem *umem = umem_xs->umem;
-> +       struct xsk_buff_pool *pool = xp_create_and_assign_umem(xs, umem);
-> +
-> +       if (!pool)
-> +               goto out;
-> +
-> +       pool->uses_need_wakeup = umem_xs->pool->uses_need_wakeup;
-> +
-> +out:
-> +       return pool;
-> +}
-> +
->  void xp_set_rxq_info(struct xsk_buff_pool *pool, struct xdp_rxq_info *rxq)
->  {
->         u32 i;
-> --
-> 2.34.1
->
