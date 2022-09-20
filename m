@@ -2,84 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 717AD5BE2B5
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 12:10:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E07265BE2BC
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 12:12:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229664AbiITKKB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 06:10:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37174 "EHLO
+        id S229726AbiITKMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 06:12:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229667AbiITKJj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 06:09:39 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F835F12;
-        Tue, 20 Sep 2022 03:09:33 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id e187so2608790ybh.10;
-        Tue, 20 Sep 2022 03:09:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=PCpH7XaOYZZ5Juyccnl2JBqJJq74rbofAcRfa5pnMW4=;
-        b=F4XYTJfQTTCYoo4OMhB4Z/sqJL21Ik7naXfWjfZE+1h6DzFB/TwjLGDVcUsUzxJYda
-         cvpra7dueS1+C9mRHZONpsH4XVQye02M/ra+Aaj99Q35PD9bkU8TW8TCmXb4dupck9Hf
-         ochtIMPQmgu8BdMdXurxEfWPlCzve9N3mwYQZn8LfwkNpLcp0OKXwmWYxlXF+flA75z7
-         OmzqElNNpVU1RNo3wBv1iWGHBcKcDb8EvtIQC99bTkFC8dtt0Miy51KNgQecOcrdgbiM
-         /z695TTWwrQSfMsyvznICWZKW6T6209NBmftinqMOs5qkUaWMcKHm1uAj0xEeAQoXBs4
-         Ap1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=PCpH7XaOYZZ5Juyccnl2JBqJJq74rbofAcRfa5pnMW4=;
-        b=aPLhlJpHP5wpwH2FaKsmTpHUxoge205KM1cdzhriioTpRRj+AeFN5Zi5afjzIoqx88
-         pi8E/Zq+kOOHMXMEcuvdefR64cwqJO83kOlcRayyM3lEPtj0zoR1qaHqxwjZAczLkiqW
-         nIYeIXGjKKtVxMA8hHy53sYbGzyOWze7twVd0zVKOA4qM+dQ7vicojK+cM93PHg0gHRj
-         PdGQd17XgOYRNoJkVP3mfksdaDJ51ITnUuYbeGR9wuD5yMmT70J5xvgFweolbEmeelXC
-         HALujvDvPs2l+Utc04P8RNL5oMWsqS0JeQodPCnwzQu3s2BvjCvv1cTa0CQsaMrNZFec
-         GfSQ==
-X-Gm-Message-State: ACrzQf3GH2sbeF15N5b2KZSAdQoE/NIk8wgFhCi0goXVQOoCN1G/5JrC
-        y0LgxgcNJLvJhcHdd5vRD6lkNa1R7apYrDohdw==
-X-Google-Smtp-Source: AMsMyM50NtaDEz5A0D4M1vNFW6JxYypfuV5AAHr+jWRcREN+1lqUX7N4PHDhd9mW8WHpIo5dJVZczYYVLyHeACCci3I=
-X-Received: by 2002:a25:d0c7:0:b0:6af:218:1751 with SMTP id
- h190-20020a25d0c7000000b006af02181751mr5911218ybg.508.1663668572279; Tue, 20
- Sep 2022 03:09:32 -0700 (PDT)
+        with ESMTP id S230033AbiITKLz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 06:11:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63E175580;
+        Tue, 20 Sep 2022 03:11:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F1C8261193;
+        Tue, 20 Sep 2022 10:11:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F9C6C433C1;
+        Tue, 20 Sep 2022 10:11:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1663668713;
+        bh=4gPkczGymKJaBF3DT++ttgjn8GG9PYQ7gXbLGMUwnF4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=DilD3foYhtlg4fZYnqnF2nAOmLab62/u4XFXSB31t8l+W6+L0ygIT+omw78oAXv0M
+         Y9tXb7t56CHiemXym717EgmDKP/rgdGUkzWm74Th68IWd4fUGNg22/jRS+nAn0CfxH
+         Aq8JEFokpk/Gfahw0I4/QP0uD/z1oLef2AMSx2/aGcio1pmaYCCk64gQJE0mFnnGC8
+         TZ42/gdraBOJs5kZPA7f/l75/b7Q1OJZ9ofoVv//mRghePgirSdWci0ixeZHRYkrMA
+         +wDCyVykejuBO2LQhMpE1kWb2GcgcL6mh2MNKcbcdT4sDaIU/Gn4YjJm9a/xft675F
+         l6g5fkctzSFYw==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
+        Mark-MC.Lee@mediatek.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, matthias.bgg@gmail.com,
+        linux-mediatek@lists.infradead.org, lorenzo.bianconi@redhat.com,
+        Bo.Jiao@mediatek.com, sujuan.chen@mediatek.com,
+        ryder.Lee@mediatek.com, evelyn.tsai@mediatek.com,
+        devicetree@vger.kernel.org, robh@kernel.org, daniel@makrotopia.org
+Subject: [PATCH v3 net-next 00/11] Add WED support for MT7986 chipset
+Date:   Tue, 20 Sep 2022 12:11:12 +0200
+Message-Id: <cover.1663668203.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-References: <cover.1663628505.git.jtoppins@redhat.com> <3cd65bdf26ba7b64c8ade801820562c426b90109.1663628505.git.jtoppins@redhat.com>
-In-Reply-To: <3cd65bdf26ba7b64c8ade801820562c426b90109.1663628505.git.jtoppins@redhat.com>
-From:   Jussi Maki <joamaki@gmail.com>
-Date:   Tue, 20 Sep 2022 12:08:56 +0200
-Message-ID: <CAHn8xcnRXq95WB9YQW1JLgZtQ0ey0LedLKT=DYr025iyqjvhxw@mail.gmail.com>
-Subject: Re: [PATCH net 2/2] bonding: fix NULL deref in bond_rr_gen_slave_id
-To:     Jonathan Toppins <jtoppins@redhat.com>
-Cc:     "netdev @ vger . kernel . org" <netdev@vger.kernel.org>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 20, 2022 at 1:09 AM Jonathan Toppins <jtoppins@redhat.com> wrote:
->
-> Fix a NULL dereference of the struct bonding.rr_tx_counter member because
-> if a bond is initially created with an initial mode != zero (Round Robin)
-> the memory required for the counter is never created and when the mode is
-> changed there is never any attempt to verify the memory is allocated upon
-> switching modes.
+Similar to MT7622, introduce Wireless Ethernet Dispatch (WED) support
+for MT7986 chipset in order to offload to the hw packet engine traffic
+received from LAN/WAN device to WLAN nic (MT7915E).
 
-Thanks for the fix and sorry for missing the mode change path in the
-original patch.
+Changes since v2:
+- fix build warnings in patch 9/11
 
-Acked-by: Jussi Maki <joamaki@gmail.com>
+Changes since v1:
+- drop foe structure in mtk_soc_data structure and fix compilation error
+  on ARMv7 (e.g. MT7623)
+- add missing dt bindings
+- rely on syscon_regmap_lookup_by_phandle to read/write into wed-pcie
+  controller
+
+Lorenzo Bianconi (11):
+  arm64: dts: mediatek: mt7986: add support for Wireless Ethernet
+    Dispatch
+  dt-bindings: net: mediatek: add WED binding for MT7986 eth driver
+  net: ethernet: mtk_eth_soc: move gdma_to_ppe and ppe_base definitions
+    in mtk register map
+  net: ethernet: mtk_eth_soc: move ppe table hash offset to mtk_soc_data
+    structure
+  net: ethernet: mtk_eth_soc: add the capability to run multiple ppe
+  net: ethernet: mtk_eth_soc: move wdma_base definitions in mtk register
+    map
+  net: ethernet: mtk_eth_soc: add foe_entry_size to mtk_eth_soc
+  net: ethernet: mtk_eth_wed: add mtk_wed_configure_irq and
+    mtk_wed_dma_{enable/disable}
+  net: ethernet: mtk_eth_wed: add wed support for mt7986 chipset
+  net: ethernet: mtk_eth_wed: add axi bus support
+  net: ethernet: mtk_eth_soc: introduce flow offloading support for
+    mt7986
+
+ .../arm/mediatek/mediatek,mt7622-wed.yaml     |   1 +
+ .../mediatek/mediatek,mt7986-wed-pcie.yaml    |  43 ++
+ .../devicetree/bindings/net/mediatek,net.yaml |  27 +-
+ arch/arm64/boot/dts/mediatek/mt7986a.dtsi     |  24 +
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c   |  98 +++-
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h   |  93 +++-
+ drivers/net/ethernet/mediatek/mtk_ppe.c       | 302 ++++++-----
+ drivers/net/ethernet/mediatek/mtk_ppe.h       |  67 ++-
+ .../net/ethernet/mediatek/mtk_ppe_debugfs.c   |  10 +-
+ .../net/ethernet/mediatek/mtk_ppe_offload.c   |  62 ++-
+ drivers/net/ethernet/mediatek/mtk_ppe_regs.h  |   8 +
+ drivers/net/ethernet/mediatek/mtk_wed.c       | 479 ++++++++++++++----
+ drivers/net/ethernet/mediatek/mtk_wed.h       |   8 +-
+ .../net/ethernet/mediatek/mtk_wed_debugfs.c   |   3 +
+ drivers/net/ethernet/mediatek/mtk_wed_regs.h  |  89 +++-
+ include/linux/soc/mediatek/mtk_wed.h          |  19 +-
+ 16 files changed, 1020 insertions(+), 313 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7986-wed-pcie.yaml
+
+-- 
+2.37.3
+
