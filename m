@@ -2,49 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 79B685BDEAD
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 09:47:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8D5F5BDECA
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 09:51:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230317AbiITHrV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 03:47:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35026 "EHLO
+        id S230113AbiITHuv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 03:50:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230478AbiITHqg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 03:46:36 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00F3F267E;
-        Tue, 20 Sep 2022 00:45:45 -0700 (PDT)
-Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1oaXwq-00084B-2t; Tue, 20 Sep 2022 09:45:40 +0200
-Message-ID: <9165d763-ec2c-3014-cebf-121934ad93f3@leemhuis.info>
-Date:   Tue, 20 Sep 2022 09:45:39 +0200
+        with ESMTP id S230164AbiITHuI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 03:50:08 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3426BDA
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 00:49:29 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id bq9so2875212wrb.4
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 00:49:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:reply-to:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date;
+        bh=M6+ne4OFKqc2mKK0wgRF6R/AO4uBhWAl+SeCBkxb194=;
+        b=T1VA8FNm+ynrkpHjD70GZE1SFBOPeLxjYfo+0xvj1oSqPS0xUluytok2jm8QWvq/dl
+         BQGjmPPjdv0mQKdJqX2q2P4ndl1YilSeEDcMppKIza+p7J8S7XnkCssKTT0bF/gnv15S
+         DW4KC/g1Hr1BytfL/Mak9/ZhoSHgQ76GPgx9SDR8lnWYDOLHCEiUJOrbSKY/6A1Xwax2
+         XXr2SOsG6AdPdhiXd6oEpTK857P7JFma0JdutIpKaHwQGxGqMF+KljRFd40gX51KZak9
+         lk5IbS+n6B59cPPs4PdeWqf03WwCbw4z669TWnXCD+OHV/n/tt7CHyZptl2GrMuBt/l4
+         VSVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:reply-to:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date;
+        bh=M6+ne4OFKqc2mKK0wgRF6R/AO4uBhWAl+SeCBkxb194=;
+        b=q6NO6c1LYY6n58tvtQSPKiJz+zPyrK29Y/3jocqKx5bdoRCd4vAFos3GevmE1pOxo9
+         zcEccVAA/Mt4uGgSNtzUpfqO447DL5IBbzGDEMySfWH3cSmNUxxNxT+3y2zAQuMrP6Pb
+         oBCBsMwGx5BDC0thy0yMGLeujZrsFtKqED50uAvMGNzbknNnc2QI3WvTefI7N90cWKEx
+         K2nq7HcQYRDFnvdCGb7ae+WambBFcIimJfCmnqgVMIVkrd36h/hw32VT6W46C6pJ/76g
+         wS0yxltoFgzIKecTeSRdmMBZq6EsR4bTlTNw37LTfKm09kRzpho0iQEuh+wZVSbtxvSN
+         a6yA==
+X-Gm-Message-State: ACrzQf26cZCQ4JSf54jkJ6hPTtLHCLn7TFf03sA7t2oDREUvKOMdoNH3
+        7u2eKNJQ5q3DrjR6enm6c3hr89FcjeRvpw==
+X-Google-Smtp-Source: AMsMyM78ynE1NLC0tTzLR91DvF2v43osaTx4a+H7Cjq9r8jkqJQdZOha14Xcr4/4xHlLNO2lc2jV3w==
+X-Received: by 2002:a5d:5312:0:b0:228:cc9e:b70f with SMTP id e18-20020a5d5312000000b00228cc9eb70fmr13263142wrv.11.1663660168186;
+        Tue, 20 Sep 2022 00:49:28 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:b41:c160:ad91:24d8:d1d3:3b41? ([2a01:e0a:b41:c160:ad91:24d8:d1d3:3b41])
+        by smtp.gmail.com with ESMTPSA id t1-20020a05600001c100b0021e51c039c5sm801894wrx.80.2022.09.20.00.49.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 20 Sep 2022 00:49:27 -0700 (PDT)
+Message-ID: <0198618f-7b52-3023-5e9f-b38c49af1677@6wind.com>
+Date:   Tue, 20 Sep 2022 09:49:27 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Subject: Re: [PATCH net 0/2] Revert fec PTP changes
-Content-Language: en-US, de-DE
-To:     Francesco Dolcini <francesco.dolcini@toradex.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        =?UTF-8?B?Q3PDs2vDoXMgQmVuY2U=?= <csokas.bence@prolan.hu>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Guenter Roeck <linux@roeck-us.net>,
-        Andrew Lunn <andrew@lunn.ch>
-References: <20220912070143.98153-1-francesco.dolcini@toradex.com>
- <20220912122857.b6g7r23esks43b3t@pengutronix.de>
- <20220912123833.GA4303@francesco-nb.int.toradex.com>
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <20220912123833.GA4303@francesco-nb.int.toradex.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH net-next v4 04/12] net: netlink: add NLM_F_BULK delete
+ request modifier
+Content-Language: en-US
+To:     Nikolay Aleksandrov <razor@blackwall.org>, netdev@vger.kernel.org
+Cc:     dsahern@kernel.org, roopa@nvidia.com, idosch@idosch.org,
+        kuba@kernel.org, davem@davemloft.net,
+        bridge@lists.linux-foundation.org
+References: <20220413105202.2616106-1-razor@blackwall.org>
+ <20220413105202.2616106-5-razor@blackwall.org>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+In-Reply-To: <20220413105202.2616106-5-razor@blackwall.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1663659946;fbec6853;
-X-HE-SMSGID: 1oaXwq-00084B-2t
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -52,31 +78,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12.09.22 14:38, Francesco Dolcini wrote:
-> On Mon, Sep 12, 2022 at 02:28:57PM +0200, Marc Kleine-Budde wrote:
->> On 12.09.2022 09:01:41, Francesco Dolcini wrote:
->>> Revert the last 2 FEC PTP changes from Csókás Bence, they are causing multiple
->>> issues and we are at 6.0-rc5.
->>>
->>> Francesco Dolcini (2):
->>>   Revert "fec: Restart PPS after link state change"
->>>   Revert "net: fec: Use a spinlock to guard `fep->ptp_clk_on`"
->>
->> Nitpick: I would revert "net: fec: Use a spinlock to guard
->> `fep->ptp_clk_on`" first, as it's the newer patch.
+
+Le 13/04/2022 à 12:51, Nikolay Aleksandrov a écrit :
+> Add a new delete request modifier called NLM_F_BULK which, when
+> supported, would cause the request to delete multiple objects. The flag
+> is a convenient way to signal that a multiple delete operation is
+> requested which can be gradually added to different delete requests. In
+> order to make sure older kernels will error out if the operation is not
+> supported instead of doing something unintended we have to break a
+> required condition when implementing support for this flag, f.e. for
+> neighbors we will omit the mandatory mac address attribute.
+> Initially it will be used to add flush with filtering support for bridge
+> fdbs, but it also opens the door to add similar support to others.
 > 
-> Shame on me, I do 100% agree, I inverted the 2 patches last second.
+> Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
+> ---
+>  include/uapi/linux/netlink.h | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/include/uapi/linux/netlink.h b/include/uapi/linux/netlink.h
+> index 4c0cde075c27..855dffb4c1c3 100644
+> --- a/include/uapi/linux/netlink.h
+> +++ b/include/uapi/linux/netlink.h
+> @@ -72,6 +72,7 @@ struct nlmsghdr {
+>  
+>  /* Modifiers to DELETE request */
+>  #define NLM_F_NONREC	0x100	/* Do not delete recursively	*/
+> +#define NLM_F_BULK	0x200	/* Delete multiple objects	*/
+Sorry to reply to an old patch, but FWIW, this patch broke the uAPI.
+One of our applications was using NLM_F_EXCL with RTM_DELTFILTER. This is
+conceptually wrong but it was working. After this patch, the kernel returns an
+error (EOPNOTSUPP).
 
-What's the status of this patchset? It seems it didn't make any progress
-in the past few days, or am I missing something?
+Here is the patch series:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/log/?h=92716869375b
 
-Just asking, because the thing is: I'm pretty sure that Linus will be
-somewhat unhappy if there isn't any attempt to get this fixed before
-rc7, as the the problems caused by these patches are known for a while now.
+We probably can't do anything now, but to avoid this in the future, I see only
+two options:
+ - enforce flags validation depending on the operation (but this may break some
+   existing apps)
+ - stop adding new flags that overlap between NEW and DEL operations (by adding
+   a comment or defining dummy flags).
 
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+Any thoughts?
 
-P.S.: As the Linux kernel's regression tracker I deal with a lot of
-reports and sometimes miss something important when writing mails like
-this. If that's the case here, don't hesitate to tell me in a public
-reply, it's in everyone's interest to set the public record straight.
+Regards,
+Nicolas
