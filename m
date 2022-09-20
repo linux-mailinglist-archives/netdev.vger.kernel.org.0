@@ -2,92 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 82DF85BE6BE
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 15:11:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93AA35BE6E6
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 15:20:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230023AbiITNLA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 09:11:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46060 "EHLO
+        id S230301AbiITNU3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 09:20:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229802AbiITNK7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 09:10:59 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FF3E4056A
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 06:10:58 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id e17so3761098edc.5
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 06:10:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=cgDnqGK8i4nTSv4BsMCL00HLHApr4hVCq8vHbXMZr1s=;
-        b=aFgB0qGVMTFmyP01EEWN15n4Aw8P/xnff1BS3G5MSqdoQTA6ehx9GnWxncoFN9ZzTG
-         89nUFiiLOgf3YWZLRch8pNDvuMlFJEAcYg6IhZcatsyB7QXGn14bME11hD8SZH24v1Tq
-         iVZJoHv/mg2U9u9iX5oIYqNLNwh4ixt/12jW4Kqbu4Gzw+b0FhXSnqGDZm6QG1hHwxzV
-         BdrDgWAswgAHBYATEG8L6Y23Z+IV1/kP+bHRnwcAPoJJQa4AxfrsKUu509o+KIf+us+r
-         0NzcPasgoizZ/9QKGNwBYjiggEpiUtXXs0cCyxCC5+tAvWZVRJEq2rSanumsenaQ4Q3X
-         aZGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=cgDnqGK8i4nTSv4BsMCL00HLHApr4hVCq8vHbXMZr1s=;
-        b=lMpmOHZanFlOkLGmV9Jwin7VWRdysl+X14XGbpiR2PRhttK5/WmjJu8YUm7iiC6h2Y
-         i1/21K03LA+pzjJy+hyDHPuTfx4DaG8ron7jpt7/8u4fxezRphrV8sxpe2hcf8hSlZpc
-         UBOyv2uZylbpBEowb0XeYyMkVpNyr4Fttmk528cgyppl7iyf300djXqvt2NR0HR55mHS
-         lu+Qa02kkAlfmE2Uf0QudFonBiKlJf54CF2JxFrLv3Zscexy9AQUOwtivM15yzOVwigs
-         +cxxrR7sOtUZGxv6GGuAr9//Muimks/y/lpC4fvSHK8xz6touc8Xe2SKtawy2YixRs8A
-         0LCg==
-X-Gm-Message-State: ACrzQf2IpAQRsrkIXunbpIOQnga8dlg89sewk4pMC3u3xnk4YGzLOWFF
-        8QFsdrilVLDeBDWH2Fx8PpzpjdXc9xePyOCC
-X-Google-Smtp-Source: AMsMyM4iexusn2hvv1A3uUc7F4dGofU1xMxKiTeUIgiUvI0n3ydBY+novBt4NQinC6u16MtGWf3MYw==
-X-Received: by 2002:a05:6402:11d1:b0:451:964:3af3 with SMTP id j17-20020a05640211d100b0045109643af3mr20506534edw.225.1663679456582;
-        Tue, 20 Sep 2022 06:10:56 -0700 (PDT)
-Received: from skbuf ([188.27.184.197])
-        by smtp.gmail.com with ESMTPSA id w14-20020a170906d20e00b0073d218af237sm815400ejz.216.2022.09.20.06.10.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Sep 2022 06:10:55 -0700 (PDT)
-Date:   Tue, 20 Sep 2022 16:10:53 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Mattias Forsblad <mattias.forsblad@gmail.com>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux@armlinux.org.uk,
-        ansuelsmth@gmail.com
-Subject: Re: [PATCH net-next v14 5/7] net: dsa: mv88e6xxx: rmu: Add
- functionality to get RMON
-Message-ID: <20220920131053.24kwiy4hxdovlkxo@skbuf>
-References: <20220919110847.744712-1-mattias.forsblad@gmail.com>
- <20220919110847.744712-1-mattias.forsblad@gmail.com>
- <20220919110847.744712-6-mattias.forsblad@gmail.com>
- <20220919110847.744712-6-mattias.forsblad@gmail.com>
- <20220919224924.yt7nzmr722a62rnl@skbuf>
- <aad1bfa6-e401-2301-2da2-f7d4f9f2798c@gmail.com>
+        with ESMTP id S231135AbiITNUU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 09:20:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9215F474C3;
+        Tue, 20 Sep 2022 06:20:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3AF21B8292E;
+        Tue, 20 Sep 2022 13:20:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id DCDC2C433D7;
+        Tue, 20 Sep 2022 13:20:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1663680016;
+        bh=W9g+HSFSLz4wyNoN2myIF2p7ILoeXP4guBNOOyXgpIU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ZKiBxYcZwea6NE7I5f9GXfl0OSwQ02vtOVujeUGzwKiUAG5ew5Srg9shJNWT24uc8
+         Q9pYCwPgGqRzD50/ekP5tkt4hgZQZlfCOoncrPAOHwUyTGKc+S3bU+BlDieLiMcqPA
+         yHJB1EkiPSaHNx+u9j08OCRI6iIuDrL1Vz9srgYR808jdD8Sa2gayWWtogc2Wtj6cl
+         1uWWTBkRrNVClju+PNyi0HHZiTmPHwXwVr9s6s+XQ9I9v9OZwGtF6qljrqOK4QMDLw
+         J7LnRDIjqDa6pPOu2oiPJnfJDho7cRwryuEo24BI9AhMTnXe9ygKaE2Rn1sOs9aYH5
+         9EIhRmGhE5iOA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BF597C43141;
+        Tue, 20 Sep 2022 13:20:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aad1bfa6-e401-2301-2da2-f7d4f9f2798c@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [net-next v8 0/3] net: ethernet: adi: Add ADIN1110 support
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166368001677.22370.6651002479753262496.git-patchwork-notify@kernel.org>
+Date:   Tue, 20 Sep 2022 13:20:16 +0000
+References: <20220913122629.124546-1-andrei.tachici@stud.acs.upb.ro>
+In-Reply-To: <20220913122629.124546-1-andrei.tachici@stud.acs.upb.ro>
+To:     None <andrei.tachici@stud.acs.upb.ro>
+Cc:     linux-kernel@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        vegard.nossum@oracle.com, joel@jms.id.au, l.stelmach@samsung.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        devicetree@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 20, 2022 at 02:26:22PM +0200, Mattias Forsblad wrote:
-> This whole shebang was a suggestion from Andrew. I had a solution with
-> mv88e6xxx_rmu_available in mv88e6xxx_get_ethtool_stats which he wasn't fond of.
-> The mv88e6xxx_bus_ops is declared const and how am I to change the get_rmon
-> member? I'm not really sure on how to solve this in a better way?
-> Suggestions any? Maybe I've misunderstood his suggestion.
+Hello:
 
-Can you point me to the beginning of that exact suggestion? I've removed
-everything older than v10 from my inbox, since the flow of patches was
-preventing me from seeing other emails.
+This series was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
+
+On Tue, 13 Sep 2022 15:26:26 +0300 you wrote:
+> From: Alexandru Tachici <alexandru.tachici@analog.com>
+> 
+> The ADIN1110 is a low power single port 10BASE-T1L MAC-PHY
+> designed for industrial Ethernet applications. It integrates
+> an Ethernet PHY core with a MAC and all the associated analog
+> circuitry, input and output clock buffering.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,v8,1/3] net: phy: adin1100: add PHY IDs of adin1110/adin2111
+    https://git.kernel.org/netdev/net-next/c/875b718ac380
+  - [net-next,v8,2/3] net: ethernet: adi: Add ADIN1110 support
+    https://git.kernel.org/netdev/net-next/c/bc93e19d088b
+  - [net-next,v8,3/3] dt-bindings: net: adin1110: Add docs
+    https://git.kernel.org/netdev/net-next/c/9fd12e869e17
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
