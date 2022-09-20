@@ -2,79 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7466D5BEA99
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 17:55:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53EEC5BEA9B
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 17:56:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231480AbiITPzs convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 20 Sep 2022 11:55:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60538 "EHLO
+        id S230046AbiITP4B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 11:56:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229706AbiITPzq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 11:55:46 -0400
-Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [205.139.111.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD13558507
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 08:55:43 -0700 (PDT)
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-670-bgoSSUozMEKEBKeXfUGgZw-1; Tue, 20 Sep 2022 11:55:39 -0400
-X-MC-Unique: bgoSSUozMEKEBKeXfUGgZw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S230060AbiITPz7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 11:55:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08A046B675
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 08:55:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 19B8B185A7A3;
-        Tue, 20 Sep 2022 15:55:39 +0000 (UTC)
-Received: from hog (unknown [10.39.194.132])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0F9B41121314;
-        Tue, 20 Sep 2022 15:55:37 +0000 (UTC)
-Date:   Tue, 20 Sep 2022 17:55:28 +0200
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, steffen.klassert@secunet.com
-Subject: Re: [PATCH ipsec-next 1/7] xfrm: add extack support to
- verify_newsa_info
-Message-ID: <YynicFZpq2Z64u86@hog>
-References: <cover.1663103634.git.sd@queasysnail.net>
- <b492239e903e8491abfd91178b572b59a48851e3.1663103634.git.sd@queasysnail.net>
- <20220919170038.23b6d58e@kernel.org>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 98D56B82AEA
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 15:55:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6D4CC433C1;
+        Tue, 20 Sep 2022 15:55:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1663689355;
+        bh=hjBg5cwgLvlSWYJOh+ELk2rQKYR36ZekZfXqVnzdzGw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=GklAb1UyhSWOHKll2l01HPHcYMPhoShqkIaiy1rekKylkvwFguHdRNq9LK29WuBeD
+         /dMwJzjRF8gCCuNS/3nj8al8DjbMCN0+ta0e0QoVfHc2ZpZm7u43ZV9XAF0O2dYWPW
+         YR+64q5lWCvBVSvwzUO1KRTgen6rAjd26glr3hEQp5q4EhVPYJJMjxEC++Qyn9Y99a
+         wHsg0yL4chQFcP8zpxMeec3W4xxVlEBm/H3Tm34h04N1lOdwhe4MPxqTNOZ7MdRU/6
+         TXK6YvwcbZM8nPeYS5pRJk593TlKpBB72tEw0k9IW5c32ExcA6Zw/3gUAsMvnLyZk9
+         bjwLrnpeFUp7g==
+Date:   Tue, 20 Sep 2022 08:55:53 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Jonathan Toppins <jtoppins@redhat.com>
+Subject: Re: [PATCH net] selftests/bonding: add a test for bonding lladdr
+ target
+Message-ID: <20220920085553.646a87f6@kernel.org>
+In-Reply-To: <YyPTvVzFWoVdf3D8@Laptop-X1>
+References: <20220915094202.335636-1-liuhangbin@gmail.com>
+        <970039e7-1c13-e6d7-cb70-53af92eb9958@redhat.com>
+        <YyPTvVzFWoVdf3D8@Laptop-X1>
 MIME-Version: 1.0
-In-Reply-To: <20220919170038.23b6d58e@kernel.org>
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: queasysnail.net
-Content-Type: text/plain; charset=UTF-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2022-09-19, 17:00:38 -0700, Jakub Kicinski wrote:
-> On Wed, 14 Sep 2022 19:04:00 +0200 Sabrina Dubroca wrote:
-> >  	case IPPROTO_COMP:
-> > +		if (!attrs[XFRMA_ALG_COMP]) {
-> > +			NL_SET_ERR_MSG(extack, "Missing required attribute for COMP: COMP");
-> > +			goto out;
-> > +		}
+On Fri, 16 Sep 2022 09:39:09 +0800 Hangbin Liu wrote:
+> Hi David, Jakub, Paolo,
 > 
-> Did NL_SET_ERR_ATTR_MISS() make it to the xfrm tree?
+> I saw the patch checking failed[1] as there is no fixes tag.
+> 
+> I post the patch to net tree as the testing commits are in net tree. I'm
+> not sure if this patch should go net-next? Any suggestion?
 
-No, it hasn't. Thanks for the note, I hadn't seen those patches.
+Sorry about the delay in responding. There are corner cases the
+patchwork check does not take into account so feel free to ignore
+it unless maintainers bring it up as well.
 
-It would only solve part of the problem here, since some cases need
-one of two possible attributes (AH needs AUTH or AUTH_TRUNC, ESP needs
-AEAD or CRYPT).
-
-In this particular case, it's also a bit confusing because which
-attribute is required (or not allowed) depends on other parts of the
-configuration, so there isn't a way to express most of it outside of
-strings -- short of having netlink policies or extacks that can
-describe logical formulas, I guess.
-
--- 
-Sabrina
-
+For selftest I don't feel like we have enough experience deciding
+so either net or net-next is fine by me. Since the new patch targets
+net-next I'll take that one :)
