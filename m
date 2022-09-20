@@ -2,135 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 87C2E5BE243
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 11:43:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C8F95BE261
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 11:50:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230052AbiITJnp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 05:43:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53590 "EHLO
+        id S229645AbiITJub (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 05:50:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229828AbiITJnn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 05:43:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5FD643E78
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 02:43:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1663667022;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KxJc4EwdNPOPw/+t4sVZ14DqF5XTa5bzeTRnaZ5IV5A=;
-        b=EzXStHi1GpyhSpfCUOaLZLOJcLDBe4mYUajrn8sMpM81NuEiEBEom0rNM4i1UgCsxndr75
-        sYJY7fm60yud6u6GwAZQ9sRQJuf6kvEkqFKw+xaWMQpszlzR0bv9v7qcstPueR+cPj33NB
-        LO4iB7EQyzbPxdIo74I7rdIpm6vBN3A=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-497-6SD14g6sMS-HMShqynwzhA-1; Tue, 20 Sep 2022 05:43:38 -0400
-X-MC-Unique: 6SD14g6sMS-HMShqynwzhA-1
-Received: by mail-qk1-f200.google.com with SMTP id u6-20020a05620a430600b006ce769b7150so1503535qko.0
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 02:43:38 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=KxJc4EwdNPOPw/+t4sVZ14DqF5XTa5bzeTRnaZ5IV5A=;
-        b=NT3oPCSahH6bbbHsNnAVkA2Ie54adDehzRtmIQiqTWBjicVcDjTXlczff7rkX2JP48
-         9kDH03X6qzN/vOHXhj1gR6BhnTNspRcYnGZjlu7mWU7xV7YTg7vPACvkEIsdiQZNQ3NS
-         dfjS2bIydqM8ogKIfu0oNiB2+QOCCTnQRE95rvcaUXbncvDxNpo2YnmOnZThQxmzgmZl
-         cT+VvNRLBdYxXChmsCaudaEyIEcpnub6DXFVyBmniZEWjiz2KN2ysqbZCjkXKWH1ru5O
-         E+Yt7QwMXaxPyw1vlXHBXYyZG1KTiLxYQF/XATbsaWy+6FaVpAOdhPQL+C86wbahBJKq
-         WhkQ==
-X-Gm-Message-State: ACrzQf0Mm257ghJyROj2tcSaBb8KHiXpsC7Pjbj64BB6cbif5AL4/2gH
-        EJR/3/nIhjvim+8gr01jn4mqImXgyed1yS3/gJ0UaH8EA1M24aNA7rhwwRfpDj+AsAa65esXFo2
-        q0+6bkKC5cTyzbvjJ
-X-Received: by 2002:ad4:5c6f:0:b0:4aa:a393:fe85 with SMTP id i15-20020ad45c6f000000b004aaa393fe85mr18124727qvh.124.1663667017768;
-        Tue, 20 Sep 2022 02:43:37 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM4EHobH+Cg0wFbiwpGjrOYGZH8L9AGUDFxY5LfTZXhip0iniWZeT8JNoZ5YwoD/7aFHxPicoQ==
-X-Received: by 2002:ad4:5c6f:0:b0:4aa:a393:fe85 with SMTP id i15-20020ad45c6f000000b004aaa393fe85mr18124721qvh.124.1663667017552;
-        Tue, 20 Sep 2022 02:43:37 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-114-90.dyn.eolo.it. [146.241.114.90])
-        by smtp.gmail.com with ESMTPSA id f9-20020ac840c9000000b0035a7070e909sm617157qtm.38.2022.09.20.02.43.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Sep 2022 02:43:37 -0700 (PDT)
-Message-ID: <4697415ff25b60b83a649c6b832d9694c2cba807.camel@redhat.com>
-Subject: Re: [PATCH 1/2] net: openvswitch: allow metering in non-initial
- user namespace
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Michael =?ISO-8859-1?Q?Wei=DF?= 
-        <michael.weiss@aisec.fraunhofer.de>
-Cc:     Pravin B Shelar <pshelar@ovn.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        dev@openvswitch.org, linux-kernel@vger.kernel.org
-Date:   Tue, 20 Sep 2022 11:43:33 +0200
-In-Reply-To: <20220911173825.167352-2-michael.weiss@aisec.fraunhofer.de>
-References: <20220911173825.167352-1-michael.weiss@aisec.fraunhofer.de>
-         <20220911173825.167352-2-michael.weiss@aisec.fraunhofer.de>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S229793AbiITJuW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 05:50:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1378C6B8D8;
+        Tue, 20 Sep 2022 02:50:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E51D562831;
+        Tue, 20 Sep 2022 09:50:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4FD20C433D7;
+        Tue, 20 Sep 2022 09:50:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1663667414;
+        bh=kX2EBvWZ7BlQJA8Sgf4mtTIkaLClscQRwqoplzn8F+w=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=iGLipXrYNs2g8myoZN31AF5AMVDi9F7fpr2rQbYV9xIkXKvb5U5f9OmhsyoUXxxma
+         TK7TZCi5lUTncUgdCTP0k0a/7gb+JCEFUrokJrVKSqJo3LAA/O4TBp3nIbgOz+PdEZ
+         B5sq27tZD50rlW6Dgl5bSEePtETNennnxGl7LeDvXHqbiKGMLq1SJT4iyHqSepLoyl
+         dGUyZDZNc4VRweknhSSq74Ui9ZnnJBH+dP/5We0Kx1zpPwJlSiObzQW8NwZgFnM2n7
+         Vz6VYdmMXf1KKap52E2b8UQ9COnXhdLwZz8G/CtP/qko1QCpoSvLjHG/5a1n/QnScV
+         eZajxpUjQH9nQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 36080E21EE2;
+        Tue, 20 Sep 2022 09:50:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Subject: Re: [PATCH net-next v2] net/mlx5e: Ensure macsec_rule is always
+ initiailized in macsec_fs_{r,t}x_add_rule()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166366741421.25964.18299631498168125673.git-patchwork-notify@kernel.org>
+Date:   Tue, 20 Sep 2022 09:50:14 +0000
+References: <20220911085748.461033-1-nathan@kernel.org>
+In-Reply-To: <20220911085748.461033-1-nathan@kernel.org>
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     saeedm@nvidia.com, leon@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        ndesaulniers@google.com, trix@redhat.com, borisp@nvidia.com,
+        raeds@nvidia.com, liorna@nvidia.com, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, patches@lists.linux.dev
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 2022-09-11 at 19:38 +0200, Michael Weiß wrote:
-> The Netlink interface for metering was restricted to global CAP_NET_ADMIN
-> by using GENL_ADMIN_PERM. To allow metring in a non-inital user namespace,
-> e.g., a container, this is changed to GENL_UNS_ADMIN_PERM.
+Hello:
+
+This patch was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
+
+On Sun, 11 Sep 2022 01:57:50 -0700 you wrote:
+> Clang warns:
 > 
-> Signed-off-by: Michael Weiß <michael.weiss@aisec.fraunhofer.de>
-> ---
->  net/openvswitch/meter.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
+>   drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec_fs.c:539:6: error: variable 'macsec_rule' is used uninitialized whenever 'if' condition is true [-Werror,-Wsometimes-uninitialized]
+>           if (err)
+>               ^~~
+>   drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec_fs.c:598:9: note: uninitialized use occurs here
+>           return macsec_rule;
+>                 ^~~~~~~~~~~
+>   drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec_fs.c:539:2: note: remove the 'if' if its condition is always false
+>           if (err)
+>           ^~~~~~~~
+>   drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec_fs.c:523:38: note: initialize the variable 'macsec_rule' to silence this warning
+>           union mlx5e_macsec_rule *macsec_rule;
+>                                               ^
+>                                               = NULL
+>   drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec_fs.c:1131:6: error: variable 'macsec_rule' is used uninitialized whenever 'if' condition is true [-Werror,-Wsometimes-uninitialized]
+>           if (err)
+>               ^~~
+>   drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec_fs.c:1215:9: note: uninitialized use occurs here
+>           return macsec_rule;
+>                 ^~~~~~~~~~~
+>   drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec_fs.c:1131:2: note: remove the 'if' if its condition is always false
+>           if (err)
+>           ^~~~~~~~
+>   drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec_fs.c:1118:38: note: initialize the variable 'macsec_rule' to silence this warning
+>           union mlx5e_macsec_rule *macsec_rule;
+>                                               ^
+>                                               = NULL
+>   2 errors generated.
 > 
-> diff --git a/net/openvswitch/meter.c b/net/openvswitch/meter.c
-> index 04a060ac7fdf..e9ef050a0dd5 100644
-> --- a/net/openvswitch/meter.c
-> +++ b/net/openvswitch/meter.c
-> @@ -687,9 +687,9 @@ static const struct genl_small_ops dp_meter_genl_ops[] = {
->  	},
->  	{ .cmd = OVS_METER_CMD_SET,
->  		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-> -		.flags = GENL_ADMIN_PERM, /* Requires CAP_NET_ADMIN
-> -					   *  privilege.
-> -					   */
-> +		.flags = GENL_UNS_ADMIN_PERM, /* Requires CAP_NET_ADMIN
-> +					       *  privilege.
-> +					       */
->  		.doit = ovs_meter_cmd_set,
->  	},
->  	{ .cmd = OVS_METER_CMD_GET,
-> @@ -699,9 +699,9 @@ static const struct genl_small_ops dp_meter_genl_ops[] = {
->  	},
->  	{ .cmd = OVS_METER_CMD_DEL,
->  		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-> -		.flags = GENL_ADMIN_PERM, /* Requires CAP_NET_ADMIN
-> -					   *  privilege.
-> -					   */
-> +		.flags = GENL_UNS_ADMIN_PERM, /* Requires CAP_NET_ADMIN
-> +					       *  privilege.
-> +					       */
->  		.doit = ovs_meter_cmd_del
->  	},
->  };
+> [...]
 
-It looks like the user namespace can allocate quite a bit of memory
-with multiple meters, I think it's better additionally change
-GFP_KERNEL to GFP_KERNEL_ACCOUNT in dp_meter_create().
+Here is the summary with links:
+  - [net-next,v2] net/mlx5e: Ensure macsec_rule is always initiailized in macsec_fs_{r,t}x_add_rule()
+    https://git.kernel.org/netdev/net-next/c/2e50e9bf328f
 
-Also plese add an explicit target tree in the subj when posting the
-next revision, thanks!
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Paolo
 
