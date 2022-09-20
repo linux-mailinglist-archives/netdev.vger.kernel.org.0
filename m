@@ -2,158 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A0895BDA78
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 04:54:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62D255BDA7B
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 04:54:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229823AbiITCyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 22:54:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58842 "EHLO
+        id S229912AbiITCy4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 22:54:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229580AbiITCyK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 22:54:10 -0400
-Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A288F54652;
-        Mon, 19 Sep 2022 19:54:08 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VQGxTZu_1663642435;
-Received: from localhost(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0VQGxTZu_1663642435)
+        with ESMTP id S229814AbiITCyz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 22:54:55 -0400
+Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9A5E22B11;
+        Mon, 19 Sep 2022 19:54:53 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VQGxz6G_1663642482;
+Received: from localhost(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0VQGxz6G_1663642482)
           by smtp.aliyun-inc.com;
-          Tue, 20 Sep 2022 10:54:06 +0800
+          Tue, 20 Sep 2022 10:54:51 +0800
 From:   Wen Gu <guwen@linux.alibaba.com>
 To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, davem@davemloft.net,
         edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
 Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 1/2] net/smc: Introduce a specific sysctl for TEST_LINK time
-Date:   Tue, 20 Sep 2022 10:53:54 +0800
-Message-Id: <1663642434-30035-1-git-send-email-guwen@linux.alibaba.com>
+Subject: [PATCH net-next 2/2] net/smc: Unbind r/w buffer size from clcsock and make them tunable
+Date:   Tue, 20 Sep 2022 10:54:42 +0800
+Message-Id: <1663642482-31639-1-git-send-email-guwen@linux.alibaba.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1663641907-15852-1-git-send-email-guwen@linux.alibaba.com>
 References: <1663641907-15852-1-git-send-email-guwen@linux.alibaba.com>
 X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SMC-R tests the viability of link by sending out TEST_LINK LLC
-messages over RoCE fabric when connections on link have been
-idle for a time longer than keepalive interval (testlink time).
+From: Tony Lu <tonylu@linux.alibaba.com>
 
-But using tcp_keepalive_time as testlink time maybe not quite
-suitable because it is default no less than two hours[1], which
-is too long for single link to find peer dead. The active host
-will still use peer-dead link (QP) sending messages, and can't
-find out until get IB_WC_RETRY_EXC_ERR error CQEs, which takes
-more time than TEST_LINK timeout (SMC_LLC_WAIT_TIME) normally.
+Currently, SMC uses smc->sk.sk_{rcv|snd}buf to create buffers for
+send buffer and RMB. And the values of buffer size are from tcp_{w|r}mem
+in clcsock.
 
-So this patch introduces a independent sysctl for SMC-R to set
-link keepalive time, in order to detect link down in time. The
-default value is 30 seconds.
+The buffer size from TCP socket doesn't fit SMC well. Generally, buffers
+are usually larger than TCP for SMC-R/-D to get higher performance, for
+they are different underlay devices and paths.
 
-[1] https://www.rfc-editor.org/rfc/rfc1122#page-101
+So this patch unbinds buffer size from TCP, and introduces two sysctl
+knobs to tune them independently. Also, these knobs are per net
+namespace and work for containers.
 
-Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
+Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
 ---
- Documentation/networking/smc-sysctl.rst |  7 +++++++
- include/net/netns/smc.h                 |  1 +
- net/smc/smc_llc.c                       |  2 +-
- net/smc/smc_llc.h                       |  1 +
- net/smc/smc_sysctl.c                    | 14 ++++++++++++++
- 5 files changed, 24 insertions(+), 1 deletion(-)
+ Documentation/networking/smc-sysctl.rst | 18 ++++++++++++++++++
+ include/net/netns/smc.h                 |  2 ++
+ net/smc/af_smc.c                        |  5 ++---
+ net/smc/smc_core.c                      |  8 ++++----
+ net/smc/smc_sysctl.c                    | 20 ++++++++++++++++++++
+ 5 files changed, 46 insertions(+), 7 deletions(-)
 
 diff --git a/Documentation/networking/smc-sysctl.rst b/Documentation/networking/smc-sysctl.rst
-index 742e90e..f8c3d59 100644
+index f8c3d59..2e45bbe 100644
 --- a/Documentation/networking/smc-sysctl.rst
 +++ b/Documentation/networking/smc-sysctl.rst
-@@ -34,3 +34,10 @@ smcr_buf_type - INTEGER
-         - 1 - Use virtually contiguous buffers
-         - 2 - Mixed use of the two types. Try physically contiguous buffers first.
-           If not available, use virtually contiguous buffers then.
+@@ -41,3 +41,21 @@ smcr_testlink_time - INTEGER
+ 	value is (INT_MAX / HZ) seconds, the minimum value is 1 second.
+ 
+ 	Default: 30 seconds.
 +
-+smcr_testlink_time - INTEGER
-+	How frequently SMC-R link sends out TEST_LINK LLC messages to confirm
-+	viability, after the last activity of connections on it. The maximum
-+	value is (INT_MAX / HZ) seconds, the minimum value is 1 second.
++wmem - INTEGER
++	Initial size of send buffer used by SMC sockets.
++	The default value inherits from net.ipv4.tcp_wmem[1].
 +
-+	Default: 30 seconds.
++	The minimum value is 16KiB and there is no hard limit for max value, but
++	only allowed 512KiB for SMC-R and 1MiB for SMC-D.
++
++	Default: 16K
++
++rmem - INTEGER
++	Initial size of receive buffer (RMB) used by SMC sockets.
++	The default value inherits from net.ipv4.tcp_rmem[1].
++
++	The minimum value is 16KiB and there is no hard limit for max value, but
++	only allowed 512KiB for SMC-R and 1MiB for SMC-D.
++
++	Default: 128K
 diff --git a/include/net/netns/smc.h b/include/net/netns/smc.h
-index 2adbe2b..d295e2c 100644
+index d295e2c..582212a 100644
 --- a/include/net/netns/smc.h
 +++ b/include/net/netns/smc.h
-@@ -19,5 +19,6 @@ struct netns_smc {
- #endif
+@@ -20,5 +20,7 @@ struct netns_smc {
  	unsigned int			sysctl_autocorking_size;
  	unsigned int			sysctl_smcr_buf_type;
-+	int				sysctl_smcr_testlink_time;
+ 	int				sysctl_smcr_testlink_time;
++	int				sysctl_wmem;
++	int				sysctl_rmem;
  };
  #endif
-diff --git a/net/smc/smc_llc.c b/net/smc/smc_llc.c
-index 175026a..388bd2e 100644
---- a/net/smc/smc_llc.c
-+++ b/net/smc/smc_llc.c
-@@ -2127,7 +2127,7 @@ void smc_llc_lgr_init(struct smc_link_group *lgr, struct smc_sock *smc)
- 	init_waitqueue_head(&lgr->llc_flow_waiter);
- 	init_waitqueue_head(&lgr->llc_msg_waiter);
- 	mutex_init(&lgr->llc_conf_mutex);
--	lgr->llc_testlink_time = READ_ONCE(net->ipv4.sysctl_tcp_keepalive_time);
-+	lgr->llc_testlink_time = READ_ONCE(net->smc.sysctl_smcr_testlink_time) * HZ;
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index 0939cc3..e44ca70 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -379,6 +379,8 @@ static struct sock *smc_sock_alloc(struct net *net, struct socket *sock,
+ 	sk->sk_state = SMC_INIT;
+ 	sk->sk_destruct = smc_destruct;
+ 	sk->sk_protocol = protocol;
++	WRITE_ONCE(sk->sk_sndbuf, READ_ONCE(net->smc.sysctl_wmem));
++	WRITE_ONCE(sk->sk_rcvbuf, READ_ONCE(net->smc.sysctl_rmem));
+ 	smc = smc_sk(sk);
+ 	INIT_WORK(&smc->tcp_listen_work, smc_tcp_listen_work);
+ 	INIT_WORK(&smc->connect_work, smc_connect_work);
+@@ -3253,9 +3255,6 @@ static int __smc_create(struct net *net, struct socket *sock, int protocol,
+ 		smc->clcsock = clcsock;
+ 	}
+ 
+-	smc->sk.sk_sndbuf = max(smc->clcsock->sk->sk_sndbuf, SMC_BUF_MIN_SIZE);
+-	smc->sk.sk_rcvbuf = max(smc->clcsock->sk->sk_rcvbuf, SMC_BUF_MIN_SIZE);
+-
+ out:
+ 	return rc;
  }
+diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+index ebf56cd..ea41f22 100644
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -2307,10 +2307,10 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
  
- /* called after lgr was removed from lgr_list */
-diff --git a/net/smc/smc_llc.h b/net/smc/smc_llc.h
-index 4404e52..1de9a29 100644
---- a/net/smc/smc_llc.h
-+++ b/net/smc/smc_llc.h
-@@ -19,6 +19,7 @@
+ 	if (is_rmb)
+ 		/* use socket recv buffer size (w/o overhead) as start value */
+-		sk_buf_size = smc->sk.sk_rcvbuf / 2;
++		sk_buf_size = smc->sk.sk_rcvbuf;
+ 	else
+ 		/* use socket send buffer size (w/o overhead) as start value */
+-		sk_buf_size = smc->sk.sk_sndbuf / 2;
++		sk_buf_size = smc->sk.sk_sndbuf;
  
- #define SMC_LLC_WAIT_FIRST_TIME		(5 * HZ)
- #define SMC_LLC_WAIT_TIME		(2 * HZ)
-+#define SMC_LLC_TESTLINK_DEFAULT_TIME	30
- 
- enum smc_llc_reqresp {
- 	SMC_LLC_REQ,
+ 	for (bufsize_short = smc_compress_bufsize(sk_buf_size, is_smcd, is_rmb);
+ 	     bufsize_short >= 0; bufsize_short--) {
+@@ -2369,7 +2369,7 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
+ 	if (is_rmb) {
+ 		conn->rmb_desc = buf_desc;
+ 		conn->rmbe_size_short = bufsize_short;
+-		smc->sk.sk_rcvbuf = bufsize * 2;
++		smc->sk.sk_rcvbuf = bufsize;
+ 		atomic_set(&conn->bytes_to_rcv, 0);
+ 		conn->rmbe_update_limit =
+ 			smc_rmb_wnd_update_limit(buf_desc->len);
+@@ -2377,7 +2377,7 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
+ 			smc_ism_set_conn(conn); /* map RMB/smcd_dev to conn */
+ 	} else {
+ 		conn->sndbuf_desc = buf_desc;
+-		smc->sk.sk_sndbuf = bufsize * 2;
++		smc->sk.sk_sndbuf = bufsize;
+ 		atomic_set(&conn->sndbuf_space, bufsize);
+ 	}
+ 	return 0;
 diff --git a/net/smc/smc_sysctl.c b/net/smc/smc_sysctl.c
-index 0613868..7f68520 100644
+index 7f68520..0046a88 100644
 --- a/net/smc/smc_sysctl.c
 +++ b/net/smc/smc_sysctl.c
-@@ -16,8 +16,12 @@
+@@ -21,6 +21,8 @@
  
- #include "smc.h"
- #include "smc_core.h"
-+#include "smc_llc.h"
- #include "smc_sysctl.h"
+ static int smcr_testlink_time_min = 1;
+ static int smcr_testlink_time_max = (INT_MAX / HZ);
++static int min_sndbuf = SMC_BUF_MIN_SIZE;
++static int min_rcvbuf = SMC_BUF_MIN_SIZE;
  
-+static int smcr_testlink_time_min = 1;
-+static int smcr_testlink_time_max = (INT_MAX / HZ);
-+
  static struct ctl_table smc_table[] = {
  	{
- 		.procname       = "autocorking_size",
-@@ -35,6 +39,15 @@
- 		.extra1		= SYSCTL_ZERO,
- 		.extra2		= SYSCTL_TWO,
+@@ -48,6 +50,22 @@
+ 		.extra1		= &smcr_testlink_time_min,
+ 		.extra2		= &smcr_testlink_time_max,
  	},
 +	{
-+		.procname	= "smcr_testlink_time",
-+		.data		= &init_net.smc.sysctl_smcr_testlink_time,
++		.procname	= "wmem",
++		.data		= &init_net.smc.sysctl_wmem,
 +		.maxlen		= sizeof(int),
 +		.mode		= 0644,
 +		.proc_handler	= proc_dointvec_minmax,
-+		.extra1		= &smcr_testlink_time_min,
-+		.extra2		= &smcr_testlink_time_max,
++		.extra1		= &min_sndbuf,
++	},
++	{
++		.procname	= "rmem",
++		.data		= &init_net.smc.sysctl_rmem,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec_minmax,
++		.extra1		= &min_rcvbuf,
 +	},
  	{  }
  };
  
-@@ -60,6 +73,7 @@ int __net_init smc_sysctl_net_init(struct net *net)
- 
+@@ -74,6 +92,8 @@ int __net_init smc_sysctl_net_init(struct net *net)
  	net->smc.sysctl_autocorking_size = SMC_AUTOCORKING_DEFAULT_SIZE;
  	net->smc.sysctl_smcr_buf_type = SMCR_PHYS_CONT_BUFS;
-+	net->smc.sysctl_smcr_testlink_time = SMC_LLC_TESTLINK_DEFAULT_TIME;
+ 	net->smc.sysctl_smcr_testlink_time = SMC_LLC_TESTLINK_DEFAULT_TIME;
++	WRITE_ONCE(net->smc.sysctl_wmem, READ_ONCE(net->ipv4.sysctl_tcp_wmem[1]));
++	WRITE_ONCE(net->smc.sysctl_rmem, READ_ONCE(net->ipv4.sysctl_tcp_rmem[1]));
  
  	return 0;
  
