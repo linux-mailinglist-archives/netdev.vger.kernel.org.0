@@ -2,141 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 20C505BEE03
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 21:48:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED7CA5BEE42
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 22:11:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229470AbiITTse (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 15:48:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42358 "EHLO
+        id S231282AbiITULE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 16:11:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231197AbiITTsd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 15:48:33 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5189C6CD3F
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 12:48:32 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id b14-20020a056902030e00b006a827d81fd8so3064073ybs.17
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 12:48:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:references
-         :mime-version:in-reply-to:date:from:to:cc:subject:date;
-        bh=Kt/NYkqtgW6B+FoKQiYCh36VQldSm8N5HzcLdnIZkxc=;
-        b=ralO8EQdOVIjLNaKmYeMAqvtHh1dYvt/aDgS6Qjo3cbVdaEt9esndaAXzbyPjyw7Hc
-         Z6l3kKpdXI7RIqE/ErgFJgdWGFICMB2TFOsWQEB0gfDliER8n7qYExCreOX5Qr8UzvMG
-         +jMALdZpmSLxR1k/DQ4BECZNR5bF5YfPf745sN9hCO2SfHF3BteO4MVTEmpr23iVtL3r
-         UGGFUmjz8Z776FiwNsl5ahcuj5DNTrvC9sIVVxinB4hzIinRQmlMs0HG+8dwQwZF4Mwl
-         qX3WwxqG4rxuo62nB4mdKgz8RisepP7knb5opHxhgx2jb/mvGs0aL8r54GTGJIwvPLro
-         AlXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:references
-         :mime-version:in-reply-to:date:x-gm-message-state:from:to:cc:subject
-         :date;
-        bh=Kt/NYkqtgW6B+FoKQiYCh36VQldSm8N5HzcLdnIZkxc=;
-        b=CPQDQ/sl54RwPKib5UIw0eVDOkYlhWa0PZ6A5qT8lSu2gowOe8WuzP/Zzimf6DSzW0
-         GRq7GeMbI/t/x9f2GCFQKrdK0y93OzQUGXMrBZulkDqSLD+UVOJhbwH6OVNSx97lyoWu
-         JBsYwP6Kpqm0lusrRvZ3zIevXRoYYMzU5uvhz//oFqRlNPll6Geul/mncJSSLitX4pUn
-         thbCy+hOLuUjgPh7/f+SvOeNNlT/hlLdXM3IC3iaFAc8M09YutXCTkyrhYD0UZh+luX8
-         NTiMsc6HGVC/NOXUxRE4RSfv7BTxfqDH8XITXfIHYajLTDp77/vb+Ib9x03fbqrXv7Jg
-         a5Ag==
-X-Gm-Message-State: ACrzQf19PBUh0m3mQBWoueIz99D1J53tXMu+Ugt2+fVxZUfw4N85wqBh
-        y+Gxsdm1fLZ6iuwH5hOBmdFOJLY3WQ==
-X-Google-Smtp-Source: AMsMyM503hU3Tg5/KmftTXLMtj/g9jB/HcIxsLD8g/1mGVZtZ80x/tL+xDSnM4vnYAZ1ZVpAwYgXeprO3Q==
-X-Received: from prohr-desktop.mtv.corp.google.com ([2620:15c:211:200:80fc:5cbf:acb:ddac])
- (user=prohr job=sendgmr) by 2002:a0d:df46:0:b0:345:22d9:f5c1 with SMTP id
- i67-20020a0ddf46000000b0034522d9f5c1mr20510567ywe.239.1663703311638; Tue, 20
- Sep 2022 12:48:31 -0700 (PDT)
-Date:   Tue, 20 Sep 2022 12:48:25 -0700
-In-Reply-To: <20220920083621.18219c3d@hermes.local>
-Mime-Version: 1.0
-References: <20220920083621.18219c3d@hermes.local>
-X-Mailer: git-send-email 2.37.3.968.ga6b4b080e4-goog
-Message-ID: <20220920194825.31820-1-prohr@google.com>
-Subject: [PATCH v2] tun: support not enabling carrier in TUNSETIFF
-From:   Patrick Rohr <prohr@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
-        Patrick Rohr <prohr@google.com>,
-        "=?UTF-8?q?Maciej=20=C5=BBenczykowski?=" <maze@google.com>,
-        Lorenzo Colitti <lorenzo@google.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S230508AbiITULC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 16:11:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A295A719BE
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 13:11:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FD4C62215
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 20:11:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B0A1C433D7;
+        Tue, 20 Sep 2022 20:11:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1663704660;
+        bh=MFypnIWH7SZob6OWKTjjnaQ6tlx+88aXA+kcl7kZzFM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=GOqH6oaN6+SpJhTPysVaA//CFZ5BI6z6XC468+8atBFcM/duO/BMktZyGhNXMwoN5
+         Hr87CoJJVIFWE2/HuHnMcj5kmtpTpdgrWy5x1FPjHNtTGFP8zJlMTcnjflZhtj7JdR
+         DBHms+M8ArPi2pkDVUKz8PTZN7nNvPSu+6DrB/9N9nJgkwYSEaje5ilGKknP1SGdJT
+         5Am+3qH+9p9GpB0TZZhN+lzG2c9s4dl32O9lYFQRgSlQONaG1gdRr3tUQfOZjvsEq+
+         7Qrm5NsZejQsmE1Tf81GTaxvU+ggmmxncPq5y+0gbsppzBpSEqZjaFAXgr5O87KC7w
+         4IXDxU4J2/ZdQ==
+Date:   Tue, 20 Sep 2022 13:10:59 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jian Shen <shenjian15@huawei.com>
+Cc:     <davem@davemloft.net>, <ecree.xilinx@gmail.com>, <andrew@lunn.ch>,
+        <hkallweit1@gmail.com>, <alexandr.lobakin@intel.com>,
+        <saeed@kernel.org>, <leon@kernel.org>, <netdev@vger.kernel.org>,
+        <linuxarm@huawei.com>
+Subject: Re: [RFCv8 PATCH net-next 01/55] net: introduce operation helpers
+ for netdev features
+Message-ID: <20220920131059.7626a665@kernel.org>
+In-Reply-To: <20220918094336.28958-2-shenjian15@huawei.com>
+References: <20220918094336.28958-1-shenjian15@huawei.com>
+        <20220918094336.28958-2-shenjian15@huawei.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This change adds support for not enabling carrier during TUNSETIFF
-interface creation by specifying the IFF_NO_CARRIER flag.
+On Sun, 18 Sep 2022 09:42:42 +0000 Jian Shen wrote:
+> Introduce a set of bitmap operation helpers for netdev features,
+> then we can use them to replace the logical operation with them.
+> 
+> The implementation of these helpers are based on the old prototype
+> of netdev_features_t is still u64. These helpers will be rewritten
+> on the last patch, follow the prototype changes. For the new type
+> netdev_features_t maybe large than 8 bytes, use netdev_features_t
+> pointer as parameter.
+> 
+> To avoid interdependencies between netdev_features_helper.h and
+> netdevice.h, put the helpers for testing feature in the netdevice.h,
+> and move advandced helpers like netdev_get_wanted_features() and
+> netdev_intersect_features() to netdev_features_helper.h.
 
-Our tests make heavy use of tun interfaces. In some scenarios, the test
-process creates the interface but another process brings it up after the
-interface is discovered via netlink notification. In that case, it is
-not possible to create a tun/tap interface with carrier off without it
-racing against the bring up. Immediately setting carrier off via
-TUNSETCARRIER is still too late.
+> diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c b/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c
+> index 8b77582bdfa0..8023a3f0d43b 100644
+> --- a/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c
+> +++ b/drivers/net/ethernet/netronome/nfp/nfp_net_repr.c
+> @@ -4,6 +4,7 @@
+>  #include <linux/etherdevice.h>
+>  #include <linux/io-64-nonatomic-hi-lo.h>
+>  #include <linux/lockdep.h>
+> +#include <linux/netdev_feature_helpers.h>
+>  #include <net/dst_metadata.h>
+>  
+>  #include "nfpcore/nfp_cpp.h"
 
-Signed-off-by: Patrick Rohr <prohr@google.com>
-Cc: Maciej =C5=BBenczykowski <maze@google.com>
-Cc: Lorenzo Colitti <lorenzo@google.com>
-Cc: Jason Wang <jasowang@redhat.com>
-Cc: Stephen Hemminger <stephen@networkplumber.org>
-Cc: Nicolas Dichtel <nicolas.dichtel@6wind.com>
----
- drivers/net/tun.c           | 9 ++++++---
- include/uapi/linux/if_tun.h | 2 ++
- 2 files changed, 8 insertions(+), 3 deletions(-)
+We need to start breaking upstreamable chunks out of this mega-series
+otherwise we won't make any progress..
 
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index 259b2b84b2b3..db736b944016 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -2828,7 +2828,10 @@ static int tun_set_iff(struct net *net, struct file =
-*file, struct ifreq *ifr)
- 		rcu_assign_pointer(tfile->tun, tun);
- 	}
-=20
--	netif_carrier_on(tun->dev);
-+	if (ifr->ifr_flags & IFF_NO_CARRIER)
-+		netif_carrier_off(tun->dev);
-+	else
-+		netif_carrier_on(tun->dev);
-=20
- 	/* Make sure persistent devices do not get stuck in
- 	 * xoff state.
-@@ -3056,8 +3059,8 @@ static long __tun_chr_ioctl(struct file *file, unsign=
-ed int cmd,
- 		 * This is needed because we never checked for invalid flags on
- 		 * TUNSETIFF.
- 		 */
--		return put_user(IFF_TUN | IFF_TAP | TUN_FEATURES,
--				(unsigned int __user*)argp);
-+		return put_user(IFF_TUN | IFF_TAP | IFF_NO_CARRIER |
-+				TUN_FEATURES, (unsigned int __user*)argp);
- 	} else if (cmd =3D=3D TUNSETQUEUE) {
- 		return tun_set_queue(file, &ifr);
- 	} else if (cmd =3D=3D SIOCGSKNS) {
-diff --git a/include/uapi/linux/if_tun.h b/include/uapi/linux/if_tun.h
-index 2ec07de1d73b..b6d7b868f290 100644
---- a/include/uapi/linux/if_tun.h
-+++ b/include/uapi/linux/if_tun.h
-@@ -67,6 +67,8 @@
- #define IFF_TAP		0x0002
- #define IFF_NAPI	0x0010
- #define IFF_NAPI_FRAGS	0x0020
-+/* Used in TUNSETIFF to bring up tun/tap without carrier */
-+#define IFF_NO_CARRIER	0x0040
- #define IFF_NO_PI	0x1000
- /* This flag has no real effect */
- #define IFF_ONE_QUEUE	0x2000
---=20
-2.37.3.968.ga6b4b080e4-goog
+Please make a patch which will move netdev_intersect_features() and
+netdev_get_wanted_features() to the new linux/netdev_feature_helpers.h
+header, and add the missing includes. Post it separately as soon as
+possible.
+
+> diff --git a/include/linux/netdev_feature_helpers.h b/include/linux/netdev_feature_helpers.h
+> new file mode 100644
+> index 000000000000..4bb5de61e4e9
+> --- /dev/null
+> +++ b/include/linux/netdev_feature_helpers.h
+> @@ -0,0 +1,607 @@
+> +/* SPDX-License-Identifier: GPL-2.0-or-later */
+> +/*
+> + * Network device features helpers.
+> + */
+> +#ifndef _LINUX_NETDEV_FEATURES_HELPER_H
+> +#define _LINUX_NETDEV_FEATURES_HELPER_H
+> +
+> +#include <linux/netdevice.h>
+> +
+> +static inline void __netdev_features_zero(netdev_features_t *dst)
+> +{
+> +	*dst = 0;
+> +}
+> +
+> +#define netdev_features_zero(features) __netdev_features_zero(&(features))
+> +
+> +/* active_feature prefer to netdev->features */
+> +#define netdev_active_features_zero(ndev) \
+> +		netdev_features_zero((ndev)->features)
+> +
+
+No need for empty lines between the defines of the same category, IMHO.
+
+> +#define netdev_hw_features_zero(ndev) \
+> +		netdev_features_zero((ndev)->hw_features)
 
