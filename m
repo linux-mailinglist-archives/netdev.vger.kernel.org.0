@@ -2,52 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 92F7C5BE672
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 14:54:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD66A5BE68B
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 14:59:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231406AbiITMyY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 08:54:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49962 "EHLO
+        id S230211AbiITM7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 08:59:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231407AbiITMxw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 08:53:52 -0400
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10EA075FCC
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 05:53:34 -0700 (PDT)
-Received: by mail-io1-f70.google.com with SMTP id u23-20020a6be917000000b0069f4854e11eso1358913iof.2
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 05:53:34 -0700 (PDT)
+        with ESMTP id S229900AbiITM7N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 08:59:13 -0400
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02765BE27
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 05:59:13 -0700 (PDT)
+Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com [209.85.215.199])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id A30063F474
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 12:59:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1663678749;
+        bh=eqAwEupQJTaL2ViF2lYJ6wP4Hl3nR09hRm2qaq0rQeE=;
+        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
+         Content-Type:Date:Message-ID;
+        b=jfwPx3+CMZMYXfO/R3CFtNTihgun1Cy5pHGdpOt4mnf/+ndsrIicf/AOhxqqtl+Wk
+         RfsOs08552W2rFoo1EBpbCC8WZTY251poQBrebvtzY4NjxZH7qNfmIeVCBl1j149B0
+         Oo92pKvtZZnf5CeaOdlpNViPsMbuT9UTDO7TztnNK/s9WtWelkgBiSZhONU5hNNm2e
+         YsyBYZN1o97e/E6CvgIiYeUS3WtVgQmqsw8THjBBC+caXV1KE2dGh8jGdJCP4p/K7W
+         E9yqb3rG2yeXXDlMR4KqUxI97sD3sllHiQGdtZWQRcvBBriQzm/+VVvvszAOzjNMqb
+         UKwUglPJSpD2A==
+Received: by mail-pg1-f199.google.com with SMTP id h5-20020a636c05000000b00429fa12cb65so1593614pgc.21
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 05:59:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=jQJm8Z+up347I13dxWYRPWK1SdivX1s8IHwB5EA/8gk=;
-        b=WuWlMjYSafPcH4Da2ZXsRSsbmZ9KHJbS4XAINxPYQDt8Ytkf8YRtz+bw+5vzY9lGyH
-         RIsQlyyV1ijyJzt8jaTch8nE+aXJ4e3FBLHXUkZ/kuDGFtYWXK0rjUPD34tAbYfR/U/6
-         t/YyPJF2l1be/e7/+lNr2eXmpID/420Gq8+HrWMmPtbRNYhC/EQOhu/bcIWHS02N6ZMW
-         GOMVpVsk3K6ZyIgn9kq39qV9XVEJY4jIfLU5SFl52wemRfdQbBbDctm0coegt+RRD55w
-         RmZ4euVGVZGmbA8yMNNK4yKzMrcNdMRYx6kdZTSBCqOmefNLUhi7+RTCSNcYpupKC1l7
-         wdgw==
-X-Gm-Message-State: ACrzQf3e6lESk1caqwLDZ6CWRqWSHgB2s1JSdWjgjRA+EDT5Uq/7afVz
-        culYQoyF28k/8RxiJK/i1hsU5n9EAUXMQrzWSb4Owd1Orzoo
-X-Google-Smtp-Source: AMsMyM6l6LLo4LWGKy1iezG8GllPNubQqkEn/HEBaG5rq+mYVV3f7Bc8lO3y7PQiTnHuHMq2nyIulejtxAPn4IVQmHIUWDcBul4c
+        h=message-id:date:content-transfer-encoding:content-id:mime-version
+         :comments:references:in-reply-to:subject:cc:to:from
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=eqAwEupQJTaL2ViF2lYJ6wP4Hl3nR09hRm2qaq0rQeE=;
+        b=Zt6BiUYnv9fJzWO94U/+xSo1R7Ezvfsqkj+R5G2+7pJTJ4+nMV6Iw+6Jp+FajS3W93
+         kUC9g/rYIqjaUo3dGNLBTh/7WQEvOSURDQaaihGGuRVueUFqTAWZJNuY6kbm/q3swDdj
+         gmkGWcc8yMeljG1Q2SV0nuukeq6NQcj/+WjaeOcizyS6oApNjtpCKP1wginNGGMfpZJ4
+         ZPzSo7LnS0kT1MAxh7iGSp4jU8r36yAUJQo0CHN2ekdSaSimgLQLqBiH3pJLxl1hxYUb
+         dpTib1220TnEtZRYlvBV04Txb7nOXVOqHuOJpi1X34fXtbe9Kd9vUqXBgK+bJRLXu7hY
+         qI6Q==
+X-Gm-Message-State: ACrzQf271dgxPsVGdXv4LC+9QpHWEvp+rqwCDyDzHOOi3DSCvJC/jOX6
+        jYByleR4zX7dnyI+R+LTYWyEqiOO7S2NHNw0yJI5ljX6ywnAvucLNy7wtTkbq2X9QusmX8L4E/1
+        221B9T/NWSEr/xYNfX4MHEzOw/GuqNMHfsA==
+X-Received: by 2002:a17:90a:64c8:b0:202:6d4a:90f8 with SMTP id i8-20020a17090a64c800b002026d4a90f8mr3885580pjm.11.1663678747869;
+        Tue, 20 Sep 2022 05:59:07 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM5IRqKKEhDlg4r6E3b5F4XnWYIDAdTm4HI2gpPxq2zepmxnXXYtHpSQyLoifBaRxlfIrdwDPg==
+X-Received: by 2002:a17:90a:64c8:b0:202:6d4a:90f8 with SMTP id i8-20020a17090a64c800b002026d4a90f8mr3885553pjm.11.1663678747591;
+        Tue, 20 Sep 2022 05:59:07 -0700 (PDT)
+Received: from famine.localdomain ([50.125.80.157])
+        by smtp.gmail.com with ESMTPSA id d1-20020a170903230100b00176d347e9a7sm1364706plh.233.2022.09.20.05.59.06
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 20 Sep 2022 05:59:06 -0700 (PDT)
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id 50334604E4; Tue, 20 Sep 2022 05:59:06 -0700 (PDT)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id 4A2C6A0101;
+        Tue, 20 Sep 2022 05:59:06 -0700 (PDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Jonathan Toppins <jtoppins@redhat.com>
+cc:     "netdev @ vger . kernel . org" <netdev@vger.kernel.org>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jussi Maki <joamaki@gmail.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net 2/2] bonding: fix NULL deref in bond_rr_gen_slave_id
+In-reply-to: <3cd65bdf26ba7b64c8ade801820562c426b90109.1663628505.git.jtoppins@redhat.com>
+References: <cover.1663628505.git.jtoppins@redhat.com> <3cd65bdf26ba7b64c8ade801820562c426b90109.1663628505.git.jtoppins@redhat.com>
+Comments: In-reply-to Jonathan Toppins <jtoppins@redhat.com>
+   message dated "Mon, 19 Sep 2022 19:08:46 -0400."
+X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:150c:b0:35a:f7a9:c3d8 with SMTP id
- b12-20020a056638150c00b0035af7a9c3d8mr1916588jat.38.1663678413730; Tue, 20
- Sep 2022 05:53:33 -0700 (PDT)
-Date:   Tue, 20 Sep 2022 05:53:33 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000def90305e91b5016@google.com>
-Subject: [syzbot] possible deadlock in skb_queue_tail (4)
-From:   syzbot <syzbot+44b38bcb874d81a15a57@syzkaller.appspotmail.com>
-To:     bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, kuniyu@amazon.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <16281.1663678746.1@famine>
+Content-Transfer-Encoding: quoted-printable
+Date:   Tue, 20 Sep 2022 05:59:06 -0700
+Message-ID: <16282.1663678746@famine>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,188 +94,166 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Jonathan Toppins <jtoppins@redhat.com> wrote:
 
-syzbot found the following issue on:
+>Fix a NULL dereference of the struct bonding.rr_tx_counter member because
+>if a bond is initially created with an initial mode !=3D zero (Round Robi=
+n)
+>the memory required for the counter is never created and when the mode is
+>changed there is never any attempt to verify the memory is allocated upon
+>switching modes.
+>
+>This causes the following Oops on an aarch64 machine:
+>    [  334.686773] Unable to handle kernel paging request at virtual addr=
+ess ffff2c91ac905000
+>    [  334.694703] Mem abort info:
+>    [  334.697486]   ESR =3D 0x0000000096000004
+>    [  334.701234]   EC =3D 0x25: DABT (current EL), IL =3D 32 bits
+>    [  334.706536]   SET =3D 0, FnV =3D 0
+>    [  334.709579]   EA =3D 0, S1PTW =3D 0
+>    [  334.712719]   FSC =3D 0x04: level 0 translation fault
+>    [  334.717586] Data abort info:
+>    [  334.720454]   ISV =3D 0, ISS =3D 0x00000004
+>    [  334.724288]   CM =3D 0, WnR =3D 0
+>    [  334.727244] swapper pgtable: 4k pages, 48-bit VAs, pgdp=3D00000804=
+4d662000
+>    [  334.733944] [ffff2c91ac905000] pgd=3D0000000000000000, p4d=3D00000=
+00000000000
+>    [  334.740734] Internal error: Oops: 96000004 [#1] SMP
+>    [  334.745602] Modules linked in: bonding tls veth rfkill sunrpc arm_=
+spe_pmu vfat fat acpi_ipmi ipmi_ssif ixgbe igb i40e mdio ipmi_devintf ipmi=
+_msghandler arm_cmn arm_dsu_pmu cppc_cpufreq acpi_tad fuse zram crct10dif_=
+ce ast ghash_ce sbsa_gwdt nvme drm_vram_helper drm_ttm_helper nvme_core tt=
+m xgene_hwmon
+>    [  334.772217] CPU: 7 PID: 2214 Comm: ping Not tainted 6.0.0-rc4-0013=
+3-g64ae13ed4784 #4
+>    [  334.779950] Hardware name: GIGABYTE R272-P31-00/MP32-AR1-00, BIOS =
+F18v (SCP: 1.08.20211002) 12/01/2021
+>    [  334.789244] pstate: 60400009 (nZCv daif +PAN -UAO -TCO -DIT -SSBS =
+BTYPE=3D--)
+>    [  334.796196] pc : bond_rr_gen_slave_id+0x40/0x124 [bonding]
+>    [  334.801691] lr : bond_xmit_roundrobin_slave_get+0x38/0xdc [bonding=
+]
+>    [  334.807962] sp : ffff8000221733e0
+>    [  334.811265] x29: ffff8000221733e0 x28: ffffdbac8572d198 x27: ffff8=
+0002217357c
+>    [  334.818392] x26: 000000000000002a x25: ffffdbacb33ee000 x24: ffff0=
+7ff980fa000
+>    [  334.825519] x23: ffffdbacb2e398ba x22: ffff07ff98102000 x21: ffff0=
+7ff981029c0
+>    [  334.832646] x20: 0000000000000001 x19: ffff07ff981029c0 x18: 00000=
+00000000014
+>    [  334.839773] x17: 0000000000000000 x16: ffffdbacb1004364 x15: 0000a=
+aaabe2f5a62
+>    [  334.846899] x14: ffff07ff8e55d968 x13: ffff07ff8e55db30 x12: 00000=
+00000000000
+>    [  334.854026] x11: ffffdbacb21532e8 x10: 0000000000000001 x9 : ffffd=
+bac857178ec
+>    [  334.861153] x8 : ffff07ff9f6e5a28 x7 : 0000000000000000 x6 : 00000=
+0007c2b3742
+>    [  334.868279] x5 : ffff2c91ac905000 x4 : ffff2c91ac905000 x3 : ffff0=
+7ff9f554400
+>    [  334.875406] x2 : ffff2c91ac905000 x1 : 0000000000000001 x0 : ffff0=
+7ff981029c0
+>    [  334.882532] Call trace:
+>    [  334.884967]  bond_rr_gen_slave_id+0x40/0x124 [bonding]
+>    [  334.890109]  bond_xmit_roundrobin_slave_get+0x38/0xdc [bonding]
+>    [  334.896033]  __bond_start_xmit+0x128/0x3a0 [bonding]
+>    [  334.901001]  bond_start_xmit+0x54/0xb0 [bonding]
+>    [  334.905622]  dev_hard_start_xmit+0xb4/0x220
+>    [  334.909798]  __dev_queue_xmit+0x1a0/0x720
+>    [  334.913799]  arp_xmit+0x3c/0xbc
+>    [  334.916932]  arp_send_dst+0x98/0xd0
+>    [  334.920410]  arp_solicit+0xe8/0x230
+>    [  334.923888]  neigh_probe+0x60/0xb0
+>    [  334.927279]  __neigh_event_send+0x3b0/0x470
+>    [  334.931453]  neigh_resolve_output+0x70/0x90
+>    [  334.935626]  ip_finish_output2+0x158/0x514
+>    [  334.939714]  __ip_finish_output+0xac/0x1a4
+>    [  334.943800]  ip_finish_output+0x40/0xfc
+>    [  334.947626]  ip_output+0xf8/0x1a4
+>    [  334.950931]  ip_send_skb+0x5c/0x100
+>    [  334.954410]  ip_push_pending_frames+0x3c/0x60
+>    [  334.958758]  raw_sendmsg+0x458/0x6d0
+>    [  334.962325]  inet_sendmsg+0x50/0x80
+>    [  334.965805]  sock_sendmsg+0x60/0x6c
+>    [  334.969286]  __sys_sendto+0xc8/0x134
+>    [  334.972853]  __arm64_sys_sendto+0x34/0x4c
+>    [  334.976854]  invoke_syscall+0x78/0x100
+>    [  334.980594]  el0_svc_common.constprop.0+0x4c/0xf4
+>    [  334.985287]  do_el0_svc+0x38/0x4c
+>    [  334.988591]  el0_svc+0x34/0x10c
+>    [  334.991724]  el0t_64_sync_handler+0x11c/0x150
+>    [  334.996072]  el0t_64_sync+0x190/0x194
+>    [  334.999726] Code: b9001062 f9403c02 d53cd044 8b040042 (b8210040)
+>    [  335.005810] ---[ end trace 0000000000000000 ]---
+>    [  335.010416] Kernel panic - not syncing: Oops: Fatal exception in i=
+nterrupt
+>    [  335.017279] SMP: stopping secondary CPUs
+>    [  335.021374] Kernel Offset: 0x5baca8eb0000 from 0xffff800008000000
+>    [  335.027456] PHYS_OFFSET: 0x80000000
+>    [  335.030932] CPU features: 0x0000,0085c029,19805c82
+>    [  335.035713] Memory Limit: none
+>    [  335.038756] Rebooting in 180 seconds..
+>
+>The is to allocate the memory in bond_open() which is guaranteed to be
+    ^
+   "fix" or "remedy" or the like here?
 
-HEAD commit:    3245cb65fd91 Merge tag 'devicetree-fixes-for-6.0-2' of git..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=12b0c487080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=98a30118ec9215e9
-dashboard link: https://syzkaller.appspot.com/bug?extid=44b38bcb874d81a15a57
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-userspace arch: i386
+	Other than the missing word, the patch looks good to me.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+	-J
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+44b38bcb874d81a15a57@syzkaller.appspotmail.com
+>called before any packets are processed.
+>
+>Fixes: 848ca9182a7d ("net: bonding: Use per-cpu rr_tx_counter")
+>Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
+>---
+> drivers/net/bonding/bond_main.c | 15 ++++++---------
+> 1 file changed, 6 insertions(+), 9 deletions(-)
+>
+>diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_m=
+ain.c
+>index bc6d8b0aa6fb..86d42306aa5e 100644
+>--- a/drivers/net/bonding/bond_main.c
+>+++ b/drivers/net/bonding/bond_main.c
+>@@ -4182,6 +4182,12 @@ static int bond_open(struct net_device *bond_dev)
+> 	struct list_head *iter;
+> 	struct slave *slave;
+> =
 
-======================================================
-WARNING: possible circular locking dependency detected
-6.0.0-rc5-syzkaller-00025-g3245cb65fd91 #0 Not tainted
-------------------------------------------------------
-syz-executor.4/21149 is trying to acquire lock:
-ffff8880178441e8 (rlock-AF_UNIX){+.+.}-{2:2}, at: skb_queue_tail+0x21/0x140 net/core/skbuff.c:3400
+>+	if (BOND_MODE(bond) =3D=3D BOND_MODE_ROUNDROBIN && !bond->rr_tx_counter=
+) {
+>+		bond->rr_tx_counter =3D alloc_percpu(u32);
+>+		if (!bond->rr_tx_counter)
+>+			return -ENOMEM;
+>+	}
+>+
+> 	/* reset slave->backup and slave->inactive */
+> 	if (bond_has_slaves(bond)) {
+> 		bond_for_each_slave(bond, slave, iter) {
+>@@ -6243,15 +6249,6 @@ static int bond_init(struct net_device *bond_dev)
+> 	if (!bond->wq)
+> 		return -ENOMEM;
+> =
 
-but task is already holding lock:
-ffff888017844670 (&u->lock/1){+.+.}-{2:2}, at: unix_state_double_lock net/unix/af_unix.c:1298 [inline]
-ffff888017844670 (&u->lock/1){+.+.}-{2:2}, at: unix_state_double_lock+0x77/0xa0 net/unix/af_unix.c:1290
+>-	if (BOND_MODE(bond) =3D=3D BOND_MODE_ROUNDROBIN) {
+>-		bond->rr_tx_counter =3D alloc_percpu(u32);
+>-		if (!bond->rr_tx_counter) {
+>-			destroy_workqueue(bond->wq);
+>-			bond->wq =3D NULL;
+>-			return -ENOMEM;
+>-		}
+>-	}
+>-
+> 	spin_lock_init(&bond->stats_lock);
+> 	netdev_lockdep_set_classes(bond_dev);
+> =
 
-which lock already depends on the new lock.
+>-- =
 
-
-the existing dependency chain (in reverse order) is:
-
--> #1 (&u->lock/1){+.+.}-{2:2}:
-       _raw_spin_lock_nested+0x30/0x40 kernel/locking/spinlock.c:378
-       sk_diag_dump_icons net/unix/diag.c:87 [inline]
-       sk_diag_fill+0xaaf/0x10d0 net/unix/diag.c:155
-       sk_diag_dump net/unix/diag.c:193 [inline]
-       unix_diag_dump+0x3a9/0x640 net/unix/diag.c:217
-       netlink_dump+0x541/0xc20 net/netlink/af_netlink.c:2275
-       __netlink_dump_start+0x647/0x900 net/netlink/af_netlink.c:2380
-       netlink_dump_start include/linux/netlink.h:245 [inline]
-       unix_diag_handler_dump net/unix/diag.c:315 [inline]
-       unix_diag_handler_dump+0x5c2/0x830 net/unix/diag.c:304
-       __sock_diag_cmd net/core/sock_diag.c:235 [inline]
-       sock_diag_rcv_msg+0x31a/0x440 net/core/sock_diag.c:266
-       netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2501
-       sock_diag_rcv+0x26/0x40 net/core/sock_diag.c:277
-       netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
-       netlink_unicast+0x543/0x7f0 net/netlink/af_netlink.c:1345
-       netlink_sendmsg+0x917/0xe10 net/netlink/af_netlink.c:1921
-       sock_sendmsg_nosec net/socket.c:714 [inline]
-       sock_sendmsg+0xcf/0x120 net/socket.c:734
-       sock_write_iter+0x291/0x3d0 net/socket.c:1108
-       call_write_iter include/linux/fs.h:2187 [inline]
-       do_iter_readv_writev+0x20b/0x3b0 fs/read_write.c:729
-       do_iter_write+0x182/0x700 fs/read_write.c:855
-       vfs_writev+0x1aa/0x630 fs/read_write.c:928
-       do_writev+0x279/0x2f0 fs/read_write.c:971
-       do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
-       __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
-       do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
-       entry_SYSENTER_compat_after_hwframe+0x70/0x82
-
--> #0 (rlock-AF_UNIX){+.+.}-{2:2}:
-       check_prev_add kernel/locking/lockdep.c:3095 [inline]
-       check_prevs_add kernel/locking/lockdep.c:3214 [inline]
-       validate_chain kernel/locking/lockdep.c:3829 [inline]
-       __lock_acquire+0x2a43/0x56d0 kernel/locking/lockdep.c:5053
-       lock_acquire kernel/locking/lockdep.c:5666 [inline]
-       lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5631
-       __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
-       _raw_spin_lock_irqsave+0x39/0x50 kernel/locking/spinlock.c:162
-       skb_queue_tail+0x21/0x140 net/core/skbuff.c:3400
-       unix_dgram_sendmsg+0xf41/0x1b50 net/unix/af_unix.c:2043
-       sock_sendmsg_nosec net/socket.c:714 [inline]
-       sock_sendmsg+0xcf/0x120 net/socket.c:734
-       ____sys_sendmsg+0x6eb/0x810 net/socket.c:2482
-       __sys_sendmsg_sock+0x26/0x30 net/socket.c:2548
-       io_sendmsg+0x246/0x7d0 io_uring/net.c:289
-       io_issue_sqe+0x6b6/0xd20 io_uring/io_uring.c:1577
-       io_queue_sqe io_uring/io_uring.c:1755 [inline]
-       io_submit_sqe io_uring/io_uring.c:2013 [inline]
-       io_submit_sqes+0x94e/0x1d30 io_uring/io_uring.c:2124
-       __do_sys_io_uring_enter+0xb85/0x1ea0 io_uring/io_uring.c:3054
-       do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
-       __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
-       do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
-       entry_SYSENTER_compat_after_hwframe+0x70/0x82
-
-other info that might help us debug this:
-
- Possible unsafe locking scenario:
-
-       CPU0                    CPU1
-       ----                    ----
-  lock(&u->lock/1);
-                               lock(rlock-AF_UNIX);
-                               lock(&u->lock/1);
-  lock(rlock-AF_UNIX);
-
- *** DEADLOCK ***
-
-2 locks held by syz-executor.4/21149:
- #0: ffff88807dcb40a8 (&ctx->uring_lock){+.+.}-{3:3}, at: __do_sys_io_uring_enter+0xb7a/0x1ea0 io_uring/io_uring.c:3053
- #1: ffff888017844670 (&u->lock/1){+.+.}-{2:2}, at: unix_state_double_lock net/unix/af_unix.c:1298 [inline]
- #1: ffff888017844670 (&u->lock/1){+.+.}-{2:2}, at: unix_state_double_lock+0x77/0xa0 net/unix/af_unix.c:1290
-
-stack backtrace:
-CPU: 0 PID: 21149 Comm: syz-executor.4 Not tainted 6.0.0-rc5-syzkaller-00025-g3245cb65fd91 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 08/26/2022
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- check_noncircular+0x25f/0x2e0 kernel/locking/lockdep.c:2175
- check_prev_add kernel/locking/lockdep.c:3095 [inline]
- check_prevs_add kernel/locking/lockdep.c:3214 [inline]
- validate_chain kernel/locking/lockdep.c:3829 [inline]
- __lock_acquire+0x2a43/0x56d0 kernel/locking/lockdep.c:5053
- lock_acquire kernel/locking/lockdep.c:5666 [inline]
- lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5631
- __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
- _raw_spin_lock_irqsave+0x39/0x50 kernel/locking/spinlock.c:162
- skb_queue_tail+0x21/0x140 net/core/skbuff.c:3400
- unix_dgram_sendmsg+0xf41/0x1b50 net/unix/af_unix.c:2043
- sock_sendmsg_nosec net/socket.c:714 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:734
- ____sys_sendmsg+0x6eb/0x810 net/socket.c:2482
- __sys_sendmsg_sock+0x26/0x30 net/socket.c:2548
- io_sendmsg+0x246/0x7d0 io_uring/net.c:289
- io_issue_sqe+0x6b6/0xd20 io_uring/io_uring.c:1577
- io_queue_sqe io_uring/io_uring.c:1755 [inline]
- io_submit_sqe io_uring/io_uring.c:2013 [inline]
- io_submit_sqes+0x94e/0x1d30 io_uring/io_uring.c:2124
- __do_sys_io_uring_enter+0xb85/0x1ea0 io_uring/io_uring.c:3054
- do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
- __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
- do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
- entry_SYSENTER_compat_after_hwframe+0x70/0x82
-RIP: 0023:0xf7faf549
-Code: 03 74 c0 01 10 05 03 74 b8 01 10 06 03 74 b4 01 10 07 03 74 b0 01 10 08 03 74 d8 01 00 00 00 00 00 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 8d b4 26 00 00 00 00 8d b4 26 00 00 00 00
-RSP: 002b:00000000f7f895cc EFLAGS: 00000296 ORIG_RAX: 00000000000001aa
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000002a6e
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
- </TASK>
-----------------
-Code disassembly (best guess):
-   0:	03 74 c0 01          	add    0x1(%rax,%rax,8),%esi
-   4:	10 05 03 74 b8 01    	adc    %al,0x1b87403(%rip)        # 0x1b8740d
-   a:	10 06                	adc    %al,(%rsi)
-   c:	03 74 b4 01          	add    0x1(%rsp,%rsi,4),%esi
-  10:	10 07                	adc    %al,(%rdi)
-  12:	03 74 b0 01          	add    0x1(%rax,%rsi,4),%esi
-  16:	10 08                	adc    %cl,(%rax)
-  18:	03 74 d8 01          	add    0x1(%rax,%rbx,8),%esi
-  1c:	00 00                	add    %al,(%rax)
-  1e:	00 00                	add    %al,(%rax)
-  20:	00 51 52             	add    %dl,0x52(%rcx)
-  23:	55                   	push   %rbp
-  24:	89 e5                	mov    %esp,%ebp
-  26:	0f 34                	sysenter
-  28:	cd 80                	int    $0x80
-* 2a:	5d                   	pop    %rbp <-- trapping instruction
-  2b:	5a                   	pop    %rdx
-  2c:	59                   	pop    %rcx
-  2d:	c3                   	retq
-  2e:	90                   	nop
-  2f:	90                   	nop
-  30:	90                   	nop
-  31:	90                   	nop
-  32:	8d b4 26 00 00 00 00 	lea    0x0(%rsi,%riz,1),%esi
-  39:	8d b4 26 00 00 00 00 	lea    0x0(%rsi,%riz,1),%esi
-
+>2.31.1
+>
 
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+	-Jay Vosburgh, jay.vosburgh@canonical.com
