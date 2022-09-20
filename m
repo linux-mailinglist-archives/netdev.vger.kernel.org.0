@@ -2,81 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E89875BDFA9
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 10:17:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BAFCB5BDFCA
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 10:21:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229940AbiITIRU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 04:17:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47908 "EHLO
+        id S231173AbiITIVH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 04:21:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229590AbiITIQ7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 04:16:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D81B122534
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 01:14:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 27E3362585
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 08:14:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1721C433D7;
-        Tue, 20 Sep 2022 08:14:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663661670;
-        bh=f7+O42Hsj6/JDzu5n5GBsN+1V9hFlk93Gk13Xo2ncSs=;
-        h=In-Reply-To:References:Subject:From:To:Cc:Date:From;
-        b=dJekUMSephvAZQOphKrDGnU31Iqyiu6fDvQVcYb8ECal/V6mXPd+KjWo40juWpkkE
-         hO6jniupjM+P0p4wNLjTK1Jq+dlbEsZXSpvsDwIiDExie+a97MFYllM89ssTmbhSA3
-         MZAb1uq2+BqYt7dfj6l+uXzlf5eqAv+ZHGCf3H2IEJ9d/eetY874Bgm41HhNakXGuf
-         H4HCVTUaH38PrOlqMBVHtngYxFSvThaVpOUAVFoyF7fTr+bwmdd5KEEh1BJQlcj/qj
-         RpUNDzTk1SgpLCpCEOuA39YYrP9G8vFuM16HcxPpXcGYId9LdMZkaNteMK4XLje8LD
-         OXf/kQW4Fwh7g==
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230177AbiITIUN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 04:20:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE1C0BC19
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 01:18:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1663661914;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=nYBXnM221OKkMmYnX56agU4HA29O1+0qE07dmbgFr1Y=;
+        b=F0OgTcmRQgV+Ch8wa63Iif3veP7AxynKLHbV79zgrraolhR+oDpdSGMZABtGOhz71Udllp
+        9/cqc6NHBuE4WvXuHuepAwiPmqRWO4MRwY/MFSWh+7YpzdfaSb7AlD31hCh24ud/DuIayk
+        n3f5z9hyD9GmZuEBubv5zcGJVBaxBak=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-31-9IJxjVreNDae-G8KOgs1rw-1; Tue, 20 Sep 2022 04:18:31 -0400
+X-MC-Unique: 9IJxjVreNDae-G8KOgs1rw-1
+Received: by mail-wm1-f70.google.com with SMTP id p24-20020a05600c1d9800b003b4b226903dso5929738wms.4
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 01:18:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=nYBXnM221OKkMmYnX56agU4HA29O1+0qE07dmbgFr1Y=;
+        b=ZneDCsOcf/MTuJqhT2NwL3BMrjkThI/I/cIKy1gOZr/evVhFb2Z1YlZu5Vc4A7w5Fb
+         93qJM9vK1LvX1R8p/ON99JCICyqHmdHKU7jlxUF9GMb/78tRWlTY1lC3RTvwzGFC+kuU
+         AsFhrdm2dKlGLhSOuGPNQKvfkgoPyP8xYDa8k6Gm+jS1yLkeoKslU8lyx/zCqBIFhQF8
+         XZYmkTFejFv9SXWIzez9kGHyYh0b8wq3C6k3kI8IfdOmAVM9w5ZO0C2Mb82qkOkkKyKK
+         SiUFyjco49IR1bEdTgJtc6jmghZ4oo1B4rLHBZRdlyNkx32Wi7R9TPy310IU527L5eF8
+         2giw==
+X-Gm-Message-State: ACrzQf3oP7VQis3T2NoZpekTnnZEEL50dbATwVoFDl7maH+ZtlqhCBpO
+        E5U96usFw9MEzvfuJIG88+KoWuioyNNIjXhcXxL66hbwh89FvsUMGMxiiyz6LLrLU3uGvlB/vJv
+        SEtjVI+vj3xcw5OUt
+X-Received: by 2002:a5d:4ec5:0:b0:228:6707:8472 with SMTP id s5-20020a5d4ec5000000b0022867078472mr13700965wrv.12.1663661910615;
+        Tue, 20 Sep 2022 01:18:30 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM5Gc746EtqOMp12PC/ZhI3qlffavJ9O8HKgnaDgO6702xNdn3VPX99CEZYZBDDZBLY3QzW+vw==
+X-Received: by 2002:a5d:4ec5:0:b0:228:6707:8472 with SMTP id s5-20020a5d4ec5000000b0022867078472mr13700953wrv.12.1663661910369;
+        Tue, 20 Sep 2022 01:18:30 -0700 (PDT)
+Received: from sgarzare-redhat (host-87-11-6-69.retail.telecomitalia.it. [87.11.6.69])
+        by smtp.gmail.com with ESMTPSA id z22-20020a05600c0a1600b003b4868eb6bbsm1749112wmp.23.2022.09.20.01.18.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Sep 2022 01:18:29 -0700 (PDT)
+Date:   Tue, 20 Sep 2022 10:18:24 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     vdasa@vmware.com, vbhakta@vmware.com, namit@vmware.com,
+        bryantan@vmware.com, zackr@vmware.com,
+        linux-graphics-maintainer@vmware.com, doshir@vmware.com,
+        gregkh@linuxfoundation.org, davem@davemloft.net,
+        pv-drivers@vmware.com, joe@perches.com, netdev@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-rdma@vger.kernel.org,
+        virtualization@lists.linux-foundation.org
+Subject: Re: [PATCH 0/3] MAINTAINERS: Update entries for some VMware drivers
+Message-ID: <20220920081824.vshwiv3lt5crlxdj@sgarzare-redhat>
+References: <20220906172722.19862-1-vdasa@vmware.com>
+ <20220919104147.1373eac1@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <DM4PR12MB53579A35887680D5211AC282C94D9@DM4PR12MB5357.namprd12.prod.outlook.com>
-References: <20220906052129.104507-1-saeed@kernel.org> <20220906052129.104507-8-saeed@kernel.org> <CALHRZuq962PeU0OJ0pLrnW=tkaBd8T+iFSkT3mfWr2ArYKdO8A@mail.gmail.com> <20220914203849.fn45bvuem2l3ppqq@sx1> <CALHRZup8+nSNoD_=wSKGym3=EPMKoU+1UxbVReOv8xnBnTeRiw@mail.gmail.com> <CALHRZuqKjpr+u237dtE3+0b4mQrJKxDLhA=SKbiNjd0Fo5h1Nw@mail.gmail.com> <166322893264.61080.12133865599607623050@kwain> <CALHRZurLscR15y48fzJXC4pAWe+wen8JZVCwk2fwT4wujqSdRQ@mail.gmail.com> <DM4PR12MB53579A35887680D5211AC282C94D9@DM4PR12MB5357.namprd12.prod.outlook.com>
-Subject: RE: [PATCH net-next V2 07/17] net/mlx5: Add MACsec offload Tx command support
-From:   Antoine Tenart <atenart@kernel.org>
-To:     Raed Salem <raeds@nvidia.com>,
-        sundeep subbaraya <sundeep.lkml@gmail.com>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Lior Nahmanson <liorna@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        "naveenm@marvell.com" <naveenm@marvell.com>,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>
-Message-ID: <166366166577.3327.17682877096646901460@kwain>
-Date:   Tue, 20 Sep 2022 10:14:25 +0200
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20220919104147.1373eac1@kernel.org>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quoting Raed Salem (2022-09-19 15:26:26)
-> >From: sundeep subbaraya <sundeep.lkml@gmail.com>
-> >As of now we will send the new driver to do all the init in the
-> >prepare phase and commit phase will return 0 always.
-> >
-> I think it is better to do all the init in commit phase and not in the
-> prepare to align with most drivers that already implemented macsec
-> offload (both aquantia and mlx5 and most of mscc implementation), this
-> will make it easier to deprecate the prepare stage in future refactor
-> of the macsec driver in stack.
+On Mon, Sep 19, 2022 at 10:41:47AM -0700, Jakub Kicinski wrote:
+>On Tue,  6 Sep 2022 10:27:19 -0700 vdasa@vmware.com wrote:
+>> From: Vishnu Dasa <vdasa@vmware.com>
+>>
+>> This series updates a few existing maintainer entries for VMware
+>> supported drivers and adds a new entry for vsock vmci transport
+>> driver.
+>
+>Just to be sure - who are you expecting to take these in?
+>
 
-Yes, please do this.
+FYI Greg already queued this series in his char-misc-next branch:
+https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git/log/?h=char-misc-next
 
 Thanks,
-Antoine
+Stefano
+
