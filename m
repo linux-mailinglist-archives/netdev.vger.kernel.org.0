@@ -2,54 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E82645BD922
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 03:10:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FAA15BD917
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 03:10:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229927AbiITBKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 21:10:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45312 "EHLO
+        id S229880AbiITBKd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 21:10:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229869AbiITBK1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 21:10:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF1754CA28;
+        with ESMTP id S229865AbiITBKZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 21:10:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21A2ADFB3;
         Mon, 19 Sep 2022 18:10:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 49CD3B822B6;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 53A1661FEB;
         Tue, 20 Sep 2022 01:10:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D8E1DC433D6;
-        Tue, 20 Sep 2022 01:10:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 037B8C43143;
+        Tue, 20 Sep 2022 01:10:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663636220;
-        bh=5TMdfKIjL6zFSE6itbf87erfcQY7LCgNjFUrXTvqFKU=;
+        s=k20201202; t=1663636221;
+        bh=5v7TuQqDF1iCfVseXS2pcdxkYOYIJabRGEK5N6iBKZo=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Z7rH639ogXreEXumqOsuElRk7tF85OGObgqK6EiNf4bnrxeb3azv38Z9ShKs22xe7
-         +2qzsWJP/fA9g4bS4Tu9pb3/M8DNVM8rjTRtDeXpq29FqxaRrPdbObovVxmG4ULhXO
-         u9BdMKnoXpxG4OWaDeV3AoTZsy+OqhP4bgNSaA0Tma/oh9L+QRGZ+pnPkgOkXKM71L
-         sNvNIn0OhnheUIPMx1V8wI7CzB1FAYaIRVWAWScTNu73iSyag8l8ErZ5GR0hS9Tm4Z
-         O/m5POTRymAFch4IH19sRDAEJXoHxfhl9jds3BDBZv9mm7U7Nlj+ZaLv+oz20vmeIx
-         AHpRG936M6E2w==
+        b=shDtRyoLLBY9DUYHJo/guDpim/tq1YACixCxPfjKcQWedRgFJZe8XIjpazrn0qPix
+         Pee3rPawL1gCewPV7sxeN9GyA+aefYBXAAZGOiIBqiHQ3jj2gFC7ulJJeeimCyw5GR
+         PWNBp01RGdJxoWrs1Nl8MtAKDu4crIkojluGiHcvLF4Ab1DIBdSrhYSU7l+WIBLmhg
+         nt3XjuPfkCtPLWrIvwC3y4y0VykhjvgpRABVRihj1iNwkVVibVLMpjg6STqRX6eXgh
+         NcXi4BhNzZO0fgQXYLyB3nl+X2C05xBITydLe9PSsT/gKqwmxCGX5OcGZu4jrxcOlK
+         wCrEDfBzmzy4Q==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BDC09C43141;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DF2CDE52539;
         Tue, 20 Sep 2022 01:10:20 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 0/2] dt-bindings: net: renesas,etheravb: R-Car Gen4 updates
+Subject: Re: [PATCH net-next 0/2] Add FEC support on s32v234 platform
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166363622077.23429.9768017743524095335.git-patchwork-notify@kernel.org>
+Message-Id: <166363622090.23429.15584862562185231209.git-patchwork-notify@kernel.org>
 Date:   Tue, 20 Sep 2022 01:10:20 +0000
-References: <cover.1662714607.git.geert+renesas@glider.be>
-In-Reply-To: <cover.1662714607.git.geert+renesas@glider.be>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
+References: <20220907095649.3101484-1-wei.fang@nxp.com>
+In-Reply-To: <20220907095649.3101484-1-wei.fang@nxp.com>
+To:     Wei Fang <wei.fang@nxp.com>
 Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, s.shtylyov@omp.ru,
-        sergei.shtylyov@gmail.com, wsa+renesas@sang-engineering.com,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org
+        krzysztof.kozlowski+dt@linaro.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -64,21 +62,24 @@ Hello:
 This series was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Fri,  9 Sep 2022 11:13:21 +0200 you wrote:
-> Hi all,
+On Wed,  7 Sep 2022 17:56:47 +0800 you wrote:
+> From: Wei Fang <wei.fang@nxp.com>
 > 
-> This patch series contains two updates for the Renesas Ethernet AVB
-> Device Tree bindings.
+> This series patches are to add FEC support on s32v234 platfom.
+> 1. Add compatible string and quirks for fsl,s32v234
+> 2. Update Kconfig to also check for ARCH_S32.
 > 
-> Thanks!
+> Wei Fang (2):
+>   dt-bindings: net: fec: add fsl,s32v234-fec to compatible property
+>   net: fec: Add initial s32v234 support
 > 
 > [...]
 
 Here is the summary with links:
-  - [1/2] dt-bindings: net: renesas,etheravb: R-Car V3U is R-Car Gen4
-    https://git.kernel.org/netdev/net-next/c/1bd81d785dfc
-  - [2/2] dt-bindings: net: renesas,etheravb: Add r8a779g0 support
-    https://git.kernel.org/netdev/net-next/c/231c4f0bcdb2
+  - [net-next,1/2] dt-bindings: net: fec: add fsl,s32v234-fec to compatible property
+    https://git.kernel.org/netdev/net-next/c/00f5303c17ee
+  - [net-next,2/2] net: fec: Add initial s32v234 support
+    https://git.kernel.org/netdev/net-next/c/167d5fe0f6c9
 
 You are awesome, thank you!
 -- 
