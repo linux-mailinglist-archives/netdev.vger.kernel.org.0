@@ -2,171 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B22875BDBDE
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 06:55:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 213B35BDC41
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 07:21:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229733AbiITEz1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 00:55:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38600 "EHLO
+        id S230166AbiITFVH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 01:21:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229557AbiITEz0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 00:55:26 -0400
-Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 003D3422EE;
-        Mon, 19 Sep 2022 21:55:24 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R521e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VQHUiMh_1663649720;
-Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0VQHUiMh_1663649720)
-          by smtp.aliyun-inc.com;
-          Tue, 20 Sep 2022 12:55:21 +0800
-Date:   Tue, 20 Sep 2022 12:55:20 +0800
-From:   "dust.li" <dust.li@linux.alibaba.com>
-To:     Wen Gu <guwen@linux.alibaba.com>, kgraul@linux.ibm.com,
-        wenjia@linux.ibm.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 1/2] net/smc: Introduce a specific sysctl for
- TEST_LINK time
-Message-ID: <20220920045520.GC108825@linux.alibaba.com>
-Reply-To: dust.li@linux.alibaba.com
-References: <1663641907-15852-1-git-send-email-guwen@linux.alibaba.com>
- <1663642434-30035-1-git-send-email-guwen@linux.alibaba.com>
+        with ESMTP id S230137AbiITFU7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 01:20:59 -0400
+Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 731C54DF11;
+        Mon, 19 Sep 2022 22:20:57 -0700 (PDT)
+Message-ID: <dc251395-78af-2ea3-9049-3b44cb831783@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1663651255;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TVGJXeiSIPnNsdrflC1unlY5vaATUQ/jFuJkzfR1pHQ=;
+        b=btCPPae5EarmsG+9BOWEXhsgz/o3rsduU6OAewWB05fiEuDmdEhsg9roxgZbXBLYSYJRy5
+        2rQCzo2ZzUTF5ybbnrwlc5XkMXQw1JpZOtvFMSOFp+oAlA1BYvBeBIMpIgy0uOhE/w8RaP
+        /m73rDUTqIEKHTLRGoCZd4VMdBtnEPk=
+Date:   Mon, 19 Sep 2022 22:20:47 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1663642434-30035-1-git-send-email-guwen@linux.alibaba.com>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+Subject: Re: [PATCH bpf-next v2 3/3] bpf: Move nf_conn extern declarations to
+ filter.h
+Content-Language: en-US
+To:     Daniel Xu <dxu@dxuuu.xyz>
+Cc:     pablo@netfilter.org, fw@strlen.de, toke@kernel.org,
+        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, memxor@gmail.com
+References: <cover.1663616584.git.dxu@dxuuu.xyz>
+ <3c00fb8d15d543ae3b5df928c191047145c6b5fe.1663616584.git.dxu@dxuuu.xyz>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Martin KaFai Lau <martin.lau@linux.dev>
+In-Reply-To: <3c00fb8d15d543ae3b5df928c191047145c6b5fe.1663616584.git.dxu@dxuuu.xyz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 20, 2022 at 10:53:54AM +0800, Wen Gu wrote:
->SMC-R tests the viability of link by sending out TEST_LINK LLC
->messages over RoCE fabric when connections on link have been
->idle for a time longer than keepalive interval (testlink time).
->
->But using tcp_keepalive_time as testlink time maybe not quite
->suitable because it is default no less than two hours[1], which
->is too long for single link to find peer dead. The active host
->will still use peer-dead link (QP) sending messages, and can't
->find out until get IB_WC_RETRY_EXC_ERR error CQEs, which takes
->more time than TEST_LINK timeout (SMC_LLC_WAIT_TIME) normally.
->
->So this patch introduces a independent sysctl for SMC-R to set
->link keepalive time, in order to detect link down in time. The
->default value is 30 seconds.
->
->[1] https://www.rfc-editor.org/rfc/rfc1122#page-101
->
->Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
->---
-> Documentation/networking/smc-sysctl.rst |  7 +++++++
-> include/net/netns/smc.h                 |  1 +
-> net/smc/smc_llc.c                       |  2 +-
-> net/smc/smc_llc.h                       |  1 +
-> net/smc/smc_sysctl.c                    | 14 ++++++++++++++
-> 5 files changed, 24 insertions(+), 1 deletion(-)
->
->diff --git a/Documentation/networking/smc-sysctl.rst b/Documentation/networking/smc-sysctl.rst
->index 742e90e..f8c3d59 100644
->--- a/Documentation/networking/smc-sysctl.rst
->+++ b/Documentation/networking/smc-sysctl.rst
->@@ -34,3 +34,10 @@ smcr_buf_type - INTEGER
->         - 1 - Use virtually contiguous buffers
->         - 2 - Mixed use of the two types. Try physically contiguous buffers first.
->           If not available, use virtually contiguous buffers then.
->+
->+smcr_testlink_time - INTEGER
->+	How frequently SMC-R link sends out TEST_LINK LLC messages to confirm
->+	viability, after the last activity of connections on it. The maximum
->+	value is (INT_MAX / HZ) seconds, the minimum value is 1 second.
->+
->+	Default: 30 seconds.
->diff --git a/include/net/netns/smc.h b/include/net/netns/smc.h
->index 2adbe2b..d295e2c 100644
->--- a/include/net/netns/smc.h
->+++ b/include/net/netns/smc.h
->@@ -19,5 +19,6 @@ struct netns_smc {
-> #endif
-> 	unsigned int			sysctl_autocorking_size;
-> 	unsigned int			sysctl_smcr_buf_type;
->+	int				sysctl_smcr_testlink_time;
-> };
-> #endif
->diff --git a/net/smc/smc_llc.c b/net/smc/smc_llc.c
->index 175026a..388bd2e 100644
->--- a/net/smc/smc_llc.c
->+++ b/net/smc/smc_llc.c
->@@ -2127,7 +2127,7 @@ void smc_llc_lgr_init(struct smc_link_group *lgr, struct smc_sock *smc)
-> 	init_waitqueue_head(&lgr->llc_flow_waiter);
-> 	init_waitqueue_head(&lgr->llc_msg_waiter);
-> 	mutex_init(&lgr->llc_conf_mutex);
->-	lgr->llc_testlink_time = READ_ONCE(net->ipv4.sysctl_tcp_keepalive_time);
->+	lgr->llc_testlink_time = READ_ONCE(net->smc.sysctl_smcr_testlink_time) * HZ;
-> }
+On 9/19/22 12:44 PM, Daniel Xu wrote:
+> We're seeing the following new warnings on netdev/build_32bit and
+> netdev/build_allmodconfig_warn CI jobs:
 > 
-> /* called after lgr was removed from lgr_list */
->diff --git a/net/smc/smc_llc.h b/net/smc/smc_llc.h
->index 4404e52..1de9a29 100644
->--- a/net/smc/smc_llc.h
->+++ b/net/smc/smc_llc.h
->@@ -19,6 +19,7 @@
+>      ../net/core/filter.c:8608:1: warning: symbol
+>      'nf_conn_btf_access_lock' was not declared. Should it be static?
+>      ../net/core/filter.c:8611:5: warning: symbol 'nfct_bsa' was not
+>      declared. Should it be static?
 > 
-> #define SMC_LLC_WAIT_FIRST_TIME		(5 * HZ)
-> #define SMC_LLC_WAIT_TIME		(2 * HZ)
->+#define SMC_LLC_TESTLINK_DEFAULT_TIME	30
+> Fix by ensuring extern declaration is present while compiling filter.o.
+> 
+> Fixes: 864b656f82cc ("bpf: Add support for writing to nf_conn:mark")
+> Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
+> ---
+>   include/linux/filter.h                   | 6 ++++++
+>   include/net/netfilter/nf_conntrack_bpf.h | 7 +------
+>   2 files changed, 7 insertions(+), 6 deletions(-)
+> 
+> diff --git a/include/linux/filter.h b/include/linux/filter.h
+> index 75335432fcbc..98e28126c24b 100644
+> --- a/include/linux/filter.h
+> +++ b/include/linux/filter.h
+> @@ -567,6 +567,12 @@ struct sk_filter {
+>   
+>   DECLARE_STATIC_KEY_FALSE(bpf_stats_enabled_key);
+>   
+> +extern struct mutex nf_conn_btf_access_lock;
+> +extern int (*nfct_btf_struct_access)(struct bpf_verifier_log *log, const struct btf *btf,
+> +				     const struct btf_type *t, int off, int size,
+> +				     enum bpf_access_type atype, u32 *next_btf_id,
+> +				     enum bpf_type_flag *flag);
+> +
+>   typedef unsigned int (*bpf_dispatcher_fn)(const void *ctx,
+>   					  const struct bpf_insn *insnsi,
+>   					  unsigned int (*bpf_func)(const void *,
+> diff --git a/include/net/netfilter/nf_conntrack_bpf.h b/include/net/netfilter/nf_conntrack_bpf.h
+> index d1087e4da440..24d1ccc1f8df 100644
+> --- a/include/net/netfilter/nf_conntrack_bpf.h
+> +++ b/include/net/netfilter/nf_conntrack_bpf.h
+> @@ -5,6 +5,7 @@
+>   
+>   #include <linux/bpf.h>
+>   #include <linux/btf.h>
+> +#include <linux/filter.h>
 
-I'm wondering why we don't follow the upper to macros using (30 * HZ) ?
+The filter.h is only needed by nf_conntrack_bpf.c?  How about moving 
+this include to nf_conntrack_bpf.c.  nf_conntrack_bpf.h is included by 
+other conntrack core codes.  I would prefer not to spill over 
+unnecessary bpf headers to them.  The same goes for the above bpf.h and 
+btf.h which are only needed in nf_conntrack_bpf.c also?
 
+>   #include <linux/kconfig.h>
+>   #include <linux/mutex.h>
 
-> 
-> enum smc_llc_reqresp {
-> 	SMC_LLC_REQ,
->diff --git a/net/smc/smc_sysctl.c b/net/smc/smc_sysctl.c
->index 0613868..7f68520 100644
->--- a/net/smc/smc_sysctl.c
->+++ b/net/smc/smc_sysctl.c
->@@ -16,8 +16,12 @@
-> 
-> #include "smc.h"
-> #include "smc_core.h"
->+#include "smc_llc.h"
-> #include "smc_sysctl.h"
-> 
->+static int smcr_testlink_time_min = 1;
->+static int smcr_testlink_time_max = (INT_MAX / HZ);
->+
-> static struct ctl_table smc_table[] = {
-> 	{
-> 		.procname       = "autocorking_size",
->@@ -35,6 +39,15 @@
-> 		.extra1		= SYSCTL_ZERO,
-> 		.extra2		= SYSCTL_TWO,
-> 	},
->+	{
->+		.procname	= "smcr_testlink_time",
->+		.data		= &init_net.smc.sysctl_smcr_testlink_time,
->+		.maxlen		= sizeof(int),
->+		.mode		= 0644,
->+		.proc_handler	= proc_dointvec_minmax,
->+		.extra1		= &smcr_testlink_time_min,
->+		.extra2		= &smcr_testlink_time_max,
->+	},
-> 	{  }
-> };
-> 
->@@ -60,6 +73,7 @@ int __net_init smc_sysctl_net_init(struct net *net)
-> 
-> 	net->smc.sysctl_autocorking_size = SMC_AUTOCORKING_DEFAULT_SIZE;
-> 	net->smc.sysctl_smcr_buf_type = SMCR_PHYS_CONT_BUFS;
->+	net->smc.sysctl_smcr_testlink_time = SMC_LLC_TESTLINK_DEFAULT_TIME;
-> 
-> 	return 0;
-> 
->-- 
->1.8.3.1
+Also, is mutex.h still needed?
+
+>   
+> @@ -14,12 +15,6 @@
+>   extern int register_nf_conntrack_bpf(void);
+>   extern void cleanup_nf_conntrack_bpf(void);
+>   
+> -extern struct mutex nf_conn_btf_access_lock;
+> -extern int (*nfct_btf_struct_access)(struct bpf_verifier_log *log, const struct btf *btf,
+> -				     const struct btf_type *t, int off, int size,
+> -				     enum bpf_access_type atype, u32 *next_btf_id,
+> -				     enum bpf_type_flag *flag);
+> -
+>   #else
+>   
+>   static inline int register_nf_conntrack_bpf(void)
+
