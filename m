@@ -2,115 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 13D4E5BE7BC
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 15:56:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E9635BE7D5
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 16:00:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231461AbiITNz4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 09:55:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43962 "EHLO
+        id S229546AbiITOAe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 10:00:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231460AbiITNzk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 09:55:40 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EC5963A9
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 06:54:33 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id c7so3046171ljm.12
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 06:54:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=wBzI+FDP/xHbpMc4ZR1RvLoZ+WufA1CKuPKcPQeIWxs=;
-        b=jKP4O2Vs5dgzrrV3QjJGsS/tq+4AAw9Cn0UMg7Z6+RT5/S8x55GBEmciQyE2xBxHNl
-         cLEOAq+ndnid9UY81L7XfUzwUAOo5jDRyRbeCuYPY4Tm4U3mlu4CWwBBwhg6yjKuY1Jg
-         9/naHdgqElN1RZGaH9ErYL6Lbtjo/zvZy/0qP6+HwVfM0DbxeNYkgLTWVFrIGPUwFGrI
-         R0bywwdc02ZDYB1rk27nDWXxeczPZ1gBsH9WcfAzC6Ow2y/Kw1wuwAjBfNKDdUDUbFO6
-         /1vcUU8n1TN/qwbOJ2Tg1l9doC45MY9Axh2lDP5oq2E16JdYboriwb0t9iRscsBIKRCs
-         Z+4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=wBzI+FDP/xHbpMc4ZR1RvLoZ+WufA1CKuPKcPQeIWxs=;
-        b=6GhA+bAt7j/DL4P7uCmApaZQvgbw1cMmRGYJUygm2fM87gAezP4olp/QC1fzhDT/a/
-         rtTpefSW5CedLY9KoKIhnzst0ae7J8VCimT8oRsw8vt+IvZp9aq5l+pGYVlr14riUK1N
-         +oMYNjxY5Iz0patSN4XvR7OnhDdG7Fnd/V++yc6u9Rb7Rz52ndIXihsmDqvkNW1QKGtG
-         qYCZV82IIl5dh1MJfJ0ql80xXJGPl9QemHlrsTHStpSYdfFugzrr3uTH3qKkgproVmgo
-         zGWH2Jaf6tmw2e0aof0+iCfi7TIc/JCR/xF+c4qa40H1EEMMsZnylPihiYtIUqP57pDg
-         0KTg==
-X-Gm-Message-State: ACrzQf2VFvocwoO19T1KGQT7z0LRU+cDHtZERbkCG6zKLXiLttpcrXXm
-        VFFsIozyeEdpHXJqLO9sBbeDxE/3aFC6HQ==
-X-Google-Smtp-Source: AMsMyM7qwNQsEBzVzh51pbKzZ073N0bCU/uLTdwj8t+B9IR78GGUWgkfjRPrW7ec6ftreXNBIXP7qw==
-X-Received: by 2002:a2e:964b:0:b0:26c:5a42:ed99 with SMTP id z11-20020a2e964b000000b0026c5a42ed99mr1310939ljh.169.1663682071302;
-        Tue, 20 Sep 2022 06:54:31 -0700 (PDT)
-Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id u22-20020a05651c131600b0026c4113c150sm8590lja.111.2022.09.20.06.54.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 20 Sep 2022 06:54:30 -0700 (PDT)
-Message-ID: <18828928-415f-2faa-8069-b4d01fa38fc6@linaro.org>
-Date:   Tue, 20 Sep 2022 15:54:29 +0200
+        with ESMTP id S230325AbiITOAb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 10:00:31 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2690A17051;
+        Tue, 20 Sep 2022 07:00:30 -0700 (PDT)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28KDkAw5010415;
+        Tue, 20 Sep 2022 14:00:18 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=j+EMvjBsy0IMEg+i0Vc5T5tC5c3LuWqT+jfH1OLp0qE=;
+ b=ngEDVwmakLzLg0EZwmF+gK3XMK39n1gOrWot4J6jp2nHJfz9lUUWwPImwlmHDzIPia9Z
+ OtxhHgbsczFZBEVZi2++yTCq6kxzCY1KMbZ1rsiAhHUvyP+tOwKB5qDqmBX54Q5eojhY
+ siJL96KC2RAM/lW6HRNbGJrcNQs5FaEM9yJ4P8h4MFK2Tg7f+5KgWF0fVizUIf7XqhbO
+ izajrDcRxYeGMmFSAT9C+tpQX+6x7dOL2RpG8jl0RKydavyuZmztB2tTJy97olHhgVxz
+ eFUxbYHhmh6Zc/L2d1HzF4g6oImuuhcnV6XgpOc8I4gLWzBU2lb1Ol7EyVCj9Xx+WgJc bw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jqepr0daf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 20 Sep 2022 14:00:18 +0000
+Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 28KDlE9U013676;
+        Tue, 20 Sep 2022 14:00:16 GMT
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jqepr0d4e-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 20 Sep 2022 14:00:15 +0000
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 28KDt1cv003987;
+        Tue, 20 Sep 2022 14:00:12 GMT
+Received: from b01cxnp22033.gho.pok.ibm.com (b01cxnp22033.gho.pok.ibm.com [9.57.198.23])
+        by ppma02dal.us.ibm.com with ESMTP id 3jn5v9s46s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 20 Sep 2022 14:00:12 +0000
+Received: from smtpav05.wdc07v.mail.ibm.com ([9.208.128.117])
+        by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 28KE0BrO65601932
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 20 Sep 2022 14:00:12 GMT
+Received: from smtpav05.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 199C958043;
+        Tue, 20 Sep 2022 14:00:11 +0000 (GMT)
+Received: from smtpav05.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 45E065805F;
+        Tue, 20 Sep 2022 14:00:09 +0000 (GMT)
+Received: from [9.155.210.227] (unknown [9.155.210.227])
+        by smtpav05.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+        Tue, 20 Sep 2022 14:00:09 +0000 (GMT)
+Message-ID: <52b73ecf-1a00-69ce-1cb8-8adb8bdd97c8@linux.ibm.com>
+Date:   Tue, 20 Sep 2022 16:00:08 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: task hung in port100_send_cmd_sync
-Content-Language: en-US
-To:     Rondreis <linhaoguo86@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "linux-nfc@lists.01.org" <linux-nfc@lists.01.org>
-References: <CAB7eexL3ac2jxVQ70Q06F6sK9VdwY2aoO=S6OqYu7DTgFMg6tQ@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CAB7eexL3ac2jxVQ70Q06F6sK9VdwY2aoO=S6OqYu7DTgFMg6tQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.2.2
+Subject: Re: [PATCH net-next v2 0/2] Separate SMC parameter settings from TCP
+ sysctls
+To:     Wen Gu <guwen@linux.alibaba.com>, kgraul@linux.ibm.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1663667542-119851-1-git-send-email-guwen@linux.alibaba.com>
+From:   Wenjia Zhang <wenjia@linux.ibm.com>
+In-Reply-To: <1663667542-119851-1-git-send-email-guwen@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: NbJ7CKR4-1Qc9gUnA9A7-QUt7h1mbzgh
+X-Proofpoint-GUID: eHeb1O3jttufCdabq3PARyDWTOADBkRZ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
+ definitions=2022-09-20_04,2022-09-20_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ spamscore=0 malwarescore=0 adultscore=0 lowpriorityscore=0 suspectscore=0
+ bulkscore=0 mlxlogscore=968 clxscore=1011 impostorscore=0 mlxscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2209130000 definitions=main-2209200079
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18/09/2022 15:22, Rondreis wrote:
-> Hello,
+
+
+On 20.09.22 11:52, Wen Gu wrote:
+> SMC shares some sysctls with TCP, but considering the difference
+> between these two protocols, it may not be very suitable for SMC
+> to reuse TCP parameter settings in some cases, such as keepalive
+> time or buffer size.
 > 
-> When fuzzing the Linux kernel driver v6.0-rc4, the following crash was
-> triggered.
-
-Hi,
-
-Thanks for the report.
-
+> So this patch set aims to introduce some SMC specific sysctls to
+> independently and flexibly set the parameters that suit SMC.
 > 
-> HEAD commit: 7e18e42e4b280c85b76967a9106a13ca61c16179
-> git tree: upstream
+> v2->v1:
+> - Use proc_dointvec_jiffies as proc_handler and allow value 0 to
+>    disable TEST_LINK.
 > 
-> kernel config: https://pastebin.com/raw/xtrgsXP3
-> C reproducer: https://pastebin.com/raw/hjSnLzDh
-> console output: https://pastebin.com/raw/3ixbVNcR
+> Tony Lu (1):
+>    net/smc: Unbind r/w buffer size from clcsock and make them tunable
 > 
-> Basically, in the c reproducer, we use the gadget module to emulate
-> attaching a USB device(vendor id: 0x54c, product id: 0x6c1, with the
-> printer function) and executing some simple sequence of system calls.
-> To reproduce this crash, we utilize a third-party library to emulate
-> the attaching process: https://github.com/linux-usb-gadgets/libusbgx.
-> Just clone this repository, install it, and compile the c
-> reproducer with ``` gcc crash.c -lusbgx -lconfig -o crash ``` will do
-> the trick.
+> Wen Gu (1):
+>    net/smc: Introduce a specific sysctl for TEST_LINK time
 > 
-> I would appreciate it if you have any idea how to solve this bug.
-
-You can try to bisect. Or you can build kernel with lockdep and try to
-reproduce.
-
+>   Documentation/networking/smc-sysctl.rst | 25 +++++++++++++++++++++++++
+>   include/net/netns/smc.h                 |  3 +++
+>   net/smc/af_smc.c                        |  5 ++---
+>   net/smc/smc_core.c                      |  8 ++++----
+>   net/smc/smc_llc.c                       |  2 +-
+>   net/smc/smc_llc.h                       |  1 +
+>   net/smc/smc_sysctl.c                    | 30 ++++++++++++++++++++++++++++++
+>   7 files changed, 66 insertions(+), 8 deletions(-)
 > 
-> The crash report is as follows:
+Looks good. Thank you!
 
-It's not a crash, but a blocked task, so there might be deadlock,
-incorrect synchronization or some missing cleanup path. Actually quite a
-lot could lead to this.
-
-Best regards,
-Krzysztof
+For the series:
+Acked-by: Wenjia Zhang <wenjia@linux.ibm.com>
