@@ -2,95 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8704C5BDD87
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 08:44:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4A7C5BDD98
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 08:47:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230051AbiITGoV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 02:44:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33262 "EHLO
+        id S230402AbiITGr5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 02:47:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229605AbiITGoU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 02:44:20 -0400
-Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB3982674;
-        Mon, 19 Sep 2022 23:44:18 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VQI-knc_1663656189;
-Received: from h68b04305.sqa.eu95.tbsite.net(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0VQI-knc_1663656189)
-          by smtp.aliyun-inc.com;
-          Tue, 20 Sep 2022 14:44:16 +0800
-From:   Wen Gu <guwen@linux.alibaba.com>
-To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net] net/smc: Stop the CLC flow if no link to map buffers on
-Date:   Tue, 20 Sep 2022 14:43:09 +0800
-Message-Id: <1663656189-32090-1-git-send-email-guwen@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S230282AbiITGrz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 02:47:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B65017A84
+        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 23:47:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1847061956
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 06:47:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFCE1C433C1;
+        Tue, 20 Sep 2022 06:47:52 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="PE4i5qPX"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1663656471;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=EeurZ3PP0yarzUoWnYEBHxbncriNVmb1WlKJuqUlFVQ=;
+        b=PE4i5qPXgB5uHSr1+BG7XdUNYX8pNHzGH6yJyT5PAYB6U1PpPNu1oqYy/Jx0U3+ebaN3s8
+        Vohg8aQM4iwgHqAhM8E6dDM+cCx4VIwe+VZFhj/e22jG4vJZ4WNR000IE5NLLUOe0dYRRc
+        CXfM03dh7Hnvz8COr0AClzTxbuSTKjY=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 97420aa8 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Tue, 20 Sep 2022 06:47:50 +0000 (UTC)
+Date:   Tue, 20 Sep 2022 08:47:48 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     pablo@netfilter.org, davem@davemloft.net, netdev@vger.kernel.org
+Subject: Re: [PATCH net 0/3] wireguard patches for 6.0-rc6
+Message-ID: <YyliFHzqeYKomxwv@zx2c4.com>
+References: <20220916143740.831881-1-Jason@zx2c4.com>
+ <20220919182053.2936e7e4@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220919182053.2936e7e4@kernel.org>
+X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There might be a potential race between SMC-R buffer map and
-link group termination.
+On Mon, Sep 19, 2022 at 06:20:53PM -0700, Jakub Kicinski wrote:
+> On Fri, 16 Sep 2022 15:37:37 +0100 Jason A. Donenfeld wrote:
+> > Sorry we didn't get a chance to talk at Plumbers. I saw some of you very
+> > briefly in passing but never had the opportunity to chat. Next time, I
+> > hope.
+> 
+> Indeed!
+> 
+> > Please pull the following fixes:
+> 
+> You say pull but you mean apply, right?
 
-smc_smcr_terminate_all()     | smc_connect_rdma()
---------------------------------------------------------------
-                             | smc_conn_create()
-for links in smcibdev        |
-        schedule links down  |
-                             | smc_buf_create()
-                             |  \- smcr_buf_map_usable_links()
-                             |      \- no usable links found,
-                             |         (rmb->mr = NULL)
-                             |
-                             | smc_clc_send_confirm()
-                             |  \- access conn->rmb_desc->mr[]->rkey
-                             |     (panic)
+Yes, sorry.
 
-During reboot and IB device module remove, all links will be set
-down and no usable links remain in link groups. In such situation
-smcr_buf_map_usable_links() should return an error and stop the
-CLC flow accessing to uninitialized mr.
-
-Fixes: b9247544c1bc ("net/smc: convert static link ID instances to support multiple links")
-Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
----
- net/smc/smc_core.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index ebf56cd..df89c2e 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -2239,7 +2239,7 @@ static struct smc_buf_desc *smcr_new_buf_create(struct smc_link_group *lgr,
- static int smcr_buf_map_usable_links(struct smc_link_group *lgr,
- 				     struct smc_buf_desc *buf_desc, bool is_rmb)
- {
--	int i, rc = 0;
-+	int i, rc = 0, cnt = 0;
- 
- 	/* protect against parallel link reconfiguration */
- 	mutex_lock(&lgr->llc_conf_mutex);
-@@ -2252,9 +2252,12 @@ static int smcr_buf_map_usable_links(struct smc_link_group *lgr,
- 			rc = -ENOMEM;
- 			goto out;
- 		}
-+		cnt++;
- 	}
- out:
- 	mutex_unlock(&lgr->llc_conf_mutex);
-+	if (!rc && !cnt)
-+		rc = -EINVAL;
- 	return rc;
- }
- 
--- 
-1.8.3.1
-
+Jason
