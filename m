@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 99C4A5BEEAB
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 22:41:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16B8D5BEEBE
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 22:50:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229713AbiITUl1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 16:41:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41756 "EHLO
+        id S230005AbiITUuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 16:50:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229630AbiITUlZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 16:41:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F39E2B184
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 13:41:24 -0700 (PDT)
+        with ESMTP id S229529AbiITUuT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 16:50:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 422314D178;
+        Tue, 20 Sep 2022 13:50:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3ABDAB80C6A
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 20:41:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A60D5C433D7;
-        Tue, 20 Sep 2022 20:41:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C72BC614B5;
+        Tue, 20 Sep 2022 20:50:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 25605C433D7;
+        Tue, 20 Sep 2022 20:50:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663706482;
-        bh=PYOG5FhWIwnP43jhCLZP89pFLqhT76E1+uqOs4Np7bk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=G4Z65ntCEbIX7NCZ7FJNrUafcNmcCMABwmJVHEN9LwHPMjIstCEgBBqtu6WrQ3ZwB
-         emxnvUtz8xpjTBMyJpuB9U+hjgOqmw519puF4KKvPDNiS7XCPO6sT6+h6eYbF2RYfs
-         u5u6Yvh+TTpfkDB9DuAnevZzNOMYjxa3tcvg2WJ7RftdypJmxKmL0/q+EuMtkhws4t
-         p0OEkGxS0HAtSAN8R/Dz/MDUpqYWLcAzoGZqrZYwl2bjqN7eyDKTanhrwHKnKT08HJ
-         IxEM776kZn2mIUKtBQnb7aT+f8IuCDrs5Bnl+QdNS/JFuToTb74TOSrX8+S6RpWYT0
-         GjXi+znPgrDUw==
-Date:   Tue, 20 Sep 2022 13:41:20 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: Re: [PATCH net-next V2 00/10] mlx5 MACSec Extended packet number
- and replay window offload
-Message-ID: <20220920134120.2abbd3f5@kernel.org>
-In-Reply-To: <20220914162713.203571-1-saeed@kernel.org>
-References: <20220914162713.203571-1-saeed@kernel.org>
+        s=k20201202; t=1663707018;
+        bh=KjOtBowGvvlXkY0CJ/ZXa41LgAc2HijH/N9ZoIAn4Vw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=OVvBlnI32wtXmw49Ixv3W+jIyVKJlYTch98OR7gtaudqrUJhOt7B7HzLZpIi8KEGf
+         24UizCAQDwboJ31NnOQuZc8G5pjA9L7zQuLa1M2cADVXV9azHbQAUb05sn0ekZCYb9
+         nNVNdGCJIqqhPAIdAH2IYKhc8JXa3q8C70rvhtYZ3eMTIVh+Li4rIICcImFikEnPJZ
+         gDkmBm1Kp3Ft6gLrzyiplZN6QVS19jxGZo8aba5leU/XHTM5o+ewUB1fKokV25Okd6
+         wp6PLNZ2kL4bkJOZev7e5LKwlCDVY5NCa9wSQbTl42NyHABdw/NsUP7nR3V/BoivGd
+         l9UC6uHF43FCA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 057DFE21EE2;
+        Tue, 20 Sep 2022 20:50:18 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] MAINTAINERS: Add myself as a reviewer for Qualcomm ETHQOS
+ Ethernet driver
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166370701801.15267.18212299614611715724.git-patchwork-notify@kernel.org>
+Date:   Tue, 20 Sep 2022 20:50:18 +0000
+References: <20220915112804.3950680-1-bhupesh.sharma@linaro.org>
+In-Reply-To: <20220915112804.3950680-1-bhupesh.sharma@linaro.org>
+To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>
+Cc:     netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        bhupesh.linux@gmail.com, linux-kernel@vger.kernel.org,
+        vkoul@kernel.org, davem@davemloft.net
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -56,20 +57,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 14 Sep 2022 17:27:03 +0100 Saeed Mahameed wrote:
-> From: Saeed Mahameed <saeedm@nvidia.com>
+Hello:
+
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Thu, 15 Sep 2022 16:58:04 +0530 you wrote:
+> As suggested by Vinod, adding myself as the reviewer
+> for the Qualcomm ETHQOS Ethernet driver.
 > 
-> v1->v2:
->   - Fix 32bit build isse
->   - Replay protection can work without EPN being enabled so moved the code out
->     of the EPN enabled check 
+> Recently I have enabled this driver on a few Qualcomm
+> SoCs / boards and hence trying to keep a close eye on
+> it.
+> 
+> [...]
 
-Does not apply, I think it's because of the bot-based fixups
-which I merged out of order. Please respin, sorry about that.
+Here is the summary with links:
+  - MAINTAINERS: Add myself as a reviewer for Qualcomm ETHQOS Ethernet driver
+    https://git.kernel.org/netdev/net/c/603ccb3aca71
 
-> This is a follow up series to the previously submitted mlx5 MACsec offload [1]
-> earlier this release cycle.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-> [1] https://lwn.net/Articles/907262/ 
 
-nit: prefer lore links
