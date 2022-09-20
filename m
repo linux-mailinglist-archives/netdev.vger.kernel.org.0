@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E54665BE0FB
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 10:59:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BD7C5BE0FC
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 10:59:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231513AbiITI6Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 04:58:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53850 "EHLO
+        id S230261AbiITI6i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 04:58:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230494AbiITI5p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 04:57:45 -0400
+        with ESMTP id S229839AbiITI5r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 04:57:47 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9EBE4D83F;
-        Tue, 20 Sep 2022 01:57:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6CFB6BD44;
+        Tue, 20 Sep 2022 01:57:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1663664258; x=1695200258;
+  t=1663664260; x=1695200260;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=8OC9b3jGtLTo5fQqF/gbyYlo9oJbmcCkXp8d0PC3Uu4=;
-  b=RXb1KSsL28RGYKHKmWgXRp9G9dEghI3KqB3VAAB5Z/elu1oKz50OtNyX
-   DS1ZXd69+QA11/QD68ZtTD0wwBVVeTSfKZoFIkj2+9ZpmRXHJgjTCg225
-   CW++B3z+kC8qwSNjsyTwt3UAoKQKdtmdhHGHvlepmi7kvp3iHcQ45+G/T
-   9vJMIblLtq3ofoipmu1hmfSnyTyA+sfqMeF/cGdVQh0H29DKVHKUWFmnJ
-   Fbi/QarOOpRc7B9fun9+ZRs56MlZLBezSsOQLEsykVhUW8lMY3fGPnBL8
-   qweES09c1cFQawIR0gy7tQXM9PUYtx0vrKYEFIDScyerz/qmaoREUCGGg
+  bh=X5YoVHDmA5S2hnj0A8k23Gt3j3pneaMUBM6qY7S9w5U=;
+  b=YQQRvb57ZeDUGNeaJ/60zwwOwSxOuIG2QMQ/oSfAvryGqLww1hKcnEKt
+   9+GarZo7AoTstaVfQI+WzmL5q63+1Z7p0ab8zcUAqSqiAY4HNCaiwSCKN
+   FxzoUK6rquMxzQuxl2WKAdTUm64pOw3NCEHPX4yzUaaDYh+f7fyFLR1MY
+   JFQ9PDxvcRq4FF/mNpgbp5DkbE+0MZmXX/+q42k70AqySHML4Gr1q47pA
+   HZ4UOFu+zSapod0yoCUTpjdnrrbljCi2yB57aAu9eCNhlKXE1FF4ttspK
+   SQm+CldexWN3KRDhj8taTiSBdrcrbeAkED+aVxd6iv0JQAWwRX1EGAMhP
    w==;
 X-IronPort-AV: E=Sophos;i="5.93,330,1654585200"; 
-   d="scan'208";a="191583103"
+   d="scan'208";a="181213632"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 20 Sep 2022 01:57:38 -0700
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 20 Sep 2022 01:57:40 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 20 Sep 2022 01:57:38 -0700
+ 15.1.2507.12; Tue, 20 Sep 2022 01:57:40 -0700
 Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Tue, 20 Sep 2022 01:57:36 -0700
+ 15.1.2507.12 via Frontend Transport; Tue, 20 Sep 2022 01:57:38 -0700
 From:   Horatiu Vultur <horatiu.vultur@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
         <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
         Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next 2/4] net: lan966x: Add offload support for mqprio
-Date:   Tue, 20 Sep 2022 11:00:08 +0200
-Message-ID: <20220920090010.305172-3-horatiu.vultur@microchip.com>
+Subject: [PATCH net-next 3/4] net: lan966x: Add registers used by taprio
+Date:   Tue, 20 Sep 2022 11:00:09 +0200
+Message-ID: <20220920090010.305172-4-horatiu.vultur@microchip.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220920090010.305172-1-horatiu.vultur@microchip.com>
 References: <20220920090010.305172-1-horatiu.vultur@microchip.com>
@@ -54,149 +54,191 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_PASS,SPF_PASS,UPPERCASE_50_75 autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement mqprio qdisc support using tc command.
-The HW supports 8 priority queues from highest (7) to lowest (0).
+Add registers that are used by taprio to configure the HW.
 
 Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
- .../net/ethernet/microchip/lan966x/Makefile   |  3 +-
- .../ethernet/microchip/lan966x/lan966x_main.c |  5 ++-
- .../ethernet/microchip/lan966x/lan966x_main.h |  6 ++++
- .../microchip/lan966x/lan966x_mqprio.c        | 28 +++++++++++++++++
- .../ethernet/microchip/lan966x/lan966x_tc.c   | 31 +++++++++++++++++++
- 5 files changed, 71 insertions(+), 2 deletions(-)
- create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_mqprio.c
- create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_tc.c
+ .../ethernet/microchip/lan966x/lan966x_regs.h | 159 ++++++++++++++++++
+ 1 file changed, 159 insertions(+)
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/Makefile b/drivers/net/ethernet/microchip/lan966x/Makefile
-index 0c22c86bdaa9d..2ea66b94abac9 100644
---- a/drivers/net/ethernet/microchip/lan966x/Makefile
-+++ b/drivers/net/ethernet/microchip/lan966x/Makefile
-@@ -8,4 +8,5 @@ obj-$(CONFIG_LAN966X_SWITCH) += lan966x-switch.o
- lan966x-switch-objs  := lan966x_main.o lan966x_phylink.o lan966x_port.o \
- 			lan966x_mac.o lan966x_ethtool.o lan966x_switchdev.o \
- 			lan966x_vlan.o lan966x_fdb.o lan966x_mdb.o \
--			lan966x_ptp.o lan966x_fdma.o lan966x_lag.o
-+			lan966x_ptp.o lan966x_fdma.o lan966x_lag.o \
-+			lan966x_tc.o lan966x_mqprio.o
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-index ee9b8ebba6d0a..033120a5b056c 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-@@ -466,6 +466,7 @@ static const struct net_device_ops lan966x_port_netdev_ops = {
- 	.ndo_set_mac_address		= lan966x_port_set_mac_address,
- 	.ndo_get_port_parent_id		= lan966x_port_get_parent_id,
- 	.ndo_eth_ioctl			= lan966x_port_ioctl,
-+	.ndo_setup_tc			= lan966x_tc_setup,
- };
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h b/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
+index f2d83fc540d24..684b08c6ff34e 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
+@@ -1018,6 +1018,165 @@ enum lan966x_target {
+ /*      QSYS:RES_CTRL:RES_CFG */
+ #define QSYS_RES_CFG(g)           __REG(TARGET_QSYS, 0, 1, 32768, g, 1024, 8, 0, 0, 1, 4)
  
- bool lan966x_netdevice_check(const struct net_device *dev)
-@@ -755,7 +756,9 @@ static int lan966x_probe_port(struct lan966x *lan966x, u32 p,
- 	dev->netdev_ops = &lan966x_port_netdev_ops;
- 	dev->ethtool_ops = &lan966x_ethtool_ops;
- 	dev->features |= NETIF_F_HW_VLAN_CTAG_TX |
--			 NETIF_F_HW_VLAN_STAG_TX;
-+			 NETIF_F_HW_VLAN_STAG_TX |
-+			 NETIF_F_HW_TC;
-+	dev->hw_features |= NETIF_F_HW_TC;
- 	dev->needed_headroom = IFH_LEN * sizeof(u32);
++/*      QSYS:TAS_CONFIG:TAS_CFG_CTRL */
++#define QSYS_TAS_CFG_CTRL         __REG(TARGET_QSYS, 0, 1, 57372, 0, 1, 12, 0, 0, 1, 4)
++
++#define QSYS_TAS_CFG_CTRL_LIST_NUM_MAX           GENMASK(27, 23)
++#define QSYS_TAS_CFG_CTRL_LIST_NUM_MAX_SET(x)\
++	FIELD_PREP(QSYS_TAS_CFG_CTRL_LIST_NUM_MAX, x)
++#define QSYS_TAS_CFG_CTRL_LIST_NUM_MAX_GET(x)\
++	FIELD_GET(QSYS_TAS_CFG_CTRL_LIST_NUM_MAX, x)
++
++#define QSYS_TAS_CFG_CTRL_LIST_NUM               GENMASK(22, 18)
++#define QSYS_TAS_CFG_CTRL_LIST_NUM_SET(x)\
++	FIELD_PREP(QSYS_TAS_CFG_CTRL_LIST_NUM, x)
++#define QSYS_TAS_CFG_CTRL_LIST_NUM_GET(x)\
++	FIELD_GET(QSYS_TAS_CFG_CTRL_LIST_NUM, x)
++
++#define QSYS_TAS_CFG_CTRL_ALWAYS_GB_SCH_Q        BIT(17)
++#define QSYS_TAS_CFG_CTRL_ALWAYS_GB_SCH_Q_SET(x)\
++	FIELD_PREP(QSYS_TAS_CFG_CTRL_ALWAYS_GB_SCH_Q, x)
++#define QSYS_TAS_CFG_CTRL_ALWAYS_GB_SCH_Q_GET(x)\
++	FIELD_GET(QSYS_TAS_CFG_CTRL_ALWAYS_GB_SCH_Q, x)
++
++#define QSYS_TAS_CFG_CTRL_GCL_ENTRY_NUM          GENMASK(16, 5)
++#define QSYS_TAS_CFG_CTRL_GCL_ENTRY_NUM_SET(x)\
++	FIELD_PREP(QSYS_TAS_CFG_CTRL_GCL_ENTRY_NUM, x)
++#define QSYS_TAS_CFG_CTRL_GCL_ENTRY_NUM_GET(x)\
++	FIELD_GET(QSYS_TAS_CFG_CTRL_GCL_ENTRY_NUM, x)
++
++/*      QSYS:TAS_CONFIG:TAS_GATE_STATE_CTRL */
++#define QSYS_TAS_GS_CTRL          __REG(TARGET_QSYS, 0, 1, 57372, 0, 1, 12, 4, 0, 1, 4)
++
++#define QSYS_TAS_GS_CTRL_HSCH_POS                GENMASK(2, 0)
++#define QSYS_TAS_GS_CTRL_HSCH_POS_SET(x)\
++	FIELD_PREP(QSYS_TAS_GS_CTRL_HSCH_POS, x)
++#define QSYS_TAS_GS_CTRL_HSCH_POS_GET(x)\
++	FIELD_GET(QSYS_TAS_GS_CTRL_HSCH_POS, x)
++
++/*      QSYS:TAS_CONFIG:TAS_STATEMACHINE_CFG */
++#define QSYS_TAS_STM_CFG          __REG(TARGET_QSYS, 0, 1, 57372, 0, 1, 12, 8, 0, 1, 4)
++
++#define QSYS_TAS_STM_CFG_REVISIT_DLY             GENMASK(7, 0)
++#define QSYS_TAS_STM_CFG_REVISIT_DLY_SET(x)\
++	FIELD_PREP(QSYS_TAS_STM_CFG_REVISIT_DLY, x)
++#define QSYS_TAS_STM_CFG_REVISIT_DLY_GET(x)\
++	FIELD_GET(QSYS_TAS_STM_CFG_REVISIT_DLY, x)
++
++/*      QSYS:TAS_PROFILE_CFG:TAS_PROFILE_CONFIG */
++#define QSYS_TAS_PROFILE_CFG(g)   __REG(TARGET_QSYS, 0, 1, 30720, g, 16, 64, 32, 0, 1, 4)
++
++#define QSYS_TAS_PROFILE_CFG_PORT_NUM            GENMASK(21, 19)
++#define QSYS_TAS_PROFILE_CFG_PORT_NUM_SET(x)\
++	FIELD_PREP(QSYS_TAS_PROFILE_CFG_PORT_NUM, x)
++#define QSYS_TAS_PROFILE_CFG_PORT_NUM_GET(x)\
++	FIELD_GET(QSYS_TAS_PROFILE_CFG_PORT_NUM, x)
++
++#define QSYS_TAS_PROFILE_CFG_LINK_SPEED          GENMASK(18, 16)
++#define QSYS_TAS_PROFILE_CFG_LINK_SPEED_SET(x)\
++	FIELD_PREP(QSYS_TAS_PROFILE_CFG_LINK_SPEED, x)
++#define QSYS_TAS_PROFILE_CFG_LINK_SPEED_GET(x)\
++	FIELD_GET(QSYS_TAS_PROFILE_CFG_LINK_SPEED, x)
++
++/*      QSYS:TAS_LIST_CFG:TAS_BASE_TIME_NSEC */
++#define QSYS_TAS_BT_NSEC          __REG(TARGET_QSYS, 0, 1, 27904, 0, 1, 64, 0, 0, 1, 4)
++
++#define QSYS_TAS_BT_NSEC_NSEC                    GENMASK(29, 0)
++#define QSYS_TAS_BT_NSEC_NSEC_SET(x)\
++	FIELD_PREP(QSYS_TAS_BT_NSEC_NSEC, x)
++#define QSYS_TAS_BT_NSEC_NSEC_GET(x)\
++	FIELD_GET(QSYS_TAS_BT_NSEC_NSEC, x)
++
++/*      QSYS:TAS_LIST_CFG:TAS_BASE_TIME_SEC_LSB */
++#define QSYS_TAS_BT_SEC_LSB       __REG(TARGET_QSYS, 0, 1, 27904, 0, 1, 64, 4, 0, 1, 4)
++
++/*      QSYS:TAS_LIST_CFG:TAS_BASE_TIME_SEC_MSB */
++#define QSYS_TAS_BT_SEC_MSB       __REG(TARGET_QSYS, 0, 1, 27904, 0, 1, 64, 8, 0, 1, 4)
++
++#define QSYS_TAS_BT_SEC_MSB_SEC_MSB              GENMASK(15, 0)
++#define QSYS_TAS_BT_SEC_MSB_SEC_MSB_SET(x)\
++	FIELD_PREP(QSYS_TAS_BT_SEC_MSB_SEC_MSB, x)
++#define QSYS_TAS_BT_SEC_MSB_SEC_MSB_GET(x)\
++	FIELD_GET(QSYS_TAS_BT_SEC_MSB_SEC_MSB, x)
++
++/*      QSYS:TAS_LIST_CFG:TAS_CYCLE_TIME_CFG */
++#define QSYS_TAS_CT_CFG           __REG(TARGET_QSYS, 0, 1, 27904, 0, 1, 64, 24, 0, 1, 4)
++
++/*      QSYS:TAS_LIST_CFG:TAS_STARTUP_CFG */
++#define QSYS_TAS_STARTUP_CFG      __REG(TARGET_QSYS, 0, 1, 27904, 0, 1, 64, 28, 0, 1, 4)
++
++#define QSYS_TAS_STARTUP_CFG_OBSOLETE_IDX        GENMASK(27, 23)
++#define QSYS_TAS_STARTUP_CFG_OBSOLETE_IDX_SET(x)\
++	FIELD_PREP(QSYS_TAS_STARTUP_CFG_OBSOLETE_IDX, x)
++#define QSYS_TAS_STARTUP_CFG_OBSOLETE_IDX_GET(x)\
++	FIELD_GET(QSYS_TAS_STARTUP_CFG_OBSOLETE_IDX, x)
++
++/*      QSYS:TAS_LIST_CFG:TAS_LIST_CFG */
++#define QSYS_TAS_LIST_CFG         __REG(TARGET_QSYS, 0, 1, 27904, 0, 1, 64, 32, 0, 1, 4)
++
++#define QSYS_TAS_LIST_CFG_LIST_BASE_ADDR         GENMASK(11, 0)
++#define QSYS_TAS_LIST_CFG_LIST_BASE_ADDR_SET(x)\
++	FIELD_PREP(QSYS_TAS_LIST_CFG_LIST_BASE_ADDR, x)
++#define QSYS_TAS_LIST_CFG_LIST_BASE_ADDR_GET(x)\
++	FIELD_GET(QSYS_TAS_LIST_CFG_LIST_BASE_ADDR, x)
++
++/*      QSYS:TAS_LIST_CFG:TAS_LIST_STATE */
++#define QSYS_TAS_LST              __REG(TARGET_QSYS, 0, 1, 27904, 0, 1, 64, 36, 0, 1, 4)
++
++#define QSYS_TAS_LST_LIST_STATE                  GENMASK(2, 0)
++#define QSYS_TAS_LST_LIST_STATE_SET(x)\
++	FIELD_PREP(QSYS_TAS_LST_LIST_STATE, x)
++#define QSYS_TAS_LST_LIST_STATE_GET(x)\
++	FIELD_GET(QSYS_TAS_LST_LIST_STATE, x)
++
++/*      QSYS:TAS_GCL_CFG:TAS_GCL_CTRL_CFG */
++#define QSYS_TAS_GCL_CT_CFG       __REG(TARGET_QSYS, 0, 1, 27968, 0, 1, 16, 0, 0, 1, 4)
++
++#define QSYS_TAS_GCL_CT_CFG_HSCH_POS             GENMASK(12, 10)
++#define QSYS_TAS_GCL_CT_CFG_HSCH_POS_SET(x)\
++	FIELD_PREP(QSYS_TAS_GCL_CT_CFG_HSCH_POS, x)
++#define QSYS_TAS_GCL_CT_CFG_HSCH_POS_GET(x)\
++	FIELD_GET(QSYS_TAS_GCL_CT_CFG_HSCH_POS, x)
++
++#define QSYS_TAS_GCL_CT_CFG_GATE_STATE           GENMASK(9, 2)
++#define QSYS_TAS_GCL_CT_CFG_GATE_STATE_SET(x)\
++	FIELD_PREP(QSYS_TAS_GCL_CT_CFG_GATE_STATE, x)
++#define QSYS_TAS_GCL_CT_CFG_GATE_STATE_GET(x)\
++	FIELD_GET(QSYS_TAS_GCL_CT_CFG_GATE_STATE, x)
++
++#define QSYS_TAS_GCL_CT_CFG_OP_TYPE              GENMASK(1, 0)
++#define QSYS_TAS_GCL_CT_CFG_OP_TYPE_SET(x)\
++	FIELD_PREP(QSYS_TAS_GCL_CT_CFG_OP_TYPE, x)
++#define QSYS_TAS_GCL_CT_CFG_OP_TYPE_GET(x)\
++	FIELD_GET(QSYS_TAS_GCL_CT_CFG_OP_TYPE, x)
++
++/*      QSYS:TAS_GCL_CFG:TAS_GCL_CTRL_CFG2 */
++#define QSYS_TAS_GCL_CT_CFG2      __REG(TARGET_QSYS, 0, 1, 27968, 0, 1, 16, 4, 0, 1, 4)
++
++#define QSYS_TAS_GCL_CT_CFG2_PORT_PROFILE        GENMASK(15, 12)
++#define QSYS_TAS_GCL_CT_CFG2_PORT_PROFILE_SET(x)\
++	FIELD_PREP(QSYS_TAS_GCL_CT_CFG2_PORT_PROFILE, x)
++#define QSYS_TAS_GCL_CT_CFG2_PORT_PROFILE_GET(x)\
++	FIELD_GET(QSYS_TAS_GCL_CT_CFG2_PORT_PROFILE, x)
++
++#define QSYS_TAS_GCL_CT_CFG2_NEXT_GCL            GENMASK(11, 0)
++#define QSYS_TAS_GCL_CT_CFG2_NEXT_GCL_SET(x)\
++	FIELD_PREP(QSYS_TAS_GCL_CT_CFG2_NEXT_GCL, x)
++#define QSYS_TAS_GCL_CT_CFG2_NEXT_GCL_GET(x)\
++	FIELD_GET(QSYS_TAS_GCL_CT_CFG2_NEXT_GCL, x)
++
++/*      QSYS:TAS_GCL_CFG:TAS_GCL_TIME_CFG */
++#define QSYS_TAS_GCL_TM_CFG       __REG(TARGET_QSYS, 0, 1, 27968, 0, 1, 16, 8, 0, 1, 4)
++
++/*      QSYS:HSCH_TAS_STATE:TAS_GATE_STATE */
++#define QSYS_TAS_GATE_STATE       __REG(TARGET_QSYS, 0, 1, 28004, 0, 1, 4, 0, 0, 1, 4)
++
++#define QSYS_TAS_GATE_STATE_TAS_GATE_STATE       GENMASK(7, 0)
++#define QSYS_TAS_GATE_STATE_TAS_GATE_STATE_SET(x)\
++	FIELD_PREP(QSYS_TAS_GATE_STATE_TAS_GATE_STATE, x)
++#define QSYS_TAS_GATE_STATE_TAS_GATE_STATE_GET(x)\
++	FIELD_GET(QSYS_TAS_GATE_STATE_TAS_GATE_STATE, x)
++
+ /*      REW:PORT:PORT_VLAN_CFG */
+ #define REW_PORT_VLAN_CFG(g)      __REG(TARGET_REW, 0, 1, 0, g, 10, 128, 0, 0, 1, 4)
  
- 	eth_hw_addr_gen(dev, lan966x->base_mac, p + 1);
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-index a5d5987852d46..b037b1feec8f3 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-@@ -446,6 +446,12 @@ void lan966x_port_ageing_set(struct lan966x_port *port,
- 			     unsigned long ageing_clock_t);
- void lan966x_update_fwd_mask(struct lan966x *lan966x);
- 
-+int lan966x_tc_setup(struct net_device *dev, enum tc_setup_type type,
-+		     void *type_data);
-+
-+int lan966x_mqprio_add(struct lan966x_port *port, u8 num_tc);
-+int lan966x_mqprio_del(struct lan966x_port *port);
-+
- static inline void __iomem *lan_addr(void __iomem *base[],
- 				     int id, int tinst, int tcnt,
- 				     int gbase, int ginst,
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_mqprio.c b/drivers/net/ethernet/microchip/lan966x/lan966x_mqprio.c
-new file mode 100644
-index 0000000000000..950ea4807eb6a
---- /dev/null
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_mqprio.c
-@@ -0,0 +1,28 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+
-+#include "lan966x_main.h"
-+
-+int lan966x_mqprio_add(struct lan966x_port *port, u8 num_tc)
-+{
-+	u8 i;
-+
-+	if (num_tc != NUM_PRIO_QUEUES) {
-+		netdev_err(port->dev, "Only %d tarffic classes supported\n",
-+			   NUM_PRIO_QUEUES);
-+		return -EINVAL;
-+	}
-+
-+	netdev_set_num_tc(port->dev, num_tc);
-+
-+	for (i = 0; i < num_tc; ++i)
-+		netdev_set_tc_queue(port->dev, i, 1, i);
-+
-+	return 0;
-+}
-+
-+int lan966x_mqprio_del(struct lan966x_port *port)
-+{
-+	netdev_reset_tc(port->dev);
-+
-+	return 0;
-+}
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_tc.c b/drivers/net/ethernet/microchip/lan966x/lan966x_tc.c
-new file mode 100644
-index 0000000000000..3fea0937076e1
---- /dev/null
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_tc.c
-@@ -0,0 +1,31 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+
-+#include <net/pkt_cls.h>
-+
-+#include "lan966x_main.h"
-+
-+static int lan966x_tc_setup_qdisc_mqprio(struct lan966x_port *port,
-+					 struct tc_mqprio_qopt_offload *mqprio)
-+{
-+	u8 num_tc = mqprio->qopt.num_tc;
-+
-+	mqprio->qopt.hw = TC_MQPRIO_HW_OFFLOAD_TCS;
-+
-+	return num_tc ? lan966x_mqprio_add(port, num_tc) :
-+			lan966x_mqprio_del(port);
-+}
-+
-+int lan966x_tc_setup(struct net_device *dev, enum tc_setup_type type,
-+		     void *type_data)
-+{
-+	struct lan966x_port *port = netdev_priv(dev);
-+
-+	switch (type) {
-+	case TC_SETUP_QDISC_MQPRIO:
-+		return lan966x_tc_setup_qdisc_mqprio(port, type_data);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return 0;
-+}
 -- 
 2.33.0
 
