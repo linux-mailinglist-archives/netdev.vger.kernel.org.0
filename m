@@ -2,78 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 305825BE641
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 14:50:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92F7C5BE672
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 14:54:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231322AbiITMuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 08:50:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46120 "EHLO
+        id S231406AbiITMyY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 08:54:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231316AbiITMuV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 08:50:21 -0400
-Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CAF261B12
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 05:50:19 -0700 (PDT)
-Received: by mail-il1-x130.google.com with SMTP id d16so1287261ils.8
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 05:50:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=zQKgQ4HqE6wGzsyWaju9zoDk2+yG62YwCmFP6Uq7Ybg=;
-        b=fYLN3d+bXN+MueTMze9Q8X6v353Up/GFFmi+EjF1hMneXt78kSyeeghELK0zuJJdpq
-         2zvNjmPJKy2mSaeouPbyeWFtS8LlFQOFGnFm4WG3pJ0BtfFigTNSy+gXCamnBgOsvlB8
-         ZTEVV7RLxC8QQ/35ydv4daofvisKRz7d7Z7zb7+Z6D2ZaFwsHGLsJKs0OYwkytdSM8s8
-         CUD4l/yiG3v/UXDrsC+7Il+CRkWbumwBWzFAjEJakWmbeJXPvreJvXGXiix1fg4OQHDb
-         BOGS4insDNyJ0dCu88LWA5Y9iIDjNVoIZ6lgV5/wAGhxVQZJbM4Hk/4IPQwfv3nyGUTd
-         LJ3A==
+        with ESMTP id S231407AbiITMxw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 08:53:52 -0400
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10EA075FCC
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 05:53:34 -0700 (PDT)
+Received: by mail-io1-f70.google.com with SMTP id u23-20020a6be917000000b0069f4854e11eso1358913iof.2
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 05:53:34 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=zQKgQ4HqE6wGzsyWaju9zoDk2+yG62YwCmFP6Uq7Ybg=;
-        b=VcSpI7UCzK1klLGxFO6IKxjjaIfsjyR1uyutfSenFl1s9Ry+TQXNiYrQe/Ty2wPeDD
-         KZxHXAtHVXm/PhjuVEWIelRVb82OH7KgJU/qStubTpRRHWx6alkCqTwMFa6/98D4vHif
-         hchRQ8lemb5BszKeHj+EIXxKf9gD58pM3kmcc9Tc1WNhmYQmVOY01afxJ6j4kwjOjL6o
-         P7Af7bpmBIWwOV+V03c/Jbh01RIvB27+iCCY6Tgik6IBFyBeoWUnI6K6MHpQitL4MK+R
-         JTCMGDRqBj/uiVRn8iphBcq3qFX7HswPS/RPzY/xEm+oVppt5fw7ruSUFgohq5HhhgXS
-         QRXQ==
-X-Gm-Message-State: ACrzQf3wJjx+L9Y2oIjQteOMZUxIPzE6qiQjhBj0vBuPgkueQWA4FVz8
-        E+ORi5XzM/qbRbKa0nhfpd/ZUOp/PGNdK89A
-X-Google-Smtp-Source: AMsMyM5zr3Cun3OYjYJC8x4bIwCaiiqupw70+97apWEch/GHkgE7BtksNT5A+S9+j+89fT61O9fv5g==
-X-Received: by 2002:a92:c543:0:b0:2f5:ae52:a023 with SMTP id a3-20020a92c543000000b002f5ae52a023mr4533245ilj.118.1663678218268;
-        Tue, 20 Sep 2022 05:50:18 -0700 (PDT)
-Received: from [172.22.22.4] ([98.61.227.136])
-        by smtp.googlemail.com with ESMTPSA id y11-20020a056602178b00b00688b30a7812sm31398iox.42.2022.09.20.05.50.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 20 Sep 2022 05:50:17 -0700 (PDT)
-Message-ID: <b26912a7-0770-4b1f-4cf4-bed81298cbdb@linaro.org>
-Date:   Tue, 20 Sep 2022 07:50:16 -0500
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=jQJm8Z+up347I13dxWYRPWK1SdivX1s8IHwB5EA/8gk=;
+        b=WuWlMjYSafPcH4Da2ZXsRSsbmZ9KHJbS4XAINxPYQDt8Ytkf8YRtz+bw+5vzY9lGyH
+         RIsQlyyV1ijyJzt8jaTch8nE+aXJ4e3FBLHXUkZ/kuDGFtYWXK0rjUPD34tAbYfR/U/6
+         t/YyPJF2l1be/e7/+lNr2eXmpID/420Gq8+HrWMmPtbRNYhC/EQOhu/bcIWHS02N6ZMW
+         GOMVpVsk3K6ZyIgn9kq39qV9XVEJY4jIfLU5SFl52wemRfdQbBbDctm0coegt+RRD55w
+         RmZ4euVGVZGmbA8yMNNK4yKzMrcNdMRYx6kdZTSBCqOmefNLUhi7+RTCSNcYpupKC1l7
+         wdgw==
+X-Gm-Message-State: ACrzQf3e6lESk1caqwLDZ6CWRqWSHgB2s1JSdWjgjRA+EDT5Uq/7afVz
+        culYQoyF28k/8RxiJK/i1hsU5n9EAUXMQrzWSb4Owd1Orzoo
+X-Google-Smtp-Source: AMsMyM6l6LLo4LWGKy1iezG8GllPNubQqkEn/HEBaG5rq+mYVV3f7Bc8lO3y7PQiTnHuHMq2nyIulejtxAPn4IVQmHIUWDcBul4c
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net-next 3/6] net: ipa: move and redefine
- ipa_version_valid()
-Content-Language: en-US
-To:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org
-Cc:     mka@chromium.org, evgreen@chromium.org, andersson@kernel.org,
-        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
-        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
-        elder@kernel.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220910011131.1431934-1-elder@linaro.org>
- <20220910011131.1431934-4-elder@linaro.org>
- <d98d439ef5ee8a1744481bf1f076fbed918c3cef.camel@redhat.com>
-From:   Alex Elder <elder@linaro.org>
-In-Reply-To: <d98d439ef5ee8a1744481bf1f076fbed918c3cef.camel@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+X-Received: by 2002:a05:6638:150c:b0:35a:f7a9:c3d8 with SMTP id
+ b12-20020a056638150c00b0035af7a9c3d8mr1916588jat.38.1663678413730; Tue, 20
+ Sep 2022 05:53:33 -0700 (PDT)
+Date:   Tue, 20 Sep 2022 05:53:33 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000def90305e91b5016@google.com>
+Subject: [syzbot] possible deadlock in skb_queue_tail (4)
+From:   syzbot <syzbot+44b38bcb874d81a15a57@syzkaller.appspotmail.com>
+To:     bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, kuniyu@amazon.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,70 +55,188 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/20/22 3:29 AM, Paolo Abeni wrote:
-> On Fri, 2022-09-09 at 20:11 -0500, Alex Elder wrote:
->> Move the definition of ipa_version_valid(), making it a static
->> inline function defined together with the enumerated type in
->> "ipa_version.h".  Define a new count value in the type.
->>
->> Rename the function to be ipa_version_supported(), and have it
->> return true only if the IPA version supplied is explicitly supported
->> by the driver.
-> 
-> I'm wondering if the above is going to cause regressions with some IPA
-> versions suddenly not probed anymore by the module?
+Hello,
 
-That is a really good observation.
+syzbot found the following issue on:
 
-The way versions are handled is a little bit inconsistent.  The
-code is generally written in such a way that *any* version could
-be used (between a certain minimum and maximum, currently 3.0-4.11).
-In other words, the *intent* in the code is to make it so that
-quirks and features that are version-specific are handled the right
-way, even if we do not (yet) support it.
+HEAD commit:    3245cb65fd91 Merge tag 'devicetree-fixes-for-6.0-2' of git..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=12b0c487080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=98a30118ec9215e9
+dashboard link: https://syzkaller.appspot.com/bug?extid=44b38bcb874d81a15a57
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+userspace arch: i386
 
-So for example the inline macro rsrc_grp_encoded() returns the
-mask to use to specify an endpoint's assigned resource group.
-IPA v4.7 uses one bit, whereas others use two or three bits.
-We don't "formally" support IPA v4.7, because I (or someone
-else) haven't set up a Device Tree file and "IPA config data"
-to test it on real hardware.  Still, rsrc_grp_encoded() returns
-the right value for IPA v4.7, even though it won't be needed
-until IPA v4.7 is tested and declared supported.
+Unfortunately, I don't have any reproducer for this issue yet.
 
-The intent is to facilitate adding support for IPA v4.7 (and
-others).  In principle one could simply try it out and it should
-work, but in reality it is unlikely to be that easy.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+44b38bcb874d81a15a57@syzkaller.appspotmail.com
 
-Finally, as mentioned, to support a version (such as 4.7) we
-need to create "ipa_data-v4.7.c", which defines a bunch of
-things that are version-specific.  Because those definitions
-are missing, no IPA v4.7 hardware will be matched by the
-ipa_match[] table.
+======================================================
+WARNING: possible circular locking dependency detected
+6.0.0-rc5-syzkaller-00025-g3245cb65fd91 #0 Not tainted
+------------------------------------------------------
+syz-executor.4/21149 is trying to acquire lock:
+ffff8880178441e8 (rlock-AF_UNIX){+.+.}-{2:2}, at: skb_queue_tail+0x21/0x140 net/core/skbuff.c:3400
 
-So the answer to your question is that currently none of the
-unsupported versions will successfully probe anyway.
+but task is already holding lock:
+ffff888017844670 (&u->lock/1){+.+.}-{2:2}, at: unix_state_double_lock net/unix/af_unix.c:1298 [inline]
+ffff888017844670 (&u->lock/1){+.+.}-{2:2}, at: unix_state_double_lock+0x77/0xa0 net/unix/af_unix.c:1290
 
-> Additionally there are a few places checking for the now unsupported
-> version[s], I guess that check could/should be removed? e.g.
-> ipa_reg_irq_suspend_en_ee_n_offset(),
-> ipa_reg_irq_suspend_info_ee_n_offset()
-> ...
+which lock already depends on the new lock.
 
-I'm a fan of removing unused code like this, but I really would
-like to actually support these other IPA versions, and I hope
-the code is close to ready for that.  I would just need to get
-some hardware to test it with (and it needs to rise to the top
-of my priority list...).
 
-Does this make sense to you?
+the existing dependency chain (in reverse order) is:
 
-Thank you very much for taking the time to review this.
+-> #1 (&u->lock/1){+.+.}-{2:2}:
+       _raw_spin_lock_nested+0x30/0x40 kernel/locking/spinlock.c:378
+       sk_diag_dump_icons net/unix/diag.c:87 [inline]
+       sk_diag_fill+0xaaf/0x10d0 net/unix/diag.c:155
+       sk_diag_dump net/unix/diag.c:193 [inline]
+       unix_diag_dump+0x3a9/0x640 net/unix/diag.c:217
+       netlink_dump+0x541/0xc20 net/netlink/af_netlink.c:2275
+       __netlink_dump_start+0x647/0x900 net/netlink/af_netlink.c:2380
+       netlink_dump_start include/linux/netlink.h:245 [inline]
+       unix_diag_handler_dump net/unix/diag.c:315 [inline]
+       unix_diag_handler_dump+0x5c2/0x830 net/unix/diag.c:304
+       __sock_diag_cmd net/core/sock_diag.c:235 [inline]
+       sock_diag_rcv_msg+0x31a/0x440 net/core/sock_diag.c:266
+       netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2501
+       sock_diag_rcv+0x26/0x40 net/core/sock_diag.c:277
+       netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+       netlink_unicast+0x543/0x7f0 net/netlink/af_netlink.c:1345
+       netlink_sendmsg+0x917/0xe10 net/netlink/af_netlink.c:1921
+       sock_sendmsg_nosec net/socket.c:714 [inline]
+       sock_sendmsg+0xcf/0x120 net/socket.c:734
+       sock_write_iter+0x291/0x3d0 net/socket.c:1108
+       call_write_iter include/linux/fs.h:2187 [inline]
+       do_iter_readv_writev+0x20b/0x3b0 fs/read_write.c:729
+       do_iter_write+0x182/0x700 fs/read_write.c:855
+       vfs_writev+0x1aa/0x630 fs/read_write.c:928
+       do_writev+0x279/0x2f0 fs/read_write.c:971
+       do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
+       __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
+       do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
+       entry_SYSENTER_compat_after_hwframe+0x70/0x82
 
-					-Alex
+-> #0 (rlock-AF_UNIX){+.+.}-{2:2}:
+       check_prev_add kernel/locking/lockdep.c:3095 [inline]
+       check_prevs_add kernel/locking/lockdep.c:3214 [inline]
+       validate_chain kernel/locking/lockdep.c:3829 [inline]
+       __lock_acquire+0x2a43/0x56d0 kernel/locking/lockdep.c:5053
+       lock_acquire kernel/locking/lockdep.c:5666 [inline]
+       lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5631
+       __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+       _raw_spin_lock_irqsave+0x39/0x50 kernel/locking/spinlock.c:162
+       skb_queue_tail+0x21/0x140 net/core/skbuff.c:3400
+       unix_dgram_sendmsg+0xf41/0x1b50 net/unix/af_unix.c:2043
+       sock_sendmsg_nosec net/socket.c:714 [inline]
+       sock_sendmsg+0xcf/0x120 net/socket.c:734
+       ____sys_sendmsg+0x6eb/0x810 net/socket.c:2482
+       __sys_sendmsg_sock+0x26/0x30 net/socket.c:2548
+       io_sendmsg+0x246/0x7d0 io_uring/net.c:289
+       io_issue_sqe+0x6b6/0xd20 io_uring/io_uring.c:1577
+       io_queue_sqe io_uring/io_uring.c:1755 [inline]
+       io_submit_sqe io_uring/io_uring.c:2013 [inline]
+       io_submit_sqes+0x94e/0x1d30 io_uring/io_uring.c:2124
+       __do_sys_io_uring_enter+0xb85/0x1ea0 io_uring/io_uring.c:3054
+       do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
+       __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
+       do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
+       entry_SYSENTER_compat_after_hwframe+0x70/0x82
 
-> Thanks,
-> 
-> Paolo
-> 
+other info that might help us debug this:
 
+ Possible unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock(&u->lock/1);
+                               lock(rlock-AF_UNIX);
+                               lock(&u->lock/1);
+  lock(rlock-AF_UNIX);
+
+ *** DEADLOCK ***
+
+2 locks held by syz-executor.4/21149:
+ #0: ffff88807dcb40a8 (&ctx->uring_lock){+.+.}-{3:3}, at: __do_sys_io_uring_enter+0xb7a/0x1ea0 io_uring/io_uring.c:3053
+ #1: ffff888017844670 (&u->lock/1){+.+.}-{2:2}, at: unix_state_double_lock net/unix/af_unix.c:1298 [inline]
+ #1: ffff888017844670 (&u->lock/1){+.+.}-{2:2}, at: unix_state_double_lock+0x77/0xa0 net/unix/af_unix.c:1290
+
+stack backtrace:
+CPU: 0 PID: 21149 Comm: syz-executor.4 Not tainted 6.0.0-rc5-syzkaller-00025-g3245cb65fd91 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 08/26/2022
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ check_noncircular+0x25f/0x2e0 kernel/locking/lockdep.c:2175
+ check_prev_add kernel/locking/lockdep.c:3095 [inline]
+ check_prevs_add kernel/locking/lockdep.c:3214 [inline]
+ validate_chain kernel/locking/lockdep.c:3829 [inline]
+ __lock_acquire+0x2a43/0x56d0 kernel/locking/lockdep.c:5053
+ lock_acquire kernel/locking/lockdep.c:5666 [inline]
+ lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5631
+ __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+ _raw_spin_lock_irqsave+0x39/0x50 kernel/locking/spinlock.c:162
+ skb_queue_tail+0x21/0x140 net/core/skbuff.c:3400
+ unix_dgram_sendmsg+0xf41/0x1b50 net/unix/af_unix.c:2043
+ sock_sendmsg_nosec net/socket.c:714 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:734
+ ____sys_sendmsg+0x6eb/0x810 net/socket.c:2482
+ __sys_sendmsg_sock+0x26/0x30 net/socket.c:2548
+ io_sendmsg+0x246/0x7d0 io_uring/net.c:289
+ io_issue_sqe+0x6b6/0xd20 io_uring/io_uring.c:1577
+ io_queue_sqe io_uring/io_uring.c:1755 [inline]
+ io_submit_sqe io_uring/io_uring.c:2013 [inline]
+ io_submit_sqes+0x94e/0x1d30 io_uring/io_uring.c:2124
+ __do_sys_io_uring_enter+0xb85/0x1ea0 io_uring/io_uring.c:3054
+ do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
+ __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
+ do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
+ entry_SYSENTER_compat_after_hwframe+0x70/0x82
+RIP: 0023:0xf7faf549
+Code: 03 74 c0 01 10 05 03 74 b8 01 10 06 03 74 b4 01 10 07 03 74 b0 01 10 08 03 74 d8 01 00 00 00 00 00 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 8d b4 26 00 00 00 00 8d b4 26 00 00 00 00
+RSP: 002b:00000000f7f895cc EFLAGS: 00000296 ORIG_RAX: 00000000000001aa
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000002a6e
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
+----------------
+Code disassembly (best guess):
+   0:	03 74 c0 01          	add    0x1(%rax,%rax,8),%esi
+   4:	10 05 03 74 b8 01    	adc    %al,0x1b87403(%rip)        # 0x1b8740d
+   a:	10 06                	adc    %al,(%rsi)
+   c:	03 74 b4 01          	add    0x1(%rsp,%rsi,4),%esi
+  10:	10 07                	adc    %al,(%rdi)
+  12:	03 74 b0 01          	add    0x1(%rax,%rsi,4),%esi
+  16:	10 08                	adc    %cl,(%rax)
+  18:	03 74 d8 01          	add    0x1(%rax,%rbx,8),%esi
+  1c:	00 00                	add    %al,(%rax)
+  1e:	00 00                	add    %al,(%rax)
+  20:	00 51 52             	add    %dl,0x52(%rcx)
+  23:	55                   	push   %rbp
+  24:	89 e5                	mov    %esp,%ebp
+  26:	0f 34                	sysenter
+  28:	cd 80                	int    $0x80
+* 2a:	5d                   	pop    %rbp <-- trapping instruction
+  2b:	5a                   	pop    %rdx
+  2c:	59                   	pop    %rcx
+  2d:	c3                   	retq
+  2e:	90                   	nop
+  2f:	90                   	nop
+  30:	90                   	nop
+  31:	90                   	nop
+  32:	8d b4 26 00 00 00 00 	lea    0x0(%rsi,%riz,1),%esi
+  39:	8d b4 26 00 00 00 00 	lea    0x0(%rsi,%riz,1),%esi
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
