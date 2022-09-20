@@ -2,88 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A1D8E5BE8C5
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 16:24:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC36B5BE8F2
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 16:29:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231804AbiITOY2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 10:24:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42732 "EHLO
+        id S231206AbiITO3z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 10:29:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231961AbiITOX7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 10:23:59 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8136021835;
-        Tue, 20 Sep 2022 07:23:37 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id e17so4093229edc.5;
-        Tue, 20 Sep 2022 07:23:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date;
-        bh=AdtpZB7U/EABK14zfV/flloJYC93tZl66p8xW/fKflI=;
-        b=WiApm+FyIA3oAhh+un2VztEkfOLo0vOyUENAeEGzdK5Xaq/T2D3fYeUWCVg+vBB14h
-         H+K4WkGh825B1M3cs6cYQ+KbNbkS/E+oMzFpVqdodOgcMMtbMFJR3w1wQ7FPdav6VQs8
-         ryYdKzuDQ+U3KaGmNScrzmHlhMWL18MvcrXzxQ9w3OPN7n12vS5fccOU40vzn9gvZFJD
-         aEoRrB9/3Fh7pFLgyIjudA6G5CGENdr6eZukz2gFbHDcW1grp8kQeuwYgdhkCskSoHfv
-         7mVT7VAgAUGDWKGDOq/4Nzn/B+eVOHhDW03leKjiGylKhrp5bPGVBVGRiNJ2PWYIHRDd
-         ALrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=AdtpZB7U/EABK14zfV/flloJYC93tZl66p8xW/fKflI=;
-        b=CAWf055qUtp0JPWZ3+MVKAD7HPU5s7j0KfhXj9PRsztC3wv/39HCPrJlD6lIOQFJsP
-         6JTWb/HOEEcWeTvzl/YaUMLZQjVbCBP62dcI8C3PuVNK9aZHkCbmxp302k+qkpJQ57+6
-         +QtJObXF7bVRvxm9nb4YQsdnbsKW3wV6BTf1bALxbUa0607QKLJ14H3P66kR294onBWx
-         Cfj6YEi4eF+K1pAn6ZsqpmBLXZFXUrTA4FeVNhJ0VvwBSNbf2oxxzSm7r4fqBakKjsXz
-         rGOVoCJspUPA+nhECInGOVaV5dOt7H6gvz1NqiL2Jnwu4SZMoX80eZps3TwD0Z9XxlGW
-         Lsqw==
-X-Gm-Message-State: ACrzQf38GHXI3VOMIZINo0Y8W+CtXFUgN6jKUWvzMLe2Xjj9ymrkcXkE
-        /aogHUyU7SeeUwEVq7NjflB9k91Y2IG519ZPHfnyc/poJE4=
-X-Google-Smtp-Source: AMsMyM7A0vXmhuLnWz/JvadhLpoO0zXesiteq62wMJys2JjmQ/j4DZd0J7mR2NLFnCp8xixumNbGJKe3LOH37nNGRQQ=
-X-Received: by 2002:aa7:cad5:0:b0:454:88dc:2c22 with SMTP id
- l21-20020aa7cad5000000b0045488dc2c22mr1698575edt.352.1663683816014; Tue, 20
- Sep 2022 07:23:36 -0700 (PDT)
+        with ESMTP id S231195AbiITO3y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 10:29:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5449CDFF3;
+        Tue, 20 Sep 2022 07:29:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 15C4962AE3;
+        Tue, 20 Sep 2022 14:29:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B702AC433D6;
+        Tue, 20 Sep 2022 14:29:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1663684190;
+        bh=I2AZ4a5ewLRtZ+OVequFYRKX7N+DsK2ocVC2jmNUcy8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=m8z7qP5xpdxGu6V+FBcbAokFPNddjLsAQxkYlWf/CecPLC3/GEv4XeX0spnREGC83
+         lw1WvvY+oYo4wOklCruY8v8kvArRs0bZ38DIBRwjcqZb9a7RxvRuD/AWIqBixMvcoP
+         ty+BFcQpMgVZRF6BR0qgcx0Pu01tSJ54+rzr19LaZ9dOZQtyUr76XkaqCOrMy9xPMM
+         NWFHwru/o56ka0ttJzCB1P5YxJNbFNJaJgbC6ArDnnpB6FOMYdlKm+CQNsFyOWqn5h
+         c8wGYyUx/FpTimpcW/GOrSBrO6In49DVYIZ9IibQ4NRZcn4q2tVn8Ok2WSECfJgRfI
+         rbbp9ajXpcSVg==
+Date:   Tue, 20 Sep 2022 07:29:48 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Casper Andersson <casper.casan@gmail.com>
+Cc:     Nathan Huckleberry <nhuck@google.com>,
+        Dan Carpenter <error27@gmail.com>, llvm@lists.linux.dev,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: sparx5: Fix return type of sparx5_port_xmit_impl
+Message-ID: <20220920072948.33c25dd2@kernel.org>
+In-Reply-To: <20220913081548.gmngjwuagbt63j7h@wse-c0155>
+References: <20220912214432.928989-1-nhuck@google.com>
+        <20220913081548.gmngjwuagbt63j7h@wse-c0155>
 MIME-Version: 1.0
-From:   Daniele Palmas <dnlplm@gmail.com>
-Date:   Tue, 20 Sep 2022 16:23:25 +0200
-Message-ID: <CAGRyCJGWQagceLhnECBcpPfG5jMPZrjbsHrio1BvgpZJhk0pbA@mail.gmail.com>
-Subject: MHI DTR client implementation
-To:     mhi@lists.linux.dev, linux-arm-msm@vger.kernel.org,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,HK_RANDOM_ENVFROM,
-        HK_RANDOM_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello all,
+On Tue, 13 Sep 2022 10:15:48 +0200 Casper Andersson wrote:
+> I noticed that the functions that assign the return value inside
+> sparx5_port_xmit_impl also have return type int, which would ideally
+> also be changed. But a bigger issue might be that
+> sparx5_ptp_txtstamp_request and sparx5_inject (called inside
+> sparx5_port_xmit_impl) returns -EBUSY (-16),
 
-I'm looking for some guidance related to  a possible MHI client for
-serial ports signals management implementation.
+Yes, that seems off. IIUC error codes are treated as drops, 
+but the driver doesn't free the frame. So it's likely a leak.
 
-Testing the AT channels with Telit modems I noted that unsolicited
-indications do not show: the root cause for this is DTR not set for
-those ports through MHI channels 18/19, something that with current
-upstream code can't be done due to the missing DTR client driver.
-
-I currently have an hack, based on the very first mhi stack submission
-(see https://lore.kernel.org/lkml/1524795811-21399-2-git-send-email-sdias@codeaurora.org/#Z31drivers:bus:mhi:core:mhi_dtr.c),
-solving my issue, but I would like to understand which would be the
-correct way, so maybe I can contribute some code.
-
-Should the MHI DTR client be part of the WWAN subsystem? If yes, does
-it make sense to have an associated port exposed as a char device? I
-guess the answer is no, since it should be used just by the AT ports
-created by mhi_wwan_ctrl, but I'm not sure if that's possible.
-
-Or should the DTR management be somehow part of the MHI stack and
-mhi_wwan_ctrl interacts with that through exported functions?
-
-Thanks a lot in advance,
-Daniele
+> when they should return NETDEV_TX_BUSY (16). If this is an issue then
+> it also needs to be fixed.
