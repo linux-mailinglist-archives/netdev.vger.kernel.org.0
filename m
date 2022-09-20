@@ -2,71 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 44CCB5BE73B
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 15:37:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 750025BE59E
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 14:22:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230420AbiITNhv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 09:37:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50544 "EHLO
+        id S230364AbiITMWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 08:22:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230477AbiITNhu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 09:37:50 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87B2622B35
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 06:37:47 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id e16so4333389wrx.7
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 06:37:47 -0700 (PDT)
+        with ESMTP id S229503AbiITMWv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 08:22:51 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC3A874CDC
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 05:22:50 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id f20so3553176edf.6
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 05:22:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:from:to:cc:subject:date;
-        bh=0JIhpSFKtvvSEa3Krb5C0ha5kHC5er+kPLNccb8+V6A=;
-        b=VQ73Fl+csqUw3a++VzWhNUm8SVf4eKNXwTsuM2dqvBuw1Ukz2TPWKkz6NznqB4K/Uo
-         PcPvjGKctlmqC3TwjlgXdMFZBMBybQKb8n40GD/vvHpfXZo1sa77Q3h8lUIkRLFexp9F
-         Kzt7jrZf+TQ78MDdYPjCWc5NPlkrenvrFy0x1hc9JDB1gcq2LNWW+Rew5XUgRNINTRUC
-         FkOESO+3sLLTjZCWGBek6vR+GvjkmtUqrzqctkdRIWC4JD8996KeXObgKjBh01Tvz2wj
-         aV8OVRFwGoMpGEPa5vcLSmVkqYWOyzFNfXa6A18NUymUYFSnB5pucTevO0hoE0ntS44/
-         m9cw==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=Y5LAXXzXFv4RyahpvK+R3PHT3WOgII02Ou55JA0/yUM=;
+        b=CfwD+Nj/Xok0vXtyofmRM937ETe1lyUjOx7M5ptKoTWan7yzN4Xk+MvI2a2r/DR6jw
+         QhrpOLrAZDljgAHdLoccioS2iGRNtOMx1KSn84jduXJy7LQf9QK/B6Vfu6yDOsj06AKJ
+         wfNC03orZYBma1pOxi2szOU+R3cm6wmIzpjfQO6VbLkkFqxqH/c1h84Ry7rSLo7h+A34
+         PaMskF6L7tse7fLPMRsbzolvNyILfcZ3tTJgrYf9dOBfhhFh2ica5qQP8AJWjiFLolV8
+         15TK3Uw/z5glMjsP1nyNknU7kakuDmvF0ZjoVVZ6j4qm5PSiXt/3OqLtcGpJNBiw0Z/E
+         2bVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date;
-        bh=0JIhpSFKtvvSEa3Krb5C0ha5kHC5er+kPLNccb8+V6A=;
-        b=GWQUsh/PcpcS7c7lmvOO/q1TSG5OSwq+Dd2DmxQY7oNSVP71bv2ZSYuOwb6VG+eTcL
-         sCGGBduu3+DqWJ4UWnOV0d5+Bw5H3Em/Sg+YW3GnZ2ThD0jqjhpVmle2Dtlv6Dk2pr/H
-         /rzFgxnYZy90AdQjsAwlBRzDcLav+06BeyNdSDqJgLEPmTq3jFSoe3c0RUdV5roXgl3o
-         SBNdNsp2pNBpl3iLyVMZnrKJ8QRxSKjVU3grHqQ/+MeTxSyYKK4zBRdKFQtupfx7hHNP
-         qyJ3iNCobQUEC2RMtJnWkaZ/fQierv83tclqkkYJQYfpzOVUlV6kReAU+xtcOBmIRSTw
-         J/Qg==
-X-Gm-Message-State: ACrzQf0qa1Te1F7TUGMTeImYhmpCLX+9evVJfZPUo/bttCv/kzRXoOUM
-        WSij5nMSusRHFY4UMigbRvo=
-X-Google-Smtp-Source: AMsMyM4hbC5YciQgUp8yHqOZZyP1aJA7Yb3aaiwO/Qu7ijLjGRRwwrGorDB6fys/UsQZ0S9E5DXeKA==
-X-Received: by 2002:a5d:5b0f:0:b0:22a:f738:acdd with SMTP id bx15-20020a5d5b0f000000b0022af738acddmr7962257wrb.234.1663681065428;
-        Tue, 20 Sep 2022 06:37:45 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-134.ip85.fastwebnet.it. [93.42.70.134])
-        by smtp.gmail.com with ESMTPSA id l4-20020adff484000000b0022ac13aa98fsm1807922wro.97.2022.09.20.06.37.44
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=Y5LAXXzXFv4RyahpvK+R3PHT3WOgII02Ou55JA0/yUM=;
+        b=qH2YHyHq4bVGZIOHFuO9w8GQdP5e4lgo8b66ErzZ+mLM2HdpsNlZ+hU6n5J12Ww6W3
+         /ljI9VJ6KiNuB4tUE6NeDnkZUgnMu0S2OoTamZPYfVkYej0dRKYa+aAcxISkh0XVzWgz
+         cC0jeJInCBANvNYcQ1obh4mb6M4juJWq00IR7os+z+KyBqf8/Jty4ZpwwpK+fxvPpvN6
+         7OJXwsUXTPCebsrMyEiVzt2Z94oHj7J1FPaEfQphTWh0eP6nEAe8cHsyWhaCrP6AuHBk
+         vriEREhsiXgwheAX3sxvzkf4O649ZmJQXaijZdYHrLSSVUqql4QzSalj7Jzs003vSpRG
+         L34w==
+X-Gm-Message-State: ACrzQf1iM4CDSV50tUkuiaYWEAC09uEH5loSGFlzO8RQVSRJTWia1vie
+        TJtav6XTMMSSIzwEicpkQCM=
+X-Google-Smtp-Source: AMsMyM51DYuFbJEPW/fIsli8W/gouC7+5tyL0MVw9GzHjHYhg4urBL3ZI4l1x8y+rixpZ3MAxRwlDg==
+X-Received: by 2002:a05:6402:2694:b0:450:d537:f6d6 with SMTP id w20-20020a056402269400b00450d537f6d6mr20259133edd.344.1663676569239;
+        Tue, 20 Sep 2022 05:22:49 -0700 (PDT)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id v17-20020a170906293100b0076fa6d9d891sm766536ejd.46.2022.09.20.05.22.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Sep 2022 06:37:44 -0700 (PDT)
-Message-ID: <6329c228.df0a0220.fd08a.30e3@mx.google.com>
-X-Google-Original-Message-ID: <YykxKweutF7ZApsg@Ansuel-xps.>
-Date:   Tue, 20 Sep 2022 05:19:07 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     mattias.forsblad@gmail.com, netdev <netdev@vger.kernel.org>,
+        Tue, 20 Sep 2022 05:22:48 -0700 (PDT)
+Date:   Tue, 20 Sep 2022 15:22:46 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Mattias Forsblad <mattias.forsblad@gmail.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH rfc v0 9/9] net: dsa: qca8k: Move inband mutex into DSA
- core
-References: <20220919110847.744712-3-mattias.forsblad@gmail.com>
- <20220919221853.4095491-1-andrew@lunn.ch>
- <20220919221853.4095491-10-andrew@lunn.ch>
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux@armlinux.org.uk,
+        ansuelsmth@gmail.com
+Subject: Re: [PATCH net-next v14 4/7] net: dsa: mv88e6xxxx: Add RMU
+ functionality.
+Message-ID: <20220920122246.4v2rlqmm6ciembfc@skbuf>
+References: <20220919110847.744712-1-mattias.forsblad@gmail.com>
+ <20220919110847.744712-1-mattias.forsblad@gmail.com>
+ <20220919110847.744712-5-mattias.forsblad@gmail.com>
+ <20220919110847.744712-5-mattias.forsblad@gmail.com>
+ <20220919223933.2hh4hhci3pj33lrj@skbuf>
+ <2be57208-61fe-95f6-f70a-b3a86f5024a1@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220919221853.4095491-10-andrew@lunn.ch>
-X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DATE_IN_PAST_06_12,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
+In-Reply-To: <2be57208-61fe-95f6-f70a-b3a86f5024a1@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,244 +81,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 20, 2022 at 12:18:53AM +0200, Andrew Lunn wrote:
-> The mutex serves two purposes:
+On Tue, Sep 20, 2022 at 01:53:36PM +0200, Mattias Forsblad wrote:
+> On 2022-09-20 00:39, Vladimir Oltean wrote:
+> >> +void mv88e6xxx_master_state_change(struct dsa_switch *ds, const struct net_device *master,
+> >> +				   bool operational)
+> >> +{
+> >> +	if (operational && chip->info->ops->rmu_enable) {
+> > 
+> > This all needs to be rewritten. Like here, if the master is operational
+> > but the chip->info->ops->rmu_enable method is not populated, you call
+> > mv88e6xxx_disable_rmu(). Why?
 > 
-> It serialises operations on the switch, so that only one
-> request/response can be happening at once.
-> 
-> It protects priv->mgmt_master, which itself has two purposes.  If the
-> hardware is wrongly wires, the wrong switch port is connected to the
-> cpu, inband cannot be used. In this case it has the value
-> NULL. Additionally, if the master is down, it is set to
-> NULL. Otherwise it points to the netdev used to send frames to the
-> switch.
-> 
-> The protection of priv->mgmt_master is not required. It is a single
-> pointer, which will be updated atomically. It is not expected that the
-> interface disappears, it only goes down. Hence mgmt_master will always
-> be valid, or NULL.
-> 
-> Move the check for the master device being NULL into the core.  Also,
-> move the mutex for serialisation into the core.
-> 
-> The MIB operations don't follow request/response semantics, so its
-> mutex is left untouched.
-> 
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> So what should we do in this case?
 
-BTW this patch makes the router crash with a kernel panic. Rest of the
-patchset works correctly and seems to be no regression. (I had to fix
-the clear_skb return value)
+Nothing, obviously.
 
-> ---
->  drivers/net/dsa/qca/qca8k-8xxx.c | 68 ++++++--------------------------
->  drivers/net/dsa/qca/qca8k.h      |  1 -
->  include/net/dsa.h                |  1 +
->  net/dsa/dsa.c                    |  7 ++++
->  4 files changed, 19 insertions(+), 58 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/qca/qca8k-8xxx.c b/drivers/net/dsa/qca/qca8k-8xxx.c
-> index 234d79a09e78..3e60bbe2570d 100644
-> --- a/drivers/net/dsa/qca/qca8k-8xxx.c
-> +++ b/drivers/net/dsa/qca/qca8k-8xxx.c
-> @@ -238,15 +238,6 @@ static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
->  	if (!skb)
->  		return -ENOMEM;
->  
-> -	mutex_lock(&mgmt_eth_data->mutex);
-> -
-> -	/* Check mgmt_master if is operational */
-> -	if (!priv->mgmt_master) {
-> -		kfree_skb(skb);
-> -		mutex_unlock(&mgmt_eth_data->mutex);
-> -		return -EINVAL;
-> -	}
-> -
->  	skb->dev = priv->mgmt_master;
->  
->  	ret = dsa_inband_request(&mgmt_eth_data->inband, skb,
-> @@ -258,8 +249,6 @@ static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
->  	if (len > QCA_HDR_MGMT_DATA1_LEN)
->  		memcpy(val + 1, &data[1], len - QCA_HDR_MGMT_DATA1_LEN);
->  
-> -	mutex_unlock(&mgmt_eth_data->mutex);
-> -
->  	return ret;
->  }
->  
-> @@ -267,32 +256,18 @@ static int qca8k_write_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
->  {
->  	struct qca8k_mgmt_eth_data *mgmt_eth_data = &priv->mgmt_eth_data;
->  	struct sk_buff *skb;
-> -	int ret;
->  
->  	skb = qca8k_alloc_mdio_header(MDIO_WRITE, reg, val,
->  				      QCA8K_ETHERNET_MDIO_PRIORITY, len);
->  	if (!skb)
->  		return -ENOMEM;
->  
-> -	mutex_lock(&mgmt_eth_data->mutex);
-> -
-> -	/* Check mgmt_master if is operational */
-> -	if (!priv->mgmt_master) {
-> -		kfree_skb(skb);
-> -		mutex_unlock(&mgmt_eth_data->mutex);
-> -		return -EINVAL;
-> -	}
-> -
->  	skb->dev = priv->mgmt_master;
->  
-> -	ret = dsa_inband_request(&mgmt_eth_data->inband, skb,
-> -				 qca8k_mdio_header_fill_seq_num,
-> -				 NULL, 0,
-> -				 QCA8K_ETHERNET_TIMEOUT);
-> -
-> -	mutex_unlock(&mgmt_eth_data->mutex);
-> -
-> -	return ret;
-> +	return dsa_inband_request(&mgmt_eth_data->inband, skb,
-> +				  qca8k_mdio_header_fill_seq_num,
-> +				  NULL, 0,
-> +				  QCA8K_ETHERNET_TIMEOUT);
->  }
->  
->  static int
-> @@ -438,7 +413,6 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
->  	struct sk_buff *write_skb, *clear_skb, *read_skb;
->  	struct qca8k_mgmt_eth_data *mgmt_eth_data;
->  	u32 write_val, clear_val = 0, val;
-> -	struct net_device *mgmt_master;
->  	u32 resp_data[4];
->  	int ret, ret1;
->  
-> @@ -484,19 +458,9 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
->  	 * 3. Get the data if we are reading
->  	 * 4. Reset the mdio master (even with error)
->  	 */
-> -	mutex_lock(&mgmt_eth_data->mutex);
-> -
-> -	/* Check if mgmt_master is operational */
-> -	mgmt_master = priv->mgmt_master;
-> -	if (!mgmt_master) {
-> -		mutex_unlock(&mgmt_eth_data->mutex);
-> -		ret = -EINVAL;
-> -		goto err_mgmt_master;
-> -	}
-> -
-> -	read_skb->dev = mgmt_master;
-> -	clear_skb->dev = mgmt_master;
-> -	write_skb->dev = mgmt_master;
-> +	read_skb->dev = priv->mgmt_master;
-> +	clear_skb->dev = priv->mgmt_master;
-> +	write_skb->dev = priv->mgmt_master;
->  
->  	ret = dsa_inband_request(&mgmt_eth_data->inband, write_skb,
->  				 qca8k_mdio_header_fill_seq_num,
-> @@ -533,18 +497,11 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
->  	}
->  exit:
->  
-> -	ret = dsa_inband_request(&mgmt_eth_data->inband, clear_skb,
-> -				 qca8k_mdio_header_fill_seq_num,
-> -				 NULL, 0,
-> -				 QCA8K_ETHERNET_TIMEOUT);
-> -
-> -	mutex_unlock(&mgmt_eth_data->mutex);
-> -
-> -	return ret;
-> +	return dsa_inband_request(&mgmt_eth_data->inband, clear_skb,
-> +				  qca8k_mdio_header_fill_seq_num,
-> +				  NULL, 0,
-> +				  QCA8K_ETHERNET_TIMEOUT);
->  
-> -	/* Error handling before lock */
-> -err_mgmt_master:
-> -	kfree_skb(read_skb);
->  err_read_skb:
->  	kfree_skb(clear_skb);
->  err_clear_skb:
-> @@ -1526,13 +1483,11 @@ qca8k_master_change(struct dsa_switch *ds, const struct net_device *master,
->  	if (dp->index != 0)
->  		return;
->  
-> -	mutex_lock(&priv->mgmt_eth_data.mutex);
->  	mutex_lock(&priv->mib_eth_data.mutex);
->  
->  	priv->mgmt_master = operational ? (struct net_device *)master : NULL;
->  
->  	mutex_unlock(&priv->mib_eth_data.mutex);
-> -	mutex_unlock(&priv->mgmt_eth_data.mutex);
->  }
->  
->  static int qca8k_connect_tag_protocol(struct dsa_switch *ds,
-> @@ -1850,7 +1805,6 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
->  	if (!priv->ds)
->  		return -ENOMEM;
->  
-> -	mutex_init(&priv->mgmt_eth_data.mutex);
->  	dsa_inband_init(&priv->mgmt_eth_data.inband, U32_MAX);
->  
->  	mutex_init(&priv->mib_eth_data.mutex);
-> diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
-> index 70494096e251..6da36ed6486b 100644
-> --- a/drivers/net/dsa/qca/qca8k.h
-> +++ b/drivers/net/dsa/qca/qca8k.h
-> @@ -347,7 +347,6 @@ enum {
->  
->  struct qca8k_mgmt_eth_data {
->  	struct dsa_inband inband;
-> -	struct mutex mutex; /* Enforce one mdio read/write at time */
->  };
->  
->  struct qca8k_mib_eth_data {
-> diff --git a/include/net/dsa.h b/include/net/dsa.h
-> index dad9e31d36ce..7a545b781e7d 100644
-> --- a/include/net/dsa.h
-> +++ b/include/net/dsa.h
-> @@ -1281,6 +1281,7 @@ bool dsa_mdb_present_in_other_db(struct dsa_switch *ds, int port,
->   * frames and expecting a response in a frame.
->  */
->  struct dsa_inband {
-> +	struct mutex lock; /* Serialise operations */
->  	struct completion completion;
->  	u32 seqno;
->  	u32 seqno_mask;
-> diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
-> index 4fa0ab4ae58e..82c729d631eb 100644
-> --- a/net/dsa/dsa.c
-> +++ b/net/dsa/dsa.c
-> @@ -521,6 +521,7 @@ EXPORT_SYMBOL_GPL(dsa_mdb_present_in_other_db);
->  void dsa_inband_init(struct dsa_inband *inband, u32 seqno_mask)
->  {
->  	init_completion(&inband->completion);
-> +	mutex_init(&inband->lock);
->  	mutex_init(&inband->resp_lock);
->  	inband->seqno_mask = seqno_mask;
->  	inband->seqno = 0;
-> @@ -567,6 +568,11 @@ int dsa_inband_request(struct dsa_inband *inband, struct sk_buff *skb,
->  	reinit_completion(&inband->completion);
->  	inband->err = 0;
->  
-> +	if (!skb->dev)
-> +		return -EOPNOTSUPP;
-> +
-> +	mutex_lock(&inband->lock);
-> +
->  	mutex_lock(&inband->resp_lock);
->  	inband->resp = resp;
->  	inband->resp_len = resp_len;
-> @@ -585,6 +591,7 @@ int dsa_inband_request(struct dsa_inband *inband, struct sk_buff *skb,
->  	inband->resp = NULL;
->  	inband->resp_len = 0;
->  	mutex_unlock(&inband->resp_lock);
-> +	mutex_unlock(&inband->lock);
->  
->  	if (ret < 0)
->  		return ret;
-> -- 
-> 2.37.2
-> 
+> If the master is operational but we cannot enable rmu (bc no funcptr),
+> we cannot use RMU -> disable RMU.
 
--- 
-	Ansuel
+Again, the RMU should start as disabled. Then why
+would you call mv88e6xxx_disable_rmu() a million times as the master
+goes up and down, if the switch doesn't support chip->info->ops->rmu_enable()?
+
+In fact, the RMU _is_ disabled, since mv88e6xxx_rmu_setup() has:
+
+int mv88e6xxx_rmu_setup(struct mv88e6xxx_chip *chip)
+{
+	mutex_init(&chip->rmu.mutex);
+
+	/* Remember original ops for restore */
+	chip->rmu.smi_ops = chip->smi_ops;
+	chip->rmu.ds_ops = chip->ds->ops;
+
+	/* Change rmu ops with our own pointer */
+	chip->rmu.smi_rmu_ops = (struct mv88e6xxx_bus_ops *)chip->rmu.smi_ops;
+	chip->rmu.smi_rmu_ops->get_rmon = mv88e6xxx_rmu_stats_get;
+
+	/* Also change get stats strings for our own */
+	chip->rmu.ds_rmu_ops = (struct dsa_switch_ops *)chip->ds->ops;
+	chip->rmu.ds_rmu_ops->get_sset_count = mv88e6xxx_stats_get_sset_count_rmu;
+	chip->rmu.ds_rmu_ops->get_strings = mv88e6xxx_stats_get_strings_rmu;
+
+	/* Start disabled, we'll enable RMU in master_state_change */
+	if (chip->info->ops->rmu_disable)
+		return chip->info->ops->rmu_disable(chip);
+
+	return 0;
+}
+
+But mv88e6xxx_disable_rmu() has:
+
+static void mv88e6xxx_disable_rmu(struct mv88e6xxx_chip *chip)
+{
+	chip->smi_ops = chip->rmu.smi_ops;
+	chip->ds->ops = chip->rmu.ds_rmu_ops;
+	chip->rmu.master_netdev = NULL;
+
+	if (chip->info->ops->rmu_disable)
+		chip->info->ops->rmu_disable(chip);
+}
+
+Notice in mv88e6xxx_disable_rmu() how:
+
+- all calls to chip->info->ops->rmu_disable() are redundant when
+  chip->info->ops->rmu_enable() isn't available.
+
+- the mumbo jumbo pointer logic with chip->smi_ops and chip->ds->ops is
+  buggy but at the same time not in the obvious way. What is obvious is
+  that you surely don't mean to assign "chip->ds->ops = chip->rmu.ds_rmu_ops;",
+  but rather "chip->ds->ops = chip->rmu.ds_ops;". But this does not
+  truly matter.
+
+This is because juggling the chip->ds->ops pointer itself is not how you
+make mv88e6xxx_get_ethtool_stats() call MDIO or Ethernet-based ops. This
+is because in reality in your implementation, ds_rmu_ops and ds_ops (and
+same goes for smi_ops and smi_rmu_ops) point to the same data structure.
+And when you do this:
+
+	/* Change rmu ops with our own pointer */
+	chip->rmu.smi_rmu_ops = (struct mv88e6xxx_bus_ops *)chip->rmu.smi_ops;
+	chip->rmu.smi_rmu_ops->get_rmon = mv88e6xxx_rmu_stats_get;
+
+you change the get_rmon() operation of _both_ smi_rmu_ops and smi_ops,
+because you dereference two pointers which have the same value.
+
+Therefore, when you attempt to collect ethtool stats, you dereference
+"our own" RMU based pointer, regardless of whether RMU is available or
+not:
+
+static void mv88e6xxx_get_ethtool_stats(struct dsa_switch *ds, int port,
+					uint64_t *data)
+{
+	struct mv88e6xxx_chip *chip = ds->priv;
+
+	chip->smi_ops->get_rmon(chip, port, data);
+}
+
+This will proceed to access stuff that isn't available, such as the
+master netdev, and crash the kernel.
