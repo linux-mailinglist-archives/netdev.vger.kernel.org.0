@@ -2,89 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81B285BEA63
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 17:40:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 283705BEA7A
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 17:45:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231575AbiITPkY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 11:40:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40476 "EHLO
+        id S230284AbiITPpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 11:45:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230200AbiITPkU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 11:40:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 687B8402FE;
-        Tue, 20 Sep 2022 08:40:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A2797626E5;
-        Tue, 20 Sep 2022 15:40:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 08016C43144;
-        Tue, 20 Sep 2022 15:40:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663688417;
-        bh=YIRciOcL31CLbwJL3Rs1qEeMQ2LC0KieJ5ByoZ71x0c=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=e6HiPRbc/lwWyQUF6azUSCxkx9ixiMUcQSrSS+eIoQnn9pMvf8I+ZM4BQ7S097vLp
-         b2kcBWXlglOtD7deD9wwyWsuqdA7WPDPuHnEdRLk02qYyqMe/1d1R0OpWu5DmsHYiR
-         awNj5mKCmRaYHuQcqTvid5mCCmRqu0wYpHjD4y9Klc7h/3VO1Vp5UxLyW3aXcIE6LL
-         gTEwghJzr+b8S8unFjiHT9jBvxfNTEJmSoroPnpL76bkTIbDeneaWt903QCyqUaMcJ
-         jG5JEnkIEvVXwx4nKmoouG3o2s4XPI1erZTFMrGXxwLouYhttZh/a4eOr1ez0PX0/w
-         jZ/FnHjZjhyMA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E4667E21EE1;
-        Tue, 20 Sep 2022 15:40:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230039AbiITPpL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 11:45:11 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE10D1EEC3;
+        Tue, 20 Sep 2022 08:45:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=t7c9L8PH8yyeuHV6ztLbyYD3Hs5tKOUbHkXDFpmhZUI=; b=OP1bAo3ZoewTQRsmB/rwKhK35d
+        bmVm1a34Obtbi6qs6Tt+nub+wFT6cwSco0pkACIhkIhcwGQU8GCdKb47VCqrKeQXlS+vxlK+TZAaw
+        lDHgJ0uhh594IS+XJDRWa7kuaLBC+Rf/o0N+8PZA5NB8wYj8iBz/DniQzZlyyq3hTklw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oafQe-00HHnR-72; Tue, 20 Sep 2022 17:44:56 +0200
+Date:   Tue, 20 Sep 2022 17:44:56 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Divya Koppera <Divya.Koppera@microchip.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: Re: [PATCH net] net: phy: micrel: fix shared interrupt on LAN8814
+Message-ID: <Yynf+PjruR2UxwDE@lunn.ch>
+References: <20220920141619.808117-1-michael@walle.cc>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3 net-next 0/2] macb: add zynqmp SGMII dynamic configuration
- support
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166368841692.10369.13627897349708750075.git-patchwork-notify@kernel.org>
-Date:   Tue, 20 Sep 2022 15:40:16 +0000
-References: <1663158796-14869-1-git-send-email-radhey.shyam.pandey@amd.com>
-In-Reply-To: <1663158796-14869-1-git-send-email-radhey.shyam.pandey@amd.com>
-To:     Pandey@ci.codeaurora.org,
-        Radhey Shyam <radhey.shyam.pandey@amd.com>
-Cc:     michal.simek@xilinx.com, nicolas.ferre@microchip.com,
-        claudiu.beznea@microchip.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        gregkh@linuxfoundation.org, andrew@lunn.ch,
-        conor.dooley@microchip.com, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org, git@amd.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220920141619.808117-1-michael@walle.cc>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Wed, 14 Sep 2022 18:03:14 +0530 you wrote:
-> This patchset add firmware and driver support to do SD/GEM dynamic
-> configuration. In traditional flow GEM secure space configuration
-> is done by FSBL. However in specific usescases like dynamic designs
-> where GEM is not enabled in base vivado design, FSBL skips GEM
-> initialization and we need a mechanism to configure GEM secure space
-> in linux space at runtime.
+On Tue, Sep 20, 2022 at 04:16:19PM +0200, Michael Walle wrote:
+> Since commit ece19502834d ("net: phy: micrel: 1588 support for LAN8814
+> phy") the handler always returns IRQ_HANDLED, except in an error case.
+> Before that commit, the interrupt status register was checked and if
+> it was empty, IRQ_NONE was returned. Restore that behavior to play nice
+> with the interrupt line being shared with others.
 > 
-> [...]
+> Fixes: ece19502834d ("net: phy: micrel: 1588 support for LAN8814 phy")
+> Signed-off-by: Michael Walle <michael@walle.cc>
 
-Here is the summary with links:
-  - [v3,net-next,1/2] firmware: xilinx: add support for sd/gem config
-    https://git.kernel.org/netdev/net-next/c/256dea9134c3
-  - [v3,net-next,2/2] net: macb: Add zynqmp SGMII dynamic configuration support
-    https://git.kernel.org/netdev/net-next/c/32cee7818111
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+    Andrew
