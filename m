@@ -2,83 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C151A5BD8BB
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 02:21:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 635DA5BD8C7
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 02:28:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229560AbiITAVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 20:21:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53876 "EHLO
+        id S229646AbiITA2E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 20:28:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229611AbiITAVf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 20:21:35 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C5245247F
-        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 17:21:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1663633291;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kBetV1101hfdFvC0CO1umfBPx9zMW1qE7FXiLHYebTU=;
-        b=CvKX3DQuhshvUGVVOmyXuIoUp3GQRIK3h5YhBLQpbHoWMdERS5/Jxv7OIQIkU7HCki0q5W
-        itsRPh6z1W9FIkgmm+vD7SjsW8zSYyIUiN7rNxxycpYDcsktx20gHBfYeA2oqYYCCO/9uf
-        HV4+KXCvZxeskd1KGK1AscCBzQkg9IA=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-574-mk61iPZHPQ-GobOnCqH9lg-1; Mon, 19 Sep 2022 20:21:30 -0400
-X-MC-Unique: mk61iPZHPQ-GobOnCqH9lg-1
-Received: by mail-qt1-f199.google.com with SMTP id fz10-20020a05622a5a8a00b0035ce18717daso672625qtb.11
-        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 17:21:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=kBetV1101hfdFvC0CO1umfBPx9zMW1qE7FXiLHYebTU=;
-        b=5JpgTU6rtp2OsHyWpmqLy9MLqHZrjGxbkl/Fp3+n0FBAxS2u8Z45yJfWb3M1q7YW6t
-         VPMQLOeBeKPvGdTVl6laq1mT4wLLQ17LEaiYhZwaNqlP8kdsk7Jm6T7rJMZ1sXWUAEpS
-         r8tzVpXSLJdRTxUhwNZFKyoeiD2oxcfikdF/xj4rIZPOmPLeLvvmF8G0vkbL8dwUczds
-         eOTXI0/dx4rFhR2WPomyUFyXogGI5vq6CmALmMvPVsveFT1sAXVOPsegUZdyuLG5d85U
-         m9zh0Ww5olJSHEnHp/va0ucDR83kbhpqpDbBSCLNJ7/eoLEGYd0s0ldDA4Ng3TshUWTC
-         rLXw==
-X-Gm-Message-State: ACrzQf1N/dnblyUKhgHoTD77v/BgB246LXQkR8WxjaRbr9+Rk1e3MXgz
-        Vs71iSMy2xtTvkI/Orcp9Yv4y9D+ENa/F3pYZPm0htwNYh7CJBvLOW6W38pf6X/LZdL1TUjzYnl
-        rng2LwLYgl3T5YtOP
-X-Received: by 2002:a05:6214:19c7:b0:4ad:32e9:a414 with SMTP id j7-20020a05621419c700b004ad32e9a414mr8328376qvc.115.1663633288923;
-        Mon, 19 Sep 2022 17:21:28 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM4DyUYrtkHa2QUqcCdNGHLn5NMDVIEGrzukSM5kG6wAzOlNtoK+dsZcVAEwt0I2pDlAefcbVQ==
-X-Received: by 2002:a05:6214:19c7:b0:4ad:32e9:a414 with SMTP id j7-20020a05621419c700b004ad32e9a414mr8328359qvc.115.1663633288691;
-        Mon, 19 Sep 2022 17:21:28 -0700 (PDT)
-Received: from [192.168.98.18] ([107.12.98.143])
-        by smtp.gmail.com with ESMTPSA id r4-20020ae9d604000000b006bb29d932e1sm13826998qkk.105.2022.09.19.17.21.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 19 Sep 2022 17:21:28 -0700 (PDT)
-Message-ID: <ab41cc04-1686-3a15-c209-387b1d60f7ef@redhat.com>
-Date:   Mon, 19 Sep 2022 20:21:27 -0400
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH net 1/2] selftests: bonding: cause oops in
- bond_rr_gen_slave_id
+        with ESMTP id S229505AbiITA2B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 20:28:01 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2074.outbound.protection.outlook.com [40.107.21.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A962C4A109
+        for <netdev@vger.kernel.org>; Mon, 19 Sep 2022 17:27:59 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Qhhn5vh+erlMybGXr+J0py+hgP8BBeuJfSMQh5PK8sZVm+977CkyaNkeC8+Uon9LSRtWhBxAQmi/BAQaTjdzhqWaNZIN3AG14S/s4OdR1pgHKysqqSSz2FyZ0cs3b8HJ4qdNfsnp023onkifNFdVthNMdtZmr0N39kCMs8Vf/DybQAFOqoScL2jzRWQat2jYWrsUD3bVmfct/wUZBqeXLS03uK3RwpVMQC9WEtZP6OjsclviR72c/Y1TXk+SVxz90rRJY/2DkHf1EjqxfP/Zq3Fa7a9HULsn7UL8mkg6Dl8FOLAKMdvdgHYz0Ufdo7hQdaTQZmg4P5QrNCOkoV+cNA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=NdnmHei3MR3bCPGWOq0KSU0Zx2kfYZ4WWg9mzYVKIjY=;
+ b=AsX6BTlEhUAk/8irz72nZGaqs+y/3Id9AWGGorya/dNCyFutS2gp/SDzfHUXy3gy4hqB2wGU6CYTLmxLFxX3Et4OfqKoI1M+cmsVEKSFZ+R2IZg6Q2BQvFLfZlTgubUqTcE6jXtoE+MpwjjuajYgXiPB8N34HB2veih22kshmmCV78rTgqutdFuOQL4GmLLyvPALZIiL4Vn4l+dDK8Tcok8+z5rsBWnML0UbSRTzQel6wucoZXTvKZYM+2Nva4JnOPtrC2Xqul9sk9UdM2ICrfkb1IqcmL0ZxNaFixXZ6gIyTgDfbeD0n2uek/1g1Wn+LvQ8BU+UHmKNglO+y8zeRA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NdnmHei3MR3bCPGWOq0KSU0Zx2kfYZ4WWg9mzYVKIjY=;
+ b=Q/wk0GOoA5z9GamTFmmoqbGoOumHbj/auvvm6j7iARZPRpbS3JuUop04IJpZtCjI3iCo/VlPNGKgBfApVhMuweQvhwO9GsgV1+CoR84+9wYisFaiu9a3V8/g+TpDWTVoNltMEeJh7N8TKF6bL7OHJqQ31XrepmMJsf8O9zNcCAk=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AM0PR04MB6898.eurprd04.prod.outlook.com (2603:10a6:208:185::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5632.21; Tue, 20 Sep
+ 2022 00:27:57 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::a67a:849c:aeff:cad1]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::a67a:849c:aeff:cad1%7]) with mapi id 15.20.5632.021; Tue, 20 Sep 2022
+ 00:27:57 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "mattias.forsblad@gmail.com" <mattias.forsblad@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Christian Marangi <ansuelsmth@gmail.com>
+Subject: Re: [PATCH rfc v0 8/9] net: dsa: qca8k: Pass response buffer via
+ dsa_rmu_request
+Thread-Topic: [PATCH rfc v0 8/9] net: dsa: qca8k: Pass response buffer via
+ dsa_rmu_request
+Thread-Index: AQHYzHXTNAkm8NWrEkyBGdtW9/qVkQ==
+Date:   Tue, 20 Sep 2022 00:27:56 +0000
+Message-ID: <20220920002755.wdmv67yiybksqji4@skbuf>
+References: <20220919110847.744712-3-mattias.forsblad@gmail.com>
+ <20220919221853.4095491-1-andrew@lunn.ch>
+ <20220919110847.744712-3-mattias.forsblad@gmail.com>
+ <20220919221853.4095491-1-andrew@lunn.ch>
+ <20220919221853.4095491-9-andrew@lunn.ch>
+ <20220919221853.4095491-9-andrew@lunn.ch>
+In-Reply-To: <20220919221853.4095491-9-andrew@lunn.ch>
+ <20220919221853.4095491-9-andrew@lunn.ch>
+Accept-Language: en-US
 Content-Language: en-US
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     "netdev @ vger . kernel . org" <netdev@vger.kernel.org>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-References: <cover.1663628505.git.jtoppins@redhat.com>
- <bb3abf634d23944a24f4a9453e07c37c7b2168e9.1663628505.git.jtoppins@redhat.com>
- <18171.1663632104@famine>
-From:   Jonathan Toppins <jtoppins@redhat.com>
-In-Reply-To: <18171.1663632104@famine>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE autolearn=unavailable
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: VI1PR04MB5136:EE_|AM0PR04MB6898:EE_
+x-ms-office365-filtering-correlation-id: 374685f0-d1a1-4be9-22f8-08da9a9ef73a
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: vgyfIFgNRrOCpL7qOIjnNM6L5+pumkBvgllf5NmXU6kHTjRbXyUmPPCQfrWy85rIAAauspgv16RJas3olSrCzlDtBjuLHXhFmVsuwoW96esxDHPmvFwv/NoIJggua4nai++3mm4b2tw6Ix9grZnQN/5UQJRio46RZUhWRPZIE2RE2rF34xG3nKtuAg6bDAKWVN+iPDD3+MzDgUWi/Gm7lHgPejic1bvWhdYzS6nLDMft6FdmOwXe9AXlqXS51SuGXbtx2OnT+HkdjScpwANmSSibOUCMMEmW4RHJOzwr0oOe7E16dAqlUElJ1n2z0DJYdlsBGoT4vW/ViOw6bW7M/Wrld4suSNaPGoF/X6dO4uMi31TJd4Eq4N9eeeTXJHMQZbJeMozRXvkfhrRlX239d3DK9mUfAr4YGx9lJ6HR4I7hz6GdZqJz8JeuaqWBqNQmGqzvfmUqcNiRP/qBUHcQU8uq1tKJ6pd0taG+G7xm9mRtPYnpvywbAqCjCzyKhSf8PwusA6VlE5f8td38X1kmgyiyGR7HQ06hVU0akUEor8UacKqE7EeiSsCH4bAydXd/ahB9p+SqrV3Wj+r/jY1FxKy+Wh+40goWaOUqCSGo/xnym61YsJvIferCwwc229Z19ZJgWft0QRH1i5gqzSZcitB8ahX+VOmpuyFLstYk2HXWabJurOnTVorYDxh7R8MxC7wd9HdYL7SVHkvAQXVOivz7xr0X3CTsj5Xb+LbQi0txdrTBpI5B4wwjXjJ+L89mMJ7rySWbKElwCYGuR6bBmgmWpiLYePInIsjqn3ufrNE=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(4636009)(346002)(39860400002)(366004)(376002)(396003)(136003)(451199015)(6506007)(186003)(2906002)(38070700005)(1076003)(26005)(6512007)(9686003)(33716001)(86362001)(71200400001)(316002)(6486002)(54906003)(6916009)(4326008)(41300700001)(8676002)(66946007)(66476007)(66446008)(64756008)(76116006)(66556008)(91956017)(478600001)(8936002)(5660300002)(66899012)(122000001)(83380400001)(30864003)(38100700002)(44832011)(32563001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ljUME8wTqlf+FOwdNFthW7K27dqI+/Om9mI2uwD+eSZaCKlPQmN8osshmYAO?=
+ =?us-ascii?Q?qzXGZmFkTzrHzEf3VQIPQRB36H+H58ADx/ZsJSg57MK2yRB9UhgTpR6e9xWI?=
+ =?us-ascii?Q?v1lKdJl21yuYjn1136aEWMEQmTJfg9st97EuE7rS6+frVjayVV2FahUdC38k?=
+ =?us-ascii?Q?A3Wlzgv5xPFCNOo14vJc+dwgCAAuMl4MKInwJBDLUze8sHCf9VnxboCgOrDs?=
+ =?us-ascii?Q?QE2Kn6wdbIm3yj1MnP2MGLlCDheFNqU4I4JHl6cyGTSsnsCkIBeJcl2NGsVo?=
+ =?us-ascii?Q?wjN/9ngJzczVypB5hGkoVCWTpAlDUObUNAPkqaKRQ0YuEhvkvGXrgj3xDDtt?=
+ =?us-ascii?Q?su/BqsP2P+lgQ7AN+xZqI5o3+oD/7PZVF9U0r81ZNf30Uwx2QLC6DPdI5bul?=
+ =?us-ascii?Q?xFnD4gyR8cqEggFXWaNceoMb0d9WV03r0URh0Hhe3KOFEdqEDVeFZpe/YyhZ?=
+ =?us-ascii?Q?d87GIooicAAcCaBCqqQ9VLtDh3PUUQRwE0adcDjv2Jz2zh2EPaernP/xfdkM?=
+ =?us-ascii?Q?p4sFQLBsyxKBFw8kgaCCnmEz8FkOuakoXkYDzb+gSCzyhK+AZAIkiSg0Y7Wm?=
+ =?us-ascii?Q?BQIXXH9W3u5ihNwP8xbyD0C3+3bh4y/eUn7GWt7v3w+AYudeYG3mFFICvWYL?=
+ =?us-ascii?Q?VHnO/2fYKBmXGfGRIaKdnhOaS8fKgSFuYukExSVkiBZsKFh4WRO1wIy8sbJt?=
+ =?us-ascii?Q?Gy6srDCLt78U3v2CqQXW7I35DxFiD+n+EmOAMJgq+3FIeuD6WvYCC4VxiNwi?=
+ =?us-ascii?Q?tN5sSHRt6ZESck48SBOb4enJxz6PvU4l7teZhP3OOMdRhlJziw/5+k2sxyuT?=
+ =?us-ascii?Q?+YXrbhKq4JemejDaYQ+4V1IUEmDKeqUTMuHASoaQq4G+OTYKeqoKepkDq5KN?=
+ =?us-ascii?Q?xXfyCqGLvN8A9mFvzhCRrhbpxMWriwQN4V87H0CTWRJw60rBFGP4aJRv/Xw4?=
+ =?us-ascii?Q?fP6TVHCXHBV5qyFn2dSvut54kQ6uQ/xCz+merI3NohDVh7U32Wa0ptEPI22w?=
+ =?us-ascii?Q?ncx3olCWTkpFezyFQwvX6+yRPdBLKXpgB/gKqGyslzhNrtsDu02qLsUlPaQi?=
+ =?us-ascii?Q?02m/5aRYUyRf2IjNC44ny01vjxXc7E0TLkWJENW43A0vywZjJiCzYPYkDRRz?=
+ =?us-ascii?Q?EAPTT6/bVMEPLVS+xMNlDYUIZv0MeW6HQy7nNTjtnEpTUjXpV63xOSQp3lsW?=
+ =?us-ascii?Q?axLFUwgMMX/v42uB9aLUoqOy1e1JoiR800U3+zd7axYNHdNxCxoktm3dkTKb?=
+ =?us-ascii?Q?tH/n44qEbgAwFvL2LXT2lKP0aBgxTmWWFDwXLOA8fPnKnABlW6SsXgRaA/Kc?=
+ =?us-ascii?Q?p/FMmcS6jWL1DO3fBNgVn2YzDVA2CzGpVHGFTa7RFW0GozSymkPqPK3ti6Y0?=
+ =?us-ascii?Q?lNLplesbINg/fk+ZYS1eBN2IJjWHX6MnZcTNrnsIIpmc/vI2eBxv8CxNH+zw?=
+ =?us-ascii?Q?knqkhWnBDxnIBCOJk3E0A8K8aFo41rAyAEbUkQV2+HCj9ER4lFWn5fPCpgyC?=
+ =?us-ascii?Q?ADz6R37BKoP7w8Wufb70riKKtdsLaf1VBWAYLdYwswzF7bAzgXV6j3Qk862R?=
+ =?us-ascii?Q?kDVmZgYaHHuK2D7FFGBPdMVEOhg7Y51BZ6psxBq7x/5zvu0OWOTCqS1eG/97?=
+ =?us-ascii?Q?zg=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1ABAA37770001B4D968472E0A105D563@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 374685f0-d1a1-4be9-22f8-08da9a9ef73a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Sep 2022 00:27:56.9014
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: wUp4kISH+o1IF3tu0lZWOB4gkE80s3GwIProvQsnyT0ftlp+d+tXLV2xMQ52K7xReF/+CrJOoAGOAI/NOND8Dg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6898
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -86,150 +126,317 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/19/22 20:01, Jay Vosburgh wrote:
-> Jonathan Toppins <jtoppins@redhat.com> wrote:
-> 
->> This bonding selftest causes the following kernel oops on aarch64 and
->> should be architectures agnostic.
->>
->> [  329.805838] kselftest: Running tests in drivers/net/bonding
->> [  330.011028] eth0: renamed from link1_2
->> [  330.220846] eth0: renamed from link1_1
->> [  330.387755] bond0: (slave eth0): making interface the new active one
->> [  330.394165] bond0: (slave eth0): Enslaving as an active interface with an up link
->> [  330.401867] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
->> [  334.586619] bond0: (slave eth0): Releasing backup interface
->> [  334.671065] bond0: (slave eth0): Enslaving as an active interface with an up link
->> [  334.686773] Unable to handle kernel paging request at virtual address ffff2c91ac905000
->> [  334.694703] Mem abort info:
->> [  334.697486]   ESR = 0x0000000096000004
->> [  334.701234]   EC = 0x25: DABT (current EL), IL = 32 bits
->> [  334.706536]   SET = 0, FnV = 0
->> [  334.709579]   EA = 0, S1PTW = 0
->> [  334.712719]   FSC = 0x04: level 0 translation fault
->> [  334.717586] Data abort info:
->> [  334.720454]   ISV = 0, ISS = 0x00000004
->> [  334.724288]   CM = 0, WnR = 0
->> [  334.727244] swapper pgtable: 4k pages, 48-bit VAs, pgdp=000008044d662000
->> [  334.733944] [ffff2c91ac905000] pgd=0000000000000000, p4d=0000000000000000
->> [  334.740734] Internal error: Oops: 96000004 [#1] SMP
->> [  334.745602] Modules linked in: bonding tls veth rfkill sunrpc arm_spe_pmu vfat fat acpi_ipmi ipmi_ssif ixgbe igb i40e mdio ipmi_devintf ipmi_msghandler arm_cmn arm_dsu_pmu cppc_cpufreq acpi_tad fuse zram crct10dif_ce ast ghash_ce sbsa_gwdt nvme drm_vram_helper drm_ttm_helper nvme_core ttm xgene_hwmon
->> [  334.772217] CPU: 7 PID: 2214 Comm: ping Not tainted 6.0.0-rc4-00133-g64ae13ed4784 #4
->> [  334.779950] Hardware name: GIGABYTE R272-P31-00/MP32-AR1-00, BIOS F18v (SCP: 1.08.20211002) 12/01/2021
->> [  334.789244] pstate: 60400009 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
->> [  334.796196] pc : bond_rr_gen_slave_id+0x40/0x124 [bonding]
->> [  334.801691] lr : bond_xmit_roundrobin_slave_get+0x38/0xdc [bonding]
->> [  334.807962] sp : ffff8000221733e0
->> [  334.811265] x29: ffff8000221733e0 x28: ffffdbac8572d198 x27: ffff80002217357c
->> [  334.818392] x26: 000000000000002a x25: ffffdbacb33ee000 x24: ffff07ff980fa000
->> [  334.825519] x23: ffffdbacb2e398ba x22: ffff07ff98102000 x21: ffff07ff981029c0
->> [  334.832646] x20: 0000000000000001 x19: ffff07ff981029c0 x18: 0000000000000014
->> [  334.839773] x17: 0000000000000000 x16: ffffdbacb1004364 x15: 0000aaaabe2f5a62
->> [  334.846899] x14: ffff07ff8e55d968 x13: ffff07ff8e55db30 x12: 0000000000000000
->> [  334.854026] x11: ffffdbacb21532e8 x10: 0000000000000001 x9 : ffffdbac857178ec
->> [  334.861153] x8 : ffff07ff9f6e5a28 x7 : 0000000000000000 x6 : 000000007c2b3742
->> [  334.868279] x5 : ffff2c91ac905000 x4 : ffff2c91ac905000 x3 : ffff07ff9f554400
->> [  334.875406] x2 : ffff2c91ac905000 x1 : 0000000000000001 x0 : ffff07ff981029c0
->> [  334.882532] Call trace:
->> [  334.884967]  bond_rr_gen_slave_id+0x40/0x124 [bonding]
->> [  334.890109]  bond_xmit_roundrobin_slave_get+0x38/0xdc [bonding]
->> [  334.896033]  __bond_start_xmit+0x128/0x3a0 [bonding]
->> [  334.901001]  bond_start_xmit+0x54/0xb0 [bonding]
->> [  334.905622]  dev_hard_start_xmit+0xb4/0x220
->> [  334.909798]  __dev_queue_xmit+0x1a0/0x720
->> [  334.913799]  arp_xmit+0x3c/0xbc
->> [  334.916932]  arp_send_dst+0x98/0xd0
->> [  334.920410]  arp_solicit+0xe8/0x230
->> [  334.923888]  neigh_probe+0x60/0xb0
->> [  334.927279]  __neigh_event_send+0x3b0/0x470
->> [  334.931453]  neigh_resolve_output+0x70/0x90
->> [  334.935626]  ip_finish_output2+0x158/0x514
->> [  334.939714]  __ip_finish_output+0xac/0x1a4
->> [  334.943800]  ip_finish_output+0x40/0xfc
->> [  334.947626]  ip_output+0xf8/0x1a4
->> [  334.950931]  ip_send_skb+0x5c/0x100
->> [  334.954410]  ip_push_pending_frames+0x3c/0x60
->> [  334.958758]  raw_sendmsg+0x458/0x6d0
->> [  334.962325]  inet_sendmsg+0x50/0x80
->> [  334.965805]  sock_sendmsg+0x60/0x6c
->> [  334.969286]  __sys_sendto+0xc8/0x134
->> [  334.972853]  __arm64_sys_sendto+0x34/0x4c
->> [  334.976854]  invoke_syscall+0x78/0x100
->> [  334.980594]  el0_svc_common.constprop.0+0x4c/0xf4
->> [  334.985287]  do_el0_svc+0x38/0x4c
->> [  334.988591]  el0_svc+0x34/0x10c
->> [  334.991724]  el0t_64_sync_handler+0x11c/0x150
->> [  334.996072]  el0t_64_sync+0x190/0x194
->> [  334.999726] Code: b9001062 f9403c02 d53cd044 8b040042 (b8210040)
->> [  335.005810] ---[ end trace 0000000000000000 ]---
->> [  335.010416] Kernel panic - not syncing: Oops: Fatal exception in interrupt
->> [  335.017279] SMP: stopping secondary CPUs
->> [  335.021374] Kernel Offset: 0x5baca8eb0000 from 0xffff800008000000
->> [  335.027456] PHYS_OFFSET: 0x80000000
->> [  335.030932] CPU features: 0x0000,0085c029,19805c82
->> [  335.035713] Memory Limit: none
->> [  335.038756] Rebooting in 180 seconds..
->>
->> Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
->> ---
->> .../selftests/drivers/net/bonding/Makefile    |  3 +-
->> .../bonding/bond-arp-interval-causes-panic.sh | 48 +++++++++++++++++++
->> 2 files changed, 50 insertions(+), 1 deletion(-)
->> create mode 100755 tools/testing/selftests/drivers/net/bonding/bond-arp-interval-causes-panic.sh
->>
->> diff --git a/tools/testing/selftests/drivers/net/bonding/Makefile b/tools/testing/selftests/drivers/net/bonding/Makefile
->> index 0f9659407969..1d866658e541 100644
->> --- a/tools/testing/selftests/drivers/net/bonding/Makefile
->> +++ b/tools/testing/selftests/drivers/net/bonding/Makefile
->> @@ -2,7 +2,8 @@
->> # Makefile for net selftests
->>
->> TEST_PROGS := bond-break-lacpdu-tx.sh \
->> -	      dev_addr_lists.sh
->> +	      dev_addr_lists.sh \
->> +	      bond-arp-interval-causes-panic.sh
->>
->> TEST_FILES := lag_lib.sh
->>
->> diff --git a/tools/testing/selftests/drivers/net/bonding/bond-arp-interval-causes-panic.sh b/tools/testing/selftests/drivers/net/bonding/bond-arp-interval-causes-panic.sh
->> new file mode 100755
->> index 000000000000..095c262ba74c
->> --- /dev/null
->> +++ b/tools/testing/selftests/drivers/net/bonding/bond-arp-interval-causes-panic.sh
->> @@ -0,0 +1,48 @@
->> +#!/bin/sh
->> +# SPDX-License-Identifier: GPL-2.0
->> +#
->> +# cause kernel oops in bond_rr_gen_slave_id
->> +DEBUG=${DEBUG:-0}
->> +
->> +set -e
->> +test ${DEBUG} -ne 0 && set -x
->> +
->> +function finish()
->> +{
->> +	ip -all netns delete
-> 
-> 	Would it be friendlier to only delete the netns created by the
-> test itself?
+On Tue, Sep 20, 2022 at 12:18:52AM +0200, Andrew Lunn wrote:
+> Make the calling of operations on the switch more like a request
+> response API by passing the address of the response buffer, rather
+> than making use of global state.
+>=20
+> To avoid race conditions with the completion timeout, and late
+> arriving responses, protect the resp members via a mutex.
 
-Sure I can list the specific namespaces.
+Cannot be a mutex; the context of qca8k_rw_reg_ack_handler(), caller of
+dsa_inband_complete(), is NET_RX softirq and that is not sleepable.
 
-> 
-> 	I'm not too familiar with the selftest harness, so I'm not sure
-> if it handles that (runs the test in a container or something), but if
-> the test is run directly could this clobber other netns unrelated to the
-> test?
+>=20
+> The qca8k response frame has an odd layout, the reply is not
+> contiguous. Use a small intermediary buffer to convert the reply into
+> something which can be memcpy'ed.
+>=20
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> ---
+>  drivers/net/dsa/qca/qca8k-8xxx.c | 31 ++++++++++++++++++++-----------
+>  drivers/net/dsa/qca/qca8k.h      |  1 -
+>  include/net/dsa.h                |  7 ++++++-
+>  net/dsa/dsa.c                    | 24 +++++++++++++++++++++++-
+>  4 files changed, 49 insertions(+), 14 deletions(-)
+>=20
+> diff --git a/drivers/net/dsa/qca/qca8k-8xxx.c b/drivers/net/dsa/qca/qca8k=
+-8xxx.c
+> index 55a781851e28..234d79a09e78 100644
+> --- a/drivers/net/dsa/qca/qca8k-8xxx.c
+> +++ b/drivers/net/dsa/qca/qca8k-8xxx.c
+> @@ -138,6 +138,7 @@ static void qca8k_rw_reg_ack_handler(struct dsa_switc=
+h *ds, struct sk_buff *skb)
+>  	struct qca8k_priv *priv =3D ds->priv;
+>  	struct qca_mgmt_ethhdr *mgmt_ethhdr;
+>  	u8 len, cmd;
+> +	u32 data[4];
+>  	int err =3D 0;
+> =20
+>  	mgmt_ethhdr =3D (struct qca_mgmt_ethhdr *)skb_mac_header(skb);
+> @@ -151,17 +152,16 @@ static void qca8k_rw_reg_ack_handler(struct dsa_swi=
+tch *ds, struct sk_buff *skb)
+>  		err =3D -EPROTO;
+> =20
+>  	if (cmd =3D=3D MDIO_READ) {
+> -		mgmt_eth_data->data[0] =3D mgmt_ethhdr->mdio_data;
+> +		data[0] =3D mgmt_ethhdr->mdio_data;
+> =20
+>  		/* Get the rest of the 12 byte of data.
+>  		 * The read/write function will extract the requested data.
+>  		 */
+>  		if (len > QCA_HDR_MGMT_DATA1_LEN)
+> -			memcpy(mgmt_eth_data->data + 1, skb->data,
+> -			       QCA_HDR_MGMT_DATA2_LEN);
+> +			memcpy(&data[1], skb->data, QCA_HDR_MGMT_DATA2_LEN);
+>  	}
+> =20
+> -	dsa_inband_complete(&mgmt_eth_data->inband, err);
+> +	dsa_inband_complete(&mgmt_eth_data->inband, &data, sizeof(data), err);
+>  }
+> =20
+>  static struct sk_buff *qca8k_alloc_mdio_header(enum mdio_cmd cmd, u32 re=
+g, u32 *val,
+> @@ -230,6 +230,7 @@ static int qca8k_read_eth(struct qca8k_priv *priv, u3=
+2 reg, u32 *val, int len)
+>  {
+>  	struct qca8k_mgmt_eth_data *mgmt_eth_data =3D &priv->mgmt_eth_data;
+>  	struct sk_buff *skb;
+> +	u32 data[4];
+>  	int ret;
+> =20
+>  	skb =3D qca8k_alloc_mdio_header(MDIO_READ, reg, NULL,
+> @@ -249,12 +250,13 @@ static int qca8k_read_eth(struct qca8k_priv *priv, =
+u32 reg, u32 *val, int len)
+>  	skb->dev =3D priv->mgmt_master;
+> =20
+>  	ret =3D dsa_inband_request(&mgmt_eth_data->inband, skb,
+> -			      qca8k_mdio_header_fill_seq_num,
+> -			      QCA8K_ETHERNET_TIMEOUT);
 
-Sure and if the namespace "server" has already been created the script 
-will get an EEXISTS error.
+Argument list should have been properly aligned when this patch set introdu=
+ced it.
 
-The only limitation I am aware of is a timeout limitation, meaning the 
-script must execute within 45 seconds. The script 
-tools/testing/selftests/run_kselftest.sh appears to run the script 
-directly within the context under which run_kselftest.sh was started. 
-For example when I used it to verify this bug I used sudo to run as 
-root, `sudo run_kselftest.sh`.
+> +				 qca8k_mdio_header_fill_seq_num,
+> +				 &data, sizeof(data),
+> +				 QCA8K_ETHERNET_TIMEOUT);
 
--Jon
+Kind of feeling the need for an error check right here, instead of
+proceeding to look at the buffer.
 
+> =20
+> -	*val =3D mgmt_eth_data->data[0];
+> +	*val =3D data[0];
+>  	if (len > QCA_HDR_MGMT_DATA1_LEN)
+> -		memcpy(val + 1, mgmt_eth_data->data + 1, len - QCA_HDR_MGMT_DATA1_LEN)=
+;
+> +		memcpy(val + 1, &data[1], len - QCA_HDR_MGMT_DATA1_LEN);
+
+This is pretty hard to digest, but it looks like it could work.
+So this can run concurrently with qca8k_rw_reg_ack_handler(), but since
+the end of dsa_inband_request() sets inband->resp to NULL, then even if
+the response will come later, it won't touch the driver-provided on-stack
+buffer, since the DSA completion structure lost the reference to it.
+
+How do we deal with the response being processed so late by the handler
+that it overlaps with the dsa_inband_request() call of the next seqid?
+We open up to another window of opportunity for the handler to have a
+valid buffer and length to which it can copy stuff. Does it matter,
+since the seqid of the response will be smaller than that of the request?
+Is reordering on multi-CPU, multi-queue masters handled in any way? This
+will be a problem regardless of QoS - currently we assume that all
+management frames are treated the same by the DSA master. But it has no
+insight into the DSA header format, so why would it? It could be doing
+RSS and even find some entropy in our seqid junk data. It's a bit late
+to think through right now.
+
+> =20
+>  	mutex_unlock(&mgmt_eth_data->mutex);
+> =20
+> @@ -285,6 +287,7 @@ static int qca8k_write_eth(struct qca8k_priv *priv, u=
+32 reg, u32 *val, int len)
+> =20
+>  	ret =3D dsa_inband_request(&mgmt_eth_data->inband, skb,
+>  				 qca8k_mdio_header_fill_seq_num,
+> +				 NULL, 0,
+>  				 QCA8K_ETHERNET_TIMEOUT);
+> =20
+>  	mutex_unlock(&mgmt_eth_data->mutex);
+> @@ -412,16 +415,18 @@ qca8k_phy_eth_busy_wait(struct qca8k_mgmt_eth_data =
+*mgmt_eth_data,
+>  			struct sk_buff *read_skb, u32 *val)
+>  {
+>  	struct sk_buff *skb =3D skb_copy(read_skb, GFP_KERNEL);
+> +	u32 data[4];
+>  	int ret;
+> =20
+>  	ret =3D dsa_inband_request(&mgmt_eth_data->inband, skb,
+>  				 qca8k_mdio_header_fill_seq_num,
+> +				 &data, sizeof(data),
+>  				 QCA8K_ETHERNET_TIMEOUT);
+> =20
+>  	if (ret)
+>  		return ret;
+> =20
+> -	*val =3D mgmt_eth_data->data[0];
+> +	*val =3D data[0];
+> =20
+>  	return 0;
+>  }
+> @@ -434,6 +439,7 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool r=
+ead, int phy,
+>  	struct qca8k_mgmt_eth_data *mgmt_eth_data;
+>  	u32 write_val, clear_val =3D 0, val;
+>  	struct net_device *mgmt_master;
+> +	u32 resp_data[4];
+>  	int ret, ret1;
+> =20
+>  	if (regnum >=3D QCA8K_MDIO_MASTER_MAX_REG)
+> @@ -494,6 +500,7 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool r=
+ead, int phy,
+> =20
+>  	ret =3D dsa_inband_request(&mgmt_eth_data->inband, write_skb,
+>  				 qca8k_mdio_header_fill_seq_num,
+> +				 NULL, 0,
+>  				 QCA8K_ETHERNET_TIMEOUT);
+> =20
+>  	if (ret) {
+> @@ -514,12 +521,13 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool=
+ read, int phy,
+>  	if (read) {
+>  		ret =3D dsa_inband_request(&mgmt_eth_data->inband, read_skb,
+>  					 qca8k_mdio_header_fill_seq_num,
+> +					 &resp_data, sizeof(resp_data),
+>  					 QCA8K_ETHERNET_TIMEOUT);
+> =20
+>  		if (ret)
+>  			goto exit;
+> =20
+> -		ret =3D mgmt_eth_data->data[0] & QCA8K_MDIO_MASTER_DATA_MASK;
+> +		ret =3D resp_data[0] & QCA8K_MDIO_MASTER_DATA_MASK;
+>  	} else {
+>  		kfree_skb(read_skb);
+>  	}
+> @@ -527,6 +535,7 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool r=
+ead, int phy,
+> =20
+>  	ret =3D dsa_inband_request(&mgmt_eth_data->inband, clear_skb,
+>  				 qca8k_mdio_header_fill_seq_num,
+> +				 NULL, 0,
+>  				 QCA8K_ETHERNET_TIMEOUT);
+> =20
+>  	mutex_unlock(&mgmt_eth_data->mutex);
+> @@ -1442,7 +1451,7 @@ static void qca8k_mib_autocast_handler(struct dsa_s=
+witch *ds, struct sk_buff *sk
+>  exit:
+>  	/* Complete on receiving all the mib packet */
+>  	if (refcount_dec_and_test(&mib_eth_data->port_parsed))
+> -		dsa_inband_complete(&mib_eth_data->inband, err);
+> +		dsa_inband_complete(&mib_eth_data->inband, NULL, 0, err);
+>  }
+> =20
+>  static int
+> diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
+> index 682106206282..70494096e251 100644
+> --- a/drivers/net/dsa/qca/qca8k.h
+> +++ b/drivers/net/dsa/qca/qca8k.h
+> @@ -348,7 +348,6 @@ enum {
+>  struct qca8k_mgmt_eth_data {
+>  	struct dsa_inband inband;
+>  	struct mutex mutex; /* Enforce one mdio read/write at time */
+> -	u32 data[4];
+>  };
+> =20
+>  struct qca8k_mib_eth_data {
+> diff --git a/include/net/dsa.h b/include/net/dsa.h
+> index 1a920f89b667..dad9e31d36ce 100644
+> --- a/include/net/dsa.h
+> +++ b/include/net/dsa.h
+> @@ -1285,12 +1285,17 @@ struct dsa_inband {
+>  	u32 seqno;
+>  	u32 seqno_mask;
+>  	int err;
+> +	struct mutex resp_lock; /* Protects resp* members */
+> +	void *resp;
+> +	unsigned int resp_len;
+
+Would be good to be a bit more verbose about what "protecting" means
+here (just offering a consistent view of the buffer pointer and of its
+length from DSA's perspective).
+
+>  };
+> =20
+>  void dsa_inband_init(struct dsa_inband *inband, u32 seqno_mask);
+> -void dsa_inband_complete(struct dsa_inband *inband, int err);
+> +void dsa_inband_complete(struct dsa_inband *inband,
+> +		      void *resp, unsigned int resp_len, int err);
+>  int dsa_inband_request(struct dsa_inband *inband, struct sk_buff *skb,
+>  		       void (* insert_seqno)(struct sk_buff *skb, u32 seqno),
+> +		       void *resp, unsigned int resp_len,
+>  		       int timeout_ms);
+>  int dsa_inband_wait_for_completion(struct dsa_inband *inband, int timeou=
+t_ms);
+>  u32 dsa_inband_seqno(struct dsa_inband *inband);
+> diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
+> index 0de283ac0bfc..4fa0ab4ae58e 100644
+> --- a/net/dsa/dsa.c
+> +++ b/net/dsa/dsa.c
+> @@ -521,14 +521,24 @@ EXPORT_SYMBOL_GPL(dsa_mdb_present_in_other_db);
+>  void dsa_inband_init(struct dsa_inband *inband, u32 seqno_mask)
+>  {
+>  	init_completion(&inband->completion);
+> +	mutex_init(&inband->resp_lock);
+>  	inband->seqno_mask =3D seqno_mask;
+>  	inband->seqno =3D 0;
+>  }
+>  EXPORT_SYMBOL_GPL(dsa_inband_init);
+> =20
+> -void dsa_inband_complete(struct dsa_inband *inband, int err)
+> +void dsa_inband_complete(struct dsa_inband *inband,
+> +			 void *resp, unsigned int resp_len,
+> +			 int err)
+>  {
+>  	inband->err =3D err;
+> +
+> +	mutex_lock(&inband->resp_lock);
+> +	resp_len =3D min(inband->resp_len, resp_len);
+
+No warning for truncation caused by resp_len > inband->resp_len?
+It seems like a valid error. At least I tried to test Mattias' patch
+set, and this is one of the problems that really happened.
+
+> +	if (inband->resp && resp)
+> +		memcpy(inband->resp, resp, resp_len);
+> +	mutex_unlock(&inband->resp_lock);
+> +
+>  	complete(&inband->completion);
+>  }
+>  EXPORT_SYMBOL_GPL(dsa_inband_complete);
+> @@ -548,6 +558,7 @@ EXPORT_SYMBOL_GPL(dsa_inband_wait_for_completion);
+>   */
+>  int dsa_inband_request(struct dsa_inband *inband, struct sk_buff *skb,
+>  		       void (* insert_seqno)(struct sk_buff *skb, u32 seqno),
+> +		       void *resp, unsigned int resp_len,
+>  		       int timeout_ms)
+>  {
+>  	unsigned long jiffies =3D msecs_to_jiffies(timeout_ms);
+> @@ -556,6 +567,11 @@ int dsa_inband_request(struct dsa_inband *inband, st=
+ruct sk_buff *skb,
+>  	reinit_completion(&inband->completion);
+>  	inband->err =3D 0;
+> =20
+> +	mutex_lock(&inband->resp_lock);
+> +	inband->resp =3D resp;
+> +	inband->resp_len =3D resp_len;
+> +	mutex_unlock(&inband->resp_lock);
+> +
+>  	if (insert_seqno) {
+>  		inband->seqno++;
+>  		insert_seqno(skb, inband->seqno & inband->seqno_mask);
+> @@ -564,6 +580,12 @@ int dsa_inband_request(struct dsa_inband *inband, st=
+ruct sk_buff *skb,
+>  	dev_queue_xmit(skb);
+> =20
+>  	ret =3D wait_for_completion_timeout(&inband->completion, jiffies);
+> +
+> +	mutex_lock(&inband->resp_lock);
+> +	inband->resp =3D NULL;
+> +	inband->resp_len =3D 0;
+> +	mutex_unlock(&inband->resp_lock);
+> +
+>  	if (ret < 0)
+>  		return ret;
+>  	if (ret =3D=3D 0)
+> --=20
+> 2.37.2
+>=
