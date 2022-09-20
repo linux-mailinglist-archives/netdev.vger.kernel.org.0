@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 91E9C5BE424
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 13:10:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CD1D5BE4FE
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 13:53:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230328AbiITLKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 07:10:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52666 "EHLO
+        id S229995AbiITLxm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 07:53:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231232AbiITLKQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 07:10:16 -0400
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FB7D6EF17
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 04:10:06 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id j24so2042640lja.4
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 04:10:06 -0700 (PDT)
+        with ESMTP id S229801AbiITLxl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 07:53:41 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 770B674B81
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 04:53:39 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id p5so2628343ljc.13
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 04:53:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date;
-        bh=mlr4HYAIjqLdIMpfmyesikSY6ASvfl2g+jaK7ls73IY=;
-        b=HNezxQO49cnnr7ZFqbPjF98zl6YV5U2yPavhU+1HvlJ0pdBBptpKivDJ70U0RSMtP9
-         CDJZnBHc3U+XLopqI0phBHXVAorLzy5qrzJyMUHfDDsvdgh/PtW/3e4EpP+jG3XaqIPx
-         uBwfJaX4zqQCbLjxEmb8IcX2e1M6ZEikInyT4YW7HMSRduSmhv4n8VpYfxNQpJg8KbxB
-         qC3hz/rX+0lRKVkjpTTF5PfZjnfU0CDbmOCQXBFlOrf+nWDgUxLCwTQ4EuTu+aSwUYiM
-         Qbr/L6SNoz12LL1bsVCt/yzJ0ytiuX2Jy+gzNhNbPCbn85YGt5CGxvNRzAohjWob4T+1
-         LTMA==
+        bh=EC/x2/yPMBgPRBzElLyCJ1KJ3S64gBsW3wRwTRTyvo8=;
+        b=F90qXRhhUBT83JwZCsvNloRPk3niYVA+avNTz9afAgswqeGGUtDh4Qtnm7xMBYQdlr
+         DcINbrNLidtscWgOj+qpjXw7Lb3HCuDsccjiEvpmax4RQIJSA1CCsMJKA9TNXgufRYnm
+         WxuBBW9MfZx+1Fx5FKdIJ0WQaETFUg4mcNKO41qxcrnbBNOikpmQXBLHidTDuAbxYx3u
+         guOsH/YFk4/M/GDcJYZRnGoYtc2roZ2PEkd4EvnVutVJh+BcVoTk72rqEh/TGnybSPEw
+         5ZB0ciSkXpNqNYFVpgTg1CvOk4GrnQO3yuvZrJijx9fld3QRMKL03hyL9927JdSv+bcb
+         lTsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date;
-        bh=mlr4HYAIjqLdIMpfmyesikSY6ASvfl2g+jaK7ls73IY=;
-        b=Q4QDWKRpc/LZV7dCgstFbVAnpPwBADNWIEt0m/oLxtjXq0rlSCH/vm6qO652j3i2vk
-         I6z8eRccKDMSOSziXAdJ/RnGuHYDHDdrzotIg+oidAuqNi+8F6spO335ZsiULLfv/cE4
-         f0o/CqAmnM3ieRNXV8mVKSnHCkOxEdIoqhANQBAFBemH46ZV32eGokwDzgMq2zTvoU9O
-         h9DnscyNRXtd1flr4JEFpey+yhyzRQuv+q+SVwiKRa/AOqpFAHsbrcu03dWt/0xXQ8gZ
-         od7J1uaKXXV/QtGmvWSMvgkqSueLrpEF/qbi65GHTYGMg9Yffe/gJ/tKwc6kugVzhZ53
-         o03w==
-X-Gm-Message-State: ACrzQf3ejNZ4g/QYBWbe8lDhV8Lu2rB2K8rwVixo8+tstbu5UPUoHawf
-        3JzWof/xglvHbSJEmGrw+1s=
-X-Google-Smtp-Source: AMsMyM6ltXoL4DL1zqjcywzt+BhKE0N4+VufJbjQ6TvZI+4eL5pWxVi5QHVNbCtY3hKiKFeAtZ8TUg==
-X-Received: by 2002:a05:651c:505:b0:26c:5815:5519 with SMTP id o5-20020a05651c050500b0026c58155519mr1496862ljp.316.1663672204444;
-        Tue, 20 Sep 2022 04:10:04 -0700 (PDT)
+        bh=EC/x2/yPMBgPRBzElLyCJ1KJ3S64gBsW3wRwTRTyvo8=;
+        b=OoiOt+dwMdQZTVVw75ZamMntrlxwfG54R9PPYTPV8W/6pB33QAJ/aL1qBnp+RUXtDK
+         uFkRK4G9UPk9AunVMZJtAER3oq0HhrTb6/Yjx8ls7eEacXxE+AiIZkxE62vISx/f2Lh/
+         06hk9/c/tOYCcemOo53qKJvuFG55kO3T095b1+/DlElWziLgwH2zZrB6IVnhulGYGdhB
+         mxoRLWredytBcsuZjdQOiqwAv1AvcmKBzp7ZGCBc5W4xlFj5Hhxfa/wP368s1qBngVex
+         4nHeCMXyGyPVNTqby6gsIsKMUwtG1hDCrTH5xsgEi9w/ctAmXVQPj0M6GGb0sNIW6szs
+         0t9w==
+X-Gm-Message-State: ACrzQf1105P6YtEz1w5JH2Ylp1PEMzpsbv6XJAqM0Jmn1gkHcnLO9wwi
+        rj+9f+WVHRl95LbVF5Rm4Dd75km7ZQZuCw==
+X-Google-Smtp-Source: AMsMyM5lhO83Jg0XztLo3N+ZsxSI80ojq1Z3wGoFNFaAZHdCEYVNW/tqaanm5lFaLP28SfP+jzNfUg==
+X-Received: by 2002:a05:651c:101:b0:250:896d:f870 with SMTP id a1-20020a05651c010100b00250896df870mr7397431ljb.235.1663674817722;
+        Tue, 20 Sep 2022 04:53:37 -0700 (PDT)
 Received: from [10.0.1.14] (h-98-128-229-160.NA.cust.bahnhof.se. [98.128.229.160])
-        by smtp.gmail.com with ESMTPSA id k12-20020a2e888c000000b0026c18aa8587sm214849lji.75.2022.09.20.04.10.03
+        by smtp.gmail.com with ESMTPSA id h18-20020a05651c125200b0026bdb7ad643sm235510ljh.50.2022.09.20.04.53.36
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 20 Sep 2022 04:10:03 -0700 (PDT)
-Message-ID: <c2937753-539c-527d-b548-d1e640e279bf@gmail.com>
-Date:   Tue, 20 Sep 2022 13:10:02 +0200
+        Tue, 20 Sep 2022 04:53:37 -0700 (PDT)
+Message-ID: <2be57208-61fe-95f6-f70a-b3a86f5024a1@gmail.com>
+Date:   Tue, 20 Sep 2022 13:53:36 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH net-next v14 3/7] net: dsa: Introduce dsa tagger data
- operation.
+Subject: Re: [PATCH net-next v14 4/7] net: dsa: mv88e6xxxx: Add RMU
+ functionality.
 Content-Language: en-US
 To:     Vladimir Oltean <olteanv@gmail.com>
 Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
@@ -68,13 +68,11 @@ Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         ansuelsmth@gmail.com
 References: <20220919110847.744712-1-mattias.forsblad@gmail.com>
  <20220919110847.744712-1-mattias.forsblad@gmail.com>
- <20220919110847.744712-4-mattias.forsblad@gmail.com>
- <20220919110847.744712-4-mattias.forsblad@gmail.com>
- <20220919220056.dactchsdzhcb5sev@skbuf>
- <3f29e40e-1a3b-8580-3fbd-6fba8fc02f1f@gmail.com>
- <20220920103115.xoddfehdhmztr6cq@skbuf>
+ <20220919110847.744712-5-mattias.forsblad@gmail.com>
+ <20220919110847.744712-5-mattias.forsblad@gmail.com>
+ <20220919223933.2hh4hhci3pj33lrj@skbuf>
 From:   Mattias Forsblad <mattias.forsblad@gmail.com>
-In-Reply-To: <20220920103115.xoddfehdhmztr6cq@skbuf>
+In-Reply-To: <20220919223933.2hh4hhci3pj33lrj@skbuf>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -87,29 +85,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-09-20 12:31, Vladimir Oltean wrote:
-> On Tue, Sep 20, 2022 at 08:41:30AM +0200, Mattias Forsblad wrote:
->>> Can you please also parse the sequence number here, so the
->>> decode_frame2reg() data consumer doesn't have to concern itself with the
->>> dsa_header at all?
->>
->> The sequence number is in the chip structure which isn't available here.
->> Should we really access that here in the dsa layer?
+On 2022-09-20 00:39, Vladimir Oltean wrote:
+>> +void mv88e6xxx_master_state_change(struct dsa_switch *ds, const struct net_device *master,
+>> +				   bool operational)
+>> +{
+>> +	struct dsa_port *cpu_dp = master->dsa_ptr;
+>> +	struct mv88e6xxx_chip *chip = ds->priv;
+>> +	int port;
+>> +	int ret;
+>> +
+>> +	port = dsa_towards_port(ds, cpu_dp->ds->index, cpu_dp->index);
+>> +
+>> +	mv88e6xxx_reg_lock(chip);
+>> +
+>> +	if (operational && chip->info->ops->rmu_enable) {
 > 
-> I'm talking about this sequence number:
-> 
-> mv88e6xxx_decode_frame2reg_handler:
-> 
-> 	/* Decode Frame2Reg DSA portion */
-> 	dsa_header = skb->data - 2;
-> 
-> 	seqno = dsa_header[3];
-> 
-> I'm saying, if you get the seqno in net/dsa/tag_dsa.c and pass it as
-> argument to mv88e6xxx_decode_frame2reg_handler(), then you should no
-> longer have a reason to look at the dsa_header from drivers/net/dsa/mv88e6xxx/.
+> This all needs to be rewritten. Like here, if the master is operational
+> but the chip->info->ops->rmu_enable method is not populated, you call
+> mv88e6xxx_disable_rmu(). Why?
+>
 
-Ok, I misunderstood your intent. I'll change. Thanks.
+So what should we do in this case? If the master is operational but we cannot
+enable rmu (bc no funcptr), we cannot use RMU -> disable RMU.
 
 /Mattias
 
+>> +		ret = chip->info->ops->rmu_enable(chip, port);
+>> +
+>> +		if (ret == -EOPNOTSUPP)
+>> +			goto out;
+>> +
+>> +		if (!ret) {
+>> +			dev_dbg(chip->dev, "RMU: Enabled on port %d", port);
+>> +
+>> +			ret = mv88e6xxx_enable_check_rmu(master, chip, port);
+>> +			if (!ret)
+>> +				goto out;
