@@ -2,135 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 305A05BE1B4
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 11:17:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC62F5BE1DA
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 11:25:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229456AbiITJQt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 05:16:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57234 "EHLO
+        id S230131AbiITJZK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 05:25:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231186AbiITJQb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 05:16:31 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD71EE2D
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 02:16:29 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id r18so4539491eja.11
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 02:16:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=v6Fmj83hx1h9EOaSFrL3lfhYXbz4XGnMveaMkf6jjPQ=;
-        b=oWXQ6TZyU38Tt6B0tB5xoeC2txaV/i23+XquBsZIHUlTTdtqpu/uE5zzD2jzVvE+Vf
-         WzCR1/U7ZsjhW8WtBnrtoJiP70wvf0AuxhL3i9qedEDUVGMWVGw4N9gRiiUDXYjS3++/
-         4flXzd2anBcOIY2h7liTEQb2eNCop6Ymvn29azgWeIx4F8b7viSUyVrZ89YRgpSM35pU
-         b4j5EA/AO4GanUxm7eAIIVGMfAWHXxpxTav64KglJnpoMOA3ALHlJpHHmpacUrTkl1po
-         wY19mQYdyX7TiiTOKtCqM21IGN5fvYkzdlcnPb8kdOD4eD7PBvqDYiq3siRnzbUhf64t
-         eENg==
+        with ESMTP id S229655AbiITJZI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 05:25:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FFDB3D5B8
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 02:25:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1663665905;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=t+W3uMuXb8mRiplJwHfdBTKhx2EgpXn+wgSS0JSazn4=;
+        b=TnIFhfnY3tXNtwG6BuGawea0axGOvYu1uXZyFzUFfgxNQgfucSDwP2COWoMHd/oCz1Fjmh
+        AAkaplTRYE4I/qMuQ/kFEKp7AwN0Zdrty9gDGkwDJ8HVGVn61ozWP5K6Ou3jIyM1dAFaUh
+        QooGOn3lyvTPfBT/7+Ava+UHES7rdLo=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-113-cbquWZ1IO_uFAcK2sdfEAA-1; Tue, 20 Sep 2022 05:25:04 -0400
+X-MC-Unique: cbquWZ1IO_uFAcK2sdfEAA-1
+Received: by mail-qv1-f69.google.com with SMTP id y16-20020a0cec10000000b004a5df9e16c6so1579871qvo.1
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 02:25:04 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=v6Fmj83hx1h9EOaSFrL3lfhYXbz4XGnMveaMkf6jjPQ=;
-        b=llBqKpvHIL7Fug6Rhlnyve7q7efAF6i78Gvi+YqWWunnE6WTML2ToqA6DOjDSQc9jY
-         9ygOt2Sbw2fC5VayrSs5SiPLvMcgfLseBxfwgLtulW0mh742nK5zN4O69Rl+SsF4F8Cx
-         m33wcUoce7SZUriSP/H8KMHS8kmA2kLv2t9ABH99tn9OhcsqQ0Rv5BhHc48PJjWIzcTa
-         L4MTImzzFZUBSiW9p0bfJRzBhdSlPeEcNmJS5RmelVxC+r8FlgBg36ttd07gSgGJNLMU
-         CIdh7l7lS3EqHJDNr7MqAUlUwcbC9FALqxYri42bI67aR7FcN5ftlXDHfE63FV9Uj+iV
-         WkhA==
-X-Gm-Message-State: ACrzQf3qEUYvZnY/J2w44EeGVlxqRNM7CW9WtihsCDMHt7nK0EKM2Ig/
-        UCQo+k8BgFf4cLrWsymcwY5LnQ==
-X-Google-Smtp-Source: AMsMyM7b7VV/V1SL9IvuRs1rPa+v63PClIaBQ47XAmsdBXtP5r3aIFHV7tonD0iqESAjbN0/c5bXig==
-X-Received: by 2002:a17:907:628f:b0:72f:58fc:3815 with SMTP id nd15-20020a170907628f00b0072f58fc3815mr16179909ejc.719.1663665387996;
-        Tue, 20 Sep 2022 02:16:27 -0700 (PDT)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id u9-20020aa7d0c9000000b0043ba7df7a42sm912888edo.26.2022.09.20.02.16.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 20 Sep 2022 02:16:27 -0700 (PDT)
-Message-ID: <78bd0e54-4ee3-bd3c-2154-9eb8b9a70497@blackwall.org>
-Date:   Tue, 20 Sep 2022 12:16:26 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Subject: Re: [PATCH RFC net-next 0/5] net: vlan: fix bridge binding behavior
- and add selftests
-Content-Language: en-US
-To:     Sevinj Aghayeva <sevinj.aghayeva@gmail.com>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>, aroulin@nvidia.com,
-        sbrivio@redhat.com, roopa@nvidia.com,
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=t+W3uMuXb8mRiplJwHfdBTKhx2EgpXn+wgSS0JSazn4=;
+        b=XH49+y/ewAk2TLd8gUAU8uKdZ6Ou/p6OMPeWgAFaYdpJfQXDvQjiUVMuN/GJTmwgQK
+         P+AJzIeQ9ip+t6zd7bpJGtbBrWp3BLXZs7cjlK1MzHtq+wdF6h1pOuCY9TPADE26ts5u
+         gUGttfA6t2HoNz2eGYqigABxrJD1EzoRZi9sO6KG5VEv7mgwOTITeh8CBCsCnf0pc5mU
+         NVCNEXmHLHTeIW4WqkP6CWaUr7TfuF2oATL5SRzhoWhlYGKIOiSKe/W46gBCxMNjR442
+         CY6SScqJG9gIhncoK5lAXIzcKbx77PtfxaoCOqVUzY5Z6Vti6VV/JfLtfU0yPEuu/KfR
+         MieQ==
+X-Gm-Message-State: ACrzQf0zJTpnXRKFFtncyPL/IDpXZfpAEDiHv8rzfmNavyt8s9qL0dfQ
+        aq3rRkjGFLMG5WPRU4iRz9tUL2eTFZ9fgW5PqQRLLEnjlsZtNRwOvXp8FDXZpN3678r940bjM+D
+        WP7RP1p0/4GOzRqSB
+X-Received: by 2002:ac8:5dd4:0:b0:35c:e24b:c185 with SMTP id e20-20020ac85dd4000000b0035ce24bc185mr9702335qtx.562.1663665903899;
+        Tue, 20 Sep 2022 02:25:03 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM6hvUHNTsLXtc9B2gNYUtMI2bswyu8hKIf3NW6dNzDyNQPSyd0tNg/+X/6m1Juj1yKw1gk7qg==
+X-Received: by 2002:ac8:5dd4:0:b0:35c:e24b:c185 with SMTP id e20-20020ac85dd4000000b0035ce24bc185mr9702312qtx.562.1663665903648;
+        Tue, 20 Sep 2022 02:25:03 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-114-90.dyn.eolo.it. [146.241.114.90])
+        by smtp.gmail.com with ESMTPSA id c25-20020a05620a269900b006bb83c2be40sm720319qkp.59.2022.09.20.02.24.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Sep 2022 02:25:03 -0700 (PDT)
+Message-ID: <5fb488a102d0738ab153bf133439dd64f09d096e.camel@redhat.com>
+Subject: Re: [PATCH v2 net-next 03/10] net: dsa: allow the DSA master to be
+ seen and changed through rtnetlink
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-References: <cover.1663445339.git.sevinj.aghayeva@gmail.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <cover.1663445339.git.sevinj.aghayeva@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Marek =?ISO-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Alvin =?UTF-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        David Ahern <dsahern@kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Date:   Tue, 20 Sep 2022 11:24:57 +0200
+In-Reply-To: <20220911143554.tq4lf5eqs4novhtn@skbuf>
+References: <20220911010706.2137967-1-vladimir.oltean@nxp.com>
+         <20220911010706.2137967-4-vladimir.oltean@nxp.com>
+         <20220911143554.tq4lf5eqs4novhtn@skbuf>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 17/09/2022 23:17, Sevinj Aghayeva wrote:
-> When bridge binding is enabled for a vlan interface, it is expected
-> that the link state of the vlan interface will track the subset of the
-> ports that are also members of the corresponding vlan, rather than
-> that of all ports.
-> 
-> Currently, this feature works as expected when a vlan interface is
-> created with bridge binding enabled:
-> 
->   ip link add link br name vlan10 type vlan id 10 protocol 802.1q \
->         bridge_binding on
-> 
-> However, the feature does not work when a vlan interface is created
-> with bridge binding disabled, and then enabled later:
-> 
->   ip link add link br name vlan10 type vlan id 10 protocol 802.1q \
->         bridge_binding off
->   ip link set vlan10 type vlan bridge_binding on
-> 
-> After these two commands, the link state of the vlan interface
-> continues to track that of all ports, which is inconsistent and
-> confusing to users. This series fixes this bug and introduces two
-> tests for the valid behavior.
-> 
-> Sevinj Aghayeva (5):
->   net: core: export call_netdevice_notifiers_info
->   net: core: introduce a new notifier for link-type-specific changes
->   net: 8021q: notify bridge module of bridge-binding flag change
->   net: bridge: handle link-type-specific changes in the bridge module
->   selftests: net: tests for bridge binding behavior
-> 
->  include/linux/if_vlan.h                       |   4 +
->  include/linux/netdevice.h                     |   3 +
->  include/linux/notifier_info.h                 |  21 +++
->  net/8021q/vlan.h                              |   2 +-
->  net/8021q/vlan_dev.c                          |  20 ++-
->  net/bridge/br.c                               |   5 +
->  net/bridge/br_private.h                       |   7 +
->  net/bridge/br_vlan.c                          |  18 +++
->  net/core/dev.c                                |   7 +-
->  tools/testing/selftests/net/Makefile          |   1 +
->  .../selftests/net/bridge_vlan_binding_test.sh | 143 ++++++++++++++++++
->  11 files changed, 223 insertions(+), 8 deletions(-)
->  create mode 100644 include/linux/notifier_info.h
->  create mode 100755 tools/testing/selftests/net/bridge_vlan_binding_test.sh
-> 
+Hello,
 
-The set looks good to me, the bridge and vlan direct dependency is gone and
-the new notification type is used for passing link type specific info.
+On Sun, 2022-09-11 at 14:35 +0000, Vladimir Oltean wrote:
+> On Sun, Sep 11, 2022 at 04:06:59AM +0300, Vladimir Oltean wrote:
+> > +struct rtnl_link_ops dsa_link_ops __read_mostly = {
+> > +	.kind			= "dsa",
+> > +	.priv_size		= sizeof(struct dsa_port),
+> > +	.maxtype		= IFLA_DSA_MAX,
+> > +	.policy			= dsa_policy,
+> > +	.changelink		= dsa_changelink,
+> > +	.get_size		= dsa_get_size,
+> > +	.fill_info		= dsa_fill_info,
+> > +};
+> 
+> I forgot to apply Jakub's suggestion to set netns_refund = true.
+> On the other hand, I think the patches are otherwise fine, and I
+> wouldn't resend them, especially without any feedback. If there is no
+> other feedback, can I fix this up through an incremental patch?
 
-If the others are ok with it I think you can send it as non-RFC, but I'd give it
-a few more days at least. :)
+Since the delta should be minimal, we have a significant backlog, and
+this LGTM, I'm going to apply the series as-is.
 
-Thanks,
- Nik
+Please follow-up with the incremental fix, thanks,
+
+Paolo
 
