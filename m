@@ -2,52 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A6075BE957
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 16:50:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6415D5BE95C
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 16:50:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229621AbiITOuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 10:50:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54312 "EHLO
+        id S231145AbiITOuZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 10:50:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229815AbiITOuT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 10:50:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFFDC2E9C6
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 07:50:17 -0700 (PDT)
+        with ESMTP id S229812AbiITOuU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 10:50:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC8A62E9C6;
+        Tue, 20 Sep 2022 07:50:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6E570B820D6
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 14:50:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 30E47C433D6;
-        Tue, 20 Sep 2022 14:50:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A077DB82A7C;
+        Tue, 20 Sep 2022 14:50:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 66577C433C1;
+        Tue, 20 Sep 2022 14:50:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663685415;
-        bh=AUf4R83RHeyMCObVUdD57w7rU08Vb4dqZ93OdlFx6uU=;
+        s=k20201202; t=1663685417;
+        bh=t736d8ZuzVTu+fHh6LkwNglQH4chrzEMr+n6SDHaahg=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=MAmc5e1rtrSb86npqnzKlQhpNsT1fREtfsw4fHpC7SCIAZTp+hCGYiHcdpflcX2I3
-         uktCl/2CxT6kOtZRxG5hhCZTCqjoWeI8fKiE7qAcSH76sXZeag5L3DZbNfiOzvpdX4
-         l537A6jYMvnxr1EKwhBf8hBWTWiIfVR0peA9AfYX+6eE33+HhK4ECclQ5Dbo+yA+wo
-         Y2VFc/fsvkWF1uWyDyQ7uD8LVwPiONDwO42mMQhvtmzCS3SdZ57wYwMYcUvoialvh0
-         BmWTfFkL2irKxIicmyUw/16+FuiYxgfnVApIRKFfyaNarbDrrypLKw6Tl8onPe4RCm
-         vWlIPTwDKfClQ==
+        b=piJeSZr1nea3RpUChMRfFn9df42+EliPIFiAGnp1jH1L5tSxC9+U/ctYgFhtgZtJw
+         PIeFoQClIIVXXZa0kXlxV8AkkyJHP+HPXmQJx5N+bbWatHDz1Jx/JdSb2j3jS+kxb9
+         xhrksNv+TvGzsrpCpFM5cDTTdHNj4grBid1DA1JG3kSeXC1Ryv6vURWTW7hppbyQFh
+         eTGnOxVfoJuJL9m2x/hC+4i/i6KIFilCb2sCJP6B4fzsFbhSn/Ez6Z/agPAq83NYu1
+         i+FepB/yjlxXLxnx9Zmd6zsKQ/QD6LSYf4ji3HAyYkLywxlDTm3PYYDXq/bYW+OIqZ
+         FXwq43uAP3ssA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0FD18E21EDF;
-        Tue, 20 Sep 2022 14:50:15 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4ED4EE21EE1;
+        Tue, 20 Sep 2022 14:50:17 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] of: mdio: Add of_node_put() when breaking out of
- for_each_xx
+Subject: Re: [PATCH net-next 0/6] net: ipa: a mix of cleanups
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166368541505.14330.9733810110021629972.git-patchwork-notify@kernel.org>
-Date:   Tue, 20 Sep 2022 14:50:15 +0000
-References: <20220913125659.3331969-1-windhl@126.com>
-In-Reply-To: <20220913125659.3331969-1-windhl@126.com>
-To:     Liang He <windhl@126.com>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org, linmq006@gmail.com
+Message-Id: <166368541731.14330.5858659115387897586.git-patchwork-notify@kernel.org>
+Date:   Tue, 20 Sep 2022 14:50:17 +0000
+References: <20220910011131.1431934-1-elder@linaro.org>
+In-Reply-To: <20220910011131.1431934-1-elder@linaro.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, mka@chromium.org, evgreen@chromium.org,
+        andersson@kernel.org, quic_cpratapa@quicinc.com,
+        quic_avuyyuru@quicinc.com, quic_jponduru@quicinc.com,
+        quic_subashab@quicinc.com, elder@kernel.org,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -59,24 +62,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
+This series was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Tue, 13 Sep 2022 20:56:59 +0800 you wrote:
-> In of_mdiobus_register(), we should call of_node_put() for 'child'
-> escaped out of for_each_available_child_of_node().
+On Fri,  9 Sep 2022 20:11:25 -0500 you wrote:
+> This series contains a set of cleanups done in preparation for a
+> more substantitive upcoming series that reworks how IPA registers
+> and their fields are defined.
 > 
-> Fixes: 66bdede495c7 ("of_mdio: Fix broken PHY IRQ in case of probe deferral")
-> Cc: Miaoqian Lin <linmq006@gmail.com>
-> Co-developed-by: Miaoqian Lin <linmq006@gmail.com>
-> Signed-off-by: Liang He <windhl@126.com>
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+> The first eliminates about half of the possible GSI register
+> constant symbols by removing offset definitions that are not
+> currently required.
 > 
 > [...]
 
 Here is the summary with links:
-  - [v2] of: mdio: Add of_node_put() when breaking out of for_each_xx
-    https://git.kernel.org/netdev/net/c/1c48709e6d9d
+  - [net-next,1/6] net: ipa: don't define unneeded GSI register offsets
+    https://git.kernel.org/netdev/net-next/c/5ea4285829de
+  - [net-next,2/6] net: ipa: move the definition of gsi_ee_id
+    https://git.kernel.org/netdev/net-next/c/bb788de30a74
+  - [net-next,3/6] net: ipa: move and redefine ipa_version_valid()
+    https://git.kernel.org/netdev/net-next/c/8b3cb084b23e
+  - [net-next,4/6] net: ipa: don't reuse variable names
+    https://git.kernel.org/netdev/net-next/c/9eefd2fb966d
+  - [net-next,5/6] net: ipa: update sequencer definition constraints
+    https://git.kernel.org/netdev/net-next/c/a14d593724c4
+  - [net-next,6/6] net: ipa: fix two symbol names
+    https://git.kernel.org/netdev/net-next/c/dae4af6bf232
 
 You are awesome, thank you!
 -- 
