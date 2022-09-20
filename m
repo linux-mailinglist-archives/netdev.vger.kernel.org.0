@@ -2,122 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CD1D5BE4FE
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 13:53:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9259C5BE504
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 13:56:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229995AbiITLxm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 07:53:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50190 "EHLO
+        id S229975AbiITL4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 07:56:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229801AbiITLxl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 07:53:41 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 770B674B81
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 04:53:39 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id p5so2628343ljc.13
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 04:53:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=EC/x2/yPMBgPRBzElLyCJ1KJ3S64gBsW3wRwTRTyvo8=;
-        b=F90qXRhhUBT83JwZCsvNloRPk3niYVA+avNTz9afAgswqeGGUtDh4Qtnm7xMBYQdlr
-         DcINbrNLidtscWgOj+qpjXw7Lb3HCuDsccjiEvpmax4RQIJSA1CCsMJKA9TNXgufRYnm
-         WxuBBW9MfZx+1Fx5FKdIJ0WQaETFUg4mcNKO41qxcrnbBNOikpmQXBLHidTDuAbxYx3u
-         guOsH/YFk4/M/GDcJYZRnGoYtc2roZ2PEkd4EvnVutVJh+BcVoTk72rqEh/TGnybSPEw
-         5ZB0ciSkXpNqNYFVpgTg1CvOk4GrnQO3yuvZrJijx9fld3QRMKL03hyL9927JdSv+bcb
-         lTsw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=EC/x2/yPMBgPRBzElLyCJ1KJ3S64gBsW3wRwTRTyvo8=;
-        b=OoiOt+dwMdQZTVVw75ZamMntrlxwfG54R9PPYTPV8W/6pB33QAJ/aL1qBnp+RUXtDK
-         uFkRK4G9UPk9AunVMZJtAER3oq0HhrTb6/Yjx8ls7eEacXxE+AiIZkxE62vISx/f2Lh/
-         06hk9/c/tOYCcemOo53qKJvuFG55kO3T095b1+/DlElWziLgwH2zZrB6IVnhulGYGdhB
-         mxoRLWredytBcsuZjdQOiqwAv1AvcmKBzp7ZGCBc5W4xlFj5Hhxfa/wP368s1qBngVex
-         4nHeCMXyGyPVNTqby6gsIsKMUwtG1hDCrTH5xsgEi9w/ctAmXVQPj0M6GGb0sNIW6szs
-         0t9w==
-X-Gm-Message-State: ACrzQf1105P6YtEz1w5JH2Ylp1PEMzpsbv6XJAqM0Jmn1gkHcnLO9wwi
-        rj+9f+WVHRl95LbVF5Rm4Dd75km7ZQZuCw==
-X-Google-Smtp-Source: AMsMyM5lhO83Jg0XztLo3N+ZsxSI80ojq1Z3wGoFNFaAZHdCEYVNW/tqaanm5lFaLP28SfP+jzNfUg==
-X-Received: by 2002:a05:651c:101:b0:250:896d:f870 with SMTP id a1-20020a05651c010100b00250896df870mr7397431ljb.235.1663674817722;
-        Tue, 20 Sep 2022 04:53:37 -0700 (PDT)
-Received: from [10.0.1.14] (h-98-128-229-160.NA.cust.bahnhof.se. [98.128.229.160])
-        by smtp.gmail.com with ESMTPSA id h18-20020a05651c125200b0026bdb7ad643sm235510ljh.50.2022.09.20.04.53.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 20 Sep 2022 04:53:37 -0700 (PDT)
-Message-ID: <2be57208-61fe-95f6-f70a-b3a86f5024a1@gmail.com>
-Date:   Tue, 20 Sep 2022 13:53:36 +0200
+        with ESMTP id S229542AbiITL4h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 07:56:37 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77A0672EF6
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 04:56:35 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1oabrd-00031k-MN; Tue, 20 Sep 2022 13:56:33 +0200
+Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:f217:a1f4:d2af:5b7c])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 29108E7614;
+        Tue, 20 Sep 2022 11:56:33 +0000 (UTC)
+Date:   Tue, 20 Sep 2022 13:56:24 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Juergen Borleis <jbe@pengutronix.de>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: Re: [PATCH] net: fec: limit register access on i.MX6UL
+Message-ID: <20220920115624.zgycbbzijudr7muc@pengutronix.de>
+References: <20220920095106.66924-1-jbe@pengutronix.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net-next v14 4/7] net: dsa: mv88e6xxxx: Add RMU
- functionality.
-Content-Language: en-US
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux@armlinux.org.uk,
-        ansuelsmth@gmail.com
-References: <20220919110847.744712-1-mattias.forsblad@gmail.com>
- <20220919110847.744712-1-mattias.forsblad@gmail.com>
- <20220919110847.744712-5-mattias.forsblad@gmail.com>
- <20220919110847.744712-5-mattias.forsblad@gmail.com>
- <20220919223933.2hh4hhci3pj33lrj@skbuf>
-From:   Mattias Forsblad <mattias.forsblad@gmail.com>
-In-Reply-To: <20220919223933.2hh4hhci3pj33lrj@skbuf>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="hqa2x4iyrwdnlys5"
+Content-Disposition: inline
+In-Reply-To: <20220920095106.66924-1-jbe@pengutronix.de>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-09-20 00:39, Vladimir Oltean wrote:
->> +void mv88e6xxx_master_state_change(struct dsa_switch *ds, const struct net_device *master,
->> +				   bool operational)
->> +{
->> +	struct dsa_port *cpu_dp = master->dsa_ptr;
->> +	struct mv88e6xxx_chip *chip = ds->priv;
->> +	int port;
->> +	int ret;
->> +
->> +	port = dsa_towards_port(ds, cpu_dp->ds->index, cpu_dp->index);
->> +
->> +	mv88e6xxx_reg_lock(chip);
->> +
->> +	if (operational && chip->info->ops->rmu_enable) {
-> 
-> This all needs to be rewritten. Like here, if the master is operational
-> but the chip->info->ops->rmu_enable method is not populated, you call
-> mv88e6xxx_disable_rmu(). Why?
->
 
-So what should we do in this case? If the master is operational but we cannot
-enable rmu (bc no funcptr), we cannot use RMU -> disable RMU.
+--hqa2x4iyrwdnlys5
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-/Mattias
+On 20.09.2022 11:51:06, Juergen Borleis wrote:
+> Using 'ethtool -d [=E2=80=A6]' on an i.MX6UL leads to a kernel crash:
+>=20
+>    Unhandled fault: external abort on non-linefetch (0x1008) at [=E2=80=
+=A6]
+>=20
+> due to this SoC has less registers in its FEC implementation compared to =
+other
+> i.MX6 variants. Thus, a run-time decision is required to avoid access to
+> non-existing registers.
+>=20
+> Signed-off-by: Juergen Borleis <jbe@pengutronix.de>
+> ---
+>  drivers/net/ethernet/freescale/fec_main.c | 50 +++++++++++++++++++++--
+>  1 file changed, 47 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethe=
+rnet/freescale/fec_main.c
+> index 6152f6d..ab620b4 100644
+> --- a/drivers/net/ethernet/freescale/fec_main.c
+> +++ b/drivers/net/ethernet/freescale/fec_main.c
+> @@ -2382,6 +2382,31 @@ static u32 fec_enet_register_offset[] =3D {
+>  	IEEE_R_DROP, IEEE_R_FRAME_OK, IEEE_R_CRC, IEEE_R_ALIGN, IEEE_R_MACERR,
+>  	IEEE_R_FDXFC, IEEE_R_OCTETS_OK
+>  };
+> +/* for i.MX6ul */
+> +static u32 fec_enet_register_offset_6ul[] =3D {
+> +	FEC_IEVENT, FEC_IMASK, FEC_R_DES_ACTIVE_0, FEC_X_DES_ACTIVE_0,
+> +	FEC_ECNTRL, FEC_MII_DATA, FEC_MII_SPEED, FEC_MIB_CTRLSTAT, FEC_R_CNTRL,
+> +	FEC_X_CNTRL, FEC_ADDR_LOW, FEC_ADDR_HIGH, FEC_OPD, FEC_TXIC0, FEC_RXIC0,
+> +	FEC_HASH_TABLE_HIGH, FEC_HASH_TABLE_LOW, FEC_GRP_HASH_TABLE_HIGH,
+> +	FEC_GRP_HASH_TABLE_LOW, FEC_X_WMRK, FEC_R_DES_START_0,
+> +	FEC_X_DES_START_0, FEC_R_BUFF_SIZE_0, FEC_R_FIFO_RSFL, FEC_R_FIFO_RSEM,
+> +	FEC_R_FIFO_RAEM, FEC_R_FIFO_RAFL, FEC_RACC,
+> +	RMON_T_DROP, RMON_T_PACKETS, RMON_T_BC_PKT, RMON_T_MC_PKT,
+> +	RMON_T_CRC_ALIGN, RMON_T_UNDERSIZE, RMON_T_OVERSIZE, RMON_T_FRAG,
+> +	RMON_T_JAB, RMON_T_COL, RMON_T_P64, RMON_T_P65TO127, RMON_T_P128TO255,
+> +	RMON_T_P256TO511, RMON_T_P512TO1023, RMON_T_P1024TO2047,
+> +	RMON_T_P_GTE2048, RMON_T_OCTETS,
+> +	IEEE_T_DROP, IEEE_T_FRAME_OK, IEEE_T_1COL, IEEE_T_MCOL, IEEE_T_DEF,
+> +	IEEE_T_LCOL, IEEE_T_EXCOL, IEEE_T_MACERR, IEEE_T_CSERR, IEEE_T_SQE,
+> +	IEEE_T_FDXFC, IEEE_T_OCTETS_OK,
+> +	RMON_R_PACKETS, RMON_R_BC_PKT, RMON_R_MC_PKT, RMON_R_CRC_ALIGN,
+> +	RMON_R_UNDERSIZE, RMON_R_OVERSIZE, RMON_R_FRAG, RMON_R_JAB,
+> +	RMON_R_RESVD_O, RMON_R_P64, RMON_R_P65TO127, RMON_R_P128TO255,
+> +	RMON_R_P256TO511, RMON_R_P512TO1023, RMON_R_P1024TO2047,
+> +	RMON_R_P_GTE2048, RMON_R_OCTETS,
+> +	IEEE_R_DROP, IEEE_R_FRAME_OK, IEEE_R_CRC, IEEE_R_ALIGN, IEEE_R_MACERR,
+> +	IEEE_R_FDXFC, IEEE_R_OCTETS_OK
+> +};
+>  #else
+>  static __u32 fec_enet_register_version =3D 1;
+>  static u32 fec_enet_register_offset[] =3D {
+> @@ -2406,7 +2431,26 @@ static void fec_enet_get_regs(struct net_device *n=
+dev,
+>  	u32 *buf =3D (u32 *)regbuf;
+>  	u32 i, off;
+>  	int ret;
+> -
+> +#if defined(CONFIG_M523x) || defined(CONFIG_M527x) || defined(CONFIG_M52=
+8x) || \
+> +	defined(CONFIG_M520x) || defined(CONFIG_M532x) || defined(CONFIG_ARM) |=
+| \
+> +	defined(CONFIG_ARM64) || defined(CONFIG_COMPILE_TEST)
+> +	struct platform_device_id *dev_info =3D
+> +			(struct platform_device_id *)fep->pdev->id_entry;
+> +	u32 *reg_list;
+> +	u32 reg_cnt;
+> +
+> +	if (strcmp(dev_info->name, "imx6ul-fec")) {
+> +		reg_list =3D fec_enet_register_offset;
+> +		reg_cnt =3D ARRAY_SIZE(fec_enet_register_offset);
+> +	} else {
+> +		reg_list =3D fec_enet_register_offset_6ul;
+> +		reg_cnt =3D ARRAY_SIZE(fec_enet_register_offset_6ul);
+> +	}
 
->> +		ret = chip->info->ops->rmu_enable(chip, port);
->> +
->> +		if (ret == -EOPNOTSUPP)
->> +			goto out;
->> +
->> +		if (!ret) {
->> +			dev_dbg(chip->dev, "RMU: Enabled on port %d", port);
->> +
->> +			ret = mv88e6xxx_enable_check_rmu(master, chip, port);
->> +			if (!ret)
->> +				goto out;
+What about using of_machine_is_compatible()?
+
+> +#else
+> +	/* coldfire */
+> +	static u32 *reg_list =3D fec_enet_register_offset;
+> +	static const u32 reg_cnt =3D ARRAY_SIZE(fec_enet_register_offset);
+> +#endif
+
+Why do you need the ifdef?
+
+>  	ret =3D pm_runtime_resume_and_get(dev);
+>  	if (ret < 0)
+>  		return;
+> @@ -2415,8 +2459,8 @@ static void fec_enet_get_regs(struct net_device *nd=
+ev,
+> =20
+>  	memset(buf, 0, regs->len);
+> =20
+> -	for (i =3D 0; i < ARRAY_SIZE(fec_enet_register_offset); i++) {
+> -		off =3D fec_enet_register_offset[i];
+> +	for (i =3D 0; i < reg_cnt; i++) {
+> +		off =3D reg_list[i];
+> =20
+>  		if ((off =3D=3D FEC_R_BOUND || off =3D=3D FEC_R_FSTART) &&
+>  		    !(fep->quirks & FEC_QUIRK_HAS_FRREG))
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--hqa2x4iyrwdnlys5
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmMpqmYACgkQrX5LkNig
+012rdgf/QKQBF08kAEHZcLSoXnU/ChCTH0bhjItfeyK+Q1tzOcxaqZJpj123RAMQ
+wrH3duVbm9hLpS5aC9CVyKj7qso5nqOT6uymU/lnsj/3elqYgrJVLzMiVNMrtBZL
+1T+8Mo4v7C4CeUOdoyXTBEjF4BiQrNSmXqd3JwcH7hMMj1uWRzgSbtkC0vDvCFCL
+XOlLiGwy/Sab7S4RtMHgkRHTHxiNURI9l1n8mqCYTnLfLCBFk187rm6MAlomYzv/
+gWwzH8vY3OEVAd7VbUHpZQqeVKRzzk1jPZQZNDse2ixHCZsFnf5RHRxYYfNUIPjo
+iwUnDaxvok5GNB+v3u1zKDE7v3078A==
+=fMtx
+-----END PGP SIGNATURE-----
+
+--hqa2x4iyrwdnlys5--
