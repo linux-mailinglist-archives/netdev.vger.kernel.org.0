@@ -2,53 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 59C3F5BEA8A
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 17:51:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D29BB5BEA87
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 17:50:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231364AbiITPuj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 11:50:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52506 "EHLO
+        id S231378AbiITPue (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 11:50:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231416AbiITPuU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 11:50:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3E634F667;
-        Tue, 20 Sep 2022 08:50:18 -0700 (PDT)
+        with ESMTP id S231316AbiITPuT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 11:50:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6F78474FD
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 08:50:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9CE59B82AEB;
-        Tue, 20 Sep 2022 15:50:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 50E4CC433D6;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8C72CB82AE9
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 15:50:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4556EC433B5;
         Tue, 20 Sep 2022 15:50:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1663689016;
-        bh=XVCmJtbJtR81L6NH/MyXEMpBjoZWmBPls2ZCMBskZk0=;
+        bh=Bnipi9Rtk5aXjDPFo4H/M2c0xp036ub0Hw/3LVR8jNs=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=MwA1VgzZnGymfKnvmF2RWsDsduyE+ZsYMFXqluzh16xarisfJmpaCBp9Yd94D56I1
-         oKBTfX4Z42/dIYSbzZe0jKakfqWSW+QoVvhQK/N+YJM/0yhhi8UCuCWuw88i1I9rXf
-         6+TTsmMlHO1O9LSFtafSDxXdq9vrNi8CANuD180xswnBywXQ+EDmR3VgAQC92OYTq5
-         Pp1TjiNn6NEFcI2gC2HNAKDX337m0FHc1Cd2RphLu8xNA13h1ZmBnnd2drH2+mRM/A
-         zTmPaXyyppMU2XpRpLiPKqM4GrwORL4YcHPeVsvg6QSdn+E4of1tawj3LtBc1rfr25
-         PdKJ5E55DPCVA==
+        b=eji5gDr274WlookZa/4/jFbe8TkPErokIH5HB3Izwu/DJsfDZprGkJKVOkfxyFrYI
+         eDi7AfT3JnZV5FP368q5YB44MigvCsj+mH3nFObVkxKLibGhjMo/vjI1Cfd4812sfo
+         bm/gFHjMS5B7ha2cn90zIB910z4ZinjmZFyLrPB5wOkMb3OIT+3ulqtndTxHQSqdj5
+         INxEqnuvm5EYTLJszU8HoMc6HQ+U6Zxsl7jkh6tnD4ve0fcwsH+AcJDjKlqRh1MRKn
+         t5DaEEu10ldKXcdBDgFlxm2KfHQA2IcCApS1heOE3Hwq2ZLsmlEFb5viz5i9ia6mT1
+         GMMNxjTxgRbRw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 37662E5251D;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2BF33C43141;
         Tue, 20 Sep 2022 15:50:16 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v5] ravb: Add RZ/G2L MII interface support
+Subject: Re: [PATCH -next 1/3] net: mdio: mux-meson-g12a: Switch to use
+ dev_err_probe() helper
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166368901622.16825.11625479930549195610.git-patchwork-notify@kernel.org>
+Message-Id: <166368901617.16825.15395049886003774132.git-patchwork-notify@kernel.org>
 Date:   Tue, 20 Sep 2022 15:50:16 +0000
-References: <20220914192604.265859-1-biju.das.jz@bp.renesas.com>
-In-Reply-To: <20220914192604.265859-1-biju.das.jz@bp.renesas.com>
-To:     Biju Das <biju.das.jz@bp.renesas.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, s.shtylyov@omp.ru,
-        prabhakar.mahadev-lad.rj@bp.renesas.com, netdev@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, geert+renesas@glider.be,
-        Chris.Paterson2@renesas.com, biju.das@bp.renesas.com
+References: <20220915065043.665138-1-yangyingliang@huawei.com>
+In-Reply-To: <20220915065043.665138-1-yangyingliang@huawei.com>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
+        davem@davemloft.net, kuba@kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -60,31 +58,25 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
+This series was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Wed, 14 Sep 2022 20:26:04 +0100 you wrote:
-> EMAC IP found on RZ/G2L Gb ethernet supports MII interface.
-> This patch adds support for selecting MII interface mode.
+On Thu, 15 Sep 2022 14:50:41 +0800 you wrote:
+> dev_err() can be replace with dev_err_probe() which will check if error
+> code is -EPROBE_DEFER.
 > 
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 > ---
-> v4->v5:
->  * Reorderd enum CXR35_BIT from LSB to MSB
-> v3->v4:
->  * Dropped CXR35_HALFCYC_CLKSW1000 enum
->  * Added CXR35_HALFCYC_CLKSW, CXR35_SEL_XMII and CXR35_SEL_XMII_RGMII
->    enum.
-> v2->v3:
->  * Documented CXR35_HALFCYC_CLKSW1000 and CXR35_SEL_XMII_MII enum.
-> v1->v2:
->  * Fixed spaces->Tab around CXR35 description.
-> 
-> [...]
+>  drivers/net/mdio/mdio-mux-meson-g12a.c | 20 +++++++-------------
+>  1 file changed, 7 insertions(+), 13 deletions(-)
 
 Here is the summary with links:
-  - [net-next,v5] ravb: Add RZ/G2L MII interface support
-    https://git.kernel.org/netdev/net-next/c/1089877ada8d
+  - [-next,1/3] net: mdio: mux-meson-g12a: Switch to use dev_err_probe() helper
+    https://git.kernel.org/netdev/net-next/c/de0665c871b7
+  - [-next,2/3] net: mdio: mux-mmioreg: Switch to use dev_err_probe() helper
+    https://git.kernel.org/netdev/net-next/c/770aac8dc05d
+  - [-next,3/3] net: mdio: mux-multiplexer: Switch to use dev_err_probe() helper
+    https://git.kernel.org/netdev/net-next/c/4633b39183c5
 
 You are awesome, thank you!
 -- 
