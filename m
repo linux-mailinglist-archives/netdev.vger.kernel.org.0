@@ -2,185 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9259C5BE504
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 13:56:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D2D55BE508
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 13:57:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229975AbiITL4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 07:56:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54608 "EHLO
+        id S230027AbiITL5a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 07:57:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229542AbiITL4h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 07:56:37 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77A0672EF6
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 04:56:35 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1oabrd-00031k-MN; Tue, 20 Sep 2022 13:56:33 +0200
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:f217:a1f4:d2af:5b7c])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 29108E7614;
-        Tue, 20 Sep 2022 11:56:33 +0000 (UTC)
-Date:   Tue, 20 Sep 2022 13:56:24 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Juergen Borleis <jbe@pengutronix.de>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: Re: [PATCH] net: fec: limit register access on i.MX6UL
-Message-ID: <20220920115624.zgycbbzijudr7muc@pengutronix.de>
-References: <20220920095106.66924-1-jbe@pengutronix.de>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="hqa2x4iyrwdnlys5"
-Content-Disposition: inline
-In-Reply-To: <20220920095106.66924-1-jbe@pengutronix.de>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S230003AbiITL53 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 07:57:29 -0400
+Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 06CF272B74;
+        Tue, 20 Sep 2022 04:57:26 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [10.162.98.155])
+        by mail-app3 (Coremail) with SMTP id cC_KCgDnObacqiljhF_LBg--.27646S2;
+        Tue, 20 Sep 2022 19:57:24 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     linux-kernel@vger.kernel.org
+Cc:     netdev@vger.kernel.org, isdn@linux-pingi.de,
+        Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH] mISDN: fix use-after-free bugs in l1oip timer handlers
+Date:   Tue, 20 Sep 2022 19:57:16 +0800
+Message-Id: <20220920115716.125741-1-duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: cC_KCgDnObacqiljhF_LBg--.27646S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxJrykJF13tryUJw1kCF48WFg_yoW8GFyfpr
+        4jgr9Fyry8XFWUtF4DZF93XF95A3Z3tFWUGFn8K3yavwnrXry3ZF10y340qF4UJr93W39I
+        qF10vr43CF98uFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUka1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
+        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
+        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j
+        6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
+        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v
+        1sIEY20_GFWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
+        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vI
+        r41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr
+        1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvE
+        x4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHUDUUUUU=
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgUTAVZdtbjOIAAQst
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The l1oip_cleanup() traverses the l1oip_ilist and calls
+release_card() to cleanup module and stack. However,
+release_card() calls del_timer() to delete the timers
+such as keep_tl and timeout_tl. If the timer handler is
+running, the del_timer() will not stop it and result in
+UAF bugs. One of the processes is shown below:
 
---hqa2x4iyrwdnlys5
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+    (cleanup routine)          |        (timer handler)
+release_card()                 | l1oip_timeout()
+ ...                           |
+ del_timer()                   | ...
+ ...                           |
+ kfree(hc) //FREE              |
+                               | hc->timeout_on = 0 //USE
 
-On 20.09.2022 11:51:06, Juergen Borleis wrote:
-> Using 'ethtool -d [=E2=80=A6]' on an i.MX6UL leads to a kernel crash:
->=20
->    Unhandled fault: external abort on non-linefetch (0x1008) at [=E2=80=
-=A6]
->=20
-> due to this SoC has less registers in its FEC implementation compared to =
-other
-> i.MX6 variants. Thus, a run-time decision is required to avoid access to
-> non-existing registers.
->=20
-> Signed-off-by: Juergen Borleis <jbe@pengutronix.de>
-> ---
->  drivers/net/ethernet/freescale/fec_main.c | 50 +++++++++++++++++++++--
->  1 file changed, 47 insertions(+), 3 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethe=
-rnet/freescale/fec_main.c
-> index 6152f6d..ab620b4 100644
-> --- a/drivers/net/ethernet/freescale/fec_main.c
-> +++ b/drivers/net/ethernet/freescale/fec_main.c
-> @@ -2382,6 +2382,31 @@ static u32 fec_enet_register_offset[] =3D {
->  	IEEE_R_DROP, IEEE_R_FRAME_OK, IEEE_R_CRC, IEEE_R_ALIGN, IEEE_R_MACERR,
->  	IEEE_R_FDXFC, IEEE_R_OCTETS_OK
->  };
-> +/* for i.MX6ul */
-> +static u32 fec_enet_register_offset_6ul[] =3D {
-> +	FEC_IEVENT, FEC_IMASK, FEC_R_DES_ACTIVE_0, FEC_X_DES_ACTIVE_0,
-> +	FEC_ECNTRL, FEC_MII_DATA, FEC_MII_SPEED, FEC_MIB_CTRLSTAT, FEC_R_CNTRL,
-> +	FEC_X_CNTRL, FEC_ADDR_LOW, FEC_ADDR_HIGH, FEC_OPD, FEC_TXIC0, FEC_RXIC0,
-> +	FEC_HASH_TABLE_HIGH, FEC_HASH_TABLE_LOW, FEC_GRP_HASH_TABLE_HIGH,
-> +	FEC_GRP_HASH_TABLE_LOW, FEC_X_WMRK, FEC_R_DES_START_0,
-> +	FEC_X_DES_START_0, FEC_R_BUFF_SIZE_0, FEC_R_FIFO_RSFL, FEC_R_FIFO_RSEM,
-> +	FEC_R_FIFO_RAEM, FEC_R_FIFO_RAFL, FEC_RACC,
-> +	RMON_T_DROP, RMON_T_PACKETS, RMON_T_BC_PKT, RMON_T_MC_PKT,
-> +	RMON_T_CRC_ALIGN, RMON_T_UNDERSIZE, RMON_T_OVERSIZE, RMON_T_FRAG,
-> +	RMON_T_JAB, RMON_T_COL, RMON_T_P64, RMON_T_P65TO127, RMON_T_P128TO255,
-> +	RMON_T_P256TO511, RMON_T_P512TO1023, RMON_T_P1024TO2047,
-> +	RMON_T_P_GTE2048, RMON_T_OCTETS,
-> +	IEEE_T_DROP, IEEE_T_FRAME_OK, IEEE_T_1COL, IEEE_T_MCOL, IEEE_T_DEF,
-> +	IEEE_T_LCOL, IEEE_T_EXCOL, IEEE_T_MACERR, IEEE_T_CSERR, IEEE_T_SQE,
-> +	IEEE_T_FDXFC, IEEE_T_OCTETS_OK,
-> +	RMON_R_PACKETS, RMON_R_BC_PKT, RMON_R_MC_PKT, RMON_R_CRC_ALIGN,
-> +	RMON_R_UNDERSIZE, RMON_R_OVERSIZE, RMON_R_FRAG, RMON_R_JAB,
-> +	RMON_R_RESVD_O, RMON_R_P64, RMON_R_P65TO127, RMON_R_P128TO255,
-> +	RMON_R_P256TO511, RMON_R_P512TO1023, RMON_R_P1024TO2047,
-> +	RMON_R_P_GTE2048, RMON_R_OCTETS,
-> +	IEEE_R_DROP, IEEE_R_FRAME_OK, IEEE_R_CRC, IEEE_R_ALIGN, IEEE_R_MACERR,
-> +	IEEE_R_FDXFC, IEEE_R_OCTETS_OK
-> +};
->  #else
->  static __u32 fec_enet_register_version =3D 1;
->  static u32 fec_enet_register_offset[] =3D {
-> @@ -2406,7 +2431,26 @@ static void fec_enet_get_regs(struct net_device *n=
-dev,
->  	u32 *buf =3D (u32 *)regbuf;
->  	u32 i, off;
->  	int ret;
-> -
-> +#if defined(CONFIG_M523x) || defined(CONFIG_M527x) || defined(CONFIG_M52=
-8x) || \
-> +	defined(CONFIG_M520x) || defined(CONFIG_M532x) || defined(CONFIG_ARM) |=
-| \
-> +	defined(CONFIG_ARM64) || defined(CONFIG_COMPILE_TEST)
-> +	struct platform_device_id *dev_info =3D
-> +			(struct platform_device_id *)fep->pdev->id_entry;
-> +	u32 *reg_list;
-> +	u32 reg_cnt;
-> +
-> +	if (strcmp(dev_info->name, "imx6ul-fec")) {
-> +		reg_list =3D fec_enet_register_offset;
-> +		reg_cnt =3D ARRAY_SIZE(fec_enet_register_offset);
-> +	} else {
-> +		reg_list =3D fec_enet_register_offset_6ul;
-> +		reg_cnt =3D ARRAY_SIZE(fec_enet_register_offset_6ul);
-> +	}
+Fix by calling del_timer_sync() in release_card(), which
+makes sure the timer handlers have finished before the
+resources, such as l1oip and so on, have been deallocated.
 
-What about using of_machine_is_compatible()?
+Fixes: 3712b42d4b1b ("Add layer1 over IP support")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+---
+ drivers/isdn/mISDN/l1oip_core.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-> +#else
-> +	/* coldfire */
-> +	static u32 *reg_list =3D fec_enet_register_offset;
-> +	static const u32 reg_cnt =3D ARRAY_SIZE(fec_enet_register_offset);
-> +#endif
+diff --git a/drivers/isdn/mISDN/l1oip_core.c b/drivers/isdn/mISDN/l1oip_core.c
+index 2c40412466e..ead2fdf8ae1 100644
+--- a/drivers/isdn/mISDN/l1oip_core.c
++++ b/drivers/isdn/mISDN/l1oip_core.c
+@@ -1232,11 +1232,9 @@ release_card(struct l1oip *hc)
+ {
+ 	int	ch;
+ 
+-	if (timer_pending(&hc->keep_tl))
+-		del_timer(&hc->keep_tl);
++	del_timer_sync(&hc->keep_tl);
+ 
+-	if (timer_pending(&hc->timeout_tl))
+-		del_timer(&hc->timeout_tl);
++	del_timer_sync(&hc->timeout_tl);
+ 
+ 	cancel_work_sync(&hc->workq);
+ 
+-- 
+2.17.1
 
-Why do you need the ifdef?
-
->  	ret =3D pm_runtime_resume_and_get(dev);
->  	if (ret < 0)
->  		return;
-> @@ -2415,8 +2459,8 @@ static void fec_enet_get_regs(struct net_device *nd=
-ev,
-> =20
->  	memset(buf, 0, regs->len);
-> =20
-> -	for (i =3D 0; i < ARRAY_SIZE(fec_enet_register_offset); i++) {
-> -		off =3D fec_enet_register_offset[i];
-> +	for (i =3D 0; i < reg_cnt; i++) {
-> +		off =3D reg_list[i];
-> =20
->  		if ((off =3D=3D FEC_R_BOUND || off =3D=3D FEC_R_FSTART) &&
->  		    !(fep->quirks & FEC_QUIRK_HAS_FRREG))
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---hqa2x4iyrwdnlys5
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmMpqmYACgkQrX5LkNig
-012rdgf/QKQBF08kAEHZcLSoXnU/ChCTH0bhjItfeyK+Q1tzOcxaqZJpj123RAMQ
-wrH3duVbm9hLpS5aC9CVyKj7qso5nqOT6uymU/lnsj/3elqYgrJVLzMiVNMrtBZL
-1T+8Mo4v7C4CeUOdoyXTBEjF4BiQrNSmXqd3JwcH7hMMj1uWRzgSbtkC0vDvCFCL
-XOlLiGwy/Sab7S4RtMHgkRHTHxiNURI9l1n8mqCYTnLfLCBFk187rm6MAlomYzv/
-gWwzH8vY3OEVAd7VbUHpZQqeVKRzzk1jPZQZNDse2ixHCZsFnf5RHRxYYfNUIPjo
-iwUnDaxvok5GNB+v3u1zKDE7v3078A==
-=fMtx
------END PGP SIGNATURE-----
-
---hqa2x4iyrwdnlys5--
