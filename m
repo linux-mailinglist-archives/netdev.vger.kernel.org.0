@@ -2,57 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C8F95BE261
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 11:50:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 538C55BE263
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 11:51:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229645AbiITJub (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 05:50:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36876 "EHLO
+        id S230015AbiITJvL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 05:51:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229793AbiITJuW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 05:50:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1378C6B8D8;
-        Tue, 20 Sep 2022 02:50:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E51D562831;
-        Tue, 20 Sep 2022 09:50:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 4FD20C433D7;
-        Tue, 20 Sep 2022 09:50:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663667414;
-        bh=kX2EBvWZ7BlQJA8Sgf4mtTIkaLClscQRwqoplzn8F+w=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=iGLipXrYNs2g8myoZN31AF5AMVDi9F7fpr2rQbYV9xIkXKvb5U5f9OmhsyoUXxxma
-         TK7TZCi5lUTncUgdCTP0k0a/7gb+JCEFUrokJrVKSqJo3LAA/O4TBp3nIbgOz+PdEZ
-         B5sq27tZD50rlW6Dgl5bSEePtETNennnxGl7LeDvXHqbiKGMLq1SJT4iyHqSepLoyl
-         dGUyZDZNc4VRweknhSSq74Ui9ZnnJBH+dP/5We0Kx1zpPwJlSiObzQW8NwZgFnM2n7
-         Vz6VYdmMXf1KKap52E2b8UQ9COnXhdLwZz8G/CtP/qko1QCpoSvLjHG/5a1n/QnScV
-         eZajxpUjQH9nQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 36080E21EE2;
-        Tue, 20 Sep 2022 09:50:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229599AbiITJvK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 05:51:10 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 314372C117
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 02:51:09 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <jbe@pengutronix.de>)
+        id 1oaZuF-0001Zg-Hg; Tue, 20 Sep 2022 11:51:07 +0200
+Received: from [2a0a:edc0:0:900:1d::45] (helo=ginster)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <jbe@pengutronix.de>)
+        id 1oaZuG-001pf8-9T; Tue, 20 Sep 2022 11:51:06 +0200
+Received: from jbe by ginster with local (Exim 4.94.2)
+        (envelope-from <jbe@pengutronix.de>)
+        id 1oaZuE-000HQD-24; Tue, 20 Sep 2022 11:51:06 +0200
+From:   Juergen Borleis <jbe@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, kernel@pengutronix.de
+Subject: [PATCH] net: fec: limit register access on i.MX6UL
+Date:   Tue, 20 Sep 2022 11:51:06 +0200
+Message-Id: <20220920095106.66924-1-jbe@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2] net/mlx5e: Ensure macsec_rule is always
- initiailized in macsec_fs_{r,t}x_add_rule()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166366741421.25964.18299631498168125673.git-patchwork-notify@kernel.org>
-Date:   Tue, 20 Sep 2022 09:50:14 +0000
-References: <20220911085748.461033-1-nathan@kernel.org>
-In-Reply-To: <20220911085748.461033-1-nathan@kernel.org>
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     saeedm@nvidia.com, leon@kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        ndesaulniers@google.com, trix@redhat.com, borisp@nvidia.com,
-        raeds@nvidia.com, liorna@nvidia.com, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, patches@lists.linux.dev
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: jbe@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,51 +48,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Using 'ethtool -d […]' on an i.MX6UL leads to a kernel crash:
 
-This patch was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+   Unhandled fault: external abort on non-linefetch (0x1008) at […]
 
-On Sun, 11 Sep 2022 01:57:50 -0700 you wrote:
-> Clang warns:
-> 
->   drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec_fs.c:539:6: error: variable 'macsec_rule' is used uninitialized whenever 'if' condition is true [-Werror,-Wsometimes-uninitialized]
->           if (err)
->               ^~~
->   drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec_fs.c:598:9: note: uninitialized use occurs here
->           return macsec_rule;
->                 ^~~~~~~~~~~
->   drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec_fs.c:539:2: note: remove the 'if' if its condition is always false
->           if (err)
->           ^~~~~~~~
->   drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec_fs.c:523:38: note: initialize the variable 'macsec_rule' to silence this warning
->           union mlx5e_macsec_rule *macsec_rule;
->                                               ^
->                                               = NULL
->   drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec_fs.c:1131:6: error: variable 'macsec_rule' is used uninitialized whenever 'if' condition is true [-Werror,-Wsometimes-uninitialized]
->           if (err)
->               ^~~
->   drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec_fs.c:1215:9: note: uninitialized use occurs here
->           return macsec_rule;
->                 ^~~~~~~~~~~
->   drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec_fs.c:1131:2: note: remove the 'if' if its condition is always false
->           if (err)
->           ^~~~~~~~
->   drivers/net/ethernet/mellanox/mlx5/core/en_accel/macsec_fs.c:1118:38: note: initialize the variable 'macsec_rule' to silence this warning
->           union mlx5e_macsec_rule *macsec_rule;
->                                               ^
->                                               = NULL
->   2 errors generated.
-> 
-> [...]
+due to this SoC has less registers in its FEC implementation compared to other
+i.MX6 variants. Thus, a run-time decision is required to avoid access to
+non-existing registers.
 
-Here is the summary with links:
-  - [net-next,v2] net/mlx5e: Ensure macsec_rule is always initiailized in macsec_fs_{r,t}x_add_rule()
-    https://git.kernel.org/netdev/net-next/c/2e50e9bf328f
+Signed-off-by: Juergen Borleis <jbe@pengutronix.de>
+---
+ drivers/net/ethernet/freescale/fec_main.c | 50 +++++++++++++++++++++--
+ 1 file changed, 47 insertions(+), 3 deletions(-)
 
-You are awesome, thank you!
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index 6152f6d..ab620b4 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -2382,6 +2382,31 @@ static u32 fec_enet_register_offset[] = {
+ 	IEEE_R_DROP, IEEE_R_FRAME_OK, IEEE_R_CRC, IEEE_R_ALIGN, IEEE_R_MACERR,
+ 	IEEE_R_FDXFC, IEEE_R_OCTETS_OK
+ };
++/* for i.MX6ul */
++static u32 fec_enet_register_offset_6ul[] = {
++	FEC_IEVENT, FEC_IMASK, FEC_R_DES_ACTIVE_0, FEC_X_DES_ACTIVE_0,
++	FEC_ECNTRL, FEC_MII_DATA, FEC_MII_SPEED, FEC_MIB_CTRLSTAT, FEC_R_CNTRL,
++	FEC_X_CNTRL, FEC_ADDR_LOW, FEC_ADDR_HIGH, FEC_OPD, FEC_TXIC0, FEC_RXIC0,
++	FEC_HASH_TABLE_HIGH, FEC_HASH_TABLE_LOW, FEC_GRP_HASH_TABLE_HIGH,
++	FEC_GRP_HASH_TABLE_LOW, FEC_X_WMRK, FEC_R_DES_START_0,
++	FEC_X_DES_START_0, FEC_R_BUFF_SIZE_0, FEC_R_FIFO_RSFL, FEC_R_FIFO_RSEM,
++	FEC_R_FIFO_RAEM, FEC_R_FIFO_RAFL, FEC_RACC,
++	RMON_T_DROP, RMON_T_PACKETS, RMON_T_BC_PKT, RMON_T_MC_PKT,
++	RMON_T_CRC_ALIGN, RMON_T_UNDERSIZE, RMON_T_OVERSIZE, RMON_T_FRAG,
++	RMON_T_JAB, RMON_T_COL, RMON_T_P64, RMON_T_P65TO127, RMON_T_P128TO255,
++	RMON_T_P256TO511, RMON_T_P512TO1023, RMON_T_P1024TO2047,
++	RMON_T_P_GTE2048, RMON_T_OCTETS,
++	IEEE_T_DROP, IEEE_T_FRAME_OK, IEEE_T_1COL, IEEE_T_MCOL, IEEE_T_DEF,
++	IEEE_T_LCOL, IEEE_T_EXCOL, IEEE_T_MACERR, IEEE_T_CSERR, IEEE_T_SQE,
++	IEEE_T_FDXFC, IEEE_T_OCTETS_OK,
++	RMON_R_PACKETS, RMON_R_BC_PKT, RMON_R_MC_PKT, RMON_R_CRC_ALIGN,
++	RMON_R_UNDERSIZE, RMON_R_OVERSIZE, RMON_R_FRAG, RMON_R_JAB,
++	RMON_R_RESVD_O, RMON_R_P64, RMON_R_P65TO127, RMON_R_P128TO255,
++	RMON_R_P256TO511, RMON_R_P512TO1023, RMON_R_P1024TO2047,
++	RMON_R_P_GTE2048, RMON_R_OCTETS,
++	IEEE_R_DROP, IEEE_R_FRAME_OK, IEEE_R_CRC, IEEE_R_ALIGN, IEEE_R_MACERR,
++	IEEE_R_FDXFC, IEEE_R_OCTETS_OK
++};
+ #else
+ static __u32 fec_enet_register_version = 1;
+ static u32 fec_enet_register_offset[] = {
+@@ -2406,7 +2431,26 @@ static void fec_enet_get_regs(struct net_device *ndev,
+ 	u32 *buf = (u32 *)regbuf;
+ 	u32 i, off;
+ 	int ret;
+-
++#if defined(CONFIG_M523x) || defined(CONFIG_M527x) || defined(CONFIG_M528x) || \
++	defined(CONFIG_M520x) || defined(CONFIG_M532x) || defined(CONFIG_ARM) || \
++	defined(CONFIG_ARM64) || defined(CONFIG_COMPILE_TEST)
++	struct platform_device_id *dev_info =
++			(struct platform_device_id *)fep->pdev->id_entry;
++	u32 *reg_list;
++	u32 reg_cnt;
++
++	if (strcmp(dev_info->name, "imx6ul-fec")) {
++		reg_list = fec_enet_register_offset;
++		reg_cnt = ARRAY_SIZE(fec_enet_register_offset);
++	} else {
++		reg_list = fec_enet_register_offset_6ul;
++		reg_cnt = ARRAY_SIZE(fec_enet_register_offset_6ul);
++	}
++#else
++	/* coldfire */
++	static u32 *reg_list = fec_enet_register_offset;
++	static const u32 reg_cnt = ARRAY_SIZE(fec_enet_register_offset);
++#endif
+ 	ret = pm_runtime_resume_and_get(dev);
+ 	if (ret < 0)
+ 		return;
+@@ -2415,8 +2459,8 @@ static void fec_enet_get_regs(struct net_device *ndev,
+ 
+ 	memset(buf, 0, regs->len);
+ 
+-	for (i = 0; i < ARRAY_SIZE(fec_enet_register_offset); i++) {
+-		off = fec_enet_register_offset[i];
++	for (i = 0; i < reg_cnt; i++) {
++		off = reg_list[i];
+ 
+ 		if ((off == FEC_R_BOUND || off == FEC_R_FSTART) &&
+ 		    !(fep->quirks & FEC_QUIRK_HAS_FRREG))
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.30.2
 
