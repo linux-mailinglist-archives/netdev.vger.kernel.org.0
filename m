@@ -2,123 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 873DE5BE7B2
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 15:54:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13D4E5BE7BC
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 15:56:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231414AbiITNy1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 09:54:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44024 "EHLO
+        id S231461AbiITNz4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 09:55:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231233AbiITNxs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 09:53:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AA415F7E7
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 06:52:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1663681961;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NoWoAM5PjMTEyFRZiCk4injlocEaVE6iGGwKNkRRD6U=;
-        b=idbPa6PAIb0MuraKu4CGhlk5F/2k4DoF1PfeT9We4pA9Kq6lhWeJJiCbKGWlHkKnggMyO8
-        cdHL5acqjGzDfT3+B8G0gZHlnASH+2ON+WnjVh9YjQ8I1Mu7aBMFyq3t7Vpk3MD5G4HQpv
-        sVyFMEwbauafLnQMBgvzKCJoT6WHjdQ=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-423-KEF5kTjLMLSCG65vFItbzA-1; Tue, 20 Sep 2022 09:52:39 -0400
-X-MC-Unique: KEF5kTjLMLSCG65vFItbzA-1
-Received: by mail-ed1-f70.google.com with SMTP id t13-20020a056402524d00b00452c6289448so1932083edd.17
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 06:52:39 -0700 (PDT)
+        with ESMTP id S231460AbiITNzk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 09:55:40 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EC5963A9
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 06:54:33 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id c7so3046171ljm.12
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 06:54:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=wBzI+FDP/xHbpMc4ZR1RvLoZ+WufA1CKuPKcPQeIWxs=;
+        b=jKP4O2Vs5dgzrrV3QjJGsS/tq+4AAw9Cn0UMg7Z6+RT5/S8x55GBEmciQyE2xBxHNl
+         cLEOAq+ndnid9UY81L7XfUzwUAOo5jDRyRbeCuYPY4Tm4U3mlu4CWwBBwhg6yjKuY1Jg
+         9/naHdgqElN1RZGaH9ErYL6Lbtjo/zvZy/0qP6+HwVfM0DbxeNYkgLTWVFrIGPUwFGrI
+         R0bywwdc02ZDYB1rk27nDWXxeczPZ1gBsH9WcfAzC6Ow2y/Kw1wuwAjBfNKDdUDUbFO6
+         /1vcUU8n1TN/qwbOJ2Tg1l9doC45MY9Axh2lDP5oq2E16JdYboriwb0t9iRscsBIKRCs
+         Z+4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:references
-         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=NoWoAM5PjMTEyFRZiCk4injlocEaVE6iGGwKNkRRD6U=;
-        b=dRY3fWB1zxF+U26AHMiQ5RZKULkzli62nGHM2G9KC6HX1P0+pWpGoxRaueLZyvYi52
-         jlG3EPQeGCzqgqUyix/ZHxLOU9fvShGZ+DMtFe9I2OoywSGB2dixoHKdQghwxYFtc8YY
-         XxUsOruLLtvWm/y4g93MlQZyInZlGuiGcAipZ+VITPCAMuiybRc+UVS2F1ZdSmQ8DBO4
-         QniZgjR+NXsqCjbMaXOzbP5TBlF279CR2tBZNXzHE1gDLKlFv+VeE98yThn+UjkW1UF2
-         /BWApMrcKh3sR2lS7sM4pD9h3QYOOr/if7C9ixTySGL4ta6jUGTA8p9OnFgdcH+XjWvT
-         nyrg==
-X-Gm-Message-State: ACrzQf3jL9UBh1YPOe2HexEd3tpCBtfTUXzPq8wi3mZlctcrwHeuYBtO
-        eFpyGSnlXQ3ZMxq9JaE8ImwUlUTL8G87fKSbekl73YOiHDIPZgOJSCx0pcs299VZSR/iLnY6OFy
-        tfDh+mqFtoteseScu
-X-Received: by 2002:a17:907:849:b0:77a:34b6:a23 with SMTP id ww9-20020a170907084900b0077a34b60a23mr16649681ejb.458.1663681958636;
-        Tue, 20 Sep 2022 06:52:38 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM7fPq/2Ix1yOlX2iX7qWVpJH3KNpOSVLrW0QXRTX6/LI3k9RwO3Pb1x9VGRx648f8/cxRvoIw==
-X-Received: by 2002:a17:907:849:b0:77a:34b6:a23 with SMTP id ww9-20020a170907084900b0077a34b60a23mr16649653ejb.458.1663681958335;
-        Tue, 20 Sep 2022 06:52:38 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id sb18-20020a1709076d9200b0073dddffbe70sm878102ejc.224.2022.09.20.06.52.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Sep 2022 06:52:37 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 1703761C33E; Tue, 20 Sep 2022 15:52:37 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Zhengchao Shao <shaozhengchao@huawei.com>, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        vinicius.gomes@intel.com, stephen@networkplumber.org,
-        shuah@kernel.org, victor@mojatatu.com
-Cc:     zhijianx.li@intel.com, weiyongjun1@huawei.com,
-        yuehaibing@huawei.com, shaozhengchao@huawei.com
-Subject: Re: [PATCH net-next,v2 03/18] selftests/tc-testings: add selftests
- for cake qdisc
-In-Reply-To: <20220917050304.127729-1-shaozhengchao@huawei.com>
-References: <20220917050304.127729-1-shaozhengchao@huawei.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 20 Sep 2022 15:52:37 +0200
-Message-ID: <87r106w3tm.fsf@toke.dk>
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=wBzI+FDP/xHbpMc4ZR1RvLoZ+WufA1CKuPKcPQeIWxs=;
+        b=6GhA+bAt7j/DL4P7uCmApaZQvgbw1cMmRGYJUygm2fM87gAezP4olp/QC1fzhDT/a/
+         rtTpefSW5CedLY9KoKIhnzst0ae7J8VCimT8oRsw8vt+IvZp9aq5l+pGYVlr14riUK1N
+         +oMYNjxY5Iz0patSN4XvR7OnhDdG7Fnd/V++yc6u9Rb7Rz52ndIXihsmDqvkNW1QKGtG
+         qYCZV82IIl5dh1MJfJ0ql80xXJGPl9QemHlrsTHStpSYdfFugzrr3uTH3qKkgproVmgo
+         zGWH2Jaf6tmw2e0aof0+iCfi7TIc/JCR/xF+c4qa40H1EEMMsZnylPihiYtIUqP57pDg
+         0KTg==
+X-Gm-Message-State: ACrzQf2VFvocwoO19T1KGQT7z0LRU+cDHtZERbkCG6zKLXiLttpcrXXm
+        VFFsIozyeEdpHXJqLO9sBbeDxE/3aFC6HQ==
+X-Google-Smtp-Source: AMsMyM7qwNQsEBzVzh51pbKzZ073N0bCU/uLTdwj8t+B9IR78GGUWgkfjRPrW7ec6ftreXNBIXP7qw==
+X-Received: by 2002:a2e:964b:0:b0:26c:5a42:ed99 with SMTP id z11-20020a2e964b000000b0026c5a42ed99mr1310939ljh.169.1663682071302;
+        Tue, 20 Sep 2022 06:54:31 -0700 (PDT)
+Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id u22-20020a05651c131600b0026c4113c150sm8590lja.111.2022.09.20.06.54.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 20 Sep 2022 06:54:30 -0700 (PDT)
+Message-ID: <18828928-415f-2faa-8069-b4d01fa38fc6@linaro.org>
+Date:   Tue, 20 Sep 2022 15:54:29 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: task hung in port100_send_cmd_sync
+Content-Language: en-US
+To:     Rondreis <linhaoguo86@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "linux-nfc@lists.01.org" <linux-nfc@lists.01.org>
+References: <CAB7eexL3ac2jxVQ70Q06F6sK9VdwY2aoO=S6OqYu7DTgFMg6tQ@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAB7eexL3ac2jxVQ70Q06F6sK9VdwY2aoO=S6OqYu7DTgFMg6tQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Zhengchao Shao <shaozhengchao@huawei.com> writes:
+On 18/09/2022 15:22, Rondreis wrote:
+> Hello,
+> 
+> When fuzzing the Linux kernel driver v6.0-rc4, the following crash was
+> triggered.
 
-> Test 1212: Create CAKE with default setting
-> Test 3281: Create CAKE with bandwidth limit
-> Test c940: Create CAKE with autorate-ingress flag
-> Test 2310: Create CAKE with rtt time
-> Test 2385: Create CAKE with besteffort flag
-> Test a032: Create CAKE with diffserv8 flag
-> Test 2349: Create CAKE with diffserv4 flag
-> Test 8472: Create CAKE with flowblind flag
-> Test 2341: Create CAKE with dsthost and nat flag
-> Test 5134: Create CAKE with wash flag
-> Test 2302: Create CAKE with flowblind and no-split-gso flag
-> Test 0768: Create CAKE with dual-srchost and ack-filter flag
-> Test 0238: Create CAKE with dual-dsthost and ack-filter-aggressive flag
-> Test 6572: Create CAKE with memlimit and ptm flag
-> Test 2436: Create CAKE with fwmark and atm flag
-> Test 3984: Create CAKE with overhead and mpu
-> Test 5421: Create CAKE with conservative and ingress flag
-> Test 6854: Delete CAKE with conservative and ingress flag
-> Test 2342: Replace CAKE with mpu
-> Test 2313: Change CAKE with mpu
-> Test 4365: Show CAKE class
->
-> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+Hi,
 
-The subject prefix is misspelled for all the test patches (should be
-selftests/tc-testing without the last 's').
+Thanks for the report.
 
-Also, v2 of the series wasn't properly threaded for some reason, which
-makes it harder to apply as a whole.
+> 
+> HEAD commit: 7e18e42e4b280c85b76967a9106a13ca61c16179
+> git tree: upstream
+> 
+> kernel config: https://pastebin.com/raw/xtrgsXP3
+> C reproducer: https://pastebin.com/raw/hjSnLzDh
+> console output: https://pastebin.com/raw/3ixbVNcR
+> 
+> Basically, in the c reproducer, we use the gadget module to emulate
+> attaching a USB device(vendor id: 0x54c, product id: 0x6c1, with the
+> printer function) and executing some simple sequence of system calls.
+> To reproduce this crash, we utilize a third-party library to emulate
+> the attaching process: https://github.com/linux-usb-gadgets/libusbgx.
+> Just clone this repository, install it, and compile the c
+> reproducer with ``` gcc crash.c -lusbgx -lconfig -o crash ``` will do
+> the trick.
+> 
+> I would appreciate it if you have any idea how to solve this bug.
 
-Other than those nits, for this patch:
+You can try to bisect. Or you can build kernel with lockdep and try to
+reproduce.
 
-Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> 
+> The crash report is as follows:
 
+It's not a crash, but a blocked task, so there might be deadlock,
+incorrect synchronization or some missing cleanup path. Actually quite a
+lot could lead to this.
+
+Best regards,
+Krzysztof
