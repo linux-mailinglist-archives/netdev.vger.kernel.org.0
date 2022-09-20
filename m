@@ -2,147 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E1475BE72A
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 15:34:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57FAB5BE742
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 15:38:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230203AbiITNeh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 09:34:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45024 "EHLO
+        id S231251AbiITNiO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 09:38:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230055AbiITNef (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 09:34:35 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D746DCD4;
-        Tue, 20 Sep 2022 06:34:30 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id o70-20020a17090a0a4c00b00202f898fa86so2500611pjo.2;
-        Tue, 20 Sep 2022 06:34:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=Ud1zLgXH9AoOTKaYWX8ixkpv9cvGKhiKEy3m7R2TJr0=;
-        b=WmGMJacRaa9mKwkL/FSCqBD9WAcWHIA5mGjDhAoJiZpWncEvQivRiD6ahlCswCWTUZ
-         U54lVxtiFuoQBn9t59ANs9QkriEcbNFYaqIm08Pup2x8i7b7emBxog5ODGweq/EpXfQM
-         yNE2AVwS63/au95MYlXofk8aiTkYOtgUjF//YJRxLXjSdVcVDYNkkk2WZt6/O0MrQ4Ui
-         p3NmZ8bGWEWkTNLZdqSpenux7bC9RGFRC3Dox+4WpGrkmpN6er2FJozi59IC8xv+ulHB
-         OIo2IRe5e6OlBxpDLgGfkpKMxz78H5I5P392Vu6ZTJbgnphl4Oq6W9UWMxCP42se1aWQ
-         574Q==
+        with ESMTP id S231190AbiITNiL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 09:38:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 346B03AE6C
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 06:38:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1663681088;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5ptul5F+oi+h41DyVRco1I/MopxWAXfTqNQ2MFX3lkw=;
+        b=aSEFEdqrgeDCK4bMzYmyGj2o482uidpLYcPZmq5Fz2vHlfM4iAGfuMexO9DY/HhlfwyKE/
+        4eBuzT5Ed5rpOsdT95EHjBRoJdvnxgmQ1ZOMUC6wZ/U8IawOFE5Rx9/moNdQ45mYOO7X74
+        V6jX9o3UREW8NQti2/dWy6KsM859d08=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-423-OvOSeH2lNCyYtAzwdrbPCA-1; Tue, 20 Sep 2022 09:38:07 -0400
+X-MC-Unique: OvOSeH2lNCyYtAzwdrbPCA-1
+Received: by mail-qv1-f72.google.com with SMTP id ec8-20020ad44e68000000b004aab01f3eaaso2006982qvb.4
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 06:38:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=Ud1zLgXH9AoOTKaYWX8ixkpv9cvGKhiKEy3m7R2TJr0=;
-        b=IttLIa37k6bRZQnXSHFWk3gG1E0nFtOZw4bP35CXL3IqFvok305WmqU0rw8YPK4dqD
-         Df+bsg1EH/eTkKEykpEaWYAZ9CgcnssCz3YFBsCLnnyLyMvmgRHPC9WIUqLY+NWl/+Nm
-         l/fgS6E9a+tzlQQ10e00Sxczf0CTMJm1jp1bkJNFJc2O8JQVPwyWED27JaB1j0g5Kf9A
-         qp2lR7DPy800lGV0K9QusA2VQCWlMUmOnigt3oJQX24t9z+Ki/SQQrialsdcjzZjqgMb
-         HYJikhEYj2nurQn0OeJNjX8tae7P06R7+7s7Zfok5O7fZIosz+AD7iV9dS48JsC99HOk
-         eDog==
-X-Gm-Message-State: ACrzQf2H5P3T0jNNT9TSRnTPoSNxIBTO0RR0x83938/08XarZuW7dMyu
-        aerLUW1Ndmp7YVAUYsvHBuZgpcC8SwSTwm5ksjfBEbMpAc/k+mDy
-X-Google-Smtp-Source: AMsMyM6E2HA8/leiFEFaY65VyvtF6eRZ91zeoQsTy0Ppg6zZHbNuIAQVLLwESFu05DhZpCyeFbQBE9tu9E+Ha1VFluA=
-X-Received: by 2002:a17:903:32cf:b0:178:3d49:45b0 with SMTP id
- i15-20020a17090332cf00b001783d4945b0mr4853354plr.5.1663680870272; Tue, 20 Sep
- 2022 06:34:30 -0700 (PDT)
-MIME-Version: 1.0
-References: <Yymq2WLA6q6TxnNq@ipe420-102>
-In-Reply-To: <Yymq2WLA6q6TxnNq@ipe420-102>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Tue, 20 Sep 2022 15:34:19 +0200
-Message-ID: <CAJ8uoz2D9mGjZzo6SmAWtgbb0A3AB_Nk4eYXajenv3VDBA11=A@mail.gmail.com>
-Subject: Re: [PATCH bpf v2] xsk: inherit need_wakeup flag for shared sockets
-To:     Jalal Mostafa <jalal.a.mostapha@gmail.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, bjorn@kernel.org,
-        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
-        jonathan.lemon@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, daniel@iogearbox.net,
-        linux-kernel@vger.kernel.org, jalal.mostafa@kit.edu
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=5ptul5F+oi+h41DyVRco1I/MopxWAXfTqNQ2MFX3lkw=;
+        b=fS9VOpzTb4hqptSwJfGKKnzJNTpUKTiIao27zfpWX63q4xWXunuUELQPUtfex49sNH
+         cotk0PsfwFcr53K6Hgdjf4Aa8RfAIJHAWM4PqDfa/79yTLIJjEi3mv3VJELYKcTtQIPJ
+         K69jB4YIfKcl9Aj1TfInQX6Hsqz9Qw1iqzCqEjl7ndXE6Wu0y88GlJSdSX4lKQ4yN8fq
+         ZzAm2H7Eez2GqAU/NUEKYo0NSWeeYcKg8F9sWvlnI0yBccecqrYnTelsgRDWBt27y6uW
+         gMKMmBPg0owa34UwvvjFnJUvkYvnO7l9F4kWmgeiz7Hxih7K65IY6fOPZWp5mfgS2DxS
+         iPhg==
+X-Gm-Message-State: ACrzQf1fOJQcAgOT32wO0gCoKS+bvvOY9A7liajb2B+p07ZrTCXlH8Jj
+        1nTxVXbxlDJ/lnESW1G5C5WHEBaEkJbhrNL2EM0DOwxjN4uXwIRBTjsPxpjeHGAyCNT5ZWsGuWB
+        8H1LCQew8Bhia4LVd
+X-Received: by 2002:ac8:59c8:0:b0:35c:e115:b18d with SMTP id f8-20020ac859c8000000b0035ce115b18dmr11456574qtf.123.1663681085590;
+        Tue, 20 Sep 2022 06:38:05 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM6E77qWjrb4O7Hq4zvnJnGvSPaIHOB3HS5izLjI11yyG3poqQh+gGyGGwkM2TfWtP/1afoIQg==
+X-Received: by 2002:ac8:59c8:0:b0:35c:e115:b18d with SMTP id f8-20020ac859c8000000b0035ce115b18dmr11456440qtf.123.1663681083862;
+        Tue, 20 Sep 2022 06:38:03 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-114-90.dyn.eolo.it. [146.241.114.90])
+        by smtp.gmail.com with ESMTPSA id bj7-20020a05620a190700b006b9c6d590fasm148570qkb.61.2022.09.20.06.38.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Sep 2022 06:38:03 -0700 (PDT)
+Message-ID: <be11181df759bce03b0bc049d30fd925d5229718.camel@redhat.com>
+Subject: Re: [PATCH net-next 3/6] net: ipa: move and redefine
+ ipa_version_valid()
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Alex Elder <elder@linaro.org>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org
+Cc:     mka@chromium.org, evgreen@chromium.org, andersson@kernel.org,
+        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
+        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
+        elder@kernel.org, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Tue, 20 Sep 2022 15:37:59 +0200
+In-Reply-To: <b26912a7-0770-4b1f-4cf4-bed81298cbdb@linaro.org>
+References: <20220910011131.1431934-1-elder@linaro.org>
+         <20220910011131.1431934-4-elder@linaro.org>
+         <d98d439ef5ee8a1744481bf1f076fbed918c3cef.camel@redhat.com>
+         <b26912a7-0770-4b1f-4cf4-bed81298cbdb@linaro.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 20, 2022 at 1:58 PM Jalal Mostafa
-<jalal.a.mostapha@gmail.com> wrote:
->
-> The flag for need_wakeup is not set for xsks with `XDP_SHARED_UMEM`
-> flag and of different queue ids and/or devices. They should inherit
-> the flag from the first socket buffer pool since no flags can be
-> specified once `XDP_SHARED_UMEM` is specified. The issue is fixed
-> by creating a new function `xp_create_and_assign_umem_shared` to
-> create xsk_buff_pool for xsks with the shared umem flag set.
+On Tue, 2022-09-20 at 07:50 -0500, Alex Elder wrote:
+> On 9/20/22 3:29 AM, Paolo Abeni wrote:
+> > On Fri, 2022-09-09 at 20:11 -0500, Alex Elder wrote:
+> > > Move the definition of ipa_version_valid(), making it a static
+> > > inline function defined together with the enumerated type in
+> > > "ipa_version.h".  Define a new count value in the type.
+> > > 
+> > > Rename the function to be ipa_version_supported(), and have it
+> > > return true only if the IPA version supplied is explicitly supported
+> > > by the driver.
+> > 
+> > I'm wondering if the above is going to cause regressions with some IPA
+> > versions suddenly not probed anymore by the module?
+> 
+> That is a really good observation.
+> 
+> The way versions are handled is a little bit inconsistent.  The
+> code is generally written in such a way that *any* version could
+> be used (between a certain minimum and maximum, currently 3.0-4.11).
+> In other words, the *intent* in the code is to make it so that
+> quirks and features that are version-specific are handled the right
+> way, even if we do not (yet) support it.
+> 
+> So for example the inline macro rsrc_grp_encoded() returns the
+> mask to use to specify an endpoint's assigned resource group.
+> IPA v4.7 uses one bit, whereas others use two or three bits.
+> We don't "formally" support IPA v4.7, because I (or someone
+> else) haven't set up a Device Tree file and "IPA config data"
+> to test it on real hardware.  Still, rsrc_grp_encoded() returns
+> the right value for IPA v4.7, even though it won't be needed
+> until IPA v4.7 is tested and declared supported.
+> 
+> The intent is to facilitate adding support for IPA v4.7 (and
+> others).  In principle one could simply try it out and it should
+> work, but in reality it is unlikely to be that easy.
+> 
+> Finally, as mentioned, to support a version (such as 4.7) we
+> need to create "ipa_data-v4.7.c", which defines a bunch of
+> things that are version-specific.  Because those definitions
+> are missing, no IPA v4.7 hardware will be matched by the
+> ipa_match[] table.
+> 
+> So the answer to your question is that currently none of the
+> unsupported versions will successfully probe anyway.
+> 
+> > Additionally there are a few places checking for the now unsupported
+> > version[s], I guess that check could/should be removed? e.g.
+> > ipa_reg_irq_suspend_en_ee_n_offset(),
+> > ipa_reg_irq_suspend_info_ee_n_offset()
+> > ...
+> 
+> I'm a fan of removing unused code like this, but I really would
+> like to actually support these other IPA versions, and I hope
+> the code is close to ready for that.  I would just need to get
+> some hardware to test it with (and it needs to rise to the top
+> of my priority list...).
+> 
+> Does this make sense to you?
 
-Thanks!
+Yes, very clear and detailed explaination, thanks!
 
-Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+I'm ok with the series in the current form.
 
-> Fixes: b5aea28dca134 ("xsk: Add shared umem support between queue ids")
-> Signed-off-by: Jalal Mostafa <jalal.a.mostapha@gmail.com>
-> ---
->  include/net/xsk_buff_pool.h | 2 +-
->  net/xdp/xsk.c               | 4 ++--
->  net/xdp/xsk_buff_pool.c     | 5 +++--
->  3 files changed, 6 insertions(+), 5 deletions(-)
->
-> diff --git a/include/net/xsk_buff_pool.h b/include/net/xsk_buff_pool.h
-> index 647722e847b4..f787c3f524b0 100644
-> --- a/include/net/xsk_buff_pool.h
-> +++ b/include/net/xsk_buff_pool.h
-> @@ -95,7 +95,7 @@ struct xsk_buff_pool *xp_create_and_assign_umem(struct xdp_sock *xs,
->                                                 struct xdp_umem *umem);
->  int xp_assign_dev(struct xsk_buff_pool *pool, struct net_device *dev,
->                   u16 queue_id, u16 flags);
-> -int xp_assign_dev_shared(struct xsk_buff_pool *pool, struct xdp_umem *umem,
-> +int xp_assign_dev_shared(struct xsk_buff_pool *pool, struct xdp_sock *umem_xs,
->                          struct net_device *dev, u16 queue_id);
->  int xp_alloc_tx_descs(struct xsk_buff_pool *pool, struct xdp_sock *xs);
->  void xp_destroy(struct xsk_buff_pool *pool);
-> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> index 5b4ce6ba1bc7..7bada4e8460b 100644
-> --- a/net/xdp/xsk.c
-> +++ b/net/xdp/xsk.c
-> @@ -954,8 +954,8 @@ static int xsk_bind(struct socket *sock, struct sockaddr *addr, int addr_len)
->                                 goto out_unlock;
->                         }
->
-> -                       err = xp_assign_dev_shared(xs->pool, umem_xs->umem,
-> -                                                  dev, qid);
-> +                       err = xp_assign_dev_shared(xs->pool, umem_xs, dev,
-> +                                                  qid);
->                         if (err) {
->                                 xp_destroy(xs->pool);
->                                 xs->pool = NULL;
-> diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
-> index a71a8c6edf55..ed6c71826d31 100644
-> --- a/net/xdp/xsk_buff_pool.c
-> +++ b/net/xdp/xsk_buff_pool.c
-> @@ -212,17 +212,18 @@ int xp_assign_dev(struct xsk_buff_pool *pool,
->         return err;
->  }
->
-> -int xp_assign_dev_shared(struct xsk_buff_pool *pool, struct xdp_umem *umem,
-> +int xp_assign_dev_shared(struct xsk_buff_pool *pool, struct xdp_sock *umem_xs,
->                          struct net_device *dev, u16 queue_id)
->  {
->         u16 flags;
-> +       struct xdp_umem *umem = umem_xs->umem;
->
->         /* One fill and completion ring required for each queue id. */
->         if (!pool->fq || !pool->cq)
->                 return -EINVAL;
->
->         flags = umem->zc ? XDP_ZEROCOPY : XDP_COPY;
-> -       if (pool->uses_need_wakeup)
-> +       if (umem_xs->pool->uses_need_wakeup)
->                 flags |= XDP_USE_NEED_WAKEUP;
->
->         return xp_assign_dev(pool, dev, queue_id, flags);
-> --
-> 2.34.1
->
+Cheers,
+
+Paolo
+
