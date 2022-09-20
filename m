@@ -2,89 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F3305BE2A8
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 12:06:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EDD65BE2F2
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 12:21:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231201AbiITKGF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 06:06:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60272 "EHLO
+        id S230234AbiITKUZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 06:20:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230520AbiITKFz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 06:05:55 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B435AA3C;
-        Tue, 20 Sep 2022 03:05:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1663668338; x=1695204338;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=6UYyEPOTu4MzOtxQURaQvD4wYB0xJT6AU06TGe2VG8o=;
-  b=MBhedeNvnbGVn9GYFXBBflVJ+ssGYPvE3lCO09/Plqeh5XF/A+yQap4A
-   /VTJoiHwpyd3w2tv6MLpW5VDSQO6qaZT65M4iQiRZDe/SecNSoOZfIsth
-   +2cEgbChmoY/t7bcd9R8dysT4s4k1r5bn8O77Ki6/4SmBxz4J5aTh417M
-   3IOlRD5y7wWyEBCOKfQDYn6CKSHjAXKneWJqrTieZjlsXYlPVjPOBwC2q
-   7l51vxWlkUQ8DAcdtTDjgi+DdryRkxbuLZzlOZMTR/kyOzuWY1mOo9meV
-   RPAa6cj4fcNpgeD3AEVPOtKH/oT4H4I/xmQCwb70EDT428PcHrlMGRjD7
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.93,330,1654585200"; 
-   d="scan'208";a="181221006"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 20 Sep 2022 03:05:37 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 20 Sep 2022 03:05:37 -0700
-Received: from DEN-LT-70577.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Tue, 20 Sep 2022 03:05:34 -0700
-From:   Daniel Machon <daniel.machon@microchip.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <Steen.Hegelund@microchip.com>,
-        <daniel.machon@microchip.com>, <UNGLinuxDriver@microchip.com>,
-        <casper.casan@gmail.com>, <horatiu.vultur@microchip.com>,
-        <rmk+kernel@armlinux.org.uk>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Steen Hegelund <steen.hegelund@microchip.com>
-Subject: [PATCH net-next v2 5/5] maintainers: update MAINTAINERS file.
-Date:   Tue, 20 Sep 2022 12:14:32 +0200
-Message-ID: <20220920101432.139323-6-daniel.machon@microchip.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220920101432.139323-1-daniel.machon@microchip.com>
-References: <20220920101432.139323-1-daniel.machon@microchip.com>
+        with ESMTP id S230341AbiITKUT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 06:20:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B017448CBE;
+        Tue, 20 Sep 2022 03:20:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 45895B82711;
+        Tue, 20 Sep 2022 10:20:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EC633C43470;
+        Tue, 20 Sep 2022 10:20:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1663669215;
+        bh=CuV4ZhXnyzj8Z3Dvy2jDCEyiGeRVrDoc9otxQBBjYL0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=iUyeh5XzHnV9XYAcA6o7AiddhLEN2JJ3euKPFCA3PH07TvePLPvPOaQ/HiCiCWDq4
+         TJWR1LYK3c2v3+3laSm637eABdpkyNFqRGNwJB5tX+WnKbE0xzOntnvfjCQBG7NSuk
+         B/YKYWslNSeXsm75+i4mzWgmBLg70IuwbKy4EZddBoBwSNpg1ODvDR/9v39Zm91Wj1
+         1xXgNbV4AlOccBwET70BWVqePaaDjJijBOUyCYGYk19VDDqxhnqy3pwxoZt+QXblzN
+         CSFjlUPmQ1xM4Uo2oYJCCkxtSe3OPne8MGzK+Yj4/AMgrgTMEwvMH9/rwqYAq+tnKG
+         S1Jv0a2XO4F3A==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C26F6E21EE0;
+        Tue, 20 Sep 2022 10:20:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [Patch net] net: dsa: microchip: lan937x: fix maximum frame length
+ check
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166366921479.11231.1109250514261906383.git-patchwork-notify@kernel.org>
+Date:   Tue, 20 Sep 2022 10:20:14 +0000
+References: <20220912051228.1306074-1-rakesh.sankaranarayanan@microchip.com>
+In-Reply-To: <20220912051228.1306074-1-rakesh.sankaranarayanan@microchip.com>
+To:     Rakesh Sankaranarayanan <rakesh.sankaranarayanan@microchip.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, arun.ramadoss@microchip.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update Maintainers file.
+Hello:
 
-Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
-Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
----
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
+This patch was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 6705fb8bfd3a..19fdcf91f1c9 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -2401,6 +2401,7 @@ N:	atmel
- ARM/Microchip Sparx5 SoC support
- M:	Lars Povlsen <lars.povlsen@microchip.com>
- M:	Steen Hegelund <Steen.Hegelund@microchip.com>
-+M:	Daniel Machon <daniel.machon@microchip.com>
- M:	UNGLinuxDriver@microchip.com
- L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
- S:	Supported
+On Mon, 12 Sep 2022 10:42:28 +0530 you wrote:
+> Maximum frame length check is enabled in lan937x switch on POR, But it
+> is found to be disabled on driver during port setup operation. Due to
+> this, packets are not dropped when transmitted with greater than configured
+> value. For testing, setup made for lan1->lan2 transmission and configured
+> lan1 interface with a frame length (less than 1500 as mentioned in
+> documentation) and transmitted packets with greater than configured value.
+> Expected no packets at lan2 end, but packets observed at lan2.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net] net: dsa: microchip: lan937x: fix maximum frame length check
+    https://git.kernel.org/netdev/net/c/807e5eda2078
+
+You are awesome, thank you!
 -- 
-2.34.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
