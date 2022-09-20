@@ -2,85 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0343A5BD97B
-	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 03:40:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 396075BD98D
+	for <lists+netdev@lfdr.de>; Tue, 20 Sep 2022 03:41:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229877AbiITBkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Sep 2022 21:40:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52256 "EHLO
+        id S230064AbiITBlx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Sep 2022 21:41:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229929AbiITBkU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 21:40:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7BD43F30F;
-        Mon, 19 Sep 2022 18:40:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 917CFB82357;
-        Tue, 20 Sep 2022 01:40:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 325A9C4347C;
-        Tue, 20 Sep 2022 01:40:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663638017;
-        bh=DzmFGWy8YdufwwD1+tSAExu34U8/TaxP+VhEqkfvVMU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=QHrNdTu1dFpu8GiRABsyktCQj7wt3Za5INPGrMnWui5fXCb8w1aVa8pqaDnASkRD5
-         nmEAZbShuStUAG7fPlIUUAsA7UOzSSHHR0wNW8TQyxxEd8sUs0GQEyrgkGRF0iZpbO
-         VsHeWNEcg84v9mD8z+rm5S+ygxg1bMOpsdUYXtErWzRbrqjQxEM00p84dQ+UFEoRdz
-         xjzhxA0ZPQXS0RuiuWViVWQujzKewEF/XDsa/M0NQga/STmzkMca4pYkkU9CiQ4lpC
-         Z8tmYZy4PPSAaNGTuJx1a2U4Zh75IM5EHGRlGq1nQwt2VR1g4kYmkzskstyxHvBgw/
-         3YXDlh6XpzvDg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 16D26E52537;
-        Tue, 20 Sep 2022 01:40:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230057AbiITBl3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Sep 2022 21:41:29 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 898B354C80;
+        Mon, 19 Sep 2022 18:40:42 -0700 (PDT)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MWkfV3z39zlW2D;
+        Tue, 20 Sep 2022 09:36:34 +0800 (CST)
+Received: from kwepemm600010.china.huawei.com (7.193.23.86) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 20 Sep 2022 09:40:39 +0800
+Received: from [10.174.178.31] (10.174.178.31) by
+ kwepemm600010.china.huawei.com (7.193.23.86) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 20 Sep 2022 09:40:38 +0800
+Subject: Re: [PATCH v2] net: ethernet: altera: TSE: fix error return code in
+ altera_tse_probe()
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <joyce.ooi@intel.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <pabeni@redhat.com>,
+        <linux@armlinux.org.uk>, <netdev@vger.kernel.org>,
+        <kernel-janitors@vger.kernel.org>
+References: <20220909024617.2584200-1-sunke32@huawei.com>
+ <20220919140951.3dcdcba7@kernel.org>
+From:   Sun Ke <sunke32@huawei.com>
+Message-ID: <9e8cbda4-2c9e-4c7a-e336-2926cecaab0a@huawei.com>
+Date:   Tue, 20 Sep 2022 09:40:38 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
+In-Reply-To: <20220919140951.3dcdcba7@kernel.org>
+Content-Type: text/plain; charset="gbk"; format=flowed
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: davicom: Fix return type of dm9000_start_xmit
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166363801708.6857.15887073480116722163.git-patchwork-notify@kernel.org>
-Date:   Tue, 20 Sep 2022 01:40:17 +0000
-References: <20220912194722.809525-1-nhuck@google.com>
-In-Reply-To: <20220912194722.809525-1-nhuck@google.com>
-To:     Nathan Huckleberry <nhuck@google.com>
-Cc:     error27@gmail.com, llvm@lists.linux.dev, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        nathan@kernel.org, ndesaulniers@google.com, trix@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Originating-IP: [10.174.178.31]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemm600010.china.huawei.com (7.193.23.86)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
 
-On Mon, 12 Sep 2022 12:47:19 -0700 you wrote:
-> The ndo_start_xmit field in net_device_ops is expected to be of type
-> netdev_tx_t (*ndo_start_xmit)(struct sk_buff *skb, struct net_device *dev).
+ÔÚ 2022/9/20 5:09, Jakub Kicinski Ð´µÀ:
+> On Fri, 9 Sep 2022 10:46:17 +0800 Sun Ke wrote:
+>> Fix to return a negative error code from the error handling
+>> case instead of 0, as done elsewhere in this function.
+>>
+>> Fixes: fef2998203e1 ("net: altera: tse: convert to phylink")
+>> Reported-by: kernel test robot <lkp@intel.com>
+>> Signed-off-by: Sun Ke <sunke32@huawei.com>
 > 
-> The mismatched return type breaks forward edge kCFI since the underlying
-> function definition does not match the function hook definition.
+> You must CC Maxime, who authored the change under Fixes,
+> and is most likely the best person to give us a review.
+> Please repost with the CC fixed.
+
+OK.
+
+Thanks,
+Sun Ke
 > 
-> The return type of dm9000_start_xmit should be changed from int to
-> netdev_tx_t.
+>> diff --git a/drivers/net/ethernet/altera/altera_tse_main.c b/drivers/net/ethernet/altera/altera_tse_main.c
+>> index 89ae6d1623aa..3cf409bdb283 100644
+>> --- a/drivers/net/ethernet/altera/altera_tse_main.c
+>> +++ b/drivers/net/ethernet/altera/altera_tse_main.c
+>> @@ -1411,6 +1411,7 @@ static int altera_tse_probe(struct platform_device *pdev)
+>>   				       priv->phy_iface, &alt_tse_phylink_ops);
+>>   	if (IS_ERR(priv->phylink)) {
+>>   		dev_err(&pdev->dev, "failed to create phylink\n");
+>> +		ret = PTR_ERR(priv->phylink);
+>>   		goto err_init_phy;
+>>   	}
+>>   
 > 
-> [...]
-
-Here is the summary with links:
-  - net: davicom: Fix return type of dm9000_start_xmit
-    https://git.kernel.org/netdev/net-next/c/0191580b000d
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+> .
+> 
