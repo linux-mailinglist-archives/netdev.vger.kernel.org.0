@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 660435BFF57
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 15:58:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E65705BFF59
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 15:58:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230420AbiIUN6l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 09:58:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53824 "EHLO
+        id S230258AbiIUN6q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 09:58:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229751AbiIUN63 (ORCPT
+        with ESMTP id S229921AbiIUN63 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 09:58:29 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 260197FE52
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 06:58:27 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MXfzT1hN1zmWL9;
-        Wed, 21 Sep 2022 21:54:29 +0800 (CST)
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 654F380E91
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 06:58:28 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MXg0m5j7xzpV4c;
+        Wed, 21 Sep 2022 21:55:36 +0800 (CST)
 Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2375.31; Wed, 21 Sep 2022 21:58:25 +0800
 Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
  (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Wed, 21 Sep
- 2022 21:58:24 +0800
+ 2022 21:58:25 +0800
 From:   Yang Yingliang <yangyingliang@huawei.com>
 To:     <netdev@vger.kernel.org>
 CC:     <f.fainelli@gmail.com>, <andrew@lunn.ch>,
@@ -33,10 +33,12 @@ CC:     <f.fainelli@gmail.com>, <andrew@lunn.ch>,
         <Woojung.Huh@microchip.com>, <sean.wang@mediatek.com>,
         <linus.walleij@linaro.org>, <clement.leger@bootlin.com>,
         <george.mccollister@gmail.com>
-Subject: [PATCH net-next 00/18] net: dsa: remove unnecessary set_drvdata()
-Date:   Wed, 21 Sep 2022 22:05:06 +0800
-Message-ID: <20220921140524.3831101-1-yangyingliang@huawei.com>
+Subject: [PATCH net-next 01/18] net: dsa: b53: remove unnecessary set_drvdata()
+Date:   Wed, 21 Sep 2022 22:05:07 +0800
+Message-ID: <20220921140524.3831101-2-yangyingliang@huawei.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220921140524.3831101-1-yangyingliang@huawei.com>
+References: <20220921140524.3831101-1-yangyingliang@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -52,61 +54,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In this patch set, I removed all set_drvdata(NULL) functions in ->remove() in
-drivers/net/dsa/.
+Remove unnecessary set_drvdata(NULL) function in ->remove(),
+the driver_data will be set to NULL in device_unbind_cleanup()
+after calling ->remove().
 
-The driver_data will be set to NULL in device_unbind_cleanup() after calling ->remove(),
-so all set_drvdata(NULL) functions in ->remove() is redundant, they can be removed.
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/net/dsa/b53/b53_mdio.c | 2 --
+ drivers/net/dsa/b53/b53_mmap.c | 2 --
+ drivers/net/dsa/b53/b53_srab.c | 2 --
+ 3 files changed, 6 deletions(-)
 
-Here is the previous patch set:
-https://lore.kernel.org/netdev/facfc855-d082-cc1c-a0bc-027f562a2f45@huawei.com/T/
-
-Yang Yingliang (18):
-  net: dsa: b53: remove unnecessary set_drvdata()
-  net: dsa: bcm_sf2: remove unnecessary platform_set_drvdata()
-  net: dsa: loop: remove unnecessary dev_set_drvdata()
-  net: dsa: hellcreek: remove unnecessary platform_set_drvdata()
-  net: dsa: lan9303: remove unnecessary dev_set_drvdata()
-  net: dsa: lantiq_gswip: remove unnecessary platform_set_drvdata()
-  net: dsa: microchip: remove unnecessary set_drvdata()
-  net: dsa: mt7530: remove unnecessary dev_set_drvdata()
-  net: dsa: mv88e6060: remove unnecessary dev_set_drvdata()
-  net: dsa: mv88e6xxx: remove unnecessary dev_set_drvdata()
-  net: dsa: ocelot: remove unnecessary set_drvdata()
-  net: dsa: ar9331: remove unnecessary dev_set_drvdata()
-  net: dsa: qca8k: remove unnecessary dev_set_drvdata()
-  net: dsa: realtek: remove unnecessary set_drvdata()
-  net: dsa: rzn1-a5psw: remove unnecessary platform_set_drvdata()
-  net: dsa: sja1105: remove unnecessary spi_set_drvdata()
-  net: dsa: vitesse-vsc73xx: remove unnecessary set_drvdata()
-  net: dsa: xrs700x: remove unnecessary dev_set_drvdata()
-
- drivers/net/dsa/b53/b53_mdio.c             | 2 --
- drivers/net/dsa/b53/b53_mmap.c             | 2 --
- drivers/net/dsa/b53/b53_srab.c             | 2 --
- drivers/net/dsa/bcm_sf2.c                  | 2 --
- drivers/net/dsa/dsa_loop.c                 | 2 --
- drivers/net/dsa/hirschmann/hellcreek.c     | 1 -
- drivers/net/dsa/lan9303_mdio.c             | 2 --
- drivers/net/dsa/lantiq_gswip.c             | 2 --
- drivers/net/dsa/microchip/ksz8863_smi.c    | 2 --
- drivers/net/dsa/microchip/ksz_spi.c        | 2 --
- drivers/net/dsa/mt7530.c                   | 2 --
- drivers/net/dsa/mv88e6060.c                | 2 --
- drivers/net/dsa/mv88e6xxx/chip.c           | 2 --
- drivers/net/dsa/ocelot/felix_vsc9959.c     | 2 --
- drivers/net/dsa/ocelot/seville_vsc9953.c   | 2 --
- drivers/net/dsa/qca/ar9331.c               | 2 --
- drivers/net/dsa/qca/qca8k-8xxx.c           | 2 --
- drivers/net/dsa/realtek/realtek-mdio.c     | 2 --
- drivers/net/dsa/realtek/realtek-smi.c      | 2 --
- drivers/net/dsa/rzn1_a5psw.c               | 2 --
- drivers/net/dsa/sja1105/sja1105_main.c     | 2 --
- drivers/net/dsa/vitesse-vsc73xx-platform.c | 2 --
- drivers/net/dsa/vitesse-vsc73xx-spi.c      | 2 --
- drivers/net/dsa/xrs700x/xrs700x_mdio.c     | 2 --
- 24 files changed, 47 deletions(-)
-
+diff --git a/drivers/net/dsa/b53/b53_mdio.c b/drivers/net/dsa/b53/b53_mdio.c
+index a7aeb3c132c9..6ddc03b58b28 100644
+--- a/drivers/net/dsa/b53/b53_mdio.c
++++ b/drivers/net/dsa/b53/b53_mdio.c
+@@ -356,8 +356,6 @@ static void b53_mdio_remove(struct mdio_device *mdiodev)
+ 		return;
+ 
+ 	b53_switch_remove(dev);
+-
+-	dev_set_drvdata(&mdiodev->dev, NULL);
+ }
+ 
+ static void b53_mdio_shutdown(struct mdio_device *mdiodev)
+diff --git a/drivers/net/dsa/b53/b53_mmap.c b/drivers/net/dsa/b53/b53_mmap.c
+index ae4c79d39bc0..e968322dfbf0 100644
+--- a/drivers/net/dsa/b53/b53_mmap.c
++++ b/drivers/net/dsa/b53/b53_mmap.c
+@@ -316,8 +316,6 @@ static int b53_mmap_remove(struct platform_device *pdev)
+ 	if (dev)
+ 		b53_switch_remove(dev);
+ 
+-	platform_set_drvdata(pdev, NULL);
+-
+ 	return 0;
+ }
+ 
+diff --git a/drivers/net/dsa/b53/b53_srab.c b/drivers/net/dsa/b53/b53_srab.c
+index da0b889880f6..bcb44034404d 100644
+--- a/drivers/net/dsa/b53/b53_srab.c
++++ b/drivers/net/dsa/b53/b53_srab.c
+@@ -667,8 +667,6 @@ static int b53_srab_remove(struct platform_device *pdev)
+ 	b53_srab_intr_set(dev->priv, false);
+ 	b53_switch_remove(dev);
+ 
+-	platform_set_drvdata(pdev, NULL);
+-
+ 	return 0;
+ }
+ 
 -- 
 2.25.1
 
