@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B08A45BFBB3
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 11:53:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 549A15BFBAF
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 11:53:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231654AbiIUJxS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 05:53:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59064 "EHLO
+        id S231807AbiIUJxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 05:53:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231793AbiIUJwy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 05:52:54 -0400
+        with ESMTP id S231706AbiIUJwz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 05:52:55 -0400
 Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A131883FA;
-        Wed, 21 Sep 2022 02:50:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01E4B641F;
+        Wed, 21 Sep 2022 02:50:20 -0700 (PDT)
 Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
         (envelope-from <fw@breakpoint.cc>)
-        id 1oawMw-0006Po-M3; Wed, 21 Sep 2022 11:50:14 +0200
+        id 1oawN0-0006Q7-RY; Wed, 21 Sep 2022 11:50:18 +0200
 From:   Florian Westphal <fw@strlen.de>
 To:     <netdev@vger.kernel.org>
 Cc:     <netfilter-devel@vger.kernel.org>,
@@ -26,9 +26,9 @@ Cc:     <netfilter-devel@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Antoine Tenart <atenart@kernel.org>,
         Florian Westphal <fw@strlen.de>
-Subject: [PATCH net-next 1/4] netfilter: conntrack: fix the gc rescheduling delay
-Date:   Wed, 21 Sep 2022 11:49:57 +0200
-Message-Id: <20220921095000.29569-2-fw@strlen.de>
+Subject: [PATCH net-next 2/4] netfilter: conntrack: revisit the gc initial rescheduling bias
+Date:   Wed, 21 Sep 2022 11:49:58 +0200
+Message-Id: <20220921095000.29569-3-fw@strlen.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220921095000.29569-1-fw@strlen.de>
 References: <20220921095000.29569-1-fw@strlen.de>
@@ -45,104 +45,58 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Antoine Tenart <atenart@kernel.org>
 
-Commit 2cfadb761d3d ("netfilter: conntrack: revisit gc autotuning")
-changed the eviction rescheduling to the use average expiry of scanned
-entries (within 1-60s) by doing:
+The previous commit changed the way the rescheduling delay is computed
+which has a side effect: the bias is now represented as much as the
+other entries in the rescheduling delay which makes the logic to kick in
+only with very large sets, as the initial interval is very large
+(INT_MAX).
 
-  for (...) {
-      expires = clamp(nf_ct_expires(tmp), ...);
-      next_run += expires;
-      next_run /= 2;
-  }
-
-The issue is the above will make the average ('next_run' here) more
-dependent on the last expiration values than the firsts (for sets > 2).
-Depending on the expiration values used to compute the average, the
-result can be quite different than what's expected. To fix this we can
-do the following:
-
-  for (...) {
-      expires = clamp(nf_ct_expires(tmp), ...);
-      next_run += (expires - next_run) / ++count;
-  }
+Revisit the GC initial bias to allow more frequent GC for smaller sets
+while still avoiding wakeups when a machine is mostly idle. We're moving
+from a large initial value to pretending we have 100 entries expiring at
+the upper bound. This way only a few entries having a small timeout
+won't impact much the rescheduling delay and non-idle machines will have
+enough entries to lower the delay when needed. This also improves
+readability as the initial bias is now linked to what is computed
+instead of being an arbitrary large value.
 
 Fixes: 2cfadb761d3d ("netfilter: conntrack: revisit gc autotuning")
-Cc: Florian Westphal <fw@strlen.de>
+Suggested-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Antoine Tenart <atenart@kernel.org>
 Signed-off-by: Florian Westphal <fw@strlen.de>
 ---
- net/netfilter/nf_conntrack_core.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ net/netfilter/nf_conntrack_core.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
 diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index c5851e1321e7..8efa6bd5703c 100644
+index 8efa6bd5703c..8208a28ea342 100644
 --- a/net/netfilter/nf_conntrack_core.c
 +++ b/net/netfilter/nf_conntrack_core.c
-@@ -67,6 +67,7 @@ struct conntrack_gc_work {
- 	struct delayed_work	dwork;
- 	u32			next_bucket;
- 	u32			avg_timeout;
-+	u32			count;
- 	u32			start_time;
- 	bool			exiting;
- 	bool			early_drop;
-@@ -1466,6 +1467,7 @@ static void gc_worker(struct work_struct *work)
- 	unsigned int expired_count = 0;
- 	unsigned long next_run;
- 	s32 delta_time;
-+	long count;
+@@ -86,10 +86,12 @@ static DEFINE_MUTEX(nf_conntrack_mutex);
+ /* clamp timeouts to this value (TCP unacked) */
+ #define GC_SCAN_INTERVAL_CLAMP	(300ul * HZ)
  
- 	gc_work = container_of(work, struct conntrack_gc_work, dwork.work);
+-/* large initial bias so that we don't scan often just because we have
+- * three entries with a 1s timeout.
++/* Initial bias pretending we have 100 entries at the upper bound so we don't
++ * wakeup often just because we have three entries with a 1s timeout while still
++ * allowing non-idle machines to wakeup more often when needed.
+  */
+-#define GC_SCAN_INTERVAL_INIT	INT_MAX
++#define GC_SCAN_INITIAL_COUNT	100
++#define GC_SCAN_INTERVAL_INIT	GC_SCAN_INTERVAL_MAX
  
-@@ -1475,10 +1477,12 @@ static void gc_worker(struct work_struct *work)
+ #define GC_SCAN_MAX_DURATION	msecs_to_jiffies(10)
+ #define GC_SCAN_EXPIRED_MAX	(64000u / HZ)
+@@ -1477,7 +1479,7 @@ static void gc_worker(struct work_struct *work)
  
  	if (i == 0) {
  		gc_work->avg_timeout = GC_SCAN_INTERVAL_INIT;
-+		gc_work->count = 1;
+-		gc_work->count = 1;
++		gc_work->count = GC_SCAN_INITIAL_COUNT;
  		gc_work->start_time = start_time;
  	}
  
- 	next_run = gc_work->avg_timeout;
-+	count = gc_work->count;
- 
- 	end_time = start_time + GC_SCAN_MAX_DURATION;
- 
-@@ -1498,8 +1502,8 @@ static void gc_worker(struct work_struct *work)
- 
- 		hlist_nulls_for_each_entry_rcu(h, n, &ct_hash[i], hnnode) {
- 			struct nf_conntrack_net *cnet;
--			unsigned long expires;
- 			struct net *net;
-+			long expires;
- 
- 			tmp = nf_ct_tuplehash_to_ctrack(h);
- 
-@@ -1513,6 +1517,7 @@ static void gc_worker(struct work_struct *work)
- 
- 				gc_work->next_bucket = i;
- 				gc_work->avg_timeout = next_run;
-+				gc_work->count = count;
- 
- 				delta_time = nfct_time_stamp - gc_work->start_time;
- 
-@@ -1528,8 +1533,8 @@ static void gc_worker(struct work_struct *work)
- 			}
- 
- 			expires = clamp(nf_ct_expires(tmp), GC_SCAN_INTERVAL_MIN, GC_SCAN_INTERVAL_CLAMP);
-+			expires = (expires - (long)next_run) / ++count;
- 			next_run += expires;
--			next_run /= 2u;
- 
- 			if (nf_conntrack_max95 == 0 || gc_worker_skip_ct(tmp))
- 				continue;
-@@ -1570,6 +1575,7 @@ static void gc_worker(struct work_struct *work)
- 		delta_time = nfct_time_stamp - end_time;
- 		if (delta_time > 0 && i < hashsz) {
- 			gc_work->avg_timeout = next_run;
-+			gc_work->count = count;
- 			gc_work->next_bucket = i;
- 			next_run = 0;
- 			goto early_exit;
 -- 
 2.35.1
 
