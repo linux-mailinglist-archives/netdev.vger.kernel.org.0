@@ -2,216 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 41E9C5D89B6
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 20:10:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CEE35DA0E8
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 20:11:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230098AbiIUSKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 14:10:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44282 "EHLO
+        id S230308AbiIUSLE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 14:11:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230091AbiIUSKm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 14:10:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F5FC53D39
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 11:10:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1663783839;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oLU56xF3u9q10x5k5ScYLycuHdbGZ3f+n2C69UlIBw4=;
-        b=GicKlDS+yOwcq2p9jCjUYfzat8xp3mCvUGXN3WGccMCz4B1UnBc8uXrUw1MCeYWJ2bgz2c
-        lcRE/0N8BvVAD5jPas5i+taf36emvfwRCZBuZS+t5oBFFf4kOmi8mFvR82DrfSIlJp4C/R
-        ZUAuVE2rCeNalvU9Qz/THrFzuN3Q88k=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-330-6fR_ec-COdipkxdkGiFhPQ-1; Wed, 21 Sep 2022 14:10:36 -0400
-X-MC-Unique: 6fR_ec-COdipkxdkGiFhPQ-1
-Received: by mail-qv1-f71.google.com with SMTP id mo5-20020a056214330500b004ad711537a6so1787308qvb.10
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 11:10:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=oLU56xF3u9q10x5k5ScYLycuHdbGZ3f+n2C69UlIBw4=;
-        b=KrpGNoLCVyANKAZH+vxfKIdbV0gsgyFfrUKI5oJGNT5y3bwAQbMCMqQotmoEltUh0j
-         t+uGUPfTvpxK0dQI5M0GRY93YNyqPxm8Xd7+0yk1JbvLked71cynIdVU7dVWesnnhdvO
-         GLzmuq6kH/bGKc0KEvFwro03iLIIGLiNCYUy/Nb3/7xcXX4zLlXFmh2zUNddejtRzdpq
-         1cEgz4CAaNjbV2MGfkpq7kfrWDaCTagjwiy6QAtrSR0TN6MYzzbm3RgimbTDTLESPJm7
-         nNio545VCnG9FCejpH89YOkrruDfls6hwVkAP3VYbEmT5YGc0E2x9NDFxDyHuEPOo4MJ
-         5LcQ==
-X-Gm-Message-State: ACrzQf2hjf0MS0gmD5mvzTYWueZJ2XfBp2WkBjeSaFg9LIv/zVQx4dWi
-        jlQi6jyP+ySu70v265FHFVFySVkYqKXY8MUXC4nvjZKQ3E0wn02ued/vYrMBbzeA6ihZnF7+TWW
-        GfPT3R8fU2PIwO7Ip
-X-Received: by 2002:ac8:7f46:0:b0:35c:da6b:cfbc with SMTP id g6-20020ac87f46000000b0035cda6bcfbcmr20156571qtk.553.1663783835402;
-        Wed, 21 Sep 2022 11:10:35 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM5ty7UpKj9xIE6oMA8UZKkHuhO5CZZ5USnoRciAu1qxG73zy+qsm8TwSeq5dMxQDCt8phAc/A==
-X-Received: by 2002:ac8:7f46:0:b0:35c:da6b:cfbc with SMTP id g6-20020ac87f46000000b0035cda6bcfbcmr20156539qtk.553.1663783835089;
-        Wed, 21 Sep 2022 11:10:35 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-104-76.dyn.eolo.it. [146.241.104.76])
-        by smtp.gmail.com with ESMTPSA id l27-20020a37f91b000000b006ce580c2663sm2329352qkj.35.2022.09.21.11.10.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Sep 2022 11:10:34 -0700 (PDT)
-Message-ID: <9cd1e24a4fb22136caaeecb2eb81d7652e6dd220.camel@redhat.com>
-Subject: Re: [PATCH net-next] net: skb: introduce and use a single page frag
- cache
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Date:   Wed, 21 Sep 2022 20:10:31 +0200
-In-Reply-To: <CANn89iK=hdV0Wya8nrdZ=z=yipAxg3OPEOBWT_arzYSuXDENLw@mail.gmail.com>
-References: <59a54c9a654fe19cc9fb7da5b2377029d93a181e.1663778475.git.pabeni@redhat.com>
-         <CANn89iK=hdV0Wya8nrdZ=z=yipAxg3OPEOBWT_arzYSuXDENLw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S230274AbiIUSLD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 14:11:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01B475302B
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 11:11:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B4D53B8326D
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 18:11:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43DCDC433D6;
+        Wed, 21 Sep 2022 18:10:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1663783859;
+        bh=87qEf3oCEgJRDpsvwCD80oVfUeN8vouh5/A+u261Pss=;
+        h=From:To:Cc:Subject:Date:From;
+        b=uP8d2U/8zSUCs1Y+aW8T9GIUcW99zLzKSj7S+VeJkHG3NFBJNTH5OlsO8vw36dq6J
+         q5qSo1AZLgNmXUqpbADVBNhFvicn1Gx+Pdw4DZQTioEUZ/kH3WGxABu1lZ9m7xaHi3
+         1vy5tIlrtNFQEAJp3ZO+sKBR6sx32X6LCg8KLXMbD5an4343/TKfGxIIJdq/qyLatW
+         0hOKZp7eePULM3zL0BPLiT9e+XuFpu7y1VpbWyGexO4grGf3FUCTQ0YOB4AdH8DW/m
+         +8zyR7E0QXJSQ+50RAfkIGZBYmUs1DvEUH8037/tnhaSTddomOC1Ks/0SOEYoTe+MB
+         5iIVatOq6/KGw==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: [PATCH net-next V3 00/10] mlx5 MACSec Extended packet number and replay window offload
+Date:   Wed, 21 Sep 2022 11:10:44 -0700
+Message-Id: <20220921181054.40249-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-09-21 at 10:18 -0700, Eric Dumazet wrote:
-> On Wed, Sep 21, 2022 at 9:42 AM Paolo Abeni <pabeni@redhat.com> wrote:
-> > 
-> > After commit 3226b158e67c ("net: avoid 32 x truesize under-estimation
-> > for tiny skbs") we are observing 10-20% regressions in performance
-> > tests with small packets. The perf trace points to high pressure on
-> > the slab allocator.
-> > 
-> > This change tries to improve the allocation schema for small packets
-> > using an idea originally suggested by Eric: a new per CPU page frag is
-> > introduced and used in __napi_alloc_skb to cope with small allocation
-> > requests.
-> > 
-> > To ensure that the above does not lead to excessive truesize
-> > underestimation, the frag size for small allocation is inflated to 1K
-> > and all the above is restricted to build with 4K page size.
-> > 
-> > Note that we need to update accordingly the run-time check introduced
-> > with commit fd9ea57f4e95 ("net: add napi_get_frags_check() helper").
-> > 
-> > Alex suggested a smart page refcount schema to reduce the number
-> > of atomic operations and deal properly with pfmemalloc pages.
-> > 
-> > Under small packet UDP flood, I measure a 15% peak tput increases.
-> > 
-> > Suggested-by: Eric Dumazet <eric.dumazet@gmail.com>
-> > Suggested-by: Alexander H Duyck <alexander.duyck@gmail.com>
-> > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> > ---
-> > @Eric, @Alex please let me know if you are comfortable with the
-> > attribution
-> > ---
-> >  include/linux/netdevice.h |   1 +
-> >  net/core/dev.c            |  17 ------
-> >  net/core/skbuff.c         | 115 +++++++++++++++++++++++++++++++++++++-
-> >  3 files changed, 113 insertions(+), 20 deletions(-)
-> > 
-> > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> > index 9f42fc871c3b..a1938560192a 100644
-> > --- a/include/linux/netdevice.h
-> > +++ b/include/linux/netdevice.h
-> > @@ -3822,6 +3822,7 @@ void netif_receive_skb_list(struct list_head *head);
-> >  gro_result_t napi_gro_receive(struct napi_struct *napi, struct sk_buff *skb);
-> >  void napi_gro_flush(struct napi_struct *napi, bool flush_old);
-> >  struct sk_buff *napi_get_frags(struct napi_struct *napi);
-> > +void napi_get_frags_check(struct napi_struct *napi);
-> >  gro_result_t napi_gro_frags(struct napi_struct *napi);
-> >  struct packet_offload *gro_find_receive_by_type(__be16 type);
-> >  struct packet_offload *gro_find_complete_by_type(__be16 type);
-> > diff --git a/net/core/dev.c b/net/core/dev.c
-> > index d66c73c1c734..fa53830d0683 100644
-> > --- a/net/core/dev.c
-> > +++ b/net/core/dev.c
-> > @@ -6358,23 +6358,6 @@ int dev_set_threaded(struct net_device *dev, bool threaded)
-> >  }
-> >  EXPORT_SYMBOL(dev_set_threaded);
-> > 
-> > -/* Double check that napi_get_frags() allocates skbs with
-> > - * skb->head being backed by slab, not a page fragment.
-> > - * This is to make sure bug fixed in 3226b158e67c
-> > - * ("net: avoid 32 x truesize under-estimation for tiny skbs")
-> > - * does not accidentally come back.
-> > - */
-> > -static void napi_get_frags_check(struct napi_struct *napi)
-> > -{
-> > -       struct sk_buff *skb;
-> > -
-> > -       local_bh_disable();
-> > -       skb = napi_get_frags(napi);
-> > -       WARN_ON_ONCE(skb && skb->head_frag);
-> > -       napi_free_frags(napi);
-> > -       local_bh_enable();
-> > -}
-> > -
-> >  void netif_napi_add_weight(struct net_device *dev, struct napi_struct *napi,
-> >                            int (*poll)(struct napi_struct *, int), int weight)
-> >  {
-> > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> > index f1b8b20fc20b..2be11b487df1 100644
-> > --- a/net/core/skbuff.c
-> > +++ b/net/core/skbuff.c
-> > @@ -134,8 +134,73 @@ static void skb_under_panic(struct sk_buff *skb, unsigned int sz, void *addr)
-> >  #define NAPI_SKB_CACHE_BULK    16
-> >  #define NAPI_SKB_CACHE_HALF    (NAPI_SKB_CACHE_SIZE / 2)
-> > 
-> > +/* the compiler doesn't like 'SKB_TRUESIZE(GRO_MAX_HEAD) > 512', but we
-> > + * can imply such condition checking the double word and MAX_HEADER size
-> > + */
-> > +#if PAGE_SIZE == SZ_4K && (defined(CONFIG_64BIT) || MAX_HEADER > 64)
-> > +
-> > +#define NAPI_HAS_SMALL_PAGE_FRAG 1
-> > +
-> > +/* specializzed page frag allocator using a single order 0 page
-> > + * and slicing it into 1K sized fragment. Constrained to system
-> > + * with:
-> > + * - a very limited amount of 1K fragments fitting a single
-> > + *   page - to avoid excessive truesize underestimation
-> > + * - reasonably high truesize value for napi_get_frags()
-> > + *   allocation - to avoid memory usage increased compared
-> > + *   to kalloc, see __napi_alloc_skb()
-> > + *
-> > + */
-> > +struct page_frag_1k {
-> > +       void *va;
-> > +       u16 offset;
-> > +       bool pfmemalloc;
-> > +};
-> > +
-> > +static void *page_frag_alloc_1k(struct page_frag_1k *nc, gfp_t gfp)
-> > +{
-> > +       struct page *page;
-> > +       int offset;
-> > +
-> > +       if (likely(nc->va)) {
-> > +               offset = nc->offset - SZ_1K;
-> > +               if (likely(offset >= 0))
-> > +                       goto out;
-> > +
-> > +               put_page(virt_to_page(nc->va));
-> 
-> This probably can be removed, if the page_ref_add() later is adjusted by one ?
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-I think you are right. It looks like we never touch the page after the
-last fragment is used. One less atomic operation :) And one less cold
-cacheline accessed.
+v2->v3:
+  - rebased
 
-I read the above as you are somewhat ok with the overall size and
-number of conditionals in this change, am I guessing too much?
+v1->v2:
+  - Fix 32bit build isse
+  - Replay protection can work without EPN being enabled so moved the code out
+    of the EPN enabled check 
 
-Thanks!
+This is a follow up series to the previously submitted mlx5 MACsec offload [1]
+earlier this release cycle.
 
-Paolo 
+In this series we add the support for MACsec Extended packet number and 
+replay window offloads.
 
+First patch is a simple modification (code movements) to the core macsec code
+to allow exposing the EPN related user properties to the offloading
+device driver.
+
+The rest of the patches are mlx5 specific, we start off with fixing some
+trivial issues with mlx5 MACsec code, and a simple refactoring to allow 
+additional functionality in mlx5 macsec to support EPN and window replay
+offloads.
+ A) Expose mkey creation functionality to MACsec
+ B) Expose ASO object to MACsec, to allow advanced steering operations,
+    ASO objects are used to modify MACsec steering objects in fastpath.
+
+1) Support MACsec offload extended packet number (EPN)
+    
+    MACsec EPN splits the packet number (PN) into two 32-bits fields,
+    epn_lsb (32 least significant bits (LSBs) of PN) and epn_msb (32
+    most significant bits (MSBs) of PN).
+    Epn_msb bits are managed by SW and for that HW is required to send
+    an object change event of type EPN event notifying the SW to update
+    the epn_msb in addition, once epn_msb is updated SW update HW with
+    the new epn_msb value for HW to perform replay protection.
+    To prevent HW from stopping while handling the event, SW manages
+    another bit for HW called epn_overlap, HW uses the latter to get
+    an indication regarding how to read the epn_msb value correctly
+    while still receiving packets.
+    Add epn event handling that updates the epn_overlap and epn_msb for
+    every 2^31 packets according to the following logic:
+    if epn_lsb crosses 2^31 (half sequence number wraparound) upon HW
+    relevant event, SW updates the esn_overlap value to OLD (value = 1).
+    When the epn_lsb crosses 2^32 (full sequence number wraparound)
+    upon HW relevant event, SW updates the esn_overlap to NEW
+    (value = 0) and increment the esn_msb.
+    When using MACsec EPN a salt and short secure channel id (ssci)
+    needs to be provided by the user, when offloading EPN need to pass
+    this salt and ssci to the HW to be used in the initial vector (IV)
+    calculations.
+
+2) Support MACsec offload replay window
+    
+    Support setting replay window size for MACsec offload.
+    Currently supported window size of 32, 64, 128 and 256
+    bit. Other values will be returned as invalid parameter.
+
+
+[1] https://lore.kernel.org/netdev/20220906052129.104507-1-saeed@kernel.org/
+
+Emeel Hakim (10):
+  net: macsec: Expose extended packet number (EPN) properties to macsec
+    offload
+  net/mlx5: Fix fields name prefix in MACsec
+  net/mlx5e: Fix MACsec initialization error path
+  net/mlx5e: Fix MACsec initial packet number
+  net/mlx5: Add ifc bits for MACsec extended packet number (EPN) and
+    replay protection
+  net/mlx5e: Expose memory key creation (mkey) function
+  net/mlx5e: Create advanced steering operation (ASO) object for MACsec
+  net/mlx5e: Move MACsec initialization from profile init stage to
+    profile enable stage
+  net/mlx5e: Support MACsec offload extended packet number (EPN)
+  net/mlx5e: Support MACsec offload replay window
+
+ drivers/net/ethernet/mellanox/mlx5/core/en.h  |   1 +
+ .../mellanox/mlx5/core/en_accel/macsec.c      | 631 +++++++++++++++++-
+ .../mellanox/mlx5/core/en_accel/macsec.h      |   1 -
+ .../ethernet/mellanox/mlx5/core/en_common.c   |   3 +-
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |  11 +-
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c  |   3 +
+ .../net/ethernet/mellanox/mlx5/core/events.c  |   3 +
+ .../net/ethernet/mellanox/mlx5/core/lib/aso.h |   3 +
+ drivers/net/macsec.c                          |  24 +-
+ include/linux/mlx5/device.h                   |   8 +
+ include/linux/mlx5/mlx5_ifc.h                 |  35 +-
+ 11 files changed, 670 insertions(+), 53 deletions(-)
+
+-- 
+2.37.3
 
