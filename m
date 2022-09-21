@@ -2,55 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A8E55BFC28
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 12:18:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A3A25BFC5A
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 12:31:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231355AbiIUKST (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 06:18:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47228 "EHLO
+        id S230029AbiIUKb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 06:31:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231281AbiIUKSQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 06:18:16 -0400
-Received: from mail.toke.dk (mail.toke.dk [45.145.95.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A23495AEC;
-        Wed, 21 Sep 2022 03:18:15 -0700 (PDT)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
-        t=1663755493; bh=41XcwKKXbTueP4NKKCKH4lAY+pFFUeOnqxXy3lPn1ug=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=lJguM4Tas+94MZ4o+K6U+S6b3KtF/3NGs7bLIX8xdqGg2wleZiEeAjQjbyyRKkef5
-         FgueoQrNLlJAX9L8fz3Jl9aN6I19w/xKfjuKuJL0nsMiQqKPa45KFWLaq/Q/Z4EdxH
-         4kVCgjxbbj+5D+QP9l5NJu2yoZXTbS3rOJicJ03HMCLZCUSOMv+SeSMZ6sMd552xMc
-         0sO63E8uYEMRwZSc+JTB2RUa0cq6zcVF3GK6ctVm/h+bUUbAXkaoApZZZnwy4wWuZ4
-         rkht3utd+mrPBlERzQuDVD5FailtpGpD8sIrofhs0E5dNsUWLfd1zorxArMjx35Boo
-         8NClFG+kSd2Rg==
-To:     Jilin Yuan <yuanjilin@cdjrlc.com>, kvalo@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: Re: [PATCH] ath9k: fix repeated words in comments
-In-Reply-To: <20220915030559.42371-1-yuanjilin@cdjrlc.com>
-References: <20220915030559.42371-1-yuanjilin@cdjrlc.com>
-Date:   Wed, 21 Sep 2022 12:18:12 +0200
-X-Clacks-Overhead: GNU Terry Pratchett
-Message-ID: <87a66tvxnf.fsf@toke.dk>
+        with ESMTP id S229830AbiIUKb0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 06:31:26 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8468E901AC
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 03:31:25 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id b75so5475639pfb.7
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 03:31:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=g7/bNXBkv6Zn92S95QY8Dj8e/vsOzrDZ7l2HEpYLx+E=;
+        b=pF1f1hMGpqMxxcYIdDvGVUwjLtkLMx5hNm5ZKpt3InXMQb22wi8jf+uLlZy/4dEg9T
+         nrYSc4+1JMg0kbsgrazR5Y8tvmoI9uKjLpaWn/1ENQdK2mFHoS6Gfn40doc/Tg7op9bA
+         ud+VYRMCwnfd1nyvaJZNLabNiR0e6rYrwEiC2nXLSeBPbBb/Bv9cUB4YRUS6hgHm6lyU
+         ZhZPLf2TpylxicmLlArqZEKZmwfeRFGdHBbkhhQaE8XQ3Gj7fN7j+nEOu73d5VGfeZEb
+         fm5JUtiWzXReta8RLX9BZ/cHf2lMAr0yymCYkkZ/N0Te8PW0Fv/SL5aVxA6fknNW98hy
+         5Irw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=g7/bNXBkv6Zn92S95QY8Dj8e/vsOzrDZ7l2HEpYLx+E=;
+        b=F5SSl3Hh90KYQrNDnPo1+O60QXva/ow8yxtnOZgjSqLpmgYRzqCeWtkAYNbgzWtOyx
+         WToS0Fxg3In2JKDuO9m2qbvHNV6K6wo38PZc+3rFpCK42tc6aF5QOIV6t5IW2dKytMed
+         Imwc+yUeBEj6M6UnvAyRtn+9L5JZjrSVBKRs5dJHMeHvYmB9/oCNdUmCXnoKvw32LldD
+         W30lLBv26wJKJD50YpBbk7DHY0OcptVE3RuS0rm7KBoZIxM9NbyHbStdFsHzL4gInLO4
+         91idcGrgML27Kz1fkg3KG8+eXoTbIiPKRnAgoYJeeqwsWTqY7wh+ClPx5GMb+Mx7SW4W
+         KNzQ==
+X-Gm-Message-State: ACrzQf2Qt2jro189MLQbV6L2jFxuEHzDdHP2+E9NNQjISZZRCVZ9t5rQ
+        7XQGRcunovmyM5CjsQ0mIdM=
+X-Google-Smtp-Source: AMsMyM5qCsOt+HZM4EEPUTcTxDmAT+oVWNECMJAOr9GJU4z3KROK85mPx1nU4Omkw9FCph2Dcxv+Cg==
+X-Received: by 2002:a63:8641:0:b0:43a:c03d:6af with SMTP id x62-20020a638641000000b0043ac03d06afmr9010077pgd.611.1663756285022;
+        Wed, 21 Sep 2022 03:31:25 -0700 (PDT)
+Received: from Laptop-X1 ([43.228.180.230])
+        by smtp.gmail.com with ESMTPSA id d18-20020a170902ced200b001783f964fe3sm1644912plg.113.2022.09.21.03.31.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Sep 2022 03:31:24 -0700 (PDT)
+Date:   Wed, 21 Sep 2022 18:31:19 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Florent Fourcot <florent.fourcot@wifirst.fr>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Guillaume Nault <gnault@redhat.com>
+Subject: Re: [PATCH net-next] rtnetlink: Honour NLM_F_ECHO flag in rtnl_{new,
+ set}link
+Message-ID: <Yyrn9wIO+3kU/zOx@Laptop-X1>
+References: <20220921030721.280528-1-liuhangbin@gmail.com>
+ <1ff2e97e-003f-e6b4-d724-c42449fde221@6wind.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1ff2e97e-003f-e6b4-d724-c42449fde221@6wind.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jilin Yuan <yuanjilin@cdjrlc.com> writes:
+On Wed, Sep 21, 2022 at 11:11:19AM +0200, Nicolas Dichtel wrote:
+> > @@ -3336,9 +3381,9 @@ static int rtnl_newlink_create(struct sk_buff *skb, struct ifinfomsg *ifm,
+> >  		return PTR_ERR(dest_net);
+> >  
+> >  	if (tb[IFLA_LINK_NETNSID]) {
+> > -		int id = nla_get_s32(tb[IFLA_LINK_NETNSID]);
+> > +		netnsid = nla_get_s32(tb[IFLA_LINK_NETNSID]);
+> >  
+> > -		link_net = get_net_ns_by_id(dest_net, id);
+> > +		link_net = get_net_ns_by_id(dest_net, netnsid);
+> >  		if (!link_net) {
+> >  			NL_SET_ERR_MSG(extack, "Unknown network namespace id");
+> >  			err =  -EINVAL;
+> > @@ -3382,6 +3427,17 @@ static int rtnl_newlink_create(struct sk_buff *skb, struct ifinfomsg *ifm,
+> >  		if (err)
+> >  			goto out_unregister;
+> >  	}
+> > +
+> > +	if (nlmsg_flags & NLM_F_ECHO) {
+> > +		u32 ext_filter_mask = 0;
+> > +
+> > +		if (tb[IFLA_EXT_MASK])
+> > +			ext_filter_mask = nla_get_u32(tb[IFLA_EXT_MASK]);
+> > +
+> > +		rtnl_echo_link_info(dev, NETLINK_CB(skb).portid, nlmsg_seq,
+> > +				    ext_filter_mask, netnsid);
+> => netnsid, ie IFLA_LINK_NETNSID has nothing to do with IFLA_TARGET_NETNSID.
+> Link netns is used for x-netns interface like vlan for example. The vlan iface
+> could be in a netns while its lower iface could be in another netns.
+> 
+> The target netns is used when a netlink message is sent in a netns but should
+> act in another netns.
 
-> Delete the redundant word 'to'.
->
-> Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+Oh, thanks for the explanation. Then we can remove the netnsid parameter
+from rtnl_echo_link_info().
 
-Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@toke.dk>
+Thanks
+Hangbin
