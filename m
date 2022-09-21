@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C51B15BFC25
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 12:18:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A8E55BFC28
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 12:18:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231317AbiIUKSS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 06:18:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47160 "EHLO
+        id S231355AbiIUKST (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 06:18:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229967AbiIUKSO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 06:18:14 -0400
+        with ESMTP id S231281AbiIUKSQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 06:18:16 -0400
 Received: from mail.toke.dk (mail.toke.dk [45.145.95.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03CFC8B2D9;
-        Wed, 21 Sep 2022 03:18:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A23495AEC;
+        Wed, 21 Sep 2022 03:18:15 -0700 (PDT)
 From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
-        t=1663755488; bh=ze+fPfeNNLOQeMVkhH1Vs5tjhjQPKinp0bPriX2bsaQ=;
+        t=1663755493; bh=41XcwKKXbTueP4NKKCKH4lAY+pFFUeOnqxXy3lPn1ug=;
         h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=fJUzCIud/LgKnYwmZXfZuEW6ehiqAuQQMjAucdbpNVOTHikaNK39jz1uTQdRlsdLB
-         p0cT6bkwdCyPWZQ4ppTCkDnDf7lUtJxLID+qv7Ks9QEEVOYXvBtcqGteQltKPlkbtE
-         r/RHUTiaAWi9xYZy3+Jp8zs7u0iTQzAz02Ldq+aPNAQvZ1FngOvR4LQ9SDr4f/wQph
-         YghkB5Upo/TtGnULBlNTdTvbQGIcUr4Y90Ply8izR4+ZUBetntItBPd5Od36LsPzk5
-         UGBQ0cXd+NYt/61k9hMYiTAxfmSWvz3U2bhPZCsCwactR8p6pf74YAZp8hbiEzlUsq
-         LXfZBqZITkZQg==
+        b=lJguM4Tas+94MZ4o+K6U+S6b3KtF/3NGs7bLIX8xdqGg2wleZiEeAjQjbyyRKkef5
+         FgueoQrNLlJAX9L8fz3Jl9aN6I19w/xKfjuKuJL0nsMiQqKPa45KFWLaq/Q/Z4EdxH
+         4kVCgjxbbj+5D+QP9l5NJu2yoZXTbS3rOJicJ03HMCLZCUSOMv+SeSMZ6sMd552xMc
+         0sO63E8uYEMRwZSc+JTB2RUa0cq6zcVF3GK6ctVm/h+bUUbAXkaoApZZZnwy4wWuZ4
+         rkht3utd+mrPBlERzQuDVD5FailtpGpD8sIrofhs0E5dNsUWLfd1zorxArMjx35Boo
+         8NClFG+kSd2Rg==
 To:     Jilin Yuan <yuanjilin@cdjrlc.com>, kvalo@kernel.org,
         davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com
 Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
 Subject: Re: [PATCH] ath9k: fix repeated words in comments
-In-Reply-To: <20220915030859.45384-1-yuanjilin@cdjrlc.com>
-References: <20220915030859.45384-1-yuanjilin@cdjrlc.com>
-Date:   Wed, 21 Sep 2022 12:18:08 +0200
+In-Reply-To: <20220915030559.42371-1-yuanjilin@cdjrlc.com>
+References: <20220915030559.42371-1-yuanjilin@cdjrlc.com>
+Date:   Wed, 21 Sep 2022 12:18:12 +0200
 X-Clacks-Overhead: GNU Terry Pratchett
-Message-ID: <87czbpvxnj.fsf@toke.dk>
+Message-ID: <87a66tvxnf.fsf@toke.dk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
@@ -49,11 +49,8 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Jilin Yuan <yuanjilin@cdjrlc.com> writes:
 
-> Delete the redundant word 'the'.
+> Delete the redundant word 'to'.
 >
 > Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
-
-Let's merge these, so we don't keep getting identical patches for the
-same two typos:
 
 Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@toke.dk>
