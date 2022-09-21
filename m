@@ -2,83 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 70C125BF914
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 10:24:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85C9A5BF91E
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 10:26:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231251AbiIUIYQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 04:24:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47816 "EHLO
+        id S230049AbiIUI0n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 04:26:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230408AbiIUIYL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 04:24:11 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE37686FE8
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 01:24:08 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id q17so6015913lji.11
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 01:24:08 -0700 (PDT)
+        with ESMTP id S229886AbiIUI0M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 04:26:12 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2E1D8A1EC
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 01:25:34 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id k10so7958973lfm.4
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 01:25:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date;
-        bh=z2MCRZwnAPTEqYODMkj3+PTJcU+ncclCIozA5x11uMM=;
-        b=BB35Aku2zGsCqnMGpK7NKQd1UICT5YpQwu7ZrKCddceP/5xfHPurL1Q69YMIhyIPV3
-         21F4kSBCktfqX1gUFg9zlBxj4KdIPaUvjAM2SScf1baXqUD9KdA8lXcu4Dt5c6B6yjKR
-         fkFgPLvX52svpOmU9DWoH8liK0fB4jhojs3RrOBP3I/QzX0s5Df5cBQlAtHyj02rkz35
-         QvZcqpr+GSqJ23HKKrkaYLXtReanYgkneApheeoHjepuw+4IyRAIjZsHM+a439lPAJnG
-         YM42xgEhu6fv9Ez9jizLriJeTLfG+TL0P7lWbeqp9gU8jx6ed+qqBToUCNVE+MQ2H37t
-         gVhw==
+        bh=kllsaU+NrhBActC8/Ko962C+vx5weLH497C4j1ASf9o=;
+        b=zWLXZoJJQ3xhYU/XcWK2I428YuQvun/7UY+WRs0+BYAAZKcmybbhZqBOE3OweGuGY4
+         1XHSKLHuXqUa9vJU7EoRVjf9weaO9bwDxbR3jMAzcRsqzCe8qMpDLnUSxHDMrsoiM01z
+         Uau16EpBeQDeVz+urQlXrcatyvzv1bY/dsJyps3utYxS4jFm0Faj51cwy8sVz9MHfaTA
+         pbvvzGCEkjH0bnsanues36FdO9hFUzPnn21WWOoJOI1RIq3epBujjl+cxwKdvjPxtwQa
+         RmKNYIH4DnY8lCDYpdPGxJrdJMPmA8tht2L7GRe0YhG/CwAjwGfGjNEQYVuRL/VR/Dhd
+         io1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date;
-        bh=z2MCRZwnAPTEqYODMkj3+PTJcU+ncclCIozA5x11uMM=;
-        b=zcc32ODVBdMa6BBQZ7vdwRqoALpHPSg05QOIszNSy/uv420528nB9A/FC+LDSt0fLs
-         qWbs6pv9U4t3Ksg8j3C0lTCiMEZMcXJ2vrbGEb1ekSU0CuOXYUq2MNJ6Ft/2PEedeCJZ
-         EooYhkF+jM8TfRrUQLPHRq3QO3eXvKo/nDWp8L7Kj6JHsz4TT6sHKYLLCBEHul+H+uxQ
-         IUAqxMXFzhRjg+f5etWTsi3+ChmJsIe5bt+ZWiOjg0uHAoc1ul1F+nZVdiCOqM5JlqVm
-         n8nicBi/tjOZ9EcOK4djnr7jGUFIJpnaIloFi9KC70ZuDZJssr+lEtPgyJDJ6kVW9x84
-         ksxg==
-X-Gm-Message-State: ACrzQf0Arb6czxKS2gojrSuhbubEI5Imja47FRuVREQ7KhtQpLwpHOWh
-        gLioUJEBnPx/LYJ7JXmMFWROIg==
-X-Google-Smtp-Source: AMsMyM6Io3BmRoigc9CnsetOFpauZCLrMtETpU3n2CWPkIA90UfIJN1GhK1zG57LSt5VssYM+AN+vg==
-X-Received: by 2002:a2e:2f07:0:b0:26c:59d3:4a26 with SMTP id v7-20020a2e2f07000000b0026c59d34a26mr3021933ljv.471.1663748646667;
-        Wed, 21 Sep 2022 01:24:06 -0700 (PDT)
+        bh=kllsaU+NrhBActC8/Ko962C+vx5weLH497C4j1ASf9o=;
+        b=Go/1+WZ2V7ZUX+6bZPp6nE5OkNka7Yus+PJMoVTfYwbr9ylr3iWQV4Lt/LKGGWAtvh
+         J1tFRlxb++b3wvunvprdbvHpTVCo0ayQvRdG0HcdmgbwbLliH12/telJrWbPVwexxnl6
+         rVh011EkgXFvfH9bZqoKmn1nqQlIF70zTDkDtEN9zdTQEcKHvBUB1jmZkOu3Ecs+CKoT
+         vMYZPH7LL5sVCL+oyxMocVxjCrsEbj306lyFaGoM93mYsyb13jCw8W/oeKttvib/sQnI
+         Bq67Km5L2qkg1YzmJ1i9J13j87kj4TGkNaKSWXD1CF2oGjmhjNOT0Uks6AUQTGiK/0SB
+         gDcg==
+X-Gm-Message-State: ACrzQf1e/FJHNMPezMezMvlI9b0meqotJk57cNsA+n9qEaxl2oH4FQhH
+        cQI1eeVMP633ImxC47rc98sOug==
+X-Google-Smtp-Source: AMsMyM5Qnrc77hlPHwoCJT5SM2C65rB7OQsSimZswtBSaPyKSq1NdLzlagQ3zPjvK3IlD/iswCJP1A==
+X-Received: by 2002:a05:6512:6c8:b0:49a:1765:335d with SMTP id u8-20020a05651206c800b0049a1765335dmr9283076lff.29.1663748732570;
+        Wed, 21 Sep 2022 01:25:32 -0700 (PDT)
 Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id d25-20020ac25459000000b0048af4dc964asm337998lfn.73.2022.09.21.01.24.05
+        by smtp.gmail.com with ESMTPSA id v18-20020a2ea612000000b0026c4113c150sm329526ljp.111.2022.09.21.01.25.31
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 21 Sep 2022 01:24:06 -0700 (PDT)
-Message-ID: <bd460cfd-7114-b200-ab99-16fa3e2cff50@linaro.org>
-Date:   Wed, 21 Sep 2022 10:24:04 +0200
+        Wed, 21 Sep 2022 01:25:31 -0700 (PDT)
+Message-ID: <7edc0445-c5d4-64a7-0261-f9db9b10158e@linaro.org>
+Date:   Wed, 21 Sep 2022 10:25:31 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.13.0
-Subject: Re: [PATCH v3 2/2] dt-bindings: net: snps,dwmac: add clk_csr property
+Subject: Re: [RFC V2 PATCH 2/3] dt-bindings: net: xilinx_axienet: Introduce
+ dmaengine binding support
 Content-Language: en-US
-To:     Jianguo Zhang <jianguo.zhang@mediatek.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Biao Huang <biao.huang@mediatek.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-References: <20220921070721.19516-1-jianguo.zhang@mediatek.com>
- <20220921070721.19516-3-jianguo.zhang@mediatek.com>
+To:     "Pandey, Radhey Shyam" <radhey.shyam.pandey@amd.com>,
+        "Gaddam, Sarath Babu Naidu" <sarath.babu.naidu.gaddam@amd.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Simek, Michal" <michal.simek@amd.com>,
+        "Sarangi, Anirudha" <anirudha.sarangi@amd.com>,
+        "Katakam, Harini" <harini.katakam@amd.com>,
+        "git@xilinx.com" <git@xilinx.com>, "git (AMD-Xilinx)" <git@amd.com>
+References: <20220920055703.13246-1-sarath.babu.naidu.gaddam@amd.com>
+ <20220920055703.13246-3-sarath.babu.naidu.gaddam@amd.com>
+ <d179f987-6d3b-449f-8f48-4ab0fff43227@linaro.org>
+ <MN0PR12MB5953B2E399B48AC410F4AC2DB74F9@MN0PR12MB5953.namprd12.prod.outlook.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220921070721.19516-3-jianguo.zhang@mediatek.com>
+In-Reply-To: <MN0PR12MB5953B2E399B48AC410F4AC2DB74F9@MN0PR12MB5953.namprd12.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-5.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -90,31 +93,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 21/09/2022 09:07, Jianguo Zhang wrote:
-> Add clk_csr property for snps,dwmac
+On 21/09/2022 10:23, Pandey, Radhey Shyam wrote:
+>>>  required:
+>>>    - compatible
+>>>    - interrupts
+>>>    - reg
+>>>    - xlnx,rxmem
+>>>    - phy-handle
+>>> +  - dmas
+>>> +  - dma-names
+>>>
+>>>  additionalProperties: false
+>>>
+>>> @@ -132,11 +137,13 @@ examples:
+>>>      axi_ethernet_eth: ethernet@40c00000 {
+>>>        compatible = "xlnx,axi-ethernet-1.00.a";
+>>>        interrupt-parent = <&microblaze_0_axi_intc>;
+>>> -      interrupts = <2>, <0>, <1>;
+>>> +      interrupts = <1>;
+>>
+>> This looks like an ABI break. How do you handle old DTS? Oh wait... you do
+>> not handle it at all.
 > 
-> Signed-off-by: Jianguo Zhang <jianguo.zhang@mediatek.com>
-> ---
->  Documentation/devicetree/bindings/net/snps,dwmac.yaml | 5 +++++
->  1 file changed, 5 insertions(+)
+> Yes, this is anticipated ABI break due to major changes in axiethernet
+> driver while adopting to dmaengine framework. Same is highlighted
+> in commit description - "DT changes are not backward compatible 
+> due to major driver restructuring/cleanup done in adopting the 
+> dmaengine framework". 
 > 
-> diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> index 491597c02edf..8cff30a8125d 100644
-> --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> @@ -288,6 +288,11 @@ properties:
->        is supported. For example, this is used in case of SGMII and
->        MAC2MAC connection.
->  
-> +  clk_csr:
+> Some background - Factor out AXI DMA code into separate driver was
+> a TODO item (mentioned in driver changelog) and is being done as 
+> part of this series. The DMA code is removed from axiethernet driver 
+> and ethernet driver now make use of dmaengine framework to 
+> communicate with AXIDMA IP.
+> 
+> When DMA code is removed from axiethernet driver there is limitation
+> to support legacy DMA resources binding. One option is to inform
+> user to switch to new binding when old DTS is detected? (and at some
+> point we have to make this transition and remove dma code).
 
-No underscores in node names. Missing vendor prefix.
+If you keep ABI non-broken, such message is a good idea.
 
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description:
-> +      Frequency division factor for MDC clock.
+> Please let us know if there are any other alternative to consider?
 
-Can't common clock framework do the job? What is the MDC clock?
+You just cannot break ABI just because you want to refactor some code in
+driver.
+
 
 Best regards,
 Krzysztof
