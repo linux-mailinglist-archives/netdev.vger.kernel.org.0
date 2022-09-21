@@ -2,115 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BC7B5BF802
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 09:44:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31A935BF807
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 09:45:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229917AbiIUHos (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 03:44:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40874 "EHLO
+        id S230064AbiIUHpG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 03:45:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229599AbiIUHoq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 03:44:46 -0400
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF56A65B6;
-        Wed, 21 Sep 2022 00:44:43 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 77A2B201E2;
-        Wed, 21 Sep 2022 09:44:41 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id EY6uRd3Yvca6; Wed, 21 Sep 2022 09:44:40 +0200 (CEST)
-Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id EFA0020189;
-        Wed, 21 Sep 2022 09:44:40 +0200 (CEST)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout1.secunet.com (Postfix) with ESMTP id DFCFC80004A;
-        Wed, 21 Sep 2022 09:44:40 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 21 Sep 2022 09:44:40 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Wed, 21 Sep
- 2022 09:44:40 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 16C8C31829EC; Wed, 21 Sep 2022 09:44:40 +0200 (CEST)
-Date:   Wed, 21 Sep 2022 09:44:40 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Li Zhong <floridsleeves@gmail.com>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <f.fainelli@gmail.com>, <pabeni@redhat.com>, <kuba@kernel.org>,
-        <edumazet@google.com>, <davem@davemloft.net>, <klassert@kernel.org>
-Subject: Re: [PATCH v1] drivers/net/ethernet/3com: check the return value of
- vortex_up()
-Message-ID: <20220921074440.GA2950045@gauss3.secunet.de>
-References: <20220919073631.1574577-1-floridsleeves@gmail.com>
- <20220920100157.GV2950045@gauss3.secunet.de>
- <CAMEuxRo9oy4uc3XK7wQ26zgwmpwwp+iOT_47OsshAv-94tGgtw@mail.gmail.com>
+        with ESMTP id S230377AbiIUHpB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 03:45:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CC49558EF
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 00:44:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1663746296;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9ubLtsAgcpDm3nvMpf+F5CRd6Xb0P+Wgpu8FfKvJ+Z0=;
+        b=L41odCb2o2XgCzZCpWpW+5JRtJLH9Dh7DhO1tlhhAQsziyYtGZMnKKuslKQ7MFzsdfIc9Z
+        YIqdRmIGJepEDeQHxr4g0NLANjoKao790ytyz3IK5OxoAm/ggFZ8M+MSMU7aqRKgD3Rtn7
+        CSVkgsf/uqUFdljre2+2UGH9JIBU/Ac=
+Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com
+ [209.85.210.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-79-IF2cPUV0OYSXfk7tKVeR-Q-1; Wed, 21 Sep 2022 03:44:55 -0400
+X-MC-Unique: IF2cPUV0OYSXfk7tKVeR-Q-1
+Received: by mail-ot1-f72.google.com with SMTP id bk9-20020a056830368900b006593c120badso2628505otb.13
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 00:44:55 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=9ubLtsAgcpDm3nvMpf+F5CRd6Xb0P+Wgpu8FfKvJ+Z0=;
+        b=1Q0F5vHR/GdGrO0vVCpWHNyYxqAkZLjWO+4d6ZoS8BkAbHlgYUrpHmykHcdUtQ5R+9
+         D7RXhxGb4LjsEMPb+yTgS3uqwuKv5TWv5hZr/SLGpTm5A+dDI1UCeP7+yOXd3CIac1GM
+         3FMOyrHYjktDKDId8lpRmrGXTPWimCCYtj8uSryzDMmoR9LWdPzrtDkrYxAvLCrc0TR5
+         QHl+uoWgf7EiVzKjDnz2Rojy0VEKWEC0P1Z+drdH3uHrie/wu7N5DYsmnQwvldoEVFk2
+         t7X5x2SHsdERwXOUL7knO3AHHuxt1kkstJljP7j/+kqy+tP108X49teAAa1W9Uh8oGJ5
+         cWbw==
+X-Gm-Message-State: ACrzQf1BmM85d197MRyfYJuvwkVk2y0+0v1El85jW1jYe9xwWFsnkZTz
+        RIvxo1F9fIb5sHGlBnuv4WRjFWBR3jL8y3G0qA38AcA8kRLTN/tsqejHA8M9cFGYcKFUgkqzgc/
+        yrghI8qshzjo1B/SB6gqwXnPbBGQLP6aH
+X-Received: by 2002:a05:6870:73cd:b0:12a:dff3:790a with SMTP id a13-20020a05687073cd00b0012adff3790amr4112342oan.35.1663746294186;
+        Wed, 21 Sep 2022 00:44:54 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM6wkv3SUBRdXvKVaNbuIgmOgYkeMBTnxhWlJtmZOEou/q4L0gaF2SAW7Z0YIVrq9HwXTbuOFZXv4kvlgStXvGI=
+X-Received: by 2002:a05:6870:73cd:b0:12a:dff3:790a with SMTP id
+ a13-20020a05687073cd00b0012adff3790amr4112337oan.35.1663746293933; Wed, 21
+ Sep 2022 00:44:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <CAMEuxRo9oy4uc3XK7wQ26zgwmpwwp+iOT_47OsshAv-94tGgtw@mail.gmail.com>
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20220909085712.46006-1-lingshan.zhu@intel.com>
+ <20220909085712.46006-2-lingshan.zhu@intel.com> <CACGkMEsq+weeO7i8KtNNAPhXGwN=cTwWt3RWfTtML-Xwj3K5Qg@mail.gmail.com>
+ <e69b65e7-516f-55bd-cb99-863d7accbd32@intel.com> <CACGkMEv0++vmfzzmX47NhsaY5JTvbO2Ro7Taf8C0dxV6OVXTKw@mail.gmail.com>
+ <27b04293-2225-c78d-f6e3-ffe8a7472ea1@intel.com>
+In-Reply-To: <27b04293-2225-c78d-f6e3-ffe8a7472ea1@intel.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Wed, 21 Sep 2022 15:44:42 +0800
+Message-ID: <CACGkMEvf0sQyFTowg9DtVS3QbAHidv_cOBCk5hUaaKNxwods8Q@mail.gmail.com>
+Subject: Re: [PATCH 1/4] vDPA: allow userspace to query features of a vDPA device
+To:     "Zhu, Lingshan" <lingshan.zhu@intel.com>
+Cc:     mst <mst@redhat.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>, kvm <kvm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 20, 2022 at 09:15:35AM -0700, Li Zhong wrote:
-> On Tue, Sep 20, 2022 at 3:02 AM Steffen Klassert
-> <steffen.klassert@secunet.com> wrote:
+On Wed, Sep 21, 2022 at 2:00 PM Zhu, Lingshan <lingshan.zhu@intel.com> wrote:
+>
+>
+>
+> On 9/21/2022 10:17 AM, Jason Wang wrote:
+> > On Tue, Sep 20, 2022 at 5:58 PM Zhu, Lingshan <lingshan.zhu@intel.com> wrote:
+> >>
+> >>
+> >> On 9/20/2022 10:02 AM, Jason Wang wrote:
+> >>> On Fri, Sep 9, 2022 at 5:05 PM Zhu Lingshan <lingshan.zhu@intel.com> wrote:
+> >>>> This commit adds a new vDPA netlink attribution
+> >>>> VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES. Userspace can query
+> >>>> features of vDPA devices through this new attr.
+> >>>>
+> >>>> This commit invokes vdpa_config_ops.get_config() than
+> >>>> vdpa_get_config_unlocked() to read the device config
+> >>>> spcae, so no raeces in vdpa_set_features_unlocked()
+> >>>>
+> >>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+> >>> It's better to share the userspace code as well.
+> >> OK, will share it in V2.
+> >>>> ---
+> >>>>    drivers/vdpa/vdpa.c       | 19 ++++++++++++++-----
+> >>>>    include/uapi/linux/vdpa.h |  4 ++++
+> >>>>    2 files changed, 18 insertions(+), 5 deletions(-)
+> >>>>
+> >>>> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
+> >>>> index c06c02704461..798a02c7aa94 100644
+> >>>> --- a/drivers/vdpa/vdpa.c
+> >>>> +++ b/drivers/vdpa/vdpa.c
+> >>>> @@ -491,6 +491,8 @@ static int vdpa_mgmtdev_fill(const struct vdpa_mgmt_dev *mdev, struct sk_buff *m
+> >>>>                   err = -EMSGSIZE;
+> >>>>                   goto msg_err;
+> >>>>           }
+> >>>> +
+> >>>> +       /* report features of a vDPA management device through VDPA_ATTR_DEV_SUPPORTED_FEATURES */
+> >>> The code explains itself, there's no need for the comment.
+> >> these comments are required in other discussions
+> > I think it's more than sufficient to clarify the semantic where it is defined.
+> OK, then only comments in the header file
 > >
-> > On Mon, Sep 19, 2022 at 12:36:31AM -0700, Li Zhong wrote:
-> > > Check the return value of vortex_up(), which could be error code when
-> > > the rx ring is not full.
-> > >
-> > > Signed-off-by: Li Zhong <floridsleeves@gmail.com>
-> > > ---
-> > >  drivers/net/ethernet/3com/3c59x.c | 5 ++++-
-> > >  1 file changed, 4 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/drivers/net/ethernet/3com/3c59x.c b/drivers/net/ethernet/3com/3c59x.c
-> > > index ccf07667aa5e..7806c5f60ac8 100644
-> > > --- a/drivers/net/ethernet/3com/3c59x.c
-> > > +++ b/drivers/net/ethernet/3com/3c59x.c
-> > > @@ -1942,6 +1942,7 @@ vortex_error(struct net_device *dev, int status)
-> > >       void __iomem *ioaddr = vp->ioaddr;
-> > >       int do_tx_reset = 0, reset_mask = 0;
-> > >       unsigned char tx_status = 0;
-> > > +     int err;
-> > >
-> > >       if (vortex_debug > 2) {
-> > >               pr_err("%s: vortex_error(), status=0x%x\n", dev->name, status);
-> > > @@ -2016,7 +2017,9 @@ vortex_error(struct net_device *dev, int status)
-> > >                       /* Must not enter D3 or we can't legally issue the reset! */
-> > >                       vortex_down(dev, 0);
-> > >                       issue_and_wait(dev, TotalReset | 0xff);
-> > > -                     vortex_up(dev);         /* AKPM: bug.  vortex_up() assumes that the rx ring is full. It may not be. */
-> > > +                     err = vortex_up(dev);
-> > > +                     if (err)
-> > > +                             return;
+> >>>>           if (nla_put_u64_64bit(msg, VDPA_ATTR_DEV_SUPPORTED_FEATURES,
+> >>>>                                 mdev->supported_features, VDPA_ATTR_PAD)) {
+> >>>>                   err = -EMSGSIZE;
+> >>>> @@ -815,10 +817,10 @@ static int vdpa_dev_net_mq_config_fill(struct vdpa_device *vdev,
+> >>>>    static int vdpa_dev_net_config_fill(struct vdpa_device *vdev, struct sk_buff *msg)
+> >>>>    {
+> >>>>           struct virtio_net_config config = {};
+> >>>> -       u64 features;
+> >>>> +       u64 features_device, features_driver;
+> >>>>           u16 val_u16;
+> >>>>
+> >>>> -       vdpa_get_config_unlocked(vdev, 0, &config, sizeof(config));
+> >>>> +       vdev->config->get_config(vdev, 0, &config, sizeof(config));
+> >>>>
+> >>>>           if (nla_put(msg, VDPA_ATTR_DEV_NET_CFG_MACADDR, sizeof(config.mac),
+> >>>>                       config.mac))
+> >>>> @@ -832,12 +834,19 @@ static int vdpa_dev_net_config_fill(struct vdpa_device *vdev, struct sk_buff *ms
+> >>>>           if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MTU, val_u16))
+> >>>>                   return -EMSGSIZE;
+> >>>>
+> >>>> -       features = vdev->config->get_driver_features(vdev);
+> >>>> -       if (nla_put_u64_64bit(msg, VDPA_ATTR_DEV_NEGOTIATED_FEATURES, features,
+> >>>> +       features_driver = vdev->config->get_driver_features(vdev);
+> >>>> +       if (nla_put_u64_64bit(msg, VDPA_ATTR_DEV_NEGOTIATED_FEATURES, features_driver,
+> >>>> +                             VDPA_ATTR_PAD))
+> >>>> +               return -EMSGSIZE;
+> >>>> +
+> >>>> +       features_device = vdev->config->get_device_features(vdev);
+> >>>> +
+> >>>> +       /* report features of a vDPA device through VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES */
+> >>>> +       if (nla_put_u64_64bit(msg, VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES, features_device,
+> >>>>                                 VDPA_ATTR_PAD))
+> >>>>                   return -EMSGSIZE;
+> >>>>
+> >>>> -       return vdpa_dev_net_mq_config_fill(vdev, msg, features, &config);
+> >>>> +       return vdpa_dev_net_mq_config_fill(vdev, msg, features_driver, &config);
+> >>>>    }
+> >>>>
+> >>>>    static int
+> >>>> diff --git a/include/uapi/linux/vdpa.h b/include/uapi/linux/vdpa.h
+> >>>> index 25c55cab3d7c..97531b52dcbe 100644
+> >>>> --- a/include/uapi/linux/vdpa.h
+> >>>> +++ b/include/uapi/linux/vdpa.h
+> >>>> @@ -46,12 +46,16 @@ enum vdpa_attr {
+> >>>>
+> >>>>           VDPA_ATTR_DEV_NEGOTIATED_FEATURES,      /* u64 */
+> >>>>           VDPA_ATTR_DEV_MGMTDEV_MAX_VQS,          /* u32 */
+> >>>> +       /* features of a vDPA management device */
+> >>>>           VDPA_ATTR_DEV_SUPPORTED_FEATURES,       /* u64 */
+> >>>>
+> >>>>           VDPA_ATTR_DEV_QUEUE_INDEX,              /* u32 */
+> >>>>           VDPA_ATTR_DEV_VENDOR_ATTR_NAME,         /* string */
+> >>>>           VDPA_ATTR_DEV_VENDOR_ATTR_VALUE,        /* u64 */
+> >>>>
+> >>>> +       /* features of a vDPA device, e.g., /dev/vhost-vdpa0 */
+> >>>> +       VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES,  /* u64 */
+> >>> What's the difference between this and VDPA_ATTR_DEV_SUPPORTED_FEATURES?
+> >> This is to report a vDPA device features, and
+> >> VDPA_ATTR_DEV_SUPPORTED_FEATURES
+> >> is used for reporting the management device features, we have a long
+> >> discussion
+> >> on this before.
+> > Yes, but the comment is not clear in many ways:
 > >
-> > Why does that fix the bug mentioned in the above comment?
+> > " features of a vDPA management device" sounds like features that is
+> > out of the scope of the virtio.
+> I think the term "vDPA device" implies that it is a virtio device.
+> So how about: "virtio features of a vDPA management device"
+
+Not a native speaker, but how about "virtio features that are
+supported by the vDPA management device?"
+
+Thanks
+
 > >
-> 
-> Since the bug is an unchecked error
-
-No, it is not. It is completely pointless to check the error value here.
-
-> we detect it with static analysis and
-> validate it's a bug by the comment we see above the code.
-
-This code is from the nineties, so it is unfixed for more
-then 20 years. Do you really think Andrew Morton would have
-added this comment if the fix is that easy?
+> > And
+> >
+> > "/dev/vhost-vdpa0" is not a vDPA device but a vhost-vDPA device.
+> will remove this example here.
+>
+> Thanks
+> >
+> > Thanks
+> >
+> >>> Thanks
+> >>>
+> >>>> +
+> >>>>           /* new attributes must be added above here */
+> >>>>           VDPA_ATTR_MAX,
+> >>>>    };
+> >>>> --
+> >>>> 2.31.1
+> >>>>
+>
 
