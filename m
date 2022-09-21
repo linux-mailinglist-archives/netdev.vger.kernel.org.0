@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D47115BF2C1
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 03:23:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B80AA5BF2CA
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 03:23:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231439AbiIUBXJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 21:23:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34222 "EHLO
+        id S231521AbiIUBXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 21:23:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231330AbiIUBXD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 21:23:03 -0400
+        with ESMTP id S231281AbiIUBXE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 21:23:04 -0400
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B88157B1E9;
-        Tue, 20 Sep 2022 18:22:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9898F7B1F0;
+        Tue, 20 Sep 2022 18:23:00 -0700 (PDT)
 Received: by linux.microsoft.com (Postfix, from userid 1004)
-        id 449D820B929D; Tue, 20 Sep 2022 18:22:59 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 449D820B929D
+        id CFA9120B929E; Tue, 20 Sep 2022 18:22:59 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com CFA9120B929E
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxonhyperv.com;
         s=default; t=1663723379;
-        bh=0IPqQiftyscz//+3GXWBUq4eJrsQ4yHfO5iam+jqUsw=;
+        bh=LmwWqjupTpaqMbP++VM/cZAhOFr+Ugbwtr03knype9U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:Reply-To:From;
-        b=jeIXDfqv7Hx7H/DyHwxPFzdV2wyY0ZIEEcp1ZhmLSdIdNejWPRbCFB9n/ge8pK5/m
-         NWDTkHB6fYKp5udZCIr6xgHfd0fRfxVpkFuj13iOl7HS41EbPuIII72yTi0fYi4XVn
-         6WMlpsPilOICJdE//lSU6cfC+qTcWqSrfELghuzU=
+        b=o6856gLX09MMSAIuAIeRf6uwRoLVaYAiWJA26JCvQyDftXp4qTGkxgM1zVW1imnbD
+         QGgg/v8mKvkgbR3S6aYzjmnxYgD1ToYMdIMsopzUQmlVQKrkMnoaSRJtrJ4KLQGcRc
+         i3I3QRLXqJ5P7fgHV4QB7/tICCc4JeJyE7flBmnQ=
 From:   longli@linuxonhyperv.com
 To:     "K. Y. Srinivasan" <kys@microsoft.com>,
         Haiyang Zhang <haiyangz@microsoft.com>,
@@ -38,9 +38,9 @@ To:     "K. Y. Srinivasan" <kys@microsoft.com>,
 Cc:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
         Long Li <longli@microsoft.com>
-Subject: [Patch v6 03/12] net: mana: Handle vport sharing between devices
-Date:   Tue, 20 Sep 2022 18:22:23 -0700
-Message-Id: <1663723352-598-4-git-send-email-longli@linuxonhyperv.com>
+Subject: [Patch v6 04/12] net: mana: Add functions for allocating doorbell page from GDMA
+Date:   Tue, 20 Sep 2022 18:22:24 -0700
+Message-Id: <1663723352-598-5-git-send-email-longli@linuxonhyperv.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1663723352-598-1-git-send-email-longli@linuxonhyperv.com>
 References: <1663723352-598-1-git-send-email-longli@linuxonhyperv.com>
@@ -57,150 +57,144 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Long Li <longli@microsoft.com>
 
-For outgoing packets, the PF requires the VF to configure the vport with
-corresponding protection domain and doorbell ID for the kernel or user
-context. The vport can't be shared between different contexts.
-
-Implement the logic to exclusively take over the vport by either the
-Ethernet device or RDMA device.
+The RDMA device needs to allocate doorbell pages for each user context.
+Implement those functions and expose them for use by the RDMA driver.
 
 Reviewed-by: Dexuan Cui <decui@microsoft.com>
 Signed-off-by: Long Li <longli@microsoft.com>
 Acked-by: Haiyang Zhang <haiyangz@microsoft.com>
 ---
 Change log:
-v2: use refcount instead of directly using atomic variables
-v4: change to mutex to avoid possible race with refcount
-v5: add detailed comments explaining vport sharing, use EXPORT_SYMBOL_NS
-v6: rebased to rdma-next
+v4: use EXPORT_SYMBOL_NS
 
- drivers/net/ethernet/microsoft/mana/mana.h    |  7 +++
- drivers/net/ethernet/microsoft/mana/mana_en.c | 53 ++++++++++++++++++-
- 2 files changed, 58 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/microsoft/mana/gdma.h    | 29 ++++++++++
+ .../net/ethernet/microsoft/mana/gdma_main.c   | 56 +++++++++++++++++++
+ 2 files changed, 85 insertions(+)
 
-diff --git a/drivers/net/ethernet/microsoft/mana/mana.h b/drivers/net/ethernet/microsoft/mana/mana.h
-index d58be64374c8..2883a08dbfb5 100644
---- a/drivers/net/ethernet/microsoft/mana/mana.h
-+++ b/drivers/net/ethernet/microsoft/mana/mana.h
-@@ -380,6 +380,10 @@ struct mana_port_context {
- 	mana_handle_t port_handle;
- 	mana_handle_t pf_filter_handle;
- 
-+	/* Mutex for sharing access to vport_use_count */
-+	struct mutex vport_mutex;
-+	int vport_use_count;
-+
- 	u16 port_idx;
- 
- 	bool port_is_up;
-@@ -631,4 +635,7 @@ struct mana_tx_package {
- 	struct gdma_posted_wqe_info wqe_info;
+diff --git a/drivers/net/ethernet/microsoft/mana/gdma.h b/drivers/net/ethernet/microsoft/mana/gdma.h
+index 72eaec2470c0..0ee3615152b8 100644
+--- a/drivers/net/ethernet/microsoft/mana/gdma.h
++++ b/drivers/net/ethernet/microsoft/mana/gdma.h
+@@ -22,11 +22,15 @@ enum gdma_request_type {
+ 	GDMA_GENERATE_TEST_EQE		= 10,
+ 	GDMA_CREATE_QUEUE		= 12,
+ 	GDMA_DISABLE_QUEUE		= 13,
++	GDMA_ALLOCATE_RESOURCE_RANGE	= 22,
++	GDMA_DESTROY_RESOURCE_RANGE	= 24,
+ 	GDMA_CREATE_DMA_REGION		= 25,
+ 	GDMA_DMA_REGION_ADD_PAGES	= 26,
+ 	GDMA_DESTROY_DMA_REGION		= 27,
  };
  
-+int mana_cfg_vport(struct mana_port_context *apc, u32 protection_dom_id,
-+		   u32 doorbell_pg_id);
-+void mana_uncfg_vport(struct mana_port_context *apc);
- #endif /* _MANA_H */
-diff --git a/drivers/net/ethernet/microsoft/mana/mana_en.c b/drivers/net/ethernet/microsoft/mana/mana_en.c
-index 8ec6924a445c..ef843a4560bb 100644
---- a/drivers/net/ethernet/microsoft/mana/mana_en.c
-+++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
-@@ -646,13 +646,48 @@ static int mana_query_vport_cfg(struct mana_port_context *apc, u32 vport_index,
- 	return 0;
++#define GDMA_RESOURCE_DOORBELL_PAGE	27
++
+ enum gdma_queue_type {
+ 	GDMA_INVALID_QUEUE,
+ 	GDMA_SQ,
+@@ -578,6 +582,26 @@ struct gdma_register_device_resp {
+ 	u32 db_id;
+ }; /* HW DATA */
+ 
++struct gdma_allocate_resource_range_req {
++	struct gdma_req_hdr hdr;
++	u32 resource_type;
++	u32 num_resources;
++	u32 alignment;
++	u32 allocated_resources;
++};
++
++struct gdma_allocate_resource_range_resp {
++	struct gdma_resp_hdr hdr;
++	u32 allocated_resources;
++};
++
++struct gdma_destroy_resource_range_req {
++	struct gdma_req_hdr hdr;
++	u32 resource_type;
++	u32 num_resources;
++	u32 allocated_resources;
++};
++
+ /* GDMA_CREATE_QUEUE */
+ struct gdma_create_queue_req {
+ 	struct gdma_req_hdr hdr;
+@@ -686,4 +710,9 @@ void mana_gd_free_memory(struct gdma_mem_info *gmi);
+ 
+ int mana_gd_send_request(struct gdma_context *gc, u32 req_len, const void *req,
+ 			 u32 resp_len, void *resp);
++
++int mana_gd_allocate_doorbell_page(struct gdma_context *gc, int *doorbell_page);
++
++int mana_gd_destroy_doorbell_page(struct gdma_context *gc, int doorbell_page);
++
+ #endif /* _GDMA_H */
+diff --git a/drivers/net/ethernet/microsoft/mana/gdma_main.c b/drivers/net/ethernet/microsoft/mana/gdma_main.c
+index 0cfe5f15458e..63544ca9e238 100644
+--- a/drivers/net/ethernet/microsoft/mana/gdma_main.c
++++ b/drivers/net/ethernet/microsoft/mana/gdma_main.c
+@@ -180,6 +180,62 @@ void mana_gd_free_memory(struct gdma_mem_info *gmi)
+ 			  gmi->dma_handle);
  }
  
--static int mana_cfg_vport(struct mana_port_context *apc, u32 protection_dom_id,
--			  u32 doorbell_pg_id)
-+void mana_uncfg_vport(struct mana_port_context *apc)
++int mana_gd_destroy_doorbell_page(struct gdma_context *gc, int doorbell_page)
 +{
-+	mutex_lock(&apc->vport_mutex);
-+	apc->vport_use_count--;
-+	WARN_ON(apc->vport_use_count < 0);
-+	mutex_unlock(&apc->vport_mutex);
-+}
-+EXPORT_SYMBOL_NS(mana_uncfg_vport, NET_MANA);
++	struct gdma_destroy_resource_range_req req = {};
++	struct gdma_resp_hdr resp = {};
++	int err;
 +
-+int mana_cfg_vport(struct mana_port_context *apc, u32 protection_dom_id,
-+		   u32 doorbell_pg_id)
- {
- 	struct mana_config_vport_resp resp = {};
- 	struct mana_config_vport_req req = {};
- 	int err;
- 
-+	/* This function is used to program the Ethernet port in the hardware
-+	 * table. It can be called from the Ethernet driver or the RDMA driver.
-+	 *
-+	 * For Ethernet usage, the hardware supports only one active user on a
-+	 * physical port. The driver checks on the port usage before programming
-+	 * the hardware when creating the RAW QP (RDMA driver) or exposing the
-+	 * device to kernel NET layer (Ethernet driver).
-+	 *
-+	 * Because the RDMA driver doesn't know in advance which QP type the
-+	 * user will create, it exposes the device with all its ports. The user
-+	 * may not be able to create RAW QP on a port if this port is already
-+	 * in used by the Ethernet driver from the kernel.
-+	 *
-+	 * This physical port limitation only applies to the RAW QP. For RC QP,
-+	 * the hardware doesn't have this limitation. The user can create RC
-+	 * QPs on a physical port up to the hardware limits independent of the
-+	 * Ethernet usage on the same port.
-+	 */
-+	mutex_lock(&apc->vport_mutex);
-+	if (apc->vport_use_count > 0) {
-+		mutex_unlock(&apc->vport_mutex);
-+		return -EBUSY;
++	mana_gd_init_req_hdr(&req.hdr, GDMA_DESTROY_RESOURCE_RANGE,
++			     sizeof(req), sizeof(resp));
++
++	req.resource_type = GDMA_RESOURCE_DOORBELL_PAGE;
++	req.num_resources = 1;
++	req.allocated_resources = doorbell_page;
++
++	err = mana_gd_send_request(gc, sizeof(req), &req, sizeof(resp), &resp);
++	if (err || resp.status) {
++		dev_err(gc->dev,
++			"Failed to destroy doorbell page: ret %d, 0x%x\n",
++			err, resp.status);
++		return err ? err : -EPROTO;
 +	}
-+	apc->vport_use_count++;
-+	mutex_unlock(&apc->vport_mutex);
 +
- 	mana_gd_init_req_hdr(&req.hdr, MANA_CONFIG_VPORT_TX,
- 			     sizeof(req), sizeof(resp));
- 	req.vport = apc->port_handle;
-@@ -679,9 +714,16 @@ static int mana_cfg_vport(struct mana_port_context *apc, u32 protection_dom_id,
- 
- 	apc->tx_shortform_allowed = resp.short_form_allowed;
- 	apc->tx_vp_offset = resp.tx_vport_offset;
++	return 0;
++}
++EXPORT_SYMBOL_NS(mana_gd_destroy_doorbell_page, NET_MANA);
 +
-+	netdev_info(apc->ndev, "Configured vPort %llu PD %u DB %u\n",
-+		    apc->port_handle, protection_dom_id, doorbell_pg_id);
- out:
-+	if (err)
-+		mana_uncfg_vport(apc);
++int mana_gd_allocate_doorbell_page(struct gdma_context *gc,
++				   int *doorbell_page)
++{
++	struct gdma_allocate_resource_range_req req = {};
++	struct gdma_allocate_resource_range_resp resp = {};
++	int err;
 +
- 	return err;
- }
-+EXPORT_SYMBOL_NS(mana_cfg_vport, NET_MANA);
- 
- static int mana_cfg_vport_steering(struct mana_port_context *apc,
- 				   enum TRI_STATE rx,
-@@ -742,6 +784,9 @@ static int mana_cfg_vport_steering(struct mana_port_context *apc,
- 			   resp.hdr.status);
- 		err = -EPROTO;
- 	}
++	mana_gd_init_req_hdr(&req.hdr, GDMA_ALLOCATE_RESOURCE_RANGE,
++			     sizeof(req), sizeof(resp));
 +
-+	netdev_info(ndev, "Configured steering vPort %llu entries %u\n",
-+		    apc->port_handle, num_entries);
- out:
- 	kfree(req);
- 	return err;
-@@ -1804,6 +1849,7 @@ static void mana_destroy_vport(struct mana_port_context *apc)
- 	}
- 
- 	mana_destroy_txq(apc);
-+	mana_uncfg_vport(apc);
- 
- 	if (gd->gdma_context->is_pf)
- 		mana_pf_deregister_hw_vport(apc);
-@@ -2076,6 +2122,9 @@ static int mana_probe_port(struct mana_context *ac, int port_idx,
- 	apc->pf_filter_handle = INVALID_MANA_HANDLE;
- 	apc->port_idx = port_idx;
- 
-+	mutex_init(&apc->vport_mutex);
-+	apc->vport_use_count = 0;
++	req.resource_type = GDMA_RESOURCE_DOORBELL_PAGE;
++	req.num_resources = 1;
++	req.alignment = 1;
 +
- 	ndev->netdev_ops = &mana_devops;
- 	ndev->ethtool_ops = &mana_ethtool_ops;
- 	ndev->mtu = ETH_DATA_LEN;
++	/* Have GDMA start searching from 0 */
++	req.allocated_resources = 0;
++
++	err = mana_gd_send_request(gc, sizeof(req), &req, sizeof(resp), &resp);
++	if (err || resp.hdr.status) {
++		dev_err(gc->dev,
++			"Failed to allocate doorbell page: ret %d, 0x%x\n",
++			err, resp.hdr.status);
++		return err ? err : -EPROTO;
++	}
++
++	*doorbell_page = resp.allocated_resources;
++
++	return 0;
++}
++EXPORT_SYMBOL_NS(mana_gd_allocate_doorbell_page, NET_MANA);
++
+ static int mana_gd_create_hw_eq(struct gdma_context *gc,
+ 				struct gdma_queue *queue)
+ {
 -- 
 2.17.1
 
