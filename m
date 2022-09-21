@@ -2,88 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A8B0D5BF6AD
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 08:51:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EE345BF6FE
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 09:07:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230236AbiIUGvQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 02:51:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49714 "EHLO
+        id S230105AbiIUHHR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 03:07:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230239AbiIUGuw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 02:50:52 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DA6E62ED;
-        Tue, 20 Sep 2022 23:50:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1663743023; x=1695279023;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=F0izjSUxDVeayqAB/0pmEcpo0FNEGPrPQXnhaxmAic8=;
-  b=I+MztIhsKxPZ/p+Va8Zu6n7FJ7jNvBeUi/8b9q3ImWl26fXhOgxDifER
-   jHM3kkVB2yqhq+pebi/UNS3ND/edQAU7NisT/lVfSVyhhjDq97ujvuSlb
-   cYZjx4H56TF0djzW98f/iLbVR4YdTle8DhenBjP5yrrsxrKwg/AluQFBE
-   eiWrUsgdfXCMa9+gCywCw0DP8O5PZWdOtkwunttfWVHauuTUGj7QyHpnV
-   zah2MOBY1RQTfB5FwXjt5YNfir29GPx24MkuAgyhQZ/8YIJmc5RGeLwu5
-   Vb2olBfivGxfqE5S82vbk1Kw1y80KG9EwiOm0Wi+/kDeDK08ExRDmI3UL
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.93,332,1654585200"; 
-   d="scan'208";a="174863270"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 20 Sep 2022 23:50:23 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 20 Sep 2022 23:50:21 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Tue, 20 Sep 2022 23:50:19 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next] net: phy: micrel: Fix double spaces inside lan8814_config_intr
-Date:   Wed, 21 Sep 2022 08:54:44 +0200
-Message-ID: <20220921065444.637067-1-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
+        with ESMTP id S230094AbiIUHHO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 03:07:14 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C75C4663F
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 00:07:13 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1oatop-0003As-K9; Wed, 21 Sep 2022 09:06:51 +0200
+Received: from pengutronix.de (hardanger-2.fritz.box [IPv6:2a03:f580:87bc:d400:f566:9915:77e6:ceb3])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 3EEF7E8203;
+        Wed, 21 Sep 2022 07:06:50 +0000 (UTC)
+Date:   Wed, 21 Sep 2022 09:06:49 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Matej Vasilevski <matej.vasilevski@seznam.cz>
+Cc:     Pavel Pisa <pisa@cmp.felk.cvut.cz>,
+        Ondrej Ille <ondrej.ille@gmail.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v4 2/3] can: ctucanfd: add HW timestamps to RX and error
+ CAN frames
+Message-ID: <20220920221450.poy5phzx564k36qn@pengutronix.de>
+References: <20220914233944.598298-1-matej.vasilevski@seznam.cz>
+ <20220914233944.598298-3-matej.vasilevski@seznam.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="dvrixjtqc5qvlwxk"
+Content-Disposition: inline
+In-Reply-To: <20220914233944.598298-3-matej.vasilevski@seznam.cz>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Inside the function lan8814_config_intr, there are double spaces when
-assigning the return value of phy_write to err.
 
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- drivers/net/phy/micrel.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+--dvrixjtqc5qvlwxk
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="s5pcgxzoguqlmlik"
+Content-Disposition: inline
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index c225df56b7d26..f5c3c5c2fe11f 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -2874,9 +2874,9 @@ static int lan8814_config_intr(struct phy_device *phydev)
- 		if (err)
- 			return err;
- 
--		err =  phy_write(phydev, LAN8814_INTC, LAN8814_INT_LINK);
-+		err = phy_write(phydev, LAN8814_INTC, LAN8814_INT_LINK);
- 	} else {
--		err =  phy_write(phydev, LAN8814_INTC, 0);
-+		err = phy_write(phydev, LAN8814_INTC, 0);
- 		if (err)
- 			return err;
- 
--- 
-2.33.0
 
+--s5pcgxzoguqlmlik
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On 15.09.2022 01:39:43, Matej Vasilevski wrote:
+[...]
+
+>  	/* Check for big-endianity and set according IO-accessors */
+>  	if ((ctucan_read32(priv, CTUCANFD_DEVICE_ID) & 0xFFFF) !=3D CTUCANFD_ID=
+) {
+> @@ -1425,6 +1582,49 @@ int ctucan_probe_common(struct device *dev, void _=
+_iomem *addr, int irq, unsigne
+> =20
+>  	priv->can.clock.freq =3D can_clk_rate;
+> =20
+> +	/* Obtain timestamping counter bit size */
+> +	timestamp_bit_size =3D FIELD_GET(REG_ERR_CAPT_TS_BITS,
+> +				       ctucan_read32(priv, CTUCANFD_ERR_CAPT));
+> +
+> +	/* The register value is actually bit_size - 1 */
+> +	if (timestamp_bit_size) {
+> +		timestamp_bit_size +=3D 1;
+> +	} else {
+> +		/* For 2.x versions of the IP core, we will assume 64-bit counter
+> +		 * if there was a 0 in the register.
+> +		 */
+> +		u32 version_reg =3D ctucan_read32(priv, CTUCANFD_DEVICE_ID);
+> +		u32 major =3D FIELD_GET(REG_DEVICE_ID_VER_MAJOR, version_reg);
+> +
+> +		if (major =3D=3D 2)
+> +			timestamp_bit_size =3D 64;
+> +		else
+> +			priv->timestamp_possible =3D false;
+> +	}
+> +
+> +	/* Setup conversion constants and work delay */
+> +	priv->cc.mask =3D CYCLECOUNTER_MASK(timestamp_bit_size);
+> +	if (priv->timestamp_possible) {
+> +		u64 max_cycles;
+> +		u64 work_delay_ns;
+> +		u32 maxsec =3D min_t(u32, CTUCANFD_MAX_WORK_DELAY_SEC,
+> +				   div_u64(priv->cc.mask, timestamp_freq));
+> +
+> +		priv->cc.read =3D ctucan_read_timestamp_cc_wrapper;
+> +		clocks_calc_mult_shift(&priv->cc.mult, &priv->cc.shift,
+> +				       timestamp_freq, NSEC_PER_SEC, maxsec);
+> +
+> +		/* shortened copy of clocks_calc_max_nsecs() */
+> +		max_cycles =3D div_u64(ULLONG_MAX, priv->cc.mult);
+> +		max_cycles =3D min(max_cycles, priv->cc.mask);
+> +		work_delay_ns =3D clocksource_cyc2ns(max_cycles, priv->cc.mult,
+> +						   priv->cc.shift) >> 1;
+
+I just ported the code to another driver with dynamic frequency and
+width. I noticed that the shift of 1 is not enough. With 2 it works.
+
+regards,
+MArc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--s5pcgxzoguqlmlik--
+
+--dvrixjtqc5qvlwxk
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmMquAcACgkQrX5LkNig
+012aPQf+P/mj/TEcAdI3Be4pkcF4qImtZF6LaZM5OrHc4iFbySunnpJHsg0FKrir
+0gai4uY2wGpxWkNc5yZri5B83wWMtQsBJP/+ct0Nju8VnQADAlgGBBBMwK77qWR9
+qfHRIQLL/MiWtZAQkxE/wLBGBQQhRHz1aZOv/wqn292wOMF81MS1e83AVHHHr/8E
+YQ/x5lrgtVd1+JtgoAPNvmpKNvIqwa8dUmrKHT18RBwkOE+lz6qsr8wYKMz6P5Ix
+ggULkhfKCqrGF9rx9Xbx8xBQGbxc12/qW6//E08UmcyXAJMEr6ljP5qz1pskDMCa
+TcwPwhXXkmKEh77CClksVGgjIUue+w==
+=mHOw
+-----END PGP SIGNATURE-----
+
+--dvrixjtqc5qvlwxk--
