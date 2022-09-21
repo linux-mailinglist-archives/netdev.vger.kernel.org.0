@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA56D5BF3D3
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 04:52:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C54155BF3E4
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 04:52:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230448AbiIUCth (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 22:49:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44046 "EHLO
+        id S230523AbiIUCto (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 22:49:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230252AbiIUCtc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 22:49:32 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B14F52F6;
-        Tue, 20 Sep 2022 19:49:29 -0700 (PDT)
+        with ESMTP id S229676AbiIUCte (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 22:49:34 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BCEEB58;
+        Tue, 20 Sep 2022 19:49:30 -0700 (PDT)
 Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MXN6k5BMWzMnmJ;
-        Wed, 21 Sep 2022 10:44:46 +0800 (CST)
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MXN7Q2pBTz14RP4;
+        Wed, 21 Sep 2022 10:45:22 +0800 (CST)
 Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
  (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Wed, 21 Sep
- 2022 10:49:27 +0800
+ 2022 10:49:28 +0800
 From:   Zhengchao Shao <shaozhengchao@huawei.com>
 To:     <netdev@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
         <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
         <shuah@kernel.org>, <victor@mojatatu.com>
 CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
         <shaozhengchao@huawei.com>
-Subject: [PATCH net-next,v2 05/15] selftests/tc-testing: add selftests for fq qdisc
-Date:   Wed, 21 Sep 2022 10:50:42 +0800
-Message-ID: <20220921025052.23465-6-shaozhengchao@huawei.com>
+Subject: [PATCH net-next,v2 06/15] selftests/tc-testing: add selftests for gred qdisc
+Date:   Wed, 21 Sep 2022 10:50:43 +0800
+Message-ID: <20220921025052.23465-7-shaozhengchao@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220921025052.23465-1-shaozhengchao@huawei.com>
 References: <20220921025052.23465-1-shaozhengchao@huawei.com>
@@ -47,43 +47,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Test 983b: Create FQ with default setting
-Test 38a1: Create FQ with limit packet setting
-Test 0a18: Create FQ with flow_limit setting
-Test 2390: Create FQ with quantum setting
-Test 845b: Create FQ with initial_quantum setting
-Test 9398: Create FQ with maxrate setting
-Test 342c: Create FQ with nopacing setting
-Test 6391: Create FQ with refill_delay setting
-Test 238b: Create FQ with low_rate_threshold setting
-Test 7582: Create FQ with orphan_mask setting
-Test 4894: Create FQ with timer_slack setting
-Test 324c: Create FQ with ce_threshold setting
-Test 424a: Create FQ with horizon time setting
-Test 89e1: Create FQ with horizon_cap setting
-Test 32e1: Delete FQ with valid handle
-Test 49b0: Replace FQ with limit setting
-Test 9478: Change FQ with limit setting
+Test 8942: Create GRED with default setting
+Test 5783: Create GRED with grio setting
+Test 8a09: Create GRED with limit setting
+Test 48cb: Create GRED with ecn setting
+Test 763a: Change GRED setting
+Test 8309: Show GRED class
 
 Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 ---
- .../tc-testing/tc-tests/qdiscs/fq.json        | 395 ++++++++++++++++++
- 1 file changed, 395 insertions(+)
- create mode 100644 tools/testing/selftests/tc-testing/tc-tests/qdiscs/fq.json
+ .../tc-testing/tc-tests/qdiscs/gred.json      | 164 ++++++++++++++++++
+ 1 file changed, 164 insertions(+)
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/qdiscs/gred.json
 
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/qdiscs/fq.json b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/fq.json
+diff --git a/tools/testing/selftests/tc-testing/tc-tests/qdiscs/gred.json b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/gred.json
 new file mode 100644
-index 000000000000..8acb904d1419
+index 000000000000..013c8ee037a4
 --- /dev/null
-+++ b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/fq.json
-@@ -0,0 +1,395 @@
++++ b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/gred.json
+@@ -0,0 +1,164 @@
 +[
 +    {
-+        "id": "983b",
-+        "name": "Create FQ with default setting",
++        "id": "8942",
++        "name": "Create GRED with default setting",
 +        "category": [
 +            "qdisc",
-+            "fq"
++            "gred"
 +        ],
 +        "plugins": {
 +            "requires": "nsPlugin"
@@ -91,10 +80,10 @@ index 000000000000..8acb904d1419
 +        "setup": [
 +            "$IP link add dev $DUMMY type dummy || /bin/true"
 +        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root fq",
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root gred setup vqs 10 default 1",
 +        "expExitCode": "0",
 +        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc fq 1: root refcnt [0-9]+ limit",
++        "matchPattern": "qdisc gred 1: root refcnt [0-9]+ vqs 10 default 1",
 +        "matchCount": "1",
 +        "teardown": [
 +            "$TC qdisc del dev $DUMMY handle 1: root",
@@ -102,11 +91,11 @@ index 000000000000..8acb904d1419
 +        ]
 +    },
 +    {
-+        "id": "38a1",
-+        "name": "Create FQ with limit packet setting",
++        "id": "5783",
++        "name": "Create GRED with grio setting",
 +        "category": [
 +            "qdisc",
-+            "fq"
++            "gred"
 +        ],
 +        "plugins": {
 +            "requires": "nsPlugin"
@@ -114,10 +103,10 @@ index 000000000000..8acb904d1419
 +        "setup": [
 +            "$IP link add dev $DUMMY type dummy || /bin/true"
 +        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root fq limit 3000",
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root gred setup vqs 10 default 1 grio",
 +        "expExitCode": "0",
 +        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc fq 1: root refcnt [0-9]+ limit 3000p",
++        "matchPattern": "qdisc gred 1: root refcnt [0-9]+ vqs 10 default 1.*grio",
 +        "matchCount": "1",
 +        "teardown": [
 +            "$TC qdisc del dev $DUMMY handle 1: root",
@@ -125,11 +114,11 @@ index 000000000000..8acb904d1419
 +        ]
 +    },
 +    {
-+        "id": "0a18",
-+        "name": "Create FQ with flow_limit setting",
++        "id": "8a09",
++        "name": "Create GRED with limit setting",
 +        "category": [
 +            "qdisc",
-+            "fq"
++            "gred"
 +        ],
 +        "plugins": {
 +            "requires": "nsPlugin"
@@ -137,10 +126,10 @@ index 000000000000..8acb904d1419
 +        "setup": [
 +            "$IP link add dev $DUMMY type dummy || /bin/true"
 +        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root fq flow_limit 300",
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root gred setup vqs 10 default 1 limit 1000",
 +        "expExitCode": "0",
 +        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc fq 1: root refcnt [0-9]+ limit 10000p flow_limit 300p",
++        "matchPattern": "qdisc gred 1: root refcnt [0-9]+ vqs 10 default 1 limit 1000b",
 +        "matchCount": "1",
 +        "teardown": [
 +            "$TC qdisc del dev $DUMMY handle 1: root",
@@ -148,11 +137,11 @@ index 000000000000..8acb904d1419
 +        ]
 +    },
 +    {
-+        "id": "2390",
-+        "name": "Create FQ with quantum setting",
++        "id": "48ca",
++        "name": "Create GRED with ecn setting",
 +        "category": [
 +            "qdisc",
-+            "fq"
++            "gred"
 +        ],
 +        "plugins": {
 +            "requires": "nsPlugin"
@@ -160,10 +149,10 @@ index 000000000000..8acb904d1419
 +        "setup": [
 +            "$IP link add dev $DUMMY type dummy || /bin/true"
 +        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root fq quantum 9000",
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root gred setup vqs 10 default 2 ecn",
 +        "expExitCode": "0",
 +        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc fq 1: root refcnt [0-9]+ limit 10000p flow_limit 100p buckets.*orphan_mask 1023 quantum 9000b",
++        "matchPattern": "qdisc gred 1: root refcnt [0-9]+ vqs 10 default 2.*ecn",
 +        "matchCount": "1",
 +        "teardown": [
 +            "$TC qdisc del dev $DUMMY handle 1: root",
@@ -171,11 +160,11 @@ index 000000000000..8acb904d1419
 +        ]
 +    },
 +    {
-+        "id": "845b",
-+        "name": "Create FQ with initial_quantum setting",
++        "id": "48cb",
++        "name": "Create GRED with harddrop setting",
 +        "category": [
 +            "qdisc",
-+            "fq"
++            "gred"
 +        ],
 +        "plugins": {
 +            "requires": "nsPlugin"
@@ -183,10 +172,10 @@ index 000000000000..8acb904d1419
 +        "setup": [
 +            "$IP link add dev $DUMMY type dummy || /bin/true"
 +        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root fq initial_quantum 900000",
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root gred setup vqs 10 default 2 harddrop",
 +        "expExitCode": "0",
 +        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc fq 1: root refcnt [0-9]+ limit 10000p flow_limit 100p buckets.*initial_quantum 900000b",
++        "matchPattern": "qdisc gred 1: root refcnt [0-9]+ vqs 10 default 2.*harddrop",
 +        "matchCount": "1",
 +        "teardown": [
 +            "$TC qdisc del dev $DUMMY handle 1: root",
@@ -194,278 +183,47 @@ index 000000000000..8acb904d1419
 +        ]
 +    },
 +    {
-+        "id": "9398",
-+        "name": "Create FQ with maxrate setting",
++        "id": "763a",
++        "name": "Change GRED setting",
 +        "category": [
 +            "qdisc",
-+            "fq"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true"
-+        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root fq maxrate 100000",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc fq 1: root refcnt [0-9]+ limit 10000p flow_limit 100p buckets.*maxrate 100Kbit",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DUMMY handle 1: root",
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    },
-+    {
-+        "id": "342c",
-+        "name": "Create FQ with nopacing setting",
-+        "category": [
-+            "qdisc",
-+            "fq"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true"
-+        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root fq nopacing",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc fq 1: root refcnt [0-9]+ limit 10000p flow_limit 100p.*nopacing",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DUMMY handle 1: root",
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    },
-+    {
-+        "id": "6391",
-+        "name": "Create FQ with refill_delay setting",
-+        "category": [
-+            "qdisc",
-+            "fq"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true"
-+        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root fq refill_delay 100ms",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc fq 1: root refcnt [0-9]+ limit 10000p flow_limit 100p.*refill_delay 100ms",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DUMMY handle 1: root",
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    },
-+    {
-+        "id": "238b",
-+        "name": "Create FQ with low_rate_threshold setting",
-+        "category": [
-+            "qdisc",
-+            "fq"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true"
-+        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root fq low_rate_threshold 10000",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc fq 1: root refcnt [0-9]+ limit 10000p flow_limit 100p.*low_rate_threshold 10Kbit",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DUMMY handle 1: root",
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    },
-+    {
-+        "id": "7582",
-+        "name": "Create FQ with orphan_mask setting",
-+        "category": [
-+            "qdisc",
-+            "fq"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true"
-+        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root fq orphan_mask 255",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc fq 1: root refcnt [0-9]+ limit 10000p flow_limit 100p.*orphan_mask 255",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DUMMY handle 1: root",
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    },
-+    {
-+        "id": "4894",
-+        "name": "Create FQ with timer_slack setting",
-+        "category": [
-+            "qdisc",
-+            "fq"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true"
-+        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root fq timer_slack 100",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc fq 1: root refcnt [0-9]+ limit 10000p flow_limit 100p.*timer_slack 100ns",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DUMMY handle 1: root",
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    },
-+    {
-+        "id": "324c",
-+        "name": "Create FQ with ce_threshold setting",
-+        "category": [
-+            "qdisc",
-+            "fq"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true"
-+        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root fq ce_threshold 100",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc fq 1: root refcnt [0-9]+ limit 10000p flow_limit 100p",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DUMMY handle 1: root",
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    },
-+    {
-+        "id": "424a",
-+        "name": "Create FQ with horizon time setting",
-+        "category": [
-+            "qdisc",
-+            "fq"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true"
-+        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root fq horizon 100",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc fq 1: root refcnt [0-9]+ limit 10000p flow_limit 100p.*horizon 100us",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DUMMY handle 1: root",
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    },
-+    {
-+        "id": "89e1",
-+        "name": "Create FQ with horizon_cap setting",
-+        "category": [
-+            "qdisc",
-+            "fq"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true"
-+        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root fq horizon_cap",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc fq 1: root refcnt [0-9]+ limit 10000p flow_limit 100p.*horizon_cap",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DUMMY handle 1: root",
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    },
-+    {
-+        "id": "32e1",
-+        "name": "Delete FQ with valid handle",
-+        "category": [
-+            "qdisc",
-+            "fq"
++            "gred"
 +        ],
 +        "plugins": {
 +            "requires": "nsPlugin"
 +        },
 +        "setup": [
 +            "$IP link add dev $DUMMY type dummy || /bin/true",
-+            "$TC qdisc add dev $DUMMY handle 1: root fq"
++            "$TC qdisc add dev $DUMMY handle 1: root gred setup vqs 10 default 1"
 +        ],
-+        "cmdUnderTest": "$TC qdisc del dev $DUMMY handle 1: root",
++        "cmdUnderTest": "$TC qdisc change dev $DUMMY handle 1: root gred limit 60KB min 15K max 25K burst 64 avpkt 1500 bandwidth 10Mbit DP 1 probability 0.1",
 +        "expExitCode": "0",
 +        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc fq 1: root refcnt [0-9]+ limit 10000p",
++        "matchPattern": "qdisc gred 1: root refcnt [0-9]+ vqs 10 default 1 limit.*vq 1 prio [0-9]+ limit 60Kb min 15Kb max 25Kb",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "8309",
++        "name": "Show GRED class",
++        "category": [
++            "qdisc",
++            "gred"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root gred setup vqs 10 default 1",
++        "expExitCode": "0",
++        "verifyCmd": "$TC class show dev $DUMMY",
++        "matchPattern": "class gred 1:",
 +        "matchCount": "0",
-+        "teardown": [
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    },
-+    {
-+        "id": "49b0",
-+        "name": "Replace FQ with limit setting",
-+        "category": [
-+            "qdisc",
-+            "fq"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true",
-+            "$TC qdisc add dev $DUMMY handle 1: root fq"
-+        ],
-+        "cmdUnderTest": "$TC qdisc replace dev $DUMMY handle 1: root fq limit 5000",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc fq 1: root refcnt [0-9]+ limit 5000p",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DUMMY handle 1: root",
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    },
-+    {
-+        "id": "9478",
-+        "name": "Change FQ with limit setting",
-+        "category": [
-+            "qdisc",
-+            "fq"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true",
-+            "$TC qdisc add dev $DUMMY handle 1: root fq"
-+        ],
-+        "cmdUnderTest": "$TC qdisc change dev $DUMMY handle 1: root fq limit 100",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc fq 1: root refcnt [0-9]+ limit 100p",
-+        "matchCount": "1",
 +        "teardown": [
 +            "$TC qdisc del dev $DUMMY handle 1: root",
 +            "$IP link del dev $DUMMY type dummy"
