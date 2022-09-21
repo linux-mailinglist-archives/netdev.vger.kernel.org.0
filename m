@@ -2,417 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 31A695E5476
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 22:23:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59BA55E547A
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 22:26:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230225AbiIUUXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 16:23:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45148 "EHLO
+        id S230403AbiIUU0N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 16:26:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230227AbiIUUXd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 16:23:33 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90D1AA4B0B
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 13:23:31 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id bu5-20020a17090aee4500b00202e9ca2182so4381566pjb.0
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 13:23:31 -0700 (PDT)
+        with ESMTP id S229876AbiIUU0M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 16:26:12 -0400
+Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D90B8792EE
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 13:26:08 -0700 (PDT)
+Received: by mail-qv1-xf31.google.com with SMTP id y9so5344254qvo.4
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 13:26:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date;
-        bh=aGQJorkmLb2mT6TRXHkb14jfmbq6wubGFCZXBNCDrY8=;
-        b=PYYhMxZOW9LLqr5Rsv6FLVCc23su5HC9x7+ceXWx+yV/P5qvZxMpeERV9T2ldy8vUO
-         riZDSI0jBXedVigszWV9De2Vgx5znCNeQQL01r+0sMkQniUCpXit2ytb1JgtriSkP3+4
-         csUSh1MQ+A32Zv3qq3T+Hn0Tr17VAkts/unAJo4IUNno6LMDB4I2NK4DRNN9EZ9VZu6t
-         eR8GYRRkz8rTpY/BtYYMMiDwCF2KxgX4BC8igPzIHfghfzDj50mvy2FnNr7rgu+NeJ7q
-         6exoQB82Zye+aSN9h/e2p8umpB7wiYV3DhDGJBNo5pSOaSXNe4nnnmhQat3xKAMxlwlK
-         Oi3Q==
+        d=broadcom.com; s=google;
+        h=in-reply-to:mime-version:references:message-id:subject:cc:to:date
+         :from:from:to:cc:subject:date;
+        bh=JgINNZslQYjKcYHtDVWQB/RRU9JQwcf5bcLp2/xPF+U=;
+        b=AsDjAj1h9xuvdkzXdG7UqEJ0iaOBAvGRKgEqHzoc+NU2PlI09XYaNzgjzWaIAgu9WY
+         R0Kw5AdbTKkjaYds/LQKq7DyDz8jA9FwAyPZYehTe/lFrjt10l9R75eDnoa5WVWpuQ4W
+         ROdylnUZipXalNOgUmivTOJ/LKYAsbGBA8c9M=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=aGQJorkmLb2mT6TRXHkb14jfmbq6wubGFCZXBNCDrY8=;
-        b=l8Kov66zRhMwZW5WNs97pBXjaPDRCfFg5v0+ttyqik+pKwSgbtqrRdq+6ESjB33RDg
-         0F37mfwRsj/Kh25avZ0mTXAXwRFxg1dD3tHrODiKsiA5eG715VSvdR7nhkUK/GJK3HCO
-         TeM85LOGT1tBSAokHiBtCaXWELiU9zxnrMk75g1Ircm2M+Nc/VDqjjZ7VfUti4Z/bIZG
-         FZuvat/68mJNWrGlDCuWvY4odS+52rekBO4ACFr8iw5WOMHdq0+tKxO4b+yGUp+x2b+x
-         X9spyz+kjUL0JBysPq7euQa8WORt59uBrpeHP0v6XivtTQqXMCsRVTKOHhT3C7QBwlC2
-         YgFQ==
-X-Gm-Message-State: ACrzQf2VNsVnowzhEOowFjbfPhaEZeQZAmf7EaHORF3Vd09ba2qdadJg
-        J6JbrwDO6gKSZOMc0Ra8gVg=
-X-Google-Smtp-Source: AMsMyM5ekTaa0eodZog3F50k6NA+Ik+fEMkDUmAeQK8yAc8BPcJhH2CaMIKEjBOK0X/2qlNa+H2/Rg==
-X-Received: by 2002:a17:90b:4a48:b0:202:9bcb:b89c with SMTP id lb8-20020a17090b4a4800b002029bcbb89cmr11766588pjb.161.1663791810862;
-        Wed, 21 Sep 2022 13:23:30 -0700 (PDT)
-Received: from [192.168.0.128] ([98.97.37.164])
-        by smtp.googlemail.com with ESMTPSA id 5-20020a620505000000b00541206f9379sm2648340pff.99.2022.09.21.13.23.29
+        h=in-reply-to:mime-version:references:message-id:subject:cc:to:date
+         :from:x-gm-message-state:from:to:cc:subject:date;
+        bh=JgINNZslQYjKcYHtDVWQB/RRU9JQwcf5bcLp2/xPF+U=;
+        b=uS95+hDMKxdAqYH2kgnZ9iVjKRGQOmwu4m0Uab4RcKdnUloxhsO3tzMsAQ2EJqHG0x
+         KhR54GfZfzJMp7dvXfIwie5mOhTcMEnku3WKviL2nX1ujOBzkQGYHCPtJ0ZO9on5rlg/
+         i8G83nSiWLxJrfp483kp1Y4uQ1ipneV+ldyYuKJOPBartSJT/dLFEueRJ78P3HrNGX5f
+         6KcL2ovfg8HesjcoKm6LgFnDWn4pJaP3AsxN/vhu9S53dkg7/2gJcWzNutSxDtmEjlZU
+         kTcz2+r520DWrIBZIVBSCkTCadpvuXM0RfSw29s3uREeMhBS2M7FiHxGIwnuotld7XA0
+         dOeg==
+X-Gm-Message-State: ACrzQf0YHBfD5jUNrtM4yx/0hi0+oGgrVAAggFX3PeZW1nxMsiMX47Tp
+        kr9+No5fIkO/DpzwFRhSrH4elw==
+X-Google-Smtp-Source: AMsMyM4Cl5AbkkVYma2g5DJBnQdcfnRv9oPm1qzztSvyuDLBjCyyYFU5eYaF0iqsHbFS86VIAUFQow==
+X-Received: by 2002:ad4:5ec5:0:b0:49c:cf39:d4d2 with SMTP id jm5-20020ad45ec5000000b0049ccf39d4d2mr24724240qvb.6.1663791967951;
+        Wed, 21 Sep 2022 13:26:07 -0700 (PDT)
+Received: from C02YVCJELVCG ([136.56.55.162])
+        by smtp.gmail.com with ESMTPSA id c15-20020ac8110f000000b0035bbb0fe90bsm2186823qtj.47.2022.09.21.13.26.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Sep 2022 13:23:30 -0700 (PDT)
-Message-ID: <1642882091e772bcdbf44e61fe5fce125a034e52.camel@gmail.com>
-Subject: Re: [PATCH net-next] net: skb: introduce and use a single page frag
- cache
-From:   Alexander H Duyck <alexander.duyck@gmail.com>
-To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Date:   Wed, 21 Sep 2022 13:23:28 -0700
-In-Reply-To: <cb3f22f20f3ecb8b049c3e590fd99c52006ef964.camel@redhat.com>
-References: <59a54c9a654fe19cc9fb7da5b2377029d93a181e.1663778475.git.pabeni@redhat.com>
-         <e2bf192391a86358f5c7502980268f17682bb328.camel@gmail.com>
-         <cb3f22f20f3ecb8b049c3e590fd99c52006ef964.camel@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
+        Wed, 21 Sep 2022 13:26:06 -0700 (PDT)
+From:   Andy Gospodarek <andrew.gospodarek@broadcom.com>
+X-Google-Original-From: Andy Gospodarek <gospo@broadcom.com>
+Date:   Wed, 21 Sep 2022 16:25:59 -0400
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, michael.chan@broadcom.com,
+        pavan.chebbi@broadcom.com, andrew.gospodarek@broadcom.com
+Subject: Re: [PATCH net] bnxt: prevent skb UAF after handing over to PTP
+ worker
+Message-ID: <YytzV3H+fSqBbxTh@C02YVCJELVCG>
+References: <20220921201005.335390-1-kuba@kernel.org>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220921201005.335390-1-kuba@kernel.org>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="0000000000003f233105e935c1c2"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-09-21 at 21:33 +0200, Paolo Abeni wrote:
-> On Wed, 2022-09-21 at 11:11 -0700, Alexander H Duyck wrote:
-> > On Wed, 2022-09-21 at 18:41 +0200, Paolo Abeni wrote:
-> > > After commit 3226b158e67c ("net: avoid 32 x truesize under-estimation
-> > > for tiny skbs") we are observing 10-20% regressions in performance
-> > > tests with small packets. The perf trace points to high pressure on
-> > > the slab allocator.
-> > >=20
-> > > This change tries to improve the allocation schema for small packets
-> > > using an idea originally suggested by Eric: a new per CPU page frag i=
-s
-> > > introduced and used in __napi_alloc_skb to cope with small allocation
-> > > requests.
-> > >=20
-> > > To ensure that the above does not lead to excessive truesize
-> > > underestimation, the frag size for small allocation is inflated to 1K
-> > > and all the above is restricted to build with 4K page size.
-> > >=20
-> > > Note that we need to update accordingly the run-time check introduced
-> > > with commit fd9ea57f4e95 ("net: add napi_get_frags_check() helper").
-> > >=20
-> > > Alex suggested a smart page refcount schema to reduce the number
-> > > of atomic operations and deal properly with pfmemalloc pages.
-> > >=20
-> > > Under small packet UDP flood, I measure a 15% peak tput increases.
-> > >=20
-> > > Suggested-by: Eric Dumazet <eric.dumazet@gmail.com>
-> > > Suggested-by: Alexander H Duyck <alexander.duyck@gmail.com>
-> > > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> > > ---
-> > > @Eric, @Alex please let me know if you are comfortable with the
-> > > attribution
-> > > ---
-> > >  include/linux/netdevice.h |   1 +
-> > >  net/core/dev.c            |  17 ------
-> > >  net/core/skbuff.c         | 115 ++++++++++++++++++++++++++++++++++++=
-+-
-> > >  3 files changed, 113 insertions(+), 20 deletions(-)
-> > >=20
-> > > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> > > index 9f42fc871c3b..a1938560192a 100644
-> > > --- a/include/linux/netdevice.h
-> > > +++ b/include/linux/netdevice.h
-> > > @@ -3822,6 +3822,7 @@ void netif_receive_skb_list(struct list_head *h=
-ead);
-> > >  gro_result_t napi_gro_receive(struct napi_struct *napi, struct sk_bu=
-ff *skb);
-> > >  void napi_gro_flush(struct napi_struct *napi, bool flush_old);
-> > >  struct sk_buff *napi_get_frags(struct napi_struct *napi);
-> > > +void napi_get_frags_check(struct napi_struct *napi);
-> > >  gro_result_t napi_gro_frags(struct napi_struct *napi);
-> > >  struct packet_offload *gro_find_receive_by_type(__be16 type);
-> > >  struct packet_offload *gro_find_complete_by_type(__be16 type);
-> > > diff --git a/net/core/dev.c b/net/core/dev.c
-> > > index d66c73c1c734..fa53830d0683 100644
-> > > --- a/net/core/dev.c
-> > > +++ b/net/core/dev.c
-> > > @@ -6358,23 +6358,6 @@ int dev_set_threaded(struct net_device *dev, b=
-ool threaded)
-> > >  }
-> > >  EXPORT_SYMBOL(dev_set_threaded);
-> > > =20
-> > > -/* Double check that napi_get_frags() allocates skbs with
-> > > - * skb->head being backed by slab, not a page fragment.
-> > > - * This is to make sure bug fixed in 3226b158e67c
-> > > - * ("net: avoid 32 x truesize under-estimation for tiny skbs")
-> > > - * does not accidentally come back.
-> > > - */
-> > > -static void napi_get_frags_check(struct napi_struct *napi)
-> > > -{
-> > > -	struct sk_buff *skb;
-> > > -
-> > > -	local_bh_disable();
-> > > -	skb =3D napi_get_frags(napi);
-> > > -	WARN_ON_ONCE(skb && skb->head_frag);
-> > > -	napi_free_frags(napi);
-> > > -	local_bh_enable();
-> > > -}
-> > > -
-> > >  void netif_napi_add_weight(struct net_device *dev, struct napi_struc=
-t *napi,
-> > >  			   int (*poll)(struct napi_struct *, int), int weight)
-> > >  {
-> > > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> > > index f1b8b20fc20b..2be11b487df1 100644
-> > > --- a/net/core/skbuff.c
-> > > +++ b/net/core/skbuff.c
-> > > @@ -134,8 +134,73 @@ static void skb_under_panic(struct sk_buff *skb,=
- unsigned int sz, void *addr)
-> > >  #define NAPI_SKB_CACHE_BULK	16
-> > >  #define NAPI_SKB_CACHE_HALF	(NAPI_SKB_CACHE_SIZE / 2)
-> > > =20
-> > > +/* the compiler doesn't like 'SKB_TRUESIZE(GRO_MAX_HEAD) > 512', but=
- we
-> > > + * can imply such condition checking the double word and MAX_HEADER =
-size
-> > > + */
-> > > +#if PAGE_SIZE =3D=3D SZ_4K && (defined(CONFIG_64BIT) || MAX_HEADER >=
- 64)
-> > > +
-> > > +#define NAPI_HAS_SMALL_PAGE_FRAG 1
-> > > +
-> > > +/* specializzed page frag allocator using a single order 0 page
-> > > + * and slicing it into 1K sized fragment. Constrained to system
-> > > + * with:
-> > > + * - a very limited amount of 1K fragments fitting a single
-> > > + *   page - to avoid excessive truesize underestimation
-> > > + * - reasonably high truesize value for napi_get_frags()
-> > > + *   allocation - to avoid memory usage increased compared
-> > > + *   to kalloc, see __napi_alloc_skb()
-> > > + *
-> > > + */
-> > > +struct page_frag_1k {
-> > > +	void *va;
-> > > +	u16 offset;
-> > > +	bool pfmemalloc;
-> > > +};
-> > > +
-> > > +static void *page_frag_alloc_1k(struct page_frag_1k *nc, gfp_t gfp)
-> > > +{
-> > > +	struct page *page;
-> > > +	int offset;
-> > > +
-> > > +	if (likely(nc->va)) {
-> > > +		offset =3D nc->offset - SZ_1K;
-> > > +		if (likely(offset >=3D 0))
-> > > +			goto out;
-> > > +
-> > > +		put_page(virt_to_page(nc->va));
-> > > +	}
-> > > +
-> > > +	page =3D alloc_pages_node(NUMA_NO_NODE, gfp, 0);
-> > > +	if (!page) {
-> > > +		nc->va =3D NULL;
-> > > +		return NULL;
-> > > +	}
-> > > +
-> > > +	nc->va =3D page_address(page);
-> > > +	nc->pfmemalloc =3D page_is_pfmemalloc(page);
-> > > +	page_ref_add(page, PAGE_SIZE / SZ_1K);
-> > > +	offset =3D PAGE_SIZE - SZ_1K;
-> > > +
-> > > +out:
-> > > +	nc->offset =3D offset;
-> > > +	return nc->va + offset;
-> >=20
-> > So you might be better off organizing this around the offset rather
-> > than the virtual address. As long as offset is 0 you know the page
-> > isn't there and has to be replaced.
-> >=20
-> > 	offset =3D nc->offset - SZ_1K;
-> > 	if (offset >=3D 0)
-> > 		goto out;
-> >=20
-> > 	page =3D alloc_pages_node(NUMA_NO_NODE, gfp, 0);
-> > 	if (!page)
-> > 		return NULL;
-> >=20
-> > 	nc->va =3D page_address(page);
-> > 	nc->pfmemalloc =3D page_is_pfmemalloc(page);
-> > 	offset =3D PAGE_SIZE - SZ_1K;
-> > 	page_ref_add(page, offset / SZ_1K);
-> > out:
-> > 	nc->offset =3D offset;
-> > 	return nc->va + offset;
-> >=20
-> > That will save you from having to call put_page and cleans it up so you
-> > only have to perform 1 conditional check instead of 2 in the fast path.
->=20
-> Nice! I'll use that in v2, with page_ref_add(page, offset / SZ_1K - 1);
-> or we will leak the page.
+--0000000000003f233105e935c1c2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-No, the offset already takes care of the -1 via the "- SZ_1K". What we
-are adding is references for the unused offset.
+On Wed, Sep 21, 2022 at 01:10:05PM -0700, Jakub Kicinski wrote:
+> When reading the timestamp is required bnxt_tx_int() hands
+> over the ownership of the completed skb to the PTP worker.
+> The skb should not be used afterwards, as the worker may
+> run before the rest of our code and free the skb, leading
+> to a use-after-free.
+> 
+> Since dev_kfree_skb_any() accepts NULL make the loss of
+> ownership more obvious and set skb to NULL.
+> 
+> Fixes: 83bb623c968e ("bnxt_en: Transmit and retrieve packet timestamps")
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-> > > +}
-> > > +#else
-> > > +#define NAPI_HAS_SMALL_PAGE_FRAG 0
-> > > +
-> > > +struct page_frag_1k {
-> > > +};
-> > > +
-> > > +static void *page_frag_alloc_1k(struct page_frag_1k *nc, gfp_t gfp_m=
-ask)
-> > > +{
-> > > +	return NULL;
-> > > +}
-> > > +
-> > > +#endif
-> > > +
-> >=20
-> > Rather than have this return NULL why not just point it at the
-> > page_frag_alloc?
->=20
-> When NAPI_HAS_SMALL_PAGE_FRAG is 0, page_frag_alloc_1k() is never used.
-> the definition is there just to please the compiler. I preferred this
-> style to avoid more #ifdef in __napi_alloc_skb().
->=20
+In general this looks good to me.  Let's make sure Pavan and Michael
+also agree.  Thanks for the patch!
 
-Okay, makes sense I guess.
+Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
 
-> > >  struct napi_alloc_cache {
-> > >  	struct page_frag_cache page;
-> > > +	struct page_frag_1k page_small;
-> > >  	unsigned int skb_count;
-> > >  	void *skb_cache[NAPI_SKB_CACHE_SIZE];
-> > >  };
-> > > @@ -143,6 +208,23 @@ struct napi_alloc_cache {
-> > >  static DEFINE_PER_CPU(struct page_frag_cache, netdev_alloc_cache);
-> > >  static DEFINE_PER_CPU(struct napi_alloc_cache, napi_alloc_cache);
-> > > =20
-> > > +/* Double check that napi_get_frags() allocates skbs with
-> > > + * skb->head being backed by slab, not a page fragment.
-> > > + * This is to make sure bug fixed in 3226b158e67c
-> > > + * ("net: avoid 32 x truesize under-estimation for tiny skbs")
-> > > + * does not accidentally come back.
-> > > + */
-> > > +void napi_get_frags_check(struct napi_struct *napi)
-> > > +{
-> > > +	struct sk_buff *skb;
-> > > +
-> > > +	local_bh_disable();
-> > > +	skb =3D napi_get_frags(napi);
-> > > +	WARN_ON_ONCE(!NAPI_HAS_SMALL_PAGE_FRAG && skb && skb->head_frag);
-> > > +	napi_free_frags(napi);
-> > > +	local_bh_enable();
-> > > +}
-> > > +
-> > >  void *__napi_alloc_frag_align(unsigned int fragsz, unsigned int alig=
-n_mask)
-> > >  {
-> > >  	struct napi_alloc_cache *nc =3D this_cpu_ptr(&napi_alloc_cache);
-> > > @@ -561,15 +643,39 @@ struct sk_buff *__napi_alloc_skb(struct napi_st=
-ruct *napi, unsigned int len,
-> > >  {
-> > >  	struct napi_alloc_cache *nc;
-> > >  	struct sk_buff *skb;
-> > > +	bool pfmemalloc;
-> > >  	void *data;
-> > > =20
-> > >  	DEBUG_NET_WARN_ON_ONCE(!in_softirq());
-> > >  	len +=3D NET_SKB_PAD + NET_IP_ALIGN;
-> > > =20
-> > > +	/* When the small frag allocator is available, prefer it over kmall=
-oc
-> > > +	 * for small fragments
-> > > +	 */
-> > > +	if (NAPI_HAS_SMALL_PAGE_FRAG && len <=3D SKB_WITH_OVERHEAD(1024)) {
-> > > +		nc =3D this_cpu_ptr(&napi_alloc_cache);
-> > > +
-> > > +		if (sk_memalloc_socks())
-> > > +			gfp_mask |=3D __GFP_MEMALLOC;
-> > > +
-> > > +		/* we are artificially inflating the allocation size, but
-> > > +		 * that is not as bad as it may look like, as:
-> > > +		 * - 'len' less then GRO_MAX_HEAD makes little sense
-> > > +		 * - larger 'len' values lead to fragment size above 512 bytes
-> > > +		 *   as per NAPI_HAS_SMALL_PAGE_FRAG definition
-> > > +		 * - kmalloc would use the kmalloc-1k slab for such values
-> > > +		 */
-> > > +		len =3D SZ_1K;
-> > > +
-> > > +		data =3D page_frag_alloc_1k(&nc->page_small, gfp_mask);
-> > > +		pfmemalloc =3D nc->page_small.pfmemalloc;
-> > > +		goto check_data;
-> > > +	}
-> > > +
-> >=20
-> > It might be better to place this code further down as a branch rather
-> > than having to duplicate things up here such as the __GFP_MEMALLOC
-> > setting.
-> >=20
-> > You could essentially just put the lines getting the napi_alloc_cache
-> > and adding the shared info after the sk_memalloc_socks() check. Then it
-> > could just be an if/else block either calling page_frag_alloc or your
-> > page_frag_alloc_1k.
->=20
-> I thought about that option, but I did not like it much because adds a
-> conditional in the fast-path for small-size allocation, and the
-> duplicate code is very little.
->=20
-> I can change the code that way, if you have strong opinion in that
-> regards.
-> >=20
+> ---
+> CC: michael.chan@broadcom.com
+> CC: pavan.chebbi@broadcom.com
+> CC: edwin.peer@broadcom.com
+> CC: andrew.gospodarek@broadcom.com
+> ---
+>  drivers/net/ethernet/broadcom/bnxt/bnxt.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+> index f46eefb5a029..96da0ba3d507 100644
+> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+> @@ -659,7 +659,6 @@ static void bnxt_tx_int(struct bnxt *bp, struct bnxt_napi *bnapi, int nr_pkts)
+>  
+>  	for (i = 0; i < nr_pkts; i++) {
+>  		struct bnxt_sw_tx_bd *tx_buf;
+> -		bool compl_deferred = false;
+>  		struct sk_buff *skb;
+>  		int j, last;
+>  
+> @@ -668,6 +667,8 @@ static void bnxt_tx_int(struct bnxt *bp, struct bnxt_napi *bnapi, int nr_pkts)
+>  		skb = tx_buf->skb;
+>  		tx_buf->skb = NULL;
+>  
+> +		tx_bytes += skb->len;
+> +
+>  		if (tx_buf->is_push) {
+>  			tx_buf->is_push = 0;
+>  			goto next_tx_int;
+> @@ -688,8 +689,9 @@ static void bnxt_tx_int(struct bnxt *bp, struct bnxt_napi *bnapi, int nr_pkts)
+>  		}
+>  		if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_IN_PROGRESS)) {
+>  			if (bp->flags & BNXT_FLAG_CHIP_P5) {
+> +				/* PTP worker takes ownership of the skb */
+>  				if (!bnxt_get_tx_ts_p5(bp, skb))
+> -					compl_deferred = true;
+> +					skb = NULL;
+>  				else
+>  					atomic_inc(&bp->ptp_cfg->tx_avail);
+>  			}
+> @@ -698,9 +700,7 @@ static void bnxt_tx_int(struct bnxt *bp, struct bnxt_napi *bnapi, int nr_pkts)
+>  next_tx_int:
+>  		cons = NEXT_TX(cons);
+>  
+> -		tx_bytes += skb->len;
+> -		if (!compl_deferred)
+> -			dev_kfree_skb_any(skb);
+> +		dev_kfree_skb_any(skb);
+>  	}
+>  
+>  	netdev_tx_completed_queue(txq, nr_pkts, tx_bytes);
+> -- 
+> 2.37.3
+> 
 
-I see, so you are trying to optimize for the smaller packet size.
+--0000000000003f233105e935c1c2
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
 
-It occurs to me that I think you are missing the check for the gfp_mask
-and the reclaim and DMA flags values as a result with your change. I
-think we will need to perform that check before we can do the direct
-page allocation based on size.
-
-> > >  	/* If requested length is either too small or too big,
-> > >  	 * we use kmalloc() for skb->head allocation.
-> > >  	 */
-> > > -	if (len <=3D SKB_WITH_OVERHEAD(1024) ||
-> > > +	if ((!NAPI_HAS_SMALL_PAGE_FRAG && len <=3D SKB_WITH_OVERHEAD(1024))=
- ||
-> > >  	    len > SKB_WITH_OVERHEAD(PAGE_SIZE) ||
-> > >  	    (gfp_mask & (__GFP_DIRECT_RECLAIM | GFP_DMA))) {
-> > >  		skb =3D __alloc_skb(len, gfp_mask, SKB_ALLOC_RX | SKB_ALLOC_NAPI,
-> > > @@ -587,6 +693,9 @@ struct sk_buff *__napi_alloc_skb(struct napi_stru=
-ct *napi, unsigned int len,
-> > >  		gfp_mask |=3D __GFP_MEMALLOC;
-> > > =20
-> > >  	data =3D page_frag_alloc(&nc->page, len, gfp_mask);
-> > > +	pfmemalloc =3D nc->page.pfmemalloc;
-> > > +
-> > > +check_data:
-> > >  	if (unlikely(!data))
-> > >  		return NULL;
-> > > =20
-> > > @@ -596,8 +705,8 @@ struct sk_buff *__napi_alloc_skb(struct napi_stru=
-ct *napi, unsigned int len,
-> > >  		return NULL;
-> > >  	}
-> > > =20
-> > > -	if (nc->page.pfmemalloc)
-> > > -		skb->pfmemalloc =3D 1;
-> > > +	if (pfmemalloc)
-> > > +		skb->pfmemalloc =3D pfmemalloc;
-> > >  	skb->head_frag =3D 1;
-> > > =20
-> > >  skb_success:
-> >=20
-> > In regards to the pfmemalloc bits I wonder if it wouldn't be better to
-> > just have them both using the page_frag_cache and just use a pointer to
-> > that to populate the skb->pfmemalloc based on frag_cache->pfmemalloc at
-> > the end?
->=20
-> Why? in the end we will still use an ancillary variable and the
-> napi_alloc_cache struct will be bigger (probaly not very relevant, but
-> for no gain at all).
-
-It was mostly just about reducing instructions. The thought is we could
-get rid of the storage of the napi cache entirely since the only thing
-used is the page member, so if we just passed that around instead it
-would save us the trouble and not really be another variable. Basically
-we would be passing a frag cache pointer instead of a napi_alloc_cache.
-
+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
+riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
+QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
+UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
+M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
+Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
+14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
+a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
+XzCCBVkwggRBoAMCAQICDBPdG+g0KtOPKKsBCTANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
+RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
+UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMTAyMjIxNDAyMzhaFw0yMjA5MjIxNDExNTVaMIGW
+MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
+BgNVBAoTDUJyb2FkY29tIEluYy4xGDAWBgNVBAMTD0FuZHkgR29zcG9kYXJlazEtMCsGCSqGSIb3
+DQEJARYeYW5kcmV3Lmdvc3BvZGFyZWtAYnJvYWRjb20uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC
+AQ8AMIIBCgKCAQEAp9JFtMqwgpbnvA3lNVCpnR5ehv0kWK9zMpw2VWslbEZq4WxlXr1zZLZEFo9Y
+rdIZ0jlxwJ4QGYCvxE093p9easqc7NMemeMg7JpF63hhjCksrGnsxb6jCVUreXPSpBDD0cjaE409
+9yo/J5OQORNPelDd4Ihod6g0XlcxOLtlTk1F0SOODSjBZvaDm0zteqiVZb+7xgle3NOSZm3kiCby
+iRuyS0gMTdQN3gdgwal9iC3cSXHMZFBXyQz+JGSHomhPC66L6j4t6dUqSTdSP07wg38ZPV6ct/Sv
+/O2HcK+E/yYkdMXrDBgcOelO4t8AYHhmedCIvFVp4pFb2oit9tBuFQIDAQABo4IB3zCCAdswDgYD
+VR0PAQH/BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3Vy
+ZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEG
+CCsGAQUFBzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWdu
+MmNhMjAyMDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93
+d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6
+hjhodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNy
+bDApBgNVHREEIjAggR5hbmRyZXcuZ29zcG9kYXJla0Bicm9hZGNvbS5jb20wEwYDVR0lBAwwCgYI
+KwYBBQUHAwQwHwYDVR0jBBgwFoAUljPR5lgXWzR1ioFWZNW+SN6hj88wHQYDVR0OBBYEFKARn7Ud
+RlGu+rBdUDirYE+Ee4TeMA0GCSqGSIb3DQEBCwUAA4IBAQAcWqh4fdwhDN0+MKyH7Mj0vS10E7xg
+mDetQhQ+twwKk5qPe3tJXrjD/NyZzrUgguNaE+X97jRsEbszO7BqdnM0j5vLDOmzb7d6qeNluJvk
+OYyzItlqZk9cJPoP9sD8w3lr2GRcajj5JCKV4pd2PX/i7r30Qco0VnloXpiesFmNTXQqD6lguUyn
+nb7IGM3v/Nb7NTFH8/KUVg33xw829ztuGrOvfrHfBbeVcUoOHEHObXoaofYOJjtmSOQdMeJIiBgP
+XEpJG8/HB8t4FF6A8W++4cHhv0+ayyEnznrbOCn6WUmIvV2WiJymRpvRG7Hhdlk0zA97MRpqK5yn
+ai3dQ6VvMYICbTCCAmkCAQEwazBbMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBu
+di1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMgUGVyc29uYWxTaWduIDIgQ0EgMjAyMAIM
+E90b6DQq048oqwEJMA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCC9JQWVBcV/owcc
+TUt1OoOe28gFhXcKuRAnfKXy3CZTkTAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3
+DQEJBTEPFw0yMjA5MjEyMDI2MDhaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEqMAsGCWCG
+SAFlAwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsGCSqGSIb3DQEB
+BzALBglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAi6A/Vq6ZiE4KT1BqQ3dcI35eQgjKlhk5
+S5tZAog0NBgcuuo3SO4REwCYNHMmr4Q6RTUBWqWu7EsPemTEILGMg08JOb+DtTZMgmJfFukoBlTx
+sXl9/bYa3QnEMiE0nAhnLWywdUCSLhfTXh6rsHEvmU9Rh7yF8BaLn2jOgmoWiD8lK8f0rP3QMEbd
+N+qAs6AsW827PKF0h08iS5KwGYxgj/sFq1eGC8on5mAdUHKftPfSGb6cvknYbfS/iewV/SdhbihU
+/bLg8bVPpUfI+9/97lymBWAP4NL+XIFKbqituzHb/mpFVVraLOBr/zlPa6kv0Xfk8FYmYR7QgskV
+UczK7Q==
+--0000000000003f233105e935c1c2--
