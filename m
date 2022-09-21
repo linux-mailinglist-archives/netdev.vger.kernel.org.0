@@ -2,116 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DDDD95E5520
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 23:24:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E4995E552B
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 23:27:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229571AbiIUVYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 17:24:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52458 "EHLO
+        id S230176AbiIUV1M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 17:27:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229472AbiIUVYC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 17:24:02 -0400
-Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 074EB9A9E6
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 14:23:59 -0700 (PDT)
-Received: by nautica.notk.org (Postfix, from userid 108)
-        id 0082FC01F; Wed, 21 Sep 2022 23:23:56 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1663795437; bh=Hk7ZZrOLXWtgfdRaSKqvrZagleJmeKAvZfrxZ3V1+4U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DYQ2cDBAwopsGdCH7OTuS9wsK3xQ8vbB1T5KIDEa+lSwH52s9qyZVsfiVM1EtvKZ/
-         39Xsrv6QrPfxbx4xxlieFXVPvyLuX6I4YVMv9ZmHiBAj+Zb08ytemFw9W/NEdHLBkA
-         1C6FIE42N8llZ0UP6aJ8g3mCcgbbbqv/rs6fjtBNyQdr1uC1LV7WkBj3WYqfHayJcZ
-         +MoxWQdSGPDAwL9w7IPfLaerONlZ04J4MtnnfSSaUo+AZ0lX/Yl9GqIfAY/MkYB8tv
-         mWgqoMpumm7nXGROoJBI4SVsJwpgwYPGQxMM+HTqwLjlsO4V0z5TzyKd4e+FnpUEHE
-         MUqPTtIkqmzzw==
+        with ESMTP id S230125AbiIUV1D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 17:27:03 -0400
+X-Greylist: delayed 76223 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 21 Sep 2022 14:27:02 PDT
+Received: from relay08.th.seeweb.it (relay08.th.seeweb.it [IPv6:2001:4b7a:2000:18::169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 929B7A61CA
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 14:27:02 -0700 (PDT)
+Received: from [192.168.1.101] (95.49.29.188.neoplus.adsl.tpnet.pl [95.49.29.188])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id 9AD6D3F341;
+        Wed, 21 Sep 2022 23:26:58 +0200 (CEST)
+Message-ID: <13b8c67c-399c-d1a6-4929-61aea27aa57d@somainline.org>
+Date:   Wed, 21 Sep 2022 23:26:57 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [PATCH v2] brcmfmac: Add support for BCM43596 PCIe Wi-Fi
+Content-Language: en-US
+To:     Hector Martin <marcan@marcan.st>,
+        ~postmarketos/upstreaming@lists.sr.ht
+Cc:     martin.botka@somainline.org,
+        angelogioacchino.delregno@somainline.org,
+        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>,
+        Marek Vasut <marex@denx.de>,
+        "Zhao, Jiaqing" <jiaqing.zhao@intel.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Soontak Lee <soontak.lee@cypress.com>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220921001630.56765-1-konrad.dybcio@somainline.org>
+ <83b90478-3974-28e6-cf13-35fc4f62e0db@marcan.st>
+From:   Konrad Dybcio <konrad.dybcio@somainline.org>
+In-Reply-To: <83b90478-3974-28e6-cf13-35fc4f62e0db@marcan.st>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
-Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id 0C307C009;
-        Wed, 21 Sep 2022 23:23:52 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1663795435; bh=Hk7ZZrOLXWtgfdRaSKqvrZagleJmeKAvZfrxZ3V1+4U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FGhJLRqd/qL7kQAGs0r9yDBb1BBTsU4zmbDGuzRBflqJjcoOoskTvIS8EM+qTjqMS
-         0IrncS25vBY6uO854sulwPF3NRoS68n7a2XrvtMRBmyNsrgbA8uc4xYbraNV4yztTG
-         nfcOWy73CyOWftTzG0KIdf0DMPAIE/GFQkJ+5V8aP4+Nqclv3SR2/WlwXo0t8k/BPr
-         G4gCsGCkaSHqccsPFJ87WNXJBrvLBDw5alDb+60hFYnIW0krPK5VluEGV3To2xgN8X
-         sruGUbpUIa+pR9qnlAOrZsw6eh1eUL20t8id4VCbN6RQ/6HOFRTJ5H9fx/toeXPP/0
-         sPIWWyoImckpw==
-Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 69357d36;
-        Wed, 21 Sep 2022 21:23:50 +0000 (UTC)
-Date:   Thu, 22 Sep 2022 06:23:35 +0900
-From:   asmadeus@codewreck.org
-To:     Li Zhong <floridsleeves@gmail.com>
-Cc:     netdev@vger.kernel.org, v9fs-developer@lists.sourceforge.net,
-        pabeni@redhat.com, kuba@kernel.org, edumazet@google.com,
-        davem@davemloft.net, linux_oss@crudebyte.com, lucho@ionkov.net,
-        ericvh@gmail.com
-Subject: Re: [PATCH net-next v1] net/9p/trans_fd: check the return value of
- parse_opts
-Message-ID: <YyuA13q/B236lZ6U@codewreck.org>
-References: <20220921210921.1654735-1-floridsleeves@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220921210921.1654735-1-floridsleeves@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Li Zhong wrote on Wed, Sep 21, 2022 at 02:09:21PM -0700:
-> parse_opts() could fail when there is error parsing mount options into
-> p9_fd_opts structure due to allocation failure. In that case opts will
-> contain invalid data.
-
-In practice opts->rfd/wfd is set to ~0 before the failure modes so they
-will contain exactly what we want them to contain: something that'll
-fail the check below.
-
-It is however cleared like this so I'll queue this patch in 9p tree when
-I have a moment, but I'll clarify the commit message to say this is
-NO-OP : please feel free to send a v2 if you want to put your own words
-in there; otherwise it'll be something like below:
-----
-net/9p: clarify trans_fd parse_opt failure handling
-
-This parse_opts will set invalid opts.rfd/wfd in case of failure which
-we already check, but it is not clear for readers that parse_opts error
-are handled in p9_fd_create: clarify this by explicitely checking the
-return value.
-----
 
 
-Also, in practice args != null doesn't seem to be checked before (the
-parse_opt() in client.c allows it) so keeping the error message common
-might be better?
-(allocation failure will print its own messages anyway and doesn't need
-checking)
-
+On 21.09.2022 06:37, Hector Martin wrote:
+> On 21/09/2022 09.16, Konrad Dybcio wrote:
+>> Add support for BCM43596 dual-band AC chip, found in
+>> SONY Xperia X Performance, XZ and XZs smartphones (and
+>> *possibly* other devices from other manufacturers).
+>> The chip doesn't require any special handling and seems to work
+>> just fine OOTB.
+>>
+>> PCIe IDs taken from: https://github.com/sonyxperiadev/kernel/commit/9e43fefbac8e43c3d7792e73ca52a052dd86d7e3.patch
+>>
+>> Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+>> ---
+>> Changes since v1:
+>> - rebased the patch against -next
+>>
+>>  drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c       | 2 ++
+>>  drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c       | 4 ++++
+>>  drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h | 4 ++++
+>>  3 files changed, 10 insertions(+)
+>>
+> [...]
+>> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+>> index f98641bb1528..2e7fc66adf31 100644
+>> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+>> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+>> @@ -81,6 +81,7 @@ static const struct brcmf_firmware_mapping brcmf_pcie_fwnames[] = {
+>>  	BRCMF_FW_ENTRY(BRCM_CC_43570_CHIP_ID, 0xFFFFFFFF, 43570),
+>>  	BRCMF_FW_ENTRY(BRCM_CC_4358_CHIP_ID, 0xFFFFFFFF, 4358),
+>>  	BRCMF_FW_ENTRY(BRCM_CC_4359_CHIP_ID, 0xFFFFFFFF, 4359),
+>> +	BRCMF_FW_ENTRY(BRCM_CC_43596_CHIP_ID, 0xFFFFFFFF, 4359),
 > 
-> Signed-off-by: Li Zhong <floridsleeves@gmail.com>
-> ---
->  net/9p/trans_fd.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+> So this works with the same firmware as 4359? That sounds a bit off. Is
+> that really the case?
 > 
-> diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
-> index e758978b44be..11ae64c1a24b 100644
-> --- a/net/9p/trans_fd.c
-> +++ b/net/9p/trans_fd.c
-> @@ -1061,7 +1061,9 @@ p9_fd_create(struct p9_client *client, const char *addr, char *args)
->  	int err;
->  	struct p9_fd_opts opts;
->  
-> -	parse_opts(args, &opts);
-> +	err = parse_opts(args, &opts);
-> +	if (err < 0)
-> +		return err;
->  	client->trans_opts.fd.rfd = opts.rfd;
->  	client->trans_opts.fd.wfd = opts.wfd;
->  
+> brcmfmac4359-pcie isn't in linux-firmware, but presumably there is
+> *some* semi-canonical firmware you can find for that chip that other
+> people are already using. If that works on 43596 *and* you plan on using
+> that firmware or some other firmware marked 4359, then this is fine. If
+> you are using separate firmware that shipped with a 43596 device and
+> isn't itself marked 4359, please make it a separate firmware entry. We
+> can always symlink the firmwares if it later turns out there is no
+> reason to have different ones for each chip.
+The firmware that SONY originally gave us for the devices that we know use
+this chip seems to be marked 4359 [1]. That said, I have no other info
+about the relation between the two models.
+
+[1] https://github.com/sonyxperiadev/device-sony-kagura/tree/q-mr1/rootdir/vendor/firmware
+
+Konrad
+> 
+> - Hector
