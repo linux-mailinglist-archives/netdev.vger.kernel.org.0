@@ -2,104 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 332625C02DA
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 17:55:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2F215C02FC
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 17:57:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232012AbiIUPzq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 11:55:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38284 "EHLO
+        id S232108AbiIUP5r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 11:57:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232073AbiIUPyG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 11:54:06 -0400
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A34D9F19B;
-        Wed, 21 Sep 2022 08:50:29 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 67EAF24000C;
-        Wed, 21 Sep 2022 15:49:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1663775375;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=lMfzm7oXpID+EdbJjZtpb1mfBYLUsogwYCElwzGougY=;
-        b=bq5mZp2I7J1bxPmqo1WnkFVrTSVMZw7lmpGAHSYo0bQJCNfdc5Th7Iff79dsmmwfu2xHfs
-        M911cp+HWQHygENbzzWSrK5Gjme99x1GH9aaecYjYcRLJbFWioHjFUFDW8xUBaoffMUqAp
-        gKfLQHBc+Tx0Lql2IctYmmF+4bT0SZlszdr46o5tpUEiLLjX9ooSa6K5HYdsUm8iPmw2AT
-        eHie/pqC9AbX/2z2k0LrknsDdBWzTm03zpey6sw8NoA3WZdDXsXl7fSaskOorwRMU10blt
-        DRGV/hNA2bcndiixgzjx13arnAiObajVhoMbP9sr44yOb8oj98jCjFFtk+jgmA==
-Date:   Wed, 21 Sep 2022 17:49:32 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <aahringo@redhat.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S231883AbiIUP5D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 11:57:03 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E62789E692
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 08:51:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=cj/AhpLur6t6HbqPjKAxtXs/H+XkLQkwI6R4xxdMUNs=; b=AML8E3B8BfMYTdoxLSBtQLTTw5
+        sRM0lExCbzLNHrvZcNm63U0FqgEi8LJZKKHbAZG7A+sCfKzJ0/DzqJO2TZnoJKqlg97unz/13zhAK
+        +xhQSRMRcZl30vVlQpdLgQatjCLUdAiU5MeBHsjJNmH8YPZ0qMkyIf7S0T2qUviE6cTE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ob1zL-00HNxR-HF; Wed, 21 Sep 2022 17:50:15 +0200
+Date:   Wed, 21 Sep 2022 17:50:15 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Mattias Forsblad <mattias.forsblad@gmail.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH wpan/next v3 5/9] net: mac802154: Drop
- IEEE802154_HW_RX_DROP_BAD_CKSUM
-Message-ID: <20220921174932.37f2938f@xps-13>
-In-Reply-To: <CAK-6q+gH3dRj6szUV6Add7G5nh1-5rBUpVLrrdbkjS22tz3ueA@mail.gmail.com>
-References: <20220905203412.1322947-1-miquel.raynal@bootlin.com>
-        <20220905203412.1322947-6-miquel.raynal@bootlin.com>
-        <CAK-6q+gH3dRj6szUV6Add7G5nh1-5rBUpVLrrdbkjS22tz3ueA@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Paolo Abeni <pabeni@redhat.com>, linux@armlinux.org.uk,
+        ansuelsmth@gmail.com
+Subject: Re: [PATCH net-next v14 5/7] net: dsa: mv88e6xxx: rmu: Add
+ functionality to get RMON
+Message-ID: <Yysyt3e6iBN2qKRI@lunn.ch>
+References: <20220919110847.744712-1-mattias.forsblad@gmail.com>
+ <20220919110847.744712-1-mattias.forsblad@gmail.com>
+ <20220919110847.744712-6-mattias.forsblad@gmail.com>
+ <20220919110847.744712-6-mattias.forsblad@gmail.com>
+ <20220919224924.yt7nzmr722a62rnl@skbuf>
+ <aad1bfa6-e401-2301-2da2-f7d4f9f2798c@gmail.com>
+ <20220920131053.24kwiy4hxdovlkxo@skbuf>
+ <Yyoqx1+AqMlAqRMx@lunn.ch>
+ <5d50db8c-5504-f776-521b-eaae4d900e90@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5d50db8c-5504-f776-521b-eaae4d900e90@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexander,
+> I understand want you want but I can see a lot of risks and pitfalls with moving
+> ordinary read and writes to RMU, which I wanted to avoid by first doing
+> RMON dump and then dump ATU and at a later stage with a better architecture
+> for write/read combining doing that, instead of forcing through read/writes
+> with all associated testing it would require. Can we please do this in
+> steps?
 
-aahringo@redhat.com wrote on Thu, 8 Sep 2022 20:49:36 -0400:
+If we are going to fall back to MDIO when RMU fails, we need a
+different code structure for these operations. That different code
+structure should also help solve the messy _ops structure stuff.
 
-> Hi,
->=20
-> On Mon, Sep 5, 2022 at 4:34 PM Miquel Raynal <miquel.raynal@bootlin.com> =
-wrote:
-> >
-> > This IEEE802154_HW_RX_DROP_BAD_CKSUM flag was only used by hwsim to
-> > reflect the fact that it would not validate the checksum (FCS). In other
-> > words, the filtering level of hwsim is always "NONE" while the core
-> > expects it to be higher.
-> >
-> > Now that we have access to real filtering levels, we can actually use
-> > them and always enforce the "NONE" level in hwsim. This case is already
-> > correctly handled in the receive so we can drop the flag.
-> > =20
->=20
-> I would say the whole hwsim driver currently only works because we
-> don't transmit wrong frames on a virtual hardware... However this can
-> be improved, yes. In my opinion the hwsim driver should pretend to
-> work like other transceivers sending frames to mac802154. That means
-> the filtering level should be implemented in hwsim not in mac802154 as
-> on real hardware the hardware would do filtering.
->=20
-> I think you should assume for now the previous behaviour that hwsim
-> does not send bad frames out. Of course there is a bug but it was
-> already there before, but the fix would be to change hwsim driver.
+RMU affects us in two different locations:
 
-Well, somehow I already implemented all the filtering by software in
-one of the other patches. I now agree that it was not relevant (because
-of the AACK issue you raised), but instead of fully dropping this code
-I might just move it to hwsim because there it would perfectly make
-sense?
+ATU and MIB dump: Controlled by struct mv88e6xxx_ops
 
-Thanks,
-Miqu=C3=A8l
+register read/write: Controlled by struct mv88e6xxx_bus_ops
+
+We could add to struct mv88e6xxx_ops:
+
+        int (*stats_rmu_get_sset_count)(struct mv88e6xxx_chip *chip);
+        int (*stats_rmu_get_strings)(struct mv88e6xxx_chip *chip,  uint8_t *data);
+        int (*stats_rmu_get_stats)(struct mv88e6xxx_chip *chip,  int port,
+                                   uint64_t *data);
+
+and then mv88e6xxx_get_stats() would become something like:
+
+static void mv88e6xxx_get_stats(struct mv88e6xxx_chip *chip, int port,
+                                uint64_t *data)
+{
+        int count = 0;
+	int err;
+
+	if (chip->info->ops->stats_rmu_get_stats && mv88e6xxx_rmu_enabled(chip)) {
+		err = chip->info->ops->stats_rmu_get_stats(chip, port, data)
+		if (!err)
+			return;
+	}
+			
+        if (chip->info->ops->stats_get_stats)
+                count = chip->info->ops->stats_get_stats(chip, port, data);
+
+We then get fall back to MDIO, and clean, separate implementations of
+RMU and MDIO stats operations.
+
+I hope the ATU/fdb dump can be done in a similar way.
+
+register read/writes, we probably need to extend mv88e6xxx_smi_read()
+and mv88e6xxx_smi_write(). Try RMU first, and then fall back to MDIO.
+
+Please try something in this direction. But please, lots of small,
+simple patches with good commit messages.
+
+       Andrew
+
+
