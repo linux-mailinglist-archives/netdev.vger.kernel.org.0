@@ -2,178 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 429E05C03D8
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 18:15:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B70F75C0435
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 18:32:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231570AbiIUQPY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 12:15:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50836 "EHLO
+        id S229531AbiIUQcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 12:32:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232555AbiIUQO6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 12:14:58 -0400
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::228])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 958709E8AA;
-        Wed, 21 Sep 2022 09:00:24 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 306581BF205;
-        Wed, 21 Sep 2022 15:59:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1663775988;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0n7aSrdrYSw+UI5ucpzj/zIatD/eWGzeiptQTDM8d0U=;
-        b=jGKZzSIXrWe5Vtdb0w9b4vZfzkgjnVuoZ6cCybhJQgyMvCd0kiAQ7nZJVAj0EqdE21SxeM
-        OHOBtt0W05XrHGFjMt+/r75/BcYxbNS9gojvV4Iq2i0yqndCp52m3LJkPyJOoIPIo4aYxe
-        0S+uKhpS10BUUrv0aVpxQs6NNaBwk728qH/hevtdchPKRg9aJTJU2u8ZjNMzrWXiF48WQY
-        A2GqbPKZeQGyrNhH2d60/R+edti8qaPDVjxG4GbHKq+56AaHHj3FfX/lRJ7neSHDFYnrT/
-        c1rmgCGvSjZtAzom1qEGpbhm5ELe+DfFcqgghUYoTNsbKYHfKTUr03yqDKh5jg==
-Date:   Wed, 21 Sep 2022 17:59:43 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <aahringo@redhat.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org,
+        with ESMTP id S232172AbiIUQb4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 12:31:56 -0400
+Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9987A031E
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 09:12:50 -0700 (PDT)
+Received: by mail-qv1-xf33.google.com with SMTP id mi14so4725470qvb.12
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 09:12:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=aLY4X7jLe6jyDRz2GTUZzGVaQ/S9bUP0pVCXbM8UVnQ=;
+        b=TPua4QONi/9P40ftlbD8dp1zg3rSaSqwpFR9IQzhC+qUz1Fp3XC86DD38Rs/IlQteT
+         mhC8Q5Ip34T/drUuWDOAfP1w5Oi+o3MIAt6huHmVSGRHAfvDxMkYPwWMLUYsAoklf+TI
+         sxQOINPIDXAzIClL8JUhpvoygyw7Nis8ZOPbHv3tOG/kJziCrdKCGR+zD+16Q7jWBvTx
+         b3sq4muQd7s2scTDNZUMlsJKdu+5ZncIwc1pHEMCFOdb7DZbcEEju2zkpk9hHJf5f2Fx
+         SDo/2l8RLlcEYe8UX5BENtEoK6jqG3kQdYjEbcER6ehHkpYkrf6sEaflGItWS+Z81gTl
+         /TOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=aLY4X7jLe6jyDRz2GTUZzGVaQ/S9bUP0pVCXbM8UVnQ=;
+        b=8RZ9HHRwRTmXPOGZEhaRLp2iHM+QQopYM2qMXwnRp+fKXioyWl9r8+z8tJbwpOYLr/
+         w3kYW1WuSwLQ3Y5WEZxrgxIPbol/oK+VZOViiz2OfbFz/KsqcgPefP6RymDEV+im4wNA
+         tRBrwjN/Ao6yEKsG8xIw0qcpEFT5gjE3Jvtt1myYdOEfdL3+12J7ydPc5O5p2o9W9vAV
+         dBiBdIY/+2z08pPG8Iq4/jVyut42TAhde1Yw4yfW0f2H0cxmcknQQXBQlr5H5FraXgBO
+         MbL0ApzeWAypEB7b1y0E69k7qbmDwwMAbCca9bSTK2+bb4TNMVvgyBP83sM31ZPXa0G7
+         e78w==
+X-Gm-Message-State: ACrzQf1icglyxEBK1ALNsw7FR2MZoMmLHKQzx0E9a5wmpFghZAlZBi0B
+        dB/3NcvUrCv+Bshsoo9FVDD4Kg==
+X-Google-Smtp-Source: AMsMyM456CtmBnPUaHOLnSGIaudSOSiBnahdUvNlkNTz0WVQ9WE8C2u4WZr6oZuKp7Qi+VeOkmaN3g==
+X-Received: by 2002:ad4:5f47:0:b0:4ac:b8de:1484 with SMTP id p7-20020ad45f47000000b004acb8de1484mr23810326qvg.77.1663776757853;
+        Wed, 21 Sep 2022 09:12:37 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
+        by smtp.gmail.com with ESMTPSA id bs39-20020a05620a472700b006bad7a2964fsm2065622qkb.78.2022.09.21.09.12.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Sep 2022 09:12:37 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1ob2Ky-000qF4-Lc;
+        Wed, 21 Sep 2022 13:12:36 -0300
+Date:   Wed, 21 Sep 2022 13:12:36 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Dexuan Cui <decui@microsoft.com>
+Cc:     Long Li <longli@microsoft.com>, KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH wpan/next v3 8/9] net: mac802154: Ensure proper general
- purpose frame filtering
-Message-ID: <20220921175943.1f871b31@xps-13>
-In-Reply-To: <CAK-6q+jB0HQsU_wzr2T-qdGj=YSdf08DTZ0WTmRvDQt0Px7+Rg@mail.gmail.com>
-References: <20220905203412.1322947-1-miquel.raynal@bootlin.com>
-        <20220905203412.1322947-9-miquel.raynal@bootlin.com>
-        <CAK-6q+jB0HQsU_wzr2T-qdGj=YSdf08DTZ0WTmRvDQt0Px7+Rg@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Leon Romanovsky <leon@kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "shiraz.saleem@intel.com" <shiraz.saleem@intel.com>,
+        Ajay Sharma <sharmaajay@microsoft.com>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
+Subject: Re: [Patch v5 12/12] RDMA/mana_ib: Add a driver for Microsoft Azure
+ Network Adapter
+Message-ID: <Yys39Dfw42XjNA7e@ziepe.ca>
+References: <1661906071-29508-1-git-send-email-longli@linuxonhyperv.com>
+ <1661906071-29508-13-git-send-email-longli@linuxonhyperv.com>
+ <SA1PR21MB133500C46963854E242EC976BF4C9@SA1PR21MB1335.namprd21.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <SA1PR21MB133500C46963854E242EC976BF4C9@SA1PR21MB1335.namprd21.prod.outlook.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexander,
+On Tue, Sep 20, 2022 at 05:54:19PM +0000, Dexuan Cui wrote:
 
-aahringo@redhat.com wrote on Thu, 8 Sep 2022 21:00:37 -0400:
-
-> Hi,
->=20
-> On Mon, Sep 5, 2022 at 4:35 PM Miquel Raynal <miquel.raynal@bootlin.com> =
-wrote:
-> >
-> > Most of the PHYs seem to cope with the standard filtering rules by
-> > default. Some of them might not, like hwsim which is only software, and=
- =20
->=20
-> yes, as I said before hwsim should pretend to be like all other
-> hardware we have.
->=20
-> > in this case advertises its real filtering level with the new
-> > "filtering" internal value.
-> >
-> > The core then needs to check what is expected by looking at the PHY
-> > requested filtering level and possibly apply additional filtering
-> > rules.
-> >
-> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > ---
-> >  include/net/ieee802154_netdev.h |  8 ++++
-> >  net/mac802154/rx.c              | 78 +++++++++++++++++++++++++++++++++
-> >  2 files changed, 86 insertions(+)
-> >
-> > diff --git a/include/net/ieee802154_netdev.h b/include/net/ieee802154_n=
-etdev.h
-> > index d0d188c3294b..1b82bbafe8c7 100644
-> > --- a/include/net/ieee802154_netdev.h
-> > +++ b/include/net/ieee802154_netdev.h
-> > @@ -69,6 +69,14 @@ struct ieee802154_hdr_fc {
-> >  #endif
-> >  };
-> >
-> > +enum ieee802154_frame_version {
-> > +       IEEE802154_2003_STD,
-> > +       IEEE802154_2006_STD,
-> > +       IEEE802154_STD,
-> > +       IEEE802154_RESERVED_STD,
-> > +       IEEE802154_MULTIPURPOSE_STD =3D IEEE802154_2003_STD,
-> > +};
+> > +int mana_ib_gd_create_dma_region(struct mana_ib_dev *dev, struct
+> > ib_umem *umem,
+> > +				 mana_handle_t *gdma_region, u64 page_sz)
+> > +{
+> > ...
 > > +
-> >  struct ieee802154_hdr {
-> >         struct ieee802154_hdr_fc fc;
-> >         u8 seq;
-> > diff --git a/net/mac802154/rx.c b/net/mac802154/rx.c
-> > index c43289c0fdd7..bc46e4a7669d 100644
-> > --- a/net/mac802154/rx.c
-> > +++ b/net/mac802154/rx.c
-> > @@ -52,6 +52,84 @@ ieee802154_subif_frame(struct ieee802154_sub_if_data=
- *sdata,
-> >                                 mac_cb(skb)->type);
-> >                         goto fail;
-> >                 }
-> > +       } else if (sdata->required_filtering =3D=3D IEEE802154_FILTERIN=
-G_4_FRAME_FIELDS && =20
->=20
-> We switch here from determine that receive path, means way we are
-> going from interface type to the required filtering value. Sure there
-> is currently a 1:1 mapping for them now but I don't know why we are
-> doing that and this is in my opinion wrong. The receive path should
-> depend on interface type as it was before and for scanning there is
-> some early check like:
+> > +if (!err)
+> > +	return 0;
+> 
+> Please add a Tab character to the above 2 lines.
 
-Maybe on this one I am not fully convinced yet.
+How are we still at the point where we have trivial style errors in
+this series at v6?? This is not OK, please handle reviews for this
+basic stuff internally.
 
-In your opinion (I try to rephrase so that we align on what you told
-me) the total lack of filtering is only something that is reserved to
-monitor interfaces, so you make an implicit link between interface type
-and filtering level.
-
-I would argue that this is true today, but as the "no filtering at all"
-level is defined in the spec, I assumed it was a possible level that
-one would want to achieve some day (not sure for what purpose yet). So
-I assumed it would be more relevant to only work with the
-expected filtering level in the receive path rather than on the
-interface type, it makes more sense IMHO. In practice I agree it should
-be the same filtering-wise, but from a conceptual point of view I find
-the current logic partially satisfying.
-
-Would you agree with me only using "expected filtering levels" rather
-than:
-- sometimes the interface type
-- sometimes the mac state (scan)
-- otherwise, by default, the highest filtering level
-?
-
-I think it would clarify the receive path.
-
-I will of course get rid of most of all the other "nasty"
-software filtering additions you nacked in the other threads.
-
-> if (wpan_phy_is_in_scan_mode_state(local)) {
->      do_receive_scanning(...)
->      /* don't do any other delivery because they provide it to upper laye=
-r */
->      return;
-> }
->=20
-> Maybe you should do monitors receive that frame before as well, but
-> every other interface type should currently not receive it.
->=20
-> - Alex
->=20
-
-
-Thanks,
-Miqu=C3=A8l
+Jason
