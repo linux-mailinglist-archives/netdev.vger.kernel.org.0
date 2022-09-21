@@ -2,171 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 062AE5BF5F6
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 07:42:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D514B5BF601
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 07:59:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229790AbiIUFme (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 01:42:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42962 "EHLO
+        id S229586AbiIUF7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 01:59:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229774AbiIUFmd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 01:42:33 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFD465A144
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 22:42:32 -0700 (PDT)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28KJXUoC019588;
-        Tue, 20 Sep 2022 22:42:25 -0700
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2042.outbound.protection.outlook.com [104.47.66.42])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3jqksa9w9g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 20 Sep 2022 22:42:25 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RAoUzzgvwu9A21+17aDic5B0c4sZv9lj2evu+81zQuV2y8M+mExqQTd8Wy17vKZDcKYL6ctjwp0P5qJmLhB703RQpTmcTmMwxgjX2wwaCkcffNhy4pf1k7u0ozzrTMjKBKfT+2vjJ/KXQvrMLlbUbqPUwpW8ZjaUGPN+zfzRtw7g+nShL9psUOklK4eerWb0ARWsGOleQAZoKh7I3+RlhOGXc0I16hqNALdhXTja8Dbd0Td1Jn7kfF3zQ0buogjVbWK5rnxJBfNdZZANUaEUrdc8206cZmqH3hTJ1YbM0d3PClnph7mUP34yAF8zLKiqpbo7XfBq8reNyT865x5D9A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zYmN2QCSm7I/fJcKUOVS73vusXkci2ylD2199elTkQ8=;
- b=VGCxMd1W5YonDJ/egmIKHaCyzV8bNOduA38FYU+MfDJeObdRydujMNxedxp3OeZb3behR8q1CjJEk9AkJbnPvk8eBbyB+oGTdAC/QYblxH8slRlcLZNyIf2EJ2Mx74oTZSdjqqmUr+aiGG3XeC5LDTy3fnJppDv5vazaNBLElGavzia9/YgpwwoqGSgPse6ol1UXoHi0lIhPN3e553ZteacvHLuESHctkExCrdIOv3BXr6O57WWM1TEYvIidzY1JbVcX4UVkNHLAsk06RgQ2JsyMsd7mFbON6d0fXbAUeH9vkiNpP9IcsKWWCZQRTGBexfJwpzVjtSku9ZQJSd0lkQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zYmN2QCSm7I/fJcKUOVS73vusXkci2ylD2199elTkQ8=;
- b=kKgHnBVeRz00ur0pmj+2GNvKSMuWKd9dmeu+aRntzq8E1S2X5JvY53/hPoQRyw9PXk7sJ1d1yYiQOk2ifKfraq2v7Uspzj1wYpHZ67YWGSjtJrcLKJdIlqcuCbrijnZ6uszHtZpP2IBKgPVOGLb0EYKISTzOlRtknNyiCL5cXa0=
-Received: from DM5PR1801MB1883.namprd18.prod.outlook.com (2603:10b6:4:62::23)
- by SA9PR18MB3776.namprd18.prod.outlook.com (2603:10b6:806:1d::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.16; Wed, 21 Sep
- 2022 05:42:23 +0000
-Received: from DM5PR1801MB1883.namprd18.prod.outlook.com
- ([fe80::866d:e19c:c2c2:80a8]) by DM5PR1801MB1883.namprd18.prod.outlook.com
- ([fe80::866d:e19c:c2c2:80a8%3]) with mapi id 15.20.5654.014; Wed, 21 Sep 2022
- 05:42:22 +0000
-From:   Bharat Bhushan <bbhushan2@marvell.com>
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [EXT] Re: Are xfrm state_add/delete() calls serialized?
-Thread-Topic: [EXT] Re: Are xfrm state_add/delete() calls serialized?
-Thread-Index: AdjGub/fR70yQVpJTS+eN+GwmjB17wFUJ+KAAFxKz8A=
-Date:   Wed, 21 Sep 2022 05:42:22 +0000
-Message-ID: <DM5PR1801MB18836F4BB4032F8654A35BD2E34F9@DM5PR1801MB1883.namprd18.prod.outlook.com>
-References: <DM5PR1801MB1883E2826A037070B2DD6608E3449@DM5PR1801MB1883.namprd18.prod.outlook.com>
- <Yyg2kYNeGxWSCvC4@unreal>
-In-Reply-To: <Yyg2kYNeGxWSCvC4@unreal>
-Accept-Language: en-IN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DM5PR1801MB1883:EE_|SA9PR18MB3776:EE_
-x-ms-office365-filtering-correlation-id: f393ccc2-cd3c-4a70-1d9a-08da9b940e87
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: W9ITfKrwJ8qM+xg5lizZNdl3NID7ZIpkzUrukiK5tLasXNAco5rSMwU1o6hQiaPDTWr7T3OAh4UKnCxuQ2ULpY3UGK4wF4RtshKYPf2RiiLhZvqjOdR54yV1UwvxLo+6uBo3AIZs1IDwhx3EgD4KA4UU9Or1OIP9RhS0CbhOVavtawH2QbukK2YGk748snM2wrS5y0tX/ZTxNUn3IUj30JjddgKf8SZjmpIG/PA1w6xWmpfKrKZsOANGHPMMMm/xvXo9MhZR+/t25Izt6iwTbVLr5/GuZYVihQLDdPiSDtICh0CXE1OYULgC2HRF7LR7VPnl9k15B/TUEOIGjIJrIp0jL30CeunqArDxhRm66tj75CJ1qiZlToKLX3g4G9E4T4S8Z+8yY4FHUatXEZefaWhRy+ZEETmyruJihc0Oz9Fo1EHReDJpWnl04lZ9pymS6h7BAmn9fYZw//W/Uhy1z5B/zOXcF5462QTtXLYRbyBeuG+Bq2L+aNX0A2dc+uBhG7mnOMLy4nLqslcwLKikjQrOmTmF/4fQpHWXGxAj7uiIAGEjLd+0XVShX/ACHAojeNrISReeqF6azE/MO9lSi/9YUnzXpQN/Ber1ij+U26ojjjbGoYCoWi8MMjUVZ0j3aiCytbYTk1ps+awdu6C3dk1g8g1L1USLC3ZNdSvP7iIo+mY97nby5tfrzWfBX1G7dHVjRfeW13+Mvoh/TXo6lzlpcjdH66EKZFoZb7JFzd72mF+CPcV7ODsHgnFfi8SRvE0Na8pUt+hYVccQsSbRvg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR1801MB1883.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(376002)(39860400002)(346002)(136003)(396003)(451199015)(122000001)(38100700002)(38070700005)(33656002)(2906002)(478600001)(71200400001)(6916009)(8676002)(8936002)(66946007)(66476007)(66556008)(64756008)(66446008)(4326008)(76116006)(316002)(52536014)(5660300002)(9686003)(26005)(55016003)(41300700001)(53546011)(6506007)(7696005)(83380400001)(186003)(86362001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?szVaKjLWysEDa5jYTs6tCHaJyvaeCKbB6UxhqbVyhqARv1E0KuKjA1xoVJXd?=
- =?us-ascii?Q?a5j7SacEFhz/apOzyfv+R1tUezdWFMLcqiqmfZpMw+4LHs6QEWbF7pjYdsEO?=
- =?us-ascii?Q?v6JUVcOATxeJ2bI1bUuuvbfImEi5OEUpmBP+8p3fdl92wrOjqC5W+375p4sT?=
- =?us-ascii?Q?DeXPz0W+OAD5+Mn6V1b0pimVfEJYdbpVficQ5LyNY4Xb6TRsu9JK25sBj/L/?=
- =?us-ascii?Q?Ac0Go3s9rNovhycq4mS7LqxMzo0Joo41Gnw6NmSB5NnHM0aXxOPR1+UAyHwX?=
- =?us-ascii?Q?Uquc6u6asGTVelxgeKKkFzpb4RsRyFTHaVfTrfGEXYqhmBGpGxluEKOidtEo?=
- =?us-ascii?Q?Jz2c5Y4l3CJVIOv0a+K/7tSpD+7tW/SIaSpLD4RDtaTcJIpfhW4WQY9y3N3f?=
- =?us-ascii?Q?K8kQh2fwzVpsK665tQeL9N/9clRjUyRVOY613ll/7jRlPxdthFwkZi6iGV07?=
- =?us-ascii?Q?SHRZNM1xQeBmt4LLlLBnEVOxvLFP1J2ikRdbEQ4meVk7g9VhLiWpWpnpO1EC?=
- =?us-ascii?Q?qrisiz3VGes5tQY17UnqMRjfRUktYYPQMwUMwaCvmpO4XnAm8mawcVhieB5j?=
- =?us-ascii?Q?hOat4iqdKzJrJwPO8gcx5javIMRowYehCSzTuhhr+QLhcFfzTTY/vYEz5nWV?=
- =?us-ascii?Q?cegTzVFrPcAsLW7j1XpZCAOWp4tbbKOZwTR7bOJ/aVNtveNX4Lkhjlj6J2UW?=
- =?us-ascii?Q?MD949g8HuNwgQ18NEbsF5WiRnIeh6ga/zLWZ5MNcYuRNalWFZKpgcfO06F5E?=
- =?us-ascii?Q?ObAA9LprDFrWl6S75c/bjiUHpw/Q5OADd9dNWchgH7MIO6sIYkDylzrzZMFK?=
- =?us-ascii?Q?nGKajes2ptBQKY42NYbDLCIG538eqv8A0rrTtv0xEtPPVQfKrjEKx9FXgAR2?=
- =?us-ascii?Q?7dnr4tJuYK9p7SzBxtimWx4kDfqBehQEGWW94XdW83mW2NGSOC07NcFH+EUw?=
- =?us-ascii?Q?0A2RqEgcdth9I0IR4nd18FiiJIx6QOPz3/aHtN29YV5TeB7/XpZpCSL9bGkI?=
- =?us-ascii?Q?EGww+n/dkwaI79mRFxBvsb6USHkCjhif2wDfOST5qgLA4fMR18XxhrjSon9J?=
- =?us-ascii?Q?VdhMsBJu957X0lXt0RsvhH7jvoHXKPR63ZanmruLzTWoUh/VDRzpJpBC1C/t?=
- =?us-ascii?Q?bpVdl+MAuk15FI0cgoFCrlzCVCW8XgSiigwnvYFtZKYk3PvoVg4NxBMYZgtH?=
- =?us-ascii?Q?wBcgiLMA9pwPu7ouZA8LpwW0vYB1TJVv4K1iNa77Pf5LhYC5j5Syn/Cy/+UL?=
- =?us-ascii?Q?8Oz3aASSpFOX30KGbrta3AhzPgc+MfNKXeBWVMVe4ZXKTVvVE6i5rquUfXij?=
- =?us-ascii?Q?HE4BS+55/kXm3OJ9gUECSF+Br6NkCV0HIA2eovdw6Mtam5QCGr6HPXH6qslz?=
- =?us-ascii?Q?fjCpz1FcRbWnVgr1HNNwvwSKmPtuRttjW5Czbs3YdijFFvKPKiagdOkCUWJH?=
- =?us-ascii?Q?Bd5ZPet3ZRDZi7jYJa2KhQ+pKo5Yy5CV44s0mSAhbYEkwf+tcXorrToyQ8ks?=
- =?us-ascii?Q?f9ZZYRC9emKT+IWymjqGTYhH53qd0Gh/5uNrvSEjLSfeO3V2+jx3+rvMRTVs?=
- =?us-ascii?Q?HPD+opPXKm/JpCd8FRSu0XPUTahzNtmoBaJTpmON?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S229453AbiIUF7v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 01:59:51 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F1312ADF;
+        Tue, 20 Sep 2022 22:59:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1663739990; x=1695275990;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=YIc1SDWwYMnhaqOGzGYWUUC0Gg63lPxz+shtRIfe3Sc=;
+  b=BMH73FcmozwtOe1gOx2m0gskxXuelcv8EpyCp97VxKAq0l/PPcCF2OF5
+   JCw852nklq7TyHmE2CF9uPGGIl+cr1xubVFObs34bv47lpPg9hEbVaNCt
+   64UPCAD4hzkewh+VaN2wjPVqAHYgkeKqMVoSgzWlRET0SNevsPg/HPyDC
+   lWo+em3qX/EU6HY04A2kuKpu1U94vfnrttblbEMCM30fPhYsYEYiViJ41
+   CkGk6QpeJao2BChzQyVacQMWgtL/IgXhMp8LJjQIZYuUKYueIr7ANfaOt
+   a3w3Sbb0OUBmxN1cUno9trPv5zZZJPkOnUwG6OC45Ycc42DZG8JXK/WfX
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10476"; a="282955373"
+X-IronPort-AV: E=Sophos;i="5.93,332,1654585200"; 
+   d="scan'208";a="282955373"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Sep 2022 22:59:50 -0700
+X-IronPort-AV: E=Sophos;i="5.93,332,1654585200"; 
+   d="scan'208";a="864284977"
+Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.255.29.68]) ([10.255.29.68])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Sep 2022 22:59:48 -0700
+Message-ID: <27b04293-2225-c78d-f6e3-ffe8a7472ea1@intel.com>
+Date:   Wed, 21 Sep 2022 13:59:46 +0800
 MIME-Version: 1.0
-X-OriginatorOrg: marvell.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR1801MB1883.namprd18.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f393ccc2-cd3c-4a70-1d9a-08da9b940e87
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Sep 2022 05:42:22.7078
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 0jsg5aV7EYtUan96GS/aa9YBneyCsBRRvrTu2zAjTq4PkHG4YYG2b01T1CcpJk8gg0xMB4W8IRxKZfTBqR3Dmw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA9PR18MB3776
-X-Proofpoint-GUID: ftBu32vbdKFJgdY8fBmgEQLm25hu2KWV
-X-Proofpoint-ORIG-GUID: ftBu32vbdKFJgdY8fBmgEQLm25hu2KWV
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
- definitions=2022-09-21_02,2022-09-20_02,2022-06-22_01
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.2.2
+Subject: Re: [PATCH 1/4] vDPA: allow userspace to query features of a vDPA
+ device
+Content-Language: en-US
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     mst <mst@redhat.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>, kvm <kvm@vger.kernel.org>
+References: <20220909085712.46006-1-lingshan.zhu@intel.com>
+ <20220909085712.46006-2-lingshan.zhu@intel.com>
+ <CACGkMEsq+weeO7i8KtNNAPhXGwN=cTwWt3RWfTtML-Xwj3K5Qg@mail.gmail.com>
+ <e69b65e7-516f-55bd-cb99-863d7accbd32@intel.com>
+ <CACGkMEv0++vmfzzmX47NhsaY5JTvbO2Ro7Taf8C0dxV6OVXTKw@mail.gmail.com>
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <CACGkMEv0++vmfzzmX47NhsaY5JTvbO2Ro7Taf8C0dxV6OVXTKw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Please see inline=20
 
-> -----Original Message-----
-> From: Leon Romanovsky <leon@kernel.org>
-> Sent: Monday, September 19, 2022 3:00 PM
-> To: Bharat Bhushan <bbhushan2@marvell.com>
-> Cc: netdev@vger.kernel.org
-> Subject: [EXT] Re: Are xfrm state_add/delete() calls serialized?
->=20
-> External Email
->=20
-> ----------------------------------------------------------------------
-> On Mon, Sep 12, 2022 at 03:10:12PM +0000, Bharat Bhushan wrote:
-> > Hi All,
-> >
-> > Have a very basic query related to .xdo_dev_state_add()/delete() ops
-> supported by netdev driver. Can .xdo_dev_state_add()/delete() execute fro=
-m
-> other core while already in process of handling .xdo_dev_state_add()/dele=
-te()
-> on one core? Or these calls are always serialized by stack?
->=20
-> It is protected from userspace callers with xfrm_cfg_mutex in xfrm_netlin=
-k_rcv().
 
-So all *_state_add() and _state_delete() are serialized from user.
-
-> However, stack triggered deletion can be in parallel. There is a lock for=
- that
-> specific SA that is going to be deleted, and it is not global.
-
-Just want to confirm m understanding, xfrm_state->lock is used by stack (ex=
-ample xfrm_timer_handler()) for deletion, but this lock is per SA (not glob=
-al).
-So _state_delete() of different SA can happen in parallel and also _state_d=
-elete() by stack can run in parallel to state addition from user.
+On 9/21/2022 10:17 AM, Jason Wang wrote:
+> On Tue, Sep 20, 2022 at 5:58 PM Zhu, Lingshan <lingshan.zhu@intel.com> wrote:
+>>
+>>
+>> On 9/20/2022 10:02 AM, Jason Wang wrote:
+>>> On Fri, Sep 9, 2022 at 5:05 PM Zhu Lingshan <lingshan.zhu@intel.com> wrote:
+>>>> This commit adds a new vDPA netlink attribution
+>>>> VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES. Userspace can query
+>>>> features of vDPA devices through this new attr.
+>>>>
+>>>> This commit invokes vdpa_config_ops.get_config() than
+>>>> vdpa_get_config_unlocked() to read the device config
+>>>> spcae, so no raeces in vdpa_set_features_unlocked()
+>>>>
+>>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>>> It's better to share the userspace code as well.
+>> OK, will share it in V2.
+>>>> ---
+>>>>    drivers/vdpa/vdpa.c       | 19 ++++++++++++++-----
+>>>>    include/uapi/linux/vdpa.h |  4 ++++
+>>>>    2 files changed, 18 insertions(+), 5 deletions(-)
+>>>>
+>>>> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
+>>>> index c06c02704461..798a02c7aa94 100644
+>>>> --- a/drivers/vdpa/vdpa.c
+>>>> +++ b/drivers/vdpa/vdpa.c
+>>>> @@ -491,6 +491,8 @@ static int vdpa_mgmtdev_fill(const struct vdpa_mgmt_dev *mdev, struct sk_buff *m
+>>>>                   err = -EMSGSIZE;
+>>>>                   goto msg_err;
+>>>>           }
+>>>> +
+>>>> +       /* report features of a vDPA management device through VDPA_ATTR_DEV_SUPPORTED_FEATURES */
+>>> The code explains itself, there's no need for the comment.
+>> these comments are required in other discussions
+> I think it's more than sufficient to clarify the semantic where it is defined.
+OK, then only comments in the header file
+>
+>>>>           if (nla_put_u64_64bit(msg, VDPA_ATTR_DEV_SUPPORTED_FEATURES,
+>>>>                                 mdev->supported_features, VDPA_ATTR_PAD)) {
+>>>>                   err = -EMSGSIZE;
+>>>> @@ -815,10 +817,10 @@ static int vdpa_dev_net_mq_config_fill(struct vdpa_device *vdev,
+>>>>    static int vdpa_dev_net_config_fill(struct vdpa_device *vdev, struct sk_buff *msg)
+>>>>    {
+>>>>           struct virtio_net_config config = {};
+>>>> -       u64 features;
+>>>> +       u64 features_device, features_driver;
+>>>>           u16 val_u16;
+>>>>
+>>>> -       vdpa_get_config_unlocked(vdev, 0, &config, sizeof(config));
+>>>> +       vdev->config->get_config(vdev, 0, &config, sizeof(config));
+>>>>
+>>>>           if (nla_put(msg, VDPA_ATTR_DEV_NET_CFG_MACADDR, sizeof(config.mac),
+>>>>                       config.mac))
+>>>> @@ -832,12 +834,19 @@ static int vdpa_dev_net_config_fill(struct vdpa_device *vdev, struct sk_buff *ms
+>>>>           if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MTU, val_u16))
+>>>>                   return -EMSGSIZE;
+>>>>
+>>>> -       features = vdev->config->get_driver_features(vdev);
+>>>> -       if (nla_put_u64_64bit(msg, VDPA_ATTR_DEV_NEGOTIATED_FEATURES, features,
+>>>> +       features_driver = vdev->config->get_driver_features(vdev);
+>>>> +       if (nla_put_u64_64bit(msg, VDPA_ATTR_DEV_NEGOTIATED_FEATURES, features_driver,
+>>>> +                             VDPA_ATTR_PAD))
+>>>> +               return -EMSGSIZE;
+>>>> +
+>>>> +       features_device = vdev->config->get_device_features(vdev);
+>>>> +
+>>>> +       /* report features of a vDPA device through VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES */
+>>>> +       if (nla_put_u64_64bit(msg, VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES, features_device,
+>>>>                                 VDPA_ATTR_PAD))
+>>>>                   return -EMSGSIZE;
+>>>>
+>>>> -       return vdpa_dev_net_mq_config_fill(vdev, msg, features, &config);
+>>>> +       return vdpa_dev_net_mq_config_fill(vdev, msg, features_driver, &config);
+>>>>    }
+>>>>
+>>>>    static int
+>>>> diff --git a/include/uapi/linux/vdpa.h b/include/uapi/linux/vdpa.h
+>>>> index 25c55cab3d7c..97531b52dcbe 100644
+>>>> --- a/include/uapi/linux/vdpa.h
+>>>> +++ b/include/uapi/linux/vdpa.h
+>>>> @@ -46,12 +46,16 @@ enum vdpa_attr {
+>>>>
+>>>>           VDPA_ATTR_DEV_NEGOTIATED_FEATURES,      /* u64 */
+>>>>           VDPA_ATTR_DEV_MGMTDEV_MAX_VQS,          /* u32 */
+>>>> +       /* features of a vDPA management device */
+>>>>           VDPA_ATTR_DEV_SUPPORTED_FEATURES,       /* u64 */
+>>>>
+>>>>           VDPA_ATTR_DEV_QUEUE_INDEX,              /* u32 */
+>>>>           VDPA_ATTR_DEV_VENDOR_ATTR_NAME,         /* string */
+>>>>           VDPA_ATTR_DEV_VENDOR_ATTR_VALUE,        /* u64 */
+>>>>
+>>>> +       /* features of a vDPA device, e.g., /dev/vhost-vdpa0 */
+>>>> +       VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES,  /* u64 */
+>>> What's the difference between this and VDPA_ATTR_DEV_SUPPORTED_FEATURES?
+>> This is to report a vDPA device features, and
+>> VDPA_ATTR_DEV_SUPPORTED_FEATURES
+>> is used for reporting the management device features, we have a long
+>> discussion
+>> on this before.
+> Yes, but the comment is not clear in many ways:
+>
+> " features of a vDPA management device" sounds like features that is
+> out of the scope of the virtio.
+I think the term "vDPA device" implies that it is a virtio device.
+So how about: "virtio features of a vDPA management device"
+>
+> And
+>
+> "/dev/vhost-vdpa0" is not a vDPA device but a vhost-vDPA device.
+will remove this example here.
 
 Thanks
--Bharat
+>
+> Thanks
+>
+>>> Thanks
+>>>
+>>>> +
+>>>>           /* new attributes must be added above here */
+>>>>           VDPA_ATTR_MAX,
+>>>>    };
+>>>> --
+>>>> 2.31.1
+>>>>
 
->=20
-> > Wanted to know if we need proper locking while handling these ops in dr=
-iver.
-> >
-> > Thanks
-> > -Bharat
