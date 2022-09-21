@@ -2,134 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 501A45BF96D
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 10:36:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A9A45BF9B6
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 10:48:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231235AbiIUIgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 04:36:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42434 "EHLO
+        id S230330AbiIUIsw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 04:48:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230526AbiIUIgR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 04:36:17 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00F3F832FE
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 01:36:15 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1oavDK-0000TU-AE
-        for netdev@vger.kernel.org; Wed, 21 Sep 2022 10:36:14 +0200
-Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 4E863E858B
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 08:36:12 +0000 (UTC)
-Received: from hardanger.blackshift.org (unknown [172.20.34.65])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id CD0EBE8575;
-        Wed, 21 Sep 2022 08:36:10 +0000 (UTC)
-Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id dbd3af39;
-        Wed, 21 Sep 2022 08:36:10 +0000 (UTC)
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Marc Kleine-Budde <mkl@pengutronix.de>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH net 3/3] can: gs_usb: gs_usb_set_phys_id(): return with error if identify is not supported
-Date:   Wed, 21 Sep 2022 10:36:09 +0200
-Message-Id: <20220921083609.419768-4-mkl@pengutronix.de>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220921083609.419768-1-mkl@pengutronix.de>
-References: <20220921083609.419768-1-mkl@pengutronix.de>
+        with ESMTP id S231436AbiIUIsl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 04:48:41 -0400
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7EC5B7FFA1;
+        Wed, 21 Sep 2022 01:48:39 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.93,332,1654527600"; 
+   d="scan'208";a="135683808"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie6.idc.renesas.com with ESMTP; 21 Sep 2022 17:48:38 +0900
+Received: from localhost.localdomain (unknown [10.166.15.32])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 5E0CB41D8A0E;
+        Wed, 21 Sep 2022 17:48:38 +0900 (JST)
+From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To:     kishon@ti.com, vkoul@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        richardcochran@gmail.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, geert+renesas@glider.be
+Cc:     andrew@lunn.ch, linux-phy@lists.infradead.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH v2 0/8] treewide: Add R-Car S4-8 Ethernet Switch support
+Date:   Wed, 21 Sep 2022 17:47:37 +0900
+Message-Id: <20220921084745.3355107-1-yoshihiro.shimoda.uh@renesas.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=1.5 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
+        KHOP_HELO_FCRDNS,SPF_HELO_NONE autolearn=no autolearn_force=no
+        version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Until commit 409c188c57cd ("can: tree-wide: advertise software
-timestamping capabilities") the ethtool_ops was only assigned for
-devices which support the GS_CAN_FEATURE_IDENTIFY feature. That commit
-assigns ethtool_ops unconditionally.
+This patch series is based on next-20220915.
+Add minimal support for R-Car S4-8 Etherent Switch. This hardware
+supports a lot of features. But, this driver only supports it as
+act as an ethernet controller for now.
 
-This results on controllers without GS_CAN_FEATURE_IDENTIFY support
-for the following ethtool error:
+- patch [1/8] is for CCF.
+- patch [2/8] and [3/8] are for Generic PHY.
+- patch [4/8] through [6/8] are for Network Ethernet.
+- patch [7/8] and [8/8] are for Renesas ARM64 SoC.
 
-| $ ethtool -p can0 1
-| Cannot identify NIC: Broken pipe
+Changes from v1:
+ https://lore.kernel.org/all/20220909132614.1967276-1-yoshihiro.shimoda.uh@renesas.com/
+ - Separate Ethernet SERDES hardware block so that made a Generic PHY driver.
+ - Separate PTP support into a patch as patch [6/8].
+ - Fix dt-bindings of Ethernet Switch.
+ - Remove module parameters from Ethernet Switch driver.
+ - Wrote reverse christmas tree about local variables in all the code.
+ - Improve error path handlings.
+ - Add comment about the current hardware limitation.
+ - Add comment about magic numbers about SERDES settings.
 
-Restore the correct error value by checking for
-GS_CAN_FEATURE_IDENTIFY in the gs_usb_set_phys_id() function.
+Yoshihiro Shimoda (8):
+  clk: renesas: r8a779f0: Add Ethernet Switch clocks
+  dt-bindings: phy: renesas: Document Renesas Ethernet SERDES
+  phy: renesas: Add Renesas Ethernet SERDES driver for R-Car S4-8
+  dt-bindings: net: renesas: Document Renesas Ethernet Switch
+  net: ethernet: renesas: Add Ethernet Switch driver
+  net: ethernet: renesas: rswitch: Add R-Car Gen4 gPTP support
+  arm64: dts: renesas: r8a779f0: Add Ethernet Switch and SERDES nodes
+  arm64: dts: renesas: r8a779f0: spider: Enable Ethernet Switch and
+    SERDES
 
-| $ ethtool -p can0 1
-| Cannot identify NIC: Operation not supported
+ .../bindings/net/renesas,etherswitch.yaml     |  286 +++
+ .../bindings/phy/renesas,ether-serdes.yaml    |   54 +
+ .../dts/renesas/r8a779f0-spider-ethernet.dtsi |   54 +
+ arch/arm64/boot/dts/renesas/r8a779f0.dtsi     |  111 +
+ drivers/clk/renesas/r8a779f0-cpg-mssr.c       |    2 +
+ drivers/net/ethernet/renesas/Kconfig          |   11 +
+ drivers/net/ethernet/renesas/Makefile         |    4 +
+ drivers/net/ethernet/renesas/rcar_gen4_ptp.c  |  151 ++
+ drivers/net/ethernet/renesas/rcar_gen4_ptp.h  |   71 +
+ drivers/net/ethernet/renesas/rswitch.c        | 1779 +++++++++++++++++
+ drivers/net/ethernet/renesas/rswitch.h        |  967 +++++++++
+ drivers/phy/renesas/Kconfig                   |    7 +
+ drivers/phy/renesas/Makefile                  |    2 +-
+ drivers/phy/renesas/r8a779f0-ether-serdes.c   |  303 +++
+ 14 files changed, 3801 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/net/renesas,etherswitch.yaml
+ create mode 100644 Documentation/devicetree/bindings/phy/renesas,ether-serdes.yaml
+ create mode 100644 drivers/net/ethernet/renesas/rcar_gen4_ptp.c
+ create mode 100644 drivers/net/ethernet/renesas/rcar_gen4_ptp.h
+ create mode 100644 drivers/net/ethernet/renesas/rswitch.c
+ create mode 100644 drivers/net/ethernet/renesas/rswitch.h
+ create mode 100644 drivers/phy/renesas/r8a779f0-ether-serdes.c
 
-While there use the variable "netdev" for the "struct net_device"
-pointer and "dev" for the "struct gs_can" pointer as in the rest of
-the driver.
-
-Fixes: 409c188c57cd ("can: tree-wide: advertise software timestamping capabilities")
-Link: http://lore.kernel.org/all/20220818143853.2671854-1-mkl@pengutronix.de
-Cc: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
----
- drivers/net/can/usb/gs_usb.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/net/can/usb/gs_usb.c b/drivers/net/can/usb/gs_usb.c
-index 553e2c7b0b12..c1ff3c046d62 100644
---- a/drivers/net/can/usb/gs_usb.c
-+++ b/drivers/net/can/usb/gs_usb.c
-@@ -925,17 +925,21 @@ static int gs_usb_set_identify(struct net_device *netdev, bool do_identify)
- }
- 
- /* blink LED's for finding the this interface */
--static int gs_usb_set_phys_id(struct net_device *dev,
-+static int gs_usb_set_phys_id(struct net_device *netdev,
- 			      enum ethtool_phys_id_state state)
- {
-+	const struct gs_can *dev = netdev_priv(netdev);
- 	int rc = 0;
- 
-+	if (!(dev->feature & GS_CAN_FEATURE_IDENTIFY))
-+		return -EOPNOTSUPP;
-+
- 	switch (state) {
- 	case ETHTOOL_ID_ACTIVE:
--		rc = gs_usb_set_identify(dev, GS_CAN_IDENTIFY_ON);
-+		rc = gs_usb_set_identify(netdev, GS_CAN_IDENTIFY_ON);
- 		break;
- 	case ETHTOOL_ID_INACTIVE:
--		rc = gs_usb_set_identify(dev, GS_CAN_IDENTIFY_OFF);
-+		rc = gs_usb_set_identify(netdev, GS_CAN_IDENTIFY_OFF);
- 		break;
- 	default:
- 		break;
-@@ -1072,9 +1076,10 @@ static struct gs_can *gs_make_candev(unsigned int channel,
- 		dev->feature |= GS_CAN_FEATURE_REQ_USB_QUIRK_LPC546XX |
- 			GS_CAN_FEATURE_QUIRK_BREQ_CANTACT_PRO;
- 
--	if (le32_to_cpu(dconf->sw_version) > 1)
--		if (feature & GS_CAN_FEATURE_IDENTIFY)
--			netdev->ethtool_ops = &gs_usb_ethtool_ops;
-+	/* GS_CAN_FEATURE_IDENTIFY is only supported for sw_version > 1 */
-+	if (!(le32_to_cpu(dconf->sw_version) > 1 &&
-+	      feature & GS_CAN_FEATURE_IDENTIFY))
-+		dev->feature &= ~GS_CAN_FEATURE_IDENTIFY;
- 
- 	kfree(bt_const);
- 
 -- 
-2.35.1
-
+2.25.1
 
