@@ -2,115 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 60DE15E5649
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 00:35:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA63E5E5651
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 00:41:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230488AbiIUWet (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 18:34:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47000 "EHLO
+        id S229726AbiIUWlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 18:41:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230525AbiIUWer (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 18:34:47 -0400
-Received: from novek.ru (unknown [213.148.174.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A5942A96F
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 15:34:45 -0700 (PDT)
-Received: from [192.168.0.18] (unknown [37.228.234.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id BE1EC504D44;
-        Thu, 22 Sep 2022 01:31:04 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru BE1EC504D44
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1663799466; bh=ju/HCv3l0569wyceIb2DgQQcFzXHNG6w7bmCZC/X1PE=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=zjZ4Rw3TXTLHMHqPBUCrIdqHDuYXNbbpVcaZCIxtF3QvA+JIUG5pHbiwdnY9nZJh4
-         Uy5pISELFBZmE6QaLqrt9CNrTpTl8BogBj1Wx1eCixW7knGKWbm5MYyH/Mn8vR7Dt9
-         Yw/3EqEdDgXID1wWfQuXlMG/e9wvYjOzg8si1BOI=
-Message-ID: <bf5936da-e04d-37e4-00b2-81e9c6fa4170@novek.ru>
-Date:   Wed, 21 Sep 2022 23:34:10 +0100
+        with ESMTP id S229555AbiIUWlL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 18:41:11 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 487C599B5A
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 15:41:10 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id 9so7393670pfz.12
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 15:41:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=ewiTBmEkjrLeRgH8XDZlgRceITtN7XK9skR1s0n7f1g=;
+        b=2Hb1yo8+QeJQ/7rO8igJvKEZ02OUbfVRZlNptwFM9W3FNhCONdyYVOVu1oCYGnc8Dn
+         Uf0JyY/X8msE313GCG/tg/v3u88DfDVhpZdeJqmmS6f0QXYqYUbeKNGhsXa38zQY39D8
+         nLiaTiPM2GI7agp+gvFa1ZQUBrtuh2kI4qIsjbnFgglj+bE4hrZEVHqU7pAJO7uQjYQ/
+         GeaLqM25LGBnTpn+Hxv4witL+/BYMyuv4XNmkVY5BG7ww7hQBdHByfbElwlGb5+fmykA
+         eA+BnsxY+zhFIuPoT1qjUVTjK4HlyeKrsi4GIRcixm2AUd+b3P7bbKYPGecIkElePmVb
+         V17w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=ewiTBmEkjrLeRgH8XDZlgRceITtN7XK9skR1s0n7f1g=;
+        b=FqEBCXnU/TrG/pDInPSa5x+2TyA7q7rt1O2SqIi0AnEOBSbLnenA7j+KenSfiI7mSb
+         Q/jZDaj74tuv7RfD4ThelrUwFtedPQ+IV99b1wS8GcGB5rttxa4IFm0714te23HFKYdh
+         KQKo0tpGm4RZs8GrS1RPtBA23yuQ5oGR+ksB2LBsdp2L0ZOdQzP3SwyFEXuAQzsSk7Kz
+         t19SGV90RN/xdsAOTjO5hCr5FkHXmpxwUGo58KTIJtgrua6fj8cMGRilfibN6v4GBxcI
+         FO9MOjtDv8TkBQsV6TSeoNICwSQbBUhAtlPkN5P84mKWri0TXZ6VOjU+tt0LtiiWs1J+
+         ssnA==
+X-Gm-Message-State: ACrzQf306c4qRQdcKbdhGVpJPJIbVOmXxA7bWII128uJNebx4ZYM9/Vv
+        6v2BjMdUyvJqSn8JL+Up7uDNTQ==
+X-Google-Smtp-Source: AMsMyM4RNham9Q17Ndxq471/Cd3A8WPNposi9DxUNxZl85HVkGRNSvxveF0MbzTB7nMNn6kBF+/Yyg==
+X-Received: by 2002:aa7:9dde:0:b0:53e:5af7:ac10 with SMTP id g30-20020aa79dde000000b0053e5af7ac10mr562653pfq.16.1663800069826;
+        Wed, 21 Sep 2022 15:41:09 -0700 (PDT)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id ik24-20020a170902ab1800b0017495461db7sm2553812plb.190.2022.09.21.15.41.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Sep 2022 15:41:09 -0700 (PDT)
+Date:   Wed, 21 Sep 2022 15:41:07 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        David Ahern <dsahern@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH v2 iproute2-next] ip link: add sub-command to view and
+ change DSA master
+Message-ID: <20220921154107.61399763@hermes.local>
+In-Reply-To: <20220921183827.gkmzula73qr4afwg@skbuf>
+References: <20220921165105.1737200-1-vladimir.oltean@nxp.com>
+        <20220921113637.73a2f383@hermes.local>
+        <20220921183827.gkmzula73qr4afwg@skbuf>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net] bnxt_en: replace reset with config timestamps
-Content-Language: en-US
-To:     Michael Chan <michael.chan@broadcom.com>
-Cc:     Pavan Chebbi <pavan.chebbi@broadcom.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Richard Cochran <richardcochran@gmail.com>
-References: <20220919183907.6689-1-vfedorenko@novek.ru>
- <CACKFLikj17yP3KZfMCiq3pQk9DZrBCYjA7AFuqjTr72H=_Z-TQ@mail.gmail.com>
- <CACKFLikxsS_arFNuqA8XkUBT09t2g0Qb0-9Z5jVQ5=W3KcV-_w@mail.gmail.com>
-From:   Vadim Fedorenko <vfedorenko@novek.ru>
-In-Reply-To: <CACKFLikxsS_arFNuqA8XkUBT09t2g0Qb0-9Z5jVQ5=W3KcV-_w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 21.09.2022 22:33, Michael Chan wrote:
-> On Tue, Sep 20, 2022 at 7:36 AM Michael Chan <michael.chan@broadcom.com> wrote:
->>
->> On Mon, Sep 19, 2022 at 11:39 AM Vadim Fedorenko <vfedorenko@novek.ru> wrote:
->>>
->>> Any change to the hardware timestamps configuration triggers nic restart,
->>> which breaks transmition and reception of network packets for a while.
->>> But there is no need to fully restart the device because while configuring
->>> hardware timestamps. The code for changing configuration runs after all
->>> of the initialisation, when the NIC is actually up and running. This patch
->>> changes the code that ioctl will only update configuration registers and
->>> will not trigger carrier status change. Tested on BCM57504.
->>>
->>> Fixes: 11862689e8f1 ("bnxt_en: Configure ptp filters during bnxt open")
->>> Cc: Richard Cochran <richardcochran@gmail.com>
->>> Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
->>> ---
->>>   drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 6 ++----
->>>   1 file changed, 2 insertions(+), 4 deletions(-)
->>>
->>> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
->>> index 8e316367f6ce..36e9148468b5 100644
->>> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
->>> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
->>> @@ -505,10 +505,8 @@ static int bnxt_hwrm_ptp_cfg(struct bnxt *bp)
->>>          ptp->tstamp_filters = flags;
->>>
->>>          if (netif_running(bp->dev)) {
->>> -               rc = bnxt_close_nic(bp, false, false);
->>> -               if (!rc)
->>> -                       rc = bnxt_open_nic(bp, false, false);
->>> -               if (!rc && !ptp->tstamp_filters)
->>> +               bnxt_ptp_cfg_tstamp_filters(bp);
->>> +               if (!ptp->tstamp_filters)
->>
->> Closing and opening is the correct sequence, but this might work too.
->> Please give us a day to review this.  Thanks.
-> 
-> We have internally discussed this issue in great detail.  If the user
-> is changing the ALL_RX setting (enabling it or disabling it), just
-> calling bnxt_ptp_cfg_tstamp_filters() is not sufficient.  The reason
-> is that there is no synchronization after we send the new setting to
-> the FW.  We don't know when valid timestamps will start showing up in
-> the RX completion ring after turning on ALL_RX.  That's why we need to
-> close and open.  After open, all RX packets are guaranteed to have
-> valid timestamps.
-> 
-> So what we can do is to detect any changes to ALL_RX setting.  If
-> ALL_RX is not changing, we can just do what this patch is doing.  If
-> ALL_RX is changing, we can do something less intrusive than
-> close/open.  We can just shutdown RX and restart RX.  This way we
-> don't have to toggle carrier and cause a bigger disruption.
-> 
-Thanks for the review. I got your point regarding timestamps for all RX packets,
-but for now I care about the case when ALL_RX is not supported. I can send a v2
-with the check for this condition while you are working on the improvements for
-all cases. Will it be to review and commit such patch?
+On Wed, 21 Sep 2022 18:38:28 +0000
+Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
 
-Thanks.
+> On Wed, Sep 21, 2022 at 11:36:37AM -0700, Stephen Hemminger wrote:
+> > On Wed, 21 Sep 2022 19:51:05 +0300
+> > Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+> >  =20
+> > > +.BI master " DEVICE"
+> > > +- change the DSA master (host network interface) responsible for han=
+dling the
+> > > +local traffic termination of the given DSA switch user port. The sel=
+ected
+> > > +interface must be eligible for operating as a DSA master of the swit=
+ch tree
+> > > +which the DSA user port is a part of. Eligible DSA masters are those=
+ interfaces
+> > > +which have an "ethernet" reference towards their firmware node in th=
+e firmware
+> > > +description of the platform, or LAG (bond, team) interfaces which co=
+ntain only
+> > > +such interfaces as their ports. =20
+> >=20
+> > We still need to find a better name for this.
+> > DSA predates the LF inclusive naming but that doesn't mean it can't be
+> > fixed in user visible commands. =20
+>=20
+> Need? Why need? Who needs this and since when?
+
+Also see: https://www.kernel.org/doc/html/v6.0-rc6/process/coding-style.htm=
+l#naming
+
+For symbol names and documentation, avoid introducing new usage of =E2=80=
+=98master / slave=E2=80=99 (or =E2=80=98slave=E2=80=99 independent of =E2=
+=80=98master=E2=80=99) and =E2=80=98blacklist / whitelist=E2=80=99.
+
+Recommended replacements for =E2=80=98master / slave=E2=80=99 are:
+=E2=80=98{primary,main} / {secondary,replica,subordinate}=E2=80=99 =E2=80=
+=98{initiator,requester} / {target,responder}=E2=80=99 =E2=80=98{controller=
+,host} / {device,worker,proxy}=E2=80=99 =E2=80=98leader / follower=E2=80=99=
+ =E2=80=98director / performer=E2=80=99
+
+Recommended replacements for =E2=80=98blacklist/whitelist=E2=80=99 are:
+=E2=80=98denylist / allowlist=E2=80=99 =E2=80=98blocklist / passlist=E2=80=
+=99
+
+Exceptions for introducing new usage is to maintain a userspace ABI/API, or=
+ when updating code for an existing (as of 2020) hardware or protocol speci=
+fication that mandates those terms. For new specifications translate specif=
+ication usage of the terminology to the kernel coding standard where possib=
+le.
