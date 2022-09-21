@@ -2,96 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD6D65BF817
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 09:46:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41C9B5BF830
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 09:50:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229995AbiIUHqm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 03:46:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43956 "EHLO
+        id S230480AbiIUHuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 03:50:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229959AbiIUHqj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 03:46:39 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8367475CE0
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 00:46:38 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        with ESMTP id S229519AbiIUHuD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 03:50:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E93895C36F
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 00:50:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 39D6821A1B;
-        Wed, 21 Sep 2022 07:46:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1663746397; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9OXfaeMeZD6jpyL701M66yxkSmfRCNZuUveeI5qc/JU=;
-        b=ql1S4jo2l5bsqvRswOXrXKKnEXwDkn0koQrCniOp2RdCbdYmr04/NKk0zVAJItr2hrnnEd
-        WVa2TMwLuvMNbvkWoEVl0P9q5AAwuUlie3cYxnYHyh0A/5AAZj/JCoiclELT+Vz8IdnTlv
-        1QD7Py1QMCav/2pKPr2xVxMojV+wOtw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1663746397;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9OXfaeMeZD6jpyL701M66yxkSmfRCNZuUveeI5qc/JU=;
-        b=lGzEtsl37hWv4yUtCeZ5tWw1i+cIbvZkLKYOL/h6kmqeKlGvfMbBMhRZ9JOgLPW6/13Wu1
-        CRs8KdiT9IhPmBAQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 227B913A00;
-        Wed, 21 Sep 2022 07:46:37 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id rbllB13BKmPUFAAAMHmgww
-        (envelope-from <chrubis@suse.cz>); Wed, 21 Sep 2022 07:46:37 +0000
-Date:   Wed, 21 Sep 2022 09:48:33 +0200
-From:   Cyril Hrubis <chrubis@suse.cz>
-To:     kernel test robot <oliver.sang@intel.com>
-Cc:     Patrick Rohr <prohr@google.com>, lkp@intel.com,
-        Maciej =?utf-8?Q?=C5=BBenczykowski?= <maze@google.com>,
-        netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        lkp@lists.01.org, "David S . Miller" <davem@davemloft.net>,
-        ltp@lists.linux.it, Lorenzo Colitti <lorenzo@google.com>
-Subject: Re: [LTP] [tun]  a4d8f18ebc: ltp.ioctl03.fail
-Message-ID: <YyrB0fSRu7PvNvLi@yuki>
-References: <20220916234552.3388360-1-prohr@google.com>
- <202209211425.14116dd2-oliver.sang@intel.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 81BBFB82E4F
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 07:50:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE1B6C433D6;
+        Wed, 21 Sep 2022 07:49:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1663746600;
+        bh=IdavPII6SMmrOQI+nCN//Gn0Zy3iBq1qqfUcNXyapVQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=sEeCE8gbJWdqZZ7N+oo9JlsPtqbg3ze1C3/BXw307smJS6LchOkLpwZ776KTG0iuP
+         whPYAwCmGffiTLdQD0mYgDSO6v6p46ihwWpHg2Fp2DwfwNiXvVcT5GasjDgUp0aJWg
+         1bfz7we5cTR9UB+YJ8oVigVukHdxiiW3dJucq9kWAI1Xef44WuE8eJFxq5UN3i2cj3
+         5+54ekgdWMztZ563BQedY1WD0mVb7E+oh6qUUC5REAN8+7RWXEO9J5mi4FIrGaUVXx
+         0eI1nUtyaRVf9wjhyGEcW5N36DQUM6+9dqD3MlkGvJrujMq/uHDXSjXxCnFWQSRtv3
+         YPNx2RSwmCoXA==
+Date:   Wed, 21 Sep 2022 10:49:56 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Bharat Bhushan <bbhushan2@marvell.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [EXT] Re: Are xfrm state_add/delete() calls serialized?
+Message-ID: <YyrCJLrciWrI5dED@unreal>
+References: <DM5PR1801MB1883E2826A037070B2DD6608E3449@DM5PR1801MB1883.namprd18.prod.outlook.com>
+ <Yyg2kYNeGxWSCvC4@unreal>
+ <DM5PR1801MB18836F4BB4032F8654A35BD2E34F9@DM5PR1801MB1883.namprd18.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202209211425.14116dd2-oliver.sang@intel.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <DM5PR1801MB18836F4BB4032F8654A35BD2E34F9@DM5PR1801MB1883.namprd18.prod.outlook.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
-> tag=ioctl03 stime=1663640405
-> cmdline="ioctl03"
-> contacts=""
-> analysis=exit
-> <<<test_output>>>
-> tst_test.c:1526: TINFO: Timeout per run is 0h 02m 30s
-> ioctl03.c:76: TINFO: Available features are: 0x7533
-> ioctl03.c:80: TPASS: TUN 0x1
-> ioctl03.c:80: TPASS: TAP 0x2
-> ioctl03.c:80: TPASS: NO_PI 0x1000
-> ioctl03.c:80: TPASS: ONE_QUEUE 0x2000
-> ioctl03.c:80: TPASS: VNET_HDR 0x4000
-> ioctl03.c:80: TPASS: MULTI_QUEUE 0x100
-> ioctl03.c:80: TPASS: IFF_NAPI 0x10
-> ioctl03.c:80: TPASS: IFF_NAPI_FRAGS 0x20
-> ioctl03.c:85: TFAIL: (UNKNOWN 0x400)
+On Wed, Sep 21, 2022 at 05:42:22AM +0000, Bharat Bhushan wrote:
+> Please see inline 
+> 
+> > -----Original Message-----
+> > From: Leon Romanovsky <leon@kernel.org>
+> > Sent: Monday, September 19, 2022 3:00 PM
+> > To: Bharat Bhushan <bbhushan2@marvell.com>
+> > Cc: netdev@vger.kernel.org
+> > Subject: [EXT] Re: Are xfrm state_add/delete() calls serialized?
+> > 
+> > External Email
+> > 
+> > ----------------------------------------------------------------------
+> > On Mon, Sep 12, 2022 at 03:10:12PM +0000, Bharat Bhushan wrote:
+> > > Hi All,
+> > >
+> > > Have a very basic query related to .xdo_dev_state_add()/delete() ops
+> > supported by netdev driver. Can .xdo_dev_state_add()/delete() execute from
+> > other core while already in process of handling .xdo_dev_state_add()/delete()
+> > on one core? Or these calls are always serialized by stack?
+> > 
+> > It is protected from userspace callers with xfrm_cfg_mutex in xfrm_netlink_rcv().
+> 
+> So all *_state_add() and _state_delete() are serialized from user.
+> 
+> > However, stack triggered deletion can be in parallel. There is a lock for that
+> > specific SA that is going to be deleted, and it is not global.
+> 
+> Just want to confirm m understanding, xfrm_state->lock is used by stack (example xfrm_timer_handler()) for deletion, but this lock is per SA (not global).
+> So _state_delete() of different SA can happen in parallel and also _state_delete() by stack can run in parallel to state addition from user.
 
-Obviously the test fails since new flag has been advertised. The test
-will have to be updated once/if this commit hits mainline.
+Right
 
--- 
-Cyril Hrubis
-chrubis@suse.cz
+> 
+> Thanks
+> -Bharat
+> 
+> > 
+> > > Wanted to know if we need proper locking while handling these ops in driver.
+> > >
+> > > Thanks
+> > > -Bharat
