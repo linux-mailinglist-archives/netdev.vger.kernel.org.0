@@ -2,101 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AAD35BF28F
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 03:05:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E92475BF29B
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 03:15:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230011AbiIUBFa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 21:05:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46550 "EHLO
+        id S230020AbiIUBPC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 21:15:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230366AbiIUBF3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 21:05:29 -0400
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 538BD17AA9;
-        Tue, 20 Sep 2022 18:05:28 -0700 (PDT)
-Received: by mail-qt1-x82c.google.com with SMTP id cj27so3099958qtb.7;
-        Tue, 20 Sep 2022 18:05:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=NpSOfoxet6fpFE78x3YM7TEF5iWYleKq0HWQ8JXp4es=;
-        b=L+vbQVXyN74JEnV20w0WoCNLCR0ZWgmXoDrA9JRcwvYNiXt1Nrb55mlCQph+16Y3HI
-         AIbs//xJzjYl80dj8xINDTazyeU+Tk2Ck/bKWtEhzGD97Xzvhkh9R8tJhgGnwo4qKv/b
-         cnBt5/QnrbaaUWPnzahD4M5V1ZJgjtMQDHAygpvhKxzvP4YyhPDUThmgtvumvp24KGOl
-         O6YG4XB8412LfsiaMq6wSrjZbvLwxT173iNZhExISe99ih7W/xvO27TQ3YpF7hAAN2UQ
-         lGdRqjhgcJOJKGRyV6he1XqdDVK76G/yC+9ALyqLdDNfg9OY+hkvCM+fZlUxERfTbvd1
-         q3ug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=NpSOfoxet6fpFE78x3YM7TEF5iWYleKq0HWQ8JXp4es=;
-        b=PYZP5BImtBA0/2Bh7cORVPMT7pE1A+l9kD4KPeSVdshBePoq5zUAIYB4xVz1VAAFzE
-         vXoWHBzQDCGGWPD0tIhxcLzPxTjrUvC2/flCRDpEH4kXO9FgvHRQUPM/tCtXjgK+aoDa
-         9qswYwJa8tVathd3PR4/4DrBsoGKWo1DyW4n/MVGRBHn0Cnh2FYi26i8J7AkdD89pBps
-         pWw36kJmTzIKE/NnatqSaYccVlzoUy0zV+HVYQnoG16hS0lBFtwKoDIKIuoMoBzY68Mi
-         ffCwaW2WItWOK3M+6RfyaMdJC8/AbI25M1pyJVZ2YYH2pniuEkToELdKWNBofSz0ZzlJ
-         7rfA==
-X-Gm-Message-State: ACrzQf3fbS/GqgeI4m9CDxjhFi3iJErkTcg7eTEUdunnFCu1JPWE7lnP
-        Zvlt7uDQnIIatcHGmxBfYQ==
-X-Google-Smtp-Source: AMsMyM4scnSyNObpXqp6+NVFEG38jdtFZ65wDMOQ8XhGqWdnt4WEMwi/LbspcFAziI/szGOT6MVf9w==
-X-Received: by 2002:a05:622a:110b:b0:35c:d403:6d95 with SMTP id e11-20020a05622a110b00b0035cd4036d95mr19170291qty.495.1663722327486;
-        Tue, 20 Sep 2022 18:05:27 -0700 (PDT)
-Received: from bytedance (ec2-3-231-65-244.compute-1.amazonaws.com. [3.231.65.244])
-        by smtp.gmail.com with ESMTPSA id bn29-20020a05620a2add00b006bbf85cad0fsm881171qkb.20.2022.09.20.18.05.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Sep 2022 18:05:26 -0700 (PDT)
-Date:   Tue, 20 Sep 2022 18:05:23 -0700
-From:   Peilin Ye <yepeilin.cs@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
+        with ESMTP id S229644AbiIUBPA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 21:15:00 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBB351A380;
+        Tue, 20 Sep 2022 18:14:52 -0700 (PDT)
+X-UUID: 00dbde89468e48c8980368407c5174c2-20220921
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=ktfKjkuCSlQ6+XBcD3iNIlUZc9IseljbIXo3FqlLINs=;
+        b=ONomnynQNKYp/OtLRjDQSsdjunAulXc1ExepZW83eEyolFjTf/K2V4hU9q+NGLNwuri/TnbdNG4N7UITHO9xQ0jAi5EAWM4rEpM46EguIoWOcOXrFQDT0rfE8KMxckJJc0xDRl3ihTdZCjWQSkdl27exgzBUw3VjdEsdIrJ6j2k=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.11,REQID:a6447ef3-ae29-4966-8222-13df92a4bb1b,IP:0,U
+        RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
+        release,TS:0
+X-CID-META: VersionHash:39a5ff1,CLOUDID:ffe915f7-6e85-48d9-afd8-0504bbfe04cb,B
+        ulkID:nil,BulkQuantity:0,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 00dbde89468e48c8980368407c5174c2-20220921
+Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw01.mediatek.com
+        (envelope-from <jianguo.zhang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 423726621; Wed, 21 Sep 2022 09:14:47 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 21 Sep 2022 09:14:46 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 21 Sep 2022 09:14:45 +0800
+Message-ID: <63ca556b81bc2874d3f0a5b87ee0e2f7a4fdeb18.camel@mediatek.com>
+Subject: Re: [PATCH 1/2] dt-bindings: net: mediatek-dwmac: add support for
+ mt8188
+From:   Jianguo Zhang <jianguo.zhang@mediatek.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+CC:     Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Peilin Ye <peilin.ye@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 1/2] udp: Refactor udp_read_skb()
-Message-ID: <20220921010523.GA2835@bytedance>
-References: <03db9765fe1ef0f61bfc87fc68b5a95b4126aa4e.1663143016.git.peilin.ye@bytedance.com>
- <20220920173859.6137f9e9@kernel.org>
- <20220920174052.47d9858b@kernel.org>
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Biao Huang <biao.huang@mediatek.com>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>
+Date:   Wed, 21 Sep 2022 09:14:44 +0800
+In-Reply-To: <3ed55b0d-6c14-79a1-b4c1-5764c667d195@collabora.com>
+References: <20220920083617.4177-1-jianguo.zhang@mediatek.com>
+         <20220920083617.4177-2-jianguo.zhang@mediatek.com>
+         <3ed55b0d-6c14-79a1-b4c1-5764c667d195@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220920174052.47d9858b@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,T_SPF_TEMPERROR,
+        UNPARSEABLE_RELAY,URIBL_CSS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 20, 2022 at 05:40:52PM -0700, Jakub Kicinski wrote:
-> On Tue, 20 Sep 2022 17:38:59 -0700 Jakub Kicinski wrote:
-> > On Wed, 14 Sep 2022 01:15:30 -0700 Peilin Ye wrote:
-> > > Delete the unnecessary while loop in udp_read_skb() for readability.
-> > > Additionally, since recv_actor() cannot return a value greater than
-> > > skb->len (see sk_psock_verdict_recv()), remove the redundant check.  
+Dear AngeloGioacchino
+
+	Thanks for your comment.
+
+On Tue, 2022-09-20 at 15:22 +0200, AngeloGioacchino Del Regno wrote:
+> Il 20/09/22 10:36, Jianguo Zhang ha scritto:
+> > Add binding document for the ethernet on mt8188
 > > 
-> > These don't apply cleanly, please rebase?
+> > Signed-off-by: Jianguo Zhang <jianguo.zhang@mediatek.com>
+> > ---
+> >   .../devicetree/bindings/net/mediatek-dwmac.yaml        | 10
+> > ++++++++--
+> >   1 file changed, 8 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/net/mediatek-
+> > dwmac.yaml b/Documentation/devicetree/bindings/net/mediatek-
+> > dwmac.yaml
+> > index 61b2fb9e141b..eaf7e8d53432 100644
+> > --- a/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
+> > +++ b/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
+> > @@ -20,6 +20,7 @@ select:
+> >           enum:
+> >             - mediatek,mt2712-gmac
 > 
-> Ah, it's the WARN_ON_ONCE() change. In that case please resend after
-> net is merged into net-next (Thu evening).
+> Please keep the list ordered by name. MT8188 goes before 8195.
+> 
+We will adjust the order in next version patches.
 
-Sure, but only the TCP part was merged [1] into net.  I just sent the
-UDP part again [2], and will resend this patchset after both [1] and [2]
-are merged into net-next.  Thanks!
+> >             - mediatek,mt8195-gmac
+> > +          - mediatek,mt8188-gmac
+> >     required:
+> >       - compatible
+> >   
+> > @@ -37,6 +38,11 @@ properties:
+> >             - enum:
+> >                 - mediatek,mt8195-gmac
+> >             - const: snps,dwmac-5.10a
+> > +      - items:
+> > +          - enum:
+> > +              - mediatek,mt8188-gmac
+> > +          - const: mediatek,mt8195-gmac
+> > +          - const: snps,dwmac-5.10a
+> >   
+> >     clocks:
+> >       minItems: 5
+> > @@ -74,7 +80,7 @@ properties:
+> >         or will round down. Range 0~31*170.
+> >         For MT2712 RMII/MII interface, Allowed value need to be a
+> > multiple of 550,
+> >         or will round down. Range 0~31*550.
+> > -      For MT8195 RGMII/RMII/MII interface, Allowed value need to
+> > be a multiple of 290,
+> > +      For MT8195/MT8188 RGMII/RMII/MII interface, Allowed value
+> > need to be a multiple of 290,
+> 
+> For MT8188/MT8195
+> 
+We will adjust the order in next version patches.
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=96628951869c0dedf0377adca01c8675172d8639
-[2] https://lore.kernel.org/netdev/20220921005915.2697-1-yepeilin.cs@gmail.com/T/#u
+> >         or will round down. Range 0~31*290.
+> >   
+> >     mediatek,rx-delay-ps:
+> > @@ -84,7 +90,7 @@ properties:
+> >         or will round down. Range 0~31*170.
+> >         For MT2712 RMII/MII interface, Allowed value need to be a
+> > multiple of 550,
+> >         or will round down. Range 0~31*550.
+> > -      For MT8195 RGMII/RMII/MII interface, Allowed value need to
+> > be a multiple
+> > +      For MT8195/MT8188 RGMII/RMII/MII interface, Allowed value
+> > need to be a multiple
+> 
+> For MT8188/MT8195
+> 
+We will adjust the order in next version patches.
 
-Peilin Ye
+> >         of 290, or will round down. Range 0~31*290.
+> >   
+> >     mediatek,rmii-rxc:
+> 
+> 
+BRS
+Jianguo
 
