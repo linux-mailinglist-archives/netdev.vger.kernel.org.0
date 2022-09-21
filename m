@@ -2,98 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 92D745BF2AD
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 03:21:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0A125BF2B4
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 03:22:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231153AbiIUBVS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 21:21:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60322 "EHLO
+        id S231197AbiIUBWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 21:22:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230489AbiIUBVN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 21:21:13 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEEC16E2F5;
-        Tue, 20 Sep 2022 18:21:10 -0700 (PDT)
-Received: from weisslap.fritz.box ([31.19.218.61]) by mrelayeu.kundenserver.de
- (mreue107 [212.227.15.183]) with ESMTPSA (Nemesis) id
- 1N3bCH-1pIZCO2eUF-010d9d; Wed, 21 Sep 2022 03:20:47 +0200
-From:   =?UTF-8?q?Michael=20Wei=C3=9F?= <michael.weiss@aisec.fraunhofer.de>
-To:     Paolo Abeni <pabeni@redhat.com>, Pravin B Shelar <pshelar@ovn.org>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     =?UTF-8?q?Michael=20Wei=C3=9F?= <michael.weiss@aisec.fraunhofer.de>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        dev@openvswitch.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 net 2/2] net: openvswitch: allow conntrack in non-initial user namespace
-Date:   Wed, 21 Sep 2022 03:19:46 +0200
-Message-Id: <20220921011946.250228-3-michael.weiss@aisec.fraunhofer.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220921011946.250228-1-michael.weiss@aisec.fraunhofer.de>
-References: <20220921011946.250228-1-michael.weiss@aisec.fraunhofer.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:BZwZqra0fOpBo5DVYUl5XUVi7Kok+GGwO5onMDYdcGcI7jZt+Za
- 5QHLkghZdmb6mEzWfUu3bebBmpyDEUBMN8ytbZLBK2BlqhltE0PmQUiN7lc7xBLGvVqhOG3
- Ix/n2Cy72dQ+lWNUQf+UOAgryZI6qJuwB1kDvYRxfGL7Q0bvX7nqbNBJuxt2xYGNgS5syc4
- dWsEDIIcNfJyoHq2pFoow==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:oc1+IDA1xcs=:1w107+qGS9SSneJIbfovYW
- qSxlP3HtT60j3vdnGvTDgF4JZJUFxacnPDhYT0JMpIoD/U2x0yMJqLvOWQfIPqX/skSKlzDoJ
- wPt4WAlSfKst4e7FWu8NReJr0A5ON5Y7lB3pssU2Jesy2dFNk+gUfKg3ypK8G4eWJAvdv7uyU
- AXH0fYRRlRj0nJOk+s8f3nl+Yd9jgaRZpR3VxmeBwDIHaj7UhmrrJZPFecFX/rPUZknFMIGrJ
- HOOtFkpNLjXOXu2AjTA7Ei97UGoH/78vtsW8H8/Fmal5Ttk4mVv4Khxd6MLcxFLpCQPmJvqYA
- GfPnpdb2tfYNIFxncb4kE6CwcJ+G42gNxJNd9f8i/xd9E6gAzMbZykxxe0PvEux1dPogL0t1O
- Be6o1D/mSwdeZ9S47y2/vuBLbRutummtdTGeGEsGQwDIp7bLRTv2tY48JodFIh4GoHaTqnBh1
- MQEfKOVsObM3sDL8UlplgKRPsN7mJzN7V+dN/NomsHjCkJAEauddsTGpY1PAfeLafLfUkMofY
- zf8uvjvUO53BZjS2Idv56xdvfLoG5dO8a0CUuuD/RAf4nZD7yo1VvoUyTB3PCSKjboJMiM+bD
- QK4oj0A8gtf6QNFp5BoHlJE13DKejCYhgb71RtXFPniXu8pNTPc9ZN4p4fVlYjAPu2HbFdNFM
- B4acUQsm8C1xe9xY7uI+RmFlsX13ndWnLEQTkiHgo1U4w0kD4PmQu0mtHY/5UyqOV/gqRCe2n
- /SykCRMD/p9/EOIz0pFWD6PchwvxH/lJXnvZoXJjX8RGZLA7JYf75DAf269zPXmWV+ZIfyuH8
- +wsj4Le4S8AtywXG/E4We/gcEu70Q==
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229716AbiIUBWw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 21:22:52 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 18F0A72EF9;
+        Tue, 20 Sep 2022 18:22:51 -0700 (PDT)
+Received: by linux.microsoft.com (Postfix, from userid 1004)
+        id B312C2052E21; Tue, 20 Sep 2022 18:22:50 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com B312C2052E21
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxonhyperv.com;
+        s=default; t=1663723370;
+        bh=ocsfRLJrMVLP3MRnHo1K6nXfRnHcqUIq5gLAJuaSbmo=;
+        h=From:To:Cc:Subject:Date:Reply-To:From;
+        b=CtVu9Dz4CXagejkTzC2j2DGGo2sVvEWk6OWKSM6H4qNfaU9/ae0ZpTkSwl3mi/Ic7
+         kJ4+QNM37WjpM2a9jYbdtEC7mfx3nVwmXLia0/+A5CXLYys+19a9OIyka0sj5dRGDv
+         Yo8p2xbnV8yNLslb6NVjAPAPN3XWfeLMsh3m5BpI=
+From:   longli@linuxonhyperv.com
+To:     "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Leon Romanovsky <leon@kernel.org>, edumazet@google.com,
+        shiraz.saleem@intel.com, Ajay Sharma <sharmaajay@microsoft.com>
+Cc:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        Long Li <longli@microsoft.com>
+Subject: [Patch v6 00/12] Introduce Microsoft Azure Network Adapter (MANA) RDMA driver
+Date:   Tue, 20 Sep 2022 18:22:20 -0700
+Message-Id: <1663723352-598-1-git-send-email-longli@linuxonhyperv.com>
+X-Mailer: git-send-email 1.8.3.1
+Reply-To: longli@microsoft.com
+X-Spam-Status: No, score=-11.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Similar to the previous commit, the Netlink interface of the OVS
-conntrack module was restricted to global CAP_NET_ADMIN by using
-GENL_ADMIN_PERM. This is changed to GENL_UNS_ADMIN_PERM to support
-unprivileged containers in non-initial user namespace.
+From: Long Li <longli@microsoft.com>
 
-Signed-off-by: Michael Weiß <michael.weiss@aisec.fraunhofer.de>
----
- net/openvswitch/conntrack.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+This patchset implements a RDMA driver for Microsoft Azure Network
+Adapter (MANA). In MANA, the RDMA device is modeled as an auxiliary device
+to the Ethernet device.
 
-diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
-index 4e70df91d0f2..9142ba322991 100644
---- a/net/openvswitch/conntrack.c
-+++ b/net/openvswitch/conntrack.c
-@@ -2252,14 +2252,16 @@ static int ovs_ct_limit_cmd_get(struct sk_buff *skb, struct genl_info *info)
- static const struct genl_small_ops ct_limit_genl_ops[] = {
- 	{ .cmd = OVS_CT_LIMIT_CMD_SET,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM, /* Requires CAP_NET_ADMIN
--					   * privilege. */
-+		.flags = GENL_UNS_ADMIN_PERM, /* Requires CAP_NET_ADMIN
-+					       * privilege.
-+					       */
- 		.doit = ovs_ct_limit_cmd_set,
- 	},
- 	{ .cmd = OVS_CT_LIMIT_CMD_DEL,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM, /* Requires CAP_NET_ADMIN
--					   * privilege. */
-+		.flags = GENL_UNS_ADMIN_PERM, /* Requires CAP_NET_ADMIN
-+					       * privilege.
-+					       */
- 		.doit = ovs_ct_limit_cmd_del,
- 	},
- 	{ .cmd = OVS_CT_LIMIT_CMD_GET,
+The first 11 patches modify the MANA Ethernet driver to support RDMA driver.
+The last patch implementes the RDMA driver.
+
+The user-mode of the driver is being reviewed at:
+https://github.com/linux-rdma/rdma-core/pull/1177
+
+
+Ajay Sharma (3):
+  net: mana: Set the DMA device max segment size
+  net: mana: Define and process GDMA response code
+    GDMA_STATUS_MORE_ENTRIES
+  net: mana: Define data structures for protection domain and memory
+    registration
+
+Long Li (9):
+  net: mana: Add support for auxiliary device
+  net: mana: Record the physical address for doorbell page region
+  net: mana: Handle vport sharing between devices
+  net: mana: Add functions for allocating doorbell page from GDMA
+  net: mana: Export Work Queue functions for use by RDMA driver
+  net: mana: Record port number in netdev
+  net: mana: Move header files to a common location
+  net: mana: Define max values for SGL entries
+  RDMA/mana_ib: Add a driver for Microsoft Azure Network Adapter
+
+ MAINTAINERS                                   |   4 +
+ drivers/infiniband/Kconfig                    |   1 +
+ drivers/infiniband/hw/Makefile                |   1 +
+ drivers/infiniband/hw/mana/Kconfig            |   7 +
+ drivers/infiniband/hw/mana/Makefile           |   4 +
+ drivers/infiniband/hw/mana/cq.c               |  80 +++
+ drivers/infiniband/hw/mana/device.c           | 129 ++++
+ drivers/infiniband/hw/mana/main.c             | 555 ++++++++++++++++++
+ drivers/infiniband/hw/mana/mana_ib.h          | 165 ++++++
+ drivers/infiniband/hw/mana/mr.c               | 133 +++++
+ drivers/infiniband/hw/mana/qp.c               | 501 ++++++++++++++++
+ drivers/infiniband/hw/mana/wq.c               | 114 ++++
+ drivers/net/ethernet/microsoft/Kconfig        |   1 +
+ .../net/ethernet/microsoft/mana/gdma_main.c   |  96 ++-
+ .../net/ethernet/microsoft/mana/hw_channel.c  |   6 +-
+ .../net/ethernet/microsoft/mana/mana_bpf.c    |   2 +-
+ drivers/net/ethernet/microsoft/mana/mana_en.c | 176 +++++-
+ .../ethernet/microsoft/mana/mana_ethtool.c    |   2 +-
+ .../net/ethernet/microsoft/mana/shm_channel.c |   2 +-
+ .../microsoft => include/net}/mana/gdma.h     | 162 ++++-
+ .../net}/mana/hw_channel.h                    |   0
+ .../microsoft => include/net}/mana/mana.h     |  23 +-
+ include/net/mana/mana_auxiliary.h             |  10 +
+ .../net}/mana/shm_channel.h                   |   0
+ include/uapi/rdma/ib_user_ioctl_verbs.h       |   1 +
+ include/uapi/rdma/mana-abi.h                  |  66 +++
+ 26 files changed, 2196 insertions(+), 45 deletions(-)
+ create mode 100644 drivers/infiniband/hw/mana/Kconfig
+ create mode 100644 drivers/infiniband/hw/mana/Makefile
+ create mode 100644 drivers/infiniband/hw/mana/cq.c
+ create mode 100644 drivers/infiniband/hw/mana/device.c
+ create mode 100644 drivers/infiniband/hw/mana/main.c
+ create mode 100644 drivers/infiniband/hw/mana/mana_ib.h
+ create mode 100644 drivers/infiniband/hw/mana/mr.c
+ create mode 100644 drivers/infiniband/hw/mana/qp.c
+ create mode 100644 drivers/infiniband/hw/mana/wq.c
+ rename {drivers/net/ethernet/microsoft => include/net}/mana/gdma.h (80%)
+ rename {drivers/net/ethernet/microsoft => include/net}/mana/hw_channel.h (100%)
+ rename {drivers/net/ethernet/microsoft => include/net}/mana/mana.h (95%)
+ create mode 100644 include/net/mana/mana_auxiliary.h
+ rename {drivers/net/ethernet/microsoft => include/net}/mana/shm_channel.h (100%)
+ create mode 100644 include/uapi/rdma/mana-abi.h
+
 -- 
-2.30.2
+2.17.1
 
