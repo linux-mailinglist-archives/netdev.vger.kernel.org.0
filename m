@@ -2,96 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 41C9B5BF830
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 09:50:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2FDF5BF842
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 09:51:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230480AbiIUHuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 03:50:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50700 "EHLO
+        id S231183AbiIUHvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 03:51:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229519AbiIUHuD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 03:50:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E93895C36F
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 00:50:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 81BBFB82E4F
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 07:50:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE1B6C433D6;
-        Wed, 21 Sep 2022 07:49:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663746600;
-        bh=IdavPII6SMmrOQI+nCN//Gn0Zy3iBq1qqfUcNXyapVQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sEeCE8gbJWdqZZ7N+oo9JlsPtqbg3ze1C3/BXw307smJS6LchOkLpwZ776KTG0iuP
-         whPYAwCmGffiTLdQD0mYgDSO6v6p46ihwWpHg2Fp2DwfwNiXvVcT5GasjDgUp0aJWg
-         1bfz7we5cTR9UB+YJ8oVigVukHdxiiW3dJucq9kWAI1Xef44WuE8eJFxq5UN3i2cj3
-         5+54ekgdWMztZ563BQedY1WD0mVb7E+oh6qUUC5REAN8+7RWXEO9J5mi4FIrGaUVXx
-         0eI1nUtyaRVf9wjhyGEcW5N36DQUM6+9dqD3MlkGvJrujMq/uHDXSjXxCnFWQSRtv3
-         YPNx2RSwmCoXA==
-Date:   Wed, 21 Sep 2022 10:49:56 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Bharat Bhushan <bbhushan2@marvell.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [EXT] Re: Are xfrm state_add/delete() calls serialized?
-Message-ID: <YyrCJLrciWrI5dED@unreal>
-References: <DM5PR1801MB1883E2826A037070B2DD6608E3449@DM5PR1801MB1883.namprd18.prod.outlook.com>
- <Yyg2kYNeGxWSCvC4@unreal>
- <DM5PR1801MB18836F4BB4032F8654A35BD2E34F9@DM5PR1801MB1883.namprd18.prod.outlook.com>
+        with ESMTP id S231182AbiIUHvh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 03:51:37 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B51885F99;
+        Wed, 21 Sep 2022 00:51:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1663746693; x=1695282693;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=EllnnA+GaGvhr9Oir7bdfJEh3FXngKBt932S4ZhnqSQ=;
+  b=AwSpopyhbgabQAu6rPJApD06tUrBZB3gbF5DW/efiT3CBddljwSkYPcw
+   zjZSl5TXeODv15h7olwzPBOdqd+MFS4LHCh3rl+IrFISeORJvG52hzM8s
+   d+jPcTPQ7qu7LdAESH0kazn1dK9DxgrAtJnIcRlJVrtFTsaMefe9nhL0W
+   icXrzKlKG9xANsymM0aTgzITabH172TqUcqCLCLflHJsybpVGf/+P8TaL
+   49HrCRGz0ILcyeXPbk0jiy56FKxTYoAFI0BW7hHN6Hxxf7D7PbaY+nQI/
+   AK576mLIb6TwwO5KgQVDClWB3b+osiWbuWGzfwyIRmf+RAHvzMjAmL4fP
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10476"; a="280306072"
+X-IronPort-AV: E=Sophos;i="5.93,332,1654585200"; 
+   d="scan'208";a="280306072"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2022 00:51:28 -0700
+X-IronPort-AV: E=Sophos;i="5.93,332,1654585200"; 
+   d="scan'208";a="649947793"
+Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.255.29.68]) ([10.255.29.68])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2022 00:51:23 -0700
+Message-ID: <31249c57-a705-510f-aad3-62c32d4ff1fc@intel.com>
+Date:   Wed, 21 Sep 2022 15:51:21 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DM5PR1801MB18836F4BB4032F8654A35BD2E34F9@DM5PR1801MB1883.namprd18.prod.outlook.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.2.2
+Subject: Re: [PATCH 1/4] vDPA: allow userspace to query features of a vDPA
+ device
+Content-Language: en-US
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     mst <mst@redhat.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>, kvm <kvm@vger.kernel.org>
+References: <20220909085712.46006-1-lingshan.zhu@intel.com>
+ <20220909085712.46006-2-lingshan.zhu@intel.com>
+ <CACGkMEsq+weeO7i8KtNNAPhXGwN=cTwWt3RWfTtML-Xwj3K5Qg@mail.gmail.com>
+ <e69b65e7-516f-55bd-cb99-863d7accbd32@intel.com>
+ <CACGkMEv0++vmfzzmX47NhsaY5JTvbO2Ro7Taf8C0dxV6OVXTKw@mail.gmail.com>
+ <27b04293-2225-c78d-f6e3-ffe8a7472ea1@intel.com>
+ <CACGkMEvf0sQyFTowg9DtVS3QbAHidv_cOBCk5hUaaKNxwods8Q@mail.gmail.com>
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <CACGkMEvf0sQyFTowg9DtVS3QbAHidv_cOBCk5hUaaKNxwods8Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 21, 2022 at 05:42:22AM +0000, Bharat Bhushan wrote:
-> Please see inline 
-> 
-> > -----Original Message-----
-> > From: Leon Romanovsky <leon@kernel.org>
-> > Sent: Monday, September 19, 2022 3:00 PM
-> > To: Bharat Bhushan <bbhushan2@marvell.com>
-> > Cc: netdev@vger.kernel.org
-> > Subject: [EXT] Re: Are xfrm state_add/delete() calls serialized?
-> > 
-> > External Email
-> > 
-> > ----------------------------------------------------------------------
-> > On Mon, Sep 12, 2022 at 03:10:12PM +0000, Bharat Bhushan wrote:
-> > > Hi All,
-> > >
-> > > Have a very basic query related to .xdo_dev_state_add()/delete() ops
-> > supported by netdev driver. Can .xdo_dev_state_add()/delete() execute from
-> > other core while already in process of handling .xdo_dev_state_add()/delete()
-> > on one core? Or these calls are always serialized by stack?
-> > 
-> > It is protected from userspace callers with xfrm_cfg_mutex in xfrm_netlink_rcv().
-> 
-> So all *_state_add() and _state_delete() are serialized from user.
-> 
-> > However, stack triggered deletion can be in parallel. There is a lock for that
-> > specific SA that is going to be deleted, and it is not global.
-> 
-> Just want to confirm m understanding, xfrm_state->lock is used by stack (example xfrm_timer_handler()) for deletion, but this lock is per SA (not global).
-> So _state_delete() of different SA can happen in parallel and also _state_delete() by stack can run in parallel to state addition from user.
 
-Right
 
-> 
+On 9/21/2022 3:44 PM, Jason Wang wrote:
+> On Wed, Sep 21, 2022 at 2:00 PM Zhu, Lingshan <lingshan.zhu@intel.com> wrote:
+>>
+>>
+>> On 9/21/2022 10:17 AM, Jason Wang wrote:
+>>> On Tue, Sep 20, 2022 at 5:58 PM Zhu, Lingshan <lingshan.zhu@intel.com> wrote:
+>>>>
+>>>> On 9/20/2022 10:02 AM, Jason Wang wrote:
+>>>>> On Fri, Sep 9, 2022 at 5:05 PM Zhu Lingshan <lingshan.zhu@intel.com> wrote:
+>>>>>> This commit adds a new vDPA netlink attribution
+>>>>>> VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES. Userspace can query
+>>>>>> features of vDPA devices through this new attr.
+>>>>>>
+>>>>>> This commit invokes vdpa_config_ops.get_config() than
+>>>>>> vdpa_get_config_unlocked() to read the device config
+>>>>>> spcae, so no raeces in vdpa_set_features_unlocked()
+>>>>>>
+>>>>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>>>>> It's better to share the userspace code as well.
+>>>> OK, will share it in V2.
+>>>>>> ---
+>>>>>>     drivers/vdpa/vdpa.c       | 19 ++++++++++++++-----
+>>>>>>     include/uapi/linux/vdpa.h |  4 ++++
+>>>>>>     2 files changed, 18 insertions(+), 5 deletions(-)
+>>>>>>
+>>>>>> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
+>>>>>> index c06c02704461..798a02c7aa94 100644
+>>>>>> --- a/drivers/vdpa/vdpa.c
+>>>>>> +++ b/drivers/vdpa/vdpa.c
+>>>>>> @@ -491,6 +491,8 @@ static int vdpa_mgmtdev_fill(const struct vdpa_mgmt_dev *mdev, struct sk_buff *m
+>>>>>>                    err = -EMSGSIZE;
+>>>>>>                    goto msg_err;
+>>>>>>            }
+>>>>>> +
+>>>>>> +       /* report features of a vDPA management device through VDPA_ATTR_DEV_SUPPORTED_FEATURES */
+>>>>> The code explains itself, there's no need for the comment.
+>>>> these comments are required in other discussions
+>>> I think it's more than sufficient to clarify the semantic where it is defined.
+>> OK, then only comments in the header file
+>>>>>>            if (nla_put_u64_64bit(msg, VDPA_ATTR_DEV_SUPPORTED_FEATURES,
+>>>>>>                                  mdev->supported_features, VDPA_ATTR_PAD)) {
+>>>>>>                    err = -EMSGSIZE;
+>>>>>> @@ -815,10 +817,10 @@ static int vdpa_dev_net_mq_config_fill(struct vdpa_device *vdev,
+>>>>>>     static int vdpa_dev_net_config_fill(struct vdpa_device *vdev, struct sk_buff *msg)
+>>>>>>     {
+>>>>>>            struct virtio_net_config config = {};
+>>>>>> -       u64 features;
+>>>>>> +       u64 features_device, features_driver;
+>>>>>>            u16 val_u16;
+>>>>>>
+>>>>>> -       vdpa_get_config_unlocked(vdev, 0, &config, sizeof(config));
+>>>>>> +       vdev->config->get_config(vdev, 0, &config, sizeof(config));
+>>>>>>
+>>>>>>            if (nla_put(msg, VDPA_ATTR_DEV_NET_CFG_MACADDR, sizeof(config.mac),
+>>>>>>                        config.mac))
+>>>>>> @@ -832,12 +834,19 @@ static int vdpa_dev_net_config_fill(struct vdpa_device *vdev, struct sk_buff *ms
+>>>>>>            if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MTU, val_u16))
+>>>>>>                    return -EMSGSIZE;
+>>>>>>
+>>>>>> -       features = vdev->config->get_driver_features(vdev);
+>>>>>> -       if (nla_put_u64_64bit(msg, VDPA_ATTR_DEV_NEGOTIATED_FEATURES, features,
+>>>>>> +       features_driver = vdev->config->get_driver_features(vdev);
+>>>>>> +       if (nla_put_u64_64bit(msg, VDPA_ATTR_DEV_NEGOTIATED_FEATURES, features_driver,
+>>>>>> +                             VDPA_ATTR_PAD))
+>>>>>> +               return -EMSGSIZE;
+>>>>>> +
+>>>>>> +       features_device = vdev->config->get_device_features(vdev);
+>>>>>> +
+>>>>>> +       /* report features of a vDPA device through VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES */
+>>>>>> +       if (nla_put_u64_64bit(msg, VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES, features_device,
+>>>>>>                                  VDPA_ATTR_PAD))
+>>>>>>                    return -EMSGSIZE;
+>>>>>>
+>>>>>> -       return vdpa_dev_net_mq_config_fill(vdev, msg, features, &config);
+>>>>>> +       return vdpa_dev_net_mq_config_fill(vdev, msg, features_driver, &config);
+>>>>>>     }
+>>>>>>
+>>>>>>     static int
+>>>>>> diff --git a/include/uapi/linux/vdpa.h b/include/uapi/linux/vdpa.h
+>>>>>> index 25c55cab3d7c..97531b52dcbe 100644
+>>>>>> --- a/include/uapi/linux/vdpa.h
+>>>>>> +++ b/include/uapi/linux/vdpa.h
+>>>>>> @@ -46,12 +46,16 @@ enum vdpa_attr {
+>>>>>>
+>>>>>>            VDPA_ATTR_DEV_NEGOTIATED_FEATURES,      /* u64 */
+>>>>>>            VDPA_ATTR_DEV_MGMTDEV_MAX_VQS,          /* u32 */
+>>>>>> +       /* features of a vDPA management device */
+>>>>>>            VDPA_ATTR_DEV_SUPPORTED_FEATURES,       /* u64 */
+>>>>>>
+>>>>>>            VDPA_ATTR_DEV_QUEUE_INDEX,              /* u32 */
+>>>>>>            VDPA_ATTR_DEV_VENDOR_ATTR_NAME,         /* string */
+>>>>>>            VDPA_ATTR_DEV_VENDOR_ATTR_VALUE,        /* u64 */
+>>>>>>
+>>>>>> +       /* features of a vDPA device, e.g., /dev/vhost-vdpa0 */
+>>>>>> +       VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES,  /* u64 */
+>>>>> What's the difference between this and VDPA_ATTR_DEV_SUPPORTED_FEATURES?
+>>>> This is to report a vDPA device features, and
+>>>> VDPA_ATTR_DEV_SUPPORTED_FEATURES
+>>>> is used for reporting the management device features, we have a long
+>>>> discussion
+>>>> on this before.
+>>> Yes, but the comment is not clear in many ways:
+>>>
+>>> " features of a vDPA management device" sounds like features that is
+>>> out of the scope of the virtio.
+>> I think the term "vDPA device" implies that it is a virtio device.
+>> So how about: "virtio features of a vDPA management device"
+> Not a native speaker, but how about "virtio features that are
+> supported by the vDPA management device?"
+OK
+>
 > Thanks
-> -Bharat
-> 
-> > 
-> > > Wanted to know if we need proper locking while handling these ops in driver.
-> > >
-> > > Thanks
-> > > -Bharat
+>
+>>> And
+>>>
+>>> "/dev/vhost-vdpa0" is not a vDPA device but a vhost-vDPA device.
+>> will remove this example here.
+>>
+>> Thanks
+>>> Thanks
+>>>
+>>>>> Thanks
+>>>>>
+>>>>>> +
+>>>>>>            /* new attributes must be added above here */
+>>>>>>            VDPA_ATTR_MAX,
+>>>>>>     };
+>>>>>> --
+>>>>>> 2.31.1
+>>>>>>
+
