@@ -2,144 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FDCD5BF1E7
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 02:22:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CC7B5BF1E2
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 02:20:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230318AbiIUAWW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 20:22:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53530 "EHLO
+        id S230295AbiIUAT7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 20:19:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229809AbiIUAWV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 20:22:21 -0400
-X-Greylist: delayed 339 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 20 Sep 2022 17:22:20 PDT
-Received: from relay06.th.seeweb.it (relay06.th.seeweb.it [5.144.164.167])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A21971736
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 17:22:20 -0700 (PDT)
-Received: from localhost.localdomain (95.49.29.188.neoplus.adsl.tpnet.pl [95.49.29.188])
-        by m-r2.th.seeweb.it (Postfix) with ESMTPA id 4824C3F63D;
-        Wed, 21 Sep 2022 02:16:36 +0200 (CEST)
-From:   Konrad Dybcio <konrad.dybcio@somainline.org>
-To:     ~postmarketos/upstreaming@lists.sr.ht
-Cc:     martin.botka@somainline.org,
-        angelogioacchino.delregno@somainline.org,
-        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hector Martin <marcan@marcan.st>,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Marek Vasut <marex@denx.de>,
-        "Zhao, Jiaqing" <jiaqing.zhao@intel.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Soontak Lee <soontak.lee@cypress.com>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] brcmfmac: Add support for BCM43596 PCIe Wi-Fi
-Date:   Wed, 21 Sep 2022 02:16:27 +0200
-Message-Id: <20220921001630.56765-1-konrad.dybcio@somainline.org>
-X-Mailer: git-send-email 2.37.3
+        with ESMTP id S229962AbiIUAT6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 20:19:58 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 516B8201B7
+        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 17:19:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=94SM7CnVRkA70dpbA13YvwV/WgokwguF8Orn/V7awaA=; b=CYUIAgDSdkSVPwh6qNP3CR7oJK
+        VIXK4LgA6xLtMfA5ZkDiCf+GCvUFI+UcpNARuOMbB10eibKsiLa9RwSueP+wHHdPn7GEJElgMJPbo
+        5eXzFqValzEr6Gefi4BkzxffCPAOfK9exndf02OYM0rk7MlhReZ08JBTwb7hnaTCqb0g=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oanT0-00HJlP-DE; Wed, 21 Sep 2022 02:19:54 +0200
+Date:   Wed, 21 Sep 2022 02:19:54 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "mattias.forsblad@gmail.com" <mattias.forsblad@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Christian Marangi <ansuelsmth@gmail.com>
+Subject: Re: [PATCH rfc v0 2/9] net: dsa: qca8k: Move completion into DSA core
+Message-ID: <YypYqqwgllmcPJZj@lunn.ch>
+References: <20220919110847.744712-3-mattias.forsblad@gmail.com>
+ <20220919221853.4095491-1-andrew@lunn.ch>
+ <20220919221853.4095491-3-andrew@lunn.ch>
+ <20220920144303.c5kxvbxlwf6jdx2g@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220920144303.c5kxvbxlwf6jdx2g@skbuf>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for BCM43596 dual-band AC chip, found in
-SONY Xperia X Performance, XZ and XZs smartphones (and
-*possibly* other devices from other manufacturers).
-The chip doesn't require any special handling and seems to work
-just fine OOTB.
+On Tue, Sep 20, 2022 at 02:43:04PM +0000, Vladimir Oltean wrote:
+> On Tue, Sep 20, 2022 at 12:18:46AM +0200, Andrew Lunn wrote:
+> > @@ -248,8 +248,6 @@ static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
+> >  
+> >  	skb->dev = priv->mgmt_master;
+> >  
+> > -	reinit_completion(&mgmt_eth_data->rw_done);
+> > -
+> >  	/* Increment seq_num and set it in the mdio pkt */
+> >  	mgmt_eth_data->seq++;
+> >  	qca8k_mdio_header_fill_seq_num(skb, mgmt_eth_data->seq);
+> > @@ -257,8 +255,8 @@ static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
+> >  
+> >  	dev_queue_xmit(skb);
+> >  
+> > -	ret = wait_for_completion_timeout(&mgmt_eth_data->rw_done,
+> > -					  QCA8K_ETHERNET_TIMEOUT);
+> > +	ret = dsa_inband_wait_for_completion(&mgmt_eth_data->inband,
+> > +					     QCA8K_ETHERNET_TIMEOUT);
+> >  
+> >  	*val = mgmt_eth_data->data[0];
+> >  	if (len > QCA_HDR_MGMT_DATA1_LEN)
+> 
+> Replacing the pattern above with this pattern:
+> 
+> int dsa_inband_wait_for_completion(struct dsa_inband *inband, int timeout_ms)
+> {
+> 	unsigned long jiffies = msecs_to_jiffies(timeout_ms);
+> 
+> 	reinit_completion(&inband->completion);
+> 
+> 	return wait_for_completion_timeout(&inband->completion, jiffies);
+> }
+> 
+> is buggy because we reinitialize the completion later than the original
+> code used to. We now call reinit_completion() from a code path that
+> races with the handler that is supposed to call dsa_inband_complete().
 
-PCIe IDs taken from: https://github.com/sonyxperiadev/kernel/commit/9e43fefbac8e43c3d7792e73ca52a052dd86d7e3.patch
+I've been thinking about this a bit. And i think the bug is in the old
+code.
 
-Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
----
-Changes since v1:
-- rebased the patch against -next
+As soon as we call reinit_completion(), a late arriving packet can
+trigger the completion. Note that the sequence number has not been
+incremented yet. So that late arriving packet can pass the sequence
+number test, and the results will be copied and complete() called.
 
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c       | 2 ++
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c       | 4 ++++
- drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h | 4 ++++
- 3 files changed, 10 insertions(+)
+qca8k_read_eth() can continue, increment the sequence number, call
+wait_for_completion_timeout() and immediately exit, returning the
+contents of the late arriving reply.
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
-index 3026166a56c1..6234e7475a1a 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
-@@ -727,6 +727,7 @@ static u32 brcmf_chip_tcm_rambase(struct brcmf_chip_priv *ci)
- 	case BRCM_CC_43666_CHIP_ID:
- 		return 0x200000;
- 	case BRCM_CC_4359_CHIP_ID:
-+	case BRCM_CC_43596_CHIP_ID:
- 		return (ci->pub.chiprev < 9) ? 0x180000 : 0x160000;
- 	case BRCM_CC_4364_CHIP_ID:
- 	case CY_CC_4373_CHIP_ID:
-@@ -1430,6 +1431,7 @@ bool brcmf_chip_sr_capable(struct brcmf_chip *pub)
- 		reg = chip->ops->read32(chip->ctx, addr);
- 		return (reg & CC_SR_CTL0_ENABLE_MASK) != 0;
- 	case BRCM_CC_4359_CHIP_ID:
-+	case BRCM_CC_43596_CHIP_ID:
- 	case CY_CC_43752_CHIP_ID:
- 	case CY_CC_43012_CHIP_ID:
- 		addr = CORE_CC_REG(pmu->base, retention_ctl);
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-index f98641bb1528..2e7fc66adf31 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-@@ -81,6 +81,7 @@ static const struct brcmf_firmware_mapping brcmf_pcie_fwnames[] = {
- 	BRCMF_FW_ENTRY(BRCM_CC_43570_CHIP_ID, 0xFFFFFFFF, 43570),
- 	BRCMF_FW_ENTRY(BRCM_CC_4358_CHIP_ID, 0xFFFFFFFF, 4358),
- 	BRCMF_FW_ENTRY(BRCM_CC_4359_CHIP_ID, 0xFFFFFFFF, 4359),
-+	BRCMF_FW_ENTRY(BRCM_CC_43596_CHIP_ID, 0xFFFFFFFF, 4359),
- 	BRCMF_FW_ENTRY(BRCM_CC_4364_CHIP_ID, 0xFFFFFFFF, 4364),
- 	BRCMF_FW_ENTRY(BRCM_CC_4365_CHIP_ID, 0x0000000F, 4365B),
- 	BRCMF_FW_ENTRY(BRCM_CC_4365_CHIP_ID, 0xFFFFFFF0, 4365C),
-@@ -2451,6 +2452,9 @@ static const struct pci_device_id brcmf_pcie_devid_table[] = {
- 	BRCMF_PCIE_DEVICE(BRCM_PCIE_43570_RAW_DEVICE_ID),
- 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4358_DEVICE_ID),
- 	BRCMF_PCIE_DEVICE(BRCM_PCIE_4359_DEVICE_ID),
-+	BRCMF_PCIE_DEVICE(BRCM_PCIE_43596_DEVICE_ID),
-+	BRCMF_PCIE_DEVICE(BRCM_PCIE_43596_2G_DEVICE_ID),
-+	BRCMF_PCIE_DEVICE(BRCM_PCIE_43596_5G_DEVICE_ID),
- 	BRCMF_PCIE_DEVICE(BRCM_PCIE_43602_DEVICE_ID),
- 	BRCMF_PCIE_DEVICE(BRCM_PCIE_43602_2G_DEVICE_ID),
- 	BRCMF_PCIE_DEVICE(BRCM_PCIE_43602_5G_DEVICE_ID),
-diff --git a/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h b/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
-index 1003f123ec25..c9c8701039c5 100644
---- a/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
-+++ b/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
-@@ -44,6 +44,7 @@
- #define BRCM_CC_43570_CHIP_ID		43570
- #define BRCM_CC_4358_CHIP_ID		0x4358
- #define BRCM_CC_4359_CHIP_ID		0x4359
-+#define BRCM_CC_43596_CHIP_ID		43596
- #define BRCM_CC_43602_CHIP_ID		43602
- #define BRCM_CC_4364_CHIP_ID		0x4364
- #define BRCM_CC_4365_CHIP_ID		0x4365
-@@ -77,6 +78,9 @@
- #define BRCM_PCIE_43570_RAW_DEVICE_ID	0xaa31
- #define BRCM_PCIE_4358_DEVICE_ID	0x43e9
- #define BRCM_PCIE_4359_DEVICE_ID	0x43ef
-+#define BRCM_PCIE_43596_DEVICE_ID	0x4415
-+#define BRCM_PCIE_43596_2G_DEVICE_ID	0x4416
-+#define BRCM_PCIE_43596_5G_DEVICE_ID	0x4417
- #define BRCM_PCIE_43602_DEVICE_ID	0x43ba
- #define BRCM_PCIE_43602_2G_DEVICE_ID	0x43bb
- #define BRCM_PCIE_43602_5G_DEVICE_ID	0x43bc
--- 
-2.37.3
+To make this safe:
 
+1) The sequence number needs to be incremented before
+   reinit_completion(). That closes one race
+
+2) If the sequence numbers don't match, silently drop the packet, it
+   is either later, or bogus. Hopefully the correct reply packet will
+   come along soon and trigger the completion.
+
+I've also got some of this wrong in my code.
+
+     Andrew
