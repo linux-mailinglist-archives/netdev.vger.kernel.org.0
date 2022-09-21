@@ -2,75 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D30EE5BFD80
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 14:07:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9B9F5BFD87
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 14:12:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229768AbiIUMHe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 08:07:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59032 "EHLO
+        id S229822AbiIUMMv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 08:12:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229739AbiIUMHd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 08:07:33 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E49D89CC6;
-        Wed, 21 Sep 2022 05:07:32 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id x18so3508095wrm.7;
-        Wed, 21 Sep 2022 05:07:32 -0700 (PDT)
+        with ESMTP id S229741AbiIUMMu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 08:12:50 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2092.outbound.protection.outlook.com [40.107.94.92])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A372956A7
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 05:12:49 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Ep56yHQyiMrmDIwSeRsEELNNVR3oS/vdoIbkGf1bOWNJZ1l050SACwRnqgvDvJkhSdogzpbKtDocKznZ6DSBE6C2+ZeGOZ5ITpji6Y9rRwWRHwL6jIFicdmcJDGtAtdcIU2uyu7/AWkolEmr2fJhddAyQhjQogNfbbpzNYJ9dyOmguPh8lABR1T9YEA8rtzagL+5qfgPfauFIteywWwHbhx0/RqKcrowfl5x3kjhljd/S6yEZ1v6/zx1qHqQUu4IE+fMaUAJBuDdMAYPdKlYh24/d2fliiVZI9v1x6HObGlsBXkOlz0coj37cpOwuJ9CVCzbUA5K6jClwXxVN6NeXA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=r0KNJBBn7GF/x6Y0iyk2JAVxe0HTNUywKmp5nSZT8iI=;
+ b=VykT+rokSQsShSa84mnUi8FWWF8l4mN7wW+fA0Dw8ET03mx3ps4zMmpSJmb/ERSLyV2pmc3aoeesQuzAjJ6xsTQB2uk4i7kJ1CaDURHnFjgDiqV07XkyRuvmSgc3LePSz1akbTnWzD//87NiECB+1RwUgvn7f6xQuFz4Z7sVsokECpoyM2KNViPRRC38HGopkiV5ZXulPlN3KGIomkhdfmkLz/eg8oFCpuRwlqTQ8OG6hf2BA0nlx161GTIMHJ6Goh7wbcTva+gU/iflA9GqKoGzr3aL/H51IRUmwFAlMSXlEybJYabsYhzpiRm5k0Irawe33X8rUorwjrwwMDyaMA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=0NyE71qEdo6FtKCgDXepSyI+k+crL0KCFItdssBoy3g=;
-        b=NUBt3m2SlYT8+IastvZKLcpUj3pRcTbbQgI5Ak2GiSQBOgQ0CyIQXi2dlU6D9ctdC1
-         HMkuhIjiDvD9G6Woao3T6oOLYFdxTGb+lTiQ24bHhrwU6QN81nnKH3oK8nw+eDltsQkj
-         d6EOikWSYrOkx/WDa0vHrwTRDaHnWrNk/44YnrHmeNKDrq05d5UMXKUE1cMLs9oukIYQ
-         4nWGUNPuIjPSxNR4ZlkbTtOg+5ex9LwBK9Vay6vdgJhmZjxPgV2SD8TTZvxPSx6sNm2i
-         2DuxdskUpQFWTAP5OIEqgAiBao2A01HpF2NZZn1KFoQLsP954psfHGrlWV4NEh1CRaEw
-         zC9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=0NyE71qEdo6FtKCgDXepSyI+k+crL0KCFItdssBoy3g=;
-        b=Uo8hiiR6LWTBGEQqMWZWe+FyZAisC+4mGAVt2Uwaw5am2S2hcBBbGnHClFcqGezstv
-         6SyWNK5I9GtT4pJwNWyg3sCcb/PjpkTGrnAgkST9BcjHr5Dt3Y3iY+zB8essAdttoK8e
-         f2O8mZg2gMCIeDo9xtMnUhhWarZ16EDYrFpsR4YGPycaWzJd2bqJEyD+bpJm7pMRoGK8
-         SBkZfVx636wi3wi/3NC7P/nZP5nJB5RNFe+fVNyUl+D2+4zzpoi9UXWwKNw/O1eg2w6X
-         NuigUAgM95yJYuzywIysVtjFaYHmVxcdY8+JAA7XH5W4CH+6ucDp5dxQMtQxtW3DHe99
-         bnIA==
-X-Gm-Message-State: ACrzQf2fCysGQjQOErjARJgS3nBeAfqIjrCBnEge2feMUvffmzzVrdmI
-        Ju6jlHuOyDDGjkD13ZrsaJf8U7DroPg=
-X-Google-Smtp-Source: AMsMyM7I6sUAd4CF5NeoBRHWb5sPoH8qUJsfd6xLNZe0bFfh/l0BAp6IfqLQCD19idjiR5cmoFUC7Q==
-X-Received: by 2002:a5d:654d:0:b0:22a:ff55:e9c9 with SMTP id z13-20020a5d654d000000b0022aff55e9c9mr8872747wrv.14.1663762050829;
-        Wed, 21 Sep 2022 05:07:30 -0700 (PDT)
-Received: from [192.168.8.198] (188.28.205.62.threembb.co.uk. [188.28.205.62])
-        by smtp.gmail.com with ESMTPSA id z6-20020a05600c220600b003b492753826sm2537354wml.43.2022.09.21.05.07.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 21 Sep 2022 05:07:30 -0700 (PDT)
-Message-ID: <33fb5be7-6c79-46d9-ddf9-92071a5271c5@gmail.com>
-Date:   Wed, 21 Sep 2022 13:04:57 +0100
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=r0KNJBBn7GF/x6Y0iyk2JAVxe0HTNUywKmp5nSZT8iI=;
+ b=bxUw8F8AcjtfY9YO+o+13o0MMgdeTl2X2Bwb3YP9X7WTF6EDDDLUre8QSF1hET/MWhNi2b873f8UZ0/NcU+PpKMeg/z/NXlgXKgxooclqjYqLcTS5xbyFOUUQDCl09tWvJQ4e+U6F6emgnomK+eO8QK4fa1jpeauVgPN/BodDhg=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by BL3PR13MB5210.namprd13.prod.outlook.com (2603:10b6:208:341::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.14; Wed, 21 Sep
+ 2022 12:12:47 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::2cbf:e4b1:5bbf:3e54]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::2cbf:e4b1:5bbf:3e54%4]) with mapi id 15.20.5654.014; Wed, 21 Sep 2022
+ 12:12:47 +0000
+From:   Simon Horman <simon.horman@corigine.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
+        Fei Qin <fei.qin@corigine.com>
+Subject: [PATCH net-next 0/3] nfp: support FEC mode reporting and auto-neg
+Date:   Wed, 21 Sep 2022 14:12:32 +0200
+Message-Id: <20220921121235.169761-1-simon.horman@corigine.com>
+X-Mailer: git-send-email 2.30.2
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: AM0PR04CA0049.eurprd04.prod.outlook.com
+ (2603:10a6:208:1::26) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 5/5] io_uring/notif: let userspace know how effective the
- zero copy usage was
-Content-Language: en-US
-To:     Stefan Metzmacher <metze@samba.org>, io-uring@vger.kernel.org,
-        axboe@kernel.dk
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-References: <cover.1663363798.git.metze@samba.org>
- <76cdd53f618e2793e1ec298c837bb17c3b9f12ee.1663363798.git.metze@samba.org>
- <5f4059ca-cec6-e44a-ac61-b9c034b1be77@gmail.com>
- <aa7d5f95-06d0-7e87-b41f-92fe07440b47@samba.org>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <aa7d5f95-06d0-7e87-b41f-92fe07440b47@samba.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BL3PR13MB5210:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7f07f9d7-b821-4a2e-29e5-08da9bca98a8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: buMpT07bUHbIUzYTvjxgdEe76cnZaSszz0rEn+WlmToRqGBqArkOyi6PD43AzON/qU9wgLRqh35VSLNQWzsgPVYU3Wv5TYW7DRGAG+wdvBc8xMV9nnbsfocWBhs+LGLdKy605V4N6GyEp8rVmG5HCQLOeLuadHOLJhNxzzPv7pn7v1J6Pmm5g16qMCX2Vh2wtmO7llTUou0+mmcLEw1HA8Rd2MuRgD4YuuwARPIo/UApRxxQLnYvsbyr4oRREuj+blDVYu4yrbG9Z7eJDC91f3MBcSUn5kcMoXUcOtBhhW0Fq0iqCMDS7X67fxJfRr7OI10Tb2t0G1LWOmEjy1Ud/rj0aoOSZmRdl+eYJFKd3oEHgeSbjxSyTo58QbFlmeLhD8YNzZ4V3Yaj51/7t7Dnt68fgbaaWr3GZqaE80RA39KgFRsDDoO+4GXSqZXWG+LeCZOrSxnyHJs/sT/a90VkZDY/Tdy2L6/ReOXIYcuh+IhfoCFgabJ+7KomfSSHPcOK2fXqDAYHFSqcEzoRiei45/nfLmT3erMxjF7RHa13SipaC2h3cRVNs3LETC+ecCNlML1BqiTGSQOkOWqG004HFbaa7VaOHNV80qMYy/OnEyTrx4a9ynsLwGTOz4ZCAWj/jZdd4TSdOuZw6z/upu96Q6yg80Z8kDGChL4yMudWuaSXdxFq189jnZOGBulasDJuaGFpl432e8enAoB5+o6a2g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(396003)(39840400004)(366004)(136003)(346002)(451199015)(107886003)(86362001)(41300700001)(6666004)(5660300002)(44832011)(4744005)(8676002)(478600001)(110136005)(4326008)(316002)(66946007)(6486002)(66556008)(66476007)(8936002)(38100700002)(2616005)(1076003)(52116002)(6506007)(6512007)(186003)(83380400001)(2906002)(36756003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?p6K7RB0DzJnCK67TBR1ReVFXmyMBotonhmT2JlJq71j6u4JNb5UuSqktY+pA?=
+ =?us-ascii?Q?eQ3ZTYQy9eY3JlwfDRWZXIwd3YgHuEeNaPKXphHaPp5DfOzsUo/xFtI7uSb1?=
+ =?us-ascii?Q?jAJFEHsGCWuNqndpQDQUTFN/sXaGp4nuU1LFv+RNIVabZns4nqL780qS7Elm?=
+ =?us-ascii?Q?i+m118oA4YcWBchraJZk8HLpWr9VyWLIWKwoXjNTKjbKKkyMpoxfIuX9Vo0v?=
+ =?us-ascii?Q?krcqmPIL0NdYmFRotAYWnlVLfsuYmvLUZ3MPPDpZKFyIw9gk1zdjZOkhTC0A?=
+ =?us-ascii?Q?2p0kAuS/BdaKXrV+3I6Oor7h5yy/RtHFuJXKDQeyX4PwScQs2jsHhOaKSwoy?=
+ =?us-ascii?Q?8ZI5vcJ4TYPTKdY+f5+5zUpE7k7+OYzh9oZJqJoQTVGZtJEV/QgXa8TGkR5P?=
+ =?us-ascii?Q?F0HNFR50V6nkmtBa0JgWbiX/nApjKaoNkl1ghXXQT2EAJ0vka2zIqv0txMm5?=
+ =?us-ascii?Q?Tmbn70SxBp9BTaK4SywPO+oOskmU61nINi/n5cD+KA9RC+Sc41BS4Q74GEp1?=
+ =?us-ascii?Q?dJlvcPG0XnkzaJ5iKN7YFIEjdf6TTp8cjpwu9XNUAlQ82S2Vk+RjRdN7Pl3W?=
+ =?us-ascii?Q?bIGgs0ubCxpbFIkqmEymmtbEwEi0IzKLx4xWOHSXFM1JAncKKg4CoQjkx0jU?=
+ =?us-ascii?Q?SHjdQ+K2Hopv3xkv/9IfnGk927iiR7WSzPXuw+9I5X1J7IgL05nQ8BWhp8ym?=
+ =?us-ascii?Q?u96Fd9gj0aoHjet6Z35hUfQaKJV+2Odb9Y8w18uqhzz0EBxbeP9b48H4+EhQ?=
+ =?us-ascii?Q?ej4WZNE3pet2xbBTp0S2EQa3UHIaXeS+uUalDq2rxmWbxyhxqKWoKhNc0/dO?=
+ =?us-ascii?Q?L+9umO9o18e+yB9hkwYpKonTnSzvRkcX3WU8afeuKi8SB2+aPNkKJQyV+Scg?=
+ =?us-ascii?Q?Lo8FdaeXcSzJ4O+Qeik5hJvgz+xxy2izrPF9DG3/H4n1L42NiUK4YOfIc0Ah?=
+ =?us-ascii?Q?chCpGSDb5a8bEszAXrCp4Rilxtoqqeb0/lHYlic1Gk6M6hPkJocsyk5EGPUC?=
+ =?us-ascii?Q?gdCt6bkCyK5PMo6V+b1GgF46s/9okR263iFleL6z8Bt0XBrsOQFOzjhUKO8y?=
+ =?us-ascii?Q?lrjW6L4wL7/hcRnNx303jjzgt2HyJibMzZtCU0Lg/pGb93gf/EN/MvpkEu/X?=
+ =?us-ascii?Q?LXC6sP1bvmrKMvB8V4+sjJtd+WtA3dagH8h5PWVbXuNN84YfIesoJooFpPeI?=
+ =?us-ascii?Q?lrQBgy6uXr8HHbSmNXfYtAFOV0DNO1ohf3phARfntpHo1M8vZ6if9BonQVgQ?=
+ =?us-ascii?Q?RKs2rRSNCNSoprSXgsSLh0IIhLWcGBpwT26Nv4YkyJXMboVVbJxyfxZ+R8X7?=
+ =?us-ascii?Q?QLn8C7+DObuaGqPD7LDRy9ElplMjYYGQRd1QI0hmT8reUCXp4RvnmKMukKLA?=
+ =?us-ascii?Q?uAKrwxd3aW2e4K+QAo9wIW4K4HnCkjnZlhtVqjBWTdJUqY/aoOHsPK3dbqwx?=
+ =?us-ascii?Q?Wc3TFnOembkDcOS05RZmw6d7T4EXoGLtCDJIcDePVNIJkDBepGm88ju52P+M?=
+ =?us-ascii?Q?Z/7Mss8ChrVW6IkZt5wxNCg3VBUcFIByneVa/mVD12Cm37dRs2Iiv7kG+zKG?=
+ =?us-ascii?Q?ZkJCnzoGum7lkQDjOwv+RZRGPZSIbdGpUNsgZeTTE8jnvIMoOyigIi8bfTQx?=
+ =?us-ascii?Q?EiBNMejeoL9s2yOXrOGrSbmZPOsBJvp4127M/YDyprcM6g0oAW1GE35hGJXM?=
+ =?us-ascii?Q?SlgJwg=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7f07f9d7-b821-4a2e-29e5-08da9bca98a8
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Sep 2022 12:12:47.6340
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: RSNbfeDxw6pT19NgMDsJxOAN4ci216hnFm+QRd5iMiEfXrdTlnVfQ5bt9wWCjT4kkAWJHH1SpFoHt3Qq+TDVMK0L62oQJayxIbV1br+wK0w=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR13MB5210
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,54 +114,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/17/22 11:24, Stefan Metzmacher wrote:
-> Am 17.09.22 um 11:22 schrieb Pavel Begunkov:
->> On 9/16/22 22:36, Stefan Metzmacher wrote:
->>> The 2nd cqe for IORING_OP_SEND_ZC has IORING_CQE_F_NOTIF set in cqe->flags
->>> and it will now have the number of successful completed
->>> io_uring_tx_zerocopy_callback() callbacks in the lower 31-bits
->>> of cqe->res, the high bit (0x80000000) is set when
->>> io_uring_tx_zerocopy_callback() was called with success=false.
->>
->> It has a couple of problems, and because that "simplify uapi"
->> patch is transitional it doesn't go well with what I'm queuing
->> for 6.1, let's hold it for a while.
-> 
-> Once the current behavior gets released stable, we're no
-> longer able to change the meaning of cqe.res.
-> 
-> As cqe.res == 0 would mean zero copy wasn't used at all,
-> which would be the indication for userspace to avoid using SEND_ZC.
-> 
-> But if 6.0 would always return cqe.res = 0, there's no chance for
-> userspace to have a detection strategy.
-> 
-> And I don't think it will cause a lot of trouble for your 6.1 stuff (assuming
-> you mean your SENDMSG_ZC code), I was already having that on top
-> of my test branches, the current one is:
-> https://git.samba.org/?p=metze/linux/wip.git;a=shortlog;h=refs/heads/io_uring-6.0.0-rc5-metze.08
+Hi,
 
-Not that one though, 1) I want to shrink ubuf_info as we're a bit out
-of space on the io_uring side and it prevents some embedding, so there
-won't be additional fields you used. And 2) we want to have a feature
-merging completion + notif CQEs into one (useful for UDP and some TCP
-cases), but that would mean we'll be using cqe->res for the normal
-return value.
+this series adds support for the following features to the nfp driver:
 
-We can disable the success counting in this case, but it's not nice,
-and we can't actually count in io_uring_tx_zerocopy_callback() as in
-the patch (racy). Also, the callback will be called multiple times for
-a number of different reasons like io_uring flush or net splitting skbs.
-The number won't be much useful and unnecessary exposes internal details,
-so I think F_COPIED in cqe->flags is a better option.
+* Patch 1/3: Support active FEC mode
+* Patch 2/3: Support link auto negotiation
+* Patch 3/3: Support restart of link auto negotiation
 
-It's a good question though whether we need more versatile reporting and
-how to do it right. Probably should be optional and not a part of IO path,
-e.g. send(MSG_PROBE) / ioctl / proc stats / etc.
+Fei Qin (1):
+  nfp: add support restart of link auto-negotiation
 
-> I plan to test SENDMSG_ZC with Samba next week.
+Yinjun Zhang (2):
+  nfp: add support for reporting active FEC mode
+  nfp: add support for link auto negotiation
 
-Awesome
+ .../ethernet/netronome/nfp/nfp_net_ethtool.c  | 78 +++++++++++++++++--
+ .../net/ethernet/netronome/nfp/nfp_net_main.c | 23 +++++-
+ .../ethernet/netronome/nfp/nfpcore/nfp_nsp.h  |  4 +
+ .../netronome/nfp/nfpcore/nfp_nsp_eth.c       | 13 +++-
+ 4 files changed, 107 insertions(+), 11 deletions(-)
 
 -- 
-Pavel Begunkov
+2.30.2
+
