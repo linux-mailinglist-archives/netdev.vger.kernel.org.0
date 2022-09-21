@@ -2,45 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 730F15BFF39
+	by mail.lfdr.de (Postfix) with ESMTP id CC2745BFF3A
 	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 15:51:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230403AbiIUNvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 09:51:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45116 "EHLO
+        id S230496AbiIUNvr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 09:51:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230399AbiIUNvg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 09:51:36 -0400
+        with ESMTP id S230326AbiIUNvh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 09:51:37 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79B3F83046
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 06:51:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF08180F79
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 06:51:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 13B10623C8
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 13:51:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF4E3C433D6;
-        Wed, 21 Sep 2022 13:51:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B5336300B
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 13:51:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58CA7C433D7;
+        Wed, 21 Sep 2022 13:51:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663768281;
-        bh=ghieRbZEgzAtaCxAo/N+ZOtV1EjaBZgc4HuhiGWM+Ks=;
-        h=From:To:Cc:Subject:Date:From;
-        b=TP3CHEa3eRIxYoFJLpKTNs3wfP9tVz0ucsHCcx5qpZm/3iOn7NCD+flr2QrAuG5M4
-         BnCMF0SB8bbraUMWEpHVlOeCnaYy65+ZS54/S+y2pvEzBn5XgP2BpWUO/06nH3W8Ff
-         nyJ9HAbetGwx6eOvncLpnurzdagJQPYP/jhEHpzGTVWvt8ZAuSH6WIFz7mVK1mqN1h
-         Wxbot6essdxao2vR6Du1qCSMU7IS2C7XbDofgrOBh3q5JoZ3IS8Mni/yp8F6nFQ+W7
-         a+PO3PoBvVaLkxdDiGYQoqAB61f7s5kKmyr3Tsq3H6DhPQ0kQksGJvEujynYdnf7p5
-         SYtdVeZeOX4qg==
+        s=k20201202; t=1663768284;
+        bh=i34wNiAqiKx9CJHvry7XJe1uKpLFAl7hMFJ8yWF7Of0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=BGbrEnZKMbP27yI/pOs/j3GGlFeThR/b2QZUMPwYdvmtAXw+cikspZ3Da+LKXjtCd
+         bXt82ypsFCIeGNq39NMU/IBLcG7pQwWUerh6OROZPq0n6AWMWmZMRcx0qxXa4ZDnSb
+         VQFJIdjC1MUazsier/anqkUtoVLR/9/QfzjRm8wYMM1eXRhBqMVW60kTbWqYExUeOk
+         mjwR0I1YUC3/EzinpxRbWUvEgJUMdn7E8et3/wx+OWIGxTcq58N3ErX3vKhTcPGRsF
+         tblyc/00StDljld1pSeueN1GB+yipcL8pW2JZVJIobOYM4hlt/oZ/ipqiP2femKf/c
+         cJeUEugoFdd5Q==
 From:   Antoine Tenart <atenart@kernel.org>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
 Cc:     Antoine Tenart <atenart@kernel.org>, sundeep.lkml@gmail.com,
         saeedm@nvidia.com, liorna@nvidia.com, dbogdanov@marvell.com,
         mstarovoitov@marvell.com, irusskikh@marvell.com,
         sd@queasysnail.net, netdev@vger.kernel.org
-Subject: [PATCH net-next 0/7] net: macsec: remove the preparation phase when offloading operations
-Date:   Wed, 21 Sep 2022 15:51:11 +0200
-Message-Id: <20220921135118.968595-1-atenart@kernel.org>
+Subject: [PATCH net-next 1/7] net: phy: mscc: macsec: make the prepare phase a noop
+Date:   Wed, 21 Sep 2022 15:51:12 +0200
+Message-Id: <20220921135118.968595-2-atenart@kernel.org>
 X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20220921135118.968595-1-atenart@kernel.org>
+References: <20220921135118.968595-1-atenart@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -52,46 +54,220 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+In preparation for removing the MACsec h/w offloading preparation phase,
+make it a no-op in the MSCC phy driver.
 
-It was reported[1] the 2-step phase offloading of MACsec operations did
-not fit well and device drivers were mostly ignoring the first phase
-(preparation). In addition the s/w fallback in case h/w rejected an
-operation, which could have taken advantage of this design, never was
-implemented and it's probably not a good idea anyway (at least
-unconditionnally). So let's remove this logic which only makes the code
-more complex for no advantage, before there are too many drivers
-providing MACsec offloading.
+Signed-off-by: Antoine Tenart <atenart@kernel.org>
+---
+ drivers/net/phy/mscc/mscc_macsec.c | 104 +++++++++++++++--------------
+ 1 file changed, 55 insertions(+), 49 deletions(-)
 
-This series removes the first phase (preparation) of the MACsec h/w
-offloading. The modifications are split per-driver and in a way that
-makes bissection working with logical steps; but I can squash some
-patches if needed.
-
-This was tested on the MSCC PHY but not on the Altantic nor mlx5e NICs.
-
-Thanks,
-Antoine
-
-[1] https://lore.kernel.org/all/166322893264.61080.12133865599607623050@kwain/T/
-
-Antoine Tenart (7):
-  net: phy: mscc: macsec: make the prepare phase a noop
-  net: atlantic: macsec: make the prepare phase a noop
-  net: macsec: remove the prepare phase when offloading
-  net: phy: mscc: macsec: remove checks on the prepare phase
-  net: atlantic: macsec: remove checks on the prepare phase
-  net/mlx5e: macsec: remove checks on the prepare phase
-  net: macsec: remove the prepare flag from the MACsec offloading
-    context
-
- .../ethernet/aquantia/atlantic/aq_macsec.c    |  57 ---------
- .../mellanox/mlx5/core/en_accel/macsec.c      |  36 ------
- drivers/net/macsec.c                          |  14 ---
- drivers/net/phy/mscc/mscc_macsec.c            | 113 ++++++------------
- include/net/macsec.h                          |   2 -
- 5 files changed, 39 insertions(+), 183 deletions(-)
-
+diff --git a/drivers/net/phy/mscc/mscc_macsec.c b/drivers/net/phy/mscc/mscc_macsec.c
+index b7b2521c73fb..58210be879ff 100644
+--- a/drivers/net/phy/mscc/mscc_macsec.c
++++ b/drivers/net/phy/mscc/mscc_macsec.c
+@@ -706,14 +706,6 @@ static int __vsc8584_macsec_add_rxsa(struct macsec_context *ctx,
+ 	struct phy_device *phydev = ctx->phydev;
+ 	struct vsc8531_private *priv = phydev->priv;
+ 
+-	if (!flow) {
+-		flow = vsc8584_macsec_alloc_flow(priv, MACSEC_INGR);
+-		if (IS_ERR(flow))
+-			return PTR_ERR(flow);
+-
+-		memcpy(flow->key, ctx->sa.key, priv->secy->key_len);
+-	}
+-
+ 	flow->assoc_num = ctx->sa.assoc_num;
+ 	flow->rx_sa = ctx->sa.rx_sa;
+ 
+@@ -730,24 +722,13 @@ static int __vsc8584_macsec_add_rxsa(struct macsec_context *ctx,
+ static int __vsc8584_macsec_add_txsa(struct macsec_context *ctx,
+ 				     struct macsec_flow *flow, bool update)
+ {
+-	struct phy_device *phydev = ctx->phydev;
+-	struct vsc8531_private *priv = phydev->priv;
+-
+-	if (!flow) {
+-		flow = vsc8584_macsec_alloc_flow(priv, MACSEC_EGR);
+-		if (IS_ERR(flow))
+-			return PTR_ERR(flow);
+-
+-		memcpy(flow->key, ctx->sa.key, priv->secy->key_len);
+-	}
+-
+ 	flow->assoc_num = ctx->sa.assoc_num;
+ 	flow->tx_sa = ctx->sa.tx_sa;
+ 
+ 	/* Always match untagged packets on egress */
+ 	flow->match.untagged = 1;
+ 
+-	return vsc8584_macsec_add_flow(phydev, flow, update);
++	return vsc8584_macsec_add_flow(ctx->phydev, flow, update);
+ }
+ 
+ static int vsc8584_macsec_dev_open(struct macsec_context *ctx)
+@@ -785,12 +766,11 @@ static int vsc8584_macsec_add_secy(struct macsec_context *ctx)
+ 	struct vsc8531_private *priv = ctx->phydev->priv;
+ 	struct macsec_secy *secy = ctx->secy;
+ 
+-	if (ctx->prepare) {
+-		if (priv->secy)
+-			return -EEXIST;
+-
++	if (ctx->prepare)
+ 		return 0;
+-	}
++
++	if (priv->secy)
++		return -EEXIST;
+ 
+ 	priv->secy = secy;
+ 
+@@ -862,33 +842,46 @@ static int vsc8584_macsec_del_rxsc(struct macsec_context *ctx)
+ 
+ static int vsc8584_macsec_add_rxsa(struct macsec_context *ctx)
+ {
+-	struct macsec_flow *flow = NULL;
++	struct phy_device *phydev = ctx->phydev;
++	struct vsc8531_private *priv = phydev->priv;
++	struct macsec_flow *flow;
++	int ret;
+ 
+ 	if (ctx->prepare)
+-		return __vsc8584_macsec_add_rxsa(ctx, flow, false);
++		return 0;
+ 
+-	flow = vsc8584_macsec_find_flow(ctx, MACSEC_INGR);
++	flow = vsc8584_macsec_alloc_flow(priv, MACSEC_INGR);
+ 	if (IS_ERR(flow))
+ 		return PTR_ERR(flow);
+ 
+-	vsc8584_macsec_flow_enable(ctx->phydev, flow);
++	memcpy(flow->key, ctx->sa.key, priv->secy->key_len);
++
++	ret = __vsc8584_macsec_add_rxsa(ctx, flow, false);
++	if (ret)
++		return ret;
++
++	vsc8584_macsec_flow_enable(phydev, flow);
+ 	return 0;
+ }
+ 
+ static int vsc8584_macsec_upd_rxsa(struct macsec_context *ctx)
+ {
+ 	struct macsec_flow *flow;
++	int ret;
++
++	if (ctx->prepare)
++		return 0;
+ 
+ 	flow = vsc8584_macsec_find_flow(ctx, MACSEC_INGR);
+ 	if (IS_ERR(flow))
+ 		return PTR_ERR(flow);
+ 
+-	if (ctx->prepare) {
+-		/* Make sure the flow is disabled before updating it */
+-		vsc8584_macsec_flow_disable(ctx->phydev, flow);
++	/* Make sure the flow is disabled before updating it */
++	vsc8584_macsec_flow_disable(ctx->phydev, flow);
+ 
+-		return __vsc8584_macsec_add_rxsa(ctx, flow, true);
+-	}
++	ret = __vsc8584_macsec_add_rxsa(ctx, flow, true);
++	if (ret)
++		return ret;
+ 
+ 	vsc8584_macsec_flow_enable(ctx->phydev, flow);
+ 	return 0;
+@@ -898,12 +891,12 @@ static int vsc8584_macsec_del_rxsa(struct macsec_context *ctx)
+ {
+ 	struct macsec_flow *flow;
+ 
+-	flow = vsc8584_macsec_find_flow(ctx, MACSEC_INGR);
++	if (ctx->prepare)
++		return 0;
+ 
++	flow = vsc8584_macsec_find_flow(ctx, MACSEC_INGR);
+ 	if (IS_ERR(flow))
+ 		return PTR_ERR(flow);
+-	if (ctx->prepare)
+-		return 0;
+ 
+ 	vsc8584_macsec_del_flow(ctx->phydev, flow);
+ 	return 0;
+@@ -911,33 +904,46 @@ static int vsc8584_macsec_del_rxsa(struct macsec_context *ctx)
+ 
+ static int vsc8584_macsec_add_txsa(struct macsec_context *ctx)
+ {
+-	struct macsec_flow *flow = NULL;
++	struct phy_device *phydev = ctx->phydev;
++	struct vsc8531_private *priv = phydev->priv;
++	struct macsec_flow *flow;
++	int ret;
+ 
+ 	if (ctx->prepare)
+-		return __vsc8584_macsec_add_txsa(ctx, flow, false);
++		return 0;
+ 
+-	flow = vsc8584_macsec_find_flow(ctx, MACSEC_EGR);
++	flow = vsc8584_macsec_alloc_flow(priv, MACSEC_EGR);
+ 	if (IS_ERR(flow))
+ 		return PTR_ERR(flow);
+ 
+-	vsc8584_macsec_flow_enable(ctx->phydev, flow);
++	memcpy(flow->key, ctx->sa.key, priv->secy->key_len);
++
++	ret = __vsc8584_macsec_add_txsa(ctx, flow, false);
++	if (ret)
++		return ret;
++
++	vsc8584_macsec_flow_enable(phydev, flow);
+ 	return 0;
+ }
+ 
+ static int vsc8584_macsec_upd_txsa(struct macsec_context *ctx)
+ {
+ 	struct macsec_flow *flow;
++	int ret;
++
++	if (ctx->prepare)
++		return 0;
+ 
+ 	flow = vsc8584_macsec_find_flow(ctx, MACSEC_EGR);
+ 	if (IS_ERR(flow))
+ 		return PTR_ERR(flow);
+ 
+-	if (ctx->prepare) {
+-		/* Make sure the flow is disabled before updating it */
+-		vsc8584_macsec_flow_disable(ctx->phydev, flow);
++	/* Make sure the flow is disabled before updating it */
++	vsc8584_macsec_flow_disable(ctx->phydev, flow);
+ 
+-		return __vsc8584_macsec_add_txsa(ctx, flow, true);
+-	}
++	ret = __vsc8584_macsec_add_txsa(ctx, flow, true);
++	if (ret)
++		return ret;
+ 
+ 	vsc8584_macsec_flow_enable(ctx->phydev, flow);
+ 	return 0;
+@@ -947,12 +953,12 @@ static int vsc8584_macsec_del_txsa(struct macsec_context *ctx)
+ {
+ 	struct macsec_flow *flow;
+ 
+-	flow = vsc8584_macsec_find_flow(ctx, MACSEC_EGR);
++	if (ctx->prepare)
++		return 0;
+ 
++	flow = vsc8584_macsec_find_flow(ctx, MACSEC_EGR);
+ 	if (IS_ERR(flow))
+ 		return PTR_ERR(flow);
+-	if (ctx->prepare)
+-		return 0;
+ 
+ 	vsc8584_macsec_del_flow(ctx->phydev, flow);
+ 	return 0;
 -- 
 2.37.3
 
