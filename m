@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC2745BFF3A
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 15:51:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 546BB5BFF3B
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 15:51:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230496AbiIUNvr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 09:51:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45352 "EHLO
+        id S230514AbiIUNvy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 09:51:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230326AbiIUNvh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 09:51:37 -0400
+        with ESMTP id S230467AbiIUNvj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 09:51:39 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF08180F79
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 06:51:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65F0783F18
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 06:51:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B5336300B
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 13:51:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58CA7C433D7;
-        Wed, 21 Sep 2022 13:51:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A2FF6304E
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 13:51:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64EDCC433C1;
+        Wed, 21 Sep 2022 13:51:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663768284;
-        bh=i34wNiAqiKx9CJHvry7XJe1uKpLFAl7hMFJ8yWF7Of0=;
+        s=k20201202; t=1663768287;
+        bh=2sitIxVtAv+R1eooDZ0qfpINIMIxbMDsZvcxqGPSOrw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BGbrEnZKMbP27yI/pOs/j3GGlFeThR/b2QZUMPwYdvmtAXw+cikspZ3Da+LKXjtCd
-         bXt82ypsFCIeGNq39NMU/IBLcG7pQwWUerh6OROZPq0n6AWMWmZMRcx0qxXa4ZDnSb
-         VQFJIdjC1MUazsier/anqkUtoVLR/9/QfzjRm8wYMM1eXRhBqMVW60kTbWqYExUeOk
-         mjwR0I1YUC3/EzinpxRbWUvEgJUMdn7E8et3/wx+OWIGxTcq58N3ErX3vKhTcPGRsF
-         tblyc/00StDljld1pSeueN1GB+yipcL8pW2JZVJIobOYM4hlt/oZ/ipqiP2femKf/c
-         cJeUEugoFdd5Q==
+        b=IE55Yf5McCfk0FmqhgMI63zLtVfYWHYaF14sgkYEofyriEmI2e5Ekz6RG2XZHXNYk
+         nmGWDdFCNBw0VvItqd/0Kgijgr8N76F6IfbqPpiwZ6IsaLyxdzpSNIWUeB85nFH33R
+         Y48Bg/yS2YPyMNHlIBeyePbJRFSER/PdmyxrepZcKjXAee9SED/RGVyGPas/KCjyXe
+         Pm5nwKOfWvA7pHMXMlF4DieD0fRGw3axYQXqJ52oKLCQQnEqfOu8ftbTPvLL9lz0ZF
+         XMeCKcILWaGTgSaC5GgmR8NxzaFSGwmFjiv60m4kxHf7izLEX8GiKSn+eUp9I5yWxX
+         ZlEnr3gOGG42A==
 From:   Antoine Tenart <atenart@kernel.org>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
 Cc:     Antoine Tenart <atenart@kernel.org>, sundeep.lkml@gmail.com,
         saeedm@nvidia.com, liorna@nvidia.com, dbogdanov@marvell.com,
         mstarovoitov@marvell.com, irusskikh@marvell.com,
         sd@queasysnail.net, netdev@vger.kernel.org
-Subject: [PATCH net-next 1/7] net: phy: mscc: macsec: make the prepare phase a noop
-Date:   Wed, 21 Sep 2022 15:51:12 +0200
-Message-Id: <20220921135118.968595-2-atenart@kernel.org>
+Subject: [PATCH net-next 2/7] net: atlantic: macsec: make the prepare phase a noop
+Date:   Wed, 21 Sep 2022 15:51:13 +0200
+Message-Id: <20220921135118.968595-3-atenart@kernel.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220921135118.968595-1-atenart@kernel.org>
 References: <20220921135118.968595-1-atenart@kernel.org>
@@ -55,219 +55,278 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 In preparation for removing the MACsec h/w offloading preparation phase,
-make it a no-op in the MSCC phy driver.
+make it a no-op in the Atlantic driver.
 
 Signed-off-by: Antoine Tenart <atenart@kernel.org>
 ---
- drivers/net/phy/mscc/mscc_macsec.c | 104 +++++++++++++++--------------
- 1 file changed, 55 insertions(+), 49 deletions(-)
+ .../ethernet/aquantia/atlantic/aq_macsec.c    | 90 +++++++++----------
+ 1 file changed, 45 insertions(+), 45 deletions(-)
 
-diff --git a/drivers/net/phy/mscc/mscc_macsec.c b/drivers/net/phy/mscc/mscc_macsec.c
-index b7b2521c73fb..58210be879ff 100644
---- a/drivers/net/phy/mscc/mscc_macsec.c
-+++ b/drivers/net/phy/mscc/mscc_macsec.c
-@@ -706,14 +706,6 @@ static int __vsc8584_macsec_add_rxsa(struct macsec_context *ctx,
- 	struct phy_device *phydev = ctx->phydev;
- 	struct vsc8531_private *priv = phydev->priv;
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_macsec.c b/drivers/net/ethernet/aquantia/atlantic/aq_macsec.c
+index 02058fe79f52..9dbd348ac714 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_macsec.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_macsec.c
+@@ -452,6 +452,9 @@ static int aq_mdo_add_secy(struct macsec_context *ctx)
+ 	u32 txsc_idx;
+ 	int ret = 0;
  
--	if (!flow) {
--		flow = vsc8584_macsec_alloc_flow(priv, MACSEC_INGR);
--		if (IS_ERR(flow))
--			return PTR_ERR(flow);
--
--		memcpy(flow->key, ctx->sa.key, priv->secy->key_len);
--	}
--
- 	flow->assoc_num = ctx->sa.assoc_num;
- 	flow->rx_sa = ctx->sa.rx_sa;
- 
-@@ -730,24 +722,13 @@ static int __vsc8584_macsec_add_rxsa(struct macsec_context *ctx,
- static int __vsc8584_macsec_add_txsa(struct macsec_context *ctx,
- 				     struct macsec_flow *flow, bool update)
- {
--	struct phy_device *phydev = ctx->phydev;
--	struct vsc8531_private *priv = phydev->priv;
--
--	if (!flow) {
--		flow = vsc8584_macsec_alloc_flow(priv, MACSEC_EGR);
--		if (IS_ERR(flow))
--			return PTR_ERR(flow);
--
--		memcpy(flow->key, ctx->sa.key, priv->secy->key_len);
--	}
--
- 	flow->assoc_num = ctx->sa.assoc_num;
- 	flow->tx_sa = ctx->sa.tx_sa;
- 
- 	/* Always match untagged packets on egress */
- 	flow->match.untagged = 1;
- 
--	return vsc8584_macsec_add_flow(phydev, flow, update);
-+	return vsc8584_macsec_add_flow(ctx->phydev, flow, update);
- }
- 
- static int vsc8584_macsec_dev_open(struct macsec_context *ctx)
-@@ -785,12 +766,11 @@ static int vsc8584_macsec_add_secy(struct macsec_context *ctx)
- 	struct vsc8531_private *priv = ctx->phydev->priv;
- 	struct macsec_secy *secy = ctx->secy;
- 
--	if (ctx->prepare) {
--		if (priv->secy)
--			return -EEXIST;
--
-+	if (ctx->prepare)
- 		return 0;
--	}
-+
-+	if (priv->secy)
-+		return -EEXIST;
- 
- 	priv->secy = secy;
- 
-@@ -862,33 +842,46 @@ static int vsc8584_macsec_del_rxsc(struct macsec_context *ctx)
- 
- static int vsc8584_macsec_add_rxsa(struct macsec_context *ctx)
- {
--	struct macsec_flow *flow = NULL;
-+	struct phy_device *phydev = ctx->phydev;
-+	struct vsc8531_private *priv = phydev->priv;
-+	struct macsec_flow *flow;
-+	int ret;
- 
- 	if (ctx->prepare)
--		return __vsc8584_macsec_add_rxsa(ctx, flow, false);
-+		return 0;
- 
--	flow = vsc8584_macsec_find_flow(ctx, MACSEC_INGR);
-+	flow = vsc8584_macsec_alloc_flow(priv, MACSEC_INGR);
- 	if (IS_ERR(flow))
- 		return PTR_ERR(flow);
- 
--	vsc8584_macsec_flow_enable(ctx->phydev, flow);
-+	memcpy(flow->key, ctx->sa.key, priv->secy->key_len);
-+
-+	ret = __vsc8584_macsec_add_rxsa(ctx, flow, false);
-+	if (ret)
-+		return ret;
-+
-+	vsc8584_macsec_flow_enable(phydev, flow);
- 	return 0;
- }
- 
- static int vsc8584_macsec_upd_rxsa(struct macsec_context *ctx)
- {
- 	struct macsec_flow *flow;
-+	int ret;
-+
 +	if (ctx->prepare)
 +		return 0;
++
+ 	if (secy->xpn)
+ 		return -EOPNOTSUPP;
  
- 	flow = vsc8584_macsec_find_flow(ctx, MACSEC_INGR);
- 	if (IS_ERR(flow))
- 		return PTR_ERR(flow);
+@@ -466,9 +469,6 @@ static int aq_mdo_add_secy(struct macsec_context *ctx)
+ 	if (txsc_idx == AQ_MACSEC_MAX_SC)
+ 		return -ENOSPC;
  
--	if (ctx->prepare) {
--		/* Make sure the flow is disabled before updating it */
--		vsc8584_macsec_flow_disable(ctx->phydev, flow);
-+	/* Make sure the flow is disabled before updating it */
-+	vsc8584_macsec_flow_disable(ctx->phydev, flow);
- 
--		return __vsc8584_macsec_add_rxsa(ctx, flow, true);
--	}
-+	ret = __vsc8584_macsec_add_rxsa(ctx, flow, true);
-+	if (ret)
-+		return ret;
- 
- 	vsc8584_macsec_flow_enable(ctx->phydev, flow);
- 	return 0;
-@@ -898,12 +891,12 @@ static int vsc8584_macsec_del_rxsa(struct macsec_context *ctx)
- {
- 	struct macsec_flow *flow;
- 
--	flow = vsc8584_macsec_find_flow(ctx, MACSEC_INGR);
-+	if (ctx->prepare)
-+		return 0;
- 
-+	flow = vsc8584_macsec_find_flow(ctx, MACSEC_INGR);
- 	if (IS_ERR(flow))
- 		return PTR_ERR(flow);
 -	if (ctx->prepare)
 -		return 0;
+-
+ 	cfg->sc_sa = sc_sa;
+ 	cfg->aq_txsc[txsc_idx].hw_sc_idx = aq_to_hw_sc_idx(txsc_idx, sc_sa);
+ 	cfg->aq_txsc[txsc_idx].sw_secy = secy;
+@@ -488,13 +488,13 @@ static int aq_mdo_upd_secy(struct macsec_context *ctx)
+ 	int txsc_idx;
+ 	int ret = 0;
  
- 	vsc8584_macsec_del_flow(ctx->phydev, flow);
- 	return 0;
-@@ -911,33 +904,46 @@ static int vsc8584_macsec_del_rxsa(struct macsec_context *ctx)
- 
- static int vsc8584_macsec_add_txsa(struct macsec_context *ctx)
- {
--	struct macsec_flow *flow = NULL;
-+	struct phy_device *phydev = ctx->phydev;
-+	struct vsc8531_private *priv = phydev->priv;
-+	struct macsec_flow *flow;
-+	int ret;
- 
- 	if (ctx->prepare)
--		return __vsc8584_macsec_add_txsa(ctx, flow, false);
-+		return 0;
- 
--	flow = vsc8584_macsec_find_flow(ctx, MACSEC_EGR);
-+	flow = vsc8584_macsec_alloc_flow(priv, MACSEC_EGR);
- 	if (IS_ERR(flow))
- 		return PTR_ERR(flow);
- 
--	vsc8584_macsec_flow_enable(ctx->phydev, flow);
-+	memcpy(flow->key, ctx->sa.key, priv->secy->key_len);
-+
-+	ret = __vsc8584_macsec_add_txsa(ctx, flow, false);
-+	if (ret)
-+		return ret;
-+
-+	vsc8584_macsec_flow_enable(phydev, flow);
- 	return 0;
- }
- 
- static int vsc8584_macsec_upd_txsa(struct macsec_context *ctx)
- {
- 	struct macsec_flow *flow;
-+	int ret;
-+
 +	if (ctx->prepare)
 +		return 0;
++
+ 	txsc_idx = aq_get_txsc_idx_from_secy(nic->macsec_cfg, secy);
+ 	if (txsc_idx < 0)
+ 		return -ENOENT;
  
- 	flow = vsc8584_macsec_find_flow(ctx, MACSEC_EGR);
- 	if (IS_ERR(flow))
- 		return PTR_ERR(flow);
- 
--	if (ctx->prepare) {
--		/* Make sure the flow is disabled before updating it */
--		vsc8584_macsec_flow_disable(ctx->phydev, flow);
-+	/* Make sure the flow is disabled before updating it */
-+	vsc8584_macsec_flow_disable(ctx->phydev, flow);
- 
--		return __vsc8584_macsec_add_txsa(ctx, flow, true);
--	}
-+	ret = __vsc8584_macsec_add_txsa(ctx, flow, true);
-+	if (ret)
-+		return ret;
- 
- 	vsc8584_macsec_flow_enable(ctx->phydev, flow);
- 	return 0;
-@@ -947,12 +953,12 @@ static int vsc8584_macsec_del_txsa(struct macsec_context *ctx)
- {
- 	struct macsec_flow *flow;
- 
--	flow = vsc8584_macsec_find_flow(ctx, MACSEC_EGR);
-+	if (ctx->prepare)
-+		return 0;
- 
-+	flow = vsc8584_macsec_find_flow(ctx, MACSEC_EGR);
- 	if (IS_ERR(flow))
- 		return PTR_ERR(flow);
 -	if (ctx->prepare)
 -		return 0;
+-
+ 	if (netif_carrier_ok(nic->ndev) && netif_running(secy->netdev))
+ 		ret = aq_set_txsc(nic, txsc_idx);
  
- 	vsc8584_macsec_del_flow(ctx->phydev, flow);
- 	return 0;
+@@ -597,13 +597,13 @@ static int aq_mdo_add_txsa(struct macsec_context *ctx)
+ 	int txsc_idx;
+ 	int ret = 0;
+ 
++	if (ctx->prepare)
++		return 0;
++
+ 	txsc_idx = aq_get_txsc_idx_from_secy(cfg, secy);
+ 	if (txsc_idx < 0)
+ 		return -EINVAL;
+ 
+-	if (ctx->prepare)
+-		return 0;
+-
+ 	aq_txsc = &cfg->aq_txsc[txsc_idx];
+ 	set_bit(ctx->sa.assoc_num, &aq_txsc->tx_sa_idx_busy);
+ 
+@@ -627,13 +627,13 @@ static int aq_mdo_upd_txsa(struct macsec_context *ctx)
+ 	int txsc_idx;
+ 	int ret = 0;
+ 
++	if (ctx->prepare)
++		return 0;
++
+ 	txsc_idx = aq_get_txsc_idx_from_secy(cfg, secy);
+ 	if (txsc_idx < 0)
+ 		return -EINVAL;
+ 
+-	if (ctx->prepare)
+-		return 0;
+-
+ 	aq_txsc = &cfg->aq_txsc[txsc_idx];
+ 	if (netif_carrier_ok(nic->ndev) && netif_running(secy->netdev))
+ 		ret = aq_update_txsa(nic, aq_txsc->hw_sc_idx, secy,
+@@ -677,13 +677,13 @@ static int aq_mdo_del_txsa(struct macsec_context *ctx)
+ 	int txsc_idx;
+ 	int ret = 0;
+ 
++	if (ctx->prepare)
++		return 0;
++
+ 	txsc_idx = aq_get_txsc_idx_from_secy(cfg, ctx->secy);
+ 	if (txsc_idx < 0)
+ 		return -EINVAL;
+ 
+-	if (ctx->prepare)
+-		return 0;
+-
+ 	ret = aq_clear_txsa(nic, &cfg->aq_txsc[txsc_idx], ctx->sa.assoc_num,
+ 			    AQ_CLEAR_ALL);
+ 
+@@ -773,6 +773,9 @@ static int aq_mdo_add_rxsc(struct macsec_context *ctx)
+ 	u32 rxsc_idx;
+ 	int ret = 0;
+ 
++	if (ctx->prepare)
++		return 0;
++
+ 	if (hweight32(cfg->rxsc_idx_busy) >= rxsc_idx_max)
+ 		return -ENOSPC;
+ 
+@@ -780,9 +783,6 @@ static int aq_mdo_add_rxsc(struct macsec_context *ctx)
+ 	if (rxsc_idx >= rxsc_idx_max)
+ 		return -ENOSPC;
+ 
+-	if (ctx->prepare)
+-		return 0;
+-
+ 	cfg->aq_rxsc[rxsc_idx].hw_sc_idx = aq_to_hw_sc_idx(rxsc_idx,
+ 							   cfg->sc_sa);
+ 	cfg->aq_rxsc[rxsc_idx].sw_secy = ctx->secy;
+@@ -805,13 +805,13 @@ static int aq_mdo_upd_rxsc(struct macsec_context *ctx)
+ 	int rxsc_idx;
+ 	int ret = 0;
+ 
++	if (ctx->prepare)
++		return 0;
++
+ 	rxsc_idx = aq_get_rxsc_idx_from_rxsc(nic->macsec_cfg, ctx->rx_sc);
+ 	if (rxsc_idx < 0)
+ 		return -ENOENT;
+ 
+-	if (ctx->prepare)
+-		return 0;
+-
+ 	if (netif_carrier_ok(nic->ndev) && netif_running(ctx->secy->netdev))
+ 		ret = aq_set_rxsc(nic, rxsc_idx);
+ 
+@@ -872,13 +872,13 @@ static int aq_mdo_del_rxsc(struct macsec_context *ctx)
+ 	int rxsc_idx;
+ 	int ret = 0;
+ 
++	if (ctx->prepare)
++		return 0;
++
+ 	rxsc_idx = aq_get_rxsc_idx_from_rxsc(nic->macsec_cfg, ctx->rx_sc);
+ 	if (rxsc_idx < 0)
+ 		return -ENOENT;
+ 
+-	if (ctx->prepare)
+-		return 0;
+-
+ 	if (netif_carrier_ok(nic->ndev))
+ 		clear_type = AQ_CLEAR_ALL;
+ 
+@@ -944,13 +944,13 @@ static int aq_mdo_add_rxsa(struct macsec_context *ctx)
+ 	int rxsc_idx;
+ 	int ret = 0;
+ 
++	if (ctx->prepare)
++		return 0;
++
+ 	rxsc_idx = aq_get_rxsc_idx_from_rxsc(nic->macsec_cfg, rx_sc);
+ 	if (rxsc_idx < 0)
+ 		return -EINVAL;
+ 
+-	if (ctx->prepare)
+-		return 0;
+-
+ 	aq_rxsc = &nic->macsec_cfg->aq_rxsc[rxsc_idx];
+ 	set_bit(ctx->sa.assoc_num, &aq_rxsc->rx_sa_idx_busy);
+ 
+@@ -974,13 +974,13 @@ static int aq_mdo_upd_rxsa(struct macsec_context *ctx)
+ 	int rxsc_idx;
+ 	int ret = 0;
+ 
++	if (ctx->prepare)
++		return 0;
++
+ 	rxsc_idx = aq_get_rxsc_idx_from_rxsc(cfg, rx_sc);
+ 	if (rxsc_idx < 0)
+ 		return -EINVAL;
+ 
+-	if (ctx->prepare)
+-		return 0;
+-
+ 	if (netif_carrier_ok(nic->ndev) && netif_running(secy->netdev))
+ 		ret = aq_update_rxsa(nic, cfg->aq_rxsc[rxsc_idx].hw_sc_idx,
+ 				     secy, ctx->sa.rx_sa, NULL,
+@@ -1025,13 +1025,13 @@ static int aq_mdo_del_rxsa(struct macsec_context *ctx)
+ 	int rxsc_idx;
+ 	int ret = 0;
+ 
++	if (ctx->prepare)
++		return 0;
++
+ 	rxsc_idx = aq_get_rxsc_idx_from_rxsc(cfg, rx_sc);
+ 	if (rxsc_idx < 0)
+ 		return -EINVAL;
+ 
+-	if (ctx->prepare)
+-		return 0;
+-
+ 	ret = aq_clear_rxsa(nic, &cfg->aq_rxsc[rxsc_idx], ctx->sa.assoc_num,
+ 			    AQ_CLEAR_ALL);
+ 
+@@ -1069,13 +1069,13 @@ static int aq_mdo_get_tx_sc_stats(struct macsec_context *ctx)
+ 	struct aq_macsec_txsc *aq_txsc;
+ 	int txsc_idx;
+ 
++	if (ctx->prepare)
++		return 0;
++
+ 	txsc_idx = aq_get_txsc_idx_from_secy(nic->macsec_cfg, ctx->secy);
+ 	if (txsc_idx < 0)
+ 		return -ENOENT;
+ 
+-	if (ctx->prepare)
+-		return 0;
+-
+ 	aq_txsc = &nic->macsec_cfg->aq_txsc[txsc_idx];
+ 	stats = &aq_txsc->stats;
+ 	aq_get_txsc_stats(hw, aq_txsc->hw_sc_idx, stats);
+@@ -1102,13 +1102,13 @@ static int aq_mdo_get_tx_sa_stats(struct macsec_context *ctx)
+ 	u32 next_pn;
+ 	int ret;
+ 
++	if (ctx->prepare)
++		return 0;
++
+ 	txsc_idx = aq_get_txsc_idx_from_secy(cfg, ctx->secy);
+ 	if (txsc_idx < 0)
+ 		return -EINVAL;
+ 
+-	if (ctx->prepare)
+-		return 0;
+-
+ 	aq_txsc = &cfg->aq_txsc[txsc_idx];
+ 	sa_idx = aq_txsc->hw_sc_idx | ctx->sa.assoc_num;
+ 	stats = &aq_txsc->tx_sa_stats[ctx->sa.assoc_num];
+@@ -1143,13 +1143,13 @@ static int aq_mdo_get_rx_sc_stats(struct macsec_context *ctx)
+ 	int ret = 0;
+ 	int i;
+ 
++	if (ctx->prepare)
++		return 0;
++
+ 	rxsc_idx = aq_get_rxsc_idx_from_rxsc(cfg, ctx->rx_sc);
+ 	if (rxsc_idx < 0)
+ 		return -ENOENT;
+ 
+-	if (ctx->prepare)
+-		return 0;
+-
+ 	aq_rxsc = &cfg->aq_rxsc[rxsc_idx];
+ 	for (i = 0; i < MACSEC_NUM_AN; i++) {
+ 		if (!test_bit(i, &aq_rxsc->rx_sa_idx_busy))
+@@ -1192,13 +1192,13 @@ static int aq_mdo_get_rx_sa_stats(struct macsec_context *ctx)
+ 	u32 next_pn;
+ 	int ret;
+ 
++	if (ctx->prepare)
++		return 0;
++
+ 	rxsc_idx = aq_get_rxsc_idx_from_rxsc(cfg, ctx->rx_sc);
+ 	if (rxsc_idx < 0)
+ 		return -EINVAL;
+ 
+-	if (ctx->prepare)
+-		return 0;
+-
+ 	aq_rxsc = &cfg->aq_rxsc[rxsc_idx];
+ 	stats = &aq_rxsc->rx_sa_stats[ctx->sa.assoc_num];
+ 	sa_idx = aq_rxsc->hw_sc_idx | ctx->sa.assoc_num;
 -- 
 2.37.3
 
