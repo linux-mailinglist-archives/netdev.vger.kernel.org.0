@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 65A625BF195
+	by mail.lfdr.de (Postfix) with ESMTP id E5F145BF196
 	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 02:00:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230221AbiIUAAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Sep 2022 20:00:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57278 "EHLO
+        id S230264AbiIUAAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Sep 2022 20:00:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229971AbiIUAAU (ORCPT
+        with ESMTP id S229751AbiIUAAU (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 20 Sep 2022 20:00:20 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 079822F651
-        for <netdev@vger.kernel.org>; Tue, 20 Sep 2022 17:00:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07B1A2FFFE;
+        Tue, 20 Sep 2022 17:00:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7E455B81011
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 00:00:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 23B22C433C1;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 84077B82C4C;
+        Wed, 21 Sep 2022 00:00:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3414FC433D7;
         Wed, 21 Sep 2022 00:00:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1663718416;
-        bh=pLOzzcadgBqzp+Dd/DBkVdvhkGefEm0UmiAEO8ngwY4=;
+        bh=jHowYW/YOEPU2Qym2AvUu9Ui+EhBhmVI/skeD+TpR00=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=oNKitQq/+WfgPpknNdjaL2iTfAi0DpLmE1rHDyUzhsxPwsmnAX8lQg6oSWLxsyiZ8
-         1nl3k8zOpDybARCZcy47ja6pZ/gzhqmuzeBmeHSg6Nn+m7YXEmxdL3QMw/hegngmyG
-         9ePitufmoUVRVm/B+PzvYYOLg4LGJuKlU3TXbI2DEAKXWvZd+3i6YXDRJhuxFdMlzx
-         88R0cP2ZE/hkHU6ZXSLX0BiuPdYg/Lirvk47C6TkXdM9GWWJ1eh6fJ0ACsPmY8zSAj
-         lTVBx08mqDzVrgFismkx6LB8StqmKMm/+0XKx8PIEMz0KRNddIjbJXi4NW1pHfJY+C
-         k0ixZuQV6PVFQ==
+        b=M4gwiRzwg4/XOrCvvO4j3+N7gtPClNVYScgOXlnHb1baEcp7yl//LhfjE9/Onn8Mi
+         fHG9deGmcy47TTtKqrIZJkAU17H5BxTYPCwooDJlg0tOpz3S2h2Ic1O2c2EBiDEehw
+         A61r8sfgFD+vWN7zCXre4iJOsDy+EQzovJHZVFL4kd7Kc5PUeWss2Z1rIO3TpRFdR4
+         82gDjCaJnh8mTx/nduEUvwPMRyNFCcCq1ywFCof6pZMxW4vl/7jxV/AiHzf8CxgTV/
+         /LeOBLLgXZNlBYUYxMZsjPpkxET2mdBDDprEdFIsL9WozW5VSmgyLTHnwgDXkdGz59
+         hiCLhwVzvmIhw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 040CFE21EE2;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1252FE21EDF;
         Wed, 21 Sep 2022 00:00:16 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 1/1] ice: Add low latency Tx timestamp read
+Subject: Re: [PATCH -next] octeontx2-pf: Fix unused variable build error
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166371841601.16905.11565731552834205871.git-patchwork-notify@kernel.org>
+Message-Id: <166371841606.16905.4984394494387073247.git-patchwork-notify@kernel.org>
 Date:   Wed, 21 Sep 2022 00:00:16 +0000
-References: <20220916201728.241510-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20220916201728.241510-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, karol.kolacinski@intel.com,
-        netdev@vger.kernel.org, richardcochran@gmail.com,
-        gurucharanx.g@intel.com
+References: <20220919025840.256411-1-renzhijie2@huawei.com>
+In-Reply-To: <20220919025840.256411-1-renzhijie2@huawei.com>
+To:     Ren Zhijie <renzhijie2@huawei.com>
+Cc:     sgoutham@marvell.com, gakula@marvell.com, sbhatta@marvell.com,
+        hkelam@marvell.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, sumang@marvell.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -62,20 +62,22 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Fri, 16 Sep 2022 13:17:28 -0700 you wrote:
-> From: Karol Kolacinski <karol.kolacinski@intel.com>
+On Mon, 19 Sep 2022 10:58:40 +0800 you wrote:
+> If CONFIG_DCB is not set,
+> make ARCH=x86_64 CROSS_COMPILE=x86_64-linux-gnu-,
+> will be failed, like this:
 > 
-> E810 products can support low latency Tx timestamp register read.
-> This requires usage of threaded IRQ instead of kthread to reduce the
-> kthread start latency (spikes up to 20 ms).
-> Add a check for the device capability and use the new method if
-> supported.
+> drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c: In function ‘otx2_select_queue’:
+> drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c:1886:19: error: unused variable ‘pf’ [-Werror=unused-variable]
+>   struct otx2_nic *pf = netdev_priv(netdev);
+>                    ^~
+> cc1: all warnings being treated as errors
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,1/1] ice: Add low latency Tx timestamp read
-    https://git.kernel.org/netdev/net-next/c/1229b33973c7
+  - [-next] octeontx2-pf: Fix unused variable build error
+    https://git.kernel.org/netdev/net-next/c/54b9a2bb6c01
 
 You are awesome, thank you!
 -- 
