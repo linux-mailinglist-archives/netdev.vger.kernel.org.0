@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 549A15BFBAF
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 11:53:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22F715BFBB8
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 11:53:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231807AbiIUJxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 05:53:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58212 "EHLO
+        id S230116AbiIUJxU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 05:53:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231706AbiIUJwz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 05:52:55 -0400
+        with ESMTP id S229945AbiIUJw4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 05:52:56 -0400
 Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01E4B641F;
-        Wed, 21 Sep 2022 02:50:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06240E8F;
+        Wed, 21 Sep 2022 02:50:24 -0700 (PDT)
 Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
         (envelope-from <fw@breakpoint.cc>)
-        id 1oawN0-0006Q7-RY; Wed, 21 Sep 2022 11:50:18 +0200
+        id 1oawN5-0006QR-0x; Wed, 21 Sep 2022 11:50:23 +0200
 From:   Florian Westphal <fw@strlen.de>
 To:     <netdev@vger.kernel.org>
 Cc:     <netfilter-devel@vger.kernel.org>,
@@ -24,11 +24,11 @@ Cc:     <netfilter-devel@vger.kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Antoine Tenart <atenart@kernel.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         Florian Westphal <fw@strlen.de>
-Subject: [PATCH net-next 2/4] netfilter: conntrack: revisit the gc initial rescheduling bias
-Date:   Wed, 21 Sep 2022 11:49:58 +0200
-Message-Id: <20220921095000.29569-3-fw@strlen.de>
+Subject: [PATCH net-next 3/4] headers: Remove some left-over license text in include/uapi/linux/netfilter/
+Date:   Wed, 21 Sep 2022 11:49:59 +0200
+Message-Id: <20220921095000.29569-4-fw@strlen.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220921095000.29569-1-fw@strlen.de>
 References: <20220921095000.29569-1-fw@strlen.de>
@@ -43,60 +43,107 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Antoine Tenart <atenart@kernel.org>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-The previous commit changed the way the rescheduling delay is computed
-which has a side effect: the bias is now represented as much as the
-other entries in the rescheduling delay which makes the logic to kick in
-only with very large sets, as the initial interval is very large
-(INT_MAX).
+When the SPDX-License-Identifier tag has been added, the corresponding
+license text has not been removed.
 
-Revisit the GC initial bias to allow more frequent GC for smaller sets
-while still avoiding wakeups when a machine is mostly idle. We're moving
-from a large initial value to pretending we have 100 entries expiring at
-the upper bound. This way only a few entries having a small timeout
-won't impact much the rescheduling delay and non-idle machines will have
-enough entries to lower the delay when needed. This also improves
-readability as the initial bias is now linked to what is computed
-instead of being an arbitrary large value.
+Remove it now.
 
-Fixes: 2cfadb761d3d ("netfilter: conntrack: revisit gc autotuning")
-Suggested-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Antoine Tenart <atenart@kernel.org>
+Also, in xt_connmark.h, move the copyright text at the top of the file
+which is a much more common pattern.
+
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 Signed-off-by: Florian Westphal <fw@strlen.de>
 ---
- net/netfilter/nf_conntrack_core.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ include/uapi/linux/netfilter/ipset/ip_set.h |  4 ----
+ include/uapi/linux/netfilter/xt_AUDIT.h     |  4 ----
+ include/uapi/linux/netfilter/xt_connmark.h  | 13 ++++---------
+ include/uapi/linux/netfilter/xt_osf.h       | 14 --------------
+ 4 files changed, 4 insertions(+), 31 deletions(-)
 
-diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index 8efa6bd5703c..8208a28ea342 100644
---- a/net/netfilter/nf_conntrack_core.c
-+++ b/net/netfilter/nf_conntrack_core.c
-@@ -86,10 +86,12 @@ static DEFINE_MUTEX(nf_conntrack_mutex);
- /* clamp timeouts to this value (TCP unacked) */
- #define GC_SCAN_INTERVAL_CLAMP	(300ul * HZ)
- 
--/* large initial bias so that we don't scan often just because we have
-- * three entries with a 1s timeout.
-+/* Initial bias pretending we have 100 entries at the upper bound so we don't
-+ * wakeup often just because we have three entries with a 1s timeout while still
-+ * allowing non-idle machines to wakeup more often when needed.
+diff --git a/include/uapi/linux/netfilter/ipset/ip_set.h b/include/uapi/linux/netfilter/ipset/ip_set.h
+index 6397d75899bc..79e5d68b87af 100644
+--- a/include/uapi/linux/netfilter/ipset/ip_set.h
++++ b/include/uapi/linux/netfilter/ipset/ip_set.h
+@@ -3,10 +3,6 @@
+  *                         Patrick Schaaf <bof@bof.de>
+  *                         Martin Josefsson <gandalf@wlug.westbo.se>
+  * Copyright (C) 2003-2011 Jozsef Kadlecsik <kadlec@netfilter.org>
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License version 2 as
+- * published by the Free Software Foundation.
   */
--#define GC_SCAN_INTERVAL_INIT	INT_MAX
-+#define GC_SCAN_INITIAL_COUNT	100
-+#define GC_SCAN_INTERVAL_INIT	GC_SCAN_INTERVAL_MAX
+ #ifndef _UAPI_IP_SET_H
+ #define _UAPI_IP_SET_H
+diff --git a/include/uapi/linux/netfilter/xt_AUDIT.h b/include/uapi/linux/netfilter/xt_AUDIT.h
+index 1b314e2f84ac..56a3f6092e0c 100644
+--- a/include/uapi/linux/netfilter/xt_AUDIT.h
++++ b/include/uapi/linux/netfilter/xt_AUDIT.h
+@@ -4,10 +4,6 @@
+  *
+  * (C) 2010-2011 Thomas Graf <tgraf@redhat.com>
+  * (C) 2010-2011 Red Hat, Inc.
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License version 2 as
+- * published by the Free Software Foundation.
+  */
  
- #define GC_SCAN_MAX_DURATION	msecs_to_jiffies(10)
- #define GC_SCAN_EXPIRED_MAX	(64000u / HZ)
-@@ -1477,7 +1479,7 @@ static void gc_worker(struct work_struct *work)
+ #ifndef _XT_AUDIT_TARGET_H
+diff --git a/include/uapi/linux/netfilter/xt_connmark.h b/include/uapi/linux/netfilter/xt_connmark.h
+index f01c19b83a2b..41b578ccd03b 100644
+--- a/include/uapi/linux/netfilter/xt_connmark.h
++++ b/include/uapi/linux/netfilter/xt_connmark.h
+@@ -1,18 +1,13 @@
+ /* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
++/* Copyright (C) 2002,2004 MARA Systems AB <https://www.marasystems.com>
++ * by Henrik Nordstrom <hno@marasystems.com>
++ */
++
+ #ifndef _XT_CONNMARK_H
+ #define _XT_CONNMARK_H
  
- 	if (i == 0) {
- 		gc_work->avg_timeout = GC_SCAN_INTERVAL_INIT;
--		gc_work->count = 1;
-+		gc_work->count = GC_SCAN_INITIAL_COUNT;
- 		gc_work->start_time = start_time;
- 	}
+ #include <linux/types.h>
  
+-/* Copyright (C) 2002,2004 MARA Systems AB <https://www.marasystems.com>
+- * by Henrik Nordstrom <hno@marasystems.com>
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
+- */
+-
+ enum {
+ 	XT_CONNMARK_SET = 0,
+ 	XT_CONNMARK_SAVE,
+diff --git a/include/uapi/linux/netfilter/xt_osf.h b/include/uapi/linux/netfilter/xt_osf.h
+index 6e466236ca4b..f1f097896bdf 100644
+--- a/include/uapi/linux/netfilter/xt_osf.h
++++ b/include/uapi/linux/netfilter/xt_osf.h
+@@ -1,20 +1,6 @@
+ /* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
+ /*
+  * Copyright (c) 2003+ Evgeniy Polyakov <johnpol@2ka.mxt.ru>
+- *
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+ #ifndef _XT_OSF_H
 -- 
 2.35.1
 
