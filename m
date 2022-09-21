@@ -2,74 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E5515BFA3E
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 11:08:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50CDD5BFA47
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 11:11:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229818AbiIUJIw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 05:08:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35076 "EHLO
+        id S229554AbiIUJLO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 05:11:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229536AbiIUJIu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 05:08:50 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E42E88C007;
-        Wed, 21 Sep 2022 02:08:49 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id l65so5276307pfl.8;
-        Wed, 21 Sep 2022 02:08:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=svFiUUeuYFlMrWiqj/jt3gEFxH31/pi8v8YQVoLmJro=;
-        b=FwSkcF3BOlSiZ7nMRlmFpLIZJy+hqmvpWkSXa+Dnn9qgT0ieruxCsZMUu6lg0a/yGa
-         a66OwfXr2+K0PS7NsMY1+fMcLv9PQ/UIPvkhiCJXHS+D9jXGHZKWM/EYu9tZkVnnQfrM
-         W4tE3p96PwNUyLmtNz53eU6qn5h8w/0Sljr8Xl/M1rvGcV1cx/07bfIokeUIjo8nA/70
-         /9+ziuFtjeAK8zEq5A85i2vZedu9l3SZTWh1VbTGyIeOv6TfDWI0e1kg/pHDr29pQ9Hg
-         NvLtjZqk00+31Vs1viwH9ItWj92fNJ7CEmJ/LbGGwiCbrWfAGTVanxGre9x63VGjbXK0
-         TlGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=svFiUUeuYFlMrWiqj/jt3gEFxH31/pi8v8YQVoLmJro=;
-        b=iCaWo9BWR6AycJZ9pvG+j5fC4gV1JfPd943HRJw7khr8APorVJ9F/YzxAQm1oKzdS/
-         KPyFw7eEkkvSLcfYp0Z8oVQSZNcNl53ceGOhLl5/nckO7enrRdYSqeu8S1casIOjg4ly
-         TWSDaOs9xP5bFWhuq6Vp81tZTyrbfoxv78Hnsz7D2OiCy8yLPcm1Xvl+T0N16PBKW+5h
-         uSFAW4efSEqnIEkGz+YOsQs/7uq3RiyQCSaFb/skm3ASJWQoqnyxcWawjK3ecVC589D9
-         Gveu9xMsIQnPGqOGA34OUKDO3bMedwZZ4JHhJpdKBoC3AEl0tMSnn5UwzPh9cOD8o15p
-         ktiQ==
-X-Gm-Message-State: ACrzQf2JAtBb3F1d+Irf7xABalbSnESg2QYcRHRWWEl9uQJWsjdMdld0
-        8WOwzl5QPMH0OO/gz9XgbTc=
-X-Google-Smtp-Source: AMsMyM6DppFjbMEpgewsvQoIa8b6R/n/SMTwIK/5BGP3ZGJJAMYwAZZjVq6jaPKKy9xUBuP7qkBOeA==
-X-Received: by 2002:a05:6a00:14ce:b0:544:1ec7:2567 with SMTP id w14-20020a056a0014ce00b005441ec72567mr27129210pfu.24.1663751329480;
-        Wed, 21 Sep 2022 02:08:49 -0700 (PDT)
-Received: from [192.168.50.247] ([129.227.150.140])
-        by smtp.gmail.com with ESMTPSA id w68-20020a623047000000b0054124008c14sm1562147pfw.154.2022.09.21.02.08.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 21 Sep 2022 02:08:49 -0700 (PDT)
-Message-ID: <7272ff00-fa24-8f05-2a5e-bd6fcb8acc45@gmail.com>
-Date:   Wed, 21 Sep 2022 17:08:44 +0800
+        with ESMTP id S229536AbiIUJLK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 05:11:10 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3153D85F9F
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 02:11:07 -0700 (PDT)
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1oavl2-0002vm-J6; Wed, 21 Sep 2022 11:11:04 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1oavl2-0002qX-7Q; Wed, 21 Sep 2022 11:11:04 +0200
+Subject: Re: [PATCH net 1/1] net: Fix return value of qdisc ingress handling
+ on success
+To:     Paul Blakey <paulb@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>,
+        Oz Shlomo <ozsh@nvidia.com>, Roi Dayan <roid@nvidia.com>,
+        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+References: <1663750248-20363-1-git-send-email-paulb@nvidia.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <c322d8d6-8594-65a9-0514-3b6486d588fe@iogearbox.net>
+Date:   Wed, 21 Sep 2022 11:11:03 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] net: sched: fix possible refcount leak in
- tc_new_tfilter()
+In-Reply-To: <1663750248-20363-1-git-send-email-paulb@nvidia.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        vladbu@mellanox.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220915085804.20894-1-hbh25y@gmail.com>
- <20220920085006.32c743be@kernel.org>
-From:   Hangyu Hua <hbh25y@gmail.com>
-In-Reply-To: <20220920085006.32c743be@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.6/26665/Wed Sep 21 09:54:09 2022)
+X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -78,43 +55,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/9/2022 23:50, Jakub Kicinski wrote:
-> On Thu, 15 Sep 2022 16:58:04 +0800 Hangyu Hua wrote:
->> tfilter_put need to be called to put the refount got by tp->ops->get to
+On 9/21/22 10:50 AM, Paul Blakey wrote:
+> Currently qdisc ingress handling (sch_handle_ingress()) doesn't
+> set a return value and it is left to the old return value of
+> the caller (__netif_receive_skb_core()) which is RX drop, so if
+> the packet is consumed, caller will stop and return this value
+> as if the packet was dropped.
 > 
-> s/refount/refcount/
+> This causes a problem in the kernel tcp stack when having a
+> egress tc rule forwarding to a ingress tc rule.
+> The tcp stack sending packets on the device having the egress rule
+> will see the packets as not successfully transmitted (although they
+> actually were), will not advance it's internal state of sent data,
+> and packets returning on such tcp stream will be dropped by the tcp
+> stack with reason ack-of-unsent-data. See reproduction in [0] below.
 > 
->> avoid possible refcount leak when chain->tmplt_ops == NULL or
->> chain->tmplt_ops != tp->ops.
+> Fix that by setting the return value to RX success if
+> the packet was handled successfully.
 > 
-> This should say:
+> [0] Reproduction steps:
+>   $ ip link add veth1 type veth peer name peer1
+>   $ ip link add veth2 type veth peer name peer2
+>   $ ifconfig peer1 5.5.5.6/24 up
+>   $ ip netns add ns0
+>   $ ip link set dev peer2 netns ns0
+>   $ ip netns exec ns0 ifconfig peer2 5.5.5.5/24 up
+>   $ ifconfig veth2 0 up
+>   $ ifconfig veth1 0 up
 > 
->    when cain->tmplt_ops != NULL and ...
+>   #ingress forwarding veth1 <-> veth2
+>   $ tc qdisc add dev veth2 ingress
+>   $ tc qdisc add dev veth1 ingress
+>   $ tc filter add dev veth2 ingress prio 1 proto all flower \
+>     action mirred egress redirect dev veth1
+>   $ tc filter add dev veth1 ingress prio 1 proto all flower \
+>     action mirred egress redirect dev veth2
 > 
-> otherwise the commit message does not match the code.
+>   #steal packet from peer1 egress to veth2 ingress, bypassing the veth pipe
+>   $ tc qdisc add dev peer1 clsact
+>   $ tc filter add dev peer1 egress prio 20 proto ip flower \
+>     action mirred ingress redirect dev veth1
 > 
+>   #run iperf and see connection not running
+>   $ iperf3 -s&
+>   $ ip netns exec ns0 iperf3 -c 5.5.5.6 -i 1
+> 
+>   #delete egress rule, and run again, now should work
+>   $ tc filter del dev peer1 egress
+>   $ ip netns exec ns0 iperf3 -c 5.5.5.6 -i 1
+> 
+> Fixes: 1f211a1b929c ("net, sched: add clsact qdisc")
+> Signed-off-by: Paul Blakey <paulb@nvidia.com>
+> ---
+>   net/core/dev.c | 3 +++
+>   1 file changed, 3 insertions(+)
+> 
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 56c8b0921c9f..c58ab657b164 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -5141,6 +5141,7 @@ sch_handle_ingress(struct sk_buff *skb, struct packet_type **pt_prev, int *ret,
+>   	case TC_ACT_QUEUED:
+>   	case TC_ACT_TRAP:
+>   		consume_skb(skb);
+> +		*ret = NET_RX_SUCCESS;
+>   		return NULL;
+>   	case TC_ACT_REDIRECT:
+>   		/* skb_mac_header check was done by cls/act_bpf, so
+> @@ -5153,8 +5154,10 @@ sch_handle_ingress(struct sk_buff *skb, struct packet_type **pt_prev, int *ret,
+>   			*another = true;
+>   			break;
+>   		}
+> +		*ret = NET_RX_SUCCESS;
+>   		return NULL;
+>   	case TC_ACT_CONSUMED:
+> +		*ret = NET_RX_SUCCESS;
+>   		return NULL;
+>   	default:
 
-My bad. I will submit a v2.
+Looks reasonable and aligns with sch_handle_egress() fwiw. I think your Fixes tag is wrong
+since that commit didn't modify any of the above. This patch should also rather go to net-next
+tree to make sure it has enough soak time to catch potential regressions from this change in
+behavior. Given the change under TC_ACT_REDIRECT is BPF specific, please also add a BPF selftest
+for tc BPF program to assert the new behavior so we can run it in our BPF CI for every patch.
 
 Thanks,
-Hangyu
-
->> Fixes: 7d5509fa0d3d ("net: sched: extend proto ops with 'put' callback")
->> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
->> ---
->>   net/sched/cls_api.c | 1 +
->>   1 file changed, 1 insertion(+)
->>
->> diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
->> index 790d6809be81..51d175f3fbcb 100644
->> --- a/net/sched/cls_api.c
->> +++ b/net/sched/cls_api.c
->> @@ -2137,6 +2137,7 @@ static int tc_new_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
->>   	}
->>   
->>   	if (chain->tmplt_ops && chain->tmplt_ops != tp->ops) {
->> +		tfilter_put(tp, fh);
->>   		NL_SET_ERR_MSG(extack, "Chain template is set to a different filter kind");
->>   		err = -EINVAL;
->>   		goto errout;
-> 
+Daniel
