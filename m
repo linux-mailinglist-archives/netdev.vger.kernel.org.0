@@ -2,477 +2,388 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B8DB5E5383
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 21:05:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E24755E53D4
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 21:33:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230038AbiIUTFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 15:05:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45704 "EHLO
+        id S229830AbiIUTd0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 15:33:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbiIUTFC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 15:05:02 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BBD261B36
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 12:05:00 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id dv25so15667758ejb.12
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 12:05:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date;
-        bh=IxntBIW0RLzy1+3BQvRrd1NhIYCRQti08E5urq5/Ck8=;
-        b=OVO6acMPsn6CxNdQM37Po7u9GyyeI2ojRd4ccFNUvEkZtpCIcD8ti32JnlhxWJhbpv
-         x2bu/nMNHxWhPubfGxE5BW5gN0qQIWMfiEkvo5GyNJ7+8T8kDXqXOxlIADdoRIdmd2+v
-         YDwLvdo2iQROz39XlbArpDmaK2tZexysgicQEDWwC/r53f7C5L0g1TWOqUD3atZy2655
-         2UgiDnWDFm0cZj3TJcVJVMKTY4iASrWF+XUtMnTi6Iagl/grJmX6a7Q5dwuxgTdbbGly
-         yyV+gLeeBiWZ482wjYUKQEOi1HtjBQ22JEpqVSjOZrGv7gqF+/iUQOTCGmQhN61h7yxn
-         AIqw==
+        with ESMTP id S229916AbiIUTdZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 15:33:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 252959A9F5
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 12:33:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1663788802;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=lyl8d0UTqhTNQVdabaCnbEqAj4eSP16PP7QEpQvfXco=;
+        b=MOZz8IVJzzRIelJJkUoO7WoYZQUjRbzzTmZIDJKk90Z2VmyLjDh2duYP2vzOqtCEZyu5+g
+        Xj5lxuDqzmJvblQU3hrp28MyglwUApGUCVX/ORw7ONifhZJtPS3mMk9SkUtBL5kypIy8Q6
+        V+7XCdJKEOrC0BVOTS/J3kYAwoj5VD4=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-184-APLQbTohNFOZE4O2l99pJA-1; Wed, 21 Sep 2022 15:33:21 -0400
+X-MC-Unique: APLQbTohNFOZE4O2l99pJA-1
+Received: by mail-qk1-f197.google.com with SMTP id w10-20020a05620a444a00b006ce9917ea1fso4962644qkp.16
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 12:33:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=IxntBIW0RLzy1+3BQvRrd1NhIYCRQti08E5urq5/Ck8=;
-        b=oPN5+JTxGSK6a3XMivJeRyKa56MozlkLJUGgnJitrR/KpFZJoToo+giM8q+Q93bUns
-         1yPpwuNR+S8UVf2/KCoV1pTfhiUYFkOA7VcvBRG7et9A+FjyYhgM2Fb5U2hdc/axQJ8J
-         /B20KEfpLZINkHrhMnBPUobUA8Ifa1tMfLnV5l0OO6XMNbj3MLB+b+cRDCD/qi5TSd18
-         5GhjRsdX2yhib8IdXCN9s2yzjcc7qE2R1xDf/+kxEAW9ZmS1zj0AVut3DORTfXmKEkBf
-         IMactipp1W9PcgttGic2FUeEXI+4G8I/BW10Sa+1keWLU1fEAnpY1PLiRghmcZqiSDom
-         zIVQ==
-X-Gm-Message-State: ACrzQf0rfYN5o89Tpj5PFlMoR5Oft3KyX74CdhVDLO0wuwX8iW2bu9wM
-        w7HjJTY0gj2SxJ1lEdek5rU0H68B5IdkdHcDGUs=
-X-Google-Smtp-Source: AMsMyM5lZzNI+wzoLXI7ulQD2Yqa46wMvxxOR2EjhhFMWmxJ2VV0H7u0H4Jem7UXKZHsr/t/yhjMQXsjA97P2Lb7IFk=
-X-Received: by 2002:a17:907:7e94:b0:77a:c48b:c80 with SMTP id
- qb20-20020a1709077e9400b0077ac48b0c80mr20850255ejc.690.1663787098794; Wed, 21
- Sep 2022 12:04:58 -0700 (PDT)
-MIME-Version: 1.0
-References: <0a1d6421-b618-9fea-9787-330a18311ec0@bursov.com>
- <CAMet4B4iJjQK6yX+XBD2CtH3B30oqECUAYDj3ZE3ysdJVu8O4w@mail.gmail.com>
- <CALs4sv2YVu0euy5-stBNuES3Bf2SR7MtiD0TJDfGmTLAiUONSA@mail.gmail.com>
- <02400c1a-e626-d6c3-ecfd-3b9e9e4b6988@bursov.com> <CALs4sv3XOTBKCxaUieYosMdXuuqiuHT5Gbhz8oixGv2XGw4+Ug@mail.gmail.com>
- <a5c6e92f-cc59-0214-56f6-66632c5e59c2@bursov.com> <CALs4sv2PWbijor=7aU4oh=yipYo2OMD79wMqEGfj3c4Lw9uycA@mail.gmail.com>
- <ae4bd2c2-6e88-2b1c-c47d-7510ef6a8010@bursov.com> <CALs4sv2mq5=FehCcxPveCbCMNT1aw=8LhqZ4g3=GXhKw8hsrmA@mail.gmail.com>
- <be0e1e7d-272e-7f32-9626-ed4724d7fd9a@bursov.com> <CALs4sv0uo7+RQ0hNmNC=3tD8gk=MS4chygeiuzf4Ve9iiKt9uA@mail.gmail.com>
- <ca16d60c-6853-f80f-99f0-0511b8ac1ef6@bursov.com>
-In-Reply-To: <ca16d60c-6853-f80f-99f0-0511b8ac1ef6@bursov.com>
-From:   Etienne Champetier <champetier.etienne@gmail.com>
-Date:   Wed, 21 Sep 2022 15:04:21 -0400
-Message-ID: <CAOdf3gpy1wc1p60f86ZYOOxX6mHe7MwmTTHm0wGeW_CfqQPiGg@mail.gmail.com>
-Subject: Re: tg3 RX packet re-order in queue 0 with RSS
-To:     Vitaly Bursov <vitaly@bursov.com>
-Cc:     Pavan Chebbi <pavan.chebbi@broadcom.com>,
-        Siva Reddy Kallam <siva.kallam@broadcom.com>,
-        Prashant Sreedharan <prashant@broadcom.com>,
-        Michael Chan <mchan@broadcom.com>,
-        Linux Netdev List <netdev@vger.kernel.org>
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=lyl8d0UTqhTNQVdabaCnbEqAj4eSP16PP7QEpQvfXco=;
+        b=jttVzYPXT7kkAXEsNTT/NOtPkv3rsTjH8De+fuVu3b23o3SHIq2+u6+P2XUHNKoel6
+         9fAkw+Yl9LGZk6j8iaohm9f5Ng9hsAVoTDm+xR5mPna7nmHWq9rjl/1qBnX4KEjmr8/1
+         glfRneZmZiTI9AQLblNH1lW3xszpQe2Z7Bhlm77cu3LaBnrMt8QHxgX0fS8guUn2BM+A
+         lxHeXoNlykMqeUSMjq8dGkzfGya/6wP0XkD5+EGlXo1edev7xp/tlRJQvIHHMPai6VBv
+         LerE6+v8LpIJSLMMtzeuTGAC7O7Ur8ZD2M8Qb4whXSt2qbBY+f4BJrLuBUzRSpW19oYZ
+         7b2Q==
+X-Gm-Message-State: ACrzQf2Mderzw8TIJUwQnZIFk3AqJv/zt9IWv0Ya5wUg+RYB1Lxl3Dww
+        e87n4y3gXT5r6packJ9x9Fp+v3FjWJd4zqyQMUioZRBj2TtJNYczQMI3nKVLpSdiIb4d21rcPs8
+        SiYNG+Z7QYXzFnFG3
+X-Received: by 2002:a05:6214:5187:b0:4ad:77a0:f088 with SMTP id kl7-20020a056214518700b004ad77a0f088mr1973122qvb.0.1663788800263;
+        Wed, 21 Sep 2022 12:33:20 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM6/Huz4u/l4X4FZHjlKKIrrDIAmTYcpdE1KhsFWIH/dUVRKOad89eawM0HQXTQfDY1BAT+Tnw==
+X-Received: by 2002:a05:6214:5187:b0:4ad:77a0:f088 with SMTP id kl7-20020a056214518700b004ad77a0f088mr1973099qvb.0.1663788799930;
+        Wed, 21 Sep 2022 12:33:19 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-104-76.dyn.eolo.it. [146.241.104.76])
+        by smtp.gmail.com with ESMTPSA id bp36-20020a05620a45a400b006bb78d095c5sm2531506qkb.79.2022.09.21.12.33.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Sep 2022 12:33:19 -0700 (PDT)
+Message-ID: <cb3f22f20f3ecb8b049c3e590fd99c52006ef964.camel@redhat.com>
+Subject: Re: [PATCH net-next] net: skb: introduce and use a single page frag
+ cache
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Alexander H Duyck <alexander.duyck@gmail.com>,
+        netdev@vger.kernel.org
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Date:   Wed, 21 Sep 2022 21:33:16 +0200
+In-Reply-To: <e2bf192391a86358f5c7502980268f17682bb328.camel@gmail.com>
+References: <59a54c9a654fe19cc9fb7da5b2377029d93a181e.1663778475.git.pabeni@redhat.com>
+         <e2bf192391a86358f5c7502980268f17682bb328.camel@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le lun. 1 nov. 2021 =C3=A0 06:17, Vitaly Bursov <vitaly@bursov.com> a =C3=
-=A9crit :
->
->
->
-> 01.11.2021 11:10, Pavan Chebbi wrote:
-> > On Mon, Nov 1, 2021 at 1:50 PM Vitaly Bursov <vitaly@bursov.com> wrote:
-> >>
-> >>
-> >>
-> >> 01.11.2021 09:06, Pavan Chebbi wrote:
-> >>> On Fri, Oct 29, 2021 at 9:15 PM Vitaly Bursov <vitaly@bursov.com> wro=
-te:
-> >>>>
-> >>>>
-> >>>>
-> >>>> 29.10.2021 08:04, Pavan Chebbi =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
-> >>>>> 90On Thu, Oct 28, 2021 at 9:11 PM Vitaly Bursov <vitaly@bursov.com>=
- wrote:
-> >>>>>>
-> >>>>>>
-> >>>>>> 28.10.2021 10:33, Pavan Chebbi wrote:
-> >>>>>>> On Wed, Oct 27, 2021 at 4:02 PM Vitaly Bursov <vitaly@bursov.com>=
- wrote:
-> >>>>>>>>
-> >>>>>>>>
-> >>>>>>>> 27.10.2021 12:30, Pavan Chebbi wrote:
-> >>>>>>>>> On Wed, Sep 22, 2021 at 12:10 PM Siva Reddy Kallam
-> >>>>>>>>> <siva.kallam@broadcom.com> wrote:
-> >>>>>>>>>>
-> >>>>>>>>>> Thank you for reporting this. Pavan(cc'd) from Broadcom lookin=
-g into this issue.
-> >>>>>>>>>> We will provide our feedback very soon on this.
-> >>>>>>>>>>
-> >>>>>>>>>> On Mon, Sep 20, 2021 at 6:59 PM Vitaly Bursov <vitaly@bursov.c=
-om> wrote:
-> >>>>>>>>>>>
-> >>>>>>>>>>> Hi,
-> >>>>>>>>>>>
-> >>>>>>>>>>> We found a occassional and random (sometimes happens, sometim=
-es not)
-> >>>>>>>>>>> packet re-order when NIC is involved in UDP multicast recepti=
-on, which
-> >>>>>>>>>>> is sensitive to a packet re-order. Network capture with tcpdu=
-mp
-> >>>>>>>>>>> sometimes shows the packet re-order, sometimes not (e.g. no r=
-e-order on
-> >>>>>>>>>>> a host, re-order in a container at the same time). In a pcap =
-file
-> >>>>>>>>>>> re-ordered packets have a correct timestamp - delayed packet =
-had a more
-> >>>>>>>>>>> earlier timestamp compared to a previous packet:
-> >>>>>>>>>>>           1.00s packet1
-> >>>>>>>>>>>           1.20s packet3
-> >>>>>>>>>>>           1.10s packet2
-> >>>>>>>>>>>           1.30s packet4
-> >>>>>>>>>>>
-> >>>>>>>>>>> There's about 300Mbps of traffic on this NIC, and server is b=
-usy
-> >>>>>>>>>>> (hyper-threading enabled, about 50% overall idle) with its
-> >>>>>>>>>>> computational application work.
-> >>>>>>>>>>>
-> >>>>>>>>>>> NIC is HPE's 4-port 331i adapter - BCM5719, in a default ring=
- and
-> >>>>>>>>>>> coalescing configuration, 1 TX queue, 4 RX queues.
-> >>>>>>>>>>>
-> >>>>>>>>>>> After further investigation, I believe that there are two sep=
-arate
-> >>>>>>>>>>> issues in tg3.c driver. Issues can be reproduced with iperf3,=
- and
-> >>>>>>>>>>> unicast UDP.
-> >>>>>>>>>>>
-> >>>>>>>>>>> Here are the details of how I understand this behavior.
-> >>>>>>>>>>>
-> >>>>>>>>>>> 1. Packet re-order.
-> >>>>>>>>>>>
-> >>>>>>>>>>> Driver calls napi_schedule(&tnapi->napi) when handling the in=
-terrupt,
-> >>>>>>>>>>> however, sometimes it calls napi_schedule(&tp->napi[1].napi),=
- which
-> >>>>>>>>>>> handles RX queue 0 too:
-> >>>>>>>>>>>
-> >>>>>>>>>>>           https://github.com/torvalds/linux/blob/master/drive=
-rs/net/ethernet/broadcom/tg3.c#L6802-L7007
-> >>>>>>>>>>>
-> >>>>>>>>>>>           static int tg3_rx(struct tg3_napi *tnapi, int budge=
-t)
-> >>>>>>>>>>>           {
-> >>>>>>>>>>>                   struct tg3 *tp =3D tnapi->tp;
-> >>>>>>>>>>>
-> >>>>>>>>>>>                   ...
-> >>>>>>>>>>>
-> >>>>>>>>>>>                   /* Refill RX ring(s). */
-> >>>>>>>>>>>                   if (!tg3_flag(tp, ENABLE_RSS)) {
-> >>>>>>>>>>>                           ....
-> >>>>>>>>>>>                   } else if (work_mask) {
-> >>>>>>>>>>>                           ...
-> >>>>>>>>>>>
-> >>>>>>>>>>>                           if (tnapi !=3D &tp->napi[1]) {
-> >>>>>>>>>>>                                   tp->rx_refill =3D true;
-> >>>>>>>>>>>                                   napi_schedule(&tp->napi[1].=
-napi);
-> >>>>>>>>>>>                           }
-> >>>>>>>>>>>                   }
-> >>>>>>>>>>>                   ...
-> >>>>>>>>>>>           }
-> >>>>>>>>>>>
-> >>>>>>>>>>>       From napi_schedule() code, it should schedure RX 0 traf=
-fic handling on
-> >>>>>>>>>>> a current CPU, which handles queues RX1-3 right now.
-> >>>>>>>>>>>
-> >>>>>>>>>>> At least two traffic flows are required - one on RX queue 0, =
-and the
-> >>>>>>>>>>> other on any other queue (1-3). Re-ordering may happend only =
-on flow
-> >>>>>>>>>>> from queue 0, the second flow will work fine.
-> >>>>>>>>>>>
-> >>>>>>>>>>> No idea how to fix this.
-> >>>>>>>>>
-> >>>>>>>>> In the case of RSS the actual rings for RX are from 1 to 4.
-> >>>>>>>>> The napi of those rings are indeed processing the packets.
-> >>>>>>>>> The explicit napi_schedule of napi[1] is only re-filling rx BD
-> >>>>>>>>> producer ring because it is shared with return rings for 1-4.
-> >>>>>>>>> I tried to repro this but I am not seeing the issue. If you are
-> >>>>>>>>> receiving packets on RX 0 then the RSS must have been disabled.
-> >>>>>>>>> Can you please check?
-> >>>>>>>>>
-> >>>>>>>>
-> >>>>>>>> # ethtool -i enp2s0f0
-> >>>>>>>> driver: tg3
-> >>>>>>>> version: 3.137
-> >>>>>>>> firmware-version: 5719-v1.46 NCSI v1.5.18.0
-> >>>>>>>> expansion-rom-version:
-> >>>>>>>> bus-info: 0000:02:00.0
-> >>>>>>>> supports-statistics: yes
-> >>>>>>>> supports-test: yes
-> >>>>>>>> supports-eeprom-access: yes
-> >>>>>>>> supports-register-dump: yes
-> >>>>>>>> supports-priv-flags: no
-> >>>>>>>>
-> >>>>>>>> # ethtool -l enp2s0f0
-> >>>>>>>> Channel parameters for enp2s0f0:
-> >>>>>>>> Pre-set maximums:
-> >>>>>>>> RX:             4
-> >>>>>>>> TX:             4
-> >>>>>>>> Other:          0
-> >>>>>>>> Combined:       0
-> >>>>>>>> Current hardware settings:
-> >>>>>>>> RX:             4
-> >>>>>>>> TX:             1
-> >>>>>>>> Other:          0
-> >>>>>>>> Combined:       0
-> >>>>>>>>
-> >>>>>>>> # ethtool -x enp2s0f0
-> >>>>>>>> RX flow hash indirection table for enp2s0f0 with 4 RX ring(s):
-> >>>>>>>>          0:      0     1     2     3     0     1     2     3
-> >>>>>>>>          8:      0     1     2     3     0     1     2     3
-> >>>>>>>>         16:      0     1     2     3     0     1     2     3
-> >>>>>>>>         24:      0     1     2     3     0     1     2     3
-> >>>>>>>>         32:      0     1     2     3     0     1     2     3
-> >>>>>>>>         40:      0     1     2     3     0     1     2     3
-> >>>>>>>>         48:      0     1     2     3     0     1     2     3
-> >>>>>>>>         56:      0     1     2     3     0     1     2     3
-> >>>>>>>>         64:      0     1     2     3     0     1     2     3
-> >>>>>>>>         72:      0     1     2     3     0     1     2     3
-> >>>>>>>>         80:      0     1     2     3     0     1     2     3
-> >>>>>>>>         88:      0     1     2     3     0     1     2     3
-> >>>>>>>>         96:      0     1     2     3     0     1     2     3
-> >>>>>>>>        104:      0     1     2     3     0     1     2     3
-> >>>>>>>>        112:      0     1     2     3     0     1     2     3
-> >>>>>>>>        120:      0     1     2     3     0     1     2     3
-> >>>>>>>> RSS hash key:
-> >>>>>>>> Operation not supported
-> >>>>>>>> RSS hash function:
-> >>>>>>>>          toeplitz: on
-> >>>>>>>>          xor: off
-> >>>>>>>>          crc32: off
-> >>>>>>>>
-> >>>>>>>> In /proc/interrupts there are enp2s0f0-tx-0, enp2s0f0-rx-1,
-> >>>>>>>> enp2s0f0-rx-2, enp2s0f0-rx-3, enp2s0f0-rx-4 interrupts, all on
-> >>>>>>>> different CPU cores. Kernel also has "threadirqs" enabled in
-> >>>>>>>> command line, I didn't check if this parameter affects the issue=
-.
-> >>>>>>>>
-> >>>>>>>> Yes, some things start with 0, and others with 1, sorry for a co=
-nfusion
-> >>>>>>>> in terminology, what I meant:
-> >>>>>>>>       - There are 4 RX rings/queues, I counted starting from 0, =
-so: 0..3.
-> >>>>>>>>         RX0 is the first queue/ring that actually receives the t=
-raffic.
-> >>>>>>>>         RX0 is handled by enp2s0f0-rx-1 interrupt.
-> >>>>>>>>       - These are related to (tp->napi[i]), but i is in 1..4, so=
- the first
-> >>>>>>>>         receiving queue relates to tp->napi[1], the second relat=
-es to
-> >>>>>>>>         tp->napi[2], and so on. Correct?
-> >>>>>>>>
-> >>>>>>>> Suppose, tg3_rx() is called for tp->napi[2], this function most =
-likely
-> >>>>>>>> calls napi_gro_receive(&tnapi->napi, skb) to further process pac=
-kets in
-> >>>>>>>> tp->napi[2]. And, under some conditions (RSS and work_mask), it =
-calls
-> >>>>>>>> napi_schedule(&tp->napi[1].napi), which schedules tp->napi[1] wo=
-rk
-> >>>>>>>> on a currect CPU, which is designated for tp->napi[2], but not f=
-or
-> >>>>>>>> tp->napi[1]. Correct?
-> >>>>>>>>
-> >>>>>>>> I don't understand what napi_schedule(&tp->napi[1].napi) does fo=
-r the
-> >>>>>>>> NIC or driver, "re-filling rx BD producer ring" sounds important=
-. I
-> >>>>>>>> suspect something will break badly if I simply remove it without
-> >>>>>>>> replacing with something more elaborate. I guess along with re-f=
-illing
-> >>>>>>>> rx BD producer ring it also can process incoming packets. Is it =
-possible?
-> >>>>>>>>
-> >>>>>>>
-> >>>>>>> Yes, napi[1] work may be called on the napi[2]'s CPU but it gener=
-ally
-> >>>>>>> won't process
-> >>>>>>> any rx packets because the producer index of napi[1] has not chan=
-ged. If the
-> >>>>>>> producer count did change, then we get a poll from the ISR for na=
-pi[1]
-> >>>>>>> to process
-> >>>>>>> packets. So it is mostly used to re-fill rx buffers when called
-> >>>>>>> explicitly. However
-> >>>>>>> there could be a small window where the prod index is incremented=
- but the ISR
-> >>>>>>> is not fired yet. It may process some small no of packets. But I =
-don't
-> >>>>>>> think this
-> >>>>>>> should lead to a reorder problem.
-> >>>>>>>
-> >>>>>>
-> >>>>>> I tried to reproduce without using bridge and veth interfaces, and=
- it seems
-> >>>>>> like it's not reproducible, so traffic forwarding via a bridge int=
-erface may
-> >>>>>> be necessary. It also does not happen if traffic load is low, but =
-moderate
-> >>>>>> load is enough - e.g. two 100 Mbps streams with 130-byte packets. =
-It's easier
-> >>>>>> to reproduce with a higher load.
-> >>>>>>
-> >>>>>> With about the same setup as in an original message (bridge + veth=
- 2
-> >>>>>> network namespaces), irqbalance daemon stopped, if traffic flows v=
-ia
-> >>>>>> enp2s0f0-rx-2 and enp2s0f0-rx-4, there's no reordering. enp2s0f0-r=
-x-1
-> >>>>>> still gets some interrupts, but at a much lower rate compared to 2=
- and
-> >>>>>> 4.
-> >>>>>>
-> >>>>>> namespace 1:
-> >>>>>>       # iperf3 -u -c server_ip -p 5000 -R -b 300M -t 300 -l 130
-> >>>>>>       - - - - - - - - - - - - - - - - - - - - - - - - -
-> >>>>>>       [ ID] Interval           Transfer     Bandwidth       Jitter=
-    Lost/Total Datagrams
-> >>>>>>       [  4]   0.00-300.00 sec  6.72 GBytes   192 Mbits/sec  0.008 =
-ms  3805/55508325 (0.0069%)
-> >>>>>>       [  4] Sent 55508325 datagrams
-> >>>>>>
-> >>>>>>       iperf Done.
-> >>>>>>
-> >>>>>> namespace 2:
-> >>>>>>       # iperf3 -u -c server_ip -p 5001 -R -b 300M -t 300 -l 130
-> >>>>>>       - - - - - - - - - - - - - - - - - - - - - - - - -
-> >>>>>>       [ ID] Interval           Transfer     Bandwidth       Jitter=
-    Lost/Total Datagrams
-> >>>>>>       [  4]   0.00-300.00 sec  6.83 GBytes   196 Mbits/sec  0.005 =
-ms  3873/56414001 (0.0069%)
-> >>>>>>       [  4] Sent 56414001 datagrams
-> >>>>>>
-> >>>>>>       iperf Done.
-> >>>>>>
-> >>>>>>
-> >>>>>> With the same configuration but different IP address so that inste=
-ad of
-> >>>>>> enp2s0f0-rx-4 enp2s0f0-rx-1 would be used, there is a reordering.
-> >>>>>>
-> >>>>>>
-> >>>>>> namespace 1 (client IP was changed):
-> >>>>>>       # iperf3 -u -c server_ip -p 5000 -R -b 300M -t 300 -l 130
-> >>>>>>       - - - - - - - - - - - - - - - - - - - - - - - - -
-> >>>>>>       [ ID] Interval           Transfer     Bandwidth       Jitter=
-    Lost/Total Datagrams
-> >>>>>>       [  4]   0.00-300.00 sec  6.32 GBytes   181 Mbits/sec  0.007 =
-ms  8506/52172059 (0.016%)
-> >>>>>>       [  4] Sent 52172059 datagrams
-> >>>>>>       [SUM]  0.0-300.0 sec  2452 datagrams received out-of-order
-> >>>>>>
-> >>>>>>       iperf Done.
-> >>>>>>
-> >>>>>> namespace 2:
-> >>>>>>       # iperf3 -u -c server_ip -p 5001 -R -b 300M -t 300 -l 130
-> >>>>>>       - - - - - - - - - - - - - - - - - - - - - - - - -
-> >>>>>>       [ ID] Interval           Transfer     Bandwidth       Jitter=
-    Lost/Total Datagrams
-> >>>>>>       [  4]   0.00-300.00 sec  6.59 GBytes   189 Mbits/sec  0.006 =
-ms  6302/54463973 (0.012%)
-> >>>>>>       [  4] Sent 54463973 datagrams
-> >>>>>>
-> >>>>>>       iperf Done.
-> >>>>>>
-> >>>>>> Swapping IP addresses in these namespaces also changes the namespa=
-ce exhibiting the issue,
-> >>>>>> it's following the IP address.
-> >>>>>>
-> >>>>>>
-> >>>>>> Is there something I could check to confirm that this behavior is =
-or is not
-> >>>>>> related to napi_schedule(&tp->napi[1].napi) call?
-> >>>>>
-> >>>>> in the function tg3_msi_1shot() you could store the cpu assigned to
-> >>>>> tnapi1 (inside the struct tg3_napi)
-> >>>>> and then in tg3_poll_work() you can add another check after
-> >>>>>            if (*(tnapi->rx_rcb_prod_idx) !=3D tnapi->rx_rcb_ptr)
-> >>>>> something like
-> >>>>> if (tnapi =3D=3D &tp->napi[1] && tnapi->assigned_cpu =3D=3D smp_pro=
-cessor_id())
-> >>>>> only then execute tg3_rx()
-> >>>>>
-> >>>>> This may stop tnapi 1 from reading rx pkts on the current CPU from
-> >>>>> which refill is called.
-> >>>>>
-> >>>>
-> >>>> Didn't work for me, perhaps I did something wrong - if tg3_rx() is n=
-ot called,
-> >>>> there's an infinite loop, and after I added "work_done =3D budget;",=
- it still doesn't
-> >>>> work - traffic does not flow.
-> >>>>
-> >>>
-> >>> I think the easiest way is to modify the tg3_rx() calling condition
-> >>> like below inside
-> >>> tg3_poll_work() :
-> >>>
-> >>> if (*(tnapi->rx_rcb_prod_idx) !=3D tnapi->rx_rcb_ptr) {
-> >>>           if (tnapi !=3D &tp->napi[1] || (tnapi =3D=3D &tp->napi[1] &=
-&
-> >>> !tp->rx_refill)) {
-> >>>                           work_done +=3D tg3_rx(tnapi, budget - work_=
-done);
-> >>>           }
-> >>> }
-> >>>
-> >>> This will prevent reading rx packets when napi[1] is scheduled only f=
-or refill.
-> >>> Can you see if this works?
-> >>>
-> >>
-> >> It doesn't hang and can receive the traffic with this change, but I do=
-n't see
-> >> a difference. I'm suspectig that tg3_poll_work() is called again, mayb=
-e in tg3_poll_msix(),
-> >> and refill happens first, and then packets are processed anyway.
-> >>
-> >
-> > OK I see it now. Let me try this out myself. Will get back on this.
-> > However, can you see with your debug prints if there is any correlation
-> > between the time and number of prints where napi 1 is reading packets
-> > on unassigned CPU to the time and number of packets you received
-> > out of order up the stack? Do they match with each other? If not, we ma=
-y be
-> > incorrectly suspecting napi1 here.
-> >
->
-> No corellation that I can see - reordered packets are received sometimes =
--
-> 10000 in 300 seconds in this test, but napi messages are logged and
-> rate-limited at about 100000 per second. If bandwidth is very low, then
-> there are no messages and no reordering. Not sure if I can isolate these
-> events specifically.
+On Wed, 2022-09-21 at 11:11 -0700, Alexander H Duyck wrote:
+> On Wed, 2022-09-21 at 18:41 +0200, Paolo Abeni wrote:
+> > After commit 3226b158e67c ("net: avoid 32 x truesize under-estimation
+> > for tiny skbs") we are observing 10-20% regressions in performance
+> > tests with small packets. The perf trace points to high pressure on
+> > the slab allocator.
+> > 
+> > This change tries to improve the allocation schema for small packets
+> > using an idea originally suggested by Eric: a new per CPU page frag is
+> > introduced and used in __napi_alloc_skb to cope with small allocation
+> > requests.
+> > 
+> > To ensure that the above does not lead to excessive truesize
+> > underestimation, the frag size for small allocation is inflated to 1K
+> > and all the above is restricted to build with 4K page size.
+> > 
+> > Note that we need to update accordingly the run-time check introduced
+> > with commit fd9ea57f4e95 ("net: add napi_get_frags_check() helper").
+> > 
+> > Alex suggested a smart page refcount schema to reduce the number
+> > of atomic operations and deal properly with pfmemalloc pages.
+> > 
+> > Under small packet UDP flood, I measure a 15% peak tput increases.
+> > 
+> > Suggested-by: Eric Dumazet <eric.dumazet@gmail.com>
+> > Suggested-by: Alexander H Duyck <alexander.duyck@gmail.com>
+> > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> > ---
+> > @Eric, @Alex please let me know if you are comfortable with the
+> > attribution
+> > ---
+> >  include/linux/netdevice.h |   1 +
+> >  net/core/dev.c            |  17 ------
+> >  net/core/skbuff.c         | 115 +++++++++++++++++++++++++++++++++++++-
+> >  3 files changed, 113 insertions(+), 20 deletions(-)
+> > 
+> > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> > index 9f42fc871c3b..a1938560192a 100644
+> > --- a/include/linux/netdevice.h
+> > +++ b/include/linux/netdevice.h
+> > @@ -3822,6 +3822,7 @@ void netif_receive_skb_list(struct list_head *head);
+> >  gro_result_t napi_gro_receive(struct napi_struct *napi, struct sk_buff *skb);
+> >  void napi_gro_flush(struct napi_struct *napi, bool flush_old);
+> >  struct sk_buff *napi_get_frags(struct napi_struct *napi);
+> > +void napi_get_frags_check(struct napi_struct *napi);
+> >  gro_result_t napi_gro_frags(struct napi_struct *napi);
+> >  struct packet_offload *gro_find_receive_by_type(__be16 type);
+> >  struct packet_offload *gro_find_complete_by_type(__be16 type);
+> > diff --git a/net/core/dev.c b/net/core/dev.c
+> > index d66c73c1c734..fa53830d0683 100644
+> > --- a/net/core/dev.c
+> > +++ b/net/core/dev.c
+> > @@ -6358,23 +6358,6 @@ int dev_set_threaded(struct net_device *dev, bool threaded)
+> >  }
+> >  EXPORT_SYMBOL(dev_set_threaded);
+> >  
+> > -/* Double check that napi_get_frags() allocates skbs with
+> > - * skb->head being backed by slab, not a page fragment.
+> > - * This is to make sure bug fixed in 3226b158e67c
+> > - * ("net: avoid 32 x truesize under-estimation for tiny skbs")
+> > - * does not accidentally come back.
+> > - */
+> > -static void napi_get_frags_check(struct napi_struct *napi)
+> > -{
+> > -	struct sk_buff *skb;
+> > -
+> > -	local_bh_disable();
+> > -	skb = napi_get_frags(napi);
+> > -	WARN_ON_ONCE(skb && skb->head_frag);
+> > -	napi_free_frags(napi);
+> > -	local_bh_enable();
+> > -}
+> > -
+> >  void netif_napi_add_weight(struct net_device *dev, struct napi_struct *napi,
+> >  			   int (*poll)(struct napi_struct *, int), int weight)
+> >  {
+> > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> > index f1b8b20fc20b..2be11b487df1 100644
+> > --- a/net/core/skbuff.c
+> > +++ b/net/core/skbuff.c
+> > @@ -134,8 +134,73 @@ static void skb_under_panic(struct sk_buff *skb, unsigned int sz, void *addr)
+> >  #define NAPI_SKB_CACHE_BULK	16
+> >  #define NAPI_SKB_CACHE_HALF	(NAPI_SKB_CACHE_SIZE / 2)
+> >  
+> > +/* the compiler doesn't like 'SKB_TRUESIZE(GRO_MAX_HEAD) > 512', but we
+> > + * can imply such condition checking the double word and MAX_HEADER size
+> > + */
+> > +#if PAGE_SIZE == SZ_4K && (defined(CONFIG_64BIT) || MAX_HEADER > 64)
+> > +
+> > +#define NAPI_HAS_SMALL_PAGE_FRAG 1
+> > +
+> > +/* specializzed page frag allocator using a single order 0 page
+> > + * and slicing it into 1K sized fragment. Constrained to system
+> > + * with:
+> > + * - a very limited amount of 1K fragments fitting a single
+> > + *   page - to avoid excessive truesize underestimation
+> > + * - reasonably high truesize value for napi_get_frags()
+> > + *   allocation - to avoid memory usage increased compared
+> > + *   to kalloc, see __napi_alloc_skb()
+> > + *
+> > + */
+> > +struct page_frag_1k {
+> > +	void *va;
+> > +	u16 offset;
+> > +	bool pfmemalloc;
+> > +};
+> > +
+> > +static void *page_frag_alloc_1k(struct page_frag_1k *nc, gfp_t gfp)
+> > +{
+> > +	struct page *page;
+> > +	int offset;
+> > +
+> > +	if (likely(nc->va)) {
+> > +		offset = nc->offset - SZ_1K;
+> > +		if (likely(offset >= 0))
+> > +			goto out;
+> > +
+> > +		put_page(virt_to_page(nc->va));
+> > +	}
+> > +
+> > +	page = alloc_pages_node(NUMA_NO_NODE, gfp, 0);
+> > +	if (!page) {
+> > +		nc->va = NULL;
+> > +		return NULL;
+> > +	}
+> > +
+> > +	nc->va = page_address(page);
+> > +	nc->pfmemalloc = page_is_pfmemalloc(page);
+> > +	page_ref_add(page, PAGE_SIZE / SZ_1K);
+> > +	offset = PAGE_SIZE - SZ_1K;
+> > +
+> > +out:
+> > +	nc->offset = offset;
+> > +	return nc->va + offset;
+> 
+> So you might be better off organizing this around the offset rather
+> than the virtual address. As long as offset is 0 you know the page
+> isn't there and has to be replaced.
+> 
+> 	offset = nc->offset - SZ_1K;
+> 	if (offset >= 0)
+> 		goto out;
+> 
+> 	page = alloc_pages_node(NUMA_NO_NODE, gfp, 0);
+> 	if (!page)
+> 		return NULL;
+> 
+> 	nc->va = page_address(page);
+> 	nc->pfmemalloc = page_is_pfmemalloc(page);
+> 	offset = PAGE_SIZE - SZ_1K;
+> 	page_ref_add(page, offset / SZ_1K);
+> out:
+> 	nc->offset = offset;
+> 	return nc->va + offset;
+> 
+> That will save you from having to call put_page and cleans it up so you
+> only have to perform 1 conditional check instead of 2 in the fast path.
 
-I'm facing the same issue, multicast packet reordering received by tg3
-going to a macvlan,
-tcpdump on the nic is ok, tcpdump on the macvlan show reordering.
-I'm using Alma 8.6, and for me the only fix is to go to 1 RX queue.
+Nice! I'll use that in v2, with page_ref_add(page, offset / SZ_1K - 1);
+or we will leak the page.
 
-Was there another email thread with more progress / was there a fix
-outside of tg3.c for this issue ?
-(looking at the git log for tg3.c I don't see anything relevant)
+> > +}
+> > +#else
+> > +#define NAPI_HAS_SMALL_PAGE_FRAG 0
+> > +
+> > +struct page_frag_1k {
+> > +};
+> > +
+> > +static void *page_frag_alloc_1k(struct page_frag_1k *nc, gfp_t gfp_mask)
+> > +{
+> > +	return NULL;
+> > +}
+> > +
+> > +#endif
+> > +
+> 
+> Rather than have this return NULL why not just point it at the
+> page_frag_alloc?
 
-Thanks
-Etienne
+When NAPI_HAS_SMALL_PAGE_FRAG is 0, page_frag_alloc_1k() is never used.
+the definition is there just to please the compiler. I preferred this
+style to avoid more #ifdef in __napi_alloc_skb().
 
->
-> --
-> Thanks
-> Vitalii
->
->
->
+> >  struct napi_alloc_cache {
+> >  	struct page_frag_cache page;
+> > +	struct page_frag_1k page_small;
+> >  	unsigned int skb_count;
+> >  	void *skb_cache[NAPI_SKB_CACHE_SIZE];
+> >  };
+> > @@ -143,6 +208,23 @@ struct napi_alloc_cache {
+> >  static DEFINE_PER_CPU(struct page_frag_cache, netdev_alloc_cache);
+> >  static DEFINE_PER_CPU(struct napi_alloc_cache, napi_alloc_cache);
+> >  
+> > +/* Double check that napi_get_frags() allocates skbs with
+> > + * skb->head being backed by slab, not a page fragment.
+> > + * This is to make sure bug fixed in 3226b158e67c
+> > + * ("net: avoid 32 x truesize under-estimation for tiny skbs")
+> > + * does not accidentally come back.
+> > + */
+> > +void napi_get_frags_check(struct napi_struct *napi)
+> > +{
+> > +	struct sk_buff *skb;
+> > +
+> > +	local_bh_disable();
+> > +	skb = napi_get_frags(napi);
+> > +	WARN_ON_ONCE(!NAPI_HAS_SMALL_PAGE_FRAG && skb && skb->head_frag);
+> > +	napi_free_frags(napi);
+> > +	local_bh_enable();
+> > +}
+> > +
+> >  void *__napi_alloc_frag_align(unsigned int fragsz, unsigned int align_mask)
+> >  {
+> >  	struct napi_alloc_cache *nc = this_cpu_ptr(&napi_alloc_cache);
+> > @@ -561,15 +643,39 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
+> >  {
+> >  	struct napi_alloc_cache *nc;
+> >  	struct sk_buff *skb;
+> > +	bool pfmemalloc;
+> >  	void *data;
+> >  
+> >  	DEBUG_NET_WARN_ON_ONCE(!in_softirq());
+> >  	len += NET_SKB_PAD + NET_IP_ALIGN;
+> >  
+> > +	/* When the small frag allocator is available, prefer it over kmalloc
+> > +	 * for small fragments
+> > +	 */
+> > +	if (NAPI_HAS_SMALL_PAGE_FRAG && len <= SKB_WITH_OVERHEAD(1024)) {
+> > +		nc = this_cpu_ptr(&napi_alloc_cache);
+> > +
+> > +		if (sk_memalloc_socks())
+> > +			gfp_mask |= __GFP_MEMALLOC;
+> > +
+> > +		/* we are artificially inflating the allocation size, but
+> > +		 * that is not as bad as it may look like, as:
+> > +		 * - 'len' less then GRO_MAX_HEAD makes little sense
+> > +		 * - larger 'len' values lead to fragment size above 512 bytes
+> > +		 *   as per NAPI_HAS_SMALL_PAGE_FRAG definition
+> > +		 * - kmalloc would use the kmalloc-1k slab for such values
+> > +		 */
+> > +		len = SZ_1K;
+> > +
+> > +		data = page_frag_alloc_1k(&nc->page_small, gfp_mask);
+> > +		pfmemalloc = nc->page_small.pfmemalloc;
+> > +		goto check_data;
+> > +	}
+> > +
+> 
+> It might be better to place this code further down as a branch rather
+> than having to duplicate things up here such as the __GFP_MEMALLOC
+> setting.
+> 
+> You could essentially just put the lines getting the napi_alloc_cache
+> and adding the shared info after the sk_memalloc_socks() check. Then it
+> could just be an if/else block either calling page_frag_alloc or your
+> page_frag_alloc_1k.
+
+I thought about that option, but I did not like it much because adds a
+conditional in the fast-path for small-size allocation, and the
+duplicate code is very little.
+
+I can change the code that way, if you have strong opinion in that
+regards.
+
+> >  	/* If requested length is either too small or too big,
+> >  	 * we use kmalloc() for skb->head allocation.
+> >  	 */
+> > -	if (len <= SKB_WITH_OVERHEAD(1024) ||
+> > +	if ((!NAPI_HAS_SMALL_PAGE_FRAG && len <= SKB_WITH_OVERHEAD(1024)) ||
+> >  	    len > SKB_WITH_OVERHEAD(PAGE_SIZE) ||
+> >  	    (gfp_mask & (__GFP_DIRECT_RECLAIM | GFP_DMA))) {
+> >  		skb = __alloc_skb(len, gfp_mask, SKB_ALLOC_RX | SKB_ALLOC_NAPI,
+> > @@ -587,6 +693,9 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
+> >  		gfp_mask |= __GFP_MEMALLOC;
+> >  
+> >  	data = page_frag_alloc(&nc->page, len, gfp_mask);
+> > +	pfmemalloc = nc->page.pfmemalloc;
+> > +
+> > +check_data:
+> >  	if (unlikely(!data))
+> >  		return NULL;
+> >  
+> > @@ -596,8 +705,8 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
+> >  		return NULL;
+> >  	}
+> >  
+> > -	if (nc->page.pfmemalloc)
+> > -		skb->pfmemalloc = 1;
+> > +	if (pfmemalloc)
+> > +		skb->pfmemalloc = pfmemalloc;
+> >  	skb->head_frag = 1;
+> >  
+> >  skb_success:
+> 
+> In regards to the pfmemalloc bits I wonder if it wouldn't be better to
+> just have them both using the page_frag_cache and just use a pointer to
+> that to populate the skb->pfmemalloc based on frag_cache->pfmemalloc at
+> the end?
+
+Why? in the end we will still use an ancillary variable and the
+napi_alloc_cache struct will be bigger (probaly not very relevant, but
+for no gain at all).
+
+Thanks!
+
+Paolo
+
