@@ -2,112 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 203D85E562A
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 00:16:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C87B35E5635
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 00:22:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231126AbiIUWQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 18:16:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58924 "EHLO
+        id S229928AbiIUWWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 18:22:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230131AbiIUWQK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 18:16:10 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71FD8A7A8A
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 15:16:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1663798568;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7ZRGiWjzNsukpIy4rJrNhhNAZ8Z3hkyqCLJbxu1V8pM=;
-        b=JSBO/cyQJVErmAIwY1k9jLZ1MA5zgCY8/1x2w8HAHJqwdG4x1uaeXs2/0iH3fYra7PkAwP
-        NsiJoK0l5iuOp7SjmzApaMTALp2IRe6+M35Gy+I+tEFsRUBsVpy4J6t9HUysJqXQVgzE/a
-        +hL7EgAFaEE5SeHA2rz6qd5k9C0/6+o=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-343-jblX7UvbMaemjclRCkfBlA-1; Wed, 21 Sep 2022 18:16:07 -0400
-X-MC-Unique: jblX7UvbMaemjclRCkfBlA-1
-Received: by mail-ed1-f70.google.com with SMTP id dz21-20020a0564021d5500b0045217702048so5268677edb.5
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 15:16:07 -0700 (PDT)
+        with ESMTP id S229641AbiIUWWA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 18:22:00 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E23FA59AC
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 15:21:59 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id m3so10844347eda.12
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 15:21:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=LIf5TH9JGQQ/iaEojY/AW+9YyJO9O+pApuj6h9Zn+Oo=;
+        b=GO0YZ5u+qsCTrf2UCsCtd11NJguu3FYsrmmp2cXMTXd1MRgnUh7fElGtibDnN4pZZ4
+         rcgbwy1kuokl42bmZGNaPW56xgqy/yR8+Riw1L+f/fBw5skX/Vy3lIZt6clS9tUkwQCW
+         ymj4xi07adCQtwoItop78vj7Kg76SNNY6jXU2o2rpXPzh+02KU6JGg1da6srxce4qpfo
+         ZOzY5xmbS8i6lomVykFr8x/t5iykbJNk8miXSLofuMaGGMk/VzYBymOqnG2hpkhXjbB4
+         tfeQhpDWWosNczVkgcspCM1k2/StP4Vha8nPSg88w8322jeRDUoxkeW1WSLpiXtVbLZT
+         Fb/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:references
-         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=7ZRGiWjzNsukpIy4rJrNhhNAZ8Z3hkyqCLJbxu1V8pM=;
-        b=X/CnDQDYInsJb3vb8LKIc5aSH4HjuKoOjeJCZ5CemaaNe48kKM7MDV0P8DyVQIdcbG
-         REULG+VFhuQxaJPRuWfS5jTeH/YOUVyo+YUrRs4yOWMmsOGoNXpBaLUqXBbEaEAN8icY
-         gf6A5ZFeUQrKMYbC2CTFvbuO7d9HjRqS7iez106qcVJKcJbG1AmDMaEwy/Omq4WhKvnI
-         FrfLvr8t3g1jnv+w1uUj/1ZTi+pWC4X7E1LUqGSqqs6K77ew35pBDyDNyu6MADd2CUx8
-         VdV0EuajbXnpf3hl9M4u3FqDsXpE6K6I6AmlEvmT95zd7wiMKlG75dYykW6fC4HcG/qg
-         c3Kw==
-X-Gm-Message-State: ACrzQf3jBLgtZpScFfxKgAycPZOax0dUeaVMyalN8MDG1yuzG+R9r9cT
-        c/OMkEmJNTkmYfJjHOJ2yIAcSSe1LrhERd3Y8SBY7zSGbwP/EVH0UXWmtmIejpWxJTeyQQP8IqR
-        sn9BCF1+bUoG9tZvR
-X-Received: by 2002:a05:6402:3486:b0:451:b8d3:c52c with SMTP id v6-20020a056402348600b00451b8d3c52cmr260515edc.406.1663798565048;
-        Wed, 21 Sep 2022 15:16:05 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM4KK6qJt+QCAEnmFM3fpiRKiITb7AsV70ttximoQ8OLk9eZKgy+daUivYutQXzjpoiAK8nURA==
-X-Received: by 2002:a05:6402:3486:b0:451:b8d3:c52c with SMTP id v6-20020a056402348600b00451b8d3c52cmr260454edc.406.1663798564188;
-        Wed, 21 Sep 2022 15:16:04 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id i18-20020a056402055200b0044841a78c70sm2439770edx.93.2022.09.21.15.16.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Sep 2022 15:16:03 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 07BA461C5A7; Thu, 22 Sep 2022 00:16:03 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
-        mtahhan@redhat.com, mcroce@microsoft.com
-Subject: Re: [PATCH net-next] xdp: improve page_pool xdp_return performance
-In-Reply-To: <166377993287.1737053.10258297257583703949.stgit@firesoul>
-References: <166377993287.1737053.10258297257583703949.stgit@firesoul>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 22 Sep 2022 00:16:02 +0200
-Message-ID: <87v8pgv0f1.fsf@toke.dk>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=LIf5TH9JGQQ/iaEojY/AW+9YyJO9O+pApuj6h9Zn+Oo=;
+        b=hCu3kpQdJ0NhmtoSwxkFnXTkbAA9QMttqeFy+7zyFk/Y+cb1axoVf4qMoV87Z3yI2W
+         buul184DHL2gMenNv8KyYVqBznAMYhzO9Oec8nEmlitXEPlxwmjcMfn3NYqwINhG955q
+         ungYBPKZ3WC3Rk9eoICG7TkK1hZbHCnPC6bxz3QgR8vfJr8o6fXZCGudPVxEAh4S0vki
+         SZqLH2L8VpB5rkqcu9/Vaxrp32EaRldCyfVMsxrHPjmhyI/cHAGzWtiSYopc7HmZMoPT
+         CM4ibeocFmOldR1z3mlq/pD/IS7SX+9sqOTpOTkiuyxMyc0NRwjTaSaXbO19rFZF3vBI
+         zJdQ==
+X-Gm-Message-State: ACrzQf0lis6JHT0fFh7C+4JvJq6AtBvfl8+uxSemC7ga+cdou9Nnely/
+        RGHA1yksFz2kguOnyErLjBCJZ7qM/ILHARgt2y4neA==
+X-Google-Smtp-Source: AMsMyM5sXqevzJeGEuPIw97S++vgsACiUNTu8c/OID4aGuuNWoGMY96knbApK+ExCEmPoHY3U8UfwNKeCq6atRU2EAw=
+X-Received: by 2002:a05:6402:190f:b0:452:d6ba:a150 with SMTP id
+ e15-20020a056402190f00b00452d6baa150mr304609edz.126.1663798917664; Wed, 21
+ Sep 2022 15:21:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+References: <20220921140524.3831101-1-yangyingliang@huawei.com> <20220921140524.3831101-15-yangyingliang@huawei.com>
+In-Reply-To: <20220921140524.3831101-15-yangyingliang@huawei.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Thu, 22 Sep 2022 00:21:46 +0200
+Message-ID: <CACRpkdaZH5cujkjt4g0u9m__r1MKRHLjs05_0kf69-Fu3pRpiw@mail.gmail.com>
+Subject: Re: [PATCH net-next 14/18] net: dsa: realtek: remove unnecessary set_drvdata()
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, olteanv@gmail.com, kurt@linutronix.de,
+        hauke@hauke-m.de, Woojung.Huh@microchip.com,
+        sean.wang@mediatek.com, clement.leger@bootlin.com,
+        george.mccollister@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jesper Dangaard Brouer <brouer@redhat.com> writes:
+On Wed, Sep 21, 2022 at 3:58 PM Yang Yingliang <yangyingliang@huawei.com> wrote:
 
-> During LPC2022 I meetup with my page_pool co-maintainer Ilias. When
-> discussing page_pool code we realised/remembered certain optimizations
-> had not been fully utilised.
+> Remove unnecessary set_drvdata(NULL) function in ->remove(),
+> the driver_data will be set to NULL in device_unbind_cleanup()
+> after calling ->remove().
 >
-> Since commit c07aea3ef4d4 ("mm: add a signature in struct page") struct
-> page have a direct pointer to the page_pool object this page was
-> allocated from.
->
-> Thus, with this info it is possible to skip the rhashtable_lookup to
-> find the page_pool object in __xdp_return().
->
-> The rcu_read_lock can be removed as it was tied to xdp_mem_allocator.
-> The page_pool object is still safe to access as it tracks inflight pages
-> and (potentially) schedules final release from a work queue.
->
-> Created a micro benchmark of XDP redirecting from mlx5 into veth with
-> XDP_DROP bpf-prog on the peer veth device. This increased performance
-> 6.5% from approx 8.45Mpps to 9Mpps corresponding to using 7 nanosec
-> (27 cycles at 3.8GHz) less per packet.
->
-> Suggested-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 
-Nice! The two of you should get together in person more often ;)
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
 
-Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-
+Yours,
+Linus Walleij
