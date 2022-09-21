@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7288E5BFF5E
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 15:59:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 944195BFF61
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 15:59:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230378AbiIUN65 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 09:58:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53900 "EHLO
+        id S230409AbiIUN64 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 09:58:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230372AbiIUN6f (ORCPT
+        with ESMTP id S230364AbiIUN6f (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 09:58:35 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 998D47C762
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D40F27D1D7
         for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 06:58:34 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MXfzP4qJ0z14Rck;
-        Wed, 21 Sep 2022 21:54:25 +0800 (CST)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MXg0w29j4zpV2Z;
+        Wed, 21 Sep 2022 21:55:44 +0800 (CST)
 Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 21 Sep 2022 21:58:32 +0800
+ 15.1.2375.31; Wed, 21 Sep 2022 21:58:33 +0800
 Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
  (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Wed, 21 Sep
- 2022 21:58:31 +0800
+ 2022 21:58:32 +0800
 From:   Yang Yingliang <yangyingliang@huawei.com>
 To:     <netdev@vger.kernel.org>
 CC:     <f.fainelli@gmail.com>, <andrew@lunn.ch>,
@@ -33,9 +33,9 @@ CC:     <f.fainelli@gmail.com>, <andrew@lunn.ch>,
         <Woojung.Huh@microchip.com>, <sean.wang@mediatek.com>,
         <linus.walleij@linaro.org>, <clement.leger@bootlin.com>,
         <george.mccollister@gmail.com>
-Subject: [PATCH net-next 12/18] net: dsa: ar9331: remove unnecessary dev_set_drvdata()
-Date:   Wed, 21 Sep 2022 22:05:18 +0800
-Message-ID: <20220921140524.3831101-13-yangyingliang@huawei.com>
+Subject: [PATCH net-next 13/18] net: dsa: qca8k: remove unnecessary dev_set_drvdata()
+Date:   Wed, 21 Sep 2022 22:05:19 +0800
+Message-ID: <20220921140524.3831101-14-yangyingliang@huawei.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220921140524.3831101-1-yangyingliang@huawei.com>
 References: <20220921140524.3831101-1-yangyingliang@huawei.com>
@@ -59,22 +59,22 @@ be set to NULL in device_unbind_cleanup() after calling ->remove().
 
 Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
- drivers/net/dsa/qca/ar9331.c | 2 --
+ drivers/net/dsa/qca/qca8k-8xxx.c | 2 --
  1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/dsa/qca/ar9331.c b/drivers/net/dsa/qca/ar9331.c
-index 0796b7cf8cae..e7b98b864fa1 100644
---- a/drivers/net/dsa/qca/ar9331.c
-+++ b/drivers/net/dsa/qca/ar9331.c
-@@ -1099,8 +1099,6 @@ static void ar9331_sw_remove(struct mdio_device *mdiodev)
- 	dsa_unregister_switch(&priv->ds);
+diff --git a/drivers/net/dsa/qca/qca8k-8xxx.c b/drivers/net/dsa/qca/qca8k-8xxx.c
+index c181346388a4..5669c92c93f7 100644
+--- a/drivers/net/dsa/qca/qca8k-8xxx.c
++++ b/drivers/net/dsa/qca/qca8k-8xxx.c
+@@ -1957,8 +1957,6 @@ qca8k_sw_remove(struct mdio_device *mdiodev)
+ 		qca8k_port_set_status(priv, i, 0);
  
- 	reset_control_assert(priv->sw_reset);
+ 	dsa_unregister_switch(priv->ds);
 -
 -	dev_set_drvdata(&mdiodev->dev, NULL);
  }
  
- static void ar9331_sw_shutdown(struct mdio_device *mdiodev)
+ static void qca8k_sw_shutdown(struct mdio_device *mdiodev)
 -- 
 2.25.1
 
