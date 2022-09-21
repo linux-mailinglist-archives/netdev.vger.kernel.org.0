@@ -2,114 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 82B135E5605
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 00:05:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A78AC5E5620
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 00:12:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230220AbiIUWF1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 18:05:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48208 "EHLO
+        id S230525AbiIUWMw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 18:12:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230011AbiIUWFZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 18:05:25 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2045.outbound.protection.outlook.com [40.107.22.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A65679E69C
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 15:05:22 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=R6KqPUQ7nC3Ue1WL75DsEjRLLsZT9+Z0bteEYEVwZEK8ozkpOkXSrqDXg9WAdM8wFoOHFZl1mfCEDj0bzKx44XfFH7aK9Ql8PqSPwHPPknwEtzG/1Dk3ETUnk2GzxSRHRxbCTnAzJu9oVQFcVaFvJk16ocNbQ1i4ByEJ/L6FtTKNrkynoDJa3cGAeZrfJ6G7rM+W6uQGfc7z256JDiljPLKpD+tc1RRGtZJDIQTc97+UScA7zv1otM6/NCgnsFn9n6ZKfdsDzmeKtnvdfSFvqQMdXeIk+n0xGAfx3QGRiUkFjcUWUdKVXHk+muTdpIb47S17KxMRrASzVVNYkpqesA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mdYQPCzIan9tDYsP3FirQ6uOnMJVJEu6WihrqKha+fc=;
- b=C0DxufThGkJWaG0s1HW60XVdRSsmrOPYwK4Xy4BnX+F+410EuGwJ9Uj7iy+gcABz9S0t0gYz3I1kit0lxmSeu4jKle0SMrcUErgOKz37K/qzTXnRTARAp0eG47wcXJH7gtS90Dm3Yul24hmdcVjuw5rZRW97KQk7A6JnjpGBF5kKzv81GvHLMbSoanJ4dKL/1pDnUSIwmTcK2u6ENFzitJDjnkXMm4Xu84pSCFrteJTO687Jad4lCU+T37qUvHpaM8yH/HWburaIYNQifTuzrIaKaU1utBxc7KN7vBd2Ssv90WBZ6yDyb2Jj6eI6RNTkKrBUYWG69gtdkBToGNjoFQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mdYQPCzIan9tDYsP3FirQ6uOnMJVJEu6WihrqKha+fc=;
- b=N6/xwoFpNnLk3pCB4ekSI+w4NVG1gu6/zgaka5Zaa5EPduG3/f/gKPkF30xOS7LMcZzP4FNEfGZWwxfdy4ZhbJCopQ8XuIk/IU8P+SZieyTTtpAbu7fCV0GBdYLbminZSachF/1dl5W8JPUoNWPjxz51tDsA7zLsFJFOnp6oNxU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by DB9PR04MB8379.eurprd04.prod.outlook.com (2603:10a6:10:241::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.16; Wed, 21 Sep
- 2022 22:05:20 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::a67a:849c:aeff:cad1]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::a67a:849c:aeff:cad1%7]) with mapi id 15.20.5632.021; Wed, 21 Sep 2022
- 22:05:20 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [RFC PATCH net-next] net: linkwatch: only report IF_OPER_LOWERLAYERDOWN if iflink is actually down
-Date:   Thu, 22 Sep 2022 01:05:06 +0300
-Message-Id: <20220921220506.1817533-1-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.34.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AS9PR06CA0313.eurprd06.prod.outlook.com
- (2603:10a6:20b:45b::29) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+        with ESMTP id S229523AbiIUWMv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 18:12:51 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27826A5705
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 15:12:50 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id z97so10823908ede.8
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 15:12:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=8GbQ3Mfinwd6r1sMG2YjNleTdihes+CqHWAOwQ6w4uY=;
+        b=gYt8sIzFZZFusyT9qRFM2LvMtGyfnwzNNKkllsCCMYrtfudUDRMdUY4ltJNJ31gGkU
+         Ipd3+LJuHW75XbJ4CdV0uWAxT3TFblldGsub6PtqSXBPCNgAP+lmGcq35AWQVFlt55fF
+         Ogldh0CunuH719E4RC2J1ToST6eoBsGPbKipkDoyI2/5M62XWVK1XCg97KOD6Cc/bQwc
+         Xbm5UrUk/Jrg+TkfqY1d7r5SjgjDIabKqWsVxA9kzeYi+rIRRW1/rpOPd/4Q1QJeM1p7
+         +X+K0wUy4DrV0CWP3rACWEWsm4oz2VPTlF2V7T7Ns7ggScF8OdZXXe1frUO7fXxGtZZA
+         g6lA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=8GbQ3Mfinwd6r1sMG2YjNleTdihes+CqHWAOwQ6w4uY=;
+        b=RNJ82sYf2n3UA2tzB7sNEcynLJ1CN4YyZJkr5c7770FxzeSc16b9WloPSKtpF/wSqP
+         srgK7rc6tTW0UqRzlS+TBkPXfpenkTxSn4UraNMqMG4lY7B4Nx202tTKoP95w2o3CxeZ
+         XoHMLX5SOf/E4/lHx+/ww+T7qFy96w5eGkvW9BZUQsXhctGPTbc7c9ojaqYBK0S1xCDi
+         BrPW754dSIiBHdscS5QmjkvUoGqekXyZSTh88TF9eSDQuGxwTAESZgXwH6/SpovlXE5h
+         NlSPxyasZDPpLTReRqLFTEQH/6WOGV3fCR4h/2XEr5E5k+qWRPmaAbIBKZmmgamWwPtO
+         3oCw==
+X-Gm-Message-State: ACrzQf3tGRATXaVRwCeUUrpRy8nKVWhh0YBAD/wxZK/PXwbvxtbN5441
+        kM+Vvi/c5FV5dsvgTmvzs9wuetoaklOJtocLxvU=
+X-Google-Smtp-Source: AMsMyM4RaHEYKNX3KYzs5qdoetS5YlKpGEPhxnRsMP52Hp/d2w6qvJLgPNjQWMMFEvGt1HZZavat/clo6LoQPdUUV70=
+X-Received: by 2002:a05:6402:26cf:b0:451:70af:ecc5 with SMTP id
+ x15-20020a05640226cf00b0045170afecc5mr232244edd.287.1663798368487; Wed, 21
+ Sep 2022 15:12:48 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|DB9PR04MB8379:EE_
-X-MS-Office365-Filtering-Correlation-Id: 141ce7ff-d32a-49f1-d28e-08da9c1d5fb0
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: OQBaUFcDrAPH7XOxnKOSgAqOy0Lkl+130dH1jZNxOfpmpadBl2W2PgO1QVuhJcvdDgTwiItlpFmSXP17xlIyRNBq/0vtQDGQVo7d1YZ3S84KlGT4V9CAR9MoKoynS/T+kDqAYlrMLY2015GFMUIb7KiGW2fMopXcJ23Ousoo804XgfF9QVWwR50fl9jlGb4xrc0m30B5WmZfMGoemyzaUGZk0d+phH9PxkC8ybe8yXBbtapheHb4oXEnRrUZGNwEOOs4CPKltqx+kAclf+OfxTD4H1DJ6CTw3AvYvfIwS0JX+z5mER3omku3604rkvwUSa29CeTT8gzsD5T9AHSS5PnCoH+P3UfL7aZewaA8ZIPWpVCkFHg3qtbBNjqRgFAiqTjFhdSA6IBC/ebU7/XD0x9f4b54F23cwLDzQ0FrumGK1xUqVIv4WCu6Ahmq3GyNwZ1KlktaeKIIKExaXv32ihqQJC+WIanvbtSCs3YemL2csQe75hT4OnVBFsnbz9m/jVGKT79RQhdUbDqZDTdl7AXYZGtrTyAtYt/0kEfZsv6rKN9mnDAVAG1IUpTvbggXw79zaGspD4DtzzKORNZGMj1OP3SSo1fYBd3yvmjJDd/4TTyioTipdYvmykifsZtm5sDG5SbcPuFhdDsPVWPAWgNbi7Hcqt8fFzvhAfnOE9n5fl7NATJ3aj2egI+2exn1qUeigUjbhRimT8gfBJhFHK0uMzhTVFcPooCxNFbPSHhr8oo7rOGJVKLc3gii46ZPs3viILJ6znv/JN0I/p8ZVA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(396003)(376002)(346002)(136003)(39860400002)(451199015)(44832011)(186003)(36756003)(6916009)(8936002)(54906003)(66946007)(66556008)(66476007)(316002)(4326008)(8676002)(86362001)(5660300002)(2616005)(41300700001)(83380400001)(6486002)(6666004)(6506007)(478600001)(1076003)(38350700002)(38100700002)(6512007)(52116002)(26005)(2906002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?7G8lrLTHxVRjt5jt/NFgFuMwgKIGnIBQtrj61O9GJEnw/KGhwNJw08HsYkpI?=
- =?us-ascii?Q?qqtRQM9KSTKuPGb9XrYyoVJ+b3Gln1OXK/ESx/sCOFOUssoHv+cnIluBpYLy?=
- =?us-ascii?Q?7NRIvkNL/NQn0yt0L/LEafmjBqgIZZcesXevEBvopDWQkYKUqcVE1SK2U/5c?=
- =?us-ascii?Q?o+re+ZacTKtzIaXlahPgt37In5DpQbOb/mk7VmolRgZ83Yxcj9W3fgAqgInd?=
- =?us-ascii?Q?k4buSaGRh9YBo0kxPwHzjQ7rM+Jvkbm2FST9+68XWE3yencQEl4A35KdrNkJ?=
- =?us-ascii?Q?DBxCS0CBY0QdjAn2rxZUQFMLaFKNuzpRIkMMXr1RAPca2pVkOvc+hSvBa4Eg?=
- =?us-ascii?Q?B8DRJYyl3QXdq+UqOLw4v2+OljL+cpZaqMWwfznSJ3Gl2P4tpnp4EhSuY4uO?=
- =?us-ascii?Q?MnQsHvrVzzqQIS5lTMZuZbHTIw9E4yvdrvqupXci+j8x92n3wcuZWGaNnwlw?=
- =?us-ascii?Q?XIEBRHFEeMUVk7ba3tIMls2lCSnJ++HoE1j93hRG26XUhwtXDq+lHn51mTVj?=
- =?us-ascii?Q?xfXGhA3SInNYczF0vUmPP417KKWeO4xrl6kjhWCzSvJXUH5uLwatEAUDg206?=
- =?us-ascii?Q?CuPFusRdUMrvavutZVupmturSJoMBd6kh3tSgjZiLaOh4bl7kRQbWZXmiSro?=
- =?us-ascii?Q?UXiW+2ZjESh6XZ43J3nkCEqwJcHcXb68OPuy7KaOAo08kndTs5rxuPSZ2tE9?=
- =?us-ascii?Q?raYoyYgXHarZkSbd3HybsFrYvnJziSrpgwIrSkio+TerReZs7TL1Ftx+pHnc?=
- =?us-ascii?Q?HHjFGU7SJxRsK9iPi8u6Y6AmCGEEtUp0tJSRwHVESsxxeBJdL+E+sycyXZE9?=
- =?us-ascii?Q?Co0kGmcOcFgAYY2RTTMHCXz4FL9Mi7KDDz+hdHJJyyXNRGtrrzYucuF797br?=
- =?us-ascii?Q?5W62GJ+zLHwkaEYXhaPPrfMG0v44z0YQuDnIafma0aKMav9eWfMXH0jmV7y/?=
- =?us-ascii?Q?cWtMc0AUshjifvtks2lrE0wSNDjI3s1Pm836VZLDCrGrgmuoP6pKla/rJ+/X?=
- =?us-ascii?Q?JX9DEJLfFQFcJd07sNurcS08QHU6hYCeIbF/V5XChr+X88QICiWc94bBBs9N?=
- =?us-ascii?Q?oX8OqtdmF5ogbau36sg3YVaLXkdUNT6CYamGVxeC/8WpIedx3Y4C8uvY+6V7?=
- =?us-ascii?Q?9JOdv5b8SWYU1YsvYlJnMr/rOtDPfOl6uwzWDc96OBvl8bxcIMLbYB8GPVL0?=
- =?us-ascii?Q?1vy0zriZkf3NkoKW3qbmi+kczZpvQ3KGcJFb3fDa8GTPaHyOVpF0h4MwXx+s?=
- =?us-ascii?Q?cGczM6XFeTBuRcmFV2i2IKFD12gB2EY63PQiQdrm/qBsuoqOplH196SFlZwk?=
- =?us-ascii?Q?df7slxkPSiuApc+a8D234bCZyBr6eRGWQOv0NGJOiQqCMFk92rEsDsgw7qxn?=
- =?us-ascii?Q?MJX4GGlIn4UgzHnO72AHYyAccmpUqm1WhBrr8/1wQzM9YVcR9Gk/Tna8BxeH?=
- =?us-ascii?Q?HFoKQz1X8XxJwNm/5pjOe87gjZh99r6JBXscz4EIol0Bk9Nnog+VByKucnDf?=
- =?us-ascii?Q?EOOS6uHTELVY7zkhRMtnRw3OdLyoShkZ++OmkUy3Ez1VtpvpZP+2Mu8p5eg9?=
- =?us-ascii?Q?gs+h9cPCefvU0/BvWROOjKWI22Y3NgufsN0rmbMIsCBdzOjhSbd5VIiVlMdQ?=
- =?us-ascii?Q?2g=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 141ce7ff-d32a-49f1-d28e-08da9c1d5fb0
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Sep 2022 22:05:20.2410
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9YC7oiqFZ3iBbeVXVHQxOzj7/qCUEWptpP2tbLTEftJY7ix+kfaZWudHLOSwg/YF8HHeQ6N4WZC9Mg/hDsqobw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR04MB8379
+References: <20220921210921.1654735-1-floridsleeves@gmail.com> <YyuA13q/B236lZ6U@codewreck.org>
+In-Reply-To: <YyuA13q/B236lZ6U@codewreck.org>
+From:   Li Zhong <floridsleeves@gmail.com>
+Date:   Wed, 21 Sep 2022 15:12:38 -0700
+Message-ID: <CAMEuxRo-QctyufOmAxZdoNrPE57KFd0MLa-kQftmhpHQfkWkJQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v1] net/9p/trans_fd: check the return value of parse_opts
+To:     asmadeus@codewreck.org
+Cc:     netdev@vger.kernel.org, v9fs-developer@lists.sourceforge.net,
+        pabeni@redhat.com, kuba@kernel.org, edumazet@google.com,
+        davem@davemloft.net, linux_oss@crudebyte.com, lucho@ionkov.net,
+        ericvh@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -117,75 +67,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RFC 2863 says:
+On Wed, Sep 21, 2022 at 2:23 PM <asmadeus@codewreck.org> wrote:
+>
+> Li Zhong wrote on Wed, Sep 21, 2022 at 02:09:21PM -0700:
+> > parse_opts() could fail when there is error parsing mount options into
+> > p9_fd_opts structure due to allocation failure. In that case opts will
+> > contain invalid data.
+>
+> In practice opts->rfd/wfd is set to ~0 before the failure modes so they
+> will contain exactly what we want them to contain: something that'll
+> fail the check below.
+>
+> It is however cleared like this so I'll queue this patch in 9p tree when
+> I have a moment, but I'll clarify the commit message to say this is
+> NO-OP : please feel free to send a v2 if you want to put your own words
+> in there; otherwise it'll be something like below:
+> ----
+> net/9p: clarify trans_fd parse_opt failure handling
+>
+> This parse_opts will set invalid opts.rfd/wfd in case of failure which
+> we already check, but it is not clear for readers that parse_opts error
+> are handled in p9_fd_create: clarify this by explicitly checking the
+> return value.
+> ----
+>
 
-   The lowerLayerDown state is also a refinement on the down state.
-   This new state indicates that this interface runs "on top of" one or
-   more other interfaces (see ifStackTable) and that this interface is
-   down specifically because one or more of these lower-layer interfaces
-   are down.
+Thanks for the patient reply! I agree that the check on
+opts.rfd/wft against ~0 will prevent error even if it fails
+memory allocation. But currently the error log is
+'insufficient options', which is kind of misleading and the
+error code returned is -ENOPROTOOPT instead of -ENOMEM, which
+I guess would be better if we distinguish between them.
 
-DSA interfaces are virtual network devices, stacked on top of the DSA
-master, but they have a physical MAC, with a PHY that reports a real
-link status.
-
-But since DSA (perhaps improperly) uses an iflink to describe the
-relationship to its master since commit c084080151e1 ("dsa: set ->iflink
-on slave interfaces to the ifindex of the parent"), default_operstate()
-will misinterpret this to mean that every time the carrier of a DSA
-interface is not ok, it is because of the master being not ok.
-
-In fact, since commit c0a8a9c27493 ("net: dsa: automatically bring user
-ports down when master goes down"), DSA cannot even in theory be in the
-lowerLayerDown state, because it just calls dev_close_many(), thereby
-going down, when the master goes down.
-
-We could revert the commit that creates an iflink between a DSA user
-port and its master, especially since now we have an alternative
-IFLA_DSA_MASTER which has less side effects. But there may be tooling in
-use which relies on the iflink, which has existed since 2009.
-
-We could also probably do something local within DSA to overwrite what
-rfc2863_policy() did, in a way similar to hsr_set_operstate(), but this
-seems like a hack.
-
-What seems appropriate is to follow the iflink, and check the carrier
-status of that interface as well. If that's down too, yes, keep
-reporting lowerLayerDown, otherwise just down.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- net/core/link_watch.c | 17 ++++++++++++++---
- 1 file changed, 14 insertions(+), 3 deletions(-)
-
-diff --git a/net/core/link_watch.c b/net/core/link_watch.c
-index aa6cb1f90966..ae70786da9d2 100644
---- a/net/core/link_watch.c
-+++ b/net/core/link_watch.c
-@@ -38,9 +38,20 @@ static unsigned char default_operstate(const struct net_device *dev)
- 	if (netif_testing(dev))
- 		return IF_OPER_TESTING;
- 
--	if (!netif_carrier_ok(dev))
--		return (dev->ifindex != dev_get_iflink(dev) ?
--			IF_OPER_LOWERLAYERDOWN : IF_OPER_DOWN);
-+	if (!netif_carrier_ok(dev)) {
-+		int iflink = dev_get_iflink(dev);
-+		struct net_device *peer;
-+
-+		if (iflink == dev->ifindex)
-+			return IF_OPER_DOWN;
-+
-+		peer = __dev_get_by_index(dev_net(dev), iflink);
-+		if (!peer)
-+			return IF_OPER_DOWN;
-+
-+		return netif_carrier_ok(peer) ? IF_OPER_DOWN :
-+						IF_OPER_LOWERLAYERDOWN;
-+	}
- 
- 	if (netif_dormant(dev))
- 		return IF_OPER_DORMANT;
--- 
-2.34.1
-
+>
+> Also, in practice args != null doesn't seem to be checked before (the
+> parse_opt() in client.c allows it) so keeping the error message common
+> might be better?
+> (allocation failure will print its own messages anyway and doesn't need
+> checking)
+>
+> >
+> > Signed-off-by: Li Zhong <floridsleeves@gmail.com>
+> > ---
+> >  net/9p/trans_fd.c | 4 +++-
+> >  1 file changed, 3 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
+> > index e758978b44be..11ae64c1a24b 100644
+> > --- a/net/9p/trans_fd.c
+> > +++ b/net/9p/trans_fd.c
+> > @@ -1061,7 +1061,9 @@ p9_fd_create(struct p9_client *client, const char *addr, char *args)
+> >       int err;
+> >       struct p9_fd_opts opts;
+> >
+> > -     parse_opts(args, &opts);
+> > +     err = parse_opts(args, &opts);
+> > +     if (err < 0)
+> > +             return err;
+> >       client->trans_opts.fd.rfd = opts.rfd;
+> >       client->trans_opts.fd.wfd = opts.wfd;
+> >
