@@ -2,129 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A001D5E5366
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 20:53:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A3EE5E5370
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 20:55:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229963AbiIUSxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 14:53:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60854 "EHLO
+        id S230211AbiIUSy4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 14:54:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229473AbiIUSxr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 14:53:47 -0400
-Received: from na01-obe.outbound.protection.outlook.com (mail-cusazon11020023.outbound.protection.outlook.com [52.101.61.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBF119F746;
-        Wed, 21 Sep 2022 11:53:46 -0700 (PDT)
+        with ESMTP id S230160AbiIUSyv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 14:54:51 -0400
+Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-eopbgr130079.outbound.protection.outlook.com [40.107.13.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B413A357C8
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 11:54:45 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hKR2ygOWRawKBNVm03waFApy9YlognxPGAx4linvxUpl63WfLnxWPBzcGYVaHdkXhM1CTR19WUtjYPJGVKWWKYEFbKDL93QJbRguCjxhw7H32OjPtyZ6gSrhb2yaAhxoNZXpI5vtAHfsG1ZXy8+wGLGi+fdWyy8DbqM72IBdhvTxXNcNUw4fabk9k+k48mxDQ0VEfXaaLpAgVmwoIuXc8O9bYetwKfubBntAC+9BpzhedoEJmHcNi3ivd0Et0Nxl1E5joLmaVpM/vXGrYf10LN5z2QELC9XUMwrLE7lZ62CxnFDk6Y2liAIoaaJ5Ffwcwl67bJMFnVxxDLCOGJkh/w==
+ b=g326MM/XNEqn8XOE77/9CljPuqlLLNNJweZCbt212xRH+icURpqRiNW89Kr8UnxHjSoaGgQwDJZptSCYweu/PyX7/AX1UTH+FnknpSzxCP5M7ZvHKtZTZcSMPi7ITZgTc0hFsxvvDfWzseOoEpHvXmUQ9YvllKvMzyvBKcApwKkbOSLIAauXNp5Ny5heSBY/mzPbeoGMM41OeoUQx6mEvrCmk99bOcyWdfoTQv0e2F0ie21vjZrQjpPiYad20/7ZS7qpqJW8OFExZaWvwIst3fjnkOti6n5zrGM2OiOeq8BxvludFi0jptlmhOTjgSCLLjiemYLudbGHXaNZvttarw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JC8UwJewfouJPTytlRkeWkFoPxPqy3zq7cd9CkTq3jU=;
- b=KC5geB2IGzOxYsiiGX6EAdpFAbcQXFoFYvWf+0xCmroCcMxryCLB+x0SRYpdzuWELRLxqEF3+we13DDG/UOi6Rjl8nE8gRp7DRQgW3jdfPdYdIx7nTKFG4MqHGQ9DAeIRR/E4pT+d42hEDtbsJpIm5ZR7DwzbwupfAYQ20ppxGILLKU4IcXnJSrEKPsr8xZaDlOouwGIdlgunr1lvZmCkt55P6CZrdoLenoUT8GKHsT5a4mrMx/ynDhHYZtcCYXM8DTAP5JPM0BIsNl1IP4M02d0NxQcYfGu89XiZKdX9GnxDioLxXe9Sb6p0AuyhM46drGoKbW1Zun7STKRRvicPQ==
+ bh=jrvXCdjEBSihiiWmvfEqFXxugIoemk9scmwrhC7dQW8=;
+ b=IJAnsDwjuP9yEWZk+mA9bBQbDG+qMKg/DFKejL92bnYJDvXKCVE0EgpWlJl7z5hhQ0f1fV0sJT9Iq9IFmipz7mSn/KGq8e6qgjgRcC9jrrAA1N4EJpWo2TojL4UyfFeQ5kd0YtXPIPhvTxMCfvOGkUPvPR+G4shO1Cyq7TW/BUh58oqLudy6w2vQm8L/vITPrb/9y3TWCSCLkkItAzjYtWts6ov6LdW5ulTyfh0QWPWEOIBoofVtklHLQ60btpdPHBfWk7ESXNjn11u5yxSu9mcIVwFdArvPg7+p8ENSgFtVPUuOzw6cc1/EkStP/apDRI8f+kBA+1xifmRxAn3IOQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JC8UwJewfouJPTytlRkeWkFoPxPqy3zq7cd9CkTq3jU=;
- b=JczzR54q973T9Dv4ApR6Q+LHIywQ8umELEjVbO+RAioHPcpXLSwpdSI9zppaNEAt3e42qqwEUzMh+qOrQrMO1UbR2M3Pi8gb0SaWDrl8Iwazd2jwgBQn/SbDzStD/Wi4oyQ9pYQ12Hk+RyDGZKJXjZLS3cfwQ9sWXDY22YI6INU=
-Received: from PH7PR21MB3263.namprd21.prod.outlook.com (2603:10b6:510:1db::16)
- by PH0PR21MB1909.namprd21.prod.outlook.com (2603:10b6:510:1a::5) with
+ bh=jrvXCdjEBSihiiWmvfEqFXxugIoemk9scmwrhC7dQW8=;
+ b=BAVa0SFXAAfIYwvvLxlLIC0DBczndvd6z5+YmEhPkLXtXMQfDQNwxFFHub/klDbtte50HOo8gfIUpMmjFJCEhggAVs+F5CC4o3HEtb8CpcOAv5iSqRWigV5A7yfcMVle9nan+Y/b9qBTFC7EGnsnqbaydQ62KYzVO/Z78G6hKnU=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR04MB6958.eurprd04.prod.outlook.com (2603:10a6:803:137::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.7; Wed, 21 Sep
- 2022 18:53:44 +0000
-Received: from PH7PR21MB3263.namprd21.prod.outlook.com
- ([fe80::ce6d:5482:f64f:2ce6]) by PH7PR21MB3263.namprd21.prod.outlook.com
- ([fe80::ce6d:5482:f64f:2ce6%7]) with mapi id 15.20.5676.004; Wed, 21 Sep 2022
- 18:53:44 +0000
-From:   Long Li <longli@microsoft.com>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-CC:     KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.16; Wed, 21 Sep
+ 2022 18:54:42 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::a67a:849c:aeff:cad1]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::a67a:849c:aeff:cad1%7]) with mapi id 15.20.5632.021; Wed, 21 Sep 2022
+ 18:54:42 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "shiraz.saleem@intel.com" <shiraz.saleem@intel.com>,
-        Ajay Sharma <sharmaajay@microsoft.com>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
-Subject: RE: [Patch v6 00/12] Introduce Microsoft Azure Network Adapter (MANA)
- RDMA driver
-Thread-Topic: [Patch v6 00/12] Introduce Microsoft Azure Network Adapter
- (MANA) RDMA driver
-Thread-Index: AQHYzViuILRXmOZQOEOj85iwelga1K3qEtCAgAApQtA=
-Date:   Wed, 21 Sep 2022 18:53:44 +0000
-Message-ID: <PH7PR21MB3263E722C2D1F34766ED7705CE4F9@PH7PR21MB3263.namprd21.prod.outlook.com>
-References: <1663723352-598-1-git-send-email-longli@linuxonhyperv.com>
- <Yys69cXCOdYL0LTo@ziepe.ca>
-In-Reply-To: <Yys69cXCOdYL0LTo@ziepe.ca>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=82e2bb8d-8846-4f43-9eb5-4ecafcce1909;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-09-21T18:53:05Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH7PR21MB3263:EE_|PH0PR21MB1909:EE_
-x-ms-office365-filtering-correlation-id: 548da136-f22e-4a40-e4b8-08da9c029bc4
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: DwAJxaSW7kF9JGb/JHdLj+rnvwxCX+CmyBbF3ODkv4v7VEUMdrW8Iw7VlMmM26La3Fl7sWwaLRfs+lyVE8eCcx3WOVv7VHtBsV2f2pqMi41rPDQN0tZQWVnm25jppqDRhZ1i4QG8QMjA2c50/lxZa42jJygC1u+/ibRJIYCXTyUOkrjmFvHJKtlmw0h8TTh5sjhbQhoT3gfPI2/iTZTNtrq7T/htT5JFFcMK6n6NG73ID/oggDh2P64foluq4sFZHQ5bgK1vTzJhZ4YnGCeaMcdE2J4R9zibawWeohe9kMSnkFSX0MbdFWfitd77VXdqfIo8ETUAKWywrSfqP6bx9aCtA0sTahfELL67TR/N/CZPkQ7O6mAfqGNuW+mx9ctBZURGIsqN9GuBKSeC/17OxNjL+ER81ij35FE6z23V3x6pn3feBucFXsaGRQ2MSiyf+NKJSbwlVXyF0EBMI1/znaNjQ9E5JiRmSBYYAYioePiAP/B2LFtUEcKHD7b/GtncQ6mujmehBJg1rGTtJzxBE46SqmIXxQQRgioaF4luxvTkoIbz665IqOolirEjKbU1pXkwwQ9ufNm5fNZySApD9rHY61XHiNpDk9zC0t6R8gEoUHisSfjZ+/LO9h+N1w3HRcDfUYp/TtgepQs6WyLB4hGWkm6etius/jmFmY7Brx4eVPLeQC3V7KazL8JHS9/HnCbdJyTiU79P5yHW4JygMP5YLnAfCObNvgbHAX8fkYHXhluHN88RXfuxkAST0rOHrbYZKGfryPs3M//qsUrlFL+Wz5x53rUv1HvWSu+7/+hrr1Kamf9TUHglKq1kLXENUIy7QYYI9HFYiF/1A7Mggw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR21MB3263.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(346002)(39860400002)(136003)(376002)(366004)(47530400004)(451199015)(33656002)(82960400001)(82950400001)(86362001)(122000001)(38100700002)(38070700005)(26005)(8990500004)(5660300002)(52536014)(2906002)(83380400001)(9686003)(186003)(71200400001)(7696005)(6506007)(41300700001)(76116006)(316002)(64756008)(6916009)(66946007)(66556008)(66476007)(66446008)(8676002)(4326008)(7416002)(966005)(55016003)(8936002)(54906003)(478600001)(10290500003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?d31G2NWkM92hidYgaMla0mdB3uNo9HRZxeeXdW7NH1Gp5nBbXACqyFrMUzvF?=
- =?us-ascii?Q?r6oai1YQ/rWfJdXIa0/0HJI/nlaZfRQns9fTwZomE3V2mLz5eCXozE0IgwEE?=
- =?us-ascii?Q?Ma2k5vfLPh79gJyCgkq4SAzUkVg1CWyU25p6n3czn5foNRrhX3eqHSR/jDQe?=
- =?us-ascii?Q?zps6LWN0JNF5D/BYKPy9I5i2JlX9uT+rNyBx0a5x4spWTBup4P1ChUfQZ+4N?=
- =?us-ascii?Q?G/mMBeW4UTVWcx4P5FPufJ9mTxn2//kVKEoMHWI4r2kYk1xP1KhjRLsskN2N?=
- =?us-ascii?Q?xGLMzU67Krd/0YQ5fOJZonYkGeVMW4ltP9XpReNe11fDYGld3zONS70BWFdb?=
- =?us-ascii?Q?h3R3L6BrYQ6cOhDusgoPJpqmNYSwZ9/ddbdEjxQdCikZ0uG0LAuI1OLn8Fig?=
- =?us-ascii?Q?APmCsaM95jgz4JKW90tDOnSbwae/vybEnxvjJoZZ60mvfWvukNuHITrAeVBK?=
- =?us-ascii?Q?z96bVczdC/3NJvWZQlR/NKNK9gbwUSQPFCcLJdcnOdNTGoi//tNG6uTg0rLd?=
- =?us-ascii?Q?DPge4mLndAfV1t78Ay3V7xzGUsGs/gGxGd1kuiqfrIr4gc+6Pwkmtd6yaBhw?=
- =?us-ascii?Q?G+BeSv5gi0VDyr/APuYYWo8xlkzWStfFas/U1H2U6n0hlXtbAxQP9fFI1hcr?=
- =?us-ascii?Q?vLAPgkF7cbQFULcIZPyt8FV45Yfp03+A5HC3TadhhOwV6CXudKGHh7rAeT0J?=
- =?us-ascii?Q?60gf/k7/X/HDOBy89suMw8e0o+BJhp2kqh7typfSlqIPxhEdc8G4B0wCfnaK?=
- =?us-ascii?Q?z4fvR+e6DZgjDD+SCMjIvixwTGguVML0rf9zWBdnctOBmDWd7UWJmwBbPek6?=
- =?us-ascii?Q?vlMp6mDlRZDzCrweb+aagE5CCCCPM5H8yY2BftLkhpvycuClDVicKu5CEIYb?=
- =?us-ascii?Q?P5TeFv/gc67t3N17kTRoT0rCfq78TnSF5nKmKQOd6oeceoHmqfwsQlNvx6Kx?=
- =?us-ascii?Q?90cTgIZOqWQXktHiTM4WhQlv0q/5EKieXKBe0v7GiLdyEGo8wgnZ2VtYkcbK?=
- =?us-ascii?Q?HUrmWNt3qqthxl6aq35/iO7FQqLwvrABJHqEVi2DOkQiXCw0hATtO1sTnb5g?=
- =?us-ascii?Q?LADYIdzcbLWdkS/eE/1GQP1Au2gme0AsxtI8CnCLaOBEik2WmvrurX/ohslk?=
- =?us-ascii?Q?7SlbPw63IAqNZ+XvJTqXjNT92Cza5lYLgEgI8TbnHeJ7H2vu7X3FnYFmCh6W?=
- =?us-ascii?Q?EtMEvk7hO52Ij2NeF7qPCTyyHACOLVU2INQarJE1D9uAkke3ouQSEQ/Omq91?=
- =?us-ascii?Q?gkJQ9FiZzrM+N/8gZn5glcOjTPgUv+YXiUxUnfFyLcgIJdWSjjCy8RZzZdWv?=
- =?us-ascii?Q?hQHl97wdqVGieBi4xhbt6q2atWlzVHAfGTwd4zA8wUIXTMfFcxOYSH1TlwNM?=
- =?us-ascii?Q?QO0A2XuX22ugASQBwpRUvf9rWXond2yXVTX80oleXdtHhjGLOLO3CGha0eOz?=
- =?us-ascii?Q?7A8AsquARBIHs1/472zTo6QnHqlnPMq1UzUxU5z3K2C8DSMuzgGu5UDXUOtp?=
- =?us-ascii?Q?WoIxW8zJPKjV9QWxTrrg72XXaJr5hxxCBccHlGTYv/1/EDpY7QncE3N9C26n?=
- =?us-ascii?Q?CufjvP6xJJ6yJ3MepwC9+9Y5A16syFOYldPcEQgL?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH net-next] net: dsa: make user ports return to init_net on netns deletion
+Date:   Wed, 21 Sep 2022 21:54:28 +0300
+Message-Id: <20220921185428.1767001-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.34.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: AM0PR02CA0190.eurprd02.prod.outlook.com
+ (2603:10a6:20b:28e::27) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|VI1PR04MB6958:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5adbfd18-27de-40e4-833b-08da9c02be58
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: nbebJH0Ygz7HwgeEuukgM95mv1868wD8gAyKNb2175Q0dehgFS8/5+qEEWzxGXOfIQW36MdBSSAGJfkBwksPwd/opqP78yj71DyrccQOKax9l2Kob2xq647q9+GvNAxYR09sSzFtF5rkIN07UDb0cDu6U06RYtPMMLZEfRu+tmKbywWdcwhAU9eLDXb5koHaox40anDaulcn8zEeld8LWa1gvxIVO20AVDQ2ivYMRXpj/7Ks1/RvBk+Tw2AGR9s5Xe9SJi5ANM6DxNKuU87ByjTw56onUaMUbaT3MLyHB67nW3lih5oxj8GNy64jtnGhYPs9T12qEUPnZzjPlXOJken8VpYEOzbzRuntPOiBL+/sU69tsRV5p6paUv2wi0mvfhFkcKZRlwXuhQtBpeX3hZq6/SGVL/5qNZgMFa7sUnn/oqP5J3SNRedUROT2puUWOISv39AFVjF3PpXnyXU/HAx5cD5FgOIKYl9WOO2qBRQejhUOozPuWBUGJkhHcKQ6caDMumzKdlOq0DA17aS5yiusGUtWA5fP3N4OOyDtkbIwN4S6UIrqwO2rDqySHsgeoaLEKNbu2S+ERKFS4fzAx59CYrcYyhCHhsEIGQ47ISl+clIsYcoU1+zxvKOQG4tzHL9jWEyYE38lptJ/e5F1pBWMW3COruoW3nmlGqnunklpqptxlF9FObI7QLae6BQjlVBlcTQYnoyVXQvlawusOgA2fURXH9+ayovvr+KwkEYsQgYv9S5ovB5Z3+K8afmW3SNGF3+nqKz4wUFlhTgwzw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(366004)(136003)(346002)(39860400002)(376002)(451199015)(478600001)(66556008)(6666004)(66476007)(54906003)(6916009)(4326008)(66946007)(8676002)(38100700002)(83380400001)(44832011)(38350700002)(36756003)(2906002)(86362001)(6506007)(316002)(26005)(52116002)(6486002)(5660300002)(6512007)(8936002)(41300700001)(2616005)(1076003)(186003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Al+sFRlYLhfebaNBSo65bgbDuAjbO0P48cWSusDKPj73eLCf8CFf3D9bDcj3?=
+ =?us-ascii?Q?kNrQP0zzWCPFeD7QXQ/K91TyGYckZbq1eg8avgA+2oXU1htrN74T2Ffu5/5J?=
+ =?us-ascii?Q?NujFvGlAt95z3g6pqROh2MmcANuMKPIHcUg2G2Erec5bVXORwGX0LaEpZ7fw?=
+ =?us-ascii?Q?8wKhrhRWGr1HWKqQ4v4FGwSV9o6z1vstk1WyF4iQbuqVzo0weOw0FyN+QApf?=
+ =?us-ascii?Q?pw+NTbIaHVPWQsM67KMj6gKeKhwZwp/738nWqArcm4sbFrllLvSHVVfB0Gxs?=
+ =?us-ascii?Q?9NE7im8jxLk40BbkSCLBTrsbzt1H9bLciJRXk2bb0Sdu8Mz654y3hETSQxNf?=
+ =?us-ascii?Q?9HzzILkVEcJdnAwVAQ6wwdjKVXs0lyj6alhKZuhs+f59eFhkUEu2bLC2ROu6?=
+ =?us-ascii?Q?89lsDUNz21r2jMXIdEuoy8czvG3o6Bepecr68GWxTxHbLl6N3I1UkNKW8LkJ?=
+ =?us-ascii?Q?pdM5Rav0m9Q5O+mVMyN5aACexBCvsXcQZinIIFTjMswCnjkZX0zpxFo0ZSgu?=
+ =?us-ascii?Q?QD/4N/KVoac7YW0gCL0MV8H+zzbL384tJwsHKV5nYuER5mO/FUUxDEsQSWUE?=
+ =?us-ascii?Q?a6NXWo0hqrsT1qbGPw8/6H2CF5LEUvf0cXD39SShZJYHE/uIc9nnMjVPxLgQ?=
+ =?us-ascii?Q?emXE9FN47S6L0RULM0W+7d0Sn+JcMox4CX9Issjl4NFdMGpUoxKxrac/pQGr?=
+ =?us-ascii?Q?E9igJXzaHkhA69ihuLXZjZ7HVZS5t1e3Aeq5Onfn3VlPiJwoT+D9DZWwThxv?=
+ =?us-ascii?Q?RFJJSZ/BgsPR5de1sMRCdJusQZvG9iqIxCJb3RmEgB/E6eTDRUIVWaH7AnMR?=
+ =?us-ascii?Q?txMqYJGVbqVfZVE1RkMB+mcKdmP6qNqt/EgZrSrJ5C9cwiVGKQQ4oBluwSaq?=
+ =?us-ascii?Q?lyEi3EuSuNWxHNriY272EPxx+8C2NtulT13qkmxhgHuoJjhfk9e1/P19qwLt?=
+ =?us-ascii?Q?Tyc1k9AmWQ46i45HLuuNLkCx9oIl8uysijStT8NpjSWjRkpq4xtNoTVjBOJO?=
+ =?us-ascii?Q?5X0s4gFyseL+iIhv/wzg5bzPU+78InE8oonXEc1XQe9Ghp+Blf1MqFNSdZYi?=
+ =?us-ascii?Q?l3RmClOohP/iw/6R+Bb2qDFcabVB+xb1KS3Qmye9EqO9KNDOAB8cTMcJpdPq?=
+ =?us-ascii?Q?mYNI7pPY+B0mBCj+sKzJ/y7lOr/Kuzj612f7uCRAZ6nJJxuTYWP7ky6VkqjG?=
+ =?us-ascii?Q?eCmywacqdy80dkxoM5fjJrj6ZelA+W6WcnTS27lc5h2vfvg2s40w6AXh7k07?=
+ =?us-ascii?Q?mGlnNfUO+7sYA8sWU7KB5o7wM1i7lcUo6b2MBatlLarzIES7MyqShejV0zJz?=
+ =?us-ascii?Q?xuzy2EnKHFH9Z9OsY/6KfBLknMmcQXaEPhUa/9cwcvpTPzyGgSzxQ5N5ADcY?=
+ =?us-ascii?Q?VQKCNgO+GdUEN3IjgQEy0yQIpILTED/m0VExaVqc70RqTP4be1TswIz8YCHY?=
+ =?us-ascii?Q?NT2j5flk94gXPXRPWXiE7rmZx8ojptS/Rz1nmilJqOjyzTQ482F45RKlVP64?=
+ =?us-ascii?Q?U7K9hLPBUAidyrUOzZ1Ye0KZkPIy/uj5iU4RIvp5AgHdxCwXHQglpreTpMJ3?=
+ =?us-ascii?Q?iI96JrbUxJM7MJA38EsUF1Q0Px+laf+5rNxEAueoKjJWjOF/24QAZXq3tYG/?=
+ =?us-ascii?Q?4w=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5adbfd18-27de-40e4-833b-08da9c02be58
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR21MB3263.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 548da136-f22e-4a40-e4b8-08da9c029bc4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Sep 2022 18:53:44.2962
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Sep 2022 18:54:42.7591
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: X7spcSJfGrbXvYz6q3VXFueaDdSz7btpc+EvlKoU7dGmPi0CVCv02yZg+PecrXXV3TN9uFovuPHUbJFgTD0v8Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR21MB1909
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_NONE autolearn=no
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: YvwLUpIe5uf6RLUXCWbtjZLXS78x7HSfbJVxOQcMFOJ3ZPjLJ5A/1w7DO1oxUe7VY9Ivxgpq63CGRD5Oquuwuw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6958
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -132,91 +117,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: Re: [Patch v6 00/12] Introduce Microsoft Azure Network Adapter
-> (MANA) RDMA driver
->=20
-> On Tue, Sep 20, 2022 at 06:22:20PM -0700, longli@linuxonhyperv.com wrote:
-> > From: Long Li <longli@microsoft.com>
-> >
-> > This patchset implements a RDMA driver for Microsoft Azure Network
-> > Adapter (MANA). In MANA, the RDMA device is modeled as an auxiliary
-> > device to the Ethernet device.
-> >
-> > The first 11 patches modify the MANA Ethernet driver to support RDMA
-> driver.
-> > The last patch implementes the RDMA driver.
-> >
-> > The user-mode of the driver is being reviewed at:
-> >
-> https://nam06.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Fgith
-> > ub.com%2Flinux-rdma%2Frdma-
-> core%2Fpull%2F1177&amp;data=3D05%7C01%7Clongl
-> >
-> i%40microsoft.com%7C1d30ce9d49bc411b0fb808da9bede4bd%7C72f988bf86
-> f141a
-> >
-> f91ab2d7cd011db47%7C1%7C0%7C637993743320198387%7CUnknown%7CT
-> WFpbGZsb3d
-> >
-> 8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%
-> 3D%7C
-> >
-> 3000%7C%7C%7C&amp;sdata=3D4cT9PFnKqb2yHRLkKNrbVVMAGwO6Ig91eoQ
-> zomlm6lY%3D
-> > &amp;reserved=3D0
-> >
-> >
-> > Ajay Sharma (3):
-> >   net: mana: Set the DMA device max segment size
-> >   net: mana: Define and process GDMA response code
-> >     GDMA_STATUS_MORE_ENTRIES
-> >   net: mana: Define data structures for protection domain and memory
-> >     registration
-> >
-> > Long Li (9):
-> >   net: mana: Add support for auxiliary device
-> >   net: mana: Record the physical address for doorbell page region
-> >   net: mana: Handle vport sharing between devices
-> >   net: mana: Add functions for allocating doorbell page from GDMA
-> >   net: mana: Export Work Queue functions for use by RDMA driver
-> >   net: mana: Record port number in netdev
-> >   net: mana: Move header files to a common location
-> >   net: mana: Define max values for SGL entries
-> >   RDMA/mana_ib: Add a driver for Microsoft Azure Network Adapter
->=20
-> Still some basic checkpatchy stuff:
->=20
-> /tmp/tmpm2fsg47h/0012-RDMA-mana_ib-Add-a-driver-for-Microsoft-
-> Azure-Network-Adapter.patch:412: WARNING: quoted string split across
-> lines
-> #412: FILE: drivers/infiniband/hw/mana/main.c:70:
-> +		  "vport handle %llx pdid %x doorbell_id %x "
-> +		  "tx_shortform_allowed %d tx_vp_offset %u\n",
->=20
-> /tmp/tmpm2fsg47h/0012-RDMA-mana_ib-Add-a-driver-for-Microsoft-
-> Azure-Network-Adapter.patch:540: WARNING: quoted string split across
-> lines
-> #540: FILE: drivers/infiniband/hw/mana/main.c:198:
-> +		  "size_dma_region %lu num_pages_total %lu, "
-> +		  "page_sz 0x%llx offset_in_page %u\n",
->=20
-> And it thinks you should write more for the kconfig symbol, eg why would
-> someone want to turn it on (hint, to use dpkd on some Azure
-> instances)
+As pointed out during review, currently the following set of commands
+crashes the kernel:
 
-Will fix those.
+$ ip netns add ns0
+$ ip link set swp0 netns ns0
+$ ip netns del ns0
+WARNING: CPU: 1 PID: 27 at net/core/dev.c:10884 unregister_netdevice_many+0xaa4/0xaec
+Workqueue: netns cleanup_net
+pstate: 20000005 (nzCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+pc : unregister_netdevice_many+0xaa4/0xaec
+lr : unregister_netdevice_many+0x700/0xaec
+Call trace:
+ unregister_netdevice_many+0xaa4/0xaec
+ default_device_exit_batch+0x294/0x340
+ ops_exit_list+0xac/0xc4
+ cleanup_net+0x2e4/0x544
+ process_one_work+0x4ec/0xb40
+---[ end trace 0000000000000000 ]---
+unregister_netdevice: waiting for swp0 to become free. Usage count = 2
 
->=20
-> /tmp/tmpm2fsg47h/0012-RDMA-mana_ib-Add-a-driver-for-Microsoft-
-> Azure-Network-Adapter.patch:100: WARNING: please write a help
-> paragraph that fully describes the config symbol
-> #100: FILE: drivers/infiniband/hw/mana/Kconfig:2:
-> +config MANA_INFINIBAND
-> +	tristate "Microsoft Azure Network Adapter support"
-> +	depends on NETDEVICES && ETHERNET && PCI &&
-> MICROSOFT_MANA
-> +	help
-> +	  This driver provides low-level RDMA support for
-> +	  Microsoft Azure Network Adapter (MANA).
->=20
+This is because since DSA user ports, since they started populating
+dev->rtnl_link_ops in the blamed commit, gained a different treatment
+from default_device_exit_net(), which thinks these interfaces can now be
+unregistered.
+
+They can't; so set netns_refund = true to restore the behavior prior to
+populating dev->rtnl_link_ops.
+
+Fixes: 95f510d0b792 ("net: dsa: allow the DSA master to be seen and changed through rtnetlink")
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ net/dsa/netlink.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/dsa/netlink.c b/net/dsa/netlink.c
+index 0f43bbb94769..ecf9ed1de185 100644
+--- a/net/dsa/netlink.c
++++ b/net/dsa/netlink.c
+@@ -59,4 +59,5 @@ struct rtnl_link_ops dsa_link_ops __read_mostly = {
+ 	.changelink		= dsa_changelink,
+ 	.get_size		= dsa_get_size,
+ 	.fill_info		= dsa_fill_info,
++	.netns_refund		= true,
+ };
+-- 
+2.34.1
 
