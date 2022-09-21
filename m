@@ -2,211 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 31A935BF807
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 09:45:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72FEF5BF80C
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 09:45:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230064AbiIUHpG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 03:45:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41572 "EHLO
+        id S230450AbiIUHpm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 03:45:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230377AbiIUHpB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 03:45:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CC49558EF
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 00:44:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1663746296;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9ubLtsAgcpDm3nvMpf+F5CRd6Xb0P+Wgpu8FfKvJ+Z0=;
-        b=L41odCb2o2XgCzZCpWpW+5JRtJLH9Dh7DhO1tlhhAQsziyYtGZMnKKuslKQ7MFzsdfIc9Z
-        YIqdRmIGJepEDeQHxr4g0NLANjoKao790ytyz3IK5OxoAm/ggFZ8M+MSMU7aqRKgD3Rtn7
-        CSVkgsf/uqUFdljre2+2UGH9JIBU/Ac=
-Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com
- [209.85.210.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-79-IF2cPUV0OYSXfk7tKVeR-Q-1; Wed, 21 Sep 2022 03:44:55 -0400
-X-MC-Unique: IF2cPUV0OYSXfk7tKVeR-Q-1
-Received: by mail-ot1-f72.google.com with SMTP id bk9-20020a056830368900b006593c120badso2628505otb.13
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 00:44:55 -0700 (PDT)
+        with ESMTP id S230333AbiIUHpY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 03:45:24 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4F2E7754D
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 00:45:21 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id c7so5902121ljm.12
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 00:45:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=9movZw0O/E24Sq9jjEpuz0M8OZ4ZSE7oi+Dy0RWuqOo=;
+        b=VMU6hCT7GCWwiZCBIeb+Mg3XIWHqqAR6yyE4/9BHRE9RQg+Zh69VvedDsW4w9USQTd
+         jWwYJvJbr/oTsHYcirsEo127/KVSV0MKPi51pyl3Ke1m+GBcyVsIF8M8AdGQJTfgmNim
+         Fh2g2TyTvrNJOj2oEE3VocyZQ7UV2d/HnI0p2DFVrRkoXmBVfVK0i2mZa5+uZyVXN2Mk
+         fKfg/HHTJ1YaUPi8pnsAWEfLQA2DPpCahA9JvagTPnNiomPrjFDRxmyr1dd30bCb0iJW
+         cGRrNI95sWG6/blpYKWVEEnheRudSScpEF9fg5qELa7gMpo3zAT0tyqckmtwGuDWRRai
+         gXMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=9ubLtsAgcpDm3nvMpf+F5CRd6Xb0P+Wgpu8FfKvJ+Z0=;
-        b=1Q0F5vHR/GdGrO0vVCpWHNyYxqAkZLjWO+4d6ZoS8BkAbHlgYUrpHmykHcdUtQ5R+9
-         D7RXhxGb4LjsEMPb+yTgS3uqwuKv5TWv5hZr/SLGpTm5A+dDI1UCeP7+yOXd3CIac1GM
-         3FMOyrHYjktDKDId8lpRmrGXTPWimCCYtj8uSryzDMmoR9LWdPzrtDkrYxAvLCrc0TR5
-         QHl+uoWgf7EiVzKjDnz2Rojy0VEKWEC0P1Z+drdH3uHrie/wu7N5DYsmnQwvldoEVFk2
-         t7X5x2SHsdERwXOUL7knO3AHHuxt1kkstJljP7j/+kqy+tP108X49teAAa1W9Uh8oGJ5
-         cWbw==
-X-Gm-Message-State: ACrzQf1BmM85d197MRyfYJuvwkVk2y0+0v1El85jW1jYe9xwWFsnkZTz
-        RIvxo1F9fIb5sHGlBnuv4WRjFWBR3jL8y3G0qA38AcA8kRLTN/tsqejHA8M9cFGYcKFUgkqzgc/
-        yrghI8qshzjo1B/SB6gqwXnPbBGQLP6aH
-X-Received: by 2002:a05:6870:73cd:b0:12a:dff3:790a with SMTP id a13-20020a05687073cd00b0012adff3790amr4112342oan.35.1663746294186;
-        Wed, 21 Sep 2022 00:44:54 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM6wkv3SUBRdXvKVaNbuIgmOgYkeMBTnxhWlJtmZOEou/q4L0gaF2SAW7Z0YIVrq9HwXTbuOFZXv4kvlgStXvGI=
-X-Received: by 2002:a05:6870:73cd:b0:12a:dff3:790a with SMTP id
- a13-20020a05687073cd00b0012adff3790amr4112337oan.35.1663746293933; Wed, 21
- Sep 2022 00:44:53 -0700 (PDT)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=9movZw0O/E24Sq9jjEpuz0M8OZ4ZSE7oi+Dy0RWuqOo=;
+        b=1w4TGL55hpQQbqy4Q7xF0vBJ3+F+p6HmT0KvXCcu+LiDOjGchAqYiqHTadsgZ+yh1e
+         w5SS2TskqAsV7WbshXegxWZmW71mBJqDOs79QzzE3KWELiOkmb7M8kZiPHq8LPjVxLcr
+         8Do0WHUEFV4UlySBG+QqcFirRDZtjhFstGQpkqDsJjGZBauMcrCJ/KEf47HwscPNgouU
+         X/u7uY/X425vRepb+bR6L1KFWiw/MJpe4h/TqZhG4zQkTCWEntVSIV/rqco8IVd+HH7a
+         jTRL2VypCNmqgHp7ia1tkBNSWtZlwXpYPPRSCNVtDTRLd68Ji9OhdDWxlADViynnWg1C
+         BIfA==
+X-Gm-Message-State: ACrzQf1bAtyuLr2g2NmLrXJ6PQq8utLIBdm1MDcSye6WMz/yYecPFd51
+        AIHXxUfP2Ti1BBPaUtembbRDiA==
+X-Google-Smtp-Source: AMsMyM7uSr9MZ8LVijuV2GTgPXryOCIqDkI2Cp+7R+GqxQnA+G0aJnSDW9s5Y+iMsoOUTcOrduqZ6g==
+X-Received: by 2002:a05:651c:1257:b0:26c:4e3b:6d98 with SMTP id h23-20020a05651c125700b0026c4e3b6d98mr4961428ljh.492.1663746319843;
+        Wed, 21 Sep 2022 00:45:19 -0700 (PDT)
+Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id z18-20020a19f712000000b0049adbc24b99sm329885lfe.24.2022.09.21.00.45.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 21 Sep 2022 00:45:19 -0700 (PDT)
+Message-ID: <d179f987-6d3b-449f-8f48-4ab0fff43227@linaro.org>
+Date:   Wed, 21 Sep 2022 09:45:18 +0200
 MIME-Version: 1.0
-References: <20220909085712.46006-1-lingshan.zhu@intel.com>
- <20220909085712.46006-2-lingshan.zhu@intel.com> <CACGkMEsq+weeO7i8KtNNAPhXGwN=cTwWt3RWfTtML-Xwj3K5Qg@mail.gmail.com>
- <e69b65e7-516f-55bd-cb99-863d7accbd32@intel.com> <CACGkMEv0++vmfzzmX47NhsaY5JTvbO2Ro7Taf8C0dxV6OVXTKw@mail.gmail.com>
- <27b04293-2225-c78d-f6e3-ffe8a7472ea1@intel.com>
-In-Reply-To: <27b04293-2225-c78d-f6e3-ffe8a7472ea1@intel.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Wed, 21 Sep 2022 15:44:42 +0800
-Message-ID: <CACGkMEvf0sQyFTowg9DtVS3QbAHidv_cOBCk5hUaaKNxwods8Q@mail.gmail.com>
-Subject: Re: [PATCH 1/4] vDPA: allow userspace to query features of a vDPA device
-To:     "Zhu, Lingshan" <lingshan.zhu@intel.com>
-Cc:     mst <mst@redhat.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>, kvm <kvm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [RFC V2 PATCH 2/3] dt-bindings: net: xilinx_axienet: Introduce
+ dmaengine binding support
+Content-Language: en-US
+To:     Sarath Babu Naidu Gaddam <sarath.babu.naidu.gaddam@amd.com>,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux@armlinux.org.uk
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        michal.simek@amd.com, radhey.shyam.pandey@amd.com,
+        anirudha.sarangi@amd.com, harini.katakam@amd.com, git@xilinx.com,
+        git@amd.com
+References: <20220920055703.13246-1-sarath.babu.naidu.gaddam@amd.com>
+ <20220920055703.13246-3-sarath.babu.naidu.gaddam@amd.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220920055703.13246-3-sarath.babu.naidu.gaddam@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 21, 2022 at 2:00 PM Zhu, Lingshan <lingshan.zhu@intel.com> wrote:
->
->
->
-> On 9/21/2022 10:17 AM, Jason Wang wrote:
-> > On Tue, Sep 20, 2022 at 5:58 PM Zhu, Lingshan <lingshan.zhu@intel.com> wrote:
-> >>
-> >>
-> >> On 9/20/2022 10:02 AM, Jason Wang wrote:
-> >>> On Fri, Sep 9, 2022 at 5:05 PM Zhu Lingshan <lingshan.zhu@intel.com> wrote:
-> >>>> This commit adds a new vDPA netlink attribution
-> >>>> VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES. Userspace can query
-> >>>> features of vDPA devices through this new attr.
-> >>>>
-> >>>> This commit invokes vdpa_config_ops.get_config() than
-> >>>> vdpa_get_config_unlocked() to read the device config
-> >>>> spcae, so no raeces in vdpa_set_features_unlocked()
-> >>>>
-> >>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
-> >>> It's better to share the userspace code as well.
-> >> OK, will share it in V2.
-> >>>> ---
-> >>>>    drivers/vdpa/vdpa.c       | 19 ++++++++++++++-----
-> >>>>    include/uapi/linux/vdpa.h |  4 ++++
-> >>>>    2 files changed, 18 insertions(+), 5 deletions(-)
-> >>>>
-> >>>> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
-> >>>> index c06c02704461..798a02c7aa94 100644
-> >>>> --- a/drivers/vdpa/vdpa.c
-> >>>> +++ b/drivers/vdpa/vdpa.c
-> >>>> @@ -491,6 +491,8 @@ static int vdpa_mgmtdev_fill(const struct vdpa_mgmt_dev *mdev, struct sk_buff *m
-> >>>>                   err = -EMSGSIZE;
-> >>>>                   goto msg_err;
-> >>>>           }
-> >>>> +
-> >>>> +       /* report features of a vDPA management device through VDPA_ATTR_DEV_SUPPORTED_FEATURES */
-> >>> The code explains itself, there's no need for the comment.
-> >> these comments are required in other discussions
-> > I think it's more than sufficient to clarify the semantic where it is defined.
-> OK, then only comments in the header file
-> >
-> >>>>           if (nla_put_u64_64bit(msg, VDPA_ATTR_DEV_SUPPORTED_FEATURES,
-> >>>>                                 mdev->supported_features, VDPA_ATTR_PAD)) {
-> >>>>                   err = -EMSGSIZE;
-> >>>> @@ -815,10 +817,10 @@ static int vdpa_dev_net_mq_config_fill(struct vdpa_device *vdev,
-> >>>>    static int vdpa_dev_net_config_fill(struct vdpa_device *vdev, struct sk_buff *msg)
-> >>>>    {
-> >>>>           struct virtio_net_config config = {};
-> >>>> -       u64 features;
-> >>>> +       u64 features_device, features_driver;
-> >>>>           u16 val_u16;
-> >>>>
-> >>>> -       vdpa_get_config_unlocked(vdev, 0, &config, sizeof(config));
-> >>>> +       vdev->config->get_config(vdev, 0, &config, sizeof(config));
-> >>>>
-> >>>>           if (nla_put(msg, VDPA_ATTR_DEV_NET_CFG_MACADDR, sizeof(config.mac),
-> >>>>                       config.mac))
-> >>>> @@ -832,12 +834,19 @@ static int vdpa_dev_net_config_fill(struct vdpa_device *vdev, struct sk_buff *ms
-> >>>>           if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MTU, val_u16))
-> >>>>                   return -EMSGSIZE;
-> >>>>
-> >>>> -       features = vdev->config->get_driver_features(vdev);
-> >>>> -       if (nla_put_u64_64bit(msg, VDPA_ATTR_DEV_NEGOTIATED_FEATURES, features,
-> >>>> +       features_driver = vdev->config->get_driver_features(vdev);
-> >>>> +       if (nla_put_u64_64bit(msg, VDPA_ATTR_DEV_NEGOTIATED_FEATURES, features_driver,
-> >>>> +                             VDPA_ATTR_PAD))
-> >>>> +               return -EMSGSIZE;
-> >>>> +
-> >>>> +       features_device = vdev->config->get_device_features(vdev);
-> >>>> +
-> >>>> +       /* report features of a vDPA device through VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES */
-> >>>> +       if (nla_put_u64_64bit(msg, VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES, features_device,
-> >>>>                                 VDPA_ATTR_PAD))
-> >>>>                   return -EMSGSIZE;
-> >>>>
-> >>>> -       return vdpa_dev_net_mq_config_fill(vdev, msg, features, &config);
-> >>>> +       return vdpa_dev_net_mq_config_fill(vdev, msg, features_driver, &config);
-> >>>>    }
-> >>>>
-> >>>>    static int
-> >>>> diff --git a/include/uapi/linux/vdpa.h b/include/uapi/linux/vdpa.h
-> >>>> index 25c55cab3d7c..97531b52dcbe 100644
-> >>>> --- a/include/uapi/linux/vdpa.h
-> >>>> +++ b/include/uapi/linux/vdpa.h
-> >>>> @@ -46,12 +46,16 @@ enum vdpa_attr {
-> >>>>
-> >>>>           VDPA_ATTR_DEV_NEGOTIATED_FEATURES,      /* u64 */
-> >>>>           VDPA_ATTR_DEV_MGMTDEV_MAX_VQS,          /* u32 */
-> >>>> +       /* features of a vDPA management device */
-> >>>>           VDPA_ATTR_DEV_SUPPORTED_FEATURES,       /* u64 */
-> >>>>
-> >>>>           VDPA_ATTR_DEV_QUEUE_INDEX,              /* u32 */
-> >>>>           VDPA_ATTR_DEV_VENDOR_ATTR_NAME,         /* string */
-> >>>>           VDPA_ATTR_DEV_VENDOR_ATTR_VALUE,        /* u64 */
-> >>>>
-> >>>> +       /* features of a vDPA device, e.g., /dev/vhost-vdpa0 */
-> >>>> +       VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES,  /* u64 */
-> >>> What's the difference between this and VDPA_ATTR_DEV_SUPPORTED_FEATURES?
-> >> This is to report a vDPA device features, and
-> >> VDPA_ATTR_DEV_SUPPORTED_FEATURES
-> >> is used for reporting the management device features, we have a long
-> >> discussion
-> >> on this before.
-> > Yes, but the comment is not clear in many ways:
-> >
-> > " features of a vDPA management device" sounds like features that is
-> > out of the scope of the virtio.
-> I think the term "vDPA device" implies that it is a virtio device.
-> So how about: "virtio features of a vDPA management device"
+On 20/09/2022 07:57, Sarath Babu Naidu Gaddam wrote:
+> From: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+> 
+> The axiethernet driver will now use dmaengine framework to communicate
+> with dma controller IP instead of built-in dma programming sequence.
+> 
+> To request dma transmit and receive channels the axiethernet driver uses
+> generic dmas, dma-names properties. It deprecates axistream-connected
+> property, remove axidma reg and interrupt properties from the ethernet
+> node. Just to highlight that these DT changes are not backward compatible
+> due to major driver restructuring/cleanup done in adopting the dmaengine
+> framework.
+> 
+> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+> Signed-off-by: Sarath Babu Naidu Gaddam <sarath.babu.naidu.gaddam@amd.com>
+> ---
+> Changes in V2:
+> - None.
+> ---
+>  .../devicetree/bindings/net/xlnx,axiethernet.yaml  |   39 ++++++++++++--------
+>  1 files changed, 23 insertions(+), 16 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/xlnx,axiethernet.yaml b/Documentation/devicetree/bindings/net/xlnx,axiethernet.yaml
+> index 780edf3..1dc1719 100644
+> --- a/Documentation/devicetree/bindings/net/xlnx,axiethernet.yaml
+> +++ b/Documentation/devicetree/bindings/net/xlnx,axiethernet.yaml
+> @@ -14,10 +14,8 @@ description: |
+>    offloading TX/RX checksum calculation off the processor.
+>  
+>    Management configuration is done through the AXI interface, while payload is
+> -  sent and received through means of an AXI DMA controller. This driver
+> -  includes the DMA driver code, so this driver is incompatible with AXI DMA
+> -  driver.
+> -
+> +  sent and received through means of an AXI DMA controller using dmaengine
+> +  framework.
+>  
+>  allOf:
+>    - $ref: "ethernet-controller.yaml#"
+> @@ -36,19 +34,13 @@ properties:
+>  
+>    reg:
+>      description:
+> -      Address and length of the IO space, as well as the address
+> -      and length of the AXI DMA controller IO space, unless
+> -      axistream-connected is specified, in which case the reg
+> -      attribute of the node referenced by it is used.
+> -    maxItems: 2
+> +      Address and length of the IO space.
+> +    maxItems: 1
+>  
+>    interrupts:
+>      description:
+> -      Can point to at most 3 interrupts. TX DMA, RX DMA, and optionally Ethernet
+> -      core. If axistream-connected is specified, the TX/RX DMA interrupts should
+> -      be on that node instead, and only the Ethernet core interrupt is optionally
+> -      specified here.
+> -    maxItems: 3
+> +      Ethernet core interrupt.
+> +    maxItems: 1
+>  
+>    phy-handle: true
+>  
+> @@ -109,6 +101,7 @@ properties:
+>        for the AXI DMA controller used by this device. If this is specified,
+>        the DMA-related resources from that device (DMA registers and DMA
+>        TX/RX interrupts) rather than this one will be used.
+> +    deprecated: true
+>  
+>    mdio: true
+>  
+> @@ -118,12 +111,24 @@ properties:
+>        and "phy-handle" should point to an external PHY if exists.
+>      $ref: /schemas/types.yaml#/definitions/phandle
+>  
+> +  dmas:
+> +    items:
+> +      - description: TX DMA Channel phandle and DMA request line number
+> +      - description: RX DMA Channel phandle and DMA request line number
+> +
+> +  dma-names:
+> +    items:
+> +      - const: tx_chan0
+> +      - const: rx_chan0
+> +
+>  required:
+>    - compatible
+>    - interrupts
+>    - reg
+>    - xlnx,rxmem
+>    - phy-handle
+> +  - dmas
+> +  - dma-names
+>  
+>  additionalProperties: false
+>  
+> @@ -132,11 +137,13 @@ examples:
+>      axi_ethernet_eth: ethernet@40c00000 {
+>        compatible = "xlnx,axi-ethernet-1.00.a";
+>        interrupt-parent = <&microblaze_0_axi_intc>;
+> -      interrupts = <2>, <0>, <1>;
+> +      interrupts = <1>;
 
-Not a native speaker, but how about "virtio features that are
-supported by the vDPA management device?"
+This looks like an ABI break. How do you handle old DTS? Oh wait... you
+do not handle it at all.
 
-Thanks
 
-> >
-> > And
-> >
-> > "/dev/vhost-vdpa0" is not a vDPA device but a vhost-vDPA device.
-> will remove this example here.
->
-> Thanks
-> >
-> > Thanks
-> >
-> >>> Thanks
-> >>>
-> >>>> +
-> >>>>           /* new attributes must be added above here */
-> >>>>           VDPA_ATTR_MAX,
-> >>>>    };
-> >>>> --
-> >>>> 2.31.1
-> >>>>
->
-
+Best regards,
+Krzysztof
