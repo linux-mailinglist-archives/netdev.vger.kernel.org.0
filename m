@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E85C5BFDEC
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 14:32:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FA375BFDE7
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 14:32:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230099AbiIUMci (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 08:32:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60206 "EHLO
+        id S230115AbiIUMck (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 08:32:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230027AbiIUMca (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 08:32:30 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2400C7E312;
+        with ESMTP id S230030AbiIUMcb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 08:32:31 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B81647F124;
         Wed, 21 Sep 2022 05:32:29 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MXd5Z2nVjzpV2Q;
-        Wed, 21 Sep 2022 20:29:38 +0800 (CST)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MXd4J0WgdzmVZn;
+        Wed, 21 Sep 2022 20:28:32 +0800 (CST)
 Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
  (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Wed, 21 Sep
- 2022 20:32:26 +0800
+ 2022 20:32:27 +0800
 From:   Zhengchao Shao <shaozhengchao@huawei.com>
 To:     <netdev@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
         <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
         <shuah@kernel.org>, <victor@mojatatu.com>
 CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
         <shaozhengchao@huawei.com>
-Subject: [PATCH -next, v3 03/10] net: hinic: remove unused functions
-Date:   Wed, 21 Sep 2022 20:33:51 +0800
-Message-ID: <20220921123358.63442-4-shaozhengchao@huawei.com>
+Subject: [PATCH -next, v3 04/10] net: hinic: remove unused macro
+Date:   Wed, 21 Sep 2022 20:33:52 +0800
+Message-ID: <20220921123358.63442-5-shaozhengchao@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220921123358.63442-1-shaozhengchao@huawei.com>
 References: <20220921123358.63442-1-shaozhengchao@huawei.com>
@@ -47,120 +47,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hinic_hwdev_max_num_qpas() and hinic_msix_attr_get() are no longer called,
-remove them. Also the macro HINIC_MSIX_ATTR_GET is also not called, remove
-it.
+remove unused macro.
 
 Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 ---
- .../net/ethernet/huawei/hinic/hinic_hw_dev.c  |  7 ----
- .../net/ethernet/huawei/hinic/hinic_hw_dev.h  |  2 --
- .../net/ethernet/huawei/hinic/hinic_hw_if.c   | 33 -------------------
- .../net/ethernet/huawei/hinic/hinic_hw_if.h   |  9 -----
- 4 files changed, 51 deletions(-)
+ drivers/net/ethernet/huawei/hinic/hinic_debugfs.h | 1 -
+ drivers/net/ethernet/huawei/hinic/hinic_ethtool.c | 1 -
+ drivers/net/ethernet/huawei/hinic/hinic_hw_csr.h  | 1 -
+ drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c  | 1 -
+ drivers/net/ethernet/huawei/hinic/hinic_hw_mbox.c | 5 -----
+ 5 files changed, 9 deletions(-)
 
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_debugfs.h b/drivers/net/ethernet/huawei/hinic/hinic_debugfs.h
+index e9e00cfa1329..e10f739d8339 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_debugfs.h
++++ b/drivers/net/ethernet/huawei/hinic/hinic_debugfs.h
+@@ -12,7 +12,6 @@
+ #define    TBL_ID_FUNC_CFG_SM_INST                      1
+ 
+ #define HINIC_FUNCTION_CONFIGURE_TABLE_SIZE             64
+-#define HINIC_FUNCTION_CONFIGURE_TABLE			1
+ 
+ struct hinic_cmd_lt_rd {
+ 	u8	status;
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c b/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
+index 93192f58ac88..f4b680286911 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
+@@ -55,7 +55,6 @@
+ #define COALESCE_ALL_QUEUE		0xFFFF
+ #define COALESCE_MAX_PENDING_LIMIT	(255 * COALESCE_PENDING_LIMIT_UNIT)
+ #define COALESCE_MAX_TIMER_CFG		(255 * COALESCE_TIMER_CFG_UNIT)
+-#define OBJ_STR_MAX_LEN			32
+ 
+ struct hw2ethtool_link_mode {
+ 	enum ethtool_link_mode_bit_indices link_mode_bit;
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_csr.h b/drivers/net/ethernet/huawei/hinic/hinic_hw_csr.h
+index 7e84e4e33fff..d56e7413ace0 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_csr.h
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_csr.h
+@@ -22,7 +22,6 @@
+ 	(HINIC_DMA_ATTR_BASE + (idx) * HINIC_DMA_ATTR_STRIDE)
+ 
+ #define HINIC_PPF_ELECTION_STRIDE                       0x4
+-#define HINIC_CSR_MAX_PORTS                             4
+ 
+ #define HINIC_CSR_PPF_ELECTION_ADDR(idx)                \
+ 	(HINIC_ELECTION_BASE +  (idx) * HINIC_PPF_ELECTION_STRIDE)
 diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
-index 641a20da6bb8..4239013a3817 100644
+index 4239013a3817..8d5c02905d9d 100644
 --- a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
 +++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
-@@ -1041,13 +1041,6 @@ void hinic_free_hwdev(struct hinic_hwdev *hwdev)
- 	hinic_free_hwif(hwdev->hwif);
- }
+@@ -29,7 +29,6 @@
+ #include "hinic_hw_io.h"
+ #include "hinic_hw_dev.h"
  
--int hinic_hwdev_max_num_qps(struct hinic_hwdev *hwdev)
--{
--	struct hinic_cap *nic_cap = &hwdev->nic_cap;
--
--	return nic_cap->max_qps;
--}
--
- /**
-  * hinic_hwdev_num_qps - return the number QPs available for use
-  * @hwdev: the NIC HW device
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h
-index afa7b5e9601c..d2d89b0a5ef0 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h
-@@ -566,8 +566,6 @@ struct hinic_hwdev *hinic_init_hwdev(struct pci_dev *pdev, struct devlink *devli
+-#define IO_STATUS_TIMEOUT               100
+ #define OUTBOUND_STATE_TIMEOUT          100
+ #define DB_STATE_TIMEOUT                100
  
- void hinic_free_hwdev(struct hinic_hwdev *hwdev);
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_mbox.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_mbox.c
+index b1edff5cab62..3f9c31d29215 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_mbox.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_mbox.c
+@@ -117,7 +117,6 @@ enum hinic_mbox_tx_status {
+ #define MBOX_WB_STATUS_MASK			0xFF
+ #define MBOX_WB_ERROR_CODE_MASK			0xFF00
+ #define MBOX_WB_STATUS_FINISHED_SUCCESS		0xFF
+-#define MBOX_WB_STATUS_FINISHED_WITH_ERR	0xFE
+ #define MBOX_WB_STATUS_NOT_FINISHED		0x00
  
--int hinic_hwdev_max_num_qps(struct hinic_hwdev *hwdev);
--
- int hinic_hwdev_num_qps(struct hinic_hwdev *hwdev);
+ #define MBOX_STATUS_FINISHED(wb)	\
+@@ -130,11 +129,8 @@ enum hinic_mbox_tx_status {
+ #define SEQ_ID_START_VAL			0
+ #define SEQ_ID_MAX_VAL				42
  
- struct hinic_sq *hinic_hwdev_get_sq(struct hinic_hwdev *hwdev, int i);
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_if.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_if.c
-index fe91942ff86a..88567305d06e 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_if.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_if.c
-@@ -57,39 +57,6 @@ int hinic_msix_attr_set(struct hinic_hwif *hwif, u16 msix_index,
- 	return 0;
- }
+-#define DST_AEQ_IDX_DEFAULT_VAL			0
+-#define SRC_AEQ_IDX_DEFAULT_VAL			0
+ #define NO_DMA_ATTRIBUTE_VAL			0
  
--/**
-- * hinic_msix_attr_get - get message attribute of msix entry
-- * @hwif: the HW interface of a pci function device
-- * @msix_index: msix_index
-- * @pending_limit: the maximum pending interrupt events (unit 8)
-- * @coalesc_timer: coalesc period for interrupt (unit 8 us)
-- * @lli_timer: replenishing period for low latency credit (unit 8 us)
-- * @lli_credit_limit: maximum credits for low latency msix messages (unit 8)
-- * @resend_timer: maximum wait for resending msix (unit coalesc period)
-- *
-- * Return 0 - Success, negative - Failure
-- **/
--int hinic_msix_attr_get(struct hinic_hwif *hwif, u16 msix_index,
--			u8 *pending_limit, u8 *coalesc_timer,
--			u8 *lli_timer, u8 *lli_credit_limit,
--			u8 *resend_timer)
--{
--	u32 addr, val;
--
--	if (!VALID_MSIX_IDX(&hwif->attr, msix_index))
--		return -EINVAL;
--
--	addr = HINIC_CSR_MSIX_CTRL_ADDR(msix_index);
--	val  = hinic_hwif_read_reg(hwif, addr);
--
--	*pending_limit    = HINIC_MSIX_ATTR_GET(val, PENDING_LIMIT);
--	*coalesc_timer    = HINIC_MSIX_ATTR_GET(val, COALESC_TIMER);
--	*lli_timer        = HINIC_MSIX_ATTR_GET(val, LLI_TIMER);
--	*lli_credit_limit = HINIC_MSIX_ATTR_GET(val, LLI_CREDIT);
--	*resend_timer     = HINIC_MSIX_ATTR_GET(val, RESEND_TIMER);
--	return 0;
--}
--
- /**
-  * hinic_msix_attr_cnt_clear - clear message attribute counters for msix entry
-  * @hwif: the HW interface of a pci function device
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_if.h b/drivers/net/ethernet/huawei/hinic/hinic_hw_if.h
-index c06f2253151e..3d588896a367 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_if.h
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_if.h
-@@ -131,10 +131,6 @@
- 	(((u32)(val) & HINIC_MSIX_##member##_MASK) <<           \
- 	 HINIC_MSIX_##member##_SHIFT)
+-#define HINIC_MGMT_RSP_AEQN			0
+ #define HINIC_MBOX_RSP_AEQN			2
+ #define HINIC_MBOX_RECV_AEQN			0
  
--#define HINIC_MSIX_ATTR_GET(val, member)                        \
--	(((val) >> HINIC_MSIX_##member##_SHIFT) &               \
--	 HINIC_MSIX_##member##_MASK)
--
- #define HINIC_MSIX_CNT_RESEND_TIMER_SHIFT                       29
+@@ -146,7 +142,6 @@ enum hinic_mbox_tx_status {
  
- #define HINIC_MSIX_CNT_RESEND_TIMER_MASK                        0x1
-@@ -269,11 +265,6 @@ int hinic_msix_attr_set(struct hinic_hwif *hwif, u16 msix_index,
- 			u8 lli_timer_cfg, u8 lli_credit_limit,
- 			u8 resend_timer);
+ #define IS_PF_OR_PPF_SRC(src_func_idx)	((src_func_idx) < HINIC_MAX_PF_FUNCS)
  
--int hinic_msix_attr_get(struct hinic_hwif *hwif, u16 msix_index,
--			u8 *pending_limit, u8 *coalesc_timer_cfg,
--			u8 *lli_timer, u8 *lli_credit_limit,
--			u8 *resend_timer);
--
- void hinic_set_msix_state(struct hinic_hwif *hwif, u16 msix_idx,
- 			  enum hinic_msix_state flag);
- 
+-#define MBOX_RESPONSE_ERROR		0x1
+ #define MBOX_MSG_ID_MASK		0xFF
+ #define MBOX_MSG_ID(func_to_func)	((func_to_func)->send_msg_id)
+ #define MBOX_MSG_ID_INC(func_to_func_mbox) (MBOX_MSG_ID(func_to_func_mbox) = \
 -- 
 2.17.1
 
