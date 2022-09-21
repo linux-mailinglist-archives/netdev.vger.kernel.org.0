@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B06B5BF944
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 10:30:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35E285BF948
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 10:31:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229905AbiIUIa3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 04:30:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33932 "EHLO
+        id S229664AbiIUIbY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 04:31:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229886AbiIUIaT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 04:30:19 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2DA33DF34
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 01:30:18 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id bh13so5227823pgb.4
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 01:30:18 -0700 (PDT)
+        with ESMTP id S229687AbiIUIbX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 04:31:23 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E46AF7DF44;
+        Wed, 21 Sep 2022 01:31:18 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id w28so7527896edi.7;
+        Wed, 21 Sep 2022 01:31:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=AHS5jLPuQlU6rwa9/NJqfJCbG+8hdDQMUtoYsMchEdg=;
-        b=ikO3/04GBrEGTXLslSkHYhWAck3KFH4yh9gNG/mQqssM3VDWLYowxIKPG9PJqPv1qO
-         Nch7hV2uaXLPECWyrizWqKA37AKqF+qljLA0tuGidWFRVJXrvc5wzhEb3QRLyofm8AhJ
-         aeNGwhFGr3/P+ZdHrB7hxSZPiTDZ1ab09ToboX180816lNHHP3z1ZVWWnzoE9bRNHE7V
-         Ayr7oiemoy6PtP1XbAhKsGDAt/WofHvVSX3vPwjSgz89t4zxlvTbK98ZJg9S6Zmsrp5Z
-         qjcCP7aYdXqxN/peE5MpbpUnKbTRcnQ4gHbSAZYa4PNAcOe18pX4SWsZt3sLzo2X7b7a
-         2wUg==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=DEz21CqJnQdDFUCM4krQvks0WhIiWv4YsiIoxyo+oFk=;
+        b=JRiStm1KS1kpNMq2xf4Z6FcQk6g+31kMDbOgeBIibakKg7CGg/jXyFc1kIPEnc2vIt
+         VRAUSqS7dHNEq7Lwj12HjYWWEGjoSuhjNgtoT/eMjyqOoINCEP85JaQR034Cx6YEd3ld
+         Z3Na/oXZ8stQw1jnnBjlb6a2tyxwrhiCpOy/xM0MMjSjx6uaWZNaqyBJeHh76txWK+2t
+         QPIJX0xVa4a99mH1l2ZJEjV2dREJzqpI3nwS2Nbqj7XMAP3MoVWkuhJxJoTiIYiUL6TK
+         hU/K9MKx4QPFa7Omy5qKz6WnPS3pqlNrZ9MZZd3zo8j1eqU3gh8ob/2CjaFXg2f3Rfwl
+         L6sQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=AHS5jLPuQlU6rwa9/NJqfJCbG+8hdDQMUtoYsMchEdg=;
-        b=mElAJzBvpPWqo7s613lmxQet/fRV95ffBbupSCbNLzdDHefIRf2g00IvM/3olUZnYe
-         DUerbTckAL63fWvRDlEfEqx1zXUmSRgnGQzzR0PjtJp3i0q/Ght+VvFRFJUT7BimxFE6
-         XGdKMWI1ovQ9O0NoDIND8iyEzq9NX1ivtWJhw0BgLfC7koS7ON3M7NHSN2xjYoTwMgtG
-         A7diW4hxMMV2h9mVoR/eombO8GyI7IRfovATWI2g8yb3IY3wIOU+IWgBDUQbYPVRUI86
-         3bFrbeSFFQW/4QcQ3LlOV6NfXBSPbpMICCiNYFuLcb2U5wPIBaGEWceDMG+cPeod+YYG
-         gFHw==
-X-Gm-Message-State: ACrzQf2gAkOfIs8dndAk11dCdnOFcDolflztoITIQ5YLVCa8RuL8T0ek
-        svfS27xMmUOVP1criJ0p5P7Nktr0Lho5bw==
-X-Google-Smtp-Source: AMsMyM5nHCrpWz+vqZbNR1iVFkfbUtNri2hyG0QDpvSUvf3DpY7t0OJ/RRjeMBUa2S75pqPfQT/KvQ==
-X-Received: by 2002:a05:6a00:24d4:b0:541:11bd:dd24 with SMTP id d20-20020a056a0024d400b0054111bddd24mr28217444pfv.66.1663749017652;
-        Wed, 21 Sep 2022 01:30:17 -0700 (PDT)
-Received: from localhost.localdomain (lily-optiplex-3070.dynamic.ucsd.edu. [2607:f720:1300:3033::1:4dd])
-        by smtp.googlemail.com with ESMTPSA id 28-20020a17090a035c00b001fb1de10a4dsm1262912pjf.33.2022.09.21.01.30.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Sep 2022 01:30:16 -0700 (PDT)
-From:   Li Zhong <floridsleeves@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     pabeni@redhat.com, kuba@kernel.org, edumazet@google.com,
-        davem@davemloft.net, Li Zhong <floridsleeves@gmail.com>
-Subject: [PATCH net-next v2] net/ethtool/tunnels: check the return value of nla_nest_start()
-Date:   Wed, 21 Sep 2022 01:30:04 -0700
-Message-Id: <20220921083004.1612113-1-floridsleeves@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=DEz21CqJnQdDFUCM4krQvks0WhIiWv4YsiIoxyo+oFk=;
+        b=OTfdv5R7wFQfwUBo4LDliVWWmCcXkKci4sDNAQgdPJPEFNpMP369K0EKQ6Sm643tVk
+         qyDaLOPOmR/7fjfJbpwno71wI6rUNiyb42fVU9zjn+t89plYSDlwSF6YQ7jxXLU8Ztnj
+         UNmKt7MINokiCqUyP3CHJTqM2NGuJ/TgQTkHgQnHrFO9Tfyz405k1+9VLqBG6HGCrweL
+         fO4knvmV2uz8USRW9eDIGntZPGurN3PnLpqpc7qO+ITPlWocSQ6NxSW25dGQG4wQhWJC
+         BtEPT4OG8wN6lm0iF2cSJ9xzQSlvHRt0SfTx5k+uAL+zr2QkNRe1qK2tPsLOBfPD4J2k
+         kaqg==
+X-Gm-Message-State: ACrzQf1hqfdwrKCzlU9ZSMnrZAAv5x173r84dOOeYsMToO0YhYXKVzA4
+        hAYgnptyT24ZSmjyopPxIr4+CGygnfetczx3gvY=
+X-Google-Smtp-Source: AMsMyM6HpN6sWx6pjoW7ofh1gaIlbazcDw/iG+FW6QN+wMRPcsho+idl1BNof/7YAbdjBv6VythbcNK4/vUQqca3gaQ=
+X-Received: by 2002:aa7:d51a:0:b0:453:9086:fc37 with SMTP id
+ y26-20020aa7d51a000000b004539086fc37mr19860298edq.174.1663749077301; Wed, 21
+ Sep 2022 01:31:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220917022602.3843619-1-floridsleeves@gmail.com>
+ <20220920113744.64b16924@kernel.org> <CAMEuxRq3YDsCVBrdP78HnPeL7UcFiLWwKt6mEB2D+EVeSWG+pw@mail.gmail.com>
+ <20220920124148.58e8aab5@kernel.org>
+In-Reply-To: <20220920124148.58e8aab5@kernel.org>
+From:   Li Zhong <floridsleeves@gmail.com>
+Date:   Wed, 21 Sep 2022 01:31:06 -0700
+Message-ID: <CAMEuxRrRJ6RZQ5Pjoxb+5cn1Z5iKZNvZ_ydATBwB1NV5S-pEog@mail.gmail.com>
+Subject: Re: [PATCH v1] net/ethtool/tunnels: check the return value of nla_nest_start()
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, edumazet@google.com, davem@davemloft.net
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -67,33 +67,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Check the return value of nla_nest_start(). When starting the entry
-level nested attributes, if the tailroom of socket buffer is
-insufficient to store the attribute header and payload, the return value
-will be NULL and we should check it. If it is NULL, go to the
-error_cancel_entry label to do error handling.
+On Tue, Sep 20, 2022 at 12:41 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Tue, 20 Sep 2022 12:31:29 -0700 Li Zhong wrote:
+> > On Tue, Sep 20, 2022 at 11:37 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> > > On Fri, 16 Sep 2022 19:26:02 -0700 Li Zhong wrote:
+> > > >                       goto err_cancel_table;
+> > > >
+> > > >               entry = nla_nest_start(skb, ETHTOOL_A_TUNNEL_UDP_TABLE_ENTRY);
+> > > > +             if (!entry)
+> > > > +                     return -EMSGSIZE;
+> > >
+> > > not even correct, and completely harmless
+> >
+> > Thanks for your reply. Maybe a more suitable way of error handling is 'goto
+> > err_cancel_table;'?
+>
+> Yes, but you _most_ provide the detailed analysis of the impact
+> in the commit message for the patches to be considered for merging.
 
-v2: error handling jump to error_cancel_entry, more details in commit 
-meesage
-
-Signed-off-by: Li Zhong <floridsleeves@gmail.com>
----
- net/ethtool/tunnels.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/net/ethtool/tunnels.c b/net/ethtool/tunnels.c
-index efde33536687..67fb414ca859 100644
---- a/net/ethtool/tunnels.c
-+++ b/net/ethtool/tunnels.c
-@@ -136,6 +136,8 @@ ethnl_tunnel_info_fill_reply(const struct ethnl_req_info *req_base,
- 			goto err_cancel_table;
- 
- 		entry = nla_nest_start(skb, ETHTOOL_A_TUNNEL_UDP_TABLE_ENTRY);
-+		if (!entry)
-+			goto err_cancel_entry;
- 
- 		if (nla_put_be16(skb, ETHTOOL_A_TUNNEL_UDP_ENTRY_PORT,
- 				 htons(IANA_VXLAN_UDP_PORT)) ||
--- 
-2.25.1
-
+Thanks for the suggestion. The commit message is updated with more details.
