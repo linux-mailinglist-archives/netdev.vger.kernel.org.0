@@ -2,142 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 50CDD5BFA47
-	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 11:11:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B1415BFA49
+	for <lists+netdev@lfdr.de>; Wed, 21 Sep 2022 11:11:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229554AbiIUJLO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 05:11:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39158 "EHLO
+        id S229987AbiIUJL0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 05:11:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229536AbiIUJLK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 05:11:10 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3153D85F9F
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 02:11:07 -0700 (PDT)
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1oavl2-0002vm-J6; Wed, 21 Sep 2022 11:11:04 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1oavl2-0002qX-7Q; Wed, 21 Sep 2022 11:11:04 +0200
-Subject: Re: [PATCH net 1/1] net: Fix return value of qdisc ingress handling
- on success
-To:     Paul Blakey <paulb@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>,
-        Oz Shlomo <ozsh@nvidia.com>, Roi Dayan <roid@nvidia.com>,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-References: <1663750248-20363-1-git-send-email-paulb@nvidia.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <c322d8d6-8594-65a9-0514-3b6486d588fe@iogearbox.net>
-Date:   Wed, 21 Sep 2022 11:11:03 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S230055AbiIUJLY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 05:11:24 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28D598A1D7
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 02:11:22 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id r7so8809626wrm.2
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 02:11:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:reply-to:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date;
+        bh=GOhbE3A+8wYCrEykuOBC1RAYe432gmD8jlXYFnSlnOI=;
+        b=BWjXCZoVpfULiZN41JE4mgI//kTFGkoS5IcaOvCyQtYYz7/Dasud4JtqSs9opLXvtz
+         02k5AYJtb/D2TDy3E+jgyPTwe8gc3uBC1YJiF/7gV17JBWAg4gXHEXRBy6JDbTrDK+ZD
+         epwtd+LM1ZaSKxaBsJI69uvUcn+CEkb8KKywA5ZPna6Mz6qzshwMprK7XJRF2yL6LNvd
+         GKyhOq1VMBPkjeW8pS4SM3rpzXpDMg9e9Z/SwkjkjJJH0/Rkw1mR2uCgClQoxlqHymqv
+         H0nY8IvD8W3+Lu95NMDTriUdNt1tSV4e9uhlg34G0XjYcuozZuBKWjPqAWGPlhDmHoGY
+         BRmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:reply-to:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date;
+        bh=GOhbE3A+8wYCrEykuOBC1RAYe432gmD8jlXYFnSlnOI=;
+        b=13DosYrqXn3ejfgViBVuI257SVQiU7X32ARHYQIwdkS8l3itJW+rogvZbg27TCZ4YR
+         J4T5lPmFvz6o500ooXPMrSiVVSRABV6Aia+5iu5Tc7a2EZnRatX/0PZh8bH1f+47QmeS
+         YfWxYdNo/jek0h3XeGKcfjCP/hROi+UZPqdRMR8vBXj6j8Djsqpadc9kGSBuTj7mSaxe
+         meq56ThEkwItBu6jJ7PNdZvaXtSjHYatni9PFmyIKumIofUtWQj2dotQ3W05mvsTuJf2
+         X+r2ZdCDvhpxtA9NmecCXulEhRhdL0ggnyLdv7oAz5MDXig+sdV5TQRnIJqB/lAo0Mrd
+         lp9g==
+X-Gm-Message-State: ACrzQf2WbaZPZE36nBfZOmGp7x1kMmF1WgmRgjOTGhAxIPb+B848BRzh
+        J9NpSH1MOHaZgTXSeicC6Ch6EA==
+X-Google-Smtp-Source: AMsMyM6OaLfa73R//G1/yYeptTwZy+97f0THX4kbd9kyY2QDhUQYtek7bFWO8CSaF1izxq6+Er5xWw==
+X-Received: by 2002:a5d:6481:0:b0:228:dc1f:4f95 with SMTP id o1-20020a5d6481000000b00228dc1f4f95mr16691045wri.298.1663751480601;
+        Wed, 21 Sep 2022 02:11:20 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:b41:c160:d6f:4b37:41db:866e? ([2a01:e0a:b41:c160:d6f:4b37:41db:866e])
+        by smtp.gmail.com with ESMTPSA id n13-20020adfe34d000000b002285f73f11dsm2303350wrj.81.2022.09.21.02.11.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 21 Sep 2022 02:11:20 -0700 (PDT)
+Message-ID: <1ff2e97e-003f-e6b4-d724-c42449fde221@6wind.com>
+Date:   Wed, 21 Sep 2022 11:11:19 +0200
 MIME-Version: 1.0
-In-Reply-To: <1663750248-20363-1-git-send-email-paulb@nvidia.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH net-next] rtnetlink: Honour NLM_F_ECHO flag in rtnl_{new,
+ set}link
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.6/26665/Wed Sep 21 09:54:09 2022)
-X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+To:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Florent Fourcot <florent.fourcot@wifirst.fr>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Guillaume Nault <gnault@redhat.com>
+References: <20220921030721.280528-1-liuhangbin@gmail.com>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+In-Reply-To: <20220921030721.280528-1-liuhangbin@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/21/22 10:50 AM, Paul Blakey wrote:
-> Currently qdisc ingress handling (sch_handle_ingress()) doesn't
-> set a return value and it is left to the old return value of
-> the caller (__netif_receive_skb_core()) which is RX drop, so if
-> the packet is consumed, caller will stop and return this value
-> as if the packet was dropped.
+
+Le 21/09/2022 à 05:07, Hangbin Liu a écrit :
+> Netlink messages are used for communicating between user and kernel space.
+> When user space configures the kernel with netlink messages, it can set the
+> NLM_F_ECHO flag to request the kernel to send the applied configuration back
+> to the caller. This allows user space to retrieve configuration information
+> that are filled by the kernel (either because these parameters can only be
+> set by the kernel or because user space let the kernel choose a default
+> value).
 > 
-> This causes a problem in the kernel tcp stack when having a
-> egress tc rule forwarding to a ingress tc rule.
-> The tcp stack sending packets on the device having the egress rule
-> will see the packets as not successfully transmitted (although they
-> actually were), will not advance it's internal state of sent data,
-> and packets returning on such tcp stream will be dropped by the tcp
-> stack with reason ack-of-unsent-data. See reproduction in [0] below.
+> This patch handles NLM_F_ECHO flag and send link info back after
+> rtnl_{new, set}link.
 > 
-> Fix that by setting the return value to RX success if
-> the packet was handled successfully.
-> 
-> [0] Reproduction steps:
->   $ ip link add veth1 type veth peer name peer1
->   $ ip link add veth2 type veth peer name peer2
->   $ ifconfig peer1 5.5.5.6/24 up
->   $ ip netns add ns0
->   $ ip link set dev peer2 netns ns0
->   $ ip netns exec ns0 ifconfig peer2 5.5.5.5/24 up
->   $ ifconfig veth2 0 up
->   $ ifconfig veth1 0 up
-> 
->   #ingress forwarding veth1 <-> veth2
->   $ tc qdisc add dev veth2 ingress
->   $ tc qdisc add dev veth1 ingress
->   $ tc filter add dev veth2 ingress prio 1 proto all flower \
->     action mirred egress redirect dev veth1
->   $ tc filter add dev veth1 ingress prio 1 proto all flower \
->     action mirred egress redirect dev veth2
-> 
->   #steal packet from peer1 egress to veth2 ingress, bypassing the veth pipe
->   $ tc qdisc add dev peer1 clsact
->   $ tc filter add dev peer1 egress prio 20 proto ip flower \
->     action mirred ingress redirect dev veth1
-> 
->   #run iperf and see connection not running
->   $ iperf3 -s&
->   $ ip netns exec ns0 iperf3 -c 5.5.5.6 -i 1
-> 
->   #delete egress rule, and run again, now should work
->   $ tc filter del dev peer1 egress
->   $ ip netns exec ns0 iperf3 -c 5.5.5.6 -i 1
-> 
-> Fixes: 1f211a1b929c ("net, sched: add clsact qdisc")
-> Signed-off-by: Paul Blakey <paulb@nvidia.com>
+> Suggested-by: Guillaume Nault <gnault@redhat.com>
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 > ---
->   net/core/dev.c | 3 +++
->   1 file changed, 3 insertions(+)
-> 
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 56c8b0921c9f..c58ab657b164 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -5141,6 +5141,7 @@ sch_handle_ingress(struct sk_buff *skb, struct packet_type **pt_prev, int *ret,
->   	case TC_ACT_QUEUED:
->   	case TC_ACT_TRAP:
->   		consume_skb(skb);
-> +		*ret = NET_RX_SUCCESS;
->   		return NULL;
->   	case TC_ACT_REDIRECT:
->   		/* skb_mac_header check was done by cls/act_bpf, so
-> @@ -5153,8 +5154,10 @@ sch_handle_ingress(struct sk_buff *skb, struct packet_type **pt_prev, int *ret,
->   			*another = true;
->   			break;
->   		}
-> +		*ret = NET_RX_SUCCESS;
->   		return NULL;
->   	case TC_ACT_CONSUMED:
-> +		*ret = NET_RX_SUCCESS;
->   		return NULL;
->   	default:
 
-Looks reasonable and aligns with sch_handle_egress() fwiw. I think your Fixes tag is wrong
-since that commit didn't modify any of the above. This patch should also rather go to net-next
-tree to make sure it has enough soak time to catch potential regressions from this change in
-behavior. Given the change under TC_ACT_REDIRECT is BPF specific, please also add a BPF selftest
-for tc BPF program to assert the new behavior so we can run it in our BPF CI for every patch.
+[snip]
 
-Thanks,
-Daniel
+> @@ -3336,9 +3381,9 @@ static int rtnl_newlink_create(struct sk_buff *skb, struct ifinfomsg *ifm,
+>  		return PTR_ERR(dest_net);
+>  
+>  	if (tb[IFLA_LINK_NETNSID]) {
+> -		int id = nla_get_s32(tb[IFLA_LINK_NETNSID]);
+> +		netnsid = nla_get_s32(tb[IFLA_LINK_NETNSID]);
+>  
+> -		link_net = get_net_ns_by_id(dest_net, id);
+> +		link_net = get_net_ns_by_id(dest_net, netnsid);
+>  		if (!link_net) {
+>  			NL_SET_ERR_MSG(extack, "Unknown network namespace id");
+>  			err =  -EINVAL;
+> @@ -3382,6 +3427,17 @@ static int rtnl_newlink_create(struct sk_buff *skb, struct ifinfomsg *ifm,
+>  		if (err)
+>  			goto out_unregister;
+>  	}
+> +
+> +	if (nlmsg_flags & NLM_F_ECHO) {
+> +		u32 ext_filter_mask = 0;
+> +
+> +		if (tb[IFLA_EXT_MASK])
+> +			ext_filter_mask = nla_get_u32(tb[IFLA_EXT_MASK]);
+> +
+> +		rtnl_echo_link_info(dev, NETLINK_CB(skb).portid, nlmsg_seq,
+> +				    ext_filter_mask, netnsid);
+=> netnsid, ie IFLA_LINK_NETNSID has nothing to do with IFLA_TARGET_NETNSID.
+Link netns is used for x-netns interface like vlan for example. The vlan iface
+could be in a netns while its lower iface could be in another netns.
+
+The target netns is used when a netlink message is sent in a netns but should
+act in another netns.
+
+Regards,
+Nicolas
