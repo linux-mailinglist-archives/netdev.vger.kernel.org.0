@@ -2,84 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB69E5E5CA1
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 09:47:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68EAB5E5CBC
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 09:56:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229482AbiIVHrR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 03:47:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48016 "EHLO
+        id S230237AbiIVH4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 03:56:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230155AbiIVHrP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 03:47:15 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0441ABD7F;
-        Thu, 22 Sep 2022 00:47:14 -0700 (PDT)
-Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MY6hS38qjzlVwB;
-        Thu, 22 Sep 2022 15:43:04 +0800 (CST)
-Received: from cgs.huawei.com (10.244.148.83) by
- kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 22 Sep 2022 15:47:12 +0800
-From:   Gaosheng Cui <cuigaosheng1@huawei.com>
-To:     <nbd@nbd.name>, <lorenzo@kernel.org>, <ryder.lee@mediatek.com>,
-        <shayne.chen@mediatek.com>, <sean.wang@mediatek.com>,
-        <kvalo@kernel.org>, <davem@davemloft.net>, <edumazet@google.com>,
-        <kuba@kernel.org>, <pabeni@redhat.com>, <matthias.bgg@gmail.com>,
-        <cuigaosheng1@huawei.com>
-CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>
-Subject: [PATCH v2] wifi: mt76: Remove unused inline function mt76_wcid_mask_test()
-Date:   Thu, 22 Sep 2022 15:47:11 +0800
-Message-ID: <20220922074711.1408385-1-cuigaosheng1@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229631AbiIVH4U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 03:56:20 -0400
+Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD0E4357CE;
+        Thu, 22 Sep 2022 00:56:19 -0700 (PDT)
+Received: by mail-qt1-f176.google.com with SMTP id g23so5776217qtu.2;
+        Thu, 22 Sep 2022 00:56:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=V7WeZATWUx2tE4MxoHQwI+QugNIBy3AvjYpUsXK7axg=;
+        b=vJ8Bx0nkPSoRJvAn3OcFQqJN7r4HGCaI4lQt3BJW9i5HotJZvb98P8K/mRiDZwPgFt
+         UB/6mjok8FBU2co2x5SO3iw9dHKfjkt8rMgQrnobtuc9zzj0FFxUBWn4PudFwydSgNP7
+         mk6f+c01gib1FIK/mq8va05ZRa/Yy2b2RwW6dhH592DrUcjd9ePFse4tcg1AGgcNBs9U
+         BXOqrz/nMr9+P02oSKJ8CI2YLSBAotQskCmc+8Jf9/HxK5U4rz2dWQ8qc8SPDXWJKcv6
+         l5g9TDaYj+BJUMlVjhgnspenmCLNyW2r/yc05KIE3+sdajWr3gmC8cCyptHk/iIUe46V
+         +oYA==
+X-Gm-Message-State: ACrzQf3atRr9RpEXXD1VqtHjmRsLttNJHfKoEaP01xmZJ+cbPPvuTqKx
+        FQurPeLMGWWnuD4yoRssjiSZAYLmcIm1WFU5
+X-Google-Smtp-Source: AMsMyM63XOlUqkqGwu6SSFkXxjo8O7lKmQ5/6Qz1+gFV1yzYm6wbiPYTBEHfyZqMLPUL4yROMWzSGA==
+X-Received: by 2002:ac8:7d52:0:b0:343:5e7a:ee32 with SMTP id h18-20020ac87d52000000b003435e7aee32mr1756447qtb.247.1663833378383;
+        Thu, 22 Sep 2022 00:56:18 -0700 (PDT)
+Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com. [209.85.219.169])
+        by smtp.gmail.com with ESMTPSA id y4-20020ac81284000000b00342f8143599sm3013883qti.13.2022.09.22.00.56.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 22 Sep 2022 00:56:18 -0700 (PDT)
+Received: by mail-yb1-f169.google.com with SMTP id j7so1580041ybb.8;
+        Thu, 22 Sep 2022 00:56:17 -0700 (PDT)
+X-Received: by 2002:a25:3851:0:b0:6ad:9cba:9708 with SMTP id
+ f78-20020a253851000000b006ad9cba9708mr2393590yba.36.1663833377467; Thu, 22
+ Sep 2022 00:56:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.244.148.83]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemi500012.china.huawei.com (7.221.188.12)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20220921084745.3355107-1-yoshihiro.shimoda.uh@renesas.com>
+ <20220921084745.3355107-3-yoshihiro.shimoda.uh@renesas.com>
+ <9b29ee3f-ed48-9d95-a262-7d9e23a20528@linaro.org> <TYBPR01MB534100D42EC0202CA8BEF04CD84E9@TYBPR01MB5341.jpnprd01.prod.outlook.com>
+In-Reply-To: <TYBPR01MB534100D42EC0202CA8BEF04CD84E9@TYBPR01MB5341.jpnprd01.prod.outlook.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 22 Sep 2022 09:56:06 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdV=HECSXtLi6BFRVFiYZvjJ_t5RDUY3DckbSB4ozEtOgg@mail.gmail.com>
+Message-ID: <CAMuHMdV=HECSXtLi6BFRVFiYZvjJ_t5RDUY3DckbSB4ozEtOgg@mail.gmail.com>
+Subject: Re: [PATCH v2 2/8] dt-bindings: phy: renesas: Document Renesas
+ Ethernet SERDES
+To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "kishon@ti.com" <kishon@ti.com>,
+        "vkoul@kernel.org" <vkoul@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "geert+renesas@glider.be" <geert+renesas@glider.be>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-All uses of mt76_wcid_mask_test() have
-been removed since commit 8950a62f19c9 ("mt76: get rid of
-mt76_wcid_hw routine"), so remove it.
+Hi Shimoda-san,
 
-Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
----
-v2:
-- taking the patch out of the series: "Remove useless inline functions from net".
-- add wifi: prefix to the subject, thanks!
-v1:
-- links: https://patchwork.kernel.org/project/linux-mediatek/patch/20220921090455.752011-3-cuigaosheng1@huawei.com/
- drivers/net/wireless/mediatek/mt76/util.h | 6 ------
- 1 file changed, 6 deletions(-)
+On Thu, Sep 22, 2022 at 9:39 AM Yoshihiro Shimoda
+<yoshihiro.shimoda.uh@renesas.com> wrote:
+> > From: Krzysztof Kozlowski, Sent: Thursday, September 22, 2022 4:29 PM
+> > On 21/09/2022 10:47, Yoshihiro Shimoda wrote:
+> > > Document Renesas Etherent SERDES for R-Car S4-8 (r8a779f0).
+> > >
+> > > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> > > ---
+> > >  .../bindings/phy/renesas,ether-serdes.yaml    | 54 +++++++++++++++++++
+> > >  1 file changed, 54 insertions(+)
+> > >  create mode 100644 Documentation/devicetree/bindings/phy/renesas,ether-serdes.yaml
+> > >
+> > > diff --git a/Documentation/devicetree/bindings/phy/renesas,ether-serdes.yaml
+> > b/Documentation/devicetree/bindings/phy/renesas,ether-serdes.yaml
+> > > new file mode 100644
+> > > index 000000000000..04d650244a6a
+> > > --- /dev/null
+> > > +++ b/Documentation/devicetree/bindings/phy/renesas,ether-serdes.yaml
+> >
+> > Filename based on compatible, so renesas,r8a779f0-ether-serdes.yaml
+>
+> I got it. I'll rename the file.
 
-diff --git a/drivers/net/wireless/mediatek/mt76/util.h b/drivers/net/wireless/mediatek/mt76/util.h
-index 49c52d781f40..260965dde94c 100644
---- a/drivers/net/wireless/mediatek/mt76/util.h
-+++ b/drivers/net/wireless/mediatek/mt76/util.h
-@@ -29,12 +29,6 @@ enum {
- 
- int mt76_wcid_alloc(u32 *mask, int size);
- 
--static inline bool
--mt76_wcid_mask_test(u32 *mask, int idx)
--{
--	return mask[idx / 32] & BIT(idx % 32);
--}
--
- static inline void
- mt76_wcid_mask_set(u32 *mask, int idx)
- {
--- 
-2.25.1
+Is this serdes present on other R-Car Gen4 SoCs, or is it (so far) only
+found on R-Car S4-8?
 
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
