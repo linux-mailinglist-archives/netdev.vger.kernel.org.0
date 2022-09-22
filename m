@@ -2,176 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 93D355E59A8
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 05:36:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28C785E59CB
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 06:01:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229641AbiIVDgf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 23:36:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50802 "EHLO
+        id S229814AbiIVEBX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 00:01:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229545AbiIVDgc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 23:36:32 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E81E4AA4C9;
-        Wed, 21 Sep 2022 20:36:31 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id iw17so7631918plb.0;
-        Wed, 21 Sep 2022 20:36:31 -0700 (PDT)
+        with ESMTP id S229475AbiIVEBV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 00:01:21 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2093.outbound.protection.outlook.com [40.107.94.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDA87ABD5C;
+        Wed, 21 Sep 2022 21:01:20 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EfzSe4ytVZn/eSCpSBb0yAVy9WMnqUIg2SDVRSBPdKiswd50VJaxIkUpBLXaS3oFnosfUKwSZPcGQDNTk1dUgih6EscefPqJtwbWXpG6PWj2Ls3ZDdVCUqp7b6Ah4YI9xTXspQtIpYIy4vVPUrAp0VhhiLS5yvvFwCzvzQ3AI/Ywg+crwlwxZqtybjMglO6HsPPF2zrAdfKDKt52aPi+I7CFW+/koSRGWdIHtCwOKFhKqcLEIFic97ddfHXS7/ZhenOigzpljv4WAn9WFTNoJ/RR9q3bWzfOsEGA6cfQjJXPaVg3pkZ/Mz0bnbjdTUm9UgAWoRyfav5Li7KNTOqMPQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=a8iyaZuIxTSg8OafM+duo7JoUFHHVXaLqQJx58Ld5ss=;
+ b=C6csy2xZzuAVoOxulmMKk0qeNfSuTLsZbKFLWFXHqcdbR5C3++CoENL+m0MFyS8GSxXM5+9lw0sQ+U6dGjxBUFRmg81kpQkAB/5Dvd8PD1IM1o2qFoOpObsCDTdzJnJBj5M0yiqdElRIdrGnoppWPSDnYkPgFfyYjsHvJxRKuBYZx3cz2lRYg7OqiLI/eN3eWLiX7dOjo/ip1LLLjm4D5M56rcyZCBbTL9ubSyPdlLol1wbnFjP6rSBlsTCoCmHPrF//wa4OXalo2uYWFraTUEzZiR/okEVqZsd11C//vYJ82FfT02d3xG0y/rvz2vFMHmZKQx0Y1J/u2sq8qj9uTA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=DRlr4S0CdSPmGIBpEz7/6qWP3xmZ7dHXhNXq25Lelfo=;
-        b=E8w9Ju0b579ywPoHP7Rh6tU35JZG2Qi3xWsB7kZR+rLcQDWp1cM08sw1D5lrLNnw3F
-         YZa77V4Ru6jOaVZUzKlIWepuQ0BjuGI6QGKoGj7QiNHjkM7SA+IsG1NIZv1g98CqDjmY
-         04tsTMoMcEMmJYkjqBT98Muat5eD1flAZiiANuDFLMLFIoHWy9Or0AEt/TL8Z4qRYI2t
-         5rbU/0sM6hP5OPyUhZGBcNQFZoy4tGZiPOhHZEKYd/tIPOJ6Ti2I5xGPmDyk1yJelmXU
-         SQHPKazmoTv2/ta3pLUDKjw94Je2CllGIojgS/7CgGOZA5Hwa/FiUGhRrjyekbhGAbrx
-         5c0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=DRlr4S0CdSPmGIBpEz7/6qWP3xmZ7dHXhNXq25Lelfo=;
-        b=iVEJrJ/FXdc/xRaKFtSb/kmrxsksRAVISy2d5dqNEuLuCuS3OuWmujsJpQTnxtFcZP
-         v0luW7M/d/Sapgc6QfdTfSzf1oKmAnybpElRUC1fWhKGx6lHIb6c1gfMhIQXntglwiXP
-         yu/n+h0f56EpOxB7oNu8i7jDiYsweK/WKJpyoEqmHtzkWmH2f8hn564dcuIViFl+re6N
-         cXu2eg04jucJv1VWD/fk3q3PjZU1oQs9DT++41+u9rFWGQOSWp4iGE5wfaqIXohdYhH3
-         uJ3KpMdEHcXet4ghVMnEgN9pvkYfTKoBglNnK7m1VwFGboeriwlZd6Mfgbldltb8DG/C
-         PbKw==
-X-Gm-Message-State: ACrzQf3f4fAw0BcWjeBrWFeX61ncorb1ZRi5e+8/i8Yzimj7Gen11g6i
-        z9uGpnz7mEWZo0ElxKB6qtc=
-X-Google-Smtp-Source: AMsMyM5v5jKc5k7ipnnOiIapTlVN0RgxK4J/JwooeGbdFgmOPw6vHGvS3h3FuG317NAUBGe0NQGmSg==
-X-Received: by 2002:a17:903:1110:b0:178:9f67:b524 with SMTP id n16-20020a170903111000b001789f67b524mr1411691plh.50.1663817791390;
-        Wed, 21 Sep 2022 20:36:31 -0700 (PDT)
-Received: from debian.me (subs28-116-206-12-54.three.co.id. [116.206.12.54])
-        by smtp.gmail.com with ESMTPSA id m14-20020a170902db0e00b00172fad607b3sm2800814plx.207.2022.09.21.20.36.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Sep 2022 20:36:30 -0700 (PDT)
-Received: by debian.me (Postfix, from userid 1000)
-        id E222C102CFC; Thu, 22 Sep 2022 10:36:25 +0700 (WIB)
-Date:   Thu, 22 Sep 2022 10:36:25 +0700
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Rob Herring <robh+dt@kernel.org>,
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=a8iyaZuIxTSg8OafM+duo7JoUFHHVXaLqQJx58Ld5ss=;
+ b=tvZAu5UQkC0HD1dWzSRvAKP6WlikG54FCbZmZxk+JiDYWmXZZf+xHyAwSD1JdHww651M6Kexbn6D2OEhGGcekzkOwxmOvnwo0sGzQ+H5FZD54Se5axGQg6tjVXBSDVeR4jc6HKcStorcUZzY4QXQouF8nMS2PACfdxmBBpU44ZM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from DM5PR1001MB2345.namprd10.prod.outlook.com (2603:10b6:4:2d::31)
+ by BN0PR10MB5158.namprd10.prod.outlook.com (2603:10b6:408:120::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.17; Thu, 22 Sep
+ 2022 04:01:16 +0000
+Received: from DM5PR1001MB2345.namprd10.prod.outlook.com
+ ([fe80::b594:405e:50f0:468e]) by DM5PR1001MB2345.namprd10.prod.outlook.com
+ ([fe80::b594:405e:50f0:468e%5]) with mapi id 15.20.5654.014; Thu, 22 Sep 2022
+ 04:01:16 +0000
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        UNGLinuxDriver@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Lee Jones <lee@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        kernel test robot <lkp@intel.com>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
-        David Jander <david@protonic.nl>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Robert Marko <robert.marko@sartura.hr>
-Subject: Re: [PATCH net-next v6 5/7] ethtool: add interface to interact with
- Ethernet Power Equipment
-Message-ID: <YyvYOcfrur2mQXGl@debian.me>
-References: <20220921124748.73495-1-o.rempel@pengutronix.de>
- <20220921124748.73495-6-o.rempel@pengutronix.de>
+        Rob Herring <robh+dt@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH v2 net-next 00/14] add support for the the vsc7512 internal copper phys
+Date:   Wed, 21 Sep 2022 21:00:48 -0700
+Message-Id: <20220922040102.1554459-1-colin.foster@in-advantage.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BYAPR05CA0009.namprd05.prod.outlook.com
+ (2603:10b6:a03:c0::22) To DM5PR1001MB2345.namprd10.prod.outlook.com
+ (2603:10b6:4:2d::31)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="MTrYSV5QHljcKwmR"
-Content-Disposition: inline
-In-Reply-To: <20220921124748.73495-6-o.rempel@pengutronix.de>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM5PR1001MB2345:EE_|BN0PR10MB5158:EE_
+X-MS-Office365-Filtering-Correlation-Id: f1363fa9-4d34-4d55-5a06-08da9c4f18e6
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 6M2xF9EQvETmH+8sqaKgN8Lz/pSoO1zmrrcKqviV+/4k1wtE6eGvfFPgxp8BaHkQEFjOA21gq3WMK7y54kCDc+D6lgnyD5foozHkC29YRrym8OZpDsdwhaGc3bQhPnMBI0IhhAIVrsV5sQiajWhGdsAInP2D7iKTTexafMYI4IM7ptsBHNHNuaTXfzkEW2r6EkaMZLD0mNs+8nV6G55rhVjyQxWu88Wj+17MB2KBdZVjB5VYAvhOwkul0pxBObT1iXl9V1AV1/LKmE2U8qV3HjvrUHzG2tMe5vkoyQ/qy5cMvJFERSapNnIVrvBVLp15Jz1+aX/y/qfpVWlx4KJ7ozYM454kAMu0PC3Dvfybum7DIf+cGWWLHWhNnLCEtnmatyqZ9/WCDnCi+2kHp8fD2KZQNtYKMhK/zwfJww+T8BEp5N3mLZJ8UqpSB6EIUvOxs38k2dKnRTpA9HA/stO2qF6735aYRcqo5lTxBaGoZBRp4Vn1K9Gc07HqW2ziTnQJwZ5GmgHNqTc3Gywk1MZex3MhAuuxVAo1Wa6nQy52GK7b7ehrRbzL1hYrkKHzN2zk0og7AdL4VPcK9LYh++vyFRktSlz/XO8o8EdIrCsYbR7fSUdKPafw5ULT1zmHd0lSt3rfRCaEKmGn0Ba25Va0mA8FtNxYBJoJRclsPiS31Dnl1CLeHZ5OOzb+SllmCK3bEaFoXyxsPeSvQbbTmqgOXffO5o0rGdwSlm/MkUWS9/paSmpA1beutam5knbzljbR2VdUuUf9mVcdnbD4iH1CKQ3WvzU9WvLX8TVljAhPyS0=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR1001MB2345.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(376002)(396003)(39840400004)(366004)(136003)(346002)(451199015)(6666004)(36756003)(41300700001)(8936002)(44832011)(26005)(6512007)(7416002)(6506007)(5660300002)(316002)(478600001)(54906003)(6486002)(38100700002)(8676002)(66476007)(66556008)(38350700002)(4326008)(66946007)(83380400001)(966005)(52116002)(1076003)(186003)(2616005)(86362001)(2906002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LgLWHbOC1MZImdX6L+De0wu61oQstD4KFEC0EH0/gjIbqUR31E34LS5kXSDj?=
+ =?us-ascii?Q?Fj03uZmp/l4of57WLgPKeua3NvsyUCTMVmk6BDL2wm4W6i1xpl2Y3ADUhxhg?=
+ =?us-ascii?Q?i17zrXKueTGC5VfyOe+1RQOhD47Qoi7UG8VNW+Xc6s7oUStn+k/xDurY/4yo?=
+ =?us-ascii?Q?RUK+/4rmXNUO4pRqAf0EeNzPPMEj+6Gxo7MySJ8Lxvq2HKAE0w5HKje+w3HF?=
+ =?us-ascii?Q?k0G8E3Lv58GLU0ATKLDKgIYrpwfoaZGATJvi8r7hhsi1PdHeh7p1XBmqjupM?=
+ =?us-ascii?Q?TSicKqPKvg7lGwmDvf4y4VKQhbT1qQ1bebpnrq5SeoRmbpHdFzQSLOlBFYgP?=
+ =?us-ascii?Q?lJD+q2xYSXTtVlDqgyfwrxC/U8CaJlrS5uRwK7tNtBOuHOGT3KKf56e6YvlV?=
+ =?us-ascii?Q?VjoOfemNXOmcPAvM7D2imEDVO6iQMR+lTpx7RHgJLBoWfV/YSYev1REhEhyl?=
+ =?us-ascii?Q?DcDZB7z9U4hW+Z6zGG6pVZbZbWxUJmyUEguT7wGoOBRjKL4/RiFh+6OoNAhZ?=
+ =?us-ascii?Q?UbphrVqYQD8Rt+gED/VqSgCX7P14CQKj3gy9IfRiYgBoHB/0PhTx9zmupvZV?=
+ =?us-ascii?Q?44URSaQ5rsB3xYNpTDM5R961v1rtiLuIqhaggHQyVw7kTBpwa9aKD8QaW36f?=
+ =?us-ascii?Q?zeW+BS+EFjRBfBv/VbvFdozlgA4fce6a4L5CYuGmY51PvZaqHqx40FGGb0QS?=
+ =?us-ascii?Q?d/z7Ah42o7WfRqCqfL7qm6eXTkcIaFUQl447BbxINqEJXsPh7vhXX2e7Mxib?=
+ =?us-ascii?Q?lCJGATOSr/FYWAujF42CPGX1hbW3laplFC0i28xOipc9s6H+w6nTA7QK85N0?=
+ =?us-ascii?Q?jGPodBA9r6vC3RuZuKNkD+gakatLhFP8cOr9p1LV2rKn6q5helUmMdS0TvsD?=
+ =?us-ascii?Q?i3saSg8ZeQPIuiG09kX3+NwhYVCxwPjqZ/5Vy6Ry8yRPLAzLQhscb8H6dLhv?=
+ =?us-ascii?Q?1Rt+MpV5F01/TFmmnO0LO5fdUbAH2Qz7b7Mgln4wqRmBQIgwCedF9QrfzSyo?=
+ =?us-ascii?Q?/CuJmPuEnRJiYetK6SD3syFN55j+25AS7LtOsFT4P1cwIm7Zya2YzfbmFtaY?=
+ =?us-ascii?Q?XOah7Cy9UR+BoPOcenpz6J3fMiBe26/8vPM8HRat30c6DTmvS0n7TE82cxm6?=
+ =?us-ascii?Q?x8BckbzsZMjRHf+EsOwEP9Vdb3dmwSHmLzXfeD6u7JXbSLMk9akRxSla+g7j?=
+ =?us-ascii?Q?mXFC47fPtIOVmyRCv9ZAgSg90SKkUMCn5+ji8X2b/8mYlab7eYpWf8lD3srR?=
+ =?us-ascii?Q?OCJDNzEUYsD9b7FjinaMWQm3d1k192B4sDrfN2eRsxDOdsbXxknYWh2CV+wM?=
+ =?us-ascii?Q?YqUW3mj9nGOKE5TRmjovt3GsD+ZthYIJEFcJvuLWnRUSXZ647It6J+abkBRG?=
+ =?us-ascii?Q?ijpV/Wmf3VmbNNmT8XpabnxnFFFwIOFTIyOSOeNVhw/BJnwldutM7EEUT99u?=
+ =?us-ascii?Q?uoWP8FXrjmnpKoWHtsgk62pvic88IGvCYOHzjf0KP3k7q0xRW+5CcvSBxpih?=
+ =?us-ascii?Q?U3vX4va00m37Bs+e7sNVgTR0H2tEV3a2+p7LseNjS45pWvxJlMhmiTJTeJ53?=
+ =?us-ascii?Q?3mVOzkvsgLv4k8fpe2lc0mBr7qWg1TCHujLJ3bRR9UVR9JFRuKaJBfsxsLC8?=
+ =?us-ascii?Q?8Q=3D=3D?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f1363fa9-4d34-4d55-5a06-08da9c4f18e6
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR1001MB2345.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Sep 2022 04:01:16.2164
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: x4b/KIjm6wjE1pfh1WLCzLpErhoSxJtC7xSJD/VaFzZtmwoOwh+OQAkM25GxJR6MLhomjMxwU9j1gdJL6ck8o9Uoix1XicaoJ6ZBRSDQUes=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN0PR10MB5158
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch series is a continuation to add support for the VSC7512:
+https://patchwork.kernel.org/project/netdevbpf/list/?series=674168&state=*
 
---MTrYSV5QHljcKwmR
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+That series added the framework and initial functionality for the
+VSC7512 chip. Several of these patches grew during the initial
+development of the framework, which is why v1 will include changelogs.
+It was during v9 of that original MFD patch set that these were dropped.
 
-On Wed, Sep 21, 2022 at 02:47:45PM +0200, Oleksij Rempel wrote:
-> +PSE_GET
-> +=3D=3D=3D=3D=3D=3D=3D
-> +
-> +Gets PSE attributes.
-> +
-> +Request contents:
-> +
-> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D  =3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> +  ``ETHTOOL_A_PSE_HEADER``               nested  request header
-> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D  =3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> +
-> +Kernel response contents:
-> +
-> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D  =3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D
-> +  ``ETHTOOL_A_PSE_HEADER``                nested  reply header
-> +  ``ETHTOOL_A_PODL_PSE_ADMIN_STATE``         u32  Operational state of t=
-he PoDL
-> +                                                  PSE functions
-> +  ``ETHTOOL_A_PODL_PSE_PW_D_STATUS``         u32  power detection status=
- of the
-> +                                                  PoDL PSE.
-> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D  =3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D
-> +
-> +When set, the optional ``ETHTOOL_A_PODL_PSE_ADMIN_STATE`` attribute iden=
-tifies
-> +the operational state of the PoDL PSE functions.  The operational state =
-of the
-> +PSE function can be changed using the ``ETHTOOL_A_PODL_PSE_ADMIN_CONTROL=
-``
-> +action. This option is corresponding to IEEE 802.3-2018 30.15.1.1.2
-> +aPoDLPSEAdminState. Possible values are:
+With that out of the way, the VSC7512 is mainly a subset of the VSC7514
+chip. The 7512 lacks an internal MIPS processor, but otherwise many of
+the register definitions are identical. That is why several of these
+patches are simply to expose common resources from
+drivers/net/ethernet/mscc/*.
 
-The IEEE 802.3-2018 keyword name can be enclosed within inline code block.
+This patch only adds support for the first four ports (swp0-swp3). The
+remaining ports require more significant changes to the felix driver,
+and will be handled in the future.
 
-> +When set, the optional ``ETHTOOL_A_PODL_PSE_PW_D_STATUS`` attribute iden=
-tifies
-> +the power detection status of the PoDL PSE.  The status depend on intern=
-al PSE
-> +state machine and automatic PD classification support. This option is
-> +corresponding to IEEE 802.3-2018 30.15.1.1.3 aPoDLPSEPowerDetectionStatu=
-s.
 
-Same here.
+v2
+    * Utilize common ocelot_reset routine (new patch 5, modified patch 13)
+    * Change init_regmap() routine to be string-based (new patch 8)
+    * Split patches where necessary (patches 9 and 14)
+    * Add documentation (patch 12) and MAINTAINERS (patch 13)
+    * Upgrade to PATCH status
 
-> +When set, the optional ``ETHTOOL_A_PODL_PSE_ADMIN_CONTROL`` attribute is=
- used
-> +to control PoDL PSE Admin functions. This option is implementing
-> +IEEE 802.3-2018 30.15.1.2.1 acPoDLPSEAdminControl. See
+v1 (from RFC v8 suggested above):
+    * Utilize the MFD framework for creating regmaps, as well as
+      dev_get_regmap() (patches 7 and 8 of this series)
 
-Same here too.
+Colin Foster (14):
+  net: mscc: ocelot: expose ocelot wm functions
+  net: mscc: ocelot: expose regfield definition to be used by other
+    drivers
+  net: mscc: ocelot: expose stats layout definition to be used by other
+    drivers
+  net: mscc: ocelot: expose vcap_props structure
+  net: mscc: ocelot: expose ocelot_reset routine
+  net: dsa: felix: add configurable device quirks
+  net: dsa: felix: populate mac_capabilities for all ports
+  net: dsa: felix: update init_regmap to be string-based
+  pinctrl: ocelot: avoid macro redefinition
+  mfd: ocelot: prepend resource size macros to be 32-bit
+  mfd: ocelot: add regmaps for ocelot_ext
+  dt-bindings: net: dsa: ocelot: add ocelot-ext documentation
+  net: dsa: ocelot: add external ocelot switch control
+  mfd: ocelot: add external ocelot switch control
 
-Otherwise LGTM.
+ .../bindings/net/dsa/mscc,ocelot.yaml         |  58 ++++++
+ MAINTAINERS                                   |   1 +
+ drivers/mfd/ocelot-core.c                     |  98 ++++++++-
+ drivers/net/dsa/ocelot/Kconfig                |  19 ++
+ drivers/net/dsa/ocelot/Makefile               |   5 +
+ drivers/net/dsa/ocelot/felix.c                |  69 +++++--
+ drivers/net/dsa/ocelot/felix.h                |   5 +-
+ drivers/net/dsa/ocelot/felix_vsc9959.c        |   3 +-
+ drivers/net/dsa/ocelot/ocelot_ext.c           | 194 ++++++++++++++++++
+ drivers/net/dsa/ocelot/seville_vsc9953.c      |   3 +-
+ drivers/net/ethernet/mscc/ocelot.c            |  48 ++++-
+ drivers/net/ethernet/mscc/ocelot_devlink.c    |  31 +++
+ drivers/net/ethernet/mscc/ocelot_vsc7514.c    | 181 +---------------
+ drivers/net/ethernet/mscc/vsc7514_regs.c      | 108 ++++++++++
+ drivers/pinctrl/pinctrl-ocelot.c              |   1 +
+ include/linux/mfd/ocelot.h                    |   5 +
+ include/soc/mscc/ocelot.h                     |   6 +
+ include/soc/mscc/vsc7514_regs.h               |   6 +
+ 18 files changed, 637 insertions(+), 204 deletions(-)
+ create mode 100644 drivers/net/dsa/ocelot/ocelot_ext.c
 
-Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
-
---=20
-An old man doll... just what I always wanted! - Clara
-
---MTrYSV5QHljcKwmR
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCYyvYNAAKCRD2uYlJVVFO
-o+8FAP4zK3UmIUdOQH+lNRAv2FK50AeVwbm1AMvGvBlNmvUuMQD/dfXyj23GsJk9
-OY1S/EdG8ybdI9p0U3BXMpirdVdCuAs=
-=B+4n
------END PGP SIGNATURE-----
-
---MTrYSV5QHljcKwmR--
+-- 
+2.25.1
