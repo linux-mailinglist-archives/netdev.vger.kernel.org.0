@@ -2,92 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE3AD5E5847
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 03:53:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E2895E586D
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 04:15:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230153AbiIVBxR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 21:53:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51108 "EHLO
+        id S231164AbiIVCPj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 22:15:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229704AbiIVBxQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 21:53:16 -0400
-Received: from dggsgout11.his.huawei.com (dggsgout11.his.huawei.com [45.249.212.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90AD6AB402;
-        Wed, 21 Sep 2022 18:53:13 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.30.67.143])
-        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4MXytR62f7zKPcM;
-        Thu, 22 Sep 2022 09:51:11 +0800 (CST)
-Received: from huaweicloud.com (unknown [10.175.102.38])
-        by APP2 (Coremail) with SMTP id Syh0CgD3SXMFwCtjbf7PBA--.33545S4;
-        Thu, 22 Sep 2022 09:53:11 +0800 (CST)
-From:   Wei Yongjun <weiyongjun@huaweicloud.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S229512AbiIVCPi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 22:15:38 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B8D24D81F;
+        Wed, 21 Sep 2022 19:15:29 -0700 (PDT)
+X-UUID: 9b8d627815ab4ea886bbf3e4b68af9d5-20220922
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=jSyECJmHSA/82hGI9rjL6xr8zQtVBlH0c/3uRbHeI0I=;
+        b=p+lf44+Lio1fo5R0xsSI1aO1zk+It3e1WbfJLnCdI6QJBcdjStsbwMdGKuzdWkvAOgWy6YUE3NqpH58xbWFd+r3h6LSehecE9dYYRe/Zv26JQGpu1+6S2aRVXvjh3WXJjNthAT7sbpkquuGHNPhBuye7sVc90Vzg3/HAUENerKQ=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.11,REQID:0a4cf8f8-7e6b-4b1d-b486-22acb43fa813,IP:0,U
+        RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
+        release,TS:0
+X-CID-META: VersionHash:39a5ff1,CLOUDID:97a739f7-6e85-48d9-afd8-0504bbfe04cb,B
+        ulkID:nil,BulkQuantity:0,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 9b8d627815ab4ea886bbf3e4b68af9d5-20220922
+Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw01.mediatek.com
+        (envelope-from <jianguo.zhang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1125236732; Thu, 22 Sep 2022 10:15:24 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs13n1.mediatek.inc (172.21.101.193) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Thu, 22 Sep 2022 10:15:23 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
+ Transport; Thu, 22 Sep 2022 10:15:22 +0800
+Message-ID: <d231f64e494f4badf8bbe23130b25594376c9882.camel@mediatek.com>
+Subject: Re: [PATCH v3 2/2] dt-bindings: net: snps,dwmac: add clk_csr
+ property
+From:   Jianguo Zhang <jianguo.zhang@mediatek.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+CC:     Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Lennart Franzen <lennart@lfdomain.com>,
-        Alexandru Tachici <alexandru.tachici@analog.com>
-Cc:     Wei Yongjun <weiyongjun1@huawei.com>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: [PATCH net-next] net: ethernet: adi: Fix return value check in adin1110_probe_netdevs()
-Date:   Thu, 22 Sep 2022 02:10:23 +0000
-Message-Id: <20220922021023.811581-1-weiyongjun@huaweicloud.com>
-X-Mailer: git-send-email 2.34.1
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Biao Huang <biao.huang@mediatek.com>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>
+Date:   Thu, 22 Sep 2022 10:15:22 +0800
+In-Reply-To: <bd460cfd-7114-b200-ab99-16fa3e2cff50@linaro.org>
+References: <20220921070721.19516-1-jianguo.zhang@mediatek.com>
+         <20220921070721.19516-3-jianguo.zhang@mediatek.com>
+         <bd460cfd-7114-b200-ab99-16fa3e2cff50@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type:   text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-X-CM-TRANSID: Syh0CgD3SXMFwCtjbf7PBA--.33545S4
-X-Coremail-Antispam: 1UD129KBjvdXoW7Gw43tFy7Aw1rKrWfWFykZrb_yoWkArgE9r
-        42vr1fWw4DKF12y3y2y3y5JFy2kF1kur95uF43t39xXryxWr18Xr4DW3srXry7Wrs5ZF90
-        qwnru3W7A3yaqjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbokYFVCjjxCrM7AC8VAFwI0_Gr0_Xr1l1xkIjI8I6I8E6xAIw20E
-        Y4v20xvaj40_JFC_Wr1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwV
-        A0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x02
-        67AKxVWxJr0_GcWl84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxV
-        AFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2
-        j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7x
-        kEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkE
-        bVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67
-        AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI
-        42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s
-        1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsG
-        vfC2KfnxnUUI43ZEXa7IU1zuWJUUUUU==
-X-CM-SenderInfo: 5zhl50pqjm3046kxt4xhlfz01xgou0bp/
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,T_SPF_TEMPERROR,
+        UNPARSEABLE_RELAY,URIBL_CSS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wei Yongjun <weiyongjun1@huawei.com>
+Dear Krzysztof,
 
-In case of error, the function get_phy_device() returns ERR_PTR()
-and never returns NULL. The NULL test in the return value check
-should be replaced with IS_ERR().
+	Thanks for your comment.
 
-Fixes: bc93e19d088b ("net: ethernet: adi: Add ADIN1110 support")
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
----
- drivers/net/ethernet/adi/adin1110.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+On Wed, 2022-09-21 at 10:24 +0200, Krzysztof Kozlowski wrote:
+> On 21/09/2022 09:07, Jianguo Zhang wrote:
+> > Add clk_csr property for snps,dwmac
+> > 
+> > Signed-off-by: Jianguo Zhang <jianguo.zhang@mediatek.com>
+> > ---
+> >  Documentation/devicetree/bindings/net/snps,dwmac.yaml | 5 +++++
+> >  1 file changed, 5 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> > b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> > index 491597c02edf..8cff30a8125d 100644
+> > --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> > +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> > @@ -288,6 +288,11 @@ properties:
+> >        is supported. For example, this is used in case of SGMII and
+> >        MAC2MAC connection.
+> >  
+> > +  clk_csr:
+> 
+> No underscores in node names. Missing vendor prefix.
+> 
+We will remane the property name 'clk_csr' as 'snps,clk-csr' and
+another driver patch is needed to align the name used in driver with
+the new name. 
+> > +    $ref: /schemas/types.yaml#/definitions/uint32
+> > +    description:
+> > +      Frequency division factor for MDC clock.
+> 
+> Can't common clock framework do the job? What is the MDC clock?
+> 
+MDC clock is used for ethernet MAC accessing PHY register by MDIO bus.
+There is frequency divider designed in ethernet internal HW to ensure
+that ethernet can get correct frequency of MDC colck and the vlaue of
+frequency divider can be got from DTS.
+> Best regards,
+> Krzysztof
 
-diff --git a/drivers/net/ethernet/adi/adin1110.c b/drivers/net/ethernet/adi/adin1110.c
-index 4dacb98e7e0a..eac4e27719ab 100644
---- a/drivers/net/ethernet/adi/adin1110.c
-+++ b/drivers/net/ethernet/adi/adin1110.c
-@@ -1582,9 +1582,9 @@ static int adin1110_probe_netdevs(struct adin1110_priv *priv)
- 		netdev->features |= NETIF_F_NETNS_LOCAL;
- 
- 		port_priv->phydev = get_phy_device(priv->mii_bus, i + 1, false);
--		if (!port_priv->phydev) {
-+		if (IS_ERR(port_priv->phydev)) {
- 			netdev_err(netdev, "Could not find PHY with device address: %d.\n", i);
--			return -ENODEV;
-+			return PTR_ERR(port_priv->phydev);
- 		}
- 
- 		port_priv->phydev = phy_connect(netdev,
+BRS
+Jianguo
 
