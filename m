@@ -2,107 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB2515E5D82
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 10:30:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CD505E5DA2
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 10:39:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230322AbiIVIaE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 04:30:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49320 "EHLO
+        id S230148AbiIVIjD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 04:39:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230216AbiIVI37 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 04:29:59 -0400
-Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E9EB12AC6;
-        Thu, 22 Sep 2022 01:29:38 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R561e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0VQRkpTA_1663835375;
-Received: from 30.221.128.159(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0VQRkpTA_1663835375)
-          by smtp.aliyun-inc.com;
-          Thu, 22 Sep 2022 16:29:36 +0800
-Message-ID: <cd996f1e-5ebf-c253-6a87-ce0e055b84c8@linux.alibaba.com>
-Date:   Thu, 22 Sep 2022 16:29:34 +0800
+        with ESMTP id S229531AbiIVIjB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 04:39:01 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A64A6AE7
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 01:39:00 -0700 (PDT)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MY7tS1sKnzHqK1;
+        Thu, 22 Sep 2022 16:36:48 +0800 (CST)
+Received: from cgs.huawei.com (10.244.148.83) by
+ kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 22 Sep 2022 16:38:58 +0800
+From:   Gaosheng Cui <cuigaosheng1@huawei.com>
+To:     <idosch@nvidia.com>, <petrm@nvidia.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <cuigaosheng1@huawei.com>
+CC:     <netdev@vger.kernel.org>
+Subject: [PATCH net-next,v2 0/4] Remove useless inline functions from net
+Date:   Thu, 22 Sep 2022 16:38:53 +0800
+Message-ID: <20220922083857.1430811-1-cuigaosheng1@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.12.0
-Subject: Re: [PATCH net] net/smc: Stop the CLC flow if no link to map buffers
- on
-From:   Wen Gu <guwen@linux.alibaba.com>
-To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1663656189-32090-1-git-send-email-guwen@linux.alibaba.com>
-In-Reply-To: <1663656189-32090-1-git-send-email-guwen@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-11.8 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
-        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.244.148.83]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemi500012.china.huawei.com (7.221.188.12)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+v2:
+  1. Take the wireless patch("mlxsw: reg: Remove unused inline function
+  mlxsw_reg_sftr2_pack()")out of the series.
+  2. Remove the entire SFTR-V2 register in the patch("mlxsw: reg: Remove
+  deprecated code about SFTR-V2 Register").
+  3. Change Subject prefix to "PATCH net-next".
+  Thanks for taking time to review the patch.
 
+v1:
+  This series contains a few cleanup patches, to remove unused
+  inline functions who's caller have been removed. Thanks!
 
-On 2022/9/20 14:43, Wen Gu wrote:
+Gaosheng Cui (4):
+  mlxsw: reg: Remove deprecated code about SFTR-V2 Register
+  neighbour: Remove unused inline function neigh_key_eq16()
+  net: Remove unused inline function sk_nulls_node_init()
+  net: Remove unused inline function dst_hold_and_use()
 
-> There might be a potential race between SMC-R buffer map and
-> link group termination.
-> 
-> smc_smcr_terminate_all()     | smc_connect_rdma()
-> --------------------------------------------------------------
->                               | smc_conn_create()
-> for links in smcibdev        |
->          schedule links down  |
->                               | smc_buf_create()
->                               |  \- smcr_buf_map_usable_links()
->                               |      \- no usable links found,
->                               |         (rmb->mr = NULL)
->                               |
->                               | smc_clc_send_confirm()
->                               |  \- access conn->rmb_desc->mr[]->rkey
->                               |     (panic)
-> 
-> During reboot and IB device module remove, all links will be set
-> down and no usable links remain in link groups. In such situation
-> smcr_buf_map_usable_links() should return an error and stop the
-> CLC flow accessing to uninitialized mr.
-> 
-> Fixes: b9247544c1bc ("net/smc: convert static link ID instances to support multiple links")
-> Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
-> ---
->   net/smc/smc_core.c | 5 ++++-
->   1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-> index ebf56cd..df89c2e 100644
-> --- a/net/smc/smc_core.c
-> +++ b/net/smc/smc_core.c
-> @@ -2239,7 +2239,7 @@ static struct smc_buf_desc *smcr_new_buf_create(struct smc_link_group *lgr,
->   static int smcr_buf_map_usable_links(struct smc_link_group *lgr,
->   				     struct smc_buf_desc *buf_desc, bool is_rmb)
->   {
-> -	int i, rc = 0;
-> +	int i, rc = 0, cnt = 0;
->   
->   	/* protect against parallel link reconfiguration */
->   	mutex_lock(&lgr->llc_conf_mutex);
-> @@ -2252,9 +2252,12 @@ static int smcr_buf_map_usable_links(struct smc_link_group *lgr,
->   			rc = -ENOMEM;
->   			goto out;
->   		}
-> +		cnt++;
->   	}
->   out:
->   	mutex_unlock(&lgr->llc_conf_mutex);
-> +	if (!rc && !cnt)
-> +		rc = -EINVAL;
->   	return rc;
->   }
->   
+ drivers/net/ethernet/mellanox/mlxsw/reg.h | 71 -----------------------
+ include/net/dst.h                         |  6 --
+ include/net/neighbour.h                   |  5 --
+ include/net/sock.h                        |  5 --
+ 4 files changed, 87 deletions(-)
 
-Any comments or reviews are welcome and appreciated.
+-- 
+2.25.1
 
-Thanks,
-Wen Gu
