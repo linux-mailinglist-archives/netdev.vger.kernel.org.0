@@ -2,51 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81EFA5E626B
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 14:31:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B06D85E6287
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 14:35:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230410AbiIVMbR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 08:31:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55036 "EHLO
+        id S229972AbiIVMfS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 08:35:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229780AbiIVMbQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 08:31:16 -0400
+        with ESMTP id S231521AbiIVMfC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 08:35:02 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6814DED4D;
-        Thu, 22 Sep 2022 05:31:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C9C33343B
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 05:35:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4627161173;
-        Thu, 22 Sep 2022 12:31:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DDDDC433D6;
-        Thu, 22 Sep 2022 12:31:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CD4036103A
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 12:35:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9185AC433D6;
+        Thu, 22 Sep 2022 12:34:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663849874;
-        bh=uFdz3JBOBz05qZff1RLKZhqaV67IWYBxo2ez8Z2CzOE=;
+        s=k20201202; t=1663850100;
+        bh=RCho8NHeFy85b/l6zIypZJufIiArioxyCG12tYOLbFo=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qWrhEWR0UY4xaHYTV2EQ2Fs1kgSnoNZ3bPXvKLczegNIUkJ2a6d/H7+5/HAS67GuB
-         0d3u+e4M+ovg3My/M9CjKN+CywDDZkDmft2jeDe+uNNe7IVjXOktppa1TOYwBRtcqz
-         93GQviOnX2TXoijOwO3wgK6fuJt3xpJ+nj/PiBdWbNdcVRfgudRMuO6aq+W5PHiGji
-         55GUP5MvZyFWOzVKaZRtcnG+Hz44QrAJFbUBBAdYxiOUo6uk7gOu2/5kwj6G2Pi0zC
-         BNbKPlnxQfpL1zLka78PXsoRpY6OGXdAtIZfVpg2RuZ/ToLsoZOrtQ8SJ0RXD+Zvr1
-         P5ogMkENr17Vw==
-Date:   Thu, 22 Sep 2022 05:31:13 -0700
+        b=a0r8g/LxtCXQ6VpWpMt6MaMPOFM4vKLcFkGcKEYl8c/iwigoeeaktlh+xoojgVn2q
+         FuuGIwhIBuwlQcZWJnVrPEeq/sOfqmX0+0+rfzmUJ/RlHaVyX204jjDDINJna5o3zV
+         +2Tyi+io+UpNyO0GCrpTUA+ILzuViInpXObttuAUAQjBpu1YTHpv/97LxoUohpUODz
+         idluJ3QdVyRjN9Zo1SBzFGTyH9+TeOlDibyi2rHmJD9Da1iVRpfN7i57aViGTwfix2
+         r631uLXnSVjya9xaAakCeQ0UxOj5INsdtKZi4M0eDb3UtWI8jS4vaqvbKwDTex41ca
+         euZVUUX7azSlw==
+Date:   Thu, 22 Sep 2022 05:34:58 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, opendmb@gmail.com,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: Re: [PATCH net] net: phy: Warn about incorrect
- mdio_bus_phy_resume() state
-Message-ID: <20220922053113.250dc095@kernel.org>
-In-Reply-To: <20220801233403.258871-1-f.fainelli@gmail.com>
-References: <20220801233403.258871-1-f.fainelli@gmail.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Parav Pandit <parav@nvidia.com>, Gavin Li <gavinl@nvidia.com>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "jesse.brandeburg@intel.com" <jesse.brandeburg@intel.com>,
+        "alexander.h.duyck@intel.com" <alexander.h.duyck@intel.com>,
+        "sridhar.samudrala@intel.com" <sridhar.samudrala@intel.com>,
+        "jasowang@redhat.com" <jasowang@redhat.com>,
+        "loseweigh@gmail.com" <loseweigh@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+        Gavi Teitz <gavi@nvidia.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>
+Subject: Re: [PATCH v5 2/2] virtio-net: use mtu size as buffer length for
+ big packets
+Message-ID: <20220922053458.66f31136@kernel.org>
+In-Reply-To: <20220922060753-mutt-send-email-mst@kernel.org>
+References: <20220901021038.84751-1-gavinl@nvidia.com>
+        <20220901021038.84751-3-gavinl@nvidia.com>
+        <20220922052734-mutt-send-email-mst@kernel.org>
+        <PH0PR12MB5481374E6A14EFC39533F9A8DC4E9@PH0PR12MB5481.namprd12.prod.outlook.com>
+        <20220922060753-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -59,27 +70,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  1 Aug 2022 16:34:03 -0700 Florian Fainelli wrote:
-> Calling mdio_bus_phy_resume() with neither the PHY state machine set to
-> PHY_HALTED nor phydev->mac_managed_pm set to true is a good indication
-> that we can produce a race condition looking like this:
-> 
-> CPU0						CPU1
-> bcmgenet_resume
->  -> phy_resume
->    -> phy_init_hw
->  -> phy_start
->    -> phy_resume  
->                                                 phy_start_aneg()
-> mdio_bus_phy_resume
->  -> phy_resume
->     -> phy_write(..., BMCR_RESET)
->      -> usleep()                                  -> phy_read()  
-> 
-> with the phy_resume() function triggering a PHY behavior that might have
-> to be worked around with (see bf8bfc4336f7 ("net: phy: broadcom: Fix
-> brcm_fet_config_init()") for instance) that ultimately leads to an error
-> reading from the PHY.
+On Thu, 22 Sep 2022 06:14:59 -0400 Michael S. Tsirkin wrote:
+> It's nitpicking to be frank. v6 arrived while I was traveling
+> and I didn't notice it.  I see Jason acked that so I guess I will
+> just apply as is.
 
-Hi Florian! There were some follow ups on this one, were all the known
-reports covered at this point or there are still platforms to tweak?
+Oh, you wanna take it? The split on who takes virtio_net is a touch
+unclear but if it makes more sense here to go via virtio feel free to
+slap my ack on the v6.
