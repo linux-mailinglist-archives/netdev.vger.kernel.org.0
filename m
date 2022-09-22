@@ -2,112 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 319055E6CEA
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 22:19:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BE1D5E6CF3
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 22:21:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232796AbiIVUSx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 16:18:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40912 "EHLO
+        id S229612AbiIVUVo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 16:21:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232792AbiIVUSu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 16:18:50 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D73C9110B32
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 13:18:47 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id hy2so19881056ejc.8
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 13:18:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date;
-        bh=NDO0U2UAkxom6B/vKmGU6leLU1q56zq7MbA2ldNi6o8=;
-        b=EofDMRLPGnmrn7D2aMk2jnEyOUnqXxod4YuTMi74m9AdGAGIwnK6JMCkahvBdYeDPY
-         8p/+T38ry7VqjEEwvfs5/XBVWYVUUTVWDvrPnHqYaWNzhQuZqQOb4nV1pFqjqXGvD7rw
-         f2lukCsQAHY9XlEhDXo9VPx/8WycDhB19QE4Q1YCBkUJz7w+Abk4Zwp/z44cRQJXuV70
-         4VpC2s1FiHuWEcY3eGEpa5O4UkxwM7bK30XBMH5DUxVABHVk0k9EJKMFoYPQe1IZ7kEJ
-         VnOC6B+TKFx42PPcmrYUHr7DsDzXkFx9Gxz8nTtsMeeU7FOwGKXsp3nmyJRAhZMqd9a7
-         SAIw==
+        with ESMTP id S229663AbiIVUVm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 16:21:42 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1931B10F735
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 13:21:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1663878101;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=U8fW3xWTKzsefF2RvXPfAH5yzzaw8F3R8M4svnMlThM=;
+        b=YZSYSGKts9jgqeQCkuK36+H+BWBfYSTW28pRJYf+6FWoi37VXIk9AokyKC568SjHBiN8dp
+        GsKnvLJCIbHgMIcVPQc28KVLg+QI2p6/5Lqx9c6v2EA6HNddilMJFXtV2317RrEdaofrZr
+        HcxiQfsUe+rhxIW3qcRw2u4VjIGkNps=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-546-KP8-0G4_PVm44xp6kpZikA-1; Thu, 22 Sep 2022 16:21:37 -0400
+X-MC-Unique: KP8-0G4_PVm44xp6kpZikA-1
+Received: by mail-qv1-f69.google.com with SMTP id f9-20020ad442c9000000b004ac7f4fde18so7222595qvr.14
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 13:21:37 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=NDO0U2UAkxom6B/vKmGU6leLU1q56zq7MbA2ldNi6o8=;
-        b=hmDBro7kjPayiDxLogDYuC0oTTInCXS2NZeDOURUu2MI5ZcPpZ8RULarV7YQEeun15
-         6TT/MSUoKR5nbQ8Dsb4IaZUKGbriXsxvavrc1TSigutVSwyiYoEfd9hJfDLLBKM6Oa2L
-         zzGp9WuaDyNWjLoRS3OzO/wEpQu8eaTQBmLhx/FCHmiyS/A9+ZrOXQmrdkxFqW0hXW59
-         /e+U+Kt/Pc3E+95yUV5swYvANLErlRKH0Kt3AO0dYhrkrLjaS3QqLJ76cOb8y4LD8qiI
-         DEVGz3AozAx4cOXh4/ojUPQkAiN4mfE8H+ygPV8W5tPEmR3u++OVBXZLM5K6in5Wv1bc
-         zP1A==
-X-Gm-Message-State: ACrzQf1g2W7d/hCtHT9SXsbVlB3pxoqh5hW1EmGUWHgUsk7JGnEwesyz
-        SdFmb7/yiLyEkjfePSu1kiPKlm9OciuN+S/AneFhfA==
-X-Google-Smtp-Source: AMsMyM7BcrNg51Tr7q/VG0RhxQhzc7nQIizTaXOmikiRdK1UFJHN93ZpgyKsrarbFnUiA6hdfRJyFfcSBJiKI7HEnU8=
-X-Received: by 2002:a17:906:9b86:b0:73d:72cf:72af with SMTP id
- dd6-20020a1709069b8600b0073d72cf72afmr4232898ejc.440.1663877926361; Thu, 22
- Sep 2022 13:18:46 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220921001630.56765-1-konrad.dybcio@somainline.org>
- <83b90478-3974-28e6-cf13-35fc4f62e0db@marcan.st> <13b8c67c-399c-d1a6-4929-61aea27aa57d@somainline.org>
- <0e65a8b2-0827-af1e-602c-76d9450e3d11@marcan.st> <7fd077c5-83f8-02e2-03c1-900a47f05dc1@somainline.org>
- <CACRpkda3uryD6TOEaTi3pPX5No40LBWoyHR4VcEuKw4iYT0dqA@mail.gmail.com> <20220922133056.eo26da4npkg6bpf2@bang-olufsen.dk>
-In-Reply-To: <20220922133056.eo26da4npkg6bpf2@bang-olufsen.dk>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Thu, 22 Sep 2022 22:18:34 +0200
-Message-ID: <CACRpkdYwJLO18t08zqu_Y1gaSpZJMc+3MFxRUtQzLkJF2MqmqQ@mail.gmail.com>
-Subject: Re: [PATCH v2] brcmfmac: Add support for BCM43596 PCIe Wi-Fi
-To:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <ALSI@bang-olufsen.dk>
-Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Hector Martin <marcan@marcan.st>,
-        "~postmarketos/upstreaming@lists.sr.ht" 
-        <~postmarketos/upstreaming@lists.sr.ht>,
-        "martin.botka@somainline.org" <martin.botka@somainline.org>,
-        "angelogioacchino.delregno@somainline.org" 
-        <angelogioacchino.delregno@somainline.org>,
-        "marijn.suijten@somainline.org" <marijn.suijten@somainline.org>,
-        "jamipkettunen@somainline.org" <jamipkettunen@somainline.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>,
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=U8fW3xWTKzsefF2RvXPfAH5yzzaw8F3R8M4svnMlThM=;
+        b=LnualUw6dHlgEM00YFHrjtMvbUtPMnHh0vUTNL0QMTSkgkohc8c4xfGXymME3GUgQ8
+         grdueKc1zFlXUL3YNIFe8oPPS/S6cflfcNmu+5C4XzCAi0r34kSoTO/FZfRARbibSFaV
+         6TlGoGuoatRFS+q7oaBVA5DEpU4CNg34NDDECOd6zek1m7mYKD7LpxfRLVrgjdXhCHJ3
+         Lw6kTQ16pnv+AomqgB7ZKEJ2ICaBeyceQoC42W+qiBFJqoh0mqwFLN7JGZK7O/rHkPZq
+         CQhErbwXZcrz1nz1EHY0ZroD/91D7t1UdDnEUlblMXhaKlp6cB5WuMuArGR4/uBS/d/h
+         4zJQ==
+X-Gm-Message-State: ACrzQf3b81rQCoserHspbh9CgN3v1RMiMXXtI42Bc53EH9fPxgYxHM5N
+        fBgTyXbJvzjOChIndTn5Eq65SVpsZmCWaWCm4Fe/4CjOC+owSz4c6JBS/aMrF5KUd0L/8cplfKp
+        o3wTFefhqeQIW79As
+X-Received: by 2002:a05:620a:2115:b0:6cd:ef64:b287 with SMTP id l21-20020a05620a211500b006cdef64b287mr3536891qkl.704.1663878096909;
+        Thu, 22 Sep 2022 13:21:36 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM6WNjeixQ9lPXAh7qbAjL7NpZaZuOaUD2elIkefVm19/LUXKFOShuADxyQdmiENkyEamUL3BQ==
+X-Received: by 2002:a05:620a:2115:b0:6cd:ef64:b287 with SMTP id l21-20020a05620a211500b006cdef64b287mr3536879qkl.704.1663878096688;
+        Thu, 22 Sep 2022 13:21:36 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-104-76.dyn.eolo.it. [146.241.104.76])
+        by smtp.gmail.com with ESMTPSA id bs13-20020a05620a470d00b006b5d9a1d326sm4674707qkb.83.2022.09.22.13.21.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Sep 2022 13:21:36 -0700 (PDT)
+Message-ID: <da50974ca9a542b7a7c1596132ddffba6bb9d7af.camel@redhat.com>
+Subject: Re: [PATCH net-next] net: skb: introduce and use a single page frag
+ cache
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Marek Vasut <marex@denx.de>,
-        "Zhao, Jiaqing" <jiaqing.zhao@intel.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Soon Tak Lee <soontak.lee@cypress.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "brcm80211-dev-list.pdl@broadcom.com" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        "SHA-cyfmac-dev-list@infineon.com" <SHA-cyfmac-dev-list@infineon.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+        Jakub Kicinski <kuba@kernel.org>
+Date:   Thu, 22 Sep 2022 22:21:33 +0200
+In-Reply-To: <791065bb090ffe08f170e91bd7fabe0a5660ab53.camel@redhat.com>
+References: <59a54c9a654fe19cc9fb7da5b2377029d93a181e.1663778475.git.pabeni@redhat.com>
+         <e2bf192391a86358f5c7502980268f17682bb328.camel@gmail.com>
+         <cb3f22f20f3ecb8b049c3e590fd99c52006ef964.camel@redhat.com>
+         <1642882091e772bcdbf44e61fe5fce125a034e52.camel@gmail.com>
+         <d347ab0f1a1aaf370d7d2908122bd886c02ec983.camel@redhat.com>
+         <CAKgT0Uf-fDHD_g75PSO591WVHdtHuUJ+L=aWBWoiM3vHyzxRtw@mail.gmail.com>
+         <791065bb090ffe08f170e91bd7fabe0a5660ab53.camel@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 22, 2022 at 3:31 PM Alvin =C5=A0ipraga <ALSI@bang-olufsen.dk> w=
-rote:
+On Thu, 2022-09-22 at 18:29 +0200, Paolo Abeni wrote:
+> On Wed, 2022-09-21 at 14:44 -0700, Alexander Duyck wrote:
+> > On Wed, Sep 21, 2022 at 1:52 PM Paolo Abeni <pabeni@redhat.com> wrote:
+> > > In that case we will still duplicate a bit of code  -
+> > > this_cpu_ptr(&napi_alloc_cache) on both branches. gcc 11.3.1 here says
+> > > that the generated code is smaller without this change.
+> > 
+> > Why do you need to duplicate it? 
+> 
+> The goal was using a single local variable to track the napi cache and
+> the memory info. I thought ("was sure") that keeping two separate
+> variables ('nc' and 'page_frag' instead of 'nc' and 'pfmemalloc') would
+> produce the same amount of code. gcc says I'm wrong and you are right
+> ;)
+> 
+> I'll use that in v2, thanks!
 
-> I would also point out that the BCM4359 is equivalent to the
-> CYW88359/CYW89359 chipset, which we are using in some of our
-> products. Note that this is a Cypress chipset (identifiable by the
-> Version: ... (... CY) tag in the version string). But the FW Konrad is
-> linking appears to be for a Broadcom chipset.
+I'm sorry for being so noisy lately. I've to take back the above.
+Before I measured the code size with for debug builds. With non debug
+build the above schema does not reduce the instructions number.
 
-This just makes me think about Peter Robinsons seminar at
-LPC last week...
-"All types of wireless in Linux are terrible and why the vendors
-should feel bad"
-https://lpc.events/event/16/contributions/1278/attachments/1120/2153/wirele=
-ss-issues.pdf
+I'll share the code after some more testing.
 
-Yours,
-Linus Walleij
+Cheers,
+
+Paolo
+
