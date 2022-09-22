@@ -2,101 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E96A15E6DC8
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 23:13:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C0A05E6DD6
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 23:17:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230356AbiIVVNZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 17:13:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33056 "EHLO
+        id S230458AbiIVVRe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 17:17:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230258AbiIVVNY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 17:13:24 -0400
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2083.outbound.protection.outlook.com [40.107.102.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67B09DDD8F
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 14:13:19 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lRfWTViz/ANoMSG7u7x2fCSqA+0ObZcDdHo8NKKWM3XJMmqpImveptr9DZ3f38RsRiJhKYNRYlkArWK1cd7V8JAfnmShDQv2slg9viO9aIggjAlvt7rMPvJQUM+1ddlEjhVbyGpfstpkevUEQ8AE4je4Xq3RKiPasHbE8Hj25gMA5Nv7IjAaYQSTQiQj/GFwt5HCjPl0Tg50o+Io5rRlq8J+0MTxJ7JAcBjSgGCz+q0sZq8dAw9DmTbdxH/8+AJvi6TkBf8OrvF1Fp2Fs/3imt0DDu8qYgAVm3d05Vb6fZfv9xx7WLRjo/hgW1dUDor6MgTvxbh6x4TZXh8kckiGkA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jzliOa1rOCTgpQwjE3Jg/bouPhVQ2W7xNHkv3VXREo0=;
- b=dUUyEcVYhfLHMlPwW4nyOtUtXzJndliLVgyoWZM9DvkTNVkSaBbhOd3aYDc25GqFNMwqnE5AC9yNnEKxGjg2EI9kRHGLW5tvQ8mlzHRVVc98sqSLvIp/nW6aAdYgu42VfIUAMFJtfEfHFMaUWmO7v2pPdgteizsbl5Tt3DXvCh30H6N4tFIXEehvnF62FKU9RxTo1OBSohYpwLSiTbtcIqQOhu9m5fpzYDxhdIHjGxMw+iLSEB746/gxp0L0Gl7B/DU+FyLo8QzdYbdYPOMs5QZn4CwzR3SL0DY3NUQbagwBV5IdKYGKiLEh8rSVnk++J1dzl2B931PLBD1NwHKWdg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=fail (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
+        with ESMTP id S230517AbiIVVRd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 17:17:33 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6CD610D664
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 14:17:30 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id b21so9984799plz.7
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 14:17:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=amdcloud.onmicrosoft.com; s=selector1-amdcloud-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jzliOa1rOCTgpQwjE3Jg/bouPhVQ2W7xNHkv3VXREo0=;
- b=yEtloHbcYl60uzQAl2wz1x79My7c5aCW38TTbiAlfwBq9e/UyZMg5y6BD7AVqMhfrszJUaWxbrBz4Tx8KX5OtDeX+0jWlzZT4SyXtEMHBIUcMjP83UFKIOR70tdlnq7h7za61puUdvj7ER3AWeQW5lJz/DO8pPetiOV5vjgyoIrU6lCJiwLQeAdkm5nk5m/gy5v3XixfLQomETqvB1uCYyGQM280gmdSRmR28BBM6wpWjxMR8zbobXv+AvgYW+3TWw5uhYa/PWPNd8qP5vzQG6NLIJ/3+V985edDP82TXxGsaUeankPj3B0iVUV9TKC1YXR7CUPskkxNv+e5h1qV+g==
-Received: from BN9PR03CA0177.namprd03.prod.outlook.com (2603:10b6:408:f4::32)
- by DS7PR12MB6141.namprd12.prod.outlook.com (2603:10b6:8:9b::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.16; Thu, 22 Sep
- 2022 21:13:17 +0000
-Received: from BN8NAM11FT018.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:f4:cafe::10) by BN9PR03CA0177.outlook.office365.com
- (2603:10b6:408:f4::32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.17 via Frontend
- Transport; Thu, 22 Sep 2022 21:13:17 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=fail action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
-Received: from SATLEXMB03.amd.com (165.204.84.17) by
- BN8NAM11FT018.mail.protection.outlook.com (10.13.176.89) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5654.14 via Frontend Transport; Thu, 22 Sep 2022 21:13:17 +0000
-Received: from SATLEXMB08.amd.com (10.181.40.132) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 22 Sep
- 2022 16:13:16 -0500
-Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB08.amd.com
- (10.181.40.132) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 22 Sep
- 2022 14:13:16 -0700
-Received: from xcbecree41x.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28 via Frontend
- Transport; Thu, 22 Sep 2022 16:13:15 -0500
-From:   <ecree@xilinx.com>
-To:     <netdev@vger.kernel.org>, <linux-net-drivers@amd.com>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <edumazet@google.com>, <habetsm.xilinx@gmail.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Andy Moreton <andy.moreton@amd.com>
-Subject: [PATCH net] sfc: correct filter_table_remove method for EF10 PFs
-Date:   Thu, 22 Sep 2022 22:12:18 +0100
-Message-ID: <20220922211218.814-1-ecree@xilinx.com>
-X-Mailer: git-send-email 2.27.0
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=1IpU1OQQhj4jva4GWHionpZ2OE70RQB3XVmWh6ZlAMs=;
+        b=Vd28LuLwOWrD4/X7wE2rdjyLMdtn4RXRzzSUc7+mXL0K6FwEFOYHFivfT/ZnoVeN5E
+         JtQz7OrwzyihooqrbVjEDei9Mke0GyJccY3hmc6yuuM1ymqU0C5EWC5tUWKr/PcaHsrR
+         nmNE6UjzoNnGZkEdCuk4TaCWhQvg9lgeovAOLP9sdzTYk9cl6t8O9nk2ZX1E2dixJlm+
+         +WZk3zii6sAKFSRGcSmt7w8ZaBIdjm1HrGoCxemfxL7VIDdNldxuiqqou+LeQp4SUqur
+         0pTXHFMUyaJOsG6xytFfA4PdVmNhTOV3FmHUUd+Z/tAQpsRaRW29RIx25yRRoOEThvAB
+         V5tQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=1IpU1OQQhj4jva4GWHionpZ2OE70RQB3XVmWh6ZlAMs=;
+        b=4TWmspVOXiH5SV8db7NKzeQIgVYf58XgfbfIVwYIKoayarlJXcSc/XqGeeMAxd4stI
+         zCff0UAXG9uRoehot1WXd8nXLKwOnmDrg0NioiDXPdv9efvAh6BJxkbFO3FC3ZXxgYxd
+         PBLMLlcM3MAOGxp6CBo2G4tghZ6InPWk8wYxXH2hhtGmC/DyE0fHu5aac3FA482w6xNp
+         9W5RTzoFBRF9MoQQT9sMeJFA48CAoLPU0CrIESf2qw3MBeO6y/pZNn+r/EMDPb1/d30y
+         On8vK9Aql4YlGI3qLyMzjx0PdXZKIOkUAnOvAqhq0H6TCYhWfDY7Gcar59JgLrMz7+7Q
+         2nlw==
+X-Gm-Message-State: ACrzQf3/OI1Xh9asjJvZ8hwot1c8noiv7hQckH5mJ0N4wpNgQ2DL+DSV
+        ROnS2fVEG/uqF2gIt5jC5ITllr3IljEgvlvSq2U=
+X-Google-Smtp-Source: AMsMyM6k6krvvHSPHteWtV/ITx016TgQ1/N0YSLrFAkSZwzuPb2y9ejcw8qpFbZApQ6qsmliUeE9+4cZzMBJP4XS7Ko=
+X-Received: by 2002:a17:90b:1b0e:b0:202:c913:221f with SMTP id
+ nu14-20020a17090b1b0e00b00202c913221fmr17488887pjb.211.1663881450060; Thu, 22
+ Sep 2022 14:17:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT018:EE_|DS7PR12MB6141:EE_
-X-MS-Office365-Filtering-Correlation-Id: 034c4bf0-7953-4cb4-5d7a-08da9cdf44f4
-X-MS-Exchange-SenderADCheck: 0
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 02y3AZfdB0HmMZjroBA7PGi1roU+IJewhNoUFz7jnd6Om9l9v1Gz9vzL3+yZZjEGHsTEN0GQTQw8uViWEoOk6G2IrnJwC7DWzGQFx7RswJmJVBpa7Z6wRwAiLeC8QJe8daREyfxqL2h9T8r9iZaM6ksuyYG3ohq+SgowjKbj4bybAVxMZCCB98TPLDJKNzxcAwVb18xgMJKGAOg9pGxx6/8LORNst41MAdTn/m0TclA6xW4NQFvwEX6Fh/Ki7/1eAZI4kZ4xdfZUUpU/JwDhfd7eqPdv4CwQfOv76wONs00n0gltqjCYm3s4JhJ/G/GYUYl37ASn2Q8AG6BcNQbqHNUOhMNPy4doVjWtFIL2jrk5oEBvBTpT45Dz5Qw6hJ24R2mI96SRT/WOYncGoG61N0yfW01WY2cZpPhN7tHM4WD3Ui1YwW71GQEP5K0nKUgoQkD9lH3Z2douE0RWkTDjeM2v31Ox8X77FMepOx5eLAf9tx+chr+EN/btvU1/Bpygc+OSTx2O0MsY3TLYJFKawDcFWMkxr8yy1iJLf2QMmJfJB/Oh02whUkjZZ1AnACvvR8m29kveWywhbXAUh7FX//YxXaULDok/i0Agu0YDEgFSOp0f7F50wOHRlkroIjVVbpuGiJQjD6pm6W6rCNnkD2j/zKkmFJSmyWX0OOgre3SywhAznxJSnpuhjUKa+FPkPvOXsVjcizYUpNmg5LmoxmTaxFCvBU1vE6i9l4DuzdJ89s1eXt0R88JEh1KN1DKA6vfl+b+/6RR2q2u+DLpUihmdIfHFymAbh6q/2ZF0t1YbCJv25JhxMXQZyKaYDoxP
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(376002)(136003)(346002)(39860400002)(396003)(451199015)(40470700004)(36840700001)(46966006)(2906002)(8676002)(26005)(478600001)(47076005)(40480700001)(316002)(83170400001)(36756003)(40460700003)(54906003)(82740400003)(110136005)(2616005)(7696005)(36860700001)(82310400005)(8936002)(70586007)(186003)(81166007)(336012)(4326008)(41300700001)(1076003)(2876002)(5660300002)(356005)(70206006)(83380400001)(42882007)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Sep 2022 21:13:17.4070
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 034c4bf0-7953-4cb4-5d7a-08da9cdf44f4
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT018.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6141
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=no
+References: <162fe40c387cd395d633729fa4f2b5245531514a.1663879752.git.pabeni@redhat.com>
+In-Reply-To: <162fe40c387cd395d633729fa4f2b5245531514a.1663879752.git.pabeni@redhat.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Thu, 22 Sep 2022 14:17:18 -0700
+Message-ID: <CAKgT0Uc2qmKTeZMCTR3ZkibioxEwKHjKqLrnz-=cfSt+5TAv=g@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] net: skb: introduce and use a single page
+ frag cache
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -104,29 +67,277 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andy Moreton <andy.moreton@amd.com>
+On Thu, Sep 22, 2022 at 2:01 PM Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> After commit 3226b158e67c ("net: avoid 32 x truesize under-estimation
+> for tiny skbs") we are observing 10-20% regressions in performance
+> tests with small packets. The perf trace points to high pressure on
+> the slab allocator.
+>
+> This change tries to improve the allocation schema for small packets
+> using an idea originally suggested by Eric: a new per CPU page frag is
+> introduced and used in __napi_alloc_skb to cope with small allocation
+> requests.
+>
+> To ensure that the above does not lead to excessive truesize
+> underestimation, the frag size for small allocation is inflated to 1K
+> and all the above is restricted to build with 4K page size.
+>
+> Note that we need to update accordingly the run-time check introduced
+> with commit fd9ea57f4e95 ("net: add napi_get_frags_check() helper").
+>
+> Alex suggested a smart page refcount schema to reduce the number
+> of atomic operations and deal properly with pfmemalloc pages.
+>
+> Under small packet UDP flood, I measure a 15% peak tput increases.
+>
+> Suggested-by: Eric Dumazet <eric.dumazet@gmail.com>
+> Suggested-by: Alexander H Duyck <alexander.duyck@gmail.com>
 
-A previous patch added a wrapper function to take a lock around
- efx_mcdi_filter_table_remove(), but only changed EF10 VFs' method table
- to call it.  Change it in the PF method table too.
+Please update my email to <alexanderduyck@fb.com>.
 
-Fixes: 77eb40749d73 ("sfc: move table locking into filter_table_{probe,remove} methods")
-Signed-off-by: Andy Moreton <andy.moreton@amd.com>
-Signed-off-by: Edward Cree <ecree.xilinx@gmail.com>
----
- drivers/net/ethernet/sfc/ef10.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> ---
+> v1 -> v2:
+>  - better page_frag_alloc_1k() (Alex & Eric)
+>  - avoid duplicate code and gfp_flags misuse in __napi_alloc_skb() (Alex)
+> ---
+>  include/linux/netdevice.h |   1 +
+>  net/core/dev.c            |  17 ------
+>  net/core/skbuff.c         | 106 ++++++++++++++++++++++++++++++++++++--
+>  3 files changed, 102 insertions(+), 22 deletions(-)
+>
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index 9f42fc871c3b..a1938560192a 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -3822,6 +3822,7 @@ void netif_receive_skb_list(struct list_head *head);
+>  gro_result_t napi_gro_receive(struct napi_struct *napi, struct sk_buff *skb);
+>  void napi_gro_flush(struct napi_struct *napi, bool flush_old);
+>  struct sk_buff *napi_get_frags(struct napi_struct *napi);
+> +void napi_get_frags_check(struct napi_struct *napi);
+>  gro_result_t napi_gro_frags(struct napi_struct *napi);
+>  struct packet_offload *gro_find_receive_by_type(__be16 type);
+>  struct packet_offload *gro_find_complete_by_type(__be16 type);
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index d66c73c1c734..fa53830d0683 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -6358,23 +6358,6 @@ int dev_set_threaded(struct net_device *dev, bool threaded)
+>  }
+>  EXPORT_SYMBOL(dev_set_threaded);
+>
+> -/* Double check that napi_get_frags() allocates skbs with
+> - * skb->head being backed by slab, not a page fragment.
+> - * This is to make sure bug fixed in 3226b158e67c
+> - * ("net: avoid 32 x truesize under-estimation for tiny skbs")
+> - * does not accidentally come back.
+> - */
+> -static void napi_get_frags_check(struct napi_struct *napi)
+> -{
+> -       struct sk_buff *skb;
+> -
+> -       local_bh_disable();
+> -       skb = napi_get_frags(napi);
+> -       WARN_ON_ONCE(skb && skb->head_frag);
+> -       napi_free_frags(napi);
+> -       local_bh_enable();
+> -}
+> -
+>  void netif_napi_add_weight(struct net_device *dev, struct napi_struct *napi,
+>                            int (*poll)(struct napi_struct *, int), int weight)
+>  {
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index f1b8b20fc20b..00340b0cf6eb 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -134,8 +134,67 @@ static void skb_under_panic(struct sk_buff *skb, unsigned int sz, void *addr)
+>  #define NAPI_SKB_CACHE_BULK    16
+>  #define NAPI_SKB_CACHE_HALF    (NAPI_SKB_CACHE_SIZE / 2)
+>
+> +/* the compiler doesn't like 'SKB_TRUESIZE(GRO_MAX_HEAD) > 512', but we
+> + * can imply such condition checking the double word and MAX_HEADER size
+> + */
+> +#if PAGE_SIZE == SZ_4K && (defined(CONFIG_64BIT) || MAX_HEADER > 64)
+> +
+> +#define NAPI_HAS_SMALL_PAGE_FRAG       1
+> +
+> +/* specializzed page frag allocator using a single order 0 page
+> + * and slicing it into 1K sized fragment. Constrained to system
+> + * with:
+> + * - a very limited amount of 1K fragments fitting a single
+> + *   page - to avoid excessive truesize underestimation
+> + * - reasonably high truesize value for napi_get_frags()
+> + *   allocation - to avoid memory usage increased compared
+> + *   to kalloc, see __napi_alloc_skb()
+> + */
+> +
+> +struct page_frag_1k {
+> +       void *va;
+> +       u16 offset;
+> +       bool pfmemalloc;
+> +};
+> +
+> +static void *page_frag_alloc_1k(struct page_frag_1k *nc, gfp_t gfp)
+> +{
+> +       struct page *page;
+> +       int offset;
+> +
+> +       offset = nc->offset - SZ_1K;
+> +       if (likely(offset >= 0))
+> +               goto use_frag;
+> +
+> +       page = alloc_pages_node(NUMA_NO_NODE, gfp, 0);
+> +       if (!page)
+> +               return NULL;
+> +
+> +       nc->va = page_address(page);
+> +       nc->pfmemalloc = page_is_pfmemalloc(page);
+> +       offset = PAGE_SIZE - SZ_1K;
+> +       page_ref_add(page, offset / SZ_1K);
+> +
+> +use_frag:
+> +       nc->offset = offset;
+> +       return nc->va + offset;
+> +}
+> +#else
+> +#define NAPI_HAS_SMALL_PAGE_FRAG       0
+> +
+> +struct page_frag_1k {
+> +};
+> +
+> +static void *page_frag_alloc_1k(struct page_frag_1k *nc, gfp_t gfp_mask)
+> +{
+> +       return NULL;
+> +}
+> +
+> +#endif
+> +
+>  struct napi_alloc_cache {
+>         struct page_frag_cache page;
+> +       struct page_frag_1k page_small;
 
-diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
-index ee734b69150f..d1e1aa19a68e 100644
---- a/drivers/net/ethernet/sfc/ef10.c
-+++ b/drivers/net/ethernet/sfc/ef10.c
-@@ -4213,7 +4213,7 @@ const struct efx_nic_type efx_hunt_a0_nic_type = {
- 	.ev_test_generate = efx_ef10_ev_test_generate,
- 	.filter_table_probe = efx_ef10_filter_table_probe,
- 	.filter_table_restore = efx_mcdi_filter_table_restore,
--	.filter_table_remove = efx_mcdi_filter_table_remove,
-+	.filter_table_remove = efx_ef10_filter_table_remove,
- 	.filter_update_rx_scatter = efx_mcdi_update_rx_scatter,
- 	.filter_insert = efx_mcdi_filter_insert,
- 	.filter_remove_safe = efx_mcdi_filter_remove_safe,
+My suggestion earlier was to just make the 1k cache a page_frag_cache.
+It will allow you to reuse the same structure members and a single
+pointer to track them. Waste would be minimal since the only real
+difference between the structures is about 8B for the structure, and
+odds are the napi_alloc_cache allocation is being rounded up anyway.
+
+>         unsigned int skb_count;
+>         void *skb_cache[NAPI_SKB_CACHE_SIZE];
+>  };
+> @@ -143,6 +202,23 @@ struct napi_alloc_cache {
+>  static DEFINE_PER_CPU(struct page_frag_cache, netdev_alloc_cache);
+>  static DEFINE_PER_CPU(struct napi_alloc_cache, napi_alloc_cache);
+>
+> +/* Double check that napi_get_frags() allocates skbs with
+> + * skb->head being backed by slab, not a page fragment.
+> + * This is to make sure bug fixed in 3226b158e67c
+> + * ("net: avoid 32 x truesize under-estimation for tiny skbs")
+> + * does not accidentally come back.
+> + */
+> +void napi_get_frags_check(struct napi_struct *napi)
+> +{
+> +       struct sk_buff *skb;
+> +
+> +       local_bh_disable();
+> +       skb = napi_get_frags(napi);
+> +       WARN_ON_ONCE(!NAPI_HAS_SMALL_PAGE_FRAG && skb && skb->head_frag);
+> +       napi_free_frags(napi);
+> +       local_bh_enable();
+> +}
+> +
+>  void *__napi_alloc_frag_align(unsigned int fragsz, unsigned int align_mask)
+>  {
+>         struct napi_alloc_cache *nc = this_cpu_ptr(&napi_alloc_cache);
+> @@ -561,6 +637,7 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
+>  {
+>         struct napi_alloc_cache *nc;
+>         struct sk_buff *skb;
+> +       bool pfmemalloc;
+
+Rather than adding this I think you would be better off adding a
+struct page_frag_cache pointer. I will reference it here as "pfc".
+
+>         void *data;
+>
+>         DEBUG_NET_WARN_ON_ONCE(!in_softirq());
+> @@ -568,8 +645,10 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
+>
+>         /* If requested length is either too small or too big,
+>          * we use kmalloc() for skb->head allocation.
+> +        * When the small frag allocator is available, prefer it over kmalloc
+> +        * for small fragments
+>          */
+> -       if (len <= SKB_WITH_OVERHEAD(1024) ||
+> +       if ((!NAPI_HAS_SMALL_PAGE_FRAG && len <= SKB_WITH_OVERHEAD(1024)) ||
+>             len > SKB_WITH_OVERHEAD(PAGE_SIZE) ||
+>             (gfp_mask & (__GFP_DIRECT_RECLAIM | GFP_DMA))) {
+>                 skb = __alloc_skb(len, gfp_mask, SKB_ALLOC_RX | SKB_ALLOC_NAPI,
+> @@ -580,13 +659,30 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
+>         }
+>
+>         nc = this_cpu_ptr(&napi_alloc_cache);
+> -       len += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
+> -       len = SKB_DATA_ALIGN(len);
+>
+>         if (sk_memalloc_socks())
+>                 gfp_mask |= __GFP_MEMALLOC;
+>
+> -       data = page_frag_alloc(&nc->page, len, gfp_mask);
+> +       if (NAPI_HAS_SMALL_PAGE_FRAG && len <= SKB_WITH_OVERHEAD(1024)) {
+
+Then here you would add a line that would be:
+pfc = &nc->page_small;
+
+> +               /* we are artificially inflating the allocation size, but
+> +                * that is not as bad as it may look like, as:
+> +                * - 'len' less then GRO_MAX_HEAD makes little sense
+> +                * - larger 'len' values lead to fragment size above 512 bytes
+> +                *   as per NAPI_HAS_SMALL_PAGE_FRAG definition
+> +                * - kmalloc would use the kmalloc-1k slab for such values
+> +                */
+> +               len = SZ_1K;
+> +
+> +               data = page_frag_alloc_1k(&nc->page_small, gfp_mask);
+> +               pfmemalloc = nc->page_small.pfmemalloc;
+
+Instead of setting pfmemalloc you could just update the line below. In
+addition you would just be passing pfc as the parameter.
+
+> +       } else {
+
+Likewise here you would have the line:
+pfc = &nc->page;
+
+> +               len += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
+> +               len = SKB_DATA_ALIGN(len);
+> +
+> +               data = page_frag_alloc(&nc->page, len, gfp_mask);
+> +               pfmemalloc = nc->page.pfmemalloc;
+
+Again no need for the pfmemalloc and the alloc could just come from pfc
+
+> +       }
+> +
+>         if (unlikely(!data))
+>                 return NULL;
+>
+> @@ -596,7 +692,7 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
+>                 return NULL;
+>         }
+>
+> -       if (nc->page.pfmemalloc)
+> +       if (pfmemalloc)
+
+Instead of passing pfmemalloc you could just check pfc->pfmemalloc.
+Alternatively I wonder if it wouldn't be faster to just set the value
+directly based on frag_cache->pfmemalloc and avoid the conditional
+check entirely.
+
+>                 skb->pfmemalloc = 1;
+>         skb->head_frag = 1;
+>
+> --
+> 2.37.3
+>
