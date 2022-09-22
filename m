@@ -2,106 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F2A05E6314
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 15:02:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B27B45E6318
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 15:03:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231492AbiIVNCi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 09:02:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46298 "EHLO
+        id S231721AbiIVNDv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 09:03:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231587AbiIVNCg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 09:02:36 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB2D6E62EF
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 06:02:35 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id y3so20926456ejc.1
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 06:02:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=Axq7H5qz5D6MI0EvsspJL8ldneb6DxIs8+NccRlNB8M=;
-        b=dqSSc6KryNasQyX1LZJMFlF7m/rNJUtAffJyAUoMBDimtf0+3cI7dTvSiTiWKWCN0i
-         RlMIMePJSOJfG4D74Nsls8N7Du4yGXGO9bktr8bJSMzNwM83KDdiTFtnYyw6JwPgwQ3/
-         myQVeiSvZ50JEQPpDYZsmxH9907qXs2zENRpJ+oFNgTmwqpc5JBOnuKwjibDsXvhfaM+
-         w78WRl9he5dNTEH9AZZV0DHDxj2GlxOHlRgZ4ZEZOkl2liwgU2SkXRw3IVC/8w3LtsEj
-         /Z0Y4Fd4Xb8HyGDORAO5fm9miCmI2CC71f4AizNxASDwokOQMEyqoaWaLFdhE1Y55xjF
-         1Ckg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=Axq7H5qz5D6MI0EvsspJL8ldneb6DxIs8+NccRlNB8M=;
-        b=XFe4AzVTdvxECbufjHNuv43pmMyfTpWWRKgUwUatgXWwuy/EPjzTtrfHXiuAWT7E65
-         40dzBqcayHP+sJTB1VTVvSCej0jFO0Tlj5SB8VQkJhbzDMmvoDjpd08ahszPmwoSgSf0
-         t5hP+cpf4Vo3JtTFp8+e4wXQFTGHo2YJG0ziPm/Es9RIdnKl5ll1Lbrxm3NG4ZarJ03Y
-         AhKm9hWgEySF96GV3uXTCVYpRT5P3aHZcGCWB3IMyqksIDpXrOUE4pPiAFqLQNtdyJae
-         C5vE+MJsLbOeIk/v1Z/YjWCFwTXfrc03k/6dFvzrK0aekUiABzuAlTqcH1J6PUJmv5GM
-         90Bg==
-X-Gm-Message-State: ACrzQf2ZHgO69Sa+aXNk9EsuP9KpUb2Vo2IZNm+xHiR/wR+rfNcyYKTW
-        VsNYRBbUoXeUHsy3hQrv7FCHSdRfoBqtFsa83C5ZMg==
-X-Google-Smtp-Source: AMsMyM7RkeIoN5xxevDwjYJX0lGxQvtMfhzR0neHfBytZ84vtKjk+/z8r1Kekesvh6EJiuWsJNac81XrXggbBytFgIs=
-X-Received: by 2002:a17:907:7f19:b0:780:375d:61ec with SMTP id
- qf25-20020a1709077f1900b00780375d61ecmr2712125ejc.203.1663851744518; Thu, 22
- Sep 2022 06:02:24 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220921001630.56765-1-konrad.dybcio@somainline.org>
- <83b90478-3974-28e6-cf13-35fc4f62e0db@marcan.st> <13b8c67c-399c-d1a6-4929-61aea27aa57d@somainline.org>
- <0e65a8b2-0827-af1e-602c-76d9450e3d11@marcan.st> <7fd077c5-83f8-02e2-03c1-900a47f05dc1@somainline.org>
-In-Reply-To: <7fd077c5-83f8-02e2-03c1-900a47f05dc1@somainline.org>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Thu, 22 Sep 2022 15:02:12 +0200
-Message-ID: <CACRpkda3uryD6TOEaTi3pPX5No40LBWoyHR4VcEuKw4iYT0dqA@mail.gmail.com>
-Subject: Re: [PATCH v2] brcmfmac: Add support for BCM43596 PCIe Wi-Fi
-To:     Konrad Dybcio <konrad.dybcio@somainline.org>
-Cc:     Hector Martin <marcan@marcan.st>,
-        ~postmarketos/upstreaming@lists.sr.ht, martin.botka@somainline.org,
-        angelogioacchino.delregno@somainline.org,
-        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>,
+        with ESMTP id S230513AbiIVNDt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 09:03:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 909091ADAB
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 06:03:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A6F76118A
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 13:03:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C75DC433D6;
+        Thu, 22 Sep 2022 13:03:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1663851827;
+        bh=D63BxjWM8pb7QyIzYZLkrM1YkKp5VD5GwD7tuA6Ot6w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=iXuTldpMP/+4ZRcOp1gQc5fmV3466UnRkLiPV9WwyBSl4b6F4nv25K1JJCeMOx+sr
+         suOk+nUCOGPfpBqhi72sd29RIi4OUBahbNSCIf/90zrr4XboejROSlJf+/zH7+2ehk
+         3QCW/aYr5vRU4MFj0r+vqVu2fSGv2ANFBnD1OSRqDeLlbfj2LUkhuboGPrX3KGbSvV
+         zHu4Y9L3EjQfc/4+RAi8+vSoEe1nJ+opimNR9irzfPxn5CchFUSKXTFMBuQPtxFXmF
+         Xz96+DKFhEipXxBqYbgi54/3LAbtoZKbkKxSP3+Xf01g3C4SZhusbH69dGoy91hQqu
+         AF9BrjyJpiWNA==
+Date:   Thu, 22 Sep 2022 06:03:46 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Marek Vasut <marex@denx.de>,
-        "Zhao, Jiaqing" <jiaqing.zhao@intel.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Soontak Lee <soontak.lee@cypress.com>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Florent Fourcot <florent.fourcot@wifirst.fr>,
+        Nikolay Aleksandrov <razor@blackwall.org>
+Subject: Re: [PATCH net-next] rtnetlink: Honour NLM_F_ECHO flag in
+ rtnl_{new, set}link
+Message-ID: <20220922060346.280b3af8@kernel.org>
+In-Reply-To: <20220922110951.GA21605@debian.home>
+References: <20220921030721.280528-1-liuhangbin@gmail.com>
+        <20220921060123.1236276d@kernel.org>
+        <20220921161409.GA11793@debian.home>
+        <20220921155640.1f3dce59@kernel.org>
+        <20220922110951.GA21605@debian.home>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 22, 2022 at 12:21 PM Konrad Dybcio
-<konrad.dybcio@somainline.org> wrote:
+On Thu, 22 Sep 2022 13:09:51 +0200 Guillaume Nault wrote:
+> That's why I complained when RTM_NEWNSID tried to implement its own
+> notification mechanism:
+> https://lore.kernel.org/netdev/20191003161940.GA31862@linux.home/
+> 
+> I mean, let's just use the built-in mechanism, rather than reinventing
+> a new one every time the need comes up.
 
-> Also worth noting is the 'somc' bit, meaning there are probably *some* SONY
-> customizations, but that's also just a guess.
-
-What I have seen from BRCM customizations on Samsung phones is that
-the per-device customization of firmware seems to involve the set-up of
-some GPIO and power management pins. For example if integrated with
-an SoC that has autonomous system resume, or if some GPIO line has
-to be pulled to enable an external regulator or PA.
-
-To the best of my knowledge that customization is done by consultants
-from Broadcom when working with the device manufacturer, and
-eventually they roll a unique firmware for the device. Probably because
-the firmware can only be signed for execution by Broadcom?
-
-Yours,
-Linus Walleij
+See, when you say "let's just use the built-in mechanism" you worry 
+me again. Let's be clear that no new API should require the use of
+ECHO for normal operation, like finding out what the handle of an
+allocated object is.
