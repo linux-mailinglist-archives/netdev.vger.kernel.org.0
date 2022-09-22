@@ -2,182 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE3335E5B17
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 08:09:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E16115E5B43
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 08:22:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229540AbiIVGI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 02:08:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33288 "EHLO
+        id S229901AbiIVGWQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 02:22:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229771AbiIVGIz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 02:08:55 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5691AB514D;
-        Wed, 21 Sep 2022 23:08:53 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id t7so13705628wrm.10;
-        Wed, 21 Sep 2022 23:08:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:date:message-id:subject:mime-version:content-transfer-encoding
-         :from:from:to:cc:subject:date;
-        bh=l9Vt9e4Iu/ywfk86/2iuNNCQpd6QY/0DlVOVIc1eqdo=;
-        b=YBl4ihSnxU9ZTRCFHxaL1JD0OVt+0kKYO6cLSj7BuUigaW5/95+KwuMH6nE9583p21
-         Zxgv01yDsXQfI6iLVCSqdozNhqGKdp8Wz97vbHTDBTTFt/zCPuew9rL3TErBCfZDYzCz
-         gk82YNfDDQYXiKbdy0TYuA3J6MN2jisW/g9lRN5zxbPlcdZiEgyvKhpVIDaMYu6sQHhX
-         qKvmsBEFwBVDnHSZbqNm1CiRauvSAm4cFJlxvTbI1Kb6XQrgeEZUdunFswUvDbIwboRx
-         47+BsLwlnsYMudYia+QzeCtKnMBdcghBbRCFgBvWxNRnmqx030QJAqvZrGkUZm6Iib3x
-         FuTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:date:message-id:subject:mime-version:content-transfer-encoding
-         :from:x-gm-message-state:from:to:cc:subject:date;
-        bh=l9Vt9e4Iu/ywfk86/2iuNNCQpd6QY/0DlVOVIc1eqdo=;
-        b=6UUqBPQ13AuvVu/El3iFcjkR4LU/xKoF4JHo0F8WCVl6zfT/Tj6lPU1mB0rlrrz+t0
-         bRXIvVubsdxOkuuC6sMCaHN5JKDkuu1Qmmfqg3+cYug+qpc+rc5INESJDJ7//UTEEC2z
-         shWhDJD22m7UrsEUUt/nftWW5hN7fzNIFFvZocDZUcad9eA9D7F81zh5RrbVrK0veXZe
-         +FOg0xcthZyRmHsU1rNxW8C4GgeHBYWo7bF2X/XKK7NbKYVm5jX1YqISQXXjlTCneZkn
-         ShhxP2NEfNZDZOjW4p2B2vWnvH/JUYUbbYiRmJy2vEPpdz4bmpr+Q9hnFdrQBdFXMq5C
-         ZZyg==
-X-Gm-Message-State: ACrzQf2veYVev0MMWRYra20qTl5FjoFjhuz6tkcvR+iE5JHT1yDMXadx
-        cNiBZR4yk/l5IgrCi5X3tEN+fDADXxo=
-X-Google-Smtp-Source: AMsMyM5h2615R+UQW3LJpdmFCWx03h2ZueSfqHDx1cOTvqlI78sCwI5yQ3j+sNnoyHhB7jihGRFGiQ==
-X-Received: by 2002:a05:6000:1004:b0:22a:f5a7:747c with SMTP id a4-20020a056000100400b0022af5a7747cmr906324wrx.612.1663826931491;
-        Wed, 21 Sep 2022 23:08:51 -0700 (PDT)
-Received: from smtpclient.apple ([178.254.237.20])
-        by smtp.gmail.com with ESMTPSA id z8-20020a05600c0a0800b003a342933727sm6140143wmp.3.2022.09.21.23.08.50
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 21 Sep 2022 23:08:50 -0700 (PDT)
-From:   Martin Zaharinov <micron10@gmail.com>
-Content-Type: text/plain;
-        charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.120.0.1.13\))
-Subject: Bug Report Flowtable NFT with kernel 5.19.9
-Message-Id: <09BE0B8A-3ADF-458E-B75E-931B74996355@gmail.com>
-Date:   Thu, 22 Sep 2022 09:08:49 +0300
-To:     Florian Westphal <fw@strlen.de>,
-        Eric Dumazet <eric.dumazet@gmail.com>, pablo@netfilter.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>, netfilter-devel@vger.kernel.org,
-        netfilter <netfilter@vger.kernel.org>
-X-Mailer: Apple Mail (2.3654.120.0.1.13)
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229449AbiIVGWP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 02:22:15 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2085.outbound.protection.outlook.com [40.107.92.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A897751420
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 23:22:14 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iHQuL3+dM64p3Z7aIVwddfOzDsY3SQMzwhieRwKwatg6rCCyqITPvFrndwkclCSkVej2cek+UksCE0068DsV9MC3cN5K9JFDTh/UVR3RUUk5UXh0Cltrjr9Sq33zB6vdp3f4d8uRo4zcXyjlL4KKVnrRHZsZ3XrptPEQpQewDNdN/MSx8gTkle4f0wJnjNRxwkM91RgsY4ZFcX1CYg6Zolp7zlplyKDQFwpg219T3XeILZO9gsdO0HpGWZAHWht9Z8XQOLPnnyuLvm4sh5bqfX+eCBH2aPAykEqIIFvWRFmMQDk3HTQJMEvPrsxC/oXi7soss9KT99L2ZxstaJpyBw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Mfj4w1QjVBPlYI1/B9CCXK7lIGHnMQH6YaiOULHsZI8=;
+ b=e98L+FKO64OOr54iAe2MiTVK5Nq8IswwUnemg44QNlsRvQJwhSI9u+PluJHHW7CAoCvWrwmgJHx3kl5suC6z0/eNIKlshrUQ1qrjag0iVP3PykhJyxK5wvv965M2WmAXVCQfuTv7xwJ4j8ZiZh4sqdvZo+Gkta1pioc0rw24Jk0zHdf/irh9Uy7yrXOum8a/ADnCOdjL4N5aWHfJUQvVFzV4XkKpcEL6MELD3ma6IaBry4LDxFN6igGlZmYTsfBVFjRw0TBpqbMQc5G8Z3wEUt0UMWIKJqax5iiJhsSrKfNxQL7x7PHjK9ld88hPcISK508qkqtPVOHX9Elnz9YUUw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Mfj4w1QjVBPlYI1/B9CCXK7lIGHnMQH6YaiOULHsZI8=;
+ b=dhL9beCmvwHSnNE2cndmKaMxLKECllBPmGddHKFus7VrjQE5sx5JilSfiuf5y9je0ug4jAMfvzKmua2kdS9r25r0mE4zqmRgzbO9a4e0i/DYsDgYFf0vdrBOX5az9c9YHYR6G/1Z+o1kfk5gwHiTHi+Fga+OrYVt0CX/qBqoW36tgnu5s928XftqwAL4cgdy/x3vpYh+4xLSeaVg9HC7o0qorLzwy2QqOvrjKpBOWLMgz8XOEr95NP/DXFMMwLHx+XVmuyA7AHKCHsu/R3S5g7qBzFON5f785SxHcd8k2LyKUOqrOfaYchBrWh2shmwkgVgTh7Q/+jYdeqUURS9mlw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4373.namprd12.prod.outlook.com (2603:10b6:208:261::8)
+ by DS7PR12MB6237.namprd12.prod.outlook.com (2603:10b6:8:97::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5632.16; Thu, 22 Sep
+ 2022 06:22:13 +0000
+Received: from MN2PR12MB4373.namprd12.prod.outlook.com
+ ([fe80::4842:360d:be7:d2f]) by MN2PR12MB4373.namprd12.prod.outlook.com
+ ([fe80::4842:360d:be7:d2f%4]) with mapi id 15.20.5654.014; Thu, 22 Sep 2022
+ 06:22:12 +0000
+From:   Benjamin Poirier <bpoirier@nvidia.com>
+To:     netdev@vger.kernel.org
+Cc:     David Ahern <dsahern@kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH iproute2 0/4] monitor command fixes
+Date:   Thu, 22 Sep 2022 15:19:34 +0900
+Message-Id: <20220922061938.202705-1-bpoirier@nvidia.com>
+X-Mailer: git-send-email 2.37.2
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: TY2PR0101CA0002.apcprd01.prod.exchangelabs.com
+ (2603:1096:404:92::14) To MN2PR12MB4373.namprd12.prod.outlook.com
+ (2603:10b6:208:261::8)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4373:EE_|DS7PR12MB6237:EE_
+X-MS-Office365-Filtering-Correlation-Id: a7417e9a-beda-41f1-efe4-08da9c62c95a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: FaHGP6vlfVR0P6tWjuGGFJH81XhQjNBRrXGoZ71NL/RQGalWv19lMfONXAToc+OgagURrwX0YFIxgH0JX4RQD1aF3XQ4F9Awc7rbVF3PuVlwTiuMowGyBgSASrB6lsC+eR6UIDTm93BebVFdi05yyUBITrc9ozt7xiJ8wf3shCBP/nbEdMijTDMli9SQr+nLXKv2Jw5t9DYuAwGyFUKyAzqYJzmt3GUP/DKoeP+vakMLjXj53XqsNSVdagYYV91IjZEb2QBVOr3s0L0RaOfnrhAEhUnUfbSe6Az/AiX/q45bFXDlc/AIbgMT+zBcwS/rY8CEk3XMbjcSWMll4YkPcOg47hkwBipnEryLEvZQz5TPF8wk11dX1bctJCI37X7/7fl/D0BMVp7NxPfaJhQvoEJ5pBbpixWM6hszaj+T39UUoypz/676LLjjGOOomi0fK493XVl6LSOslMN6t91d31Pe2PIJB0hrU/WMz9P8vW9+VTmUm7JC4eRFS6yzi7SzKhrDe+oNDs0sXwXvBBmi6q+haZox14JMTHkf8M5Nx7riENdsCPoGP3O4fV2hD7LyC0KfqBsI29FljPEtBdeW6sbKkbEDjMrhKFExKjFpJ1bIrdmwBry2SRtbFLDzYLNlh7q9Y6W5QMk06UDtgfd2eZS5tZWpl7NdmOyunJpa2c1MiolsyIFrYmHMhqQrDoEueHdSZnjFMl0tZDk0i81mgg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4373.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(346002)(366004)(396003)(376002)(136003)(451199015)(6916009)(54906003)(4326008)(478600001)(4744005)(316002)(6486002)(86362001)(8676002)(66946007)(66556008)(41300700001)(66476007)(8936002)(83380400001)(26005)(6506007)(186003)(6512007)(6666004)(5660300002)(107886003)(38100700002)(2616005)(1076003)(36756003)(2906002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Rd2PUJA7wf0xnsy2w8CLfW0Hct7uRLt3jrUuDyVYffvZQVjq0pinhY5Dh/WM?=
+ =?us-ascii?Q?FL6POmiGYcmyCW58HxBqIZWcaS9plvg0IeDRxSEHW2nYAxpPzwyQCIKOGBZJ?=
+ =?us-ascii?Q?VqrrnAnhNXP8Bv89ZPe46E33JWQ4ZHQGJIuxrp8T5HQxC3zfICtC5C+EVNwk?=
+ =?us-ascii?Q?3T/tNbMsImOelSH4Ix1L0Lc+O96cnPLvWpXrei0eQhWjUDQ9m30fNti0z5Ts?=
+ =?us-ascii?Q?eRGOu12rV0Z1njjR0XUOdN0DoDoq2bzfBueK4s01fbp6/HPA3o3DbB2qT/pY?=
+ =?us-ascii?Q?AJl2mIyOhn7vMOfcCACkSBs2nAlpGMb9BSyyUH5HUgpb5lchwzZn+hbtpgJl?=
+ =?us-ascii?Q?N3+EGba30u4E2zzry9Cmti5R+AAsn7wawS2+GpJRc0G0Dg5RE67pkVEGCSCY?=
+ =?us-ascii?Q?cVG0kjtj3U4kRMFf2jEUua+uNt2TmBnYniH9Pqyp4VXIHaId8T35dieGvEHE?=
+ =?us-ascii?Q?LUAgrCHoL59rZQwhcFn/PTXjfEqX5JKM6lQftPESlLFdAMfEi5jFdE5uZGQ6?=
+ =?us-ascii?Q?T9iUoAFdIhorGdUvdhRtOD3NMqvCS8y9k24eoNCsmfgSL3fenA+kSKNMcai3?=
+ =?us-ascii?Q?1Sj1+cI2glLvbQa8WZQytOYCSIKDgMB6EajFTVy8hfOzHPOvtgbxbSCbh4QR?=
+ =?us-ascii?Q?auXJNhM/doL8yKJBdW/ZuVC7vCjcme7pGsilv9MPChThYCctiUjhQCadbT3k?=
+ =?us-ascii?Q?rBgzwCLUl+J16jocSEODzlV4h8VDnK2DXTuzEng1NUSTUX+PAWvAQtFs/iHY?=
+ =?us-ascii?Q?RKkaikK54XM0zG4Y9LV1DuNwfXT2HGPRi5AD93ZCOv7iLun35QaSlov/iWtm?=
+ =?us-ascii?Q?93TiAnjkKDuZ1ncZnaS0CFGw5Ev5L1Ef8FYF+kmiBSNwMhsWOt0uZEL4sD+U?=
+ =?us-ascii?Q?4OydoJ2SNUwM83Ivz7/BKe/WR+MUZxFjylyj634sYlD24oqlBocX9RDDg6S8?=
+ =?us-ascii?Q?7P5EVnEOc2BPyY6Iybq4alcmEN6Vv121HKFV4uLcDSYMYRPOrHA+St5uJ4dB?=
+ =?us-ascii?Q?uP5AhESvdYPodQHaq6otdTm6t/7mzNHvM2cTo5lWkkieuufVwKNn7cMQ5Odi?=
+ =?us-ascii?Q?1GOWl8K5NNIEQnhZ5KM8d/4LQB9rdLbemjG1kVlQO+rIJ0jzFxjpwXZEasrg?=
+ =?us-ascii?Q?T+VBRNBCMq2j2wbxgmXlghXY0KHuptWa4YsS2KyQHsdDOYIuNQpFMPKSyI25?=
+ =?us-ascii?Q?MTBVNF8yzmhfOHqFUTgLenzCL05BOOuGSWIsl5ej1QeXRujZqjBY3VZ5TTws?=
+ =?us-ascii?Q?55sdnAQXmk4VjA45k0ZzLPdoHq4Yiv6anWaFJJVY/Om8XRHxku3NVOZPTyJq?=
+ =?us-ascii?Q?gVUz51bmXZLPJXmC9HK7GviQMI32GKDXob7+AudPizXM+pwieyhKljN+WBMy?=
+ =?us-ascii?Q?05o+k38kWuZP6w9gyRjKQdVQwP1IqSIgnftuQmWJaXTt6Row2Ftv/dTwQU+w?=
+ =?us-ascii?Q?E9MO/o9FJnGqZYkfwwp3wbUmJkuD/emHvrvGYeYzbyN8j+ioi2WuxMCfQmC/?=
+ =?us-ascii?Q?4XoqVE+AuxDJYla9lk1uWGPwQzwOmGYEYcF3bbWHOuXQCh4t8J9OusOWPrt9?=
+ =?us-ascii?Q?/2ojVdL425FLyduMdHzzJ3bY2ek3vf7FQv1BNXVU?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a7417e9a-beda-41f1-efe4-08da9c62c95a
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4373.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Sep 2022 06:22:12.6348
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: A6QoNvBlRhK/S21N8AWMvVcyf/fGg+JKZvWKXFN52uyKbqZrLGaOOGfn3H+fthCz17ve3/g7tlk+KqHrSsoZrQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6237
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Florian,Pablo and Eric
+Fix problems in `bridge monitor` and `ip monitor` regarding the filtering
+of object types and address families.
 
-This is bug report for flowtable and kernel 5.19.9
+Benjamin Poirier (4):
+  bridge: Do not print stray prefixes in monitor mode
+  ip-monitor: Do not listen for nexthops by default when specifying
+    stats
+  ip-monitor: Include stats events in default and "all" cases
+  ip-monitor: Fix the selection of rtnl groups when listening for all
+    object types
 
-simple config nat + flowtable=20
+ bridge/br_common.h |   1 +
+ bridge/fdb.c       |   3 ++
+ bridge/link.c      |   4 ++
+ bridge/mdb.c       |   3 ++
+ bridge/monitor.c   |  35 ++++----------
+ bridge/vlan.c      |   4 ++
+ bridge/vni.c       |   4 ++
+ ip/ipmonitor.c     | 115 +++++++++++++++++----------------------------
+ 8 files changed, 71 insertions(+), 98 deletions(-)
 
+-- 
+2.37.2
 
-Sep 22 07:43:49  [460691.259144][   C28] ------------[ cut here =
-]------------
-Sep 22 07:43:49  [460691.305266][   C28] kernel BUG at =
-mm/vmalloc.c:2437!
-Sep 22 07:43:49  [460691.350494][   C28] invalid opcode: 0000 [#1] SMP
-Sep 22 07:43:49  [460691.394815][   C28] CPU: 28 PID: 0 Comm: swapper/28 =
-Tainted: G        W  O      5.19.9 #1
-Sep 22 07:43:49  [460691.438893][   C28] Hardware name: Supermicro =
-SYS-5038MR-H8TRF/X10SRD-F, BIOS 3.3 10/28/2020
-Sep 22 07:43:49  [460691.482545][   C28] RIP: =
-0010:__get_vm_area_node+0x120/0x130
-Sep 22 07:43:50  [460691.525384][   C28] Code: ff bd ff ff ff ff 48 0f =
-bd e8 b8 0c 00 00 00 ff c5 39 c5 0f 4c e8 b8 1e 00 00 00 39 c5 0f 4f e8 =
-c4 e2 d1 f7 e9 e9 2e ff ff ff <0f> 0b 4c 89 ff e8 86 80 01 00 45 31 ff =
-eb b6 90 41 57 41 56 41 55
-Sep 22 07:43:50  [460691.611308][   C28] RSP: 0018:ffffb484406c0950 =
-EFLAGS: 00010206
-Sep 22 07:43:50  [460691.653294][   C28] RAX: 00000000ffffffff RBX: =
-0000000000002b20 RCX: 0000000000000100
-Sep 22 07:43:50  [460691.694895][   C28] RDX: 0000000000000015 RSI: =
-0000000000200000 RDI: 0000000000400040
-Sep 22 07:43:50  [460691.735452][   C28] RBP: 0000000000000015 R08: =
-ffffb48440000000 R09: ffffd4843fffffff
-Sep 22 07:43:50  [460691.775139][   C28] R10: 0000000000000010 R11: =
-ffff9f0263dfc6c0 R12: 0000000000000422
-Sep 22 07:43:50  [460691.813944][   C28] R13: 0000000000400040 R14: =
-0000000000000015 R15: fffffffffffffff5
-Sep 22 07:43:50  [460691.851938][   C28] FS:  0000000000000000(0000) =
-GS:ffff9f089fd00000(0000) knlGS:0000000000000000
-Sep 22 07:43:50  [460691.889498][   C28] CS:  0010 DS: 0000 ES: 0000 =
-CR0: 0000000080050033
-Sep 22 07:43:50  [460691.926124][   C28] CR2: 0000000000460ea0 CR3: =
-000000023899a003 CR4: 00000000003706e0
-Sep 22 07:43:50  [460691.962349][   C28] DR0: 0000000000000000 DR1: =
-0000000000000000 DR2: 0000000000000000
-Sep 22 07:43:50  [460691.997569][   C28] DR3: 0000000000000000 DR6: =
-00000000fffe0ff0 DR7: 0000000000000400
-Sep 22 07:43:50  [460692.031617][   C28] Call Trace:
-Sep 22 07:43:50  [460692.064498][   C28]  <IRQ>
-Sep 22 07:43:50  [460692.096177][   C28]  =
-__vmalloc_node_range+0x96/0x1e0
-Sep 22 07:43:50  [460692.128014][   C28]  ? =
-bucket_table_alloc.isra.0+0x47/0x140
-Sep 22 07:43:50  [460692.160134][   C28]  kvmalloc_node+0x92/0xb0
-Sep 22 07:43:50  [460692.191885][   C28]  ? =
-bucket_table_alloc.isra.0+0x47/0x140
-Sep 22 07:43:50  [460692.224234][   C28]  =
-bucket_table_alloc.isra.0+0x47/0x140
-Sep 22 07:43:50  [460692.256840][   C28]  =
-rhashtable_try_insert+0x3a4/0x440
-Sep 22 07:43:50  [460692.288863][   C28]  =
-rhashtable_insert_slow+0x1b/0x30
-Sep 22 07:43:50  [460692.320345][   C28]  flow_offload_add+0x6e/0x130 =
-[nf_flow_table]
-Sep 22 07:43:50  [460692.351709][   C28]  =
-nft_flow_offload_eval+0x22c/0x2ab [nft_flow_offload]
-Sep 22 07:43:50  [460692.382998][   C28]  ? nft_rhash_lookup+0xe8/0x1b0 =
-[nf_tables]
-Sep 22 07:43:50  [460692.414226][   C28]  nft_do_chain+0x120/0x4c0 =
-[nf_tables]
-Sep 22 07:43:50  [460692.445492][   C28]  ? nft_do_chain+0x60/0x4c0 =
-[nf_tables]
-Sep 22 07:43:50  [460692.476915][   C28]  ? __dev_xmit_skb+0x1fc/0x4c0
-Sep 22 07:43:51  [460692.508318][   C28]  ? =
-fib_validate_source+0x37/0xd0
-Sep 22 07:43:51  [460692.539150][   C28]  ? __mkroute_input+0x102/0x310
-Sep 22 07:43:51  [460692.569601][   C28]  ? =
-ip_route_input_slow+0x394/0x8c0
-Sep 22 07:43:51  [460692.599666][   C28]  ? nf_conntrack_in+0x32f/0x500 =
-[nf_conntrack]
-Sep 22 07:43:51  [460692.629598][   C28]  nft_do_chain_inet+0x76/0xc0 =
-[nf_tables]
-Sep 22 07:43:51  [460692.659203][   C28]  nf_hook_slow+0x36/0xa0
-Sep 22 07:43:51  [460692.688275][   C28]  ip_forward+0x46c/0x4c0
-Sep 22 07:43:51  [460692.716786][   C28]  ? lookup+0x42/0xf0
-Sep 22 07:43:51  [460692.744774][   C28]  ? ip4_obj_hashfn+0xc0/0xc0
-Sep 22 07:43:51  [460692.772405][   C28]  =
-__netif_receive_skb_one_core+0x3f/0x50
-Sep 22 07:43:51  [460692.799925][   C28]  process_backlog+0x7c/0x110
-Sep 22 07:43:51  [460692.827146][   C28]  __napi_poll+0x20/0x100
-Sep 22 07:43:51  [460692.853971][   C28]  net_rx_action+0x26d/0x330
-Sep 22 07:43:51  [460692.880116][   C28]  __do_softirq+0xaf/0x1d7
-Sep 22 07:43:51  [460692.905939][   C28]  do_softirq+0x5a/0x80
-Sep 22 07:43:51  [460692.931585][   C28]  </IRQ>
-Sep 22 07:43:51  [460692.956920][   C28]  <TASK>
-Sep 22 07:43:51  [460692.981744][   C28]  =
-flush_smp_call_function_queue+0x3f/0x60
-Sep 22 07:43:51  [460693.006615][   C28]  do_idle+0xa6/0xc0
-Sep 22 07:43:51  [460693.031211][   C28]  cpu_startup_entry+0x14/0x20
-Sep 22 07:43:51  [460693.054932][   C28]  start_secondary+0xd6/0xe0
-Sep 22 07:43:51  [460693.077931][   C28]  =
-secondary_startup_64_no_verify+0xd3/0xdb
-Sep 22 07:43:51  [460693.100596][   C28]  </TASK>
-Sep 22 07:43:51  [460693.122724][   C28] Modules linked in: =
-nft_flow_offload nf_flow_table_inet nf_flow_table nf_nat_sip =
-nf_conntrack_sip nf_nat_pptp nf_conntrack_pptp nf_nat_tftp =
-nf_conntrack_tftp nf_nat_ftp nf_conntrack_ftp nft_limit =
-nf_conntrack_netlink pppoe pppox ppp_generic slhc nft_nat nft_chain_nat =
-nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 nf_tables netconsole =
-coretemp bonding i40e acpi_ipmi ipmi_si ipmi_devintf ipmi_msghandler =
-rtc_cmos
-Sep 22 07:43:51  [460693.225006][   C28] ---[ end trace 0000000000000000 =
-]---=
