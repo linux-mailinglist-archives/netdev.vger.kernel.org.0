@@ -2,60 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C16625E6D05
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 22:29:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DB3E5E6D08
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 22:31:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229695AbiIVU3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 16:29:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55640 "EHLO
+        id S229677AbiIVUbv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 16:31:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229543AbiIVU3t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 16:29:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA32B21821
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 13:29:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 61A7262A2B
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 20:29:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42458C433D6;
-        Thu, 22 Sep 2022 20:29:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663878586;
-        bh=03Be1RpJ0786D4CdXPypsQxN7I/vBRO0g/0H9iri/T0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tFzhCI7jUcHOnPBKVWigBUis82prI4+TZU95bBS4Bh46WaJZo4+gtHZg5bCNMQu9G
-         6xf55+3FrcEBYmaY0K9Y7tsBlNDShwc6pvOxMiwy0z6rArS9qgJsycn8+W8N/pEN+E
-         DV6kUTegBPuuqSKVgrzFI+jRhsampXlnOuV6byiphtMucm52s51OGUz7lGcIsBMDXl
-         qK7bSbMf7IcXhY0ADYxmBemtb9RsGMHQKqjzdI1CQCan0ovOAdh0nqEjB7JSh9TGj+
-         hs6xyT/7/FFsXpYrjapcRdeAXiVpzHk9kbhTtCQoyaIEhdbQSBqKU0QigpDaq2zLLP
-         kThBv29XZBXKQ==
-Date:   Thu, 22 Sep 2022 13:29:45 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Wilczynski, Michal" <michal.wilczynski@intel.com>
-Cc:     Edward Cree <ecree.xilinx@gmail.com>, <netdev@vger.kernel.org>,
-        <alexandr.lobakin@intel.com>, <dchumak@nvidia.com>,
-        <maximmi@nvidia.com>, <jiri@resnulli.us>,
-        <simon.horman@corigine.com>, <jacob.e.keller@intel.com>,
-        <jesse.brandeburg@intel.com>, <przemyslaw.kitszel@intel.com>
-Subject: Re: [RFC PATCH net-next v4 2/6] devlink: Extend devlink-rate api
- with queues and new parameters
-Message-ID: <20220922132945.7b449d9b@kernel.org>
-In-Reply-To: <9656fcda-0d63-06dc-0803-bc5f90ee44fd@intel.com>
-References: <20220915134239.1935604-1-michal.wilczynski@intel.com>
-        <20220915134239.1935604-3-michal.wilczynski@intel.com>
-        <f17166c7-312d-ac13-989e-b064cddcb49e@gmail.com>
-        <401d70a9-5f6d-ed46-117b-de0b82a5f52c@intel.com>
-        <20220921163354.47ca3c64@kernel.org>
-        <477ea14d-118a-759f-e847-3ba93ae96ea8@intel.com>
-        <20220922055040.7c869e9c@kernel.org>
-        <9656fcda-0d63-06dc-0803-bc5f90ee44fd@intel.com>
+        with ESMTP id S229499AbiIVUbt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 16:31:49 -0400
+Received: from mail.parknet.co.jp (mail.parknet.co.jp [210.171.160.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6A153109527
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 13:31:48 -0700 (PDT)
+Received: from ibmpc.myhome.or.jp (server.parknet.ne.jp [210.171.168.39])
+        by mail.parknet.co.jp (Postfix) with ESMTPSA id 758A72003FB8;
+        Fri, 23 Sep 2022 05:31:46 +0900 (JST)
+Received: from devron.myhome.or.jp (foobar@devron.myhome.or.jp [192.168.0.3])
+        by ibmpc.myhome.or.jp (8.17.1.9/8.17.1.9/Debian-1) with ESMTPS id 28MKVjWK090175
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Fri, 23 Sep 2022 05:31:46 +0900
+Received: from devron.myhome.or.jp (foobar@localhost [127.0.0.1])
+        by devron.myhome.or.jp (8.17.1.9/8.17.1.9/Debian-1) with ESMTPS id 28MKVjZO236857
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Fri, 23 Sep 2022 05:31:45 +0900
+Received: (from hirofumi@localhost)
+        by devron.myhome.or.jp (8.17.1.9/8.17.1.9/Submit) id 28MKVifF236856;
+        Fri, 23 Sep 2022 05:31:44 +0900
+From:   OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH iproute2] Fix segv on "-r" option if unknown rpc service
+In-Reply-To: <20220922120105.7a200fd2@hermes.local> (Stephen Hemminger's
+        message of "Thu, 22 Sep 2022 12:01:05 -0700")
+References: <87tu55q48x.fsf@mail.parknet.co.jp>
+        <20220922120105.7a200fd2@hermes.local>
+Date:   Fri, 23 Sep 2022 05:31:44 +0900
+Message-ID: <87sfkjcfrj.fsf@mail.parknet.co.jp>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/29.0.50 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,33 +49,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 22 Sep 2022 15:45:55 +0200 Wilczynski, Michal wrote:
-> On 9/22/2022 2:50 PM, Jakub Kicinski wrote:
-> > Anyway. My gut feeling is that this is cutting a corner. Seems
-> > most natural for the VF/PF level to be controlled by the admin
-> > and the queue level by whoever owns the queue. The hypervisor
-> > driver/FW should reconcile the two and compile the full hierarchy.  
-> 
-> We tried already tc-htb, and it doesn't work for a couple of reasons, 
-> even in this potential hybrid with devlink-rate. One of the problems
-> with tc-htb offload is that it forces you to allocate a new
-> queue, it doesn't allow for reassigning an existing queue to another 
-> scheduling node. This is our main use case.
-> 
-> Here's a discussion about tc-htb: 
-> https://lore.kernel.org/netdev/20220704114513.2958937-1-michal.wilczynski@intel.com/
+Stephen Hemminger <stephen@networkplumber.org> writes:
 
-This is a problem only for "SR-IOV case" or also for just the PF?
+> On Sun, 18 Sep 2022 02:50:54 +0900
+> OGAWA Hirofumi <hirofumi@mail.parknet.co.jp> wrote:
+>
+>> +		} else {
+>> +			const char fmt[] = "%s%u";
+>> +			char *buf = NULL;
+>> +			int len = snprintf(buf, 0, fmt, prog,
+>> +					   rhead->rpcb_map.r_prog);
+>> +			len++;
+>> +			buf = malloc(len);
+>> +			snprintf(buf, len, fmt, prog, rhead->rpcb_map.r_prog);
+>> +			c->name = buf;
+>>  		}
+>
+> Thanks for finding the bug but this could be improved.
+> This seems like the hard way to do this.
+> You are reinventing asprintf().
 
-> So either I would have to invent a new offload type (?) for tc, or 
-> completely rewrite and
-> probably break tc-htb that mellanox implemented.
-> Also in our use case it's possible to create completely new branches 
-> from the root and
-> reassigning queues there. This wouldn't be possible with the method 
-> you're proposing.
-> 
-> So existing interface doesn't allow us to do what is required.
+Right, if this project is assuming the extension is available.
 
-For some definition of "what is required" which was not really
-disclosed clearly. Or I'm to slow to grasp.
+> Would this work instead.
+
+Thanks.
+
+> diff --git a/misc/ss.c b/misc/ss.c
+> index ff985cd8cae9..9d3d0bd84df3 100644
+> --- a/misc/ss.c
+> +++ b/misc/ss.c
+> @@ -1596,6 +1596,10 @@ static void init_service_resolver(void)
+>                 if (rpc) {
+>                         strncat(prog, rpc->r_name, 128 - strlen(prog));
+>                         c->name = strdup(prog);
+> +               } else if (asprintf(&c->name, "%s%u",
+> +                                   prog, rhead->rpcb_map.r_prog) < 0) {
+> +                       fprintf(stderr, "ss: asprintf failed to allocate buffer\n");
+> +                       abort();
+>                 }
+>  
+>                 c->next = rlist;
+
+-- 
+OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
