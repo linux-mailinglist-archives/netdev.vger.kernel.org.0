@@ -2,41 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 122115E6049
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 12:59:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 285225E604E
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 13:00:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229918AbiIVK7A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 06:59:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58938 "EHLO
+        id S231296AbiIVLAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 07:00:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230310AbiIVK66 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 06:58:58 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFDEAD576E
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 03:58:55 -0700 (PDT)
-Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1obJuv-0004Hy-WC; Thu, 22 Sep 2022 12:58:54 +0200
-Message-ID: <fc761257-d8e2-8f3e-fd49-1584fe414c07@leemhuis.info>
-Date:   Thu, 22 Sep 2022 12:58:53 +0200
+        with ESMTP id S229563AbiIVLAW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 07:00:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A18B86894;
+        Thu, 22 Sep 2022 04:00:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DBCE661378;
+        Thu, 22 Sep 2022 11:00:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 415C4C433C1;
+        Thu, 22 Sep 2022 11:00:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1663844415;
+        bh=/nDuAkxffLxwSnNaChsoOns5y5I+Tn66KG5BIB3vunM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=XbeADh0LG1F7g19cPXtkCmmqDLfNqOh3xNEbNFGlc1m3mknxNkNbHsACD4zI/uMmS
+         MnagftY2MLnajfybYYG+9dx90rYIRJ92LlyWN5Hl8LS4CUYFyQyAU6V2vRX+nPdZgh
+         X5ohozo/yOlANRBLL2TfhbGbqULtV5E7oBeamFx09y24AHxGVmdBtDSXukQAd/K/eX
+         021/wSd0YIk7jtMBq9Mkt3LCcSLyv/H5knJyDTCtB78GLs3W2DHKs8zVUTvxJft4P2
+         DyuamhSknHvzJoRxODbp9L6ZPRbXI/jwZssHHS0eZzZV9BxJla+PDEheXCdYBy9QmR
+         uyCWFV3FcHhTg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 241BCE4D03C;
+        Thu, 22 Sep 2022 11:00:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Subject: Re: [REGRESSION] Re: [PATCH v2] net: fec: Use a spinlock to guard
- `fep->ptp_clk_on` #forregzbot
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-To:     regressions@lists.linux.dev
-Cc:     netdev@vger.kernel.org
-References: <20220901140402.64804-1-csokas.bence@prolan.hu>
- <20220914145317.GA1868385@roeck-us.net>
- <f026b273-472a-8af9-c9be-c08be0f60d53@leemhuis.info>
-Content-Language: en-US, de-DE
-In-Reply-To: <f026b273-472a-8af9-c9be-c08be0f60d53@leemhuis.info>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1663844335;eb312354;
-X-HE-SMSGID: 1obJuv-0004Hy-WC
-X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+Subject: Re: [PATCH net] net/smc: Stop the CLC flow if no link to map buffers on
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166384441514.19700.3392239951153800895.git-patchwork-notify@kernel.org>
+Date:   Thu, 22 Sep 2022 11:00:15 +0000
+References: <1663656189-32090-1-git-send-email-guwen@linux.alibaba.com>
+In-Reply-To: <1663656189-32090-1-git-send-email-guwen@linux.alibaba.com>
+To:     Wen Gu <guwen@linux.alibaba.com>
+Cc:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -44,36 +57,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18.09.22 20:59, Thorsten Leemhuis wrote:
-> TWIMC: this mail is primarily send for documentation purposes and for
-> regzbot, my Linux kernel regression tracking bot. These mails usually
-> contain '#forregzbot' in the subject, to make them easy to spot and filter.
-> 
-> On 14.09.22 15:53, Guenter Roeck wrote:
->> On Thu, Sep 01, 2022 at 04:04:03PM +0200, Csókás Bence wrote:
->>> Mutexes cannot be taken in a non-preemptible context,
->>> causing a panic in `fec_ptp_save_state()`. Replacing
->>> `ptp_clk_mutex` by `tmreg_lock` fixes this.
->>>
->>> Fixes: 6a4d7234ae9a ("net: fec: ptp: avoid register access when ipg clock is disabled")
->>> Fixes: f79959220fa5 ("fec: Restart PPS after link state change")
->>> Reported-by: Marc Kleine-Budde <mkl@pengutronix.de>
->>> Link: https://lore.kernel.org/all/20220827160922.642zlcd5foopozru@pengutronix.de/
->>> Signed-off-by: Csókás Bence <csokas.bence@prolan.hu>
->>
->> For regzbot:
-> 
-> Thanks for the report. To be sure below issue doesn't fall through the
-> cracks unnoticed, I'm adding it to regzbot, my Linux kernel regression
-> tracking bot:
-> 
-> #regzbot ^introduced b353b241f1eb9b626
-> #regzbot title net: fec: backtrace: BUG: sleeping function called from
-> invalid context at drivers/clk/imx/clk-pllv3.c
-> #regzbot ignore-activity
-> #regzbot monitor:
-> https://lore.kernel.org/all/20220912073106.2544207-1-bence98@sch.bme.hu/
-> #regzbot monitor:
-> https://lore.kernel.org/all/20220912070143.98153-1-francesco.dolcini@toradex.com/
+Hello:
 
-#regzbot fixed-by: 01b825f997ac28f
+This patch was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
+
+On Tue, 20 Sep 2022 14:43:09 +0800 you wrote:
+> There might be a potential race between SMC-R buffer map and
+> link group termination.
+> 
+> smc_smcr_terminate_all()     | smc_connect_rdma()
+> --------------------------------------------------------------
+>                              | smc_conn_create()
+> for links in smcibdev        |
+>         schedule links down  |
+>                              | smc_buf_create()
+>                              |  \- smcr_buf_map_usable_links()
+>                              |      \- no usable links found,
+>                              |         (rmb->mr = NULL)
+>                              |
+>                              | smc_clc_send_confirm()
+>                              |  \- access conn->rmb_desc->mr[]->rkey
+>                              |     (panic)
+> 
+> [...]
+
+Here is the summary with links:
+  - [net] net/smc: Stop the CLC flow if no link to map buffers on
+    https://git.kernel.org/netdev/net/c/e738455b2c6d
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
