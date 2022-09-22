@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A263A5E5A21
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 06:23:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A2745E5A4F
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 06:43:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229590AbiIVEXL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 00:23:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41994 "EHLO
+        id S229935AbiIVEnO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 00:43:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbiIVEXJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 00:23:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FFA6ADCE9;
-        Wed, 21 Sep 2022 21:23:09 -0700 (PDT)
+        with ESMTP id S229631AbiIVEnN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 00:43:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1721893226;
+        Wed, 21 Sep 2022 21:43:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D450633B2;
-        Thu, 22 Sep 2022 04:23:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B840CC433C1;
-        Thu, 22 Sep 2022 04:23:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A66D660E15;
+        Thu, 22 Sep 2022 04:43:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAD3DC433C1;
+        Thu, 22 Sep 2022 04:43:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663820588;
-        bh=Zu49OmzNGTlyM3kN/XVnev/23u/OswdAXVOA4hTUCm0=;
+        s=k20201202; t=1663821792;
+        bh=PhAbgL0g6IiPTeCsm/2ov7dmC59SuI25dD03BZIxxk0=;
         h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=TiyJW0ElUtMQ9OBf+XxHk/3od8zmIrLezqDbWrZiZoPaqcBzwwoMYJYCCpB2OwToq
-         bsSyUBOaqcDCFYWIhiDDYRenvwj9rpdisnwEi1U7UZsaQPsxOrViyLlKD1xvX9DbYP
-         JcZlDas9rael2YP3Wsx4Fq/LU3nQwn1/IkIFP/3pLSLFO9qmWxigeizm99z5kYneGU
-         HfoumbgxM3vPrrgw8wV2BXsyN88eP5iCNPX0jGsqhHI/sBL47BkBc1hOQGcfbT83o7
-         yFtGqcl2lEytlWD1NkqHdepGczfO1TjfTFD91UaKYI6dtBkKiDevhQ4ctt5Ve8gOGS
-         r8XlKhivAYSNw==
+        b=TY3LAUxKuiZf0lCB4i2rxsK8RJZcPtnuHNhubNMG3XhOS4LgwVH4YWlcg8YFqCyBl
+         JwtOcFLsnJ8GwbMj597NHiD982jm800vmWyGe8m+BiC5ka248IUxdOZfJ96pxHjrvr
+         lbwo3h8ReyH2gvDFbISBfRKu1N/SVhUYJGNxYsiE+eUSwuqLDC50ITYeJep77nnjcQ
+         sI3+Czi+qyS2uLNqKnu92Jh3Y+z/Z89TiE5/axdr+Y9GYoJ/COlG8PzpHLTBqUxn0r
+         wNjOYynuhrGOXYZMzh7qtV52L75kidJBcPFn2Mrjx1z611d16X+FxWHVs8lRTiTxGf
+         3cxYgzsEBwdWQ==
 From:   Kalle Valo <kvalo@kernel.org>
 To:     Alvin =?utf-8?Q?=C5=A0ipraga?= <alvin@pqrs.dk>
 Cc:     Arend van Spriel <aspriel@gmail.com>,
@@ -52,11 +52,11 @@ Cc:     Arend van Spriel <aspriel@gmail.com>,
 Subject: Re: [PATCH 6/6] brcmfmac: Update SSID of hidden AP while informing its bss to cfg80211 layer
 References: <20220722115632.620681-1-alvin@pqrs.dk>
         <20220722115632.620681-7-alvin@pqrs.dk>
-Date:   Thu, 22 Sep 2022 07:23:01 +0300
+Date:   Thu, 22 Sep 2022 07:43:03 +0300
 In-Reply-To: <20220722115632.620681-7-alvin@pqrs.dk> ("Alvin
  \=\?utf-8\?Q\?\=C5\=A0ipraga\=22's\?\=
         message of "Fri, 22 Jul 2022 13:56:31 +0200")
-Message-ID: <878rmc6nru.fsf@kernel.org>
+Message-ID: <874jx06mug.fsf@kernel.org>
 User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
@@ -87,14 +87,22 @@ er
 > to cfg80211 layer.
 >
 > Signed-off-by: Syed Rafiuddeen <syed.rafiuddeen@infineon.com>
-> Signed-off-by: Chung-Hsien Hsu <chung-hsien.hsu@infineon.com>
-> Signed-off-by: Chi-hsien Lin <chi-hsien.lin@infineon.com>
-> Signed-off-by: Alvin =C5=A0ipraga <alsi@bang-olufsen.dk>
 
-Infineon now submitted the same patch, I'll continue the review there:
+Syed's email address in From and s-o-b doesn't match.
 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220914033620.12=
-742-5-ian.lin@infineon.com/
+> @@ -3018,6 +3019,12 @@ static s32 brcmf_inform_single_bss(struct brcmf_cf=
+g80211_info *cfg,
+>  	notify_ielen =3D le32_to_cpu(bi->ie_length);
+>  	bss_data.signal =3D (s16)le16_to_cpu(bi->RSSI) * 100;
+>=20=20
+> +	ssid =3D brcmf_parse_tlvs(notify_ie, notify_ielen, WLAN_EID_SSID);
+> +	if (ssid && ssid->data[0] =3D=3D '\0' && ssid->len =3D=3D bi->SSID_len)=
+ {
+> +		/* Update SSID for hidden AP */
+> +		memcpy((u8 *)ssid->data, bi->SSID, bi->SSID_len);
+> +	}
+
+memcpy() takes a void pointer so the cast is not needed.
 
 --=20
 https://patchwork.kernel.org/project/linux-wireless/list/
