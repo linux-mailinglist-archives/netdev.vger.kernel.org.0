@@ -2,95 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A22975E5854
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 04:00:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE3AD5E5847
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 03:53:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229971AbiIVCAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 22:00:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58962 "EHLO
+        id S230153AbiIVBxR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 21:53:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229646AbiIVCAT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 22:00:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB01F6AA1D
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 19:00:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE3B362355
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 02:00:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2D186C433D6;
-        Thu, 22 Sep 2022 02:00:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663812017;
-        bh=sOxZSGN1m7wU/N0C7OkK8lUBcYZUQHN62+lwO7Zxq4Q=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=KDVvo07juMLaaFmV42wVLkmXluZW8AB7EI10Oeo6E+Jo6hft2FjdURs4xSN0cwGwO
-         44U357aDcLN2FGNKN1g5gEwR/lMeoMSlRe3iUY5n/DQ1qBh/HUn24ZQjzX4ecp1z+n
-         oqP1Ni3QqDvIxJBcnmcPCSWO1wLaUW6xsTrO11X7dM0CXlXFBLVEFNhP5m1o0q0Wle
-         wyJn5sj6URWiUNXdTm3j5lMylkUUy0SzuuUYcuC+DmH+HeBgwphfS0dDAhiWxa2vVB
-         eXNs24toHhJRFm3Sng5r+nxK6zQw87XzKfHA1wIUnuQA14gvNPsmUO7dtfFtqad5uW
-         8HW8xxYVx0yMw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 15165E21ECF;
-        Thu, 22 Sep 2022 02:00:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229704AbiIVBxQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 21:53:16 -0400
+Received: from dggsgout11.his.huawei.com (dggsgout11.his.huawei.com [45.249.212.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90AD6AB402;
+        Wed, 21 Sep 2022 18:53:13 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.30.67.143])
+        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4MXytR62f7zKPcM;
+        Thu, 22 Sep 2022 09:51:11 +0800 (CST)
+Received: from huaweicloud.com (unknown [10.175.102.38])
+        by APP2 (Coremail) with SMTP id Syh0CgD3SXMFwCtjbf7PBA--.33545S4;
+        Thu, 22 Sep 2022 09:53:11 +0800 (CST)
+From:   Wei Yongjun <weiyongjun@huaweicloud.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lennart Franzen <lennart@lfdomain.com>,
+        Alexandru Tachici <alexandru.tachici@analog.com>
+Cc:     Wei Yongjun <weiyongjun1@huawei.com>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH net-next] net: ethernet: adi: Fix return value check in adin1110_probe_netdevs()
+Date:   Thu, 22 Sep 2022 02:10:23 +0000
+Message-Id: <20220922021023.811581-1-weiyongjun@huaweicloud.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] flow_dissector: Do not count vlan tags inside tunnel payload
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166381201707.16388.1468731298104125114.git-patchwork-notify@kernel.org>
-Date:   Thu, 22 Sep 2022 02:00:17 +0000
-References: <20220919074808.136640-1-qingqing.yang@broadcom.com>
-In-Reply-To: <20220919074808.136640-1-qingqing.yang@broadcom.com>
-To:     Qingqing Yang <qingqing.yang@broadcom.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, boris.sukholitko@broadcom.com,
-        kurt@linutronix.de, f.fainelli@gmail.com, paulb@nvidia.com,
-        wojciech.drewek@intel.com, komachi.yoshiki@gmail.com,
-        ludovic.cintrat@gatewatcher.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type:   text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+X-CM-TRANSID: Syh0CgD3SXMFwCtjbf7PBA--.33545S4
+X-Coremail-Antispam: 1UD129KBjvdXoW7Gw43tFy7Aw1rKrWfWFykZrb_yoWkArgE9r
+        42vr1fWw4DKF12y3y2y3y5JFy2kF1kur95uF43t39xXryxWr18Xr4DW3srXry7Wrs5ZF90
+        qwnru3W7A3yaqjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbokYFVCjjxCrM7AC8VAFwI0_Gr0_Xr1l1xkIjI8I6I8E6xAIw20E
+        Y4v20xvaj40_JFC_Wr1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwV
+        A0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x02
+        67AKxVWxJr0_GcWl84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxV
+        AFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2
+        j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7x
+        kEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkE
+        bVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67
+        AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI
+        42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s
+        1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsG
+        vfC2KfnxnUUI43ZEXa7IU1zuWJUUUUU==
+X-CM-SenderInfo: 5zhl50pqjm3046kxt4xhlfz01xgou0bp/
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: Wei Yongjun <weiyongjun1@huawei.com>
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+In case of error, the function get_phy_device() returns ERR_PTR()
+and never returns NULL. The NULL test in the return value check
+should be replaced with IS_ERR().
 
-On Mon, 19 Sep 2022 15:48:08 +0800 you wrote:
-> We've met the problem that when there is a vlan tag inside
-> GRE encapsulation, the match of num_of_vlans fails.
-> It is caused by the vlan tag inside GRE payload has been
-> counted into num_of_vlans, which is not expected.
-> 
-> One example packet is like this:
-> Ethernet II, Src: Broadcom_68:56:07 (00:10:18:68:56:07)
->                    Dst: Broadcom_68:56:08 (00:10:18:68:56:08)
-> 802.1Q Virtual LAN, PRI: 0, DEI: 0, ID: 100
-> Internet Protocol Version 4, Src: 192.168.1.4, Dst: 192.168.1.200
-> Generic Routing Encapsulation (Transparent Ethernet bridging)
-> Ethernet II, Src: Broadcom_68:58:07 (00:10:18:68:58:07)
->                    Dst: Broadcom_68:58:08 (00:10:18:68:58:08)
-> 802.1Q Virtual LAN, PRI: 0, DEI: 0, ID: 200
-> ...
-> It should match the (num_of_vlans 1) rule, but it matches
-> the (num_of_vlans 2) rule.
-> 
-> [...]
+Fixes: bc93e19d088b ("net: ethernet: adi: Add ADIN1110 support")
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+---
+ drivers/net/ethernet/adi/adin1110.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Here is the summary with links:
-  - flow_dissector: Do not count vlan tags inside tunnel payload
-    https://git.kernel.org/netdev/net-next/c/9f87eb424699
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+diff --git a/drivers/net/ethernet/adi/adin1110.c b/drivers/net/ethernet/adi/adin1110.c
+index 4dacb98e7e0a..eac4e27719ab 100644
+--- a/drivers/net/ethernet/adi/adin1110.c
++++ b/drivers/net/ethernet/adi/adin1110.c
+@@ -1582,9 +1582,9 @@ static int adin1110_probe_netdevs(struct adin1110_priv *priv)
+ 		netdev->features |= NETIF_F_NETNS_LOCAL;
+ 
+ 		port_priv->phydev = get_phy_device(priv->mii_bus, i + 1, false);
+-		if (!port_priv->phydev) {
++		if (IS_ERR(port_priv->phydev)) {
+ 			netdev_err(netdev, "Could not find PHY with device address: %d.\n", i);
+-			return -ENODEV;
++			return PTR_ERR(port_priv->phydev);
+ 		}
+ 
+ 		port_priv->phydev = phy_connect(netdev,
 
