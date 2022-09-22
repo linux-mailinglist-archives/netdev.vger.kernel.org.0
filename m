@@ -2,97 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ADE035E675D
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 17:43:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E78CC5E678E
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 17:50:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231454AbiIVPnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 11:43:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51738 "EHLO
+        id S232079AbiIVPuo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 11:50:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231269AbiIVPnF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 11:43:05 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CCEDEFA66
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 08:43:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=yeZFoaSa/5FYUIcIZVxbuRFhkTOBmmc6ueKH8AJXCQ4=; b=3Ssw0umyTraWWvCIsBmOKtE8SI
-        FypD/wsJkv3tw59MWHcaA+6uz0Ma6CUR0jvwWOdYyf5koqasnA0Lai8c5NZz22cXJt+5OMtOAt0AR
-        7a0boFaoqTFLLM9IffssArIxeiolDpdEmrEzXeJDwoyfl0i5Na0NMKFJCJy0wduD8RKs=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1obOLp-00HY43-SO; Thu, 22 Sep 2022 17:42:57 +0200
-Date:   Thu, 22 Sep 2022 17:42:57 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        David Ahern <dsahern@kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH v2 iproute2-next] ip link: add sub-command to view and
- change DSA master
-Message-ID: <YyyCgQMTaXf9PXf9@lunn.ch>
-References: <20220921165105.1737200-1-vladimir.oltean@nxp.com>
- <20220921113637.73a2f383@hermes.local>
- <20220921183827.gkmzula73qr4afwg@skbuf>
- <20220921153349.0519c35d@hermes.local>
- <20220922144123.5z3wib5apai462q7@skbuf>
+        with ESMTP id S232123AbiIVPu0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 11:50:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C658DF87;
+        Thu, 22 Sep 2022 08:50:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EBF0FB838AB;
+        Thu, 22 Sep 2022 15:50:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8FD38C433D7;
+        Thu, 22 Sep 2022 15:50:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1663861815;
+        bh=P6g40CLQGzIX6ifmQmuwtYebzCG5vkEOzxXnaC8NY/8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=k8yH69AbCMPtTyFcTCZcpyilav0FBq5iuaWbGB0k5iizuxLBnyRR+WiO/xCQbEUXB
+         dW1AdF18CIOpc2mMOklhZrYgugWhJdLAjteGRPhjDpl3V4TXwLDjV2KAPkiVSJGE1t
+         YNjnFmWiZ7lkeRlEGEuBVw8uIXNRlmJ9RD4mFw/8F6CwHIx6I7BdP/9spERUklKxLm
+         rMgs1svBnnpvElmfpwYdD/tzYaYCHLQIFEl+kzmsoGhzDtpDbbKXzivteWWeClDReu
+         Ven7J3IpwNuh7MeAxpmOkV9FYnT+alH6Mn+VZVkli9t5xIKgns1jwHg5SvnrPgpCdT
+         bmrqV2/Yx6Vgw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7505AE4D03D;
+        Thu, 22 Sep 2022 15:50:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220922144123.5z3wib5apai462q7@skbuf>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [net-next] net: ethernet: adi: Fix invalid parent name length
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166386181547.2610.4116048326764999279.git-patchwork-notify@kernel.org>
+Date:   Thu, 22 Sep 2022 15:50:15 +0000
+References: <20220922063049.10388-1-alexandru.tachici@analog.com>
+In-Reply-To: <20220922063049.10388-1-alexandru.tachici@analog.com>
+To:     Alexandru Tachici <alexandru.andrei.tachici@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        vegard.nossum@oracle.com, joel@jms.id.au, l.stelmach@samsung.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 22, 2022 at 02:41:24PM +0000, Vladimir Oltean wrote:
-> On Wed, Sep 21, 2022 at 03:33:49PM -0700, Stephen Hemminger wrote:
-> > There is no reason that words with long emotional history need to be used
-> > in network command.
-> >
-> > https://inclusivenaming.org/word-lists/
-> >
-> > https://inclusivenaming.org/word-lists/tier-1/
-> >
-> > I understand that you and others that live in different geographies may
-> > have different feelings about this. But the goal as a community to
-> > not use names and terms that may hinder new diverse people from
-> > being involved.
+Hello:
+
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Thu, 22 Sep 2022 09:30:49 +0300 you wrote:
+> MII_BUS_ID_SIZE is larger than MAX_PHYS_ITEM_ID_LEN
+> so we use the former here to set the parent port id.
 > 
-> The Linux kernel community is centered around a technical goal rather
-> than political or emotional ones, and for this reason I don't think it's
-> appropriate to go here in many more details than this.
-> 
-> All I will say is that I have more things to do than time to do them,
-> and I'm not willing to voluntarily go even one step back about this and
-> change the UAPI names while the in-kernel data structures and the
-> documentation remain with the old names, because it's not going to stop
-> there, and I will never have time for this.
+> Fixes: bc93e19d088b ("net: ethernet: adi: Add ADIN1110 support")
+> Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
+> ---
+>  drivers/net/ethernet/adi/adin1110.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Yes, what is being asked for is a very thin veneer. Everything
-underneath still uses master, and that is very unlikely to change. Do
-we really gain anything with:
+Here is the summary with links:
+  - [net-next] net: ethernet: adi: Fix invalid parent name length
+    https://git.kernel.org/netdev/net-next/c/2b9977470b39
 
-.BI master " DEVICE"
-- change the DSA master (host network interface) responsible for handling the
-local traffic termination of the given DSA switch user port. The selected
-interface must be eligible for operating as a DSA master of the switch tree
-which the DSA user port is a part of. Eligible DSA masters are those interfaces
-which have an "ethernet" reference towards their firmware node in the firmware
-description of the platform, or LAG (bond, team) interfaces which contain only
-such interfaces as their ports.
-+
-+ Those who wish can also use the synonym aggregator in place of master
-+ in this command.
-+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-  Andrew
+
