@@ -2,54 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E4E15E66E4
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 17:20:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 975845E66FC
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 17:24:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229967AbiIVPUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 11:20:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44332 "EHLO
+        id S232127AbiIVPXz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 11:23:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230166AbiIVPUR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 11:20:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 919C07C777;
-        Thu, 22 Sep 2022 08:20:15 -0700 (PDT)
+        with ESMTP id S232026AbiIVPXw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 11:23:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F861F858A
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 08:23:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E6F561388;
-        Thu, 22 Sep 2022 15:20:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8766AC433D7;
-        Thu, 22 Sep 2022 15:20:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AB75C6361D
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 15:23:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4DD3C433D6;
+        Thu, 22 Sep 2022 15:23:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663860014;
-        bh=Y/UYpzSr1GDE1c2TA1atoaallVLMUhHYl0REHUJdcTY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Eop5zedDRJJAQd6MUsKKPvVths6VaEw+SnkkVXHClXyiuYDQ2kH89N/EbgIvD7QEM
-         rlzSS1JYWkKpKkWNCOzOrgR6tM8oc1z/uU//aumUHA+JNxFgw61qdxIJhr49m7Bdl3
-         DI9P2Qo+BwQVdqQUBlM6FCpYalU1T/RXw8LG+S04sW/xoBzBW2xVtSXsl4d+lNitjw
-         l264DWja94UtiDOUFqSEnW/k9jLlt1thvA/0SXAzOn+4ObQpBVXp2iOjrZm7YfeFQM
-         3BUt2Xkb6QFPCpxUUWSh2CPWo3ouXIhCWWDJ/8z3fKxWQL1TsEsH4dGSE6XpukhUHz
-         Nwx77PCQVHTgw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6A0BCE21ED1;
-        Thu, 22 Sep 2022 15:20:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1663860231;
+        bh=LAEX5cCEFf1NDGEF0tN2HavSK3D8M6bseQWsmZQhkWQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=LY3Obt99UC79MQAXv6L2NQsle92FI0ztsf8vP+PIKjjKGIyoadWnFrDxzZieVoQSc
+         6j6xur17ZLxqp++ifsEOFwPG5SrWK4hDVzpI46QrQNPwVOY14WLK9P30hpU2QJ+N+u
+         aEvFP5T10hVRTu/cVq2fusnU3XTVOgr4iLpPwpzsEWl/2q6LHDaOqjdd7DxIfLgh7L
+         YGcKVpgZzoVxyswtB3Yx1znVG3RJ6OSESrZaYt3jbuiGe6RKwTn7puj/kK0wyNaF39
+         o4go38w1HN43r5EUk/EbdhGzAKnx4qC04M5fnlHAsLU8jqcp3htEg4vceuSNLlD+XX
+         cgs0JLtI7B/Sw==
+Date:   Thu, 22 Sep 2022 08:23:49 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Paul Blakey <paulb@nvidia.com>, Vlad Buslov <vladbu@nvidia.com>,
+        Oz Shlomo <ozsh@nvidia.com>, Roi Dayan <roid@nvidia.com>,
+        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net 1/1] net: Fix return value of qdisc ingress handling
+ on success
+Message-ID: <20220922082349.18fb65d6@kernel.org>
+In-Reply-To: <2338579f-689f-4891-ec58-22ac4046dd5a@iogearbox.net>
+References: <1663750248-20363-1-git-send-email-paulb@nvidia.com>
+        <c322d8d6-8594-65a9-0514-3b6486d588fe@iogearbox.net>
+        <20220921074854.48175d87@kernel.org>
+        <2338579f-689f-4891-ec58-22ac4046dd5a@iogearbox.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf v3] xsk: inherit need_wakeup flag for shared sockets
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166386001443.15287.1242641673670233629.git-patchwork-notify@kernel.org>
-Date:   Thu, 22 Sep 2022 15:20:14 +0000
-References: <20220921135701.10199-1-jalal.a.mostapha@gmail.com>
-In-Reply-To: <20220921135701.10199-1-jalal.a.mostapha@gmail.com>
-To:     Jalal Mostafa <jalal.a.mostapha@gmail.com>
-Cc:     maciej.fijalkowski@intel.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, bjorn@kernel.org, magnus.karlsson@intel.com,
-        jonathan.lemon@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, daniel@iogearbox.net,
-        john.fastabend@gmail.com, hawk@kernel.org, ast@kernel.org,
-        linux-kernel@vger.kernel.org, jalal.mostafa@kit.edu
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -59,28 +60,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to bpf/bpf.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
-
-On Wed, 21 Sep 2022 13:57:01 +0000 you wrote:
-> The flag for need_wakeup is not set for xsks with `XDP_SHARED_UMEM`
-> flag and of different queue ids and/or devices. They should inherit
-> the flag from the first socket buffer pool since no flags can be
-> specified once `XDP_SHARED_UMEM` is specified.
+On Thu, 22 Sep 2022 16:47:14 +0200 Daniel Borkmann wrote:
+> >> Looks reasonable and aligns with sch_handle_egress() fwiw. I think your Fixes tag is wrong
+> >> since that commit didn't modify any of the above. This patch should also rather go to net-next
+> >> tree to make sure it has enough soak time to catch potential regressions from this change in
+> >> behavior.  
+> > 
+> > I don't think we do "soak time" in networking. Perhaps we can try
+> > to use the "CC: stable # after 4 weeks" delay mechanism which Greg
+> > promised at LPC?  
 > 
-> Fixes: b5aea28dca134 ("xsk: Add shared umem support between queue ids")
-> 
-> [...]
+> Isn't that implicit? If the commit has Fixes tag and lands in net-next, stable team
+> anyway automatically pulls it once everything lands in Linus' tree via merge win and
+> then does the backporting for stable.
 
-Here is the summary with links:
-  - [bpf,v3] xsk: inherit need_wakeup flag for shared sockets
-    https://git.kernel.org/bpf/bpf/c/60240bc26114
+What I meant is we don't merge fixes into net-next directly.
+Perhaps that's my personal view, not shared by other netdev maintainers.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+To me the 8 rc release process is fairly arbitrary timing wise.
+The fixes continue flowing in after Linus cuts final, plus only 
+after a few stable releases the kernel makes it to a wide audience.
 
+Putting a fix in -next gives us anywhere between 0 and 8 weeks of delay.
+Explicit delay on the tag seems much more precise and independent of
+where we are in the release cycle.
 
+The cases where we put something in -next, later it becomes urgent 
+and we can't get it to stable stand out in my memory much more than
+problems introduced late in the rc cycle.
