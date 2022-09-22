@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 47E045E6F92
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 00:21:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 815725E6F98
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 00:21:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231663AbiIVWVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 18:21:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38188 "EHLO
+        id S231675AbiIVWVQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 18:21:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231254AbiIVWVJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 18:21:09 -0400
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D69310F700
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 15:21:08 -0700 (PDT)
-Received: by mail-io1-xd33.google.com with SMTP id y141so8964830iof.5
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 15:21:08 -0700 (PDT)
+        with ESMTP id S231388AbiIVWVK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 18:21:10 -0400
+Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 507D610D0EA
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 15:21:09 -0700 (PDT)
+Received: by mail-il1-x12f.google.com with SMTP id i16so2637730ilq.0
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 15:21:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=xmsMzMwZV5ZOovBFH/X4I+q5eM58vu3t0RCGdrrJ4lo=;
-        b=lwk5GNqrV4OxPP8qp73gshHXz55xffiQpviZS/ZOTCHHSNl65LvN3ggIYjmO5dCpLr
-         Fs1n4D/MTlA9unQWakS2OsQZLJmgrDzJlQuYZwJ1a0+EFAVmYQ7HYjS6FbCFrUArfl8X
-         CMqugiEzrmfX607XfSUB+NyuToRFg6KRA9OZ/ccE6GfqynlnZVkyhZA8Q0dsmDRaZ5kf
-         m6GsxFiPKivasjIfTp65t4GxlIIZFMawNtLhYaV53HxpcCIBdCrSuVKmkeyedfxLqJ8j
-         rl1kTPr6Ju25tooQeuv9p+vESpBHaWcPAsbikY3DWOzNUVMV7IiKd/wShKcDGbI5pKro
-         psuw==
+        bh=DxN4skl57Ip6n+jQkYaK3Z/OC9a58fagmXeHv9SstKE=;
+        b=f0OWnnq6haiADOzRDBqpglUAw/QpO4xOSvS3uO0z1+eiKD+5DAD3rZnm/JJk59CXRm
+         X6xN/ft/h8HudpguVdNk2QVteTUI6i8v8JMR+QtxwczYFdjLtq5gZhsDmPrTa9G765/t
+         Ml7/fJl1fRpeJX5ZLKbtnVuUrNlhy6VZTn4t1yyc0MwK6CEGy44OmNCazBi3amkgrvBt
+         FKstrxkA9mPmpUmc2k++YqQXqcbaY7G6QbalvnPQAWG3/aME/dKu20T+rnSUtHGL3K5I
+         WLH3k6YKaayPZbhryrz7ZFuUrcQcuR+kgo/oDe3aQt1mlUS2QjX7vTHICmpmOIgtIcF/
+         7Q9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=xmsMzMwZV5ZOovBFH/X4I+q5eM58vu3t0RCGdrrJ4lo=;
-        b=Ap9h3xWrY5cdyNG886H+yVIWysXtx/tOqK97dbHIhiWoUUEV8N1J6QXCkG1fi1qapm
-         MMbAH4MhmvgxdSqr3PSNo0Dw57T4VL9GlLTg1rpUOKERFFrr88Vr9C48c1REkIcfyXAQ
-         W+DyAvGS5gjLM5KZACC+J6bK8kbSMvKFkMT7UwYXimCAZEBhn+9n6UaBKOFamgE8MqYP
-         OpmuT2vQDNyXDI+BgCcxN8dPIOwFZGrRnn5W7tMyiAWWVoJyQdilRu/cCwrG9aZ8n9gu
-         C+fxZELHqH6AGqtEb4p05PAfQGa+81R6yZKiuQWVGYKjwlM2yvQ8kUHYbiWEKu+kgudy
-         kQLQ==
-X-Gm-Message-State: ACrzQf3amEPEmoqsQ5DFNJkFKg+TDZlriRqbmlVyFo5TWaua4r3h8zeN
-        ug1fi6pSjFsRpb1EE9VwvlaelQ==
-X-Google-Smtp-Source: AMsMyM7C9xX0hkqYnTdMkfO0HNRWwamhjwDGRl38P9k/ct9i5H95W9s0SYARVEP+o9wrJgr8JAKAuA==
-X-Received: by 2002:a6b:b28b:0:b0:6a1:eb9e:bf62 with SMTP id b133-20020a6bb28b000000b006a1eb9ebf62mr2577093iof.87.1663885267395;
-        Thu, 22 Sep 2022 15:21:07 -0700 (PDT)
+        bh=DxN4skl57Ip6n+jQkYaK3Z/OC9a58fagmXeHv9SstKE=;
+        b=bPcDnjSS6bNuuBRzfSfFDYwUfJx6SQn1Svcut8on1m4lihcYnjQHij/LWHmnvhYPr+
+         28FQNhsmjo/MGstmkKPe3hGB50U9C5Xn+A/T+lnncm2VI+fJOuuGajoKaf1XqW77A/Rl
+         tnAC6aRwmxdU2CFx6CUtEAHiXso0t4VvsnyO93h2WFKabNoyjMxk3IStf/9TD+MIILf7
+         qxY9ndU6ia0X5u+oBO3JUGCh2h4YAhwEfM+uyOi05ZK22HDTxgsWdslimcfMVEcmDi30
+         ZDP9n8IzXzb8BEs0IrqJ7sLFwKkLrE6FnB7jLA0dURluSpvVO5QyBHCBRMKGBvJEmhTT
+         yOAw==
+X-Gm-Message-State: ACrzQf1ddt505O38nLGBQiQpqEJLgYOfVzzsCrMR890Ow+SoSlGHAmvX
+        PMz/KFyzC5JjAUBpu8uX9o89lA==
+X-Google-Smtp-Source: AMsMyM55tKcBQjxn0AOH07fVF51W4vb3otwirDCFcdPawDCpeJ6Vc4rJGLjSXT1CSbwHYRmVRlqQrw==
+X-Received: by 2002:a05:6e02:1c24:b0:2f6:2fae:a4b with SMTP id m4-20020a056e021c2400b002f62fae0a4bmr2929727ilh.131.1663885268500;
+        Thu, 22 Sep 2022 15:21:08 -0700 (PDT)
 Received: from localhost.localdomain ([98.61.227.136])
-        by smtp.gmail.com with ESMTPSA id g12-20020a92d7cc000000b002f592936fbfsm2483332ilq.41.2022.09.22.15.21.06
+        by smtp.gmail.com with ESMTPSA id g12-20020a92d7cc000000b002f592936fbfsm2483332ilq.41.2022.09.22.15.21.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Sep 2022 15:21:06 -0700 (PDT)
+        Thu, 22 Sep 2022 15:21:08 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com
@@ -56,9 +56,9 @@ Cc:     mka@chromium.org, evgreen@chromium.org, andersson@kernel.org,
         quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
         elder@kernel.org, netdev@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 3/8] net: ipa: rearrange functions for similarity
-Date:   Thu, 22 Sep 2022 17:20:55 -0500
-Message-Id: <20220922222100.2543621-4-elder@linaro.org>
+Subject: [PATCH net-next 4/8] net: ipa: define BCR values using an enum
+Date:   Thu, 22 Sep 2022 17:20:56 -0500
+Message-Id: <20220922222100.2543621-5-elder@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220922222100.2543621-1-elder@linaro.org>
 References: <20220922222100.2543621-1-elder@linaro.org>
@@ -74,143 +74,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Both aggr_time_limit_encode() and hol_block_timer_encode() figure
-out how to encode a millisecond time value so it can be programmed
-into a register.  Rearranging them a bit can make their similarity
-more obvious, with both taking essentially the same form.
+The backward compatibility register (BCR) has a set of bit flags
+that indicate ways in which the IPA hardware should operate in a
+backward compatible way.  The register is not supported starting
+with IPA v4.5, and where it is supported, defined bits all have the
+same numeric value.
 
-To do this:
-  - Return 0 immediately in aggr_time_limit_encode() if the
-    microseconds value supplied is zero.
-  - Reverse the test at top of aggr_time_limit_encode(), so we
-    compute and return the Qtime value in the "true" block,
-    and compute the result the old way otherwise.
-  - Open-code (and eliminate) hol_block_timer_qtime_encode() at the
-    top of hol_block_timer_encode() in the case we use Qtimer.
+Redefine these flags using an enumerated type, with each member's
+value representing the bit position that encodes it in the BCR.
+This replaces all of the single-bit field masks previously defined.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/ipa_endpoint.c | 86 ++++++++++++++++------------------
- 1 file changed, 41 insertions(+), 45 deletions(-)
+ drivers/net/ipa/data/ipa_data-v3.1.c   |  2 +-
+ drivers/net/ipa/data/ipa_data-v3.5.1.c | 10 +++++-----
+ drivers/net/ipa/ipa_reg.h              | 26 ++++++++++++--------------
+ 3 files changed, 18 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-index 7d91b423a1be7..6db62b6fb6632 100644
---- a/drivers/net/ipa/ipa_endpoint.c
-+++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -752,34 +752,38 @@ static int ipa_qtime_val(u32 microseconds, u32 max)
- /* Encode the aggregation timer limit (microseconds) based on IPA version */
- static u32 aggr_time_limit_encode(enum ipa_version version, u32 microseconds)
- {
--	u32 gran_sel;
- 	u32 fmask;
- 	u32 val;
--	int ret;
+diff --git a/drivers/net/ipa/data/ipa_data-v3.1.c b/drivers/net/ipa/data/ipa_data-v3.1.c
+index 1c1895aea8118..e0d71f6092729 100644
+--- a/drivers/net/ipa/data/ipa_data-v3.1.c
++++ b/drivers/net/ipa/data/ipa_data-v3.1.c
+@@ -526,7 +526,7 @@ static const struct ipa_power_data ipa_power_data = {
+ /* Configuration data for an SoC having IPA v3.1 */
+ const struct ipa_data ipa_data_v3_1 = {
+ 	.version	= IPA_VERSION_3_1,
+-	.backward_compat = BCR_CMDQ_L_LACK_ONE_ENTRY_FMASK,
++	.backward_compat = BIT(BCR_CMDQ_L_LACK_ONE_ENTRY),
+ 	.qsb_count	= ARRAY_SIZE(ipa_qsb_data),
+ 	.qsb_data	= ipa_qsb_data,
+ 	.endpoint_count	= ARRAY_SIZE(ipa_gsi_endpoint_data),
+diff --git a/drivers/net/ipa/data/ipa_data-v3.5.1.c b/drivers/net/ipa/data/ipa_data-v3.5.1.c
+index 58b708d2fc75d..383ef18900654 100644
+--- a/drivers/net/ipa/data/ipa_data-v3.5.1.c
++++ b/drivers/net/ipa/data/ipa_data-v3.5.1.c
+@@ -407,11 +407,11 @@ static const struct ipa_power_data ipa_power_data = {
+ /* Configuration data for an SoC having IPA v3.5.1 */
+ const struct ipa_data ipa_data_v3_5_1 = {
+ 	.version	= IPA_VERSION_3_5_1,
+-	.backward_compat = BCR_CMDQ_L_LACK_ONE_ENTRY_FMASK |
+-			   BCR_TX_NOT_USING_BRESP_FMASK |
+-			   BCR_SUSPEND_L2_IRQ_FMASK |
+-			   BCR_HOLB_DROP_L2_IRQ_FMASK |
+-			   BCR_DUAL_TX_FMASK,
++	.backward_compat = BIT(BCR_CMDQ_L_LACK_ONE_ENTRY) |
++			   BIT(BCR_TX_NOT_USING_BRESP) |
++			   BIT(BCR_SUSPEND_L2_IRQ) |
++			   BIT(BCR_HOLB_DROP_L2_IRQ) |
++			   BIT(BCR_DUAL_TX),
+ 	.qsb_count	= ARRAY_SIZE(ipa_qsb_data),
+ 	.qsb_data	= ipa_qsb_data,
+ 	.endpoint_count	= ARRAY_SIZE(ipa_gsi_endpoint_data),
+diff --git a/drivers/net/ipa/ipa_reg.h b/drivers/net/ipa/ipa_reg.h
+index 3e24bddc682ef..2aa1d1dd0adf5 100644
+--- a/drivers/net/ipa/ipa_reg.h
++++ b/drivers/net/ipa/ipa_reg.h
+@@ -220,20 +220,18 @@ static inline u32 ipa_reg_state_aggr_active_offset(enum ipa_version version)
  
--	if (version < IPA_VERSION_4_5) {
--		/* We set aggregation granularity in ipa_hardware_config() */
--		fmask = aggr_time_limit_fmask(true);
--		val = DIV_ROUND_CLOSEST(microseconds, IPA_AGGR_GRANULARITY);
--		WARN(val > field_max(fmask),
--		     "aggr_time_limit too large (%u > %u usec)\n",
--		     val, field_max(fmask) * IPA_AGGR_GRANULARITY);
-+	if (!microseconds)
-+		return 0;	/* Nothing to compute if time limit is 0 */
+ /* The next register is not present for IPA v4.5+ */
+ #define IPA_REG_BCR_OFFSET				0x000001d0
+-/* The next two fields are not present for IPA v4.2+ */
+-#define BCR_CMDQ_L_LACK_ONE_ENTRY_FMASK		GENMASK(0, 0)
+-#define BCR_TX_NOT_USING_BRESP_FMASK		GENMASK(1, 1)
+-/* The next field is invalid for IPA v4.0+ */
+-#define BCR_TX_SUSPEND_IRQ_ASSERT_ONCE_FMASK	GENMASK(2, 2)
+-/* The next two fields are not present for IPA v4.2+ */
+-#define BCR_SUSPEND_L2_IRQ_FMASK		GENMASK(3, 3)
+-#define BCR_HOLB_DROP_L2_IRQ_FMASK		GENMASK(4, 4)
+-/* The next five fields are present for IPA v3.5+ */
+-#define BCR_DUAL_TX_FMASK			GENMASK(5, 5)
+-#define BCR_ENABLE_FILTER_DATA_CACHE_FMASK	GENMASK(6, 6)
+-#define BCR_NOTIF_PRIORITY_OVER_ZLT_FMASK	GENMASK(7, 7)
+-#define BCR_FILTER_PREFETCH_EN_FMASK		GENMASK(8, 8)
+-#define BCR_ROUTER_PREFETCH_EN_FMASK		GENMASK(9, 9)
++enum ipa_bcr_compat {
++	BCR_CMDQ_L_LACK_ONE_ENTRY		= 0x0,	/* Not IPA v4.2+ */
++	BCR_TX_NOT_USING_BRESP			= 0x1,	/* Not IPA v4.2+ */
++	BCR_TX_SUSPEND_IRQ_ASSERT_ONCE		= 0x2,	/* Not IPA v4.0+ */
++	BCR_SUSPEND_L2_IRQ			= 0x3,	/* Not IPA v4.2+ */
++	BCR_HOLB_DROP_L2_IRQ			= 0x4,	/* Not IPA v4.2+ */
++	BCR_DUAL_TX				= 0x5,	/* IPA v3.5+ */
++	BCR_ENABLE_FILTER_DATA_CACHE		= 0x6,	/* IPA v3.5+ */
++	BCR_NOTIF_PRIORITY_OVER_ZLT		= 0x7,	/* IPA v3.5+ */
++	BCR_FILTER_PREFETCH_EN			= 0x8,	/* IPA v3.5+ */
++	BCR_ROUTER_PREFETCH_EN			= 0x9,	/* IPA v3.5+ */
++};
  
--		return u32_encode_bits(val, fmask);
--	}
-+	if (version >= IPA_VERSION_4_5) {
-+		u32 gran_sel;
-+		int ret;
-+
-+		/* Compute the Qtime limit value to use */
-+		fmask = aggr_time_limit_fmask(false);
-+		ret = ipa_qtime_val(microseconds, field_max(fmask));
-+		if (ret < 0) {
-+			val = -ret;
-+			gran_sel = AGGR_GRAN_SEL_FMASK;
-+		} else {
-+			val = ret;
-+			gran_sel = 0;
-+		}
- 
--	/* Compute the Qtime limit value to use */
--	fmask = aggr_time_limit_fmask(false);
--	ret = ipa_qtime_val(microseconds, field_max(fmask));
--	if (ret < 0) {
--		val = -ret;
--		gran_sel = AGGR_GRAN_SEL_FMASK;
--	} else {
--		val = ret;
--		gran_sel = 0;
-+		return gran_sel | u32_encode_bits(val, fmask);
- 	}
- 
--	return gran_sel | u32_encode_bits(val, fmask);
-+	/* We set aggregation granularity in ipa_hardware_config() */
-+	fmask = aggr_time_limit_fmask(true);
-+	val = DIV_ROUND_CLOSEST(microseconds, IPA_AGGR_GRANULARITY);
-+	WARN(val > field_max(fmask),
-+	     "aggr_time_limit too large (%u > %u usec)\n",
-+	     val, field_max(fmask) * IPA_AGGR_GRANULARITY);
-+
-+	return u32_encode_bits(val, fmask);
- }
- 
- static u32 aggr_sw_eof_active_encoded(enum ipa_version version, bool enabled)
-@@ -837,28 +841,6 @@ static void ipa_endpoint_init_aggr(struct ipa_endpoint *endpoint)
- 	iowrite32(val, endpoint->ipa->reg_virt + offset);
- }
- 
--/* Return the Qtime-based head-of-line blocking timer value that
-- * represents the given number of microseconds.  The result
-- * includes both the timer value and the selected timer granularity.
-- */
--static u32 hol_block_timer_qtime_encode(struct ipa *ipa, u32 microseconds)
--{
--	u32 gran_sel;
--	u32 val;
--	int ret;
--
--	ret = ipa_qtime_val(microseconds, field_max(TIME_LIMIT_FMASK));
--	if (ret < 0) {
--		val = -ret;
--		gran_sel = GRAN_SEL_FMASK;
--	} else {
--		val = ret;
--		gran_sel = 0;
--	}
--
--	return gran_sel | u32_encode_bits(val, TIME_LIMIT_FMASK);
--}
--
- /* The head-of-line blocking timer is defined as a tick count.  For
-  * IPA version 4.5 the tick count is based on the Qtimer, which is
-  * derived from the 19.2 MHz SoC XO clock.  For older IPA versions
-@@ -879,8 +861,22 @@ static u32 hol_block_timer_encode(struct ipa *ipa, u32 microseconds)
- 	if (!microseconds)
- 		return 0;	/* Nothing to compute if timer period is 0 */
- 
--	if (ipa->version >= IPA_VERSION_4_5)
--		return hol_block_timer_qtime_encode(ipa, microseconds);
-+	if (ipa->version >= IPA_VERSION_4_5) {
-+		u32 gran_sel;
-+		int ret;
-+
-+		/* Compute the Qtime limit value to use */
-+		ret = ipa_qtime_val(microseconds, field_max(TIME_LIMIT_FMASK));
-+		if (ret < 0) {
-+			val = -ret;
-+			gran_sel = GRAN_SEL_FMASK;
-+		} else {
-+			val = ret;
-+			gran_sel = 0;
-+		}
-+
-+		return gran_sel | u32_encode_bits(val, TIME_LIMIT_FMASK);
-+	}
- 
- 	/* Use 64 bit arithmetic to avoid overflow... */
- 	rate = ipa_core_clock_rate(ipa);
+ /* The value of the next register must be a multiple of 8 (bottom 3 bits 0) */
+ #define IPA_REG_LOCAL_PKT_PROC_CNTXT_OFFSET		0x000001e8
 -- 
 2.34.1
 
