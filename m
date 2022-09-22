@@ -2,118 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB1E75E6676
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 17:07:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E4E15E66E4
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 17:20:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231210AbiIVPHi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 11:07:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54858 "EHLO
+        id S229967AbiIVPUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 11:20:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231276AbiIVPHh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 11:07:37 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A35FDE0DD
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 08:07:36 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id u18so15154095lfo.8
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 08:07:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=AICgMCTu4ugKZVgKKYZSCEgyNXOHBsTus/rL4+rxADE=;
-        b=V6OmMtcM8HwjnmW517gvagdimCQzKh4oEk+jCZREpCpQaMRh+CUYlJnjHhWQjY+sn6
-         O2EMQ4TmRPc0YWA2AXrfK9EAIppOKDmxGDrlHPoDNfxJVW3XtHnP0Fgo5W/reRLAdYHm
-         UVYMEVijD6WYE+JDTgZ0vUoZrmyKJTJtPlgAIrAp/2bsvx+1/X6ph9K33pGARnN0DkAP
-         AgfZpohHy0hyLAk3+mnfVrclwPJDWSjxwZWLrJM9tgAB6aNIiSgHd7ef4jFxWuZMDLPK
-         KNeogYycbDYEqtFUykDyC8n5Xxzcz1p0neVIj97isWerTZuHph+kEpakzCtG+d2YcUpa
-         pKIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=AICgMCTu4ugKZVgKKYZSCEgyNXOHBsTus/rL4+rxADE=;
-        b=Nqo6+f/n3us6cMP5ZfdQgyakVlPXxgWme3k21+h6fO8ATwp/fSh+HxWNXZoAHBIsyl
-         PnneFCf0uPFohBI8VK1/PLZgSojRJIUkTDi1WoPRXwOFosr1fuAwb43Mu/U6ps3dFsuy
-         Pauxnz2qXJZAJr7La8P4C1oEU35JRRnnWPEWhpj/pKcfhVgSZObCbK17r+jPa9+Ae3fF
-         vHPFurn9f8dYTapJ4Ro14WxyW315niGezBmwBqjkAlrr078oZ4B2cDoHTPGrItzDHoHs
-         4nA01dhLSVVgl9t2EDWIrWHW2ZDgyRvIK/gj6JX2ZIntnS4ZGygXO0/p1KcnVs1Kcp8A
-         ifiQ==
-X-Gm-Message-State: ACrzQf1/UrTuHZ/UnFlIHD8QrT61fxOMA3oFdzBTS4kCrU3cj6pW9GXx
-        DZpswLdXpaKbT0rRSzp3roh75g==
-X-Google-Smtp-Source: AMsMyM5wWu4phY9miXzBVbKKyNmCh/6w2BSelex3t5iKGlg/9o62Y81D5nF1RPEPAveTSBkz6dR4Ww==
-X-Received: by 2002:ac2:4422:0:b0:49f:5c95:9525 with SMTP id w2-20020ac24422000000b0049f5c959525mr1506912lfl.1.1663859254520;
-        Thu, 22 Sep 2022 08:07:34 -0700 (PDT)
-Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id u6-20020a05651220c600b0049771081b10sm986478lfr.31.2022.09.22.08.07.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 22 Sep 2022 08:07:33 -0700 (PDT)
-Message-ID: <04b9e5ef-f3c7-3400-f9df-2f585a084c5d@linaro.org>
-Date:   Thu, 22 Sep 2022 17:07:32 +0200
+        with ESMTP id S230166AbiIVPUR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 11:20:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 919C07C777;
+        Thu, 22 Sep 2022 08:20:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E6F561388;
+        Thu, 22 Sep 2022 15:20:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8766AC433D7;
+        Thu, 22 Sep 2022 15:20:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1663860014;
+        bh=Y/UYpzSr1GDE1c2TA1atoaallVLMUhHYl0REHUJdcTY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Eop5zedDRJJAQd6MUsKKPvVths6VaEw+SnkkVXHClXyiuYDQ2kH89N/EbgIvD7QEM
+         rlzSS1JYWkKpKkWNCOzOrgR6tM8oc1z/uU//aumUHA+JNxFgw61qdxIJhr49m7Bdl3
+         DI9P2Qo+BwQVdqQUBlM6FCpYalU1T/RXw8LG+S04sW/xoBzBW2xVtSXsl4d+lNitjw
+         l264DWja94UtiDOUFqSEnW/k9jLlt1thvA/0SXAzOn+4ObQpBVXp2iOjrZm7YfeFQM
+         3BUt2Xkb6QFPCpxUUWSh2CPWo3ouXIhCWWDJ/8z3fKxWQL1TsEsH4dGSE6XpukhUHz
+         Nwx77PCQVHTgw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6A0BCE21ED1;
+        Thu, 22 Sep 2022 15:20:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [resend PATCH v4 2/2] dt-bindings: net: snps,dwmac: add clk_csr
- property
-Content-Language: en-US
-To:     Jianguo Zhang <jianguo.zhang@mediatek.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Biao Huang <biao.huang@mediatek.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Christophe Roullier <christophe.roullier@st.com>
-References: <20220922092743.22824-1-jianguo.zhang@mediatek.com>
- <20220922092743.22824-3-jianguo.zhang@mediatek.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220922092743.22824-3-jianguo.zhang@mediatek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf v3] xsk: inherit need_wakeup flag for shared sockets
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166386001443.15287.1242641673670233629.git-patchwork-notify@kernel.org>
+Date:   Thu, 22 Sep 2022 15:20:14 +0000
+References: <20220921135701.10199-1-jalal.a.mostapha@gmail.com>
+In-Reply-To: <20220921135701.10199-1-jalal.a.mostapha@gmail.com>
+To:     Jalal Mostafa <jalal.a.mostapha@gmail.com>
+Cc:     maciej.fijalkowski@intel.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, bjorn@kernel.org, magnus.karlsson@intel.com,
+        jonathan.lemon@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, daniel@iogearbox.net,
+        john.fastabend@gmail.com, hawk@kernel.org, ast@kernel.org,
+        linux-kernel@vger.kernel.org, jalal.mostafa@kit.edu
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 22/09/2022 11:27, Jianguo Zhang wrote:
-> The clk_csr property is parsed in driver for generating MDC clock
-> with correct frequency. A warning('clk_csr' was unexpeted) is reported
-> when runing 'make_dtbs_check' because the clk_csr property
-> has been not documented in the binding file.
+Hello:
+
+This patch was applied to bpf/bpf.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
+
+On Wed, 21 Sep 2022 13:57:01 +0000 you wrote:
+> The flag for need_wakeup is not set for xsks with `XDP_SHARED_UMEM`
+> flag and of different queue ids and/or devices. They should inherit
+> the flag from the first socket buffer pool since no flags can be
+> specified once `XDP_SHARED_UMEM` is specified.
 > 
+> Fixes: b5aea28dca134 ("xsk: Add shared umem support between queue ids")
+> 
+> [...]
 
-You did not describe the case, but apparently this came with
-81311c03ab4d ("net: ethernet: stmmac: add management of clk_csr
-property") which never brought the bindings change.
+Here is the summary with links:
+  - [bpf,v3] xsk: inherit need_wakeup flag for shared sockets
+    https://git.kernel.org/bpf/bpf/c/60240bc26114
 
-Therefore the property was never part of bindings documentation and
-bringing them via driver is not the correct process. It bypasses the
-review and such bypass cannot be an argument to bring the property to
-bindings. It's not how new properties can be added.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Therefore I don't agree. Please make it a property matching bindings, so
-vendor prefix, no underscores in node names.
-
-Driver and DTS need updates.
-
-Best regards,
-Krzysztof
 
