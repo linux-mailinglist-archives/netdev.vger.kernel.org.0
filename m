@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C074B5E5C05
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 09:13:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65B6B5E5C0A
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 09:13:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230488AbiIVHMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 03:12:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56940 "EHLO
+        id S230500AbiIVHM4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 03:12:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230352AbiIVHMV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 03:12:21 -0400
+        with ESMTP id S230265AbiIVHMW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 03:12:22 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AAA1B776F;
-        Thu, 22 Sep 2022 00:12:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E8C4B7771;
+        Thu, 22 Sep 2022 00:12:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1663830729; x=1695366729;
+  t=1663830733; x=1695366733;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=TqSw95am9Kp3Rxvnu/GBt9EmDaerXeLzQ41xHw+Pn4g=;
-  b=qTpPkfMMC5g8uGb2ivfQGtwBH+hTmi5NP22+XnK9jEBOM8NGX3r9qlvC
-   5CAJhVwnKAV9UW937NGVhRVZjjU00+l+u+sM3xOnd7j59sQ9NA1rIXEQ5
-   KwNxhlWV9z61GosSPXPZ8Nb5aX5gufT3yQAnzb1PKQEs7+2DTfl1lwoze
-   dQt9d8puBKj7ASoIsSCywhHVQDk9/Yo2+B8U5PddtdK+kSG69bchT96aj
-   vPUlIfPfACMPSff/O81d4SscEe5ksH00HKFpQ7nqcjU/6mzaZyguHGyRu
-   yuLiccNW1nB7+TAxIR/C2yIV6BSsz9BdT9j9RLvmFl/jBKeHq0FuZe1Sg
-   A==;
+  bh=HglqcTtWKwFtmXCDI1ec9govv5P2jyzRG8y1ui26QqY=;
+  b=UUqZ1GQ+JD00IcoAa3+kXxhY+Jbxzk85by0lIoiiOytWqzHxW1HSx2BT
+   GHRAuvErGeZbL+qDRehank6+dkT1O3gwdXCGCQ7Zl2/54zZuat0e4cjLo
+   4o0EwHfRpAUZ9Zrd+9fOTAcSvfQ7ii0QvXOZPUkVas/rrAIVMXR1rqkmc
+   kNOkduOwj7aG37iSd7C9J4srE2m/qlYDoMmzN9uuvyfPJeKTh0cxoKExN
+   DDrSY5+4OWEO7363bQUQSrUNRnPdIU0kknaT1dQ7AKrs2ehONOFEiLcGk
+   Dn4xs+DvaN2upmbFdsmYknxYY9Iz1upVshtWETUsT8zrqRFJbZCPh15Xc
+   w==;
 X-IronPort-AV: E=Sophos;i="5.93,335,1654585200"; 
-   d="scan'208";a="181470958"
+   d="scan'208";a="181470998"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Sep 2022 00:12:06 -0700
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Sep 2022 00:12:12 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Thu, 22 Sep 2022 00:12:03 -0700
+ 15.1.2507.12; Thu, 22 Sep 2022 00:12:11 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Thu, 22 Sep 2022 00:11:57 -0700
+ 15.1.2507.12 via Frontend Transport; Thu, 22 Sep 2022 00:12:05 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
@@ -47,9 +47,9 @@ CC:     <woojung.huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
         <linux@armlinux.org.uk>, <Tristram.Ha@microchip.com>,
         <arun.ramadoss@microchip.com>,
         <prasanna.vengateshan@microchip.com>, <hkallweit1@gmail.com>
-Subject: [Patch net-next v4 3/6] net: dsa: microchip: lan937x: return zero if mdio node not present
-Date:   Thu, 22 Sep 2022 12:40:25 +0530
-Message-ID: <20220922071028.18012-4-arun.ramadoss@microchip.com>
+Subject: [Patch net-next v4 4/6] net: dsa: microchip: move interrupt handling logic from lan937x to ksz_common
+Date:   Thu, 22 Sep 2022 12:40:26 +0530
+Message-ID: <20220922071028.18012-5-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220922071028.18012-1-arun.ramadoss@microchip.com>
 References: <20220922071028.18012-1-arun.ramadoss@microchip.com>
@@ -65,34 +65,975 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, if the mdio node is not present in the dts file then
-lan937x_mdio_register return -ENODEV and entire probing process fails.
-To make the mdio_register generic for all ksz series switches and to
-maintain back-compatibility with existing dts file, return -ENODEV is
-replaced with return 0.
+To support the phy link detection through interrupt method for ksz9477
+based switch, the interrupt handling routines are moved from
+lan937x_main.c to ksz_common.c. The only changes made are functions
+names are prefixed with ksz_ instead of lan937x_.
 
 Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 ---
- drivers/net/dsa/microchip/lan937x_main.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/net/dsa/microchip/ksz_common.c   | 424 ++++++++++++++++++++++
+ drivers/net/dsa/microchip/ksz_common.h   |   9 +
+ drivers/net/dsa/microchip/lan937x_main.c | 426 -----------------------
+ 3 files changed, 433 insertions(+), 426 deletions(-)
 
-diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
-index 2664331cc743..d7382a77d454 100644
---- a/drivers/net/dsa/microchip/lan937x_main.c
-+++ b/drivers/net/dsa/microchip/lan937x_main.c
-@@ -214,10 +214,8 @@ static int lan937x_mdio_register(struct ksz_device *dev)
- 	int ret;
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 07283279c578..605ce3ffbeff 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -14,6 +14,9 @@
+ #include <linux/phy.h>
+ #include <linux/etherdevice.h>
+ #include <linux/if_bridge.h>
++#include <linux/irq.h>
++#include <linux/irqdomain.h>
++#include <linux/of_mdio.h>
+ #include <linux/of_device.h>
+ #include <linux/of_net.h>
+ #include <linux/micrel_phy.h>
+@@ -1653,9 +1656,394 @@ static void ksz_update_port_member(struct ksz_device *dev, int port)
+ 	dev->dev_ops->cfg_port_member(dev, port, port_member | cpu_port);
+ }
  
- 	mdio_np = of_get_child_by_name(dev->dev->of_node, "mdio");
--	if (!mdio_np) {
--		dev_err(ds->dev, "no MDIO bus node\n");
--		return -ENODEV;
--	}
++static int ksz_sw_mdio_read(struct mii_bus *bus, int addr, int regnum)
++{
++	struct ksz_device *dev = bus->priv;
++	u16 val;
++	int ret;
++
++	if (regnum & MII_ADDR_C45)
++		return -EOPNOTSUPP;
++
++	ret = dev->dev_ops->r_phy(dev, addr, regnum, &val);
++	if (ret < 0)
++		return ret;
++
++	return val;
++}
++
++static int ksz_sw_mdio_write(struct mii_bus *bus, int addr, int regnum,
++			     u16 val)
++{
++	struct ksz_device *dev = bus->priv;
++
++	if (regnum & MII_ADDR_C45)
++		return -EOPNOTSUPP;
++
++	return dev->dev_ops->w_phy(dev, addr, regnum, val);
++}
++
++static int ksz_irq_phy_setup(struct ksz_device *dev)
++{
++	struct dsa_switch *ds = dev->ds;
++	int phy;
++	int irq;
++	int ret;
++
++	for (phy = 0; phy < KSZ_MAX_NUM_PORTS; phy++) {
++		if (BIT(phy) & ds->phys_mii_mask) {
++			irq = irq_find_mapping(dev->ports[phy].pirq.domain,
++					       PORT_SRC_PHY_INT);
++			if (irq < 0) {
++				ret = irq;
++				goto out;
++			}
++			ds->slave_mii_bus->irq[phy] = irq;
++		}
++	}
++	return 0;
++out:
++	while (phy--)
++		if (BIT(phy) & ds->phys_mii_mask)
++			irq_dispose_mapping(ds->slave_mii_bus->irq[phy]);
++
++	return ret;
++}
++
++static void ksz_irq_phy_free(struct ksz_device *dev)
++{
++	struct dsa_switch *ds = dev->ds;
++	int phy;
++
++	for (phy = 0; phy < KSZ_MAX_NUM_PORTS; phy++)
++		if (BIT(phy) & ds->phys_mii_mask)
++			irq_dispose_mapping(ds->slave_mii_bus->irq[phy]);
++}
++
++static int ksz_mdio_register(struct ksz_device *dev)
++{
++	struct dsa_switch *ds = dev->ds;
++	struct device_node *mdio_np;
++	struct mii_bus *bus;
++	int ret;
++
++	mdio_np = of_get_child_by_name(dev->dev->of_node, "mdio");
 +	if (!mdio_np)
 +		return 0;
++
++	bus = devm_mdiobus_alloc(ds->dev);
++	if (!bus) {
++		of_node_put(mdio_np);
++		return -ENOMEM;
++	}
++
++	bus->priv = dev;
++	bus->read = ksz_sw_mdio_read;
++	bus->write = ksz_sw_mdio_write;
++	bus->name = "ksz slave smi";
++	snprintf(bus->id, MII_BUS_ID_SIZE, "SMI-%d", ds->index);
++	bus->parent = ds->dev;
++	bus->phy_mask = ~ds->phys_mii_mask;
++
++	ds->slave_mii_bus = bus;
++
++	if (dev->irq > 0) {
++		ret = ksz_irq_phy_setup(dev);
++		if (ret) {
++			of_node_put(mdio_np);
++			return ret;
++		}
++	}
++
++	ret = devm_of_mdiobus_register(ds->dev, bus, mdio_np);
++	if (ret) {
++		dev_err(ds->dev, "unable to register MDIO bus %s\n",
++			bus->id);
++		if (dev->irq > 0)
++			ksz_irq_phy_free(dev);
++	}
++
++	of_node_put(mdio_np);
++
++	return ret;
++}
++
++static void ksz_girq_mask(struct irq_data *d)
++{
++	struct ksz_device *dev = irq_data_get_irq_chip_data(d);
++	unsigned int n = d->hwirq;
++
++	dev->girq.masked |= (1 << n);
++}
++
++static void ksz_girq_unmask(struct irq_data *d)
++{
++	struct ksz_device *dev = irq_data_get_irq_chip_data(d);
++	unsigned int n = d->hwirq;
++
++	dev->girq.masked &= ~(1 << n);
++}
++
++static void ksz_girq_bus_lock(struct irq_data *d)
++{
++	struct ksz_device *dev = irq_data_get_irq_chip_data(d);
++
++	mutex_lock(&dev->lock_irq);
++}
++
++static void ksz_girq_bus_sync_unlock(struct irq_data *d)
++{
++	struct ksz_device *dev = irq_data_get_irq_chip_data(d);
++	int ret;
++
++	ret = ksz_write32(dev, REG_SW_PORT_INT_MASK__4, dev->girq.masked);
++	if (ret)
++		dev_err(dev->dev, "failed to change IRQ mask\n");
++
++	mutex_unlock(&dev->lock_irq);
++}
++
++static const struct irq_chip ksz_girq_chip = {
++	.name			= "ksz-global",
++	.irq_mask		= ksz_girq_mask,
++	.irq_unmask		= ksz_girq_unmask,
++	.irq_bus_lock		= ksz_girq_bus_lock,
++	.irq_bus_sync_unlock	= ksz_girq_bus_sync_unlock,
++};
++
++static int ksz_girq_domain_map(struct irq_domain *d,
++			       unsigned int irq, irq_hw_number_t hwirq)
++{
++	struct ksz_device *dev = d->host_data;
++
++	irq_set_chip_data(irq, d->host_data);
++	irq_set_chip_and_handler(irq, &dev->girq.chip, handle_level_irq);
++	irq_set_noprobe(irq);
++
++	return 0;
++}
++
++static const struct irq_domain_ops ksz_girq_domain_ops = {
++	.map	= ksz_girq_domain_map,
++	.xlate	= irq_domain_xlate_twocell,
++};
++
++static void ksz_girq_free(struct ksz_device *dev)
++{
++	int irq, virq;
++
++	free_irq(dev->irq, dev);
++
++	for (irq = 0; irq < dev->girq.nirqs; irq++) {
++		virq = irq_find_mapping(dev->girq.domain, irq);
++		irq_dispose_mapping(virq);
++	}
++
++	irq_domain_remove(dev->girq.domain);
++}
++
++static irqreturn_t ksz_girq_thread_fn(int irq, void *dev_id)
++{
++	struct ksz_device *dev = dev_id;
++	unsigned int nhandled = 0;
++	unsigned int sub_irq;
++	unsigned int n;
++	u32 data;
++	int ret;
++
++	/* Read global interrupt status register */
++	ret = ksz_read32(dev, REG_SW_PORT_INT_STATUS__4, &data);
++	if (ret)
++		goto out;
++
++	for (n = 0; n < dev->girq.nirqs; ++n) {
++		if (data & (1 << n)) {
++			sub_irq = irq_find_mapping(dev->girq.domain, n);
++			handle_nested_irq(sub_irq);
++			++nhandled;
++		}
++	}
++out:
++	return (nhandled > 0 ? IRQ_HANDLED : IRQ_NONE);
++}
++
++static int ksz_girq_setup(struct ksz_device *dev)
++{
++	int ret, irq;
++
++	dev->girq.nirqs = dev->info->port_cnt;
++	dev->girq.domain = irq_domain_add_simple(NULL, dev->girq.nirqs, 0,
++						 &ksz_girq_domain_ops, dev);
++	if (!dev->girq.domain)
++		return -ENOMEM;
++
++	for (irq = 0; irq < dev->girq.nirqs; irq++)
++		irq_create_mapping(dev->girq.domain, irq);
++
++	dev->girq.chip = ksz_girq_chip;
++	dev->girq.masked = ~0;
++
++	ret = request_threaded_irq(dev->irq, NULL, ksz_girq_thread_fn,
++				   IRQF_ONESHOT | IRQF_TRIGGER_FALLING,
++				   dev_name(dev->dev), dev);
++	if (ret)
++		goto out;
++
++	return 0;
++
++out:
++	ksz_girq_free(dev);
++
++	return ret;
++}
++
++static void ksz_pirq_mask(struct irq_data *d)
++{
++	struct ksz_port *port = irq_data_get_irq_chip_data(d);
++	unsigned int n = d->hwirq;
++
++	port->pirq.masked |= (1 << n);
++}
++
++static void ksz_pirq_unmask(struct irq_data *d)
++{
++	struct ksz_port *port = irq_data_get_irq_chip_data(d);
++	unsigned int n = d->hwirq;
++
++	port->pirq.masked &= ~(1 << n);
++}
++
++static void ksz_pirq_bus_lock(struct irq_data *d)
++{
++	struct ksz_port *port = irq_data_get_irq_chip_data(d);
++	struct ksz_device *dev = port->ksz_dev;
++
++	mutex_lock(&dev->lock_irq);
++}
++
++static void ksz_pirq_bus_sync_unlock(struct irq_data *d)
++{
++	struct ksz_port *port = irq_data_get_irq_chip_data(d);
++	struct ksz_device *dev = port->ksz_dev;
++
++	ksz_pwrite8(dev, port->num, REG_PORT_INT_MASK, port->pirq.masked);
++	mutex_unlock(&dev->lock_irq);
++}
++
++static const struct irq_chip ksz_pirq_chip = {
++	.name			= "ksz-port",
++	.irq_mask		= ksz_pirq_mask,
++	.irq_unmask		= ksz_pirq_unmask,
++	.irq_bus_lock		= ksz_pirq_bus_lock,
++	.irq_bus_sync_unlock	= ksz_pirq_bus_sync_unlock,
++};
++
++static int ksz_pirq_domain_map(struct irq_domain *d, unsigned int irq,
++			       irq_hw_number_t hwirq)
++{
++	struct ksz_port *port = d->host_data;
++
++	irq_set_chip_data(irq, d->host_data);
++	irq_set_chip_and_handler(irq, &port->pirq.chip, handle_level_irq);
++	irq_set_noprobe(irq);
++
++	return 0;
++}
++
++static const struct irq_domain_ops ksz_pirq_domain_ops = {
++	.map	= ksz_pirq_domain_map,
++	.xlate	= irq_domain_xlate_twocell,
++};
++
++static void ksz_pirq_free(struct ksz_device *dev, u8 p)
++{
++	struct ksz_port *port = &dev->ports[p];
++	int irq, virq;
++	int irq_num;
++
++	irq_num = irq_find_mapping(dev->girq.domain, p);
++	if (irq_num < 0)
++		return;
++
++	free_irq(irq_num, port);
++
++	for (irq = 0; irq < port->pirq.nirqs; irq++) {
++		virq = irq_find_mapping(port->pirq.domain, irq);
++		irq_dispose_mapping(virq);
++	}
++
++	irq_domain_remove(port->pirq.domain);
++}
++
++static irqreturn_t ksz_pirq_thread_fn(int irq, void *dev_id)
++{
++	struct ksz_port *port = dev_id;
++	unsigned int nhandled = 0;
++	struct ksz_device *dev;
++	unsigned int sub_irq;
++	unsigned int n;
++	u8 data;
++
++	dev = port->ksz_dev;
++
++	/* Read port interrupt status register */
++	ksz_pread8(dev, port->num, REG_PORT_INT_STATUS, &data);
++
++	for (n = 0; n < port->pirq.nirqs; ++n) {
++		if (data & (1 << n)) {
++			sub_irq = irq_find_mapping(port->pirq.domain, n);
++			handle_nested_irq(sub_irq);
++			++nhandled;
++		}
++	}
++
++	return (nhandled > 0 ? IRQ_HANDLED : IRQ_NONE);
++}
++
++static int ksz_pirq_setup(struct ksz_device *dev, u8 p)
++{
++	struct ksz_port *port = &dev->ports[p];
++	int ret, irq;
++	int irq_num;
++
++	port->pirq.nirqs = dev->info->port_nirqs;
++	port->pirq.domain = irq_domain_add_simple(dev->dev->of_node,
++						  port->pirq.nirqs, 0,
++						  &ksz_pirq_domain_ops,
++						  port);
++	if (!port->pirq.domain)
++		return -ENOMEM;
++
++	for (irq = 0; irq < port->pirq.nirqs; irq++)
++		irq_create_mapping(port->pirq.domain, irq);
++
++	port->pirq.chip = ksz_pirq_chip;
++	port->pirq.masked = ~0;
++
++	irq_num = irq_find_mapping(dev->girq.domain, p);
++	if (irq_num < 0)
++		return irq_num;
++
++	snprintf(port->pirq.name, sizeof(port->pirq.name), "port_irq-%d", p);
++
++	ret = request_threaded_irq(irq_num, NULL, ksz_pirq_thread_fn,
++				   IRQF_ONESHOT | IRQF_TRIGGER_FALLING,
++				   port->pirq.name, port);
++	if (ret)
++		goto out;
++
++	return 0;
++
++out:
++	ksz_pirq_free(dev, p);
++
++	return ret;
++}
++
+ static int ksz_setup(struct dsa_switch *ds)
+ {
+ 	struct ksz_device *dev = ds->priv;
++	struct dsa_port *dp;
+ 	struct ksz_port *p;
+ 	const u16 *regs;
+ 	int ret;
+@@ -1704,16 +2092,52 @@ static int ksz_setup(struct dsa_switch *ds)
+ 	p = &dev->ports[dev->cpu_port];
+ 	p->learning = true;
  
- 	bus = devm_mdiobus_alloc(ds->dev);
- 	if (!bus) {
++	if (dev->irq > 0) {
++		ret = ksz_girq_setup(dev);
++		if (ret)
++			return ret;
++
++		dsa_switch_for_each_user_port(dp, dev->ds) {
++			ret = ksz_pirq_setup(dev, dp->index);
++			if (ret)
++				goto out_girq;
++		}
++	}
++
++	ret = ksz_mdio_register(dev);
++	if (ret < 0) {
++		dev_err(dev->dev, "failed to register the mdio");
++		goto out_pirq;
++	}
++
+ 	/* start switch */
+ 	regmap_update_bits(dev->regmap[0], regs[S_START_CTRL],
+ 			   SW_START, SW_START);
+ 
+ 	return 0;
++
++out_pirq:
++	if (dev->irq > 0)
++		dsa_switch_for_each_user_port(dp, dev->ds)
++			ksz_pirq_free(dev, dp->index);
++out_girq:
++	if (dev->irq > 0)
++		ksz_girq_free(dev);
++
++	return ret;
+ }
+ 
+ static void ksz_teardown(struct dsa_switch *ds)
+ {
+ 	struct ksz_device *dev = ds->priv;
++	struct dsa_port *dp;
++
++	if (dev->irq > 0) {
++		dsa_switch_for_each_user_port(dp, dev->ds)
++			ksz_pirq_free(dev, dp->index);
++
++		ksz_girq_free(dev);
++	}
+ 
+ 	if (dev->dev_ops->teardown)
+ 		dev->dev_ops->teardown(ds);
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index baa1e1bc1b7c..6edce587bfd2 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -573,6 +573,15 @@ static inline int is_lan937x(struct ksz_device *dev)
+ #define P_MII_MAC_MODE			BIT(2)
+ #define P_MII_SEL_M			0x3
+ 
++/* Interrupt */
++#define REG_SW_PORT_INT_STATUS__4	0x0018
++#define REG_SW_PORT_INT_MASK__4		0x001C
++
++#define REG_PORT_INT_STATUS		0x001B
++#define REG_PORT_INT_MASK		0x001F
++
++#define PORT_SRC_PHY_INT		1
++
+ /* Regmap tables generation */
+ #define KSZ_SPI_OP_RD		3
+ #define KSZ_SPI_OP_WR		2
+diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
+index d7382a77d454..715c44544dd7 100644
+--- a/drivers/net/dsa/microchip/lan937x_main.c
++++ b/drivers/net/dsa/microchip/lan937x_main.c
+@@ -7,11 +7,8 @@
+ #include <linux/iopoll.h>
+ #include <linux/phy.h>
+ #include <linux/of_net.h>
+-#include <linux/of_mdio.h>
+ #include <linux/if_bridge.h>
+ #include <linux/if_vlan.h>
+-#include <linux/irq.h>
+-#include <linux/irqdomain.h>
+ #include <linux/math.h>
+ #include <net/dsa.h>
+ #include <net/switchdev.h>
+@@ -140,120 +137,6 @@ int lan937x_w_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 val)
+ 	return lan937x_internal_phy_write(dev, addr, reg, val);
+ }
+ 
+-static int lan937x_sw_mdio_read(struct mii_bus *bus, int addr, int regnum)
+-{
+-	struct ksz_device *dev = bus->priv;
+-	u16 val;
+-	int ret;
+-
+-	if (regnum & MII_ADDR_C45)
+-		return -EOPNOTSUPP;
+-
+-	ret = lan937x_internal_phy_read(dev, addr, regnum, &val);
+-	if (ret < 0)
+-		return ret;
+-
+-	return val;
+-}
+-
+-static int lan937x_sw_mdio_write(struct mii_bus *bus, int addr, int regnum,
+-				 u16 val)
+-{
+-	struct ksz_device *dev = bus->priv;
+-
+-	if (regnum & MII_ADDR_C45)
+-		return -EOPNOTSUPP;
+-
+-	return lan937x_internal_phy_write(dev, addr, regnum, val);
+-}
+-
+-static int lan937x_irq_phy_setup(struct ksz_device *dev)
+-{
+-	struct dsa_switch *ds = dev->ds;
+-	int phy, err_phy;
+-	int irq;
+-	int ret;
+-
+-	for (phy = 0; phy < KSZ_MAX_NUM_PORTS; phy++) {
+-		if (BIT(phy) & ds->phys_mii_mask) {
+-			irq = irq_find_mapping(dev->ports[phy].pirq.domain,
+-					       PORT_SRC_PHY_INT);
+-			if (irq < 0) {
+-				ret = irq;
+-				goto out;
+-			}
+-			ds->slave_mii_bus->irq[phy] = irq;
+-		}
+-	}
+-	return 0;
+-out:
+-	err_phy = phy;
+-
+-	for (phy = 0; phy < err_phy; phy++)
+-		if (BIT(phy) & ds->phys_mii_mask)
+-			irq_dispose_mapping(ds->slave_mii_bus->irq[phy]);
+-
+-	return ret;
+-}
+-
+-static void lan937x_irq_phy_free(struct ksz_device *dev)
+-{
+-	struct dsa_switch *ds = dev->ds;
+-	int phy;
+-
+-	for (phy = 0; phy < KSZ_MAX_NUM_PORTS; phy++)
+-		if (BIT(phy) & ds->phys_mii_mask)
+-			irq_dispose_mapping(ds->slave_mii_bus->irq[phy]);
+-}
+-
+-static int lan937x_mdio_register(struct ksz_device *dev)
+-{
+-	struct dsa_switch *ds = dev->ds;
+-	struct device_node *mdio_np;
+-	struct mii_bus *bus;
+-	int ret;
+-
+-	mdio_np = of_get_child_by_name(dev->dev->of_node, "mdio");
+-	if (!mdio_np)
+-		return 0;
+-
+-	bus = devm_mdiobus_alloc(ds->dev);
+-	if (!bus) {
+-		of_node_put(mdio_np);
+-		return -ENOMEM;
+-	}
+-
+-	bus->priv = dev;
+-	bus->read = lan937x_sw_mdio_read;
+-	bus->write = lan937x_sw_mdio_write;
+-	bus->name = "lan937x slave smi";
+-	snprintf(bus->id, MII_BUS_ID_SIZE, "SMI-%d", ds->index);
+-	bus->parent = ds->dev;
+-	bus->phy_mask = ~ds->phys_mii_mask;
+-
+-	ds->slave_mii_bus = bus;
+-
+-	if (dev->irq > 0) {
+-		ret = lan937x_irq_phy_setup(dev);
+-		if (ret) {
+-			of_node_put(mdio_np);
+-			return ret;
+-		}
+-	}
+-
+-	ret = devm_of_mdiobus_register(ds->dev, bus, mdio_np);
+-	if (ret) {
+-		dev_err(ds->dev, "unable to register MDIO bus %s\n",
+-			bus->id);
+-		if (dev->irq > 0)
+-			lan937x_irq_phy_free(dev);
+-	}
+-
+-	of_node_put(mdio_np);
+-
+-	return ret;
+-}
+-
+ int lan937x_reset_switch(struct ksz_device *dev)
+ {
+ 	u32 data32;
+@@ -460,282 +343,9 @@ int lan937x_switch_init(struct ksz_device *dev)
+ 	return 0;
+ }
+ 
+-static void lan937x_girq_mask(struct irq_data *d)
+-{
+-	struct ksz_device *dev = irq_data_get_irq_chip_data(d);
+-	unsigned int n = d->hwirq;
+-
+-	dev->girq.masked |= (1 << n);
+-}
+-
+-static void lan937x_girq_unmask(struct irq_data *d)
+-{
+-	struct ksz_device *dev = irq_data_get_irq_chip_data(d);
+-	unsigned int n = d->hwirq;
+-
+-	dev->girq.masked &= ~(1 << n);
+-}
+-
+-static void lan937x_girq_bus_lock(struct irq_data *d)
+-{
+-	struct ksz_device *dev = irq_data_get_irq_chip_data(d);
+-
+-	mutex_lock(&dev->lock_irq);
+-}
+-
+-static void lan937x_girq_bus_sync_unlock(struct irq_data *d)
+-{
+-	struct ksz_device *dev = irq_data_get_irq_chip_data(d);
+-	int ret;
+-
+-	ret = ksz_write32(dev, REG_SW_PORT_INT_MASK__4, dev->girq.masked);
+-	if (ret)
+-		dev_err(dev->dev, "failed to change IRQ mask\n");
+-
+-	mutex_unlock(&dev->lock_irq);
+-}
+-
+-static const struct irq_chip lan937x_girq_chip = {
+-	.name			= "lan937x-global",
+-	.irq_mask		= lan937x_girq_mask,
+-	.irq_unmask		= lan937x_girq_unmask,
+-	.irq_bus_lock		= lan937x_girq_bus_lock,
+-	.irq_bus_sync_unlock	= lan937x_girq_bus_sync_unlock,
+-};
+-
+-static int lan937x_girq_domain_map(struct irq_domain *d,
+-				   unsigned int irq, irq_hw_number_t hwirq)
+-{
+-	struct ksz_device *dev = d->host_data;
+-
+-	irq_set_chip_data(irq, d->host_data);
+-	irq_set_chip_and_handler(irq, &dev->girq.chip, handle_level_irq);
+-	irq_set_noprobe(irq);
+-
+-	return 0;
+-}
+-
+-static const struct irq_domain_ops lan937x_girq_domain_ops = {
+-	.map	= lan937x_girq_domain_map,
+-	.xlate	= irq_domain_xlate_twocell,
+-};
+-
+-static void lan937x_girq_free(struct ksz_device *dev)
+-{
+-	int irq, virq;
+-
+-	free_irq(dev->irq, dev);
+-
+-	for (irq = 0; irq < dev->girq.nirqs; irq++) {
+-		virq = irq_find_mapping(dev->girq.domain, irq);
+-		irq_dispose_mapping(virq);
+-	}
+-
+-	irq_domain_remove(dev->girq.domain);
+-}
+-
+-static irqreturn_t lan937x_girq_thread_fn(int irq, void *dev_id)
+-{
+-	struct ksz_device *dev = dev_id;
+-	unsigned int nhandled = 0;
+-	unsigned int sub_irq;
+-	unsigned int n;
+-	u32 data;
+-	int ret;
+-
+-	/* Read global interrupt status register */
+-	ret = ksz_read32(dev, REG_SW_PORT_INT_STATUS__4, &data);
+-	if (ret)
+-		goto out;
+-
+-	for (n = 0; n < dev->girq.nirqs; ++n) {
+-		if (data & (1 << n)) {
+-			sub_irq = irq_find_mapping(dev->girq.domain, n);
+-			handle_nested_irq(sub_irq);
+-			++nhandled;
+-		}
+-	}
+-out:
+-	return (nhandled > 0 ? IRQ_HANDLED : IRQ_NONE);
+-}
+-
+-static int lan937x_girq_setup(struct ksz_device *dev)
+-{
+-	int ret, irq;
+-
+-	dev->girq.nirqs = dev->info->port_cnt;
+-	dev->girq.domain = irq_domain_add_simple(NULL, dev->girq.nirqs, 0,
+-						 &lan937x_girq_domain_ops, dev);
+-	if (!dev->girq.domain)
+-		return -ENOMEM;
+-
+-	for (irq = 0; irq < dev->girq.nirqs; irq++)
+-		irq_create_mapping(dev->girq.domain, irq);
+-
+-	dev->girq.chip = lan937x_girq_chip;
+-	dev->girq.masked = ~0;
+-
+-	ret = request_threaded_irq(dev->irq, NULL, lan937x_girq_thread_fn,
+-				   IRQF_ONESHOT | IRQF_TRIGGER_FALLING,
+-				   dev_name(dev->dev), dev);
+-	if (ret)
+-		goto out;
+-
+-	return 0;
+-
+-out:
+-	lan937x_girq_free(dev);
+-
+-	return ret;
+-}
+-
+-static void lan937x_pirq_mask(struct irq_data *d)
+-{
+-	struct ksz_port *port = irq_data_get_irq_chip_data(d);
+-	unsigned int n = d->hwirq;
+-
+-	port->pirq.masked |= (1 << n);
+-}
+-
+-static void lan937x_pirq_unmask(struct irq_data *d)
+-{
+-	struct ksz_port *port = irq_data_get_irq_chip_data(d);
+-	unsigned int n = d->hwirq;
+-
+-	port->pirq.masked &= ~(1 << n);
+-}
+-
+-static void lan937x_pirq_bus_lock(struct irq_data *d)
+-{
+-	struct ksz_port *port = irq_data_get_irq_chip_data(d);
+-	struct ksz_device *dev = port->ksz_dev;
+-
+-	mutex_lock(&dev->lock_irq);
+-}
+-
+-static void lan937x_pirq_bus_sync_unlock(struct irq_data *d)
+-{
+-	struct ksz_port *port = irq_data_get_irq_chip_data(d);
+-	struct ksz_device *dev = port->ksz_dev;
+-
+-	ksz_pwrite8(dev, port->num, REG_PORT_INT_MASK, port->pirq.masked);
+-	mutex_unlock(&dev->lock_irq);
+-}
+-
+-static const struct irq_chip lan937x_pirq_chip = {
+-	.name			= "lan937x-port",
+-	.irq_mask		= lan937x_pirq_mask,
+-	.irq_unmask		= lan937x_pirq_unmask,
+-	.irq_bus_lock		= lan937x_pirq_bus_lock,
+-	.irq_bus_sync_unlock	= lan937x_pirq_bus_sync_unlock,
+-};
+-
+-static int lan937x_pirq_domain_map(struct irq_domain *d, unsigned int irq,
+-				   irq_hw_number_t hwirq)
+-{
+-	struct ksz_port *port = d->host_data;
+-
+-	irq_set_chip_data(irq, d->host_data);
+-	irq_set_chip_and_handler(irq, &port->pirq.chip, handle_level_irq);
+-	irq_set_noprobe(irq);
+-
+-	return 0;
+-}
+-
+-static const struct irq_domain_ops lan937x_pirq_domain_ops = {
+-	.map	= lan937x_pirq_domain_map,
+-	.xlate	= irq_domain_xlate_twocell,
+-};
+-
+-static void lan937x_pirq_free(struct ksz_device *dev, u8 p)
+-{
+-	struct ksz_port *port = &dev->ports[p];
+-	int irq, virq;
+-	int irq_num;
+-
+-	irq_num = irq_find_mapping(dev->girq.domain, p);
+-	if (irq_num < 0)
+-		return;
+-
+-	free_irq(irq_num, port);
+-
+-	for (irq = 0; irq < port->pirq.nirqs; irq++) {
+-		virq = irq_find_mapping(port->pirq.domain, irq);
+-		irq_dispose_mapping(virq);
+-	}
+-
+-	irq_domain_remove(port->pirq.domain);
+-}
+-
+-static irqreturn_t lan937x_pirq_thread_fn(int irq, void *dev_id)
+-{
+-	struct ksz_port *port = dev_id;
+-	unsigned int nhandled = 0;
+-	struct ksz_device *dev;
+-	unsigned int sub_irq;
+-	unsigned int n;
+-	u8 data;
+-
+-	dev = port->ksz_dev;
+-
+-	/* Read port interrupt status register */
+-	ksz_pread8(dev, port->num, REG_PORT_INT_STATUS, &data);
+-
+-	for (n = 0; n < port->pirq.nirqs; ++n) {
+-		if (data & (1 << n)) {
+-			sub_irq = irq_find_mapping(port->pirq.domain, n);
+-			handle_nested_irq(sub_irq);
+-			++nhandled;
+-		}
+-	}
+-
+-	return (nhandled > 0 ? IRQ_HANDLED : IRQ_NONE);
+-}
+-
+-static int lan937x_pirq_setup(struct ksz_device *dev, u8 p)
+-{
+-	struct ksz_port *port = &dev->ports[p];
+-	int ret, irq;
+-	int irq_num;
+-
+-	port->pirq.nirqs = dev->info->port_nirqs;
+-	port->pirq.domain = irq_domain_add_simple(dev->dev->of_node,
+-						  port->pirq.nirqs, 0,
+-						  &lan937x_pirq_domain_ops,
+-						  port);
+-	if (!port->pirq.domain)
+-		return -ENOMEM;
+-
+-	for (irq = 0; irq < port->pirq.nirqs; irq++)
+-		irq_create_mapping(port->pirq.domain, irq);
+-
+-	port->pirq.chip = lan937x_pirq_chip;
+-	port->pirq.masked = ~0;
+-
+-	irq_num = irq_find_mapping(dev->girq.domain, p);
+-	if (irq_num < 0)
+-		return irq_num;
+-
+-	snprintf(port->pirq.name, sizeof(port->pirq.name), "port_irq-%d", p);
+-
+-	ret = request_threaded_irq(irq_num, NULL, lan937x_pirq_thread_fn,
+-				   IRQF_ONESHOT | IRQF_TRIGGER_FALLING,
+-				   port->pirq.name, port);
+-	if (ret)
+-		goto out;
+-
+-	return 0;
+-
+-out:
+-	lan937x_pirq_free(dev, p);
+-
+-	return ret;
+-}
+-
+ int lan937x_setup(struct dsa_switch *ds)
+ {
+ 	struct ksz_device *dev = ds->priv;
+-	struct dsa_port *dp;
+ 	int ret;
+ 
+ 	/* enable Indirect Access from SPI to the VPHY registers */
+@@ -745,24 +355,6 @@ int lan937x_setup(struct dsa_switch *ds)
+ 		return ret;
+ 	}
+ 
+-	if (dev->irq > 0) {
+-		ret = lan937x_girq_setup(dev);
+-		if (ret)
+-			return ret;
+-
+-		dsa_switch_for_each_user_port(dp, dev->ds) {
+-			ret = lan937x_pirq_setup(dev, dp->index);
+-			if (ret)
+-				goto out_girq;
+-		}
+-	}
+-
+-	ret = lan937x_mdio_register(dev);
+-	if (ret < 0) {
+-		dev_err(dev->dev, "failed to register the mdio");
+-		goto out_pirq;
+-	}
+-
+ 	/* The VLAN aware is a global setting. Mixed vlan
+ 	 * filterings are not supported.
+ 	 */
+@@ -786,29 +378,11 @@ int lan937x_setup(struct dsa_switch *ds)
+ 		    (SW_CLK125_ENB | SW_CLK25_ENB), true);
+ 
+ 	return 0;
+-
+-out_pirq:
+-	if (dev->irq > 0)
+-		dsa_switch_for_each_user_port(dp, dev->ds)
+-			lan937x_pirq_free(dev, dp->index);
+-out_girq:
+-	if (dev->irq > 0)
+-		lan937x_girq_free(dev);
+-
+-	return ret;
+ }
+ 
+ void lan937x_teardown(struct dsa_switch *ds)
+ {
+-	struct ksz_device *dev = ds->priv;
+-	struct dsa_port *dp;
+ 
+-	if (dev->irq > 0) {
+-		dsa_switch_for_each_user_port(dp, dev->ds)
+-			lan937x_pirq_free(dev, dp->index);
+-
+-		lan937x_girq_free(dev);
+-	}
+ }
+ 
+ void lan937x_switch_exit(struct ksz_device *dev)
 -- 
 2.36.1
 
