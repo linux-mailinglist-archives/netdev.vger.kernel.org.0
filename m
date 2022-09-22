@@ -2,82 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BCACE5E65FF
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 16:41:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7395E5E6601
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 16:41:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229911AbiIVOlY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 10:41:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37072 "EHLO
+        id S232007AbiIVOlk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 10:41:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231299AbiIVOk7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 10:40:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2F437E309
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 07:40:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C1620B837EF
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 14:40:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 79C2BC433D7;
-        Thu, 22 Sep 2022 14:40:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663857614;
-        bh=o/rkJb8pWfWbMsRrDzUMwGpTIxxJLvbb8ztEnWEJI+0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=qV5eape96c3GTCF0NnzcYgQ9+jKNq675Bu04F7KaeGPpd1s3HBowa7UaO4+fcfKMH
-         dU7EidfIh22YJTsSpMCIgDcjtvENT4988r5YJVPQtU7oCIU7hiS/rBOKSNJyPBHuEJ
-         31msmmzlTnMDrKuBBJ7vG34rwvbLLmcYtbRtXWIs7KKhv4kQj/2PVgLhV0ApsztbfV
-         vPTvXLuEB2FW1gL+6oEcd9gEXaPrlzdEHtqNAohfaQUVOcUrF8yVlKKrLcset3FJib
-         7uXCRjdlv8Tqj8Yk6C+Ws1R2GB5mtDuJyVkLhLVf3ZR+MW+erVnF6fWeYmNbyFMxJ1
-         lsuAV1wYNclHw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5B7B5E4D03F;
-        Thu, 22 Sep 2022 14:40:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S232004AbiIVOlO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 10:41:14 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7C2AF6850
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 07:40:49 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MYHss651SzWgqP;
+        Thu, 22 Sep 2022 22:36:49 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 22 Sep 2022 22:40:47 +0800
+Received: from [10.174.178.174] (10.174.178.174) by
+ dggpemm500007.china.huawei.com (7.185.36.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 22 Sep 2022 22:40:46 +0800
+Subject: Re: [PATCH 7/18] net: dsa: microchip: remove unnecessary
+ set_drvdata()
+To:     <Arun.Ramadoss@microchip.com>, <netdev@vger.kernel.org>
+CC:     <olteanv@gmail.com>, <andrew@lunn.ch>,
+        <george.mccollister@gmail.com>, <vivien.didelot@gmail.com>,
+        <linus.walleij@linaro.org>, <f.fainelli@gmail.com>,
+        <hauke@hauke-m.de>, <clement.leger@bootlin.com>,
+        <sean.wang@mediatek.com>, <kurt@linutronix.de>,
+        <Woojung.Huh@microchip.com>
+References: <20220921140524.3831101-1-yangyingliang@huawei.com>
+ <20220921140524.3831101-8-yangyingliang@huawei.com>
+ <291e1e20d479629e82bbca984c15e9e87dbe1197.camel@microchip.com>
+From:   Yang Yingliang <yangyingliang@huawei.com>
+Message-ID: <b9c7d729-677f-8274-d5b2-339bf4462b46@huawei.com>
+Date:   Thu, 22 Sep 2022 22:40:45 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] selftests: forwarding: add shebang for sch_red.sh
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166385761437.22604.1345969771959253503.git-patchwork-notify@kernel.org>
-Date:   Thu, 22 Sep 2022 14:40:14 +0000
-References: <20220922024453.437757-1-liuhangbin@gmail.com>
-In-Reply-To: <20220922024453.437757-1-liuhangbin@gmail.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, shuah@kernel.org, dsahern@kernel.org,
-        petrm@mellanox.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <291e1e20d479629e82bbca984c15e9e87dbe1197.camel@microchip.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.174.178.174]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-6.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi,
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+On 2022/9/22 22:12, Arun.Ramadoss@microchip.com wrote:
+> On Wed, 2022-09-21 at 22:05 +0800, Yang Yingliang wrote:
+>> Remove unnecessary set_drvdata(NULL) function in ->remove(),
+>> the driver_data will be set to NULL in device_unbind_cleanup()
+>> after calling ->remove().
+> Do we need to remove i2c_set_clientdata(i2c, NULL) in ksz9477_i2c.c or
+> is it applicable only spi and mdio bus.
+Yes, it calls the dev_set_drvdata(), I think it should be remove too.
 
-On Thu, 22 Sep 2022 10:44:53 +0800 you wrote:
-> RHEL/Fedora RPM build checks are stricter, and complain when executable
-> files don't have a shebang line, e.g.
-> 
-> *** WARNING: ./kselftests/net/forwarding/sch_red.sh is executable but has no shebang, removing executable bit
-> 
-> Fix it by adding shebang line.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net] selftests: forwarding: add shebang for sch_red.sh
-    https://git.kernel.org/netdev/net/c/83e4b196838d
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Thanks,
+Yang
