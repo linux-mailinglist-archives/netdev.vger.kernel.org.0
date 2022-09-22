@@ -2,121 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 68EAB5E5CBC
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 09:56:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66CD05E5CCB
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 10:01:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230237AbiIVH4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 03:56:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58458 "EHLO
+        id S229842AbiIVIBT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 04:01:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229631AbiIVH4U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 03:56:20 -0400
-Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD0E4357CE;
-        Thu, 22 Sep 2022 00:56:19 -0700 (PDT)
-Received: by mail-qt1-f176.google.com with SMTP id g23so5776217qtu.2;
-        Thu, 22 Sep 2022 00:56:19 -0700 (PDT)
+        with ESMTP id S231164AbiIVIA7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 04:00:59 -0400
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BCF685AB7;
+        Thu, 22 Sep 2022 01:00:58 -0700 (PDT)
+Received: by mail-yb1-xb41.google.com with SMTP id a67so11607638ybb.3;
+        Thu, 22 Sep 2022 01:00:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=3oP1QkyQogUqbd7txk3r32kAVm+/kI9pBniGW5zsUYs=;
+        b=mzKY9rZ+m6Q5r/D86LDMWGiqX0e9nCWM0o0tycTO9slkQ5yRuMeU0j+p2OY9jE/Pl7
+         1eNpt78zEVPGYaOFMwMMjcpkTN1ZkEKJF2n8hj3x3S4erU9UTwnrrWJc7JeW4m07ibWa
+         1Qq3q01UGJ3iikkxgCvBM/AtejFeqBk7eA/l29YkYcitljKAIwZ8pf9CkoQTR4vyeVg6
+         7BSCxBWZr/Wv3vb8ODNgpn54Wu46UhoD+Ufjht7Xg1TOo9xoFxIYZEWoHVA/yKnPHmtv
+         HMvkflC8XbCP3eDkm3L6i86OrYZ3LM0iD+bPmfi0KEPZzxhH0SHAjHTQDFD8HZ1cIzIy
+         D/8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=V7WeZATWUx2tE4MxoHQwI+QugNIBy3AvjYpUsXK7axg=;
-        b=vJ8Bx0nkPSoRJvAn3OcFQqJN7r4HGCaI4lQt3BJW9i5HotJZvb98P8K/mRiDZwPgFt
-         UB/6mjok8FBU2co2x5SO3iw9dHKfjkt8rMgQrnobtuc9zzj0FFxUBWn4PudFwydSgNP7
-         mk6f+c01gib1FIK/mq8va05ZRa/Yy2b2RwW6dhH592DrUcjd9ePFse4tcg1AGgcNBs9U
-         BXOqrz/nMr9+P02oSKJ8CI2YLSBAotQskCmc+8Jf9/HxK5U4rz2dWQ8qc8SPDXWJKcv6
-         l5g9TDaYj+BJUMlVjhgnspenmCLNyW2r/yc05KIE3+sdajWr3gmC8cCyptHk/iIUe46V
-         +oYA==
-X-Gm-Message-State: ACrzQf3atRr9RpEXXD1VqtHjmRsLttNJHfKoEaP01xmZJ+cbPPvuTqKx
-        FQurPeLMGWWnuD4yoRssjiSZAYLmcIm1WFU5
-X-Google-Smtp-Source: AMsMyM63XOlUqkqGwu6SSFkXxjo8O7lKmQ5/6Qz1+gFV1yzYm6wbiPYTBEHfyZqMLPUL4yROMWzSGA==
-X-Received: by 2002:ac8:7d52:0:b0:343:5e7a:ee32 with SMTP id h18-20020ac87d52000000b003435e7aee32mr1756447qtb.247.1663833378383;
-        Thu, 22 Sep 2022 00:56:18 -0700 (PDT)
-Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com. [209.85.219.169])
-        by smtp.gmail.com with ESMTPSA id y4-20020ac81284000000b00342f8143599sm3013883qti.13.2022.09.22.00.56.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 22 Sep 2022 00:56:18 -0700 (PDT)
-Received: by mail-yb1-f169.google.com with SMTP id j7so1580041ybb.8;
-        Thu, 22 Sep 2022 00:56:17 -0700 (PDT)
-X-Received: by 2002:a25:3851:0:b0:6ad:9cba:9708 with SMTP id
- f78-20020a253851000000b006ad9cba9708mr2393590yba.36.1663833377467; Thu, 22
- Sep 2022 00:56:17 -0700 (PDT)
+        bh=3oP1QkyQogUqbd7txk3r32kAVm+/kI9pBniGW5zsUYs=;
+        b=jxDqlRCDnZAwFKfXAotWV6C1jge6m5OZF0546blycGR4cOr6KCr/DvUB9Dat8B5iSL
+         P/1tFg40C/qL1YjvDEotZFTQeNyF9rNGt03L8cLL6lM3XUrYjgTnpbB3ersb2HJplqAc
+         m125hd4WAB9sheEfrr0EelWPeyF680Jklf5NMdK/FFnoMw9wNECT//RGLMcVJLPjFnqD
+         pWKUYVDpRPPT7Vov7JUUUJ/PuF50U6G2eoPOPUZILCQ0MA9zs1hip6IM1wpJIUZMDAXV
+         qA1ltDdpLlSE5oQUUsUywdzSIxJ+szStmUphOTL2CzcfWv+xykSMA3uz9+g0qqjf5x02
+         3mlA==
+X-Gm-Message-State: ACrzQf1BdvFqZ9MqBh7+JIcdNE8hRVRuY9+zRJSW9cRBZuouQ95BkNcG
+        wsic0tDTlAmbFuqWIwQJUfE5mBYIzmpPRJjemBK6/bhS
+X-Google-Smtp-Source: AMsMyM5xiGeHeRSkmgFgjjAuDOrPNwavgO+if4Gw//dbT7EY5oQm8PPWL2ADWaAJNsyoRDXfNSJnL9JAbKwe8td9j9w=
+X-Received: by 2002:a25:b44a:0:b0:695:bd50:9c2d with SMTP id
+ c10-20020a25b44a000000b00695bd509c2dmr2324792ybg.495.1663833657534; Thu, 22
+ Sep 2022 01:00:57 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220921084745.3355107-1-yoshihiro.shimoda.uh@renesas.com>
- <20220921084745.3355107-3-yoshihiro.shimoda.uh@renesas.com>
- <9b29ee3f-ed48-9d95-a262-7d9e23a20528@linaro.org> <TYBPR01MB534100D42EC0202CA8BEF04CD84E9@TYBPR01MB5341.jpnprd01.prod.outlook.com>
-In-Reply-To: <TYBPR01MB534100D42EC0202CA8BEF04CD84E9@TYBPR01MB5341.jpnprd01.prod.outlook.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 22 Sep 2022 09:56:06 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdV=HECSXtLi6BFRVFiYZvjJ_t5RDUY3DckbSB4ozEtOgg@mail.gmail.com>
-Message-ID: <CAMuHMdV=HECSXtLi6BFRVFiYZvjJ_t5RDUY3DckbSB4ozEtOgg@mail.gmail.com>
-Subject: Re: [PATCH v2 2/8] dt-bindings: phy: renesas: Document Renesas
- Ethernet SERDES
-To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "kishon@ti.com" <kishon@ti.com>,
-        "vkoul@kernel.org" <vkoul@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "geert+renesas@glider.be" <geert+renesas@glider.be>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
+References: <cover.1663778601.git.lorenzo@kernel.org> <cdede0043c47ed7a357f0a915d16f9ce06a1d589.1663778601.git.lorenzo@kernel.org>
+ <CAADnVQJY4pibr5PkoTFhpYDj8pBJ1mTPuR9VSeKQXuJqeh6d3Q@mail.gmail.com>
+In-Reply-To: <CAADnVQJY4pibr5PkoTFhpYDj8pBJ1mTPuR9VSeKQXuJqeh6d3Q@mail.gmail.com>
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Date:   Thu, 22 Sep 2022 10:00:20 +0200
+Message-ID: <CAP01T76Vsbo-8zO=K4EGNR-iJutqPSVV0trgMVYXbEtV=f_19w@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 1/3] bpf: Tweak definition of KF_TRUSTED_ARGS
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel <netfilter-devel@vger.kernel.org>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Shimoda-san,
-
-On Thu, Sep 22, 2022 at 9:39 AM Yoshihiro Shimoda
-<yoshihiro.shimoda.uh@renesas.com> wrote:
-> > From: Krzysztof Kozlowski, Sent: Thursday, September 22, 2022 4:29 PM
-> > On 21/09/2022 10:47, Yoshihiro Shimoda wrote:
-> > > Document Renesas Etherent SERDES for R-Car S4-8 (r8a779f0).
-> > >
-> > > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> > > ---
-> > >  .../bindings/phy/renesas,ether-serdes.yaml    | 54 +++++++++++++++++++
-> > >  1 file changed, 54 insertions(+)
-> > >  create mode 100644 Documentation/devicetree/bindings/phy/renesas,ether-serdes.yaml
-> > >
-> > > diff --git a/Documentation/devicetree/bindings/phy/renesas,ether-serdes.yaml
-> > b/Documentation/devicetree/bindings/phy/renesas,ether-serdes.yaml
-> > > new file mode 100644
-> > > index 000000000000..04d650244a6a
-> > > --- /dev/null
-> > > +++ b/Documentation/devicetree/bindings/phy/renesas,ether-serdes.yaml
-> >
-> > Filename based on compatible, so renesas,r8a779f0-ether-serdes.yaml
+On Thu, 22 Sept 2022 at 04:39, Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> I got it. I'll rename the file.
+> On Wed, Sep 21, 2022 at 9:49 AM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+> >
+> > +               /* These register types have special constraints wrt ref_obj_id
+> > +                * and offset checks. The rest of trusted args don't.
+> > +                */
+> > +               obj_ptr = reg->type == PTR_TO_CTX || reg->type == PTR_TO_BTF_ID ||
+> > +                         reg2btf_ids[base_type(reg->type)];
+> > +
+>
+> ..
+>
+> >                 /* Check if argument must be a referenced pointer, args + i has
+> >                  * been verified to be a pointer (after skipping modifiers).
+> > +                * PTR_TO_CTX is ok without having non-zero ref_obj_id.
+> >                  */
+>
+> Kumar,
+>
+> Looking forward to your subsequent patch to split this function.
+> It's definitely getting unwieldy.
+>
+> The comment above is double confusing.
+> 1. I think you meant to say "PTR_TO_CTX is ok with zero ref_obj_id",
+> right? That double negate is not easy to parse.
+>
 
-Is this serdes present on other R-Car Gen4 SoCs, or is it (so far) only
-found on R-Car S4-8?
+Yes.
 
-Gr{oetje,eeting}s,
+> 2.
+> PTR_TO_CTX cannot have ref_obj_id != 0.
+> At least I don't think it's possible, but the comment implies
+> that such a case may exist.
+>
 
-                        Geert
+Yes, but we are checking for that later, which is why we skip it for PTR_TO_CTX.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> I applied anyway, since big refactoring is coming shortly, right?
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Yes, which is why I tacked it on like this for now. I will be
+reposting later this week.
+
+Thanks!
