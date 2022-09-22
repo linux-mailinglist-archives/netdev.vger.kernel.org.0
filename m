@@ -2,83 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E78CC5E678E
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 17:50:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FE985E67AF
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 17:55:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232079AbiIVPuo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 11:50:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36160 "EHLO
+        id S231539AbiIVPzc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 11:55:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232123AbiIVPu0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 11:50:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C658DF87;
-        Thu, 22 Sep 2022 08:50:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EBF0FB838AB;
-        Thu, 22 Sep 2022 15:50:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8FD38C433D7;
-        Thu, 22 Sep 2022 15:50:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663861815;
-        bh=P6g40CLQGzIX6ifmQmuwtYebzCG5vkEOzxXnaC8NY/8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=k8yH69AbCMPtTyFcTCZcpyilav0FBq5iuaWbGB0k5iizuxLBnyRR+WiO/xCQbEUXB
-         dW1AdF18CIOpc2mMOklhZrYgugWhJdLAjteGRPhjDpl3V4TXwLDjV2KAPkiVSJGE1t
-         YNjnFmWiZ7lkeRlEGEuBVw8uIXNRlmJ9RD4mFw/8F6CwHIx6I7BdP/9spERUklKxLm
-         rMgs1svBnnpvElmfpwYdD/tzYaYCHLQIFEl+kzmsoGhzDtpDbbKXzivteWWeClDReu
-         Ven7J3IpwNuh7MeAxpmOkV9FYnT+alH6Mn+VZVkli9t5xIKgns1jwHg5SvnrPgpCdT
-         bmrqV2/Yx6Vgw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7505AE4D03D;
-        Thu, 22 Sep 2022 15:50:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230352AbiIVPz0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 11:55:26 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F8B1ABD47
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 08:55:21 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id l10so9158172plb.10
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 08:55:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date;
+        bh=5YOa+gv1sIPcp5S2eMDxZrJPz51jsjFGvspNVL+ych0=;
+        b=LEFzWbqksCDh4S4OiJrbR7XAYMyOC2rDNgEzxm4wNn6u+IvIuPSxz7ChVzcXYCA9kN
+         JUv48f4jgPup+CHrzZf6w+AfSyBn13B+QQpM2W85KtMMefowgfzF6SEkXu9wDa88gO2B
+         nN2k3CYK4Hh5e/4TzZfHnbEaM6zaDEwuByIkk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=5YOa+gv1sIPcp5S2eMDxZrJPz51jsjFGvspNVL+ych0=;
+        b=En2t7sWCcQKlkpLpU6OjM872xMaNSR6OBnbQu1CG1KktGqVOkXNyeqX9ST5+5xVQuA
+         9QKhjHWSwx9BSTbpkW9Sw4hqtra41Abpl80fELYPsi4Z2fklLvvPbUBBRwg/JcL2/6fC
+         L8dZwOQlKjihwccf8s/MzEXNUzGZpDvHhFxoiKk8xxdAmNZl3miGLiX3RlfbA2s5f+Rj
+         6jrkwdmZFDzvCpMdtj+kqm30miEOz7H1MAzgwiOzb3meX9+OnP0mccUzuaxBrWkLuvB+
+         qcHXDCjGa26wSc5Q2v0kdYiAYgWaj+3ZtXAiEutc6JWpi6E4Ev4myASUSj+SVxdudsoF
+         4d3A==
+X-Gm-Message-State: ACrzQf2jrvoLGcTTnro61yl9MoBfLd/Gcwog9dOmuVwqWHbt3Hv3euZ/
+        T9dN4ivAmB0lt903lT2nIneCjw==
+X-Google-Smtp-Source: AMsMyM6pj2YmcAiXg6SonP+gJGRIk20ZQXjacFA/fb+08tqqdtojyBlUHrRZT8F0Z+9OyQ05xLAwxg==
+X-Received: by 2002:a17:90b:3ec9:b0:203:246e:4370 with SMTP id rm9-20020a17090b3ec900b00203246e4370mr15665429pjb.221.1663862121161;
+        Thu, 22 Sep 2022 08:55:21 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id b7-20020a170902650700b001754fa42065sm4270774plk.143.2022.09.22.08.55.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Sep 2022 08:55:20 -0700 (PDT)
+Date:   Thu, 22 Sep 2022 08:55:19 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
+Cc:     Vlastimil Babka <vbabka@suse.cz>,
+        Pekka Enberg <penberg@kernel.org>,
+        Feng Tang <feng.tang@intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Alex Elder <elder@kernel.org>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Daniel Micay <danielmicay@gmail.com>,
+        Yonghong Song <yhs@fb.com>, Marco Elver <elver@google.com>,
+        Miguel Ojeda <ojeda@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, netdev@vger.kernel.org,
+        linux-btrfs@vger.kernel.org, linux-media@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+        linux-fsdevel@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        dev@openvswitch.org, x86@kernel.org,
+        linux-wireless@vger.kernel.org, llvm@lists.linux.dev,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH 00/12] slab: Introduce kmalloc_size_roundup()
+Message-ID: <202209220845.2F7A050@keescook>
+References: <20220922031013.2150682-1-keescook@chromium.org>
+ <673e425d-1692-ef47-052b-0ff2de0d9c1d@amd.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next] net: ethernet: adi: Fix invalid parent name length
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166386181547.2610.4116048326764999279.git-patchwork-notify@kernel.org>
-Date:   Thu, 22 Sep 2022 15:50:15 +0000
-References: <20220922063049.10388-1-alexandru.tachici@analog.com>
-In-Reply-To: <20220922063049.10388-1-alexandru.tachici@analog.com>
-To:     Alexandru Tachici <alexandru.andrei.tachici@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        vegard.nossum@oracle.com, joel@jms.id.au, l.stelmach@samsung.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <673e425d-1692-ef47-052b-0ff2de0d9c1d@amd.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Thu, 22 Sep 2022 09:30:49 +0300 you wrote:
-> MII_BUS_ID_SIZE is larger than MAX_PHYS_ITEM_ID_LEN
-> so we use the former here to set the parent port id.
+On Thu, Sep 22, 2022 at 09:10:56AM +0200, Christian König wrote:
+> Am 22.09.22 um 05:10 schrieb Kees Cook:
+> > Hi,
+> > 
+> > This series fixes up the cases where callers of ksize() use it to
+> > opportunistically grow their buffer sizes, which can run afoul of the
+> > __alloc_size hinting that CONFIG_UBSAN_BOUNDS and CONFIG_FORTIFY_SOURCE
+> > use to perform dynamic buffer bounds checking.
 > 
-> Fixes: bc93e19d088b ("net: ethernet: adi: Add ADIN1110 support")
-> Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
-> ---
->  drivers/net/ethernet/adi/adin1110.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Good cleanup, but one question: What other use cases we have for ksize()
+> except the opportunistically growth of buffers?
 
-Here is the summary with links:
-  - [net-next] net: ethernet: adi: Fix invalid parent name length
-    https://git.kernel.org/netdev/net-next/c/2b9977470b39
+The remaining cases all seem to be using it as a "do we need to resize
+yet?" check, where they don't actually track the allocation size
+themselves and want to just depend on the slab cache to answer it. This
+is most clearly seen in the igp code:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/net/ethernet/intel/igb/igb_main.c?h=v6.0-rc6#n1204
 
-You are awesome, thank you!
+My "solution" there kind of side-steps it, and leaves ksize() as-is:
+https://lore.kernel.org/linux-hardening/20220922031013.2150682-8-keescook@chromium.org/
+
+The more correct solution would be to add per-v_idx size tracking,
+similar to the other changes I sent:
+https://lore.kernel.org/linux-hardening/20220922031013.2150682-11-keescook@chromium.org/
+
+I wonder if perhaps I should just migrate some of this code to using
+something like struct membuf.
+
+> Off hand I can't see any.
+> 
+> So when this patch set is about to clean up this use case it should probably
+> also take care to remove ksize() or at least limit it so that it won't be
+> used for this use case in the future.
+
+Yeah, my goal would be to eliminate ksize(), and it seems possible if
+other cases are satisfied with tracking their allocation sizes directly.
+
+-Kees
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Kees Cook
