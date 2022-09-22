@@ -2,109 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 290B75E6718
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 17:30:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 303B55E6737
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 17:35:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231516AbiIVPam (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 11:30:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60724 "EHLO
+        id S230188AbiIVPfC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 11:35:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232116AbiIVPad (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 11:30:33 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1ABDA99E8
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 08:30:31 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id e67so3354285pgc.12
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 08:30:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=ktbc2zsLnnKt6+57+I19rvSLvElUo/d1AGdIoWTJ0qc=;
-        b=EB4FOGidA7sCicF/Xmn0C2qVXh+wfP5QgcE1K0CuQZ9qnnfpX+0uEVXt8+wuQ+0EV+
-         3Is4qbCNq9qjNOZkrOseshBh5NiMkSQyr3qj2e9sh9tyXnAVlVwtIvY953+mZVoKnJKm
-         Wcsy0WISPa2Cp8t63rD2qlUbRgtRwgvgzztKGQrlnz6OO/rcgqzu8vMiA5lnEOIsKMMF
-         MosKJPuDI86M273uRpFW0y4fX0AgHc5leNEbW7B/B+V+yphtWVw+X5UYSPcy45010Lls
-         e0G/MZI+9+00UcJifHc5cK8Usl3MlGJvejCgAcWkaE3clKYX6LEWUBHmipVo8v2ySNok
-         NXBg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=ktbc2zsLnnKt6+57+I19rvSLvElUo/d1AGdIoWTJ0qc=;
-        b=2HFhZweNqJoN6Bw2Ri6JSyM27gUXFghn+Y3FoUJZYQbpMf/1pOeEjuyHaVAoqpQuG8
-         dPrY1Y48TMf3frVm2V3Z921ZNejcUUTTObbSRs1B/LsHNNhQYJGztfCPqePX3vf+AXEY
-         p9eNaQ6rireMG+RhYiO97mkZU2pYia33PhY1CgeuesSt3jnd3ME/ae/RXFSUKfaxKpNb
-         QqFlUWjdSuKc+YyR7byvRkrMi+qVptZQGTxqG11fEHtjmYs0r9B4p1JZgvQbP1RLWthc
-         Vwb+w7G7QYmFMIBpTYSsNXpmM15bNKiXNZaLMuBAj6iCw1ttpqrMBIabNEdjevRbCMzF
-         g46Q==
-X-Gm-Message-State: ACrzQf19wIseCmrIuCSdflyCVrtH0eeoNlP/WEeBjKBpgVGDZ2McwVfK
-        gKtGzqY9jw2/RS3MJUa/fJNyQQ==
-X-Google-Smtp-Source: AMsMyM7tPDq5FCJv4ls78g2LIVVM5jjAfCPG6TzXMCSjRo7dBvzMcU6v/2ZWDnb00A00Mrq40Gl0hQ==
-X-Received: by 2002:a63:20f:0:b0:43c:1ef6:ebd6 with SMTP id 15-20020a63020f000000b0043c1ef6ebd6mr1867621pgc.217.1663860631374;
-        Thu, 22 Sep 2022 08:30:31 -0700 (PDT)
-Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
-        by smtp.gmail.com with ESMTPSA id bg18-20020a056a02011200b00434feb1841dsm3861687pgb.66.2022.09.22.08.30.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Sep 2022 08:30:31 -0700 (PDT)
-Date:   Thu, 22 Sep 2022 08:30:29 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        David Ahern <dsahern@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH v2 iproute2-next] ip link: add sub-command to view and
- change DSA master
-Message-ID: <20220922083029.52524b21@hermes.local>
-In-Reply-To: <20220922144123.5z3wib5apai462q7@skbuf>
-References: <20220921165105.1737200-1-vladimir.oltean@nxp.com>
-        <20220921113637.73a2f383@hermes.local>
-        <20220921183827.gkmzula73qr4afwg@skbuf>
-        <20220921153349.0519c35d@hermes.local>
-        <20220922144123.5z3wib5apai462q7@skbuf>
+        with ESMTP id S230213AbiIVPe6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 11:34:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFBF358B7E;
+        Thu, 22 Sep 2022 08:34:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BD7860B4D;
+        Thu, 22 Sep 2022 15:34:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A42BC433D6;
+        Thu, 22 Sep 2022 15:34:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1663860895;
+        bh=sJXAH3EXSAELsL3FBaVZLmcKpg+EFzU0zQj/ilHdxKQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=sH08VxiesoHQx1m209f3GrudMrcvx5xose4r0Fm28b5YiGYL8X1PCNmkQD98N1K2d
+         fD1bvdf+FZlY1gwlJMAOEN/6YHWGiNOj2LkQGDbftoXo5JHG4FfafxiuYNDFeONpNB
+         Y0D4wcbPTAnthxZju9Gl+v1QzlsW+mk5mrBjo9MPeCgKqgKEZH//Tu53BcllTReMXT
+         NhKpPCNKFakLSOSX0ixNx6k946R++Z6fPE1ikr6iSMGAQSXGLA7DGNXx3I58px/a7W
+         Sbdf/ol1h/r0DbNhF6/U2CFO3MM7LiIykw6MNn2+pfNMgUSl7h4sK26tRzV3nM0NYN
+         0DUIrHexV7T/g==
+Date:   Thu, 22 Sep 2022 08:34:54 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jon Hunter <jonathanh@nvidia.com>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Bhadram Varka <vbhadram@nvidia.com>,
+        devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v4 9/9] stmmac: tegra: Add MGBE support
+Message-ID: <20220922083454.1b7936b2@kernel.org>
+In-Reply-To: <64414eac-fa09-732e-6582-408cfb9d41dd@nvidia.com>
+References: <20220707074818.1481776-1-thierry.reding@gmail.com>
+        <20220707074818.1481776-10-thierry.reding@gmail.com>
+        <YxjIj1kr0mrdoWcd@orome>
+        <64414eac-fa09-732e-6582-408cfb9d41dd@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 22 Sep 2022 14:41:24 +0000
-Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+On Thu, 22 Sep 2022 16:05:22 +0100 Jon Hunter wrote:
+> On 07/09/2022 17:36, Thierry Reding wrote:
+> > On Thu, Jul 07, 2022 at 09:48:18AM +0200, Thierry Reding wrote:  
+> >> From: Bhadram Varka <vbhadram@nvidia.com>
+> >>
+> >> Add support for the Multi-Gigabit Ethernet (MGBE/XPCS) IP found on
+> >> NVIDIA Tegra234 SoCs.
+> >>
+> >> Signed-off-by: Bhadram Varka <vbhadram@nvidia.com>
+> >> Signed-off-by: Thierry Reding <treding@nvidia.com>
+> >> ---
+> >> Note that this doesn't have any dependencies on any of the patches
+> >> earlier in the series, so this can be applied independently.
+>
+> > Patches 1-8 of this have already been applied to the Tegra tree. Are
+> > there any more comments on this or can this be merged as well?
+> > 
+> >  From a Tegra point of view this looks good, so:
+> > 
+> > Acked-by: Thierry Reding <treding@nvidia.com>  
+> 
+> Acked-by: Jon Hunter <jonathanh@nvidia.com>
+> 
+> Please can we queue this for v6.1? I have added the stmmac maintainers 
+> to the email, but not sure if you can pick this up?
 
-> On Wed, Sep 21, 2022 at 03:33:49PM -0700, Stephen Hemminger wrote:
-> > There is no reason that words with long emotional history need to be used
-> > in network command.
-> >
-> > https://inclusivenaming.org/word-lists/
-> >
-> > https://inclusivenaming.org/word-lists/tier-1/
-> >
-> > I understand that you and others that live in different geographies may
-> > have different feelings about this. But the goal as a community to
-> > not use names and terms that may hinder new diverse people from
-> > being involved.  
-> 
-> The Linux kernel community is centered around a technical goal rather
-> than political or emotional ones, and for this reason I don't think it's
-> appropriate to go here in many more details than this.
-> 
-> All I will say is that I have more things to do than time to do them,
-> and I'm not willing to voluntarily go even one step back about this and
-> change the UAPI names while the in-kernel data structures and the
-> documentation remain with the old names, because it's not going to stop
-> there, and I will never have time for this.
-> 
-> So until this becomes mandatory in some sort of official way, I'd like
-> to make use of the exception paragraph, which in my reading applies
-> perfectly to this situation, thank you.
-
-Because it is in the Coding Style it has been approved by the
-Linux Kernel Technical Advisor Board.
+Could you repost it independently of the series so that it can go thru
+the net auto-checkers? It should be able to make 6.1 pretty comfortably.
