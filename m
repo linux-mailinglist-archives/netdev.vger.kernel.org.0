@@ -2,49 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA3755E64C2
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 16:11:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 812DA5E64BC
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 16:10:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231411AbiIVOKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 10:10:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46742 "EHLO
+        id S229448AbiIVOKd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 10:10:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231418AbiIVOK3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 10:10:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 470AD6DAE5
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 07:10:18 -0700 (PDT)
+        with ESMTP id S230436AbiIVOKW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 10:10:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4060E6BCDE;
+        Thu, 22 Sep 2022 07:10:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 558C4B836CF
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 14:10:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 14DCEC433D7;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C7620634B2;
+        Thu, 22 Sep 2022 14:10:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 28F6DC433B5;
         Thu, 22 Sep 2022 14:10:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1663855816;
-        bh=lvL9LYrPpTA+L4Z0EHkpATH9nM3e3/TErI9fFNh0VF0=;
+        bh=eh4ObEUuIkDM4NMuRNEtG7sy49Qz55iaL5hBbk9QuYY=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=OaDJMN6y8ROoje8xe6Mn1T5xht6/9HTqifeBLzypLFcQWx1e2GVNmlDGyotEA0pTB
-         wWzs6B1HI6DuTGeL25ZsfQGN3ENUw2wiCa0Ranrove3YnfOgN/ytzPuyy+v26c6ILE
-         /5rZVKsit6wsFnu1tNbwe2GOVbf8Pr0nKcWp0CC0k/Xx9yaoibjFvbBiYYiCLqHKsm
-         N5oPBOqyb4qaeyFF34XWdzklF1I0uULhiD+MjfdFiHxR0X4BQW+17eOIv3+A3gAv/w
-         fZ4kJlRDdTipHSK0BQWVOhf7fcFRXRlI4dkZGUznoEmZgBIKZDpKAX742Ptc6Tql9B
-         Qi+FINJHtIB1Q==
+        b=bHodsX8HDejU6yGVjGryT6frz/osHqJqpwXTKZTdU/g8Mpwb1tjkVJxiRGFztFGis
+         kJ6nsVk6M2xxrQEJruKHLY4RdS4yOXytnmbJcLbIU0BnA13XJt5uLoYZwi1dlalVZg
+         +xECPN1/kPE2kCmRy5BRJJaP9IyXX9TYEvkGo2oL4DUXzXf5aGIzjFMGGCebj7Kabj
+         kviCuMCmkw1dMMbplatW87r/smd6zRTFJqK4913rB/ptdVN/OmOwQ95fbEDUGcPsbe
+         az9YHsTyBExIT/ccILwu3lDQ22CFnK1ZdsfiAD0xTbYcmHSWwD8216B84Y/naWitOP
+         fJTGudY+7dYUw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F1515E4D03C;
-        Thu, 22 Sep 2022 14:10:15 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0807DE4D03F;
+        Thu, 22 Sep 2022 14:10:16 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2 0/2] bonding: fix NULL deref in bond_rr_gen_slave_id
+Subject: Re: [PATCH net v2] net: sunhme: Fix packet reception for len <
+ RX_COPY_THRESHOLD
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166385581598.2095.4389439130979294872.git-patchwork-notify@kernel.org>
-Date:   Thu, 22 Sep 2022 14:10:15 +0000
-References: <cover.1663694476.git.jtoppins@redhat.com>
-In-Reply-To: <cover.1663694476.git.jtoppins@redhat.com>
-To:     Jonathan Toppins <jtoppins@redhat.com>
-Cc:     netdev@vger.kernel.org, j.vosburgh@gmail.com, joamaki@gmail.com
+Message-Id: <166385581602.2095.7967202939695469127.git-patchwork-notify@kernel.org>
+Date:   Thu, 22 Sep 2022 14:10:16 +0000
+References: <20220920235018.1675956-1-seanga2@gmail.com>
+In-Reply-To: <20220920235018.1675956-1-seanga2@gmail.com>
+To:     Sean Anderson <seanga2@gmail.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, nbowler@draconx.ca,
+        eike-kernel@sf-tec.de, zheyuma97@gmail.com, andrew@lunn.ch
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -56,26 +60,26 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (master)
+This patch was applied to netdev/net.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Tue, 20 Sep 2022 13:45:50 -0400 you wrote:
-> Fix a NULL dereference of the struct bonding.rr_tx_counter member because
-> if a bond is initially created with an initial mode != zero (Round Robin)
-> the memory required for the counter is never created and when the mode is
-> changed there is never any attempt to verify the memory is allocated upon
-> switching modes.
-> 
-> The first patch provides a selftest to demonstrate the issue and the
-> second patch fixes the issue.
+On Tue, 20 Sep 2022 19:50:18 -0400 you wrote:
+> There is a separate receive path for small packets (under 256 bytes).
+> Instead of allocating a new dma-capable skb to be used for the next packet,
+> this path allocates a skb and copies the data into it (reusing the existing
+> sbk for the next packet). There are two bytes of junk data at the beginning
+> of every packet. I believe these are inserted in order to allow aligned DMA
+> and IP headers. We skip over them using skb_reserve. Before copying over
+> the data, we must use a barrier to ensure we see the whole packet. The
+> current code only synchronizes len bytes, starting from the beginning of
+> the packet, including the junk bytes. However, this leaves off the final
+> two bytes in the packet. Synchronize the whole packet.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,v2,1/2] selftests: bonding: cause oops in bond_rr_gen_slave_id
-    https://git.kernel.org/netdev/net/c/2ffd57327ff1
-  - [net,v2,2/2] bonding: fix NULL deref in bond_rr_gen_slave_id
-    https://git.kernel.org/netdev/net/c/0e400d602f46
+  - [net,v2] net: sunhme: Fix packet reception for len < RX_COPY_THRESHOLD
+    https://git.kernel.org/netdev/net/c/878e2405710a
 
 You are awesome, thank you!
 -- 
