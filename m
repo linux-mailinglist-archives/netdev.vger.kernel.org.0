@@ -2,90 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 539045E6B84
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 21:08:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53CEC5E6B87
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 21:09:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232371AbiIVTIf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 15:08:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50264 "EHLO
+        id S232518AbiIVTJq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 15:09:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232532AbiIVTI3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 15:08:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 119C3FFA5B
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 12:08:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S232508AbiIVTJo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 15:09:44 -0400
+Received: from novek.ru (unknown [213.148.174.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A777A2EF1E
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 12:09:41 -0700 (PDT)
+Received: from [192.168.0.18] (unknown [37.228.234.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 75A2363798
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 19:08:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AEAFC433C1;
-        Thu, 22 Sep 2022 19:08:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663873706;
-        bh=cyYfmI5+8d1NFEnpneFi2gX0bDg/0oreLKIf4MJ/S0s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Rnl0Xvfqa15C0+RHVbkt5RCouL+yr+eY/VCp4I/74fe3SWH+K404o37ozE+sncLqi
-         Iyx5d6wo0RlLBoW7hE0tte/ML/BTsiK96mwimMiKJHqe+4h4mtVl/vROXfSoGLbyIg
-         pJ4k4lfAsQoRONQ4z3RO/JFHdJUSOhYbL8VCyit9BuD7CZGUaoYsqWQGWJqoqHo57n
-         l7LNux3mJ+UNBQVfuDRXd3Av3CM3qgUK474AOL2OJBMgmAYtbcmdlcYcQuKgdfDDy3
-         HmY6TYl0PWBy0BHJtMaBNTzsiTHz33GwPeUO+xtiSFEvC7d7MALO/EK31vQNoLnVf8
-         /hqJaiG7f27vA==
-Date:   Thu, 22 Sep 2022 22:08:22 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Simon Horman <simon.horman@corigine.com>,
-        David Miller <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        oss-drivers@corigine.com, Diana Wang <na.wang@corigine.com>,
-        Peng Zhang <peng.zhang@corigine.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Gal Pressman <gal@nvidia.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: Re: driver uABI review list? (was: Re: [PATCH/RFC net-next 0/3] nfp:
- support VF multi-queues configuration)
-Message-ID: <YyyyphcLn8UQse2F@unreal>
-References: <20220920151419.76050-1-simon.horman@corigine.com>
- <20220921063448.5b0dd32b@kernel.org>
- <YyyHg/lvzXHKNPe9@unreal>
- <20220922091414.4086f747@kernel.org>
+        by novek.ru (Postfix) with ESMTPSA id D2AA8504CFA;
+        Thu, 22 Sep 2022 22:06:29 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru D2AA8504CFA
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1663873591; bh=mEwnapkenWokKZYiSYBOt8MmfiHzlKD0ql2XQR1Keio=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Qdfl2JgzrXV9NYBZxMJjt2PryQ4HbUkangda5owwi1qAlt+ueVAqEq4IVtCmL3Bgb
+         NczlH2iXvrjUrzr1vMnXnTmPzcD9i5qXVZ7Uh+2IwOFG0Iwc/mipRxbigK0bW2HSue
+         CL2HC4ub1jpXYxMacMI9IKng72zeRym7N4oiZomw=
+Message-ID: <6772ad1d-9d40-4e1e-9e61-acd5b1d9eda5@novek.ru>
+Date:   Thu, 22 Sep 2022 20:09:35 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220922091414.4086f747@kernel.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH net v2] bnxt_en: replace reset with config timestamps
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Michael Chan <michael.chan@broadcom.com>,
+        Pavan Chebbi <pavan.chebbi@broadcom.com>,
+        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Richard Cochran <richardcochran@gmail.com>
+References: <20220921224430.20395-1-vfedorenko@novek.ru>
+ <20220921173818.305eb52e@kernel.org>
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+In-Reply-To: <20220921173818.305eb52e@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 22, 2022 at 09:14:14AM -0700, Jakub Kicinski wrote:
-> On Thu, 22 Sep 2022 19:04:19 +0300 Leon Romanovsky wrote:
-> > > Would it be helpful for participation if we had a separate mailing 
-> > > list for discussing driver uAPI introduction which would hopefully 
-> > > be lower traffic?  
-> > 
-> > Please don't. It will cause to an opposite situation where UAPI
-> > discussions will be hidden from most people.
+On 22.09.2022 01:38, Jakub Kicinski wrote:
+> On Thu, 22 Sep 2022 01:44:30 +0300 Vadim Fedorenko wrote:
+>> +		if (ptp->rx_filter == PORT_MAC_CFG_REQ_FLAGS_ALL_RX_TS_CAPTURE_ENABLE) {
 > 
-> Oh, it'd just be an additional list, the patches would still need 
-> to CC netdev.
+> Doesn't ptp->rx_filter hold the uAPI values, i.e. HWTSTAMP_FILTER_* ?
+> 
 
-First, there is already such ML: https://lore.kernel.org/linux-api/
-Second, you disconnect discussion from actual patches and this can
-cause to repeating of same arguments while reviewing patches.
+Thanks for catching this, Jakub.
+>> +			rc = bnxt_close_nic(bp, false, false);
+>> +			if (!rc)
+>> +				rc = bnxt_open_nic(bp, false, false);
+>> +		} else
+>> +			bnxt_ptp_cfg_tstamp_filters(bp);
+> 
+> nit: missing brackets around the else branch
 
-> 
-> > IMHO, every net vendor should be registered to netdev mailing list
-> > and read, review and participate.
-> 
-> Alright, so we got two no votes so far.
+v3 is on the way, also moving to net-next and without Fixes tag
