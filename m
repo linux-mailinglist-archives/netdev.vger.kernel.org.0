@@ -2,46 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A9C095E58FF
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 05:10:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1BAE5E5930
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 05:11:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230456AbiIVDKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 23:10:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44696 "EHLO
+        id S231223AbiIVDLg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 23:11:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229819AbiIVDK1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 23:10:27 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEA366717C
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 20:10:23 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id b75so7948092pfb.7
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 20:10:23 -0700 (PDT)
+        with ESMTP id S231154AbiIVDKc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 23:10:32 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 753417D7BF
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 20:10:26 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id d64-20020a17090a6f4600b00202ce056566so807631pjk.4
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 20:10:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=Vn16rLGrbDDjaKey8W5tBl33Bv/zSWk+J99kOTcbUQE=;
-        b=AE85R2lewHV6WpJoVOU7vYZV1LEmLLSYclgKQnUnY2xKVDNii5Fo/BkTgD3yH2NCT3
-         SVad2gPnMgif6X0cTuEEQWajnZUigllF8Swz/AIt7V/3KOVHG8p4eV2QEjA7+Ig8Tbzm
-         hCWNqHwmKS+0LzUeaR2ah/lhPJclhFqcjfbic=
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=h9cusoEVOsvIBl4L0VXSFc2MJFL0mH6lft5B/P8cXkg=;
+        b=EefbEI0k1Fvv0iVYJuV6w/tObk4UgFVwCXCDy/bABsI3ElERV6iytXpTF/NpFdgI1O
+         d81RNyJnc5vfQA1f6BhbuzkggUhj9QwTixgkqhyctIWzBuhtrRb6AZvcdQwcRe2lnbl1
+         JLox0/9IOh9NJapFOjCMAnZr4uVg2HMv5Yxdo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=Vn16rLGrbDDjaKey8W5tBl33Bv/zSWk+J99kOTcbUQE=;
-        b=rrSk1ZMIYrAJ/ve7ueg0lEw4qw/B6ikOEINzo7eP5KtiyyQ3kTQRsqK3Gu5F2lFYCH
-         FZZQUrj0aMZCluR5PO/PUbAiA+/WI/4ThapdGeB9WLYRp83ZdL96Iad2VmnE3WEcK9eT
-         DXVl4PgaO0USfTjNSwl82/UMEuj/4P1C2JVozgaF+LSM7iOpHUt7UfdEbu0PyGLOHd8k
-         n+kQ3Qg9tZxQX3wpJMd4APigeceN+dtUFkPgzxmETqHNl5hdEBdkbUxsANz+rUaYDYja
-         6bqvnjAA1xf90fCnXfUJDxWJ7dMhAK1z6D3MJtNXL0YplrJ1upnACuvDkOjN3SY4S4O7
-         QY2w==
-X-Gm-Message-State: ACrzQf3JHp0e10jNTAFTobreZz5V+nmNFGjLu0v/4FUWbPeaAoimToR1
-        be03WjFZ2RPigtMAk9ZK2/u2Yw==
-X-Google-Smtp-Source: AMsMyM5kbtfQXBGy+UgqYmJ89cy++RVO/0JPV5R9E0qA9P5D2h03X/wzrRsUp18SKmZq4kCTVEHctQ==
-X-Received: by 2002:a05:6a00:2314:b0:546:ce91:89a3 with SMTP id h20-20020a056a00231400b00546ce9189a3mr1393996pfh.77.1663816223317;
-        Wed, 21 Sep 2022 20:10:23 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=h9cusoEVOsvIBl4L0VXSFc2MJFL0mH6lft5B/P8cXkg=;
+        b=nMUHvXXr7iwu7i2bovZT+Y+L6Zj4vOUuq8xr1syww4XvEc+KB4QkAIEpEr3WecBpR3
+         UiKIXEJrSOWSbpODlrozZEUDZPdDjJkrOLJywiufIEqO+XF10WgR3IRVCD4F5WRQj0E+
+         iHmNBmpcQeITHZ9VftCcQI06RvWV1MRePCP6oE9MAeO9iHjUArdNPF/k1CiVBuUujKmC
+         G/c+UYx9SJ0K8AWbzNccjkQVr/DUUAil5kh3XU5jj49vDBY+5qh4JjNxR7RKT06zHV8v
+         5FQpaozlFH0s8P3IeqxAOmEMbsL5Xu7ShSQ51t2s+wEzg5oiPQYp/5IbB0e0n/GHyEBe
+         492A==
+X-Gm-Message-State: ACrzQf0m5PWt5BsewwibeMbsJqeoI+1C8L/ZEQ/VW+sELC7FmE5LwPEQ
+        OBhcaeTdDGSJdSdO7SsHqGRQXA==
+X-Google-Smtp-Source: AMsMyM7erk6BHrQMxxcqPheW+HKrcqt2FcPmRVEmbz5MxMnxjV9RgJfmyvf0sA3fzWftgJsc7PNdUw==
+X-Received: by 2002:a17:902:c205:b0:178:5083:f656 with SMTP id 5-20020a170902c20500b001785083f656mr1264667pll.81.1663816225447;
+        Wed, 21 Sep 2022 20:10:25 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id q21-20020a170902bd9500b001785fa792f4sm2713016pls.243.2022.09.21.20.10.22
+        by smtp.gmail.com with ESMTPSA id o9-20020a170902d4c900b0016c1a1c1405sm2690393plg.222.2022.09.21.20.10.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Wed, 21 Sep 2022 20:10:22 -0700 (PDT)
 From:   Kees Cook <keescook@chromium.org>
@@ -50,7 +51,7 @@ Cc:     Kees Cook <keescook@chromium.org>,
         Pekka Enberg <penberg@kernel.org>,
         David Rientjes <rientjes@google.com>,
         Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -67,20 +68,20 @@ Cc:     Kees Cook <keescook@chromium.org>,
         Yonghong Song <yhs@fb.com>, Marco Elver <elver@google.com>,
         Miguel Ojeda <ojeda@kernel.org>,
         Jacob Shin <jacob.shin@amd.com>, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, netdev@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, linux-media@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-        linux-fsdevel@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        dev@openvswitch.org, x86@kernel.org,
-        linux-wireless@vger.kernel.org, llvm@lists.linux.dev,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH 00/12] slab: Introduce kmalloc_size_roundup()
-Date:   Wed, 21 Sep 2022 20:10:01 -0700
-Message-Id: <20220922031013.2150682-1-keescook@chromium.org>
+        netdev@vger.kernel.org, linux-btrfs@vger.kernel.org,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org, linux-fsdevel@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, dev@openvswitch.org,
+        x86@kernel.org, linux-wireless@vger.kernel.org,
+        llvm@lists.linux.dev, linux-hardening@vger.kernel.org
+Subject: [PATCH 01/12] slab: Introduce kmalloc_size_roundup()
+Date:   Wed, 21 Sep 2022 20:10:02 -0700
+Message-Id: <20220922031013.2150682-2-keescook@chromium.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220922031013.2150682-1-keescook@chromium.org>
+References: <20220922031013.2150682-1-keescook@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4981; h=from:subject; bh=s4SaVhOuX1ncHIDJErOKK4BV4PgBIHpDN/h97+EEvV8=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBjK9ISNp90ZWOfSod9OsDV3Pgtvy1E13pzv3DCmYbF tf0g8d2JAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYyvSEgAKCRCJcvTf3G3AJkzwD/ wIy7miKIK9lOw6XzF5heENIATw2uhYlNzjs0acveP+ZCyoyc5I/WgCfqRAXAmHiXedbujzGw2FDqqT syY2emsesoSNP3gS/GOKo8RJDSOQC9cSQtEjb+mjbPF7Fkzqn/ZGRwMTbs9UaBsTj9Tj2fL7NNiO9p dwoQsa5XdmYV2vD0OlPuGJimN4Jz3oRQSNVQkawd+40awqnlGD9yQqU64uaLr5mwdGgPkIuw3aLLFd 5YiPwZw6bM1vgbnqBIuIHr/Z7XwM9EEapPwfqVdg/9dcOavsB633n1itcgsIqIDBioJGxOM0Ts7T86 4Jlikvby9AVebqTHq4+YuA+QwXaCQlzI8PxvKGF5ANAjeoheIYOhRCZTs4Dpe3aQtWFnO3FqVYLrzT cc2coPLbTlqbCxnMzWO5XK6k+LQJYAS5r5kCiddkkzITSqNSDkHLgAWrVT+WoO8GDM5wBJEy4K4BDX /s7uUaLCb4fXbubShHzmjelGTOPkp/YtKLrJhFLmk8oztScmMVc7cus/HhSCEpn2aXj3zHgtLJzUfw SN01q4wcwhmS6xqLuWl/PHEsTyaH69+g+rznvzhR64VGsg0V8g68wKeLcHDL9rQRALeFd3MBdV5n9s KFNBVsIrnbnnS1eImonqd1xuYH0pPRl+0Ng4aVcGGvP/yynpBokeriuTdCqA==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=5962; h=from:subject; bh=xZ4KvmpECLGcGEsYM/zKNprXKbXd9yWPl8ziuEK6bU0=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBjK9ISH57RDxzGZ7UZialGYuMXkkODnaIpmrO6frz1 JnTSVj+JAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYyvSEgAKCRCJcvTf3G3AJs0jD/ 9D8TMVp8e4DH86Ac/6txtkiLFvVFUXmWJTlIcztV3aHNeZUFgTtyJKbUyS/zmxZaIieM8uNiDl18aZ tFXG4/tQosDRpfPGTWZkPNKyVy0co9qQoJAqsQVgJijjzWaXitPIznFfMRsWJsHZkUlmSdgw7eGkue K/icTyNOfGqisB9zJ0Rt3u/9DuWH14ggoiHvu7PxwGUjRFaMvnXAAKaW1UIq9F83dyJjGUm38DADu9 4dfZCCjPjSlkFriDoF1Zl46UYapSeK6CjKINCrRxjHKe82xChD5DMqlJEXgUnMKNy0sDPpTsxq8Sda JGgN3Ry4iAbRaoNtpXRBsXwPfUk8qR3S1CYwwijhfkVjmK3DhOovAJqhsH3zX1A8DN1NawNv8K0iBn hQ6VQZGmjHr/hZoda6Rd/h98UPn+CpR5tnDV/gyX8lOcFytpbAUW/lXz0TR5Iyoto6OHwy+zO1n7AW MyqbTwIMPC7c17AKOQ8+COEl1jWv0QQyw8lCdYFsTBZ5aVwhfdqgd4NZbuYDdxUsEH81SVQQEZYqXf vGaIzaLEwq+c8FBwEDkGblzx1mqKGyz9o36hzstihC4vNVyv03Azq4elSlE2ZgKbhstadli4oCjvIt rnGXqP02zpXF4W9AgWxjdb/dO4G60VkpbWgiEbgUFW6b+Ei2xtqE09gmRfLg==
 X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -92,14 +93,6 @@ X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
-
-Hi,
-
-This series fixes up the cases where callers of ksize() use it to
-opportunistically grow their buffer sizes, which can run afoul of the
-__alloc_size hinting that CONFIG_UBSAN_BOUNDS and CONFIG_FORTIFY_SOURCE
-use to perform dynamic buffer bounds checking. Quoting the first patch:
-
 
 In the effort to help the compiler reason about buffer sizes, the
 __alloc_size attribute was added to allocators. This improves the scope
@@ -153,52 +146,97 @@ replacing the "anticipatory resizing" uses of ksize().
 
 [1] https://github.com/ClangBuiltLinux/linux/issues/1599
     https://github.com/KSPP/linux/issues/183
--------
 
-And after adding kmalloc_size_roundup(), put it to use with the various
-ksize() callers, restore the previously removed __alloc_size hint,
-and fix the use of __malloc annotations.
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: Pekka Enberg <penberg@kernel.org>
+Cc: David Rientjes <rientjes@google.com>
+Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-mm@kvack.org
+Signed-off-by: Kees Cook <keescook@chromium.org>
+---
+ include/linux/slab.h | 31 +++++++++++++++++++++++++++++++
+ mm/slab_common.c     | 17 +++++++++++++++++
+ 2 files changed, 48 insertions(+)
 
-I tried to trim the CC list on this series since it got rather long. I
-kept all the suggested mailing lists, though. :)
-
-Thanks!
-
--Kees
-
-Kees Cook (12):
-  slab: Introduce kmalloc_size_roundup()
-  skbuff: Proactively round up to kmalloc bucket size
-  net: ipa: Proactively round up to kmalloc bucket size
-  btrfs: send: Proactively round up to kmalloc bucket size
-  dma-buf: Proactively round up to kmalloc bucket size
-  coredump: Proactively round up to kmalloc bucket size
-  igb: Proactively round up to kmalloc bucket size
-  openvswitch: Proactively round up to kmalloc bucket size
-  x86/microcode/AMD: Track patch allocation size explicitly
-  iwlwifi: Track scan_cmd allocation size explicitly
-  slab: Remove __malloc attribute from realloc functions
-  slab: Restore __alloc_size attribute to __kmalloc_track_caller
-
- arch/x86/include/asm/microcode.h              |  1 +
- arch/x86/kernel/cpu/microcode/amd.c           |  3 +-
- drivers/dma-buf/dma-resv.c                    |  9 +++-
- drivers/net/ethernet/intel/igb/igb_main.c     |  1 +
- drivers/net/ipa/gsi_trans.c                   |  7 ++-
- drivers/net/wireless/intel/iwlwifi/dvm/dev.h  |  1 +
- drivers/net/wireless/intel/iwlwifi/dvm/scan.c | 10 +++-
- drivers/net/wireless/intel/iwlwifi/mvm/mvm.h  |  3 +-
- drivers/net/wireless/intel/iwlwifi/mvm/ops.c  |  3 +-
- drivers/net/wireless/intel/iwlwifi/mvm/scan.c |  6 +--
- fs/btrfs/send.c                               | 11 +++--
- fs/coredump.c                                 |  7 ++-
- include/linux/compiler_types.h                | 13 ++----
- include/linux/slab.h                          | 46 ++++++++++++++++---
- mm/slab_common.c                              | 17 +++++++
- net/core/skbuff.c                             | 34 +++++++-------
- net/openvswitch/flow_netlink.c                |  4 +-
- 17 files changed, 125 insertions(+), 51 deletions(-)
-
+diff --git a/include/linux/slab.h b/include/linux/slab.h
+index 0fefdf528e0d..4fc41e4ed4a2 100644
+--- a/include/linux/slab.h
++++ b/include/linux/slab.h
+@@ -188,7 +188,21 @@ void * __must_check krealloc(const void *objp, size_t new_size, gfp_t flags) __a
+ void kfree(const void *objp);
+ void kfree_sensitive(const void *objp);
+ size_t __ksize(const void *objp);
++
++/**
++ * ksize - Report actual allocation size of associated object
++ *
++ * @objp: Pointer returned from a prior kmalloc()-family allocation.
++ *
++ * This should not be used for writing beyond the originally requested
++ * allocation size. Either use krealloc() or round up the allocation size
++ * with kmalloc_size_roundup() prior to allocation. If this is used to
++ * access beyond the originally requested allocation size, UBSAN_BOUNDS
++ * and/or FORTIFY_SOURCE may trip, since they only know about the
++ * originally allocated size via the __alloc_size attribute.
++ */
+ size_t ksize(const void *objp);
++
+ #ifdef CONFIG_PRINTK
+ bool kmem_valid_obj(void *object);
+ void kmem_dump_obj(void *object);
+@@ -779,6 +793,23 @@ extern void kvfree(const void *addr);
+ extern void kvfree_sensitive(const void *addr, size_t len);
+ 
+ unsigned int kmem_cache_size(struct kmem_cache *s);
++
++/**
++ * kmalloc_size_roundup - Report allocation bucket size for the given size
++ *
++ * @size: Number of bytes to round up from.
++ *
++ * This returns the number of bytes that would be available in a kmalloc()
++ * allocation of @size bytes. For example, a 126 byte request would be
++ * rounded up to the next sized kmalloc bucket, 128 bytes. (This is strictly
++ * for the general-purpose kmalloc()-based allocations, and is not for the
++ * pre-sized kmem_cache_alloc()-based allocations.)
++ *
++ * Use this to kmalloc() the full bucket size ahead of time instead of using
++ * ksize() to query the size after an allocation.
++ */
++unsigned int kmalloc_size_roundup(size_t size);
++
+ void __init kmem_cache_init_late(void);
+ 
+ #if defined(CONFIG_SMP) && defined(CONFIG_SLAB)
+diff --git a/mm/slab_common.c b/mm/slab_common.c
+index 17996649cfe3..132d91a0f8c7 100644
+--- a/mm/slab_common.c
++++ b/mm/slab_common.c
+@@ -721,6 +721,23 @@ struct kmem_cache *kmalloc_slab(size_t size, gfp_t flags)
+ 	return kmalloc_caches[kmalloc_type(flags)][index];
+ }
+ 
++unsigned int kmalloc_size_roundup(size_t size)
++{
++	struct kmem_cache *c;
++
++	/* Short-circuit the 0 size case. */
++	if (size == 0)
++		return 0;
++	/* Above the smaller buckets, size is a multiple of page size. */
++	if (size > KMALLOC_MAX_CACHE_SIZE)
++		return PAGE_SIZE << get_order(size);
++
++	/* The flags don't matter since size_index is common to all. */
++	c = kmalloc_slab(size, GFP_KERNEL);
++	return c ? c->object_size : 0;
++}
++EXPORT_SYMBOL(kmalloc_size_roundup);
++
+ #ifdef CONFIG_ZONE_DMA
+ #define KMALLOC_DMA_NAME(sz)	.name[KMALLOC_DMA] = "dma-kmalloc-" #sz,
+ #else
 -- 
 2.34.1
 
