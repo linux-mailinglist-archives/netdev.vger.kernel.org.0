@@ -2,93 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A57C5E58B0
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 04:40:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 882625E58C2
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 04:45:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230355AbiIVCkU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 22:40:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42836 "EHLO
+        id S230358AbiIVCpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 22:45:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230197AbiIVCkT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 22:40:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 669D69AFCE;
-        Wed, 21 Sep 2022 19:40:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EE707B833F5;
-        Thu, 22 Sep 2022 02:40:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9E763C433C1;
-        Thu, 22 Sep 2022 02:40:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663814415;
-        bh=pCK1mKDA5rYstwX51BC9V1ecQPoxBA7MiLn9jkmCr1k=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=DDVCEtjVptOwmPBu6/Ukvxv51vnZZHGDe/OGkS/4E30wHPp/PIQyU/72F/M7CADr1
-         TM+sn+O/k43+YyH3Drcur2x1Vlt4V/9rbBncyBcTO5GvUT3hm8ZfEkZ/0iJbK0Ab0V
-         LjcCRNZMXYDt5naiU+9b06Jsa748qEl+BNKYCGsaC5a+RLD1KIIq3U2Suplipd6msz
-         CwK7nS+m3h89Cu1xf34pMOExK3TyhL0rTOg5DIyseGPoiCD9pfVJrlOOMH64AlnfAE
-         Kf9PjE7KIzAFTUYq3dYIz1X17ezanNNy0yriIX2fJyZ60v9ENT8K6IUI6ruuejjuGQ
-         bzXe+B7xxLKVw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7A22BE4D03D;
-        Thu, 22 Sep 2022 02:40:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230218AbiIVCpQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 22:45:16 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 891F67AC35
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 19:45:13 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id s206so7830784pgs.3
+        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 19:45:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=Yno7lIiE4QUqkgoMcNs/MFNAV99IkUYcJae4SRqDJDM=;
+        b=nmDHwPNUbPj+Rk6Wt14n96daVPvH1abWaGY4JdubdrZojwcflT4h2O1L3YVK1UTVyL
+         0nHxfVvgzcKSekHkxboPHEOe7ou+UDYfcBN8yNAixZ2uZqRf3ZCVFQMi7WvVnESdeZ+Q
+         lzrDjThdVq0JzT4rwmMwRb0wzQsxUVukxa76moEBOr/yzen5AXO7ka9PQIyls8Leojz2
+         YDcKdvWXFdhbN7R1g7eOWqRRcfV/CLmSd8BOZy/iL5JPIYw0ltWxQ1a1cI+IR4yRBNu0
+         X2vnQ9EgTMnwnD3rbnVKXEFPfzM01g1Xg74eUGQtcP+rdFPQyOv5bqq8BriroHzRB97L
+         z0pQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=Yno7lIiE4QUqkgoMcNs/MFNAV99IkUYcJae4SRqDJDM=;
+        b=as3tDsJrAyNEiXBzUY8vzZH8If4diS380sngXA0oVCbjbhMS14myyklDY4mwydTiNK
+         GeCmBR6DhKAkn2KZDymgh846UEgMEshvpBjHk0aAegceqDIq1TyknX+m3fT6mLMKKvaV
+         t3yyucSiFQwE3ryK/Lgd3ZypfGGpXflPHk0j3ND+/lQNoHEvMnCTjiAv3dHJVgSJE62+
+         HbSBIfIFwXnWVe8dBJfP5EIkPoEunfYU71G+z5EzzfXaS15c0FWOFtVDVkDd9WFfLZ9N
+         8dAAbdBdBvwKXk2rE5Otgzhcw9gOxjfKWt9cZFkk9Nip7pGTuiWUQM6z30ZdZOVYS6ac
+         VtZg==
+X-Gm-Message-State: ACrzQf3hOcASDZT/h0SJPg6OO5tq7iB0Hd5PZm0mkJR8Cecz7Nq8eETT
+        UYpwEMSz7fkVnh0NWAlO8vo7TmyhiSlm+A==
+X-Google-Smtp-Source: AMsMyM5iQlMcXhrRjdPk/MZCY2z4hKdWcI7i0e0dwuGIUM/7IA32/vGJ18XV5OQYO9agpAWrHFlOuQ==
+X-Received: by 2002:aa7:9e0d:0:b0:540:94a7:9051 with SMTP id y13-20020aa79e0d000000b0054094a79051mr1407933pfq.59.1663814712848;
+        Wed, 21 Sep 2022 19:45:12 -0700 (PDT)
+Received: from Laptop-X1.redhat.com ([43.228.180.230])
+        by smtp.gmail.com with ESMTPSA id n17-20020aa79851000000b0053b0d88220csm2971547pfq.3.2022.09.21.19.45.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Sep 2022 19:45:12 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Petr Machata <petrm@mellanox.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCH net] selftests: forwarding: add shebang for sch_red.sh
+Date:   Thu, 22 Sep 2022 10:44:53 +0800
+Message-Id: <20220922024453.437757-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3 bpf-next 0/3] Introduce bpf_ct_set_nat_info kfunc helper
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166381441549.2980.4403940314525769490.git-patchwork-notify@kernel.org>
-Date:   Thu, 22 Sep 2022 02:40:15 +0000
-References: <cover.1663778601.git.lorenzo@kernel.org>
-In-Reply-To: <cover.1663778601.git.lorenzo@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
-        pablo@netfilter.org, fw@strlen.de, netfilter-devel@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, brouer@redhat.com, toke@redhat.com,
-        memxor@gmail.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+RHEL/Fedora RPM build checks are stricter, and complain when executable
+files don't have a shebang line, e.g.
 
-This series was applied to bpf/bpf-next.git (master)
-by Alexei Starovoitov <ast@kernel.org>:
+*** WARNING: ./kselftests/net/forwarding/sch_red.sh is executable but has no shebang, removing executable bit
 
-On Wed, 21 Sep 2022 18:48:24 +0200 you wrote:
-> Introduce bpf_ct_set_nat_info kfunc helper in order to set source and
-> destination nat addresses/ports in a new allocated ct entry not inserted
-> in the connection tracking table yet.
-> Introduce support for per-parameter trusted args.
-> 
-> Changes since v2:
-> - use int instead of a pointer for port in bpf_ct_set_nat_info signature
-> - modify KF_TRUSTED_ARGS definition in order to referenced pointer constraint
->   just for PTR_TO_BTF_ID
-> - drop patch 2/4
-> 
-> [...]
+Fix it by adding shebang line.
 
-Here is the summary with links:
-  - [v3,bpf-next,1/3] bpf: Tweak definition of KF_TRUSTED_ARGS
-    https://git.kernel.org/bpf/bpf-next/c/eed807f62610
-  - [v3,bpf-next,2/3] net: netfilter: add bpf_ct_set_nat_info kfunc helper
-    https://git.kernel.org/bpf/bpf-next/c/0fabd2aa199f
-  - [v3,bpf-next,3/3] selftests/bpf: add tests for bpf_ct_set_nat_info kfunc
-    https://git.kernel.org/bpf/bpf-next/c/b06b45e82b59
+Fixes: 6cf0291f9517 ("selftests: forwarding: Add a RED test for SW datapath")
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+---
+ tools/testing/selftests/net/forwarding/sch_red.sh | 1 +
+ 1 file changed, 1 insertion(+)
 
-You are awesome, thank you!
+diff --git a/tools/testing/selftests/net/forwarding/sch_red.sh b/tools/testing/selftests/net/forwarding/sch_red.sh
+index e714bae473fb..81f31179ac88 100755
+--- a/tools/testing/selftests/net/forwarding/sch_red.sh
++++ b/tools/testing/selftests/net/forwarding/sch_red.sh
+@@ -1,3 +1,4 @@
++#!/bin/bash
+ # SPDX-License-Identifier: GPL-2.0
+ 
+ # This test sends one stream of traffic from H1 through a TBF shaper, to a RED
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.37.2
 
