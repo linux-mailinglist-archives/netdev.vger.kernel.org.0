@@ -2,174 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D48BB5E68E4
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 18:56:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBAB85E692D
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 19:08:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231764AbiIVQz4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 12:55:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44656 "EHLO
+        id S230094AbiIVRIa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 13:08:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231689AbiIVQzv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 12:55:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AEC0EEB6A;
-        Thu, 22 Sep 2022 09:55:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 355A561174;
-        Thu, 22 Sep 2022 16:55:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BADD0C433C1;
-        Thu, 22 Sep 2022 16:55:47 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="fycoWGBA"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1663865745;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=N73clIXixeJ/JM4wCsOBXre5Rf6uhDiyb/I7sNh+v+4=;
-        b=fycoWGBAAwuWPYDyBcastWyRZEkRPbxgxzUMeUh/nKVm6Q8TRp1kVyNV5HpFzFsaB147tR
-        uAJxLDIAINR8BR9RxfbUbK0JAdvae1Vz1IN+IRFVVPjSnlEp/j/3lXIt7hd4HKrfGrzU+N
-        +rKLeRG8Js2VhF6JhmY8L2N8XbdrZm4=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id f720e13b (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Thu, 22 Sep 2022 16:55:44 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Tejun Heo <tj@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jack Vogel <jack.vogel@oracle.com>,
-        sultan@kerneltoast.com, Sherry Yang <sherry.yang@oracle.com>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>, stable@vger.kernel.org
-Subject: [PATCH] random: use tasklet rather than workqueue for mixing fast pool
-Date:   Thu, 22 Sep 2022 18:55:28 +0200
-Message-Id: <20220922165528.3679479-1-Jason@zx2c4.com>
-In-Reply-To: <YyyRMam6Eu8nmeCd@zx2c4.com>
-References: <YyyRMam6Eu8nmeCd@zx2c4.com>
+        with ESMTP id S230256AbiIVRI2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 13:08:28 -0400
+Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B96FFF3FD
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 10:08:27 -0700 (PDT)
+Received: by mail-ot1-x32a.google.com with SMTP id j17-20020a9d7f11000000b0065a20212349so6629696otq.12
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 10:08:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf.com; s=google;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date;
+        bh=NsLp670RdI3g1jDRkVkeaW3CVX2HSxEN1Ogh5i9k9LY=;
+        b=IEKLSGYZyAft4XxWcA4PD4UttV+HgJmCgq5nMaXUm4o2EF1aOrqRwi/FjAPgXePFO5
+         1ioPjw3VrpI42US2WJWHxn0GCPmZUch7f5WDUnnF6MKmI8f0XJdriigXi4iChVKnQ25m
+         iscb/XcXlYEB3a8Pco4Nxcl0te/TwAFzeS85BH4mjJJWMYAAHScb5hT/nsR9VBjQ6WCo
+         sROWS/3uxZymCkF6Ps/YA3DK4rau/j/1SPrCKcHMdRbBrO2Uw8FIZUsIbap3cgvpJffW
+         j1AznO+MB1ZOgWS2AMbMuzhi9nR3L8jy+PtF2/9eYYryjUTgo7EU7BMub6gFsARSyVH2
+         /0VQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=NsLp670RdI3g1jDRkVkeaW3CVX2HSxEN1Ogh5i9k9LY=;
+        b=HGfJ1IvowP4QU2jEtWWAJyFf9/AB49W0NIokNquqKeWw5Zam2se0LjhtQixM60x6/R
+         peZvlUwKto0Sajlafd6VhN3ldq53QGzRG1B70107OQlH7Ok4rMFmZGjRFCfZKgr4A3ZB
+         //evxAyJNBIl7Q1iiBZ6pq0TLhtSxwlKQ1PlqmN55Lh1ACHTR9lSckgGxjDR4yu1E2He
+         D4kPQxKu6A6ONIRiB9Um+WBIECfWfaSTGOoT4PSDiXEUYZUJJeBcWHdFHq4hBgAMRjd6
+         AH8y1NoRJDrIpc2xW0m8U8ZJPQEeO78OJcecMFasmj6p3CDwAGYYg1UQhpn0+eexJ0wg
+         2nhA==
+X-Gm-Message-State: ACrzQf3jhXi8LcIJNVC55UyQrIv9bG6ePC5zbQEgsKXJWCVIGPkbBPag
+        6pYi5RL8fgsJCduByIjp8aZ529gmf+c/Lunx0eEzUw==
+X-Google-Smtp-Source: AMsMyM4GcKX0bCdneB/J/ZUwyoJzNyhgBt62WBUXi/PfZoJvLFtvtjK7mNxiF89ZH9QB9THsbU0/0Qku63ByaVTi1MI=
+X-Received: by 2002:a9d:7a8a:0:b0:656:284c:d5bd with SMTP id
+ l10-20020a9d7a8a000000b00656284cd5bdmr2142775otn.52.1663866506690; Thu, 22
+ Sep 2022 10:08:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220921114444.2247083-1-gregkh@linuxfoundation.org> <YyyH1oXMubeQ8KVu@shell.armlinux.org.uk>
+In-Reply-To: <YyyH1oXMubeQ8KVu@shell.armlinux.org.uk>
+From:   Marcin Wojtas <mw@semihalf.com>
+Date:   Thu, 22 Sep 2022 19:08:16 +0200
+Message-ID: <CAPv3WKch2J4tteo68wOt_ETj_eYEKy8EC5sTwDvW6UZ-Gs_sCw@mail.gmail.com>
+Subject: Re: [PATCH net] net: mvpp2: debugfs: fix problem with previous memory
+ leak fix
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, stable <stable@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Previously, the fast pool was dumped into the main pool peroidically in
-the fast pool's hard IRQ handler. This worked fine and there weren't
-problems with it, until RT came around. Since RT converts spinlocks into
-sleeping locks, problems cropped up. Rather than switching to raw
-spinlocks, the RT developers preferred we make the transformation from
-originally doing:
+Hi,
 
-    do_some_stuff()
-    spin_lock()
-    do_some_other_stuff()
-    spin_unlock()
+Thank you both for the patches.
 
-to doing:
 
-    do_some_stuff()
-    queue_work_on(some_other_stuff_worker)
-
-This is an ordinary pattern done all over the kernel. However, Sherry
-noticed a 10% performance regression in qperf TCP over a 40gbps
-InfiniBand card. Quoting her message:
-
-> MT27500 Family [ConnectX-3] cards:
-> Infiniband device 'mlx4_0' port 1 status:
-> default gid: fe80:0000:0000:0000:0010:e000:0178:9eb1
-> base lid: 0x6
-> sm lid: 0x1
-> state: 4: ACTIVE
-> phys state: 5: LinkUp
-> rate: 40 Gb/sec (4X QDR)
-> link_layer: InfiniBand
+czw., 22 wrz 2022 o 18:05 Russell King (Oracle)
+<linux@armlinux.org.uk> napisa=C5=82(a):
 >
-> Cards are configured with IP addresses on private subnet for IPoIB
-> performance testing.
-> Regression identified in this bug is in TCP latency in this stack as reported
-> by qperf tcp_lat metric:
+> On Wed, Sep 21, 2022 at 01:44:44PM +0200, Greg Kroah-Hartman wrote:
+> > In commit fe2c9c61f668 ("net: mvpp2: debugfs: fix memory leak when usin=
+g
+> > debugfs_lookup()"), if the module is unloaded, the directory will still
+> > be present if the module is loaded again and creating the directory wil=
+l
+> > fail, causing the creation of additional child debugfs entries for the
+> > individual devices to fail.
+> >
+> > As this module never cleaned up the root directory it created, even whe=
+n
+> > loaded, and unloading/loading a module is not a normal operation, none
+> > of would normally happen.
+> >
+> > To clean all of this up, use a tiny reference counted structure to hold
+> > the root debugfs directory for the driver, and then clean it up when th=
+e
+> > last user of it is removed from the system.  This should resolve the
+> > previously reported problems, and the original memory leak that
+> > fe2c9c61f668 ("net: mvpp2: debugfs: fix memory leak when using
+> > debugfs_lookup()") was attempting to fix.
 >
-> We have one system listen as a qperf server:
-> [root@yourQperfServer ~]# qperf
+> For the record... I have a better fix for this, but I haven't been able
+> to get it into a state suitable for submission yet.
 >
-> Have the other system connect to qperf server as a client (in this
-> case, it’s X7 server with Mellanox card):
-> [root@yourQperfClient ~]# numactl -m0 -N0 qperf 20.20.20.101 -v -uu -ub --time 60 --wait_server 20 -oo msg_size:4K:1024K:*2 tcp_lat
+> http://www.home.armlinux.org.uk/~rmk/misc/mvpp2-debugfs.diff
+>
+> Not yet against the net tree. Might have time tomorrow to do that, not
+> sure at the moment. Medical stuff is getting in the way. :(
+>
 
-Rather than incur the scheduling latency from queue_work_on, we can
-instead switch to a tasklet, which will run on the same core -- exactly
-what we want -- and happen during context transition without additional
-scheduling latency, and minimized logic in the enqueuing path.
+I'd lean towards this version - it is a bit more compact. I'll try to
+test that tomorrow or during the weekend.
 
-Hopefully this restores performance from prior to the RT changes.
-
-Reported-by: Sherry Yang <sherry.yang@oracle.com>
-Suggested-by: Sultan Alsawaf <sultan@kerneltoast.com>
-Fixes: 58340f8e952b ("random: defer fast pool mixing to worker")
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/lkml/YyuREcGAXV9828w5@zx2c4.com/
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
-Hi Sherry,
-
-I'm not going to commit to this until I receive your `Tested-by:`, so
-please let me know if this fixes the problem. If not, we'll try
-something else.
-
-Thanks,
-Jason
-
- drivers/char/random.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 520a385c7dab..ad17b36cf977 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -918,13 +918,16 @@ EXPORT_SYMBOL_GPL(unregister_random_vmfork_notifier);
- #endif
- 
- struct fast_pool {
--	struct work_struct mix;
-+	struct tasklet_struct mix;
- 	unsigned long pool[4];
- 	unsigned long last;
- 	unsigned int count;
- };
- 
-+static void mix_interrupt_randomness(struct tasklet_struct *work);
-+
- static DEFINE_PER_CPU(struct fast_pool, irq_randomness) = {
-+	.mix = { .use_callback = true, .callback = mix_interrupt_randomness },
- #ifdef CONFIG_64BIT
- #define FASTMIX_PERM SIPHASH_PERMUTATION
- 	.pool = { SIPHASH_CONST_0, SIPHASH_CONST_1, SIPHASH_CONST_2, SIPHASH_CONST_3 }
-@@ -973,7 +976,7 @@ int __cold random_online_cpu(unsigned int cpu)
- }
- #endif
- 
--static void mix_interrupt_randomness(struct work_struct *work)
-+static void mix_interrupt_randomness(struct tasklet_struct *work)
- {
- 	struct fast_pool *fast_pool = container_of(work, struct fast_pool, mix);
- 	/*
-@@ -1027,10 +1030,8 @@ void add_interrupt_randomness(int irq)
- 	if (new_count < 1024 && !time_is_before_jiffies(fast_pool->last + HZ))
- 		return;
- 
--	if (unlikely(!fast_pool->mix.func))
--		INIT_WORK(&fast_pool->mix, mix_interrupt_randomness);
- 	fast_pool->count |= MIX_INFLIGHT;
--	queue_work_on(raw_smp_processor_id(), system_highpri_wq, &fast_pool->mix);
-+	tasklet_hi_schedule(&fast_pool->mix);
- }
- EXPORT_SYMBOL_GPL(add_interrupt_randomness);
- 
--- 
-2.37.3
-
+Best regards,
+Marcin
