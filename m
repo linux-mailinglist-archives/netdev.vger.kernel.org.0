@@ -2,53 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DA8E35E645A
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 15:55:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6EC35E649D
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 16:03:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231853AbiIVNzv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 09:55:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48812 "EHLO
+        id S231602AbiIVODm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 10:03:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231851AbiIVNzu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 09:55:50 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E7A5E7C15
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 06:55:46 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MYGvx4vHtzHp5B;
-        Thu, 22 Sep 2022 21:53:33 +0800 (CST)
-Received: from dggpemm100009.china.huawei.com (7.185.36.113) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 22 Sep 2022 21:55:44 +0800
-Received: from huawei.com (10.175.113.32) by dggpemm100009.china.huawei.com
- (7.185.36.113) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Thu, 22 Sep
- 2022 21:55:43 +0800
-From:   Liu Shixin <liushixin2@huawei.com>
-To:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-CC:     <netdev@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        Liu Shixin <liushixin2@huawei.com>
-Subject: [PATCH] net: ethernet: mtk_eth_soc: use DEFINE_SHOW_ATTRIBUTE to simplify code
-Date:   Thu, 22 Sep 2022 22:29:29 +0800
-Message-ID: <20220922142929.3250844-1-liushixin2@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229866AbiIVODk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 10:03:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD13F52464;
+        Thu, 22 Sep 2022 07:03:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 58207634A7;
+        Thu, 22 Sep 2022 14:03:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 503FAC433D6;
+        Thu, 22 Sep 2022 14:03:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1663855417;
+        bh=IaXnE90Dw+lix3qQa6wNniUCh50gJ4TzNAPq4uuhwfs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=h44e5MJQs/hxUyq55HYJZ/tZ12V+PbbG4N3hlbJ5IcXTqChHMYcCHWPBfLL0Sbii/
+         P+4uyvV+TmFmqbr+2+Hzm3YNdxNED0hJ4WGyo2D8qcCPiDxd6I+lxJzAKBMkfrdypM
+         5g+ANA+IVr4Gno9Zh8bcpeVGCZ8FsAv8Igue6qdPAMvCZrb+FhyLpDWxMyVfhF8kiq
+         sAMSnuieLRi6KcTD2v0OrGwyb++lC9CydNd8WfnXt/YHUxOy5/FjE0q7oDuelm3wly
+         /wiJMenbzpKKVTaaTa0Irvy7S/fAhs/oCAFwtvi20vilIpBqEi/bbW5TcXYhOs0byc
+         vmjcuGhxjGvwA==
+Date:   Thu, 22 Sep 2022 07:03:36 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Michael =?UTF-8?B?V2Vpw58=?= <michael.weiss@aisec.fraunhofer.de>
+Cc:     Paolo Abeni <pabeni@redhat.com>, Pravin B Shelar <pshelar@ovn.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        dev@openvswitch.org, linux-kernel@vger.kernel.org,
+        Joe Stringer <joe@cilium.io>
+Subject: Re: [PATCH v2 net 2/2] net: openvswitch: allow conntrack in
+ non-initial user namespace
+Message-ID: <20220922070336.623d4150@kernel.org>
+In-Reply-To: <20220921011946.250228-3-michael.weiss@aisec.fraunhofer.de>
+References: <20220921011946.250228-1-michael.weiss@aisec.fraunhofer.de>
+        <20220921011946.250228-3-michael.weiss@aisec.fraunhofer.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.32]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm100009.china.huawei.com (7.185.36.113)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,77 +57,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use DEFINE_SHOW_ATTRIBUTE helper macro to simplify the code.
-No functional change.
+On Wed, 21 Sep 2022 03:19:46 +0200 Michael Wei=C3=9F wrote:
+> Similar to the previous commit, the Netlink interface of the OVS
+> conntrack module was restricted to global CAP_NET_ADMIN by using
+> GENL_ADMIN_PERM. This is changed to GENL_UNS_ADMIN_PERM to support
+> unprivileged containers in non-initial user namespace.
 
-Signed-off-by: Liu Shixin <liushixin2@huawei.com>
----
- .../net/ethernet/mediatek/mtk_ppe_debugfs.c   | 38 +++----------------
- 1 file changed, 6 insertions(+), 32 deletions(-)
+Should we bump=20
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c b/drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c
-index eb0b598f14e4..e0d7c6f83b80 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c
-@@ -162,52 +162,26 @@ mtk_ppe_debugfs_foe_show(struct seq_file *m, void *private, bool bind)
- }
- 
- static int
--mtk_ppe_debugfs_foe_show_all(struct seq_file *m, void *private)
-+mtk_ppe_debugfs_foe_all_show(struct seq_file *m, void *private)
- {
- 	return mtk_ppe_debugfs_foe_show(m, private, false);
- }
-+DEFINE_SHOW_ATTRIBUTE(mtk_ppe_debugfs_foe_all);
- 
- static int
--mtk_ppe_debugfs_foe_show_bind(struct seq_file *m, void *private)
-+mtk_ppe_debugfs_foe_bind_show(struct seq_file *m, void *private)
- {
- 	return mtk_ppe_debugfs_foe_show(m, private, true);
- }
--
--static int
--mtk_ppe_debugfs_foe_open_all(struct inode *inode, struct file *file)
--{
--	return single_open(file, mtk_ppe_debugfs_foe_show_all,
--			   inode->i_private);
--}
--
--static int
--mtk_ppe_debugfs_foe_open_bind(struct inode *inode, struct file *file)
--{
--	return single_open(file, mtk_ppe_debugfs_foe_show_bind,
--			   inode->i_private);
--}
-+DEFINE_SHOW_ATTRIBUTE(mtk_ppe_debugfs_foe_bind);
- 
- int mtk_ppe_debugfs_init(struct mtk_ppe *ppe)
- {
--	static const struct file_operations fops_all = {
--		.open = mtk_ppe_debugfs_foe_open_all,
--		.read = seq_read,
--		.llseek = seq_lseek,
--		.release = single_release,
--	};
--
--	static const struct file_operations fops_bind = {
--		.open = mtk_ppe_debugfs_foe_open_bind,
--		.read = seq_read,
--		.llseek = seq_lseek,
--		.release = single_release,
--	};
--
- 	struct dentry *root;
- 
- 	root = debugfs_create_dir("mtk_ppe", NULL);
--	debugfs_create_file("entries", S_IRUGO, root, ppe, &fops_all);
--	debugfs_create_file("bind", S_IRUGO, root, ppe, &fops_bind);
-+	debugfs_create_file("entries", S_IRUGO, root, ppe, &mtk_ppe_debugfs_foe_all_fops);
-+	debugfs_create_file("bind", S_IRUGO, root, ppe, &mtk_ppe_debugfs_foe_bind_fops);
- 
- 	return 0;
- }
--- 
-2.25.1
+  ct_limit =3D kmalloc(sizeof(*ct_limit), GFP_KERNEL);
+
+to also being accounted?
+
+Otherwise LGTM, please repost with [PATCH net-next v3] in the subject.
+net is for fixes only, and we're quite late in the -rc process.
+
+Please try to CC the original authors as well, for Joe the address
+will be Joe Stringer <joe@cilium.io>.
+
+> diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
+> index 4e70df91d0f2..9142ba322991 100644
+> --- a/net/openvswitch/conntrack.c
+> +++ b/net/openvswitch/conntrack.c
+> @@ -2252,14 +2252,16 @@ static int ovs_ct_limit_cmd_get(struct sk_buff *s=
+kb, struct genl_info *info)
+>  static const struct genl_small_ops ct_limit_genl_ops[] =3D {
+>  	{ .cmd =3D OVS_CT_LIMIT_CMD_SET,
+>  		.validate =3D GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+> -		.flags =3D GENL_ADMIN_PERM, /* Requires CAP_NET_ADMIN
+> -					   * privilege. */
+> +		.flags =3D GENL_UNS_ADMIN_PERM, /* Requires CAP_NET_ADMIN
+> +					       * privilege.
+> +					       */
+>  		.doit =3D ovs_ct_limit_cmd_set,
+>  	},
+>  	{ .cmd =3D OVS_CT_LIMIT_CMD_DEL,
+>  		.validate =3D GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+> -		.flags =3D GENL_ADMIN_PERM, /* Requires CAP_NET_ADMIN
+> -					   * privilege. */
+> +		.flags =3D GENL_UNS_ADMIN_PERM, /* Requires CAP_NET_ADMIN
+> +					       * privilege.
+> +					       */
+>  		.doit =3D ovs_ct_limit_cmd_del,
+>  	},
+>  	{ .cmd =3D OVS_CT_LIMIT_CMD_GET,
 
