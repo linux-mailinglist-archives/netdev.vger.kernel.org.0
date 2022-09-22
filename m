@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B0585E6FF7
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 00:59:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5AD85E6FFE
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 00:59:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230454AbiIVW4t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 18:56:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55886 "EHLO
+        id S230441AbiIVW5P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 18:57:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230477AbiIVW4p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 18:56:45 -0400
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 795D710F734
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 15:56:44 -0700 (PDT)
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28MKiQgv001128
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 15:56:44 -0700
+        with ESMTP id S231181AbiIVW47 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 18:56:59 -0400
+Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FDB21138F8
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 15:56:56 -0700 (PDT)
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28MKiT0g013235
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 15:56:55 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=RqFL4vFtq4xcNAh9IUa9kzPBN7c/NmqbgQ+sYfefREs=;
- b=pHrzvTJRxAIFO+63+bl0P3og0gtwmjKRzwnTwZ1ggnlC6njx2mvFXjZqloFM4Zr5CBm+
- pXzo0cRqHMQVSyPdfEgPCCJpnEFRqUuxY+CgvcHJq+NohfBw3S268vWSEQuKqFPo2NGj
- dzhTXawVerHDHBwJ0+7uicVSJ9ScUP6KyrU= 
+ bh=I6mE5Nuvw1CCKlFjYO5v8nXq6zIBUNfcRxIn1vznMQA=;
+ b=djeLTeuLwo9JehQCGslUUR2VHyTAw6QT2iYbqwdxWwPJxYO+Kwjz+B5jfxs/UP7+DOJk
+ Ya5hE8ISgUxN3JsVng8EHkjbHmwvoopYSvzIFxjDrqrO67mYtoUfe8WEa/swH0WpHcgC
+ GCJ16i8Xtp7XM2o9fIfFSoYJ+GmJYZ4bsrs= 
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3jrhjgps1g-3
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3jr6s3twre-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 15:56:44 -0700
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 15:56:55 -0700
 Received: from twshared20273.14.frc2.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:11d::5) with Microsoft SMTP Server
+ mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 22 Sep 2022 15:56:42 -0700
+ 15.1.2375.31; Thu, 22 Sep 2022 15:56:54 -0700
 Received: by devbig933.frc1.facebook.com (Postfix, from userid 6611)
-        id 7605F999DE7D; Thu, 22 Sep 2022 15:56:36 -0700 (PDT)
+        id C35B5999DE97; Thu, 22 Sep 2022 15:56:42 -0700 (PDT)
 From:   Martin KaFai Lau <kafai@fb.com>
 To:     <bpf@vger.kernel.org>
 CC:     Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
         <netdev@vger.kernel.org>, Martin KaFai Lau <martin.lau@kernel.org>
-Subject: [PATCH bpf-next 3/5] bpf: Add bpf_run_ctx_type
-Date:   Thu, 22 Sep 2022 15:56:36 -0700
-Message-ID: <20220922225636.3057567-1-kafai@fb.com>
+Subject: [PATCH bpf-next 4/5] bpf: Stop bpf_setsockopt(TCP_CONGESTION) in init ops to recur itself
+Date:   Thu, 22 Sep 2022 15:56:42 -0700
+Message-ID: <20220922225642.3058176-1-kafai@fb.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220922225616.3054840-1-kafai@fb.com>
 References: <20220922225616.3054840-1-kafai@fb.com>
@@ -50,11 +50,11 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-GUID: iRZALEdLytxiydXFOUaBnyiEY9MIXYJk
-X-Proofpoint-ORIG-GUID: iRZALEdLytxiydXFOUaBnyiEY9MIXYJk
+X-Proofpoint-ORIG-GUID: jyF6ZMna8JMqItWBbAB9AFQx7wNRWgF9
+X-Proofpoint-GUID: jyF6ZMna8JMqItWBbAB9AFQx7wNRWgF9
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
- definitions=2022-09-22_14,2022-09-22_02,2022-06-22_01
+ definitions=2022-09-22_15,2022-09-22_02,2022-06-22_01
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
@@ -67,166 +67,140 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Martin KaFai Lau <martin.lau@kernel.org>
 
-This patch adds a bpf_run_ctx_type to the struct bpf_run_ctx.
-The next patch needs to look at the previous run ctx saved at
-tramp_run_ctx->saved_run_ctx and checks if it is also
-changing the tcp-cc for the same sk (saved in bpf_cookie).
-Thus, it needs to know if the saved_run_ctx is the bpf_run_ctx
-type that it is looking for before looking into its members.
+When a bad bpf prog '.init' calls
+bpf_setsockopt(TCP_CONGESTION, "itself"), it will trigger this loop:
+
+.init =3D> bpf_setsockopt(tcp_cc) =3D> .init =3D> bpf_setsockopt(tcp_cc) =
+...
+... =3D> .init =3D> bpf_setsockopt(tcp_cc).
+
+It was prevented by the prog->active counter before but the prog->active
+detection cannot be used in struct_ops as explained in the earlier
+patch of the set.
+
+In this patch, the second bpf_setsockopt(tcp_cc) is not allowed
+in order to break the loop.  This is done by checking the
+previous bpf_run_ctx has saved the same sk pointer in the
+bpf_cookie.
+
+Note that this essentially limits only the first '.init' can
+call bpf_setsockopt(TCP_CONGESTION) to pick a fallback cc (eg. peer
+does not support ECN) and the second '.init' cannot fallback to
+another cc.  This applies even the second
+bpf_setsockopt(TCP_CONGESTION) will not cause a loop.
 
 Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
 ---
- include/linux/bpf.h      | 17 ++++++++++++++---
- kernel/bpf/bpf_iter.c    |  2 +-
- kernel/bpf/cgroup.c      |  2 +-
- kernel/bpf/trampoline.c  |  4 ++++
- kernel/trace/bpf_trace.c |  1 +
- net/bpf/test_run.c       |  2 +-
- 6 files changed, 22 insertions(+), 6 deletions(-)
+ include/linux/filter.h |  3 +++
+ net/core/filter.c      |  4 ++--
+ net/ipv4/bpf_tcp_ca.c  | 54 ++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 59 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 6fdbc1398b8a..902b1be047cf 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -1517,7 +1517,18 @@ int bpf_prog_array_copy(struct bpf_prog_array *old=
-_array,
- 			u64 bpf_cookie,
- 			struct bpf_prog_array **new_array);
+diff --git a/include/linux/filter.h b/include/linux/filter.h
+index 98e28126c24b..9942ecc68a45 100644
+--- a/include/linux/filter.h
++++ b/include/linux/filter.h
+@@ -911,6 +911,9 @@ int sk_get_filter(struct sock *sk, sockptr_t optval, =
+unsigned int len);
+ bool sk_filter_charge(struct sock *sk, struct sk_filter *fp);
+ void sk_filter_uncharge(struct sock *sk, struct sk_filter *fp);
 =20
--struct bpf_run_ctx {};
-+enum bpf_run_ctx_type {
-+	BPF_RUN_CTX_TYPE_NONE,
-+	BPF_RUN_CTX_TYPE_CG,
-+	BPF_RUN_CTX_TYPE_TRACE,
-+	BPF_RUN_CTX_TYPE_TRAMP,
-+	BPF_RUN_CTX_TYPE_KPROBE_MULTI,
-+	BPF_RUN_CTX_TYPE_STRUCT_OPS,
++int _bpf_setsockopt(struct sock *sk, int level, int optname,
++		    char *optval, int optlen);
++
+ u64 __bpf_call_base(u64 r1, u64 r2, u64 r3, u64 r4, u64 r5);
+ #define __bpf_call_base_args \
+ 	((u64 (*)(u64, u64, u64, u64, u64, const struct bpf_insn *)) \
+diff --git a/net/core/filter.c b/net/core/filter.c
+index f4cea3ff994a..e56a1ebcf1bc 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -5244,8 +5244,8 @@ static int __bpf_setsockopt(struct sock *sk, int le=
+vel, int optname,
+ 	return -EINVAL;
+ }
+=20
+-static int _bpf_setsockopt(struct sock *sk, int level, int optname,
+-			   char *optval, int optlen)
++int _bpf_setsockopt(struct sock *sk, int level, int optname,
++		    char *optval, int optlen)
+ {
+ 	if (sk_fullsock(sk))
+ 		sock_owned_by_me(sk);
+diff --git a/net/ipv4/bpf_tcp_ca.c b/net/ipv4/bpf_tcp_ca.c
+index 6da16ae6a962..a9f2cab5ffbc 100644
+--- a/net/ipv4/bpf_tcp_ca.c
++++ b/net/ipv4/bpf_tcp_ca.c
+@@ -144,6 +144,57 @@ static const struct bpf_func_proto bpf_tcp_send_ack_=
+proto =3D {
+ 	.arg2_type	=3D ARG_ANYTHING,
+ };
+=20
++BPF_CALL_5(bpf_init_ops_setsockopt, struct sock *, sk, int, level,
++	   int, optname, char *, optval, int, optlen)
++{
++	struct bpf_tramp_run_ctx *run_ctx, *saved_run_ctx;
++	int ret;
++
++	if (optname !=3D TCP_CONGESTION)
++		return _bpf_setsockopt(sk, level, optname, optval, optlen);
++
++	run_ctx =3D (struct bpf_tramp_run_ctx *)current->bpf_ctx;
++	if (unlikely(run_ctx->saved_run_ctx &&
++		     run_ctx->saved_run_ctx->type =3D=3D BPF_RUN_CTX_TYPE_STRUCT_OPS))=
+ {
++		saved_run_ctx =3D (struct bpf_tramp_run_ctx *)run_ctx->saved_run_ctx;
++		/* It stops this looping
++		 *
++		 * .init =3D> bpf_setsockopt(tcp_cc) =3D> .init =3D>
++		 * bpf_setsockopt(tcp_cc)" =3D> .init =3D> ....
++		 *
++		 * The second bpf_setsockopt(tcp_cc) is not allowed
++		 * in order to break the loop when both .init
++		 * are the same bpf prog.
++		 *
++		 * This applies even the second bpf_setsockopt(tcp_cc)
++		 * does not cause a loop.  This limits only the first
++		 * '.init' can call bpf_setsockopt(TCP_CONGESTION) to
++		 * pick a fallback cc (eg. peer does not support ECN)
++		 * and the second '.init' cannot fallback to
++		 * another cc.
++		 */
++		if (saved_run_ctx->bpf_cookie =3D=3D (uintptr_t)sk)
++			return -EBUSY;
++	}
++
++	run_ctx->bpf_cookie =3D (uintptr_t)sk;
++	ret =3D _bpf_setsockopt(sk, level, optname, optval, optlen);
++	run_ctx->bpf_cookie =3D 0;
++
++	return ret;
++}
++
++static const struct bpf_func_proto bpf_init_ops_setsockopt_proto =3D {
++	.func		=3D bpf_init_ops_setsockopt,
++	.gpl_only	=3D false,
++	.ret_type	=3D RET_INTEGER,
++	.arg1_type	=3D ARG_PTR_TO_BTF_ID_SOCK_COMMON,
++	.arg2_type	=3D ARG_ANYTHING,
++	.arg3_type	=3D ARG_ANYTHING,
++	.arg4_type	=3D ARG_PTR_TO_MEM | MEM_RDONLY,
++	.arg5_type	=3D ARG_CONST_SIZE,
 +};
 +
-+struct bpf_run_ctx {
-+	enum bpf_run_ctx_type type;
-+};
-=20
- struct bpf_cg_run_ctx {
- 	struct bpf_run_ctx run_ctx;
-@@ -1568,7 +1579,7 @@ bpf_prog_run_array(const struct bpf_prog_array *arr=
-ay,
- 	const struct bpf_prog_array_item *item;
- 	const struct bpf_prog *prog;
- 	struct bpf_run_ctx *old_run_ctx;
--	struct bpf_trace_run_ctx run_ctx;
-+	struct bpf_trace_run_ctx run_ctx =3D { .run_ctx.type =3D BPF_RUN_CTX_TY=
-PE_TRACE };
- 	u32 ret =3D 1;
-=20
- 	RCU_LOCKDEP_WARN(!rcu_read_lock_held(), "no rcu lock held");
-@@ -1607,7 +1618,7 @@ bpf_prog_run_array_sleepable(const struct bpf_prog_=
-array __rcu *array_rcu,
- 	const struct bpf_prog *prog;
- 	const struct bpf_prog_array *array;
- 	struct bpf_run_ctx *old_run_ctx;
--	struct bpf_trace_run_ctx run_ctx;
-+	struct bpf_trace_run_ctx run_ctx =3D { .run_ctx.type =3D BPF_RUN_CTX_TY=
-PE_TRACE };
- 	u32 ret =3D 1;
-=20
- 	might_fault();
-diff --git a/kernel/bpf/bpf_iter.c b/kernel/bpf/bpf_iter.c
-index 5dc307bdeaeb..65ff0c93b0ba 100644
---- a/kernel/bpf/bpf_iter.c
-+++ b/kernel/bpf/bpf_iter.c
-@@ -694,7 +694,7 @@ struct bpf_prog *bpf_iter_get_info(struct bpf_iter_me=
-ta *meta, bool in_stop)
-=20
- int bpf_iter_run_prog(struct bpf_prog *prog, void *ctx)
+ static u32 prog_ops_moff(const struct bpf_prog *prog)
  {
--	struct bpf_run_ctx run_ctx, *old_run_ctx;
-+	struct bpf_run_ctx run_ctx =3D {}, *old_run_ctx;
- 	int ret;
-=20
- 	if (prog->aux->sleepable) {
-diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-index 00c7f864900e..850fd6983b9a 100644
---- a/kernel/bpf/cgroup.c
-+++ b/kernel/bpf/cgroup.c
-@@ -37,7 +37,7 @@ bpf_prog_run_array_cg(const struct cgroup_bpf *cgrp,
- 	const struct bpf_prog *prog;
- 	const struct bpf_prog_array *array;
- 	struct bpf_run_ctx *old_run_ctx;
--	struct bpf_cg_run_ctx run_ctx;
-+	struct bpf_cg_run_ctx run_ctx =3D { .run_ctx.type =3D BPF_RUN_CTX_TYPE_=
-CG };
- 	u32 func_ret;
-=20
- 	run_ctx.retval =3D retval;
-diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
-index e6551e4a6064..313619012a59 100644
---- a/kernel/bpf/trampoline.c
-+++ b/kernel/bpf/trampoline.c
-@@ -882,6 +882,7 @@ u64 notrace __bpf_prog_enter(struct bpf_prog *prog, s=
-truct bpf_tramp_run_ctx *ru
- 	rcu_read_lock();
- 	migrate_disable();
-=20
-+	run_ctx->run_ctx.type =3D BPF_RUN_CTX_TYPE_TRAMP;
- 	run_ctx->saved_run_ctx =3D bpf_set_run_ctx(&run_ctx->run_ctx);
-=20
- 	if (unlikely(this_cpu_inc_return(*(prog->active)) !=3D 1)) {
-@@ -934,6 +935,7 @@ u64 notrace __bpf_prog_enter_lsm_cgroup(struct bpf_pr=
-og *prog,
- 	rcu_read_lock();
- 	migrate_disable();
-=20
-+	run_ctx->run_ctx.type =3D BPF_RUN_CTX_TYPE_TRAMP;
- 	run_ctx->saved_run_ctx =3D bpf_set_run_ctx(&run_ctx->run_ctx);
-=20
- 	return NO_START_TIME;
-@@ -960,6 +962,7 @@ u64 notrace __bpf_prog_enter_sleepable(struct bpf_pro=
-g *prog, struct bpf_tramp_r
- 		return 0;
- 	}
-=20
-+	run_ctx->run_ctx.type =3D BPF_RUN_CTX_TYPE_TRAMP;
- 	run_ctx->saved_run_ctx =3D bpf_set_run_ctx(&run_ctx->run_ctx);
-=20
- 	return bpf_prog_start_time();
-@@ -983,6 +986,7 @@ u64 notrace __bpf_prog_enter_struct_ops(struct bpf_pr=
-og *prog,
- 	rcu_read_lock();
- 	migrate_disable();
-=20
-+	run_ctx->run_ctx.type =3D BPF_RUN_CTX_TYPE_STRUCT_OPS;
- 	run_ctx->saved_run_ctx =3D bpf_set_run_ctx(&run_ctx->run_ctx);
-=20
- 	return bpf_prog_start_time();
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index b05f0310dbd3..7670ca88b721 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -2575,6 +2575,7 @@ kprobe_multi_link_prog_run(struct bpf_kprobe_multi_=
-link *link,
- 			   unsigned long entry_ip, struct pt_regs *regs)
- {
- 	struct bpf_kprobe_multi_run_ctx run_ctx =3D {
-+		.run_ctx.type =3D BPF_RUN_CTX_TYPE_KPROBE_MULTI,
- 		.link =3D link,
- 		.entry_ip =3D entry_ip,
- 	};
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index 13d578ce2a09..1f2a745e8641 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -374,7 +374,7 @@ static int bpf_test_run(struct bpf_prog *prog, void *=
-ctx, u32 repeat,
- {
- 	struct bpf_prog_array_item item =3D {.prog =3D prog};
- 	struct bpf_run_ctx *old_ctx;
--	struct bpf_cg_run_ctx run_ctx;
-+	struct bpf_cg_run_ctx run_ctx =3D { .run_ctx.type =3D BPF_RUN_CTX_TYPE_=
-CG };
- 	struct bpf_test_timer t =3D { NO_MIGRATE };
- 	enum bpf_cgroup_storage_type stype;
- 	int ret;
+ 	const struct btf_member *m;
+@@ -169,6 +220,9 @@ bpf_tcp_ca_get_func_proto(enum bpf_func_id func_id,
+ 	case BPF_FUNC_sk_storage_delete:
+ 		return &bpf_sk_storage_delete_proto;
+ 	case BPF_FUNC_setsockopt:
++		if (prog_ops_moff(prog) =3D=3D
++		    offsetof(struct tcp_congestion_ops, init))
++			return &bpf_init_ops_setsockopt_proto;
+ 		/* Does not allow release() to call setsockopt.
+ 		 * release() is called when the current bpf-tcp-cc
+ 		 * is retiring.  It is not allowed to call
 --=20
 2.30.2
 
