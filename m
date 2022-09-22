@@ -2,107 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 469F55E699E
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 19:28:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C26515E69A3
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 19:29:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231415AbiIVR2G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 13:28:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38858 "EHLO
+        id S230097AbiIVR30 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 13:29:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230097AbiIVR2D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 13:28:03 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A53DE105D4E
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 10:27:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=6YRyPvcL52rF0grMTQsnDkc6Y0UmTVBj9t/xlkDCBPo=; b=LafvYu5AeNokwkn1KWfUd+Ex/j
-        O2+hiC7axKfyoZcaWHcPFSr0939IFJRTN4G/TfXnqCDMnQ50qBIVxzksRIYao6EhXF6QBzcdDogqr
-        UDbKdBwfDy+ascDoItMljddUKqxs+FEpcCKqhOWfKtpzRPYEuEur5RpfvhHQw1Xn9QEk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1obPzP-00HYTo-AC; Thu, 22 Sep 2022 19:27:55 +0200
-Date:   Thu, 22 Sep 2022 19:27:55 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Mattias Forsblad <mattias.forsblad@gmail.com>,
-        netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S231600AbiIVR3Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 13:29:24 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 630F5105D4F
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 10:29:22 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id b6so11810463ljr.10
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 10:29:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=CvZGODSHXfe2qDQBF8M0YqQ7IJQUTtK3MjZMfL5pJoU=;
+        b=wyxLufnOxJgOp9zOszeHuEx4JwfK3vKMV8AkSc+h4Vn5LHGX7nt31zfR9uA48gGZX1
+         aO/ZnG2uDhDAIXqL/XDfngkbXbLa7XJbwR71f5rkcq9rICmzHxWg2vo/ccATfw4iPYTm
+         iBAs4JQ492Si5hZGH5hfwmNRpk7lpnz+c4/2MkXScoqRDxipV+CeMFFbFUvzR1v9QWea
+         N8v7BJfkQ9N+ykvby0qiLGlD3mPqiS0TQepb6ZXsXxPz/XBZoMBmYPBYzVAhXEFvH8uP
+         GfC08+c6tTRKnPJxBBfhoZzUuUPeIklTSqLrFiMZvVkLxJrFkdtgH43x+t3AvGII4YC1
+         1tSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=CvZGODSHXfe2qDQBF8M0YqQ7IJQUTtK3MjZMfL5pJoU=;
+        b=fyZRMwtVyW2Xt+PQ8mRqivR3DUL3NZsP91TgjxyAXdL2G6T1Md/JGPie8B8UEK4dIW
+         qsHCujAvzlzSeZDO6xFm3+7NpVgoXdmzTJQU8xWG9X0wLGFALimAAp390QdFSxiUEmgV
+         oGX/4KADc+7Vnl1igha3yUhNBDaaFzD7V/T7zYUSASZ1JJwFTsxVGnbpIb6wKZ4rg1X3
+         mnww6TsJuvF3Dbs9NQFhALWeevkkzqKiEyRGQQwC6F4Q1X/ODvFmCHPwwh4e4ldKQCFx
+         F7lOhxIKsmRIooGmBRCKP+L9EaoshcQzao30jE8Hbpov98wmEbl598HGSJC55wFnqt1Z
+         Ku4g==
+X-Gm-Message-State: ACrzQf3oEHVdMP4IH216grsorcWLACnbDgSHYjmv5uvmUVFYnVkgm34e
+        U75XApTTT/G0Dr7tYjAsFGXmYg==
+X-Google-Smtp-Source: AMsMyM47meZ9OSO5xTf8YhjmWCydR+psTRg8aw/prbjr/EGxY8a51Szfl1ryDQSMv61sDC5b9YA5iQ==
+X-Received: by 2002:a2e:bc04:0:b0:26c:5e:c186 with SMTP id b4-20020a2ebc04000000b0026c005ec186mr1564145ljf.118.1663867760677;
+        Thu, 22 Sep 2022 10:29:20 -0700 (PDT)
+Received: from krzk-bin (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id u16-20020ac248b0000000b00498f871f33fsm1032905lfg.86.2022.09.22.10.29.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Sep 2022 10:29:20 -0700 (PDT)
+Date:   Thu, 22 Sep 2022 19:29:18 +0200
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Jerry Ray <jerry.ray@microchip.com>
+Cc:     devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux@armlinux.org.uk,
-        ansuelsmth@gmail.com
-Subject: Re: [PATCH net-next v14 5/7] net: dsa: mv88e6xxx: rmu: Add
- functionality to get RMON
-Message-ID: <YyybG/MsUIUji4UH@lunn.ch>
-References: <20220919110847.744712-1-mattias.forsblad@gmail.com>
- <20220919110847.744712-6-mattias.forsblad@gmail.com>
- <20220919110847.744712-6-mattias.forsblad@gmail.com>
- <20220919224924.yt7nzmr722a62rnl@skbuf>
- <aad1bfa6-e401-2301-2da2-f7d4f9f2798c@gmail.com>
- <20220920131053.24kwiy4hxdovlkxo@skbuf>
- <Yyoqx1+AqMlAqRMx@lunn.ch>
- <20220922114820.hexazc2do5yytsu2@skbuf>
- <YyxY7hLaX0twtThI@lunn.ch>
- <20220922130452.v2yhykduhbpdw3mi@skbuf>
+        Rob Herring <robh+dt@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [internal][PATCH] dt-bindings: dsa: lan9303: Add lan9303 yaml
+Message-ID: <20220922172918.hsvqgiipj5wiuz5k@krzk-bin>
+References: <20220922152438.350-1-jerry.ray@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220922130452.v2yhykduhbpdw3mi@skbuf>
+In-Reply-To: <20220922152438.350-1-jerry.ray@microchip.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > I was thinking within mv88e6xxx_read() and mv88e6xxx_write(). Keep a
-> > buffer for building requests. Each write call appends the write to the
-> > buffer and returns 0. A read call gets appended to the buffer and then
-> > executes the RMU. We probably also need to wrap the reg mutex, so that
-> > when it is released, any buffered writes get executed. If the RMU
-> > fails, we have all the information needed to do the same via MDIO.
+On Thu, 22 Sep 2022 10:24:38 -0500, Jerry Ray wrote:
+> Adding the dt binding yaml for the lan9303 3-port ethernet switch.
+> The microchip lan9354 3-port ethernet switch will also use the
+> same binding.
 > 
-> Ah, so you want to make the mv88e6xxx_reg_unlock() become an implicit
-> write barrier.
+> Signed-off-by: Jerry Ray <jerry.ray@microchip.com>
+> ---
+>  .../devicetree/bindings/net/dsa/lan9303.txt   | 100 +-----------
+>  .../bindings/net/dsa/microchip,lan9303.yaml   | 143 ++++++++++++++++++
+>  MAINTAINERS                                   |   8 +
+>  3 files changed, 152 insertions(+), 99 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/net/dsa/microchip,lan9303.yaml
+> 
 
-I'm still thinking this through. It probably needs real code to get
-all the details sorted out. The locking could be interesting...  We
-need something to flush the queue before we exit from the driver, and
-that seems like the obvious synchronisation point. If not that, we
-need to add another function call at all the exit points.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-> That could work, but the trouble seems to be error propagation.
-> mv88e6xxx_write() will always return 0, the operation will be delayed
-> until the unlock, and mv88e6xxx_reg_unlock() does not return an error
-> code (why would it?).
+yamllint warnings/errors:
 
-If the RMU fails and the fallback MDIO also fails, we are in big
-trouble, and the switch is probably dead. At which point, do we really
-care. netdev_ratelimited_err('Switch has died...') and keep going,
-everything afterwards is probably going to go wrong as well.
+dtschema/dtc warnings/errors:
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/dsa/microchip,lan9303.example.dtb: switch@0: Unevaluated properties are not allowed ('mdio' was unexpected)
+	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/dsa/microchip,lan9303.yaml
 
-I don't think there are any instances in the driver where we try to
-recover from an MDIO write failure, other than return -ETIMEDOUT or
--EIO or whatever.
+doc reference errors (make refcheckdocs):
 
-> Or the driver might have a worker which periodically sends the GetID
-> message and tracks whether the switch responded. Maybe the rescheduling
-> intervals of that are dynamically adjusted based on feedback from
-> timeouts or successes of register reads/writes. In any case, now we're
-> starting to talk about really complex logic. And it's not clear how
-> effective any of these mechanisms would be against random and sporadic
-> timeouts rather than persistent issues.
+See https://patchwork.ozlabs.org/patch/1681194
 
-I don't think we can assume every switch has an equivalent of
-GetID. So a solution like this would have to be per driver. Given the
-potential complexity, it would probably be better to have it in the
-core, everybody shares it, debugs it, and makes sure it works well.
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
 
-      Andrew
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
