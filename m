@@ -2,154 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CE2A5E5F56
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 12:07:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B79D5E5F91
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 12:14:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230116AbiIVKHJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 06:07:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43908 "EHLO
+        id S230141AbiIVKON (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 06:14:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229585AbiIVKHH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 06:07:07 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2062.outbound.protection.outlook.com [40.107.237.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 605D5B6541
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 03:07:06 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YfKNK9ZADncDZA/Yhxe1o17jmM0JVKmrKyiIABYnvzJgZ5TXlIxkqVYzcTnejH7WB5NEwyng3zg/rgOXl2E35uNaf+tr2j4dYvbjO3uVPqci2vHO0hMlQGNtDVURQZk2CSoItL5w66Zz0sq404PoIs+hk3KMEEMx1n+KBGiws38/zccvvt3bQi4PE7WYTAE5JpRpLDeimHLQ/u2DCnYQ6RRrbJW+3csVdIaCHEiV+BG0RxgCQTmM4iSjoHFUVBXkeg7j2MW3s6njpm5IqCYhPh2F7K5r1hvkar4MGaDKj0oFVAg5EIYvrwv7kXyYelSJDQIuoo0xzVfTad7w89FHBw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=N2NJQbS/1RDGPIRIiJMsnnWFpFnN7bkPLS/e1EMV8oU=;
- b=jl10bAqhXTwKCM7PwFR9U5tnpRP6kS99E3vPvbZqMkyU34+Fo/LhK+16XqkRgFdQ+YEbSNQqqxfkSaIvTC4w/i9XRXPSy1gx60O+7qtXQ7oRqYiltwk+KckpV36asPtG6NklTZS/Il0SqVwhgChQG99EANNyB0IEtxY9oZHclBLS4J0gyCK1vTbHuP1fzWgPs19pYCZBQtcrc+JZrlFHlSgZsvaPlaX13SVfn9h1WfFwsHP5ySI1EJJltFrCNMQKADg+2UE7zXnlLCuu6OzWG/LXNA+0vzqIKyFWEDAPt3f/ie5PXjU+KY+Y/r0P0C/Reo1hxkUA3ihA/XHGmwVH8A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=N2NJQbS/1RDGPIRIiJMsnnWFpFnN7bkPLS/e1EMV8oU=;
- b=TXqA5kIqThLx9oR1M6CglcSpXiSHXA7tlunoahqtsqoE9+52TUeWmL6LkIxN1uVfufOrJDjC01T822lRTyxMnHha+9x0Zc+KpmnA11xnv5dLCNKb5cuA2fe3jXVcr1xcSaOLsH274r5Q1ts7ZD7YPUEpJqOOKdK0nqtUjASbt72mruwH9Ryk9mL3u0WsK6l3cnPoP2rRwnxMnZEyJ9epTDgU863+aO5bfJs08WdtlYwad4VbCKZ2LxV30qoPre/bs5ttiKjay4F0KLLRqjtssTB835eZV4QdmKpV8PYnb9aadKuG3DZV+gozytPo/tYhBfvpWzLr1sqO2MdPphdfJw==
-Received: from PH0PR12MB5481.namprd12.prod.outlook.com (2603:10b6:510:d4::15)
- by DS7PR12MB6096.namprd12.prod.outlook.com (2603:10b6:8:9b::9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5654.18; Thu, 22 Sep 2022 10:07:04 +0000
-Received: from PH0PR12MB5481.namprd12.prod.outlook.com
- ([fe80::1429:e3e9:dc54:ba98]) by PH0PR12MB5481.namprd12.prod.outlook.com
- ([fe80::1429:e3e9:dc54:ba98%9]) with mapi id 15.20.5654.018; Thu, 22 Sep 2022
- 10:07:04 +0000
-From:   Parav Pandit <parav@nvidia.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-CC:     Gavin Li <gavinl@nvidia.com>,
-        "stephen@networkplumber.org" <stephen@networkplumber.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "jesse.brandeburg@intel.com" <jesse.brandeburg@intel.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "sridhar.samudrala@intel.com" <sridhar.samudrala@intel.com>,
-        "jasowang@redhat.com" <jasowang@redhat.com>,
-        "loseweigh@gmail.com" <loseweigh@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
-        Gavi Teitz <gavi@nvidia.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>
-Subject: RE: [PATCH v5 2/2] virtio-net: use mtu size as buffer length for big
- packets
-Thread-Topic: [PATCH v5 2/2] virtio-net: use mtu size as buffer length for big
- packets
-Thread-Index: AQHYwpEbqLdY6RByfkyoSMo8wpA6EK3TsrMAgABG8oCAAA3LAIAAADnAgAACroCAABYGQIAAJjCAgAALaACAAAQwAIAAAFDQgAADKICAAACIkIAAAuAAgAAASDCAFuh1gIAACqzA
-Date:   Thu, 22 Sep 2022 10:07:04 +0000
-Message-ID: <PH0PR12MB5481910FDC14C294979BB529DC4E9@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20220907103420-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481066A18907753997A6F0CDC419@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220907141447-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481C6E39AB31AB445C714A1DC419@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220907151026-mutt-send-email-mst@kernel.org>
- <PH0PR12MB54811F1234CB7822F47DD1B9DC419@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220907152156-mutt-send-email-mst@kernel.org>
- <PH0PR12MB5481291080EBEC54C82A5641DC419@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220907153425-mutt-send-email-mst@kernel.org>
- <PH0PR12MB54815E541D435DDC9339CA02DC419@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220922052233-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20220922052233-mutt-send-email-mst@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR12MB5481:EE_|DS7PR12MB6096:EE_
-x-ms-office365-filtering-correlation-id: 320035fd-1f30-4c52-c06c-08da9c82330f
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: i3AAgw88GfcDSLJTLlJsUA8rVDbSM7RjpLU+H6iEXDX9CUTAdPV0EWo+x0gxchxcuhPICeBi7CQq3b5XLTkQfyvInLUmYWmYJT5BGpPOlx1PKAjZTNM23ZhHIRjHvmWgs8HUO5zOlrlAP96GHdfzvXs12pv0BxMdPelTnKoRwbOWZoAoztv2GwTbWKjTDV1HNMtUMVqAz2mPG4w/8gqbnfXcoN7Xaa1htokRBhkwl6XrJc6i8AwGalBlwcWT2z+4XMHSeUisMOy4tBCLxW0xDf2+2qF5YzovaXMjacILrqJPzypnbfiNiwMHZDEA1ry81qI18geOY425JeV6lduHM7IY4DmtQKvSvfX5JBwf/vjngOx63va8v1dZEu73zDlgVC29+xKwcTVQmnQzGlPRXybcDq+o6xKzPk8uWx3yKa+YRvwd4Ih7EdpPzWK4T0uLLYqK8MLVYRGCguQpMrz1lgUZ7k8fJCHTjg50xvPonGT041RzMHTwgMWTGukiX3pPFMtNqapU6HkbvaWY9BKbUyL1pP8nSDSPChDjblZqUDbrDhN3g8zmR86eOCnZB3KmNtfi790aee1oUX025gpGAIu8niKDWEfpBFFArtES6m9xP8mfE7B4RSsSM3TOwyZXOkqY8AnPuZvGQusWuVX146VVJUfRRMQMaO427eQGYU38KXI+visQ2DsFxAhv5IwUJZty15LGiSw8vueJ9SAf57xp3oxxMNXUVoR5tA9DBBNEtf6SyyKwLTPiUJwl3UAYAdA6FFduqPu9pNIls3fIng==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(346002)(136003)(366004)(39860400002)(396003)(451199015)(38100700002)(71200400001)(478600001)(122000001)(33656002)(7696005)(6506007)(38070700005)(41300700001)(76116006)(55016003)(186003)(86362001)(66476007)(6916009)(7416002)(5660300002)(8936002)(8676002)(4744005)(54906003)(66946007)(4326008)(66556008)(64756008)(66446008)(9686003)(52536014)(316002)(2906002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?PS4jAhEYWw+rOdbOHOWrNd9eD7oKutOBSs6T13dBCADEqZxvXvW5jaQPBPlS?=
- =?us-ascii?Q?m2a8CmyfIWUuQEp7QnSV1UKSmnBaRVwqS4gt8jbDbJiHcSfqi09YB8KsGSQ6?=
- =?us-ascii?Q?4yise30UVP/UHdRjVw2oe39LtfQXJVr2n7Z8fvSSQymWNtcm5tXN+ErM5an0?=
- =?us-ascii?Q?CioAiyQVxF2X6dUKIGQ47BzzqkT0dBns1RNSI3NlsWV/Jg7pp3ypy1nMwy6P?=
- =?us-ascii?Q?95G6ffrRp41t4XYdVGm8/MKx9BPJ6zxV+BGjmmBD39OMThqe5qt3q3JF3FgH?=
- =?us-ascii?Q?nWWUXUB5iTU+pi8V6Zfbe9abwsyxJMl44tJUbpM4AKBwAX1xrgdiaLKn4uyL?=
- =?us-ascii?Q?asIzCax/nbCbgmsNE9xDreZ8aUbDQEUBXIJXfFCNewdbUBU56T3acZ/NwQ/P?=
- =?us-ascii?Q?yX8VunHFitUMLWebohoGAdbHAgNreAn95Np9ztIlvaxacVGYAq+rBqsiXa+O?=
- =?us-ascii?Q?X8YmuK7gnjW9+qLuCIO02v6dEyKNbItcmMAiZSHzueUwZtOND8+hd68yQgAU?=
- =?us-ascii?Q?RsJjxLoXLVz7rCbw2decmx8GzC2QRxQsBjpH6/STFUMcK7bo90wccmaVb4YK?=
- =?us-ascii?Q?AkbrybLMjKiBiVeYjRFYXFZ8rebnqXza9ufZr+jJ0YifXsLLbtl1l8PyQIS8?=
- =?us-ascii?Q?B7Shb8XbDniQ4OD31T7ineQs3XV7n/e/VzwqlDimfJqceG4mRS8iowIpujTK?=
- =?us-ascii?Q?Pdj7fR28+RJo3R0gBNfwHAqLyoq6SV+VfGFjC+Vjt2TKmCo7h13NXecBDOWT?=
- =?us-ascii?Q?0V2oQLGGFJZLevdg+fvHUWMjnX7opAmQcI7h/jop1dQasy4pSZahMQT+bSf2?=
- =?us-ascii?Q?Aofxb3V2xOKNqF75lxHFWWRmnQzDACDsKoqMZbjbrbbelXFpJ6LEWV3Y87iT?=
- =?us-ascii?Q?5O1+Ego6qJW+uUfmWWnx7A/79ukxXcwgiNgLK0dHiRXE8xyhZzvMKJsKdCKh?=
- =?us-ascii?Q?H0GD7Kdj/SY2yu8eW8ExhaLmdCI5WnMAttBajamhUrSCOK4ac5ckUD+pCDfY?=
- =?us-ascii?Q?FkHbGeNJH0otOThbzF/ytH/xIoLa997OE5TQS+4y0XgWDgOdpod8PDQwmodA?=
- =?us-ascii?Q?p2UTjaY/4XTRKe4Ieo1mz3skgf0cGoPhrkjkT9T0D4/ES8PRFVBsvq3B6fjh?=
- =?us-ascii?Q?f0szhqkqI70EzU9/xyDVMVI9qufpptOP+06KCXRvEpZojrm41oYu3LBGYEIR?=
- =?us-ascii?Q?pHEf9rzhCe65Hmts+JX94p5RzGP8ffpABhnUrSixmMCAkPJkttpJUHZbQjwe?=
- =?us-ascii?Q?IUP4PvSMzYntcONKnG/eoKNBXloudxrsJP1StjH4eiMedwkY7HPFgdxz+d7/?=
- =?us-ascii?Q?id+cANqb38gyo6hMpSmGm2pBdW397qQxHAFtc0ngzMjt4bgZH5IIm+aONTx+?=
- =?us-ascii?Q?EUuiRMA9JymNtluCW1msjZV9vkSmW99SoA7fnM2EhQliLQJpdclut2rK/dea?=
- =?us-ascii?Q?7X87yTmlTcDPwuTTh9zw7/iyNRnDwiPXnx3yaIigyKOH6RxyzPmuabCsJmjD?=
- =?us-ascii?Q?YipEoElBX89RRno1yhQj5UwfEgLqwij+ELKoOPWHkgJtPVdy8v2O0C00LDWu?=
- =?us-ascii?Q?tOJ+ZkcEIwrTppeh1WW0dUM+tYWF/+da1PLrUa2xyAv7psgAmmcftOe0T/Uv?=
- =?us-ascii?Q?X6uOrFLAOicDx87fJVfBxsM=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S231436AbiIVKNu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 06:13:50 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3813ED8E3E
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 03:13:40 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id l10so8325674plb.10
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 03:13:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=OfnB2AmdGYyOW3nmaqtcCAjUJ5qi2LxKoHjSUIC7aCo=;
+        b=Sz7xFd5Qe+1pgVAkO1Ay8aw3+p3yxqHMuEXRDZA73RrMiqg4yQDJaf9lj2FVApivHE
+         cKdoNRzAxy3GwwmN0crEuIt1+ys/nHqln4J6W/M8jRcDAeU4iwZ6tE+XQV/6bU6hKDa4
+         zAy6MLEudluW+QnQ3yvAW8OJ3I6+nFtz6czd9xXwgiCvlwJb6GKpQ7dr1ITTDxXwLgjz
+         Af+v+VLruIXiuwcFbwi1njDzQ1CKM8d+jmuo1tz021pFA6niv+g1MGDJ5/mN2zNU2I2l
+         xtNw3WwCqaOjWgImb/hQLH4dUiTeHEaQ10Y85vOU8SPR0R52QCZJ0s/O+QwexkfmKsGQ
+         EQbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=OfnB2AmdGYyOW3nmaqtcCAjUJ5qi2LxKoHjSUIC7aCo=;
+        b=BGDoCToJAXl0iOQfGBI1P2OEwcwD1uMTxt8slSMmO7W3pHGuJlZ0iqG4D2Q6BV+Wcy
+         lVILQ0UuZYyXKU6rfyeULSCdqt6cuqhKcrWjmp1bU0KILuBCuZRpZ841QLCS93lXM47z
+         MVaPefFLMQ3J26PZ4SHfuuqZJFN7E8a9/Ckf/EXB8J4m8U71JyMU7yRoqunCtXI58HzY
+         sPjw5tM0OS264H55MXxoM/xz903lPohpH3X/64vEgcUnyBXMNIbAUTDrpeYHVBIPg+jV
+         lhLePy8w1UUCj5rfD9dcToHoZCeYFdrJc5KrFNgbwyDY/4N/YC9290hnJ2lB0m1I4cKn
+         m1RA==
+X-Gm-Message-State: ACrzQf3InuzUThLrGJHxVYszhF/l+Nj+241tFrmP36pZqfa+JoVwWxDh
+        xFiGrN5wNTpSCdP2nmLpzTo=
+X-Google-Smtp-Source: AMsMyM5Y28Rbb6d+T+RMNm1vPPEXjT/EKMjxgmvpJwCW2vFghwGlBuCruY/4aBxEMlzOKeCKf+8NsQ==
+X-Received: by 2002:a17:90a:9281:b0:203:19a9:e57e with SMTP id n1-20020a17090a928100b0020319a9e57emr14512077pjo.97.1663841619697;
+        Thu, 22 Sep 2022 03:13:39 -0700 (PDT)
+Received: from Laptop-X1 ([43.228.180.230])
+        by smtp.gmail.com with ESMTPSA id ij29-20020a170902ab5d00b00172e19c5f8bsm3676086plb.168.2022.09.22.03.13.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Sep 2022 03:13:39 -0700 (PDT)
+Date:   Thu, 22 Sep 2022 18:13:33 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Guillaume Nault <gnault@redhat.com>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Florent Fourcot <florent.fourcot@wifirst.fr>,
+        Nikolay Aleksandrov <razor@blackwall.org>
+Subject: Re: [PATCH net-next] rtnetlink: Honour NLM_F_ECHO flag in rtnl_{new,
+ set}link
+Message-ID: <Yyw1TRSMRUbmOOtK@Laptop-X1>
+References: <20220921030721.280528-1-liuhangbin@gmail.com>
+ <20220921060123.1236276d@kernel.org>
+ <20220921161409.GA11793@debian.home>
+ <20220921155640.1f3dce59@kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 320035fd-1f30-4c52-c06c-08da9c82330f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Sep 2022 10:07:04.2229
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: SXhrlXx0Wi9pgT06jDhldELZ0iQdQwqGiOGENccsXTP24UGb92RJQkaJn176KKthSs2oU1MNBe8IozlB9ltwcg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6096
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220921155640.1f3dce59@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Sep 21, 2022 at 03:56:40PM -0700, Jakub Kicinski wrote:
+> Looking closer at the code it seems like what NLM_F_ECHO does in most
+> places is to loop notifications resulting from the command back onto
+> the requesting socket. See nlmsg_notify(), report is usually passed 
+> as nlmsg_report(req).
+> 
+> I guess that answers Hangbin's question - yes, I'd vote that we just
+> pass the nlh to rtnl_notify() and let the netlink core do its thing.
 
-> From: Michael S. Tsirkin <mst@redhat.com>
-> Sent: Thursday, September 22, 2022 5:27 AM
+Thanks, I will update the patch by using rtnl_notify().
 
-> > >
-> > > And I'd like commit log to include results of perf testing
-> > > - with indirect feature on
-> > Which device do you suggest using for this test?
->=20
-> AFAIK most devices support INDIRECT, e.g. don't nvidia cards do this?
-The device of interest didn't have INDIRECT support.
-But the question is no more relevant as Gavin supplied the numbers with IND=
-IRECT in commit log of v6.
+> 
+> In general I still don't think NLM_F_ECHO makes for a reasonable API.
+> It may seem okay to those who are willing to write manual netlink
+> parsers but for a normal programmer the ability to receive directly
+> notifications resulting from a API call they made is going to mean..
+> nothing they can have prior experience with. NEWLINK should have
+> reported the allocated handle / ifindex from the start :(
+> 
+> The "give me back the notifications" semantics match well your use
+> case to log what the command has done, in that case there is no need 
+> to "return" all the notifications from the API call.
+
+I didn't get what you mean about "no need to return all the notifications from
+the API call"? Do you ask for some update of the patch, or just talking about
+your propose of NEWLINK?
+
+Thanks
+Hangbin
