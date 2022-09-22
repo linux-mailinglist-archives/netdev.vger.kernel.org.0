@@ -2,89 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A711D5E5772
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 02:40:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A9845E5779
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 02:41:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230125AbiIVAkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Sep 2022 20:40:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51864 "EHLO
+        id S229771AbiIVAl3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Sep 2022 20:41:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229745AbiIVAkR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 20:40:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0CA76744F
-        for <netdev@vger.kernel.org>; Wed, 21 Sep 2022 17:40:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 32EBD63334
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 00:40:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8E024C433D7;
-        Thu, 22 Sep 2022 00:40:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663807215;
-        bh=NnMufUJqoZpWykiGjUMdy235zk49t4JUyB/rhmfLIwg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=L4n/CpRyHrfX7PHFgzRA6eAJ6bw5nqIppqbNw8SkRT0WGuazw5FMbZ5EG77AuBNiR
-         5OXb/qHEgs2H/A/pldwPa68hj+lAvVK2FlGN2Tc15WKvmOJ7eigWYtofosWI6R7ROu
-         Fla3UnZLZT88CIEC7uPyVpVsf3Er5crCcn+3T9GauKJhfJZL/OMaqdKESdxPRyIXYP
-         ox9ZX1wL6wioEfrrjSNwQMF8jzfcWALiULo5hFmG+3cOc/dc3p+pyCeSONtxIEANCy
-         WAsWBxATryhF2DbD+/m/om+P0xKRmOGMYIFbtw5KLFjbXEFe8MghzyDIY7xyVBmixt
-         M/5Kx1oB0wjJw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7837AE4D03D;
-        Thu, 22 Sep 2022 00:40:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229624AbiIVAl2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Sep 2022 20:41:28 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 872CD6B64C;
+        Wed, 21 Sep 2022 17:41:27 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id 13so17544284ejn.3;
+        Wed, 21 Sep 2022 17:41:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=QgBu6l3SOQc9v277Gy+0Dwk3UC62V2zlMgK2CDkHwM4=;
+        b=evWhPjTnvCy2qAfvOEtKk2l0OGVkU2o2R2FS/FnIRHwNJ4RJi55GI9l1rQhKnoHAJq
+         yIPrmO0om61wS84O1OzQY4gvy3jTS7htSRrI7Blr3KMWS9++OI7wmcAXfwAWCIKf5Hd5
+         +N3C++zPmH2J2GRnkbRar+gPoceIrNKgBV4oR6P26xre0P72Lnw9AlcOSgiox7pDQBUQ
+         gLESxmJxKegpP73XCknbuQgBlgM/9b9BsUWjP5lDYFbLTwPpYfvec9MS5eQSB0xnap3F
+         +vD6WdMc4b3xiliDjCfOY7avSuS3sxQX1CiPsZjAPAwoO7Mj5KRJyID4pMuc0yZ/Cysx
+         IENw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=QgBu6l3SOQc9v277Gy+0Dwk3UC62V2zlMgK2CDkHwM4=;
+        b=dC7LgsvdI3d0Hwh+Nb7DDyx/xqQ3pq33SqBLe1LpwSEWVQoOnJck32bW2Q1n6cY3/k
+         MqyLpvns2XrrvmY520UrcuImXriGxOJmFLjvxLAP9/m5NKsLnnZ6a2rYo5cpfnsvKgWd
+         QoAmMyf6bWTAkdfWFqmNm9fEKmzEMYeUx2qC2hYxqOxMFpd1CyyDT3l+3pdwgli6H667
+         7yeZMvZfzDeYkTR41m9g0stvKKwk7L2z8AFxWh7C+KNGkCpstBiNysWdOrkGCduaGC20
+         kPYR/+OnaMICKjWF/fLE63sxyiQPMg8Q2jpf58j3RFVmkw7zIg2iMnQlD3qaL+FoKnhc
+         lRhg==
+X-Gm-Message-State: ACrzQf3Gq2K03aKcjUAcDuRDKNSwDBFbRjjmYoQVBqa1ACWLpNjBzGmT
+        sr9HYvGqAVzcmPaUlqNovAvmg6ZtXdnx7Vp/L3k=
+X-Google-Smtp-Source: AMsMyM5fEHkkqOS+igET9j4G33WfnWE/gcXQj0zep94rSz1jU3juUCEoiKzsEe45QEMXXXoP+aemleY+1utr67FCMhg=
+X-Received: by 2002:a17:907:96a3:b0:780:633:2304 with SMTP id
+ hd35-20020a17090796a300b0078006332304mr694171ejc.115.1663807285946; Wed, 21
+ Sep 2022 17:41:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/4][pull request] Intel Wired LAN Driver Updates
- 2022-09-19 (iavf, i40e)
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166380721548.7808.3107330846620507834.git-patchwork-notify@kernel.org>
-Date:   Thu, 22 Sep 2022 00:40:15 +0000
-References: <20220919223428.572091-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20220919223428.572091-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <1663555725-17016-1-git-send-email-wangyufen@huawei.com>
+In-Reply-To: <1663555725-17016-1-git-send-email-wangyufen@huawei.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 21 Sep 2022 17:41:14 -0700
+Message-ID: <CAEf4BzbacgBeBrJcutGrpMceD2ipYyvRgrwyKdATN0K39adg5Q@mail.gmail.com>
+Subject: Re: [bpf-next v3 1/2] libbpf: Add pathname_concat() helper
+To:     Wang Yufen <wangyufen@huawei.com>
+Cc:     andrii@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
+        haoluo@google.com, jolsa@kernel.org, paul.walmsley@sifive.com,
+        palmer@dabbelt.com, aou@eecs.berkeley.edu, davem@davemloft.net,
+        kuba@kernel.org, hawk@kernel.org, nathan@kernel.org,
+        ndesaulniers@google.com, trix@redhat.com, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Sun, Sep 18, 2022 at 7:28 PM Wang Yufen <wangyufen@huawei.com> wrote:
+>
+> Move snprintf and len check to common helper pathname_concat() to make the
+> code simpler.
+>
+> Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+> ---
+>  tools/lib/bpf/libbpf.c | 76 +++++++++++++++++++-------------------------------
+>  1 file changed, 29 insertions(+), 47 deletions(-)
+>
 
-This series was applied to netdev/net.git (master)
-by Tony Nguyen <anthony.l.nguyen@intel.com>:
+[...]
 
-On Mon, 19 Sep 2022 15:34:24 -0700 you wrote:
-> This series contains updates to iavf and i40e drivers.
-> 
-> Norbert adds checking of buffer size for Rx buffer checks in iavf.
-> 
-> Michal corrects setting of max MTU in iavf to account for MTU data provided
-> by PF, fixes i40e to set VF max MTU, and resolves lack of rate limiting
-> when value was less than divisor for i40e.
-> 
-> [...]
+> @@ -8009,14 +8012,9 @@ int bpf_object__unpin_maps(struct bpf_object *obj, const char *path)
+>                 char buf[PATH_MAX];
+>
+>                 if (path) {
+> -                       int len;
+> -
+> -                       len = snprintf(buf, PATH_MAX, "%s/%s", path,
+> -                                      bpf_map__name(map));
+> -                       if (len < 0)
+> -                               return libbpf_err(-EINVAL);
+> -                       else if (len >= PATH_MAX)
+> -                               return libbpf_err(-ENAMETOOLONG);
+> +                       err = pathname_concat(path, bpf_map__name(map), buf, PATH_MAX);
+> +                       if (err)
+> +                               return err;
 
-Here is the summary with links:
-  - [net,1/4] iavf: Fix bad page state
-    https://git.kernel.org/netdev/net/c/66039eb9015e
-  - [net,2/4] iavf: Fix set max MTU size with port VLAN and jumbo frames
-    https://git.kernel.org/netdev/net/c/399c98c4dc50
-  - [net,3/4] i40e: Fix VF set max MTU size
-    https://git.kernel.org/netdev/net/c/372539def282
-  - [net,4/4] i40e: Fix set max_tx_rate when it is lower than 1 Mbps
-    https://git.kernel.org/netdev/net/c/198eb7e1b81d
+also keep libbpf_err() as well, it sets errno properly
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+>                         sanitize_pin_path(buf);
+>                         pin_path = buf;
+>                 } else if (!map->pin_path) {
+> @@ -8034,6 +8032,7 @@ int bpf_object__unpin_maps(struct bpf_object *obj, const char *path)
+>  int bpf_object__pin_programs(struct bpf_object *obj, const char *path)
+>  {
+>         struct bpf_program *prog;
+> +       char buf[PATH_MAX];
+>         int err;
+>
+>         if (!obj)
 
-
+[...]
