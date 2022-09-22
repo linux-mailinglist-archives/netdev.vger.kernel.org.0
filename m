@@ -2,122 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 585AB5E5E47
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 11:17:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 791B45E5E77
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 11:24:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230187AbiIVJRO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 05:17:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55286 "EHLO
+        id S230221AbiIVJYA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 05:24:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229762AbiIVJRM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 05:17:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B64F6D01E9
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 02:17:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1663838230;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kQfJsNBklEQnlLpVZNYjFz1njaLl7T8B+cRrquogK3o=;
-        b=ClBDFzKp4yJtLoAki63cOIoOmqhfy1RfGGxcJ+JSzR34OEHAvZLXC8VowAXCNcLQtr5CEh
-        dKDSh5cLkY3afC8QuTnDw1BZT03BnqlVcVxxpjQVOxw03p5yaTcFTWjgHRDmp+bscrnNBB
-        1NxlXrrhP3e3GdIa5/XEggjHDCAOVzw=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-564-oTj6TP8sPJKioBqRJiy2NQ-1; Thu, 22 Sep 2022 05:17:09 -0400
-X-MC-Unique: oTj6TP8sPJKioBqRJiy2NQ-1
-Received: by mail-ed1-f69.google.com with SMTP id i17-20020a05640242d100b0044f18a5379aso6331314edc.21
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 02:17:09 -0700 (PDT)
+        with ESMTP id S229649AbiIVJX6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 05:23:58 -0400
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 248554623D;
+        Thu, 22 Sep 2022 02:23:58 -0700 (PDT)
+Received: by mail-io1-xd30.google.com with SMTP id v128so7156059ioe.12;
+        Thu, 22 Sep 2022 02:23:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=eq1ulTtXYhBmIV3Hec+MzaFRLDXw1vSRF6+bOMmPhJ4=;
+        b=bE2W6qfxPeZ5hG8th9HBte8uWTQjYuCcr36yI1hhiheOM64/zofTi1amyoUC/YRb+J
+         NgesQGAjTL00GMSehk4Np33KVgoKvpm/Mh3RSzMdF+EkL5Y4k9K6GB3q17DXyKsUm/6E
+         tSUleWEaIUryrEiqLEE56d9SYCS/YFMrs6gU37f7Pqu7tr26K2zmBNy6tAGoGVxQ5f+n
+         DlMD1/oSQBrQp/QHyG7CgFktY+50H+Wm33tTFaH8FxMf0iDQdWTe9OU6Ok7FDH/xYrVm
+         +Y17qm2jbLBl43Ckz4h9g/NlAB7oNcZMDPJUHArvKPR8Jrr0Y7Jjk4kBCdA2lo60DN3B
+         Aphg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=kQfJsNBklEQnlLpVZNYjFz1njaLl7T8B+cRrquogK3o=;
-        b=PdDZEWpGchWlk7pSd0/9vcXEPu0CCM5T7iFh/wQl/s4iSk1H8OEPwUCtLM62SDST6B
-         dtT7/Fgzn3xRtavsXbOuYkQn9O8XSB9J33j3WOFCAS2ce/rm04agf0L/P1QeMNub4rUU
-         l1Z2z8ASsGifVyRul5rH+bUZsUJzq4fyU0F8/NNIuUORcEYdDd5P7IGgHrWB7V3IxVO6
-         dNxrsRV4eS4qWgqDM86InLbEJVzQ5L+q3USXmd0BnV8YG3pPzwGFFeFJ3nftlYRwlKTt
-         fXG/SXiMhZFscGACK8e2EtHEHYZ884HQOjwTlqMiXTLL3Jo8HHFYfCjGqDwrK8kMfYRT
-         m0Dg==
-X-Gm-Message-State: ACrzQf33tsoegm8qOfww6Adf0DPEiPys0PArGz4HCA95Rjl89qc7FsHP
-        VeYJTwyQa6teG4VGf65UTYFg7ccVp9iCWXgwzUMZ3VrH5fZucsRYf06zL3IGRX+Udb/bVKcZHmb
-        as8WtLWs6Zd+23WJO
-X-Received: by 2002:a17:907:d07:b0:72e:ec79:ad0f with SMTP id gn7-20020a1709070d0700b0072eec79ad0fmr2019354ejc.296.1663838228512;
-        Thu, 22 Sep 2022 02:17:08 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM6aWYk2gLkly55RZes2gWKaV2mpYmlQSmVpIR2XSzCn6t3IkeaTpYNPXd0NwzuX13AYtWwYqg==
-X-Received: by 2002:a17:907:d07:b0:72e:ec79:ad0f with SMTP id gn7-20020a1709070d0700b0072eec79ad0fmr2019336ejc.296.1663838228336;
-        Thu, 22 Sep 2022 02:17:08 -0700 (PDT)
-Received: from redhat.com ([2.55.16.18])
-        by smtp.gmail.com with ESMTPSA id d14-20020a170906304e00b0073bf84be798sm2374187ejd.142.2022.09.22.02.17.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Sep 2022 02:17:07 -0700 (PDT)
-Date:   Thu, 22 Sep 2022 05:17:03 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Junbo <junbo4242@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, bpf@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] Do not name control queue for virtio-net
-Message-ID: <20220922051613-mutt-send-email-mst@kernel.org>
-References: <20220917092857.3752357-1-junbo4242@gmail.com>
- <20220918025033-mutt-send-email-mst@kernel.org>
- <CACvn-oGUj0mDxBO2yV1mwvz4PzhN3rDnVpUh12NA5jLKTqRT3A@mail.gmail.com>
- <20220918081713-mutt-send-email-mst@kernel.org>
- <f3ad0de40b424413ede30abd3517c8fad0c3caca.camel@redhat.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=eq1ulTtXYhBmIV3Hec+MzaFRLDXw1vSRF6+bOMmPhJ4=;
+        b=XAbmbADnMx1d4MDhg9mZ+JCOlI8v/mXVbJmgFFJ4Aha0fj2C83T1uAOyMi0keOy7K4
+         KC+ensOGk3/jP4BgR2XdHhNAn93UyKOSIEgMf83cKIZKiE2MNlRG5qPZFsUArLGslWsJ
+         jF9y/EydOKtZLPkyUu3S3t8e9NfvRnbFuKeMjUE9K0SmjdtHhvMtaEmQ64qmYRHfSENC
+         JxESA9v7yr4OtqcwnuPULcp59C6JPo/IoCzGIQerj5Ou60Hvqr8Z9xeZwe9xHPYhI2W6
+         DUHUuEJ5Y8NOmpVQYVd0W7p2/s2dveW4DIEGZEKoIC0PSA05aTSG6RSya1vn2/kU+69Z
+         L75A==
+X-Gm-Message-State: ACrzQf356hDtiQ4/84mEVGMqKbAvLC7HqVZ0tzelr+KA+/rC59b3RnhR
+        cty9X7VDst/qGKH/RjuahRI6dGocnqKY98FaYxs=
+X-Google-Smtp-Source: AMsMyM4VmAwcaT5Lc+Ww++2Y7GpjHXOf8JO1cC9hLR1vHps4lN+vAXggqFNSedolxw1DncuzKFlDGIHvcmXTBzRY/kM=
+X-Received: by 2002:a05:6638:dcc:b0:35a:7ba6:ad51 with SMTP id
+ m12-20020a0566380dcc00b0035a7ba6ad51mr1404409jaj.256.1663838637536; Thu, 22
+ Sep 2022 02:23:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <f3ad0de40b424413ede30abd3517c8fad0c3caca.camel@redhat.com>
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220922031013.2150682-1-keescook@chromium.org> <20220922031013.2150682-12-keescook@chromium.org>
+In-Reply-To: <20220922031013.2150682-12-keescook@chromium.org>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Thu, 22 Sep 2022 11:23:46 +0200
+Message-ID: <CANiq72=m9VngFH9jE3s0RV7MpjX0a=ekJN4pZwcDksBkSRR_1w@mail.gmail.com>
+Subject: Re: [PATCH 11/12] slab: Remove __malloc attribute from realloc functions
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Vlastimil Babka <vbabka@suse.cz>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Hao Luo <haoluo@google.com>, Marco Elver <elver@google.com>,
+        linux-mm@kvack.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alex Elder <elder@kernel.org>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Daniel Micay <danielmicay@gmail.com>,
+        Yonghong Song <yhs@fb.com>, Miguel Ojeda <ojeda@kernel.org>,
+        Jacob Shin <jacob.shin@amd.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-btrfs@vger.kernel.org,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org, linux-fsdevel@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, dev@openvswitch.org,
+        x86@kernel.org, linux-wireless@vger.kernel.org,
+        llvm@lists.linux.dev, linux-hardening@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 22, 2022 at 11:10:37AM +0200, Paolo Abeni wrote:
-> On Sun, 2022-09-18 at 08:17 -0400, Michael S. Tsirkin wrote:
-> > On Sun, Sep 18, 2022 at 05:00:20PM +0800, Junbo wrote:
-> > > hi Michael
-> > > 
-> > > in virtio-net.c
-> > >     /* Parameters for control virtqueue, if any */
-> > >     if (vi->has_cvq) {
-> > >         callbacks[total_vqs - 1] = NULL;
-> > >         names[total_vqs - 1] = "control";
-> > >     }
-> > > 
-> > > I think the Author who write the code
-> > 
-> > wait, that was not you?
-> 
-> I believe 'the Author' refers to the author of the current code, not to
-> the author of the patch.
+On Thu, Sep 22, 2022 at 5:10 AM Kees Cook <keescook@chromium.org> wrote:
+>
+> -#ifdef __alloc_size__
+> -# define __alloc_size(x, ...)  __alloc_size__(x, ## __VA_ARGS__) __malloc
+> -#else
+> -# define __alloc_size(x, ...)  __malloc
+> -#endif
+> +#define __alloc_size(x, ...)   __alloc_size__(x, ## __VA_ARGS__) __malloc
+> +#define __realloc_size(x, ...) __alloc_size__(x, ## __VA_ARGS__)
 
-Oh I see. Responded.
+These look unconditional now, so we could move it to
+`compiler_attributes.h` in a later patch (or an independent series).
 
-> @Junbo: the control queue is created only if the VIRTIO_NET_F_CTRL_VQ
-> feature is set, please check that in your setup.
-> 
-> Thanks
-> 
-> Paolo
-
-
--- 
-MST
-
+Cheers,
+Miguel
