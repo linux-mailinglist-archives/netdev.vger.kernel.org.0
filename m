@@ -2,94 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 303B55E6737
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 17:35:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 030DA5E673A
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 17:36:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230188AbiIVPfC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 11:35:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40576 "EHLO
+        id S230108AbiIVPgR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 11:36:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230213AbiIVPe6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 11:34:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFBF358B7E;
-        Thu, 22 Sep 2022 08:34:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BD7860B4D;
-        Thu, 22 Sep 2022 15:34:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A42BC433D6;
-        Thu, 22 Sep 2022 15:34:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663860895;
-        bh=sJXAH3EXSAELsL3FBaVZLmcKpg+EFzU0zQj/ilHdxKQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=sH08VxiesoHQx1m209f3GrudMrcvx5xose4r0Fm28b5YiGYL8X1PCNmkQD98N1K2d
-         fD1bvdf+FZlY1gwlJMAOEN/6YHWGiNOj2LkQGDbftoXo5JHG4FfafxiuYNDFeONpNB
-         Y0D4wcbPTAnthxZju9Gl+v1QzlsW+mk5mrBjo9MPeCgKqgKEZH//Tu53BcllTReMXT
-         NhKpPCNKFakLSOSX0ixNx6k946R++Z6fPE1ikr6iSMGAQSXGLA7DGNXx3I58px/a7W
-         Sbdf/ol1h/r0DbNhF6/U2CFO3MM7LiIykw6MNn2+pfNMgUSl7h4sK26tRzV3nM0NYN
-         0DUIrHexV7T/g==
-Date:   Thu, 22 Sep 2022 08:34:54 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jon Hunter <jonathanh@nvidia.com>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Bhadram Varka <vbhadram@nvidia.com>,
-        devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v4 9/9] stmmac: tegra: Add MGBE support
-Message-ID: <20220922083454.1b7936b2@kernel.org>
-In-Reply-To: <64414eac-fa09-732e-6582-408cfb9d41dd@nvidia.com>
-References: <20220707074818.1481776-1-thierry.reding@gmail.com>
-        <20220707074818.1481776-10-thierry.reding@gmail.com>
-        <YxjIj1kr0mrdoWcd@orome>
-        <64414eac-fa09-732e-6582-408cfb9d41dd@nvidia.com>
+        with ESMTP id S229944AbiIVPgQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 11:36:16 -0400
+Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 648A3FB30F
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 08:36:15 -0700 (PDT)
+Received: by mail-qv1-xf31.google.com with SMTP id c6so7057590qvn.6
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 08:36:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=0XDNA9xHJMpQS14lG/g7LpIJFt7UCTCQ1PdBp+r0/7Q=;
+        b=BKgT2KqZ8lBlzk2t33WkJT08ESCaxDNZiVk+tPZ2uL1nGnHYc+pU/mjc0Jr7THrewh
+         y4wP4NhKKLW7maJAwcjoQvWm+xCCTqrv9QpkPjKt1gwxjFl9tayPZil60bxgvrzwN0FZ
+         7iszlYo8GUppXrMqMKB66CXLkGc/iFfLf48QJIox8ce8Hl2m9X7pBPL3aYQeJojc5PKG
+         7Rkbl0Z5r89MtFVBRbYXcx5DkQdRlkXUkoqwNLdQSMLrWAdhdR60RIJTTu5QJkG96Bqh
+         oSIsKCZbJ8bqMAk6nYJVbK+vPsjLYRhO5iSDJ5YPoGTgJD9eLFGTgmOm9Av+DlNY3Dgk
+         lv4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=0XDNA9xHJMpQS14lG/g7LpIJFt7UCTCQ1PdBp+r0/7Q=;
+        b=Cr55edRFAOm4lZsD6hCL93msiPR9KOpR0xu3DsPkHDpJN7gMTwzTaamwUMrd6CDt+P
+         sSXWwMkpL/PcWEdjPQ+YHPy90NSWb2mYmL6UF+Hqp1H3+EdQ4VsdbpxDecIUKTjDxPgf
+         yYp/ilRTMIdFzNV4w8KybAS9V27xk0VlG5OehvQIWZm+fXJoD8SxUO/okFARSobIbitl
+         AZB38EsOGPOFMxD6CPnW7x23j/g3P0MS/c4C5FSZt3MhbNmDraJz7Y1OVFAlDwfFnIcy
+         659+SjJPJVLsIWLEnJbT75eI80p0y5MJuv54cC7nW7KtuLF1iQ6wh54zHOJ9OdEoDe2l
+         xpcw==
+X-Gm-Message-State: ACrzQf0GETmN4gLBXBBB5NH6qqaGkWYb2GKdyO7X2zxjacpatJHKX7AO
+        M9+2nAM0tH4r4/A+YesKfwVIvWSVsXg=
+X-Google-Smtp-Source: AMsMyM599ykSl/x7Sg0QdqLaolAQiub/WBPSVT60+GUhmz2OIvarS3hPiuoOaYQHKzcPlsHtu76lww==
+X-Received: by 2002:a05:6214:2301:b0:498:9f6f:28d with SMTP id gc1-20020a056214230100b004989f6f028dmr3135146qvb.5.1663860974464;
+        Thu, 22 Sep 2022 08:36:14 -0700 (PDT)
+Received: from [192.168.1.102] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id h7-20020ac85047000000b0035d0520db17sm3429777qtm.49.2022.09.22.08.36.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 22 Sep 2022 08:36:13 -0700 (PDT)
+Message-ID: <d6413510-0b75-be83-0ff1-f34be6c3974a@gmail.com>
+Date:   Thu, 22 Sep 2022 08:36:12 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.0
+Subject: Re: [PATCH v2 iproute2-next] ip link: add sub-command to view and
+ change DSA master
+Content-Language: en-US
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+References: <20220921165105.1737200-1-vladimir.oltean@nxp.com>
+ <20220921113637.73a2f383@hermes.local>
+ <20220921183827.gkmzula73qr4afwg@skbuf>
+ <20220921154107.61399763@hermes.local> <Yyu6w8Ovq2/aqzBc@lunn.ch>
+ <20220922062405.15837cfe@kernel.org> <20220922082724.7abb328a@hermes.local>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220922082724.7abb328a@hermes.local>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 22 Sep 2022 16:05:22 +0100 Jon Hunter wrote:
-> On 07/09/2022 17:36, Thierry Reding wrote:
-> > On Thu, Jul 07, 2022 at 09:48:18AM +0200, Thierry Reding wrote:  
-> >> From: Bhadram Varka <vbhadram@nvidia.com>
-> >>
-> >> Add support for the Multi-Gigabit Ethernet (MGBE/XPCS) IP found on
-> >> NVIDIA Tegra234 SoCs.
-> >>
-> >> Signed-off-by: Bhadram Varka <vbhadram@nvidia.com>
-> >> Signed-off-by: Thierry Reding <treding@nvidia.com>
-> >> ---
-> >> Note that this doesn't have any dependencies on any of the patches
-> >> earlier in the series, so this can be applied independently.
->
-> > Patches 1-8 of this have already been applied to the Tegra tree. Are
-> > there any more comments on this or can this be merged as well?
-> > 
-> >  From a Tegra point of view this looks good, so:
-> > 
-> > Acked-by: Thierry Reding <treding@nvidia.com>  
-> 
-> Acked-by: Jon Hunter <jonathanh@nvidia.com>
-> 
-> Please can we queue this for v6.1? I have added the stmmac maintainers 
-> to the email, but not sure if you can pick this up?
 
-Could you repost it independently of the series so that it can go thru
-the net auto-checkers? It should be able to make 6.1 pretty comfortably.
+
+On 9/22/2022 8:27 AM, Stephen Hemminger wrote:
+> On Thu, 22 Sep 2022 06:24:05 -0700
+> Jakub Kicinski <kuba@kernel.org> wrote:
+> 
+>> On Thu, 22 Sep 2022 03:30:43 +0200 Andrew Lunn wrote:
+>>> Looking at these, none really fit the concept of what the master
+>>> interface is.
+>>>
+>>> slave is also used quite a lot within DSA, but we can probably use
+>>> user in place of that, it is already somewhat used as a synonym within
+>>> DSA terminology.
+>>>
+>>> Do you have any more recommendations for something which pairs with
+>>> user.
+>>
+>> cpu-ifc? via?
+> 
+> I did look at the Switch Abstraction Layer document which
+> started at Microsoft for Sonic and is now part of Open Compute.
+> 
+> Didn't see anything there. The 802 spec uses words like
+> aggregator port etc.
+
+Top of the rack switches typically have a built-in DMA controller for 
+each user-facing port such that there is not really a management/conduit 
+CPU like what DSA supports, that is the whole reason actually why we 
+keep having a separation between "pure switchdev" and DSA drivers. If 
+you had not attended the talk from Andrew, Vivien and myself back in 
+2017 in Montreal, I suggest you watch it now in case it provides some 
+inspiration for suggestion appropriate terms:
+
+https://www.youtube.com/watch?v=EK5ZmQOYSpM
+-- 
+Florian
