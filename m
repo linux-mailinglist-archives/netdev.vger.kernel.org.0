@@ -2,77 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BF995E5A1A
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 06:19:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A263A5E5A21
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 06:23:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230398AbiIVETL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 00:19:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37546 "EHLO
+        id S229590AbiIVEXL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 00:23:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230247AbiIVETG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 00:19:06 -0400
+        with ESMTP id S229437AbiIVEXJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 00:23:09 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35995A221B;
-        Wed, 21 Sep 2022 21:19:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FFA6ADCE9;
+        Wed, 21 Sep 2022 21:23:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C0F2D62FAD;
-        Thu, 22 Sep 2022 04:19:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C3BEC433D6;
-        Thu, 22 Sep 2022 04:18:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D450633B2;
+        Thu, 22 Sep 2022 04:23:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B840CC433C1;
+        Thu, 22 Sep 2022 04:23:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663820344;
-        bh=8xodEWMTndBecZO1JG0sANGtdcIZJhdCKz1ZoOkxjMk=;
+        s=k20201202; t=1663820588;
+        bh=Zu49OmzNGTlyM3kN/XVnev/23u/OswdAXVOA4hTUCm0=;
         h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=uW+exXsXSGrew87ZojaTnnu2Pv1UtGXzQqjjLX2b7oGph4+PQelJUJX11FgjpqatQ
-         ELoqv5pR8bSV3/7535PDpBw6BVY4bi59s4BaKlJSIYVXzNRY6aDLmLKhJLPFtzieTO
-         iB7297vU052/FKz0Dc21FYTixE1ykO1VrtaDUUK3SkYuK3biSXS0J7OKhhQjo/eWra
-         7mj2sPUPAmfSHWCc1MV6VYkGtcRnMWzr/LNBb6lPibVdaMWLqUzHsztksp0W4hjZYv
-         zIN6846mujkb0CwMdnKoomN+OWU5pYCeMqp4QWw7CJvtecSieKja+ya7GWiRyAj90B
-         2nqT/vaz2aB1w==
+        b=TiyJW0ElUtMQ9OBf+XxHk/3od8zmIrLezqDbWrZiZoPaqcBzwwoMYJYCCpB2OwToq
+         bsSyUBOaqcDCFYWIhiDDYRenvwj9rpdisnwEi1U7UZsaQPsxOrViyLlKD1xvX9DbYP
+         JcZlDas9rael2YP3Wsx4Fq/LU3nQwn1/IkIFP/3pLSLFO9qmWxigeizm99z5kYneGU
+         HfoumbgxM3vPrrgw8wV2BXsyN88eP5iCNPX0jGsqhHI/sBL47BkBc1hOQGcfbT83o7
+         yFtGqcl2lEytlWD1NkqHdepGczfO1TjfTFD91UaKYI6dtBkKiDevhQ4ctt5Ve8gOGS
+         r8XlKhivAYSNw==
 From:   Kalle Valo <kvalo@kernel.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Vlastimil Babka <vbabka@suse.cz>,
-        Gregory Greenman <gregory.greenman@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
+To:     Alvin =?utf-8?Q?=C5=A0ipraga?= <alvin@pqrs.dk>
+Cc:     Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Alex Elder <elder@kernel.org>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Christian =?utf-8?Q?K=C3=B6nig?= <christian.koenig@amd.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Daniel Micay <danielmicay@gmail.com>,
-        Yonghong Song <yhs@fb.com>, Marco Elver <elver@google.com>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Jacob Shin <jacob.shin@amd.com>, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-btrfs@vger.kernel.org,
-        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org, linux-fsdevel@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, dev@openvswitch.org,
-        x86@kernel.org, llvm@lists.linux.dev,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH 10/12] iwlwifi: Track scan_cmd allocation size explicitly
-References: <20220922031013.2150682-1-keescook@chromium.org>
-        <20220922031013.2150682-11-keescook@chromium.org>
-Date:   Thu, 22 Sep 2022 07:18:51 +0300
-In-Reply-To: <20220922031013.2150682-11-keescook@chromium.org> (Kees Cook's
-        message of "Wed, 21 Sep 2022 20:10:11 -0700")
-Message-ID: <87fsgk6nys.fsf@kernel.org>
+        Syed Rafiuddeen <syed.rafiuddeen@cypress.com>,
+        Syed Rafiuddeen <syed.rafiuddeen@infineon.com>,
+        Chung-Hsien Hsu <chung-hsien.hsu@infineon.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 6/6] brcmfmac: Update SSID of hidden AP while informing its bss to cfg80211 layer
+References: <20220722115632.620681-1-alvin@pqrs.dk>
+        <20220722115632.620681-7-alvin@pqrs.dk>
+Date:   Thu, 22 Sep 2022 07:23:01 +0300
+In-Reply-To: <20220722115632.620681-7-alvin@pqrs.dk> ("Alvin
+ \=\?utf-8\?Q\?\=C5\=A0ipraga\=22's\?\=
+        message of "Fri, 22 Jul 2022 13:56:31 +0200")
+Message-ID: <878rmc6nru.fsf@kernel.org>
 User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -82,28 +70,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kees Cook <keescook@chromium.org> writes:
+Alvin =C5=A0ipraga <alvin@pqrs.dk> writes:
 
-> In preparation for reducing the use of ksize(), explicitly track the
-> size of scan_cmd allocations. This also allows for noticing if the scan
-> size changes unexpectedly. Note that using ksize() was already incorrect
-> here, in the sense that ksize() would not match the actual allocation
-> size, which would trigger future run-time allocation bounds checking.
-> (In other words, memset() may know how large scan_cmd was allocated for,
-> but ksize() will return the upper bounds of the actually allocated memory,
-> causing a run-time warning about an overflow.)
+> From: Syed Rafiuddeen <syed.rafiuddeen@cypress.com>
 >
-> Cc: Gregory Greenman <gregory.greenman@intel.com>
-> Cc: Kalle Valo <kvalo@kernel.org>
-> Cc: Johannes Berg <johannes.berg@intel.com>
-> Cc: linux-wireless@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Kees Cook <keescook@chromium.org>
+> cfg80211 layer on DUT STA is disconnecting ongoing connection attempt aft=
+er
+> receiving association response, because cfg80211 layer does not have valid
+> AP bss information. On association response event, brcmfmac communicates
+> the AP bss information to cfg80211 layer, but SSID seem to be empty in AP
+> bss information, and cfg80211 layer prints kernel warning and then
+> disconnects the ongoing connection attempt.
+>
+> SSID is empty in SSID IE, but 'bi->SSID' contains a valid SSID, so
+> updating the SSID for hidden AP while informing its bss information
+> to cfg80211 layer.
+>
+> Signed-off-by: Syed Rafiuddeen <syed.rafiuddeen@infineon.com>
+> Signed-off-by: Chung-Hsien Hsu <chung-hsien.hsu@infineon.com>
+> Signed-off-by: Chi-hsien Lin <chi-hsien.lin@infineon.com>
+> Signed-off-by: Alvin =C5=A0ipraga <alsi@bang-olufsen.dk>
 
-Via which tree is this iwlwifi patch going? Normally via wireless-next
-or something else?
+Infineon now submitted the same patch, I'll continue the review there:
 
--- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20220914033620.12=
+742-5-ian.lin@infineon.com/
+
+--=20
 https://patchwork.kernel.org/project/linux-wireless/list/
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
+hes
