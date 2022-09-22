@@ -2,314 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 38F6A5E5D1A
-	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 10:10:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAC1C5E5D4A
+	for <lists+netdev@lfdr.de>; Thu, 22 Sep 2022 10:19:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230133AbiIVIKX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 04:10:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51212 "EHLO
+        id S229518AbiIVITQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 04:19:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229554AbiIVIKW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 04:10:22 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E542580BA;
-        Thu, 22 Sep 2022 01:10:20 -0700 (PDT)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1663834218;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Yk37Sm5RjPl4UM/wzjBk81ZqNgBCf/jvihfnr2HHbmQ=;
-        b=P0fi/JSHZxDEpWm+kyqNqlwL8rKUkQd7pIeHdLT3EMWFnW/67mJQyJ3Bt0APH6aIk9FnYN
-        L3hxok8BqhjzwrikH94uAD37KZsml2XE1oX7iWwnQJrr6J9y1KnIuo9+6J+xK5rH5rVYsn
-        rFwRFPoCwlfpbUfk3aICi/phuIJtbEJkqAeDz+fFG63ztOplEZW/2Kn/ZLc9fkH2hvhOIu
-        n6LCp7yZrQBfcTJccnOuo5jVtcBcqCnTQ5bY/MxL6YsdNApyQTXa1YEJvVg5MlAa73qaDb
-        FVnHM4HPQscsa64nh/YCpXTc8bEeNstX5XuWNmVGCb5LcC5Hk4zNZ1/jNdK8sw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1663834218;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Yk37Sm5RjPl4UM/wzjBk81ZqNgBCf/jvihfnr2HHbmQ=;
-        b=9yxXWJ9Uwb/92HpkvOpk1PH3pma/UUMrKllv4gTJEOMedTG98Gi9fooPTxdsfgp5ZkSGTx
-        uJzPAkw+Gg3/RaAQ==
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Rui Sousa <rui.sousa@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Michael Walle <michael@walle.cc>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Richie Pearn <richard.pearn@nxp.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Gerhard Engleder <gerhard@engleder-embedded.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 08/13] net: dsa: hellcreek: deny tc-taprio
- changes to per-tc max SDU
-In-Reply-To: <20220921142115.4gywxgkgh2fqthjz@skbuf>
-References: <20220914153303.1792444-1-vladimir.oltean@nxp.com>
- <20220914153303.1792444-9-vladimir.oltean@nxp.com> <87a671bz8e.fsf@kurt>
- <20220914184051.2awuutgr4vm4tfgf@skbuf> <87r10dxiw5.fsf@kurt>
- <20220915115925.zujsneox4jqzod2g@skbuf> <87bkr9m0nn.fsf@kurt>
- <20220921112916.umvtccuuygacbqbb@skbuf> <878rmdlzld.fsf@kurt>
- <20220921141206.rvdsrp7lmm2fk5ub@skbuf>
- <20220921142115.4gywxgkgh2fqthjz@skbuf>
-Date:   Thu, 22 Sep 2022 10:10:13 +0200
-Message-ID: <8735cjrfru.fsf@kurt>
+        with ESMTP id S229482AbiIVITO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 04:19:14 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F18ECD1FE
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 01:19:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1663834752; x=1695370752;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=Smxwynfi/XLoWWSbflAC0JnD/fHc//7Yu258laaqPqE=;
+  b=VotUTSXANhv+FblNJri8NldnXQukDnV0OYlPVseSro6KGrCNwdP3DyEx
+   lYp8+Gr1Ra/VKCRtKVJGqez9ddyI3R+D2kawP+5vQHHwcRgZh5ZrXa1Gu
+   Rtn+YjXIAPXPly9RGGADtMBAbppg6BxH+yeY8kfopK6K1hW+TYHnOwZwl
+   Y0euMqd/umb9UHXWyqR3rJnc8geb0f4eLARC7hMNbukNCKWe7mG7n6KNO
+   GU/mVeeC3foN9UCZmMEPW4uGOj+CPYikAcOkFD3/bDQCImBrL1vHGLrWg
+   /hcEeEEVu5SyJZ7qMMwfx6aAHx4MS8rcSKyovg3LYrXk7LHwUL119Cc03
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10477"; a="279956834"
+X-IronPort-AV: E=Sophos;i="5.93,335,1654585200"; 
+   d="scan'208";a="279956834"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Sep 2022 01:19:11 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,335,1654585200"; 
+   d="scan'208";a="723564138"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by fmsmga002.fm.intel.com with ESMTP; 22 Sep 2022 01:19:11 -0700
+Received: from fmsmsx609.amr.corp.intel.com (10.18.126.89) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 22 Sep 2022 01:19:10 -0700
+Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
+ fmsmsx609.amr.corp.intel.com (10.18.126.89) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 22 Sep 2022 01:19:10 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Thu, 22 Sep 2022 01:19:10 -0700
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (104.47.74.43) by
+ edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.31; Thu, 22 Sep 2022 01:19:10 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HZC1XYEQrIuksBU/05YVUquZQdR0tkkchwVQ/xU5/cV8aA3QhELFK7oj1cyfjGLn6WYQOafbXQRZ5svHqef3VP+jhMy0jyWuK1mRz/X2wd4KIO4gsOTL1LdnyqJ4cSTcl3WGwrQAmn+CSxyS2K1G6TaC+pBLVSowy6Yx/3DoGxukZ3lskpkY0G/SYxwvNDtrozNFO0gkkPnqYfqCRjWizeppCgsoMa5j3kNNUcEJqaLQzBSvkcEki2T5Kf2OKU7t+6i1LPelNi0uHq8sDDWyfy+B3CE1wXjByKtT5vV2/E/aJTm0D59ZXXf5/P71th1m6H53mtI8U8uXi21pUqwwvg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Smxwynfi/XLoWWSbflAC0JnD/fHc//7Yu258laaqPqE=;
+ b=kjfXByJ6SxFMD1jZDq6Uce9w5sVPSmOZO2msA3diXR22MULL5UBIUTBp5tRtqyvsSbTjkN83sOSvXjQpgi4sTXnCEFBcJrANbrhfrHG6GHBeTsvABXvCClizuyvhuZbeA6ZhW6qEWFFUtitRq/9Y3Oho8hpE+bHZTV0dcyaUz1OthAxTVfkci2dPPt03YsIg+WZJOIKcDB4AIo/2YqjGauSsMRNT+l/tFWvzUvUJ/UjYiwSHDUZbHYMqiMCPBHPH1vuRJteGY0IYzh0bYDNKXVAXSGgLQuKjz62pvq7+vBJF9zCwFloHS3Hk/yccHvQRzKnyPqBaev7nAo4q/EmNmg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from MWHPR11MB1293.namprd11.prod.outlook.com (2603:10b6:300:1e::8)
+ by PH8PR11MB6854.namprd11.prod.outlook.com (2603:10b6:510:22d::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.16; Thu, 22 Sep
+ 2022 08:19:08 +0000
+Received: from MWHPR11MB1293.namprd11.prod.outlook.com
+ ([fe80::a0a4:bd71:e7c9:851a]) by MWHPR11MB1293.namprd11.prod.outlook.com
+ ([fe80::a0a4:bd71:e7c9:851a%8]) with mapi id 15.20.5654.018; Thu, 22 Sep 2022
+ 08:19:08 +0000
+From:   "Nambiar, Amritha" <amritha.nambiar@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "alexander.duyck@gmail.com" <alexander.duyck@gmail.com>,
+        "jhs@mojatatu.com" <jhs@mojatatu.com>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
+        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Subject: RE: [net-next PATCH v2 0/4] Extend action skbedit to RX queue mapping
+Thread-Topic: [net-next PATCH v2 0/4] Extend action skbedit to RX queue
+ mapping
+Thread-Index: AQHYwyBaPBOhs3BGO0uGs2JDALv3X63qa3KAgADC2YA=
+Date:   Thu, 22 Sep 2022 08:19:07 +0000
+Message-ID: <MWHPR11MB1293C87E3EC9BD7D64829F2FF14E9@MWHPR11MB1293.namprd11.prod.outlook.com>
+References: <166260012413.81018.8010396115034847972.stgit@anambiarhost.jf.intel.com>
+ <20220921132929.3f4ca04d@kernel.org>
+In-Reply-To: <20220921132929.3f4ca04d@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.6.500.17
+dlp-reaction: no-action
+dlp-product: dlpe-windows
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: MWHPR11MB1293:EE_|PH8PR11MB6854:EE_
+x-ms-office365-filtering-correlation-id: 242a1d8f-dc3a-43f5-5ca5-08da9c731ef6
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: exbofs+tJWBHkZG724HRlCPQJQ9JyCdP7H4IE2eNvZBB2DvoMPqIJU048RelyhNnsLGhwDLe+aJ+rWXExHp1Lwy1UUZWBvf0AiFqhQr356JOIUt1M7f7C0VPbIRBW7nO8LbELJpCZ3FKSAeuwQ2JUC2vK1tQEwdi8Yt1PzOE0MIkRrIYYaSodGk4vttseD/CU/zQru4PyWeDEcHL2KvRdUNMbfs6TsIT0Mxl2hUEUmJjcitrJi/zR2RDqo0bGFbm4rZzNXAqKj6o9pOqTAZKFifa6hDwedWMwym8TTHJGmbSBlRIkGqZMP4DXtUL/tOFAS4tJkxK1bYdbZ6yC6DQUJ6KUd4CyZM+IqJVzAEGHg7Ui4tsKAeppS5qUIHbQ2TTyu/N6niERfjxSZQjSrN/lDCPIMbXevzKQo9D1GE72donScWnyyWHdND3Xl3gtvbNADu3JJJ7OEjK/60r4wSMe3Fo8hAvzTuMKyXSem/uP8QOZbsNwwyjYXVVmFXspAgPLBkv88OrvjonFPgsBlXJuYjQ0bJbuumpJqBp1CIXlhauj7+x2CVEf5Wc+0sdX3DwuTJ2uk+mDmUcr6F3FUbvH+3ye8PrH5k18uOK2L4YA2Zhs9Q5h6PNsBRrbuhYtLFxEwDJnU/KvN1DiEQ8yd0C8fnKInLa8dbpppXKxLl2fiKnj4T/ZnYmMQ/hKsfGyPwdPJ8vhTJWJhvg37vWZzAPHTSxCi8QfYfQNzptqO35D2rK5sf01WDZSXdp+zE20DCdTsot3A9IPUWeFHZVFMBI8kSnzrPKIbmRRY9i4kzNMSk=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR11MB1293.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(396003)(346002)(136003)(376002)(366004)(39860400002)(451199015)(66946007)(33656002)(82960400001)(86362001)(38100700002)(122000001)(38070700005)(478600001)(7696005)(83380400001)(2906002)(5660300002)(26005)(107886003)(53546011)(9686003)(186003)(71200400001)(52536014)(6506007)(316002)(76116006)(66556008)(8676002)(8936002)(66476007)(966005)(66446008)(4326008)(41300700001)(55016003)(64756008)(6916009)(54906003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?DQeSNQkXBCbxzVtnLbGPjV7wo6s049YbkDrQw5zayAtOxDxVQfRV/Il4Ip0E?=
+ =?us-ascii?Q?9eldP49R23KNphCrs2GGa1XZTDM/oTTfW0MvPlb+qYnNNxem0MI0nbBJQ6ul?=
+ =?us-ascii?Q?+x33SXRwdElchzckiYHkRAhojWUxEBxG0z87iHdKV/JobVazDvWAzq4MUopB?=
+ =?us-ascii?Q?HrgKkb8tmUSyUTg5meZCsG1yjU9X88OLZzC/2P2tRhRuoT4MRdS0Rx42/Lib?=
+ =?us-ascii?Q?s4W8he1YzAzI+8iKSF119ZnngIzCbbPfUNBPYlO7lxckQ/GlAI/3ME1IZWyf?=
+ =?us-ascii?Q?QsWJlaXeN/JpkqxwuGZq0wzjraPA2/kIhajISMo0dTAFhEzTC/jDDMDAKYIM?=
+ =?us-ascii?Q?koyIzKQiWe/9mRKEyv6MK3JekaNaeSH7LLsDmy77Mr/EG/6Y886BaT5xxHgw?=
+ =?us-ascii?Q?Ua+HmCv9nQyFkD/Cpg1NLzwaG/af9WsuvXJN1TcHIOiVpSXp2+BOE5fHcifS?=
+ =?us-ascii?Q?/EtN54/zp75mDmfbWZARUQhgJwiUXLwi7eUbR0+MqZ+wqwMU8NA2RbewiTw5?=
+ =?us-ascii?Q?nyaVwiVTr+lxyLEtcmELQN7bC98TCp+bSiFY2ZYD3VC0+95V00yCdBTa3bQN?=
+ =?us-ascii?Q?T1bst3Rn/UjnFmZN0B+cVvsWSC2VjN5dMMMQu9P+piQlON4O7dRAka+iXc0K?=
+ =?us-ascii?Q?xgzCNws7Zbq6ek0ndaj0owrvZy6BPMq59Q6C2OLBQKC7FPZCRpZ3TItE37mY?=
+ =?us-ascii?Q?uFWrK9kuWhsSdphkay62eRb2QRFk1OWiNjjN2W700ZGrsEAyBMxQp8buiHhu?=
+ =?us-ascii?Q?ekX7RQ2UxldscGUfWabNUm81NapFO+8oeuZcbo/Tb0LIMeAHM7qQlc783GTW?=
+ =?us-ascii?Q?XLKjvrhlsMF6dk7SQSJQe3R8uAZfvQPbYoB7nPi4TjVe9TZUYyJa5q1gAhVV?=
+ =?us-ascii?Q?Dho3rQVJ4QByzeF/w/OLZqbULYoPcJTQZBH0QezYXW8ZnbRiSd2Yrp6ag1NH?=
+ =?us-ascii?Q?JP0oGhk/x7555NJ1qrXuYb3aLBq0s9zkbF/LF3ymSDqE0YUkM2aDf+gZNy3v?=
+ =?us-ascii?Q?YWotXdV5CW/uVPAlii2BJ+NBtNV7aOym6UCFu+h9R4tFkQySBe8sQO4tdF9l?=
+ =?us-ascii?Q?oCWege58Fb0MSMRsFmEpqe5htxU3iHUuqeF94U09KwggnzMGPimwXGYx0Lr/?=
+ =?us-ascii?Q?GgYCUR74mCQ21VotCFb7fCSexuCJ6PMOoGM4iv9CujRdCOM0Hu/Nixip+dHD?=
+ =?us-ascii?Q?s5JcxIxEFh6B39wxTMmZf+Q++yBXEzvrMbJe64PX5lN2dCm3cMAH7XukVUsv?=
+ =?us-ascii?Q?fWfc8bcPBXGjBOCT+Ow0LwOXDBKbXiDodGcnLnCq2zSUm/Z800/aW6eekFGB?=
+ =?us-ascii?Q?cPm3pZ7xzA4iVJIOy2u/5IlBL+rfSJl1Ww0y7EGCbRV9LFX4ma5uhUpo/XU9?=
+ =?us-ascii?Q?mqlRqlK/S8QsrhEfr28Yk8M5DddIdztdrcD0Y11uLImXsy1j0gCCM20XwftL?=
+ =?us-ascii?Q?d6nc9bjrHT3cQqTCPHrczNrE0tr0tpNKtaRY1oGnryBCJAIfPz24cymcAe8d?=
+ =?us-ascii?Q?mj3nCyoUbwNr/G72Abp/Nabg1/TgW78FwFTW+L2JlB1Qjk37AwdwG8R7XdlS?=
+ =?us-ascii?Q?VACpRmYfPZzTsbr0jIswTofe0M0Ni9QT0jhOPO9LQFcP3SLzlvOP+N08OZhj?=
+ =?us-ascii?Q?2w=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR11MB1293.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 242a1d8f-dc3a-43f5-5ca5-08da9c731ef6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Sep 2022 08:19:08.0355
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: YhNbscQCP4oc2V9iJJUhLIkhUqwV4Drn9tPg9qEi0OU6LzIlLw2kr4fbdF2be971qaalE3FAAyGa/e6ZtTCtgIUr34dPbXwCKd9UCZFcPlc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR11MB6854
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
+> -----Original Message-----
+> From: Jakub Kicinski <kuba@kernel.org>
+> Sent: Wednesday, September 21, 2022 1:29 PM
+> To: Nambiar, Amritha <amritha.nambiar@intel.com>
+> Cc: netdev@vger.kernel.org; alexander.duyck@gmail.com;
+> jhs@mojatatu.com; jiri@resnulli.us; xiyou.wangcong@gmail.com; Gomes,
+> Vinicius <vinicius.gomes@intel.com>; Samudrala, Sridhar
+> <sridhar.samudrala@intel.com>
+> Subject: Re: [net-next PATCH v2 0/4] Extend action skbedit to RX queue
+> mapping
+>=20
+> On Wed, 07 Sep 2022 18:23:57 -0700 Amritha Nambiar wrote:
+> > Based on the discussion on
+> > https://lore.kernel.org/netdev/20220429171717.5b0b2a81@kernel.org/,
+> > the following series extends skbedit tc action to RX queue mapping.
+> > Currently, skbedit action in tc allows overriding of transmit queue.
+> > Extending this ability of skedit action supports the selection of recei=
+ve
+> > queue for incoming packets. Offloading this action is added for receive
+> > side. Enabled ice driver to offload this type of filter into the
+> > hardware for accepting packets to the device's receive queue.
+> >
+> > v2: Added documentation in Documentation/networking
+>=20
+> Alex and I had a quick chat about this, I think we can work around
+> the difficulties with duplicating the behavior in SW by enforcing
+> that the action can only be used with skip_sw. Either skbedit or
+> Alex's suggested approach with act_mirred. Or new hw-only action.
+>=20
 
-On Wed Sep 21 2022, Vladimir Oltean wrote:
-> On Wed, Sep 21, 2022 at 05:12:06PM +0300, Vladimir Oltean wrote:
->> On Wed, Sep 21, 2022 at 01:46:22PM +0200, Kurt Kanzenbach wrote:
->> > >> So, configured to 128 and 132 bytes (including VLAN Ethernet header=
-) is
->> > >> the maximum frame size which passes through.
->> > >
->> > > Frame size means MAC DA + MAC SA + VLAN header + Ethertype + L2 payl=
-oad,
->> > > and without FCS, right?
->> >=20
->> > Yes.
->> >=20
->> > >
->> > > Because max_sdu 128 only counts the L2 payload, so the maximum frame
->> > > size that passes should be 142 octets, or 146 octets with VLAN.
->> >=20
->> > Ok, i see. So, for 128 max-sdu we should end up with something like th=
-is
->> > in the prio config register:
->> >=20
->> >  schedule->max_sdu[tc] + VLAN_ETH_HLEN - 4
->>=20
->> What does 4 represent? ETH_FCS_LEN?
->>=20
->> So when schedule->max_sdu[tc] is 128, you write to HR_PTPRTCCFG_MAXSDU
->> the value of 128 + 18 - 4 =3D 142, and this will pass packets (VLAN-tagg=
-ed
->> or not) with an skb->len (on xmit) <=3D 142, right?
->
-> Mistake, I meant skb->len <=3D 146 (max_sdu[tc] + VLAN_ETH_HLEN). So the
-> hardware calculates the max frame len to include FCS, and skb->len is
-> without FCS, hence the 4 discrepancy.
+Okay, I will go with skbedit and enforce skip_sw for the action on Rx
+side. So, skbedit for TX queue is SW only and skbedit for RX queue is
+HW only action.
 
-Yes, seems like it.
+> Alex pointed out that it'd be worth documenting the priorities of
+> aRFS vs this thing, which one will be used if HW matches both.
 
-In case you repost this series, can you replace your patch with the one
-below?
+Sure, I will document the priorities of aRFS and TC filter selecting
+the Rx queue. On Intel E810 devices, the TC filter selecting Rx queue
+has higher priority over aRFS (Flow director filter) if both the filters
+are matched.
 
-From=206488e0f979f3ea8c6130beb1b3e661cdb7796916 Mon Sep 17 00:00:00 2001
-From: Kurt Kanzenbach <kurt@linutronix.de>
-Date: Wed, 14 Sep 2022 19:51:40 +0200
-Subject: [PATCH] net: dsa: hellcreek: Offload per-tc max SDU from tc-taprio
-
-Add support for configuring the max SDU per priority and per port. If not
-specified, keep the default.
-
-Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
-=2D--
- drivers/net/dsa/hirschmann/hellcreek.c | 64 +++++++++++++++++++++++---
- drivers/net/dsa/hirschmann/hellcreek.h |  7 +++
- 2 files changed, 64 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/dsa/hirschmann/hellcreek.c b/drivers/net/dsa/hirsc=
-hmann/hellcreek.c
-index 5ceee71d9a25..c4b76b1e7a63 100644
-=2D-- a/drivers/net/dsa/hirschmann/hellcreek.c
-+++ b/drivers/net/dsa/hirschmann/hellcreek.c
-@@ -128,6 +128,16 @@ static void hellcreek_select_prio(struct hellcreek *he=
-llcreek, int prio)
- 	hellcreek_write(hellcreek, val, HR_PSEL);
- }
-=20
-+static void hellcreek_select_port_prio(struct hellcreek *hellcreek, int po=
-rt,
-+				       int prio)
-+{
-+	u16 val =3D port << HR_PSEL_PTWSEL_SHIFT;
-+
-+	val |=3D prio << HR_PSEL_PRTCWSEL_SHIFT;
-+
-+	hellcreek_write(hellcreek, val, HR_PSEL);
-+}
-+
- static void hellcreek_select_counter(struct hellcreek *hellcreek, int coun=
-ter)
- {
- 	u16 val =3D counter << HR_CSEL_SHIFT;
-@@ -1537,6 +1547,45 @@ hellcreek_port_prechangeupper(struct dsa_switch *ds,=
- int port,
- 	return ret;
- }
-=20
-+static void hellcreek_setup_maxsdu(struct hellcreek *hellcreek, int port,
-+				   const struct tc_taprio_qopt_offload *schedule)
-+{
-+	int tc;
-+
-+	for (tc =3D 0; tc < 8; ++tc) {
-+		u32 max_sdu =3D schedule->max_sdu[tc] + VLAN_ETH_HLEN - ETH_FCS_LEN;
-+		u16 val;
-+
-+		if (!schedule->max_sdu[tc])
-+			continue;
-+
-+		dev_dbg(hellcreek->dev, "Configure max-sdu %u for tc %d on port %d\n",
-+			max_sdu, tc, port);
-+
-+		hellcreek_select_port_prio(hellcreek, port, tc);
-+
-+		val =3D (max_sdu & HR_PTPRTCCFG_MAXSDU_MASK) << HR_PTPRTCCFG_MAXSDU_SHIF=
-T;
-+
-+		hellcreek_write(hellcreek, val, HR_PTPRTCCFG);
-+	}
-+}
-+
-+static void hellcreek_reset_maxsdu(struct hellcreek *hellcreek, int port)
-+{
-+	int tc;
-+
-+	for (tc =3D 0; tc < 8; ++tc) {
-+		u16 val;
-+
-+		hellcreek_select_port_prio(hellcreek, port, tc);
-+
-+		val =3D (HELLCREEK_DEFAULT_MAX_SDU & HR_PTPRTCCFG_MAXSDU_MASK)
-+			<< HR_PTPRTCCFG_MAXSDU_SHIFT;
-+
-+		hellcreek_write(hellcreek, val, HR_PTPRTCCFG);
-+	}
-+}
-+
- static void hellcreek_setup_gcl(struct hellcreek *hellcreek, int port,
- 				const struct tc_taprio_qopt_offload *schedule)
- {
-@@ -1720,7 +1769,10 @@ static int hellcreek_port_set_schedule(struct dsa_sw=
-itch *ds, int port,
- 	}
- 	hellcreek_port->current_schedule =3D taprio_offload_get(taprio);
-=20
-=2D	/* Then select port */
-+	/* Configure max sdu */
-+	hellcreek_setup_maxsdu(hellcreek, port, hellcreek_port->current_schedule);
-+
-+	/* Select tdg */
- 	hellcreek_select_tgd(hellcreek, port);
-=20
- 	/* Enable gating and keep defaults */
-@@ -1772,7 +1824,10 @@ static int hellcreek_port_del_schedule(struct dsa_sw=
-itch *ds, int port)
- 		hellcreek_port->current_schedule =3D NULL;
- 	}
-=20
-=2D	/* Then select port */
-+	/* Reset max sdu */
-+	hellcreek_reset_maxsdu(hellcreek, port);
-+
-+	/* Select tgd */
- 	hellcreek_select_tgd(hellcreek, port);
-=20
- 	/* Disable gating and return to regular switching flow */
-@@ -1814,15 +1869,10 @@ static int hellcreek_port_setup_tc(struct dsa_switc=
-h *ds, int port,
- {
- 	struct tc_taprio_qopt_offload *taprio =3D type_data;
- 	struct hellcreek *hellcreek =3D ds->priv;
-=2D	int tc;
-=20
- 	if (type !=3D TC_SETUP_QDISC_TAPRIO)
- 		return -EOPNOTSUPP;
-=20
-=2D	for (tc =3D 0; tc < TC_MAX_QUEUE; tc++)
-=2D		if (taprio->max_sdu[tc])
-=2D			return -EOPNOTSUPP;
-=2D
- 	if (!hellcreek_validate_schedule(hellcreek, taprio))
- 		return -EOPNOTSUPP;
-=20
-diff --git a/drivers/net/dsa/hirschmann/hellcreek.h b/drivers/net/dsa/hirsc=
-hmann/hellcreek.h
-index c96b8c278904..66b989d946e4 100644
-=2D-- a/drivers/net/dsa/hirschmann/hellcreek.h
-+++ b/drivers/net/dsa/hirschmann/hellcreek.h
-@@ -37,6 +37,7 @@
- #define HELLCREEK_VLAN_UNTAGGED_MEMBER	0x1
- #define HELLCREEK_VLAN_TAGGED_MEMBER	0x3
- #define HELLCREEK_NUM_EGRESS_QUEUES	8
-+#define HELLCREEK_DEFAULT_MAX_SDU	1536
-=20
- /* Register definitions */
- #define HR_MODID_C			(0 * 2)
-@@ -72,6 +73,12 @@
- #define HR_PRTCCFG_PCP_TC_MAP_SHIFT	0
- #define HR_PRTCCFG_PCP_TC_MAP_MASK	GENMASK(2, 0)
-=20
-+#define HR_PTPRTCCFG			(0xa9 * 2)
-+#define HR_PTPRTCCFG_SET_QTRACK		BIT(15)
-+#define HR_PTPRTCCFG_REJECT		BIT(14)
-+#define HR_PTPRTCCFG_MAXSDU_SHIFT	0
-+#define HR_PTPRTCCFG_MAXSDU_MASK	GENMASK(10, 0)
-+
- #define HR_CSEL				(0x8d * 2)
- #define HR_CSEL_SHIFT			0
- #define HR_CSEL_MASK			GENMASK(7, 0)
-=2D-=20
-2.30.2
-
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmMsGGUTHGt1cnRAbGlu
-dXRyb25peC5kZQAKCRDBk9HyqkZzgtggEACyeEp0bzZvEccfIhL0cyFVLvhUXBVu
-8oS5PO4of2nlIwX499CSYesbrgE4wHbyXXxrU0nW4/nQY07cP/stNlFVf9bAuwhb
-syAXZSVADPG35DV6ROr77EjEsrcBf43yf1yqCFVqx37DzCdgWPCI6mCcLa3p0am7
-Pb399tXm/llO25I1lTml9jYmojQGIc9h3dwxmB6tgjsf558nWZI00P3KGIFXqgmq
-Nlbk3Q27iBsrKjt4Aukz9j4AepMSqdtL6b7qYOKf3UZF6wt+r4CGIZB6LQxPgqH2
-rSVGuvGvILkvlT2RiESmBAYXPGfNFWRlj0s0KvjgyQDcCrxCV/CxV02GukYkhnPA
-t7V9e2FliLZNZKTb9XIteIVxS4xeZgDpK+Q848iRc9X30uejMea5Gp8+2rX/n3RH
-ETFW9ESi24CI5pxTZrFPwC0dutAZpnSSVk1HYHyLd39G/V+gEs2aKf9MoZi9Wpdg
-KBWqReaQfyfD3wEd7HiMYPj4SsY8TA+4Q/l4WBiirfbuHz3q/pdPbYtAT8h6WCJ5
-1Ri1vaAFKjBvAWYrfZmQHrjVekXJKKmIgjAgdXyMbTpgJDEvfvU4zQM0GTr/BX0y
-MXaln9yGjgKBndIF7KBi8+SsUoFfzUV98HCYoa/Pu3A6/nhIC+b8pqQXpJtCUuWk
-5aRIBaJzP0vjBQ==
-=7Q4o
------END PGP SIGNATURE-----
---=-=-=--
