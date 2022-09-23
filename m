@@ -2,50 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DEFBA5E8406
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 22:39:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 745475E8478
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 23:00:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233104AbiIWUg4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 16:36:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52380 "EHLO
+        id S231566AbiIWVAq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 17:00:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233192AbiIWUen (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 16:34:43 -0400
-Received: from mx08lb.world4you.com (mx08lb.world4you.com [81.19.149.118])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 705F1132FDB;
-        Fri, 23 Sep 2022 13:29:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=n1s8hqyifdPC7N0Zubm2N8vcr8Qm5zqyKnmMfEsg5gg=; b=xVHDSl04A5YvbqGkG0jKg/49ro
-        DLCGw5falxdkWRdYkAPzxTigNgzMLNEjQkVTXVqrfrBk5Y+7aquFre61/IWTcFfle96Zif+qUJCWy
-        zj3rLUiItxn2tGlsaRDin9s/JXAu9PUEMa6CeUe6ImiQIXgR6bZtCFnP+LZl9G6GE+wI=;
-Received: from 88-117-54-199.adsl.highway.telekom.at ([88.117.54.199] helo=hornet.engleder.at)
-        by mx08lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <gerhard@engleder-embedded.com>)
-        id 1obpIX-0004EI-Un; Fri, 23 Sep 2022 22:29:22 +0200
-From:   Gerhard Engleder <gerhard@engleder-embedded.com>
+        with ESMTP id S232315AbiIWVAk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 17:00:40 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2041.outbound.protection.outlook.com [40.107.21.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6723109634;
+        Fri, 23 Sep 2022 14:00:39 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NcXWTPsI//E+4a9B+kXqmapfCnWqeufufAsCCF1l3c8uVH6/a+mdRO7p895EfHV2wnh11ssoWi18ntcS5FCldNyZKwZlMQRBoI/djf2LBmRAViri75iOZqdqjYWGbuK+fbqSxROLANvq/4Px3qjnKDWTKpF5x90yApgbeK/F+YYtE59Z/qFS/YE8gkrPPU3sEoD2RADSls4SKsMdloO/EIQk8761dKulQRGUAiZOhkJ8UObbBbUWU0mSqzUAvoI2yjZY+AvAiyoltz5lPOUg2bmq0b38+S0q3dzPuX1zUeiygVH0/C/E+jV2yC3KJ7XeDN4JJYFOJu4xmfAS82mRhA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=fuPEtxUodvmdbLjU8Tx+5k6uYitzVcUQTOJm4E7Zvl8=;
+ b=OE757I5ONq+VuNhGFDpeFySciIHNrJEVt4IC/cPMpm4su+6B4zfV0qM259HPcWeNU3i9MsywHhGLWF5ZApHw5u/az/xYECLm3AfewcMalThBnrsUSfR4B+mVj0SO86LODTVzbAYxuoQOcYtrn+tfcIbGQZlB5h1Ib6s0fAZxKvUbkW7YQdXxstgAy5FvRRcDv1RnUU/v4/CqFZOsULft1hRWzlukdMQBeKQwdljwd2HhL6THP20T31Uw/OuHjmEJMTDLPQ2vXL8vbOT3TsJN9yPERv5ye63o833vcrZmceW9pQU5Aqdx13wbUbtHDiEHerSuA+lCHS6N8rz+C1pZCA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fuPEtxUodvmdbLjU8Tx+5k6uYitzVcUQTOJm4E7Zvl8=;
+ b=Rfelerx6vLR9jZxxTHBsz1GShV1vRF0ZvUgOD7c2gMePW57LSYfl5d1u3gLEysCmB9hAbqo2gV/8xP0kmrcTLptXbpTabU5EF7enMtAI/ABQb5k9UhSB3AtkKCgitE9w6xr1VsRpdfeYdBNvaq2rOnXVEUoAYzCslQDufHjO5eY=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AS8PR04MB7863.eurprd04.prod.outlook.com (2603:10a6:20b:2a8::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.18; Fri, 23 Sep
+ 2022 21:00:37 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::a67a:849c:aeff:cad1]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::a67a:849c:aeff:cad1%7]) with mapi id 15.20.5632.021; Fri, 23 Sep 2022
+ 21:00:36 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
-        Gerhard Engleder <gerhard@engleder-embedded.com>
-Subject: [PATCH net-next v3 6/6] tsnep: Use page pool for RX
-Date:   Fri, 23 Sep 2022 22:29:11 +0200
-Message-Id: <20220923202911.119729-7-gerhard@engleder-embedded.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220923202911.119729-1-gerhard@engleder-embedded.com>
-References: <20220923202911.119729-1-gerhard@engleder-embedded.com>
-MIME-Version: 1.0
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        UNGLinuxDriver@microchip.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/4] Improve tsn_lib selftests for future distributed tasks
+Date:   Sat, 24 Sep 2022 00:00:11 +0300
+Message-Id: <20220923210016.3406301-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.34.1
 Content-Transfer-Encoding: 8bit
-X-AV-Do-Run: Yes
+Content-Type: text/plain
+X-ClientProxiedBy: VI1PR07CA0270.eurprd07.prod.outlook.com
+ (2603:10a6:803:b4::37) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AS8PR04MB7863:EE_
+X-MS-Office365-Filtering-Correlation-Id: c845e0c6-54b6-42db-e2fb-08da9da6a99f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: EJmf9bwW+B/yDwcukQZcZPzYEnZdwSwS3r20klHVbxE5QE0kMG6Xj1ScVUJ9n5MX+AQ60Omsr0Dblxl5Eavpufui7Icl6L09qf6MVbvKG9SHpi/lV+fBnx6wrqy3VhhG6+XOj2uhPNmmeTZg0V7GOUUnyT8+2RShBRSuxzrVpAp1Y/en4tgC0X83jV9jctUaXnNFAzuxHCw/KZQjmLWZQJgn6LROEvBbYUNMMcsvzLdGuuV4zS2OeqGb48ZfrC8gTffubBZE4zYMRCqa8aG/u6oZt8HbmZHqDyYGGdyL1FcupxZ2oWsBVLoTGA/1U3SsSd26PkObUmZvWCYUsKLVTpuHBpAk4ogWV+LBxogwJ04RIYJCjAuCKzGpnnWpv6/sHeFCyKIE4Wt3GB6p4YhylTwgip8G564oHXym/ah2dCWuDlld8v43Vgq+iypUCmKjcIQoYnH9kBNmsvqNk5JDDar026dGeD6W5v/UK3y66g9VzAG4naC4F9DVyKLbLPfdGDaDoFe3EPPoD+lOGDKRnboiSiQGUBE4Z3Gxp6Rnu8YT73Hwydf9DDu5ZcpJiXLX/bby1BwMFLZqR7pHZVTcYfSTe4Dqei5dvweWaxEZA2MTM7X7TvVcfIvOXaOS3WoUfKxlVZfgTj0iPmENyw+uyTgiRdZXzngcXRseRX+E2mH1pwxdAfLkbbLmNXoqOCKvwR/VTf+fNdx9zYNG4Hh3Ad6kgDTdjgMP5qUrzcDlRFUnh4Vl2AtWlesZYrezQGGe
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(366004)(346002)(39860400002)(396003)(136003)(451199015)(6486002)(38100700002)(66476007)(52116002)(316002)(6916009)(8676002)(4326008)(66556008)(66946007)(6506007)(36756003)(6666004)(1076003)(478600001)(8936002)(5660300002)(54906003)(41300700001)(86362001)(44832011)(2906002)(38350700002)(6512007)(26005)(186003)(2616005)(83380400001)(7416002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?8nJaJ9mlk4VQEb2RajIR2SuVL5dp6/P8pzR6NuriBMzdKZAPMzkSJuaj34qE?=
+ =?us-ascii?Q?ypnlLBH7q/DTJ0spwYUFGJTqX2Ee3IztCxMVkdiEeU3eAyftO7DF6Xlk+xKC?=
+ =?us-ascii?Q?DVQqNsetWxcJ+F9TP8QokP9jewslzqXkmi0+zzEWh7IzK0KZxlV2vM4B9rWm?=
+ =?us-ascii?Q?pHbB3/Ouk+EjXU134F9sCuarFCeKRweklcif0sWAjT1/2N077CW6wjJsPCF3?=
+ =?us-ascii?Q?Fxbesl0U0m0RPaz6JRmf9lD3uK7wcGtzhdFx45troJuKKpImEkcVWj9XM6x4?=
+ =?us-ascii?Q?D8ZxGcpU8U2LEs/zcAlx00gfMVeAAG7WN3xcz38M3eHqZn1c85ijlqZ5b80p?=
+ =?us-ascii?Q?/duyHNVtdAZV+/xfDCP+NTR2d6wGJYmIYG6GGjfFBCr0LdZbhmJgcFOILee7?=
+ =?us-ascii?Q?wshebOsmq3OaH81i5mKsUBmMk81lhyCAvxLs3kcOkct520keFUfnXX3l0svY?=
+ =?us-ascii?Q?/xuHC6ZM87dDiIOgmQ/i8mKuiJlwVpJS2dT1X7/WzTLVofVOA7hZj0vTFcDI?=
+ =?us-ascii?Q?H5kkoUTPIgHFOwve/PVkX/2Lzb3VU5iVjqY1I2atWWMSr62Yap8WLtqk4EV5?=
+ =?us-ascii?Q?mxlepY0wGz031Bw2+BTmo2LjCKbxUM9TBZYvNiLt05DEHo2cK9ubfqMhl4co?=
+ =?us-ascii?Q?qUtOaCdh6n8K5UukaLd6MU9bqpFB6Y+aiqDiicMteK7e2sxHbg4KfXi+RL4p?=
+ =?us-ascii?Q?XhQjh+TCkVoaqgIWV7ov7U/uwNNfdEC6Jt4AbjIDxLQjG1bHj24EojRb8KK3?=
+ =?us-ascii?Q?3vTWn0BnbiDOxpOCqQ2Qpsk7phcnbR5vvU6fqfVdRqgZleJD5OiqMywt5g8E?=
+ =?us-ascii?Q?ilXM0SViagg2rtiLwj3oh5JcpIJiAb7WOop5m6o0AKRCCmh6MVRC5vEy8EAG?=
+ =?us-ascii?Q?T51QCDNIemMBw/hgDpASHaRpPZIYN6hPn0xVJCWbAPTbr43aPlPEmmZhBjFO?=
+ =?us-ascii?Q?X+ZmkXOBtg9Z9VxNr7aMIw8jcvHBt/q2Ox3XAvSJuIDo7B/b4Q/Y3sBEZcs3?=
+ =?us-ascii?Q?AL0ujrx9xUtgIBaw2ckL3WHW8RkP5A5/cj6hjM9VsWlpWuPV15FsuMKHKLS7?=
+ =?us-ascii?Q?GoX03Bf5ORKqRYoKjlnOJFhEgvRKMzUeOtqe2mK/k6hvu5XaBKOlfOf+wlSg?=
+ =?us-ascii?Q?A0L3DwTmcZcpRPAtXSx5aYYKnYBhZM9mNtdMMDcBxe4M/2tXV0wD/wscpdf0?=
+ =?us-ascii?Q?ul4XAjLAstV2WkMS56PL/VdnEVim7HUAGdDcLHzWo13RPLO/cRTYYOx01fEk?=
+ =?us-ascii?Q?6lOMf9PV3ru11gANBzkASqSYckFbqmv/mYB+ztVRyR0ttknlCJUNubGFfSjY?=
+ =?us-ascii?Q?T6o9gSc3poo5rudssq986muCsXzXR34NXwgZNhCPEZLTifpgMlQ2Rz7om5YQ?=
+ =?us-ascii?Q?AybmxmOPEH64w/RMMCyQnVGZAuT4+tW5xBN8W8AmMIh9KwqSIXff+EN3+oNA?=
+ =?us-ascii?Q?QixGfWBNF0u6l/lqckZkkIAjkqHYb5/UdGVZ7WmRnGX8HW7CwYpSx4Gaq1g5?=
+ =?us-ascii?Q?avzddIJt3A0vtKWqgWs3ygWFNNVR+tPPSLRU0eeHxYdsY3UcQiwe5NZe+bb+?=
+ =?us-ascii?Q?0czd0CKMviHPTi+LVstwDLGx9MLN2IoM4gvO9+gcDDUv9vjRv9qZZpUzOWEc?=
+ =?us-ascii?Q?KA=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c845e0c6-54b6-42db-e2fb-08da9da6a99f
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2022 21:00:36.5587
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: lY410wlSWcnUF+7zjnHgXSCbnBFIK+zJhBTBFXKBVVINKNFJk0qCfjqgj6PU6hpNA3sgSitrHfrWNGmZorqfvw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB7863
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -53,302 +118,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use page pool for RX buffer handling. Makes RX path more efficient and
-is required prework for future XDP support.
+Some of the boards I am working with are limited in the number of ports
+that they offer, and as more TSN related selftests are added, it is
+important to be able to distribute the work among multiple boards.
+A large part of implementing that is ensuring network-wide
+synchronization, but also permitting more streams of data to flow
+through the network. There is the more important aspect of also
+coordinating the timing characteristics of those streams, and that is
+also something that is tackled, although not in this modest patch set.
+The goal here is not to introduce new selftests yet, but just to lay a
+better foundation for them. These patches are a part of the cleanup work
+I've done while working on selftests for frame preemption. They are
+regression-tested with psfp.sh.
 
-Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
----
- drivers/net/ethernet/engleder/Kconfig      |   1 +
- drivers/net/ethernet/engleder/tsnep.h      |   5 +-
- drivers/net/ethernet/engleder/tsnep_main.c | 162 ++++++++++++---------
- 3 files changed, 100 insertions(+), 68 deletions(-)
+Vladimir Oltean (4):
+  selftests: net: tsn_lib: don't overwrite isochron receiver extra args
+    with UDS
+  selftests: net: tsn_lib: allow running ptp4l on multiple interfaces
+  selftests: net: tsn_lib: allow multiple isochron receivers
+  selftests: net: tsn_lib: run phc2sys in automatic mode
 
-diff --git a/drivers/net/ethernet/engleder/Kconfig b/drivers/net/ethernet/engleder/Kconfig
-index f4e2b1102d8f..3df6bf476ae7 100644
---- a/drivers/net/ethernet/engleder/Kconfig
-+++ b/drivers/net/ethernet/engleder/Kconfig
-@@ -21,6 +21,7 @@ config TSNEP
- 	depends on HAS_IOMEM && HAS_DMA
- 	depends on PTP_1588_CLOCK_OPTIONAL
- 	select PHYLIB
-+	select PAGE_POOL
- 	help
- 	  Support for the Engleder TSN endpoint Ethernet MAC IP Core.
- 
-diff --git a/drivers/net/ethernet/engleder/tsnep.h b/drivers/net/ethernet/engleder/tsnep.h
-index 2ca34ae9b55a..09a723b827c7 100644
---- a/drivers/net/ethernet/engleder/tsnep.h
-+++ b/drivers/net/ethernet/engleder/tsnep.h
-@@ -96,9 +96,9 @@ struct tsnep_rx_entry {
- 
- 	u32 properties;
- 
--	struct sk_buff *skb;
-+	struct page *page;
- 	size_t len;
--	DEFINE_DMA_UNMAP_ADDR(dma);
-+	dma_addr_t dma;
- };
- 
- struct tsnep_rx {
-@@ -113,6 +113,7 @@ struct tsnep_rx {
- 	int read;
- 	u32 owner_counter;
- 	int increment_owner_counter;
-+	struct page_pool *page_pool;
- 
- 	u32 packets;
- 	u32 bytes;
-diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/ethernet/engleder/tsnep_main.c
-index a6b81f32d76b..8a93d0aa7faa 100644
---- a/drivers/net/ethernet/engleder/tsnep_main.c
-+++ b/drivers/net/ethernet/engleder/tsnep_main.c
-@@ -27,10 +27,10 @@
- #include <linux/phy.h>
- #include <linux/iopoll.h>
- 
--#define RX_SKB_LENGTH (round_up(TSNEP_RX_INLINE_METADATA_SIZE + ETH_HLEN + \
--				TSNEP_MAX_FRAME_SIZE + ETH_FCS_LEN, 4))
--#define RX_SKB_RESERVE ((16 - TSNEP_RX_INLINE_METADATA_SIZE) + NET_IP_ALIGN)
--#define RX_SKB_ALLOC_LENGTH (RX_SKB_RESERVE + RX_SKB_LENGTH)
-+#define TSNEP_SKB_PAD (NET_SKB_PAD + NET_IP_ALIGN)
-+#define TSNEP_HEADROOM ALIGN(TSNEP_SKB_PAD, 4)
-+#define TSNEP_MAX_RX_BUF_SIZE (PAGE_SIZE - TSNEP_HEADROOM - \
-+			       SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
- 
- #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
- #define DMA_ADDR_HIGH(dma_addr) ((u32)(((dma_addr) >> 32) & 0xFFFFFFFF))
-@@ -587,14 +587,15 @@ static void tsnep_rx_ring_cleanup(struct tsnep_rx *rx)
- 
- 	for (i = 0; i < TSNEP_RING_SIZE; i++) {
- 		entry = &rx->entry[i];
--		if (dma_unmap_addr(entry, dma))
--			dma_unmap_single(dmadev, dma_unmap_addr(entry, dma),
--					 dma_unmap_len(entry, len),
--					 DMA_FROM_DEVICE);
--		if (entry->skb)
--			dev_kfree_skb(entry->skb);
-+		if (entry->page)
-+			page_pool_put_full_page(rx->page_pool, entry->page,
-+						false);
-+		entry->page = NULL;
- 	}
- 
-+	if (rx->page_pool)
-+		page_pool_destroy(rx->page_pool);
-+
- 	memset(rx->entry, 0, sizeof(rx->entry));
- 
- 	for (i = 0; i < TSNEP_RING_PAGE_COUNT; i++) {
-@@ -607,31 +608,19 @@ static void tsnep_rx_ring_cleanup(struct tsnep_rx *rx)
- 	}
- }
- 
--static int tsnep_rx_alloc_and_map_skb(struct tsnep_rx *rx,
--				      struct tsnep_rx_entry *entry)
-+static int tsnep_rx_alloc_buffer(struct tsnep_rx *rx,
-+				 struct tsnep_rx_entry *entry)
- {
--	struct device *dmadev = rx->adapter->dmadev;
--	struct sk_buff *skb;
--	dma_addr_t dma;
-+	struct page *page;
- 
--	skb = __netdev_alloc_skb(rx->adapter->netdev, RX_SKB_ALLOC_LENGTH,
--				 GFP_ATOMIC | GFP_DMA);
--	if (!skb)
-+	page = page_pool_dev_alloc_pages(rx->page_pool);
-+	if (unlikely(!page))
- 		return -ENOMEM;
- 
--	skb_reserve(skb, RX_SKB_RESERVE);
--
--	dma = dma_map_single(dmadev, skb->data, RX_SKB_LENGTH,
--			     DMA_FROM_DEVICE);
--	if (dma_mapping_error(dmadev, dma)) {
--		dev_kfree_skb(skb);
--		return -ENOMEM;
--	}
--
--	entry->skb = skb;
--	entry->len = RX_SKB_LENGTH;
--	dma_unmap_addr_set(entry, dma, dma);
--	entry->desc->rx = __cpu_to_le64(dma);
-+	entry->page = page;
-+	entry->len = TSNEP_MAX_RX_BUF_SIZE;
-+	entry->dma = page_pool_get_dma_addr(entry->page);
-+	entry->desc->rx = __cpu_to_le64(entry->dma + TSNEP_SKB_PAD);
- 
- 	return 0;
- }
-@@ -640,6 +629,7 @@ static int tsnep_rx_ring_init(struct tsnep_rx *rx)
- {
- 	struct device *dmadev = rx->adapter->dmadev;
- 	struct tsnep_rx_entry *entry;
-+	struct page_pool_params pp_params = { 0 };
- 	struct tsnep_rx_entry *next_entry;
- 	int i, j;
- 	int retval;
-@@ -661,12 +651,28 @@ static int tsnep_rx_ring_init(struct tsnep_rx *rx)
- 			entry->desc_dma = rx->page_dma[i] + TSNEP_DESC_SIZE * j;
- 		}
- 	}
-+
-+	pp_params.flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV;
-+	pp_params.order = 0;
-+	pp_params.pool_size = TSNEP_RING_SIZE;
-+	pp_params.nid = dev_to_node(dmadev);
-+	pp_params.dev = dmadev;
-+	pp_params.dma_dir = DMA_FROM_DEVICE;
-+	pp_params.max_len = TSNEP_MAX_RX_BUF_SIZE;
-+	pp_params.offset = TSNEP_SKB_PAD;
-+	rx->page_pool = page_pool_create(&pp_params);
-+	if (IS_ERR(rx->page_pool)) {
-+		retval = PTR_ERR(rx->page_pool);
-+		rx->page_pool = NULL;
-+		goto failed;
-+	}
-+
- 	for (i = 0; i < TSNEP_RING_SIZE; i++) {
- 		entry = &rx->entry[i];
- 		next_entry = &rx->entry[(i + 1) % TSNEP_RING_SIZE];
- 		entry->desc->next = __cpu_to_le64(next_entry->desc_dma);
- 
--		retval = tsnep_rx_alloc_and_map_skb(rx, entry);
-+		retval = tsnep_rx_alloc_buffer(rx, entry);
- 		if (retval)
- 			goto failed;
- 	}
-@@ -682,7 +688,7 @@ static void tsnep_rx_activate(struct tsnep_rx *rx, int index)
- {
- 	struct tsnep_rx_entry *entry = &rx->entry[index];
- 
--	/* RX_SKB_LENGTH is a multiple of 4 */
-+	/* TSNEP_MAX_RX_BUF_SIZE is a multiple of 4 */
- 	entry->properties = entry->len & TSNEP_DESC_LENGTH_MASK;
- 	entry->properties |= TSNEP_DESC_INTERRUPT_FLAG;
- 	if (index == rx->increment_owner_counter) {
-@@ -705,19 +711,52 @@ static void tsnep_rx_activate(struct tsnep_rx *rx, int index)
- 	entry->desc->properties = __cpu_to_le32(entry->properties);
- }
- 
-+static struct sk_buff *tsnep_build_skb(struct tsnep_rx *rx, struct page *page,
-+				       int length)
-+{
-+	struct sk_buff *skb;
-+
-+	skb = napi_build_skb(page_address(page), PAGE_SIZE);
-+	if (unlikely(!skb))
-+		return NULL;
-+
-+	/* update pointers within the skb to store the data */
-+	skb_reserve(skb, TSNEP_SKB_PAD + TSNEP_RX_INLINE_METADATA_SIZE);
-+	__skb_put(skb, length - TSNEP_RX_INLINE_METADATA_SIZE - ETH_FCS_LEN);
-+
-+	if (rx->adapter->hwtstamp_config.rx_filter == HWTSTAMP_FILTER_ALL) {
-+		struct skb_shared_hwtstamps *hwtstamps = skb_hwtstamps(skb);
-+		struct tsnep_rx_inline *rx_inline =
-+			(struct tsnep_rx_inline *)(page_address(page) +
-+						   TSNEP_SKB_PAD);
-+
-+		skb_shinfo(skb)->tx_flags |=
-+			SKBTX_HW_TSTAMP_NETDEV;
-+		memset(hwtstamps, 0, sizeof(*hwtstamps));
-+		hwtstamps->netdev_data = rx_inline;
-+	}
-+
-+	skb_record_rx_queue(skb, rx->queue_index);
-+	skb->protocol = eth_type_trans(skb, rx->adapter->netdev);
-+
-+	return skb;
-+}
-+
- static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
- 			 int budget)
- {
- 	struct device *dmadev = rx->adapter->dmadev;
- 	int done = 0;
-+	enum dma_data_direction dma_dir;
- 	struct tsnep_rx_entry *entry;
-+	struct page *page;
- 	struct sk_buff *skb;
--	size_t len;
--	dma_addr_t dma;
- 	int length;
- 	bool enable = false;
- 	int retval;
- 
-+	dma_dir = page_pool_get_dma_dir(rx->page_pool);
-+
- 	while (likely(done < budget)) {
- 		entry = &rx->entry[rx->read];
- 		if ((__le32_to_cpu(entry->desc_wb->properties) &
-@@ -730,43 +769,34 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
- 		 */
- 		dma_rmb();
- 
--		skb = entry->skb;
--		len = dma_unmap_len(entry, len);
--		dma = dma_unmap_addr(entry, dma);
-+		prefetch(page_address(entry->page) + TSNEP_SKB_PAD);
-+		length = __le32_to_cpu(entry->desc_wb->properties) &
-+			 TSNEP_DESC_LENGTH_MASK;
-+		dma_sync_single_range_for_cpu(dmadev, entry->dma, TSNEP_SKB_PAD,
-+					      length, dma_dir);
-+		page = entry->page;
- 
- 		/* forward skb only if allocation is successful, otherwise
--		 * skb is reused and frame dropped
-+		 * page is reused and frame dropped
- 		 */
--		retval = tsnep_rx_alloc_and_map_skb(rx, entry);
-+		retval = tsnep_rx_alloc_buffer(rx, entry);
- 		if (!retval) {
--			dma_unmap_single(dmadev, dma, len, DMA_FROM_DEVICE);
--
--			length = __le32_to_cpu(entry->desc_wb->properties) &
--				 TSNEP_DESC_LENGTH_MASK;
--			skb_put(skb, length - ETH_FCS_LEN);
--			if (rx->adapter->hwtstamp_config.rx_filter ==
--			    HWTSTAMP_FILTER_ALL) {
--				struct skb_shared_hwtstamps *hwtstamps =
--					skb_hwtstamps(skb);
--				struct tsnep_rx_inline *rx_inline =
--					(struct tsnep_rx_inline *)skb->data;
--
--				skb_shinfo(skb)->tx_flags |=
--					SKBTX_HW_TSTAMP_NETDEV;
--				memset(hwtstamps, 0, sizeof(*hwtstamps));
--				hwtstamps->netdev_data = rx_inline;
--			}
--			skb_pull(skb, TSNEP_RX_INLINE_METADATA_SIZE);
--			skb_record_rx_queue(skb, rx->queue_index);
--			skb->protocol = eth_type_trans(skb,
--						       rx->adapter->netdev);
-+			skb = tsnep_build_skb(rx, page, length);
-+			if (skb) {
-+				page_pool_release_page(rx->page_pool, page);
-+
-+				rx->packets++;
-+				rx->bytes += length -
-+					     TSNEP_RX_INLINE_METADATA_SIZE;
-+				if (skb->pkt_type == PACKET_MULTICAST)
-+					rx->multicast++;
- 
--			rx->packets++;
--			rx->bytes += length - TSNEP_RX_INLINE_METADATA_SIZE;
--			if (skb->pkt_type == PACKET_MULTICAST)
--				rx->multicast++;
-+				napi_gro_receive(napi, skb);
-+			} else {
-+				page_pool_recycle_direct(rx->page_pool, page);
- 
--			napi_gro_receive(napi, skb);
-+				rx->dropped++;
-+			}
- 			done++;
- 		} else {
- 			rx->dropped++;
+ .../selftests/drivers/net/ocelot/psfp.sh      |  2 +-
+ .../selftests/net/forwarding/tsn_lib.sh       | 52 ++++++++++++-------
+ 2 files changed, 34 insertions(+), 20 deletions(-)
+
 -- 
-2.30.2
+2.34.1
 
