@@ -2,44 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 994365E7A69
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 14:18:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23EB05E7A57
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 14:18:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229993AbiIWMS5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 08:18:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41354 "EHLO
+        id S232072AbiIWMSX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 08:18:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231178AbiIWMQS (ORCPT
+        with ESMTP id S231184AbiIWMQS (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 08:16:18 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94D9F13C86C
-        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 05:09:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCAC912F762
+        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 05:09:07 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1obhUO-0007Ep-3z
-        for netdev@vger.kernel.org; Fri, 23 Sep 2022 14:09:04 +0200
+        id 1obhUQ-0007G8-6Z
+        for netdev@vger.kernel.org; Fri, 23 Sep 2022 14:09:06 +0200
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 56D97EB112
-        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 12:09:03 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id 963E6EB124
+        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 12:09:04 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id D703DEB104;
-        Fri, 23 Sep 2022 12:09:01 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 4692EEB105;
+        Fri, 23 Sep 2022 12:09:02 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id c8f4d511;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id c64d6b52;
         Fri, 23 Sep 2022 12:09:00 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: [PATCH net-next 0/11] pull-request: can-next 2022-09-23
-Date:   Fri, 23 Sep 2022 14:08:48 +0200
-Message-Id: <20220923120859.740577-1-mkl@pengutronix.de>
+        kernel@pengutronix.de, Ziyang Xuan <william.xuanziyang@huawei.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH net-next 01/11] can: bcm: registration process optimization in bcm_module_init()
+Date:   Fri, 23 Sep 2022 14:08:49 +0200
+Message-Id: <20220923120859.740577-2-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220923120859.740577-1-mkl@pengutronix.de>
+References: <20220923120859.740577-1-mkl@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
@@ -55,68 +59,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Jakub, hello David,
+From: Ziyang Xuan <william.xuanziyang@huawei.com>
 
-this is a pull request of 11 patches for net-next/main.
+Now, register_netdevice_notifier() and register_pernet_subsys() are both
+after can_proto_register(). It can create CAN_BCM socket and process socket
+once can_proto_register() successfully, so it is possible missing notifier
+event or proc node creation because notifier or bcm proc directory is not
+registered or created yet. Although this is a low probability scenario, it
+is not impossible.
 
-The first 2 patches are by Ziyang Xuan and optimize registration and
-the sending in the CAN BCM protocol a bit.
+Move register_pernet_subsys() and register_netdevice_notifier() to the
+front of can_proto_register(). In addition, register_pernet_subsys() and
+register_netdevice_notifier() may fail, check their results are necessary.
 
-The next 8 patches target the gs_usb driver. 7 are by me and first fix
-the time hardware stamping support (added during this net-next cycle),
-rename a variable, convert the usb_control_msg + manual
-kmalloc()/kfree() to usb_control_msg_{send,rev}(), clean up the error
-handling and add switchable termination support. The patch by Rhett
-Aultman and Vasanth Sadhasivan convert the driver from
-usb_alloc_coherent()/usb_free_coherent() to kmalloc()/URB_FREE_BUFFER.
-
-The last patch is by Shang XiaoJing and removes an unneeded call to
-dev_err() from the ctucanfd driver.
-
-regards,
-Marc
-
+Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+Link: https://lore.kernel.org/all/823cff0ebec33fa9389eeaf8b8ded3217c32cb38.1663206163.git.william.xuanziyang@huawei.com
+Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
+ net/can/bcm.c | 18 +++++++++++++++---
+ 1 file changed, 15 insertions(+), 3 deletions(-)
 
-The following changes since commit d05d9eb79d0cd0f7a978621b4a56a1f2db444f86:
+diff --git a/net/can/bcm.c b/net/can/bcm.c
+index e5d179ba6f7d..0a2adb844280 100644
+--- a/net/can/bcm.c
++++ b/net/can/bcm.c
+@@ -1749,15 +1749,27 @@ static int __init bcm_module_init(void)
+ 
+ 	pr_info("can: broadcast manager protocol\n");
+ 
++	err = register_pernet_subsys(&canbcm_pernet_ops);
++	if (err)
++		return err;
++
++	err = register_netdevice_notifier(&canbcm_notifier);
++	if (err)
++		goto register_notifier_failed;
++
+ 	err = can_proto_register(&bcm_can_proto);
+ 	if (err < 0) {
+ 		printk(KERN_ERR "can: registration of bcm protocol failed\n");
+-		return err;
++		goto register_proto_failed;
+ 	}
+ 
+-	register_pernet_subsys(&canbcm_pernet_ops);
+-	register_netdevice_notifier(&canbcm_notifier);
+ 	return 0;
++
++register_proto_failed:
++	unregister_netdevice_notifier(&canbcm_notifier);
++register_notifier_failed:
++	unregister_pernet_subsys(&canbcm_pernet_ops);
++	return err;
+ }
+ 
+ static void __exit bcm_module_exit(void)
 
-  Merge branch 'net-dsa-remove-unnecessary-set_drvdata' (2022-09-22 19:31:39 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git tags/linux-can-next-for-6.1-20220923
-
-for you to fetch changes up to 6eed756408c69687613a83fd221431c8790cf0bb:
-
-  can: ctucanfd: Remove redundant dev_err call (2022-09-23 13:55:01 +0200)
-
-----------------------------------------------------------------
-linux-can-next-for-6.1-20220923
-
-----------------------------------------------------------------
-Marc Kleine-Budde (8):
-      Merge patch series "can: bcm: can: bcm: random optimizations"
-      can: gs_usb: gs_usb_get_timestamp(): fix endpoint parameter for usb_control_msg_recv()
-      can: gs_usb: add missing lock to protect struct timecounter::cycle_last
-      can: gs_usb: gs_can_open(): initialize time counter before starting device
-      can: gs_usb: gs_cmd_reset(): rename variable holding struct gs_can pointer to dev
-      can: gs_usb: convert from usb_control_msg() to usb_control_msg_{send,recv}()
-      can: gs_usb: gs_make_candev(): clean up error handling
-      can: gs_usb: add switchable termination support
-
-Shang XiaoJing (1):
-      can: ctucanfd: Remove redundant dev_err call
-
-Vasanth Sadhasivan (1):
-      can: gs_usb: remove dma allocations
-
-Ziyang Xuan (2):
-      can: bcm: registration process optimization in bcm_module_init()
-      can: bcm: check the result of can_send() in bcm_can_tx()
-
- drivers/net/can/ctucanfd/ctucanfd_platform.c |   1 -
- drivers/net/can/usb/gs_usb.c                 | 478 +++++++++++++--------------
- net/can/bcm.c                                |  25 +-
- 3 files changed, 249 insertions(+), 255 deletions(-)
+base-commit: d05d9eb79d0cd0f7a978621b4a56a1f2db444f86
+-- 
+2.35.1
 
 
