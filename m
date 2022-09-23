@@ -2,94 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C7715E7169
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 03:34:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6A5F5E7175
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 03:41:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230190AbiIWBeQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 21:34:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60536 "EHLO
+        id S231285AbiIWBlJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 21:41:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230176AbiIWBeP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 21:34:15 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C79ED5E8
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 18:34:14 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id a10so13082056ljq.0
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 18:34:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=yxVkj8vMOj0M4F+ZY9bcIhgF0+ag1p/3PWCPUQB0x8s=;
-        b=jKIGElwC44o0+qFhSH9ox495eEa9xYjEc6Xbg2IUlKg0eEFJS+B+0tz6rJy5EIGr0a
-         b5wlLi38UDghN50Dj+LJ4nu54hvgsW8KzNTjWeE3ARd7mVrjMFwhllo3KbdvkZk/Ih6V
-         sA3HmrarXYEM6EtepyirenrufNKoUM+k/ZhUyA0q1tKkCllrpCAqoY3d8CjDQb+A+KII
-         TMIQP2eBlaEF7xyjzrjgqSv7ZkhrsfuoIfpnp2IlEe7nadvV+jVzuSDCEHEvd9TcG9eV
-         1HC5aGmgL+Z7Mj2pZhHgALG2Hj7ElXoEG/Ur45Y9dknyesuxgQpyI9FTyRSX/QTAbIpS
-         Z5CA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=yxVkj8vMOj0M4F+ZY9bcIhgF0+ag1p/3PWCPUQB0x8s=;
-        b=TGyFzuVYrbeGTL6+wyGUTBKZ0Hl/C+qegzfD+1Wzz0i/tXwzB0i51Y7PyYXjcvnEN+
-         1a2UY38v6k/i5jm5kgD6tAYsMM8ENh5k2aK0DumtEwopIIyj47yi+LoZpw0Y9vC1t1lz
-         cA8Z1nD6lSgB/guocDsno3YuxygDQNfyxR7BSkt9x9N9JAEbFrvEauI4sUPPUh1KUHlS
-         LnbGGmRTuE2/4tavbzIELSeT4yDs/jgz/Cw//4Uvu3/daQ8SEr6gBz97Yi9OWMEryAcU
-         oRTFdAMm7icVxPlT2UJSQJ+4AhfimnMPSr09DFp9hHZ2dTZ95qwLF5QNkKsdASirKgGi
-         5fkA==
-X-Gm-Message-State: ACrzQf3+cs8Shcgk4UxUy2kBloUS0IgherdVVWQdJUfx8iXvK3vSeNgd
-        89hsnqHh/ltSzi5JAXZEyrp7rJCRhiMs0m2OA2hvyC/8p5o=
-X-Google-Smtp-Source: AMsMyM7Ct1Rq0whbC2lGQwkd3jNYclXeT6SVe/WH/WZSiqd3lchmATXlsVEuxdO3PwJh7YGFFf9EYdiOwkY/vjC3sBA=
-X-Received: by 2002:a2e:9545:0:b0:26c:400d:47db with SMTP id
- t5-20020a2e9545000000b0026c400d47dbmr2145821ljh.404.1663896852750; Thu, 22
- Sep 2022 18:34:12 -0700 (PDT)
+        with ESMTP id S229831AbiIWBlI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 21:41:08 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE3ACD12D6;
+        Thu, 22 Sep 2022 18:41:06 -0700 (PDT)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MYZWW516WzlVjT;
+        Fri, 23 Sep 2022 09:36:55 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Fri, 23 Sep 2022 09:41:04 +0800
+Received: from localhost.localdomain (10.69.192.56) by
+ kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Fri, 23 Sep 2022 09:41:04 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <jiri@mellanox.com>, <moshe@mellanox.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <idosch@nvidia.com>
+CC:     <edumazet@google.com>, <pabeni@redhat.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <huangguangbin2@huawei.com>, <lipeng321@huawei.com>,
+        <chenhao418@huawei.com>
+Subject: [PATCH net-next 0/2] net: hns3: add support setting parameters of congestion control algorithm by devlink param
+Date:   Fri, 23 Sep 2022 09:38:16 +0800
+Message-ID: <20220923013818.51003-1-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-References: <20220824221252.4130836-1-benedictwong@google.com>
- <20220824221252.4130836-3-benedictwong@google.com> <20220830062529.GM2950045@gauss3.secunet.de>
- <CANrj0bYOU0Ekwn6nVQr+c2znbX6wHFry7TUi-Hd4BW78DEw7qA@mail.gmail.com> <20220922062710.GE2950045@gauss3.secunet.de>
-In-Reply-To: <20220922062710.GE2950045@gauss3.secunet.de>
-From:   Benedict Wong <benedictwong@google.com>
-Date:   Thu, 22 Sep 2022 18:33:55 -0700
-Message-ID: <CANrj0bZ16_QOr8Tw6Cp6Dv0dM3MzkWKfwFfb7WqT-X3QbvJ8cA@mail.gmail.com>
-Subject: Re: [PATCH v2 ipsec 2/2] xfrm: Ensure policy checked for nested ESP tunnels
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     netdev@vger.kernel.org, nharold@google.com, lorenzo@google.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.69.192.56]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ahh, I've never had an IPv4 server without a NAT to test against, I'd presume
-this is identical there. The only comparison that I've been able to do  was IPv4
-UDP-encap vs IPv6 ESP.
+This series adds support setting parameters of congestion control algorithm
+by devlink param for HNS3 driver of PF.
 
-We could instead add the policy check to the ESP input path if that is
-the correct place.
+There are several parameters need to be set, but the devlink param string
+is limited to 32 characters, it is not enough, so expand the string length
+to 256.
 
+Hao Chen (2):
+  devlink: expand __DEVLINK_PARAM_MAX_STRING_VALUE to 256
+  net: hns3: PF add support setting parameters of congestion control
+    algorithm by devlink param
 
-On Wed, Sep 21, 2022 at 11:27 PM Steffen Klassert
-<steffen.klassert@secunet.com> wrote:
->
-> On Fri, Sep 16, 2022 at 10:44:42PM -0700, Benedict Wong wrote:
-> > Thanks for the response; apologies for taking a while to re-patch this
-> > and verify.
-> >
-> > I think this /almost/ does what we need to. I'm still seeing v6 ESP in v6
-> > ESP tunnels failing; I think it's due to the fact that the IPv6 ESP
-> > codepath does not trigger policy checks in the receive codepath until it
-> > hits the socket, or changes namespace.
-> > Perhaps if we verify policy unconditionally in xfrmi_rcv_cb? combined
-> > with your change above, this should ensure IPv6 ESP also checks policies,
-> > and inside that clear the secpath?
->
-> Hm, do you know why this is different to IPv4? IPv4 and IPv6 should
-> do the same regarding to policy checks.
->
+ .../hns3/hns3_common/hclge_comm_cmd.h         |   6 +
+ .../hisilicon/hns3/hns3pf/hclge_cmd.h         |  44 +
+ .../hisilicon/hns3/hns3pf/hclge_devlink.c     | 788 ++++++++++++++++++
+ .../hisilicon/hns3/hns3pf/hclge_devlink.h     |   6 +
+ .../hisilicon/hns3/hns3pf/hclge_main.c        | 122 +++
+ .../hisilicon/hns3/hns3pf/hclge_main.h        |  61 ++
+ include/net/devlink.h                         |   2 +-
+ 7 files changed, 1028 insertions(+), 1 deletion(-)
+
+-- 
+2.33.0
+
