@@ -2,108 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B6AF5E71B1
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 04:01:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00D525E71D7
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 04:23:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232087AbiIWCBI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 22:01:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35706 "EHLO
+        id S231143AbiIWCXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 22:23:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230389AbiIWCBH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 22:01:07 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D582CE62EB;
-        Thu, 22 Sep 2022 19:01:02 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id 207so10913377pgc.7;
-        Thu, 22 Sep 2022 19:01:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=bB9Tyz2MGei/rxt2bSHk0QAaaZwHT52srHDPcahTgFE=;
-        b=g6Ko2HQJlKOW9u/0K7tR1qSeenReSxha99ver8JK4vZIauL7NTk1136eIxYpTsW6jk
-         qyWWTyPHYqZWA3Yoqh7HulLJzZiyQkyXxNZMDl0zyA6iNxImQ5IkuzlVx0UGgJG8u+Ph
-         5UZlJ35XKZrkDaEfYSnrAYF95ClMxY/XwbeWsXw7rOgf+CV6OQZCwxoVfKOgv379pd4p
-         ecEITttOiMKlszLbMqEjStDEGPDLxJl0UCCDKrJIapR1pkGuSrApBIHnhlrnaynWt3sB
-         Q0DQktZL+PhRtPE2cIr9Gg/BGtuNK11xodsj2zob6y6XJXEV4+NOtj733FNh6TLJqkgB
-         Sxlw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=bB9Tyz2MGei/rxt2bSHk0QAaaZwHT52srHDPcahTgFE=;
-        b=Mcso2e2izflnjxH8PM3B/P2Pxd43S7zGxDXaoMN/X/LK7l9a4QsEn+sdztDusTlNO0
-         NkjX82bI9FNHI7LY3JZHqbKzVBEZTYWDrujC6d8w7HDdYJcU0mLv0o9tPiXFGnN5Fw7a
-         OHIvjH4FVJaegUkEt2JlVIUTXWgG+kWlQOYYQ6yK0qiR4gKr0bOdUXAZFzCrfRsh6JIF
-         kDdFDSUKhTZo0/0tV43gwVvUWHEGQAz5Uwi7cX+1OKBaq++hmPAIc5Yx36Q0khnwk9LO
-         aD17PsWCDTJFIQVf8KFmw3XegYQSi97s8phQGL9nxSNKq32tqh+BYO5edDRRvxLA16bX
-         C78g==
-X-Gm-Message-State: ACrzQf2nznHTowe/0TYHSEyuBIUbiaO0EIYLU41Lqor9ol8BlQrSCD3L
-        KSqRfruupBbZkAvOl3r8QlY=
-X-Google-Smtp-Source: AMsMyM6Ov/1W/Nv1auvdPleBF9koIwzyaeFUPtW8rn4zx6dMyGlJsRGYF1TFIL2wAr8G5JkoK1CghQ==
-X-Received: by 2002:a62:4e4c:0:b0:53e:22b6:6869 with SMTP id c73-20020a624e4c000000b0053e22b66869mr6462669pfb.29.1663898462325;
-        Thu, 22 Sep 2022 19:01:02 -0700 (PDT)
-Received: from hbh25y.. ([129.227.150.140])
-        by smtp.gmail.com with ESMTPSA id s3-20020a17090a5d0300b001fbb6d73da5sm445577pji.21.2022.09.22.19.00.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Sep 2022 19:01:01 -0700 (PDT)
-From:   Hangyu Hua <hbh25y@gmail.com>
-To:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, paulb@mellanox.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Hangyu Hua <hbh25y@gmail.com>
-Subject: [PATCH net v2] net: sched: act_ct: fix possible refcount leak in tcf_ct_init()
-Date:   Fri, 23 Sep 2022 10:00:46 +0800
-Message-Id: <20220923020046.8021-1-hbh25y@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229522AbiIWCXU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 22:23:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C49E11181D0;
+        Thu, 22 Sep 2022 19:23:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 74184B80E8B;
+        Fri, 23 Sep 2022 02:23:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEE9CC433C1;
+        Fri, 23 Sep 2022 02:23:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1663899795;
+        bh=US9WnX/zDydwXEUduLYigaXcXHA4trAG1ZKUNyExbKo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=b0rS3GOFYxJNVdo9tfEgS+oreCpFWivwJ5oY+HahAWtsI1GAHAIw+p2XhlH4MPJFq
+         rA/6nCP3DbIMaClDclqyuXWZVAK6QgkoWl8dQAuCW/ckq+qVc+60pelkZko/90HTwt
+         LkrwJBnqOFQHy5RFljZ1BXScQXu86NzGXC9hIQBMB3NpKxRx4S20dxY4xaGUY1dPUZ
+         yKitvkP7ZBhJgCnxpG1kMnpbpNetnyrv31I0NSzMbjq4nIcjeKyKrl/KNSLKxuVIbZ
+         fqqeufohYfKw6DhW036w9tR1/KnsqMWtZiFV2Yar353FULxcuFp2XCfOVJzkJbT8TL
+         1DXNU9rloxN3Q==
+Date:   Thu, 22 Sep 2022 19:23:13 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Guangbin Huang <huangguangbin2@huawei.com>
+Cc:     <jiri@mellanox.com>, <moshe@mellanox.com>, <davem@davemloft.net>,
+        <idosch@nvidia.com>, <edumazet@google.com>, <pabeni@redhat.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lipeng321@huawei.com>, <chenhao418@huawei.com>
+Subject: Re: [PATCH net-next 2/2] net: hns3: PF add support setting
+ parameters of congestion control algorithm by devlink param
+Message-ID: <20220922192313.628470a6@kernel.org>
+In-Reply-To: <20220923013818.51003-3-huangguangbin2@huawei.com>
+References: <20220923013818.51003-1-huangguangbin2@huawei.com>
+        <20220923013818.51003-3-huangguangbin2@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-nf_ct_put need to be called to put the refcount got by tcf_ct_fill_params
-to avoid possible refcount leak when tcf_ct_flow_table_get fails.
+On Fri, 23 Sep 2022 09:38:18 +0800 Guangbin Huang wrote:
+> Some new devices support dynamiclly configuring parameters of congestion
+> control algorithm, this patch implement it by devlink param.
+> 
+> Examples of read and set command are as follows:
+> 
+> $ devlink dev param set pci/0000:35:00.0 name algo_param value \
+>   "type@dcqcn_alp@30_f@35_tmp@11_tkp@11_ai@60_maxspeed@17_g@11_al@19_cnptime@20" \
+>   cmode runtime
+> 
+> $ devlink dev param show pci/0000:35:00.0 name algo_param
+> pci/0000:35:00.0:
+>   name algo_param type driver-specific
+>     values:
+>       cmode runtime value type@dcqcn_ai@60_f@35_tkp@11_tmp@11_alp@30_maxspeed@17_g@11_al@19_cnptime@20
 
-Fixes: c34b961a2492 ("net/sched: act_ct: Create nf flow table per zone")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
----
-
-v2: use a new label to put the refcount.
-
- net/sched/act_ct.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-index d55afb8d14be..5950974ae8f6 100644
---- a/net/sched/act_ct.c
-+++ b/net/sched/act_ct.c
-@@ -1394,7 +1394,7 @@ static int tcf_ct_init(struct net *net, struct nlattr *nla,
- 
- 	err = tcf_ct_flow_table_get(net, params);
- 	if (err)
--		goto cleanup;
-+		goto cleanup_params;
- 
- 	spin_lock_bh(&c->tcf_lock);
- 	goto_ch = tcf_action_set_ctrlact(*a, parm->action, goto_ch);
-@@ -1409,6 +1409,9 @@ static int tcf_ct_init(struct net *net, struct nlattr *nla,
- 
- 	return res;
- 
-+cleanup_params:
-+	if (params->tmpl)
-+		nf_ct_put(params->tmpl);
- cleanup:
- 	if (goto_ch)
- 		tcf_chain_put_by_act(goto_ch);
--- 
-2.34.1
-
+Please put your RDMA params to the RDMA subsystem.
+It's not what devlink is for. In general 95% of the time devlink params
+are not the answer upstream.
