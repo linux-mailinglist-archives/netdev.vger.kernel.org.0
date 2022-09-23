@@ -2,51 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E461F5E7B27
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 14:50:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77DAD5E7B2F
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 14:52:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230409AbiIWMub (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 08:50:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38412 "EHLO
+        id S230487AbiIWMwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 08:52:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230015AbiIWMua (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 08:50:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64AA51166D4;
-        Fri, 23 Sep 2022 05:50:21 -0700 (PDT)
+        with ESMTP id S229549AbiIWMwh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 08:52:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02D3C1166C9;
+        Fri, 23 Sep 2022 05:52:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 16F98B8317C;
-        Fri, 23 Sep 2022 12:50:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B7673C433D7;
-        Fri, 23 Sep 2022 12:50:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9356D61043;
+        Fri, 23 Sep 2022 12:52:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 734CFC433D6;
+        Fri, 23 Sep 2022 12:52:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663937414;
-        bh=Amqa2Q5rxGYINkTmRz3S+7GGUX2jay5F7luuA9oDrz4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=NpBx67rcaEbRExl7Rrtvvi/Rk2DXY55ms2Df41p4FU18Fm9xolS3Qh6MBtYWB+quw
-         fGU6Qz0skAj20GSoADbAil6v34L53qqqbP1xnGoL/SQvKa8dFDnQky9UQoIpFI3BZp
-         zY8uSZ8Brb15IJ54NpvUJ7igcevJjf1mpzeH/FB5GRChgYC0YNl3qMTUr5XS1aM4nT
-         1vGmorLK5Q5zLjeDC/ST7r/Ojd2QYz6qGqQ05Xk7a7YAXQ9s/7nGCY5LexsxQKyHM+
-         tgmy+RI72a3Omt31OOOFZImwQa9FtynZSOQ1BoldI3NmoQJCRh4cRyMeKi2RbfD4pO
-         9O/eRkx3a1kng==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9CC34E4D03D;
-        Fri, 23 Sep 2022 12:50:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1663937556;
+        bh=1lp6YHISpXrs3QH/vlQg9zEdKh7pjHvYbhmHoxr9/UY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=UDfwCDVpeZf/E9NPOZelu6n6eSkWDGo5lgfqB1eDG8pz1qoMvLkRAvSCglaI1GFHb
+         plPNJIVtXyOwF7ivNCLzUVhwb9m4KnrpuH7YE1EDHBioladBhcfEMwgIjIy1HupRg7
+         XihJ/Gyj/0vrd8CI694AuPZZDF8tfnDUddOma3f88CsWf1K1WZ9gmJHRSsDibmShDz
+         OjYfO20RF0rfBG3kL7ZJ14DIjHBkw/X0iDUi2c9g+gkrC5agfqvW1hb+c7mPWGZfFE
+         L2ZuUmUVQI4e31OGLwXYphUPhGmllEvqYOo/RcTrpgAHYOTqNuIcXUaH6UC64FHiKO
+         GmJM/F8l0yP5Q==
+Date:   Fri, 23 Sep 2022 05:52:34 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Thierry Reding <thierry.reding@gmail.com>
+Cc:     Jon Hunter <jonathanh@nvidia.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Bhadram Varka <vbhadram@nvidia.com>,
+        devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v4 9/9] stmmac: tegra: Add MGBE support
+Message-ID: <20220923055234.4714c86a@kernel.org>
+In-Reply-To: <Yy2pFfUWU7LwGG/m@orome>
+References: <20220707074818.1481776-1-thierry.reding@gmail.com>
+        <20220707074818.1481776-10-thierry.reding@gmail.com>
+        <YxjIj1kr0mrdoWcd@orome>
+        <64414eac-fa09-732e-6582-408cfb9d41dd@nvidia.com>
+        <20220922083454.1b7936b2@kernel.org>
+        <Yy2pFfUWU7LwGG/m@orome>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] MAINTAINERS: rectify file entry in TEAM DRIVER
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166393741463.6856.17054212763990591343.git-patchwork-notify@kernel.org>
-Date:   Fri, 23 Sep 2022 12:50:14 +0000
-References: <20220922114053.10883-1-lukas.bulwahn@gmail.com>
-In-Reply-To: <20220922114053.10883-1-lukas.bulwahn@gmail.com>
-To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Cc:     bpoirier@nvidia.com, davem@davemloft.net, netdev@vger.kernel.org,
-        jiri@resnulli.us, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -56,28 +67,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Thu, 22 Sep 2022 13:40:53 +0200 you wrote:
-> Commit bbb774d921e2 ("net: Add tests for bonding and team address list
-> management") adds the net team driver tests in the directory:
+On Fri, 23 Sep 2022 14:39:49 +0200 Thierry Reding wrote:
+> > Could you repost it independently of the series so that it can go thru
+> > the net auto-checkers? It should be able to make 6.1 pretty comfortably.  
 > 
->   tools/testing/selftests/drivers/net/team/
-> 
-> The file entry in MAINTAINERS for the TEAM DRIVER however refers to:
-> 
-> [...]
+> Done. Let me know if there's anything in the patch that needs more work.
+> For the auto-checkers, do they send out notifications if they find
+> anything or can I monitor them manually somewhere? Are all of those
+> reported in the patchwork checks?
 
-Here is the summary with links:
-  - MAINTAINERS: rectify file entry in TEAM DRIVER
-    https://git.kernel.org/netdev/net/c/f8497b3e9650
+They are reported to patchwork, but they sometimes produce false
+positives so we don't expect folks to look at the themselves. The
+maintainers will reply to the submission and quote the failed checks 
+as needed. 
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Also note that we have a "at most one version per day" policy,
+if, say, there is a build issue discovered please hold off posting
+the new version for 24h. Frequent posting makes reviewing harder 
+for folks who read the list top to bottom and increases ML traffic.
