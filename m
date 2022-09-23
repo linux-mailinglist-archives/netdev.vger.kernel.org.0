@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 06B745E7306
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 06:38:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5F285E7312
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 06:40:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229531AbiIWEiG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 00:38:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35034 "EHLO
+        id S229640AbiIWEkl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 00:40:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229776AbiIWEiF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 00:38:05 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2133.outbound.protection.outlook.com [40.107.223.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29FDF122A5F
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 21:38:03 -0700 (PDT)
+        with ESMTP id S229878AbiIWEk3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 00:40:29 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2113.outbound.protection.outlook.com [40.107.223.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 672214620E
+        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 21:40:28 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UMdWIh5ZvROQIHXR98R6OsO/1fujL2xy8FUnK+VVtFw2rAd5lESWIrD1C4WH9JWfYYH3vjKwskhptRSF5XhkWUG/XbH/3co4E6RVl3qO790y1uhFC0Y/PM7+SgAKCYE/j72QeCzSGTBd0KgGJtaPOnGwDkSobYXVkM3HRDhHQmpFjicc+BALHGViGd1+upXlqkIwpv5ziMb5mvAU51LyOBEzfl0UaxIddqDlttQdeRWl1NqrPYIU28TdFH0RITwuaofcwLXrVoR3YQ3CSJQaAEXKcpfg2tYy267qWIdAEF330D42clekX4aUNJsb/LhRV1faMcPnMx2oam+x3rM9Zg==
+ b=hwl1ym5krQskW+adp2Gq8hi/Y8O4cUeHYDDtwLBpc7JRHabfTCBe0i8ijc+ZRDckKO3Sq+tkt1BDgwYZOgL9iJWXTCdmDQv/5/p2LZsMHTGhwUKlIzqK4QxwjH0q5RmvlAJZ5LYR7g/4n2g60u4txQcQXlAN72S3JhRM2JdZbPgw/Pz1hyZMbfFIWpdYLTpM/IXr8DdWdpEl9pfbA/hVYNP1yQ/thaFGrO7RvnHdjQQFIsc8tFV62AkYOSL9I+v0CZ0m6gPyEJBo+RtSSZXzm9oKdVXub6td7XjeqiGaShYp3sc8iF0LylemL4TUTRI3daP/xSpIEKthWR2nfnBbBw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3tG97vdcCDDsHQn4CiRQ5W/O0YQIeWIFSLecYWG8ua8=;
- b=OFVT6TCICWaLnrq9gAwcomCdxQW3viTZpMfO12SurDAZz9AYFa9OEivhXM1/GWQJQocH8Z7ClPe5vU7F+at9+bKqyRccI+2MSOE0K6s4dVvpeWDD/POj3tnEIzc1mZUB5cnQ14dV+g7RrVPk7oFFitNQQ+TFzEpjNyf+lywcS/SfhC8K/jMIRI2r7bNwq26gGsmKW0JV6GKIXo3xlnCx6U3vf1eFiUiVCUDhJ1WpRRmRwG10dYqRE6JDTvQKfvDlXWaHUzFM3iFgu9cNUnbJHUoc6Zq702N5L/BL6xTe8xmzBzUczLyWGGDy9Sip3ECuT4XhqE/3RXMO8dyJFJFKlA==
+ bh=xrTqK31OnJyAjK5+o8yf3bXoXp4cdqToPQWXKAOuY+A=;
+ b=mPpVSlhPzLrAKLSFBngoUwmtjTUEAvwVuq9WmgIUq/SBAWJiER1kEjIittkJXRmIYxOXVPEtml/7H5K1uZhvCBgJmHaQYMwj7XsTG5R2bcls9YvLX7sg4J1s2iQxjzGiP1xK1aZIZcLKcTXA+LFZj5eyrrV8/g1bc4gEvABlp6DuP9wS0LhGkCgmPApOBkWJeGOZg5sviCunZAnPsCUiNpGZsFkwG2zQc1ySfNHtCSgge2lstGlbo9WLJ5D79EzOvRk6PyOrLG5faKqS/eO0j7e46TZ3DUvEoyJhlxjDhob9F8Bhwiob+kY3OPmZpn/kyibxnHXWEAYV6PzVzEFqew==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3tG97vdcCDDsHQn4CiRQ5W/O0YQIeWIFSLecYWG8ua8=;
- b=Rj3IMY5RkSxLL4/+xOgjW3y4qPq7H8QsqvtHVMrNp26MOO0IsrwexcHowiq4Ef9PaBk3T0SROA8rCRSZTfe5/Zp/oZWoYDz2rFT4IpMdsl8jKPBeNINGPX/+fqAHeQVzyuxwnw7bsPNkYqOC5Qw5Tn/Xc5wbpIDL+8/eBEuJV3A=
+ bh=xrTqK31OnJyAjK5+o8yf3bXoXp4cdqToPQWXKAOuY+A=;
+ b=S6ygaK53SswWKIVqrHwKMquzYVVoJBDGzrT1gnfvCM8o/ODziHL8P4obawseoN940Lh87Y0fA9lGgTkUS9kkx6DTYgoUhkcMbI+BkJ8iyFyuYBM9FUHE8jWmT0w82svW9lVENaayKTstugkBOes+si/gbd4cU3NP4f/LXzG6xhM=
 Received: from DM6PR13MB3705.namprd13.prod.outlook.com (2603:10b6:5:24c::16)
  by CO6PR13MB5370.namprd13.prod.outlook.com (2603:10b6:303:14d::6) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.14; Fri, 23 Sep
- 2022 04:37:58 +0000
+ 2022 04:40:26 +0000
 Received: from DM6PR13MB3705.namprd13.prod.outlook.com
  ([fe80::c008:3ade:54e7:d3be]) by DM6PR13MB3705.namprd13.prod.outlook.com
  ([fe80::c008:3ade:54e7:d3be%6]) with mapi id 15.20.5676.009; Fri, 23 Sep 2022
- 04:37:58 +0000
+ 04:40:26 +0000
 From:   Yinjun Zhang <yinjun.zhang@corigine.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         Simon Horman <simon.horman@corigine.com>
@@ -46,15 +46,17 @@ CC:     David Miller <davem@davemloft.net>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         oss-drivers <oss-drivers@corigine.com>,
         Fei Qin <fei.qin@corigine.com>
-Subject: RE: [PATCH net-next 2/3] nfp: add support for link auto negotiation
-Thread-Topic: [PATCH net-next 2/3] nfp: add support for link auto negotiation
-Thread-Index: AQHYzbN5AcsGOm08oUOGbZxFfyT2B63sNGUAgAA5DfA=
-Date:   Fri, 23 Sep 2022 04:37:58 +0000
-Message-ID: <DM6PR13MB3705B174455A7E5225CAF996FC519@DM6PR13MB3705.namprd13.prod.outlook.com>
+Subject: RE: [PATCH net-next 3/3] nfp: add support restart of link
+ auto-negotiation
+Thread-Topic: [PATCH net-next 3/3] nfp: add support restart of link
+ auto-negotiation
+Thread-Index: AQHYzbN6NGIRbUhLl0yJnbtzNwwnjq3sMseAgAA+W2A=
+Date:   Fri, 23 Sep 2022 04:40:26 +0000
+Message-ID: <DM6PR13MB37050FD20AF4529263102B52FC519@DM6PR13MB3705.namprd13.prod.outlook.com>
 References: <20220921121235.169761-1-simon.horman@corigine.com>
-        <20220921121235.169761-3-simon.horman@corigine.com>
- <20220922180040.50dd1af0@kernel.org>
-In-Reply-To: <20220922180040.50dd1af0@kernel.org>
+        <20220921121235.169761-4-simon.horman@corigine.com>
+ <20220922175453.0b7057ac@kernel.org>
+In-Reply-To: <20220922175453.0b7057ac@kernel.org>
 Accept-Language: en-US, zh-CN
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -63,53 +65,53 @@ authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 x-ms-publictraffictype: Email
 x-ms-traffictypediagnostic: DM6PR13MB3705:EE_|CO6PR13MB5370:EE_
-x-ms-office365-filtering-correlation-id: 47cd7865-e5f3-47f1-249d-08da9d1d642a
+x-ms-office365-filtering-correlation-id: 6eb35200-71cf-42cf-740b-08da9d1dbc52
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 7C5iJfPTtgCicdIPgfJpOJOeJDhlbWGSb5dbgBH5HS4NIRPGYUynLQtN7AHxc4BrCzRQZFT3EuqXZS9ZUwSR03uM2BZvHAG6s9RMlfUcdF/+HFzmk4RS61m0hdQxoCJ19z1TosEQp59Gzi7cM/Ux2POD7u0sWjdqxS2uXo2wYM84tduu/GTN2DTNOy2l4gZ2UP8pS0/meaBE+x/JbP+RI7CDeppBRDysELO2ZsA9pTIN2E9Vv4VqHaCg4qSgidqNpBMvJwreWLtDl2t0JUe0e8+obwC3UYmAIIDZw4UcFlR1Gn1oHb3jh2VZxDMm5z8k7qB8XaalOZp9p9J1oX+ISLpqjkGPnbSVfw9q+gfEpoV3fjIkFBBkS2qSoelbwWMAjQYda89c09BD7gTKBJviGN23MDtg0WGYryDgQGRNqxSlqPz+RHyeezHCvs/MLC8auQahmdFGwtA4Dt8hFWEYhvlAeV4BbA/yK8Kvph0elNrZFCkH1nu9Pe5/zynzIPBvsooHKxfJzu6V+JIPgw7KtHPYuxhBHC/HyrtwjQAjK1mfdCABhIOAFzxJ5nnqocEIhKW6altHG8jzsjvJEzPg/HGHifHHX5pz47E2Tpz+19B/uC71fHd4Si/x3saXWl7yo0XLlKcdCObKJU8yDt+WwEOP+BsehjRj3zWTw7ssvjexrL+W8XZsa1Ymf7Vp6+CTJ1Crfk/EHNvuFO9xGYCdrwGDyP7qF21kWBA22+5RXXHB737OphKl8/bZyGWB7612lKf62Z6PrV3ZiFl+UvI8Vr3xpfyCLfJKEGy+Q6XaIoagkpUFKcEONujmBXdy+dmp
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR13MB3705.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(396003)(39830400003)(376002)(136003)(366004)(451199015)(8936002)(122000001)(38070700005)(83380400001)(38100700002)(6506007)(107886003)(9686003)(7696005)(2906002)(26005)(5660300002)(71200400001)(186003)(478600001)(66946007)(52536014)(54906003)(66446008)(6636002)(316002)(64756008)(86362001)(44832011)(41300700001)(66476007)(76116006)(8676002)(4326008)(55016003)(110136005)(33656002)(66556008);DIR:OUT;SFP:1102;
+x-microsoft-antispam-message-info: E9fE7jSs7WF6pAUBKfMFyEzNR77617iwd/zWxMIIR8h78L0WUhREG9S2lYJsjUHqtWZh7cKnWC7JiT4OgTHELkLCd3DCKsVVsBxZWOQLWoM5MbGVRuFIHgeJpD6qM4buqaay0c2WBHAivD70VXAILWgdXXIVEMyvZHOG0kn5v8fT+JDG5XSAUjjPRu3BtbBQ43eU+78RY2hc5351PFbfYGABir0Sy7H+rcPfREUlffLOoBF5SAe5AVFZSmO+2w79g+gl/r11ww6/ty2YqGD7ubYaJBK0GoK4K2ForPET4tP74ce0cBBezEtWXz+tejoNNzFS7ur7O/clRhv2v/p4A4pVnvK/6q5TazsG1uG4W9uVrrbSNtth00nZBvLWadwHVU3u3aRAII9qZqFwxmiOaUOLMHOPc2joA2DmtHihRtuocKzDRyxaRKS7nHJvAk1OoQ4+C4J86SzLjuK8pr+hWTN20mOC2JuT/S+/Jo6tS+1G33uv1ylPYCzKuyLci3lsUtmaR2rKhw0EpybibQB9kIr3G9bPkBqTwbqBTL+yl05DE1KWQ8JZ5L+4z+XaiLC5LjspiH2gjSnNVkM3dnTWB8tUVx69mMrQZcwGahmXC/30wtSpiJLEvN3zqb0gVGgZmQhBKeqmJV5eICjfysnglf63PoBa8ZYZDBrXvXELOMvSiPQqoD9liZzQp3Cz3O3FTXvKVm+Pt3ior/eMuBDtBItA5PvVpCHtkK29wDkaxbvy8sg+ffS3aQPFM5qnIMzT8eMLXpchv4+RQO2WQCgpZD4Bf+Xe2FBNNuPi0Gg48uipw20iHGAmLT7Td/ksdRXC
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR13MB3705.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(396003)(39830400003)(376002)(136003)(366004)(451199015)(8936002)(122000001)(38070700005)(38100700002)(6506007)(107886003)(9686003)(7696005)(2906002)(26005)(5660300002)(71200400001)(186003)(478600001)(66946007)(52536014)(54906003)(66446008)(6636002)(316002)(64756008)(86362001)(44832011)(41300700001)(66476007)(4744005)(76116006)(8676002)(4326008)(55016003)(110136005)(33656002)(66556008);DIR:OUT;SFP:1102;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?5dVBdcZZX81coneFiF6avO4bjyR4u9dNUbFVt6Bi32R3egfnavvVdmpgdBu5?=
- =?us-ascii?Q?vEaG8ymQU9+eTT15G0vjUS2+6qzWe0V7NBELclTk/ubcCSNweuar/73bOnl8?=
- =?us-ascii?Q?uDo/m6ovyUURInC67Gqr8zjUjR2ArjJnIkiThtFNFi28jJadxq2ygGw3phbU?=
- =?us-ascii?Q?x8Jh2idsbQtdJAmi67icULfqp0NnrKtkevAMPXO5ugzHHSSit3qiAtCKDGEj?=
- =?us-ascii?Q?Cr+olEjjPeDuhr9e8zSjjKM/SM6dcDSjgeglxwgIaPrvKgMzOmgoBPVwUa7x?=
- =?us-ascii?Q?AcMVhjud6elmCQAvi21u58VspFitK259DSxv/wxH5EclJ13qoOmDHkco7Z/4?=
- =?us-ascii?Q?DArvuUf1TuEsuzRzr8o1Ntm/0WiM6GFxzeohP3CwD91p02YM1WnAExmCZCuY?=
- =?us-ascii?Q?faWOkuQ3BgUgxTu8lvgDKOpyrwwKbRfFw6R4oL9VldZsX83InxdzGkxtuRhh?=
- =?us-ascii?Q?9Y5cZtj1mzTc4FXEv5wFVMjG4rFPWj0bNdEAhkTs9D5/GrnM9xwPleRuGvgK?=
- =?us-ascii?Q?4mMubVtBuXA9TAXz2QYUrnYohYkqexlqAdNnv6yEIz/zHt9yCxxhBkXTKJ6J?=
- =?us-ascii?Q?3mHei1FaF23JHOaOtPM6Gjc0H7JVpU3Kyeyy6MyV5USGUHqnhNu2zbRFh7YN?=
- =?us-ascii?Q?eJMOgxPE+zSZ+WheDvfLQF390QaSitY5MAlHPnD1pAS0OQ40SqEvGLvqpzTW?=
- =?us-ascii?Q?3P+XtRchzamEHwofy+fsG06ua7OjYFrq8NDn7SUEhl1s8AxN4wLWPvzGxy3+?=
- =?us-ascii?Q?4UNAkb/VK5pBfdBsfvD9PIOzQxYqmy98Fa8i22X/8ov0wsD8aLbEDwFVUiHp?=
- =?us-ascii?Q?CkiT+5r5IqLwJ5Iufge6frlc7P4Bi4IYULmmwYShVc8+qoTEcYQ2MUXK0Txn?=
- =?us-ascii?Q?qtZkM6xOLdI4kXcT9VM83Fm1+VMat99J8rHpeF1fk25GsqzDWMS6gtcLMJt4?=
- =?us-ascii?Q?9U/zM4vwkM9Z5WWX9UOXYPMg0UXkzoa5RVe+VBylgjaf0hnenNJlb2W9vOGc?=
- =?us-ascii?Q?9HKzgyEY193+bklemoGuJVQXHrDCvUbXrtTHjlhBtJAy+Bk9COOn3uCDc9JP?=
- =?us-ascii?Q?hIQmzupEdfETH/gIlMC9hZWOPN/WmbC1VUL6Bl+09x8RZgk04BKxBL5iWVUd?=
- =?us-ascii?Q?K1AO5OkAMCPq8XW6ezpXV6TtBjCBuEK7QQD9QnLbleFw683EjUyqd/jKTjAQ?=
- =?us-ascii?Q?MaC/NCK0APTmGQndOwhPAofAaS8lJqCLJf4FxBh16D2T872+wKkFumtheY/i?=
- =?us-ascii?Q?kSBSRrhiV9uCR+ViF6G6Blgq1CYGBVv8Gs4n22WXhQ+TFDzWX9g9ciVv0cxQ?=
- =?us-ascii?Q?3eG6xLqD/ahgqz42lEq9hY4FURFor6ukwekplyQPIIguUOiT9gf4VAdhlepP?=
- =?us-ascii?Q?jb+MPRYp3tQBbvnSnouVAZyIBnCMW28oXbDJ7s8Y9i0FhuBw+aIYCfchVmqW?=
- =?us-ascii?Q?zduExMieZ8e/k1gzTxBjLmkc5QN1RfshP7Dok5zxMOxwpU18dm8PtzrX8osD?=
- =?us-ascii?Q?G+OQnVIK+KOmlqqLAxjBDCRBk4cz3I4XSoOIbztLaASZdELKIwAZSJr6z78P?=
- =?us-ascii?Q?w9png61UKCf644UOzyGvOFS5+ptHEzsJkY21nojd?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ws4PGKTazg+vW325YzTK/pC410cCkv8tlnWCV4ir49SinY4yJq35XI51WWTv?=
+ =?us-ascii?Q?gfef8MUECbjJ37Lk9D1dlL9BvcV2E/PJWKidPO7L5ogZ35ICOqlxGjoJNn75?=
+ =?us-ascii?Q?KVWlpWU9eC8xccvIlXc96GPTEJW8YBcjsN2CpGnfGKjNOVDtWXwbAAdW5iHJ?=
+ =?us-ascii?Q?qMZdPz7irpffjxfiT5II/XnZ7aJXFYSBV8FMHSWtn4QY8PfJFsACq4Kidy3c?=
+ =?us-ascii?Q?8ha+CFeST/btZ7jTD7qdNcyAl7WcAnVCz1FQOHpGi7zhJBfAehjyU9DPAIZ7?=
+ =?us-ascii?Q?TW3l8dUipTz2DwdotvEVh63CKoHCLjW4SAEA9dexGXQmBCAhG3pivXRD6uYD?=
+ =?us-ascii?Q?4beW7EcMkn3Nw5StBFmwnZP/JmMvH5alTfINvgSMr38GcD8NuH+gc2HUQH8j?=
+ =?us-ascii?Q?bqpcbTb6FMI+HBrssFYMhlfdib7xDwKZB3zFCp/LamaslaQm/OyrPQABWCF4?=
+ =?us-ascii?Q?odTuEJNUBCzfBdTifjfSu0rUEGYLSl341RIyFmDKqgVtIDJvMWnEs9rz/8T7?=
+ =?us-ascii?Q?BRKaFHPBslVtejSPXvRhRQ2Ht/qA5TfiUjA8t/SzzEx3foFnxIgSrVoG2sVt?=
+ =?us-ascii?Q?nFP2JjFlXyxIwCk2kxQwt0lnhyrzSe2O5PuPsW2FqfxxcwiFLskhE7oZp9Jp?=
+ =?us-ascii?Q?p00I8a1Cy6stGugjcK9qJMFXqMvVGfCz8F7n4yDbN2NjHiqwh+4CzZ90lwDz?=
+ =?us-ascii?Q?3+b371jZMMSLUJqZnj/OE0u/10bu20INDm9+M9V4P1FRWDSkCl3MYrDNGdOG?=
+ =?us-ascii?Q?7OaKYS897eWKE2PAl2lfNO/78GOMXse/9lbIhZNkfH1kvQYskeuzYQ8p+OU1?=
+ =?us-ascii?Q?ZMPQTlvDhmp2l4ICokTaEoUC7ltr67prJE/ES/dB2WIMZrngFbawGCC8VWkU?=
+ =?us-ascii?Q?XcRTJnb9wWbBFysUZmLZQSGanofsBUJe10LO8pQ9okJgJacgGE6WUUfb5gMQ?=
+ =?us-ascii?Q?ivPKqJJpiGP70m8PNVWtd2Q4pVoY/6ib0v5suIBFCr4BEEhfsbZoeSw9CEBj?=
+ =?us-ascii?Q?+qhnSAXHZugu43xlFslBOOgtX1oRtgFZwwAar+T9my+dGG6czTtmr6rccTVm?=
+ =?us-ascii?Q?R5joGsdoolaqWj9NJhEjjeSD+haU5L+T7HFViREyrJbRDScsUl56nsQ2Ce0l?=
+ =?us-ascii?Q?L56t41faidebkdpnBwEHg7aEpVRFfYvewVUVJgXs+z4J3ClARlNn8+4lh3b8?=
+ =?us-ascii?Q?tqJ/W2zMc/hcWxobVI2FwxoQsnfd0aK+aqjhe1EzEwH87E+/p7o1gDZuvvta?=
+ =?us-ascii?Q?pBfBikzUj4Domv9DnQtjf5jjeNqc8swWeDxyHetYlKlqyCYeSODmlRdhUp/M?=
+ =?us-ascii?Q?yFjg9ibHFSbjIdr3qRYBqCzmwMalJxMe/miPLeZQRqdlqPR2VnMPYAdTDGQG?=
+ =?us-ascii?Q?F7SRTWgdeKACCYkRRvxyrIGF98sULBBz0Lb28rqGngSpR1xeQFhenqn+/0v2?=
+ =?us-ascii?Q?ytvmMnxe3qqFZy30Loz/uGqWMn/4rYA+C9IDq47YszWCrPj8Sdbr65cIKY2X?=
+ =?us-ascii?Q?q3XFjKAb/hRHWxlZOi1KqNNEiMwRjOpQGx334yQ10CoaA3ANjrYHEEIbUlY0?=
+ =?us-ascii?Q?mN82aIlcfP8Wlx960SS7ZAFSAf04xA0GaG13M/FB?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: corigine.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: DM6PR13MB3705.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 47cd7865-e5f3-47f1-249d-08da9d1d642a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Sep 2022 04:37:58.5817
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6eb35200-71cf-42cf-740b-08da9d1dbc52
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Sep 2022 04:40:26.5166
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: CFhuICxZJKLX6h/K5ESHAsR75xmAxqIK2ahNaKdKticcJXDowket0O+1yUY1MEqufCOjPb3NXAbvVeUghRW8MoGkweCwSX2LDevpePB+rIQ=
+X-MS-Exchange-CrossTenant-userprincipalname: 4Il4/Allm4a44ObfomraRQaQcq7hLJv4ih8qwX/gk+QzCRLNZx63aR2m9HHCyJ18vzLIebZiB/dmQohABDY1fEzDWmRsvhrqEG08vHZRt7o=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR13MB5370
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
@@ -120,91 +122,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 22 Sep 2022 18:00:40 -0700 Jakub Kicinski wrote:
-> On Wed, 21 Sep 2022 14:12:34 +0200 Simon Horman wrote:
-> > From: Yinjun Zhang <yinjun.zhang@corigine.com>
-> >
-> > Report the auto negotiation capability if it's supported
-> > in management firmware, and advertise it if it's enabled.
-> >
-> > Changing FEC to mode other than auto or changing port
-> > speed is not allowed when autoneg is enabled. And FEC mode
-> > is enforced into auto mode when enabling link autoneg.
-> >
-> > The ethtool <intf> command displays the auto-neg capability:
->=20
-> > +				goto err_bad_set;
-> > +		}
->=20
-> Please refactor this to avoid the extra indentation
-
-Will do.
-
->=20
-> > +	if (eth_port->supp_aneg && eth_port->aneg =3D=3D NFP_ANEG_AUTO &&
-> fec !=3D NFP_FEC_AUTO_BIT) {
-> > +		netdev_err(netdev, "Only auto mode is allowed when link
-> autoneg is enabled.\n");
-> > +		return -EINVAL;
-> > +	}
->=20
-> Autoneg and AUTO fec are two completely different things.
-> There was a long thread on AUTO recently.. :(
-
-Yes, you're right, will remove this limitation.
-
->=20
-> > +		/* Not a fatal error, no need to return error to stop driver
-> from loading */
-> >  		nfp_warn(pf->cpp, "HWinfo(sp_indiff=3D%d) set failed: %d\n",
-> sp_indiff, err);
-> > +		err =3D 0;
->=20
-> This should be a separate commit, it seems
-
-Will separate it.
-
->=20
-> >
-> >  	nfp_nsp_close(nsp);
-> >  	return err;
-> > @@ -331,7 +334,23 @@ static int nfp_net_pf_cfg_nsp(struct nfp_pf *pf,
-> bool sp_indiff)
-> >
-> >  static int nfp_net_pf_init_nsp(struct nfp_pf *pf)
-> >  {
-> > -	return nfp_net_pf_cfg_nsp(pf, pf->sp_indiff);
-> > +	int err;
+On Thu, 22 Sep 2022 17:54:53 -0700 Jakub Kicinski wrote:
+> On Wed, 21 Sep 2022 14:12:35 +0200 Simon Horman wrote:
 > > +
-> > +	err =3D nfp_net_pf_cfg_nsp(pf, pf->sp_indiff);
-> > +	if (!err) {
-> > +		struct nfp_port *port;
-> > +
-> > +		/* The eth ports need be refreshed after nsp is configured,
-> > +		 * since the eth table state may change, e.g. aneg_supp field.
+> > +	netdev_info(netdev, "Link reset succeeded\n");
+> > +	return 0;
 >=20
-> No idea why, tho
->=20
-> > +		 * Only `CHANGED` bit is set here in case nsp needs some
-> time
-> > +		 * to process the configuration.
->=20
-> I can't parse what this is saying but doesn't look good
+> This will not do anything if the port is forced up by multi host
+> or NC-SI.
 
-I think this comment is clear enough. In previous ` nfp_net_pf_cfg_nsp`, hw=
-info "sp_indiff" is=20
-configured into Management firmware(NSP), and it decides if autoneg is supp=
-orted or not and
-updates eth table accordingly. And only `CHANGED` flag is set here so that =
-with some delay driver
-can get the updated eth table instead of stale info.
-
->=20
-> > +		 */
-> > +		list_for_each_entry(port, &pf->ports, port_list)
-> > +			if (__nfp_port_get_eth_port(port))
-> > +				set_bit(NFP_PORT_CHANGED, &port->flags);
-> > +	}
-> > +
-> > +	return err;
-> >  }
+OK, we're going to do the reset thing as long as it's physically
+configured up.
