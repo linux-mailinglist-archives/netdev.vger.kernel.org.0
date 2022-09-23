@@ -2,68 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B2D65E7BC1
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 15:25:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5C1A5E7BD9
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 15:29:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229624AbiIWNZs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 09:25:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59542 "EHLO
+        id S231406AbiIWN3d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 09:29:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231621AbiIWNZq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 09:25:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2767312C683;
-        Fri, 23 Sep 2022 06:25:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S231346AbiIWN3b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 09:29:31 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D249BCA;
+        Fri, 23 Sep 2022 06:29:29 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF467B81E56;
-        Fri, 23 Sep 2022 13:25:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C8BFC433D6;
-        Fri, 23 Sep 2022 13:25:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663939543;
-        bh=dvzp8eyI4MQl3wONgiHtP4fVdsf0WDy4arC+9dcgonw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fyaeRFAEYordYWbyGSMdleexKo5WW/HrH9aUcowCGGEWPFqFoM7adziIPM8YPe3oq
-         +ySW1PLXu4jKAM5UHlfQXoYGpuYdFXoPrCFMxOjMvR94mOJ3EjcXVVA5JZHPP7WLS3
-         sr1TLyqNscp2MmImHNWuaRYXSbDQNRPzB7tYHj8eR/SB73egR6MPMaS4E25JQukFhr
-         SCqVhLu6g0iWs6nMzxfinuteAeaYApNaY95/Y4u7kSn8rn2Vw7AFr8bchyBwl4hIoN
-         Nz56I4RyD+l+rScDkmVwSmPaQo2RnzL4d5G1uD75daiofxHyirRlbiZdQO8U/iRtlK
-         0Hb1RE5oyiSQA==
-Date:   Fri, 23 Sep 2022 06:25:42 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] selftests/bonding: re-add lladdr target test
-Message-ID: <20220923062542.6e41fed8@kernel.org>
-In-Reply-To: <Yy16saDPo5tnkXdp@Laptop-X1>
-References: <20220923082306.2468081-1-matthieu.baerts@tessares.net>
-        <Yy16saDPo5tnkXdp@Laptop-X1>
+        by smtp-out1.suse.de (Postfix) with ESMTPS id A7AB7219E6;
+        Fri, 23 Sep 2022 13:29:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1663939767; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=KqOhL/1z0xmD9tmZdAbP8D5T9tbMxBqnVFjN6bOd52Y=;
+        b=t1wXI75qPHFYyyrgOy5ZtEpsPNBiaYev8rXnj8rKmvvaEowfT3MXeP/3yiFsINP9FFvWez
+        ARDju94gr8OvkDFRDqJbJipNYF4ATFKW1b6S42k2DY/Dedi2Rr2WfsaW1D4DJKvIPiJPB6
+        w7l/0M/k990+KWal4v93jTr+0c/xdhs=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 8D5C213AA5;
+        Fri, 23 Sep 2022 13:29:27 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id kyeBH7e0LWPHDgAAMHmgww
+        (envelope-from <mhocko@suse.com>); Fri, 23 Sep 2022 13:29:27 +0000
+Date:   Fri, 23 Sep 2022 15:29:26 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org, vbabka@suse.cz,
+        akpm@linux-foundation.org, urezki@gmail.com,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        Martin Zaharinov <micron10@gmail.com>
+Subject: Re: [PATCH mm] mm: fix BUG with kvzalloc+GFP_ATOMIC
+Message-ID: <Yy20toVrIktiMSvH@dhcp22.suse.cz>
+References: <20220923103858.26729-1-fw@strlen.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220923103858.26729-1-fw@strlen.de>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 23 Sep 2022 17:21:53 +0800 Hangbin Liu wrote:
-> > The first one was applied in 'net-next' while the two other ones were
-> > recently applied in the 'net' tree.  
+On Fri 23-09-22 12:38:58, Florian Westphal wrote:
+> Martin Zaharinov reports BUG() in mm land for 5.19.10 kernel:
+>  kernel BUG at mm/vmalloc.c:2437!
+>  invalid opcode: 0000 [#1] SMP
+>  CPU: 28 PID: 0 Comm: swapper/28 Tainted: G        W  O      5.19.9 #1
+>  [..]
+>  RIP: 0010:__get_vm_area_node+0x120/0x130
+>   __vmalloc_node_range+0x96/0x1e0
+>   kvmalloc_node+0x92/0xb0
+>   bucket_table_alloc.isra.0+0x47/0x140
+>   rhashtable_try_insert+0x3a4/0x440
+>   rhashtable_insert_slow+0x1b/0x30
+>  [..]
 > 
-> Thanks for the fix. Before re-post to net-next, I should wait for some more
-> time so lladdr test could be applied to net tree.
+> bucket_table_alloc uses kvzallocGPF_ATOMIC).  If kmalloc fails, this now
+> falls through to vmalloc and hits code paths that assume GFP_KERNEL.
+> 
+> Revert the problematic change and stay with slab allocator.
 
-That'd be best, but hopefully if the tests are sorted the chances 
-of conflicts go down. Chances are the tests will end up landing in
-different spots in the list rather than all at the end.
+Why don't you simply fix the caller?
+-- 
+Michal Hocko
+SUSE Labs
