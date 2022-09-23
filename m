@@ -2,133 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 55EAC5E76D1
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 11:23:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A3545E76D3
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 11:24:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231638AbiIWJXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 05:23:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59608 "EHLO
+        id S231661AbiIWJYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 05:24:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231655AbiIWJXR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 05:23:17 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A87F8E10AD
-        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 02:23:15 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id 10so923383lfy.5
-        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 02:23:15 -0700 (PDT)
+        with ESMTP id S231381AbiIWJYJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 05:24:09 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63E6CE1082
+        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 02:24:07 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id y3so26672460ejc.1
+        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 02:24:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=tessares.net; s=google;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date;
-        bh=6KRGHi5QO3WPnDzOkycHTFaQ6rn1LlFLCXaq4LIPA2o=;
-        b=nr19Q9adKvfDHJX1/MuKtdcCmb+W2G4kH9i+60wOK18TE2mFjrQb+Zhxkd4iaZDLYw
-         UljVVMKI9OZEOTsuDxxGAT5c/UFL8XR67rS6OWaaw9r4B8Qgmujg/irw+c6WkX8QZbyS
-         uc4dhF5ciBcdB6NnytStFtuQlGW/MCd6onKxK6cu8Ue6qxkAAec6dFtEW27xIKGPCGf+
-         RJUnMQeiGSrQ6DmPFstmf9gOAdikqtf/ykVZrUAvavkQBmcQrXPZk3kubgEHf9sxAbjQ
-         KYQt8AkzYu1LGEoaUIe2emDFYd9Atk9KwGWgew5BnOESRBgIDVIrqORDZrcToYmUVGlb
-         5d/g==
+        bh=sdhEqqcLQ9mPBvHp0xzH8RN91FNsaGFp1sqEEbf0Klg=;
+        b=8KEj5RkoExqB7QUn1pVTDUOrzMbG1hNThr7BgxpbklpvEXMeqF3jO5MPncDCFjXE5i
+         q4y7h6MF1HLf5sVkFR5zLUyHReyhib6fkML8mtDrmZEqruuHSAjbTlGzxQbu+l+a31bC
+         xTFZgJpUljY8tjpCP/8i/V5n2QIEXXTgwfDtpNXs40EvtmOZUJob7KVi9NHEmDrnHdRE
+         nakPv+SbbaCEzZ4iKMyBoH2yHkMcTo7wzWMKYOHAMHcYt/kHjOByV8w8N6OZ+rpRVpef
+         u3qtaqItwqMGX/i5kuAIpb6C7TOKt4ty69TMnU1Pr7JccOjfKTjm7JebH7zBzS9Ui9zs
+         /Udw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date;
-        bh=6KRGHi5QO3WPnDzOkycHTFaQ6rn1LlFLCXaq4LIPA2o=;
-        b=Yiw0rn4SLjb8cOukn+YmtX++T8VbN9uSpY89UxvmXO8Jm/bRrJdXXlyyu8uonz2jx/
-         zB8n6kvkMgbxHsnOjMOCGun2p8gDQA1fy3EIjZqNdbUPFkgZQXp4tCbaIxyE59gA/RAJ
-         YBGKCjaAB9Xh9yrgUxNYWXHH076P1qLoAFDa/3icJiFpPKOnrDqCo6Q7ytM3KTVGuajh
-         v0/CEg7O8vEuWL+LNNXbIw5EvwTgFsiUvsVZxZsaZKCZpCwVDVeGxHQ9LJO00rkDOK56
-         wHo1gklcK5AjcdfzoCU0yeGptV3jJukbFqy3U1r2zJfK+3OfiQaMiAUDgsc20p4nW2RJ
-         vs4A==
-X-Gm-Message-State: ACrzQf1fPPKZHoOYB7Wu7yJHmRdm8T5fULTYFpWDHJbBJFnZLqXDDMLz
-        1NlchPtX8s3OwSjuo37dRqrk/w==
-X-Google-Smtp-Source: AMsMyM5CQWggSmYXQq0F3Di+/pXRM3IYsH2YikO+/Bi2/zu7pZyr6nxphxgrV9sWndQW0zsNvXqCvQ==
-X-Received: by 2002:a05:6512:1320:b0:488:8fcc:e196 with SMTP id x32-20020a056512132000b004888fcce196mr2715533lfu.602.1663924994025;
-        Fri, 23 Sep 2022 02:23:14 -0700 (PDT)
-Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id 11-20020ac25f4b000000b00499b1873d6dsm1349862lfz.269.2022.09.23.02.23.12
+        bh=sdhEqqcLQ9mPBvHp0xzH8RN91FNsaGFp1sqEEbf0Klg=;
+        b=ON6KnOxx5HXV98P0wByIJFky3vaI91PqT03cJVU590PuGdDl8h9JsjPHWQdvuFTlyJ
+         CA2Dg0Tnruxa7luj88X12LlFbo4kBNxibp0/Vn1WNXRloBfIbTx0AKJC0KWIy9Iwj2Jm
+         2fjaqNZcoLbD5c6nKHRxVgNRdZm6PJcr1a4i+6U7u8eUoPjwjDphWyrMkV4acCtkcUh+
+         bO5YPcyy3iAvlyw2b9xazic6AcMbNp3cBoNiYbC86N06wp4DS9B0jjrXCQq6cuGgAOLG
+         iGS95Dsl6zsuTnBzMnCJDiJbCQOTZxsWexV87Uj/Fz22qLSALJ3waR5SXOJq1AM4Yl/w
+         L7NQ==
+X-Gm-Message-State: ACrzQf2yafsZEDEAYhuV+NJ4FQkPyyL/j2V+APY2+JjmbRcY44ygDUNe
+        gwYqFXOvs0Qj0KrJkO64VueCHA==
+X-Google-Smtp-Source: AMsMyM6YZ/wN8xFwdDm3pQTdYhSKMRqDUQ4TSVSOKmqOMRFu564QuPXlK8k6ORG6biif7eZE2kTHFA==
+X-Received: by 2002:a17:906:7945:b0:73b:e605:f31 with SMTP id l5-20020a170906794500b0073be6050f31mr6114135ejo.129.1663925045890;
+        Fri, 23 Sep 2022 02:24:05 -0700 (PDT)
+Received: from ?IPV6:2a02:578:8593:1200:5e2b:69ae:ba71:ae54? ([2a02:578:8593:1200:5e2b:69ae:ba71:ae54])
+        by smtp.gmail.com with ESMTPSA id 13-20020a170906318d00b00738467f743dsm3764902ejy.5.2022.09.23.02.24.04
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 23 Sep 2022 02:23:13 -0700 (PDT)
-Message-ID: <29f9fbd3-a266-e947-5dad-27181d3945e3@linaro.org>
-Date:   Fri, 23 Sep 2022 11:23:12 +0200
+        Fri, 23 Sep 2022 02:24:04 -0700 (PDT)
+Message-ID: <beb00a53-fa2a-4208-7650-e299157a8617@tessares.net>
+Date:   Fri, 23 Sep 2022 11:24:03 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [resend PATCH v4 2/2] dt-bindings: net: snps,dwmac: add clk_csr
- property
-Content-Language: en-US
-To:     Jianguo Zhang <jianguo.zhang@mediatek.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Biao Huang <biao.huang@mediatek.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Christophe Roullier <christophe.roullier@st.com>
-References: <20220922092743.22824-1-jianguo.zhang@mediatek.com>
- <20220922092743.22824-3-jianguo.zhang@mediatek.com>
- <04b9e5ef-f3c7-3400-f9df-2f585a084c5d@linaro.org>
- <8007b455dd18837c06ab099a6009505e7dddc124.camel@mediatek.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <8007b455dd18837c06ab099a6009505e7dddc124.camel@mediatek.com>
+ Thunderbird/102.3.0
+Subject: Re: [PATCH net 2/3] can: gs_usb: gs_can_open(): fix race
+ dev->can.state condition
+Content-Language: en-GB
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Marc Kleine-Budde <mkl@pengutronix.de>, netdev@vger.kernel.org,
+        davem@davemloft.net, linux-can@vger.kernel.org,
+        kernel@pengutronix.de, MPTCP Upstream <mptcp@lists.linux.dev>
+References: <20220921083609.419768-1-mkl@pengutronix.de>
+ <20220921083609.419768-3-mkl@pengutronix.de>
+ <84f45a7d-92b6-4dc5-d7a1-072152fab6ff@tessares.net>
+ <20220922082338.a6mbf2bbtznr3lvz@pengutronix.de>
+ <20220922130525.6b1a1104@kernel.org>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+In-Reply-To: <20220922130525.6b1a1104@kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 23/09/2022 03:48, Jianguo Zhang wrote:
-> Dear Krzysztof,
-> 
-> 	Thanks for your comment.
-> 
-> On Thu, 2022-09-22 at 17:07 +0200, Krzysztof Kozlowski wrote:
->> On 22/09/2022 11:27, Jianguo Zhang wrote:
->>> The clk_csr property is parsed in driver for generating MDC clock
->>> with correct frequency. A warning('clk_csr' was unexpeted) is
->>> reported
->>> when runing 'make_dtbs_check' because the clk_csr property
->>> has been not documented in the binding file.
+Hi Jakub,
+
+On 22/09/2022 22:05, Jakub Kicinski wrote:
+> On Thu, 22 Sep 2022 10:23:38 +0200 Marc Kleine-Budde wrote:
+>> On 22.09.2022 10:04:55, Matthieu Baerts wrote:
+>>> FYI, we got a small conflict when merging -net in net-next in the MPTCP
+>>> tree due to this patch applied in -net:
 >>>
->>
->> You did not describe the case, but apparently this came with
->> 81311c03ab4d ("net: ethernet: stmmac: add management of clk_csr
->> property") which never brought the bindings change.
->>
->> Therefore the property was never part of bindings documentation and
->> bringing them via driver is not the correct process. It bypasses the
->> review and such bypass cannot be an argument to bring the property to
->> bindings. It's not how new properties can be added.
->>
->> Therefore I don't agree. Please make it a property matching bindings,
->> so
->> vendor prefix, no underscores in node names.
->>
->> Driver and DTS need updates.
->>
-> We will rename the property 'clk_csr' as 'snps,clk-csr' and update DTS
-> & driver to align with the new name in next versions patches.
+>>>   5440428b3da6 ("can: gs_usb: gs_can_open(): fix race dev->can.state
+>>> condition")
+>>>
+>>> and this one from net-next:
+>>>
+>>>   45dfa45f52e6 ("can: gs_usb: add RX and TX hardware timestamp support")
+>>>
+>>> The conflict has been resolved on our side[1] and the resolution we
+>>> suggest is attached to this email.  
+> 
+> Thanks for the resolution! If you happen to remember perhaps throw
+> "manual merge" into the subject. That's what I search my inbox for
+> when merging, it will allow us to be even more lazy :)
 
-Thanks!
+I thought you were going to ask me to impersonate "Stephen Rothwell" :-P
 
-Best regards,
-Krzysztof
+Good to know, I can sure do that! (Or at least try to remember that next
+time)
 
+Cheers,
+Matt
+-- 
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
