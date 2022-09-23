@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 406CA5E8355
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 22:17:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 463955E835D
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 22:17:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232925AbiIWURY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 16:17:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39352 "EHLO
+        id S232971AbiIWURe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 16:17:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232774AbiIWUPV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 16:15:21 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FB83133CB5
-        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 13:14:11 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id r7so1599369wrm.2
-        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 13:14:11 -0700 (PDT)
+        with ESMTP id S232799AbiIWUPa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 16:15:30 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7535135043
+        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 13:14:12 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id bq9so1583331wrb.4
+        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 13:14:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=arista.com; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=8ma5Ol24QeG3/DDgAehhLNXstU8Od+DxxiWWftpJxi8=;
-        b=UFHQlfaGDMqQ64/kz4XSLGDjHcLsMZ/w7rbnBj0h1DCSYTYvIaj5wzL9rEI+6HklyN
-         rAm3Nrd0V7qQEBPxAj4jGVjhSEgniN1ipI8nwBikAm/eJoaqT0dtXq9aEO/siUJj+BM3
-         EsWI9DWks5n0Y5U0+eNE5T+CAB95cNjRyo190QezN8NgGOeyo1E9pduxglSvwhEmtZI2
-         w2bbsgUq46eMPt69jTBEJWKdVWwWISG3GYW62AEN+RkyfN+6vQEQyKT+FBBACYxBmhqF
-         UE/BQPmyzEj+2SeOi8KicMHCNwd/9OTpUiCcHktMJPqBcX3iN50x/PyHEwfQuWUKbTX2
-         L9uQ==
+        bh=AK4InlvF9B1QaPzw96JloJQ6G3mOJmIdQ9aUwWnWzUc=;
+        b=LVXtBJy1Z/GJQVIKE2FDxWZ9hfhZJoY8eJ7OLcD0rbKsFpBj9gHpth4IpqE+WoZBAZ
+         8MtIPl8VVCb8O11afBQ8kJpZwYfseGrP2UyOKpibm87wsH1fQkkklfySY4lOKDwI8OwP
+         xWzuUQQWn3ruqaqXa8hO9pxbEiF7akSpkYv3P36+91RpMrjFYcEwzb7ex4vvNf+ttoPO
+         viJAMw/pn/DwMbA3ehyhC0iI7TK7nyGvRfOKtqaE08MFc+zHwE92qXFhyugsc+25sar6
+         v1FdrVUSSp+XMtAZ9xDmxcf2fX/erJUvsWOiKq5LgBiUZxnr0Wv2JLVQcq6NLJXWeXmY
+         8Cew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=8ma5Ol24QeG3/DDgAehhLNXstU8Od+DxxiWWftpJxi8=;
-        b=o0IqyhtF0HAFsTwqXnmPrg88FSJZDQBdDgjEwZvntmf5IzMedTiZKgKsYT/gGchG92
-         W3l4LesdbRzcK0eJLZsZG6Bot2VIZKJuHm5PzGTwhyuaZjNKhCGTMQGDqN43PMHgsiNz
-         j1R/qbsxuTKmocP6Jo5PXwfYSKKNtCeD5+c8QHIb6vAoWyLeYiI6d6XutaHMXjR14llG
-         8aXqT7UeVpAvakfM0MsuOsLN6V6Q47kLxodElijr1zF0kEBbQEzcWlK0JZzhPec+nLGf
-         sru08RnVVgIjt3KSqFRj7aZVbcEL47LSC6BIno7MNjek45rqP3sXGBo//940416h0P+T
-         UUhA==
-X-Gm-Message-State: ACrzQf2kSNXfqsrIAhpy6xO6iZFfh5TM06o3/JEWHlTZhawAuDyc1J6c
-        mdsEAkfaFhoW/Mh5gtGttcSbCQ==
-X-Google-Smtp-Source: AMsMyM6R081AsD5FRHemwMM/H2uDoxUMO32PC4eSc2TYLRgEQIT9QoZOkpxpGV7xSZmbY4crl3aKug==
-X-Received: by 2002:adf:dc92:0:b0:22a:415f:8dd7 with SMTP id r18-20020adfdc92000000b0022a415f8dd7mr6046550wrj.708.1663964050759;
-        Fri, 23 Sep 2022 13:14:10 -0700 (PDT)
+        bh=AK4InlvF9B1QaPzw96JloJQ6G3mOJmIdQ9aUwWnWzUc=;
+        b=sqY4SXZvMf9ScbJVz8aUZI/CG4gpzb8Y2iYryzw3b1eXYrzJJ3Q14qsWnpmUYypeFx
+         0bcwhe+iNBNiiA1cYvGnOyADZBgd8ygCyo9GKEvKd7RGKYYeUFN7peLvPDa4wUPvNZ+z
+         LvVVqVuHmgwWUEIvTZWdT8kNuMNKuNQ/FduKpNCWhgs8B+XpQ4bb2JXtOlQbCkr3VFqQ
+         F0osfvH8tOK4DrPN3hqeMwYlxp8hDMKJGyXF2tbDDesU9LeCdrYem5KlYgXO0aUk1k9u
+         EzOKFQbLjpmjxNx87mFHphJWxnjA7tBXDTSmcqdcmiLesTfKFHtPh6gPxIHxpTOUcjgj
+         JpGw==
+X-Gm-Message-State: ACrzQf1sxgjuogVzmpbHmDXe3FHrFAus4hBYT8PuzSBCiVEcGkuz8X8z
+        Rglpzqtv8RtCh6LHXbwPQIpAmA==
+X-Google-Smtp-Source: AMsMyM412ce+3x41p2+xdKr69DMd17SdmUBcsHgqcKrP8N2/oRtXsN98o461kOv8KBQXmVXcIJP0lg==
+X-Received: by 2002:a5d:6d0b:0:b0:22a:ca5b:a37e with SMTP id e11-20020a5d6d0b000000b0022aca5ba37emr6221812wrq.383.1663964052251;
+        Fri, 23 Sep 2022 13:14:12 -0700 (PDT)
 Received: from Mindolluin.ire.aristanetworks.com ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id k11-20020a05600c0b4b00b003b492753826sm3281056wmr.43.2022.09.23.13.14.09
+        by smtp.gmail.com with ESMTPSA id k11-20020a05600c0b4b00b003b492753826sm3281056wmr.43.2022.09.23.13.14.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Sep 2022 13:14:10 -0700 (PDT)
+        Fri, 23 Sep 2022 13:14:11 -0700 (PDT)
 From:   Dmitry Safonov <dima@arista.com>
 To:     linux-kernel@vger.kernel.org, David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>
@@ -70,9 +70,9 @@ Cc:     Dmitry Safonov <dima@arista.com>,
         Salam Noureddine <noureddine@arista.com>,
         Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
         linux-crypto@vger.kernel.org
-Subject: [PATCH v2 28/35] selftest/tcp-ao: Add a test for MKT matching
-Date:   Fri, 23 Sep 2022 21:13:12 +0100
-Message-Id: <20220923201319.493208-29-dima@arista.com>
+Subject: [PATCH v2 29/35] selftest/tcp-ao: Add test for TCP-AO add setsockopt() command
+Date:   Fri, 23 Sep 2022 21:13:13 +0100
+Message-Id: <20220923201319.493208-30-dima@arista.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220923201319.493208-1-dima@arista.com>
 References: <20220923201319.493208-1-dima@arista.com>
@@ -87,249 +87,243 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add TCP-AO tests on connect()/accept() pair.
-SNMP counters exposed by kernel are very useful here to verify the
-expected behavior of TCP-AO.
+Verify corner-cases for UAPI.
+Sample output:
+> # ./setsockopt-closed_ipv6
+> 1..16
+> # 9508[lib/setup.c:173] rand seed 1643819055
+> TAP version 13
+> ok 1 minimum size
+> ok 2 extended size
+> ok 3 bad algo
+> ok 4 bad ao flags
+> ok 5 empty prefix
+> ok 6 prefix, any addr
+> ok 7 no prefix, any addr
+> ok 8 too short prefix
+> ok 9 too big prefix
+> ok 10 too big maclen
+> ok 11 bad key flags
+> ok 12 too big keylen
+> not ok 13 duplicate: full copy: setsockopt() was expected to fail with 17
+> ok 14 duplicate: any addr key on the socket
+> ok 15 duplicate: add any addr key
+> not ok 16 duplicate: add any addr for the same subnet: setsockopt() was expected to fail with 17
 
 Signed-off-by: Dmitry Safonov <dima@arista.com>
 ---
- tools/testing/selftests/net/tcp_ao/Makefile   |   2 +-
- .../selftests/net/tcp_ao/connect-deny.c       | 217 ++++++++++++++++++
- 2 files changed, 218 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/net/tcp_ao/connect-deny.c
+ tools/testing/selftests/net/tcp_ao/Makefile   |   3 +-
+ .../selftests/net/tcp_ao/setsockopt-closed.c  | 191 ++++++++++++++++++
+ 2 files changed, 193 insertions(+), 1 deletion(-)
+ create mode 100644 tools/testing/selftests/net/tcp_ao/setsockopt-closed.c
 
 diff --git a/tools/testing/selftests/net/tcp_ao/Makefile b/tools/testing/selftests/net/tcp_ao/Makefile
-index a178bde0af08..5064e34ebe38 100644
+index 5064e34ebe38..a001dc2aed4e 100644
 --- a/tools/testing/selftests/net/tcp_ao/Makefile
 +++ b/tools/testing/selftests/net/tcp_ao/Makefile
-@@ -1,5 +1,5 @@
+@@ -1,5 +1,6 @@
  # SPDX-License-Identifier: GPL-2.0
--TEST_BOTH_AF := connect icmps-discard icmps-accept
-+TEST_BOTH_AF := connect icmps-discard icmps-accept connect-deny
+-TEST_BOTH_AF := connect icmps-discard icmps-accept connect-deny
++TEST_BOTH_AF := connect icmps-discard icmps-accept connect-deny \
++		setsockopt-closed
  
  TEST_IPV4_PROGS := $(TEST_BOTH_AF:%=%_ipv4)
  TEST_IPV6_PROGS := $(TEST_BOTH_AF:%=%_ipv6)
-diff --git a/tools/testing/selftests/net/tcp_ao/connect-deny.c b/tools/testing/selftests/net/tcp_ao/connect-deny.c
+diff --git a/tools/testing/selftests/net/tcp_ao/setsockopt-closed.c b/tools/testing/selftests/net/tcp_ao/setsockopt-closed.c
 new file mode 100644
-index 000000000000..cf71dda52c49
+index 000000000000..be2cbc407f60
 --- /dev/null
-+++ b/tools/testing/selftests/net/tcp_ao/connect-deny.c
-@@ -0,0 +1,217 @@
++++ b/tools/testing/selftests/net/tcp_ao/setsockopt-closed.c
+@@ -0,0 +1,191 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/* Author: Dmitry Safonov <dima@arista.com> */
 +#include <inttypes.h>
++#include "../../../../include/linux/kernel.h"
 +#include "aolib.h"
 +
-+typedef uint8_t fault_t;
-+#define F_TIMEOUT	1
-+#define F_KEYREJECT	2
-+
-+#define fault(type)	(inj == type)
-+
-+static void try_accept(const char *tst_name, unsigned port, const char *pwd,
-+		       union tcp_addr addr, uint8_t prefix,
-+		       uint8_t sndid, uint8_t rcvid, const char *cnt_name,
-+		       fault_t inj)
++static void clean_ao(int sk, struct tcp_ao *ao)
 +{
-+	uint64_t before_cnt, after_cnt;
-+	int lsk, err, sk = 0;
-+	time_t timeout;
++	struct tcp_ao_del ao_del = {};
 +
-+	lsk = test_listen_socket(this_ip_addr, port, 1);
++	ao_del.tcpa_sndid = ao->tcpa_sndid;
++	ao_del.tcpa_rcvid = ao->tcpa_rcvid;
++	ao_del.tcpa_prefix = ao->tcpa_prefix;
++	memcpy(&ao_del.tcpa_addr, &ao->tcpa_addr, sizeof(ao->tcpa_addr));
 +
-+	if (pwd && test_set_ao(lsk, pwd, 0, addr, prefix, sndid, rcvid))
-+		test_error("setsockopt(TCP_AO)");
++	if (setsockopt(sk, IPPROTO_TCP, TCP_AO_DEL, &ao_del, sizeof(ao_del)))
++		test_error("setsockopt(TCP_AO_DEL) failed to clean");
++	close(sk);
++}
 +
-+	if (cnt_name)
-+		before_cnt = netstat_get_one(cnt_name, NULL);
++static void setsockopt_checked(int sk, int optname, struct tcp_ao *ao,
++			       int err, const char *tst)
++{
++	int ret;
 +
-+	synchronize_threads(); /* preparations done */
-+
-+	timeout = fault(F_TIMEOUT) ? TEST_RETRANSMIT_SEC : TEST_TIMEOUT_SEC;
-+	err = test_wait_fd(lsk, timeout, 0);
-+	if (err < 0)
-+		test_error("test_wait_fd()");
-+	else if (!err) {
-+		if (!fault(F_TIMEOUT))
-+			test_fail("timeouted for accept()");
-+	} else {
-+		if (fault(F_TIMEOUT))
-+			test_fail("ready to accept");
-+
-+		sk = accept(lsk, NULL, NULL);
-+		if (sk < 0) {
-+			test_error("accept()");
-+		} else {
-+			if (fault(F_TIMEOUT))
-+				test_fail("%s: accepted", tst_name);
++	errno = 0;
++	ret = setsockopt(sk, IPPROTO_TCP, optname, ao, sizeof(*ao));
++	if (ret == -1) {
++		if (errno == err) {
++			test_ok("%s", tst);
++			return;
 +		}
++		test_fail("%s: setsockopt() returned %d", tst, err);
++		return;
 +	}
 +
-+	close(lsk);
-+
-+	if (!cnt_name)
-+		goto out;
-+
-+	after_cnt = netstat_get_one(cnt_name, NULL);
-+
-+	if (after_cnt <= before_cnt) {
-+		test_fail("%s: %s counter did not increase: %zu <= %zu",
-+				tst_name, cnt_name, after_cnt, before_cnt);
++	if (err) {
++		test_fail("%s: setsockopt() was expected to fail with %d", tst, err);
 +	} else {
-+		test_ok("%s: counter %s increased %zu => %zu",
-+			tst_name, cnt_name, before_cnt, after_cnt);
++		test_ok("%s", tst);
++		test_verify_socket_ao(sk, ao);
 +	}
-+
-+out:
-+	synchronize_threads(); /* close() */
-+	if (sk > 0)
-+		close(sk);
++	clean_ao(sk, ao);
 +}
 +
-+static void *server_fn(void *arg)
++static int prepare_defs(struct tcp_ao *ao)
 +{
-+	union tcp_addr wrong_addr, network_addr;
-+	unsigned port = test_server_port;
++	int sk = socket(test_family, SOCK_STREAM, IPPROTO_TCP);
 +
-+	if (inet_pton(TEST_FAMILY, TEST_WRONG_IP, &wrong_addr) != 1)
-+		test_error("Can't convert ip address %s", TEST_WRONG_IP);
-+
-+	try_accept("Non-AO server + AO client", port++, NULL,
-+		this_ip_dest, -1, 100, 100, "TCPAOKeyNotFound", F_TIMEOUT);
-+
-+	try_accept("AO server + Non-AO client", port++, "password",
-+		this_ip_dest, -1, 100, 100, "TCPAORequired", F_TIMEOUT);
-+
-+	try_accept("Wrong password", port++, "password2",
-+		this_ip_dest, -1, 100, 100, "TCPAOBad", F_TIMEOUT);
-+
-+	try_accept("Wrong rcv id", port++, "password",
-+		this_ip_dest, -1, 100, 101, "TCPAOKeyNotFound", F_TIMEOUT);
-+
-+	try_accept("Wrong snd id", port++, "password",
-+		this_ip_dest, -1, 101, 100, "TCPAOGood", F_TIMEOUT);
-+
-+	try_accept("Server: Wrong addr", port++, "password",
-+		wrong_addr, -1, 100, 100, "TCPAOKeyNotFound", F_TIMEOUT);
-+
-+	try_accept("Client: Wrong addr", port++, NULL,
-+		this_ip_dest, -1, 100, 100, NULL, F_TIMEOUT);
-+
-+	try_accept("rcv id != snd id", port++, "password",
-+		this_ip_dest, -1, 200, 100, "TCPAOGood", 0);
-+
-+	if (inet_pton(TEST_FAMILY, TEST_NETWORK, &network_addr) != 1)
-+		test_error("Can't convert ip address %s", TEST_NETWORK);
-+
-+	try_accept("Server: prefix match", port++, "password",
-+		network_addr, 16, 100, 100, "TCPAOGood", 0);
-+
-+	try_accept("Client: prefix match", port++, "password",
-+		this_ip_dest, -1, 100, 100, "TCPAOGood", 0);
-+
-+	/* client exits */
-+	synchronize_threads();
-+	return NULL;
-+}
-+
-+static void try_connect(const char *tst_name, unsigned port,
-+			const char *pwd, union tcp_addr addr, uint8_t prefix,
-+			uint8_t sndid, uint8_t rcvid, fault_t inj)
-+{
-+	time_t timeout;
-+	int sk, ret;
-+
-+	sk = socket(test_family, SOCK_STREAM, IPPROTO_TCP);
 +	if (sk < 0)
 +		test_error("socket()");
 +
-+	if (pwd && test_set_ao(sk, pwd, 0, addr, prefix, sndid, rcvid))
-+		test_error("setsockopt(TCP_AO)");
++	if (test_prepare_def_ao(ao, "password", 0, this_ip_dest, -1, 100, 100))
++		test_error("prepare default tcp_ao");
 +
-+	synchronize_threads(); /* preparations done */
-+
-+	timeout = fault(F_TIMEOUT) ? TEST_RETRANSMIT_SEC : TEST_TIMEOUT_SEC;
-+	ret = _test_connect_socket(sk, this_ip_dest, port, timeout);
-+
-+	if (ret < 0) {
-+		if (fault(F_KEYREJECT) && ret == -EKEYREJECTED) {
-+			test_ok("%s: connect() was prevented", tst_name);
-+			goto out;
-+		} else if (ret == -ECONNREFUSED &&
-+				(fault(F_TIMEOUT) || fault(F_KEYREJECT))) {
-+			test_ok("%s: refused to connect", tst_name);
-+			goto out;
-+		} else {
-+			test_error("%s: connect() returned %d", tst_name, ret);
-+		}
-+	}
-+
-+	if (ret == 0) {
-+		if (fault(F_TIMEOUT))
-+			test_ok("%s", tst_name);
-+		else
-+			test_fail("%s: failed to connect()", tst_name);
-+	} else {
-+		if (fault(F_TIMEOUT) || fault(F_KEYREJECT))
-+			test_fail("%s: connected", tst_name);
-+		else
-+			test_ok("%s: connected", tst_name);
-+	}
-+
-+out:
-+	synchronize_threads(); /* close() */
-+
-+	if (ret > 0)
-+		close(sk);
++	return sk;
 +}
++
++static void test_extend(void)
++{
++	struct tcp_ao ao;
++	struct {
++		struct tcp_ao ao;
++		char *extend[100];
++	} ao_big = {};
++	int ret, sk;
++
++	sk = prepare_defs(&ao);
++	errno = 0;
++	ret = setsockopt(sk, IPPROTO_TCP, TCP_AO,
++			&ao, offsetof(struct tcp_ao, tcpa_key));
++	if (!ret) {
++		test_fail("minminum size: accepted invalid size");
++		clean_ao(sk, &ao);
++	} else if (errno != EINVAL) {
++		test_fail("minminum size: failed with %d", errno);
++	} else {
++		test_ok("minimum size");
++	}
++
++	sk = prepare_defs(&ao_big.ao);
++	errno = 0;
++	ret = setsockopt(sk, IPPROTO_TCP, TCP_AO, &ao_big.ao, sizeof(ao_big));
++	if (ret) {
++		test_fail("extended size: returned %d", ret);
++	} else {
++		test_ok("extended size");
++		clean_ao(sk, &ao_big.ao);
++	}
++}
++
++static void einval_tests(void)
++{
++	struct tcp_ao ao;
++	int sk;
++
++	sk = prepare_defs(&ao);
++	strcpy(ao.tcpa_alg_name, "imaginary hash algo");
++	setsockopt_checked(sk, TCP_AO, &ao, ENOENT, "bad algo");
++
++	sk = prepare_defs(&ao);
++	ao.tcpa_flags = (uint16_t)(-1);
++	setsockopt_checked(sk, TCP_AO, &ao, EINVAL, "bad ao flags");
++
++	sk = prepare_defs(&ao);
++	ao.tcpa_prefix = 0;
++	setsockopt_checked(sk, TCP_AO, &ao, EINVAL, "empty prefix");
++
++	sk = prepare_defs(&ao);
++	ao.tcpa_prefix = 32;
++	memcpy(&ao.tcpa_addr, &SOCKADDR_ANY, sizeof(SOCKADDR_ANY));
++	setsockopt_checked(sk, TCP_AO, &ao, EINVAL, "prefix, any addr");
++
++	sk = prepare_defs(&ao);
++	ao.tcpa_prefix = 0;
++	memcpy(&ao.tcpa_addr, &SOCKADDR_ANY, sizeof(SOCKADDR_ANY));
++	setsockopt_checked(sk, TCP_AO, &ao, 0, "no prefix, any addr");
++
++	sk = prepare_defs(&ao);
++	ao.tcpa_prefix = 2;
++	setsockopt_checked(sk, TCP_AO, &ao, EINVAL, "too short prefix");
++
++	sk = prepare_defs(&ao);
++	ao.tcpa_prefix = 129;
++	setsockopt_checked(sk, TCP_AO, &ao, EINVAL, "too big prefix");
++
++	sk = prepare_defs(&ao);
++	ao.tcpa_maclen = 100;
++	setsockopt_checked(sk, TCP_AO, &ao, EMSGSIZE, "too big maclen");
++
++	sk = prepare_defs(&ao);
++	ao.tcpa_keyflags = (uint8_t)(-1);
++	setsockopt_checked(sk, TCP_AO, &ao, EINVAL, "bad key flags");
++
++	sk = prepare_defs(&ao);
++	ao.tcpa_keylen = TCP_AO_MAXKEYLEN + 1;
++	setsockopt_checked(sk, TCP_AO, &ao, EINVAL, "too big keylen");
++}
++
++static void duplicate_tests(void)
++{
++	union tcp_addr network_dup;
++	struct tcp_ao ao, ao2;
++	int sk;
++
++	sk = prepare_defs(&ao);
++	if (setsockopt(sk, IPPROTO_TCP, TCP_AO, &ao, sizeof(ao)))
++		test_error("setsockopt()");
++	setsockopt_checked(sk, TCP_AO, &ao, EEXIST, "duplicate: full copy");
++
++	sk = prepare_defs(&ao);
++	ao2 = ao;
++	memcpy(&ao2.tcpa_addr, &SOCKADDR_ANY, sizeof(SOCKADDR_ANY));
++	ao2.tcpa_prefix = 0;
++	if (setsockopt(sk, IPPROTO_TCP, TCP_AO, &ao2, sizeof(ao)))
++		test_error("setsockopt()");
++	setsockopt_checked(sk, TCP_AO, &ao, EEXIST, "duplicate: any addr key on the socket");
++
++	sk = prepare_defs(&ao);
++	if (setsockopt(sk, IPPROTO_TCP, TCP_AO, &ao, sizeof(ao)))
++		test_error("setsockopt()");
++	memcpy(&ao.tcpa_addr, &SOCKADDR_ANY, sizeof(SOCKADDR_ANY));
++	ao.tcpa_prefix = 0;
++	setsockopt_checked(sk, TCP_AO, &ao, EEXIST, "duplicate: add any addr key");
++
++
++	if (inet_pton(TEST_FAMILY, TEST_NETWORK, &network_dup) != 1)
++		test_error("Can't convert ip address %s", TEST_NETWORK);
++	sk = prepare_defs(&ao);
++	if (setsockopt(sk, IPPROTO_TCP, TCP_AO, &ao, sizeof(ao)))
++		test_error("setsockopt()");
++	if (test_prepare_def_ao(&ao, "password", 0, network_dup, 16, 100, 100))
++		test_error("prepare default tcp_ao");
++	setsockopt_checked(sk, TCP_AO, &ao, EEXIST, "duplicate: add any addr for the same subnet");
++}
++
 +
 +static void *client_fn(void *arg)
 +{
-+	union tcp_addr wrong_addr, network_addr;
-+	unsigned port = test_server_port;
-+
-+	if (inet_pton(TEST_FAMILY, TEST_WRONG_IP, &wrong_addr) != 1)
-+		test_error("Can't convert ip address %s", TEST_WRONG_IP);
-+
-+	try_connect("Non-AO server + AO client", port++, "password",
-+			this_ip_dest, -1, 100, 100, F_TIMEOUT);
-+
-+	try_connect("AO server + Non-AO client", port++, NULL,
-+			this_ip_dest, -1, 100, 100, F_TIMEOUT);
-+
-+	try_connect("Wrong password", port++, "password",
-+			this_ip_dest, -1, 100, 100, F_TIMEOUT);
-+
-+	try_connect("Wrong rcv id", port++, "password",
-+			this_ip_dest, -1, 100, 100, F_TIMEOUT);
-+
-+	try_connect("Wrong snd id", port++, "password",
-+			this_ip_dest, -1, 100, 100, F_TIMEOUT);
-+
-+	try_connect("Server: Wrong addr", port++, "password",
-+			this_ip_dest, -1, 100, 100, F_TIMEOUT);
-+
-+	try_connect("Client: Wrong addr", port++, "password",
-+			wrong_addr, -1, 100, 100, F_KEYREJECT);
-+
-+	try_connect("rcv id != snd id", port++, "password",
-+			this_ip_dest, -1, 100, 200, 0);
-+
-+	if (inet_pton(TEST_FAMILY, TEST_NETWORK, &network_addr) != 1)
-+		test_error("Can't convert ip address %s", TEST_NETWORK);
-+
-+	try_connect("Server: prefix match", port++, "password",
-+			this_ip_dest, -1, 100, 100, 0);
-+
-+	try_connect("Client: prefix match", port++, "password",
-+			network_addr, 16, 100, 100, 0);
++	test_extend();
++	einval_tests();
++	duplicate_tests();
 +
 +	return NULL;
 +}
 +
 +int main(int argc, char *argv[])
 +{
-+	test_init(20, server_fn, client_fn);
++	test_init(16, client_fn, NULL);
 +	return 0;
 +}
 -- 
