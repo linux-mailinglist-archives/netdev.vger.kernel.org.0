@@ -2,88 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B2A15E84D3
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 23:25:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D35555E84E6
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 23:31:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232301AbiIWVZq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 17:25:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48186 "EHLO
+        id S232853AbiIWVbR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 17:31:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbiIWVZV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 17:25:21 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7837122A4E
-        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 14:25:18 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id s14so1891896wro.0
-        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 14:25:18 -0700 (PDT)
+        with ESMTP id S232809AbiIWVaY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 17:30:24 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC963E4D82;
+        Fri, 23 Sep 2022 14:30:09 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id lc7so3328301ejb.0;
+        Fri, 23 Sep 2022 14:30:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=QYrS8aOXLdxfqH2E62RLs+f9pZwOFHbwNujxln9jHyA=;
-        b=Hi/H8ExZPdy/8PAaeHOmAMG4nWm4ghmynArm3W8PbYmlmyXQ3uIANZI82QLoqaM/LK
-         +BoF/anj5m2URzuhNwoMgMAMxabnMnq0TO2Mz77ywAMxXgtrWK1r0jmiNeCZaaH17+PQ
-         2HCNtgyOGG518WvjJ9V0TKkzJ5TBAUuYfyeN/vBZhTcNKOzzD+4+5D1xg3B6OTjW1T8K
-         HG8S3fcDIGgnHrdWp4sK+r4pIfxNjSkX7BW3xbZ4j4wvtHbQ7Za1Jveq2/M0Qdo0tZWS
-         95pG0iCzlH34rashvM5klN6fQaN0NnuvRo5txYugnQNmUZiwLK5xZN/0QlfY/dRrTLs6
-         HzCw==
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=Ww+rniqhu9NFGDOvfC2Yy/m/fFm7UdkBwQIJUqQ5qmM=;
+        b=jtBwsA0aXXgjW9H5yKVw0u7FPvlQKv4SEs3GfZ/vNdSZU7rIl5UJc12xFGDdhxKxXZ
+         9WOnWQ9XNHZCOEisBNKoVOxOQRBf3BtrDz1hPXjf9sAMsW31ZmJ/1td8yuaKYMMZIkaT
+         ZJsOTtcEuD7FxevXLj2HdEgLI9RqpDSQtUsTcy9H5ma2BZZwNmqCfcptVo0hxqCHQuFV
+         qskagxH5dMlzv0FUaoDSDzsI4y9SL8JapzTNuDMr2o8zpIV9jEo7j+cyHKEBbgt0kc6e
+         eOIQXoWZdM7qVomOXDEQWjHMw5DxOeuBQBEnHcKFcT+isHx0MGmdTWqIPUcQJSLC3mR3
+         KRZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=QYrS8aOXLdxfqH2E62RLs+f9pZwOFHbwNujxln9jHyA=;
-        b=K5Vr66hKOwU4iVt7zvILWxewEjvGwLOyikkXHMR7Omh9JhRV76PKTE3bcHma2IogeP
-         YWlzQrVC28uvl1w09aqwCWh+gvMujDZLwAq9n7QyqbcU6L39sTeZ9wt4ETJmEcumPOqE
-         iphkmNsGuWBP0adZtnHFAWuLl7D7R2ICOThoGOgUMVvonUGikf0XU0Qo+1U6e72rAboS
-         WmrjOFgrQ/nZVCIJYa6Rp1OrmO07qz8icUyyZP4fKPfaNTZwpbjJS9LD2yUZB1OP8dE/
-         hn/L8PG3OqGgaOxShw+teoKDxkBDv2YAc8qhnxNLZgeDrR1tWSnZkv5PpFdh5MZQPRjJ
-         Hw5A==
-X-Gm-Message-State: ACrzQf3BM8RSusN/vbdgZ1w1Ae7YrIKwdBaDYPJ5nOO3JGFaFHNl3AtG
-        fbGZ/ANiToyoK0zrLH8n7+JWBQ==
-X-Google-Smtp-Source: AMsMyM7gocVlrtj5dqu1OiHtiRCqcKRbRfs4z/zcbr9ci9j7iMZlVMSPxnq0HVdqw7xJsq30MrKBAA==
-X-Received: by 2002:a5d:47c5:0:b0:22a:6d4c:f21e with SMTP id o5-20020a5d47c5000000b0022a6d4cf21emr6462523wrc.417.1663968317189;
-        Fri, 23 Sep 2022 14:25:17 -0700 (PDT)
-Received: from [10.83.37.24] ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id u9-20020a056000038900b002252884cc91sm8155982wrf.43.2022.09.23.14.25.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 23 Sep 2022 14:25:16 -0700 (PDT)
-Message-ID: <3cf03d51-74db-675c-b392-e4647fa5b5a6@arista.com>
-Date:   Fri, 23 Sep 2022 22:25:09 +0100
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=Ww+rniqhu9NFGDOvfC2Yy/m/fFm7UdkBwQIJUqQ5qmM=;
+        b=rfJWdxSiClMfhHLtyDGNk+dDaFc7z1n2oOpj09Cn8TfaPzx64NR3FAaz1mFgthCpZx
+         NkGIXoOlKxO3Tw3GXFK5XgiggxIr4R/VhSc8tZfgNhud1fmrzVpV4jgk+fhUI78jvJKr
+         igWauhqxSztxIkkfYa0dYrljRW7uQeswWd97KMMkAxhNPaCSxvRIJqxWUEe3Q5mPFJ2B
+         IRGGA1PfPKbkyrS059wDtgnVhXUvTC4GPcu28T5xiG4x4umwjSRDN5qGNGvqH67xtrND
+         o7hwu2upr+q75HeLmnNHLjrqb9OFzbPnsLtwQ4dHuz8UpEA7QwBXfffr+ODjok1OjRey
+         1Dcg==
+X-Gm-Message-State: ACrzQf2KHUvp+Plg22iaBk4uMO2gm2Mpt9NU9ypnGSG4YRDPLBNm3PMu
+        YxR0+JCPpFo0G7maPFYIBLkAINK39+2H1bfOL28=
+X-Google-Smtp-Source: AMsMyM7wbUGGCdyhs/80nM8dSUGFoHeIlKdp58rzR0+BXa0pRZNFVgZ8YOo+ZRr8tHq0Cv8I/O56WLqPGcN8N6lh/HM=
+X-Received: by 2002:a17:907:984:b0:77f:4d95:9e2f with SMTP id
+ bf4-20020a170907098400b0077f4d959e2fmr9070827ejc.176.1663968607591; Fri, 23
+ Sep 2022 14:30:07 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v2 00/35] net/tcp: Add TCP-AO support
-Content-Language: en-US
-To:     linux-kernel@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Leonard Crestez <cdleonard@gmail.com>
-Cc:     Andy Lutomirski <luto@amacapital.net>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Bob Gilligan <gilligan@arista.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Ivan Delalande <colona@arista.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
-        linux-crypto@vger.kernel.org
-References: <20220923201319.493208-1-dima@arista.com>
-From:   Dmitry Safonov <dima@arista.com>
-In-Reply-To: <20220923201319.493208-1-dima@arista.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+References: <1663747240-31210-1-git-send-email-wangyufen@huawei.com>
+In-Reply-To: <1663747240-31210-1-git-send-email-wangyufen@huawei.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 23 Sep 2022 14:29:56 -0700
+Message-ID: <CAEf4Bzaskw74UeufRgKSbGtk5eybD9J+4keAPYb-u=jb5myLjw@mail.gmail.com>
+Subject: Re: [bpf-next v5 1/3] bpftool: Add auto_attach for bpf prog load|loadall
+To:     Wang Yufen <wangyufen@huawei.com>
+Cc:     quentin@isovalent.com, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
+        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
+        sdf@google.com, haoluo@google.com, jolsa@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, hawk@kernel.org,
+        nathan@kernel.org, ndesaulniers@google.com, trix@redhat.com,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -91,119 +71,198 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/23/22 21:12, Dmitry Safonov wrote:
-> Changes from v1:
-> - Building now with CONFIG_IPV6=n (kernel test robot <lkp@intel.com>)
-> - Added missing static declarations for local functions
->   (kernel test robot <lkp@intel.com>)
-> - Addressed static analyzer and review comments by Dan Carpenter
->   (thanks, they were very useful!)
-> - Fix elif without defined() for !CONFIG_TCP_AO
-> - Recursively build selftests/net/tcp_ao (Shuah Khan), patches in:
->   https://lore.kernel.org/all/20220919201958.279545-1-dima@arista.com/T/#u
-> - Don't leak crypto_pool reference when TCP-MD5 key is modified/changed
-> - Add TCP-AO support for nettest.c and fcnal-test.sh
->   (will be used for VRF testing in later versions)
-> 
-> Version 1: https://lore.kernel.org/all/20220818170005.747015-1-dima@arista.com/T/#u
+On Wed, Sep 21, 2022 at 12:40 AM Wang Yufen <wangyufen@huawei.com> wrote:
+>
+> Add auto_attach optional to support one-step load-attach-pin_link.
+>
+> For example,
+>    $ bpftool prog loadall test.o /sys/fs/bpf/test auto_attach
+>
+>    $ bpftool link
+>    26: tracing  name test1  tag f0da7d0058c00236  gpl
+>         loaded_at 2022-09-09T21:39:49+0800  uid 0
+>         xlated 88B  jited 55B  memlock 4096B  map_ids 3
+>         btf_id 55
+>    28: kprobe  name test3  tag 002ef1bef0723833  gpl
+>         loaded_at 2022-09-09T21:39:49+0800  uid 0
+>         xlated 88B  jited 56B  memlock 4096B  map_ids 3
+>         btf_id 55
+>    57: tracepoint  name oncpu  tag 7aa55dfbdcb78941  gpl
+>         loaded_at 2022-09-09T21:41:32+0800  uid 0
+>         xlated 456B  jited 265B  memlock 4096B  map_ids 17,13,14,15
+>         btf_id 82
+>
+>    $ bpftool link
+>    1: tracing  prog 26
+>         prog_type tracing  attach_type trace_fentry
+>    3: perf_event  prog 28
+>    10: perf_event  prog 57
+>
+> The auto_attach optional can support tracepoints, k(ret)probes,
+> u(ret)probes.
+>
+> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+> Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+> Reviewed-by: Quentin Monnet <quentin@isovalent.com>
+> ---
+> v4 -> v5: some formatting nits of doc
+> v3 -> v4: rename functions, update doc, bash and do_help()
+> v2 -> v3: switch to extend prog load command instead of extend perf
+> v2: https://patchwork.kernel.org/project/netdevbpf/patch/20220824033837.458197-1-weiyongjun1@huawei.com/
+> v1: https://patchwork.kernel.org/project/netdevbpf/patch/20220816151725.153343-1-weiyongjun1@huawei.com/
+>  tools/bpf/bpftool/prog.c | 77 ++++++++++++++++++++++++++++++++++++++++++++++--
+>  1 file changed, 75 insertions(+), 2 deletions(-)
+>
+> diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
+> index c81362a..aea0b57 100644
+> --- a/tools/bpf/bpftool/prog.c
+> +++ b/tools/bpf/bpftool/prog.c
+> @@ -1453,6 +1453,68 @@ static int do_run(int argc, char **argv)
+>         return ret;
+>  }
+>
+> +static int
+> +auto_attach_program(struct bpf_program *prog, const char *path)
+> +{
+> +       struct bpf_link *link;
+> +       int err;
+> +
+> +       link = bpf_program__attach(prog);
+> +       err = libbpf_get_error(link);
 
-I think it's worth answering the question: why am I continuing sending
-patches for TCP-AO support when there's already another proposal? [1]
-Pre-history how we end up with the second approach is here: [2]
-TLDR; we had a customer and a deadline to deliver, I've given reviews to
-Leonard, but in the end it seems to me what we got is worth submitting
-as it's better in my view in many aspects.
+nit: bpftool uses libbpf 1.0, so no need to use libbpf_get_error()
+anymore, you can just check link for NULL and then look at errno
 
-The biggest differences between two proposals, that I care about
-(design-decisions, not implementation details):
 
-1. Per-netns TCP-AO keys vs per-socket TCP-AO keys. The reasons why this
-proposal is using per-socket keys (that are added like TCP-MD5 keys with
-setsockopt()) are:
-- They scale better: you don't have to lookup in netns database for a
-key. This is a major thing for Arista: we have to support customers that
-want more than 1000 peers with possible multiple keys per-peer. This
-scales well when the keys are split by design for each socket on every
-established connection.
-- TCP-AO doesn't require CAP_NET_ADMIN for usage.
-- TCP-AO is not meant to be transparent (like ipsec tunnels) for
-applications. The users are BGP applications which already know what
-they need.
-- Leonard's proposal has weird semantics when setsockopt() on some
-socket will change keys on other sockets in that network namespace. It
-should have been rather netlink-managed API or something of the kind if
-the keys are per-netns.
+but I wanted to check on desired behavior here. BPF skeleton will skip
+programs that can't be auto-attached because they are of the type that
+can't be declaratively specified to be auto-attachable. For such
+programs bpf_program__attach() will return -EOPNOTSUPP and libbpf's
+skeleton_attach API will silently skip them. Should bpftool be
+stricter about such programs here or should it follow BPF skeleton
+approach?
 
-2. This proposal seeks to do less in kernel space and leave more
-decision-making to the userspace. It is another major disagreement with
-Leonard's proposal, which seeks to add a key lifetime, key rotation
-logic and all other business-logic details into the kernel, while here
-those decisions are left for the userspace.
-If I understood Leonard correctly, he is placing more things in kernel
-to simplify migration for user applications from TCP-MD5 to TCP-AO. I
-rather think that would be a job for a shared library if that's needed.
-As per my perception (1) was also done to relieve userspace from the job
-of removing an outdated key simultaneously from all users in netns,
-while in this proposal this job is left for userspace to use available
-IPC methods. Essentially, I think TCP-AO in kernel should do only
-minimum that can't be done "reasonably" in userspace. By "reasonably" I
-mean without moving the TCP-IP stack into userspace.
+> +       if (err)
+> +               return err;
+> +
+> +       err = bpf_link__pin(link, path);
+> +       if (err) {
+> +               bpf_link__destroy(link);
+> +               return err;
+> +       }
+> +       return 0;
+> +}
+> +
+> +static int pathname_concat(const char *path, const char *name, char *buf)
 
-3. Re-using existing kernel code vs copy'n'pasting it, leaving
-refactoring for later. I'm a big fan of reusing existing functions. I
-think lesser amount of code in the end reduces the burden of maintenance
-as well as simplifies the code (both reading and changing). I can see
-Leonard's point of simplifying backports to stable releases that he
-ships to customers, but I think any upstream proposal should add less
-code and try reusing more.
+you added buffer size in libbpf version of this function, maybe match
+the same signature (I also moved buf and buf_sz to be first two args).
 
-4. Following RFC5925 closer to text. RFC says that rnext_key from the
-peer MUST be respected, as well as that current_key MUST not be removed
-on an established connection. In this proposal if the requirements of
-RFC can be met, they are followed, rather than broken.
+> +{
+> +       int len;
+> +
+> +       len = snprintf(buf, PATH_MAX, "%s/%s", path, name);
+> +       if (len < 0)
+> +               return -EINVAL;
+> +       if (len >= PATH_MAX)
+> +               return -ENAMETOOLONG;
+> +
+> +       return 0;
+> +}
+> +
+> +static int
+> +auto_attach_programs(struct bpf_object *obj, const char *path)
+> +{
+> +       struct bpf_program *prog;
+> +       char buf[PATH_MAX];
+> +       int err;
+> +
+> +       bpf_object__for_each_program(prog, obj) {
+> +               err = pathname_concat(path, bpf_program__name(prog), buf);
+> +               if (err)
+> +                       goto err_unpin_programs;
+> +
+> +               err = auto_attach_program(prog, buf);
+> +               if (err)
+> +                       goto err_unpin_programs;
+> +       }
+> +
 
-5. Using ahash instead of shash. If there's a hardware accelerator - why
-not using it? This proposal uses crypto_ahash through per-CPU pool of
-crypto requests (crypto_pool).
+would it be safer to first make sure that all programs are
+auto-attached and then pin links?
 
-6. Hash algorithm UAPI: magic constants vs hash name as char *. This is
-a thing I've asked Leonard multiple times and what he refuses to change
-in his patches: let the UAPI have `char tcpa_alg_name[64]' and just pass
-it to crypto_* layer. There is no need for #define MY_HASHING_ALGO 0x2
-and another in-kernel array to convert the magic number to algorithm
-string in order to pass it to crypto.
-The algorithm names are flexible: we already have customer's request to
-use other than RFC5926 required hashing algorithms. And I don't see any
-value in this middle-layer. This is already what kernel does, see for
-example, include/uapi/linux/xfrm.h, grep for alg_name.
+also note that not all bpf_links returned by libbpf are actual links
+in kernel (e.g., kprobe/tp bpf_link on older kernels).
 
-7. Adding traffic keys from the beginning. The proposal would be
-incomplete without having traffic keys: they are pre-calculated in this
-proposal, so the TCP stack doesn't have to do hashing twice (first for
-calculation of the traffic key) for every segment on established
-connections. This proposal has them naturally per-socket.
+> +       return 0;
+> +
+> +err_unpin_programs:
+> +       while ((prog = bpf_object__prev_program(obj, prog))) {
+> +               if (pathname_concat(path, bpf_program__name(prog), buf))
+> +                       continue;
+> +
+> +               bpf_program__unpin(prog, buf);
+> +       }
+> +
+> +       return err;
+> +}
+> +
+>  static int load_with_options(int argc, char **argv, bool first_prog_only)
+>  {
+>         enum bpf_prog_type common_prog_type = BPF_PROG_TYPE_UNSPEC;
+> @@ -1464,6 +1526,7 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
+>         struct bpf_program *prog = NULL, *pos;
+>         unsigned int old_map_fds = 0;
+>         const char *pinmaps = NULL;
+> +       bool auto_attach = false;
+>         struct bpf_object *obj;
+>         struct bpf_map *map;
+>         const char *pinfile;
+> @@ -1583,6 +1646,9 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
+>                                 goto err_free_reuse_maps;
+>
+>                         pinmaps = GET_ARG();
+> +               } else if (is_prefix(*argv, "auto_attach")) {
+> +                       auto_attach = true;
+> +                       NEXT_ARG();
+>                 } else {
+>                         p_err("expected no more arguments, 'type', 'map' or 'dev', got: '%s'?",
+>                               *argv);
+> @@ -1692,14 +1758,20 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
+>                         goto err_close_obj;
+>                 }
+>
+> -               err = bpf_obj_pin(bpf_program__fd(prog), pinfile);
+> +               if (auto_attach)
+> +                       err = auto_attach_program(prog, pinfile);
+> +               else
+> +                       err = bpf_obj_pin(bpf_program__fd(prog), pinfile);
+>                 if (err) {
+>                         p_err("failed to pin program %s",
+>                               bpf_program__section_name(prog));
+>                         goto err_close_obj;
+>                 }
+>         } else {
+> -               err = bpf_object__pin_programs(obj, pinfile);
+> +               if (auto_attach)
+> +                       err = auto_attach_programs(obj, pinfile);
+> +               else
+> +                       err = bpf_object__pin_programs(obj, pinfile);
+>                 if (err) {
+>                         p_err("failed to pin all programs");
+>                         goto err_close_obj;
+> @@ -2338,6 +2410,7 @@ static int do_help(int argc, char **argv)
+>                 "                         [type TYPE] [dev NAME] \\\n"
+>                 "                         [map { idx IDX | name NAME } MAP]\\\n"
+>                 "                         [pinmaps MAP_DIR]\n"
+> +               "                         [auto_attach]\n"
 
-I think those are the biggest differences in the approaches and they are
-enough to submit a concurrent proposal. Salam, Francesco, please add if
-I've missed any other disagreement or major architectural/design
-difference in the proposals.
+looking at "pinmaps" seems like "autoattach" would be more consistent
+naming? Or just "attach"?
 
-> In TODO (expect in next versions):
-> - selftests on older kernels (or with CONFIG_TCP_AO=n) should exit with
->   SKIP, not FAIL
-> - Support VRFs in setsockopt()
-> - setsockopt() UAPI padding + a test that structures are of the same
->   size on 32-bit as on 64-bit platforms
-> - IPv4-mapped-IPv6 addresses (might be working, but no selftest now)
-> - Remove CONFIG_TCP_AO dependency on CONFIG_TCP_MD5SIG
-> - Add TCP-AO static key
-> - Measure/benchmark TCP-AO and regular TCP connections
-> - setsockopt(TCP_REPAIR) with TCP-AO
-[..]
-[1]:
-https://lore.kernel.org/linux-crypto/cover.1662361354.git.cdleonard@gmail.com/
-[2]:
-https://lore.kernel.org/all/8097c38e-e88e-66ad-74d3-2f4a9e3734f4@arista.com/T/#u
-
-Thanks,
-          Dmitry
+>                 "       %1$s %2$s attach PROG ATTACH_TYPE [MAP]\n"
+>                 "       %1$s %2$s detach PROG ATTACH_TYPE [MAP]\n"
+>                 "       %1$s %2$s run PROG \\\n"
+> --
+> 1.8.3.1
+>
