@@ -2,101 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 36C975E71F4
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 04:39:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7264D5E71FA
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 04:39:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232280AbiIWCjM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 22:39:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44444 "EHLO
+        id S232369AbiIWCjw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 22:39:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231127AbiIWCjL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 22:39:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9B6D1176C0;
-        Thu, 22 Sep 2022 19:39:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8E200B829B1;
-        Fri, 23 Sep 2022 02:39:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65602C433C1;
-        Fri, 23 Sep 2022 02:39:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663900748;
-        bh=PNdU7fNduRcQhJm7dcaxtTTE0/w4p67D22t7Qk/4oIA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=RlDbgsfq9WocF3wv6oF3qp73BIG8bHWeNk8PDwpZzFyg5h74slf5WDAh2IkvqquF5
-         a0TXN3X0phG6rRZfZH7GWE7xvyxgalMrUQq7zjEnC30AjuEXlINniM98vU6pI2IGyt
-         T1gcseg2K/OHlYESk1uWMWnczVAtoN7s2hUBKLAeGC12Xmlr75PPLDPgK7kdzyTl9N
-         9gWaWA1+L6huRq62WFeYgFYWeiu4ITFeoml+vzRfq4iSJy4ozqIK5hyquXHhWg7EO1
-         xvxfqPS/Vzs4pJK36zMnONOW8KQjS87Z7ZXNKW6KmEzDpKdZ/8gaiTtyiQ5rSEThO/
-         av9VMydDhIwQA==
-Date:   Thu, 22 Sep 2022 19:39:06 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Lee Jones <lee@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH v2 net-next 08/14] net: dsa: felix: update init_regmap
- to be string-based
-Message-ID: <20220922193906.7ab18960@kernel.org>
-In-Reply-To: <20220922040102.1554459-9-colin.foster@in-advantage.com>
-References: <20220922040102.1554459-1-colin.foster@in-advantage.com>
-        <20220922040102.1554459-9-colin.foster@in-advantage.com>
+        with ESMTP id S232225AbiIWCjn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 22:39:43 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 604681117E;
+        Thu, 22 Sep 2022 19:39:36 -0700 (PDT)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MYbq12gs9zlXRN;
+        Fri, 23 Sep 2022 10:35:25 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Fri, 23 Sep 2022 10:39:34 +0800
+Received: from [10.67.102.67] (10.67.102.67) by kwepemm600016.china.huawei.com
+ (7.193.23.20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Fri, 23 Sep
+ 2022 10:39:34 +0800
+Subject: Re: [PATCH net-next 2/2] net: hns3: PF add support setting parameters
+ of congestion control algorithm by devlink param
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <jiri@mellanox.com>, <moshe@mellanox.com>, <davem@davemloft.net>,
+        <idosch@nvidia.com>, <edumazet@google.com>, <pabeni@redhat.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lipeng321@huawei.com>, <chenhao418@huawei.com>
+References: <20220923013818.51003-1-huangguangbin2@huawei.com>
+ <20220923013818.51003-3-huangguangbin2@huawei.com>
+ <20220922192313.628470a6@kernel.org>
+From:   "huangguangbin (A)" <huangguangbin2@huawei.com>
+Message-ID: <5f77197f-a3ea-7ab5-2dc7-577d0ec7b8f7@huawei.com>
+Date:   Fri, 23 Sep 2022 10:39:33 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20220922192313.628470a6@kernel.org>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Originating-IP: [10.67.102.67]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-6.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 21 Sep 2022 21:00:56 -0700 Colin Foster wrote:
-> During development, it was believed that a wrapper for ocelot_regmap_init()
-> would be sufficient for the felix driver to work in non-mmio scenarios.
-> This was merged in during commit 242bd0c10bbd ("net: dsa: ocelot: felix:
-> add interface for custom regmaps")
-> 
-> As the external ocelot DSA driver grew closer to an acceptable state, it
-> was realized that most of the parameters that were passed in from struct
-> resource *res were useless and ignored. This is due to the fact that the
-> external ocelot DSA driver utilizes dev_get_regmap(dev, resource->name).
-> 
-> Instead of simply ignoring those parameters, refactor the API to only
-> require the name as an argument. MMIO scenarios this will reconstruct the
-> struct resource before calling ocelot_regmap_init(ocelot, resource). MFD
-> scenarios need only call dev_get_regmap(dev, name).
-> 
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
 
-drivers/net/dsa/ocelot/felix.c:1328:14: warning: variable 'match' is used uninitialized whenever 'for' loop exits because its condition is false [-Wsometimes-uninitialized]
-        for (i = 0; i < TARGET_MAX; i++) {
-                    ^~~~~~~~~~~~~~
-drivers/net/dsa/ocelot/felix.c:1338:7: note: uninitialized use occurs here
-        if (!match) {
-             ^~~~~
-drivers/net/dsa/ocelot/felix.c:1328:14: note: remove the condition if it is always true
-        for (i = 0; i < TARGET_MAX; i++) {
-                    ^~~~~~~~~~~~~~
-drivers/net/dsa/ocelot/felix.c:1324:30: note: initialize the variable 'match' to silence this warning
-        const struct resource *match;
-                                    ^
-                                     = NULL
+
+On 2022/9/23 10:23, Jakub Kicinski wrote:
+> On Fri, 23 Sep 2022 09:38:18 +0800 Guangbin Huang wrote:
+>> Some new devices support dynamiclly configuring parameters of congestion
+>> control algorithm, this patch implement it by devlink param.
+>>
+>> Examples of read and set command are as follows:
+>>
+>> $ devlink dev param set pci/0000:35:00.0 name algo_param value \
+>>    "type@dcqcn_alp@30_f@35_tmp@11_tkp@11_ai@60_maxspeed@17_g@11_al@19_cnptime@20" \
+>>    cmode runtime
+>>
+>> $ devlink dev param show pci/0000:35:00.0 name algo_param
+>> pci/0000:35:00.0:
+>>    name algo_param type driver-specific
+>>      values:
+>>        cmode runtime value type@dcqcn_ai@60_f@35_tkp@11_tmp@11_alp@30_maxspeed@17_g@11_al@19_cnptime@20
+> 
+> Please put your RDMA params to the RDMA subsystem.
+> It's not what devlink is for. In general 95% of the time devlink params
+> are not the answer upstream.
+> .
+> 
+Ok, I will discuss with our team.
