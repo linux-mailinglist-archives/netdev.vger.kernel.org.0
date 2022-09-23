@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CDB45E84E1
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 23:30:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C1195E84E2
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 23:30:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232827AbiIWVaB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 17:30:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53934 "EHLO
+        id S232893AbiIWVaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 17:30:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232753AbiIWV37 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 17:29:59 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D19035E31F
-        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 14:29:57 -0700 (PDT)
+        with ESMTP id S232812AbiIWVaB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 17:30:01 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2063.outbound.protection.outlook.com [40.107.223.63])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D5266CF4A
+        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 14:29:59 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=N7Wnt6DgI3OWfufoTnOVC8+NMky3RgXVr3r6Wb7j4Pl+Uxsb5cl2HIopqESPMFSx8eB22pzGnFfq77GdoIqkSfatlQ9LGtRQT1XuV08T1404AykcEUS4mqcanzgs8tih0b2mLEDbNgUY9mHSOQ1J8ZuFb+MqD5ICvfEPRqEb29TUW0xQypYiMXJy0nv+20J51oYmL9Y4WaQW7Cqs7FODW/xpQ2iIrzJw+2ZSEAE2Hh9g6WbgwXvXNSiyyIaZ/5RMt1CIZtHjjD/1pOFUx87FEGazrhem1LmugPfQ8nW3MjG+NXT3kM31sVZYvEGXLINFRvrU6Q54ZrTqHCPhLPUvzw==
+ b=jsswcSB/ZwNwnedeHbNXnNiBEZvwcss/JKV9nEBpiXtK7BjBA9PLCB/YxjoVzx2uYrVB+6jKBxZd51azmvhpDizQ8y5UK4XMvC0ilZT+lwN8gemoUwT7BMhEpE4UFEDtd3GktYfpTbu5IfinC3Zx1UyX/WxJSB8RZzQ0crpNmNo2tWou5dvQNpTY7TIBgKIu4IExUke+Qzm/ztHNOH7xUQYyrHBX8xLhuh8mahjVdDctSFXS1LS8Ypn71vzjdW1L2Q6yeOjTIYj3fdp4BmcySMeRjzabOWn+NYUVMWfv4R4iYJz5G04vDJmHFRjlG1haO3a0Ey1LPcmR4J5xdVuj9Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=F+gwaQ5ZB4wauMMEjimUTnM+1AZmtKeZGVrRPRChL3U=;
- b=Lt/v0GEyM18VHneof+V2cv57sPmWZTeLEsf4A/Q+oQ9wr0r7Yvj7L6WqZ8ubNSm7ifb2Gi+zucfmWYzPgqfds3fhzmAqJg2lFA/AmAm00226Lqqo2FpRBq9/Av0n30HUiBA4GQTq2kz/A/ZNZMr6GXIud25GK+gK73qsl318wJwepcUPdgnL50Hk4+LOH+56yQyH9uEAkY9TCx/n0lzk9KcVkBRBUcNEd9wn6eTe4Y2+GTj1BQeKQgcEBCeSrgFvigesu5Gx2nP9sJh5YVCRFKPv2HH72s261oYiyCq5jVNX01IzxJ8uF7d1GMomMw9qMwp+zjBenF1S5DfHMA+kcg==
+ bh=U8Hg90LR61pr4LwLxsbnlGf3IH/tS3z4I9w9KSgUIew=;
+ b=VvAF4SFy8V3hZhjgARZK2b0GVDzRR8i74eVQgXHPBQ0IDobf3diRgj7djbnMaLOEoisxZ+swgwDixGM9whmDVc672mgviaig2L75l99gqhSRXYtRlWjVDYjd/Q0X0sir6mJCtmjiUiv5NMA3d7jvuHv5s8Hbj5xdKEHx+8VIdDk5TdGR49RV8GVVsMj8UeWaIfEeEtCofAVgc2+yhittSoLGdSzWJP+YmVDGIYBJTCztkYrk+P/RQTBaVraB9HlEOqoSuVnVwU5O+BfX91yUKoe6OjntfRL6fCsAYPqNmet4CNi9WJKI46t/Rhc4oKjrCanZ8zxFNWr+Xz6MFAHsdA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
  dmarc=fail (p=none sp=none pct=100) action=none header.from=xilinx.com;
@@ -28,18 +28,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=amdcloud.onmicrosoft.com; s=selector1-amdcloud-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=F+gwaQ5ZB4wauMMEjimUTnM+1AZmtKeZGVrRPRChL3U=;
- b=AJHzEeFAnoqokBwPT4phVDYMh2bQjj+7wZ+eCnqU9msHegvo+8LgcYrNn4m0x0CHJQvJuHVWreJ+cV8rur4r2euI39OVT/DdAaD5hBcHlj/EVUWDo1JACxqnLmPz96RB7u2M2bDDuIscPi6RGF3umAiYKgJGZjvGfCeU4595ptsUdphpBcUtUvO9/WPOiECcVgmcETuFqNzFVYJ2kDABbhzMceO5UfyZPWPgLp9GQoJcY2wHSME7t3B8z0o75KOQjyBRbOG5KwEzztFEOip/jI50S/fSMbmGq+JbhI+asKXl/mR14zq2iTk3uFKhWtjcsff9N+W4IM3clpBBnvvcRQ==
-Received: from BN1PR10CA0006.namprd10.prod.outlook.com (2603:10b6:408:e0::11)
- by MN2PR12MB4551.namprd12.prod.outlook.com (2603:10b6:208:263::22) with
+ bh=U8Hg90LR61pr4LwLxsbnlGf3IH/tS3z4I9w9KSgUIew=;
+ b=K12hpgxoVR4Baae40NPDA4y2oFmINQaR9wWXOco3OTeHRSolDAO1N6/izO6/Qrb2Ukzd8glH1qevj2CgZa/lGFSe3Qz54VHmFhPn/ESSFzAZ2BNTn0bEeA6cfBmMoi9gVHJZJh6mwTXeB2AI8G0tuyO4NZ8JbNjGmxF/IX56wgwnkYu8JV/xhAQF83HjaAow2Nid0gjz+ULjWT8NjvNWbU/iAMxe1wkb3UNuvAJkXQN76/xCI8mftAlNfOYYTHX/97hb9yA6/YwUCNJHgPyyz3ioGrERHqynFgForvn7j4ID+ZdyXpJf6caT/61/u/3Vao+Q8BAtIYnaAZ4rDgDB2Q==
+Received: from BN9PR03CA0059.namprd03.prod.outlook.com (2603:10b6:408:fb::34)
+ by PH8PR12MB6697.namprd12.prod.outlook.com (2603:10b6:510:1cc::12) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.20; Fri, 23 Sep
- 2022 21:29:55 +0000
-Received: from BN8NAM11FT095.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:e0:cafe::67) by BN1PR10CA0006.outlook.office365.com
- (2603:10b6:408:e0::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.16; Fri, 23 Sep
+ 2022 21:29:57 +0000
+Received: from BN8NAM11FT040.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:fb:cafe::fe) by BN9PR03CA0059.outlook.office365.com
+ (2603:10b6:408:fb::34) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.20 via Frontend
- Transport; Fri, 23 Sep 2022 21:29:55 +0000
+ Transport; Fri, 23 Sep 2022 21:29:57 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=fail action=none header.from=xilinx.com;
@@ -47,26 +47,26 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
 Received: from SATLEXMB03.amd.com (165.204.84.17) by
- BN8NAM11FT095.mail.protection.outlook.com (10.13.176.206) with Microsoft SMTP
+ BN8NAM11FT040.mail.protection.outlook.com (10.13.177.166) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5654.14 via Frontend Transport; Fri, 23 Sep 2022 21:29:55 +0000
+ 15.20.5654.14 via Frontend Transport; Fri, 23 Sep 2022 21:29:56 +0000
 Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB03.amd.com
  (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Fri, 23 Sep
- 2022 16:29:54 -0500
+ 2022 16:29:56 -0500
 Received: from xcbecree41x.xilinx.com (10.180.168.240) by SATLEXMB03.amd.com
  (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28 via Frontend
- Transport; Fri, 23 Sep 2022 16:29:53 -0500
+ Transport; Fri, 23 Sep 2022 16:29:54 -0500
 From:   <ecree@xilinx.com>
 To:     <netdev@vger.kernel.org>, <linux-net-drivers@amd.com>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
         <edumazet@google.com>, <habetsm.xilinx@gmail.com>,
         Edward Cree <ecree.xilinx@gmail.com>,
         Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>
-Subject: [PATCH net-next 3/6] sfc: optional logging of TC offload errors
-Date:   Fri, 23 Sep 2022 22:05:35 +0100
-Message-ID: <4d0739086b12813e9858bc96e1a9e4689a202f80.1663962653.git.ecree.xilinx@gmail.com>
+Subject: [PATCH net-next 4/6] sfc: add a hashtable for offloaded TC rules
+Date:   Fri, 23 Sep 2022 22:05:36 +0100
+Message-ID: <d01262d8c5162f3ee740554b10e8d062bdc05e51.1663962653.git.ecree.xilinx@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <cover.1663962652.git.ecree.xilinx@gmail.com>
 References: <cover.1663962652.git.ecree.xilinx@gmail.com>
@@ -75,23 +75,23 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT095:EE_|MN2PR12MB4551:EE_
-X-MS-Office365-Filtering-Correlation-Id: bfdfb946-ef2f-404a-7946-08da9daac20f
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT040:EE_|PH8PR12MB6697:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6a70660c-0332-4269-11fb-08da9daac320
 X-MS-Exchange-SenderADCheck: 0
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Hs723wljy+cHK27D9EhU0A0W0wnsYhQ2achln8HZyRniEUyvg/PJkMn5Oa1vZA7uFJrXDxi5It8eQmNRizBxHJmXkxG/7kfryto9vKRDWbz/5P1jvmHpwzkXQgDV0T6Mtaj1F1uXUA5DYKQMXkuhxtAw994PwNp3V8Kbr9Fwus7T9mf6hk9p57D8w4OGj9cG9GyndvWdyFlKv6QZBzTiHzYo9WUkfzU3uerNNtypQ9aVuym9ZAwSW5/vattuUNTZgJyYBeCwoNxfdCvaYqzJdYm6qsRMk1F9v0NcCxAwFzKuYGdMOSots3nyInWYVNK45hfhq7GQMvCB5+f/eo63cwyTL6pO/XLQTdtYiukwYiXkBfY5upQDQqi3BEn/uEAxmnn726ocSl3d3hfEdHl87CeXjUi0IJ6yy/7a/1lydX1OPe9Ri7qAjEg3bmBaiWkpUrLsEKlHj2crKlTMIMPABSqWu4WlkLBDMRRHZFgw5dKtj13jLDhYB6duAtOREsH/AiVyBgj00HfZNSa42M0HT7ovwhSK9crqSPwpvHvVOjHNa8JfY31iRCp8w9Cw1y6WDsH20NRwFn3zGtIR/c/f2OqXdAAqSOt0i3GeSRa8ltFcj294T74EGXNzknEWXvnpPsC29rnTovvOJHmBTh5gx503bYhj+0XGEQBl2PkwHmGlRXjpPH54SHPvO4RAxuyA0kzbfB5ivk7NRjfoBkaitVi6ykOGuMm7OHPEE3LCCfPifJDl3XXD7LkXI58IL8eX/GYY8KWD7GiDD8vebTm5YZSeYwPBPm0V3Gjlsj9LoQNxpVABbCxQpfmYdE9cgEHf
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(376002)(136003)(396003)(346002)(451199015)(36840700001)(40470700004)(46966006)(82310400005)(82740400003)(36860700001)(8676002)(4326008)(70206006)(70586007)(110136005)(316002)(2876002)(54906003)(2906002)(8936002)(41300700001)(83380400001)(26005)(47076005)(186003)(336012)(42882007)(9686003)(5660300002)(478600001)(6666004)(55446002)(36756003)(40460700003)(81166007)(40480700001)(356005)(83170400001)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: XQFhnw41IBkS+wQU6Rigr4wF7rKQsDLXfFAn2CpMJXgxdfuo7ZOMltNBeidbGsJ0CaNgQhXqLbOQpa2ttS6W88Oj/bLdsqR1nOzs1bmiA6cM37+MsLQHbgvgDpVbLMbKhA6jTl5DIZOyi+dGgHrjGpOzxqO6XoMoZ6IkwY4cD2JZk6gRy7yYl3SRhQmxk02gIkYKPRUW/hubw+nxtSxbJ7SCkX1M3DPCoSH5sOAPt0ladqhrsq7nM8oe1LgRwkCV1MGMJsf9eg0wUckt+uPhJ4MuCpMydLvmnWhQcq1j5Ew5eoV9KIEXUGf3TCCMfMcGT9mhhrleS5XiyQ/PgycVSO8TY/JbnPoASVy7IdomzJNoPQchO5A6/7j87oF/WkG89/EvNuD0D/CplzaWlqpTHlWkhDarxeF0KGC3fkpS227LL4cKBV0Mz55SU2yaXvm8UZPJ0ehXyAcsuJxVqwRkHiUe1gSDpXA9I2B5Js8V1L05qcV9HPuTpjRkdgdyQ5cg5epuQxpKzEt7v9PkeeCZiX2AgokcPcnspSS4VpIyqGUpTiLGz6QGD++ySpTjZ9NfXKsfiqdRY9cj7NTRGtf7SUqManDm2mo+x6g6qZvebtenKfxJjPftHOEQ9R2gYZ0wc5eIrNZaFeyZ60LfoFJdqZ51hcYx2r9OM9h6r2NHhwEG5p3924pHeLOqNYzNfDk3qvzBlU8LgKlHBPxgeWnGtQVA06ipkuh3nRGZnwGnb+72Y2vtkUW5N8HoX3+99pk169JlF5A4FgHE9jk89TnSA/kqoA6PJVgSTQg05pGqS6qCjlxdzYGnP4Ow2XLGPRBZ
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(346002)(376002)(39860400002)(396003)(136003)(451199015)(46966006)(40470700004)(36840700001)(478600001)(110136005)(54906003)(8676002)(316002)(70586007)(4326008)(6666004)(356005)(26005)(36860700001)(70206006)(9686003)(82310400005)(336012)(83170400001)(5660300002)(41300700001)(36756003)(82740400003)(2876002)(47076005)(40480700001)(2906002)(81166007)(186003)(40460700003)(83380400001)(42882007)(8936002)(55446002)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2022 21:29:55.1360
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2022 21:29:56.9381
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: bfdfb946-ef2f-404a-7946-08da9daac20f
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6a70660c-0332-4269-11fb-08da9daac320
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT095.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT040.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4551
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB6697
 X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=no
@@ -104,161 +104,246 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Edward Cree <ecree.xilinx@gmail.com>
 
-TC offload support will involve complex limitations on what matches and
- actions a rule can do, in some cases potentially depending on rules
- already offloaded.  So add an ethtool private flag "log-tc-errors" which
- controls reporting the reasons for un-offloadable TC rules at NETIF_INFO.
+Nothing inserts into this table yet, but we have code to remove rules
+ on FLOW_CLS_DESTROY or at driver teardown time, in both cases also
+ attempting to remove the corresponding hardware rules.
 
 Reviewed-by: Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>
 Signed-off-by: Edward Cree <ecree.xilinx@gmail.com>
 ---
- drivers/net/ethernet/sfc/ef100_ethtool.c  |  2 ++
- drivers/net/ethernet/sfc/ethtool_common.c | 37 +++++++++++++++++++++++
- drivers/net/ethernet/sfc/ethtool_common.h |  2 ++
- drivers/net/ethernet/sfc/net_driver.h     |  2 ++
- drivers/net/ethernet/sfc/tc.h             | 18 +++++++++++
- 5 files changed, 61 insertions(+)
+ drivers/net/ethernet/sfc/ef100_rep.c |   2 +-
+ drivers/net/ethernet/sfc/ef100_rep.h |   1 +
+ drivers/net/ethernet/sfc/tc.c        | 115 ++++++++++++++++++++++++++-
+ drivers/net/ethernet/sfc/tc.h        |   7 ++
+ 4 files changed, 123 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/ef100_ethtool.c b/drivers/net/ethernet/sfc/ef100_ethtool.c
-index 702abbe59b76..135ece2f1375 100644
---- a/drivers/net/ethernet/sfc/ef100_ethtool.c
-+++ b/drivers/net/ethernet/sfc/ef100_ethtool.c
-@@ -43,6 +43,8 @@ const struct ethtool_ops ef100_ethtool_ops = {
- 	.get_pauseparam         = efx_ethtool_get_pauseparam,
- 	.set_pauseparam         = efx_ethtool_set_pauseparam,
- 	.get_sset_count		= efx_ethtool_get_sset_count,
-+	.get_priv_flags		= efx_ethtool_get_priv_flags,
-+	.set_priv_flags		= efx_ethtool_set_priv_flags,
- 	.self_test		= efx_ethtool_self_test,
- 	.get_strings		= efx_ethtool_get_strings,
- 	.get_link_ksettings	= efx_ethtool_get_link_ksettings,
-diff --git a/drivers/net/ethernet/sfc/ethtool_common.c b/drivers/net/ethernet/sfc/ethtool_common.c
-index a8cbceeb301b..6649a2327d03 100644
---- a/drivers/net/ethernet/sfc/ethtool_common.c
-+++ b/drivers/net/ethernet/sfc/ethtool_common.c
-@@ -101,6 +101,14 @@ static const struct efx_sw_stat_desc efx_sw_stat_desc[] = {
- 
- #define EFX_ETHTOOL_SW_STAT_COUNT ARRAY_SIZE(efx_sw_stat_desc)
- 
-+static const char efx_ethtool_priv_flags_strings[][ETH_GSTRING_LEN] = {
-+	"log-tc-errors",
-+};
-+
-+#define EFX_ETHTOOL_PRIV_FLAGS_LOG_TC_ERRS		BIT(0)
-+
-+#define EFX_ETHTOOL_PRIV_FLAGS_COUNT ARRAY_SIZE(efx_ethtool_priv_flags_strings)
-+
- void efx_ethtool_get_drvinfo(struct net_device *net_dev,
- 			     struct ethtool_drvinfo *info)
- {
-@@ -452,6 +460,8 @@ int efx_ethtool_get_sset_count(struct net_device *net_dev, int string_set)
- 		       efx_ptp_describe_stats(efx, NULL);
- 	case ETH_SS_TEST:
- 		return efx_ethtool_fill_self_tests(efx, NULL, NULL, NULL);
-+	case ETH_SS_PRIV_FLAGS:
-+		return EFX_ETHTOOL_PRIV_FLAGS_COUNT;
- 	default:
- 		return -EINVAL;
- 	}
-@@ -478,12 +488,39 @@ void efx_ethtool_get_strings(struct net_device *net_dev,
- 	case ETH_SS_TEST:
- 		efx_ethtool_fill_self_tests(efx, NULL, strings, NULL);
- 		break;
-+	case ETH_SS_PRIV_FLAGS:
-+		for (i = 0; i < EFX_ETHTOOL_PRIV_FLAGS_COUNT; i++)
-+			strscpy(strings + i * ETH_GSTRING_LEN,
-+				efx_ethtool_priv_flags_strings[i],
-+				ETH_GSTRING_LEN);
-+		break;
- 	default:
- 		/* No other string sets */
- 		break;
- 	}
+diff --git a/drivers/net/ethernet/sfc/ef100_rep.c b/drivers/net/ethernet/sfc/ef100_rep.c
+index 0a631e0c9914..869f806a6b67 100644
+--- a/drivers/net/ethernet/sfc/ef100_rep.c
++++ b/drivers/net/ethernet/sfc/ef100_rep.c
+@@ -135,7 +135,7 @@ static void efx_ef100_rep_get_stats64(struct net_device *dev,
+ 	stats->tx_errors = atomic64_read(&efv->stats.tx_errors);
  }
  
-+u32 efx_ethtool_get_priv_flags(struct net_device *net_dev)
+-static const struct net_device_ops efx_ef100_rep_netdev_ops = {
++const struct net_device_ops efx_ef100_rep_netdev_ops = {
+ 	.ndo_open		= efx_ef100_rep_open,
+ 	.ndo_stop		= efx_ef100_rep_close,
+ 	.ndo_start_xmit		= efx_ef100_rep_xmit,
+diff --git a/drivers/net/ethernet/sfc/ef100_rep.h b/drivers/net/ethernet/sfc/ef100_rep.h
+index 070f700893c1..c21bc716f847 100644
+--- a/drivers/net/ethernet/sfc/ef100_rep.h
++++ b/drivers/net/ethernet/sfc/ef100_rep.h
+@@ -66,4 +66,5 @@ void efx_ef100_rep_rx_packet(struct efx_rep *efv, struct efx_rx_buffer *rx_buf);
+  * Caller must hold rcu_read_lock().
+  */
+ struct efx_rep *efx_ef100_find_rep_by_mport(struct efx_nic *efx, u16 mport);
++extern const struct net_device_ops efx_ef100_rep_netdev_ops;
+ #endif /* EF100_REP_H */
+diff --git a/drivers/net/ethernet/sfc/tc.c b/drivers/net/ethernet/sfc/tc.c
+index cb7f76c74e66..51e75feb7a42 100644
+--- a/drivers/net/ethernet/sfc/tc.c
++++ b/drivers/net/ethernet/sfc/tc.c
+@@ -15,6 +15,39 @@
+ #include "ef100_rep.h"
+ #include "efx.h"
+ 
++#define EFX_EFV_PF	NULL
++/* Look up the representor information (efv) for a device.
++ * May return NULL for the PF (us), or an error pointer for a device that
++ * isn't supported as a TC offload endpoint
++ */
++struct efx_rep *efx_tc_flower_lookup_efv(struct efx_nic *efx,
++					 struct net_device *dev)
 +{
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
-+	u32 ret_flags = 0;
++	struct efx_rep *efv;
 +
-+	if (efx->log_tc_errs)
-+		ret_flags |= EFX_ETHTOOL_PRIV_FLAGS_LOG_TC_ERRS;
-+
-+	return ret_flags;
++	if (!dev)
++		return ERR_PTR(-EOPNOTSUPP);
++	/* Is it us (the PF)? */
++	if (dev == efx->net_dev)
++		return EFX_EFV_PF;
++	/* Is it an efx vfrep at all? */
++	if (dev->netdev_ops != &efx_ef100_rep_netdev_ops)
++		return ERR_PTR(-EOPNOTSUPP);
++	/* Is it ours?  We don't support TC rules that include another
++	 * EF100's netdevices (not even on another port of the same NIC).
++	 */
++	efv = netdev_priv(dev);
++	if (efv->parent != efx)
++		return ERR_PTR(-EOPNOTSUPP);
++	return efv;
 +}
 +
-+int efx_ethtool_set_priv_flags(struct net_device *net_dev, u32 flags)
++static const struct rhashtable_params efx_tc_match_action_ht_params = {
++	.key_len	= sizeof(unsigned long),
++	.key_offset	= offsetof(struct efx_tc_flow_rule, cookie),
++	.head_offset	= offsetof(struct efx_tc_flow_rule, linkage),
++};
++
+ static void efx_tc_free_action_set(struct efx_nic *efx,
+ 				   struct efx_tc_action_set *act, bool in_hw)
+ {
+@@ -59,10 +92,74 @@ static void efx_tc_delete_rule(struct efx_nic *efx, struct efx_tc_flow_rule *rul
+ 	rule->fw_id = MC_CMD_MAE_ACTION_RULE_INSERT_OUT_ACTION_RULE_ID_NULL;
+ }
+ 
++static void efx_tc_flow_free(void *ptr, void *arg)
 +{
-+	struct efx_nic *efx = efx_netdev_priv(net_dev);
++	struct efx_tc_flow_rule *rule = ptr;
++	struct efx_nic *efx = arg;
 +
-+	efx->log_tc_errs =
-+		!!(flags & EFX_ETHTOOL_PRIV_FLAGS_LOG_TC_ERRS);
++	netif_err(efx, drv, efx->net_dev,
++		  "tc rule %lx still present at teardown, removing\n",
++		  rule->cookie);
 +
++	efx_mae_delete_rule(efx, rule->fw_id);
++
++	/* Release entries in subsidiary tables */
++	efx_tc_free_action_set_list(efx, &rule->acts, true);
++
++	kfree(rule);
++}
++
++static int efx_tc_flower_destroy(struct efx_nic *efx,
++				 struct net_device *net_dev,
++				 struct flow_cls_offload *tc)
++{
++	struct netlink_ext_ack *extack = tc->common.extack;
++	struct efx_tc_flow_rule *rule;
++
++	rule = rhashtable_lookup_fast(&efx->tc->match_action_ht, &tc->cookie,
++				      efx_tc_match_action_ht_params);
++	if (!rule) {
++		/* Only log a message if we're the ingress device.  Otherwise
++		 * it's a foreign filter and we might just not have been
++		 * interested (e.g. we might not have been the egress device
++		 * either).
++		 */
++		if (!IS_ERR(efx_tc_flower_lookup_efv(efx, net_dev)))
++			netif_warn(efx, drv, efx->net_dev,
++				   "Filter %lx not found to remove\n", tc->cookie);
++		NL_SET_ERR_MSG_MOD(extack, "Flow cookie not found in offloaded rules");
++		return -ENOENT;
++	}
++
++	/* Remove it from HW */
++	efx_tc_delete_rule(efx, rule);
++	/* Delete it from SW */
++	rhashtable_remove_fast(&efx->tc->match_action_ht, &rule->linkage,
++			       efx_tc_match_action_ht_params);
++	netif_dbg(efx, drv, efx->net_dev, "Removed filter %lx\n", rule->cookie);
++	kfree(rule);
 +	return 0;
 +}
 +
- void efx_ethtool_get_stats(struct net_device *net_dev,
- 			   struct ethtool_stats *stats,
- 			   u64 *data)
-diff --git a/drivers/net/ethernet/sfc/ethtool_common.h b/drivers/net/ethernet/sfc/ethtool_common.h
-index 659491932101..0afc74021a5e 100644
---- a/drivers/net/ethernet/sfc/ethtool_common.h
-+++ b/drivers/net/ethernet/sfc/ethtool_common.h
-@@ -27,6 +27,8 @@ int efx_ethtool_fill_self_tests(struct efx_nic *efx,
- int efx_ethtool_get_sset_count(struct net_device *net_dev, int string_set);
- void efx_ethtool_get_strings(struct net_device *net_dev, u32 string_set,
- 			     u8 *strings);
-+u32 efx_ethtool_get_priv_flags(struct net_device *net_dev);
-+int efx_ethtool_set_priv_flags(struct net_device *net_dev, u32 flags);
- void efx_ethtool_get_stats(struct net_device *net_dev,
- 			   struct ethtool_stats *stats __attribute__ ((unused)),
- 			   u64 *data);
-diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
-index 7ef823d7a89a..2e9ba0cfe848 100644
---- a/drivers/net/ethernet/sfc/net_driver.h
-+++ b/drivers/net/ethernet/sfc/net_driver.h
-@@ -855,6 +855,7 @@ enum efx_xdp_tx_queues_mode {
-  * @timer_max_ns: Interrupt timer maximum value, in nanoseconds
-  * @irq_rx_adaptive: Adaptive IRQ moderation enabled for RX event queues
-  * @irqs_hooked: Channel interrupts are hooked
-+ * @log_tc_errs: Error logging for TC filter insertion is enabled
-  * @irq_rx_mod_step_us: Step size for IRQ moderation for RX event queues
-  * @irq_rx_moderation_us: IRQ moderation time for RX event queues
-  * @msg_enable: Log message enable flags
-@@ -1017,6 +1018,7 @@ struct efx_nic {
- 	unsigned int timer_max_ns;
- 	bool irq_rx_adaptive;
- 	bool irqs_hooked;
-+	bool log_tc_errs;
- 	unsigned int irq_mod_step_us;
- 	unsigned int irq_rx_moderation_us;
- 	u32 msg_enable;
+ int efx_tc_flower(struct efx_nic *efx, struct net_device *net_dev,
+ 		  struct flow_cls_offload *tc, struct efx_rep *efv)
+ {
+-	return -EOPNOTSUPP;
++	int rc;
++
++	if (!efx->tc)
++		return -EOPNOTSUPP;
++
++	mutex_lock(&efx->tc->mutex);
++	switch (tc->command) {
++	case FLOW_CLS_DESTROY:
++		rc = efx_tc_flower_destroy(efx, net_dev, tc);
++		break;
++	default:
++		rc = -EOPNOTSUPP;
++		break;
++	}
++	mutex_unlock(&efx->tc->mutex);
++	return rc;
+ }
+ 
+ static int efx_tc_configure_default_rule(struct efx_nic *efx, u32 ing_port,
+@@ -239,6 +336,8 @@ void efx_fini_tc(struct efx_nic *efx)
+ 
+ int efx_init_struct_tc(struct efx_nic *efx)
+ {
++	int rc;
++
+ 	if (efx->type->is_vf)
+ 		return 0;
+ 
+@@ -247,6 +346,10 @@ int efx_init_struct_tc(struct efx_nic *efx)
+ 		return -ENOMEM;
+ 	INIT_LIST_HEAD(&efx->tc->block_list);
+ 
++	mutex_init(&efx->tc->mutex);
++	rc = rhashtable_init(&efx->tc->match_action_ht, &efx_tc_match_action_ht_params);
++	if (rc < 0)
++		goto fail_match_action_ht;
+ 	efx->tc->reps_filter_uc = -1;
+ 	efx->tc->reps_filter_mc = -1;
+ 	INIT_LIST_HEAD(&efx->tc->dflt.pf.acts.list);
+@@ -254,6 +357,11 @@ int efx_init_struct_tc(struct efx_nic *efx)
+ 	INIT_LIST_HEAD(&efx->tc->dflt.wire.acts.list);
+ 	efx->tc->dflt.wire.fw_id = MC_CMD_MAE_ACTION_RULE_INSERT_OUT_ACTION_RULE_ID_NULL;
+ 	return 0;
++fail_match_action_ht:
++	mutex_destroy(&efx->tc->mutex);
++	kfree(efx->tc);
++	efx->tc = NULL;
++	return rc;
+ }
+ 
+ void efx_fini_struct_tc(struct efx_nic *efx)
+@@ -261,10 +369,15 @@ void efx_fini_struct_tc(struct efx_nic *efx)
+ 	if (!efx->tc)
+ 		return;
+ 
++	mutex_lock(&efx->tc->mutex);
+ 	EFX_WARN_ON_PARANOID(efx->tc->dflt.pf.fw_id !=
+ 			     MC_CMD_MAE_ACTION_RULE_INSERT_OUT_ACTION_RULE_ID_NULL);
+ 	EFX_WARN_ON_PARANOID(efx->tc->dflt.wire.fw_id !=
+ 			     MC_CMD_MAE_ACTION_RULE_INSERT_OUT_ACTION_RULE_ID_NULL);
++	rhashtable_free_and_destroy(&efx->tc->match_action_ht, efx_tc_flow_free,
++				    efx);
++	mutex_unlock(&efx->tc->mutex);
++	mutex_destroy(&efx->tc->mutex);
+ 	kfree(efx->tc);
+ 	efx->tc = NULL;
+ }
 diff --git a/drivers/net/ethernet/sfc/tc.h b/drivers/net/ethernet/sfc/tc.h
-index 7b1a6fa0097d..3e2299c5a885 100644
+index 3e2299c5a885..94a04374e505 100644
 --- a/drivers/net/ethernet/sfc/tc.h
 +++ b/drivers/net/ethernet/sfc/tc.h
-@@ -14,6 +14,24 @@
+@@ -12,6 +12,7 @@
+ #ifndef EFX_TC_H
+ #define EFX_TC_H
  #include <net/flow_offload.h>
++#include <linux/rhashtable.h>
  #include "net_driver.h"
  
-+/* Error reporting: convenience macros.  For indicating why a given filter
-+ * insertion is not supported; errors in internal operation or in the
-+ * hardware should be netif_err()s instead.
-+ */
-+/* Used when error message is constant. */
-+#define EFX_TC_ERR_MSG(efx, extack, message)	do {			\
-+	NL_SET_ERR_MSG_MOD(extack, message);				\
-+	if (efx->log_tc_errs)						\
-+		netif_info(efx, drv, efx->net_dev, "%s\n", message);	\
-+} while (0)
-+/* Used when error message is not constant; caller should also supply a
-+ * constant extack message with NL_SET_ERR_MSG_MOD().
-+ */
-+#define efx_tc_err(efx, fmt, args...)	do {		\
-+if (efx->log_tc_errs)					\
-+	netif_info(efx, drv, efx->net_dev, fmt, ##args);\
-+} while (0)
-+
- struct efx_tc_action_set {
- 	u16 deliver:1;
- 	u32 dest_mport;
+ /* Error reporting: convenience macros.  For indicating why a given filter
+@@ -55,6 +56,8 @@ struct efx_tc_action_set_list {
+ };
+ 
+ struct efx_tc_flow_rule {
++	unsigned long cookie;
++	struct rhash_head linkage;
+ 	struct efx_tc_match match;
+ 	struct efx_tc_action_set_list acts;
+ 	u32 fw_id;
+@@ -69,6 +72,8 @@ enum efx_tc_rule_prios {
+  * struct efx_tc_state - control plane data for TC offload
+  *
+  * @block_list: List of &struct efx_tc_block_binding
++ * @mutex: Used to serialise operations on TC hashtables
++ * @match_action_ht: Hashtable of TC match-action rules
+  * @reps_mport_id: MAE port allocated for representor RX
+  * @reps_filter_uc: VNIC filter for representor unicast RX (promisc)
+  * @reps_filter_mc: VNIC filter for representor multicast RX (allmulti)
+@@ -81,6 +86,8 @@ enum efx_tc_rule_prios {
+  */
+ struct efx_tc_state {
+ 	struct list_head block_list;
++	struct mutex mutex;
++	struct rhashtable match_action_ht;
+ 	u32 reps_mport_id, reps_mport_vport_id;
+ 	s32 reps_filter_uc, reps_filter_mc;
+ 	struct {
