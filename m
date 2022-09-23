@@ -2,401 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E7C955E72C8
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 06:20:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4DAB5E72CD
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 06:20:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231367AbiIWEUP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 00:20:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38850 "EHLO
+        id S231610AbiIWEUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 00:20:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229831AbiIWEUO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 00:20:14 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 361C2AB1A1
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 21:20:13 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id e5so11286079pfl.2
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 21:20:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=205dLX8y2q2+b6YRDogu2BeRc4V1RfS3f4+K+opL0C8=;
-        b=MaLxC07xiQFv1rxLH6K0CYalOwcz/wG/2N093r0Ci0zI3qzixDAKlS1QLIplydd0bZ
-         iQjknnwXljao1IWi0JDRba7fIqoESjvFYDU4k2/QusNOU2lkzok4Ec8/3FZyYab+Dlqw
-         2Cp1A6ohOHFSuLazRfvoFOMPpaO4fE0J3JVn0npQ4z2o5cDg0lcbm5KmY3AF4WIrVCRN
-         2EfkN5CNQECOX8y/OqnE6mQqakI/zUzfF/D9OkpOFOU6WzuiJqx5uEuGm/QNSed1l8xf
-         Ul3dRijcuSOyHHIdWl0Lssm3rj0siIFW67VVBqMopmNk9N4cd93alo29p6Ilu0swzMQh
-         HigQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=205dLX8y2q2+b6YRDogu2BeRc4V1RfS3f4+K+opL0C8=;
-        b=14NbujQY0FEWpCIblXWU+dAqeMcrXCxRjaL7dZjn5Uyu8ay6bxlrxwImruvtNbyYyp
-         YRVRzS2dwCt5RupAKVe9xtg+hs64+SPfB1kd39hg+qOcqV439bQ77ibmZAIHDjGnZw3Q
-         /6wexvhYybgON97gIjEHC2TqdhlmjCyLBG04ChYqHoHlhoT12/f4TYCy5icmeBZ6KDw4
-         9rAOwxbfVY9Am2EqM0Bd/Uzk/h8cfsnt173BDWDGf0VLxDv2xNdajzAGJ0W1fDxhFsV8
-         7VEP0xK5NRLTxqozPPTw6tGPYl2Iyzj5gOGnrgWqglq/APDcICRuobOycUsNFqA6VRTs
-         z3Cg==
-X-Gm-Message-State: ACrzQf39FiG52omHtuH0zle/KRg1IbX+pUGWDPZxd443iYR3cgzTCBrr
-        RORKGombn7JEO4JMWiXuAkSIiepqMQ/rBQ==
-X-Google-Smtp-Source: AMsMyM5Hdu3/tYno99LGaf8us21Y19suQD6AX9GhGfVlXieu4UaFzauUiOmYgzJ8vKQ0rcugxQUvwg==
-X-Received: by 2002:a63:ff4f:0:b0:439:61d6:197 with SMTP id s15-20020a63ff4f000000b0043961d60197mr5867993pgk.67.1663906812502;
-        Thu, 22 Sep 2022 21:20:12 -0700 (PDT)
-Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id d185-20020a621dc2000000b00540b979c493sm5144787pfd.55.2022.09.22.21.20.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Sep 2022 21:20:12 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     David Ahern <dsahern@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Guillaume Nault <gnault@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH iproute2-next] rtnetlink: add new function rtnl_echo_talk()
-Date:   Fri, 23 Sep 2022 12:20:00 +0800
-Message-Id: <20220923042000.602250-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.37.2
+        with ESMTP id S229810AbiIWEUo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 00:20:44 -0400
+Received: from bmailout2.hostsharing.net (bmailout2.hostsharing.net [83.223.78.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 419C7F3100;
+        Thu, 22 Sep 2022 21:20:42 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout2.hostsharing.net (Postfix) with ESMTPS id 31C39280973F2;
+        Fri, 23 Sep 2022 06:20:37 +0200 (CEST)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id 1690F4EA97; Fri, 23 Sep 2022 06:20:37 +0200 (CEST)
+Date:   Fri, 23 Sep 2022 06:20:37 +0200
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org,
+        Steve Glendinning <steve.glendinning@shawell.net>,
+        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
+        Andre Edich <andre.edich@microchip.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Martyn Welch <martyn.welch@collabora.com>,
+        Gabriel Hojda <ghojda@yo2urs.ro>,
+        Christoph Fritz <chf.fritz@googlemail.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Philipp Rosenberger <p.rosenberger@kunbus.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        Ferry Toth <fntoth@gmail.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>
+Subject: Re: [PATCH net-next v3 5/7] usbnet: smsc95xx: Forward PHY interrupts
+ to PHY driver to avoid polling
+Message-ID: <20220923042037.GA10101@wunner.de>
+References: <e598a232-6c78-782a-316f-77902644ad6c@samsung.com>
+ <20220826071924.GA21264@wunner.de>
+ <2b1a1588-505e-dff3-301d-bfc1fb14d685@samsung.com>
+ <20220826075331.GA32117@wunner.de>
+ <093730dd-2f2c-bd0b-bd13-b97f8a2898bd@samsung.com>
+ <81c0f21f-f8f1-f7b3-c52f-c6a564c6a445@samsung.com>
+ <20220918191333.GA2107@wunner.de>
+ <d963b1a3-e18d-25d5-f07c-42d17d382174@gmail.com>
+ <20220918205516.GA13914@wunner.de>
+ <adb2de4e-0ad0-a94a-93e6-572f58a2141b@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <adb2de4e-0ad0-a94a-93e6-572f58a2141b@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a new function rtnl_echo_talk() that could be used when the
-sub-component supports NLM_F_ECHO flag. With this function we can
-remove the redundant code added by commit b264b4c6568c7 ("ip: add
-NLM_F_ECHO support").
+On Sun, Sep 18, 2022 at 03:11:47PM -0700, Florian Fainelli wrote:
+> On 9/18/2022 1:55 PM, Lukas Wunner wrote:
+> > On Sun, Sep 18, 2022 at 01:41:13PM -0700, Florian Fainelli wrote:
+> > > On 9/18/2022 12:13 PM, Lukas Wunner wrote:
+> > > > On Mon, Aug 29, 2022 at 01:40:05PM +0200, Marek Szyprowski wrote:
+> > > > > I've finally traced what has happened. I've double checked and indeed
+> > > > > the 1758bde2e4aa commit fixed the issue on next-20220516 kernel and as
+> > > > > such it has been merged to linus tree. Then the commit 744d23c71af3
+> > > > > ("net: phy: Warn about incorrect mdio_bus_phy_resume() state") has been
+> > > > > merged to linus tree, which triggers a new warning during the
+> > > > > suspend/resume cycle with smsc95xx driver. Please note, that the
+> > > > > smsc95xx still works fine regardless that warning. However it look that
+> > > > > the commit 1758bde2e4aa only hide a real problem, which the commit
+> > > > > 744d23c71af3 warns about.
+> > > > > 
+> > > > > Probably a proper fix for smsc95xx driver is to call phy_stop/start
+> > > > > during suspend/resume cycle, like in similar patches for other drivers:
+> > > > > 
+> > > > > https://lore.kernel.org/all/20220825023951.3220-1-f.fainelli@gmail.com/
+> > > > 
+> > > > No, smsc95xx.c relies on mdio_bus_phy_{suspend,resume}() and there's
+> > > > no need to call phy_{stop,start}() >
+> > > > 744d23c71af3 was flawed and 6dbe852c379f has already fixed a portion
+> > > > of the fallout.
+> > > > 
+> > > > However the WARN() condition still seems too broad and causes false
+> > > > positives such as in your case.  In particular, mdio_bus_phy_suspend()
+> > > > may leave the device in PHY_UP state, so that's a legal state that
+> > > > needs to be exempted from the WARN().
+> > > 
+> > > How is that a legal state when the PHY should be suspended? Even if we are
+> > > interrupt driven, the state machine should be stopped, does not mean that
+> > > Wake-on-LAN or other activity interrupts should be disabled.
+> > 
+> > mdio_bus_phy_suspend()
+> >    phy_stop_machine()
+> >      phydev->state = PHY_UP  #  if (phydev->state >= PHY_UP)
+> > 
+> > So apparently PHY_UP is a legal state for a suspended PHY.
+> 
+> It is not clear to me why, however. Sure it does ensure that when we resume
+> we set needs_aneg = true but this feels like a hack in the sense that we are
+> setting the PHY in a provisional state in anticipation for what might come
+> next.
 
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
- include/libnetlink.h |  4 ++++
- include/utils.h      |  1 -
- ip/ipaddress.c       | 24 +-----------------------
- ip/iplink.c          | 20 +-------------------
- ip/ipnexthop.c       | 23 +----------------------
- ip/iproute.c         | 24 +-----------------------
- ip/iprule.c          | 24 +-----------------------
- lib/libnetlink.c     | 31 +++++++++++++++++++++++++++++++
- 8 files changed, 40 insertions(+), 111 deletions(-)
+I've just submitted a fix so that at least v6.0 doesn't get released
+with a false-positive WARN splat on resume:
 
-diff --git a/include/libnetlink.h b/include/libnetlink.h
-index a7b0f352..e9125f04 100644
---- a/include/libnetlink.h
-+++ b/include/libnetlink.h
-@@ -44,6 +44,7 @@ struct ipstats_req {
- };
- 
- extern int rcvbuf;
-+extern int echo_request;
- 
- int rtnl_open(struct rtnl_handle *rth, unsigned int subscriptions)
- 	__attribute__((warn_unused_result));
-@@ -171,6 +172,9 @@ int rtnl_dump_filter_errhndlr_nc(struct rtnl_handle *rth,
- #define rtnl_dump_filter_errhndlr(rth, filter, farg, errhndlr, earg) \
- 	rtnl_dump_filter_errhndlr_nc(rth, filter, farg, errhndlr, earg, 0)
- 
-+int rtnl_echo_talk(struct rtnl_handle *rtnl, struct nlmsghdr *n,
-+		   int (*print_info)(struct nlmsghdr *n, void *arg))
-+	__attribute__((warn_unused_result));
- int rtnl_talk(struct rtnl_handle *rtnl, struct nlmsghdr *n,
- 	      struct nlmsghdr **answer)
- 	__attribute__((warn_unused_result));
-diff --git a/include/utils.h b/include/utils.h
-index 2eb80b3e..eeb23a64 100644
---- a/include/utils.h
-+++ b/include/utils.h
-@@ -36,7 +36,6 @@ extern int max_flush_loops;
- extern int batch_mode;
- extern int numeric;
- extern bool do_all;
--extern int echo_request;
- 
- #ifndef CONFDIR
- #define CONFDIR		"/etc/iproute2"
-diff --git a/ip/ipaddress.c b/ip/ipaddress.c
-index 986cfbc3..89acfeaa 100644
---- a/ip/ipaddress.c
-+++ b/ip/ipaddress.c
-@@ -2422,11 +2422,6 @@ static int ipaddr_modify(int cmd, int flags, int argc, char **argv)
- 	__u32 preferred_lft = INFINITY_LIFE_TIME;
- 	__u32 valid_lft = INFINITY_LIFE_TIME;
- 	unsigned int ifa_flags = 0;
--	struct nlmsghdr *answer;
--	int ret;
--
--	if (echo_request)
--		req.n.nlmsg_flags |= NLM_F_ECHO | NLM_F_ACK;
- 
- 	while (argc > 0) {
- 		if (strcmp(*argv, "peer") == 0 ||
-@@ -2608,24 +2603,7 @@ static int ipaddr_modify(int cmd, int flags, int argc, char **argv)
- 		return -1;
- 	}
- 
--	if (echo_request)
--		ret = rtnl_talk(&rth, &req.n, &answer);
--	else
--		ret = rtnl_talk(&rth, &req.n, NULL);
--
--	if (ret < 0)
--		return -2;
--
--	if (echo_request) {
--		new_json_obj(json);
--		open_json_object(NULL);
--		print_addrinfo(answer, stdout);
--		close_json_object();
--		delete_json_obj();
--		free(answer);
--	}
--
--	return 0;
-+	return rtnl_echo_talk(&rth, &req.n, print_addrinfo);
- }
- 
- int do_ipaddr(int argc, char **argv)
-diff --git a/ip/iplink.c b/ip/iplink.c
-index ad22f2d7..2b8602e4 100644
---- a/ip/iplink.c
-+++ b/ip/iplink.c
-@@ -1073,16 +1073,12 @@ static int iplink_modify(int cmd, unsigned int flags, int argc, char **argv)
- 		.n.nlmsg_type = cmd,
- 		.i.ifi_family = preferred_family,
- 	};
--	struct nlmsghdr *answer;
- 	int ret;
- 
- 	ret = iplink_parse(argc, argv, &req, &type);
- 	if (ret < 0)
- 		return ret;
- 
--	if (echo_request)
--		req.n.nlmsg_flags |= NLM_F_ECHO | NLM_F_ACK;
--
- 	if (type) {
- 		struct link_util *lu;
- 		struct rtattr *linkinfo;
-@@ -1127,23 +1123,9 @@ static int iplink_modify(int cmd, unsigned int flags, int argc, char **argv)
- 		return -1;
- 	}
- 
--	if (echo_request)
--		ret = rtnl_talk(&rth, &req.n, &answer);
--	else
--		ret = rtnl_talk(&rth, &req.n, NULL);
--
--	if (ret < 0)
-+	if(rtnl_echo_talk(&rth, &req.n, print_linkinfo) < 0)
- 		return -2;
- 
--	if (echo_request) {
--		new_json_obj(json);
--		open_json_object(NULL);
--		print_linkinfo(answer, stdout);
--		close_json_object();
--		delete_json_obj();
--		free(answer);
--	}
--
- 	/* remove device from cache; next use can refresh with new data */
- 	ll_drop_by_index(req.i.ifi_index);
- 
-diff --git a/ip/ipnexthop.c b/ip/ipnexthop.c
-index 59f8f2fb..6da44414 100644
---- a/ip/ipnexthop.c
-+++ b/ip/ipnexthop.c
-@@ -921,10 +921,6 @@ static int ipnh_modify(int cmd, unsigned int flags, int argc, char **argv)
- 	};
- 	struct nlmsghdr *answer;
- 	__u32 nh_flags = 0;
--	int ret;
--
--	if (echo_request)
--		req.n.nlmsg_flags |= NLM_F_ECHO | NLM_F_ACK;
- 
- 	while (argc > 0) {
- 		if (!strcmp(*argv, "id")) {
-@@ -1004,24 +1000,7 @@ static int ipnh_modify(int cmd, unsigned int flags, int argc, char **argv)
- 
- 	req.nhm.nh_flags = nh_flags;
- 
--	if (echo_request)
--		ret = rtnl_talk(&rth, &req.n, &answer);
--	else
--		ret = rtnl_talk(&rth, &req.n, NULL);
--
--	if (ret < 0)
--		return -2;
--
--	if (echo_request) {
--		new_json_obj(json);
--		open_json_object(NULL);
--		print_nexthop_nocache(answer, (void *)stdout);
--		close_json_object();
--		delete_json_obj();
--		free(answer);
--	}
--
--	return 0;
-+	return rtnl_echo_talk(&rth, &req.n, print_nexthop_nocache);
- }
- 
- static int ipnh_get_id(__u32 id)
-diff --git a/ip/iproute.c b/ip/iproute.c
-index 4774aac0..aefc884b 100644
---- a/ip/iproute.c
-+++ b/ip/iproute.c
-@@ -1123,7 +1123,6 @@ static int iproute_modify(int cmd, unsigned int flags, int argc, char **argv)
- 	};
- 	char  mxbuf[256];
- 	struct rtattr *mxrta = (void *)mxbuf;
--	struct nlmsghdr *answer;
- 	unsigned int mxlock = 0;
- 	char  *d = NULL;
- 	int gw_ok = 0;
-@@ -1134,7 +1133,6 @@ static int iproute_modify(int cmd, unsigned int flags, int argc, char **argv)
- 	int raw = 0;
- 	int type_ok = 0;
- 	__u32 nhid = 0;
--	int ret;
- 
- 	if (cmd != RTM_DELROUTE) {
- 		req.r.rtm_protocol = RTPROT_BOOT;
-@@ -1142,9 +1140,6 @@ static int iproute_modify(int cmd, unsigned int flags, int argc, char **argv)
- 		req.r.rtm_type = RTN_UNICAST;
- 	}
- 
--	if (echo_request)
--		req.n.nlmsg_flags |= NLM_F_ECHO | NLM_F_ACK;
--
- 	mxrta->rta_type = RTA_METRICS;
- 	mxrta->rta_len = RTA_LENGTH(0);
- 
-@@ -1591,24 +1586,7 @@ static int iproute_modify(int cmd, unsigned int flags, int argc, char **argv)
- 	if (!type_ok && req.r.rtm_family == AF_MPLS)
- 		req.r.rtm_type = RTN_UNICAST;
- 
--	if (echo_request)
--		ret = rtnl_talk(&rth, &req.n, &answer);
--	else
--		ret = rtnl_talk(&rth, &req.n, NULL);
--
--	if (ret < 0)
--		return -2;
--
--	if (echo_request) {
--		new_json_obj(json);
--		open_json_object(NULL);
--		print_route(answer, (void *)stdout);
--		close_json_object();
--		delete_json_obj();
--		free(answer);
--	}
--
--	return 0;
-+	return rtnl_echo_talk(&rth, &req.n, print_route);
- }
- 
- static int iproute_flush_cache(void)
-diff --git a/ip/iprule.c b/ip/iprule.c
-index af77e62c..67058b9b 100644
---- a/ip/iprule.c
-+++ b/ip/iprule.c
-@@ -787,11 +787,6 @@ static int iprule_modify(int cmd, int argc, char **argv)
- 		.frh.family = preferred_family,
- 		.frh.action = FR_ACT_UNSPEC,
- 	};
--	struct nlmsghdr *answer;
--	int ret;
--
--	if (echo_request)
--		req.n.nlmsg_flags |= NLM_F_ECHO | NLM_F_ACK;
- 
- 	if (cmd == RTM_NEWRULE) {
- 		if (argc == 0) {
-@@ -1021,24 +1016,7 @@ static int iprule_modify(int cmd, int argc, char **argv)
- 	if (!table_ok && cmd == RTM_NEWRULE)
- 		req.frh.table = RT_TABLE_MAIN;
- 
--	if (echo_request)
--		ret = rtnl_talk(&rth, &req.n, &answer);
--	else
--		ret = rtnl_talk(&rth, &req.n, NULL);
--
--	if (ret < 0)
--		return -2;
--
--	if (echo_request) {
--		new_json_obj(json);
--		open_json_object(NULL);
--		print_rule(answer, stdout);
--		close_json_object();
--		delete_json_obj();
--		free(answer);
--	}
--
--	return 0;
-+	return rtnl_echo_talk(&rth, &req.n, print_rule);
- }
- 
- int do_iprule(int argc, char **argv)
-diff --git a/lib/libnetlink.c b/lib/libnetlink.c
-index c27627fe..00feb69b 100644
---- a/lib/libnetlink.c
-+++ b/lib/libnetlink.c
-@@ -42,7 +42,9 @@
- #define MIN(a, b) ((a) < (b) ? (a) : (b))
- #endif
- 
-+int json;
- int rcvbuf = 1024 * 1024;
-+int echo_request = 0;
- 
- #ifdef HAVE_LIBMNL
- #include <libmnl/libmnl.h>
-@@ -1139,6 +1141,35 @@ static int __rtnl_talk(struct rtnl_handle *rtnl, struct nlmsghdr *n,
- 	return __rtnl_talk_iov(rtnl, &iov, 1, answer, show_rtnl_err, errfn);
- }
- 
-+int rtnl_echo_talk(struct rtnl_handle *rtnl, struct nlmsghdr *n,
-+		   int (*print_info)(struct nlmsghdr *n, void *arg))
-+{
-+	struct nlmsghdr *answer;
-+	int ret;
-+
-+	if (echo_request)
-+		n->nlmsg_flags |= NLM_F_ECHO | NLM_F_ACK;
-+
-+	if (echo_request)
-+		ret = rtnl_talk(rtnl, n, &answer);
-+	else
-+		ret = rtnl_talk(rtnl, n, NULL);
-+
-+	if (ret < 0)
-+		return -2;
-+
-+	if (echo_request) {
-+		new_json_obj(json);
-+		open_json_object(NULL);
-+		print_info(answer, stdout);
-+		close_json_object();
-+		delete_json_obj();
-+		free(answer);
-+	}
-+
-+	return 0;
-+}
-+
- int rtnl_talk(struct rtnl_handle *rtnl, struct nlmsghdr *n,
- 	      struct nlmsghdr **answer)
- {
--- 
-2.37.2
+https://lore.kernel.org/netdev/8128fdb51eeebc9efbf3776a4097363a1317aaf1.1663905575.git.lukas@wunner.de/
 
+I guess we can look into making the state setting more logical in a
+separate step.
+
+
+> > > If you allow PHY_UP, then the warning becomes effectively useless, so I
+> > > don't believe this is quite what you want to do here.
+> > 
+> > Hm, maybe the WARN() should be dropped altogether?
+> 
+> And then be left with debugging similar problems that prompted me to submit
+> the patch in the first place, no thank you. I guess I would rather accept
+> that PHY_UP needs to be special cased then.
+
+I've interpreted that as an Acked-by for exempting PHY_UP.
+If that was not what you wanted, please speak up.
+
+Thanks,
+
+Lukas
