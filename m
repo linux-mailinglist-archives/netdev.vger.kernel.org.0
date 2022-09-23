@@ -2,134 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A554C5E7672
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 11:08:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19C535E7685
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 11:10:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231574AbiIWJII (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 05:08:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34276 "EHLO
+        id S229787AbiIWJKz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 05:10:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230378AbiIWJID (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 05:08:03 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23F4F12BD80;
-        Fri, 23 Sep 2022 02:08:02 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        with ESMTP id S229839AbiIWJKy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 05:10:54 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA2EB127570;
+        Fri, 23 Sep 2022 02:10:53 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id A0F1B219BA;
-        Fri, 23 Sep 2022 09:08:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1663924080; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3NmV8dBleohq19FUTGjShv3qNCUcjTHlt1m0s7sWLVk=;
-        b=V6wEuumqUBqjySkow4NVfoPBdDcct+QY2sSnA92ZeyPwH38i0NPhxZ2JBFN/nzoZI0qJDc
-        KkeFL/D96aoTs49QcLygaGlMNADNI8AXG8StgjNUceGaiafR2+x2Vnsi6pDhmZ07qrK3n8
-        Inta8iq5GzYLsx9ExrSXKnUXYR9y3Io=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1663924080;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3NmV8dBleohq19FUTGjShv3qNCUcjTHlt1m0s7sWLVk=;
-        b=U7EHAzZMP7bk2R61PfblSG7IYbc4Ddv8PLRV2h2xeqC20gD9ZFpGn6nKi00zf3zaGPeOWS
-        aSCwMvZR9gmTbODQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 19F9B13AA5;
-        Fri, 23 Sep 2022 09:08:00 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id e5i3BXB3LWM6HAAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Fri, 23 Sep 2022 09:08:00 +0000
-Message-ID: <6e6a5f86-3080-54ed-82ea-80e57e184fd0@suse.cz>
-Date:   Fri, 23 Sep 2022 11:07:59 +0200
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 64B1C6602038;
+        Fri, 23 Sep 2022 10:10:51 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1663924252;
+        bh=5dQSl61o3/d45Zc6JtCNy5byEWYtp/sXtn/FPR8mee0=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=TcjIIpAmezqk2QInoHN7/joAu1zk07/Kfi7cH9ft9WKzxDKDSNEldxLKkANAX6gGy
+         HAeHai4DWD0fqncMVAK1e3wiBRq2xtkmBGERLqjeGmOyFFn2TisGGgqCCuIFpLJRDu
+         1i62xgUq8U/9aDBXM4sYqRWTb+smoi/nXRFqVTZmNgaD4Ra1969DyhAckqLVWb9Uvj
+         3MRMA/JRsEEwGP6M0saTXuzRpkbM6g91Q37wHAtjLF+eAgMp2blQalZvvPRWvO8/Cw
+         Bs+WK5Lq5/QhU4m4l8Kzj191h86d8vUG/fGPYsFnq20sxUB+XG/NAzs7whejtpteYg
+         3QH9MNcbetMIg==
+Message-ID: <e0fa3ddf-575d-9e25-73d8-e0858782b73f@collabora.com>
+Date:   Fri, 23 Sep 2022 11:10:49 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [PATCH 00/12] slab: Introduce kmalloc_size_roundup()
+ Thunderbird/102.2.0
+Subject: Re: [PATCH v5 4/4] net: stmmac: Update the name of property 'clk_csr'
 Content-Language: en-US
-To:     Kees Cook <keescook@chromium.org>
-Cc:     =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Feng Tang <feng.tang@intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+To:     Jianguo Zhang <jianguo.zhang@mediatek.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Alex Elder <elder@kernel.org>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Daniel Micay <danielmicay@gmail.com>,
-        Yonghong Song <yhs@fb.com>, Marco Elver <elver@google.com>,
-        Miguel Ojeda <ojeda@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, netdev@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, linux-media@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-        linux-fsdevel@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        dev@openvswitch.org, x86@kernel.org,
-        linux-wireless@vger.kernel.org, llvm@lists.linux.dev,
-        linux-hardening@vger.kernel.org,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>
-References: <20220922031013.2150682-1-keescook@chromium.org>
- <673e425d-1692-ef47-052b-0ff2de0d9c1d@amd.com>
- <202209220845.2F7A050@keescook>
- <cb38655c-2107-bda6-2fa8-f5e1e97eab14@suse.cz>
- <202209221446.5E90AEED@keescook>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <202209221446.5E90AEED@keescook>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Biao Huang <biao.huang@mediatek.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+References: <20220923052828.16581-1-jianguo.zhang@mediatek.com>
+ <20220923052828.16581-5-jianguo.zhang@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220923052828.16581-5-jianguo.zhang@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/22/22 23:49, Kees Cook wrote:
-> On Thu, Sep 22, 2022 at 11:05:47PM +0200, Vlastimil Babka wrote:
->> On 9/22/22 17:55, Kees Cook wrote:
->> > On Thu, Sep 22, 2022 at 09:10:56AM +0200, Christian König wrote:
->> > [...]
->> > > So when this patch set is about to clean up this use case it should probably
->> > > also take care to remove ksize() or at least limit it so that it won't be
->> > > used for this use case in the future.
->> > 
->> > Yeah, my goal would be to eliminate ksize(), and it seems possible if
->> > other cases are satisfied with tracking their allocation sizes directly.
->> 
->> I think we could leave ksize() to determine the size without a need for
->> external tracking, but from now on forbid callers from using that hint to
->> overflow the allocation size they actually requested? Once we remove the
->> kasan/kfence hooks in ksize() that make the current kinds of usage possible,
->> we should be able to catch any offenders of the new semantics that would appear?
+Il 23/09/22 07:28, Jianguo Zhang ha scritto:
+> Update the name of property 'clk_csr' as 'snps,clk-csr' to align with
+> the property name in the binding file.
 > 
-> That's correct. I spent the morning working my way through the rest of
-> the ksize() users I didn't clean up yesterday, and in several places I
-> just swapped in __ksize(). But that wouldn't even be needed if we just
-> removed the kasan unpoisoning from ksize(), etc.
+> Signed-off-by: Jianguo Zhang <jianguo.zhang@mediatek.com>
+> ---
+>   drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> I am tempted to leave it __ksize(), though, just to reinforce that it's
-> not supposed to be used "normally". What do you think?
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+> index 9f5cac4000da..18f9952d667f 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+> @@ -444,7 +444,7 @@ stmmac_probe_config_dt(struct platform_device *pdev, u8 *mac)
+>   	 * or get clk_csr from device tree.
+>   	 */
+>   	plat->clk_csr = -1;
+> -	of_property_read_u32(np, "clk_csr", &plat->clk_csr);
+> +	of_property_read_u32(np, "snps,clk-csr", &plat->clk_csr);
 
-Sounds good. Note in linux-next there's now a series in slab.git planned for
-6.1 that moves __ksize() declaration to mm/slab.h to make it more private.
-But we don't want random users outside mm and related kasan/kfence
-subsystems to include mm/slab.h, so we'll have to expose it again instead of
-ksize().
+This is going to break MT2712e on old devicetrees.
+
+The right way of doing that is to check the return value of of_property_read_u32()
+for "snps,clk-csr": if the property is not found, fall back to the old "clk_csr".
+
+Regards,
+Angelo
+
+>   
+>   	/* "snps,phy-addr" is not a standard property. Mark it as deprecated
+>   	 * and warn of its use. Remove this when phy node support is added.
+
+
