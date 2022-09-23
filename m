@@ -2,54 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 436815E7C95
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 16:11:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADE945E7CBC
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 16:19:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232133AbiIWOLM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 10:11:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37176 "EHLO
+        id S232524AbiIWOTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 10:19:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232526AbiIWOKq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 10:10:46 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6848FEE67B;
-        Fri, 23 Sep 2022 07:10:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S232123AbiIWOTP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 10:19:15 -0400
+Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 761B1128A3B;
+        Fri, 23 Sep 2022 07:19:14 -0700 (PDT)
+Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B5F87CE24E3;
-        Fri, 23 Sep 2022 14:10:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1AF64C4347C;
-        Fri, 23 Sep 2022 14:10:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663942217;
-        bh=iAWhOPsndRHqQw8SQe8LSyqZZn5ruSlDcyafkVQl0xs=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=rHnY2Rbg+pxQ+vtknC8C1wKlFqj3JQz9BSel/X+FHqgB/yCPFbXp1d/i1NJYLlKiQ
-         ZMbU2WCXKNYs8vAEyTUtQ7ZueorPA9JPmFwO9yHL7tGlu9uLvXYMkqVl31of1aQ7v3
-         g7tB8rseuicwuq1mseI67gtt4ARs+G0utDlW9h8b2BMvSDUFQ8fVTqYhYnVISMiZ6D
-         Xi0A1ip/x7guZatl6wDT4BQF3KC3scDMIk0xJUmE1pIbgJl40a9iz+BqC2B2cIveNr
-         txpSIkX9PQ/7XQfF6bj4DNusifjwkuA0zAtFwvX924aCH9jWjk+lRWuOYBODRDC06X
-         ZHhX+Rmpg5bIQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F2EE9E4D03F;
-        Fri, 23 Sep 2022 14:10:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        (Authenticated sender: marex@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 9AB9A8317B;
+        Fri, 23 Sep 2022 16:19:11 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1663942752;
+        bh=+RotZuS4WwpidmKoXwBn3WTjHkBeMhRa7hl1zuEk9T4=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=abkL8O1usF33toQc0mqTtXNtpazu9Xbomu+m5dp+OxXwtm6CkH+v2HRgFSVT9yPf0
+         SQ5S6SGhjGOL3AS09clP1UC/mWM2nyfO9npq18i2lVHuXX/kZzk0zk/AGFlRDCYR9L
+         6N4NoMa4Nge4v8sqI9WDe0uhLzR+v71xU4Btv9cofWORCAF6b6T665U05T8nKJkp6G
+         bmbaLPADfj/TiKj2pLY56YgJdmosa21USP0Wi9Ew0NpYvlNBaWtu4sff1Et3QNZohw
+         rBThewq1wtz//CFsPu7MUZAqeTf0QqVqvyglbrfQP8L3wqr6OtvTfJHJ6l/Jmr4msO
+         8zQGMCESzy7ww==
+Message-ID: <d5f38a5c-8073-6e34-54f0-a11d2347b2c1@denx.de>
+Date:   Fri, 23 Sep 2022 16:19:11 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] selftests/bonding: re-add lladdr target test
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166394221699.18573.18054139188469148797.git-patchwork-notify@kernel.org>
-Date:   Fri, 23 Sep 2022 14:10:16 +0000
-References: <20220923082306.2468081-1-matthieu.baerts@tessares.net>
-In-Reply-To: <20220923082306.2468081-1-matthieu.baerts@tessares.net>
-To:     Matthieu Baerts <matthieu.baerts@tessares.net>
-Cc:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        shuah@kernel.org, kuba@kernel.org, liuhangbin@gmail.com,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [PATCH] wifi: rsi: Fix handling of 802.3 EAPOL frames sent via
+ control port
+Content-Language: en-US
+To:     "Fuzzey, Martin" <martin.fuzzey@flowbird.group>
+Cc:     linux-wireless@vger.kernel.org,
+        Amitkumar Karwar <amit.karwar@redpinesignals.com>,
+        Angus Ainslie <angus@akkea.ca>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kalle Valo <kvalo@kernel.org>,
+        Martin Kepplinger <martink@posteo.de>,
+        Prameela Rani Garnepudi <prameela.j04cs@gmail.com>,
+        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
+        Siva Rebbagondla <siva8118@gmail.com>, netdev@vger.kernel.org
+References: <20220922203240.108623-1-marex@denx.de>
+ <CANh8QzxfznS3jB8OgwRAp68wGcTDctzvBSeaXQH2bPicOSyyYA@mail.gmail.com>
+From:   Marek Vasut <marex@denx.de>
+In-Reply-To: <CANh8QzxfznS3jB8OgwRAp68wGcTDctzvBSeaXQH2bPicOSyyYA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,31 +65,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On 9/23/22 09:11, Fuzzey, Martin wrote:
+> Hi Marek,
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Hi,
 
-On Fri, 23 Sep 2022 10:23:06 +0200 you wrote:
-> It looks like this test has been accidentally dropped when resolving
-> conflicts in this Makefile.
+> On Thu, 22 Sept 2022 at 22:33, Marek Vasut <marex@denx.de> wrote:
+>>
+>> When using wpa_supplicant v2.10, this driver is no longer able to
+>> associate with any AP and fails in the EAPOL 4-way handshake while
+>> sending the 2/4 message to the AP. The problem is not present in
+>> wpa_supplicant v2.9 or older. The problem stems from HostAP commit
+>> 144314eaa ("wpa_supplicant: Send EAPOL frames over nl80211 where available")
+>> which changes the way EAPOL frames are sent, from them being send
+>> at L2 frames to them being sent via nl80211 control port.
+> ...
+>> Therefore, to fix this problem, inspect the ETH_P_802_3 frames in
+>> the rsi_91x driver, check the ethertype of the encapsulated frame,
+>> and in case it is ETH_P_PAE, transmit the frame via high-priority
+>> queue just like other ETH_P_PAE frames.
+>>
 > 
-> Most probably because there were 3 different patches modifying this file
-> in parallel:
+>> diff --git a/drivers/net/wireless/rsi/rsi_91x_core.c b/drivers/net/wireless/rsi/rsi_91x_core.c
+>> index 0f3a80f66b61c..d76c9dc99cafa 100644
+>> --- a/drivers/net/wireless/rsi/rsi_91x_core.c
+>> +++ b/drivers/net/wireless/rsi/rsi_91x_core.c
+>> +
+>>                  if (skb->protocol == cpu_to_be16(ETH_P_PAE)) {
+>> +                       tx_eapol = true;
+>> +               } else if (skb->protocol == cpu_to_be16(ETH_P_802_3)) {
+>> +                       hdr_len = ieee80211_get_hdrlen_from_skb(skb) +
+>> +                                 sizeof(rfc1042_header) - ETH_HLEN + 2;
+>> +                       eth_hdr = (struct ethhdr *)(skb->data + hdr_len);
+>> +                       if (eth_hdr->h_proto == cpu_to_be16(ETH_P_PAE))
+>> +                               tx_eapol = true;
+>> +               }
+>> +
+>> diff --git a/drivers/net/wireless/rsi/rsi_91x_hal.c b/drivers/net/wireless/rsi/rsi_91x_hal.c
+>> index c61f83a7333b6..d43754fff287d 100644
+>> @@ -168,6 +171,16 @@ int rsi_prepare_data_desc(struct rsi_common *common, struct sk_buff *skb)
+>> +       if (skb->protocol == cpu_to_be16(ETH_P_PAE)) {
+>> +               tx_eapol = true;
+>> +       } else if (skb->protocol == cpu_to_be16(ETH_P_802_3)) {
+>> +               hdr_len = ieee80211_get_hdrlen_from_skb(skb) +
+>> +                         sizeof(rfc1042_header) - ETH_HLEN + 2;
+>> +               eth_hdr = (struct ethhdr *)(skb->data + hdr_len);
+>> +               if (eth_hdr->h_proto == cpu_to_be16(ETH_P_PAE))
+>> +                       tx_eapol = true;
+>> +       }
+>> +
 > 
->   commit 152e8ec77640 ("selftests/bonding: add a test for bonding lladdr target")
->   commit bbb774d921e2 ("net: Add tests for bonding and team address list management")
->   commit 2ffd57327ff1 ("selftests: bonding: cause oops in bond_rr_gen_slave_id")
-> 
-> [...]
+> It looks like the same logic is being duplicated twice. Maybe create a
+> helper function for it, something like bool rsi_is_eapol(struct
+> sk_buff *skb) ?
 
-Here is the summary with links:
-  - [net-next] selftests/bonding: re-add lladdr target test
-    https://git.kernel.org/netdev/net-next/c/aacdecda9eb4
+Sure, I'll do that in V2.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Currently I am looking for input whether this reaching into an 8023 
+packet to see if it is EAPOL one is even the right approach:
+"
+NOTE: I am really unsure about the method of finding out the exact
+       place of ethernet header in the encapsulated packet and then
+       extracting the ethertype from it. Is there maybe some sort of
+       helper function for that purpose ?
+"
 
+> Also I think it would be good to tag this for stable.
 
+There is a Fixes tag:
+"
+Fixes: 0eb42586cf876 ("rsi: data packet descriptor enhancements")
+"
