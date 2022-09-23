@@ -2,65 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 19EE25E8025
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 18:51:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F1735E808B
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 19:14:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231287AbiIWQvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 12:51:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46842 "EHLO
+        id S229784AbiIWROl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 13:14:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229765AbiIWQvT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 12:51:19 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF6B521E2F
-        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 09:51:17 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id z2so1043698edi.1
-        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 09:51:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=N7JKDCyIP2HxavOTH6AxnlZDr4VpDAjTFRD7lMoolU0=;
-        b=BGR2YMB1oaPTes14ulREeOWNNc8Gb+78BQ/kEOzlCNGQzAMR1tY19/YGb2o6g/U/EA
-         gwTQRcuhUkzJIIhYqC4vKQ+4PVC0K6AkgSFheV5iYnd/cDddG7Z/s3oGn8pAAEf9oH50
-         09YsmggfTKbMWocLMYB43SPV2aI7P8o/mS1J8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=N7JKDCyIP2HxavOTH6AxnlZDr4VpDAjTFRD7lMoolU0=;
-        b=MeT2tqDDXnX1fmEp/KcBowUzmHUaj0dT71SEeyQz0z6Sa+KAu2W7z37J5hd7/dponW
-         PVlotofoAysjrvMstr4psUw4qWOO3ZwbqHl7cM0HHfuzfA8H0/SF63jmDacPHMuhkopg
-         rsz9q1uZGztDpa0/CJBs5OKPRW6xEQdxaCxEEXp0+43VX8cQeoq6Ztbeg4Z/BTUg9F/W
-         8LpovPZQgFFW9n+zYlevdqCzmuQN2Pu6G+B9SmJfbLsdjBjt1N2LnYGj82T1gPQP9F/8
-         r9rJUDsX4mesddz4FDDoWrEcQPJNJxORr/SlGTn82ro0DMSKzng47MB0KfFXFesY3syQ
-         NxRw==
-X-Gm-Message-State: ACrzQf07ibF/NatD3p6sT6jqBcik8nXcVqu7CZuUPbVXQu463PgsFoqV
-        W1Unx2cfBO4hh7wJ0pPZHWiEloUjhJekR8QtPoalrg==
-X-Google-Smtp-Source: AMsMyM5MVHRffaeZeCr6UYyPgWJnJ30PcUkz4/m0ha6F5mHUM0jH9Sn3FPnJSh2ujiwZj3fNI+hUIiWZwPUmOaN+UxE=
-X-Received: by 2002:a05:6402:b85:b0:44e:dad7:3e24 with SMTP id
- cf5-20020a0564020b8500b0044edad73e24mr9632743edb.264.1663951876319; Fri, 23
- Sep 2022 09:51:16 -0700 (PDT)
+        with ESMTP id S229461AbiIWROj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 13:14:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA1B66553
+        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 10:14:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1663953276;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=JNpkfXBpHSWeFztWplzzb3HF4Tg9t/tqh8uTSbovK94=;
+        b=TD/4yY6G0zYLxTCpa8Ow2XK02una5hflLx+koy+p8rEr9iZPzL5yEHu7XXaPS5yUZX0DF8
+        cSsPJdSJox9a7l2gzwWa/T9M+CtFPZTWVckMb0cBTEqUUgukVyR0fcwdO4BE4plmjgiw8w
+        idL/xiMK4nvzYBfK/pAvvHdSZ5YJblM=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-203-oMIMq2VFMyef5sFZwoOdDA-1; Fri, 23 Sep 2022 13:14:30 -0400
+X-MC-Unique: oMIMq2VFMyef5sFZwoOdDA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0970885A583;
+        Fri, 23 Sep 2022 17:14:30 +0000 (UTC)
+Received: from gerbillo.redhat.com (unknown [10.39.192.195])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E099F1121314;
+        Fri, 23 Sep 2022 17:14:28 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexander H Duyck <alexanderduyck@fb.com>
+Subject: [PATCH net-next v3] net: skb: introduce and use a single page frag cache
+Date:   Fri, 23 Sep 2022 19:12:51 +0200
+Message-Id: <8596dd058b9f94f519a8f035dbf8a94670c1ccea.1663953061.git.pabeni@redhat.com>
 MIME-Version: 1.0
-References: <20220923093806.3108119-1-ruanjinjie@huawei.com>
-In-Reply-To: <20220923093806.3108119-1-ruanjinjie@huawei.com>
-From:   Franky Lin <franky.lin@broadcom.com>
-Date:   Fri, 23 Sep 2022 09:50:49 -0700
-Message-ID: <CA+8PC_eCwv321DxoCMOrWNLw7NWkT9F0sD-=8GzygEXPJHFWWA@mail.gmail.com>
-Subject: Re: [PATCH -next] wifi: brcmfmac: pcie: add missing
- pci_disable_device() in brcmf_pcie_get_resource()
-To:     ruanjinjie <ruanjinjie@huawei.com>
-Cc:     aspriel@gmail.com, hante.meuleman@broadcom.com, kvalo@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, marcan@marcan.st, linus.walleij@linaro.org,
-        rmk+kernel@armlinux.org.uk, soontak.lee@cypress.com,
-        linux-wireless@vger.kernel.org, SHA-cyfmac-dev-list@infineon.com,
-        brcm80211-dev-list.pdl@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000087ec4505e95afcad"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.3
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,145 +57,250 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000087ec4505e95afcad
-Content-Type: text/plain; charset="UTF-8"
+After commit 3226b158e67c ("net: avoid 32 x truesize under-estimation
+for tiny skbs") we are observing 10-20% regressions in performance
+tests with small packets. The perf trace points to high pressure on
+the slab allocator.
 
-On Fri, Sep 23, 2022 at 2:42 AM ruanjinjie <ruanjinjie@huawei.com> wrote:
->
-> Add missing pci_disable_device() if brcmf_pcie_get_resource() fails.
+This change tries to improve the allocation schema for small packets
+using an idea originally suggested by Eric: a new per CPU page frag is
+introduced and used in __napi_alloc_skb to cope with small allocation
+requests.
 
-Did you encounter any issue because of the absensent
-pci_disable_device? A bit more context will be very helpful.
+To ensure that the above does not lead to excessive truesize
+underestimation, the frag size for small allocation is inflated to 1K
+and all the above is restricted to build with 4K page size.
 
->
-> Signed-off-by: ruanjinjie <ruanjinjie@huawei.com>
-> ---
->  drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c | 9 +++++++--
->  1 file changed, 7 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-> index f98641bb1528..25fa69793d86 100644
-> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-> @@ -1725,7 +1725,8 @@ static int brcmf_pcie_get_resource(struct brcmf_pciedev_info *devinfo)
->         if ((bar1_size == 0) || (bar1_addr == 0)) {
->                 brcmf_err(bus, "BAR1 Not enabled, device size=%ld, addr=%#016llx\n",
->                           bar1_size, (unsigned long long)bar1_addr);
-> -               return -EINVAL;
-> +               err = -EINVAL;
-> +               goto err_disable;
->         }
->
->         devinfo->regs = ioremap(bar0_addr, BRCMF_PCIE_REG_MAP_SIZE);
-> @@ -1734,7 +1735,8 @@ static int brcmf_pcie_get_resource(struct brcmf_pciedev_info *devinfo)
->         if (!devinfo->regs || !devinfo->tcm) {
->                 brcmf_err(bus, "ioremap() failed (%p,%p)\n", devinfo->regs,
->                           devinfo->tcm);
-> -               return -EINVAL;
-> +               err = -EINVAL;
-> +               goto err_disable;
->         }
->         brcmf_dbg(PCIE, "Phys addr : reg space = %p base addr %#016llx\n",
->                   devinfo->regs, (unsigned long long)bar0_addr);
-> @@ -1743,6 +1745,9 @@ static int brcmf_pcie_get_resource(struct brcmf_pciedev_info *devinfo)
->                   (unsigned int)bar1_size);
->
->         return 0;
-> +err_disable:
-> +       pci_disable_device(pdev);
+Note that we need to update accordingly the run-time check introduced
+with commit fd9ea57f4e95 ("net: add napi_get_frags_check() helper").
 
-Isn't brcmf_pcie_release_resource() a better choice which also unmap
-the io if any was mapped?
+Alex suggested a smart page refcount schema to reduce the number
+of atomic operations and deal properly with pfmemalloc pages.
 
-Regards,
-- Franky
+Under small packet UDP flood, I measure a 15% peak tput increases.
 
-> +       return err;
->  }
->
->
-> --
-> 2.25.1
->
+Suggested-by: Eric Dumazet <eric.dumazet@gmail.com>
+Suggested-by: Alexander H Duyck <alexanderduyck@fb.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
+v2 -> v3:
+ - updated Alex email address
+ - fixed build with !NAPI_HAS_SMALL_PAGE_FRAG
 
---00000000000087ec4505e95afcad
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+v1 -> v2:
+ - better page_frag_alloc_1k() (Alex & Eric)
+ - avoid duplicate code and gfp_flags misuse in __napi_alloc_skb() (Alex)
+---
+ include/linux/netdevice.h |   1 +
+ net/core/dev.c            |  17 ------
+ net/core/skbuff.c         | 112 ++++++++++++++++++++++++++++++++++++--
+ 3 files changed, 108 insertions(+), 22 deletions(-)
 
-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
-BZrfei1PlO2m9d3AfpeD7Y1pVL1SrZC1yvhXeDO463M8rGKz/l8XZrJY1P6qU8U6QwxjFgXr5o5B
-9N6Yw9IhwXhZI3m6F1pe3mMdZ9cFC3xS3Ke+awIDAQABo4IB2DCCAdQwDgYDVR0PAQH/BAQDAgWg
-MIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3VyZS5nbG9iYWxzaWdu
-LmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEGCCsGAQUFBzABhjVo
-dHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMDBNBgNV
-HSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93d3cuZ2xvYmFsc2ln
-bi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6hjhodHRwOi8vY3Js
-Lmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNybDAiBgNVHREEGzAZ
-gRdmcmFua3kubGluQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNVHSMEGDAW
-gBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQU0v383z+6bcUXkukYi4fq7VBiM6swDQYJ
-KoZIhvcNAQELBQADggEBABUIiuJPuLq9vbb6/7d0VJ6LS6osA6kNs0Tph9iEX49TxPQJtvA97oy4
-AgPCjWNiAMLkmu+kNQKlNZG3Vl3S4A+VMOogB6aKtiLlz73Cs0sPgpohw6GSS41TKVt17PrAzo0o
-/xuXczzIbtvrpoi6OnGlsW4aVCqQSOqKUamG8wU8u3/h+iPM1rr4z6ZHdyrllNi+ukH/Z6Dpn6wF
-ATUa+n5ReFZpli4TzcqVHw7i+OaB23TMHCwed4OPFm0H3zcCJgVtgt3z95IPak7bBuYLAGMT2c3K
-Xkdn27MnpydqZw5mnP970DgyUMHXY3Jvj65UAVioJUr4LkNBL7Tsk/6q0FExggJtMIICaQIBATBr
-MFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhHbG9i
-YWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxcbvtv+NUbtJoPDWwwDQYJYIZI
-AWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIMqIok+aoYNZ5dfdTIrDWkSUC7DyXu63PobYQiV9
-8+hrMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDkyMzE2NTEx
-NlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFlAwQB
-AjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQCATANBgkq
-hkiG9w0BAQEFAASCAQC/VWfubgjSafqEvZW6B6zAiAiZjv7PpTHNOF0QDyx7ULmwPW/eBJVf9dsE
-RPTqZAExB/XooZ2nyMBMmdq3oD0AWudVS5c7e7GQjN6iTLHm0hoZ8t46KNVPR4EeH8GYyUwBhpcs
-OeyJCmrGvj9TAtY1QFYsxb8nsWWLWHN8FSRgCxrF3oP5GuXZje12trajT2Sw5ZqOb9vTUfvStQDB
-owvrS5ZNXQ0csJlGmYFST3kC8eQZhsFOCJo64DWYKoUG9PZN38RLa7ARP03DhVTpEauQmjk1a2Rm
-zf7sAdcY5fKWcj1oomqfryx+BYpt/QBw/WH+2BrBPVotWwDPYkmsrz7a
---00000000000087ec4505e95afcad--
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 9f42fc871c3b..a1938560192a 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -3822,6 +3822,7 @@ void netif_receive_skb_list(struct list_head *head);
+ gro_result_t napi_gro_receive(struct napi_struct *napi, struct sk_buff *skb);
+ void napi_gro_flush(struct napi_struct *napi, bool flush_old);
+ struct sk_buff *napi_get_frags(struct napi_struct *napi);
++void napi_get_frags_check(struct napi_struct *napi);
+ gro_result_t napi_gro_frags(struct napi_struct *napi);
+ struct packet_offload *gro_find_receive_by_type(__be16 type);
+ struct packet_offload *gro_find_complete_by_type(__be16 type);
+diff --git a/net/core/dev.c b/net/core/dev.c
+index d66c73c1c734..fa53830d0683 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -6358,23 +6358,6 @@ int dev_set_threaded(struct net_device *dev, bool threaded)
+ }
+ EXPORT_SYMBOL(dev_set_threaded);
+ 
+-/* Double check that napi_get_frags() allocates skbs with
+- * skb->head being backed by slab, not a page fragment.
+- * This is to make sure bug fixed in 3226b158e67c
+- * ("net: avoid 32 x truesize under-estimation for tiny skbs")
+- * does not accidentally come back.
+- */
+-static void napi_get_frags_check(struct napi_struct *napi)
+-{
+-	struct sk_buff *skb;
+-
+-	local_bh_disable();
+-	skb = napi_get_frags(napi);
+-	WARN_ON_ONCE(skb && skb->head_frag);
+-	napi_free_frags(napi);
+-	local_bh_enable();
+-}
+-
+ void netif_napi_add_weight(struct net_device *dev, struct napi_struct *napi,
+ 			   int (*poll)(struct napi_struct *, int), int weight)
+ {
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index f1b8b20fc20b..e7578549a561 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -134,8 +134,73 @@ static void skb_under_panic(struct sk_buff *skb, unsigned int sz, void *addr)
+ #define NAPI_SKB_CACHE_BULK	16
+ #define NAPI_SKB_CACHE_HALF	(NAPI_SKB_CACHE_SIZE / 2)
+ 
++/* the compiler doesn't like 'SKB_TRUESIZE(GRO_MAX_HEAD) > 512', but we
++ * can imply such condition checking the double word and MAX_HEADER size
++ */
++#if PAGE_SIZE == SZ_4K && (defined(CONFIG_64BIT) || MAX_HEADER > 64)
++
++#define NAPI_HAS_SMALL_PAGE_FRAG	1
++#define NAPI_SMALL_PAGE_PFMEMALLOC(nc)	((nc).pfmemalloc)
++
++/* specializzed page frag allocator using a single order 0 page
++ * and slicing it into 1K sized fragment. Constrained to system
++ * with:
++ * - a very limited amount of 1K fragments fitting a single
++ *   page - to avoid excessive truesize underestimation
++ * - reasonably high truesize value for napi_get_frags()
++ *   allocation - to avoid memory usage increased compared
++ *   to kalloc, see __napi_alloc_skb()
++ */
++
++struct page_frag_1k {
++	void *va;
++	u16 offset;
++	bool pfmemalloc;
++};
++
++static void *page_frag_alloc_1k(struct page_frag_1k *nc, gfp_t gfp)
++{
++	struct page *page;
++	int offset;
++
++	offset = nc->offset - SZ_1K;
++	if (likely(offset >= 0))
++		goto use_frag;
++
++	page = alloc_pages_node(NUMA_NO_NODE, gfp, 0);
++	if (!page)
++		return NULL;
++
++	nc->va = page_address(page);
++	nc->pfmemalloc = page_is_pfmemalloc(page);
++	offset = PAGE_SIZE - SZ_1K;
++	page_ref_add(page, offset / SZ_1K);
++
++use_frag:
++	nc->offset = offset;
++	return nc->va + offset;
++}
++#else
++
++/* the small page is actually unused in this build; add dummy helpers
++ * to plase the compiler and avoiding later preprocessor's conditionals
++ */
++#define NAPI_HAS_SMALL_PAGE_FRAG	0
++#define NAPI_SMALL_PAGE_PFMEMALLOC(nc)	false
++
++struct page_frag_1k {
++};
++
++static void *page_frag_alloc_1k(struct page_frag_1k *nc, gfp_t gfp_mask)
++{
++	return NULL;
++}
++
++#endif
++
+ struct napi_alloc_cache {
+ 	struct page_frag_cache page;
++	struct page_frag_1k page_small;
+ 	unsigned int skb_count;
+ 	void *skb_cache[NAPI_SKB_CACHE_SIZE];
+ };
+@@ -143,6 +208,23 @@ struct napi_alloc_cache {
+ static DEFINE_PER_CPU(struct page_frag_cache, netdev_alloc_cache);
+ static DEFINE_PER_CPU(struct napi_alloc_cache, napi_alloc_cache);
+ 
++/* Double check that napi_get_frags() allocates skbs with
++ * skb->head being backed by slab, not a page fragment.
++ * This is to make sure bug fixed in 3226b158e67c
++ * ("net: avoid 32 x truesize under-estimation for tiny skbs")
++ * does not accidentally come back.
++ */
++void napi_get_frags_check(struct napi_struct *napi)
++{
++	struct sk_buff *skb;
++
++	local_bh_disable();
++	skb = napi_get_frags(napi);
++	WARN_ON_ONCE(!NAPI_HAS_SMALL_PAGE_FRAG && skb && skb->head_frag);
++	napi_free_frags(napi);
++	local_bh_enable();
++}
++
+ void *__napi_alloc_frag_align(unsigned int fragsz, unsigned int align_mask)
+ {
+ 	struct napi_alloc_cache *nc = this_cpu_ptr(&napi_alloc_cache);
+@@ -561,6 +643,7 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
+ {
+ 	struct napi_alloc_cache *nc;
+ 	struct sk_buff *skb;
++	bool pfmemalloc;
+ 	void *data;
+ 
+ 	DEBUG_NET_WARN_ON_ONCE(!in_softirq());
+@@ -568,8 +651,10 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
+ 
+ 	/* If requested length is either too small or too big,
+ 	 * we use kmalloc() for skb->head allocation.
++	 * When the small frag allocator is available, prefer it over kmalloc
++	 * for small fragments
+ 	 */
+-	if (len <= SKB_WITH_OVERHEAD(1024) ||
++	if ((!NAPI_HAS_SMALL_PAGE_FRAG && len <= SKB_WITH_OVERHEAD(1024)) ||
+ 	    len > SKB_WITH_OVERHEAD(PAGE_SIZE) ||
+ 	    (gfp_mask & (__GFP_DIRECT_RECLAIM | GFP_DMA))) {
+ 		skb = __alloc_skb(len, gfp_mask, SKB_ALLOC_RX | SKB_ALLOC_NAPI,
+@@ -580,13 +665,30 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
+ 	}
+ 
+ 	nc = this_cpu_ptr(&napi_alloc_cache);
+-	len += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
+-	len = SKB_DATA_ALIGN(len);
+ 
+ 	if (sk_memalloc_socks())
+ 		gfp_mask |= __GFP_MEMALLOC;
+ 
+-	data = page_frag_alloc(&nc->page, len, gfp_mask);
++	if (NAPI_HAS_SMALL_PAGE_FRAG && len <= SKB_WITH_OVERHEAD(1024)) {
++		/* we are artificially inflating the allocation size, but
++		 * that is not as bad as it may look like, as:
++		 * - 'len' less then GRO_MAX_HEAD makes little sense
++		 * - larger 'len' values lead to fragment size above 512 bytes
++		 *   as per NAPI_HAS_SMALL_PAGE_FRAG definition
++		 * - kmalloc would use the kmalloc-1k slab for such values
++		 */
++		len = SZ_1K;
++
++		data = page_frag_alloc_1k(&nc->page_small, gfp_mask);
++		pfmemalloc = NAPI_SMALL_PAGE_PFMEMALLOC(nc->page_small);
++	} else {
++		len += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
++		len = SKB_DATA_ALIGN(len);
++
++		data = page_frag_alloc(&nc->page, len, gfp_mask);
++		pfmemalloc = nc->page.pfmemalloc;
++	}
++
+ 	if (unlikely(!data))
+ 		return NULL;
+ 
+@@ -596,7 +698,7 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
+ 		return NULL;
+ 	}
+ 
+-	if (nc->page.pfmemalloc)
++	if (pfmemalloc)
+ 		skb->pfmemalloc = 1;
+ 	skb->head_frag = 1;
+ 
+-- 
+2.37.3
+
