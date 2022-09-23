@@ -2,58 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 384415E83CC
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 22:34:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3B1F5E83C2
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 22:32:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233030AbiIWUc4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 16:32:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47686 "EHLO
+        id S233110AbiIWUct (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 16:32:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232954AbiIWUca (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 16:32:30 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AB1A1497A7
-        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 13:28:27 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id f23so1168016plr.6
-        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 13:28:27 -0700 (PDT)
+        with ESMTP id S232881AbiIWUc2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 16:32:28 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56ABD147CFE
+        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 13:28:26 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id s90-20020a17090a2f6300b00203a685a1aaso1281137pjd.1
+        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 13:28:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=WK0bGuD2tAxqqCEo+J+Vcp/Ca26AMBReT0rLu9mHjWo=;
-        b=Bq646OyB58An4Ya0i1tJSWid5B14G8+Igfn3fxCST+TPDeet6KAginBjtHf1G+96pP
-         KMbRLvXh6hUd7mw6RJpRt7mflnBYm9ibc+vu8XY4rLIHczU3FqSb/xj3tEHFFGtr1oRe
-         sICyRsZLX9/FsK6U8cZvA0aX8m/YlImy46ePk=
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=YGvtsu71vtHcP1IwH8KHiY99VHKmYF+/gM9Vu/q9kHU=;
+        b=IFb3o6XSbaR/uQunXfgk/OAgUcbyiUG/neLZN7u63Mb8Dqi7z6PDoN9BNOVaTqa26y
+         SRlzwgeKQKd7R1FctE6Aq8Of9Rx/sgZevcaBDxM7zwYZdr/ifKEynY9SIWqMo8+dRdxg
+         Y1YODqFn9CHpITGWx8VNcWimDUOWaa7761v9Y=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=WK0bGuD2tAxqqCEo+J+Vcp/Ca26AMBReT0rLu9mHjWo=;
-        b=N88GsKp/OcWWb/A3KBTNyn7EPowtpKHCNNaqhGDhyU0VXxvXDEvNjjKRMuHCpkbwRY
-         PbDDdcz3Vjxi1qy0x1JQhStg11N0kW37DTN8xZtb+ydPP1krg80ud1AkpquBdIhplt6t
-         0itxpPTyULYfYDghnjumJLylTCxZ9y1ADhvaEMGdbHUTPfkaw0l9tuxoe9t3XrGwIWjv
-         NpQPOJcsnenhKXdji5GOCTqeX1XkCM+EczeKh6QyQEdSLN6ejQ8xp+WGCF8ADKfe08FO
-         cAzikOzg+iKoC0eu/dM4lneASUDaFJVX9Z0aVn+3QdTWovvxElRxNTr3LaHCw2sgnMXs
-         mC7Q==
-X-Gm-Message-State: ACrzQf3fdvX2/Irdb9lyFkG0If/g/Jwl6b9KJ/kKOYyX3efYJ8O0D583
-        S+EiIguT5Wbqf3cDNBvuJIKhVg==
-X-Google-Smtp-Source: AMsMyM72+AZrvCjzG0TpHX1QWIyqlT+yIJNjqD6XgzhlX4O0lN7py3H0HnAbWO3N8SQjTT6PAgNtPQ==
-X-Received: by 2002:a17:90b:17cf:b0:202:95a2:e310 with SMTP id me15-20020a17090b17cf00b0020295a2e310mr23778042pjb.76.1663964906615;
-        Fri, 23 Sep 2022 13:28:26 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=YGvtsu71vtHcP1IwH8KHiY99VHKmYF+/gM9Vu/q9kHU=;
+        b=8J5RySbfhnzLARVUzglzrQcLSL0gI6F3drRUvOsD3MolghFR5m78hcRzn+Dw/hiALg
+         +cdkS87GuDrdXCtzTCuHhjHvJ3clB8vD5begsCSs5rtvgo7mIw0GjYSd/VAzNRoDe0+S
+         ka2qPozN1K6glOZlzkMQgwuOL50lJFMrz5cbB5ZXrzN9RnPkPRWf6ihQH5jg3fMG/iu0
+         rMY7T3YjClbMJa/wulfUtv3w0xdYJ69XeRqCwC3rNxnJ0BBakb6y0EYNVq2N2mcBzWT5
+         1ntVi/8b0H5QtsBxEAWMbCgqmj+c8TGtaYvLHxKvqw1NY+jDiQs9E/y2qbfzdx0WeyDk
+         t3pQ==
+X-Gm-Message-State: ACrzQf0meK/rbB86wk99jVBewVxqPLHsNYbGKlOU0rn5ueKMEH6bYvO2
+        pQhlJRSuAsieCX3cIL0YyUPweQ==
+X-Google-Smtp-Source: AMsMyM4GlI4eTJyA9jGLi9lKSnvEwSBc6wqIcYDsgYSV7Hnp4hgp4C2mRxXo8b79UHawMzdaoq59kQ==
+X-Received: by 2002:a17:90a:e7c5:b0:200:ab1a:f32 with SMTP id kb5-20020a17090ae7c500b00200ab1a0f32mr22617314pjb.100.1663964905845;
+        Fri, 23 Sep 2022 13:28:25 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id t2-20020aa79462000000b0053639773ad8sm6832080pfq.119.2022.09.23.13.28.24
+        by smtp.gmail.com with ESMTPSA id q9-20020a17090311c900b0017829f986a5sm6477104plh.133.2022.09.23.13.28.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Fri, 23 Sep 2022 13:28:25 -0700 (PDT)
 From:   Kees Cook <keescook@chromium.org>
 To:     Vlastimil Babka <vbabka@suse.cz>
 Cc:     Kees Cook <keescook@chromium.org>,
-        "Ruhl, Michael J" <michael.j.ruhl@intel.com>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
         Christoph Lameter <cl@linux.com>,
         Pekka Enberg <penberg@kernel.org>,
         David Rientjes <rientjes@google.com>,
         Joonsoo Kim <iamjoonsoo.kim@lge.com>,
         Andrew Morton <akpm@linux-foundation.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Marco Elver <elver@google.com>, linux-mm@kvack.org,
+        "Ruhl, Michael J" <michael.j.ruhl@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -67,21 +70,21 @@ Cc:     Kees Cook <keescook@chromium.org>,
         =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
         Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Daniel Micay <danielmicay@gmail.com>,
-        Yonghong Song <yhs@fb.com>, Marco Elver <elver@google.com>,
-        Miguel Ojeda <ojeda@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, netdev@vger.kernel.org,
+        Yonghong Song <yhs@fb.com>, Miguel Ojeda <ojeda@kernel.org>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         linux-btrfs@vger.kernel.org, linux-media@vger.kernel.org,
         dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
         linux-fsdevel@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
         dev@openvswitch.org, x86@kernel.org, llvm@lists.linux.dev,
         linux-hardening@vger.kernel.org
-Subject: [PATCH v2 00/16] slab: Introduce kmalloc_size_roundup()
-Date:   Fri, 23 Sep 2022 13:28:06 -0700
-Message-Id: <20220923202822.2667581-1-keescook@chromium.org>
+Subject: [PATCH v2 01/16] slab: Remove __malloc attribute from realloc functions
+Date:   Fri, 23 Sep 2022 13:28:07 -0700
+Message-Id: <20220923202822.2667581-2-keescook@chromium.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220923202822.2667581-1-keescook@chromium.org>
+References: <20220923202822.2667581-1-keescook@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3290; h=from:subject; bh=6t8CTnxnusXxlhLGNxOhRs5l2789SVRbReUcmZgsVm4=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBjLhbjKWBYYij171TDp3TdZmoZXSs7dXXkRN1eGod1 9RjCiP+JAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYy4W4wAKCRCJcvTf3G3AJnMrD/ 9AYEfZWXDOv2krdFVvtjQthCuAcgKZVOWzfaX/ZBtQRlYjuppFlG2ED1IEpuIhD0Ir80c5xPT0sC6o NsiMZw3mMRacDRN1JKTgZIg3s63bBHGPVJzr9Ms7LrhbLULxcInTn8Kmx1m+j/SOpIaVQbOz2eMMkZ hq15TaNyE7pBLM9SdfCtAyTs9eRAtVTuYrwZqvgSDjZ61SXuxi2k37cjMCmPHUTq/sIlGgP+BbmYVU h4TXPtyeel8GsxvMTh+ZJLwcMIm74VL8RdFIlqhUbTT1t2IHy48AtxwQQhaVX0FoQuaeRVIHGZ6W3H G8nJ1wcWlIzz3bYBH022dj7eQTsTkVCk6mdVQzd0tBA9yKVcNDoLBacX1DCakWCtJtW9hB3nI7wGSo dddWD44+KFc7CqbVkUJUBWKf0KFDD+RBxraKtYUvKQrLMx0oq545fsuTe+Wx85iePymCMknPsuIu7T RqpkKnn423yOsp7n6oWGz2jCxpOIGyTubVpWH5O/cuXKNmrDFZz8jsL8Js/2Of2DYZ5nq9YGQsiXeg 2S+DEM7sXnFtd9YfGznNOceTXn0B6askh1+E8cTpDv624NJQscze/0hYjyKnnV10f4gf0FRf/X6SzA azwQEVgyfXgzY00yn92DXcmjocb95A4MMqEAG/m2SLnjQl6aJMp6R561rcig==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4158; h=from:subject; bh=MMNKX5wNJYq+FFEmxyLeG88Y0pnaYb/m5JRZI7mnarg=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBjLhbj8zMWKpgfJIfLMPzhNCTicodYe34AHw5xM3H6 j5Q5e5iJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYy4W4wAKCRCJcvTf3G3AJkqXEA C0CZsQPuFBR2/YBQC6kBOKXs3AnUbDd1vBqtB/SiXvO/znjATFPdq/AAaSBC59HBiMKMePM5lvoiuf aYrT/n/J7UMzadTeGJDsCFyc95mxXFpunUjeXGaTgZojjSgAVg4DABiW54DaumW0lAWFAYegD26yeW JBuJYikNr/QTKW2lM4rlUyCE6YeklCEU+t6NysjAG5alyIx4W0dgH5pUSaAsO6hX65jz8XnK6X4gIg /ftbvkJQdCA8yp6HbKj3bRnJNwHhei3Ew8kR8tRkxr/QCstK0qco60yvO2mmfdDhJOTt8ljlhX+99P ki8iAJ2IUxqLrohWV0+vBNh/UwJAT/E2xl9J7vSz0a5lE1JDaJni0l7B9aWJ6wdTRIlb2RIw/25CU3 2jH0hGLqeXUGTIW8ZuajWL/FWv6nUhF3N+Zql34CZfjXaiVB/8urV6hGJYu0PjR4RhPJtooFtvcGnc NN4P/rvByw1L7/4EGJFqF8KQolNWMu558pdQ29AecI/zn4E9FW41pu2k0zXuekf9ZHdzPr//MRq0VK jji3tNn5ZbZXQWzbxXbbkECT6CK1qfq6Re4GlmJrjPbAnkWCC4gXdw7JW6JIg/Km6CtttHx519iZge eYs/03ai/ytBwKoKeQmOX9IHVAAm1pTNUYNBd0RtV+OAb1aVL8B7TsN5Okig==
 X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -94,79 +97,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+The __malloc attribute should not be applied to "realloc" functions, as
+the returned pointer may alias the storage of the prior pointer. Instead
+of splitting __malloc from __alloc_size, which would be a huge amount of
+churn, just create __realloc_size for the few cases where it is needed.
 
-The main details on this series are in patch #2's commit log. It's long,
-so I won't repeat it again here for the v2. As before, I've tried to
-trim the CC list.
+Additionally removes the conditional test for __alloc_size__, which is
+always defined now.
 
-v2:
-- _keep_ ksize(), but remove instrumentation (makes patch series smaller)
-- reorganized skbuff logic to avoid yet more copy/paste code
-- added a WARN to a separate skbuff ksize usage
-- add new refactorings: bpf, openvswitch, devres, mempool, kasan
-- dropped "independent" patches: iwlwifi, x86/microcode/AMD (sent separately)
-v1: https://lore.kernel.org/lkml/20220922031013.2150682-1-keescook@chromium.org
+Cc: Christoph Lameter <cl@linux.com>
+Cc: Pekka Enberg <penberg@kernel.org>
+Cc: David Rientjes <rientjes@google.com>
+Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: Roman Gushchin <roman.gushchin@linux.dev>
+Cc: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Cc: Marco Elver <elver@google.com>
+Cc: linux-mm@kvack.org
+Signed-off-by: Kees Cook <keescook@chromium.org>
+---
+ include/linux/compiler_types.h | 13 +++++--------
+ include/linux/slab.h           | 12 ++++++------
+ mm/slab_common.c               |  4 ++--
+ 3 files changed, 13 insertions(+), 16 deletions(-)
 
-Notes:
-
-Originally when I was going to entirely remove ksize(), there were a
-handful for refactorings that just needed to do ksize -> __ksize. In
-the end, it was cleaner to actually leave ksize() as a real function,
-just without the kasan instrumentation. I wonder, however, if it should
-be converted into a static inline now?
-
-I dropped Jakub's Ack because I refactored that code a bunch more.
-
-The 2 patches that didn't need to call kmalloc_size_roundup() don't need
-to be part of this series. (One is already in -next, actually.)
-
-I'd like to land at least the first two patches in the coming v6.1 merge
-window so that the per-subsystem patches can be sent to their various
-subsystems directly. Vlastimil, what you think?
-
-Thanks!
-
--Kees
-
-
-Kees Cook (16):
-  slab: Remove __malloc attribute from realloc functions
-  slab: Introduce kmalloc_size_roundup()
-  skbuff: Proactively round up to kmalloc bucket size
-  skbuff: Phase out ksize() fallback for frag_size
-  net: ipa: Proactively round up to kmalloc bucket size
-  igb: Proactively round up to kmalloc bucket size
-  btrfs: send: Proactively round up to kmalloc bucket size
-  dma-buf: Proactively round up to kmalloc bucket size
-  coredump: Proactively round up to kmalloc bucket size
-  openvswitch: Use kmalloc_size_roundup() to match ksize() usage
-  bpf: Use kmalloc_size_roundup() to match ksize() usage
-  devres: Use kmalloc_size_roundup() to match ksize() usage
-  mempool: Use kmalloc_size_roundup() to match ksize() usage
-  kasan: Remove ksize()-related tests
-  mm: Make ksize() a reporting-only function
-  slab: Restore __alloc_size attribute to __kmalloc_track_caller
-
- drivers/base/devres.c                     |  3 +
- drivers/dma-buf/dma-resv.c                |  9 ++-
- drivers/net/ethernet/intel/igb/igb_main.c |  5 +-
- drivers/net/ipa/gsi_trans.c               |  7 +-
- fs/btrfs/send.c                           | 11 +--
- fs/coredump.c                             |  7 +-
- include/linux/compiler_types.h            | 13 ++--
- include/linux/skbuff.h                    |  5 +-
- include/linux/slab.h                      | 46 +++++++++++--
- kernel/bpf/verifier.c                     | 49 +++++++++-----
- lib/test_kasan.c                          | 42 ------------
- mm/kasan/shadow.c                         |  4 +-
- mm/mempool.c                              |  2 +-
- mm/slab.c                                 |  9 ++-
- mm/slab_common.c                          | 62 ++++++++++-------
- net/core/skbuff.c                         | 82 ++++++++++++-----------
- net/openvswitch/flow_netlink.c            |  2 +-
- 17 files changed, 192 insertions(+), 166 deletions(-)
-
+diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
+index 4f2a819fd60a..f141a6f6b9f6 100644
+--- a/include/linux/compiler_types.h
++++ b/include/linux/compiler_types.h
+@@ -271,15 +271,12 @@ struct ftrace_likely_data {
+ 
+ /*
+  * Any place that could be marked with the "alloc_size" attribute is also
+- * a place to be marked with the "malloc" attribute. Do this as part of the
+- * __alloc_size macro to avoid redundant attributes and to avoid missing a
+- * __malloc marking.
++ * a place to be marked with the "malloc" attribute, except those that may
++ * be performing a _reallocation_, as that may alias the existing pointer.
++ * For these, use __realloc_size().
+  */
+-#ifdef __alloc_size__
+-# define __alloc_size(x, ...)	__alloc_size__(x, ## __VA_ARGS__) __malloc
+-#else
+-# define __alloc_size(x, ...)	__malloc
+-#endif
++#define __alloc_size(x, ...)	__alloc_size__(x, ## __VA_ARGS__) __malloc
++#define __realloc_size(x, ...)	__alloc_size__(x, ## __VA_ARGS__)
+ 
+ #ifndef asm_volatile_goto
+ #define asm_volatile_goto(x...) asm goto(x)
+diff --git a/include/linux/slab.h b/include/linux/slab.h
+index 0fefdf528e0d..41bd036e7551 100644
+--- a/include/linux/slab.h
++++ b/include/linux/slab.h
+@@ -184,7 +184,7 @@ int kmem_cache_shrink(struct kmem_cache *s);
+ /*
+  * Common kmalloc functions provided by all allocators
+  */
+-void * __must_check krealloc(const void *objp, size_t new_size, gfp_t flags) __alloc_size(2);
++void * __must_check krealloc(const void *objp, size_t new_size, gfp_t flags) __realloc_size(2);
+ void kfree(const void *objp);
+ void kfree_sensitive(const void *objp);
+ size_t __ksize(const void *objp);
+@@ -647,10 +647,10 @@ static inline __alloc_size(1, 2) void *kmalloc_array(size_t n, size_t size, gfp_
+  * @new_size: new size of a single member of the array
+  * @flags: the type of memory to allocate (see kmalloc)
+  */
+-static inline __alloc_size(2, 3) void * __must_check krealloc_array(void *p,
+-								    size_t new_n,
+-								    size_t new_size,
+-								    gfp_t flags)
++static inline __realloc_size(2, 3) void * __must_check krealloc_array(void *p,
++								      size_t new_n,
++								      size_t new_size,
++								      gfp_t flags)
+ {
+ 	size_t bytes;
+ 
+@@ -774,7 +774,7 @@ static inline __alloc_size(1, 2) void *kvcalloc(size_t n, size_t size, gfp_t fla
+ }
+ 
+ extern void *kvrealloc(const void *p, size_t oldsize, size_t newsize, gfp_t flags)
+-		      __alloc_size(3);
++		      __realloc_size(3);
+ extern void kvfree(const void *addr);
+ extern void kvfree_sensitive(const void *addr, size_t len);
+ 
+diff --git a/mm/slab_common.c b/mm/slab_common.c
+index 17996649cfe3..457671ace7eb 100644
+--- a/mm/slab_common.c
++++ b/mm/slab_common.c
+@@ -1134,8 +1134,8 @@ module_init(slab_proc_init);
+ 
+ #endif /* CONFIG_SLAB || CONFIG_SLUB_DEBUG */
+ 
+-static __always_inline void *__do_krealloc(const void *p, size_t new_size,
+-					   gfp_t flags)
++static __always_inline __realloc_size(2) void *
++__do_krealloc(const void *p, size_t new_size, gfp_t flags)
+ {
+ 	void *ret;
+ 	size_t ks;
 -- 
 2.34.1
 
