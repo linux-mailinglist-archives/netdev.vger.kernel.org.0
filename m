@@ -2,116 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D4ECD5E81A7
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 20:16:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2F425E81AD
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 20:18:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231593AbiIWSQG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 14:16:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36742 "EHLO
+        id S229525AbiIWSSp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 14:18:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229794AbiIWSQE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 14:16:04 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70BAA11BCED
-        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 11:16:02 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id a2so1522481lfb.6
-        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 11:16:02 -0700 (PDT)
+        with ESMTP id S232827AbiIWSSn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 14:18:43 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2094.outbound.protection.outlook.com [40.107.244.94])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 993DF12647B;
+        Fri, 23 Sep 2022 11:18:41 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hQoOqVW5znYIk/r5rwwmky5Fw7Q27nWp3p8whWrfbjjR3+sb61WZpzIdUMF+BStzZKkbCrztD8Cg7ci6k282RE1NUyFCx+CZGrESo5MwSI+xKBuHGHXKRYgYLW8IbDW/gESIniboCQeC6vnq9+YA0wG+KaUtzS93v9AQ4Rnp899V/YJB2XM1B6ycXWcG2ErUEGSQQ29jaeetQnRQVOd2fDC426Nk/ZgSqqoxTah+xH+A8HWO3kn0yM2VrhpWNPzvxwLSFkFYBUtWUKBCir7sL0I1ay2gwuZE+Pd5aSShHS/R5yVr1SICCWd4boYAYrVtaHVcH+rxYp63j7+Ti5mk8w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7iFdUe4iISXxd8qofDDPmPgwyAlVS3GkCkpwwydAX88=;
+ b=V5qyIScMitzRpeQs5XO9Q5jpSjiB3WvwLePfjs7RjOnGan4kwHslbnrhXYSe619UtyZ4q3Yuhx51kpien1QLVi8FbUqECT1+eyj0XCeQd8b4IMSDKgZwKWz8S8AXEu/f9yA9f+J7gcEM+AfKmTrs8Aqw4flkEfymcw1l/dZPTSQgl1pJQmhlaPpLQukGegVtAIxJ2HDzdVb6w5xbs6oxEbmJcD1JmrfVyMwTacF2Sk70FWoLvnCRMvRTLHOrKXzzGdbD89lP6+E0/2RBMEpcQVgKpWnQOmwl0iniKyis7AYtf7y377aebD25TuJUrtukPCU4c6J3rmOWqZNj1rQe5A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=oCR6Bo3A4ofjsJSPRwu8W/6xTMTPUToxbtx6duza/9I=;
-        b=QTFH6A6ALvOnrxdBlLXWwrPn4QlREymvd6XMlcentLZ7h/3fide79fdoCHB5KTem71
-         yp6pWhrM2z41mtYT5qLU1Bh2iz6CQHypAeyWgu+d26gmF+IBSGIswW9vQE8qWgJ374M4
-         J/sKG8vfLGHmHmWMmL0qpwPd+e/Bj/iWmYCd/15aKADo++tGMLkwakMCAyWOepF0i+ri
-         dgeTUxMR2PMwWHVfXToHcEn+O+6EOAZsDDngC6NZ/U5fhtxvtdPZuOdXrK0VhBLVtBA2
-         3FBSeqMz0DB1naWCCiR7W8HX0k883wfgPGcd/oly/dmRrF0ooaifWb7Sstlh8ULCJj1C
-         B7+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=oCR6Bo3A4ofjsJSPRwu8W/6xTMTPUToxbtx6duza/9I=;
-        b=1MBP9uuWShU1o1Eia4DW6drzict/sVIebJvAkt2q9UcTnPA4WHXlK8rRPsZAqQ/ggw
-         Qel8wjoEPyvqT4Wgphd3XW1P33J8lj7EE/b51wggW+0j88RVH2uRIJDqH1hdu9f8UWJu
-         6vjP5q9l54lctEGDTaMFQ02rHGfLRtcC7pYdov78B16suodKKxcA7BtJP88XTyMNtYdJ
-         e27KnL1BCsESF3/M/ye5BhAenfa9qQPzqJoROm0hHq/Y6veTZLjdyznrG/pOJ8Fv/CO5
-         gpKlVjQClzQUTOpzCK+NjocaJVJzjOo/4Aky5YGhVilwIiFQTiRTbwNNHzbS0cALyc/K
-         EoRw==
-X-Gm-Message-State: ACrzQf2WJeqf2n4c6cYf3eieGBH2tgtrlvEUKlhT8sx7Rsz5+UAdJzVz
-        zVmrCSvuv1cCY12fU0g7xAhXwA==
-X-Google-Smtp-Source: AMsMyM5VPQHR6EgWnlQIIyiIzzfK4PFaph4377Xhq50FxdoZgzoCfLawcTAmFyxngXUm5xjobVChzg==
-X-Received: by 2002:a05:6512:3295:b0:497:a156:795a with SMTP id p21-20020a056512329500b00497a156795amr3537914lfe.345.1663956960760;
-        Fri, 23 Sep 2022 11:16:00 -0700 (PDT)
-Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id j5-20020a2e6e05000000b0026c59d3f557sm1487798ljc.33.2022.09.23.11.15.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 23 Sep 2022 11:16:00 -0700 (PDT)
-Message-ID: <4f205f0d-420d-8f51-ad26-0c2475c0decd@linaro.org>
-Date:   Fri, 23 Sep 2022 20:15:59 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.0
-Subject: Re: [PATCH v5 4/4] net: stmmac: Update the name of property 'clk_csr'
-Content-Language: en-US
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Jianguo Zhang <jianguo.zhang@mediatek.com>,
-        "David S . Miller" <davem@davemloft.net>,
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7iFdUe4iISXxd8qofDDPmPgwyAlVS3GkCkpwwydAX88=;
+ b=xrxrMLt7TFBw2Y+1QZ5+WC8FGlDQ4Be33h6zl3sEnvcHUkA68vmAN6fphX8E+gfbAqWhlvrzWz858VhiHNZplFTCfMhV8jVAZPCGHBAMschMHFBPXPXw2hz0xorcm72P75+aSa7gPdoKeD+d07Mr2LaxvPuqDQkDE7O1bY3ehJc=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from DM5PR1001MB2345.namprd10.prod.outlook.com (2603:10b6:4:2d::31)
+ by IA1PR10MB5947.namprd10.prod.outlook.com (2603:10b6:208:3d5::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.18; Fri, 23 Sep
+ 2022 18:18:38 +0000
+Received: from DM5PR1001MB2345.namprd10.prod.outlook.com
+ ([fe80::b594:405e:50f0:468e]) by DM5PR1001MB2345.namprd10.prod.outlook.com
+ ([fe80::b594:405e:50f0:468e%5]) with mapi id 15.20.5654.020; Fri, 23 Sep 2022
+ 18:18:38 +0000
+Date:   Fri, 23 Sep 2022 11:18:33 -0700
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        UNGLinuxDriver@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Lee Jones <lee@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Biao Huang <biao.huang@mediatek.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-References: <20220923052828.16581-1-jianguo.zhang@mediatek.com>
- <20220923052828.16581-5-jianguo.zhang@mediatek.com>
- <e0fa3ddf-575d-9e25-73d8-e0858782b73f@collabora.com>
- <ac24dc0f-0038-5068-3ce6-bbace55c7027@linaro.org>
-In-Reply-To: <ac24dc0f-0038-5068-3ce6-bbace55c7027@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH v2 net-next 12/14] dt-bindings: net: dsa: ocelot: add
+ ocelot-ext documentation
+Message-ID: <Yy34edNkKopsETcg@colin-ia-desktop>
+References: <20220922040102.1554459-1-colin.foster@in-advantage.com>
+ <20220922040102.1554459-13-colin.foster@in-advantage.com>
+ <35ba126d-be10-2566-63df-3c474cdc8887@linaro.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <35ba126d-be10-2566-63df-3c474cdc8887@linaro.org>
+X-ClientProxiedBy: MW3PR05CA0009.namprd05.prod.outlook.com
+ (2603:10b6:303:2b::14) To DM5PR1001MB2345.namprd10.prod.outlook.com
+ (2603:10b6:4:2d::31)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM5PR1001MB2345:EE_|IA1PR10MB5947:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7b4d2c16-e188-4d2c-3980-08da9d900915
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: JYOiOZ2129YpA+LIeqmxl7psm9et54jPTzNvmfYnp8ldlb2wxQo1mW59t/7mE9dIi2660Via0EFShNafXAJs8XsrUeVdFAux0EiWlVrJTkPWEz5eB1LG1TxEFNa53vkcdd/JGPslr33CrKxtBzUt0MP2U5ivU5AoVlFIagMu9A0s05w8gA2+ChU4SHX2pZPMq4/Q1UCUESN28UKINeKqUazWh0qzuhtLWCmILXeko1r6Me/7m4nijL7r+9uS15wlqOqMTnfC6pesG5TjYIkwWB7c2RacS54Ju/z+7NoI/DHwfLWaWcpBN5QUXmO0qqPjfjhV/k5Z+NIaVwjlA7ArjtOnUpVcxTVRre/N2YU+Y26dvqgtW649aGs8nXZLhvCodYOW8MU5ghRRVhXSsiEiuv12oXWPSTT0XhxCdRHd/HgWxJJJa56DqXgOwGmOB3W2YWVCOyX/qJSHpY0ox9wR3nOlYC6Is/Z7a9yZ4Q62Pv6wwwIhJDyAVzFRhrf0U+nIpmqr3XgpEbJuM+morwwxQ0u+Q7Iw/RiXswFsn2dchYBR0mc+1gm0sDbxPG+VoPHwX7YnfsIn8TTcAgk6RnrIKX6Uu3YV+6ubAzmjMZt/iLCUXl7pL25IA4d5ANRmx8R5VxIZokrOXNhhzwPtgXA/CePZX2CBZyLvzWi5LC6VOlXpwGrvrI1xM0Ne9WFoj6uEOohE0f7tdbxYNj6+73AE0w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR1001MB2345.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(346002)(366004)(396003)(376002)(39840400004)(136003)(451199015)(6666004)(8676002)(86362001)(33716001)(38100700002)(66556008)(9686003)(6506007)(4326008)(66946007)(6512007)(53546011)(26005)(66476007)(41300700001)(8936002)(44832011)(54906003)(5660300002)(6486002)(316002)(478600001)(6916009)(7416002)(2906002)(186003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?xBI52VHh+IJl/WWv0F9wPYv1sLzdiQTJu4Bumi/k7+V/IyhpGRQpIheuxCjM?=
+ =?us-ascii?Q?SSneObwamtyDkdBNiergKTMMpmOUc1YMQ/gwE9hf/wi51QCECOCoto5QIMma?=
+ =?us-ascii?Q?5sHnoZiiv2/0ljDWCXqtN77QRk2R1jA+dzdNhCoYS2M7R3BPMSdQoIGd/Pjr?=
+ =?us-ascii?Q?j623a+OpshA14JD8/65z+GEcLWlMhXmzBFJpC+boeNH8e9LDwkKeO6zZexwv?=
+ =?us-ascii?Q?+rEd2RH0zvACUiJagO5j7XqYff5lJybnnRQiVH20D8FahysHwBxXqlDlM47k?=
+ =?us-ascii?Q?bWDZJFKyTm5vfQZN5AVSTjdX4Igb6Gn/3Z6O2vlxcZdtNkVuMu2X1ZRypseF?=
+ =?us-ascii?Q?lrDN1VGqtoQrLLFatjdpX/Zd2rVFaI4cME3X9UU0t9QDl0E7XfnHUZydTxqH?=
+ =?us-ascii?Q?SOZHLsiIvJulsIRqYWcjc5LGj2z660AoRkEJRakdTgh74Hqk0Tq3fPMcMyBn?=
+ =?us-ascii?Q?z0PwSI4HyX/Ua2DO77D5T8H+R1GKF93llt+lHPX+dtdBDUOqtMBY8gQp5WXg?=
+ =?us-ascii?Q?/mWGaChHXQ6tttuXeWIy7R2slbR55LATYCt0ryQr8V8ttNLpTU/+BJDFrIDb?=
+ =?us-ascii?Q?hN6XRKFFfYfodwtwvfp2z4cQCmWSIs4FHLCoJygaJs+LzTitOddL/N5AdkWH?=
+ =?us-ascii?Q?IthkKdjnDMOWilEaiEVjB64tGmJy4MpB5weIO8oKDbxrS+NZq9GYBMcfW9YE?=
+ =?us-ascii?Q?XcYXx1bHmqu5u/XLU+Gss+/MpWZobqx/1VDddlPpnuihfN02TSvrqdNac+Qm?=
+ =?us-ascii?Q?kXt18lcHuqLu25PZfEa1u9ltXs/KPET7yBeYtT0sjIKbLyV3Ow+9dequXPIp?=
+ =?us-ascii?Q?CFkX/jviQyn092x4/aFud21SI4mAJw8DsT1/FKiJleq7rIPPDAp7H+u3Izuf?=
+ =?us-ascii?Q?x3Mayi0FOhci4TSr4L/1EHVhsAZlwA38D+W+bm9rHZVOtnj+QV013VbAmTM2?=
+ =?us-ascii?Q?kwKuqmaoMXEOicxNH4hKQ8lDLj1eIVE3JmXd7BGeE2VgLsPHS/2rwsG/XQ4B?=
+ =?us-ascii?Q?izB6EBj0E3ANiJx1uPxuNb8qDugjDOPfUCM7D7J7VR3tAW87fsKbX9c6PTnz?=
+ =?us-ascii?Q?eVBy+vlDba+8n1Xu2XBF0aSLnexFYGzIYNcnhq7ONOSC/d5UzSbjwIJEdpOj?=
+ =?us-ascii?Q?UBN3fvHJsrJl4kfG6GEDrJJKlX8tYvqR7Op6j8dVNd91y+yT1e6PKqsiatrS?=
+ =?us-ascii?Q?o08onrv5VculBhufOT6/VpM4CPeQyKGmuxe8dpbnepLXpe21igylVlTR8Whm?=
+ =?us-ascii?Q?5afPEfsJ7U2TPldNNJfHyrPjsFCDwpLd4zn8oRVnHs8jlnx1fj6YghU2BpI2?=
+ =?us-ascii?Q?8pSWWU/voQqSJsRSNBMkJJX6elyGebipEkIYTxGV2izrEd5ET7wWJch3j7Gb?=
+ =?us-ascii?Q?kavxqp3f7kDOpa1tzama4jcoGkJcYiNUFyHz6Lzz1ON5GCz3kET30skjT4Nz?=
+ =?us-ascii?Q?Agjalv0gQyg/ZQ5aUYNLMHidgBbUFhuC0UUVsPw/bdhy3Td1TJpyI6KBGN5F?=
+ =?us-ascii?Q?5IeIm7lra+S96iZnPkUkVccJU53SD0yzK/+cwAPAK3PcDOzXJyKGLJHFJhs0?=
+ =?us-ascii?Q?2begwjkBm1tjipEztphp4es9yrJZwjg2loP7O1hexCF4dLxLX2glF1qde6h3?=
+ =?us-ascii?Q?jQ=3D=3D?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7b4d2c16-e188-4d2c-3980-08da9d900915
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR1001MB2345.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2022 18:18:38.1771
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: izLtiWuiDf8xuaw4C4bpTMM4Zwao1JjvgyEA9GvjNCEI+32fEY5KVxmj6DlpsGIMLZsmnlv5xMje6zJMwirudNDieQ5y98dBUuwDZcQzSBs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR10MB5947
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 23/09/2022 20:14, Krzysztof Kozlowski wrote:
->> This is going to break MT2712e on old devicetrees.
->>
->> The right way of doing that is to check the return value of of_property_read_u32()
->> for "snps,clk-csr": if the property is not found, fall back to the old "clk_csr".
+On Fri, Sep 23, 2022 at 08:08:53PM +0200, Krzysztof Kozlowski wrote:
+> On 22/09/2022 06:01, Colin Foster wrote:
+> > diff --git a/Documentation/devicetree/bindings/net/dsa/mscc,ocelot.yaml b/Documentation/devicetree/bindings/net/dsa/mscc,ocelot.yaml
+> > index 8d93ed9c172c..bed575236261 100644
+> > --- a/Documentation/devicetree/bindings/net/dsa/mscc,ocelot.yaml
+> > +++ b/Documentation/devicetree/bindings/net/dsa/mscc,ocelot.yaml
+> > @@ -54,9 +54,21 @@ description: |
+> >        - phy-mode = "1000base-x": on ports 0, 1, 2, 3
+> >        - phy-mode = "2500base-x": on ports 0, 1, 2, 3
+> >  
+> > +  VSC7412 (Ocelot-Ext):
+> > +
+> > +    The Ocelot family consists of four devices, the VSC7511, VSC7512, VSC7513,
+> > +    and the VSC7514. The VSC7513 and VSC7514 both have an internal MIPS
+> > +    processor that natively support Linux. Additionally, all four devices
+> > +    support control over external interfaces, SPI and PCIe. The Ocelot-Ext
+> > +    driver is for the external control portion.
+> > +
+> > +    The following PHY interface type are currently supported:
+> > +      - phy-mode = "internal": on ports 0, 1, 2, 3
 > 
-> I must admit - I don't care. That's the effect when submitter bypasses
-> DT bindings review (81311c03ab4d ("net: ethernet: stmmac: add management
-> of clk_csr property")).
-> 
-> If anyone wants ABI, please document the properties.
-> 
-> If out-of-tree users complain, please upstream your DTS or do not use
-> undocumented features...
-> 
+> "Currently supported" by hardware or by some specific, chosen
+> implementation? If the latter, drop it. If the former, maybe this should
+> be constrained in allOf:if:then.
 
-OTOH, as Angelo pointed out, handling old and new properties is quite
-easy to achieve, so... :)
+Hi Krzysztof,
 
-Best regards,
-Krzysztof
+Currently supported by the software. This patch set explicitly adds
+support for the four internal ports. There'll be another patch set right
+around the corner that'll add QSGMII to ports 4-7.
 
+I see your point though. I'll drop "currently" and have it match the
+wording of the other drivers.
