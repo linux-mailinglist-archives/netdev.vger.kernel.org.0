@@ -2,53 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B99A85E840D
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 22:39:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 755F25E8409
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 22:39:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233244AbiIWUe6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 16:34:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52560 "EHLO
+        id S233251AbiIWUfH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 16:35:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233113AbiIWUcu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 16:32:50 -0400
+        with ESMTP id S233087AbiIWUcs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 16:32:48 -0400
 Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 292D314C079
-        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 13:28:35 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id v1so1157274plo.9
-        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 13:28:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 584DB14AD46
+        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 13:28:36 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id d24so1177801pls.4
+        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 13:28:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=PCPU7pjQsz2sISTfhiNbNnCu1P7dpEEV5lOobjZTacw=;
-        b=Iu9IAyDuLzG+6v/Qe/VDx2yB77cAoW4xXxxoWLwcPs2hQ2vdFhoGM7rk54C0JPoyAN
-         AaLg5lQQvhHAFcTmsUdZWlK9hHQlqBPwPeDuvjvIf+b16rmlZZjb/iy/HTS0LU78apjW
-         nLGtaiMCoXEcj1ad5zoxgqn0DT23BivJkRE/I=
+        bh=z4tB+xVARH2BbBzGKcf3E9OvsPG9MUKkIVIFYw9OFoE=;
+        b=Q4rh+gmlpihEosurwwZcg5v36Y7S4n07nnD5qTUDm6HH7U8YnWvyJeQCcPZN5psqhA
+         1FcoXjDJH32RpyVhUAH8KodhEdorGpw+FG6gvM+RSEQNuZXjSLQE5zdS1isnmk0JOB4S
+         3CG9eUjuqlbNuMG0YbmCq/VnSQeCLDo3sbD6M=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=PCPU7pjQsz2sISTfhiNbNnCu1P7dpEEV5lOobjZTacw=;
-        b=MMWeD1N8A151UdMZClMtB/EL+StC4RB3nxXkjgQMqO2hMifw9ihZ8CCH9YmW3Pundy
-         w4jYt/H4/sH6Ne+eJ40nhe+FPklaSF/505cT+9QueZPzl+JQWCxgc1DbCeSs7ylSQWlY
-         N83Y2TNioxvyocuzv2XFtGmM6lAepkIJgTM36oeyrQuISR6QKsTVNEXNEfrZON0TsxnC
-         95Fu4eVvYKeLoRkI/ON8AJsj5/ulHlJJgqOjRefvPYex+eN7haWYu88ptd8hvim2dTiZ
-         ZO5QK3jnVdLwEajExKSaKccCBhHTEPmMg1T8vv3zAr8OcK/tzDteYch85+OyVgiFQvLr
-         RBBA==
-X-Gm-Message-State: ACrzQf1UdwFrGevN3UPpQ4L17dMK1s1+C4QLdn4k0VIIR212wmDaUxB7
-        /E/Asqwt3vx8dVr6NghpPTR28Q==
-X-Google-Smtp-Source: AMsMyM6XUwdmhAaIK2A3UxRxY7Sbzemd3FVYShW5LY9Q79SPPQFgRGi67TrIU8bwe4lKUNw9bOUpJw==
-X-Received: by 2002:a17:90b:4b09:b0:202:ad77:9ee1 with SMTP id lx9-20020a17090b4b0900b00202ad779ee1mr11743471pjb.10.1663964914034;
-        Fri, 23 Sep 2022 13:28:34 -0700 (PDT)
+        bh=z4tB+xVARH2BbBzGKcf3E9OvsPG9MUKkIVIFYw9OFoE=;
+        b=yABZKH71tWyBx3vbsR2NTkJfbE/bYbs17CwIh+UH1E1/nNhF3rgYRyfPvqoKgJvqWg
+         00lCZ3E4/X+aTHwxihXsowCeGWGiPDXPK0adORSA4EzlJ28qN12TWTxN8oTEtE4ZU3cC
+         wI4zsAJZb6YYaqmKZk7cN4KPFN98nDfkr4ry5yD0ykch/p+4Z9RxFfso8QXIMXu2/KpG
+         lsYQ6zgvWTQ0E+tt9/Cr9VT4OGN57LU5DQOxEYulRfLeIKJA6rWllUXXu0shaH/ibsgS
+         4CoIzW6KFOw6lhMC8fKOmtJqk6Myu17RCZFQpTWN377Bhq+6MrIycTdlCBcpOThyc9bW
+         JJeA==
+X-Gm-Message-State: ACrzQf3D/FERlr92uWOMDJrGRRVuo+xtmoVhWoUhYsMfmyD7HMy4k535
+        CX1j0li/vZ/vJx8690bu2euFig==
+X-Google-Smtp-Source: AMsMyM75IrvvzFBms5bHfHu6V2O7UB+rtpwccRdUWoQNc25BPNZqqAb4Stuw+QSSG5uxeFf6i+40Yw==
+X-Received: by 2002:a17:90b:4b46:b0:202:7a55:5588 with SMTP id mi6-20020a17090b4b4600b002027a555588mr11300183pjb.55.1663964915056;
+        Fri, 23 Sep 2022 13:28:35 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id p67-20020a622946000000b00528bd940390sm6579869pfp.153.2022.09.23.13.28.28
+        by smtp.gmail.com with ESMTPSA id o5-20020a170902d4c500b00176b66954a6sm6438596plg.121.2022.09.23.13.28.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Fri, 23 Sep 2022 13:28:32 -0700 (PDT)
 From:   Kees Cook <keescook@chromium.org>
 To:     Vlastimil Babka <vbabka@suse.cz>
 Cc:     Kees Cook <keescook@chromium.org>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        kasan-dev@googlegroups.com, linux-mm@kvack.org,
         "Ruhl, Michael J" <michael.j.ruhl@intel.com>,
         Hyeonggon Yoo <42.hyeyoo@gmail.com>,
         Christoph Lameter <cl@linux.com>,
@@ -76,50 +82,117 @@ Cc:     Kees Cook <keescook@chromium.org>,
         intel-wired-lan@lists.osuosl.org, dev@openvswitch.org,
         x86@kernel.org, llvm@lists.linux.dev,
         linux-hardening@vger.kernel.org
-Subject: [PATCH v2 13/16] mempool: Use kmalloc_size_roundup() to match ksize() usage
-Date:   Fri, 23 Sep 2022 13:28:19 -0700
-Message-Id: <20220923202822.2667581-14-keescook@chromium.org>
+Subject: [PATCH v2 14/16] kasan: Remove ksize()-related tests
+Date:   Fri, 23 Sep 2022 13:28:20 -0700
+Message-Id: <20220923202822.2667581-15-keescook@chromium.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220923202822.2667581-1-keescook@chromium.org>
 References: <20220923202822.2667581-1-keescook@chromium.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=821; h=from:subject; bh=1Gas3SCsMDWgBChil0VwFgY9Fr6zuZgi/zbZ+v/amZU=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBjLhblw9hPBOt2abeHvNz251QmxKrK5qZ9E2npmHln zyeWomSJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYy4W5QAKCRCJcvTf3G3AJoKkD/ 0Rw7ftGkpv6Cp14LlheghY8ULuROeYsl+xBHJIECYJxb7Zj7xNiTAKJPkYJG2rfH7dJMP4mnVCyvlE aX9DI2jRbF0DpDm8X4kNTAYLiAnekyLGRBI1uuwyosPWzFt5fthMVPKTGw4skU5eJeoliXwvKRjc7w H2hvKX03v8bjW2hWSueT4lkm2RIg4t4qCd7tAHcfkVFPluuXqkRyHl5jKKj/gvloXfr0a7NEcoK6+B OMr9c7RIevNvATAWl7BVsl1C+sgXBlqnebMSX5UB3sQFDThE2TOU6PM8pwx2uGkviWtrIORGwdnrqF 0BWUxYm3S7RgbB0E08f07OQbs6iZbOosdIECqTf8jwkxFWpqXk+ywZexmptnljyesSCsq4Q45yeVtp CivmXPCHnnW/ltVIwlzqLXkKSA1ANCZugfA9MQMfNYzYLJmYhU2oE75hyFkzyLL6O7DnVutl/lmgOX 3BjHh5o+PuSYbw4gy0xL95tSHEokwlTTS9maudQ7pyB/lQFm8Got/UmZKScGYd6rVWQ+NR3+w3ud3e oz3kjiT0YzaO+sAjrsJDYKalavBaxhajZL8QMmPOZRL6XigFy+8x9O7y3Ji6lN4tryxNvAYJ08zYoV GZZ+QW0vnk/Etuibtx0IyAfth89gRlflFdIp1c7NouB249gCifAsYbMMOFbA==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3002; h=from:subject; bh=nsR089jDUY/rZ3RkLnBCmN0cxhulkR1WvQxc2IILkdA=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBjLhbmz8DrfaIQlG3nQhgCokX0k1pjcPoiZW0Jauf3 tW1sqtCJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYy4W5gAKCRCJcvTf3G3AJhLbEA CE0iCQD7eLDXpM8ch5Nl2WFXcHp3LHX4r5WZApWbPThez4fy3zQ6oNOuYG3svqE9Ty3HRWiGtAuj1z 52ieVU1DgCeOcKoR+WWmyjUwvEKyYiR5nSddmdky8FqqpEzQC4EtPsNCfpE7C5WkkbCFT2YOnKkP+I c+XG3sdrbNkpYqdfxTpOaqfpmDejGo/bN62+BnL1P/oGYvKbQbJwTsGZSFgCcDiGxIx4MUs8kdvOoE f3E1N/A5SnQc82KMjdHOBvqyr5/nmPWBXDf9PlAi8EX9EOeSdWA63gqrcMmtWF7k53AM8y3nnA1WjF ArSY9BsRELGcOYhJ3ZLW3AkptdWRSxpYNY4+Bez24YkZOCmYJtf8k9uUGxCocTzQbk81lJAneIcRM6 CmmNxTps7Rcdxo//FEpitZVXcFDFcuKqMUFVXOtgkBr5VTyqhFW3U3sns9A/xdIvuzU1nLW21+Z/gs rX/cfIV7h8BHZawSfOBQwanV/aeRIHMA3P7DqC6Wryes8omgf/NBRyzIEWcXGOjM+KfNjcPoqUYaPn VmEXb44aYqHppQofZHS2SZ2s3815KS6eI25k+LJIkeIBCtJfER9/IiKu4geqN/K/Fc2osV+7bYCzqb C4y72qoT68wn68L1UOdkRy8UoFwG12ut8cp2hnf2M1C3fLZUVpj8BctMNe3A==
 X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Round up allocations with kmalloc_size_roundup() so that mempool's use
-of ksize() is always accurate and no special handling of the memory is
-needed by KASAN, UBSAN_BOUNDS, nor FORTIFY_SOURCE.
+In preparation for no longer unpoisoning in ksize(), remove the behavioral
+self-tests for ksize().
 
+Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>
+Cc: Alexander Potapenko <glider@google.com>
+Cc: Andrey Konovalov <andreyknvl@gmail.com>
+Cc: Dmitry Vyukov <dvyukov@google.com>
+Cc: Vincenzo Frascino <vincenzo.frascino@arm.com>
 Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: kasan-dev@googlegroups.com
 Cc: linux-mm@kvack.org
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- mm/mempool.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ lib/test_kasan.c  | 42 ------------------------------------------
+ mm/kasan/shadow.c |  4 +---
+ 2 files changed, 1 insertion(+), 45 deletions(-)
 
-diff --git a/mm/mempool.c b/mm/mempool.c
-index 96488b13a1ef..0f3107b28e6b 100644
---- a/mm/mempool.c
-+++ b/mm/mempool.c
-@@ -526,7 +526,7 @@ EXPORT_SYMBOL(mempool_free_slab);
-  */
- void *mempool_kmalloc(gfp_t gfp_mask, void *pool_data)
- {
--	size_t size = (size_t)pool_data;
-+	size_t size = kmalloc_size_roundup((size_t)pool_data);
- 	return kmalloc(size, gfp_mask);
+diff --git a/lib/test_kasan.c b/lib/test_kasan.c
+index 58c1b01ccfe2..bdd0ced8f8d7 100644
+--- a/lib/test_kasan.c
++++ b/lib/test_kasan.c
+@@ -753,46 +753,6 @@ static void kasan_global_oob_left(struct kunit *test)
+ 	KUNIT_EXPECT_KASAN_FAIL(test, *(volatile char *)p);
  }
- EXPORT_SYMBOL(mempool_kmalloc);
+ 
+-/* Check that ksize() makes the whole object accessible. */
+-static void ksize_unpoisons_memory(struct kunit *test)
+-{
+-	char *ptr;
+-	size_t size = 123, real_size;
+-
+-	ptr = kmalloc(size, GFP_KERNEL);
+-	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, ptr);
+-	real_size = ksize(ptr);
+-
+-	OPTIMIZER_HIDE_VAR(ptr);
+-
+-	/* This access shouldn't trigger a KASAN report. */
+-	ptr[size] = 'x';
+-
+-	/* This one must. */
+-	KUNIT_EXPECT_KASAN_FAIL(test, ((volatile char *)ptr)[real_size]);
+-
+-	kfree(ptr);
+-}
+-
+-/*
+- * Check that a use-after-free is detected by ksize() and via normal accesses
+- * after it.
+- */
+-static void ksize_uaf(struct kunit *test)
+-{
+-	char *ptr;
+-	int size = 128 - KASAN_GRANULE_SIZE;
+-
+-	ptr = kmalloc(size, GFP_KERNEL);
+-	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, ptr);
+-	kfree(ptr);
+-
+-	OPTIMIZER_HIDE_VAR(ptr);
+-	KUNIT_EXPECT_KASAN_FAIL(test, ksize(ptr));
+-	KUNIT_EXPECT_KASAN_FAIL(test, ((volatile char *)ptr)[0]);
+-	KUNIT_EXPECT_KASAN_FAIL(test, ((volatile char *)ptr)[size]);
+-}
+-
+ static void kasan_stack_oob(struct kunit *test)
+ {
+ 	char stack_array[10];
+@@ -1392,8 +1352,6 @@ static struct kunit_case kasan_kunit_test_cases[] = {
+ 	KUNIT_CASE(kasan_stack_oob),
+ 	KUNIT_CASE(kasan_alloca_oob_left),
+ 	KUNIT_CASE(kasan_alloca_oob_right),
+-	KUNIT_CASE(ksize_unpoisons_memory),
+-	KUNIT_CASE(ksize_uaf),
+ 	KUNIT_CASE(kmem_cache_double_free),
+ 	KUNIT_CASE(kmem_cache_invalid_free),
+ 	KUNIT_CASE(kmem_cache_double_destroy),
+diff --git a/mm/kasan/shadow.c b/mm/kasan/shadow.c
+index 0e3648b603a6..0895c73e9b69 100644
+--- a/mm/kasan/shadow.c
++++ b/mm/kasan/shadow.c
+@@ -124,9 +124,7 @@ void kasan_unpoison(const void *addr, size_t size, bool init)
+ 	addr = kasan_reset_tag(addr);
+ 
+ 	/*
+-	 * Skip KFENCE memory if called explicitly outside of sl*b. Also note
+-	 * that calls to ksize(), where size is not a multiple of machine-word
+-	 * size, would otherwise poison the invalid portion of the word.
++	 * Skip KFENCE memory if called explicitly outside of sl*b.
+ 	 */
+ 	if (is_kfence_address(addr))
+ 		return;
 -- 
 2.34.1
 
