@@ -2,145 +2,326 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DFFE95E7950
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 13:20:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92F655E7953
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 13:21:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231263AbiIWLUy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 07:20:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46196 "EHLO
+        id S231661AbiIWLVL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 07:21:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229975AbiIWLUw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 07:20:52 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C930AC9977;
-        Fri, 23 Sep 2022 04:20:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663932051; x=1695468051;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=6Qbcmzx6oXxdj+twPmsuaKBP/DBj7kMJ9vSNnRiPopw=;
-  b=Jx09fmYbd3leCnsaK7ykSyCj+NtQm2vqBxCbKIFhFwrIvXHKKnnKkJC7
-   MU3FGa38bsGuL+aZcslHi51Tb00obG1UATZM8ZBOQwVYf2pHR2jruHryr
-   FljnNXG27tMWuO7Vzbq5Oq9DhohcYpHaDl3eYoHM3SS7aZyfQDJHBK9LI
-   K5hUt7Qr0STjxYU90401nCgM2t3k87WgzuYIOu8HzzG29MgxoDgGPHakx
-   7Ft51dckYCQlnaJCtO7dcYfuxJLTxuYG/DLci4O2Pcm3rCoYCSUQdykJt
-   t+8kp+EXkOssGlDEqKOz2ne5Yp6skfC8cUjS5LMnqdLd1GOAt8CYVnJtA
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10478"; a="301453230"
-X-IronPort-AV: E=Sophos;i="5.93,339,1654585200"; 
-   d="scan'208";a="301453230"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2022 04:20:51 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,339,1654585200"; 
-   d="scan'208";a="622489619"
-Received: from lkp-server01.sh.intel.com (HELO c0a60f19fe7e) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 23 Sep 2022 04:20:47 -0700
-Received: from kbuild by c0a60f19fe7e with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1obgjf-0005c0-15;
-        Fri, 23 Sep 2022 11:20:47 +0000
-Date:   Fri, 23 Sep 2022 19:20:06 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Guangbin Huang <huangguangbin2@huawei.com>, jiri@mellanox.com,
-        moshe@mellanox.com, davem@davemloft.net, kuba@kernel.org,
-        idosch@nvidia.com
-Cc:     kbuild-all@lists.01.org, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        huangguangbin2@huawei.com, lipeng321@huawei.com,
-        chenhao418@huawei.com
-Subject: Re: [PATCH net-next 2/2] net: hns3: PF add support setting
- parameters of congestion control algorithm by devlink param
-Message-ID: <202209231935.JRvKASjh-lkp@intel.com>
-References: <20220923013818.51003-3-huangguangbin2@huawei.com>
+        with ESMTP id S230264AbiIWLVJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 07:21:09 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A32BA12756E
+        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 04:21:06 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id a8so19236097lff.13
+        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 04:21:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=rCHuExPyw34E49pRLOmhVp4keZrznuThXnXRZMaWCCg=;
+        b=ZQd7rxG9iEDwOsocem0C/3t0VsE0KCJVYhftLV0TGGmQ9+0enEqM8lrABD1DgiArNx
+         QThG6exTX6toUTXFb9m+SWCEtWwS/0sCxapWIIN9UNRw7qzcjg0WRYRDiDQ+RTbdYpFh
+         /YQXUh6SVU3iGD9DnhqtLhSHSKXHqJmYnJlIUVJnNtJwmGmYDm2MGaNDvOmw6mIa6821
+         sSiiXfUIL9I6EP+C6nV1dQpBEV88/Xqg3ldRJVd4e/UGeW6qQYibasQfssvhkm2u8HxN
+         y+U2S9Cg/Rz9iZJK4ufO0WN08A7S55wJvGmSnbp4S1KsVwKoYQu0RvUXwxL3cmcoBc1V
+         bQZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=rCHuExPyw34E49pRLOmhVp4keZrznuThXnXRZMaWCCg=;
+        b=NwKA2ZnzewyOlDiLpo8Qri/WeMRVfaigAR/MekTJJ3M7XYXwIkaRBfK6QvOmcB3IJr
+         aOz99P4qq/JsFDR8OQIz2x5DXX5MUSg0qpT4pafltrmR0Dox7Aqgpu7iks/H4CxhyB4g
+         9Kxfb95Fgh/uX9jx0Rl+Of8isCaFzXnM/9bIg1FjEd3DjIWkr7zWhNtDatskEb8s+lEB
+         UBTXj4zaBtKJBB8P+THx61Jn0ySgqY4tZpD6Hv8nANcc7bnFOv3kA7rgevkoAdTA15wy
+         9QT/RuIfhymTAQm0QMwXnqaUNjSyPvQguzM8qnuYOgmwx6WV1ht3FKp5Rw4d0Qb128rz
+         XU5w==
+X-Gm-Message-State: ACrzQf1Ai0jx/qfZB5ChrJAYqhBgmXyRtcor2c5wkhizxnOyVgkRpzBf
+        B8I5RaOTFiGaD1OI/z7DFDQTcg==
+X-Google-Smtp-Source: AMsMyM66ZBHC4h0SEgXf3jOTu/Lfs2tP185KjXaslJjWK0qEoSuOeg/RQHaj34Vp8XvoyNzQYc0ohg==
+X-Received: by 2002:a05:6512:2286:b0:49e:eb:ea19 with SMTP id f6-20020a056512228600b0049e00ebea19mr3122982lfu.645.1663932064944;
+        Fri, 23 Sep 2022 04:21:04 -0700 (PDT)
+Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id t3-20020ac25483000000b0049a5a59aa68sm1408105lfk.10.2022.09.23.04.21.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 23 Sep 2022 04:21:04 -0700 (PDT)
+Message-ID: <29fb0a59-8685-89b2-74de-2ccdce1c925c@linaro.org>
+Date:   Fri, 23 Sep 2022 13:21:03 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220923013818.51003-3-huangguangbin2@huawei.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [net-next PATCH] dt-bindings: net: marvell,pp2: convert to
+ json-schema
+Content-Language: en-US
+To:     =?UTF-8?Q?Micha=c5=82_Grzelak?= <mig@semihalf.com>,
+        devicetree@vger.kernel.org
+Cc:     mw@semihalf.com, linux@armlinux.org.uk, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        upstream@semihalf.com
+References: <20220922211026.34462-1-mig@semihalf.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220922211026.34462-1-mig@semihalf.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Guangbin,
+On 22/09/2022 23:10, Michał Grzelak wrote:
+> This converts the marvell,pp2 bindings from text to proper schema.
+> 
+> Move 'marvell,system-controller' and 'dma-coherent' properties from
+> port up to the controller node, to match what is actually done in DT.
+> 
+> Signed-off-by: Michał Grzelak <mig@semihalf.com>
+> ---
+>  .../devicetree/bindings/net/marvell,pp2.yaml  | 292 ++++++++++++++++++
+>  .../devicetree/bindings/net/marvell-pp2.txt   | 141 ---------
+>  MAINTAINERS                                   |   2 +-
+>  3 files changed, 293 insertions(+), 142 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/net/marvell,pp2.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/net/marvell-pp2.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/net/marvell,pp2.yaml b/Documentation/devicetree/bindings/net/marvell,pp2.yaml
+> new file mode 100644
+> index 000000000000..b4589594a0cc
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/marvell,pp2.yaml
+> @@ -0,0 +1,292 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/marvell,pp2.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Marvell CN913X / Marvell Armada 375, 7K, 8K Ethernet Controller
+> +
+> +maintainers:
+> +  - Marcin Wojtas <mw@semihalf.com>
+> +  - Russell King <linux@armlinux.org>
+> +
+> +description: |
+> +  Marvell Armada 375 Ethernet Controller (PPv2.1)
+> +  Marvell Armada 7K/8K Ethernet Controller (PPv2.2)
+> +  Marvell CN913X Ethernet Controller (PPv2.3)
+> +
 
-Thank you for the patch! Perhaps something to improve:
+properties go first.
 
-[auto build test WARNING on net-next/master]
+> +patternProperties:
+> +
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Guangbin-Huang/net-hns3-add-support-setting-parameters-of-congestion-control-algorithm-by-devlink-param/20220923-094236
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git bcff1a37bafc144d67192f2f5e1f4b9c49b37bd6
-config: s390-allyesconfig (https://download.01.org/0day-ci/archive/20220923/202209231935.JRvKASjh-lkp@intel.com/config)
-compiler: s390-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/fc0ab8f22c924e963b0e0a2723cbb49acc1d3bb3
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Guangbin-Huang/net-hns3-add-support-setting-parameters-of-congestion-control-algorithm-by-devlink-param/20220923-094236
-        git checkout fc0ab8f22c924e963b0e0a2723cbb49acc1d3bb3
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash drivers/net/ethernet/hisilicon/hns3/
+no need for blank line.
 
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
+> +  '^interrupt': true
 
-All warnings (new ones prefixed by >>):
+This is not a pattern..
 
-   drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c: In function 'hclge_devlink_get_algo_param_value':
->> drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c:418:35: warning: variable 'tmp' set but not used [-Wunused-but-set-variable]
-     418 |         char *value, *value_tmp, *tmp;
-         |                                   ^~~
-   drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c: In function 'hclge_devlink_algo_param_set':
->> drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c:690:13: warning: variable 'cnt' set but not used [-Wunused-but-set-variable]
-     690 |         int cnt = 0;
-         |             ^~~
-   drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c: In function 'hclge_devlink_is_algo_param_valid':
-   drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c:727:35: warning: variable 'tmp' set but not used [-Wunused-but-set-variable]
-     727 |         char *value, *value_tmp, *tmp;
-         |                                   ^~~
+> +  '^#.*-cells$': true
 
+??? Nope. Please start from scratch either from recent similar bindings
+or from example-schema.
 
-vim +/tmp +418 drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c
+> +
+> +  '^eth[0-9a-f]*(@.*)?$':
+> +    type: object
+> +    properties:
+> +
+> +      interrupts:
+> +        minItems: 1
+> +        maxItems: 10
+> +        description: interrupt(s) for the port
+> +
+> +      interrupt-names:
+> +        minItems: 1
+> +        maxItems: 10
+> +
+> +        items:
+> +          oneOf:
+> +            - pattern: "^hif[0-8]$"
+> +            - pattern: "^tx-cpu[0-3]$"
+> +              deprecated: true
+> +            - const: link
+> +            - const: rx-shared
+> +              deprecated: true
 
-   415	
-   416	static int hclge_devlink_get_algo_param_value(const char *str, u64 *param_value)
-   417	{
- > 418		char *value, *value_tmp, *tmp;
-   419		int ret = 0;
-   420		int i;
-   421	
-   422		value = kmalloc(sizeof(char) * __DEVLINK_PARAM_MAX_STRING_VALUE,
-   423				GFP_KERNEL);
-   424		if (!value)
-   425			return -ENOMEM;
-   426	
-   427		strncpy(value, str, __DEVLINK_PARAM_MAX_STRING_VALUE);
-   428		value_tmp = value;
-   429	
-   430		tmp = strsep(&value, "@");
-   431	
-   432		for (i = 0; i < strlen(value); i++) {
-   433			if (!(value[i] >= '0' && value[i] <= '9')) {
-   434				kfree(value_tmp);
-   435				return -EINVAL;
-   436			}
-   437		}
-   438	
-   439		ret = kstrtou64(value, 0, param_value);
-   440	
-   441		kfree(value_tmp);
-   442		return ret;
-   443	}
-   444	
+List hast to be specific.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> +
+> +        description: >
+> +          if more than a single interrupt for is given, must be the
+> +          name associated to the interrupts listed. Valid names are:
+> +          "hifX", with X in [0..8], and "link". The names "tx-cpu0",
+> +          "tx-cpu1", "tx-cpu2", "tx-cpu3" and "rx-shared" are supported
+> +          for backward compatibility but shouldn't be used for new
+> +          additions.
+> +
+> +      port-id:
+> +        $ref: /schemas/types.yaml#/definitions/uint32
+> +        description: ID of the port from the MAC point of view.
+> +
+> +      phy-mode:
+> +        $ref: "ethernet-controller.yaml#/properties/phy-mode"
+> +
+> +      marvell,loopback:
+> +        $ref: /schemas/types.yaml#/definitions/flag
+> +        description: port is loopback mode.
+> +
+> +      phy:
+> +        $ref: /schemas/types.yaml#/definitions/phandle
+> +        description: >
+> +          a phandle to a phy node defining the PHY address
+> +          (as the reg property, a single integer).
+> +
+> +    required:
+> +      - interrupts
+> +      - port-id
+> +      - phy-mode
+> +
+> +properties:
+> +
+> +  dma-coherent: true
+> +
+> +  compatible:
+
+This goes first.
+
+> +    enum:
+> +      - marvell,armada-375-pp2
+> +      - marvell,armada-7k-pp2
+> +
+> +  reg:
+> +    minItems: 3
+> +    maxItems: 4
+> +
+> +  marvell,system-controller:
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+> +    description: a phandle to the system controller.
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - clocks
+> +  - clock-names
+> +
+> +allOf:
+> +
+
+No need for blank line.
+
+> +  - $ref: ethernet-controller.yaml#
+> +
+> +  - if:
+> +      not:
+> +        patternProperties:
+> +          '^eth[0-9a-f]*(@.*)?$':
+> +            properties:
+> +              interrupts:
+> +                maxItems: 1
+> +
+> +    then:
+> +      patternProperties:
+> +        '^eth[0-9a-f]*(@.*)?$':
+> +          required:
+> +            - interrupt-names
+
+Skip this.
+
+> +
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          const: marvell,armada-375-pp2
+> +
+> +    then:
+> +      properties:
+> +
+
+Skip the blank lines after each new block.
+
+> +        clocks:
+> +          items:
+> +            - description: main controller clock
+> +            - description: GOP clock
+> +
+> +        clock-names:
+> +          minItems: 2
+> +          maxItems: 2
+> +          items:
+> +            enum:
+> +              - pp_clk
+> +              - gop_clk
+> +
+> +        reg:
+> +          description: |
+> +            For "marvell,armada-375-pp2", must contain the following register sets:
+> +              - common controller registers
+> +              - LMS registers
+> +              - one register area per Ethernet port
+> +
+> +    else:
+> +
+> +      patternProperties:
+> +        '^eth[0-9a-f]*(@.*)?$':
+> +          properties:
+> +            gop-port-id:
+> +              $ref: /schemas/types.yaml#/definitions/uint32
+> +              description: >
+> +                only for marvell,armada-7k-pp2, ID of the port from the
+> +                GOP (Group Of Ports) point of view. This ID is used to index the
+> +                per-port registers in the second register area.
+> +
+> +          required:
+> +            - gop-port-id
+> +
+> +      properties:
+> +
+> +        clocks:
+> +          items:
+> +            - description: main controller clock
+> +            - description: GOP clock
+> +            - description: MG clock
+> +            - description: MG Core clock
+> +            - description: AXI clock
+
+Why clocks appear only here? All devices require clocks, so this should
+be in top level.
+
+> +
+> +        clock-names:
+> +          minItems: 5
+> +          maxItems: 5
+> +          items:
+> +            enum:
+> +              - gop_clk
+> +              - pp_clk
+> +              - mg_clk
+> +              - mg_core_clk
+> +              - axi_clk
+> +
+> +        reg:
+> +          description: |
+> +            For "marvell,armada-7k-pp2" used by 7K/8K and CN913X, must contain the following register sets:
+> +              - packet processor registers
+> +              - networking interfaces registers
+> +              - CM3 address space used for TX Flow Control
+
+Do not define properties in allOf:if:then, but in top-level place.
+
+Really, start with example-schema. This deviates too much from existing
+coding style.
+
+Best regards,
+Krzysztof
+
