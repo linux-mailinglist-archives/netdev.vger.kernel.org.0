@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC9285E7369
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 07:28:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 772455E736D
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 07:29:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229925AbiIWF2z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 01:28:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60032 "EHLO
+        id S229968AbiIWF27 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 01:28:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229808AbiIWF2w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 01:28:52 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48C0411C174;
-        Thu, 22 Sep 2022 22:28:51 -0700 (PDT)
-X-UUID: 44d21e3c74ca4372bc8406b2dd3138a1-20220923
+        with ESMTP id S229938AbiIWF24 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 01:28:56 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03906126B53;
+        Thu, 22 Sep 2022 22:28:54 -0700 (PDT)
+X-UUID: 420be362c7604414a902e98855331c6a-20220923
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=zodG3TIj/bxvoQArJAAN1YPKHEtL0GfJ0B9pLll9oSI=;
-        b=fILl0P663EdWcu2dytwg9tnH510Ui+nelhjvtbaNgT091OfoYjKWbswQACBk1ZApxcxUHQRcPylpcSuyrmWlBjycYHhpxyrdBfDzqW6den4vwnuOWD8Dn0/wFwWQOqKGKIuMKPdXgA1UmbnHUF9vGgWd+wLm8ivkb4Z43FSLTmg=;
+        h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=mPUNeuHmFD5RX1kbnI4DWe/4FjFXHC90WwyKHQQWviY=;
+        b=WTSdLqYRReKaLLSjnrtg87wrm2EQsf1NiNm9J2cNiYj5K9MDXi+0L6BRpoDn830vygd8WqjZOE0AnEl91f/iuWfaMhYjNx/HGMK7RdJfRQJbKEgYEXjhLhA2dxUmzo7dwW9Pbu9//eR770/r4B+1hSM0YqKotPFSvyxSy9ZLy5M=;
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.11,REQID:a84566eb-42f5-49a1-bc5a-af281a6c0e09,IP:0,U
-        RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
-        release,TS:0
-X-CID-META: VersionHash:39a5ff1,CLOUDID:4897d1a2-dc04-435c-b19b-71e131a5fc35,B
+X-CID-O-INFO: VERSION:1.1.11,REQID:d7edda5c-e81c-4a6a-9190-72db16b454c1,IP:0,U
+        RL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION
+        :release,TS:-5
+X-CID-META: VersionHash:39a5ff1,CLOUDID:7d97d1a2-dc04-435c-b19b-71e131a5fc35,B
         ulkID:nil,BulkQuantity:0,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,U
         RL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 44d21e3c74ca4372bc8406b2dd3138a1-20220923
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+X-UUID: 420be362c7604414a902e98855331c6a-20220923
+Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw01.mediatek.com
         (envelope-from <jianguo.zhang@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 670686664; Fri, 23 Sep 2022 13:28:46 +0800
+        with ESMTP id 1819676316; Fri, 23 Sep 2022 13:28:47 +0800
 Received: from mtkcas10.mediatek.inc (172.21.101.39) by
  mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Fri, 23 Sep 2022 13:28:45 +0800
+ 15.2.792.15; Fri, 23 Sep 2022 13:28:46 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 23 Sep 2022 13:28:44 +0800
+ Transport; Fri, 23 Sep 2022 13:28:45 +0800
 From:   Jianguo Zhang <jianguo.zhang@mediatek.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Rob Herring <robh+dt@kernel.org>,
@@ -57,9 +57,9 @@ CC:     Eric Dumazet <edumazet@google.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-mediatek@lists.infradead.org>,
         Jianguo Zhang <jianguo.zhang@mediatek.com>
-Subject: [PATCH v5 3/4] arm64: dts: mediatek: mt2712e: Update the name of property 'clk_csr'
-Date:   Fri, 23 Sep 2022 13:28:27 +0800
-Message-ID: <20220923052828.16581-4-jianguo.zhang@mediatek.com>
+Subject: [PATCH v5 4/4] net: stmmac: Update the name of property 'clk_csr'
+Date:   Fri, 23 Sep 2022 13:28:28 +0800
+Message-ID: <20220923052828.16581-5-jianguo.zhang@mediatek.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220923052828.16581-1-jianguo.zhang@mediatek.com>
 References: <20220923052828.16581-1-jianguo.zhang@mediatek.com>
@@ -82,22 +82,22 @@ the property name in the binding file.
 
 Signed-off-by: Jianguo Zhang <jianguo.zhang@mediatek.com>
 ---
- arch/arm64/boot/dts/mediatek/mt2712e.dtsi | 2 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-index 4797537cb368..e6d7453e56e0 100644
---- a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-@@ -756,7 +756,7 @@ eth: ethernet@1101c000 {
- 		snps,mtl-tx-config = <&mtl_tx_setup>;
- 		snps,txpbl = <1>;
- 		snps,rxpbl = <1>;
--		clk_csr = <0>;
-+		snps,clk-csr = <0>;
- 		status = "disabled";
- 	};
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+index 9f5cac4000da..18f9952d667f 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+@@ -444,7 +444,7 @@ stmmac_probe_config_dt(struct platform_device *pdev, u8 *mac)
+ 	 * or get clk_csr from device tree.
+ 	 */
+ 	plat->clk_csr = -1;
+-	of_property_read_u32(np, "clk_csr", &plat->clk_csr);
++	of_property_read_u32(np, "snps,clk-csr", &plat->clk_csr);
  
+ 	/* "snps,phy-addr" is not a standard property. Mark it as deprecated
+ 	 * and warn of its use. Remove this when phy node support is added.
 -- 
 2.25.1
 
