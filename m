@@ -2,280 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 376BB5E7F97
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 18:21:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCE4B5E7FD7
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 18:33:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231440AbiIWQVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 12:21:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41834 "EHLO
+        id S232609AbiIWQda (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 12:33:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231767AbiIWQUd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 12:20:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A03B51A21C
-        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 09:19:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1663949952;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=BzaafTuUqewrWXj7vYgZEtgaCTa2dI4dC0ftOasCvDA=;
-        b=gPZJN7iBSTifqx18lnSpGYNW5Up2Bz1NXDVNIUarRls7mk8wzdCnmycm1gGtVaJ2uk6cwb
-        Kz8FhITVtft5VRCYMoWQKMruOXd58JgnAR2YUilZLAjakM8DRyAyNy6Lo5IOXVrECv0JST
-        Na1Bqk58kI8LxLGnI5AiMylOwTo1UbM=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-575-y0K1BKXrOw2rNoK8QOilGQ-1; Fri, 23 Sep 2022 12:19:11 -0400
-X-MC-Unique: y0K1BKXrOw2rNoK8QOilGQ-1
-Received: by mail-wm1-f72.google.com with SMTP id p24-20020a05600c1d9800b003b4b226903dso2936858wms.4
-        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 09:19:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=BzaafTuUqewrWXj7vYgZEtgaCTa2dI4dC0ftOasCvDA=;
-        b=XENyyBm0cPSiq0jIiXJCuLcSyZc/w8Xa7hnbBPPfgsvr6oaQrq0NBAxlrWEhT2b8ml
-         VGy67jcQWnmyq4OJre02/0/YlGoY84XsIWIxV5m3RbbY3LJJhZPmsvjSDLAId5dB53g2
-         wFo8ozr7RW5VD2R00/JFB8ONZEVmBvIEIDiLND5Cb4NwicACqT32vTqB5K38bzZrJayl
-         EGfhinHUgttvoGlv25kcke8dBsy4tH+imp/C2PO1bUTH00sLbjFXtI7lnz63pypr92Ay
-         rwY/LgB+QMZXM+ONFgV0HzHzhI0yqN+6gUZHrflSaQm3+MnZenVtqGflqPl9/Uh63AFp
-         wPJg==
-X-Gm-Message-State: ACrzQf1GgdWBYVgu5vMlutof78CFVKPbwNauWnhKOYSVsZAjgCMa09sV
-        HMBSjNGY+sHRGf05BRJYV/UAsiRbeE/Lyq30hmvTY3NmzQ413PpL4CQKX6GNHLkQrCwRwg/9eKT
-        7J/6rnstIswvbKJ+H
-X-Received: by 2002:a05:6000:81e:b0:228:a17f:92f0 with SMTP id bt30-20020a056000081e00b00228a17f92f0mr5919058wrb.31.1663949949897;
-        Fri, 23 Sep 2022 09:19:09 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM7zTp6XQYzwHwuvZOD9Q4KahxduuvQpI4aeMFaDOy0IGBvyjIHQ+4Os/t8UFnzflNTqlAjoLw==
-X-Received: by 2002:a05:6000:81e:b0:228:a17f:92f0 with SMTP id bt30-20020a056000081e00b00228a17f92f0mr5919041wrb.31.1663949949548;
-        Fri, 23 Sep 2022 09:19:09 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-104-76.dyn.eolo.it. [146.241.104.76])
-        by smtp.gmail.com with ESMTPSA id o3-20020a05600c4fc300b003a5ca627333sm2966723wmq.8.2022.09.23.09.19.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Sep 2022 09:19:08 -0700 (PDT)
-Message-ID: <6633c62c7a59f887eb15d3309c9cc408a74fb46f.camel@redhat.com>
-Subject: Re: [PATCH net-next v2] net: skb: introduce and use a single page
- frag cache
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Date:   Fri, 23 Sep 2022 18:19:07 +0200
-In-Reply-To: <CAKgT0Ud+U4NO+adYeUdegVbbS2EMaqTg2B-a0Z8Q2n9H7MaePg@mail.gmail.com>
-References: <162fe40c387cd395d633729fa4f2b5245531514a.1663879752.git.pabeni@redhat.com>
-         <CAKgT0Uc2qmKTeZMCTR3ZkibioxEwKHjKqLrnz-=cfSt+5TAv=g@mail.gmail.com>
-         <efa64c44b1e53510f972954e4670b2d8ecde97eb.camel@redhat.com>
-         <CAKgT0Ud+U4NO+adYeUdegVbbS2EMaqTg2B-a0Z8Q2n9H7MaePg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S229507AbiIWQd0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 12:33:26 -0400
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60040.outbound.protection.outlook.com [40.107.6.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88CD413EEA1;
+        Fri, 23 Sep 2022 09:33:25 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=go8WS67jd4MYWLpNAIg62H7FVKcxvOyY1YLwWBAfcjIfkhLggFtRdOt3meyHLCbN3yVGnMb7u9n2+Ns/fVS5y/iWm72clWrJNfIqBXuAlf+R4RnlM1x70xKwtWZvbvrxPyTbiaHTAdl+yEST4WeXtP82y4LFBIRO61bLio8ghhgHx0ZTmhN3g6EsJDTJ3xalpK+39MDunQG7WYAhmzkByI5ldXHNHd5tFtN3vb0RmPQ53UjJriIhgPirOIxwMMEaDiM5eeMG4iirDgBiLKkQBPw7WMEZTA7DM8tPv0BilPdh0vMtX/s9DtJy786iZD3pMIheAEMh5fVBCbkC6NTLZA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xbRy6toclTowKxVf6hFDcJ3s5tiwQgvPfFT4M0K06us=;
+ b=AsoOjlvGn+ubhguXb2+6wa2OhGg+DoyNTf3mH60z7+n6zBKCWjMKtlKZBo8ZhZZ/rK2JkgkRr+OcwS1xeaYEMjVe44e6VNH0CB/BMKK9+jthS2kSDKvymrgF3gIbI+aTy60CZqNtGvX2wjJjqEF7bvLcmik/+vmnFjgY03Gsri7k2RNKaUFDDn2l8KE0eSmgkSrihPmLHCzBmNM+oQToxrsX3ud5FYcsNDdKn0buQIeLPS9NymqW6+7FAyPof0WoBEd6eIFi5Y7UY0rdGw6q+cStyIv2HqJyjIHwsbMMhGp08FBc0W+C8moyYUpKQZdokrcBcGRnWzs55WON78sLhA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xbRy6toclTowKxVf6hFDcJ3s5tiwQgvPfFT4M0K06us=;
+ b=qC79nTyqlo62XLid/ZB1O9hoW8mt1QOm/XOqrURdq0spu57EKqQj0CzAr4lX6r9Dvc0qKaovazWKnJarj8sKx2OmnrlebZvyiLKIq241y0YKloD2XRHQqCxPU6YPif8nasMvwO3dH1dnRJHYGaC7LFta/zkcjqIXJbRMel8O+Lo=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR04MB7023.eurprd04.prod.outlook.com (2603:10a6:800:12f::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.17; Fri, 23 Sep
+ 2022 16:33:23 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::a67a:849c:aeff:cad1]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::a67a:849c:aeff:cad1%7]) with mapi id 15.20.5632.021; Fri, 23 Sep 2022
+ 16:33:22 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Rui Sousa <rui.sousa@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Michael Walle <michael@walle.cc>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Richie Pearn <richard.pearn@nxp.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Gerhard Engleder <gerhard@engleder-embedded.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 net-next 00/12] Add tc-taprio support for queueMaxSDU
+Date:   Fri, 23 Sep 2022 19:32:58 +0300
+Message-Id: <20220923163310.3192733-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.34.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: AM0PR10CA0029.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:208:17c::39) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|VI1PR04MB7023:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9e004e76-b90c-458c-0cea-08da9d8154b9
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: bXMLhzeb9gf1sL0AqQ9fYqPIcrbaaeufQAQP/is6gcLHouhji8RYhgT4rZH0OOT8XyDG0LwzNgsvDM+dlFGGTk4xPZqk5i6GQYyGmaXJx/3KDN0W8suOYBNirck1s0LUxNY6QNTqsFinhAiWgPcU+HuzlM58okgYJWyGAWx4jEtc5ShOWWuvCExSXav+iyv1TYtOx1e32FeT/Pdi0/EmoUfb2uCq9XSOaGYetHpIXnFTz9LuRe12pZeJtZiqO0HgS5EmMDdFSkwC6ySp9yK+Nhldug5IlRPuyKk6X08sntjnCDdzo9GY3Ytfp0kc7zxyCmrDEu6ZI4f5B1u/HnWN+PNdrPyxBtVs59raCrPAZ38hByuVPjxq8VyhEbuHNDPoltPHcZU/bh/+Ir6DU/UjVR3g2eDRdxfuaTM/G2+sQ8CQGJlJRfzOEc/Z3J6FkSqbiuF+vV4MlAZh61T2gTP6bp3lmHpcmzEJZttlLl08AX0trp9hMPBFDt7ArliyrCbzvNE/FvnLMNkBfBLLA0guJpj0nUqhKkIbBaDzAfg8o5ZzToVnw5upk0VaoNkTn9HApqL1kMNMe6Dboy9V82baMcaJGHD/qqUbtAgYcuws3UoIOIOtLhhAYlXfAJKECb0BTXtL+GEcr5xG+TeA8ksbSuiVOFvX1Kmym+Ma60cwhC57xAo5fs32o0e7cF4KS6ggVVsV29eMJdtGx8IQ5+ipKOjefpjRfEBE3l8BTtD2zMrY4I6M/XE0K8kTlSdDYYGjQH0mUFXNTPBMCHwaWSRJNKpHcatlHWIO804jPb/8amX/lfQtgh1R094ylKR2X1u+rEV/zVhkIxIB/dlY+Mprbw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(346002)(39860400002)(136003)(376002)(396003)(451199015)(478600001)(966005)(6486002)(54906003)(4326008)(66556008)(66946007)(6512007)(6506007)(8936002)(66476007)(41300700001)(6666004)(26005)(7416002)(44832011)(8676002)(316002)(5660300002)(36756003)(6916009)(186003)(2906002)(2616005)(86362001)(52116002)(83380400001)(38350700002)(38100700002)(1076003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?DfoRzF3SU4ZHsjtNQzUH3mBUqhp9fezi2jrMuY63C9QGL0Led8CkHS/wTPQj?=
+ =?us-ascii?Q?ffWGt6EZu9m9oZkLsa6VIkNzt5jJFBmWQ/8f57CIITy6VCniQIpZee/oT0mE?=
+ =?us-ascii?Q?NTuRidtuOGWlRF3cJO5R7s5XHNTCv731UlluXLMyNMLxFU33NnXOy01Z/Je4?=
+ =?us-ascii?Q?Dgi/nwpwtpissXZhUb+mfawdunoSbU9zdufWVreGejC+X5DPH/oJzAUtjWrD?=
+ =?us-ascii?Q?SZDGT85ZKpaNRjHioCWCl6cwvJ5uvQYJq/2+5x+Owatk3jgOAVxg8QzImIXT?=
+ =?us-ascii?Q?uKGCt2XPA8wRCe3dpKSVY80WNqQeh0ypWFdBNLkU0bhcc0Z2pzbgj00HQXWW?=
+ =?us-ascii?Q?mcV5tGh8i3jySgWGjNVGyT4q8X+LwLg0h+WgcNechvpZZHxw8GQ5MfCbwq06?=
+ =?us-ascii?Q?ct6M69cfHPGS/WM9ddbgsWdoFDsJbG+Zem1HDB7Xl1VE/kVhL3LbipeVmqDZ?=
+ =?us-ascii?Q?jgYJGP2IYb6RSlAb7kkJmQCiK78rv4YXqpVF1IPEVNyAMHHhTl34sv1Uqi1Z?=
+ =?us-ascii?Q?jOyYFSuOcniYcbYshLjBaLCogXg3qA4NRQ0C1xrryLjAKKR9bkb3f5DDhce8?=
+ =?us-ascii?Q?e/nF9AXYbkz9tunnbMBPX+CX1juWPBMTqWiMsQ/RlTlXdpNu2lurPVAlrME5?=
+ =?us-ascii?Q?xxqtQGoVK5pum5PAJksZ+BNck0U3+ahTKREzkCXdXqMEGBCVY0aL+QV0YDb8?=
+ =?us-ascii?Q?mT8GQrYHoe46navxD+koJLSmEUp/i/y/AwLJ4riahlGUSVHIO5tXAemM7Q8q?=
+ =?us-ascii?Q?Twcb+xzXnvc2RP/cjeTr7Muse1F5b9S3siEGmzJA+97hsE09m7e+Iw8Ja+zc?=
+ =?us-ascii?Q?/HSzkm/cR6fWfk7cZnsvB80q8q78mYZKk1PTAMGX32I6VpmAiXs1vmuxlpzu?=
+ =?us-ascii?Q?TegrheWTfUABEcFv4uvxvSst1r5LSjZOmrEw7HATKblsR0FrwdYLB2Xgmy0S?=
+ =?us-ascii?Q?gj5C2ubmpoSbt+dox5hNznf0808EZK1N7Ca5O2iPHaZIk3jfeTO8UAO5wUHq?=
+ =?us-ascii?Q?xs0AhFCaYqAwIUORtKJfhWxZDpY1u2OMVu5nl8Af9dB51waqadHXZyy4f4fV?=
+ =?us-ascii?Q?uGEZF4IlZYQ8CvtsHmFkBs/FFVXtHTJge98GwQC2l4bPceBE+eoGit1y/BIo?=
+ =?us-ascii?Q?9kAEbLOx+Kcyrsy/QtTfSSRM/oJS8OAZ2nyFHDCMQZmvyoZ+zrVk5SWjcJT5?=
+ =?us-ascii?Q?hTHwOxzpkHv0Wz3d2XGrrODiHCAPKdJmgDe1foOEZZ0YvQKNaartscPETs2u?=
+ =?us-ascii?Q?2wfa5+HjE3TDmglcU6PKb3BqX/r9R5gEBUoD1IdhCn1lLENi1yIZuggk7Sog?=
+ =?us-ascii?Q?PZZE4SxLGMhGDG3zx+bs/d9f0ZRHOktRX0jExc+9o8GhtqALNqL7KIykuMkw?=
+ =?us-ascii?Q?DJL8b2EvaAwPEPy2T4YSKgn93lOvnhrP98iC78y4SZJdOpswG5hBLU9bcEze?=
+ =?us-ascii?Q?y47l2ItyWiWNI5O9WeT6Hcta+5ghf1D0oxbaMm1i3zIGj92h8Li+17KFNgsA?=
+ =?us-ascii?Q?Q5DgPHpKexF9f3yyAM5rx5CJ16Z1XIwAf7Sqc8E9aDE7CZyjAADQjv/6NuVV?=
+ =?us-ascii?Q?LE+WSKJ4SFnUS8cPwROG/DhIMfEpCfqt1QZVLtY41tXLW/pgwQrWCp69Csba?=
+ =?us-ascii?Q?vA=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9e004e76-b90c-458c-0cea-08da9d8154b9
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2022 16:33:22.7851
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: DIHMQJCNRFLc9PpyL5Dv+QuQDl8yRuAafmlxu8LrWjJjkjU6IdekAWc6+4EI9cnYEp7fX3w4rk+dWCePqXS0eg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7023
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2022-09-23 at 08:22 -0700, Alexander Duyck wrote:
-> On Fri, Sep 23, 2022 at 12:41 AM Paolo Abeni <pabeni@redhat.com> wrote:
-> > 
-> > Hello,
-> > 
-> > On Thu, 2022-09-22 at 14:17 -0700, Alexander Duyck wrote:
-> > [...]
-> > > My suggestion earlier was to just make the 1k cache a page_frag_cache.
-> > > It will allow you to reuse the same structure members and a single
-> > > pointer to track them. Waste would be minimal since the only real
-> > > difference between the structures is about 8B for the structure, and
-> > > odds are the napi_alloc_cache allocation is being rounded up anyway.
-> > > 
-> > > >         unsigned int skb_count;
-> > > >         void *skb_cache[NAPI_SKB_CACHE_SIZE];
-> > > >  };
-> > > > @@ -143,6 +202,23 @@ struct napi_alloc_cache {
-> > > >  static DEFINE_PER_CPU(struct page_frag_cache, netdev_alloc_cache);
-> > > >  static DEFINE_PER_CPU(struct napi_alloc_cache, napi_alloc_cache);
-> > > > 
-> > > > +/* Double check that napi_get_frags() allocates skbs with
-> > > > + * skb->head being backed by slab, not a page fragment.
-> > > > + * This is to make sure bug fixed in 3226b158e67c
-> > > > + * ("net: avoid 32 x truesize under-estimation for tiny skbs")
-> > > > + * does not accidentally come back.
-> > > > + */
-> > > > +void napi_get_frags_check(struct napi_struct *napi)
-> > > > +{
-> > > > +       struct sk_buff *skb;
-> > > > +
-> > > > +       local_bh_disable();
-> > > > +       skb = napi_get_frags(napi);
-> > > > +       WARN_ON_ONCE(!NAPI_HAS_SMALL_PAGE_FRAG && skb && skb->head_frag);
-> > > > +       napi_free_frags(napi);
-> > > > +       local_bh_enable();
-> > > > +}
-> > > > +
-> > > >  void *__napi_alloc_frag_align(unsigned int fragsz, unsigned int align_mask)
-> > > >  {
-> > > >         struct napi_alloc_cache *nc = this_cpu_ptr(&napi_alloc_cache);
-> > > > @@ -561,6 +637,7 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
-> > > >  {
-> > > >         struct napi_alloc_cache *nc;
-> > > >         struct sk_buff *skb;
-> > > > +       bool pfmemalloc;
-> > > 
-> > > Rather than adding this I think you would be better off adding a
-> > > struct page_frag_cache pointer. I will reference it here as "pfc".
-> > > 
-> > > >         void *data;
-> > > > 
-> > > >         DEBUG_NET_WARN_ON_ONCE(!in_softirq());
-> > > > @@ -568,8 +645,10 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
-> > > > 
-> > > >         /* If requested length is either too small or too big,
-> > > >          * we use kmalloc() for skb->head allocation.
-> > > > +        * When the small frag allocator is available, prefer it over kmalloc
-> > > > +        * for small fragments
-> > > >          */
-> > > > -       if (len <= SKB_WITH_OVERHEAD(1024) ||
-> > > > +       if ((!NAPI_HAS_SMALL_PAGE_FRAG && len <= SKB_WITH_OVERHEAD(1024)) ||
-> > > >             len > SKB_WITH_OVERHEAD(PAGE_SIZE) ||
-> > > >             (gfp_mask & (__GFP_DIRECT_RECLAIM | GFP_DMA))) {
-> > > >                 skb = __alloc_skb(len, gfp_mask, SKB_ALLOC_RX | SKB_ALLOC_NAPI,
-> > > > @@ -580,13 +659,30 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
-> > > >         }
-> > > > 
-> > > >         nc = this_cpu_ptr(&napi_alloc_cache);
-> > > > -       len += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-> > > > -       len = SKB_DATA_ALIGN(len);
-> > > > 
-> > > >         if (sk_memalloc_socks())
-> > > >                 gfp_mask |= __GFP_MEMALLOC;
-> > > > 
-> > > > -       data = page_frag_alloc(&nc->page, len, gfp_mask);
-> > > > +       if (NAPI_HAS_SMALL_PAGE_FRAG && len <= SKB_WITH_OVERHEAD(1024)) {
-> > > 
-> > > Then here you would add a line that would be:
-> > > pfc = &nc->page_small;
-> > > 
-> > > > +               /* we are artificially inflating the allocation size, but
-> > > > +                * that is not as bad as it may look like, as:
-> > > > +                * - 'len' less then GRO_MAX_HEAD makes little sense
-> > > > +                * - larger 'len' values lead to fragment size above 512 bytes
-> > > > +                *   as per NAPI_HAS_SMALL_PAGE_FRAG definition
-> > > > +                * - kmalloc would use the kmalloc-1k slab for such values
-> > > > +                */
-> > > > +               len = SZ_1K;
-> > > > +
-> > > > +               data = page_frag_alloc_1k(&nc->page_small, gfp_mask);
-> > > > +               pfmemalloc = nc->page_small.pfmemalloc;
-> > > 
-> > > Instead of setting pfmemalloc you could just update the line below. In
-> > > addition you would just be passing pfc as the parameter.
-> > > 
-> > > > +       } else {
-> > > 
-> > > Likewise here you would have the line:
-> > > pfc = &nc->page;
-> > 
-> > Probaly I was not clear in my previois email, sorry: before posting
-> > this version I tried locally exactly all the above, and the generated
-> > code with gcc 11.3.1 is a little bigger (a couple of instructions) than
-> > what this version produces (with gcc 11.3.1-2). It has the same number
-> > of conditionals and a slightly larger napi_alloc_cache.
-> > 
-> > Additionally the suggested alternative needs more pre-processor
-> > conditionals to handle the !NAPI_HAS_SMALL_PAGE_FRAG case - avoiding
-> > adding a 2nd, unused in that case, page_frag_cache.
-> > 
-> > [...]
-> 
-> Why would that be? You should still be using the pointer to the
-> page_frag_cache in the standard case. Like I was saying what you are
-> doing is essentially replacing the use of napi_alloc_cache with the
-> page_frag_cache, so for example with the existing setup all references
-> to "nc->page" would become "pfc->" so there shouldn't be any extra
-> unused variables in such a case since it would be used for both the
-> frag allocation and the pfmemalloc check.
+The tc-taprio offload mode supported by the Felix DSA driver has
+limitations surrounding its guard bands.
 
-The problem is that regardless of the NAPI_HAS_SMALL_PAGE_FRAG value,
-under the branch:
-	
-	if (NAPI_HAS_SMALL_PAGE_FRAG && len <= SKB_WITH_OVERHEAD(1024)) {
+The initial discussion was at:
+https://lore.kernel.org/netdev/c7618025da6723418c56a54fe4683bd7@walle.cc/
 
-gcc sees nc->page_small so we need page_small to exists and be 0 bytes
-wide for !NAPI_HAS_SMALL_PAGE_FRAG.
+with the latest status being that we now have a vsc9959_tas_guard_bands_update()
+method which makes a best-guess attempt at how much useful space to
+reserve for packet scheduling in a taprio interval, and how much to
+reserve for guard bands.
 
-> One alternate way that occured to me to handle this would be to look
-> at possibly having napi_alloc_cache contain an array of
-> page_frag_cache structures. With that approach you could just size the
-> array and have it stick with a size of 1 in the case that small
-> doesn't exist, and support a size of 2 if it does. You could define
-> them via an enum so that the max would vary depending on if you add a
-> small frag cache or not. With that you could just bump the pointer
-> with a ++ so it goes from large to small and you wouldn't have any
-> warnings about items not existing in your structures, and the code
-> with the ++ could be kept from being called in the
-> !NAPI_HAS_SMALL_PAGE_FRAG case.
+IEEE 802.1Q actually does offer a tunable variable (queueMaxSDU) which
+can determine the max MTU supported per traffic class. In turn we can
+determine the size we need for the guard bands, depending on the
+queueMaxSDU. This way we can make the guard band of small taprio
+intervals smaller than one full MTU worth of transmission time, if we
+know that said traffic class will transport only smaller packets.
 
-Yes, the above works nicely from a 'no additional preprocessor
-conditional perspective', and the generate code for __napi_alloc_skb()
-is 3 bytes shorted then my variant - which boils down to nothing due to
-alignment - but the most critical path (small allocations) requires
-more instructions and the diff is IMHO less readable, touching all the
-other nc->page users.
+As discussed with Gerhard Engleder, the queueMaxSDU may also be useful
+in limiting the latency on an endpoint, if some of the TX queues are
+outside of the control of the Linux driver.
+https://patchwork.kernel.org/project/netdevbpf/patch/20220914153303.1792444-11-vladimir.oltean@nxp.com/
 
-Allocations >1K should be a less relevant code path, as e.g. there is
-still a ~ 32x truesize underestimation there...
+Allow input of queueMaxSDU through netlink into tc-taprio, offload it to
+the hardware I have access to (LS1028A), and deny non-default values to
+everyone else. Kurt Kanzenbach has also kindly tested and shared a patch
+to offload this to hellcreek.
 
-> > > > @@ -596,7 +692,7 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
-> > > >                 return NULL;
-> > > >         }
-> > > > 
-> > > > -       if (nc->page.pfmemalloc)
-> > > > +       if (pfmemalloc)
-> > > 
-> > > Instead of passing pfmemalloc you could just check pfc->pfmemalloc.
-> > > Alternatively I wonder if it wouldn't be faster to just set the value
-> > > directly based on frag_cache->pfmemalloc and avoid the conditional
-> > > heck entirely.
-> > 
-> > Note that:
-> > 
-> >         skb->pfmemalloc = pfmemalloc;
-> > 
-> > avoids a branch but requires more instructions than the current code
-> > (verified with gcc). The gain looks doubtful?!? Additionally we have
-> > statement alike:
-> > 
-> >         if (<pfmemalloc>)
-> >                 skb->pfmemalloc = 1;
-> > 
-> > in other functions in skbuff.c - still fast-path - and would be better
-> > updating all the places together for consistency - if that is really
-> > considered an improvement. IMHO it should at least land in a different
-> > patch.
-> 
-> We cannot really use "skb->pfmemalloc = pfmemalloc" because one is a
-> bitfield and the other is a boolean value. I suspect the complexity
-> would be greatly reduced if we converted the pfmemalloc to a bitfield
-> similar to skb->pfmemalloc. It isn't important though. I was mostly
-> just speculating on possible future optimizations.
-> 
-> > I'll post a v3 with your updated email address, but I think the current
-> > code is the better option.
-> 
-> That's fine. Like I mentioned I am mostly just trying to think things
-> out and identify any possible gaps we may have missed. I will keep an
-> eye out for the next version.
+Changes in v2:
+- precompute the max_frm_len using dev->hard_header_len, so that the
+  fast path can directly check against skb->len
+- add the newly added lan966x taprio offload to the list of drivers
+  which must reject the new option
+- add some enetc cleanup patches from
+  https://patchwork.kernel.org/project/netdevbpf/patch/20220921144349.1529150-2-vladimir.oltean@nxp.com/
+- get rid of some taprio cleanup patches which were merged separately
+  via https://patchwork.kernel.org/project/netdevbpf/cover/20220915105046.2404072-1-vladimir.oltean@nxp.com/
+- make enetc_vf.ko compile by excluding the taprio offload code:
+  https://patchwork.kernel.org/project/netdevbpf/patch/20220916133209.3351399-2-vladimir.oltean@nxp.com/
 
-Yep, let me go aheat with this...
+v1 at:
+https://patchwork.kernel.org/project/netdevbpf/cover/20220914153303.1792444-1-vladimir.oltean@nxp.com/
 
-Thanks,
+Kurt Kanzenbach (1):
+  net: dsa: hellcreek: Offload per-tc max SDU from tc-taprio
 
-Paolo
+Vladimir Oltean (11):
+  net/sched: taprio: allow user input of per-tc max SDU
+  tsnep: deny tc-taprio changes to per-tc max SDU
+  igc: deny tc-taprio changes to per-tc max SDU
+  net: stmmac: deny tc-taprio changes to per-tc max SDU
+  net: am65-cpsw: deny tc-taprio changes to per-tc max SDU
+  net: lan966x: deny tc-taprio changes to per-tc max SDU
+  net: dsa: sja1105: deny tc-taprio changes to per-tc max SDU
+  net: dsa: felix: offload per-tc max SDU from tc-taprio
+  net: enetc: cache accesses to &priv->si->hw
+  net: enetc: use common naming scheme for PTGCR and PTGCAPR registers
+  net: enetc: offload per-tc max SDU from tc-taprio
+
+ drivers/net/dsa/hirschmann/hellcreek.c        |  59 +++++++-
+ drivers/net/dsa/hirschmann/hellcreek.h        |   7 +
+ drivers/net/dsa/ocelot/felix_vsc9959.c        |  20 ++-
+ drivers/net/dsa/sja1105/sja1105_tas.c         |   6 +-
+ drivers/net/ethernet/engleder/tsnep_tc.c      |   6 +-
+ drivers/net/ethernet/freescale/enetc/enetc.c  |  28 ++--
+ drivers/net/ethernet/freescale/enetc/enetc.h  |  12 +-
+ .../net/ethernet/freescale/enetc/enetc_hw.h   |  10 +-
+ .../net/ethernet/freescale/enetc/enetc_pf.c   |  25 +++-
+ .../net/ethernet/freescale/enetc/enetc_qos.c  |  73 +++++----
+ drivers/net/ethernet/intel/igc/igc_main.c     |   6 +-
+ .../microchip/lan966x/lan966x_taprio.c        |   8 +
+ .../net/ethernet/stmicro/stmmac/stmmac_tc.c   |   6 +-
+ drivers/net/ethernet/ti/am65-cpsw-qos.c       |   6 +-
+ include/net/pkt_sched.h                       |   1 +
+ include/uapi/linux/pkt_sched.h                |  11 ++
+ net/sched/sch_taprio.c                        | 138 +++++++++++++++++-
+ 17 files changed, 351 insertions(+), 71 deletions(-)
+
+-- 
+2.34.1
 
