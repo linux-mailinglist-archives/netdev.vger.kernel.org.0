@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BFE0E5E83B1
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 22:30:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 108515E83B8
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 22:31:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232986AbiIWUae (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 16:30:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43414 "EHLO
+        id S229724AbiIWUat (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 16:30:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232984AbiIWUaD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 16:30:03 -0400
+        with ESMTP id S233029AbiIWUaL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 16:30:11 -0400
 Received: from mx08lb.world4you.com (mx08lb.world4you.com [81.19.149.118])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CCCB12C1EA;
-        Fri, 23 Sep 2022 13:25:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CA1B13A059;
+        Fri, 23 Sep 2022 13:25:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=MWwdkCNgAk3sirVM5Vc88GEss7kAzPvg02RTVeN3zGY=; b=paFi86lKFxsc32d7iyHp8z/OoP
-        pvb/iz13fg62cMH8Nekz51R6WGW0Kme/FnwzDj12A5alg3zEf8rr9YotvljzWFAufwKo36qkLqpP5
-        zCXCmKA8xU0ZyCY0curSDYUt10Bdq8daxqp5xEhG+f6F4Mt2KHsFPJuUOkk5x+bbsAWA=;
+        bh=m9W/RohaKoA9CaHSW8srxvEN1ctgD/oolEbnyQspg2s=; b=TvovKqfGJDYTwyRRPGMIPOp+Gp
+        ATcuZmy/g3gDWar39yilcO6n9IU+HkGlNK7u2TAGHaH1Iwf+NJGjWXheA+jNjSgLoSs4xp5EAeyjA
+        IFIuIgibcLAcxL/hi5TiC1LJFbb+ZEcrhp5fl3h119G8+JYCT/qSzR0VBSLFcplg3tRw=;
 Received: from 88-117-54-199.adsl.highway.telekom.at ([88.117.54.199] helo=hornet.engleder.at)
         by mx08lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <gerhard@engleder-embedded.com>)
-        id 1obpDd-0002Jm-A8; Fri, 23 Sep 2022 22:24:17 +0200
+        id 1obpDe-0002Jm-62; Fri, 23 Sep 2022 22:24:18 +0200
 From:   Gerhard Engleder <gerhard@engleder-embedded.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
         pabeni@redhat.com, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
         Gerhard Engleder <gerhard@engleder-embedded.com>
-Subject: [PATCH net-next v2 3/6] tsnep: Move interrupt from device to queue
-Date:   Fri, 23 Sep 2022 22:22:43 +0200
-Message-Id: <20220923202246.118926-4-gerhard@engleder-embedded.com>
+Subject: [PATCH net-next v2 4/6] tsnep: Support multiple TX/RX queue pairs
+Date:   Fri, 23 Sep 2022 22:22:44 +0200
+Message-Id: <20220923202246.118926-5-gerhard@engleder-embedded.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220923202246.118926-1-gerhard@engleder-embedded.com>
 References: <20220923202246.118926-1-gerhard@engleder-embedded.com>
@@ -53,317 +53,131 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For multiple queues multiple interrupts shall be used. Therefore, rework
-global interrupt to per queue interrupt.
-
-Every interrupt name shall contain interface name and queue information.
-To get a valid interface name, the interrupt request needs to by done
-during open like in other drivers. Additionally, this allows the removal
-of some initialisation checks in the interrupt handler.
+Support additional TX/RX queue pairs if dedicated interrupt is
+available. Interrupts are detected by name in device tree.
 
 Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
 ---
- drivers/net/ethernet/engleder/tsnep.h      |   4 +-
- drivers/net/ethernet/engleder/tsnep_main.c | 128 +++++++++++++++------
- 2 files changed, 99 insertions(+), 33 deletions(-)
+ drivers/net/ethernet/engleder/tsnep.h      |  2 -
+ drivers/net/ethernet/engleder/tsnep_hw.h   |  1 +
+ drivers/net/ethernet/engleder/tsnep_main.c | 61 ++++++++++++++++++----
+ 3 files changed, 53 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/net/ethernet/engleder/tsnep.h b/drivers/net/ethernet/engleder/tsnep.h
-index 147fe03ca979..149c9acbae9c 100644
+index 149c9acbae9c..62a279bcb011 100644
 --- a/drivers/net/ethernet/engleder/tsnep.h
 +++ b/drivers/net/ethernet/engleder/tsnep.h
-@@ -55,6 +55,7 @@ struct tsnep_tx_entry {
- struct tsnep_tx {
- 	struct tsnep_adapter *adapter;
+@@ -21,8 +21,6 @@
+ #define TSNEP_RING_ENTRIES_PER_PAGE (PAGE_SIZE / TSNEP_DESC_SIZE)
+ #define TSNEP_RING_PAGE_COUNT (TSNEP_RING_SIZE / TSNEP_RING_ENTRIES_PER_PAGE)
+ 
+-#define TSNEP_QUEUES 1
+-
+ struct tsnep_gcl {
  	void __iomem *addr;
-+	int queue_index;
  
- 	void *page[TSNEP_RING_PAGE_COUNT];
- 	dma_addr_t page_dma[TSNEP_RING_PAGE_COUNT];
-@@ -105,12 +106,14 @@ struct tsnep_rx {
+diff --git a/drivers/net/ethernet/engleder/tsnep_hw.h b/drivers/net/ethernet/engleder/tsnep_hw.h
+index e03aaafab559..e6cc6fbaf0d7 100644
+--- a/drivers/net/ethernet/engleder/tsnep_hw.h
++++ b/drivers/net/ethernet/engleder/tsnep_hw.h
+@@ -34,6 +34,7 @@
+ #define ECM_INT_LINK 0x00000020
+ #define ECM_INT_TX_0 0x00000100
+ #define ECM_INT_RX_0 0x00000200
++#define ECM_INT_TXRX_SHIFT 2
+ #define ECM_INT_ALL 0x7FFFFFFF
+ #define ECM_INT_DISABLE 0x80000000
  
- struct tsnep_queue {
- 	struct tsnep_adapter *adapter;
-+	char name[IFNAMSIZ + 9];
- 
- 	struct tsnep_tx *tx;
- 	struct tsnep_rx *rx;
- 
- 	struct napi_struct napi;
- 
-+	int irq;
- 	u32 irq_mask;
- };
- 
-@@ -126,7 +129,6 @@ struct tsnep_adapter {
- 	struct platform_device *pdev;
- 	struct device *dmadev;
- 	void __iomem *addr;
--	int irq;
- 
- 	bool gate_control;
- 	/* gate control lock */
 diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/ethernet/engleder/tsnep_main.c
-index 19db8b1dddc4..c95328ef992b 100644
+index c95328ef992b..bf088b91efb7 100644
 --- a/drivers/net/ethernet/engleder/tsnep_main.c
 +++ b/drivers/net/ethernet/engleder/tsnep_main.c
-@@ -60,22 +60,29 @@ static irqreturn_t tsnep_irq(int irq, void *arg)
- 		iowrite32(active, adapter->addr + ECM_INT_ACKNOWLEDGE);
- 
- 	/* handle link interrupt */
--	if ((active & ECM_INT_LINK) != 0) {
--		if (adapter->netdev->phydev)
--			phy_mac_interrupt(adapter->netdev->phydev);
--	}
-+	if ((active & ECM_INT_LINK) != 0)
-+		phy_mac_interrupt(adapter->netdev->phydev);
- 
- 	/* handle TX/RX queue 0 interrupt */
- 	if ((active & adapter->queue[0].irq_mask) != 0) {
--		if (adapter->netdev) {
--			tsnep_disable_irq(adapter, adapter->queue[0].irq_mask);
--			napi_schedule(&adapter->queue[0].napi);
--		}
-+		tsnep_disable_irq(adapter, adapter->queue[0].irq_mask);
-+		napi_schedule(&adapter->queue[0].napi);
- 	}
- 
- 	return IRQ_HANDLED;
+@@ -1265,6 +1265,52 @@ static int tsnep_phy_init(struct tsnep_adapter *adapter)
+ 	return 0;
  }
  
-+static irqreturn_t tsnep_irq_txrx(int irq, void *arg)
++static int tsnep_queue_init(struct tsnep_adapter *adapter, int queue_count)
 +{
-+	struct tsnep_queue *queue = arg;
-+
-+	/* handle TX/RX queue interrupt */
-+	tsnep_disable_irq(queue->adapter, queue->irq_mask);
-+	napi_schedule(&queue->napi);
-+
-+	return IRQ_HANDLED;
-+}
-+
- static int tsnep_mdiobus_read(struct mii_bus *bus, int addr, int regnum)
- {
- 	struct tsnep_adapter *adapter = bus->priv;
-@@ -536,7 +543,7 @@ static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
- }
- 
- static int tsnep_tx_open(struct tsnep_adapter *adapter, void __iomem *addr,
--			 struct tsnep_tx *tx)
-+			 int queue_index, struct tsnep_tx *tx)
- {
- 	dma_addr_t dma;
- 	int retval;
-@@ -544,6 +551,7 @@ static int tsnep_tx_open(struct tsnep_adapter *adapter, void __iomem *addr,
- 	memset(tx, 0, sizeof(*tx));
- 	tx->adapter = adapter;
- 	tx->addr = addr;
-+	tx->queue_index = queue_index;
- 
- 	retval = tsnep_tx_ring_init(tx);
- 	if (retval)
-@@ -854,6 +862,56 @@ static int tsnep_poll(struct napi_struct *napi, int budget)
- 	return min(done, budget - 1);
- }
- 
-+static int tsnep_request_irq(struct tsnep_queue *queue, bool first)
-+{
-+	const char *name = netdev_name(queue->adapter->netdev);
-+	irq_handler_t handler;
-+	void *dev;
++	u32 irq_mask = ECM_INT_TX_0 | ECM_INT_RX_0;
++	char name[8];
++	int i;
 +	int retval;
 +
-+	if (first) {
-+		sprintf(queue->name, "%s-mac", name);
-+		handler = tsnep_irq;
-+		dev = queue->adapter;
-+	} else {
-+		if (queue->tx && queue->rx)
-+			sprintf(queue->name, "%s-txrx-%d", name,
-+				queue->rx->queue_index);
-+		else if (queue->tx)
-+			sprintf(queue->name, "%s-tx-%d", name,
-+				queue->tx->queue_index);
-+		else
-+			sprintf(queue->name, "%s-rx-%d", name,
-+				queue->rx->queue_index);
-+		handler = tsnep_irq_txrx;
-+		dev = queue;
-+	}
-+
-+	retval = request_irq(queue->irq, handler, 0, queue->name, dev);
-+	if (retval) {
-+		/* if name is empty, then interrupt won't be freed */
-+		memset(queue->name, 0, sizeof(queue->name));
-+	}
-+
-+	return retval;
-+}
-+
-+static void tsnep_free_irq(struct tsnep_queue *queue, bool first)
-+{
-+	void *dev;
-+
-+	if (!strlen(queue->name))
-+		return;
-+
-+	if (first)
-+		dev = queue->adapter;
++	/* one TX/RX queue pair for netdev is mandatory */
++	if (platform_irq_count(adapter->pdev) == 1)
++		retval = platform_get_irq(adapter->pdev, 0);
 +	else
-+		dev = queue;
++		retval = platform_get_irq_byname(adapter->pdev, "mac");
++	if (retval < 0)
++		return retval;
++	adapter->num_tx_queues = 1;
++	adapter->num_rx_queues = 1;
++	adapter->num_queues = 1;
++	adapter->queue[0].irq = retval;
++	adapter->queue[0].tx = &adapter->tx[0];
++	adapter->queue[0].rx = &adapter->rx[0];
++	adapter->queue[0].irq_mask = irq_mask;
 +
-+	free_irq(queue->irq, dev);
-+	memset(queue->name, 0, sizeof(queue->name));
++	adapter->netdev->irq = adapter->queue[0].irq;
++
++	/* add additional TX/RX queue pairs only if dedicated interrupt is
++	 * available
++	 */
++	for (i = 1; i < queue_count; i++) {
++		sprintf(name, "txrx-%d", i);
++		retval = platform_get_irq_byname_optional(adapter->pdev, name);
++		if (retval < 0)
++			break;
++
++		adapter->num_tx_queues++;
++		adapter->num_rx_queues++;
++		adapter->num_queues++;
++		adapter->queue[i].irq = retval;
++		adapter->queue[i].tx = &adapter->tx[i];
++		adapter->queue[i].rx = &adapter->rx[i];
++		adapter->queue[i].irq_mask =
++			irq_mask << (ECM_INT_TXRX_SHIFT * i);
++	}
++
++	return 0;
 +}
 +
- static int tsnep_netdev_open(struct net_device *netdev)
+ static int tsnep_probe(struct platform_device *pdev)
  {
- 	struct tsnep_adapter *adapter = netdev_priv(netdev);
-@@ -863,15 +921,11 @@ static int tsnep_netdev_open(struct net_device *netdev)
- 	int rx_queue_index = 0;
+ 	struct tsnep_adapter *adapter;
+@@ -1273,6 +1319,7 @@ static int tsnep_probe(struct platform_device *pdev)
+ 	u32 type;
+ 	int revision;
+ 	int version;
++	int queue_count;
  	int retval;
  
--	retval = tsnep_phy_open(adapter);
--	if (retval)
--		return retval;
--
- 	for (i = 0; i < adapter->num_queues; i++) {
- 		adapter->queue[i].adapter = adapter;
- 		if (adapter->queue[i].tx) {
- 			addr = adapter->addr + TSNEP_QUEUE(tx_queue_index);
--			retval = tsnep_tx_open(adapter, addr,
-+			retval = tsnep_tx_open(adapter, addr, tx_queue_index,
- 					       adapter->queue[i].tx);
- 			if (retval)
- 				goto failed;
-@@ -886,6 +940,14 @@ static int tsnep_netdev_open(struct net_device *netdev)
- 				goto failed;
- 			rx_queue_index++;
- 		}
-+
-+		retval = tsnep_request_irq(&adapter->queue[i], i == 0);
-+		if (retval) {
-+			netif_err(adapter, drv, adapter->netdev,
-+				  "can't get assigned irq %d.\n",
-+				  adapter->queue[i].irq);
-+			goto failed;
-+		}
- 	}
- 
- 	retval = netif_set_real_num_tx_queues(adapter->netdev,
-@@ -897,6 +959,11 @@ static int tsnep_netdev_open(struct net_device *netdev)
- 	if (retval)
- 		goto failed;
- 
-+	tsnep_enable_irq(adapter, ECM_INT_LINK);
-+	retval = tsnep_phy_open(adapter);
-+	if (retval)
-+		goto phy_failed;
-+
- 	for (i = 0; i < adapter->num_queues; i++) {
- 		netif_napi_add(adapter->netdev, &adapter->queue[i].napi,
- 			       tsnep_poll, 64);
-@@ -907,14 +974,18 @@ static int tsnep_netdev_open(struct net_device *netdev)
- 
- 	return 0;
- 
-+phy_failed:
-+	tsnep_disable_irq(adapter, ECM_INT_LINK);
-+	tsnep_phy_close(adapter);
- failed:
- 	for (i = 0; i < adapter->num_queues; i++) {
-+		tsnep_free_irq(&adapter->queue[i], i == 0);
-+
- 		if (adapter->queue[i].rx)
- 			tsnep_rx_close(adapter->queue[i].rx);
- 		if (adapter->queue[i].tx)
- 			tsnep_tx_close(adapter->queue[i].tx);
- 	}
--	tsnep_phy_close(adapter);
- 	return retval;
- }
- 
-@@ -923,20 +994,23 @@ static int tsnep_netdev_close(struct net_device *netdev)
- 	struct tsnep_adapter *adapter = netdev_priv(netdev);
- 	int i;
- 
-+	tsnep_disable_irq(adapter, ECM_INT_LINK);
-+	tsnep_phy_close(adapter);
-+
- 	for (i = 0; i < adapter->num_queues; i++) {
- 		tsnep_disable_irq(adapter, adapter->queue[i].irq_mask);
- 
- 		napi_disable(&adapter->queue[i].napi);
- 		netif_napi_del(&adapter->queue[i].napi);
- 
-+		tsnep_free_irq(&adapter->queue[i], i == 0);
-+
- 		if (adapter->queue[i].rx)
- 			tsnep_rx_close(adapter->queue[i].rx);
- 		if (adapter->queue[i].tx)
- 			tsnep_tx_close(adapter->queue[i].tx);
- 	}
- 
--	tsnep_phy_close(adapter);
--
- 	return 0;
- }
- 
-@@ -1225,10 +1299,8 @@ static int tsnep_probe(struct platform_device *pdev)
- 	adapter->addr = devm_ioremap_resource(&pdev->dev, io);
- 	if (IS_ERR(adapter->addr))
- 		return PTR_ERR(adapter->addr);
--	adapter->irq = platform_get_irq(pdev, 0);
- 	netdev->mem_start = io->start;
- 	netdev->mem_end = io->end;
--	netdev->irq = adapter->irq;
- 
+ 	netdev = devm_alloc_etherdev_mqs(&pdev->dev,
+@@ -1305,19 +1352,15 @@ static int tsnep_probe(struct platform_device *pdev)
  	type = ioread32(adapter->addr + ECM_TYPE);
  	revision = (type & ECM_REVISION_MASK) >> ECM_REVISION_SHIFT;
-@@ -1238,10 +1310,14 @@ static int tsnep_probe(struct platform_device *pdev)
- 	adapter->num_tx_queues = TSNEP_QUEUES;
- 	adapter->num_rx_queues = TSNEP_QUEUES;
- 	adapter->num_queues = TSNEP_QUEUES;
-+	adapter->queue[0].irq = platform_get_irq(pdev, 0);
- 	adapter->queue[0].tx = &adapter->tx[0];
- 	adapter->queue[0].rx = &adapter->rx[0];
- 	adapter->queue[0].irq_mask = ECM_INT_TX_0 | ECM_INT_RX_0;
+ 	version = (type & ECM_VERSION_MASK) >> ECM_VERSION_SHIFT;
++	queue_count = (type & ECM_QUEUE_COUNT_MASK) >> ECM_QUEUE_COUNT_SHIFT;
+ 	adapter->gate_control = type & ECM_GATE_CONTROL;
  
-+	netdev->irq = adapter->queue[0].irq;
-+	tsnep_disable_irq(adapter, ECM_INT_ALL);
+-	adapter->num_tx_queues = TSNEP_QUEUES;
+-	adapter->num_rx_queues = TSNEP_QUEUES;
+-	adapter->num_queues = TSNEP_QUEUES;
+-	adapter->queue[0].irq = platform_get_irq(pdev, 0);
+-	adapter->queue[0].tx = &adapter->tx[0];
+-	adapter->queue[0].rx = &adapter->rx[0];
+-	adapter->queue[0].irq_mask = ECM_INT_TX_0 | ECM_INT_RX_0;
+-
+-	netdev->irq = adapter->queue[0].irq;
+ 	tsnep_disable_irq(adapter, ECM_INT_ALL);
+ 
++	retval = tsnep_queue_init(adapter, queue_count);
++	if (retval)
++		return retval;
 +
  	retval = dma_set_mask_and_coherent(&adapter->pdev->dev,
  					   DMA_BIT_MASK(64));
  	if (retval) {
-@@ -1249,19 +1325,9 @@ static int tsnep_probe(struct platform_device *pdev)
- 		return retval;
- 	}
- 
--	tsnep_disable_irq(adapter, ECM_INT_ALL);
--	retval = devm_request_irq(&adapter->pdev->dev, adapter->irq, tsnep_irq,
--				  0, TSNEP, adapter);
--	if (retval != 0) {
--		dev_err(&adapter->pdev->dev, "can't get assigned irq %d.\n",
--			adapter->irq);
--		return retval;
--	}
--	tsnep_enable_irq(adapter, ECM_INT_LINK);
--
- 	retval = tsnep_mac_init(adapter);
- 	if (retval)
--		goto mac_init_failed;
-+		return retval;
- 
- 	retval = tsnep_mdio_init(adapter);
- 	if (retval)
-@@ -1307,8 +1373,6 @@ static int tsnep_probe(struct platform_device *pdev)
- 	if (adapter->mdiobus)
- 		mdiobus_unregister(adapter->mdiobus);
- mdio_init_failed:
--mac_init_failed:
--	tsnep_disable_irq(adapter, ECM_INT_ALL);
- 	return retval;
- }
- 
 -- 
 2.30.2
 
