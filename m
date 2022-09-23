@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BAFA5E7EEC
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 17:47:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3885F5E7EEE
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 17:47:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232402AbiIWPri (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 11:47:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46180 "EHLO
+        id S229794AbiIWPrm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 11:47:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231981AbiIWPq6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 11:46:58 -0400
+        with ESMTP id S230448AbiIWPrD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 11:47:03 -0400
 Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2071.outbound.protection.outlook.com [40.107.21.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA53313A979;
-        Fri, 23 Sep 2022 08:46:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1E8C13E7CC;
+        Fri, 23 Sep 2022 08:46:58 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dKamwHRNt9UYI/C6IB9CQuhqXpQmxT5fRdvIuC99Fio4cmfu0CC0yo1lcrD0MF25gf9QT36FfSbMtZ/nPgF1EzfjRuXZ7m+gfrD1vune46clnape8wQcTcW9svkLdY8c/hHIv2rW0QjWXyiEDKW2cdxOZ8kPbS1eFoJ9uWgMwB8sEp/udEHJeGe7Hcv5epQMVgwL+dwHdJnozitAKyLOCMABn9dHuTX0DniNx+g7vnQduIIOw+Mqwjf1hM5VRRqJMa/TUtPb7UByjUth54oWcekQwXES7ncML60BGyUZPruMJ3N8k0b9TI1ylPn+mipFFHtkDR3aAKtc3gh0hk7v1Q==
+ b=TjcGj3ZSqT2Yu5sCTdLNdylq1GE/FcaOtiWTh5Yf1CYByk/jfQdWTKNQtkx5CZHKWkPxSIWLiXVcJaPf7Llj9VnOExuBEqG6MRGEL23Qwf6LIOLeldeY1k2gVpSYkVIeMf0+0QGN7tP6x/Vr9SSJowRr3dFHABsDwQ8S5E2wvLBm8q/g7OFa0zwjahgMXjKo6SApnG37HdNgTWnlkCRqMaP6jQaCTRyzbZzdE9ZODlxv9hZD39Red0IU3ObJHOiIKVdCWEJXnZ7QGkUiynSnM3yEyBleMQkulQoSiK38HNBnya4M5xI/gyAdPSOmHyIkACZaVSsAe2sGdVWZWf6NCw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ptshYWobvMSlKm168dltpvtpUE5UJaun/a4bZhKbTlI=;
- b=lM0OovnV5W+rlNiOQMjvqIasCTaUjSvpbnHqRmnPn+I7PHDKRoGYNV0KD7Gv5k3I8gYoFyfMwWA4/JfGA5kEdSsjpdjQ1jbQQZFVcaXxT+AM7dYHRao42aNCt/XJl74k0QQ9acexoQKfCdqAAW7mXjSGBV3J2AHu8QkXNg+FgM5AdXfdpYmv5x5Xwr4+nxRj9H1N8tmTuGssqnftBGak1CVr6Vq+ncDLKLpojgQQClVS+zCoLAf9LraXDEgxkYp+Jz56eQcBebhznsejiovzuox24EoUuBKPO89up4c6yJDnFl5rvh29ASWF5O27F4pC3v0gNhgD7Oqr921N56w6Aw==
+ bh=bHbJHpBAJ8dgeuyVtluaMKejajTi4NghnRGJWzd+3jw=;
+ b=HIPq/hUxlf0+phwD7fpRBolaaxGyx3xsyCUKH+1F2arWDD834nQtgHnfgrizVru8jEFbxDyJFMA6a8LWoFCIpQMRkwdoZzhqxLDAMvGPdtrbi5L1U9hIrpamxDM+5MBJAZXsK8E9wJY58BIWJQtHaDXptEAFDf/qL2LPrLAqn5L2Otc3MSpHxaPMtx0/RiffiECQM3ClfIw7VAOZM8juJ8LymWkovQQSS1+ac4wx1qv5wJswAe9ooAYN1liwqTupYmYx20KR5EtUpm8ULtBCGiC/hVjLnnG1ckme5syT4Pl2L3xNa3zZLsHPJka0KSHzDzomLb2bJ9kLY/Q5FpYqFg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ptshYWobvMSlKm168dltpvtpUE5UJaun/a4bZhKbTlI=;
- b=GZ3NXp342sjxByl0ouao7XDl9iU+2V/1olZqJ+HnCWq/fE6WqKIk7VK7jbIcK5ClaYRUkV6o+bseV75ru/aQb9zf+EHfElNRLtpOX3LiHYpOUEd5EHDcEIHYbPaTvT/mjDkGANtvGCX91DwRzL6ZJwDO+nobFGnDmeGRhy0N4As=
+ bh=bHbJHpBAJ8dgeuyVtluaMKejajTi4NghnRGJWzd+3jw=;
+ b=MES2KgPzNCUq5w8OrR1IT943AmkiI1yrGex8fVod5YdN4Sjn1cA/uvg+cmzbiEH/vOLS3BCK7SkIup+FlLIORJSFqrsS25T5FQvjocH1mh0kKlowFdWc0ASx1M76NX7XPYKlZ4iAin7NxuzOlSp1My2f5yvBgXCqFkQ4+FOGI5g=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from GV1PR04MB9055.eurprd04.prod.outlook.com (2603:10a6:150:1e::22)
  by AS8PR04MB8724.eurprd04.prod.outlook.com (2603:10a6:20b:42b::6) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.20; Fri, 23 Sep
- 2022 15:46:52 +0000
+ 2022 15:46:53 +0000
 Received: from GV1PR04MB9055.eurprd04.prod.outlook.com
  ([fe80::dd0b:d481:bc5a:9f15]) by GV1PR04MB9055.eurprd04.prod.outlook.com
  ([fe80::dd0b:d481:bc5a:9f15%4]) with mapi id 15.20.5654.018; Fri, 23 Sep 2022
- 15:46:52 +0000
+ 15:46:53 +0000
 From:   Ioana Ciornei <ioana.ciornei@nxp.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -50,9 +50,9 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
         Robert-Ionut Alexa <robert-ionut.alexa@nxp.com>,
         Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next v2 10/12] net: dpaa2-eth: AF_XDP RX zero copy support
-Date:   Fri, 23 Sep 2022 18:45:54 +0300
-Message-Id: <20220923154556.721511-11-ioana.ciornei@nxp.com>
+Subject: [PATCH net-next v2 11/12] net: dpaa2-eth: AF_XDP TX zero copy support
+Date:   Fri, 23 Sep 2022 18:45:55 +0300
+Message-Id: <20220923154556.721511-12-ioana.ciornei@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220923154556.721511-1-ioana.ciornei@nxp.com>
 References: <20220923154556.721511-1-ioana.ciornei@nxp.com>
@@ -64,51 +64,51 @@ X-ClientProxiedBy: AM3PR05CA0152.eurprd05.prod.outlook.com
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: GV1PR04MB9055:EE_|AS8PR04MB8724:EE_
-X-MS-Office365-Filtering-Correlation-Id: 67ab1b2b-31a9-4e92-02c1-08da9d7ad57b
+X-MS-Office365-Filtering-Correlation-Id: 589834dc-84ed-4594-6a02-08da9d7ad651
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: f5MUTBMMuqRPkikmInfOt7BBjmjQ9dqSYXIkQI10Vg3ebSoz/Ep7OfLXot400Qu2x5JdUd3eYod519ZIg3WDVagHVNd/Ccwqi6dtUhWujuCwo/H79X+sgg479XHvo2b6pcXO8B1XONGGiXb0g2zbJa1ArA0XgNIcUUkVI3/TNzxKyLI24i6Fz41QeaTXk5RdiQ4h4V2GodiVPBNe/215fxZa+Cbx2cMxdZUK6EHNAqwP7E3INkbAX73F+KhQan7ExHvX/dvr44k8dxT/Lb5RR7XxtiljUQxOUmn61dQG+sK0sOBaxvTHKlGgOFyehxdOJH0iKWePIRcZveMqR2otOBUUDU1lzt7tfXUmjpcsSK9uzYQ503V6WNKAVcKJo8um4oYf4H6bl1blMZDpltc6MDZUlUYbVyAthJ6/VfnW3g6ee0b5GVuqbv+9Js/U6hTr3Xss5Ncgzd71VZpjuOjp45mh1RgOMJst/oidz3wum7kg7zuXHl0fVPG+cpZd9x/lEs1bit+EyFk2yAoqSQdhfFxIv/UeEolOUs6F4rqY6mna2nRJ1mwUlLfQWlXUhf+GRhDpiAzk6txsgQ8KCUN+kouDmTXS5BQC3wINVtO2Mhg9FhYciDPIdovJdBk9xZYQcRuZeQKYUFVHVRnuFx68po3jMmDnS2mKT+hwxHYYzsLohyCg+IiL2GTCZhSLx9datGtUh0W7EUa1hMnHZCllFHzGigkdFAbFhsV+cgUzQtaNTTVy8BrHaDNh4JVBp5IkKtgX310KEXrUFAvEYvpAgw==
+X-Microsoft-Antispam-Message-Info: OFGfVYYtFDypDSJhYVXr8cG0Vy3ASJlP6YpXXZiLv/3MG62zcnoskJ2zWQtEU+1+/UNJ3Jmi3e9ia9+LQpe8DQZfxYGS07kIn2nOiFzi4b0ZqKmBGwE9Kdm3IIRDg2v3BysM9lwibsSBl6FVmIiyiMCk+KYwIWK1WZjBXJOYICS7J0T6HfkfvvOp3s7pEnUffXq7KcYTLpIfs/Cs5gnQUAAXh7C4rTJcA+hJQQ5I07do5tTE/U0i32ZpCetwI3GuuwPY2JYGdtYfY3vrdQR9+LkWbnQjMBzg5EQailKsXTSp5fAo13/ZRWTsqcy1c+QJw+QsM+J5u+qzmgHvvo1RHFyYe+Msfz9PVMCpqWnYOe7YU8ttWm1m0+U3m1ofiRWqawl5y8yUogJxrdl5Gy1ERCDn+qrzC677fSoDAcaA14IAz/35vrIWzpG6kERJvZNX2fnM3J93X3pJe2h3GJ1BA8yM6B76lDYxWSrSbPKzP4G30vhoqpNax6fnj/X9ZYd1pSDNEcZ2WGZgzfcwRAuCTskzukEQC+qq7Jw5bXz64+aPS7jWaET5Q9vBjU8vRv0yJVQQ8Z1q0GPnWpxr2Nns9RT2MK8gi5GKOf5ErjDoxh4g3GuYD10TaaW0+6VZStzVSWpxw0mXAi7us4ymZUfRx6KQgBcOiAL19DnMpVik9vZS5yAvnMO2tIgCYxxYMevtijbdu+4yDmySd7jih9nAE6s+Y/H7QTK+ys/sq90iBY3yX/wsVtqqeG9M0iyOx/kRLrUCW4bHitN7O5dqhoOSKA==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV1PR04MB9055.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(366004)(396003)(376002)(346002)(136003)(451199015)(66476007)(41300700001)(52116002)(83380400001)(6506007)(66556008)(4326008)(66946007)(8676002)(26005)(36756003)(6512007)(38350700002)(8936002)(38100700002)(6486002)(110136005)(54906003)(316002)(478600001)(2906002)(2616005)(30864003)(44832011)(86362001)(1076003)(7416002)(5660300002)(186003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?RjbBvl6TrGwGcCSrLJQMXDJLF9dDhgCFskqXamNM5Ikq0mMZhNVyD3Rs5U9B?=
- =?us-ascii?Q?vXkYwA28CcxwBGn7ykkKOCyuYaQV7dcV2BvSYLUg1siM4XVMcPk2dCuf/Det?=
- =?us-ascii?Q?7OqrU2OYQ0W58H3SZgYQCLjjagCsbjmvRrXe6zLPntos8Ounm7TBCKJfUrnL?=
- =?us-ascii?Q?f+HKyZa6bXsyzv/f4ZLbupEpt7EUO5Ph6m3xHZAJ5LBmEJrZ74r1YNa23wSz?=
- =?us-ascii?Q?shgauE2xMoFY9d0BveS1Bm51Uq840ZiJ03OdvTqUcGHmiEKpJlEZ0Yio8ejm?=
- =?us-ascii?Q?iaAbkW9yKXMzOGY6hXvsLLo0t8RFx3kKmvhF2DC1bHrPA000Ldbbn72yptn3?=
- =?us-ascii?Q?q5RCBREVufRBKX4g4kaNRg8nudF3p3gAgNV9vyBH4GutOKUe16pxR7csm1HR?=
- =?us-ascii?Q?7ugyDHThM2wjHzMhqL25pc0opOQve90pTcSL7+b9IGfSoH3PUsce1oMuoeHF?=
- =?us-ascii?Q?w9h8lAH6t5rttUjnidV+p0K3s6KK2AGt+Zed2akgE7gzs8HOxnFkDZcCrbyP?=
- =?us-ascii?Q?5gOvUhTm3YmOWq4siT6oM7uHs5vAKYUypezlnot9qNin8kukAC5ZgYc/vuvl?=
- =?us-ascii?Q?LcFKVY6z/rEXb7z55AjwV6yoz6SYEOUoUQ+FQj6d14ZkbUtoAwBXpM6WRH2M?=
- =?us-ascii?Q?AjYJILyKVUnOohZe2UQilJHm7tait9Ur4jzytDBOOCbqR9tZLApFDSn/ayll?=
- =?us-ascii?Q?NSSWMb6RCj86ZJL5MyW7ibBxoHGL2GgPBImJHDTgFFpUrvs5MsEvckipVja6?=
- =?us-ascii?Q?Wo24N7A3QXdTfqyn3Pcgv4nbffNgeCbFA49hEGbZFXFShMwO2q7EHooh04gR?=
- =?us-ascii?Q?r/FM38PLJDwuK9wzvb66+SbyJVH9SofslEXJhijtLyhPBMS5WwV1B1YZk9sa?=
- =?us-ascii?Q?HROghhfPbHFZfhuQ3kvJUsK5oew1FfUWQLBc7sGpmcPNYJm6O+Tb2GWpLAza?=
- =?us-ascii?Q?T7s3FRTA7ERolR2mF9cGHbr58Mrcoe32VxMHYh4J7d0MV3UgGAAUX15UHvcK?=
- =?us-ascii?Q?jAEP85aJSvu1iLMPIXxLRiJjAf/00qBzwMwvVsrPQOdTWOiwtcqrhgIZGevS?=
- =?us-ascii?Q?HOKO0GJWzdcNknwVLR7O23K8IjSbsKrlY+Nli5xU5fdoSh1eQzBWrVm68Hau?=
- =?us-ascii?Q?QBdKGXvXvZE2IfEAXdy1PDCV8X4fgfJMBH8sXapq+7YoGsm51VIR4zkaFUft?=
- =?us-ascii?Q?arHftCqWcRvoYOIY/3MPh453foXRpLYCSSPllzDVC7LEWhbshw8EODwktUxd?=
- =?us-ascii?Q?GBZwLFIX4M1lBFNIb27mJEgGX16e8QjgjsbKCzyLYyzK2Y1Qi7f6aJlwLTsE?=
- =?us-ascii?Q?nz5nnlSRJorAxS55Zq8hId0SbXd6a/bULdNNZ+GUehPRu/x9Y126GDZARTsN?=
- =?us-ascii?Q?+Krsn7X/nr3BNUkiJkn5DS8eCM/hn80nSrnqA6PA4mJ+vOchZNlMz6TGNzFV?=
- =?us-ascii?Q?vFVsi0Y054k29RTGP7UwPfFSbhkyB4HRmKpMvL7QgLFri2r5n6UfcrFh9bo6?=
- =?us-ascii?Q?ccIwAUZ9lfmqUu5H2NQkdcfnizwK5DivzLV4I10aKYrSALr3MBBlVF4awzRi?=
- =?us-ascii?Q?qYobl7wWGmpFcOZcMOVfC6BA/e5mrX4V/VxcJJmlc7CfkeIn/h5FgNFB1iJF?=
- =?us-ascii?Q?ew=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?VmuixnR2xtcKagIFxKg1M84gHwY4zh5uPhOD/jwW08JkYzTu4mgbjbBIc59P?=
+ =?us-ascii?Q?2sw7dUxvSjHvcedDhVHF5YGvNMkMeiiBOddvd8d8b+ErjJAxiKb16bkbrJFg?=
+ =?us-ascii?Q?FZmHpRZ/sEDwYaq5iCmDbwxFoFGdNGe5TSuShaatj95MkILfWvi9FzbPXezw?=
+ =?us-ascii?Q?KqZojMhvqmVWNP/zzE45GxmoQn7RjORCedTxWZvTVg3ttS92rlU1PgWDLK44?=
+ =?us-ascii?Q?miwVndPDwk8GMij2xauy+3jsFR5lqzFjnY0dxyg9MBGlAcKX7St1mw/UgC0H?=
+ =?us-ascii?Q?p9yVw2/Siopv/SR3XJW1NLZyuNZPA24ptn4Wo7+yuRmMrj0kdhrdvAomQjs9?=
+ =?us-ascii?Q?k7FL86F8bpuL9RtIwbZj3qwqn3eoYq+9Dw2y2L/VuaqiLpQ+YKPy3Ij/E3Lk?=
+ =?us-ascii?Q?+wXXEhr50Uru3WIjAxezYoCPTbazY8QC+uMLObZg0/YZdm0E32Cz1lZ6Pb+/?=
+ =?us-ascii?Q?EA9mESzJMGOhsPb0sAzGP/C6g7+XnqWkvTkKRnmX+/vxEcq9K/4KczXsZIVx?=
+ =?us-ascii?Q?S+hB1SBn3EIW6sAjAZxTMyDG2F41ZiJKOF5vOt2qA1+Em/KQ1iiuiyQDDtfL?=
+ =?us-ascii?Q?mOhvIEcq7WhjCxuXSMnHGw26JqUdJ13IdLlSqwBnh5M3qu++MufJwYonDr1B?=
+ =?us-ascii?Q?6iN2/ZtckT74J79FV8PviwEwTQzWWe6vIcNdD0ipViPXA6pH9Drvg/Jo1M6J?=
+ =?us-ascii?Q?GBJHdTcGi9lNDAh4V8rZhY/rFPTxAFvPwvU7mk7pnxcebX721ufcsQTmzrXH?=
+ =?us-ascii?Q?5wDzGTjUt9bbyCZg6D/6bgPEtmg91K2WySNzBDts5uwUF8uDiSOwElQncQYz?=
+ =?us-ascii?Q?HWGlIrFL2nsrzpl3gLaVEtPcb28fCQy7DHKryNo9pqv1cim9KXeeAmM4Cih1?=
+ =?us-ascii?Q?NeSTlqXniv6q1zaZT7/jS2MdMpgFfN8WnAFHQyzSNPiLIOf3HFFRyIK4oaUB?=
+ =?us-ascii?Q?Xh9SrSiMHZB4S2I95LdOj6RxSyC/aTUJyxk4W8CIRfHQEpy5WWtM03A/5kMq?=
+ =?us-ascii?Q?dUZ6fgzt8Lu+TfPKSnRP8xiy+/IEH4ruFy6OwpnVDQJ9ONkQi8wCU4MDwtlz?=
+ =?us-ascii?Q?YrDFzMbVjcXD/6MnC7purnp1+U30Bhq3do1tZzImlwqfw8x0pm2VjqTjg7ui?=
+ =?us-ascii?Q?C3IUgYM+q2mYJj3w6dN7s1y0tRpm0UL3rX7Sgb/yIebPYa4G27jnKCIxiGhE?=
+ =?us-ascii?Q?rbfNOloyq1TRDWpF/Qq7fiLMX6bUoqn2Hz0SUyJ+utkv6WRvD1xEaR8sqO3s?=
+ =?us-ascii?Q?uceWWnWFAhuwZN0K6u9kC33l8cUwNWPIwKGQJQ4VkVRKYCWcsowVB5w7JAMb?=
+ =?us-ascii?Q?UeBko6XJTZa4aTYXOGRxT7nLBqi93qx8hxt7HVjmi8FQ08uDkGqBgFUpixDP?=
+ =?us-ascii?Q?DBOLCiEvJxtHGfijzgevM5whN8zpVzBx0koDa9uGdEIMjWYZtsZ5tfqgZm9G?=
+ =?us-ascii?Q?KJWJzuBXyEhA2R9hMqrh61WcNVmnbycvyHwfmsVlNqgwCNTcWX6jD0Rpf6j0?=
+ =?us-ascii?Q?Na4TTkZTTbUFsVc7AhTX8MbfeBCBJ7jPDfIM+w0qE6zkUrkluvIKqnFPjTPV?=
+ =?us-ascii?Q?Gxm1GS+4q7HU4Dy+4If7RTI4z65dYBB1OPZlER3zYj+HagsI9Yu0Ypa3C8HP?=
+ =?us-ascii?Q?Qg=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 67ab1b2b-31a9-4e92-02c1-08da9d7ad57b
+X-MS-Exchange-CrossTenant-Network-Message-Id: 589834dc-84ed-4594-6a02-08da9d7ad651
 X-MS-Exchange-CrossTenant-AuthSource: GV1PR04MB9055.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2022 15:46:52.1400
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2022 15:46:53.5451
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: iG2eYCCmjaTcAOUkD2KZXriDUEpfGjVidy+UDvZHzp4ashKQjKwDUqwzaa8jcM3agkZt9NrFhszt9H9Z6C+I2A==
+X-MS-Exchange-CrossTenant-UserPrincipalName: BV80STpgGOE9IKHpcCn/PqGHZTowyBDL2ot/TxH7cWSxkaBhsHIZThQg4AmpTcv+cxxJi0j52rxIfSfODu72Jw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8724
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -122,34 +122,27 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Robert-Ionut Alexa <robert-ionut.alexa@nxp.com>
 
-This patch adds the support for receiving packets via the AF_XDP
-zero-copy mechanism in the dpaa2-eth driver. The support is available
-only on the LX2160A SoC and variants because we are relying on the HW
-capability to associate a buffer pool to a specific queue (QDBIN), only
-available on newer WRIOP versions.
+Add support in dpaa2-eth for packet processing on the Tx path using
+AF_XDP zero copy mode.
 
-On the control path, the dpaa2_xsk_enable_pool() function is responsible
-to allocate a buffer pool (BP), setup this new BP to be used only on the
-requested queue and change the consume function to point to the XSK ZC
-one.
-We are forced to call dev_close() in order to change the queue to buffer
-pool association (dpaa2_xsk_set_bp_per_qdbin) . This also works in our
-favor since at dev_close() the buffer pools will be drained and at the
-later dev_open() call they will be again seeded, this time with buffers
-allocated from the XSK pool if needed.
+The newly added dpaa2_xsk_tx() function will handle enqueuing AF_XDP Tx
+packets into the appropriate queue and update any necessary statistics.
 
-On the data path, a new software annotation type is defined to be used
-only for the XSK scenarios. This will enable us to pass keep necessary
-information about a packet buffer between the moment in which it was
-seeded and when it's received by the driver. In the XSK case, we are
-keeping the associated xdp_buff.
-Depending on the action returned by the BPF program, we will do the
-following:
- - XDP_PASS: copy the contents of the packet into a brand new skb,
-   recycle the initial buffer.
- - XDP_TX: just enqueue the same frame descriptor back into the Tx path,
-   the buffer will get automatically released into the initial BP.
- - XDP_REDIRECT: call xdp_do_redirect() and exit.
+On a more detailed note, the dpaa2_xsk_tx_build_fd() function handles
+creating a Scatter-Gather frame descriptor with only one data buffer.
+This is needed because otherwise we would need to impose a headroom in
+the Tx buffer to store our software annotation structures.
+This tactic is already used on the normal data path of the dpaa2-eth
+driver, thus we are reusing the dpaa2_eth_sgt_get/dpaa2_eth_sgt_recycle
+functions in order to allocate and recycle the Scatter-Gather table
+buffers.
+
+In case we have reached the maximum number of Tx XSK packets to be sent
+in a NAPI cycle, we'll exit the dpaa2_eth_poll() and hope to be
+rescheduled again.
+
+On the XSK Tx confirmation path, we are just unmapping the SGT buffer
+and recycle it for further use.
 
 Signed-off-by: Robert-Ionut Alexa <robert-ionut.alexa@nxp.com>
 Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
@@ -157,704 +150,343 @@ Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 Changes in v2:
  - none
 
- MAINTAINERS                                   |   1 +
- drivers/net/ethernet/freescale/dpaa2/Makefile |   2 +-
- .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  | 131 ++++---
- .../net/ethernet/freescale/dpaa2/dpaa2-eth.h  |  36 +-
- .../net/ethernet/freescale/dpaa2/dpaa2-xsk.c  | 327 ++++++++++++++++++
- 5 files changed, 452 insertions(+), 45 deletions(-)
- create mode 100644 drivers/net/ethernet/freescale/dpaa2/dpaa2-xsk.c
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |  48 +++++--
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.h  |  22 +++-
+ .../net/ethernet/freescale/dpaa2/dpaa2-xsk.c  | 123 ++++++++++++++++++
+ 3 files changed, 183 insertions(+), 10 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 1415a1498d68..004411566f48 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -6290,6 +6290,7 @@ F:	drivers/net/ethernet/freescale/dpaa2/Kconfig
- F:	drivers/net/ethernet/freescale/dpaa2/Makefile
- F:	drivers/net/ethernet/freescale/dpaa2/dpaa2-eth*
- F:	drivers/net/ethernet/freescale/dpaa2/dpaa2-mac*
-+F:	drivers/net/ethernet/freescale/dpaa2/dpaa2-xsk*
- F:	drivers/net/ethernet/freescale/dpaa2/dpkg.h
- F:	drivers/net/ethernet/freescale/dpaa2/dpmac*
- F:	drivers/net/ethernet/freescale/dpaa2/dpni*
-diff --git a/drivers/net/ethernet/freescale/dpaa2/Makefile b/drivers/net/ethernet/freescale/dpaa2/Makefile
-index 3d9842af7f10..1b05ba8d1cbf 100644
---- a/drivers/net/ethernet/freescale/dpaa2/Makefile
-+++ b/drivers/net/ethernet/freescale/dpaa2/Makefile
-@@ -7,7 +7,7 @@ obj-$(CONFIG_FSL_DPAA2_ETH)		+= fsl-dpaa2-eth.o
- obj-$(CONFIG_FSL_DPAA2_PTP_CLOCK)	+= fsl-dpaa2-ptp.o
- obj-$(CONFIG_FSL_DPAA2_SWITCH)		+= fsl-dpaa2-switch.o
- 
--fsl-dpaa2-eth-objs	:= dpaa2-eth.o dpaa2-ethtool.o dpni.o dpaa2-mac.o dpmac.o dpaa2-eth-devlink.o
-+fsl-dpaa2-eth-objs	:= dpaa2-eth.o dpaa2-ethtool.o dpni.o dpaa2-mac.o dpmac.o dpaa2-eth-devlink.o dpaa2-xsk.o
- fsl-dpaa2-eth-${CONFIG_FSL_DPAA2_ETH_DCB} += dpaa2-eth-dcb.o
- fsl-dpaa2-eth-${CONFIG_DEBUG_FS} += dpaa2-eth-debugfs.o
- fsl-dpaa2-ptp-objs	:= dpaa2-ptp.o dprtc.o
 diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index d786740d1bdd..1e94506bf9e6 100644
+index 1e94506bf9e6..4cfdbf644466 100644
 --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
 +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -19,6 +19,7 @@
- #include <net/pkt_cls.h>
- #include <net/sock.h>
- #include <net/tso.h>
-+#include <net/xdp_sock_drv.h>
- 
- #include "dpaa2-eth.h"
- 
-@@ -104,8 +105,8 @@ static void dpaa2_ptp_onestep_reg_update_method(struct dpaa2_eth_priv *priv)
- 	priv->dpaa2_set_onestep_params_cb = dpaa2_update_ptp_onestep_direct;
+@@ -858,7 +858,7 @@ static void dpaa2_eth_enable_tx_tstamp(struct dpaa2_eth_priv *priv,
+ 	}
  }
  
--static void *dpaa2_iova_to_virt(struct iommu_domain *domain,
--				dma_addr_t iova_addr)
-+void *dpaa2_iova_to_virt(struct iommu_domain *domain,
-+			 dma_addr_t iova_addr)
+-static void *dpaa2_eth_sgt_get(struct dpaa2_eth_priv *priv)
++void *dpaa2_eth_sgt_get(struct dpaa2_eth_priv *priv)
  {
- 	phys_addr_t phys_addr;
+ 	struct dpaa2_eth_sgt_cache *sgt_cache;
+ 	void *sgt_buf = NULL;
+@@ -880,7 +880,7 @@ static void *dpaa2_eth_sgt_get(struct dpaa2_eth_priv *priv)
+ 	return sgt_buf;
+ }
  
-@@ -279,23 +280,33 @@ static struct sk_buff *dpaa2_eth_build_frag_skb(struct dpaa2_eth_priv *priv,
-  * be released in the pool
+-static void dpaa2_eth_sgt_recycle(struct dpaa2_eth_priv *priv, void *sgt_buf)
++void dpaa2_eth_sgt_recycle(struct dpaa2_eth_priv *priv, void *sgt_buf)
+ {
+ 	struct dpaa2_eth_sgt_cache *sgt_cache;
+ 
+@@ -1115,9 +1115,10 @@ static int dpaa2_eth_build_single_fd(struct dpaa2_eth_priv *priv,
+  * This can be called either from dpaa2_eth_tx_conf() or on the error path of
+  * dpaa2_eth_tx().
   */
- static void dpaa2_eth_free_bufs(struct dpaa2_eth_priv *priv, u64 *buf_array,
--				int count)
-+				int count, bool xsk_zc)
+-static void dpaa2_eth_free_tx_fd(struct dpaa2_eth_priv *priv,
+-				 struct dpaa2_eth_fq *fq,
+-				 const struct dpaa2_fd *fd, bool in_napi)
++void dpaa2_eth_free_tx_fd(struct dpaa2_eth_priv *priv,
++			  struct dpaa2_eth_channel *ch,
++			  struct dpaa2_eth_fq *fq,
++			  const struct dpaa2_fd *fd, bool in_napi)
  {
  	struct device *dev = priv->net_dev->dev.parent;
-+	struct dpaa2_eth_swa *swa;
-+	struct xdp_buff *xdp_buff;
- 	void *vaddr;
- 	int i;
+ 	dma_addr_t fd_addr, sg_addr;
+@@ -1184,6 +1185,10 @@ static void dpaa2_eth_free_tx_fd(struct dpaa2_eth_priv *priv,
  
- 	for (i = 0; i < count; i++) {
- 		vaddr = dpaa2_iova_to_virt(priv->iommu_domain, buf_array[i]);
--		dma_unmap_page(dev, buf_array[i], priv->rx_buf_size,
--			       DMA_BIDIRECTIONAL);
--		free_pages((unsigned long)vaddr, 0);
-+
-+		if (!xsk_zc) {
-+			dma_unmap_page(dev, buf_array[i], priv->rx_buf_size,
-+				       DMA_BIDIRECTIONAL);
-+			free_pages((unsigned long)vaddr, 0);
-+		} else {
-+			swa = (struct dpaa2_eth_swa *)
-+				(vaddr + DPAA2_ETH_RX_HWA_SIZE);
-+			xdp_buff = swa->xsk.xdp_buff;
-+			xsk_buff_free(xdp_buff);
-+		}
- 	}
- }
+ 			if (!swa->tso.is_last_fd)
+ 				should_free_skb = 0;
++		} else if (swa->type == DPAA2_ETH_SWA_XSK) {
++			/* Unmap the SGT Buffer */
++			dma_unmap_single(dev, fd_addr, swa->xsk.sgt_size,
++					 DMA_BIDIRECTIONAL);
+ 		} else {
+ 			skb = swa->single.skb;
  
--static void dpaa2_eth_recycle_buf(struct dpaa2_eth_priv *priv,
--				  struct dpaa2_eth_channel *ch,
--				  dma_addr_t addr)
-+void dpaa2_eth_recycle_buf(struct dpaa2_eth_priv *priv,
-+			   struct dpaa2_eth_channel *ch,
-+			   dma_addr_t addr)
- {
- 	int retries = 0;
- 	int err;
-@@ -313,7 +324,8 @@ static void dpaa2_eth_recycle_buf(struct dpaa2_eth_priv *priv,
+@@ -1201,6 +1206,12 @@ static void dpaa2_eth_free_tx_fd(struct dpaa2_eth_priv *priv,
+ 		return;
  	}
  
- 	if (err) {
--		dpaa2_eth_free_bufs(priv, ch->recycled_bufs, ch->recycled_bufs_cnt);
-+		dpaa2_eth_free_bufs(priv, ch->recycled_bufs,
-+				    ch->recycled_bufs_cnt, ch->xsk_zc);
- 		ch->buf_count -= ch->recycled_bufs_cnt;
- 	}
- 
-@@ -377,10 +389,10 @@ static void dpaa2_eth_xdp_tx_flush(struct dpaa2_eth_priv *priv,
- 	fq->xdp_tx_fds.num = 0;
- }
- 
--static void dpaa2_eth_xdp_enqueue(struct dpaa2_eth_priv *priv,
--				  struct dpaa2_eth_channel *ch,
--				  struct dpaa2_fd *fd,
--				  void *buf_start, u16 queue_id)
-+void dpaa2_eth_xdp_enqueue(struct dpaa2_eth_priv *priv,
-+			   struct dpaa2_eth_channel *ch,
-+			   struct dpaa2_fd *fd,
-+			   void *buf_start, u16 queue_id)
- {
- 	struct dpaa2_faead *faead;
- 	struct dpaa2_fd *dest_fd;
-@@ -1652,37 +1664,63 @@ static int dpaa2_eth_set_tx_csum(struct dpaa2_eth_priv *priv, bool enable)
- static int dpaa2_eth_add_bufs(struct dpaa2_eth_priv *priv,
- 			      struct dpaa2_eth_channel *ch)
- {
-+	struct xdp_buff *xdp_buffs[DPAA2_ETH_BUFS_PER_CMD];
- 	struct device *dev = priv->net_dev->dev.parent;
- 	u64 buf_array[DPAA2_ETH_BUFS_PER_CMD];
-+	struct dpaa2_eth_swa *swa;
- 	struct page *page;
- 	dma_addr_t addr;
- 	int retries = 0;
--	int i, err;
--
--	for (i = 0; i < DPAA2_ETH_BUFS_PER_CMD; i++) {
--		/* Allocate buffer visible to WRIOP + skb shared info +
--		 * alignment padding
--		 */
--		/* allocate one page for each Rx buffer. WRIOP sees
--		 * the entire page except for a tailroom reserved for
--		 * skb shared info
-+	int i = 0, err;
-+	u32 batch;
-+
-+	/* Allocate buffers visible to WRIOP */
-+	if (!ch->xsk_zc) {
-+		for (i = 0; i < DPAA2_ETH_BUFS_PER_CMD; i++) {
-+			/* Also allocate skb shared info and alignment padding.
-+			 * There is one page for each Rx buffer. WRIOP sees
-+			 * the entire page except for a tailroom reserved for
-+			 * skb shared info
-+			 */
-+			page = dev_alloc_pages(0);
-+			if (!page)
-+				goto err_alloc;
-+
-+			addr = dma_map_page(dev, page, 0, priv->rx_buf_size,
-+					    DMA_BIDIRECTIONAL);
-+			if (unlikely(dma_mapping_error(dev, addr)))
-+				goto err_map;
-+
-+			buf_array[i] = addr;
-+
-+			/* tracing point */
-+			trace_dpaa2_eth_buf_seed(priv->net_dev,
-+						 page_address(page),
-+						 DPAA2_ETH_RX_BUF_RAW_SIZE,
-+						 addr, priv->rx_buf_size,
-+						 ch->bp->bpid);
-+		}
-+	} else if (xsk_buff_can_alloc(ch->xsk_pool, DPAA2_ETH_BUFS_PER_CMD)) {
-+		/* Allocate XSK buffers for AF_XDP fast path in batches
-+		 * of DPAA2_ETH_BUFS_PER_CMD. Bail out if the UMEM cannot
-+		 * provide enough buffers at the moment
- 		 */
--		page = dev_alloc_pages(0);
--		if (!page)
-+		batch = xsk_buff_alloc_batch(ch->xsk_pool, xdp_buffs,
-+					     DPAA2_ETH_BUFS_PER_CMD);
-+		if (!batch)
- 			goto err_alloc;
- 
--		addr = dma_map_page(dev, page, 0, priv->rx_buf_size,
--				    DMA_BIDIRECTIONAL);
--		if (unlikely(dma_mapping_error(dev, addr)))
--			goto err_map;
-+		for (i = 0; i < batch; i++) {
-+			swa = (struct dpaa2_eth_swa *)(xdp_buffs[i]->data_hard_start +
-+						       DPAA2_ETH_RX_HWA_SIZE);
-+			swa->xsk.xdp_buff = xdp_buffs[i];
- 
--		buf_array[i] = addr;
-+			addr = xsk_buff_xdp_get_frame_dma(xdp_buffs[i]);
-+			if (unlikely(dma_mapping_error(dev, addr)))
-+				goto err_map;
- 
--		/* tracing point */
--		trace_dpaa2_eth_buf_seed(priv->net_dev, page_address(page),
--					 DPAA2_ETH_RX_BUF_RAW_SIZE,
--					 addr, priv->rx_buf_size,
--					 ch->bp->bpid);
-+			buf_array[i] = addr;
-+		}
- 	}
- 
- release_bufs:
-@@ -1698,14 +1736,19 @@ static int dpaa2_eth_add_bufs(struct dpaa2_eth_priv *priv,
- 	 * not much else we can do about it
- 	 */
- 	if (err) {
--		dpaa2_eth_free_bufs(priv, buf_array, i);
-+		dpaa2_eth_free_bufs(priv, buf_array, i, ch->xsk_zc);
- 		return 0;
- 	}
- 
- 	return i;
- 
- err_map:
--	__free_pages(page, 0);
-+	if (!ch->xsk_zc) {
-+		__free_pages(page, 0);
-+	} else {
-+		for (; i < batch; i++)
-+			xsk_buff_free(xdp_buffs[i]);
-+	}
- err_alloc:
- 	/* If we managed to allocate at least some buffers,
- 	 * release them to hardware
-@@ -1764,8 +1807,13 @@ static void dpaa2_eth_drain_bufs(struct dpaa2_eth_priv *priv, int bpid,
- 				 int count)
- {
- 	u64 buf_array[DPAA2_ETH_BUFS_PER_CMD];
-+	bool xsk_zc = false;
- 	int retries = 0;
--	int ret;
-+	int i, ret;
-+
-+	for (i = 0; i < priv->num_channels; i++)
-+		if (priv->channel[i]->bp->bpid == bpid)
-+			xsk_zc = priv->channel[i]->xsk_zc;
- 
- 	do {
- 		ret = dpaa2_io_service_acquire(NULL, bpid, buf_array, count);
-@@ -1776,7 +1824,7 @@ static void dpaa2_eth_drain_bufs(struct dpaa2_eth_priv *priv, int bpid,
- 			netdev_err(priv->net_dev, "dpaa2_io_service_acquire() failed\n");
- 			return;
- 		}
--		dpaa2_eth_free_bufs(priv, buf_array, ret);
-+		dpaa2_eth_free_bufs(priv, buf_array, ret, xsk_zc);
- 		retries = 0;
- 	} while (ret);
- }
-@@ -2694,6 +2742,8 @@ static int dpaa2_eth_xdp(struct net_device *dev, struct netdev_bpf *xdp)
- 	switch (xdp->command) {
- 	case XDP_SETUP_PROG:
- 		return dpaa2_eth_setup_xdp(dev, xdp->prog);
-+	case XDP_SETUP_XSK_POOL:
-+		return dpaa2_xsk_setup_pool(dev, xdp->xsk.pool, xdp->xsk.queue_id);
- 	default:
- 		return -EINVAL;
- 	}
-@@ -2924,6 +2974,7 @@ static const struct net_device_ops dpaa2_eth_ops = {
- 	.ndo_change_mtu = dpaa2_eth_change_mtu,
- 	.ndo_bpf = dpaa2_eth_xdp,
- 	.ndo_xdp_xmit = dpaa2_eth_xdp_xmit,
-+	.ndo_xsk_wakeup = dpaa2_xsk_wakeup,
- 	.ndo_setup_tc = dpaa2_eth_setup_tc,
- 	.ndo_vlan_rx_add_vid = dpaa2_eth_rx_add_vid,
- 	.ndo_vlan_rx_kill_vid = dpaa2_eth_rx_kill_vid
-@@ -4246,8 +4297,8 @@ static int dpaa2_eth_bind_dpni(struct dpaa2_eth_priv *priv)
- {
- 	struct dpaa2_eth_bp *bp = priv->bp[DPAA2_ETH_DEFAULT_BP_IDX];
- 	struct net_device *net_dev = priv->net_dev;
-+	struct dpni_pools_cfg pools_params = { 0 };
- 	struct device *dev = net_dev->dev.parent;
--	struct dpni_pools_cfg pools_params;
- 	struct dpni_error_cfg err_cfg;
- 	int err = 0;
- 	int i;
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-index 3c4fc46b1324..38f67b98865f 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-@@ -130,6 +130,7 @@ enum dpaa2_eth_swa_type {
- 	DPAA2_ETH_SWA_SINGLE,
- 	DPAA2_ETH_SWA_SG,
- 	DPAA2_ETH_SWA_XDP,
-+	DPAA2_ETH_SWA_XSK,
- 	DPAA2_ETH_SWA_SW_TSO,
- };
- 
-@@ -151,6 +152,9 @@ struct dpaa2_eth_swa {
- 			int dma_size;
- 			struct xdp_frame *xdpf;
- 		} xdp;
-+		struct {
-+			struct xdp_buff *xdp_buff;
-+		} xsk;
- 		struct {
- 			struct sk_buff *skb;
- 			int num_sg;
-@@ -429,12 +433,19 @@ enum dpaa2_eth_fq_type {
- };
- 
- struct dpaa2_eth_priv;
-+struct dpaa2_eth_channel;
-+struct dpaa2_eth_fq;
- 
- struct dpaa2_eth_xdp_fds {
- 	struct dpaa2_fd fds[DEV_MAP_BULK_SIZE];
- 	ssize_t num;
- };
- 
-+typedef void dpaa2_eth_consume_cb_t(struct dpaa2_eth_priv *priv,
-+				    struct dpaa2_eth_channel *ch,
-+				    const struct dpaa2_fd *fd,
-+				    struct dpaa2_eth_fq *fq);
-+
- struct dpaa2_eth_fq {
- 	u32 fqid;
- 	u32 tx_qdbin;
-@@ -447,10 +458,7 @@ struct dpaa2_eth_fq {
- 	struct dpaa2_eth_channel *channel;
- 	enum dpaa2_eth_fq_type type;
- 
--	void (*consume)(struct dpaa2_eth_priv *priv,
--			struct dpaa2_eth_channel *ch,
--			const struct dpaa2_fd *fd,
--			struct dpaa2_eth_fq *fq);
-+	dpaa2_eth_consume_cb_t *consume;
- 	struct dpaa2_eth_fq_stats stats;
- 
- 	struct dpaa2_eth_xdp_fds xdp_redirect_fds;
-@@ -486,6 +494,8 @@ struct dpaa2_eth_channel {
- 	u64 recycled_bufs[DPAA2_ETH_BUFS_PER_CMD];
- 	int recycled_bufs_cnt;
- 
-+	bool xsk_zc;
-+	struct xsk_buff_pool *xsk_pool;
- 	struct dpaa2_eth_bp *bp;
- };
- 
-@@ -808,4 +818,22 @@ void dpaa2_eth_rx(struct dpaa2_eth_priv *priv,
- 		  struct dpaa2_eth_channel *ch,
- 		  const struct dpaa2_fd *fd,
- 		  struct dpaa2_eth_fq *fq);
-+
-+struct dpaa2_eth_bp *dpaa2_eth_allocate_dpbp(struct dpaa2_eth_priv *priv);
-+void dpaa2_eth_free_dpbp(struct dpaa2_eth_priv *priv,
-+			 struct dpaa2_eth_bp *bp);
-+
-+void *dpaa2_iova_to_virt(struct iommu_domain *domain, dma_addr_t iova_addr);
-+void dpaa2_eth_recycle_buf(struct dpaa2_eth_priv *priv,
-+			   struct dpaa2_eth_channel *ch,
-+			   dma_addr_t addr);
-+
-+void dpaa2_eth_xdp_enqueue(struct dpaa2_eth_priv *priv,
-+			   struct dpaa2_eth_channel *ch,
-+			   struct dpaa2_fd *fd,
-+			   void *buf_start, u16 queue_id);
-+
-+int dpaa2_xsk_wakeup(struct net_device *dev, u32 qid, u32 flags);
-+int dpaa2_xsk_setup_pool(struct net_device *dev, struct xsk_buff_pool *pool, u16 qid);
-+
- #endif	/* __DPAA2_H */
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-xsk.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-xsk.c
-new file mode 100644
-index 000000000000..2df7bffec5a7
---- /dev/null
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-xsk.c
-@@ -0,0 +1,327 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-+/* Copyright 2022 NXP
-+ */
-+#include <linux/filter.h>
-+#include <linux/compiler.h>
-+#include <linux/bpf_trace.h>
-+#include <net/xdp.h>
-+#include <net/xdp_sock_drv.h>
-+
-+#include "dpaa2-eth.h"
-+
-+static void dpaa2_eth_setup_consume_func(struct dpaa2_eth_priv *priv,
-+					 struct dpaa2_eth_channel *ch,
-+					 enum dpaa2_eth_fq_type type,
-+					 dpaa2_eth_consume_cb_t *consume)
-+{
-+	struct dpaa2_eth_fq *fq;
-+	int i;
-+
-+	for (i = 0; i < priv->num_fqs; i++) {
-+		fq = &priv->fq[i];
-+
-+		if (fq->type != type)
-+			continue;
-+		if (fq->channel != ch)
-+			continue;
-+
-+		fq->consume = consume;
-+	}
-+}
-+
-+static u32 dpaa2_xsk_run_xdp(struct dpaa2_eth_priv *priv,
-+			     struct dpaa2_eth_channel *ch,
-+			     struct dpaa2_eth_fq *rx_fq,
-+			     struct dpaa2_fd *fd, void *vaddr)
-+{
-+	dma_addr_t addr = dpaa2_fd_get_addr(fd);
-+	struct bpf_prog *xdp_prog;
-+	struct xdp_buff *xdp_buff;
-+	struct dpaa2_eth_swa *swa;
-+	u32 xdp_act = XDP_PASS;
-+	int err;
-+
-+	xdp_prog = READ_ONCE(ch->xdp.prog);
-+	if (!xdp_prog)
-+		goto out;
-+
-+	swa = (struct dpaa2_eth_swa *)(vaddr + DPAA2_ETH_RX_HWA_SIZE +
-+				       ch->xsk_pool->umem->headroom);
-+	xdp_buff = swa->xsk.xdp_buff;
-+
-+	xdp_buff->data_hard_start = vaddr;
-+	xdp_buff->data = vaddr + dpaa2_fd_get_offset(fd);
-+	xdp_buff->data_end = xdp_buff->data + dpaa2_fd_get_len(fd);
-+	xdp_set_data_meta_invalid(xdp_buff);
-+	xdp_buff->rxq = &ch->xdp_rxq;
-+
-+	xsk_buff_dma_sync_for_cpu(xdp_buff, ch->xsk_pool);
-+	xdp_act = bpf_prog_run_xdp(xdp_prog, xdp_buff);
-+
-+	/* xdp.data pointer may have changed */
-+	dpaa2_fd_set_offset(fd, xdp_buff->data - vaddr);
-+	dpaa2_fd_set_len(fd, xdp_buff->data_end - xdp_buff->data);
-+
-+	if (likely(xdp_act == XDP_REDIRECT)) {
-+		err = xdp_do_redirect(priv->net_dev, xdp_buff, xdp_prog);
-+		if (unlikely(err)) {
-+			ch->stats.xdp_drop++;
-+			dpaa2_eth_recycle_buf(priv, ch, addr);
-+		} else {
-+			ch->buf_count--;
-+			ch->stats.xdp_redirect++;
-+		}
-+
-+		goto xdp_redir;
-+	}
-+
-+	switch (xdp_act) {
-+	case XDP_PASS:
-+		break;
-+	case XDP_TX:
-+		dpaa2_eth_xdp_enqueue(priv, ch, fd, vaddr, rx_fq->flowid);
-+		break;
-+	default:
-+		bpf_warn_invalid_xdp_action(priv->net_dev, xdp_prog, xdp_act);
-+		fallthrough;
-+	case XDP_ABORTED:
-+		trace_xdp_exception(priv->net_dev, xdp_prog, xdp_act);
-+		fallthrough;
-+	case XDP_DROP:
-+		dpaa2_eth_recycle_buf(priv, ch, addr);
-+		ch->stats.xdp_drop++;
-+		break;
-+	}
-+
-+xdp_redir:
-+	ch->xdp.res |= xdp_act;
-+out:
-+	return xdp_act;
-+}
-+
-+/* Rx frame processing routine for the AF_XDP fast path */
-+static void dpaa2_xsk_rx(struct dpaa2_eth_priv *priv,
-+			 struct dpaa2_eth_channel *ch,
-+			 const struct dpaa2_fd *fd,
-+			 struct dpaa2_eth_fq *fq)
-+{
-+	dma_addr_t addr = dpaa2_fd_get_addr(fd);
-+	u8 fd_format = dpaa2_fd_get_format(fd);
-+	struct rtnl_link_stats64 *percpu_stats;
-+	u32 fd_length = dpaa2_fd_get_len(fd);
-+	struct sk_buff *skb;
-+	void *vaddr;
-+	u32 xdp_act;
-+
-+	vaddr = dpaa2_iova_to_virt(priv->iommu_domain, addr);
-+	percpu_stats = this_cpu_ptr(priv->percpu_stats);
-+
-+	if (fd_format != dpaa2_fd_single) {
-+		WARN_ON(priv->xdp_prog);
-+		/* AF_XDP doesn't support any other formats */
-+		goto err_frame_format;
-+	}
-+
-+	xdp_act = dpaa2_xsk_run_xdp(priv, ch, fq, (struct dpaa2_fd *)fd, vaddr);
-+	if (xdp_act != XDP_PASS) {
-+		percpu_stats->rx_packets++;
-+		percpu_stats->rx_bytes += dpaa2_fd_get_len(fd);
++	if (swa->type == DPAA2_ETH_SWA_XSK) {
++		ch->xsk_tx_pkts_sent++;
++		dpaa2_eth_sgt_recycle(priv, buffer_start);
 +		return;
 +	}
 +
-+	/* Build skb */
-+	skb = dpaa2_eth_alloc_skb(priv, ch, fd, fd_length, vaddr);
-+	if (!skb)
-+		/* Nothing else we can do, recycle the buffer and
-+		 * drop the frame.
-+		 */
-+		goto err_alloc_skb;
-+
-+	/* Send the skb to the Linux networking stack */
-+	dpaa2_eth_receive_skb(priv, ch, fd, vaddr, fq, percpu_stats, skb);
-+
-+	return;
-+
-+err_alloc_skb:
-+	dpaa2_eth_recycle_buf(priv, ch, addr);
-+err_frame_format:
-+	percpu_stats->rx_dropped++;
-+}
-+
-+static void dpaa2_xsk_set_bp_per_qdbin(struct dpaa2_eth_priv *priv,
-+				       struct dpni_pools_cfg *pools_params)
-+{
-+	int curr_bp = 0, i, j;
-+
-+	pools_params->pool_options = DPNI_POOL_ASSOC_QDBIN;
-+	for (i = 0; i < priv->num_bps; i++) {
-+		for (j = 0; j < priv->num_channels; j++)
-+			if (priv->bp[i] == priv->channel[j]->bp)
-+				pools_params->pools[curr_bp].priority_mask |= (1 << j);
-+		if (!pools_params->pools[curr_bp].priority_mask)
-+			continue;
-+
-+		pools_params->pools[curr_bp].dpbp_id = priv->bp[i]->bpid;
-+		pools_params->pools[curr_bp].buffer_size = priv->rx_buf_size;
-+		pools_params->pools[curr_bp++].backup_pool = 0;
+ 	if (swa->type != DPAA2_ETH_SWA_XDP && in_napi) {
+ 		fq->dq_frames++;
+ 		fq->dq_bytes += fd_len;
+@@ -1375,7 +1386,7 @@ static int dpaa2_eth_build_gso_fd(struct dpaa2_eth_priv *priv,
+ err_sgt_get:
+ 	/* Free all the other FDs that were already fully created */
+ 	for (i = 0; i < index; i++)
+-		dpaa2_eth_free_tx_fd(priv, NULL, &fd_start[i], false);
++		dpaa2_eth_free_tx_fd(priv, NULL, NULL, &fd_start[i], false);
+ 
+ 	return err;
+ }
+@@ -1491,7 +1502,7 @@ static netdev_tx_t __dpaa2_eth_tx(struct sk_buff *skb,
+ 	if (unlikely(err < 0)) {
+ 		percpu_stats->tx_errors++;
+ 		/* Clean up everything, including freeing the skb */
+-		dpaa2_eth_free_tx_fd(priv, fq, fd, false);
++		dpaa2_eth_free_tx_fd(priv, NULL, fq, fd, false);
+ 		netdev_tx_completed_queue(nq, 1, fd_len);
+ 	} else {
+ 		percpu_stats->tx_packets += total_enqueued;
+@@ -1584,7 +1595,7 @@ static void dpaa2_eth_tx_conf(struct dpaa2_eth_priv *priv,
+ 
+ 	/* Check frame errors in the FD field */
+ 	fd_errors = dpaa2_fd_get_ctrl(fd) & DPAA2_FD_TX_ERR_MASK;
+-	dpaa2_eth_free_tx_fd(priv, fq, fd, true);
++	dpaa2_eth_free_tx_fd(priv, ch, fq, fd, true);
+ 
+ 	if (likely(!fd_errors))
+ 		return;
+@@ -1929,6 +1940,7 @@ static int dpaa2_eth_poll(struct napi_struct *napi, int budget)
+ 	struct dpaa2_eth_fq *fq, *txc_fq = NULL;
+ 	struct netdev_queue *nq;
+ 	int store_cleaned, work_done;
++	bool work_done_zc = false;
+ 	struct list_head rx_list;
+ 	int retries = 0;
+ 	u16 flowid;
+@@ -1941,6 +1953,15 @@ static int dpaa2_eth_poll(struct napi_struct *napi, int budget)
+ 	INIT_LIST_HEAD(&rx_list);
+ 	ch->rx_list = &rx_list;
+ 
++	if (ch->xsk_zc) {
++		work_done_zc = dpaa2_xsk_tx(priv, ch);
++		/* If we reached the XSK Tx per NAPI threshold, we're done */
++		if (work_done_zc) {
++			work_done = budget;
++			goto out;
++		}
 +	}
-+	pools_params->num_dpbp = curr_bp;
-+}
 +
-+static int dpaa2_xsk_disable_pool(struct net_device *dev, u16 qid)
-+{
-+	struct xsk_buff_pool *pool = xsk_get_pool_from_qid(dev, qid);
-+	struct dpaa2_eth_priv *priv = netdev_priv(dev);
-+	struct dpni_pools_cfg pools_params = { 0 };
-+	struct dpaa2_eth_channel *ch;
-+	int err;
-+	bool up;
-+
-+	ch = priv->channel[qid];
-+	if (!ch->xsk_pool)
-+		return -EINVAL;
-+
-+	up = netif_running(dev);
-+	if (up)
-+		dev_close(dev);
-+
-+	xsk_pool_dma_unmap(pool, 0);
-+	err = xdp_rxq_info_reg_mem_model(&ch->xdp_rxq,
-+					 MEM_TYPE_PAGE_ORDER0, NULL);
-+	if (err)
-+		netdev_err(dev, "xsk_rxq_info_reg_mem_model() failed (err = %d)\n",
-+			   err);
-+
-+	dpaa2_eth_free_dpbp(priv, ch->bp);
-+
-+	ch->xsk_zc = false;
-+	ch->xsk_pool = NULL;
-+	ch->bp = priv->bp[DPAA2_ETH_DEFAULT_BP_IDX];
-+
-+	dpaa2_eth_setup_consume_func(priv, ch, DPAA2_RX_FQ, dpaa2_eth_rx);
-+
-+	dpaa2_xsk_set_bp_per_qdbin(priv, &pools_params);
-+	err = dpni_set_pools(priv->mc_io, 0, priv->mc_token, &pools_params);
-+	if (err)
-+		netdev_err(dev, "dpni_set_pools() failed\n");
-+
-+	if (up) {
-+		err = dev_open(dev, NULL);
-+		if (err)
-+			return err;
+ 	do {
+ 		err = dpaa2_eth_pull_channel(ch);
+ 		if (unlikely(err))
+@@ -1993,6 +2014,11 @@ static int dpaa2_eth_poll(struct napi_struct *napi, int budget)
+ out:
+ 	netif_receive_skb_list(ch->rx_list);
+ 
++	if (ch->xsk_tx_pkts_sent) {
++		xsk_tx_completed(ch->xsk_pool, ch->xsk_tx_pkts_sent);
++		ch->xsk_tx_pkts_sent = 0;
 +	}
++
+ 	if (txc_fq && txc_fq->dq_frames) {
+ 		nq = netdev_get_tx_queue(priv->net_dev, txc_fq->flowid);
+ 		netdev_tx_completed_queue(nq, txc_fq->dq_frames,
+@@ -2989,7 +3015,11 @@ static void dpaa2_eth_cdan_cb(struct dpaa2_io_notification_ctx *ctx)
+ 	/* Update NAPI statistics */
+ 	ch->stats.cdan++;
+ 
+-	napi_schedule(&ch->napi);
++	/* NAPI can also be scheduled from the AF_XDP Tx path. Mark a missed
++	 * so that it can be rescheduled again.
++	 */
++	if (!napi_if_scheduled_mark_missed(&ch->napi))
++		napi_schedule(&ch->napi);
+ }
+ 
+ /* Allocate and configure a DPCON object */
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+index 38f67b98865f..5d0fc432e5b2 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+@@ -53,6 +53,12 @@
+  */
+ #define DPAA2_ETH_TXCONF_PER_NAPI	256
+ 
++/* Maximum number of Tx frames to be processed in a single NAPI
++ * call when AF_XDP is running. Bind it to DPAA2_ETH_TXCONF_PER_NAPI
++ * to maximize the throughput.
++ */
++#define DPAA2_ETH_TX_ZC_PER_NAPI	DPAA2_ETH_TXCONF_PER_NAPI
++
+ /* Buffer qouta per channel. We want to keep in check number of ingress frames
+  * in flight: for small sized frames, congestion group taildrop may kick in
+  * first; for large sizes, Rx FQ taildrop threshold will ensure only a
+@@ -154,6 +160,7 @@ struct dpaa2_eth_swa {
+ 		} xdp;
+ 		struct {
+ 			struct xdp_buff *xdp_buff;
++			int sgt_size;
+ 		} xsk;
+ 		struct {
+ 			struct sk_buff *skb;
+@@ -495,6 +502,7 @@ struct dpaa2_eth_channel {
+ 	int recycled_bufs_cnt;
+ 
+ 	bool xsk_zc;
++	int xsk_tx_pkts_sent;
+ 	struct xsk_buff_pool *xsk_pool;
+ 	struct dpaa2_eth_bp *bp;
+ };
+@@ -531,7 +539,7 @@ struct dpaa2_eth_trap_data {
+ 
+ #define DPAA2_ETH_DEFAULT_COPYBREAK	512
+ 
+-#define DPAA2_ETH_ENQUEUE_MAX_FDS	200
++#define DPAA2_ETH_ENQUEUE_MAX_FDS	256
+ struct dpaa2_eth_fds {
+ 	struct dpaa2_fd array[DPAA2_ETH_ENQUEUE_MAX_FDS];
+ };
+@@ -836,4 +844,16 @@ void dpaa2_eth_xdp_enqueue(struct dpaa2_eth_priv *priv,
+ int dpaa2_xsk_wakeup(struct net_device *dev, u32 qid, u32 flags);
+ int dpaa2_xsk_setup_pool(struct net_device *dev, struct xsk_buff_pool *pool, u16 qid);
+ 
++void dpaa2_eth_free_tx_fd(struct dpaa2_eth_priv *priv,
++			  struct dpaa2_eth_channel *ch,
++			  struct dpaa2_eth_fq *fq,
++			  const struct dpaa2_fd *fd, bool in_napi);
++bool dpaa2_xsk_tx(struct dpaa2_eth_priv *priv,
++		  struct dpaa2_eth_channel *ch);
++
++/* SGT (Scatter-Gather Table) cache management */
++void *dpaa2_eth_sgt_get(struct dpaa2_eth_priv *priv);
++
++void dpaa2_eth_sgt_recycle(struct dpaa2_eth_priv *priv, void *sgt_buf);
++
+ #endif	/* __DPAA2_H */
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-xsk.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-xsk.c
+index 2df7bffec5a7..731318842054 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-xsk.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-xsk.c
+@@ -196,6 +196,7 @@ static int dpaa2_xsk_disable_pool(struct net_device *dev, u16 qid)
+ 
+ 	ch->xsk_zc = false;
+ 	ch->xsk_pool = NULL;
++	ch->xsk_tx_pkts_sent = 0;
+ 	ch->bp = priv->bp[DPAA2_ETH_DEFAULT_BP_IDX];
+ 
+ 	dpaa2_eth_setup_consume_func(priv, ch, DPAA2_RX_FQ, dpaa2_eth_rx);
+@@ -325,3 +326,125 @@ int dpaa2_xsk_wakeup(struct net_device *dev, u32 qid, u32 flags)
+ 
+ 	return 0;
+ }
++
++static int dpaa2_xsk_tx_build_fd(struct dpaa2_eth_priv *priv,
++				 struct dpaa2_eth_channel *ch,
++				 struct dpaa2_fd *fd,
++				 struct xdp_desc *xdp_desc)
++{
++	struct device *dev = priv->net_dev->dev.parent;
++	struct dpaa2_sg_entry *sgt;
++	struct dpaa2_eth_swa *swa;
++	void *sgt_buf = NULL;
++	dma_addr_t sgt_addr;
++	int sgt_buf_size;
++	dma_addr_t addr;
++	int err = 0;
++
++	/* Prepare the HW SGT structure */
++	sgt_buf_size = priv->tx_data_offset + sizeof(struct dpaa2_sg_entry);
++	sgt_buf = dpaa2_eth_sgt_get(priv);
++	if (unlikely(!sgt_buf))
++		return -ENOMEM;
++	sgt = (struct dpaa2_sg_entry *)(sgt_buf + priv->tx_data_offset);
++
++	/* Get the address of the XSK Tx buffer */
++	addr = xsk_buff_raw_get_dma(ch->xsk_pool, xdp_desc->addr);
++	xsk_buff_raw_dma_sync_for_device(ch->xsk_pool, addr, xdp_desc->len);
++
++	/* Fill in the HW SGT structure */
++	dpaa2_sg_set_addr(sgt, addr);
++	dpaa2_sg_set_len(sgt, xdp_desc->len);
++	dpaa2_sg_set_final(sgt, true);
++
++	/* Store the necessary info in the SGT buffer */
++	swa = (struct dpaa2_eth_swa *)sgt_buf;
++	swa->type = DPAA2_ETH_SWA_XSK;
++	swa->xsk.sgt_size = sgt_buf_size;
++
++	/* Separately map the SGT buffer */
++	sgt_addr = dma_map_single(dev, sgt_buf, sgt_buf_size, DMA_BIDIRECTIONAL);
++	if (unlikely(dma_mapping_error(dev, sgt_addr))) {
++		err = -ENOMEM;
++		goto sgt_map_failed;
++	}
++
++	/* Initialize FD fields */
++	memset(fd, 0, sizeof(struct dpaa2_fd));
++	dpaa2_fd_set_offset(fd, priv->tx_data_offset);
++	dpaa2_fd_set_format(fd, dpaa2_fd_sg);
++	dpaa2_fd_set_addr(fd, sgt_addr);
++	dpaa2_fd_set_len(fd, xdp_desc->len);
++	dpaa2_fd_set_ctrl(fd, FD_CTRL_PTA);
 +
 +	return 0;
-+}
 +
-+static int dpaa2_xsk_enable_pool(struct net_device *dev,
-+				 struct xsk_buff_pool *pool,
-+				 u16 qid)
-+{
-+	struct dpaa2_eth_priv *priv = netdev_priv(dev);
-+	struct dpni_pools_cfg pools_params = { 0 };
-+	struct dpaa2_eth_channel *ch;
-+	int err, err2;
-+	bool up;
-+
-+	if (priv->dpni_attrs.wriop_version < DPAA2_WRIOP_VERSION(3, 0, 0)) {
-+		netdev_err(dev, "AF_XDP zero-copy not supported on devices <= WRIOP(3, 0, 0)\n");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (priv->dpni_attrs.num_queues > 8) {
-+		netdev_err(dev, "AF_XDP zero-copy not supported on DPNI with more then 8 queues\n");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	up = netif_running(dev);
-+	if (up)
-+		dev_close(dev);
-+
-+	err = xsk_pool_dma_map(pool, priv->net_dev->dev.parent, 0);
-+	if (err) {
-+		netdev_err(dev, "xsk_pool_dma_map() failed (err = %d)\n",
-+			   err);
-+		goto err_dma_unmap;
-+	}
-+
-+	ch = priv->channel[qid];
-+	err = xdp_rxq_info_reg_mem_model(&ch->xdp_rxq, MEM_TYPE_XSK_BUFF_POOL, NULL);
-+	if (err) {
-+		netdev_err(dev, "xdp_rxq_info_reg_mem_model() failed (err = %d)\n", err);
-+		goto err_mem_model;
-+	}
-+	xsk_pool_set_rxq_info(pool, &ch->xdp_rxq);
-+
-+	priv->bp[priv->num_bps] = dpaa2_eth_allocate_dpbp(priv);
-+	if (IS_ERR(priv->bp[priv->num_bps])) {
-+		err = PTR_ERR(priv->bp[priv->num_bps]);
-+		goto err_bp_alloc;
-+	}
-+	ch->xsk_zc = true;
-+	ch->xsk_pool = pool;
-+	ch->bp = priv->bp[priv->num_bps++];
-+
-+	dpaa2_eth_setup_consume_func(priv, ch, DPAA2_RX_FQ, dpaa2_xsk_rx);
-+
-+	dpaa2_xsk_set_bp_per_qdbin(priv, &pools_params);
-+	err = dpni_set_pools(priv->mc_io, 0, priv->mc_token, &pools_params);
-+	if (err) {
-+		netdev_err(dev, "dpni_set_pools() failed\n");
-+		goto err_set_pools;
-+	}
-+
-+	if (up) {
-+		err = dev_open(dev, NULL);
-+		if (err)
-+			return err;
-+	}
-+
-+	return 0;
-+
-+err_set_pools:
-+	err2 = dpaa2_xsk_disable_pool(dev, qid);
-+	if (err2)
-+		netdev_err(dev, "dpaa2_xsk_disable_pool() failed %d\n", err2);
-+err_bp_alloc:
-+	err2 = xdp_rxq_info_reg_mem_model(&priv->channel[qid]->xdp_rxq,
-+					  MEM_TYPE_PAGE_ORDER0, NULL);
-+	if (err2)
-+		netdev_err(dev, "xsk_rxq_info_reg_mem_model() failed with %d)\n", err2);
-+err_mem_model:
-+	xsk_pool_dma_unmap(pool, 0);
-+err_dma_unmap:
-+	if (up)
-+		dev_open(dev, NULL);
++sgt_map_failed:
++	dpaa2_eth_sgt_recycle(priv, sgt_buf);
 +
 +	return err;
 +}
 +
-+int dpaa2_xsk_setup_pool(struct net_device *dev, struct xsk_buff_pool *pool, u16 qid)
++bool dpaa2_xsk_tx(struct dpaa2_eth_priv *priv,
++		  struct dpaa2_eth_channel *ch)
 +{
-+	return pool ? dpaa2_xsk_enable_pool(dev, pool, qid) :
-+		      dpaa2_xsk_disable_pool(dev, qid);
-+}
++	struct xdp_desc *xdp_descs = ch->xsk_pool->tx_descs;
++	struct dpaa2_eth_drv_stats *percpu_extras;
++	struct rtnl_link_stats64 *percpu_stats;
++	int budget = DPAA2_ETH_TX_ZC_PER_NAPI;
++	int total_enqueued, enqueued;
++	int retries, max_retries;
++	struct dpaa2_eth_fq *fq;
++	struct dpaa2_fd *fds;
++	int batch, i, err;
 +
-+int dpaa2_xsk_wakeup(struct net_device *dev, u32 qid, u32 flags)
-+{
-+	struct dpaa2_eth_priv *priv = netdev_priv(dev);
-+	struct dpaa2_eth_channel *ch = priv->channel[qid];
++	percpu_stats = this_cpu_ptr(priv->percpu_stats);
++	percpu_extras = this_cpu_ptr(priv->percpu_extras);
++	fds = (this_cpu_ptr(priv->fd))->array;
 +
-+	if (!priv->link_state.up)
-+		return -ENETDOWN;
++	/* Use the FQ with the same idx as the affine CPU */
++	fq = &priv->fq[ch->nctx.desired_cpu];
 +
-+	if (!priv->xdp_prog)
-+		return -EINVAL;
++	batch = xsk_tx_peek_release_desc_batch(ch->xsk_pool, budget);
++	if (!batch)
++		return false;
 +
-+	if (!ch->xsk_zc)
-+		return -EINVAL;
++	/* Create a FD for each XSK frame to be sent */
++	for (i = 0; i < batch; i++) {
++		err = dpaa2_xsk_tx_build_fd(priv, ch, &fds[i], &xdp_descs[i]);
++		if (err) {
++			batch = i;
++			break;
++		}
++	}
 +
-+	/* We do not have access to a per channel SW interrupt, so instead we
-+	 * schedule a NAPI instance.
-+	 */
-+	if (!napi_if_scheduled_mark_missed(&ch->napi))
-+		napi_schedule(&ch->napi);
++	/* Enqueue all the created FDs */
++	max_retries = batch * DPAA2_ETH_ENQUEUE_RETRIES;
++	total_enqueued = 0;
++	enqueued = 0;
++	retries = 0;
++	while (total_enqueued < batch && retries < max_retries) {
++		err = priv->enqueue(priv, fq, &fds[total_enqueued], 0,
++				    batch - total_enqueued, &enqueued);
++		if (err == -EBUSY) {
++			retries++;
++			continue;
++		}
 +
-+	return 0;
++		total_enqueued += enqueued;
++	}
++	percpu_extras->tx_portal_busy += retries;
++
++	/* Update statistics */
++	percpu_stats->tx_packets += total_enqueued;
++	for (i = 0; i < total_enqueued; i++)
++		percpu_stats->tx_bytes += dpaa2_fd_get_len(&fds[i]);
++	for (i = total_enqueued; i < batch; i++) {
++		dpaa2_eth_free_tx_fd(priv, ch, fq, &fds[i], false);
++		percpu_stats->tx_errors++;
++	}
++
++	xsk_tx_release(ch->xsk_pool);
++
++	return total_enqueued == budget ? true : false;
 +}
 -- 
 2.25.1
