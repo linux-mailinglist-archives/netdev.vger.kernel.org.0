@@ -2,235 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A51AB5E7729
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 11:30:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E924F5E775C
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 11:40:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231919AbiIWJam (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 05:30:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40842 "EHLO
+        id S231855AbiIWJks (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 05:40:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231784AbiIWJaG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 05:30:06 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 875D21296AC
-        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 02:29:23 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MYmvr1F96z1P6s7;
-        Fri, 23 Sep 2022 17:25:12 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by canpemm500010.china.huawei.com
- (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Fri, 23 Sep
- 2022 17:29:21 +0800
-From:   Liu Jian <liujian56@huawei.com>
-To:     <steffen.klassert@secunet.com>, <herbert@gondor.apana.org.au>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>
-CC:     <liujian56@huawei.com>
-Subject: [PATCH net] xfrm: Reinject transport-mode packets through workqueue
-Date:   Fri, 23 Sep 2022 17:30:53 +0800
-Message-ID: <20220923093053.63882-1-liujian56@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S231947AbiIWJio (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 05:38:44 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E830F184D;
+        Fri, 23 Sep 2022 02:37:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1663925839; x=1695461839;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=bIO/NRfK+8hLta04E3Rq6Senn8z/tJVFm8Ma4wyZzQY=;
+  b=tsmw8v5HRY3iNId4e0SF2r61o04NLEB1k9UakgD/GEelKb/DSYFKoGHH
+   lCP9IPc6455zXYTXRLuA+wGnhfURNu7H76YBJIHor4zaBhWvYHEx6FcqL
+   fAuERzL4u0vW8qI6oQSug0cTGKmPlsIghnRX5t8HJiervSz4vWh18blgq
+   UG9lk/WpePKBTIMLyJ2nm706P2+Qcj6Zl64FEYR6BHVQMUlWikpe6wkHm
+   +Hm71wb6FeXbTB4QDe5rZeO2DoBXqe0XIMlTLUJK1mAJzAQz0aDa6OoOm
+   iFi2g7KESYWpeD4GmKCEiVCmraAj2feVD0L7mNOpsnEPCQH/bPxIgEPV2
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.93,337,1654585200"; 
+   d="scan'208";a="181665623"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Sep 2022 02:37:17 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Fri, 23 Sep 2022 02:37:16 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Fri, 23 Sep 2022 02:37:12 -0700
+From:   Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
+To:     <netdev@vger.kernel.org>, <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
+        <bryan.whitehead@microchip.com>, <richardcochran@gmail.com>,
+        <edumazet@google.com>, <pabeni@redhat.com>,
+        <UNGLinuxDriver@microchip.com>, <Ian.Saturley@microchip.com>
+Subject: [PATCH] net: lan743x: Fixes: 60942c397af6 ("Add support for PTP-IO Event Input External  Timestamp (extts)"
+Date:   Fri, 23 Sep 2022 15:07:09 +0530
+Message-ID: <20220923093709.10355-1-Raju.Lakkaraju@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following warning is displayed when the tcp6-multi-diffip11 stress
-test case of the LTP test suite is tested:
-
-watchdog: BUG: soft lockup - CPU#0 stuck for 22s! [ns-tcpserver:48198]
-CPU: 0 PID: 48198 Comm: ns-tcpserver Kdump: loaded Not tainted 6.0.0-rc6+ #39
-Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0 02/06/2015
-pstate: 80400005 (Nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-pc : des3_ede_encrypt+0x27c/0x460 [libdes]
-lr : 0x3f
-sp : ffff80000ceaa1b0
-x29: ffff80000ceaa1b0 x28: ffff0000df056100 x27: ffff0000e51e5280
-x26: ffff80004df75030 x25: ffff0000e51e4600 x24: 000000000000003b
-x23: 0000000000802080 x22: 000000000000003d x21: 0000000000000038
-x20: 0000000080000020 x19: 000000000000000a x18: 0000000000000033
-x17: ffff0000e51e4780 x16: ffff80004e2d1448 x15: ffff80004e2d1248
-x14: ffff0000e51e4680 x13: ffff80004e2d1348 x12: ffff80004e2d1548
-x11: ffff80004e2d1848 x10: ffff80004e2d1648 x9 : ffff80004e2d1748
-x8 : ffff80004e2d1948 x7 : 000000000bcaf83d x6 : 000000000000001b
-x5 : ffff80004e2d1048 x4 : 00000000761bf3bf x3 : 000000007f1dd0a3
-x2 : ffff0000e51e4780 x1 : ffff0000e3b9a2f8 x0 : 00000000db44e872
-Call trace:
- des3_ede_encrypt+0x27c/0x460 [libdes]
- crypto_des3_ede_encrypt+0x1c/0x30 [des_generic]
- crypto_cbc_encrypt+0x148/0x190
- crypto_skcipher_encrypt+0x2c/0x40
- crypto_authenc_encrypt+0xc8/0xfc [authenc]
- crypto_aead_encrypt+0x2c/0x40
- echainiv_encrypt+0x144/0x1a0 [echainiv]
- crypto_aead_encrypt+0x2c/0x40
- esp6_output_tail+0x1c8/0x5d0 [esp6]
- esp6_output+0x120/0x278 [esp6]
- xfrm_output_one+0x458/0x4ec
- xfrm_output_resume+0x6c/0x1f0
- xfrm_output+0xac/0x4ac
- __xfrm6_output+0x130/0x270
- xfrm6_output+0x60/0xec
- ip6_xmit+0x2ec/0x5bc
- inet6_csk_xmit+0xbc/0x10c
- __tcp_transmit_skb+0x460/0x8c0
- tcp_write_xmit+0x348/0x890
- __tcp_push_pending_frames+0x44/0x110
- tcp_rcv_established+0x3c8/0x720
- tcp_v6_do_rcv+0xdc/0x4a0
- tcp_v6_rcv+0xc24/0xcb0
- ip6_protocol_deliver_rcu+0xf0/0x574
- ip6_input_finish+0x48/0x7c
- ip6_input+0x48/0xc0
- ip6_rcv_finish+0x80/0x9c
- xfrm_trans_reinject+0xb0/0xf4
- tasklet_action_common.constprop.0+0xf8/0x134
- tasklet_action+0x30/0x3c
- __do_softirq+0x128/0x368
- do_softirq+0xb4/0xc0
- __local_bh_enable_ip+0xb0/0xb4
- put_cpu_fpsimd_context+0x40/0x70
- kernel_neon_end+0x20/0x40
- sha1_base_do_update.constprop.0.isra.0+0x11c/0x140 [sha1_ce]
- sha1_ce_finup+0x94/0x110 [sha1_ce]
- crypto_shash_finup+0x34/0xc0
- hmac_finup+0x48/0xe0
- crypto_shash_finup+0x34/0xc0
- shash_digest_unaligned+0x74/0x90
- crypto_shash_digest+0x4c/0x9c
- shash_ahash_digest+0xc8/0xf0
- shash_async_digest+0x28/0x34
- crypto_ahash_digest+0x48/0xcc
- crypto_authenc_genicv+0x88/0xcc [authenc]
- crypto_authenc_encrypt+0xd8/0xfc [authenc]
- crypto_aead_encrypt+0x2c/0x40
- echainiv_encrypt+0x144/0x1a0 [echainiv]
- crypto_aead_encrypt+0x2c/0x40
- esp6_output_tail+0x1c8/0x5d0 [esp6]
- esp6_output+0x120/0x278 [esp6]
- xfrm_output_one+0x458/0x4ec
- xfrm_output_resume+0x6c/0x1f0
- xfrm_output+0xac/0x4ac
- __xfrm6_output+0x130/0x270
- xfrm6_output+0x60/0xec
- ip6_xmit+0x2ec/0x5bc
- inet6_csk_xmit+0xbc/0x10c
- __tcp_transmit_skb+0x460/0x8c0
- tcp_write_xmit+0x348/0x890
- __tcp_push_pending_frames+0x44/0x110
- tcp_push+0xb4/0x14c
- tcp_sendmsg_locked+0x71c/0xb64
- tcp_sendmsg+0x40/0x6c
- inet6_sendmsg+0x4c/0x80
- sock_sendmsg+0x5c/0x6c
- __sys_sendto+0x128/0x15c
- __arm64_sys_sendto+0x30/0x40
- invoke_syscall+0x50/0x120
- el0_svc_common.constprop.0+0x170/0x194
- do_el0_svc+0x38/0x4c
- el0_svc+0x28/0xe0
- el0t_64_sync_handler+0xbc/0x13c
- el0t_64_sync+0x180/0x184
-
-Get softirq info by bcc tool:
-./softirqs -NT 10
-Tracing soft irq event time... Hit Ctrl-C to end.
-
-15:34:34
-SOFTIRQ          TOTAL_nsecs
-block                 158990
-timer               20030920
-sched               46577080
-net_rx             676746820
-tasklet           9906067650
-
-15:34:45
-SOFTIRQ          TOTAL_nsecs
-block                  86100
-sched               38849790
-net_rx             676532470
-timer             1163848790
-tasklet           9409019620
-
-15:34:55
-SOFTIRQ          TOTAL_nsecs
-sched               58078450
-net_rx             475156720
-timer              533832410
-tasklet           9431333300
-
-The tasklet software interrupt takes too much time. Therefore, the
-xfrm_trans_reinject executor is changed from tasklet to workqueue. This
-reduces the processing flow of the tcp_sendmsg function in this scenario.
-
-Fixes: acf568ee859f0 ("xfrm: Reinject transport-mode packets through tasklet")
-Signed-off-by: Liu Jian <liujian56@huawei.com>
+Remove PTP_PF_EXTTS support for non-PCI11x1x devices since they do not
+support the PTP-IO Input event triggered timestamping mechanisms
+added
 ---
- net/xfrm/xfrm_input.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/microchip/lan743x_ptp.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
-index b2f4ec9c537f..b4d40a8890ae 100644
---- a/net/xfrm/xfrm_input.c
-+++ b/net/xfrm/xfrm_input.c
-@@ -24,7 +24,7 @@
- #include "xfrm_inout.h"
- 
- struct xfrm_trans_tasklet {
--	struct tasklet_struct tasklet;
-+	struct work_struct work;
- 	struct sk_buff_head queue;
- };
- 
-@@ -760,18 +760,20 @@ int xfrm_input_resume(struct sk_buff *skb, int nexthdr)
- }
- EXPORT_SYMBOL(xfrm_input_resume);
- 
--static void xfrm_trans_reinject(struct tasklet_struct *t)
-+static void xfrm_trans_reinject(struct work_struct *work)
+diff --git a/drivers/net/ethernet/microchip/lan743x_ptp.c b/drivers/net/ethernet/microchip/lan743x_ptp.c
+index 6a11e2ceb013..da3ea905adbb 100644
+--- a/drivers/net/ethernet/microchip/lan743x_ptp.c
++++ b/drivers/net/ethernet/microchip/lan743x_ptp.c
+@@ -1049,6 +1049,10 @@ static int lan743x_ptpci_verify_pin_config(struct ptp_clock_info *ptp,
+ 					   enum ptp_pin_function func,
+ 					   unsigned int chan)
  {
--	struct xfrm_trans_tasklet *trans = from_tasklet(trans, t, tasklet);
-+	struct xfrm_trans_tasklet *trans = container_of(work, struct xfrm_trans_tasklet, work);
- 	struct sk_buff_head queue;
- 	struct sk_buff *skb;
++	struct lan743x_ptp *lan_ptp =
++		container_of(ptp, struct lan743x_ptp, ptp_clock_info);
++	struct lan743x_adapter *adapter =
++		container_of(lan_ptp, struct lan743x_adapter, ptp);
+ 	int result = 0;
  
- 	__skb_queue_head_init(&queue);
- 	skb_queue_splice_init(&trans->queue, &queue);
- 
-+	local_bh_disable();
- 	while ((skb = __skb_dequeue(&queue)))
- 		XFRM_TRANS_SKB_CB(skb)->finish(XFRM_TRANS_SKB_CB(skb)->net,
- 					       NULL, skb);
-+	local_bh_enable();
- }
- 
- int xfrm_trans_queue_net(struct net *net, struct sk_buff *skb,
-@@ -790,7 +792,7 @@ int xfrm_trans_queue_net(struct net *net, struct sk_buff *skb,
- 	XFRM_TRANS_SKB_CB(skb)->finish = finish;
- 	XFRM_TRANS_SKB_CB(skb)->net = net;
- 	__skb_queue_tail(&trans->queue, skb);
--	tasklet_schedule(&trans->tasklet);
-+	schedule_work(&trans->work);
- 	return 0;
- }
- EXPORT_SYMBOL(xfrm_trans_queue_net);
-@@ -818,6 +820,6 @@ void __init xfrm_input_init(void)
- 
- 		trans = &per_cpu(xfrm_trans_tasklet, i);
- 		__skb_queue_head_init(&trans->queue);
--		tasklet_setup(&trans->tasklet, xfrm_trans_reinject);
-+		INIT_WORK(&trans->work, xfrm_trans_reinject);
- 	}
- }
+ 	/* Confirm the requested function is supported. Parameter
+@@ -1057,7 +1061,10 @@ static int lan743x_ptpci_verify_pin_config(struct ptp_clock_info *ptp,
+ 	switch (func) {
+ 	case PTP_PF_NONE:
+ 	case PTP_PF_PEROUT:
++		break;
+ 	case PTP_PF_EXTTS:
++		if (!adapter->is_pci11x1x)
++			result = -1;
+ 		break;
+ 	case PTP_PF_PHYSYNC:
+ 	default:
 -- 
-2.17.1
+2.25.1
 
