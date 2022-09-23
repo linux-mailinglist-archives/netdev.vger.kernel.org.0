@@ -2,119 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EBD835E76C1
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 11:22:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55EAC5E76D1
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 11:23:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231576AbiIWJWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 05:22:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57744 "EHLO
+        id S231638AbiIWJXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 05:23:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230175AbiIWJWA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 05:22:00 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC51110F71E;
-        Fri, 23 Sep 2022 02:21:59 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id u132so11851242pfc.6;
-        Fri, 23 Sep 2022 02:21:59 -0700 (PDT)
+        with ESMTP id S231655AbiIWJXR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 05:23:17 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A87F8E10AD
+        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 02:23:15 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id 10so923383lfy.5
+        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 02:23:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=a5o3HQq6PSNNKoplcJhBieGyZ7YmfPEPc/HaZ7kVhr4=;
-        b=l71XoG0FVmOwkkF/Xj22eRs2n5QDgNPRp4MbOz4jmVTzbNZZraimNFPMIVPztWI3vG
-         ioNmWO593a2VQs1jNMECzKD3dRoI/Lamyr3TKnR8pe/rUKxjqcm3Qle9RwJAbWbYXkF4
-         nZQzSFWOoYSpQWurMiKZX4VSk7ApIUMnBZepZ2NLi3lI9QBuQvKSljtW2rqMJmABturk
-         i99Ma8Of9y8VZyjlGi7+ABK0pBtdE3N7lbNzdRnZ1K3wM1DUw8VpqHH2n3IbgbNGSEdA
-         HZP8gVV/BWZsU4R+PcSf/bkARKxMhAVCgGR80Srg3m76MDV7J3zIeEfVT5iffRifB97d
-         caig==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=6KRGHi5QO3WPnDzOkycHTFaQ6rn1LlFLCXaq4LIPA2o=;
+        b=nr19Q9adKvfDHJX1/MuKtdcCmb+W2G4kH9i+60wOK18TE2mFjrQb+Zhxkd4iaZDLYw
+         UljVVMKI9OZEOTsuDxxGAT5c/UFL8XR67rS6OWaaw9r4B8Qgmujg/irw+c6WkX8QZbyS
+         uc4dhF5ciBcdB6NnytStFtuQlGW/MCd6onKxK6cu8Ue6qxkAAec6dFtEW27xIKGPCGf+
+         RJUnMQeiGSrQ6DmPFstmf9gOAdikqtf/ykVZrUAvavkQBmcQrXPZk3kubgEHf9sxAbjQ
+         KYQt8AkzYu1LGEoaUIe2emDFYd9Atk9KwGWgew5BnOESRBgIDVIrqORDZrcToYmUVGlb
+         5d/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=a5o3HQq6PSNNKoplcJhBieGyZ7YmfPEPc/HaZ7kVhr4=;
-        b=p++RDEuNQcE+kpTsNISZt2kgpA9TjWcfGR/mkaQCM+3Gs/W0ct4plAiLejHb2fSKei
-         CbVJ8bSbvtkMkN5dZqGDQWFUN9YlyymPYy/sPqDDvX/cbKRirr9KX6KoGcFojsVgGBVO
-         4GcEwJ0DxdSY/oOzukkHb4i0P5vcrwu60RLRI3IlxlEiId1oGP7+AoxW08GkBErkgnHI
-         2JhAoWZHLmGcK3LW0OFdtoq9opga1WoumiFQC2t7fMobZKVkkcMen5mGAjZrXrZW4I1b
-         sHOSr68G9juRpqRISdpHJysjFDQDJL9yRnxom+q0oZyUkZQx3vH1TZkNxWXJQcEg7Rfc
-         NvXw==
-X-Gm-Message-State: ACrzQf3Vf+ZTFpnSoHwrKvTiN1x4WcIENErS5JxP4aS3PHHrvLiYIhzr
-        KoCkqEecFgVOjfk1SB5l18E=
-X-Google-Smtp-Source: AMsMyM5gIYBlKzCErfVrcNr4eZD55tbAVqTAfLwBlBY6b5tcExKhBJD1Lsw2vKSd1DatDY3Cp3fQGA==
-X-Received: by 2002:a63:4f19:0:b0:43b:ddc9:387c with SMTP id d25-20020a634f19000000b0043bddc9387cmr6639971pgb.333.1663924919179;
-        Fri, 23 Sep 2022 02:21:59 -0700 (PDT)
-Received: from Laptop-X1 ([43.228.180.230])
-        by smtp.gmail.com with ESMTPSA id s14-20020a170902ea0e00b0016edd557412sm5595120plg.201.2022.09.23.02.21.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Sep 2022 02:21:58 -0700 (PDT)
-Date:   Fri, 23 Sep 2022 17:21:53 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Matthieu Baerts <matthieu.baerts@tessares.net>
-Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Shuah Khan <shuah@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] selftests/bonding: re-add lladdr target test
-Message-ID: <Yy16saDPo5tnkXdp@Laptop-X1>
-References: <20220923082306.2468081-1-matthieu.baerts@tessares.net>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=6KRGHi5QO3WPnDzOkycHTFaQ6rn1LlFLCXaq4LIPA2o=;
+        b=Yiw0rn4SLjb8cOukn+YmtX++T8VbN9uSpY89UxvmXO8Jm/bRrJdXXlyyu8uonz2jx/
+         zB8n6kvkMgbxHsnOjMOCGun2p8gDQA1fy3EIjZqNdbUPFkgZQXp4tCbaIxyE59gA/RAJ
+         YBGKCjaAB9Xh9yrgUxNYWXHH076P1qLoAFDa/3icJiFpPKOnrDqCo6Q7ytM3KTVGuajh
+         v0/CEg7O8vEuWL+LNNXbIw5EvwTgFsiUvsVZxZsaZKCZpCwVDVeGxHQ9LJO00rkDOK56
+         wHo1gklcK5AjcdfzoCU0yeGptV3jJukbFqy3U1r2zJfK+3OfiQaMiAUDgsc20p4nW2RJ
+         vs4A==
+X-Gm-Message-State: ACrzQf1fPPKZHoOYB7Wu7yJHmRdm8T5fULTYFpWDHJbBJFnZLqXDDMLz
+        1NlchPtX8s3OwSjuo37dRqrk/w==
+X-Google-Smtp-Source: AMsMyM5CQWggSmYXQq0F3Di+/pXRM3IYsH2YikO+/Bi2/zu7pZyr6nxphxgrV9sWndQW0zsNvXqCvQ==
+X-Received: by 2002:a05:6512:1320:b0:488:8fcc:e196 with SMTP id x32-20020a056512132000b004888fcce196mr2715533lfu.602.1663924994025;
+        Fri, 23 Sep 2022 02:23:14 -0700 (PDT)
+Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id 11-20020ac25f4b000000b00499b1873d6dsm1349862lfz.269.2022.09.23.02.23.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 23 Sep 2022 02:23:13 -0700 (PDT)
+Message-ID: <29f9fbd3-a266-e947-5dad-27181d3945e3@linaro.org>
+Date:   Fri, 23 Sep 2022 11:23:12 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220923082306.2468081-1-matthieu.baerts@tessares.net>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [resend PATCH v4 2/2] dt-bindings: net: snps,dwmac: add clk_csr
+ property
+Content-Language: en-US
+To:     Jianguo Zhang <jianguo.zhang@mediatek.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Biao Huang <biao.huang@mediatek.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Christophe Roullier <christophe.roullier@st.com>
+References: <20220922092743.22824-1-jianguo.zhang@mediatek.com>
+ <20220922092743.22824-3-jianguo.zhang@mediatek.com>
+ <04b9e5ef-f3c7-3400-f9df-2f585a084c5d@linaro.org>
+ <8007b455dd18837c06ab099a6009505e7dddc124.camel@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <8007b455dd18837c06ab099a6009505e7dddc124.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 23, 2022 at 10:23:06AM +0200, Matthieu Baerts wrote:
-> It looks like this test has been accidentally dropped when resolving
-> conflicts in this Makefile.
+On 23/09/2022 03:48, Jianguo Zhang wrote:
+> Dear Krzysztof,
 > 
-> Most probably because there were 3 different patches modifying this file
-> in parallel:
+> 	Thanks for your comment.
 > 
->   commit 152e8ec77640 ("selftests/bonding: add a test for bonding lladdr target")
->   commit bbb774d921e2 ("net: Add tests for bonding and team address list management")
->   commit 2ffd57327ff1 ("selftests: bonding: cause oops in bond_rr_gen_slave_id")
-> 
-> The first one was applied in 'net-next' while the two other ones were
-> recently applied in the 'net' tree.
+> On Thu, 2022-09-22 at 17:07 +0200, Krzysztof Kozlowski wrote:
+>> On 22/09/2022 11:27, Jianguo Zhang wrote:
+>>> The clk_csr property is parsed in driver for generating MDC clock
+>>> with correct frequency. A warning('clk_csr' was unexpeted) is
+>>> reported
+>>> when runing 'make_dtbs_check' because the clk_csr property
+>>> has been not documented in the binding file.
+>>>
+>>
+>> You did not describe the case, but apparently this came with
+>> 81311c03ab4d ("net: ethernet: stmmac: add management of clk_csr
+>> property") which never brought the bindings change.
+>>
+>> Therefore the property was never part of bindings documentation and
+>> bringing them via driver is not the correct process. It bypasses the
+>> review and such bypass cannot be an argument to bring the property to
+>> bindings. It's not how new properties can be added.
+>>
+>> Therefore I don't agree. Please make it a property matching bindings,
+>> so
+>> vendor prefix, no underscores in node names.
+>>
+>> Driver and DTS need updates.
+>>
+> We will rename the property 'clk_csr' as 'snps,clk-csr' and update DTS
+> & driver to align with the new name in next versions patches.
 
-Thanks for the fix. Before re-post to net-next, I should wait for some more
-time so lladdr test could be applied to net tree.
+Thanks!
 
-Hangbin
+Best regards,
+Krzysztof
 
-> 
-> But that's alright, easy to fix by re-adding the missing one!
-> 
-> Fixes: 0140a7168f8b ("Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net")
-> Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-> ---
->  tools/testing/selftests/drivers/net/bonding/Makefile | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/tools/testing/selftests/drivers/net/bonding/Makefile b/tools/testing/selftests/drivers/net/bonding/Makefile
-> index d14846fcf3d1..e9dab5f9d773 100644
-> --- a/tools/testing/selftests/drivers/net/bonding/Makefile
-> +++ b/tools/testing/selftests/drivers/net/bonding/Makefile
-> @@ -4,6 +4,7 @@
->  TEST_PROGS := \
->  	bond-arp-interval-causes-panic.sh \
->  	bond-break-lacpdu-tx.sh \
-> +	bond-lladdr-target.sh \
->  	dev_addr_lists.sh
->  
->  TEST_FILES := lag_lib.sh
-> 
-> base-commit: d05d9eb79d0cd0f7a978621b4a56a1f2db444f86
-> -- 
-> 2.37.2
-> 
