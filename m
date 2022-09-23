@@ -2,97 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E924F5E775C
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 11:40:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9112B5E777C
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 11:43:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231855AbiIWJks (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 05:40:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58448 "EHLO
+        id S231931AbiIWJnE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 05:43:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231947AbiIWJio (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 05:38:44 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E830F184D;
-        Fri, 23 Sep 2022 02:37:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1663925839; x=1695461839;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=bIO/NRfK+8hLta04E3Rq6Senn8z/tJVFm8Ma4wyZzQY=;
-  b=tsmw8v5HRY3iNId4e0SF2r61o04NLEB1k9UakgD/GEelKb/DSYFKoGHH
-   lCP9IPc6455zXYTXRLuA+wGnhfURNu7H76YBJIHor4zaBhWvYHEx6FcqL
-   fAuERzL4u0vW8qI6oQSug0cTGKmPlsIghnRX5t8HJiervSz4vWh18blgq
-   UG9lk/WpePKBTIMLyJ2nm706P2+Qcj6Zl64FEYR6BHVQMUlWikpe6wkHm
-   +Hm71wb6FeXbTB4QDe5rZeO2DoBXqe0XIMlTLUJK1mAJzAQz0aDa6OoOm
-   iFi2g7KESYWpeD4GmKCEiVCmraAj2feVD0L7mNOpsnEPCQH/bPxIgEPV2
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.93,337,1654585200"; 
-   d="scan'208";a="181665623"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Sep 2022 02:37:17 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Fri, 23 Sep 2022 02:37:16 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Fri, 23 Sep 2022 02:37:12 -0700
-From:   Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
-To:     <netdev@vger.kernel.org>, <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
-        <bryan.whitehead@microchip.com>, <richardcochran@gmail.com>,
-        <edumazet@google.com>, <pabeni@redhat.com>,
-        <UNGLinuxDriver@microchip.com>, <Ian.Saturley@microchip.com>
-Subject: [PATCH] net: lan743x: Fixes: 60942c397af6 ("Add support for PTP-IO Event Input External  Timestamp (extts)"
-Date:   Fri, 23 Sep 2022 15:07:09 +0530
-Message-ID: <20220923093709.10355-1-Raju.Lakkaraju@microchip.com>
+        with ESMTP id S231835AbiIWJmm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 05:42:42 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 529FE13198A;
+        Fri, 23 Sep 2022 02:41:55 -0700 (PDT)
+Received: from kwepemi500008.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MYnBH715Tz1P6tM;
+        Fri, 23 Sep 2022 17:37:43 +0800 (CST)
+Received: from huawei.com (10.67.175.83) by kwepemi500008.china.huawei.com
+ (7.221.188.139) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Fri, 23 Sep
+ 2022 17:41:52 +0800
+From:   ruanjinjie <ruanjinjie@huawei.com>
+To:     <aspriel@gmail.com>, <franky.lin@broadcom.com>,
+        <hante.meuleman@broadcom.com>, <kvalo@kernel.org>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <marcan@marcan.st>,
+        <linus.walleij@linaro.org>, <rmk+kernel@armlinux.org.uk>,
+        <soontak.lee@cypress.com>, <linux-wireless@vger.kernel.org>,
+        <SHA-cyfmac-dev-list@infineon.com>,
+        <brcm80211-dev-list.pdl@broadcom.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <ruanjinjie@huawei.com>
+Subject: [PATCH -next] wifi: brcmfmac: pcie: add missing pci_disable_device() in brcmf_pcie_get_resource()
+Date:   Fri, 23 Sep 2022 17:38:06 +0800
+Message-ID: <20220923093806.3108119-1-ruanjinjie@huawei.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.175.83]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemi500008.china.huawei.com (7.221.188.139)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove PTP_PF_EXTTS support for non-PCI11x1x devices since they do not
-support the PTP-IO Input event triggered timestamping mechanisms
-added
----
- drivers/net/ethernet/microchip/lan743x_ptp.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+Add missing pci_disable_device() if brcmf_pcie_get_resource() fails.
 
-diff --git a/drivers/net/ethernet/microchip/lan743x_ptp.c b/drivers/net/ethernet/microchip/lan743x_ptp.c
-index 6a11e2ceb013..da3ea905adbb 100644
---- a/drivers/net/ethernet/microchip/lan743x_ptp.c
-+++ b/drivers/net/ethernet/microchip/lan743x_ptp.c
-@@ -1049,6 +1049,10 @@ static int lan743x_ptpci_verify_pin_config(struct ptp_clock_info *ptp,
- 					   enum ptp_pin_function func,
- 					   unsigned int chan)
- {
-+	struct lan743x_ptp *lan_ptp =
-+		container_of(ptp, struct lan743x_ptp, ptp_clock_info);
-+	struct lan743x_adapter *adapter =
-+		container_of(lan_ptp, struct lan743x_adapter, ptp);
- 	int result = 0;
+Signed-off-by: ruanjinjie <ruanjinjie@huawei.com>
+---
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+index f98641bb1528..25fa69793d86 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+@@ -1725,7 +1725,8 @@ static int brcmf_pcie_get_resource(struct brcmf_pciedev_info *devinfo)
+ 	if ((bar1_size == 0) || (bar1_addr == 0)) {
+ 		brcmf_err(bus, "BAR1 Not enabled, device size=%ld, addr=%#016llx\n",
+ 			  bar1_size, (unsigned long long)bar1_addr);
+-		return -EINVAL;
++		err = -EINVAL;
++		goto err_disable;
+ 	}
  
- 	/* Confirm the requested function is supported. Parameter
-@@ -1057,7 +1061,10 @@ static int lan743x_ptpci_verify_pin_config(struct ptp_clock_info *ptp,
- 	switch (func) {
- 	case PTP_PF_NONE:
- 	case PTP_PF_PEROUT:
-+		break;
- 	case PTP_PF_EXTTS:
-+		if (!adapter->is_pci11x1x)
-+			result = -1;
- 		break;
- 	case PTP_PF_PHYSYNC:
- 	default:
+ 	devinfo->regs = ioremap(bar0_addr, BRCMF_PCIE_REG_MAP_SIZE);
+@@ -1734,7 +1735,8 @@ static int brcmf_pcie_get_resource(struct brcmf_pciedev_info *devinfo)
+ 	if (!devinfo->regs || !devinfo->tcm) {
+ 		brcmf_err(bus, "ioremap() failed (%p,%p)\n", devinfo->regs,
+ 			  devinfo->tcm);
+-		return -EINVAL;
++		err = -EINVAL;
++		goto err_disable;
+ 	}
+ 	brcmf_dbg(PCIE, "Phys addr : reg space = %p base addr %#016llx\n",
+ 		  devinfo->regs, (unsigned long long)bar0_addr);
+@@ -1743,6 +1745,9 @@ static int brcmf_pcie_get_resource(struct brcmf_pciedev_info *devinfo)
+ 		  (unsigned int)bar1_size);
+ 
+ 	return 0;
++err_disable:
++	pci_disable_device(pdev);
++	return err;
+ }
+ 
+ 
 -- 
 2.25.1
 
