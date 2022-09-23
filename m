@@ -2,61 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 598945E7E44
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 17:23:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3F165E7E59
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 17:27:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231623AbiIWPXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 11:23:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39886 "EHLO
+        id S232542AbiIWP1K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 11:27:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232070AbiIWPXI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 11:23:08 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F83F148A2C
-        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 08:22:58 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id f23so473469plr.6
-        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 08:22:58 -0700 (PDT)
+        with ESMTP id S229810AbiIWP1J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 11:27:09 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CC7F13EAFA;
+        Fri, 23 Sep 2022 08:27:08 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id z97so685901ede.8;
+        Fri, 23 Sep 2022 08:27:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date;
-        bh=dt2S/GvG0+ik7cReE6XNKY8qJKXq2AZToaT9MrYplrA=;
-        b=Fznt0rhoF0TkEASjZ5J9vyjMgIBA9xLGmu2zHUkEm4f5522oGE5DvDYeUwBVZkPyEm
-         ZyJP9ws95+rcxfLfgFV006IeoOjOCr4v6qVH/5InrGyEpT7zWWU4hdz8k26EtP2CBdXQ
-         HuEt0A6ArpqTIdVeppQ9U2JPjg6UbSmi/wcywes8hROln861F9mpYocl7SOi9NsyCtIl
-         XpAimyLMw/Z1ZaKFqu4BLY2OT0FJcvRnHeFQTho6umcBvtgsRRNYXbCi3XvDe7fTnjed
-         v8jN0AUKyxekHYlL93V/zofh6J58eWZ0Y3o4r7m5h/XcqPZSZJQm6Pe43/HL+4PHs5DK
-         jp1w==
+        bh=6JMTEY2lWNmisu5wgCvIjJuHrDPad0gYhdclOkvEFOA=;
+        b=beW9ZPMZQWdJyVN9Zk2lZ2G6V9ZvIQ2LZlK2vGUP7EUOQcT7WkoxWFhmuMZQRulX9a
+         X79LhL2CorE4QouVUv/A1cEmTuhUDV0bV+TQzZMMAHpVy6P2icyjPt+Vh1Z6QAyIPF7Q
+         JP9obE5mEVtLttGNiaDxIoIAX+S60nwK4xN084pLXGReSpB5ZJt/TPOnDEBlihtGuWKQ
+         1XCMNnkFpV4OTcyxZXS0/tHeQiIsPyv7ui0zDAQr+umvaS3DzR0a/gFLxKe3OZbemiRw
+         Ky7cMiyE8+0B44bja1YdqVjFKzVva047QkNJVbLS5Jfw/b1N0WwZsRTe+s4GIrjzECW4
+         kM6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=dt2S/GvG0+ik7cReE6XNKY8qJKXq2AZToaT9MrYplrA=;
-        b=rhpgoRlyyfaXEGDeOYVE4oKYay/iCpTme6qi3CFLxlPMX5qzhgow9tFTi58r8IgdpU
-         8kMO1J8beno2dAG9N8BfquaY7VfZgpDml6/Gws5Eq997/By4hF3svYKVZPUU7ZIX/TtJ
-         7Qiho6Cpu7XrzO3GDDSIUwuqPg+2NMIUsSPhME9AfQRhgqFKECLnYHmC/+VhRmZPce8n
-         G/GqI/9tkv2oA7XbrRgbfaHhiGqLcT1DE6+maikf95Tr1ja1R75M3yMeK/4cdbuL3KG4
-         flz+0PKWerr0X8adSI/D/mk3mKuZMY9AF2ZBdIdVTOKwnfKZUKym0tChDULyX5gzvreZ
-         +bUQ==
-X-Gm-Message-State: ACrzQf2UP6mxPUCMJ9L9Btyhmd0vWfiQ8m/cXV5EUo8f09RCDaXADfAN
-        0dMkhUZHrkfq5ph7wytzcw/RvHeHVig9oUmn6oMlzcb04y4=
-X-Google-Smtp-Source: AMsMyM60qI9gu8RmaNst5h6i1aNZiCvs5QQ01SvW0s/OAKkf6PgRyYiN/tTREijsqB225St4D8syelgxGH+yZAFvdv8=
-X-Received: by 2002:a17:90b:1b0e:b0:202:c913:221f with SMTP id
- nu14-20020a17090b1b0e00b00202c913221fmr21943676pjb.211.1663946575688; Fri, 23
- Sep 2022 08:22:55 -0700 (PDT)
+        bh=6JMTEY2lWNmisu5wgCvIjJuHrDPad0gYhdclOkvEFOA=;
+        b=a8hUPxLrMsCm4jCLVee7ur292labRepMArL58hegY79U89YK86mFdzn/L1mOLVr8/K
+         6LFNLTt/UmzEK5vfQJOms6GM+c7ccyhS7xQVh6478v5BJFDSvJdEGqgOw5155PwaFRHU
+         ZYQl6Mw7og3J876ShKUuD5pn16dlkj+R6j1fSm97BrV5hAZ9y7QCqHEfwwAvvJwiYA50
+         glfQ2tJSxbCM3F+kmsy/ZJqmfZqeVT7fWy0pS8IKO7FKRpjPw9Gi2rkPKZKjhN6msdBJ
+         t4ePzbRitjWPy4TvzYPt3SjNjnmZPLcrb/5UA4yQDjDUrYIbql8ydaxNiBme+tHEkqKH
+         GCjg==
+X-Gm-Message-State: ACrzQf2aCYsonlpQlZcbTifqonCTT6zJm8YXIWtiAskRFRwhLY9da2yH
+        P9/c+2kL3xKQJE4MUC7RA7Q3XkokcGwX2kLMw90=
+X-Google-Smtp-Source: AMsMyM583AbFhoKMPu2EiMn+8gyvG7HHbuqkgOw/xOzPLYemM5WW+8nUN8sCYp0WwAqW/Md2eL1UJRfB3qgMwVEk5vo=
+X-Received: by 2002:aa7:c619:0:b0:454:2cca:6c0d with SMTP id
+ h25-20020aa7c619000000b004542cca6c0dmr9062655edq.6.1663946826562; Fri, 23 Sep
+ 2022 08:27:06 -0700 (PDT)
 MIME-Version: 1.0
-References: <162fe40c387cd395d633729fa4f2b5245531514a.1663879752.git.pabeni@redhat.com>
- <CAKgT0Uc2qmKTeZMCTR3ZkibioxEwKHjKqLrnz-=cfSt+5TAv=g@mail.gmail.com> <efa64c44b1e53510f972954e4670b2d8ecde97eb.camel@redhat.com>
-In-Reply-To: <efa64c44b1e53510f972954e4670b2d8ecde97eb.camel@redhat.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Fri, 23 Sep 2022 08:22:43 -0700
-Message-ID: <CAKgT0Ud+U4NO+adYeUdegVbbS2EMaqTg2B-a0Z8Q2n9H7MaePg@mail.gmail.com>
-Subject: Re: [PATCH net-next v2] net: skb: introduce and use a single page
- frag cache
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
+References: <20220922225616.3054840-1-kafai@fb.com> <20220922225642.3058176-1-kafai@fb.com>
+ <CAADnVQK4fVZ0KdWkV7MfP_F3As7cme46SoR30YU0bk0zAfpOrA@mail.gmail.com> <99e23c92-b1dc-db45-73f7-c210eb1debc8@linux.dev>
+In-Reply-To: <99e23c92-b1dc-db45-73f7-c210eb1debc8@linux.dev>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 23 Sep 2022 08:26:55 -0700
+Message-ID: <CAADnVQKFdpiQFxgF253V5XmtjnrVXcZ14sxT_Q3vOQ97WxScMQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 4/5] bpf: Stop bpf_setsockopt(TCP_CONGESTION) in
+ init ops to recur itself
+To:     Martin KaFai Lau <martin.lau@linux.dev>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Network Development <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -68,175 +70,189 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 23, 2022 at 12:41 AM Paolo Abeni <pabeni@redhat.com> wrote:
+On Thu, Sep 22, 2022 at 6:11 PM Martin KaFai Lau <martin.lau@linux.dev> wrote:
 >
-> Hello,
+> On 9/22/22 5:12 PM, Alexei Starovoitov wrote:
+> > On Thu, Sep 22, 2022 at 3:56 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> >>
+> >> From: Martin KaFai Lau <martin.lau@kernel.org>
+> >>
+> >> When a bad bpf prog '.init' calls
+> >> bpf_setsockopt(TCP_CONGESTION, "itself"), it will trigger this loop:
+> >>
+> >> .init => bpf_setsockopt(tcp_cc) => .init => bpf_setsockopt(tcp_cc) ...
+> >> ... => .init => bpf_setsockopt(tcp_cc).
+> >>
+> >> It was prevented by the prog->active counter before but the prog->active
+> >> detection cannot be used in struct_ops as explained in the earlier
+> >> patch of the set.
+> >>
+> >> In this patch, the second bpf_setsockopt(tcp_cc) is not allowed
+> >> in order to break the loop.  This is done by checking the
+> >> previous bpf_run_ctx has saved the same sk pointer in the
+> >> bpf_cookie.
+> >>
+> >> Note that this essentially limits only the first '.init' can
+> >> call bpf_setsockopt(TCP_CONGESTION) to pick a fallback cc (eg. peer
+> >> does not support ECN) and the second '.init' cannot fallback to
+> >> another cc.  This applies even the second
+> >> bpf_setsockopt(TCP_CONGESTION) will not cause a loop.
+> >>
+> >> Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
+> >> ---
+> >>   include/linux/filter.h |  3 +++
+> >>   net/core/filter.c      |  4 ++--
+> >>   net/ipv4/bpf_tcp_ca.c  | 54 ++++++++++++++++++++++++++++++++++++++++++
+> >>   3 files changed, 59 insertions(+), 2 deletions(-)
+> >>
+> >> diff --git a/include/linux/filter.h b/include/linux/filter.h
+> >> index 98e28126c24b..9942ecc68a45 100644
+> >> --- a/include/linux/filter.h
+> >> +++ b/include/linux/filter.h
+> >> @@ -911,6 +911,9 @@ int sk_get_filter(struct sock *sk, sockptr_t optval, unsigned int len);
+> >>   bool sk_filter_charge(struct sock *sk, struct sk_filter *fp);
+> >>   void sk_filter_uncharge(struct sock *sk, struct sk_filter *fp);
+> >>
+> >> +int _bpf_setsockopt(struct sock *sk, int level, int optname,
+> >> +                   char *optval, int optlen);
+> >> +
+> >>   u64 __bpf_call_base(u64 r1, u64 r2, u64 r3, u64 r4, u64 r5);
+> >>   #define __bpf_call_base_args \
+> >>          ((u64 (*)(u64, u64, u64, u64, u64, const struct bpf_insn *)) \
+> >> diff --git a/net/core/filter.c b/net/core/filter.c
+> >> index f4cea3ff994a..e56a1ebcf1bc 100644
+> >> --- a/net/core/filter.c
+> >> +++ b/net/core/filter.c
+> >> @@ -5244,8 +5244,8 @@ static int __bpf_setsockopt(struct sock *sk, int level, int optname,
+> >>          return -EINVAL;
+> >>   }
+> >>
+> >> -static int _bpf_setsockopt(struct sock *sk, int level, int optname,
+> >> -                          char *optval, int optlen)
+> >> +int _bpf_setsockopt(struct sock *sk, int level, int optname,
+> >> +                   char *optval, int optlen)
+> >>   {
+> >>          if (sk_fullsock(sk))
+> >>                  sock_owned_by_me(sk);
+> >> diff --git a/net/ipv4/bpf_tcp_ca.c b/net/ipv4/bpf_tcp_ca.c
+> >> index 6da16ae6a962..a9f2cab5ffbc 100644
+> >> --- a/net/ipv4/bpf_tcp_ca.c
+> >> +++ b/net/ipv4/bpf_tcp_ca.c
+> >> @@ -144,6 +144,57 @@ static const struct bpf_func_proto bpf_tcp_send_ack_proto = {
+> >>          .arg2_type      = ARG_ANYTHING,
+> >>   };
+> >>
+> >> +BPF_CALL_5(bpf_init_ops_setsockopt, struct sock *, sk, int, level,
+> >> +          int, optname, char *, optval, int, optlen)
+> >> +{
+> >> +       struct bpf_tramp_run_ctx *run_ctx, *saved_run_ctx;
+> >> +       int ret;
+> >> +
+> >> +       if (optname != TCP_CONGESTION)
+> >> +               return _bpf_setsockopt(sk, level, optname, optval, optlen);
+> >> +
+> >> +       run_ctx = (struct bpf_tramp_run_ctx *)current->bpf_ctx;
+> >> +       if (unlikely(run_ctx->saved_run_ctx &&
+> >> +                    run_ctx->saved_run_ctx->type == BPF_RUN_CTX_TYPE_STRUCT_OPS)) {
+> >> +               saved_run_ctx = (struct bpf_tramp_run_ctx *)run_ctx->saved_run_ctx;
+> >> +               /* It stops this looping
+> >> +                *
+> >> +                * .init => bpf_setsockopt(tcp_cc) => .init =>
+> >> +                * bpf_setsockopt(tcp_cc)" => .init => ....
+> >> +                *
+> >> +                * The second bpf_setsockopt(tcp_cc) is not allowed
+> >> +                * in order to break the loop when both .init
+> >> +                * are the same bpf prog.
+> >> +                *
+> >> +                * This applies even the second bpf_setsockopt(tcp_cc)
+> >> +                * does not cause a loop.  This limits only the first
+> >> +                * '.init' can call bpf_setsockopt(TCP_CONGESTION) to
+> >> +                * pick a fallback cc (eg. peer does not support ECN)
+> >> +                * and the second '.init' cannot fallback to
+> >> +                * another cc.
+> >> +                */
+> >> +               if (saved_run_ctx->bpf_cookie == (uintptr_t)sk)
+> >> +                       return -EBUSY;
+> >> +       }
+> >> +
+> >> +       run_ctx->bpf_cookie = (uintptr_t)sk;
+> >> +       ret = _bpf_setsockopt(sk, level, optname, optval, optlen);
+> >> +       run_ctx->bpf_cookie = 0;
+> >
+> > Instead of adding 4 bytes for enum in patch 3
+> > (which will be 8 bytes due to alignment)
+> > and abusing bpf_cookie here
+> > (which struct_ops bpf prog might eventually read and be surprised
+> > to find sk pointer in there)
+> > how about adding 'struct task_struct *saved_current' as another arg
+> > to bpf_tramp_run_ctx ?
+> > Always store the current task in there in prog_entry_struct_ops
+> > and then compare it here in this specialized bpf_init_ops_setsockopt?
+> >
+> > Or maybe always check in enter_prog_struct_ops:
+> > if (container_of(current->bpf_ctx, struct bpf_tramp_run_ctx,
+> > run_ctx)->saved_current == current) // goto out since recursion?
+> > it will prevent issues in case we don't know about and will
+> > address the good recursion case as explained in patch 1?
+> > I'm assuming 2nd ssthresh runs in a different task..
+> > Or is it actually the same task?
 >
-> On Thu, 2022-09-22 at 14:17 -0700, Alexander Duyck wrote:
-> [...]
-> > My suggestion earlier was to just make the 1k cache a page_frag_cache.
-> > It will allow you to reuse the same structure members and a single
-> > pointer to track them. Waste would be minimal since the only real
-> > difference between the structures is about 8B for the structure, and
-> > odds are the napi_alloc_cache allocation is being rounded up anyway.
-> >
-> > >         unsigned int skb_count;
-> > >         void *skb_cache[NAPI_SKB_CACHE_SIZE];
-> > >  };
-> > > @@ -143,6 +202,23 @@ struct napi_alloc_cache {
-> > >  static DEFINE_PER_CPU(struct page_frag_cache, netdev_alloc_cache);
-> > >  static DEFINE_PER_CPU(struct napi_alloc_cache, napi_alloc_cache);
-> > >
-> > > +/* Double check that napi_get_frags() allocates skbs with
-> > > + * skb->head being backed by slab, not a page fragment.
-> > > + * This is to make sure bug fixed in 3226b158e67c
-> > > + * ("net: avoid 32 x truesize under-estimation for tiny skbs")
-> > > + * does not accidentally come back.
-> > > + */
-> > > +void napi_get_frags_check(struct napi_struct *napi)
-> > > +{
-> > > +       struct sk_buff *skb;
-> > > +
-> > > +       local_bh_disable();
-> > > +       skb = napi_get_frags(napi);
-> > > +       WARN_ON_ONCE(!NAPI_HAS_SMALL_PAGE_FRAG && skb && skb->head_frag);
-> > > +       napi_free_frags(napi);
-> > > +       local_bh_enable();
-> > > +}
-> > > +
-> > >  void *__napi_alloc_frag_align(unsigned int fragsz, unsigned int align_mask)
-> > >  {
-> > >         struct napi_alloc_cache *nc = this_cpu_ptr(&napi_alloc_cache);
-> > > @@ -561,6 +637,7 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
-> > >  {
-> > >         struct napi_alloc_cache *nc;
-> > >         struct sk_buff *skb;
-> > > +       bool pfmemalloc;
-> >
-> > Rather than adding this I think you would be better off adding a
-> > struct page_frag_cache pointer. I will reference it here as "pfc".
-> >
-> > >         void *data;
-> > >
-> > >         DEBUG_NET_WARN_ON_ONCE(!in_softirq());
-> > > @@ -568,8 +645,10 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
-> > >
-> > >         /* If requested length is either too small or too big,
-> > >          * we use kmalloc() for skb->head allocation.
-> > > +        * When the small frag allocator is available, prefer it over kmalloc
-> > > +        * for small fragments
-> > >          */
-> > > -       if (len <= SKB_WITH_OVERHEAD(1024) ||
-> > > +       if ((!NAPI_HAS_SMALL_PAGE_FRAG && len <= SKB_WITH_OVERHEAD(1024)) ||
-> > >             len > SKB_WITH_OVERHEAD(PAGE_SIZE) ||
-> > >             (gfp_mask & (__GFP_DIRECT_RECLAIM | GFP_DMA))) {
-> > >                 skb = __alloc_skb(len, gfp_mask, SKB_ALLOC_RX | SKB_ALLOC_NAPI,
-> > > @@ -580,13 +659,30 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
-> > >         }
-> > >
-> > >         nc = this_cpu_ptr(&napi_alloc_cache);
-> > > -       len += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-> > > -       len = SKB_DATA_ALIGN(len);
-> > >
-> > >         if (sk_memalloc_socks())
-> > >                 gfp_mask |= __GFP_MEMALLOC;
-> > >
-> > > -       data = page_frag_alloc(&nc->page, len, gfp_mask);
-> > > +       if (NAPI_HAS_SMALL_PAGE_FRAG && len <= SKB_WITH_OVERHEAD(1024)) {
-> >
-> > Then here you would add a line that would be:
-> > pfc = &nc->page_small;
-> >
-> > > +               /* we are artificially inflating the allocation size, but
-> > > +                * that is not as bad as it may look like, as:
-> > > +                * - 'len' less then GRO_MAX_HEAD makes little sense
-> > > +                * - larger 'len' values lead to fragment size above 512 bytes
-> > > +                *   as per NAPI_HAS_SMALL_PAGE_FRAG definition
-> > > +                * - kmalloc would use the kmalloc-1k slab for such values
-> > > +                */
-> > > +               len = SZ_1K;
-> > > +
-> > > +               data = page_frag_alloc_1k(&nc->page_small, gfp_mask);
-> > > +               pfmemalloc = nc->page_small.pfmemalloc;
-> >
-> > Instead of setting pfmemalloc you could just update the line below. In
-> > addition you would just be passing pfc as the parameter.
-> >
-> > > +       } else {
-> >
-> > Likewise here you would have the line:
-> > pfc = &nc->page;
+> The 2nd ssthresh() should run in the same task but different sk.  The
+> first ssthresh(sk[1]) was run in_task() context and then got
+> interrupted.  The softirq then handles the rcv path which just happens
+> to also call ssthresh(sk[2]) in the unlikely pkt-loss case. It is like
+> ssthresh(sk[1]) => softirq => ssthresh(sk[2]).
 >
-> Probaly I was not clear in my previois email, sorry: before posting
-> this version I tried locally exactly all the above, and the generated
-> code with gcc 11.3.1 is a little bigger (a couple of instructions) than
-> what this version produces (with gcc 11.3.1-2). It has the same number
-> of conditionals and a slightly larger napi_alloc_cache.
->
-> Additionally the suggested alternative needs more pre-processor
-> conditionals to handle the !NAPI_HAS_SMALL_PAGE_FRAG case - avoiding
-> adding a 2nd, unused in that case, page_frag_cache.
->
-> [...]
+> The tcp-cc ops can recur but cannot recur on the same sk because it
+> requires to hold the sk lock, so the patch remembers what was the
+> previous sk to ensure it does not recur on the same sk.  Then it needs
+> to peek into the previous run ctx which may not always be
+> bpf_trump_run_ctx.  eg. a cg bpf prog (with bpf_cg_run_ctx) can call
+> bpf_setsockopt(TCP_CONGESTION, "a_bpf_tcp_cc") which then will call the
+> a_bpf_tcp_cc->init().  It needs a bpf_run_ctx_type so it can safely peek
+> the previous bpf_run_ctx.
 
-Why would that be? You should still be using the pointer to the
-page_frag_cache in the standard case. Like I was saying what you are
-doing is essentially replacing the use of napi_alloc_cache with the
-page_frag_cache, so for example with the existing setup all references
-to "nc->page" would become "pfc->" so there shouldn't be any extra
-unused variables in such a case since it would be used for both the
-frag allocation and the pfmemalloc check.
+got it.
 
-One alternate way that occured to me to handle this would be to look
-at possibly having napi_alloc_cache contain an array of
-page_frag_cache structures. With that approach you could just size the
-array and have it stick with a size of 1 in the case that small
-doesn't exist, and support a size of 2 if it does. You could define
-them via an enum so that the max would vary depending on if you add a
-small frag cache or not. With that you could just bump the pointer
-with a ++ so it goes from large to small and you wouldn't have any
-warnings about items not existing in your structures, and the code
-with the ++ could be kept from being called in the
-!NAPI_HAS_SMALL_PAGE_FRAG case.
+>
+> Since struct_ops is the only one that needs to peek into the previous
+> run_ctx (through tramp_run_ctx->saved_run_ctx),  instead of adding 4
+> bytes to the bpf_run_ctx, one idea just came to my mind is to use one
+> bit in the tramp_run_ctx->saved_run_ctx pointer itsef.  Something like
+> this if it reuses the bpf_cookie (probably missed some int/ptr type
+> casting):
+>
+> #define BPF_RUN_CTX_STRUCT_OPS_BIT 1UL
+>
+> u64 notrace __bpf_prog_enter_struct_ops(struct bpf_prog *prog,
+>                                      struct bpf_tramp_run_ctx *run_ctx)
+>          __acquires(RCU)
+> {
+>         rcu_read_lock();
+>         migrate_disable();
+>
+>         run_ctx->saved_run_ctx = bpf_set_run_ctx((&run_ctx->run_ctx) |
+>                                         BPF_RUN_CTX_STRUCT_OPS_BIT);
+>
+>          return bpf_prog_start_time();
+> }
+>
+> BPF_CALL_5(bpf_init_ops_setsockopt, struct sock *, sk, int, level,
+>             int, optname, char *, optval, int, optlen)
+> {
+>         /* ... */
+>         if (unlikely((run_ctx->saved_run_ctx &
+>                         BPF_RUN_CTX_STRUCT_OPS_BIT) && ...) {
+>                 /* ... */
+>                 if (bpf_cookie == (uintptr_t)sk)
+>                         return -EBUSY;
+>         }
+>
+> }
 
-> >
-> > > @@ -596,7 +692,7 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
-> > >                 return NULL;
-> > >         }
-> > >
-> > > -       if (nc->page.pfmemalloc)
-> > > +       if (pfmemalloc)
-> >
-> > Instead of passing pfmemalloc you could just check pfc->pfmemalloc.
-> > Alternatively I wonder if it wouldn't be faster to just set the value
-> > directly based on frag_cache->pfmemalloc and avoid the conditional
-> > heck entirely.
->
-> Note that:
->
->         skb->pfmemalloc = pfmemalloc;
->
-> avoids a branch but requires more instructions than the current code
-> (verified with gcc). The gain looks doubtful?!? Additionally we have
-> statement alike:
->
->         if (<pfmemalloc>)
->                 skb->pfmemalloc = 1;
->
-> in other functions in skbuff.c - still fast-path - and would be better
-> updating all the places together for consistency - if that is really
-> considered an improvement. IMHO it should at least land in a different
-> patch.
-
-We cannot really use "skb->pfmemalloc = pfmemalloc" because one is a
-bitfield and the other is a boolean value. I suspect the complexity
-would be greatly reduced if we converted the pfmemalloc to a bitfield
-similar to skb->pfmemalloc. It isn't important though. I was mostly
-just speculating on possible future optimizations.
-
-> I'll post a v3 with your updated email address, but I think the current
-> code is the better option.
-
-That's fine. Like I mentioned I am mostly just trying to think things
-out and identify any possible gaps we may have missed. I will keep an
-eye out for the next version.
+that should work, but don't you need to loop through all previous
+run_ctx and check all with BPF_RUN_CTX_STRUCT_OPS_BIT type ?
+Since run_ctx is saved in the task and we have preemptible
+rpgos there could be tracing prog in the chain:
+struct_ops_run_ctx->tracing_run_ctx->struct_ops_run_ctx
+where 1st and last have the same 'sk'.
