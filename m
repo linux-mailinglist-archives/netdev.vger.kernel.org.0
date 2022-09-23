@@ -2,62 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ADE945E7CBC
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 16:19:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24BF65E7CC1
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 16:20:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232524AbiIWOTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 10:19:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52510 "EHLO
+        id S232516AbiIWOUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 10:20:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232123AbiIWOTP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 10:19:15 -0400
-Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 761B1128A3B;
-        Fri, 23 Sep 2022 07:19:14 -0700 (PDT)
-Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
+        with ESMTP id S232544AbiIWOUU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 10:20:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27C9CE171F;
+        Fri, 23 Sep 2022 07:20:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: marex@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 9AB9A8317B;
-        Fri, 23 Sep 2022 16:19:11 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1663942752;
-        bh=+RotZuS4WwpidmKoXwBn3WTjHkBeMhRa7hl1zuEk9T4=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=abkL8O1usF33toQc0mqTtXNtpazu9Xbomu+m5dp+OxXwtm6CkH+v2HRgFSVT9yPf0
-         SQ5S6SGhjGOL3AS09clP1UC/mWM2nyfO9npq18i2lVHuXX/kZzk0zk/AGFlRDCYR9L
-         6N4NoMa4Nge4v8sqI9WDe0uhLzR+v71xU4Btv9cofWORCAF6b6T665U05T8nKJkp6G
-         bmbaLPADfj/TiKj2pLY56YgJdmosa21USP0Wi9Ew0NpYvlNBaWtu4sff1Et3QNZohw
-         rBThewq1wtz//CFsPu7MUZAqeTf0QqVqvyglbrfQP8L3wqr6OtvTfJHJ6l/Jmr4msO
-         8zQGMCESzy7ww==
-Message-ID: <d5f38a5c-8073-6e34-54f0-a11d2347b2c1@denx.de>
-Date:   Fri, 23 Sep 2022 16:19:11 +0200
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA1F662373;
+        Fri, 23 Sep 2022 14:20:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 242A2C433D7;
+        Fri, 23 Sep 2022 14:20:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1663942818;
+        bh=Rhvv+Iydenk8ACiYitJE/oTrMmj9xntYcGCGLQuTFUc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=krV+S6MfQFKQRI2XALFhC2dlaOOIbe74ALI+MiAIuzAFuHRvMUus15qmSsnMf6U/q
+         6EKcCYqjwwECIBVPxHhzIYuwloxtJcrtq4Q6a2MhcWdIjM3ZLOOHU5pBJqG7ZnrVvw
+         1vSkyl6tkwtDdlwK9MSUaSX3mOsjy03uZR7SeumCIddF/+GWqGQJmuOx+aqo/LUypr
+         nUi33/UT5J3W5t4GVCGwCMpiugc0+mv85BgJPl0q293eV11SmVCgZnift0KOIon5+S
+         Q1AnCS9U4p41npDHit984nN3jE8fdXGaO9u+0X3weo3mSTjdHRScL1NosZMvh19TQ8
+         KioT668NReJoQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 11515E4D03D;
+        Fri, 23 Sep 2022 14:20:18 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [PATCH] wifi: rsi: Fix handling of 802.3 EAPOL frames sent via
- control port
-Content-Language: en-US
-To:     "Fuzzey, Martin" <martin.fuzzey@flowbird.group>
-Cc:     linux-wireless@vger.kernel.org,
-        Amitkumar Karwar <amit.karwar@redpinesignals.com>,
-        Angus Ainslie <angus@akkea.ca>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@kernel.org>,
-        Martin Kepplinger <martink@posteo.de>,
-        Prameela Rani Garnepudi <prameela.j04cs@gmail.com>,
-        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
-        Siva Rebbagondla <siva8118@gmail.com>, netdev@vger.kernel.org
-References: <20220922203240.108623-1-marex@denx.de>
- <CANh8QzxfznS3jB8OgwRAp68wGcTDctzvBSeaXQH2bPicOSyyYA@mail.gmail.com>
-From:   Marek Vasut <marex@denx.de>
-In-Reply-To: <CANh8QzxfznS3jB8OgwRAp68wGcTDctzvBSeaXQH2bPicOSyyYA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 01/11] can: bcm: registration process optimization in
+ bcm_module_init()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166394281805.25768.3506928119698170613.git-patchwork-notify@kernel.org>
+Date:   Fri, 23 Sep 2022 14:20:18 +0000
+References: <20220923120859.740577-2-mkl@pengutronix.de>
+In-Reply-To: <20220923120859.740577-2-mkl@pengutronix.de>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-can@vger.kernel.org, kernel@pengutronix.de,
+        william.xuanziyang@huawei.com, socketcan@hartkopp.net
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -65,74 +57,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/23/22 09:11, Fuzzey, Martin wrote:
-> Hi Marek,
+Hello:
 
-Hi,
+This series was applied to netdev/net-next.git (master)
+by Marc Kleine-Budde <mkl@pengutronix.de>:
 
-> On Thu, 22 Sept 2022 at 22:33, Marek Vasut <marex@denx.de> wrote:
->>
->> When using wpa_supplicant v2.10, this driver is no longer able to
->> associate with any AP and fails in the EAPOL 4-way handshake while
->> sending the 2/4 message to the AP. The problem is not present in
->> wpa_supplicant v2.9 or older. The problem stems from HostAP commit
->> 144314eaa ("wpa_supplicant: Send EAPOL frames over nl80211 where available")
->> which changes the way EAPOL frames are sent, from them being send
->> at L2 frames to them being sent via nl80211 control port.
-> ...
->> Therefore, to fix this problem, inspect the ETH_P_802_3 frames in
->> the rsi_91x driver, check the ethertype of the encapsulated frame,
->> and in case it is ETH_P_PAE, transmit the frame via high-priority
->> queue just like other ETH_P_PAE frames.
->>
+On Fri, 23 Sep 2022 14:08:49 +0200 you wrote:
+> From: Ziyang Xuan <william.xuanziyang@huawei.com>
 > 
->> diff --git a/drivers/net/wireless/rsi/rsi_91x_core.c b/drivers/net/wireless/rsi/rsi_91x_core.c
->> index 0f3a80f66b61c..d76c9dc99cafa 100644
->> --- a/drivers/net/wireless/rsi/rsi_91x_core.c
->> +++ b/drivers/net/wireless/rsi/rsi_91x_core.c
->> +
->>                  if (skb->protocol == cpu_to_be16(ETH_P_PAE)) {
->> +                       tx_eapol = true;
->> +               } else if (skb->protocol == cpu_to_be16(ETH_P_802_3)) {
->> +                       hdr_len = ieee80211_get_hdrlen_from_skb(skb) +
->> +                                 sizeof(rfc1042_header) - ETH_HLEN + 2;
->> +                       eth_hdr = (struct ethhdr *)(skb->data + hdr_len);
->> +                       if (eth_hdr->h_proto == cpu_to_be16(ETH_P_PAE))
->> +                               tx_eapol = true;
->> +               }
->> +
->> diff --git a/drivers/net/wireless/rsi/rsi_91x_hal.c b/drivers/net/wireless/rsi/rsi_91x_hal.c
->> index c61f83a7333b6..d43754fff287d 100644
->> @@ -168,6 +171,16 @@ int rsi_prepare_data_desc(struct rsi_common *common, struct sk_buff *skb)
->> +       if (skb->protocol == cpu_to_be16(ETH_P_PAE)) {
->> +               tx_eapol = true;
->> +       } else if (skb->protocol == cpu_to_be16(ETH_P_802_3)) {
->> +               hdr_len = ieee80211_get_hdrlen_from_skb(skb) +
->> +                         sizeof(rfc1042_header) - ETH_HLEN + 2;
->> +               eth_hdr = (struct ethhdr *)(skb->data + hdr_len);
->> +               if (eth_hdr->h_proto == cpu_to_be16(ETH_P_PAE))
->> +                       tx_eapol = true;
->> +       }
->> +
+> Now, register_netdevice_notifier() and register_pernet_subsys() are both
+> after can_proto_register(). It can create CAN_BCM socket and process socket
+> once can_proto_register() successfully, so it is possible missing notifier
+> event or proc node creation because notifier or bcm proc directory is not
+> registered or created yet. Although this is a low probability scenario, it
+> is not impossible.
 > 
-> It looks like the same logic is being duplicated twice. Maybe create a
-> helper function for it, something like bool rsi_is_eapol(struct
-> sk_buff *skb) ?
+> [...]
 
-Sure, I'll do that in V2.
+Here is the summary with links:
+  - [net-next,01/11] can: bcm: registration process optimization in bcm_module_init()
+    https://git.kernel.org/netdev/net-next/c/edd1a7e42f1d
+  - [net-next,02/11] can: bcm: check the result of can_send() in bcm_can_tx()
+    https://git.kernel.org/netdev/net-next/c/3fd7bfd28cfd
+  - [net-next,03/11] can: gs_usb: gs_usb_get_timestamp(): fix endpoint parameter for usb_control_msg_recv()
+    https://git.kernel.org/netdev/net-next/c/593b5e2f5a4a
+  - [net-next,04/11] can: gs_usb: add missing lock to protect struct timecounter::cycle_last
+    https://git.kernel.org/netdev/net-next/c/29a8c9ec9090
+  - [net-next,05/11] can: gs_usb: gs_can_open(): initialize time counter before starting device
+    https://git.kernel.org/netdev/net-next/c/103108cb9673
+  - [net-next,06/11] can: gs_usb: gs_cmd_reset(): rename variable holding struct gs_can pointer to dev
+    https://git.kernel.org/netdev/net-next/c/002467518688
+  - [net-next,07/11] can: gs_usb: convert from usb_control_msg() to usb_control_msg_{send,recv}()
+    https://git.kernel.org/netdev/net-next/c/3814ed27548a
+  - [net-next,08/11] can: gs_usb: gs_make_candev(): clean up error handling
+    https://git.kernel.org/netdev/net-next/c/68822f4e74f3
+  - [net-next,09/11] can: gs_usb: add switchable termination support
+    https://git.kernel.org/netdev/net-next/c/906e0e6886af
+  - [net-next,10/11] can: gs_usb: remove dma allocations
+    https://git.kernel.org/netdev/net-next/c/62f102c0d156
+  - [net-next,11/11] can: ctucanfd: Remove redundant dev_err call
+    https://git.kernel.org/netdev/net-next/c/6eed756408c6
 
-Currently I am looking for input whether this reaching into an 8023 
-packet to see if it is EAPOL one is even the right approach:
-"
-NOTE: I am really unsure about the method of finding out the exact
-       place of ethernet header in the encapsulated packet and then
-       extracting the ethertype from it. Is there maybe some sort of
-       helper function for that purpose ?
-"
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-> Also I think it would be good to tag this for stable.
 
-There is a Fixes tag:
-"
-Fixes: 0eb42586cf876 ("rsi: data packet descriptor enhancements")
-"
