@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DFEC5E8308
+	by mail.lfdr.de (Postfix) with ESMTP id DFAB15E830A
 	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 22:13:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231932AbiIWUNb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 16:13:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38876 "EHLO
+        id S232081AbiIWUNd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 16:13:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231698AbiIWUNa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 16:13:30 -0400
+        with ESMTP id S231800AbiIWUNb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 16:13:31 -0400
 Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 196BD1231D6
-        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 13:13:28 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id o20-20020a05600c4fd400b003b4a516c479so560863wmq.1
-        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 13:13:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E87131231D1
+        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 13:13:29 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id n40-20020a05600c3ba800b003b49aefc35fso539552wms.5
+        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 13:13:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=arista.com; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=4WUPrLN7XkRR9MORunRoTrx70rBfaBddHW406jzp/Rg=;
-        b=QV08EmmNWaJt0HvqkS6ddzACN5j3WuWl8Azg4oyzqrQ6xJMa3S6UbCPM4WNacUp6Rc
-         80i1P5L2EqCZGArKRqyYYuF96S2y0KqdVbli1DcRHm5ay5YFMASc3d4euxm6EH+3mfDw
-         N7m/IqXoE5i9aYtB7URUYUqSo8bM6lQdOZOqlSCzlvUDJtv/riL7PCJsAGrvWUnqE306
-         JlahqflIPmqBjNwUkUphsVM7d+MjfOQgPJjA0EKQ/wtBJvoIAVcgkFtHeDfRcnyzQPdD
-         GRsG0drKuzJmbrTj4Ff38+NWLXbhiXDvYX2+gV+Q4UmhO2joxY5xSWrxt0zORhNDlaAn
-         ySwA==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=OvtUazKBAJMG9dbG+xM0v31JDJKchjSAv9zROkShycc=;
+        b=G4o4EH/nZ5QcMiZZxbxEWWnIYzqNweWX7Fcss59OGR536RLJDfqw/Rab/uPbzR5NUA
+         kYQorNJTwPyn13XRAUKMF0xy7nZJt+svvHcBKzNdYgNrMgog5uArXbX0lLBV7U4umxUX
+         xQ5ljJ+FlaRIGfqYLYfyCEN/HSsS4DoaPVjgYsurhyPIP5U7p6Iihs55A1HNkUEJqFob
+         bFyAce02WLQ/2tlnaYOqUzgLKt7kEBzaO4sTyeSDOGEShWU31oUbO6dOFZn/pc2ybjw8
+         QUO+cLAeBW1n4eE55cTX2solmTBZ2ptjPXQmkb7uJazE9LDWxI9XNqG7DnQQF0suBqd9
+         TnOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=4WUPrLN7XkRR9MORunRoTrx70rBfaBddHW406jzp/Rg=;
-        b=zYbYnkNdzoiqQZ82JC9e2K3WHCrgf1exsciZLbvis199mmHjoLXP4dX0jC7YcSefzP
-         92PmnxsZCXLvKBzZdD8Sx0NtzL4m+7UY9hRRspyt5mIH8DTREYuNl+lmIkhwAbHF04SI
-         o3YDvhKBNcZ6CjPEjX/T9kkpjzB73Ahql3rvFy/8jdTesrKn9PBHOMGwf5f89s7iL/bx
-         Ww2ym6b2btayslRwAQ1t0QCerSuXXnbDE319aopbdqY19hCY84jA2B9kz7mg0Ne43W0r
-         1lh/2vG4fvqrceI2VdsJh497aqPomvp2l96fLciQeSPRQUduFfd0AECtb6aRxscYj+zG
-         8uqQ==
-X-Gm-Message-State: ACrzQf1k+0rfuTMj/DN2yklku9PME4klAbywxIOXBRdhi0g/kISFYkno
-        a6mwXk7tkpKFXcS3C+jEw393Sw==
-X-Google-Smtp-Source: AMsMyM5nznz/5FgmzAr4dpam/yPXh/sVHtXO61Y0FDfp3ObVzlokSnjaVvFtbwpGOhUeLiwfV6Yqgg==
-X-Received: by 2002:a05:600c:a185:b0:3b4:ff33:9fc4 with SMTP id id5-20020a05600ca18500b003b4ff339fc4mr7999357wmb.2.1663964006614;
-        Fri, 23 Sep 2022 13:13:26 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=OvtUazKBAJMG9dbG+xM0v31JDJKchjSAv9zROkShycc=;
+        b=600N0RTspsk8ga3S+s3NjFEghK4t3vNTfFkjE9EEMq5jn6ka3paGkRgWxjrhepVPFY
+         NhEKz7zOkErwOF3fLau+TTstscTj69atDP8h0nV7gsV3wZmtTQVc4CjLyGVzYOK5nJll
+         /0b1PtRG2zL1Kcya7UrBTd4OWpYWu3xCT/8GvhBhYYTmmA+QA4XrRR3zy6XsIshc6E+l
+         ncIDQUHmYHPFUEErGoxNeNQmtzLZOum+7fbH2bLPIZfee/2bN3Shl5CZPL7mEatRYjZ3
+         4P/jwiRTf/UDn4NSv5QAYK980405jyi84D6P0buyWh2gTR1si7DuWtWe2wR1j7ZQTJv2
+         YhIA==
+X-Gm-Message-State: ACrzQf1PeoeZNPX/kSlrZoajDmOqwPQRndXbCpDpb6Cf1EzpdovM6B94
+        qBGKzNYtPfO8wVSu+a1a/uCkAA==
+X-Google-Smtp-Source: AMsMyM4g/k6Bq1bHATAIikM8FV0DDD94YcYeEEqRdaklOV57pXvZ+hfrq8e2vzsRMBn5Chz24zaWDg==
+X-Received: by 2002:a05:600c:4e52:b0:3b4:91ec:b15d with SMTP id e18-20020a05600c4e5200b003b491ecb15dmr7009031wmq.119.1663964008432;
+        Fri, 23 Sep 2022 13:13:28 -0700 (PDT)
 Received: from Mindolluin.ire.aristanetworks.com ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id k11-20020a05600c0b4b00b003b492753826sm3281056wmr.43.2022.09.23.13.13.25
+        by smtp.gmail.com with ESMTPSA id k11-20020a05600c0b4b00b003b492753826sm3281056wmr.43.2022.09.23.13.13.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Sep 2022 13:13:26 -0700 (PDT)
+        Fri, 23 Sep 2022 13:13:27 -0700 (PDT)
 From:   Dmitry Safonov <dima@arista.com>
 To:     linux-kernel@vger.kernel.org, David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>
@@ -69,12 +70,13 @@ Cc:     Dmitry Safonov <dima@arista.com>,
         Salam Noureddine <noureddine@arista.com>,
         Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
         linux-crypto@vger.kernel.org
-Subject: [PATCH v2 00/35] net/tcp: Add TCP-AO support
-Date:   Fri, 23 Sep 2022 21:12:44 +0100
-Message-Id: <20220923201319.493208-1-dima@arista.com>
+Subject: [PATCH v2 01/35] crypto: Introduce crypto_pool
+Date:   Fri, 23 Sep 2022 21:12:45 +0100
+Message-Id: <20220923201319.493208-2-dima@arista.com>
 X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220923201319.493208-1-dima@arista.com>
+References: <20220923201319.493208-1-dima@arista.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -85,221 +87,388 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Changes from v1:
-- Building now with CONFIG_IPV6=n (kernel test robot <lkp@intel.com>)
-- Added missing static declarations for local functions
-  (kernel test robot <lkp@intel.com>)
-- Addressed static analyzer and review comments by Dan Carpenter
-  (thanks, they were very useful!)
-- Fix elif without defined() for !CONFIG_TCP_AO
-- Recursively build selftests/net/tcp_ao (Shuah Khan), patches in:
-  https://lore.kernel.org/all/20220919201958.279545-1-dima@arista.com/T/#u
-- Don't leak crypto_pool reference when TCP-MD5 key is modified/changed
-- Add TCP-AO support for nettest.c and fcnal-test.sh
-  (will be used for VRF testing in later versions)
+Introduce a per-CPU pool of async crypto requests that can be used
+in bh-disabled contexts (designed with net RX/TX softirqs as users in
+mind). Allocation can sleep and is a slow-path.
+Initial implementation has only ahash as a backend and a fix-sized array
+of possible algorithms used in parallel.
 
-Version 1: https://lore.kernel.org/all/20220818170005.747015-1-dima@arista.com/T/#u
-
-In TODO (expect in next versions):
-- selftests on older kernels (or with CONFIG_TCP_AO=n) should exit with
-  SKIP, not FAIL
-- Support VRFs in setsockopt()
-- setsockopt() UAPI padding + a test that structures are of the same
-  size on 32-bit as on 64-bit platforms
-- IPv4-mapped-IPv6 addresses (might be working, but no selftest now)
-- Remove CONFIG_TCP_AO dependency on CONFIG_TCP_MD5SIG
-- Add TCP-AO static key
-- Measure/benchmark TCP-AO and regular TCP connections
-- setsockopt(TCP_REPAIR) with TCP-AO
-
-This patchset implements the TCP-AO option as described in RFC5925. There
-is a request from industry to move away from TCP-MD5SIG and it seems the time
-is right to have a TCP-AO upstreamed. This TCP option is meant to replace
-the TCP MD5 option and address its shortcomings. Specifically, it provides
-more secure hashing, key rotation and support for long-lived connections
-(see the summary of TCP-AO advantages over TCP-MD5 in (1.3) of RFC5925).
-The patch series starts with six patches that are not specific to TCP-AO
-but implement a general crypto facility that we thought is useful
-to eliminate code duplication between TCP-MD5SIG and TCP-AO as well as other
-crypto users. These six patches are being submitted separately in
-a different patchset [1]. Including them here will show better the gain
-in code sharing. Next are 18 patches that implement the actual TCP-AO option,
-followed by patches implementing selftests.
-
-The patch set was written as a collaboration of three authors (in alphabetical
-order): Dmitry Safonov, Francesco Ruggeri and Salam Noureddine. Additional
-credits should be given to Prasad Koya, who was involved in early prototyping
-a few years back. There is also a separate submission done by Leonard Crestez
-whom we thank for his efforts getting an implementation of RFC5925 submitted
-for review upstream [2]. This is an independent implementation that makes
-different design decisions.
-
-For example, we chose a similar design to the TCP-MD5SIG implementation and
-used setsockopts to program per-socket keys, avoiding the extra complexity
-of managing a centralized key database in the kernel. A centralized database
-in the kernel has dubious benefits since it doesn’t eliminate per-socket
-setsockopts needed to specify which sockets need TCP-AO and what are the
-currently preferred keys. It also complicates traffic key caching and
-preventing deletion of in-use keys.
-
-In this implementation, a centralized database of keys can be thought of
-as living in user space and user applications would have to program those
-keys on matching sockets. On the server side, the user application programs
-keys (MKTS in TCP-AO nomenclature) on the listening socket for all peers that
-are expected to connect. Prefix matching on the peer address is supported.
-When a peer issues a successful connect, all the MKTs matching the IP address
-of the peer are copied to the newly created socket. On the active side,
-when a connect() is issued all MKTs that do not match the peer are deleted
-from the socket since they will never match the peer. This implementation
-uses three setsockopt()s for adding, deleting and modifying keys on a socket.
-All three setsockopt()s have extensive sanity checks that prevent
-inconsistencies in the keys on a given socket. A getsockopt() is provided
-to get key information from any given socket.
-
-Few things to note about this implementation:
-- Traffic keys are cached for established connections avoiding the cost of
-  such calculation for each packet received or sent.
-- Great care has been taken to avoid deleting in-use MKTs
-  as required by the RFC.
-- Any crypto algorithm supported by the Linux kernel can be used
-  to calculate packet hashes.
-- Fastopen works with TCP-AO but hasn’t been tested extensively.
-- Tested for interop with other major networking vendors (on linux-4.19),
-  including testing for key rotation and long lived connections.
-
-[1]: https://lore.kernel.org/all/20220726201600.1715505-1-dima@arista.com/
-[2]: https://lore.kernel.org/all/cover.1658815925.git.cdleonard@gmail.com/
-
-Cc: Andy Lutomirski <luto@amacapital.net>
-Cc: Ard Biesheuvel <ardb@kernel.org>
-Cc: Bob Gilligan <gilligan@arista.com>
-Cc: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: David Ahern <dsahern@kernel.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Dmitry Safonov <0x7f454c46@gmail.com>
-Cc: Eric Biggers <ebiggers@kernel.org>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: "Eric W. Biederman" <ebiederm@xmission.com>
-Cc: Francesco Ruggeri <fruggeri@arista.com>
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Cc: Ivan Delalande <colona@arista.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Leonard Crestez <cdleonard@gmail.com>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Salam Noureddine <noureddine@arista.com>
-Cc: Shuah Khan <shuah@kernel.org>
-Cc: netdev@vger.kernel.org
-Cc: linux-crypto@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-
-Dmitry Safonov (35):
-  crypto: Introduce crypto_pool
-  crypto_pool: Add crypto_pool_reserve_scratch()
-  net/tcp: Separate tcp_md5sig_info allocation into
-    tcp_md5sig_info_add()
-  net/tcp: Disable TCP-MD5 static key on tcp_md5sig_info destruction
-  net/tcp: Use crypto_pool for TCP-MD5
-  net/ipv6: sr: Switch to using crypto_pool
-  tcp: Add TCP-AO config and structures
-  net/tcp: Introduce TCP_AO setsockopt()s
-  net/tcp: Prevent TCP-MD5 with TCP-AO being set
-  net/tcp: Calculate TCP-AO traffic keys
-  net/tcp: Add TCP-AO sign to outgoing packets
-  net/tcp: Add tcp_parse_auth_options()
-  net/tcp: Add AO sign to RST packets
-  net/tcp: Add TCP-AO sign to twsk
-  net/tcp: Wire TCP-AO to request sockets
-  net/tcp: Sign SYN-ACK segments with TCP-AO
-  net/tcp: Verify inbound TCP-AO signed segments
-  net/tcp: Add TCP-AO segments counters
-  net/tcp: Add TCP-AO SNE support
-  net/tcp: Add tcp_hash_fail() ratelimited logs
-  net/tcp: Ignore specific ICMPs for TCP-AO connections
-  net/tcp: Add option for TCP-AO to (not) hash header
-  net/tcp: Add getsockopt(TCP_AO_GET)
-  net/tcp: Allow asynchronous delete for TCP-AO keys (MKTs)
-  selftests/net: Add TCP-AO library
-  selftests/net: Verify that TCP-AO complies with ignoring ICMPs
-  selftest/net: Add TCP-AO ICMPs accept test
-  selftest/tcp-ao: Add a test for MKT matching
-  selftest/tcp-ao: Add test for TCP-AO add setsockopt() command
-  selftests/tcp-ao: Add TCP-AO + TCP-MD5 + no sign listen socket tests
-  selftests/aolib: Add test/benchmark for removing MKTs
-  selftests/nettest: Remove client_pw
-  selftest/nettest: Rename md5_prefix* => auth_prefix*
-  selftests/nettest: Add TCP-AO support
-  selftests/fcnal-test.sh: Add TCP-AO tests
-
- crypto/Kconfig                                |   12 +
- crypto/Makefile                               |    1 +
- crypto/crypto_pool.c                          |  326 +++
- include/crypto/pool.h                         |   33 +
- include/linux/sockptr.h                       |   23 +
- include/linux/tcp.h                           |   24 +
- include/net/dropreason.h                      |   25 +
- include/net/seg6_hmac.h                       |    7 -
- include/net/tcp.h                             |  193 +-
- include/net/tcp_ao.h                          |  283 +++
- include/uapi/linux/snmp.h                     |    5 +
- include/uapi/linux/tcp.h                      |   62 +
- net/ipv4/Kconfig                              |   15 +-
- net/ipv4/Makefile                             |    1 +
- net/ipv4/proc.c                               |    5 +
- net/ipv4/tcp.c                                |  191 +-
- net/ipv4/tcp_ao.c                             | 1978 +++++++++++++++++
- net/ipv4/tcp_input.c                          |   94 +-
- net/ipv4/tcp_ipv4.c                           |  390 +++-
- net/ipv4/tcp_minisocks.c                      |   37 +-
- net/ipv4/tcp_output.c                         |  192 +-
- net/ipv6/Kconfig                              |    2 +-
- net/ipv6/Makefile                             |    1 +
- net/ipv6/seg6.c                               |    3 -
- net/ipv6/seg6_hmac.c                          |  204 +-
- net/ipv6/tcp_ao.c                             |  151 ++
- net/ipv6/tcp_ipv6.c                           |  327 ++-
- tools/testing/selftests/Makefile              |    1 +
- tools/testing/selftests/net/fcnal-test.sh     |  471 +++-
- tools/testing/selftests/net/nettest.c         |  217 +-
- tools/testing/selftests/net/tcp_ao/.gitignore |    2 +
- tools/testing/selftests/net/tcp_ao/Makefile   |   50 +
- .../selftests/net/tcp_ao/bench-lookups.c      |  403 ++++
- .../selftests/net/tcp_ao/connect-deny.c       |  217 ++
- tools/testing/selftests/net/tcp_ao/connect.c  |   81 +
- .../selftests/net/tcp_ao/icmps-accept.c       |    1 +
- .../selftests/net/tcp_ao/icmps-discard.c      |  447 ++++
- .../testing/selftests/net/tcp_ao/lib/aolib.h  |  333 +++
- .../selftests/net/tcp_ao/lib/netlink.c        |  341 +++
- tools/testing/selftests/net/tcp_ao/lib/proc.c |  267 +++
- .../testing/selftests/net/tcp_ao/lib/setup.c  |  297 +++
- tools/testing/selftests/net/tcp_ao/lib/sock.c |  294 +++
- .../testing/selftests/net/tcp_ao/lib/utils.c  |   30 +
- .../selftests/net/tcp_ao/setsockopt-closed.c  |  191 ++
- .../selftests/net/tcp_ao/unsigned-md5.c       |  483 ++++
- 45 files changed, 8099 insertions(+), 612 deletions(-)
+Signed-off-by: Dmitry Safonov <dima@arista.com>
+---
+ crypto/Kconfig        |   6 +
+ crypto/Makefile       |   1 +
+ crypto/crypto_pool.c  | 291 ++++++++++++++++++++++++++++++++++++++++++
+ include/crypto/pool.h |  34 +++++
+ 4 files changed, 332 insertions(+)
  create mode 100644 crypto/crypto_pool.c
  create mode 100644 include/crypto/pool.h
- create mode 100644 include/net/tcp_ao.h
- create mode 100644 net/ipv4/tcp_ao.c
- create mode 100644 net/ipv6/tcp_ao.c
- create mode 100644 tools/testing/selftests/net/tcp_ao/.gitignore
- create mode 100644 tools/testing/selftests/net/tcp_ao/Makefile
- create mode 100644 tools/testing/selftests/net/tcp_ao/bench-lookups.c
- create mode 100644 tools/testing/selftests/net/tcp_ao/connect-deny.c
- create mode 100644 tools/testing/selftests/net/tcp_ao/connect.c
- create mode 120000 tools/testing/selftests/net/tcp_ao/icmps-accept.c
- create mode 100644 tools/testing/selftests/net/tcp_ao/icmps-discard.c
- create mode 100644 tools/testing/selftests/net/tcp_ao/lib/aolib.h
- create mode 100644 tools/testing/selftests/net/tcp_ao/lib/netlink.c
- create mode 100644 tools/testing/selftests/net/tcp_ao/lib/proc.c
- create mode 100644 tools/testing/selftests/net/tcp_ao/lib/setup.c
- create mode 100644 tools/testing/selftests/net/tcp_ao/lib/sock.c
- create mode 100644 tools/testing/selftests/net/tcp_ao/lib/utils.c
- create mode 100644 tools/testing/selftests/net/tcp_ao/setsockopt-closed.c
- create mode 100644 tools/testing/selftests/net/tcp_ao/unsigned-md5.c
 
-
-base-commit: bf682942cd26ce9cd5e87f73ae099b383041e782
+diff --git a/crypto/Kconfig b/crypto/Kconfig
+index bb427a835e44..aeddaa3dcc77 100644
+--- a/crypto/Kconfig
++++ b/crypto/Kconfig
+@@ -2128,6 +2128,12 @@ config CRYPTO_STATS
+ config CRYPTO_HASH_INFO
+ 	bool
+ 
++config CRYPTO_POOL
++	tristate "Per-CPU crypto pool"
++	default n
++	help
++	  Per-CPU pool of crypto requests ready for usage in atomic contexts.
++
+ source "drivers/crypto/Kconfig"
+ source "crypto/asymmetric_keys/Kconfig"
+ source "certs/Kconfig"
+diff --git a/crypto/Makefile b/crypto/Makefile
+index a6f94e04e1da..b0f54cb9cea1 100644
+--- a/crypto/Makefile
++++ b/crypto/Makefile
+@@ -63,6 +63,7 @@ obj-$(CONFIG_CRYPTO_ACOMP2) += crypto_acompress.o
+ cryptomgr-y := algboss.o testmgr.o
+ 
+ obj-$(CONFIG_CRYPTO_MANAGER2) += cryptomgr.o
++obj-$(CONFIG_CRYPTO_POOL) += crypto_pool.o
+ obj-$(CONFIG_CRYPTO_USER) += crypto_user.o
+ crypto_user-y := crypto_user_base.o
+ crypto_user-$(CONFIG_CRYPTO_STATS) += crypto_user_stat.o
+diff --git a/crypto/crypto_pool.c b/crypto/crypto_pool.c
+new file mode 100644
+index 000000000000..37131952c5a7
+--- /dev/null
++++ b/crypto/crypto_pool.c
+@@ -0,0 +1,291 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++
++#include <crypto/pool.h>
++#include <linux/kref.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/percpu.h>
++#include <linux/workqueue.h>
++
++static unsigned long scratch_size = DEFAULT_CRYPTO_POOL_SCRATCH_SZ;
++static DEFINE_PER_CPU(void *, crypto_pool_scratch);
++
++struct crypto_pool_entry {
++	struct ahash_request * __percpu *req;
++	const char			*alg;
++	struct kref			kref;
++	bool				needs_key;
++};
++
++#define CPOOL_SIZE (PAGE_SIZE/sizeof(struct crypto_pool_entry))
++static struct crypto_pool_entry cpool[CPOOL_SIZE];
++static unsigned int cpool_populated;
++static DEFINE_MUTEX(cpool_mutex);
++
++static int crypto_pool_scratch_alloc(void)
++{
++	int cpu;
++
++	lockdep_assert_held(&cpool_mutex);
++
++	for_each_possible_cpu(cpu) {
++		void *scratch = per_cpu(crypto_pool_scratch, cpu);
++
++		if (scratch)
++			continue;
++
++		scratch = kmalloc_node(scratch_size, GFP_KERNEL,
++				       cpu_to_node(cpu));
++		if (!scratch)
++			return -ENOMEM;
++		per_cpu(crypto_pool_scratch, cpu) = scratch;
++	}
++	return 0;
++}
++
++static void crypto_pool_scratch_free(void)
++{
++	int cpu;
++
++	lockdep_assert_held(&cpool_mutex);
++
++	for_each_possible_cpu(cpu) {
++		void *scratch = per_cpu(crypto_pool_scratch, cpu);
++
++		if (!scratch)
++			continue;
++		per_cpu(crypto_pool_scratch, cpu) = NULL;
++		kfree(scratch);
++	}
++}
++
++static int __cpool_alloc_ahash(struct crypto_pool_entry *e, const char *alg)
++{
++	struct crypto_ahash *hash;
++	int cpu, ret = -ENOMEM;
++
++	e->alg = kstrdup(alg, GFP_KERNEL);
++	if (!e->alg)
++		return -ENOMEM;
++
++	e->req = alloc_percpu(struct ahash_request *);
++	if (!e->req)
++		goto out_free_alg;
++
++	hash = crypto_alloc_ahash(alg, 0, CRYPTO_ALG_ASYNC);
++	if (IS_ERR(hash)) {
++		ret = PTR_ERR(hash);
++		goto out_free_req;
++	}
++
++	/* If hash has .setkey(), allocate ahash per-cpu, not only request */
++	e->needs_key = crypto_ahash_get_flags(hash) & CRYPTO_TFM_NEED_KEY;
++
++	for_each_possible_cpu(cpu) {
++		struct ahash_request *req;
++
++		if (!hash)
++			hash = crypto_alloc_ahash(alg, 0, CRYPTO_ALG_ASYNC);
++		if (IS_ERR(hash))
++			goto out_free;
++
++		req = ahash_request_alloc(hash, GFP_KERNEL);
++		if (!req)
++			goto out_free;
++
++		ahash_request_set_callback(req, 0, NULL, NULL);
++
++		*per_cpu_ptr(e->req, cpu) = req;
++
++		if (e->needs_key)
++			hash = NULL;
++	}
++	kref_init(&e->kref);
++	return 0;
++
++out_free:
++	if (!IS_ERR_OR_NULL(hash) && e->needs_key)
++		crypto_free_ahash(hash);
++
++	for_each_possible_cpu(cpu) {
++		if (*per_cpu_ptr(e->req, cpu) == NULL)
++			break;
++		hash = crypto_ahash_reqtfm(*per_cpu_ptr(e->req, cpu));
++		ahash_request_free(*per_cpu_ptr(e->req, cpu));
++		if (e->needs_key) {
++			crypto_free_ahash(hash);
++			hash = NULL;
++		}
++	}
++
++	if (hash)
++		crypto_free_ahash(hash);
++out_free_req:
++	free_percpu(e->req);
++out_free_alg:
++	kfree(e->alg);
++	e->alg = NULL;
++	return ret;
++}
++
++/**
++ * crypto_pool_alloc_ahash - allocates pool for ahash requests
++ * @alg: name of async hash algorithm
++ */
++int crypto_pool_alloc_ahash(const char *alg)
++{
++	int i, ret;
++
++	/* slow-path */
++	mutex_lock(&cpool_mutex);
++
++	for (i = 0; i < cpool_populated; i++) {
++		if (cpool[i].alg && !strcmp(cpool[i].alg, alg)) {
++			if (kref_read(&cpool[i].kref) > 0) {
++				kref_get(&cpool[i].kref);
++				ret = i;
++				goto out;
++			} else {
++				break;
++			}
++		}
++	}
++
++	for (i = 0; i < cpool_populated; i++) {
++		if (!cpool[i].alg)
++			break;
++	}
++	if (i >= CPOOL_SIZE) {
++		ret = -ENOSPC;
++		goto out;
++	}
++
++	ret = __cpool_alloc_ahash(&cpool[i], alg);
++	if (!ret) {
++		ret = i;
++		if (i == cpool_populated)
++			cpool_populated++;
++	}
++out:
++	mutex_unlock(&cpool_mutex);
++	return ret;
++}
++EXPORT_SYMBOL_GPL(crypto_pool_alloc_ahash);
++
++static void __cpool_free_entry(struct crypto_pool_entry *e)
++{
++	struct crypto_ahash *hash = NULL;
++	int cpu;
++
++	for_each_possible_cpu(cpu) {
++		if (*per_cpu_ptr(e->req, cpu) == NULL)
++			continue;
++
++		hash = crypto_ahash_reqtfm(*per_cpu_ptr(e->req, cpu));
++		ahash_request_free(*per_cpu_ptr(e->req, cpu));
++		if (e->needs_key) {
++			crypto_free_ahash(hash);
++			hash = NULL;
++		}
++	}
++	if (hash)
++		crypto_free_ahash(hash);
++	free_percpu(e->req);
++	kfree(e->alg);
++	memset(e, 0, sizeof(*e));
++}
++
++static void cpool_cleanup_work_cb(struct work_struct *work)
++{
++	unsigned int i;
++	bool free_scratch = true;
++
++	mutex_lock(&cpool_mutex);
++	for (i = 0; i < cpool_populated; i++) {
++		if (kref_read(&cpool[i].kref) > 0) {
++			free_scratch = false;
++			continue;
++		}
++		if (!cpool[i].alg)
++			continue;
++		__cpool_free_entry(&cpool[i]);
++	}
++	if (free_scratch)
++		crypto_pool_scratch_free();
++	mutex_unlock(&cpool_mutex);
++}
++
++static DECLARE_WORK(cpool_cleanup_work, cpool_cleanup_work_cb);
++static void cpool_schedule_cleanup(struct kref *kref)
++{
++	schedule_work(&cpool_cleanup_work);
++}
++
++/**
++ * crypto_pool_release - decreases number of users for a pool. If it was
++ * the last user of the pool, releases any memory that was consumed.
++ * @id: crypto_pool that was previously allocated by crypto_pool_alloc_ahash()
++ */
++void crypto_pool_release(unsigned int id)
++{
++	if (WARN_ON_ONCE(id > cpool_populated || !cpool[id].alg))
++		return;
++
++	/* slow-path */
++	kref_put(&cpool[id].kref, cpool_schedule_cleanup);
++}
++EXPORT_SYMBOL_GPL(crypto_pool_release);
++
++/**
++ * crypto_pool_add - increases number of users (refcounter) for a pool
++ * @id: crypto_pool that was previously allocated by crypto_pool_alloc_ahash()
++ */
++void crypto_pool_add(unsigned int id)
++{
++	if (WARN_ON_ONCE(id > cpool_populated || !cpool[id].alg))
++		return;
++	kref_get(&cpool[id].kref);
++}
++EXPORT_SYMBOL_GPL(crypto_pool_add);
++
++/**
++ * crypto_pool_get - disable bh and start using crypto_pool
++ * @id: crypto_pool that was previously allocated by crypto_pool_alloc_ahash()
++ * @c: returned crypto_pool for usage (uninitialized on failure)
++ */
++int crypto_pool_get(unsigned int id, struct crypto_pool *c)
++{
++	struct crypto_pool_ahash *ret = (struct crypto_pool_ahash *)c;
++
++	local_bh_disable();
++	if (WARN_ON_ONCE(id > cpool_populated || !cpool[id].alg)) {
++		local_bh_enable();
++		return -EINVAL;
++	}
++	ret->req = *this_cpu_ptr(cpool[id].req);
++	ret->base.scratch = this_cpu_read(crypto_pool_scratch);
++	return 0;
++}
++EXPORT_SYMBOL_GPL(crypto_pool_get);
++
++/**
++ * crypto_pool_algo - return algorithm of crypto_pool
++ * @id: crypto_pool that was previously allocated by crypto_pool_alloc_ahash()
++ * @buf: buffer to return name of algorithm
++ * @buf_len: size of @buf
++ */
++size_t crypto_pool_algo(unsigned int id, char *buf, size_t buf_len)
++{
++	size_t ret = 0;
++
++	/* slow-path */
++	mutex_lock(&cpool_mutex);
++	if (cpool[id].alg)
++		ret = strscpy(buf, cpool[id].alg, buf_len);
++	mutex_unlock(&cpool_mutex);
++	return ret;
++}
++EXPORT_SYMBOL_GPL(crypto_pool_algo);
++
++MODULE_LICENSE("GPL");
++MODULE_DESCRIPTION("Per-CPU pool of crypto requests");
+diff --git a/include/crypto/pool.h b/include/crypto/pool.h
+new file mode 100644
+index 000000000000..2c61aa45faff
+--- /dev/null
++++ b/include/crypto/pool.h
+@@ -0,0 +1,34 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++#ifndef _CRYPTO_POOL_H
++#define _CRYPTO_POOL_H
++
++#include <crypto/hash.h>
++
++#define DEFAULT_CRYPTO_POOL_SCRATCH_SZ	128
++
++struct crypto_pool {
++	void *scratch;
++};
++
++/*
++ * struct crypto_pool_ahash - per-CPU pool of ahash_requests
++ * @base: common members that can be used by any async crypto ops
++ * @req: pre-allocated ahash request
++ */
++struct crypto_pool_ahash {
++	struct crypto_pool base;
++	struct ahash_request *req;
++};
++
++int crypto_pool_alloc_ahash(const char *alg);
++void crypto_pool_add(unsigned int id);
++void crypto_pool_release(unsigned int id);
++
++int crypto_pool_get(unsigned int id, struct crypto_pool *c);
++static inline void crypto_pool_put(void)
++{
++	local_bh_enable();
++}
++size_t crypto_pool_algo(unsigned int id, char *buf, size_t buf_len);
++
++#endif /* _CRYPTO_POOL_H */
 -- 
 2.37.2
 
