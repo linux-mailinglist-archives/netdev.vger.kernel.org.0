@@ -2,124 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E386F5E759D
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 10:23:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EE2A5E75CD
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 10:28:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231273AbiIWIXS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 04:23:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52842 "EHLO
+        id S231368AbiIWI2x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 04:28:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231182AbiIWIXR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 04:23:17 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A89B31162CD
-        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 01:23:14 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id n15so12325686wrq.5
-        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 01:23:14 -0700 (PDT)
+        with ESMTP id S231426AbiIWI2a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 04:28:30 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5775A3B710
+        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 01:28:14 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id 13so26365288ejn.3
+        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 01:28:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=tessares.net; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=YFEvJ/RKjhmvlVPLUD3Cqk9u+S3Qsgpvsfy23XmSnT8=;
-        b=xuwgSL+k9BKvUq5Y8p/v2zYMDk7y2GvqIomRIidNQzOx4S56/Ekxnkc6dVHnb35d3m
-         FbxFvh9Q9N6O10BufFtz6wWSq7TfVFE7lDmk+6OBXvwOUy0DabmgnZGD2CGHWFW8j+se
-         UGVXsV2rzNo0/hDOqjK8Un9kxAVp6HiDrmHSdXgj0B0OjnyEX272qtOwlNtH0iJXOn0A
-         FIZs5EQKpQ+X4PMVblepFmyWSNyg7lecWw0LQCiy/svdlnplGTCvmo/V9K19eRgcKAOK
-         PzPkx0+YGuXXuSCWT6UFlhRNS45BTXv31LK3pYXI1DDnslMFRymHUpdOF4g20qMHxWID
-         e1aw==
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=QezEKz77/Db/GC+vdqhiQIwuhY+qNfYlF6o+mILXDdY=;
+        b=k3xKkqK8d6xfCj8E+OcF6B57KkJM4PkkFSPrCN8YRj8etjrJ2J8YzY825ZZU8dxHwL
+         A+MPdmk3bf2WsT1rXQIDlNruJhs03w+hTzKmKMMnt738/sd+Peg/rj/IgXLmdH2y94o7
+         1cjPh1h6pFjTlzwjGY4NDb6z+53VjEkcKdUqC7cIEMDUErSVdrxd/wUbDsIZ5/7kXZhR
+         ozh4KghWE2CABfnkoSLFLL63nDyFO4MGWt5CTkUNxiViz3+ZquowLQqEDwRdrAiOFrRx
+         Hy8r22W8r5Fhsc42ShLeiF9o3KV+Cp4AKLOOAcshSRXhsO7mBK9TYAc6XoDB2DdXi8eV
+         o4KQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=YFEvJ/RKjhmvlVPLUD3Cqk9u+S3Qsgpvsfy23XmSnT8=;
-        b=FOk3TrmS9HFI6YhoXFEFtgcETiQiQVMK8CMqjTyt/nE6VL5ak87JeNSwFWUf08b1UI
-         3yCPhnkodqY0ZD1K9HiaNzvhPcbObHZAI1vvHf15omWvZ8IBIFFmSYXH34FJWrG13Ior
-         AfnXKOdcn96e/A0cvYXdVIzbNqBH8er84dFPIxQlt21FkykEzlcreZwaI7d2h9mMgaE4
-         j4tMoRfpK5qrzX3N0TUBYhxYJSvD+55i2gRfv9vDN+4iggEcGPFGOLaVq+6QcPGhpz8/
-         25fZig0jzhtf32tZLvnwNrXzkQwmAb/zc7P/ypZT3RHIFcXuUA+LpHmIdWuK83yf0phV
-         64Hw==
-X-Gm-Message-State: ACrzQf1TDczGZTx9LU/Wqp1aLz77JBd+V9aRrvuvwVdPM3ZcZ2k5JkQv
-        AQ6MCyoBxc7qtN6PR4/vj0u4qQ==
-X-Google-Smtp-Source: AMsMyM4bdVt3vaj37y8CH/P7NLQGXzQzRL8awhY0FLeSj2zaEFJPEdiaOQkVuExB0hRF7DggvtVypg==
-X-Received: by 2002:adf:de8d:0:b0:22a:e4b5:6791 with SMTP id w13-20020adfde8d000000b0022ae4b56791mr4374851wrl.1.1663921393156;
-        Fri, 23 Sep 2022 01:23:13 -0700 (PDT)
-Received: from vdi08.nix.tessares.net (static.219.156.76.144.clients.your-server.de. [144.76.156.219])
-        by smtp.gmail.com with ESMTPSA id bg42-20020a05600c3caa00b003a5f4fccd4asm1844515wmb.35.2022.09.23.01.23.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Sep 2022 01:23:12 -0700 (PDT)
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-To:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Shuah Khan <shuah@kernel.org>, Jakub Kicinski <kuba@kernel.org>
-Cc:     Hangbin Liu <liuhangbin@gmail.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] selftests/bonding: re-add lladdr target test
-Date:   Fri, 23 Sep 2022 10:23:06 +0200
-Message-Id: <20220923082306.2468081-1-matthieu.baerts@tessares.net>
-X-Mailer: git-send-email 2.37.2
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=QezEKz77/Db/GC+vdqhiQIwuhY+qNfYlF6o+mILXDdY=;
+        b=ZUXSCnv4pUUphUy63oWk/8Ym73YV0A+LEx82lTqXdJz8OdhEhk8vTuYH5ypTVnLayC
+         Elo7q/LnzVIZSKyf9MudRKJQzasnQ7ly5H3RrPWBp9ifNVF51Yy8uB/rdo68wMN8+aLv
+         vnYlujGMaLoDIWUPDwJRAsanlOLeorrY7ak2p0HydIMyrZPcMArfJWow8bUVEWyPZDHn
+         WcAIpOme0TbSiG09YaBmWXfk20UG+iBU78JUIn0857NjFYCovwH6BBZDgjwfoN0fhG9p
+         cjJHQlHv0lSWAxIFM7eD9Zh74KazZ8O+xDB2VXQZfOgkPpqduww7a4135CCTyrOo1Ypk
+         8zbw==
+X-Gm-Message-State: ACrzQf3AyonVXqTrRh3sD2Y0wLPFmTfrT5P3P8+wZ8BCiiZYnk5IGJn0
+        pbuP4XwOCG1TG1cOH6PECDCcSA==
+X-Google-Smtp-Source: AMsMyM6qOD/x5bbY9+p6d3Z6Xp/kb+CsMY8Y5mdn24hKcbasvvISebmD2bgJKHB0R1CScIPpjJ0mvA==
+X-Received: by 2002:a17:906:8454:b0:772:7b02:70b5 with SMTP id e20-20020a170906845400b007727b0270b5mr6092325ejy.114.1663921692676;
+        Fri, 23 Sep 2022 01:28:12 -0700 (PDT)
+Received: from ?IPV6:2a02:578:8593:1200:5e2b:69ae:ba71:ae54? ([2a02:578:8593:1200:5e2b:69ae:ba71:ae54])
+        by smtp.gmail.com with ESMTPSA id t22-20020a056402021600b00443d657d8a4sm5050904edv.61.2022.09.23.01.28.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 23 Sep 2022 01:28:11 -0700 (PDT)
+Message-ID: <1ccfd999-7cb6-3243-20c6-54299bc1b8a1@tessares.net>
+Date:   Fri, 23 Sep 2022 10:28:10 +0200
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1406; i=matthieu.baerts@tessares.net;
- h=from:subject; bh=AllAkDq+t+NJ5dCbtr0QN/nvka+ooj6Nxcu0FnWxesc=;
- b=owEBbQKS/ZANAwAIAfa3gk9CaaBzAcsmYgBjLWzoxx/J66co0FDhYxhq9FsSjjrCXEGFkOb2abBq
- hmT0snyJAjMEAAEIAB0WIQToy4X3aHcFem4n93r2t4JPQmmgcwUCYy1s6AAKCRD2t4JPQmmgc6UxEA
- DwPzVGAEs0qZ39OvtbkrRh9HJbP+529XBkMuvDjrksZhBN1w5GbIXlnqAGvtg7Zz/0EVvqh7DZk+iO
- 7rHxlOmbdfaMCjBRuYM47fkOytV/QJJc9Uq49WknWL4SI0h0TNFvEl1l409TOJuKxK46b2adTEM/eX
- 17gX9Lc+c/HhN/4qmJl1STgRf18uR+EuDk7YbckGE1d0sHxVggRy0GAJz71HUBo2bYG9vGKqMJ0LMv
- MkEGAGRUrcSK5XCtSUvZOfKBZrTvpw7OQhzs7sUXKc7qBAG5oMiGlERdpOTIRHrJBk5CA1D5GebYBU
- DwqjcUmRbz0Y50S746rDADEsxmE6yRosb47wSd0bfF9FzMLQjE490jF6dO1PwW8Qb77uUrIrlI3ccm
- QStkcpFapGa0cCAcp9IDhO9Az9vIBv8Sk+sReGkHyqcEqhQi5KsyPDuKOyn194/iN8IW+GVM7PKbf8
- JRPbg+/TFu8JC6aes8EmN39bxGjhliRpPMn4MLYM6kM14z3e2JcCUi4Nh3re81hhFFLqOJETpoNXCU
- bBHKJuQBPNrgJLa18e+NQoI2kXiQZ+3ulIboieNfDSXX9yLsQks1RxwVsizWSk+DadvFKeLwuMK0oB
- 1nrwbdJ1IOlkvKKXR6YhPVP0fFm0fgBoWzEfOJJonEeSx4iV7hzEeKqYqpsA==
-X-Developer-Key: i=matthieu.baerts@tessares.net; a=openpgp; fpr=E8CB85F76877057A6E27F77AF6B7824F4269A073
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.0
+Subject: Re: linux-next: manual merge of the net-next tree with the net tree
+Content-Language: en-GB
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Benjamin Poirier <bpoirier@nvidia.com>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        MPTCP Upstream <mptcp@lists.linux.dev>
+References: <20220921110437.5b7dbd82@canb.auug.org.au>
+ <2b4722a2-04cd-5e8f-ee09-c01c55aee7a7@tessares.net>
+ <20220922125908.28efd4b4@kernel.org>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+In-Reply-To: <20220922125908.28efd4b4@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It looks like this test has been accidentally dropped when resolving
-conflicts in this Makefile.
+Hi Jakub,
 
-Most probably because there were 3 different patches modifying this file
-in parallel:
+On 22/09/2022 21:59, Jakub Kicinski wrote:
+> On Wed, 21 Sep 2022 11:18:17 +0200 Matthieu Baerts wrote:
+>> Hi Stephen,
+>>
+>> On 21/09/2022 03:04, Stephen Rothwell wrote:
+>>> Hi all,
+>>>
+>>> Today's linux-next merge of the net-next tree got a conflict in:
+>>>
+>>>   tools/testing/selftests/drivers/net/bonding/Makefile
+>>>
+>>> between commit:
+>>>
+>>>   bbb774d921e2 ("net: Add tests for bonding and team address list management")
+>>>
+>>> from the net tree and commit:
+>>>
+>>>   152e8ec77640 ("selftests/bonding: add a test for bonding lladdr target")
+>>>
+>>> from the net-next tree.
+>>>
+>>> I fixed it up (see below) and can carry the fix as necessary.  
+>> Thank you for sharing this fix (and all the others!).
+>>
+>> I also had this conflict on my side[1] and I resolved it differently,
+>> more like what is done in the -net tree I think, please see the patch
+>> attached to this email.
+>>
+>> I guess I should probably use your version. It is just I saw it after
+>> having resolved the conflict on my side :)
+>> I will check later how the network maintainers will resolve this
+>> conflict and update my tree if needed.
+> 
+> I took this opportunity to sort 'em:
+> 
+> - TEST_PROGS := bond-break-lacpdu-tx.sh
+> - TEST_PROGS += bond-lladdr-target.sh
+>  -TEST_PROGS := bond-break-lacpdu-tx.sh \
+>  -            dev_addr_lists.sh \
+>  -            bond-arp-interval-causes-panic.sh
+> ++TEST_PROGS := \
+> ++      bond-arp-interval-causes-panic.sh \
+> ++      bond-break-lacpdu-tx.sh \
+> ++      dev_addr_lists.sh
+> + 
+> + TEST_FILES := lag_lib.sh
+> 
+> Here's to hoping there are no more bond selftests before final..
 
-  commit 152e8ec77640 ("selftests/bonding: add a test for bonding lladdr target")
-  commit bbb774d921e2 ("net: Add tests for bonding and team address list management")
-  commit 2ffd57327ff1 ("selftests: bonding: cause oops in bond_rr_gen_slave_id")
+Good idea to sort them!
 
-The first one was applied in 'net-next' while the two other ones were
-recently applied in the 'net' tree.
+It looks like you accidentally removed 'bond-lladdr-target.sh' from the
+list. Most probably because there was yet another conflict in this file,
+see commit 2ffd57327ff1 ("selftests: bonding: cause oops in
+bond_rr_gen_slave_id") :)
 
-But that's alright, easy to fix by re-adding the missing one!
+Or maybe because you were again disappointed by Lewandowski's
+performance yesterday when you were resolving the conflicts at the same
+time :-D
 
-Fixes: 0140a7168f8b ("Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net")
-Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
----
- tools/testing/selftests/drivers/net/bonding/Makefile | 1 +
- 1 file changed, 1 insertion(+)
+Anyway I just sent a small patch to fix this:
 
-diff --git a/tools/testing/selftests/drivers/net/bonding/Makefile b/tools/testing/selftests/drivers/net/bonding/Makefile
-index d14846fcf3d1..e9dab5f9d773 100644
---- a/tools/testing/selftests/drivers/net/bonding/Makefile
-+++ b/tools/testing/selftests/drivers/net/bonding/Makefile
-@@ -4,6 +4,7 @@
- TEST_PROGS := \
- 	bond-arp-interval-causes-panic.sh \
- 	bond-break-lacpdu-tx.sh \
-+	bond-lladdr-target.sh \
- 	dev_addr_lists.sh
- 
- TEST_FILES := lag_lib.sh
+https://lore.kernel.org/netdev/20220923082306.2468081-1-matthieu.baerts@tessares.net/T/
+https://patchwork.kernel.org/project/netdevbpf/patch/20220923082306.2468081-1-matthieu.baerts@tessares.net/
 
-base-commit: d05d9eb79d0cd0f7a978621b4a56a1f2db444f86
+Cheers,
+Matt
 -- 
-2.37.2
-
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
