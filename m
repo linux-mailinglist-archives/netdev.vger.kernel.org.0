@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB32E5E800B
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 18:40:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05EC95E800C
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 18:40:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230449AbiIWQkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 12:40:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58422 "EHLO
+        id S231287AbiIWQke (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 12:40:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229953AbiIWQk1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 12:40:27 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59D83719BE;
-        Fri, 23 Sep 2022 09:40:26 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id g3so776661wrq.13;
-        Fri, 23 Sep 2022 09:40:26 -0700 (PDT)
+        with ESMTP id S229765AbiIWQka (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 12:40:30 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A7287820B;
+        Fri, 23 Sep 2022 09:40:27 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id n10so781732wrw.12;
+        Fri, 23 Sep 2022 09:40:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=NLIYqCB5GFGbnjqA6dYmmqdLI8BuNFTVxSCPXONSBRc=;
-        b=owDxYda7B4frXz3u0Fwc1/mPY0PkIoc9YEt4hkPPANfeq4CAFBjXeUytt806Zgzrh2
-         Oflmk3RWPGkL3H4Kqr+rh0g6ue3kNa5qh9EG2VFQ5SqjrD782ppbdaoa2zK8ufjpi3tg
-         YpW05bXLXbqTGO0ZMSAueq+peDDRvbo8UVlb48ZmGp0vWAJpfOl00oTe17PDhCBXTmcj
-         4LkSJcqD4FNFtW3MKLedobmMatlst3bdPyImM5Y1cg33OA2+GGukbR5y3KFMrsGkoqPe
-         QYLUipMNRbiIvHjo0pc7wNIYe7Hj0Xd06Y+WNBvXMB+pfT+4vyFvrFYbZ+73u9ePpxWd
-         LFHw==
+        bh=FG3Mj1csJ7FbeoY2zgdLrFVr7w1D2Zs//acRgBf+TRE=;
+        b=eE5aVrZKg1v/P9UeaHNz1t9u6KrDObJzPuHWUbsNB0CGvL2ozT6QO6y8RV3J4TvApK
+         gPGLloFmul/9NycdPQzEdBinJ0njxpLdx/5DMi9pkPqxHexWAitmYT7B+590/zvfROM9
+         CIVg8YVhNarmc9WM95AOuXgoiDJPoZLmdOExh3cWbH26mGW6YjwixTE3hbClVdbEUOis
+         9uTUExsQwAPYQ75waTv9Um9hLpemVfJuIj+0GaxnBaIvAP3G5baJmEnOoa51UmzPE0/V
+         9wc+Ze+zqXKhGHGQroVMuqM6b/rlyf5FCzbF0pKQAhzaxGDoxQxA7E7iIWwRmyyPXktb
+         EuHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=NLIYqCB5GFGbnjqA6dYmmqdLI8BuNFTVxSCPXONSBRc=;
-        b=diyoHVNJnMp+XooHEQKBmPjJK+sEvvY/rBAg8SaW8S8Og9OgT9mfzZgVoh60y47gQO
-         C76du9I5y/tEPyX+AI7Nz9whFPjje4GzmB9XvUJWfc9nqCXav9Sp3W7jvbQTGsStxa4p
-         N9g18WgKfBL3sy8cUCXbE4VgP9Mh2O2ihIwqx/IhPQuf9kddv/kMOr6/7fzbuyj/OG3A
-         4Z1FpRDQPXxbmh6CDu9oY0U0LHapmxa9kFmZRQa78j2E7UQiTk57r3TGL+P9tbyh5jrb
-         aX44WNq3+ySgGheetT7yGmIAIHRp9XRxFd7Q5m9V4zSQKwA5TshDrJEteK5VMv5LA3Ax
-         Q3lg==
-X-Gm-Message-State: ACrzQf3Hdry4p1zSDYSw+Kx/I3CL5AIDn5/YosDroVSC6RyV2zDUl1CM
-        +ZiIkujqXoKR3KKNpLp6r54KIUnEbj8=
-X-Google-Smtp-Source: AMsMyM5HMaxWgOxUGbCzg/XjKD/kmOOlcN0KKz9OmaE/RAZn/7aZ8z59Qz72lGSep1WOF16x4j6q2w==
-X-Received: by 2002:a5d:5c06:0:b0:22a:7b52:cda6 with SMTP id cc6-20020a5d5c06000000b0022a7b52cda6mr5635717wrb.485.1663951224622;
-        Fri, 23 Sep 2022 09:40:24 -0700 (PDT)
+        bh=FG3Mj1csJ7FbeoY2zgdLrFVr7w1D2Zs//acRgBf+TRE=;
+        b=abKyBZvWWlNWtB45NbW1inprVyd4dgftlqVnvLS/fFFEAewPo8c8LinU/LAIEclxNu
+         GOQV1HamHjESoc2PDTCYv5B8Z5UsSrLCxJIVbgr+gVkjSPY9WOpwhp8vzQggpcpNUeUh
+         gjtpFsUgwxQJKoONRg+1R9HywB+KnYeTBV4AB9P8uqDYSOp+sj7bnxQQHVe/v+cDhmS0
+         /lyAunPnjvwrKI5C1RN3Bh8Oriv2Wv4/1Ibl4LJieothlKccdbsMqS33w3+cOwMLB9mG
+         1ovi/27PCCaPm9Ld4h6vQuxSs9cVUcR1kXx4uW5r0+14te7RkSvY54X9DdKNSsBI31Fv
+         exxA==
+X-Gm-Message-State: ACrzQf3UGbEdJc6Zc3hv/vyLTEmgLDzEkCNzdSjULOuhRqU3IIPJ7WbI
+        tDGFmncBITk6BC678Kp6ZnX8RFeC0Ks=
+X-Google-Smtp-Source: AMsMyM7kN8lNHyV1w1d1RL8dD6evo1RUYO8Wx/UWQQUl5cn81n4HQTVjecLZI9rI0Uh/wzPOiMq83A==
+X-Received: by 2002:a5d:5452:0:b0:228:d6f0:dbeb with SMTP id w18-20020a5d5452000000b00228d6f0dbebmr5883466wrv.84.1663951226140;
+        Fri, 23 Sep 2022 09:40:26 -0700 (PDT)
 Received: from 127.0.0.1localhost (188.28.201.74.threembb.co.uk. [188.28.201.74])
-        by smtp.gmail.com with ESMTPSA id x13-20020a5d60cd000000b0022af6c93340sm7717399wrt.17.2022.09.23.09.40.23
+        by smtp.gmail.com with ESMTPSA id x13-20020a5d60cd000000b0022af6c93340sm7717399wrt.17.2022.09.23.09.40.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Sep 2022 09:40:24 -0700 (PDT)
+        Fri, 23 Sep 2022 09:40:25 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S . Miller" <davem@davemloft.net>,
@@ -58,9 +58,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         "Michael S . Tsirkin" <mst@redhat.com>,
         Jason Wang <jasowang@redhat.com>,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next 2/4] xen/netback: use struct ubuf_info_msgzc
-Date:   Fri, 23 Sep 2022 17:39:02 +0100
-Message-Id: <5e00bc6d4d8c3fdcf3ed02549ba8a36d5552e56c.1663892211.git.asml.silence@gmail.com>
+Subject: [PATCH net-next 3/4] vhost/net: use struct ubuf_info_msgzc
+Date:   Fri, 23 Sep 2022 17:39:03 +0100
+Message-Id: <126df081c74ecf06de383b4fdaad5080346f93dd.1663892211.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <cover.1663892211.git.asml.silence@gmail.com>
 References: <cover.1663892211.git.asml.silence@gmail.com>
@@ -80,75 +80,61 @@ struct ubuf_info will be changed, use ubuf_info_msgzc instead.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- drivers/net/xen-netback/common.h    | 2 +-
- drivers/net/xen-netback/interface.c | 4 ++--
- drivers/net/xen-netback/netback.c   | 7 ++++---
- 3 files changed, 7 insertions(+), 6 deletions(-)
+ drivers/vhost/net.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/xen-netback/common.h b/drivers/net/xen-netback/common.h
-index 8174d7b2966c..1545cbee77a4 100644
---- a/drivers/net/xen-netback/common.h
-+++ b/drivers/net/xen-netback/common.h
-@@ -62,7 +62,7 @@ struct pending_tx_info {
- 	 * ubuf_to_vif is a helper which finds the struct xenvif from a pointer
- 	 * to this field.
- 	 */
--	struct ubuf_info callback_struct;
-+	struct ubuf_info_msgzc callback_struct;
- };
- 
- #define XEN_NETIF_TX_RING_SIZE __CONST_RING_SIZE(xen_netif_tx, XEN_PAGE_SIZE)
-diff --git a/drivers/net/xen-netback/interface.c b/drivers/net/xen-netback/interface.c
-index fb32ae82d9b0..e579ecd40b74 100644
---- a/drivers/net/xen-netback/interface.c
-+++ b/drivers/net/xen-netback/interface.c
-@@ -591,8 +591,8 @@ int xenvif_init_queue(struct xenvif_queue *queue)
- 	}
- 
- 	for (i = 0; i < MAX_PENDING_REQS; i++) {
--		queue->pending_tx_info[i].callback_struct = (struct ubuf_info)
--			{ .callback = xenvif_zerocopy_callback,
-+		queue->pending_tx_info[i].callback_struct = (struct ubuf_info_msgzc)
-+			{ { .callback = xenvif_zerocopy_callback },
- 			  { { .ctx = NULL,
- 			      .desc = i } } };
- 		queue->grant_tx_handle[i] = NETBACK_INVALID_HANDLE;
-diff --git a/drivers/net/xen-netback/netback.c b/drivers/net/xen-netback/netback.c
-index a256695fc89e..3d2081bbbc86 100644
---- a/drivers/net/xen-netback/netback.c
-+++ b/drivers/net/xen-netback/netback.c
-@@ -133,7 +133,7 @@ static inline unsigned long idx_to_kaddr(struct xenvif_queue *queue,
- 
- /* Find the containing VIF's structure from a pointer in pending_tx_info array
-  */
--static inline struct xenvif_queue *ubuf_to_queue(const struct ubuf_info *ubuf)
-+static inline struct xenvif_queue *ubuf_to_queue(const struct ubuf_info_msgzc *ubuf)
- {
- 	u16 pending_idx = ubuf->desc;
- 	struct pending_tx_info *temp =
-@@ -1228,11 +1228,12 @@ static int xenvif_tx_submit(struct xenvif_queue *queue)
- 	return work_done;
+diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
+index 68e4ecd1cc0e..d7a04d573988 100644
+--- a/drivers/vhost/net.c
++++ b/drivers/vhost/net.c
+@@ -118,7 +118,7 @@ struct vhost_net_virtqueue {
+ 	/* Number of XDP frames batched */
+ 	int batched_xdp;
+ 	/* an array of userspace buffers info */
+-	struct ubuf_info *ubuf_info;
++	struct ubuf_info_msgzc *ubuf_info;
+ 	/* Reference counting for outstanding ubufs.
+ 	 * Protected by vq mutex. Writers must also take device mutex. */
+ 	struct vhost_net_ubuf_ref *ubufs;
+@@ -382,8 +382,9 @@ static void vhost_zerocopy_signal_used(struct vhost_net *net,
  }
  
--void xenvif_zerocopy_callback(struct sk_buff *skb, struct ubuf_info *ubuf,
-+void xenvif_zerocopy_callback(struct sk_buff *skb, struct ubuf_info *ubuf_base,
- 			      bool zerocopy_success)
+ static void vhost_zerocopy_callback(struct sk_buff *skb,
+-				    struct ubuf_info *ubuf, bool success)
++				    struct ubuf_info *ubuf_base, bool success)
  {
- 	unsigned long flags;
- 	pending_ring_idx_t index;
 +	struct ubuf_info_msgzc *ubuf = uarg_to_msgzc(ubuf_base);
- 	struct xenvif_queue *queue = ubuf_to_queue(ubuf);
+ 	struct vhost_net_ubuf_ref *ubufs = ubuf->ctx;
+ 	struct vhost_virtqueue *vq = ubufs->vq;
+ 	int cnt;
+@@ -871,7 +872,7 @@ static void handle_tx_zerocopy(struct vhost_net *net, struct socket *sock)
+ 	size_t len, total_len = 0;
+ 	int err;
+ 	struct vhost_net_ubuf_ref *ubufs;
+-	struct ubuf_info *ubuf;
++	struct ubuf_info_msgzc *ubuf;
+ 	bool zcopy_used;
+ 	int sent_pkts = 0;
  
- 	/* This is the only place where we grab this lock, to protect callbacks
-@@ -1241,7 +1242,7 @@ void xenvif_zerocopy_callback(struct sk_buff *skb, struct ubuf_info *ubuf,
- 	spin_lock_irqsave(&queue->callback_lock, flags);
- 	do {
- 		u16 pending_idx = ubuf->desc;
--		ubuf = (struct ubuf_info *) ubuf->ctx;
-+		ubuf = (struct ubuf_info_msgzc *) ubuf->ctx;
- 		BUG_ON(queue->dealloc_prod - queue->dealloc_cons >=
- 			MAX_PENDING_REQS);
- 		index = pending_index(queue->dealloc_prod);
+@@ -907,14 +908,14 @@ static void handle_tx_zerocopy(struct vhost_net *net, struct socket *sock)
+ 			ubuf = nvq->ubuf_info + nvq->upend_idx;
+ 			vq->heads[nvq->upend_idx].id = cpu_to_vhost32(vq, head);
+ 			vq->heads[nvq->upend_idx].len = VHOST_DMA_IN_PROGRESS;
+-			ubuf->callback = vhost_zerocopy_callback;
+ 			ubuf->ctx = nvq->ubufs;
+ 			ubuf->desc = nvq->upend_idx;
+-			ubuf->flags = SKBFL_ZEROCOPY_FRAG;
+-			refcount_set(&ubuf->refcnt, 1);
++			ubuf->ubuf.callback = vhost_zerocopy_callback;
++			ubuf->ubuf.flags = SKBFL_ZEROCOPY_FRAG;
++			refcount_set(&ubuf->ubuf.refcnt, 1);
+ 			msg.msg_control = &ctl;
+ 			ctl.type = TUN_MSG_UBUF;
+-			ctl.ptr = ubuf;
++			ctl.ptr = &ubuf->ubuf;
+ 			msg.msg_controllen = sizeof(ctl);
+ 			ubufs = nvq->ubufs;
+ 			atomic_inc(&ubufs->refcount);
 -- 
 2.37.2
 
