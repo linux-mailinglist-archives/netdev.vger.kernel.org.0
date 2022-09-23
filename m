@@ -2,54 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C0CF5E7921
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 13:10:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 978475E7925
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 13:10:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232006AbiIWLKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 07:10:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58774 "EHLO
+        id S232084AbiIWLK1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 07:10:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231548AbiIWLKU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 07:10:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E09BA831E;
-        Fri, 23 Sep 2022 04:10:19 -0700 (PDT)
+        with ESMTP id S231215AbiIWLKW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 07:10:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0154FAA4D6
+        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 04:10:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B07161EF9;
-        Fri, 23 Sep 2022 11:10:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 664ADC433D7;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 96895B828D6
+        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 11:10:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5350AC433D6;
         Fri, 23 Sep 2022 11:10:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1663931418;
-        bh=LbW+VUr9DWt/bljfn5Ciy9AmuInJestA0k3eWHVTt6k=;
+        bh=ghn8tzhGtrvoRXE0BRumYZPx9Zc/TUeIGa+4s08s+7o=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=RYaHvTqq5gghs2gneIkUOvpWfNcxCgBpvD6gOB5162wt+2McsR83Vl73OpvKKpn2e
-         RCIj0oiS5U9XleKIyItiMsDYWY7jx4UwundC1RMm11QNkhKurfeeYjheFmSqh6K5qY
-         OBSyTf9SANNaAQbOhMIXGABEEELA27gxx/Duuy+S4hNZFFLmh6PcNRiCnF3JBzzKWK
-         H7pB5v4PvKiuDSEJArKoxH+VBuG4dU/CIVcC7PM8M/M9t6dc/0NGqDl0iHqXKrb7WH
-         eRS6PuSv+GP7U8IbZbN6XWS+Ihk1huu0GGk2GnIt2CQTNQNzrGtUaJlmfaYoW9Yj9n
-         V4fAEnH9CmyKQ==
+        b=VdXYNDo3/7r5d8qh/TmZlPLQM3R3A946cX6ZTyWVqXbjys1rUU7Y6nk9jOKEVAcMs
+         4MPW3p5dFnkcP006ewFky17tecdf3o2FPrdkYWYa6BPib4QVM3LAaCO47hhxSrGIlt
+         SV6iwMlWzSUtot5DddtEHMi/gCivGadQZbFR8dE33Vq8r3UyueWrGldS8lR2f/iP7h
+         0SBQaOqOOK4Jz9aszp4lqudSWNX7hznigWNP65FT2LyTvCujENkxI5oOzd32t0GClJ
+         k7QfsNkPNPA/bkfm1GENHcaLGxVKkTUvPSdbQKaR2MSbCPipk34w9KMaV7DVZ/0knW
+         wjU5saSovJxBA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4A6F4E4D03A;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3B90EE50D69;
         Fri, 23 Sep 2022 11:10:18 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v6 0/8] net: phy: Add support for rate matching
+Subject: Re: [PATCH v4] net: dsa: mt7530: add support for in-band link status
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166393141830.14679.9638727148672158207.git-patchwork-notify@kernel.org>
+Message-Id: <166393141823.14679.13460162221057201141.git-patchwork-notify@kernel.org>
 Date:   Fri, 23 Sep 2022 11:10:18 +0000
-References: <20220920221235.1487501-1-sean.anderson@seco.com>
-In-Reply-To: <20220920221235.1487501-1-sean.anderson@seco.com>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, olteanv@gmail.com, edumazet@google.com,
-        linux-kernel@vger.kernel.org, kuba@kernel.org, pabeni@redhat.com,
-        alexandru.marginean@nxp.com, davem@davemloft.net,
-        claudiu.manoil@nxp.com, ioana.ciornei@nxp.com, corbet@lwn.net,
-        linux-doc@vger.kernel.org
+References: <YypZcnkmkS4bWQYs@makrotopia.org>
+In-Reply-To: <YypZcnkmkS4bWQYs@makrotopia.org>
+To:     Daniel Golle <daniel@makrotopia.org>
+Cc:     linux@armlinux.org.uk, linux-mediatek@lists.infradead.org,
+        netdev@vger.kernel.org, sean.wang@mediatek.com,
+        Landen.Chao@mediatek.com, dqfext@gmail.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, matthias.bgg@gmail.com, p.zabel@pengutronix.de,
+        lynxis@fe80.eu
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -61,36 +62,22 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (master)
+This patch was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Tue, 20 Sep 2022 18:12:27 -0400 you wrote:
-> This adds support for phy rate matching: when a phy adapts between
-> differing phy interface and link speeds. It was originally submitted as
-> part of [1], which is considered "v1" of this series.
-> 
-> Several past discussions [2-4] around adding rate adaptation provide
-> some context.
+On Wed, 21 Sep 2022 01:23:14 +0100 you wrote:
+> Read link status from SGMII PCS for in-band managed 2500Base-X and
+> 1000Base-X connection on a MAC port of the MT7531. This is needed to
+> get the SFP cage working which is connected to SGMII interface of
+> port 5 of the MT7531 switch IC on the Bananapi BPi-R3 board.
+> While at it also handle an_complete for both the autoneg and the
+> non-autoneg codepath.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v6,1/8] net: phylink: Document MAC_(A)SYM_PAUSE
-    https://git.kernel.org/netdev/net-next/c/72bc36956f73
-  - [net-next,v6,2/8] net: phylink: Export phylink_caps_to_linkmodes
-    https://git.kernel.org/netdev/net-next/c/606116529ab2
-  - [net-next,v6,3/8] net: phylink: Generate caps and convert to linkmodes separately
-    https://git.kernel.org/netdev/net-next/c/3e6eab8f3ef9
-  - [net-next,v6,4/8] net: phy: Add support for rate matching
-    https://git.kernel.org/netdev/net-next/c/0c3e10cb4423
-  - [net-next,v6,5/8] net: phylink: Adjust link settings based on rate matching
-    https://git.kernel.org/netdev/net-next/c/ae0e4bb2a0e0
-  - [net-next,v6,6/8] net: phylink: Adjust advertisement based on rate matching
-    https://git.kernel.org/netdev/net-next/c/b7e9294885b6
-  - [net-next,v6,7/8] net: phy: aquantia: Add some additional phy interfaces
-    https://git.kernel.org/netdev/net-next/c/7de26bf144f6
-  - [net-next,v6,8/8] net: phy: aquantia: Add support for rate matching
-    (no matching commit)
+  - [v4] net: dsa: mt7530: add support for in-band link status
+    https://git.kernel.org/netdev/net-next/c/e19de30d2080
 
 You are awesome, thank you!
 -- 
