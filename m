@@ -2,117 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 226205E847B
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 23:02:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FDBC5E84DC
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 23:29:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232299AbiIWVA5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 17:00:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45458 "EHLO
+        id S231958AbiIWV3r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 17:29:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231593AbiIWVAr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 17:00:47 -0400
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2041.outbound.protection.outlook.com [40.107.21.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25AE510D642;
-        Fri, 23 Sep 2022 14:00:46 -0700 (PDT)
+        with ESMTP id S229808AbiIWV3q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 17:29:46 -0400
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2067.outbound.protection.outlook.com [40.107.95.67])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 926A72A957
+        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 14:29:43 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XiixKbHZxXEHbLb2fipWbw6AkLXHKndg68CoGWE1OxNA8s62GIYoHdYC/BCsmgbxAlaAXYdFvQYUhVY2KmwIO49Jwq561GPemZ4MpyTR1e3n81d7C0Wb1ciQiCjYMVLjisfMRXXU2i90jXnFDdpAQh64RqZ6Ogd2m2hCImd6XxvhbAs3enX9IsQyYl5qm0b18A5h7BRxArc3cA6md4fa4tAKlwnVTFuXA4kMIE0dl/+yxnMEHVpiRgzzUYb3vvVuifRB7UDljuY1rk4CjTAKD3Z+NNLFrF5fPlcWwv1PmTHo6Juz6Rc9me+nv3fa1f/TUpf9e6y4JnCpKqgIweIdtg==
+ b=i8j632pxg9fl9bi5Pm/PCqqByDh4VOKOt/+lw1LUjx6WWJJZSBjf6oEGbSmkCi1f5aKAhFFWSSBJe8vj0SpANnv+szgS1QexfdkM5hjl9pe9rONX7Kg2xvbE6d+aC2o8rf71eJ6Dl1LY/Xyd3xbyq5OBWVpOKmHH6c0qPckW45h8WaaxhB5KNF1Rhd1ZHOalUt7zEVIcw/4U/ZGOoOqAhm7ru4u4TrHQMmMEWRNCxDSh3KpayU3I0xBzrS4bLJ+u7czZJDbwQFgBC/g/BxiQKU7uS8nkcFUmzJoax5hTUsF12hB5PqHeL/TxYXPdBqjXjF61Zx0R/JMGkVMsqCgiKw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uam/3T3/50/z/8v91n0dbEBvvU607MfNHi2z6Umk/wI=;
- b=FMVIvj8PbIEGP5ZwY9aTXikYG08St3kJ00FRBQWv8oHLR1HoZZKzJm00NnA3AFZz2oU871kFpvBhsxEnRFQATMaKQRdbCTaUsDYNfHyPSwvXPCKtMgKoC1nRIUoT/UkjDOvzH8+QmJ2Wo43S+eRJb629/dvDE+rcDo0dbxPy7Rmv+iB6t9W1Y3Dq1Vsn/Ehn2Z4OmNYDU/qWNHPHwkmdA8rX/5BIusK9wOetDwYlqvpTCX8/0Lt3f84/Ke6dW4hPdYEL8LbQresTuNDrIpBQ3xlsF1v6nPSt31+A9Wy7Y5g0D0gsCkmwaJ/g+HKHfjVPmkdI26IMFnMBOw7yR8kzdQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ bh=UQcOGjOtcdgCpkv+DlM8QdCwhZcFWowY9pNiQoffFwU=;
+ b=F6/wa0OrH222lVoMVjkp+/hBhloZnVlD1r66gxvvUrC58QcYA4IvKQyjQe1fKIDz4jucB+BzZgBjI/r8k/x0izzeSo8coMvcm3fXumZPTfQFU9lYxnxU0zdb14lMJNabCGRAFQQVQCvQD/4l3kSrZyw8DXuel0L/PrX4wwx0FytXBYEAx3aRYgLxoFV/0Pd+Koss/25SKC78/AUwDUvR8SaGgZly3bRC/YVklBkc+mJ2XA5ieNf/I2RjAvpt+d0oozdVUBV5d1HcH7ku98KlIKaK1lcaVD4jxt/UUjE4wJ8csiW99g8Q99kJAQdIBfLbVcgH2WPGSqmoszomYRq72Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=fail (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=amdcloud.onmicrosoft.com; s=selector1-amdcloud-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uam/3T3/50/z/8v91n0dbEBvvU607MfNHi2z6Umk/wI=;
- b=TxEGvLGielyZR9r5nXn47sXcZYJNzeZtK0ENdkZODxNHQEvy4mABPsJoeMXW1YxGF0AjQcDW074Hv9D0cDAQHnyY3KBPlMN92q16J7UZeIoGQ5+gv42TCazyrTAWToWhzDU5bUUWTFNOp9HlPT2RBgYskhap48RBG9aMRQ4ea6E=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by AS8PR04MB7863.eurprd04.prod.outlook.com (2603:10a6:20b:2a8::11) with
+ bh=UQcOGjOtcdgCpkv+DlM8QdCwhZcFWowY9pNiQoffFwU=;
+ b=Jpm/lDtQ9RmJHW8wIkYSmQnnOyiM8QD0xin181WiYjrm0BEiFpwUR9gCT0bqOSEPNUpkys/LOlfQfzHVFcdMGAREuB7MsgjOWJUkN9BznxbQRQ/nQRNCjPRRxC6miO5Vuo8l6sDuBl5m4QMLPGjd5aTxgennL09RBoBgy7SZqfXhxxnzBfMexATzNIov9UbV5Gq6SjC4StcV0HfWeLxN77VlnesLwneILhliLns+sMAFM4RiOvG4MAdnQ9W+O69JUuh9OVm08MVpOsQDFKqPZq6FDrTQaOvn1OcKhbaLgyQUZEVZe43nV0wNfc01RVvZnVSwdvuv7C4iV8qTIhXBhQ==
+Received: from BN1PR12CA0002.namprd12.prod.outlook.com (2603:10b6:408:e1::7)
+ by MN2PR12MB4568.namprd12.prod.outlook.com (2603:10b6:208:260::12) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.18; Fri, 23 Sep
- 2022 21:00:42 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::a67a:849c:aeff:cad1]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::a67a:849c:aeff:cad1%7]) with mapi id 15.20.5632.021; Fri, 23 Sep 2022
- 21:00:42 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        UNGLinuxDriver@microchip.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 4/4] selftests: net: tsn_lib: run phc2sys in automatic mode
-Date:   Sat, 24 Sep 2022 00:00:16 +0300
-Message-Id: <20220923210016.3406301-6-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220923210016.3406301-1-vladimir.oltean@nxp.com>
-References: <20220923210016.3406301-1-vladimir.oltean@nxp.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.17; Fri, 23 Sep
+ 2022 21:29:41 +0000
+Received: from BN8NAM11FT051.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:e1:cafe::92) by BN1PR12CA0002.outlook.office365.com
+ (2603:10b6:408:e1::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.20 via Frontend
+ Transport; Fri, 23 Sep 2022 21:29:41 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=fail action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
+Received: from SATLEXMB03.amd.com (165.204.84.17) by
+ BN8NAM11FT051.mail.protection.outlook.com (10.13.177.66) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5654.14 via Frontend Transport; Fri, 23 Sep 2022 21:29:41 +0000
+Received: from SATLEXMB06.amd.com (10.181.40.147) by SATLEXMB03.amd.com
+ (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Fri, 23 Sep
+ 2022 16:29:41 -0500
+Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB06.amd.com
+ (10.181.40.147) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Fri, 23 Sep
+ 2022 16:29:40 -0500
+Received: from xcbecree41x.xilinx.com (10.180.168.240) by SATLEXMB03.amd.com
+ (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28 via Frontend
+ Transport; Fri, 23 Sep 2022 16:29:39 -0500
+From:   <ecree@xilinx.com>
+To:     <netdev@vger.kernel.org>, <linux-net-drivers@amd.com>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <edumazet@google.com>, <habetsm.xilinx@gmail.com>,
+        Edward Cree <ecree.xilinx@gmail.com>
+Subject: [PATCH net-next 0/6] sfc: bare bones TC offload
+Date:   Fri, 23 Sep 2022 22:05:32 +0100
+Message-ID: <cover.1663962652.git.ecree.xilinx@gmail.com>
+X-Mailer: git-send-email 2.27.0
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: VI1PR07CA0270.eurprd07.prod.outlook.com
- (2603:10a6:803:b4::37) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
-MIME-Version: 1.0
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AS8PR04MB7863:EE_
-X-MS-Office365-Filtering-Correlation-Id: 39b03766-2541-4ade-cc07-08da9da6ad67
-X-MS-Exchange-SenderADCheck: 1
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT051:EE_|MN2PR12MB4568:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9cb2c03f-09a3-4e74-bbdf-08da9daab9e6
+X-MS-Exchange-SenderADCheck: 0
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Je5uVZUTQfhV6J4Z0ThS9gRQzwD3keRO3FZbgIF4Bzx4Z5kJyVUqvoS/i9zp1MClQ9Rv52kG1Wmu2dOaO1tHObZXe6vkTs9POYEbDPURtaQqGHIp211IjhrycwAaNpaBVwSDoLgzMjWHGdr8mIvaiK7+422mvS8DbJ0OAlfGt85r5Xr3TWs+2PkWx/3FvLCsWFdbcIQTKzrgIxN+Q11QdRqjgQz9OA215EdqLnGyNu9D986FgBP6NTBnp3WdVCpm2eMNVb+Q91VHHVXL9aSPgzHHoFqaJKLI5DUEeP9qZXqcmUfUlY36QV526WVDmFDgh1vAJNXObuvjPATn7vONi6zk8AWjGa8HiDkWk/vXhfJ0ePGbhkzS3wWn0Hm6GgXSiCTMcO93CiKBRiohvd8H4ZCv/Q7LNM69jEY8iP66bYI+WvpwKPfPQ3HRZQRsBMNAtx2JY1MXfhGFTpKFDzxhpd8bCUyZsSEi0GVz+CbnSqc0GSu/qJ/c/OQRoMiXtQJ0DQMYk7ZRF8MwgB8/l9FwvyOADuaIwi2XELyRj9KY26+YwkIqpFnuXK97G/Kbv8qLgtyhZ61QdmhrLejLyCM+KWjR+jO/fJ8fklr/hOSCLPXBDfOf7ySsyYtx9ZFyf2AN1klSScxmNtNMDKRD3ybiHwXWEaowEQ4bpA2kxM0qqaV6NRxpjlULOvFOcfKQLKPHE5s0AVoJhhkWJBxv0EXDUc6arAHdtkQBse4PoBFsfivKENrVagMT/EPTtqR3YWDQ
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(366004)(346002)(39860400002)(396003)(136003)(451199015)(6486002)(38100700002)(66476007)(52116002)(316002)(6916009)(8676002)(4326008)(66556008)(66946007)(6506007)(36756003)(6666004)(1076003)(478600001)(8936002)(5660300002)(54906003)(41300700001)(86362001)(44832011)(2906002)(38350700002)(6512007)(26005)(186003)(2616005)(83380400001)(7416002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?AHDIlKJXdX3bHQWEGge2roMHAEt2SU8Ygp8si+5cU8M8IKUqGnZ2GoOpY3p4?=
- =?us-ascii?Q?Zfqrg4nLDO/7N9OnE6frY5MDbdzGtrN2SUoI5W124IBWv+IjqyL/EAWnZ5lP?=
- =?us-ascii?Q?CR8HH+x6y+TBXrFFA5Hdm/EbKhEbp8avjCdHLqggxZI76mc0RZLRjZfLOSll?=
- =?us-ascii?Q?rZkgcV3JY5UAnmYySnb0S5ziM9rlpKWlL1NPZEznAHSUSHH3gBfASlV56AU+?=
- =?us-ascii?Q?bAW95kitJM240XkTMvgek251BgqNZCQqQcVJAvuw6la0TqMvamDA3Ap1ubkb?=
- =?us-ascii?Q?hkZYdg6z0HyRo+tLrNXbQpU70ZxD0u61a5qWegB8n4x+UF03I3b9G3gpO8tO?=
- =?us-ascii?Q?TX93QAZm19BGkKrURXhhRvIWAMpdx8Ie23fMTadNlpMDuFLb6XIH8X4doDM8?=
- =?us-ascii?Q?C+rRuGqZSHkNCGQyZsPwPApx6DJUZLWDIvl2xNPgOL5/slM6WIeGZb9/xHn7?=
- =?us-ascii?Q?Sg9um6h6eQjug9aitUNDgAvxBe976RA6sKtpkgpomgcw0o1Tef1ax80MUvfJ?=
- =?us-ascii?Q?4r073DKqYixH0ZLhwhJ1mxhNQibu3yYQhJGTEBsOkjoUQqj5XLL/alWJfyB0?=
- =?us-ascii?Q?/s4l55QfQBAddJ+MFmxVe3qCJwvY9HZvfqdaN+abLNA7x3yFcO3UQm0W9kyp?=
- =?us-ascii?Q?A9y55WaK+bifBe70nd/WzMhFRDkhJEgn6JNCbJdTK8bLEEZvzmvjYHVJQV5X?=
- =?us-ascii?Q?2MxTQwfbAQtbGm0E6irmWncQqfCQUtutgN5+5Y2uTSVYBurAEJlHjqE4SUx8?=
- =?us-ascii?Q?YoMtSwdEPv2urrYwkWB4x53TxS8iB2V5PocUZLl4rQTFr+txIUnuAMyGxfEI?=
- =?us-ascii?Q?ImjHRDDGH/ihKQwUFRaEWQirtXVEMTC4/cS0RjzIXZ82PYYoHs/mppPbEl5l?=
- =?us-ascii?Q?2+Lcljv/IrjOY2C0nPX5dVwe7Ony2OVMR++DN9y8ZXcVJ9uuDQZ3QzhQJ4rF?=
- =?us-ascii?Q?PiU5BwNE4fG6JaR2JKBxYVoA8PYvveV5/pog/fDpdxg2Vmtl7Zxyp6VmAV4H?=
- =?us-ascii?Q?eduDOw0sKx8N3dl9UCD27dvZ2qO9M7Q0YtWNgoFmCJhcze/aA3BLLx6agA4o?=
- =?us-ascii?Q?Jme+2Gi8BmabMxCo9BlASU4AeJqWPYQ1+l6LXaVS00mvVa3Bx3ELsP7v5yt4?=
- =?us-ascii?Q?pRtbIZ8iGTgddw3kb/bFdW12gSyXayvhAAxeJEkc/aqoVlc4FdDGlidaEq3g?=
- =?us-ascii?Q?XTntQjWUtq1nh30w1jPxwvvWBxOPbFORY5nxi4HPpU25Hvw1j5Bp2L+3v99y?=
- =?us-ascii?Q?bI1a2zv/Vu4iP5iVLzQC4QirkkqSJT6H1FaeQZ+jeuBAJcoyonIXuNLi57f9?=
- =?us-ascii?Q?YLJJP9dbbyHEUnUznsK8SexWpNjJBLgX+AM4+UXkoufGKUhh5TI5x8biZm05?=
- =?us-ascii?Q?RPni856ERaZIdtGi7ySkr7x8541bO0szDkIPQ1Ew3yUyFBe3/4l4WUxdCtts?=
- =?us-ascii?Q?LS1lKfp+uul/k+rClaPS6hl+jzt+PKVr2UhQEjRhHCBT9Q10wjV8DmJXPyWE?=
- =?us-ascii?Q?BLiTraxf72JAchALj/XYafxEoIfhQYN1BvAh8BjL93v5djQjt/Hch/fnYcoI?=
- =?us-ascii?Q?+NMVMHrVwlK6mdiCt6iM0z4gb0nY6xVRDn1XVPgKxifKxY7udnd8SZuLRdiR?=
- =?us-ascii?Q?2w=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 39b03766-2541-4ade-cc07-08da9da6ad67
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2022 21:00:42.7926
+X-Microsoft-Antispam-Message-Info: HDgMWMBECFA7RkiCH+mzqyuNu0bDQQmGpiuFPyLGcYcxgqEZ97+qxb4Ksgsp2BYRJmhcHaEJ8SgfSi9QGEhnMV+ulNm/wPjCb1ZclHRnlq3+dtwj/WkKYqSyXld+VQDxSGxuaUMKtNeRNez7XubJyx3HK4fmlv5Pm12Q/Cbp8YUcYHYk7bOzOxheUnUiDkRiLL1Mz2QoQwgX/67it312bttd66NKYqL8s+jLr18Dt55V2xsy4JI9M5oPvNz8L4AY+wAoljvH++8rzS+QdGLZHyGSjvlntqxhRH9mKaONhMJkucqvg9vTlYprYbKN367pHGaO+95fFuF48qI0PVs7Ed0Nxzu4ktaytq4KAnnJhlL63GLmLidwPT+RzHA61V5t+7bb7nURhVFlXfuo5L8FLmD8vkp5wLfHJWt5Bt2l755N8UDyRqiI9h3gqpcBKmb3z/K29MzGtYiWBtf9HxEgsWvK6Rhqtbk+Xl3xymtzEoUmhGIXNbUpu3RZFfxYhoY3evzTrcxNAAt5EmsqrhEKZgQDJPo23xHAILzB0k1FPqj9pFHyKtpQqB2g0AQVdp8bjlKl4B9S2Xfbh7Lc0C3dK40o5Vu/ribs5+aIpv0pt/mlqSsMQnLztj7VlNZQeE3QSvhXziGns9djQIj7McF+4S9jwo+imhaa2NDbbBDJXc+Y5M6z/uIcJ25zH7oagTLQ3T6VeOU6GZK6gpQWkJD/Mwxdw9n/ZEAF3LBGs/o8phIIxVpFGY8eW1sCKKa8zZB7B/hNzAYwoERVgOvELJ3A6kI/gruDcygDUS/ewWfmbCY=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(376002)(346002)(136003)(396003)(39860400002)(451199015)(40470700004)(36840700001)(46966006)(82740400003)(478600001)(4326008)(36756003)(42882007)(336012)(70586007)(82310400005)(316002)(356005)(54906003)(70206006)(55446002)(41300700001)(8676002)(81166007)(83170400001)(110136005)(40480700001)(6666004)(36860700001)(26005)(9686003)(40460700003)(5660300002)(83380400001)(2876002)(8936002)(2906002)(186003)(47076005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2022 21:29:41.4629
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: qoN69MQ+k97+WhgSUdmnRE6iRINMRjRL9J5RX6RvYfNMzLWAUMqBWsU6L+ViGQohSTO0EC/Dj627jmhYT4SPgg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB7863
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9cb2c03f-09a3-4e74-bbdf-08da9daab9e6
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT051.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4568
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -120,67 +103,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We can make the phc2sys helper not only synchronize a PHC to
-CLOCK_REALTIME, which is what it currently does, but also CLOCK_REALTIME
-to a PHC, which is going to be needed in distributed TSN tests.
+From: Edward Cree <ecree.xilinx@gmail.com>
 
-Instead of making the complexity of the arguments passed to
-phc2sys_start() explode, we can let it figure out the sync direction
-automatically, based on ptp4l's port states.
+This series begins the work of supporting TC flower offload on EF100 NICs.
+This is the absolute minimum viable TC implementation to get traffic to
+ VFs and allow them to be tested; it supports no match fields besides
+ ingress port, no actions besides mirred and drop, and no stats.
+More matches, actions, and counters will be added in subsequent patches.
 
-Towards that goal, pass just the path to the desired ptp4l instance's
-UNIX domain socket, and remove the $if_name argument (from which it
-derives the PHC). Also adapt the one caller from the ocelot psfp.sh
-test. In the case of psfp.sh, phc2sys_start is able to properly figure
-out that CLOCK_REALTIME is the source clock and swp1's PHC is the
-destination, because of the way in which ptp4l_start for the
-UDS_ADDRESS_SWP1 was called: with slave_only=false, so it will always
-win the BMCA and always become the sync master between itself and $h1.
+Edward Cree (6):
+  sfc: bind blocks for TC offload on EF100
+  sfc: bind indirect blocks for TC offload on EF100
+  sfc: optional logging of TC offload errors
+  sfc: add a hashtable for offloaded TC rules
+  sfc: interrogate MAE capabilities at probe time
+  sfc: bare bones TC offload on EF100
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- tools/testing/selftests/drivers/net/ocelot/psfp.sh | 2 +-
- tools/testing/selftests/net/forwarding/tsn_lib.sh  | 7 ++-----
- 2 files changed, 3 insertions(+), 6 deletions(-)
-
-diff --git a/tools/testing/selftests/drivers/net/ocelot/psfp.sh b/tools/testing/selftests/drivers/net/ocelot/psfp.sh
-index 5a5cee92c665..bed748dde4b0 100755
---- a/tools/testing/selftests/drivers/net/ocelot/psfp.sh
-+++ b/tools/testing/selftests/drivers/net/ocelot/psfp.sh
-@@ -181,7 +181,7 @@ setup_prepare()
- 
- 	# Set up swp1 as a master PHC for h1, synchronized to the local
- 	# CLOCK_REALTIME.
--	phc2sys_start ${swp1} ${UDS_ADDRESS_SWP1}
-+	phc2sys_start ${UDS_ADDRESS_SWP1}
- 
- 	# Assumption true for LS1028A: h1 and h2 use the same PHC. So by
- 	# synchronizing h1 to swp1 via PTP, h2 is also implicitly synchronized
-diff --git a/tools/testing/selftests/net/forwarding/tsn_lib.sh b/tools/testing/selftests/net/forwarding/tsn_lib.sh
-index 20c2b411ba36..b91bcd8008a9 100644
---- a/tools/testing/selftests/net/forwarding/tsn_lib.sh
-+++ b/tools/testing/selftests/net/forwarding/tsn_lib.sh
-@@ -22,8 +22,7 @@ fi
- 
- phc2sys_start()
- {
--	local if_name=$1
--	local uds_address=$2
-+	local uds_address=$1
- 	local extra_args=""
- 
- 	if ! [ -z "${uds_address}" ]; then
-@@ -33,9 +32,7 @@ phc2sys_start()
- 	phc2sys_log="$(mktemp)"
- 
- 	chrt -f 10 phc2sys -m \
--		-c ${if_name} \
--		-s CLOCK_REALTIME \
--		-O ${UTC_TAI_OFFSET} \
-+		-a -rr \
- 		--step_threshold 0.00002 \
- 		--first_step_threshold 0.00002 \
- 		${extra_args} \
--- 
-2.34.1
+ drivers/net/ethernet/sfc/Makefile         |   2 +-
+ drivers/net/ethernet/sfc/ef100_ethtool.c  |   2 +
+ drivers/net/ethernet/sfc/ef100_netdev.c   |   4 +
+ drivers/net/ethernet/sfc/ef100_nic.c      |   3 +
+ drivers/net/ethernet/sfc/ef100_rep.c      |  18 +-
+ drivers/net/ethernet/sfc/ef100_rep.h      |   1 +
+ drivers/net/ethernet/sfc/ethtool_common.c |  37 ++
+ drivers/net/ethernet/sfc/ethtool_common.h |   2 +
+ drivers/net/ethernet/sfc/mae.c            | 165 +++++++++
+ drivers/net/ethernet/sfc/mae.h            |  14 +
+ drivers/net/ethernet/sfc/mcdi.h           |  10 +
+ drivers/net/ethernet/sfc/net_driver.h     |   2 +
+ drivers/net/ethernet/sfc/tc.c             | 430 +++++++++++++++++++++-
+ drivers/net/ethernet/sfc/tc.h             |  36 ++
+ drivers/net/ethernet/sfc/tc_bindings.c    | 228 ++++++++++++
+ drivers/net/ethernet/sfc/tc_bindings.h    |  29 ++
+ 16 files changed, 980 insertions(+), 3 deletions(-)
+ create mode 100644 drivers/net/ethernet/sfc/tc_bindings.c
+ create mode 100644 drivers/net/ethernet/sfc/tc_bindings.h
 
