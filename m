@@ -2,53 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E44125E703D
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 01:29:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B86665E706C
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 02:01:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229709AbiIVX3t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Sep 2022 19:29:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33260 "EHLO
+        id S230342AbiIWAA7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Sep 2022 20:00:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbiIVX3r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 19:29:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30792E97
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 16:29:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2EF8A612A1
-        for <netdev@vger.kernel.org>; Thu, 22 Sep 2022 23:29:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7970DC433D6;
-        Thu, 22 Sep 2022 23:29:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663889384;
-        bh=jTj9hjeuKXMgvWI+QaPNeZPkKLlaL+gGKOBXvAd9qFY=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=Hy/inp9yYj2LUT1HQHoYWh9xx2Y5ThroGj2uVIn8IkvbHgNIXTybJAnxnnp1kEwTt
-         4HhG91Fh/GaWlIZ3aGiRDtq8/eir0DPLPY3Q5qmpdcLwUfBoFlcJp03Ja5M10cvfwl
-         23HNaBDHCCq0ArccZQSVuYaPuvHGLxqb0sVc8tQCAI+xS3a7bCx/pe7TIMi6ATZimv
-         V1DDmRUhMc/ix9vwo+NvK1vbSYjNALvNnoM0iv1s1+ZEMZy0SKIwht3MJtYtHdhBD2
-         cFlmyV1dQEjSqr2dfGl1qz+NbjmeFAnXL9LSI7hPEo9/92xG5up6qY/sBV3/jPq0TJ
-         H/ErTKSDU5EkA==
-Message-ID: <12ecc390-bd02-9e06-ac29-416e79462064@kernel.org>
-Date:   Thu, 22 Sep 2022 16:29:43 -0700
+        with ESMTP id S230328AbiIWAAn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Sep 2022 20:00:43 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54888F8584;
+        Thu, 22 Sep 2022 17:00:21 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id q3so11345187pjg.3;
+        Thu, 22 Sep 2022 17:00:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date;
+        bh=doTF54kxpUq01XVd1M1z4LBvecAkGoOPNNz/NgZ0K5o=;
+        b=VjR+jvn8JGBYrkohscDoaleGHBdC7mA2kaT3LFTttWGJ8FF7BFhJbZ4w2TUfjh6jE5
+         epQLPkRy/4XSLL1ss/R6uy0skzav1Kht5pEpkcUssi3BbyPDn95GFsf3TvQujqMWbli8
+         gEEu3oWQm/ajmsq1ClEGHlJL4ljd2gHussTQiDE5wM/5rCTbAEAuGmKYA8wxmxR5wqIJ
+         KGMi5jps7c++ZhWTXN2szoD7WmDsEt5f8GqN7ClZZBcZ3oUqeICfwNzLL5DG2UOeOtSZ
+         QviHQYNQ+Cw9vg8CLROmLxelBvBGeQHmHQ/3rjlPam+xFAgaAREL3FTQh40tPCoyW2kj
+         enQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=doTF54kxpUq01XVd1M1z4LBvecAkGoOPNNz/NgZ0K5o=;
+        b=dM/fJOd5zVBOdZ9mlSy+vcI1GifMrOfPYt+6X2oucQ6e0GVf1lYfvSDSz9QtH4338N
+         X+P8Z8cOx6MOMf9LSwFdRrsR8Jz99a2F83Vm0m39IZVJG2yiYj1/lFVydF0XvX3paPvp
+         aVNc0+H3bCPhiAiFpae8PZIWyKVsh7yHNfKkHWxW+O98yJIv2f1c89qJr+X2ENGNHcgz
+         SSfyI2TAMqbRf3EYrGLbxNzEeQEwJs1mt++wtnO6wORg7iRpR5x/C7hwjZ9UHXPtCjBy
+         TBKxklBByrmQcVS9LMovAZS/OcVUWke+05XyeWfJ62vY+11k5PH+jO1ojgf4AlBiA9BV
+         VP7A==
+X-Gm-Message-State: ACrzQf2Ar1Winln45jMilhcOohjYpPTBLGpjoZAYja6RpGHN9iU6ETGm
+        8s58GnfNEU8kMUbTST5S1TRISeGwEiY=
+X-Google-Smtp-Source: AMsMyM5qT8sENZqnzkT5Z0IjzEeVY8nzXYzQOb9lsFr6dsdMc6GfRU/vk422OpVuoGJPjp5Lu7J6hg==
+X-Received: by 2002:a17:90a:c258:b0:202:b93b:cb89 with SMTP id d24-20020a17090ac25800b00202b93bcb89mr17606585pjx.126.1663891220689;
+        Thu, 22 Sep 2022 17:00:20 -0700 (PDT)
+Received: from [192.168.0.128] ([98.97.37.164])
+        by smtp.googlemail.com with ESMTPSA id m7-20020a17090aab0700b002008ba3a74csm324645pjq.52.2022.09.22.17.00.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Sep 2022 17:00:20 -0700 (PDT)
+Message-ID: <c6454874c531dd9e6c50c2110d47903b87a1e165.camel@gmail.com>
+Subject: Re: [PATCH v2] headers: Remove some left-over license text
+From:   Alexander H Duyck <alexander.duyck@gmail.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>, yhs@fb.com,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Date:   Thu, 22 Sep 2022 17:00:18 -0700
+In-Reply-To: <88410cddd31197ea26840d7dd71612bece8c6acf.1663871981.git.christophe.jaillet@wanadoo.fr>
+References: <88410cddd31197ea26840d7dd71612bece8c6acf.1663871981.git.christophe.jaillet@wanadoo.fr>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.13.0
-Subject: Re: [PATCH iproute2] taprio: support dumping and setting per-tc max
- SDU
-Content-Language: en-US
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>
-References: <20220914200706.1961613-1-vladimir.oltean@nxp.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <20220914200706.1961613-1-vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-9.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,27 +75,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/14/22 2:07 PM, Vladimir Oltean wrote:
-> The 802.1Q queueMaxSDU table is technically implemented in Linux as
-> the TCA_TAPRIO_TC_ENTRY_MAX_SDU attribute of the TCA_TAPRIO_ATTR_TC_ENTRY
-> nest. Multiple TCA_TAPRIO_ATTR_TC_ENTRY nests may appear in the netlink
-> message, one per traffic class. Other configuration items that are per
-> traffic class are also supposed to go there.
-> 
-> This is done for future extensibility of the netlink interface (I have
-> the feeling that the struct tc_mqprio_qopt passed through
-> TCA_TAPRIO_ATTR_PRIOMAP is not exactly extensible, which kind of defeats
-> the purpose of using netlink). But otherwise, the max-sdu is parsed from
-> the user, and printed, just like any other fixed-size 16 element array.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Thu, 2022-09-22 at 20:41 +0200, Christophe JAILLET wrote:
+> Remove some left-over from commit e2be04c7f995 ("License cleanup: add SPD=
+X
+> license identifier to uapi header files with a license")
+>=20
+> When the SPDX-License-Identifier tag has been added, the corresponding
+> license text has not been removed.
+>=20
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 > ---
-> This is the user space counterpart of:
-> https://patchwork.kernel.org/project/netdevbpf/cover/20220914153303.1792444-1-vladimir.oltean@nxp.com/
-> 
+> Changes since v1:
+>   - add tools/include/uapi/linux/tc_act/tc_bpf.h   [Yonghong Song <yhs@fb=
+.com>]
+>=20
+> v1: https://lore.kernel.org/all/2a15aba72497e78ff08c8b8a8bfe3cf5a3e6ee18.=
+1662897019.git.christophe.jaillet@wanadoo.fr/
+> ---
+>  include/uapi/linux/tc_act/tc_bpf.h        |  5 -----
+>  include/uapi/linux/tc_act/tc_skbedit.h    | 13 -------------
+>  include/uapi/linux/tc_act/tc_skbmod.h     |  7 +------
+>  include/uapi/linux/tc_act/tc_tunnel_key.h |  5 -----
+>  include/uapi/linux/tc_act/tc_vlan.h       |  5 -----
+>  tools/include/uapi/linux/tc_act/tc_bpf.h  |  5 -----
+>  6 files changed, 1 insertion(+), 39 deletions(-)
+>=20
+>=20
 
-still waiting for the upstream api to be merged. When that happens,
-repost and include example command lines for setting and dumping along
-with json output to the cover letter. Also, include tc folks such as
-Jamal, Jiri and Cong
+<snip>
 
+> diff --git a/include/uapi/linux/tc_act/tc_skbedit.h b/include/uapi/linux/=
+tc_act/tc_skbedit.h
+> index 6cb6101208d0..64032513cc4c 100644
+> --- a/include/uapi/linux/tc_act/tc_skbedit.h
+> +++ b/include/uapi/linux/tc_act/tc_skbedit.h
+> @@ -2,19 +2,6 @@
+>  /*
+>   * Copyright (c) 2008, Intel Corporation.
+>   *
+> - * This program is free software; you can redistribute it and/or modify =
+it
+> - * under the terms and conditions of the GNU General Public License,
+> - * version 2, as published by the Free Software Foundation.
+> - *
+> - * This program is distributed in the hope it will be useful, but WITHOU=
+T
+> - * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+> - * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License=
+ for
+> - * more details.
+> - *
+> - * You should have received a copy of the GNU General Public License alo=
+ng with
+> - * this program; if not, write to the Free Software Foundation, Inc., 59=
+ Temple
+> - * Place - Suite 330, Boston, MA 02111-1307 USA.
+> - *
+>   * Author: Alexander Duyck <alexander.h.duyck@intel.com>
+>   */
+> =20
+
+Looks good to me.
+
+Acked-by: Alexander Duyck <alexanderduyck@fb.com>
