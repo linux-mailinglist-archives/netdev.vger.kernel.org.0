@@ -2,218 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 74A4C5E7B7F
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 15:12:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0356D5E7B9B
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 15:16:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232140AbiIWNMP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 09:12:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38828 "EHLO
+        id S232140AbiIWNQr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 09:16:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232310AbiIWNLw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 09:11:52 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47DA65D0D8;
-        Fri, 23 Sep 2022 06:11:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=xuVCXIa/TPpmYY8fHhGwDK/MmbReamcjwszP+MviEcs=; b=Yg+/eTLPcNlrktCGDt+F1FzFYf
-        r8BWI7JEu/zEiOVjP99B7ogfSUJhxrhsSuqWJqYC/aw+hgT618np0In4VHxRGLKDW0ZcsHNDFUDPh
-        Hpzui+tJFwYq/3nyg+k4JFTrTUGRi1FeNjq9ne0J6EzsXEA9EUrPpbWjXvkPCkBbohtI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1obiSw-0001Vg-Nn; Fri, 23 Sep 2022 15:11:38 +0200
-Date:   Fri, 23 Sep 2022 15:11:38 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org
-Subject: Re: [PATCH v3 2/3] net: ethernet: renesas: Add Ethernet Switch driver
-Message-ID: <Yy2wivbzUA2zroqy@lunn.ch>
-References: <20220922052803.3442561-1-yoshihiro.shimoda.uh@renesas.com>
- <20220922052803.3442561-3-yoshihiro.shimoda.uh@renesas.com>
+        with ESMTP id S231402AbiIWNQq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 09:16:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E944013C86A
+        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 06:16:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A1405B80C7B
+        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 13:16:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E13DEC433D7;
+        Fri, 23 Sep 2022 13:16:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1663939002;
+        bh=B36MaMoH2SlTOnpa0i9dgMKBIYd5GO4gXjv44jPR/RE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=T7BagpWKFCDKj5wdrLvrHNMcZEvOReQqZfDUeNO9F8ZnSYMz6CremzCFwQBXPVIMr
+         /x/VcnjwEX4mpmvqNsawPa1MYzUMrfFXvgGb0F02FZQJy/Apsbhj/jb3cc2x+zCii1
+         YUvsy/nr1jyctbrVZIrarabJWuzc+QBPwkKry7kdYLysZ2jbrZWs64TEUHdMMhjaxl
+         AKa/e3pyjUr5b2RPd+hncV9V/LskOnkHPE6uLkoVdmPdcForVsIet/x0C1OWp5iwtY
+         +hTE7t/xOXYr2Id1OCqWnLETjYGz2K3S9mNCN/Ev1bG2InnfkrW025NwUynpqWymgA
+         Yt4voWf4Lf1Mw==
+Date:   Fri, 23 Sep 2022 06:16:40 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Wilczynski, Michal" <michal.wilczynski@intel.com>
+Cc:     Edward Cree <ecree.xilinx@gmail.com>, <netdev@vger.kernel.org>,
+        <alexandr.lobakin@intel.com>, <dchumak@nvidia.com>,
+        <maximmi@nvidia.com>, <jiri@resnulli.us>,
+        <simon.horman@corigine.com>, <jacob.e.keller@intel.com>,
+        <jesse.brandeburg@intel.com>, <przemyslaw.kitszel@intel.com>
+Subject: Re: [RFC PATCH net-next v4 2/6] devlink: Extend devlink-rate api
+ with queues and new parameters
+Message-ID: <20220923061640.595db7ef@kernel.org>
+In-Reply-To: <732253d6-69a4-e7ab-99a2-f310c0f22b12@intel.com>
+References: <20220915134239.1935604-1-michal.wilczynski@intel.com>
+        <20220915134239.1935604-3-michal.wilczynski@intel.com>
+        <f17166c7-312d-ac13-989e-b064cddcb49e@gmail.com>
+        <401d70a9-5f6d-ed46-117b-de0b82a5f52c@intel.com>
+        <20220921163354.47ca3c64@kernel.org>
+        <477ea14d-118a-759f-e847-3ba93ae96ea8@intel.com>
+        <20220922055040.7c869e9c@kernel.org>
+        <9656fcda-0d63-06dc-0803-bc5f90ee44fd@intel.com>
+        <20220922132945.7b449d9b@kernel.org>
+        <732253d6-69a4-e7ab-99a2-f310c0f22b12@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220922052803.3442561-3-yoshihiro.shimoda.uh@renesas.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +/* Forwarding engine block (MFWD) */
-> +static void rswitch_fwd_init(struct rswitch_private *priv)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < RSWITCH_NUM_HW; i++) {
-> +		iowrite32(FWPC0_DEFAULT, priv->addr + FWPC0(i));
-> +		iowrite32(0, priv->addr + FWPBFC(i));
-> +	}
+On Fri, 23 Sep 2022 14:11:08 +0200 Wilczynski, Michal wrote:
+> On 9/22/2022 10:29 PM, Jakub Kicinski wrote:
+> > On Thu, 22 Sep 2022 15:45:55 +0200 Wilczynski, Michal wrote: =20
+> >> On 9/22/2022 2:50 PM, Jakub Kicinski wrote: =20
+>
+> I'm not sure whether this is allowed on mailing list, but I'm attaching=20
+> a text file  with an ASCII drawing representing a tree I've send
+> previously as linear. Hope you'll find this easier to read.
 
-What is RSWITCH_NUM_HW?
+That helps, thanks! So what I was saying was anything under the vport
+layer should be configured by the policy local to the owner of the
+function.
 
-> +
-> +	for (i = 0; i < RSWITCH_NUM_ETHA; i++) {
+> >> We tried already tc-htb, and it doesn't work for a couple of reasons,
+> >> even in this potential hybrid with devlink-rate. One of the problems
+> >> with tc-htb offload is that it forces you to allocate a new
+> >> queue, it doesn't allow for reassigning an existing queue to another
+> >> scheduling node. This is our main use case.
+> >>
+> >> Here's a discussion about tc-htb:
+> >> https://lore.kernel.org/netdev/20220704114513.2958937-1-michal.wilczyn=
+ski@intel.com/ =20
+> > This is a problem only for "SR-IOV case" or also for just the PF? =20
+>=20
+> The way tc-htb is coded it's NOT possible to reassign queues from one=20
+> scheduling node to the other, this is a generic problem with this
+> implementation, regardless of SR-IOV or PF. So even if we
+> wanted to reassign queues only for PF's this wouldn't be possible.
+> I feel like an example would help. So let's say I do this:
+>=20
+> tc qdisc replace dev ens785 root handle 1: htb offload
+> tc class add dev ens785 parent 1: classid 1:2 htb rate 1000 ceil 2000
+> tc class add dev ens785 parent 1:2 classid 1:3 htb rate 1000 ceil 2000
+> tc class add dev ens785 parent 1:2 classid 1:4 htb rate 1000 ceil 2000
+> tc class add dev ens785 parent 1:3 classid 1:5 htb rate 1000 ceil 2000
+> tc class add dev ens785 parent 1:4 classid 1:6 htb rate 1000 ceil 2000
+>=20
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 1:=C2=A0=C2=A0=C2=A0 <-- root qdisc
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 1:2
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 / \
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 /=C2=A0=C2=A0 \
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 1:3=C2=A0=C2=A0 1:4
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 |=C2=A0=C2=A0=C2=A0=C2=A0 |
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 |=C2=A0=C2=A0=C2=A0=C2=A0 |
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 1:5=C2=A0=C2=A0 1:6
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 |=C2=A0=C2=A0=C2=A0=C2=A0 |
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 QID=C2=A0=C2=A0 QID=C2=A0=C2=A0 <---- here we'll have PFIFO qdiscs
+>=20
+>=20
+> At this point I would have two additional queues in the system, and
+> the kernel would enqueue packets to those new queues according to 'tc
+> flower' configuration.=20
 
-RSWITCH_NUM_ETHA appears to be the number of ports?
+TBH I don't know what you mean by "reassign queues from one=20
+scheduling node to the other", sorry I don't know this code well.
+Neither the offload nor HTB itself.
 
-> +static void rswitch_gwca_set_rate_limit(struct rswitch_private *priv, int rate)
-> +{
-> +	u32 gwgrlulc, gwgrlc;
-> +
-> +	switch (rate) {
-> +	case 1000:
-> +		gwgrlulc = 0x0000005f;
-> +		gwgrlc = 0x00010260;
-> +		break;
-> +	default:
-> +		dev_err(&priv->pdev->dev, "%s: This rate is not supported (%d)\n", __func__, rate);
-> +		return;
-> +	}
+My uneducated anticipation of how HTB offload would work is that=20
+queue 0 of the NIC is a catch all for leftovers and all other queues
+get assigned leaf nodes.
 
-Is this setting the Mbps between the switch matrix and the CPU? Why
-limit the rate? Especially if you have 3 ports, would not 3000 make
-sense?
+> So theoretically we should create a new queue
+> in a hardware and put it in a privileged position in the scheduling=20
+> tree. And I would happily write it this
+> way, but this is NOT what our customer want. He doesn't want any
+> extra queues in the system, he just
+> wants to make existing queues more privileged. And not just PF queues
+> - he's mostly interested in VF queues.
+> I'm not sure how to state use case more clearly.
 
-> +static void rswitch_get_data_irq_status(struct rswitch_private *priv, u32 *dis)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < RSWITCH_NUM_IRQ_REGS; i++) {
-> +		dis[i] = ioread32(priv->addr + GWDIS(i));
-> +		dis[i] &= ioread32(priv->addr + GWDIE(i));
-> +	}
-> +}
-> +
-> +static void rswitch_enadis_data_irq(struct rswitch_private *priv, int index, bool enable)
-> +{
-> +	u32 offs = enable ? GWDIE(index / 32) : GWDID(index / 32);
-> +
-> +	iowrite32(BIT(index % 32), priv->addr + offs);
-> +}
-> +
-> +static void rswitch_ack_data_irq(struct rswitch_private *priv, int index)
-> +{
-> +	u32 offs = GWDIS(index / 32);
-> +
-> +	iowrite32(BIT(index % 32), priv->addr + offs);
-> +}
-> +
-> +static bool rswitch_is_chain_rxed(struct rswitch_gwca_chain *c)
-> +{
-> +	struct rswitch_ext_ts_desc *desc;
-> +	int entry;
-> +
-> +	entry = c->dirty % c->num_ring;
-> +	desc = &c->ts_ring[entry];
-> +
-> +	if ((desc->die_dt & DT_MASK) != DT_FEMPTY)
-> +		return true;
-> +
-> +	return false;
+The VF means controlling queue scheduling of another function
+via the PF, right? Let's leave that out of the picture for now
+so we don't have to worry about "architectural" concerns.
 
-Is a chain a queue? Also known as a ring? The naming is different to
-most drivers, which is making this harder to understand. Ideally, you
-want to follow the basic naming the majority of other drivers use.
+> >> So either I would have to invent a new offload type (?) for tc, or
+> >> completely rewrite and
+> >> probably break tc-htb that mellanox implemented.
+> >> Also in our use case it's possible to create completely new
+> >> branches from the root and
+> >> reassigning queues there. This wouldn't be possible with the method
+> >> you're proposing.
+> >>
+> >> So existing interface doesn't allow us to do what is required. =20
+> > For some definition of "what is required" which was not really
+> > disclosed clearly. Or I'm to slow to grasp. =20
+>=20
+> In most basic variant what we want is a way to make hardware queues
+> more privileged, and modify hierarchy of nodes/queues freely. We
+> don't want to create new queues, as required by tc-htb
+> implementation. This is main reason why tc-htb and devlink-rate
+> hybrid doesn't work for us.
 
-> +}
-> +
-> +static int rswitch_gwca_chain_alloc_skb(struct rswitch_gwca_chain *c,
-> +					int start, int num)
-> +{
-> +	int i, index;
-> +
-> +	for (i = start; i < (start + num); i++) {
-> +		index = i % c->num_ring;
-
-Why this? Would it not make more sense to validate that start + num <
-num_ring? It seems like bad parameters passed here could destroy some
-other skb in the ring?
-
-More naming... Here you use num_ring, not num_chain. Try to be
-consistent. Also, num_ring makes my think of ring 7 of 9 rings. When
-this actually appears to be the size of the ring. So c->ring_size
-would be a better name.
-
-> +		if (c->skb[index])
-> +			continue;
-> +		c->skb[index] = dev_alloc_skb(PKT_BUF_SZ + RSWITCH_ALIGN - 1);
-> +		if (!c->skb[index])
-> +			goto err;
-> +		skb_reserve(c->skb[index], NET_IP_ALIGN);
-
-netdev_alloc_skb_ip_align()?
-
-> +static void rswitch_gwca_chain_free(struct net_device *ndev,
-> +				    struct rswitch_gwca_chain *c)
-> +{
-> +	int i;
-> +
-> +	if (c->gptp) {
-> +		dma_free_coherent(ndev->dev.parent,
-> +				  sizeof(struct rswitch_ext_ts_desc) *
-> +				  (c->num_ring + 1), c->ts_ring, c->ring_dma);
-> +		c->ts_ring = NULL;
-> +	} else {
-> +		dma_free_coherent(ndev->dev.parent,
-> +				  sizeof(struct rswitch_ext_desc) *
-> +				  (c->num_ring + 1), c->ring, c->ring_dma);
-> +		c->ring = NULL;
-> +	}
-> +
-> +	if (!c->dir_tx) {
-> +		for (i = 0; i < c->num_ring; i++)
-> +			dev_kfree_skb(c->skb[i]);
-> +	}
-> +
-> +	kfree(c->skb);
-> +	c->skb = NULL;
-
-When i see code like this, i wonder why an API call like
-dev_kfree_skb() is not being used. I would suggest reaming this to
-something other than skb, which has a very well understood meaning.
-
-> +static bool rswitch_rx(struct net_device *ndev, int *quota)
-> +{
-> +	struct rswitch_device *rdev = netdev_priv(ndev);
-> +	struct rswitch_gwca_chain *c = rdev->rx_chain;
-> +	int entry = c->cur % c->num_ring;
-> +	struct rswitch_ext_ts_desc *desc;
-> +	int limit, boguscnt, num, ret;
-> +	struct sk_buff *skb;
-> +	dma_addr_t dma_addr;
-> +	u16 pkt_len;
-> +
-> +	boguscnt = min_t(int, c->dirty + c->num_ring - c->cur, *quota);
-> +	limit = boguscnt;
-> +
-> +	desc = &c->ts_ring[entry];
-> +	while ((desc->die_dt & DT_MASK) != DT_FEMPTY) {
-> +		dma_rmb();
-> +		pkt_len = le16_to_cpu(desc->info_ds) & RX_DS;
-> +		if (--boguscnt < 0)
-> +			break;
-
-Why the barrier, read the length and then decide to break out of the
-loop?
-
-> +static int rswitch_open(struct net_device *ndev)
-> +{
-> +	struct rswitch_device *rdev = netdev_priv(ndev);
-> +	struct device_node *phy;
-> +	int err = 0;
-> +
-> +	if (rdev->etha) {
-
-Can this happen? What would a netdev without an etha mean?
-
-    Andrew
+Hm, when you say "privileged" do you mean higher quota or priority?
