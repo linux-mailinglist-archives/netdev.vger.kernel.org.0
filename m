@@ -2,144 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E4DAB5E72CD
-	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 06:20:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 686615E72E9
+	for <lists+netdev@lfdr.de>; Fri, 23 Sep 2022 06:26:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231610AbiIWEUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 00:20:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40120 "EHLO
+        id S231590AbiIWE0g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 00:26:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229810AbiIWEUo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 00:20:44 -0400
-Received: from bmailout2.hostsharing.net (bmailout2.hostsharing.net [83.223.78.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 419C7F3100;
-        Thu, 22 Sep 2022 21:20:42 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout2.hostsharing.net (Postfix) with ESMTPS id 31C39280973F2;
-        Fri, 23 Sep 2022 06:20:37 +0200 (CEST)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id 1690F4EA97; Fri, 23 Sep 2022 06:20:37 +0200 (CEST)
-Date:   Fri, 23 Sep 2022 06:20:37 +0200
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
+        with ESMTP id S229810AbiIWE0f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 00:26:35 -0400
+Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4996011CB17;
+        Thu, 22 Sep 2022 21:26:34 -0700 (PDT)
+Received: by mail-qk1-x72b.google.com with SMTP id u28so7593254qku.2;
+        Thu, 22 Sep 2022 21:26:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=834WTL3ucIQJn/oIPARINl5NteoQUlnwL1PFIIOV5EA=;
+        b=ekfjtB1RtoCci3VW28eBT3T+4QWDhhXFAww/X7R0mJcINtSKz1jknOEHSOZL6TZtpn
+         4YDldzp9p4ncC9UDs0plzFvugtwPyEnkeIETb+4Gb74tPnVZr6st8GDzlmrN/2ijPwGO
+         uZU7HbwnCxpizW2JqQG9hd9gewxKkajGxlYGqJIOW145/nULQ3Bt2ITQvs62lnaRSRWp
+         GNXFOhJcx0o9WKCIvslsaO9LRwpUDV5Rls7QjdVFhu/AvotuEM2qpE5BW+gSbMwEHOZE
+         8UBnAE3YYOhPOAngLTVONuqGq/QrajK0+QaZGiodxx1hpv6GPcI3buJofc6m0YgzDo8F
+         kCmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=834WTL3ucIQJn/oIPARINl5NteoQUlnwL1PFIIOV5EA=;
+        b=2CCP/Hptf9cZXPmq4CKjU78BM9saRo6eJICfcQqlZCOvArRSf3UXpaFCpuhgh97XW/
+         Oe8ZgQsjjw2+jOh5Q/Fu7vhDY+2JgCESSIbz1febcoYdfNaEBBKRXsKoAqlXzFgVUC4k
+         deYNPgqSPPX40R2V5ri+DzQq3GaoLYqLqOaLYi/Tiqm2bvwn9d5g712Grp3oF6iQ0AWl
+         mnfaaZEyZ/zle5XllaMTJ2Y/I9jBhbplNBncg9bglOvbSvAMBJqZmD46WKo54nC/OHaH
+         QK+zIvOLFp6fqrWh+4hZjoN/wkq7hDTo90RPm5aG2izDlgYOfXrhLWrUlj8EwZ23zZmZ
+         IR5A==
+X-Gm-Message-State: ACrzQf2bsikBDrCg62kvy0uxBKckRKz8HU+GUBX5JWpB4uHh2JMGLyho
+        MBEQrpGh/1EVBkz0Cxroj+O/mm67sA==
+X-Google-Smtp-Source: AMsMyM5J6wfxYVBQtz7ABJTqo1Pp9fqiQJJPKiZ/0Ejjjjd2TurjIgCjOBl0LR8+kKOQIi0iP9JmZA==
+X-Received: by 2002:a37:a8ca:0:b0:6cb:c12e:e8fe with SMTP id r193-20020a37a8ca000000b006cbc12ee8femr4374918qke.311.1663907193403;
+        Thu, 22 Sep 2022 21:26:33 -0700 (PDT)
+Received: from bytedance.attlocal.net (ec2-3-231-65-244.compute-1.amazonaws.com. [3.231.65.244])
+        by smtp.gmail.com with ESMTPSA id o10-20020ac8698a000000b0035a6f972f84sm4304033qtq.62.2022.09.22.21.26.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Sep 2022 21:26:32 -0700 (PDT)
+From:   Peilin Ye <yepeilin.cs@gmail.com>
+To:     Oliver Neukum <oneukum@suse.com>,
         "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
-        Andre Edich <andre.edich@microchip.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Martyn Welch <martyn.welch@collabora.com>,
-        Gabriel Hojda <ghojda@yo2urs.ro>,
-        Christoph Fritz <chf.fritz@googlemail.com>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Philipp Rosenberger <p.rosenberger@kunbus.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        Ferry Toth <fntoth@gmail.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>
-Subject: Re: [PATCH net-next v3 5/7] usbnet: smsc95xx: Forward PHY interrupts
- to PHY driver to avoid polling
-Message-ID: <20220923042037.GA10101@wunner.de>
-References: <e598a232-6c78-782a-316f-77902644ad6c@samsung.com>
- <20220826071924.GA21264@wunner.de>
- <2b1a1588-505e-dff3-301d-bfc1fb14d685@samsung.com>
- <20220826075331.GA32117@wunner.de>
- <093730dd-2f2c-bd0b-bd13-b97f8a2898bd@samsung.com>
- <81c0f21f-f8f1-f7b3-c52f-c6a564c6a445@samsung.com>
- <20220918191333.GA2107@wunner.de>
- <d963b1a3-e18d-25d5-f07c-42d17d382174@gmail.com>
- <20220918205516.GA13914@wunner.de>
- <adb2de4e-0ad0-a94a-93e6-572f58a2141b@gmail.com>
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Peilin Ye <peilin.ye@bytedance.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ming Lei <ming.lei@canonical.com>,
+        Cong Wang <cong.wang@bytedance.com>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Peilin Ye <yepeilin.cs@gmail.com>
+Subject: [PATCH net] usbnet: Fix memory leak in usbnet_disconnect()
+Date:   Thu, 22 Sep 2022 21:25:51 -0700
+Message-Id: <20220923042551.2745-1-yepeilin.cs@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <0000000000004027ca05e8d2ac0a@google.com>
+References: <0000000000004027ca05e8d2ac0a@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <adb2de4e-0ad0-a94a-93e6-572f58a2141b@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 18, 2022 at 03:11:47PM -0700, Florian Fainelli wrote:
-> On 9/18/2022 1:55 PM, Lukas Wunner wrote:
-> > On Sun, Sep 18, 2022 at 01:41:13PM -0700, Florian Fainelli wrote:
-> > > On 9/18/2022 12:13 PM, Lukas Wunner wrote:
-> > > > On Mon, Aug 29, 2022 at 01:40:05PM +0200, Marek Szyprowski wrote:
-> > > > > I've finally traced what has happened. I've double checked and indeed
-> > > > > the 1758bde2e4aa commit fixed the issue on next-20220516 kernel and as
-> > > > > such it has been merged to linus tree. Then the commit 744d23c71af3
-> > > > > ("net: phy: Warn about incorrect mdio_bus_phy_resume() state") has been
-> > > > > merged to linus tree, which triggers a new warning during the
-> > > > > suspend/resume cycle with smsc95xx driver. Please note, that the
-> > > > > smsc95xx still works fine regardless that warning. However it look that
-> > > > > the commit 1758bde2e4aa only hide a real problem, which the commit
-> > > > > 744d23c71af3 warns about.
-> > > > > 
-> > > > > Probably a proper fix for smsc95xx driver is to call phy_stop/start
-> > > > > during suspend/resume cycle, like in similar patches for other drivers:
-> > > > > 
-> > > > > https://lore.kernel.org/all/20220825023951.3220-1-f.fainelli@gmail.com/
-> > > > 
-> > > > No, smsc95xx.c relies on mdio_bus_phy_{suspend,resume}() and there's
-> > > > no need to call phy_{stop,start}() >
-> > > > 744d23c71af3 was flawed and 6dbe852c379f has already fixed a portion
-> > > > of the fallout.
-> > > > 
-> > > > However the WARN() condition still seems too broad and causes false
-> > > > positives such as in your case.  In particular, mdio_bus_phy_suspend()
-> > > > may leave the device in PHY_UP state, so that's a legal state that
-> > > > needs to be exempted from the WARN().
-> > > 
-> > > How is that a legal state when the PHY should be suspended? Even if we are
-> > > interrupt driven, the state machine should be stopped, does not mean that
-> > > Wake-on-LAN or other activity interrupts should be disabled.
-> > 
-> > mdio_bus_phy_suspend()
-> >    phy_stop_machine()
-> >      phydev->state = PHY_UP  #  if (phydev->state >= PHY_UP)
-> > 
-> > So apparently PHY_UP is a legal state for a suspended PHY.
-> 
-> It is not clear to me why, however. Sure it does ensure that when we resume
-> we set needs_aneg = true but this feels like a hack in the sense that we are
-> setting the PHY in a provisional state in anticipation for what might come
-> next.
+From: Peilin Ye <peilin.ye@bytedance.com>
 
-I've just submitted a fix so that at least v6.0 doesn't get released
-with a false-positive WARN splat on resume:
+Currently usbnet_disconnect() unanchors and frees all deferred URBs
+using usb_scuttle_anchored_urbs(), which does not free urb->context,
+causing a memory leak as reported by syzbot.
 
-https://lore.kernel.org/netdev/8128fdb51eeebc9efbf3776a4097363a1317aaf1.1663905575.git.lukas@wunner.de/
+Use a usb_get_from_anchor() while loop instead, similar to what we did
+in commit 19cfe912c37b ("Bluetooth: btusb: Fix memory leak in
+play_deferred").  Also free urb->sg.
 
-I guess we can look into making the state setting more logical in a
-separate step.
+Reported-and-tested-by: syzbot+dcd3e13cf4472f2e0ba1@syzkaller.appspotmail.com
+Fixes: 69ee472f2706 ("usbnet & cdc-ether: Autosuspend for online devices")
+Fixes: 638c5115a794 ("USBNET: support DMA SG")
+Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+---
+Hi all,
 
+I think we may have similar issues at other usb_scuttle_anchored_urbs()
+call sites.  Since urb->context is (void *), should we pass a "destructor"
+callback to usb_scuttle_anchored_urbs(), or replace this function with
+usb_get_from_anchor() loops like this patch does?
 
-> > > If you allow PHY_UP, then the warning becomes effectively useless, so I
-> > > don't believe this is quite what you want to do here.
-> > 
-> > Hm, maybe the WARN() should be dropped altogether?
-> 
-> And then be left with debugging similar problems that prompted me to submit
-> the patch in the first place, no thank you. I guess I would rather accept
-> that PHY_UP needs to be special cased then.
+Please advise, thanks!
+Peilin Ye
 
-I've interpreted that as an Acked-by for exempting PHY_UP.
-If that was not what you wanted, please speak up.
+ drivers/net/usb/usbnet.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-Thanks,
+diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
+index fd399a8ed973..64a9a80b2309 100644
+--- a/drivers/net/usb/usbnet.c
++++ b/drivers/net/usb/usbnet.c
+@@ -1598,6 +1598,7 @@ void usbnet_disconnect (struct usb_interface *intf)
+ 	struct usbnet		*dev;
+ 	struct usb_device	*xdev;
+ 	struct net_device	*net;
++	struct urb		*urb;
+ 
+ 	dev = usb_get_intfdata(intf);
+ 	usb_set_intfdata(intf, NULL);
+@@ -1614,7 +1615,11 @@ void usbnet_disconnect (struct usb_interface *intf)
+ 	net = dev->net;
+ 	unregister_netdev (net);
+ 
+-	usb_scuttle_anchored_urbs(&dev->deferred);
++	while ((urb = usb_get_from_anchor(&dev->deferred))) {
++		dev_kfree_skb(urb->context);
++		kfree(urb->sg);
++		usb_free_urb(urb);
++	}
+ 
+ 	if (dev->driver_info->unbind)
+ 		dev->driver_info->unbind(dev, intf);
+-- 
+2.20.1
 
-Lukas
