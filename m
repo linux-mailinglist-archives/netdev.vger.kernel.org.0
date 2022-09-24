@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 60BAC5E870E
-	for <lists+netdev@lfdr.de>; Sat, 24 Sep 2022 03:54:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 237705E8713
+	for <lists+netdev@lfdr.de>; Sat, 24 Sep 2022 03:54:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233002AbiIXBxp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 21:53:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34732 "EHLO
+        id S233009AbiIXBxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 21:53:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232339AbiIXBxo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 21:53:44 -0400
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EBDF106F45;
-        Fri, 23 Sep 2022 18:53:43 -0700 (PDT)
-Received: by mail-qk1-x735.google.com with SMTP id q11so1155272qkc.12;
-        Fri, 23 Sep 2022 18:53:43 -0700 (PDT)
+        with ESMTP id S232932AbiIXBxp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 21:53:45 -0400
+Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3E81106529;
+        Fri, 23 Sep 2022 18:53:44 -0700 (PDT)
+Received: by mail-qv1-xf2a.google.com with SMTP id l14so1038916qvq.8;
+        Fri, 23 Sep 2022 18:53:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=/oRwLC7FHOemWzoqeif26ioyvFSvS3lvtQTXdIA2m2g=;
-        b=S1kR5nIIy53QQZ9FbFh1NLPLScYNfv3BI7sEeCLIElBFmwIMDtOc/54jUFm1aCyxtH
-         ptCVy6vOQvtgWuqKdoe/P5BLxynHTWIUbbIgAPPLn3aewqDVoum92/oABQuecvuE71r7
-         226y/XpUBpftwVRt/L3mDqT5XigRnPTvoUmYsowBC8fEGURTh3SkuNs33G+vFy83anKh
-         XEc0NiL6JWjNZnMOkEV/xo0oVTgMtTyk9yE63DqPL5qrrDChaQvNAy9fVcughvq8fXf9
-         ic68gnK3js/Xxig138SPK1eDKaBA9asRH5YF3iH9nCiBBHHJcx7ybkESAYH4I5SgwaRW
-         fStg==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=H1UaOTpezQWNyZKXRTONOpsHys97wRpqFpTI6Zr1YuY=;
+        b=inp7n0QA5p8anUYe8CCsOphpF3rIrxEVB1QR+ClplsUiGfl+QW5A4WUIKYfWC76Nb3
+         7pJqgukW+yh4J4/NKWLfrRHTVEzNEBGQY2iq6Tk6DgLwnhWPgbXlRnkPBg3OCQhMIdit
+         u74U4kxvL+EF29wIQPWkUPt2Yg9RrAZ0pFIi9Da+DJFRgrIfaXJww+LUVlNnYiOGDvyw
+         NDqlvGza4O8YCYyUYHJe4VAAV7eF3WiLBb114qa+vFtvFUcgSfzl232ipbiV1uUEHC/w
+         yObPUMif1RmXBhdlEN3H9Bn7x9DCX8/k6KByxHtd48F1IPAjLLm3EGhIgpmc3KzfHFqP
+         tEdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=/oRwLC7FHOemWzoqeif26ioyvFSvS3lvtQTXdIA2m2g=;
-        b=BuzKB44CiraaRlttidK6bUk0DagrnheNRTXFOWrHV+I3X5hXIFIr0GrqSVNMkjkznr
-         61qTxIyyanXud/LleT3SIThuq22ZPhEQz+rTbS85vpQwumM6YIQLU8BYxfkkHthZ+mcR
-         0lxab73AAGQAXxAIyyKCl2CfozekVwaw42e3Iv6yDwdAEec3yBxE431/flb8l9LnhBEq
-         kubfVCPFUME6JmDWP2AxK6lO9toBwZQm1/teqvQ26SKMOL/gpNPJwBQ46/trY2HCfg90
-         gow0Dv/KgWhdnMtEiJ2VtasCFc+oIGNHrJxNitdRMXWUX6Ir/t25sdjW6iCExQnJeKkO
-         nomw==
-X-Gm-Message-State: ACrzQf0jlpq/dUXanDfaxWVtu26ND83+NCvKk2osNzR9ncdcIS9kF5Tu
-        VJacnWQIpqo0VqjiuwijHDB67Apr/jCLNw==
-X-Google-Smtp-Source: AMsMyM5Rd03jIH8TutldOZ7kjUfXJbFeO/d6F0uAyb4WrWVzENsY/rKZf8fsat7mlIUSvDxgAOP4Sw==
-X-Received: by 2002:a05:620a:472b:b0:6ce:6189:74f5 with SMTP id bs43-20020a05620a472b00b006ce618974f5mr7708571qkb.455.1663984422554;
-        Fri, 23 Sep 2022 18:53:42 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=H1UaOTpezQWNyZKXRTONOpsHys97wRpqFpTI6Zr1YuY=;
+        b=GbDr7nh7FsKP0IJJ+MmT0ZORvGirKwmL43K4KjZ5V8ryrZUsRoNrXUpTQjytT7HXh0
+         A15e78Q7DeXGQcNDUQkYRhihs4601WqsdYAB6ABm4XqdA1v3SyprKtjSUtFzUjddFa9d
+         IOZsGw8WBXcNBT9hNGRiBpeHtMzoR1c+mUysHp4b0KES84hUPeZTRjW4FoCGUdU6iC0b
+         esvTVzy9GCZooem4UDaRES+idIfP+PgHLe07fZNQ3LMpksFptpTGpvOZyaXpo6Byhm1r
+         gmdQYzkCu1gxukqNO955o2cAe5wS9lHDJnYvF2uw+g+lIZHRFmVGpXqjXpYjuye5nCoe
+         CIxA==
+X-Gm-Message-State: ACrzQf14hVSzBwJMXMqE4rv6trfiLIXoHzk734hVZKUPgSzNS0nSvnKB
+        QEJ84AU/kgLcRX7gfWq41B4=
+X-Google-Smtp-Source: AMsMyM6SaF7yVnz7G9pkKIWzOtbx0ys3YxyqEi6q6nbRya0jENAUE+CkV/4R2no91GsXh8Y66WCgDQ==
+X-Received: by 2002:a05:6214:2303:b0:4ad:58f2:7ca4 with SMTP id gc3-20020a056214230300b004ad58f27ca4mr9134294qvb.89.1663984423937;
+        Fri, 23 Sep 2022 18:53:43 -0700 (PDT)
 Received: from localhost (pool-173-73-95-180.washdc.fios.verizon.net. [173.73.95.180])
-        by smtp.gmail.com with UTF8SMTPSA id d18-20020ac851d2000000b00342fa1f4a10sm6395573qtn.61.2022.09.23.18.53.41
+        by smtp.gmail.com with UTF8SMTPSA id i10-20020ac8764a000000b0035badb499c7sm6962360qtr.21.2022.09.23.18.53.43
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 23 Sep 2022 18:53:41 -0700 (PDT)
+        Fri, 23 Sep 2022 18:53:43 -0700 (PDT)
 From:   Sean Anderson <seanga2@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -57,10 +58,12 @@ Cc:     Nick Bowler <nbowler@draconx.ca>,
         Zheyu Ma <zheyuma97@gmail.com>,
         linux-kernel@vger.kernel.org (open list),
         Sean Anderson <seanga2@gmail.com>
-Subject: [PATCH net-next v2 00/13] net: sunhme: Cleanups and logging improvements
-Date:   Fri, 23 Sep 2022 21:53:26 -0400
-Message-Id: <20220924015339.1816744-1-seanga2@gmail.com>
+Subject: [PATCH net-next v2 01/13] sunhme: remove unused tx_dump_ring()
+Date:   Fri, 23 Sep 2022 21:53:27 -0400
+Message-Id: <20220924015339.1816744-2-seanga2@gmail.com>
 X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220924015339.1816744-1-seanga2@gmail.com>
+References: <20220924015339.1816744-1-seanga2@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -73,45 +76,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series is a continuation of [1] with a focus on logging improvements (in
-the style of commit b11e5f6a3a5c ("net: sunhme: output link status with a single
-print.")). I have included several of Rolf's patches in the series where
-appropriate (with slight modifications). After this series is applied, many more
-messages from this driver will come with driver/device information.
-Additionally, most messages (especially debug messages) have been condensed onto
-one line (as KERN_CONT messages get split).
+From: Rolf Eike Beer <eike-kernel@sf-tec.de>
 
-[1] https://lore.kernel.org/netdev/4686583.GXAFRqVoOG@eto.sf-tec.de/
+I can't find a reference to it in the entire git history.
 
-Changes in v2:
-- Remove space after pci_enable_device
-- Use memset to clear p->happy_meals
-- Set err inside error branches
-- sumhme -> sunhme
-- Remove repeated newline
-- Remove another excess debug
+Signed-off-by: Rolf Eike Beer <eike-kernel@sf-tec.de>
+Signed-off-by: Sean Anderson <seanga2@gmail.com>
+---
 
-Rolf Eike Beer (3):
-  sunhme: remove unused tx_dump_ring()
-  sunhme: forward the error code from pci_enable_device()
-  sunhme: switch to devres
+(no changes since v1)
 
-Sean Anderson (10):
-  sunhme: Remove version
-  sunhme: Return an ERR_PTR from quattro_pci_find
-  sunhme: Regularize probe errors
-  sunhme: Convert FOO((...)) to FOO(...)
-  sunhme: Clean up debug infrastructure
-  sunhme: Convert printk(KERN_FOO ...) to pr_foo(...)
-  sunhme: Use (net)dev_foo wherever possible
-  sunhme: Combine continued messages
-  sunhme: Use vdbg for spam-y prints
-  sunhme: Add myself as a maintainer
+ drivers/net/ethernet/sun/sunhme.c | 16 ----------------
+ 1 file changed, 16 deletions(-)
 
- MAINTAINERS                       |   5 +
- drivers/net/ethernet/sun/sunhme.c | 661 ++++++++++++------------------
- 2 files changed, 264 insertions(+), 402 deletions(-)
-
+diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
+index e660902cfdf7..987f4c7338f5 100644
+--- a/drivers/net/ethernet/sun/sunhme.c
++++ b/drivers/net/ethernet/sun/sunhme.c
+@@ -135,25 +135,9 @@ static __inline__ void tx_dump_log(void)
+ 		this = (this + 1) & (TX_LOG_LEN - 1);
+ 	}
+ }
+-static __inline__ void tx_dump_ring(struct happy_meal *hp)
+-{
+-	struct hmeal_init_block *hb = hp->happy_block;
+-	struct happy_meal_txd *tp = &hb->happy_meal_txd[0];
+-	int i;
+-
+-	for (i = 0; i < TX_RING_SIZE; i+=4) {
+-		printk("TXD[%d..%d]: [%08x:%08x] [%08x:%08x] [%08x:%08x] [%08x:%08x]\n",
+-		       i, i + 4,
+-		       le32_to_cpu(tp[i].tx_flags), le32_to_cpu(tp[i].tx_addr),
+-		       le32_to_cpu(tp[i + 1].tx_flags), le32_to_cpu(tp[i + 1].tx_addr),
+-		       le32_to_cpu(tp[i + 2].tx_flags), le32_to_cpu(tp[i + 2].tx_addr),
+-		       le32_to_cpu(tp[i + 3].tx_flags), le32_to_cpu(tp[i + 3].tx_addr));
+-	}
+-}
+ #else
+ #define tx_add_log(hp, a, s)		do { } while(0)
+ #define tx_dump_log()			do { } while(0)
+-#define tx_dump_ring(hp)		do { } while(0)
+ #endif
+ 
+ #ifdef HMEDEBUG
 -- 
 2.37.1
 
