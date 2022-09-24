@@ -2,294 +2,286 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA9065E8770
-	for <lists+netdev@lfdr.de>; Sat, 24 Sep 2022 04:32:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F4D05E8794
+	for <lists+netdev@lfdr.de>; Sat, 24 Sep 2022 04:40:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233168AbiIXCc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 22:32:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32846 "EHLO
+        id S233015AbiIXCku (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 22:40:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232812AbiIXCcY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 22:32:24 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34952EDD32;
-        Fri, 23 Sep 2022 19:32:23 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MZCcB4mPtzlW19;
-        Sat, 24 Sep 2022 10:28:10 +0800 (CST)
-Received: from [10.174.178.66] (10.174.178.66) by
- dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Sat, 24 Sep 2022 10:32:20 +0800
-Message-ID: <427a3b9e-5484-9fa3-04f7-138c93c802b9@huawei.com>
-Date:   Sat, 24 Sep 2022 10:32:20 +0800
+        with ESMTP id S231379AbiIXCkt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 22:40:49 -0400
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7AE1E741D
+        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 19:40:46 -0700 (PDT)
+Received: by mail-il1-f198.google.com with SMTP id m5-20020a056e021c2500b002f65685226eso1490540ilh.4
+        for <netdev@vger.kernel.org>; Fri, 23 Sep 2022 19:40:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=onJAqhgCyi2YJW4sYUxj2DDCsFwDiwgCEPMaHbSzii8=;
+        b=eYz/KUlZ3PxzqrTu9fAj0Sj/E4XUukdT1ticSu2aIY/wRkBkBjzmN9IUMjyRPHbULa
+         AeOW8f+UFfxyMUsnH4cyrW5cEupj7z5Js3y8SI8CsUIGxLoLJCjpajSmb5Dxdwly+kZS
+         3MfzMwiBAuYDRORfwpfaoNNY30ushgDyTXJs9MjCp6XOTryx2Tq9rxcp9FFOd1JQLBZA
+         i7ux95JV0kGeWT8xohJ+mCUc86ZjPW2Ayof+NZyy5FgIXLN6mQ4R2UyBJGk0DFw8jhfQ
+         PTh+6q3ElxkvQ0Jxcw5wvuH9pfXTpoQ0DIJvp64HoS4o9Z7ix1AcMvebCIVzGYbaw2zK
+         h+VQ==
+X-Gm-Message-State: ACrzQf0xEqjDPhkNITDP29EDLfRJVGeApuyMlCAXQ+A2kqRUoMqFfd2b
+        sQR9XW+F6J00AhGWmHOP8gnBrmoN6kzZTFnR6ziNVzVn5dsS
+X-Google-Smtp-Source: AMsMyM4SjhsGnfCPrn904C8VG+JdYCNtOhuR5Bf9rtuX/yFlye1DW3iYQpOrw+eC/ZCPeNArNmqDrw+XHos0LZjpd4bFTZj/hFPr
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.2
-Subject: Re: [PATCH net-next,v2 00/15] add tc-testing qdisc test cases
-To:     Victor Nogueira <victor@mojatatu.com>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>, <jhs@mojatatu.com>,
-        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>, <shuah@kernel.org>
-CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>
-References: <20220921025052.23465-1-shaozhengchao@huawei.com>
- <5a5e70a1-428b-9358-ea47-fdfb48e913ea@mojatatu.com>
-From:   shaozhengchao <shaozhengchao@huawei.com>
-In-Reply-To: <5a5e70a1-428b-9358-ea47-fdfb48e913ea@mojatatu.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.178.66]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Received: by 2002:a05:6e02:1074:b0:2f6:15d9:4719 with SMTP id
+ q20-20020a056e02107400b002f615d94719mr5508688ilj.123.1663987245895; Fri, 23
+ Sep 2022 19:40:45 -0700 (PDT)
+Date:   Fri, 23 Sep 2022 19:40:45 -0700
+In-Reply-To: <000000000000e848fb05e962fb56@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000b3d6e705e96338b2@google.com>
+Subject: Re: [syzbot] WARNING: held lock freed in l2cap_conn_del
+From:   syzbot <syzbot+f5f14f5e9e2df9920b98@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com, johan.hedberg@gmail.com,
+        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
+        marcel@holtmann.org, netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+syzbot has found a reproducer for the following issue on:
 
+HEAD commit:    1707c39ae309 Merge tag 'driver-core-6.0-rc7' of git://git...
+git tree:       upstream
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=145ed640880000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=122d7bd4fc8e0ecb
+dashboard link: https://syzkaller.appspot.com/bug?extid=f5f14f5e9e2df9920b98
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14bce6e4880000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12903cff080000
 
-On 2022/9/23 21:40, Victor Nogueira wrote:
-> On 20/09/2022 23:50, Zhengchao Shao wrote:
-> 
->> For this patchset, test cases of the qdisc modules are added to the
->> tc-testing test suite.
->>
->> After a test case is added locally, the test result is as follows:
->>
->> ./tdc.py -c atm
->> ok 1 7628 - Create ATM with default setting
->> ok 2 390a - Delete ATM with valid handle
->> ok 3 32a0 - Show ATM class
->> ok 4 6310 - Dump ATM stats
->>
->> ./tdc.py -c choke
->> ok 1 8937 - Create CHOKE with default setting
->> ok 2 48c0 - Create CHOKE with min packet setting
->> ok 3 38c1 - Create CHOKE with max packet setting
->> ok 4 234a - Create CHOKE with ecn setting
->> ok 5 4380 - Create CHOKE with burst setting
->> ok 6 48c7 - Delete CHOKE with valid handle
->> ok 7 4398 - Replace CHOKE with min setting
->> ok 8 0301 - Change CHOKE with limit setting
->>
->> ./tdc.py -c codel
->> ok 1 983a - Create CODEL with default setting
->> ok 2 38aa - Create CODEL with limit packet setting
->> ok 3 9178 - Create CODEL with target setting
->> ok 4 78d1 - Create CODEL with interval setting
->> ok 5 238a - Create CODEL with ecn setting
->> ok 6 939c - Create CODEL with ce_threshold setting
->> ok 7 8380 - Delete CODEL with valid handle
->> ok 8 289c - Replace CODEL with limit setting
->> ok 9 0648 - Change CODEL with limit setting
->>
->> ./tdc.py -c etf
->> ok 1 34ba - Create ETF with default setting
->> ok 2 438f - Create ETF with delta nanos setting
->> ok 3 9041 - Create ETF with deadline_mode setting
->> ok 4 9a0c - Create ETF with skip_sock_check setting
->> ok 5 2093 - Delete ETF with valid handle
->>
->> ./tdc.py -c fq
->> ok 1 983b - Create FQ with default setting
->> ok 2 38a1 - Create FQ with limit packet setting
->> ok 3 0a18 - Create FQ with flow_limit setting
->> ok 4 2390 - Create FQ with quantum setting
->> ok 5 845b - Create FQ with initial_quantum setting
->> ok 6 9398 - Create FQ with maxrate setting
->> ok 7 342c - Create FQ with nopacing setting
->> ok 8 6391 - Create FQ with refill_delay setting
->> ok 9 238b - Create FQ with low_rate_threshold setting
->> ok 10 7582 - Create FQ with orphan_mask setting
->> ok 11 4894 - Create FQ with timer_slack setting
->> ok 12 324c - Create FQ with ce_threshold setting
->> ok 13 424a - Create FQ with horizon time setting
->> ok 14 89e1 - Create FQ with horizon_cap setting
->> ok 15 32e1 - Delete FQ with valid handle
->> ok 16 49b0 - Replace FQ with limit setting
->> ok 17 9478 - Change FQ with limit setting
->>
->> ./tdc.py -c gred
->> ok 1 8942 - Create GRED with default setting
->> ok 2 5783 - Create GRED with grio setting
->> ok 3 8a09 - Create GRED with limit setting
->> ok 4 48cb - Create GRED with ecn setting
->> ok 5 763a - Change GRED setting
->> ok 6 8309 - Show GRED class
->>
->> ./tdc.py -c hhf
->> ok 1 4812 - Create HHF with default setting
->> ok 2 8a92 - Create HHF with limit setting
->> ok 3 3491 - Create HHF with quantum setting
->> ok 4 ba04 - Create HHF with reset_timeout setting
->> ok 5 4238 - Create HHF with admit_bytes setting
->> ok 6 839f - Create HHF with evict_timeout setting
->> ok 7 a044 - Create HHF with non_hh_weight setting
->> ok 8 32f9 - Change HHF with limit setting
->> ok 9 385e - Show HHF class
->>
->> ./tdc.py -c pfifo_fast
->> ok 1 900c - Create pfifo_fast with default setting
->> ok 2 7470 - Dump pfifo_fast stats
->> ok 3 b974 - Replace pfifo_fast with different handle
->> ok 4 3240 - Delete pfifo_fast with valid handle
->> ok 5 4385 - Delete pfifo_fast with invalid handle
->>
->> ./tdc.py -c plug
->> ok 1 3289 - Create PLUG with default setting
->> ok 2 0917 - Create PLUG with block setting
->> ok 3 483b - Create PLUG with release setting
->> ok 4 4995 - Create PLUG with release_indefinite setting
->> ok 5 389c - Create PLUG with limit setting
->> ok 6 384a - Delete PLUG with valid handle
->> ok 7 439a - Replace PLUG with limit setting
->> ok 8 9831 - Change PLUG with limit setting
->>
->> ./tdc.py -c sfb
->> ok 1 3294 - Create SFB with default setting
->> ok 2 430a - Create SFB with rehash setting
->> ok 3 3410 - Create SFB with db setting
->> ok 4 49a0 - Create SFB with limit setting
->> ok 5 1241 - Create SFB with max setting
->> ok 6 3249 - Create SFB with target setting
->> ok 7 30a9 - Create SFB with increment setting
->> ok 8 239a - Create SFB with decrement setting
->> ok 9 9301 - Create SFB with penalty_rate setting
->> ok 10 2a01 - Create SFB with penalty_burst setting
->> ok 11 3209 - Change SFB with rehash setting
->> ok 12 5447 - Show SFB class
->>
->> ./tdc.py -c sfq
->> ok 1 7482 - Create SFQ with default setting
->> ok 2 c186 - Create SFQ with limit setting
->> ok 3 ae23 - Create SFQ with perturb setting
->> ok 4 a430 - Create SFQ with quantum setting
->> ok 5 4539 - Create SFQ with divisor setting
->> ok 6 b089 - Create SFQ with flows setting
->> ok 7 99a0 - Create SFQ with depth setting
->> ok 8 7389 - Create SFQ with headdrop setting
->> ok 9 6472 - Create SFQ with redflowlimit setting
->> ok 10 8929 - Show SFQ class
->>
->> ./tdc.py -c skbprio
->> ok 1 283e - Create skbprio with default setting
->> ok 2 c086 - Create skbprio with limit setting
->> ok 3 6733 - Change skbprio with limit setting
->> ok 4 2958 - Show skbprio class
->>
->> ./tdc.py -c taprio
->> ok 1 ba39 - Add taprio Qdisc to multi-queue device (8 queues)
->> ok 2 9462 - Add taprio Qdisc with multiple sched-entry
->> ok 3 8d92 - Add taprio Qdisc with txtime-delay
->> ok 4 d092 - Delete taprio Qdisc with valid handle
->> ok 5 8471 - Show taprio class
->> ok 6 0a85 - Add taprio Qdisc to single-queue device
->>
->> ./tdc.py -c tbf
->> ok 1 6430 - Create TBF with default setting
->> ok 2 0518 - Create TBF with mtu setting
->> ok 3 320a - Create TBF with peakrate setting
->> ok 4 239b - Create TBF with latency setting
->> ok 5 c975 - Create TBF with overhead setting
->> ok 6 948c - Create TBF with linklayer setting
->> ok 7 3549 - Replace TBF with mtu
->> ok 8 f948 - Change TBF with latency time
->> ok 9 2348 - Show TBF class
->>
->> ./tdc.py -c teql
->> ok 1 84a0 - Create TEQL with default setting
->> ok 2 7734 - Create TEQL with multiple device
->> ok 3 34a9 - Delete TEQL with valid handle
->> ok 4 6289 - Show TEQL stats
->>
->> ---
->> v2: modify subject prefix
->> ---
->> Zhengchao Shao (15):
->>    selftests/tc-testing: add selftests for atm qdisc
->>    selftests/tc-testing: add selftests for choke qdisc
->>    selftests/tc-testing: add selftests for codel qdisc
->>    selftests/tc-testing: add selftests for etf qdisc
->>    selftests/tc-testing: add selftests for fq qdisc
->>    selftests/tc-testing: add selftests for gred qdisc
->>    selftests/tc-testing: add selftests for hhf qdisc
->>    selftests/tc-testing: add selftests for pfifo_fast qdisc
->>    selftests/tc-testing: add selftests for plug qdisc
->>    selftests/tc-testing: add selftests for sfb qdisc
->>    selftests/tc-testing: add selftests for sfq qdisc
->>    selftests/tc-testing: add selftests for skbprio qdisc
->>    selftests/tc-testing: add selftests for taprio qdisc
->>    selftests/tc-testing: add selftests for tbf qdisc
->>    selftests/tc-testing: add selftests for teql qdisc
->>
->>   .../tc-testing/tc-tests/qdiscs/atm.json       |  94 +++++
->>   .../tc-testing/tc-tests/qdiscs/choke.json     | 188 +++++++++
->>   .../tc-testing/tc-tests/qdiscs/codel.json     | 211 ++++++++++
->>   .../tc-testing/tc-tests/qdiscs/etf.json       | 117 ++++++
->>   .../tc-testing/tc-tests/qdiscs/fq.json        | 395 ++++++++++++++++++
->>   .../tc-testing/tc-tests/qdiscs/gred.json      | 164 ++++++++
->>   .../tc-testing/tc-tests/qdiscs/hhf.json       | 210 ++++++++++
->>   .../tc-tests/qdiscs/pfifo_fast.json           | 119 ++++++
->>   .../tc-testing/tc-tests/qdiscs/plug.json      | 188 +++++++++
->>   .../tc-testing/tc-tests/qdiscs/sfb.json       | 279 +++++++++++++
->>   .../tc-testing/tc-tests/qdiscs/sfq.json       | 232 ++++++++++
->>   .../tc-testing/tc-tests/qdiscs/skbprio.json   |  95 +++++
->>   .../tc-testing/tc-tests/qdiscs/taprio.json    | 135 ++++++
->>   .../tc-testing/tc-tests/qdiscs/tbf.json       | 211 ++++++++++
->>   .../tc-testing/tc-tests/qdiscs/teql.json      |  97 +++++
->>   15 files changed, 2735 insertions(+)
->>   create mode 100644 
->> tools/testing/selftests/tc-testing/tc-tests/qdiscs/atm.json
->>   create mode 100644 
->> tools/testing/selftests/tc-testing/tc-tests/qdiscs/choke.json
->>   create mode 100644 
->> tools/testing/selftests/tc-testing/tc-tests/qdiscs/codel.json
->>   create mode 100644 
->> tools/testing/selftests/tc-testing/tc-tests/qdiscs/etf.json
->>   create mode 100644 
->> tools/testing/selftests/tc-testing/tc-tests/qdiscs/fq.json
->>   create mode 100644 
->> tools/testing/selftests/tc-testing/tc-tests/qdiscs/gred.json
->>   create mode 100644 
->> tools/testing/selftests/tc-testing/tc-tests/qdiscs/hhf.json
->>   create mode 100644 
->> tools/testing/selftests/tc-testing/tc-tests/qdiscs/pfifo_fast.json
->>   create mode 100644 
->> tools/testing/selftests/tc-testing/tc-tests/qdiscs/plug.json
->>   create mode 100644 
->> tools/testing/selftests/tc-testing/tc-tests/qdiscs/sfb.json
->>   create mode 100644 
->> tools/testing/selftests/tc-testing/tc-tests/qdiscs/sfq.json
->>   create mode 100644 
->> tools/testing/selftests/tc-testing/tc-tests/qdiscs/skbprio.json
->>   create mode 100644 
->> tools/testing/selftests/tc-testing/tc-tests/qdiscs/taprio.json
->>   create mode 100644 
->> tools/testing/selftests/tc-testing/tc-tests/qdiscs/tbf.json
->>   create mode 100644 
->> tools/testing/selftests/tc-testing/tc-tests/qdiscs/teql.json
-> 
-> 
-> When adding new test case files, you should add any necessary configs 
-> needed to
-> run them in tools/testing/selftests/tc-testing/config, if they aren't 
-> already there.
-> 
-> For example, your ATM patch should also add the following config options 
-> to that file:
-> 
-> CONFIG_ATM=y
-> CONFIG_NET_SCH_ATM=m
-> 
-> 
-Hi Victor：
-	Thank you for your testing. I will add config in V3. It might be
-better to generate executable test suites based on kernel config.
-However, this feature does not seem to be supported currently. Or This 
-feature can be added later.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+f5f14f5e9e2df9920b98@syzkaller.appspotmail.com
 
-Zhengchao Shao
+Bluetooth: hci0: hardware error 0x00
+=========================
+WARNING: held lock freed!
+6.0.0-rc6-syzkaller-00281-g1707c39ae309 #0 Not tainted
+-------------------------
+kworker/u5:2/3610 is freeing memory ffff888021840000-ffff8880218407ff, with a lock still held there!
+ffff888021840520 (&chan->lock/1){+.+.}-{3:3}, at: l2cap_chan_lock include/net/bluetooth/l2cap.h:855 [inline]
+ffff888021840520 (&chan->lock/1){+.+.}-{3:3}, at: l2cap_conn_del+0x3b5/0x7b0 net/bluetooth/l2cap_core.c:1920
+7 locks held by kworker/u5:2/3610:
+ #0: ffff888147a10938 ((wq_completion)hci0){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff888147a10938 ((wq_completion)hci0){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
+ #0: ffff888147a10938 ((wq_completion)hci0){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
+ #0: ffff888147a10938 ((wq_completion)hci0){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
+ #0: ffff888147a10938 ((wq_completion)hci0){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
+ #0: ffff888147a10938 ((wq_completion)hci0){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
+ #1: ffffc90003a6fda8 ((work_completion)(&hdev->error_reset)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
+ #2: ffff888077b60fd0 (&hdev->req_lock){+.+.}-{3:3}, at: hci_dev_do_close+0x25/0x70 net/bluetooth/hci_core.c:552
+ #3: ffff888077b60078 (&hdev->lock){+.+.}-{3:3}, at: hci_dev_close_sync+0x268/0x1130 net/bluetooth/hci_sync.c:4463
+ #4: ffffffff8d9d3e28 (hci_cb_list_lock){+.+.}-{3:3}, at: hci_disconn_cfm include/net/bluetooth/hci_core.h:1776 [inline]
+ #4: ffffffff8d9d3e28 (hci_cb_list_lock){+.+.}-{3:3}, at: hci_conn_hash_flush+0xd5/0x260 net/bluetooth/hci_conn.c:2366
+ #5: ffff888149a112d8 (&conn->chan_lock){+.+.}-{3:3}, at: l2cap_conn_del+0x2ef/0x7b0 net/bluetooth/l2cap_core.c:1915
+ #6: ffff888021840520 (&chan->lock/1){+.+.}-{3:3}, at: l2cap_chan_lock include/net/bluetooth/l2cap.h:855 [inline]
+ #6: ffff888021840520 (&chan->lock/1){+.+.}-{3:3}, at: l2cap_conn_del+0x3b5/0x7b0 net/bluetooth/l2cap_core.c:1920
+
+stack backtrace:
+CPU: 0 PID: 3610 Comm: kworker/u5:2 Not tainted 6.0.0-rc6-syzkaller-00281-g1707c39ae309 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 08/26/2022
+Workqueue: hci0 hci_error_reset
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_freed_lock_bug kernel/locking/lockdep.c:6422 [inline]
+ debug_check_no_locks_freed.cold+0x9d/0xa9 kernel/locking/lockdep.c:6455
+ slab_free_hook mm/slub.c:1731 [inline]
+ slab_free_freelist_hook+0x73/0x1c0 mm/slub.c:1785
+ slab_free mm/slub.c:3539 [inline]
+ kfree+0xe2/0x580 mm/slub.c:4567
+ l2cap_chan_destroy net/bluetooth/l2cap_core.c:503 [inline]
+ kref_put include/linux/kref.h:65 [inline]
+ l2cap_chan_put+0x22a/0x2d0 net/bluetooth/l2cap_core.c:527
+ l2cap_conn_del+0x3fc/0x7b0 net/bluetooth/l2cap_core.c:1924
+ l2cap_disconn_cfm net/bluetooth/l2cap_core.c:8212 [inline]
+ l2cap_disconn_cfm+0x8c/0xc0 net/bluetooth/l2cap_core.c:8205
+ hci_disconn_cfm include/net/bluetooth/hci_core.h:1779 [inline]
+ hci_conn_hash_flush+0x122/0x260 net/bluetooth/hci_conn.c:2366
+ hci_dev_close_sync+0x55d/0x1130 net/bluetooth/hci_sync.c:4476
+ hci_dev_do_close+0x2d/0x70 net/bluetooth/hci_core.c:554
+ hci_error_reset+0x96/0x130 net/bluetooth/hci_core.c:1050
+ process_one_work+0x991/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e4/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+ </TASK>
+==================================================================
+BUG: KASAN: use-after-free in instrument_atomic_read include/linux/instrumented.h:71 [inline]
+BUG: KASAN: use-after-free in atomic_long_read include/linux/atomic/atomic-instrumented.h:1265 [inline]
+BUG: KASAN: use-after-free in __mutex_unlock_slowpath+0xa6/0x5e0 kernel/locking/mutex.c:916
+Read of size 8 at addr ffff8880218404b8 by task kworker/u5:2/3610
+
+CPU: 0 PID: 3610 Comm: kworker/u5:2 Not tainted 6.0.0-rc6-syzkaller-00281-g1707c39ae309 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 08/26/2022
+Workqueue: hci0 hci_error_reset
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description mm/kasan/report.c:317 [inline]
+ print_report.cold+0x2ba/0x719 mm/kasan/report.c:433
+ kasan_report+0xb1/0x1e0 mm/kasan/report.c:495
+ check_region_inline mm/kasan/generic.c:183 [inline]
+ kasan_check_range+0x13d/0x180 mm/kasan/generic.c:189
+ instrument_atomic_read include/linux/instrumented.h:71 [inline]
+ atomic_long_read include/linux/atomic/atomic-instrumented.h:1265 [inline]
+ __mutex_unlock_slowpath+0xa6/0x5e0 kernel/locking/mutex.c:916
+ l2cap_chan_unlock include/net/bluetooth/l2cap.h:860 [inline]
+ l2cap_conn_del+0x404/0x7b0 net/bluetooth/l2cap_core.c:1926
+ l2cap_disconn_cfm net/bluetooth/l2cap_core.c:8212 [inline]
+ l2cap_disconn_cfm+0x8c/0xc0 net/bluetooth/l2cap_core.c:8205
+ hci_disconn_cfm include/net/bluetooth/hci_core.h:1779 [inline]
+ hci_conn_hash_flush+0x122/0x260 net/bluetooth/hci_conn.c:2366
+ hci_dev_close_sync+0x55d/0x1130 net/bluetooth/hci_sync.c:4476
+ hci_dev_do_close+0x2d/0x70 net/bluetooth/hci_core.c:554
+ hci_error_reset+0x96/0x130 net/bluetooth/hci_core.c:1050
+ process_one_work+0x991/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e4/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+ </TASK>
+
+Allocated by task 49:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ kasan_set_track mm/kasan/common.c:45 [inline]
+ set_alloc_info mm/kasan/common.c:437 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:516 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:475 [inline]
+ __kasan_kmalloc+0xa9/0xd0 mm/kasan/common.c:525
+ kmalloc include/linux/slab.h:600 [inline]
+ kzalloc include/linux/slab.h:733 [inline]
+ l2cap_chan_create+0x40/0x570 net/bluetooth/l2cap_core.c:463
+ a2mp_chan_open net/bluetooth/a2mp.c:771 [inline]
+ amp_mgr_create+0x8f/0x960 net/bluetooth/a2mp.c:862
+ a2mp_channel_create+0x7d/0x150 net/bluetooth/a2mp.c:894
+ l2cap_data_channel net/bluetooth/l2cap_core.c:7569 [inline]
+ l2cap_recv_frame+0x48e3/0x8d90 net/bluetooth/l2cap_core.c:7724
+ l2cap_recv_acldata+0xaa6/0xc00 net/bluetooth/l2cap_core.c:8429
+ hci_acldata_packet net/bluetooth/hci_core.c:3777 [inline]
+ hci_rx_work+0x705/0x1230 net/bluetooth/hci_core.c:4012
+ process_one_work+0x991/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e4/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+
+Freed by task 3610:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ kasan_set_track+0x21/0x30 mm/kasan/common.c:45
+ kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
+ ____kasan_slab_free mm/kasan/common.c:367 [inline]
+ ____kasan_slab_free+0x166/0x1c0 mm/kasan/common.c:329
+ kasan_slab_free include/linux/kasan.h:200 [inline]
+ slab_free_hook mm/slub.c:1759 [inline]
+ slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1785
+ slab_free mm/slub.c:3539 [inline]
+ kfree+0xe2/0x580 mm/slub.c:4567
+ l2cap_chan_destroy net/bluetooth/l2cap_core.c:503 [inline]
+ kref_put include/linux/kref.h:65 [inline]
+ l2cap_chan_put+0x22a/0x2d0 net/bluetooth/l2cap_core.c:527
+ l2cap_conn_del+0x3fc/0x7b0 net/bluetooth/l2cap_core.c:1924
+ l2cap_disconn_cfm net/bluetooth/l2cap_core.c:8212 [inline]
+ l2cap_disconn_cfm+0x8c/0xc0 net/bluetooth/l2cap_core.c:8205
+ hci_disconn_cfm include/net/bluetooth/hci_core.h:1779 [inline]
+ hci_conn_hash_flush+0x122/0x260 net/bluetooth/hci_conn.c:2366
+ hci_dev_close_sync+0x55d/0x1130 net/bluetooth/hci_sync.c:4476
+ hci_dev_do_close+0x2d/0x70 net/bluetooth/hci_core.c:554
+ hci_error_reset+0x96/0x130 net/bluetooth/hci_core.c:1050
+ process_one_work+0x991/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e4/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+
+The buggy address belongs to the object at ffff888021840000
+ which belongs to the cache kmalloc-2k of size 2048
+The buggy address is located 1208 bytes inside of
+ 2048-byte region [ffff888021840000, ffff888021840800)
+
+The buggy address belongs to the physical page:
+page:ffffea0000861000 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x21840
+head:ffffea0000861000 order:3 compound_mapcount:0 compound_pincount:0
+flags: 0xfff00000010200(slab|head|node=0|zone=1|lastcpupid=0x7ff)
+raw: 00fff00000010200 0000000000000000 dead000000000122 ffff888011842000
+raw: 0000000000000000 0000000080080008 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 3, migratetype Unmovable, gfp_mask 0x52a20(GFP_ATOMIC|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP), pid 49, tgid 49 (kworker/u5:0), ts 46525106359, free_ts 46388169462
+ prep_new_page mm/page_alloc.c:2532 [inline]
+ get_page_from_freelist+0x109b/0x2ce0 mm/page_alloc.c:4283
+ __alloc_pages+0x1c7/0x510 mm/page_alloc.c:5515
+ alloc_pages+0x1a6/0x270 mm/mempolicy.c:2270
+ alloc_slab_page mm/slub.c:1829 [inline]
+ allocate_slab+0x27e/0x3d0 mm/slub.c:1974
+ new_slab mm/slub.c:2034 [inline]
+ ___slab_alloc+0x7f1/0xe10 mm/slub.c:3036
+ __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3123
+ slab_alloc_node mm/slub.c:3214 [inline]
+ slab_alloc mm/slub.c:3256 [inline]
+ kmem_cache_alloc_trace+0x323/0x3e0 mm/slub.c:3287
+ kmalloc include/linux/slab.h:600 [inline]
+ kzalloc include/linux/slab.h:733 [inline]
+ l2cap_chan_create+0x40/0x570 net/bluetooth/l2cap_core.c:463
+ a2mp_chan_open net/bluetooth/a2mp.c:771 [inline]
+ amp_mgr_create+0x8f/0x960 net/bluetooth/a2mp.c:862
+ a2mp_channel_create+0x7d/0x150 net/bluetooth/a2mp.c:894
+ l2cap_data_channel net/bluetooth/l2cap_core.c:7569 [inline]
+ l2cap_recv_frame+0x48e3/0x8d90 net/bluetooth/l2cap_core.c:7724
+ l2cap_recv_acldata+0xaa6/0xc00 net/bluetooth/l2cap_core.c:8429
+ hci_acldata_packet net/bluetooth/hci_core.c:3777 [inline]
+ hci_rx_work+0x705/0x1230 net/bluetooth/hci_core.c:4012
+ process_one_work+0x991/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e4/0x3a0 kernel/kthread.c:376
+page last free stack trace:
+ reset_page_owner include/linux/page_owner.h:24 [inline]
+ free_pages_prepare mm/page_alloc.c:1449 [inline]
+ free_pcp_prepare+0x5e4/0xd20 mm/page_alloc.c:1499
+ free_unref_page_prepare mm/page_alloc.c:3380 [inline]
+ free_unref_page+0x19/0x4d0 mm/page_alloc.c:3476
+ __unfreeze_partials+0x17c/0x1a0 mm/slub.c:2553
+ qlink_free mm/kasan/quarantine.c:168 [inline]
+ qlist_free_all+0x6a/0x170 mm/kasan/quarantine.c:187
+ kasan_quarantine_reduce+0x180/0x200 mm/kasan/quarantine.c:294
+ __kasan_slab_alloc+0xa2/0xc0 mm/kasan/common.c:447
+ kasan_slab_alloc include/linux/kasan.h:224 [inline]
+ slab_post_alloc_hook mm/slab.h:727 [inline]
+ slab_alloc_node mm/slub.c:3248 [inline]
+ slab_alloc mm/slub.c:3256 [inline]
+ __kmem_cache_alloc_lru mm/slub.c:3263 [inline]
+ kmem_cache_alloc+0x267/0x3b0 mm/slub.c:3273
+ getname_flags.part.0+0x50/0x4f0 fs/namei.c:139
+ getname_flags+0x9a/0xe0 include/linux/audit.h:320
+ vfs_fstatat+0x73/0xb0 fs/stat.c:254
+ __do_sys_newfstatat+0x91/0x110 fs/stat.c:425
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+Memory state around the buggy address:
+ ffff888021840380: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff888021840400: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>ffff888021840480: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                                        ^
+ ffff888021840500: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff888021840580: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
+
