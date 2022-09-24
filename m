@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 127D85E8895
-	for <lists+netdev@lfdr.de>; Sat, 24 Sep 2022 07:44:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 790305E88D2
+	for <lists+netdev@lfdr.de>; Sat, 24 Sep 2022 08:44:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233338AbiIXFoc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Sep 2022 01:44:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37990 "EHLO
+        id S233230AbiIXGok (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Sep 2022 02:44:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232968AbiIXFo3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Sep 2022 01:44:29 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E81DE1205B1;
-        Fri, 23 Sep 2022 22:44:25 -0700 (PDT)
+        with ESMTP id S233352AbiIXGoe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Sep 2022 02:44:34 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF92314B874;
+        Fri, 23 Sep 2022 23:44:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663998265; x=1695534265;
+  t=1664001868; x=1695537868;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=7EtDNptgTMQd5VnrDWf9mHT9/OnWNMgMIlQAxY1LOko=;
-  b=TwRZdScGSVrVlelHUR7ZRcdEH4/9hRewZ4PvdbXda+5syRXSyQS3LwDL
-   9gpPh7AKmXXWitWtdzQcrmtqeZl9rtv+PqFwuVzNBKFARuoJnLKVaV3Zc
-   7ye67QzTCSa4TbPMWG92n1hFiFQ6cLggKTOm95aybXU85nqv9B1z3/00D
-   p5TZ9uU+wu8xINWY81nMyWvYPi77veDzdq2UriXWg/Jz4XmqajhmUSwEH
-   /lqyTAkg7Z3VFCVsSMngkUIQRr27yjuxLurEaOVTcmSLAlkNmnLu2xEzR
-   HSYEYDCam9AYKY5pQPahT2pniTsBlLuNFeraz6EkHRJmSqaGS7XW7yN6v
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10479"; a="281112480"
+  bh=asq03Kekt/HxQ+uwOnsm9AKKRYPDhzI1+BzgaJh8NXM=;
+  b=lXrPeRk9aaDrO00TSEUIY7Y9Kjjpq4fSPaqR7f+Q+/XxBYIenjHHgC0M
+   lIV4cdZC7W4hsOHnRCjouGQR8miN1NS+WIaGVlTXk2eDgJf76odizFZYA
+   ttknjtQf8hFullwNtDYtivH8ll7KCbj0JHm7wlTRk1uGWpp7/KoE/xaYC
+   kWinwWHbj4TUDBPdyhBpqJZPc4I3jkT6Gq6kdbywzUaCEl3QfZ7HJrA6B
+   RyaqC6AQau6HKXlculVPBHWb5toIj1ryM4fFUyERudcTMCVfEWWxBRehJ
+   lqCOegnCD4lZUW1OZ5yEMPQ0Bi/y8H72KGDXQn3JjcwkYsTcSwcuxnRvi
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10479"; a="300733150"
 X-IronPort-AV: E=Sophos;i="5.93,341,1654585200"; 
-   d="scan'208";a="281112480"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2022 22:44:25 -0700
+   d="scan'208";a="300733150"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2022 23:44:26 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,341,1654585200"; 
-   d="scan'208";a="762864439"
+   d="scan'208";a="688980405"
 Received: from lkp-server01.sh.intel.com (HELO c0a60f19fe7e) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 23 Sep 2022 22:44:20 -0700
+  by fmsmga004.fm.intel.com with ESMTP; 23 Sep 2022 23:44:21 -0700
 Received: from kbuild by c0a60f19fe7e with local (Exim 4.96)
         (envelope-from <lkp@intel.com>)
-        id 1obxxb-0006Fw-36;
-        Sat, 24 Sep 2022 05:44:19 +0000
-Date:   Sat, 24 Sep 2022 13:43:36 +0800
+        id 1obytg-0006HQ-2n;
+        Sat, 24 Sep 2022 06:44:20 +0000
+Date:   Sat, 24 Sep 2022 14:44:08 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     Dmitry Safonov <dima@arista.com>, linux-kernel@vger.kernel.org,
         David Ahern <dsahern@kernel.org>,
@@ -63,15 +63,15 @@ Cc:     kbuild-all@lists.01.org, Dmitry Safonov <dima@arista.com>,
         Salam Noureddine <noureddine@arista.com>,
         Shuah Khan <skhan@linuxfoundation.org>, netdev@vger.kernel.org,
         linux-crypto@vger.kernel.org
-Subject: Re: [PATCH v2 17/35] net/tcp: Verify inbound TCP-AO signed segments
-Message-ID: <202209241319.jprfVomp-lkp@intel.com>
-References: <20220923201319.493208-18-dima@arista.com>
+Subject: Re: [PATCH v2 23/35] net/tcp: Add getsockopt(TCP_AO_GET)
+Message-ID: <202209241447.1vIs9E8P-lkp@intel.com>
+References: <20220923201319.493208-24-dima@arista.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="05pH+KHyVlEJlRmi"
+Content-Type: multipart/mixed; boundary="wOuTzDfqp1nTSBw+"
 Content-Disposition: inline
-In-Reply-To: <20220923201319.493208-18-dima@arista.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+In-Reply-To: <20220923201319.493208-24-dima@arista.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_NONE,UPPERCASE_50_75 autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -81,46 +81,255 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---05pH+KHyVlEJlRmi
+--wOuTzDfqp1nTSBw+
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
 Hi Dmitry,
 
-Thank you for the patch! Yet something to improve:
+Thank you for the patch! Perhaps something to improve:
 
-[auto build test ERROR on bf682942cd26ce9cd5e87f73ae099b383041e782]
+[auto build test WARNING on bf682942cd26ce9cd5e87f73ae099b383041e782]
 
 url:    https://github.com/intel-lab-lkp/linux/commits/Dmitry-Safonov/net-tcp-Add-TCP-AO-support/20220924-042311
 base:   bf682942cd26ce9cd5e87f73ae099b383041e782
-config: um-i386_defconfig
+config: um-x86_64_defconfig
 compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
 reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/0058d82fd50cb64ca679e3397507fe28165b817b
+        # https://github.com/intel-lab-lkp/linux/commit/464de48068a05d5b8690ca346f382b74914e5ce3
         git remote add linux-review https://github.com/intel-lab-lkp/linux
         git fetch --no-tags linux-review Dmitry-Safonov/net-tcp-Add-TCP-AO-support/20220924-042311
-        git checkout 0058d82fd50cb64ca679e3397507fe28165b817b
+        git checkout 464de48068a05d5b8690ca346f382b74914e5ce3
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=um SUBARCH=i386 SHELL=/bin/bash
+        make W=1 O=build_dir ARCH=um SUBARCH=x86_64 SHELL=/bin/bash net/ipv4/
 
 If you fix the issue, kindly add following tag where applicable
 | Reported-by: kernel test robot <lkp@intel.com>
 
-All errors (new ones prefixed by >>):
+All warnings (new ones prefixed by >>):
 
-   /usr/bin/ld: warning: arch/x86/um/checksum_32.o: missing .note.GNU-stack section implies executable stack
-   /usr/bin/ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
-   /usr/bin/ld: warning: .tmp_vmlinux.kallsyms1 has a LOAD segment with RWX permissions
-   /usr/bin/ld: net/ipv4/tcp_ipv4.o: in function `tcp_inbound_hash.constprop.0':
->> tcp_ipv4.c:(.text+0xa95): undefined reference to `tcp_do_parse_auth_options'
-   collect2: error: ld returned 1 exit status
+   net/ipv4/tcp_ao.c:113:20: warning: no previous prototype for 'tcp_ao_do_lookup_keyid' [-Wmissing-prototypes]
+     113 | struct tcp_ao_key *tcp_ao_do_lookup_keyid(struct tcp_ao_info *ao,
+         |                    ^~~~~~~~~~~~~~~~~~~~~~
+   net/ipv4/tcp_ao.c:270:20: warning: no previous prototype for 'tcp_ao_copy_key' [-Wmissing-prototypes]
+     270 | struct tcp_ao_key *tcp_ao_copy_key(struct sock *sk, struct tcp_ao_key *key)
+         |                    ^~~~~~~~~~~~~~~
+>> net/ipv4/tcp_ao.c:1778:5: warning: no previous prototype for 'tcp_ao_copy_mkts_to_user' [-Wmissing-prototypes]
+    1778 | int tcp_ao_copy_mkts_to_user(struct tcp_ao_info *ao_info,
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~
+
+
+vim +/tcp_ao_copy_mkts_to_user +1778 net/ipv4/tcp_ao.c
+
+  1742	
+  1743	/* tcp_ao_copy_mkts_to_user(ao_info, optval, optlen)
+  1744	 *
+  1745	 * @ao_info:	struct tcp_ao_info on the socket that
+  1746	 *		socket getsockopt(TCP_AO_GET) is executed on
+  1747	 * @optval:	pointer to array of tcp_ao_getsockopt structures in user space.
+  1748	 *		Must be != NULL.
+  1749	 * @optlen:	pointer to size of tcp_ao_getsockopt structure.
+  1750	 *		Must be != NULL.
+  1751	 *
+  1752	 * Return value: 0 on success, a negative error number otherwise.
+  1753	 *
+  1754	 * optval points to an array of tcp_ao_getsockopt structures in user space.
+  1755	 * optval[0] is used as both input and output to getsockopt. It determines
+  1756	 * which keys are returned by the kernel.
+  1757	 * optval[0].nkeys is the size of the array in user space. On return it contains
+  1758	 * the number of keys matching the search criteria.
+  1759	 * If TCP_AO_GET_ALL is set in "flags", then all keys in the socket are
+  1760	 * returned, otherwise only keys matching <addr, prefix, sndid, rcvid>
+  1761	 * in optval[0] are returned.
+  1762	 * optlen is also used as both input and output. The user provides the size
+  1763	 * of struct tcp_ao_getsockopt in user space, and the kernel returns the size
+  1764	 * of the structure in kernel space.
+  1765	 * The size of struct tcp_ao_getsockopt may differ between user and kernel.
+  1766	 * There are three cases to consider:
+  1767	 *  * If usize == ksize, then keys are copied verbatim.
+  1768	 *  * If usize < ksize, then the userspace has passed an old struct to a
+  1769	 *    newer kernel. The rest of the trailing bytes in optval[0]
+  1770	 *    (ksize - usize) are interpreted as 0 by the kernel.
+  1771	 *  * If usize > ksize, then the userspace has passed a new struct to an
+  1772	 *    older kernel. The trailing bytes unknown to the kernel (usize - ksize)
+  1773	 *    are checked to ensure they are zeroed, otherwise -E2BIG is returned.
+  1774	 * On return the kernel fills in min(usize, ksize) in each entry of the array.
+  1775	 * The layout of the fields in the user and kernel structures is expected to
+  1776	 * be the same (including in the 32bit vs 64bit case).
+  1777	 */
+> 1778	int tcp_ao_copy_mkts_to_user(struct tcp_ao_info *ao_info,
+  1779				     char __user *optval, int __user *optlen)
+  1780	{
+  1781		struct tcp_ao_getsockopt opt_in;
+  1782		struct tcp_ao_getsockopt opt_out;
+  1783		struct tcp_ao_getsockopt __user *optval_in;
+  1784		int user_len;
+  1785		unsigned int max_keys;	/* maximum number of keys to copy to user */
+  1786		u32 copied_keys;	/* keys copied to user so far */
+  1787		int matched_keys;	/* keys from ao_info matched so far */
+  1788		int bytes_to_write;	/* number of bytes to write to user level */
+  1789		struct tcp_ao_key *key;
+  1790		struct sockaddr_in *sin;   /* (struct sockaddr_in *)&opt_in.addr */
+  1791		struct sockaddr_in6 *sin6; /* (struct sockaddr_in6 *)&opt_in.addr */
+  1792		struct in6_addr *addr6;    /* &sin6->sin6_addr */
+  1793		__kernel_sa_family_t ss_family;
+  1794		union tcp_ao_addr *addr;
+  1795		int optlen_out;
+  1796		u8 prefix_in;
+  1797		u16 port = 0;
+  1798		bool copy_all, copy_current, copy_next;
+  1799		int err;
+  1800	
+  1801		if (get_user(user_len, optlen))
+  1802			return -EFAULT;
+  1803	
+  1804		if (user_len <= 0)
+  1805			return -EINVAL;
+  1806	
+  1807		memset(&opt_in, 0, sizeof(struct tcp_ao_getsockopt));
+  1808		err = copy_struct_from_user(&opt_in, sizeof(struct tcp_ao_getsockopt),
+  1809					    optval, user_len);
+  1810		if (err < 0)
+  1811			return err;
+  1812	
+  1813		optval_in = (struct tcp_ao_getsockopt __user *)optval;
+  1814		ss_family = opt_in.addr.ss_family;
+  1815	
+  1816		BUILD_BUG_ON(TCP_AO_GET_ALL & (TCP_AO_GET_CURR | TCP_AO_GET_NEXT));
+  1817		if (opt_in.flags & ~TCP_AO_GETF_VALID)
+  1818			return -EINVAL;
+  1819	
+  1820		max_keys = opt_in.nkeys;
+  1821		copy_all = !!(opt_in.flags & TCP_AO_GET_ALL);
+  1822		copy_current = !!(opt_in.flags & TCP_AO_GET_CURR);
+  1823		copy_next = !!(opt_in.flags & TCP_AO_GET_NEXT);
+  1824	
+  1825		if (!(copy_all || copy_current || copy_next)) {
+  1826			prefix_in = opt_in.prefix;
+  1827	
+  1828			switch (ss_family) {
+  1829			case AF_INET: {
+  1830				sin = (struct sockaddr_in *)&opt_in.addr;
+  1831				port = sin->sin_port;
+  1832				addr = (union tcp_ao_addr *)&sin->sin_addr;
+  1833	
+  1834				if (prefix_in > 32)
+  1835					return -EINVAL;
+  1836	
+  1837				if (sin->sin_addr.s_addr == INADDR_ANY &&
+  1838				    prefix_in != 0)
+  1839					return -EINVAL;
+  1840	
+  1841				break;
+  1842			}
+  1843			case AF_INET6: {
+  1844				sin6 = (struct sockaddr_in6 *)&opt_in.addr;
+  1845				addr = (union tcp_ao_addr *)&sin6->sin6_addr;
+  1846				addr6 = &sin6->sin6_addr;
+  1847				port = sin6->sin6_port;
+  1848	
+  1849				if (prefix_in != 0) {
+  1850					if (ipv6_addr_v4mapped(addr6)) {
+  1851						__be32 addr4 = addr6->s6_addr32[3];
+  1852	
+  1853						if (prefix_in > 32 ||
+  1854						    addr4 == INADDR_ANY)
+  1855							return -EINVAL;
+  1856					} else {
+  1857						if (ipv6_addr_any(addr6) ||
+  1858						    prefix_in > 128)
+  1859							return -EINVAL;
+  1860					}
+  1861				} else if (!ipv6_addr_any(addr6)) {
+  1862					return -EINVAL;
+  1863				}
+  1864	
+  1865				break;
+  1866			}
+  1867			default:
+  1868				return -EINVAL;
+  1869			}
+  1870		}
+  1871	
+  1872		bytes_to_write = min(user_len, (int)sizeof(struct tcp_ao_getsockopt));
+  1873		copied_keys = 0;
+  1874		matched_keys = 0;
+  1875	
+  1876		hlist_for_each_entry_rcu(key, &ao_info->head, node) {
+  1877			if (copy_all)
+  1878				goto match;
+  1879	
+  1880			if (copy_current || copy_next) {
+  1881				if (copy_current && key == ao_info->current_key)
+  1882					goto match;
+  1883				if (copy_next && key == ao_info->rnext_key)
+  1884					goto match;
+  1885				continue;
+  1886			}
+  1887	
+  1888			if (tcp_ao_key_cmp(key, addr, opt_in.prefix,
+  1889					   opt_in.addr.ss_family,
+  1890					   opt_in.sndid, opt_in.rcvid, port) != 0)
+  1891				continue;
+  1892	match:
+  1893			matched_keys++;
+  1894			if (copied_keys >= max_keys)
+  1895				continue;
+  1896	
+  1897			memset(&opt_out, 0, sizeof(struct tcp_ao_getsockopt));
+  1898	
+  1899			if (key->family == AF_INET) {
+  1900				struct sockaddr_in *sin_out = (struct sockaddr_in *)&opt_out.addr;
+  1901	
+  1902				sin_out->sin_family = key->family;
+  1903				sin_out->sin_port = ntohs(key->port);
+  1904				memcpy(&sin_out->sin_addr, &key->addr, sizeof(struct in_addr));
+  1905			} else {
+  1906				struct sockaddr_in6 *sin6_out = (struct sockaddr_in6 *)&opt_out.addr;
+  1907	
+  1908				sin6_out->sin6_family = key->family;
+  1909				sin6_out->sin6_port = ntohs(key->port);
+  1910				memcpy(&sin6_out->sin6_addr, &key->addr, sizeof(struct in6_addr));
+  1911			}
+  1912			opt_out.sndid = key->sndid;
+  1913			opt_out.rcvid = key->rcvid;
+  1914			opt_out.prefix = key->prefixlen;
+  1915			opt_out.keyflags = key->keyflags;
+  1916			opt_out.flags = 0;
+  1917			if (key == ao_info->current_key)
+  1918				opt_out.flags |= TCP_AO_GET_CURR;
+  1919			if (key == ao_info->rnext_key)
+  1920				opt_out.flags |= TCP_AO_GET_NEXT;
+  1921			opt_out.nkeys = 0;
+  1922			opt_out.maclen = key->maclen;
+  1923			opt_out.keylen = key->keylen;
+  1924			memcpy(&opt_out.key, key->key, key->keylen);
+  1925			crypto_pool_algo(key->crypto_pool_id, opt_out.alg_name, 64);
+  1926	
+  1927			/* Copy key to user */
+  1928			if (copy_to_user(optval, &opt_out, bytes_to_write))
+  1929				return -EFAULT;
+  1930			optval += user_len;
+  1931			copied_keys++;
+  1932		}
+  1933	
+  1934		optlen_out = (int)sizeof(struct tcp_ao_getsockopt);
+  1935		if (copy_to_user(optlen, &optlen_out, sizeof(int)))
+  1936			return -EFAULT;
+  1937	
+  1938		if (copy_to_user(&optval_in->nkeys, &matched_keys, sizeof(u32)))
+  1939			return -EFAULT;
+  1940	
+  1941		return 0;
+  1942	}
+  1943	
 
 -- 
 0-DAY CI Kernel Test Service
 https://01.org/lkp
 
---05pH+KHyVlEJlRmi
+--wOuTzDfqp1nTSBw+
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: attachment; filename=config
 
@@ -226,6 +435,7 @@ CONFIG_PRINTK_SAFE_LOG_BUF_SHIFT=13
 #
 # end of Scheduler features
 
+CONFIG_CC_HAS_INT128=y
 CONFIG_CC_IMPLICIT_FALLTHROUGH="-Wimplicit-fallthrough=5"
 CONFIG_GCC12_NO_ARRAY_BOUNDS=y
 CONFIG_CGROUPS=y
@@ -312,54 +522,29 @@ CONFIG_ARCH_HAS_CACHE_LINE_SIZE=y
 #
 # Host processor type and features
 #
-# CONFIG_M486SX is not set
-# CONFIG_M486 is not set
-# CONFIG_M586 is not set
-# CONFIG_M586TSC is not set
-# CONFIG_M586MMX is not set
-CONFIG_M686=y
-# CONFIG_MPENTIUMII is not set
-# CONFIG_MPENTIUMIII is not set
-# CONFIG_MPENTIUMM is not set
-# CONFIG_MPENTIUM4 is not set
-# CONFIG_MK6 is not set
-# CONFIG_MK7 is not set
 # CONFIG_MK8 is not set
-# CONFIG_MCRUSOE is not set
-# CONFIG_MEFFICEON is not set
-# CONFIG_MWINCHIPC6 is not set
-# CONFIG_MWINCHIP3D is not set
-# CONFIG_MELAN is not set
-# CONFIG_MGEODEGX1 is not set
-# CONFIG_MGEODE_LX is not set
-# CONFIG_MCYRIXIII is not set
-# CONFIG_MVIAC3_2 is not set
-# CONFIG_MVIAC7 is not set
+# CONFIG_MPSC is not set
 # CONFIG_MCORE2 is not set
 # CONFIG_MATOM is not set
-# CONFIG_X86_GENERIC is not set
-CONFIG_X86_INTERNODE_CACHE_SHIFT=5
-CONFIG_X86_L1_CACHE_SHIFT=5
-CONFIG_X86_USE_PPRO_CHECKSUM=y
+CONFIG_GENERIC_CPU=y
+CONFIG_X86_INTERNODE_CACHE_SHIFT=6
+CONFIG_X86_L1_CACHE_SHIFT=6
 CONFIG_X86_TSC=y
 CONFIG_X86_CMPXCHG64=y
 CONFIG_X86_CMOV=y
-CONFIG_X86_MINIMUM_CPU_FAMILY=6
+CONFIG_X86_MINIMUM_CPU_FAMILY=64
 CONFIG_IA32_FEAT_CTL=y
 CONFIG_CPU_SUP_INTEL=y
 CONFIG_CPU_SUP_AMD=y
 CONFIG_CPU_SUP_HYGON=y
 CONFIG_CPU_SUP_CENTAUR=y
-CONFIG_CPU_SUP_TRANSMETA_32=y
 CONFIG_CPU_SUP_ZHAOXIN=y
-CONFIG_CPU_SUP_VORTEX_32=y
 # end of Host processor type and features
 
 CONFIG_UML_X86=y
-CONFIG_X86_32=y
+CONFIG_64BIT=y
+CONFIG_X86_64=y
 CONFIG_3_LEVEL_PGTABLES=y
-CONFIG_ARCH_HAS_SC_SIGNALS=y
-CONFIG_ARCH_REUSE_HOST_VSYSCALL_AREA=y
 CONFIG_GENERIC_HWEIGHT=y
 # CONFIG_STATIC_LINK is not set
 CONFIG_LD_SCRIPT_DYN=y
@@ -367,7 +552,7 @@ CONFIG_LD_SCRIPT_DYN_RPATH=y
 CONFIG_HOSTFS=y
 CONFIG_MCONSOLE=y
 CONFIG_MAGIC_SYSRQ=y
-CONFIG_KERNEL_STACK_ORDER=1
+CONFIG_KERNEL_STACK_ORDER=2
 # CONFIG_MMAPPER is not set
 CONFIG_PGTABLE_LEVELS=3
 # CONFIG_UML_TIME_TRAVEL_SUPPORT is not set
@@ -425,23 +610,20 @@ CONFIG_PM=y
 # General architecture-dependent options
 #
 CONFIG_CRASH_CORE=y
+CONFIG_HAVE_64BIT_ALIGNED_ACCESS=y
 CONFIG_TRACE_IRQFLAGS_SUPPORT=y
-CONFIG_ARCH_32BIT_OFF_T=y
 CONFIG_HAVE_ASM_MODVERSIONS=y
-CONFIG_ARCH_WANT_IPC_PARSE_VERSION=y
 CONFIG_HAVE_ARCH_SECCOMP=y
 CONFIG_HAVE_ARCH_SECCOMP_FILTER=y
 CONFIG_SECCOMP=y
 CONFIG_SECCOMP_FILTER=y
 # CONFIG_SECCOMP_CACHE_DEBUG is not set
 CONFIG_LTO_NONE=y
-CONFIG_MODULES_USE_ELF_REL=y
+CONFIG_HAVE_VIRT_CPU_ACCOUNTING_GEN=y
+CONFIG_MODULES_USE_ELF_RELA=y
 CONFIG_PAGE_SIZE_LESS_THAN_64KB=y
 CONFIG_PAGE_SIZE_LESS_THAN_256KB=y
-CONFIG_CLONE_BACKWARDS=y
-CONFIG_OLD_SIGSUSPEND3=y
-CONFIG_OLD_SIGACTION=y
-CONFIG_COMPAT_32BIT_TIME=y
+# CONFIG_COMPAT_32BIT_TIME is not set
 CONFIG_ARCH_NO_PREEMPT=y
 CONFIG_ARCH_EPHEMERAL_INODES=y
 CONFIG_HAVE_ARCH_VMAP_STACK=y
@@ -518,7 +700,6 @@ CONFIG_FREEZER=y
 # Executable file formats
 #
 CONFIG_BINFMT_ELF=y
-CONFIG_ARCH_BINFMT_ELF_EXTRA_PHDRS=y
 CONFIG_ELFCORE=y
 CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS=y
 CONFIG_BINFMT_SCRIPT=y
@@ -548,6 +729,7 @@ CONFIG_FLATMEM=y
 CONFIG_SPLIT_PTLOCK_CPUS=4
 # CONFIG_COMPACTION is not set
 # CONFIG_PAGE_REPORTING is not set
+CONFIG_PHYS_ADDR_T_64BIT=y
 # CONFIG_KSM is not set
 CONFIG_DEFAULT_MMAP_MIN_ADDR=4096
 CONFIG_NEED_PER_CPU_KM=y
@@ -603,7 +785,8 @@ CONFIG_INET_TCP_DIAG=y
 # CONFIG_TCP_CONG_ADVANCED is not set
 CONFIG_TCP_CONG_CUBIC=y
 CONFIG_DEFAULT_TCP_CONG="cubic"
-# CONFIG_TCP_MD5SIG is not set
+CONFIG_TCP_AO=y
+CONFIG_TCP_MD5SIG=y
 # CONFIG_IPV6 is not set
 # CONFIG_MPTCP is not set
 # CONFIG_NETWORK_SECMARK is not set
@@ -980,7 +1163,6 @@ CONFIG_LDISC_AUTOLOAD=y
 # CONFIG_VIRTIO_CONSOLE is not set
 CONFIG_HW_RANDOM=y
 CONFIG_UML_RANDOM=y
-# CONFIG_NSC_GPIO is not set
 CONFIG_DEVMEM=y
 CONFIG_RANDOM_TRUST_CPU=y
 CONFIG_RANDOM_TRUST_BOOTLOADER=y
@@ -1360,6 +1542,7 @@ CONFIG_SYSFS=y
 CONFIG_TMPFS=y
 # CONFIG_TMPFS_POSIX_ACL is not set
 # CONFIG_TMPFS_XATTR is not set
+# CONFIG_TMPFS_INODE64 is not set
 CONFIG_MEMFD_CREATE=y
 # CONFIG_CONFIGFS_FS is not set
 # end of Pseudo filesystems
@@ -1559,7 +1742,7 @@ CONFIG_CRYPTO_CRC32C=y
 # CONFIG_CRYPTO_GHASH is not set
 # CONFIG_CRYPTO_POLY1305 is not set
 # CONFIG_CRYPTO_MD4 is not set
-# CONFIG_CRYPTO_MD5 is not set
+CONFIG_CRYPTO_MD5=y
 # CONFIG_CRYPTO_MICHAEL_MIC is not set
 # CONFIG_CRYPTO_RMD160 is not set
 # CONFIG_CRYPTO_SHA1 is not set
@@ -1586,7 +1769,7 @@ CONFIG_CRYPTO_CRC32C=y
 # CONFIG_CRYPTO_SERPENT is not set
 # CONFIG_CRYPTO_SM4_GENERIC is not set
 # CONFIG_CRYPTO_TWOFISH is not set
-# CONFIG_CRYPTO_TWOFISH_586 is not set
+# CONFIG_CRYPTO_TWOFISH_X86_64 is not set
 
 #
 # Compression
@@ -1608,7 +1791,8 @@ CONFIG_CRYPTO_CRC32C=y
 # CONFIG_CRYPTO_USER_API_SKCIPHER is not set
 # CONFIG_CRYPTO_USER_API_RNG is not set
 # CONFIG_CRYPTO_USER_API_AEAD is not set
-# CONFIG_CRYPTO_POOL is not set
+CONFIG_CRYPTO_POOL=y
+CONFIG_CRYPTO_POOL_DEFAULT_SCRATCH_SIZE=0x100
 CONFIG_CRYPTO_HW=y
 
 #
@@ -1633,7 +1817,7 @@ CONFIG_GENERIC_NET_UTILS=y
 CONFIG_CRYPTO_LIB_BLAKE2S_GENERIC=y
 # CONFIG_CRYPTO_LIB_CHACHA is not set
 # CONFIG_CRYPTO_LIB_CURVE25519 is not set
-CONFIG_CRYPTO_LIB_POLY1305_RSIZE=1
+CONFIG_CRYPTO_LIB_POLY1305_RSIZE=11
 # CONFIG_CRYPTO_LIB_POLY1305 is not set
 # CONFIG_CRYPTO_LIB_CHACHA20POLY1305 is not set
 CONFIG_CRYPTO_LIB_SHA1=y
@@ -1659,6 +1843,7 @@ CONFIG_CRC32_SLICEBY8=y
 # CONFIG_RANDOM32_SELFTEST is not set
 # CONFIG_XZ_DEC is not set
 CONFIG_NO_DMA=y
+CONFIG_ARCH_DMA_ADDR_T_64BIT=y
 # CONFIG_DMA_API_DEBUG is not set
 CONFIG_DQL=y
 CONFIG_NLATTR=y
@@ -1696,7 +1881,7 @@ CONFIG_DEBUG_INFO_NONE=y
 # CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT is not set
 # CONFIG_DEBUG_INFO_DWARF4 is not set
 # CONFIG_DEBUG_INFO_DWARF5 is not set
-CONFIG_FRAME_WARN=1024
+CONFIG_FRAME_WARN=2048
 # CONFIG_STRIP_ASM_SYMS is not set
 # CONFIG_READABLE_ASM is not set
 CONFIG_DEBUG_SECTION_MISMATCH=y
@@ -1739,8 +1924,11 @@ CONFIG_HAVE_DEBUG_KMEMLEAK=y
 # CONFIG_SCHED_STACK_END_CHECK is not set
 # CONFIG_DEBUG_VM is not set
 CONFIG_DEBUG_MEMORY_INIT=y
+CONFIG_HAVE_ARCH_KASAN=y
+CONFIG_HAVE_ARCH_KASAN_VMALLOC=y
 CONFIG_CC_HAS_KASAN_GENERIC=y
 CONFIG_CC_HAS_WORKING_NOSANITIZE_ADDRESS=y
+# CONFIG_KASAN is not set
 # end of Memory Debugging
 
 # CONFIG_DEBUG_SHIRQ is not set
@@ -1782,6 +1970,7 @@ CONFIG_LOCK_DEBUGGING_SUPPORT=y
 # CONFIG_LOCK_TORTURE_TEST is not set
 # CONFIG_WW_MUTEX_SELFTEST is not set
 # CONFIG_SCF_TORTURE_TEST is not set
+# CONFIG_CSD_LOCK_WAIT_DEBUG is not set
 # end of Lock Debugging (spinlocks, mutexes, etc...)
 
 # CONFIG_DEBUG_IRQFLAGS is not set
@@ -1887,4 +2076,4 @@ CONFIG_RUNTIME_TESTING_MENU=y
 # end of Kernel Testing and Coverage
 # end of Kernel hacking
 
---05pH+KHyVlEJlRmi--
+--wOuTzDfqp1nTSBw+--
