@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 124965E87BC
-	for <lists+netdev@lfdr.de>; Sat, 24 Sep 2022 04:51:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C57575E87B5
+	for <lists+netdev@lfdr.de>; Sat, 24 Sep 2022 04:51:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232997AbiIXCvd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 22:51:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33382 "EHLO
+        id S233383AbiIXCvg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 22:51:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232783AbiIXCvG (ORCPT
+        with ESMTP id S233273AbiIXCvG (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 22:51:06 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD20D1138ED;
-        Fri, 23 Sep 2022 19:51:04 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MZD1m3pgxzlW3C;
-        Sat, 24 Sep 2022 10:46:52 +0800 (CST)
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68E4212416A;
+        Fri, 23 Sep 2022 19:51:05 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MZD432rMjzHqLH;
+        Sat, 24 Sep 2022 10:48:51 +0800 (CST)
 Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
  (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Sat, 24 Sep
- 2022 10:51:02 +0800
+ 2022 10:51:03 +0800
 From:   Zhengchao Shao <shaozhengchao@huawei.com>
 To:     <netdev@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
         <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
         <shuah@kernel.org>, <victor@mojatatu.com>
 CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
         <shaozhengchao@huawei.com>
-Subject: [PATCH net-next,v3 12/15] selftests/tc-testing: add selftests for skbprio qdisc
-Date:   Sat, 24 Sep 2022 10:51:54 +0800
-Message-ID: <20220924025157.331635-13-shaozhengchao@huawei.com>
+Subject: [PATCH net-next,v3 13/15] selftests/tc-testing: add selftests for taprio qdisc
+Date:   Sat, 24 Sep 2022 10:51:55 +0800
+Message-ID: <20220924025157.331635-14-shaozhengchao@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220924025157.331635-1-shaozhengchao@huawei.com>
 References: <20220924025157.331635-1-shaozhengchao@huawei.com>
@@ -47,128 +47,170 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Test 283e: Create skbprio with default setting
-Test c086: Create skbprio with limit setting
-Test 6733: Change skbprio with limit setting
-Test 2958: Show skbprio class
+Test ba39: Add taprio Qdisc to multi-queue device (8 queues)
+Test 9462: Add taprio Qdisc with multiple sched-entry
+Test 8d92: Add taprio Qdisc with txtime-delay
+Test d092: Delete taprio Qdisc with valid handle
+Test 8471: Show taprio class
+Test 0a85: Add taprio Qdisc to single-queue device
 
 Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 ---
- tools/testing/selftests/tc-testing/config     |  1 +
- .../tc-testing/tc-tests/qdiscs/skbprio.json   | 95 +++++++++++++++++++
- 2 files changed, 96 insertions(+)
- create mode 100644 tools/testing/selftests/tc-testing/tc-tests/qdiscs/skbprio.json
+ tools/testing/selftests/tc-testing/config     |   1 +
+ .../tc-testing/tc-tests/qdiscs/taprio.json    | 135 ++++++++++++++++++
+ 2 files changed, 136 insertions(+)
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/qdiscs/taprio.json
 
 diff --git a/tools/testing/selftests/tc-testing/config b/tools/testing/selftests/tc-testing/config
-index bc0ef6eb515a..22729f244c6e 100644
+index 22729f244c6e..d6063918e2c3 100644
 --- a/tools/testing/selftests/tc-testing/config
 +++ b/tools/testing/selftests/tc-testing/config
-@@ -24,6 +24,7 @@ CONFIG_NET_SCH_PRIO=m
- CONFIG_NET_SCH_INGRESS=m
+@@ -25,6 +25,7 @@ CONFIG_NET_SCH_INGRESS=m
  CONFIG_NET_SCH_SFB=m
  CONFIG_NET_SCH_SFQ=m
-+CONFIG_NET_SCH_SKBPRIO=m
+ CONFIG_NET_SCH_SKBPRIO=m
++CONFIG_NET_SCH_TAPRIO=m
  
  #
  # Classification
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/qdiscs/skbprio.json b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/skbprio.json
+diff --git a/tools/testing/selftests/tc-testing/tc-tests/qdiscs/taprio.json b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/taprio.json
 new file mode 100644
-index 000000000000..5766045c9d33
+index 000000000000..a44455372646
 --- /dev/null
-+++ b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/skbprio.json
-@@ -0,0 +1,95 @@
++++ b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/taprio.json
+@@ -0,0 +1,135 @@
 +[
 +    {
-+        "id": "283e",
-+        "name": "Create skbprio with default setting",
++        "id": "ba39",
++        "name": "Add taprio Qdisc to multi-queue device (8 queues)",
 +        "category": [
 +            "qdisc",
-+            "skbprio"
++            "taprio"
 +        ],
 +        "plugins": {
 +            "requires": "nsPlugin"
 +        },
 +        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true"
++            "echo \"1 1 8\" > /sys/bus/netdevsim/new_device"
 +        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root skbprio",
++        "cmdUnderTest": "$TC qdisc add dev $ETH root handle 1: taprio num_tc 3 map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 queues 1@0 1@0 1@0 base-time 1000000000 sched-entry S 01 300000 flags 0x1 clockid CLOCK_TAI",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc skbprio 1: root refcnt [0-9]+ limit 64",
++        "verifyCmd": "$TC qdisc show dev $ETH",
++        "matchPattern": "qdisc taprio 1: root refcnt [0-9]+ tc 3 map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2",
 +        "matchCount": "1",
 +        "teardown": [
-+            "$TC qdisc del dev $DUMMY handle 1: root",
-+            "$IP link del dev $DUMMY type dummy"
++            "echo \"1\" > /sys/bus/netdevsim/del_device"
 +        ]
 +    },
 +    {
-+        "id": "c086",
-+        "name": "Create skbprio with limit setting",
++        "id": "9462",
++        "name": "Add taprio Qdisc with multiple sched-entry",
 +        "category": [
 +            "qdisc",
-+            "skbprio"
++            "taprio"
 +        ],
 +        "plugins": {
 +            "requires": "nsPlugin"
 +        },
 +        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true"
++            "echo \"1 1 8\" > /sys/bus/netdevsim/new_device"
 +        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root skbprio limit 1",
++        "cmdUnderTest": "$TC qdisc add dev $ETH root handle 1: taprio num_tc 3 map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 queues 1@0 1@0 1@0 base-time 1000000000 sched-entry S 01 300000 sched-entry S 03 300000 sched-entry S 04 400000 flags 0x1 clockid CLOCK_TAI",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc skbprio 1: root refcnt [0-9]+ limit 1",
-+        "matchCount": "1",
++        "verifyCmd": "$TC qdisc show dev $ETH",
++        "matchPattern": "index [0-9]+ cmd S gatemask 0x[0-9]+ interval [0-9]+00000",
++        "matchCount": "3",
 +        "teardown": [
-+            "$TC qdisc del dev $DUMMY handle 1: root",
-+            "$IP link del dev $DUMMY type dummy"
++            "echo \"1\" > /sys/bus/netdevsim/del_device"
 +        ]
 +    },
 +    {
-+        "id": "6733",
-+        "name": "Change skbprio with limit setting",
++        "id": "8d92",
++        "name": "Add taprio Qdisc with txtime-delay",
 +        "category": [
 +            "qdisc",
-+            "skbprio"
++            "taprio"
 +        ],
 +        "plugins": {
 +            "requires": "nsPlugin"
 +        },
 +        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true",
-+            "$TC qdisc add dev $DUMMY handle 1: root skbprio"
++            "echo \"1 1 8\" > /sys/bus/netdevsim/new_device"
 +        ],
-+        "cmdUnderTest": "$TC qdisc change dev $DUMMY handle 1: root skbprio limit 32",
++        "cmdUnderTest": "$TC qdisc add dev $ETH root handle 1: taprio num_tc 3 map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 queues 1@0 1@0 1@0 base-time 1000000000 sched-entry S 01 300000 flags 0x1 txtime-delay 500000 clockid CLOCK_TAI",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc skbprio 1: root refcnt [0-9]+ limit 32",
++        "verifyCmd": "$TC qdisc show dev $ETH",
++        "matchPattern": "clockid TAI flags 0x1 txtime delay 500000",
 +        "matchCount": "1",
 +        "teardown": [
-+            "$TC qdisc del dev $DUMMY handle 1: root",
-+            "$IP link del dev $DUMMY type dummy"
++            "echo \"1\" > /sys/bus/netdevsim/del_device"
 +        ]
 +    },
 +    {
-+        "id": "2958",
-+        "name": "Show skbprio class",
++        "id": "d092",
++        "name": "Delete taprio Qdisc with valid handle",
 +        "category": [
 +            "qdisc",
-+            "skbprio"
++            "taprio"
 +        ],
 +        "plugins": {
 +            "requires": "nsPlugin"
 +        },
 +        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true"
++            "echo \"1 1 8\" > /sys/bus/netdevsim/new_device",
++            "$TC qdisc add dev $ETH root handle 1: taprio num_tc 3 map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 queues 1@0 1@0 1@0 base-time 1000000000 sched-entry S 01 300000 flags 0x1 clockid CLOCK_TAI"
 +        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root skbprio",
++        "cmdUnderTest": "$TC qdisc del dev $ETH root handle 1:",
 +        "expExitCode": "0",
-+        "verifyCmd": "$TC class show dev $DUMMY",
-+        "matchPattern": "class skbprio 1:",
-+        "matchCount": "64",
++        "verifyCmd": "$TC qdisc show dev $ETH",
++        "matchPattern": "qdisc taprio 1: root refcnt",
++        "matchCount": "0",
 +        "teardown": [
-+            "$TC qdisc del dev $DUMMY handle 1: root",
-+            "$IP link del dev $DUMMY type dummy"
++            "echo \"1\" > /sys/bus/netdevsim/del_device"
++        ]
++    },
++    {
++        "id": "8471",
++        "name": "Show taprio class",
++        "category": [
++            "qdisc",
++            "taprio"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "echo \"1 1 8\" > /sys/bus/netdevsim/new_device"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $ETH root handle 1: taprio num_tc 3 map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 queues 1@0 1@0 1@0 base-time 1000000000 sched-entry S 01 300000 flags 0x1 clockid CLOCK_TAI",
++        "expExitCode": "0",
++        "verifyCmd": "$TC class show dev $ETH",
++        "matchPattern": "class taprio 1:[0-9]+ root leaf 1:",
++        "matchCount": "8",
++        "teardown": [
++            "echo \"1\" > /sys/bus/netdevsim/del_device"
++        ]
++    },
++    {
++        "id": "0a85",
++        "name": "Add taprio Qdisc to single-queue device",
++        "category": [
++            "qdisc",
++            "taprio"
++        ],
++        "plugins": {
++            "requires": "nsPlugin"
++        },
++        "setup": [
++            "echo \"1 1\" > /sys/bus/netdevsim/new_device"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $ETH root handle 1: taprio num_tc 3 map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 queues 1@0 1@0 1@0 base-time 1000000000 sched-entry S 01 300000 flags 0x1 clockid CLOCK_TAI",
++        "expExitCode": "2",
++        "verifyCmd": "$TC qdisc show dev $ETH",
++        "matchPattern": "qdisc taprio 1: root refcnt",
++        "matchCount": "0",
++        "teardown": [
++            "echo \"1\" > /sys/bus/netdevsim/del_device"
 +        ]
 +    }
 +]
