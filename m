@@ -2,97 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 33E305E8AC2
-	for <lists+netdev@lfdr.de>; Sat, 24 Sep 2022 11:28:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F05C5E8B2E
+	for <lists+netdev@lfdr.de>; Sat, 24 Sep 2022 11:53:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233543AbiIXJ2x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Sep 2022 05:28:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53426 "EHLO
+        id S233573AbiIXJxE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Sep 2022 05:53:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233516AbiIXJ2w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Sep 2022 05:28:52 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFA05127C94
-        for <netdev@vger.kernel.org>; Sat, 24 Sep 2022 02:28:50 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id bu25so1797829lfb.3
-        for <netdev@vger.kernel.org>; Sat, 24 Sep 2022 02:28:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=jrh4qRmQUJ/q2crYkL86oyhAjsetFbiilFq4gqr3q0Q=;
-        b=QOARMQx3jWwWSNNym9bN+dqTqtNFMO346NSAbKi+sHtxYz3niuhAkF8jvGa8PQifIu
-         hEV2GDPyL7RUQWD1aUoG9Qj4lDDsoLEpzJ+nQltJrCFsS6CN/+zC6RK43Y+LrT07g5+q
-         mRyaEXyuMwTJ8w3+2ig4SLEw7vgsSI7XXjCE0jR/sbc3c26d5dJ4FZr0g6GtW/lPCX6R
-         uyhNYw+enYW5zFMo0ytOW48j8CxK4cY1CsJrE5V6uxnVYpJYJZe/YmG/75U5yt+GhtK0
-         dLeMUGbLPC2/Nq5YNv7LnSfYGLU1kigOAwQEJGvUcGoPisR7MrE1OeJQm8BxySiE78e7
-         4OgQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=jrh4qRmQUJ/q2crYkL86oyhAjsetFbiilFq4gqr3q0Q=;
-        b=uZh7l8n9QjslmmC1BuMGHd0PQgG3jAV2mVRKUT+cC6HsunsskNx+y4hre/Au++Ic8x
-         d7TD0JcwrjNvFxLHQNtwtqxJgbm8pryKpnWL8H0Ng1wIr1jx6QLV/pReRW6m0+Eys8H/
-         yZ/hYqice3F/5e9qawn+UUqDWJ0+VpBo6QKhAToIQLh4V5UZHXSbGc1UqlzzBoQD1xSy
-         zDxvVNdcLSdOwxzeZAVtzp3Ig8Ci82Hcx2CTTWxBJlRs5p17Jd62JnOnpZ93AuOHPVDw
-         eUepORH9gduTpmEBNSGDjbHgh/Vqc0hoXhnFpUyUiVmfRdLRR4rysjuRR7JeWYIUkgfO
-         gQjA==
-X-Gm-Message-State: ACrzQf1cxiucOyhJIP1B49CiLjxjr8HZ6vtZaHCQNaHJC7v2EnYKHY3A
-        ESgbp0hdCYX3CitePWf4y8Znqc9iX4soGw==
-X-Google-Smtp-Source: AMsMyM6L+QLbgAo0uHKr0nyiFyYCIgXYnkUMDWWP6xNyu7162NORyWwVQJv4gT+qyCHIuS0Vp/VrqQ==
-X-Received: by 2002:a05:6512:3e10:b0:498:f317:e57e with SMTP id i16-20020a0565123e1000b00498f317e57emr5178516lfv.328.1664011729227;
-        Sat, 24 Sep 2022 02:28:49 -0700 (PDT)
-Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id o7-20020ac25e27000000b00497a8f04905sm1836220lfg.251.2022.09.24.02.28.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 24 Sep 2022 02:28:48 -0700 (PDT)
-Message-ID: <0eef32f2-0092-746d-7428-983f10ad4565@linaro.org>
-Date:   Sat, 24 Sep 2022 11:28:48 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.0
-Subject: Re: [PATCH] NFC: hci: Split memcpy() of struct hcp_message flexible
- array
-Content-Language: en-US
-To:     Kees Cook <keescook@chromium.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S233438AbiIXJxD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Sep 2022 05:53:03 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 471F9B0894;
+        Sat, 24 Sep 2022 02:53:03 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1664013180;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ILxHY3TWz3amCTghU14AmHcO8sLhIbTOfXDqfFVic+0=;
+        b=uPDA+iTSI6Zaa1ooqbeSoL8d7JhZbTsAhpvzmdOSZof6w1+Q1hy6Mar7GQyPX5NtwkRxJs
+        vKaXrluD3fpLw3Mm126+oqMrnSiU9yueznrWcifR4K7vyo0PP2rEV/L+32sGrBdaPxhcCP
+        zKKhrGqQQzg2rnWSN1Z7indpMFqjoTVU3NEnah2rI/D0JNjIx/3yYI2p0AQwQc0sLcBhe1
+        ZZSNzxs10bhDqdL3DREEVvwnxTWeQPS/w8JqJcHRcGLgaO1yxPvZ+fKqdFsOZSgeCX6rqk
+        cFgk+I79G8mXokijmJe/Eb0gOiK9xhGGGDP4tIARL3gW0UpKH+BjddWuDQcnng==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1664013180;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ILxHY3TWz3amCTghU14AmHcO8sLhIbTOfXDqfFVic+0=;
+        b=2oCnuv8LHrTsMXgDCJap1SqMJorMTwJZhmzUCe3VAEYe1Lvc3RNJnOYbTQJHj11Icc6DLo
+        STAAjqHqh4uHqLAA==
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        UNGLinuxDriver@microchip.com,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-References: <20220924040835.3364912-1-keescook@chromium.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220924040835.3364912-1-keescook@chromium.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 0/4] Improve tsn_lib selftests for future
+ distributed tasks
+In-Reply-To: <20220923210016.3406301-1-vladimir.oltean@nxp.com>
+References: <20220923210016.3406301-1-vladimir.oltean@nxp.com>
+Date:   Sat, 24 Sep 2022 11:52:59 +0200
+Message-ID: <87bkr5aykk.fsf@kurt>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 24/09/2022 06:08, Kees Cook wrote:
-> To work around a misbehavior of the compiler's ability to see into
-> composite flexible array structs (as detailed in the coming memcpy()
-> hardening series[1]), split the memcpy() of the header and the payload
-> so no false positive run-time overflow warning will be generated. This
-> split already existed for the "firstfrag" case, so just generalize the
-> logic further.
-> 
-> [1] https://lore.kernel.org/linux-hardening/20220901065914.1417829-2-keescook@chromium.org/
-> 
+--=-=-=
+Content-Type: text/plain
 
-Looks correct:
+On Sat Sep 24 2022, Vladimir Oltean wrote:
+> Some of the boards I am working with are limited in the number of ports
+> that they offer, and as more TSN related selftests are added, it is
+> important to be able to distribute the work among multiple boards.
+> A large part of implementing that is ensuring network-wide
+> synchronization, but also permitting more streams of data to flow
+> through the network. There is the more important aspect of also
+> coordinating the timing characteristics of those streams, and that is
+> also something that is tackled, although not in this modest patch set.
+> The goal here is not to introduce new selftests yet, but just to lay a
+> better foundation for them. These patches are a part of the cleanup work
+> I've done while working on selftests for frame preemption. They are
+> regression-tested with psfp.sh.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+For this series,
 
-Best regards,
-Krzysztof
+Reviewed-by: Kurt Kanzenbach <kurt@linutronix.de>
 
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmMu03sTHGt1cnRAbGlu
+dXRyb25peC5kZQAKCRDBk9HyqkZzgnCCD/9gvTfAyxuU9tn7yTA/6CsNP2bI/5bK
+HtAcw3lFVdGfVqLciUpopSZN+/pCuqit32naMsM1DqhR37aZTYjdDm1cvu26UUhg
+gGmXC8RVToLt42bcRRSvRLdcvt+zyqxeCoV051DMGXmn0XF0jJe59AjLStwoK/It
+nfMa4i4Jojw/ttnJqyAbQDjh2aCSkLH0xFS1MJdCKBmOMjclWLKYGsa1Ctg3YE5I
+ARnEVjzz8p95QMoFUFObW5h92nIxNKikcEFD4satk8ql5GfxJOMBNR7eoYj0Y+fy
+Bwr1lGbDLf8Cg3H6NURQJyrRrWWQJDftk1fzpSw5q5MCnLQuA3QZcz8P0YCAyFIt
+y+83pc2E5ifVsZISXtJzERHDx063lylVM2DL7gFhNBXofnOTZ61S15vggkL8pINr
+y3cicITEeJWDhRO/g0+n0u+foVLxDSMKYLG43nK0btgpkEl8Vpvr4FFUBVdU39Z0
+ar0RkVGb3YVriKOfl+nv5xWX/FvCbuQFSuETv1f6XrwO+y3L8TVpLfwgkK3KyMPt
+H0GUnZcPfij9qD5IZ0Jv/GlhyN2KsB6FhzQPcZ09fH6yXZBswOhs3a4TdXlDKGEH
+gWYI+QN4E8aE9dZLN6sw8rV/08KIfyPzsSk5Su+exw0C9Px7jCMK2AW2QXqaTTqK
+Kh2YHmzetobEHA==
+=gUDW
+-----END PGP SIGNATURE-----
+--=-=-=--
