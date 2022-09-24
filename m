@@ -2,53 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A6D35E8960
-	for <lists+netdev@lfdr.de>; Sat, 24 Sep 2022 10:03:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7C835E8A00
+	for <lists+netdev@lfdr.de>; Sat, 24 Sep 2022 10:18:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233480AbiIXIDy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Sep 2022 04:03:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52176 "EHLO
+        id S233644AbiIXISK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Sep 2022 04:18:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229573AbiIXIDx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Sep 2022 04:03:53 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 622381DA55;
-        Sat, 24 Sep 2022 01:03:52 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MZLyt4CNvzWgny;
-        Sat, 24 Sep 2022 15:59:50 +0800 (CST)
-Received: from [10.174.179.191] (10.174.179.191) by
- canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Sat, 24 Sep 2022 16:03:49 +0800
-Message-ID: <4129c1fd-e731-3830-ed33-841c4989f240@huawei.com>
-Date:   Sat, 24 Sep 2022 16:03:49 +0800
+        with ESMTP id S233783AbiIXIRo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Sep 2022 04:17:44 -0400
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D7AFC8404
+        for <netdev@vger.kernel.org>; Sat, 24 Sep 2022 01:15:31 -0700 (PDT)
+Received: by mail-lj1-x235.google.com with SMTP id b24so2322533ljk.6
+        for <netdev@vger.kernel.org>; Sat, 24 Sep 2022 01:15:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=nQomz4ut+7sjfQrrU1jIFAnyWatFfjECi53D3yczEIE=;
+        b=KI9bvqb1+pvOBd4LUHBVRiy4ZY0slRCTRZZlpbG/wkf5BfzAwgC4tzlqpiFF6oyV8H
+         D7v79qgnbhBTO6d2uDyYHRhhdOOhBfa6EEXzsR1OAGK0jLsPlfD7cA9BCk+dEYTkPA3D
+         wWtwWaAoPO0/uTRDdef7+H6/fPQ584Q/+VF22lUeYetTvqY4NLRzWkfcrMuUKAwvI8Ur
+         HORX0nTGI2VWAa2VLCpjSTjWJtDJGVfm/4NoDwUwRQY3sCzLDgDtibX9udsLmyhZz/Ab
+         UsteBe0vnTvVHno/YLL9xbDupvnLo0yMlhWvaVPU8HJaxwp4Vvg2Oz/Cql9apCVP7xpg
+         yn0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=nQomz4ut+7sjfQrrU1jIFAnyWatFfjECi53D3yczEIE=;
+        b=wsCVUkgoQVkvUE0Z7OCRS/9dbdS+c9Tiwt+AFEYWdd7lsyQTG6gW2/VirVei0MTpoZ
+         pQDFkPW+U3I5iC4F1sJXFUhcfBVUjMVwH9015DZ4uwxFNc7PhLYtyh3YutKwvoCJ8uO7
+         Fpr+0EmCmYjZxrDgdrQqRRv8itgSZ6Tift3mCsDdkDhuoIJ+HHuZgU6VQcHoYsbijSor
+         lAL+t+NvmkQ2Zx0V2CofVNb+VpC/1qvbdYH/H5Y7gOteIRzqwgAQwdKlCkwA3hQzqOv9
+         jY0QBWEavSbOOkcKhAt1Xz3wSfxigDRdYDH97rY7Ep7zm0p1xDhCkP7jq62TzchVRycW
+         qmSQ==
+X-Gm-Message-State: ACrzQf2sTHYtXLwyYyAtoyJKBxNnE3Pp7S/ReA7cZpG57ZK/8L1lvuAC
+        4VXNGHy1EQOOqTUn2bev0KHk7iS88qjx3Io4nglHOA==
+X-Google-Smtp-Source: AMsMyM51jSACu0ueivCRHFSALnMRIGDYekDLNBr6hGK18mYNepOD+DBZDwtrPTKiiVk4AIl/66dQQBc8ZJ/gjsu15yk=
+X-Received: by 2002:a2e:be8d:0:b0:26c:f4b:47a0 with SMTP id
+ a13-20020a2ebe8d000000b0026c0f4b47a0mr4030821ljr.92.1664007329396; Sat, 24
+ Sep 2022 01:15:29 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [bpf-next v5 1/3] bpftool: Add auto_attach for bpf prog
- load|loadall
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     <quentin@isovalent.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <andrii@kernel.org>, <martin.lau@linux.dev>, <song@kernel.org>,
-        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
-        <sdf@google.com>, <haoluo@google.com>, <jolsa@kernel.org>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <hawk@kernel.org>,
-        <nathan@kernel.org>, <ndesaulniers@google.com>, <trix@redhat.com>,
-        <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <llvm@lists.linux.dev>
-References: <1663747240-31210-1-git-send-email-wangyufen@huawei.com>
- <CAEf4Bzaskw74UeufRgKSbGtk5eybD9J+4keAPYb-u=jb5myLjw@mail.gmail.com>
-From:   wangyufen <wangyufen@huawei.com>
-In-Reply-To: <CAEf4Bzaskw74UeufRgKSbGtk5eybD9J+4keAPYb-u=jb5myLjw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.191]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-6.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20220923202822.2667581-1-keescook@chromium.org> <20220923202822.2667581-15-keescook@chromium.org>
+In-Reply-To: <20220923202822.2667581-15-keescook@chromium.org>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Sat, 24 Sep 2022 10:15:18 +0200
+Message-ID: <CACT4Y+bg=j9VdteQwrJTNFF_t4EE5uDTMLj07+uMJ9-NcooXGQ@mail.gmail.com>
+Subject: Re: [PATCH v2 14/16] kasan: Remove ksize()-related tests
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Vlastimil Babka <vbabka@suse.cz>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        kasan-dev@googlegroups.com, linux-mm@kvack.org,
+        "Ruhl, Michael J" <michael.j.ruhl@intel.com>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Alex Elder <elder@kernel.org>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Daniel Micay <danielmicay@gmail.com>,
+        Yonghong Song <yhs@fb.com>, Marco Elver <elver@google.com>,
+        Miguel Ojeda <ojeda@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-btrfs@vger.kernel.org,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org, linux-fsdevel@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, dev@openvswitch.org,
+        x86@kernel.org, llvm@lists.linux.dev,
+        linux-hardening@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,206 +98,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-在 2022/9/24 5:29, Andrii Nakryiko 写道:
-> On Wed, Sep 21, 2022 at 12:40 AM Wang Yufen <wangyufen@huawei.com> wrote:
->> Add auto_attach optional to support one-step load-attach-pin_link.
->>
->> For example,
->>     $ bpftool prog loadall test.o /sys/fs/bpf/test auto_attach
->>
->>     $ bpftool link
->>     26: tracing  name test1  tag f0da7d0058c00236  gpl
->>          loaded_at 2022-09-09T21:39:49+0800  uid 0
->>          xlated 88B  jited 55B  memlock 4096B  map_ids 3
->>          btf_id 55
->>     28: kprobe  name test3  tag 002ef1bef0723833  gpl
->>          loaded_at 2022-09-09T21:39:49+0800  uid 0
->>          xlated 88B  jited 56B  memlock 4096B  map_ids 3
->>          btf_id 55
->>     57: tracepoint  name oncpu  tag 7aa55dfbdcb78941  gpl
->>          loaded_at 2022-09-09T21:41:32+0800  uid 0
->>          xlated 456B  jited 265B  memlock 4096B  map_ids 17,13,14,15
->>          btf_id 82
->>
->>     $ bpftool link
->>     1: tracing  prog 26
->>          prog_type tracing  attach_type trace_fentry
->>     3: perf_event  prog 28
->>     10: perf_event  prog 57
->>
->> The auto_attach optional can support tracepoints, k(ret)probes,
->> u(ret)probes.
->>
->> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
->> Signed-off-by: Wang Yufen <wangyufen@huawei.com>
->> Reviewed-by: Quentin Monnet <quentin@isovalent.com>
->> ---
->> v4 -> v5: some formatting nits of doc
->> v3 -> v4: rename functions, update doc, bash and do_help()
->> v2 -> v3: switch to extend prog load command instead of extend perf
->> v2: https://patchwork.kernel.org/project/netdevbpf/patch/20220824033837.458197-1-weiyongjun1@huawei.com/
->> v1: https://patchwork.kernel.org/project/netdevbpf/patch/20220816151725.153343-1-weiyongjun1@huawei.com/
->>   tools/bpf/bpftool/prog.c | 77 ++++++++++++++++++++++++++++++++++++++++++++++--
->>   1 file changed, 75 insertions(+), 2 deletions(-)
->>
->> diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
->> index c81362a..aea0b57 100644
->> --- a/tools/bpf/bpftool/prog.c
->> +++ b/tools/bpf/bpftool/prog.c
->> @@ -1453,6 +1453,68 @@ static int do_run(int argc, char **argv)
->>          return ret;
->>   }
->>
->> +static int
->> +auto_attach_program(struct bpf_program *prog, const char *path)
->> +{
->> +       struct bpf_link *link;
->> +       int err;
->> +
->> +       link = bpf_program__attach(prog);
->> +       err = libbpf_get_error(link);
-> nit: bpftool uses libbpf 1.0, so no need to use libbpf_get_error()
-> anymore, you can just check link for NULL and then look at errno
-
-Thanks, will change in v6
-
+On Fri, 23 Sept 2022 at 22:28, Kees Cook <keescook@chromium.org> wrote:
 >
-> but I wanted to check on desired behavior here. BPF skeleton will skip
-> programs that can't be auto-attached because they are of the type that
-> can't be declaratively specified to be auto-attachable. For such
-> programs bpf_program__attach() will return -EOPNOTSUPP and libbpf's
-> skeleton_attach API will silently skip them. Should bpftool be
-> stricter about such programs here or should it follow BPF skeleton
-> approach?
-
-will change auto_attach_programs() to follow BPF skeleton approach in v6
-
->> +       if (err)
->> +               return err;
->> +
->> +       err = bpf_link__pin(link, path);
->> +       if (err) {
->> +               bpf_link__destroy(link);
->> +               return err;
->> +       }
->> +       return 0;
->> +}
->> +
->> +static int pathname_concat(const char *path, const char *name, char *buf)
-> you added buffer size in libbpf version of this function, maybe match
-> the same signature (I also moved buf and buf_sz to be first two args).
+> In preparation for no longer unpoisoning in ksize(), remove the behavioral
+> self-tests for ksize().
 >
->> +{
->> +       int len;
->> +
->> +       len = snprintf(buf, PATH_MAX, "%s/%s", path, name);
->> +       if (len < 0)
->> +               return -EINVAL;
->> +       if (len >= PATH_MAX)
->> +               return -ENAMETOOLONG;
->> +
->> +       return 0;
->> +}
->> +
->> +static int
->> +auto_attach_programs(struct bpf_object *obj, const char *path)
->> +{
->> +       struct bpf_program *prog;
->> +       char buf[PATH_MAX];
->> +       int err;
->> +
->> +       bpf_object__for_each_program(prog, obj) {
->> +               err = pathname_concat(path, bpf_program__name(prog), buf);
->> +               if (err)
->> +                       goto err_unpin_programs;
->> +
->> +               err = auto_attach_program(prog, buf);
->> +               if (err)
->> +                       goto err_unpin_programs;
->> +       }
->> +
-> would it be safer to first make sure that all programs are
-> auto-attached and then pin links?
+> Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>
+> Cc: Alexander Potapenko <glider@google.com>
+> Cc: Andrey Konovalov <andreyknvl@gmail.com>
+> Cc: Dmitry Vyukov <dvyukov@google.com>
+> Cc: Vincenzo Frascino <vincenzo.frascino@arm.com>
+> Cc: Andrew Morton <akpm@linux-foundation.org>
+> Cc: kasan-dev@googlegroups.com
+> Cc: linux-mm@kvack.org
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> ---
+>  lib/test_kasan.c  | 42 ------------------------------------------
+>  mm/kasan/shadow.c |  4 +---
+>  2 files changed, 1 insertion(+), 45 deletions(-)
 >
-> also note that not all bpf_links returned by libbpf are actual links
-> in kernel (e.g., kprobe/tp bpf_link on older kernels).
-
-  will silently skip the unsupport programs as BPF skeleton
-approach
-
+> diff --git a/lib/test_kasan.c b/lib/test_kasan.c
+> index 58c1b01ccfe2..bdd0ced8f8d7 100644
+> --- a/lib/test_kasan.c
+> +++ b/lib/test_kasan.c
+> @@ -753,46 +753,6 @@ static void kasan_global_oob_left(struct kunit *test)
+>         KUNIT_EXPECT_KASAN_FAIL(test, *(volatile char *)p);
+>  }
 >
->> +       return 0;
->> +
->> +err_unpin_programs:
->> +       while ((prog = bpf_object__prev_program(obj, prog))) {
->> +               if (pathname_concat(path, bpf_program__name(prog), buf))
->> +                       continue;
->> +
->> +               bpf_program__unpin(prog, buf);
->> +       }
->> +
->> +       return err;
->> +}
->> +
->>   static int load_with_options(int argc, char **argv, bool first_prog_only)
->>   {
->>          enum bpf_prog_type common_prog_type = BPF_PROG_TYPE_UNSPEC;
->> @@ -1464,6 +1526,7 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
->>          struct bpf_program *prog = NULL, *pos;
->>          unsigned int old_map_fds = 0;
->>          const char *pinmaps = NULL;
->> +       bool auto_attach = false;
->>          struct bpf_object *obj;
->>          struct bpf_map *map;
->>          const char *pinfile;
->> @@ -1583,6 +1646,9 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
->>                                  goto err_free_reuse_maps;
->>
->>                          pinmaps = GET_ARG();
->> +               } else if (is_prefix(*argv, "auto_attach")) {
->> +                       auto_attach = true;
->> +                       NEXT_ARG();
->>                  } else {
->>                          p_err("expected no more arguments, 'type', 'map' or 'dev', got: '%s'?",
->>                                *argv);
->> @@ -1692,14 +1758,20 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
->>                          goto err_close_obj;
->>                  }
->>
->> -               err = bpf_obj_pin(bpf_program__fd(prog), pinfile);
->> +               if (auto_attach)
->> +                       err = auto_attach_program(prog, pinfile);
->> +               else
->> +                       err = bpf_obj_pin(bpf_program__fd(prog), pinfile);
->>                  if (err) {
->>                          p_err("failed to pin program %s",
->>                                bpf_program__section_name(prog));
->>                          goto err_close_obj;
->>                  }
->>          } else {
->> -               err = bpf_object__pin_programs(obj, pinfile);
->> +               if (auto_attach)
->> +                       err = auto_attach_programs(obj, pinfile);
->> +               else
->> +                       err = bpf_object__pin_programs(obj, pinfile);
->>                  if (err) {
->>                          p_err("failed to pin all programs");
->>                          goto err_close_obj;
->> @@ -2338,6 +2410,7 @@ static int do_help(int argc, char **argv)
->>                  "                         [type TYPE] [dev NAME] \\\n"
->>                  "                         [map { idx IDX | name NAME } MAP]\\\n"
->>                  "                         [pinmaps MAP_DIR]\n"
->> +               "                         [auto_attach]\n"
-> looking at "pinmaps" seems like "autoattach" would be more consistent
-> naming? Or just "attach"?
+> -/* Check that ksize() makes the whole object accessible. */
+> -static void ksize_unpoisons_memory(struct kunit *test)
+> -{
+> -       char *ptr;
+> -       size_t size = 123, real_size;
+> -
+> -       ptr = kmalloc(size, GFP_KERNEL);
+> -       KUNIT_ASSERT_NOT_ERR_OR_NULL(test, ptr);
+> -       real_size = ksize(ptr);
+> -
+> -       OPTIMIZER_HIDE_VAR(ptr);
+> -
+> -       /* This access shouldn't trigger a KASAN report. */
+ > -       ptr[size] = 'x';
 
-will change to "autoattach" in v6
+I would rather keep the tests and update to the new behavior. We had
+bugs in ksize, we need test coverage.
+I assume ptr[size] access must now produce an error even after ksize.
 
+
+> -       /* This one must. */
+> -       KUNIT_EXPECT_KASAN_FAIL(test, ((volatile char *)ptr)[real_size]);
+> -
+> -       kfree(ptr);
+> -}
+> -
+> -/*
+> - * Check that a use-after-free is detected by ksize() and via normal accesses
+> - * after it.
+> - */
+> -static void ksize_uaf(struct kunit *test)
+> -{
+> -       char *ptr;
+> -       int size = 128 - KASAN_GRANULE_SIZE;
+> -
+> -       ptr = kmalloc(size, GFP_KERNEL);
+> -       KUNIT_ASSERT_NOT_ERR_OR_NULL(test, ptr);
+> -       kfree(ptr);
+> -
+> -       OPTIMIZER_HIDE_VAR(ptr);
+> -       KUNIT_EXPECT_KASAN_FAIL(test, ksize(ptr));
+
+This is still a bug that should be detected, right? Calling ksize on a
+freed pointer is a bug.
+
+> -       KUNIT_EXPECT_KASAN_FAIL(test, ((volatile char *)ptr)[0]);
+> -       KUNIT_EXPECT_KASAN_FAIL(test, ((volatile char *)ptr)[size]);
+> -}
+> -
+>  static void kasan_stack_oob(struct kunit *test)
+>  {
+>         char stack_array[10];
+> @@ -1392,8 +1352,6 @@ static struct kunit_case kasan_kunit_test_cases[] = {
+>         KUNIT_CASE(kasan_stack_oob),
+>         KUNIT_CASE(kasan_alloca_oob_left),
+>         KUNIT_CASE(kasan_alloca_oob_right),
+> -       KUNIT_CASE(ksize_unpoisons_memory),
+> -       KUNIT_CASE(ksize_uaf),
+>         KUNIT_CASE(kmem_cache_double_free),
+>         KUNIT_CASE(kmem_cache_invalid_free),
+>         KUNIT_CASE(kmem_cache_double_destroy),
+> diff --git a/mm/kasan/shadow.c b/mm/kasan/shadow.c
+> index 0e3648b603a6..0895c73e9b69 100644
+> --- a/mm/kasan/shadow.c
+> +++ b/mm/kasan/shadow.c
+> @@ -124,9 +124,7 @@ void kasan_unpoison(const void *addr, size_t size, bool init)
+>         addr = kasan_reset_tag(addr);
 >
->>                  "       %1$s %2$s attach PROG ATTACH_TYPE [MAP]\n"
->>                  "       %1$s %2$s detach PROG ATTACH_TYPE [MAP]\n"
->>                  "       %1$s %2$s run PROG \\\n"
->> --
->> 1.8.3.1
->>
+>         /*
+> -        * Skip KFENCE memory if called explicitly outside of sl*b. Also note
+> -        * that calls to ksize(), where size is not a multiple of machine-word
+> -        * size, would otherwise poison the invalid portion of the word.
+> +        * Skip KFENCE memory if called explicitly outside of sl*b.
+>          */
+>         if (is_kfence_address(addr))
+>                 return;
+> --
+> 2.34.1
