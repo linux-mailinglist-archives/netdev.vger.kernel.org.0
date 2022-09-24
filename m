@@ -2,93 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D24D45E8D77
-	for <lists+netdev@lfdr.de>; Sat, 24 Sep 2022 16:45:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BC405E8D8D
+	for <lists+netdev@lfdr.de>; Sat, 24 Sep 2022 16:51:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233463AbiIXOpz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Sep 2022 10:45:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57650 "EHLO
+        id S233603AbiIXOvQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Sep 2022 10:51:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbiIXOpy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Sep 2022 10:45:54 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21981A6ADB
-        for <netdev@vger.kernel.org>; Sat, 24 Sep 2022 07:45:53 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id d42so4549148lfv.0
-        for <netdev@vger.kernel.org>; Sat, 24 Sep 2022 07:45:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:references:in-reply-to
-         :mime-version:from:to:cc:subject:date;
-        bh=k+Ky1zUVYQynvJMT/eDD5UM0Et+gfAUEOdNTYnqfcoA=;
-        b=MdkjqC9nvKULejBzGH0fxvc232UOYGb6e9t3Xhs8iHIvSqIaYVO4IhxHk65RwECylZ
-         6oV8t3o8MkUjTQFiZly9d9DiLjUxlvhFebRuf5bzW85MILGx7L901K2SxZZNBvRe5nlq
-         pEmsdGzSlZttxd/wc9jopQ72KCAHeVz27J4q36PrOnB5oHOGok66cwIzyyplg4rWh09l
-         COMcEZb1VSRbRNOcaZA54zvmG5bza/M4naM1ykC6J6bSKEY6OZFHMRH4fiCuIuJ++fW4
-         AJo7hY+HfYlRKZx/Bgv86FtVxll8CwGT0hN67GPbI1XHsUMlrn96ha0E6aYu2t4JuGP5
-         lrRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:references:in-reply-to
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=k+Ky1zUVYQynvJMT/eDD5UM0Et+gfAUEOdNTYnqfcoA=;
-        b=nAbywXo584bmXtKiP8RLnAscVLq/ZttCksPbye/5hF/mRoaqddVGqLQ3gC5mn2h41C
-         NFI9i0h0LwvSO2ChAeEqfJiI5vsrBHfF7+iA+Ga+TvDUCOOvSHySNhCrp3aqJOcMKjzW
-         jpljY1L30O2fyHVRCRq9+bRvzVVR3Kp1zXcj07bGjDSd2zAdfkT9VOn1CljS/03MDOV1
-         1+8BiPODCTTNmQfMak6bmQCa6u1D7RoufqCvzNEcqdRJWBFYO24jIONpog9oCXOb5Ezs
-         zOxp4BRApgI5Gxg4Soq+mG/AIliAcvffdVFvlMPR6vOsCsOCQZmR8H8a1gkNZak4BMUk
-         B4Ow==
-X-Gm-Message-State: ACrzQf2NiGDict+0qZgm3ivRzLp8c57jg/+HgzrQQgq0LvXeWzg8VM7X
-        gOTEd4CGTDv0GjaM4bi8yji9muqWj/jGzuQouBY4TWLc
-X-Google-Smtp-Source: AMsMyM42+i3BsRwAN8WLyDwgSEMS7h6Y16puIUyfIypNG0aC2mI2B3LO34Y4ir2IbEgMnzvWXbZPeE/+m1Gn+0WIyWI=
-X-Received: by 2002:a05:6512:3502:b0:496:272:6258 with SMTP id
- h2-20020a056512350200b0049602726258mr5029028lfs.429.1664030751162; Sat, 24
- Sep 2022 07:45:51 -0700 (PDT)
+        with ESMTP id S232138AbiIXOvM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Sep 2022 10:51:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB1293B700;
+        Sat, 24 Sep 2022 07:51:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 582E961261;
+        Sat, 24 Sep 2022 14:51:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF485C433D7;
+        Sat, 24 Sep 2022 14:51:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664031070;
+        bh=V+z2ZxfJa/HIqj8ztFdh4ZNMoVb/OXAUUcB9+H7UUKY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=rut2W+r4XjkruOkNGAm10IlL0euxcwI6NDQx6Wcwn9DVztzLLNXSKs0gYBuYYRcTI
+         LG4HfKa/Ywam38bRhtFnDsMy2HEhxy9S2JSemPIKNzg+YYW8Ef1UnjcCjGChdWEnYU
+         7w5ue5Z1nDXaUbKh8O8l82to6pmfdKw8BzGjm25zDTED9Lg9QT/qxNWcuzaTABZhqo
+         P1ShpNwfAQsEIy46FOeoAx9lzoWIN2NKGk63oyRN6Jknmr8+N+z3rUnmEaHHRRaBfb
+         Y4/pj/xejSANlC36FmYey4Po3uUbKAa01020ySYgaCxQOvst1IC7BGIR/zuHSBIVsu
+         qMC4KBxvnt1QQ==
+Date:   Sat, 24 Sep 2022 07:51:08 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
+        pablo@netfilter.org, fw@strlen.de, netfilter-devel@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, brouer@redhat.com, toke@redhat.com,
+        memxor@gmail.com
+Subject: Re: [PATCH v3 bpf-next 2/3] net: netfilter: add bpf_ct_set_nat_info
+ kfunc helper
+Message-ID: <Yy8ZXFoWYIE0qpWp@dev-arch.thelio-3990X>
+References: <cover.1663778601.git.lorenzo@kernel.org>
+ <9567db2fdfa5bebe7b7cc5870f7a34549418b4fc.1663778601.git.lorenzo@kernel.org>
+ <Yy4mVv+4X/Tm3TK4@dev-arch.thelio-3990X>
+ <Yy4xGT7XGGredCB2@lore-desk>
+ <Yy7ltMthyiWn/cYM@lore-desk>
 MIME-Version: 1.0
-Received: by 2002:a05:6512:3d0e:0:0:0:0 with HTTP; Sat, 24 Sep 2022 07:45:50
- -0700 (PDT)
-In-Reply-To: <Yy8U71LdKpblNVjz@lunn.ch>
-References: <20220922175821.4184622-1-andrew@lunn.ch> <20220922175821.4184622-9-andrew@lunn.ch>
- <20220923224201.pf7slosr5yag5iac@skbuf> <Yy8U71LdKpblNVjz@lunn.ch>
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-Date:   Sat, 24 Sep 2022 16:45:50 +0200
-Message-ID: <CA+_ehUzYJychAo+w2hSLyCjf5v7aMN-+a=2OYMQvyGK=DvEnqg@mail.gmail.com>
-Subject: Re: [PATCH rfc v2 08/10] net: dsa: qca8k: Pass error code from reply
- decoder to requester
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        netdev <netdev@vger.kernel.org>,
-        Mattias Forsblad <mattias.forsblad@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yy7ltMthyiWn/cYM@lore-desk>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > My understanding of the autocast function (I could be wrong) is that
-> > it's essentially one request with 10 (or how many ports there are)
-> > responses. At least this is what the code appears to handle.
->
-> The autocast packet handling does not fit the model. I already
-> excluded it from parts of the patchset. I might need to exclude it
-> from more. It is something i need to understand more. I did find a
-> leaked data sheet for the qca8337, but i've not had time to read it
-> yet.
->
-> Either the model needs to change a bit, or we don't convert this part
-> of the code to use shared functions, or maybe we can do a different
-> implementation in the driver for statistics access.
->
+On Sat, Sep 24, 2022 at 01:10:44PM +0200, Lorenzo Bianconi wrote:
+> > > Hi Lorenzo,
+> > 
+> > Hi Nathan,
+> > 
+> > > 
+> > > On Wed, Sep 21, 2022 at 06:48:26PM +0200, Lorenzo Bianconi wrote:
+> > > > Introduce bpf_ct_set_nat_info kfunc helper in order to set source and
+> > > > destination nat addresses/ports in a new allocated ct entry not inserted
+> > > > in the connection tracking table yet.
+> > > > 
+> > > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > > 
+> > > This commit is now in -next as commit 0fabd2aa199f ("net: netfilter: add
+> > > bpf_ct_set_nat_info kfunc helper"). Unfortunately, it introduces a
+> > > circular dependency when I build with my distribution's (Arch Linux)
+> > > configuration:
+> > > 
+> > > $ curl -LSso .config https://github.com/archlinux/svntogit-packages/raw/packages/linux/trunk/config
+> > > 
+> > > $ make -skj"$(nproc)" INSTALL_MOD_PATH=rootfs INSTALL_MOD_STRIP=1 olddefconfig all modules_install
+> > > ...
+> > > WARN: multiple IDs found for 'nf_conn': 99333, 114119 - using 99333
+> > > WARN: multiple IDs found for 'nf_conn': 99333, 115663 - using 99333
+> > > WARN: multiple IDs found for 'nf_conn': 99333, 117330 - using 99333
+> > > WARN: multiple IDs found for 'nf_conn': 99333, 119583 - using 99333
+> > > depmod: ERROR: Cycle detected: nf_conntrack -> nf_nat -> nf_conntrack
+> > > depmod: ERROR: Found 2 modules in dependency cycles!
+> > 
+> > I guess the issue occurs when we compile both nf_conntrack and nf_nat as module
+> > since now we introduced the dependency "nf_conntrack -> nf_nat".
+> > Discussing with Kumar, in order to fix it, we can move bpf_ct_set_nat_info() in
+> > nf_nat module (with some required registration code similar to register_nf_conntrack_bpf()).
+> > What do you think?
+> > Sorry for the inconvenience.
+> 
+> Hi Nathan,
+> 
+> this is a PoC of what I described above:
+> https://github.com/LorenzoBianconi/bpf-next/commit/765d32dd08e56f5059532845e70d0bbfe4badda1
 
-Honestly autocast mib seems a very different feature
-than inband. And I can totally see other switch works
-in a similar way. It's a different feature than using inband
-to access mib data.
+Thanks, that appears to resolve the error for me!
 
-For now I would focus on inband and think about this later.
+Tested-by: Nathan Chancellor <nathan@kernel.org>
+
+> Regards,
+> Lorenzo
+> 
+> > 
+> > Regards,
+> > Lorenzo
+> > 
+> > 
+> > > ...
+> > > 
+> > > The WARN lines are there before this change but I figured they were
+> > > worth including anyways, in case they factor in here.
+> > > 
+> > > If there is any more information I can provide or patches I can test,
+> > > please let me know!
+> > > 
+> > > Cheers,
+> > > Nathan
+> 
+> 
+
+
