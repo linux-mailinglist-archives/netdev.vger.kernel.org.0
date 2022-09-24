@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C36895E878E
-	for <lists+netdev@lfdr.de>; Sat, 24 Sep 2022 04:34:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21D295E8777
+	for <lists+netdev@lfdr.de>; Sat, 24 Sep 2022 04:34:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233296AbiIXCeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Sep 2022 22:34:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33530 "EHLO
+        id S233113AbiIXCde (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Sep 2022 22:33:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233147AbiIXCdW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 22:33:22 -0400
+        with ESMTP id S233230AbiIXCdU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Sep 2022 22:33:20 -0400
 Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19D74151B14;
-        Fri, 23 Sep 2022 19:33:18 -0700 (PDT)
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MZCdG4rJ0zlW11;
-        Sat, 24 Sep 2022 10:29:06 +0800 (CST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5168A151B16;
+        Fri, 23 Sep 2022 19:33:19 -0700 (PDT)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MZCfn6myPzpTWr;
+        Sat, 24 Sep 2022 10:30:25 +0800 (CST)
 Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
  dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -31,9 +31,9 @@ CC:     <edumazet@google.com>, <pabeni@redhat.com>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <huangguangbin2@huawei.com>, <lipeng321@huawei.com>,
         <lanhao@huawei.com>
-Subject: [PATCH net-next 11/14] net: hns3: delete redundant macro hnae3_dev_tqp_txrx_indep_supported
-Date:   Sat, 24 Sep 2022 10:30:21 +0800
-Message-ID: <20220924023024.14219-12-huangguangbin2@huawei.com>
+Subject: [PATCH net-next 12/14] net: hns3: modify macro hnae3_dev_hw_pad_supported
+Date:   Sat, 24 Sep 2022 10:30:22 +0800
+Message-ID: <20220924023024.14219-13-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220924023024.14219-1-huangguangbin2@huawei.com>
 References: <20220924023024.14219-1-huangguangbin2@huawei.com>
@@ -52,31 +52,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is macro hnae3_ae_dev_tqp_txrx_indep_supported(ae_dev) can be used
-in both hclge and hns3_enet layer.
-
-The macro hnae3_dev_tqp_txrx_indep_supported(hdev) is redundant, so delete
-it.
+Redefine macro hnae3_dev_hw_pad_supported(hdev) to
+hnae3_ae_dev_hw_pad_supported(ae_dev), so it can be
+used in both hclge and hns3_enet layer.
 
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hnae3.h | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index 0d8e0c461a31..12730cbc3bfe 100644
+index 12730cbc3bfe..99140a7617f3 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
 +++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -137,9 +137,6 @@ enum HNAE3_DEV_CAP_BITS {
+@@ -137,8 +137,8 @@ enum HNAE3_DEV_CAP_BITS {
  #define hnae3_ae_dev_ras_imp_supported(ae_dev) \
  	test_bit(HNAE3_DEV_SUPPORT_RAS_IMP_B, (ae_dev)->caps)
  
--#define hnae3_dev_tqp_txrx_indep_supported(hdev) \
--	test_bit(HNAE3_DEV_SUPPORT_TQP_TXRX_INDEP_B, (hdev)->ae_dev->caps)
--
- #define hnae3_dev_hw_pad_supported(hdev) \
- 	test_bit(HNAE3_DEV_SUPPORT_HW_PAD_B, (hdev)->ae_dev->caps)
+-#define hnae3_dev_hw_pad_supported(hdev) \
+-	test_bit(HNAE3_DEV_SUPPORT_HW_PAD_B, (hdev)->ae_dev->caps)
++#define hnae3_ae_dev_hw_pad_supported(ae_dev) \
++	test_bit(HNAE3_DEV_SUPPORT_HW_PAD_B, (ae_dev)->caps)
  
+ #define hnae3_dev_stash_supported(hdev) \
+ 	test_bit(HNAE3_DEV_SUPPORT_STASH_B, (hdev)->ae_dev->caps)
 -- 
 2.33.0
 
