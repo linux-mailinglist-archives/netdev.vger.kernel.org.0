@@ -2,55 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B6A205E882E
-	for <lists+netdev@lfdr.de>; Sat, 24 Sep 2022 06:10:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD3885E8853
+	for <lists+netdev@lfdr.de>; Sat, 24 Sep 2022 06:28:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233312AbiIXEK2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Sep 2022 00:10:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60752 "EHLO
+        id S233247AbiIXE2Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Sep 2022 00:28:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233296AbiIXEKX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Sep 2022 00:10:23 -0400
+        with ESMTP id S233053AbiIXE2N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Sep 2022 00:28:13 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58E106AE9D;
-        Fri, 23 Sep 2022 21:10:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21332F8C04;
+        Fri, 23 Sep 2022 21:28:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EBFDE6020F;
-        Sat, 24 Sep 2022 04:10:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5BAB3C433B5;
-        Sat, 24 Sep 2022 04:10:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B17C660A73;
+        Sat, 24 Sep 2022 04:28:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 078E9C433D6;
+        Sat, 24 Sep 2022 04:28:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1663992621;
-        bh=tFrlN0Ws0MZlv3K/NFJQ7H0ktz5/Fq6FKEEhVnJy0Pc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=tVAO99igDi2lZ/6zIpbaII5pMVVHQ6kLYNCEir6ZgknPSTX5Ts6ih+WsOk7z7wCRK
-         DtcYn3SxnSZyYcsxumZnGhrHuVafBJWHZWCZGDg/6f+sGpjWWfSXHh5yf+VK3RViQ8
-         HorjgX+ognm8I7MW0UZIkXPFWBQKc9uyyQovQW+awDLIcBMoWRVyMaXfI9MFP0WkPJ
-         6oWJ5xqA01mcwhUpoctYB5cTeRfQt3DPXk6ytYbBR0SyXFQwcqHKHbVN9ED/D/2CLm
-         Zu/UPFndgzX5vQBH9C3WfBFJxvhxLh1gvRJQGHCfAarnMGLfgbDzjRT/E0F6JoOy9I
-         e2FH1dIp0OIUQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 476A8C072E7;
-        Sat, 24 Sep 2022 04:10:21 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1663993692;
+        bh=86eW6iIqE0bM9Xt04DpkiC+DSve+XgiN712S/FIk0CI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=k9BS9Az+Bf6cGWLFRHh1FvsgvpmrpzfqXc2HNs2RJbdTxTmxspK5NUKHb4Kh64oQR
+         Sfj890V+mJJxCXY7jCadT/JV9s5fK9TMMGPKyNT3J8R6wUNhCPJKFS9ebeTYwT4PyL
+         1eRfvCbuRedXzCY42rWYrbak1Mb8/yvTcLghSv6URJKjVe2qN+7FCduvb5AzK2VBo3
+         CROnPmPdIudYPRyepAzJHF7sxxcd8pm33DGCBPCtu6LW1sqaupTet1iX3slgXw9RNB
+         XmeBd9nuKOEW5qOeyVnSqvVpd0kSZZ/FCEqgl/S8oA6AzB3Li05izfqkBaR4d46kOl
+         +8KN69wSExZOg==
+Date:   Fri, 23 Sep 2022 23:28:05 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] NFC: hci: Split memcpy() of struct hcp_message flexible
+ array
+Message-ID: <Yy6HVVMGdSCyEHbZ@work>
+References: <20220924040835.3364912-1-keescook@chromium.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/8] net: ipa: another set of cleanups
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166399262128.11836.2543789042465500261.git-patchwork-notify@kernel.org>
-Date:   Sat, 24 Sep 2022 04:10:21 +0000
-References: <20220922222100.2543621-1-elder@linaro.org>
-In-Reply-To: <20220922222100.2543621-1-elder@linaro.org>
-To:     Alex Elder <elder@linaro.org>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, mka@chromium.org, evgreen@chromium.org,
-        andersson@kernel.org, quic_cpratapa@quicinc.com,
-        quic_avuyyuru@quicinc.com, quic_jponduru@quicinc.com,
-        quic_subashab@quicinc.com, elder@kernel.org,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220924040835.3364912-1-keescook@chromium.org>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -60,42 +57,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Thu, 22 Sep 2022 17:20:52 -0500 you wrote:
-> This series contains another set of cleanups done in preparation for
-> an upcoming series that reworks how IPA registers and their fields
-> are defined.
+On Fri, Sep 23, 2022 at 09:08:35PM -0700, Kees Cook wrote:
+> To work around a misbehavior of the compiler's ability to see into
+> composite flexible array structs (as detailed in the coming memcpy()
+> hardening series[1]), split the memcpy() of the header and the payload
+> so no false positive run-time overflow warning will be generated. This
+> split already existed for the "firstfrag" case, so just generalize the
+> logic further.
 > 
-> The first replaces the use of u32_replace_bits() with a simple
-> logical AND operation in two places.
+> [1] https://lore.kernel.org/linux-hardening/20220901065914.1417829-2-keescook@chromium.org/
 > 
-> [...]
+> Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: netdev@vger.kernel.org
+> Reported-by: "Gustavo A. R. Silva" <gustavoars@kernel.org>
+> Signed-off-by: Kees Cook <keescook@chromium.org>
 
-Here is the summary with links:
-  - [net-next,1/8] net: ipa: don't use u32p_replace_bits()
-    https://git.kernel.org/netdev/net-next/c/a50d37b7565e
-  - [net-next,2/8] net: ipa: introduce ipa_qtime_val()
-    https://git.kernel.org/netdev/net-next/c/8be440e17bdb
-  - [net-next,3/8] net: ipa: rearrange functions for similarity
-    (no matching commit)
-  - [net-next,4/8] net: ipa: define BCR values using an enum
-    https://git.kernel.org/netdev/net-next/c/21ab2078ff37
-  - [net-next,5/8] net: ipa: tidy up register enum definitions
-    https://git.kernel.org/netdev/net-next/c/73e0c9efb5ed
-  - [net-next,6/8] net: ipa: encapsulate setting the FILT_ROUT_HASH_EN register
-    https://git.kernel.org/netdev/net-next/c/b24627b1d9b2
-  - [net-next,7/8] net: ipa: encapsulate updating the COUNTER_CFG register
-    https://git.kernel.org/netdev/net-next/c/1e5db0965ef5
-  - [net-next,8/8] net: ipa: encapsulate updating three more registers
-    https://git.kernel.org/netdev/net-next/c/92073b1648cb
+Reviewed-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Thanks!
+--
+Gustavo
 
-
+> ---
+>  net/nfc/hci/hcp.c | 12 +++++-------
+>  1 file changed, 5 insertions(+), 7 deletions(-)
+> 
+> diff --git a/net/nfc/hci/hcp.c b/net/nfc/hci/hcp.c
+> index 05c60988f59a..4902f5064098 100644
+> --- a/net/nfc/hci/hcp.c
+> +++ b/net/nfc/hci/hcp.c
+> @@ -73,14 +73,12 @@ int nfc_hci_hcp_message_tx(struct nfc_hci_dev *hdev, u8 pipe,
+>  		if (firstfrag) {
+>  			firstfrag = false;
+>  			packet->message.header = HCP_HEADER(type, instruction);
+> -			if (ptr) {
+> -				memcpy(packet->message.data, ptr,
+> -				       data_link_len - 1);
+> -				ptr += data_link_len - 1;
+> -			}
+>  		} else {
+> -			memcpy(&packet->message, ptr, data_link_len);
+> -			ptr += data_link_len;
+> +			packet->message.header = *ptr++;
+> +		}
+> +		if (ptr) {
+> +			memcpy(packet->message.data, ptr, data_link_len - 1);
+> +			ptr += data_link_len - 1;
+>  		}
+>  
+>  		/* This is the last fragment, set the cb bit */
+> -- 
+> 2.34.1
+> 
