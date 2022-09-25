@@ -2,131 +2,312 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 598665E92D1
-	for <lists+netdev@lfdr.de>; Sun, 25 Sep 2022 13:50:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4F835E935B
+	for <lists+netdev@lfdr.de>; Sun, 25 Sep 2022 15:26:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232228AbiIYLuf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Sep 2022 07:50:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46104 "EHLO
+        id S229965AbiIYN01 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Sep 2022 09:26:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231960AbiIYLud (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Sep 2022 07:50:33 -0400
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A80125C6C
-        for <netdev@vger.kernel.org>; Sun, 25 Sep 2022 04:50:32 -0700 (PDT)
-Received: by mail-il1-f199.google.com with SMTP id d18-20020a056e020c1200b002eaea8e6081so3357373ile.6
-        for <netdev@vger.kernel.org>; Sun, 25 Sep 2022 04:50:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=ZsyAs/UrNKZYnPlEhsRU7jhr/lUz9DbDWBlnRMCzylY=;
-        b=IknSxMxU7/UN1YyyFPEqAwAnNEJPh2vayKEVXm45bG6yhDiI8Oqo6np+n95UY2u5Je
-         HZ4InmCz3mMyUUxytZxL2kvhsnsc/R34Syn+x3VU1ruMhZ237afPClyEcbuEtwY8RayJ
-         MVUi6lHwF8I+aJHPwVjGQJlyyLNcrlmj9QwVjdwWa3lO5afvBeEmx3HMxO8Evg87Z4W6
-         D17kbLNNfJBTODsvAyzm/7XlhDNiORZhjue5ncJqxI7+9w+cYI71Sak/KeCKn1nhmDQc
-         WFNUt66f/yuta8NHGgTiVf9F0BXqeEKNJ4ooUea4ViNpPfhd6THbgkM3yAAwdvAbLgB1
-         UD9w==
-X-Gm-Message-State: ACrzQf3VnB2CsfpJj+zhLgtP3T+MUpW40Hn7oj2YOZEumdnefGpi0r7h
-        r2QUX/pWlcdMoO/FtKtHR6nVsPCQmYpfOqLABwg6DqBj//ZG
-X-Google-Smtp-Source: AMsMyM649fTx1p8ApeLTacsEufTCfeyokopzG7Hr0zurD4Wz8jMeZrlPoO0l9C8kM4NgOc6DV53mkIE9hu96p4SF1BmqdIiaxgnb
+        with ESMTP id S229589AbiIYN00 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Sep 2022 09:26:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B68D92F03F;
+        Sun, 25 Sep 2022 06:26:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 61A0DB8010F;
+        Sun, 25 Sep 2022 13:26:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C2ECC433D6;
+        Sun, 25 Sep 2022 13:26:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664112382;
+        bh=RqRzawPrzxIpU09rt8ECwEplXzcYl+Pry0JvNgCCkTE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=qICDQpZDED7S3nlvd7HpvJfsWSZur+NrEMsRrgG/VjuMRSpmdDyful+lb1Xg45USl
+         ueEI6Qv4zp5ouw3k4w255a64m4bJFuB4eCHCTPiJwlvyIsfV/1fZtUDyYsa1WQ6TkZ
+         9vno9P+l3wq4a5sp8Q7CgYF5RtH2JBQ+d3n46hm03sWNkPHtnMvrSl0va+S5XwVT1d
+         WEajkP085pRit+ZGjT/yuS8eYRYtkbZZNLvXmDHrIuN4uwZoiQxSUZ+J/q24Th9oiP
+         P7N5ezrd3ilvgZHk38hAtEcMdjdTMkLBi9W1/My56pNiLTOLGzleI/X5m3aDAU3F5w
+         /4dlaT3GAOc2Q==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        edumazet@google.com, pabeni@redhat.com, pablo@netfilter.org,
+        fw@strlen.de, netfilter-devel@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, brouer@redhat.com, toke@redhat.com,
+        memxor@gmail.com, nathan@kernel.org
+Subject: [PATCH bpf-next] net: netfilter: move bpf_ct_set_nat_info kfunc in nf_nat_bpf.c
+Date:   Sun, 25 Sep 2022 15:26:12 +0200
+Message-Id: <ddd17d808fe25917893eb035b20146479810124c.1664111646.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-X-Received: by 2002:a6b:194:0:b0:6a0:d2fd:d481 with SMTP id
- 142-20020a6b0194000000b006a0d2fdd481mr7276229iob.78.1664106631881; Sun, 25
- Sep 2022 04:50:31 -0700 (PDT)
-Date:   Sun, 25 Sep 2022 04:50:31 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a96c0b05e97f0444@google.com>
-Subject: [syzbot] WARNING in u32_change
-From:   syzbot <syzbot+a2c4601efc75848ba321@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com, jhs@mojatatu.com,
-        jiri@resnulli.us, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Remove circular dependency between nf_nat module and nf_conntrack one
+moving bpf_ct_set_nat_info kfunc in nf_nat_bpf.c
 
-syzbot found the following issue on:
-
-HEAD commit:    483fed3b5dc8 Add linux-next specific files for 20220921
-git tree:       linux-next
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=16becbd5080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=849cb9f70f15b1ba
-dashboard link: https://syzkaller.appspot.com/bug?extid=a2c4601efc75848ba321
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13bc196f080000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=152b15f8880000
-
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/1cb3f4618323/disk-483fed3b.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/cc02cb30b495/vmlinux-483fed3b.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+a2c4601efc75848ba321@syzkaller.appspotmail.com
-
-------------[ cut here ]------------
-memcpy: detected field-spanning write (size 80) of single field "&n->sel" at net/sched/cls_u32.c:1043 (size 16)
-WARNING: CPU: 0 PID: 3608 at net/sched/cls_u32.c:1043 u32_change+0x2962/0x3250 net/sched/cls_u32.c:1043
-Modules linked in:
-CPU: 0 PID: 3608 Comm: syz-executor971 Not tainted 6.0.0-rc6-next-20220921-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/16/2022
-RIP: 0010:u32_change+0x2962/0x3250 net/sched/cls_u32.c:1043
-Code: f4 df 14 fa 48 8b b5 78 fe ff ff b9 10 00 00 00 48 c7 c2 20 f7 f5 8a 48 c7 c7 a0 f6 f5 8a c6 05 55 b3 63 06 01 e8 db d6 df 01 <0f> 0b e9 73 f3 ff ff e8 c2 df 14 fa 48 c7 c7 00 fc f5 8a e8 66 ed
-RSP: 0018:ffffc90003d7f300 EFLAGS: 00010282
-RAX: 0000000000000000 RBX: ffffc90003d7f618 RCX: 0000000000000000
-RDX: ffff8880235f1d40 RSI: ffffffff81620348 RDI: fffff520007afe52
-RBP: ffffc90003d7f4a0 R08: 0000000000000005 R09: 0000000000000000
-R10: 0000000080000000 R11: 203a7970636d656d R12: ffff888021d420e0
-R13: ffffc90003d7f5b8 R14: ffff888021d43c30 R15: ffff888021d42000
-FS:  0000555555f71300(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000000000064a110 CR3: 000000002824c000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- tc_new_tfilter+0x938/0x2190 net/sched/cls_api.c:2146
- rtnetlink_rcv_msg+0x955/0xca0 net/core/rtnetlink.c:6082
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2540
- netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
- netlink_unicast+0x543/0x7f0 net/netlink/af_netlink.c:1345
- netlink_sendmsg+0x917/0xe10 net/netlink/af_netlink.c:1921
- sock_sendmsg_nosec net/socket.c:714 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:734
- ____sys_sendmsg+0x712/0x8c0 net/socket.c:2482
- ___sys_sendmsg+0x110/0x1b0 net/socket.c:2536
- __sys_sendmsg+0xf3/0x1c0 net/socket.c:2565
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f97a4bf4e69
-Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffdcaf10028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f97a4bf4e69
-RDX: 0000000000000000 RSI: 0000000020000340 RDI: 0000000000000006
-RBP: 00007f97a4bb9010 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f97a4bb90a0
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
- </TASK>
-
-
+Fixes: 0fabd2aa199f ("net: netfilter: add bpf_ct_set_nat_info kfunc helper")
+Suggested-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Tested-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ include/net/netfilter/nf_conntrack_bpf.h |  5 ++
+ include/net/netfilter/nf_nat.h           | 14 +++++
+ net/netfilter/Makefile                   |  6 ++
+ net/netfilter/nf_conntrack_bpf.c         | 49 ---------------
+ net/netfilter/nf_nat_bpf.c               | 79 ++++++++++++++++++++++++
+ net/netfilter/nf_nat_core.c              |  2 +-
+ 6 files changed, 105 insertions(+), 50 deletions(-)
+ create mode 100644 net/netfilter/nf_nat_bpf.c
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+diff --git a/include/net/netfilter/nf_conntrack_bpf.h b/include/net/netfilter/nf_conntrack_bpf.h
+index c8b80add1142..1ce46e406062 100644
+--- a/include/net/netfilter/nf_conntrack_bpf.h
++++ b/include/net/netfilter/nf_conntrack_bpf.h
+@@ -4,6 +4,11 @@
+ #define _NF_CONNTRACK_BPF_H
+ 
+ #include <linux/kconfig.h>
++#include <net/netfilter/nf_conntrack.h>
++
++struct nf_conn___init {
++	struct nf_conn ct;
++};
+ 
+ #if (IS_BUILTIN(CONFIG_NF_CONNTRACK) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF)) || \
+     (IS_MODULE(CONFIG_NF_CONNTRACK) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF_MODULES))
+diff --git a/include/net/netfilter/nf_nat.h b/include/net/netfilter/nf_nat.h
+index e9eb01e99d2f..cd084059a953 100644
+--- a/include/net/netfilter/nf_nat.h
++++ b/include/net/netfilter/nf_nat.h
+@@ -68,6 +68,20 @@ static inline bool nf_nat_oif_changed(unsigned int hooknum,
+ #endif
+ }
+ 
++#if (IS_BUILTIN(CONFIG_NF_NAT) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF)) || \
++    (IS_MODULE(CONFIG_NF_NAT) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF_MODULES))
++
++extern int register_nf_nat_bpf(void);
++
++#else
++
++static inline int register_nf_nat_bpf(void)
++{
++	return 0;
++}
++
++#endif
++
+ int nf_nat_register_fn(struct net *net, u8 pf, const struct nf_hook_ops *ops,
+ 		       const struct nf_hook_ops *nat_ops, unsigned int ops_count);
+ void nf_nat_unregister_fn(struct net *net, u8 pf, const struct nf_hook_ops *ops,
+diff --git a/net/netfilter/Makefile b/net/netfilter/Makefile
+index 06df49ea6329..0f060d100880 100644
+--- a/net/netfilter/Makefile
++++ b/net/netfilter/Makefile
+@@ -60,6 +60,12 @@ obj-$(CONFIG_NF_NAT) += nf_nat.o
+ nf_nat-$(CONFIG_NF_NAT_REDIRECT) += nf_nat_redirect.o
+ nf_nat-$(CONFIG_NF_NAT_MASQUERADE) += nf_nat_masquerade.o
+ 
++ifeq ($(CONFIG_NF_NAT),m)
++nf_nat-$(CONFIG_DEBUG_INFO_BTF_MODULES) += nf_nat_bpf.o
++else ifeq ($(CONFIG_NF_NAT),y)
++nf_nat-$(CONFIG_DEBUG_INFO_BTF) += nf_nat_bpf.o
++endif
++
+ # NAT helpers
+ obj-$(CONFIG_NF_NAT_AMANDA) += nf_nat_amanda.o
+ obj-$(CONFIG_NF_NAT_FTP) += nf_nat_ftp.o
+diff --git a/net/netfilter/nf_conntrack_bpf.c b/net/netfilter/nf_conntrack_bpf.c
+index 756ea818574e..f4ba4ff3a63b 100644
+--- a/net/netfilter/nf_conntrack_bpf.c
++++ b/net/netfilter/nf_conntrack_bpf.c
+@@ -14,7 +14,6 @@
+ #include <linux/types.h>
+ #include <linux/btf_ids.h>
+ #include <linux/net_namespace.h>
+-#include <net/netfilter/nf_conntrack.h>
+ #include <net/netfilter/nf_conntrack_bpf.h>
+ #include <net/netfilter/nf_conntrack_core.h>
+ #include <net/netfilter/nf_nat.h>
+@@ -239,10 +238,6 @@ __diag_push();
+ __diag_ignore_all("-Wmissing-prototypes",
+ 		  "Global functions as their definitions will be in nf_conntrack BTF");
+ 
+-struct nf_conn___init {
+-	struct nf_conn ct;
+-};
+-
+ /* bpf_xdp_ct_alloc - Allocate a new CT entry
+  *
+  * Parameters:
+@@ -476,49 +471,6 @@ int bpf_ct_change_status(struct nf_conn *nfct, u32 status)
+ 	return nf_ct_change_status_common(nfct, status);
+ }
+ 
+-/* bpf_ct_set_nat_info - Set source or destination nat address
+- *
+- * Set source or destination nat address of the newly allocated
+- * nf_conn before insertion. This must be invoked for referenced
+- * PTR_TO_BTF_ID to nf_conn___init.
+- *
+- * Parameters:
+- * @nfct	- Pointer to referenced nf_conn object, obtained using
+- *		  bpf_xdp_ct_alloc or bpf_skb_ct_alloc.
+- * @addr	- Nat source/destination address
+- * @port	- Nat source/destination port. Non-positive values are
+- *		  interpreted as select a random port.
+- * @manip	- NF_NAT_MANIP_SRC or NF_NAT_MANIP_DST
+- */
+-int bpf_ct_set_nat_info(struct nf_conn___init *nfct,
+-			union nf_inet_addr *addr, int port,
+-			enum nf_nat_manip_type manip)
+-{
+-#if ((IS_MODULE(CONFIG_NF_NAT) && IS_MODULE(CONFIG_NF_CONNTRACK)) || \
+-     IS_BUILTIN(CONFIG_NF_NAT))
+-	struct nf_conn *ct = (struct nf_conn *)nfct;
+-	u16 proto = nf_ct_l3num(ct);
+-	struct nf_nat_range2 range;
+-
+-	if (proto != NFPROTO_IPV4 && proto != NFPROTO_IPV6)
+-		return -EINVAL;
+-
+-	memset(&range, 0, sizeof(struct nf_nat_range2));
+-	range.flags = NF_NAT_RANGE_MAP_IPS;
+-	range.min_addr = *addr;
+-	range.max_addr = range.min_addr;
+-	if (port > 0) {
+-		range.flags |= NF_NAT_RANGE_PROTO_SPECIFIED;
+-		range.min_proto.all = cpu_to_be16(port);
+-		range.max_proto.all = range.min_proto.all;
+-	}
+-
+-	return nf_nat_setup_info(ct, &range, manip) == NF_DROP ? -ENOMEM : 0;
+-#else
+-	return -EOPNOTSUPP;
+-#endif
+-}
+-
+ __diag_pop()
+ 
+ BTF_SET8_START(nf_ct_kfunc_set)
+@@ -532,7 +484,6 @@ BTF_ID_FLAGS(func, bpf_ct_set_timeout, KF_TRUSTED_ARGS)
+ BTF_ID_FLAGS(func, bpf_ct_change_timeout, KF_TRUSTED_ARGS)
+ BTF_ID_FLAGS(func, bpf_ct_set_status, KF_TRUSTED_ARGS)
+ BTF_ID_FLAGS(func, bpf_ct_change_status, KF_TRUSTED_ARGS)
+-BTF_ID_FLAGS(func, bpf_ct_set_nat_info, KF_TRUSTED_ARGS)
+ BTF_SET8_END(nf_ct_kfunc_set)
+ 
+ static const struct btf_kfunc_id_set nf_conntrack_kfunc_set = {
+diff --git a/net/netfilter/nf_nat_bpf.c b/net/netfilter/nf_nat_bpf.c
+new file mode 100644
+index 000000000000..0fa5a0bbb0ff
+--- /dev/null
++++ b/net/netfilter/nf_nat_bpf.c
+@@ -0,0 +1,79 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Unstable NAT Helpers for XDP and TC-BPF hook
++ *
++ * These are called from the XDP and SCHED_CLS BPF programs. Note that it is
++ * allowed to break compatibility for these functions since the interface they
++ * are exposed through to BPF programs is explicitly unstable.
++ */
++
++#include <linux/bpf.h>
++#include <linux/btf_ids.h>
++#include <net/netfilter/nf_conntrack_bpf.h>
++#include <net/netfilter/nf_conntrack_core.h>
++#include <net/netfilter/nf_nat.h>
++
++__diag_push();
++__diag_ignore_all("-Wmissing-prototypes",
++		  "Global functions as their definitions will be in nf_nat BTF");
++
++/* bpf_ct_set_nat_info - Set source or destination nat address
++ *
++ * Set source or destination nat address of the newly allocated
++ * nf_conn before insertion. This must be invoked for referenced
++ * PTR_TO_BTF_ID to nf_conn___init.
++ *
++ * Parameters:
++ * @nfct	- Pointer to referenced nf_conn object, obtained using
++ *		  bpf_xdp_ct_alloc or bpf_skb_ct_alloc.
++ * @addr	- Nat source/destination address
++ * @port	- Nat source/destination port. Non-positive values are
++ *		  interpreted as select a random port.
++ * @manip	- NF_NAT_MANIP_SRC or NF_NAT_MANIP_DST
++ */
++int bpf_ct_set_nat_info(struct nf_conn___init *nfct,
++			union nf_inet_addr *addr, int port,
++			enum nf_nat_manip_type manip)
++{
++	struct nf_conn *ct = (struct nf_conn *)nfct;
++	u16 proto = nf_ct_l3num(ct);
++	struct nf_nat_range2 range;
++
++	if (proto != NFPROTO_IPV4 && proto != NFPROTO_IPV6)
++		return -EINVAL;
++
++	memset(&range, 0, sizeof(struct nf_nat_range2));
++	range.flags = NF_NAT_RANGE_MAP_IPS;
++	range.min_addr = *addr;
++	range.max_addr = range.min_addr;
++	if (port > 0) {
++		range.flags |= NF_NAT_RANGE_PROTO_SPECIFIED;
++		range.min_proto.all = cpu_to_be16(port);
++		range.max_proto.all = range.min_proto.all;
++	}
++
++	return nf_nat_setup_info(ct, &range, manip) == NF_DROP ? -ENOMEM : 0;
++}
++
++__diag_pop()
++
++BTF_SET8_START(nf_nat_kfunc_set)
++BTF_ID_FLAGS(func, bpf_ct_set_nat_info, KF_TRUSTED_ARGS)
++BTF_SET8_END(nf_nat_kfunc_set)
++
++static const struct btf_kfunc_id_set nf_bpf_nat_kfunc_set = {
++	.owner = THIS_MODULE,
++	.set   = &nf_nat_kfunc_set,
++};
++
++int register_nf_nat_bpf(void)
++{
++	int ret;
++
++	ret = register_btf_kfunc_id_set(BPF_PROG_TYPE_XDP,
++					&nf_bpf_nat_kfunc_set);
++	if (ret)
++		return ret;
++
++	return register_btf_kfunc_id_set(BPF_PROG_TYPE_SCHED_CLS,
++					 &nf_bpf_nat_kfunc_set);
++}
+diff --git a/net/netfilter/nf_nat_core.c b/net/netfilter/nf_nat_core.c
+index 7981be526f26..1ed09c9af5e5 100644
+--- a/net/netfilter/nf_nat_core.c
++++ b/net/netfilter/nf_nat_core.c
+@@ -1152,7 +1152,7 @@ static int __init nf_nat_init(void)
+ 	WARN_ON(nf_nat_hook != NULL);
+ 	RCU_INIT_POINTER(nf_nat_hook, &nat_hook);
+ 
+-	return 0;
++	return register_nf_nat_bpf();
+ }
+ 
+ static void __exit nf_nat_cleanup(void)
+-- 
+2.37.3
+
