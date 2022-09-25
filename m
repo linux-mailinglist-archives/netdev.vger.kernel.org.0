@@ -2,101 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 668815E940B
-	for <lists+netdev@lfdr.de>; Sun, 25 Sep 2022 17:45:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD8595E9414
+	for <lists+netdev@lfdr.de>; Sun, 25 Sep 2022 17:47:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229567AbiIYPpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Sep 2022 11:45:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41340 "EHLO
+        id S232680AbiIYPrk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Sep 2022 11:47:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232535AbiIYPpD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Sep 2022 11:45:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0B581A234;
-        Sun, 25 Sep 2022 08:45:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6F092B81244;
-        Sun, 25 Sep 2022 15:45:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 046CAC43470;
-        Sun, 25 Sep 2022 15:44:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664120699;
-        bh=56m/znKoTqndib5n/0vCAB2QHcSxXEmvepAWYlZLhWk=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=QQLd9wkzmzjg2Y9MYtxD7yTDj0m/R13xWOkIr4gOzrwcYyNlUgMPBz2WoG2Iifo6M
-         b4rdth7ywIDrJBzjsGx9/3pA892Nu7JSCiwCt00ttI8lC+zO65TZzIhIu9/0a6S5gL
-         luaMcuQf8AoQvud3q4Tbgl3bMH5wv5HyXF8xhFoNXrB6eXEHWBU6BDndY/uRlGq0dB
-         Tx3OeBlCcX1n2uFAEL7a/yV2Ri7rcV+PJqI3gxvZMc8gkrraex+SULO0JGse3zdmqq
-         79WH+Y7L+Dg3RWKZiO3+urVehnbcfloeJgVSb3+wXu5djvw+S8c4Z0KZATiWO5cAfz
-         F+pYCgtLhrm3w==
-Received: by mail-vs1-f50.google.com with SMTP id d187so4431864vsd.6;
-        Sun, 25 Sep 2022 08:44:58 -0700 (PDT)
-X-Gm-Message-State: ACrzQf01Z999lfLO0f+iVso7Hb0sxNvAbXXkDhX/zG1Tatsc1eMYwksT
-        ERnUJU6IB1ErqncNhMRX3jWtz4pDkZD2Qt5kLQ==
-X-Google-Smtp-Source: AMsMyM7/3q9FshtDglD88xmTCGAJX/8emrrdhymK14qX1nCmQ86CE+9eL8oqG7N/RaB47ay+Ukfhad/Do05B2gOjn7g=
-X-Received: by 2002:a67:c18a:0:b0:398:4c72:cafb with SMTP id
- h10-20020a67c18a000000b003984c72cafbmr6274564vsj.53.1664120697844; Sun, 25
- Sep 2022 08:44:57 -0700 (PDT)
+        with ESMTP id S230465AbiIYPrh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Sep 2022 11:47:37 -0400
+Received: from mail-ua1-x92d.google.com (mail-ua1-x92d.google.com [IPv6:2607:f8b0:4864:20::92d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC9C72BB1E;
+        Sun, 25 Sep 2022 08:47:36 -0700 (PDT)
+Received: by mail-ua1-x92d.google.com with SMTP id bu4so1665123uab.6;
+        Sun, 25 Sep 2022 08:47:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
+         :from:to:cc:subject:date;
+        bh=IUa8wfuk/71VgaNbuYluKFoAwM2+Ac9n9e+sqJwT4h4=;
+        b=OKC80+Bw2kHZPIGtTh4Lb+BsbA8nQ9lGH+ecY7Awx7InMXPyFgE7lAdTj0DNciZHiR
+         OiNMDddgskfsckhf5SHjEMH0kQa/yLBWnHmlGbggQRZhSlpT/JH0ZCEO3ox7LpTEvzVy
+         vWGrwujBfiTEEdKlfpQHKGUxoy4GMnKjvICiAPDzvi2wO4iqpH4l807wGS6+pdSq77ek
+         8d6IU2Bxo3taiwnpCEFCw2wRZJyvTyRZBueDaGmVpIkd60jF7GvpZx5sTO9LSvQmW/vL
+         j3afUzzPUH46UGmJd9cFWalUQcdhvEVJHtbtgBuxDNbwKTY/RjmgWivWEt3Xnt2LrZdx
+         L4Lg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=IUa8wfuk/71VgaNbuYluKFoAwM2+Ac9n9e+sqJwT4h4=;
+        b=C1Pe0lcA97e0J5HCtlpA6q+d0bdhvsOhrdmrhjn5SaDtZ4r4hVxIbxzmAyYSb0Yd7b
+         BrHBJCT7yq0OuzcHoEhMqNQ1v04e2OSajDkbjaO68IW6o8jTnwfYwpde6MR/7llRaLgJ
+         u9du35CZ7ivEkVmspBitIPISsDJCsKkKQ0PzzEqJ2yYb77lLJ39Fa1JWUrIeZD2fIVKt
+         MfFNoqhBHfYJrf1a9yOPn4EUnyaoWdFU9cpLrO2UAoa93+gaGumRPtfY8ueCqWvYRR7I
+         ChRxBLbuMq47MO8OzCsxgjFBSMl3oYebn3KUEGrxN8S2bFmJedtms/d8nJG93a+X54V5
+         Pc3Q==
+X-Gm-Message-State: ACrzQf32Ysi9IH2LQgb3TeifvZpqdTc/u4s7i6Rpy5SqtnryqN5trbbT
+        BBDHbt5EHjjMiFN2jTEKamEfkvixK9wadQe/swsubjpT
+X-Google-Smtp-Source: AMsMyM4EkXh0LvebuFqrr1Bt/3jI6MxI3NDcmd0KJHVY4W2eEpnWcJnu6FsgoLpAFWzodDQfkH6vbGKdmv4Pywqyhg0=
+X-Received: by 2002:a05:6130:64c:b0:390:f639:5ac4 with SMTP id
+ bh12-20020a056130064c00b00390f6395ac4mr7103912uab.98.1664120855767; Sun, 25
+ Sep 2022 08:47:35 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220919164834.62739-1-sven@svenpeter.dev> <20220919164834.62739-3-sven@svenpeter.dev>
-In-Reply-To: <20220919164834.62739-3-sven@svenpeter.dev>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Sun, 25 Sep 2022 10:44:46 -0500
-X-Gmail-Original-Message-ID: <CAL_Jsq+32LpvsFC+sCVsqzncgokYRd+oXUQYirumr-boz_RwKQ@mail.gmail.com>
-Message-ID: <CAL_Jsq+32LpvsFC+sCVsqzncgokYRd+oXUQYirumr-boz_RwKQ@mail.gmail.com>
-Subject: Re: [PATCH v3 2/7] dt-bindings: net: Add Broadcom BCM4377 family PCIe Bluetooth
-To:     Sven Peter <sven@svenpeter.dev>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
+References: <20220919210559.1509179-1-yury.norov@gmail.com>
+In-Reply-To: <20220919210559.1509179-1-yury.norov@gmail.com>
+From:   Yury Norov <yury.norov@gmail.com>
+Date:   Sun, 25 Sep 2022 08:47:24 -0700
+Message-ID: <CAAH8bW-TtZrvR5rZHVFXAHtfQySD85fqerxAAjUTN+eoh1bP2g@mail.gmail.com>
+Subject: Re: [PATCH 0/7] cpumask: repair cpumask_check()
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Hector Martin <marcan@marcan.st>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        asahi@lists.linux.dev, netdev <netdev@vger.kernel.org>,
-        devicetree@vger.kernel.org,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Yury Norov <yury.norov@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 19, 2022 at 11:49 AM Sven Peter <sven@svenpeter.dev> wrote:
->
-> These chips are combined Wi-Fi/Bluetooth radios which expose a
-> PCI subfunction for the Bluetooth part.
-> They are found in Apple machines such as the x86 models with the T2
-> chip or the arm64 models with the M1 or M2 chips.
->
-> Signed-off-by: Sven Peter <sven@svenpeter.dev>
-> ---
-> changes from v2:
->   - extended example to include parent pcie node to make
->     node name validation work
->   - moved to bluetooth/ subdirectory
->   - added maxItems to reg and dropped description
->   - moved bluetooth-controller.yaml reference after description
->
-> changes from v1:
->   - added apple,* pattern to brcm,board-type
->   - s/PCI/PCIe/
->   - fixed 1st reg cell inside the example to not contain the bus number
->
->  .../net/bluetooth/brcm,bcm4377-bluetooth.yaml | 81 +++++++++++++++++++
->  MAINTAINERS                                   |  1 +
->  2 files changed, 82 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/bluetooth/brcm,bcm4377-bluetooth.yaml
+Ping?
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+On Mon, Sep 19, 2022 at 2:06 PM Yury Norov <yury.norov@gmail.com> wrote:
+>
+> After switching cpumask to use nr_cpu_ids in [1], cpumask_check() started
+> generating many false-positive warnings. There are some more issues with
+> the cpumask_check() that brake it.
+>
+> This series fixes cpumask_check() mess and addresses most of the
+> false-positive warnings observed on boot of x86_64 and arm64.
+>
+> [1] https://lore.kernel.org/lkml/20220905230820.3295223-4-yury.norov@gmail.com/T/
+>
+> Yury Norov (7):
+>   cpumask: fix checking valid cpu range
+>   net: fix cpu_max_bits_warn() usage in netif_attrmask_next{,_and}
+>   cpumask: switch for_each_cpu{,_not} to use for_each_bit()
+>   lib/find_bit: add find_next{,_and}_bit_wrap
+>   lib/bitmap: introduce for_each_set_bit_wrap() macro
+>   lib/find: optimize for_each() macros
+>   lib/bitmap: add tests for for_each() iterators
+>
+>  include/linux/cpumask.h   |  37 ++----
+>  include/linux/find.h      | 140 +++++++++++++++++-----
+>  include/linux/netdevice.h |  10 +-
+>  lib/cpumask.c             |  12 +-
+>  lib/test_bitmap.c         | 244 +++++++++++++++++++++++++++++++++++++-
+>  5 files changed, 375 insertions(+), 68 deletions(-)
+>
+> --
+> 2.34.1
+>
