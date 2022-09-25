@@ -2,103 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD8595E9414
-	for <lists+netdev@lfdr.de>; Sun, 25 Sep 2022 17:47:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 368235E9444
+	for <lists+netdev@lfdr.de>; Sun, 25 Sep 2022 18:15:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232680AbiIYPrk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Sep 2022 11:47:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43458 "EHLO
+        id S231258AbiIYQPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Sep 2022 12:15:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230465AbiIYPrh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Sep 2022 11:47:37 -0400
-Received: from mail-ua1-x92d.google.com (mail-ua1-x92d.google.com [IPv6:2607:f8b0:4864:20::92d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC9C72BB1E;
-        Sun, 25 Sep 2022 08:47:36 -0700 (PDT)
-Received: by mail-ua1-x92d.google.com with SMTP id bu4so1665123uab.6;
-        Sun, 25 Sep 2022 08:47:36 -0700 (PDT)
+        with ESMTP id S229505AbiIYQO5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Sep 2022 12:14:57 -0400
+Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E241613DD8
+        for <netdev@vger.kernel.org>; Sun, 25 Sep 2022 09:14:56 -0700 (PDT)
+Received: by mail-ot1-x32d.google.com with SMTP id x23-20020a056830409700b00655c6dace73so3080659ott.11
+        for <netdev@vger.kernel.org>; Sun, 25 Sep 2022 09:14:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
-         :from:to:cc:subject:date;
-        bh=IUa8wfuk/71VgaNbuYluKFoAwM2+Ac9n9e+sqJwT4h4=;
-        b=OKC80+Bw2kHZPIGtTh4Lb+BsbA8nQ9lGH+ecY7Awx7InMXPyFgE7lAdTj0DNciZHiR
-         OiNMDddgskfsckhf5SHjEMH0kQa/yLBWnHmlGbggQRZhSlpT/JH0ZCEO3ox7LpTEvzVy
-         vWGrwujBfiTEEdKlfpQHKGUxoy4GMnKjvICiAPDzvi2wO4iqpH4l807wGS6+pdSq77ek
-         8d6IU2Bxo3taiwnpCEFCw2wRZJyvTyRZBueDaGmVpIkd60jF7GvpZx5sTO9LSvQmW/vL
-         j3afUzzPUH46UGmJd9cFWalUQcdhvEVJHtbtgBuxDNbwKTY/RjmgWivWEt3Xnt2LrZdx
-         L4Lg==
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=1+BfOKXcpoEaGQk95c12dhY+fN+OE2AYcMztraFwAsk=;
+        b=wN5BooiQD42vU5abO3Jq07KAmsf1rSR14pJwwXBN1+rqeVXkc39LSPV1IoDASB+HG9
+         0ScbzPo/v1IaxSlEdursT1K0f2gmE6WHmaakYwTm3K6iK2SG8bWzFSaYTVIAtJZrGuGZ
+         xlCPh8ugqU7AdWT52/JTgWfbKjc1Tefn/a4rHdyz7lWpE0yF6XEnNyL3l82CeyDqZH5J
+         dvUg8IHGVmKF4p+XS2JK3Bw0ZjuceM8e1MKBkavleTzKwLeCiNKz1Z9CbsTnhkVFm8tR
+         5Xh/STAwQ4P7K5ZEUTWtL4tDlzVZaf/7BOSXSM5srPtDGxKg6jKmUsH3Mr5d53inXDXW
+         xpjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=IUa8wfuk/71VgaNbuYluKFoAwM2+Ac9n9e+sqJwT4h4=;
-        b=C1Pe0lcA97e0J5HCtlpA6q+d0bdhvsOhrdmrhjn5SaDtZ4r4hVxIbxzmAyYSb0Yd7b
-         BrHBJCT7yq0OuzcHoEhMqNQ1v04e2OSajDkbjaO68IW6o8jTnwfYwpde6MR/7llRaLgJ
-         u9du35CZ7ivEkVmspBitIPISsDJCsKkKQ0PzzEqJ2yYb77lLJ39Fa1JWUrIeZD2fIVKt
-         MfFNoqhBHfYJrf1a9yOPn4EUnyaoWdFU9cpLrO2UAoa93+gaGumRPtfY8ueCqWvYRR7I
-         ChRxBLbuMq47MO8OzCsxgjFBSMl3oYebn3KUEGrxN8S2bFmJedtms/d8nJG93a+X54V5
-         Pc3Q==
-X-Gm-Message-State: ACrzQf32Ysi9IH2LQgb3TeifvZpqdTc/u4s7i6Rpy5SqtnryqN5trbbT
-        BBDHbt5EHjjMiFN2jTEKamEfkvixK9wadQe/swsubjpT
-X-Google-Smtp-Source: AMsMyM4EkXh0LvebuFqrr1Bt/3jI6MxI3NDcmd0KJHVY4W2eEpnWcJnu6FsgoLpAFWzodDQfkH6vbGKdmv4Pywqyhg0=
-X-Received: by 2002:a05:6130:64c:b0:390:f639:5ac4 with SMTP id
- bh12-20020a056130064c00b00390f6395ac4mr7103912uab.98.1664120855767; Sun, 25
- Sep 2022 08:47:35 -0700 (PDT)
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=1+BfOKXcpoEaGQk95c12dhY+fN+OE2AYcMztraFwAsk=;
+        b=NjWgc0yhemzyV5tAt45/hB6nCo8BH7o7cz6PlvnXmxLGKWoh7bq42wwWWTM1M4ESuU
+         YM9D1cHc1/SRLini/t+uHsFypW+Nk45MXCIvqZWpcC3wSewZgOEVfIeGwd6yUFPET1Tn
+         4SnlNNa/e/MAwf57sHKbSwyhrjP9lVgwjP+FkQOoy3/m2l8vhZ26oI1Pc90sR1BTew7u
+         jaJif9M0nVzeELTpb4t1/PE0M+N3obq7Xy2v7xA6iPjY2tEDJubllZL6359s5puq9K8x
+         8/+qsvRZGSmY6j6m2hM/pcpFvOkg/G6EZAyHhfSvwJohPs61cXHzC49JFbF4MYFfHeKS
+         Bcdg==
+X-Gm-Message-State: ACrzQf32v2pCoXlbxGK7hTklRy6M6ql25WeA7oiM0znIogl+LxQL7aDp
+        d+xv0gSVOzrin0ZhP3cRQUla5h+LHtgSQJ8Wt2OFHw==
+X-Google-Smtp-Source: AMsMyM4JiYaM8vkxKO5IiUPaGDs7yAidHhRSb1/KaBQm+MEZzI7BKYMfUM0mllxN+l+FRkilCa3wfCqQlqkcuqHjPTU=
+X-Received: by 2002:a9d:2a7:0:b0:65a:c6a3:1d0e with SMTP id
+ 36-20020a9d02a7000000b0065ac6a31d0emr8377812otl.223.1664122496283; Sun, 25
+ Sep 2022 09:14:56 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220919210559.1509179-1-yury.norov@gmail.com>
-In-Reply-To: <20220919210559.1509179-1-yury.norov@gmail.com>
-From:   Yury Norov <yury.norov@gmail.com>
-Date:   Sun, 25 Sep 2022 08:47:24 -0700
-Message-ID: <CAAH8bW-TtZrvR5rZHVFXAHtfQySD85fqerxAAjUTN+eoh1bP2g@mail.gmail.com>
-Subject: Re: [PATCH 0/7] cpumask: repair cpumask_check()
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Yury Norov <yury.norov@gmail.com>
+References: <000000000000a96c0b05e97f0444@google.com> <CAM0EoMnJ=STtk5BnZ9oJtnkXY2Q+Px2cKa4gowFRGpp40UNKww@mail.gmail.com>
+In-Reply-To: <CAM0EoMnJ=STtk5BnZ9oJtnkXY2Q+Px2cKa4gowFRGpp40UNKww@mail.gmail.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Date:   Sun, 25 Sep 2022 12:14:44 -0400
+Message-ID: <CAM0EoMm9uBQQepMb5bda1vR-Okw-tPp2nnf6TvfA0FzPu_D_2A@mail.gmail.com>
+Subject: Re: [syzbot] WARNING in u32_change
+To:     syzbot <syzbot+a2c4601efc75848ba321@syzkaller.appspotmail.com>
+Cc:     davem@davemloft.net, edumazet@google.com, jiri@resnulli.us,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SORTED_RECIPS,SPF_HELO_NONE,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ping?
+On Sun, Sep 25, 2022 at 11:38 AM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+>
+> Is there a way to tell the boat "looking into it?"
 
-On Mon, Sep 19, 2022 at 2:06 PM Yury Norov <yury.norov@gmail.com> wrote:
->
-> After switching cpumask to use nr_cpu_ids in [1], cpumask_check() started
-> generating many false-positive warnings. There are some more issues with
-> the cpumask_check() that brake it.
->
-> This series fixes cpumask_check() mess and addresses most of the
-> false-positive warnings observed on boot of x86_64 and arm64.
->
-> [1] https://lore.kernel.org/lkml/20220905230820.3295223-4-yury.norov@gmail.com/T/
->
-> Yury Norov (7):
->   cpumask: fix checking valid cpu range
->   net: fix cpu_max_bits_warn() usage in netif_attrmask_next{,_and}
->   cpumask: switch for_each_cpu{,_not} to use for_each_bit()
->   lib/find_bit: add find_next{,_and}_bit_wrap
->   lib/bitmap: introduce for_each_set_bit_wrap() macro
->   lib/find: optimize for_each() macros
->   lib/bitmap: add tests for for_each() iterators
->
->  include/linux/cpumask.h   |  37 ++----
->  include/linux/find.h      | 140 +++++++++++++++++-----
->  include/linux/netdevice.h |  10 +-
->  lib/cpumask.c             |  12 +-
->  lib/test_bitmap.c         | 244 +++++++++++++++++++++++++++++++++++++-
->  5 files changed, 375 insertions(+), 68 deletions(-)
->
-> --
-> 2.34.1
->
+
+I guess I have to swim across to it to get the message;->
+
+I couldnt see the warning message  but it is obvious by inspection that
+the memcpy is broken. We should add more test coverage.
+This should fix it. Will send a formal patch later:
+
+diff --git a/net/sched/cls_u32.c b/net/sched/cls_u32.c
+index 4d27300c2..591cbbf27 100644
+--- a/net/sched/cls_u32.c
++++ b/net/sched/cls_u32.c
+@@ -1019,7 +1019,7 @@ static int u32_change(struct net *net, struct
+sk_buff *in_skb,
+        }
+
+        s = nla_data(tb[TCA_U32_SEL]);
+-       sel_size = struct_size(s, keys, s->nkeys);
++       sel_size = struct_size(s, keys, s->nkeys) + sizeof(n->sel);
+        if (nla_len(tb[TCA_U32_SEL]) < sel_size) {
+                err = -EINVAL;
+                goto erridr;
