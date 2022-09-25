@@ -2,92 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F3A75E91A0
-	for <lists+netdev@lfdr.de>; Sun, 25 Sep 2022 10:15:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49EBF5E91C7
+	for <lists+netdev@lfdr.de>; Sun, 25 Sep 2022 11:16:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231336AbiIYIPI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Sep 2022 04:15:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60480 "EHLO
+        id S231169AbiIYJQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Sep 2022 05:16:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231148AbiIYIPB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Sep 2022 04:15:01 -0400
-Received: from mx09lb.world4you.com (mx09lb.world4you.com [81.19.149.119])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E913E167F9;
-        Sun, 25 Sep 2022 01:14:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=J0v71m+eUUQZwPLK3q/LlviSmS5FDTzpxwl07HQgb5M=; b=UlheF2Gpv7INypAbZBp95k/R5o
-        tdU8Fowtp81i4pvzi2crCufcjGz+H9mEHK1uLPd4JkQ0WQ+z6Sfev1Vm5kEjJH0828JWRz1lKPfAk
-        oLxnsjTlsCcVyODEmmErFU0Uv4SkWSxQQLRoHPIQ/Mb0F8V6kLaWfGZml1/6OMcfhhMw=;
-Received: from [88.117.54.199] (helo=[10.0.0.160])
-        by mx09lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <gerhard@engleder-embedded.com>)
-        id 1ocMmn-0007qa-BB; Sun, 25 Sep 2022 10:14:49 +0200
-Message-ID: <7782924b-9664-6946-f8f6-c70cec618df9@engleder-embedded.com>
-Date:   Sun, 25 Sep 2022 10:14:49 +0200
+        with ESMTP id S229692AbiIYJQK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Sep 2022 05:16:10 -0400
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E1D526AC0
+        for <netdev@vger.kernel.org>; Sun, 25 Sep 2022 02:16:08 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 224EF2052E;
+        Sun, 25 Sep 2022 11:16:05 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id pvvN5f_I60zr; Sun, 25 Sep 2022 11:16:04 +0200 (CEST)
+Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 8643F20504;
+        Sun, 25 Sep 2022 11:16:04 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout1.secunet.com (Postfix) with ESMTP id 7557580004A;
+        Sun, 25 Sep 2022 11:16:04 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Sun, 25 Sep 2022 11:16:04 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Sun, 25 Sep
+ 2022 11:16:03 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 76D943182DAE; Sun, 25 Sep 2022 11:16:03 +0200 (CEST)
+Date:   Sun, 25 Sep 2022 11:16:03 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     Leon Romanovsky <leonro@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Raed Salem <raeds@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Bharat Bhushan <bbhushan2@marvell.com>
+Subject: Re: [PATCH RFC xfrm-next v3 4/8] xfrm: add TX datapath support for
+ IPsec full offload mode
+Message-ID: <20220925091603.GS2602992@gauss3.secunet.de>
+References: <cover.1662295929.git.leonro@nvidia.com>
+ <0a44d3b02479e5b19831038f9dc3a99259fa50f3.1662295929.git.leonro@nvidia.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH net-next v3 1/6] dt-bindings: net: tsnep: Allow
- dma-coherent
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org
-References: <20220923202911.119729-1-gerhard@engleder-embedded.com>
- <20220923202911.119729-2-gerhard@engleder-embedded.com>
- <6e814bf8-7033-2f5d-9124-feaa6593a129@linaro.org>
- <773e8425-58ff-1f17-f0eb-2041f3114105@engleder-embedded.com>
- <7c7f67d3-d42e-a053-256d-706cc9dfb947@linaro.org>
-From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-In-Reply-To: <7c7f67d3-d42e-a053-256d-706cc9dfb947@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AV-Do-Run: Yes
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <0a44d3b02479e5b19831038f9dc3a99259fa50f3.1662295929.git.leonro@nvidia.com>
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25.09.22 09:41, Krzysztof Kozlowski wrote:
-> On 24/09/2022 20:11, Gerhard Engleder wrote:
->> On 24.09.22 11:15, Krzysztof Kozlowski wrote:
->>> On 23/09/2022 22:29, Gerhard Engleder wrote:
->>>> Fix the following dtbs_check error if dma-coherent is used:
->>>>
->>>> ...: 'dma-coherent' does not match any of the regexes: 'pinctrl-[0-9]+'
->>>>   From schema: .../Documentation/devicetree/bindings/net/engleder,tsnep.yaml
->>>
->>> Skip last line - it's obvious. What instead you miss here - the
->>> DTS/target which has this warning. I assume that some existing DTS uses
->>> this property?
->>
->> I will skip that line.
->>
->> The binding is for an FPGA based Ethernet MAC. I'm working with
->> an evaluation platform currently. The DTS for the evaluation platform
->> is mainline, but my derived DTS was not accepted mainline. So there is
->> no DTS. This is similar for other FPGA based devices.
+On Sun, Sep 04, 2022 at 04:15:38PM +0300, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
 > 
-> If this is not coming from mainline, then there is no warning...  we are
-> not interested in warnings in out-of-tree code, because we are not
-> fixing them.
+> In IPsec full mode, the device is going to encrypt and encapsulate
+> packets that are associated with offloaded policy. After successful
+> policy lookup to indicate if packets should be offloaded or not,
+> the stack forwards packets to the device to do the magic.
+> 
+> Signed-off-by: Raed Salem <raeds@nvidia.com>
+> Signed-off-by: Huy Nguyen <huyn@nvidia.com>
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> ---
+>  net/xfrm/xfrm_device.c | 15 +++++++++++++--
+>  net/xfrm/xfrm_output.c | 12 +++++++++++-
+>  2 files changed, 24 insertions(+), 3 deletions(-)
+> 
+> diff --git a/net/xfrm/xfrm_device.c b/net/xfrm/xfrm_device.c
+> index 1cc482e9c87d..2d37bb86914a 100644
+> --- a/net/xfrm/xfrm_device.c
+> +++ b/net/xfrm/xfrm_device.c
+> @@ -120,6 +120,16 @@ struct sk_buff *validate_xmit_xfrm(struct sk_buff *skb, netdev_features_t featur
+>  	if (xo->flags & XFRM_GRO || x->xso.dir == XFRM_DEV_OFFLOAD_IN)
+>  		return skb;
+>  
+> +	/* The packet was sent to HW IPsec full offload engine,
+> +	 * but to wrong device. Drop the packet, so it won't skip
+> +	 * XFRM stack.
+> +	 */
+> +	if (x->xso.type == XFRM_DEV_OFFLOAD_FULL && x->xso.dev != dev) {
+> +		kfree_skb(skb);
+> +		dev_core_stats_tx_dropped_inc(dev);
+> +		return NULL;
+> +	}
+> +
+>  	/* This skb was already validated on the upper/virtual dev */
+>  	if ((x->xso.dev != dev) && (x->xso.real_dev == dev))
+>  		return skb;
+> @@ -369,8 +379,9 @@ bool xfrm_dev_offload_ok(struct sk_buff *skb, struct xfrm_state *x)
+>  	if (!x->type_offload || x->encap)
+>  		return false;
+>  
+> -	if ((!dev || (dev == xfrm_dst_path(dst)->dev)) &&
+> -	    (!xdst->child->xfrm)) {
+> +	if (x->xso.type == XFRM_DEV_OFFLOAD_FULL ||
+> +	    ((!dev || (dev == xfrm_dst_path(dst)->dev)) &&
+> +	     !xdst->child->xfrm)) {
+>  		mtu = xfrm_state_mtu(x, xdst->child_mtu_cached);
+>  		if (skb->len <= mtu)
+>  			goto ok;
+> diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
+> index 9a5e79a38c67..dde009be8463 100644
+> --- a/net/xfrm/xfrm_output.c
+> +++ b/net/xfrm/xfrm_output.c
+> @@ -494,7 +494,7 @@ static int xfrm_output_one(struct sk_buff *skb, int err)
+>  	struct xfrm_state *x = dst->xfrm;
+>  	struct net *net = xs_net(x);
+>  
+> -	if (err <= 0)
+> +	if (err <= 0 || x->xso.type == XFRM_DEV_OFFLOAD_FULL)
+>  		goto resume;
 
-Ok. So I would rewrite the description that it just allows dma-coherent
-and remove the fix/warning stuff. Is that ok?
+You check here that the state is marked as 'full offload' before
+you skip the SW xfrm handling, but I don't see where you check
+that the policy that led to this state is offloaded too. Also,
+we have to make sure that both, policy and state is offloaded to
+the same device. Looks like this part is missing.
 
-Thanks!
-
-Gerhard
