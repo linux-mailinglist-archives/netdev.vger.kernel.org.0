@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 339645E93BF
-	for <lists+netdev@lfdr.de>; Sun, 25 Sep 2022 16:47:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F1635E93C2
+	for <lists+netdev@lfdr.de>; Sun, 25 Sep 2022 16:48:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231142AbiIYOrf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Sep 2022 10:47:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48824 "EHLO
+        id S230465AbiIYOsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Sep 2022 10:48:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229557AbiIYOre (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Sep 2022 10:47:34 -0400
+        with ESMTP id S229711AbiIYOsx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Sep 2022 10:48:53 -0400
 Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50C5927B19
-        for <netdev@vger.kernel.org>; Sun, 25 Sep 2022 07:47:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6386F275CF
+        for <netdev@vger.kernel.org>; Sun, 25 Sep 2022 07:48:52 -0700 (PDT)
 Received: from local
         by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
          (Exim 4.96)
         (envelope-from <daniel@makrotopia.org>)
-        id 1ocSuk-0002Tw-1a;
-        Sun, 25 Sep 2022 16:47:26 +0200
-Date:   Sun, 25 Sep 2022 15:47:20 +0100
+        id 1ocSw5-0002Ul-3B;
+        Sun, 25 Sep 2022 16:48:50 +0200
+Date:   Sun, 25 Sep 2022 15:48:43 +0100
 From:   Daniel Golle <daniel@makrotopia.org>
 To:     linux-mediatek@lists.infradead.org, netdev@vger.kernel.org,
         Lorenzo Bianconi <lorenzo@kernel.org>
@@ -35,9 +35,8 @@ Cc:     Sujuan Chen <sujuan.chen@mediatek.com>,
         Paolo Abeni <pabeni@redhat.com>,
         Matthias Brugger <matthias.bgg@gmail.com>,
         Chen Minqiang <ptpt52@gmail.com>
-Subject: [PATCH 1/2] net: ethernet: mtk_eth_soc: fix wrong use of new helper
- function
-Message-ID: <YzBp+Kk04CFDys4L@makrotopia.org>
+Subject: [PATCH 2/2] net: ethernet: mtk_eth_soc: fix usage of foe_entry_size
+Message-ID: <YzBqPIgQR2gLrPoK@makrotopia.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -49,33 +48,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In function mtk_foe_entry_set_vlan() the call to field accessor macro
-FIELD_GET(MTK_FOE_IB1_BIND_VLAN_LAYER, entry->ib1)
-has been wrongly replaced by
-mtk_prep_ib1_vlan_layer(eth, entry->ib1)
+As sizeof(hwe->data) can now longer be used as the actual size depends
+on foe_entry_size, in commit 9d8cb4c096ab02
+("net: ethernet: mtk_eth_soc: add foe_entry_size to mtk_eth_soc") the
+use of sizeof(hwe->data) is hence replaced.
 
-Use correct helper function mtk_get_ib1_vlan_layer instead.
+However, replacing it with ppe->eth->soc->foe_entry_size is wrong as
+foe_entry_size represents the size of the whole descriptor and not just
+the 'data' field.
+
+Fix this by subtracing the size of the only other field in the struct
+'ib1', so we actually end up with the correct size to be copied to the
+data field.
 
 Reported-by: Chen Minqiang <ptpt52@gmail.com>
-Fixes: 03a3180e5c09e1 ("net: ethernet: mtk_eth_soc: introduce flow offloading support for mt7986")
+Fixes: 9d8cb4c096ab02 ("net: ethernet: mtk_eth_soc: add foe_entry_size to mtk_eth_soc")
 Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 ---
  drivers/net/ethernet/mediatek/mtk_ppe.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
-index 25f8738a062bd0..4ea2b342f252ac 100644
+index 4ea2b342f252ac..887f430734f747 100644
 --- a/drivers/net/ethernet/mediatek/mtk_ppe.c
 +++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
-@@ -337,7 +337,7 @@ int mtk_foe_entry_set_vlan(struct mtk_eth *eth, struct mtk_foe_entry *entry,
- {
- 	struct mtk_foe_mac_info *l2 = mtk_foe_entry_l2(eth, entry);
+@@ -547,7 +547,7 @@ __mtk_foe_entry_commit(struct mtk_ppe *ppe, struct mtk_foe_entry *entry,
+ 	}
  
--	switch (mtk_prep_ib1_vlan_layer(eth, entry->ib1)) {
-+	switch (mtk_get_ib1_vlan_layer(eth, entry->ib1)) {
- 	case 0:
- 		entry->ib1 |= mtk_get_ib1_vlan_tag_mask(eth) |
- 			      mtk_prep_ib1_vlan_layer(eth, 1);
+ 	hwe = mtk_foe_get_entry(ppe, hash);
+-	memcpy(&hwe->data, &entry->data, eth->soc->foe_entry_size);
++	memcpy(&hwe->data, &entry->data, eth->soc->foe_entry_size - sizeof(hwe->ib1));
+ 	wmb();
+ 	hwe->ib1 = entry->ib1;
+ 
 -- 
 2.37.3
 
