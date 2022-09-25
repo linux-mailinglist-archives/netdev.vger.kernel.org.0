@@ -2,124 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 605915E912F
-	for <lists+netdev@lfdr.de>; Sun, 25 Sep 2022 08:02:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F091F5E9139
+	for <lists+netdev@lfdr.de>; Sun, 25 Sep 2022 08:25:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229614AbiIYGBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Sep 2022 02:01:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42156 "EHLO
+        id S229692AbiIYGZS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Sep 2022 02:25:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229525AbiIYGB3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Sep 2022 02:01:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E51E83DBFB
-        for <netdev@vger.kernel.org>; Sat, 24 Sep 2022 23:01:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91E05B80B50
-        for <netdev@vger.kernel.org>; Sun, 25 Sep 2022 06:01:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A578BC433C1;
-        Sun, 25 Sep 2022 06:01:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664085686;
-        bh=ZAcJFKlBa1MF+t/2GfyFmGBNIweKLg5SBjvlzpf4Ioo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FwLdLMjMvjP+6pjeyB+ufq6/8ibEXl4fDvlVuaY5AjwOgOHmJGawp8xKiMgVczN6t
-         SzLKrtdNQ4zbdW7e+gcK5lYH2tGtm09nqy3QirLYM/F0Pw8ucQmALzHZNUZ9VcMVR/
-         vRC1PVVsPlrS97z7Y6d2n0F9uFrgNbARl/A8/a+erodNjVydCL5JOs04n6ZPimHuPh
-         U3hSd2zGD9ehGGoUDo+ZeEKeHv7T9RiEL5Lh/AXPCgVhxon1f6P//cwgCo56mVvRZ+
-         xkKG7MNWcqxnypV3O6YNN7k3DFaXrn6/sWO6rbPoG2OrNx8U4Mk7/yEdRKQUvDfx14
-         f6EGHJOzUC9eA==
-Date:   Sun, 25 Sep 2022 09:01:21 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Saeed Mahameed <saeedm@nvidia.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net-next] net/mlx5: Make ASO poll CQ usable in atomic
- context
-Message-ID: <Yy/usWIjvzHGNq0b@unreal>
-References: <d941bb44798b938705ca6944d8ee02c97af7ddd5.1664017836.git.leonro@nvidia.com>
- <20220924172425.bfagbky4h5tbcxf4@fedora>
- <Yy9RuS1AaEe45iLZ@unreal>
- <20220924201131.6r2wslhqovcdhq5z@fedora>
+        with ESMTP id S229515AbiIYGZO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Sep 2022 02:25:14 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 180B721244;
+        Sat, 24 Sep 2022 23:25:10 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id b21so3614982plz.7;
+        Sat, 24 Sep 2022 23:25:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=/9+S3w2KTexUwGjM1ZrLCIzYIY9JvXq+FJwM8gQ/p3s=;
+        b=DTMA7qpkT0Msnh2y0UveC3W9mPrlDD9y9sK1d/ontnH1A9idhiDKxLWJ+fLcE++N9X
+         8NTHnQn7IKAx7n7jELhrAbXaaog2Nli3owFhm51UlTq3kC3A8Qtw4xsHccKix5ouxj99
+         1RrS8Xm06iQ+SV9cGFA1Cpx9D0uodm4yKqX2PFSwXUnREPaXiCpbT3l6QeN1iXPjEGAk
+         Cok/8+lA2E1E/e8j/WPDddG9yp7JOb3oRbs4kwwsIlAR8NloalBCT6b8HKGj2cp1Bz1M
+         XO03/zB62Q+72T4XcXZzNnFYiLxGyOnJmlwv7ir6AGarWDSUZmE6TieEQZ+DRmm/mXQT
+         Jn8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=/9+S3w2KTexUwGjM1ZrLCIzYIY9JvXq+FJwM8gQ/p3s=;
+        b=DHvWT+1vbrsMIr8lD8xfFg6L1/wVHOPVoutQ35PSlWAZP5gckNSW7mUjpiKpkYH+J7
+         zcxZNvbhZxIWC/Tz7iXReAWDct5FarnbY1hdxllPo3XB5wzbY00K+7MsM7Q0y7AAVOGp
+         8xaGAi074UjFaE7l2su9t4rcgoiniVnVV8ZWawvGmNeGT673qn9SKj0gr6o09O9zRiZz
+         6byHY3Fu/ZhDWdbmhgVMGaavYhOFbIWK834VE4Y0AYx9MypXmhR7suF1AB6S+qN44+BN
+         5BlE0w6lzkD0zCc8trKhqfsQUOmSRqnB1D99si4MNYh/WYoqdill7u01h2kYctxVYJqA
+         HUMQ==
+X-Gm-Message-State: ACrzQf23+3J1Hz0P7Fa2FD/BaYRVoUZxHjHVj+lRPIajUu+RGE6wAQM/
+        /hnEUhYa1xoKihgFrR8TU14=
+X-Google-Smtp-Source: AMsMyM6qj6M0WLtIPQqdGN6Tkih4WyEYGV6ujOpFtZ4qTBw9Z1y4J4Spd6qux6bKHursa2Yj1i3FWw==
+X-Received: by 2002:a17:90b:3a84:b0:203:6911:52c with SMTP id om4-20020a17090b3a8400b002036911052cmr31004938pjb.73.1664087109415;
+        Sat, 24 Sep 2022 23:25:09 -0700 (PDT)
+Received: from localhost ([36.112.180.197])
+        by smtp.gmail.com with ESMTPSA id c6-20020a170903234600b0017680faa1a8sm8680206plh.112.2022.09.24.23.25.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 24 Sep 2022 23:25:08 -0700 (PDT)
+From:   Hawkins Jiawei <yin31149@gmail.com>
+To:     keescook@chromium.org
+Cc:     18801353760@163.com, davem@davemloft.net, edumazet@google.com,
+        johannes@sipsolutions.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com, sfr@canb.auug.org.au,
+        syzbot+473754e5af963cf014cf@syzkaller.appspotmail.com,
+        syzkaller-bugs@googlegroups.com, yin31149@gmail.com
+Subject: Re: [PATCH] Add linux-next specific files for 20220923
+Date:   Sun, 25 Sep 2022 14:25:01 +0800
+Message-Id: <20220925062501.4373-1-yin31149@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <202209240905.F5654D7A5@keescook>
+References: <202209240905.F5654D7A5@keescook>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220924201131.6r2wslhqovcdhq5z@fedora>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Sep 24, 2022 at 01:11:31PM -0700, Saeed Mahameed wrote:
-> On 24 Sep 21:51, Leon Romanovsky wrote:
-> > On Sat, Sep 24, 2022 at 10:24:25AM -0700, Saeed Mahameed wrote:
-> > > On 24 Sep 14:17, Leon Romanovsky wrote:
-> > > > From: Leon Romanovsky <leonro@nvidia.com>
-> > > >
-> > > > Poll CQ functions shouldn't sleep as they are called in atomic context.
-> > > > The following splat appears once the mlx5_aso_poll_cq() is used in such
-> > > > flow.
-> > > >
-> > > > BUG: scheduling while atomic: swapper/17/0/0x00000100
-> > > 
-> > > ...
-> > > 
-> > > > 	/* With newer FW, the wait for the first ASO WQE is more than 2us, put the wait 10ms. */
-> > > > -	err = mlx5_aso_poll_cq(aso, true, 10);
-> > > > +	expires = jiffies + msecs_to_jiffies(10);
-> > > > +	do {
-> > > > +		err = mlx5_aso_poll_cq(aso, true);
-> > > > +	} while (err && time_is_after_jiffies(expires));
-> > > > 	mutex_unlock(&flow_meters->aso_lock);
-> > >         ^^^^
-> > > busy poll won't work, this mutex is held and can sleep anyway.
-> > > Let's discuss internally and solve this by design.
-> > 
-> > This is TC code, it doesn't need atomic context and had mutex + sleep
-> > from the beginning.
-> > 
-> 
-> then let's bring back the sleep for TC use-case, we don't need to burn the
-> CPU!
+On Sun, 25 Sept 2022 at 00:26, Kees Cook <keescook@chromium.org> wrote:
+>
+> On Sat, Sep 24, 2022 at 11:55:14PM +0800, Hawkins Jiawei wrote:
+> > > And as for the value of offsetof in calculating **offset**,
+> > > I wonder if we can use the macro defined in
+> > > include/linux/wireless.h as below, which makes code simplier:
+> > > #define IW_EV_COMPAT_LCP_LEN offsetof(struct __compat_iw_event, pointer)
+>
+> Ah yes, that would be good.
+>
+> > According to above code, it seems that kernel will saves enough memory
+> > (hdr_len + extra_len bytes) for payload structure in
+> > nla_reserve()(Please correct me if I am wrong), pointed by compat_event.
+> > So I wonder if we can use unsafe_memcpy(), to avoid unnecessary
+> > memcpy() check as below, which seems more simple:
+>
+> I'd rather this was properly resolved with the creation of a real
+> flexible array so that when bounds tracking gets improved in the future,
+> the compiler can reason about it better. And, I think, it makes the code
+> more readable:
+>
+> diff --git a/include/linux/wireless.h b/include/linux/wireless.h
+> index 2d1b54556eff..e0b4b46da63f 100644
+> --- a/include/linux/wireless.h
+> +++ b/include/linux/wireless.h
+> @@ -26,7 +26,10 @@ struct compat_iw_point {
+>  struct __compat_iw_event {
+>         __u16           len;                    /* Real length of this stuff */
+>         __u16           cmd;                    /* Wireless IOCTL */
+> -       compat_caddr_t  pointer;
+> +       union {
+> +               compat_caddr_t  pointer;
+> +               DECLARE_FLEX_ARRAY(__u8, ptr_bytes);
+> +       };
+>  };
+>  #define IW_EV_COMPAT_LCP_LEN offsetof(struct __compat_iw_event, pointer)
+>  #define IW_EV_COMPAT_POINT_OFF offsetof(struct compat_iw_point, length)
+> diff --git a/net/wireless/wext-core.c b/net/wireless/wext-core.c
+> index 76a80a41615b..6079c8f4b634 100644
+> --- a/net/wireless/wext-core.c
+> +++ b/net/wireless/wext-core.c
+> @@ -468,6 +468,7 @@ void wireless_send_event(struct net_device *        dev,
+>         struct __compat_iw_event *compat_event;
+>         struct compat_iw_point compat_wrqu;
+>         struct sk_buff *compskb;
+> +       int ptr_len;
+>  #endif
+>
+>         /*
+> @@ -582,6 +583,7 @@ void wireless_send_event(struct net_device *        dev,
+>         nlmsg_end(skb, nlh);
+>  #ifdef CONFIG_COMPAT
+>         hdr_len = compat_event_type_size[descr->header_type];
+> +       ptr_len = hdr_len - IW_EV_COMPAT_LCP_LEN;
+>         event_len = hdr_len + extra_len;
+>
+>         compskb = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_ATOMIC);
+> @@ -612,16 +614,15 @@ void wireless_send_event(struct net_device *      dev,
+>         if (descr->header_type == IW_HEADER_TYPE_POINT) {
+>                 compat_wrqu.length = wrqu->data.length;
+>                 compat_wrqu.flags = wrqu->data.flags;
+> -               memcpy(&compat_event->pointer,
+> +               memcpy(compat_event->ptr_bytes,
+>                         ((char *) &compat_wrqu) + IW_EV_COMPAT_POINT_OFF,
+> -                       hdr_len - IW_EV_COMPAT_LCP_LEN);
+> +                       ptr_len);
+>                 if (extra_len)
+> -                       memcpy(((char *) compat_event) + hdr_len,
+> +                       memcpy(compat_event->ptr_bytes + ptr_len,
+>                                 extra, extra_len);
+>         } else {
+>                 /* extra_len must be zero, so no if (extra) needed */
+> -               memcpy(&compat_event->pointer, wrqu,
+> -                       hdr_len - IW_EV_COMPAT_LCP_LEN);
+> +               memcpy(compat_event->ptr_bytes, wrqu, ptr_len);
+>         }
+>
+>         nlmsg_end(compskb, nlh);
+>
+>
+> --
+> Kees Cook
+Yes, it seems that this code is more readable. I will refactor the patch
+in this way, with some comments on union in struct compat_iw_point.
 
-Again, this is exactly how TC was implemented. The difference is that
-before it burnt cycles in poll_cq and now it does it inside TC code.
-
-> But still the change has bigger effect on other aso use cases, see below.
-
-I have serious doubts about it.
-
-> 
-> > My change cleans mlx5_aso_poll_cq() from busy loop for the IPsec path,
-> > so why do you plan to change in the design?
-> > 
-> 
-> a typical use case for aso is
-> 
-> post_aso_wqe();
-> poll_aso_cqe();
-> 
-> The HW needs time to consume and excute the wqe then generate the CQE.
-> This is why the driver needs to wait a bit when polling for the cqe,
-> your change will break others. Let's discuss internally.
-
-IPsec was always implemented without any time delays, and I'm sure that
-MACsec doesn't need too, it is probably copy/paste.
-
-More generally, post_wqe->poll_cq is very basic paradigm in RDMA and
-delays were never needed.
-
-But if you insist, let's discuss internally.
-
-Thanks
-
-> 
-> > Thanks
+By the way, do you think we need to refactor the **struct compat_iw_point**
+into union with some comments, or just replace the **pointer** field with
+**DECLARE_FLEX_ARRAY(__u8, ptr_bytes)**? Because it seems that this field is
+only used in wireless_send_event() and some macros in this
+include/linux/wireless.h
