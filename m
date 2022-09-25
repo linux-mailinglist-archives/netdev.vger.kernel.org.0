@@ -2,125 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 627E45E9151
-	for <lists+netdev@lfdr.de>; Sun, 25 Sep 2022 09:06:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B76B05E9162
+	for <lists+netdev@lfdr.de>; Sun, 25 Sep 2022 09:18:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229910AbiIYHGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Sep 2022 03:06:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60480 "EHLO
+        id S230201AbiIYHRx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Sep 2022 03:17:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229525AbiIYHGE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Sep 2022 03:06:04 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A81232A86;
-        Sun, 25 Sep 2022 00:06:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=ef7w/BGAlSfKgDUpwXPM3rpXmxvDq2RT3Ue6ctgkM3w=; b=ww1tsjnv1WXGFAL76NLRkAi9hx
-        YU71fpBOE1q5jOamKxvgFYtSPuOheXmv/ZqVFoxBtwzTf9lKhI+Er/SGHvA3UMXVZFnI8qWwMfU7Q
-        +3KW7iszY/NzTG8FUHNxq3cm4vZHHrrhLAoQDE+sirTzIKTEgjFZOtJTywxGehzbjo57VywKGbtlz
-        pz30UvoN2YAWj0Kc7fIKe7S/wLFepdjashXG2AhALKkBxui16dTIW779Wh/j4GuAh0N34CLnCrJa2
-        +SdV+x9Qo6nw+qF9S7yvpI9kZemEpzVEI4qntsIqck/AS7d6dX7iwIoVTvAvvXBgxpAj9Yv1J2yMq
-        SY4ABjlA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34480)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1ocLiB-0007nm-6Q; Sun, 25 Sep 2022 08:05:59 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1ocLiA-0003zQ-24; Sun, 25 Sep 2022 08:05:58 +0100
-Date:   Sun, 25 Sep 2022 08:05:58 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S230056AbiIYHRw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Sep 2022 03:17:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF36932EC0
+        for <netdev@vger.kernel.org>; Sun, 25 Sep 2022 00:17:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1664090269;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FnuW0+nquE7jeCs1wGd25t/HgD5sAtMc07QK9kih2sQ=;
+        b=B97KTn2dpYAt61kIInCLOK/2Ro6Wst4uMijGFSzgHYRdcZYdeHN2Z3ugLtJoUKxafz8yNC
+        sWsj/xIEwaV1yrv9Q1SsmiCxhVHRLyjrG7MDBtCipNp9CsQ1df0T63dAJdIXFk2HpFvimj
+        SNz8dinnXFQVzc5AwMsgibAO84z47E8=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-580-gDercgUCM5G5aQ4bGXoToQ-1; Sun, 25 Sep 2022 03:17:48 -0400
+X-MC-Unique: gDercgUCM5G5aQ4bGXoToQ-1
+Received: by mail-qt1-f199.google.com with SMTP id n16-20020ac85b50000000b0035ce9e26eb1so2686987qtw.8
+        for <netdev@vger.kernel.org>; Sun, 25 Sep 2022 00:17:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=FnuW0+nquE7jeCs1wGd25t/HgD5sAtMc07QK9kih2sQ=;
+        b=dtVxAWQ3A9qlMNM55eyHu7FGedJdwNOCxf3IM7tlr248kPsTz2PeJMSjX0bS+mFNzo
+         nOJaeuaOoKqvHd8lLqS7RVRWrd+ej/s5Q4z2JBeSAbtHRBCcJFnavveo8d59U9uEgC0p
+         Q77dzFX4CCzva35U0kn/eOdl+i3sLypUrsKUFxKu+/x+BxhPjyo8+iKfYDKQOPZTihlb
+         MLDu30EBYf8Rzpd8VGliPDwfM1OvHIXXcs1ASsSdn6E7G2E4a+NZTEslFLuKg35MzXN+
+         W1XzjKRkiQHKlYqz3oDxyg4/W3N6RbKgZB+E1GKgpRctNFZOaKYBKqsolq3Fdvk5epSN
+         spoA==
+X-Gm-Message-State: ACrzQf3ehZCQ07+zJ2p0HSO6Dl0UxBHb59D7JUhsOLa375/PoEWI9H/h
+        dhyODN4XfbKGlVhKwG++C6eZv5PTJDNScmdYf0S6ke9ylxAkxB/9aCJg4ZEtsKKvmXS7f2XOJxG
+        A2r0SjiCqZ+OTpBJ1
+X-Received: by 2002:a05:620a:c8f:b0:6cb:e329:b5b9 with SMTP id q15-20020a05620a0c8f00b006cbe329b5b9mr10667164qki.95.1664090268091;
+        Sun, 25 Sep 2022 00:17:48 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM4u6YF4dJIrwAN1QRZGgvTOpwH6qKYsc23O//LxYiiudu83+P6fv+LpA21i63RBBqqlayo//g==
+X-Received: by 2002:a05:620a:c8f:b0:6cb:e329:b5b9 with SMTP id q15-20020a05620a0c8f00b006cbe329b5b9mr10667159qki.95.1664090267816;
+        Sun, 25 Sep 2022 00:17:47 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-97-96.dyn.eolo.it. [146.241.97.96])
+        by smtp.gmail.com with ESMTPSA id bp30-20020a05620a459e00b006c479acd82fsm10375465qkb.7.2022.09.25.00.17.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 25 Sep 2022 00:17:47 -0700 (PDT)
+Message-ID: <e340d993bce8e1b2742fba52ac6383771cfaddae.camel@redhat.com>
+Subject: Re: [PATCH v2 04/16] skbuff: Phase out ksize() fallback for
+ frag_size
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Kees Cook <keescook@chromium.org>, Vlastimil Babka <vbabka@suse.cz>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, stable <stable@kernel.org>
-Subject: Re: [PATCH net] net: mvpp2: debugfs: fix problem with previous
- memory leak fix
-Message-ID: <Yy/91grVshObYNNR@shell.armlinux.org.uk>
-References: <20220921114444.2247083-1-gregkh@linuxfoundation.org>
- <YyyH1oXMubeQ8KVu@shell.armlinux.org.uk>
- <CAPv3WKch2J4tteo68wOt_ETj_eYEKy8EC5sTwDvW6UZ-Gs_sCw@mail.gmail.com>
- <CAPv3WKcEa69vhrfE9h2XeuckDjvB=Y-HT7Y3fjV1W6gqYRmyjw@mail.gmail.com>
- <Yy/8FawjLnaE2Swj@shell.armlinux.org.uk>
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        "Ruhl, Michael J" <michael.j.ruhl@intel.com>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Alex Elder <elder@kernel.org>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Christian =?ISO-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Daniel Micay <danielmicay@gmail.com>,
+        Yonghong Song <yhs@fb.com>, Marco Elver <elver@google.com>,
+        Miguel Ojeda <ojeda@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-btrfs@vger.kernel.org,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org, linux-fsdevel@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, dev@openvswitch.org,
+        x86@kernel.org, llvm@lists.linux.dev,
+        linux-hardening@vger.kernel.org
+Date:   Sun, 25 Sep 2022 09:17:40 +0200
+In-Reply-To: <20220923202822.2667581-5-keescook@chromium.org>
+References: <20220923202822.2667581-1-keescook@chromium.org>
+         <20220923202822.2667581-5-keescook@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yy/8FawjLnaE2Swj@shell.armlinux.org.uk>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 25, 2022 at 07:58:29AM +0100, Russell King (Oracle) wrote:
-> On Sun, Sep 25, 2022 at 01:27:06AM +0200, Marcin Wojtas wrote:
-> > Hi Russell,
-> > 
-> > I improved the patch compile and work (tested on my CN913x board).
-> > Feel free to submit (if you wish, I can do it too - please let me know
-> > your preference):
-> > https://github.com/semihalf-wojtas-marcin/Linux-Kernel/commit/0abb75115ffb2772f595bb3346573e27e650018b
-> 
-> I don't see what the compile fixes were in that - it looks like my patch
-> ported onto current -net. Obvious changes:
-> 
-> - moved mvpp2_dbgfs_exit() declaration from after mvpp2_dbgfs_cleanup()
->   to before.
-> - moved definition of mvpp2_root to the top of the file (as no effect
->   on the code.)
-> 
-> and the change to port it:
-> 
-> - dropped my mvpp2_dbgfs_init() hunk (because it's different in -net)
-> - removed static declaration of mvpp2_root in mvpp2_dbgfs_init()
-> 
-> I'm not seeing any other changes.
-> 
-> Note that Sasha has submitted a revert of Greg's original patch for
-> mainline, so my original patch should apply as-is if that revert
-> happens - and I don't see any compile issues with it.
+On Fri, 2022-09-23 at 13:28 -0700, Kees Cook wrote:
+> All callers of APIs that allowed a 0-sized frag_size appear to be
+> passing actual size information already
 
-On that - it seems the Stable kernel maintainers can't cope with being
-told not to apply a patch - we've had a big long discussion about it
-on IRC over the past few days.
+AFAICS, not yet:
 
-Sasha states that the mainline process is broken - and as long as Greg's
-original patch is in place, stable will repeatedly attempt to backport
-it no matter whether a proper fix is being worked on, whether
-maintainers are busy, and so on and so forth. The only way to stop
-stable backporting patches is to revert them in mainline - as I asked to
-happen in this case on the 13th.  So it's all our fault for not
-reverting the patch. It's got nothing to do with stable maintainers
-unable to keep track of which patches they shouldn't be picking up.
+drivers/net/ethernet/qlogic/qed/qed_ll2.c:
+	skb = build_skb(buffer->data, 0); // -> __build_skb(..., 0) 
+		// ->  __build_skb_around()
 
-I maintain that the stable kernel process is totally broken due to
-this - it makes no allowance for whether maintainers can sort the
-problem out in a timely manner.
+drivers/net/ethernet/broadcom/bnx2.c:
+	skb = build_skb(data, 0);
 
-Quite honestly, I now regard the stable kernel process as being
-utterly broken. In my mind, it's not a stable kernel. It's an unstable
-kernel with randomly applied patches that may or may not be appropriate.
-Certainly, stable-kernel-rules.rst is a total and utter joke - they
-aren't rules at all, the stable kernel maintainers don't have any rules
-about patches they backport.
+I guess some more drivers have calls leading to 
 
-Anyway, I guess we're going to have to wait for Sasha's revert to be
-merged into -net first, which will make backporting our true and proper
-memory-leak fix a lot easier.
+	__build_skb_around(...,  0)
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+there are several call path to checks...
+
+
+> , so this use of ksize() can
+> be removed. However, just in case there is something still depending
+> on this behavior, issue a WARN and fall back to as before to ksize()
+> which means we'll also potentially get KASAN warnings.
+> 
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> ---
+>  net/core/skbuff.c | 18 ++++++++++--------
+>  1 file changed, 10 insertions(+), 8 deletions(-)
+> 
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index 0b30fbdbd0d0..84ca89c781cd 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -195,7 +195,11 @@ static void __build_skb_around(struct sk_buff *skb, void *data,
+>  			       unsigned int frag_size)
+>  {
+>  	struct skb_shared_info *shinfo;
+> -	unsigned int size = frag_size ? : ksize(data);
+> +	unsigned int size = frag_size;
+> +
+> +	/* All callers should be setting frag size now? */
+> +	if (WARN_ON_ONCE(size == 0))
+> +		size = ksize(data);
+
+At some point in the future, I guess we could even drop this check,
+right?
+
+Thanks!
+
+Paolo
+
