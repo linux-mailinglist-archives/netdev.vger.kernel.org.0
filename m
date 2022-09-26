@@ -2,142 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E3E4A5E9C31
-	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 10:38:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D17F35E9C42
+	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 10:43:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234461AbiIZIh7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 04:37:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44810 "EHLO
+        id S234467AbiIZInJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 04:43:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234470AbiIZIh5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 04:37:57 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A043BC77
-        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 01:37:50 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id z6so9059939wrq.1
-        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 01:37:50 -0700 (PDT)
+        with ESMTP id S233151AbiIZInH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 04:43:07 -0400
+Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com [IPv6:2001:4860:4864:20::32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D259356D2
+        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 01:43:06 -0700 (PDT)
+Received: by mail-oa1-x32.google.com with SMTP id 586e51a60fabf-11e9a7135easo8318628fac.6
+        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 01:43:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:reply-to:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date;
-        bh=BlMeeUEVodPBdqThTNC1beQRPVqh3BMP+jz01cEkl2Q=;
-        b=bxdk56PRw6L4abkbFZZN14bHDPlCQVQ4SAGfIIa6SAhjeMzxJVGsHP8wV9xkbP0fh0
-         oJx+2afqhLOwtgp33QsbDMwVhLpa1xGLJqMNetNlYKzmqeo6xq7uOP/FyD6sYMR1F/Aq
-         jr2oW64uC9IMkf2UkPI/NBAfVv6IVZpdpH3roclasP2/izB3QHy/XBOXhI0sIhATmrdL
-         ZDYOh9jepinRShFDutVHdFSmwrpwSaYuKkcyimiuj0buL9D8cTJt5A3PMOU/pUbXGsKl
-         SYwwyIHycvdIZwX8C4n7d0EGciQ3Z6ziUJRUkp5DyK6i/dFJPMfdDWHy31NCYF3vaOGL
-         hAGQ==
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc
+         :subject:date;
+        bh=ddKdS4x8c4ZSI9PbKdla4xMHlbecpUYnHnf7KqPY/v4=;
+        b=SnqSRKyiGjXNY3MxSBng4eq1z+iTb/ha18CqT0fa2gaU66CGD6bzfnh8s06GPEs5kR
+         Aw5sDJBRuPUqq4/xAmQKsgwXR0NZmuU0clK0Zbji+JXIEFKdjbqoEbeDUCpKTij3x1w3
+         A3a1GIqPggdru/CC4cv/a76ANIkPwr9BP8vYqIW0UC0fExAcM11ZufROxsu4fhsCtIzc
+         msmpMQ94kLTitrDr0r6LrlNl22bNgeA4uhLXonyzyxqQav++K4dCuPfuRbqOBZ9uawwx
+         w1GXxLpbJecoXApRIO9Ne1xRNuKIc+c+OilDGvZlT0MxgTivyQtTOibfY4uhRxj3pwZ+
+         dIeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:reply-to:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date;
-        bh=BlMeeUEVodPBdqThTNC1beQRPVqh3BMP+jz01cEkl2Q=;
-        b=zARnydY8/z021Cl2om+pZixX1lZn4naqfTquFekZdmBxNJgN0W1+w08EHr6B+0ELTH
-         Mi71PpZ9uxKEclwSD+iVGi2V0SHM2LNnsFpgADRYahR1RY8Tnhp7k5IY0ptTP4WkFSg7
-         BcPq/HGULi1ijb241mUUCPbxhl9H1eWAGOsFE+grt/LsXMvyvCMzTOrZotUHS8LgB7iK
-         7nFKsjVWwx5fJuZOOLsH4BL/lYgrkcseSqj6TkwyYLn/IUc4axz6ghOIds0Bj1HUPx9+
-         n79qTmJq6h6MjRGbtYbgYs7Y9HFgzABiXB6jhs9ojc/ycAqeeXXhrG/mHMX4hyew7sZB
-         BsrQ==
-X-Gm-Message-State: ACrzQf2j1v0dhO0qk0hxdt7XA2avTaJwT7lG7h+owjtA8n1fPxvfbqzP
-        OqD6XFX3s3LEO8ojWH6cqbyakrr1YnP7ZQ==
-X-Google-Smtp-Source: AMsMyM74iY95H84GB6eiyxiDqR2iFNL3c8f4hBGlM4p4TJLN7Zvb6GZiBhLOXEpoGDgG/zf4OXegJw==
-X-Received: by 2002:a5d:62d2:0:b0:22a:3a88:e902 with SMTP id o18-20020a5d62d2000000b0022a3a88e902mr12584366wrv.637.1664181468229;
-        Mon, 26 Sep 2022 01:37:48 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:b41:c160:ec8f:a2ed:f455:6b0a? ([2a01:e0a:b41:c160:ec8f:a2ed:f455:6b0a])
-        by smtp.gmail.com with ESMTPSA id e4-20020a05600c4e4400b003a682354f63sm10741914wmq.11.2022.09.26.01.37.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 26 Sep 2022 01:37:47 -0700 (PDT)
-Message-ID: <e74aeed9-fd93-43dd-7692-251efbc5e5b9@6wind.com>
-Date:   Mon, 26 Sep 2022 10:37:46 +0200
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=ddKdS4x8c4ZSI9PbKdla4xMHlbecpUYnHnf7KqPY/v4=;
+        b=wsjZ5oyYL6S8Ys8T0MBNAcpzVbD257ofjyaoGev+LpRjvyGbtu+Rf89S+gBD1IKIdf
+         385jKgNMYHsxsoBF1v4SqO9EKmvAxDV4Ajibp2RstM1zrzCgAQulhyVctsy0K68007Uv
+         7mfR2315K3SNc/dl9kneUkJNmCdqGluyRcd7fsl4/tFhSn8ep50Juv3DZf9YW/CAAXka
+         757S3X7LtUFzPy3bEFyjvSSZsfQLA40e1uw0VKgxVk6fM2Va4aIuGCtftcbCnAcBy8ZC
+         I84RNlPz1tEsZsBDNQyYbmdHMMQBT27oQatyG3HVe0bibUY6khLiPK7SFW/sI0m0lMct
+         UOgA==
+X-Gm-Message-State: ACrzQf0z095XqdZkUuiIL1bRTQygW0HohNsAjoMxfdjRUA1rR2cwiG0l
+        aGj6CQEawalJ2IPpljiBQ9GzS1uVmvlHlB/6xa4=
+X-Google-Smtp-Source: AMsMyM7wG6zskDyiFPN0xX/1FOqzu5BYs7CZcj5HUKXSX1/SSBTY/XMHDGocNovVKezBfVcneCiG/3tsXSPUH7vAtLA=
+X-Received: by 2002:a05:6870:249c:b0:10c:7f4d:71ab with SMTP id
+ s28-20020a056870249c00b0010c7f4d71abmr11592299oaq.15.1664181785740; Mon, 26
+ Sep 2022 01:43:05 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCHv2 net-next] rtnetlink: Honour NLM_F_ECHO flag in
- rtnl_{new, set, del}link
-Content-Language: en-US
-To:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Florent Fourcot <florent.fourcot@wifirst.fr>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Guillaume Nault <gnault@redhat.com>
-References: <20220926071246.38805-1-liuhangbin@gmail.com>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-In-Reply-To: <20220926071246.38805-1-liuhangbin@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:a05:6358:52c7:b0:b3:4dd7:8c58 with HTTP; Mon, 26 Sep 2022
+ 01:43:05 -0700 (PDT)
+Reply-To: sb9174937@gmail.com
+From:   Susan Bikram <redw07882@gmail.com>
+Date:   Mon, 26 Sep 2022 01:43:05 -0700
+Message-ID: <CAND8bMJM77y-eOLgG74h8pQmjOjtvZq9EO0ncCYz77Bwa6hDfQ@mail.gmail.com>
+Subject: Waiting to hear from you
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=5.2 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,UNDISC_FREEM autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2001:4860:4864:20:0:0:0:32 listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5000]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [sb9174937[at]gmail.com]
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [redw07882[at]gmail.com]
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [redw07882[at]gmail.com]
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        *  3.1 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Dear ,
 
-Le 26/09/2022 à 09:12, Hangbin Liu a écrit :
-> Netlink messages are used for communicating between user and kernel space.
-> When user space configures the kernel with netlink messages, it can set the
-> NLM_F_ECHO flag to request the kernel to send the applied configuration back
-> to the caller. This allows user space to retrieve configuration information
-> that are filled by the kernel (either because these parameters can only be
-> set by the kernel or because user space let the kernel choose a default
-> value).
-> 
-> The kernel has support this feature in some places like RTM_{NEW, DEL}ADDR,
-> RTM_{NEW, DEL}ROUTE. This patch handles NLM_F_ECHO flag and send link info
-> back after rtnl_{new, set, del}link.
-> 
-> Suggested-by: Guillaume Nault <gnault@redhat.com>
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-> ---
-> v2:
-> 1) rename rtnl_echo_link_info() to rtnl_link_notify().
-> 2) remove IFLA_LINK_NETNSID and IFLA_EXT_MASK, which do not fit here.
-> 3) Add NLM_F_ECHO in rtnl_dellink. But we can't re-use the rtnl_link_notify()
->    helper as we need to get the link info before rtnl_delete_link().
-> ---
->  net/core/rtnetlink.c | 66 ++++++++++++++++++++++++++++++++++++++------
->  1 file changed, 58 insertions(+), 8 deletions(-)
-> 
-> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-> index 74864dc46a7e..0897cb6cc931 100644
-> --- a/net/core/rtnetlink.c
-> +++ b/net/core/rtnetlink.c
-> @@ -2645,13 +2645,41 @@ static int do_set_proto_down(struct net_device *dev,
->  	return 0;
->  }
->  
-> +static void rtnl_link_notify(struct net_device *dev, u32 pid,
-> +			     struct nlmsghdr *nlh)
-> +{
-> +	struct sk_buff *skb;
-> +	int err = -ENOBUFS;
-> +
-> +	skb = nlmsg_new(if_nlmsg_size(dev, 0), GFP_KERNEL);
-> +	if (!skb)
-> +		goto errout;
-> +
-> +	err = rtnl_fill_ifinfo(skb, dev, dev_net(dev), RTM_NEWLINK, pid,
-> +			       nlh->nlmsg_seq, 0, 0, 0, 0, NULL, 0, 0,
-> +			       GFP_KERNEL);
-> +	if (err < 0) {
-> +		/* -EMSGSIZE implies BUG in if_nlmsg_size */
-> +		WARN_ON(err == -EMSGSIZE);
-> +		kfree_skb(skb);
-> +		goto errout;
-> +	}
-> +
-> +	rtnl_notify(skb, dev_net(dev), pid, RTM_NEWLINK, nlh, GFP_KERNEL);
-The fourth argument is the group, not the command. It should be RTNLGRP_LINK
-here. But it would be better to pass 0 to avoid multicasting a new / duplicate
-notification. Calling functions already multicast one.
+Please can I have your attention and possibly help me for humanity's
+sake please. I am writing this message with a heavy heart filled with
+sorrows and sadness.
+Please if you can respond, i have an issue that i will be most
+grateful if you could help me deal with it please.
+
+Susan
