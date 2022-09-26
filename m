@@ -2,88 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 44BAD5E9B73
-	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 10:02:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 935D75E9B82
+	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 10:03:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234223AbiIZIB6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 04:01:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49940 "EHLO
+        id S233787AbiIZIDW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 04:03:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233727AbiIZIBa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 04:01:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02614C27;
-        Mon, 26 Sep 2022 00:58:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F8A36179F;
-        Mon, 26 Sep 2022 07:58:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85251C433C1;
-        Mon, 26 Sep 2022 07:58:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664179131;
-        bh=jfuwhFd5PczoIXgvji7jNDdS65hU/TTDtOFWvgEpYkI=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=GCIatT1Gc/erxM3rdkI/8g7syX2EzY43d6RY9O+fWQUdcXRuyiUDtbvpnl60m7dE+
-         2hHqu72oyFVsX4ntX4wXxY+UDRxa8AzF24r8pQDDmoqhG/pdyMDuzLPD8O4VauEEUl
-         2XSuoHx8i7aA0x3Uj8Z3QMBfujxRHshTsS1sRVRluCpBkAN3MltLOp8V0a/pNOmEqY
-         vAT7RtTC2bIb0/ClWsmnnclQtV2Im5Dl85mLrfXyuZ0Dbjt+i4BqX/ve4Hd2AbJdJ1
-         0tfGBkzPGfZm8pNH/aTWBqPL4AJ/rT8cq1qQTCqdVHwvl0uR2DQiL0spjUkMyiThdb
-         ZMl452H4brgTQ==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Ruan Jinjie <ruanjinjie@huawei.com>
-Cc:     Franky Lin <franky.lin@broadcom.com>, <aspriel@gmail.com>,
-        <hante.meuleman@broadcom.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <marcan@marcan.st>, <linus.walleij@linaro.org>,
-        <rmk+kernel@armlinux.org.uk>, <soontak.lee@cypress.com>,
-        <linux-wireless@vger.kernel.org>,
-        <SHA-cyfmac-dev-list@infineon.com>,
-        <brcm80211-dev-list.pdl@broadcom.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH -next] wifi: brcmfmac: pcie: add missing pci_disable_device() in brcmf_pcie_get_resource()
-References: <20220923093806.3108119-1-ruanjinjie@huawei.com>
-        <CA+8PC_eCwv321DxoCMOrWNLw7NWkT9F0sD-=8GzygEXPJHFWWA@mail.gmail.com>
-        <b5e39818-2961-ba3d-8552-f618c19f8fe6@huawei.com>
-Date:   Mon, 26 Sep 2022 10:58:45 +0300
-In-Reply-To: <b5e39818-2961-ba3d-8552-f618c19f8fe6@huawei.com> (Ruan Jinjie's
-        message of "Sat, 24 Sep 2022 09:00:12 +0800")
-Message-ID: <878rm64le2.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        with ESMTP id S233927AbiIZIC3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 04:02:29 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1F0A6A444
+        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 00:59:40 -0700 (PDT)
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 28Q7lriE7020545, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 28Q7lriE7020545
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Mon, 26 Sep 2022 15:47:53 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Mon, 26 Sep 2022 15:48:18 +0800
+Received: from localhost.localdomain (172.21.182.184) by
+ RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Mon, 26 Sep 2022 15:48:17 +0800
+From:   Chunhao Lin <hau@realtek.com>
+To:     <hkallweit1@gmail.com>
+CC:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
+        Chunhao Lin <hau@realtek.com>
+Subject: [PATCH net-next] r8169: add rtl_disable_rxdvgate()
+Date:   Mon, 26 Sep 2022 15:48:13 +0800
+Message-ID: <20220926074813.3619-1-hau@realtek.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [172.21.182.184]
+X-ClientProxiedBy: RTEXH36504.realtek.com.tw (172.21.6.27) To
+ RTEXMBS04.realtek.com.tw (172.21.6.97)
+X-KSE-ServerInfo: RTEXMBS04.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: trusted connection
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 09/26/2022 07:25:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzkvMjYgpFekyCAwNjowMDowMA==?=
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ruan Jinjie <ruanjinjie@huawei.com> writes:
+rtl_disable_rxdvgate() is used for disable RXDV_GATE.
+It is opposite function of rtl_enable_rxdvgate().
 
-> On 2022/9/24 0:50, Franky Lin wrote:
->> On Fri, Sep 23, 2022 at 2:42 AM ruanjinjie <ruanjinjie@huawei.com> wrote:
->>>
->>> Add missing pci_disable_device() if brcmf_pcie_get_resource() fails.
->> 
->> Did you encounter any issue because of the absensent
->> pci_disable_device? A bit more context will be very helpful.
->> 
->
-> We use static analysis via coccinelle to find the above issue. The
-> command we use is below:
->
-> spatch -I include -timeout 60 -very_quiet -sp_file
-> pci_disable_device_missing.cocci
-> drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+Signed-off-by: Chunhao Lin <hau@realtek.com>
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
-Please include this information to the commit log, it helps to
-understand the background of the fix.
-
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 9c21894d0518..956562797496 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -2443,6 +2443,11 @@ static void rtl_wait_txrx_fifo_empty(struct rtl8169_private *tp)
+ 	}
+ }
+ 
++static void rtl_disable_rxdvgate(struct rtl8169_private *tp)
++{
++	RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
++}
++
+ static void rtl_enable_rxdvgate(struct rtl8169_private *tp)
+ {
+ 	RTL_W32(tp, MISC, RTL_R32(tp, MISC) | RXDV_GATED_EN);
+@@ -2960,7 +2965,7 @@ static void rtl_hw_start_8168g(struct rtl8169_private *tp)
+ 	rtl_reset_packet_filter(tp);
+ 	rtl_eri_write(tp, 0x2f8, ERIAR_MASK_0011, 0x1d8f);
+ 
+-	RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
++	rtl_disable_rxdvgate(tp);
+ 
+ 	rtl_eri_write(tp, 0xc0, ERIAR_MASK_0011, 0x0000);
+ 	rtl_eri_write(tp, 0xb8, ERIAR_MASK_0011, 0x0000);
+@@ -3198,7 +3203,7 @@ static void rtl_hw_start_8168h_1(struct rtl8169_private *tp)
+ 
+ 	rtl_eri_write(tp, 0x5f0, ERIAR_MASK_0011, 0x4f87);
+ 
+-	RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
++	rtl_disable_rxdvgate(tp);
+ 
+ 	rtl_eri_write(tp, 0xc0, ERIAR_MASK_0011, 0x0000);
+ 	rtl_eri_write(tp, 0xb8, ERIAR_MASK_0011, 0x0000);
+@@ -3249,7 +3254,7 @@ static void rtl_hw_start_8168ep(struct rtl8169_private *tp)
+ 
+ 	rtl_eri_write(tp, 0x5f0, ERIAR_MASK_0011, 0x4f87);
+ 
+-	RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
++	rtl_disable_rxdvgate(tp);
+ 
+ 	rtl_eri_write(tp, 0xc0, ERIAR_MASK_0011, 0x0000);
+ 	rtl_eri_write(tp, 0xb8, ERIAR_MASK_0011, 0x0000);
+@@ -3313,7 +3318,7 @@ static void rtl_hw_start_8117(struct rtl8169_private *tp)
+ 
+ 	rtl_eri_write(tp, 0x5f0, ERIAR_MASK_0011, 0x4f87);
+ 
+-	RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
++	rtl_disable_rxdvgate(tp);
+ 
+ 	rtl_eri_write(tp, 0xc0, ERIAR_MASK_0011, 0x0000);
+ 	rtl_eri_write(tp, 0xb8, ERIAR_MASK_0011, 0x0000);
+@@ -3557,8 +3562,7 @@ static void rtl_hw_start_8125_common(struct rtl8169_private *tp)
+ 	else
+ 		rtl8125a_config_eee_mac(tp);
+ 
+-	RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
+-	udelay(10);
++	rtl_disable_rxdvgate(tp);
+ }
+ 
+ static void rtl_hw_start_8125a_2(struct rtl8169_private *tp)
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.25.1
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
