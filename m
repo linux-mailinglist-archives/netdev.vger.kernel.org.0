@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B675E5EB222
-	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 22:32:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD5295EB223
+	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 22:32:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229972AbiIZUc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 16:32:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58156 "EHLO
+        id S229760AbiIZUc1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 16:32:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229621AbiIZUcY (ORCPT
+        with ESMTP id S229671AbiIZUcY (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 16:32:24 -0400
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49400A4B8D
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DD95A4B90
         for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 13:32:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1664224342; x=1695760342;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=mk/O+pb4vDEv/4z5c4T+TiCftuTCRdCJVZvmwYvIzBU=;
-  b=nLzTNe3d8RB5X5ty3tsUkGkVlv0SIPc8T+j2OnKl/Qp1cvYec6C0yqN7
-   cGCRuOwdD5TMKDsovX6subEt54aTBihlzn0GLsMlS/hXv1m8y1p3hRpRA
-   s9XS2/xDNubkp9zd7TV6togYtL68QUqC3gN2LC4RGJ4o9YG9xvWpT1hAm
-   pMNJW8YlxCrE/0+UTBxROY3eXDfuF8Rc9/sNbCGve53BRu7RkhfxZBSRu
-   FhdIamD9WYuNoxkqQLHpFlMEI3qqomp+Tmu2mcP5h7EIW8WvJAH4AbCG0
-   Acr2J2/niKPClIGhJ1yx/TG+qouvlamko0yxuIMjnu55Ua7a0Pkb1mBSe
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="281508585"
+  bh=rEgVx8YEjEfIoDVie6jskmWt58BSvMdKVzYkqaLaSZk=;
+  b=jz4FkEb3IqT9qxAIt7SDrzsTuhJIevbp/vB5/9vbrmcwp/3Lr/8D+dxO
+   xYR4KzxKxgP3S+mF3m28H3y/l5ZeCX31X+EYx8oUjhX/dfxN4yiEMz47R
+   n+z60/bNPCYoDgf01W69n8/t9VtZYh8iZHeSu4ZeiV4AR01f4PkJ6g7s/
+   fGes5MGaPazKOVReE+FnLk6vsbmhCiUidLQgJeod8xFDb41XFktniSFPI
+   re/Nd+gBdnSujzP1jpclqIdjGkL0E0zR1sVh09dVPk++J38d7uOQeqMeK
+   9Pfzu85Zkj3F4bvn1mm+qM9bY2HNQ2mTEjbYzd3FP2M/T7+f1q2V0hy2y
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="281508586"
 X-IronPort-AV: E=Sophos;i="5.93,347,1654585200"; 
-   d="scan'208";a="281508585"
+   d="scan'208";a="281508586"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
   by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Sep 2022 13:32:20 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="616547443"
+X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="616547447"
 X-IronPort-AV: E=Sophos;i="5.93,347,1654585200"; 
-   d="scan'208";a="616547443"
+   d="scan'208";a="616547447"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga007.jf.intel.com with ESMTP; 26 Sep 2022 13:32:20 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
-Cc:     Slawomir Laba <slawomirx.laba@intel.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com, Michal Jaron <michalx.jaron@intel.com>,
-        Mateusz Palczewski <mateusz.palczewski@intel.com>,
+Cc:     Michal Jaron <michalx.jaron@intel.com>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com,
+        Kamil Maziarz <kamil.maziarz@intel.com>,
         Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH net 1/3] i40e: Fix ethtool rx-flow-hash setting for X722
-Date:   Mon, 26 Sep 2022 13:32:12 -0700
-Message-Id: <20220926203214.3678419-2-anthony.l.nguyen@intel.com>
+Subject: [PATCH net 2/3] i40e: Fix not setting xps_cpus after reset
+Date:   Mon, 26 Sep 2022 13:32:13 -0700
+Message-Id: <20220926203214.3678419-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220926203214.3678419-1-anthony.l.nguyen@intel.com>
 References: <20220926203214.3678419-1-anthony.l.nguyen@intel.com>
@@ -62,122 +62,192 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Slawomir Laba <slawomirx.laba@intel.com>
+From: Michal Jaron <michalx.jaron@intel.com>
 
-When enabling flow type for RSS hash via ethtool:
+During tx rings configuration default XPS queue config is set and
+__I40E_TX_XPS_INIT_DONE is locked. XPS CPUs maps are cleared in
+every reset by netdev_set_num_tc() call regardless it was set by
+user or driver. If reset with reinit occurs __I40E_TX_XPS_INIT_DONE
+flag is removed and XPS mapping is set to default again but after
+reset without reinit this flag is still set and XPS CPUs to queues
+mapping stays cleared.
 
-ethtool -N $pf rx-flow-hash tcp4|tcp6|udp4|udp6 s|d
+Add code to preserve xps_cpus mapping as cpumask for every queue
+and restore those mapping at the end of reset.
 
-the driver would fail to setup this setting on X722
-device since it was using the mask on the register
-dedicated for X710 devices.
-
-Apply a different mask on the register when setting the
-RSS hash for the X722 device.
-
-When displaying the flow types enabled via ethtool:
-
-ethtool -n $pf rx-flow-hash tcp4|tcp6|udp4|udp6
-
-the driver would print wrong values for X722 device.
-
-Fix this issue by testing masks for X722 device in
-i40e_get_rss_hash_opts function.
-
-Fixes: eb0dd6e4a3b3 ("i40e: Allow RSS Hash set with less than four parameters")
-Signed-off-by: Slawomir Laba <slawomirx.laba@intel.com>
+Fixes: 6f853d4f8e93 ("i40e: allow XPS with QoS enabled")
 Signed-off-by: Michal Jaron <michalx.jaron@intel.com>
-Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
+Signed-off-by: Kamil Maziarz <kamil.maziarz@intel.com>
 Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- .../net/ethernet/intel/i40e/i40e_ethtool.c    | 31 ++++++++++++++-----
- drivers/net/ethernet/intel/i40e/i40e_type.h   |  4 +++
- 2 files changed, 27 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e.h      |   6 ++
+ drivers/net/ethernet/intel/i40e/i40e_main.c | 109 ++++++++++++++++++++
+ 2 files changed, 115 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-index e9cd0fa6a0d2..e518aaa2c0ca 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-@@ -3188,10 +3188,17 @@ static int i40e_get_rss_hash_opts(struct i40e_pf *pf, struct ethtool_rxnfc *cmd)
+diff --git a/drivers/net/ethernet/intel/i40e/i40e.h b/drivers/net/ethernet/intel/i40e/i40e.h
+index d86b6d349ea9..238d00d3423a 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e.h
++++ b/drivers/net/ethernet/intel/i40e/i40e.h
+@@ -1306,4 +1306,10 @@ static inline u32 i40e_is_tc_mqprio_enabled(struct i40e_pf *pf)
+ 	return pf->flags & I40E_FLAG_TC_MQPRIO;
+ }
  
- 		if (cmd->flow_type == TCP_V4_FLOW ||
- 		    cmd->flow_type == UDP_V4_FLOW) {
--			if (i_set & I40E_L3_SRC_MASK)
--				cmd->data |= RXH_IP_SRC;
--			if (i_set & I40E_L3_DST_MASK)
--				cmd->data |= RXH_IP_DST;
-+			if (hw->mac.type == I40E_MAC_X722) {
-+				if (i_set & I40E_X722_L3_SRC_MASK)
-+					cmd->data |= RXH_IP_SRC;
-+				if (i_set & I40E_X722_L3_DST_MASK)
-+					cmd->data |= RXH_IP_DST;
-+			} else {
-+				if (i_set & I40E_L3_SRC_MASK)
-+					cmd->data |= RXH_IP_SRC;
-+				if (i_set & I40E_L3_DST_MASK)
-+					cmd->data |= RXH_IP_DST;
-+			}
- 		} else if (cmd->flow_type == TCP_V6_FLOW ||
- 			  cmd->flow_type == UDP_V6_FLOW) {
- 			if (i_set & I40E_L3_V6_SRC_MASK)
-@@ -3549,12 +3556,15 @@ static int i40e_get_rxnfc(struct net_device *netdev, struct ethtool_rxnfc *cmd,
++/* reverse XPS CPUs to tx queues map */
++struct i40e_qmap_rev {
++	struct cpumask cpus;
++	int vsi_id;
++};
++
+ #endif /* _I40E_H_ */
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index e3d9804aeb25..452ed104766e 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -10793,6 +10793,83 @@ static int i40e_reset(struct i40e_pf *pf)
+ 	return ret;
+ }
  
- /**
-  * i40e_get_rss_hash_bits - Read RSS Hash bits from register
-+ * @hw: hw structure
-  * @nfc: pointer to user request
-  * @i_setc: bits currently set
-  *
-  * Returns value of bits to be set per user request
-  **/
--static u64 i40e_get_rss_hash_bits(struct ethtool_rxnfc *nfc, u64 i_setc)
-+static u64 i40e_get_rss_hash_bits(struct i40e_hw *hw,
-+				  struct ethtool_rxnfc *nfc,
-+				  u64 i_setc)
- {
- 	u64 i_set = i_setc;
- 	u64 src_l3 = 0, dst_l3 = 0;
-@@ -3573,8 +3583,13 @@ static u64 i40e_get_rss_hash_bits(struct ethtool_rxnfc *nfc, u64 i_setc)
- 		dst_l3 = I40E_L3_V6_DST_MASK;
- 	} else if (nfc->flow_type == TCP_V4_FLOW ||
- 		  nfc->flow_type == UDP_V4_FLOW) {
--		src_l3 = I40E_L3_SRC_MASK;
--		dst_l3 = I40E_L3_DST_MASK;
-+		if (hw->mac.type == I40E_MAC_X722) {
-+			src_l3 = I40E_X722_L3_SRC_MASK;
-+			dst_l3 = I40E_X722_L3_DST_MASK;
-+		} else {
-+			src_l3 = I40E_L3_SRC_MASK;
-+			dst_l3 = I40E_L3_DST_MASK;
++#ifdef CONFIG_XPS
++/**
++ * i40e_preserve_xps_settings - preserve XPS maps before reset
++ * @vsi: pointer to the targeted VSI
++ * @qr: pointer to the structure with XPS mapping
++ *
++ * Read queues mapping from every CPU and save it as a CPU mask for every
++ * queue.
++ **/
++static void
++i40e_preserve_xps_settings(struct i40e_vsi *vsi, struct i40e_qmap_rev *qr)
++{
++	int cpu, q_idx, cpu_idx, cpus = num_online_cpus();
++	struct net_device *netdev = vsi->netdev;
++	struct xps_dev_maps *dev_maps;
++	struct xps_map *map;
++	u64 bitmap_arr;
++
++	if (!netdev || vsi->type != I40E_VSI_MAIN)
++		return;
++
++	if (cpus < vsi->num_queue_pairs) {
++		dev_warn(&vsi->back->pdev->dev,
++			 "There are more queues than cpus. To set xps maps properly reinitialize queues.\n");
++		return;
++	}
++
++	rcu_read_lock();
++
++	if (!netdev->xps_maps[XPS_CPUS])
++		goto out;
++
++	dev_maps = rcu_dereference(netdev->xps_maps[XPS_CPUS]);
++
++	for (cpu = 0; cpu < cpus; cpu++) {
++		cpu_idx = cpumask_local_spread(cpu, -1);
++		if (!dev_maps->attr_map[cpu_idx])
++			continue;
++
++		map = rcu_dereference(dev_maps->attr_map[cpu_idx]);
++		bitmap_arr = cpu_idx;
++		do_div(bitmap_arr, BITS_PER_LONG);
++		for (q_idx = 0; q_idx < map->len; q_idx++) {
++			qr[map->queues[q_idx]].vsi_id = vsi->id;
++			qr[map->queues[q_idx]].cpus.bits[bitmap_arr] |=
++				BIT(cpu_idx);
 +		}
- 	} else {
- 		/* Any other flow type are not supported here */
- 		return i_set;
-@@ -3689,7 +3704,7 @@ static int i40e_set_rss_hash_opt(struct i40e_pf *pf, struct ethtool_rxnfc *nfc)
- 					       flow_pctype)) |
- 			((u64)i40e_read_rx_ctl(hw, I40E_GLQF_HASH_INSET(1,
- 					       flow_pctype)) << 32);
--		i_set = i40e_get_rss_hash_bits(nfc, i_setc);
-+		i_set = i40e_get_rss_hash_bits(&pf->hw, nfc, i_setc);
- 		i40e_write_rx_ctl(hw, I40E_GLQF_HASH_INSET(0, flow_pctype),
- 				  (u32)i_set);
- 		i40e_write_rx_ctl(hw, I40E_GLQF_HASH_INSET(1, flow_pctype),
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_type.h b/drivers/net/ethernet/intel/i40e/i40e_type.h
-index 7b3f30beb757..388c3d36d96a 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_type.h
-+++ b/drivers/net/ethernet/intel/i40e/i40e_type.h
-@@ -1404,6 +1404,10 @@ struct i40e_lldp_variables {
- #define I40E_PFQF_CTL_0_HASHLUTSIZE_512	0x00010000
++	}
++
++out:
++	rcu_read_unlock();
++}
++
++/**
++ * i40e_restore_xps_settings - restore XPS maps after reset
++ * @vsi: pointer to the targeted VSI
++ * @qr: pointer to the structure with XPS mapping
++ *
++ * Set previously preserved XPS CPUs to queues mapping.
++ **/
++static void
++i40e_restore_xps_settings(struct i40e_vsi *vsi, struct i40e_qmap_rev *qr)
++{
++	struct net_device *netdev = vsi->netdev;
++	int q_count, q;
++
++	q_count = min_t(unsigned int, num_online_cpus(), vsi->num_queue_pairs);
++
++	if (vsi->type != I40E_VSI_MAIN)
++		return;
++
++	for (q = 0; q < q_count; q++)
++		if (qr[q].vsi_id == vsi->id)
++			netif_set_xps_queue(netdev, &qr[q].cpus, q);
++}
++
++#endif /* CONFIG_XPS */
+ /**
+  * i40e_rebuild - rebuild using a saved config
+  * @pf: board private structure
+@@ -10804,6 +10881,9 @@ static void i40e_rebuild(struct i40e_pf *pf, bool reinit, bool lock_acquired)
+ {
+ 	const bool is_recovery_mode_reported = i40e_check_recovery_mode(pf);
+ 	struct i40e_vsi *vsi = pf->vsi[pf->lan_vsi];
++#ifdef CONFIG_XPS
++	struct i40e_qmap_rev *qr = NULL;
++#endif /* CONFIG_XPS */
+ 	struct i40e_hw *hw = &pf->hw;
+ 	i40e_status ret;
+ 	u32 val;
+@@ -10919,6 +10999,22 @@ static void i40e_rebuild(struct i40e_pf *pf, bool reinit, bool lock_acquired)
+ 	}
  
- /* INPUT SET MASK for RSS, flow director, and flexible payload */
-+#define I40E_X722_L3_SRC_SHIFT		49
-+#define I40E_X722_L3_SRC_MASK		(0x3ULL << I40E_X722_L3_SRC_SHIFT)
-+#define I40E_X722_L3_DST_SHIFT		41
-+#define I40E_X722_L3_DST_MASK		(0x3ULL << I40E_X722_L3_DST_SHIFT)
- #define I40E_L3_SRC_SHIFT		47
- #define I40E_L3_SRC_MASK		(0x3ULL << I40E_L3_SRC_SHIFT)
- #define I40E_L3_V6_SRC_SHIFT		43
+ #endif /* CONFIG_I40E_DCB */
++#ifdef CONFIG_XPS
++	if (!reinit) {
++		int cpus = num_possible_cpus();
++
++		qr = kcalloc(cpus, sizeof(struct i40e_qmap_rev), GFP_KERNEL);
++		if (!qr) {
++			ret = -ENOMEM;
++			goto end_unlock;
++		}
++
++		for (v = 0; v < pf->num_alloc_vsi; v++)
++			if (pf->vsi[v])
++				i40e_preserve_xps_settings(pf->vsi[v], qr);
++	}
++
++#endif /* CONFIG_XPS */
+ 	if (!lock_acquired)
+ 		rtnl_lock();
+ 	ret = i40e_setup_pf_switch(pf, reinit, true);
+@@ -11073,6 +11169,16 @@ static void i40e_rebuild(struct i40e_pf *pf, bool reinit, bool lock_acquired)
+ 
+ 	i40e_reset_all_vfs(pf, true);
+ 
++#ifdef CONFIG_XPS
++	if (!reinit) {
++		for (v = 0; v < pf->num_alloc_vsi; v++)
++			if (pf->vsi[v])
++				i40e_restore_xps_settings(pf->vsi[v], qr);
++	} else {
++		dev_info(&pf->pdev->dev, "XPS maps were reset to default after queue re-initialization");
++	}
++
++#endif /* CONFIG_XPS */
+ 	/* tell the firmware that we're starting */
+ 	i40e_send_version(pf);
+ 
+@@ -11082,6 +11188,9 @@ static void i40e_rebuild(struct i40e_pf *pf, bool reinit, bool lock_acquired)
+ end_unlock:
+ 	if (!lock_acquired)
+ 		rtnl_unlock();
++#ifdef CONFIG_XPS
++	kfree(qr);
++#endif /* CONFIG_XPS */
+ end_core_reset:
+ 	clear_bit(__I40E_RESET_FAILED, pf->state);
+ clear_recovery:
 -- 
 2.35.1
 
