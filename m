@@ -2,101 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B36255E9B85
-	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 10:03:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAB6F5E9BA1
+	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 10:07:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231218AbiIZIDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 04:03:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44220 "EHLO
+        id S233420AbiIZIHm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 04:07:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234186AbiIZICn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 04:02:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 077C6167C2;
-        Mon, 26 Sep 2022 01:00:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6E967B8191D;
-        Mon, 26 Sep 2022 08:00:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15004C433C1;
-        Mon, 26 Sep 2022 07:59:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664179199;
-        bh=BKaJB74cTuefD7ABjII+u7AOgXdfZ6IIrKwYO+YFiwA=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=Hyc7Yt4JMRaV93ujZXcbA6K75iKsTxLlkmSgCVt36DaZp09gGDnmN4EJbeayeQ/qN
-         3jEp8KLozDsB5an81OOeR7jhTN01D7/6umcHN2nNtowRyX35dtCAQ1JDHTjuEn9ULL
-         oV6buTY/Pjh1znzJxLvS71sf46j3L57ogNSxUesw9iGcpVHQsL42CAtv1Z3RnZbW/b
-         wtR6XNhWhaxNVau5wCZto1o8qodSKDM+Z7JI7nMB1jSI9rSqql3wOZYycygUYlXKZH
-         GQNLjqJ66xRAjmjKK8LN9zfpa2pje/YYTyfFmuy955aTcDQUZ9Q9L5IscH5qYVfdnj
-         yWy6pOoZhiNcw==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Gregory Greenman <gregory.greenman@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Miri Korenblit <miriam.rachel.korenblit@intel.com>,
-        Ilan Peer <ilan.peer@intel.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Nathan Errera <nathan.errera@intel.com>,
-        Mordechay Goodstein <mordechay.goodstein@intel.com>,
-        Mike Golant <michael.golant@intel.com>,
-        Ayala Beker <ayala.beker@intel.com>,
-        Avraham Stern <avraham.stern@intel.com>,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH v2] iwlwifi: Track scan_cmd allocation size explicitly
-References: <20220923220853.3302056-1-keescook@chromium.org>
-Date:   Mon, 26 Sep 2022 10:59:52 +0300
-In-Reply-To: <20220923220853.3302056-1-keescook@chromium.org> (Kees Cook's
-        message of "Fri, 23 Sep 2022 15:08:53 -0700")
-Message-ID: <874jwu4lc7.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        with ESMTP id S234169AbiIZIHT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 04:07:19 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 965CE1C432
+        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 01:05:46 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id c7so6458742ljm.12
+        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 01:05:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=dDb2i13fBtu+EH3CiEibKEBT59YoFLUU+bsiVkR8l7w=;
+        b=ihah1xcfdLbdTn51D9Oj+AUAMPAeSYDOoR7PK/JVPiIjPsD5rCDfYKe8UQJTKJdnh8
+         HUgcPuY+vpg1xsH6XcootO9Wx4lcotoqXD6unGqW4w+GymwHvPn8VlpM2foivwVZRUt8
+         w1NhcLCxEc8cN4LfsKZeF9GTQtcnfF3xW+psfsDgAlsBBs9fpEvN75p0A7QJEHzYCAhX
+         Q/fi/UYQ5WmxnL186WHG02kU4+DFI0CAH1e1nkwM9im2UZk8igaQzw4yJS7ls93X4US7
+         Re0NNxLA6Wc9a4cDrv4xeT6khiOblVh2EsKiYMasnXzfQ8C4l/H17JTjyfj4GXm++Zrx
+         JDDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=dDb2i13fBtu+EH3CiEibKEBT59YoFLUU+bsiVkR8l7w=;
+        b=6fhpBr5V/pfI1GMv4Wq1u8aHja00+gnwZdSwRAJ1EnzF6XHZaZzvZqW0gl2UveYv+i
+         gkrcjk3W16ffOTknAz4eeo4igdLVzpd9ddnSeX2dh+VK8Y71CV259/VsJ+2v0B0/V1/1
+         MvPVU3iI+6QWBiI4wxsxNTDCRoa4QB4grSgV/tWF+BeUBPY8WA72xQRngR2iNko93iPf
+         QIR2m0V9FaGE98Qd1s5XmPL1r5t19sn62wOPEhixYlXCXS04N4pU7UHapXxxR8faEUcb
+         mgtsCYy1zxow8qMmzlKjAguFdho+qwGdBdjdT0E9QgQk540+pZoTIbAu4V6u9JMtun1W
+         Qv4g==
+X-Gm-Message-State: ACrzQf15P/etfHdccVEIioIO40rpst8XwRON8e/5sNYWJB+AbZKXPJI7
+        knMDV2GFdmezF2YBwt/7kXrFfgiQefI4o4/tKFw=
+X-Google-Smtp-Source: AMsMyM7UMs2EgmUnR9uWxTb/VbyvmkdN8oHc8dHJrRrRnvNHkjk0RV8kdQZ15rNRQrTAMIZRUU8+5B2qg7rKLV+caEE=
+X-Received: by 2002:a2e:97c5:0:b0:26c:54ba:4cc8 with SMTP id
+ m5-20020a2e97c5000000b0026c54ba4cc8mr7161946ljj.219.1664179544948; Mon, 26
+ Sep 2022 01:05:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20220923160937.1912-1-claudiajkang@gmail.com> <YzFYYXcZaoPXcLz/@corigine.com>
+In-Reply-To: <YzFYYXcZaoPXcLz/@corigine.com>
+From:   Juhee Kang <claudiajkang@gmail.com>
+Date:   Mon, 26 Sep 2022 17:05:08 +0900
+Message-ID: <CAK+SQuRj=caHiyrtVySVoxRrhNttfg_cSbNFjG2PL7Fc0_ObGg@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/3] net: use netdev_unregistering instead of
+ open code
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, skhan@linuxfoundation.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kees Cook <keescook@chromium.org> writes:
+Hi Simon,
+Thanks a lot for your review!
 
-> In preparation for reducing the use of ksize(), explicitly track the
-> size of scan_cmd allocations. This also allows for noticing if the scan
-> size changes unexpectedly. Note that using ksize() was already incorrect
-> here, in the sense that ksize() would not match the actual allocation
-> size, which would trigger future run-time allocation bounds checking.
-> (In other words, memset() may know how large scan_cmd was allocated for,
-> but ksize() will return the upper bounds of the actually allocated memory,
-> causing a run-time warning about an overflow.)
+On Mon, Sep 26, 2022 at 4:44 PM Simon Horman <simon.horman@corigine.com> wrote:
 >
-> Cc: Gregory Greenman <gregory.greenman@intel.com>
-> Cc: Kalle Valo <kvalo@kernel.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: Luca Coelho <luciano.coelho@intel.com>
-> Cc: Johannes Berg <johannes.berg@intel.com>
-> Cc: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-> Cc: Miri Korenblit <miriam.rachel.korenblit@intel.com>
-> Cc: Ilan Peer <ilan.peer@intel.com>
-> Cc: linux-wireless@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Kees Cook <keescook@chromium.org>
+> On Sat, Sep 24, 2022 at 01:09:35AM +0900, Juhee Kang wrote:
+> > [You don't often get email from claudiajkang@gmail.com. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
+> >
+> > The open code is defined as a helper function(netdev_unregistering)
+> > on netdev.h, which the open code is dev->reg_state == NETREG_UNREGISTERING.
+> > Thus, netdev_unregistering() replaces the open code. This patch doesn't
+> > change logic.
+> >
+> > Signed-off-by: Juhee Kang <claudiajkang@gmail.com>
+>
+> Reviewed-by: Simon Horman <simon.horman@corigine.com>
+>
+> > ---
+> >  net/core/dev.c       | 9 ++++-----
+> >  net/core/net-sysfs.c | 2 +-
+> >  2 files changed, 5 insertions(+), 6 deletions(-)
+> >
+> > diff --git a/net/core/dev.c b/net/core/dev.c
+> > index d66c73c1c734..f3f9394f0b5a 100644
+> > --- a/net/core/dev.c
+> > +++ b/net/core/dev.c
+> > @@ -2886,8 +2886,7 @@ int netif_set_real_num_tx_queues(struct net_device *dev, unsigned int txq)
+> >         if (txq < 1 || txq > dev->num_tx_queues)
+> >                 return -EINVAL;
+> >
+> > -       if (dev->reg_state == NETREG_REGISTERED ||
+> > -           dev->reg_state == NETREG_UNREGISTERING) {
+> > +       if (dev->reg_state == NETREG_REGISTERED || netdev_unregistering(dev)) {
+> >                 ASSERT_RTNL();
+> >
+> >                 rc = netdev_queue_update_kobjects(dev, dev->real_num_tx_queues,
+>
+> Is there any value in adding a netdev_registered() helper?
+>
 
-Gregory, can I take this directly to wireless-next?
+The open code which is reg_state == NETREG_REGISTERED used 37 times on
+some codes related to the network. I think that the
+netdev_registered() helper is valuable.
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+> ...
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Best regards,
+Juhee
