@@ -2,57 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BD845EB33E
-	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 23:37:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D09F5EB359
+	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 23:42:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230239AbiIZVhQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 17:37:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41960 "EHLO
+        id S230072AbiIZVmE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 17:42:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229778AbiIZVhP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 17:37:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2FB8A4B06;
-        Mon, 26 Sep 2022 14:37:14 -0700 (PDT)
+        with ESMTP id S229515AbiIZVmD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 17:42:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6465C72FCC;
+        Mon, 26 Sep 2022 14:42:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ADEC86146C;
-        Mon, 26 Sep 2022 21:37:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD17CC433D6;
-        Mon, 26 Sep 2022 21:37:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AC5E66146C;
+        Mon, 26 Sep 2022 21:42:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EA4FC433D6;
+        Mon, 26 Sep 2022 21:41:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664228233;
-        bh=HbVXecPaL2twFT0FsJ6Cmayfch5wJ/ca5IKBfPoTWvY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fZgh/7nnGEilLznZzYcgY+WNuQ80mzEZw11SknJZ+Ut0s7LLRj0IqN8YaZaBi4ITR
-         kAt0OX6ejxE7nB+uYHHxkmtLua1nMdEKSIJxRjfuQjCMY1dwka7obWNgfkW6ZCsxPm
-         wKpKSE9x2QJBxtqQS6Yx0Yr2HfljcTGckXgGbrd+X7/lamQguYFjRunJtHTbVMV1iY
-         nvddFKRyDoxkjEb3HE/pI1tq7W6gv+/uy44cXkE+toNdGF06+mVnYtH7Uhrcajh2e6
-         jY4Y3h6RPMaIfDlFX2okujfxTdw2vW1eKcak9UUfIvBOOdkxdNlQtafzoy3fof+5UN
-         sTXu+FTq/jzDA==
-Date:   Mon, 26 Sep 2022 14:37:11 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Shane Parslow <shaneparslow808@gmail.com>
-Cc:     M Chetan Kumar <m.chetan.kumar@intel.com>,
-        Intel Corporation <linuxwwan@intel.com>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
+        s=k20201202; t=1664228520;
+        bh=Xa4BkxMFeIIJfKHYr4ePJYQZBBTMBlGFQ0Mb8GYffik=;
+        h=Date:From:To:Cc:Subject:From;
+        b=S6n/iFfWfO0akHLJkH4ZyqWVbWLfcz7qUaEqZPxOhUN/OHQ/zGk/ctEyX/E+Rb9Xd
+         egpdAHEck9L41dnAlaOUBTfxfIuS3z/cs/0bstdYtRncPcUHXdwDJy99TDjNon38X/
+         tFGgpHiZC646p35urLUndeRicARWEwLDVzgyeVZyW5GdxSlUKf45LzePxy/dXLIzKw
+         oIDzPb+uCJUZz7782eXeYjdgRCPZvfQO4OJyUJOsRc9eqLnm4RuXTgwTkoAAJ9As8U
+         OCU85uUsSaY27/Hdlv7bORY8wEK/Ac//ApJDNBvON5qK/kRyzHHVgnYKHzgc+Bp4D/
+         mYnfeyFwEkP/g==
+Date:   Mon, 26 Sep 2022 16:41:54 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Kalle Valo <kvalo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: wwan: iosm: Fix 7360 WWAN card control channel
- mapping
-Message-ID: <20220926143711.39ba78e9@kernel.org>
-In-Reply-To: <CALi=oTY7Me6g1=jtnZig-MzS-TPOOMQ53ih-78QuF-K+Rs0rUw@mail.gmail.com>
-References: <20220926040524.4017-1-shaneparslow808@gmail.com>
-        <20220926131109.43d51e55@kernel.org>
-        <CALi=oTY7Me6g1=jtnZig-MzS-TPOOMQ53ih-78QuF-K+Rs0rUw@mail.gmail.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] ath10k: Replace zero-length arrays with
+ DECLARE_FLEX_ARRAY() helper
+Message-ID: <YzIcoloIQBDqGlgc@work>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -62,19 +57,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 26 Sep 2022 13:51:23 -0700 Shane Parslow wrote:
-> There isn't currently an open bug report for this. I can open one if that
-> is preferred.
-> The gist is that previously, any writes to the 2nd userspace AT port
-> would crash the modem.
-> This is my first patch -- I apologize if I did things out of order.
+Zero-length arrays are deprecated and we are moving towards adopting
+C99 flexible-array members, instead. So, replace zero-length arrays
+declarations in anonymous union with the new DECLARE_FLEX_ARRAY()
+helper macro.
 
-The Fixes tag just points us to the commit which introduced the bug,
-look thru the git history of the kernel for examples. The expected
-format is:
+This helper allows for flexible-array members in unions.
 
-        fixes = Fixes: %h (\"%s\")
+Link: https://github.com/KSPP/linux/issues/193
+Link: https://github.com/KSPP/linux/issues/212
+Link: https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ drivers/net/wireless/ath/ath10k/htt.h | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-You need to find the oldest commit where problem exists. This helps
-stable tree maintainers to backport the necessary fixes (and netdev
-maintainers to make sure that the right tree is targeted).
+diff --git a/drivers/net/wireless/ath/ath10k/htt.h b/drivers/net/wireless/ath/ath10k/htt.h
+index f06cf39204e2..c051a22fce14 100644
+--- a/drivers/net/wireless/ath/ath10k/htt.h
++++ b/drivers/net/wireless/ath/ath10k/htt.h
+@@ -1108,8 +1108,10 @@ struct htt_rx_in_ord_ind {
+ 	u8 reserved;
+ 	__le16 msdu_count;
+ 	union {
+-		struct htt_rx_in_ord_msdu_desc msdu_descs32[0];
+-		struct htt_rx_in_ord_msdu_desc_ext msdu_descs64[0];
++		DECLARE_FLEX_ARRAY(struct htt_rx_in_ord_msdu_desc,
++				   msdu_descs32);
++		DECLARE_FLEX_ARRAY(struct htt_rx_in_ord_msdu_desc_ext,
++				   msdu_descs64);
+ 	} __packed;
+ } __packed;
+ 
+-- 
+2.34.1
+
