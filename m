@@ -2,92 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 91F465EB29E
-	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 22:48:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 085315EB2AA
+	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 22:51:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230490AbiIZUsD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 16:48:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55960 "EHLO
+        id S231154AbiIZUvi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 16:51:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229711AbiIZUsB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 16:48:01 -0400
-Received: from mail-io1-f54.google.com (mail-io1-f54.google.com [209.85.166.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE030A6C6A;
-        Mon, 26 Sep 2022 13:47:59 -0700 (PDT)
-Received: by mail-io1-f54.google.com with SMTP id p202so6246982iod.6;
-        Mon, 26 Sep 2022 13:47:59 -0700 (PDT)
+        with ESMTP id S230506AbiIZUvh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 16:51:37 -0400
+Received: from mail-vs1-xe32.google.com (mail-vs1-xe32.google.com [IPv6:2607:f8b0:4864:20::e32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57FDB5A824;
+        Mon, 26 Sep 2022 13:51:36 -0700 (PDT)
+Received: by mail-vs1-xe32.google.com with SMTP id p4so7784060vsa.9;
+        Mon, 26 Sep 2022 13:51:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=qKfQ34C5O0rzE70r20R+tBB75q+j778U5ZfxXFszttA=;
+        b=BPHvEFMYltn2Rg8aDJxPny0237ec0tFbJGaTtOttAlEIZSm2TcnzNn5ETQhaCYVEA/
+         1qY0MRCPSEGPtvV6OJa4pIwvqGU+4Ncve0silNBsx4rvedoSb5MwXkDLo/2JJMKO6YDO
+         uDV1svhkfvCNY5bRTIm4UaEewGyshTTQW5W37wbwQv20EMhnSwp2b2mIIW3j9jgxoH2S
+         kOSTeNDjg0w60LZwx8judNwqPq4P/fFfyHt44AQOgxdHuQYhpcTnpOws8ApnRvxHUjqT
+         W7xAz71SNhJzJVfmp6wCixGNyR+o+JP+Y+gwzOGIkgoDiSl9dHxRXDQv9UayvKO+2AN9
+         oaFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=faa5y7qBR+UreIMx8m63IdwyTJaEPpyMFVUYsgBqw10=;
-        b=iD+KSdS9wJ0+tBHuKR3iPyul3DGyZ7cSsdx9WiLUoPpUnzpuSp9f4CgWfGLPTr0+aq
-         BWNPp2hHs0Wy4CUHPCaRNJJmGfkA4ZxsdlY47mvPWk4ICJEWuquvn9igcawiv8LMsBgL
-         AtZVH5xTtTOBqmsHr4J0ELev9dZ4s1ZHUJcPnW1pBnIKWhcSO3hB5NbABRXdZR5ctDck
-         J8Dkwu+123wLlgLDauLTN8fM8QPpckJ7+3tsj7oGPd3cUycRQwE0+8bV7Ds7jqYIvHWa
-         /HGs+IJa4O2QQluDeRoRkWsak1R4/5PHjNbmOUUIfVggR4SoAjqqWnyhOBWZgso509kp
-         5igQ==
-X-Gm-Message-State: ACrzQf0HAzwntkcy2b/9uPJ9Ik70B/Uwn8m6p0FI79JWbGn6muwYyVUE
-        6Pa2I2Ah4bebHhQxcsnndwI=
-X-Google-Smtp-Source: AMsMyM6O6zaf+mSCDHfYhOS6FFRft1h0I2XNvK2d8x/7KIMcdO0Q6CEYIKgagoctq1u/jQXoPwdbWg==
-X-Received: by 2002:a05:6638:3821:b0:35a:1973:ae9 with SMTP id i33-20020a056638382100b0035a19730ae9mr11897859jav.313.1664225279054;
-        Mon, 26 Sep 2022 13:47:59 -0700 (PDT)
-Received: from noodle.cs.purdue.edu (switch-lwsn2133-z1r11.cs.purdue.edu. [128.10.127.250])
-        by smtp.googlemail.com with ESMTPSA id c14-20020a023b0e000000b0035a8d644a31sm7336423jaa.117.2022.09.26.13.47.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Sep 2022 13:47:58 -0700 (PDT)
-From:   Sungwoo Kim <iam@sung-woo.kim>
-Cc:     syzkaller@googlegroups.com, Sungwoo Kim <iam@sung-woo.kim>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=qKfQ34C5O0rzE70r20R+tBB75q+j778U5ZfxXFszttA=;
+        b=1tqum0NvVTXNsDec60A5DYPzMD2n2KcxTiJA4glelV6p0NYPVm8u9rHuZdT+PGoFWX
+         395JiSS8QzPV2o1EL5jaWq9r3GmIhPcaVUTP4SnJA7eejZLV/apGPs2m1pz0RmFk/Yx1
+         EkkZZ2BCEWKs1TE4img+tZTohTO4mjBt1YqR3nj9Jcaxh1zypFgZ6sR3uq3v7A0zV4v3
+         lGE7amj3/SKctRbueT1+2b5mGpcSkfZGfvCPn+IGjLhwQCSzVJ8bstKhV7TbeyJ5Y0sY
+         ShCFKbyC81zb8vukHCz6+fsUvYi3CDmCWKeW2RZQTA0k49TzlzWgmWZuV/wK0T4exiOT
+         wipg==
+X-Gm-Message-State: ACrzQf113IIN2mvLyPSeuVrMsgAj3trBmqkAlAVXcePuqd23oYRQkFjo
+        1h7nRbuC2jV6RGpeVBfhFppXNZsZpN22hSoZdzQ=
+X-Google-Smtp-Source: AMsMyM61qhvjMNXEsMZbHVi9pCwdwFn2hFbnwr6qFxEtjuqg591fuKkDmD/Cu3PIDRsXc4iH9Pd3znSaSDk3yY/AUJA=
+X-Received: by 2002:a67:e314:0:b0:397:f9b2:1b9a with SMTP id
+ j20-20020a67e314000000b00397f9b21b9amr9455108vsf.40.1664225495312; Mon, 26
+ Sep 2022 13:51:35 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220926040524.4017-1-shaneparslow808@gmail.com> <20220926131109.43d51e55@kernel.org>
+In-Reply-To: <20220926131109.43d51e55@kernel.org>
+From:   Shane Parslow <shaneparslow808@gmail.com>
+Date:   Mon, 26 Sep 2022 13:51:23 -0700
+Message-ID: <CALi=oTY7Me6g1=jtnZig-MzS-TPOOMQ53ih-78QuF-K+Rs0rUw@mail.gmail.com>
+Subject: Re: [PATCH net] net: wwan: iosm: Fix 7360 WWAN card control channel mapping
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     M Chetan Kumar <m.chetan.kumar@intel.com>,
+        Intel Corporation <linuxwwan@intel.com>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] Bluetooth: L2CAP: fix an illegal state transition from BT_DISCONN
-Date:   Mon, 26 Sep 2022 16:46:58 -0400
-Message-Id: <20220926204657.3147968-1-iam@sung-woo.kim>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Prevent an illegal state transition from BT_DISCONN to BT_CONFIG.
-L2CAP_CONN_RSP and L2CAP_CREATE_CHAN_RSP events should be ignored
-for BT_DISCONN state according to the Bluetooth Core v5.3 p.1096.
-It is found by BTFuzz, a modified version of syzkaller.
+On Mon, 26 Sep 2022 13:11:09 -0700 Jakub Kicinski wrote:
+> On Sun, 25 Sep 2022 21:05:24 -0700 Shane Parslow wrote:
+>> This patch fixes the control channel mapping for the 7360, which was
+>> previously the same as the 7560.
+>>
+>> As shown by the reverse engineering efforts of James Wah [1], the layout
+>> of channels on the 7360 is actually somewhat different from that of the
+>> 7560.
+>>
+>> A new ipc_chnl_cfg is added specifically for the 7360. The new config
+>> updates channel 7 to be an AT port and removes the mbim interface, as
+>> it does not exist on the 7360. The config is otherwise left the same as
+>> the 7560. ipc_chnl_cfg_get is updated to switch between the two configs.
+>> In ipc_imem, a special case for the mbim port is removed as it no longer
+>> exists in the 7360 ipc_chnl_cfg.
+>>
+>> As a result of this, the second userspace AT port now functions whereas
+>> previously it was routed to the trace channel. Modem crashes ("confused
+>> phase", "msg timeout", "PORT open refused") resulting from garbage being
+>> sent to the modem are also fixed.
+>
+> What's the Fixes: tag for this one?
 
-Signed-off-by: Sungwoo Kim <iam@sung-woo.kim>
----
- net/bluetooth/l2cap_core.c | 3 +++
- 1 file changed, 3 insertions(+)
+There isn't currently an open bug report for this. I can open one if that
+is preferred.
+The gist is that previously, any writes to the 2nd userspace AT port
+would crash the modem.
+This is my first patch -- I apologize if I did things out of order.
 
-diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-index 2c9de67da..a15d64b13 100644
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -4307,6 +4307,9 @@ static int l2cap_connect_create_rsp(struct l2cap_conn *conn,
- 		}
- 	}
- 
-+	if (chan->state == BT_DISCONN)
-+		goto unlock;
-+
- 	err = 0;
- 
- 	l2cap_chan_lock(chan);
--- 
-2.25.1
-
+On Mon, Sep 26, 2022 at 1:11 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Sun, 25 Sep 2022 21:05:24 -0700 Shane Parslow wrote:
+> > This patch fixes the control channel mapping for the 7360, which was
+> > previously the same as the 7560.
+> >
+> > As shown by the reverse engineering efforts of James Wah [1], the layout
+> > of channels on the 7360 is actually somewhat different from that of the
+> > 7560.
+> >
+> > A new ipc_chnl_cfg is added specifically for the 7360. The new config
+> > updates channel 7 to be an AT port and removes the mbim interface, as
+> > it does not exist on the 7360. The config is otherwise left the same as
+> > the 7560. ipc_chnl_cfg_get is updated to switch between the two configs.
+> > In ipc_imem, a special case for the mbim port is removed as it no longer
+> > exists in the 7360 ipc_chnl_cfg.
+> >
+> > As a result of this, the second userspace AT port now functions whereas
+> > previously it was routed to the trace channel. Modem crashes ("confused
+> > phase", "msg timeout", "PORT open refused") resulting from garbage being
+> > sent to the modem are also fixed.
+>
+> What's the Fixes: tag for this one?
