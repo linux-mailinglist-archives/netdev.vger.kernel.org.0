@@ -2,93 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4193A5EAC89
-	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 18:30:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 333275EACCC
+	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 18:42:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229938AbiIZQaw convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 26 Sep 2022 12:30:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44462 "EHLO
+        id S229447AbiIZQl6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 12:41:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229824AbiIZQaS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 12:30:18 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C24FBE1C;
-        Mon, 26 Sep 2022 08:19:49 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1ocptT-0006F9-1V; Mon, 26 Sep 2022 17:19:39 +0200
-Date:   Mon, 26 Sep 2022 17:19:39 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
-        tgraf@suug.ch, urezki@gmail.com, Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, herbert@gondor.apana.org.au,
+        with ESMTP id S229749AbiIZQlK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 12:41:10 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E160D7C1FF;
+        Mon, 26 Sep 2022 08:28:46 -0700 (PDT)
+Date:   Mon, 26 Sep 2022 17:28:43 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1664206125;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9nbCVQlF5qlRYS1gBGpsvqLakPTcaKItqwHxbBmwhEU=;
+        b=l95NVTonaPZeEOkZ4+Q4TZ1DUvKec7KYHg9OvC+2mNm8V/+3fUl03BoBAuEofGOTSLlJc1
+        OfkbknPRAo22h48R6SCkRodReH3PRKLd57V3qA7yb+cjo9/R0VAeKRaenrXttAFAXAK/Tf
+        53LtHBoqE4sDR5TR43tKMI8EX8r95ZovjCsfGJnfFUtogbr4hmgR3/GmEOTsMdU5MfqkPZ
+        R0GcayhYMi+9lWM/FJX4mGS3UK0cvENZ0BuhejPpHlS4y40qtfXH8/sPpF+6NU+YDSnOgp
+        tRbVNZO8OC+Ul6apcXmAoAb1zrdp2gGlJMV2MNZ4eVGjVp1oFlBIKO6ZWfRCXw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1664206125;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9nbCVQlF5qlRYS1gBGpsvqLakPTcaKItqwHxbBmwhEU=;
+        b=olKpBUea9DZ42RA47FqvYpgoEm5m73lP7JG6MFSQ5veDZbxevd8Nlr14YrjeQMjjL8v3DX
+        ondOGzqBh1a9lyCw==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Vlastimil Babka <vbabka@suse.cz>
+Cc:     Uladzislau Rezki <urezki@gmail.com>,
+        Florian Westphal <fw@strlen.de>,
+        Michal Hocko <mhocko@suse.com>, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
-        Martin Zaharinov <micron10@gmail.com>,
-        Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org
-Subject: Re: [PATCH net] rhashtable: fix crash due to mm api change
-Message-ID: <20220926151939.GG12777@breakpoint.cc>
-References: <20220926083139.48069-1-fw@strlen.de>
- <YzFp4H/rbdov7iDg@dhcp22.suse.cz>
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        Martin Zaharinov <micron10@gmail.com>
+Subject: Re: [PATCH mm] mm: fix BUG with kvzalloc+GFP_ATOMIC
+Message-ID: <YzHFK01dNy5dKJDO@linutronix.de>
+References: <20220923103858.26729-1-fw@strlen.de>
+ <Yy20toVrIktiMSvH@dhcp22.suse.cz>
+ <20220923133512.GE22541@breakpoint.cc>
+ <Yy3GL12BOgp3wLjI@pc636>
+ <20220923145409.GF22541@breakpoint.cc>
+ <Yy3MS2uhSgjF47dy@pc636>
+ <76d0cb2b-a963-b867-4399-3e3c4828ecc4@suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <YzFp4H/rbdov7iDg@dhcp22.suse.cz>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <76d0cb2b-a963-b867-4399-3e3c4828ecc4@suse.cz>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Michal Hocko <mhocko@suse.com> wrote:
-> On Mon 26-09-22 10:31:39, Florian Westphal wrote:
-> > Martin Zaharinov reports BUG() in mm land for 5.19.10 kernel:
-> >  kernel BUG at mm/vmalloc.c:2437!
-> >  invalid opcode: 0000 [#1] SMP
-> >  CPU: 28 PID: 0 Comm: swapper/28 Tainted: G        W  O      5.19.9 #1
-> >  [..]
-> >  RIP: 0010:__get_vm_area_node+0x120/0x130
-> >   __vmalloc_node_range+0x96/0x1e0
-> >   kvmalloc_node+0x92/0xb0
-> >   bucket_table_alloc.isra.0+0x47/0x140
-> >   rhashtable_try_insert+0x3a4/0x440
-> >   rhashtable_insert_slow+0x1b/0x30
-> >  [..]
-> > 
-> > bucket_table_alloc uses kvzalloc(GPF_ATOMIC).  If kmalloc fails, this now
-> > falls through to vmalloc and hits code paths that assume GFP_KERNEL.
-> > 
-> > I sent a patch to restore GFP_ATOMIC support in kvmalloc but mm
-> > maintainers rejected it.
-> > 
-> > This patch is partial revert of
-> > commit 93f976b5190d ("lib/rhashtable: simplify bucket_table_alloc()"),
-> > to avoid kvmalloc for ATOMIC case.
-> > 
-> > As kvmalloc doesn't warn when used with ATOMIC, kernel will only crash
-> > once vmalloc fallback occurs, so we may see more crashes in other areas
-> > in the future.
-> > 
-> > Most other callers seem ok but kvm_mmu_topup_memory_cache looks like it
-> > might be affected by the same breakage, so Cc kvm@.
-> > 
-> > Reported-by: Martin Zaharinov <micron10@gmail.com>
-> > Fixes: a421ef303008 ("mm: allow !GFP_KERNEL allocations for kvmalloc")
-> > Link: https://lore.kernel.org/linux-mm/Yy3MS2uhSgjF47dy@pc636/T/#t
-> > Cc: Michal Hocko <mhocko@suse.com>
-> > Cc: Paolo Bonzini <pbonzini@redhat.com>
-> > Cc: kvm@vger.kernel.org
-> > Signed-off-by: Florian Westphal <fw@strlen.de>
-> 
-> Please continue in the original email thread until we sort out the most
-> reasonable solution for this.
+On 2022-09-26 17:03:48 [+0200], Vlastimil Babka wrote:
+> > Doing the "p = kmalloc(sizeof(*p), GFP_ATOMIC);" from an atomic context
+> > is also a problem nowadays. Such code should be fixed across the kernel
+> > because of PREEMPT_RT support.
 
-I've submitted a v2 using Michals proposed fix for kvmalloc api, if
-thats merged no fixes are required in the callers, so this rhashtable
-patch can be discarded.
+You should make sure that the context in question is atomic on
+PREEMPT_RT before fixing it. My guess here is that it is average the
+softirq (NAPI) callback which is fine.
+
+> But the "atomic context" here is different, no? Calling kmalloc() from IRQ
+> handlers AFAIK is ok as IRQ handlers are threaded on PREEMPT_RT. Calling it
+> inside an local_irq_disable() would be a problem on the other hand. But then
+> under e.g. spin_lock_irqsave() could be ok as those don't really disable
+> irqs on RT.
+
+correct.
+
+Sebastian
