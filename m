@@ -2,192 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1705D5EB422
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 00:06:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2507E5EB42D
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 00:09:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230136AbiIZWGA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 18:06:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34292 "EHLO
+        id S230150AbiIZWJs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 18:09:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229908AbiIZWFa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 18:05:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AEB1AE6E;
-        Mon, 26 Sep 2022 15:05:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 05E73B811CC;
-        Mon, 26 Sep 2022 22:05:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DAC0C433D6;
-        Mon, 26 Sep 2022 22:05:09 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="p0x5YAy1"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1664229906;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=g2d/KOy5STZq6TUCEdm7KBWJkEx7SxOt3t2eUWdbSRI=;
-        b=p0x5YAy1mEx2xJjfX+VSErZwLHrStA1Juk9J5QpcQQO5r8wY7qogwegXWpSfqsaT/RiS+s
-        6zDkny+4w5BphpnveXg1qt/SJrfvpdg5Mh7RhjN/dQ+SEu0dXV4lK3aziUlKczpn5JIh7F
-        V8oQwxJAsdeICvGewJ3cqxDBrogweYw=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 5cfdcae2 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Mon, 26 Sep 2022 22:05:06 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Sherry Yang <sherry.yang@oracle.com>,
-        Paul Webb <paul.x.webb@oracle.com>,
-        Phillip Goerl <phillip.goerl@oracle.com>,
-        Jack Vogel <jack.vogel@oracle.com>,
-        Nicky Veitch <nicky.veitch@oracle.com>,
-        Colm Harrington <colm.harrington@oracle.com>,
-        Ramanan Govindarajan <ramanan.govindarajan@oracle.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Tejun Heo <tj@kernel.org>,
-        Sultan Alsawaf <sultan@kerneltoast.com>, stable@vger.kernel.org
-Subject: [PATCH v2] random: use immediate per-cpu timer rather than workqueue for mixing fast pool
-Date:   Tue, 27 Sep 2022 00:04:57 +0200
-Message-Id: <20220926220457.1517120-1-Jason@zx2c4.com>
-In-Reply-To: <20220922165528.3679479-1-Jason@zx2c4.com>
-References: <20220922165528.3679479-1-Jason@zx2c4.com>
+        with ESMTP id S229605AbiIZWJp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 18:09:45 -0400
+Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A51D116E
+        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 15:09:41 -0700 (PDT)
+Received: by mail-il1-x12c.google.com with SMTP id d14so4260179ilf.2
+        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 15:09:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=Tcofh2eParKVCFfTU5ufAxTg6uY4Kus0F8zdnWHYYIg=;
+        b=Aq58PwRCaXZfPNg4YaGxYuvcojdnBOGLBwOcBYyieYctSEQw73G6W8n3+r2hG4fK3p
+         suNr5264F1H1TmCYQdDnJCawGbo1OAiSjAAj84ztGBHXzSjgTuX3d4M8glsqQXw0U9tV
+         Fnj+57ZZ7SA0/toa/x99xQ5qQXZc5miVK5SbpM/LL27Y7j7Jkjy2RUoW2+wa7FLESvou
+         jNDN0eS5qeBgd9uZXq5L8/n0wx8kiQBBgiDs3yZWwcdIQIJKNtQ9WH/mb7nT/zNU2twu
+         woMkrBqjBRWbtyJPfPIeSgjVX/oSfRCpVoe6chyy6/0RasHkjJhj5l459+B2zZAI4I++
+         A0XA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=Tcofh2eParKVCFfTU5ufAxTg6uY4Kus0F8zdnWHYYIg=;
+        b=4hT0Dav/FIGQC4yzFYW0yoqZu8Lcys7/MILJTGODfCXZtW4K0q1P7AGKgP1VKDcCQW
+         BvodhS4delVEg2sJa5GoyHxUbP7tejiDlt84EJbThXL2Y54vUBRW3UBLsnBG2RUHzGW2
+         zrf4LIBcFIif70wOeAA/nK66GJxp9Fwd4DKbavIOoF/nZGaYm8WxCdxETqz36y28xKey
+         cL8BJSKcSjZJ5oLN51sA2nw7+jKPRqx6HJt8/0CGD1MYwylD79vCB3xqLLo2ecGugTWa
+         OgSXleUW0wtiz/Zoz6qHer4RA35UoX1jA7ibELhYaZBoBgtMWcwZvTokqzBElynQ7WPU
+         SMZA==
+X-Gm-Message-State: ACrzQf2SKGEpC4FVO8oCg3K0yJ395aAebRoRfaAJlRLV8ksEo9jDi4lX
+        StFfPmywH7ScmiGSKYtn7FibmA==
+X-Google-Smtp-Source: AMsMyM4shf+d5xGDO0sWxUlNoCpHt8PoWqtcOLw6wY7RY03lKrA4P6MQG4WLa8qpPekrfJMCMy/h8A==
+X-Received: by 2002:a05:6e02:1a6e:b0:2f5:9aad:1e97 with SMTP id w14-20020a056e021a6e00b002f59aad1e97mr11535884ilv.37.1664230181120;
+        Mon, 26 Sep 2022 15:09:41 -0700 (PDT)
+Received: from localhost.localdomain ([98.61.227.136])
+        by smtp.gmail.com with ESMTPSA id z20-20020a027a54000000b003567503cf92sm7631600jad.82.2022.09.26.15.09.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Sep 2022 15:09:38 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     mka@chromium.org, evgreen@chromium.org, andersson@kernel.org,
+        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
+        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
+        elder@kernel.org, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 00/15] net: ipa: generalized register definitions
+Date:   Mon, 26 Sep 2022 17:09:16 -0500
+Message-Id: <20220926220931.3261749-1-elder@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Previously, the fast pool was dumped into the main pool peroidically in
-the fast pool's hard IRQ handler. This worked fine and there weren't
-problems with it, until RT came around. Since RT converts spinlocks into
-sleeping locks, problems cropped up. Rather than switching to raw
-spinlocks, the RT developers preferred we make the transformation from
-originally doing:
+This series is quite a bit bigger than what I normally like to send,
+and I apologize for that.  I would like it to get incorporated in
+its entirety this week if possible, and splitting up the series
+carries a small risk that wouldn't happen.
 
-    do_some_stuff()
-    spin_lock()
-    do_some_other_stuff()
-    spin_unlock()
+Each IPA register has a defined offset, and in most cases, a set
+of masks that define the width and position of fields within the
+register.  Most registers currently use the same offset for all
+versions of IPA.  Usually fields within registers are also the same
+across many versions.  Offsets and fields like this are defined
+using preprocessor constants.
 
-to doing:
+When a register has a different offset for different versions of
+IPA, an inline function is used to determine its offset.  And in
+places where a field differs between versions, an inline function is
+used to determine how a value is encoded within the field, depending
+on IPA version.
 
-    do_some_stuff()
-    queue_work_on(some_other_stuff_worker)
+Starting with IPA version 5.0, the number of IPA endpoints supported
+is greater than 32.  As a consequence, *many* IPA register offsets
+differ considerably from prior versions.  This increase in endpoints
+also requires a lot of field sizes and/or positions to change (such
+as those that contain an endpoint ID).
 
-This is an ordinary pattern done all over the kernel. However, Sherry
-noticed a 10% performance regression in qperf TCP over a 40gbps
-InfiniBand card. Quoting her message:
+Defining these things with constants is no longer simple, and rather
+than fill the code with one-off functions to define offsets and
+encode field values, this series puts in place a new way of defining
+IPA registers and their fields.  Note that this series creates this
+new scheme, but does not add IPA v5.0+ support.
 
-> MT27500 Family [ConnectX-3] cards:
-> Infiniband device 'mlx4_0' port 1 status:
-> default gid: fe80:0000:0000:0000:0010:e000:0178:9eb1
-> base lid: 0x6
-> sm lid: 0x1
-> state: 4: ACTIVE
-> phys state: 5: LinkUp
-> rate: 40 Gb/sec (4X QDR)
-> link_layer: InfiniBand
->
-> Cards are configured with IP addresses on private subnet for IPoIB
-> performance testing.
-> Regression identified in this bug is in TCP latency in this stack as reported
-> by qperf tcp_lat metric:
->
-> We have one system listen as a qperf server:
-> [root@yourQperfServer ~]# qperf
->
-> Have the other system connect to qperf server as a client (in this
-> case, it’s X7 server with Mellanox card):
-> [root@yourQperfClient ~]# numactl -m0 -N0 qperf 20.20.20.101 -v -uu -ub --time 60 --wait_server 20 -oo msg_size:4K:1024K:*2 tcp_lat
+An enumerated type will now define a unique ID for each IPA register.
+Each defined register will have a structure that contains its offset
+and its name (a printable string).  Each version of IPA will have an
+array of these register structures, indexed by register ID.
 
-Rather than incur the scheduling latency from queue_work_on, we can
-instead switch to running on the next timer tick, on the same core,
-deferrably so. This also batches things a bit more -- once per jiffy --
-which is probably okay now that mix_interrupt_randomness() can credit
-multiple bits at once. It still puts a bit of pressure on fast_mix(),
-but hopefully that's acceptable.
+Some "parameterized" registers are duplicated (this is not new).
+For example, each endpoint has an INIT_HDR register, and the offset
+of a given endpoint's INIT_HDR register is dependent on the endpoint
+number (the parameter).  In such cases, the register's "stride" is
+defined as the distance between two of these registers.
 
-Hopefully this restores performance from prior to the RT changes.
+If a register contains fields, each field will have a unique ID
+that's used as an index into an array of field masks defined for the
+register.  The register structure also defines the number of entries
+in this field array.
 
-Reported-by: Sherry Yang <sherry.yang@oracle.com>
-Reported-by: Paul Webb <paul.x.webb@oracle.com>
-Cc: Sherry Yang <sherry.yang@oracle.com>
-Cc: Phillip Goerl <phillip.goerl@oracle.com>
-Cc: Jack Vogel <jack.vogel@oracle.com>
-Cc: Nicky Veitch <nicky.veitch@oracle.com>
-Cc: Colm Harrington <colm.harrington@oracle.com>
-Cc: Ramanan Govindarajan <ramanan.govindarajan@oracle.com>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Tejun Heo <tj@kernel.org>
-Cc: Sultan Alsawaf <sultan@kerneltoast.com>
-Cc: stable@vger.kernel.org
-Fixes: 58340f8e952b ("random: defer fast pool mixing to worker")
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- drivers/char/random.c | 18 +++++++++++-------
- 1 file changed, 11 insertions(+), 7 deletions(-)
+When a register is to be used in code, its register structure will
+be fetched using function ipa_reg().  Other functions are then used
+to determine the register's offset, or to encode a value into one of
+the register's fields, and so on.
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 1cb53495e8f7..08bb46a50802 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -928,17 +928,20 @@ struct fast_pool {
- 	unsigned long pool[4];
- 	unsigned long last;
- 	unsigned int count;
--	struct work_struct mix;
-+	struct timer_list mix;
- };
- 
-+static void mix_interrupt_randomness(struct timer_list *work);
-+
- static DEFINE_PER_CPU(struct fast_pool, irq_randomness) = {
- #ifdef CONFIG_64BIT
- #define FASTMIX_PERM SIPHASH_PERMUTATION
--	.pool = { SIPHASH_CONST_0, SIPHASH_CONST_1, SIPHASH_CONST_2, SIPHASH_CONST_3 }
-+	.pool = { SIPHASH_CONST_0, SIPHASH_CONST_1, SIPHASH_CONST_2, SIPHASH_CONST_3 },
- #else
- #define FASTMIX_PERM HSIPHASH_PERMUTATION
--	.pool = { HSIPHASH_CONST_0, HSIPHASH_CONST_1, HSIPHASH_CONST_2, HSIPHASH_CONST_3 }
-+	.pool = { HSIPHASH_CONST_0, HSIPHASH_CONST_1, HSIPHASH_CONST_2, HSIPHASH_CONST_3 },
- #endif
-+	.mix = __TIMER_INITIALIZER(mix_interrupt_randomness, TIMER_DEFERRABLE)
- };
- 
- /*
-@@ -980,7 +983,7 @@ int __cold random_online_cpu(unsigned int cpu)
- }
- #endif
- 
--static void mix_interrupt_randomness(struct work_struct *work)
-+static void mix_interrupt_randomness(struct timer_list *work)
- {
- 	struct fast_pool *fast_pool = container_of(work, struct fast_pool, mix);
- 	/*
-@@ -1034,10 +1037,11 @@ void add_interrupt_randomness(int irq)
- 	if (new_count < 1024 && !time_is_before_jiffies(fast_pool->last + HZ))
- 		return;
- 
--	if (unlikely(!fast_pool->mix.func))
--		INIT_WORK(&fast_pool->mix, mix_interrupt_randomness);
- 	fast_pool->count |= MIX_INFLIGHT;
--	queue_work_on(raw_smp_processor_id(), system_highpri_wq, &fast_pool->mix);
-+	if (!timer_pending(&fast_pool->mix)) {
-+		fast_pool->mix.expires = jiffies;
-+		add_timer_on(&fast_pool->mix, raw_smp_processor_id());
-+	}
- }
- EXPORT_SYMBOL_GPL(add_interrupt_randomness);
- 
+Each version of IPA defines the set of registers that are available,
+including all fields for these registers.  The array of defined
+registers is set up at probe time based on the IPA version, and it
+is associated with the main IPA structure.
+
+					-Alex
+
+Alex Elder (15):
+  net: ipa: introduce IPA register IDs
+  net: ipa: use IPA register IDs to determine offsets
+  net: ipa: add per-version IPA register definition files
+  net: ipa: use ipa_reg[] array for register offsets
+  net: ipa: introduce ipa_reg()
+  net: ipa: introduce ipa_reg field masks
+  net: ipa: define COMP_CFG IPA register fields
+  net: ipa: define CLKON_CFG and ROUTE IPA register fields
+  net: ipa: define some more IPA register fields
+  net: ipa: define more IPA register fields
+  net: ipa: define even more IPA register fields
+  net: ipa: define resource group/type IPA register fields
+  net: ipa: define some IPA endpoint register fields
+  net: ipa: define more IPA endpoint register fields
+  net: ipa: define remaining IPA register fields
+
+ drivers/net/ipa/Makefile             |    2 +
+ drivers/net/ipa/ipa.h                |    2 +
+ drivers/net/ipa/ipa_cmd.c            |    7 +-
+ drivers/net/ipa/ipa_endpoint.c       |  378 ++++++----
+ drivers/net/ipa/ipa_interrupt.c      |   45 +-
+ drivers/net/ipa/ipa_main.c           |  164 +++--
+ drivers/net/ipa/ipa_mem.c            |   16 +-
+ drivers/net/ipa/ipa_reg.c            |   95 +++
+ drivers/net/ipa/ipa_reg.h            | 1011 ++++++++++++--------------
+ drivers/net/ipa/ipa_resource.c       |   63 +-
+ drivers/net/ipa/ipa_table.c          |   27 +-
+ drivers/net/ipa/ipa_uc.c             |    9 +-
+ drivers/net/ipa/reg/ipa_reg-v3.1.c   |  478 ++++++++++++
+ drivers/net/ipa/reg/ipa_reg-v3.5.1.c |  456 ++++++++++++
+ drivers/net/ipa/reg/ipa_reg-v4.11.c  |  512 +++++++++++++
+ drivers/net/ipa/reg/ipa_reg-v4.2.c   |  456 ++++++++++++
+ drivers/net/ipa/reg/ipa_reg-v4.5.c   |  533 ++++++++++++++
+ drivers/net/ipa/reg/ipa_reg-v4.9.c   |  509 +++++++++++++
+ 18 files changed, 3921 insertions(+), 842 deletions(-)
+ create mode 100644 drivers/net/ipa/reg/ipa_reg-v3.1.c
+ create mode 100644 drivers/net/ipa/reg/ipa_reg-v3.5.1.c
+ create mode 100644 drivers/net/ipa/reg/ipa_reg-v4.11.c
+ create mode 100644 drivers/net/ipa/reg/ipa_reg-v4.2.c
+ create mode 100644 drivers/net/ipa/reg/ipa_reg-v4.5.c
+ create mode 100644 drivers/net/ipa/reg/ipa_reg-v4.9.c
+
 -- 
-2.37.3
+2.34.1
 
