@@ -2,147 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ACCA55E9975
-	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 08:30:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54CED5E99A8
+	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 08:38:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233354AbiIZGaL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 02:30:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40614 "EHLO
+        id S233480AbiIZGiT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 02:38:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232759AbiIZGaJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 02:30:09 -0400
-Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01on2112.outbound.protection.outlook.com [40.107.114.112])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 125BF17E2D;
-        Sun, 25 Sep 2022 23:30:08 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YfAyO/ESM7YF2gLsVficMcyS3XEXqs3q0KZYr/9ONXjzRtpylXGK6RODWjPA+uHPKnpyWcfQ15FNo+jOFcytkJCzSM5vE6LzA68ngPl6bqo8cLutSd6oAY9RtZGFuPksU5eJTEZ9cShdc3hS1nYLKY+niwtAYAEjHAtrFVg8GVcXpl2CZaW2ePxrXoL3tWhTtZWDfJAXX7X7XGD2A+xhD2kOs/A6DIhkfImCR0oBrQoZhqBcA0PweM8Z8dxVOLY25szMIiALmyRYGu6E0CmOI1QrUyX2kbiBnoEF4W67/0rwgZ7ansv4CHhWvsEjEI/vsyQFd67tSMZqtlbXRA4msQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5lAYIThU4EXZPrHLjMvUJn1nW13PzdzCJU+YJMiVCPw=;
- b=RrwpivqUf9deL32qwIRfEKwC+vljbE4tMmKuY4kfW4jwEdlWdYA7Bj9lrRHIbpQF+1f9dkFxa4vFo0n9pfLB6awOd30L/02HFbU3isZ6Aj9Wq5SGn7AS00TaeuXQ/d9/Py+Y97R5ZkNU2GJUpwIvTEHCJUDgFmWXS2Q4F3heWvuwho+ssiKdB8VwpFX2osdIHBexwKchUPHpNoEuf9dK9ZvZL2jp0mWsEyfxaDZR1b6FzLLoBBaLRWszwQrFfKGJBtwVBbH6PjZsJj3eBGnICRxN5CJctLpK0S+UVBwv9AgMRN5zlPmZcuDzweIxLN40M4LVRDgRezGtNZWxfvX+Xg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5lAYIThU4EXZPrHLjMvUJn1nW13PzdzCJU+YJMiVCPw=;
- b=owvS/boncmRD0VPltjwDGwhM47FGmcQJCVN9CNA1egu8bMHJzKId9Lx0e/77GUlTzM8dMm3XLB3T+Udi5rkDoeH2oGeTMH3vN4K01I8xOC2azR6jflFqMqSpmG3XRha9fqzFtVlC95GsFBz5jRcMT2coVIg6oug0T14PgskhhY0=
-Received: from TYBPR01MB5341.jpnprd01.prod.outlook.com
- (2603:1096:404:8028::13) by TYWPR01MB9710.jpnprd01.prod.outlook.com
- (2603:1096:400:230::8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.25; Mon, 26 Sep
- 2022 06:30:06 +0000
-Received: from TYBPR01MB5341.jpnprd01.prod.outlook.com
- ([fe80::2991:1e2d:e62c:37d0]) by TYBPR01MB5341.jpnprd01.prod.outlook.com
- ([fe80::2991:1e2d:e62c:37d0%3]) with mapi id 15.20.5654.025; Mon, 26 Sep 2022
- 06:30:06 +0000
-From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Subject: RE: [PATCH v3 2/3] net: ethernet: renesas: Add Ethernet Switch driver
-Thread-Topic: [PATCH v3 2/3] net: ethernet: renesas: Add Ethernet Switch
- driver
-Thread-Index: AQHYzkQbCGZNTw1MNUuaNx/SR8stKK3sUCGAgAT19/A=
-Date:   Mon, 26 Sep 2022 06:30:05 +0000
-Message-ID: <TYBPR01MB5341D7BE09D2E76E03A26110D8529@TYBPR01MB5341.jpnprd01.prod.outlook.com>
-References: <20220922052803.3442561-1-yoshihiro.shimoda.uh@renesas.com>
-        <20220922052803.3442561-3-yoshihiro.shimoda.uh@renesas.com>
- <20220922194359.3416a6a2@kernel.org>
-In-Reply-To: <20220922194359.3416a6a2@kernel.org>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=renesas.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: TYBPR01MB5341:EE_|TYWPR01MB9710:EE_
-x-ms-office365-filtering-correlation-id: 3b878e61-dc07-4e91-23ec-08da9f888d5d
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: cKSXHhKDadVvagV1XHA82vWNc9cKITyZWZJEB+tTsV2gQfPzp97F9nRjsLWVdH8ODXbgZBtkqtY5mYwhlzLykejC8EmBEm+84Y507VYao6iYGwOFM4Nip4BSfcO4OcExwAgisZTpb+A2qDQu7i0r3cR2LpnyVtX9g8IUYHXEqdLnbecuC2EQYSnCazSeZZx+u1cIzFuzs+w+UBhhdNzx2FbUEvPFaiC/dxF3bXTseJUo0HCb6lh/9LWmvbF87YUUiAIDhkv1lGq1N1C461DxvDwSzz88/fre7t6ab/HC3d6z2uvl0iFKnSPNNEiERpa0IOGM1eF3NzyNO9tJgMnTfFaicz+oiRWmxaYm/7eaKOhHkHjFncippBMrKxpANjELExfeEZo8mtENCjtm8BylqZLlg3xLk9FJx9ll7N+6zY2XixAWZYXAhA3p8EKD+ux496beKHGu2VTFvW7dtQi6tLwyB6B6u1Ob9vL44U7qtFDkXnTldFgrvb7jrcEWFoEG5Hgk6EGJCUW97jUBwRG+BLrP1GFrcAGCNwypmifiZ7dhxq/iaLEhZJHYQ9n3gFD2yJvSjqXi5Jh1pxfblhkhmuXKI9BAdwk2avO1heEtWEBpHlc8eiDmCl/SkVHLwrBAif0/L3DwRD/X6BPafmU/10/D+f0PTiKxRf4KuAjejB8Q4RUscLmt0COP0zHDj3Qcl/C+3GF62Djt1u8xn/cjcy7QDV/a5Uh9l0u3pNC23Hf2p5CIXR6Df53j+Seypk74wMyosJVBSVTB88vKUi6bwA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYBPR01MB5341.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(346002)(376002)(39860400002)(396003)(366004)(451199015)(66946007)(4744005)(66556008)(66446008)(8936002)(64756008)(66476007)(5660300002)(7696005)(52536014)(33656002)(38100700002)(86362001)(122000001)(2906002)(38070700005)(6506007)(55016003)(478600001)(71200400001)(9686003)(41300700001)(186003)(83380400001)(8676002)(4326008)(76116006)(316002)(54906003)(6916009);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?HvVIl8dNwEnCoxJL1E6dBgvVnStkkVHBuSfmc/tOiQd6yF4F8lX0w4IW9sHQ?=
- =?us-ascii?Q?aqNo6j0qPxSB4whjG0lFSY3LwXxkUJjhveNAbZ4whQ1Sx+DAK53yNVHPomAl?=
- =?us-ascii?Q?aXR9VCUP+/lh/TRHRvaUuFEkJui8QArNqCr7XSigSQeSXTmbdkZJRTXnisl6?=
- =?us-ascii?Q?DyFsA0gzNha7tNR6imXWDEKtOvgl0BHcWBDuwdmKBnJkNKkVip5dnhS18UuT?=
- =?us-ascii?Q?BQudToVy2jnKw1Ktu77dFHDD9jErBD9+K8L1dqbStVqXdx4tv8ENT3lHHCdK?=
- =?us-ascii?Q?VcsHL84IsocTreGj24WFM5UQyTfOVMScfbBEwu6k57y2lqg/XT/LbBXWMAQr?=
- =?us-ascii?Q?P2WJU28Wgm77kCdYbdvlMCo66liBhsCvvG6Bf0s4+rkkkQG8Vyz5bFiORGhI?=
- =?us-ascii?Q?7MrQfVzXp07tNtd9Rg+OMTg1GOHTzqmrb7dayROSGD5V6XUFL+AVEcggD6c2?=
- =?us-ascii?Q?YUG/ADU2wJmc9sWWrrdVvCXHMbA7UcQIInW3zhkZlRCTMnWoGvuKlXcW6iKG?=
- =?us-ascii?Q?0C27Zoda5D+P1dDxjmFUC0rDIWgiCApGYuZ4EBuN1TH3BiBw+l+dOC8tSoNM?=
- =?us-ascii?Q?eyAlqE4bk2sVPbD4ExXeocqGkqf/SY40tmBMHDQgD8Vdn1jnsWPUy82T3+R5?=
- =?us-ascii?Q?1V+aOQ49p6zuwN+i/DOySIoq3qWxLuvNVxqu0FgHytkl4NMtJ2NQ+67+zyfy?=
- =?us-ascii?Q?ZHCrsWFMvfmxxT/S4zrl8c4iNLerCO7UnyQnHfGQ53sfPKecOlHo6qvizBAa?=
- =?us-ascii?Q?dfxCKJS7c+m+T7yZtyjHakwUNY0JcGWgjXkLZSJHU/r4FdCHyArsVE+Ah/YK?=
- =?us-ascii?Q?Vf1yR1aRy2AN/leUkbLYxtTyYSDyhD45sNJIpE/5PE5IVAnTs3TYAOq4L/Rs?=
- =?us-ascii?Q?7Tq4SEhL4ZC8KouL81SlUpB8+p9uJB2rlvgOUn32wqnNfp+5LuLL3NqQwCPN?=
- =?us-ascii?Q?s9yGMN5+GcpFGyaDFZxLk90OxIx64Bax8tyevrak96Du/4YgebTMkdv2K4gf?=
- =?us-ascii?Q?0pbWaytiqFFlNEv2JZZ7leNCQ1I76ZYeYfZgSuOq1hepMoYBMMDid9arUDTX?=
- =?us-ascii?Q?xKxxeVs47qjayD4xAfmA2GM8VCH1oTBmRtTsW2fyW8pfW/2VzDbWm1NDvctW?=
- =?us-ascii?Q?M3tuIoLFv5pHRpex29VTJOzihoej996NDE3ADVe2DHnzY7cAgEfapeew3L8D?=
- =?us-ascii?Q?jO2RGIVQ4XRYZD2Kccdyt4hXhBKVTep6YlRMjQhSvk8ATP+gfwE58K/f1I07?=
- =?us-ascii?Q?aZMSVfsfF+znR/SoPbPYaZIYIsT6E7XCbDRZRifh/ss8FCBiTomgXRkDMaIs?=
- =?us-ascii?Q?Ii0BYaSguNd3X/4l9C9NbGOMxrZyMdEdZUvfbXIkM6Ck4TvY8WXx63oCu9ob?=
- =?us-ascii?Q?nT539xg+mupOozuY/Fjjc8qx4jyYhUd2/Z2A8E95o3qi1T208jNfo1nw8qpF?=
- =?us-ascii?Q?aVYx5kUiOqtvN3eENpfYfXCPTrzJ8oIG3Uf+RjXsrmYo7O5qC4GET8gw78V+?=
- =?us-ascii?Q?Dsp1vRpm8LV1ITkENbVgsltL9LHRGYXD63fC0NLFDrf+vc8AKfjkUdp6yPzx?=
- =?us-ascii?Q?qnQnScWruuhvucXA8QcsItAMXkgss+9dus69Rz+HPR2sDEYRvD7Es7x3Dkzl?=
- =?us-ascii?Q?NG7hOrjoesx6/8mZ8xig1zV904+JgzvhksVUxJS9nvvnaxnWH0Kolk68OQa1?=
- =?us-ascii?Q?qygK7g=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S233473AbiIZGiS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 02:38:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DC75F42
+        for <netdev@vger.kernel.org>; Sun, 25 Sep 2022 23:38:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 403DFB818D6
+        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 06:38:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21358C433D6;
+        Mon, 26 Sep 2022 06:38:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664174294;
+        bh=FTyjIIrlwr5V4b25coUjFY2bjKDMAvepiDkqaaNXx70=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qPIUw4aqWi/54ZRJqCmZo6Dcjv/w+42/lhPTmu+JumsOKBvXfPTd13uJHNJ+Nx5cS
+         BtWnNzv5JWVB8uJ3/a+LWmNJ3QWvroOj0/AkBiGy2/V7aPsnGOtR+qFe5wO6rB39ZK
+         J2J/2tH+VjW1rrlD75lqBO5uBH1FVNN1GgJ9fI8NWeuxxxe/QMITWy4n+YBMr26MPn
+         QJ0yGJ6Ul5jqO0iZRcfqdjdlUtsJIiPUteTEuy3CcQdHQVUpYea4scI9F+iPAXifyn
+         UU1lVCKhmzbdmPMrmjak0BlApJKTRvBnY4utHBd46i+pQdAXzL3YgF2zDM/9N8GWG8
+         L0dLZJTpdVqWQ==
+Date:   Mon, 26 Sep 2022 09:38:10 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>, Raed Salem <raeds@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Bharat Bhushan <bbhushan2@marvell.com>
+Subject: Re: [PATCH RFC xfrm-next v3 6/8] xfrm: enforce separation between
+ priorities of HW/SW policies
+Message-ID: <YzFI0kxN3k2EZw0v@unreal>
+References: <cover.1662295929.git.leonro@nvidia.com>
+ <1b9d865971972a63eaa2c076afd71743952bd3c8.1662295929.git.leonro@nvidia.com>
+ <20220925093454.GU2602992@gauss3.secunet.de>
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TYBPR01MB5341.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3b878e61-dc07-4e91-23ec-08da9f888d5d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Sep 2022 06:30:05.9125
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: NBvxcsaDvB3PfaqZNJTmZlS69rYxfqRH4zXuikzFYradmS2DVB2aL+35r1wTb5/bgprqMXvdhNGYsooMBrLyI9npLViSpwRG6BSg56f6hiQuA5OplwiAqFKJOBm0aqIo
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYWPR01MB9710
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220925093454.GU2602992@gauss3.secunet.de>
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
+On Sun, Sep 25, 2022 at 11:34:54AM +0200, Steffen Klassert wrote:
+> On Sun, Sep 04, 2022 at 04:15:40PM +0300, Leon Romanovsky wrote:
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> > 
+> > Devices that implement IPsec full offload mode offload policies too.
+> > In RX path, it causes to the situation that HW can't effectively handle
+> > mixed SW and HW priorities unless users make sure that HW offloaded
+> > policies have higher priorities.
+> > 
+> > In order to make sure that users have coherent picture, let's require
+> > that HW offloaded policies have always (both RX and TX) higher priorities
+> > than SW ones.
+> > 
+> > To do not over engineer the code, HW policies are treated as SW ones and
+> > don't take into account netdev to allow reuse of same priorities for
+> > different devices.
+> 
+> I think we should split HW and SW SPD (and maybe even SAD) and priorize
+> over the SPDs instead of doing that in one single SPD. Each NIC should
+> maintain its own databases and we should do the lookups from SW with
+> a callback. 
 
-> From: Jakub Kicinski, Sent: Friday, September 23, 2022 11:44 AM
->=20
-> On Thu, 22 Sep 2022 14:28:02 +0900 Yoshihiro Shimoda wrote:
-> > Add Renesas Ethernet Switch driver for R-Car S4-8 to be used as an
-> > ethernet controller.
->=20
-> Looks like we have a lot of sparse warnings here.
->=20
-> Please try building the module with W=3D1 C=3D1 and make sure
-> it builds cleanly.
+I don't understand how will it work and scale.
 
-I got it. I'll fix the warnings.
+Every packet needs to be classified if it is in offloaded path or not.
+To ensure that, we will need to have two identifiers: targeted device
+(part of skb, so ok) and relevant SP/SA.
 
-Best regards,
-Yoshihiro Shimoda
+The latter is needed to make sure that we perform lookup only on
+offloaded SP/SA. It means that we will do lookup twice now. First
+to see if SP/SA is offloaded and second to see if it in HW.
 
+HW lookup is also misleading name, as the lookup will be in driver code
+in very similar way to how SADB managed for crypto mode. It makes no
+sense to convert data from XFRM representation to HW format, execute in
+HW and convert returned result back. It will be also slow because lookup
+of SP/SA based on XFRM properties is not datapath.
+
+In any case, you will have double lookup. You will need to query XFRM
+core DBs and later call to driver DB or vice versa.
+
+Unless you want to perform HW lookup always without relation to SP/SA
+state and hurt performance for non-offloaded path.
+
+> With the current approach, we still do the costly full
+> policy and state lookup on the TX side in software. On a 'full offload'
+> that should happen in HW too.
+
+In proposed approach, you have only one lookup which is better than two.
+I'm not even talking about "quality" of driver lookups implementations.
+
+> Also, that will make things easier with tunnel mode whre we can have overlapping
+> traffic selectors.
+
+Can we please put tunnel mode aside? It is a long journey.
+
+> 
+> We can keep a HW SPD in software as a fallback for devices that don't
+> support the offloaded lookup, but on the long run lookups for the  RX
+> anf TX path should happen in HW.
+
+I doubt about it.
+
+> 
