@@ -2,167 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BADF35EB4A7
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 00:40:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DB1E5EB4F8
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 01:02:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229896AbiIZWkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 18:40:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59304 "EHLO
+        id S230166AbiIZXCa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 19:02:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229912AbiIZWkb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 18:40:31 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83A2851427;
-        Mon, 26 Sep 2022 15:40:29 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id c7so9031510ljm.12;
-        Mon, 26 Sep 2022 15:40:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=y72XdXz6R5ZX/ARjJcZ26pw4EoyPBrU9yVa6+CTk8aU=;
-        b=MUbphOcrpdLt5Iomx0drL3eOcQehL/fsyiEdAkz7QzmABbebFY7hoTuj00cvws+kQb
-         xdkQ7b5thEBkfj+yxxLT2UtP/Jlkz1uhSvDSgbkTR7NPFW8LG0NmyQB4gr/YmngT3CdE
-         oZKo3e09DksH1ZBc0B/lYsVvf8l99rwiHoHE8K1DPOU7wP3qn+38DPYtARw/uDpIqJws
-         kFyEkWHl4TFB/zConA/M2BLF+dxBVsC4VCgis8TNOSaH/XoKG5FdqRt3bdUfptxQY+pp
-         5AkIxUrWdYm8oOS3DNXwumRi/Pp1I+3aXZ1ig1ad9KVWTsr23F5TzvcRMaWzoXMl/wNY
-         RzUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=y72XdXz6R5ZX/ARjJcZ26pw4EoyPBrU9yVa6+CTk8aU=;
-        b=EoJ5o9IGyFaPCDv8AiHT9Y8DU+TRtrLfuVdfF5pyVLQwREwbnefB/aUxJG+wxvoe+L
-         0NVmhABjjBDi6YSPsZpaIs9T3YEpaZwZWh5lolzgNPg9L5H7/nkbyuoEn7YzqEZMjaZK
-         oVUX6uKlhwOxveeTO0frxgDtp6z01o/jUOiyCrw1Lsr7qgGRZcGipzXT+KlU4qePPFZx
-         zcTnKS+aCP+mm5ehNfU1ZWw8AuA7kkzsGmEkAAl/diMjyBMvz0Gfwcny/mjeYNDJcVTk
-         lpPGR4B38hxzRCHerD4p6hB83tI0neSYilspJxmj2gxLDI5hn5bdsksjT8DzGAKzW7AD
-         SYyg==
-X-Gm-Message-State: ACrzQf2Ffzuj/BhwGCmIP7jZAJ7D5E3Ax3N2ztvCUbC25d4U15AyvldZ
-        uLWQG+Jz2UJKTdjjeexZbubH9oOlg5yBU5jyVm8=
-X-Google-Smtp-Source: AMsMyM5W3/lV0mq0BREkCl59rHi1NZjUjoS6a/j3YY+f9eMLjaOBimG9gR98iWI/mtzQCNT2AD7QEJIr4upKEDPk1AI=
-X-Received: by 2002:a2e:a884:0:b0:25d:d8a2:d18c with SMTP id
- m4-20020a2ea884000000b0025dd8a2d18cmr7917320ljq.305.1664232027695; Mon, 26
- Sep 2022 15:40:27 -0700 (PDT)
+        with ESMTP id S229779AbiIZXC3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 19:02:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DBD3A6C32;
+        Mon, 26 Sep 2022 16:02:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B4848B815A2;
+        Mon, 26 Sep 2022 23:02:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBD04C433C1;
+        Mon, 26 Sep 2022 23:02:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664233345;
+        bh=5dChttAHV31mKU5I2NgaQQKiJXkhkhhDNgOij7T3c9Y=;
+        h=Date:From:To:Cc:Subject:From;
+        b=MR1D7pcp2gGikSxBXu28M3Ea1TFbxRqrIFnKiG843hTEk9Yy0ZGZ7KYMIaIz1U74V
+         Z+KgP2tppCHkHY3kq1FtEFQoMlBCPN7JJj5tVsma2AVhdi1qSZ33yodiwri+mSrBrg
+         RGD8w9NZ6e6MyN03WrII8BmS1wn2p+6TFP6jJYyCfrJRrIg2GAqpQBNkN05G3r6QxD
+         WpweY2+iRKuGnAG5pA69CbPlXnd/bD85uMBaH8lj/mhWrmQvtr+vY3ZKmyIysAh9VB
+         D4jBQm+eHUtSrJJD1kUuXi+J6Gek0E0vaZh10N7se7UvDRMDwyKPzecL6ZH34tTeXT
+         uRw97VLopjl6g==
+Date:   Mon, 26 Sep 2022 18:02:20 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] netns: Replace zero-length array with
+ DECLARE_FLEX_ARRAY() helper
+Message-ID: <YzIvfGXxfjdXmIS3@work>
 MIME-Version: 1.0
-References: <CABBYNZLdvOzTwnHp4GX9PiXVMr2SDjD1NCXLRJw1_XLvSuZyjw@mail.gmail.com>
- <20220926220212.3170191-1-iam@sung-woo.kim>
-In-Reply-To: <20220926220212.3170191-1-iam@sung-woo.kim>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Mon, 26 Sep 2022 15:40:15 -0700
-Message-ID: <CABBYNZ+C_N=vSE6oUn2rDHq5EHCFtAAjtohbcpjMtKwwgqpqUQ@mail.gmail.com>
-Subject: Re: [PATCH] Bluetooth: L2CAP: fix an illegal state transition from BT_DISCONN
-To:     Sungwoo Kim <iam@sung-woo.kim>
-Cc:     davem@davemloft.net, edumazet@google.com, johan.hedberg@gmail.com,
-        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-kernel@vger.kernel.org, marcel@holtmann.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Kim,
+Zero-length arrays are deprecated and we are moving towards adopting
+C99 flexible-array members, instead. So, replace zero-length arrays
+declarations in anonymous union with the new DECLARE_FLEX_ARRAY()
+helper macro.
 
-On Mon, Sep 26, 2022 at 3:06 PM Sungwoo Kim <iam@sung-woo.kim> wrote:
->
-> Signed-off-by: Sungwoo Kim <iam@sung-woo.kim>
-> ---
->  net/bluetooth/l2cap_core.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
->
-> diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-> index 2c9de67da..029de9f35 100644
-> --- a/net/bluetooth/l2cap_core.c
-> +++ b/net/bluetooth/l2cap_core.c
-> @@ -4294,13 +4294,13 @@ static int l2cap_connect_create_rsp(struct l2cap_conn *conn,
->         mutex_lock(&conn->chan_lock);
->
->         if (scid) {
-> -               chan = __l2cap_get_chan_by_scid(conn, scid);
-> +               chan = l2cap_get_chan_by_scid(conn, scid);
->                 if (!chan) {
->                         err = -EBADSLT;
->                         goto unlock;
->                 }
->         } else {
-> -               chan = __l2cap_get_chan_by_ident(conn, cmd->ident);
-> +               chan = l2cap_get_chan_by_ident(conn, cmd->ident);
->                 if (!chan) {
->                         err = -EBADSLT;
->                         goto unlock;
-> @@ -4336,6 +4336,7 @@ static int l2cap_connect_create_rsp(struct l2cap_conn *conn,
->         }
->
->         l2cap_chan_unlock(chan);
-> +       l2cap_chan_put(chan);
->
->  unlock:
->         mutex_unlock(&conn->chan_lock);
-> --
-> 2.25.1
+This helper allows for flexible-array members in unions.
 
-Not quite right, we cannot lock conn->chan_lock since the likes of
-l2cap_get_chan_by_scid will also attempt to lock it:
+Link: https://github.com/KSPP/linux/issues/193
+Link: https://github.com/KSPP/linux/issues/225
+Link: https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ include/net/netns/generic.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-index 770891f68703..4726d8979276 100644
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -4293,26 +4293,18 @@ static int l2cap_connect_create_rsp(struct
-l2cap_conn *conn,
-        BT_DBG("dcid 0x%4.4x scid 0x%4.4x result 0x%2.2x status 0x%2.2x",
-               dcid, scid, result, status);
-
--       mutex_lock(&conn->chan_lock);
--
-        if (scid) {
--               chan = __l2cap_get_chan_by_scid(conn, scid);
--               if (!chan) {
--                       err = -EBADSLT;
--                       goto unlock;
--               }
-+               chan = l2cap_get_chan_by_scid(conn, scid);
-+               if (!chan)
-+                       return -EBADSLT;
-        } else {
--               chan = __l2cap_get_chan_by_ident(conn, cmd->ident);
--               if (!chan) {
--                       err = -EBADSLT;
--                       goto unlock;
--               }
-+               chan = l2cap_get_chan_by_ident(conn, cmd->ident);
-+               if (!chan)
-+                       return -EBADSLT;
-        }
-
-        err = 0;
-
--       l2cap_chan_lock(chan);
--
-        switch (result) {
-        case L2CAP_CR_SUCCESS:
-                l2cap_state_change(chan, BT_CONFIG);
-@@ -4338,9 +4330,7 @@ static int l2cap_connect_create_rsp(struct
-l2cap_conn *conn,
-        }
-
-        l2cap_chan_unlock(chan);
--
--unlock:
--       mutex_unlock(&conn->chan_lock);
-+       l2cap_chan_put(chan);
-
-        return err;
- }
-
-
+diff --git a/include/net/netns/generic.h b/include/net/netns/generic.h
+index 7ce68183f6e1..00c399edeed1 100644
+--- a/include/net/netns/generic.h
++++ b/include/net/netns/generic.h
+@@ -33,7 +33,7 @@ struct net_generic {
+ 			struct rcu_head rcu;
+ 		} s;
+ 
+-		void *ptr[0];
++		DECLARE_FLEX_ARRAY(void *, ptr);
+ 	};
+ };
+ 
 -- 
-Luiz Augusto von Dentz
+2.34.1
+
