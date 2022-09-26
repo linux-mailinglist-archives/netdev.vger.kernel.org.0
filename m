@@ -2,67 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F38F55EAC42
-	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 18:17:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B5C95EAC74
+	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 18:27:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236188AbiIZQRL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 12:17:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46068 "EHLO
+        id S231409AbiIZQ1U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 12:27:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236157AbiIZQQn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 12:16:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0CFA7E315;
-        Mon, 26 Sep 2022 08:05:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2364860E8A;
-        Mon, 26 Sep 2022 15:05:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 651C7C433D7;
-        Mon, 26 Sep 2022 15:05:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664204747;
-        bh=Aov3/htKvwTgeLQbsF1d8tAKy0N1QUy2ectm30sdcNw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ihe0QJe+e0jIrJwHJOGn1goH+ihHG3gLY3A1T+UkRE83krXWNZ+U7R7QqBB7aiaky
-         T76XyMrw13QTxm7kjfOC8NpK8MAetVPB2+IrwrkkuQX95Eh3o7Z8rS5/aY2r08vKyd
-         seYv30vLQEja3ARXi97JNIjGHYRCaLTcFXV9Ffh4b0uDvm3JtwmzqmvD8lVXXFN0tB
-         d6pIUBs6zHLG2xmYQ7HmGb4xqnyFIKonqJ1rhHGhVBAwhW8Eu8DTZkIuja71sf0HjK
-         m6PSn+YU8EdUHvHOuQ1nXZiYBkptaoXRgwB4ew0ukQua4brQkhPCjSiE8NNsbdsbj1
-         xumf0pWjCpcdA==
-Date:   Mon, 26 Sep 2022 08:05:45 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     <Divya.Koppera@microchip.com>
-Cc:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <richardcochran@gmail.com>, <UNGLinuxDriver@microchip.com>
-Subject: Re: [patch v2 net-next] net: phy: micrel: PEROUT support in lan8814
-Message-ID: <20220926080545.64f5d08d@kernel.org>
-In-Reply-To: <CO1PR11MB47713D1140834D937435A6CBE2529@CO1PR11MB4771.namprd11.prod.outlook.com>
-References: <20220916121809.16924-1-Divya.Koppera@microchip.com>
-        <CO1PR11MB47713D1140834D937435A6CBE2529@CO1PR11MB4771.namprd11.prod.outlook.com>
+        with ESMTP id S230380AbiIZQ0v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 12:26:51 -0400
+X-Greylist: delayed 94 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 26 Sep 2022 08:15:33 PDT
+Received: from mxout3.routing.net (mxout3.routing.net [IPv6:2a03:2900:1:a::8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D3347E015;
+        Mon, 26 Sep 2022 08:15:32 -0700 (PDT)
+Received: from mxbox3.masterlogin.de (unknown [192.168.10.78])
+        by mxout3.routing.net (Postfix) with ESMTP id 60F71604B1;
+        Mon, 26 Sep 2022 15:08:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
+        s=20200217; t=1664204886;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=xZG8JkRaZLK232kDPLAOmHeKNwxxMI/j9n7ukbBYAW0=;
+        b=s7SVLJJEfwZODlXq4TDif6GkRLd/BTItP/PGcCqfAYRBoFlTPD258SCsJ00KGW9KyA30B6
+        EQLEANnwyYPg7HpgU5ZiRhGmk1enjE9QTn0f/WMjlQKEfCUECDjLtWptAiEj+mcofcbEBU
+        GZBWbxMWoNDf5A7oajch6PbbW58b3lA=
+Received: from frank-G5.. (fttx-pool-217.61.154.230.bambit.de [217.61.154.230])
+        by mxbox3.masterlogin.de (Postfix) with ESMTPSA id 77D0C360037;
+        Mon, 26 Sep 2022 15:08:05 +0000 (UTC)
+From:   Frank Wunderlich <linux@fw-web.de>
+To:     linux-usb@vger.kernel.org
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
+        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Johan Hovold <johan@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] Add Support for Dell 5811e with usb-id 0x413c:0x81c2
+Date:   Mon, 26 Sep 2022 17:07:38 +0200
+Message-Id: <20220926150740.6684-1-linux@fw-web.de>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Mail-ID: 46a954e0-9594-4660-91c0-7275a392d480
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 26 Sep 2022 04:46:35 +0000 Divya.Koppera@microchip.com wrote:
-> Gentle ping.
+From: Frank Wunderlich <frank-w@public-files.de>
 
-Who are you pinging? The patch is in "Needs ACK" state, try to find
-someone to review it. Better still try reviewing patches posted by
-others, I don't see a single review or ack from you in the history.
-Just saying "ping" to the list that owes you nothing is really low
-effort.
+Add new USB-id for dell branded EM7455 with this usb-id in qcserial and qmi
+driver.
+MBIM-mode works out of the box with 6.0-rc6.
 
-I'm tossing your patch from patchwork. Go review something, then
-repost.
+Frank Wunderlich (2):
+  USB: serial: qcserial: add new usb-id for Dell branded EM7455
+  net: usb: qmi_wwan: Add new usb-id for Dell branded EM7455
+
+ drivers/net/usb/qmi_wwan.c    | 1 +
+ drivers/usb/serial/qcserial.c | 1 +
+ 2 files changed, 2 insertions(+)
+
+-- 
+2.34.1
+
