@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DCCCF5EB5C2
+	by mail.lfdr.de (Postfix) with ESMTP id 891415EB5C1
 	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 01:28:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230318AbiIZX2N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 19:28:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60216 "EHLO
+        id S231144AbiIZX17 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 19:27:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiIZX1t (ORCPT
+        with ESMTP id S230489AbiIZX1t (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 19:27:49 -0400
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 691526EF2A
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D3CC6EF30
         for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 16:27:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1664234866; x=1695770866;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=9am/bieXiysWtUx7w/8/1msQI6g+HrLkELye1uXSmPM=;
-  b=dnTHYwqhusnhP82sHhQ1A8Dn06oazH+0mhOTQPW/uGnEpTQGUSFYq2eE
-   qoIfIjEjGXj1iW/VOjW6Zqa4G+rWzDdIpxIRbGJLYbvcy2pVLovqcihcR
-   qC2h440CuMg1nQoYcAvVsQ41mPA00LVWbb0i9DgP3THs5hnHVRlB3leyh
-   MK63pZML06F4i0WU4Y8jGKaBto+FVDvmYH1oW14/xUP+Nvio9XU84vDlF
-   OF29t8TzHx+et+0CEsgAvOHK98Ora4DOLsGo1iiniChV7qjxKF6h4AkJC
-   wgswTD+hrBjg293maAdthPzbcWGNVwAU8bxUzPBTOC6VOFMjc7nv/jnla
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="280890873"
+  bh=3eEN83FGptLBGWVNuc+N6UdQMdtD/faMYXdyfUdW2Ss=;
+  b=m34chFg/DTH3bxYBJm1UUnNlRjfBMFeuZCSh+nRvxB5NdZxBJDpK3Mqo
+   IeHlMtBLMDmadV3NTleVTqI2Hq4wyeZTggREYtGUXvVHN9AjFbdHtVmRT
+   FJ+0Dv7+XIWPZLItqTYia4QotZX1N0d6Sp82IBKo4Hkflf7W83pQ4rcbp
+   QwfQb3qfrMUbBeyRNX+RwjTfli2zkUezy8IU8pb0f/ec74eWhT9cwbXHh
+   CpXEjeIqihPsl24Bho7lwVbbil2PnoOUN+f+njrk08RgxL5vYM/SUaFrM
+   3AT47ao6A53+wk+p+hPM/H3WAuMLfe3ITOic76wOAYvjMRPIVVY+AWI/e
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="280890877"
 X-IronPort-AV: E=Sophos;i="5.93,347,1654585200"; 
-   d="scan'208";a="280890873"
+   d="scan'208";a="280890877"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
   by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Sep 2022 16:27:44 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="572424287"
+X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="572424288"
 X-IronPort-AV: E=Sophos;i="5.93,347,1654585200"; 
-   d="scan'208";a="572424287"
+   d="scan'208";a="572424288"
 Received: from sankarka-mobl1.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.3.132])
   by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Sep 2022 16:27:44 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
-Cc:     Dmytro Shytyi <dmytro@shytyi.net>, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        benjamin.hesmans@tessares.net, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev,
+Cc:     Benjamin Hesmans <benjamin.hesmans@tessares.net>,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, dmytro@shytyi.net,
+        matthieu.baerts@tessares.net, mptcp@lists.linux.dev,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 3/4] mptcp: handle defer connect in mptcp_sendmsg
-Date:   Mon, 26 Sep 2022 16:27:38 -0700
-Message-Id: <20220926232739.76317-4-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 4/4] mptcp: poll allow write call before actual connect
+Date:   Mon, 26 Sep 2022 16:27:39 -0700
+Message-Id: <20220926232739.76317-5-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220926232739.76317-1-mathew.j.martineau@linux.intel.com>
 References: <20220926232739.76317-1-mathew.j.martineau@linux.intel.com>
@@ -61,63 +61,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dmytro Shytyi <dmytro@shytyi.net>
+From: Benjamin Hesmans <benjamin.hesmans@tessares.net>
 
-When TCP_FASTOPEN_CONNECT has been set on the socket before a connect,
-the defer flag is set and must be handled when sendmsg is called.
+If fastopen is used, poll must allow a first write that will trigger
+the SYN+data
 
-This is similar to what is done in tcp_sendmsg_locked().
+Similar to what is done in tcp_poll().
 
 Acked-by: Paolo Abeni <pabeni@redhat.com>
 Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Co-developed-by: Benjamin Hesmans <benjamin.hesmans@tessares.net>
 Signed-off-by: Benjamin Hesmans <benjamin.hesmans@tessares.net>
-Signed-off-by: Dmytro Shytyi <dmytro@shytyi.net>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- net/mptcp/protocol.c | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+ net/mptcp/protocol.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 866dfad3cde6..fc753896caa0 100644
+index fc753896caa0..16c3a6fc347f 100644
 --- a/net/mptcp/protocol.c
 +++ b/net/mptcp/protocol.c
-@@ -1677,6 +1677,7 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- {
- 	struct mptcp_sock *msk = mptcp_sk(sk);
- 	struct page_frag *pfrag;
-+	struct socket *ssock;
- 	size_t copied = 0;
- 	int ret = 0;
- 	long timeo;
-@@ -1690,6 +1691,27 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+@@ -3548,6 +3548,7 @@ static int mptcp_stream_connect(struct socket *sock, struct sockaddr *uaddr,
  
- 	lock_sock(sk);
+ do_connect:
+ 	err = ssock->ops->connect(ssock, uaddr, addr_len, flags);
++	inet_sk(sock->sk)->defer_connect = inet_sk(ssock->sk)->defer_connect;
+ 	sock->state = ssock->state;
  
-+	ssock = __mptcp_nmpc_socket(msk);
-+	if (unlikely(ssock && inet_sk(ssock->sk)->defer_connect)) {
-+		struct sock *ssk = ssock->sk;
-+		int copied_syn = 0;
-+
-+		lock_sock(ssk);
-+
-+		ret = tcp_sendmsg_fastopen(ssk, msg, &copied_syn, len, NULL);
-+		copied += copied_syn;
-+		if (ret == -EINPROGRESS && copied_syn > 0) {
-+			/* reflect the new state on the MPTCP socket */
-+			inet_sk_state_store(sk, inet_sk_state_load(ssk));
-+			release_sock(ssk);
-+			goto out;
-+		} else if (ret) {
-+			release_sock(ssk);
-+			goto out;
-+		}
-+		release_sock(ssk);
-+	}
-+
- 	timeo = sock_sndtimeo(sk, msg->msg_flags & MSG_DONTWAIT);
- 
- 	if ((1 << sk->sk_state) & ~(TCPF_ESTABLISHED | TCPF_CLOSE_WAIT)) {
+ 	/* on successful connect, the msk state will be moved to established by
+@@ -3698,6 +3699,9 @@ static __poll_t mptcp_poll(struct file *file, struct socket *sock,
+ 	if (state != TCP_SYN_SENT && state != TCP_SYN_RECV) {
+ 		mask |= mptcp_check_readable(msk);
+ 		mask |= mptcp_check_writeable(msk);
++	} else if (state == TCP_SYN_SENT && inet_sk(sk)->defer_connect) {
++		/* cf tcp_poll() note about TFO */
++		mask |= EPOLLOUT | EPOLLWRNORM;
+ 	}
+ 	if (sk->sk_shutdown == SHUTDOWN_MASK || state == TCP_CLOSE)
+ 		mask |= EPOLLHUP;
 -- 
 2.37.3
 
