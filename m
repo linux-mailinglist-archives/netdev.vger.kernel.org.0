@@ -2,272 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 07A945EA695
-	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 14:55:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEC5A5EA783
+	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 15:42:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234830AbiIZMzb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 08:55:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60950 "EHLO
+        id S235761AbiIZNmE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 09:42:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234327AbiIZMzC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 08:55:02 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01E2C15566D
-        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 04:29:29 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1ocmET-0007Wt-FW; Mon, 26 Sep 2022 13:25:05 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1ocmES-0031Gv-Ve; Mon, 26 Sep 2022 13:25:03 +0200
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1ocmEP-0049l8-P0; Mon, 26 Sep 2022 13:25:01 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
-        David Jander <david@protonic.nl>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Robert Marko <robert.marko@sartura.hr>
-Subject: [PATCH net-next v7 7/7] net: pse-pd: add regulator based PSE driver
-Date:   Mon, 26 Sep 2022 13:25:00 +0200
-Message-Id: <20220926112500.990705-8-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220926112500.990705-1-o.rempel@pengutronix.de>
-References: <20220926112500.990705-1-o.rempel@pengutronix.de>
+        with ESMTP id S235770AbiIZNlf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 09:41:35 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5F7553009
+        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 04:59:57 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id y8so8641831edc.10
+        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 04:59:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=B1uHGqTvOywhRYzeVXjBcmFOMxjIUzN5HodeanuZfxE=;
+        b=wlOtRe7Hc/ANzyzD3oFPUjEJB2iFw/hzsaR/+44S0dfnQxE2GcDFtJxTm0dfrt9M5y
+         y9+ALJUSPc+iltIgg+LqjTyrFo662xQIw183A2/hshATVCUqGNZ8iliBWMwaRGeauP5z
+         JW2o7xIBVIl6s8x/0vLztj21stm/jryc8kgrFC9yqMCOdpe5xCGb9nsyrkwz1mMmidqi
+         RB6c4irOzgZRc+0czieqMtMziVwFZynw6tvV2M6Cz/2bsSnqBzQwq+g2bNxfP97WhQqQ
+         vThh65jzIN1SLeth8q6sgj/UPtVTrVbEdXksrDtVyz8i2dkFwkoPXvK0BliT85mIiuw9
+         dQNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=B1uHGqTvOywhRYzeVXjBcmFOMxjIUzN5HodeanuZfxE=;
+        b=edi7xhwBnrcpBxleH3iocgyEI+amHPf+KJIgieDm7zD5kj9f+YTQR8O7C0Wj1RglUl
+         8g/fkUYA93n9I2JIkZ33a/CF6SH2ssJ8w4al/CdahSPHnQy7ujPNGETegpC+m6SiUaMR
+         CUIM9hwzOWY8q7nVgcJqpqKWE4n8m0RckhzlGF1AFc8ffpbuJZQRBgU+4tHWdJCy9Nrs
+         0LPZ7gSpNqOh3ylXHNWzZ228gRvlNlrVvgWZiNcSV68F9sVTeEa+Nq9wQfLJY5P4Q7EI
+         if9IvMivxPYQXmjkn7n4vVGlIzxCaqWsdclhuHaSX7BxM7ba7xy0HlDGivDkg7ROFcxd
+         mrFg==
+X-Gm-Message-State: ACrzQf24J9/dQdrzqoWrQNQ2uV9p3Vh6z65CNLWruqPYJX/Ot1d+T2TO
+        TQPgVds43IY5jWGCRUNwBAdhhA==
+X-Google-Smtp-Source: AMsMyM7BQFgaIiWuQX8a9zc6L0WAR/RZgL2hZXZ0Nfel84VPlpFVHTnoZ0bbZuwIRf+byc3YWt+Ktg==
+X-Received: by 2002:a05:6402:cab:b0:457:5a5c:88a8 with SMTP id cn11-20020a0564020cab00b004575a5c88a8mr2727769edb.9.1664193534867;
+        Mon, 26 Sep 2022 04:58:54 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id b2-20020a1709063ca200b00780a26edfcesm8189009ejh.60.2022.09.26.04.58.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Sep 2022 04:58:54 -0700 (PDT)
+Date:   Mon, 26 Sep 2022 13:58:47 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Edward Cree <ecree.xilinx@gmail.com>
+Cc:     "Wilczynski, Michal" <michal.wilczynski@intel.com>,
+        netdev@vger.kernel.org, alexandr.lobakin@intel.com,
+        dchumak@nvidia.com, maximmi@nvidia.com, simon.horman@corigine.com,
+        jacob.e.keller@intel.com, jesse.brandeburg@intel.com,
+        przemyslaw.kitszel@intel.com
+Subject: Re: [RFC PATCH net-next v4 2/6] devlink: Extend devlink-rate api
+ with queues and new parameters
+Message-ID: <YzGT98W0+Pzhahl8@nanopsycho>
+References: <20220915134239.1935604-1-michal.wilczynski@intel.com>
+ <20220915134239.1935604-3-michal.wilczynski@intel.com>
+ <f17166c7-312d-ac13-989e-b064cddcb49e@gmail.com>
+ <401d70a9-5f6d-ed46-117b-de0b82a5f52c@intel.com>
+ <df4cd224-fc1b-dcd0-b7d4-22b80e6c1821@gmail.com>
+ <7ce70b9f-23dc-03c9-f83a-4b620cdc8a7d@intel.com>
+ <24690f01-5a4b-840b-52b7-bdc0e6b9376a@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <24690f01-5a4b-840b-52b7-bdc0e6b9376a@gmail.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add generic, regulator based PSE driver to support simple Power Sourcing
-Equipment without automatic classification support.
+Tue, Sep 20, 2022 at 01:09:04PM CEST, ecree.xilinx@gmail.com wrote:
+>On 19/09/2022 14:12, Wilczynski, Michal wrote:
+>> Maybe a switchdev case would be a good parallel here. When you enable switchdev, you get port representors on
+>> the host for each VF that is already attached to the VM. Something that gives the host power to configure
+>> netdev that it doesn't 'own'. So it seems to me like giving user more power to configure things from the host
 
-This driver was tested on 10Bast-T1L switch with regulator based PoDL PSE.
+Well, not really. It gives the user on hypervisor possibility
+to configure the eswitch vport side. The other side of the wire, which
+is in VM, is autonomous.
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
----
-changes v5:
-- use dev_err_probe on devm_regulator_get_exclusive() error
-- add __maybe_unused to the of_device_id
-changes v4:
-- rename to pse_regulator
-changes v2:
-- add regulator_enable test to the probe
-- migrate to the new PSE ethtool API
----
- drivers/net/pse-pd/Kconfig         |  11 +++
- drivers/net/pse-pd/Makefile        |   2 +
- drivers/net/pse-pd/pse_regulator.c | 147 +++++++++++++++++++++++++++++
- 3 files changed, 160 insertions(+)
- create mode 100644 drivers/net/pse-pd/pse_regulator.c
 
-diff --git a/drivers/net/pse-pd/Kconfig b/drivers/net/pse-pd/Kconfig
-index 49c7f0bcff52..73d163704068 100644
---- a/drivers/net/pse-pd/Kconfig
-+++ b/drivers/net/pse-pd/Kconfig
-@@ -9,3 +9,14 @@ menuconfig PSE_CONTROLLER
- 	  Generic Power Sourcing Equipment Controller support.
- 
- 	  If unsure, say no.
-+
-+if PSE_CONTROLLER
-+
-+config PSE_REGULATOR
-+	tristate "Regulator based PSE controller"
-+	help
-+	  This module provides support for simple regulator based Ethernet Power
-+	  Sourcing Equipment without automatic classification support. For
-+	  example for basic implementation of PoDL (802.3bu) specification.
-+
-+endif
-diff --git a/drivers/net/pse-pd/Makefile b/drivers/net/pse-pd/Makefile
-index cfa780c7801d..1b8aa4c70f0b 100644
---- a/drivers/net/pse-pd/Makefile
-+++ b/drivers/net/pse-pd/Makefile
-@@ -2,3 +2,5 @@
- # Makefile for Linux PSE drivers
- 
- obj-$(CONFIG_PSE_CONTROLLER) += pse_core.o
-+
-+obj-$(CONFIG_PSE_REGULATOR) += pse_regulator.o
-diff --git a/drivers/net/pse-pd/pse_regulator.c b/drivers/net/pse-pd/pse_regulator.c
-new file mode 100644
-index 000000000000..e2bf8306ca90
---- /dev/null
-+++ b/drivers/net/pse-pd/pse_regulator.c
-@@ -0,0 +1,147 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+//
-+// Driver for the regulator based Ethernet Power Sourcing Equipment, without
-+// auto classification support.
-+//
-+// Copyright (c) 2022 Pengutronix, Oleksij Rempel <kernel@pengutronix.de>
-+//
-+
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+#include <linux/pse-pd/pse.h>
-+#include <linux/regulator/consumer.h>
-+
-+struct pse_reg_priv {
-+	struct pse_controller_dev pcdev;
-+	struct regulator *ps; /*power source */
-+	enum ethtool_podl_pse_admin_state admin_state;
-+};
-+
-+static struct pse_reg_priv *to_pse_reg(struct pse_controller_dev *pcdev)
-+{
-+	return container_of(pcdev, struct pse_reg_priv, pcdev);
-+}
-+
-+static int
-+pse_reg_ethtool_set_config(struct pse_controller_dev *pcdev, unsigned long id,
-+			   struct netlink_ext_ack *extack,
-+			   const struct pse_control_config *config)
-+{
-+	struct pse_reg_priv *priv = to_pse_reg(pcdev);
-+	int ret;
-+
-+	if (priv->admin_state == config->admin_cotrol)
-+		return 0;
-+
-+	switch (config->admin_cotrol) {
-+	case ETHTOOL_PODL_PSE_ADMIN_STATE_ENABLED:
-+		ret = regulator_enable(priv->ps);
-+		break;
-+	case ETHTOOL_PODL_PSE_ADMIN_STATE_DISABLED:
-+		ret = regulator_disable(priv->ps);
-+		break;
-+	default:
-+		dev_err(pcdev->dev, "Unknown admin state %i\n",
-+			config->admin_cotrol);
-+		ret = -ENOTSUPP;
-+	}
-+
-+	if (ret)
-+		return ret;
-+
-+	priv->admin_state = config->admin_cotrol;
-+
-+	return 0;
-+}
-+
-+static int
-+pse_reg_ethtool_get_status(struct pse_controller_dev *pcdev, unsigned long id,
-+			   struct netlink_ext_ack *extack,
-+			   struct pse_control_status *status)
-+{
-+	struct pse_reg_priv *priv = to_pse_reg(pcdev);
-+	int ret;
-+
-+	ret = regulator_is_enabled(priv->ps);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (!ret)
-+		status->podl_pw_status = ETHTOOL_PODL_PSE_PW_D_STATUS_DISABLED;
-+	else
-+		status->podl_pw_status =
-+			ETHTOOL_PODL_PSE_PW_D_STATUS_DELIVERING;
-+
-+	status->podl_admin_state = priv->admin_state;
-+
-+	return 0;
-+}
-+
-+static const struct pse_controller_ops pse_reg_ops = {
-+	.ethtool_get_status = pse_reg_ethtool_get_status,
-+	.ethtool_set_config = pse_reg_ethtool_set_config,
-+};
-+
-+static int
-+pse_reg_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct pse_reg_priv *priv;
-+	int ret;
-+
-+	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	if (!pdev->dev.of_node)
-+		return -ENOENT;
-+
-+	priv->ps = devm_regulator_get_exclusive(dev, "pse");
-+	if (IS_ERR(priv->ps))
-+		return dev_err_probe(dev, PTR_ERR(priv->ps),
-+				     "failed to get PSE regulator.\n");
-+
-+	platform_set_drvdata(pdev, priv);
-+
-+	ret = regulator_is_enabled(priv->ps);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (ret)
-+		priv->admin_state = ETHTOOL_PODL_PSE_ADMIN_STATE_ENABLED;
-+	else
-+		priv->admin_state = ETHTOOL_PODL_PSE_ADMIN_STATE_DISABLED;
-+
-+	priv->pcdev.owner = THIS_MODULE;
-+	priv->pcdev.ops = &pse_reg_ops;
-+	priv->pcdev.dev = dev;
-+	ret = devm_pse_controller_register(dev, &priv->pcdev);
-+	if (ret) {
-+		dev_err(dev, "failed to register PSE controller (%pe)\n",
-+			ERR_PTR(ret));
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static const __maybe_unused struct of_device_id pse_reg_of_match[] = {
-+	{ .compatible = "podl-pse-regulator", },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, pse_reg_of_match);
-+
-+static struct platform_driver pse_reg_driver = {
-+	.probe		= pse_reg_probe,
-+	.driver		= {
-+		.name		= "PSE regulator",
-+		.of_match_table = of_match_ptr(pse_reg_of_match),
-+	},
-+};
-+module_platform_driver(pse_reg_driver);
-+
-+MODULE_AUTHOR("Oleksij Rempel <kernel@pengutronix.de>");
-+MODULE_DESCRIPTION("regulator based Ethernet Power Sourcing Equipment");
-+MODULE_LICENSE("GPL v2");
-+MODULE_ALIAS("platform:pse-regulator");
--- 
-2.30.2
+>> is acceptable.
+>
+>Right that's the thing though: I instinctively Want this to be done
+> through representors somehow, because it _looks_ like it ought to
+> be scoped to a single netdev; but that forces the hierarchy to
+> respect netdev boundaries which as we've discussed is an unwelcome
+> limitation.
 
+Why exacly? Do you want to share a single queue between multiple vport?
+Or what exactly would the the usecase where you hit the limitation?
+
+
+>
+>> In my mind this is a device-wide configuration, since the ice driver registers each port as a separate pci device.
+>> And each of this devices have their own hardware Tx Scheduler tree global to that port. Queues that we're
+>> discussing are actually hardware queues, and are identified by hardware assigned txq_id.
+>
+>In general, hardware being a single unit at the device level does
+> not necessarily mean its configuration should be device-wide.
+>For instance, in many NICs each port has a single hardware v-switch,
+> but we do not have some kind of "devlink filter" API to program it
+> directly.  Instead we attach TC rules to _many_ netdevs, and driver
+> code transforms and combines these to program the unitary device.
+>"device-wide configuration" originally meant things like firmware
+> version or operating mode (legacy vs. switchdev) that do not relate
+> directly to netdevs.
+>
+>But I agree with you that your approach is the "least evil method";
+> if properly explained and documented then I don't have any
+> remaining objection to your patch, despite that I'm continuing to
+> take the opportunity to proselytise for "reprs >> devlink" ;)
+>
+>-ed
