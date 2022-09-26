@@ -2,69 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 085315EB2AA
-	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 22:51:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 572905EB2EE
+	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 23:16:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231154AbiIZUvi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 16:51:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34852 "EHLO
+        id S231367AbiIZVQP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 17:16:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230506AbiIZUvh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 16:51:37 -0400
-Received: from mail-vs1-xe32.google.com (mail-vs1-xe32.google.com [IPv6:2607:f8b0:4864:20::e32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57FDB5A824;
-        Mon, 26 Sep 2022 13:51:36 -0700 (PDT)
-Received: by mail-vs1-xe32.google.com with SMTP id p4so7784060vsa.9;
-        Mon, 26 Sep 2022 13:51:36 -0700 (PDT)
+        with ESMTP id S231365AbiIZVQO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 17:16:14 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E4A073305;
+        Mon, 26 Sep 2022 14:16:13 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id s26so7665239pgv.7;
+        Mon, 26 Sep 2022 14:16:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=qKfQ34C5O0rzE70r20R+tBB75q+j778U5ZfxXFszttA=;
-        b=BPHvEFMYltn2Rg8aDJxPny0237ec0tFbJGaTtOttAlEIZSm2TcnzNn5ETQhaCYVEA/
-         1qY0MRCPSEGPtvV6OJa4pIwvqGU+4Ncve0silNBsx4rvedoSb5MwXkDLo/2JJMKO6YDO
-         uDV1svhkfvCNY5bRTIm4UaEewGyshTTQW5W37wbwQv20EMhnSwp2b2mIIW3j9jgxoH2S
-         kOSTeNDjg0w60LZwx8judNwqPq4P/fFfyHt44AQOgxdHuQYhpcTnpOws8ApnRvxHUjqT
-         W7xAz71SNhJzJVfmp6wCixGNyR+o+JP+Y+gwzOGIkgoDiSl9dHxRXDQv9UayvKO+2AN9
-         oaFA==
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date;
+        bh=rRT+OkAAhjLoiWNBuCG4sTsHyASMrgBByhNlqKZBCHs=;
+        b=iR2byfWUuFQLG6wpAcciFeGGBozQu5PX/spgbxYqphz6VyYYc+LI3It+2LLSVFnKPy
+         Qk2etlB8Rgaw7VDhUsvIgXDnNRlWLeEIcrMV5pAy8zEVKWRqsEB455PhZUtzh6BEXD7y
+         4m1D9Hn2MEIHBhx6hqZRBmqJq+aipSt1jfsR0vg0jC5KsRRnbcVbveY7gL0gDoaFMXIo
+         7xV0O+PdE7tOlI43B7e6/NDqyTUCWdCfhEo3Xp6Tc9uN1WalRkxrG+TZUaz+IlVab+Yv
+         pIAJEgW9Kv9NeKhAfXmDn/9swYM8+CWltIYeOzzueDxZwJorgMU44hU2JCcM7Lot+XPF
+         6usQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=qKfQ34C5O0rzE70r20R+tBB75q+j778U5ZfxXFszttA=;
-        b=1tqum0NvVTXNsDec60A5DYPzMD2n2KcxTiJA4glelV6p0NYPVm8u9rHuZdT+PGoFWX
-         395JiSS8QzPV2o1EL5jaWq9r3GmIhPcaVUTP4SnJA7eejZLV/apGPs2m1pz0RmFk/Yx1
-         EkkZZ2BCEWKs1TE4img+tZTohTO4mjBt1YqR3nj9Jcaxh1zypFgZ6sR3uq3v7A0zV4v3
-         lGE7amj3/SKctRbueT1+2b5mGpcSkfZGfvCPn+IGjLhwQCSzVJ8bstKhV7TbeyJ5Y0sY
-         ShCFKbyC81zb8vukHCz6+fsUvYi3CDmCWKeW2RZQTA0k49TzlzWgmWZuV/wK0T4exiOT
-         wipg==
-X-Gm-Message-State: ACrzQf113IIN2mvLyPSeuVrMsgAj3trBmqkAlAVXcePuqd23oYRQkFjo
-        1h7nRbuC2jV6RGpeVBfhFppXNZsZpN22hSoZdzQ=
-X-Google-Smtp-Source: AMsMyM61qhvjMNXEsMZbHVi9pCwdwFn2hFbnwr6qFxEtjuqg591fuKkDmD/Cu3PIDRsXc4iH9Pd3znSaSDk3yY/AUJA=
-X-Received: by 2002:a67:e314:0:b0:397:f9b2:1b9a with SMTP id
- j20-20020a67e314000000b00397f9b21b9amr9455108vsf.40.1664225495312; Mon, 26
- Sep 2022 13:51:35 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220926040524.4017-1-shaneparslow808@gmail.com> <20220926131109.43d51e55@kernel.org>
-In-Reply-To: <20220926131109.43d51e55@kernel.org>
-From:   Shane Parslow <shaneparslow808@gmail.com>
-Date:   Mon, 26 Sep 2022 13:51:23 -0700
-Message-ID: <CALi=oTY7Me6g1=jtnZig-MzS-TPOOMQ53ih-78QuF-K+Rs0rUw@mail.gmail.com>
-Subject: Re: [PATCH net] net: wwan: iosm: Fix 7360 WWAN card control channel mapping
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     M Chetan Kumar <m.chetan.kumar@intel.com>,
-        Intel Corporation <linuxwwan@intel.com>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc:subject:date;
+        bh=rRT+OkAAhjLoiWNBuCG4sTsHyASMrgBByhNlqKZBCHs=;
+        b=64ZUGxa0mHeh3JUW3h7fJ0iGgeC6HGdGlnutJhjia3i7w6bmPpWu+QbGr7h7pWJeaT
+         +FZCRnrRhF0+JoI893P+/fESvzTYfyOyTyfqpP/E32GNZ57/dxBUgs20TyyHXQxgltAi
+         kw/00Aac5OWTk/CVJcDX/ndIoPBtKYaiLVw0uF3BVrbV386vQaIFl+iqBRhsaNpBotUY
+         CDjysqj7l7e9KO6bQL0+I8N2uCDrC0gON92AyQmDvc0bw5QuEcn2VCr6eIEf7fP8GUsc
+         2phGVyepqWlbhAE6Nn4aiqsIpThqDfgAuGNyGJgia7GM7BNhl19mK9omhniaankcqKPH
+         ez0w==
+X-Gm-Message-State: ACrzQf3vzNdUcq4OE69Nnkzfb5LroxaiGWszhGIKQEkP2VPCV/P/HKyh
+        NVWaxgDKiQARnNwewJT02D4=
+X-Google-Smtp-Source: AMsMyM5IDprnUed2O2q7famJYKUWw3FYbKQLOxERaC9MG2P7W+CeNTxGaB5Bef9n4Ak5IIDkDtJXDw==
+X-Received: by 2002:a63:1215:0:b0:43a:827d:dd with SMTP id h21-20020a631215000000b0043a827d00ddmr22154155pgl.98.1664226972630;
+        Mon, 26 Sep 2022 14:16:12 -0700 (PDT)
+Received: from localhost ([98.97.32.109])
+        by smtp.gmail.com with ESMTPSA id q12-20020a170902dacc00b0016c50179b1esm11798925plx.152.2022.09.26.14.16.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Sep 2022 14:16:11 -0700 (PDT)
+Date:   Mon, 26 Sep 2022 14:16:10 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     "liujian (CE)" <liujian56@huawei.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        davem <davem@davemloft.net>,
+        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
+        "dsahern@kernel.org" <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
+Message-ID: <6332169a699f8_4dfb7208e4@john.notmuch>
+In-Reply-To: <fb254c963d3549a19c066b6bd2acf9c7@huawei.com>
+References: <061d068ccd6f4db899d095cd61f52114@huawei.com>
+ <YzCdHXtgKPciEusR@pop-os.localdomain>
+ <fb254c963d3549a19c066b6bd2acf9c7@huawei.com>
+Subject: RE: [bug report] one possible out-of-order issue in sockmap
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,55 +82,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 26 Sep 2022 13:11:09 -0700 Jakub Kicinski wrote:
-> On Sun, 25 Sep 2022 21:05:24 -0700 Shane Parslow wrote:
->> This patch fixes the control channel mapping for the 7360, which was
->> previously the same as the 7560.
->>
->> As shown by the reverse engineering efforts of James Wah [1], the layout
->> of channels on the 7360 is actually somewhat different from that of the
->> 7560.
->>
->> A new ipc_chnl_cfg is added specifically for the 7360. The new config
->> updates channel 7 to be an AT port and removes the mbim interface, as
->> it does not exist on the 7360. The config is otherwise left the same as
->> the 7560. ipc_chnl_cfg_get is updated to switch between the two configs.
->> In ipc_imem, a special case for the mbim port is removed as it no longer
->> exists in the 7360 ipc_chnl_cfg.
->>
->> As a result of this, the second userspace AT port now functions whereas
->> previously it was routed to the trace channel. Modem crashes ("confused
->> phase", "msg timeout", "PORT open refused") resulting from garbage being
->> sent to the modem are also fixed.
->
-> What's the Fixes: tag for this one?
+liujian (CE) wrote:
+> 
+> 
+> > -----Original Message-----
+> > From: Cong Wang [mailto:xiyou.wangcong@gmail.com]
+> > Sent: Monday, September 26, 2022 2:26 AM
+> > To: liujian (CE) <liujian56@huawei.com>
+> > Cc: John Fastabend <john.fastabend@gmail.com>; Jakub Sitnicki
+> > <jakub@cloudflare.com>; Eric Dumazet <edumazet@google.com>; davem
+> > <davem@davemloft.net>; yoshfuji@linux-ipv6.org; dsahern@kernel.org;
+> > Jakub Kicinski <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>;
+> > netdev <netdev@vger.kernel.org>; bpf@vger.kernel.org
+> > Subject: Re: [bug report] one possible out-of-order issue in sockmap
+> > 
+> > On Sat, Sep 24, 2022 at 07:59:15AM +0000, liujian (CE) wrote:
+> > > Hello,
+> > >
+> > > I had a scp failure problem here. I analyze the code, and the reasons may
+> > be as follows:
+> > >
+> > > From commit e7a5f1f1cd00 ("bpf/sockmap: Read psock ingress_msg
+> > before
+> > > sk_receive_queue", if we use sockops
+> > > (BPF_SOCK_OPS_ACTIVE_ESTABLISHED_CB
+> > > and BPF_SOCK_OPS_PASSIVE_ESTABLISHED_CB) to enable socket's
+> > sockmap
+> > > function, and don't enable strparse and verdict function, the
+> > > out-of-order problem may occur in the following process.
+> > >
+> > > client SK                                   server SK
+> > > ----------------------------------------------------------------------
+> > > ----
+> > > tcp_rcv_synsent_state_process
+> > >   tcp_finish_connect
+> > >     tcp_init_transfer
+> > >       tcp_set_state(sk, TCP_ESTABLISHED);
+> > >       // insert SK to sockmap
+> > >     wake up waitter
+> > >     tcp_send_ack
+> > >
+> > > tcp_bpf_sendmsg(msgA)
+> > > // msgA will go tcp stack
+> > >                                             tcp_rcv_state_process
+> > >                                               tcp_init_transfer
+> > >                                                 //insert SK to sockmap
+> > >                                               tcp_set_state(sk,
+> > >                                                      TCP_ESTABLISHED)
+> > >                                               wake up waitter
+> > 
+> > Here after the socket is inserted to a sockmap, its ->sk_data_ready() is
+> > already replaced with sk_psock_verdict_data_ready(), so msgA should go to
+> > sockmap, not TCP stack?
+> > 
+> It is TCP stack.  Here I only enable BPF_SK_MSG_VERDICT type.
+> bpftool prog load bpf_redir.o /sys/fs/bpf/bpf_redir map name sock_ops_map pinned /sys/fs/bpf/sock_ops_map
+> bpftool prog attach pinned /sys/fs/bpf/bpf_redir msg_verdict pinned /sys/fs/bpf/sock_ops_map
 
-There isn't currently an open bug report for this. I can open one if that
-is preferred.
-The gist is that previously, any writes to the 2nd userspace AT port
-would crash the modem.
-This is my first patch -- I apologize if I did things out of order.
-
-On Mon, Sep 26, 2022 at 1:11 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Sun, 25 Sep 2022 21:05:24 -0700 Shane Parslow wrote:
-> > This patch fixes the control channel mapping for the 7360, which was
-> > previously the same as the 7560.
-> >
-> > As shown by the reverse engineering efforts of James Wah [1], the layout
-> > of channels on the 7360 is actually somewhat different from that of the
-> > 7560.
-> >
-> > A new ipc_chnl_cfg is added specifically for the 7360. The new config
-> > updates channel 7 to be an AT port and removes the mbim interface, as
-> > it does not exist on the 7360. The config is otherwise left the same as
-> > the 7560. ipc_chnl_cfg_get is updated to switch between the two configs.
-> > In ipc_imem, a special case for the mbim port is removed as it no longer
-> > exists in the 7360 ipc_chnl_cfg.
-> >
-> > As a result of this, the second userspace AT port now functions whereas
-> > previously it was routed to the trace channel. Modem crashes ("confused
-> > phase", "msg timeout", "PORT open refused") resulting from garbage being
-> > sent to the modem are also fixed.
->
-> What's the Fixes: tag for this one?
+Is the sender using FAST_OPEN by any chance? We know this bug exists
+in this case. Fix tbd.
