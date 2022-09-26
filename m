@@ -2,112 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EF5F45EA9A3
-	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 17:07:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 703595EA9B2
+	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 17:08:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235683AbiIZPHr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 11:07:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43982 "EHLO
+        id S235353AbiIZPIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 11:08:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235611AbiIZPGj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 11:06:39 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 678D7EBD47;
-        Mon, 26 Sep 2022 06:38:39 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1ocoJe-0005aZ-MP; Mon, 26 Sep 2022 15:38:34 +0200
-Date:   Mon, 26 Sep 2022 15:38:34 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     Michal Hocko <mhocko@suse.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, vbabka@suse.cz,
-        akpm@linux-foundation.org, urezki@gmail.com,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        Martin Zaharinov <micron10@gmail.com>
-Subject: Re: [PATCH mm] mm: fix BUG with kvzalloc+GFP_ATOMIC
-Message-ID: <20220926133834.GE12777@breakpoint.cc>
-References: <20220923103858.26729-1-fw@strlen.de>
- <Yy20toVrIktiMSvH@dhcp22.suse.cz>
- <20220923133512.GE22541@breakpoint.cc>
- <YzFZf0Onm6/UH7/I@dhcp22.suse.cz>
- <20220926075639.GA908@breakpoint.cc>
- <YzFplwSxwwsLpzzX@dhcp22.suse.cz>
- <YzFxHlYoncuDl2fM@dhcp22.suse.cz>
- <20220926100800.GB12777@breakpoint.cc>
- <YzGUyWlYd15uLu7G@dhcp22.suse.cz>
- <20220926130808.GD12777@breakpoint.cc>
+        with ESMTP id S235775AbiIZPIg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 11:08:36 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1B0B79A62;
+        Mon, 26 Sep 2022 06:40:55 -0700 (PDT)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1ocoLu-0006yL-49; Mon, 26 Sep 2022 15:40:54 +0200
+Message-ID: <d1ba88bf-ae0e-72e2-d5c8-133cd4323e9f@leemhuis.info>
+Date:   Mon, 26 Sep 2022 15:40:53 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220926130808.GD12777@breakpoint.cc>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.1
+Subject: Re: [regression] Bug 216397 - Kernel 5.19 with NetworkManager and
+ iwd: Wifi reconnect on resume is broken #forregzbot
+Content-Language: en-US, de-DE
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+To:     "regressions@lists.linux.dev" <regressions@lists.linux.dev>
+Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <31cceaa5-2684-1aa8-61c6-c1be2d563bb0@leemhuis.info>
+In-Reply-To: <31cceaa5-2684-1aa8-61c6-c1be2d563bb0@leemhuis.info>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1664199655;7c1d48f2;
+X-HE-SMSGID: 1ocoLu-0006yL-49
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Florian Westphal <fw@strlen.de> wrote:
-> Michal Hocko <mhocko@suse.com> wrote:
-> > On Mon 26-09-22 12:08:00, Florian Westphal wrote:
-> > > Michal Hocko <mhocko@suse.com> wrote:
-> > > > +		old_tbl = rht_dereference_rcu(ht->tbl, ht);
-> > > > +		size = tbl->size;
-> > > > +
-> > > > +		data = ERR_PTR(-EBUSY);
-> > > > +
-> > > > +		if (rht_grow_above_75(ht, tbl))
-> > > > +			size *= 2;
-> > > > +		/* Do not schedule more than one rehash */
-> > > > +		else if (old_tbl != tbl)
-> > > > +			return data;
-> > > > +
-> > > > +		data = ERR_PTR(-ENOMEM);
-> > > > +
-> > > > +		rcu_read_unlock();
-> > > > +		new_tbl = bucket_table_alloc(ht, size, GFP_KERNEL);
-> > > > +		rcu_read_lock();
-> > > 
-> > > I don't think this is going to work, there can be callers that
-> > > rely on rcu protected data structures getting free'd.
-> > 
-> > The caller of this function drops RCU for each retry, why should be the
-> > called function any special?
+TWIMC: this mail is primarily send for documentation purposes and for
+regzbot, my Linux kernel regression tracking bot. These mails usually
+contain '#forregzbot' in the subject, to make them easy to spot and filter.
+
+On 26.08.22 13:14, Thorsten Leemhuis wrote:
 > 
-> I was unfortunately never able to fully understand rhashtable.
-
-Obviously.
-
-> AFAICS the rcu_read_lock/unlock in the caller is pointless,
-> or at least dubious.
-
-Addedum, I can't read:
-
-void *rhashtable_insert_slow(struct rhashtable *ht, const void *key,
-		                             struct rhash_head *obj)
-{
-       void *data;
-
-       do {
-		rcu_read_lock();
-		data = rhashtable_try_insert(ht, key, obj);
-	       	rcu_read_unlock();
-										        }
-	} while (PTR_ERR(data) == -EAGAIN);
-}
-
-... which is needed to prevent a lockdep splat in
-rhashtable_try_insert() -- there is no guarantee the caller already
-has rcu_read_lock().
-
-> To the best of my knowledge there are users of this interface that
-> invoke it with rcu read lock held, and since those always nest, the
-> rcu_read_unlock() won't move us to GFP_KERNEL territory.
+> To quote from https://bugzilla.kernel.org/show_bug.cgi?id=216397 :
 > 
-> I guess you can add a might_sleep() and ask kernel to barf at runtime.
+>>  Vorpal 2022-08-22 16:35:21 UTC
+>>
+>> Created attachment 301630 [details]
+>> Relevant journalctl.txt
+>>
+>> After upgrading to kernel 5.19 (Arch Linux kernel, which is minimally modified, but I tested a few alternative kernels too, such as zen), wifi reconnect on resume is broken when using NetworkManager + iwd.
 
-I did and it triggers.  Caller is inet_frag_find(), triggered
-via 'ping -s 60000 $addr'.
+#regzbot fixed-by: 8997f5c8a62
+
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+
+P.S.: As the Linux kernel's regression tracker I deal with a lot of
+reports and sometimes miss something important when writing mails like
+this. If that's the case here, don't hesitate to tell me in a public
+reply, it's in everyone's interest to set the public record straight.
