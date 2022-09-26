@@ -2,354 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA7EA5E9BB7
-	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 10:12:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D909F5E9BD4
+	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 10:20:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233480AbiIZIMU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 04:12:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38402 "EHLO
+        id S233816AbiIZIUB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 04:20:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229613AbiIZIMT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 04:12:19 -0400
-Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01on2127.outbound.protection.outlook.com [40.107.114.127])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E93CC222AD;
-        Mon, 26 Sep 2022 01:12:16 -0700 (PDT)
+        with ESMTP id S233756AbiIZITu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 04:19:50 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2103.outbound.protection.outlook.com [40.107.92.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8B1FDF0C
+        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 01:19:47 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Lf8GsqDCDjvZ8E+Pz1K1OYEClO0tAUA3MIEzGiFkq0wveaBcDuwEweKidE/pdzUL3eCUioaVMD+GQsneh9hyK6vgAfQUpN0xLVkaL4QQ34VzNmWSc00Hj+FP8v/O/mBpbfRnve/nIM1LKK22ulJDZf2eA7NSJ2UumBajrSUe7eftNx9xF/guay0TzerfbrF+HX0nZb1KjecXtK3kV1QrDb2TsPmFkUXkKSCrcH5s48RCeTeU18nOwDkLtNqaLgd6U3IVAwptC3q2RobszySF9dXSp0Q6op5FYCrp4T7mH6FdQy70EVJ4+dgUMgT+YQW734rFxPvaKgbS+sNuWy5eiQ==
+ b=Nn2oqc6BLb7XJ3IHGoIQ89/T8Jj6X778PEvXYl58wR2OVyP4koZLB4zhdTkir16Rp5PQNHWPcT9SiOzeACN4EWPiqioYudQdUZEgjTfPuB9jhIJLctrSClTznpdT6XmoDhVd0EjKK/llR4BV29CXPf+g3Nzq+bzZp9BxGwrYyB098jITP5tyus1Wu+6QeeJD8g5p9CfxiP44CbHwOu93HpN+/rJOIZq9GyvCG5JrySzUPPOfnReORyY5lEO5XkPpq8VSozLcIgC+m38b4QB73erqu9s/CVXa/DKxwE10kzk+f0+mOAHPJPBUnUFhLzNu69u+VI1IfzIixd+gdaEpwg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5JewN34PpSacUBqEcaTaF0FxHMyDvH7WNDcTY1zXiwY=;
- b=H2B4um9Hp9NX7l+3cKJu9x2014jVTsuAMMqR4gL79j8LV6DtP751u21lXfYmZ6bxYi+fA++ZIALWra7rEd9AN8qWTbQzgGcmNjrWxebvR3OuHEDTXLF6RfZu9zeRf9Sooh7RttH7C07CNaRaqi0ZLyZoPPi4jxT5oHOr8FrNPeYcMOmkSIxMVKsGJsVx3BUADtzuE/bCbBs/1esuvaMbDtD2sMdJyVhmvCOoKApCYgcj2CBbxw6GGbIUtNU3Gh1l3vtaf2wuUumDixtSWiCMOQSWfzX2ytY6YkNQYo3C8cQXekCggHAQpBawalbVwNVNCqv6Lo65YALaqVMQLqncuA==
+ bh=8F1fb9QNfxQcbMN6VN0hnUuJOlzxkkm3CmHWC1gIhM8=;
+ b=hM3JEAx74zbno3Y18rPgMv0FFVRpJyiW0PzAxDPvWOVK+QTptmsTtplmRsiWc0KSXM6PW75BoyHtCEixCaoW0qe7Tk3yhF543CneTweNU2QPzNfgSwPrqmxeFTL9vdECZCMfRaPNuKEIL+93wV+4JruutMpYomT8m1rA28Pq4IQGM727ftv1XreapwNFgyqNYo96UYFzkY6PNfb6g5EbjAQcANCMmmuOYIl3w/iDw8OCRrD4ldzYx7CtKQYEltA3HCSzK6kL8n7+UxVv/jErPniRBOY64G7bt7SPy5QLX8EBDFUE2zL7Fo5o7SHi4pGbAYlNXV+nKImuRbac8I174A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
- s=selector1;
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5JewN34PpSacUBqEcaTaF0FxHMyDvH7WNDcTY1zXiwY=;
- b=oLb6HHJjbxs7EFg0F/UaCjRg5PzCpx3CJwe01SF7JSG1cXiHuCLsunKlglxABTONI180mfrEFhrGBUezou80aBuz4Qw7enN2AT8Ei68a3DukniR3EPfMHzAKREQ04vaVzgDj0ATW1jd6Smhpb2bYBMAjv3DulVVf4PsJYp67HhY=
-Received: from TYBPR01MB5341.jpnprd01.prod.outlook.com
- (2603:1096:404:8028::13) by OSZPR01MB8734.jpnprd01.prod.outlook.com
- (2603:1096:604:15f::7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.25; Mon, 26 Sep
- 2022 08:12:14 +0000
-Received: from TYBPR01MB5341.jpnprd01.prod.outlook.com
- ([fe80::2991:1e2d:e62c:37d0]) by TYBPR01MB5341.jpnprd01.prod.outlook.com
- ([fe80::2991:1e2d:e62c:37d0%3]) with mapi id 15.20.5654.025; Mon, 26 Sep 2022
- 08:12:14 +0000
-From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Subject: RE: [PATCH v3 2/3] net: ethernet: renesas: Add Ethernet Switch driver
-Thread-Topic: [PATCH v3 2/3] net: ethernet: renesas: Add Ethernet Switch
- driver
-Thread-Index: AQHYzkQbCGZNTw1MNUuaNx/SR8stKK3s/34AgARIsfA=
-Date:   Mon, 26 Sep 2022 08:12:14 +0000
-Message-ID: <TYBPR01MB5341ACAD30E913D01C94FE08D8529@TYBPR01MB5341.jpnprd01.prod.outlook.com>
-References: <20220922052803.3442561-1-yoshihiro.shimoda.uh@renesas.com>
- <20220922052803.3442561-3-yoshihiro.shimoda.uh@renesas.com>
- <Yy2wivbzUA2zroqy@lunn.ch>
-In-Reply-To: <Yy2wivbzUA2zroqy@lunn.ch>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=renesas.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: TYBPR01MB5341:EE_|OSZPR01MB8734:EE_
-x-ms-office365-filtering-correlation-id: 4e3278fc-8bd9-4897-25c2-08da9f96d1f9
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: TjnQlqquyrdINSOGWjdPfwSRQEVSf7BlzaBX3DuhtcBr4C7ZZiTyAep9yyXMor4GoP+PPrLWRGe8WYPN8QP9rSHT66e+Jil4fBUDo+QUFgT9za62GTmuP+GZ+e9FtOHko9ty0Hrvq93IVf1GUELGj5CBC/AYF9YHV9dgg0ozV/MWJhm4wX9G/Ybpb4Jm/QMMVgG4niXp8kOYu4hMBzx/+Feyo+o6eRmHjyYFBEOwSgaN7CRiXQDD/fTfT/pcvt2FDHDWK7u7rIuz6aD2O+TPre71kcQTGV4K6g0W3/DFJFN7YZbkMWObSnoOg729jCNedcbNZIPmFTT6BpdwLzvV1CpAx5PLWpAN2mdsWW8+4oWu2MEtGiATV8jvW7Ejwb46Gs4zePQwCBhl4Zqk7wIP4oMAaLGfFLm7dN8aoEcBxmTHzs/d/ypHfXcNxQUIwFFCrWNhMcxFxaKyuDNCmlpjBN8zMBoE/kDZkA7074cBEVTskIJD7Hb78UxIco3eONT6japbHtRyD/m/Zikm3LXB8gsj8YW8W3DYKl1g/fw0YtnPLpiCR4rLdV6bSq0cke8aVODq+DeAUWgOHUxNrHqgsvlZyjmPl599yGOBnWBW9bYoM4b7+HK88Mt4db3JAHDvkymVPcedMJ8+paIpoTDeNkpYxDTf5OK71i4gaE6EKz2WgJHn8UpKYT0s4wzGoMbR+fPlDn5rxJAKtPtJd3J78W98TWP3QZeQNwh8uR4r+fi2RWmkY9wUbWTMXmztMeC1dwOSkk6fDVOQT1k+A17ISw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYBPR01MB5341.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(366004)(376002)(346002)(136003)(39860400002)(451199015)(6916009)(54906003)(33656002)(66899012)(86362001)(186003)(7416002)(38070700005)(5660300002)(38100700002)(122000001)(83380400001)(316002)(41300700001)(6506007)(9686003)(478600001)(66476007)(4326008)(76116006)(66946007)(71200400001)(66556008)(7696005)(8676002)(64756008)(66446008)(8936002)(55016003)(2906002)(52536014);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?+SGsv6RC4ixBc1OojmklDgNXRqCWt5MNVToxIj89g2txpMvlPAz23U/AmllN?=
- =?us-ascii?Q?RZQ11vNnBCNT51qOAGFxlqyqyJc4hirXAd68J+K/1GOJdhGg36DFI0EwBVyU?=
- =?us-ascii?Q?tfFf1Emabf4qQhmHblTBYCOkzODV4+J9Ru1wO9hozx0kJJGbw402WYm/zI6h?=
- =?us-ascii?Q?SD3XhHqBv0VigI2EHKIMMCUtmkklALmkcxIGcYmcamxS0NGOm+eEZzDYxKSb?=
- =?us-ascii?Q?6ka9i87vYDXnap8rXSbxFgqBX44h1OJrlrTlzJ9ywPHgKy+CcaADBtpf/Ep3?=
- =?us-ascii?Q?4twRXLPObc5y+esEXpc8EFc5p2EMrEjwF0o1FgtpmR9mnvDHJIsyLYbN5sLu?=
- =?us-ascii?Q?ngEDf96LaKA3N+dxfmzf0R3M9tPejIwd7GtGUn/LMCXPYAX7j10zUQUc/ceE?=
- =?us-ascii?Q?by8ZKKvzmyxO0wslB2YlSELQuH0s3MqHuI8zA8zBkW/8BIUXNX1te6C84GqX?=
- =?us-ascii?Q?6YH+AMYn4tRo6M1rwtDNQUMOg6KEMw5rg597H/NvmO2tadBTcw910hk6cwGo?=
- =?us-ascii?Q?RXlPm3/M1iJU3vUtT9rUuu24cpyjiByjMcrAQ7W5LTfCDBocBWL7YRgkXSlt?=
- =?us-ascii?Q?tTmAkoUTfimL6REnjJTE0Lo8YRdsZBTBjNs3P2J1LMZ1EQ8e+GcPBzcwIj2L?=
- =?us-ascii?Q?vTPmhr6DIo5QdnkJ/AS4BjxN5IhF+l/KeS2Fxsw77woHtCnBqA6fFUJaerwG?=
- =?us-ascii?Q?38eZxYZG0R5G1VgH1bnetlhOT+fkebtdjas/zRJ+PlnIpCEPYTmvBWIri0pA?=
- =?us-ascii?Q?eEluqr16EtgFrQdgXmIDm+ZpTZXT03xjq9wCaNuSe7WAqBj0MmKaemf8MKGb?=
- =?us-ascii?Q?dTZnwaLWtHUWJMIF7/9yjMSsiwCz3xJwFpeuu4QhsBWShYUftwdfb1TrkmNq?=
- =?us-ascii?Q?njm/lX5QZskunLj91HhynvGbsHtokzkNk+zpWUscfI6lneQsPuVlzkamN+tF?=
- =?us-ascii?Q?iEX0SKSUxKNlRir0qxSypd1E51cuFearCtS+iZx4LYsALPvaojOv2niX8V+3?=
- =?us-ascii?Q?9HRGO7y9QYjwzKh/evF7ljri3itKzdWCq0LNj/tEJZvokveK8wnv89VqnhPu?=
- =?us-ascii?Q?ARfNRtsKo9Eu82VlG+RP+TukvgD9hsR2yjKnOf96U7p6nmA5LVqjHjfJWF9g?=
- =?us-ascii?Q?6+ENo2w/oQMAxSsHldc4IXI+hfbaeX6FAgsr2OMs+WTbmZHMGWnQhZaeDBDK?=
- =?us-ascii?Q?x/6W2xWAT+qnXtHugelJjhaL35PaX/kmWj0VgkicjlObPue0bWyLH2koPgYs?=
- =?us-ascii?Q?DJjlZ8LD0XlxwCMPNKW7GwDNjG/94BxN/fQrh5kgpcpyLuTv23EnNu3ulDgX?=
- =?us-ascii?Q?OcRCohBS0of36CaBFUkRFewxeJtaataj+oGCWFKZi0mOgGCLyPKpsElg4Nj8?=
- =?us-ascii?Q?w9KTrnysiQLjqQnLgp19jfNRuJDkCPAgV/+dRO0/lvlhuYjwDVQMhjPOpbuv?=
- =?us-ascii?Q?CxwhywfHaCyBGs0qM9Y9pbMhmwtbju8hvtMrw3lZiGkGc45QrzBPOR+sk6ID?=
- =?us-ascii?Q?+htwEWxSmY090V+sr4RLsRBSMf06yxdpkfEaTJK1A6bxG4ZDC7TBydJ4nZm2?=
- =?us-ascii?Q?F35O8X353As3ZJ5AcnYWESuXInzCS0rRDRCmSlvYD8U4mKfY21jPprwbuqs5?=
- =?us-ascii?Q?yEOHFcEmOT+Y2qwUzq3ExGcud8/jzMQLN3IIxzGXrEYHdch38bO6VGqb3LDt?=
- =?us-ascii?Q?rpfchw=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ bh=8F1fb9QNfxQcbMN6VN0hnUuJOlzxkkm3CmHWC1gIhM8=;
+ b=D6e27ZKdf1C0uPGbqoFCn3fB85jMGYz7WSrwLD9+sO0ksu/QqoGwewPWDRpoAxkts7UtpeDiMq6JT6tCH7wznyUuaBxRLb6uQ0SpPLDy5boDgi7cOejV0qQ4Lun7YJRxwLGaNOO4DjGlS5aMgRkcskVRivXp9iWA56SrmHKyKoA=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by BY3PR13MB4963.namprd13.prod.outlook.com (2603:10b6:a03:361::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.14; Mon, 26 Sep
+ 2022 08:19:46 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::2cbf:e4b1:5bbf:3e54]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::2cbf:e4b1:5bbf:3e54%5]) with mapi id 15.20.5676.011; Mon, 26 Sep 2022
+ 08:19:46 +0000
+Date:   Mon, 26 Sep 2022 10:19:40 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Juhee Kang <claudiajkang@gmail.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, skhan@linuxfoundation.org
+Subject: Re: [PATCH net-next 1/3] net: use netdev_unregistering instead of
+ open code
+Message-ID: <YzFgnIUFy49QX2b6@corigine.com>
+References: <20220923160937.1912-1-claudiajkang@gmail.com>
+ <YzFYYXcZaoPXcLz/@corigine.com>
+ <CAK+SQuRj=caHiyrtVySVoxRrhNttfg_cSbNFjG2PL7Fc0_ObGg@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAK+SQuRj=caHiyrtVySVoxRrhNttfg_cSbNFjG2PL7Fc0_ObGg@mail.gmail.com>
+X-ClientProxiedBy: AM0PR10CA0015.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:208:17c::25) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|BY3PR13MB4963:EE_
+X-MS-Office365-Filtering-Correlation-Id: fd187cc5-7936-4ee5-b3e5-08da9f97df1a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: AX1GTHa4xNaRsEZenfv2b1TJxPTemuwENCHsP3Buu5DU65YTrqsZCpbv11bUpgNiiG9o6g8Etsa1uEVfegixWpYGyZB0sMc3VM0M2rEeTdB/1PBA22meqBWSetokmc2Khe4646McTuVpvaPCUiHUs+vqXRmhFC3j+FRhkj9+d23f5ufzYzvcxHCT2Wc2RNfPbORg+lNYftcvYeCKlD7vWwNly1iFZd9rx6Jw6y1N31ZGEZueaLhz4gW7sA/GprhjQnfGmEwa0hF4qY6fQCuIe4LBiYQQ7i0QW4E8p0kZa4AuzkHMr4iDly/TrUWHkPKan3dp2yTTy12UYdrsXKMcsmA8g42NiglQcbKRcgJPdfvz4Oc7aw4yz4Y3VYDpqAPTsxhFSReKoaiDMkWQSpBzKTaAfwNyoZKQfrAlB0BVkp3OBY+8bG3JDvCVwXKzxwrPOlstyevv/p9ACdiQUHz4yKKZ5EvfCz4C+UjxmbikZFE+mxNWgWgCiw+J6M71kwbdY+TM5ZTWaW0Jo/6wVwKw0DBZxhpSWJ2BSG+mUVEultu7Ak/Rc3ipy49YNkU+UhL6nLn+5xd400zrnIdpPR2zwhVXvsXkR2CiF8bOMrUPmdoYJpo3mUHDGFyfrwPfPZdDKITaCQq3obMOEV/eo/dh6XLG1yiUFSyIyU+cpiNywBhJ6A6TyC+46NNQIwUN1L1SzDTXwdjEH3x8CUWTMyQXD/0TVQ6XkN5VCX8jHS6IP6cI16pRN6yqud2ER6kKHPwx
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(396003)(39840400004)(136003)(346002)(366004)(451199015)(4744005)(6512007)(44832011)(36756003)(52116002)(5660300002)(2616005)(8936002)(2906002)(66476007)(66556008)(66946007)(8676002)(4326008)(6506007)(6666004)(41300700001)(38100700002)(86362001)(186003)(6916009)(316002)(83380400001)(478600001)(6486002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?tHrR/vszQunWPW66HYvX3r7B5Qts3Mxu6MV6qaRanpdP504CCP6vAgkDqSaS?=
+ =?us-ascii?Q?qNawq2UjJnoyNuwX9/hkyMdCjRpnwRm837f6CC3wcO1EW+DO6mkeOoI/TTo/?=
+ =?us-ascii?Q?oltHRsadP10PvFU6VxAOk1sXuisdFxYMDUlWBB6s29TUyNs0PIqqkcnjSksc?=
+ =?us-ascii?Q?eT+xMWZZfOdrKf8RdoG6dvdpP+cnrNdSF437P2ZafGnndA1sFlhu3lNEsam2?=
+ =?us-ascii?Q?576qVQFvL/TPIohHXXiIuEzcJ4XjAjAFM/640a15cvKJqXLczuSEPoNWlXTb?=
+ =?us-ascii?Q?V8MoZLMPKyq/BTvtPq6HzVJjdDx/tiIXlHaWo90VuCWcWLoefhnrCH8gwhLw?=
+ =?us-ascii?Q?+jwThSwlh1U3btwCa0DGVxab3cJ73P0kbWAAAdx45legRsailf2Z0rSj7kmU?=
+ =?us-ascii?Q?WyYUvouHL/mRzWdK2i6CCGuu3W1GwJ9B/yeJmmmGoik2ByWVN1I333z99bUj?=
+ =?us-ascii?Q?zW5vajq7Qmh89NOCLMQsprXySQgiNlREoDBwDb6BSKJZ58Wlj1yUl+6BRm1h?=
+ =?us-ascii?Q?EkCT72WKGoj6iwbTVMDTmQ9h/27qEYAOkrYM7esJufxHZDkawMVF9onEHxap?=
+ =?us-ascii?Q?dwE1mOVivuCXMic8R7yOqW+jh3UrhYp95SeIEfdM1uGqdkqn6EmHCG7RxNVG?=
+ =?us-ascii?Q?+r3oF4wwn2zMvQKXGhcAB8B9PcOw2FBTKLs8s9jsSNU9WjhpdPpFajZ3deio?=
+ =?us-ascii?Q?aAu6f7nJgUcScbAfwfXsRf+i5rZDA7Q8oaUHtPxIdxprsxD7nyEXPyyi/37e?=
+ =?us-ascii?Q?nv/v9ZMtsytF9UBm1IPyFEn74R2CQKA5VaznVvbhMd+zlF7NQMutj5lLY95k?=
+ =?us-ascii?Q?DzT5vm+x+Dhm6pXPtgHrlm2WOtBLonB83aVv5BLIriiUg85ly8uqFMwX52Bh?=
+ =?us-ascii?Q?tCNHnqhUZwojSh0xSt9jVEntQY2r7wXrJI402sgzMu3uNGKOMCSvM4pInOh8?=
+ =?us-ascii?Q?6pJgT/8FksPwX7PLeAGm5pKaQ6HDEollpTuWxEi9Q0Ru2/tfyG5fwRiS7Zh3?=
+ =?us-ascii?Q?JYetqlIY1wdAzusMSYocVF0Sdx4HTUC6aRK/nN9STJBR//8T6LRB5mliRYwo?=
+ =?us-ascii?Q?l2B6dxlsHWQP52QOUeI/Lvx3FLS9dYXveF+LbZgdkAqIci4kLZp38RHL22Nw?=
+ =?us-ascii?Q?1AT/sL1LM9ODk+IbkG7vwcoMz7qtA1qt7PueEC14JWI2Q7gZl4JKhajsVmOj?=
+ =?us-ascii?Q?LaUT/Yx5HQViXj09tfGliGFGV0FGp9GxttJQfk6ZZtYvru2iu5mB/sxhD6w2?=
+ =?us-ascii?Q?xCP9/gI6X6djAt4n+CC1ATmOdIWyrQ7bhjjb9lA3QxFjUVu9tAyBYRYbLnMk?=
+ =?us-ascii?Q?I/XbSEsFsMP45lJCn51cEPIWceLseigu3zJNbXvFYqGFt0yCnviCZB3WbjcJ?=
+ =?us-ascii?Q?LVAQ70IGSEJzl/vQN/CrrKiW+ASwdxMUw6M48vFJIivsblCjmhVuKeTj/8vF?=
+ =?us-ascii?Q?P/oErW92B+c8juO7CMjPoxb0wDxJg/mvbBZXgLOlF7U1nIK9rh0pPDW1yoO9?=
+ =?us-ascii?Q?0DzfQDy3PoNa9LN+WWFVFo3jG71eMyT7hWpnz1JNE4EYCEj9qHEn9+fPyOBQ?=
+ =?us-ascii?Q?eraWrnM7Aagk6dy1Skt7WOEyoLDrVtHoCnHTaOxE1ubqTe9l7G7yqcDjuSWS?=
+ =?us-ascii?Q?VksazArryb7EY3Z3JgdnK45pRBdfgCMilc9Dsnu7E430HWZ8vkq5B0Hr4GIo?=
+ =?us-ascii?Q?Q+T8jg=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fd187cc5-7936-4ee5-b3e5-08da9f97df1a
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TYBPR01MB5341.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4e3278fc-8bd9-4897-25c2-08da9f96d1f9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Sep 2022 08:12:14.2711
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Sep 2022 08:19:45.9543
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Zo8CLNaMc3NOLQBJ1oLYGutwLbvUfEF89/OMS23xVIfwest5Myj65Ai5kXuyHu/OTuR5CMffTRpaeZPUQFEmN8csYVBrw+IMcU9XQgwI1GZKiL/cEU7JWC7kqc8iWsf+
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSZPR01MB8734
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: OkmDAExBsBQBWTNPymUT2PmtIp3YlHy7PsIIYtmnkCepq+8byn75ZKsnDzrY8gb45aQ6ph0Th4IjSqfQHH5EsPAmoc6az6YOrCl9DV1+BdE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY3PR13MB4963
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+On Mon, Sep 26, 2022 at 05:05:08PM +0900, Juhee Kang wrote:
+> Hi Simon,
 
-> From: Andrew Lunn, Sent: Friday, September 23, 2022 10:12 PM
->=20
-> > +/* Forwarding engine block (MFWD) */
-> > +static void rswitch_fwd_init(struct rswitch_private *priv)
-> > +{
-> > +	int i;
-> > +
-> > +	for (i =3D 0; i < RSWITCH_NUM_HW; i++) {
-> > +		iowrite32(FWPC0_DEFAULT, priv->addr + FWPC0(i));
-> > +		iowrite32(0, priv->addr + FWPBFC(i));
-> > +	}
->=20
-> What is RSWITCH_NUM_HW?
+...
 
-I think the name is unclear...
-Anyway, this hardware has 3 ethernet ports and 2 CPU ports.
-So that the RSWITCH_NUM_HW is 5. Perhaps, RSWITCH_NUM_ALL_PORTS
-is better name.
+> > > diff --git a/net/core/dev.c b/net/core/dev.c
+> > > index d66c73c1c734..f3f9394f0b5a 100644
+> > > --- a/net/core/dev.c
+> > > +++ b/net/core/dev.c
+> > > @@ -2886,8 +2886,7 @@ int netif_set_real_num_tx_queues(struct net_device *dev, unsigned int txq)
+> > >         if (txq < 1 || txq > dev->num_tx_queues)
+> > >                 return -EINVAL;
+> > >
+> > > -       if (dev->reg_state == NETREG_REGISTERED ||
+> > > -           dev->reg_state == NETREG_UNREGISTERING) {
+> > > +       if (dev->reg_state == NETREG_REGISTERED || netdev_unregistering(dev)) {
+> > >                 ASSERT_RTNL();
+> > >
+> > >                 rc = netdev_queue_update_kobjects(dev, dev->real_num_tx_queues,
+> >
+> > Is there any value in adding a netdev_registered() helper?
+> >
+> 
+> The open code which is reg_state == NETREG_REGISTERED used 37 times on
+> some codes related to the network. I think that the
+> netdev_registered() helper is valuable.
 
-Perhaps, since the current driver supports 1 ethernet port and 1 CPU port o=
-nly,
-I should modify this driver for the current condition strictly.
-
-> > +
-> > +	for (i =3D 0; i < RSWITCH_NUM_ETHA; i++) {
->=20
-> RSWITCH_NUM_ETHA appears to be the number of ports?
-
-Yes, this is number of ethernet ports.
-
-> > +static void rswitch_gwca_set_rate_limit(struct rswitch_private *priv, =
-int rate)
-> > +{
-> > +	u32 gwgrlulc, gwgrlc;
-> > +
-> > +	switch (rate) {
-> > +	case 1000:
-> > +		gwgrlulc =3D 0x0000005f;
-> > +		gwgrlc =3D 0x00010260;
-> > +		break;
-> > +	default:
-> > +		dev_err(&priv->pdev->dev, "%s: This rate is not supported (%d)\n", _=
-_func__, rate);
-> > +		return;
-> > +	}
->=20
-> Is this setting the Mbps between the switch matrix and the CPU? Why
-> limit the rate? Especially if you have 3 ports, would not 3000 make
-> sense?
-
-This is needed to avoid about 10% packets loss when the hardware sends data
-because the hardware will send much data if the limit is not set.
-
-> > +static void rswitch_get_data_irq_status(struct rswitch_private *priv, =
-u32 *dis)
-> > +{
-> > +	int i;
-> > +
-> > +	for (i =3D 0; i < RSWITCH_NUM_IRQ_REGS; i++) {
-> > +		dis[i] =3D ioread32(priv->addr + GWDIS(i));
-> > +		dis[i] &=3D ioread32(priv->addr + GWDIE(i));
-> > +	}
-> > +}
-> > +
-> > +static void rswitch_enadis_data_irq(struct rswitch_private *priv, int =
-index, bool enable)
-> > +{
-> > +	u32 offs =3D enable ? GWDIE(index / 32) : GWDID(index / 32);
-> > +
-> > +	iowrite32(BIT(index % 32), priv->addr + offs);
-> > +}
-> > +
-> > +static void rswitch_ack_data_irq(struct rswitch_private *priv, int ind=
-ex)
-> > +{
-> > +	u32 offs =3D GWDIS(index / 32);
-> > +
-> > +	iowrite32(BIT(index % 32), priv->addr + offs);
-> > +}
-> > +
-> > +static bool rswitch_is_chain_rxed(struct rswitch_gwca_chain *c)
-> > +{
-> > +	struct rswitch_ext_ts_desc *desc;
-> > +	int entry;
-> > +
-> > +	entry =3D c->dirty % c->num_ring;
-> > +	desc =3D &c->ts_ring[entry];
-> > +
-> > +	if ((desc->die_dt & DT_MASK) !=3D DT_FEMPTY)
-> > +		return true;
-> > +
-> > +	return false;
->=20
-> Is a chain a queue? Also known as a ring?
-
-Yes.
-
-> The naming is different to
-> most drivers, which is making this harder to understand. Ideally, you
-> want to follow the basic naming the majority of other drivers use.
-
-I got it. I'll rename them.
-=20
-> > +}
-> > +
-> > +static int rswitch_gwca_chain_alloc_skb(struct rswitch_gwca_chain *c,
-> > +					int start, int num)
-> > +{
-> > +	int i, index;
-> > +
-> > +	for (i =3D start; i < (start + num); i++) {
-> > +		index =3D i % c->num_ring;
->=20
-> Why this? Would it not make more sense to validate that start + num <
-> num_ring? It seems like bad parameters passed here could destroy some
-> other skb in the ring?
-
-The descriptor indexes (c->cur and c->dirty) are just counters so that
-the index is always calculated by that. This implementation is similar
-with other drivers/net/ethernet/renesas/ drivers. However, as you mentioned
-above, this is not majority, I think...
-
-Also, I realized that the function will cause an issue because the types of
-c->cur and c->dirty are u32, but the type of start is int.
-
-I'll fix the indexes handling.
-
-> More naming... Here you use num_ring, not num_chain. Try to be
-> consistent. Also, num_ring makes my think of ring 7 of 9 rings. When
-> this actually appears to be the size of the ring. So c->ring_size
-> would be a better name.
-
-Yes, the num_ring means the size of the ring. So, I'll rename it as your su=
-ggestion.
-
-> > +		if (c->skb[index])
-> > +			continue;
-> > +		c->skb[index] =3D dev_alloc_skb(PKT_BUF_SZ + RSWITCH_ALIGN - 1);
-> > +		if (!c->skb[index])
-> > +			goto err;
-> > +		skb_reserve(c->skb[index], NET_IP_ALIGN);
->=20
-> netdev_alloc_skb_ip_align()?
-
-Yes. I'll use it. Thanks!
-
-> > +static void rswitch_gwca_chain_free(struct net_device *ndev,
-> > +				    struct rswitch_gwca_chain *c)
-> > +{
-> > +	int i;
-> > +
-> > +	if (c->gptp) {
-> > +		dma_free_coherent(ndev->dev.parent,
-> > +				  sizeof(struct rswitch_ext_ts_desc) *
-> > +				  (c->num_ring + 1), c->ts_ring, c->ring_dma);
-> > +		c->ts_ring =3D NULL;
-> > +	} else {
-> > +		dma_free_coherent(ndev->dev.parent,
-> > +				  sizeof(struct rswitch_ext_desc) *
-> > +				  (c->num_ring + 1), c->ring, c->ring_dma);
-> > +		c->ring =3D NULL;
-> > +	}
-> > +
-> > +	if (!c->dir_tx) {
-> > +		for (i =3D 0; i < c->num_ring; i++)
-> > +			dev_kfree_skb(c->skb[i]);
-> > +	}
-> > +
-> > +	kfree(c->skb);
-> > +	c->skb =3D NULL;
->=20
-> When i see code like this, i wonder why an API call like
-> dev_kfree_skb() is not being used. I would suggest reaming this to
-> something other than skb, which has a very well understood meaning.
-
-Perhaps, c->skbs is better name than just c->skb.
-
-> > +static bool rswitch_rx(struct net_device *ndev, int *quota)
-> > +{
-> > +	struct rswitch_device *rdev =3D netdev_priv(ndev);
-> > +	struct rswitch_gwca_chain *c =3D rdev->rx_chain;
-> > +	int entry =3D c->cur % c->num_ring;
-> > +	struct rswitch_ext_ts_desc *desc;
-> > +	int limit, boguscnt, num, ret;
-> > +	struct sk_buff *skb;
-> > +	dma_addr_t dma_addr;
-> > +	u16 pkt_len;
-> > +
-> > +	boguscnt =3D min_t(int, c->dirty + c->num_ring - c->cur, *quota);
-> > +	limit =3D boguscnt;
-> > +
-> > +	desc =3D &c->ts_ring[entry];
-> > +	while ((desc->die_dt & DT_MASK) !=3D DT_FEMPTY) {
-> > +		dma_rmb();
-> > +		pkt_len =3D le16_to_cpu(desc->info_ds) & RX_DS;
-> > +		if (--boguscnt < 0)
-> > +			break;
->=20
-> Why the barrier, read the length and then decide to break out of the
-> loop?
-
-Thank you for pointed it out. I should decrement/check boguscnt
-before the barrier and read the length.
-
-> > +static int rswitch_open(struct net_device *ndev)
-> > +{
-> > +	struct rswitch_device *rdev =3D netdev_priv(ndev);
-> > +	struct device_node *phy;
-> > +	int err =3D 0;
-> > +
-> > +	if (rdev->etha) {
->=20
-> Can this happen? What would a netdev without an etha mean?
-
-This cannot happen now. So, I'll drop it.
-(I intended to create a netdev without an etha as a virtual device.
- But the current driver doesn't have such a feature.)
-
-Best regards,
-Yoshihiro Shimoda
-
->     Andrew
+Thanks, FWIIW, that seems likely to me too.
