@@ -2,295 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E9AF05EAF29
-	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 20:07:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 939CA5EAF30
+	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 20:07:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231342AbiIZSG5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 14:06:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34110 "EHLO
+        id S231290AbiIZSHb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 14:07:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231341AbiIZSGf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 14:06:35 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A23798284F
-        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 10:50:39 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id s90-20020a17090a2f6300b00203a685a1aaso7681026pjd.1
-        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 10:50:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=TNDUsCjQ4zB2/5GZ7X+uS9zeoK4Uz9rg4Dmc7gG+Kts=;
-        b=diPFMelUGqg5Olz6I8z2UqQgP/qT0p6U2CTPr1IKXAPPQDlXjIbGiW+Mq8ZW/AJerP
-         YVtmTqGjAus4WfzbTh4Tizc48Roo/vvFh6ncx714UJ4hLWN/DikhBXoZzoyhCy7LE6Y/
-         3OYOMIYymLSLRxuRHD8IaRlLtQ4iFKBE+1Png=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=TNDUsCjQ4zB2/5GZ7X+uS9zeoK4Uz9rg4Dmc7gG+Kts=;
-        b=mYEsPABud6aSQKq4c5g5NaBoTWVKgNjxp1WG2EJ2tYP1UyzMk16dSdXe00huPOWrRq
-         PG799Jp47dvQIzCJ/wSrTrWCH15sK3WTT18kp8/K1QByfTl4XYUnM46bNNPLjbfz/rM2
-         xz6wTvgXFlsyWFDFiVlIaYhf3Hvx++pOXnUA2eNSdDkuqNEgK6NHSheDJGlTwcUfIt9N
-         mO4//VLPVXv/09QZ6QT3n79YQb2tgRd5LGJvyKSDkRnliFVkU3Vgk3UfBeAY+BkKkg6j
-         sxPA5T2FiDmDPcRvDhqCWyoS1xAwuITM7WjxGTKRAw/DIDfMuD5s4/PQ4kvQKsBi2DyU
-         aW0g==
-X-Gm-Message-State: ACrzQf1WVQGK3tlJOLgFpuTAddG5WYHLubJ3L8wdbSV71Oa1Vc4CJqSB
-        YG2nTdhWlfX2OFmkIxMYua3vrg==
-X-Google-Smtp-Source: AMsMyM53HUNBt6kGZBRWVtwFK3cgJAVMJrfeOBQoCVB2uG4qpYwM3FiGKu6g/YmgMRQUrRqqychKmQ==
-X-Received: by 2002:a17:90a:a09:b0:202:ab93:2afb with SMTP id o9-20020a17090a0a0900b00202ab932afbmr37124281pjo.60.1664214639071;
-        Mon, 26 Sep 2022 10:50:39 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id g13-20020aa79f0d000000b00536097dd45bsm12539497pfr.134.2022.09.26.10.50.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Sep 2022 10:50:37 -0700 (PDT)
-Date:   Mon, 26 Sep 2022 10:50:36 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Vlastimil Babka <vbabka@suse.cz>
-Cc:     Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        "Ruhl, Michael J" <michael.j.ruhl@intel.com>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Alex Elder <elder@kernel.org>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Daniel Micay <danielmicay@gmail.com>,
-        Yonghong Song <yhs@fb.com>, Marco Elver <elver@google.com>,
-        Miguel Ojeda <ojeda@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-btrfs@vger.kernel.org,
-        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org, linux-fsdevel@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, dev@openvswitch.org,
-        x86@kernel.org, llvm@lists.linux.dev,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH v2 02/16] slab: Introduce kmalloc_size_roundup()
-Message-ID: <202209261050.560459B@keescook>
-References: <20220923202822.2667581-1-keescook@chromium.org>
- <20220923202822.2667581-3-keescook@chromium.org>
- <e0326835-9b0d-af1b-bd22-2aadb178bd25@suse.cz>
-MIME-Version: 1.0
+        with ESMTP id S231332AbiIZSGu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 14:06:50 -0400
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2081.outbound.protection.outlook.com [40.107.100.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7643F186C2;
+        Mon, 26 Sep 2022 10:51:30 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=glAQ0VWOlm5JWzWAlSDdXseaJDhRmAePmsYXfqkubsOp7E4NKra/41azq9g82qYItM4r01lY2ScO4WYZXrZ+6X01pxhbvuPMHuvSOnPubhgaTYPAq6hEyzRbtrAOFqPGUwGOjDmw8X2oqcqjxZhrrUnrnzndleadEvpHfaB/27Z66/UpJ/723iMNxDUtrgHZlqxryfhguMpvWzNxgbeP8xM9Ebo/ofBLa6+hHedKWp5WdoJ/i6//NAiPbyiIHLu/Io/eLfI4stWAb1Gw5uDZrrEKXubRrnXQC8WkhSsLEX+s1iNG8XJsrGqvEJj+28G1Es+PTFyZnCMI7yR79ADkQA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mxnJ1212wl2Tw7Q6Fnb00u3yNSj5BhP3CX54OkGIgvQ=;
+ b=bhZyv8+Y9FsFWHBBmoL5j2qu5gNRJSMGUe1ybThKUwTktYIdR42pJjbjmrJrXjxZWYYtwkCaHKdaov4llg8joLpMktyMwjJJbptRNIifQd4Z92OyIBAwyWdAIiWvq8IOJMDG97rtqVj3ON7PqOfaIlf8LbhPCgcyZ2Vdi7J1mP6N23R1IO86NXEsJZWzLFgkUGeNGcjiQWQ18NBHU71JuQvGE3xm17zZ3PZ/vYx5WrJvKHOVNOmFPFySVD6by1TkzaZ2Bz0vIXq5DzQAE3QcU6Hy20PBShFzPNMS9r888P3oYGOOjLfC8d3AjT4AxJQejTSBvC8GXidA3uWTAjc2yA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mxnJ1212wl2Tw7Q6Fnb00u3yNSj5BhP3CX54OkGIgvQ=;
+ b=jpE3nBfapFGC+aX3/6j9VLCn4DguWVSGIX2k7Ak8mbKYOF/ZFDUGRrPNTXjJ+kHu88dVop8B69Nz6qEMT6YaTm5Li/nduBFuLERZPyRfjcEtbNbqHX232dfI0lGv8C0+jmYvvZ6uTk8N0/Ko2iL4bXildEHbPYcrRDlgG6mvh5ocVl8eY++ptmEpU+p5D/eTb4PbcZao4xRR/djqfNELgrZY3otgJfPIo0XR353mzCTh88k8WqfrUgE6ZkRwNaB2N696gsimMxmtWYLhNOLxcy0NExHjodYSXvco8IHxKpxKws+4t5OPCr0vEBbqzYqkFco9gdse6NFeDQm6NOXkLg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by SA1PR12MB7149.namprd12.prod.outlook.com (2603:10b6:806:29c::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.25; Mon, 26 Sep
+ 2022 17:51:28 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::462:7fe:f04f:d0d5]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::462:7fe:f04f:d0d5%8]) with mapi id 15.20.5654.025; Mon, 26 Sep 2022
+ 17:51:28 +0000
+Date:   Mon, 26 Sep 2022 14:51:27 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+        dri-devel@lists.freedesktop.org, Leon Romanovsky <leon@kernel.org>,
+        linaro-mm-sig@lists.linaro.org, linux-media@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>
+Cc:     Kamal Heib <kamalheib1@gmail.com>,
+        Mohammad Kabat <mohammadkab@nvidia.com>
+Subject: Re: [PATCH 0/4] RDMA/mlx5: Support DMABUF in umems and enable ATS
+Message-ID: <YzHmn/ClnFX3vRX7@nvidia.com>
+References: <0-v1-bd147097458e+ede-umem_dmabuf_jgg@nvidia.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <e0326835-9b0d-af1b-bd22-2aadb178bd25@suse.cz>
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+In-Reply-To: <0-v1-bd147097458e+ede-umem_dmabuf_jgg@nvidia.com>
+X-ClientProxiedBy: BL0PR03CA0014.namprd03.prod.outlook.com
+ (2603:10b6:208:2d::27) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4192:EE_|SA1PR12MB7149:EE_
+X-MS-Office365-Filtering-Correlation-Id: 88121a43-92f9-4a11-0e90-08da9fe7bd16
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: uKk/P2mpej/ffr7WzfHnC0f0kl0+NcVjh71znXHBMlY6e5m61Y9KSPhO+LKRXjQpgwYPB00up64bVueiVfiWURIJpvlUsgDdOJ+0Wr/H1z/rDqjdGPhkeaujK0erI7gMdbdh3vldIOBVRJqEgyZAd0D9e2Z/FfhepNZzQdnV2SluHYjfXLPG/ZCTKya49EplS0TbcEIsfoecRLj1+4BNXR75fzKrHcWd1Qy/fmYhxf2FpQdru1mkmRWRpc5ErV4m41cUciRX4920TPBI7h5q4f1F615C5m5P8Pl8Lh9XNgEcilLPlr5hLC/EKmqjNYZ4VvRxCwYozIrceedHwUChmy9aFy26Ft+FZnhrgg9645wp8zJ2h7A5QWdyQsdEdnZ4DYkpK1kgWP1G/lTtP1U54oHHhm94a0xvcw4wusnDA8ZtcxTpbjjJRjWomcDwIeFz1B0J+56ZqyB12mx7DlCouWE7nW1PcYjs7Msv3Eqxi2j0zM6p09xMyPmvYw1yef33lRIrdQ4abYKmwHdorHwTw3qvDFDa5OD1SffRC3J1DMeH5hG+7zx1Mbx+z+/PZ3ly5t8yM9Nd91JsqXRPTOfk9odAs+vj64ohYjBwk8Gznb1kzO9vmSVGbGyXLCwLNqWwHqcuTIcSOg2L5U9YOqAWSX2VERrkC5gEFC6wZx1vJ9+qXvdajh0PZ/mI2/2DfJn9iaKI5iNwyL+MX0hTISPCzw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(376002)(346002)(366004)(136003)(396003)(451199015)(36756003)(86362001)(66556008)(66476007)(66946007)(6486002)(54906003)(478600001)(110136005)(316002)(38100700002)(4326008)(107886003)(41300700001)(8676002)(5660300002)(6512007)(2906002)(186003)(26005)(2616005)(83380400001)(8936002)(6506007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?iJAFOw6KF02OG9ZETDwzjUTomwUk4RnuRDrmKZqjY1psUmML5FacPJdkFrRH?=
+ =?us-ascii?Q?U6Ff/LsCT8+o4qfCjBpidET/T369Fn3QJ2yIs/z8ZaVluRwAeo6M4b8DP3qu?=
+ =?us-ascii?Q?dqH3tWxpcxkw7BRIu8zAbD2KqKJYMknzjMyeYQpnnyneKLxL1XP7tmAjl1we?=
+ =?us-ascii?Q?mScxZUNQXneglUIcKKjr4g20DGVh8xQEisvwpH9NcVOZKJBta6lvjRjh+WEH?=
+ =?us-ascii?Q?NIQaggyUO2lI0Jsw7NGS4zz1HrjlW7u2hNYOl6DbPgSi8yceYOAksHqdpycg?=
+ =?us-ascii?Q?EPb9ryD6a25KCoNjX6BTUcInAeeDHsHS4ggOWJ8iqzDrhYKccqlplG2+3YjD?=
+ =?us-ascii?Q?juXAl5n+G1V8+wDhFaSHTA4U20jaS9RbiGlDiEq5InK0ts+8GJLGAVGzdJlf?=
+ =?us-ascii?Q?LrMj5zw3sEKRhC6nnwoy8sts6sEVhNdBp7cKHuevKnlKJi94CLVxOQcT43f/?=
+ =?us-ascii?Q?scGeSJSr3fkU7WqhO3XHSS8apYRXbvROPSdGZILibUEI8GITS7k5N9lPXf4b?=
+ =?us-ascii?Q?opPMt3FvkI7SwQ7/pQ/neeqe/ppFmSXMYa9jCbRi2SFHCqwCm15ehiAbU1OK?=
+ =?us-ascii?Q?rxeZKdZzaR/I1JEV/sKsRCgR8IUpqcv6BELrXS+mNt2bvWrBMXX2Xe1mmqwP?=
+ =?us-ascii?Q?dlVAWMFWoiKbHHWeUe+UekdVmyjZZwIt2USNB8M8ACslPsz2IyRxxr58uAz9?=
+ =?us-ascii?Q?kqyK7iWzqg62EK0UkexbI/V5rgC4KdEuWjPQ0S3kMgba5O0Pokn+QKN8D+Oi?=
+ =?us-ascii?Q?IN3eLv6Ktb6kTCDyuBfBL78/5U/eKjjVldGWqI8gjrP97GfOkjIAfPrBR3cL?=
+ =?us-ascii?Q?vDeIU62zBdFINWFrx4A9XH/q+yYzCJS5BP3lrfoDZsySIXnIcFXDpxDyxQo/?=
+ =?us-ascii?Q?31bW5m/noekxPWe+BF8SkxTi/q749MsmBi8XaTLMyYZor3v08XoKBU1GDCHB?=
+ =?us-ascii?Q?4fU2uqjL7dPFVY220pfvvTK9KKTQNhaHZPdRnIUg9Lv1plk7LudPnipoMMyu?=
+ =?us-ascii?Q?Dj9fhALdJbKX/5G94Bus7vYVxZz1p50bBLalhRAy/mq/NPcVSk4qpIYx2S66?=
+ =?us-ascii?Q?lE/0JNnyITrD0ilLxEfKhmVxXAG7/WXx2TlLiTJB+PXLudDz5U7QK4hTSmqu?=
+ =?us-ascii?Q?qwXgq2XUoYbi80+XrgKnUOqmaHDmR44V94T7D3FSFVIroorRKWh2IGYYOm3Y?=
+ =?us-ascii?Q?EXtcy5rUDH+HDDMIYznPrDmalzDzSMTCnBUhN3gSJndXdIsvLDR2LYXxmEfX?=
+ =?us-ascii?Q?Y1EtDoMPG/Hxt4hjdOErqg1ZWD8jU0+sc5OE78+D4QqQv9WI5na5GIgI4N7p?=
+ =?us-ascii?Q?yftIr3jtZjBlPgJIxIm3lM/dBYWr/AzL5tk5267hS04zhMHloT9BDSrl+D9x?=
+ =?us-ascii?Q?0kQkOW/+O5xpPrYtKQ1IR2q8mh4hdSdaEmGRWfSH/lSKJhZQVIP1Os83dX+8?=
+ =?us-ascii?Q?dtQvHRKzQV7G+FoCA0vhrpDb5YdE0jwjw7+sHZzuzXOowiE7MatmeUD8ZQsG?=
+ =?us-ascii?Q?lyPm13VGhr3Td+1EDHStY0P61OUcYU+cDbdaBIwfbyfIc5ixqObE6REJZiax?=
+ =?us-ascii?Q?XhIo+VjkSn60Soxgxjs=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 88121a43-92f9-4a11-0e90-08da9fe7bd16
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Sep 2022 17:51:28.6490
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: /DwYu8JRzWSio3Xb+35AtBMYEEVSja4GPqf1hFtmCDASbL+OxMEod7DOtqqadSmw
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB7149
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 26, 2022 at 03:15:22PM +0200, Vlastimil Babka wrote:
-> On 9/23/22 22:28, Kees Cook wrote:
-> > In the effort to help the compiler reason about buffer sizes, the
-> > __alloc_size attribute was added to allocators. This improves the scope
-> > of the compiler's ability to apply CONFIG_UBSAN_BOUNDS and (in the near
-> > future) CONFIG_FORTIFY_SOURCE. For most allocations, this works well,
-> > as the vast majority of callers are not expecting to use more memory
-> > than what they asked for.
-> > 
-> > There is, however, one common exception to this: anticipatory resizing
-> > of kmalloc allocations. These cases all use ksize() to determine the
-> > actual bucket size of a given allocation (e.g. 128 when 126 was asked
-> > for). This comes in two styles in the kernel:
-> > 
-> > 1) An allocation has been determined to be too small, and needs to be
-> >     resized. Instead of the caller choosing its own next best size, it
-> >     wants to minimize the number of calls to krealloc(), so it just uses
-> >     ksize() plus some additional bytes, forcing the realloc into the next
-> >     bucket size, from which it can learn how large it is now. For example:
-> > 
-> > 	data = krealloc(data, ksize(data) + 1, gfp);
-> > 	data_len = ksize(data);
-> > 
-> > 2) The minimum size of an allocation is calculated, but since it may
-> >     grow in the future, just use all the space available in the chosen
-> >     bucket immediately, to avoid needing to reallocate later. A good
-> >     example of this is skbuff's allocators:
-> > 
-> > 	data = kmalloc_reserve(size, gfp_mask, node, &pfmemalloc);
-> > 	...
-> > 	/* kmalloc(size) might give us more room than requested.
-> > 	 * Put skb_shared_info exactly at the end of allocated zone,
-> > 	 * to allow max possible filling before reallocation.
-> > 	 */
-> > 	osize = ksize(data);
-> >          size = SKB_WITH_OVERHEAD(osize);
-> > 
-> > In both cases, the "how much was actually allocated?" question is answered
-> > _after_ the allocation, where the compiler hinting is not in an easy place
-> > to make the association any more. This mismatch between the compiler's
-> > view of the buffer length and the code's intention about how much it is
-> > going to actually use has already caused problems[1]. It is possible to
-> > fix this by reordering the use of the "actual size" information.
-> > 
-> > We can serve the needs of users of ksize() and still have accurate buffer
-> > length hinting for the compiler by doing the bucket size calculation
-> > _before_ the allocation. Code can instead ask "how large an allocation
-> > would I get for a given size?".
-> > 
-> > Introduce kmalloc_size_roundup(), to serve this function so we can start
-> > replacing the "anticipatory resizing" uses of ksize().
-> > 
-> > [1] https://github.com/ClangBuiltLinux/linux/issues/1599
-> >      https://github.com/KSPP/linux/issues/183
-> > 
-> > Cc: Vlastimil Babka <vbabka@suse.cz>
-> > Cc: Christoph Lameter <cl@linux.com>
-> > Cc: Pekka Enberg <penberg@kernel.org>
-> > Cc: David Rientjes <rientjes@google.com>
-> > Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
-> > Cc: Andrew Morton <akpm@linux-foundation.org>
-> > Cc: linux-mm@kvack.org
-> > Signed-off-by: Kees Cook <keescook@chromium.org>
+On Thu, Sep 01, 2022 at 11:20:52AM -0300, Jason Gunthorpe wrote:
+> This series adds support for DMABUF when creating a devx umem. devx umems
+> are quite similar to MR's execpt they cannot be revoked, so this uses the
+> dmabuf pinned memory flow. Several mlx5dv flows require umem and cannot
+> work with MR.
 > 
-> OK, added patch 1+2 to slab.git for-next branch.
-> Had to adjust this one a bit, see below.
+> The intended use case is primarily for P2P transfers using dmabuf as a
+> handle to the underlying PCI BAR memory from the exporter. When a PCI
+> switch is present the P2P transfers can bypass the host bridge completely
+> and go directly through the switch. ATS allows this bypass to function in
+> more cases as translated TLPs issued after an ATS query allows the request
+> redirect setting to be bypassed in the switch.
 > 
-> > ---
-> >   include/linux/slab.h | 31 +++++++++++++++++++++++++++++++
-> >   mm/slab.c            |  9 ++++++---
-> >   mm/slab_common.c     | 20 ++++++++++++++++++++
-> >   3 files changed, 57 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/include/linux/slab.h b/include/linux/slab.h
-> > index 41bd036e7551..727640173568 100644
-> > --- a/include/linux/slab.h
-> > +++ b/include/linux/slab.h
-> > @@ -188,7 +188,21 @@ void * __must_check krealloc(const void *objp, size_t new_size, gfp_t flags) __r
-> >   void kfree(const void *objp);
-> >   void kfree_sensitive(const void *objp);
-> >   size_t __ksize(const void *objp);
-> > +
-> > +/**
-> > + * ksize - Report actual allocation size of associated object
-> > + *
-> > + * @objp: Pointer returned from a prior kmalloc()-family allocation.
-> > + *
-> > + * This should not be used for writing beyond the originally requested
-> > + * allocation size. Either use krealloc() or round up the allocation size
-> > + * with kmalloc_size_roundup() prior to allocation. If this is used to
-> > + * access beyond the originally requested allocation size, UBSAN_BOUNDS
-> > + * and/or FORTIFY_SOURCE may trip, since they only know about the
-> > + * originally allocated size via the __alloc_size attribute.
-> > + */
-> >   size_t ksize(const void *objp);
-> > +
-> >   #ifdef CONFIG_PRINTK
-> >   bool kmem_valid_obj(void *object);
-> >   void kmem_dump_obj(void *object);
-> > @@ -779,6 +793,23 @@ extern void kvfree(const void *addr);
-> >   extern void kvfree_sensitive(const void *addr, size_t len);
-> >   unsigned int kmem_cache_size(struct kmem_cache *s);
-> > +
-> > +/**
-> > + * kmalloc_size_roundup - Report allocation bucket size for the given size
-> > + *
-> > + * @size: Number of bytes to round up from.
-> > + *
-> > + * This returns the number of bytes that would be available in a kmalloc()
-> > + * allocation of @size bytes. For example, a 126 byte request would be
-> > + * rounded up to the next sized kmalloc bucket, 128 bytes. (This is strictly
-> > + * for the general-purpose kmalloc()-based allocations, and is not for the
-> > + * pre-sized kmem_cache_alloc()-based allocations.)
-> > + *
-> > + * Use this to kmalloc() the full bucket size ahead of time instead of using
-> > + * ksize() to query the size after an allocation.
-> > + */
-> > +size_t kmalloc_size_roundup(size_t size);
-> > +
-> >   void __init kmem_cache_init_late(void);
-> >   #if defined(CONFIG_SMP) && defined(CONFIG_SLAB)
-> > diff --git a/mm/slab.c b/mm/slab.c
-> > index 10e96137b44f..2da862bf6226 100644
-> > --- a/mm/slab.c
-> > +++ b/mm/slab.c
-> > @@ -4192,11 +4192,14 @@ void __check_heap_object(const void *ptr, unsigned long n,
-> >   #endif /* CONFIG_HARDENED_USERCOPY */
-> >   /**
-> > - * __ksize -- Uninstrumented ksize.
-> > + * __ksize -- Report full size of underlying allocation
-> >    * @objp: pointer to the object
-> >    *
-> > - * Unlike ksize(), __ksize() is uninstrumented, and does not provide the same
-> > - * safety checks as ksize() with KASAN instrumentation enabled.
-> > + * This should only be used internally to query the true size of allocations.
-> > + * It is not meant to be a way to discover the usable size of an allocation
-> > + * after the fact. Instead, use kmalloc_size_roundup(). Using memory beyond
-> > + * the originally requested allocation size may trigger KASAN, UBSAN_BOUNDS,
-> > + * and/or FORTIFY_SOURCE.
-> >    *
-> >    * Return: size of the actual memory used by @objp in bytes
-> >    */
-> > diff --git a/mm/slab_common.c b/mm/slab_common.c
-> > index 457671ace7eb..d7420cf649f8 100644
-> > --- a/mm/slab_common.c
-> > +++ b/mm/slab_common.c
-> > @@ -721,6 +721,26 @@ struct kmem_cache *kmalloc_slab(size_t size, gfp_t flags)
-> >   	return kmalloc_caches[kmalloc_type(flags)][index];
-> >   }
-> > +size_t kmalloc_size_roundup(size_t size)
-> > +{
-> > +	struct kmem_cache *c;
-> > +
-> > +	/* Short-circuit the 0 size case. */
-> > +	if (unlikely(size == 0))
-> > +		return 0;
-> > +	/* Short-circuit saturated "too-large" case. */
-> > +	if (unlikely(size == SIZE_MAX))
-> > +		return SIZE_MAX;
-> > +	/* Above the smaller buckets, size is a multiple of page size. */
-> > +	if (size > KMALLOC_MAX_CACHE_SIZE)
-> > +		return PAGE_SIZE << get_order(size);
-> > +
-> > +	/* The flags don't matter since size_index is common to all. */
-> > +	c = kmalloc_slab(size, GFP_KERNEL);
-> > +	return c ? c->object_size : 0;
-> > +}
-> > +EXPORT_SYMBOL(kmalloc_size_roundup);
+> Have mlx5 automatically use ATS in places where it makes sense.
 > 
-> We need a SLOB version too as it's not yet removed... I added this:
+> Jason Gunthorpe (4):
+>   net/mlx5: Add IFC bits for mkey ATS
+>   RDMA/core: Add UVERBS_ATTR_RAW_FD
+>   RDMA/mlx5: Add support for dmabuf to devx umem
+>   RDMA/mlx5: Enable ATS support for MRs and umems
 > 
-> diff --git a/mm/slob.c b/mm/slob.c
-> index 2bd4f476c340..5dbdf6ad8bcc 100644
-> --- a/mm/slob.c
-> +++ b/mm/slob.c
-> @@ -574,6 +574,20 @@ void kfree(const void *block)
->  }
->  EXPORT_SYMBOL(kfree);
-> +size_t kmalloc_size_roundup(size_t size)
-> +{
-> +       /* Short-circuit the 0 size case. */
-> +       if (unlikely(size == 0))
-> +               return 0;
-> +       /* Short-circuit saturated "too-large" case. */
-> +       if (unlikely(size == SIZE_MAX))
-> +               return SIZE_MAX;
-> +
-> +       return ALIGN(size, ARCH_KMALLOC_MINALIGN);
-> +}
-> +
-> +EXPORT_SYMBOL(kmalloc_size_roundup);
+>  drivers/infiniband/core/uverbs_ioctl.c   |  8 ++++
+>  drivers/infiniband/hw/mlx5/devx.c        | 55 +++++++++++++++++-------
+>  drivers/infiniband/hw/mlx5/mlx5_ib.h     | 36 ++++++++++++++++
+>  drivers/infiniband/hw/mlx5/mr.c          |  5 ++-
+>  include/linux/mlx5/mlx5_ifc.h            | 11 +++--
+>  include/rdma/uverbs_ioctl.h              | 13 ++++++
+>  include/uapi/rdma/mlx5_user_ioctl_cmds.h |  1 +
+>  7 files changed, 109 insertions(+), 20 deletions(-)
 
-Ah, perfect! Thanks for catching that. :)
+Applied to for-next, thanks
 
-FWIW:
-
-Reviewed-by: Kees Cook <keescook@chromium.org>
-
--- 
-Kees Cook
+Jason
