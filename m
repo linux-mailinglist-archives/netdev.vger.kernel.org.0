@@ -2,64 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F5DC5EAC56
-	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 18:20:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4193A5EAC89
+	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 18:30:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236708AbiIZQUt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 12:20:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59506 "EHLO
+        id S229938AbiIZQaw convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 26 Sep 2022 12:30:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235296AbiIZQUZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 12:20:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19419E2358;
-        Mon, 26 Sep 2022 08:09:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 996CD6068B;
-        Mon, 26 Sep 2022 15:09:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAE34C433D6;
-        Mon, 26 Sep 2022 15:09:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664204952;
-        bh=pwuba6jvnTrO2156q7RLZabQFaxzkBuXtJWFTVuY/0I=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PfYF18eblSgPjJouJIX7YJwYI0k5lXq75DjzVHsQRAhH8JAZB6QEW28Gdl2+upjrY
-         ladwjCF28jOU8R6OJYBxg+YOeXXoXVeWAUfFFWDjbvlnSEjX+pQZ+7TFzDyP+v5dVa
-         LpFet7Ytx36Be12QfNw7Q4dVXe7jCqAXP6+vjGXknSRB5oPkJ2Bs5ok6D0E92KKO2i
-         WtPT3/J9ygO5hpVc7pKEzcqW4ZR9p84qr/ZeFykA0h2MXVu7cBHhsjJj/nJOzih9Ng
-         TXVcgN9KcZkPCitUb0DsjxEZ3W85+6WH/U0qmpX4jw3YDTIW1AzOxN2KGGQYU18Gx2
-         bxFiKJWrg50/Q==
-Date:   Mon, 26 Sep 2022 08:09:10 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S229824AbiIZQaS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 12:30:18 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C24FBE1C;
+        Mon, 26 Sep 2022 08:19:49 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1ocptT-0006F9-1V; Mon, 26 Sep 2022 17:19:39 +0200
+Date:   Mon, 26 Sep 2022 17:19:39 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Michal Hocko <mhocko@suse.com>
+Cc:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
+        tgraf@suug.ch, urezki@gmail.com, Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: Re: [PATCH 0/7] cpumask: repair cpumask_check()
-Message-ID: <20220926080910.412408f9@kernel.org>
-In-Reply-To: <CAAH8bW-TtZrvR5rZHVFXAHtfQySD85fqerxAAjUTN+eoh1bP2g@mail.gmail.com>
-References: <20220919210559.1509179-1-yury.norov@gmail.com>
-        <CAAH8bW-TtZrvR5rZHVFXAHtfQySD85fqerxAAjUTN+eoh1bP2g@mail.gmail.com>
+        Jakub Kicinski <kuba@kernel.org>, herbert@gondor.apana.org.au,
+        linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
+        Martin Zaharinov <micron10@gmail.com>,
+        Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org
+Subject: Re: [PATCH net] rhashtable: fix crash due to mm api change
+Message-ID: <20220926151939.GG12777@breakpoint.cc>
+References: <20220926083139.48069-1-fw@strlen.de>
+ <YzFp4H/rbdov7iDg@dhcp22.suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <YzFp4H/rbdov7iDg@dhcp22.suse.cz>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 25 Sep 2022 08:47:24 -0700 Yury Norov wrote:
-> Ping?
+Michal Hocko <mhocko@suse.com> wrote:
+> On Mon 26-09-22 10:31:39, Florian Westphal wrote:
+> > Martin Zaharinov reports BUG() in mm land for 5.19.10 kernel:
+> >  kernel BUG at mm/vmalloc.c:2437!
+> >  invalid opcode: 0000 [#1] SMP
+> >  CPU: 28 PID: 0 Comm: swapper/28 Tainted: G        W  O      5.19.9 #1
+> >  [..]
+> >  RIP: 0010:__get_vm_area_node+0x120/0x130
+> >   __vmalloc_node_range+0x96/0x1e0
+> >   kvmalloc_node+0x92/0xb0
+> >   bucket_table_alloc.isra.0+0x47/0x140
+> >   rhashtable_try_insert+0x3a4/0x440
+> >   rhashtable_insert_slow+0x1b/0x30
+> >  [..]
+> > 
+> > bucket_table_alloc uses kvzalloc(GPF_ATOMIC).  If kmalloc fails, this now
+> > falls through to vmalloc and hits code paths that assume GFP_KERNEL.
+> > 
+> > I sent a patch to restore GFP_ATOMIC support in kvmalloc but mm
+> > maintainers rejected it.
+> > 
+> > This patch is partial revert of
+> > commit 93f976b5190d ("lib/rhashtable: simplify bucket_table_alloc()"),
+> > to avoid kvmalloc for ATOMIC case.
+> > 
+> > As kvmalloc doesn't warn when used with ATOMIC, kernel will only crash
+> > once vmalloc fallback occurs, so we may see more crashes in other areas
+> > in the future.
+> > 
+> > Most other callers seem ok but kvm_mmu_topup_memory_cache looks like it
+> > might be affected by the same breakage, so Cc kvm@.
+> > 
+> > Reported-by: Martin Zaharinov <micron10@gmail.com>
+> > Fixes: a421ef303008 ("mm: allow !GFP_KERNEL allocations for kvmalloc")
+> > Link: https://lore.kernel.org/linux-mm/Yy3MS2uhSgjF47dy@pc636/T/#t
+> > Cc: Michal Hocko <mhocko@suse.com>
+> > Cc: Paolo Bonzini <pbonzini@redhat.com>
+> > Cc: kvm@vger.kernel.org
+> > Signed-off-by: Florian Westphal <fw@strlen.de>
+> 
+> Please continue in the original email thread until we sort out the most
+> reasonable solution for this.
 
-Sugar sweet, you really need to say more than ping. You put the entire
-recipient list in the To:, I have no idea what kind of feedback you
-expect and from whom.
+I've submitted a v2 using Michals proposed fix for kvmalloc api, if
+thats merged no fixes are required in the callers, so this rhashtable
+patch can be discarded.
