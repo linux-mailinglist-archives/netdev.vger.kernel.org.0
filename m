@@ -2,35 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FBB35EACAE
-	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 18:37:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01CE15EACB9
+	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 18:38:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229805AbiIZQh3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 12:37:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42240 "EHLO
+        id S229488AbiIZQiu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 12:38:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbiIZQhH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 12:37:07 -0400
-X-Greylist: delayed 553 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 26 Sep 2022 08:24:51 PDT
-Received: from mxout4.routing.net (mxout4.routing.net [IPv6:2a03:2900:1:a::9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 548E212AED8;
-        Mon, 26 Sep 2022 08:24:50 -0700 (PDT)
+        with ESMTP id S229549AbiIZQi0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 12:38:26 -0400
+Received: from mxout1.routing.net (mxout1.routing.net [IPv6:2a03:2900:1:a::a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E0788C000;
+        Mon, 26 Sep 2022 08:25:56 -0700 (PDT)
 Received: from mxbox3.masterlogin.de (unknown [192.168.10.78])
-        by mxout4.routing.net (Postfix) with ESMTP id 7FA2410091E;
-        Mon, 26 Sep 2022 15:08:10 +0000 (UTC)
+        by mxout1.routing.net (Postfix) with ESMTP id E39273FFF0;
+        Mon, 26 Sep 2022 15:08:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
-        s=20200217; t=1664204890;
+        s=20200217; t=1664204892;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Gu67iLTcMpzYQt0Kue8AjzxM20d7cDhso1y+s0Ycn7g=;
-        b=RAUT8RO+l3S5C0EbsiIAqJrOtc6mi51v6SnxF3MDzvuGPIe2q8Du10hOelfdywvYQUG7lc
-        ouXDA/LX9x2oxu7G0WXWOQrrUzSi9va61jy/RC8EFdBNQwaJVMWWOgQJSRmakMLIeecSRN
-        rzroY7VpG6XJ5veRAiZevj5mrtxiiSs=
+        bh=NHI+QS/eBkDGWbjwEnXiouNM7fwY5aYplh9m0mNl5TI=;
+        b=xpaCvBxZGQB3+F03ZzwI/+1XzVIHuwDxCWqdUtecGEWj9YkLlczuAYVds04bU/Ucynjrxg
+        yqAeK8r2WT/APSP3Fhpsb5uo/2ZOWrwGi7oIP0zlwJ6mx1yI3sGANyLEaT8DzVwu+d/aRv
+        BvG+YHBakei73qczJDlBKajGfHKP5GA=
 Received: from frank-G5.. (fttx-pool-217.61.154.230.bambit.de [217.61.154.230])
-        by mxbox3.masterlogin.de (Postfix) with ESMTPSA id B727B36026A;
-        Mon, 26 Sep 2022 15:08:09 +0000 (UTC)
+        by mxbox3.masterlogin.de (Postfix) with ESMTPSA id 1C26536018E;
+        Mon, 26 Sep 2022 15:08:11 +0000 (UTC)
 From:   Frank Wunderlich <linux@fw-web.de>
 To:     linux-usb@vger.kernel.org
 Cc:     Frank Wunderlich <frank-w@public-files.de>,
@@ -43,18 +42,18 @@ Cc:     Frank Wunderlich <frank-w@public-files.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         stable@vger.kernel.org
-Subject: [PATCH 1/2] USB: serial: qcserial: add new usb-id for Dell branded EM7455
-Date:   Mon, 26 Sep 2022 17:07:39 +0200
-Message-Id: <20220926150740.6684-2-linux@fw-web.de>
+Subject: [PATCH 2/2] net: usb: qmi_wwan: Add new usb-id for Dell branded EM7455
+Date:   Mon, 26 Sep 2022 17:07:40 +0200
+Message-Id: <20220926150740.6684-3-linux@fw-web.de>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220926150740.6684-1-linux@fw-web.de>
 References: <20220926150740.6684-1-linux@fw-web.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Mail-ID: d1679d74-3f87-4a09-a7db-2a1401a2b864
+X-Mail-ID: 73473d7a-5ce6-4892-a86a-201a34497ef9
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -68,21 +67,21 @@ Add support for Dell 5811e (EM7455) with USB-id 0x413c:0x81c2.
 Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
 Cc: stable@vger.kernel.org
 ---
- drivers/usb/serial/qcserial.c | 1 +
+ drivers/net/usb/qmi_wwan.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/usb/serial/qcserial.c b/drivers/usb/serial/qcserial.c
-index 586ef5551e76..7897609916a6 100644
---- a/drivers/usb/serial/qcserial.c
-+++ b/drivers/usb/serial/qcserial.c
-@@ -177,6 +177,7 @@ static const struct usb_device_id id_table[] = {
- 	{DEVICE_SWI(0x413c, 0x81b3)},	/* Dell Wireless 5809e Gobi(TM) 4G LTE Mobile Broadband Card (rev3) */
- 	{DEVICE_SWI(0x413c, 0x81b5)},	/* Dell Wireless 5811e QDL */
- 	{DEVICE_SWI(0x413c, 0x81b6)},	/* Dell Wireless 5811e QDL */
-+	{DEVICE_SWI(0x413c, 0x81c2)},	/* Dell Wireless 5811e QDL */
- 	{DEVICE_SWI(0x413c, 0x81cb)},	/* Dell Wireless 5816e QDL */
- 	{DEVICE_SWI(0x413c, 0x81cc)},	/* Dell Wireless 5816e */
- 	{DEVICE_SWI(0x413c, 0x81cf)},   /* Dell Wireless 5819 */
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index 0cb187def5bc..26c34a7c21bd 100644
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -1402,6 +1402,7 @@ static const struct usb_device_id products[] = {
+ 	{QMI_FIXED_INTF(0x413c, 0x81b3, 8)},	/* Dell Wireless 5809e Gobi(TM) 4G LTE Mobile Broadband Card (rev3) */
+ 	{QMI_FIXED_INTF(0x413c, 0x81b6, 8)},	/* Dell Wireless 5811e */
+ 	{QMI_FIXED_INTF(0x413c, 0x81b6, 10)},	/* Dell Wireless 5811e */
++	{QMI_FIXED_INTF(0x413c, 0x81c2, 8)},	/* Dell Wireless 5811e */
+ 	{QMI_FIXED_INTF(0x413c, 0x81cc, 8)},	/* Dell Wireless 5816e */
+ 	{QMI_FIXED_INTF(0x413c, 0x81d7, 0)},	/* Dell Wireless 5821e */
+ 	{QMI_FIXED_INTF(0x413c, 0x81d7, 1)},	/* Dell Wireless 5821e preproduction config */
 -- 
 2.34.1
 
