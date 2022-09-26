@@ -2,72 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BC5F5E9949
-	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 08:10:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACCA55E9975
+	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 08:30:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233316AbiIZGKb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 02:10:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53882 "EHLO
+        id S233354AbiIZGaL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 02:30:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229526AbiIZGKa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 02:10:30 -0400
-Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01on2122.outbound.protection.outlook.com [40.107.113.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C761827B1F;
-        Sun, 25 Sep 2022 23:10:28 -0700 (PDT)
+        with ESMTP id S232759AbiIZGaJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 02:30:09 -0400
+Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01on2112.outbound.protection.outlook.com [40.107.114.112])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 125BF17E2D;
+        Sun, 25 Sep 2022 23:30:08 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QVEOUFsHvLCTro0KkSg9pRD9OIh8uYTbwtAolSddQ7OZ28uUpBiW9P2YXpYxVF3qR6e4XxOLV8GZ4rEZa6n0vcF1117krETjwiyiycsAiFRxGXjnYd4rdcPRLBHygh7MFXeoPeUeVF6dHZdnTiGwlNLOpZ5tk3XghSIxtd1URRtUg2De0GZA3wTMdn386EzkemgzIC4MaP7eKdGwi4AULCZAe0JM1hL2iE6g/FiKK9qoXS8Ko9p9dyhxlMiMZAhvAHtbQmxh0C+rKuU6lOy95Q/dRxvKb7Pc3a12QDHQ/AKCZ4T0EkQ6ImkbhomSOsl615lWx+m6XLy0SluWS4We/g==
+ b=YfAyO/ESM7YF2gLsVficMcyS3XEXqs3q0KZYr/9ONXjzRtpylXGK6RODWjPA+uHPKnpyWcfQ15FNo+jOFcytkJCzSM5vE6LzA68ngPl6bqo8cLutSd6oAY9RtZGFuPksU5eJTEZ9cShdc3hS1nYLKY+niwtAYAEjHAtrFVg8GVcXpl2CZaW2ePxrXoL3tWhTtZWDfJAXX7X7XGD2A+xhD2kOs/A6DIhkfImCR0oBrQoZhqBcA0PweM8Z8dxVOLY25szMIiALmyRYGu6E0CmOI1QrUyX2kbiBnoEF4W67/0rwgZ7ansv4CHhWvsEjEI/vsyQFd67tSMZqtlbXRA4msQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=B7oXsLhONk+1hXvapN9zxFsrIZY0nUNfaRD1KbmY5Uk=;
- b=X/nJnq6q0yWD31Gg1CA4C5LdnVzpPwGo7msaJDuGJDKu2EiZT+SRf4Deere5rboI/LPeQB1v6gUAliJQ5gvcmBD+iPcsuFOpURkjIXhL4ixhi1MkBG3N30snh3/lqv+IoDW6bXeGe3Koa5Z9ha3mr5pXEmzAU4S1y/5zIxsIsJm01qc72sOXu20+IioqkD8i0kBE7tednYq1/pM1RuSbD2k2NegcHV1cY9eRg7P0IP6ZUPC5zAoatJM1YFD06g2m85m2PneCx+y1XygSo+ZHX7G+OXNbsgS9ZPNq6iCqzHdkmNSee7IYIKRXxeUM8V/QhStKpHJcMKlqBQU2mbmk2Q==
+ bh=5lAYIThU4EXZPrHLjMvUJn1nW13PzdzCJU+YJMiVCPw=;
+ b=RrwpivqUf9deL32qwIRfEKwC+vljbE4tMmKuY4kfW4jwEdlWdYA7Bj9lrRHIbpQF+1f9dkFxa4vFo0n9pfLB6awOd30L/02HFbU3isZ6Aj9Wq5SGn7AS00TaeuXQ/d9/Py+Y97R5ZkNU2GJUpwIvTEHCJUDgFmWXS2Q4F3heWvuwho+ssiKdB8VwpFX2osdIHBexwKchUPHpNoEuf9dK9ZvZL2jp0mWsEyfxaDZR1b6FzLLoBBaLRWszwQrFfKGJBtwVBbH6PjZsJj3eBGnICRxN5CJctLpK0S+UVBwv9AgMRN5zlPmZcuDzweIxLN40M4LVRDgRezGtNZWxfvX+Xg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
  dkim=pass header.d=renesas.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=B7oXsLhONk+1hXvapN9zxFsrIZY0nUNfaRD1KbmY5Uk=;
- b=hmmrDuF8rKPEy+cemwqwHUF/DjLH1DSG3ICCv+s32/YB4dHz6txmolxuJYVgcH34Q5N0TGUBL7nnFjdmT/2xuv0F5c7xIyjVUNRXwgBfevz85ntOfY+xRZ5fuNJaa1gw3bAlam5C9xp4r8A5m0SLqoEQcPew48KPlhygK8E4eMg=
+ bh=5lAYIThU4EXZPrHLjMvUJn1nW13PzdzCJU+YJMiVCPw=;
+ b=owvS/boncmRD0VPltjwDGwhM47FGmcQJCVN9CNA1egu8bMHJzKId9Lx0e/77GUlTzM8dMm3XLB3T+Udi5rkDoeH2oGeTMH3vN4K01I8xOC2azR6jflFqMqSpmG3XRha9fqzFtVlC95GsFBz5jRcMT2coVIg6oug0T14PgskhhY0=
 Received: from TYBPR01MB5341.jpnprd01.prod.outlook.com
- (2603:1096:404:8028::13) by OS3PR01MB5591.jpnprd01.prod.outlook.com
- (2603:1096:604:b5::9) with Microsoft SMTP Server (version=TLS1_2,
+ (2603:1096:404:8028::13) by TYWPR01MB9710.jpnprd01.prod.outlook.com
+ (2603:1096:400:230::8) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.25; Mon, 26 Sep
- 2022 06:10:25 +0000
+ 2022 06:30:06 +0000
 Received: from TYBPR01MB5341.jpnprd01.prod.outlook.com
  ([fe80::2991:1e2d:e62c:37d0]) by TYBPR01MB5341.jpnprd01.prod.outlook.com
  ([fe80::2991:1e2d:e62c:37d0%3]) with mapi id 15.20.5654.025; Mon, 26 Sep 2022
- 06:10:25 +0000
+ 06:30:06 +0000
 From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "kishon@ti.com" <kishon@ti.com>,
-        "vkoul@kernel.org" <vkoul@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
         "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
         "pabeni@redhat.com" <pabeni@redhat.com>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
         "robh+dt@kernel.org" <robh+dt@kernel.org>,
         "krzysztof.kozlowski+dt@linaro.org" 
         <krzysztof.kozlowski+dt@linaro.org>,
-        "geert+renesas@glider.be" <geert+renesas@glider.be>
-CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
-        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
         "linux-renesas-soc@vger.kernel.org" 
         <linux-renesas-soc@vger.kernel.org>
-Subject: RE: [PATCH v2 4/8] dt-bindings: net: renesas: Document Renesas
- Ethernet Switch
-Thread-Topic: [PATCH v2 4/8] dt-bindings: net: renesas: Document Renesas
- Ethernet Switch
-Thread-Index: AQHYzZbyqNqCKbNV30+Ykc0QZw/71q3rESYAgAYuSTA=
-Date:   Mon, 26 Sep 2022 06:10:25 +0000
-Message-ID: <TYBPR01MB5341514CD57AB080454749F2D8529@TYBPR01MB5341.jpnprd01.prod.outlook.com>
-References: <20220921084745.3355107-1-yoshihiro.shimoda.uh@renesas.com>
- <20220921084745.3355107-5-yoshihiro.shimoda.uh@renesas.com>
- <1aebd827-3ff4-8d13-ca85-acf4d3a82592@linaro.org>
-In-Reply-To: <1aebd827-3ff4-8d13-ca85-acf4d3a82592@linaro.org>
+Subject: RE: [PATCH v3 2/3] net: ethernet: renesas: Add Ethernet Switch driver
+Thread-Topic: [PATCH v3 2/3] net: ethernet: renesas: Add Ethernet Switch
+ driver
+Thread-Index: AQHYzkQbCGZNTw1MNUuaNx/SR8stKK3sUCGAgAT19/A=
+Date:   Mon, 26 Sep 2022 06:30:05 +0000
+Message-ID: <TYBPR01MB5341D7BE09D2E76E03A26110D8529@TYBPR01MB5341.jpnprd01.prod.outlook.com>
+References: <20220922052803.3442561-1-yoshihiro.shimoda.uh@renesas.com>
+        <20220922052803.3442561-3-yoshihiro.shimoda.uh@renesas.com>
+ <20220922194359.3416a6a2@kernel.org>
+In-Reply-To: <20220922194359.3416a6a2@kernel.org>
 Accept-Language: ja-JP, en-US
 Content-Language: ja-JP
 X-MS-Has-Attach: 
@@ -75,57 +67,57 @@ X-MS-TNEF-Correlator:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=renesas.com;
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: TYBPR01MB5341:EE_|OS3PR01MB5591:EE_
-x-ms-office365-filtering-correlation-id: e764f207-9bfb-4fc6-b2eb-08da9f85cd8f
+x-ms-traffictypediagnostic: TYBPR01MB5341:EE_|TYWPR01MB9710:EE_
+x-ms-office365-filtering-correlation-id: 3b878e61-dc07-4e91-23ec-08da9f888d5d
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: o89/qJbynsGADLBc8AbM3ndtSl9u5JPAbegN8zEfmRw8U5pWLp0ar09YMR9a2uRzF7N73EdrCFPpv8n/IzEkADdV1YXwwRvbl88KgWtLirsiEI5qEvjRS+Xowpk35yk2MyvhrXezCBpe8/hzhUd3v7U/n/WHysT/P5etmjINAl9ZAMSRa4lUyuILGR6xiG2So2anec92Jw7/KGUi/KVdHxTc1EwowphkjM4fEfbZbCuxavVh8Xb7nFEtCW49gLAKzagsKB3U7u7lua8ETUchdsaZEzC/Z6WFJNP33Qkxv2zsov8kisE4JlUQufsYEhtub2BxPDr/E3L+XJ7BV5ZjGAPRq8BZ+uLD4pP3tqRdC4E5ZoAcVhvmND4fnsoOU9sIwayN8f5dJw9hRv7BcUmpiC60G7uuXdn/IzIE3jYLxkoqPSwq3iMALh9Whzc5Q5N9Lp/kKSm5lOEPBs4HYxWjhPO72BYQDGbJj6RZaG2hYhosX0gP4RCpLpeAfifAh59lr3eAvFUziunLhQJrbV2GzYbAlMnCnbtsgRdK8jA0PTKnOEb5UfrJr6mRM1PVF373IMaYUf860z0vVHPQm/MJqi+6ncR4uAo6pBZBJLgdwrZHNSS9wqSgV92P41/s2ViTN2s7Y1dbFD2NYGinVq9upoBaqisQctRzJlHT4UyVL/qCeetS9GxjtlYhxT9NRgF65iY+pINymLGSw8gs3bD8HPEXcxYf2fX0xe4EFOBlmWJplxllE2voAViKbSByA4A/pC3XXOehQX/d1D7RZqjZTC8Fj2TziN03/JuirbHn6IARSyNtSQOJd5zHYC9dawWO
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYBPR01MB5341.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(376002)(136003)(366004)(346002)(396003)(451199015)(66946007)(7416002)(64756008)(66446008)(66556008)(66476007)(8936002)(52536014)(5660300002)(33656002)(921005)(122000001)(2906002)(38100700002)(86362001)(38070700005)(55016003)(186003)(6506007)(53546011)(478600001)(41300700001)(71200400001)(9686003)(83380400001)(8676002)(4326008)(76116006)(54906003)(316002)(966005)(110136005)(7696005);DIR:OUT;SFP:1102;
+x-microsoft-antispam-message-info: cKSXHhKDadVvagV1XHA82vWNc9cKITyZWZJEB+tTsV2gQfPzp97F9nRjsLWVdH8ODXbgZBtkqtY5mYwhlzLykejC8EmBEm+84Y507VYao6iYGwOFM4Nip4BSfcO4OcExwAgisZTpb+A2qDQu7i0r3cR2LpnyVtX9g8IUYHXEqdLnbecuC2EQYSnCazSeZZx+u1cIzFuzs+w+UBhhdNzx2FbUEvPFaiC/dxF3bXTseJUo0HCb6lh/9LWmvbF87YUUiAIDhkv1lGq1N1C461DxvDwSzz88/fre7t6ab/HC3d6z2uvl0iFKnSPNNEiERpa0IOGM1eF3NzyNO9tJgMnTfFaicz+oiRWmxaYm/7eaKOhHkHjFncippBMrKxpANjELExfeEZo8mtENCjtm8BylqZLlg3xLk9FJx9ll7N+6zY2XixAWZYXAhA3p8EKD+ux496beKHGu2VTFvW7dtQi6tLwyB6B6u1Ob9vL44U7qtFDkXnTldFgrvb7jrcEWFoEG5Hgk6EGJCUW97jUBwRG+BLrP1GFrcAGCNwypmifiZ7dhxq/iaLEhZJHYQ9n3gFD2yJvSjqXi5Jh1pxfblhkhmuXKI9BAdwk2avO1heEtWEBpHlc8eiDmCl/SkVHLwrBAif0/L3DwRD/X6BPafmU/10/D+f0PTiKxRf4KuAjejB8Q4RUscLmt0COP0zHDj3Qcl/C+3GF62Djt1u8xn/cjcy7QDV/a5Uh9l0u3pNC23Hf2p5CIXR6Df53j+Seypk74wMyosJVBSVTB88vKUi6bwA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYBPR01MB5341.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(346002)(376002)(39860400002)(396003)(366004)(451199015)(66946007)(4744005)(66556008)(66446008)(8936002)(64756008)(66476007)(5660300002)(7696005)(52536014)(33656002)(38100700002)(86362001)(122000001)(2906002)(38070700005)(6506007)(55016003)(478600001)(71200400001)(9686003)(41300700001)(186003)(83380400001)(8676002)(4326008)(76116006)(316002)(54906003)(6916009);DIR:OUT;SFP:1102;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?O3KWOtgsYxKUqsXa5mb6IVnBmKafoDmezkFNk0x41QhcgZRJiiI761sNVJpU?=
- =?us-ascii?Q?nyhLc/MctN9CsnePSsw6+5ldZgKqJzV055cSbnAnSedcT8EdPCieuY/NIgio?=
- =?us-ascii?Q?dP5zSARASq6ucAYs3DOzJBYJIIQYXI+ttaFX1RyK+r668GBYiE6XkYPHlJAQ?=
- =?us-ascii?Q?w2mkJmuA7FMWgjx/jPfdA/YI5YS68+jg2SSk6/VPpkbaJFvIRwKgij2E8CFu?=
- =?us-ascii?Q?iympyz+fljsclew1g7aum1qAYic8mS2MgiFH2GGGeDZbB187HKGskOvWa67q?=
- =?us-ascii?Q?t04gjGPDw06bMgkmr1gf2GabXfJYT5DL1KAD0fBsCWVUc15PqQMIou3rbsty?=
- =?us-ascii?Q?FMPJk1DjUpOf5mqRCR4XsiN3bLfqjRC5/xL6mxEsge0ilL1yRJaV5ZozIQkq?=
- =?us-ascii?Q?CL24we7G0cuZ1mgUn766Df47K1j0RfX9JP0SyFsZgJmB8wrmsHDHkMqxiZAO?=
- =?us-ascii?Q?iyTU0CmeYeB5iJpCePSu+Y3uDRc4ZLv3iElnuoddH8KalB5vXHOEkqtWunym?=
- =?us-ascii?Q?A+Kbuv7n5YpMqI8lZid86F7EZtpnGUSKDZq9QRAv0MqxR4SOAQ/G6k5OGK64?=
- =?us-ascii?Q?KPRWzelxf3HqbD3dm1F+FhZVyUDeMHLQFwTxWaOfXgO31KkTOqt7o+aSkQrJ?=
- =?us-ascii?Q?JBUV4MU8PGpRoaq2LWtzAtmPpppIXvqanQO0pqWbDRCgyPdmmIDmKZ37RPdy?=
- =?us-ascii?Q?1qP0l/b6gpBBHQ4Daph97ch4yGFS2Oo6uMr50dNkDCWkpjh9N37UjAtGtyjG?=
- =?us-ascii?Q?rbzsBtp6Kntu8jSNcIZvSM1QAmKspHAKEwRllymZSJuBQpQPf5N0cMXOfctg?=
- =?us-ascii?Q?TL4oHBDTecI5L1ke5FRg9OZpGp0/C7svBRwdGxfuGbuXNQpnhAUJV0gwg0Et?=
- =?us-ascii?Q?3OcoaKBDWY7Ei/p/O+FGo3PIj4tT9eEpmtNL9+EJqGgwg/jAwi3UCyvtmqHe?=
- =?us-ascii?Q?E4Q6fIoGmNROi7mD2U8EgGkemL6ygkzJdsvCKPMOsUFfzUC0LjIZOUDtSdv5?=
- =?us-ascii?Q?o/JmTzqyYDhLARrkGy4LC2W+LJuoVDde3WgVOqzGtv8g6erpwqHMRPlZF9Wm?=
- =?us-ascii?Q?J1HVifdzvhpHkAhUJQf4QDPQR8txGnrxUbiXVLVj4TH8U66c/6KvEWnO0AdD?=
- =?us-ascii?Q?WCUyvjcwJSoXFejdsScQx4eCpDdgVgJnSDmi1BrhS1euMJ5jQ4iC0T2qTcta?=
- =?us-ascii?Q?GvqXj2oaJYsBAjDCB/oJAF+6wsTql7GCyIxLuBlQ5jA2HzeXT6iL5IH278KG?=
- =?us-ascii?Q?Dw+E1WjmcruLI0j8g6EKsd+a8oSVe6RqXQdEEZu8mPgcTiWFFbLXQKQzR/WJ?=
- =?us-ascii?Q?TfLdk22VI3M3iFG2VURfNWCGHPSxjH6wwhnbr57iKLlynpub7BVEIpyfJQTy?=
- =?us-ascii?Q?XuQXVpckVx7gco8LYv49flKJK334lLn9a2GLhhna6I6QVaJhGAqoa8/UHbff?=
- =?us-ascii?Q?H7uMl9VysjELLKnKOGCzh//i/5oSJf8TetCzdv88X7AakCJT4UteY8uu3cpH?=
- =?us-ascii?Q?q5ypqrIkXokCj15NdpfShqtlwil04nHIL7uT1yDYPlslEoiQXcZ3LZW56rIh?=
- =?us-ascii?Q?ogXp7oUh3+f915etOM1qJO68a5UWCs4A40os2rBRFA+cBWsM7wlIFx1/ob7o?=
- =?us-ascii?Q?cq/pEfgQ82RJuaRhx7E9u0a50J781bLe8zFik00UFFJmXvwF2M2dvteB1GVN?=
- =?us-ascii?Q?GLl9mw=3D=3D?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?HvVIl8dNwEnCoxJL1E6dBgvVnStkkVHBuSfmc/tOiQd6yF4F8lX0w4IW9sHQ?=
+ =?us-ascii?Q?aqNo6j0qPxSB4whjG0lFSY3LwXxkUJjhveNAbZ4whQ1Sx+DAK53yNVHPomAl?=
+ =?us-ascii?Q?aXR9VCUP+/lh/TRHRvaUuFEkJui8QArNqCr7XSigSQeSXTmbdkZJRTXnisl6?=
+ =?us-ascii?Q?DyFsA0gzNha7tNR6imXWDEKtOvgl0BHcWBDuwdmKBnJkNKkVip5dnhS18UuT?=
+ =?us-ascii?Q?BQudToVy2jnKw1Ktu77dFHDD9jErBD9+K8L1dqbStVqXdx4tv8ENT3lHHCdK?=
+ =?us-ascii?Q?VcsHL84IsocTreGj24WFM5UQyTfOVMScfbBEwu6k57y2lqg/XT/LbBXWMAQr?=
+ =?us-ascii?Q?P2WJU28Wgm77kCdYbdvlMCo66liBhsCvvG6Bf0s4+rkkkQG8Vyz5bFiORGhI?=
+ =?us-ascii?Q?7MrQfVzXp07tNtd9Rg+OMTg1GOHTzqmrb7dayROSGD5V6XUFL+AVEcggD6c2?=
+ =?us-ascii?Q?YUG/ADU2wJmc9sWWrrdVvCXHMbA7UcQIInW3zhkZlRCTMnWoGvuKlXcW6iKG?=
+ =?us-ascii?Q?0C27Zoda5D+P1dDxjmFUC0rDIWgiCApGYuZ4EBuN1TH3BiBw+l+dOC8tSoNM?=
+ =?us-ascii?Q?eyAlqE4bk2sVPbD4ExXeocqGkqf/SY40tmBMHDQgD8Vdn1jnsWPUy82T3+R5?=
+ =?us-ascii?Q?1V+aOQ49p6zuwN+i/DOySIoq3qWxLuvNVxqu0FgHytkl4NMtJ2NQ+67+zyfy?=
+ =?us-ascii?Q?ZHCrsWFMvfmxxT/S4zrl8c4iNLerCO7UnyQnHfGQ53sfPKecOlHo6qvizBAa?=
+ =?us-ascii?Q?dfxCKJS7c+m+T7yZtyjHakwUNY0JcGWgjXkLZSJHU/r4FdCHyArsVE+Ah/YK?=
+ =?us-ascii?Q?Vf1yR1aRy2AN/leUkbLYxtTyYSDyhD45sNJIpE/5PE5IVAnTs3TYAOq4L/Rs?=
+ =?us-ascii?Q?7Tq4SEhL4ZC8KouL81SlUpB8+p9uJB2rlvgOUn32wqnNfp+5LuLL3NqQwCPN?=
+ =?us-ascii?Q?s9yGMN5+GcpFGyaDFZxLk90OxIx64Bax8tyevrak96Du/4YgebTMkdv2K4gf?=
+ =?us-ascii?Q?0pbWaytiqFFlNEv2JZZ7leNCQ1I76ZYeYfZgSuOq1hepMoYBMMDid9arUDTX?=
+ =?us-ascii?Q?xKxxeVs47qjayD4xAfmA2GM8VCH1oTBmRtTsW2fyW8pfW/2VzDbWm1NDvctW?=
+ =?us-ascii?Q?M3tuIoLFv5pHRpex29VTJOzihoej996NDE3ADVe2DHnzY7cAgEfapeew3L8D?=
+ =?us-ascii?Q?jO2RGIVQ4XRYZD2Kccdyt4hXhBKVTep6YlRMjQhSvk8ATP+gfwE58K/f1I07?=
+ =?us-ascii?Q?aZMSVfsfF+znR/SoPbPYaZIYIsT6E7XCbDRZRifh/ss8FCBiTomgXRkDMaIs?=
+ =?us-ascii?Q?Ii0BYaSguNd3X/4l9C9NbGOMxrZyMdEdZUvfbXIkM6Ck4TvY8WXx63oCu9ob?=
+ =?us-ascii?Q?nT539xg+mupOozuY/Fjjc8qx4jyYhUd2/Z2A8E95o3qi1T208jNfo1nw8qpF?=
+ =?us-ascii?Q?aVYx5kUiOqtvN3eENpfYfXCPTrzJ8oIG3Uf+RjXsrmYo7O5qC4GET8gw78V+?=
+ =?us-ascii?Q?Dsp1vRpm8LV1ITkENbVgsltL9LHRGYXD63fC0NLFDrf+vc8AKfjkUdp6yPzx?=
+ =?us-ascii?Q?qnQnScWruuhvucXA8QcsItAMXkgss+9dus69Rz+HPR2sDEYRvD7Es7x3Dkzl?=
+ =?us-ascii?Q?NG7hOrjoesx6/8mZ8xig1zV904+JgzvhksVUxJS9nvvnaxnWH0Kolk68OQa1?=
+ =?us-ascii?Q?qygK7g=3D=3D?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: renesas.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: TYBPR01MB5341.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e764f207-9bfb-4fc6-b2eb-08da9f85cd8f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Sep 2022 06:10:25.3935
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3b878e61-dc07-4e91-23ec-08da9f888d5d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Sep 2022 06:30:05.9125
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: AK4kqEUUw1DjZAXDAxuFwDJLn/Wa7ZvsKGPf0IhKwkbMiKtognXRwp7PUfxg8PCcunkBaC5vo2DcuZZbLD9Q0wmXy8r6oO2xMXvX96FFtlRdRGipVI9DzNekfcfLIS6d
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OS3PR01MB5591
+X-MS-Exchange-CrossTenant-userprincipalname: NBvxcsaDvB3PfaqZNJTmZlS69rYxfqRH4zXuikzFYradmS2DVB2aL+35r1wTb5/bgprqMXvdhNGYsooMBrLyI9npLViSpwRG6BSg56f6hiQuA5OplwiAqFKJOBm0aqIo
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYWPR01MB9710
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
@@ -136,287 +128,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Krzysztof,
+Hi Jakub,
 
-> From: Krzysztof Kozlowski, Sent: Thursday, September 22, 2022 4:37 PM
+> From: Jakub Kicinski, Sent: Friday, September 23, 2022 11:44 AM
 >=20
-> On 21/09/2022 10:47, Yoshihiro Shimoda wrote:
-> > Document Renesas Etherent Switch for R-Car S4-8 (r8a779f0).
-> >
-> > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> > ---
-> >  .../bindings/net/renesas,etherswitch.yaml     | 286 ++++++++++++++++++
-> >  1 file changed, 286 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/net/renesas,ether=
-switch.yaml
-> >
-> > diff --git a/Documentation/devicetree/bindings/net/renesas,etherswitch.=
-yaml
-> b/Documentation/devicetree/bindings/net/renesas,etherswitch.yaml
-> > new file mode 100644
-> > index 000000000000..988d14f5c54e
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/net/renesas,etherswitch.yaml
+> On Thu, 22 Sep 2022 14:28:02 +0900 Yoshihiro Shimoda wrote:
+> > Add Renesas Ethernet Switch driver for R-Car S4-8 to be used as an
+> > ethernet controller.
 >=20
-> Isn't dsa directory for this?
-
-As Andrew mentioned, this is not a DSA driver.
-
-> > @@ -0,0 +1,286 @@
-> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/net/renesas,etherswitch.yaml#
+> Looks like we have a lot of sparse warnings here.
 >=20
-> Filename: renesas,r8a779f0-ether-switch.yaml
+> Please try building the module with W=3D1 C=3D1 and make sure
+> it builds cleanly.
 
-I'll rename this file.
-
-> > +$schema:
-<snip>
-> > +
-> > +title: Renesas Ethernet Switch
-> > +
-> > +maintainers:
-> > +  - Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> > +
-> > +properties:
-> > +  compatible:
-> > +    const: renesas,r8a779f0-ether-switch
-> > +
-> > +  reg:
-> > +    maxItems: 2
-> > +
-> > +  reg-names:
-> > +    items:
-> > +      - const: base
-> > +      - const: secure_base
-> > +
-> > +  interrupts:
-> > +    maxItems: 47
-> > +
-> > +  interrupt-names:
-> > +    items:
-> > +      - const: mfwd_error
-> > +      - const: race_error
-> > +      - const: coma_error
-> > +      - const: gwca0_error
-> > +      - const: gwca1_error
-> > +      - const: etha0_error
-> > +      - const: etha1_error
-> > +      - const: etha2_error
-> > +      - const: gptp0_status
-> > +      - const: gptp1_status
-> > +      - const: mfwd_status
-> > +      - const: race_status
-> > +      - const: coma_status
-> > +      - const: gwca0_status
-> > +      - const: gwca1_status
-> > +      - const: etha0_status
-> > +      - const: etha1_status
-> > +      - const: etha2_status
-> > +      - const: rmac0_status
-> > +      - const: rmac1_status
-> > +      - const: rmac2_status
-> > +      - const: gwca0_rxtx0
-> > +      - const: gwca0_rxtx1
-> > +      - const: gwca0_rxtx2
-> > +      - const: gwca0_rxtx3
-> > +      - const: gwca0_rxtx4
-> > +      - const: gwca0_rxtx5
-> > +      - const: gwca0_rxtx6
-> > +      - const: gwca0_rxtx7
-> > +      - const: gwca1_rxtx0
-> > +      - const: gwca1_rxtx1
-> > +      - const: gwca1_rxtx2
-> > +      - const: gwca1_rxtx3
-> > +      - const: gwca1_rxtx4
-> > +      - const: gwca1_rxtx5
-> > +      - const: gwca1_rxtx6
-> > +      - const: gwca1_rxtx7
-> > +      - const: gwca0_rxts0
-> > +      - const: gwca0_rxts1
-> > +      - const: gwca1_rxts0
-> > +      - const: gwca1_rxts1
-> > +      - const: rmac0_mdio
-> > +      - const: rmac1_mdio
-> > +      - const: rmac2_mdio
-> > +      - const: rmac0_phy
-> > +      - const: rmac1_phy
-> > +      - const: rmac2_phy
-> > +
-> > +  clocks:
-> > +    maxItems: 2
-> > +
-> > +  clock-names:
-> > +    items:
-> > +      - const: fck
-> > +      - const: tsn
-> > +
-> > +  resets:
-> > +    maxItems: 2
-> > +
-> > +  reset-names:
-> > +    items:
-> > +      - const: rswitch2
-> > +      - const: tsn
-> > +
-> > +  iommus:
-> > +    maxItems: 16
-> > +
-> > +  power-domains:
-> > +    maxItems: 1
-> > +
-> > +  ethernet-ports:
-> > +    type: object
-> > +
-> > +    properties:
-> > +      '#address-cells':
-> > +        description: Port number of ETHA (TSNA).
-> > +        const: 1
->=20
-> Blank line
-
-I'll add a blank line here.
-
-> > +      '#size-cells':
-> > +        const: 0
-> > +
-> > +    additionalProperties: false
->=20
-> Don't put it between properties. For nested object usually this is
-> before properties:
-
-I'll drop it.
-
-> > +
-> > +    patternProperties:
-> > +      "^port@[0-9a-f]+$":
-> > +        type: object
-> > +
->=20
-> Skip blank line.
-
-I got it.
-
-> > +        $ref: "/schemas/net/ethernet-controller.yaml#"
->=20
-> No need for quotes.
-
-I'll drop the quotes.
-
-> > +        unevaluatedProperties: false
-> > +
-> > +        properties:
-> > +          reg:
-> > +            description:
-> > +              Port number of ETHA (TSNA).
-> > +
-> > +          phy-handle:
-> > +            description:
-> > +              Phandle of an Ethernet PHY.
->=20
-> Why do you need to mention this property? Isn't it coming from
-> ethernet-controller.yaml?
-
-Indeed. I'll drop the description.
-
-> > +
-> > +          phy-mode:
-> > +            description:
-> > +              This specifies the interface used by the Ethernet PHY.
-> > +            enum:
-> > +              - mii
-> > +              - sgmii
-> > +              - usxgmii
-> > +
-> > +          phys:
-> > +            maxItems: 1
-> > +            description:
-> > +              Phandle of an Ethernet SERDES.
->=20
-> This is getting confusing. You have now:
-> - phy-handle
-> - phy
-> - phy-device
-> - phys
-> in one schema... although lan966x serdes seems to do the same. :/
-
-Yes... I found the following documents have "phy" and "phy-handle" by using
-git grep -l -w "phys" `git grep -l phy-handle Documentation/devicetree/bind=
-ings/`:
-Documentation/devicetree/bindings/net/cdns,macb.yaml
-Documentation/devicetree/bindings/net/cpsw.txt
-Documentation/devicetree/bindings/net/microchip,lan966x-switch.yaml
-Documentation/devicetree/bindings/net/microchip,sparx5-switch.yaml
-Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
-Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
-Documentation/devicetree/bindings/phy/phy-bindings.txt
-
-And I'm interesting that the phy-bindings.txt said the following:
------
-phys : the phandle for the PHY device (used by the PHY subsystem; not to be
-       confused with the Ethernet specific 'phy' and 'phy-handle' propertie=
-s,
-       see Documentation/devicetree/bindings/net/ethernet.txt for these)
------
-
-> > +
-> > +          mdio:
-> > +            $ref: "/schemas/net/mdio.yaml#"
->=20
-> No need for quotes.
-
-I got it.
-
-> Are you sure this is property of each port? I don't
-> know the net/ethernet bindings that good, so I need to ask sometimes
-> basic questions. Other bindings seem to do it differently a bit.
-
-Yes, each port has mdio bus.
-
-> > +            unevaluatedProperties: false
-> > +
-> > +        required:
-> > +          - phy-handle
-> > +          - phy-mode
-> > +          - phys
-> > +          - mdio
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +  - reg-names
-> > +  - interrupts
-> > +  - interrupt-names
-> > +  - clocks
-> > +  - clock-names
-> > +  - resets
-> > +  - power-domains
-> > +  - ethernet-ports
-> > +
-> > +additionalProperties: false
-> > +
-> > +examples:
-> > +  - |
-> > +    #include <dt-bindings/clock/r8a779f0-cpg-mssr.h>
-> > +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> > +    #include <dt-bindings/power/r8a779f0-sysc.h>
-> > +
-> > +    ethernet@e6880000 {
-> > +            compatible =3D "renesas,r8a779f0-ether-switch";
->=20
-> Wrong indentation. Use 4 spaces.
-
-I'll fix it.
+I got it. I'll fix the warnings.
 
 Best regards,
 Yoshihiro Shimoda
-
-> > +            reg =3D <0xe6880000 0x20000>, <0xe68c0000 0x20000>;
-> > +            reg-names =3D "base", "secure_base";
-> > +            interrupts =3D <GIC_SPI 256 IRQ_TYPE_LEVEL_HIGH>,
-> > +                         <GIC_SPI 257 IRQ_TYPE_LEVEL_HIGH>,
-> Best regards,
-> Krzysztof
 
