@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D1035EA90D
-	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 16:52:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EAD925EA911
+	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 16:52:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235353AbiIZOwa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 10:52:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38404 "EHLO
+        id S235202AbiIZOw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 10:52:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235004AbiIZOvu (ORCPT
+        with ESMTP id S234166AbiIZOvu (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 10:51:50 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A9D312D06
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7C0D12D0A
         for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 06:18:22 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Mbjqy2txRzHtrD;
-        Mon, 26 Sep 2022 21:13:34 +0800 (CST)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Mbjrb36Znz1P767;
+        Mon, 26 Sep 2022 21:14:07 +0800 (CST)
 Received: from huawei.com (10.175.101.6) by canpemm500010.china.huawei.com
  (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Mon, 26 Sep
@@ -26,10 +26,12 @@ To:     <davem@davemloft.net>, <yoshfuji@linux-ipv6.org>,
         <dsahern@kernel.org>, <edumazet@google.com>, <kuba@kernel.org>,
         <pabeni@redhat.com>, <netdev@vger.kernel.org>
 CC:     <liujian56@huawei.com>
-Subject: [PATCH net-next 0/2] Add helper functions to parse netlink msg of ip_tunnel
-Date:   Mon, 26 Sep 2022 21:19:42 +0800
-Message-ID: <20220926131944.137094-1-liujian56@huawei.com>
+Subject: [PATCH net-next 1/2] net: Add helper function to parse netlink msg of ip_tunnel_encap
+Date:   Mon, 26 Sep 2022 21:19:43 +0800
+Message-ID: <20220926131944.137094-2-liujian56@huawei.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220926131944.137094-1-liujian56@huawei.com>
+References: <20220926131944.137094-1-liujian56@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.175.101.6]
@@ -44,18 +46,250 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add helper functions to parse netlinkmsg of ip_tunnel
+Add ip_tunnel_netlink_encap_parms to parse netlink msg of ip_tunnel_encap.
+Reduces duplicate code, no actual functional changes.
 
-Liu Jian (2):
-  net: Add helper function to parse netlink msg of ip_tunnel_encap
-  net: Add helper function to parse netlink msg of ip_tunnel_parm
+Signed-off-by: Liu Jian <liujian56@huawei.com>
+---
+ include/net/ip_tunnels.h | 34 ++++++++++++++++++++++++++++++++++
+ net/ipv4/ipip.c          | 38 ++------------------------------------
+ net/ipv6/ip6_tunnel.c    | 37 ++-----------------------------------
+ net/ipv6/sit.c           | 38 ++------------------------------------
+ 4 files changed, 40 insertions(+), 107 deletions(-)
 
- include/net/ip_tunnels.h | 66 ++++++++++++++++++++++++++++++++++++++++
- net/ipv4/ipip.c          | 62 ++-----------------------------------
- net/ipv6/ip6_tunnel.c    | 37 ++--------------------
- net/ipv6/sit.c           | 65 ++-------------------------------------
- 4 files changed, 74 insertions(+), 156 deletions(-)
-
+diff --git a/include/net/ip_tunnels.h b/include/net/ip_tunnels.h
+index ced80e2f8b58..e8bb8944ce3f 100644
+--- a/include/net/ip_tunnels.h
++++ b/include/net/ip_tunnels.h
+@@ -302,6 +302,40 @@ int ip_tunnel_newlink(struct net_device *dev, struct nlattr *tb[],
+ 		      struct ip_tunnel_parm *p, __u32 fwmark);
+ void ip_tunnel_setup(struct net_device *dev, unsigned int net_id);
+ 
++/* This function returns true when ENCAP attributes are present in the nl msg */
++static inline bool ip_tunnel_netlink_encap_parms(struct nlattr *data[],
++						 struct ip_tunnel_encap *encap)
++{
++	bool ret = false;
++
++	memset(encap, 0, sizeof(*encap));
++
++	if (!data)
++		return ret;
++
++	if (data[IFLA_IPTUN_ENCAP_TYPE]) {
++		ret = true;
++		encap->type = nla_get_u16(data[IFLA_IPTUN_ENCAP_TYPE]);
++	}
++
++	if (data[IFLA_IPTUN_ENCAP_FLAGS]) {
++		ret = true;
++		encap->flags = nla_get_u16(data[IFLA_IPTUN_ENCAP_FLAGS]);
++	}
++
++	if (data[IFLA_IPTUN_ENCAP_SPORT]) {
++		ret = true;
++		encap->sport = nla_get_be16(data[IFLA_IPTUN_ENCAP_SPORT]);
++	}
++
++	if (data[IFLA_IPTUN_ENCAP_DPORT]) {
++		ret = true;
++		encap->dport = nla_get_be16(data[IFLA_IPTUN_ENCAP_DPORT]);
++	}
++
++	return ret;
++}
++
+ extern const struct header_ops ip_tunnel_header_ops;
+ __be16 ip_tunnel_parse_protocol(const struct sk_buff *skb);
+ 
+diff --git a/net/ipv4/ipip.c b/net/ipv4/ipip.c
+index 123ea63a04cb..7c64ca06adf3 100644
+--- a/net/ipv4/ipip.c
++++ b/net/ipv4/ipip.c
+@@ -448,40 +448,6 @@ static void ipip_netlink_parms(struct nlattr *data[],
+ 		*fwmark = nla_get_u32(data[IFLA_IPTUN_FWMARK]);
+ }
+ 
+-/* This function returns true when ENCAP attributes are present in the nl msg */
+-static bool ipip_netlink_encap_parms(struct nlattr *data[],
+-				     struct ip_tunnel_encap *ipencap)
+-{
+-	bool ret = false;
+-
+-	memset(ipencap, 0, sizeof(*ipencap));
+-
+-	if (!data)
+-		return ret;
+-
+-	if (data[IFLA_IPTUN_ENCAP_TYPE]) {
+-		ret = true;
+-		ipencap->type = nla_get_u16(data[IFLA_IPTUN_ENCAP_TYPE]);
+-	}
+-
+-	if (data[IFLA_IPTUN_ENCAP_FLAGS]) {
+-		ret = true;
+-		ipencap->flags = nla_get_u16(data[IFLA_IPTUN_ENCAP_FLAGS]);
+-	}
+-
+-	if (data[IFLA_IPTUN_ENCAP_SPORT]) {
+-		ret = true;
+-		ipencap->sport = nla_get_be16(data[IFLA_IPTUN_ENCAP_SPORT]);
+-	}
+-
+-	if (data[IFLA_IPTUN_ENCAP_DPORT]) {
+-		ret = true;
+-		ipencap->dport = nla_get_be16(data[IFLA_IPTUN_ENCAP_DPORT]);
+-	}
+-
+-	return ret;
+-}
+-
+ static int ipip_newlink(struct net *src_net, struct net_device *dev,
+ 			struct nlattr *tb[], struct nlattr *data[],
+ 			struct netlink_ext_ack *extack)
+@@ -491,7 +457,7 @@ static int ipip_newlink(struct net *src_net, struct net_device *dev,
+ 	struct ip_tunnel_encap ipencap;
+ 	__u32 fwmark = 0;
+ 
+-	if (ipip_netlink_encap_parms(data, &ipencap)) {
++	if (ip_tunnel_netlink_encap_parms(data, &ipencap)) {
+ 		int err = ip_tunnel_encap_setup(t, &ipencap);
+ 
+ 		if (err < 0)
+@@ -512,7 +478,7 @@ static int ipip_changelink(struct net_device *dev, struct nlattr *tb[],
+ 	bool collect_md;
+ 	__u32 fwmark = t->fwmark;
+ 
+-	if (ipip_netlink_encap_parms(data, &ipencap)) {
++	if (ip_tunnel_netlink_encap_parms(data, &ipencap)) {
+ 		int err = ip_tunnel_encap_setup(t, &ipencap);
+ 
+ 		if (err < 0)
+diff --git a/net/ipv6/ip6_tunnel.c b/net/ipv6/ip6_tunnel.c
+index 9e97f3b4c7e8..cc5d5e75b658 100644
+--- a/net/ipv6/ip6_tunnel.c
++++ b/net/ipv6/ip6_tunnel.c
+@@ -1988,39 +1988,6 @@ static void ip6_tnl_netlink_parms(struct nlattr *data[],
+ 		parms->fwmark = nla_get_u32(data[IFLA_IPTUN_FWMARK]);
+ }
+ 
+-static bool ip6_tnl_netlink_encap_parms(struct nlattr *data[],
+-					struct ip_tunnel_encap *ipencap)
+-{
+-	bool ret = false;
+-
+-	memset(ipencap, 0, sizeof(*ipencap));
+-
+-	if (!data)
+-		return ret;
+-
+-	if (data[IFLA_IPTUN_ENCAP_TYPE]) {
+-		ret = true;
+-		ipencap->type = nla_get_u16(data[IFLA_IPTUN_ENCAP_TYPE]);
+-	}
+-
+-	if (data[IFLA_IPTUN_ENCAP_FLAGS]) {
+-		ret = true;
+-		ipencap->flags = nla_get_u16(data[IFLA_IPTUN_ENCAP_FLAGS]);
+-	}
+-
+-	if (data[IFLA_IPTUN_ENCAP_SPORT]) {
+-		ret = true;
+-		ipencap->sport = nla_get_be16(data[IFLA_IPTUN_ENCAP_SPORT]);
+-	}
+-
+-	if (data[IFLA_IPTUN_ENCAP_DPORT]) {
+-		ret = true;
+-		ipencap->dport = nla_get_be16(data[IFLA_IPTUN_ENCAP_DPORT]);
+-	}
+-
+-	return ret;
+-}
+-
+ static int ip6_tnl_newlink(struct net *src_net, struct net_device *dev,
+ 			   struct nlattr *tb[], struct nlattr *data[],
+ 			   struct netlink_ext_ack *extack)
+@@ -2033,7 +2000,7 @@ static int ip6_tnl_newlink(struct net *src_net, struct net_device *dev,
+ 
+ 	nt = netdev_priv(dev);
+ 
+-	if (ip6_tnl_netlink_encap_parms(data, &ipencap)) {
++	if (ip_tunnel_netlink_encap_parms(data, &ipencap)) {
+ 		err = ip6_tnl_encap_setup(nt, &ipencap);
+ 		if (err < 0)
+ 			return err;
+@@ -2070,7 +2037,7 @@ static int ip6_tnl_changelink(struct net_device *dev, struct nlattr *tb[],
+ 	if (dev == ip6n->fb_tnl_dev)
+ 		return -EINVAL;
+ 
+-	if (ip6_tnl_netlink_encap_parms(data, &ipencap)) {
++	if (ip_tunnel_netlink_encap_parms(data, &ipencap)) {
+ 		int err = ip6_tnl_encap_setup(t, &ipencap);
+ 
+ 		if (err < 0)
+diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
+index 98f1cf40746f..a8a258f672fa 100644
+--- a/net/ipv6/sit.c
++++ b/net/ipv6/sit.c
+@@ -1534,40 +1534,6 @@ static void ipip6_netlink_parms(struct nlattr *data[],
+ 		*fwmark = nla_get_u32(data[IFLA_IPTUN_FWMARK]);
+ }
+ 
+-/* This function returns true when ENCAP attributes are present in the nl msg */
+-static bool ipip6_netlink_encap_parms(struct nlattr *data[],
+-				      struct ip_tunnel_encap *ipencap)
+-{
+-	bool ret = false;
+-
+-	memset(ipencap, 0, sizeof(*ipencap));
+-
+-	if (!data)
+-		return ret;
+-
+-	if (data[IFLA_IPTUN_ENCAP_TYPE]) {
+-		ret = true;
+-		ipencap->type = nla_get_u16(data[IFLA_IPTUN_ENCAP_TYPE]);
+-	}
+-
+-	if (data[IFLA_IPTUN_ENCAP_FLAGS]) {
+-		ret = true;
+-		ipencap->flags = nla_get_u16(data[IFLA_IPTUN_ENCAP_FLAGS]);
+-	}
+-
+-	if (data[IFLA_IPTUN_ENCAP_SPORT]) {
+-		ret = true;
+-		ipencap->sport = nla_get_be16(data[IFLA_IPTUN_ENCAP_SPORT]);
+-	}
+-
+-	if (data[IFLA_IPTUN_ENCAP_DPORT]) {
+-		ret = true;
+-		ipencap->dport = nla_get_be16(data[IFLA_IPTUN_ENCAP_DPORT]);
+-	}
+-
+-	return ret;
+-}
+-
+ #ifdef CONFIG_IPV6_SIT_6RD
+ /* This function returns true when 6RD attributes are present in the nl msg */
+ static bool ipip6_netlink_6rd_parms(struct nlattr *data[],
+@@ -1619,7 +1585,7 @@ static int ipip6_newlink(struct net *src_net, struct net_device *dev,
+ 
+ 	nt = netdev_priv(dev);
+ 
+-	if (ipip6_netlink_encap_parms(data, &ipencap)) {
++	if (ip_tunnel_netlink_encap_parms(data, &ipencap)) {
+ 		err = ip_tunnel_encap_setup(nt, &ipencap);
+ 		if (err < 0)
+ 			return err;
+@@ -1671,7 +1637,7 @@ static int ipip6_changelink(struct net_device *dev, struct nlattr *tb[],
+ 	if (dev == sitn->fb_tunnel_dev)
+ 		return -EINVAL;
+ 
+-	if (ipip6_netlink_encap_parms(data, &ipencap)) {
++	if (ip_tunnel_netlink_encap_parms(data, &ipencap)) {
+ 		err = ip_tunnel_encap_setup(t, &ipencap);
+ 		if (err < 0)
+ 			return err;
 -- 
 2.17.1
 
