@@ -2,82 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DD445EAE4F
-	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 19:39:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97EB75EAE74
+	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 19:46:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230514AbiIZRja (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 13:39:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51274 "EHLO
+        id S231252AbiIZRqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 13:46:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230517AbiIZRjO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 13:39:14 -0400
-Received: from mail-vk1-xa2c.google.com (mail-vk1-xa2c.google.com [IPv6:2607:f8b0:4864:20::a2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD278476E1
-        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 10:03:13 -0700 (PDT)
-Received: by mail-vk1-xa2c.google.com with SMTP id g85so3716788vkf.10
-        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 10:03:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:to:subject:message-id:date:from
-         :mime-version:from:to:cc:subject:date;
-        bh=NL2j5GnRtPSyJoYbxDPwesH3P6+XcidREgbhHvhd444=;
-        b=OtHcB7p0IX16Xu0xQXhVAzW3kpo84BNEgKVdt4KpmXxx5lUMkxw3hoXkcq8nZ7sape
-         lfcqOTRiACBpC+PKNwziwRhbA9E2qe2xmseno66S3L+f5AZKYpsgkDOnaFNDzJ1/Yy6e
-         11lwfDD7VGAWmFJxRJNLprztBZQUYk/l4kuv0EMUB/5bovyFq4SOGZEzZn/tDYfD9sCn
-         S6AtI79mzm543wgKD78+rJTwPap9klCXHpkSwwGvOYH9Y2x4/KqgaABp/zEg/jprqeeh
-         bWb9GzPTCcrMqLIO1Ms+OghsONCk4RpJ+9X2yikeLdAJLh/m/vitRJQ8ZAsQ0j2ies3s
-         1nKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:to:subject:message-id:date:from
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=NL2j5GnRtPSyJoYbxDPwesH3P6+XcidREgbhHvhd444=;
-        b=m+NagjWbEgkR/zZ5TBDjyYK4hhIbvW2IU55H7LU+hOJU+Tck6LtRuWhcCAv319oEbv
-         BHWOD9+LTvbx7aPIILwTK7MntsPBxS2N1tAM6laY5WzVec9OT1VVqrXAXDO1owIm19+n
-         55tLQeOv5XYznpP5pr2TNO3taTPh6PAUIbviIphyBegB6vpGwFTukdUm0/jCemy+EJuY
-         PUeNqh0iSZtNECPMY7dK408Hy1MoGG4gdQpy9OCIH7c3uhG2soz6sB05lx5RRAvFh6I/
-         7R1TaP7YVEiei96zC6VIpUsjhhUTuLu/i3+Et9wrZ+fWymLaHAE8AZesAk7tvekoG6pw
-         dbmA==
-X-Gm-Message-State: ACrzQf3Qu/Fh8NeeM4/yoYWg6ibEkqNPxQ5oYgEJosWpQ7sRgAvS65EL
-        d8CoSXWumoYAl7glF9yhLO1NQkI1wEXQrnD7v2k=
-X-Google-Smtp-Source: AMsMyM6ghXxvURqA6P6zMSpEq9jorIjW8AOnpoVWOTxbFW1uBFieEHo/EtaRw/Gljoa52r2XsEGYqiViTczJk3/Fpho=
-X-Received: by 2002:a1f:78c1:0:b0:3a3:72e6:c482 with SMTP id
- t184-20020a1f78c1000000b003a372e6c482mr9493349vkc.10.1664211789735; Mon, 26
- Sep 2022 10:03:09 -0700 (PDT)
+        with ESMTP id S230171AbiIZRpt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 13:45:49 -0400
+X-Greylist: delayed 651 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 26 Sep 2022 10:15:46 PDT
+Received: from louie.mork.no (louie.mork.no [IPv6:2001:41c8:51:8a:feff:ff:fe00:e5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C1E072B4C;
+        Mon, 26 Sep 2022 10:15:44 -0700 (PDT)
+Received: from canardo.dyn.mork.no ([IPv6:2a01:799:c9e:d400:0:0:0:1])
+        (authenticated bits=0)
+        by louie.mork.no (8.15.2/8.15.2) with ESMTPSA id 28QH4KZ8672490
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
+        Mon, 26 Sep 2022 18:04:22 +0100
+Received: from miraculix.mork.no ([IPv6:2a01:799:c9e:d402:994f:a892:5647:3399])
+        (authenticated bits=0)
+        by canardo.dyn.mork.no (8.15.2/8.15.2) with ESMTPSA id 28QH4FPd3519149
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
+        Mon, 26 Sep 2022 19:04:15 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1664211855; bh=PqndwwYw1ihtRY0vSKmdDtjYH38o8PijP0Upc5+FQhk=;
+        h=From:To:Cc:Subject:References:Date:Message-ID:From;
+        b=SPRlWzSh0GqPerWaLEGfitcRmPvVnFn2tsRf9fFHqbrUHDzaotI9DdcctX5zwJfrD
+         39g03HaXQd207SsfvAx/573cOx8NEJ8sdP3r6xKzPUuUk27j+e/iSA2oaB82kA/3qt
+         LsqKbryOY7rwhyWBB6GqU3YDxYq69Z4oKDwOkslE=
+Received: (nullmailer pid 818259 invoked by uid 1000);
+        Mon, 26 Sep 2022 17:04:15 -0000
+From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+To:     Frank Wunderlich <linux@fw-web.de>
+Cc:     linux-usb@vger.kernel.org,
+        Frank Wunderlich <frank-w@public-files.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Johan Hovold <johan@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH 2/2] net: usb: qmi_wwan: Add new usb-id for Dell branded
+ EM7455
+Organization: m
+References: <20220926150740.6684-1-linux@fw-web.de>
+        <20220926150740.6684-3-linux@fw-web.de>
+Date:   Mon, 26 Sep 2022 19:04:15 +0200
+In-Reply-To: <20220926150740.6684-3-linux@fw-web.de> (Frank Wunderlich's
+        message of "Mon, 26 Sep 2022 17:07:40 +0200")
+Message-ID: <87sfke9ieo.fsf@miraculix.mork.no>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Received: by 2002:a05:6130:11f:b0:382:f28c:9768 with HTTP; Mon, 26 Sep 2022
- 10:03:09 -0700 (PDT)
-From:   Ajfor simon <lawyersimon1985@gmail.com>
-Date:   Mon, 26 Sep 2022 17:03:09 +0000
-Message-ID: <CAN9gDKf2xmr0XC5+iT9HNejG4PG-vOGx4pSSE=_uFD+Y=fhYTQ@mail.gmail.com>
-Subject: =?UTF-8?B?7JeQ6rKMLCBLYW5n?=
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.103.7 at canardo
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-7JeQ6rKMLCBLYW5nDQoNCuyViOuFle2VmOyEuOyalC4g7KCA64qUIOyEnOyVhO2UhOumrOy5tCDr
-oZzrqZQg7Yag6rOg7JeQ7IScIOuzgO2YuOyCrOuhnCDsnbztlZjripQg67OA7Zi47IKs7J24IFNp
-bW9uIEFqYeyeheuLiOuLpC4gRW5nci5HZW9yZ2UgS2FuZ+ydmA0K6rCc7J24IOuzgO2YuOyCrOuK
-lCDroZzrqZQg7Yag6rOgIOyEnOu2gCDslYTtlITrpqzsubTsnZgg7ImYIOqwnOuwnCDtmozsgqzs
-l5DshJwg6rOE7JW97J6QIOuwjyDshJ3snKAg7Iuc7LaUIOyDge2SiOycvOuhnCDsnbztlojrjZgg
-7KCB7J20IOyeiOyKteuLiOuLpC4g6re464qUDQoyMDIw64WEIDEx7JuUIDIx7J287JeQIOyCrOun
-ne2WiOyKteuLiOuLpC4g6re47J2YIOyVhOuCtOyZgCDsmbjrj5nrlLjsnbQg66+46rWt7JeQ7ISc
-IOy9lOu5hOuTnC0xOeuhnCDsgqzrp53tlZwg7ZuEIOyLrOyepeuniOu5hDsNCg0K6re4IOydtO2b
-hOuhnCDsoIDripQg7KCcIOqzoOqwneydmCDsuZzsspnsnYQg7LC+6riwIOychO2VtCDsl6zquLAg
-7Yag6rOg7JeQIOyeiOuKlCDri7nsi6DsnZgg64yA7IKs6rSA7JeQIOusuOydmO2VtCDsmZTsirXr
-i4jri6QuIOydtOqyg+ydgCDrmJDtlZwg7ISx6rO17KCB7J207KeAIOyViuydgA0K6rKD7Jy866Gc
-IO2MkOuqheuQmOyXiOycvOupsCwg7KCA64qUIOuKpuydgCDqs6DqsJ3snbQg64Ko6rKo65GUIOuv
-uO2ZlCAxLDI1MOunjCDri6zrn6wg7IOB64u57J2YIOq4sOq4iOydhCDrs7jqta3snLzroZwg7Iah
-7ZmY7ZWY64qUIOuNsCDrj4Tsm4DsnYQg7KO86riwIOychO2VtA0K6reA7ZWY7JeQ6rKMIOyXsOud
-ve2WiOyKteuLiOuLpC4NCuqzpyDri7nsi6Dsl5DqsozshJwg7IaM7Iud7J2EIOq4sOuLpOumrOqz
-oA0KDQrsuZzslaDtlZjripQuDQrrs4DtmLjsgqwgU2ltb24gQWphZm9yKEVTUSkNCuuhnOuplCDt
-hqDqs6Ag7ISc7JWE7ZSE66as7Lm0DQo=
+Frank Wunderlich <linux@fw-web.de> writes:
+
+> From: Frank Wunderlich <frank-w@public-files.de>
+>
+> Add support for Dell 5811e (EM7455) with USB-id 0x413c:0x81c2.
+>
+> Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+> Cc: stable@vger.kernel.org
+> ---
+>  drivers/net/usb/qmi_wwan.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+> index 0cb187def5bc..26c34a7c21bd 100644
+> --- a/drivers/net/usb/qmi_wwan.c
+> +++ b/drivers/net/usb/qmi_wwan.c
+> @@ -1402,6 +1402,7 @@ static const struct usb_device_id products[] =3D {
+>  	{QMI_FIXED_INTF(0x413c, 0x81b3, 8)},	/* Dell Wireless 5809e Gobi(TM) 4G=
+ LTE Mobile Broadband Card (rev3) */
+>  	{QMI_FIXED_INTF(0x413c, 0x81b6, 8)},	/* Dell Wireless 5811e */
+>  	{QMI_FIXED_INTF(0x413c, 0x81b6, 10)},	/* Dell Wireless 5811e */
+> +	{QMI_FIXED_INTF(0x413c, 0x81c2, 8)},	/* Dell Wireless 5811e */
+>  	{QMI_FIXED_INTF(0x413c, 0x81cc, 8)},	/* Dell Wireless 5816e */
+>  	{QMI_FIXED_INTF(0x413c, 0x81d7, 0)},	/* Dell Wireless 5821e */
+>  	{QMI_FIXED_INTF(0x413c, 0x81d7, 1)},	/* Dell Wireless 5821e preproducti=
+on config */
+
+Acked-by: Bj=C3=B8rn Mork <bjorn@mork.no>
