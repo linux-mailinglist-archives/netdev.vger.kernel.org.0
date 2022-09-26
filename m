@@ -2,130 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A201D5E9D9C
-	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 11:29:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6C385E9DA5
+	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 11:30:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234968AbiIZJ3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 05:29:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49426 "EHLO
+        id S234580AbiIZJaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 05:30:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234881AbiIZJ3J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 05:29:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBEBD30547;
-        Mon, 26 Sep 2022 02:27:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4235F60B4A;
-        Mon, 26 Sep 2022 09:27:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88327C433C1;
-        Mon, 26 Sep 2022 09:27:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664184470;
-        bh=ptacZmb4mAiKW7hPsZLLTNmlfwI/LBzdweTZj/Svi90=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=YLi8e0sIBewQtpKNnoxhs3GdUGYcSUrGG82QYkExPUiSEIxx2R7suJj5wORrJp7T7
-         SkH86mu2bnHei41LHglyAS+ag87fX8BfPirX8njNhecSoxic4FzT+lXWRP9LEJPkaf
-         f8e/J0oU0KgCgq3knojBQIX57CC5pSOQTjm8CyRO0Ki32YGpvpSJIDJZSBYyifwAPp
-         8stFng9d7BZrpsytnsy6SLt+iZR4rstMMWE2tT8c0+Jn/nZz4EVwFt5Q0KH17WShJu
-         5sZse98PYkv/kn5cNdi7o70hWDlSrxydSXMVW3yrpcHyUhky1PSBPXQe5DdOwIl7fW
-         fTtI5tgvxYRYg==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Alvin =?utf-8?Q?=C5=A0ipraga?= <ALSI@bang-olufsen.dk>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Hector Martin <marcan@marcan.st>,
-        "~postmarketos\/upstreaming\@lists.sr.ht" 
-        <~postmarketos/upstreaming@lists.sr.ht>,
-        "martin.botka\@somainline.org" <martin.botka@somainline.org>,
-        "angelogioacchino.delregno\@somainline.org" 
-        <angelogioacchino.delregno@somainline.org>,
-        "marijn.suijten\@somainline.org" <marijn.suijten@somainline.org>,
-        "jamipkettunen\@somainline.org" <jamipkettunen@somainline.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
+        with ESMTP id S234953AbiIZJa1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 05:30:27 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1824812AB2;
+        Mon, 26 Sep 2022 02:29:26 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id a41so8151939edf.4;
+        Mon, 26 Sep 2022 02:29:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=RRTzEh4eX7QJuMr9PBYcSE6qe2YnKNQ4s+EeI3ZLOR8=;
+        b=N2CdQZ5DidOd7rXorrAHwsU7REyGYjsVLRQw24k5i/zVnwxTVLXi79SokmwMPQ23dG
+         ltHADiZ2Xdl1ZpGJHcq9sCz91HuEiXsn5cgUkN6cCcc0qhs3gJdO6JtWSNxOVKAm2maA
+         RUP45w5trMH4BmzGD7P4bYWDoQ80fJ5gk/tTcqUWNZwxEVqilkjzRE/DXJj2o9eLrnMT
+         Eibb/G/CFzTjUYyiTkzjs9+xpKaddZrQr2Ady4gPnOt6q/+8sfnBsKlTNnNA0nWB58c5
+         OZTJtHQ5pIa7jnF722Q6qFBJveO3Wd9eH06jY4XW0T30bgmjP4abl+o8prFN+WFIDcbp
+         QH5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=RRTzEh4eX7QJuMr9PBYcSE6qe2YnKNQ4s+EeI3ZLOR8=;
+        b=TNPn9AYtmnngjVCdi87k1yFv6XJAA7gE4e+/fYSch7edyqffp+EnbWn3XHD1o+M85a
+         fYtu8kC1g/SiVIqgEX788FPBKsDctBwY2OoP72sJH6CReKNHoSlMH7wbNXnSVvKIHm57
+         E6TQ2wANT8JWxGQyVm9Z8Dr+NzczUByxK9nMJ/qnQhyHZDrUphrObp/km7ZQ+sTHIcod
+         uTDUnxsnbcfQ7FvjrVZAehFenluMtjjyPPE+1tfQtFSAzmko60nhmY4htX9B58ZLw1i1
+         hA2kqxIEnZmxePDoIwXVAO3lC+p25ncv1r4zVea8loWHMfKB2BVVGB7nid3xZTT1cczw
+         3WTA==
+X-Gm-Message-State: ACrzQf1w3KfGKXMtj93HKRC+GRO7asNNy5Vkd/Oe4WszXv1h/DgZfxpf
+        GFgbuRKN+giNOt4A3pjD9vw=
+X-Google-Smtp-Source: AMsMyM7SuVBgSYWy5kh1HhAcVXy6Llss6obNUjIA/ZoXJgkE8T8RGaoTb9VPoRu5QX3Pg6i6kN2O6A==
+X-Received: by 2002:a05:6402:2489:b0:454:11de:7698 with SMTP id q9-20020a056402248900b0045411de7698mr21490387eda.214.1664184564514;
+        Mon, 26 Sep 2022 02:29:24 -0700 (PDT)
+Received: from [192.168.178.21] (p4fc20ebf.dip0.t-ipconnect.de. [79.194.14.191])
+        by smtp.gmail.com with ESMTPSA id lh3-20020a170906f8c300b00782ee6b34f2sm3710039ejb.183.2022.09.26.02.29.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 26 Sep 2022 02:29:24 -0700 (PDT)
+Message-ID: <a07c4a5e-1668-3609-334c-8aee2834ff90@gmail.com>
+Date:   Mon, 26 Sep 2022 11:29:20 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [Linaro-mm-sig] [PATCH v2 08/16] dma-buf: Proactively round up to
+ kmalloc bucket size
+Content-Language: en-US
+To:     Kees Cook <keescook@chromium.org>, Vlastimil Babka <vbabka@suse.cz>
+Cc:     Sumit Semwal <sumit.semwal@linaro.org>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org,
+        "Ruhl, Michael J" <michael.j.ruhl@intel.com>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Marek Vasut <marex@denx.de>,
-        "Zhao\, Jiaqing" <jiaqing.zhao@intel.com>,
-        "Russell King \(Oracle\)" <rmk+kernel@armlinux.org.uk>,
-        Soon Tak Lee <soontak.lee@cypress.com>,
-        "linux-wireless\@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "brcm80211-dev-list.pdl\@broadcom.com" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        "SHA-cyfmac-dev-list\@infineon.com" 
-        <SHA-cyfmac-dev-list@infineon.com>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] brcmfmac: Add support for BCM43596 PCIe Wi-Fi
-References: <20220921001630.56765-1-konrad.dybcio@somainline.org>
-        <83b90478-3974-28e6-cf13-35fc4f62e0db@marcan.st>
-        <13b8c67c-399c-d1a6-4929-61aea27aa57d@somainline.org>
-        <0e65a8b2-0827-af1e-602c-76d9450e3d11@marcan.st>
-        <7fd077c5-83f8-02e2-03c1-900a47f05dc1@somainline.org>
-        <CACRpkda3uryD6TOEaTi3pPX5No40LBWoyHR4VcEuKw4iYT0dqA@mail.gmail.com>
-        <20220922133056.eo26da4npkg6bpf2@bang-olufsen.dk>
-Date:   Mon, 26 Sep 2022 12:27:43 +0300
-In-Reply-To: <20220922133056.eo26da4npkg6bpf2@bang-olufsen.dk> ("Alvin
-        \=\?utf-8\?Q\?\=C5\=A0ipraga\=22's\?\= message of "Thu, 22 Sep 2022 13:30:57 +0000")
-Message-ID: <87sfke32pc.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Alex Elder <elder@kernel.org>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Daniel Micay <danielmicay@gmail.com>,
+        Yonghong Song <yhs@fb.com>, Marco Elver <elver@google.com>,
+        Miguel Oj eda <ojeda@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        netdev@vger.kernel.org, linux-btrfs@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        dev@openvswitch.org, x86@kernel.org, llvm@lists.linux.dev,
+        linux-hardening@vger.kernel.org
+References: <20220923202822.2667581-1-keescook@chromium.org>
+ <20220923202822.2667581-9-keescook@chromium.org>
+From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>
+In-Reply-To: <20220923202822.2667581-9-keescook@chromium.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alvin =C5=A0ipraga <ALSI@bang-olufsen.dk> writes:
+Am 23.09.22 um 22:28 schrieb Kees Cook:
+> Instead of discovering the kmalloc bucket size _after_ allocation, round
+> up proactively so the allocation is explicitly made for the full size,
+> allowing the compiler to correctly reason about the resulting size of
+> the buffer through the existing __alloc_size() hint.
+>
+> Cc: Sumit Semwal <sumit.semwal@linaro.org>
+> Cc: "Christian König" <christian.koenig@amd.com>
+> Cc: linux-media@vger.kernel.org
+> Cc: dri-devel@lists.freedesktop.org
+> Cc: linaro-mm-sig@lists.linaro.org
+> Signed-off-by: Kees Cook <keescook@chromium.org>
 
-> On Thu, Sep 22, 2022 at 03:02:12PM +0200, Linus Walleij wrote:
->> On Thu, Sep 22, 2022 at 12:21 PM Konrad Dybcio
->> <konrad.dybcio@somainline.org> wrote:
->>=20
->> > Also worth noting is the 'somc' bit, meaning there are probably *some*=
- SONY
->> > customizations, but that's also just a guess.
->>=20
->> What I have seen from BRCM customizations on Samsung phones is that
->> the per-device customization of firmware seems to involve the set-up of
->> some GPIO and power management pins. For example if integrated with
->> an SoC that has autonomous system resume, or if some GPIO line has
->> to be pulled to enable an external regulator or PA.
->
-> At least with Infineon (formerly Cypress), as a customer you might get a
-> private firmware and this will be maintained internally by them on a
-> separate customer branch. Any subsequent bugfixes or feature requests
-> will usually be applied to that customer branch and a new firmware built
-> from it. I think their internal "mainline" branch might get merged into
-> the customer branches from time to time, but this seems to be done on an
-> ad-hoc basis. This is our experience at least.
->
-> I would also point out that the BCM4359 is equivalent to the
-> CYW88359/CYW89359 chipset, which we are using in some of our
-> products. Note that this is a Cypress chipset (identifiable by the
-> Version: ... (... CY) tag in the version string). But the FW Konrad is
-> linking appears to be for a Broadcom chipset.
->
-> FYI, here's a publicly available set of firmware files for the '4359:
->
-> https://github.com/NXP/imx-firmware/tree/master/cyw-wifi-bt/1FD_CYW4359
->
-> Anyway, I would second Hector's suggestion and make this a separate FW.
+Reviewed-by: Christian König <christian.koenig@amd.com>
 
-I also recommend having a separate firmware filename. Like Hector said,
-it's easy to have a symlink in userspace if same binary can be used.
+> ---
+>   drivers/dma-buf/dma-resv.c | 9 +++++++--
+>   1 file changed, 7 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/dma-buf/dma-resv.c b/drivers/dma-buf/dma-resv.c
+> index 205acb2c744d..5b0a4b8830ff 100644
+> --- a/drivers/dma-buf/dma-resv.c
+> +++ b/drivers/dma-buf/dma-resv.c
+> @@ -98,12 +98,17 @@ static void dma_resv_list_set(struct dma_resv_list *list,
+>   static struct dma_resv_list *dma_resv_list_alloc(unsigned int max_fences)
+>   {
+>   	struct dma_resv_list *list;
+> +	size_t size;
+>   
+> -	list = kmalloc(struct_size(list, table, max_fences), GFP_KERNEL);
+> +	/* Round up to the next kmalloc bucket size. */
+> +	size = kmalloc_size_roundup(struct_size(list, table, max_fences));
+> +
+> +	list = kmalloc(size, GFP_KERNEL);
+>   	if (!list)
+>   		return NULL;
+>   
+> -	list->max_fences = (ksize(list) - offsetof(typeof(*list), table)) /
+> +	/* Given the resulting bucket size, recalculated max_fences. */
+> +	list->max_fences = (size - offsetof(typeof(*list), table)) /
+>   		sizeof(*list->table);
+>   
+>   	return list;
 
---=20
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
