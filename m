@@ -2,237 +2,268 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 909625E99ED
-	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 08:55:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A8B45E9A48
+	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 09:13:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233549AbiIZGz4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 02:55:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46428 "EHLO
+        id S233173AbiIZHNw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 03:13:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229898AbiIZGzz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 02:55:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BC3B1FCE0
-        for <netdev@vger.kernel.org>; Sun, 25 Sep 2022 23:55:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E4574B80D99
-        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 06:55:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 856D6C433C1;
-        Mon, 26 Sep 2022 06:55:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664175350;
-        bh=5foC364C9cRM9oLxP3HfRBsb+BybVDkvyA1AAe9Pw9A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=pCTkXzioYvp69siIS7ZxX7EUeXhGl8rEFG2Lm8aDbD4FBdzupdoXIHRN5WX+8Xl/G
-         QIXjq5/e59ZcBGWMRgiSgy1bLcOOZHdnLYeYqqrlqU8fo0rs3A3lF4RoSqUkqM3xny
-         9Im+HF1a/MkR7dg6YT9vv7cWmZZi6dNXQd8pIwA4WI0T2XISfQpJTQEeNw4Mz2ByO7
-         m9FOpUnlOSKMijsfbZaqRQ5Zg7JlKuwUNvBYt0wptl9iA51n+PFdef/iz5Ug2/JNgH
-         GiAzj1Y8oN+5WDnYzQtPUJ41V9/21dvJX+sSxzyg3VO85/Q6jaFrGbIX9ZFtmj9hfR
-         fuw1RDXYb+1yw==
-Date:   Mon, 26 Sep 2022 09:55:45 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S234052AbiIZHM7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 03:12:59 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F4B7BA5
+        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 00:12:57 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id v1so5392815plo.9
+        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 00:12:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=KydVmeYm7BcEqXqNnGQGXDSS6WTc7uszi6FYRq+e/yw=;
+        b=REfFEwnvWGk/wKnMIYz0t3ObwAd0DwC/RvlbM1vEqXX7XU75a//RpRvcFp7BjI0W/o
+         oR8JHcfIbHrntOZBeTeiMUdEjLQ0yKGTPVwDkZcodtRIOBGtj4qAFrCMIJ95plueKAAm
+         antyCH9bnVAfcm+WCMPhmpYAsr/1y7aNBk+eLvOHnmnjdw1Z7m722/dFGKhvH/ltToMs
+         m5QBtFnpfV9H+S2AQZBQHq3pZVwUn6KCyIFWnznyiIvXjbVYGun1ZH10RuaXQRpsjt9x
+         VjMrq/2up73NKEk2rEXKr9txmF8EBu61kaexOqhql/zmcRImAllLlYJnwPxBEPKmfzW9
+         YZ4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=KydVmeYm7BcEqXqNnGQGXDSS6WTc7uszi6FYRq+e/yw=;
+        b=VssYFYhOksP953SKlaFXbVW9AWL6qdoPreK9ucJ7mDlNRKMandq2HzAI2Lj+VVaceL
+         ciwnhzwRtRzyY64yERpBs7vEBuF7rZ+Pz4nHl96GhZOsirg2roJqICpyj67eMxuBCfEO
+         G+0/zf4hnMTWMAwBVlXbY24mkTqSh1fSjGWAVz70Rsh5nOWF/hGFMk26n0THJiak2ooz
+         AxhsaNyruZBzbWLoM5KcSA8x2Yl0+tV82gCZkZIFN04v0hBLY5god91VDXwJ4WZI3ayV
+         zHvGJleWIOV62u5k4GA2fB9Mwgx32ZHWCrXoq0/d3/3RcfanJpmaEpISWIc/eXbMQXP3
+         9dVA==
+X-Gm-Message-State: ACrzQf2NgdwkPLYxG6PhDjQbw9q2PfDwlbJwZZHTGBvmjKm959VFygZ0
+        y5aHdOphVKA7tBox/ka6LyqH4fmPPKrnLw==
+X-Google-Smtp-Source: AMsMyM6i78NWh1Dkg/A0CxwXgJqJJp69ftiExusF4u1R+Gi8H1ujYaTw2cJalEdTgLz3SEHvl7fTNQ==
+X-Received: by 2002:a17:90a:4e8a:b0:203:9556:1b7d with SMTP id o10-20020a17090a4e8a00b0020395561b7dmr35073649pjh.0.1664176375438;
+        Mon, 26 Sep 2022 00:12:55 -0700 (PDT)
+Received: from Laptop-X1.redhat.com ([43.228.180.230])
+        by smtp.gmail.com with ESMTPSA id t11-20020a170902e84b00b0016d1b70872asm10602481plg.134.2022.09.26.00.12.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Sep 2022 00:12:55 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Raed Salem <raeds@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Bharat Bhushan <bbhushan2@marvell.com>
-Subject: Re: [PATCH RFC xfrm-next v3 0/8] Extend XFRM core to allow full
- offload configuration
-Message-ID: <YzFM8RF0suHc4cKI@unreal>
-References: <cover.1662295929.git.leonro@nvidia.com>
- <Yxm8QFvtMcpHWzIy@unreal>
- <20220921075927.3ace0307@kernel.org>
- <YytLwlvza1ulmyTd@unreal>
- <20220925094039.GV2602992@gauss3.secunet.de>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Florent Fourcot <florent.fourcot@wifirst.fr>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCHv2 net-next] rtnetlink: Honour NLM_F_ECHO flag in rtnl_{new, set, del}link
+Date:   Mon, 26 Sep 2022 15:12:46 +0800
+Message-Id: <20220926071246.38805-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220925094039.GV2602992@gauss3.secunet.de>
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 25, 2022 at 11:40:39AM +0200, Steffen Klassert wrote:
-> On Wed, Sep 21, 2022 at 08:37:06PM +0300, Leon Romanovsky wrote:
-> > On Wed, Sep 21, 2022 at 07:59:27AM -0700, Jakub Kicinski wrote:
-> > > On Thu, 8 Sep 2022 12:56:16 +0300 Leon Romanovsky wrote:
-> > > > I have TX traces too and can add if RX are not sufficient. 
-> > > 
-> > > The perf trace is good, but for those of us not intimately familiar
-> > > with xfrm, could you provide some analysis here?
-> > 
-> > The perf trace presented is for RX path of IPsec crypto offload mode. In that
-> > mode, decrypted packet enters the netdev stack to perform various XFRM specific
-> > checks.
-> 
-> Can you provide the perf traces and analysis for the TX side too? That
-> would be interesting in particular, because the policy and state lookups
-> there happen still in software.
+Netlink messages are used for communicating between user and kernel space.
+When user space configures the kernel with netlink messages, it can set the
+NLM_F_ECHO flag to request the kernel to send the applied configuration back
+to the caller. This allows user space to retrieve configuration information
+that are filled by the kernel (either because these parameters can only be
+set by the kernel or because user space let the kernel choose a default
+value).
 
-Single core TX (crypto mode) from the same run:
-Please notice that it is not really bottleneck, probably RX caused to the situation
-where TX was not executed enough. It is also lighter path than RX.
+The kernel has support this feature in some places like RTM_{NEW, DEL}ADDR,
+RTM_{NEW, DEL}ROUTE. This patch handles NLM_F_ECHO flag and send link info
+back after rtnl_{new, set, del}link.
 
-# Children      Self       Samples  Command          Shared Object       Symbol                                        
-# ........  ........  ............  ...............  ..................  ..............................................
-#
-    86.58%     0.00%             0  swapper          [kernel.vmlinux]    [k] secondary_startup_64_no_verify
-            |
-            ---secondary_startup_64_no_verify
-               start_secondary
-               cpu_startup_entry
-               do_idle
-               |          
-                --86.37%--cpu_idle_poll
-                          |          
-                           --24.53%--asm_common_interrupt
-                                     |          
-                                      --24.48%--common_interrupt
-                                                |          
-                                                |--23.47%--irq_exit_rcu
-                                                |          |          
-                                                |           --23.23%--do_softirq_own_stack
-                                                |                     |          
-                                                |                      --23.17%--asm_call_irq_on_stack
-                                                |                                __do_softirq
-                                                |                                |          
-                                                |                                |--22.23%--net_rx_action
-                                                |                                |          |          
-                                                |                                |          |--20.17%--gro_cell_poll
-                                                |                                |          |          |          
-                                                |                                |          |           --20.02%--napi_complete_done
-                                                |                                |          |                     |          
-                                                |                                |          |                      --19.98%--gro_normal_list.part.154
-                                                |                                |          |                                |          
-                                                |                                |          |                                 --19.96%--netif_receive_skb_list_internal
-                                                |                                |          |                                           |          
-                                                |                                |          |                                            --19.89%--__netif_receive_skb_list_core
-                                                |                                |          |                                                      |          
-                                                |                                |          |                                                       --19.77%--ip_list_rcv
-                                                |                                |          |                                                                 |          
-                                                |                                |          |                                                                  --19.67%--ip_sublist_rcv
-                                                |                                |          |                                                                            |          
-                                                |                                |          |                                                                             --19.56%--ip_sublist_rcv_finish
-                                                |                                |          |                                                                                       |          
-                                                |                                |          |                                                                                        --19.54%--ip_local_deliver
-                                                |                                |          |                                                                                                  |          
-                                                |                                |          |                                                                                                   --19.49%--ip_local_deliver_finish
-                                                |                                |          |                                                                                                             |          
-                                                |                                |          |                                                                                                              --19.47%--ip_protocol_deliver_rcu
-                                                |                                |          |                                                                                                                        |          
-                                                |                                |          |                                                                                                                         --19.43%--tcp_v4_rcv
-                                                |                                |          |                                                                                                                                   |          
-                                                |                                |          |                                                                                                                                    --18.87%--tcp_v4_do_rcv
-                                                |                                |          |                                                                                                                                              |          
-                                                |                                |          |                                                                                                                                               --18.83%--tcp_rcv_established
-                                                |                                |          |                                                                                                                                                         |          
-                                                |                                |          |                                                                                                                                                         |--16.41%--__tcp_push_pending_frames
-                                                |                                |          |                                                                                                                                                         |          |          
-                                                |                                |          |                                                                                                                                                         |           --16.38%--tcp_write_xmit
-                                                |                                |          |                                                                                                                                                         |                     |          
-                                                |                                |          |                                                                                                                                                         |                     |--6.35%--tcp_event_new_data_sent
-                                                |                                |          |                                                                                                                                                         |                     |          |          
-                                                |                                |          |                                                                                                                                                         |                     |           --6.22%--sk_reset_timer
-                                                |                                |          |                                                                                                                                                         |                     |                     |          
-                                                |                                |          |                                                                                                                                                         |                     |                      --6.21%--mod_timer
-                                                |                                |          |                                                                                                                                                         |                     |                                |          
-                                                |                                |          |                                                                                                                                                         |                     |                                 --6.10%--get_nohz_timer_target
-                                                |                                |          |                                                                                                                                                         |                     |                                           |          
-                                                |                                |          |                                                                                                                                                         |                     |                                            --1.87%--cpumask_next_and
-                                                |                                |          |                                                                                                                                                         |                     |                                                      |          
-                                                |                                |          |                                                                                                                                                         |                     |                                                       --1.07%--_find_next_bit.constprop.1
-                                                |                                |          |                                                                                                                                                         |                     |          
-                                                |                                |          |                                                                                                                                                         |                     |--5.50%--tcp_schedule_loss_probe
-                                                |                                |          |                                                                                                                                                         |                     |          |          
-                                                |                                |          |                                                                                                                                                         |                     |           --5.49%--sk_reset_timer
-                                                |                                |          |                                                                                                                                                         |                     |                     mod_timer
-                                                |                                |          |                                                                                                                                                         |                     |                     |          
-                                                |                                |          |                                                                                                                                                         |                     |                      --5.43%--get_nohz_timer_target
-                                                |                                |          |                                                                                                                                                         |                     |                                |          
-                                                |                                |          |                                                                                                                                                         |                     |                                 --1.37%--cpumask_next_and
-                                                |                                |          |                                                                                                                                                         |                     |                                           |          
-                                                |                                |          |                                                                                                                                                         |                     |                                            --0.71%--_find_next_bit.constprop.1
-                                                |                                |          |                                                                                                                                                         |                     |          
-                                                |                                |          |                                                                                                                                                         |                      --4.31%--__tcp_transmit_skb
-                                                |                                |          |                                                                                                                                                         |                                |          
-                                                |                                |          |                                                                                                                                                         |                                 --3.87%--__ip_queue_xmit
-                                                |                                |          |                                                                                                                                                         |                                           |          
-                                                |                                |          |                                                                                                                                                         |                                            --3.54%--xfrm4_output
-                                                |                                |          |                                                                                                                                                         |                                                      |          
-                                                |                                |          |                                                                                                                                                         |                                                       --3.26%--xfrm_output_resume
-                                                |                                |          |                                                                                                                                                         |                                                                 |          
-                                                |                                |          |                                                                                                                                                         |                                                                  --2.88%--ip_output
-                                                |                                |          |                                                                                                                                                         |                                                                            |          
-                                                |                                |          |                                                                                                                                                         |                                                                             --2.78%--ip_finish_output2
-                                                |                                |          |                                                                                                                                                         |                                                                                       |          
-                                                |                                |          |                                                                                                                                                         |                                                                                        --2.73%--__dev_queue_xmit
-                                                |                                |          |                                                                                                                                                         |                                                                                                  |          
-                                                |                                |          |                                                                                                                                                         |                                                                                                   --2.49%--sch_direct_xmit
-                                                |                                |          |                                                                                                                                                         |                                                                                                             |          
-                                                |                                |          |                                                                                                                                                         |                                                                                                             |--1.50%--validate_xmit_skb_list
-               |                                |                                |          |                                                                                                                                                         |                                                                                                             |          |          
-                                                |                                |          |                                                                                                                                                         |                                                                                                             |           --1.32%--validate_xmit_skb
-                          |                     |                                |          |                                                                                                                                                         |                                                                                                             |                     |          
-                                                |                                |          |                                                                                                                                                         |                                                                                                             |                      --1.06%--__skb_gso_segment
-                                     |          |                                |          |                                                                                                                                                         |                                                                                                             |                                |          
-                                                |                                |          |                                                                                                                                                         |                                                                                                             |                                 --1.04%--skb_mac_gso_segment
-                                                |                                |          |                                                                                                                                                         |                                                                                                             |                                           |          
-                                                                                 |          |                                                                                                                                                         |                                                                                                             |                                            --1.02%--inet_gso_segment
-                                                           |                     |          |                                                                                                                                                         |                                                                                                             |                                                      |          
-                                                                                 |          |                                                                                                                                                         |                                                                                                             |                                                       --0.93%--esp4_gso_segment
-                                                                      |          |          |                                                                                                                                                         |                                                                                                             |                                                                 |          
-                                                                                 |          |                                                                                                                                                         |                                                                                                             |                                                                  --0.86%--tcp_gso_segment
-                                                                                 |          |                                                                                                                                                         |                                                                                                             |                                                                            |          
-                                                                                            |                                                                                                                                                         |                                                                                                             |                                                                             --0.78%--skb_segment
-                                                |                                |          |                                                                                                                                                         |                                                                                                             |          
-                                                |                                |          |                                                                                                                                                         |                                                                                                              --0.77%--dev_hard_start_xmit
-               |                                |                                |          |                                                                                                                                                         |                                                                                                                        |          
-                                                |                                |          |                                                                                                                                                         |                                                                                                                         --0.75%--mlx5e_xmit
-                                                |                                |          |                                                                                                                                                         |          
-                                                |                                |          |                                                                                                                                                          --1.87%--tcp_ack
-                                                |                                |          |                                                                                                                                                                    |          
-                                                |                                |          |                                                                                                                                                                     --1.66%--tcp_clean_rtx_queue
-                                                |                                |          |                                                                                                                                                                               |          
-                                                |                                |          |                                                                                                                                                                                --1.35%--__kfree_skb
-                                                |                                |          |                                                                                                                                                                                          |          
-                                                |                                |          |                                                                                                                                                                                           --1.21%--skb_release_data
-                                                |                                |          |          
-                                                |                                |           --1.92%--mlx5e_napi_poll
-                                                |                                |                     |          
-                                                |                                |                      --1.38%--mlx5e_poll_rx_cq
-                                                |                                |                                |          
-                                                |                                |                                 --1.33%--mlx5e_handle_rx_cqe
-                                                |                                |                                           |          
-                                                |                                |                                            --0.53%--napi_gro_receive
-                                                |                                |                                                      |          
-                                                |                                |                                                       --0.52%--dev_gro_receive
-                                                |                                |          
-                                                |                                 --0.77%--tasklet_action_common.isra.17
-                                                |          
-                                                 --0.80%--asm_call_irq_on_stack
-                                                           |          
-                                                            --0.78%--handle_edge_irq
-                                                                      |          
-                                                                       --0.74%--handle_irq_event
-                                                                                 |          
-                                                                                  --0.71%--handle_irq_event_percpu
-                                                                                            |          
-                                                                                             --0.64%--__handle_irq_event_percpu
-                                                                                                       |          
-                                                                                                        --0.60%--mlx5_irq_int_handler
-                                                                                                                  |          
-                                                                                                                   --0.58%--atomic_notifier_call_chain
-                                                                                                                             |          
-                                                                                                                              --0.57%--mlx5_eq_comp_int
+Suggested-by: Guillaume Nault <gnault@redhat.com>
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+---
+v2:
+1) rename rtnl_echo_link_info() to rtnl_link_notify().
+2) remove IFLA_LINK_NETNSID and IFLA_EXT_MASK, which do not fit here.
+3) Add NLM_F_ECHO in rtnl_dellink. But we can't re-use the rtnl_link_notify()
+   helper as we need to get the link info before rtnl_delete_link().
+---
+ net/core/rtnetlink.c | 66 ++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 58 insertions(+), 8 deletions(-)
+
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 74864dc46a7e..0897cb6cc931 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -2645,13 +2645,41 @@ static int do_set_proto_down(struct net_device *dev,
+ 	return 0;
+ }
+ 
++static void rtnl_link_notify(struct net_device *dev, u32 pid,
++			     struct nlmsghdr *nlh)
++{
++	struct sk_buff *skb;
++	int err = -ENOBUFS;
++
++	skb = nlmsg_new(if_nlmsg_size(dev, 0), GFP_KERNEL);
++	if (!skb)
++		goto errout;
++
++	err = rtnl_fill_ifinfo(skb, dev, dev_net(dev), RTM_NEWLINK, pid,
++			       nlh->nlmsg_seq, 0, 0, 0, 0, NULL, 0, 0,
++			       GFP_KERNEL);
++	if (err < 0) {
++		/* -EMSGSIZE implies BUG in if_nlmsg_size */
++		WARN_ON(err == -EMSGSIZE);
++		kfree_skb(skb);
++		goto errout;
++	}
++
++	rtnl_notify(skb, dev_net(dev), pid, RTM_NEWLINK, nlh, GFP_KERNEL);
++
++errout:
++	if (err < 0)
++		rtnl_set_sk_err(dev_net(dev), RTM_NEWLINK, err);
++}
++
+ #define DO_SETLINK_MODIFIED	0x01
+ /* notify flag means notify + modified. */
+ #define DO_SETLINK_NOTIFY	0x03
+ static int do_setlink(const struct sk_buff *skb,
+ 		      struct net_device *dev, struct ifinfomsg *ifm,
+ 		      struct netlink_ext_ack *extack,
+-		      struct nlattr **tb, int status)
++		      struct nlattr **tb, int status,
++		      struct nlmsghdr *nlh)
+ {
+ 	const struct net_device_ops *ops = dev->netdev_ops;
+ 	char ifname[IFNAMSIZ];
+@@ -3009,6 +3037,8 @@ static int do_setlink(const struct sk_buff *skb,
+ 		}
+ 	}
+ 
++	rtnl_link_notify(dev, NETLINK_CB(skb).portid, nlh);
++
+ errout:
+ 	if (status & DO_SETLINK_MODIFIED) {
+ 		if ((status & DO_SETLINK_NOTIFY) == DO_SETLINK_NOTIFY)
+@@ -3069,7 +3099,8 @@ static int rtnl_setlink(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 		goto errout;
+ 	}
+ 
+-	err = do_setlink(skb, dev, ifm, extack, tb, 0);
++	err = do_setlink(skb, dev, ifm, extack, tb, 0, nlh);
++
+ errout:
+ 	return err;
+ }
+@@ -3130,10 +3161,12 @@ static int rtnl_dellink(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 			struct netlink_ext_ack *extack)
+ {
+ 	struct net *net = sock_net(skb->sk);
++	u32 pid = NETLINK_CB(skb).portid;
+ 	struct net *tgt_net = net;
+ 	struct net_device *dev = NULL;
+ 	struct ifinfomsg *ifm;
+ 	struct nlattr *tb[IFLA_MAX+1];
++	struct sk_buff *nskb;
+ 	int err;
+ 	int netnsid = -1;
+ 
+@@ -3171,7 +3204,20 @@ static int rtnl_dellink(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 		goto out;
+ 	}
+ 
++	nskb = nlmsg_new(if_nlmsg_size(dev, 0), GFP_KERNEL);
++	if (nskb) {
++		err = rtnl_fill_ifinfo(nskb, dev, dev_net(dev), RTM_DELLINK, pid,
++				       nlh->nlmsg_seq, 0, 0, 0, 0, NULL, 0, 0,
++				       GFP_KERNEL);
++		if (err < 0) {
++			WARN_ON(err == -EMSGSIZE);
++			kfree_skb(nskb);
++		}
++	}
++
+ 	err = rtnl_delete_link(dev);
++	if (!err && nskb)
++		rtnl_notify(nskb, net, pid, RTM_DELLINK, nlh, GFP_KERNEL);
+ 
+ out:
+ 	if (netnsid >= 0)
+@@ -3293,14 +3339,14 @@ static int rtnl_group_changelink(const struct sk_buff *skb,
+ 		struct net *net, int group,
+ 		struct ifinfomsg *ifm,
+ 		struct netlink_ext_ack *extack,
+-		struct nlattr **tb)
++		struct nlattr **tb, struct nlmsghdr *nlh)
+ {
+ 	struct net_device *dev, *aux;
+ 	int err;
+ 
+ 	for_each_netdev_safe(net, dev, aux) {
+ 		if (dev->group == group) {
+-			err = do_setlink(skb, dev, ifm, extack, tb, 0);
++			err = do_setlink(skb, dev, ifm, extack, tb, 0, nlh);
+ 			if (err < 0)
+ 				return err;
+ 		}
+@@ -3312,7 +3358,8 @@ static int rtnl_group_changelink(const struct sk_buff *skb,
+ static int rtnl_newlink_create(struct sk_buff *skb, struct ifinfomsg *ifm,
+ 			       const struct rtnl_link_ops *ops,
+ 			       struct nlattr **tb, struct nlattr **data,
+-			       struct netlink_ext_ack *extack)
++			       struct netlink_ext_ack *extack,
++			       struct nlmsghdr *nlh)
+ {
+ 	unsigned char name_assign_type = NET_NAME_USER;
+ 	struct net *net = sock_net(skb->sk);
+@@ -3382,6 +3429,9 @@ static int rtnl_newlink_create(struct sk_buff *skb, struct ifinfomsg *ifm,
+ 		if (err)
+ 			goto out_unregister;
+ 	}
++
++	rtnl_link_notify(dev, NETLINK_CB(skb).portid, nlh);
++
+ out:
+ 	if (link_net)
+ 		put_net(link_net);
+@@ -3544,7 +3594,7 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 			status |= DO_SETLINK_NOTIFY;
+ 		}
+ 
+-		return do_setlink(skb, dev, ifm, extack, tb, status);
++		return do_setlink(skb, dev, ifm, extack, tb, status, nlh);
+ 	}
+ 
+ 	if (!(nlh->nlmsg_flags & NLM_F_CREATE)) {
+@@ -3556,7 +3606,7 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 		if (tb[IFLA_GROUP])
+ 			return rtnl_group_changelink(skb, net,
+ 						nla_get_u32(tb[IFLA_GROUP]),
+-						ifm, extack, tb);
++						ifm, extack, tb, nlh);
+ 		return -ENODEV;
+ 	}
+ 
+@@ -3578,7 +3628,7 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+-	return rtnl_newlink_create(skb, ifm, ops, tb, data, extack);
++	return rtnl_newlink_create(skb, ifm, ops, tb, data, extack, nlh);
+ }
+ 
+ static int rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
+-- 
+2.37.2
 
