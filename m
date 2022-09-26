@@ -2,50 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C612D5EB221
-	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 22:32:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B675E5EB222
+	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 22:32:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229787AbiIZUcY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 16:32:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58106 "EHLO
+        id S229972AbiIZUc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 16:32:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229671AbiIZUcW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 16:32:22 -0400
+        with ESMTP id S229621AbiIZUcY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 16:32:24 -0400
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2558DA486C
-        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 13:32:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49400A4B8D
+        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 13:32:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1664224341; x=1695760341;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=xPxyTcGW9tfNfK6ZOTLZyX8mUG8VnYsOgNCH+GQHsx8=;
-  b=guvc621el+1PAnygTLzYD19V4rXkLN+cnNOh0+57oKdkYqS8kSmu4YZs
-   1E3eGs2I9p7dMSG9vbUQyP/mcoQZdBWcQMJrCSAkFlTddg9/sqjolsVGD
-   7ue9IP/YZWrD8BrLj5KmoJXQR46sGxzlLOMy57OdKUCRNqXfpjxsHzv80
-   hLYa3nEgFOswqfwhBltVxoHUACqutvcsD2bcPHxL8nr2tOrsLcBAvCJtS
-   Pf9d+a4GaTVvDOtFTJsbDOwo6CKWz7lzP9BAY2CxZ99qaB/fnz534X+NR
-   RmdZ5Dwct3GZotW647+U4jVk0kbnvlswbMXPBmj252HSyTsr3iC3zMT09
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="281508583"
+  t=1664224342; x=1695760342;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=mk/O+pb4vDEv/4z5c4T+TiCftuTCRdCJVZvmwYvIzBU=;
+  b=nLzTNe3d8RB5X5ty3tsUkGkVlv0SIPc8T+j2OnKl/Qp1cvYec6C0yqN7
+   cGCRuOwdD5TMKDsovX6subEt54aTBihlzn0GLsMlS/hXv1m8y1p3hRpRA
+   s9XS2/xDNubkp9zd7TV6togYtL68QUqC3gN2LC4RGJ4o9YG9xvWpT1hAm
+   pMNJW8YlxCrE/0+UTBxROY3eXDfuF8Rc9/sNbCGve53BRu7RkhfxZBSRu
+   FhdIamD9WYuNoxkqQLHpFlMEI3qqomp+Tmu2mcP5h7EIW8WvJAH4AbCG0
+   Acr2J2/niKPClIGhJ1yx/TG+qouvlamko0yxuIMjnu55Ua7a0Pkb1mBSe
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="281508585"
 X-IronPort-AV: E=Sophos;i="5.93,347,1654585200"; 
-   d="scan'208";a="281508583"
+   d="scan'208";a="281508585"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
   by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Sep 2022 13:32:20 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="616547437"
+X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="616547443"
 X-IronPort-AV: E=Sophos;i="5.93,347,1654585200"; 
-   d="scan'208";a="616547437"
+   d="scan'208";a="616547443"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga007.jf.intel.com with ESMTP; 26 Sep 2022 13:32:19 -0700
+  by orsmga007.jf.intel.com with ESMTP; 26 Sep 2022 13:32:20 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org
-Subject: [PATCH net 0/3][pull request] Intel Wired LAN Driver Updates 2022-09-26 (i40e)
-Date:   Mon, 26 Sep 2022 13:32:11 -0700
-Message-Id: <20220926203214.3678419-1-anthony.l.nguyen@intel.com>
+Cc:     Slawomir Laba <slawomirx.laba@intel.com>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com, Michal Jaron <michalx.jaron@intel.com>,
+        Mateusz Palczewski <mateusz.palczewski@intel.com>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH net 1/3] i40e: Fix ethtool rx-flow-hash setting for X722
+Date:   Mon, 26 Sep 2022 13:32:12 -0700
+Message-Id: <20220926203214.3678419-2-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220926203214.3678419-1-anthony.l.nguyen@intel.com>
+References: <20220926203214.3678419-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -57,38 +62,122 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series contains updates to i40e driver only.
+From: Slawomir Laba <slawomirx.laba@intel.com>
 
-Slawomir fixes using incorrect register masks on X722 devices.
+When enabling flow type for RSS hash via ethtool:
 
-Michal saves then restores XPS settings after reset.
+ethtool -N $pf rx-flow-hash tcp4|tcp6|udp4|udp6 s|d
 
-Jan fixes memory leak of DMA memory due to incorrect freeing of rx_buf.
+the driver would fail to setup this setting on X722
+device since it was using the mask on the register
+dedicated for X710 devices.
 
-The following are changes since commit b7ca8d5f56e6c57b671ceb8de1361d2a5a495087:
-  sfc: correct filter_table_remove method for EF10 PFs
-and are available in the git repository at:
-  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 40GbE
+Apply a different mask on the register when setting the
+RSS hash for the X722 device.
 
-Jan Sokolowski (1):
-  i40e: Fix DMA mappings leak
+When displaying the flow types enabled via ethtool:
 
-Michal Jaron (1):
-  i40e: Fix not setting xps_cpus after reset
+ethtool -n $pf rx-flow-hash tcp4|tcp6|udp4|udp6
 
-Slawomir Laba (1):
-  i40e: Fix ethtool rx-flow-hash setting for X722
+the driver would print wrong values for X722 device.
 
- drivers/net/ethernet/intel/i40e/i40e.h        |   6 +
- .../net/ethernet/intel/i40e/i40e_ethtool.c    |  34 +++--
- drivers/net/ethernet/intel/i40e/i40e_main.c   | 122 +++++++++++++++++-
- drivers/net/ethernet/intel/i40e/i40e_txrx.c   |  13 +-
- drivers/net/ethernet/intel/i40e/i40e_txrx.h   |   1 -
- drivers/net/ethernet/intel/i40e/i40e_type.h   |   4 +
- drivers/net/ethernet/intel/i40e/i40e_xsk.c    |  67 ++++++++--
- drivers/net/ethernet/intel/i40e/i40e_xsk.h    |   2 +-
- 8 files changed, 213 insertions(+), 36 deletions(-)
+Fix this issue by testing masks for X722 device in
+i40e_get_rss_hash_opts function.
 
+Fixes: eb0dd6e4a3b3 ("i40e: Allow RSS Hash set with less than four parameters")
+Signed-off-by: Slawomir Laba <slawomirx.laba@intel.com>
+Signed-off-by: Michal Jaron <michalx.jaron@intel.com>
+Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+---
+ .../net/ethernet/intel/i40e/i40e_ethtool.c    | 31 ++++++++++++++-----
+ drivers/net/ethernet/intel/i40e/i40e_type.h   |  4 +++
+ 2 files changed, 27 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
+index e9cd0fa6a0d2..e518aaa2c0ca 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
+@@ -3188,10 +3188,17 @@ static int i40e_get_rss_hash_opts(struct i40e_pf *pf, struct ethtool_rxnfc *cmd)
+ 
+ 		if (cmd->flow_type == TCP_V4_FLOW ||
+ 		    cmd->flow_type == UDP_V4_FLOW) {
+-			if (i_set & I40E_L3_SRC_MASK)
+-				cmd->data |= RXH_IP_SRC;
+-			if (i_set & I40E_L3_DST_MASK)
+-				cmd->data |= RXH_IP_DST;
++			if (hw->mac.type == I40E_MAC_X722) {
++				if (i_set & I40E_X722_L3_SRC_MASK)
++					cmd->data |= RXH_IP_SRC;
++				if (i_set & I40E_X722_L3_DST_MASK)
++					cmd->data |= RXH_IP_DST;
++			} else {
++				if (i_set & I40E_L3_SRC_MASK)
++					cmd->data |= RXH_IP_SRC;
++				if (i_set & I40E_L3_DST_MASK)
++					cmd->data |= RXH_IP_DST;
++			}
+ 		} else if (cmd->flow_type == TCP_V6_FLOW ||
+ 			  cmd->flow_type == UDP_V6_FLOW) {
+ 			if (i_set & I40E_L3_V6_SRC_MASK)
+@@ -3549,12 +3556,15 @@ static int i40e_get_rxnfc(struct net_device *netdev, struct ethtool_rxnfc *cmd,
+ 
+ /**
+  * i40e_get_rss_hash_bits - Read RSS Hash bits from register
++ * @hw: hw structure
+  * @nfc: pointer to user request
+  * @i_setc: bits currently set
+  *
+  * Returns value of bits to be set per user request
+  **/
+-static u64 i40e_get_rss_hash_bits(struct ethtool_rxnfc *nfc, u64 i_setc)
++static u64 i40e_get_rss_hash_bits(struct i40e_hw *hw,
++				  struct ethtool_rxnfc *nfc,
++				  u64 i_setc)
+ {
+ 	u64 i_set = i_setc;
+ 	u64 src_l3 = 0, dst_l3 = 0;
+@@ -3573,8 +3583,13 @@ static u64 i40e_get_rss_hash_bits(struct ethtool_rxnfc *nfc, u64 i_setc)
+ 		dst_l3 = I40E_L3_V6_DST_MASK;
+ 	} else if (nfc->flow_type == TCP_V4_FLOW ||
+ 		  nfc->flow_type == UDP_V4_FLOW) {
+-		src_l3 = I40E_L3_SRC_MASK;
+-		dst_l3 = I40E_L3_DST_MASK;
++		if (hw->mac.type == I40E_MAC_X722) {
++			src_l3 = I40E_X722_L3_SRC_MASK;
++			dst_l3 = I40E_X722_L3_DST_MASK;
++		} else {
++			src_l3 = I40E_L3_SRC_MASK;
++			dst_l3 = I40E_L3_DST_MASK;
++		}
+ 	} else {
+ 		/* Any other flow type are not supported here */
+ 		return i_set;
+@@ -3689,7 +3704,7 @@ static int i40e_set_rss_hash_opt(struct i40e_pf *pf, struct ethtool_rxnfc *nfc)
+ 					       flow_pctype)) |
+ 			((u64)i40e_read_rx_ctl(hw, I40E_GLQF_HASH_INSET(1,
+ 					       flow_pctype)) << 32);
+-		i_set = i40e_get_rss_hash_bits(nfc, i_setc);
++		i_set = i40e_get_rss_hash_bits(&pf->hw, nfc, i_setc);
+ 		i40e_write_rx_ctl(hw, I40E_GLQF_HASH_INSET(0, flow_pctype),
+ 				  (u32)i_set);
+ 		i40e_write_rx_ctl(hw, I40E_GLQF_HASH_INSET(1, flow_pctype),
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_type.h b/drivers/net/ethernet/intel/i40e/i40e_type.h
+index 7b3f30beb757..388c3d36d96a 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_type.h
++++ b/drivers/net/ethernet/intel/i40e/i40e_type.h
+@@ -1404,6 +1404,10 @@ struct i40e_lldp_variables {
+ #define I40E_PFQF_CTL_0_HASHLUTSIZE_512	0x00010000
+ 
+ /* INPUT SET MASK for RSS, flow director, and flexible payload */
++#define I40E_X722_L3_SRC_SHIFT		49
++#define I40E_X722_L3_SRC_MASK		(0x3ULL << I40E_X722_L3_SRC_SHIFT)
++#define I40E_X722_L3_DST_SHIFT		41
++#define I40E_X722_L3_DST_MASK		(0x3ULL << I40E_X722_L3_DST_SHIFT)
+ #define I40E_L3_SRC_SHIFT		47
+ #define I40E_L3_SRC_MASK		(0x3ULL << I40E_L3_SRC_SHIFT)
+ #define I40E_L3_V6_SRC_SHIFT		43
 -- 
 2.35.1
 
