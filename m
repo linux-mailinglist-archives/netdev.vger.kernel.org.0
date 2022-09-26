@@ -2,622 +2,252 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6362C5EB0A7
-	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 20:59:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43B015EB0D0
+	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 21:04:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231313AbiIZS7a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 14:59:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42272 "EHLO
+        id S230155AbiIZTEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 15:04:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230106AbiIZS7Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 14:59:16 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on20619.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e8a::619])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD3D1937A9
-        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 11:59:14 -0700 (PDT)
+        with ESMTP id S230169AbiIZTDl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 15:03:41 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2042.outbound.protection.outlook.com [40.107.21.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3FF38C01F;
+        Mon, 26 Sep 2022 12:03:35 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mgdOjW8eTvko1aXqqtXvrBgbpazv0VuyeTZmL6p+PrsSdVgPvY33KY7BwTMFUosLW48uHU05OnJ/Bu/ctjwEIdbcPC7Wj2tmAh/+DtGH87Wdv7LaNqxJD61jCEKmW9BEvLV6ahfjQEwfdNZXwvzvk86ApnYXFgRcqUfwG2WtgKncCDi9L717V998z5Lcsjv8N/8UZ0OLP68cy0PDI5CFEifQ/ZYR7qkTlgo4Ve7rF3dNK8LOsMucfSBGI4neqPr0ZI+xXNiaRNneTu73uKzbHYP/wwSODpNVtxwyS6lPirfjXeyUJAgcVuD6rYmBTxvIUPMchu5hX0bbr7k6xNrS6w==
+ b=DaaQZzxwu93M6dewM5q0mS2bwXSjzOrZeVY++ROqHR0xiiUra3ydcheHTxsyZL4pvDUbMXNHWdpNugQkLNSmx3Cacpd0+hHqNG+bcf0hXLraXzMgNgKTKKfp+Qwoejrd6Uci1JuyQgzZt/RjTwhtoxJgf2P3l+RpnWwWWhrPpjtSjSJ6y+4T3+fVBUBHvLfwtLrcw8HJQTVQxj76QlAFod7bdZe6NZP/pqtt8G7cJP5VqbPu0MiX5tV469SgmBFmlZdM1NL4QEtWJ8TeixFbdsEMqpmVsbnXHaD9Xq8SDoQL3V74FKBHVYQ6Xv9EmjpXWwIs94P1B6oAe0AIXZzAhQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lLEgaMrmNhXhEk7CYYIQ4YL8KewlXOu1Ne1ULt9QHKc=;
- b=FqBY37NEo19P39VxhEIqNZ2wcUIOjPdboqXeP3fdXjCaS+8qqwwcwGCapKb9eP44c3ngSn+krPRCnClxe0vLCtIN61vfYkMMVvH3EL5zgaVpP+ZzZR5V7q+pTWoMX1yHQfUuLiJVdAd9RNMkk0sr6Q6erd+t9aYHnrBLzl5lhmHEZYw2d4tGEaxLhBZeohVpsVL0u+JTxtVzy0ESbgM/6JiWe3P2Z1cEwgXGDvoM4LI8LMthwO9d4nLrRHrsXdl3Xd8ZKkbdSSCNoiGsWpV5Z3YTo8j54gbqBUYgcBmPtgP6RohK0SOk3ogMsgQTkLl1ELg1cwM5KhzQmuooBIRn0w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=fail (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=amdcloud.onmicrosoft.com; s=selector1-amdcloud-onmicrosoft-com;
+ bh=gA5yQTC7ukjGTj/kXU5vOE7P46JCeTyJjtqlXQ+W0dk=;
+ b=A0tnLTrH/ePAZN11jSGRFXuCcafid2NkGVagJrcSxokmS4GXPeP3fVUk1NhoMAgiZkr1wwob5CU/5+oL/jft5kxQQmlSzbGax1t78UUEXWpWDx//EOGhi8yskdrZyxCjbAiGuAbUfzAg2OCASWubiLjzGxGLFp8f2kLZebHINo5po6Feo9jPvrZanwM8JvCVlM0Ze84K7tl7utlSix0X8/3jrR4V2aC3HzZNOe6cP/VsM9PM+o8NHKKwfX9fFnu2O3WO9zEOhvjbYl05n5fexAlM3rYej4OizYjMcxiK0SL9u5nQl/jX1zH9GW26iTAtt4VIRbUAahYZkZs3O0iO1g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
+ dkim=pass header.d=seco.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lLEgaMrmNhXhEk7CYYIQ4YL8KewlXOu1Ne1ULt9QHKc=;
- b=amkB2xOW5X18HFuk+lwfLLV4YcH98O9OggW6s32RNnPzs3EOHuQL5uqoga1d2UT3tDEyY4nPG+K41npF8n6JZVfjyy0tFTFh3kIjTcQIk90n2oltu+lg3fxs0IoF6l2LIlBs7RGfBajI6Bh8A8+qy5TAzljgYFvp750IFcigtH+JcO4Dqi+rV0LExg1AxrH7FkwPmY2F74BZbdTb/46U3mbwCp1YO3SCxBGwiWPjOF85DocX3HiqaxNfOZJ2RLxbzODh1RCG4LEJtv7FqMfh8oqqaAMOGk2HF4Z5h3QHP6b7yJxnZ8HkoKHr5ujMZ9jz0HkAVDkE28sCOE5bsLH04A==
-Received: from MW4P222CA0019.NAMP222.PROD.OUTLOOK.COM (2603:10b6:303:114::24)
- by DM4PR12MB5390.namprd12.prod.outlook.com (2603:10b6:5:389::15) with
+ bh=gA5yQTC7ukjGTj/kXU5vOE7P46JCeTyJjtqlXQ+W0dk=;
+ b=lnJ/aqNSd1mOlFAA00RKdJ2tnTqSE1z1rCLyDfRjSgfvL+egrpNE2fM9IVQjHmXTSTNmjQ8yVsOeL4UbycdM77DfB9ImPL9V+Eu7GAZzB5JIRG5zpXnFLTm9/zQ2XhHuFJDuYmcqIW1Hc9gk3crBrxigkMZrS30el/6m8Kunj7T8lh0zvd+gsAjhhu2tlnnfU1/MNeUju39FNCLuVrspH5AVeNhKz21880BjHKg3iLhEOcumXW2weHwLnvyp+LbozxFlbggSvhIGqpPCEFd2ZPre/+JuCyJN9H4CBmoDoDgBEKpnQjThvWfp8Z8UPNtsRBdSLnsXva35gpvaf6vRoA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=seco.com;
+Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
+ by PAWPR03MB9246.eurprd03.prod.outlook.com (2603:10a6:102:342::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.25; Mon, 26 Sep
- 2022 18:59:11 +0000
-Received: from CO1NAM11FT110.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:114:cafe::9b) by MW4P222CA0019.outlook.office365.com
- (2603:10b6:303:114::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.19 via Frontend
- Transport; Mon, 26 Sep 2022 18:59:11 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=fail action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT110.mail.protection.outlook.com (10.13.175.125) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5654.14 via Frontend Transport; Mon, 26 Sep 2022 18:59:10 +0000
-Received: from SATLEXMB05.amd.com (10.181.40.146) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Mon, 26 Sep
- 2022 13:59:09 -0500
-Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB05.amd.com
- (10.181.40.146) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Mon, 26 Sep
- 2022 13:59:09 -0500
-Received: from xcbecree41x.xilinx.com (10.180.168.240) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28 via Frontend
- Transport; Mon, 26 Sep 2022 13:59:07 -0500
-From:   <ecree@xilinx.com>
-To:     <netdev@vger.kernel.org>, <linux-net-drivers@amd.com>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <edumazet@google.com>, <habetsm.xilinx@gmail.com>,
-        Edward Cree <ecree.xilinx@gmail.com>
-Subject: [PATCH v2 net-next 6/6] sfc: bare bones TC offload on EF100
-Date:   Mon, 26 Sep 2022 19:57:36 +0100
-Message-ID: <f97a9ad59a1317be3c676f0bd5b4adbd9dc45416.1664218348.git.ecree.xilinx@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <cover.1664218348.git.ecree.xilinx@gmail.com>
-References: <cover.1664218348.git.ecree.xilinx@gmail.com>
-MIME-Version: 1.0
+ 2022 19:03:32 +0000
+Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
+ ([fe80::204a:de22:b651:f86d]) by DB7PR03MB4972.eurprd03.prod.outlook.com
+ ([fe80::204a:de22:b651:f86d%6]) with mapi id 15.20.5654.014; Mon, 26 Sep 2022
+ 19:03:32 +0000
+From:   Sean Anderson <sean.anderson@seco.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        Camelia Alexandra Groza <camelia.groza@nxp.com>,
+        netdev@vger.kernel.org
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        "linuxppc-dev @ lists . ozlabs . org" <linuxppc-dev@lists.ozlabs.org>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Li Yang <leoyang.li@nxp.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Paul Mackerras <paulus@samba.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org
+Subject: [PATCH net-next v5 0/9] [RFT] net: dpaa: Convert to phylink
+Date:   Mon, 26 Sep 2022 15:03:12 -0400
+Message-Id: <20220926190322.2889342-1-sean.anderson@seco.com>
+X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-EOPAttributedMessage: 0
+X-ClientProxiedBy: BL0PR1501CA0019.namprd15.prod.outlook.com
+ (2603:10b6:207:17::32) To DB7PR03MB4972.eurprd03.prod.outlook.com
+ (2603:10a6:10:7d::22)
+MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT110:EE_|DM4PR12MB5390:EE_
-X-MS-Office365-Filtering-Correlation-Id: b97d7eb2-6bc5-4ca2-251c-08da9ff132ad
-X-MS-Exchange-SenderADCheck: 0
+X-MS-TrafficTypeDiagnostic: DB7PR03MB4972:EE_|PAWPR03MB9246:EE_
+X-MS-Office365-Filtering-Correlation-Id: ad1e1957-0a0f-4931-dc96-08da9ff1ce46
+X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: xuPx14+6gCebQ2dOkIuWHMDiv8QiH2MPPU6dfb8/6UcclTIrpiOGB4I6LYwNpqQwVa9iKOY/CRv5hidCmWBNmSxmbu8DGsob+jkhBEyXlTJ+6Ih4GtFH6hMgHYUVchTLJ+Zc7HUytQlL7aQBTmdJTeAY7xtwgbKXi4chL+s1YNl9xB6EPfcUl2XSQfirWfNi0+kwALzeOhm3dP9pgmXQaaAb74Fc9nvPdvD2NdH7WhN8mDTcPVTPTlvz6QXc/11lWLCQiWO+FILGxI1BRBO713Jj0rc1lUlktXX/AZToxtusq4N9G0iHhlYPgkoHSU0yErMFEFJfp2GVvEsRnHjmR+EIYlOApV+a9hPAe6+SRNExlWRSSCajyE2f6UnT4W5IjJyMDYmNYzLr5MVS/ApOlHYVn2UV0Kpdwsjew3d0uTLKey0qwUq0x+SMCzRUxiSacbCD5ezav/2nYUl7HCfVKRkO4Duqq/bVdXKRDXC8j2GJyTxWTSMJ2JtQqBZBXOIyVn33rgjruNirgKFpK5YONyW+NumqHxPfQBre9pumJXvYxjuP16BJn5XMTLWcf8JGVuFbM0nGfUyvv5cbOhmJFuZU0Mm6RsEmmy9N/9DYqK5eLp2p4wQ4LYWk8hmshIkwuFdmE3HjN8djBHf6+s0rKYqJqILYieKxjs204PR5CkyNKv8DndADdzQaQwDycBNcUVhCxenBF9s5Yb9ar3O9JCpTH56v4DhAQ/PftjTuSIUNJRq2HglcAfyPykfclKISdaQzWhU6zjoxaS35mErnU0ZyyDQQ4VFBpj0KJmL3D7pGDmD6ukTVmim3xmwzr+yF
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(396003)(376002)(346002)(39860400002)(136003)(451199015)(46966006)(40470700004)(36840700001)(47076005)(83380400001)(336012)(83170400001)(186003)(42882007)(81166007)(356005)(82740400003)(36860700001)(5660300002)(2906002)(8936002)(2876002)(40480700001)(40460700003)(82310400005)(478600001)(4326008)(41300700001)(26005)(9686003)(6666004)(30864003)(8676002)(70586007)(70206006)(316002)(110136005)(54906003)(36756003)(55446002)(2004002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Sep 2022 18:59:10.9364
+X-Microsoft-Antispam-Message-Info: isWP4CLpiIFh5Apdftrt5AKxEAuAtGd8js3M+GBDG5kupPEBoglAwMd6duOYnqK/MFjyOjyQWJKntKOB+XsjwtW5NthhrVGB6mWY/V9t1V9Hw++ChoRlwDQfgIkIo0kSnmIuQRseqBXjnfiip2YVa1iQcv0uSEhXB61251pTiB0htOQSe43+rvH+gb/lJkd1zJLyO4VvWvUCrd+BGxRCEkGKwhslWbnkPzuq+BxV8AXpUNvbihH7iW3b/x1zQx+Z9n/FzLGqP/kxZN0PGRSINnqady8I1j6IxgDAVc0UzMm4iqSFJ0JkM8WRPkHKoX3zVMn4Kh41HdHJUR0BZ0wFTcCoobGo6BsZYjPZyJ34vzmLNAmXtyJzo4HWLAcnWMm9/0HIaLnZIMOVyKh2nzTvs0AFsg+TRKMJZ7xg1YdGCoAuGD5EWtevZPQ857sGOCYM6ObDdJ3eQc2jA91HKqzvpdK/fBlS8/csTPY3DLOcAeOzbmYhhuwNueu1oOZll5YlQM4ETupzjkydEAUNkItKPGrgZOQF06j81GknBwwefpEhbMQl5HsXxIk805qfyHFabRplgxrsLt+hSl5kwOOJj+O1kis0aJImV72Z5ZqFC2XO1wCzxUHf+lhPZsgm24eNlTLYdkIBw0oBLkAGgL+GcMCOU6G8G8HPhzWtwAhv1b73lkKRO+U31wVQg9+RieAG+xXOiI8p0OIztK+6JSMdVQs9hBJdtI1hPpXg8XKgPBkJJs4VdZK7q516dK4OYuEK8dCZp1aVmub147rB1KlvBmPeQMAxI9L2pP98jYsJ4IY=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(366004)(396003)(136003)(376002)(39850400004)(346002)(451199015)(36756003)(86362001)(66946007)(66476007)(66556008)(6486002)(966005)(110136005)(54906003)(4326008)(316002)(478600001)(38350700002)(38100700002)(41300700001)(6666004)(8676002)(5660300002)(7416002)(44832011)(6512007)(26005)(2616005)(2906002)(1076003)(186003)(83380400001)(8936002)(6506007)(52116002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?F7v3G4XFrVyeOeEgZFYSDX6FUdzia7/8JB46cmkgLyYjU7recVpsPcEYyNtD?=
+ =?us-ascii?Q?fZ4qkU9UUX5ixBvSEeaPBKFQexizLgLLDhgweyiDyO8QFcJhW9VM+46PWWWL?=
+ =?us-ascii?Q?DxbVsr2aIEjctgvmRhnGnSMTt5xOLP21WQrvpwG5eE5S2sjkSggO+7AsKl0b?=
+ =?us-ascii?Q?5JfCDakfdcYaZaKszG0eYf4i76oQQCKJFAlXHkIeqYJx/vVfi3vVEv9VjhNG?=
+ =?us-ascii?Q?r6kcN0nmAIJDbaQneWVeYuCgvY5jWf2GGYT3GNcduNVDJAuv+rwnnUMzvl+1?=
+ =?us-ascii?Q?50tlzuZcIvRJXT05tpIJLOVaHoXEZsVT1KJ22chVSkQpyDcDlPqWNTSPOlW6?=
+ =?us-ascii?Q?u3VGiBzLxYCkJunwrV/XO89o0ui1nsApxMOLnheDFVJe3AnVT9NJJON2lQfJ?=
+ =?us-ascii?Q?9IscA6tD5QKtMjrxQgqoa81hlnMpc12yGql3sv8jbz+ASVo5BqfEhbxNQpeE?=
+ =?us-ascii?Q?KeEqMrL21CQTKwVjXLyYMPRdnHowd1QbBzuafMnjMhefpgt10dX9/W/NpQr4?=
+ =?us-ascii?Q?VM562ha/bqri1XcuLpyLy6+Py3LjcQjamzJ3qUBuowHTBVL9r8nhou9fyvug?=
+ =?us-ascii?Q?g3BGKed4rYiAfHDSNd3s1IOVAk/HkzCK6XUjtjxK/y19Li8GbXbi5ImNhrYw?=
+ =?us-ascii?Q?c8E1jcH3iSICPLsSbLoRMwdhvmGa0VVTb74pfD/YhZDdN8bV0+VOonOFShzA?=
+ =?us-ascii?Q?hkgTYuaxFaoLjZ1haINfZagILw9XhOES5HbVtOJLqOqp9R3kQJtzsuxf0BVA?=
+ =?us-ascii?Q?SfoGq0/rU8yhPLRYEGZx20cNc6wvcBylNqhIDqXl8HsvxvZXPKk3IK0Z/dhV?=
+ =?us-ascii?Q?Nr6Oa/e1S6vEXKYTH1bMaiHYzJ9wTFbj3cS97t1w2PmLx8eIBdZesVVeioBx?=
+ =?us-ascii?Q?IQyZzPxEO9EhQoTi0Vdv+Ri80uOpRBHL5wNUB3dGPrSw3ZtiD4eLrF3KmE8q?=
+ =?us-ascii?Q?rXaWh/Z07e2hLTMDzp4JKnEWLBkDcFMygWca0ikk0hRy2Qb5SXdeNT93Kdy5?=
+ =?us-ascii?Q?XCnJP9vMkge+xCN06DyPz0WBM/HrfciZEj1y0OpI+bxTSaPAzY0nL8LqNMb1?=
+ =?us-ascii?Q?WmRS/Gm6Jb2giRQGlgV5k/dQtTvW2qLGErxjdvOKIEuKK68tIjmiyroZng4W?=
+ =?us-ascii?Q?QHdPvCHKjwq55+mTk9nkUQVygozvFydFb9c9LA5xFfMEGUqv+VZk/PcVc3lI?=
+ =?us-ascii?Q?xXCn30o3yngHnhcC5BJVvojrE+gt1ODUTo6dvax3YpACxcLFYUngez7QLkXu?=
+ =?us-ascii?Q?VyLFCmKt49d0mCAsby5R3bwNNQAFBaijw6Zw63hWJ8q5fnNiF+RJGB5ORBjI?=
+ =?us-ascii?Q?Et+/AHt9i5lOKM4/sCvGRTDVwrNjN8B7ry7HdQrAR5ZmsRnSEHr5p/vgLvaS?=
+ =?us-ascii?Q?U+Ru9jVWeLinHoSecHBE54YtoajcI7Gjp/cQQF60WTXOHdeOTEq5i+5jNuOg?=
+ =?us-ascii?Q?qpKN57B8fs0VXw0259o94aO4/SbMdpoDl6MeGX1c5nGo4F0Pmr9JxkeHi9rn?=
+ =?us-ascii?Q?MTc1uFRc5C+U+seVIcyb5q0uvLtqJfGZ4VO0VOb5Q0l5SxBqrmCabbutRum6?=
+ =?us-ascii?Q?1PaMcfglz/4NgXi9VrujiE1V+Ru9Wyy832rgqthMxwMVtUqI2TZf7kX+dTHs?=
+ =?us-ascii?Q?dQ=3D=3D?=
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ad1e1957-0a0f-4931-dc96-08da9ff1ce46
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Sep 2022 19:03:32.4437
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b97d7eb2-6bc5-4ca2-251c-08da9ff132ad
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT110.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5390
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,SPF_HELO_PASS,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6KoIi4ub2/0hq/wB1ouesYHSZIdfxCSL/PlPQc6XYxajIhsxVzAgzkqVM2r/XJEqfRStOjVzJw9M3t9m2dFJ8w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAWPR03MB9246
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Edward Cree <ecree.xilinx@gmail.com>
+This series converts the DPAA driver to phylink.
 
-This is the absolute minimum viable TC implementation to get traffic to
- VFs and allow them to be tested; it supports no match fields besides
- ingress port, no actions besides mirred and drop, and no stats.
-Example usage:
-    tc filter add dev $PF parent ffff: flower skip_sw \
-        action mirred egress mirror dev $VFREP
-    tc filter add dev $VFREP parent ffff: flower skip_sw \
-        action mirred egress redirect dev $PF
- gives a VF unfiltered access to the network out the physical port ($PF
- acts here as a physical port representor).
-More matches, actions, and counters will be added in subsequent patches.
+I have tried to maintain backwards compatibility with existing device
+trees whereever possible. However, one area where I was unable to
+achieve this was with QSGMII. Please refer to patch 2 for details.
 
-Signed-off-by: Edward Cree <ecree.xilinx@gmail.com>
----
- drivers/net/ethernet/sfc/mae.c  | 109 +++++++++++++
- drivers/net/ethernet/sfc/mae.h  |   4 +
- drivers/net/ethernet/sfc/mcdi.h |  10 ++
- drivers/net/ethernet/sfc/tc.c   | 272 ++++++++++++++++++++++++++++++++
- drivers/net/ethernet/sfc/tc.h   |   2 +
- 5 files changed, 397 insertions(+)
+All mac drivers have now been converted. I would greatly appreciate if
+anyone has T-series or P-series boards they can test/debug this series
+on. I only have an LS1046ARDB. Everything but QSGMII should work without
+breakage; QSGMII needs patches 7 and 8. For this reason, the last 4
+patches in this series should be applied together (and should not go
+through separate trees).
 
-diff --git a/drivers/net/ethernet/sfc/mae.c b/drivers/net/ethernet/sfc/mae.c
-index 19138b2d2f5c..874c765b2465 100644
---- a/drivers/net/ethernet/sfc/mae.c
-+++ b/drivers/net/ethernet/sfc/mae.c
-@@ -168,6 +168,111 @@ int efx_mae_get_caps(struct efx_nic *efx, struct mae_caps *caps)
- 				       caps->action_rule_fields);
- }
- 
-+/* Bit twiddling:
-+ * Prefix: 1...110...0
-+ *      ~: 0...001...1
-+ *    + 1: 0...010...0 is power of two
-+ * so (~x) & ((~x) + 1) == 0.  Converse holds also.
-+ */
-+#define is_prefix_byte(_x)	!(((_x) ^ 0xff) & (((_x) ^ 0xff) + 1))
-+
-+enum mask_type { MASK_ONES, MASK_ZEROES, MASK_PREFIX, MASK_OTHER };
-+
-+static const char *mask_type_name(enum mask_type typ)
-+{
-+	switch (typ) {
-+	case MASK_ONES:
-+		return "all-1s";
-+	case MASK_ZEROES:
-+		return "all-0s";
-+	case MASK_PREFIX:
-+		return "prefix";
-+	case MASK_OTHER:
-+		return "arbitrary";
-+	default: /* can't happen */
-+		return "unknown";
-+	}
-+}
-+
-+/* Checks a (big-endian) bytestring is a bit prefix */
-+static enum mask_type classify_mask(const u8 *mask, size_t len)
-+{
-+	bool zeroes = true; /* All bits seen so far are zeroes */
-+	bool ones = true; /* All bits seen so far are ones */
-+	bool prefix = true; /* Valid prefix so far */
-+	size_t i;
-+
-+	for (i = 0; i < len; i++) {
-+		if (ones) {
-+			if (!is_prefix_byte(mask[i]))
-+				prefix = false;
-+		} else if (mask[i]) {
-+			prefix = false;
-+		}
-+		if (mask[i] != 0xff)
-+			ones = false;
-+		if (mask[i])
-+			zeroes = false;
-+	}
-+	if (ones)
-+		return MASK_ONES;
-+	if (zeroes)
-+		return MASK_ZEROES;
-+	if (prefix)
-+		return MASK_PREFIX;
-+	return MASK_OTHER;
-+}
-+
-+static int efx_mae_match_check_cap_typ(u8 support, enum mask_type typ)
-+{
-+	switch (support) {
-+	case MAE_FIELD_UNSUPPORTED:
-+	case MAE_FIELD_SUPPORTED_MATCH_NEVER:
-+		if (typ == MASK_ZEROES)
-+			return 0;
-+		return -EOPNOTSUPP;
-+	case MAE_FIELD_SUPPORTED_MATCH_OPTIONAL:
-+		if (typ == MASK_ZEROES)
-+			return 0;
-+		fallthrough;
-+	case MAE_FIELD_SUPPORTED_MATCH_ALWAYS:
-+		if (typ == MASK_ONES)
-+			return 0;
-+		return -EINVAL;
-+	case MAE_FIELD_SUPPORTED_MATCH_PREFIX:
-+		if (typ == MASK_OTHER)
-+			return -EOPNOTSUPP;
-+		return 0;
-+	case MAE_FIELD_SUPPORTED_MATCH_MASK:
-+		return 0;
-+	default:
-+		return -EIO;
-+	}
-+}
-+
-+int efx_mae_match_check_caps(struct efx_nic *efx,
-+			     const struct efx_tc_match_fields *mask,
-+			     struct netlink_ext_ack *extack)
-+{
-+	const u8 *supported_fields = efx->tc->caps->action_rule_fields;
-+	__be32 ingress_port = cpu_to_be32(mask->ingress_port);
-+	enum mask_type ingress_port_mask_type;
-+	int rc;
-+
-+	/* Check for _PREFIX assumes big-endian, so we need to convert */
-+	ingress_port_mask_type = classify_mask((const u8 *)&ingress_port,
-+					       sizeof(ingress_port));
-+	rc = efx_mae_match_check_cap_typ(supported_fields[MAE_FIELD_INGRESS_PORT],
-+					 ingress_port_mask_type);
-+	if (rc) {
-+		efx_tc_err(efx, "No support for %s mask in field ingress_port\n",
-+			   mask_type_name(ingress_port_mask_type));
-+		NL_SET_ERR_MSG_MOD(extack, "Unsupported mask type for ingress_port");
-+		return rc;
-+	}
-+	return 0;
-+}
-+
- static bool efx_mae_asl_id(u32 id)
- {
- 	return !!(id & BIT(31));
-@@ -335,6 +440,10 @@ static int efx_mae_populate_match_criteria(MCDI_DECLARE_STRUCT_PTR(match_crit),
- 	}
- 	MCDI_STRUCT_SET_DWORD(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_INGRESS_MPORT_SELECTOR_MASK,
- 			      match->mask.ingress_port);
-+	MCDI_STRUCT_SET_BYTE(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_RECIRC_ID,
-+			     match->value.recirc_id);
-+	MCDI_STRUCT_SET_BYTE(match_crit, MAE_FIELD_MASK_VALUE_PAIRS_V2_RECIRC_ID_MASK,
-+			     match->mask.recirc_id);
- 	return 0;
- }
- 
-diff --git a/drivers/net/ethernet/sfc/mae.h b/drivers/net/ethernet/sfc/mae.h
-index 2b49a88b303c..3e0cd238d523 100644
---- a/drivers/net/ethernet/sfc/mae.h
-+++ b/drivers/net/ethernet/sfc/mae.h
-@@ -37,6 +37,10 @@ struct mae_caps {
- 
- int efx_mae_get_caps(struct efx_nic *efx, struct mae_caps *caps);
- 
-+int efx_mae_match_check_caps(struct efx_nic *efx,
-+			     const struct efx_tc_match_fields *mask,
-+			     struct netlink_ext_ack *extack);
-+
- int efx_mae_alloc_action_set(struct efx_nic *efx, struct efx_tc_action_set *act);
- int efx_mae_free_action_set(struct efx_nic *efx, u32 fw_id);
- 
-diff --git a/drivers/net/ethernet/sfc/mcdi.h b/drivers/net/ethernet/sfc/mcdi.h
-index 26bc69f76801..1f18e9dc62e8 100644
---- a/drivers/net/ethernet/sfc/mcdi.h
-+++ b/drivers/net/ethernet/sfc/mcdi.h
-@@ -201,6 +201,12 @@ void efx_mcdi_sensor_event(struct efx_nic *efx, efx_qword_t *ev);
- 	((u8 *)(_buf) + (_offset))
- #define MCDI_PTR(_buf, _field)						\
- 	_MCDI_PTR(_buf, MC_CMD_ ## _field ## _OFST)
-+/* Use MCDI_STRUCT_ functions to access members of MCDI structuredefs.
-+ * _buf should point to the start of the structure, typically obtained with
-+ * MCDI_DECLARE_STRUCT_PTR(structure) = _MCDI_DWORD(mcdi_buf, FIELD_WHICH_IS_STRUCT);
-+ */
-+#define MCDI_STRUCT_PTR(_buf, _field)					\
-+	_MCDI_PTR(_buf, _field ## _OFST)
- #define _MCDI_CHECK_ALIGN(_ofst, _align)				\
- 	((_ofst) + BUILD_BUG_ON_ZERO((_ofst) & (_align - 1)))
- #define _MCDI_DWORD(_buf, _field)					\
-@@ -208,6 +214,10 @@ void efx_mcdi_sensor_event(struct efx_nic *efx, efx_qword_t *ev);
- #define _MCDI_STRUCT_DWORD(_buf, _field)				\
- 	((_buf) + (_MCDI_CHECK_ALIGN(_field ## _OFST, 4) >> 2))
- 
-+#define MCDI_STRUCT_SET_BYTE(_buf, _field, _value) do {			\
-+	BUILD_BUG_ON(_field ## _LEN != 1);				\
-+	*(u8 *)MCDI_STRUCT_PTR(_buf, _field) = _value;			\
-+	} while (0)
- #define MCDI_BYTE(_buf, _field)						\
- 	((void)BUILD_BUG_ON_ZERO(MC_CMD_ ## _field ## _LEN != 1),	\
- 	 *MCDI_PTR(_buf, _field))
-diff --git a/drivers/net/ethernet/sfc/tc.c b/drivers/net/ethernet/sfc/tc.c
-index 2b2d45b97305..3478860d4023 100644
---- a/drivers/net/ethernet/sfc/tc.c
-+++ b/drivers/net/ethernet/sfc/tc.c
-@@ -9,6 +9,7 @@
-  * by the Free Software Foundation, incorporated herein by reference.
-  */
- 
-+#include <net/pkt_cls.h>
- #include "tc.h"
- #include "tc_bindings.h"
- #include "mae.h"
-@@ -42,6 +43,20 @@ static struct efx_rep *efx_tc_flower_lookup_efv(struct efx_nic *efx,
- 	return efv;
- }
- 
-+/* Convert a driver-internal vport ID into an external device (wire or VF) */
-+static s64 efx_tc_flower_external_mport(struct efx_nic *efx, struct efx_rep *efv)
-+{
-+	u32 mport;
-+
-+	if (IS_ERR(efv))
-+		return PTR_ERR(efv);
-+	if (!efv) /* device is PF (us) */
-+		efx_mae_mport_wire(efx, &mport);
-+	else /* device is repr */
-+		efx_mae_mport_mport(efx, efv->mport, &mport);
-+	return mport;
-+}
-+
- static const struct rhashtable_params efx_tc_match_action_ht_params = {
- 	.key_len	= sizeof(unsigned long),
- 	.key_offset	= offsetof(struct efx_tc_flow_rule, cookie),
-@@ -109,6 +124,260 @@ static void efx_tc_flow_free(void *ptr, void *arg)
- 	kfree(rule);
- }
- 
-+static int efx_tc_flower_parse_match(struct efx_nic *efx,
-+				     struct flow_rule *rule,
-+				     struct efx_tc_match *match,
-+				     struct netlink_ext_ack *extack)
-+{
-+	struct flow_dissector *dissector = rule->match.dissector;
-+
-+	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_CONTROL)) {
-+		struct flow_match_control fm;
-+
-+		flow_rule_match_control(rule, &fm);
-+
-+		if (fm.mask->flags) {
-+			efx_tc_err(efx, "Unsupported match on control.flags %#x\n",
-+				   fm.mask->flags);
-+			NL_SET_ERR_MSG_MOD(extack, "Unsupported match on control.flags");
-+			return -EOPNOTSUPP;
-+		}
-+	}
-+	if (dissector->used_keys &
-+	    ~(BIT(FLOW_DISSECTOR_KEY_CONTROL) |
-+	      BIT(FLOW_DISSECTOR_KEY_BASIC))) {
-+		efx_tc_err(efx, "Unsupported flower keys %#x\n", dissector->used_keys);
-+		NL_SET_ERR_MSG_MOD(extack, "Unsupported flower keys encountered");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_BASIC)) {
-+		struct flow_match_basic fm;
-+
-+		flow_rule_match_basic(rule, &fm);
-+		if (fm.mask->n_proto) {
-+			EFX_TC_ERR_MSG(efx, extack, "Unsupported eth_proto match\n");
-+			return -EOPNOTSUPP;
-+		}
-+		if (fm.mask->ip_proto) {
-+			EFX_TC_ERR_MSG(efx, extack, "Unsupported ip_proto match\n");
-+			return -EOPNOTSUPP;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static int efx_tc_flower_replace(struct efx_nic *efx,
-+				 struct net_device *net_dev,
-+				 struct flow_cls_offload *tc,
-+				 struct efx_rep *efv)
-+{
-+	struct flow_rule *fr = flow_cls_offload_flow_rule(tc);
-+	struct netlink_ext_ack *extack = tc->common.extack;
-+	struct efx_tc_flow_rule *rule = NULL, *old;
-+	struct efx_tc_action_set *act = NULL;
-+	const struct flow_action_entry *fa;
-+	struct efx_rep *from_efv, *to_efv;
-+	struct efx_tc_match match;
-+	s64 rc;
-+	int i;
-+
-+	if (!tc_can_offload_extack(efx->net_dev, extack))
-+		return -EOPNOTSUPP;
-+	if (WARN_ON(!efx->tc))
-+		return -ENETDOWN;
-+	if (WARN_ON(!efx->tc->up))
-+		return -ENETDOWN;
-+
-+	from_efv = efx_tc_flower_lookup_efv(efx, net_dev);
-+	if (IS_ERR(from_efv)) {
-+		/* Might be a tunnel decap rule from an indirect block.
-+		 * Support for those not implemented yet.
-+		 */
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (efv != from_efv) {
-+		/* can't happen */
-+		efx_tc_err(efx, "for %s efv is %snull but from_efv is %snull\n",
-+			   netdev_name(net_dev), efv ? "non-" : "",
-+			   from_efv ? "non-" : "");
-+		if (efv)
-+			NL_SET_ERR_MSG_MOD(extack, "vfrep filter has PF net_dev (can't happen)");
-+		else
-+			NL_SET_ERR_MSG_MOD(extack, "PF filter has vfrep net_dev (can't happen)");
-+		return -EINVAL;
-+	}
-+
-+	/* Parse match */
-+	memset(&match, 0, sizeof(match));
-+	rc = efx_tc_flower_external_mport(efx, from_efv);
-+	if (rc < 0) {
-+		EFX_TC_ERR_MSG(efx, extack, "Failed to identify ingress m-port");
-+		return rc;
-+	}
-+	match.value.ingress_port = rc;
-+	match.mask.ingress_port = ~0;
-+	rc = efx_tc_flower_parse_match(efx, fr, &match, extack);
-+	if (rc)
-+		return rc;
-+
-+	if (tc->common.chain_index) {
-+		EFX_TC_ERR_MSG(efx, extack, "No support for nonzero chain_index");
-+		return -EOPNOTSUPP;
-+	}
-+	match.mask.recirc_id = 0xff;
-+
-+	rc = efx_mae_match_check_caps(efx, &match.mask, extack);
-+	if (rc)
-+		return rc;
-+
-+	rule = kzalloc(sizeof(*rule), GFP_USER);
-+	if (!rule)
-+		return -ENOMEM;
-+	INIT_LIST_HEAD(&rule->acts.list);
-+	rule->cookie = tc->cookie;
-+	old = rhashtable_lookup_get_insert_fast(&efx->tc->match_action_ht,
-+						&rule->linkage,
-+						efx_tc_match_action_ht_params);
-+	if (old) {
-+		netif_dbg(efx, drv, efx->net_dev,
-+			  "Already offloaded rule (cookie %lx)\n", tc->cookie);
-+		rc = -EEXIST;
-+		NL_SET_ERR_MSG_MOD(extack, "Rule already offloaded");
-+		goto release;
-+	}
-+
-+	/* Parse actions */
-+	act = kzalloc(sizeof(*act), GFP_USER);
-+	if (!act) {
-+		rc = -ENOMEM;
-+		goto release;
-+	}
-+
-+	flow_action_for_each(i, fa, &fr->action) {
-+		struct efx_tc_action_set save;
-+
-+		if (!act) {
-+			/* more actions after a non-pipe action */
-+			EFX_TC_ERR_MSG(efx, extack, "Action follows non-pipe action");
-+			rc = -EINVAL;
-+			goto release;
-+		}
-+
-+		switch (fa->id) {
-+		case FLOW_ACTION_DROP:
-+			rc = efx_mae_alloc_action_set(efx, act);
-+			if (rc) {
-+				EFX_TC_ERR_MSG(efx, extack, "Failed to write action set to hw (drop)");
-+				goto release;
-+			}
-+			list_add_tail(&act->list, &rule->acts.list);
-+			act = NULL; /* end of the line */
-+			break;
-+		case FLOW_ACTION_REDIRECT:
-+		case FLOW_ACTION_MIRRED:
-+			save = *act;
-+			to_efv = efx_tc_flower_lookup_efv(efx, fa->dev);
-+			if (IS_ERR(to_efv)) {
-+				EFX_TC_ERR_MSG(efx, extack, "Mirred egress device not on switch");
-+				rc = PTR_ERR(to_efv);
-+				goto release;
-+			}
-+			rc = efx_tc_flower_external_mport(efx, to_efv);
-+			if (rc < 0) {
-+				EFX_TC_ERR_MSG(efx, extack, "Failed to identify egress m-port");
-+				goto release;
-+			}
-+			act->dest_mport = rc;
-+			act->deliver = 1;
-+			rc = efx_mae_alloc_action_set(efx, act);
-+			if (rc) {
-+				EFX_TC_ERR_MSG(efx, extack, "Failed to write action set to hw (mirred)");
-+				goto release;
-+			}
-+			list_add_tail(&act->list, &rule->acts.list);
-+			act = NULL;
-+			if (fa->id == FLOW_ACTION_REDIRECT)
-+				break; /* end of the line */
-+			/* Mirror, so continue on with saved act */
-+			act = kzalloc(sizeof(*act), GFP_USER);
-+			if (!act) {
-+				rc = -ENOMEM;
-+				goto release;
-+			}
-+			*act = save;
-+			break;
-+		default:
-+			efx_tc_err(efx, "Unhandled action %u\n", fa->id);
-+			rc = -EOPNOTSUPP;
-+			NL_SET_ERR_MSG_MOD(extack, "Unsupported action");
-+			goto release;
-+		}
-+	}
-+
-+	if (act) {
-+		/* Not shot/redirected, so deliver to default dest */
-+		if (from_efv == EFX_EFV_PF)
-+			/* Rule applies to traffic from the wire,
-+			 * and default dest is thus the PF
-+			 */
-+			efx_mae_mport_uplink(efx, &act->dest_mport);
-+		else
-+			/* Representor, so rule applies to traffic from
-+			 * representee, and default dest is thus the rep.
-+			 * All reps use the same mport for delivery
-+			 */
-+			efx_mae_mport_mport(efx, efx->tc->reps_mport_id,
-+					    &act->dest_mport);
-+		act->deliver = 1;
-+		rc = efx_mae_alloc_action_set(efx, act);
-+		if (rc) {
-+			EFX_TC_ERR_MSG(efx, extack, "Failed to write action set to hw (deliver)");
-+			goto release;
-+		}
-+		list_add_tail(&act->list, &rule->acts.list);
-+		act = NULL; /* Prevent double-free in error path */
-+	}
-+
-+	netif_dbg(efx, drv, efx->net_dev,
-+		  "Successfully parsed filter (cookie %lx)\n",
-+		  tc->cookie);
-+
-+	rule->match = match;
-+
-+	rc = efx_mae_alloc_action_set_list(efx, &rule->acts);
-+	if (rc) {
-+		EFX_TC_ERR_MSG(efx, extack, "Failed to write action set list to hw");
-+		goto release;
-+	}
-+	rc = efx_mae_insert_rule(efx, &rule->match, EFX_TC_PRIO_TC,
-+				 rule->acts.fw_id, &rule->fw_id);
-+	if (rc) {
-+		EFX_TC_ERR_MSG(efx, extack, "Failed to insert rule in hw");
-+		goto release_acts;
-+	}
-+	return 0;
-+
-+release_acts:
-+	efx_mae_free_action_set_list(efx, &rule->acts);
-+release:
-+	/* We failed to insert the rule, so free up any entries we created in
-+	 * subsidiary tables.
-+	 */
-+	if (act)
-+		efx_tc_free_action_set(efx, act, false);
-+	if (rule) {
-+		rhashtable_remove_fast(&efx->tc->match_action_ht,
-+				       &rule->linkage,
-+				       efx_tc_match_action_ht_params);
-+		efx_tc_free_action_set_list(efx, &rule->acts, false);
-+	}
-+	kfree(rule);
-+	return rc;
-+}
-+
- static int efx_tc_flower_destroy(struct efx_nic *efx,
- 				 struct net_device *net_dev,
- 				 struct flow_cls_offload *tc)
-@@ -151,6 +420,9 @@ int efx_tc_flower(struct efx_nic *efx, struct net_device *net_dev,
- 
- 	mutex_lock(&efx->tc->mutex);
- 	switch (tc->command) {
-+	case FLOW_CLS_REPLACE:
-+		rc = efx_tc_flower_replace(efx, net_dev, tc, efv);
-+		break;
- 	case FLOW_CLS_DESTROY:
- 		rc = efx_tc_flower_destroy(efx, net_dev, tc);
- 		break;
-diff --git a/drivers/net/ethernet/sfc/tc.h b/drivers/net/ethernet/sfc/tc.h
-index baf1e67b58a5..196fd74ed973 100644
---- a/drivers/net/ethernet/sfc/tc.h
-+++ b/drivers/net/ethernet/sfc/tc.h
-@@ -43,6 +43,7 @@ struct efx_tc_action_set {
- struct efx_tc_match_fields {
- 	/* L1 */
- 	u32 ingress_port;
-+	u8 recirc_id;
- };
- 
- struct efx_tc_match {
-@@ -64,6 +65,7 @@ struct efx_tc_flow_rule {
- };
- 
- enum efx_tc_rule_prios {
-+	EFX_TC_PRIO_TC, /* Rule inserted by TC */
- 	EFX_TC_PRIO_DFLT, /* Default switch rule; one of efx_tc_default_rules */
- 	EFX_TC_PRIO__NUM
- };
+This series depends on [1] and [2].
+
+[1] https://lore.kernel.org/netdev/20220725153730.2604096-1-sean.anderson@seco.com/
+[2] https://lore.kernel.org/netdev/20220725151039.2581576-1-sean.anderson@seco.com/
+
+Changes in v5:
+- Add Lynx PCS binding
+
+Changes in v4:
+- Use pcs-handle-names instead of pcs-names, as discussed
+- Don't fail if phy support was not compiled in
+- Split off rate adaptation series
+- Split off DPAA "preparation" series
+- Split off Lynx 10G support
+- t208x: Mark MAC1 and MAC2 as 10G
+- Add XFI PCS for t208x MAC1/MAC2
+
+Changes in v3:
+- Expand pcs-handle to an array
+- Add vendor prefix 'fsl,' to rgmii and mii properties.
+- Set maxItems for pcs-names
+- Remove phy-* properties from example because dt-schema complains and I
+  can't be bothered to figure out how to make it work.
+- Add pcs-handle as a preferred version of pcsphy-handle
+- Deprecate pcsphy-handle
+- Remove mii/rmii properties
+- Put the PCS mdiodev only after we are done with it (since the PCS
+  does not perform a get itself).
+- Remove _return label from memac_initialization in favor of returning
+  directly
+- Fix grabbing the default PCS not checking for -ENODATA from
+  of_property_match_string
+- Set DTSEC_ECNTRL_R100M in dtsec_link_up instead of dtsec_mac_config
+- Remove rmii/mii properties
+- Replace 1000Base... with 1000BASE... to match IEEE capitalization
+- Add compatibles for QSGMII PCSs
+- Split arm and powerpcs dts updates
+
+Changes in v2:
+- Better document how we select which PCS to use in the default case
+- Move PCS_LYNX dependency to fman Kconfig
+- Remove unused variable slow_10g_if
+- Restrict valid link modes based on the phy interface. This is easier
+  to set up, and mostly captures what I intended to do the first time.
+  We now have a custom validate which restricts half-duplex for some SoCs
+  for RGMII, but generally just uses the default phylink validate.
+- Configure the SerDes in enable/disable
+- Properly implement all ethtool ops and ioctls. These were mostly
+  stubbed out just enough to compile last time.
+- Convert 10GEC and dTSEC as well
+- Fix capitalization of mEMAC in commit messages
+- Add nodes for QSGMII PCSs
+- Add nodes for QSGMII PCSs
+
+Sean Anderson (9):
+  dt-bindings: net: Expand pcs-handle to an array
+  dt-bindings: net: Add Lynx PCS binding
+  dt-bindings: net: fman: Add additional interface properties
+  net: fman: memac: Add serdes support
+  net: fman: memac: Use lynx pcs driver
+  net: dpaa: Convert to phylink
+  powerpc: dts: t208x: Mark MAC1 and MAC2 as 10G
+  powerpc: dts: qoriq: Add nodes for QSGMII PCSs
+  arm64: dts: layerscape: Add nodes for QSGMII PCSs
+
+ .../bindings/net/dsa/renesas,rzn1-a5psw.yaml  |   1 +
+ .../bindings/net/ethernet-controller.yaml     |  10 +-
+ .../bindings/net/fsl,fman-dtsec.yaml          |  53 +-
+ .../bindings/net/fsl,qoriq-mc-dpmac.yaml      |   2 +-
+ .../devicetree/bindings/net/fsl-fman.txt      |   5 +-
+ .../bindings/net/pcs/fsl,lynx-pcs.yaml        |  40 +
+ .../boot/dts/freescale/fsl-ls1043-post.dtsi   |  24 +
+ .../boot/dts/freescale/fsl-ls1046-post.dtsi   |  25 +
+ .../fsl/qoriq-fman3-0-10g-0-best-effort.dtsi  |   3 +-
+ .../boot/dts/fsl/qoriq-fman3-0-10g-0.dtsi     |  10 +-
+ .../fsl/qoriq-fman3-0-10g-1-best-effort.dtsi  |  10 +-
+ .../boot/dts/fsl/qoriq-fman3-0-10g-1.dtsi     |  10 +-
+ .../boot/dts/fsl/qoriq-fman3-0-10g-2.dtsi     |  45 ++
+ .../boot/dts/fsl/qoriq-fman3-0-10g-3.dtsi     |  45 ++
+ .../boot/dts/fsl/qoriq-fman3-0-1g-0.dtsi      |   3 +-
+ .../boot/dts/fsl/qoriq-fman3-0-1g-1.dtsi      |  10 +-
+ .../boot/dts/fsl/qoriq-fman3-0-1g-2.dtsi      |  10 +-
+ .../boot/dts/fsl/qoriq-fman3-0-1g-3.dtsi      |  10 +-
+ .../boot/dts/fsl/qoriq-fman3-0-1g-4.dtsi      |   3 +-
+ .../boot/dts/fsl/qoriq-fman3-0-1g-5.dtsi      |  10 +-
+ .../boot/dts/fsl/qoriq-fman3-1-10g-0.dtsi     |  10 +-
+ .../boot/dts/fsl/qoriq-fman3-1-10g-1.dtsi     |  10 +-
+ .../boot/dts/fsl/qoriq-fman3-1-1g-0.dtsi      |   3 +-
+ .../boot/dts/fsl/qoriq-fman3-1-1g-1.dtsi      |  10 +-
+ .../boot/dts/fsl/qoriq-fman3-1-1g-2.dtsi      |  10 +-
+ .../boot/dts/fsl/qoriq-fman3-1-1g-3.dtsi      |  10 +-
+ .../boot/dts/fsl/qoriq-fman3-1-1g-4.dtsi      |   3 +-
+ .../boot/dts/fsl/qoriq-fman3-1-1g-5.dtsi      |  10 +-
+ arch/powerpc/boot/dts/fsl/t2081si-post.dtsi   |   4 +-
+ drivers/net/ethernet/freescale/dpaa/Kconfig   |   4 +-
+ .../net/ethernet/freescale/dpaa/dpaa_eth.c    |  89 +--
+ .../ethernet/freescale/dpaa/dpaa_ethtool.c    |  90 +--
+ drivers/net/ethernet/freescale/fman/Kconfig   |   4 +-
+ .../net/ethernet/freescale/fman/fman_dtsec.c  | 459 +++++------
+ .../net/ethernet/freescale/fman/fman_mac.h    |  10 -
+ .../net/ethernet/freescale/fman/fman_memac.c  | 746 +++++++++---------
+ .../net/ethernet/freescale/fman/fman_tgec.c   | 131 ++-
+ drivers/net/ethernet/freescale/fman/mac.c     | 168 +---
+ drivers/net/ethernet/freescale/fman/mac.h     |  23 +-
+ 39 files changed, 1073 insertions(+), 1050 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/pcs/fsl,lynx-pcs.yaml
+ create mode 100644 arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-2.dtsi
+ create mode 100644 arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-3.dtsi
+
+-- 
+2.35.1.1320.gc452695387.dirty
+
