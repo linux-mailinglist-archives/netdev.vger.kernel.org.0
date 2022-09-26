@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E96F15EA633
-	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 14:32:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A93755EA635
+	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 14:32:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239321AbiIZMcq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 08:32:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33936 "EHLO
+        id S234694AbiIZMcs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 08:32:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236865AbiIZMcN (ORCPT
+        with ESMTP id S237915AbiIZMcN (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 08:32:13 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AE3CD8E1F
-        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 04:10:56 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id nb11so13279665ejc.5
-        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 04:10:56 -0700 (PDT)
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADC29D98CD
+        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 04:10:58 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id 13so13290860ejn.3
+        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 04:10:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=wI7HrNRBO0d7dglUkU4iYvgRqefxDdj6o6r69HsSzz8=;
-        b=W9RaSkLlrs36WEBXN/ckvIMaX7Zhs8hb0CRTNTkxRHCVMzICgRsxgFulJqn1O2TAm2
-         0S09n/3bFMN6GWAtykm6cqP4xTeN2nGv5p4Zknsr8Trwg1fzX6giSbOSwqMAxoFcJhp0
-         WAkO1de/zj68f0g+uBxoFCHkNUPS/kNHQFtKn001XOB7OPfpak/AkBylI/Ajs/Ug4SFw
-         ZhkV8eBvrjYaA8AmIJeY0K07C3A87wjNIo/IFenMC5/m4UnbSbYsx0LY5m9IJ4kj4psF
-         9ubO92Dj8o0qvYpdONUsWA2EOa2OYQLaP+0x3wJSyztT+l9+lpZ7+CkfTo0yAFsQ4OLP
-         1vPQ==
+        bh=wCtoNENIcVaIAAxqnqE2pnQR3bzcsl3wG7gZ1OCGir8=;
+        b=vZJglMoRJphlFWUDNotdGAHMOBdIZZy0MY9ucyUv6VOwjAk6IDq7Er9EKenNn85jpS
+         cSTuUCl9aKBevVdNCPu+jDAYAYcw1IOLCj2C6Fl0LSrZjAPIpJqDeavLFQnRIS6HmuTO
+         dovsc47umZ2mu/W/pWPcQYlmj/ua7KI17mZNO76drHVD2Rs2q/3hW1dIjUNQLyyn9/cm
+         1ptJBG+hl+RpJ/lIBqUd6bM3xPCdAq6f8Jqbfs7YUWxVipiE496y1pcVMxrmP0PpY+zp
+         qHawUMJIvkb0uZe5+0l+G/RoUE8y0qw3RTa6DK8p8KADMTsMbOSOP+zIfhjyOb3vnWo1
+         81MA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=wI7HrNRBO0d7dglUkU4iYvgRqefxDdj6o6r69HsSzz8=;
-        b=XGUebFxLDLc52D/1jRrSLFXJKNF10HlqjgbBrPdX1YjP4E4p7RrpvtV995Ki5TVjpJ
-         vBbYdfsm0bllYfmC/94jO9s1IXkIImm53m/r3fOVTbelNRZKCcuROjJ+MV72uw2APiD2
-         ZXMBf2O2IVutdWZxcIk/yAkO8F9OO+I77L3TXHkHUO19DKZ5nJgM5xmbBGXQE7dBNoPM
-         lGIMnsRq8eNcw6ilXGYVmJPZj+Hf2kKFoyM+vglk9Yy8QRdREtBvW1MXvNtkFruG5dGB
-         AkNbreLIhtk0Sw2J1cdURXNuLncvHfzjArMgBnNZtiq5zlaSzIz6JN1u/8RymYITop6j
-         V2Cw==
-X-Gm-Message-State: ACrzQf1CZvjbpNLTh6wIXKVyrmfRmijNVFt3P2vVsBydyCN/QWAbmT/f
-        PXkaadnCb1mRNEJHKxOJ9K7HCEf3kaVRsWcqNsI=
-X-Google-Smtp-Source: AMsMyM5/HBXehsaG1ccFSNmBAI12OhALHGotwKSUyKWaFKcd5RHg+Y+Q6CwDSxno1q+I5mX9nDdIlw==
-X-Received: by 2002:a17:906:845b:b0:770:86da:9702 with SMTP id e27-20020a170906845b00b0077086da9702mr17073179ejy.244.1664190581516;
-        Mon, 26 Sep 2022 04:09:41 -0700 (PDT)
+        bh=wCtoNENIcVaIAAxqnqE2pnQR3bzcsl3wG7gZ1OCGir8=;
+        b=CiOdpzNOk6SIsVdYIGOMwcmJ+BUamT1y/1XmXNaNff8/ZwI4DPTFKwLoeX4aZxb84z
+         TdAgT5rUYn475W0j7Nkiod73MTkO6CJn52y6r5068tpxT/RIyH31agiLnJFvy4fNtzyo
+         bpDRY9SSopdplTDNz+DFnlzKdj3LWuos1EdOCl5GW4j/PFkK0KaofxbourfTIue8K3sj
+         vU/IGP2HA0Z/hdTU/s/xgGJBEsOhvElxU+F4IU1pJtSDX08KaY2UrE7gNx1l4h5+tWv6
+         whZ1aDZc2FdIJ8X7/PZMi7PfYwbga6vq4OQxndxzjl2/fUPs/dLPyrd/lG0XpaP7czSw
+         E01A==
+X-Gm-Message-State: ACrzQf3gsTSocQpwiDdTFsWHFJwl8MWrg9L6/BSYySOcmCBDCGSp1+KL
+        EXPAXIKJeYu59QzTMC14xOFZqRNaB3vFJJkkRzE=
+X-Google-Smtp-Source: AMsMyM4KmC5O21bX3YGbgxlmVFrG0Pta7osPlyqJq8AHNBoXl4qSLqKHDetouOSJ6agFrgAt4d/7RQ==
+X-Received: by 2002:a17:907:2bcf:b0:772:4b8e:6b29 with SMTP id gv15-20020a1709072bcf00b007724b8e6b29mr17112302ejc.412.1664190583221;
+        Mon, 26 Sep 2022 04:09:43 -0700 (PDT)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id f11-20020a056402068b00b004572df40700sm2880039edy.81.2022.09.26.04.09.40
+        by smtp.gmail.com with ESMTPSA id g6-20020a1709061c8600b00779a605c777sm8142164ejh.192.2022.09.26.04.09.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Sep 2022 04:09:41 -0700 (PDT)
+        Mon, 26 Sep 2022 04:09:42 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
@@ -55,9 +55,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
         snelson@pensando.io, drivers@pensando.io, f.fainelli@gmail.com,
         yangyingliang@huawei.com
-Subject: [patch net-next 1/3] funeth: unregister devlink port after netdevice unregister
-Date:   Mon, 26 Sep 2022 13:09:36 +0200
-Message-Id: <20220926110938.2800005-2-jiri@resnulli.us>
+Subject: [patch net-next 2/3] ice: reorder PF/representor devlink port register/unregister flows
+Date:   Mon, 26 Sep 2022 13:09:37 +0200
+Message-Id: <20220926110938.2800005-3-jiri@resnulli.us>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220926110938.2800005-1-jiri@resnulli.us>
 References: <20220926110938.2800005-1-jiri@resnulli.us>
@@ -74,28 +74,91 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-Fix the order of destroy_netdev() flow and unregister the devlink port
-after calling unregister_netdev().
+Make sure that netdevice is registered/unregistered while devlink port
+is registered.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- drivers/net/ethernet/fungible/funeth/funeth_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ice/ice_lib.c  |  6 +++---
+ drivers/net/ethernet/intel/ice/ice_main.c | 12 ++++++------
+ drivers/net/ethernet/intel/ice/ice_repr.c |  2 +-
+ 3 files changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/fungible/funeth/funeth_main.c b/drivers/net/ethernet/fungible/funeth/funeth_main.c
-index b6de2ad82a32..6980455fb909 100644
---- a/drivers/net/ethernet/fungible/funeth/funeth_main.c
-+++ b/drivers/net/ethernet/fungible/funeth/funeth_main.c
-@@ -1829,8 +1829,8 @@ static void fun_destroy_netdev(struct net_device *netdev)
+diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
+index 8a80da8e910e..938ba8c215cb 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_lib.c
+@@ -2988,9 +2988,6 @@ int ice_vsi_release(struct ice_vsi *vsi)
+ 		clear_bit(ICE_VSI_NETDEV_REGISTERED, vsi->state);
+ 	}
  
- 	fp = netdev_priv(netdev);
- 	devlink_port_type_clear(&fp->dl_port);
--	devlink_port_unregister(&fp->dl_port);
- 	unregister_netdev(netdev);
-+	devlink_port_unregister(&fp->dl_port);
- 	fun_ktls_cleanup(fp);
- 	fun_free_stats_area(fp);
- 	fun_free_rss(fp);
+-	if (vsi->type == ICE_VSI_PF)
+-		ice_devlink_destroy_pf_port(pf);
+-
+ 	if (test_bit(ICE_FLAG_RSS_ENA, pf->flags))
+ 		ice_rss_clean(vsi);
+ 
+@@ -3048,6 +3045,9 @@ int ice_vsi_release(struct ice_vsi *vsi)
+ 		}
+ 	}
+ 
++	if (vsi->type == ICE_VSI_PF)
++		ice_devlink_destroy_pf_port(pf);
++
+ 	if (vsi->type == ICE_VSI_VF &&
+ 	    vsi->agg_node && vsi->agg_node->valid)
+ 		vsi->agg_node->num_vsis--;
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 0ccc8a750374..747f27c4e761 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -4599,6 +4599,10 @@ static int ice_register_netdev(struct ice_pf *pf)
+ 	if (!vsi || !vsi->netdev)
+ 		return -EIO;
+ 
++	err = ice_devlink_create_pf_port(pf);
++	if (err)
++		goto err_devlink_create;
++
+ 	err = register_netdev(vsi->netdev);
+ 	if (err)
+ 		goto err_register_netdev;
+@@ -4606,17 +4610,13 @@ static int ice_register_netdev(struct ice_pf *pf)
+ 	set_bit(ICE_VSI_NETDEV_REGISTERED, vsi->state);
+ 	netif_carrier_off(vsi->netdev);
+ 	netif_tx_stop_all_queues(vsi->netdev);
+-	err = ice_devlink_create_pf_port(pf);
+-	if (err)
+-		goto err_devlink_create;
+ 
+ 	devlink_port_type_eth_set(&pf->devlink_port, vsi->netdev);
+ 
+ 	return 0;
+-err_devlink_create:
+-	unregister_netdev(vsi->netdev);
+-	clear_bit(ICE_VSI_NETDEV_REGISTERED, vsi->state);
+ err_register_netdev:
++	ice_devlink_destroy_pf_port(pf);
++err_devlink_create:
+ 	free_netdev(vsi->netdev);
+ 	vsi->netdev = NULL;
+ 	clear_bit(ICE_VSI_NETDEV_ALLOCD, vsi->state);
+diff --git a/drivers/net/ethernet/intel/ice/ice_repr.c b/drivers/net/ethernet/intel/ice/ice_repr.c
+index 0dac67cd9c77..bd31748aae1b 100644
+--- a/drivers/net/ethernet/intel/ice/ice_repr.c
++++ b/drivers/net/ethernet/intel/ice/ice_repr.c
+@@ -377,10 +377,10 @@ static void ice_repr_rem(struct ice_vf *vf)
+ 	if (!vf->repr)
+ 		return;
+ 
+-	ice_devlink_destroy_vf_port(vf);
+ 	kfree(vf->repr->q_vector);
+ 	vf->repr->q_vector = NULL;
+ 	unregister_netdev(vf->repr->netdev);
++	ice_devlink_destroy_vf_port(vf);
+ 	free_netdev(vf->repr->netdev);
+ 	vf->repr->netdev = NULL;
+ #ifdef CONFIG_ICE_SWITCHDEV
 -- 
 2.37.1
 
