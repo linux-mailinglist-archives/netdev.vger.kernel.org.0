@@ -2,115 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F3FF5EB127
-	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 21:18:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 104B55EB130
+	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 21:21:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229552AbiIZTSL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 15:18:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60584 "EHLO
+        id S229697AbiIZTUz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 15:20:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229458AbiIZTSK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 15:18:10 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5836D9C216;
-        Mon, 26 Sep 2022 12:18:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=hS7TFU/5h99HaCSSIks5N//b6fAZfGSpwFxmPBRrixI=; b=XHz1NCfYK3a/4gi9B7dQ/XFHss
-        Co4OCAcVisij3zK+7jMLP7dbnDL8xAZZ/NDCQl+rHpE4/jL98jr8bJ+oP2QzCnlPSbFk5vw9qksC+
-        AA/rYQp4nDmFaMajeQ5qG3yoV4HdtCimNbrKquzPYGw4g9V0r4Iq1j4UpLa5fDRKQJ+E=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1octc5-000Kq6-C5; Mon, 26 Sep 2022 21:17:57 +0200
-Date:   Mon, 26 Sep 2022 21:17:57 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Subject: Re: [PATCH v3 2/3] net: ethernet: renesas: Add Ethernet Switch driver
-Message-ID: <YzH65W3r1IV+rHFW@lunn.ch>
-References: <20220922052803.3442561-1-yoshihiro.shimoda.uh@renesas.com>
- <20220922052803.3442561-3-yoshihiro.shimoda.uh@renesas.com>
- <Yy2wivbzUA2zroqy@lunn.ch>
- <TYBPR01MB5341ACAD30E913D01C94FE08D8529@TYBPR01MB5341.jpnprd01.prod.outlook.com>
+        with ESMTP id S229711AbiIZTUv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 15:20:51 -0400
+Received: from mail-oi1-f182.google.com (mail-oi1-f182.google.com [209.85.167.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4EA27A75F;
+        Mon, 26 Sep 2022 12:20:44 -0700 (PDT)
+Received: by mail-oi1-f182.google.com with SMTP id q10so1905571oib.5;
+        Mon, 26 Sep 2022 12:20:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=ADvJyP56wHbSxc129KlmBq1wxQ11OvIcsy3rVQbt0AM=;
+        b=nqjRtNZqxGxiKH8/Xu17bmfWvVB1qS/y7iOcVZmO6A/mbfE3roDELudxzC53BWeDyf
+         6fEOxKyGx17CgPL2wIbCSufIWMvLRViyl0RQqkxAWsAVS20UxNxP+YOrojLrNSFLM444
+         BEWj+zeNBH/sIzx+/egPMqjRQHX9vl4i+6NJAAxK17TxiCoFGg/MGcjG+tooeWfWRYqt
+         7SHZavJ+PebWAEXZZ38c9rE74cQ73HUOKvrr6LJNTGSQk9T2rRPPR+G72X5lL7Hb+/ku
+         L5jJrzB2pyGjR4IhxkzS0JeKUD9+m50ptYP3TywX63fKuEHiOoe0schopIG6yy1WdQkd
+         GjrQ==
+X-Gm-Message-State: ACrzQf2aJKLdRtfBXfZIGX6TVT4c6Ay4XI17uhRb48wTxwd2IQxJit/B
+        Yh+YFb6I8eWZH9sZ+hn8/skoWC7NqA==
+X-Google-Smtp-Source: AMsMyM4ROdDjV6GTDIC7rGrPJZId6RQc+iAMicuKSsRckR/ihD7ZKbUwPWuDfXhBc1jE8xBvdfnQGQ==
+X-Received: by 2002:aca:aa97:0:b0:34d:83f5:4a5 with SMTP id t145-20020acaaa97000000b0034d83f504a5mr144441oie.146.1664220043920;
+        Mon, 26 Sep 2022 12:20:43 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id t9-20020a05683022e900b0061c9f9c54e4sm8144004otc.80.2022.09.26.12.20.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Sep 2022 12:20:43 -0700 (PDT)
+Received: (nullmailer pid 2629975 invoked by uid 1000);
+        Mon, 26 Sep 2022 19:20:42 -0000
+Date:   Mon, 26 Sep 2022 14:20:42 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Sven Peter <sven@svenpeter.dev>
+Cc:     linux-kernel@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-bluetooth@vger.kernel.org, Hector Martin <marcan@marcan.st>,
+        linux-arm-kernel@lists.infradead.org,
+        Andy Gross <agross@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev@vger.kernel.org, Marcel Holtmann <marcel@holtmann.org>,
+        asahi@lists.linux.dev,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v3 1/7] dt-bindings: net: Add generic Bluetooth controller
+Message-ID: <20220926192042.GA2629908-robh@kernel.org>
+References: <20220919164834.62739-1-sven@svenpeter.dev>
+ <20220919164834.62739-2-sven@svenpeter.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <TYBPR01MB5341ACAD30E913D01C94FE08D8529@TYBPR01MB5341.jpnprd01.prod.outlook.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220919164834.62739-2-sven@svenpeter.dev>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 26, 2022 at 08:12:14AM +0000, Yoshihiro Shimoda wrote:
-> Hi Andrew,
+On Mon, 19 Sep 2022 18:48:28 +0200, Sven Peter wrote:
+> Bluetooth controllers share the common local-bd-address property.
+> Add a generic YAML schema to replace bluetooth.txt for those.
 > 
-> > From: Andrew Lunn, Sent: Friday, September 23, 2022 10:12 PM
-> > 
-> > > +/* Forwarding engine block (MFWD) */
-> > > +static void rswitch_fwd_init(struct rswitch_private *priv)
-> > > +{
-> > > +	int i;
-> > > +
-> > > +	for (i = 0; i < RSWITCH_NUM_HW; i++) {
-> > > +		iowrite32(FWPC0_DEFAULT, priv->addr + FWPC0(i));
-> > > +		iowrite32(0, priv->addr + FWPBFC(i));
-> > > +	}
-> > 
-> > What is RSWITCH_NUM_HW?
+> Signed-off-by: Sven Peter <sven@svenpeter.dev>
+> ---
+> changes from v2:
+>   - added new bluetooth subdirectory and moved files there
+>   - removed minItems from local-bd-address
+>   - dropped bjorn.andersson@linaro.org, bgodavar@codeaurora.org and
+>     rjliao@codeaurora.org due to bouncing emails from the CC list
 > 
-> I think the name is unclear...
-> Anyway, this hardware has 3 ethernet ports and 2 CPU ports.
-> So that the RSWITCH_NUM_HW is 5. Perhaps, RSWITCH_NUM_ALL_PORTS
-> is better name.
-
-How do the CPU ports differ to the other ports? When you mention CPU
-ports, it makes me wonder if this should be a DSA driver?
-
-Is there a public data sheet for this device?
-
-> Perhaps, since the current driver supports 1 ethernet port and 1 CPU port only,
-> I should modify this driver for the current condition strictly.
-
-I would suggest you support all three user ports. For an initial
-driver you don't need to support any sort of acceleration. You don't
-need any hardware bridging etc. That can be added later. Just three
-separated ports.
-
-> > > +
-> > > +	for (i = 0; i < RSWITCH_NUM_ETHA; i++) {
-> > 
-> > RSWITCH_NUM_ETHA appears to be the number of ports?
+> changes from v1:
+>   - removed blueetooth.txt instead of just replacing it with a
+>     deprecation note
+>   - replaced references to bluetooth.txt
 > 
-> Yes, this is number of ethernet ports.
-
-In the DSA world we call these user ports. 
-
-> > > +	kfree(c->skb);
-> > > +	c->skb = NULL;
-> > 
-> > When i see code like this, i wonder why an API call like
-> > dev_kfree_skb() is not being used. I would suggest reaming this to
-> > something other than skb, which has a very well understood meaning.
+>  .../devicetree/bindings/net/bluetooth.txt     |  5 ----
+>  .../net/bluetooth/bluetooth-controller.yaml   | 29 +++++++++++++++++++
+>  .../{ => bluetooth}/qualcomm-bluetooth.yaml   |  6 ++--
+>  .../bindings/soc/qcom/qcom,wcnss.yaml         |  8 ++---
+>  4 files changed, 35 insertions(+), 13 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/net/bluetooth.txt
+>  create mode 100644 Documentation/devicetree/bindings/net/bluetooth/bluetooth-controller.yaml
+>  rename Documentation/devicetree/bindings/net/{ => bluetooth}/qualcomm-bluetooth.yaml (96%)
 > 
-> Perhaps, c->skbs is better name than just c->skb.
 
-Yes, that is O.K.
-
-     Andrew
+Reviewed-by: Rob Herring <robh@kernel.org>
