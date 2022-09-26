@@ -2,134 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 057D45EAFC0
-	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 20:26:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 793285EAFD5
+	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 20:27:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230212AbiIZS0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 14:26:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49760 "EHLO
+        id S230221AbiIZS1P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 14:27:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230167AbiIZS0G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 14:26:06 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BFFA4BA73
-        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 11:24:40 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id b75so7520575pfb.7
-        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 11:24:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=4OBTQRXHJygCpY/2rBSvNKQlNNozBBa3mtJlOeJ/EyY=;
-        b=cSzvTXKu85TucB7q+g9CQdjC/FdnYJW7ESEBDVMDQZhpqkoHzMT6tB5vmqaaVmtq+c
-         HBo/BI5kdAn7jf+xxq5MiOLWI7cJumnHX29hS+SWLXo9wgZxYqgGZ4IjXwCG6/+UPFiS
-         mSjP6/8kEubWj+KXOsoeUGGJwGHBMRMvzL4Ek=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=4OBTQRXHJygCpY/2rBSvNKQlNNozBBa3mtJlOeJ/EyY=;
-        b=MZT8YzP7gufpCG0afZySeXKy5rQDpztXPaLgr/B8SVKLNCGLkT5QjqHfUr4YlZH7ug
-         s0ugrCcLKnoZLJa0WK+v0JCDktObpCAA+vz8GZTMdutRuC7ygFAurPQEvOF4oulZsBDm
-         E6tMa2q5ET5XrZPIcACI+eOKwl8gbJk3v9gaMPMNitGKwBCC1Z/CBMRD35M3PMA4leWx
-         Q9c4FkaZMRzCoqbIlDpSL9TqtxxuNpl2nstEhsFKvryW9pRI9h8Lt0jjijwFliTlEMCW
-         L9/jLw9TP6T7psUFNI9HzS+9w5l+PnilQTCS3mV1vslKqOgFQZs4XAdSbJVni2cpc0T8
-         M+Rg==
-X-Gm-Message-State: ACrzQf0Fpydk4ssrioDPP86hzxGL4tywVdieBcij75FmMECLzNLM/SwE
-        bSVaVzaVdy33DVoEr2IXU5wP9w==
-X-Google-Smtp-Source: AMsMyM6gzz3RlLPDBF6eEAacYBSNNxOrYYdXLeQNzcYYWROPiLY1NScn4aUnW3BZuZbnjPt9v5tgLQ==
-X-Received: by 2002:a63:4750:0:b0:43c:dac:9e4b with SMTP id w16-20020a634750000000b0043c0dac9e4bmr21137736pgk.300.1664216679159;
-        Mon, 26 Sep 2022 11:24:39 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id p2-20020a170902c70200b0016f85feae65sm11305644plp.87.2022.09.26.11.24.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Sep 2022 11:24:38 -0700 (PDT)
-Date:   Mon, 26 Sep 2022 11:24:37 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Vlastimil Babka <vbabka@suse.cz>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        "Ruhl, Michael J" <michael.j.ruhl@intel.com>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Alex Elder <elder@kernel.org>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Daniel Micay <danielmicay@gmail.com>,
-        Yonghong Song <yhs@fb.com>, Marco Elver <elver@google.com>,
-        Miguel Ojeda <ojeda@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-btrfs@vger.kernel.org,
-        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org, linux-fsdevel@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, dev@openvswitch.org,
-        x86@kernel.org, llvm@lists.linux.dev,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH v2 13/16] mempool: Use kmalloc_size_roundup() to match
- ksize() usage
-Message-ID: <202209261123.B2CBAE87E0@keescook>
-References: <20220923202822.2667581-1-keescook@chromium.org>
- <20220923202822.2667581-14-keescook@chromium.org>
- <f4fc52c4-7c18-1d76-0c7a-4058ea2486b9@suse.cz>
+        with ESMTP id S229830AbiIZS0y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 14:26:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B210B53038;
+        Mon, 26 Sep 2022 11:25:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3EA96611FE;
+        Mon, 26 Sep 2022 18:25:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A194C43141;
+        Mon, 26 Sep 2022 18:25:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664216728;
+        bh=Y5qLzRGdsOCwx5ouHFiN9SCKtz+YXlGNMDHQ/+qU8uw=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=kqWfLDMVQE1v+BdTxETwBYr6RTduIuEN9ZhkSh7vUXPSDzXB2F+slGOrt2kqlzxEx
+         /zVFIziJ3HUzYkfuUMbxsLj8h28WG9e9bRCvIcfWMRN377I9MXqHmagFAclo1QY4nl
+         QGu85R6bAd/4fCPjPl4w/HQbCZxvqIVln0uh7YtLv5FLV8XdBYSKzmyfLOw5I8dLZN
+         pjVLxNFXkY1KdFuzJdoDsnADsrTBvxD9+1r5a2dismbZo9JeXq76luOIRnf3txmoR1
+         IcSe1p+0EGqnliT8SYUV061yQstm3OtueYceF/9B6zUAouuaKzAVHQCxW4mTQ+uhHA
+         y4k90bJv/SWTQ==
+Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-351630b1728so8496877b3.1;
+        Mon, 26 Sep 2022 11:25:28 -0700 (PDT)
+X-Gm-Message-State: ACrzQf31pUUO5DH7itwV3LK7uY9YZM/sU080iiPL0FObNKDxbXZidwHA
+        tqqKLfRImyDzHrHGb8ByNaYOMgKFaFYfEX9YDg==
+X-Google-Smtp-Source: AMsMyM5WOL0fZfHYzWaw2DdaPSr6kh7DGRI2ScO+UdVg2zStt3aJXG4qtOOC5FFK87yV5Mi/AUvaSMeil9/+6K1KBfA=
+X-Received: by 2002:a81:6608:0:b0:351:4cd2:d59a with SMTP id
+ a8-20020a816608000000b003514cd2d59amr1485347ywc.432.1664216717388; Mon, 26
+ Sep 2022 11:25:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f4fc52c4-7c18-1d76-0c7a-4058ea2486b9@suse.cz>
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+References: <20220701012647.2007122-1-saravanak@google.com>
+ <YwS5J3effuHQJRZ5@kroah.com> <CAOesGMivJ5Q-jdeGKw32yhjmNiYctHjpEAnoMMRghYqWD2m2tw@mail.gmail.com>
+ <YygsEtxKz8dsEstc@kroah.com> <CAOesGMh5GHCONTQ9M1Ro7zW-hkL_1F7Xt=xRV0vYSfPY=7LYkQ@mail.gmail.com>
+In-Reply-To: <CAOesGMh5GHCONTQ9M1Ro7zW-hkL_1F7Xt=xRV0vYSfPY=7LYkQ@mail.gmail.com>
+From:   Rob Herring <robh@kernel.org>
+Date:   Mon, 26 Sep 2022 13:25:05 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqK7auA8coB3DCqSDKw1ept_yQihVs-Me3bvU923os23xg@mail.gmail.com>
+Message-ID: <CAL_JsqK7auA8coB3DCqSDKw1ept_yQihVs-Me3bvU923os23xg@mail.gmail.com>
+Subject: Re: [PATCH v2 0/2] Fix console probe delay when stdout-path isn't set
+To:     Olof Johansson <olof@lixom.net>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Saravana Kannan <saravanak@google.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Al Cooper <alcooperx@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Tobias Klauser <tklauser@distanz.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        Vineet Gupta <vgupta@kernel.org>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Alexander Shiyan <shc_work@mail.ru>,
+        Baruch Siach <baruch@tkos.co.il>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Gabriel Somlo <gsomlo@gmail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Taichi Sugaya <sugaya.taichi@socionext.com>,
+        Takao Orito <orito.takao@socionext.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Pali Rohar <pali@kernel.org>,
+        Andreas Farber <afaerber@suse.de>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hammer Hsieh <hammerh0314@gmail.com>,
+        Peter Korsgaard <jacmet@sunsite.dk>,
+        Timur Tabi <timur@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        sascha hauer <sha@pengutronix.de>, peng fan <peng.fan@nxp.com>,
+        kevin hilman <khilman@kernel.org>,
+        ulf hansson <ulf.hansson@linaro.org>,
+        len brown <len.brown@intel.com>, pavel machek <pavel@ucw.cz>,
+        joerg roedel <joro@8bytes.org>, will deacon <will@kernel.org>,
+        andrew lunn <andrew@lunn.ch>,
+        heiner kallweit <hkallweit1@gmail.com>,
+        eric dumazet <edumazet@google.com>,
+        jakub kicinski <kuba@kernel.org>,
+        paolo abeni <pabeni@redhat.com>,
+        linus walleij <linus.walleij@linaro.org>,
+        hideaki yoshifuji <yoshfuji@linux-ipv6.org>,
+        david ahern <dsahern@kernel.org>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org,
+        linux-rpi-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-tegra@vger.kernel.org,
+        linux-snps-arc@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linux-actions@lists.infradead.org,
+        linux-unisoc@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        sparclinux@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 26, 2022 at 03:50:43PM +0200, Vlastimil Babka wrote:
-> On 9/23/22 22:28, Kees Cook wrote:
-> > Round up allocations with kmalloc_size_roundup() so that mempool's use
-> > of ksize() is always accurate and no special handling of the memory is
-> > needed by KASAN, UBSAN_BOUNDS, nor FORTIFY_SOURCE.
-> > 
-> > Cc: Andrew Morton <akpm@linux-foundation.org>
-> > Cc: linux-mm@kvack.org
-> > Signed-off-by: Kees Cook <keescook@chromium.org>
-> > ---
-> >   mm/mempool.c | 2 +-
-> >   1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/mm/mempool.c b/mm/mempool.c
-> > index 96488b13a1ef..0f3107b28e6b 100644
-> > --- a/mm/mempool.c
-> > +++ b/mm/mempool.c
-> > @@ -526,7 +526,7 @@ EXPORT_SYMBOL(mempool_free_slab);
-> >    */
-> >   void *mempool_kmalloc(gfp_t gfp_mask, void *pool_data)
-> >   {
-> > -	size_t size = (size_t)pool_data;
-> > +	size_t size = kmalloc_size_roundup((size_t)pool_data);
-> 
-> Hm it is kinda wasteful to call into kmalloc_size_roundup for every
-> allocation that has the same input. We could do it just once in
-> mempool_init_node() for adjusting pool->pool_data ?
-> 
-> But looking more closely, I wonder why poison_element() and
-> kasan_unpoison_element() in mm/mempool.c even have to use ksize()/__ksize()
-> and not just operate on the requested size (again, pool->pool_data). If no
-> kmalloc mempool's users use ksize() to write beyond requested size, then we
-> don't have to unpoison/poison that area either?
+On Mon, Sep 19, 2022 at 5:56 PM Olof Johansson <olof@lixom.net> wrote:
+>
+> On Mon, Sep 19, 2022 at 1:44 AM Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+> >
+> > On Sun, Sep 18, 2022 at 08:44:27PM -0700, Olof Johansson wrote:
+> > > On Tue, Aug 23, 2022 at 8:37 AM Greg Kroah-Hartman
+> > > <gregkh@linuxfoundation.org> wrote:
+> > > >
+> > > > On Thu, Jun 30, 2022 at 06:26:38PM -0700, Saravana Kannan wrote:
+> > > > > These patches are on top of driver-core-next.
+> > > > >
+> > > > > Even if stdout-path isn't set in DT, this patch should take console
+> > > > > probe times back to how they were before the deferred_probe_timeout
+> > > > > clean up series[1].
+> > > >
+> > > > Now dropped from my queue due to lack of a response to other reviewer's
+> > > > questions.
+> > >
+> > > What happened to this patch? I have a 10 second timeout on console
+> > > probe on my SiFive Unmatched, and I don't see this flag being set for
+> > > the serial driver. In fact, I don't see it anywhere in-tree. I can't
+> > > seem to locate another patchset from Saravana around this though, so
+> > > I'm not sure where to look for a missing piece for the sifive serial
+> > > driver.
+> > >
+> > > This is the second boot time regression (this one not fatal, unlike
+> > > the Layerscape PCIe one) from the fw_devlink patchset.
+> > >
+> > > Greg, can you revert the whole set for 6.0, please? It's obviously
+> > > nowhere near tested enough to go in and I expect we'll see a bunch of
+> > > -stable fixups due to this if we let it remain in.
+> >
+> > What exactly is "the whole set"?  I have the default option fix queued
+> > up and will send that to Linus later this week (am traveling back from
+> > Plumbers still), but have not heard any problems about any other issues
+> > at all other than your report.
+>
+> I stand corrected in this case, the issue on the Hifive Unmatched was
+> a regression due to a PWM clock change -- I just sent a patch for that
+> (serial driver fix).
+>
+> So it seems like as long as the fw_devlink.strict=1 patch is reverted,
+> things are back to a working state here.
+>
+> I still struggle with how the fw_devlink patchset is expected to work
+> though, since DT is expected to describe the hardware configuration,
+> and it has no knowledge of whether there are drivers that will be
+> bound to any referenced supplier devnodes. It's not going to work well
+> to assume that they will always be bound, and to add 10 second
+> timeouts for those cases isn't a good solution. Seems like the number
+> of special cases will keep adding up.
 
-Yeah, I think that's a fair point. I will adjust this.
+Since the introduction of deferred probe, the kernel has always
+assumed if there is a device described, then there is or will be a
+driver for it. The result is you can't use new DTs (if they add
+providers) with older kernels.
 
--- 
-Kees Cook
+We've ended up with a timeout because no one has come up with a better
+way to handle it. What the kernel needs is userspace saying "I'm done
+loading modules", but it's debatable whether that's a good solution
+too.
+
+Rob
