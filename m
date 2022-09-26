@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F9125E9754
-	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 02:31:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 508965E9758
+	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 02:32:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233328AbiIZAbz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Sep 2022 20:31:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34502 "EHLO
+        id S233396AbiIZAcW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Sep 2022 20:32:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233220AbiIZAbI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Sep 2022 20:31:08 -0400
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2103.outbound.protection.outlook.com [40.107.96.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9B082A256;
-        Sun, 25 Sep 2022 17:30:32 -0700 (PDT)
+        with ESMTP id S230173AbiIZAbd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Sep 2022 20:31:33 -0400
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2111.outbound.protection.outlook.com [40.107.96.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AEEE2A438;
+        Sun, 25 Sep 2022 17:30:34 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Liiw5aMaBKYKQ24l0JpFB78WokniF/BSWBP5Bnil0F1bywSZXKhqDfQrqKJcjnRryr78Su4g4UEe8Y5ntASqk7ToLO+E+6bNzkLUOZftHB2nZY5StBk8l9qvm4xCaeT8/76MVK9OSkKb/gvZGAN6oW2z4tonxD+UgwCdXhPIv1zgXxoEdQv4t79EzFJWH6ba+reYlZagBfMLoVkzSkZhoUbfUUqH/8x++4g/VGD4OWIdFwrXyeb6L+D8CvKltRUfmtd+Tj7bfMqnngiBCtEAP+fLC8lY/mlsx8CynNicTCj4b0Hbn5jLt6zQo99kbH2Y/reuACJVRzV+oA9I8CJKVg==
+ b=gjhpNS/AKe43nO8liXGspr6iwSSgXXav+Kr1gWp9GSdBTmHLh+VyZhtRuqf9H1TlRWsJU9HeYr228IPsGY6uInj1rTRYuZq63jNRoTusy0CyujC802IxQaOWfqfr5QO0DUPIVvDyHzRmSEPyROpZ/qX2tNBbDW8IdalnMCCnRjKWE4LEPSIJ6hfYfrQw1dIsbPdR9fK5NFJ/ID7eGhpP5iQNV/rwnkuSmKlEpTcqSyJLHbFY+Hf0f6WJteth5Y9ZifZmd+WLLYMbv73XUEpler9+u4tuMN+vBAasw0QGjUzZSL48RaP0CyF7GXHaeoMqI7IU+pingVcDEN19gwppSA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ASIiEnFKGLw923mztlg95DyOv0KbmFqGr7B6B5DszVQ=;
- b=HCrkr/TMx2R0C2OuTKvm+r5ppyQnHZDJRghq+q7tea37+4LWfCxi72znlhAvqjIVLp8DmxQq+pPr/kEQSCHNcc2Cjl5AjJ8Jqu3pZDtHHyM1j6ZaM2zJPE2ebQ/S/J/B8XG5aXbhJyQFSC0QtO/55fhWBHOFfDVpXNu+hHm2M99WopO3Woc3Wrdusao0FdqbHAi7OrrZa1WkY8HfnefjaXnMzy++gISNnsqWpUsjVlAYjn0AJi20MjgFF31o2wuZbMH9+8zzyPt1rw9lniVRb4IrqNv5P6ZhdKguCSWs1X6Ua0uZZ6emo7IN+DgQD1jLzq+8fuhmnFw0hX9o0PBjIQ==
+ bh=EjgLO9u32pEV+OAvuDZG62F+qdkTStLP6SR/sEud5L4=;
+ b=OWR04W7sT/JbBKQc4pmqMCTzhdAauQr9ZarvTy9Wk6RelbtdPBvvNw0Ak3/Ukjc/HsPoVM+P2Zi3aYcfWs6h0Zae/hOZ9ClBOSzJlBeLTNdBtpNNOk/MiHXc53bDgfLc75Lo6L1JFH0XV1rTVHnaLanEU2NSLICOOAUOd9+FQo+B78QZrm//0jgF+cKbEQNPBSbKD/f0y8a9pFBrfVXiAKBcASlQhA77GlfdcdW/ddCve4clMUqo+ukClvME2HgsYDIS6LEkcrlglkPiPDzIZ+K/FSlTc78h/t5gQ3PDJ4XkjyI/jTs9Jtenq6mtTlUG+Uei802zYXFwVGyHh+Tl2g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=in-advantage.com; dmarc=pass action=none
  header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ASIiEnFKGLw923mztlg95DyOv0KbmFqGr7B6B5DszVQ=;
- b=wLhm22o6C6iPdLJi+XNSzlISZOk3SMfP1PAGVo7KkPwJhwp34wj3AcEDei8AJTQyyapp7fMrlICpVJUIdhJfXs40FWqv/U94Gtaydw9ZKgDivfUSLvK599OVmdT5Msv6HHun41t0ofqbCmyKAz5DG7ZOvTiLXMfnL6EUoiyRYJY=
+ bh=EjgLO9u32pEV+OAvuDZG62F+qdkTStLP6SR/sEud5L4=;
+ b=qGIsANpSoF2zut7RH9Lxp1g8BlsFRG44IhBA0bBMPoOxSQNURKJX1FuJjc/4AUwRhB4S7s+s6orhFNchuKk2p2EHu5u3GhFKrUAbH0rofc87xutY6Jcn8Xwy0S+NBsrDePEgfYLylxkhhTINSpT1k6Be24eAZPfLPdY/HOC6k1M=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=in-advantage.com;
 Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
  (2603:10b6:301:35::37) by BLAPR10MB4849.namprd10.prod.outlook.com
  (2603:10b6:208:321::23) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.25; Mon, 26 Sep
- 2022 00:30:24 +0000
+ 2022 00:30:25 +0000
 Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
  ([fe80::b417:2ac7:1925:8f69]) by MWHPR1001MB2351.namprd10.prod.outlook.com
  ([fe80::b417:2ac7:1925:8f69%4]) with mapi id 15.20.5654.025; Mon, 26 Sep 2022
- 00:30:24 +0000
+ 00:30:25 +0000
 From:   Colin Foster <colin.foster@in-advantage.com>
 To:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
         devicetree@vger.kernel.org, netdev@vger.kernel.org
@@ -59,9 +59,9 @@ Cc:     Russell King <linux@armlinux.org.uk>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH v3 net-next 09/14] pinctrl: ocelot: avoid macro redefinition
-Date:   Sun, 25 Sep 2022 17:29:23 -0700
-Message-Id: <20220926002928.2744638-10-colin.foster@in-advantage.com>
+Subject: [PATCH v3 net-next 10/14] mfd: ocelot: prepend resource size macros to be 32-bit
+Date:   Sun, 25 Sep 2022 17:29:24 -0700
+Message-Id: <20220926002928.2744638-11-colin.foster@in-advantage.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220926002928.2744638-1-colin.foster@in-advantage.com>
 References: <20220926002928.2744638-1-colin.foster@in-advantage.com>
@@ -73,51 +73,51 @@ X-ClientProxiedBy: MW4PR04CA0260.namprd04.prod.outlook.com
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: MWHPR1001MB2351:EE_|BLAPR10MB4849:EE_
-X-MS-Office365-Filtering-Correlation-Id: 255ac755-44d4-4259-ee6c-08da9f564d3f
+X-MS-Office365-Filtering-Correlation-Id: ccc5caa0-7469-474b-5b4d-08da9f564dd1
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: EBQcHfXEWzsBcYqMqCbv25aXVobgIauqH4U29nkQNnCHRFsbTUKJK4idodAWH3CegZXtQ3NuWVxwAZtUGJnCRPiJaDCIJDMzBFo23miAk7h5C1+QkbNpvblPoKb4fbVaMaflU7ad4GOdNM/kBVBRKc8lJ9B4fiiYQDUN/H+MO4WhGZsdE3klk7MtBkoMorZhnEbkS0LmczTWuSXFL91zCF8oM8fw77E8QfonQDD7JGL/RlNUaA6ZFCBxVtLP9Aa4wn/wnzvgWmNwIVT66+PaKCJE4qBFawxxNnVVyINb8nXUfO5/LKezu4ml1t6gd3TA/DqnCZCH7bDUstwoj89XVDnZsHnqZPymHqig1xbCWdlsgRXzIhZ3kdFTa2itNx2AKgpJyberL/pFsQ1UUwN4QT3VnO/+57hWaKiESTr7CI25g4ko29CcTmmKwvME+wOVGxxOrYYqYubCBfavbKR00CbjMbspmfPaqcnlpZk0OQPSrpVvYP6UjKPxsS/lLJG6CE4wNIbWsd4bZoX9dkCJq6of77q/3XhcfGIsc15ohdFkPlv6F2NvCyvlv5BDXcLjGFpZh3PkWmspmMSupttFXbvRDN+Kjob+Umm51jvSrjHgksvJd81A8LBECRaTNBQmPbH4Nq2XlcKlEHsagEYUqjhc3c1agUWl85VTHLGcw//NuJcA0YBscwlsGD4AJmBadVWk4YW80WM/FuWl9IKX+Cg31f7YNtfsd6vsyiY/g+eKumPbqx1Y6LqmnFMg0W4w
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(396003)(346002)(376002)(39830400003)(366004)(136003)(451199015)(54906003)(38100700002)(478600001)(6486002)(316002)(2906002)(2616005)(6506007)(6512007)(26005)(5660300002)(1076003)(8936002)(7416002)(186003)(52116002)(86362001)(8676002)(38350700002)(36756003)(44832011)(41300700001)(66946007)(66556008)(4326008)(66476007);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: TwvhM93gAY3gSlMJQ0GHNa5yOuApaaDCho49uTqwifGb3Oc+G68SzJFoaaL7V4GYtxAmfDphK5PGEj+OfAFfjk26F1X3fJgVWh3cN6soxoStpYtR8x3VGupTnM2HQefic0yyk98N6moGtJ3wHDD7UchJ1OOP0ZGNxjSDO+u7qne569tqXYLiQX7W6S7FjCNR/qsUc7KipxWXHR31kXoRiUZu+Js3pH1VnNNyBYDQudmqHaa60uITVDf8uZG4W3SyAu8V95Q0Iy+AGlDzu4Aag7dnw6rnaUFSRiWxwqNeSgsXqd7+l+udNSaHvM9dMnJr6g+3QNecK/hwclc6FkFThZz+dh8ySUymQhFqkIklCuYEdPCn+NAzfrci2gbMQv3VpfX/NPLH15jzFVb3qu9DfQ0IKaPz1W2mK7V3p7QrNUwU69cy3R0XursoK3h8nYcF/svKh5TuUPH4vA6eyYd9TciMZVnEYzGbcXe/gdMAR6GBILBvNkrfXlZuGUCKMVmidqfyZYzK6af9WvneQjm8S6xPHCLJSgAXjXFw/yXEtQdZLRWLROiaZGr+fZhZhyCC+71WNIAoPUULAHH+zDvAdRbzg6m0aBqg53+H/1kawVmoU8G97vv12n0Qy4AcceqsozgZCfW9cJuq6xmh4LiPZyvxMToXNhvaqWDins/9kPpUw6L7JL3cC6aXaRgK+lSRq1CnVwYU2UiBSBadAKHnFUcOAKwLD+P7ZpO/An5Am4WO4wG2DIb9UlF/daX8MliQ
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(396003)(346002)(376002)(39830400003)(366004)(136003)(451199015)(54906003)(38100700002)(478600001)(6486002)(316002)(2906002)(2616005)(6506007)(6512007)(26005)(5660300002)(1076003)(8936002)(7416002)(186003)(52116002)(86362001)(8676002)(38350700002)(36756003)(44832011)(41300700001)(83380400001)(66946007)(66556008)(4326008)(66476007);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?U+NyP+LYXXw4dq05qV3+ScatVX5UKdUNPSjNAfMv2llIKI/g4RvMYgC/NREl?=
- =?us-ascii?Q?pAAkt6fogrGROajs1IXMKaEhVchrKFA9U4j8nA7gnW1XEN7yTjdAsIYh33f/?=
- =?us-ascii?Q?ZFxkkL+Z+R0d8dUvZpZqqhUDLSPamkZllNYYTOxwmTmHn0MUUgy2BpG9kryq?=
- =?us-ascii?Q?oZRotHSaCXNGafCVjmszWIoD2wl0fih658K+IQ2wxAAJ8LKZQD0Wn+pEe6YG?=
- =?us-ascii?Q?nGWPaQkIowjgIk6ab14Tn/Fh5R5Q7a77KszkQ2r6CtUlPtvTLI1F/Zo8jey8?=
- =?us-ascii?Q?PAEZYTQ7Ud3+jTRyuvN9qqDNrWMHh/bhrSXfEQsXlIXB17QjXwGMjqPntWRJ?=
- =?us-ascii?Q?3aL8UNfXv6NunqbfmSwyhD/e+F3TXorVkaYg3S+DJCskQpjYX/y1GqSRP5fB?=
- =?us-ascii?Q?sS6MBHDFZLJfREsDuCOP0UTF5q1N/LW0+09YVPEZtjmqwOGhlcmao9YC8kTe?=
- =?us-ascii?Q?P12zfxxhzm0hPOJGXbfJeWudEcSnsj4tBlmDyPde93uK8lQPpKczhQu0m5Gy?=
- =?us-ascii?Q?0vzC5sdP22NGWZINcIxufwdCXZTkQKHfp5zgG/2xDOZZi78GZ23fkhn+Os6G?=
- =?us-ascii?Q?8QTCa+1H9bXoYDCE8UHZp7JHVdcZS5vscXA4R84Av1Q1InK2gXM+ekpSHEf8?=
- =?us-ascii?Q?Y/HvNERuBdqeQUh0U4re6ebWsIr3OCJuB4R8qKy8dn5ZQ2lWOXldMknrp6ID?=
- =?us-ascii?Q?n71lJpTBxmTK21YbaoWph1wr2bpR7WN8i3zkMqnQiJOGCkBZdDO8SydH9FDQ?=
- =?us-ascii?Q?d1B/zJ6hRF9IFphNvp08cJTSdb/ZFnQln/uxZqgSg4Oq9plTuVqptBCOWjdc?=
- =?us-ascii?Q?7yAIcHTH1WbWNzVNOXoJPOxPY+4+kawjiTBOV8MNzKbsTcjNZf8XsbbjcVfG?=
- =?us-ascii?Q?IEu5GJELAHFznTicXe8rkRYXGkgRusXiqDY3Vb0Xi4/aF7zC5AQjREVgiGDY?=
- =?us-ascii?Q?tu3VZlWFdKcSV1lQeVICR1rh+o7D4WEt8CYXw1Du8kY/wzgMEgWnlwW79Nlh?=
- =?us-ascii?Q?rIPS10EbN+85IQXVcSCQT4UBMfiqyD2UOCRhZCkzVLaNk6Eo5H9+BzsO5z2U?=
- =?us-ascii?Q?T0aEpHHEcAYGzHjLkk3Pib8lb/sxGLtAcDExUdxZ7gWSUXtxP1bbOFWz2YLT?=
- =?us-ascii?Q?ZfdGJgR5/9Lu4cPIMv7SlFA/JRf4yBDG7tXR+SLVZ5LcoJjwG5koE1dzjm46?=
- =?us-ascii?Q?E8Jc/vsiw1ZYrB4cD08d2nsvGmiF7hVCymKljMaGtGyh5QyV+vaFqoaaGy1E?=
- =?us-ascii?Q?GQi3W7AI1f32iUqwxUHvA9npYiig65NRsbd7xXJWWT2f4m7arII/JiRs+JEa?=
- =?us-ascii?Q?kkHHbPJPCCD+6AUDgTE9w6dMBw8PofqZGyfTzQTkx9Q3ZQNFPKqxYpvDFOsy?=
- =?us-ascii?Q?MKg0bWQCt7A8NJ4YA4kiDHnl01cqYFkYfqQmoazOkQAM82C4/4G0OYuw127O?=
- =?us-ascii?Q?bDWMQclaeRq96nIA8FR+TTkA7CZLbqtWIoUta7GzAxC2St/bWV1zf9GBVtHD?=
- =?us-ascii?Q?zM3JPrEEMQhUqOqrPyIlUJG5aQe26Kss68UcI22MejWRwQXMw/nmWLOA3P/Q?=
- =?us-ascii?Q?OP0Zu5iYucoDBKzU+/yvR9hY6rtKrkUqpck6QUaawVex1/XhjbLc48kU/b2j?=
- =?us-ascii?Q?Nw=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sfOG2f7uwrfil7C67Wgx6RSiCDGCpoDibHxVxQglCKNs2aioHrcwFIf8rN/i?=
+ =?us-ascii?Q?JM+vr4nC7Ezyguhuir2LpqLhHquge6NrZepmGlpLrb2HzQi6pu2xsS5Vfo0t?=
+ =?us-ascii?Q?yQV8AHX4RipSX3DRz0be7g4DDcPhaNa8vUsubPzY7BktZk2S5c4XKPWV23XC?=
+ =?us-ascii?Q?4gCvumqeJ1xV9Kz5PcydxbVvTPoVASWxYIhZKybZ9++hvJidv3R5Q78he/+s?=
+ =?us-ascii?Q?NONGreG+hR34fff3pLe1EWIvvpgC4KDFBu/9sLXz/Y4nviY73u3ydH+tpOL3?=
+ =?us-ascii?Q?fQpK/eY2ZgA+qoO6idYaj+a3gnhutYwW8VFdmOm5xc1vK5R5IS8RVLitjirZ?=
+ =?us-ascii?Q?ePMY+vVJ7ZrSTC8gx54p1OUYJP2K/pr0jVxk1RtrCG0VfOg5w+1zE9l8oFUM?=
+ =?us-ascii?Q?tBhtqvJqpxtRRg+sTsyRrHOJFE+Hw1bFSz3JBEamrC8485c0dYqK8NFzb9z2?=
+ =?us-ascii?Q?jgDsJCSy0bTdODlnvUDf/mM4P0n44DkKkSElR/IjYnQUOm7sat5bXUsA5pTi?=
+ =?us-ascii?Q?pfQbKa/WEpodtv2c+d3D+RgGlgTUSmqQxxxOFH+iuQUgNO7CSGgVM7gEO3j2?=
+ =?us-ascii?Q?INVejMctCNxwpd7MbbWk6mk7CeMZJaI5ltPRD4vGy4QQtiHrEwd1Zoqa4CUs?=
+ =?us-ascii?Q?esHnIYIXHYmu4iKsQzoIkl43vzmGD5+bjsMgLIgm6WlbMCwPYJNUwmZu08Bp?=
+ =?us-ascii?Q?wxUR0AmtEg8e458d5M/BpO3c+ZSwhuqLi8iNv6tpvagLioyukM/mkdcBtaB+?=
+ =?us-ascii?Q?Pgu5J2nmLYeMJpWEPk/scbn9IzIqLS7n17HsnZ/zySCxq7TYAxrBS5fzUXaQ?=
+ =?us-ascii?Q?1fkRFy6lVa/Fg6saVDdJLzwgVSIetP9zClLSiDlRYW2BksTkOJPprw2L+WvE?=
+ =?us-ascii?Q?1RMHoB3wac19J7ksujfADgVbvC8Dbma74Cf8swjLC+Eig4g0UCr/i24ZkGS8?=
+ =?us-ascii?Q?ruo0UOcpDDWkMa626uMeafMlMZukXoeTcNFJnSQrS0YET23WX0zwnegTP/Pe?=
+ =?us-ascii?Q?AIPe17SnO70/PSJElf53GrkVId+DVheJZYR61Yhas6vTqpQ/2IavGU1/GRfg?=
+ =?us-ascii?Q?P22/AKiFmI2MX4gfnQ6QUOXZMH2F8LF0UyzmzE7094DCgU9BQ+Ip5rPyQPGg?=
+ =?us-ascii?Q?l3lkLHnw8sE3S13rDmHxzSkVpRpxtK3nsgQvv5sx6XeyA15QbnN4TDPzelHI?=
+ =?us-ascii?Q?MpvqlavlMgCcUnQOWKYrC/YdTEJVaHHhRPxm0H26evvi7UByBms0Oa2pctDX?=
+ =?us-ascii?Q?FBbZCaKn6Zlksl1Xx6dWzFYlf5g3AtDXGIvbdN9FPlZYEnru1BYDN0wO1XeK?=
+ =?us-ascii?Q?qXG4U0f55XHYdvviNAMqkfDNaPImYthm/lwl0BTCJMu9okxQuA66WOBrwSU1?=
+ =?us-ascii?Q?jHRWUgXcCRtH17/Sk14nSIw+e3QxryWSI/wSPuSNXrEjRtnEp/J4XFAr0kPo?=
+ =?us-ascii?Q?8ym0W5J8WyhsXTKeMCWKq5Z4/PJ+vi3s6YHdL6Yd4ilTBGr5qFpIv3ioWLoi?=
+ =?us-ascii?Q?pCxjC1ySpjhfKtxJGXxytDlD1Zc5UX8wFYr0yrSgeP+7MO66nd76VNLJUa0i?=
+ =?us-ascii?Q?4iSg0rmh52oOH1fX1bGWNwtEz8+3VeZUQE4V2Ye2sKN4l4p87o+UIw6J73hV?=
+ =?us-ascii?Q?9QDlaH3gA8s6K3IWSshsJJ8=3D?=
 X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 255ac755-44d4-4259-ee6c-08da9f564d3f
+X-MS-Exchange-CrossTenant-Network-Message-Id: ccc5caa0-7469-474b-5b4d-08da9f564dd1
 X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Sep 2022 00:30:24.3072
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Sep 2022 00:30:25.0572
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8eUnaYjrUy8ESHHzc1oA+cZx/E4e30BksLQ3u4dAqu3yuS/zqPc4dOXsYKRPaiSikBuYJmGfrhioRnzYxP6eVcNPAiiTvsIliyYQ1ykdPEw=
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9z7WHJtLTx21QZm13V3Sc0LKoY+roElkJUcEt7h0EfBwDg7VYtDzb1zbbYfYJR2pJuWm2NuwsEnPeHkJrSP9nKOHEAmvcwiGib64LWhrgS0=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: BLAPR10MB4849
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
@@ -128,43 +128,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The macro REG gets defined in at least two locations -
-drivers/pinctrl/pinctrl-ocelot.c and include/soc/mscc/ocelot.h. While
-pinctrl-ocelot.c doesn't include include/soc/mscc/ocelot.h, it does in fact
-include include/linux/mfd/ocelot.h.
+The *_RES_SIZE macros are initally <= 0x100. Future resource sizes will be
+upwards of 0x200000 in size.
 
-This was all fine, until include/linux/mfd/ocelot.h needed resources from
-include/soc/mscc/ocelot.h. At that point the REG macro becomes redefined,
-and will throw a compiler error.
-
-Undefine the REG macro in drivers/pinctrl/pinctrl-ocelot.c before it is
-defined to avoid this error.
+To keep things clean, fully align the RES_SIZE macros to 32-bit to do
+nothing more than make the code more consistent.
 
 Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
 ---
 
-v3
+b3
     * No change
 
 v2
-    * New patch
+    * New patch - broken out from a different one
 
 ---
- drivers/pinctrl/pinctrl-ocelot.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/mfd/ocelot-core.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/pinctrl/pinctrl-ocelot.c b/drivers/pinctrl/pinctrl-ocelot.c
-index 62ce3957abe4..525c6ae898e2 100644
---- a/drivers/pinctrl/pinctrl-ocelot.c
-+++ b/drivers/pinctrl/pinctrl-ocelot.c
-@@ -1237,6 +1237,7 @@ static int lan966x_pinmux_set_mux(struct pinctrl_dev *pctldev,
- 	return 0;
- }
+diff --git a/drivers/mfd/ocelot-core.c b/drivers/mfd/ocelot-core.c
+index 1816d52c65c5..013e83173062 100644
+--- a/drivers/mfd/ocelot-core.c
++++ b/drivers/mfd/ocelot-core.c
+@@ -34,16 +34,16 @@
  
-+#undef REG
- #define REG(r, info, p) ((r) * (info)->stride + (4 * ((p) / 32)))
+ #define VSC7512_MIIM0_RES_START		0x7107009c
+ #define VSC7512_MIIM1_RES_START		0x710700c0
+-#define VSC7512_MIIM_RES_SIZE		0x024
++#define VSC7512_MIIM_RES_SIZE		0x00000024
  
- static int ocelot_gpio_set_direction(struct pinctrl_dev *pctldev,
+ #define VSC7512_PHY_RES_START		0x710700f0
+-#define VSC7512_PHY_RES_SIZE		0x004
++#define VSC7512_PHY_RES_SIZE		0x00000004
+ 
+ #define VSC7512_GPIO_RES_START		0x71070034
+-#define VSC7512_GPIO_RES_SIZE		0x06c
++#define VSC7512_GPIO_RES_SIZE		0x0000006c
+ 
+ #define VSC7512_SIO_CTRL_RES_START	0x710700f8
+-#define VSC7512_SIO_CTRL_RES_SIZE	0x100
++#define VSC7512_SIO_CTRL_RES_SIZE	0x00000100
+ 
+ #define VSC7512_GCB_RST_SLEEP_US	100
+ #define VSC7512_GCB_RST_TIMEOUT_US	100000
 -- 
 2.25.1
 
