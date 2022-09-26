@@ -2,138 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 935D75E9B82
-	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 10:03:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B36255E9B85
+	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 10:03:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233787AbiIZIDW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 04:03:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50532 "EHLO
+        id S231218AbiIZIDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 04:03:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233927AbiIZIC3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 04:02:29 -0400
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1F0A6A444
-        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 00:59:40 -0700 (PDT)
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 28Q7lriE7020545, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 28Q7lriE7020545
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Mon, 26 Sep 2022 15:47:53 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Mon, 26 Sep 2022 15:48:18 +0800
-Received: from localhost.localdomain (172.21.182.184) by
- RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.7; Mon, 26 Sep 2022 15:48:17 +0800
-From:   Chunhao Lin <hau@realtek.com>
-To:     <hkallweit1@gmail.com>
-CC:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
-        Chunhao Lin <hau@realtek.com>
-Subject: [PATCH net-next] r8169: add rtl_disable_rxdvgate()
-Date:   Mon, 26 Sep 2022 15:48:13 +0800
-Message-ID: <20220926074813.3619-1-hau@realtek.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S234186AbiIZICn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 04:02:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 077C6167C2;
+        Mon, 26 Sep 2022 01:00:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6E967B8191D;
+        Mon, 26 Sep 2022 08:00:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15004C433C1;
+        Mon, 26 Sep 2022 07:59:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664179199;
+        bh=BKaJB74cTuefD7ABjII+u7AOgXdfZ6IIrKwYO+YFiwA=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=Hyc7Yt4JMRaV93ujZXcbA6K75iKsTxLlkmSgCVt36DaZp09gGDnmN4EJbeayeQ/qN
+         3jEp8KLozDsB5an81OOeR7jhTN01D7/6umcHN2nNtowRyX35dtCAQ1JDHTjuEn9ULL
+         oV6buTY/Pjh1znzJxLvS71sf46j3L57ogNSxUesw9iGcpVHQsL42CAtv1Z3RnZbW/b
+         wtR6XNhWhaxNVau5wCZto1o8qodSKDM+Z7JI7nMB1jSI9rSqql3wOZYycygUYlXKZH
+         GQNLjqJ66xRAjmjKK8LN9zfpa2pje/YYTyfFmuy955aTcDQUZ9Q9L5IscH5qYVfdnj
+         yWy6pOoZhiNcw==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Gregory Greenman <gregory.greenman@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Miri Korenblit <miriam.rachel.korenblit@intel.com>,
+        Ilan Peer <ilan.peer@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Nathan Errera <nathan.errera@intel.com>,
+        Mordechay Goodstein <mordechay.goodstein@intel.com>,
+        Mike Golant <michael.golant@intel.com>,
+        Ayala Beker <ayala.beker@intel.com>,
+        Avraham Stern <avraham.stern@intel.com>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH v2] iwlwifi: Track scan_cmd allocation size explicitly
+References: <20220923220853.3302056-1-keescook@chromium.org>
+Date:   Mon, 26 Sep 2022 10:59:52 +0300
+In-Reply-To: <20220923220853.3302056-1-keescook@chromium.org> (Kees Cook's
+        message of "Fri, 23 Sep 2022 15:08:53 -0700")
+Message-ID: <874jwu4lc7.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [172.21.182.184]
-X-ClientProxiedBy: RTEXH36504.realtek.com.tw (172.21.6.27) To
- RTEXMBS04.realtek.com.tw (172.21.6.97)
-X-KSE-ServerInfo: RTEXMBS04.realtek.com.tw, 9
-X-KSE-AntiSpam-Interceptor-Info: trusted connection
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Deterministic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 09/26/2022 07:25:00
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzkvMjYgpFekyCAwNjowMDowMA==?=
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-rtl_disable_rxdvgate() is used for disable RXDV_GATE.
-It is opposite function of rtl_enable_rxdvgate().
+Kees Cook <keescook@chromium.org> writes:
 
-Signed-off-by: Chunhao Lin <hau@realtek.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
+> In preparation for reducing the use of ksize(), explicitly track the
+> size of scan_cmd allocations. This also allows for noticing if the scan
+> size changes unexpectedly. Note that using ksize() was already incorrect
+> here, in the sense that ksize() would not match the actual allocation
+> size, which would trigger future run-time allocation bounds checking.
+> (In other words, memset() may know how large scan_cmd was allocated for,
+> but ksize() will return the upper bounds of the actually allocated memory,
+> causing a run-time warning about an overflow.)
+>
+> Cc: Gregory Greenman <gregory.greenman@intel.com>
+> Cc: Kalle Valo <kvalo@kernel.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: Luca Coelho <luciano.coelho@intel.com>
+> Cc: Johannes Berg <johannes.berg@intel.com>
+> Cc: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+> Cc: Miri Korenblit <miriam.rachel.korenblit@intel.com>
+> Cc: Ilan Peer <ilan.peer@intel.com>
+> Cc: linux-wireless@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Kees Cook <keescook@chromium.org>
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 9c21894d0518..956562797496 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -2443,6 +2443,11 @@ static void rtl_wait_txrx_fifo_empty(struct rtl8169_private *tp)
- 	}
- }
- 
-+static void rtl_disable_rxdvgate(struct rtl8169_private *tp)
-+{
-+	RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
-+}
-+
- static void rtl_enable_rxdvgate(struct rtl8169_private *tp)
- {
- 	RTL_W32(tp, MISC, RTL_R32(tp, MISC) | RXDV_GATED_EN);
-@@ -2960,7 +2965,7 @@ static void rtl_hw_start_8168g(struct rtl8169_private *tp)
- 	rtl_reset_packet_filter(tp);
- 	rtl_eri_write(tp, 0x2f8, ERIAR_MASK_0011, 0x1d8f);
- 
--	RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
-+	rtl_disable_rxdvgate(tp);
- 
- 	rtl_eri_write(tp, 0xc0, ERIAR_MASK_0011, 0x0000);
- 	rtl_eri_write(tp, 0xb8, ERIAR_MASK_0011, 0x0000);
-@@ -3198,7 +3203,7 @@ static void rtl_hw_start_8168h_1(struct rtl8169_private *tp)
- 
- 	rtl_eri_write(tp, 0x5f0, ERIAR_MASK_0011, 0x4f87);
- 
--	RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
-+	rtl_disable_rxdvgate(tp);
- 
- 	rtl_eri_write(tp, 0xc0, ERIAR_MASK_0011, 0x0000);
- 	rtl_eri_write(tp, 0xb8, ERIAR_MASK_0011, 0x0000);
-@@ -3249,7 +3254,7 @@ static void rtl_hw_start_8168ep(struct rtl8169_private *tp)
- 
- 	rtl_eri_write(tp, 0x5f0, ERIAR_MASK_0011, 0x4f87);
- 
--	RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
-+	rtl_disable_rxdvgate(tp);
- 
- 	rtl_eri_write(tp, 0xc0, ERIAR_MASK_0011, 0x0000);
- 	rtl_eri_write(tp, 0xb8, ERIAR_MASK_0011, 0x0000);
-@@ -3313,7 +3318,7 @@ static void rtl_hw_start_8117(struct rtl8169_private *tp)
- 
- 	rtl_eri_write(tp, 0x5f0, ERIAR_MASK_0011, 0x4f87);
- 
--	RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
-+	rtl_disable_rxdvgate(tp);
- 
- 	rtl_eri_write(tp, 0xc0, ERIAR_MASK_0011, 0x0000);
- 	rtl_eri_write(tp, 0xb8, ERIAR_MASK_0011, 0x0000);
-@@ -3557,8 +3562,7 @@ static void rtl_hw_start_8125_common(struct rtl8169_private *tp)
- 	else
- 		rtl8125a_config_eee_mac(tp);
- 
--	RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
--	udelay(10);
-+	rtl_disable_rxdvgate(tp);
- }
- 
- static void rtl_hw_start_8125a_2(struct rtl8169_private *tp)
+Gregory, can I take this directly to wireless-next?
+
 -- 
-2.25.1
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
