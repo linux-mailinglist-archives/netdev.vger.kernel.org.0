@@ -2,75 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BEC5A5EA783
-	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 15:42:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 623AE5EA789
+	for <lists+netdev@lfdr.de>; Mon, 26 Sep 2022 15:43:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235761AbiIZNmE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 09:42:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40380 "EHLO
+        id S235062AbiIZNnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 09:43:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235770AbiIZNlf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 09:41:35 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5F7553009
-        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 04:59:57 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id y8so8641831edc.10
-        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 04:59:57 -0700 (PDT)
+        with ESMTP id S234948AbiIZNms (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 09:42:48 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 407CE8D799;
+        Mon, 26 Sep 2022 05:00:32 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id e129so269941pgc.9;
+        Mon, 26 Sep 2022 05:00:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=B1uHGqTvOywhRYzeVXjBcmFOMxjIUzN5HodeanuZfxE=;
-        b=wlOtRe7Hc/ANzyzD3oFPUjEJB2iFw/hzsaR/+44S0dfnQxE2GcDFtJxTm0dfrt9M5y
-         y9+ALJUSPc+iltIgg+LqjTyrFo662xQIw183A2/hshATVCUqGNZ8iliBWMwaRGeauP5z
-         JW2o7xIBVIl6s8x/0vLztj21stm/jryc8kgrFC9yqMCOdpe5xCGb9nsyrkwz1mMmidqi
-         RB6c4irOzgZRc+0czieqMtMziVwFZynw6tvV2M6Cz/2bsSnqBzQwq+g2bNxfP97WhQqQ
-         vThh65jzIN1SLeth8q6sgj/UPtVTrVbEdXksrDtVyz8i2dkFwkoPXvK0BliT85mIiuw9
-         dQNA==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=yaZsqph06GntR+D15TzunhyhKnzThingfXRbQEEFIyk=;
+        b=mzX9UUgOmbpU7ze9RtcM0DK0bskvbK3KRziTIu+NV7Dzlj0f8hGKJwH+4xVUYSG4KX
+         XOdiv2CkJBDiufQ52T0ZuA/JDxn830giuYzdCIjSNu2iW6Dkr8kZ3H38MyO5CzkGdFMX
+         0eyeHrH2KD7BwthEJ7jni4DAp5JcZsEm8x43eC2vMznOWIyH9dX06D/fW60vlBK2Uqjx
+         SkuJkA3SUZJ6ady/0rFymiQMcbL3SvgK4dc958V5N0csNff2FGNVmrWfj9LMcU3EJpYw
+         hnlITCWEfHViJCmJiefwNdOvzAKo3q0XpiPci4rcDNux/85Bsl7z81SXNmD85qBXV2Nh
+         6c7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=B1uHGqTvOywhRYzeVXjBcmFOMxjIUzN5HodeanuZfxE=;
-        b=edi7xhwBnrcpBxleH3iocgyEI+amHPf+KJIgieDm7zD5kj9f+YTQR8O7C0Wj1RglUl
-         8g/fkUYA93n9I2JIkZ33a/CF6SH2ssJ8w4al/CdahSPHnQy7ujPNGETegpC+m6SiUaMR
-         CUIM9hwzOWY8q7nVgcJqpqKWE4n8m0RckhzlGF1AFc8ffpbuJZQRBgU+4tHWdJCy9Nrs
-         0LPZ7gSpNqOh3ylXHNWzZ228gRvlNlrVvgWZiNcSV68F9sVTeEa+Nq9wQfLJY5P4Q7EI
-         if9IvMivxPYQXmjkn7n4vVGlIzxCaqWsdclhuHaSX7BxM7ba7xy0HlDGivDkg7ROFcxd
-         mrFg==
-X-Gm-Message-State: ACrzQf24J9/dQdrzqoWrQNQ2uV9p3Vh6z65CNLWruqPYJX/Ot1d+T2TO
-        TQPgVds43IY5jWGCRUNwBAdhhA==
-X-Google-Smtp-Source: AMsMyM7BQFgaIiWuQX8a9zc6L0WAR/RZgL2hZXZ0Nfel84VPlpFVHTnoZ0bbZuwIRf+byc3YWt+Ktg==
-X-Received: by 2002:a05:6402:cab:b0:457:5a5c:88a8 with SMTP id cn11-20020a0564020cab00b004575a5c88a8mr2727769edb.9.1664193534867;
-        Mon, 26 Sep 2022 04:58:54 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id b2-20020a1709063ca200b00780a26edfcesm8189009ejh.60.2022.09.26.04.58.52
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=yaZsqph06GntR+D15TzunhyhKnzThingfXRbQEEFIyk=;
+        b=wB3ZZFH7pA92L9SObkqrBXunUmH3mffvJfVMHNoDg+tWoJC0jzEZTc9V3bFwdrYP80
+         mUZLL4DyFkGiIzeWJsl+4u6e30CTq7pQ6KIOginwtsd6bTdRX2CvXErD3teNbJhTF6vC
+         eEtBdg4ZtcAddRA6jqe1qy1G/ZbWIJjLMXSJ3b25MN1CmPlNKJUFssuUPjf7SKr1iRLg
+         YCum7M8Q20X1Ccdev1mn90A46dNQKci3dsRMazwvo4Ljrj4DRaB43Ab22kOcFFpyRpuR
+         LU4fXte5z/5//rJvWK1mHYoe9hDx6EPG1ebrNitJvEm/tUZYYStPPNv0DjJyNUTsRnjX
+         urXA==
+X-Gm-Message-State: ACrzQf0H6z2LR5jzPf1w1YA41gle41MC3WRxkiNvTgi6hBmAmU93g14p
+        1w21qqtTpaqZlzipS91vENk=
+X-Google-Smtp-Source: AMsMyM4J7TNPJFef7B8KSkY+qFAjumwpawFZvba1r01PJGHpbX4eNGm/c/q31tzlNJHsZAvEQm2dGg==
+X-Received: by 2002:a63:154b:0:b0:42c:60ce:8bd3 with SMTP id 11-20020a63154b000000b0042c60ce8bd3mr19766143pgv.372.1664193582357;
+        Mon, 26 Sep 2022 04:59:42 -0700 (PDT)
+Received: from localhost ([223.104.44.30])
+        by smtp.gmail.com with ESMTPSA id c37-20020a631c65000000b0043949b480a8sm10447035pgm.29.2022.09.26.04.59.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Sep 2022 04:58:54 -0700 (PDT)
-Date:   Mon, 26 Sep 2022 13:58:47 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Edward Cree <ecree.xilinx@gmail.com>
-Cc:     "Wilczynski, Michal" <michal.wilczynski@intel.com>,
-        netdev@vger.kernel.org, alexandr.lobakin@intel.com,
-        dchumak@nvidia.com, maximmi@nvidia.com, simon.horman@corigine.com,
-        jacob.e.keller@intel.com, jesse.brandeburg@intel.com,
-        przemyslaw.kitszel@intel.com
-Subject: Re: [RFC PATCH net-next v4 2/6] devlink: Extend devlink-rate api
- with queues and new parameters
-Message-ID: <YzGT98W0+Pzhahl8@nanopsycho>
-References: <20220915134239.1935604-1-michal.wilczynski@intel.com>
- <20220915134239.1935604-3-michal.wilczynski@intel.com>
- <f17166c7-312d-ac13-989e-b064cddcb49e@gmail.com>
- <401d70a9-5f6d-ed46-117b-de0b82a5f52c@intel.com>
- <df4cd224-fc1b-dcd0-b7d4-22b80e6c1821@gmail.com>
- <7ce70b9f-23dc-03c9-f83a-4b620cdc8a7d@intel.com>
- <24690f01-5a4b-840b-52b7-bdc0e6b9376a@gmail.com>
+        Mon, 26 Sep 2022 04:59:41 -0700 (PDT)
+From:   Hawkins Jiawei <yin31149@gmail.com>
+To:     syzbot+473754e5af963cf014cf@syzkaller.appspotmail.com
+Cc:     18801353760@163.com, davem@davemloft.net, edumazet@google.com,
+        johannes@sipsolutions.net, keescook@chromium.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com, sfr@canb.auug.org.au,
+        syzkaller-bugs@googlegroups.com, yin31149@gmail.com
+Subject: Re: [syzbot] WARNING in wireless_send_event
+Date:   Mon, 26 Sep 2022 19:59:02 +0800
+Message-Id: <20220926115901.4941-1-yin31149@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <00000000000070db2005e95a5984@google.com>
+References: <00000000000070db2005e95a5984@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <24690f01-5a4b-840b-52b7-bdc0e6b9376a@gmail.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,47 +73,123 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Sep 20, 2022 at 01:09:04PM CEST, ecree.xilinx@gmail.com wrote:
->On 19/09/2022 14:12, Wilczynski, Michal wrote:
->> Maybe a switchdev case would be a good parallel here. When you enable switchdev, you get port representors on
->> the host for each VF that is already attached to the VM. Something that gives the host power to configure
->> netdev that it doesn't 'own'. So it seems to me like giving user more power to configure things from the host
+#syz test git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
+aaa11ce2ffc84166d11c4d2ac88c3fcf75425fbd
 
-Well, not really. It gives the user on hypervisor possibility
-to configure the eswitch vport side. The other side of the wire, which
-is in VM, is autonomous.
+Syzkaller reports refcount bug as follows:
+------------[ cut here ]------------
+memcpy: detected field-spanning write (size 8) of single field "&compat_event->pointer" at net/wireless/wext-core.c:623 (size 4)
+WARNING: CPU: 0 PID: 3607 at net/wireless/wext-core.c:623 wireless_send_event+0xab5/0xca0 net/wireless/wext-core.c:623
+Modules linked in:
+CPU: 1 PID: 3607 Comm: syz-executor659 Not tainted 6.0.0-rc6-next-20220921-syzkaller #0
+[...]
+Call Trace:
+ <TASK>
+ ioctl_standard_call+0x155/0x1f0 net/wireless/wext-core.c:1022
+ wireless_process_ioctl+0xc8/0x4c0 net/wireless/wext-core.c:955
+ wext_ioctl_dispatch net/wireless/wext-core.c:988 [inline]
+ wext_ioctl_dispatch net/wireless/wext-core.c:976 [inline]
+ wext_handle_ioctl+0x26b/0x280 net/wireless/wext-core.c:1049
+ sock_ioctl+0x285/0x640 net/socket.c:1220
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:870 [inline]
+ __se_sys_ioctl fs/ioctl.c:856 [inline]
+ __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:856
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+ [...]
+ </TASK>
 
+Wireless events will be sent on the appropriate channels in
+wireless_send_event(). Different wireless events may have different
+payload structure and size, so kernel uses **len** and **cmd** field
+in struct __compat_iw_event as wireless event common LCP part, uses
+**pointer** as a label to mark the position of remaining different part.
 
->> is acceptable.
->
->Right that's the thing though: I instinctively Want this to be done
-> through representors somehow, because it _looks_ like it ought to
-> be scoped to a single netdev; but that forces the hierarchy to
-> respect netdev boundaries which as we've discussed is an unwelcome
-> limitation.
+Yet the problem is that, **pointer** is a compat_caddr_t type, which may
+be smaller than the relative structure at the same position. So during
+wireless_send_event() tries to parse the wireless events payload, it may
+trigger the memcpy() run-time destination buffer bounds checking when the
+relative structure's data is copied to the position marked by **pointer**.
 
-Why exacly? Do you want to share a single queue between multiple vport?
-Or what exactly would the the usecase where you hit the limitation?
+This patch solves it by introducing flexible-array field **ptr_bytes**,
+to mark the position of the wireless events remaining part next to
+LCP part. What's more, this patch also adds **ptr_len** variable in
+wireless_send_event() to improve its maintainability.
 
+Link: https://lore.kernel.org/all/00000000000070db2005e95a5984@google.com/
+Suggested-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Hawkins Jiawei <yin31149@gmail.com>
+---
+ include/linux/wireless.h | 10 +++++++++-
+ net/wireless/wext-core.c | 13 ++++++++-----
+ 2 files changed, 17 insertions(+), 6 deletions(-)
 
->
->> In my mind this is a device-wide configuration, since the ice driver registers each port as a separate pci device.
->> And each of this devices have their own hardware Tx Scheduler tree global to that port. Queues that we're
->> discussing are actually hardware queues, and are identified by hardware assigned txq_id.
->
->In general, hardware being a single unit at the device level does
-> not necessarily mean its configuration should be device-wide.
->For instance, in many NICs each port has a single hardware v-switch,
-> but we do not have some kind of "devlink filter" API to program it
-> directly.  Instead we attach TC rules to _many_ netdevs, and driver
-> code transforms and combines these to program the unitary device.
->"device-wide configuration" originally meant things like firmware
-> version or operating mode (legacy vs. switchdev) that do not relate
-> directly to netdevs.
->
->But I agree with you that your approach is the "least evil method";
-> if properly explained and documented then I don't have any
-> remaining objection to your patch, despite that I'm continuing to
-> take the opportunity to proselytise for "reprs >> devlink" ;)
->
->-ed
+diff --git a/include/linux/wireless.h b/include/linux/wireless.h
+index 2d1b54556eff..e6e34d74dda0 100644
+--- a/include/linux/wireless.h
++++ b/include/linux/wireless.h
+@@ -26,7 +26,15 @@ struct compat_iw_point {
+ struct __compat_iw_event {
+ 	__u16		len;			/* Real length of this stuff */
+ 	__u16		cmd;			/* Wireless IOCTL */
+-	compat_caddr_t	pointer;
++
++	union {
++		compat_caddr_t	pointer;
++
++		/* we need ptr_bytes to make memcpy() run-time destination
++		 * buffer bounds checking happy, nothing special
++		 */
++		DECLARE_FLEX_ARRAY(__u8, ptr_bytes);
++	};
+ };
+ #define IW_EV_COMPAT_LCP_LEN offsetof(struct __compat_iw_event, pointer)
+ #define IW_EV_COMPAT_POINT_OFF offsetof(struct compat_iw_point, length)
+diff --git a/net/wireless/wext-core.c b/net/wireless/wext-core.c
+index 76a80a41615b..2ca009aca865 100644
+--- a/net/wireless/wext-core.c
++++ b/net/wireless/wext-core.c
+@@ -468,6 +468,7 @@ void wireless_send_event(struct net_device *	dev,
+ 	struct __compat_iw_event *compat_event;
+ 	struct compat_iw_point compat_wrqu;
+ 	struct sk_buff *compskb;
++	int ptr_len;
+ #endif
+ 
+ 	/*
+@@ -582,6 +583,9 @@ void wireless_send_event(struct net_device *	dev,
+ 	nlmsg_end(skb, nlh);
+ #ifdef CONFIG_COMPAT
+ 	hdr_len = compat_event_type_size[descr->header_type];
++
++	/* ptr_len is remaining size in event header apart from LCP */
++	ptr_len = hdr_len - IW_EV_COMPAT_LCP_LEN;
+ 	event_len = hdr_len + extra_len;
+ 
+ 	compskb = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_ATOMIC);
+@@ -612,16 +616,15 @@ void wireless_send_event(struct net_device *	dev,
+ 	if (descr->header_type == IW_HEADER_TYPE_POINT) {
+ 		compat_wrqu.length = wrqu->data.length;
+ 		compat_wrqu.flags = wrqu->data.flags;
+-		memcpy(&compat_event->pointer,
++		memcpy(compat_event->ptr_bytes,
+ 			((char *) &compat_wrqu) + IW_EV_COMPAT_POINT_OFF,
+-			hdr_len - IW_EV_COMPAT_LCP_LEN);
++			ptr_len);
+ 		if (extra_len)
+-			memcpy(((char *) compat_event) + hdr_len,
++			memcpy(&compat_event->ptr_bytes[ptr_len],
+ 				extra, extra_len);
+ 	} else {
+ 		/* extra_len must be zero, so no if (extra) needed */
+-		memcpy(&compat_event->pointer, wrqu,
+-			hdr_len - IW_EV_COMPAT_LCP_LEN);
++		memcpy(compat_event->ptr_bytes, wrqu, ptr_len);
+ 	}
+ 
+ 	nlmsg_end(compskb, nlh);
+-- 
+2.25.1
+
