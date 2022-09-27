@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AEA85EBFB5
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 12:27:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42F235EBFB6
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 12:28:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231640AbiI0K1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 06:27:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48492 "EHLO
+        id S231201AbiI0K15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 06:27:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231201AbiI0K1f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 06:27:35 -0400
+        with ESMTP id S231719AbiI0K1w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 06:27:52 -0400
 Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2093.outbound.protection.outlook.com [40.107.243.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4808DAD986
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 03:27:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F958C888E
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 03:27:35 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nbA0E7C8aGZ2b+wiZAoMyjvvZ/r8Y8S58U73k5xX7TJlzM3ebIoaF0catqEZcVJPermAXKu08RhVnzHLHfLyjr0UFS/ZXZUlCksFAN5ack21fnArouxFjZhqY8m25kX+MeR+uww/UCjg9nTv9VXdSbn3EyITJ9ftR9lmUg8RBEE3THajE+Dqwl6FSARhAmpE0VohO88JlvrE6TgoRbLOvu4sBdTpSGhtF8ZV2qSAskJ2K8syLj3qmSoZ0b6xP+SdMzlNGAlVG+J4eLlvvf96LuUmqUrlD2lyHMRMBS3FOyd31x4LAyNzIa1lAbs0HvdLySbl/FqH+RSBHWIlwohVyA==
+ b=O10SS3UjjhXE1yOaX4qUR86Lb1ywP81Nw8/3NxpwkPIPGv6e9xQ01rHo4fHzxbHZD7df+Nv216ItiiZxoMIswWwwI5CPAM4UrdMGCkNmVmyw7WLnPGzKMc98y8Vs40wSwF4JLKEEk1/Lxs9lWEWJwM6yKsOb5Ev6TvWNOJ3ywgB8W3agpc1E2lO7pEiMd2d6LeBR6jk4U2NEHyQ92GNSYYAUb9zVIXGiN1RG0wzZhY84dubPH6dqb6NTzXuRrgJv7yqYEwQveSHUidt+FumoMPlFpkUfSkjPW4vyZRSe57xlm2WEI1AtXzf69e1kPWfTY75sTbuLd4aYNG/9vppAIg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=t4I9JURb3v9ZP4NX77p9I5tUIH9SFbRA9gjtZMMm7Xs=;
- b=CoGZTx9moPl2nWr5njHnBALI2uwNTC11evDFaxLzqOmypCf91oWoeHTpn3rJk5eqcMPQPaik+TwZ66BWQUPPSb80gv0SS44GNmMa6HG3T+kcMzrud7XGuO76HZXTlqNXieKS8h2Pv2faeQariouYVjsxeVkXZYUBAF4q9T7yesTaz5uKCbBe5Xb/oh3De32IIm8mZo1NSrYajd44f91PRWY8kHzAEsJs1BZK4WZKxbS1nmatE4bRtqRRS+vTGQho7LOSHj+uIT52mm2IWsL6kUe8WJFhwQsQeM8uKUiIbC7lfLUKnfYHE6cnw9KkVtsNe4W4zHKwf0P0OwaHgaTG/w==
+ bh=P9JU/RDljNiV5Klq4VVr6zcnAc/Sg7hNaltzIfoUlM8=;
+ b=SAj+A663dhFDPsiRppWNu3+jKhf0EUl2JVRT/qGtTpLZ0ilJ7Nqn7dmosW91eosKbJ99eIZPbGbWdiBjAxLPHKJEY9sa5XFie9EC3PvfZswIb+nKzKDnyqemPLjlN8Yxav/LFFLXGm4t6hq+LyWGTXVYR/j4qDpX1MpJpEcOaWfzVK4RvkNGS7K3wcTP2dMUaeMZb10qlAiYpAGRTk1+d7a8k+Jgc8dwoUIhEdKMnCnQJLte7T9m/dFSF2f4ng9QeqgPIPo2scixKWmrpWbLkXl2w9ocUBZXAH1g1uYZsrnUQIVtbg4HV79nmSY6dqvn+df0zjf60/UNeRYXdUBUnQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=t4I9JURb3v9ZP4NX77p9I5tUIH9SFbRA9gjtZMMm7Xs=;
- b=Ee8Rx4jpJNfA9e3r34MO041NQ3XwKxQM3uvSgDLzHBEkTbrQPeZNQmXlMclNP5TO5CxQ7tQvft5lZX4IV+uUMOgDindCpBu3+PMk6flCYZTo6nr+zAHrn4FsjUZJkC28Mt1c+CllA9vbgAb2VmkylBtpJknPCxf0tzW9USWVNl0=
+ bh=P9JU/RDljNiV5Klq4VVr6zcnAc/Sg7hNaltzIfoUlM8=;
+ b=hDFZQXrfUr0Fl4i73iD+uSy7tf1OQne2gleIgbqrDYd5w5+sHPWnVX+I2wnfCT3E8EmUWSZWoT7Dnp84iE0UIs7OTKbP7Mrc/5fUHzMgAAhwXkqq8tN/Rb7OzLWxThNVTWVUENtiTEY5PzqMiXRDCKPm8MeEiTsZSuLU8zBHGZA=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
  by MN2PR13MB4150.namprd13.prod.outlook.com (2603:10b6:208:262::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.14; Tue, 27 Sep
- 2022 10:27:31 +0000
+ 2022 10:27:33 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::2cbf:e4b1:5bbf:3e54]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::2cbf:e4b1:5bbf:3e54%5]) with mapi id 15.20.5676.011; Tue, 27 Sep 2022
- 10:27:31 +0000
+ 10:27:33 +0000
 From:   Simon Horman <simon.horman@corigine.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -47,9 +47,9 @@ To:     David Miller <davem@davemloft.net>,
 Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
         Leon Romanovsky <leon@kernel.org>,
         Huanhuan Wang <huanhuan.wang@corigine.com>
-Subject: [PATCH net-next v2 2/3] nfp: add framework to support ipsec offloading
-Date:   Tue, 27 Sep 2022 12:27:06 +0200
-Message-Id: <20220927102707.479199-3-simon.horman@corigine.com>
+Subject: [PATCH net-next v2 3/3] nfp: implement xfrm callbacks and expose ipsec offload feature to upper layer
+Date:   Tue, 27 Sep 2022 12:27:07 +0200
+Message-Id: <20220927102707.479199-4-simon.horman@corigine.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220927102707.479199-1-simon.horman@corigine.com>
 References: <20220927102707.479199-1-simon.horman@corigine.com>
@@ -61,52 +61,52 @@ X-ClientProxiedBy: AS4P192CA0017.EURP192.PROD.OUTLOOK.COM
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|MN2PR13MB4150:EE_
-X-MS-Office365-Filtering-Correlation-Id: d51b22e6-987b-4821-1eef-08daa072e26c
+X-MS-Office365-Filtering-Correlation-Id: 6c75a404-33eb-49c6-a72a-08daa072e372
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: V7m2V153QmbWtPATTPdQg3ysWCbP7MAqshwF68QSnIv/GhjlqKme4owM8GG5KCRze41jvuLRGQ9yk9V0zQ7vKIICIyWZGbcxCMGy5dbHlbHNRxWxERn2aE7wRX1NfTGn2HDR8C+wvseyyd3A7isPxrkzAgFcsS69bRMDWpVqAWKtnYQ0VYEr+AroR1SmFsYJbjHsuGV9yW3VrQOUh11f5gK2/WZa3Uxoghsa2lt1E6wCdXjY667UtSXBll0aqnId5ELVHiJF274Pl4vem6OC7irjsRzGuXwZ+dWFPap7lf/oBYQ+SM60nlaKKGra9ljShXAr1s9MpwxyS7L3LWMDDCyO2WJBsWX3kH3heAbd1NAK7VHdhE3DskAoaR8KsSiFppTFWyemrZzR+duCCupeJcBx/p5K2Fa0OEdw1/3kA8nT4E4/jfwcouxLDj7ybQrWD7nwXzJsb80/zEVsHDvYX5XjStUVclhoVg+vDazCof6zqhsybdKZMOLRfmGdsEyPaK0InF38UMrJF/svCWT7P4mE8K8sr17Q9XJxWiAnMsA0h6wVqaqEB7Wzka1T5RNiX+kLgNTGh8AQz+cKcwowWCT0o3yxcuCe0Ea7iO24duPCTdjZfanza32EP/3mX5d/0hG5mcwMgx0gdkdNMkguqn7eEWkA1+Dj2TiY7jbV2Wrzu50/Jw46u8biaFL7UxR1GTkDLhBCaPVSddVpp0Hm018MowPML2B4B9OipgQbiqTNLImIKeSCAFmn0yWB90RcJz6UMOAJrrpLBdHa86UuYg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(376002)(136003)(396003)(366004)(39840400004)(451199015)(186003)(2906002)(36756003)(41300700001)(30864003)(6666004)(44832011)(5660300002)(1076003)(6512007)(107886003)(8936002)(2616005)(6506007)(52116002)(38100700002)(83380400001)(86362001)(54906003)(6486002)(110136005)(478600001)(316002)(4326008)(8676002)(66556008)(66946007)(66476007)(309714004);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: MxuIA9au5g7nC+KBN3l2AwljHAf/AMhm4cveDG39VnHWxO/FFa1bWNx14pMipBpsZiyhiisP1S702k6G/EZPMjTYYDHCkiGwIHfHlA9t47Agqy1/dzF6jGDHpgfIeS7APCgUbtPBYBIGf5ToIU3dqtBtXuF6vgV3DRksXhezeGYqIIeJFKYS7fVQqPpWgq2VKJVm9KcmfVYqpe13YYCTnoGVDvr1tPwoWH4fsFgy/3jq8RVNNIe94udAv9IsEftW8W5QT0j4HaMR8scZR9Xjfk9IQwR2+MLpEh617Gxitf5vZmvnwzahz2gTGLSnuqxyH1jgMZswamfrAJTijWHfa3bTibF1em1zPi8StUdh5tWWpTUoo3sMu53x4WYuK72AkOwU6HFuHUqdiSjIj2CnUEawtCXStX419+gPFou0Emn5w4Ci7xsQTmO+vPSa+QcUVVMXDUl8RKCvESGtw8ZwDjiC7zF4Qb4MXtkCBKdB07vjzso4G7+AQLThPrj8mg1orsUI/vuymDH0sk8dEnsAksJJxyYEqCIOHYWwufoHpiURw8tdgTb+P76p9F4SOdAqJ/ogwikMmpMVSS2Ca4kAJ8YYBdJJfQvuWgg2HMIWjypWD86Z6PMYm/9VL95EALnfww2Klf4ofkVubOgU93U0jkFO+ewtJvApCjAUKeStdOL52NBvfOn4I2XVFF+HCmq8/cDVSqJpNQaebGldjaRBiA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(376002)(136003)(396003)(366004)(39840400004)(451199015)(186003)(2906002)(36756003)(41300700001)(30864003)(6666004)(44832011)(5660300002)(1076003)(6512007)(107886003)(8936002)(2616005)(6506007)(52116002)(38100700002)(83380400001)(86362001)(54906003)(6486002)(110136005)(478600001)(316002)(4326008)(8676002)(66556008)(66946007)(66476007);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?nu8yfzfIrqXh2mG2IyY1XLxzybgRFedPzRcMIf0ol37oylPafFlDIoPeDpVy?=
- =?us-ascii?Q?B7MxeuSvINAH2hQHK+xxbLIku/K0/no+bvVLXXuOsYzmxT7wLDTIclonlAT9?=
- =?us-ascii?Q?QD1XzxV0TRU5MGTxBwCuJa5GoxW+w+WlW36aadxqWiqPYZOAajw8uCLP3MjK?=
- =?us-ascii?Q?vINcwr3KI76iT795v8uIxDs+7E0hVRZ9WYEVGf6FrXlbW0s/VVZwJZ/7ltcF?=
- =?us-ascii?Q?LlpxBr0bZWr6vtdWP+dXkZ+icF+dfHhjjV/W7+wI35l5MCGukWr4+SHAvcMT?=
- =?us-ascii?Q?tKYLx7UvbGOnBD7E7KIxWjcUFlgLNKf8a76AoSCtrpHPc57+efQvYbWm5pah?=
- =?us-ascii?Q?mkCWIsnjznI2JL09+BTjA1zwQ6He8lkNsTD0VdNIt6488Ghv/AAhx+qeN4kH?=
- =?us-ascii?Q?9B9L4TnqlPOB54PVQDqA44/XQuMxFlMJBsRW0aN8sqZiHJOdo4P10TA8pGZ2?=
- =?us-ascii?Q?DbzNUds7LLK7tNilozoqC+C7HGkp6RmKmnoDW5YE6BFE6EMw7Ht9Kk2pTNM5?=
- =?us-ascii?Q?C1tt2xkg3QLLMFYvelVfp+5SsZEx2T16eTX+zPOZgCTwqGoBbjZ3f6hpSQCa?=
- =?us-ascii?Q?+1x98UVaX/Jpb0KmxLK9jRAsVkF0t2Dl52j/zllPoy4fvqxriKU6/mk1NWzA?=
- =?us-ascii?Q?J77hm5xpuekN2iVGYil7qNoihEiannrsEtrd+hpglseMCB7b/Gy+BeusKGE8?=
- =?us-ascii?Q?1+gOfAkbqEhh2GYNuDa3gZr4WcrVDo2+hahJMkjX0RmExd/G5XrDePMrIyKF?=
- =?us-ascii?Q?FmVdb1XyCzGajaZSveWVhrz8Jvfk5ncEAA5CGDiZlzAysjnIRs9yzdb3NRpU?=
- =?us-ascii?Q?fps9jz1GdeFiRpRE7qMlz68PLG5vktoG7OVLLvVvR2+odbpi4kQhG6ORAzbh?=
- =?us-ascii?Q?u8b01KW6Avy0W6MAsX5vqpHzwuWS+J7QiW+DsMZR1Cnu8NR/LF8BJnIYxXCn?=
- =?us-ascii?Q?1Yeslwmn62IVuIwYc+xPEXzHKDrOrKn5S6nASTuCOxVvSFOBqcffA3WyeKzk?=
- =?us-ascii?Q?ajHM8nrExApPziiQrjgOIV8GpbyZr2199RNx5G6O7Yabb9CAEHmG0OfEXOid?=
- =?us-ascii?Q?65ORADPfHtqzqB1HhYTyA8WGBW21t97sIOXbPIt1ceg1ggSC3zVMM0AIWRaM?=
- =?us-ascii?Q?c7FowTscREYb03YCVwEyL1I9kDoTt6reOvuaufpjQV9qXuUq1QseoGZCgAY0?=
- =?us-ascii?Q?3hAKc8R/eoIj3cFnufkj36AI6uIJXaYT+fZyiP+ya9h3aX4FDScOp4xppDz/?=
- =?us-ascii?Q?wQ3EscXrxsSKsPeV8JMvUiQx3WtXwRNqRCpOGTe4UA/epRrGlQE6KqKdiTNu?=
- =?us-ascii?Q?2wZQGaMK1XVo6mrj+zmTgmrkF1OwdLLyUYIU5eNXsN19weBXvE6lw2T1cUtF?=
- =?us-ascii?Q?oetxMtLcMxpL7v7vL90ZDOK2ex2j8FBDRBjVMHtADRlFtWPiq7J3fwdBLwif?=
- =?us-ascii?Q?bivgsbcNLWMUQwAVW7Dk9Nn/b4uiAIfaiOsjWVKbDWiFd+Neujy0Z4kiKj0I?=
- =?us-ascii?Q?1Ct1mOYg2cFnQVeziVfKhSzp7d3uU0TCXtlSH7pGkSLBP7Z4YhTE372RMk9d?=
- =?us-ascii?Q?1ynkFZfLnW/iDKVeEfCzthPNiNYWf2LX/Smjgep1AbJoC1ov8qHueoEJHJX/?=
- =?us-ascii?Q?Zh769Y/L8Bv+FpJT49e4IZQcYcSeWPml455h5fJ0anuSebAMGiyZ44s3hblv?=
- =?us-ascii?Q?Xy+Rrg=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?5cnkhFaNiaeU1gjz8ouj5U8wgAWMpNJU+XrIxM0NCciavgv4cdICrVOg6gtJ?=
+ =?us-ascii?Q?MEuTV4d76tuPBq5vNCBXCZI1Vky96vGqztNBopD3DYyuyEiEDCSeHPxMH3JV?=
+ =?us-ascii?Q?JytcDgbslAXfs7EMNlE3xsY2+vFxdsNl+DdF6ifETBFsl0JUzz2IIGT0QmEU?=
+ =?us-ascii?Q?t7v69iVeFNT/PWF0caBTR5pM3t9zx8MWVCAgUP3q366fnZcGQvCbNl+2XePG?=
+ =?us-ascii?Q?aQtsa+fakuwIU0ZUeRbWwSSP5ILCWP3aC0sfsDOGwvA4ygy5MvyRvYaCfjYD?=
+ =?us-ascii?Q?eNnoX7QmJiGefQvbPYh777ixaHZ5k2nokQoNdcntk/xhi45eb7j7aokifhha?=
+ =?us-ascii?Q?q4UW3AhJZct8xOOx4qsCsHvKKtZOIsUEyQY7GirBxFBSukbDKtvIFVT3chbi?=
+ =?us-ascii?Q?nJVKBCSeKUF7gQsMs8fROWaeZ11WYN+hPDIvJP306TfZZQeSFaC1wxKW21zO?=
+ =?us-ascii?Q?GwpaEwTnEQ+fico5NZstMyNjwH3XfC9St/8NXOoyPNnLDr4E7DRV6kk5UyQg?=
+ =?us-ascii?Q?UyPwhOWCnQRxImciyOom9mLK+2cTZXoFuA+Feth8mcJocbDYO7cAt0bhT+EY?=
+ =?us-ascii?Q?zEH3acsUDgisgWipB2I/pH4/NzZf5KuXaUTTs15ACiJNaeJUMnhAARhPgx7C?=
+ =?us-ascii?Q?nsIuSQuZL1xlgvt1BYX5wPBpezxvflG0ddXLZi99NnC2nWupey+neFFs9G7A?=
+ =?us-ascii?Q?s/UZnzVwyQpiMDy6r7M2C0V4MROKmpB+UCL/lGiXc9Lvj6x6KkT6w5/6CITE?=
+ =?us-ascii?Q?orWsE/bfdQW+31YJNpL2mYVoUiQ6wEBSqEFsNkhlFokovUCiKNbNGxL4Tne4?=
+ =?us-ascii?Q?+NtuXpEWrFc74iRuiquqaXOo9awJiI5HtCUB95fuEf3MzEub0ZDy1yjKe9/0?=
+ =?us-ascii?Q?imEkD+oL3xfGnwXRuDBcV7KzP5+4B/ExYURpiHMTWIFg2qckIh1s4fZ8npr2?=
+ =?us-ascii?Q?dau7WdUM+YphyVuywuGc7JfcLHsb08g0XXoWguwy8ajzigsRV+F5bweHFEoi?=
+ =?us-ascii?Q?b6guuCLxboTV8j7kgU++Ja2yAKm4yF09QPYhvO+l4zPb5fpnOAEgDEnm86wL?=
+ =?us-ascii?Q?1k+KC3ktGoIiQpTJdeiveknETO5HovgACjkF7X+xOQmeaepId/AwIZiF6QU+?=
+ =?us-ascii?Q?yXnB3srGSfB2BJlwYSmCPDMGefBm76ej3jNQXUWDTlOD12Z7bfHXr6kTAI0s?=
+ =?us-ascii?Q?pWBBoZ2vDg6o65C8IE0wvHtNwtPqw91bRKOdS7RmVRILkEpU7X1fzDoLm7Ag?=
+ =?us-ascii?Q?XpDsuHSpudlAKLnQhcfrtmB2Er1VGuehh4ntUtkRO+m32PsRuvnLShinDLB0?=
+ =?us-ascii?Q?KDRKh9Bijo28DlFKeYrcA3JgWPRsaGL+wMS3YzeDPNRTwbTnYuxbQcPLb8OX?=
+ =?us-ascii?Q?BHsNhFDMgovvGx235poGdHeQz5faacRrUUw7jQtiJ2Tf590HK+urMlW5llCy?=
+ =?us-ascii?Q?3wJDyIc4UPwiCxcEe/0lNEmEQdkc0ceP2TzuydewhjEPFMh/w6y+XoZaWB1G?=
+ =?us-ascii?Q?klQ0zXC03urwfBUEwqQ2JbXGTYRl7SJ5x/aIysGf/4z9YFHtgb5Ftee3TLsk?=
+ =?us-ascii?Q?Ui2ILrqTmFvGwO53LD03EI+/RgcducWh3+UAo87TUbu5hW548cva0RIcEg+i?=
+ =?us-ascii?Q?X2OUCt9oziTHG+WQXvooBL3U9GLUIxkhG2zzIrCaod0NqZOJK1+rv5HCE4/5?=
+ =?us-ascii?Q?+PWtOQ=3D=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d51b22e6-987b-4821-1eef-08daa072e26c
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6c75a404-33eb-49c6-a72a-08daa072e372
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Sep 2022 10:27:31.3673
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Sep 2022 10:27:33.0566
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: JYU/Mrx2ou7TDS34MGzPasNswEP+n8ThQiUGGx0I2A5KVU1DCcQGw6Odf24wYzcOEL0lJY8Pp6FvusdFkEHXOpJWE2awnyrawK80avvYMQY=
+X-MS-Exchange-CrossTenant-UserPrincipalName: oj/AlM2kU48XgkgJebn4LSzRjfRXRszH705lnheeqxPYgq/rKEUd458IuvbTOfmW+hVRPv85xYgWu8tSCwZswNdFxbEk1dcDIZDPpFQeYss=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR13MB4150
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
@@ -119,603 +119,660 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Huanhuan Wang <huanhuan.wang@corigine.com>
 
-A new metadata type and config structure are introduced to
-interact with firmware to support ipsec offloading. This
-feature relies on specific firmware that supports ipsec
-encrypt/decrypt by advertising related capability bit.
+Xfrm callbacks are implemented to offload SA info into firmware
+by mailbox. It supports 16K SA info in total.
 
-The xfrm callbacks which interact with upper layer are
-implemented in the following patch.
+Expose ipsec offload feature to upper layer, this feature will
+signal the availability of the offload.
 
 Based on initial work of Norm Bagley <norman.bagley@netronome.com>.
 
 Signed-off-by: Huanhuan Wang <huanhuan.wang@corigine.com>
 Signed-off-by: Simon Horman <simon.horman@corigine.com>
 ---
- drivers/net/ethernet/netronome/Kconfig        |  11 +
- drivers/net/ethernet/netronome/nfp/Makefile   |   6 +
- .../ethernet/netronome/nfp/crypto/crypto.h    |  35 +++
- .../net/ethernet/netronome/nfp/crypto/ipsec.c | 216 ++++++++++++++++++
- drivers/net/ethernet/netronome/nfp/nfd3/dp.c  |  43 +++-
- .../net/ethernet/netronome/nfp/nfd3/ipsec.c   |  19 ++
- .../net/ethernet/netronome/nfp/nfd3/nfd3.h    |   8 +
- drivers/net/ethernet/netronome/nfp/nfp_net.h  |   9 +
- .../ethernet/netronome/nfp/nfp_net_common.c   |  10 +-
- .../net/ethernet/netronome/nfp/nfp_net_ctrl.h |   4 +
- 10 files changed, 354 insertions(+), 7 deletions(-)
- create mode 100644 drivers/net/ethernet/netronome/nfp/crypto/ipsec.c
- create mode 100644 drivers/net/ethernet/netronome/nfp/nfd3/ipsec.c
+ .../net/ethernet/netronome/nfp/crypto/ipsec.c | 562 +++++++++++++++++-
+ .../ethernet/netronome/nfp/nfp_net_common.c   |   6 +
+ .../net/ethernet/netronome/nfp/nfp_net_ctrl.h |   4 +-
+ 3 files changed, 568 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/netronome/Kconfig b/drivers/net/ethernet/netronome/Kconfig
-index 8844d1ac053a..7f669d39e471 100644
---- a/drivers/net/ethernet/netronome/Kconfig
-+++ b/drivers/net/ethernet/netronome/Kconfig
-@@ -54,6 +54,17 @@ config NFP_APP_ABM_NIC
- 	  functionality.
- 	  Code will be built into the nfp.ko driver.
- 
-+config NFP_NET_IPSEC
-+	bool "NFP Ipsec offload support"
-+	depends on NFP
-+	depends on XFRM_OFFLOAD
-+	default y
-+	help
-+	  Enable driver support Ipsec offload on NFP NIC. Say Y, if
-+	  you are planning to make use of Ipsec offload.
-+	  NOTE that Ipsec offload on NFP Nic requires specific FW to
-+	  work.
-+
- config NFP_DEBUG
- 	bool "Debug support for Netronome(R) NFP4000/NFP6000 NIC drivers"
- 	depends on NFP
-diff --git a/drivers/net/ethernet/netronome/nfp/Makefile b/drivers/net/ethernet/netronome/nfp/Makefile
-index 9c0861d03634..3d33b2838e0d 100644
---- a/drivers/net/ethernet/netronome/nfp/Makefile
-+++ b/drivers/net/ethernet/netronome/nfp/Makefile
-@@ -80,4 +80,10 @@ nfp-objs += \
- 	    abm/main.o
- endif
- 
-+ifeq ($(CONFIG_NFP_NET_IPSEC),y)
-+nfp-objs += \
-+	    crypto/ipsec.o \
-+	    nfd3/ipsec.o
-+endif
-+
- nfp-$(CONFIG_NFP_DEBUG) += nfp_net_debugfs.o
-diff --git a/drivers/net/ethernet/netronome/nfp/crypto/crypto.h b/drivers/net/ethernet/netronome/nfp/crypto/crypto.h
-index bffe58bb2f27..a27a378e3ebe 100644
---- a/drivers/net/ethernet/netronome/nfp/crypto/crypto.h
-+++ b/drivers/net/ethernet/netronome/nfp/crypto/crypto.h
-@@ -39,4 +39,39 @@ nfp_net_tls_rx_resync_req(struct net_device *netdev,
- }
- #endif
- 
-+/* Ipsec related structures and functions */
-+struct nfp_ipsec_offload {
-+	u32 seq_hi;
-+	u32 seq_low;
-+	u32 handle;
-+};
-+
-+#ifndef CONFIG_NFP_NET_IPSEC
-+static inline int nfp_net_ipsec_init(struct nfp_net *nn)
-+{
-+	return 0;
-+}
-+
-+static inline void nfp_net_ipsec_clean(struct nfp_net *nn)
-+{
-+}
-+
-+static inline bool nfp_net_ipsec_tx_prep(struct nfp_net_dp *dp, struct sk_buff *skb,
-+					 struct nfp_ipsec_offload *offload_info)
-+{
-+	return false;
-+}
-+
-+static inline int nfp_net_ipsec_rx(struct nfp_meta_parsed *meta, struct sk_buff *skb)
-+{
-+	return 0;
-+}
-+#else
-+int nfp_net_ipsec_init(struct nfp_net *nn);
-+void nfp_net_ipsec_clean(struct nfp_net *nn);
-+bool nfp_net_ipsec_tx_prep(struct nfp_net_dp *dp, struct sk_buff *skb,
-+			   struct nfp_ipsec_offload *offload_info);
-+int nfp_net_ipsec_rx(struct nfp_meta_parsed *meta, struct sk_buff *skb);
-+#endif
-+
- #endif
 diff --git a/drivers/net/ethernet/netronome/nfp/crypto/ipsec.c b/drivers/net/ethernet/netronome/nfp/crypto/ipsec.c
-new file mode 100644
-index 000000000000..658fcba8e733
---- /dev/null
+index 658fcba8e733..a81e6cde4ea8 100644
+--- a/drivers/net/ethernet/netronome/nfp/crypto/ipsec.c
 +++ b/drivers/net/ethernet/netronome/nfp/crypto/ipsec.c
-@@ -0,0 +1,216 @@
-+// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+/* Copyright (C) 2018 Netronome Systems, Inc */
-+/* Copyright (C) 2021 Corigine, Inc */
+@@ -17,6 +17,77 @@
+ #define NFP_NET_IPSEC_MAX_SA_CNT  (16 * 1024) /* Firmware support a maximum of 16K sa offload */
+ #define OFFLOAD_HANDLE_ERROR      0xffffffff
+ 
++/* IPsec config message cmd codes */
++enum nfp_ipsec_cfg_mssg_cmd_codes {
++	NFP_IPSEC_CFG_MSSG_ADD_SA,	 /* Add a new SA */
++	NFP_IPSEC_CFG_MSSG_INV_SA,	 /* Invalidate an existing SA */
++	NFP_IPSEC_CFG_MSSG_MODIFY_SA,	 /* Modify an existing SA */
++	NFP_IPSEC_CFG_MSSG_GET_SA_STATS, /* Report SA counters, flags, etc. */
++	NFP_IPSEC_CFG_MSSG_GET_SEQ_NUMS, /* Allocate sequence numbers */
++	NFP_IPSEC_CFG_MSSG_LAST
++};
 +
-+#include <linux/module.h>
-+#include <linux/kernel.h>
-+#include <linux/init.h>
-+#include <linux/netdevice.h>
-+#include <asm/unaligned.h>
-+#include <linux/ktime.h>
-+#include <net/xfrm.h>
++/* IPsec config message response codes */
++enum nfp_ipsec_cfg_mssg_rsp_codes {
++	NFP_IPSEC_CFG_MSSG_OK,
++	NFP_IPSEC_CFG_MSSG_FAILED,
++	NFP_IPSEC_CFG_MSSG_SA_VALID,
++	NFP_IPSEC_CFG_MSSG_SA_HASH_ADD_FAILED,
++	NFP_IPSEC_CFG_MSSG_SA_HASH_DEL_FAILED,
++	NFP_IPSEC_CFG_MSSG_SA_INVALID_CMD
++};
 +
-+#include "../nfp_net_ctrl.h"
-+#include "../nfp_net.h"
-+#include "crypto.h"
++/* Protocol */
++enum nfp_ipsec_sa_prot {
++	NFP_IPSEC_PROTOCOL_AH = 0,
++	NFP_IPSEC_PROTOCOL_ESP = 1
++};
 +
-+#define NFP_NET_IPSEC_MAX_SA_CNT  (16 * 1024) /* Firmware support a maximum of 16K sa offload */
-+#define OFFLOAD_HANDLE_ERROR      0xffffffff
++/* Mode */
++enum nfp_ipsec_sa_mode {
++	NFP_IPSEC_PROTMODE_TRANSPORT = 0,
++	NFP_IPSEC_PROTMODE_TUNNEL = 1
++};
 +
-+/* IPSEC_CFG_MSSG_ADD_SA */
-+struct nfp_ipsec_cfg_add_sa {
-+	u32 ciph_key[8];		  /* Cipher Key */
++/* Cipher types */
++enum nfp_ipsec_sa_cipher {
++	NFP_IPSEC_CIPHER_NULL,
++	NFP_IPSEC_CIPHER_3DES,
++	NFP_IPSEC_CIPHER_AES128,
++	NFP_IPSEC_CIPHER_AES192,
++	NFP_IPSEC_CIPHER_AES256,
++	NFP_IPSEC_CIPHER_AES128_NULL,
++	NFP_IPSEC_CIPHER_AES192_NULL,
++	NFP_IPSEC_CIPHER_AES256_NULL,
++	NFP_IPSEC_CIPHER_CHACHA20
++};
++
++/* Cipher modes */
++enum nfp_ipsec_sa_cipher_mode {
++	NFP_IPSEC_CIMODE_ECB,
++	NFP_IPSEC_CIMODE_CBC,
++	NFP_IPSEC_CIMODE_CFB,
++	NFP_IPSEC_CIMODE_OFB,
++	NFP_IPSEC_CIMODE_CTR
++};
++
++/* Hash types */
++enum nfp_ipsec_sa_hash_type {
++	NFP_IPSEC_HASH_NONE,
++	NFP_IPSEC_HASH_MD5_96,
++	NFP_IPSEC_HASH_SHA1_96,
++	NFP_IPSEC_HASH_SHA256_96,
++	NFP_IPSEC_HASH_SHA384_96,
++	NFP_IPSEC_HASH_SHA512_96,
++	NFP_IPSEC_HASH_MD5_128,
++	NFP_IPSEC_HASH_SHA1_80,
++	NFP_IPSEC_HASH_SHA256_128,
++	NFP_IPSEC_HASH_SHA384_192,
++	NFP_IPSEC_HASH_SHA512_256,
++	NFP_IPSEC_HASH_GF128_128,
++	NFP_IPSEC_HASH_POLY1305_128
++};
++
+ /* IPSEC_CFG_MSSG_ADD_SA */
+ struct nfp_ipsec_cfg_add_sa {
+ 	u32 ciph_key[8];		  /* Cipher Key */
+@@ -71,6 +142,73 @@ struct nfp_ipsec_cfg_add_sa {
+ 	uint32_t tfc_padding :16;	  /* Traffic Flow Confidential Pad */
+ };
+ 
++/* IPSEC_CFG_MSSG_INV_SA */
++struct nfp_ipsec_cfg_inv_sa {
++	u32 spare6;
++};
++
++/* IPSEC_CFG_MSSG_GET_SA_STATS */
++struct nfp_ipsec_cfg_get_sa_stats {
++	u32 seq_lo;					/* Sequence Number (low 32bits) */
++	u32 seq_high;					/* Sequence Number (high 32bits) */
++	u32 arw_counter_lo;				/* Anti-replay wndw cntr */
++	u32 arw_counter_high;				/* Anti-replay wndw cntr */
++	u32 arw_bitmap_lo;				/* Anti-replay wndw bitmap */
++	u32 arw_bitmap_high;				/* Anti-replay wndw bitmap */
++	uint32_t reserved1:1;
++	uint32_t soft_lifetime_byte_cnt_exceeded :1;	/* Soft cnt_exceeded */
++	uint32_t hard_lifetime_byte_cnt_exceeded :1;	/* Hard cnt_exceeded */
++	uint32_t soft_lifetime_time_limit_exceeded :1;	/* Soft cnt_exceeded */
++	uint32_t hard_lifetime_time_limit_exceeded :1;	/* Hard cnt_exceeded */
++	uint32_t spare7:27;
++	u32 lifetime_byte_count;
++	u32 pkt_count;
++	u32 discards_auth;				/* Auth failures */
++	u32 discards_unsupported;			/* Unsupported crypto mode */
++	u32 discards_alignment;				/* Alignment error */
++	u32 discards_hard_bytelimit;			/* Byte Count limit */
++	u32 discards_seq_num_wrap;			/* Sequ Number wrap */
++	u32 discards_pmtu_limit_exceeded;		/* PMTU Limit */
++	u32 discards_arw_old_seq;			/* Anti-Replay seq small */
++	u32 discards_arw_replay;			/* Anti-Replay seq rcvd */
++	u32 discards_ctrl_word;				/* Bad SA Control word */
++	u32 discards_ip_hdr_len;			/* Hdr offset from too high */
++	u32 discards_eop_buf;				/* No EOP buffer */
++	u32 ipv4_id_counter;				/* IPv4 ID field counter */
++	u32 discards_isl_fail;				/* Inbound SPD Lookup failure */
++	u32 discards_ext_not_found;			/* Ext header end */
++	u32 discards_max_ext_hdrs;			/* Max ext header */
++	u32 discards_non_ext_hdrs;			/* Non-extension headers */
++	u32 discards_ext_hdr_too_big;			/* Ext header chain */
++	u32 discards_hard_timelimit;			/* Time Limit */
++};
++
++/* IPSEC_CFG_MSSG_GET_SEQ_NUMS */
++struct ipsec_cfg_get_seq_nums {
++	u32 seq_nums;	 /* Sequence numbers to allocate */
++	u32 seq_num_low; /* Rtrn start seq num 31:00 */
++	u32 seq_num_hi;	 /* Rtrn start seq num 63:32 */
++};
++
++/* IPSEC_CFG_MSSG */
++struct nfp_ipsec_cfg_mssg {
 +	union {
-+		u32 auth_key[16];	  /* Authentication Key */
-+		struct nfp_ipsec_aesgcm { /* AES-GCM-ESP fields */
-+			u32 salt;	  /* Initialized with sa */
-+			u32 iv[2];	  /* Firmware use only */
-+			u32 cntr;
-+			u32 zeros[4];	  /* Init to 0 with sa */
-+			u32 len_a[2];	  /* Firmware use only */
-+			u32 len_c[2];
-+			u32 spare0[4];
-+		} aesgcm_fields;
++		struct{
++			uint32_t cmd:16;     /* One of nfp_ipsec_cfg_mssg_cmd_codes */
++			uint32_t rsp:16;     /* One of nfp_ipsec_cfg_mssg_rsp_codes */
++			uint32_t sa_idx:16;  /* SA table index */
++			uint32_t spare0:16;
++			union {
++				struct nfp_ipsec_cfg_add_sa cfg_add_sa;
++				struct nfp_ipsec_cfg_inv_sa cfg_inv_sa;
++				struct nfp_ipsec_cfg_get_sa_stats cfg_get_stats;
++				struct ipsec_cfg_get_seq_nums cfg_get_seq_nums;
++			};
++		};
++		u32 raw[64];
 +	};
-+	struct sa_ctrl_word {
-+		uint32_t hash   :4;	  /* From nfp_ipsec_sa_hash_type */
-+		uint32_t cimode :4;	  /* From nfp_ipsec_sa_cipher_mode */
-+		uint32_t cipher :4;	  /* From nfp_ipsec_sa_cipher */
-+		uint32_t mode   :2;	  /* From nfp_ipsec_sa_mode */
-+		uint32_t proto  :2;	  /* From nfp_ipsec_sa_prot */
-+		uint32_t dir :1;	  /* Sa direction */
-+		uint32_t ena_arw:1;	  /* Anti-Replay Window */
-+		uint32_t ext_seq:1;	  /* 64-bit Sequence Num */
-+		uint32_t ext_arw:1;	  /* 64b Anti-Replay Window */
-+		uint32_t spare2 :9;	  /* Must be set to 0 */
-+		uint32_t encap_dsbl:1;	  /* Encap/decap disable */
-+		uint32_t gen_seq:1;	  /* Firmware Generate Seq */
-+		uint32_t spare8 :1;	  /* Must be set to 0 */
-+	} ctrl_word;
-+	u32 spi;			  /* SPI Value */
-+	uint32_t pmtu_limit :16;	  /* PMTU Limit */
-+	uint32_t spare3     :1;
-+	uint32_t frag_check :1;		  /* Stateful fragment checking flag */
-+	uint32_t bypass_DSCP:1;		  /* Bypass DSCP Flag */
-+	uint32_t df_ctrl    :2;		  /* DF Control bits */
-+	uint32_t ipv6       :1;		  /* Outbound IPv6 addr format */
-+	uint32_t udp_enable :1;		  /* Add/Remove UDP header for NAT */
-+	uint32_t tfc_enable :1;		  /* Traffic Flow Confidentiality */
-+	uint32_t spare4	 :8;
-+	u32 soft_lifetime_byte_count;
-+	u32 hard_lifetime_byte_count;
-+	u32 src_ip[4];			  /* Src IP addr */
-+	u32 dst_ip[4];			  /* Dst IP addr */
-+	uint32_t natt_dst_port :16;	  /* NAT-T UDP Header dst port */
-+	uint32_t natt_src_port :16;	  /* NAT-T UDP Header src port */
-+	u32 soft_lifetime_time_limit;
-+	u32 hard_lifetime_time_limit;
-+	u32 sa_creation_time_lo_32;	  /* Ucode fills this in */
-+	u32 sa_creation_time_hi_32;	  /* Ucode fills this in */
-+	uint32_t reserved0   :16;
-+	uint32_t tfc_padding :16;	  /* Traffic Flow Confidential Pad */
 +};
 +
-+struct nfp_net_ipsec_sa_data {
-+	struct nfp_ipsec_cfg_add_sa nfp_sa;
-+	struct xfrm_state *x;
-+	int invalidated;
-+};
-+
-+struct nfp_net_ipsec_data {
-+	struct nfp_net_ipsec_sa_data sa_entries[NFP_NET_IPSEC_MAX_SA_CNT];
-+	unsigned int sa_free_stack[NFP_NET_IPSEC_MAX_SA_CNT];
-+	unsigned int sa_free_cnt;
-+	struct mutex lock;	/* Protects nfp_net_ipsec_data struct */
-+};
-+
-+static int nfp_net_xfrm_add_state(struct xfrm_state *x)
+ struct nfp_net_ipsec_sa_data {
+ 	struct nfp_ipsec_cfg_add_sa nfp_sa;
+ 	struct xfrm_state *x;
+@@ -84,22 +222,442 @@ struct nfp_net_ipsec_data {
+ 	struct mutex lock;	/* Protects nfp_net_ipsec_data struct */
+ };
+ 
++static int nfp_ipsec_cfg_cmd_issue(struct nfp_net *nn, int type, int saidx,
++				   struct nfp_ipsec_cfg_mssg *msg)
 +{
-+	return -EOPNOTSUPP;
++	int i, msg_size, ret;
++
++	msg->cmd = type;
++	msg->sa_idx = saidx;
++	msg->rsp = 0;
++	msg_size = ARRAY_SIZE(msg->raw);
++
++	for (i = 0; i < msg_size; i++)
++		nn_writel(nn, NFP_NET_CFG_MBOX_VAL + 4 * i, msg->raw[i]);
++
++	ret = nfp_net_mbox_reconfig(nn, NFP_NET_CFG_MBOX_CMD_IPSEC);
++	if (ret < 0)
++		return ret;
++
++	/* For now we always read the whole message response back */
++	for (i = 0; i < msg_size; i++)
++		msg->raw[i] = nn_readl(nn, NFP_NET_CFG_MBOX_VAL + 4 * i);
++
++	switch (msg->rsp) {
++	case NFP_IPSEC_CFG_MSSG_OK:
++		return 0;
++	case NFP_IPSEC_CFG_MSSG_SA_INVALID_CMD:
++		return -EINVAL;
++	case NFP_IPSEC_CFG_MSSG_SA_VALID:
++		return -EEXIST;
++	case NFP_IPSEC_CFG_MSSG_FAILED:
++	case NFP_IPSEC_CFG_MSSG_SA_HASH_ADD_FAILED:
++	case NFP_IPSEC_CFG_MSSG_SA_HASH_DEL_FAILED:
++		return -EIO;
++	default:
++		return -EDOM;
++	}
 +}
 +
-+static void nfp_net_xfrm_del_state(struct xfrm_state *x)
++static int set_aes_keylen(struct nfp_ipsec_cfg_add_sa *cfg, int alg, int keylen)
 +{
-+}
-+
-+static void nfp_net_xfrm_free_state(struct xfrm_state *x)
-+{
-+}
-+
-+static bool nfp_net_ipsec_offload_ok(struct sk_buff *skb, struct xfrm_state *x)
-+{
-+	return false;
-+}
-+
-+static const struct xfrmdev_ops nfp_net_ipsec_xfrmdev_ops = {
-+	.xdo_dev_state_add = nfp_net_xfrm_add_state,
-+	.xdo_dev_state_delete = nfp_net_xfrm_del_state,
-+	.xdo_dev_state_free = nfp_net_xfrm_free_state,
-+	.xdo_dev_offload_ok = nfp_net_ipsec_offload_ok,
-+};
-+
-+int nfp_net_ipsec_init(struct nfp_net *nn)
-+{
-+	if (nn->cap_w1 & NFP_NET_CFG_CTRL_IPSEC) {
-+		struct nfp_net_ipsec_data *ipd;
-+		int i;
-+
-+		nn->dp.netdev->xfrmdev_ops = &nfp_net_ipsec_xfrmdev_ops;
-+
-+		ipd = kzalloc(sizeof(*ipd), GFP_KERNEL);
-+		if (!ipd)
-+			return -ENOMEM;
-+
-+		for (i = 0; i < NFP_NET_IPSEC_MAX_SA_CNT; i++)
-+			ipd->sa_free_stack[i] = NFP_NET_IPSEC_MAX_SA_CNT - i - 1;
-+
-+		ipd->sa_free_cnt = NFP_NET_IPSEC_MAX_SA_CNT;
-+		mutex_init(&ipd->lock);
-+		nn->ipsec_data = ipd;
++	if (alg == SADB_X_EALG_NULL_AES_GMAC) {
++		if (keylen == 128)
++			cfg->ctrl_word.cipher = NFP_IPSEC_CIPHER_AES128_NULL;
++		else if (keylen == 192)
++			cfg->ctrl_word.cipher = NFP_IPSEC_CIPHER_AES192_NULL;
++		else if (keylen == 256)
++			cfg->ctrl_word.cipher = NFP_IPSEC_CIPHER_AES256_NULL;
++		else
++			return -EINVAL;
++	} else {
++		if (keylen == 128)
++			cfg->ctrl_word.cipher = NFP_IPSEC_CIPHER_AES128;
++		else if (keylen == 192)
++			cfg->ctrl_word.cipher = NFP_IPSEC_CIPHER_AES192;
++		else if (keylen == 256)
++			cfg->ctrl_word.cipher = NFP_IPSEC_CIPHER_AES256;
++		else
++			return -EINVAL;
 +	}
 +
 +	return 0;
 +}
 +
-+void nfp_net_ipsec_clean(struct nfp_net *nn)
-+{
-+	if (!nn->ipsec_data)
-+		return;
+ static int nfp_net_xfrm_add_state(struct xfrm_state *x)
+ {
+-	return -EOPNOTSUPP;
++	int i, key_len, trunc_len, err = 0, saidx = -1;
++	struct net_device *netdev = x->xso.dev;
++	struct nfp_net_ipsec_sa_data *sa_data;
++	struct nfp_ipsec_cfg_add_sa *cfg;
++	struct nfp_net_ipsec_data *ipd;
++	struct nfp_ipsec_cfg_mssg msg;
++	struct nfp_net *nn;
++	__be32 *p;
 +
-+	mutex_destroy(&nn->ipsec_data->lock);
-+	kfree(nn->ipsec_data);
-+	nn->ipsec_data = NULL;
++	nn = netdev_priv(netdev);
++	ipd = nn->ipsec_data;
++	cfg = &msg.cfg_add_sa;
++
++	nn_dbg(nn, "XFRM add state!\n");
++	mutex_lock(&ipd->lock);
++
++	if (ipd->sa_free_cnt == 0) {
++		nn_err(nn, "No space for xfrm offload\n");
++		err = -ENOSPC;
++		goto error;
++	}
++
++	saidx = ipd->sa_free_stack[ipd->sa_free_cnt - 1];
++	sa_data = &ipd->sa_entries[saidx];
++	memset(&msg, 0, sizeof(msg));
++
++	/* General */
++	switch (x->props.mode) {
++	case XFRM_MODE_TUNNEL:
++		cfg->ctrl_word.mode = NFP_IPSEC_PROTMODE_TUNNEL;
++		break;
++	case XFRM_MODE_TRANSPORT:
++		cfg->ctrl_word.mode = NFP_IPSEC_PROTMODE_TRANSPORT;
++		break;
++	default:
++		nn_err(nn, "Unsupported mode for xfrm offload\n");
++		err = -EINVAL;
++		goto error;
++	}
++
++	switch (x->id.proto) {
++	case IPPROTO_ESP:
++		cfg->ctrl_word.proto = NFP_IPSEC_PROTOCOL_ESP;
++		break;
++	case IPPROTO_AH:
++		cfg->ctrl_word.proto = NFP_IPSEC_PROTOCOL_AH;
++		break;
++	default:
++		nn_err(nn, "Unsupported protocol for xfrm offload\n");
++		err = -EINVAL;
++		goto error;
++	}
++
++	if (x->props.flags & XFRM_STATE_ESN) {
++		nn_err(nn, "Unsupported XFRM_REPLAY_MODE_ESN for xfrm offload\n");
++		err = -EINVAL;
++		goto error;
++	}
++
++	cfg->ctrl_word.ena_arw = 0;
++	cfg->ctrl_word.ext_arw = 0;
++	cfg->spi = ntohl(x->id.spi);
++
++	/* Hash/Authentication */
++	if (x->aalg)
++		trunc_len = x->aalg->alg_trunc_len;
++	else
++		trunc_len = 0;
++
++	switch (x->props.aalgo) {
++	case SADB_AALG_NONE:
++		if (x->aead) {
++			trunc_len = -1;
++		} else {
++			nn_err(nn, "Unsupported authentication algorithm\n");
++			err = -EINVAL;
++			goto error;
++		}
++		break;
++	case SADB_X_AALG_NULL:
++		cfg->ctrl_word.hash = NFP_IPSEC_HASH_NONE;
++		trunc_len = -1;
++		break;
++	case SADB_AALG_MD5HMAC:
++		if (trunc_len == 96)
++			cfg->ctrl_word.hash = NFP_IPSEC_HASH_MD5_96;
++		else if (trunc_len == 128)
++			cfg->ctrl_word.hash = NFP_IPSEC_HASH_MD5_128;
++		else
++			trunc_len = 0;
++		break;
++	case SADB_AALG_SHA1HMAC:
++		if (trunc_len == 96)
++			cfg->ctrl_word.hash = NFP_IPSEC_HASH_SHA1_96;
++		else if (trunc_len == 80)
++			cfg->ctrl_word.hash = NFP_IPSEC_HASH_SHA1_80;
++		else
++			trunc_len = 0;
++		break;
++	case SADB_X_AALG_SHA2_256HMAC:
++		if (trunc_len == 96)
++			cfg->ctrl_word.hash = NFP_IPSEC_HASH_SHA256_96;
++		else if (trunc_len == 128)
++			cfg->ctrl_word.hash = NFP_IPSEC_HASH_SHA256_128;
++		else
++			trunc_len = 0;
++		break;
++	case SADB_X_AALG_SHA2_384HMAC:
++		if (trunc_len == 96)
++			cfg->ctrl_word.hash = NFP_IPSEC_HASH_SHA384_96;
++		else if (trunc_len == 192)
++			cfg->ctrl_word.hash = NFP_IPSEC_HASH_SHA384_192;
++		else
++			trunc_len = 0;
++		break;
++	case SADB_X_AALG_SHA2_512HMAC:
++		if (trunc_len == 96)
++			cfg->ctrl_word.hash = NFP_IPSEC_HASH_SHA512_96;
++		else if (trunc_len == 256)
++			cfg->ctrl_word.hash = NFP_IPSEC_HASH_SHA512_256;
++		else
++			trunc_len = 0;
++		break;
++	default:
++		nn_err(nn, "Unsupported authentication algorithm\n");
++		err = -EINVAL;
++		goto error;
++	}
++
++	if (!trunc_len) {
++		nn_err(nn, "Unsupported authentication algorithm trunc length\n");
++		err = -EINVAL;
++		goto error;
++	}
++
++	if (x->aalg) {
++		p = (__be32 *)x->aalg->alg_key;
++		key_len = DIV_ROUND_UP(x->aalg->alg_key_len, BITS_PER_BYTE);
++		if (key_len > sizeof(cfg->auth_key)) {
++			nn_err(nn, "Insufficient space for offloaded auth key\n");
++			err = -EINVAL;
++			goto error;
++		}
++		for (i = 0; i < key_len / sizeof(cfg->auth_key[0]) ; i++)
++			cfg->auth_key[i] = ntohl(*p++);
++	}
++	/* Encryption */
++	switch (x->props.ealgo) {
++	case SADB_EALG_NONE:
++	case SADB_EALG_NULL:
++		cfg->ctrl_word.cimode = NFP_IPSEC_CIMODE_CBC;
++		cfg->ctrl_word.cipher = NFP_IPSEC_CIPHER_NULL;
++		break;
++	case SADB_EALG_3DESCBC:
++		cfg->ctrl_word.cimode = NFP_IPSEC_CIMODE_CBC;
++		cfg->ctrl_word.cipher = NFP_IPSEC_CIPHER_3DES;
++		break;
++	case SADB_X_EALG_AES_GCM_ICV16:
++	case SADB_X_EALG_NULL_AES_GMAC:
++		if (!x->aead) {
++			nn_err(nn, "Invalid AES key data\n");
++			err = -EINVAL;
++			goto error;
++		}
++
++		if (x->aead->alg_icv_len != 128) {
++			nn_err(nn, "ICV must be 128bit with SADB_X_EALG_AES_GCM_ICV16\n");
++			err = -EINVAL;
++			goto error;
++		}
++		cfg->ctrl_word.cimode = NFP_IPSEC_CIMODE_CTR;
++		cfg->ctrl_word.hash = NFP_IPSEC_HASH_GF128_128;
++
++		/* Aead->alg_key_len includes 32-bit salt */
++		if (set_aes_keylen(cfg, x->props.ealgo, x->aead->alg_key_len - 32)) {
++			nn_err(nn, "Unsupported AES key length %d\n", x->aead->alg_key_len);
++			err = -EINVAL;
++			goto error;
++		}
++		break;
++	case SADB_X_EALG_AESCBC:
++		cfg->ctrl_word.cimode = NFP_IPSEC_CIMODE_CBC;
++		if (!x->ealg) {
++			nn_err(nn, "Invalid AES key data\n");
++			err = -EINVAL;
++			goto error;
++		}
++		if (set_aes_keylen(cfg, x->props.ealgo, x->ealg->alg_key_len) < 0) {
++			nn_err(nn, "Unsupported AES key length %d\n", x->ealg->alg_key_len);
++			err = -EINVAL;
++			goto error;
++		}
++		break;
++	default:
++		nn_err(nn, "Unsupported encryption algorithm for offload\n");
++		err = -EINVAL;
++		goto error;
++	}
++
++	if (x->aead) {
++		int salt_len = 4;
++
++		p = (__be32 *)x->aead->alg_key;
++		key_len = DIV_ROUND_UP(x->aead->alg_key_len, BITS_PER_BYTE);
++		key_len -= salt_len;
++
++		if (key_len > sizeof(cfg->ciph_key)) {
++			nn_err(nn, "Insufficient space for offloaded key\n");
++			err = -EINVAL;
++			goto error;
++		}
++
++		for (i = 0; i < key_len / sizeof(cfg->ciph_key[0]) ; i++)
++			cfg->ciph_key[i] = ntohl(*p++);
++
++		/* Load up the salt */
++		for (i = 0; i < salt_len; i++)
++			cfg->auth_key[i] = ntohl(*p++);
++	}
++
++	if (x->ealg) {
++		p = (__be32 *)x->ealg->alg_key;
++		key_len = DIV_ROUND_UP(x->ealg->alg_key_len, BITS_PER_BYTE);
++
++		if (key_len > sizeof(cfg->ciph_key)) {
++			nn_err(nn, "Insufficient space for offloaded key\n");
++			err = -EINVAL;
++			goto error;
++		}
++		for (i = 0; i < key_len / sizeof(cfg->ciph_key[0]) ; i++)
++			cfg->ciph_key[i] = ntohl(*p++);
++	}
++	/* IP related info */
++	switch (x->props.family) {
++	case AF_INET:
++		cfg->ipv6 = 0;
++		cfg->src_ip[0] = ntohl(x->props.saddr.a4);
++		cfg->dst_ip[0] = ntohl(x->id.daddr.a4);
++		break;
++	case AF_INET6:
++		cfg->ipv6 = 1;
++		for (i = 0; i < 4; i++) {
++			cfg->src_ip[i] = ntohl(x->props.saddr.a6[i]);
++			cfg->dst_ip[i] = ntohl(x->id.daddr.a6[i]);
++		}
++		break;
++	default:
++		nn_err(nn, "Unsupported address family\n");
++		err = -EINVAL;
++		goto error;
++	}
++
++	/* Maximum nic ipsec code could handle. Other limits may apply. */
++	cfg->pmtu_limit = 0xffff;
++
++	/* Host will generate the sequence numbers so that if packets get
++	 * fragmented in host, sequence numbers will stay in sync.
++	 */
++	cfg->ctrl_word.gen_seq = 0;
++
++	cfg->ctrl_word.encap_dsbl = 1;
++
++	/* Sa direction */
++	cfg->ctrl_word.dir = x->xso.dir;
++
++	/* Allocate saidx and commit the Sa */
++	ipd->sa_free_cnt -= 1;
++	sa_data->invalidated = 0;
++	sa_data->x = x;
++	x->xso.offload_handle = saidx + 1;
++	err = nfp_ipsec_cfg_cmd_issue(nn, NFP_IPSEC_CFG_MSSG_ADD_SA, saidx, &msg);
++	if (err) {
++		nn_err(nn, "Failed to issue ipsec command err ret=%d\n", err);
++		goto error;
++	}
++
++	mutex_unlock(&ipd->lock);
++
++	nn_dbg(nn, "Successfully offload saidx %d\n", saidx);
++	return 0;
++error:
++	if (saidx < 0) {
++		ipd->sa_free_stack[ipd->sa_free_cnt] = saidx;
++		ipd->sa_free_cnt++;
++	}
++	mutex_unlock(&ipd->lock);
++	x->xso.offload_handle = OFFLOAD_HANDLE_ERROR;
++	return err;
 +}
 +
-+bool nfp_net_ipsec_tx_prep(struct nfp_net_dp *dp, struct sk_buff *skb,
-+			   struct nfp_ipsec_offload *offload_info)
++static void xfrm_invalidate(struct nfp_net *nn, unsigned int saidx, int is_del)
 +{
-+	struct xfrm_offload *xo = xfrm_offload(skb);
-+	struct xfrm_state *x;
++	struct nfp_net_ipsec_data *ipd = nn->ipsec_data;
++	struct nfp_net_ipsec_sa_data *sa_data;
++	struct nfp_ipsec_cfg_mssg msg;
++	int err;
 +
-+	if (!xo)
-+		return false;
++	sa_data = &ipd->sa_entries[saidx];
++	if (!sa_data->invalidated) {
++		err = nfp_ipsec_cfg_cmd_issue(nn, NFP_IPSEC_CFG_MSSG_INV_SA, saidx, &msg);
++		if (err)
++			nn_warn(nn, "Failed to invalidate SA in hardware\n");
++		sa_data->invalidated = 1;
++	} else if (is_del) {
++		nn_warn(nn, "Unexpected invalidate state for offloaded saidx %d\n", saidx);
++	}
+ }
+ 
+ static void nfp_net_xfrm_del_state(struct xfrm_state *x)
+ {
++	struct net_device *netdev = x->xso.dev;
++	struct nfp_net_ipsec_data *ipd;
++	struct nfp_net *nn;
 +
-+	x = xfrm_input_state(skb);
-+	if (!x)
-+		return false;
++	nn = netdev_priv(netdev);
++	ipd = nn->ipsec_data;
++
++	nn_dbg(nn, "XFRM del state!\n");
 +
 +	if (x->xso.offload_handle == OFFLOAD_HANDLE_ERROR) {
-+		nn_dp_warn(dp, "Invalid xfrm offload handle\n");
-+		return false;
++		nn_err(nn, "Invalid xfrm offload handle\n");
++		return;
 +	}
 +
-+	offload_info->seq_hi = xo->seq.hi;
-+	offload_info->seq_low = xo->seq.low;
-+	offload_info->handle = x->xso.offload_handle;
-+
-+	return true;
-+}
-+
-+int nfp_net_ipsec_rx(struct nfp_meta_parsed *meta, struct sk_buff *skb)
-+{
-+	struct nfp_net_ipsec_sa_data *sa_data;
-+	struct net_device *netdev = skb->dev;
++	mutex_lock(&ipd->lock);
++	xfrm_invalidate(nn, x->xso.offload_handle - 1, 1);
++	mutex_unlock(&ipd->lock);
+ }
+ 
+ static void nfp_net_xfrm_free_state(struct xfrm_state *x)
+ {
++	struct net_device *netdev = x->xso.dev;
 +	struct nfp_net_ipsec_data *ipd;
-+	struct xfrm_offload *xo;
-+	struct nfp_net_dp *dp;
-+	struct xfrm_state *x;
-+	struct sec_path *sp;
 +	struct nfp_net *nn;
 +	int saidx;
 +
 +	nn = netdev_priv(netdev);
 +	ipd = nn->ipsec_data;
-+	dp = &nn->dp;
 +
-+	if (meta->ipsec_saidx == 0)
-+		return 0; /* No offload took place */
++	nn_dbg(nn, "XFRM free state!\n");
 +
-+	saidx = meta->ipsec_saidx - 1;
-+	if (saidx > NFP_NET_IPSEC_MAX_SA_CNT || saidx < 0) {
-+		nn_dp_warn(dp, "Invalid SAIDX from NIC %d\n", saidx);
-+		return -EINVAL;
++	if (x->xso.offload_handle == OFFLOAD_HANDLE_ERROR) {
++		nn_err(nn, "Invalid xfrm offload handle\n");
++		return;
 +	}
 +
-+	sa_data = &ipd->sa_entries[saidx];
-+	if (!sa_data->x) {
-+		nn_dp_warn(dp, "Unused SAIDX from NIC %d\n", saidx);
-+		return -EINVAL;
-+	}
++	mutex_lock(&ipd->lock);
++	saidx = x->xso.offload_handle - 1;
++	xfrm_invalidate(nn, saidx, 0);
++	ipd->sa_entries[saidx].x = NULL;
++	/* Return saidx to free list */
++	ipd->sa_free_stack[ipd->sa_free_cnt] = saidx;
++	ipd->sa_free_cnt++;
 +
-+	x = sa_data->x;
-+	xfrm_state_hold(x);
-+	sp = secpath_set(skb);
-+	if (unlikely(!sp)) {
-+		nn_dp_warn(dp, "Failed to alloc secpath for RX offload\n");
-+		return -ENOMEM;
-+	}
-+
-+	sp->xvec[sp->len++] = x;
-+	sp->olen++;
-+	xo = xfrm_offload(skb);
-+	xo->flags = CRYPTO_DONE;
-+	xo->status = CRYPTO_SUCCESS;
-+
-+	return 0;
-+}
-diff --git a/drivers/net/ethernet/netronome/nfp/nfd3/dp.c b/drivers/net/ethernet/netronome/nfp/nfd3/dp.c
-index 448c1c1afaee..db53e0392923 100644
---- a/drivers/net/ethernet/netronome/nfp/nfd3/dp.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfd3/dp.c
-@@ -167,14 +167,18 @@ nfp_nfd3_tx_csum(struct nfp_net_dp *dp, struct nfp_net_r_vector *r_vec,
- 	u64_stats_update_end(&r_vec->tx_sync);
++	mutex_unlock(&ipd->lock);
  }
  
--static int nfp_nfd3_prep_tx_meta(struct nfp_net_dp *dp, struct sk_buff *skb, u64 tls_handle)
-+static int nfp_nfd3_prep_tx_meta(struct nfp_net_dp *dp, struct sk_buff *skb,
-+				 u64 tls_handle, bool *ipsec)
+ static bool nfp_net_ipsec_offload_ok(struct sk_buff *skb, struct xfrm_state *x)
  {
- 	struct metadata_dst *md_dst = skb_metadata_dst(skb);
-+	struct nfp_ipsec_offload offload_info;
- 	unsigned char *data;
- 	bool vlan_insert;
- 	u32 meta_id = 0;
- 	int md_bytes;
- 
-+	*ipsec = nfp_net_ipsec_tx_prep(dp, skb, &offload_info);
-+
- 	if (unlikely(md_dst || tls_handle)) {
- 		if (unlikely(md_dst && md_dst->type != METADATA_HW_PORT_MUX))
- 			md_dst = NULL;
-@@ -182,13 +186,14 @@ static int nfp_nfd3_prep_tx_meta(struct nfp_net_dp *dp, struct sk_buff *skb, u64
- 
- 	vlan_insert = skb_vlan_tag_present(skb) && (dp->ctrl & NFP_NET_CFG_CTRL_TXVLAN_V2);
- 
--	if (!(md_dst || tls_handle || vlan_insert))
-+	if (!(md_dst || tls_handle || vlan_insert || *ipsec))
- 		return 0;
- 
- 	md_bytes = sizeof(meta_id) +
- 		   !!md_dst * NFP_NET_META_PORTID_SIZE +
- 		   !!tls_handle * NFP_NET_META_CONN_HANDLE_SIZE +
--		   vlan_insert * NFP_NET_META_VLAN_SIZE;
-+		   vlan_insert * NFP_NET_META_VLAN_SIZE +
-+		   *ipsec * NFP_NET_META_IPSEC_FIELD_SIZE; /* Ipsec has 12-bytes metadata */
- 
- 	if (unlikely(skb_cow_head(skb, md_bytes)))
- 		return -ENOMEM;
-@@ -218,6 +223,19 @@ static int nfp_nfd3_prep_tx_meta(struct nfp_net_dp *dp, struct sk_buff *skb, u64
- 		meta_id <<= NFP_NET_META_FIELD_SIZE;
- 		meta_id |= NFP_NET_META_VLAN;
- 	}
-+	if (*ipsec) {
-+		/* The ipsec has three consecutive 4-bit ipsec Metadate types
-+		 * so ipsec has three 4-bytes of Metadata
-+		 */
-+		data -= NFP_NET_META_IPSEC_SIZE;
-+		put_unaligned_be32(offload_info.seq_hi, data);
-+		data -= NFP_NET_META_IPSEC_SIZE;
-+		put_unaligned_be32(offload_info.seq_low, data);
-+		data -= NFP_NET_META_IPSEC_SIZE;
-+		put_unaligned_be32(offload_info.handle - 1, data);
-+		meta_id <<= NFP_NET_META_IPSEC_FIELD_SIZE;
-+		meta_id |= NFP_NET_META_IPSEC << 8 | NFP_NET_META_IPSEC << 4 | NFP_NET_META_IPSEC;
+-	return false;
++	if (x->props.family == AF_INET) {
++		/* Offload with IPv4 options is not supported yet */
++		if (ip_hdr(skb)->ihl != 5)
++			return false;
++	} else if (x->props.family == AF_INET6) {
++		/* Offload with IPv6 extension headers is not support yet */
++		if (ipv6_ext_hdr(ipv6_hdr(skb)->nexthdr))
++			return false;
++	} else {
++		return false;
 +	}
- 
- 	data -= sizeof(meta_id);
- 	put_unaligned_be32(meta_id, data);
-@@ -246,6 +264,7 @@ netdev_tx_t nfp_nfd3_tx(struct sk_buff *skb, struct net_device *netdev)
- 	dma_addr_t dma_addr;
- 	unsigned int fsize;
- 	u64 tls_handle = 0;
-+	bool ipsec = false;
- 	u16 qidx;
- 
- 	dp = &nn->dp;
-@@ -273,7 +292,7 @@ netdev_tx_t nfp_nfd3_tx(struct sk_buff *skb, struct net_device *netdev)
- 		return NETDEV_TX_OK;
- 	}
- 
--	md_bytes = nfp_nfd3_prep_tx_meta(dp, skb, tls_handle);
-+	md_bytes = nfp_nfd3_prep_tx_meta(dp, skb, tls_handle, &ipsec);
- 	if (unlikely(md_bytes < 0))
- 		goto err_flush;
- 
-@@ -312,6 +331,8 @@ netdev_tx_t nfp_nfd3_tx(struct sk_buff *skb, struct net_device *netdev)
- 		txd->vlan = cpu_to_le16(skb_vlan_tag_get(skb));
- 	}
- 
-+	if (ipsec)
-+		nfp_nfd3_ipsec_tx(txd, skb);
- 	/* Gather DMA */
- 	if (nr_frags > 0) {
- 		__le64 second_half;
-@@ -764,6 +785,12 @@ nfp_nfd3_parse_meta(struct net_device *netdev, struct nfp_meta_parsed *meta,
- 				return false;
- 			data += sizeof(struct nfp_net_tls_resync_req);
- 			break;
-+#ifdef CONFIG_NFP_NET_IPSEC
-+		case NFP_NET_META_IPSEC:
-+			meta->ipsec_saidx = get_unaligned_be32(data) + 1;
-+			data += 4;
-+			break;
-+#endif
- 		default:
- 			return true;
- 		}
-@@ -876,12 +903,11 @@ static int nfp_nfd3_rx(struct nfp_net_rx_ring *rx_ring, int budget)
- 	struct nfp_net_dp *dp = &r_vec->nfp_net->dp;
- 	struct nfp_net_tx_ring *tx_ring;
- 	struct bpf_prog *xdp_prog;
-+	int idx, pkts_polled = 0;
- 	bool xdp_tx_cmpl = false;
- 	unsigned int true_bufsz;
- 	struct sk_buff *skb;
--	int pkts_polled = 0;
- 	struct xdp_buff xdp;
--	int idx;
- 
- 	xdp_prog = READ_ONCE(dp->xdp_prog);
- 	true_bufsz = xdp_prog ? PAGE_SIZE : dp->fl_bufsz;
-@@ -1081,6 +1107,11 @@ static int nfp_nfd3_rx(struct nfp_net_rx_ring *rx_ring, int budget)
- 			continue;
- 		}
- 
-+		if (unlikely(nfp_net_ipsec_rx(&meta, skb))) {
-+			nfp_nfd3_rx_drop(dp, r_vec, rx_ring, NULL, skb);
-+			continue;
-+		}
 +
- 		if (meta_len_xdp)
- 			skb_metadata_set(skb, meta_len_xdp);
++	return true;
+ }
  
-diff --git a/drivers/net/ethernet/netronome/nfp/nfd3/ipsec.c b/drivers/net/ethernet/netronome/nfp/nfd3/ipsec.c
-new file mode 100644
-index 000000000000..f0d74d6b49d0
---- /dev/null
-+++ b/drivers/net/ethernet/netronome/nfp/nfd3/ipsec.c
-@@ -0,0 +1,19 @@
-+// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+/* Copyright (C) 2018 Netronome Systems, Inc */
-+/* Copyright (C) 2021 Corigine, Inc */
-+
-+#include <net/xfrm.h>
-+
-+#include "../nfp_net.h"
-+#include "nfd3.h"
-+
-+void nfp_nfd3_ipsec_tx(struct nfp_nfd3_tx_desc *txd, struct sk_buff *skb)
-+{
-+	struct xfrm_state *x;
-+
-+	x = xfrm_input_state(skb);
-+	if (x->xso.dev && (x->xso.dev->features & NETIF_F_HW_ESP_TX_CSUM)) {
-+		txd->flags |= NFD3_DESC_TX_CSUM | NFD3_DESC_TX_IP4_CSUM |
-+			      NFD3_DESC_TX_TCP_CSUM | NFD3_DESC_TX_UDP_CSUM;
-+	}
-+}
-diff --git a/drivers/net/ethernet/netronome/nfp/nfd3/nfd3.h b/drivers/net/ethernet/netronome/nfp/nfd3/nfd3.h
-index 7a0df9e6c3c4..9c1c10dcbaee 100644
---- a/drivers/net/ethernet/netronome/nfp/nfd3/nfd3.h
-+++ b/drivers/net/ethernet/netronome/nfp/nfd3/nfd3.h
-@@ -103,4 +103,12 @@ void nfp_nfd3_rx_ring_fill_freelist(struct nfp_net_dp *dp,
- void nfp_nfd3_xsk_tx_free(struct nfp_nfd3_tx_buf *txbuf);
- int nfp_nfd3_xsk_poll(struct napi_struct *napi, int budget);
- 
-+#ifndef CONFIG_NFP_NET_IPSEC
-+static inline void nfp_nfd3_ipsec_tx(struct nfp_nfd3_tx_desc *txd, struct sk_buff *skb)
-+{
-+}
-+#else
-+void nfp_nfd3_ipsec_tx(struct nfp_nfd3_tx_desc *txd, struct sk_buff *skb);
-+#endif
-+
- #endif
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net.h b/drivers/net/ethernet/netronome/nfp/nfp_net.h
-index 0c3e7e2f856d..768539f12214 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net.h
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net.h
-@@ -263,6 +263,10 @@ struct nfp_meta_parsed {
- 		u8 tpid;
- 		u16 tci;
- 	} vlan;
-+
-+#ifdef CONFIG_NFP_NET_IPSEC
-+	u32 ipsec_saidx;
-+#endif
- };
- 
- struct nfp_net_rx_hash {
-@@ -584,6 +588,7 @@ struct nfp_net_dp {
-  * @qcp_cfg:            Pointer to QCP queue used for configuration notification
-  * @tx_bar:             Pointer to mapped TX queues
-  * @rx_bar:             Pointer to mapped FL/RX queues
-+ * @ipsec_data:         Ipsec Sa data
-  * @tlv_caps:		Parsed TLV capabilities
-  * @ktls_tx_conn_cnt:	Number of offloaded kTLS TX connections
-  * @ktls_rx_conn_cnt:	Number of offloaded kTLS RX connections
-@@ -672,6 +677,10 @@ struct nfp_net {
- 	u8 __iomem *tx_bar;
- 	u8 __iomem *rx_bar;
- 
-+#ifdef CONFIG_NFP_NET_IPSEC
-+	struct nfp_net_ipsec_data *ipsec_data;
-+#endif
-+
- 	struct nfp_net_tlv_caps tlv_caps;
- 
- 	unsigned int ktls_tx_conn_cnt;
+ static const struct xfrmdev_ops nfp_net_ipsec_xfrmdev_ops = {
 diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-index 7e4424d626a6..040c0c2aad80 100644
+index 040c0c2aad80..0e48e2887278 100644
 --- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
 +++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-@@ -2565,9 +2565,13 @@ int nfp_net_init(struct nfp_net *nn)
- 		if (err)
- 			return err;
- 
--		err = nfp_net_tls_init(nn);
-+		err = nfp_net_ipsec_init(nn);
- 		if (err)
- 			goto err_clean_mbox;
-+
-+		err = nfp_net_tls_init(nn);
-+		if (err)
-+			goto err_clean_ipsec;
+@@ -2375,6 +2375,12 @@ static void nfp_net_netdev_init(struct nfp_net *nn)
  	}
- 
- 	nfp_net_vecs_init(nn);
-@@ -2576,6 +2580,9 @@ int nfp_net_init(struct nfp_net *nn)
- 		return 0;
- 	return register_netdev(nn->dp.netdev);
- 
-+err_clean_ipsec:
-+	nfp_net_ipsec_clean(nn);
+ 	if (nn->cap & NFP_NET_CFG_CTRL_RSS_ANY)
+ 		netdev->hw_features |= NETIF_F_RXHASH;
 +
- err_clean_mbox:
- 	nfp_ccm_mbox_clean(nn);
- 	return err;
-@@ -2591,6 +2598,7 @@ void nfp_net_clean(struct nfp_net *nn)
- 		return;
- 
- 	unregister_netdev(nn->dp.netdev);
-+	nfp_net_ipsec_clean(nn);
- 	nfp_ccm_mbox_clean(nn);
- 	nfp_net_reconfig_wait_posted(nn);
- }
++#ifdef CONFIG_NFP_NET_IPSEC
++	if (nn->cap_w1 & NFP_NET_CFG_CTRL_IPSEC)
++		netdev->hw_features |= NETIF_F_HW_ESP | NETIF_F_HW_ESP_TX_CSUM;
++#endif
++
+ 	if (nn->cap & NFP_NET_CFG_CTRL_VXLAN) {
+ 		if (nn->cap & NFP_NET_CFG_CTRL_LSO) {
+ 			netdev->hw_features |= NETIF_F_GSO_UDP_TUNNEL |
 diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_ctrl.h b/drivers/net/ethernet/netronome/nfp/nfp_net_ctrl.h
-index 80346c1c266b..fff05496152d 100644
+index fff05496152d..b7e62d1186ca 100644
 --- a/drivers/net/ethernet/netronome/nfp/nfp_net_ctrl.h
 +++ b/drivers/net/ethernet/netronome/nfp/nfp_net_ctrl.h
-@@ -45,6 +45,7 @@
- #define NFP_NET_META_CSUM		6 /* checksum complete type */
- #define NFP_NET_META_CONN_HANDLE	7
- #define NFP_NET_META_RESYNC_INFO	8 /* RX resync info request */
-+#define NFP_NET_META_IPSEC		9 /* IPSec SA index for tx and rx */
- 
- #define NFP_META_PORT_ID_CTRL		~0U
- 
-@@ -52,6 +53,8 @@
- #define NFP_NET_META_VLAN_SIZE			4
- #define NFP_NET_META_PORTID_SIZE		4
- #define NFP_NET_META_CONN_HANDLE_SIZE		8
-+#define NFP_NET_META_IPSEC_SIZE			4
-+#define NFP_NET_META_IPSEC_FIELD_SIZE		12
- /* Hash type pre-pended when a RSS hash was computed */
- #define NFP_NET_RSS_NONE		0
- #define NFP_NET_RSS_IPV4		1
-@@ -260,6 +263,7 @@
+@@ -399,14 +399,14 @@
   */
- #define NFP_NET_CFG_CTRL_WORD1		0x0098
- #define   NFP_NET_CFG_CTRL_PKT_TYPE	  (0x1 << 0) /* Pkttype offload */
-+#define   NFP_NET_CFG_CTRL_IPSEC	  (0x1 << 1) /* IPSec offload */
+ #define NFP_NET_CFG_MBOX_BASE		0x1800
+ #define NFP_NET_CFG_MBOX_VAL_MAX_SZ	0x1F8
+-
++#define NFP_NET_CFG_MBOX_VAL		0x1808
+ #define NFP_NET_CFG_MBOX_SIMPLE_CMD	0x0
+ #define NFP_NET_CFG_MBOX_SIMPLE_RET	0x4
+ #define NFP_NET_CFG_MBOX_SIMPLE_VAL	0x8
  
- #define NFP_NET_CFG_CAP_WORD1		0x00a4
+ #define NFP_NET_CFG_MBOX_CMD_CTAG_FILTER_ADD 1
+ #define NFP_NET_CFG_MBOX_CMD_CTAG_FILTER_KILL 2
+-
++#define NFP_NET_CFG_MBOX_CMD_IPSEC 3
+ #define NFP_NET_CFG_MBOX_CMD_PCI_DSCP_PRIOMAP_SET	5
+ #define NFP_NET_CFG_MBOX_CMD_TLV_CMSG			6
  
 -- 
 2.30.2
