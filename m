@@ -2,133 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 57AB25EC378
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 15:02:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F18E5EC3B6
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 15:08:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232038AbiI0NCY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 09:02:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56842 "EHLO
+        id S232223AbiI0NIe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 09:08:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231814AbiI0NCW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 09:02:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99D42AB18C;
-        Tue, 27 Sep 2022 06:02:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4C79AB81BE1;
-        Tue, 27 Sep 2022 13:02:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 291BCC433D6;
-        Tue, 27 Sep 2022 13:02:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664283739;
-        bh=xvoJ+OW9l4BhVywumi/8ss3JCeIzNvyx47l4j80wEpY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=hu/ZGjZUx+YKxna8QJPq9YEtENFVjxiyumA+BXZQ34qJyuIThGup+w9noHq4TNd+k
-         7bcOWKNbRFlH9bKbSWtakhRbWWU9IhoE80gikToBJa8/cj4kJhMlNolOihdlycBJ24
-         bWlrleSmKmG8lk3H8/qZ5sR4ZsrvglHzdqesgunxKt7pKRZZywDEvAl4/t+Rv9NWva
-         wO7PAP+VOY3oIvuOUWHOhLRveJL3aqhGCcc1WjeRCNC6PjsxzBipM9mqTOOs20Y8lt
-         7H+FPTbvogYL1mXMLRnd17upd8wui/YMEL50MNnKKURoNzuTXulqxrzV6xZTRvl0N6
-         qBLtBkPNVMRaA==
-From:   broonie@kernel.org
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Wolfram Sang <wsa@kernel.org>,
-        Yang Yingliang <yangyingliang@huawei.com>
-Subject: linux-next: manual merge of the net-next tree with the i2c tree
-Date:   Tue, 27 Sep 2022 14:02:06 +0100
-Message-Id: <20220927130206.368099-1-broonie@kernel.org>
-X-Mailer: git-send-email 2.30.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229734AbiI0NIL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 09:08:11 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED23C1857AD
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 06:08:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1664284086; x=1695820086;
+  h=from:to:cc:subject:date:message-id;
+  bh=LckD10FgykrV7aKsGyhhcdj30WJ7hHizfIuU2xDd8Cc=;
+  b=MZKcACWtexg0lt98H5zaf174e0TGagW1y5XzOGAlNSx7/x/rI4VTYsxv
+   o/dbPjD52etB+c1Vby4wPVIPlQtQkr+QYeVX2gLXD1jljoJiKOVWm6eOv
+   52aQuOpMO3bHBQcZiXomkwDxqDE6m0535zPll1Gdma2PWCjlneTEKRaOS
+   kUGanhRPcDkobbalBq07W9PuuN7coqYtwp8gAPWXZPK/cz5eSheCN4qja
+   r8oppTpLL3hu6Z2LnDVLpbJTAt+MkBrzDvmTgtHHhoeE7/l1hckCMPINi
+   KzD6nopSJ6chtfpOOyShRk0ZEotgPpRsm2c7sLWolAFz25B/i/RSZa9s3
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10483"; a="363148173"
+X-IronPort-AV: E=Sophos;i="5.93,349,1654585200"; 
+   d="scan'208";a="363148173"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Sep 2022 06:07:56 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10483"; a="689984900"
+X-IronPort-AV: E=Sophos;i="5.93,349,1654585200"; 
+   d="scan'208";a="689984900"
+Received: from zulkifl3-ilbpg0.png.intel.com ([10.88.229.82])
+  by fmsmga004.fm.intel.com with ESMTP; 27 Sep 2022 06:07:53 -0700
+From:   Muhammad Husaini Zulkifli <muhammad.husaini.zulkifli@intel.com>
+To:     intel-wired-lan@osuosl.org
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        edumazet@google.com, muhammad.husaini.zulkifli@intel.com,
+        vinicius.gomes@intel.com, aravindhan.gunasekaran@intel.com,
+        noor.azura.ahmad.tarmizi@intel.com
+Subject: [PATCH v1 0/4] Add support for DMA timestamp for non-PTP packets
+Date:   Tue, 27 Sep 2022 21:06:52 +0800
+Message-Id: <20220927130656.32567-1-muhammad.husaini.zulkifli@intel.com>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-1.5 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
+        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+The HW TX timestamps created by the NIC via socket options can be
+requested using the current network timestamps generation capability of
+SOF_TIMESTAMPING_TX_HARDWARE. The most common users of this socket flag
+is PTP, however other packet applications that require tx timestamps might
+also ask for it.
 
-Today's linux-next merge of the net-next tree got conflicts in:
+The problem is that, when there is a lot of traffic, there is a high chance
+that the timestamps for a PTP packet will be lost if both PTP and Non-PTP
+packets use the same SOF TIMESTAMPING TX HARDWARE causing the tx timeout.
 
-  drivers/net/dsa/lan9303_i2c.c
-  drivers/net/dsa/microchip/ksz9477_i2c.c
-  drivers/net/dsa/xrs700x/xrs700x_i2c.c
+DMA timestamps through socket options are not currently available to
+the user. Because if the user wants to, they can configure the hwtstamp
+config option to use the new introduced DMA Time Stamp flag through the
+setsockopt().
 
-between commit:
+With these additional socket options, users can continue to utilise
+HW timestamps for PTP while specifying non-PTP packets to use DMA
+timestamps if the NIC can support them.
 
-  ed5c2f5fd10dd ("i2c: Make remove callback return void")
+Any socket application can be use to verify this.
+TSN Ref SW application is been used for testing by changing as below:
 
-from the i2c tree and commits:
+	int timestamping_flags = SOF_TIMESTAMPING_TX_HARDWARE_DMA_FETCH;
 
-  db5d451c4640a ("net: dsa: lan9303: remove unnecessary i2c_set_clientdata()")
-  008971adb95d3 ("net: dsa: microchip: ksz9477: remove unnecessary i2c_set_clientdata()")
-  6387bf7c390a1 ("net: dsa: xrs700x: remove unnecessary i2c_set_clientdata()")
+	strncpy(hwtstamp.ifr_name, opt->ifname, sizeof(hwtstamp.ifr_name)-1);
+	hwtstamp.ifr_data = (void *)&hwconfig;
+	hwconfig.tx_type = HWTSTAMP_TX_ON;
+	hwconfig.flags = HWTSTAMP_FLAG_DMA_TIMESTAMP;
+	hwconfig.rx_filter = HWTSTAMP_FILTER_ALL;
 
-from the net-next tree.
+	if (ioctl(sock, SIOCSHWTSTAMP, &hwtstamp) < 0) {
+		fprintf(stderr, "%s: %s\n", "ioctl", strerror(errno));
+		exit(1);
+	}
 
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
+	if (setsockopt(sock, SOL_SOCKET, SO_TIMESTAMPING, &timestamping_flags,
+			sizeof(timestamping_flags)) < 0)
+		exit_with_error("setsockopt SO_TIMESTAMPING");
 
-diff --cc drivers/net/dsa/lan9303_i2c.c
-index b25e91b26d991,79be5fc044bd4..0000000000000
---- a/drivers/net/dsa/lan9303_i2c.c
-+++ b/drivers/net/dsa/lan9303_i2c.c
-@@@ -70,11 -70,11 +70,9 @@@ static void lan9303_i2c_remove(struct i
-  	struct lan9303_i2c *sw_dev = i2c_get_clientdata(client);
-  
-  	if (!sw_dev)
- -		return 0;
- +		return;
-  
-  	lan9303_remove(&sw_dev->chip);
+Muhammad Husaini Zulkifli (3):
+  ethtool: Add new hwtstamp flag
+  net-timestamp: Increase the size of tsflags
+  net: sock: extend SO_TIMESTAMPING for DMA Fetch
+
+Vinicius Costa Gomes (1):
+  igc: Add support for DMA timestamp for non-PTP packets
+
+ drivers/net/ethernet/intel/igc/igc.h         | 10 +++
+ drivers/net/ethernet/intel/igc/igc_base.h    |  2 +-
+ drivers/net/ethernet/intel/igc/igc_defines.h |  2 +
+ drivers/net/ethernet/intel/igc/igc_ethtool.c |  5 +-
+ drivers/net/ethernet/intel/igc/igc_main.c    | 24 ++++--
+ drivers/net/ethernet/intel/igc/igc_ptp.c     | 83 ++++++++++++++++++++
+ include/linux/skbuff.h                       |  3 +
+ include/net/sock.h                           | 12 +--
+ include/uapi/linux/ethtool.h                 |  3 +
+ include/uapi/linux/ethtool_netlink.h         |  1 +
+ include/uapi/linux/net_tstamp.h              | 11 ++-
+ net/ethtool/common.c                         |  7 ++
+ net/ethtool/common.h                         |  2 +
+ net/ethtool/strset.c                         |  5 ++
+ net/ethtool/tsinfo.c                         | 17 ++++
+ net/socket.c                                 |  5 +-
+ 16 files changed, 175 insertions(+), 17 deletions(-)
+
 --
-- 	i2c_set_clientdata(client, NULL);
- -	return 0;
-  }
-  
-  static void lan9303_i2c_shutdown(struct i2c_client *client)
-diff --cc drivers/net/dsa/microchip/ksz9477_i2c.c
-index 4a719ab8aa89c,e111756f64735..0000000000000
---- a/drivers/net/dsa/microchip/ksz9477_i2c.c
-+++ b/drivers/net/dsa/microchip/ksz9477_i2c.c
-@@@ -58,8 -58,8 +58,6 @@@ static void ksz9477_i2c_remove(struct i
-  
-  	if (dev)
-  		ksz_switch_remove(dev);
---
-- 	i2c_set_clientdata(i2c, NULL);
- -	return 0;
-  }
-  
-  static void ksz9477_i2c_shutdown(struct i2c_client *i2c)
-diff --cc drivers/net/dsa/xrs700x/xrs700x_i2c.c
-index bbaf5a3fbf000,cd533b9e17eca..0000000000000
---- a/drivers/net/dsa/xrs700x/xrs700x_i2c.c
-+++ b/drivers/net/dsa/xrs700x/xrs700x_i2c.c
-@@@ -110,11 -110,11 +110,9 @@@ static void xrs700x_i2c_remove(struct i
-  	struct xrs700x *priv = i2c_get_clientdata(i2c);
-  
-  	if (!priv)
- -		return 0;
- +		return;
-  
-  	xrs700x_switch_remove(priv);
---
-- 	i2c_set_clientdata(i2c, NULL);
- -	return 0;
-  }
-  
-  static void xrs700x_i2c_shutdown(struct i2c_client *i2c)
+2.17.1
+
