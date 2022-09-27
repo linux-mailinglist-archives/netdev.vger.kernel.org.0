@@ -2,74 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 213C55EB920
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 06:13:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 574C15EB92C
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 06:25:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229773AbiI0ENP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 00:13:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45906 "EHLO
+        id S229760AbiI0EZD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 00:25:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229477AbiI0ENN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 00:13:13 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83A0EFAC75
-        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 21:13:12 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id x15-20020a17090a294f00b00205d6bb3815so768763pjf.4
-        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 21:13:12 -0700 (PDT)
+        with ESMTP id S229603AbiI0EZB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 00:25:01 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2619443331;
+        Mon, 26 Sep 2022 21:24:59 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id y8so11583141edc.10;
+        Mon, 26 Sep 2022 21:24:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=4ew5J0ZZM2PZoNYpAAemHG9JlNCv28UpDVxyrk0jBlE=;
-        b=cLJlumWrd5BBjkXpOREH7MIEYtjJY60xJ5E0AhY66539enc34QPH9mTHk/Pk/iru67
-         BpKjXf6GbQ3UUCEheW1LO0nWjSC+3g69ebHbuKZgNTvOHKe5lgSpytBfR2+d77edr3+s
-         /XMLuzf8sWENQkPLwJjJ1QDGm/bSUbZ9WtVW+NiigK7Hvpxp1C8JBkNMt/YtfX0jHnjo
-         efNUrWdj++U49997sa1nZa12dxrDfJFjj6YwFXLmly5XAerHynoJuR8P9U7APTR0Gt72
-         VTHMLaSE9QZ0umMA4Wyb/1RiXyM4ynjlNUgyTi7+tPwjTWXActE//P22EWB2BTDa9s8c
-         DN1Q==
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:from:to:cc:subject:date;
+        bh=Qhij+rjILZXDr+3dJvPrhS9Wzmxt2vE9xc3gwCW9y/4=;
+        b=MO/JQMEj73YcZ/TIrS8pPfV+iuy3VJR8dRpw29+9WYGZDSonxZc/74EYBxh5ZUaZfX
+         Mosu/tmNVv6t1j22MBYa343rFWbWNOJfVLGu6c0u0sesxklANU2pCqJRN4NjMwRu9w+d
+         TykOZ6slxWujmmXB0oxj5n+sJIElWZOHOSuugz17Fr2+8m1heUncxI1VjjPYVPCju61K
+         XweLR7MQY71toSelqK1k1lr6MoNUPSBA807HsdjGOv8B04VHpylCmkg+xUoD124vgA51
+         H1/CQ21ktsXoVHPBBV3ZGThPxyacV7QVVIYbRUkU8dZ3XrG9sz/2UIR556brZXgYGW3b
+         G8qw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=4ew5J0ZZM2PZoNYpAAemHG9JlNCv28UpDVxyrk0jBlE=;
-        b=ECG96eZsqWEvKOyFtqZpNsi7xdGH+ZKC8q3pClSHJUU1RC0+pgXgqRO9xUn5bfM7Os
-         GPHQkVuOT6Q6CKTsRGDiBTzuU+b4Bz9ETFSgj75iHYC/Bs/Ao2JGriplyzKfwYP4uq1v
-         HNGzKUL3wTafS7inkN8Jztr+leTeHqGUF3jqNZRnPoTRnmrUK34oG+KpTLQUa7co4uHY
-         ywLPbnEfB1XEpXHyPwqO6xvP0GeWtwRXzDT+ypPIZb8toD5LniltTRomh6XVwc6Wg7r/
-         9u9KnyAZuuIedvhhZYx9AMzLqdaMTzgI7X7DBTBv7jgFNelZVmkcwek1C8riX30dapLh
-         8JCw==
-X-Gm-Message-State: ACrzQf1DeZjTwdjy/8EoCeIYiCilsTl4FVil57LmVCgRvRAyHoowWoQd
-        VZtler+kL/PFuKqSAF8ZtozqpTwHef6hhA==
-X-Google-Smtp-Source: AMsMyM7L0Yy3D7nas/fWFEXtIs0LpDFEHc0SNm6yXSa4FqO6Z4YgcppenAanFdJC8Odog+3nic/cCg==
-X-Received: by 2002:a17:902:cec8:b0:178:1b77:5afe with SMTP id d8-20020a170902cec800b001781b775afemr24688094plg.63.1664251991797;
-        Mon, 26 Sep 2022 21:13:11 -0700 (PDT)
-Received: from Laptop-X1.redhat.com ([43.228.180.230])
-        by smtp.gmail.com with ESMTPSA id n16-20020a634d50000000b0042c0ffa0e62sm334123pgl.47.2022.09.26.21.13.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Sep 2022 21:13:11 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=Qhij+rjILZXDr+3dJvPrhS9Wzmxt2vE9xc3gwCW9y/4=;
+        b=JcOUE/jk4WPN+dGodew+MNdJTeXFoon3PfQus4Y8eL/JgR1ScqpuA/sqzLdkM8WTwL
+         q9Bo5RERyhZW00OhtcEbmtu9MCZiKgGH22K6JyOiK6izLkgPm8/PwFho0JHej+xVVY0Y
+         +wSnSShqbMTOU/UJ3kLBQ+OL7rJ9c/VEerkyZHQYlc+TG2KOtXPZsDwThcgNJ54WZefK
+         diMx3js+10O2ZYFlFz5lKvyEQIoRneH+EX/ODYAkLwu02FFBuSpW+pSM+ISPl9sGbdS7
+         KoaZnj0dVM/ly2uEKvV3tfAMvDDa9LB1zEig3RhY2uUjaFo/pvEUDcMlEy1PbKwMwsyi
+         VoJQ==
+X-Gm-Message-State: ACrzQf02M4Ny53y+iZnGymZmciaR1e5soDKt93qZ6qzQckAOYkb7d9t0
+        btrLcObZ5Dppvp3swsBshSA=
+X-Google-Smtp-Source: AMsMyM44RQ84B1aDVXGrsKZWMZ75w4JYXnkVyZ6xfoLOwA+BhvLmo6gdR5iABqiuOKBEPYVAIHIjDQ==
+X-Received: by 2002:a50:fb17:0:b0:457:1808:8471 with SMTP id d23-20020a50fb17000000b0045718088471mr12993300edq.338.1664252697661;
+        Mon, 26 Sep 2022 21:24:57 -0700 (PDT)
+Received: from smtpclient.apple ([178.254.237.20])
+        by smtp.gmail.com with ESMTPSA id 18-20020a170906329200b0077f5e96129fsm110839ejw.158.2022.09.26.21.24.56
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 26 Sep 2022 21:24:57 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.120.0.1.13\))
+Subject: Re: [PATCH net] rhashtable: fix crash due to mm api change
+From:   Martin Zaharinov <micron10@gmail.com>
+In-Reply-To: <20220926151939.GG12777@breakpoint.cc>
+Date:   Tue, 27 Sep 2022 07:24:55 +0300
+Cc:     Michal Hocko <mhocko@suse.com>, netdev <netdev@vger.kernel.org>,
+        tgraf@suug.ch, urezki@gmail.com, Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Florent Fourcot <florent.fourcot@wifirst.fr>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        David Ahern <dsahern@kernel.org>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCHv3 net-next] rtnetlink: Honour NLM_F_ECHO flag in rtnl_{new, set, del}link
-Date:   Tue, 27 Sep 2022 12:13:03 +0800
-Message-Id: <20220927041303.152877-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.37.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        Jakub Kicinski <kuba@kernel.org>, herbert@gondor.apana.org.au,
+        "linux-kernel@vger kernel. org" <linux-kernel@vger.kernel.org>,
+        akpm@linux-foundation.org, Paolo Bonzini <pbonzini@redhat.com>,
+        kvm@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <3AF0514E-57AB-417A-A800-A68FCF65749F@gmail.com>
+References: <20220926083139.48069-1-fw@strlen.de>
+ <YzFp4H/rbdov7iDg@dhcp22.suse.cz> <20220926151939.GG12777@breakpoint.cc>
+To:     Florian Westphal <fw@strlen.de>
+X-Mailer: Apple Mail (2.3654.120.0.1.13)
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,231 +79,241 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Netlink messages are used for communicating between user and kernel space.
-When user space configures the kernel with netlink messages, it can set the
-NLM_F_ECHO flag to request the kernel to send the applied configuration back
-to the caller. This allows user space to retrieve configuration information
-that are filled by the kernel (either because these parameters can only be
-set by the kernel or because user space let the kernel choose a default
-value).
+Hi Florian
 
-The kernel has support this feature in some places like RTM_{NEW, DEL}ADDR,
-RTM_{NEW, DEL}ROUTE. This patch handles NLM_F_ECHO flag and send link info
-back after rtnl_{new, set, del}link.
+Apply v2 patch and upload on sever , after 4-5 hours work server crash =
+see log:=20
 
-Suggested-by: Guillaume Nault <gnault@redhat.com>
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
-v3:
-1) Fix group parameter in rtnl_notify.
-2) Use helper rtmsg_ifinfo_build_skb() instead re-write a new one.
+Sep 27 04:15:53  [35863.462862][   C28] ------------[ cut here =
+]------------
+Sep 27 04:15:53  [35863.463590][   C28] NETDEV WATCHDOG: eth0 (i40e): =
+transmit queue 18 timed out
+Sep 27 04:15:53  [35863.464567][   C28] WARNING: CPU: 28 PID: 0 at =
+net/sched/sch_generic.c:529 dev_watchdog+0x167/0x170
+Sep 27 04:15:53  [35863.465799][   C28] Modules linked in: nft_limit =
+nf_conntrack_netlink pppoe pppox ppp_generic slhc nft_ct =
+nft_flow_offload nf_flow_table_inet nf_flow_table nft_nat nft_chain_nat =
+team_mode_loadbalance team nf_tables netconsole coretemp i40e nf_nat_sip =
+nf_conntrack_sip nf_nat_pptp nf_conntrack_pptp nf_nat_tftp =
+nf_conntrack_tftp nf_nat_ftp nf_conntrack_ftp nf_nat nf_conntrack =
+nf_defrag_ipv6 nf_defrag_ipv4 acpi_ipmi ipmi_si ipmi_devintf =
+ipmi_msghandler rtc_cmos
+Sep 27 04:15:53  [35863.471915][   C28] CPU: 28 PID: 0 Comm: swapper/28 =
+Tainted: G           O      5.19.11 #1
+Sep 27 04:15:53  [35863.473036][   C28] Hardware name: Supermicro =
+SYS-5038MR-H8TRF/X10SRD-F, BIOS 3.3 10/28/2020
+Sep 27 04:15:53  [35863.474179][   C28] RIP: =
+0010:dev_watchdog+0x167/0x170
+Sep 27 04:15:53  [35863.474875][   C28] Code: 28 e9 77 ff ff ff 48 89 df =
+c6 05 63 57 c4 00 01 e8 de 59 fb ff 48 89 c2 44 89 e1 48 89 de 48 c7 c7 =
+08 c7 ec 97 e8 52 c6 13 00 <0f> 0b eb 85 0f 1f 44 00 00 41 55 41 54 55 =
+53 48 8b 47 50 4c 8b 28
+Sep 27 04:15:53  [35863.477517][   C28] RSP: 0018:ffff9ae9806b8ee8 =
+EFLAGS: 00010292
+Sep 27 04:15:53  [35863.478320][   C28] RAX: 0000000000000039 RBX: =
+ffff96ad92269800 RCX: 0000000000000001
+Sep 27 04:15:53  [35863.479379][   C28] RDX: 00000000ffffffea RSI: =
+00000000fff7ffff RDI: 00000000fff7ffff
+Sep 27 04:15:53  [35863.480439][   C28] RBP: ffff96ad92269bc0 R08: =
+0000000000000001 R09: 00000000fff7ffff
+Sep 27 04:15:53  [35863.481499][   C28] R10: ffff96b4dae00000 R11: =
+0000000000000003 R12: 0000000000000012
+Sep 27 04:15:53  [35863.482560][   C28] R13: 0000000000000000 R14: =
+ffff96b4dfd207a8 R15: 0000000000000082
+Sep 27 04:15:53  [35863.483621][   C28] FS:  0000000000000000(0000) =
+GS:ffff96b4dfd00000(0000) knlGS:0000000000000000
+Sep 27 04:15:53  [35863.484809][   C28] CS:  0010 DS: 0000 ES: 0000 CR0: =
+0000000080050033
+Sep 27 04:15:53  [35863.485681][   C28] CR2: 00007f87fae3d2e8 CR3: =
+000000016063b004 CR4: 00000000003706e0
+Sep 27 04:15:53  [35863.486743][   C28] DR0: 0000000000000000 DR1: =
+0000000000000000 DR2: 0000000000000000
+Sep 27 04:15:53  [35863.487802][   C28] DR3: 0000000000000000 DR6: =
+00000000fffe0ff0 DR7: 0000000000000400
+Sep 27 04:15:53  [35863.488862][   C28] Call Trace:
+Sep 27 04:15:53  [35863.489289][   C28]  <IRQ>
+Sep 27 04:15:53  [35863.489653][   C28]  ? pfifo_fast_destroy+0x30/0x30
+Sep 27 04:15:53  [35863.490313][   C28]  =
+call_timer_fn.constprop.0+0x14/0x70
+Sep 27 04:15:53  [35863.491033][   C28]  __run_timers.part.0+0x164/0x190
+Sep 27 04:15:53  [35863.491706][   C28]  ? =
+__hrtimer_run_queues+0x143/0x1a0
+Sep 27 04:15:53  [35863.492414][   C28]  ? ktime_get+0x30/0x90
+Sep 27 04:15:53  [35863.492969][   C28]  run_timer_softirq+0x21/0x50
+Sep 27 04:15:53  [35863.493598][   C28]  __do_softirq+0xaf/0x1d7
+Sep 27 04:15:53  [35863.494175][   C28]  __irq_exit_rcu+0x9a/0xd0
+Sep 27 04:15:53  [35863.494767][   C28]  =
+sysvec_apic_timer_interrupt+0x66/0x80
+Sep 27 04:15:53  [35863.495510][   C28]  </IRQ>
+Sep 27 04:15:53  [35863.495886][   C28]  <TASK>
+Sep 27 04:15:53  [35863.496263][   C28]  =
+asm_sysvec_apic_timer_interrupt+0x16/0x20
+Sep 27 04:15:53  [35863.497054][   C28] RIP: =
+0010:cpuidle_enter_state+0xb3/0x290
+Sep 27 04:15:53  [35863.497822][   C28] Code: e8 12 25 b0 ff 31 ff 49 89 =
+c5 e8 c8 80 af ff 45 84 ff 74 12 9c 58 f6 c4 02 0f 85 cf 01 00 00 31 ff =
+e8 c1 cb b3 ff fb 45 85 f6 <0f> 88 d0 00 00 00 49 63 ce 48 6b f1 68 48 =
+8b 04 24 4c 89 ea 48 29
+Sep 27 04:15:53  [35863.500462][   C28] RSP: 0018:ffff9ae9801cfe98 =
+EFLAGS: 00000202
+Sep 27 04:15:53  [35863.501266][   C28] RAX: ffff96b4dfd26800 RBX: =
+ffff96ad80bfa000 RCX: 000000000000001f
+Sep 27 04:15:53  [35863.502324][   C28] RDX: 0000209e1cf6d09d RSI: =
+00000000313b14ef RDI: 0000000000000000
+Sep 27 04:15:53  [35863.503387][   C28] RBP: 0000000000000001 R08: =
+0000000000000002 R09: ffff96b4dfd25704
+Sep 27 04:15:54  [35863.537016][   C28] R10: 0000000000000008 R11: =
+00000000000000f3 R12: ffffffff98222da0
+Sep 27 04:15:54  [35863.570647][   C28] R13: 0000209e1cf6d09d R14: =
+0000000000000001 R15: 0000000000000000
+Sep 27 04:15:54  [35863.603939][   C28]  ? =
+cpuidle_enter_state+0x98/0x290
+Sep 27 04:15:54  [35863.637176][   C28]  cpuidle_enter+0x24/0x40
+Sep 27 04:15:54  [35863.669424][   C28]  cpuidle_idle_call+0xbb/0x100
+Sep 27 04:15:54  [35863.701075][   C28]  do_idle+0x76/0xc0
+Sep 27 04:15:54  [35863.731736][   C28]  cpu_startup_entry+0x14/0x20
+Sep 27 04:15:54  [35863.761417][   C28]  start_secondary+0xd6/0xe0
+Sep 27 04:15:54  [35863.790449][   C28]  =
+secondary_startup_64_no_verify+0xd3/0xdb
+Sep 27 04:15:54  [35863.818324][   C28]  </TASK>
+Sep 27 04:15:54  [35863.844969][   C28] ---[ end trace 0000000000000000 =
+]---
+Sep 27 04:15:54  [35863.871638][   C28] i40e 0000:03:00.0 eth0: =
+tx_timeout: VSI_seid: 390, Q 18, NTC: 0xa44, HWB: 0xd18, NTU: 0xd1a, =
+TAIL: 0xd1a, INT: 0x0
+Sep 27 04:15:54  [35863.926113][   C28] i40e 0000:03:00.0 eth0: =
+tx_timeout recovery level 1, txqueue 18
 
-v2:
-1) Rename rtnl_echo_link_info() to rtnl_link_notify().
-2) Remove IFLA_LINK_NETNSID and IFLA_EXT_MASK, which do not fit here.
-3) Add NLM_F_ECHO in rtnl_dellink. But we can't re-use the rtnl_link_notify()
-   helper as we need to get the link info before rtnl_delete_link().
----
- include/linux/rtnetlink.h |  2 +-
- net/core/dev.c            |  2 +-
- net/core/rtnetlink.c      | 47 ++++++++++++++++++++++++++++++---------
- 3 files changed, 38 insertions(+), 13 deletions(-)
 
-diff --git a/include/linux/rtnetlink.h b/include/linux/rtnetlink.h
-index ae2c6a3cec5d..3534701cdcc5 100644
---- a/include/linux/rtnetlink.h
-+++ b/include/linux/rtnetlink.h
-@@ -24,7 +24,7 @@ void rtmsg_ifinfo_newnet(int type, struct net_device *dev, unsigned int change,
- struct sk_buff *rtmsg_ifinfo_build_skb(int type, struct net_device *dev,
- 				       unsigned change, u32 event,
- 				       gfp_t flags, int *new_nsid,
--				       int new_ifindex);
-+				       int new_ifindex, u32 pid, u32 seq);
- void rtmsg_ifinfo_send(struct sk_buff *skb, struct net_device *dev,
- 		       gfp_t flags);
- 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index d66c73c1c734..fb2603bd07a9 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -10862,7 +10862,7 @@ void unregister_netdevice_many(struct list_head *head)
- 		if (!dev->rtnl_link_ops ||
- 		    dev->rtnl_link_state == RTNL_LINK_INITIALIZED)
- 			skb = rtmsg_ifinfo_build_skb(RTM_DELLINK, dev, ~0U, 0,
--						     GFP_KERNEL, NULL, 0);
-+						     GFP_KERNEL, NULL, 0, 0, 0);
- 
- 		/*
- 		 *	Flush the unicast and multicast chains
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 74864dc46a7e..a399b623a44f 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -2651,10 +2651,13 @@ static int do_set_proto_down(struct net_device *dev,
- static int do_setlink(const struct sk_buff *skb,
- 		      struct net_device *dev, struct ifinfomsg *ifm,
- 		      struct netlink_ext_ack *extack,
--		      struct nlattr **tb, int status)
-+		      struct nlattr **tb, int status,
-+		      struct nlmsghdr *nlh)
- {
- 	const struct net_device_ops *ops = dev->netdev_ops;
-+	u32 pid = NETLINK_CB(skb).portid;
- 	char ifname[IFNAMSIZ];
-+	struct sk_buff *nskb;
- 	int err;
- 
- 	err = validate_linkmsg(dev, tb, extack);
-@@ -3009,6 +3012,11 @@ static int do_setlink(const struct sk_buff *skb,
- 		}
- 	}
- 
-+	nskb = rtmsg_ifinfo_build_skb(RTM_NEWLINK, dev, 0, 0, GFP_KERNEL, NULL,
-+				      0, pid, nlh->nlmsg_seq);
-+	if (nskb)
-+		rtnl_notify(nskb, dev_net(dev), pid, RTNLGRP_LINK, nlh, GFP_KERNEL);
-+
- errout:
- 	if (status & DO_SETLINK_MODIFIED) {
- 		if ((status & DO_SETLINK_NOTIFY) == DO_SETLINK_NOTIFY)
-@@ -3069,7 +3077,8 @@ static int rtnl_setlink(struct sk_buff *skb, struct nlmsghdr *nlh,
- 		goto errout;
- 	}
- 
--	err = do_setlink(skb, dev, ifm, extack, tb, 0);
-+	err = do_setlink(skb, dev, ifm, extack, tb, 0, nlh);
-+
- errout:
- 	return err;
- }
-@@ -3130,10 +3139,12 @@ static int rtnl_dellink(struct sk_buff *skb, struct nlmsghdr *nlh,
- 			struct netlink_ext_ack *extack)
- {
- 	struct net *net = sock_net(skb->sk);
-+	u32 pid = NETLINK_CB(skb).portid;
- 	struct net *tgt_net = net;
- 	struct net_device *dev = NULL;
- 	struct ifinfomsg *ifm;
- 	struct nlattr *tb[IFLA_MAX+1];
-+	struct sk_buff *nskb;
- 	int err;
- 	int netnsid = -1;
- 
-@@ -3171,7 +3182,12 @@ static int rtnl_dellink(struct sk_buff *skb, struct nlmsghdr *nlh,
- 		goto out;
- 	}
- 
-+	nskb = rtmsg_ifinfo_build_skb(RTM_DELLINK, dev, 0, 0, GFP_KERNEL, NULL,
-+				      0, pid, nlh->nlmsg_seq);
-+
- 	err = rtnl_delete_link(dev);
-+	if (!err && nskb)
-+		rtnl_notify(nskb, dev_net(dev), pid, RTNLGRP_LINK, nlh, GFP_KERNEL);
- 
- out:
- 	if (netnsid >= 0)
-@@ -3293,14 +3309,14 @@ static int rtnl_group_changelink(const struct sk_buff *skb,
- 		struct net *net, int group,
- 		struct ifinfomsg *ifm,
- 		struct netlink_ext_ack *extack,
--		struct nlattr **tb)
-+		struct nlattr **tb, struct nlmsghdr *nlh)
- {
- 	struct net_device *dev, *aux;
- 	int err;
- 
- 	for_each_netdev_safe(net, dev, aux) {
- 		if (dev->group == group) {
--			err = do_setlink(skb, dev, ifm, extack, tb, 0);
-+			err = do_setlink(skb, dev, ifm, extack, tb, 0, nlh);
- 			if (err < 0)
- 				return err;
- 		}
-@@ -3312,13 +3328,16 @@ static int rtnl_group_changelink(const struct sk_buff *skb,
- static int rtnl_newlink_create(struct sk_buff *skb, struct ifinfomsg *ifm,
- 			       const struct rtnl_link_ops *ops,
- 			       struct nlattr **tb, struct nlattr **data,
--			       struct netlink_ext_ack *extack)
-+			       struct netlink_ext_ack *extack,
-+			       struct nlmsghdr *nlh)
- {
- 	unsigned char name_assign_type = NET_NAME_USER;
- 	struct net *net = sock_net(skb->sk);
-+	u32 pid = NETLINK_CB(skb).portid;
- 	struct net *dest_net, *link_net;
- 	struct net_device *dev;
- 	char ifname[IFNAMSIZ];
-+	struct sk_buff *nskb;
- 	int err;
- 
- 	if (!ops->alloc && !ops->setup)
-@@ -3382,6 +3401,12 @@ static int rtnl_newlink_create(struct sk_buff *skb, struct ifinfomsg *ifm,
- 		if (err)
- 			goto out_unregister;
- 	}
-+
-+	nskb = rtmsg_ifinfo_build_skb(RTM_NEWLINK, dev, 0, 0, GFP_KERNEL, NULL,
-+				      0, pid, nlh->nlmsg_seq);
-+	if (nskb)
-+		rtnl_notify(nskb, dev_net(dev), pid, RTNLGRP_LINK, nlh, GFP_KERNEL);
-+
- out:
- 	if (link_net)
- 		put_net(link_net);
-@@ -3544,7 +3569,7 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
- 			status |= DO_SETLINK_NOTIFY;
- 		}
- 
--		return do_setlink(skb, dev, ifm, extack, tb, status);
-+		return do_setlink(skb, dev, ifm, extack, tb, status, nlh);
- 	}
- 
- 	if (!(nlh->nlmsg_flags & NLM_F_CREATE)) {
-@@ -3556,7 +3581,7 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
- 		if (tb[IFLA_GROUP])
- 			return rtnl_group_changelink(skb, net,
- 						nla_get_u32(tb[IFLA_GROUP]),
--						ifm, extack, tb);
-+						ifm, extack, tb, nlh);
- 		return -ENODEV;
- 	}
- 
-@@ -3578,7 +3603,7 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
- 		return -EOPNOTSUPP;
- 	}
- 
--	return rtnl_newlink_create(skb, ifm, ops, tb, data, extack);
-+	return rtnl_newlink_create(skb, ifm, ops, tb, data, extack, nlh);
- }
- 
- static int rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
-@@ -3896,7 +3921,7 @@ static int rtnl_dump_all(struct sk_buff *skb, struct netlink_callback *cb)
- struct sk_buff *rtmsg_ifinfo_build_skb(int type, struct net_device *dev,
- 				       unsigned int change,
- 				       u32 event, gfp_t flags, int *new_nsid,
--				       int new_ifindex)
-+				       int new_ifindex, u32 pid, u32 seq)
- {
- 	struct net *net = dev_net(dev);
- 	struct sk_buff *skb;
-@@ -3907,7 +3932,7 @@ struct sk_buff *rtmsg_ifinfo_build_skb(int type, struct net_device *dev,
- 		goto errout;
- 
- 	err = rtnl_fill_ifinfo(skb, dev, dev_net(dev),
--			       type, 0, 0, change, 0, 0, event,
-+			       type, pid, seq, change, 0, 0, event,
- 			       new_nsid, new_ifindex, -1, flags);
- 	if (err < 0) {
- 		/* -EMSGSIZE implies BUG in if_nlmsg_size() */
-@@ -3939,7 +3964,7 @@ static void rtmsg_ifinfo_event(int type, struct net_device *dev,
- 		return;
- 
- 	skb = rtmsg_ifinfo_build_skb(type, dev, change, event, flags, new_nsid,
--				     new_ifindex);
-+				     new_ifindex, 0, 0);
- 	if (skb)
- 		rtmsg_ifinfo_send(skb, dev, flags);
- }
--- 
-2.37.2
+Sep 27 05:44:05  [ 5136.419612][   C14] watchdog: BUG: soft lockup - =
+CPU#14 stuck for 89s! [swapper/14:0]
+Sep 27 05:44:05  [ 5136.420830][   C14] Kernel panic - not syncing: =
+softlockup: hung tasks
+Sep 27 05:44:05  [ 5136.421718][   C14] CPU: 14 PID: 0 Comm: swapper/14 =
+Tainted: G           O L    5.19.11 #1
+Sep 27 05:44:05  [ 5136.422842][   C14] Hardware name: Supermicro =
+SYS-5038MR-H8TRF/X10SRD-F, BIOS 3.3 10/28/2020
+Sep 27 05:44:05  [ 5136.423990][   C14] Call Trace:
+Sep 27 05:44:05  [ 5136.424417][   C14]  <IRQ>
+Sep 27 05:44:05  [ 5136.424784][   C14]  dump_stack_lvl+0x33/0x42
+Sep 27 05:44:05  [ 5136.425377][   C14]  panic+0xea/0x24b
+Sep 27 05:44:05  [ 5136.425875][   C14]  watchdog_timer_fn.cold+0xc/0x16
+Sep 27 05:44:05  [ 5136.426549][   C14]  ? =
+lockup_detector_update_enable+0x50/0x50
+Sep 27 05:44:05  [ 5136.427343][   C14]  __hrtimer_run_queues+0xff/0x1a0
+Sep 27 05:44:05  [ 5136.428021][   C14]  hrtimer_interrupt+0xee/0x200
+Sep 27 05:44:05  [ 5136.428660][   C14]  =
+__sysvec_apic_timer_interrupt+0x47/0x60
+Sep 27 05:44:05  [ 5136.429430][   C14]  =
+sysvec_apic_timer_interrupt+0x2d/0x80
+Sep 27 05:44:05  [ 5136.430176][   C14]  =
+asm_sysvec_apic_timer_interrupt+0x16/0x20
+Sep 27 05:44:05  [ 5136.430970][   C14] RIP: =
+0010:queued_spin_lock_slowpath+0x105/0x1a0
+Sep 27 05:44:05  [ 5136.431822][   C14] Code: ff c0 41 c1 e0 12 c1 e6 10 =
+41 09 f0 44 89 c0 c1 e8 10 66 87 42 02 89 c6 c1 e6 10 81 fe ff ff 00 00 =
+77 48 31 f6 eb 03 0f ae e8 <8b> 02 66 85 c0 75 f6 89 c7 66 31 ff 44 39 =
+c7 74 75 c6 02 01 48 85
+Sep 27 05:44:05  [ 5136.434475][   C14] RSP: 0018:ffff9eaa80450d20 =
+EFLAGS: 00000202
+Sep 27 05:44:05  [ 5136.435279][   C14] RAX: 00000000003c0101 RBX: =
+ffff88c800ce4800 RCX: ffff88ce1f9a73c0
+Sep 27 05:44:05  [ 5136.436345][   C14] RDX: ffff88c800ce4804 RSI: =
+0000000000000000 RDI: ffff88c800ce4804
+Sep 27 05:44:05  [ 5136.437410][   C14] RBP: ffff88c7e8cd28e2 R08: =
+00000000003c0000 R09: 0000000000000000
+Sep 27 05:44:05  [ 5136.438477][   C14] R10: 382ecf75f888481b R11: =
+68035d3c9e84f0bf R12: ffff88c7f91dea00
+Sep 27 05:44:05  [ 5136.439543][   C14] R13: 0000000000000014 R14: =
+0000000000000001 R15: ffff9eaa80450e78
+Sep 27 05:44:05  [ 5136.440610][   C14]  =
+nf_conntrack_tcp_packet+0xab/0xbb0 [nf_conntrack]
+Sep 27 05:44:05  [ 5136.441505][   C14]  ? dev_hard_start_xmit+0x95/0xe0
+Sep 27 05:44:05  [ 5136.442182][   C14]  ? =
+hash_conntrack_raw.constprop.0+0x89/0x100 [nf_conntrack]
+Sep 27 05:44:05  [ 5136.443180][   C14]  nf_conntrack_in+0x32f/0x500 =
+[nf_conntrack]
+Sep 27 05:44:05  [ 5136.443988][   C14]  nf_hook_slow+0x36/0xa0
+Sep 27 05:44:05  [ 5136.444556][   C14]  ip_rcv+0x65/0xa0
+Sep 27 05:44:05  [ 5136.445053][   C14]  ? =
+ip_rcv_finish_core.constprop.0+0x2c0/0x2c0
+Sep 27 05:44:05  [ 5136.445883][   C14]  =
+__netif_receive_skb_one_core+0x3f/0x50
+Sep 27 05:44:05  [ 5136.446641][   C14]  process_backlog+0x7c/0x110
+Sep 27 05:44:05  [ 5136.447257][   C14]  __napi_poll+0x20/0x100
+Sep 27 05:44:05  [ 5136.447826][   C14]  net_rx_action+0x26d/0x330
+Sep 27 05:44:05  [ 5136.448429][   C14]  __do_softirq+0xaf/0x1d7
+Sep 27 05:44:05  [ 5136.449009][   C14]  do_softirq+0x5a/0x80
+Sep 27 05:44:05  [ 5136.449554][   C14]  </IRQ>
+Sep 27 05:44:05  [ 5136.449932][   C14]  <TASK>
+Sep 27 05:44:05  [ 5136.450312][   C14]  =
+flush_smp_call_function_queue+0x3f/0x60
+Sep 27 05:44:05  [ 5136.451083][   C14]  do_idle+0xa6/0xc0
+Sep 27 05:44:05  [ 5136.451592][   C14]  cpu_startup_entry+0x14/0x20
+Sep 27 05:44:05  [ 5136.452220][   C14]  start_secondary+0xd6/0xe0
+Sep 27 05:44:05  [ 5136.452826][   C14]  =
+secondary_startup_64_no_verify+0xd3/0xdb
+Sep 27 05:44:05  [ 5136.453607][   C14]  </TASK>
+Sep 27 05:44:05  [ 5136.565092][   C14] Kernel Offset: 0x3000000 from =
+0xffffffff81000000 (relocation range: =
+0xffffffff80000000-0xffffffffbfffffff)
+Sep 27 05:44:05  [ 5136.621741][   C14] Rebooting in 10 seconds..
+
+
+> On 26 Sep 2022, at 18:19, Florian Westphal <fw@strlen.de> wrote:
+>=20
+> Michal Hocko <mhocko@suse.com> wrote:
+>> On Mon 26-09-22 10:31:39, Florian Westphal wrote:
+>>> Martin Zaharinov reports BUG() in mm land for 5.19.10 kernel:
+>>> kernel BUG at mm/vmalloc.c:2437!
+>>> invalid opcode: 0000 [#1] SMP
+>>> CPU: 28 PID: 0 Comm: swapper/28 Tainted: G        W  O      5.19.9 =
+#1
+>>> [..]
+>>> RIP: 0010:__get_vm_area_node+0x120/0x130
+>>>  __vmalloc_node_range+0x96/0x1e0
+>>>  kvmalloc_node+0x92/0xb0
+>>>  bucket_table_alloc.isra.0+0x47/0x140
+>>>  rhashtable_try_insert+0x3a4/0x440
+>>>  rhashtable_insert_slow+0x1b/0x30
+>>> [..]
+>>>=20
+>>> bucket_table_alloc uses kvzalloc(GPF_ATOMIC).  If kmalloc fails, =
+this now
+>>> falls through to vmalloc and hits code paths that assume GFP_KERNEL.
+>>>=20
+>>> I sent a patch to restore GFP_ATOMIC support in kvmalloc but mm
+>>> maintainers rejected it.
+>>>=20
+>>> This patch is partial revert of
+>>> commit 93f976b5190d ("lib/rhashtable: simplify =
+bucket_table_alloc()"),
+>>> to avoid kvmalloc for ATOMIC case.
+>>>=20
+>>> As kvmalloc doesn't warn when used with ATOMIC, kernel will only =
+crash
+>>> once vmalloc fallback occurs, so we may see more crashes in other =
+areas
+>>> in the future.
+>>>=20
+>>> Most other callers seem ok but kvm_mmu_topup_memory_cache looks like =
+it
+>>> might be affected by the same breakage, so Cc kvm@.
+>>>=20
+>>> Reported-by: Martin Zaharinov <micron10@gmail.com>
+>>> Fixes: a421ef303008 ("mm: allow !GFP_KERNEL allocations for =
+kvmalloc")
+>>> Link: https://lore.kernel.org/linux-mm/Yy3MS2uhSgjF47dy@pc636/T/#t
+>>> Cc: Michal Hocko <mhocko@suse.com>
+>>> Cc: Paolo Bonzini <pbonzini@redhat.com>
+>>> Cc: kvm@vger.kernel.org
+>>> Signed-off-by: Florian Westphal <fw@strlen.de>
+>>=20
+>> Please continue in the original email thread until we sort out the =
+most
+>> reasonable solution for this.
+>=20
+> I've submitted a v2 using Michals proposed fix for kvmalloc api, if
+> thats merged no fixes are required in the callers, so this rhashtable
+> patch can be discarded.
 
