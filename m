@@ -2,353 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF76F5ECD73
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 21:59:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77B4E5ECD78
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 21:59:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232465AbiI0T72 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 15:59:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52246 "EHLO
+        id S232496AbiI0T7c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 15:59:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232426AbiI0T66 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 15:58:58 -0400
-Received: from mx08lb.world4you.com (mx08lb.world4you.com [81.19.149.118])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 523FD326F5;
-        Tue, 27 Sep 2022 12:58:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=n1s8hqyifdPC7N0Zubm2N8vcr8Qm5zqyKnmMfEsg5gg=; b=S1he1hOlQSDcQ/V+LtC/TqKywo
-        76XF8NMCKYUSmJjwCg0MnbQiAoKGaQu5oFD69si/+mOFFRRz8Zo+FD2K1jzcFNsl+1sw9Ob9TOuRf
-        erABjZ2pbEO6ZuiX5mjsdyyVTjOY6/wAyz+XVzfe/o7Pek0x0+K+itLxvhRaKAqKp9mc=;
-Received: from 88-117-54-199.adsl.highway.telekom.at ([88.117.54.199] helo=hornet.engleder.at)
-        by mx08lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <gerhard@engleder-embedded.com>)
-        id 1odGjB-0005u7-9U; Tue, 27 Sep 2022 21:58:49 +0200
-From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
-        Gerhard Engleder <gerhard@engleder-embedded.com>
-Subject: [PATCH net-next v4 6/6] tsnep: Use page pool for RX
-Date:   Tue, 27 Sep 2022 21:58:42 +0200
-Message-Id: <20220927195842.44641-7-gerhard@engleder-embedded.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220927195842.44641-1-gerhard@engleder-embedded.com>
-References: <20220927195842.44641-1-gerhard@engleder-embedded.com>
+        with ESMTP id S232203AbiI0T7N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 15:59:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 754254622B
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 12:59:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1664308751;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Dx5HDOePnyxgHzqa6DOD5MnqegsYWwrLtgMoZQ1P8dI=;
+        b=dzDrfmbzZenJ4kt4SoG0g6RKdm1TcbxEVaoqmg6cma8pgOVlurVLGVxSTHZHD7BG7yGENt
+        MqeGCwCXJ92uxWUCqISNdxluncYQzPfo0GGO11L0A8WXehN7bU+pZ+g2q9z5kmmP3rOp4+
+        2EYBGNwWWiDlDnlK+DyTcmt/Ci1spQE=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-348-QcFafshdP0GfqjPcSAOMcQ-1; Tue, 27 Sep 2022 15:59:10 -0400
+X-MC-Unique: QcFafshdP0GfqjPcSAOMcQ-1
+Received: by mail-wm1-f72.google.com with SMTP id p36-20020a05600c1da400b003b4faefa2b9so6008278wms.6
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 12:59:10 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=Dx5HDOePnyxgHzqa6DOD5MnqegsYWwrLtgMoZQ1P8dI=;
+        b=aQH+RRapXZGld+MUiQxmBK6pLDMbL8lQjK3jlh0GbKPQ5xFKKsg6mUjaYgc9VIJRPh
+         30CygvFE8pBtPxNg9IWw9mvm4fmd+sqWYd6B5i23UKc056C/pd+PboFuNrs6MZTDdVkF
+         gG7wAu2JPLYwf5LlFvCmX3HGTdata6+JLXEMtb2UxyiXvc9ar9GKqP32yU/61rP9xLx4
+         Vxe1UDi52anzIxynfnwft6PEw+722BOYGvqKtB5paPw72uKJBVrGXNz6gjgXdQGmVeeD
+         UaYPCaYxUwF212qTkxFaqOTmFOmVg17yXH6fcBiblsyXZ7Z3Io35qic1skqKxkAf/M38
+         S3zQ==
+X-Gm-Message-State: ACrzQf1Vb1EENIrswyZVV9xDT1rBcCtemSMw1E8E4blhxnBb1Aa4vJEl
+        4rMWvxTfeuJ8sF2jiPXGtUN816iNIhGEDXXxepxRopWw5SLOFnRJKAd9UF7G7/uuckJ4+Dt9U4i
+        gHRJRbmTlI9cCRwgN
+X-Received: by 2002:a05:6000:1a8a:b0:22a:33aa:a907 with SMTP id f10-20020a0560001a8a00b0022a33aaa907mr17893669wry.322.1664308748213;
+        Tue, 27 Sep 2022 12:59:08 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM7eOWYFV9iprtkvNGfif9TK9/JHNd5re5oxCk70ig0yrmbrjCmGTXstvwdg4i4Hc1mUWp0nvA==
+X-Received: by 2002:a05:6000:1a8a:b0:22a:33aa:a907 with SMTP id f10-20020a0560001a8a00b0022a33aaa907mr17893654wry.322.1664308747882;
+        Tue, 27 Sep 2022 12:59:07 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-104-40.dyn.eolo.it. [146.241.104.40])
+        by smtp.gmail.com with ESMTPSA id f12-20020a05600c4e8c00b003b33943ce5esm17310012wmq.32.2022.09.27.12.59.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Sep 2022 12:59:07 -0700 (PDT)
+Message-ID: <6502e1a45526f97a1e6d7d27bbe07e3bb3623de3.camel@redhat.com>
+Subject: Re: [PATCH net-next 0/4] shrink struct ubuf_info
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Pavel Begunkov <asml.silence@gmail.com>, netdev@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        xen-devel@lists.xenproject.org, Wei Liu <wei.liu@kernel.org>,
+        Paul Durrant <paul@xen.org>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>
+Date:   Tue, 27 Sep 2022 21:59:06 +0200
+In-Reply-To: <c06897d4-4883-2756-87f9-9b10ab495c43@gmail.com>
+References: <cover.1663892211.git.asml.silence@gmail.com>
+         <7fef56880d40b9d83cc99317df9060c4e7cdf919.camel@redhat.com>
+         <021d8ea4-891c-237d-686e-64cecc2cc842@gmail.com>
+         <bbb212f6-0165-0747-d99d-b49acbb02a80@gmail.com>
+         <85cccb780608e830024fc82a8e4f703031646f4e.camel@redhat.com>
+         <c06897d4-4883-2756-87f9-9b10ab495c43@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-AV-Do-Run: Yes
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use page pool for RX buffer handling. Makes RX path more efficient and
-is required prework for future XDP support.
+On Tue, 2022-09-27 at 19:48 +0100, Pavel Begunkov wrote:
+> On 9/27/22 18:56, Paolo Abeni wrote:
+> > On Tue, 2022-09-27 at 18:16 +0100, Pavel Begunkov wrote:
+> > > On 9/27/22 15:28, Pavel Begunkov wrote:
+> > > > Hello Paolo,
+> > > > 
+> > > > On 9/27/22 14:49, Paolo Abeni wrote:
+> > > > > Hello,
+> > > > > 
+> > > > > On Fri, 2022-09-23 at 17:39 +0100, Pavel Begunkov wrote:
+> > > > > > struct ubuf_info is large but not all fields are needed for all
+> > > > > > cases. We have limited space in io_uring for it and large ubuf_info
+> > > > > > prevents some struct embedding, even though we use only a subset
+> > > > > > of the fields. It's also not very clean trying to use this typeless
+> > > > > > extra space.
+> > > > > > 
+> > > > > > Shrink struct ubuf_info to only necessary fields used in generic paths,
+> > > > > > namely ->callback, ->refcnt and ->flags, which take only 16 bytes. And
+> > > > > > make MSG_ZEROCOPY and some other users to embed it into a larger struct
+> > > > > > ubuf_info_msgzc mimicking the former ubuf_info.
+> > > > > > 
+> > > > > > Note, xen/vhost may also have some cleaning on top by creating
+> > > > > > new structs containing ubuf_info but with proper types.
+> > > > > 
+> > > > > That sounds a bit scaring to me. If I read correctly, every uarg user
+> > > > > should check 'uarg->callback == msg_zerocopy_callback' before accessing
+> > > > > any 'extend' fields.
+> > > > 
+> > > > Providers of ubuf_info access those fields via callbacks and so already
+> > > > know the actual structure used. The net core, on the opposite, should
+> > > > keep it encapsulated and not touch them at all.
+> > > > 
+> > > > The series lists all places where we use extended fields just on the
+> > > > merit of stripping the structure of those fields and successfully
+> > > > building it. The only user in net/ipv{4,6}/* is MSG_ZEROCOPY, which
+> > > > again uses callbacks.
+> > > > 
+> > > > Sounds like the right direction for me. There is a couple of
+> > > > places where it might get type safer, i.e. adding types instead
+> > > > of void* in for struct tun_msg_ctl and getting rid of one macro
+> > > > hiding types in xen. But seems more like TODO for later.
+> > > > 
+> > > > > AFAICS the current code sometimes don't do the
+> > > > > explicit test because the condition is somewhat implied, which in turn
+> > > > > is quite hard to track.
+> > > > > 
+> > > > > clearing uarg->zerocopy for the 'wrong' uarg was armless and undetected
+> > > > > before this series, and after will trigger an oops..
+> > > > 
+> > > > And now we don't have this field at all to access, considering that
+> > > > nobody blindly casts it.
+> > > > 
+> > > > > There is some noise due to uarg -> uarg_zc renaming which make the
+> > > > > series harder to review. Have you considered instead keeping the old
+> > > > > name and introducing a smaller 'struct ubuf_info_common'? the overall
+> > > > > code should be mostly the same, but it will avoid the above mentioned
+> > > > > noise.
+> > > > 
+> > > > I don't think there will be less noise this way, but let me try
+> > > > and see if I can get rid of some churn.
+> > > 
+> > > It doesn't look any better for me
+> > > 
+> > > TL;DR; This series converts only 3 users: tap, xen and MSG_ZEROCOPY
+> > > and doesn't touch core code. If we do ubuf_info_common though I'd need
+> > > to convert lots of places in skbuff.c and multiple places across
+> > > tcp/udp, which is much worse.
+> > 
+> > Uhmm... I underlook the fact we must preserve the current accessors for
+> > the common fields.
+> > 
+> > I guess something like the following could do (completely untested,
+> > hopefully should illustrate the idea):
+> > 
+> > struct ubuf_info {
+> > 	struct_group_tagged(ubuf_info_common, common,
+> > 		void (*callback)(struct sk_buff *, struct ubuf_info *,
+> >                           bool zerocopy_success);
+> > 		refcount_t refcnt;
+> > 	        u8 flags;
+> > 	);
+> > 
+> > 	union {
+> >                  struct {
+> >                          unsigned long desc;
+> >                          void *ctx;
+> >                  };
+> >                  struct {
+> >                          u32 id;
+> >                          u16 len;
+> >                          u16 zerocopy:1;
+> >                          u32 bytelen;
+> >                  };
+> >          };
+> > 
+> >          struct mmpin {
+> >                  struct user_struct *user;
+> >                  unsigned int num_pg;
+> >          } mmp;
+> > };
+> > 
+> > Then you should be able to:
+> > - access ubuf_info->callback,
+> > - access the same field via ubuf_info->common.callback
+> > - declare variables as 'struct ubuf_info_commom' with appropriate
+> > contents.
+> > 
+> > WDYT?
+> 
+> Interesting, I didn't think about struct_group, this would
+> let to split patches better and would limit non-core changes.
+> But if the plan is to convert the core helpers to
+> ubuf_info_common, than I think it's still messier than changing
+> ubuf providers only.
+> 
+> I can do the exercise, but I don't really see what is the goal.
+> Let me ask this, if we forget for a second how diffs look,
+> do you care about which pair is going to be in the end?
 
-Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
----
- drivers/net/ethernet/engleder/Kconfig      |   1 +
- drivers/net/ethernet/engleder/tsnep.h      |   5 +-
- drivers/net/ethernet/engleder/tsnep_main.c | 162 ++++++++++++---------
- 3 files changed, 100 insertions(+), 68 deletions(-)
+Uhm... I proposed this initially with the goal of remove non fuctional
+changes from a patch that was hard to digest for me (4/4). So it's
+about diffstat to me ;) 
 
-diff --git a/drivers/net/ethernet/engleder/Kconfig b/drivers/net/ethernet/engleder/Kconfig
-index f4e2b1102d8f..3df6bf476ae7 100644
---- a/drivers/net/ethernet/engleder/Kconfig
-+++ b/drivers/net/ethernet/engleder/Kconfig
-@@ -21,6 +21,7 @@ config TSNEP
- 	depends on HAS_IOMEM && HAS_DMA
- 	depends on PTP_1588_CLOCK_OPTIONAL
- 	select PHYLIB
-+	select PAGE_POOL
- 	help
- 	  Support for the Engleder TSN endpoint Ethernet MAC IP Core.
- 
-diff --git a/drivers/net/ethernet/engleder/tsnep.h b/drivers/net/ethernet/engleder/tsnep.h
-index 2ca34ae9b55a..09a723b827c7 100644
---- a/drivers/net/ethernet/engleder/tsnep.h
-+++ b/drivers/net/ethernet/engleder/tsnep.h
-@@ -96,9 +96,9 @@ struct tsnep_rx_entry {
- 
- 	u32 properties;
- 
--	struct sk_buff *skb;
-+	struct page *page;
- 	size_t len;
--	DEFINE_DMA_UNMAP_ADDR(dma);
-+	dma_addr_t dma;
- };
- 
- struct tsnep_rx {
-@@ -113,6 +113,7 @@ struct tsnep_rx {
- 	int read;
- 	u32 owner_counter;
- 	int increment_owner_counter;
-+	struct page_pool *page_pool;
- 
- 	u32 packets;
- 	u32 bytes;
-diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/ethernet/engleder/tsnep_main.c
-index a6b81f32d76b..8a93d0aa7faa 100644
---- a/drivers/net/ethernet/engleder/tsnep_main.c
-+++ b/drivers/net/ethernet/engleder/tsnep_main.c
-@@ -27,10 +27,10 @@
- #include <linux/phy.h>
- #include <linux/iopoll.h>
- 
--#define RX_SKB_LENGTH (round_up(TSNEP_RX_INLINE_METADATA_SIZE + ETH_HLEN + \
--				TSNEP_MAX_FRAME_SIZE + ETH_FCS_LEN, 4))
--#define RX_SKB_RESERVE ((16 - TSNEP_RX_INLINE_METADATA_SIZE) + NET_IP_ALIGN)
--#define RX_SKB_ALLOC_LENGTH (RX_SKB_RESERVE + RX_SKB_LENGTH)
-+#define TSNEP_SKB_PAD (NET_SKB_PAD + NET_IP_ALIGN)
-+#define TSNEP_HEADROOM ALIGN(TSNEP_SKB_PAD, 4)
-+#define TSNEP_MAX_RX_BUF_SIZE (PAGE_SIZE - TSNEP_HEADROOM - \
-+			       SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
- 
- #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
- #define DMA_ADDR_HIGH(dma_addr) ((u32)(((dma_addr) >> 32) & 0xFFFFFFFF))
-@@ -587,14 +587,15 @@ static void tsnep_rx_ring_cleanup(struct tsnep_rx *rx)
- 
- 	for (i = 0; i < TSNEP_RING_SIZE; i++) {
- 		entry = &rx->entry[i];
--		if (dma_unmap_addr(entry, dma))
--			dma_unmap_single(dmadev, dma_unmap_addr(entry, dma),
--					 dma_unmap_len(entry, len),
--					 DMA_FROM_DEVICE);
--		if (entry->skb)
--			dev_kfree_skb(entry->skb);
-+		if (entry->page)
-+			page_pool_put_full_page(rx->page_pool, entry->page,
-+						false);
-+		entry->page = NULL;
- 	}
- 
-+	if (rx->page_pool)
-+		page_pool_destroy(rx->page_pool);
-+
- 	memset(rx->entry, 0, sizeof(rx->entry));
- 
- 	for (i = 0; i < TSNEP_RING_PAGE_COUNT; i++) {
-@@ -607,31 +608,19 @@ static void tsnep_rx_ring_cleanup(struct tsnep_rx *rx)
- 	}
- }
- 
--static int tsnep_rx_alloc_and_map_skb(struct tsnep_rx *rx,
--				      struct tsnep_rx_entry *entry)
-+static int tsnep_rx_alloc_buffer(struct tsnep_rx *rx,
-+				 struct tsnep_rx_entry *entry)
- {
--	struct device *dmadev = rx->adapter->dmadev;
--	struct sk_buff *skb;
--	dma_addr_t dma;
-+	struct page *page;
- 
--	skb = __netdev_alloc_skb(rx->adapter->netdev, RX_SKB_ALLOC_LENGTH,
--				 GFP_ATOMIC | GFP_DMA);
--	if (!skb)
-+	page = page_pool_dev_alloc_pages(rx->page_pool);
-+	if (unlikely(!page))
- 		return -ENOMEM;
- 
--	skb_reserve(skb, RX_SKB_RESERVE);
--
--	dma = dma_map_single(dmadev, skb->data, RX_SKB_LENGTH,
--			     DMA_FROM_DEVICE);
--	if (dma_mapping_error(dmadev, dma)) {
--		dev_kfree_skb(skb);
--		return -ENOMEM;
--	}
--
--	entry->skb = skb;
--	entry->len = RX_SKB_LENGTH;
--	dma_unmap_addr_set(entry, dma, dma);
--	entry->desc->rx = __cpu_to_le64(dma);
-+	entry->page = page;
-+	entry->len = TSNEP_MAX_RX_BUF_SIZE;
-+	entry->dma = page_pool_get_dma_addr(entry->page);
-+	entry->desc->rx = __cpu_to_le64(entry->dma + TSNEP_SKB_PAD);
- 
- 	return 0;
- }
-@@ -640,6 +629,7 @@ static int tsnep_rx_ring_init(struct tsnep_rx *rx)
- {
- 	struct device *dmadev = rx->adapter->dmadev;
- 	struct tsnep_rx_entry *entry;
-+	struct page_pool_params pp_params = { 0 };
- 	struct tsnep_rx_entry *next_entry;
- 	int i, j;
- 	int retval;
-@@ -661,12 +651,28 @@ static int tsnep_rx_ring_init(struct tsnep_rx *rx)
- 			entry->desc_dma = rx->page_dma[i] + TSNEP_DESC_SIZE * j;
- 		}
- 	}
-+
-+	pp_params.flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV;
-+	pp_params.order = 0;
-+	pp_params.pool_size = TSNEP_RING_SIZE;
-+	pp_params.nid = dev_to_node(dmadev);
-+	pp_params.dev = dmadev;
-+	pp_params.dma_dir = DMA_FROM_DEVICE;
-+	pp_params.max_len = TSNEP_MAX_RX_BUF_SIZE;
-+	pp_params.offset = TSNEP_SKB_PAD;
-+	rx->page_pool = page_pool_create(&pp_params);
-+	if (IS_ERR(rx->page_pool)) {
-+		retval = PTR_ERR(rx->page_pool);
-+		rx->page_pool = NULL;
-+		goto failed;
-+	}
-+
- 	for (i = 0; i < TSNEP_RING_SIZE; i++) {
- 		entry = &rx->entry[i];
- 		next_entry = &rx->entry[(i + 1) % TSNEP_RING_SIZE];
- 		entry->desc->next = __cpu_to_le64(next_entry->desc_dma);
- 
--		retval = tsnep_rx_alloc_and_map_skb(rx, entry);
-+		retval = tsnep_rx_alloc_buffer(rx, entry);
- 		if (retval)
- 			goto failed;
- 	}
-@@ -682,7 +688,7 @@ static void tsnep_rx_activate(struct tsnep_rx *rx, int index)
- {
- 	struct tsnep_rx_entry *entry = &rx->entry[index];
- 
--	/* RX_SKB_LENGTH is a multiple of 4 */
-+	/* TSNEP_MAX_RX_BUF_SIZE is a multiple of 4 */
- 	entry->properties = entry->len & TSNEP_DESC_LENGTH_MASK;
- 	entry->properties |= TSNEP_DESC_INTERRUPT_FLAG;
- 	if (index == rx->increment_owner_counter) {
-@@ -705,19 +711,52 @@ static void tsnep_rx_activate(struct tsnep_rx *rx, int index)
- 	entry->desc->properties = __cpu_to_le32(entry->properties);
- }
- 
-+static struct sk_buff *tsnep_build_skb(struct tsnep_rx *rx, struct page *page,
-+				       int length)
-+{
-+	struct sk_buff *skb;
-+
-+	skb = napi_build_skb(page_address(page), PAGE_SIZE);
-+	if (unlikely(!skb))
-+		return NULL;
-+
-+	/* update pointers within the skb to store the data */
-+	skb_reserve(skb, TSNEP_SKB_PAD + TSNEP_RX_INLINE_METADATA_SIZE);
-+	__skb_put(skb, length - TSNEP_RX_INLINE_METADATA_SIZE - ETH_FCS_LEN);
-+
-+	if (rx->adapter->hwtstamp_config.rx_filter == HWTSTAMP_FILTER_ALL) {
-+		struct skb_shared_hwtstamps *hwtstamps = skb_hwtstamps(skb);
-+		struct tsnep_rx_inline *rx_inline =
-+			(struct tsnep_rx_inline *)(page_address(page) +
-+						   TSNEP_SKB_PAD);
-+
-+		skb_shinfo(skb)->tx_flags |=
-+			SKBTX_HW_TSTAMP_NETDEV;
-+		memset(hwtstamps, 0, sizeof(*hwtstamps));
-+		hwtstamps->netdev_data = rx_inline;
-+	}
-+
-+	skb_record_rx_queue(skb, rx->queue_index);
-+	skb->protocol = eth_type_trans(skb, rx->adapter->netdev);
-+
-+	return skb;
-+}
-+
- static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
- 			 int budget)
- {
- 	struct device *dmadev = rx->adapter->dmadev;
- 	int done = 0;
-+	enum dma_data_direction dma_dir;
- 	struct tsnep_rx_entry *entry;
-+	struct page *page;
- 	struct sk_buff *skb;
--	size_t len;
--	dma_addr_t dma;
- 	int length;
- 	bool enable = false;
- 	int retval;
- 
-+	dma_dir = page_pool_get_dma_dir(rx->page_pool);
-+
- 	while (likely(done < budget)) {
- 		entry = &rx->entry[rx->read];
- 		if ((__le32_to_cpu(entry->desc_wb->properties) &
-@@ -730,43 +769,34 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
- 		 */
- 		dma_rmb();
- 
--		skb = entry->skb;
--		len = dma_unmap_len(entry, len);
--		dma = dma_unmap_addr(entry, dma);
-+		prefetch(page_address(entry->page) + TSNEP_SKB_PAD);
-+		length = __le32_to_cpu(entry->desc_wb->properties) &
-+			 TSNEP_DESC_LENGTH_MASK;
-+		dma_sync_single_range_for_cpu(dmadev, entry->dma, TSNEP_SKB_PAD,
-+					      length, dma_dir);
-+		page = entry->page;
- 
- 		/* forward skb only if allocation is successful, otherwise
--		 * skb is reused and frame dropped
-+		 * page is reused and frame dropped
- 		 */
--		retval = tsnep_rx_alloc_and_map_skb(rx, entry);
-+		retval = tsnep_rx_alloc_buffer(rx, entry);
- 		if (!retval) {
--			dma_unmap_single(dmadev, dma, len, DMA_FROM_DEVICE);
--
--			length = __le32_to_cpu(entry->desc_wb->properties) &
--				 TSNEP_DESC_LENGTH_MASK;
--			skb_put(skb, length - ETH_FCS_LEN);
--			if (rx->adapter->hwtstamp_config.rx_filter ==
--			    HWTSTAMP_FILTER_ALL) {
--				struct skb_shared_hwtstamps *hwtstamps =
--					skb_hwtstamps(skb);
--				struct tsnep_rx_inline *rx_inline =
--					(struct tsnep_rx_inline *)skb->data;
--
--				skb_shinfo(skb)->tx_flags |=
--					SKBTX_HW_TSTAMP_NETDEV;
--				memset(hwtstamps, 0, sizeof(*hwtstamps));
--				hwtstamps->netdev_data = rx_inline;
--			}
--			skb_pull(skb, TSNEP_RX_INLINE_METADATA_SIZE);
--			skb_record_rx_queue(skb, rx->queue_index);
--			skb->protocol = eth_type_trans(skb,
--						       rx->adapter->netdev);
-+			skb = tsnep_build_skb(rx, page, length);
-+			if (skb) {
-+				page_pool_release_page(rx->page_pool, page);
-+
-+				rx->packets++;
-+				rx->bytes += length -
-+					     TSNEP_RX_INLINE_METADATA_SIZE;
-+				if (skb->pkt_type == PACKET_MULTICAST)
-+					rx->multicast++;
- 
--			rx->packets++;
--			rx->bytes += length - TSNEP_RX_INLINE_METADATA_SIZE;
--			if (skb->pkt_type == PACKET_MULTICAST)
--				rx->multicast++;
-+				napi_gro_receive(napi, skb);
-+			} else {
-+				page_pool_recycle_direct(rx->page_pool, page);
- 
--			napi_gro_receive(napi, skb);
-+				rx->dropped++;
-+			}
- 			done++;
- 		} else {
- 			rx->dropped++;
--- 
-2.30.2
+On the flip side the change suggested would probably not be as
+straighforward as I would hope for.
+
+> ubuf_info_common/ubuf_info vs ubuf_info/ubuf_info_msgzc?
+
+The specific names used are not much relevant.
+
+> Are there you concerned about naming or is there more to it?
+
+I feel like this series is potentially dangerous, but I could not spot
+bugs into the code. I would have felt more relaxed eariler in the devel
+cycle.
+
+Cheers,
+
+Paolo
 
