@@ -2,175 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B45995EC7D0
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 17:33:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62D2E5EC846
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 17:40:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232237AbiI0Pdj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 11:33:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47452 "EHLO
+        id S232616AbiI0PkK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 11:40:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232285AbiI0Pde (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 11:33:34 -0400
-Received: from mail-ot1-f43.google.com (mail-ot1-f43.google.com [209.85.210.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 371F11C00FB;
-        Tue, 27 Sep 2022 08:33:33 -0700 (PDT)
-Received: by mail-ot1-f43.google.com with SMTP id r13-20020a056830418d00b0065601df69c0so6545124otu.7;
-        Tue, 27 Sep 2022 08:33:33 -0700 (PDT)
+        with ESMTP id S232587AbiI0Pjg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 11:39:36 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 977407172B
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 08:37:38 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id q15-20020a17090a304f00b002002ac83485so10471746pjl.0
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 08:37:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=ykCQj/F1ypqbvqexiYMjYhFxNcu6uF4BGSAsLrFhFos=;
+        b=AoTNrZ6i/DA3ZJMwyJ1E0YeMp99pdWHG1nuqWQZsW7ASfoRYoBHZhy4+sypx3iJ914
+         aD6tisqFBf3zyz/vv99eurUL8/9mD4qSULoVzrrnjSA/ae4Vz7KBUZCVx8ROOTsi8K8E
+         foooo0cNNM4fUY5TRC6JrjK2osBxddtlVAkt8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=zjI6ubeIbgQT2Yf0aGxPciDY+P2liDNjOEnL2+LkAyE=;
-        b=cN3Bg1R7tKngsluouxTcd9k3VeYyD9sY7FjN6G5SWlngQRuZUpmrBYK9MkKBJ6dkTh
-         E9v+2vvW6/dVwS2ArzV1xzzH5CiiE6Jdxj2Of+qUBVZk4rwgG7u11DV0pkdpF+bQ/Czv
-         eHhn7Jb3eiIbrPRn+voZ3I1EwbOIHkkhS6qWSpj6OjOuBCXoy8aESrM6RsGA+nJ3RCKu
-         lTaGXckJSOF9z7TqbBNtlx9vu+2/IOSHlp5N932ryCDxG4J/8fv31BwujvuxF3lOy3Cu
-         dMMXjdopz2Ztk91BkhkaTjftDIfc7uGEApkqmUfCcU76B4gCMAM5i5wvhx0Xo438gvTr
-         izqA==
-X-Gm-Message-State: ACrzQf0BQaiJlFgBCbbzFcFB8iQ7A7A+AtwpF59PwUKMTuaNcZrusjVb
-        Yz+AwY7BCTbs/vFRqo30Ug==
-X-Google-Smtp-Source: AMsMyM5eq9K8ICY6X0Mr3tOx3IJ4dvoj1unYKLRLY6r5PgzFpoQnkpXjPvXns1r165xN5VFsaDkAWw==
-X-Received: by 2002:a05:6830:1d4c:b0:65b:5ca1:3c5c with SMTP id p12-20020a0568301d4c00b0065b5ca13c5cmr12714674oth.77.1664292812364;
-        Tue, 27 Sep 2022 08:33:32 -0700 (PDT)
-Received: from macbook.herring.priv (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id o11-20020a4ae58b000000b00425678b9c4bsm744517oov.0.2022.09.27.08.33.31
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=ykCQj/F1ypqbvqexiYMjYhFxNcu6uF4BGSAsLrFhFos=;
+        b=FWmKeGahsH3iGDcSxcImt5WmvkAaFlSQ4B9+OvZXnny+Nu2OFReMX9oG2gKHBEP98h
+         JvOOhCgnsQUCb8OTmID13apuFvri+O/uGUR1xMliq8K7HKYh0DfSbHYO+8FBMosTB/4y
+         ObLBeQ1WxNncF6/br62lp5pFVkPsCpcT4X//fuB7AMHcprragU0dOdDaz5MmyNsVqmgX
+         5gu83uzOrdx75CSANUmAaxlR1bKttZHEBOLtjAPSDijEzX7kKnEApKYKClt/5TB67Z31
+         SxNsuIwoYw7qMZlAY84QQw7QYVBO6dM7lHF4MFPMA2AsBxbHhxLWjS9LPbR52CdglmkO
+         5j6w==
+X-Gm-Message-State: ACrzQf1MGMFegGPpRfVIEcxPTRhKmQdIksH/WSPEOnRsfPzA7TkoJqME
+        IuvSqk53yI90l6McF784tdY6jA==
+X-Google-Smtp-Source: AMsMyM4naSQ2tfT6ukvZrllCFAbhDgh/m5kkTJyLRd93cbWNuZl123In5MUJoO5CqKmQlmhLuDEW9Q==
+X-Received: by 2002:a17:90b:2785:b0:203:6279:f03a with SMTP id pw5-20020a17090b278500b002036279f03amr5267591pjb.36.1664293031076;
+        Tue, 27 Sep 2022 08:37:11 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id i7-20020a170902c94700b001754064ac31sm1720685pla.280.2022.09.27.08.37.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Sep 2022 08:33:32 -0700 (PDT)
-Received: (nullmailer pid 4069847 invoked by uid 1000);
-        Tue, 27 Sep 2022 15:33:31 -0000
-Date:   Tue, 27 Sep 2022 10:33:31 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+        Tue, 27 Sep 2022 08:37:10 -0700 (PDT)
+From:   Kees Cook <keescook@chromium.org>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        Camelia Alexandra Groza <camelia.groza@nxp.com>,
-        netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        "linuxppc-dev @ lists . ozlabs . org" <linuxppc-dev@lists.ozlabs.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next v5 1/9] dt-bindings: net: Expand pcs-handle to
- an array
-Message-ID: <20220927153331.GA4057163-robh@kernel.org>
-References: <20220926190322.2889342-1-sean.anderson@seco.com>
- <20220926190322.2889342-2-sean.anderson@seco.com>
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        syzbot+a2c4601efc75848ba321@syzkaller.appspotmail.com,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: [PATCH] net: sched: cls_u32: Avoid memcpy() false-positive warning
+Date:   Tue, 27 Sep 2022 08:37:01 -0700
+Message-Id: <20220927153700.3071688-1-keescook@chromium.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220926190322.2889342-2-sean.anderson@seco.com>
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1780; h=from:subject; bh=a5kfZGJ20b02uPWXgL+F0pZhrLA3yDR5ugsapwWzdVQ=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBjMxibiOsVeOwkPIgAZeyeGKuoXXag6IdhCVwdK/mY wPyLQjGJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYzMYmwAKCRCJcvTf3G3AJriyEA CPC7YSelum/IEpcDi7K97nEgWYsr8mtNQH1474+2H4xJLyhNW3HAMl1vTyCeMjvYmOD1aYN0xQ5teM LmKF6oPT44UK0btmPpAVOqyGNOV3/R8NvRRcCt3I/qv3AsQP6Ly3Ah4jaCYlNE5DYQsG+coJVVmJB7 535LwZTqcC9rI4xRNGfLr8af/UnLd9FGt2KbBnZ4NK5hiTgDET1qGYwK+EmgBpRtJZgN+SeagpND1b EdSXKgo7Zouz8Sh7xgWTYmHvOPDAbC3nb+oUmd+tg3rw9i2Cztj3UVHhxf8jQFJ1PNSi8Szmw5Edh/ DWl13x831rcqnPaIuaT8Abt4L+ypjwZZ6flOQxYCXGR5uIwLZBlpH65AMJJgRsZSsUJDrZd62N5V2w S39qNbLuiohGb+gBSPI/UpLSN5z1HeVvMkK+CfXq9Y7/R5xGKstH/COHXZDSoWjHNwYWV3xNeDWLCx 2JeNqT5Nfh7dI7MK6/RowSVlm4wFzOV+8sGJHeYY55Hebx8Ss4SGDx0VPWHJEVg9dEvIFJ/yARARp4 WEPBLJ2t2ncEXWLliNDmYK1gx6DaajGEZjW/c65rTBOUXqMA/r/6XPr38JGNyvHOiMyMfMQg+b2rE6 KknkWeeGmjYq1ZOABLLYpRno65rTj6e23knzZGqxvCR7zLXEsNl3ci2t24ZA==
+X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 26, 2022 at 03:03:13PM -0400, Sean Anderson wrote:
-> This allows multiple phandles to be specified for pcs-handle, such as
-> when multiple PCSs are present for a single MAC. To differentiate
-> between them, also add a pcs-handle-names property.
-> 
-> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-> ---
-> This was previously submitted as [1]. I expect to update this series
-> more, so I have moved it here. Changes from that version include:
-> - Add maxItems to existing bindings
-> - Add a dependency from pcs-names to pcs-handle.
-> 
-> [1] https://lore.kernel.org/netdev/20220711160519.741990-3-sean.anderson@seco.com/
-> 
-> (no changes since v4)
-> 
-> Changes in v4:
-> - Use pcs-handle-names instead of pcs-names, as discussed
-> 
-> Changes in v3:
-> - New
-> 
->  .../bindings/net/dsa/renesas,rzn1-a5psw.yaml           |  1 +
->  .../devicetree/bindings/net/ethernet-controller.yaml   | 10 +++++++++-
->  .../devicetree/bindings/net/fsl,qoriq-mc-dpmac.yaml    |  2 +-
->  3 files changed, 11 insertions(+), 2 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml b/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
-> index 7ca9c19a157c..a53552ee1d0e 100644
-> --- a/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
-> +++ b/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
-> @@ -74,6 +74,7 @@ properties:
->  
->          properties:
->            pcs-handle:
-> +            maxItems: 1
+To work around a misbehavior of the compiler's ability to see into
+composite flexible array structs (as detailed in the coming memcpy()
+hardening series[1]), use unsafe_memcpy(), as the sizing,
+bounds-checking, and allocation are all very tightly coupled here.
+This silences the false-positive reported by syzbot:
 
-Forgot to remove the $ref here.
+  memcpy: detected field-spanning write (size 80) of single field "&n->sel" at net/sched/cls_u32.c:1043 (size 16)
 
->              description:
->                phandle pointing to a PCS sub-node compatible with
->                renesas,rzn1-miic.yaml#
-> diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-> index 4b3c590fcebf..5bb2ec2963cf 100644
-> --- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-> +++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-> @@ -108,11 +108,16 @@ properties:
->      $ref: "#/properties/phy-connection-type"
->  
->    pcs-handle:
-> -    $ref: /schemas/types.yaml#/definitions/phandle
-> +    $ref: /schemas/types.yaml#/definitions/phandle-array
+[1] https://lore.kernel.org/linux-hardening/20220901065914.1417829-2-keescook@chromium.org
 
-'phandle-array' is really a matrix, so this needs a bit more:
+Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Cong Wang <xiyou.wangcong@gmail.com>
+Cc: Jiri Pirko <jiri@resnulli.us>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: netdev@vger.kernel.org
+Reported-by: syzbot+a2c4601efc75848ba321@syzkaller.appspotmail.com
+Link: https://lore.kernel.org/lkml/000000000000a96c0b05e97f0444@google.com/
+Signed-off-by: Kees Cook <keescook@chromium.org>
+---
+ net/sched/cls_u32.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-items:
-  maxItems: 1
+diff --git a/net/sched/cls_u32.c b/net/sched/cls_u32.c
+index 4d27300c287c..5f33472aad36 100644
+--- a/net/sched/cls_u32.c
++++ b/net/sched/cls_u32.c
+@@ -1040,7 +1040,11 @@ static int u32_change(struct net *net, struct sk_buff *in_skb,
+ 	}
+ #endif
+ 
+-	memcpy(&n->sel, s, sel_size);
++	unsafe_memcpy(&n->sel, s, sel_size,
++		      /* A composite flex-array structure destination,
++		       * which was correctly sized with struct_size(),
++		       * bounds-checked against nla_len(), and allocated
++		       * above. */);
+ 	RCU_INIT_POINTER(n->ht_up, ht);
+ 	n->handle = handle;
+ 	n->fshift = s->hmask ? ffs(ntohl(s->hmask)) - 1 : 0;
+-- 
+2.34.1
 
-Which basically says this is phandles with no arg cells.
-
->      description:
->        Specifies a reference to a node representing a PCS PHY device on a MDIO
->        bus to link with an external PHY (phy-handle) if exists.
->  
-> +  pcs-handle-names:
-> +    $ref: /schemas/types.yaml#/definitions/string-array
-
-No need for a type as *-names already has a type.
-
-> +    description:
-> +      The name of each PCS in pcs-handle.
-> +
->    phy-handle:
->      $ref: /schemas/types.yaml#/definitions/phandle
->      description:
-> @@ -216,6 +221,9 @@ properties:
->          required:
->            - speed
->  
-> +dependencies:
-> +  pcs-handle-names: [pcs-handle]
-> +
->  allOf:
->    - if:
->        properties:
-> diff --git a/Documentation/devicetree/bindings/net/fsl,qoriq-mc-dpmac.yaml b/Documentation/devicetree/bindings/net/fsl,qoriq-mc-dpmac.yaml
-> index 7f620a71a972..600240281e8c 100644
-> --- a/Documentation/devicetree/bindings/net/fsl,qoriq-mc-dpmac.yaml
-> +++ b/Documentation/devicetree/bindings/net/fsl,qoriq-mc-dpmac.yaml
-> @@ -31,7 +31,7 @@ properties:
->    phy-mode: true
->  
->    pcs-handle:
-> -    $ref: /schemas/types.yaml#/definitions/phandle
-> +    maxItems: 1
->      description:
->        A reference to a node representing a PCS PHY device found on
->        the internal MDIO bus.
-> -- 
-> 2.35.1.1320.gc452695387.dirty
-> 
-> 
