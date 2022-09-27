@@ -2,177 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 02CA85EC9E4
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 18:46:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FF825EC9EF
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 18:49:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233234AbiI0QqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 12:46:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41230 "EHLO
+        id S233120AbiI0QtS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 12:49:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233101AbiI0Qph (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 12:45:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A26D1C115
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 09:45:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1664297129;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3aYh91Y5WzQL9iD8Qk6Vf/HhWFbftIWDiE0GIw3ZzEc=;
-        b=cdzCuSWH6HAXXxLIxdYHZinTxsty8tgqEPhj7b/si/ZzYHyfktFWF2mrn6RrpYzCpQj+d3
-        3o4eWS+oqX4vlPBssrQQHBslyMyucma080OmbQg9LVRcNWg9dxGGCoLxkOXfnkceMBYkSG
-        SPz8Cf2jvC73+ZDiAbhJ97a3TECyOeY=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-282-Erjm7Ju-PsiPweuK1wRGXQ-1; Tue, 27 Sep 2022 12:45:25 -0400
-X-MC-Unique: Erjm7Ju-PsiPweuK1wRGXQ-1
-Received: by mail-wm1-f70.google.com with SMTP id h187-20020a1c21c4000000b003b51369ff1bso6865149wmh.3
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 09:45:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:x-gm-message-state:from:to:cc:subject:date;
-        bh=3aYh91Y5WzQL9iD8Qk6Vf/HhWFbftIWDiE0GIw3ZzEc=;
-        b=RCdKUFBjUTtJxZ0BUaRNTwIfdESNwEIMBvYWlZZ84fb3sC7QmjHL8cOmTs3qDTPTPF
-         VixULEqduerFIzMAd0xGkX04ih5mJKKppat8SCqcX1nxUGnO4O5EH5JsXmR2oqXfHdXJ
-         lgAvZeWQAM13utYlPHwfvf8hnlaHNgQO8NXn+XEwIbji+PveagE9VIf7VjtHkE1i/1E4
-         xY4njZDG8aP/Ok9tS+njt2ynKSQMXPqFJyfEy1imdnF3+ixuAjuXt85tGIjtmpy8d1PL
-         fJgTeQ9E3YCU3nmhBjE7178xW58K6bHfPQZVn2DVBol+AqwXqLz3GT7nFAVp3unoHxaA
-         AUxg==
-X-Gm-Message-State: ACrzQf1Rt6Zerx08mygVThkgJsdw1WUoacGZDfxHeQ+MAhp5BLoYq/co
-        J9yrlr4eaV4Uw0ba0nEgaSDg5Y8AE3DTUf2NsCC/JC26Rq8n4JF15TLhn1IQyrNXkno801AxKB0
-        KXLs+PsPlVEHY1E9K
-X-Received: by 2002:a05:6000:1081:b0:22a:2ecf:9cf8 with SMTP id y1-20020a056000108100b0022a2ecf9cf8mr16895827wrw.205.1664297123837;
-        Tue, 27 Sep 2022 09:45:23 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM4xfXd99KDnmORegLCH4Mobu+mrKA/QfOT4UCXrEVf80cwvr7snphoIuQO9+NR1l/RPhKpcDQ==
-X-Received: by 2002:a05:6000:1081:b0:22a:2ecf:9cf8 with SMTP id y1-20020a056000108100b0022a2ecf9cf8mr16895793wrw.205.1664297123592;
-        Tue, 27 Sep 2022 09:45:23 -0700 (PDT)
-Received: from vschneid.remote.csb ([185.11.37.247])
-        by smtp.gmail.com with ESMTPSA id t18-20020adfe452000000b00228cd9f6349sm2287334wrm.106.2022.09.27.09.45.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Sep 2022 09:45:22 -0700 (PDT)
-From:   Valentin Schneider <vschneid@redhat.com>
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>
-Subject: Re: [PATCH v4 6/7] sched/topology: Introduce for_each_numa_hop_cpu()
-In-Reply-To: <YzBsonBFi9OJ29UT@yury-laptop>
-References: <20220923132527.1001870-1-vschneid@redhat.com>
- <20220923155542.1212814-5-vschneid@redhat.com>
- <YzBsonBFi9OJ29UT@yury-laptop>
-Date:   Tue, 27 Sep 2022 17:45:21 +0100
-Message-ID: <xhsmhedvw4vha.mognet@vschneid.remote.csb>
+        with ESMTP id S233117AbiI0Qsx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 12:48:53 -0400
+Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 757ADB4AB;
+        Tue, 27 Sep 2022 09:48:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1664297329; x=1695833329;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=KeNqr9c4YEEl6TJaonX4jPKG+rD7IHPilstBlaa2ATY=;
+  b=Qf4J48wZ0/T8RZUFCD8BUhjdaU/hmEBAnRChYAXexgInsa0w74WGYKsW
+   vJRXzVTr4fKvRO23DrFe8H2hRcNjCndk6fhGdn8reoma9IcdwCE31xeCl
+   fF8Lx5XgaLhWqEZWV7xyEr7nQmBF+oNPYLkZEeZO27lHC2honq8uyEABk
+   E=;
+X-IronPort-AV: E=Sophos;i="5.93,349,1654560000"; 
+   d="scan'208";a="249252708"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-28a78e3f.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Sep 2022 16:48:35 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2b-28a78e3f.us-west-2.amazon.com (Postfix) with ESMTPS id BD1FAA2614;
+        Tue, 27 Sep 2022 16:48:34 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Tue, 27 Sep 2022 16:48:34 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.160.214) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
+ Tue, 27 Sep 2022 16:48:31 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <edumazet@google.com>
+CC:     <davem@davemloft.net>, <dsahern@kernel.org>, <kuba@kernel.org>,
+        <kuni1840@gmail.com>, <kuniyu@amazon.com>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <pabeni@redhat.com>, <syzkaller-bugs@googlegroups.com>
+Subject: Re: [PATCH v1 net 5/5] tcp: Fix data races around icsk->icsk_af_ops.
+Date:   Tue, 27 Sep 2022 09:48:24 -0700
+Message-ID: <20220927164824.36027-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <CANn89iLyqG8SRmHhWZOZUc-HDR88z_TNZn4_zbJz5MW4+kh2ZQ@mail.gmail.com>
+References: <CANn89iLyqG8SRmHhWZOZUc-HDR88z_TNZn4_zbJz5MW4+kh2ZQ@mail.gmail.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Originating-IP: [10.43.160.214]
+X-ClientProxiedBy: EX13D44UWC002.ant.amazon.com (10.43.162.169) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25/09/22 07:58, Yury Norov wrote:
-> On Fri, Sep 23, 2022 at 04:55:41PM +0100, Valentin Schneider wrote:
->> +/**
->> + * for_each_numa_hop_cpu - iterate over CPUs by increasing NUMA distance,
->> + *                         starting from a given node.
->> + * @cpu: the iteration variable.
->> + * @node: the NUMA node to start the search from.
->> + *
->> + * Requires rcu_lock to be held.
->> + * Careful: this is a double loop, 'break' won't work as expected.
->
-> This warning concerns me not only because new iteration loop hides
-> complexity and breaks 'break' (sic!), but also because it looks too
-> specific. Why don't you split it, so instead:
->
->        for_each_numa_hop_cpu(cpu, dev->priv.numa_node) {
->                cpus[i] = cpu;
->                if (++i == ncomp_eqs)
->                        goto spread_done;
->        }
->
-> in the following patch you would have something like this:
->
->        for_each_node_hop(hop, node) {
->                struct cpumask hop_cpus = sched_numa_hop_mask(node, hop);
->
->                for_each_cpu_andnot(cpu, hop_cpus, ...) {
->                        cpus[i] = cpu;
->                        if (++i == ncomp_eqs)
->                                goto spread_done;
->                }
->        }
->
-> It looks more bulky, but I believe there will be more users for
-> for_each_node_hop() alone.
->
-> On top of that, if you really like it, you can implement
-> for_each_numa_hop_cpu() if you want.
->
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 27 Sep 2022 09:39:37 -0700
+> On Tue, Sep 27, 2022 at 9:33 AM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+> >
+> > IPV6_ADDRFORM changes icsk->icsk_af_ops under lock_sock(), but
+> > tcp_(get|set)sockopt() read it locklessly.  To avoid load/store
+> > tearing, we need to add READ_ONCE() and WRITE_ONCE() for the reads
+> > and write.
+> 
+> I am pretty sure I have released a syzkaller bug recently with this issue.
+> Have you seen this?
+> If yes, please include the appropriate syzbot tag.
 
-IIUC you're suggesting to introduce an iterator for the cpumasks first, and
-then maybe add one on top for the individual cpus.
+No, I haven't.
+Could you provide the URL?
+I'm happy to include the syzbot tag and KCSAN report in the changelog.
 
-I'm happy to do that, though I have to say I'm keen to keep the CPU
-iterator - IMO the complexity is justified if it is centralized in one
-location and saves us from boring old boilerplate code.
 
->> + * Implementation notes:
->> + *
->> + * Providing it is valid, the mask returned by
->> + *  sched_numa_hop_mask(node, hops+1)
->> + * is a superset of the one returned by
->> + *   sched_numa_hop_mask(node, hops)
->> + * which may not be that useful for drivers that try to spread things out and
->> + * want to visit a CPU not more than once.
->> + *
->> + * To accommodate for that, we use for_each_cpu_andnot() to iterate over the cpus
->> + * of sched_numa_hop_mask(node, hops+1) with the CPUs of
->> + * sched_numa_hop_mask(node, hops) removed, IOW we only iterate over CPUs
->> + * a given distance away (rather than *up to* a given distance).
->> + *
->> + * hops=0 forces us to play silly games: we pass cpu_none_mask to
->> + * for_each_cpu_andnot(), which turns it into for_each_cpu().
->> + */
->> +#define for_each_numa_hop_cpu(cpu, node)				       \
->> +	for (struct { const struct cpumask *curr, *prev; int hops; } __v =     \
->> +		     { sched_numa_hop_mask(node, 0), NULL, 0 };		       \
->
-> This anonymous structure is never used as structure. What for you
-> define it? Why not just declare hops, prev and curr without packing
-> them?
->
-
-I haven't found a way to do this that doesn't involve a struct - apparently
-you can't mix types in a for loop declaration clause.
-
-> Thanks,
-> Yury
->
-
+> > Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> > ---
+> >  net/ipv4/tcp.c           | 10 ++++++----
+> >  net/ipv6/ipv6_sockglue.c |  3 ++-
+> >  2 files changed, 8 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> > index e373dde1f46f..c86dd0ccef5b 100644
+> > --- a/net/ipv4/tcp.c
+> > +++ b/net/ipv4/tcp.c
+> > @@ -3795,8 +3795,9 @@ int tcp_setsockopt(struct sock *sk, int level, int optname, sockptr_t optval,
+> >         const struct inet_connection_sock *icsk = inet_csk(sk);
+> >
+> >         if (level != SOL_TCP)
+> > -               return icsk->icsk_af_ops->setsockopt(sk, level, optname,
+> > -                                                    optval, optlen);
+> > +               /* IPV6_ADDRFORM can change icsk->icsk_af_ops under us. */
+> > +               return READ_ONCE(icsk->icsk_af_ops)->setsockopt(sk, level, optname,
+> > +                                                               optval, optlen);
+> >         return do_tcp_setsockopt(sk, level, optname, optval, optlen);
+> >  }
+> >  EXPORT_SYMBOL(tcp_setsockopt);
+> > @@ -4394,8 +4395,9 @@ int tcp_getsockopt(struct sock *sk, int level, int optname, char __user *optval,
+> >         struct inet_connection_sock *icsk = inet_csk(sk);
+> >
+> >         if (level != SOL_TCP)
+> > -               return icsk->icsk_af_ops->getsockopt(sk, level, optname,
+> > -                                                    optval, optlen);
+> > +               /* IPV6_ADDRFORM can change icsk->icsk_af_ops under us. */
+> > +               return READ_ONCE(icsk->icsk_af_ops)->getsockopt(sk, level, optname,
+> > +                                                               optval, optlen);
+> >         return do_tcp_getsockopt(sk, level, optname, optval, optlen);
+> >  }
+> >  EXPORT_SYMBOL(tcp_getsockopt);
+> > diff --git a/net/ipv6/ipv6_sockglue.c b/net/ipv6/ipv6_sockglue.c
+> > index a89db5872dc3..726d95859898 100644
+> > --- a/net/ipv6/ipv6_sockglue.c
+> > +++ b/net/ipv6/ipv6_sockglue.c
+> > @@ -479,7 +479,8 @@ static int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
+> >
+> >                                 /* Paired with READ_ONCE(sk->sk_prot) in inet6_stream_ops */
+> >                                 WRITE_ONCE(sk->sk_prot, &tcp_prot);
+> > -                               icsk->icsk_af_ops = &ipv4_specific;
+> > +                               /* Paired with READ_ONCE() in tcp_(get|set)sockopt() */
+> > +                               WRITE_ONCE(icsk->icsk_af_ops, &ipv4_specific);
+> >                                 sk->sk_socket->ops = &inet_stream_ops;
+> >                                 sk->sk_family = PF_INET;
+> >                                 tcp_sync_mss(sk, icsk->icsk_pmtu_cookie);
+> > --
+> > 2.30.2
+> >
