@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BA595ECCAC
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 21:16:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 862D75ECCAD
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 21:16:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231759AbiI0TP7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 15:15:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52088 "EHLO
+        id S230384AbiI0TQF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 15:16:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230165AbiI0TPn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 15:15:43 -0400
+        with ESMTP id S231750AbiI0TP6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 15:15:58 -0400
 Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80057.outbound.protection.outlook.com [40.107.8.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C42B67165
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 12:15:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 788406D9F6
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 12:15:44 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=P+uKg8Rlb6YGsstfzJIZCMVPfsCvvlv6xCyaZ6CnLq16aKSJKw/RrJVgVrjI8XpVM3i+WygQ5SxNJKLBtVKftqwPufpW7V7VBzlNA3xE0npY0y/tfy3O9Ej9mVfik8LTB/MQgUHigahk5OrGAnOMdAA78PiBW9EsV/HNx9+rmH/L4WDb8/zRbdBZWh7mc7YTn6YKY6tPIfZRa4Nvfkdp5ciA4I7gG0DeefIBiwyqFv6rwBlVu0pKXo8v6DL7TgHVVJ1Orwi7MA3gcRdqAzrl/VjZQZyLEIJw7qWvtqWIyMWpWb0eRBGukNkUektvcqNIzu0AC8skTciHmjhz6at0Ag==
+ b=daR5lihBwCpkQTOauLLGJJkjBE9GCj3VagLGwGcMmfEHDA7x/Boz8UXCXOi6kOEHdexRK9WT7YvN7KnY1af16XEt7pjcUw7AiAqTG/zGDHi3KIKFa0d4+mL5bXvsHvySLmyvggZ3uGb1XOsvcLDzKlSe197IbWeWlWsDyiAwRyQRpBJSVvj3oID7Z/QaJf4RHnyNYzsIP0a9XKCVF+wiN8DLHIXwuIUfHQqZGErP4Q4oYFoYfrG/ReakfMBozdE5tymhQCUKd+KyhzwcsDoK2aRYAjKZ6rnsMiDbDtBYh95lf60XOp/ST9VXAXijxp1apa0TCkSAjaTfvZNCkVkmFQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CDnbWP/+vtuLUc0YPgcF2sM3AaLL2/JzkDGCCdWmY8M=;
- b=OpnYINSTJiKRQK1+z3Nq+cc4eNKoJH+qv+d9xrGYQ8J2/cFLZOAt5D5TpRQHXwwS4wNmLj1fBdRE0aE5uvhgebF+dVcUoDFnMgc9ar1tvCd/uhf/kNcEKm8byIsCHDoZYNYwpQCrfWGgY5/V4QGsVRGkb3jZLtGTD3K4bHap2ngEKMzATEHg+vXpj2FcuEg2gU9CW0Of35+cODNsEpMRpaIfEi8q+fiOovvvKqHZTJmb0cIrmV5L4FQDyMgoXvFvykbBuApc0T6v00ff1/ZHoHsyecvZZwixJLkGrpLPRPLOBCrflpEQypi3bfxOBPUEZ9MGfpqfX3KmYS/537s00Q==
+ bh=RRRkS+w6rdw4coL7Fs5EUvCTnlglGOeidu66pGN28Go=;
+ b=GK35VOFy5PGCirFa2kRGJlzg/VNixcnDwFyU88+GqKDkMb48bt6HWdk++Q+5JWlsP+FUsPO4fMdLilHn1zk5XX+OjyLalWPS6nYMUa2v5gK8pAmsgkGHIPBeszBZitm5K2ldDpdXm6LcK6Vdea99yjRms++825fM8y8OqADY/EcIqhm4aQxtr0KIaMPFBeqqg2oosTB1mege+tAEme23fmxyg3N9u0OJdTWUAiKKv/B4GR5FSrsKTuAPXPH2rPOvrDpjKx8ZRhheVk6GSeahtT3cM9k93gJ8PZGnn/Oo3ZirsIvBjb3FZdlfpFDgJcC+JjamlcLpvaBHKqRqahm6sA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CDnbWP/+vtuLUc0YPgcF2sM3AaLL2/JzkDGCCdWmY8M=;
- b=FPAPM7OTi+mQ+nY+i/5ljMO2LJ+GwUkA0qnNMASyJj6FgxqwvDJTgA3kGNUjbJfQDbzWUnIqEgOgHJhAvVhby+zP3z8decpyk6lzlHluirNwy3dMf2WJiepgaigMIZQlKh8HSewrkQWO6Qp4JcDNltXW1aIwFUnADhYLEwG+4IU=
+ bh=RRRkS+w6rdw4coL7Fs5EUvCTnlglGOeidu66pGN28Go=;
+ b=ftu0v++Kys7uYIqWJX+f+5oUuSte/0GDuQxpzwXwHYn5dWjvVXeZ8H4GmLxKRi9OAlQb7/Ehc2wYBvsDklV860xPjdvBHPh6kY5eIeDPcIgYAnwD4xvrmSw85PHORy94jguWhV37sEfvVhTqKLMEd/tKOL+RrCpfQ5qldp0VDAY=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by AM7PR04MB7029.eurprd04.prod.outlook.com (2603:10a6:20b:118::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.26; Tue, 27 Sep
- 2022 19:15:36 +0000
+ 2022 19:15:37 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::a67a:849c:aeff:cad1]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::a67a:849c:aeff:cad1%7]) with mapi id 15.20.5654.025; Tue, 27 Sep 2022
- 19:15:36 +0000
+ 19:15:37 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -53,9 +53,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Paolo Abeni <pabeni@redhat.com>,
         Colin Foster <colin.foster@in-advantage.com>,
         Maxim Kochetkov <fido_max@inbox.ru>
-Subject: [PATCH net-next 3/5] net: dsa: felix: remove felix_info :: init_regmap
-Date:   Tue, 27 Sep 2022 22:15:18 +0300
-Message-Id: <20220927191521.1578084-4-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 4/5] net: dsa: felix: use DEFINE_RES_MEM_NAMED for resources
+Date:   Tue, 27 Sep 2022 22:15:19 +0300
+Message-Id: <20220927191521.1578084-5-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220927191521.1578084-1-vladimir.oltean@nxp.com>
 References: <20220927191521.1578084-1-vladimir.oltean@nxp.com>
@@ -67,51 +67,51 @@ X-ClientProxiedBy: VI1PR07CA0287.eurprd07.prod.outlook.com
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AM7PR04MB7029:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2ec754b2-50cc-4df7-a02e-08daa0bca818
+X-MS-Office365-Filtering-Correlation-Id: f290a347-b888-44c9-485e-08daa0bca8a5
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: SYKnNoyh4g5bRYSuQ2GQk0TNTLF0urjyfngslvyR0po31vlb5VNetV8z4i4zopTWnLRVi1g/k/9idNdM6QyqsNTfX+L0S0tSPxX1WfWel2gSV+ejnLZcIE8KCYBuBw7yXZLI19YIZ6jEYLw78mYe/QaAgvLs49BZoDnKoU3+ZzN0awfBByhmrC09tKpb5PZLjNaSjQvRJh0ma82cvuRVy2iSuE3R2pg+g5z9RLLzgebXxZtj4kcAdtJLqx202zbfBSmBa13M6TV2hFJ1NSlKHlghXKZ0aykEY/4yuOdJhh/Q6a+1ZE+ZBLOy8p5EjwezdfDZZXFIXXuEbVGhs40y/AHWstC1bsLWkUjrXhPH5NQ5wf3j9iu+C17ljc9pC4hK1VxI6HHY/9efH+wQw5UCBd7nyMCBAAwCpkp94fRfG621hmU0Yh3f8Hx9FLdPQf0o4gHctY/FkPvcdPTk9ixII9wiLDwQ4Nd8cVmhqMbel5yflz9EZ+w8CLVaGpPR7PoyojlZGmlXDtBZY9djZ5FMWztaDuH3jqOswvy/dsZONqX6Zu3BazWPpL9VSIz/S6kRTJ7YBN6V86+32Bfhg67VcUdSczJ8RzLM7FHszt+XuwPhaKxDcd+bGJJTTEX+A2KTuXiKFU0sguoCzevktpzxLWYYOiXHDW4fi6cy72C6EzpXxdAEIVLiY8xm4t6BdUXjqX1Zag/t2Qg0WIxvZi4ItyLa63fGQr0W+RsyV9/9n8hIJwEJBcOPUz9Q/DMYHuXqYU6UyyxhEkAGZ0o3VJdK9g==
+X-Microsoft-Antispam-Message-Info: 2edmb9HzFxPqw9G0KiytZOcNDksmGWuycN2TAeTgHijr3WMpNjTxiK8sbckHxPD8E89iqKdEFqyy7p0x+KVwSQ18zg6JyxLFoEF22jjiMRBFpyerf+jtjKYNNySg52qdRjTc08tPdhBVIgpLTa5Nztoo5niUbTxG0miPY6IHPnHYxGZoXjYPnnMZSR9kQtAf4kq43cXgSXCU0g3u2E28BOxPG7eRUEDi8mtt6Uk5bMf9FudQ0n54fwxWv/7CCXTiYukZC4TWgv9jCEG4ogktKJ+24s2+VpIIMXwomYtt25C6jk9xxVzQp6US2ODMWDWc7vR1x9i4t/m09/pPH4v5ArRg2ldJu4AjRKKQWvF5vkR3d2MQ+HXmUHToQJ362y2pZysRpn0cM9xrxIJOfcbSFqXCqe0HHvNvrUSYQ7mQv7uUyxmMR50ZcNGUNwXNWJ9rRY2PX6PIYrTTkOOOYYZZ2Rj7dmD1xDBNBuiUygsBb+tbAmOtjh0DM8YXNELuUyt89hJczt/f4vXsOGtDZMiaTBE1Ybnrh6sBnyvUSG+fGI+KTcbn0iqDGnXziZE3NfpMqf2ESDiwrJkJVDB25FSPULDK2uZ6TlIMYEqqJv1rR5w5yfmqgOmK2MCy4ETfGCTVA5qdf02dpk8zN46Sd2IxgW/SHRVpCfUCsX3mE2RW/wuP9mWaf58zeNWCBLT9s0QICFldxMCzaflDsyq7WVcS/McXh81Lo/8dqtYlLF+sHvntUS91mVvO4B7jVZ5q5pPBLI+BQyw0gPQ5u5Q3IiA3mw==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(346002)(136003)(396003)(39860400002)(376002)(451199015)(86362001)(38100700002)(38350700002)(36756003)(2906002)(44832011)(2616005)(6506007)(478600001)(6486002)(6666004)(186003)(83380400001)(52116002)(26005)(1076003)(6512007)(54906003)(7416002)(8936002)(316002)(8676002)(6916009)(66476007)(66946007)(5660300002)(4326008)(41300700001)(66556008);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ar4wYLFdLFbDjSSFo4/CLlSMzIqxpuL0hoDMuQLxh08cl7SRSDl5pe517DpV?=
- =?us-ascii?Q?UCz72CHRdnQOqLJqRo8t6JvSBWcqNYoqqCaiwR+XyNPiMrMM9P+1beWxaE7B?=
- =?us-ascii?Q?5qNTroWfRXOSm+BdmKnnobJB4pprio1TIkypny5gGJ1fnZkfY9IzEakgxzRO?=
- =?us-ascii?Q?oheGMQnCyNIi4jEwY2WjyIDItJl8UayjVQ17Y2f0Cnpnr3EKhTuFyR2Ap5hr?=
- =?us-ascii?Q?GeDquYCA9SHoOdNdWtrpll2cvlSYA9fHLcT3Akn3SxodZaTX8kl6x2mrfGYv?=
- =?us-ascii?Q?WefhzVbZsuphVW8Ok1VhII7D+cjGHI5dzxourqS3kSftVp1q0eY+gg/PAmeM?=
- =?us-ascii?Q?7IrvNjhVvXZ87KyRt6u/dJ6njSp9KuHX9E6qkgJGnsztlUKtvALlD4uBnrso?=
- =?us-ascii?Q?ICX9+GGXAPO4VLzWAzAKKUVwRVthKpqHmQVOzeAsEh3Vy5Vu7VpLWWm3hOgF?=
- =?us-ascii?Q?M2JOmzkk7oYDtn5vWSHEgkvz/uFQN7xFZ4FFNh9tp93z2Yyh+GvsDJNGJeij?=
- =?us-ascii?Q?OF2x4GD6LPawKIGJLFJ8+xFWa/oRtYIPtkaqPKxsJYuegq4saM+FVfRH/WLB?=
- =?us-ascii?Q?kMSvvGDy+j63RQcFGQH1woyOR7zWrcIj5aEkLm7+4D8n97XWkL6to5r6wUUw?=
- =?us-ascii?Q?02Um/FerA234NzUEIkx0mLE4KsGObUkiZi/jTuEkofgY5BonER0IjaEXQWca?=
- =?us-ascii?Q?Q09qiDNnYo9g2HZM5KcfhOetqaq6ECMp3aqhrRwNYnLmWF4zf1KTU2mh583p?=
- =?us-ascii?Q?/ToLp8yN6efnaIntHcViQpFBf6z7OqikRDHhvYXJROBGD0GxymSdwiz2jEUl?=
- =?us-ascii?Q?E3/SLugJDMyOc7TCeE9kz/Ih/Cl+35+4TsNQpxnO9cIk9hmhNMpil+kcWsMR?=
- =?us-ascii?Q?WlHGfXeuNwLmiVHLeBNZcTT5b41l/ubHMVJoE7SLC9TxgHUNBdDI9QrwIjOV?=
- =?us-ascii?Q?P+BT/GhtDBRBZ9ByiyA5pzCx8sD098Z0dFu/zQJdGV9cDyUSUDXU7k54cjRC?=
- =?us-ascii?Q?qvtaoaEzEsBArcW6tABkVaFIlKQZmE7ARI1oR0t20c4KdBTgcSYpDPypTf3H?=
- =?us-ascii?Q?qUd5VHuh6u5NDSEcZhnPMyg/C710PzNZDUCCe9jCJ3p+tXotO72H93lT4kGM?=
- =?us-ascii?Q?KLQVEgW1f76UJj7tAzi3QMstj4p6Ming8hhBcMM42D5Uqgg4FLDI0+dqLzmK?=
- =?us-ascii?Q?MfAfi5WU9FATq9zv+ds9w/6UM5PvR7wViwThox4A7WCt1TF8G2Q9+rdJX0OV?=
- =?us-ascii?Q?qNPIkJ3maAffVXgKCdMNc1csCikfXLr8dv48+97M9Ijyy7MmFX53rL3NYLe7?=
- =?us-ascii?Q?3AJXjXvD8BTXVsaM49lgvWfSwSxmi4hzcSUDf8hlai7rB+sXIkyvbMyWmyK2?=
- =?us-ascii?Q?N+nSaYKnJYFumYNiIpGnXJgQb9Mj3ygP9GtvNkTFKYtMmH6dtC2FhPdwT0pq?=
- =?us-ascii?Q?lIHVfJoCGWPpWW6vCGpRJzH+iayqac8HPaaOBRXr8n9nmCa8c83TjbhtFkIO?=
- =?us-ascii?Q?rVCFJYjDSMgAwdAHQl0AP0t+uXJiQ0exkShOSGlgtJuU1xyRr6+WyHxuedHc?=
- =?us-ascii?Q?NkzqmIr2pjw3/1AUSywfAPNikSdV0ambgc+65ehLboYoiWLn7Rj3gn0bgGw+?=
- =?us-ascii?Q?wA=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?MEon/pxLAK0ueDrPimQ26JyNqWG04zIssHHR7s1MpjTKBWyBDeI713z5S+HC?=
+ =?us-ascii?Q?7n7zC6XGaTFyZqDQD8jZTMkeihbVC9an/NSup3MlusroTFWMnLa0NhTJW1Kr?=
+ =?us-ascii?Q?9APiJmFJcNEYW+rn7nsXdBvYdRsKVV7+tUlcI6GS7xxk1p7hm18Gnkf4KeWI?=
+ =?us-ascii?Q?z2saqyrtHPQbKyW1HWcuqyb4OygR/0BFdjkjPRMgnyBSQDjTG6ESj5LHbLeL?=
+ =?us-ascii?Q?2VBPKjKBC0EWEo55Bg/Mc4cInTTKAWyeLKcggDtjbp0Juep9lrsiWSgIQPef?=
+ =?us-ascii?Q?9gFCuwJNPfkoNyhBXEFbhek/2F3Vt/SBoClgblg+hoPLGag8EK2gbsTLur8C?=
+ =?us-ascii?Q?d+EF5FEs7yxvsmQPT2RtJVF4pqX8dXzs2VZuWKibP1EWR5SiGBex2JY0aNQp?=
+ =?us-ascii?Q?ZBpmpOrIg+XSxYVB6xG4tpUqO2S15yQMzjE18rUnq9qnpdhi8+8sQe990IKU?=
+ =?us-ascii?Q?YRODwP0tPG0GOIcJ5XQo4qbp8NhRB7ZLpnHigNzeTDszObcU5fOpWwHim+9W?=
+ =?us-ascii?Q?OkKlNREyF/mi2zUb1sx0w0HaTmBtmaMOFa47lVWYwiUWJGdp8CCA+N9g5yXC?=
+ =?us-ascii?Q?QuKixcIpLvwGv8m8lswKjIiN0XRYD3j9JBcoPLpgU2AeVRlUlBfn5mMRwjkf?=
+ =?us-ascii?Q?aU4007XMvA1pMQW4yYkphsW/8aeqkSy5bAbgSm3gsYkTuWO18LFxsH9agqc7?=
+ =?us-ascii?Q?378o3IDR7W73oi3iB+i22XNIwE5Y+xR5O6xqKKuhCFEQm8avswKgitkFwuCJ?=
+ =?us-ascii?Q?7QNtAMCkWvN0zOd422tY+D6d8fUgIdfzVXjihLfNn3ouSYlfq2KS9QSvIJSt?=
+ =?us-ascii?Q?WdpjsCrAl1pjsFGxsU/Bnngejrc6Xue2mNgVLageMVZXxzrOILqisIwOpTbr?=
+ =?us-ascii?Q?Hbe+Yy/GwBySxKfl5WdBy7YN6F+qgBZ5KojWzS934ohk2K/Kr1xz7eWcPVjw?=
+ =?us-ascii?Q?paIBbRe9pFmOzAvK14E3foLpm52pZlOcDtxa2Eu20xYzFhr4mk2X+azGhIv1?=
+ =?us-ascii?Q?z4WofpvJXqQ8QLpWfWbd053OQviuZEMSG62VC/4mllE/bFgtyTvJoKMiGYY/?=
+ =?us-ascii?Q?NeNMmAzDJNismRvtxrxi9RDrQfiikPu+P6SOa86pTpIZ8Z+Re0uWvL1hWhkD?=
+ =?us-ascii?Q?Hu32zXos+n/UHnj82VLgc+pfypHuYzb1304u1vwuGzsZ03Fp5mh67Ipxn32r?=
+ =?us-ascii?Q?xAKZC3f9fL9Qqrcb7cItK6+3NGCvWAR5VhWqncWlz2tZjngstqm5mUpXJhsT?=
+ =?us-ascii?Q?CPz8xfMPXUlzk6Xp5E51HOS35tIhY9vVCmxZlyd0/30dDLafqaMeUt6fN9XC?=
+ =?us-ascii?Q?Kaqc3DRZhbywA+Zw+CWb2uUzxM1u6dES/Ftp5TRRKez+dnVEKxVGlISJpGbX?=
+ =?us-ascii?Q?bQMmMsCxiPdc7XIJynmy+sybx/uSRyTh3a9Xm/Fp45erW+OhP+JJqN/X21r0?=
+ =?us-ascii?Q?svwIavFMRRaRXVzDeGlI52De/aQiGEth9aIxSe+eXZNArcv/wvhgahN51t+U?=
+ =?us-ascii?Q?I+wWCRbrN5Q6wMsCGGSTqhoc3A29YzPM8y0iBpkjdr3+BfhUVrdyy6fxv0FL?=
+ =?us-ascii?Q?EEr+7AQ6ZGIkYMmyExyzGrANSdTgerBT6Hk+8cNUn7nabC73NOwL6p1NKzEi?=
+ =?us-ascii?Q?2Q=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2ec754b2-50cc-4df7-a02e-08daa0bca818
+X-MS-Exchange-CrossTenant-Network-Message-Id: f290a347-b888-44c9-485e-08daa0bca8a5
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Sep 2022 19:15:36.2859
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Sep 2022 19:15:37.2390
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: N8gvIwaFE0+TQlzWpPs5pj96dTCqqJJ/+halbmnYCer68JrxxCnsy3Im+C6lzM6qhEPKurfHlOUhugkN7vzhow==
+X-MS-Exchange-CrossTenant-UserPrincipalName: MDLHqr99uSzrkPZlmcJ5z46mX7jsLTr8Uj5y9oqn9IU32aeHzH/XAn78UOL6AfSuQCF0OLQo0EA9rAVktm1vDw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB7029
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -123,82 +123,307 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It turns out that the idea of having a customizable implementation of a
-regmap creation from a resource is not exactly useful. The idea was for
-the new MFD-based VSC7512 driver to use something that creates a SPI
-regmap from a resource. But there are problems in actually getting those
-resources (it involves getting them from MFD).
+Use less verbose resource definitions in vsc9959 and vsc9953. This also
+sets IORESOURCE_MEM in the constant array of resources, so we don't have
+to do this from felix_init_structs() - in fact, in the future, we may
+even support IORESOURCE_REG resources.
 
-To avoid all that, we'll be getting resources by name, so this custom
-init_regmap() method won't be needed. Remove it.
+Note that this macro takes start and length as argument, and we had
+start and end before. So transform end into length.
+
+While at it, sort the resources according to their offset.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/ocelot/felix.c           | 4 ++--
- drivers/net/dsa/ocelot/felix.h           | 2 --
- drivers/net/dsa/ocelot/felix_vsc9959.c   | 1 -
- drivers/net/dsa/ocelot/seville_vsc9953.c | 1 -
- 4 files changed, 2 insertions(+), 6 deletions(-)
+ drivers/net/dsa/ocelot/felix.c           |   2 -
+ drivers/net/dsa/ocelot/felix_vsc9959.c   | 104 ++++----------------
+ drivers/net/dsa/ocelot/seville_vsc9953.c | 120 ++++-------------------
+ 3 files changed, 38 insertions(+), 188 deletions(-)
 
 diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index d2a9d292160c..b7a66c151be3 100644
+index b7a66c151be3..6a7643c31c46 100644
 --- a/drivers/net/dsa/ocelot/felix.c
 +++ b/drivers/net/dsa/ocelot/felix.c
-@@ -1360,7 +1360,7 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+@@ -1356,7 +1356,6 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+ 			continue;
+ 
+ 		memcpy(&res, &felix->info->target_io_res[i], sizeof(res));
+-		res.flags = IORESOURCE_MEM;
  		res.start += felix->switch_base;
  		res.end += felix->switch_base;
  
--		target = felix->info->init_regmap(ocelot, &res);
-+		target = ocelot_regmap_init(ocelot, &res);
- 		if (IS_ERR(target)) {
- 			dev_err(ocelot->dev,
- 				"Failed to map device memory space\n");
-@@ -1397,7 +1397,7 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+@@ -1393,7 +1392,6 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+ 		}
+ 
+ 		memcpy(&res, &felix->info->port_io_res[port], sizeof(res));
+-		res.flags = IORESOURCE_MEM;
  		res.start += felix->switch_base;
  		res.end += felix->switch_base;
  
--		target = felix->info->init_regmap(ocelot, &res);
-+		target = ocelot_regmap_init(ocelot, &res);
- 		if (IS_ERR(target)) {
- 			dev_err(ocelot->dev,
- 				"Failed to map memory space for port %d\n",
-diff --git a/drivers/net/dsa/ocelot/felix.h b/drivers/net/dsa/ocelot/felix.h
-index 4921f5cc8170..54322d0398fd 100644
---- a/drivers/net/dsa/ocelot/felix.h
-+++ b/drivers/net/dsa/ocelot/felix.h
-@@ -55,8 +55,6 @@ struct felix_info {
- 	void	(*tas_guard_bands_update)(struct ocelot *ocelot, int port);
- 	void	(*port_sched_speed_set)(struct ocelot *ocelot, int port,
- 					u32 speed);
--	struct regmap *(*init_regmap)(struct ocelot *ocelot,
--				      struct resource *res);
- };
- 
- /* Methods for initializing the hardware resources specific to a tagging
 diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index 4ca9fbe197c7..e465e3f85467 100644
+index e465e3f85467..1872727e80df 100644
 --- a/drivers/net/dsa/ocelot/felix_vsc9959.c
 +++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -2617,7 +2617,6 @@ static const struct felix_info felix_info_vsc9959 = {
- 	.port_setup_tc		= vsc9959_port_setup_tc,
- 	.port_sched_speed_set	= vsc9959_sched_speed_set,
- 	.tas_guard_bands_update	= vsc9959_tas_guard_bands_update,
--	.init_regmap		= ocelot_regmap_init,
+@@ -478,99 +478,32 @@ static const u32 *vsc9959_regmap[TARGET_MAX] = {
+ 
+ /* Addresses are relative to the PCI device's base address */
+ static const struct resource vsc9959_target_io_res[TARGET_MAX] = {
+-	[ANA] = {
+-		.start	= 0x0280000,
+-		.end	= 0x028ffff,
+-		.name	= "ana",
+-	},
+-	[QS] = {
+-		.start	= 0x0080000,
+-		.end	= 0x00800ff,
+-		.name	= "qs",
+-	},
+-	[QSYS] = {
+-		.start	= 0x0200000,
+-		.end	= 0x021ffff,
+-		.name	= "qsys",
+-	},
+-	[REW] = {
+-		.start	= 0x0030000,
+-		.end	= 0x003ffff,
+-		.name	= "rew",
+-	},
+-	[SYS] = {
+-		.start	= 0x0010000,
+-		.end	= 0x001ffff,
+-		.name	= "sys",
+-	},
+-	[S0] = {
+-		.start	= 0x0040000,
+-		.end	= 0x00403ff,
+-		.name	= "s0",
+-	},
+-	[S1] = {
+-		.start	= 0x0050000,
+-		.end	= 0x00503ff,
+-		.name	= "s1",
+-	},
+-	[S2] = {
+-		.start	= 0x0060000,
+-		.end	= 0x00603ff,
+-		.name	= "s2",
+-	},
+-	[PTP] = {
+-		.start	= 0x0090000,
+-		.end	= 0x00900cb,
+-		.name	= "ptp",
+-	},
+-	[GCB] = {
+-		.start	= 0x0070000,
+-		.end	= 0x00701ff,
+-		.name	= "devcpu_gcb",
+-	},
++	[SYS]  = DEFINE_RES_MEM_NAMED(0x0010000, 0x0010000, "sys"),
++	[REW]  = DEFINE_RES_MEM_NAMED(0x0030000, 0x0010000, "rew"),
++	[S0]   = DEFINE_RES_MEM_NAMED(0x0040000, 0x0000400, "s0"),
++	[S1]   = DEFINE_RES_MEM_NAMED(0x0050000, 0x0000400, "s1"),
++	[S2]   = DEFINE_RES_MEM_NAMED(0x0060000, 0x0000400, "s2"),
++	[GCB]  = DEFINE_RES_MEM_NAMED(0x0070000, 0x0000200, "devcpu_gcb"),
++	[QS]   = DEFINE_RES_MEM_NAMED(0x0080000, 0x0000100, "qs"),
++	[PTP]  = DEFINE_RES_MEM_NAMED(0x0090000, 0x00000cc, "ptp"),
++	[QSYS] = DEFINE_RES_MEM_NAMED(0x0200000, 0x0020000, "qsys"),
++	[ANA]  = DEFINE_RES_MEM_NAMED(0x0280000, 0x0010000, "ana"),
  };
  
- static irqreturn_t felix_irq_handler(int irq, void *data)
+ static const struct resource vsc9959_port_io_res[] = {
+-	{
+-		.start	= 0x0100000,
+-		.end	= 0x010ffff,
+-		.name	= "port0",
+-	},
+-	{
+-		.start	= 0x0110000,
+-		.end	= 0x011ffff,
+-		.name	= "port1",
+-	},
+-	{
+-		.start	= 0x0120000,
+-		.end	= 0x012ffff,
+-		.name	= "port2",
+-	},
+-	{
+-		.start	= 0x0130000,
+-		.end	= 0x013ffff,
+-		.name	= "port3",
+-	},
+-	{
+-		.start	= 0x0140000,
+-		.end	= 0x014ffff,
+-		.name	= "port4",
+-	},
+-	{
+-		.start	= 0x0150000,
+-		.end	= 0x015ffff,
+-		.name	= "port5",
+-	},
++	DEFINE_RES_MEM_NAMED(0x0100000, 0x0010000, "port0"),
++	DEFINE_RES_MEM_NAMED(0x0110000, 0x0010000, "port1"),
++	DEFINE_RES_MEM_NAMED(0x0120000, 0x0010000, "port2"),
++	DEFINE_RES_MEM_NAMED(0x0130000, 0x0010000, "port3"),
++	DEFINE_RES_MEM_NAMED(0x0140000, 0x0010000, "port4"),
++	DEFINE_RES_MEM_NAMED(0x0150000, 0x0010000, "port5"),
+ };
+ 
+ /* Port MAC 0 Internal MDIO bus through which the SerDes acting as an
+  * SGMII/QSGMII MAC PCS can be found.
+  */
+-static const struct resource vsc9959_imdio_res = {
+-	.start		= 0x8030,
+-	.end		= 0x8040,
+-	.name		= "imdio",
+-};
++static const struct resource vsc9959_imdio_res =
++	DEFINE_RES_MEM_NAMED(0x8030, 0x8040, "imdio");
+ 
+ static const struct reg_field vsc9959_regfields[REGFIELD_MAX] = {
+ 	[ANA_ADVLEARN_VLAN_CHK] = REG_FIELD(ANA_ADVLEARN, 6, 6),
+@@ -1026,7 +959,6 @@ static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
+ 	imdio_base = pci_resource_start(pdev, VSC9959_IMDIO_PCI_BAR);
+ 
+ 	memcpy(&res, &vsc9959_imdio_res, sizeof(res));
+-	res.flags = IORESOURCE_MEM;
+ 	res.start += imdio_base;
+ 	res.end += imdio_base;
+ 
 diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
-index 5b29fa930627..e807db0dea98 100644
+index e807db0dea98..66237c4385ac 100644
 --- a/drivers/net/dsa/ocelot/seville_vsc9953.c
 +++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
-@@ -1078,7 +1078,6 @@ static const struct felix_info seville_info_vsc9953 = {
- 	.mdio_bus_free		= vsc9953_mdio_bus_free,
- 	.phylink_validate	= vsc9953_phylink_validate,
- 	.port_modes		= vsc9953_port_modes,
--	.init_regmap		= ocelot_regmap_init,
+@@ -459,109 +459,29 @@ static const u32 *vsc9953_regmap[TARGET_MAX] = {
+ 
+ /* Addresses are relative to the device's base address */
+ static const struct resource vsc9953_target_io_res[TARGET_MAX] = {
+-	[ANA] = {
+-		.start	= 0x0280000,
+-		.end	= 0x028ffff,
+-		.name	= "ana",
+-	},
+-	[QS] = {
+-		.start	= 0x0080000,
+-		.end	= 0x00800ff,
+-		.name	= "qs",
+-	},
+-	[QSYS] = {
+-		.start	= 0x0200000,
+-		.end	= 0x021ffff,
+-		.name	= "qsys",
+-	},
+-	[REW] = {
+-		.start	= 0x0030000,
+-		.end	= 0x003ffff,
+-		.name	= "rew",
+-	},
+-	[SYS] = {
+-		.start	= 0x0010000,
+-		.end	= 0x001ffff,
+-		.name	= "sys",
+-	},
+-	[S0] = {
+-		.start	= 0x0040000,
+-		.end	= 0x00403ff,
+-		.name	= "s0",
+-	},
+-	[S1] = {
+-		.start	= 0x0050000,
+-		.end	= 0x00503ff,
+-		.name	= "s1",
+-	},
+-	[S2] = {
+-		.start	= 0x0060000,
+-		.end	= 0x00603ff,
+-		.name	= "s2",
+-	},
+-	[PTP] = {
+-		.start	= 0x0090000,
+-		.end	= 0x00900cb,
+-		.name	= "ptp",
+-	},
+-	[GCB] = {
+-		.start	= 0x0070000,
+-		.end	= 0x00701ff,
+-		.name	= "devcpu_gcb",
+-	},
++	[SYS]  = DEFINE_RES_MEM_NAMED(0x0010000, 0x0010000, "sys"),
++	[REW]  = DEFINE_RES_MEM_NAMED(0x0030000, 0x0010000, "rew"),
++	[S0]   = DEFINE_RES_MEM_NAMED(0x0040000, 0x0000400, "s0"),
++	[S1]   = DEFINE_RES_MEM_NAMED(0x0050000, 0x0000400, "s1"),
++	[S2]   = DEFINE_RES_MEM_NAMED(0x0060000, 0x0000400, "s2"),
++	[GCB]  = DEFINE_RES_MEM_NAMED(0x0070000, 0x0000200, "devcpu_gcb"),
++	[QS]   = DEFINE_RES_MEM_NAMED(0x0080000, 0x0000100, "qs"),
++	[PTP]  = DEFINE_RES_MEM_NAMED(0x0090000, 0x00000cc, "ptp"),
++	[QSYS] = DEFINE_RES_MEM_NAMED(0x0200000, 0x0020000, "qsys"),
++	[ANA]  = DEFINE_RES_MEM_NAMED(0x0280000, 0x0010000, "ana"),
  };
  
- static int seville_probe(struct platform_device *pdev)
+ static const struct resource vsc9953_port_io_res[] = {
+-	{
+-		.start	= 0x0100000,
+-		.end	= 0x010ffff,
+-		.name	= "port0",
+-	},
+-	{
+-		.start	= 0x0110000,
+-		.end	= 0x011ffff,
+-		.name	= "port1",
+-	},
+-	{
+-		.start	= 0x0120000,
+-		.end	= 0x012ffff,
+-		.name	= "port2",
+-	},
+-	{
+-		.start	= 0x0130000,
+-		.end	= 0x013ffff,
+-		.name	= "port3",
+-	},
+-	{
+-		.start	= 0x0140000,
+-		.end	= 0x014ffff,
+-		.name	= "port4",
+-	},
+-	{
+-		.start	= 0x0150000,
+-		.end	= 0x015ffff,
+-		.name	= "port5",
+-	},
+-	{
+-		.start	= 0x0160000,
+-		.end	= 0x016ffff,
+-		.name	= "port6",
+-	},
+-	{
+-		.start	= 0x0170000,
+-		.end	= 0x017ffff,
+-		.name	= "port7",
+-	},
+-	{
+-		.start	= 0x0180000,
+-		.end	= 0x018ffff,
+-		.name	= "port8",
+-	},
+-	{
+-		.start	= 0x0190000,
+-		.end	= 0x019ffff,
+-		.name	= "port9",
+-	},
++	DEFINE_RES_MEM_NAMED(0x0100000, 0x0010000, "port0"),
++	DEFINE_RES_MEM_NAMED(0x0110000, 0x0010000, "port1"),
++	DEFINE_RES_MEM_NAMED(0x0120000, 0x0010000, "port2"),
++	DEFINE_RES_MEM_NAMED(0x0130000, 0x0010000, "port3"),
++	DEFINE_RES_MEM_NAMED(0x0140000, 0x0010000, "port4"),
++	DEFINE_RES_MEM_NAMED(0x0150000, 0x0010000, "port5"),
++	DEFINE_RES_MEM_NAMED(0x0160000, 0x0010000, "port6"),
++	DEFINE_RES_MEM_NAMED(0x0170000, 0x0010000, "port7"),
++	DEFINE_RES_MEM_NAMED(0x0180000, 0x0010000, "port8"),
++	DEFINE_RES_MEM_NAMED(0x0190000, 0x0010000, "port9"),
+ };
+ 
+ static const struct reg_field vsc9953_regfields[REGFIELD_MAX] = {
 -- 
 2.34.1
 
