@@ -2,85 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E4FA75ECECF
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 22:41:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73FA85ECF12
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 23:04:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231707AbiI0UlF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 16:41:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52756 "EHLO
+        id S232683AbiI0VEH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 17:04:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230172AbiI0UlD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 16:41:03 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E72DF85A4;
-        Tue, 27 Sep 2022 13:41:02 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id dv25so23089059ejb.12;
-        Tue, 27 Sep 2022 13:41:02 -0700 (PDT)
+        with ESMTP id S229838AbiI0VEG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 17:04:06 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC01B6D07;
+        Tue, 27 Sep 2022 14:04:05 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id ay36so7367337wmb.0;
+        Tue, 27 Sep 2022 14:04:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=erSZq+ttTs2w72LdoF4lUIQ5z3RURjxVVFpi+g7c2Js=;
-        b=K5xbQNotsqpY3vXiZMgt/d/uysRXJFTFm5TKdF3Z45RUpsrR9d0zMwbKh+mmqVjGRI
-         ukh3bY6qc6DyrtmodpDwGxdbakCyWwFkaWuXO8YXuFy8XOv3aR/570ZaiiVf8MFShXPc
-         IiA9fuHljs9gkqm1dXADLkqQkJRy+5jriTWGj5lPEYwTDzZ9TEd3X7uN3i4meX68jpm1
-         nAR7rLVHkBMUCszkyT3ZuuiytVTXpGvdiOWqslfXpjS7vvUMGeySuK5Y4XZO93HI1gpX
-         62C0DUIUJzWBEs6hokXwhmZu79FKmObTxIIU0owMJpqd52QTKz/9NvH0ao3aUbktEPB/
-         6YEg==
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=4utwpaiX+nwZ8/aoptuiHSf3C3V/LbDfmFnwMH4/AB4=;
+        b=jyusM2yPG8DlGbki+SxcWD6f5AVuoTEYdygVIP1p9R1YD5O0l8LILbnNLh79Kns0Cz
+         PU2FjB4OLLFvCtesBimyiKrjAxE76xJPFK4G5iWTBnjZC9Slf5dWWzF/bNtBtvilVrM1
+         mU5ndgUOIZoGA3OaFQC28I30J3MVXpoenboUg/GvOz/mgpNzAztconza319TBTPc0yjP
+         x7LwT4WqJq5UH/nWhLn2NNZVso3FZ2V8bqvYSkYKSK3KradKkiksbySeShprzUuVrx7x
+         Up4t7mmKBdBoZ6osAnsLCMG5BVkRdKutYS2XUmqQTbrbtNMGHtRblysYOpO3k1Mol3IS
+         kCnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=erSZq+ttTs2w72LdoF4lUIQ5z3RURjxVVFpi+g7c2Js=;
-        b=RXlbDryGeX2CVDh91SJwHGREGegULBv+6BORO181ZeK1Y2oLO/e9HH1Drsxo7+kJmM
-         uo5YoSiPWN4W+Ep40nogOrUeQXzGqjoPFdFZ+6P7xZ2hvThs9Qum2Z63M4Eg0OLZ4qZu
-         c7yn/JKke/caxnTQzEKvp9djKPpx90CLVYqRIj3ohjx0WPcdgMF3qy86acSt3CZmoTmC
-         u2x2ZbCz8Y3wcVbq6XqAjQYQehJ6oVWnhexPFvE/wMC/g4tHkW0713fw4DHxUvH0JQ/h
-         J6kCZE8eJlN8+75TbqXU9IcnavC1FsG4Ku7/TRE0jN5lmN6hlY1C6T8TCt+PLksTIz9b
-         NISQ==
-X-Gm-Message-State: ACrzQf2FzTPyGFOsBgDUm6z3MQDTGz2Rw7klvh/mQs9hfbNDyZj8/sma
-        yrg3DpppuRjT2d1ZnM3VOWs=
-X-Google-Smtp-Source: AMsMyM4+go5mJgyTgdgKDtx9FSOzH2w9Cl6hPGVWZMHmWqa/kWoEs29UR5Y1re1Oe8BkleX6JSpd/w==
-X-Received: by 2002:a17:907:3f0b:b0:781:e783:2773 with SMTP id hq11-20020a1709073f0b00b00781e7832773mr23507732ejc.610.1664311260452;
-        Tue, 27 Sep 2022 13:41:00 -0700 (PDT)
-Received: from skbuf ([188.27.184.197])
-        by smtp.gmail.com with ESMTPSA id q3-20020a170906144300b0077d37a5d401sm1280606ejc.33.2022.09.27.13.40.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Sep 2022 13:40:59 -0700 (PDT)
-Date:   Tue, 27 Sep 2022 23:40:56 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Lee Jones <lee@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH v3 net-next 13/14] net: dsa: ocelot: add external ocelot
- switch control
-Message-ID: <20220927204056.xuc7h3xhb2f5znpy@skbuf>
-References: <20220926002928.2744638-1-colin.foster@in-advantage.com>
- <20220926002928.2744638-1-colin.foster@in-advantage.com>
- <20220926002928.2744638-14-colin.foster@in-advantage.com>
- <20220926002928.2744638-14-colin.foster@in-advantage.com>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=4utwpaiX+nwZ8/aoptuiHSf3C3V/LbDfmFnwMH4/AB4=;
+        b=wzJuvlf7Qm2bLhm/mDkYR5tVNrFqGLxxz4EoP/CfCMdFr6KGKIQHf6C+AXHbSFDhsG
+         kI1wUrq3xR3iAq5ZBboSJJ9k7pcqi1OdYMimloJD4zJMQ0Kk/2v7FooHMubXYiKxYG8t
+         76/9L4KY2zHChOZKWKQawbft0MlUtMwMulnStBtwu+yJXauDACxDKRPqrd2c7zWwT/6P
+         R5JfOuvtKcAL5+w0fAL7tT/QbdY52s0PxLngwXof18TflTL5RF+OvvELzVVxnhPl9t8o
+         6AJ4EgmNfvl/k7SrRqMFf0U3oj+GIW+S9n/o6jG8qfRAeqroSdKdcCAo+9vGfow+g7Fm
+         6pUw==
+X-Gm-Message-State: ACrzQf3/OH21zXeDxYMXUyFAHRuB0lmSDPQXxQBlcVIgSwXD1o7Y5UXp
+        5J/J0x9oiE4tFTQrV64IlKQ=
+X-Google-Smtp-Source: AMsMyM5bRqdJoS8GkrzVBsbwQ/0Om0L4715MSQx2Luhy1dmQdbONNx03zPxwGHpo4vbTsTgRYmFHwA==
+X-Received: by 2002:a05:600c:35cf:b0:3b4:c0c2:d213 with SMTP id r15-20020a05600c35cf00b003b4c0c2d213mr4320200wmq.162.1664312643840;
+        Tue, 27 Sep 2022 14:04:03 -0700 (PDT)
+Received: from [192.168.8.100] (94.196.228.157.threembb.co.uk. [94.196.228.157])
+        by smtp.gmail.com with ESMTPSA id i7-20020adffc07000000b0022917d58603sm2578282wrr.32.2022.09.27.14.04.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 27 Sep 2022 14:04:03 -0700 (PDT)
+Message-ID: <b52ae230-3a31-e29b-42fa-ff25393161c9@gmail.com>
+Date:   Tue, 27 Sep 2022 22:02:37 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220926002928.2744638-14-colin.foster@in-advantage.com>
- <20220926002928.2744638-14-colin.foster@in-advantage.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH net-next 0/4] shrink struct ubuf_info
+Content-Language: en-US
+To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        xen-devel@lists.xenproject.org, Wei Liu <wei.liu@kernel.org>,
+        Paul Durrant <paul@xen.org>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>
+References: <cover.1663892211.git.asml.silence@gmail.com>
+ <7fef56880d40b9d83cc99317df9060c4e7cdf919.camel@redhat.com>
+ <021d8ea4-891c-237d-686e-64cecc2cc842@gmail.com>
+ <bbb212f6-0165-0747-d99d-b49acbb02a80@gmail.com>
+ <85cccb780608e830024fc82a8e4f703031646f4e.camel@redhat.com>
+ <c06897d4-4883-2756-87f9-9b10ab495c43@gmail.com>
+ <6502e1a45526f97a1e6d7d27bbe07e3bb3623de3.camel@redhat.com>
+ <eb543907-190f-c661-b5d6-b4d67b6184e6@gmail.com>
+ <b06d81fe39710b948a74a365c173b316252ed1f8.camel@redhat.com>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <b06d81fe39710b948a74a365c173b316252ed1f8.camel@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -89,247 +87,174 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 25, 2022 at 05:29:27PM -0700, Colin Foster wrote:
-> Add control of an external VSC7512 chip.
+On 9/27/22 21:23, Paolo Abeni wrote:
+> On Tue, 2022-09-27 at 21:17 +0100, Pavel Begunkov wrote:
+>> On 9/27/22 20:59, Paolo Abeni wrote:
+>>> On Tue, 2022-09-27 at 19:48 +0100, Pavel Begunkov wrote:
+>>>> On 9/27/22 18:56, Paolo Abeni wrote:
+>>>>> On Tue, 2022-09-27 at 18:16 +0100, Pavel Begunkov wrote:
+>>>>>> On 9/27/22 15:28, Pavel Begunkov wrote:
+>>>>>>> Hello Paolo,
+>>>>>>>
+>>>>>>> On 9/27/22 14:49, Paolo Abeni wrote:
+>>>>>>>> Hello,
+>>>>>>>>
+>>>>>>>> On Fri, 2022-09-23 at 17:39 +0100, Pavel Begunkov wrote:
+>>>>>>>>> struct ubuf_info is large but not all fields are needed for all
+>>>>>>>>> cases. We have limited space in io_uring for it and large ubuf_info
+>>>>>>>>> prevents some struct embedding, even though we use only a subset
+>>>>>>>>> of the fields. It's also not very clean trying to use this typeless
+>>>>>>>>> extra space.
+>>>>>>>>>
+>>>>>>>>> Shrink struct ubuf_info to only necessary fields used in generic paths,
+>>>>>>>>> namely ->callback, ->refcnt and ->flags, which take only 16 bytes. And
+>>>>>>>>> make MSG_ZEROCOPY and some other users to embed it into a larger struct
+>>>>>>>>> ubuf_info_msgzc mimicking the former ubuf_info.
+>>>>>>>>>
+>>>>>>>>> Note, xen/vhost may also have some cleaning on top by creating
+>>>>>>>>> new structs containing ubuf_info but with proper types.
+>>>>>>>>
+>>>>>>>> That sounds a bit scaring to me. If I read correctly, every uarg user
+>>>>>>>> should check 'uarg->callback == msg_zerocopy_callback' before accessing
+>>>>>>>> any 'extend' fields.
+>>>>>>>
+>>>>>>> Providers of ubuf_info access those fields via callbacks and so already
+>>>>>>> know the actual structure used. The net core, on the opposite, should
+>>>>>>> keep it encapsulated and not touch them at all.
+>>>>>>>
+>>>>>>> The series lists all places where we use extended fields just on the
+>>>>>>> merit of stripping the structure of those fields and successfully
+>>>>>>> building it. The only user in net/ipv{4,6}/* is MSG_ZEROCOPY, which
+>>>>>>> again uses callbacks.
+>>>>>>>
+>>>>>>> Sounds like the right direction for me. There is a couple of
+>>>>>>> places where it might get type safer, i.e. adding types instead
+>>>>>>> of void* in for struct tun_msg_ctl and getting rid of one macro
+>>>>>>> hiding types in xen. But seems more like TODO for later.
+>>>>>>>
+>>>>>>>> AFAICS the current code sometimes don't do the
+>>>>>>>> explicit test because the condition is somewhat implied, which in turn
+>>>>>>>> is quite hard to track.
+>>>>>>>>
+>>>>>>>> clearing uarg->zerocopy for the 'wrong' uarg was armless and undetected
+>>>>>>>> before this series, and after will trigger an oops..
+>>>>>>>
+>>>>>>> And now we don't have this field at all to access, considering that
+>>>>>>> nobody blindly casts it.
+>>>>>>>
+>>>>>>>> There is some noise due to uarg -> uarg_zc renaming which make the
+>>>>>>>> series harder to review. Have you considered instead keeping the old
+>>>>>>>> name and introducing a smaller 'struct ubuf_info_common'? the overall
+>>>>>>>> code should be mostly the same, but it will avoid the above mentioned
+>>>>>>>> noise.
+>>>>>>>
+>>>>>>> I don't think there will be less noise this way, but let me try
+>>>>>>> and see if I can get rid of some churn.
+>>>>>>
+>>>>>> It doesn't look any better for me
+>>>>>>
+>>>>>> TL;DR; This series converts only 3 users: tap, xen and MSG_ZEROCOPY
+>>>>>> and doesn't touch core code. If we do ubuf_info_common though I'd need
+>>>>>> to convert lots of places in skbuff.c and multiple places across
+>>>>>> tcp/udp, which is much worse.
+>>>>>
+>>>>> Uhmm... I underlook the fact we must preserve the current accessors for
+>>>>> the common fields.
+>>>>>
+>>>>> I guess something like the following could do (completely untested,
+>>>>> hopefully should illustrate the idea):
+>>>>>
+>>>>> struct ubuf_info {
+>>>>> 	struct_group_tagged(ubuf_info_common, common,
+>>>>> 		void (*callback)(struct sk_buff *, struct ubuf_info *,
+>>>>>                             bool zerocopy_success);
+>>>>> 		refcount_t refcnt;
+>>>>> 	        u8 flags;
+>>>>> 	);
+>>>>>
+>>>>> 	union {
+>>>>>                    struct {
+>>>>>                            unsigned long desc;
+>>>>>                            void *ctx;
+>>>>>                    };
+>>>>>                    struct {
+>>>>>                            u32 id;
+>>>>>                            u16 len;
+>>>>>                            u16 zerocopy:1;
+>>>>>                            u32 bytelen;
+>>>>>                    };
+>>>>>            };
+>>>>>
+>>>>>            struct mmpin {
+>>>>>                    struct user_struct *user;
+>>>>>                    unsigned int num_pg;
+>>>>>            } mmp;
+>>>>> };
+>>>>>
+>>>>> Then you should be able to:
+>>>>> - access ubuf_info->callback,
+>>>>> - access the same field via ubuf_info->common.callback
+>>>>> - declare variables as 'struct ubuf_info_commom' with appropriate
+>>>>> contents.
+>>>>>
+>>>>> WDYT?
+>>>>
+>>>> Interesting, I didn't think about struct_group, this would
+>>>> let to split patches better and would limit non-core changes.
+>>>> But if the plan is to convert the core helpers to
+>>>> ubuf_info_common, than I think it's still messier than changing
+>>>> ubuf providers only.
+>>>>
+>>>> I can do the exercise, but I don't really see what is the goal.
+>>>> Let me ask this, if we forget for a second how diffs look,
+>>>> do you care about which pair is going to be in the end?
+>>>
+>>> Uhm... I proposed this initially with the goal of remove non fuctional
+>>> changes from a patch that was hard to digest for me (4/4). So it's
+>>> about diffstat to me ;)
+>>
+>> Ah, got it
+>>
+>>> On the flip side the change suggested would probably not be as
+>>> straighforward as I would hope for.
+>>>
+>>>> ubuf_info_common/ubuf_info vs ubuf_info/ubuf_info_msgzc?
+>>>
+>>> The specific names used are not much relevant.
+>>>
+>>>> Are there you concerned about naming or is there more to it?
+>>>
+>>> I feel like this series is potentially dangerous, but I could not spot
+>>> bugs into the code. I would have felt more relaxed eariler in the devel
+>>> cycle.
+>>
+>> union {
+>> 	struct {
+>> 		unsigned long desc;
+>> 		void *ctx;
+>> 	};
+>> 	struct {
+>> 		u32 id;
+>> 		u16 len;
+>> 		u16 zerocopy:1;
+>> 		u32 bytelen;
+>> 	};
+>> };
+>>
+>>
+>> btw, nobody would frivolously change ->zerocopy anyway as it's
+>> in a union. Even without the series we're absolutely screwed
+>> if someone does that. If anything it adds a way to get rid of it:
+>>
+>> 1) Make vhost and xen use their own structures with right types.
+>> 2) kill unused struct {ctx, desc} for MSG_ZEROCOPY
 > 
-> Currently the four copper phy ports are fully functional. Communication to
-> external phys is also functional, but the SGMII / QSGMII interfaces are
-> currently non-functional.
+> Ok, the above sounds reasonable. Additionally I've spent the last
+> surviving neuron on my side to on this series, and it looks sane, so...
 > 
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> ---
-> 
-> v3
->     * Remove additional entry in vsc7512_port_modes array
->     * Add MFD_OCELOT namespace import, which is needed for
->       vsc7512_*_io_res
+> Acked-by: Paolo Abeni <pabeni@redhat.com>
 
-and which hopefully will no longer be
+Great, thanks for taking a look!
 
-> diff --git a/drivers/net/dsa/ocelot/ocelot_ext.c b/drivers/net/dsa/ocelot/ocelot_ext.c
-> new file mode 100644
-> index 000000000000..fb9dbb31fea1
-> --- /dev/null
-> +++ b/drivers/net/dsa/ocelot/ocelot_ext.c
-> @@ -0,0 +1,194 @@
-> +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-> +/*
-> + * Copyright 2021-2022 Innovative Advantage Inc.
-> + */
-> +
-> +#include <linux/mfd/ocelot.h>
-> +#include <linux/phylink.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/regmap.h>
-> +#include <soc/mscc/ocelot.h>
-> +#include <soc/mscc/vsc7514_regs.h>
-> +#include "felix.h"
-> +
-> +#define VSC7512_NUM_PORTS		11
-
-Is there a difference in port count between VSC7512 and VSC7514? Nope.
-Could you please give naming preference to "vsc7514" for things that are
-identical?
-
-> +
-> +#define OCELOT_PORT_MODE_SERDES		(OCELOT_PORT_MODE_SGMII | \
-> +					 OCELOT_PORT_MODE_QSGMII)
-> +
-> +static const u32 vsc7512_port_modes[VSC7512_NUM_PORTS] = {
-> +	OCELOT_PORT_MODE_INTERNAL,
-> +	OCELOT_PORT_MODE_INTERNAL,
-> +	OCELOT_PORT_MODE_INTERNAL,
-> +	OCELOT_PORT_MODE_INTERNAL,
-> +	OCELOT_PORT_MODE_SERDES,
-> +	OCELOT_PORT_MODE_SERDES,
-> +	OCELOT_PORT_MODE_SERDES,
-> +	OCELOT_PORT_MODE_SERDES,
-> +	OCELOT_PORT_MODE_SERDES,
-> +	OCELOT_PORT_MODE_SERDES,
-> +	OCELOT_PORT_MODE_SGMII,
-> +};
-> +
-> +static const u32 *vsc7512_regmap[TARGET_MAX] = {
-> +	[ANA] = vsc7514_ana_regmap,
-> +	[QS] = vsc7514_qs_regmap,
-> +	[QSYS] = vsc7514_qsys_regmap,
-> +	[REW] = vsc7514_rew_regmap,
-> +	[SYS] = vsc7514_sys_regmap,
-> +	[S0] = vsc7514_vcap_regmap,
-> +	[S1] = vsc7514_vcap_regmap,
-> +	[S2] = vsc7514_vcap_regmap,
-> +	[PTP] = vsc7514_ptp_regmap,
-> +	[DEV_GMII] = vsc7514_dev_gmii_regmap,
-> +};
-
-Isn't this precisely the same as ocelot_regmap from
-drivers/net/ethernet/mscc/ocelot_vsc7514.c?
-
-> +
-> +static void ocelot_ext_phylink_validate(struct ocelot *ocelot, int port,
-> +					unsigned long *supported,
-> +					struct phylink_link_state *state)
-> +{
-> +	struct felix *felix = ocelot_to_felix(ocelot);
-> +	struct dsa_switch *ds = felix->ds;
-> +	struct dsa_port *dp;
-> +
-> +	dp = dsa_to_port(ds, port);
-> +
-> +	phylink_generic_validate(&dp->pl_config, supported, state);
-
-It would be good to transition everybody to phylink_generic_validate(),
-now that Sean Anderson's PHY rate matching work was accepted. I haven't
-found the time to test this on a LS1028A-QDS board, but I hope I will
-soon.
-
-> +}
-> +
-> +static struct regmap *ocelot_ext_regmap_init(struct ocelot *ocelot,
-> +					     const char *name)
-> +{
-> +	/* In the ocelot-mfd configuration, regmaps are attached to the device
-> +	 * by name alone, so dev_get_regmap will return the requested regmap
-> +	 * without the need to fully define the resource
-> +	 */
-> +	return dev_get_regmap(ocelot->dev->parent, name);
-
-As discussed: nope.
-
-> +}
-> +
-> +static const struct ocelot_ops ocelot_ext_ops = {
-> +	.reset		= ocelot_reset,
-> +	.wm_enc		= ocelot_wm_enc,
-> +	.wm_dec		= ocelot_wm_dec,
-> +	.wm_stat	= ocelot_wm_stat,
-> +	.port_to_netdev	= felix_port_to_netdev,
-> +	.netdev_to_port	= felix_netdev_to_port,
-> +};
-> +
-> +static const struct felix_info vsc7512_info = {
-> +	.target_io_res			= vsc7512_target_io_res,
-> +	.port_io_res			= vsc7512_port_io_res,
-> +	.regfields			= vsc7514_regfields,
-> +	.map				= vsc7512_regmap,
-> +	.ops				= &ocelot_ext_ops,
-> +	.stats_layout			= vsc7514_stats_layout,
-> +	.vcap				= vsc7514_vcap_props,
-> +	.num_mact_rows			= 1024,
-> +	.num_ports			= VSC7512_NUM_PORTS,
-> +	.num_tx_queues			= OCELOT_NUM_TC,
-> +	.phylink_validate		= ocelot_ext_phylink_validate,
-> +	.port_modes			= vsc7512_port_modes,
-> +	.init_regmap			= ocelot_ext_regmap_init,
-> +};
-> +
-> +static int ocelot_ext_probe(struct platform_device *pdev)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct dsa_switch *ds;
-> +	struct ocelot *ocelot;
-> +	struct felix *felix;
-> +	int err;
-> +
-> +	felix = kzalloc(sizeof(*felix), GFP_KERNEL);
-> +	if (!felix)
-> +		return -ENOMEM;
-> +
-> +	dev_set_drvdata(dev, felix);
-> +
-> +	ocelot = &felix->ocelot;
-> +	ocelot->dev = dev;
-> +
-> +	ocelot->num_flooding_pgids = 1;
-> +
-> +	felix->info = &vsc7512_info;
-> +
-> +	ds = kzalloc(sizeof(*ds), GFP_KERNEL);
-> +	if (!ds) {
-> +		err = -ENOMEM;
-> +		dev_err_probe(dev, err, "Failed to allocate DSA switch\n");
-> +		goto err_free_felix;
-> +	}
-> +
-> +	ds->dev = dev;
-> +	ds->num_ports = felix->info->num_ports;
-> +	ds->num_tx_queues = felix->info->num_tx_queues;
-> +
-> +	ds->ops = &felix_switch_ops;
-> +	ds->priv = ocelot;
-> +	felix->ds = ds;
-> +	felix->tag_proto = DSA_TAG_PROTO_OCELOT;
-> +
-> +	err = dsa_register_switch(ds);
-> +	if (err) {
-> +		dev_err_probe(dev, err, "Failed to register DSA switch\n");
-> +		goto err_free_ds;
-> +	}
-> +
-> +	return 0;
-> +
-> +err_free_ds:
-> +	kfree(ds);
-> +err_free_felix:
-> +	kfree(felix);
-> +	return err;
-> +}
-> +
-> +static int ocelot_ext_remove(struct platform_device *pdev)
-> +{
-> +	struct felix *felix = dev_get_drvdata(&pdev->dev);
-> +
-> +	if (!felix)
-> +		return 0;
-> +
-> +	dsa_unregister_switch(felix->ds);
-> +
-> +	kfree(felix->ds);
-> +	kfree(felix);
-> +
-> +	dev_set_drvdata(&pdev->dev, NULL);
-
-The pattern was changed again, so can you please delete this line now,
-to be in sync with the other drivers?
-https://patchwork.kernel.org/project/netdevbpf/patch/20220921140524.3831101-12-yangyingliang@huawei.com/
-
-> +
-> +	return 0;
-> +}
-> +
-> +static void ocelot_ext_shutdown(struct platform_device *pdev)
-> +{
-> +	struct felix *felix = dev_get_drvdata(&pdev->dev);
-> +
-> +	if (!felix)
-> +		return;
-> +
-> +	dsa_switch_shutdown(felix->ds);
-> +
-> +	dev_set_drvdata(&pdev->dev, NULL);
-> +}
-> +
-> +static const struct of_device_id ocelot_ext_switch_of_match[] = {
-> +	{ .compatible = "mscc,vsc7512-switch" },
-> +	{ },
-> +};
-> +MODULE_DEVICE_TABLE(of, ocelot_ext_switch_of_match);
-> +
-> +static struct platform_driver ocelot_ext_switch_driver = {
-> +	.driver = {
-> +		.name = "ocelot-switch",
-> +		.of_match_table = of_match_ptr(ocelot_ext_switch_of_match),
-> +	},
-> +	.probe = ocelot_ext_probe,
-> +	.remove = ocelot_ext_remove,
-> +	.shutdown = ocelot_ext_shutdown,
-> +};
-> +module_platform_driver(ocelot_ext_switch_driver);
-> +
-> +MODULE_DESCRIPTION("External Ocelot Switch driver");
-> +MODULE_LICENSE("GPL");
-> +MODULE_IMPORT_NS(MFD_OCELOT);
-> -- 
-> 2.25.1
-> 
-
+-- 
+Pavel Begunkov
