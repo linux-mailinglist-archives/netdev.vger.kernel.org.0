@@ -2,136 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F3AC5EC091
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 13:08:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66DC45EC0AA
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 13:11:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231833AbiI0LII (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 07:08:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34216 "EHLO
+        id S231149AbiI0LLo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 07:11:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231462AbiI0LHm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 07:07:42 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A76C4C601;
-        Tue, 27 Sep 2022 04:05:37 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4McGrJ1gmxzHtcW;
-        Tue, 27 Sep 2022 19:00:48 +0800 (CST)
-Received: from [10.174.179.191] (10.174.179.191) by
- canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 27 Sep 2022 19:05:34 +0800
-Message-ID: <f34e0c32-34b5-bca5-b71a-5d588caf1c2f@huawei.com>
-Date:   Tue, 27 Sep 2022 19:05:33 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [bpf-next v6 2/3] bpftool: Update doc (add autoattach to prog
- load)
-To:     Daniel Borkmann <daniel@iogearbox.net>, <quentin@isovalent.com>,
-        <ast@kernel.org>, <andrii@kernel.org>, <martin.lau@linux.dev>,
-        <song@kernel.org>, <yhs@fb.com>, <john.fastabend@gmail.com>,
-        <kpsingh@kernel.org>, <sdf@google.com>, <haoluo@google.com>,
-        <jolsa@kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <hawk@kernel.org>, <nathan@kernel.org>, <ndesaulniers@google.com>,
-        <trix@redhat.com>
-CC:     <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <llvm@lists.linux.dev>
-References: <1664014430-5286-1-git-send-email-wangyufen@huawei.com>
- <1664014430-5286-2-git-send-email-wangyufen@huawei.com>
- <2b001fcb-4340-e1ba-4b84-a69c670cf09a@iogearbox.net>
-From:   wangyufen <wangyufen@huawei.com>
-In-Reply-To: <2b001fcb-4340-e1ba-4b84-a69c670cf09a@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.191]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-6.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S231197AbiI0LLV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 07:11:21 -0400
+Received: from smtpbgau1.qq.com (smtpbgau1.qq.com [54.206.16.166])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CE6A4D810
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 04:09:55 -0700 (PDT)
+X-QQ-GoodBg: 2
+X-BAN-DOWNLOAD: 1
+X-BAN-SHARE: 1
+X-QQ-SSF: 0040000000B000F0
+X-QQ-FEAT: yO+f9Z6R4yDIA6Pkg1IYlVQAvQuPrP7kSl8OGUNIAEN5d6qsE/+as9HUnJuln
+        9DUmhXqJPuNeOc3GkU9Ir7DjWIuvZC8ETg7NVgU/Ven0oZzJg/YlL+MeDBpErNOQ/01N6k5
+        qUHqqF5WN5QdKDK/JnL2VTgR2D3ExL4E+zskyANefhqMjE+bwuwyJ0Cp5OSKsVObI/cFM38
+        b1Y9RA+gh1WzfwYpJ1R4P3nKp7TbRXVRLVx2Pw7DBd2bd6zm+UGZXf3/kGb2DuhPj7Bwvj9
+        oYWg3l5YSzDmKbP1rZJLDX2iBYSNWl5aDKMNXI4mSgCV+UN9IZuMCHRA1r9D/fVGnYsRJbp
+        Ng2C1eONQtMEWf4pddDJkEPQ31dySDTKYVVuLxGtbpz6ftDZJkNXuTVMAhENA==
+X-QQ-BUSINESS-ORIGIN: 2
+X-Originating-IP: 58.213.191.206
+X-QQ-STYLE: 
+X-QQ-mid: logic706t1664276920t221863
+From:   "=?utf-8?B?546L5YWJ5bGV?=" <191840239@smail.nju.edu.cn>
+To:     "=?utf-8?B?bmV0ZGV2?=" <netdev@vger.kernel.org>
+Subject: bug report for man page ip-link(8)
+Mime-Version: 1.0
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: base64
+Date:   Tue, 27 Sep 2022 19:08:40 +0800
+X-Priority: 3
+Message-ID: <tencent_149D797F235003681752D5E6@qq.com>
+X-QQ-MIME: TCMime 1.0 by Tencent
+X-Mailer: QQMail 2.x
+X-QQ-Mailer: QQMail 2.x
+X-QQ-SENDSIZE: 520
+Received: from qq.com (unknown [127.0.0.1])
+        by smtp.qq.com (ESMTP) with SMTP
+        id ; Tue, 27 Sep 2022 19:08:41 +0800 (CST)
+Feedback-ID: logic:smail.nju.edu.cn:qybglogicsvr:qybglogicsvr6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,
+        MSGID_FROM_MTA_HEADER,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+aW4gU1lOT1BTSVMsIHRoZSBmb2xsb3dpbmcgaXRlbXMgZG9lc24ndCBpbmRlbnQgcHJvcGVy
+bHk6DQogICAgaXAgbGluayBzaG93DQogICAgaXAgbGluayB4c3RhdHMNCiAgICBpcCBsaW5r
+IGFmc3RhdHMNCiAgICBpcCBsaW5rIGhlbHANCmFuZCBzb21lIG90aGVycy4=
 
-在 2022/9/27 0:20, Daniel Borkmann 写道:
-> On 9/24/22 12:13 PM, Wang Yufen wrote:
->> Add autoattach optional to prog load|loadall for supporting
->> one-step load-attach-pin_link.
->>
->> Signed-off-by: Wang Yufen <wangyufen@huawei.com>
->> ---
->>   tools/bpf/bpftool/Documentation/bpftool-prog.rst | 13 +++++++++++--
->>   1 file changed, 11 insertions(+), 2 deletions(-)
->>
->> diff --git a/tools/bpf/bpftool/Documentation/bpftool-prog.rst 
->> b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
->> index eb1b2a254eb1..2d9f27a0120f 100644
->> --- a/tools/bpf/bpftool/Documentation/bpftool-prog.rst
->> +++ b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
->> @@ -31,7 +31,7 @@ PROG COMMANDS
->>   |    **bpftool** **prog dump xlated** *PROG* [{**file** *FILE* | 
->> **opcodes** | **visual** | **linum**}]
->>   |    **bpftool** **prog dump jited**  *PROG* [{**file** *FILE* | 
->> **opcodes** | **linum**}]
->>   |    **bpftool** **prog pin** *PROG* *FILE*
->> -|    **bpftool** **prog** { **load** | **loadall** } *OBJ* *PATH* 
->> [**type** *TYPE*] [**map** {**idx** *IDX* | **name** *NAME*} *MAP*] 
->> [**dev** *NAME*] [**pinmaps** *MAP_DIR*]
->> +|    **bpftool** **prog** { **load** | **loadall** } *OBJ* *PATH* 
->> [**type** *TYPE*] [**map** {**idx** *IDX* | **name** *NAME*} *MAP*] 
->> [**dev** *NAME*] [**pinmaps** *MAP_DIR*] [**autoattach**]
->>   |    **bpftool** **prog attach** *PROG* *ATTACH_TYPE* [*MAP*]
->>   |    **bpftool** **prog detach** *PROG* *ATTACH_TYPE* [*MAP*]
->>   |    **bpftool** **prog tracelog**
->> @@ -131,7 +131,7 @@ DESCRIPTION
->>             contain a dot character ('.'), which is reserved for future
->>             extensions of *bpffs*.
->>   -    **bpftool prog { load | loadall }** *OBJ* *PATH* [**type** 
->> *TYPE*] [**map** {**idx** *IDX* | **name** *NAME*} *MAP*] [**dev** 
->> *NAME*] [**pinmaps** *MAP_DIR*]
->> +    **bpftool prog { load | loadall }** *OBJ* *PATH* [**type** 
->> *TYPE*] [**map** {**idx** *IDX* | **name** *NAME*} *MAP*] [**dev** 
->> *NAME*] [**pinmaps** *MAP_DIR*] [**autoattach**]
->>             Load bpf program(s) from binary *OBJ* and pin as *PATH*.
->>             **bpftool prog load** pins only the first program from the
->>             *OBJ* as *PATH*. **bpftool prog loadall** pins all programs
->> @@ -150,6 +150,15 @@ DESCRIPTION
->>             Optional **pinmaps** argument can be provided to pin all
->>             maps under *MAP_DIR* directory.
->>   +          If **autoattach** is specified program will be attached
->> +          before pin. In that case, only the link (representing the
->> +          program attached to its hook) is pinned, not the program as
->> +          such, so the path won't show in "**bpftool prog show -f**",
->> +          only show in "**bpftool link show -f**". Also, this only 
->> works
->> +          when bpftool (libbpf) is able to infer all necessary 
->> information
->> +          from the objectfile, in particular, it's not supported for 
->> all
->> +          program types.
->
-> Related to Quentin's comment, the documentation should also describe 
-> clear semantics
-> on what happens in failure case. I presume the use case you have in 
-> mind is to use
-> this facility for scripts e.g. to run/load some tests objs? Thus would 
-> be good to describe
-> to users what they need to do/clean up when things only partially 
-> succeed etc..
-
-
-Thanks for your comment.
-add in v7, please check.
-
->
->>             Note: *PATH* must be located in *bpffs* mount. It must not
->>             contain a dot character ('.'), which is reserved for future
->>             extensions of *bpffs*.
->>
->
->
