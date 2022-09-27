@@ -2,83 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 45A385ECBAF
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 19:54:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92ACE5ECBBF
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 19:55:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232590AbiI0RyC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 13:54:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37922 "EHLO
+        id S233131AbiI0RzQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 13:55:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229567AbiI0RyA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 13:54:00 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E3935FA7;
-        Tue, 27 Sep 2022 10:53:59 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id y8so14230988edc.10;
-        Tue, 27 Sep 2022 10:53:59 -0700 (PDT)
+        with ESMTP id S233204AbiI0RzE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 13:55:04 -0400
+Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70CFBF10
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 10:55:02 -0700 (PDT)
+Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-352eb66e3e8so4018527b3.0
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 10:55:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=1Ypdl4TRQC+1OSWNoWtNsZeRHzU6ew8cFJ+YEjQfHTc=;
-        b=KqO/zXxWkOwDPjKbXu8hyuaZYWxR9s9hv1at+3jJv5Y1FY6E0+h8Rgc0BE+pauKcdo
-         KHXPYY5Co95VFHegGHFKyg6eiNfyncmORzdlLOM59YxHuYo71OEdMGc7Ksu/R5LhQoOZ
-         0p9c3auRYjW/2g0W3Q6WUoij8rvt0NMtgGAlcR5plE0dZ81MJZF/Azy7wu8EPC6Irpjp
-         XH/XHMPcsLmTqi/yWbjhr/zx0XFFBFjLbwJ66lmIyRI6cb6QtL2HavkWTR2OaXE9FhpL
-         BZiTfbXVybauGSTo3aHFuTOTrl0rpWhC0oTQQhrdhrPhW+EZ8+S794xtfQZ0DlGDZf+3
-         pYBQ==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=tWpS4cEqVjCvAbrEpDrZ5jq3lmCtX8OGRlYF/P9XNV8=;
+        b=aI81aKFW+4dgqcToZisPeA4jtrgtLI5hDy+Cm0Mwnw3Ejr8SR4V2xB/zjlqPLSLI2Q
+         czwtAffY37UauybiIJFHhsz/Toihy02bT6l/NDNpcOrPHizj7QfEjRvtYM5GIhXfuqX7
+         GCOZ+7yIYsMcp4/5JBvMq3XLkL6ChR0Q/HorJVS6N5ATSLg3tdHQyLFx0mEa7QvC5VoQ
+         mQqawFfbMWUfJhyCjDqvj3AfkYWn72DQdJIGk0Pq3N8z5bGS3XbAEPubNAt4VLiwWiFC
+         Fa4ckKxIoZLKNol9BC9Lo4/0gIu93WgzTQio99Bb6BY8IDW2G97+eEkk/w8o97vUwz1C
+         gQbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=1Ypdl4TRQC+1OSWNoWtNsZeRHzU6ew8cFJ+YEjQfHTc=;
-        b=pW7VVKvcXKzj/WNEnVBSXe00pojx5BLdJ3WSXu1j0dLGhDJCFc0HT8VdHf1PzP2w2L
-         Q5feWq4vsvffPoURHcj0hracjXklcjU2af0K+61VaQU0XV4EkTuiHwEtq3Lsx/ZKPBmB
-         zEUxbpfrCBSLordqWRiVAszNvQeYKTxpgNJHpoW832hL1a2dlJMBA0whWYo37QZKL3/9
-         Fq5wvAjzvCU0mMxiAztVMlyuy3Ck8+IcDUKImYcDwzdZOw44tKW0cUGCA0sGdWJEnPzY
-         VU8H4rtihBIK2s1CzCG21mt3Z9F2Y72OQvVOnK5n1NkSFNcsQ1AVJQ40EO+OP8glN11q
-         RGCg==
-X-Gm-Message-State: ACrzQf1N5Mlp6Kr3e5ElOhWELtPOumNnyeyKAFErFtd29PmBzOucBMWh
-        mtA48fO8nDz10PjLxRhm4c+s9YuSRBT12IMy
-X-Google-Smtp-Source: AMsMyM4oYDuidVOOn0Lqag9BVv4J+Q7FYAuopwpG4GOuNpRt6Rih4mCc0JdTv2q9+6xTw0yPNXZZ+w==
-X-Received: by 2002:a05:6402:1554:b0:457:375e:7289 with SMTP id p20-20020a056402155400b00457375e7289mr13151127edx.171.1664301237455;
-        Tue, 27 Sep 2022 10:53:57 -0700 (PDT)
-Received: from skbuf ([188.27.184.197])
-        by smtp.gmail.com with ESMTPSA id k22-20020a17090632d600b007030c97ae62sm1123767ejk.191.2022.09.27.10.53.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Sep 2022 10:53:56 -0700 (PDT)
-Date:   Tue, 27 Sep 2022 20:53:53 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Lee Jones <lee@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH v3 net-next 08/14] net: dsa: felix: update init_regmap to
- be string-based
-Message-ID: <20220927175353.mn5lpxopp2n2yegr@skbuf>
-References: <20220926002928.2744638-1-colin.foster@in-advantage.com>
- <20220926002928.2744638-9-colin.foster@in-advantage.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=tWpS4cEqVjCvAbrEpDrZ5jq3lmCtX8OGRlYF/P9XNV8=;
+        b=hHMKnp0O06Q5SE1WkTr4MCFmBK+V91tbqsH1eMcKfW3YWs76WPqJog67o+PpGReCnq
+         D1Tcr1bdP9hNwT1BLFUxS80gQ8IfEMnS8kOzp0pWCBAkCqhrfFeArXCSSPixrRQ4DQj0
+         OqAIg6nQVvA81skMvFsu+1aAqsbpiixHipAOs9kkuKu4CJDSG1LKIifTFq8hdYTLNs+R
+         JeYLHyAQSl5wabb34T/24esXeZT4+4ui4kAWElSbozoqRnMYrPufGCN/7TUvnEHPJ1h4
+         18ynYFKfyqy2iB9lRmvbHTFs8aXpGhiK9SUIWmjo394lzPaQpc3rKTdXot6FLd3/EQrv
+         +zEQ==
+X-Gm-Message-State: ACrzQf2fcOS2WA5QnpJglOYN3Ds5NsQUyPidsvNcOH5TBrd8c1/4q1GT
+        XBEyco7du0ny6VXYNYSOl7NIwHtHITTu5SB/mdGHvw==
+X-Google-Smtp-Source: AMsMyM52wMIxhgYM5ELWXtaWymd9neNz5hZdppDIvfylJWmhZCtnT2YZ8QouamPa8ksX5z3a0GGPERJkDnkuiW0UTkU=
+X-Received: by 2002:a81:98d:0:b0:352:b79c:4cc6 with SMTP id
+ 135-20020a81098d000000b00352b79c4cc6mr1557441ywj.467.1664301301055; Tue, 27
+ Sep 2022 10:55:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220926002928.2744638-9-colin.foster@in-advantage.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+References: <20220927132753.750069-1-kuba@kernel.org>
+In-Reply-To: <20220927132753.750069-1-kuba@kernel.org>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 27 Sep 2022 10:54:49 -0700
+Message-ID: <CANn89iL4m=aMjZ1XWFNWDyyyDBF1uhNocN0OFqhm2VMm_JQOog@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: drop the weight argument from netif_napi_add
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        kvalo@kernel.org, Johannes Berg <johannes@sipsolutions.net>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-can@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -86,31 +70,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Colin,
+On Tue, Sep 27, 2022 at 6:28 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> We tell driver developers to always pass NAPI_POLL_WEIGHT
+> as the weight to netif_napi_add(). This may be confusing
+> to newcomers, drop the weight argument, those who really
+> need to tweak the weight can use netif_napi_add_weight().
+>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-On Sun, Sep 25, 2022 at 05:29:22PM -0700, Colin Foster wrote:
-> During development, it was believed that a wrapper for ocelot_regmap_init()
-> would be sufficient for the felix driver to work in non-mmio scenarios.
-> This was merged in during commit 242bd0c10bbd ("net: dsa: ocelot: felix:
-> add interface for custom regmaps")
-> 
-> As the external ocelot DSA driver grew closer to an acceptable state, it
-> was realized that most of the parameters that were passed in from struct
-> resource *res were useless and ignored. This is due to the fact that the
-> external ocelot DSA driver utilizes dev_get_regmap(dev, resource->name).
-> 
-> Instead of simply ignoring those parameters, refactor the API to only
-> require the name as an argument. MMIO scenarios this will reconstruct the
-> struct resource before calling ocelot_regmap_init(ocelot, resource). MFD
-> scenarios need only call dev_get_regmap(dev, name).
-> 
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> ---
-
-I don't like how this turned out. I was expecting you not to look at the
-exported resources from the ocelot-core anymore - that was kind of the
-point of using just the names rather than the whole resource definitions.
-
-I am also sorry for the mess that the felix driver currently is in, and
-the fact that some things may have confused you. I will prepare a patch
-set which offers an alternative to this, and send it for review.
+Sure, but this kind of patch makes backports harder.
+Not sure how confused are newcomers about this NAPI_POLL_WEIGHT....
