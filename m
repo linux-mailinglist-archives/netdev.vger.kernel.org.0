@@ -2,70 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A8005ECA42
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 18:58:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AABF5ECA92
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 19:12:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231784AbiI0Q6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 12:58:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44980 "EHLO
+        id S232105AbiI0RM4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 13:12:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231293AbiI0Q6U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 12:58:20 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 995309D51E
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 09:58:18 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id d22-20020a634f16000000b0043ce5f5a19bso1944878pgb.20
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 09:58:18 -0700 (PDT)
+        with ESMTP id S229834AbiI0RMy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 13:12:54 -0400
+Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0CE51B8CBF
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 10:12:52 -0700 (PDT)
+Received: by mail-qk1-x730.google.com with SMTP id i17so3450411qkk.12
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 10:12:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date;
-        bh=/a/nRCvi5803KEjxs2Dftg9xnS7geCJ0St0MIV9P0E0=;
-        b=dl80onQmkaC+7R0Tux6aOyBkRBdNixvpxHOZr4CIjHwIqny7X7AoCoFZREakNMav+9
-         Cw2FxTg4rCtTPoZbHNosuSegQDiSjCd628WzqS/YjIj/HXWPKZumk9gJGElYoOkuw5sX
-         qnqdOY33waMauV12yw0JmNf9nHynNsYRKJRbijHJdOds74WM2q7olLShCLLsG39FNUCP
-         c7yRmJzzzqroVOrJNGlnf39u69C6ILXfB4zrSMNxS1LTWYrBg5a0PklL6cP7Xyia0yzt
-         /xe75dD08Pwq1MjIleeprvflCxT33Xeq7DTSHqHmGAkMc87XBfsL/U2TXByhZqwF1WpY
-         FTmQ==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date;
+        bh=OiY5rTg7VuhmYymVKAvhy3a2Viv1gv5iq9jVHgcVhoo=;
+        b=Cyaj3DXeuxOqDwfDoeKxig+AmOf6rB9Lo+Up8G4NmzjQlDqn9j/oOY405eSYaMVi2+
+         Co67QWpVc6W0uq3SFu/ES6dQHBjbIzJkYrHOXgXzuJ6xX7uynNn1QWzTJ1lIiW0Aq5iD
+         /+pwfqzghCxnVvLkRV1j7m2pajju9eQVQSL79FpwoZqG+REqh4R44nVtupwyj+eGPpGc
+         ofX7+dIr1YHxxr8htDQ9HAji34uJ1vec/p82hYJTIBUwvZZJznIdSifoCeHVYzD68fi8
+         GLZGhu8KtuGM7XMYPcKfUZXAKyw7E48FGUFcPEHJPfqSj/WPItlp9/B0uqVwFbmtaWkO
+         DM7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=/a/nRCvi5803KEjxs2Dftg9xnS7geCJ0St0MIV9P0E0=;
-        b=PPgbhAYt9HlnSk30V8HknWXxBFlL0ospOGrUcdm7h3m/qylzv6deaP5sTL3B4NHoRZ
-         qFqy+4su0sEIevQheHFh0wZheCl9/XS14J+JT6Mg/4ulWuNVe23AfsskVqHbkFKud3kq
-         tATHhLF9eHLWc2paARP3Yz5qEncDaxiCklg35jkq+lGiy9ecHJEZC012wAWXvXvn4CKa
-         DUTkDqYd1U4LiNsvt+gin5bp5nBDjyKOyxrdLTxQAqWwlofbfcUselfdNQl++YGa22IE
-         ExdKfQxPxCBZTvI4Ry7LyPXUP7XtSg8DYhLHNICoIEQJts5+Z348q1CJODwy/b0M31xY
-         0vAQ==
-X-Gm-Message-State: ACrzQf0r5YUcj3DNTskJ17+YMz9ms7WCyoBLsWkFhIWIeXgip77p/aiX
-        WplY3Upk4BmPHbDpD7cyaQNyJ2ZYV6Vs46KRZJqKuA==
-X-Google-Smtp-Source: AMsMyM5+59p1E+QIu6HyE+h4AgY63qutNQlLKSmmvpb2XHbtpn7suAT0pqZs43cUtFmkBlz/UWsoWKCkC5+83BMbfWI7fA==
-X-Received: from abps.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:9b4])
- (user=abhishekpandit job=sendgmr) by 2002:a05:6a00:10c2:b0:547:4991:c985 with
- SMTP id d2-20020a056a0010c200b005474991c985mr30670142pfu.67.1664297898012;
- Tue, 27 Sep 2022 09:58:18 -0700 (PDT)
-Date:   Tue, 27 Sep 2022 09:58:15 -0700
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.3.998.g577e59143f-goog
-Message-ID: <20220927095813.v2.1.Ia168b651a69b253059f2bbaa60b98083e619545c@changeid>
-Subject: [PATCH v2] Bluetooth: Prevent double register of suspend
-From:   Abhishek Pandit-Subedi <abhishekpandit@google.com>
-To:     linux-bluetooth@vger.kernel.org
-Cc:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        syzbot <syzkaller@googlegroups.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=OiY5rTg7VuhmYymVKAvhy3a2Viv1gv5iq9jVHgcVhoo=;
+        b=FAOC/bkXj5zx/wubgMErGoHPlavsLLoigiz6OYf5bDZyCpHXk4Gz3QWUoD3ywjVAWR
+         9J72+FGp1ziDZ9/6oJGzGAjogDmk4OZP6qHZ8GXPbGy9vVWfHYvHbJl7WDHbOIHMgkwC
+         re2W+O1bgA7B9F3jdWzzbJkjl9+I4JQVzlKythHMLQH3CARtSKeNosfEHlSE+SuIkIQt
+         Yno6iespuF20/tPOuwZUgoAt7Vu4HCvmaKIV8+2xazDhl7gPN0Ik4epl5TaYUcJmQL9C
+         S68KK8gmIt5FGQEysiHksr6qp4mCRqEo9bbtOfVBQ9zckDQcW60SMIpi2qjeRcnPwHAc
+         e41Q==
+X-Gm-Message-State: ACrzQf1mML+yI9mabkKKjqCp+N34ddik7IlzbANaLJwK6w6wDN2Pzn2G
+        WtOhKXQE+QGle2dvBXlU1jlE8GyZ07g=
+X-Google-Smtp-Source: AMsMyM4Q3AmzsHxbzvRLhJbWXiyH0hr3lFB1i2rOpPRdGBjTdJaKnvZPYIGjJQTGYH74+jUs4UBE5A==
+X-Received: by 2002:a05:620a:2683:b0:6cf:3a7e:e006 with SMTP id c3-20020a05620a268300b006cf3a7ee006mr18506389qkp.474.1664298771851;
+        Tue, 27 Sep 2022 10:12:51 -0700 (PDT)
+Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com. [209.85.128.178])
+        by smtp.gmail.com with ESMTPSA id ga17-20020a05622a591100b0035d0a021dcasm1126197qtb.63.2022.09.27.10.12.50
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 27 Sep 2022 10:12:51 -0700 (PDT)
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-333a4a5d495so106424237b3.10
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 10:12:50 -0700 (PDT)
+X-Received: by 2002:a81:de44:0:b0:341:6954:52b2 with SMTP id
+ o4-20020a81de44000000b00341695452b2mr25648802ywl.208.1664298770377; Tue, 27
+ Sep 2022 10:12:50 -0700 (PDT)
+MIME-Version: 1.0
+References: <adel.abushaev@gmail.com> <20220817200940.1656747-1-adel.abushaev@gmail.com>
+ <CADvbK_fVRVYjtSkn29ec70mko9aEwnwu+kHYx8bAAWm-n25mjA@mail.gmail.com>
+ <f479b419-b05d-2cae-4fd0-4e88707b8d8b@gmail.com> <CA+FuTSf_8MjF4jeUjEqDrOwqXzf485jX_GJyVP5kPUDzOFezkg@mail.gmail.com>
+ <0c989c58-2aa6-eca6-2bb9-24b1ae71694a@gmail.com>
+In-Reply-To: <0c989c58-2aa6-eca6-2bb9-24b1ae71694a@gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 27 Sep 2022 13:12:13 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSdCmWu5w09KZshCv=TVugf_x5NUY1xjv4X8kgbEQ+WbHQ@mail.gmail.com>
+Message-ID: <CA+FuTSdCmWu5w09KZshCv=TVugf_x5NUY1xjv4X8kgbEQ+WbHQ@mail.gmail.com>
+Subject: Re: [net-next v2 0/6] net: support QUIC crypto
+To:     Adel Abouchaev <adel.abushaev@gmail.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Xin Long <lucien.xin@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, davem <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        David Ahern <dsahern@kernel.org>, shuah@kernel.org,
+        imagedong@tencent.com, network dev <netdev@vger.kernel.org>,
+        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,129 +87,188 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+On Tue, Sep 27, 2022 at 12:45 PM Adel Abouchaev <adel.abushaev@gmail.com> w=
+rote:
+>
+>
+> On 9/25/22 11:04 AM, Willem de Bruijn wrote:
+> >>> The patch seems to get the crypto_ctx by doing a connection hash tabl=
+e
+> >>> lookup in the sendmsg(), which is not good from the performance side.
+> >>> One QUIC connection can go over multiple UDP sockets, but I don't
+> >>> think one socket can be used by multiple QUIC connections. So why not
+> >>> save the ctx in the socket instead?
+> >> A single socket could have multiple connections originated from it,
+> >> having different destinations, if the socket is not connected. An
+> >> optimization could be made for connected sockets to cache the context
+> >> and save time on a lookup. The measurement of kernel operations timing
+> >> did not reveal a significant amount of time spent in this lookup due t=
+o
+> >> a relatively small number of connections per socket in general. A shar=
+ed
+> >> table across multiple sockets might experience a different performance
+> >> grading.
+> > I'm late to this patch series, sorry. High quality implementation. I
+> > have a few design questions similar to Xin.
+> >
+> > If multiplexing, instead of looking up a connection by { address, port
+> > variable length connection ID }, perhaps return a connection table
+> > index on setsockopt and use that in sendmsg.
+>
+>
+> It was deliberate to not to return anything other than 0 from
+> setsockopt() as defined in the spec for the function. Despite that it
+> says "shall", the doc says that 0 is the only value for successful
+> operation. This was the reason not to use setsockopt() for any
+> bidirectional transfers of data and or status. A more sophisticated
+> approach with netlink sockets would be more suitable for it. The second
+> reason is the API asymmetry for Tx and Rx which will be introduced - the
 
-Suspend notifier should only be registered and unregistered once per
-hdev. Simplify this by only registering during driver registration and
-simply exiting early when HCI_USER_CHANNEL is set.
+I thought the cover letter indicated that due to asymmetry of most
+QUIC workloads, only Tx offload is implemented. You do intend to add
+Rx later?
 
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Fixes: 359ee4f834f5 (Bluetooth: Unregister suspend with userchannel)
-Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
----
-This is fixing a syzbot reported warning. Tested in the following ways:
-* Normal start-up of driver with bluez.
-* Start/stop loop using HCI_USER_CHANNEL (sock path).
-* USB reset triggering hci_dev_unregister (driver path).
+> Rx will still need to match on the address, port and cid. The third
+> reason is that in current implementations there are no more than a few
+> connections per socket,
 
-------------[ cut here ]------------
-double register detected
-WARNING: CPU: 0 PID: 2657 at kernel/notifier.c:27
-notifier_chain_register kernel/notifier.c:27 [inline]
-WARNING: CPU: 0 PID: 2657 at kernel/notifier.c:27
-notifier_chain_register+0x5c/0x124 kernel/notifier.c:22
-Modules linked in:
-CPU: 0 PID: 2657 Comm: syz-executor212 Not tainted
-5.10.136-syzkaller-19376-g6f46a5fe0124 #0
-    8f0771607702f5ef7184d2ee33bd0acd70219fc4
-    Hardware name: Google Google Compute Engine/Google Compute Engine,
-    BIOS Google 07/22/2022
-    RIP: 0010:notifier_chain_register kernel/notifier.c:27 [inline]
-    RIP: 0010:notifier_chain_register+0x5c/0x124 kernel/notifier.c:22
-    Code: 6a 41 00 4c 8b 23 4d 85 e4 0f 84 88 00 00 00 e8 c2 1e 19 00 49
-    39 ec 75 18 e8 b8 1e 19 00 48 c7 c7 80 6d ca 84 e8 2c 68 48 03 <0f> 0b
-        e9 af 00 00 00 e8 a0 1e 19 00 48 8d 7d 10 48 89 f8 48 c1 e8
-        RSP: 0018:ffffc900009d7da8 EFLAGS: 00010286
-        RAX: 0000000000000000 RBX: ffff8881076fd1d8 RCX: 0000000000000000
-        RDX: 0000001810895100 RSI: ffff888110895100 RDI: fffff5200013afa7
-        RBP: ffff88811a4191d0 R08: ffffffff813b8ca1 R09: 0000000080000000
-        R10: 0000000000000000 R11: 0000000000000005 R12: ffff88811a4191d0
-        R13: dffffc0000000000 R14: 0000000000000000 R15: 0000000000000000
-        FS: 00005555571f5300(0000) GS:ffff8881f6c00000(0000)
-        knlGS:0000000000000000
-        CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-        CR2: 000078e3857f3075 CR3: 000000010d668000 CR4: 00000000003506f0
-        DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-        DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-        Call Trace:
-        blocking_notifier_chain_register+0x8c/0xa6 kernel/notifier.c:254
-        hci_register_suspend_notifier net/bluetooth/hci_core.c:2733
-        [inline]
-        hci_register_suspend_notifier+0x6b/0x7c
-        net/bluetooth/hci_core.c:2727
-        hci_sock_release+0x270/0x3cf net/bluetooth/hci_sock.c:889
-        __sock_release+0xcd/0x1de net/socket.c:597
-        sock_close+0x18/0x1c net/socket.c:1267
-        __fput+0x418/0x729 fs/file_table.c:281
-        task_work_run+0x12b/0x15b kernel/task_work.c:151
-        tracehook_notify_resume include/linux/tracehook.h:188 [inline]
-        exit_to_user_mode_loop kernel/entry/common.c:165 [inline]
-        exit_to_user_mode_prepare+0x8f/0x130 kernel/entry/common.c:192
-        syscall_exit_to_user_mode+0x172/0x1b2 kernel/entry/common.c:268
-        entry_SYSCALL_64_after_hwframe+0x61/0xc6
-        RIP: 0033:0x78e38575e1db
-        Code: 0f 05 48 3d 00 f0 ff ff 77 45 c3 0f 1f 40 00 48 83 ec 18 89
-        7c 24 0c e8 63 fc ff ff 8b 7c 24 0c 41 89 c0 b8 03 00 00 00 0f 05
-        <48> 3d 00 f0 ff ff 77 35 44 89 c7 89 44 24 0c e8 a1 fc ff ff 8b 44
-        RSP: 002b:00007ffffc20a0b0 EFLAGS: 00000293 ORIG_RAX:
-        0000000000000003
-        RAX: 0000000000000000 RBX: 0000000000000006 RCX: 000078e38575e1db
-        RDX: ffffffffffffffb8 RSI: 0000000020000000 RDI: 0000000000000005
-        RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000150
-        R10: 0000000000000000 R11: 0000000000000293 R12: 000000000000e155
-        R13: 00007ffffc20a140 R14: 00007ffffc20a130 R15: 00007ffffc20a0e8
+This is very different from how we do QUIC at Google. There we
+definitely multiplex many connections across essentially a socket per
+CPU IIRC.
 
-Changes in v2:
-- Removed suspend registration from hci_sock.
-- Exit hci_suspend_notifier early if user channel.
+> which does not abuse the rhashtable that does a
+> lookup, although it takes time to hash the key into a hash for a seek.
+> The performance measurement ran against the runtime and did not flag
+> this path as underperforming either, there were other parts that
+> substantially add to the runtime, not the key lookup though.
+>
+>
+> >>> The patch is to reduce the copying operations between user space and
+> >>> the kernel. I might miss something in your user space code, but the
+> >>> msg to send is *already packed* into the Stream Frame in user space,
+> >>> what's the difference if you encrypt it in userspace and then
+> >>> sendmsg(udp_sk) with zero-copy to the kernel.
+> >> It is possible to do it this way. Zero-copy works best with packet siz=
+es
+> >> starting at 32K and larger.  Anything less than that would consume the
+> >> improvements of zero-copy by zero-copy pre/post operations and needs t=
+o
+> >> align memory.
+> > Part of the cost of MSG_ZEROCOPY is in mapping and unmapping user
+> > pages. This series re-implements that with its own get_user_pages.
+> > That is duplicative non-trivial code. And it will incur the same cost.
+> > What this implementation saves is the (indeed non-trivial)
+> > asynchronous completion notification over the error queue.
+> >
+> > The cover letter gives some performance numbers against a userspace
+> > implementation that has to copy from user to kernel. It might be more
+> > even to compare against an implementation using MSG_ZEROCOPY and
+> > UDP_SEGMENT. A userspace crypto implementation may have other benefits
+> > compared to a kernel implementation, such as not having to convert to
+> > crypto API scatter-gather arrays and back to network structures.
+> >
+> > A few related points
+> >
+> > - The implementation support multiplexed connections, but only one
+> > crypto sendmsg can be outstanding at any time:
+> >
+> >    + /**
+> >    + * To synchronize concurrent sendmsg() requests through the same so=
+cket
+> >    + * and protect preallocated per-context memory.
+> >    + **/
+> >    + struct mutex sendmsg_mux;
+> >
+> > That is quite limiting for production workloads.
+>
+> The use case that we have with MVFST library currently runs a single
+> worker for a connection and has a single socket attached to it. QUIC
+> allows simultaneous use of multiple connection IDs to swap them in
+> runtime, and implementation would request only a handful of these. The
+> MVFST batches writes into a block of about 8Kb and then uses GSO to send
+> them all at once.
+>
+> > - Crypto operations are also executed synchronously, using
+> > crypto_wait_req after each operationn. This limits throughput by using
+> > at most one core per UDP socket. And adds sendmsg latency (which may
+> > or may not be important to the application). Wireguard shows an
+> > example of how to parallelize software crypto across cores.
+> >
+> > - The implementation avoids dynamic allocation of cipher text pages by
+> > using a single ctx->cipher_page. This is protected by sendmsg_mux (see
+> > above). Is that safe when packets leave the protocol stack and are
+> > then held in a qdisc or when being processed by the NIC?
+> > quic_sendmsg_locked will return, but the cipher page is not free to
+> > reuse yet.
+> There is currently no use case that we have in hands that requires
+> parallel transmission of data for the same connection. Multiple
+> connections would have no issue running in parallel as each of them will
+> have it's own preallocated cipher_page in the context.
 
- net/bluetooth/hci_core.c | 4 ++++
- net/bluetooth/hci_sock.c | 3 ---
- 2 files changed, 4 insertions(+), 3 deletions(-)
+This still leaves the point that sendmsg may return and the mutex
+released while the cipher_page is still associated with an skb in the
+transmit path.
 
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 66c7cdba0d32..86ce2dd1c7fb 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -2406,6 +2406,10 @@ static int hci_suspend_notifier(struct notifier_block *nb, unsigned long action,
- 		container_of(nb, struct hci_dev, suspend_notifier);
- 	int ret = 0;
- 
-+	/* Userspace has full control of this device. Do nothing. */
-+	if (hci_dev_test_flag(hdev, HCI_USER_CHANNEL))
-+		return NOTIFY_DONE;
-+
- 	if (action == PM_SUSPEND_PREPARE)
- 		ret = hci_suspend_dev(hdev);
- 	else if (action == PM_POST_SUSPEND)
-diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
-index b2a33a05c93e..06581223238c 100644
---- a/net/bluetooth/hci_sock.c
-+++ b/net/bluetooth/hci_sock.c
-@@ -887,7 +887,6 @@ static int hci_sock_release(struct socket *sock)
- 			 */
- 			hci_dev_do_close(hdev);
- 			hci_dev_clear_flag(hdev, HCI_USER_CHANNEL);
--			hci_register_suspend_notifier(hdev);
- 			mgmt_index_added(hdev);
- 		}
- 
-@@ -1216,7 +1215,6 @@ static int hci_sock_bind(struct socket *sock, struct sockaddr *addr,
- 		}
- 
- 		mgmt_index_removed(hdev);
--		hci_unregister_suspend_notifier(hdev);
- 
- 		err = hci_dev_open(hdev->id);
- 		if (err) {
-@@ -1231,7 +1229,6 @@ static int hci_sock_bind(struct socket *sock, struct sockaddr *addr,
- 				err = 0;
- 			} else {
- 				hci_dev_clear_flag(hdev, HCI_USER_CHANNEL);
--				hci_register_suspend_notifier(hdev);
- 				mgmt_index_added(hdev);
- 				hci_dev_put(hdev);
- 				goto done;
--- 
-2.37.3.998.g577e59143f-goog
+> There is a fragmentation further down the stack with
+> ip_generic_getfrag() that eventually does copy_from_iter() and makea a
+> copy of the data. This is executed as part of __ip_append_data() called
+> from udp_sendmsg() in ipv4/udp.c. The assumption was that this is
+> executed synchronously and the queues and NIC will see a mapping of a
+> different memory area than the ciphertext in the pre-allocated page.
+>
+> >
+> > - The real benefit of kernel QUIC will come from HW offload. Would it
+> > be better to avoid the complexity of an in-kernel software
+> > implementation and only focus on HW offload? Basically, pass the
+> > plaintext QUIC packets over a standard UDP socket and alongside in a
+> > cmsg pass either an index into a HW security association database or
+> > the immediate { key, iv } connection_info (for stateless sockets), to
+> > be encoded into the descriptor by the device driver.
+> Hardware usually targets a single ciphersuite such as AES-GCM-128/256,
+> while QUIC also supports Chacha20-Poly1305 and AES-CCM. The generalized
+> support for offload prompted implementation of these ciphers in kernel
+> code.
 
+All userspace libraries also support all protocols as fall-back. No
+need for two fall-backs if HW support is missing?
+
+> The kernel code could also engage if the future hardware has
+> capacity caps preventing it from handling all requests in the hardware.
+> > - With such a simpler path, could we avoid introducing ULP and just
+> > have udp [gs]etsockopt CRYPTO_STATE. Where QUIC is the only defined
+> > state type yet.
+> >
+> > - Small aside: as the series introduces new APIs with non-trivial
+> > parsing in the kernel, it's good to run a fuzzer like syzkaller on it
+> > (if not having done so yet).
+> Agreed.
+> >> The other possible obstacle would be that eventual support
+> >> of QUIC encryption and decryption in hardware would integrate well wit=
+h
+> >> this current approach.
+> >>> Didn't really understand the "GSO" you mentioned, as I don't see any
+> >>> code about kernel GSO, I guess it's just "Fragment size", right?
+> >>> BTW, it=E2=80=98s not common to use "//" for the kernel annotation.
+> > minor point: fragment has meaning in IPv4. For GSO, prefer gso_size.
+> Sure, will change it to gso_size.
+> >
+> >> Once the payload arrives into the kernel, the GSO on the interface wou=
+ld
+> >> instruct L3/L4 stack on fragmentation. In this case, the plaintext QUI=
+C
+> >> packets should be aligned on the GSO marks less the tag size that woul=
+d
+> >> be added by encryption. For GSO size 1000, the QUIC packets in the bat=
+ch
+> >> for transmission should all be 984 bytes long, except maybe the last
+> >> one. Once the tag is attached, the new size of 1000 will correctly spl=
+it
+> >> the QUIC packets further down the stack for transmission in individual
+> >> IP/UDP packets. The code is also saving processing time by sending all
+> >> packets at once to UDP in a single call, when GSO is enabled.
+> >>> I'm not sure if it's worth adding a ULP layer over UDP for this QUIC
+> >>> TX only. Honestly, I'm more supporting doing a full QUIC stack in the
+> >>> kernel independently with socket APIs to use it:
+> >>> https://github.com/lxin/tls_hs.
+> >>>
+> >>> Thanks.
