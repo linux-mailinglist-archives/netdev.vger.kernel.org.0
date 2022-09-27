@@ -2,80 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E17BE5EBDC0
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 10:49:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CC825EBDC3
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 10:49:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231268AbiI0Itj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 04:49:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51088 "EHLO
+        id S231588AbiI0Itq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 04:49:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230202AbiI0Ith (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 04:49:37 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DFD67649;
-        Tue, 27 Sep 2022 01:49:35 -0700 (PDT)
-X-UUID: 54547f90f4c24f05a9716be71998a468-20220927
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=PWBKd6s+alHmuqMW7zBzYd2csWJfir6MkKHpoQDs4cg=;
-        b=Ry/6IipgkSU2hqtXGAVjuy+5b5xKfu8wglUEzfr25o/dRZNXDRdrpfArD37Q0c7f24lLrXcY8AdAyJF7tvOW6Gkp1z5HrlGZD8Y7nk99nIf+dxBrOBkWeJ5dOmohV/tOzja0ZcyL9//6S7HvkQQNNFwyRI7EzHI+Bd4AowS9IHk=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.11,REQID:6147a00e-7c2d-4823-ad3d-bed593ddf9b0,IP:0,U
-        RL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,BULK:0,RULE:Release_Ham,ACTION
-        :release,TS:45
-X-CID-INFO: VERSION:1.1.11,REQID:6147a00e-7c2d-4823-ad3d-bed593ddf9b0,IP:0,URL
-        :0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,BULK:0,RULE:Release_Ham,ACTION:r
-        elease,TS:45
-X-CID-META: VersionHash:39a5ff1,CLOUDID:1eb737a3-dc04-435c-b19b-71e131a5fc35,B
-        ulkID:220927164931O60JSLKQ,BulkQuantity:0,Recheck:0,SF:38|28|17|19|48,TC:n
-        il,Content:0,EDM:-3,IP:nil,URL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 54547f90f4c24f05a9716be71998a468-20220927
-Received: from mtkmbs13n1.mediatek.inc [(172.21.101.193)] by mailgw01.mediatek.com
-        (envelope-from <jianguo.zhang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1987659540; Tue, 27 Sep 2022 16:49:30 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Tue, 27 Sep 2022 16:49:29 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
- Transport; Tue, 27 Sep 2022 16:49:27 +0800
-Message-ID: <eb6a70844b067f76e8405b937de9408045d569a0.camel@mediatek.com>
-Subject: Re: [PATCH v5 2/4] dt-bindings: net: snps,dwmac: add clk_csr
- property
-From:   Jianguo Zhang <jianguo.zhang@mediatek.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-CC:     Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
-        Biao Huang <biao.huang@mediatek.com>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>
-Date:   Tue, 27 Sep 2022 16:49:27 +0800
-In-Reply-To: <a215ae81-10de-7880-1a15-b7b08d0d80d7@linaro.org>
-References: <20220923052828.16581-1-jianguo.zhang@mediatek.com>
-         <20220923052828.16581-3-jianguo.zhang@mediatek.com>
-         <a215ae81-10de-7880-1a15-b7b08d0d80d7@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        with ESMTP id S230508AbiI0Itl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 04:49:41 -0400
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13F751F2DF
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 01:49:39 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id q3-20020a056e0220e300b002f5e648e02eso7037124ilv.3
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 01:49:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=VcrBPx8xfJ9lVz+FClYVuo7si9Glw5I9QGikXlKH2Ug=;
+        b=Tjc30jHfACLubEMDoUrQgBZj04ROPh4Nb3fGwvlhJ5zm8SaJe450gvAok3hDxMLNLD
+         sFPz15Ag/qhG76+EtcmiEzCuWe0I+gf5gnZIed0VCzjYhHcok8Ww2MhFPJgHRHdrHkSo
+         AqMjQHbdIVQ52ukLgSjYvtAjhEqhnsvj1155zQ/Ch8kWCa8vOpMqES0AZJIwgWgHlqH0
+         tbPd4pFuwA6j/QbT1HxwTMoawqsCv4DatjffJVuhV4CT9Kj6hDbSXBesXiGGw3elZt0z
+         rasTDjzX8b6z6eeG7EUWt/zl7HFXnLpDk+14RdFz2K6iwIpa83QVP6cZQ3o5BhudDSQ1
+         nsNg==
+X-Gm-Message-State: ACrzQf1TwqpwyY32ZdaKcftjcuJTVEhBgamfCslNcG8uI+3yVkRIfIMw
+        6BMUCTBm6mADDCVeC9vdNdR8cwNO88zUqGCodV53VkZAbZ6D
+X-Google-Smtp-Source: AMsMyM70AyRb0r7TXdF58Jm1rV5VBRv2D9KicVc0GeCv407F6+C7NHIjnxuPK8o4LraWCWiSU02rF4XmeVZN2JIw3U1gEMly8IGz
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_PASS,UNPARSEABLE_RELAY,URIBL_CSS autolearn=ham autolearn_force=no
+X-Received: by 2002:a05:6e02:b45:b0:2f8:ab79:fc70 with SMTP id
+ f5-20020a056e020b4500b002f8ab79fc70mr2146818ilu.214.1664268578426; Tue, 27
+ Sep 2022 01:49:38 -0700 (PDT)
+Date:   Tue, 27 Sep 2022 01:49:38 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000006d989105e9a4b916@google.com>
+Subject: [syzbot] general protection fault in kernel_accept (5)
+From:   syzbot <syzbot+c5ce866a8d30f4be0651@syzkaller.appspotmail.com>
+To:     bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.9 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,30 +55,87 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Krzysztof,
+Hello,
 
-	Thanks for your comment.
+syzbot found the following issue on:
 
-On Fri, 2022-09-23 at 20:11 +0200, Krzysztof Kozlowski wrote:
-> On 23/09/2022 07:28, Jianguo Zhang wrote:
-> > The clk_csr property is parsed in driver for generating MDC clock
-> > with correct frequency. A warning('clk_csr' was unexpeted) is
-> > reported
-> > when runing 'make_dtbs_check' because the clk_csr property
-> > has been not documented in the binding file.
-> 
-> Your subject is not accurate anymore. Maybe mention that instead of
-> existing clk_csr, you add a different property.
-> 
-> With commit msg fixes:
-> 
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> 
-We will fix commit message in next version patches.
+HEAD commit:    bf682942cd26 Merge tag 'scsi-fixes' of git://git.kernel.or..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=117fc3ac880000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=7db7ad17eb14cb7
+dashboard link: https://syzkaller.appspot.com/bug?extid=c5ce866a8d30f4be0651
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-> Best regards,
-> Krzysztof
-> 
-BRS
-Jianguo
+Unfortunately, I don't have any reproducer for this issue yet.
 
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+c5ce866a8d30f4be0651@syzkaller.appspotmail.com
+
+general protection fault, probably for non-canonical address 0xdffffc0000000001: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
+CPU: 3 PID: 12841 Comm: kworker/u16:2 Not tainted 6.0.0-rc6-syzkaller-00210-gbf682942cd26 #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+Workqueue: tipc_rcv tipc_topsrv_accept
+RIP: 0010:kernel_accept+0x22d/0x350 net/socket.c:3487
+Code: 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 e3 00 00 00 48 b8 00 00 00 00 00 fc ff df 48 8b 5b 20 48 8d 7b 08 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 ee 00 00 00 48 8b 7b 08 e8 a0 36 1c fa e8 8b ff
+RSP: 0018:ffffc9000494fc28 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000001 RSI: ffffffff874c37b2 RDI: 0000000000000008
+RBP: 0000000000000000 R08: 0000000000000005 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000449 R12: 0000000000000000
+R13: ffff888027a7b980 R14: ffff888028bc08e0 R15: 1ffff92000929f90
+FS:  0000000000000000(0000) GS:ffff88802cb00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fa6e1a8c920 CR3: 000000004bba0000 CR4: 0000000000150ee0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ tipc_topsrv_accept+0x197/0x280 net/tipc/topsrv.c:460
+ process_one_work+0x991/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e4/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:kernel_accept+0x22d/0x350 net/socket.c:3487
+Code: 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 e3 00 00 00 48 b8 00 00 00 00 00 fc ff df 48 8b 5b 20 48 8d 7b 08 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 ee 00 00 00 48 8b 7b 08 e8 a0 36 1c fa e8 8b ff
+RSP: 0018:ffffc9000494fc28 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000001 RSI: ffffffff874c37b2 RDI: 0000000000000008
+RBP: 0000000000000000 R08: 0000000000000005 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000449 R12: 0000000000000000
+R13: ffff888027a7b980 R14: ffff888028bc08e0 R15: 1ffff92000929f90
+FS:  0000000000000000(0000) GS:ffff88802ca00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000000c0154d8000 CR3: 000000006fb4b000 CR4: 0000000000150ee0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess):
+   0:	48 89 fa             	mov    %rdi,%rdx
+   3:	48 c1 ea 03          	shr    $0x3,%rdx
+   7:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1)
+   b:	0f 85 e3 00 00 00    	jne    0xf4
+  11:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
+  18:	fc ff df
+  1b:	48 8b 5b 20          	mov    0x20(%rbx),%rbx
+  1f:	48 8d 7b 08          	lea    0x8(%rbx),%rdi
+  23:	48 89 fa             	mov    %rdi,%rdx
+  26:	48 c1 ea 03          	shr    $0x3,%rdx
+* 2a:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1) <-- trapping instruction
+  2e:	0f 85 ee 00 00 00    	jne    0x122
+  34:	48 8b 7b 08          	mov    0x8(%rbx),%rdi
+  38:	e8 a0 36 1c fa       	callq  0xfa1c36dd
+  3d:	e8                   	.byte 0xe8
+  3e:	8b ff                	mov    %edi,%edi
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
