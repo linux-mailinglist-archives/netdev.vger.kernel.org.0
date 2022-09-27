@@ -2,69 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 716825ECA30
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 18:56:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A8005ECA42
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 18:58:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232521AbiI0Q4H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 12:56:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36920 "EHLO
+        id S231784AbiI0Q6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 12:58:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232805AbiI0Qzq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 12:55:46 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABC404E61D
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 09:55:16 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id e187so12910391ybh.10
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 09:55:16 -0700 (PDT)
+        with ESMTP id S231293AbiI0Q6U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 12:58:20 -0400
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 995309D51E
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 09:58:18 -0700 (PDT)
+Received: by mail-pg1-x54a.google.com with SMTP id d22-20020a634f16000000b0043ce5f5a19bso1944878pgb.20
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 09:58:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=vv3W7RQ7dbZpyBjlAQgi1M2Mtk3zvmXTUqiF3crSNUY=;
-        b=WW16dMN983lgj7CgWDAI1u+cbIcZvIuoT1QF4KByI9XPKrblTCqJ+fiueGcp5vlHT3
-         HWcCr0UV2jMVaJPltFx6TxPGBPOfBOrHTW5omESJCIXOn19wYqHUIU56mR6RsELxKoz4
-         XOXh0q7aEvNUHvdq8otTruXqYyH0wlnIqai7dfGeYPRCTku/jOszoEmEUOCXhm/2KXaC
-         ZHWGCvsqBOOal2tc4BUB8WhDGwoi87OPQqWFWqdZK54OjugNl6dTyWL/EeF67Pds/Sfk
-         Pc8eooNqTvezdHI7UKVch9QpGoKUHpNn1hg10bn8yM0+Nb78a3iXXZl4Jq9QLVmv+vVE
-         uMOg==
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date;
+        bh=/a/nRCvi5803KEjxs2Dftg9xnS7geCJ0St0MIV9P0E0=;
+        b=dl80onQmkaC+7R0Tux6aOyBkRBdNixvpxHOZr4CIjHwIqny7X7AoCoFZREakNMav+9
+         Cw2FxTg4rCtTPoZbHNosuSegQDiSjCd628WzqS/YjIj/HXWPKZumk9gJGElYoOkuw5sX
+         qnqdOY33waMauV12yw0JmNf9nHynNsYRKJRbijHJdOds74WM2q7olLShCLLsG39FNUCP
+         c7yRmJzzzqroVOrJNGlnf39u69C6ILXfB4zrSMNxS1LTWYrBg5a0PklL6cP7Xyia0yzt
+         /xe75dD08Pwq1MjIleeprvflCxT33Xeq7DTSHqHmGAkMc87XBfsL/U2TXByhZqwF1WpY
+         FTmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=vv3W7RQ7dbZpyBjlAQgi1M2Mtk3zvmXTUqiF3crSNUY=;
-        b=HktEpDaGpMqh/d9e5ewywur3+mjeNt1h7/wTWmLqoRFlIdnhtLTNBfUg4EoKujJhFl
-         xzQ/4uN+zuzBhbUImn0raro3qq6h2xvDh40wKrnJsO/Ru+S7jxgzM9p2gFC0jdMbfr2C
-         AnR9kUrYs3jpMaYUOLCb66JgBV9wIW2pA/5o99LZB3IhMfCD3it2hvzAqXScv5scl4XX
-         hfLfAbXrdESzcfBGhwm9XHtUTuIN2kcAcqUZP5z8aO8tq6x0r52LC0pQS5frmPiDSvz4
-         oOneGMzD6grC0Euz5tjXcrCT4luF+wHiLdZHZhP2WjmE8r3leP/2bTieGXvvxcN+a7P9
-         G4mw==
-X-Gm-Message-State: ACrzQf193CObmSRuyUASOyM9svwpNna4zdOO+JhPCmT0OZLo1iKRUqIi
-        tB6mIj9+IN7hHXcU3nBJ4YmmcYr/Bbt9MTqYdMTg7A==
-X-Google-Smtp-Source: AMsMyM6NbbMtdQMpVfLCAh0D0q68PKe3qwWQ3D+kcPlFlbxLVmV17y2Ou35POHeKahxqYviJ1ZAc33Ny+NGeQhVBJcQ=
-X-Received: by 2002:a25:80d0:0:b0:6b3:f287:93a4 with SMTP id
- c16-20020a2580d0000000b006b3f28793a4mr25039297ybm.427.1664297715530; Tue, 27
- Sep 2022 09:55:15 -0700 (PDT)
-MIME-Version: 1.0
-References: <CANn89iLyqG8SRmHhWZOZUc-HDR88z_TNZn4_zbJz5MW4+kh2ZQ@mail.gmail.com>
- <20220927164824.36027-1-kuniyu@amazon.com>
-In-Reply-To: <20220927164824.36027-1-kuniyu@amazon.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 27 Sep 2022 09:55:03 -0700
-Message-ID: <CANn89iJ-a6DQ=ZmaQJKag3Tpa15TK-3E2o9=FHQVZb8QDCEvHQ@mail.gmail.com>
-Subject: Re: [PATCH v1 net 5/5] tcp: Fix data races around icsk->icsk_af_ops.
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     David Miller <davem@davemloft.net>,
-        David Ahern <dsahern@kernel.org>,
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=/a/nRCvi5803KEjxs2Dftg9xnS7geCJ0St0MIV9P0E0=;
+        b=PPgbhAYt9HlnSk30V8HknWXxBFlL0ospOGrUcdm7h3m/qylzv6deaP5sTL3B4NHoRZ
+         qFqy+4su0sEIevQheHFh0wZheCl9/XS14J+JT6Mg/4ulWuNVe23AfsskVqHbkFKud3kq
+         tATHhLF9eHLWc2paARP3Yz5qEncDaxiCklg35jkq+lGiy9ecHJEZC012wAWXvXvn4CKa
+         DUTkDqYd1U4LiNsvt+gin5bp5nBDjyKOyxrdLTxQAqWwlofbfcUselfdNQl++YGa22IE
+         ExdKfQxPxCBZTvI4Ry7LyPXUP7XtSg8DYhLHNICoIEQJts5+Z348q1CJODwy/b0M31xY
+         0vAQ==
+X-Gm-Message-State: ACrzQf0r5YUcj3DNTskJ17+YMz9ms7WCyoBLsWkFhIWIeXgip77p/aiX
+        WplY3Upk4BmPHbDpD7cyaQNyJ2ZYV6Vs46KRZJqKuA==
+X-Google-Smtp-Source: AMsMyM5+59p1E+QIu6HyE+h4AgY63qutNQlLKSmmvpb2XHbtpn7suAT0pqZs43cUtFmkBlz/UWsoWKCkC5+83BMbfWI7fA==
+X-Received: from abps.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:9b4])
+ (user=abhishekpandit job=sendgmr) by 2002:a05:6a00:10c2:b0:547:4991:c985 with
+ SMTP id d2-20020a056a0010c200b005474991c985mr30670142pfu.67.1664297898012;
+ Tue, 27 Sep 2022 09:58:18 -0700 (PDT)
+Date:   Tue, 27 Sep 2022 09:58:15 -0700
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.3.998.g577e59143f-goog
+Message-ID: <20220927095813.v2.1.Ia168b651a69b253059f2bbaa60b98083e619545c@changeid>
+Subject: [PATCH v2] Bluetooth: Prevent double register of suspend
+From:   Abhishek Pandit-Subedi <abhishekpandit@google.com>
+To:     linux-bluetooth@vger.kernel.org
+Cc:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
+        syzbot <syzkaller@googlegroups.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,116 +73,129 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 27, 2022 at 9:48 AM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
->
-> From:   Eric Dumazet <edumazet@google.com>
-> Date:   Tue, 27 Sep 2022 09:39:37 -0700
-> > On Tue, Sep 27, 2022 at 9:33 AM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
-> > >
-> > > IPV6_ADDRFORM changes icsk->icsk_af_ops under lock_sock(), but
-> > > tcp_(get|set)sockopt() read it locklessly.  To avoid load/store
-> > > tearing, we need to add READ_ONCE() and WRITE_ONCE() for the reads
-> > > and write.
-> >
-> > I am pretty sure I have released a syzkaller bug recently with this issue.
-> > Have you seen this?
-> > If yes, please include the appropriate syzbot tag.
->
-> No, I haven't.
-> Could you provide the URL?
-> I'm happy to include the syzbot tag and KCSAN report in the changelog.
->
->
+From: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
 
-Report has been released 10 days ago, but apparently the syzbot queue
-is so full these days that the report is still throttled.
+Suspend notifier should only be registered and unregistered once per
+hdev. Simplify this by only registering during driver registration and
+simply exiting early when HCI_USER_CHANNEL is set.
 
-==================================================================
-BUG: KCSAN: data-race in tcp_setsockopt / tcp_v6_connect
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Fixes: 359ee4f834f5 (Bluetooth: Unregister suspend with userchannel)
+Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+---
+This is fixing a syzbot reported warning. Tested in the following ways:
+* Normal start-up of driver with bluez.
+* Start/stop loop using HCI_USER_CHANNEL (sock path).
+* USB reset triggering hci_dev_unregister (driver path).
 
-write to 0xffff88813c624518 of 8 bytes by task 23936 on cpu 0:
-tcp_v6_connect+0x5b3/0xce0 net/ipv6/tcp_ipv6.c:240
-__inet_stream_connect+0x159/0x6d0 net/ipv4/af_inet.c:660
-inet_stream_connect+0x44/0x70 net/ipv4/af_inet.c:724
-__sys_connect_file net/socket.c:1976 [inline]
-__sys_connect+0x197/0x1b0 net/socket.c:1993
-__do_sys_connect net/socket.c:2003 [inline]
-__se_sys_connect net/socket.c:2000 [inline]
-__x64_sys_connect+0x3d/0x50 net/socket.c:2000
-do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
-entry_SYSCALL_64_after_hwframe+0x63/0xcd
+------------[ cut here ]------------
+double register detected
+WARNING: CPU: 0 PID: 2657 at kernel/notifier.c:27
+notifier_chain_register kernel/notifier.c:27 [inline]
+WARNING: CPU: 0 PID: 2657 at kernel/notifier.c:27
+notifier_chain_register+0x5c/0x124 kernel/notifier.c:22
+Modules linked in:
+CPU: 0 PID: 2657 Comm: syz-executor212 Not tainted
+5.10.136-syzkaller-19376-g6f46a5fe0124 #0
+    8f0771607702f5ef7184d2ee33bd0acd70219fc4
+    Hardware name: Google Google Compute Engine/Google Compute Engine,
+    BIOS Google 07/22/2022
+    RIP: 0010:notifier_chain_register kernel/notifier.c:27 [inline]
+    RIP: 0010:notifier_chain_register+0x5c/0x124 kernel/notifier.c:22
+    Code: 6a 41 00 4c 8b 23 4d 85 e4 0f 84 88 00 00 00 e8 c2 1e 19 00 49
+    39 ec 75 18 e8 b8 1e 19 00 48 c7 c7 80 6d ca 84 e8 2c 68 48 03 <0f> 0b
+        e9 af 00 00 00 e8 a0 1e 19 00 48 8d 7d 10 48 89 f8 48 c1 e8
+        RSP: 0018:ffffc900009d7da8 EFLAGS: 00010286
+        RAX: 0000000000000000 RBX: ffff8881076fd1d8 RCX: 0000000000000000
+        RDX: 0000001810895100 RSI: ffff888110895100 RDI: fffff5200013afa7
+        RBP: ffff88811a4191d0 R08: ffffffff813b8ca1 R09: 0000000080000000
+        R10: 0000000000000000 R11: 0000000000000005 R12: ffff88811a4191d0
+        R13: dffffc0000000000 R14: 0000000000000000 R15: 0000000000000000
+        FS: 00005555571f5300(0000) GS:ffff8881f6c00000(0000)
+        knlGS:0000000000000000
+        CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+        CR2: 000078e3857f3075 CR3: 000000010d668000 CR4: 00000000003506f0
+        DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+        DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+        Call Trace:
+        blocking_notifier_chain_register+0x8c/0xa6 kernel/notifier.c:254
+        hci_register_suspend_notifier net/bluetooth/hci_core.c:2733
+        [inline]
+        hci_register_suspend_notifier+0x6b/0x7c
+        net/bluetooth/hci_core.c:2727
+        hci_sock_release+0x270/0x3cf net/bluetooth/hci_sock.c:889
+        __sock_release+0xcd/0x1de net/socket.c:597
+        sock_close+0x18/0x1c net/socket.c:1267
+        __fput+0x418/0x729 fs/file_table.c:281
+        task_work_run+0x12b/0x15b kernel/task_work.c:151
+        tracehook_notify_resume include/linux/tracehook.h:188 [inline]
+        exit_to_user_mode_loop kernel/entry/common.c:165 [inline]
+        exit_to_user_mode_prepare+0x8f/0x130 kernel/entry/common.c:192
+        syscall_exit_to_user_mode+0x172/0x1b2 kernel/entry/common.c:268
+        entry_SYSCALL_64_after_hwframe+0x61/0xc6
+        RIP: 0033:0x78e38575e1db
+        Code: 0f 05 48 3d 00 f0 ff ff 77 45 c3 0f 1f 40 00 48 83 ec 18 89
+        7c 24 0c e8 63 fc ff ff 8b 7c 24 0c 41 89 c0 b8 03 00 00 00 0f 05
+        <48> 3d 00 f0 ff ff 77 35 44 89 c7 89 44 24 0c e8 a1 fc ff ff 8b 44
+        RSP: 002b:00007ffffc20a0b0 EFLAGS: 00000293 ORIG_RAX:
+        0000000000000003
+        RAX: 0000000000000000 RBX: 0000000000000006 RCX: 000078e38575e1db
+        RDX: ffffffffffffffb8 RSI: 0000000020000000 RDI: 0000000000000005
+        RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000150
+        R10: 0000000000000000 R11: 0000000000000293 R12: 000000000000e155
+        R13: 00007ffffc20a140 R14: 00007ffffc20a130 R15: 00007ffffc20a0e8
 
-read to 0xffff88813c624518 of 8 bytes by task 23937 on cpu 1:
-tcp_setsockopt+0x147/0x1c80 net/ipv4/tcp.c:3789
-sock_common_setsockopt+0x5d/0x70 net/core/sock.c:3585
-__sys_setsockopt+0x212/0x2b0 net/socket.c:2252
-__do_sys_setsockopt net/socket.c:2263 [inline]
-__se_sys_setsockopt net/socket.c:2260 [inline]
-__x64_sys_setsockopt+0x62/0x70 net/socket.c:2260
-do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
-entry_SYSCALL_64_after_hwframe+0x63/0xcd
+Changes in v2:
+- Removed suspend registration from hci_sock.
+- Exit hci_suspend_notifier early if user channel.
 
-value changed: 0xffffffff8539af68 -> 0xffffffff8539aff8
+ net/bluetooth/hci_core.c | 4 ++++
+ net/bluetooth/hci_sock.c | 3 ---
+ 2 files changed, 4 insertions(+), 3 deletions(-)
 
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 23937 Comm: syz-executor.5 Not tainted
-6.0.0-rc4-syzkaller-00331-g4ed9c1e971b1-dirty #0
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index 66c7cdba0d32..86ce2dd1c7fb 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -2406,6 +2406,10 @@ static int hci_suspend_notifier(struct notifier_block *nb, unsigned long action,
+ 		container_of(nb, struct hci_dev, suspend_notifier);
+ 	int ret = 0;
+ 
++	/* Userspace has full control of this device. Do nothing. */
++	if (hci_dev_test_flag(hdev, HCI_USER_CHANNEL))
++		return NOTIFY_DONE;
++
+ 	if (action == PM_SUSPEND_PREPARE)
+ 		ret = hci_suspend_dev(hdev);
+ 	else if (action == PM_POST_SUSPEND)
+diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
+index b2a33a05c93e..06581223238c 100644
+--- a/net/bluetooth/hci_sock.c
++++ b/net/bluetooth/hci_sock.c
+@@ -887,7 +887,6 @@ static int hci_sock_release(struct socket *sock)
+ 			 */
+ 			hci_dev_do_close(hdev);
+ 			hci_dev_clear_flag(hdev, HCI_USER_CHANNEL);
+-			hci_register_suspend_notifier(hdev);
+ 			mgmt_index_added(hdev);
+ 		}
+ 
+@@ -1216,7 +1215,6 @@ static int hci_sock_bind(struct socket *sock, struct sockaddr *addr,
+ 		}
+ 
+ 		mgmt_index_removed(hdev);
+-		hci_unregister_suspend_notifier(hdev);
+ 
+ 		err = hci_dev_open(hdev->id);
+ 		if (err) {
+@@ -1231,7 +1229,6 @@ static int hci_sock_bind(struct socket *sock, struct sockaddr *addr,
+ 				err = 0;
+ 			} else {
+ 				hci_dev_clear_flag(hdev, HCI_USER_CHANNEL);
+-				hci_register_suspend_notifier(hdev);
+ 				mgmt_index_added(hdev);
+ 				hci_dev_put(hdev);
+ 				goto done;
+-- 
+2.37.3.998.g577e59143f-goog
 
-Hardware name: Google Google Compute Engine/Google Compute Engine,
-BIOS Google 08/26/2022
-==================================================================
-
-> > > Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> > > ---
-> > >  net/ipv4/tcp.c           | 10 ++++++----
-> > >  net/ipv6/ipv6_sockglue.c |  3 ++-
-> > >  2 files changed, 8 insertions(+), 5 deletions(-)
-> > >
-> > > diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> > > index e373dde1f46f..c86dd0ccef5b 100644
-> > > --- a/net/ipv4/tcp.c
-> > > +++ b/net/ipv4/tcp.c
-> > > @@ -3795,8 +3795,9 @@ int tcp_setsockopt(struct sock *sk, int level, int optname, sockptr_t optval,
-> > >         const struct inet_connection_sock *icsk = inet_csk(sk);
-> > >
-> > >         if (level != SOL_TCP)
-> > > -               return icsk->icsk_af_ops->setsockopt(sk, level, optname,
-> > > -                                                    optval, optlen);
-> > > +               /* IPV6_ADDRFORM can change icsk->icsk_af_ops under us. */
-> > > +               return READ_ONCE(icsk->icsk_af_ops)->setsockopt(sk, level, optname,
-> > > +                                                               optval, optlen);
-> > >         return do_tcp_setsockopt(sk, level, optname, optval, optlen);
-> > >  }
-> > >  EXPORT_SYMBOL(tcp_setsockopt);
-> > > @@ -4394,8 +4395,9 @@ int tcp_getsockopt(struct sock *sk, int level, int optname, char __user *optval,
-> > >         struct inet_connection_sock *icsk = inet_csk(sk);
-> > >
-> > >         if (level != SOL_TCP)
-> > > -               return icsk->icsk_af_ops->getsockopt(sk, level, optname,
-> > > -                                                    optval, optlen);
-> > > +               /* IPV6_ADDRFORM can change icsk->icsk_af_ops under us. */
-> > > +               return READ_ONCE(icsk->icsk_af_ops)->getsockopt(sk, level, optname,
-> > > +                                                               optval, optlen);
-> > >         return do_tcp_getsockopt(sk, level, optname, optval, optlen);
-> > >  }
-> > >  EXPORT_SYMBOL(tcp_getsockopt);
-> > > diff --git a/net/ipv6/ipv6_sockglue.c b/net/ipv6/ipv6_sockglue.c
-> > > index a89db5872dc3..726d95859898 100644
-> > > --- a/net/ipv6/ipv6_sockglue.c
-> > > +++ b/net/ipv6/ipv6_sockglue.c
-> > > @@ -479,7 +479,8 @@ static int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
-> > >
-> > >                                 /* Paired with READ_ONCE(sk->sk_prot) in inet6_stream_ops */
-> > >                                 WRITE_ONCE(sk->sk_prot, &tcp_prot);
-> > > -                               icsk->icsk_af_ops = &ipv4_specific;
-> > > +                               /* Paired with READ_ONCE() in tcp_(get|set)sockopt() */
-> > > +                               WRITE_ONCE(icsk->icsk_af_ops, &ipv4_specific);
-> > >                                 sk->sk_socket->ops = &inet_stream_ops;
-> > >                                 sk->sk_family = PF_INET;
-> > >                                 tcp_sync_mss(sk, icsk->icsk_pmtu_cookie);
-> > > --
-> > > 2.30.2
-> > >
