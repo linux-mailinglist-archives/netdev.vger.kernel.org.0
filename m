@@ -2,105 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A30355EBF03
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 11:51:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 662E65EBF25
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 12:02:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230338AbiI0JvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 05:51:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60836 "EHLO
+        id S231474AbiI0KCZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 06:02:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229676AbiI0JvS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 05:51:18 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2075.outbound.protection.outlook.com [40.107.94.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74F92B7F1;
-        Tue, 27 Sep 2022 02:51:16 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mmB/zElAVsRoEcECQ7nqaYGnS/fhVNEFKFSpIgu86oV3qOSUs06kw2xAATBaKj68EAE1nHNY3NloDUmuLe8MsdlR120CR9+a5K+01Mt0xYnC4kdtXdIt8cpM+Qzk5UobUGsovCdt5sQsZN3GXLDRjl1z9bxDzDqNVf22TAJ4k1G4vQL4wfzm4AXOxzfQTHohUHG0R1rNBOnTgEE8gixktuICJxZQHiBNq/ccmrRV6XbmcYdQA6rYpmXOz/4z57HDl6CgM94alUTQ+udUm3KzJg1M5Wuz2hv7YeySo4HO6a3VjBdBWVPCjwb1dnbVLOinuiCwXiFNWQ72gqRqTpIBDw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=epIjPrBaoXiv0MKUpdJb+nD5MKbMZOo0Wt51J3erKmc=;
- b=WDcnvI1cVgGg3rNb3tLGUrJTuYDHAH6PmVHT+OOLbKTeaZN+fh+HsRSXNGud8dMOnfLQBIcQ5l/E03rBQD7VqkpfLa9P0eBfbeOXZ3K58yZ41gO8Ud72XRqQddAnwwBA+LP3tA7q1pD478cqiN2DgRcnvRb4+3/EPPoHx1kvNq5pFh9jWmdOcNaXQT7ydMdAvcHgLjAN+RzDj4KVcAxx2RVv03U+9X3ghrG8YdIFKVo6cjy2bnK6LaeyfoKVrNfGKZx3d11izlQdHi/Xxlt2IrOtT6Td989UTUnA6R9ntmpTzHKOz90ZWL1H4/FOvsAicx4aAIJZ7UPGuzleMkcVSQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=epIjPrBaoXiv0MKUpdJb+nD5MKbMZOo0Wt51J3erKmc=;
- b=skSZlSxSSRgaXgUxgLHYtx3RWXlEiIt6M/c5sEGxghJ/Oh5dgKSIn/txED2xdAGMCKhz/FBONQlLmbxrincJYofZhT05UK+SDw1JiAAPTPe2WcXjVCvskRy033Dkgp7CmPSpNnGmbWi6AKpSvgP2HKSJcbBPI43KuwphUVCWI+rsiI4VSrIRk6TzwgD5jnAHvSfuic+GY1eXg8dKKDS6rMinSprDQaDmu7GmT3YqHq+DwY3a+pyPqPtRmL4F9cCF1gPV4LZq2/t2ngD4kcE6q1uKC1+/X3dZ/PzsClIVFMEXqZF6uAzDiKjItceoDICXS+BSQ4s4S+p1OTsvBNN/iQ==
-Received: from MW3PR05CA0027.namprd05.prod.outlook.com (2603:10b6:303:2b::32)
- by BY5PR12MB4193.namprd12.prod.outlook.com (2603:10b6:a03:20c::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.25; Tue, 27 Sep
- 2022 09:51:14 +0000
-Received: from CO1NAM11FT039.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:2b:cafe::60) by MW3PR05CA0027.outlook.office365.com
- (2603:10b6:303:2b::32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.9 via Frontend
- Transport; Tue, 27 Sep 2022 09:51:14 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- CO1NAM11FT039.mail.protection.outlook.com (10.13.174.110) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5654.14 via Frontend Transport; Tue, 27 Sep 2022 09:51:14 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Tue, 27 Sep
- 2022 02:51:02 -0700
-Received: from yaviefel (10.126.231.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Tue, 27 Sep
- 2022 02:50:58 -0700
-References: <20220927004033.1942992-1-keescook@chromium.org>
-User-agent: mu4e 1.6.6; emacs 28.1
-From:   Petr Machata <petrm@nvidia.com>
-To:     Kees Cook <keescook@chromium.org>
-CC:     Ido Schimmel <idosch@nvidia.com>, Petr Machata <petrm@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-hardening@vger.kernel.org>
-Subject: Re: [PATCH] mlxsw: core_acl_flex_actions: Split memcpy() of struct
- flow_action_cookie flexible array
-Date:   Tue, 27 Sep 2022 11:50:42 +0200
-In-Reply-To: <20220927004033.1942992-1-keescook@chromium.org>
-Message-ID: <87o7v1w3gg.fsf@nvidia.com>
+        with ESMTP id S231269AbiI0KCX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 06:02:23 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E70892F4F;
+        Tue, 27 Sep 2022 03:02:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1664272941; x=1695808941;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=rvOIjYkZETRJiXSBJeZOwgo1UXNr0fy2AWtQ3v/xzbY=;
+  b=IpKUUtB40Fxt5F6tg/nk/BVk7f/pyIP0CUODA4izAEyPFbo/ShOvHFLx
+   OxGtIwrPnrtxfdWmO0wfwgk3tDVP4FmJKpTd3ff9E9L9Ihs9VsXOhoqh5
+   EGuhXoow93pco2fVEkOZ7apoAbQZhQs+ZMbenRz46c8dr/sGSA2MvAbcs
+   2Xmxki9xrj6HJt1ug4jlOGrrHEs8AZEupBC2bZpuuW4PFyt3ZXvLYNQ3K
+   EAMox4DjqrgXsSYuzZgNWjw0SkH5+TFiGtwkgMGxQXBm1qKs269KcRC4y
+   acJTlq7suQxtQTVjm4XCvHLLvuGzSKMvPJFdx5H07c8DvhIBVOrtsFuDx
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="363114393"
+X-IronPort-AV: E=Sophos;i="5.93,349,1654585200"; 
+   d="scan'208";a="363114393"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Sep 2022 03:02:20 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="689937325"
+X-IronPort-AV: E=Sophos;i="5.93,349,1654585200"; 
+   d="scan'208";a="689937325"
+Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.249.174.145]) ([10.249.174.145])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Sep 2022 03:02:16 -0700
+Message-ID: <4d9b3ea4-b9b2-a2c6-67a4-b2f57e6491d4@intel.com>
+Date:   Tue, 27 Sep 2022 18:02:14 +0800
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.126.231.35]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT039:EE_|BY5PR12MB4193:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4718857f-4deb-496a-6fee-08daa06dd114
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: j07zoUNJnhxW+udkQhgC8qf93WwdXJXQhYM0ePiKho4xN/rGitUNoyEJR4Je2bXn3dw2dn0YqbGESSFQUKiB4rlCwvAmzpqZ4Hv0DUS5JmkUuO0EQgkHBhhdjVtgyzffd2MvelLMz1KDxZPFfDOxpLSUWaxmIw3DBW0U6MmRoivCMOhnpnqkcz6lJx3q913qp8ErZpg+tqLcF0mIQsbfAfBKEki3VrUjMwDP203nnJg6NThi+4bod0tekQC1niiSH/XyKevN+73yaR3THob/QgrU6JOMTyZ1v6Btwl/s8cqv5yQbYR5Go6VDc41I7LzLxqk0haI9zYS9wlvu2F/vikSWzvcoQpp6haIJA8XELLcSVh73N5Iyqg1J0pIEOQwTG2TB+JC1R2ujVgN/rXJpBu4kviI2TXs3wLNvOmQnSTDOdzE8atnPFUtsGQfVPu+rHGwTvXhUqnXi4sPFFP+8333RL/JxAF8gtmXYPr2sq5JZVzKeHBpl3RA8jaZiAo25VneKo/1312tqjkx1/khs1G3ykmZ/DRBAtqxHmQgOci9w/Ibz8y45RplQy9XwELp/JQAOAouR+FBhMYFQR8laUTadyJi36g0eF0MDx66Cf9X3DLYw8T8wt4qUB04oveuEwPm9jtlgKobt+vOCVakUVTF2ByEwjGdoZtpo/fjvx+7rHk4QBpVHIXFRYWOrhVcwfycZX2AWFU+4Yz70VIUMsanXS4GboHh7QHf6MSgRYgVOu11xBEUoNFBc17rrvalMLUw1hHf/UkTQEIGKUjBr5uILU+K4fsm6/E06HySTmTcODnlgVuprlYcsQWV2Gs18wED2XhMuhwA1W6tu6+0+3YPENVt1UV9SIfp74iDXXo8=
-X-Forefront-Antispam-Report: CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(346002)(396003)(376002)(136003)(39860400002)(451199015)(36840700001)(40470700004)(46966006)(83380400001)(336012)(426003)(36756003)(47076005)(82740400003)(36860700001)(356005)(40460700003)(7636003)(8676002)(70206006)(26005)(8936002)(70586007)(4326008)(4744005)(2906002)(41300700001)(5660300002)(86362001)(6666004)(2616005)(966005)(82310400005)(316002)(186003)(16526019)(40480700001)(478600001)(54906003)(6916009);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Sep 2022 09:51:14.3659
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4718857f-4deb-496a-6fee-08daa06dd114
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT039.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4193
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE
-        autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.3.0
+Subject: Re: [PATCH V2 RESEND 1/6] vDPA: allow userspace to query features of
+ a vDPA device
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     mst@redhat.com, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, kvm@vger.kernel.org
+References: <20220927030117.5635-1-lingshan.zhu@intel.com>
+ <20220927030117.5635-2-lingshan.zhu@intel.com>
+ <CACGkMEtDmG=YvcVcvO1c371sk5wvz+UO1i4keZXA2f4PrXzXBg@mail.gmail.com>
+Content-Language: en-US
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <CACGkMEtDmG=YvcVcvO1c371sk5wvz+UO1i4keZXA2f4PrXzXBg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -108,22 +66,118 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-Kees Cook <keescook@chromium.org> writes:
 
-> To work around a misbehavior of the compiler's ability to see into
-> composite flexible array structs (as detailed in the coming memcpy()
-> hardening series[1]), split the memcpy() of the header and the payload
-> so no false positive run-time overflow warning will be generated.
+On 9/27/2022 12:36 PM, Jason Wang wrote:
+> On Tue, Sep 27, 2022 at 11:09 AM Zhu Lingshan <lingshan.zhu@intel.com> wrote:
+>> This commit adds a new vDPA netlink attribution
+>> VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES. Userspace can query
+>> features of vDPA devices through this new attr.
+>>
+>> This commit invokes vdpa_config_ops.get_config()
+>> rather than vdpa_get_config_unlocked() to read
+>> the device config spcae, so no races in
+>> vdpa_set_features_unlocked()
+>>
+>> Userspace tool iproute2 example:
+>> $ vdpa dev config show vdpa0
+>> vdpa0: mac 00:e8:ca:11:be:05 link up link_announce false max_vq_pairs 4 mtu 1500
+>>    negotiated_features MRG_RXBUF CTRL_VQ MQ VERSION_1 ACCESS_PLATFORM
+>>    dev_features MTU MAC MRG_RXBUF CTRL_VQ MQ ANY_LAYOUT VERSION_1 ACCESS_PLATFORM
+>>
+>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>> ---
+>>   drivers/vdpa/vdpa.c       | 17 ++++++++++++-----
+>>   include/uapi/linux/vdpa.h |  4 ++++
+>>   2 files changed, 16 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
+>> index c06c02704461..2035700d6fc8 100644
+>> --- a/drivers/vdpa/vdpa.c
+>> +++ b/drivers/vdpa/vdpa.c
+>> @@ -491,6 +491,7 @@ static int vdpa_mgmtdev_fill(const struct vdpa_mgmt_dev *mdev, struct sk_buff *m
+>>                  err = -EMSGSIZE;
+>>                  goto msg_err;
+>>          }
+>> +
+> Nit: Unnecessary changes.
+oh, yes!
 >
-> [1] https://lore.kernel.org/linux-hardening/20220901065914.1417829-2-keescook@chromium.org
->
-> Cc: Ido Schimmel <idosch@nvidia.com>
-> Cc: Petr Machata <petrm@nvidia.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Kees Cook <keescook@chromium.org>
+>>          if (nla_put_u64_64bit(msg, VDPA_ATTR_DEV_SUPPORTED_FEATURES,
+>>                                mdev->supported_features, VDPA_ATTR_PAD)) {
+>>                  err = -EMSGSIZE;
+>> @@ -815,10 +816,10 @@ static int vdpa_dev_net_mq_config_fill(struct vdpa_device *vdev,
+>>   static int vdpa_dev_net_config_fill(struct vdpa_device *vdev, struct sk_buff *msg)
+>>   {
+>>          struct virtio_net_config config = {};
+>> -       u64 features;
+>> +       u64 features_device, features_driver;
+>>          u16 val_u16;
+>>
+>> -       vdpa_get_config_unlocked(vdev, 0, &config, sizeof(config));
+>> +       vdev->config->get_config(vdev, 0, &config, sizeof(config));
+>>
+>>          if (nla_put(msg, VDPA_ATTR_DEV_NET_CFG_MACADDR, sizeof(config.mac),
+>>                      config.mac))
+>> @@ -832,12 +833,18 @@ static int vdpa_dev_net_config_fill(struct vdpa_device *vdev, struct sk_buff *ms
+>>          if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MTU, val_u16))
+>>                  return -EMSGSIZE;
+>>
+>> -       features = vdev->config->get_driver_features(vdev);
+>> -       if (nla_put_u64_64bit(msg, VDPA_ATTR_DEV_NEGOTIATED_FEATURES, features,
+>> +       features_driver = vdev->config->get_driver_features(vdev);
+>> +       if (nla_put_u64_64bit(msg, VDPA_ATTR_DEV_NEGOTIATED_FEATURES, features_driver,
+>> +                             VDPA_ATTR_PAD))
+>> +               return -EMSGSIZE;
+> It looks to me that those parts were removed in patch 2. I wonder if
+> it's better to reorder the patch to let patch 2 come first?
+I am not sure, if we apply patch 2(check FEATURES_OK in 
+vdpa_dev_config_fill and report driver features there) first,
+we need to remove driver_features in vdpa_dev_net_config_fill(),
+however, we still not introduce and initialize device features(which is 
+in patch 1, introduce device_features) yet,
+so the last line "return vdpa_dev_net_mq_config_fill()" which needs 
+features as its parameter may not work,
+filling NULL looks worse than keep features_driver here.
 
-Reviewed-by: Petr Machata <petrm@nvidia.com>
+Thanks
+Zhu Lingshan
+>
+> Thanks
+>
+>> +
+>> +       features_device = vdev->config->get_device_features(vdev);
+>> +
+>> +       if (nla_put_u64_64bit(msg, VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES, features_device,
+>>                                VDPA_ATTR_PAD))
+>>                  return -EMSGSIZE;
+>>
+>> -       return vdpa_dev_net_mq_config_fill(vdev, msg, features, &config);
+>> +       return vdpa_dev_net_mq_config_fill(vdev, msg, features_driver, &config);
+>>   }
+>>
+>>   static int
+>> diff --git a/include/uapi/linux/vdpa.h b/include/uapi/linux/vdpa.h
+>> index 25c55cab3d7c..07474183fdb3 100644
+>> --- a/include/uapi/linux/vdpa.h
+>> +++ b/include/uapi/linux/vdpa.h
+>> @@ -46,12 +46,16 @@ enum vdpa_attr {
+>>
+>>          VDPA_ATTR_DEV_NEGOTIATED_FEATURES,      /* u64 */
+>>          VDPA_ATTR_DEV_MGMTDEV_MAX_VQS,          /* u32 */
+>> +       /* virtio features that are supported by the vDPA management device */
+>>          VDPA_ATTR_DEV_SUPPORTED_FEATURES,       /* u64 */
+>>
+>>          VDPA_ATTR_DEV_QUEUE_INDEX,              /* u32 */
+>>          VDPA_ATTR_DEV_VENDOR_ATTR_NAME,         /* string */
+>>          VDPA_ATTR_DEV_VENDOR_ATTR_VALUE,        /* u64 */
+>>
+>> +       /* virtio features that are supported by the vDPA device */
+>> +       VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES,  /* u64 */
+>> +
+>>          /* new attributes must be added above here */
+>>          VDPA_ATTR_MAX,
+>>   };
+>> --
+>> 2.31.1
+>>
+
