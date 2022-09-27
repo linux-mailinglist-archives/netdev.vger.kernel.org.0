@@ -2,99 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FF865EBCAE
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 10:04:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA3015EBCB8
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 10:07:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231696AbiI0IEh convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 27 Sep 2022 04:04:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35590 "EHLO
+        id S231690AbiI0IHB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 04:07:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231993AbiI0IEM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 04:04:12 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6485B6018
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 00:59:14 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mtapsc-2-TbeEpqk4Pl6H61nb9fZ9VQ-1; Tue, 27 Sep 2022 08:58:37 +0100
-X-MC-Unique: TbeEpqk4Pl6H61nb9fZ9VQ-1
-Received: from AcuMS.Aculab.com (10.202.163.4) by AcuMS.aculab.com
- (10.202.163.4) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Tue, 27 Sep
- 2022 08:58:35 +0100
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.040; Tue, 27 Sep 2022 08:58:35 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Sean Anderson' <seanga2@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Nick Bowler <nbowler@draconx.ca>,
-        Rolf Eike Beer <eike-kernel@sf-tec.de>,
-        Zheyu Ma <zheyuma97@gmail.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net-next v2 07/13] sunhme: Convert FOO((...)) to FOO(...)
-Thread-Topic: [PATCH net-next v2 07/13] sunhme: Convert FOO((...)) to FOO(...)
-Thread-Index: AQHYz7ig+qNCRawu/kW9+5ipsBz0Rq3y7U4Q
-Date:   Tue, 27 Sep 2022 07:58:35 +0000
-Message-ID: <9412f706a4934d218019d74c5f4b74ae@AcuMS.aculab.com>
-References: <20220924015339.1816744-1-seanga2@gmail.com>
- <20220924015339.1816744-8-seanga2@gmail.com>
-In-Reply-To: <20220924015339.1816744-8-seanga2@gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S231689AbiI0IGd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 04:06:33 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92C7FCBAF7
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 01:00:58 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id k3-20020a05600c1c8300b003b4fa1a85f8so4962692wms.3
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 01:00:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=8KXeAi8bLl/4xDSQHTAZUIT2rxZgkHrTv7EF2KN/kpc=;
+        b=xsUc6nbu4ykT7peSuwlcvmxlW8gH9JNmHu+I0twf4HwF1J5XzKYqpFWkj2dh8q5Ul6
+         YIyTsCwVLcVCaqmZK0bRl0knR4E+gs1g3VmYqFhJ5ISP30EzzuG67bXySPNLETE/znCh
+         1kOaxyvtrtAyp6HP8dbla4TRNZFN+GwiDeBxS7EIpqL7nzY9tGQWADkj6VBwOzLQyaFh
+         pCCi4FN8EpWc+6PH6d58eIKwaMfHegUjGc14ZwZQ0iNB6osoFANcFYIfmlYevX66Nh0Q
+         3cO3YAgQUZdtH3V7oCiZJtN3UhQPnMyOVOXCnj/NAIxf0w0TZI2pQe44Lv3U3z04foBx
+         m6Ng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=8KXeAi8bLl/4xDSQHTAZUIT2rxZgkHrTv7EF2KN/kpc=;
+        b=HRvGnQqDkQgdovJKgs6n7xxAUIKHY2Y8MR/+11QRIfy2N6qWR6sD7u385QymakUFis
+         QWQhQFjl+mFIp8z3rHivzsXd5jo7M5qzQOC3+C55Ns0cLXh9fi+MNbqnWK2HXZIANV5I
+         jPEZcphMBcX3TtsjLqDlVEO6HlUaIjIfJuFUEay7Iw+jrEpT7H9hDoMHpx6b+GVcQiyQ
+         DpX7OS+fpBrOE023nTrE8aXf++flsyFb7tPUqJBy8bUvzNYpw3C79ifKRsTaSyf9GixR
+         WsXr+DlIGUXhyXLhl2W1oZJbudIRqyz82uBq1CniR0VgB5MdFZeAEfnIzcmy7q3J3sAD
+         be7A==
+X-Gm-Message-State: ACrzQf1GxFyCUCKxWZVFa9vKRw2B/TKh83WMqM8EIFOfND/3Lcg2W79l
+        jnDs4AGRLmcwzdSQVGQL/yl1yg==
+X-Google-Smtp-Source: AMsMyM5/TzO253ei5AMvrs8QpkYUOj/Z1fLYncdDCYmb2TsApdukWwTv9OqA0R3Kzq6LByqDgxAN9A==
+X-Received: by 2002:a05:600c:3d93:b0:3b4:c28f:6a2b with SMTP id bi19-20020a05600c3d9300b003b4c28f6a2bmr1627703wmb.121.1664265597319;
+        Tue, 27 Sep 2022 00:59:57 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id g6-20020a5d5546000000b00228aea99efcsm1099354wrw.14.2022.09.27.00.59.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Sep 2022 00:59:56 -0700 (PDT)
+Date:   Tue, 27 Sep 2022 09:59:55 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     yhs@fb.com, Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH v2] headers: Remove some left-over license text
+Message-ID: <YzKte9AESCrcDcWh@nanopsycho>
+References: <88410cddd31197ea26840d7dd71612bece8c6acf.1663871981.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <88410cddd31197ea26840d7dd71612bece8c6acf.1663871981.git.christophe.jaillet@wanadoo.fr>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sean Anderson
-> Sent: 24 September 2022 02:54
-> 
-> With the power of variadic macros, double parentheses are unnecessary.
-> 
-> Signed-off-by: Sean Anderson <seanga2@gmail.com>
-> ---
-> 
-> Changes in v2:
-> - sumhme -> sunhme
-> 
->  drivers/net/ethernet/sun/sunhme.c | 272 +++++++++++++++---------------
->  1 file changed, 136 insertions(+), 136 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
-> index 7d6825c573a2..77a2a192f2ce 100644
-> --- a/drivers/net/ethernet/sun/sunhme.c
-> +++ b/drivers/net/ethernet/sun/sunhme.c
-> @@ -134,17 +134,17 @@ static __inline__ void tx_dump_log(void)
->  #endif
-> 
->  #ifdef HMEDEBUG
-> -#define HMD(x)  printk x
-> +#define HMD printk
+Thu, Sep 22, 2022 at 08:41:40PM CEST, christophe.jaillet@wanadoo.fr wrote:
+>Remove some left-over from commit e2be04c7f995 ("License cleanup: add SPDX
+>license identifier to uapi header files with a license")
+>
+>When the SPDX-License-Identifier tag has been added, the corresponding
+>license text has not been removed.
+>
+>Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-That probably ought to be:
-	#define HMD(...) printk(__VA_ARGS__)
-
-(and followed through all the other patches)
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
