@@ -2,98 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF55B5EC6CC
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 16:49:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8233D5EC6E9
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 16:51:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233092AbiI0Otc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 10:49:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51106 "EHLO
+        id S233032AbiI0Ovo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 10:51:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230515AbiI0OtH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 10:49:07 -0400
-Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D68A5E335
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 07:46:21 -0700 (PDT)
-Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-1318443dbdfso2200610fac.3
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 07:46:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=UVJ0zli5rqphXpZyzoquxRevsa1rbXVSCDH5DfGXxSA=;
-        b=K1o602WGt/SnXMUB2M17Ee7/BzYiGokgDH54qAUN6rrLhg7/P/cvX61ibIknUZN5X2
-         fhna5MMF3TQ/nuzaKwFn96F6aM/PXmP7yQ26CsAItnGo6buZvjiJ8DWhyJW7mK2ohgsS
-         Ii5nnQbdTzlKTPe8elpHzPuFzLcqVduTTjlZzT6LwGY3YntcuoFisPcdRrByRuebs1aI
-         wQZaxIhx2Vuk3m6nq2uJ0IpQOxfylkGrvwfL9C4+LfEIB72+un3Jeqdsnou4ms1tk1r5
-         8WdYeUg0E+YeeBzJu9JoKLXD72bOXQWrVLHsgCjwklKnz38+x5aBqbd/TZp2fK11ekm7
-         XMKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=UVJ0zli5rqphXpZyzoquxRevsa1rbXVSCDH5DfGXxSA=;
-        b=bBsjwbXOkUVKDxk2Hsz2tqv2DRx0e1ib7hs5amfxJ9TEtOqPnqjUVrCpqD9jqnAS8n
-         n18HGXQ8afo3UbrHiVJOl2Qfizezt2GNNWTUIxqIMdgrdGDKuQ9RnoXG0XGgOAk0IOC8
-         /8J1GtcWUpDNGTYhECM78t17tOyHWXUGM+ge5BFg/a/EpMAh+aS0zxnAwy0wGPEfHsR1
-         fY6gTbr8MjZw2LP+eu5xS31BVf9EFWdLte+QQ3LaEtX7AAWBq/T2taYLFbSfxUWOHs/S
-         As44nKWEwGRxOMHO97V0D5s6nBTPZthxEMdqnr/rVmqLCDQrknCG3SfoBGx/KojfWDXx
-         CUcQ==
-X-Gm-Message-State: ACrzQf3DhKNRCX3uBruQ9DO1pRY+Cqi0y2SmUV/UicBKQOLusKHy2jOL
-        uMSgeLdqlTGogwTv0tDNsVzGJ2etNJ89XF/Zz20=
-X-Google-Smtp-Source: AMsMyM4ZIe7kp/ex6h+1O+3IM9lBz77nRqzeEMmy8invYUZJzbSBSiBMuy9fcG3hG7lGDwyu40Vc3n4SGJuL8wqzZwE=
-X-Received: by 2002:a05:6870:523:b0:131:2d50:e09c with SMTP id
- j35-20020a056870052300b001312d50e09cmr2493183oao.129.1664289980967; Tue, 27
- Sep 2022 07:46:20 -0700 (PDT)
+        with ESMTP id S233141AbiI0OvL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 10:51:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 295E55B077;
+        Tue, 27 Sep 2022 07:50:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6470561A05;
+        Tue, 27 Sep 2022 14:50:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id BE671C433D6;
+        Tue, 27 Sep 2022 14:50:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664290215;
+        bh=axSkT7wopRkPF4+TxkNdX6InmludY04cLnPwzYvxWp8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=GxUuVqGFSzk+7xviLu2t/xrxAexr9sDWvpOjgpAlrSPrXobFCPUCrPDE5HSo8/WmL
+         GV2onFYGXuLic5bEwqfkim0HaXkAGiqncM47TLkMy6wzkvb9YVnqhz/ErmV7Mo0rTM
+         OHHeMvljkadCsg8tGr3laaag0McodM16RGCFrApU7P6Zo+/6Za8t5YNBrGsUtqOfe3
+         H3ksUU4BPNmNerdOvI6f8vW+ADghpZu9wgocn7dl4oXr6ckxoJjKucjuGRfdK0VXCs
+         0eD1vRpfYov8lfP12AoXyHD8qclFyKDdpneQt+xQGBI3ZoorMbd4kizfymfkN/QCsP
+         PP0Foq2AnogwA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A12A9E21EC5;
+        Tue, 27 Sep 2022 14:50:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <cover.1663946157.git.lucien.xin@gmail.com> <208333ca564baf0994d3af3c454dc16127c9ad09.1663946157.git.lucien.xin@gmail.com>
- <5a7a07d34b68b36410aa42f22fb4c08c5ec6a08c.camel@redhat.com>
-In-Reply-To: <5a7a07d34b68b36410aa42f22fb4c08c5ec6a08c.camel@redhat.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Tue, 27 Sep 2022 10:45:39 -0400
-Message-ID: <CADvbK_dyOapTEOzOrAJM9GXAG8quR+ZeV6QYY0p2KrA6Z-Hk_g@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/2] net: sched: fix the err path of tcf_ct_init
- in act_ct
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Oz Shlomo <ozsh@nvidia.com>, Paul Blakey <paulb@nvidia.com>,
-        Ilya Maximets <i.maximets@ovn.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 0/2] Add Support for Dell 5811e with usb-id 0x413c:0x81c2
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166429021565.22749.13023746895326673030.git-patchwork-notify@kernel.org>
+Date:   Tue, 27 Sep 2022 14:50:15 +0000
+References: <20220926150740.6684-1-linux@fw-web.de>
+In-Reply-To: <20220926150740.6684-1-linux@fw-web.de>
+To:     Frank Wunderlich <linux@fw-web.de>
+Cc:     linux-usb@vger.kernel.org, frank-w@public-files.de, bjorn@mork.no,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, johan@kernel.org, gregkh@linuxfoundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 27, 2022 at 8:43 AM Paolo Abeni <pabeni@redhat.com> wrote:
->
-> On Fri, 2022-09-23 at 11:28 -0400, Xin Long wrote:
-> > When it returns err from tcf_ct_flow_table_get(), the param tmpl should
-> > have been freed in the cleanup. Otherwise a memory leak will occur.
-> >
-> > While fixing this problem, this patch also makes the err path simple by
-> > calling tcf_ct_params_free(), so that it won't cause problems when more
-> > members are added into param and need freeing on the err path.
-> >
-> > Fixes: c34b961a2492 ("net/sched: act_ct: Create nf flow table per zone")
-> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
->
-> I think it's better if you re-submit this patch for -net explicitly, as
-> it LGTM and makes sense to let it reach the affected kernel soon.
-If so, I will have to wait until this patch is merged on net-next,
-then post the other one for net-next, right?
+Hello:
 
->
-> Thanks!
->
-> Paolo
->
->
+This series was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Mon, 26 Sep 2022 17:07:38 +0200 you wrote:
+> From: Frank Wunderlich <frank-w@public-files.de>
+> 
+> Add new USB-id for dell branded EM7455 with this usb-id in qcserial and qmi
+> driver.
+> MBIM-mode works out of the box with 6.0-rc6.
+> 
+> Frank Wunderlich (2):
+>   USB: serial: qcserial: add new usb-id for Dell branded EM7455
+>   net: usb: qmi_wwan: Add new usb-id for Dell branded EM7455
+> 
+> [...]
+
+Here is the summary with links:
+  - [1/2] USB: serial: qcserial: add new usb-id for Dell branded EM7455
+    (no matching commit)
+  - [2/2] net: usb: qmi_wwan: Add new usb-id for Dell branded EM7455
+    https://git.kernel.org/netdev/net/c/797666cd5af0
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
