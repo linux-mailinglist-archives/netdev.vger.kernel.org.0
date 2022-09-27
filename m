@@ -2,190 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E21C5EBFFE
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 12:43:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21A0F5EC00A
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 12:44:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231167AbiI0KnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 06:43:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48018 "EHLO
+        id S231288AbiI0Koz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 06:44:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230169AbiI0KnG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 06:43:06 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC6CC422C3;
-        Tue, 27 Sep 2022 03:43:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S229567AbiI0Kox (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 06:44:53 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E0FA6B8E7;
+        Tue, 27 Sep 2022 03:44:52 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 7EF01CE178E;
-        Tue, 27 Sep 2022 10:43:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD7B0C433D6;
-        Tue, 27 Sep 2022 10:42:57 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="KrzmBZra"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1664275374;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NJzK5QOVB5hTk/kwHZrgK27Cq8fKAJHhQ1EixID94zk=;
-        b=KrzmBZrab/rZ4Ha1dVmn8AHNvl7bnA78AzAWUmTNPTJD5sKf5k3PmRzQlUVmnqJm/UQ/Zs
-        WCOM07gwSEbBRKNgGcYSoASucoylxwqB+IPCxrVGz7J0diQ6YyWKU4i0RpRlNENpkbw0n8
-        kycWwpaE6/5J4uot1V6EWuxI/godCoA=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 66047c3f (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Tue, 27 Sep 2022 10:42:54 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Sherry Yang <sherry.yang@oracle.com>,
-        Paul Webb <paul.x.webb@oracle.com>,
-        Phillip Goerl <phillip.goerl@oracle.com>,
-        Jack Vogel <jack.vogel@oracle.com>,
-        Nicky Veitch <nicky.veitch@oracle.com>,
-        Colm Harrington <colm.harrington@oracle.com>,
-        Ramanan Govindarajan <ramanan.govindarajan@oracle.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Tejun Heo <tj@kernel.org>,
-        Sultan Alsawaf <sultan@kerneltoast.com>, stable@vger.kernel.org
-Subject: [PATCH v3] random: use expired per-cpu timer rather than wq for mixing fast pool
-Date:   Tue, 27 Sep 2022 12:42:33 +0200
-Message-Id: <20220927104233.1605507-1-Jason@zx2c4.com>
-In-Reply-To: <YzKy+bNedt2vu+a1@zx2c4.com>
-References: <YzKy+bNedt2vu+a1@zx2c4.com>
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 125C96602265;
+        Tue, 27 Sep 2022 11:44:50 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1664275491;
+        bh=ql4FTrakdy7CCJMp7yH+mwWBCOP+cR85Z8Ogp0SyhfQ=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=YPYx0ZrExlZHMAFeo/WtOFIN8CcQcAPdKHAiMl1HxB5TXBC535cZvTs8W0xZmK7lF
+         +/fdeD6qWM1p33efR/YpUjibMzM/k+mXVg953aKxQoHBf3ct9lB+bdNBnX8rkNaDBt
+         pvJSrvGB21cdSfH3GXqwjlfKa16GfaGZ0vWXv9RKA9HAbodUKHphgiLLph2VDaHa4c
+         NLufBwh57PaWEyCzJclqmsBDDpq3HIG9jJJ463q+whX3ILocQY9HucQGgeTT/tI8SI
+         PQLcAyKBWa3BXTAou5taxGv4uNP7qbv2RhHaATsbjTM9gJ5XkxZ1fV/4/q6TB0UFS3
+         nlwmyFZSQbVhg==
+Message-ID: <888703a8-a8e5-e691-7a53-294f88ad7a4e@collabora.com>
+Date:   Tue, 27 Sep 2022 12:44:47 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH v5 4/4] net: stmmac: Update the name of property 'clk_csr'
+Content-Language: en-US
+To:     Jianguo Zhang <jianguo.zhang@mediatek.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Biao Huang <biao.huang@mediatek.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+References: <20220923052828.16581-1-jianguo.zhang@mediatek.com>
+ <20220923052828.16581-5-jianguo.zhang@mediatek.com>
+ <e0fa3ddf-575d-9e25-73d8-e0858782b73f@collabora.com>
+ <ac24dc0f-0038-5068-3ce6-bbace55c7027@linaro.org>
+ <4f205f0d-420d-8f51-ad26-0c2475c0decd@linaro.org>
+ <80c59c9462955037981a1eab6409ba69fc9b7c34.camel@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <80c59c9462955037981a1eab6409ba69fc9b7c34.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Previously, the fast pool was dumped into the main pool periodically in
-the fast pool's hard IRQ handler. This worked fine and there weren't
-problems with it, until RT came around. Since RT converts spinlocks into
-sleeping locks, problems cropped up. Rather than switching to raw
-spinlocks, the RT developers preferred we make the transformation from
-originally doing:
+Il 27/09/22 10:44, Jianguo Zhang ha scritto:
+> Dear Krzysztof,
+> 	Thanks for your comment.
+> 
+> On Fri, 2022-09-23 at 20:15 +0200, Krzysztof Kozlowski wrote:
+>> On 23/09/2022 20:14, Krzysztof Kozlowski wrote:
+>>>> This is going to break MT2712e on old devicetrees.
+>>>>
+>>>> The right way of doing that is to check the return value of
+>>>> of_property_read_u32()
+>>>> for "snps,clk-csr": if the property is not found, fall back to
+>>>> the old "clk_csr".
+>>>
+>>> I must admit - I don't care. That's the effect when submitter
+>>> bypasses
+>>> DT bindings review (81311c03ab4d ("net: ethernet: stmmac: add
+>>> management
+>>> of clk_csr property")).
+>>>
+>>> If anyone wants ABI, please document the properties.
+>>>
+>>> If out-of-tree users complain, please upstream your DTS or do not
+>>> use
+>>> undocumented features...
+>>>
+>>
+>> OTOH, as Angelo pointed out, handling old and new properties is quite
+>> easy to achieve, so... :)
+>>
+> So, the conclusion is as following:
+> 
+> 1. add new property 'snps,clk-csr' and document it in binding file.
+> 2. parse new property 'snps,clk-csr' firstly, if failed, fall back to
+> old property 'clk_csr' in driver.
+> 
+> Is my understanding correct?
 
-    do_some_stuff()
-    spin_lock()
-    do_some_other_stuff()
-    spin_unlock()
+Yes, please.
 
-to doing:
+I think that bindings should also get a 'clk_csr' with deprecated: true,
+but that's Krzysztof's call.
 
-    do_some_stuff()
-    queue_work_on(some_other_stuff_worker)
+Regards,
+Angelo
 
-This is an ordinary pattern done all over the kernel. However, Sherry
-noticed a 10% performance regression in qperf TCP over a 40gbps
-InfiniBand card. Quoting her message:
+> 
+>> Best regards,
+>> Krzysztof
+>>
+> BRS
+> Jianguo
+> 
 
-> MT27500 Family [ConnectX-3] cards:
-> Infiniband device 'mlx4_0' port 1 status:
-> default gid: fe80:0000:0000:0000:0010:e000:0178:9eb1
-> base lid: 0x6
-> sm lid: 0x1
-> state: 4: ACTIVE
-> phys state: 5: LinkUp
-> rate: 40 Gb/sec (4X QDR)
-> link_layer: InfiniBand
->
-> Cards are configured with IP addresses on private subnet for IPoIB
-> performance testing.
-> Regression identified in this bug is in TCP latency in this stack as reported
-> by qperf tcp_lat metric:
->
-> We have one system listen as a qperf server:
-> [root@yourQperfServer ~]# qperf
->
-> Have the other system connect to qperf server as a client (in this
-> case, it’s X7 server with Mellanox card):
-> [root@yourQperfClient ~]# numactl -m0 -N0 qperf 20.20.20.101 -v -uu -ub --time 60 --wait_server 20 -oo msg_size:4K:1024K:*2 tcp_lat
-
-Rather than incur the scheduling latency from queue_work_on, we can
-instead switch to running on the next timer tick, on the same core. This
-also batches things a bit more -- once per jiffy -- which is okay now
-that mix_interrupt_randomness() can credit multiple bits at once.
-
-Reported-by: Sherry Yang <sherry.yang@oracle.com>
-Tested-by: Paul Webb <paul.x.webb@oracle.com>
-Cc: Sherry Yang <sherry.yang@oracle.com>
-Cc: Phillip Goerl <phillip.goerl@oracle.com>
-Cc: Jack Vogel <jack.vogel@oracle.com>
-Cc: Nicky Veitch <nicky.veitch@oracle.com>
-Cc: Colm Harrington <colm.harrington@oracle.com>
-Cc: Ramanan Govindarajan <ramanan.govindarajan@oracle.com>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Cc: Tejun Heo <tj@kernel.org>
-Cc: Sultan Alsawaf <sultan@kerneltoast.com>
-Cc: stable@vger.kernel.org
-Fixes: 58340f8e952b ("random: defer fast pool mixing to worker")
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- drivers/char/random.c | 18 +++++++++++-------
- 1 file changed, 11 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index a90d96f4b3bb..e591c6aadca4 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -921,17 +921,20 @@ struct fast_pool {
- 	unsigned long pool[4];
- 	unsigned long last;
- 	unsigned int count;
--	struct work_struct mix;
-+	struct timer_list mix;
- };
- 
-+static void mix_interrupt_randomness(struct timer_list *work);
-+
- static DEFINE_PER_CPU(struct fast_pool, irq_randomness) = {
- #ifdef CONFIG_64BIT
- #define FASTMIX_PERM SIPHASH_PERMUTATION
--	.pool = { SIPHASH_CONST_0, SIPHASH_CONST_1, SIPHASH_CONST_2, SIPHASH_CONST_3 }
-+	.pool = { SIPHASH_CONST_0, SIPHASH_CONST_1, SIPHASH_CONST_2, SIPHASH_CONST_3 },
- #else
- #define FASTMIX_PERM HSIPHASH_PERMUTATION
--	.pool = { HSIPHASH_CONST_0, HSIPHASH_CONST_1, HSIPHASH_CONST_2, HSIPHASH_CONST_3 }
-+	.pool = { HSIPHASH_CONST_0, HSIPHASH_CONST_1, HSIPHASH_CONST_2, HSIPHASH_CONST_3 },
- #endif
-+	.mix = __TIMER_INITIALIZER(mix_interrupt_randomness, 0)
- };
- 
- /*
-@@ -973,7 +976,7 @@ int __cold random_online_cpu(unsigned int cpu)
- }
- #endif
- 
--static void mix_interrupt_randomness(struct work_struct *work)
-+static void mix_interrupt_randomness(struct timer_list *work)
- {
- 	struct fast_pool *fast_pool = container_of(work, struct fast_pool, mix);
- 	/*
-@@ -1027,10 +1030,11 @@ void add_interrupt_randomness(int irq)
- 	if (new_count < 1024 && !time_is_before_jiffies(fast_pool->last + HZ))
- 		return;
- 
--	if (unlikely(!fast_pool->mix.func))
--		INIT_WORK(&fast_pool->mix, mix_interrupt_randomness);
- 	fast_pool->count |= MIX_INFLIGHT;
--	queue_work_on(raw_smp_processor_id(), system_highpri_wq, &fast_pool->mix);
-+	if (!timer_pending(&fast_pool->mix)) {
-+		fast_pool->mix.expires = jiffies;
-+		add_timer_on(&fast_pool->mix, raw_smp_processor_id());
-+	}
- }
- EXPORT_SYMBOL_GPL(add_interrupt_randomness);
- 
--- 
-2.37.3
 
