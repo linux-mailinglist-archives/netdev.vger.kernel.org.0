@@ -2,107 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F7055ECD1F
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 21:47:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 773D35ECD6C
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 21:59:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231269AbiI0Tq4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 15:46:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59354 "EHLO
+        id S232246AbiI0T7S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 15:59:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230214AbiI0Tqz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 15:46:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 253271B3490;
-        Tue, 27 Sep 2022 12:46:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B5E0D61B1F;
-        Tue, 27 Sep 2022 19:46:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AD93C433D6;
-        Tue, 27 Sep 2022 19:46:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664308013;
-        bh=e5aDBKk9NK4a1QWira1pG3Pp+doScKrC1ane/mpBN3I=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=vHR+DB5QsrizGiSsJZYLaH8Bt36twqWRizKrEcipq/mH5ylFlLP/JfyTbKjwRgEVU
-         Hv/hDy+wB1mer94r2Upk8FVHgZod9IzQwFKVVbvFWRDi80hl48GhsKe9YIyQHJFTWA
-         9+zMDPiHZ6G34TfdaemGQvHV1Jfu1dtKWV/Af+wXQYhWUyzYEiZXy0SePk60zjZEcM
-         JeHuJhLusgrvh7ZsixQzCv5BZdeOaywcpblMZcnMvkURpDrHKyItYu62lNMKtT2JRF
-         ueWbQnxnevo2BcnALQQc6N7HKhvw80xBt7lhrxhqkJUZnF2bDWY3F34gomxsv3MEb9
-         TGoZw9qT08oSQ==
-Date:   Tue, 27 Sep 2022 14:46:47 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH v2] wifi: nl80211: Split memcpy() of struct
- nl80211_wowlan_tcp_data_token flexible array
-Message-ID: <YzNTJ4D8HyeIvSiR@work>
-References: <20220927022923.1956205-1-keescook@chromium.org>
+        with ESMTP id S232138AbiI0T6z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 15:58:55 -0400
+Received: from mx08lb.world4you.com (mx08lb.world4you.com [81.19.149.118])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B665F372A;
+        Tue, 27 Sep 2022 12:58:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Q0bSnmkVYfhr1GAU9MS1lz7YWt0x6Xo7B/xrBdyZ/SE=; b=ijx71oq78ZNUaGhJZYbNq9N0EK
+        nSvNNvLzl4rbSkYT13DZI9LUhdQ1oNtQqGzC+K2ZUoJojFytIGs1Gsa+Pss0+0CAnn3w/5lTcbGbX
+        nTQduJRlj5k1/2lPYmo6hE2NvDrG4X1VHWaf2ZIHJBtKB3HENvABBg6mFrumhLvEW4NU=;
+Received: from [88.117.54.199] (helo=hornet.engleder.at)
+        by mx08lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <gerhard@engleder-embedded.com>)
+        id 1odGj7-0005u7-BP; Tue, 27 Sep 2022 21:58:45 +0200
+From:   Gerhard Engleder <gerhard@engleder-embedded.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
+        Gerhard Engleder <gerhard@engleder-embedded.com>
+Subject: [PATCH net-next v4 0/6] tsnep: multi queue support and some other improvements
+Date:   Tue, 27 Sep 2022 21:58:36 +0200
+Message-Id: <20220927195842.44641-1-gerhard@engleder-embedded.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220927022923.1956205-1-keescook@chromium.org>
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-AV-Do-Run: Yes
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 26, 2022 at 07:29:23PM -0700, Kees Cook wrote:
-> To work around a misbehavior of the compiler's ability to see into
-> composite flexible array structs (as detailed in the coming memcpy()
-> hardening series[1]), split the memcpy() of the header and the payload
-> so no false positive run-time overflow warning will be generated.
-> 
-> [1] https://lore.kernel.org/linux-hardening/20220901065914.1417829-2-keescook@chromium.org/
-> 
-> Cc: Johannes Berg <johannes@sipsolutions.net>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: linux-wireless@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Kees Cook <keescook@chromium.org>
+Add support for additional TX/RX queues along with RX flow classification
+support.
 
-Reviewed-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+Binding is extended to allow additional interrupts for additional TX/RX
+queues. Also dma-coherent is allowed as minor improvement.
 
-Thanks!
---
-Gustavo
+RX path optimisation is done by using page pool as preparations for future
+XDP support.
 
-> ---
-> v2: - fix typo leading "+" (Gustavo)
-> v1: https://lore.kernel.org/lkml/20220927003903.1941873-1-keescook@chromium.org
-> ---
->  net/wireless/nl80211.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-> index 2705e3ee8fc4..169e3ec33466 100644
-> --- a/net/wireless/nl80211.c
-> +++ b/net/wireless/nl80211.c
-> @@ -13171,7 +13171,9 @@ static int nl80211_parse_wowlan_tcp(struct cfg80211_registered_device *rdev,
->  	       wake_mask_size);
->  	if (tok) {
->  		cfg->tokens_size = tokens_size;
-> -		memcpy(&cfg->payload_tok, tok, sizeof(*tok) + tokens_size);
-> +		cfg->payload_tok = *tok;
-> +		memcpy(cfg->payload_tok.token_stream, tok->token_stream,
-> +		       tokens_size);
->  	}
->  
->  	trig->tcp = cfg;
-> -- 
-> 2.34.1
-> 
+v4:
+- rework dma-coherent commit message (Krzysztof Kozlowski)
+- fixed order of interrupt-names in binding (Krzysztof Kozlowski)
+- add line break between examples in binding (Krzysztof Kozlowski)
+- add RX_CLS_LOC_ANY support to RX flow classification
+
+v3:
+- now with changes in cover letter
+
+v2:
+- use netdev_name() (Jakub Kicinski)
+- use ENOENT if RX flow rule is not found (Jakub Kicinski)
+- eliminate return code of tsnep_add_rule() (Jakub Kicinski)
+- remove commit with lazy refill due to depletion problem (Jakub Kicinski)
+
+Gerhard Engleder (6):
+  dt-bindings: net: tsnep: Allow dma-coherent
+  dt-bindings: net: tsnep: Allow additional interrupts
+  tsnep: Move interrupt from device to queue
+  tsnep: Support multiple TX/RX queue pairs
+  tsnep: Add EtherType RX flow classification support
+  tsnep: Use page pool for RX
+
+ .../bindings/net/engleder,tsnep.yaml          |  43 ++-
+ drivers/net/ethernet/engleder/Kconfig         |   1 +
+ drivers/net/ethernet/engleder/Makefile        |   2 +-
+ drivers/net/ethernet/engleder/tsnep.h         |  47 ++-
+ drivers/net/ethernet/engleder/tsnep_ethtool.c |  40 ++
+ drivers/net/ethernet/engleder/tsnep_hw.h      |  13 +-
+ drivers/net/ethernet/engleder/tsnep_main.c    | 356 +++++++++++++-----
+ drivers/net/ethernet/engleder/tsnep_rxnfc.c   | 307 +++++++++++++++
+ 8 files changed, 693 insertions(+), 116 deletions(-)
+ create mode 100644 drivers/net/ethernet/engleder/tsnep_rxnfc.c
+
+-- 
+2.30.2
+
