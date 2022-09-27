@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C8A85EC9DD
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 18:45:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02CA85EC9E4
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 18:46:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233155AbiI0Qpe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 12:45:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39450 "EHLO
+        id S233234AbiI0QqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 12:46:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233004AbiI0QpY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 12:45:24 -0400
+        with ESMTP id S233101AbiI0Qph (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 12:45:37 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08C8F13F57
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 09:45:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A26D1C115
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 09:45:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1664297120;
+        s=mimecast20190719; t=1664297129;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=eJgd373y00u6OoO8RAM18F2fCJ0BD0Jh8m7p8Foc1w4=;
-        b=HALDpdaJJLm/mtmrTR1NvNXdF1gAkfyEJhTdz1VkZ+a8KhyOnUv6AtQiiShCrc4vs+WoQw
-        mC85HfDF0tcYDONig82lumt86TOlPAp1eJAkJb3DoIE74EQPfFu2sDYxZgGVFqrKcju3cl
-        V3yUt1KCA7gq27k8sgqbfAGrsq52eyg=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=3aYh91Y5WzQL9iD8Qk6Vf/HhWFbftIWDiE0GIw3ZzEc=;
+        b=cdzCuSWH6HAXXxLIxdYHZinTxsty8tgqEPhj7b/si/ZzYHyfktFWF2mrn6RrpYzCpQj+d3
+        3o4eWS+oqX4vlPBssrQQHBslyMyucma080OmbQg9LVRcNWg9dxGGCoLxkOXfnkceMBYkSG
+        SPz8Cf2jvC73+ZDiAbhJ97a3TECyOeY=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-524-GxAmS6MUP9qOiNFRklcPHA-1; Tue, 27 Sep 2022 12:45:19 -0400
-X-MC-Unique: GxAmS6MUP9qOiNFRklcPHA-1
-Received: by mail-wm1-f71.google.com with SMTP id y15-20020a1c4b0f000000b003b47578405aso2964050wma.5
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 09:45:19 -0700 (PDT)
+ us-mta-282-Erjm7Ju-PsiPweuK1wRGXQ-1; Tue, 27 Sep 2022 12:45:25 -0400
+X-MC-Unique: Erjm7Ju-PsiPweuK1wRGXQ-1
+Received: by mail-wm1-f70.google.com with SMTP id h187-20020a1c21c4000000b003b51369ff1bso6865149wmh.3
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 09:45:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
          :from:x-gm-message-state:from:to:cc:subject:date;
-        bh=eJgd373y00u6OoO8RAM18F2fCJ0BD0Jh8m7p8Foc1w4=;
-        b=aHG8/U3Sb1xKK9g4YeykXlxV9mdmeO8X3/pmmwXLEXeZN7FpdPSjnl76KxBRfsquoO
-         uGss0rkamOqxBKnGKHcOzZAqHLMbA9KdGEj1FY+gIWsN57qDTkC8bxsgk6tq9t6wVoFv
-         Pwg9s6RDN8VYeAmTRp34h+wPVcVew7Ub9NtGY2c2xCPdKcwQECoGUSlxTtL8tcqobaDJ
-         LLBXT8N4RszMaLXmGClLrFf5e+YU0rOHLG34TQG+YTuqvBAU92gGkKXKFvdllOwsBRw+
-         yuZrYejKxafboDgrBJ3ATD1FCDLjybXeD+GNSHmrKAKaZUNDi/MUYqlAyRpoldZOmeU9
-         0PCw==
-X-Gm-Message-State: ACrzQf2mcDf+5swLTeIB2s1X0Qpt+vOp1wY++KY0m1Q5mA6hjUdASPRj
-        Cw6/XpAUvU8f7AjKhYfxko1mCvz/uuDFrBhOOt6RnxVRoWljKnW6d3sOGZxhew5w2lYmanERcYD
-        /S/oS6s7Td+bkFj9w
-X-Received: by 2002:a05:6000:1687:b0:22a:3516:4f98 with SMTP id y7-20020a056000168700b0022a35164f98mr17198026wrd.525.1664297118146;
-        Tue, 27 Sep 2022 09:45:18 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM5TSt7aiYS9wyhijktid6xBQmelnexwMFjxC9sY22eg66YL48Ms5o3nyBrUuZcLFa9dXplgPw==
-X-Received: by 2002:a05:6000:1687:b0:22a:3516:4f98 with SMTP id y7-20020a056000168700b0022a35164f98mr17197998wrd.525.1664297117969;
-        Tue, 27 Sep 2022 09:45:17 -0700 (PDT)
+        bh=3aYh91Y5WzQL9iD8Qk6Vf/HhWFbftIWDiE0GIw3ZzEc=;
+        b=RCdKUFBjUTtJxZ0BUaRNTwIfdESNwEIMBvYWlZZ84fb3sC7QmjHL8cOmTs3qDTPTPF
+         VixULEqduerFIzMAd0xGkX04ih5mJKKppat8SCqcX1nxUGnO4O5EH5JsXmR2oqXfHdXJ
+         lgAvZeWQAM13utYlPHwfvf8hnlaHNgQO8NXn+XEwIbji+PveagE9VIf7VjtHkE1i/1E4
+         xY4njZDG8aP/Ok9tS+njt2ynKSQMXPqFJyfEy1imdnF3+ixuAjuXt85tGIjtmpy8d1PL
+         fJgTeQ9E3YCU3nmhBjE7178xW58K6bHfPQZVn2DVBol+AqwXqLz3GT7nFAVp3unoHxaA
+         AUxg==
+X-Gm-Message-State: ACrzQf1Rt6Zerx08mygVThkgJsdw1WUoacGZDfxHeQ+MAhp5BLoYq/co
+        J9yrlr4eaV4Uw0ba0nEgaSDg5Y8AE3DTUf2NsCC/JC26Rq8n4JF15TLhn1IQyrNXkno801AxKB0
+        KXLs+PsPlVEHY1E9K
+X-Received: by 2002:a05:6000:1081:b0:22a:2ecf:9cf8 with SMTP id y1-20020a056000108100b0022a2ecf9cf8mr16895827wrw.205.1664297123837;
+        Tue, 27 Sep 2022 09:45:23 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM4xfXd99KDnmORegLCH4Mobu+mrKA/QfOT4UCXrEVf80cwvr7snphoIuQO9+NR1l/RPhKpcDQ==
+X-Received: by 2002:a05:6000:1081:b0:22a:2ecf:9cf8 with SMTP id y1-20020a056000108100b0022a2ecf9cf8mr16895793wrw.205.1664297123592;
+        Tue, 27 Sep 2022 09:45:23 -0700 (PDT)
 Received: from vschneid.remote.csb ([185.11.37.247])
-        by smtp.gmail.com with ESMTPSA id l2-20020a05600c1d0200b003b477532e66sm3637988wms.2.2022.09.27.09.45.16
+        by smtp.gmail.com with ESMTPSA id t18-20020adfe452000000b00228cd9f6349sm2287334wrm.106.2022.09.27.09.45.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Sep 2022 09:45:17 -0700 (PDT)
+        Tue, 27 Sep 2022 09:45:22 -0700 (PDT)
 From:   Valentin Schneider <vschneid@redhat.com>
 To:     Yury Norov <yury.norov@gmail.com>
 Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
@@ -77,76 +77,102 @@ Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
         Gal Pressman <gal@nvidia.com>,
         Tariq Toukan <tariqt@nvidia.com>,
         Jesse Brandeburg <jesse.brandeburg@intel.com>
-Subject: Re: [PATCH v4 5/7] sched/topology: Introduce sched_numa_hop_mask()
-In-Reply-To: <YzCYXEytXy8UJQFv@yury-laptop>
+Subject: Re: [PATCH v4 6/7] sched/topology: Introduce for_each_numa_hop_cpu()
+In-Reply-To: <YzBsonBFi9OJ29UT@yury-laptop>
 References: <20220923132527.1001870-1-vschneid@redhat.com>
- <20220923155542.1212814-4-vschneid@redhat.com>
- <YzCYXEytXy8UJQFv@yury-laptop>
-Date:   Tue, 27 Sep 2022 17:45:15 +0100
-Message-ID: <xhsmhfsgc4vhg.mognet@vschneid.remote.csb>
+ <20220923155542.1212814-5-vschneid@redhat.com>
+ <YzBsonBFi9OJ29UT@yury-laptop>
+Date:   Tue, 27 Sep 2022 17:45:21 +0100
+Message-ID: <xhsmhedvw4vha.mognet@vschneid.remote.csb>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25/09/22 11:05, Yury Norov wrote:
-> On Fri, Sep 23, 2022 at 04:55:40PM +0100, Valentin Schneider wrote:
->> +const struct cpumask *sched_numa_hop_mask(int node, int hops)
->> +{
->> +	struct cpumask ***masks = rcu_dereference(sched_domains_numa_masks);
->> +
->> +	if (node == NUMA_NO_NODE && !hops)
->> +		return cpu_online_mask;
->> +
->> +	if (node >= nr_node_ids || hops >= sched_domains_numa_levels)
->> +		return ERR_PTR(-EINVAL);
+On 25/09/22 07:58, Yury Norov wrote:
+> On Fri, Sep 23, 2022 at 04:55:41PM +0100, Valentin Schneider wrote:
+>> +/**
+>> + * for_each_numa_hop_cpu - iterate over CPUs by increasing NUMA distance,
+>> + *                         starting from a given node.
+>> + * @cpu: the iteration variable.
+>> + * @node: the NUMA node to start the search from.
+>> + *
+>> + * Requires rcu_lock to be held.
+>> + * Careful: this is a double loop, 'break' won't work as expected.
 >
-> This looks like a sanity check. If so, it should go before the snippet
-> above, so that client code would behave consistently.
+> This warning concerns me not only because new iteration loop hides
+> complexity and breaks 'break' (sic!), but also because it looks too
+> specific. Why don't you split it, so instead:
+>
+>        for_each_numa_hop_cpu(cpu, dev->priv.numa_node) {
+>                cpus[i] = cpu;
+>                if (++i == ncomp_eqs)
+>                        goto spread_done;
+>        }
+>
+> in the following patch you would have something like this:
+>
+>        for_each_node_hop(hop, node) {
+>                struct cpumask hop_cpus = sched_numa_hop_mask(node, hop);
+>
+>                for_each_cpu_andnot(cpu, hop_cpus, ...) {
+>                        cpus[i] = cpu;
+>                        if (++i == ncomp_eqs)
+>                                goto spread_done;
+>                }
+>        }
+>
+> It looks more bulky, but I believe there will be more users for
+> for_each_node_hop() alone.
+>
+> On top of that, if you really like it, you can implement
+> for_each_numa_hop_cpu() if you want.
 >
 
-nr_node_ids is unsigned, so -1 >= nr_node_ids is true.
+IIUC you're suggesting to introduce an iterator for the cpumasks first, and
+then maybe add one on top for the individual cpus.
 
->> +
->> +	if (!masks)
->> +		return NULL;
->
-> In (node == NUMA_NO_NODE && !hops) case you return online cpus. Here
-> you return NULL just to convert it to cpu_online_mask in the caller.
-> This looks inconsistent. So, together with the above comment, this
-> makes me feel that you'd do it like this:
->
->  const struct cpumask *sched_numa_hop_mask(int node, int hops)
->  {
->       struct cpumask ***masks;
->
->       if (node >= nr_node_ids || hops >= sched_domains_numa_levels)
->         {
->  #ifdef CONFIG_SCHED_DEBUG
->                 pr_err(...);
->  #endif
->               return ERR_PTR(-EINVAL);
->         }
->
->       if (node == NUMA_NO_NODE && !hops)
->               return cpu_online_mask; /* or NULL */
->
->         masks = rcu_dereference(sched_domains_numa_masks);
->       if (!masks)
->               return cpu_online_mask; /* or NULL */
->
->       return masks[hops][node];
->  }
+I'm happy to do that, though I have to say I'm keen to keep the CPU
+iterator - IMO the complexity is justified if it is centralized in one
+location and saves us from boring old boilerplate code.
 
-If we're being pedantic, sched_numa_hop_mask() shouldn't return
-cpu_online_mask in those cases, but that was the least horrible
-option I found to get something sensible for the NUMA_NO_NODE /
-!CONFIG_NUMA case. I might be able to better handle this with your
-suggestion of having a mask iterator.
+>> + * Implementation notes:
+>> + *
+>> + * Providing it is valid, the mask returned by
+>> + *  sched_numa_hop_mask(node, hops+1)
+>> + * is a superset of the one returned by
+>> + *   sched_numa_hop_mask(node, hops)
+>> + * which may not be that useful for drivers that try to spread things out and
+>> + * want to visit a CPU not more than once.
+>> + *
+>> + * To accommodate for that, we use for_each_cpu_andnot() to iterate over the cpus
+>> + * of sched_numa_hop_mask(node, hops+1) with the CPUs of
+>> + * sched_numa_hop_mask(node, hops) removed, IOW we only iterate over CPUs
+>> + * a given distance away (rather than *up to* a given distance).
+>> + *
+>> + * hops=0 forces us to play silly games: we pass cpu_none_mask to
+>> + * for_each_cpu_andnot(), which turns it into for_each_cpu().
+>> + */
+>> +#define for_each_numa_hop_cpu(cpu, node)				       \
+>> +	for (struct { const struct cpumask *curr, *prev; int hops; } __v =     \
+>> +		     { sched_numa_hop_mask(node, 0), NULL, 0 };		       \
+>
+> This anonymous structure is never used as structure. What for you
+> define it? Why not just declare hops, prev and curr without packing
+> them?
+>
+
+I haven't found a way to do this that doesn't involve a struct - apparently
+you can't mix types in a for loop declaration clause.
+
+> Thanks,
+> Yury
+>
 
