@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6CD15ED140
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 01:50:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E04A5ED143
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 01:50:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232618AbiI0XuM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 19:50:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57194 "EHLO
+        id S232557AbiI0Xuj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 19:50:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232620AbiI0Xta (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 19:49:30 -0400
+        with ESMTP id S232541AbiI0XuD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 19:50:03 -0400
 Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70084.outbound.protection.outlook.com [40.107.7.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD04D1D983D;
-        Tue, 27 Sep 2022 16:48:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5E771DCC64;
+        Tue, 27 Sep 2022 16:48:49 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MyElL/FF/jhyYo9RT1WG6v+gRk/hBnySyMlK6XSrlOKXFUToLoKhUR4aGw0xsMLimUrP24uVTm/V+rF0HLj2kvbGkcd9OvkQ0P1u63IvTMJ7i1IaOm/70PXdgXzLk3ALuJemzc9l9npoyLUYhvtuk/EKkh6ZPq+penWmZsSsuORl0dsbYRXk7Qp7SHzPmmYd8dwxNbcDjGXbhLH3EZPA7Mxe2iyEUHgASrxKIM8vMr9IrSQmhCSnkDdumUb7FOfkbt0DzcmmzK1WWvVPQdLZc8ZQcH75Qai+/m6TUHz6ezBo8J7fzljetf/iMGPmrZcLmNMU2KKIxzA4vBrhAKWkKA==
+ b=Df3nawH1pmTO/RWpmXmt1REnf0GRbC1Zp9l14CTYkjV0eJpodQos9Kgn110ticNymYgk8tBFBWULwAuTo2c8alIK4IGlfXYLP5ocILwG5mii9MWYx73ElIbZhMCU5qNUcD/MYo4yD9mghavfhrWxouGMjh5zZQRjY6z6bVqcNOuYUXSLUe79brKtpO9iEcP0/onkHMqXv8GYSzWSN5RzhRshGrPot/v0s5QJ1sjnmSmbujVNjbr23olwiuPpBCsMcGOmGk/q37Eeh3r3TotzlC3/DvIeP7ruqlHgQTJLJ/9m1pv8mtIHYJIHaJnS6wF+pFkisaaB6TQ1mhhyP4hRqw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hhjdW8+kQiEUx8E/PIKOnug/ItS5WoqfM30DiT7cNTY=;
- b=NzZopajgWizMhgL4KjthZcn8kPXUfvctUoRPJfJghbs000vKX6q//AtJA0MWb5GWU7OWLeAz150UCcPjR9/q7IJBFbHhobfeXmKfkQb2q5wu3GUCqgmujXTlfFt4tIKZsOrDNsInJNQUuF9IPggh7tirWyhum4W2DHUZP0l1IjgoLt75cXhGMj5ibLIYRX24Ma1a5dBx6mHVLXr6PdKVwIO0bDi2QxlwecfGo1TnWkFAqsJB4IGHU8U7zfhKO4k0x3C+p+OQTLgK6eQl7MlQgIiUQ2NLsMyursws7PHMdRI9gyzq9nxpc/OhYuwA9ZfpozgTIUmXqUmjUVs907/5Xw==
+ bh=aqcjgH6LKi3PibKIAig3lHNnby+SLPB7547ljDCPQKo=;
+ b=BsJXeRNOjpVkRCRDlXn0MYr92xJ0fmX9KTNhee6U7A1NlZDqWrahVXUhRZdmD5BAdcc4iXXQq85lazuFbf6Cp3YItVcYkX9BtkBtjoa2aNejWhMJ8TmzErlJtKlGnPQjl9MDTsaXew9ITPjMgdt7fanGLfEbJWNg8AzyR/PXkpT2HyfEJNjQ1z+SaZWBpFZ+gBLVof2K8nWZdQTpljrp5b/JLTK/tZAzJc99JRTv2K9Bqgd+CgVxZTulro5Ea5g+NTMDy1JLN9QGQhkVYngeF38+Hwmv/MagKMNx+C/S9cj/G4W3S8B0K8OUB5q3yS5EwSEGVSl+DYmKCUxjcUnVZg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hhjdW8+kQiEUx8E/PIKOnug/ItS5WoqfM30DiT7cNTY=;
- b=Dx1RRyWQAwkYFEZnQIgfwMBm8kiD9UfD1oeRe7xOZcBcOfexFwkAzJ1aRJ8FICJOm3Yz2B1IXd8Ja7L/7dymAj0hiQOIU3e5s8bcMUfcKs1a0rxMpnzd5t6tYhAxxFo6Ce/+926mPEF3Q+fsjS4u8i4IMjAQSEcyGPYjRvWnSoA=
+ bh=aqcjgH6LKi3PibKIAig3lHNnby+SLPB7547ljDCPQKo=;
+ b=STXfqC4MiJUUrGJl7tGgfACPxfEq+J0Vg7MANDXRwFFDvjxrERH10lLQWHZpFGVauUpaXAI53SIrlR3Xq25QV6jzXb3zLEvqFc2uprxmA3PwNNLNrugGh4fIXIA4xZwx3REBs5qNx58tkVNIeJCyMRyykHtuUhPvVDS2RC2ysIM=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by DU0PR04MB9444.eurprd04.prod.outlook.com (2603:10a6:10:35c::5) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.20; Tue, 27 Sep
- 2022 23:48:08 +0000
+ 2022 23:48:10 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::a67a:849c:aeff:cad1]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::a67a:849c:aeff:cad1%7]) with mapi id 15.20.5654.025; Tue, 27 Sep 2022
- 23:48:08 +0000
+ 23:48:10 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -64,9 +64,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Jamal Hadi Salim <jhs@mojatatu.com>,
         Cong Wang <xiyou.wangcong@gmail.com>,
         Jiri Pirko <jiri@resnulli.us>, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 net-next 7/8] net: enetc: use common naming scheme for PTGCR and PTGCAPR registers
-Date:   Wed, 28 Sep 2022 02:47:45 +0300
-Message-Id: <20220927234746.1823648-8-vladimir.oltean@nxp.com>
+Subject: [PATCH v3 net-next 8/8] net: enetc: offload per-tc max SDU from tc-taprio
+Date:   Wed, 28 Sep 2022 02:47:46 +0300
+Message-Id: <20220927234746.1823648-9-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220927234746.1823648-1-vladimir.oltean@nxp.com>
 References: <20220927234746.1823648-1-vladimir.oltean@nxp.com>
@@ -78,51 +78,51 @@ X-ClientProxiedBy: VI1PR0501CA0025.eurprd05.prod.outlook.com
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|DU0PR04MB9444:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0277a776-efca-49c2-e21d-08daa0e2baf4
+X-MS-Office365-Filtering-Correlation-Id: 14c77b51-1823-482e-5f64-08daa0e2bbb8
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Pxu3V4lGZTLCFpJ6jk715voF0pnucqs9b+rnj85MIJJ5PQ0GhPN8jeWBTzcxOpfap5c+PsyMvOI4KSC/xvecdigXJQtkyj6u4ZXnCmQuz+958CqsZfaCGrqo6NI95GCaNch65BM2W7pua8F7RcpHX/kqZ7dX6jO/8kLfP0tcQK/BFypBK5hTTNnRPfGFq3INOdZ3ugkRtm/UmADxs4jwvHGzpVqa+TxlInVHoI3nlCpuB7jx/dfoUU9OHLF48QDzpGYIFBddjxBW5Toz+VsKl8djwlpViWsPE7JAGdt6/iVjl3GqvFd5q0kG9MA6woo6gRaycnIJLoe9eDzGEtxPdhpFOtrsbNAgy89eVdt75NpYSYsPH10EdGM8ZPSsxE/oM6QD+R7pyD77OZS3YRGA7P8otVKtogOub7w2Qk1ouW9GHZAG+1/MfOMvtFns2eDeBGkP/iKwtugGj73ou3sMj8AUYrknZiN4HPSclL9M73uzvoHl79SfW1F7rIA2s84O8uNf8D4GryMx2L4s1szOREkN0M2OzEOTB/I3AryFkDp9okMGjFnd0hHMSdLtU5GPvXIwfRBJaURgdq1B6c/GRiC+7N/uC57jSI5LV0WKlN2zvzqrlJEjb39wN4MyW/vwGh6onlEZp3eybjjst19xarned9Ix+gXi6cpuacfQdXbOBA62rJl0dESI1lfrztH2NTKWxMfJFH0zDjQ0FY5PsEVJDaHOC3UfW1qxc1vBM0xhiM35ojTaq3IdDiR808iPCYvbkIAj/Sl8kIkHii4XaPFl3aNnBnruIo1IE0o24u0=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(366004)(376002)(39860400002)(396003)(346002)(451199015)(7416002)(6512007)(966005)(41300700001)(6666004)(36756003)(6486002)(38350700002)(6506007)(6916009)(8676002)(86362001)(66476007)(4326008)(26005)(52116002)(8936002)(66946007)(83380400001)(38100700002)(316002)(54906003)(186003)(1076003)(2906002)(5660300002)(66556008)(478600001)(44832011)(2616005);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: L9iQYplfH2pgDmZ1Au9/tzQydGwwULzkahrH52UxiIf8vnlYVfaNErLDXkvkM283IS0qqHaA8cqBEecmaUdA0/plg4WdjFVHtS0wm0fvgMdGpk15tIBMagNB9dfvGeJPmGnz23WQlHka1YDyLykp49jMhAIphlRIRMMawmM26rvcron57OV5fOVqobOgQCkusHlg54GuFvBWjs1fP8t5Nimt1pGD1+9apo3X228xitF7oQRTXquLKi2tJMri2m0I/QklhoVUL/eMq7YNTz3u1Zktv0gNRdd41trMqE/wMPpgSMiNOBDN9nLB9G935asvUIT0/ai2bTDZyvTetRAvePLqzyU07UYs7RNCCty9lhf42uLh4+AOjQ8rf2rN5fqbeGX7Ug8cNQAwlHVsbtUm/F+8hD0rykAqLXoCOsQepa6PS5jYbpJA1Qjv9PLHKYY+nmg2GU0y22dCFYXqpA23tvp/vYW5a2Eke1634kDFBisS/7TYtNB0+iPSZFGmIqG3c83f01oen3k4IeyW8sEwpin9xYYQNCsTTjPUJlwehkGGk5OzcVVvxyNF7NXBum92xR5byHwtiG4SbaxCK3UsO8oebWR7+/n4SzcFQrw9SLWMHFSlz5izgIU4ZdT1i79VeT+Ws4DX33SRpf5Hp1qi5w/Zw7nKM+vmSEOnfmk4BSHUJAfM0x5uBvo9n8vdzwaymg44pTscmruyVr2ED9hMUqYpF3kHIBNV3KfYrLSCZuRdgOJo8cpDerJJbh037+DWbBdDhJgopZdshaFvlLu2qg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(366004)(376002)(39860400002)(396003)(346002)(451199015)(7416002)(6512007)(41300700001)(6666004)(36756003)(6486002)(38350700002)(6506007)(6916009)(8676002)(86362001)(66476007)(4326008)(26005)(52116002)(8936002)(66946007)(83380400001)(38100700002)(316002)(54906003)(186003)(1076003)(2906002)(5660300002)(66556008)(478600001)(44832011)(2616005);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?E+KlFIdwRx+uP7z2WYzUzP6YCYqDLU6bdFQwxdF5KENOGYFEdtXn6yuAnnuC?=
- =?us-ascii?Q?CiL0kU44bm/En9H6akWDtdR+H5lSoznwdkWRDOXEy4jUIweOEnwAj2mcmZQl?=
- =?us-ascii?Q?gJgvqeFtXka+D9SQn5wxFTArDUvIp+uPcJ9wTzP9/UBCObNqyvhT3BVahxRN?=
- =?us-ascii?Q?9Y4Sv0O5CkVJLFVLgiZP330mliR3zatc6uKmyxWkStZFZAkWfka2Y+heNQD+?=
- =?us-ascii?Q?HNK/DbCthkpK8AbgaUgsvWkD80JoFn8xojWfyYlfiRmBUOpdZCXwPVMAkohW?=
- =?us-ascii?Q?ff3oElFgamlUzMbpDtnqiFK90bhuPJTAEM/MS8k4MHRjbBpCFbUrbQl8vOkc?=
- =?us-ascii?Q?Hj5H9vinHaVsYdjrxSuM1aD6P/jQ9PHdb9hOvKWlIrD80lF7zXRZjk1DkvhY?=
- =?us-ascii?Q?BTCs+g56htMue1ajT6nIk9Bnkv9PO54+otmqtX6hORc2k7kPqgyL4u+F6jVD?=
- =?us-ascii?Q?Yu9ppMW8pxd6lzQbfvcOtic4D9cY1tWHtkuO2QCsMQ/kQgk7gsowx9BTNLZy?=
- =?us-ascii?Q?/JwtQIvqRMJuEn2FjfHV3MHfX8D9/3yWS0F82MN16W8bcGpjQyWPBoyh1Idm?=
- =?us-ascii?Q?tO7kAVXKbgI/Vp8TViUShEdTNv9aMGeybJ66SPrhTTZmE8yTq/6WAqxBQMoh?=
- =?us-ascii?Q?CJXjmnbMEhdDEr9OOTk6DUMyuYaseq/hYzhk6YLDlxD58SCYOuaLJO400DLZ?=
- =?us-ascii?Q?UzE63ISNhjmjfoyJTSDgd4lnqHHRrIrUk3OnDOuNP5B+Ss29mvzn1c6W221f?=
- =?us-ascii?Q?ne6R4I//504H6TitYHuAgz0eVBCFmBrJQBxXIwQojN2gR/cqHo/BXA+Z7DCg?=
- =?us-ascii?Q?/65Bl8FwwKB2uu1L5/4fTDr9gya86lnY/EY1G9a0d8x4DTcvpEeNwzD4HU7Q?=
- =?us-ascii?Q?REp7WxK+1Zw3wtjY3agqUmpe1/y4nKlEppItw3qtC9zqLaj3qcm6TLj8NVsM?=
- =?us-ascii?Q?FnBpgyfKdorQKdUfqtr9Gkd2+Qa7p9MyCIxKzs27gH6PtXVbWkTK+qdsRXiG?=
- =?us-ascii?Q?++LxQPEfdaaDQpOdtvI3oWE4Nqn2Z5CDfai1nGpNmOAJYnrK0uMt8jiCqsOE?=
- =?us-ascii?Q?uLT0P9SQXSQaT2DbvMhU5SiybvdJpce+BNaEDpoWsYzv/Qx4eXynfe1cpAMO?=
- =?us-ascii?Q?wvIHNLJUxabdPrHybZ65nNfU53n+CMWanE16cNniBTpN34qFPJXJw/QO3g8a?=
- =?us-ascii?Q?SHpMSeUj9Gl8YR/OysQeT+TBGScJnA3/p0e6rKT+tqovf4+OjQb+wbc65suY?=
- =?us-ascii?Q?L9nFMViA4MKGuzldm+4g9WaW6BG2rmDYsjXAH7DdXnJ9Yd19k41cZy3K7XgG?=
- =?us-ascii?Q?oaS4GF63GRY4OkypOBCrMYZbN0dRbHZWWIxWIpAw0u/IGrWs+Xl0LjknPzr1?=
- =?us-ascii?Q?9gT+SyRFo0EvHEty713J3+aBOTs+inWRT2P7SM7+kXMS7YlExRWZdCWetC4G?=
- =?us-ascii?Q?SArMKslFWvwrRcHxqUKT326pocfyyOVI/LStmFfzK3vOuVhZSe0xvNtT/F69?=
- =?us-ascii?Q?lheoz2X2o7UtWnHfTYAd0FaE6nB4eUCYFOuEvrp/Pud8mFKULVjVvEBJzZhL?=
- =?us-ascii?Q?JJhHn8VkkQO1QwFyoNAe6GE14H4zIqLkadQxmjxJK6NYpvaxv1OLT4r8NHs4?=
- =?us-ascii?Q?dQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?BNnv0jzRgAK3OuhP8VbFsFgCnk4mRIUuKj1Z13HfaZ0jEhK3dMRfDaiyH61y?=
+ =?us-ascii?Q?5q+HdiiRlIJL3YrKSTZb3tO9PbklueydZiiabXq8ma7Mc0pACMHRoTaw7nP2?=
+ =?us-ascii?Q?XZk9taI7Iy6P0M0S12zsnrBv3+W5qibH661wv8P8A7I9ADRKJbG3GHFt4QtX?=
+ =?us-ascii?Q?TRxP4N+lKwXk8IALE8LFASLFYzbRd72AT158JnHkVu5c+Ni8d4sB4blnelm6?=
+ =?us-ascii?Q?bpgnIuBYVpr8xs9T5VbQ7m9fwrFpgTzdswAXf/5ujgDrPKXzqbCSE3p1nzN4?=
+ =?us-ascii?Q?Y5UP9vvOfaiNyglBUFLmrNu8cFTqm5rGPhV0z3uWqruIw1P3c3fVvV92KiGG?=
+ =?us-ascii?Q?+mP1QJkF7NlcHhCk3qteEoBsK5/VVoixlm94pS96krlTT2Otl17Xt9FuMpDy?=
+ =?us-ascii?Q?RQAaZVlplX9fq4IA7FzEraQyEDi13saIHOxS2ca7dfKcSiYEh2aMqnRwxuYD?=
+ =?us-ascii?Q?4+0W6ehXs1iYrys6WVLGCSV0d1aw7jKPPqEC5ifM1WXWIkvVQxcgFXqk1fJW?=
+ =?us-ascii?Q?psLLzx1fpoCUbB3IuL06wM7mp8CdXI5IWlwJECLVjLnFxUyEWjFt+1lBLCzW?=
+ =?us-ascii?Q?XRC6kS1NYvyXtpP0D95utK8/KacQWhGCTListIPbWf6xuqk8qOzTwHLprRgC?=
+ =?us-ascii?Q?ohzxYtJebH/21sKlfe/XPxFzun4cVyilvpnYVybeup0oBL5+YD58J+8Bj0Hn?=
+ =?us-ascii?Q?rwwqkkgTVHem4rSSzUp2WwUBqkvZHa0kRELaDrYsZYJZr7dpXoZt7W5752B7?=
+ =?us-ascii?Q?Opmfbu0KKD7HjuemRm0juNG9qQG7QPB+k07kJuqWl1ydjRwv+hvOLbGI/G0P?=
+ =?us-ascii?Q?T//isVH1bSLQp70VWW1Y8Cid975rXYvKqmg1BSIbb/n1Awy45STE1tZWMqq5?=
+ =?us-ascii?Q?dmn0CCDdLsMr5Po+UL1/MF4s3AIGZTH05HW2PjldckdjwBU9OVc5zoIa8jnO?=
+ =?us-ascii?Q?DZiwL+0o3VfOKxtE64Xq9LUnuSxo3y0bAlTC3yXJMfwx5pq52dvFnoMgCGeO?=
+ =?us-ascii?Q?/j0B/fM0M7bHBm1l1WE+YT1n08TPypwh/ggdyi69nE+fED8uPQFApPpGD3Yy?=
+ =?us-ascii?Q?OkUxdTjS5e1IDEygb5YmD28eyy6RaSG56wlhe6xwxWiKE5hQ2oU8VRJjUhWV?=
+ =?us-ascii?Q?27xn6inSCd8A5lu7+i27r8YYxmngJfQ+4qd4Dxr4fGNgVUrKa07PpdNcDeog?=
+ =?us-ascii?Q?T79//snW0DigcCyw26iD+Rm4NLBC9OuRM9ATE+cham6WPz7AYGRUEF/fyNp7?=
+ =?us-ascii?Q?7e07K5yLf43ZySnUjbIQ0BVbWdsbRVXBg6plExc53rvMp1Qsuyk0QdeS14B2?=
+ =?us-ascii?Q?X1CNW6nuuRr5EtthTPc+f+utZ/+0IaN1OkLd6R5zawrKwNApsm8hiSK/EjNr?=
+ =?us-ascii?Q?5rFpmtuuaBch94GTyiEnJJ4eVmzB7/221cH9FEBvZ32a6Z9NowvQ8mF7SEth?=
+ =?us-ascii?Q?Q44o3KHf7IXbJdFsl16nchdnCwxj6UAnHnwJE90NYA2+92zFwKFRdyrtmatm?=
+ =?us-ascii?Q?NFS4ejoQljk3QZTpYkbgLAXxKGk3z5ZKcplSctPvwo9n39atIG/fM/f0U9Mu?=
+ =?us-ascii?Q?dnO7kiqosYgvwqPqdUpFZ/dCt7CtU6QbujA58IrcqGL+XcfNin8OTzh+NF5H?=
+ =?us-ascii?Q?Cg=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0277a776-efca-49c2-e21d-08daa0e2baf4
+X-MS-Exchange-CrossTenant-Network-Message-Id: 14c77b51-1823-482e-5f64-08daa0e2bbb8
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Sep 2022 23:48:08.7572
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Sep 2022 23:48:10.0228
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: UY8LsPvSYY1/qhuH6XIR/kA3JzVAOEIxjxteB2uBofysK+KESwx96i9shlxyR5N0H4cU8rU4jEyEO79IJFnSVw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: vhMgC7g1+cxTODtIQZA8o1qqFzat0mmEi28p7QjVBOjewtgxnsEhdKZuHZv0lAJPLej+P21YGTYRJYhAY2C3IQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR04MB9444
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -134,92 +134,157 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Port Time Gating Control Register (PTGCR) and Port Time Gating
-Capability Register (PTGCAPR) have definitions in the driver which
-aren't in line with the other registers. Rename these.
+The driver currently sets the PTCMSDUR register statically to the max
+MTU supported by the interface. Keep this logic if tc-taprio is absent
+or if the max_sdu for a traffic class is 0, and follow the requested max
+SDU size otherwise.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
-v1->v2: patch is new (actually taken from the separate preliminary
-series at https://patchwork.kernel.org/project/netdevbpf/patch/20220921144349.1529150-2-vladimir.oltean@nxp.com/)
-v2->v3: none
+v1->v2: none
+v2->v3: implement TC_QUERY_CAPS with TC_SETUP_QDISC_TAPRIO
 
- drivers/net/ethernet/freescale/enetc/enetc_hw.h  | 10 +++++-----
- drivers/net/ethernet/freescale/enetc/enetc_qos.c | 13 ++++++-------
- 2 files changed, 11 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/freescale/enetc/enetc.h  |  5 +++
+ .../net/ethernet/freescale/enetc/enetc_pf.c   | 27 ++++++++++++++--
+ .../net/ethernet/freescale/enetc/enetc_qos.c  | 31 +++++++++++++++++--
+ 3 files changed, 57 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_hw.h b/drivers/net/ethernet/freescale/enetc/enetc_hw.h
-index 0b85e37a00eb..18ca1f42b1f7 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_hw.h
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_hw.h
-@@ -945,13 +945,13 @@ static inline u32 enetc_usecs_to_cycles(u32 usecs)
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc.h b/drivers/net/ethernet/freescale/enetc/enetc.h
+index 748677b2ce1f..161930a65f61 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc.h
++++ b/drivers/net/ethernet/freescale/enetc/enetc.h
+@@ -453,7 +453,11 @@ static inline void enetc_cbd_free_data_mem(struct enetc_si *si, int size,
+ 			  data, *dma);
  }
  
- /* port time gating control register */
--#define ENETC_QBV_PTGCR_OFFSET		0x11a00
--#define ENETC_QBV_TGE			BIT(31)
--#define ENETC_QBV_TGPE			BIT(30)
-+#define ENETC_PTGCR			0x11a00
-+#define ENETC_PTGCR_TGE			BIT(31)
-+#define ENETC_PTGCR_TGPE		BIT(30)
++void enetc_reset_ptcmsdur(struct enetc_hw *hw);
++void enetc_set_ptcmsdur(struct enetc_hw *hw, u32 *queue_max_sdu);
++
+ #ifdef CONFIG_FSL_ENETC_QOS
++int enetc_qos_query_caps(struct net_device *ndev, void *type_data);
+ int enetc_setup_tc_taprio(struct net_device *ndev, void *type_data);
+ void enetc_sched_speed_set(struct enetc_ndev_priv *priv, int speed);
+ int enetc_setup_tc_cbs(struct net_device *ndev, void *type_data);
+@@ -521,6 +525,7 @@ static inline int enetc_psfp_disable(struct enetc_ndev_priv *priv)
+ }
  
- /* Port time gating capability register */
--#define ENETC_QBV_PTGCAPR_OFFSET	0x11a08
--#define ENETC_QBV_MAX_GCL_LEN_MASK	GENMASK(15, 0)
-+#define ENETC_PTGCAPR			0x11a08
-+#define ENETC_PTGCAPR_MAX_GCL_LEN_MASK	GENMASK(15, 0)
+ #else
++#define enetc_qos_query_caps(ndev, type_data) -EOPNOTSUPP
+ #define enetc_setup_tc_taprio(ndev, type_data) -EOPNOTSUPP
+ #define enetc_sched_speed_set(priv, speed) (void)0
+ #define enetc_setup_tc_cbs(ndev, type_data) -EOPNOTSUPP
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+index bb7750222691..bdf94335ee99 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+@@ -516,15 +516,34 @@ static void enetc_port_si_configure(struct enetc_si *si)
+ 	enetc_port_wr(hw, ENETC_PSIVLANFMR, ENETC_PSIVLANFMR_VS);
+ }
  
- /* Port time specific departure */
- #define ENETC_PTCTSDR(n)	(0x1210 + 4 * (n))
+-static void enetc_configure_port_mac(struct enetc_hw *hw)
++void enetc_set_ptcmsdur(struct enetc_hw *hw, u32 *max_sdu)
+ {
+ 	int tc;
+ 
+-	enetc_port_wr(hw, ENETC_PM0_MAXFRM,
+-		      ENETC_SET_MAXFRM(ENETC_RX_MAXFRM_SIZE));
++	for (tc = 0; tc < 8; tc++) {
++		u32 val = ENETC_MAC_MAXFRM_SIZE;
++
++		if (max_sdu[tc])
++			val = max_sdu[tc] + VLAN_ETH_HLEN;
++
++		enetc_port_wr(hw, ENETC_PTCMSDUR(tc), val);
++	}
++}
++
++void enetc_reset_ptcmsdur(struct enetc_hw *hw)
++{
++	int tc;
+ 
+ 	for (tc = 0; tc < 8; tc++)
+ 		enetc_port_wr(hw, ENETC_PTCMSDUR(tc), ENETC_MAC_MAXFRM_SIZE);
++}
++
++static void enetc_configure_port_mac(struct enetc_hw *hw)
++{
++	enetc_port_wr(hw, ENETC_PM0_MAXFRM,
++		      ENETC_SET_MAXFRM(ENETC_RX_MAXFRM_SIZE));
++
++	enetc_reset_ptcmsdur(hw);
+ 
+ 	enetc_port_wr(hw, ENETC_PM0_CMD_CFG, ENETC_PM0_CMD_PHY_TX_EN |
+ 		      ENETC_PM0_CMD_TXP	| ENETC_PM0_PROMISC);
+@@ -738,6 +757,8 @@ static int enetc_pf_setup_tc(struct net_device *ndev, enum tc_setup_type type,
+ 			     void *type_data)
+ {
+ 	switch (type) {
++	case TC_QUERY_CAPS:
++		return enetc_qos_query_caps(ndev, type_data);
+ 	case TC_SETUP_QDISC_MQPRIO:
+ 		return enetc_setup_tc_mqprio(ndev, type_data);
+ 	case TC_SETUP_QDISC_TAPRIO:
 diff --git a/drivers/net/ethernet/freescale/enetc/enetc_qos.c b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
-index 2e783ef73690..ee28cb62afe8 100644
+index ee28cb62afe8..e6416332ec79 100644
 --- a/drivers/net/ethernet/freescale/enetc/enetc_qos.c
 +++ b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
-@@ -11,8 +11,7 @@
+@@ -7,6 +7,7 @@
+ #include <linux/math64.h>
+ #include <linux/refcount.h>
+ #include <net/pkt_cls.h>
++#include <net/pkt_sched.h>
+ #include <net/tc_act/tc_gate.h>
  
  static u16 enetc_get_max_gcl_len(struct enetc_hw *hw)
- {
--	return enetc_rd(hw, ENETC_QBV_PTGCAPR_OFFSET)
--		& ENETC_QBV_MAX_GCL_LEN_MASK;
-+	return enetc_rd(hw, ENETC_PTGCAPR) & ENETC_PTGCAPR_MAX_GCL_LEN_MASK;
- }
- 
- void enetc_sched_speed_set(struct enetc_ndev_priv *priv, int speed)
-@@ -65,9 +64,9 @@ static int enetc_setup_taprio(struct net_device *ndev,
- 		return -EINVAL;
- 	gcl_len = admin_conf->num_entries;
- 
--	tge = enetc_rd(hw, ENETC_QBV_PTGCR_OFFSET);
-+	tge = enetc_rd(hw, ENETC_PTGCR);
+@@ -67,6 +68,7 @@ static int enetc_setup_taprio(struct net_device *ndev,
+ 	tge = enetc_rd(hw, ENETC_PTGCR);
  	if (!admin_conf->enable) {
--		enetc_wr(hw, ENETC_QBV_PTGCR_OFFSET, tge & ~ENETC_QBV_TGE);
-+		enetc_wr(hw, ENETC_PTGCR, tge & ~ENETC_PTGCR_TGE);
+ 		enetc_wr(hw, ENETC_PTGCR, tge & ~ENETC_PTGCR_TGE);
++		enetc_reset_ptcmsdur(hw);
  
  		priv->active_offloads &= ~ENETC_F_QBV;
  
-@@ -115,11 +114,11 @@ static int enetc_setup_taprio(struct net_device *ndev,
- 	cbd.cls = BDCR_CMD_PORT_GCL;
- 	cbd.status_flags = 0;
- 
--	enetc_wr(hw, ENETC_QBV_PTGCR_OFFSET, tge | ENETC_QBV_TGE);
-+	enetc_wr(hw, ENETC_PTGCR, tge | ENETC_PTGCR_TGE);
- 
- 	err = enetc_send_cmd(priv->si, &cbd);
- 	if (err)
--		enetc_wr(hw, ENETC_QBV_PTGCR_OFFSET, tge & ~ENETC_QBV_TGE);
-+		enetc_wr(hw, ENETC_PTGCR, tge & ~ENETC_PTGCR_TGE);
+@@ -122,10 +124,13 @@ static int enetc_setup_taprio(struct net_device *ndev,
  
  	enetc_cbd_free_data_mem(priv->si, data_size, tmp, &dma);
  
-@@ -299,7 +298,7 @@ int enetc_setup_tc_txtime(struct net_device *ndev, void *type_data)
- 		return -EINVAL;
+-	if (!err)
+-		priv->active_offloads |= ENETC_F_QBV;
++	if (err)
++		return err;
  
- 	/* TSD and Qbv are mutually exclusive in hardware */
--	if (enetc_rd(hw, ENETC_QBV_PTGCR_OFFSET) & ENETC_QBV_TGE)
-+	if (enetc_rd(hw, ENETC_PTGCR) & ENETC_PTGCR_TGE)
- 		return -EBUSY;
+-	return err;
++	enetc_set_ptcmsdur(hw, admin_conf->max_sdu);
++	priv->active_offloads |= ENETC_F_QBV;
++
++	return 0;
+ }
  
- 	priv->tx_ring[tc]->tsd_enable = qopt->enable;
+ int enetc_setup_tc_taprio(struct net_device *ndev, void *type_data)
+@@ -1594,3 +1599,23 @@ int enetc_setup_tc_psfp(struct net_device *ndev, void *type_data)
+ 
+ 	return 0;
+ }
++
++int enetc_qos_query_caps(struct net_device *ndev, void *type_data)
++{
++	struct enetc_ndev_priv *priv = netdev_priv(ndev);
++	struct tc_query_caps_base *base = type_data;
++	struct enetc_si *si = priv->si;
++
++	switch (base->type) {
++	case TC_SETUP_QDISC_TAPRIO: {
++		struct tc_taprio_caps *caps = base->caps;
++
++		if (si->hw_features & ENETC_SI_F_QBV)
++			caps->supports_queue_max_sdu = true;
++
++		return 0;
++	}
++	default:
++		return -EOPNOTSUPP;
++	}
++}
 -- 
 2.34.1
 
