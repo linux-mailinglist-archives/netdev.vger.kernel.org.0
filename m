@@ -2,52 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DFFA5EC48B
+	by mail.lfdr.de (Postfix) with ESMTP id 118055EC48A
 	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 15:33:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232608AbiI0Ndp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 09:33:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50098 "EHLO
+        id S232927AbiI0Ndy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 09:33:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232692AbiI0NdU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 09:33:20 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E412857EF
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 06:31:58 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1odAgT-0004Qu-4S; Tue, 27 Sep 2022 15:31:37 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 98235EE174;
-        Tue, 27 Sep 2022 13:31:34 +0000 (UTC)
-Date:   Tue, 27 Sep 2022 15:31:32 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, kvalo@kernel.org, johannes@sipsolutions.net,
-        linux-wireless@vger.kernel.org, linux-can@vger.kernel.org
-Subject: Re: [PATCH net-next] net: drop the weight argument from
- netif_napi_add
-Message-ID: <20220927133132.ze3wx54shojraa5a@pengutronix.de>
-References: <20220927132753.750069-1-kuba@kernel.org>
+        with ESMTP id S232007AbiI0NdZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 09:33:25 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DB3929CB2;
+        Tue, 27 Sep 2022 06:32:03 -0700 (PDT)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28RC7MK7021419;
+        Tue, 27 Sep 2022 13:31:55 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=MdCRng429X186D9J5471uKUeBpf1L3mUsZeSHfDOuuo=;
+ b=Ea++vmzat+1IfdSk5AE8yUJBcop1GbKcnP2NoXbX/dbGGYA9QRi9t7/kwgfnN8xIIfaL
+ ggq5fz5qhSr2SSScuUd8DxhEzavE23skcgkzrLFTnZU0ceiFXTsIpTAssbbXEOrW/epZ
+ EqfP5OMXXosSPMJkwk4zR2/GxKxl1L8lwy5oiYiP4YYslzHH7ycs7K9wchAVC/J9tj2V
+ I+qPKnzogVaBILi2/4xNhUg3r5a/Qt10bH0/BqvQreC7ysYW6Rxy39WkiZyfzYnxtKCJ
+ pTFaQY/djLGnmjUF9SIinb6C9jU0apkHWuSkafNwlZmv8JVcz6DNbJsb6ibeUnYBrSPV JA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3juwmn0x1h-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 27 Sep 2022 13:31:54 +0000
+Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 28RC7woq023440;
+        Tue, 27 Sep 2022 13:31:54 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3juwmn0wyy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 27 Sep 2022 13:31:54 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 28RDQB7l007072;
+        Tue, 27 Sep 2022 13:31:51 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma06ams.nl.ibm.com with ESMTP id 3jss5j3w2g-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 27 Sep 2022 13:31:51 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 28RDVmtU5374536
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 27 Sep 2022 13:31:48 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8808642041;
+        Tue, 27 Sep 2022 13:31:48 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 401AF42042;
+        Tue, 27 Sep 2022 13:31:48 +0000 (GMT)
+Received: from [9.152.224.236] (unknown [9.152.224.236])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 27 Sep 2022 13:31:48 +0000 (GMT)
+Message-ID: <03ac1fb3-ea5d-d5b8-1d7e-92c13fba339d@linux.ibm.com>
+Date:   Tue, 27 Sep 2022 15:31:47 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="sn3iwhk4ctenflmz"
-Content-Disposition: inline
-In-Reply-To: <20220927132753.750069-1-kuba@kernel.org>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.13.1
+Subject: Re: [PATCH 3/7] s390/qeth: Convert snprintf() to scnprintf()
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Jules Irenge <jbi.octave@gmail.com>
+Cc:     borntraeger@linux.ibm.com, svens@linux.ibm.com,
+        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, agordeev@linux.ibm.com
+References: <YzHyniCyf+G/2xI8@fedora> <20220926173312.7a735619@kernel.org>
+From:   Alexandra Winter <wintera@linux.ibm.com>
+In-Reply-To: <20220926173312.7a735619@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: M714Eh_pQXytoOwcg4b1iSr1bFrEZ10w
+X-Proofpoint-ORIG-GUID: LrFxKqbuAeCJmJhsbHQj367zWD2JyA2_
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
+ definitions=2022-09-27_05,2022-09-27_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 impostorscore=0
+ bulkscore=0 mlxscore=0 clxscore=1015 suspectscore=0 lowpriorityscore=0
+ mlxlogscore=819 spamscore=0 phishscore=0 priorityscore=1501 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2209130000
+ definitions=main-2209270080
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -55,47 +95,23 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---sn3iwhk4ctenflmz
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On 27.09.2022 06:27:53, Jakub Kicinski wrote:
-> We tell driver developers to always pass NAPI_POLL_WEIGHT
-> as the weight to netif_napi_add(). This may be confusing
-> to newcomers, drop the weight argument, those who really
-> need to tweak the weight can use netif_napi_add_weight().
->=20
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
->  drivers/net/can/ctucanfd/ctucanfd_base.c      |  2 +-
->  drivers/net/can/ifi_canfd/ifi_canfd.c         |  2 +-
->  drivers/net/can/m_can/m_can.c                 |  3 +--
+On 27.09.22 02:33, Jakub Kicinski wrote:
+> On Mon, 26 Sep 2022 19:42:38 +0100 Jules Irenge wrote:
+>> Coccinnelle reports a warning
+>> Warning: Use scnprintf or sprintf
+>> Adding to that, there has been a slow migration from snprintf to scnprintf.
+>> This LWN article explains the rationale for this change
+>> https: //lwn.net/Articles/69419/
+>> Ie. snprintf() returns what *would* be the resulting length,
+>> while scnprintf() returns the actual length.
+>>
+>> Signed-off-by: Jules Irenge <jbi.octave@gmail.com>
+> 
+> Looks legit but please repost this separately.
+> We only see patch 3 of the series.
+When you repost, you can add
+Reviewed-by: Alexandra Winter <wintera@linux.ibm.com>
 
-Acked-by: Marc Kleine-Budde <mkl@pengutronix.de> # for CAN
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---sn3iwhk4ctenflmz
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmMy+zEACgkQrX5LkNig
-013DrQgAnSKMI/Gmp2TfD4MpcjCCFFzRyLlfs/viJiu7YHBCsRclZMTAAjTAnyD1
-/t5maqlOkdRi0wZCqcu/kF7vgnbmNYuFfEw4RlAWGZl9AXXgo6jPXxz8qEpnlr5B
-5lQuaVneytM0+ky5WLWl3uqB6JG++Ra+L3jDESRAcwXiJNJPg92n2IglPENuBNxT
-s6CrSuetrV0OAvEaU8IJAtIYIIFjMy7P3itZY535ngx65mhiEomQ9Er3ohkRvCzi
-teo7zO/iutWshQQK1WKjNQ1P/L+aDvtAvGlnx5Sf5Ap4cYauwiywsqRjzlzdPVou
-EQLAVrG9cy8yPUyKXWpmvifg3osHlQ==
-=pEGT
------END PGP SIGNATURE-----
-
---sn3iwhk4ctenflmz--
+Thank you
+Alexandra
