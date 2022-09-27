@@ -2,138 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D24E5F0176
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 01:38:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9850A5F0211
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 03:01:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229717AbiI2XiS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 19:38:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47126 "EHLO
+        id S229853AbiI3BBx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 21:01:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229505AbiI2XiR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 19:38:17 -0400
-Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67D0214C062;
-        Thu, 29 Sep 2022 16:38:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=f7WrZuRB2GX0P+1NfkIg4YGL4fmYDCdScdWAGuAPgzc=; b=eP4G/3SzWgOlPrSUKmlI9aNrCR
-        4rACRsmYEJ6uMECWrySSKj8fMonyU0DVvv70pYZIYb0JlLsCpPQSER+gHFMJQzJD0meT4GGrUFG4c
-        IshwHvMxaie7wdpK7pDPnR724hijO8//B6KYNx+xUO6IX8zorTfSI7SnAZ6AcHKEafgAfBNaXGAcH
-        XvXsp1vBNgD1Bl9mqzUfljEFgpr9wSAyCz6WsupjgupJI9DBiDSmneAkwqUXTq4MgXc+oBFb8Sydu
-        Aa3M7KqRQWPZmgxu+Sivk6+zWQR6BjDt1MU/1PIVbmd8laLiRHL5WVwvVVYMcBbQFrOnZOMIiTzqV
-        HGsZvZhw==;
-Received: from viro by zeniv.linux.org.uk with local (Exim 4.96 #2 (Red Hat Linux))
-        id 1oe36W-005937-0h;
-        Thu, 29 Sep 2022 23:38:08 +0000
-Date:   Fri, 30 Sep 2022 00:38:08 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        David Laight <David.Laight@aculab.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>
-Subject: Re: [CFT][PATCH] proc: Update /proc/net to point at the accessing
- threads network namespace
-Message-ID: <YzYsYK7pWo0RQXaw@ZenIV>
-References: <dacfc18d6667421d97127451eafe4f29@AcuMS.aculab.com>
- <CAHk-=wgS_XpzEL140ovgLwGv6yXvV7Pu9nKJbCuo5pnRfcEbvg@mail.gmail.com>
- <YzXo/DIwq65ypHNH@ZenIV>
- <YzXrOFpPStEwZH/O@ZenIV>
- <CAHk-=wjLgM06JrS21W4g2VquqCLab+qu_My67cv6xuH7NhgHpw@mail.gmail.com>
- <YzXzXNAgcJeJ3M0d@ZenIV>
- <YzYK7k3tgZy3Pwht@ZenIV>
- <CAHk-=wihPFFE5KcsmOnOm1CALQDWqC1JTvrwSGBS08N5avVmEA@mail.gmail.com>
- <871qrt4ymg.fsf@email.froward.int.ebiederm.org>
- <87ill53igy.fsf_-_@email.froward.int.ebiederm.org>
+        with ESMTP id S229651AbiI3BBu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 21:01:50 -0400
+Received: from ssh248.corpemail.net (ssh248.corpemail.net [210.51.61.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 823BC1F8C0D;
+        Thu, 29 Sep 2022 18:01:48 -0700 (PDT)
+Received: from ([60.208.111.195])
+        by ssh248.corpemail.net ((D)) with ASMTP (SSL) id YAF00140;
+        Fri, 30 Sep 2022 09:01:40 +0800
+Received: from localhost.localdomain (10.200.104.82) by
+ jtjnmail201605.home.langchao.com (10.100.2.5) with Microsoft SMTP Server id
+ 15.1.2507.12; Fri, 30 Sep 2022 09:01:43 +0800
+From:   Deming Wang <wangdeming@inspur.com>
+To:     <ast@kernel.org>, <daniel@iogearbox.net>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <hawk@kernel.org>, <john.fastabend@gmail.com>,
+        <andrii@kernel.org>
+CC:     <martin.lau@linux.dev>, <song@kernel.org>, <yhs@fb.com>,
+        <kpsingh@kernel.org>, <sdf@google.com>, <haoluo@google.com>,
+        <jolsa@kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Deming Wang <wangdeming@inspur.com>
+Subject: [PATCH] samples, bpf: fix the typo of sample
+Date:   Tue, 27 Sep 2022 15:25:27 -0400
+Message-ID: <20220927192527.8722-1-wangdeming@inspur.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87ill53igy.fsf_-_@email.froward.int.ebiederm.org>
-Sender: Al Viro <viro@ftp.linux.org.uk>
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.200.104.82]
+tUid:   20229300901401c89c41559e6149114e126f6d18044e9
+X-Abuse-Reports-To: service@corp-email.com
+Abuse-Reports-To: service@corp-email.com
+X-Complaints-To: service@corp-email.com
+X-Report-Abuse-To: service@corp-email.com
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 29, 2022 at 05:48:29PM -0500, Eric W. Biederman wrote:
+fix the typo of the enty.
 
-> +static const char *proc_net_symlink_get_link(struct dentry *dentry,
-> +					     struct inode *inode,
-> +					     struct delayed_call *done)
-> +{
-> +	struct pid_namespace *ns = proc_pid_ns(inode->i_sb);
-> +	pid_t tid = task_pid_nr_ns(current, ns);
-> +	char *name;
-> +
-> +	if (!tid)
-> +		return ERR_PTR(-ENOENT);
-> +	name = kmalloc(10 + 4 + 1, dentry ? GFP_KERNEL : GFP_ATOMIC);
-> +	if (unlikely(!name))
-> +		return dentry ? ERR_PTR(-ENOMEM) : ERR_PTR(-ECHILD);
-> +	sprintf(name, "%u/net", tid);
-> +	set_delayed_call(done, kfree_link, name);
-> +	return name;
-> +}
+Signed-off-by: Deming Wang <wangdeming@inspur.com>
+---
+ samples/bpf/xdp_router_ipv4_user.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Just to troll adobriyan a bit:
+diff --git a/samples/bpf/xdp_router_ipv4_user.c b/samples/bpf/xdp_router_ipv4_user.c
+index 294fc15ad1cb..683913bbf279 100644
+--- a/samples/bpf/xdp_router_ipv4_user.c
++++ b/samples/bpf/xdp_router_ipv4_user.c
+@@ -209,7 +209,7 @@ static void read_route(struct nlmsghdr *nh, int nll)
+ 					/* Rereading the route table to check if
+ 					 * there is an entry with the same
+ 					 * prefix but a different metric as the
+-					 * deleted enty.
++					 * deleted entry.
+ 					 */
+ 					get_route_table(AF_INET);
+ 				} else if (prefix_key->data[0] ==
+-- 
+2.27.0
 
-static const char *dynamic_get_link(struct delayed_call *done,
-				    bool is_rcu,
-				    const char *fmt, ...)
-{
-	va_list args;
-	char *body;
-
-	va_start(args, fmt);
-	body = kvasprintf(is_rcu ? GFP_ATOMIC : GFP_KERNEL, fmt, args);
-	va_end(args);
-
-	if (unlikely(!body))
-		return is_rcu ? ERR_PTR(-ECHILD) : ERR_PTR(-ENOMEM);
-	set_delayed_call(done, kfree_link, body);
-	return body;
-}
-
-static const char *proc_net_symlink_get_link(struct dentry *dentry,
-					     struct inode *inode,
-					     struct delayed_call *done)
-{
-	struct pid_namespace *ns = proc_pid_ns(inode->i_sb);
-	pid_t tid = task_pid_nr_ns(current, ns);
-
-	if (!tid)
-		return ERR_PTR(-ENOENT);
-	return dyname_get_link(done, !dentry, "%u/net", tid);
-}
-
-static const char *proc_self_get_link(struct dentry *dentry,
-				      struct inode *inode,
-				      struct delayed_call *done)
-{
-	struct pid_namespace *ns = proc_pid_ns(inode->i_sb);
-	pid_t tgid = task_tgid_nr_ns(current, ns);
-
-	if (!tgid)
-		return ERR_PTR(-ENOENT);
-	return dynamic_get_link(done, !dentry, "%u", tgid);
-}
-
-static const char *proc_thread_self_get_link(struct dentry *dentry,
-					     struct inode *inode,
-					     struct delayed_call *done)
-{
-	struct pid_namespace *ns = proc_pid_ns(inode->i_sb);
-	pid_t tgid = task_tgid_nr_ns(current, ns);
-	pid_t pid = task_pid_nr_ns(current, ns);
-
-	if (!pid)
-		return ERR_PTR(-ENOENT);
-	return dynamic_get_link(done, !dentry, "%u/task/%u", tgid, pid);
-}
