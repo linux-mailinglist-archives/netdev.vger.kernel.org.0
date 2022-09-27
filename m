@@ -2,237 +2,301 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E7D755ED028
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 00:20:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 709085ED02C
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 00:21:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231236AbiI0WUe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 18:20:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41738 "EHLO
+        id S231725AbiI0WVE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 18:21:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231496AbiI0WUc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 18:20:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 908451B8689
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 15:20:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1664317230;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=B7hn20Zeqkcubja41/WChKWpPqLMVS3GAmGLnKHDhAU=;
-        b=Yx5IJqa2rX8UXQFrq7LE+D/drZkgo1Cin0jxNPbBwX6G0odGMRYuSaoCqtH/yRsK+iaDqr
-        N4p5dxCca/S+qk+NZfZba9fMWluSqUEgRp2HqrpcSeE2Hc1DEmjm4rbaO7jUZa0WONreaq
-        SOrvuTFdYjcRW26fPNJHDH3iLHiabJ0=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-371-kPduZq6XOYSHslBxaWjhLA-1; Tue, 27 Sep 2022 18:20:27 -0400
-X-MC-Unique: kPduZq6XOYSHslBxaWjhLA-1
-Received: by mail-wm1-f69.google.com with SMTP id h187-20020a1c21c4000000b003b51369ff1bso42381wmh.3
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 15:20:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=B7hn20Zeqkcubja41/WChKWpPqLMVS3GAmGLnKHDhAU=;
-        b=LnOXL1lsUUB+mFdYMNotIZix9c2eQQMsT2IRKJiUjeSfK6olKQeP+dYvukkk4ClWpZ
-         +7jk8rNiaAWxd8evLYPmuhz7LJs+7dWSFFJ+2d2IybxaEDWfkAZzG8FP8lu2Yc/584a7
-         KHMvTZAcrGa+H37uhHZfqyUBHIS7I21oKQp1oS0Kg2ExKniRhFV0v2iXRpDV4BAWh989
-         4znomCAdgUlWQrGCeVmM2yB4uwy9bsmYnmA6XXFSskEkg0aIS+2EX5+Rqa2eNSwIDr9y
-         dWjeHsMpYA3o0guSRV4UuMdqa+mRlNRdJ6X9FVw2n+0O6IJG+5Dhxcrley9fw78mSw+O
-         xG3Q==
-X-Gm-Message-State: ACrzQf3/telGR6qNk4zaebfPKWVaDReXnqcBD8DMuBV6x3S/CvLcumvO
-        wz663OyemsFt5GroWboFQLc1qzViFCtZZHrQ5RaaJdH3YblHgU3S0LJO+2k09H4wb9byKxD6k0P
-        BvSG9N5EZBDgPeIvy
-X-Received: by 2002:a05:6000:1d9d:b0:22a:745b:9f00 with SMTP id bk29-20020a0560001d9d00b0022a745b9f00mr18158785wrb.280.1664317226254;
-        Tue, 27 Sep 2022 15:20:26 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM6oB7tbkGtVRI3gvZ8k+SQXcKmBMF8mKtNbT7iyUkMcWoAG8FRHgS74kE0f7DBUAGmZvRbnXA==
-X-Received: by 2002:a05:6000:1d9d:b0:22a:745b:9f00 with SMTP id bk29-20020a0560001d9d00b0022a745b9f00mr18158769wrb.280.1664317225999;
-        Tue, 27 Sep 2022 15:20:25 -0700 (PDT)
-Received: from redhat.com ([2.55.47.213])
-        by smtp.gmail.com with ESMTPSA id i1-20020a5d4381000000b002205cbc1c74sm2663721wrq.101.2022.09.27.15.20.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Sep 2022 15:20:25 -0700 (PDT)
-Date:   Tue, 27 Sep 2022 18:20:21 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     syzbot <syzbot+0cb3309ee74d3c0c431c@syzkaller.appspotmail.com>
-Cc:     ast@kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
-        davem@davemloft.net, edumazet@google.com, hawk@kernel.org,
-        jasowang@redhat.com, john.fastabend@gmail.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com,
-        virtualization@lists.linux-foundation.org, hch@lst.de
-Subject: Re: [syzbot] usb-testing boot error: BUG: unable to handle kernel
- paging request in virtnet_set_affinity
-Message-ID: <20220927181950-mutt-send-email-mst@kernel.org>
-References: <0000000000008d61ee05e6d9bb0a@google.com>
-MIME-Version: 1.0
+        with ESMTP id S231314AbiI0WU5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 18:20:57 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2139.outbound.protection.outlook.com [40.107.237.139])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A1C51CE93B;
+        Tue, 27 Sep 2022 15:20:55 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CeqcaCmVRnRG5RQp0LoieYHSk7Bmre3YCMDn2CN5Q+hMS0xY6eAdRLJsPIqfqYH01QZeGsOv26OIyr3+Vn7beED9WNLRhRIczXbOwAQ7iY06nfsWhvNAoesQIRGMvV1AA2el2otIKdZMENTkb2t9LnKsmOZ3pNDiJ0WAmYNyhDbDh1hS4ZDShn2q2uF8kqVNwyUnwzxtCszh3PDrIVSuJCDzjjoL0E0V2QNru+r9ARl83GR0U1VmvThiRfUk/soNLXdUaUeDDRHc+VMDMn7odF7Ys0Ak2G8T+0kFPmuYlm5/Kl9WfPJ8w/A1qosvt8Mslps+lWZwj3ssC0nGsaPhaw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=IokLYMoHevv4kqNbEqW6P0g1MFMsu/JPV3zrGvrAMRk=;
+ b=Bc/GNsQKIritbTFFlaV5LXF84naCR1miSMNHxb0mPbrhaG4yJTtyv8PnoKRJoaxZQCzfNfnCISOq68UxRy0Yo21gaBvry4U9cSoi5a2kz/4Cc20FRQ8C35gA7cHlPiAf1XxloeyGq+P2NNvJ5jawrWXKt8maOeuk1BJWZn5sxzH2PxZqS49c86XPKZkfFLHTU3ClSnPEV5lz9R/PO+K5dXmEAhbqHujoA9G8mr82GzHiobKccTaTLelLztF7gkMF0GTsQYmJXBt6520tQJugje30oRCmDjEp2bVaBT3AH1M6RhmMHjEgFm32v3mbgfwn9tzHHD6cKsYSpY+PfdsEUg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IokLYMoHevv4kqNbEqW6P0g1MFMsu/JPV3zrGvrAMRk=;
+ b=m/Bj4M5o2456iTXLsA9P+/T6DXHTBSCtxnwKLr0yBKOgE2ga46n7551vreABLmpKVnPiuddR2lfN9CrkZAVRWICuP4yYdfFhBQF/q/DjtLTFLqYuuKBF6nr6v0c0xi8CXBsNXUob/P1RZi7rdGZ7GMj64BPy4UX7UNJIPVzmr2Y=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by PH7PR10MB6129.namprd10.prod.outlook.com
+ (2603:10b6:510:1f7::19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.24; Tue, 27 Sep
+ 2022 22:20:52 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::b417:2ac7:1925:8f69]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::b417:2ac7:1925:8f69%4]) with mapi id 15.20.5654.026; Tue, 27 Sep 2022
+ 22:20:51 +0000
+Date:   Tue, 27 Sep 2022 15:20:47 -0700
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        UNGLinuxDriver@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Lee Jones <lee@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH v3 net-next 12/14] dt-bindings: net: dsa: ocelot: add
+ ocelot-ext documentation
+Message-ID: <YzN3P6NaDhjA1Qrk@colin-ia-desktop>
+References: <20220926002928.2744638-1-colin.foster@in-advantage.com>
+ <20220926002928.2744638-13-colin.foster@in-advantage.com>
+ <20220927202600.hy5dr2s6j4jnmfpg@skbuf>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0000000000008d61ee05e6d9bb0a@google.com>
-X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20220927202600.hy5dr2s6j4jnmfpg@skbuf>
+X-ClientProxiedBy: MW2PR2101CA0011.namprd21.prod.outlook.com
+ (2603:10b6:302:1::24) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MWHPR1001MB2351:EE_|PH7PR10MB6129:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2b5f0d39-e180-4f7b-4c0f-08daa0d68928
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: WAx4hBsex2y0BQQ1W0sFwk58Dls1a+pwFryLO+qI7w5HgC35aaiSaissyt0hWP5lHuZNhMlmcqDuWTx1oxM3usNQmqF3brI+FC7r5p51delo9bwagUMjTaTtY70f6qwdcfU+gMzDz7G3XDIHySeHHhtpOkTs3GVF0jxBEPNJaj5rM6UErZa2EJnrle1x1YJGtjzqobAzLpP1Fyywm4oZnP0U3BpU3KL7WpZ6DkQxH7GkBuVWntflzrieRSqUx9lxEGpXYr6lu0BSnhDvC6QEJmzSOSb5B43g+C31yHjsXGdBUWGgARqnlq/P3vAdHv8TABtIaUzbxy2HD+vAd8XN/jSVktJckG+Nh/5TPwOVOGNNCUlmt9p3osWMdpJIai4TX57CKX703x1ztn0+HAnTUTmcymXhDbu9CrqdaQSo5LSSCVqUv1DpM1nLSOUXO93BQYo+ylE+LkYPROiiQSEHJsRQctVVS5xSdFV4C7QWoO22KIKUO2B1B7p7mgSHp3uW4gTBkkLRrDxA8dVmYUpBCEyMVSqkzjToHS513qnNbiKDH24pluLsrLXFijlu+c2RBkIZEfqO7Qg0zj2VujH6EsKarVT3BLx0vKjEmTok1+O65K6nW35fDDvpx8d/qmJSC+3EaOY3ZsR/f2UiyfskMgr0QoqStgqHtuOirroY0ZP47OJuU5QwugWNwKFycZ0FkVYPzZNOxb9SJZU5WXJ9iaZvA88OWdEe4ME+qCE/6vU=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(39840400004)(346002)(136003)(376002)(396003)(366004)(451199015)(66946007)(86362001)(44832011)(38100700002)(2906002)(9686003)(6512007)(966005)(33716001)(6486002)(478600001)(6916009)(54906003)(26005)(8936002)(7416002)(5660300002)(41300700001)(66476007)(6666004)(83380400001)(4326008)(6506007)(66556008)(186003)(8676002)(316002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?vFWA2yyyyp1uy5LUKNwCDv0uj0iSZLNHVQwr40tKrJxCF+rz+09JMrgqeVUH?=
+ =?us-ascii?Q?4jR/dzOD1+MGUgGFWnTce5p+AAPO91XhpqMRNBhWEDgvM6Z8z5DMvLOpeNC7?=
+ =?us-ascii?Q?9Nbb62iRq37UhQkwq5m6eXjDfXFXGV8UQqqmXzt0I8/Kqo++wQRZmRth4DSb?=
+ =?us-ascii?Q?M92zFM9W4GwTg42UqEgj5/tAznANSBX2w50+X/cAK5MPdQ/PgRPio34cgZpt?=
+ =?us-ascii?Q?SXH3hGDQxeubAjJ7wpSmDfaNdJ3TKO7VW6cqvrATVeJnSA6tDMRTQRZwkIZq?=
+ =?us-ascii?Q?sReSoa/dtKI4lkRfinyiFEOz5y/FOiXsLcFNUkahd6fcQ7cnti6VYAWONHQU?=
+ =?us-ascii?Q?i38gpGtqQnVvzmplCLu3GGpCgOQsXrUR84LPdQHHdomLtCM3bixytCxu6gNi?=
+ =?us-ascii?Q?FgjlC1oUTZELLRjSeZau+vedPZiF76q9KJa9zvoaC9dyVcNKRiLuWKwlLXj1?=
+ =?us-ascii?Q?WHCMmlEUbZ1OgUHcd5LeBas+Zs4l6ZMmldCExxmNu3GfMG6Z3lzNlta8jl7N?=
+ =?us-ascii?Q?12Z9CyWeI3/QeTWDz7Lske0wMxhn5cipfvJ95Ja0Juc2rirFtiB0cA3AQJ8/?=
+ =?us-ascii?Q?8XDB8bP0OhD+y4sSBAsrEz1ASl6OrRmjWxuPMhj2UZI9QD0bDtHc0PD7fSfn?=
+ =?us-ascii?Q?31qatqWkhQAhsWi3mzRxgiu8gdHB/ooaMInG7UxjqK8wax906mQJYMifWXgu?=
+ =?us-ascii?Q?KIS4uBErk2q+FwCTnLRQgnekmqbMU8mLTx5Ij6Wofhl5FJqNOkakpcBuxtJG?=
+ =?us-ascii?Q?eslNvuPrXgcyzPuNuTakbRXlsX9NlGsamQbgzEliWiud2Xvod5Cpb03xm1H0?=
+ =?us-ascii?Q?Ezje8M//QWc2P2RoGHPAj0ODDPQHU0+fpOU8eU4z0oZUWMbDVkGTYppa8vJh?=
+ =?us-ascii?Q?bM6PttAe82D7U67xQFCncNg8H/fFECY32lbzeMDl9yEaNnCqLXDbKLtX7QED?=
+ =?us-ascii?Q?dimwr5Q9OaBsnTB2zY0TyK8A9S/HACftN2FQHMHOzoJKjM+7JDIFjcmHa+c+?=
+ =?us-ascii?Q?4jAsQBfEe6VOsID6442DqPi3pvldfjOnBOiV+UtiUU9v2DYlucAPFG6e6WO+?=
+ =?us-ascii?Q?79u3Sk7cQo1iTqKyOdPCNCwqjyDpdGERrc4J5KyMlvXm+ambL3hlBvxinzMJ?=
+ =?us-ascii?Q?VCqkO+WBbuUQOcmROHwJyg9yqHgK1W4mc5Qx34xDkgxI4vLrbAxW0OjSK2Ne?=
+ =?us-ascii?Q?oLGqznLhffmgLl9g7ODEeVeW4L3oY2gOxhuywFfiCfS/QOsNDoRwIpUsyGdl?=
+ =?us-ascii?Q?76Fsv76Awi7yGCuONqudzZG7/ToWNXg0f9Gv28yUxOba2+oFO01gAepeou6z?=
+ =?us-ascii?Q?H5lQFGq89tyFud4v6HhY0lgM+Gf/wgaQ4mNKa7nJnRJVS4LiJKY/qSrno9op?=
+ =?us-ascii?Q?rOToNIxuGETV0GSk4rJ4DuFayc0DtUJWLhGqt0MX3FnhfB0HwL00OLnqD46e?=
+ =?us-ascii?Q?tnbXjStWEzrbWkoI6TI2ycHjieqgtBdmniEQ/pBPM2L8YgEJD3R9AQDd/eV8?=
+ =?us-ascii?Q?4yDPywHaflXCOurVQfsB/CRVy1deTjTECP+fCjSVbt5/D/5IhGK0uI/Nc6WM?=
+ =?us-ascii?Q?pFG0yZScU+amPzRNfV/5ESiDpUTzV1qrU174n8RykjJhSrG9GINAZOVikMBH?=
+ =?us-ascii?Q?Fg=3D=3D?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2b5f0d39-e180-4f7b-4c0f-08daa0d68928
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Sep 2022 22:20:51.8723
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: cu2fa7phfFxtyUvo23d6/9tFFY7J7P9+hdUVlmAa1ne1pTzhLTmSUW5h9bKxEgf/wx+kSDu++vbyTWGEgOppQdau0oRgptKagM25okeGAFU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR10MB6129
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 12:48:32PM -0700, syzbot wrote:
-> Hello,
+On Tue, Sep 27, 2022 at 11:26:00PM +0300, Vladimir Oltean wrote:
+> On Sun, Sep 25, 2022 at 05:29:26PM -0700, Colin Foster wrote:
+> > ---
+> >  .../bindings/net/dsa/mscc,ocelot.yaml         | 59 +++++++++++++++++++
+> >  1 file changed, 59 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/net/dsa/mscc,ocelot.yaml b/Documentation/devicetree/bindings/net/dsa/mscc,ocelot.yaml
+> > index 8d93ed9c172c..49450a04e589 100644
+> > --- a/Documentation/devicetree/bindings/net/dsa/mscc,ocelot.yaml
+> > +++ b/Documentation/devicetree/bindings/net/dsa/mscc,ocelot.yaml
+> > @@ -54,9 +54,22 @@ description: |
+> >        - phy-mode = "1000base-x": on ports 0, 1, 2, 3
+> >        - phy-mode = "2500base-x": on ports 0, 1, 2, 3
+> >  
+> > +  VSC7412 (Ocelot-Ext):
 > 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    ad57410d231d usb: gadget: rndis: use %u instead of %d to p..
-> git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git usb-testing
-> console output: https://syzkaller.appspot.com/x/log.txt?x=17472b85080000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=3cb39b084894e9a5
-> dashboard link: https://syzkaller.appspot.com/bug?extid=0cb3309ee74d3c0c431c
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+0cb3309ee74d3c0c431c@syzkaller.appspotmail.com
-> 
-> PCI-DMA: Using software bounce buffering for IO (SWIOTLB)
-> software IO TLB: mapped [mem 0x00000000bbffd000-0x00000000bfffd000] (64MB)
-> RAPL PMU: API unit is 2^-32 Joules, 0 fixed counters, 10737418240 ms ovfl timer
-> clocksource: tsc: mask: 0xffffffffffffffff max_cycles: 0x1fb6feccdd0, max_idle_ns: 440795259471 ns
-> clocksource: Switched to clocksource tsc
-> Initialise system trusted keyrings
-> workingset: timestamp_bits=40 max_order=21 bucket_order=0
-> NFS: Registering the id_resolver key type
-> Key type id_resolver registered
-> Key type id_legacy registered
-> 9p: Installing v9fs 9p2000 file system support
-> Key type asymmetric registered
-> Asymmetric key parser 'x509' registered
-> Block layer SCSI generic (bsg) driver version 0.4 loaded (major 246)
-> io scheduler mq-deadline registered
-> io scheduler kyber registered
-> usbcore: registered new interface driver udlfb
-> usbcore: registered new interface driver smscufx
-> input: Power Button as /devices/LNXSYSTM:00/LNXPWRBN:00/input/input0
-> ACPI: button: Power Button [PWRF]
-> input: Sleep Button as /devices/LNXSYSTM:00/LNXSLPBN:00/input/input1
-> ACPI: button: Sleep Button [SLPF]
-> ACPI: \_SB_.LNKC: Enabled at IRQ 11
-> virtio-pci 0000:00:03.0: virtio_pci: leaving for legacy driver
-> ACPI: \_SB_.LNKD: Enabled at IRQ 10
-> virtio-pci 0000:00:04.0: virtio_pci: leaving for legacy driver
-> ACPI: \_SB_.LNKB: Enabled at IRQ 10
-> virtio-pci 0000:00:06.0: virtio_pci: leaving for legacy driver
-> virtio-pci 0000:00:07.0: virtio_pci: leaving for legacy driver
-> Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
-> 00:03: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
-> 00:04: ttyS1 at I/O 0x2f8 (irq = 3, base_baud = 115200) is a 16550A
-> 00:05: ttyS2 at I/O 0x3e8 (irq = 6, base_baud = 115200) is a 16550A
-> 00:06: ttyS3 at I/O 0x2e8 (irq = 7, base_baud = 115200) is a 16550A
-> Non-volatile memory driver v1.3
-> Linux agpgart interface v0.103
-> ACPI: bus type drm_connector registered
-> usbcore: registered new interface driver udl
-> loop: module loaded
-> usbcore: registered new interface driver rtsx_usb
-> usbcore: registered new interface driver viperboard
-> usbcore: registered new interface driver dln2
-> usbcore: registered new interface driver pn533_usb
-> usbcore: registered new interface driver port100
-> usbcore: registered new interface driver nfcmrvl
-> scsi host0: Virtio SCSI HBA
-> scsi 0:0:1:0: Direct-Access     Google   PersistentDisk   1    PQ: 0 ANSI: 6
-> sd 0:0:1:0: Attached scsi generic sg0 type 0
-> Rounding down aligned max_sectors from 4294967295 to 4294967288
-> db_root: cannot open: /etc/target
-> BUG: unable to handle page fault for address: ffffdc0000000000
-> #PF: supervisor read access in kernel mode
-> #PF: error_code(0x0000) - not-present page
-> PGD 100026067 P4D 100026067 PUD 0 
-> Oops: 0000 [#1] PREEMPT SMP KASAN
-> CPU: 1 PID: 1 Comm: swapper/0 Not tainted 6.0.0-rc1-syzkaller-00005-gad57410d231d #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-> RIP: 0010:virtnet_set_affinity+0x2e4/0x600 drivers/net/virtio_net.c:2303
-> Code: e8 03 42 80 3c 30 00 0f 85 de 02 00 00 48 8b 44 24 10 48 8d 1c 80 48 8b 44 24 18 48 c1 e3 08 48 03 58 20 48 89 d8 48 c1 e8 03 <42> 80 3c 30 00 0f 85 a9 02 00 00 4c 8b 23 49 8d 7c 24 20 48 89 f8
-> RSP: 0000:ffffc9000001f980 EFLAGS: 00010a06
-> RAX: 1fffe00000000000 RBX: ffff000000000000 RCX: 0000000000000000
-> RDX: ffff8881002a8000 RSI: ffffffff82fd75e3 RDI: 0000000000000004
-> RBP: 0000000000000001 R08: 0000000000000004 R09: 0000000000000001
-> R10: 0000000000000001 R11: 0000000000000000 R12: 0000000000000001
-> R13: 0000000000000000 R14: dffffc0000000000 R15: ffffc9000001f9f8
-> FS:  0000000000000000(0000) GS:ffff8881f6900000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: ffffdc0000000000 CR3: 0000000007825000 CR4: 00000000003506e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->  <TASK>
->  init_vqs drivers/net/virtio_net.c:3611 [inline]
->  init_vqs drivers/net/virtio_net.c:3597 [inline]
->  virtnet_probe+0x11ed/0x30f0 drivers/net/virtio_net.c:3904
->  virtio_dev_probe+0x577/0x870 drivers/virtio/virtio.c:305
->  call_driver_probe drivers/base/dd.c:530 [inline]
->  really_probe+0x249/0xb90 drivers/base/dd.c:609
->  __driver_probe_device+0x1df/0x4d0 drivers/base/dd.c:748
->  driver_probe_device+0x4c/0x1a0 drivers/base/dd.c:778
->  __driver_attach+0x223/0x550 drivers/base/dd.c:1150
->  bus_for_each_dev+0x147/0x1d0 drivers/base/bus.c:301
->  bus_add_driver+0x4c9/0x640 drivers/base/bus.c:618
->  driver_register+0x220/0x3a0 drivers/base/driver.c:240
->  virtio_net_driver_init+0x93/0xd2 drivers/net/virtio_net.c:4108
->  do_one_initcall+0xfe/0x650 init/main.c:1296
->  do_initcall_level init/main.c:1369 [inline]
->  do_initcalls init/main.c:1385 [inline]
->  do_basic_setup init/main.c:1404 [inline]
->  kernel_init_freeable+0x6ac/0x735 init/main.c:1611
->  kernel_init+0x1a/0x1d0 init/main.c:1500
->  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
->  </TASK>
-> Modules linked in:
-> CR2: ffffdc0000000000
-> ---[ end trace 0000000000000000 ]---
-> RIP: 0010:virtnet_set_affinity+0x2e4/0x600 drivers/net/virtio_net.c:2303
+> VSC7512
 
+Oops. Thanks.
 
-So this is not new it turns out.  Was on vacation and missed it.
+> 
+> > +
+> > +    The Ocelot family consists of four devices, the VSC7511, VSC7512, VSC7513,
+> > +    and the VSC7514. The VSC7513 and VSC7514 both have an internal MIPS
+> > +    processor that natively support Linux. Additionally, all four devices
+> > +    support control over external interfaces, SPI and PCIe. The Ocelot-Ext
+> > +    driver is for the external control portion.
+> > +
+> > +    The following PHY interface types are supported:
+> > +
+> > +      - phy-mode = "internal": on ports 0, 1, 2, 3
+> 
+> More PHY interface types are supported. Please document them all.
+> It doesn't matter what the driver supports. Drivers and device tree
+> blobs should be able to have different lifetimes. A driver which doesn't
+> support the SERDES ports should work with a device tree that defines
+> them, and a driver that supports the SERDES ports should work with a
+> device tree that doesn't.
+> 
+> Similar for the other stuff which isn't documented (interrupts, SERDES
+> PHY handles etc). Since there is already an example with vsc7514, you
+> know how they need to look, even if they don't work yet on your
+> hardware, no?
 
-> Code: e8 03 42 80 3c 30 00 0f 85 de 02 00 00 48 8b 44 24 10 48 8d 1c 80 48 8b 44 24 18 48 c1 e3 08 48 03 58 20 48 89 d8 48 c1 e8 03 <42> 80 3c 30 00 0f 85 a9 02 00 00 4c 8b 23 49 8d 7c 24 20 48 89 f8
-> RSP: 0000:ffffc9000001f980 EFLAGS: 00010a06
-> RAX: 1fffe00000000000 RBX: ffff000000000000 RCX: 0000000000000000
-> RDX: ffff8881002a8000 RSI: ffffffff82fd75e3 RDI: 0000000000000004
-> RBP: 0000000000000001 R08: 0000000000000004 R09: 0000000000000001
-> R10: 0000000000000001 R11: 0000000000000000 R12: 0000000000000001
-> R13: 0000000000000000 R14: dffffc0000000000 R15: ffffc9000001f9f8
-> FS:  0000000000000000(0000) GS:ffff8881f6900000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: ffffdc0000000000 CR3: 0000000007825000 CR4: 00000000003506e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> ----------------
-> Code disassembly (best guess):
->    0:	e8 03 42 80 3c       	callq  0x3c804208
->    5:	30 00                	xor    %al,(%rax)
->    7:	0f 85 de 02 00 00    	jne    0x2eb
->    d:	48 8b 44 24 10       	mov    0x10(%rsp),%rax
->   12:	48 8d 1c 80          	lea    (%rax,%rax,4),%rbx
->   16:	48 8b 44 24 18       	mov    0x18(%rsp),%rax
->   1b:	48 c1 e3 08          	shl    $0x8,%rbx
->   1f:	48 03 58 20          	add    0x20(%rax),%rbx
->   23:	48 89 d8             	mov    %rbx,%rax
->   26:	48 c1 e8 03          	shr    $0x3,%rax
-> * 2a:	42 80 3c 30 00       	cmpb   $0x0,(%rax,%r14,1) <-- trapping instruction
->   2f:	0f 85 a9 02 00 00    	jne    0x2de
->   35:	4c 8b 23             	mov    (%rbx),%r12
->   38:	49 8d 7c 24 20       	lea    0x20(%r12),%rdi
->   3d:	48 89 f8             	mov    %rdi,%rax
+Understood. My concern was "oh, all these ports are supported in the
+documentation, so they must work" when in actuality they won't. But I
+understand DTB compatibility.
+
+This is the same thing Krzysztof was saying as well I belive. I'll
+update for v4, with apologies.
+
 > 
+> > +
+> >  properties:
+> >    compatible:
+> >      enum:
+> > +      - mscc,vsc7512-switch
+> >        - mscc,vsc9953-switch
+> >        - pci1957,eef0
+> >  
+> > @@ -258,3 +271,49 @@ examples:
+> >              };
+> >          };
+> >      };
+> > +  # Ocelot-ext VSC7512
+> > +  - |
+> > +    spi {
+> > +        soc@0 {
+> > +            compatible = "mscc,vsc7512";
+> > +            #address-cells = <1>;
+> > +            #size-cells = <1>;
+> > +
+> > +            ethernet-switch@0 {
+> > +                compatible = "mscc,vsc7512-switch";
+> > +                reg = <0 0>;
 > 
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
+> What is the idea behind reg = <0 0> here? I would expect this driver to
+> follow the same conventions as Documentation/devicetree/bindings/net/mscc,vsc7514-switch.yaml.
+> The hardware is mostly the same, so the switch portion of the DT bindings
+> should be mostly plug and play between the switchdev and the DSA variant.
+> So you can pick the "sys" target as the one giving the address of the
+> node, and define all targets via "reg" and "reg-names" here.
 > 
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> Like so:
+> 
+>       reg = <0x71010000 0x00010000>,
+>             <0x71030000 0x00010000>,
+>             <0x71080000 0x00000100>,
+>             <0x710e0000 0x00010000>,
+>             <0x711e0000 0x00000100>,
+>             <0x711f0000 0x00000100>,
+>             <0x71200000 0x00000100>,
+>             <0x71210000 0x00000100>,
+>             <0x71220000 0x00000100>,
+>             <0x71230000 0x00000100>,
+>             <0x71240000 0x00000100>,
+>             <0x71250000 0x00000100>,
+>             <0x71260000 0x00000100>,
+>             <0x71270000 0x00000100>,
+>             <0x71280000 0x00000100>,
+>             <0x71800000 0x00080000>,
+>             <0x71880000 0x00010000>,
+>             <0x71040000 0x00010000>,
+>             <0x71050000 0x00010000>,
+>             <0x71060000 0x00010000>;
+>       reg-names = "sys", "rew", "qs", "ptp", "port0", "port1",
+>             "port2", "port3", "port4", "port5", "port6",
+>             "port7", "port8", "port9", "port10", "qsys",
+>             "ana", "s0", "s1", "s2";
+> 
+> The mfd driver can use these resources or can choose to ignore them, but
+> I don't see a reason why the dt-bindings should diverge from vsc7514,
+> its closest cousin.
+
+This one I can answer. (from November 2021). Also I'm not saying that my
+interpretation is correct. Historically when there are things up for
+interpretation, I choose the incorrect path. (case in point... the other
+part of this email)
+
+https://patchwork.kernel.org/project/netdevbpf/patch/20211125201301.3748513-4-colin.foster@in-advantage.com/#24620755
+
+'''
+The thing with putting the targets in the device tree is that you're
+inflicting yourself unnecessary pain. Take a look at
+Documentation/devicetree/bindings/net/mscc-ocelot.txt, and notice that
+they mark the "ptp" target as optional because it wasn't needed when
+they first published the device tree, and now they need to maintain
+compatibility with those old blobs. To me that is one of the sillier
+reasons why you would not support PTP, because you don't know where your
+registers are. And that document is not even up to date, it hasn't been
+updated when VCAP ES0, IS1, IS2 were added. I don't think that Horatiu
+even bothered to maintain backwards compatibility when he initially
+added tc-flower offload for VCAP IS2, and as a result, I did not bother
+either when extending it for the S0 and S1 targets. At some point
+afterwards, the Microchip people even stopped complaining and just went
+along with it. (the story is pretty much told from memory, I'm sorry if
+I mixed up some facts). It's pretty messy, and that's what you get for
+creating these micro-maps of registers spread through the guts of the
+SoC and then a separate reg-name for each. When we worked on the device
+tree for LS1028A and then T1040, it was very much a conscious decision
+for the driver to have a single, big register map and split it up pretty
+much in whichever way it wants to. In fact I think we wouldn't be
+having the discussion about how to split things right now if we didn't
+have that flexibility.
+'''
+
+I'm happy to go any way. The two that make the most sense might be:
+
+micro-maps to make the VSC7512 "switch" portion match the VSC7514. The
+ethernet switch portion might still have to ignore these...
+
+A 'mega-map' that would also be ignored by the switch. It would be less
+arbitrary than the <0 0> that I went with. Maybe something like
+<0x70000000 0x02000000> to at least point to some valid region.
+
+> 
+> > +
+> > +                ethernet-ports {
+> > +                    #address-cells = <1>;
+> > +                    #size-cells = <0>;
+> > +
+> > +                    port@0 {
+> > +                        reg = <0>;
+> > +                        label = "cpu";
+> 
+> label = "cpu" is not used, please remove.
+
+Will do. This sounds familiar, so I'm sorry if it fell through the
+cracks.
 
