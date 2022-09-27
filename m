@@ -2,175 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D7EE5ECA16
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 18:51:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56D0E5ECBA4
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 19:50:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233252AbiI0Qvj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 12:51:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53894 "EHLO
+        id S233517AbiI0Ru3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 13:50:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233272AbiI0QuU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 12:50:20 -0400
-Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3917C1F2F0
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 09:50:18 -0700 (PDT)
-Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-345528ceb87so106097247b3.11
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 09:50:18 -0700 (PDT)
+        with ESMTP id S233281AbiI0RuG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 13:50:06 -0400
+Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 463D5D8265;
+        Tue, 27 Sep 2022 10:49:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=vESNePe9n7uejPFfs1w+utJ1cwyq3VqYeQvjK+K3YTk=;
-        b=aU3mY4mPAPL8Y2DkTOPUbIiQVySXBNqOsUTLmktA49l3UNs9/YlO2TV60ZgYj3vPXZ
-         LUGZiSASvDb4yvODdmRKdB+QR/4fxv4qGnjLDH8pPMvHwX+7R+0OGDzUxQkYLgnRIMTA
-         s6vBuGVmKpH2zduXU0kTUJmobtmghsBvRVEvcc3GVDwwY1ndmksJk0uGCYaGhIsS3OzW
-         owBLL5/oNHuHgwYyJzghsb4sqQGRaJOSwkP3qQDaZUBLaMj3Tlcx5lUQDwb5itDbRZXp
-         GqQi0FsJiZbiSsARlgbB0/xIorzd2ftsumw6B0mGhOfJ3OrYzLTvL9KRbSgjImhU2afu
-         knNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=vESNePe9n7uejPFfs1w+utJ1cwyq3VqYeQvjK+K3YTk=;
-        b=4Q7Rjg8NxwFZcuxj9gUseR+oUK/vbYhnnE+4KuxB5n3T5CUOTeEGh1XhN+MKl/NbSZ
-         2xLTg6SBZAJsiuFjt7Ba1+tPnUQFkskHjBb99t59twacjCabzMQZIpvCgdFl43mEytrR
-         p1nr1XvwZ7/j1yvM0t/lPCp9s5ag5GKkFzU7/m61Ha5OGDwXbX/hdEQFtB05dOWByj07
-         I7pGOOz5KFBNn/+87b/l9+IcOl/kFVfgd8+vLw4GreOEMsALZ+sWfM863R3hXte0d2fC
-         rlQbl8ljb2zj3K8AtGoWF8RrMcNBCY6ppVoJz5Vd746xe8nkrZbpJWaxkpqzZqEj/vvX
-         ObEQ==
-X-Gm-Message-State: ACrzQf3oDEVQ5lj2iksCH4K8qPlMwYmm090/mmUXPhNlaD/Um82wWv+G
-        n526zaB2XrafPZIBg1Zi4a+yYKLGnYzVha3+Jq5oPA==
-X-Google-Smtp-Source: AMsMyM4CKKRtW+2RFnlNvNc6W+CBVYvfJ2xFQmhBp0HkkEjyqcmvPFQrarolp2eVeL6aIuHNXWImPeCeiR9ci7eeMNc=
-X-Received: by 2002:a0d:d508:0:b0:352:43a6:7ddc with SMTP id
- x8-20020a0dd508000000b0035243a67ddcmr2574418ywd.55.1664297416738; Tue, 27 Sep
- 2022 09:50:16 -0700 (PDT)
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1664300955; x=1695836955;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=RPREyKVXMFwCt1bTh0W9wA+KknXBhzmp1n3kVnvwXc0=;
+  b=PiqSEKYsbrqJhiLx5uUdQChSJ3e/VCSnqx3joZybSm4vEK35P+CvZnMx
+   DE2xysdjLzAaNb1U9vhvpisLb23+AwKMEPtKSudoZaOFvrwIGfhrDBtoa
+   J7ZP+hWo0rD8TkaPdxs6dIKq83JvEct9qsn7mDnErOo67dQfWLKMje58b
+   w=;
+X-IronPort-AV: E=Sophos;i="5.93,350,1654560000"; 
+   d="scan'208";a="263752039"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2a-7d84505d.us-west-2.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-9102.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Sep 2022 16:53:51 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2a-7d84505d.us-west-2.amazon.com (Postfix) with ESMTPS id 331E294917;
+        Tue, 27 Sep 2022 16:53:51 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Tue, 27 Sep 2022 16:53:50 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.160.124) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
+ Tue, 27 Sep 2022 16:53:48 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <kuniyu@amazon.com>
+CC:     <davem@davemloft.net>, <dsahern@kernel.org>, <edumazet@google.com>,
+        <kuba@kernel.org>, <kuni1840@gmail.com>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <pabeni@redhat.com>, <syzkaller-bugs@googlegroups.com>
+Subject: Re: [PATCH v1 net 5/5] tcp: Fix data races around icsk->icsk_af_ops.
+Date:   Tue, 27 Sep 2022 09:53:40 -0700
+Message-ID: <20220927165340.36239-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220927164824.36027-1-kuniyu@amazon.com>
+References: <20220927164824.36027-1-kuniyu@amazon.com>
 MIME-Version: 1.0
-References: <20220927161209.32939-1-kuniyu@amazon.com> <20220927161209.32939-4-kuniyu@amazon.com>
-In-Reply-To: <20220927161209.32939-4-kuniyu@amazon.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 27 Sep 2022 09:50:04 -0700
-Message-ID: <CANn89iKguA1pAc7wUuWVwuSLJ7+dDRLscY0CEJXNPpg8gphJbg@mail.gmail.com>
-Subject: Re: [PATCH v1 net 3/5] tcp/udp: Call inet6_destroy_sock() in IPv4 sk_prot->destroy().
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@kernel.org>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Vladislav Yasevich <vyasevic@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.160.124]
+X-ClientProxiedBy: EX13D23UWA002.ant.amazon.com (10.43.160.40) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_HI,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 27, 2022 at 9:13 AM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
->
-> Originally, inet6_sk(sk)->XXX were changed under lock_sock(), so we were
-> able to clean them up by calling inet6_destroy_sock() during the IPv6 ->
-> IPv4 conversion by IPV6_ADDRFORM.  However, commit 03485f2adcde ("udpv6:
-> Add lockless sendmsg() support") added a lockless memory allocation path,
-> which could cause a memory leak:
->
-> setsockopt(IPV6_ADDRFORM)                 sendmsg()
-> +-----------------------+                 +-------+
-> - do_ipv6_setsockopt(sk, ...)             - udpv6_sendmsg(sk, ...)
->   - lock_sock(sk)                           ^._ called via udpv6_prot
->   - WRITE_ONCE(sk->sk_prot, &tcp_prot)          before WRITE_ONCE()
->   - inet6_destroy_sock()
->   - release_sock(sk)                        - ip6_make_skb(sk, ...)
->                                               ^._ lockless fast path for
->                                                   the non-corking case
->
->                                               - __ip6_append_data(sk, ...)
->                                                 - ipv6_local_rxpmtu(sk, ...)
->                                                   - xchg(&np->rxpmtu, skb)
->                                                     ^._ rxpmtu is never freed.
->
->                                             - lock_sock(sk)
->
-> For now, rxpmtu is only the case, but let's call inet6_destroy_sock()
-> in both TCP/UDP v4 destroy functions not to miss the future change.
->
-> We can consolidate TCP/UDP v4/v6 destroy functions, but such changes
-> are too invasive to backport to stable.  So, they can be posted as a
-> follow-up later for net-next.
->
-> Fixes: 03485f2adcde ("udpv6: Add lockless sendmsg() support")
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> ---
-> Cc: Vladislav Yasevich <vyasevic@redhat.com>
-> ---
->  net/ipv4/tcp_ipv4.c | 5 +++++
->  net/ipv4/udp.c      | 6 ++++++
->  net/ipv6/tcp_ipv6.c | 1 -
->  3 files changed, 11 insertions(+), 1 deletion(-)
->
-> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-> index 5b019ba2b9d2..035b6c52a243 100644
-> --- a/net/ipv4/tcp_ipv4.c
-> +++ b/net/ipv4/tcp_ipv4.c
-> @@ -2263,6 +2263,11 @@ void tcp_v4_destroy_sock(struct sock *sk)
->         tcp_saved_syn_free(tp);
->
->         sk_sockets_allocated_dec(sk);
-> +
-> +#if IS_ENABLED(CONFIG_IPV6)
-> +       if (sk->sk_prot_creator == &tcpv6_prot)
-> +               inet6_destroy_sock(sk);
-> +#endif
->  }
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+Date:   Tue, 27 Sep 2022 09:48:24 -0700
+> From:   Eric Dumazet <edumazet@google.com>
+> Date:   Tue, 27 Sep 2022 09:39:37 -0700
+> > On Tue, Sep 27, 2022 at 9:33 AM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+> > >
+> > > IPV6_ADDRFORM changes icsk->icsk_af_ops under lock_sock(), but
+> > > tcp_(get|set)sockopt() read it locklessly.  To avoid load/store
+> > > tearing, we need to add READ_ONCE() and WRITE_ONCE() for the reads
+> > > and write.
+> > 
+> > I am pretty sure I have released a syzkaller bug recently with this issue.
+> > Have you seen this?
+> > If yes, please include the appropriate syzbot tag.
 
-This is ugly, and will not compile with CONFIG_IPV6=m, right ?
+Are you mentioning this commit ?
+
+086d49058cd8 ("ipv6: annotate some data-races around sk->sk_prot")
+
+Then, yes, I'll add syzbot tags to patch 4 and 5.
 
 
->  EXPORT_SYMBOL(tcp_v4_destroy_sock);
->
-> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-> index 560d9eadeaa5..cdf131c0a819 100644
-> --- a/net/ipv4/udp.c
-> +++ b/net/ipv4/udp.c
-> @@ -115,6 +115,7 @@
->  #include <net/udp_tunnel.h>
->  #if IS_ENABLED(CONFIG_IPV6)
->  #include <net/ipv6_stubs.h>
-> +#include <net/transp_v6.h>
->  #endif
->
->  struct udp_table udp_table __read_mostly;
-> @@ -2666,6 +2667,11 @@ void udp_destroy_sock(struct sock *sk)
->                 if (up->encap_enabled)
->                         static_branch_dec(&udp_encap_needed_key);
->         }
-> +
-> +#if IS_ENABLED(CONFIG_IPV6)
-> +       if (sk->sk_prot_creator == &udpv6_prot)
-> +               inet6_destroy_sock(sk);
-> +#endif
->  }
->
->  /*
-> diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-> index e54eee80ce5f..1ff6a92f7774 100644
-> --- a/net/ipv6/tcp_ipv6.c
-> +++ b/net/ipv6/tcp_ipv6.c
-> @@ -1945,7 +1945,6 @@ static int tcp_v6_init_sock(struct sock *sk)
->  static void tcp_v6_destroy_sock(struct sock *sk)
->  {
->         tcp_v4_destroy_sock(sk);
-> -       inet6_destroy_sock(sk);
->  }
->
->  #ifdef CONFIG_PROC_FS
-> --
-> 2.30.2
->
+> 
+> No, I haven't.
+> Could you provide the URL?
+> I'm happy to include the syzbot tag and KCSAN report in the changelog.
+> 
+> 
+> > > Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> > > ---
+> > >  net/ipv4/tcp.c           | 10 ++++++----
+> > >  net/ipv6/ipv6_sockglue.c |  3 ++-
+> > >  2 files changed, 8 insertions(+), 5 deletions(-)
+> > >
+> > > diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> > > index e373dde1f46f..c86dd0ccef5b 100644
+> > > --- a/net/ipv4/tcp.c
+> > > +++ b/net/ipv4/tcp.c
+> > > @@ -3795,8 +3795,9 @@ int tcp_setsockopt(struct sock *sk, int level, int optname, sockptr_t optval,
+> > >         const struct inet_connection_sock *icsk = inet_csk(sk);
+> > >
+> > >         if (level != SOL_TCP)
+> > > -               return icsk->icsk_af_ops->setsockopt(sk, level, optname,
+> > > -                                                    optval, optlen);
+> > > +               /* IPV6_ADDRFORM can change icsk->icsk_af_ops under us. */
+> > > +               return READ_ONCE(icsk->icsk_af_ops)->setsockopt(sk, level, optname,
+> > > +                                                               optval, optlen);
+> > >         return do_tcp_setsockopt(sk, level, optname, optval, optlen);
+> > >  }
+> > >  EXPORT_SYMBOL(tcp_setsockopt);
+> > > @@ -4394,8 +4395,9 @@ int tcp_getsockopt(struct sock *sk, int level, int optname, char __user *optval,
+> > >         struct inet_connection_sock *icsk = inet_csk(sk);
+> > >
+> > >         if (level != SOL_TCP)
+> > > -               return icsk->icsk_af_ops->getsockopt(sk, level, optname,
+> > > -                                                    optval, optlen);
+> > > +               /* IPV6_ADDRFORM can change icsk->icsk_af_ops under us. */
+> > > +               return READ_ONCE(icsk->icsk_af_ops)->getsockopt(sk, level, optname,
+> > > +                                                               optval, optlen);
+> > >         return do_tcp_getsockopt(sk, level, optname, optval, optlen);
+> > >  }
+> > >  EXPORT_SYMBOL(tcp_getsockopt);
+> > > diff --git a/net/ipv6/ipv6_sockglue.c b/net/ipv6/ipv6_sockglue.c
+> > > index a89db5872dc3..726d95859898 100644
+> > > --- a/net/ipv6/ipv6_sockglue.c
+> > > +++ b/net/ipv6/ipv6_sockglue.c
+> > > @@ -479,7 +479,8 @@ static int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
+> > >
+> > >                                 /* Paired with READ_ONCE(sk->sk_prot) in inet6_stream_ops */
+> > >                                 WRITE_ONCE(sk->sk_prot, &tcp_prot);
+> > > -                               icsk->icsk_af_ops = &ipv4_specific;
+> > > +                               /* Paired with READ_ONCE() in tcp_(get|set)sockopt() */
+> > > +                               WRITE_ONCE(icsk->icsk_af_ops, &ipv4_specific);
+> > >                                 sk->sk_socket->ops = &inet_stream_ops;
+> > >                                 sk->sk_family = PF_INET;
+> > >                                 tcp_sync_mss(sk, icsk->icsk_pmtu_cookie);
+> > > --
+> > > 2.30.2
+> > >
