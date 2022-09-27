@@ -2,52 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C97E75EC62B
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 16:33:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 177025EC675
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 16:35:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230202AbiI0Oc7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 10:32:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55910 "EHLO
+        id S233019AbiI0OfY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 10:35:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231811AbiI0Och (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 10:32:37 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B351550721
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 07:32:36 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1odBdT-0005tX-4C; Tue, 27 Sep 2022 16:32:35 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1odBdS-003F7h-A5; Tue, 27 Sep 2022 16:32:32 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1odBdP-003uny-P8; Tue, 27 Sep 2022 16:32:31 +0200
-Date:   Tue, 27 Sep 2022 16:32:25 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     David Miller <davem@davemloft.net>
-Cc:     broonie@kernel.org, Networking <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        Yang Yingliang <yangyingliang@huawei.com>
-Subject: Re: linux-next: manual merge of the net-next tree with the i2c tree
-Message-ID: <20220927143225.j4yztggdqqozdiwa@pengutronix.de>
-References: <20220927130206.368099-1-broonie@kernel.org>
+        with ESMTP id S233016AbiI0Odq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 10:33:46 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 095271B8CB4
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 07:33:31 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id e18so6662980wmq.3
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 07:33:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=qkEQMAFlFrUq6t0pAagx8mtMZ2aPJX8cpHX423TQAwM=;
+        b=sstU7C44DCyLtSbtIDtb9NbxYP7n7fdaZJJno6PDU5ZxWKMlA6/k1bnc7ufHX0bgx6
+         NSRkrKEhctgbgGLN6kqLFRQAHlc/UdadfTbN7+kIptsfOQCq7W+yu+9wYXFV3r3GKjs6
+         H4Isl48r/sYKf27gqXB2OQKoVpWATGtarpn2ZKJeNZuIrkEMiKGAXDcftlAOLaloh3jm
+         N/SS5nlKgx/oB/nJUoXqkh3LEWJDv72h+GW0PSgBqUHfu0qqLq+hWeA24/NbJ/ieu3VG
+         TUqDdhOAISol+HQxHg0TJZgcdjr47ZZbcO7ipOTuJUrjx02HcD8ZkJ1jtPcO/FfmmwwA
+         k1yg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=qkEQMAFlFrUq6t0pAagx8mtMZ2aPJX8cpHX423TQAwM=;
+        b=xrxymIaM/0z1Nd+dxu7LXIp7dAPGfbq7YkQpeA1fpNWeNGoMji1DLEttOVBfOmWz0v
+         IX+WcFlyVNbqhBPug49RiZ3UAzyjujrQW4IPsIeA9EcjZLKSAFlGTkT1iTtOiXhb5JQQ
+         GSzhRkc2d12+6B11LENqxsDrt75EG1iTPLo/zsycaC8nEwA54DqAAGvb8nlvUKrkVnoI
+         WHrul6SuQqZk7oY7xLzzRBqZxKPRDFtJ/+jyKHWf3dW3DsC3bz5aQj4DsB2G6UJKIx0i
+         i888FU63GoqublXMskvlcV2ZLI2eNsPR+eACbeVKIs7t9LOn70YYygGTCWBw5fgHsZdF
+         fTrQ==
+X-Gm-Message-State: ACrzQf0WvGMjsF62USxxGEKSzg8CJN3+6X8AmmDsJOnRx2KRsljY3mF9
+        NW5d9uGjPmvvricQ0mgrFWtQ0g==
+X-Google-Smtp-Source: AMsMyM4ldUgUYXF27+lDREpDF/bRW+TcBdJttw/n34Re05vXaKeQRBVebYUCyiKtWCM2HoPOfZb6fw==
+X-Received: by 2002:a05:600c:3cd:b0:3b4:8372:294c with SMTP id z13-20020a05600c03cd00b003b48372294cmr2981541wmd.191.1664289209854;
+        Tue, 27 Sep 2022 07:33:29 -0700 (PDT)
+Received: from mai.. (146725694.box.freepro.com. [130.180.211.218])
+        by smtp.gmail.com with ESMTPSA id l6-20020a05600c4f0600b003b4924493bfsm17518371wmq.9.2022.09.27.07.33.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Sep 2022 07:33:28 -0700 (PDT)
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+To:     daniel.lezcano@linaro.org, rafael@kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        rui.zhang@intel.com, Jakub Kicinski <kuba@kernel.org>,
+        Raju Rangoju <rajur@chelsio.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev@vger.kernel.org (open list:CXGB4 ETHERNET DRIVER (CXGB4))
+Subject: [PATCH v6 27/29] thermal/drivers/cxgb4: Use generic thermal_zone_get_trip() function
+Date:   Tue, 27 Sep 2022 16:32:37 +0200
+Message-Id: <20220927143239.376737-28-daniel.lezcano@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220927143239.376737-1-daniel.lezcano@linaro.org>
+References: <20220927143239.376737-1-daniel.lezcano@linaro.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="7mgoxxaeekmkd6jf"
-Content-Disposition: inline
-In-Reply-To: <20220927130206.368099-1-broonie@kernel.org>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,123 +74,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The thermal framework gives the possibility to register the trip
+points with the thermal zone. When that is done, no get_trip_* ops are
+needed and they can be removed.
 
---7mgoxxaeekmkd6jf
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Convert ops content logic into generic trip points and register them with the
+thermal zone.
 
-Hello,
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Acked-by: Jakub Kicinski <kuba@kernel.org>
+---
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4.h    |  2 -
+ .../ethernet/chelsio/cxgb4/cxgb4_thermal.c    | 41 ++++---------------
+ 2 files changed, 8 insertions(+), 35 deletions(-)
 
-On Tue, Sep 27, 2022 at 02:02:06PM +0100, broonie@kernel.org wrote:
-> Hi all,
->=20
-> Today's linux-next merge of the net-next tree got conflicts in:
->=20
->   drivers/net/dsa/lan9303_i2c.c
->   drivers/net/dsa/microchip/ksz9477_i2c.c
->   drivers/net/dsa/xrs700x/xrs700x_i2c.c
->=20
-> between commit:
->=20
->   ed5c2f5fd10dd ("i2c: Make remove callback return void")
->=20
-> from the i2c tree and commits:
->=20
->   db5d451c4640a ("net: dsa: lan9303: remove unnecessary i2c_set_clientdat=
-a()")
->   008971adb95d3 ("net: dsa: microchip: ksz9477: remove unnecessary i2c_se=
-t_clientdata()")
->   6387bf7c390a1 ("net: dsa: xrs700x: remove unnecessary i2c_set_clientdat=
-a()")
->=20
-> from the net-next tree.
->=20
-> I fixed it up (see below) and can carry the fix as necessary. This
-> is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
->=20
-> diff --cc drivers/net/dsa/lan9303_i2c.c
-> index b25e91b26d991,79be5fc044bd4..0000000000000
-> --- a/drivers/net/dsa/lan9303_i2c.c
-> +++ b/drivers/net/dsa/lan9303_i2c.c
-> @@@ -70,11 -70,11 +70,9 @@@ static void lan9303_i2c_remove(struct i
->   	struct lan9303_i2c *sw_dev =3D i2c_get_clientdata(client);
->  =20
->   	if (!sw_dev)
->  -		return 0;
->  +		return;
->  =20
->   	lan9303_remove(&sw_dev->chip);
-> --
-> - 	i2c_set_clientdata(client, NULL);
->  -	return 0;
->   }
->  =20
->   static void lan9303_i2c_shutdown(struct i2c_client *client)
-> diff --cc drivers/net/dsa/microchip/ksz9477_i2c.c
-> index 4a719ab8aa89c,e111756f64735..0000000000000
-> --- a/drivers/net/dsa/microchip/ksz9477_i2c.c
-> +++ b/drivers/net/dsa/microchip/ksz9477_i2c.c
-> @@@ -58,8 -58,8 +58,6 @@@ static void ksz9477_i2c_remove(struct i
->  =20
->   	if (dev)
->   		ksz_switch_remove(dev);
-> --
-> - 	i2c_set_clientdata(i2c, NULL);
->  -	return 0;
->   }
->  =20
->   static void ksz9477_i2c_shutdown(struct i2c_client *i2c)
-> diff --cc drivers/net/dsa/xrs700x/xrs700x_i2c.c
-> index bbaf5a3fbf000,cd533b9e17eca..0000000000000
-> --- a/drivers/net/dsa/xrs700x/xrs700x_i2c.c
-> +++ b/drivers/net/dsa/xrs700x/xrs700x_i2c.c
-> @@@ -110,11 -110,11 +110,9 @@@ static void xrs700x_i2c_remove(struct i
->   	struct xrs700x *priv =3D i2c_get_clientdata(i2c);
->  =20
->   	if (!priv)
->  -		return 0;
->  +		return;
->  =20
->   	xrs700x_switch_remove(priv);
-> --
-> - 	i2c_set_clientdata(i2c, NULL);
->  -	return 0;
->   }
->  =20
->   static void xrs700x_i2c_shutdown(struct i2c_client *i2c)
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
+index 5657ac8cfca0..fca9533bc011 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
+@@ -1079,8 +1079,6 @@ struct mbox_list {
+ #if IS_ENABLED(CONFIG_THERMAL)
+ struct ch_thermal {
+ 	struct thermal_zone_device *tzdev;
+-	int trip_temp;
+-	int trip_type;
+ };
+ #endif
+ 
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_thermal.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_thermal.c
+index 9a6d65243334..1d49cfe3e2ab 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_thermal.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_thermal.c
+@@ -29,36 +29,12 @@ static int cxgb4_thermal_get_temp(struct thermal_zone_device *tzdev,
+ 	return 0;
+ }
+ 
+-static int cxgb4_thermal_get_trip_type(struct thermal_zone_device *tzdev,
+-				       int trip, enum thermal_trip_type *type)
+-{
+-	struct adapter *adap = tzdev->devdata;
+-
+-	if (!adap->ch_thermal.trip_temp)
+-		return -EINVAL;
+-
+-	*type = adap->ch_thermal.trip_type;
+-	return 0;
+-}
+-
+-static int cxgb4_thermal_get_trip_temp(struct thermal_zone_device *tzdev,
+-				       int trip, int *temp)
+-{
+-	struct adapter *adap = tzdev->devdata;
+-
+-	if (!adap->ch_thermal.trip_temp)
+-		return -EINVAL;
+-
+-	*temp = adap->ch_thermal.trip_temp;
+-	return 0;
+-}
+-
+ static struct thermal_zone_device_ops cxgb4_thermal_ops = {
+ 	.get_temp = cxgb4_thermal_get_temp,
+-	.get_trip_type = cxgb4_thermal_get_trip_type,
+-	.get_trip_temp = cxgb4_thermal_get_trip_temp,
+ };
+ 
++static struct thermal_trip trip = { .type = THERMAL_TRIP_CRITICAL } ;
++
+ int cxgb4_thermal_init(struct adapter *adap)
+ {
+ 	struct ch_thermal *ch_thermal = &adap->ch_thermal;
+@@ -79,15 +55,14 @@ int cxgb4_thermal_init(struct adapter *adap)
+ 	if (ret < 0) {
+ 		num_trip = 0; /* could not get trip temperature */
+ 	} else {
+-		ch_thermal->trip_temp = val * 1000;
+-		ch_thermal->trip_type = THERMAL_TRIP_CRITICAL;
++		trip.temperature = val * 1000;
+ 	}
+-
++	
+ 	snprintf(ch_tz_name, sizeof(ch_tz_name), "cxgb4_%s", adap->name);
+-	ch_thermal->tzdev = thermal_zone_device_register(ch_tz_name, num_trip,
+-							 0, adap,
+-							 &cxgb4_thermal_ops,
+-							 NULL, 0, 0);
++	ch_thermal->tzdev = thermal_zone_device_register_with_trips(ch_tz_name, &trip, num_trip,
++								    0, adap,
++								    &cxgb4_thermal_ops,
++								    NULL, 0, 0);
+ 	if (IS_ERR(ch_thermal->tzdev)) {
+ 		ret = PTR_ERR(ch_thermal->tzdev);
+ 		dev_err(adap->pdev_dev, "Failed to register thermal zone\n");
+-- 
+2.34.1
 
-To fix that issue before sending a PR to Linus you might want to pull
-
-	https://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux i2c/make_remove_=
-callback_void-immutable
-
-into your tree.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---7mgoxxaeekmkd6jf
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmMzCXYACgkQwfwUeK3K
-7AmW1Qf/bgiNo2Mo68dWX3kd8AOMpEiW4YG/Hy6lGGWSOzLC473XhiRnN2nzM/cJ
-TnIf5vRyVks8DYhy31HY5nnnJRYFiJMqHm1J9XzsYO3f6mY7P1BhmW1toagFKRdg
-nxOCZTDh+Aos2m4FSXm91HUExFJ1hMaH4CH7nPjr+584+ZN+0ILVovTTchHuEzjl
-Cy3+UN+d83DmLUoEjAVFKdURWggKpO5TYAbPluB5jZ1PsR4xeRMe72EU9FcWS0X8
-+Pp+gUduEnEYgsWrJNBXmpSz2yWAiYEGYrsVNdfMt3PuuWAjWxW/3lYAX6YNXmJd
-miAKxj5Akk0JK22aBXVj51nkKXblVQ==
-=ONMS
------END PGP SIGNATURE-----
-
---7mgoxxaeekmkd6jf--
