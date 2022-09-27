@@ -2,301 +2,298 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 709085ED02C
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 00:21:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DF335ED0A1
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 00:59:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231725AbiI0WVE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 18:21:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43676 "EHLO
+        id S231773AbiI0W7T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 18:59:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231314AbiI0WU5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 18:20:57 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2139.outbound.protection.outlook.com [40.107.237.139])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A1C51CE93B;
-        Tue, 27 Sep 2022 15:20:55 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CeqcaCmVRnRG5RQp0LoieYHSk7Bmre3YCMDn2CN5Q+hMS0xY6eAdRLJsPIqfqYH01QZeGsOv26OIyr3+Vn7beED9WNLRhRIczXbOwAQ7iY06nfsWhvNAoesQIRGMvV1AA2el2otIKdZMENTkb2t9LnKsmOZ3pNDiJ0WAmYNyhDbDh1hS4ZDShn2q2uF8kqVNwyUnwzxtCszh3PDrIVSuJCDzjjoL0E0V2QNru+r9ARl83GR0U1VmvThiRfUk/soNLXdUaUeDDRHc+VMDMn7odF7Ys0Ak2G8T+0kFPmuYlm5/Kl9WfPJ8w/A1qosvt8Mslps+lWZwj3ssC0nGsaPhaw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IokLYMoHevv4kqNbEqW6P0g1MFMsu/JPV3zrGvrAMRk=;
- b=Bc/GNsQKIritbTFFlaV5LXF84naCR1miSMNHxb0mPbrhaG4yJTtyv8PnoKRJoaxZQCzfNfnCISOq68UxRy0Yo21gaBvry4U9cSoi5a2kz/4Cc20FRQ8C35gA7cHlPiAf1XxloeyGq+P2NNvJ5jawrWXKt8maOeuk1BJWZn5sxzH2PxZqS49c86XPKZkfFLHTU3ClSnPEV5lz9R/PO+K5dXmEAhbqHujoA9G8mr82GzHiobKccTaTLelLztF7gkMF0GTsQYmJXBt6520tQJugje30oRCmDjEp2bVaBT3AH1M6RhmMHjEgFm32v3mbgfwn9tzHHD6cKsYSpY+PfdsEUg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=in-advantage.com; dmarc=pass action=none
- header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
+        with ESMTP id S231218AbiI0W7S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 18:59:18 -0400
+Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF450EF090;
+        Tue, 27 Sep 2022 15:59:16 -0700 (PDT)
+Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-13175b79807so5149610fac.9;
+        Tue, 27 Sep 2022 15:59:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IokLYMoHevv4kqNbEqW6P0g1MFMsu/JPV3zrGvrAMRk=;
- b=m/Bj4M5o2456iTXLsA9P+/T6DXHTBSCtxnwKLr0yBKOgE2ga46n7551vreABLmpKVnPiuddR2lfN9CrkZAVRWICuP4yYdfFhBQF/q/DjtLTFLqYuuKBF6nr6v0c0xi8CXBsNXUob/P1RZi7rdGZ7GMj64BPy4UX7UNJIPVzmr2Y=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=in-advantage.com;
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37) by PH7PR10MB6129.namprd10.prod.outlook.com
- (2603:10b6:510:1f7::19) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.24; Tue, 27 Sep
- 2022 22:20:52 +0000
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::b417:2ac7:1925:8f69]) by MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::b417:2ac7:1925:8f69%4]) with mapi id 15.20.5654.026; Tue, 27 Sep 2022
- 22:20:51 +0000
-Date:   Tue, 27 Sep 2022 15:20:47 -0700
-From:   Colin Foster <colin.foster@in-advantage.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Lee Jones <lee@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH v3 net-next 12/14] dt-bindings: net: dsa: ocelot: add
- ocelot-ext documentation
-Message-ID: <YzN3P6NaDhjA1Qrk@colin-ia-desktop>
-References: <20220926002928.2744638-1-colin.foster@in-advantage.com>
- <20220926002928.2744638-13-colin.foster@in-advantage.com>
- <20220927202600.hy5dr2s6j4jnmfpg@skbuf>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220927202600.hy5dr2s6j4jnmfpg@skbuf>
-X-ClientProxiedBy: MW2PR2101CA0011.namprd21.prod.outlook.com
- (2603:10b6:302:1::24) To MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37)
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=ZWhbXo4LHHOgqEY3MQYQGmP0WVsbYvhjsz/W36gZzVI=;
+        b=JrkkY9/wWFIvfQ0dvTDYi6mrEW1SSO1/kcDOUvFeC9xZrG9+kTDhSIuFGxX7OfYA+f
+         KdCMe3aU52bro9i+vmWl72sfBnHMW6+b3IoP4DdmPOfzVqmq9Db8V4g7sf8hCujrgKfA
+         qukyVD3NIHEq3cGlxnfPOrmhiU4O0b/DCGk9UIrMJDID5clZTQ5ZiEfDGxp83Gakr0Gq
+         RkYKzMgkS2jaqOvefEIwTV6k3Kafn7PKNyAhdXlpERAFxDxj9yZx3SZ3RjEa6PWgBXeq
+         CvEWR2bdn3+n4YDbvj8LfJeYXUvZwUEkC6Bcdi1Lx8nCzKa2dcultFN16124x5tEu77a
+         knqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=ZWhbXo4LHHOgqEY3MQYQGmP0WVsbYvhjsz/W36gZzVI=;
+        b=7OE5nv7LpsE48J3NJ1k4G2VO1UwFJcHEqMtLn43MorLbtnn39KiNeKYTha9HYBoed0
+         RvtsrMarTDUWn4A74OVuCkujCYBC6rWYvo6iqYba7d/p9VwiiE/ZCpO2yRpGWcrFMf8C
+         tLnF2uZeW+nXiLId+l2qZXORjisJk5m2CGibve63PkHup3590lQQcDav/qrxQMnASuQv
+         EPODMIonYj/5lxVaQOSOi/GQrDk5R7OoNBP4xQ5d0UXdgZjJ4i3Wci/lv1DaBGoFlnax
+         FOMQxWoD5j6YnwvbkRwg/3iTtiJXWBmx4GKo0MJ5R0o2pyifHhBlZwttrSuirNY4SFUU
+         SWjg==
+X-Gm-Message-State: ACrzQf1ws5KI3GCc8c8DB1F7coNEl5BSP3MWsm+1b9aQR3+EWuC8K5Ij
+        UCM9U68Ie7e2qY5esn4mFNLwxDlIPjHe/LFiclk=
+X-Google-Smtp-Source: AMsMyM5sS4jw0h2JbCUGtPHH2kVbGsiot79GdN1r7qbvIQMBDfUxHd3hBatAL8YCG7cbwtYxOlCxwNZyZa7TCQxI4Uc=
+X-Received: by 2002:a05:6870:9614:b0:11d:3906:18fc with SMTP id
+ d20-20020a056870961400b0011d390618fcmr3683600oaq.190.1664319555991; Tue, 27
+ Sep 2022 15:59:15 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MWHPR1001MB2351:EE_|PH7PR10MB6129:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2b5f0d39-e180-4f7b-4c0f-08daa0d68928
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: WAx4hBsex2y0BQQ1W0sFwk58Dls1a+pwFryLO+qI7w5HgC35aaiSaissyt0hWP5lHuZNhMlmcqDuWTx1oxM3usNQmqF3brI+FC7r5p51delo9bwagUMjTaTtY70f6qwdcfU+gMzDz7G3XDIHySeHHhtpOkTs3GVF0jxBEPNJaj5rM6UErZa2EJnrle1x1YJGtjzqobAzLpP1Fyywm4oZnP0U3BpU3KL7WpZ6DkQxH7GkBuVWntflzrieRSqUx9lxEGpXYr6lu0BSnhDvC6QEJmzSOSb5B43g+C31yHjsXGdBUWGgARqnlq/P3vAdHv8TABtIaUzbxy2HD+vAd8XN/jSVktJckG+Nh/5TPwOVOGNNCUlmt9p3osWMdpJIai4TX57CKX703x1ztn0+HAnTUTmcymXhDbu9CrqdaQSo5LSSCVqUv1DpM1nLSOUXO93BQYo+ylE+LkYPROiiQSEHJsRQctVVS5xSdFV4C7QWoO22KIKUO2B1B7p7mgSHp3uW4gTBkkLRrDxA8dVmYUpBCEyMVSqkzjToHS513qnNbiKDH24pluLsrLXFijlu+c2RBkIZEfqO7Qg0zj2VujH6EsKarVT3BLx0vKjEmTok1+O65K6nW35fDDvpx8d/qmJSC+3EaOY3ZsR/f2UiyfskMgr0QoqStgqHtuOirroY0ZP47OJuU5QwugWNwKFycZ0FkVYPzZNOxb9SJZU5WXJ9iaZvA88OWdEe4ME+qCE/6vU=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(39840400004)(346002)(136003)(376002)(396003)(366004)(451199015)(66946007)(86362001)(44832011)(38100700002)(2906002)(9686003)(6512007)(966005)(33716001)(6486002)(478600001)(6916009)(54906003)(26005)(8936002)(7416002)(5660300002)(41300700001)(66476007)(6666004)(83380400001)(4326008)(6506007)(66556008)(186003)(8676002)(316002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?vFWA2yyyyp1uy5LUKNwCDv0uj0iSZLNHVQwr40tKrJxCF+rz+09JMrgqeVUH?=
- =?us-ascii?Q?4jR/dzOD1+MGUgGFWnTce5p+AAPO91XhpqMRNBhWEDgvM6Z8z5DMvLOpeNC7?=
- =?us-ascii?Q?9Nbb62iRq37UhQkwq5m6eXjDfXFXGV8UQqqmXzt0I8/Kqo++wQRZmRth4DSb?=
- =?us-ascii?Q?M92zFM9W4GwTg42UqEgj5/tAznANSBX2w50+X/cAK5MPdQ/PgRPio34cgZpt?=
- =?us-ascii?Q?SXH3hGDQxeubAjJ7wpSmDfaNdJ3TKO7VW6cqvrATVeJnSA6tDMRTQRZwkIZq?=
- =?us-ascii?Q?sReSoa/dtKI4lkRfinyiFEOz5y/FOiXsLcFNUkahd6fcQ7cnti6VYAWONHQU?=
- =?us-ascii?Q?i38gpGtqQnVvzmplCLu3GGpCgOQsXrUR84LPdQHHdomLtCM3bixytCxu6gNi?=
- =?us-ascii?Q?FgjlC1oUTZELLRjSeZau+vedPZiF76q9KJa9zvoaC9dyVcNKRiLuWKwlLXj1?=
- =?us-ascii?Q?WHCMmlEUbZ1OgUHcd5LeBas+Zs4l6ZMmldCExxmNu3GfMG6Z3lzNlta8jl7N?=
- =?us-ascii?Q?12Z9CyWeI3/QeTWDz7Lske0wMxhn5cipfvJ95Ja0Juc2rirFtiB0cA3AQJ8/?=
- =?us-ascii?Q?8XDB8bP0OhD+y4sSBAsrEz1ASl6OrRmjWxuPMhj2UZI9QD0bDtHc0PD7fSfn?=
- =?us-ascii?Q?31qatqWkhQAhsWi3mzRxgiu8gdHB/ooaMInG7UxjqK8wax906mQJYMifWXgu?=
- =?us-ascii?Q?KIS4uBErk2q+FwCTnLRQgnekmqbMU8mLTx5Ij6Wofhl5FJqNOkakpcBuxtJG?=
- =?us-ascii?Q?eslNvuPrXgcyzPuNuTakbRXlsX9NlGsamQbgzEliWiud2Xvod5Cpb03xm1H0?=
- =?us-ascii?Q?Ezje8M//QWc2P2RoGHPAj0ODDPQHU0+fpOU8eU4z0oZUWMbDVkGTYppa8vJh?=
- =?us-ascii?Q?bM6PttAe82D7U67xQFCncNg8H/fFECY32lbzeMDl9yEaNnCqLXDbKLtX7QED?=
- =?us-ascii?Q?dimwr5Q9OaBsnTB2zY0TyK8A9S/HACftN2FQHMHOzoJKjM+7JDIFjcmHa+c+?=
- =?us-ascii?Q?4jAsQBfEe6VOsID6442DqPi3pvldfjOnBOiV+UtiUU9v2DYlucAPFG6e6WO+?=
- =?us-ascii?Q?79u3Sk7cQo1iTqKyOdPCNCwqjyDpdGERrc4J5KyMlvXm+ambL3hlBvxinzMJ?=
- =?us-ascii?Q?VCqkO+WBbuUQOcmROHwJyg9yqHgK1W4mc5Qx34xDkgxI4vLrbAxW0OjSK2Ne?=
- =?us-ascii?Q?oLGqznLhffmgLl9g7ODEeVeW4L3oY2gOxhuywFfiCfS/QOsNDoRwIpUsyGdl?=
- =?us-ascii?Q?76Fsv76Awi7yGCuONqudzZG7/ToWNXg0f9Gv28yUxOba2+oFO01gAepeou6z?=
- =?us-ascii?Q?H5lQFGq89tyFud4v6HhY0lgM+Gf/wgaQ4mNKa7nJnRJVS4LiJKY/qSrno9op?=
- =?us-ascii?Q?rOToNIxuGETV0GSk4rJ4DuFayc0DtUJWLhGqt0MX3FnhfB0HwL00OLnqD46e?=
- =?us-ascii?Q?tnbXjStWEzrbWkoI6TI2ycHjieqgtBdmniEQ/pBPM2L8YgEJD3R9AQDd/eV8?=
- =?us-ascii?Q?4yDPywHaflXCOurVQfsB/CRVy1deTjTECP+fCjSVbt5/D/5IhGK0uI/Nc6WM?=
- =?us-ascii?Q?pFG0yZScU+amPzRNfV/5ESiDpUTzV1qrU174n8RykjJhSrG9GINAZOVikMBH?=
- =?us-ascii?Q?Fg=3D=3D?=
-X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2b5f0d39-e180-4f7b-4c0f-08daa0d68928
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Sep 2022 22:20:51.8723
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cu2fa7phfFxtyUvo23d6/9tFFY7J7P9+hdUVlmAa1ne1pTzhLTmSUW5h9bKxEgf/wx+kSDu++vbyTWGEgOppQdau0oRgptKagM25okeGAFU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR10MB6129
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <000000000000212d3205e9984e12@google.com>
+In-Reply-To: <000000000000212d3205e9984e12@google.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Tue, 27 Sep 2022 18:58:34 -0400
+Message-ID: <CADvbK_csG9_6coaKE0hqnzRudhTi3BXOsaANGfH2QC1Cx8OO5w@mail.gmail.com>
+Subject: Re: [syzbot] KASAN: use-after-free Write in sctp_auth_shkey_hold (2)
+To:     syzbot <syzbot+a236dd8e9622ed8954a3@syzkaller.appspotmail.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-sctp@vger.kernel.org,
+        marcelo.leitner@gmail.com, netdev@vger.kernel.org,
+        nhorman@tuxdriver.com, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 27, 2022 at 11:26:00PM +0300, Vladimir Oltean wrote:
-> On Sun, Sep 25, 2022 at 05:29:26PM -0700, Colin Foster wrote:
-> > ---
-> >  .../bindings/net/dsa/mscc,ocelot.yaml         | 59 +++++++++++++++++++
-> >  1 file changed, 59 insertions(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/net/dsa/mscc,ocelot.yaml b/Documentation/devicetree/bindings/net/dsa/mscc,ocelot.yaml
-> > index 8d93ed9c172c..49450a04e589 100644
-> > --- a/Documentation/devicetree/bindings/net/dsa/mscc,ocelot.yaml
-> > +++ b/Documentation/devicetree/bindings/net/dsa/mscc,ocelot.yaml
-> > @@ -54,9 +54,22 @@ description: |
-> >        - phy-mode = "1000base-x": on ports 0, 1, 2, 3
-> >        - phy-mode = "2500base-x": on ports 0, 1, 2, 3
-> >  
-> > +  VSC7412 (Ocelot-Ext):
-> 
-> VSC7512
+On Mon, Sep 26, 2022 at 2:14 PM syzbot
+<syzbot+a236dd8e9622ed8954a3@syzkaller.appspotmail.com> wrote:
+>
+> Hello,
+>
+> syzbot found the following issue on:
+>
+> HEAD commit:    cb71b93c2dc3 Add linux-next specific files for 20220628
+> git tree:       linux-next
+> console+strace: https://syzkaller.appspot.com/x/log.txt?x=12e40342080000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=badbc1adb2d582eb
+> dashboard link: https://syzkaller.appspot.com/bug?extid=a236dd8e9622ed8954a3
+> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1689249a080000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1618ab1c080000
+>
+> Bisection is inconclusive: the issue happens on the oldest tested release.
+>
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1155cda4080000
+> final oops:     https://syzkaller.appspot.com/x/report.txt?x=1355cda4080000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=1555cda4080000
+>
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+a236dd8e9622ed8954a3@syzkaller.appspotmail.com
+>
+> ==================================================================
+> BUG: KASAN: use-after-free in instrument_atomic_read_write include/linux/instrumented.h:101 [inline]
+> BUG: KASAN: use-after-free in atomic_fetch_add_relaxed include/linux/atomic/atomic-instrumented.h:116 [inline]
+> BUG: KASAN: use-after-free in __refcount_add include/linux/refcount.h:193 [inline]
+> BUG: KASAN: use-after-free in __refcount_inc include/linux/refcount.h:250 [inline]
+> BUG: KASAN: use-after-free in refcount_inc include/linux/refcount.h:267 [inline]
+> BUG: KASAN: use-after-free in sctp_auth_shkey_hold+0x22/0xa0 net/sctp/auth.c:112
+> Write of size 4 at addr ffff88807cd4ad98 by task syz-executor284/3719
+>
+> CPU: 0 PID: 3719 Comm: syz-executor284 Not tainted 5.19.0-rc4-next-20220628-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 06/29/2022
+> Call Trace:
+>  <TASK>
+>  __dump_stack lib/dump_stack.c:88 [inline]
+>  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+>  print_address_description mm/kasan/report.c:317 [inline]
+>  print_report.cold+0x2ba/0x719 mm/kasan/report.c:433
+>  kasan_report+0xbe/0x1f0 mm/kasan/report.c:495
+>  check_region_inline mm/kasan/generic.c:183 [inline]
+>  kasan_check_range+0x13d/0x180 mm/kasan/generic.c:189
+>  instrument_atomic_read_write include/linux/instrumented.h:101 [inline]
+>  atomic_fetch_add_relaxed include/linux/atomic/atomic-instrumented.h:116 [inline]
+>  __refcount_add include/linux/refcount.h:193 [inline]
+>  __refcount_inc include/linux/refcount.h:250 [inline]
+>  refcount_inc include/linux/refcount.h:267 [inline]
+>  sctp_auth_shkey_hold+0x22/0xa0 net/sctp/auth.c:112
+>  sctp_set_owner_w net/sctp/socket.c:132 [inline]
+>  sctp_sendmsg_to_asoc+0xbd5/0x1a20 net/sctp/socket.c:1863
+>  sctp_sendmsg+0x1053/0x1d50 net/sctp/socket.c:2025
+>  inet_sendmsg+0x99/0xe0 net/ipv4/af_inet.c:819
+>  sock_sendmsg_nosec net/socket.c:714 [inline]
+>  sock_sendmsg+0xcf/0x120 net/socket.c:734
+The call trace is very similar with the one fixed in:
 
-Oops. Thanks.
+commit 58acd10092268831e49de279446c314727101292
+Author: Xin Long <lucien.xin@gmail.com>
+Date:   Tue Jul 20 16:07:01 2021 -0400
 
-> 
-> > +
-> > +    The Ocelot family consists of four devices, the VSC7511, VSC7512, VSC7513,
-> > +    and the VSC7514. The VSC7513 and VSC7514 both have an internal MIPS
-> > +    processor that natively support Linux. Additionally, all four devices
-> > +    support control over external interfaces, SPI and PCIe. The Ocelot-Ext
-> > +    driver is for the external control portion.
-> > +
-> > +    The following PHY interface types are supported:
-> > +
-> > +      - phy-mode = "internal": on ports 0, 1, 2, 3
-> 
-> More PHY interface types are supported. Please document them all.
-> It doesn't matter what the driver supports. Drivers and device tree
-> blobs should be able to have different lifetimes. A driver which doesn't
-> support the SERDES ports should work with a device tree that defines
-> them, and a driver that supports the SERDES ports should work with a
-> device tree that doesn't.
-> 
-> Similar for the other stuff which isn't documented (interrupts, SERDES
-> PHY handles etc). Since there is already an example with vsc7514, you
-> know how they need to look, even if they don't work yet on your
-> hardware, no?
+    sctp: update active_key for asoc when old key is being replaced
 
-Understood. My concern was "oh, all these ports are supported in the
-documentation, so they must work" when in actuality they won't. But I
-understand DTB compatibility.
+It was caused by active_key not being updated.
 
-This is the same thing Krzysztof was saying as well I belive. I'll
-update for v4, with apologies.
+"setsockopt$inet_sctp6_SCTP_AUTH_KEY(r0, 0x84, 0x17,
+&(0x7f00000002c0)={0x0, 0x0, 0x1, "8b"}, 0x9) (fail_nth: 5)"
 
-> 
-> > +
-> >  properties:
-> >    compatible:
-> >      enum:
-> > +      - mscc,vsc7512-switch
-> >        - mscc,vsc9953-switch
-> >        - pci1957,eef0
-> >  
-> > @@ -258,3 +271,49 @@ examples:
-> >              };
-> >          };
-> >      };
-> > +  # Ocelot-ext VSC7512
-> > +  - |
-> > +    spi {
-> > +        soc@0 {
-> > +            compatible = "mscc,vsc7512";
-> > +            #address-cells = <1>;
-> > +            #size-cells = <1>;
-> > +
-> > +            ethernet-switch@0 {
-> > +                compatible = "mscc,vsc7512-switch";
-> > +                reg = <0 0>;
-> 
-> What is the idea behind reg = <0 0> here? I would expect this driver to
-> follow the same conventions as Documentation/devicetree/bindings/net/mscc,vsc7514-switch.yaml.
-> The hardware is mostly the same, so the switch portion of the DT bindings
-> should be mostly plug and play between the switchdev and the DSA variant.
-> So you can pick the "sys" target as the one giving the address of the
-> node, and define all targets via "reg" and "reg-names" here.
-> 
-> Like so:
-> 
->       reg = <0x71010000 0x00010000>,
->             <0x71030000 0x00010000>,
->             <0x71080000 0x00000100>,
->             <0x710e0000 0x00010000>,
->             <0x711e0000 0x00000100>,
->             <0x711f0000 0x00000100>,
->             <0x71200000 0x00000100>,
->             <0x71210000 0x00000100>,
->             <0x71220000 0x00000100>,
->             <0x71230000 0x00000100>,
->             <0x71240000 0x00000100>,
->             <0x71250000 0x00000100>,
->             <0x71260000 0x00000100>,
->             <0x71270000 0x00000100>,
->             <0x71280000 0x00000100>,
->             <0x71800000 0x00080000>,
->             <0x71880000 0x00010000>,
->             <0x71040000 0x00010000>,
->             <0x71050000 0x00010000>,
->             <0x71060000 0x00010000>;
->       reg-names = "sys", "rew", "qs", "ptp", "port0", "port1",
->             "port2", "port3", "port4", "port5", "port6",
->             "port7", "port8", "port9", "port10", "qsys",
->             "ana", "s0", "s1", "s2";
-> 
-> The mfd driver can use these resources or can choose to ignore them, but
-> I don't see a reason why the dt-bindings should diverge from vsc7514,
-> its closest cousin.
+If the 5th failure is the one in sctp_auth_asoc_init_active_key(),
+this same issue will be triggered.
 
-This one I can answer. (from November 2021). Also I'm not saying that my
-interpretation is correct. Historically when there are things up for
-interpretation, I choose the incorrect path. (case in point... the other
-part of this email)
+I will prepare a fix to handle the error returned from
+sctp_auth_asoc_init_active_key() in sctp_auth_set_key().
 
-https://patchwork.kernel.org/project/netdevbpf/patch/20211125201301.3748513-4-colin.foster@in-advantage.com/#24620755
+Thanks.
 
-'''
-The thing with putting the targets in the device tree is that you're
-inflicting yourself unnecessary pain. Take a look at
-Documentation/devicetree/bindings/net/mscc-ocelot.txt, and notice that
-they mark the "ptp" target as optional because it wasn't needed when
-they first published the device tree, and now they need to maintain
-compatibility with those old blobs. To me that is one of the sillier
-reasons why you would not support PTP, because you don't know where your
-registers are. And that document is not even up to date, it hasn't been
-updated when VCAP ES0, IS1, IS2 were added. I don't think that Horatiu
-even bothered to maintain backwards compatibility when he initially
-added tc-flower offload for VCAP IS2, and as a result, I did not bother
-either when extending it for the S0 and S1 targets. At some point
-afterwards, the Microchip people even stopped complaining and just went
-along with it. (the story is pretty much told from memory, I'm sorry if
-I mixed up some facts). It's pretty messy, and that's what you get for
-creating these micro-maps of registers spread through the guts of the
-SoC and then a separate reg-name for each. When we worked on the device
-tree for LS1028A and then T1040, it was very much a conscious decision
-for the driver to have a single, big register map and split it up pretty
-much in whichever way it wants to. In fact I think we wouldn't be
-having the discussion about how to split things right now if we didn't
-have that flexibility.
-'''
 
-I'm happy to go any way. The two that make the most sense might be:
-
-micro-maps to make the VSC7512 "switch" portion match the VSC7514. The
-ethernet switch portion might still have to ignore these...
-
-A 'mega-map' that would also be ignored by the switch. It would be less
-arbitrary than the <0 0> that I went with. Maybe something like
-<0x70000000 0x02000000> to at least point to some valid region.
-
-> 
-> > +
-> > +                ethernet-ports {
-> > +                    #address-cells = <1>;
-> > +                    #size-cells = <0>;
-> > +
-> > +                    port@0 {
-> > +                        reg = <0>;
-> > +                        label = "cpu";
-> 
-> label = "cpu" is not used, please remove.
-
-Will do. This sounds familiar, so I'm sorry if it fell through the
-cracks.
-
+>  __sys_sendto+0x21a/0x320 net/socket.c:2116
+>  __do_sys_sendto net/socket.c:2128 [inline]
+>  __se_sys_sendto net/socket.c:2124 [inline]
+>  __x64_sys_sendto+0xdd/0x1b0 net/socket.c:2124
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+> RIP: 0033:0x7f9b40d281d9
+> Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 a1 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007f9b40cb52d8 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
+> RAX: ffffffffffffffda RBX: 00007f9b40db04b0 RCX: 00007f9b40d281d9
+> RDX: 0000000000000001 RSI: 0000000020000400 RDI: 0000000000000003
+> RBP: 00007f9b40d7d5dc R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 00007f9b40cb52f0
+> R13: 00007f9b40db04b8 R14: 0100000000000000 R15: 0000000000022000
+>  </TASK>
+>
+> Allocated by task 3717:
+>  kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+>  kasan_set_track mm/kasan/common.c:45 [inline]
+>  set_alloc_info mm/kasan/common.c:436 [inline]
+>  ____kasan_kmalloc mm/kasan/common.c:515 [inline]
+>  ____kasan_kmalloc mm/kasan/common.c:474 [inline]
+>  __kasan_kmalloc+0xa9/0xd0 mm/kasan/common.c:524
+>  kmalloc include/linux/slab.h:600 [inline]
+>  kzalloc include/linux/slab.h:733 [inline]
+>  sctp_auth_shkey_create+0x85/0x1f0 net/sctp/auth.c:84
+>  sctp_auth_asoc_copy_shkeys+0x1e8/0x350 net/sctp/auth.c:363
+>  sctp_association_init net/sctp/associola.c:257 [inline]
+>  sctp_association_new+0x189e/0x2330 net/sctp/associola.c:298
+>  sctp_connect_new_asoc+0x1ac/0x770 net/sctp/socket.c:1089
+>  sctp_sendmsg_new_asoc net/sctp/socket.c:1691 [inline]
+>  sctp_sendmsg+0x13d7/0x1d50 net/sctp/socket.c:1998
+>  inet_sendmsg+0x99/0xe0 net/ipv4/af_inet.c:819
+>  sock_sendmsg_nosec net/socket.c:714 [inline]
+>  sock_sendmsg+0xcf/0x120 net/socket.c:734
+>  __sys_sendto+0x21a/0x320 net/socket.c:2116
+>  __do_sys_sendto net/socket.c:2128 [inline]
+>  __se_sys_sendto net/socket.c:2124 [inline]
+>  __x64_sys_sendto+0xdd/0x1b0 net/socket.c:2124
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+>
+> Freed by task 3720:
+>  kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+>  kasan_set_track+0x21/0x30 mm/kasan/common.c:45
+>  kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
+>  ____kasan_slab_free mm/kasan/common.c:366 [inline]
+>  ____kasan_slab_free+0x166/0x1c0 mm/kasan/common.c:328
+>  kasan_slab_free include/linux/kasan.h:200 [inline]
+>  slab_free_hook mm/slub.c:1754 [inline]
+>  slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1780
+>  slab_free mm/slub.c:3534 [inline]
+>  kfree+0xe2/0x4d0 mm/slub.c:4562
+>  sctp_auth_shkey_destroy net/sctp/auth.c:101 [inline]
+>  sctp_auth_shkey_release+0x100/0x160 net/sctp/auth.c:107
+>  sctp_auth_set_key+0x443/0x960 net/sctp/auth.c:866
+>  sctp_setsockopt_auth_key net/sctp/socket.c:3640 [inline]
+>  sctp_setsockopt+0x4c33/0xa9a0 net/sctp/socket.c:4683
+>  __sys_setsockopt+0x2d6/0x690 net/socket.c:2251
+>  __do_sys_setsockopt net/socket.c:2262 [inline]
+>  __se_sys_setsockopt net/socket.c:2259 [inline]
+>  __x64_sys_setsockopt+0xba/0x150 net/socket.c:2259
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+>
+> The buggy address belongs to the object at ffff88807cd4ad80
+>  which belongs to the cache kmalloc-32 of size 32
+> The buggy address is located 24 bytes inside of
+>  32-byte region [ffff88807cd4ad80, ffff88807cd4ada0)
+>
+> The buggy address belongs to the physical page:
+> page:ffffea0001f35280 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x7cd4a
+> flags: 0xfff00000000200(slab|node=0|zone=1|lastcpupid=0x7ff)
+> raw: 00fff00000000200 0000000000000000 dead000000000122 ffff888011841500
+> raw: 0000000000000000 0000000000400040 00000001ffffffff 0000000000000000
+> page dumped because: kasan: bad access detected
+> page_owner tracks the page as allocated
+> page last allocated via order 0, migratetype Unmovable, gfp_mask 0x12820(GFP_ATOMIC|__GFP_NOWARN|__GFP_NORETRY), pid 3653, tgid 3653 (kworker/1:6), ts 62971434672, free_ts 62952459810
+>  prep_new_page mm/page_alloc.c:2535 [inline]
+>  get_page_from_freelist+0x210d/0x3a30 mm/page_alloc.c:4282
+>  __alloc_pages+0x1c7/0x510 mm/page_alloc.c:5506
+>  alloc_pages+0x1aa/0x310 mm/mempolicy.c:2280
+>  alloc_slab_page mm/slub.c:1824 [inline]
+>  allocate_slab+0x27e/0x3d0 mm/slub.c:1969
+>  new_slab mm/slub.c:2029 [inline]
+>  ___slab_alloc+0x89d/0xef0 mm/slub.c:3031
+>  __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3118
+>  slab_alloc_node mm/slub.c:3209 [inline]
+>  slab_alloc mm/slub.c:3251 [inline]
+>  kmem_cache_alloc_trace+0x323/0x3e0 mm/slub.c:3282
+>  kmalloc include/linux/slab.h:600 [inline]
+>  kzalloc include/linux/slab.h:733 [inline]
+>  ref_tracker_alloc+0x14c/0x550 lib/ref_tracker.c:85
+>  __netdev_tracker_alloc include/linux/netdevice.h:3960 [inline]
+>  netdev_hold include/linux/netdevice.h:3989 [inline]
+>  dst_init+0xe0/0x520 net/core/dst.c:52
+>  dst_alloc+0x16b/0x1f0 net/core/dst.c:96
+>  ip6_dst_alloc+0x2e/0x90 net/ipv6/route.c:344
+>  icmp6_dst_alloc+0x6d/0x680 net/ipv6/route.c:3261
+>  ndisc_send_skb+0x10eb/0x1730 net/ipv6/ndisc.c:487
+>  ndisc_send_ns+0xa6/0x120 net/ipv6/ndisc.c:665
+>  addrconf_dad_work+0xbf9/0x12d0 net/ipv6/addrconf.c:4171
+>  process_one_work+0x991/0x1610 kernel/workqueue.c:2289
+> page last free stack trace:
+>  reset_page_owner include/linux/page_owner.h:24 [inline]
+>  free_pages_prepare mm/page_alloc.c:1453 [inline]
+>  free_pcp_prepare+0x5e4/0xd20 mm/page_alloc.c:1503
+>  free_unref_page_prepare mm/page_alloc.c:3383 [inline]
+>  free_unref_page_list+0x16f/0xb90 mm/page_alloc.c:3525
+>  release_pages+0xbe8/0x1810 mm/swap.c:1017
+>  tlb_batch_pages_flush+0xa8/0x1a0 mm/mmu_gather.c:58
+>  tlb_flush_mmu_free mm/mmu_gather.c:255 [inline]
+>  tlb_flush_mmu mm/mmu_gather.c:262 [inline]
+>  tlb_finish_mmu+0x147/0x7e0 mm/mmu_gather.c:353
+>  exit_mmap+0x1fe/0x720 mm/mmap.c:3212
+>  __mmput+0x128/0x4c0 kernel/fork.c:1180
+>  mmput+0x5c/0x70 kernel/fork.c:1201
+>  exit_mm kernel/exit.c:510 [inline]
+>  do_exit+0xa09/0x29f0 kernel/exit.c:782
+>  do_group_exit+0xd2/0x2f0 kernel/exit.c:925
+>  __do_sys_exit_group kernel/exit.c:936 [inline]
+>  __se_sys_exit_group kernel/exit.c:934 [inline]
+>  __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:934
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+>
+> Memory state around the buggy address:
+>  ffff88807cd4ac80: 00 00 00 00 fc fc fc fc 00 00 00 00 fc fc fc fc
+>  ffff88807cd4ad00: 00 00 00 00 fc fc fc fc fa fb fb fb fc fc fc fc
+> >ffff88807cd4ad80: fa fb fb fb fc fc fc fc fa fb fb fb fc fc fc fc
+>                             ^
+>  ffff88807cd4ae00: 00 00 00 00 fc fc fc fc 00 00 00 00 fc fc fc fc
+>  ffff88807cd4ae80: 00 00 00 00 fc fc fc fc 00 00 00 00 fc fc fc fc
+> ==================================================================
+>
+>
+> ---
+> This report is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+> syzbot will keep track of this issue. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> syzbot can test patches for this issue, for details see:
+> https://goo.gl/tpsmEJ#testing-patches
