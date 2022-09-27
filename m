@@ -2,46 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C3DCF5ECEB8
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 22:37:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE6795ECEB5
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 22:37:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233149AbiI0Ug5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 16:36:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40242 "EHLO
+        id S233196AbiI0Ug7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 16:36:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233131AbiI0Ugj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 16:36:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30BAB6050A
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 13:36:39 -0700 (PDT)
+        with ESMTP id S233210AbiI0Ugm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 16:36:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF97380483
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 13:36:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A883461B80
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 20:36:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05620C43147;
-        Tue, 27 Sep 2022 20:36:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5EB61B81C16
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 20:36:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 156F8C433C1;
+        Tue, 27 Sep 2022 20:36:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664310998;
-        bh=UKBIvs41rNjmYpJDLzLHMzXzvypyCn52INH/LOHFU4A=;
-        h=From:To:Cc:Subject:Date:From;
-        b=o4v51YB1+0rduotWBYuFVh8hUEqDo9qkmDzfOZlUb0QYp4fKC5Vcy5+lTFmzOEqP4
-         O1E8jLKeZ6PR8BQv51f5cmeHiTyJtRqEwo6T136wSPLUyf1I4KwT3U7bwmpxr7WF+e
-         lXwHSldYzjdupUbovSx/pq+WGtaUGCKopLYIIY94I04kqDtFiNnn6wAQOnCvSms7I2
-         c6r3RWPV7UxIbxfB29wuCfMrOA/b5VuyZfXO4XWJgSaNEaa90h1pJUJT2Y2sS8gbZo
-         ZY2GiP/znhO8b7YcI04OIuOIuvUp1rrrD8Y6Hw9eY377UPA1ynlyqWB4nZxAq9UOlP
-         bBiiPqH03FXeA==
+        s=k20201202; t=1664310999;
+        bh=eSPKrGD6TaxW3GiJRzmnuH2mXny6w77OdIh4QuGa8B8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=uGAc242B9D0AelV3hp0cglasMJ6RMvBZDZF7YDLaGmX/xgy10y6Uq86B3aGWcULLk
+         gKf9+U/uHlIbG5ER71wCIY7KL6k9D1dvpJH/UojENj+75OpaJBWU7Z2EiUDayj8PQZ
+         V2ekiAiLJDg2g/Whqtka+aPZhxTOmo+XSg4XMXvl6u00q+z45oqfwyexrl8rUYD4xB
+         8QFDcHR1zpT+PnxbXZzhm9NtMXA89Pl7i5yQTegDmFAD6jtKLBu6MkMA4JPxoK+7iM
+         J/BTrsCf6RxOFE9guO/xx+I1el3pIdHHb4dBDmjGBUjaRpiP1c1zhUpkBN7fjG0zOB
+         1w1PFpUKzQCbw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: [pull request][net-next 00/16] mlx5 updates 2022-09-27
-Date:   Tue, 27 Sep 2022 13:35:55 -0700
-Message-Id: <20220927203611.244301-1-saeed@kernel.org>
+        Tariq Toukan <tariqt@nvidia.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>
+Subject: [net-next 01/16] net/mlx5: Add the log_min_mkey_entity_size capability
+Date:   Tue, 27 Sep 2022 13:35:56 -0700
+Message-Id: <20220927203611.244301-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20220927203611.244301-1-saeed@kernel.org>
+References: <20220927203611.244301-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -53,97 +56,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-XSK buffer improvements, This is part #1 of 4 parts series.
-For more information please see tag log below.
+Add the capability that will allow the driver to determine the minimal
+MTT page size to be able to map the smallest possible pages in XSK. The
+older firmwares that don't have this capability default to 12 (i.e.
+4096-byte pages).
 
-Please pull and let me know if there is any problem.
+Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+---
+ include/linux/mlx5/mlx5_ifc.h | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-Thanks,
-Saeed.
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index bd577b99b146..28c07557bd99 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -1856,7 +1856,13 @@ struct mlx5_ifc_cmd_hca_cap_2_bits {
+ 	u8	   max_reformat_remove_size[0x8];
+ 	u8	   max_reformat_remove_offset[0x8];
+ 
+-	u8	   reserved_at_c0[0x160];
++	u8	   reserved_at_c0[0xe0];
++
++	u8	   reserved_at_1a0[0xb];
++	u8	   log_min_mkey_entity_size[0x5];
++	u8	   reserved_at_1b0[0x10];
++
++	u8	   reserved_at_1c0[0x60];
+ 
+ 	u8	   reserved_at_220[0x1];
+ 	u8	   sw_vhca_id_valid[0x1];
+-- 
+2.37.3
 
-The following changes since commit 7bcd9683e51575c72c9289c05213150245d1c186:
-
-  selftests/net: enable io_uring sendzc testing (2022-09-27 07:59:57 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2022-09-27
-
-for you to fetch changes up to 48670cfdb211a57b41d870098bae659be5b453f7:
-
-  net/mlx5e: Use runtime values of striding RQ parameters in datapath (2022-09-27 13:32:42 -0700)
-
-----------------------------------------------------------------
-mlx5-updates-2022-09-27
-
-This is Part #1 of 4 parts series to align mlx5's implementation of
-XSK (AF_XDP) RX-Qs indexing and management with other vendors:
-
-Maxim Says:
-===========
-
-xsk: Bug fixes for frame mapping on striding RQ
-
-Striding RQ relies on the driver mapping RX buffers into the NIC's
-virtual memory space. Currently, regadless of the XSK frame size, mlx5e
-maps them using MTT, and each mapping's length is PAGE_SIZE. As the
-result, the stride size used by striding RQ is also equal to PAGE_SIZE.
-
-This decision has the following issues:
-
-1. In the XSK aligned mode with frame size smaller than PAGE_SIZE, it's
-suboptimal. Using 2K strides and 2K pages allows to post twice as fewer
-WQEs.
-
-2. MTT is not suitable for unaligned frames, as it requires natural
-alignment theoretically, in practice at least 8-byte alignment.
-
-3. Using mapping and stride bigger than the frame has risk of writing
-over the bounds of the XSK frame upon receiving packets bigger than MTU,
-which is possible in some specific configurations.
-
-This series addresses issues 1 and 2 and alleviates issue 3. Where
-possible, page and stride size will match the XSK frame size (firmware
-upgrade may be needed to have effect for 2K frames). Unaligned mode will
-use KSM instead of MTT, which allows to drop the partial workaround [1].
-
-[1]: https://lore.kernel.org/netdev/YufYFQ6JN91lQbso@boxer/T/
-
-===========
-
-----------------------------------------------------------------
-Maxim Mikityanskiy (16):
-      net/mlx5: Add the log_min_mkey_entity_size capability
-      net/mlx5e: Convert mlx5e_get_max_sq_wqebbs to u8
-      net/mlx5e: Remove unused fields from datapath structs
-      net/mlx5e: Make mlx5e_verify_rx_mpwqe_strides static
-      net/mlx5e: Validate striding RQ before enabling XDP
-      net/mlx5e: Let mlx5e_get_sw_max_sq_mpw_wqebbs accept mdev
-      net/mlx5e: Use mlx5e_stop_room_for_max_wqe where appropriate
-      net/mlx5e: Fix a typo in mlx5e_xdp_mpwqe_is_full
-      net/mlx5e: Use the aligned max TX MPWQE size
-      net/mlx5e: kTLS, Check ICOSQ WQE size in advance
-      net/mlx5e: Simplify stride size calculation for linear RQ
-      net/mlx5e: xsk: Remove dead code in validation
-      net/mlx5e: xsk: Fix SKB headroom calculation in validation
-      net/mlx5e: Improve the MTU change shortcut
-      net/mlx5e: Make dma_info array dynamic in struct mlx5e_mpw_info
-      net/mlx5e: Use runtime values of striding RQ parameters in datapath
-
- drivers/net/ethernet/mellanox/mlx5/core/en.h       |  37 ++----
- .../net/ethernet/mellanox/mlx5/core/en/params.c    | 141 +++++++++++----------
- .../net/ethernet/mellanox/mlx5/core/en/params.h    |  15 ++-
- drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h  |  13 +-
- drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c   |   2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h   |   2 +-
- .../net/ethernet/mellanox/mlx5/core/en/xsk/rx.c    |   2 +-
- .../net/ethernet/mellanox/mlx5/core/en/xsk/setup.c |   6 +-
- .../ethernet/mellanox/mlx5/core/en_accel/ktls.c    |  18 +++
- .../ethernet/mellanox/mlx5/core/en_accel/ktls.h    |   5 +-
- .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |  12 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  85 ++++++++-----
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    |  60 +++++----
- include/linux/mlx5/mlx5_ifc.h                      |   8 +-
- 14 files changed, 230 insertions(+), 176 deletions(-)
