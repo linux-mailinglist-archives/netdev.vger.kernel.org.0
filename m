@@ -2,91 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B163E5EC716
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 17:00:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAFF35EC720
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 17:01:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231387AbiI0PA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 11:00:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57016 "EHLO
+        id S231923AbiI0PBn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 11:01:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231659AbiI0PAS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 11:00:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 019EA73904
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 08:00:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D28761A25
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 15:00:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E19FDC433D7;
-        Tue, 27 Sep 2022 15:00:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664290816;
-        bh=fJkaHa6tyfSYRsUFTzs71+amRH+zSqcPVmZI6j7fRU4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=axmgwCU8E14lAh3HRmk3FmUiLEsR9QoNz7RQ6u0i2sb8CiiwXuqJtVjWwup28vseN
-         vGLGZXVGZTG85oCJu6rEJAfQQdauL+p99ybUPrsBiI+SDC5RtArUpKp8in8g+pReR4
-         tqDC0LT2yQoHXl6h8uDD+xJRESqcOxOjqUrLjVmouiIP6n/ENKXZRMPXlYnXVH/pJg
-         bt/d2H2adp4igP4lCK24B4AQ/PbNER0b4g0zGIbhZSbOlSMJ1/2ea4yZPxj3+U7Dee
-         qO43XO6FZ5UIFw8nClCG1Yf2EIt7/pPK1PXEah68H6vCWRRNHSoYuzt96YgllCdqZK
-         F4JD06sKUd2Bw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C2A51E21EC1;
-        Tue, 27 Sep 2022 15:00:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S231600AbiI0PBk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 11:01:40 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C708915F8;
+        Tue, 27 Sep 2022 08:01:32 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id h8-20020a17090a054800b00205ccbae31eso3287937pjf.5;
+        Tue, 27 Sep 2022 08:01:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=gZiBMQs0z73rJMB2fq1G2rEopYe6FV32v/POQXxCThI=;
+        b=BgPo8+N+HAR7bhrUYKwglwPiXoPs75yN7aqZYK7IjxWA34HsOq/O2zoaAnrORCH0wt
+         PCVYZf05hYR/oZXWCTLxoQ9xg8SwJug3ajzuY3XzOq6NJ+kIu4fKogQvGhjv/ajXGCwe
+         wg66r3kRUfz4VtC7KwZyNtE9pm46eCqlEGQLIQsr2NNkJlr8r1eVIysfDnxlIqgQZYa9
+         WNDBve3USNFI6Ev0Bk1FMMXuxkbi9OjpPPLNXCpNeWQT25mFBv2IRvpoylPDz+pwRxo6
+         koRjnwAAPJl/ZlBnwNfm4v4NkFKDgyVghC8L2YyeqJ4axzOMFz4WjwcoixRmkhfgfxBl
+         U5yA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=gZiBMQs0z73rJMB2fq1G2rEopYe6FV32v/POQXxCThI=;
+        b=a9rTwHcT/UzBshVCeHJN29M3FDM+mRp6hNpjtCdf8peH+PXtqNL8Ji3gNvPHU8DBe7
+         A3vtiJADq4v6ke9CELca2x/k2WbunklQ6JrzhFo8JC7zbkEMMWyy2Xva8cJnGMFSS0lL
+         smObewAevKXPDNMFwJIOeLIPJxrijzhLs/GIgkD+yZRuCgy8WkRokxTrZ0KaJyPWFcXj
+         YDQXcd5A6gTwdU7zsxDrUX/ArlSxe3TBrBtxfShd5UPitAC7B5OnhzjyvngflCTl5Uaz
+         yj6qWyFe4iGeWixKZe03fhtQOcdbcLtWxZpRjjluJ8r2ElnC2bzhHjHKU18BidvQw513
+         SPig==
+X-Gm-Message-State: ACrzQf2fjdG6YS1PWFgn74FWTgmmdcBCT1Rve7rLGCnq1BRPVFOT3gT8
+        iLdiU20lagAG27TjnjNlHuFmi2ktaVI=
+X-Google-Smtp-Source: AMsMyM6xiqjrzeRVGyvvYOMt0uUJUdcZdwvkGUMD7YLVFZvJJ8802sLzaxKNtsFOwZlaTTUbL++60w==
+X-Received: by 2002:a17:90b:3505:b0:203:b7b1:2bc3 with SMTP id ls5-20020a17090b350500b00203b7b12bc3mr5148716pjb.242.1664290891506;
+        Tue, 27 Sep 2022 08:01:31 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id c3-20020a170903234300b001780e4e6b65sm1691015plh.114.2022.09.27.08.01.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Sep 2022 08:01:31 -0700 (PDT)
+Date:   Tue, 27 Sep 2022 08:01:28 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Bo Liu <liubo03@inspur.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ptp: Remove usage of the deprecated ida_simple_xxx API
+Message-ID: <YzMQSJtLA1LDMGOm@hoboy.vegasvil.org>
+References: <20220926012744.3363-1-liubo03@inspur.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [patch net-next 0/3] devlink: fix order of port and netdev register
- in drivers
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166429081579.27886.11728976920673888757.git-patchwork-notify@kernel.org>
-Date:   Tue, 27 Sep 2022 15:00:15 +0000
-References: <20220926110938.2800005-1-jiri@resnulli.us>
-In-Reply-To: <20220926110938.2800005-1-jiri@resnulli.us>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, dmichail@fungible.com,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        snelson@pensando.io, drivers@pensando.io, f.fainelli@gmail.com,
-        yangyingliang@huawei.com
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220926012744.3363-1-liubo03@inspur.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Sun, Sep 25, 2022 at 09:27:44PM -0400, Bo Liu wrote:
+> Use ida_alloc_xxx()/ida_free() instead of
+> ida_simple_get()/ida_simple_remove().
+> The latter is deprecated and more verbose.
 
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+I can't say that I am excited about this.  It seems like a way to
+create a regression.  I don't see any need to change.  After all,
+there are many "deprecated" interfaces in use.
 
-On Mon, 26 Sep 2022 13:09:35 +0200 you wrote:
-> From: Jiri Pirko <jiri@nvidia.com>
+> Signed-off-by: Bo Liu <liubo03@inspur.com>
+> ---
+>  drivers/ptp/ptp_clock.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 > 
-> Some of the drivers use wrong order in registering devlink port and
-> netdev, registering netdev first. That was not intended as the devlink
-> port is some sort of parent for the netdev. Fix the ordering.
+> diff --git a/drivers/ptp/ptp_clock.c b/drivers/ptp/ptp_clock.c
+> index 688cde320bb0..51cae72bb6db 100644
+> --- a/drivers/ptp/ptp_clock.c
+> +++ b/drivers/ptp/ptp_clock.c
+> @@ -174,7 +174,7 @@ static void ptp_clock_release(struct device *dev)
+>  	mutex_destroy(&ptp->tsevq_mux);
+>  	mutex_destroy(&ptp->pincfg_mux);
+>  	mutex_destroy(&ptp->n_vclocks_mux);
+> -	ida_simple_remove(&ptp_clocks_map, ptp->index);
+> +	ida_free(&ptp_clocks_map, ptp->index);
+>  	kfree(ptp);
+>  }
+>  
+> @@ -217,7 +217,7 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
+>  	if (ptp == NULL)
+>  		goto no_memory;
+>  
+> -	index = ida_simple_get(&ptp_clocks_map, 0, MINORMASK + 1, GFP_KERNEL);
+> +	index = ida_alloc_max(&ptp_clocks_map, MINORMASK, GFP_KERNEL);
+
+Typo?   You changed the value of the second argument.
+
+Thanks,
+Richard
+
+
+
+>  	if (index < 0) {
+>  		err = index;
+>  		goto no_slot;
+> @@ -332,7 +332,7 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
+>  	mutex_destroy(&ptp->tsevq_mux);
+>  	mutex_destroy(&ptp->pincfg_mux);
+>  	mutex_destroy(&ptp->n_vclocks_mux);
+> -	ida_simple_remove(&ptp_clocks_map, index);
+> +	ida_free(&ptp_clocks_map, index);
+>  no_slot:
+>  	kfree(ptp);
+>  no_memory:
+> -- 
+> 2.27.0
 > 
-> Note that the follow-up patchset is going to make this ordering
-> mandatory.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,1/3] funeth: unregister devlink port after netdevice unregister
-    https://git.kernel.org/netdev/net-next/c/dfe609491476
-  - [net-next,2/3] ice: reorder PF/representor devlink port register/unregister flows
-    https://git.kernel.org/netdev/net-next/c/a286ba738714
-  - [net-next,3/3] ionic: change order of devlink port register and netdev register
-    https://git.kernel.org/netdev/net-next/c/1fd7c08286ce
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
