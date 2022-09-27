@@ -2,71 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 00BF35EC924
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 18:12:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 507D35EC929
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 18:13:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232593AbiI0QMP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 12:12:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33076 "EHLO
+        id S232267AbiI0QM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 12:12:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233039AbiI0QL5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 12:11:57 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D2FC110B
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 09:11:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1664295075;
-        bh=at5PEYB7MYYtYEPJSTehbMaiU2dsQ9XOsVfiFS1Scms=;
-        h=X-UI-Sender-Class:Date:From:To:Subject;
-        b=HBNcO5NmDQWgyJdPoOOfnshpbTeBPpjvpo1wP7DZuZMaxS5HST+df28Q1y4m6C7Fl
-         eeWLQ49Ls2Sm2MtF4g95r9BwVH1j7i4yaptE0pvzvrmgrnwRmq1Xz+YqdGZSNeBfQB
-         4NonpYmISCHmM0rE2POEJZ80392Pxmia1isWfh3E=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from gmx.fr ([181.118.49.178]) by mail.gmx.net (mrgmx105
- [212.227.17.174]) with ESMTPSA (Nemesis) id 1Mv31c-1pUDKt0THk-00r3sl for
- <netdev@vger.kernel.org>; Tue, 27 Sep 2022 18:11:15 +0200
-Date:   Tue, 27 Sep 2022 12:11:06 -0400
-From:   Jamie Gloudon <jamie.gloudon@gmx.fr>
-To:     netdev@vger.kernel.org
-Subject: ip: Missing brace in ip6tunnel.c
-Message-ID: <YzMgmkVJBmzZpG7E@gmx.fr>
+        with ESMTP id S231391AbiI0QMz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 12:12:55 -0400
+Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA72F5A814;
+        Tue, 27 Sep 2022 09:12:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1664295175; x=1695831175;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=lVbdRi5tzGJSVZaxAc/Kc7H+biNtsjmn4bTYdb8Fp6A=;
+  b=IjAojPRW5BIeNBA38x8DAR0pSeavRLfJbrYxOWzvJOysTneEL/cnpAJF
+   AsHHsKUQdAirIK854v7gEMHk6Pgk7Xb9M9A+4UegrIYmahxsaSHmUYZ7Q
+   EFqjkbkMUuavvH+bzOpf/6sCCdaXECG2Ve97rEpyMKNeoutZAh5zoV6dh
+   o=;
+X-IronPort-AV: E=Sophos;i="5.93,349,1654560000"; 
+   d="scan'208";a="249236619"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-90d70b14.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Sep 2022 16:12:43 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1e-90d70b14.us-east-1.amazon.com (Postfix) with ESMTPS id ED050C08DC;
+        Tue, 27 Sep 2022 16:12:39 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Tue, 27 Sep 2022 16:12:34 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.160.214) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
+ Tue, 27 Sep 2022 16:12:32 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@kernel.org>
+CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        <netdev@vger.kernel.org>, <syzkaller-bugs@googlegroups.com>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v1 net 0/5] tcp/udp: Fix memory leaks and data races around IPV6_ADDRFORM.
+Date:   Tue, 27 Sep 2022 09:12:04 -0700
+Message-ID: <20220927161209.32939-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Provags-ID: V03:K1:hFQqODzExokhQqNsMLbpargECnTp90Y7F5JtcVL6o34MK2ghU6r
- UDo2WbRjGNztCjqiP+lfPshN4T0jGW0Wh2t9wsk2XZf6UfuPfNBCVeOUci+UUwdXht8zwKR
- IshwuPAJmWhfq8KrK30OEJTcaXGLEtJmskuCjOglYcXn3v1xcb5Pw2GhubSaYs1sJY5Y1gQ
- atWVd6rIGwA+Sz/WzCJag==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:14Pbfohhrkw=:norFcMYHFFvLCUeIjU79RO
- kUpX3BwBRmLlq3tBg4GmrTM0VM6jmwPNIWAeJngfmiuBdfEppCHctMmFmikufZlaIh5ovZK3b
- 2vd3gLAskZ10yp9szi4k28WDA1yCsIqqW6tlbYyKf4xzLxi7vtkA6NaP5gdjc8XlDmnkiULdq
- QR44RaNCaqJEiNdGxTijTnLR7v7PMghDP/t7f5QnjDxrjq8z80fPyfrHbHNzIsU1xkjHJa9JU
- wa77S/P1CE9l6RJcWbP9Eoqet49GB2H2bv5UHYsovnsi5MZpR3FdYM5vKz5jstK4vXgWz85UZ
- tfDba41eUXSqYt+mpaRr0deoNzzPol/sgyMs6TdtmJFSx8Wr2ggnSEsNjoQ0bfC7sAE0AR+Yb
- EsCJuFOvoM/ljcZSsdEzw8kUYCEslFsyAxnx2SbTnhcn/+BBszTAykEWhoCCr4BZk6ZVXmCZA
- k2fvFUU9YPy5xdAXb3ivAWhjf5u9tjpYeLSRXmXd/aoggXKv2dV3w0Fr/yZNWL0pc3e4Jqt6f
- 3teIAOZmw8obW+brxf7sCH0Vk4JI19WcVOmt+qcu86/A4mHGIxT3XB/3lwyG07TxbX3+GjaA3
- m1IxNGeJzch+VJpdS/Sh2dMiqrr5pLBfbl1hpzHD4yBXi7KrsUQnAcQVKOJm53X0KUISoBa93
- 5lIbiP5QLIb7X+Q/YrMjQH6ND7DbafUQUoThLvOoTUpCCVpnuO6z1WP+vl57hJ1tPQUs7x0Xs
- 1oJwqMG0GF9OQoNPTcp25OpMxd1WktpXqJ9bjIf1/L7chW8CiM7b0CWilCIjvldDP65FkvUjj
- +bHJCXLpdPNSClI8rGigEDcLyvvh4yRUzukOGPGBhEjo7psJjY3KuCgoRVvtXzEcJteBiwLEH
- SkwZEqV1hG7VTPcXf+3x+ly8pSnwtOVjBBak75wb33FmoV7TcDhLoJ6gqINkItKU9tPT3q7f2
- e/vPDtB5llq57hKyencNin+Pv9JYnFnYWfoXhHurmsGOOl2CMwHJINFGWwX/P0haeliD3yKmM
- R7osXBE6/gudHt4PIcgF8bSMau1WWB1kfKuuERIIy21/2IVeZDc/P7t/OPk0qRv1sJkhX6FcO
- va6Bh8XkS4nhH9XGbatUvjaMn8wlcYKe3l8Zw5bdLrI6qMVsaBPFOhJPj2cGI1rvqgrRky8d4
- TxQe0tmgGU3m5yNPps/svIDNZ+
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,FREEMAIL_FROM,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_BL,
-        RCVD_IN_MSPIKE_ZBI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.160.214]
+X-ClientProxiedBy: EX13D13UWA002.ant.amazon.com (10.43.160.172) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hey,
-    I am not absolutely sure, but in line 165 of ip6tunnel.c should be
-if(t && (t->dev->flags & IFF_UP) like line 169?
+This series fixes some memory leaks and data races caused in the
+same scenario where one thread converts an IPv6 socket into IPv4
+with IPV6_ADDRFORM and another accesses the socket concurrently.
 
-Regards
+Note patch 1 and 5 conflict with these commits in net-next, respectively.
+
+  * 24426654ed3a ("bpf: net: Avoid sk_setsockopt() taking sk lock when called from bpf")
+  * 34704ef024ae ("bpf: net: Change do_tcp_getsockopt() to take the sockptr_t argument")
+
+
+Kuniyuki Iwashima (5):
+  tcp/udp: Fix memory leak in ipv6_renew_options().
+  udp: Call inet6_destroy_sock() in setsockopt(IPV6_ADDRFORM).
+  tcp/udp: Call inet6_destroy_sock() in IPv4 sk_prot->destroy().
+  ipv6: Fix data races around sk->sk_prot.
+  tcp: Fix data races around icsk->icsk_af_ops.
+
+ net/core/sock.c          |  6 ++++--
+ net/ipv4/af_inet.c       | 23 ++++++++++++++++-------
+ net/ipv4/tcp.c           | 10 ++++++----
+ net/ipv4/tcp_ipv4.c      |  5 +++++
+ net/ipv4/udp.c           |  6 ++++++
+ net/ipv6/ipv6_sockglue.c | 29 ++++++++++++++---------------
+ net/ipv6/tcp_ipv6.c      |  1 -
+ 7 files changed, 51 insertions(+), 29 deletions(-)
+
+-- 
+2.30.2
+
