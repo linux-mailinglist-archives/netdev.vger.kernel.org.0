@@ -2,74 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 437B65ED023
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 00:19:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7D755ED028
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 00:20:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231268AbiI0WTX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 18:19:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36478 "EHLO
+        id S231236AbiI0WUe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 18:20:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231236AbiI0WTV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 18:19:21 -0400
+        with ESMTP id S231496AbiI0WUc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 18:20:32 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C11411E45BB
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 15:19:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 908451B8689
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 15:20:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1664317160;
+        s=mimecast20190719; t=1664317230;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=sPkv0tXRBGRFHsPE4skY8laZ5MwDJA/XEqh88B2Acpo=;
-        b=BNDuUZWoR0kkzRvHy7Ng0+oo+mnjYSRg7nzc2qQml4khxzOBULpUOK3M37NX1JIr+j2zTD
-        xENv7ygyKR131xi1803M2B+VKmNW1vMnt5G6UEOk/ni27E4zPQIUrwOX5boor9g+PjGsX7
-        Pr33SCGRL0k5GTkKAMPbmffuR8qwleA=
+        bh=B7hn20Zeqkcubja41/WChKWpPqLMVS3GAmGLnKHDhAU=;
+        b=Yx5IJqa2rX8UXQFrq7LE+D/drZkgo1Cin0jxNPbBwX6G0odGMRYuSaoCqtH/yRsK+iaDqr
+        N4p5dxCca/S+qk+NZfZba9fMWluSqUEgRp2HqrpcSeE2Hc1DEmjm4rbaO7jUZa0WONreaq
+        SOrvuTFdYjcRW26fPNJHDH3iLHiabJ0=
 Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
  [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-477-VTBRsBNnNmGSh1hKgYVZUQ-1; Tue, 27 Sep 2022 18:19:13 -0400
-X-MC-Unique: VTBRsBNnNmGSh1hKgYVZUQ-1
-Received: by mail-wm1-f69.google.com with SMTP id n32-20020a05600c3ba000b003b5054c71faso25254wms.9
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 15:19:13 -0700 (PDT)
+ us-mta-371-kPduZq6XOYSHslBxaWjhLA-1; Tue, 27 Sep 2022 18:20:27 -0400
+X-MC-Unique: kPduZq6XOYSHslBxaWjhLA-1
+Received: by mail-wm1-f69.google.com with SMTP id h187-20020a1c21c4000000b003b51369ff1bso42381wmh.3
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 15:20:27 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=sPkv0tXRBGRFHsPE4skY8laZ5MwDJA/XEqh88B2Acpo=;
-        b=0rfqLIj1udeqIMFX+26PlEHlP1QMyCrXJkeO4kHhzifO19232xejyvgKl96coGu5eK
-         ZxjPhv+NWQW+eOzv2vlQJh36WjiHumRJTGvfYq5m8NWRX8cio6Vh+cjYEJfCAXqdIAT2
-         U7tyQssFxuhVhodGLFNnYudR6mjaMQj/OHkS1/G85wN+tC+4kXjUSMMftGQC02ayCXmI
-         n0Tn+xdOKCT9bt3QuNLGC7g4gLx/HWg8MsPbJURoZyu5R244P4RZLIK7SfE4JkZD7cws
-         KOiLSklpmAv8CbyTcfoE2tWPHaaAXM5QRo8OQawnGp+x6jJN7cpHKTuRFP9yraQlaQ1m
-         JiSQ==
-X-Gm-Message-State: ACrzQf2j4WX2ckt+O6276B5Io77WSAP4wZLxOTUeTVgUIR94AqeTRw8W
-        zDejCZ6KK3XyD0JhnLtBi7qkpq8Yj40spn9ZJDRibkvBl0/+ezKa6mwT1RlAGF13a7ZRP/kbFJ0
-        gFmNKlXJ4SMH4D5lC
-X-Received: by 2002:a7b:cb49:0:b0:3b4:b08a:89b with SMTP id v9-20020a7bcb49000000b003b4b08a089bmr4264630wmj.173.1664317152725;
-        Tue, 27 Sep 2022 15:19:12 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM4yVAuON4IWBfCSPhgaypPYe4TWmLMMFvQJVnsSDJhPqJfgdzcdmJoPl9f9OuBfTy70adiwkA==
-X-Received: by 2002:a7b:cb49:0:b0:3b4:b08a:89b with SMTP id v9-20020a7bcb49000000b003b4b08a089bmr4264604wmj.173.1664317152467;
-        Tue, 27 Sep 2022 15:19:12 -0700 (PDT)
+        bh=B7hn20Zeqkcubja41/WChKWpPqLMVS3GAmGLnKHDhAU=;
+        b=LnOXL1lsUUB+mFdYMNotIZix9c2eQQMsT2IRKJiUjeSfK6olKQeP+dYvukkk4ClWpZ
+         +7jk8rNiaAWxd8evLYPmuhz7LJs+7dWSFFJ+2d2IybxaEDWfkAZzG8FP8lu2Yc/584a7
+         KHMvTZAcrGa+H37uhHZfqyUBHIS7I21oKQp1oS0Kg2ExKniRhFV0v2iXRpDV4BAWh989
+         4znomCAdgUlWQrGCeVmM2yB4uwy9bsmYnmA6XXFSskEkg0aIS+2EX5+Rqa2eNSwIDr9y
+         dWjeHsMpYA3o0guSRV4UuMdqa+mRlNRdJ6X9FVw2n+0O6IJG+5Dhxcrley9fw78mSw+O
+         xG3Q==
+X-Gm-Message-State: ACrzQf3/telGR6qNk4zaebfPKWVaDReXnqcBD8DMuBV6x3S/CvLcumvO
+        wz663OyemsFt5GroWboFQLc1qzViFCtZZHrQ5RaaJdH3YblHgU3S0LJO+2k09H4wb9byKxD6k0P
+        BvSG9N5EZBDgPeIvy
+X-Received: by 2002:a05:6000:1d9d:b0:22a:745b:9f00 with SMTP id bk29-20020a0560001d9d00b0022a745b9f00mr18158785wrb.280.1664317226254;
+        Tue, 27 Sep 2022 15:20:26 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM6oB7tbkGtVRI3gvZ8k+SQXcKmBMF8mKtNbT7iyUkMcWoAG8FRHgS74kE0f7DBUAGmZvRbnXA==
+X-Received: by 2002:a05:6000:1d9d:b0:22a:745b:9f00 with SMTP id bk29-20020a0560001d9d00b0022a745b9f00mr18158769wrb.280.1664317225999;
+        Tue, 27 Sep 2022 15:20:25 -0700 (PDT)
 Received: from redhat.com ([2.55.47.213])
-        by smtp.gmail.com with ESMTPSA id d37-20020a05600c4c2500b003b332a7b898sm2561817wmp.45.2022.09.27.15.19.09
+        by smtp.gmail.com with ESMTPSA id i1-20020a5d4381000000b002205cbc1c74sm2663721wrq.101.2022.09.27.15.20.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Sep 2022 15:19:11 -0700 (PDT)
-Date:   Tue, 27 Sep 2022 18:19:07 -0400
+        Tue, 27 Sep 2022 15:20:25 -0700 (PDT)
+Date:   Tue, 27 Sep 2022 18:20:21 -0400
 From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     syzbot <syzbot+21da700f3c9f0bc40150@syzkaller.appspotmail.com>
+To:     syzbot <syzbot+0cb3309ee74d3c0c431c@syzkaller.appspotmail.com>
 Cc:     ast@kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
         davem@davemloft.net, edumazet@google.com, hawk@kernel.org,
         jasowang@redhat.com, john.fastabend@gmail.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-next@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com, sfr@canb.auug.org.au,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
         syzkaller-bugs@googlegroups.com,
         virtualization@lists.linux-foundation.org, hch@lst.de
-Subject: Re: [syzbot] linux-next boot error: WARNING in cpumask_next_wrap
-Message-ID: <20220927181728-mutt-send-email-mst@kernel.org>
-References: <000000000000dfa4f105e9af8c54@google.com>
+Subject: Re: [syzbot] usb-testing boot error: BUG: unable to handle kernel
+ paging request in virtnet_set_affinity
+Message-ID: <20220927181950-mutt-send-email-mst@kernel.org>
+References: <0000000000008d61ee05e6d9bb0a@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <000000000000dfa4f105e9af8c54@google.com>
+In-Reply-To: <0000000000008d61ee05e6d9bb0a@google.com>
 X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
@@ -80,25 +81,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 27, 2022 at 02:44:35PM -0700, syzbot wrote:
+On Mon, Aug 22, 2022 at 12:48:32PM -0700, syzbot wrote:
 > Hello,
 > 
 > syzbot found the following issue on:
 > 
-> HEAD commit:    1bd8b75fe6ad Add linux-next specific files for 20220927
-> git tree:       linux-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=109d3404880000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=fab8618a7c989c9d
-> dashboard link: https://syzkaller.appspot.com/bug?extid=21da700f3c9f0bc40150
+> HEAD commit:    ad57410d231d usb: gadget: rndis: use %u instead of %d to p..
+> git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git usb-testing
+> console output: https://syzkaller.appspot.com/x/log.txt?x=17472b85080000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=3cb39b084894e9a5
+> dashboard link: https://syzkaller.appspot.com/bug?extid=0cb3309ee74d3c0c431c
 > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 > 
-> Downloadable assets:
-> disk image: https://storage.googleapis.com/syzbot-assets/b150a04debdc/disk-1bd8b75f.raw.xz
-> vmlinux: https://storage.googleapis.com/syzbot-assets/2bf7d4b812bc/vmlinux-1bd8b75f.xz
-> 
 > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+21da700f3c9f0bc40150@syzkaller.appspotmail.com
+> Reported-by: syzbot+0cb3309ee74d3c0c431c@syzkaller.appspotmail.com
 > 
+> PCI-DMA: Using software bounce buffering for IO (SWIOTLB)
+> software IO TLB: mapped [mem 0x00000000bbffd000-0x00000000bfffd000] (64MB)
+> RAPL PMU: API unit is 2^-32 Joules, 0 fixed counters, 10737418240 ms ovfl timer
+> clocksource: tsc: mask: 0xffffffffffffffff max_cycles: 0x1fb6feccdd0, max_idle_ns: 440795259471 ns
+> clocksource: Switched to clocksource tsc
+> Initialise system trusted keyrings
+> workingset: timestamp_bits=40 max_order=21 bucket_order=0
+> NFS: Registering the id_resolver key type
+> Key type id_resolver registered
+> Key type id_legacy registered
+> 9p: Installing v9fs 9p2000 file system support
+> Key type asymmetric registered
+> Asymmetric key parser 'x509' registered
+> Block layer SCSI generic (bsg) driver version 0.4 loaded (major 246)
+> io scheduler mq-deadline registered
+> io scheduler kyber registered
+> usbcore: registered new interface driver udlfb
+> usbcore: registered new interface driver smscufx
+> input: Power Button as /devices/LNXSYSTM:00/LNXPWRBN:00/input/input0
+> ACPI: button: Power Button [PWRF]
+> input: Sleep Button as /devices/LNXSYSTM:00/LNXSLPBN:00/input/input1
 > ACPI: button: Sleep Button [SLPF]
 > ACPI: \_SB_.LNKC: Enabled at IRQ 11
 > virtio-pci 0000:00:03.0: virtio_pci: leaving for legacy driver
@@ -107,7 +125,6 @@ On Tue, Sep 27, 2022 at 02:44:35PM -0700, syzbot wrote:
 > ACPI: \_SB_.LNKB: Enabled at IRQ 10
 > virtio-pci 0000:00:06.0: virtio_pci: leaving for legacy driver
 > virtio-pci 0000:00:07.0: virtio_pci: leaving for legacy driver
-> N_HDLC line discipline registered with maxframe=4096
 > Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
 > 00:03: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
 > 00:04: ttyS1 at I/O 0x2f8 (irq = 3, base_baud = 115200) is a 16550A
@@ -116,93 +133,99 @@ On Tue, Sep 27, 2022 at 02:44:35PM -0700, syzbot wrote:
 > Non-volatile memory driver v1.3
 > Linux agpgart interface v0.103
 > ACPI: bus type drm_connector registered
-> [drm] Initialized vgem 1.0.0 20120112 for vgem on minor 0
-> [drm] Initialized vkms 1.0.0 20180514 for vkms on minor 1
-> Console: switching to colour frame buffer device 128x48
-> platform vkms: [drm] fb0: vkmsdrmfb frame buffer device
 > usbcore: registered new interface driver udl
-> brd: module loaded
 > loop: module loaded
-> zram: Added device: zram0
-> null_blk: disk nullb0 created
-> null_blk: module loaded
-> Guest personality initialized and is inactive
-> VMCI host device registered (name=vmci, major=10, minor=119)
-> Initialized host personality
 > usbcore: registered new interface driver rtsx_usb
 > usbcore: registered new interface driver viperboard
 > usbcore: registered new interface driver dln2
 > usbcore: registered new interface driver pn533_usb
-> nfcsim 0.2 initialized
 > usbcore: registered new interface driver port100
 > usbcore: registered new interface driver nfcmrvl
-> Loading iSCSI transport class v2.0-870.
 > scsi host0: Virtio SCSI HBA
-> st: Version 20160209, fixed bufsize 32768, s/g segs 256
+> scsi 0:0:1:0: Direct-Access     Google   PersistentDisk   1    PQ: 0 ANSI: 6
+> sd 0:0:1:0: Attached scsi generic sg0 type 0
 > Rounding down aligned max_sectors from 4294967295 to 4294967288
 > db_root: cannot open: /etc/target
-> slram: not enough parameters.
-> ftl_cs: FTL header not found.
-> wireguard: WireGuard 1.0.0 loaded. See www.wireguard.com for information.
-> wireguard: Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
-> eql: Equalizer2002: Simon Janes (simon@ncm.com) and David S. Miller (davem@redhat.com)
-> MACsec IEEE 802.1AE
-> tun: Universal TUN/TAP device driver, 1.6
-> ------------[ cut here ]------------
-> WARNING: CPU: 0 PID: 1 at include/linux/cpumask.h:110 cpu_max_bits_warn include/linux/cpumask.h:110 [inline]
-> WARNING: CPU: 0 PID: 1 at include/linux/cpumask.h:110 cpumask_check include/linux/cpumask.h:117 [inline]
-> WARNING: CPU: 0 PID: 1 at include/linux/cpumask.h:110 cpumask_next include/linux/cpumask.h:178 [inline]
-> WARNING: CPU: 0 PID: 1 at include/linux/cpumask.h:110 cpumask_next_wrap+0x139/0x1d0 lib/cpumask.c:27
-> Modules linked in:
-> CPU: 0 PID: 1 Comm: swapper/0 Not tainted 6.0.0-rc7-next-20220927-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 08/26/2022
-> RIP: 0010:cpu_max_bits_warn include/linux/cpumask.h:110 [inline]
-> RIP: 0010:cpumask_check include/linux/cpumask.h:117 [inline]
-> RIP: 0010:cpumask_next include/linux/cpumask.h:178 [inline]
-> RIP: 0010:cpumask_next_wrap+0x139/0x1d0 lib/cpumask.c:27
-> Code: df e8 1b 07 3e f8 39 eb 77 64 e8 c2 0a 3e f8 41 8d 6c 24 01 89 de 89 ef e8 04 07 3e f8 39 dd 0f 82 54 ff ff ff e8 a7 0a 3e f8 <0f> 0b e9 48 ff ff ff e8 9b 0a 3e f8 48 c7 c2 00 ae e1 8d 48 b8 00
-> RSP: 0000:ffffc90000067920 EFLAGS: 00010293
-> RAX: 0000000000000000 RBX: 0000000000000002 RCX: 0000000000000000
-> RDX: ffff88813fe50000 RSI: ffffffff893e3c59 RDI: 0000000000000004
-> RBP: 0000000000000002 R08: 0000000000000004 R09: 0000000000000002
-> R10: 0000000000000002 R11: 0000000000000000 R12: 0000000000000001
-> R13: 0000000000000000 R14: 0000000000000002 R15: ffffffff8de1ac10
-> FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+> BUG: unable to handle page fault for address: ffffdc0000000000
+> #PF: supervisor read access in kernel mode
+> #PF: error_code(0x0000) - not-present page
+> PGD 100026067 P4D 100026067 PUD 0 
+> Oops: 0000 [#1] PREEMPT SMP KASAN
+> CPU: 1 PID: 1 Comm: swapper/0 Not tainted 6.0.0-rc1-syzkaller-00005-gad57410d231d #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+> RIP: 0010:virtnet_set_affinity+0x2e4/0x600 drivers/net/virtio_net.c:2303
+> Code: e8 03 42 80 3c 30 00 0f 85 de 02 00 00 48 8b 44 24 10 48 8d 1c 80 48 8b 44 24 18 48 c1 e3 08 48 03 58 20 48 89 d8 48 c1 e8 03 <42> 80 3c 30 00 0f 85 a9 02 00 00 4c 8b 23 49 8d 7c 24 20 48 89 f8
+> RSP: 0000:ffffc9000001f980 EFLAGS: 00010a06
+> RAX: 1fffe00000000000 RBX: ffff000000000000 RCX: 0000000000000000
+> RDX: ffff8881002a8000 RSI: ffffffff82fd75e3 RDI: 0000000000000004
+> RBP: 0000000000000001 R08: 0000000000000004 R09: 0000000000000001
+> R10: 0000000000000001 R11: 0000000000000000 R12: 0000000000000001
+> R13: 0000000000000000 R14: dffffc0000000000 R15: ffffc9000001f9f8
+> FS:  0000000000000000(0000) GS:ffff8881f6900000(0000) knlGS:0000000000000000
 > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: ffff88823ffff000 CR3: 000000000bc8e000 CR4: 00000000003506f0
+> CR2: ffffdc0000000000 CR3: 0000000007825000 CR4: 00000000003506e0
 > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
 > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 > Call Trace:
 >  <TASK>
->  virtnet_set_affinity+0x35a/0x750 drivers/net/virtio_net.c:2300
-
-
-
-Also related to affinity things?
-I wonder what does virtio do wrong?
-
-
->  init_vqs drivers/net/virtio_net.c:3578 [inline]
->  init_vqs drivers/net/virtio_net.c:3564 [inline]
->  virtnet_probe+0x110f/0x2ea0 drivers/net/virtio_net.c:3868
+>  init_vqs drivers/net/virtio_net.c:3611 [inline]
+>  init_vqs drivers/net/virtio_net.c:3597 [inline]
+>  virtnet_probe+0x11ed/0x30f0 drivers/net/virtio_net.c:3904
 >  virtio_dev_probe+0x577/0x870 drivers/virtio/virtio.c:305
->  call_driver_probe drivers/base/dd.c:560 [inline]
->  really_probe+0x249/0xb90 drivers/base/dd.c:639
->  __driver_probe_device+0x1df/0x4d0 drivers/base/dd.c:778
->  driver_probe_device+0x4c/0x1a0 drivers/base/dd.c:808
->  __driver_attach+0x1d0/0x550 drivers/base/dd.c:1190
+>  call_driver_probe drivers/base/dd.c:530 [inline]
+>  really_probe+0x249/0xb90 drivers/base/dd.c:609
+>  __driver_probe_device+0x1df/0x4d0 drivers/base/dd.c:748
+>  driver_probe_device+0x4c/0x1a0 drivers/base/dd.c:778
+>  __driver_attach+0x223/0x550 drivers/base/dd.c:1150
 >  bus_for_each_dev+0x147/0x1d0 drivers/base/bus.c:301
 >  bus_add_driver+0x4c9/0x640 drivers/base/bus.c:618
->  driver_register+0x220/0x3a0 drivers/base/driver.c:246
->  virtio_net_driver_init+0x93/0xd2 drivers/net/virtio_net.c:4074
->  do_one_initcall+0x13d/0x780 init/main.c:1306
->  do_initcall_level init/main.c:1381 [inline]
->  do_initcalls init/main.c:1397 [inline]
->  do_basic_setup init/main.c:1416 [inline]
->  kernel_init_freeable+0x6ff/0x788 init/main.c:1636
->  kernel_init+0x1a/0x1d0 init/main.c:1524
+>  driver_register+0x220/0x3a0 drivers/base/driver.c:240
+>  virtio_net_driver_init+0x93/0xd2 drivers/net/virtio_net.c:4108
+>  do_one_initcall+0xfe/0x650 init/main.c:1296
+>  do_initcall_level init/main.c:1369 [inline]
+>  do_initcalls init/main.c:1385 [inline]
+>  do_basic_setup init/main.c:1404 [inline]
+>  kernel_init_freeable+0x6ac/0x735 init/main.c:1611
+>  kernel_init+0x1a/0x1d0 init/main.c:1500
 >  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
 >  </TASK>
+> Modules linked in:
+> CR2: ffffdc0000000000
+> ---[ end trace 0000000000000000 ]---
+> RIP: 0010:virtnet_set_affinity+0x2e4/0x600 drivers/net/virtio_net.c:2303
+
+
+So this is not new it turns out.  Was on vacation and missed it.
+
+> Code: e8 03 42 80 3c 30 00 0f 85 de 02 00 00 48 8b 44 24 10 48 8d 1c 80 48 8b 44 24 18 48 c1 e3 08 48 03 58 20 48 89 d8 48 c1 e8 03 <42> 80 3c 30 00 0f 85 a9 02 00 00 4c 8b 23 49 8d 7c 24 20 48 89 f8
+> RSP: 0000:ffffc9000001f980 EFLAGS: 00010a06
+> RAX: 1fffe00000000000 RBX: ffff000000000000 RCX: 0000000000000000
+> RDX: ffff8881002a8000 RSI: ffffffff82fd75e3 RDI: 0000000000000004
+> RBP: 0000000000000001 R08: 0000000000000004 R09: 0000000000000001
+> R10: 0000000000000001 R11: 0000000000000000 R12: 0000000000000001
+> R13: 0000000000000000 R14: dffffc0000000000 R15: ffffc9000001f9f8
+> FS:  0000000000000000(0000) GS:ffff8881f6900000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: ffffdc0000000000 CR3: 0000000007825000 CR4: 00000000003506e0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> ----------------
+> Code disassembly (best guess):
+>    0:	e8 03 42 80 3c       	callq  0x3c804208
+>    5:	30 00                	xor    %al,(%rax)
+>    7:	0f 85 de 02 00 00    	jne    0x2eb
+>    d:	48 8b 44 24 10       	mov    0x10(%rsp),%rax
+>   12:	48 8d 1c 80          	lea    (%rax,%rax,4),%rbx
+>   16:	48 8b 44 24 18       	mov    0x18(%rsp),%rax
+>   1b:	48 c1 e3 08          	shl    $0x8,%rbx
+>   1f:	48 03 58 20          	add    0x20(%rax),%rbx
+>   23:	48 89 d8             	mov    %rbx,%rax
+>   26:	48 c1 e8 03          	shr    $0x3,%rax
+> * 2a:	42 80 3c 30 00       	cmpb   $0x0,(%rax,%r14,1) <-- trapping instruction
+>   2f:	0f 85 a9 02 00 00    	jne    0x2de
+>   35:	4c 8b 23             	mov    (%rbx),%r12
+>   38:	49 8d 7c 24 20       	lea    0x20(%r12),%rdi
+>   3d:	48 89 f8             	mov    %rdi,%rax
 > 
 > 
 > ---
