@@ -2,49 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DAFE05EC70D
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 16:59:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 509845EC719
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 17:00:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230384AbiI0O7B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 10:59:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53080 "EHLO
+        id S231679AbiI0PAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 11:00:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbiI0O67 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 10:58:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2A4B4D4F3
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 07:58:57 -0700 (PDT)
+        with ESMTP id S231860AbiI0PAT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 11:00:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5858A6ACA;
+        Tue, 27 Sep 2022 08:00:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 019AD61A14
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 14:58:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 173BBC433C1;
-        Tue, 27 Sep 2022 14:58:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 629C5B81C24;
+        Tue, 27 Sep 2022 15:00:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EA4DFC433B5;
+        Tue, 27 Sep 2022 15:00:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664290736;
-        bh=45xIoDN/qAv8jmALP4wCeqOlDXNzOuiLYwON3J3fERM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=YxowAPzC7rwaAWnnt4QvKWfFm/6QXyStbIKyd3NenMzUhS+hYsJ5oiqcOPbYe+7HP
-         TvkKkRrThRMw/clieIIVu+rr2Sdn1P5TBcc/+YZ3M6PEF0qlSwyl6WTHXzy78SqR4e
-         In+T9Du5j0WPEWI7UMep/a6S2CeoEZDS1ajt/EbhQsDgJQJl64SWlU7JpLmIkK7rzX
-         T4niO/kBMPdnvXXC9YCFnlJkgeBsAvEsvx7xdDYqkkkFVAz1e/sCP0BtFKmozf8nyh
-         zZ86jU6XA2sRzHH2FhFyHeECb9bt+steOO76VIbr+JHSbunstZ7hS+X6J1NctU7gF+
-         /8Y5qX2TxMdWQ==
-Date:   Tue, 27 Sep 2022 07:58:55 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Liu Jian <liujian56@huawei.com>
-Cc:     <davem@davemloft.net>, <yoshfuji@linux-ipv6.org>,
-        <dsahern@kernel.org>, <edumazet@google.com>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 0/2] Add helper functions to parse netlink msg
- of ip_tunnel
-Message-ID: <20220927075855.7c09921b@kernel.org>
-In-Reply-To: <20220926131944.137094-1-liujian56@huawei.com>
-References: <20220926131944.137094-1-liujian56@huawei.com>
+        s=k20201202; t=1664290816;
+        bh=sFdOOobofzRSevtw276melbjxHB5ys6FHTANHXpopgw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=WX4frANPnykC7qs55nXP80M3bAJFh2unwqwJoLJz5GoRiCR/4tA2eX3ltERmzEusN
+         ZpXEtM9u9BJrVbs1qhr1UwE7RiFjZChweNT8cHUR+K/Da1G5Bwv4myqnXY2Icqr9xI
+         Y+TgflGxjmtemWgyaqdHtM9qos4EjC72lgbpjPjAVKn4i1jfs71rlVUcro8c9WFOpe
+         2j2gI/x3ApIC6mFjV9+EQVpgraTbi1SQTdP/PG3QZQd1xTAf1tBlCOSubUA9x0eRRG
+         x276lzU3aiR3loaZeBLqb9rXPRglLOI3gTyDj4CH6NomJ2JSV4/Va7DxdApUNDxvh0
+         e7trxI6k33RRg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CE978E21EC6;
+        Tue, 27 Sep 2022 15:00:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2] headers: Remove some left-over license text
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166429081584.27886.14059951639048254195.git-patchwork-notify@kernel.org>
+Date:   Tue, 27 Sep 2022 15:00:15 +0000
+References: <88410cddd31197ea26840d7dd71612bece8c6acf.1663871981.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <88410cddd31197ea26840d7dd71612bece8c6acf.1663871981.git.christophe.jaillet@wanadoo.fr>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     yhs@fb.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
 X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -54,17 +57,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 26 Sep 2022 21:19:42 +0800 Liu Jian wrote:
-> Add helper functions to parse netlinkmsg of ip_tunnel
-> 
-> Liu Jian (2):
->   net: Add helper function to parse netlink msg of ip_tunnel_encap
->   net: Add helper function to parse netlink msg of ip_tunnel_parm
-> 
->  include/net/ip_tunnels.h | 66 ++++++++++++++++++++++++++++++++++++++++
->  net/ipv4/ipip.c          | 62 ++-----------------------------------
->  net/ipv6/ip6_tunnel.c    | 37 ++--------------------
->  net/ipv6/sit.c           | 65 ++-------------------------------------
+Hello:
 
-Do they need to be in a header file? Could you put them in
-net/ipv4/ip_tunnel.c or net/ipv4/ip_tunnel_core.c instead?
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Thu, 22 Sep 2022 20:41:40 +0200 you wrote:
+> Remove some left-over from commit e2be04c7f995 ("License cleanup: add SPDX
+> license identifier to uapi header files with a license")
+> 
+> When the SPDX-License-Identifier tag has been added, the corresponding
+> license text has not been removed.
+> 
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> 
+> [...]
+
+Here is the summary with links:
+  - [v2] headers: Remove some left-over license text
+    https://git.kernel.org/netdev/net-next/c/73dfe93ea1b3
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
