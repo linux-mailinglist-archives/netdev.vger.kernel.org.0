@@ -2,240 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B39785EC2FD
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 14:40:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F3535EC321
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 14:43:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232428AbiI0MkH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 08:40:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36062 "EHLO
+        id S230202AbiI0MnN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 08:43:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232413AbiI0MkB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 08:40:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1C167269F;
-        Tue, 27 Sep 2022 05:39:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2890F61932;
-        Tue, 27 Sep 2022 12:39:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15663C433C1;
-        Tue, 27 Sep 2022 12:39:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1664282397;
-        bh=37yDCTtTXKSMe/LNxUNskIHnOhgXH3MxP0BfzMXipSc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oDLkAAZAK9fwuZt7LKXM8ftnzMYuqEX16TQ7tEzyFmrIv30ofSaafC4Y6LcrceyD7
-         V+zHm07PGvSaenwVeBW7ozfKT0qc6eaS4RIQDezd00apiD/wzViERNkpjWxNMuSu3T
-         TKNCo/J23ajBzpoO84jGyHvI9aryn0jwbsbvfsIQ=
-Date:   Tue, 27 Sep 2022 14:39:53 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Rob Herring <robh@kernel.org>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Olof Johansson <olof@lixom.net>,
-        Saravana Kannan <saravanak@google.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Al Cooper <alcooperx@gmail.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Tobias Klauser <tklauser@distanz.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        Vineet Gupta <vgupta@kernel.org>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Alexander Shiyan <shc_work@mail.ru>,
-        Baruch Siach <baruch@tkos.co.il>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Gabriel Somlo <gsomlo@gmail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Taichi Sugaya <sugaya.taichi@socionext.com>,
-        Takao Orito <orito.takao@socionext.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Pali Rohar <pali@kernel.org>,
-        Andreas Farber <afaerber@suse.de>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hammer Hsieh <hammerh0314@gmail.com>,
-        Peter Korsgaard <jacmet@sunsite.dk>,
-        Timur Tabi <timur@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        sascha hauer <sha@pengutronix.de>, peng fan <peng.fan@nxp.com>,
-        kevin hilman <khilman@kernel.org>,
-        ulf hansson <ulf.hansson@linaro.org>,
-        len brown <len.brown@intel.com>, pavel machek <pavel@ucw.cz>,
-        joerg roedel <joro@8bytes.org>, will deacon <will@kernel.org>,
-        andrew lunn <andrew@lunn.ch>,
-        heiner kallweit <hkallweit1@gmail.com>,
-        eric dumazet <edumazet@google.com>,
-        jakub kicinski <kuba@kernel.org>,
-        paolo abeni <pabeni@redhat.com>,
-        linus walleij <linus.walleij@linaro.org>,
-        hideaki yoshifuji <yoshfuji@linux-ipv6.org>,
-        david ahern <dsahern@kernel.org>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org,
-        linux-rpi-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-tegra@vger.kernel.org,
-        linux-snps-arc@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-actions@lists.infradead.org,
-        linux-unisoc@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        sparclinux@vger.kernel.org
-Subject: Re: [PATCH v2 0/2] Fix console probe delay when stdout-path isn't set
-Message-ID: <YzLvGXjP8+W0X/1s@kroah.com>
-References: <20220701012647.2007122-1-saravanak@google.com>
- <YwS5J3effuHQJRZ5@kroah.com>
- <CAOesGMivJ5Q-jdeGKw32yhjmNiYctHjpEAnoMMRghYqWD2m2tw@mail.gmail.com>
- <YygsEtxKz8dsEstc@kroah.com>
- <CAOesGMh5GHCONTQ9M1Ro7zW-hkL_1F7Xt=xRV0vYSfPY=7LYkQ@mail.gmail.com>
- <CAL_JsqK7auA8coB3DCqSDKw1ept_yQihVs-Me3bvU923os23xg@mail.gmail.com>
- <YzLp9yXgoJmy5YU8@smile.fi.intel.com>
+        with ESMTP id S231222AbiI0MnM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 08:43:12 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56E777F101
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 05:43:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1664282589;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rU2B4pS7ZGEFHrPkwWaKQmodtthUefxcZfoR2Tssn1s=;
+        b=Dm+6GNzcXNmmtowupdyQNRWS5WDtELI1jabc/EyKmrH/HhwZ5jX0t3jVq4Mh5FGoZ0jq/G
+        KKf7Z7aVmj8G1u3jpC7+iajQ3VSryvpRHKwHv5TAV1HLL8oSEQbGe4yOQK3PL2CzPoF5PK
+        cvSvc2JO+eXOvLYzQbyWvESUKcOvORg=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-203-kHikNxZ8PL2mqGp9XfvDog-1; Tue, 27 Sep 2022 08:43:08 -0400
+X-MC-Unique: kHikNxZ8PL2mqGp9XfvDog-1
+Received: by mail-wr1-f69.google.com with SMTP id h20-20020adfaa94000000b0022cc1de1251so384018wrc.15
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 05:43:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=rU2B4pS7ZGEFHrPkwWaKQmodtthUefxcZfoR2Tssn1s=;
+        b=JnisBTooRtlyV+38qXVycvgBK9swuNc0D1rkbIscoSxEnch6n0yTDTRMV/aZR1E+mJ
+         idaranj8QcapKeKooQKNpEYLbnwWKnLslvcraPesvCMiHMs7xJNvO5QsjwRdfVju8P+A
+         63tbb/rJsBMEL/rERGgUNBAi9rGecXv6id+hKJ0X0VUFAjuqbn9dOy3LS2ZIzfUrWXj0
+         LDcAKN3AhbI5jSr/pvrk0nlgOzgbhvg781/bTJIn/eGmheAs+Q7HhNUv3L50WGjjIiXp
+         d9/uPz+9gAzRBQy3jFemHUq0q5XveD0pr0EMqBwBRHE9zaaGGk7RtI6/8fGRnEOER3jJ
+         z44A==
+X-Gm-Message-State: ACrzQf2wUvplYuiVyhkNgDWmHkccUTKQ+KFJeebEFIa+X3iefLWmBQPS
+        UhkVLRhKtqQiN61fM5XWEj0OpwbUsz1QPkaWRez4XiP+B91qLkMWjiNrHc9ho5OJZtPKrxhBa1p
+        xfIr/PwLzZBm6svvM
+X-Received: by 2002:a5d:6d07:0:b0:22a:3f21:3b56 with SMTP id e7-20020a5d6d07000000b0022a3f213b56mr16363363wrq.679.1664282586822;
+        Tue, 27 Sep 2022 05:43:06 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM5Pcsg/TBB9EfSIfpEGBG2uGxB8J+7UAlyIzPAokOasmpqUmY3nny/ctIsR0WHg9tnAIzKXcg==
+X-Received: by 2002:a5d:6d07:0:b0:22a:3f21:3b56 with SMTP id e7-20020a5d6d07000000b0022a3f213b56mr16363348wrq.679.1664282586592;
+        Tue, 27 Sep 2022 05:43:06 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-104-40.dyn.eolo.it. [146.241.104.40])
+        by smtp.gmail.com with ESMTPSA id v187-20020a1cacc4000000b003b492338f45sm1685135wme.39.2022.09.27.05.43.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Sep 2022 05:43:06 -0700 (PDT)
+Message-ID: <5a7a07d34b68b36410aa42f22fb4c08c5ec6a08c.camel@redhat.com>
+Subject: Re: [PATCH net-next 1/2] net: sched: fix the err path of
+ tcf_ct_init in act_ct
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Xin Long <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Oz Shlomo <ozsh@nvidia.com>, Paul Blakey <paulb@nvidia.com>,
+        Ilya Maximets <i.maximets@ovn.org>
+Date:   Tue, 27 Sep 2022 14:43:04 +0200
+In-Reply-To: <208333ca564baf0994d3af3c454dc16127c9ad09.1663946157.git.lucien.xin@gmail.com>
+References: <cover.1663946157.git.lucien.xin@gmail.com>
+         <208333ca564baf0994d3af3c454dc16127c9ad09.1663946157.git.lucien.xin@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YzLp9yXgoJmy5YU8@smile.fi.intel.com>
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 27, 2022 at 03:17:59PM +0300, Andy Shevchenko wrote:
-> On Mon, Sep 26, 2022 at 01:25:05PM -0500, Rob Herring wrote:
-> > On Mon, Sep 19, 2022 at 5:56 PM Olof Johansson <olof@lixom.net> wrote:
-> > >
-> > > On Mon, Sep 19, 2022 at 1:44 AM Greg Kroah-Hartman
-> > > <gregkh@linuxfoundation.org> wrote:
-> > > >
-> > > > On Sun, Sep 18, 2022 at 08:44:27PM -0700, Olof Johansson wrote:
-> > > > > On Tue, Aug 23, 2022 at 8:37 AM Greg Kroah-Hartman
-> > > > > <gregkh@linuxfoundation.org> wrote:
-> > > > > >
-> > > > > > On Thu, Jun 30, 2022 at 06:26:38PM -0700, Saravana Kannan wrote:
-> > > > > > > These patches are on top of driver-core-next.
-> > > > > > >
-> > > > > > > Even if stdout-path isn't set in DT, this patch should take console
-> > > > > > > probe times back to how they were before the deferred_probe_timeout
-> > > > > > > clean up series[1].
-> > > > > >
-> > > > > > Now dropped from my queue due to lack of a response to other reviewer's
-> > > > > > questions.
-> > > > >
-> > > > > What happened to this patch? I have a 10 second timeout on console
-> > > > > probe on my SiFive Unmatched, and I don't see this flag being set for
-> > > > > the serial driver. In fact, I don't see it anywhere in-tree. I can't
-> > > > > seem to locate another patchset from Saravana around this though, so
-> > > > > I'm not sure where to look for a missing piece for the sifive serial
-> > > > > driver.
-> > > > >
-> > > > > This is the second boot time regression (this one not fatal, unlike
-> > > > > the Layerscape PCIe one) from the fw_devlink patchset.
-> > > > >
-> > > > > Greg, can you revert the whole set for 6.0, please? It's obviously
-> > > > > nowhere near tested enough to go in and I expect we'll see a bunch of
-> > > > > -stable fixups due to this if we let it remain in.
-> > > >
-> > > > What exactly is "the whole set"?  I have the default option fix queued
-> > > > up and will send that to Linus later this week (am traveling back from
-> > > > Plumbers still), but have not heard any problems about any other issues
-> > > > at all other than your report.
-> > >
-> > > I stand corrected in this case, the issue on the Hifive Unmatched was
-> > > a regression due to a PWM clock change -- I just sent a patch for that
-> > > (serial driver fix).
-> > >
-> > > So it seems like as long as the fw_devlink.strict=1 patch is reverted,
-> > > things are back to a working state here.
-> > >
-> > > I still struggle with how the fw_devlink patchset is expected to work
-> > > though, since DT is expected to describe the hardware configuration,
-> > > and it has no knowledge of whether there are drivers that will be
-> > > bound to any referenced supplier devnodes. It's not going to work well
-> > > to assume that they will always be bound, and to add 10 second
-> > > timeouts for those cases isn't a good solution. Seems like the number
-> > > of special cases will keep adding up.
-> > 
-> > Since the introduction of deferred probe, the kernel has always
-> > assumed if there is a device described, then there is or will be a
-> > driver for it. The result is you can't use new DTs (if they add
-> > providers) with older kernels.
-> > 
-> > We've ended up with a timeout because no one has come up with a better
-> > way to handle it. What the kernel needs is userspace saying "I'm done
-> > loading modules", but it's debatable whether that's a good solution
-> > too.
+On Fri, 2022-09-23 at 11:28 -0400, Xin Long wrote:
+> When it returns err from tcf_ct_flow_table_get(), the param tmpl should
+> have been freed in the cleanup. Otherwise a memory leak will occur.
 > 
-> In my opinion the deferred probe is a big hack and that is the root
-> cause of the issues we have here and there. It has to be redesigned
-> to be mathematically robust. It was an attempt by Andrzej Hajda to
-> solve this [1].
+> While fixing this problem, this patch also makes the err path simple by
+> calling tcf_ct_params_free(), so that it won't cause problems when more
+> members are added into param and need freeing on the err path.
 > 
-> [1]: https://events19.linuxfoundation.org/wp-content/uploads/2017/12/Deferred-Problem-Issues-With-Complex-Dependencies-Between-Devices-in-Linux-Kernel-Andrzej-Hajda-Samsung.pdf
+> Fixes: c34b961a2492 ("net/sched: act_ct: Create nf flow table per zone")
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
 
-deferred probe has _ALWAYS_ been known to be a hack, way back when we
-accepted it, but it was the best hack we had to solve a real problem
-that we had, so it was accepted.
+I think it's better if you re-submit this patch for -net explicitly, as
+it LGTM and makes sense to let it reach the affected kernel soon.
 
-It's been polished over the years, but yes, it does break down at times,
-due to the crazy complexity of hardware systems that we have no control
-over.
+Thanks!
 
-If you have concrete solutions for how to solve the issue, wonderful,
-please submit patches :)
+Paolo
 
-thanks,
 
-greg k-h
