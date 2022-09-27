@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C0655ECD7D
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 21:59:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF76F5ECD73
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 21:59:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232455AbiI0T70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 15:59:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51382 "EHLO
+        id S232465AbiI0T72 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 15:59:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232425AbiI0T65 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 15:58:57 -0400
+        with ESMTP id S232426AbiI0T66 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 15:58:58 -0400
 Received: from mx08lb.world4you.com (mx08lb.world4you.com [81.19.149.118])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1DE71CD134;
-        Tue, 27 Sep 2022 12:58:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 523FD326F5;
+        Tue, 27 Sep 2022 12:58:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=pdv64lbOXgiLrGKDi4zmXfWkT0tm4AeV7RFBw61vbEA=; b=iGVrli2cy++TG+v5i9GX8AOmoI
-        qgSXnurxJm+fbS/Fa6vnYa18iD0PIBOQ23YxzsSEPLIWBOIxdZlqm04b5jBVEJh9sUrX7Bu0BByci
-        bVgidz2K3UmoNXowM+Se5Q/IeCgjL++0tjeQq4FhK6sW9dBizvjrHZoCsqU2BMz1P88c=;
+        bh=n1s8hqyifdPC7N0Zubm2N8vcr8Qm5zqyKnmMfEsg5gg=; b=S1he1hOlQSDcQ/V+LtC/TqKywo
+        76XF8NMCKYUSmJjwCg0MnbQiAoKGaQu5oFD69si/+mOFFRRz8Zo+FD2K1jzcFNsl+1sw9Ob9TOuRf
+        erABjZ2pbEO6ZuiX5mjsdyyVTjOY6/wAyz+XVzfe/o7Pek0x0+K+itLxvhRaKAqKp9mc=;
 Received: from 88-117-54-199.adsl.highway.telekom.at ([88.117.54.199] helo=hornet.engleder.at)
         by mx08lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <gerhard@engleder-embedded.com>)
-        id 1odGjA-0005u7-LJ; Tue, 27 Sep 2022 21:58:48 +0200
+        id 1odGjB-0005u7-9U; Tue, 27 Sep 2022 21:58:49 +0200
 From:   Gerhard Engleder <gerhard@engleder-embedded.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
         pabeni@redhat.com, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
         Gerhard Engleder <gerhard@engleder-embedded.com>
-Subject: [PATCH net-next v4 5/6] tsnep: Add EtherType RX flow classification support
-Date:   Tue, 27 Sep 2022 21:58:41 +0200
-Message-Id: <20220927195842.44641-6-gerhard@engleder-embedded.com>
+Subject: [PATCH net-next v4 6/6] tsnep: Use page pool for RX
+Date:   Tue, 27 Sep 2022 21:58:42 +0200
+Message-Id: <20220927195842.44641-7-gerhard@engleder-embedded.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220927195842.44641-1-gerhard@engleder-embedded.com>
 References: <20220927195842.44641-1-gerhard@engleder-embedded.com>
@@ -45,556 +45,310 @@ Content-Transfer-Encoding: 8bit
 X-AV-Do-Run: Yes
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_FILL_THIS_FORM_SHORT
-        autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Received Ethernet frames are assigned to first RX queue per default.
-Based on EtherType Ethernet frames can be assigned to other RX queues.
-This enables processing of real-time Ethernet protocols on dedicated
-RX queues.
-
-Add RX flow classification interface for EtherType based RX queue
-assignment.
+Use page pool for RX buffer handling. Makes RX path more efficient and
+is required prework for future XDP support.
 
 Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
 ---
- drivers/net/ethernet/engleder/Makefile        |   2 +-
- drivers/net/ethernet/engleder/tsnep.h         |  36 ++
- drivers/net/ethernet/engleder/tsnep_ethtool.c |  40 +++
- drivers/net/ethernet/engleder/tsnep_hw.h      |  12 +-
- drivers/net/ethernet/engleder/tsnep_main.c    |  11 +
- drivers/net/ethernet/engleder/tsnep_rxnfc.c   | 307 ++++++++++++++++++
- 6 files changed, 403 insertions(+), 5 deletions(-)
- create mode 100644 drivers/net/ethernet/engleder/tsnep_rxnfc.c
+ drivers/net/ethernet/engleder/Kconfig      |   1 +
+ drivers/net/ethernet/engleder/tsnep.h      |   5 +-
+ drivers/net/ethernet/engleder/tsnep_main.c | 162 ++++++++++++---------
+ 3 files changed, 100 insertions(+), 68 deletions(-)
 
-diff --git a/drivers/net/ethernet/engleder/Makefile b/drivers/net/ethernet/engleder/Makefile
-index cce2191cb889..b6e3b16623de 100644
---- a/drivers/net/ethernet/engleder/Makefile
-+++ b/drivers/net/ethernet/engleder/Makefile
-@@ -6,5 +6,5 @@
- obj-$(CONFIG_TSNEP) += tsnep.o
+diff --git a/drivers/net/ethernet/engleder/Kconfig b/drivers/net/ethernet/engleder/Kconfig
+index f4e2b1102d8f..3df6bf476ae7 100644
+--- a/drivers/net/ethernet/engleder/Kconfig
++++ b/drivers/net/ethernet/engleder/Kconfig
+@@ -21,6 +21,7 @@ config TSNEP
+ 	depends on HAS_IOMEM && HAS_DMA
+ 	depends on PTP_1588_CLOCK_OPTIONAL
+ 	select PHYLIB
++	select PAGE_POOL
+ 	help
+ 	  Support for the Engleder TSN endpoint Ethernet MAC IP Core.
  
- tsnep-objs := tsnep_main.o tsnep_ethtool.o tsnep_ptp.o tsnep_tc.o \
--	      $(tsnep-y)
-+	      tsnep_rxnfc.o $(tsnep-y)
- tsnep-$(CONFIG_TSNEP_SELFTESTS) += tsnep_selftests.o
 diff --git a/drivers/net/ethernet/engleder/tsnep.h b/drivers/net/ethernet/engleder/tsnep.h
-index 62a279bcb011..2ca34ae9b55a 100644
+index 2ca34ae9b55a..09a723b827c7 100644
 --- a/drivers/net/ethernet/engleder/tsnep.h
 +++ b/drivers/net/ethernet/engleder/tsnep.h
-@@ -37,6 +37,24 @@ struct tsnep_gcl {
- 	bool change;
+@@ -96,9 +96,9 @@ struct tsnep_rx_entry {
+ 
+ 	u32 properties;
+ 
+-	struct sk_buff *skb;
++	struct page *page;
+ 	size_t len;
+-	DEFINE_DMA_UNMAP_ADDR(dma);
++	dma_addr_t dma;
  };
  
-+enum tsnep_rxnfc_filter_type {
-+	TSNEP_RXNFC_ETHER_TYPE,
-+};
-+
-+struct tsnep_rxnfc_filter {
-+	enum tsnep_rxnfc_filter_type type;
-+	union {
-+		u16 ether_type;
-+	};
-+};
-+
-+struct tsnep_rxnfc_rule {
-+	struct list_head list;
-+	struct tsnep_rxnfc_filter filter;
-+	int queue_index;
-+	int location;
-+};
-+
- struct tsnep_tx_entry {
- 	struct tsnep_tx_desc *desc;
- 	struct tsnep_tx_desc_wb *desc_wb;
-@@ -141,6 +159,12 @@ struct tsnep_adapter {
- 	/* ptp clock lock */
- 	spinlock_t ptp_lock;
+ struct tsnep_rx {
+@@ -113,6 +113,7 @@ struct tsnep_rx {
+ 	int read;
+ 	u32 owner_counter;
+ 	int increment_owner_counter;
++	struct page_pool *page_pool;
  
-+	/* RX flow classification rules lock */
-+	struct mutex rxnfc_lock;
-+	struct list_head rxnfc_rules;
-+	int rxnfc_count;
-+	int rxnfc_max;
-+
- 	int num_tx_queues;
- 	struct tsnep_tx tx[TSNEP_MAX_QUEUES];
- 	int num_rx_queues;
-@@ -161,6 +185,18 @@ void tsnep_tc_cleanup(struct tsnep_adapter *adapter);
- int tsnep_tc_setup(struct net_device *netdev, enum tc_setup_type type,
- 		   void *type_data);
+ 	u32 packets;
+ 	u32 bytes;
+diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/ethernet/engleder/tsnep_main.c
+index a6b81f32d76b..8a93d0aa7faa 100644
+--- a/drivers/net/ethernet/engleder/tsnep_main.c
++++ b/drivers/net/ethernet/engleder/tsnep_main.c
+@@ -27,10 +27,10 @@
+ #include <linux/phy.h>
+ #include <linux/iopoll.h>
  
-+int tsnep_rxnfc_init(struct tsnep_adapter *adapter);
-+void tsnep_rxnfc_cleanup(struct tsnep_adapter *adapter);
-+int tsnep_rxnfc_get_rule(struct tsnep_adapter *adapter,
-+			 struct ethtool_rxnfc *cmd);
-+int tsnep_rxnfc_get_all(struct tsnep_adapter *adapter,
-+			struct ethtool_rxnfc *cmd,
-+			u32 *rule_locs);
-+int tsnep_rxnfc_add_rule(struct tsnep_adapter *adapter,
-+			 struct ethtool_rxnfc *cmd);
-+int tsnep_rxnfc_del_rule(struct tsnep_adapter *adapter,
-+			 struct ethtool_rxnfc *cmd);
+-#define RX_SKB_LENGTH (round_up(TSNEP_RX_INLINE_METADATA_SIZE + ETH_HLEN + \
+-				TSNEP_MAX_FRAME_SIZE + ETH_FCS_LEN, 4))
+-#define RX_SKB_RESERVE ((16 - TSNEP_RX_INLINE_METADATA_SIZE) + NET_IP_ALIGN)
+-#define RX_SKB_ALLOC_LENGTH (RX_SKB_RESERVE + RX_SKB_LENGTH)
++#define TSNEP_SKB_PAD (NET_SKB_PAD + NET_IP_ALIGN)
++#define TSNEP_HEADROOM ALIGN(TSNEP_SKB_PAD, 4)
++#define TSNEP_MAX_RX_BUF_SIZE (PAGE_SIZE - TSNEP_HEADROOM - \
++			       SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
+ 
+ #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
+ #define DMA_ADDR_HIGH(dma_addr) ((u32)(((dma_addr) >> 32) & 0xFFFFFFFF))
+@@ -587,14 +587,15 @@ static void tsnep_rx_ring_cleanup(struct tsnep_rx *rx)
+ 
+ 	for (i = 0; i < TSNEP_RING_SIZE; i++) {
+ 		entry = &rx->entry[i];
+-		if (dma_unmap_addr(entry, dma))
+-			dma_unmap_single(dmadev, dma_unmap_addr(entry, dma),
+-					 dma_unmap_len(entry, len),
+-					 DMA_FROM_DEVICE);
+-		if (entry->skb)
+-			dev_kfree_skb(entry->skb);
++		if (entry->page)
++			page_pool_put_full_page(rx->page_pool, entry->page,
++						false);
++		entry->page = NULL;
+ 	}
+ 
++	if (rx->page_pool)
++		page_pool_destroy(rx->page_pool);
 +
- #if IS_ENABLED(CONFIG_TSNEP_SELFTESTS)
- int tsnep_ethtool_get_test_count(void);
- void tsnep_ethtool_get_test_strings(u8 *data);
-diff --git a/drivers/net/ethernet/engleder/tsnep_ethtool.c b/drivers/net/ethernet/engleder/tsnep_ethtool.c
-index e6760dc68ddd..a713a126b227 100644
---- a/drivers/net/ethernet/engleder/tsnep_ethtool.c
-+++ b/drivers/net/ethernet/engleder/tsnep_ethtool.c
-@@ -250,6 +250,44 @@ static int tsnep_ethtool_get_sset_count(struct net_device *netdev, int sset)
+ 	memset(rx->entry, 0, sizeof(rx->entry));
+ 
+ 	for (i = 0; i < TSNEP_RING_PAGE_COUNT; i++) {
+@@ -607,31 +608,19 @@ static void tsnep_rx_ring_cleanup(struct tsnep_rx *rx)
  	}
  }
  
-+static int tsnep_ethtool_get_rxnfc(struct net_device *dev,
-+				   struct ethtool_rxnfc *cmd, u32 *rule_locs)
-+{
-+	struct tsnep_adapter *adapter = netdev_priv(dev);
-+
-+	switch (cmd->cmd) {
-+	case ETHTOOL_GRXRINGS:
-+		cmd->data = adapter->num_rx_queues;
-+		return 0;
-+	case ETHTOOL_GRXCLSRLCNT:
-+		cmd->rule_cnt = adapter->rxnfc_count;
-+		cmd->data = adapter->rxnfc_max;
-+		cmd->data |= RX_CLS_LOC_SPECIAL;
-+		return 0;
-+	case ETHTOOL_GRXCLSRULE:
-+		return tsnep_rxnfc_get_rule(adapter, cmd);
-+	case ETHTOOL_GRXCLSRLALL:
-+		return tsnep_rxnfc_get_all(adapter, cmd, rule_locs);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+static int tsnep_ethtool_set_rxnfc(struct net_device *dev,
-+				   struct ethtool_rxnfc *cmd)
-+{
-+	struct tsnep_adapter *adapter = netdev_priv(dev);
-+
-+	switch (cmd->cmd) {
-+	case ETHTOOL_SRXCLSRLINS:
-+		return tsnep_rxnfc_add_rule(adapter, cmd);
-+	case ETHTOOL_SRXCLSRLDEL:
-+		return tsnep_rxnfc_del_rule(adapter, cmd);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
- static int tsnep_ethtool_get_ts_info(struct net_device *dev,
- 				     struct ethtool_ts_info *info)
+-static int tsnep_rx_alloc_and_map_skb(struct tsnep_rx *rx,
+-				      struct tsnep_rx_entry *entry)
++static int tsnep_rx_alloc_buffer(struct tsnep_rx *rx,
++				 struct tsnep_rx_entry *entry)
  {
-@@ -287,6 +325,8 @@ const struct ethtool_ops tsnep_ethtool_ops = {
- 	.get_strings = tsnep_ethtool_get_strings,
- 	.get_ethtool_stats = tsnep_ethtool_get_ethtool_stats,
- 	.get_sset_count = tsnep_ethtool_get_sset_count,
-+	.get_rxnfc = tsnep_ethtool_get_rxnfc,
-+	.set_rxnfc = tsnep_ethtool_set_rxnfc,
- 	.get_ts_info = tsnep_ethtool_get_ts_info,
- 	.get_link_ksettings = phy_ethtool_get_link_ksettings,
- 	.set_link_ksettings = phy_ethtool_set_link_ksettings,
-diff --git a/drivers/net/ethernet/engleder/tsnep_hw.h b/drivers/net/ethernet/engleder/tsnep_hw.h
-index e6cc6fbaf0d7..315dada75323 100644
---- a/drivers/net/ethernet/engleder/tsnep_hw.h
-+++ b/drivers/net/ethernet/engleder/tsnep_hw.h
-@@ -122,10 +122,6 @@
- #define TSNEP_RX_STATISTIC_BUFFER_TOO_SMALL 0x0191
- #define TSNEP_RX_STATISTIC_FIFO_OVERFLOW 0x0192
- #define TSNEP_RX_STATISTIC_INVALID_FRAME 0x0193
--#define TSNEP_RX_ASSIGN 0x01A0
--#define TSNEP_RX_ASSIGN_ETHER_TYPE_ACTIVE 0x00000001
--#define TSNEP_RX_ASSIGN_ETHER_TYPE_MASK 0xFFFF0000
--#define TSNEP_RX_ASSIGN_ETHER_TYPE_SHIFT 16
- #define TSNEP_MAC_ADDRESS_LOW 0x0800
- #define TSNEP_MAC_ADDRESS_HIGH 0x0804
- #define TSNEP_RX_FILTER 0x0806
-@@ -152,6 +148,14 @@
- #define TSNEP_GCL_A 0x2000
- #define TSNEP_GCL_B 0x2800
- #define TSNEP_GCL_SIZE SZ_2K
-+#define TSNEP_RX_ASSIGN 0x0840
-+#define TSNEP_RX_ASSIGN_ACTIVE 0x00000001
-+#define TSNEP_RX_ASSIGN_QUEUE_MASK 0x00000006
-+#define TSNEP_RX_ASSIGN_QUEUE_SHIFT 1
-+#define TSNEP_RX_ASSIGN_OFFSET 1
-+#define TSNEP_RX_ASSIGN_ETHER_TYPE 0x0880
-+#define TSNEP_RX_ASSIGN_ETHER_TYPE_OFFSET 2
-+#define TSNEP_RX_ASSIGN_ETHER_TYPE_COUNT 2
+-	struct device *dmadev = rx->adapter->dmadev;
+-	struct sk_buff *skb;
+-	dma_addr_t dma;
++	struct page *page;
  
- /* tsnep gate control list operation */
- struct tsnep_gcl_operation {
-diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/ethernet/engleder/tsnep_main.c
-index bf088b91efb7..a6b81f32d76b 100644
---- a/drivers/net/ethernet/engleder/tsnep_main.c
-+++ b/drivers/net/ethernet/engleder/tsnep_main.c
-@@ -1341,6 +1341,8 @@ static int tsnep_probe(struct platform_device *pdev)
- 	netdev->max_mtu = TSNEP_MAX_FRAME_SIZE;
+-	skb = __netdev_alloc_skb(rx->adapter->netdev, RX_SKB_ALLOC_LENGTH,
+-				 GFP_ATOMIC | GFP_DMA);
+-	if (!skb)
++	page = page_pool_dev_alloc_pages(rx->page_pool);
++	if (unlikely(!page))
+ 		return -ENOMEM;
  
- 	mutex_init(&adapter->gate_control_lock);
-+	mutex_init(&adapter->rxnfc_lock);
-+	INIT_LIST_HEAD(&adapter->rxnfc_rules);
+-	skb_reserve(skb, RX_SKB_RESERVE);
+-
+-	dma = dma_map_single(dmadev, skb->data, RX_SKB_LENGTH,
+-			     DMA_FROM_DEVICE);
+-	if (dma_mapping_error(dmadev, dma)) {
+-		dev_kfree_skb(skb);
+-		return -ENOMEM;
+-	}
+-
+-	entry->skb = skb;
+-	entry->len = RX_SKB_LENGTH;
+-	dma_unmap_addr_set(entry, dma, dma);
+-	entry->desc->rx = __cpu_to_le64(dma);
++	entry->page = page;
++	entry->len = TSNEP_MAX_RX_BUF_SIZE;
++	entry->dma = page_pool_get_dma_addr(entry->page);
++	entry->desc->rx = __cpu_to_le64(entry->dma + TSNEP_SKB_PAD);
  
- 	io = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	adapter->addr = devm_ioremap_resource(&pdev->dev, io);
-@@ -1354,6 +1356,7 @@ static int tsnep_probe(struct platform_device *pdev)
- 	version = (type & ECM_VERSION_MASK) >> ECM_VERSION_SHIFT;
- 	queue_count = (type & ECM_QUEUE_COUNT_MASK) >> ECM_QUEUE_COUNT_SHIFT;
- 	adapter->gate_control = type & ECM_GATE_CONTROL;
-+	adapter->rxnfc_max = TSNEP_RX_ASSIGN_ETHER_TYPE_COUNT;
- 
- 	tsnep_disable_irq(adapter, ECM_INT_ALL);
- 
-@@ -1388,6 +1391,10 @@ static int tsnep_probe(struct platform_device *pdev)
- 	if (retval)
- 		goto tc_init_failed;
- 
-+	retval = tsnep_rxnfc_init(adapter);
-+	if (retval)
-+		goto rxnfc_init_failed;
-+
- 	netdev->netdev_ops = &tsnep_netdev_ops;
- 	netdev->ethtool_ops = &tsnep_ethtool_ops;
- 	netdev->features = NETIF_F_SG;
-@@ -1408,6 +1415,8 @@ static int tsnep_probe(struct platform_device *pdev)
  	return 0;
- 
- register_failed:
-+	tsnep_rxnfc_cleanup(adapter);
-+rxnfc_init_failed:
- 	tsnep_tc_cleanup(adapter);
- tc_init_failed:
- 	tsnep_ptp_cleanup(adapter);
-@@ -1425,6 +1434,8 @@ static int tsnep_remove(struct platform_device *pdev)
- 
- 	unregister_netdev(adapter->netdev);
- 
-+	tsnep_rxnfc_cleanup(adapter);
-+
- 	tsnep_tc_cleanup(adapter);
- 
- 	tsnep_ptp_cleanup(adapter);
-diff --git a/drivers/net/ethernet/engleder/tsnep_rxnfc.c b/drivers/net/ethernet/engleder/tsnep_rxnfc.c
-new file mode 100644
-index 000000000000..9ac2a0cf3833
---- /dev/null
-+++ b/drivers/net/ethernet/engleder/tsnep_rxnfc.c
-@@ -0,0 +1,307 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (C) 2022 Gerhard Engleder <gerhard@engleder-embedded.com> */
-+
-+#include "tsnep.h"
-+
-+#define ETHER_TYPE_FULL_MASK ((__force __be16)~0)
-+
-+static void tsnep_enable_rule(struct tsnep_adapter *adapter,
-+			      struct tsnep_rxnfc_rule *rule)
-+{
-+	u8 rx_assign;
-+	void __iomem *addr;
-+
-+	rx_assign = TSNEP_RX_ASSIGN_ACTIVE;
-+	rx_assign |= (rule->queue_index << TSNEP_RX_ASSIGN_QUEUE_SHIFT) &
-+		     TSNEP_RX_ASSIGN_QUEUE_MASK;
-+
-+	addr = adapter->addr + TSNEP_RX_ASSIGN_ETHER_TYPE +
-+	       TSNEP_RX_ASSIGN_ETHER_TYPE_OFFSET * rule->location;
-+	iowrite16(rule->filter.ether_type, addr);
-+
-+	/* enable rule after all settings are done */
-+	addr = adapter->addr + TSNEP_RX_ASSIGN +
-+	       TSNEP_RX_ASSIGN_OFFSET * rule->location;
-+	iowrite8(rx_assign, addr);
-+}
-+
-+static void tsnep_disable_rule(struct tsnep_adapter *adapter,
-+			       struct tsnep_rxnfc_rule *rule)
-+{
-+	void __iomem *addr;
-+
-+	addr = adapter->addr + TSNEP_RX_ASSIGN +
-+	       TSNEP_RX_ASSIGN_OFFSET * rule->location;
-+	iowrite8(0, addr);
-+}
-+
-+static struct tsnep_rxnfc_rule *tsnep_get_rule(struct tsnep_adapter *adapter,
-+					       int location)
-+{
-+	struct tsnep_rxnfc_rule *rule;
-+
-+	list_for_each_entry(rule, &adapter->rxnfc_rules, list) {
-+		if (rule->location == location)
-+			return rule;
-+		if (rule->location > location)
-+			break;
-+	}
-+
-+	return NULL;
-+}
-+
-+static void tsnep_add_rule(struct tsnep_adapter *adapter,
-+			   struct tsnep_rxnfc_rule *rule)
-+{
-+	struct tsnep_rxnfc_rule *pred, *cur;
-+
-+	tsnep_enable_rule(adapter, rule);
-+
-+	pred = NULL;
-+	list_for_each_entry(cur, &adapter->rxnfc_rules, list) {
-+		if (cur->location >= rule->location)
-+			break;
-+		pred = cur;
-+	}
-+
-+	list_add(&rule->list, pred ? &pred->list : &adapter->rxnfc_rules);
-+	adapter->rxnfc_count++;
-+}
-+
-+static void tsnep_delete_rule(struct tsnep_adapter *adapter,
-+			      struct tsnep_rxnfc_rule *rule)
-+{
-+	tsnep_disable_rule(adapter, rule);
-+
-+	list_del(&rule->list);
-+	adapter->rxnfc_count--;
-+
-+	kfree(rule);
-+}
-+
-+static void tsnep_flush_rules(struct tsnep_adapter *adapter)
-+{
-+	struct tsnep_rxnfc_rule *rule, *tmp;
-+
-+	mutex_lock(&adapter->rxnfc_lock);
-+
-+	list_for_each_entry_safe(rule, tmp, &adapter->rxnfc_rules, list)
-+		tsnep_delete_rule(adapter, rule);
-+
-+	mutex_unlock(&adapter->rxnfc_lock);
-+}
-+
-+int tsnep_rxnfc_get_rule(struct tsnep_adapter *adapter,
-+			 struct ethtool_rxnfc *cmd)
-+{
-+	struct ethtool_rx_flow_spec *fsp = &cmd->fs;
-+	struct tsnep_rxnfc_rule *rule = NULL;
-+
-+	cmd->data = adapter->rxnfc_max;
-+
-+	mutex_lock(&adapter->rxnfc_lock);
-+
-+	rule = tsnep_get_rule(adapter, fsp->location);
-+	if (!rule) {
-+		mutex_unlock(&adapter->rxnfc_lock);
-+
-+		return -ENOENT;
-+	}
-+
-+	fsp->flow_type = ETHER_FLOW;
-+	fsp->ring_cookie = rule->queue_index;
-+
-+	if (rule->filter.type == TSNEP_RXNFC_ETHER_TYPE) {
-+		fsp->h_u.ether_spec.h_proto = htons(rule->filter.ether_type);
-+		fsp->m_u.ether_spec.h_proto = ETHER_TYPE_FULL_MASK;
-+	}
-+
-+	mutex_unlock(&adapter->rxnfc_lock);
-+
-+	return 0;
-+}
-+
-+int tsnep_rxnfc_get_all(struct tsnep_adapter *adapter,
-+			struct ethtool_rxnfc *cmd,
-+			u32 *rule_locs)
-+{
-+	struct tsnep_rxnfc_rule *rule;
-+	int count = 0;
-+
-+	cmd->data = adapter->rxnfc_max;
-+
-+	mutex_lock(&adapter->rxnfc_lock);
-+
-+	list_for_each_entry(rule, &adapter->rxnfc_rules, list) {
-+		if (count == cmd->rule_cnt) {
-+			mutex_unlock(&adapter->rxnfc_lock);
-+
-+			return -EMSGSIZE;
-+		}
-+
-+		rule_locs[count] = rule->location;
-+		count++;
-+	}
-+
-+	mutex_unlock(&adapter->rxnfc_lock);
-+
-+	cmd->rule_cnt = count;
-+
-+	return 0;
-+}
-+
-+static int tsnep_rxnfc_find_location(struct tsnep_adapter *adapter)
-+{
-+	struct tsnep_rxnfc_rule *tmp;
-+	int location = 0;
-+
-+	list_for_each_entry(tmp, &adapter->rxnfc_rules, list) {
-+		if (tmp->location == location)
-+			location++;
-+		else
-+			return location;
-+	}
-+
-+	if (location >= adapter->rxnfc_max)
-+		return -ENOSPC;
-+
-+	return location;
-+}
-+
-+static void tsnep_rxnfc_init_rule(struct tsnep_rxnfc_rule *rule,
-+				  const struct ethtool_rx_flow_spec *fsp)
-+{
-+	INIT_LIST_HEAD(&rule->list);
-+
-+	rule->queue_index = fsp->ring_cookie;
-+	rule->location = fsp->location;
-+
-+	rule->filter.type = TSNEP_RXNFC_ETHER_TYPE;
-+	rule->filter.ether_type = ntohs(fsp->h_u.ether_spec.h_proto);
-+}
-+
-+static int tsnep_rxnfc_check_rule(struct tsnep_adapter *adapter,
-+				  struct tsnep_rxnfc_rule *rule)
-+{
-+	struct net_device *dev = adapter->netdev;
-+	struct tsnep_rxnfc_rule *tmp;
-+
-+	list_for_each_entry(tmp, &adapter->rxnfc_rules, list) {
-+		if (!memcmp(&rule->filter, &tmp->filter, sizeof(rule->filter)) &&
-+		    tmp->location != rule->location) {
-+			netdev_dbg(dev, "rule already exists\n");
-+
-+			return -EEXIST;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+int tsnep_rxnfc_add_rule(struct tsnep_adapter *adapter,
-+			 struct ethtool_rxnfc *cmd)
-+{
-+	struct net_device *netdev = adapter->netdev;
-+	struct ethtool_rx_flow_spec *fsp =
-+		(struct ethtool_rx_flow_spec *)&cmd->fs;
-+	struct tsnep_rxnfc_rule *rule, *old_rule;
-+	int retval;
-+
-+	/* only EtherType is supported */
-+	if (fsp->flow_type != ETHER_FLOW ||
-+	    !is_zero_ether_addr(fsp->m_u.ether_spec.h_dest) ||
-+	    !is_zero_ether_addr(fsp->m_u.ether_spec.h_source) ||
-+	    fsp->m_u.ether_spec.h_proto != ETHER_TYPE_FULL_MASK) {
-+		netdev_dbg(netdev, "only ethernet protocol is supported\n");
-+
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (fsp->ring_cookie >
-+	    (TSNEP_RX_ASSIGN_QUEUE_MASK >> TSNEP_RX_ASSIGN_QUEUE_SHIFT)) {
-+		netdev_dbg(netdev, "invalid action\n");
-+
-+		return -EINVAL;
-+	}
-+
-+	if (fsp->location != RX_CLS_LOC_ANY &&
-+	    fsp->location >= adapter->rxnfc_max) {
-+		netdev_dbg(netdev, "invalid location\n");
-+
-+		return -EINVAL;
-+	}
-+
-+	rule = kzalloc(sizeof(*rule), GFP_KERNEL);
-+	if (!rule)
-+		return -ENOMEM;
-+
-+	mutex_lock(&adapter->rxnfc_lock);
-+
-+	if (fsp->location == RX_CLS_LOC_ANY) {
-+		retval = tsnep_rxnfc_find_location(adapter);
-+		if (retval < 0)
-+			goto failed;
-+		fsp->location = retval;
-+	}
-+
-+	tsnep_rxnfc_init_rule(rule, fsp);
-+
-+	retval = tsnep_rxnfc_check_rule(adapter, rule);
-+	if (retval)
+ }
+@@ -640,6 +629,7 @@ static int tsnep_rx_ring_init(struct tsnep_rx *rx)
+ {
+ 	struct device *dmadev = rx->adapter->dmadev;
+ 	struct tsnep_rx_entry *entry;
++	struct page_pool_params pp_params = { 0 };
+ 	struct tsnep_rx_entry *next_entry;
+ 	int i, j;
+ 	int retval;
+@@ -661,12 +651,28 @@ static int tsnep_rx_ring_init(struct tsnep_rx *rx)
+ 			entry->desc_dma = rx->page_dma[i] + TSNEP_DESC_SIZE * j;
+ 		}
+ 	}
++
++	pp_params.flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV;
++	pp_params.order = 0;
++	pp_params.pool_size = TSNEP_RING_SIZE;
++	pp_params.nid = dev_to_node(dmadev);
++	pp_params.dev = dmadev;
++	pp_params.dma_dir = DMA_FROM_DEVICE;
++	pp_params.max_len = TSNEP_MAX_RX_BUF_SIZE;
++	pp_params.offset = TSNEP_SKB_PAD;
++	rx->page_pool = page_pool_create(&pp_params);
++	if (IS_ERR(rx->page_pool)) {
++		retval = PTR_ERR(rx->page_pool);
++		rx->page_pool = NULL;
 +		goto failed;
-+
-+	old_rule = tsnep_get_rule(adapter, fsp->location);
-+	if (old_rule)
-+		tsnep_delete_rule(adapter, old_rule);
-+
-+	tsnep_add_rule(adapter, rule);
-+
-+	mutex_unlock(&adapter->rxnfc_lock);
-+
-+	return 0;
-+
-+failed:
-+	mutex_unlock(&adapter->rxnfc_lock);
-+	kfree(rule);
-+	return retval;
-+}
-+
-+int tsnep_rxnfc_del_rule(struct tsnep_adapter *adapter,
-+			 struct ethtool_rxnfc *cmd)
-+{
-+	struct ethtool_rx_flow_spec *fsp =
-+		(struct ethtool_rx_flow_spec *)&cmd->fs;
-+	struct tsnep_rxnfc_rule *rule;
-+
-+	mutex_lock(&adapter->rxnfc_lock);
-+
-+	rule = tsnep_get_rule(adapter, fsp->location);
-+	if (!rule) {
-+		mutex_unlock(&adapter->rxnfc_lock);
-+
-+		return -ENOENT;
 +	}
 +
-+	tsnep_delete_rule(adapter, rule);
-+
-+	mutex_unlock(&adapter->rxnfc_lock);
-+
-+	return 0;
-+}
-+
-+int tsnep_rxnfc_init(struct tsnep_adapter *adapter)
+ 	for (i = 0; i < TSNEP_RING_SIZE; i++) {
+ 		entry = &rx->entry[i];
+ 		next_entry = &rx->entry[(i + 1) % TSNEP_RING_SIZE];
+ 		entry->desc->next = __cpu_to_le64(next_entry->desc_dma);
+ 
+-		retval = tsnep_rx_alloc_and_map_skb(rx, entry);
++		retval = tsnep_rx_alloc_buffer(rx, entry);
+ 		if (retval)
+ 			goto failed;
+ 	}
+@@ -682,7 +688,7 @@ static void tsnep_rx_activate(struct tsnep_rx *rx, int index)
+ {
+ 	struct tsnep_rx_entry *entry = &rx->entry[index];
+ 
+-	/* RX_SKB_LENGTH is a multiple of 4 */
++	/* TSNEP_MAX_RX_BUF_SIZE is a multiple of 4 */
+ 	entry->properties = entry->len & TSNEP_DESC_LENGTH_MASK;
+ 	entry->properties |= TSNEP_DESC_INTERRUPT_FLAG;
+ 	if (index == rx->increment_owner_counter) {
+@@ -705,19 +711,52 @@ static void tsnep_rx_activate(struct tsnep_rx *rx, int index)
+ 	entry->desc->properties = __cpu_to_le32(entry->properties);
+ }
+ 
++static struct sk_buff *tsnep_build_skb(struct tsnep_rx *rx, struct page *page,
++				       int length)
 +{
-+	int i;
++	struct sk_buff *skb;
 +
-+	/* disable all rules */
-+	for (i = 0; i < adapter->rxnfc_max;
-+	     i += sizeof(u32) / TSNEP_RX_ASSIGN_OFFSET)
-+		iowrite32(0, adapter->addr + TSNEP_RX_ASSIGN + i);
++	skb = napi_build_skb(page_address(page), PAGE_SIZE);
++	if (unlikely(!skb))
++		return NULL;
 +
-+	return 0;
++	/* update pointers within the skb to store the data */
++	skb_reserve(skb, TSNEP_SKB_PAD + TSNEP_RX_INLINE_METADATA_SIZE);
++	__skb_put(skb, length - TSNEP_RX_INLINE_METADATA_SIZE - ETH_FCS_LEN);
++
++	if (rx->adapter->hwtstamp_config.rx_filter == HWTSTAMP_FILTER_ALL) {
++		struct skb_shared_hwtstamps *hwtstamps = skb_hwtstamps(skb);
++		struct tsnep_rx_inline *rx_inline =
++			(struct tsnep_rx_inline *)(page_address(page) +
++						   TSNEP_SKB_PAD);
++
++		skb_shinfo(skb)->tx_flags |=
++			SKBTX_HW_TSTAMP_NETDEV;
++		memset(hwtstamps, 0, sizeof(*hwtstamps));
++		hwtstamps->netdev_data = rx_inline;
++	}
++
++	skb_record_rx_queue(skb, rx->queue_index);
++	skb->protocol = eth_type_trans(skb, rx->adapter->netdev);
++
++	return skb;
 +}
 +
-+void tsnep_rxnfc_cleanup(struct tsnep_adapter *adapter)
-+{
-+	tsnep_flush_rules(adapter);
-+}
+ static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
+ 			 int budget)
+ {
+ 	struct device *dmadev = rx->adapter->dmadev;
+ 	int done = 0;
++	enum dma_data_direction dma_dir;
+ 	struct tsnep_rx_entry *entry;
++	struct page *page;
+ 	struct sk_buff *skb;
+-	size_t len;
+-	dma_addr_t dma;
+ 	int length;
+ 	bool enable = false;
+ 	int retval;
+ 
++	dma_dir = page_pool_get_dma_dir(rx->page_pool);
++
+ 	while (likely(done < budget)) {
+ 		entry = &rx->entry[rx->read];
+ 		if ((__le32_to_cpu(entry->desc_wb->properties) &
+@@ -730,43 +769,34 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
+ 		 */
+ 		dma_rmb();
+ 
+-		skb = entry->skb;
+-		len = dma_unmap_len(entry, len);
+-		dma = dma_unmap_addr(entry, dma);
++		prefetch(page_address(entry->page) + TSNEP_SKB_PAD);
++		length = __le32_to_cpu(entry->desc_wb->properties) &
++			 TSNEP_DESC_LENGTH_MASK;
++		dma_sync_single_range_for_cpu(dmadev, entry->dma, TSNEP_SKB_PAD,
++					      length, dma_dir);
++		page = entry->page;
+ 
+ 		/* forward skb only if allocation is successful, otherwise
+-		 * skb is reused and frame dropped
++		 * page is reused and frame dropped
+ 		 */
+-		retval = tsnep_rx_alloc_and_map_skb(rx, entry);
++		retval = tsnep_rx_alloc_buffer(rx, entry);
+ 		if (!retval) {
+-			dma_unmap_single(dmadev, dma, len, DMA_FROM_DEVICE);
+-
+-			length = __le32_to_cpu(entry->desc_wb->properties) &
+-				 TSNEP_DESC_LENGTH_MASK;
+-			skb_put(skb, length - ETH_FCS_LEN);
+-			if (rx->adapter->hwtstamp_config.rx_filter ==
+-			    HWTSTAMP_FILTER_ALL) {
+-				struct skb_shared_hwtstamps *hwtstamps =
+-					skb_hwtstamps(skb);
+-				struct tsnep_rx_inline *rx_inline =
+-					(struct tsnep_rx_inline *)skb->data;
+-
+-				skb_shinfo(skb)->tx_flags |=
+-					SKBTX_HW_TSTAMP_NETDEV;
+-				memset(hwtstamps, 0, sizeof(*hwtstamps));
+-				hwtstamps->netdev_data = rx_inline;
+-			}
+-			skb_pull(skb, TSNEP_RX_INLINE_METADATA_SIZE);
+-			skb_record_rx_queue(skb, rx->queue_index);
+-			skb->protocol = eth_type_trans(skb,
+-						       rx->adapter->netdev);
++			skb = tsnep_build_skb(rx, page, length);
++			if (skb) {
++				page_pool_release_page(rx->page_pool, page);
++
++				rx->packets++;
++				rx->bytes += length -
++					     TSNEP_RX_INLINE_METADATA_SIZE;
++				if (skb->pkt_type == PACKET_MULTICAST)
++					rx->multicast++;
+ 
+-			rx->packets++;
+-			rx->bytes += length - TSNEP_RX_INLINE_METADATA_SIZE;
+-			if (skb->pkt_type == PACKET_MULTICAST)
+-				rx->multicast++;
++				napi_gro_receive(napi, skb);
++			} else {
++				page_pool_recycle_direct(rx->page_pool, page);
+ 
+-			napi_gro_receive(napi, skb);
++				rx->dropped++;
++			}
+ 			done++;
+ 		} else {
+ 			rx->dropped++;
 -- 
 2.30.2
 
