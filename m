@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D90615ECEB2
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 22:37:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2405A5ECEB9
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 22:37:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233226AbiI0UhG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 16:37:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40500 "EHLO
+        id S233257AbiI0UhQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 16:37:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233262AbiI0Ugs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 16:36:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9E678307F
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 13:36:47 -0700 (PDT)
+        with ESMTP id S233134AbiI0Ugu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 16:36:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3358B85FAA
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 13:36:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C82C61B80
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 20:36:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DAC4C433C1;
-        Tue, 27 Sep 2022 20:36:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CA3A4B81C19
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 20:36:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65BF3C433C1;
+        Tue, 27 Sep 2022 20:36:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664311006;
-        bh=4RpxXg7lHUF8Mxf/ixtJ9UUgj3wwDcQXLVROGM1ff6I=;
+        s=k20201202; t=1664311007;
+        bh=Kcb1hWi/+6H9adD2DLmYGtYMG/CqS/zGpXXxLw2qzT4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P2ULxwBE6iikwQU+eVu1CqchM7hn+KGD2urh3lHL+lkZrAIDxSi8oZcTDveP6EhD4
-         2YPL+YKYP+5neSVJ7wT+p8ssfZlEBH3lrGiWwgp2g6lWc4imr5Z+HhYkmbU0wxJtPH
-         hMY3xJuQQpq4K02VO9uyOd6lD1PVPx3rM3eF38KlVxxUlpf43mDA0NF7fqoIjOXwzl
-         FdLcYMfAOyrNAkhZ1fh7QQhTzA0tNjSnzW85HzmNpy7eopDfBWbC4Md3xXAEQ5GFjd
-         ssT2w6vrQAHKfKS2qa/GlXzpWJUXUrImonXRUuc3X+w9h3qwpguuDCnLIr1c2Ug6/Y
-         xkmEBQLqC/1rA==
+        b=WWNQE+lbTEmBEgjrH0z0tHnAzZxfDmfFvJWTqHbmyqITABJp4Fh+0t8e4tLcgN+oT
+         8FBiotLfI6om2xqjots2SAzYDOOGz/Lrqyh1WLVKBZ9HizBvSxZXYftKkxi+3PKb0M
+         W8AH1L75f9uxZG9AKZ6FvrXAwmEK5z0n7oV9KOUAuYTT1zDsQX+YUc6wzoEa06RO7u
+         TTeRDt01QKb5qlj7t3rSzHc+yLY6Hyp2In+vh80A8ck3p98MVk21ngtRJK9FPOk1RQ
+         pLhAfaefVJvvSlvEf3PRb/Tmsw9rks4sDbxq7EDA9JJjr/i+w3eJIikdna/m4wOioq
+         uVJwCyHHNHcqw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -39,9 +39,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
         Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: [net-next 08/16] net/mlx5e: Fix a typo in mlx5e_xdp_mpwqe_is_full
-Date:   Tue, 27 Sep 2022 13:36:03 -0700
-Message-Id: <20220927203611.244301-9-saeed@kernel.org>
+Subject: [net-next 09/16] net/mlx5e: Use the aligned max TX MPWQE size
+Date:   Tue, 27 Sep 2022 13:36:04 -0700
+Message-Id: <20220927203611.244301-10-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220927203611.244301-1-saeed@kernel.org>
 References: <20220927203611.244301-1-saeed@kernel.org>
@@ -58,44 +58,80 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-Fix a typo in the function name: mpqwe -> mpwqe (stands for multi-packet
-work queue element).
+TX MPWQE size is limited to the cacheline-aligned maximum. Use the same
+value for the stop room and the capability check.
 
 Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en/params.c | 8 ++++----
+ drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h   | 7 +++++++
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c   | 5 +++--
+ 3 files changed, 14 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-index 8f321a6c0809..4685c652c97e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-@@ -333,7 +333,7 @@ mlx5e_xmit_xdp_frame_mpwqe(struct mlx5e_xdpsq *sq, struct mlx5e_xmit_data *xdptx
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
+index 2be09cc3c437..2c8fe2e60e17 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
+@@ -209,11 +209,11 @@ u16 mlx5e_calc_sq_stop_room(struct mlx5_core_dev *mdev, struct mlx5e_params *par
+ 	stop_room  = mlx5e_ktls_get_stop_room(mdev, params);
+ 	stop_room += mlx5e_stop_room_for_max_wqe(mdev);
+ 	if (is_mpwqe)
+-		/* A MPWQE can take up to the maximum-sized WQE + all the normal
+-		 * stop room can be taken if a new packet breaks the active
+-		 * MPWQE session and allocates its WQEs right away.
++		/* A MPWQE can take up to the maximum cacheline-aligned WQE +
++		 * all the normal stop room can be taken if a new packet breaks
++		 * the active MPWQE session and allocates its WQEs right away.
+ 		 */
+-		stop_room += mlx5e_stop_room_for_max_wqe(mdev);
++		stop_room += mlx5e_stop_room_for_mpwqe(mdev);
  
- 	mlx5e_xdp_mpwqe_add_dseg(sq, xdptxd, stats);
- 
--	if (unlikely(mlx5e_xdp_mpqwe_is_full(session, sq->max_sq_mpw_wqebbs)))
-+	if (unlikely(mlx5e_xdp_mpwqe_is_full(session, sq->max_sq_mpw_wqebbs)))
- 		mlx5e_xdp_mpwqe_complete(sq);
- 
- 	stats->xmit++;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
-index 287e17911251..bc2d9034af5b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
-@@ -122,7 +122,7 @@ static inline bool mlx5e_xdp_get_inline_state(struct mlx5e_xdpsq *sq, bool cur)
- 	return cur;
+ 	return stop_room;
+ }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
+index c208ea307bff..8751e48e283d 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
+@@ -439,6 +439,13 @@ static inline u16 mlx5e_stop_room_for_max_wqe(struct mlx5_core_dev *mdev)
+ 	return MLX5E_STOP_ROOM(mlx5e_get_max_sq_wqebbs(mdev));
  }
  
--static inline bool mlx5e_xdp_mpqwe_is_full(struct mlx5e_tx_mpwqe *session, u8 max_sq_mpw_wqebbs)
-+static inline bool mlx5e_xdp_mpwqe_is_full(struct mlx5e_tx_mpwqe *session, u8 max_sq_mpw_wqebbs)
++static inline u16 mlx5e_stop_room_for_mpwqe(struct mlx5_core_dev *mdev)
++{
++	u8 mpwqe_wqebbs = mlx5e_get_max_sq_aligned_wqebbs(mdev);
++
++	return mlx5e_stop_room_for_wqe(mdev, mpwqe_wqebbs);
++}
++
+ static inline bool mlx5e_icosq_can_post_wqe(struct mlx5e_icosq *sq, u16 wqe_size)
  {
- 	if (session->inline_on)
- 		return session->ds_count + MLX5E_XDP_INLINE_WQE_MAX_DS_CNT >
+ 	u16 room = sq->reserved_room;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index e7fea19ac523..a3013d5190d1 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -75,7 +75,7 @@ bool mlx5e_check_fragmented_striding_rq_cap(struct mlx5_core_dev *mdev)
+ 
+ 	striding_rq_umr = MLX5_CAP_GEN(mdev, striding_rq) && MLX5_CAP_GEN(mdev, umr_ptr_rlky) &&
+ 			  MLX5_CAP_ETH(mdev, reg_umr_sq);
+-	max_wqe_sz_cap = mlx5e_get_max_sq_wqebbs(mdev) * MLX5_SEND_WQE_BB;
++	max_wqe_sz_cap = mlx5e_get_max_sq_aligned_wqebbs(mdev) * MLX5_SEND_WQE_BB;
+ 	inline_umr = max_wqe_sz_cap >= MLX5E_UMR_WQE_INLINE_SZ;
+ 	if (!striding_rq_umr)
+ 		return false;
+@@ -1155,7 +1155,8 @@ static int mlx5e_alloc_xdpsq(struct mlx5e_channel *c,
+ 		is_redirect ?
+ 			&c->priv->channel_stats[c->ix]->xdpsq :
+ 			&c->priv->channel_stats[c->ix]->rq_xdpsq;
+-	sq->stop_room = mlx5e_stop_room_for_max_wqe(mdev);
++	sq->stop_room = param->is_mpw ? mlx5e_stop_room_for_mpwqe(mdev) :
++					mlx5e_stop_room_for_max_wqe(mdev);
+ 	sq->max_sq_mpw_wqebbs = mlx5e_get_max_sq_aligned_wqebbs(mdev);
+ 
+ 	param->wq.db_numa_node = cpu_to_node(c->cpu);
 -- 
 2.37.3
 
