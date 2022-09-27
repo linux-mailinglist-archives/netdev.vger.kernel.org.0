@@ -2,53 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 90F825EBA5B
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 08:08:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C46945EBAA6
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 08:31:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229832AbiI0GIr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 02:08:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48800 "EHLO
+        id S229786AbiI0GbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 02:31:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbiI0GIq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 02:08:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76B9BA6C3B;
-        Mon, 26 Sep 2022 23:08:44 -0700 (PDT)
+        with ESMTP id S229567AbiI0Ga5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 02:30:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 561778670A;
+        Mon, 26 Sep 2022 23:30:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BA358B8198C;
-        Tue, 27 Sep 2022 06:08:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 462F4C433D6;
-        Tue, 27 Sep 2022 06:08:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D6A5A61604;
+        Tue, 27 Sep 2022 06:30:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D6F0C433D6;
+        Tue, 27 Sep 2022 06:30:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664258921;
-        bh=w3EvjEl2w444FDkaGcaMBXMqh4XDEqATPXWfLB6KEW0=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=YKKUWOvSvMzWpNaacN2UVJA4PX7oufPHofneTilffSjT4Fj3xUmlNzRxgVHyY48jr
-         hZ5s9JI3Dvor6THtpCV7We5LRWzaR2PGDGxvlUcmwszSC6OVx5euWXmHvjzX8fOdYb
-         fV2xLKOROR0hgvldaacPTH1mzNTSm4Mc92plqZQNg9eFOzlpNL4aY/y+JvKdUWk3RR
-         n/alSKAvdD1V1c5zPdEhITCAacedWPEsnpYs5bD0p82weORCpqJGCPRz3P/cmOYz47
-         QquJiLxjTPYo2ek3kLxyVhkwPUsggi5djOYObxBnkTy4FnvKtwJ37PNsGorTIFOeHq
-         l4GhyMEWXVqMg==
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1664260255;
+        bh=YGDSP5vLuXAeAgX4Rz1u2FTBmaQowm/Pe9gP8nWeNdE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=AdpgttYZfI8FZsZgXi1OHKUN56K+EB+ohwmfdOS6Vf+JrdQS9wj/I41PhZmtrm16E
+         hlx5xleiavKfW//6iijp71HVs5s6zCV5CzlV5Q3G/vR+3mhTlk2QhTv6MU44lPh2GG
+         1zYzKB1SezyEMw0WXRV1CAES/pvHJ3LyDHvoba6lrbjTaEngLROohVRd+L+/l9jHUS
+         PNAHFtII8LGQ/+RINhboAtj+qfQz0/mn4BZWFToLBrdReOluLCZEXI+aOHsILwruvO
+         qEBFRZxZHbd6qDjRYRLeNhnwxVptZbJCzRYcAjk/7jwBK5v059RsUR2nWJd3cOOi8W
+         Qipv8yGXPhJcw==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1od47Q-0006Uq-UD; Tue, 27 Sep 2022 08:31:00 +0200
+Date:   Tue, 27 Sep 2022 08:31:00 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Frank Wunderlich <linux@fw-web.de>
+Cc:     linux-usb@vger.kernel.org,
+        Frank Wunderlich <frank-w@public-files.de>,
+        =?utf-8?B?QmrDuHJu?= Mork <bjorn@mork.no>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH 1/2] USB: serial: qcserial: add new usb-id for Dell
+ branded EM7455
+Message-ID: <YzKYpPFyZYMkVaxS@hovoldconsulting.com>
+References: <20220926150740.6684-1-linux@fw-web.de>
+ <20220926150740.6684-2-linux@fw-web.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v3] cw1200: fix incorrect check to determine if no element
- is
- found in list
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20220413091723.17596-1-xiam0nd.tong@gmail.com>
-References: <20220413091723.17596-1-xiam0nd.tong@gmail.com>
-To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Cc:     pizza@shaftnet.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, linville@tuxdriver.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Xiaomeng Tong <xiam0nd.tong@gmail.com>
-User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <166425891751.10854.17954228621330378644.kvalo@kernel.org>
-Date:   Tue, 27 Sep 2022 06:08:39 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220926150740.6684-2-linux@fw-web.de>
 X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -58,32 +65,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Xiaomeng Tong <xiam0nd.tong@gmail.com> wrote:
-
-> The bug is here: "} else if (item) {".
+On Mon, Sep 26, 2022 at 05:07:39PM +0200, Frank Wunderlich wrote:
+> From: Frank Wunderlich <frank-w@public-files.de>
 > 
-> The list iterator value will *always* be set and non-NULL by
-> list_for_each_entry(), so it is incorrect to assume that the iterator
-> value will be NULL if the list is empty or no element is found in list.
+> Add support for Dell 5811e (EM7455) with USB-id 0x413c:0x81c2.
 > 
-> Use a new value 'iter' as the list iterator, while use the old value
-> 'item' as a dedicated pointer to point to the found element, which
-> 1. can fix this bug, due to now 'item' is NULL only if it's not found.
-> 2. do not need to change all the uses of 'item' after the loop.
-> 3. can also limit the scope of the list iterator 'iter' *only inside*
->    the traversal loop by simply declaring 'iter' inside the loop in the
->    future, as usage of the iterator outside of the list_for_each_entry
->    is considered harmful. https://lkml.org/lkml/2022/2/17/1032
+> Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+> Cc: stable@vger.kernel.org
+> ---
+>  drivers/usb/serial/qcserial.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> Fixes: a910e4a94f692 ("cw1200: add driver for the ST-E CW1100 & CW1200 WLAN chipsets")
-> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+> diff --git a/drivers/usb/serial/qcserial.c b/drivers/usb/serial/qcserial.c
+> index 586ef5551e76..7897609916a6 100644
+> --- a/drivers/usb/serial/qcserial.c
+> +++ b/drivers/usb/serial/qcserial.c
+> @@ -177,6 +177,7 @@ static const struct usb_device_id id_table[] = {
+>  	{DEVICE_SWI(0x413c, 0x81b3)},	/* Dell Wireless 5809e Gobi(TM) 4G LTE Mobile Broadband Card (rev3) */
+>  	{DEVICE_SWI(0x413c, 0x81b5)},	/* Dell Wireless 5811e QDL */
+>  	{DEVICE_SWI(0x413c, 0x81b6)},	/* Dell Wireless 5811e QDL */
+> +	{DEVICE_SWI(0x413c, 0x81c2)},	/* Dell Wireless 5811e QDL */
 
-Patch applied to wireless-next.git, thanks.
+I assume this is not just for QDL mode as the comment indicates.
 
-86df5de5c632 cw1200: fix incorrect check to determine if no element is found in list
+Could you post the output of usb-devices for this device?
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220413091723.17596-1-xiam0nd.tong@gmail.com/
+>  	{DEVICE_SWI(0x413c, 0x81cb)},	/* Dell Wireless 5816e QDL */
+>  	{DEVICE_SWI(0x413c, 0x81cc)},	/* Dell Wireless 5816e */
+>  	{DEVICE_SWI(0x413c, 0x81cf)},   /* Dell Wireless 5819 */
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+Johan
