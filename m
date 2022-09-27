@@ -2,184 +2,244 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 22ECA5EC205
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 14:03:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A028F5EC269
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 14:20:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232119AbiI0MD0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 08:03:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36664 "EHLO
+        id S232380AbiI0MUT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 08:20:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229572AbiI0MDZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 08:03:25 -0400
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78E66DF3A0;
-        Tue, 27 Sep 2022 05:03:23 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 56F452049B;
-        Tue, 27 Sep 2022 14:03:20 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id jEMa5iUXLDMK; Tue, 27 Sep 2022 14:03:19 +0200 (CEST)
-Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id C1EFC20080;
-        Tue, 27 Sep 2022 14:03:19 +0200 (CEST)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout1.secunet.com (Postfix) with ESMTP id B2C7B80004A;
-        Tue, 27 Sep 2022 14:03:19 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 27 Sep 2022 14:03:19 +0200
-Received: from [10.182.6.203] (10.182.6.203) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Tue, 27 Sep
- 2022 14:03:19 +0200
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-From:   Christian Langrock <christian.langrock@secunet.com>
-Subject: [PATCH net-ipsec v2] xfrm: replay: Fix ESN wrap around for GSO
-Autocrypt: addr=christian.langrock@secunet.com; keydata=
- mQENBFee7jkBCACkeMIuzZu/KBA1q3kKGr7d9iiZGF5IpJnIE9dMiK3uaz7uM26VSTJVp6jd
- GuSGGGmb81OSLEcIEIsYKXvjblAKUX1A74t3WMRcky3MwJbmN6AkN8QlP45mDddtPRf1ElB2
- S32i9OrEkvw8xcvHYPwbaHenXic4/8fHWEh+vtd/5/5TDTIU/ag9tQfPea13ixXN0PuccMub
- FeUMpwFCg324+Z19iGvfDWWZmQQGlBjc3Q6z0hXOb/deWL/+lPS4t+tTgpmmZO4XkIs+18Kq
- xCVukCbnqV0y+04sj3G1GQ/DlGvZHxwywBceAL7BvmdeXQKAS0KRL5zrghIBCgnUyutDABEB
- AAG0M0NocmlzdGlhbiBMYW5ncm9jayA8Y2hyaXN0aWFuLmxhbmdyb2NrQHNlY3VuZXQuY29t
- PokBNwQTAQgAIQUCV57uOQIbAwULCQgHAgYVCAkKCwIEFgIDAQIeAQIXgAAKCRCjeMdfgutr
- Xu3kCACIBx6UHReBtBciNUPkP3fRaGeSOADIrql72VKD9faLAHTt6w8kvyzb8Ctpa77jswJt
- 21c349mF3maPlpNtpswqH27bTlXYhNcXxcmHPCbNtN3yGUy0UuIJfBMZc8PLqiqYoY5GKD3u
- imeVbDYjgNhebO2f1cUvwY2wTwX6b0tgKVK0xYYTDpXI1/2MVGsjXqak7PQoqVq0sDu0gIAA
- i1QO0Fbb6jIaHj6CEM2hpBTBk8qbkPs/MqYGdLl4oXvkWTLduQjm6dMtjxvIt6WJWZQbLjTe
- QIfc21luNQKDmfT623pVTPPMMAciWfpdw63FblfGcfBnAKCJ8JBj0z9T6/PmuQENBFee7jkB
- CADS7amJPbY2dWpeGtE+I9yLL53lSriP4L6rI9UoEwNM1OkjnB7wFnH8dm8N68K2OJogkHwo
- X2OnzGhxJ28NHRuAh++3hIYY+gU4HMLaX3onDK1oqAdYczhJ7f6UCPbYaghkzJ6Vg/FEWpA8
- u5vG/BX4y+F3/Y98l6mzAX5wLmTapRwdfuRCXRA6jlIHIOwP3NPKK4Pz2E7witsimV1ucN4u
- XFiZ36CUPAiXXlER9iPZnQUSyCobqJOJKm4C7wUNQ1negCXDBd3KjSyzTIafw/oYG4RrWGul
- iI2ig/qTUC8cZdAJTMBjUJR6ugJazMB1Rg17p2GRD0AzUOV2qdqYFqQFABEBAAGJAR8EGAEI
- AAkFAlee7jkCGwwACgkQo3jHX4Lra17vtQgAg2g0JEXVTGT36BDJgVjIUY1evnm1fWwTPpco
- kP/8/aO2ubmlxtWQ2hV5OPfL5nDday2S4Nq5j3kqQq+rvUrORVmvT4WxYZM1fr2nibuzaUbs
- JtxphNpjahrsEcLLTzBW4CbHTaL4YTT+ZD/GDeHoxAh9JfMkdMBXHyWTuw+QSP0pp7WvNsDo
- sukKFyQ0rve9PH2dry6A0oLP7UxtAzEERV2Se0BueZPQuVnU6Cvj3ZStK28JDhMjxIPkZPE5
- kCV8QNF8OsiwymA3aoPKe5Bw0lOcjuuJkxRa5bazyuubX9pIIgTeGsecgpSgpfA9jsEHKFqo
- LuxUA+77VQ5hSydVaQ==
-Message-ID: <056c6bc1-0371-fca4-500b-e84bbcbcfc34@secunet.com>
-Date:   Tue, 27 Sep 2022 14:03:18 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        with ESMTP id S232310AbiI0MTv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 08:19:51 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FB0812FF07;
+        Tue, 27 Sep 2022 05:18:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1664281126; x=1695817126;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=OFIxxBkiaCDaU7hdmWCgva7sjv3x1WGTNlqGM1oQtNQ=;
+  b=QjkNRJ9JABpK5KuGM6vW13ifDgF1zvv2NkXQaswwpopi4XOrqXvNEW0a
+   zpn3E9p4vm/ehX8quUW0x0BcZv29fvHaAW/CgJ7m0T7qXQe0amKRrEDAS
+   EzB9PNHcvJpz0v5O31ewC6zMNtvXzKqa8GeDCBYoV0lCNy6b/2IZB1DBT
+   Id0ypUSxa2I1GHDoKY+PdTwG9seHh2aJKRcz1VEVKBPDv0rkhfFI2ij6M
+   HzvJcvXyiqAF0KmEO1wuXT7fF/4llRwNNO0kHo3UcyfJOgYiuwzhcscEj
+   KvJSp43ftV8CWZlWWf9OWIxVC5CY0jzHRUjgnkJrYa+TZkir+NeUE9ezV
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="302782109"
+X-IronPort-AV: E=Sophos;i="5.93,349,1654585200"; 
+   d="scan'208";a="302782109"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Sep 2022 05:18:11 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="599160114"
+X-IronPort-AV: E=Sophos;i="5.93,349,1654585200"; 
+   d="scan'208";a="599160114"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga006.jf.intel.com with ESMTP; 27 Sep 2022 05:18:06 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1od9XD-008RHv-1p;
+        Tue, 27 Sep 2022 15:17:59 +0300
+Date:   Tue, 27 Sep 2022 15:17:59 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Rob Herring <robh@kernel.org>,
+        Andrzej Hajda <andrzej.hajda@intel.com>
+Cc:     Olof Johansson <olof@lixom.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Saravana Kannan <saravanak@google.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Al Cooper <alcooperx@gmail.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Tobias Klauser <tklauser@distanz.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        Vineet Gupta <vgupta@kernel.org>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Alexander Shiyan <shc_work@mail.ru>,
+        Baruch Siach <baruch@tkos.co.il>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Gabriel Somlo <gsomlo@gmail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Taichi Sugaya <sugaya.taichi@socionext.com>,
+        Takao Orito <orito.takao@socionext.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Pali Rohar <pali@kernel.org>,
+        Andreas Farber <afaerber@suse.de>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hammer Hsieh <hammerh0314@gmail.com>,
+        Peter Korsgaard <jacmet@sunsite.dk>,
+        Timur Tabi <timur@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        sascha hauer <sha@pengutronix.de>, peng fan <peng.fan@nxp.com>,
+        kevin hilman <khilman@kernel.org>,
+        ulf hansson <ulf.hansson@linaro.org>,
+        len brown <len.brown@intel.com>, pavel machek <pavel@ucw.cz>,
+        joerg roedel <joro@8bytes.org>, will deacon <will@kernel.org>,
+        andrew lunn <andrew@lunn.ch>,
+        heiner kallweit <hkallweit1@gmail.com>,
+        eric dumazet <edumazet@google.com>,
+        jakub kicinski <kuba@kernel.org>,
+        paolo abeni <pabeni@redhat.com>,
+        linus walleij <linus.walleij@linaro.org>,
+        hideaki yoshifuji <yoshfuji@linux-ipv6.org>,
+        david ahern <dsahern@kernel.org>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org,
+        linux-rpi-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-tegra@vger.kernel.org,
+        linux-snps-arc@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linux-actions@lists.infradead.org,
+        linux-unisoc@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        sparclinux@vger.kernel.org
+Subject: Re: [PATCH v2 0/2] Fix console probe delay when stdout-path isn't set
+Message-ID: <YzLp9yXgoJmy5YU8@smile.fi.intel.com>
+References: <20220701012647.2007122-1-saravanak@google.com>
+ <YwS5J3effuHQJRZ5@kroah.com>
+ <CAOesGMivJ5Q-jdeGKw32yhjmNiYctHjpEAnoMMRghYqWD2m2tw@mail.gmail.com>
+ <YygsEtxKz8dsEstc@kroah.com>
+ <CAOesGMh5GHCONTQ9M1Ro7zW-hkL_1F7Xt=xRV0vYSfPY=7LYkQ@mail.gmail.com>
+ <CAL_JsqK7auA8coB3DCqSDKw1ept_yQihVs-Me3bvU923os23xg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAL_JsqK7auA8coB3DCqSDKw1ept_yQihVs-Me3bvU923os23xg@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When using GSO it can happen that the wrong seq_hi is used for the last
-packets before the wrap around. This can lead to double usage of a
-sequence number. To avoid this, we should serialize this last GSO
-packet.
+On Mon, Sep 26, 2022 at 01:25:05PM -0500, Rob Herring wrote:
+> On Mon, Sep 19, 2022 at 5:56 PM Olof Johansson <olof@lixom.net> wrote:
+> >
+> > On Mon, Sep 19, 2022 at 1:44 AM Greg Kroah-Hartman
+> > <gregkh@linuxfoundation.org> wrote:
+> > >
+> > > On Sun, Sep 18, 2022 at 08:44:27PM -0700, Olof Johansson wrote:
+> > > > On Tue, Aug 23, 2022 at 8:37 AM Greg Kroah-Hartman
+> > > > <gregkh@linuxfoundation.org> wrote:
+> > > > >
+> > > > > On Thu, Jun 30, 2022 at 06:26:38PM -0700, Saravana Kannan wrote:
+> > > > > > These patches are on top of driver-core-next.
+> > > > > >
+> > > > > > Even if stdout-path isn't set in DT, this patch should take console
+> > > > > > probe times back to how they were before the deferred_probe_timeout
+> > > > > > clean up series[1].
+> > > > >
+> > > > > Now dropped from my queue due to lack of a response to other reviewer's
+> > > > > questions.
+> > > >
+> > > > What happened to this patch? I have a 10 second timeout on console
+> > > > probe on my SiFive Unmatched, and I don't see this flag being set for
+> > > > the serial driver. In fact, I don't see it anywhere in-tree. I can't
+> > > > seem to locate another patchset from Saravana around this though, so
+> > > > I'm not sure where to look for a missing piece for the sifive serial
+> > > > driver.
+> > > >
+> > > > This is the second boot time regression (this one not fatal, unlike
+> > > > the Layerscape PCIe one) from the fw_devlink patchset.
+> > > >
+> > > > Greg, can you revert the whole set for 6.0, please? It's obviously
+> > > > nowhere near tested enough to go in and I expect we'll see a bunch of
+> > > > -stable fixups due to this if we let it remain in.
+> > >
+> > > What exactly is "the whole set"?  I have the default option fix queued
+> > > up and will send that to Linus later this week (am traveling back from
+> > > Plumbers still), but have not heard any problems about any other issues
+> > > at all other than your report.
+> >
+> > I stand corrected in this case, the issue on the Hifive Unmatched was
+> > a regression due to a PWM clock change -- I just sent a patch for that
+> > (serial driver fix).
+> >
+> > So it seems like as long as the fw_devlink.strict=1 patch is reverted,
+> > things are back to a working state here.
+> >
+> > I still struggle with how the fw_devlink patchset is expected to work
+> > though, since DT is expected to describe the hardware configuration,
+> > and it has no knowledge of whether there are drivers that will be
+> > bound to any referenced supplier devnodes. It's not going to work well
+> > to assume that they will always be bound, and to add 10 second
+> > timeouts for those cases isn't a good solution. Seems like the number
+> > of special cases will keep adding up.
+> 
+> Since the introduction of deferred probe, the kernel has always
+> assumed if there is a device described, then there is or will be a
+> driver for it. The result is you can't use new DTs (if they add
+> providers) with older kernels.
+> 
+> We've ended up with a timeout because no one has come up with a better
+> way to handle it. What the kernel needs is userspace saying "I'm done
+> loading modules", but it's debatable whether that's a good solution
+> too.
 
-Fixes: d7dbefc45cf5 ("xfrm: Add xfrm_replay_overflow functions for...")
-Signed-off-by: Christian Langrock <christian.langrock@secunet.com>
----
- include/net/xfrm.h     |  1 +
- net/xfrm/xfrm_output.c |  2 +-
- net/xfrm/xfrm_replay.c | 33 +++++++++++++++++++++++++++++++++
- 3 files changed, 35 insertions(+), 1 deletion(-)
+In my opinion the deferred probe is a big hack and that is the root
+cause of the issues we have here and there. It has to be redesigned
+to be mathematically robust. It was an attempt by Andrzej Hajda to
+solve this [1].
 
-diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index 6e8fa98f786f..49d6d974f493 100644
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -1749,6 +1749,7 @@ void xfrm_replay_advance(struct xfrm_state *x,
-__be32 net_seq);
- int xfrm_replay_check(struct xfrm_state *x, struct sk_buff *skb, __be32
-net_seq);
- void xfrm_replay_notify(struct xfrm_state *x, int event);
- int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb);
-+int xfrm_replay_overflow_check(struct xfrm_state *x, struct sk_buff *skb);
- int xfrm_replay_recheck(struct xfrm_state *x, struct sk_buff *skb,
-__be32 net_seq);
+[1]: https://events19.linuxfoundation.org/wp-content/uploads/2017/12/Deferred-Problem-Issues-With-Complex-Dependencies-Between-Devices-in-Linux-Kernel-Andrzej-Hajda-Samsung.pdf
 
- static inline int xfrm_aevent_is_on(struct net *net)
-diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
-index 9a5e79a38c67..c470a68d9c88 100644
---- a/net/xfrm/xfrm_output.c
-+++ b/net/xfrm/xfrm_output.c
-@@ -738,7 +738,7 @@ int xfrm_output(struct sock *sk, struct sk_buff *skb)
- 		skb->encapsulation = 1;
-
- 		if (skb_is_gso(skb)) {
--			if (skb->inner_protocol)
-+			if (skb->inner_protocol || xfrm_replay_overflow_check(x, skb))
- 				return xfrm_output_gso(net, sk, skb);
-
- 			skb_shinfo(skb)->gso_type |= SKB_GSO_ESP;
-diff --git a/net/xfrm/xfrm_replay.c b/net/xfrm/xfrm_replay.c
-index 9277d81b344c..991cfc7a091d 100644
---- a/net/xfrm/xfrm_replay.c
-+++ b/net/xfrm/xfrm_replay.c
-@@ -750,6 +750,34 @@ int xfrm_replay_overflow(struct xfrm_state *x,
-struct sk_buff *skb)
-
- 	return xfrm_replay_overflow_offload(x, skb);
- }
-+
-+static bool xfrm_replay_overflow_check_offload_esn(struct xfrm_state
-*x, struct sk_buff *skb)
-+{
-+	struct xfrm_replay_state_esn *replay_esn = x->replay_esn;
-+	__u32 oseq = replay_esn->oseq;
-+	bool ret = false;
-+
-+	/* We assume that this function is called with
-+	 * skb_is_gso(skb) == true
-+	 */
-+
-+	if (x->type->flags & XFRM_TYPE_REPLAY_PROT) {
-+		oseq = oseq + 1 + skb_shinfo(skb)->gso_segs;
-+		if (unlikely(oseq < replay_esn->oseq))
-+			ret = true;
-+	}
-+
-+	return ret;
-+}
-+
-+bool xfrm_replay_overflow_check(struct xfrm_state *x, struct sk_buff *skb)
-+{
-+	if (x->repl_mode == XFRM_REPLAY_MODE_ESN)
-+		return xfrm_replay_overflow_check_offload_esn(x, skb);
-+
-+	return false;
-+}
-+
- #else
- int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb)
- {
-@@ -764,6 +792,11 @@ int xfrm_replay_overflow(struct xfrm_state *x,
-struct sk_buff *skb)
-
- 	return __xfrm_replay_overflow(x, skb);
- }
-+
-+int xfrm_replay_overflow_check(struct xfrm_state *x, struct sk_buff *skb)
-+{
-+	return 0;
-+}
- #endif
-
- int xfrm_init_replay(struct xfrm_state *x)
 -- 
-2.37.1.223.g6a475b71f8
+With Best Regards,
+Andy Shevchenko
+
+
