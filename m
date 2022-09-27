@@ -2,97 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0118B5ECC23
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 20:26:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 053025ECC26
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 20:27:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231846AbiI0S0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 14:26:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51594 "EHLO
+        id S231909AbiI0S1P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 14:27:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231721AbiI0S01 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 14:26:27 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 365B2DF044;
-        Tue, 27 Sep 2022 11:26:26 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id s14so16365991wro.0;
-        Tue, 27 Sep 2022 11:26:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date;
-        bh=T9mgYmd86XdemvaSKD7SCs2XkzuFJtwfsDjs/pRyThA=;
-        b=nOj8AnDIe75AfAO4VchkMKmg5BAMDXNZw2EAsnB4/oF/oZuVIolHIoTC9bOv+rAJuu
-         wHgeMu1Axd94nSUv1sxjX7rrZrtJgiXEyJNrISP5gonPVzxoKZVddanaE/ha+vqv93is
-         /e+WXlShdXf6RT3MCgK93k6HCTZVvYFombEGaFRVto1PQ7I1fY2Y56d7AUNO1hWX9m97
-         lAtIIhVtj15g43IbhUtJtJs5zvOzStnNgsO3fYZpY/xS0DBo13qziLVd5dii6W6praGx
-         TSLg/Rij3llzh/yT7s72Et3AqVb1YTi+HRWiuvgkjY9BppBM/kQJhiEy2NWcE0iJhz6v
-         3qXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=T9mgYmd86XdemvaSKD7SCs2XkzuFJtwfsDjs/pRyThA=;
-        b=6HnCK6uT7grqmbvGhq1ADyeENseOWJD6wzI3dKKTsVUMHG8kgR7ROOc/TR8Cos1d2f
-         GPCItIa8vC3m/b9e9a19gz38WRRu2ILEjD9gx3OT6142iqQZaA1IdywM6TG4FiWMbZ6X
-         5yf4qw62tz3O6qcpOxlI2ADSfPCvWgH3JIF7eumdv1YZXOUWZuBNSJnGIJq76EZuXCUH
-         lxXs/ERFdVUY1OQVhnMWebB2geIIJq0CrBG+Px5Jbw0R0tNHpn9pAXWSO6rjLtlHlSi1
-         mioRezppcuwonXcPkK1RDYvSvlG0yjF94m3rBGAemHDbCBRvai6KBzU8MO7oqyolyLxl
-         nR/w==
-X-Gm-Message-State: ACrzQf2YhQsuhN1TtnDD3xmu0yFqWiB8eZ20np7m+jt0AW0aOD9wikkg
-        e+EMC1GEuoidHBxsbLqj3wzt2bUY85+7fqQB1yY=
-X-Google-Smtp-Source: AMsMyM5DQ8LC2iHP1lq0rf/iklDDElVZoP0loHSEvuVqHRJ8lQjJY6VeRrufLJhs7LICdnseKa1ZDHSLbq9pVF9N34I=
-X-Received: by 2002:a05:6000:1565:b0:22c:8da7:3cf8 with SMTP id
- 5-20020a056000156500b0022c8da73cf8mr12472975wrz.688.1664303184639; Tue, 27
- Sep 2022 11:26:24 -0700 (PDT)
+        with ESMTP id S230305AbiI0S1O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 14:27:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACA6217D415;
+        Tue, 27 Sep 2022 11:27:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 48916617AE;
+        Tue, 27 Sep 2022 18:27:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6FD8C433C1;
+        Tue, 27 Sep 2022 18:27:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664303232;
+        bh=VmeZoaR4znmAeKpaeUX///idXMsk6iOrJR1YkkoUSQM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=U93JZXK2THIHddlkh50COJm0+uGpFKCjBA5v005IafWDRMqx4ahy2pNgArW0IsJ+1
+         1Wr79efqmxciHNZoWUS2SuZDdKiZbB4tFG3m07Ep8M/OzlkIe2GfRRiM+Xa8qZgCIf
+         uHMeib1UUDfBSSH2Ybgi+mGfuSXwNPgzCTh1FixXfIpcQlR3I8kM3C9zFPSb0Huf2B
+         AAZ8I4fDBQs1DR1g+IIbyLW/IchGFbJC5cD0lMvhkZWbwa0Yh2L/ESnSFlnSchhaV0
+         TR5lSiscd3tFza9T10FhJvTo3viVpzikKE84MukGm6ZiQ7EBN0zIWDAJyP6IzEwlgV
+         Frq6QojYSetvQ==
+Date:   Tue, 27 Sep 2022 11:27:10 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Rui Sousa <rui.sousa@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Michael Walle <michael@walle.cc>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Richie Pearn <richard.pearn@nxp.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Gerhard Engleder <gerhard@engleder-embedded.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 net-next 01/12] net/sched: taprio: allow user input
+ of per-tc max SDU
+Message-ID: <20220927112710.5fc7720f@kernel.org>
+In-Reply-To: <20220927150921.ffjdliwljccusxad@skbuf>
+References: <20220923163310.3192733-1-vladimir.oltean@nxp.com>
+        <20220923163310.3192733-2-vladimir.oltean@nxp.com>
+        <20220926133829.6bb62b8a@kernel.org>
+        <20220927150921.ffjdliwljccusxad@skbuf>
 MIME-Version: 1.0
-References: <20220927132753.750069-1-kuba@kernel.org> <CANn89iL4m=aMjZ1XWFNWDyyyDBF1uhNocN0OFqhm2VMm_JQOog@mail.gmail.com>
-In-Reply-To: <CANn89iL4m=aMjZ1XWFNWDyyyDBF1uhNocN0OFqhm2VMm_JQOog@mail.gmail.com>
-From:   Dave Taht <dave.taht@gmail.com>
-Date:   Tue, 27 Sep 2022 11:26:12 -0700
-Message-ID: <CAA93jw7oY+m3c83b0qgoJjxG=rL6ErnrF2_+UZ9hiQ85H9ZSdg@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: drop the weight argument from netif_napi_add
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 27, 2022 at 11:21 AM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Tue, Sep 27, 2022 at 6:28 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > We tell driver developers to always pass NAPI_POLL_WEIGHT
-> > as the weight to netif_napi_add(). This may be confusing
-> > to newcomers, drop the weight argument, those who really
-> > need to tweak the weight can use netif_napi_add_weight().
-> >
-> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
->
-> Sure, but this kind of patch makes backports harder.
-> Not sure how confused are newcomers about this NAPI_POLL_WEIGHT....
+On Tue, 27 Sep 2022 18:09:21 +0300 Vladimir Oltean wrote:
+> On Mon, Sep 26, 2022 at 01:38:29PM -0700, Jakub Kicinski wrote:
+> > On Fri, 23 Sep 2022 19:32:59 +0300 Vladimir Oltean wrote:  
+> > > +	if (!tb[TCA_TAPRIO_TC_ENTRY_INDEX]) {
+> > > +		NL_SET_ERR_MSG_MOD(extack, "TC entry index missing");  
+> > 
+> > NL_SET_ERR_ATTR_MISS() ?
+> >   
+> > > +		return -EINVAL;
+> > > +	}
+> > > +
+> > > +	tc = nla_get_u32(tb[TCA_TAPRIO_TC_ENTRY_INDEX]);
+> > > +	if (tc >= TC_QOPT_MAX_QUEUE) {
+> > > +		NL_SET_ERR_MSG_MOD(extack, "TC entry index out of range");  
+> > 
+> > NLA_POLICY_MAX()
+> > 
+> > Are you not using those on purpose? :(  
+> 
+> I don't exactly see it as being super user friendly to leave it to the
+> policy validator (or to use NL_SET_ERR_ATTR_MISS()) because all that
+> will be reported back to user space will be the offset to the original
+> attribute in the nlmsghdr, which is pretty hard to retrieve and
+> re-interpret (at least in the iproute2 tc source code, I can't seem to
+> find a way to stringify it or something like that). For the NLA_POLICY_MAX(),
+> all I'll get now is an uninformative "Error: integer out of range."
+> What integer?  What range?
 
-Ironically we've been fiddling with dramatically reducing the
-NAPI_POLL_WEIGHT (8) on
-several multicore arm systems, with good results, especially on ath10k.
+I know, that's what I expected you'd say :(
+You'd need a reverse parser which is a PITA to do unless you have
+clearly specified bindings.
 
+> I don't understand what is the gain of removing extack message strings
+> and just pointing to the netlink attribute via NLMSGERR_ATTR_OFFS? Could
+> I at least use the NL_SET_ERR_ATTR_MISS() helper *and* set a custom message?
+> That's for the missing nlattr. Regarding the range checking in the
+> policy, I'd like a custom message there as well, but the NLA_POLICY_MAX()
+> doesn't provide one. However, I see that struct nla_policy has a const
+> char *reject_message for NLA_REJECT types. Would it be an abuse to move
+> this outside of the union and allow U32 policies and such to also
+> provide it?
 
---=20
-FQ World Domination pending: https://blog.cerowrt.org/post/state_of_fq_code=
-l/
-Dave T=C3=A4ht CEO, TekLibre, LLC
+I'd rather you kept the code as is than make precedent for adding both
+string and machine readable. If we do that people will try to stay on
+the safe side and always add both.
+
+The machine readable format is carries all the information you need.
+It's just the user space is not clever enough to read it which is,
+well, solvable.
