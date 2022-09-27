@@ -2,57 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 66C785EB60A
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 01:59:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AE6F5EB61D
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 02:10:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230292AbiIZX7n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 19:59:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60874 "EHLO
+        id S230387AbiI0AKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 20:10:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229543AbiIZX7l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 19:59:41 -0400
-Received: from mail-vk1-xa2a.google.com (mail-vk1-xa2a.google.com [IPv6:2607:f8b0:4864:20::a2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A1AFE02F
-        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 16:59:37 -0700 (PDT)
-Received: by mail-vk1-xa2a.google.com with SMTP id v192so4193588vkv.7
-        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 16:59:37 -0700 (PDT)
+        with ESMTP id S229542AbiI0AKt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 20:10:49 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD169A1D2F;
+        Mon, 26 Sep 2022 17:10:47 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id d42so13432217lfv.0;
+        Mon, 26 Sep 2022 17:10:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date;
-        bh=t5RrCdQ8BJBxCmjNqX5bp/pde40RZMgx6IAMJqmXFbw=;
-        b=UKoD9iTjq8ej2/Wdppb3Seec1gBn67meE0Cr/gzPsF3vRT5hzODOuSu82u78NvKODf
-         W9m1u8BtuapxnnvcLisWfE6lY4Tm3ELlEcaaFEmabnE7lZoh0wHEOkbsZTnujrritDpB
-         eofECpCP7Jej1wpHh0xsDRSpPXjdewzkOUZB0=
+        bh=IUJ883vXpIy8HsSMOZN5r8Aa/v8we/1OUC9VvaE/vgg=;
+        b=kdKOfVJjqcfbjmysbn8RvscGiIHxfnNSdIs/2eWi+aYJZeiV14hDxAtKmUV9CUTIn5
+         Y+pImzu5BSsDPFmCaB2u/67WiDF58Hi/te8MS2eWoxZIZj2tafwR7ZBH8I3dJZ0iGger
+         Cock4M9KkcCk7UhfsmKTfNOMXbs5YbAL4xmsbZTEfF1wi3GJS3BKTEaVSupek2epMyNR
+         3MGPPPRpCQSeUoDWBs4cOQNTPezP2FgvvgPK0ncL2pqaINu80v748yDhogEkH8I5ntBl
+         axRAW4zXq4+YWV1ici67mjtAQXxnp8OWFDJ7a3a13N0tcRYtwIZiZyufXYpZJ+CeD1sb
+         T+mw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=t5RrCdQ8BJBxCmjNqX5bp/pde40RZMgx6IAMJqmXFbw=;
-        b=LHGMMf4gSm8a1sthxeCJp11NwEiNOLF3gY3ZYEsCnUNaBhQ89X+nBI4fHRbN7evNY3
-         +WoqTj/oabbi9wRHRCcsF343WHcpxda+1o3xiINWEODg4RsSIjQn36rRTi4JBqW+01dG
-         7TynhXKBSgHY6vz8FK82daqGPTBZE9vekedzP8U+WSBw8FTXKH+Gat3lgG8rga6DJNT9
-         XMik28yXJFtJJOPdl44KzpSJUE+esKOMOAWvQZayjjsE3s2IC5gIoZvxT4ld6G040+eH
-         Q1GvINxPWbee7eBAnSooo3YStS5SK2azgvD27c7NQQGbDM7skRKvE7n3ZA0bT9lrFukn
-         1vNQ==
-X-Gm-Message-State: ACrzQf0UJ8eU8M7l4MHkBImL4Uh6XwuFywFwwQ310Xmoog4/y4jQnDrO
-        M86G6UbRA2p/4mp/PBuQW9WOtmHtNXP1khUteEE0Xg==
-X-Google-Smtp-Source: AMsMyM4fHVTZj6Bs5Uv87RCxD8LHn0UqAhQMFg95Jv+t7YVwbKwFeZvURJRzgaSc3Y4OaS4ARlO28ZBYOeLsMGGT2mU=
-X-Received: by 2002:a05:6122:31a:b0:3a3:cb4d:d211 with SMTP id
- c26-20020a056122031a00b003a3cb4dd211mr10656930vko.26.1664236776470; Mon, 26
- Sep 2022 16:59:36 -0700 (PDT)
+        bh=IUJ883vXpIy8HsSMOZN5r8Aa/v8we/1OUC9VvaE/vgg=;
+        b=zk2Kn8f4iOFJXOKDX+cEuTn/JfLyGhU/hS8UJwPP2dYhFUzub3vtjAti6rjDWjl3+p
+         e3KMgFEltBqOXj1DkooChNF/BiewLxdSBoZJEhm8LLDgDyyeHMMAl6nru0lbhI4xMpHP
+         mtQYU8bUL9IylND1Xt7zjeKnUNvmpIs00BwxVG4qgsJ3m8kQ2G9jNW2SOgTgKV/ba3SQ
+         gOITxExqbkNT0YrTzbJQNzQbLbB76yDFXxvqW/UtC+2EZBiKxKeZQGQXy6auRcHOK5ex
+         yVqloiRbMB2RgcktwC+PmO+sMau8BFqHtlbW+sL5YtbbSi1EILqUqx7/quT6W/dm1/U9
+         O5jQ==
+X-Gm-Message-State: ACrzQf3qQtuhoveLD2wy50/XnM28aD1tPBxRjAID/0hvsf04V8FtaAff
+        Kt9XJkZsysZAklhtjcoM8bykbLjzRL/ae/eijn8=
+X-Google-Smtp-Source: AMsMyM5t2yMQz8YtpKBdLJnPDLccM1eNIwYgD1UwuR8cz1Q6SJGukjwtllwx6Lx4SuqcfIbmuGo049BDiixWKIsTf14=
+X-Received: by 2002:a05:6512:b97:b0:497:5c43:2d61 with SMTP id
+ b23-20020a0565120b9700b004975c432d61mr9093348lfv.251.1664237445949; Mon, 26
+ Sep 2022 17:10:45 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220926163057.1.Ia168b651a69b253059f2bbaa60b98083e619545c@changeid>
- <CABBYNZJ1r-qiE6+8ZY1phgOJ3DJZRQFSNLugZARtBChUC7d2UQ@mail.gmail.com>
-In-Reply-To: <CABBYNZJ1r-qiE6+8ZY1phgOJ3DJZRQFSNLugZARtBChUC7d2UQ@mail.gmail.com>
-From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-Date:   Mon, 26 Sep 2022 16:59:25 -0700
-Message-ID: <CANFp7mWZzivR0gbr2upf8awy1x6JZ9DaAjVfT=HHM3NAi6sk=Q@mail.gmail.com>
-Subject: Re: [PATCH] Bluetooth: Prevent double register of suspend
-To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     Abhishek Pandit-Subedi <abhishekpandit@google.com>,
-        linux-bluetooth@vger.kernel.org,
-        syzbot <syzkaller@googlegroups.com>,
+References: <20220926164358.v2.1.Ic8eabc8ed89a07c3d52726dd017539069faac6c4@changeid>
+In-Reply-To: <20220926164358.v2.1.Ic8eabc8ed89a07c3d52726dd017539069faac6c4@changeid>
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Mon, 26 Sep 2022 17:10:34 -0700
+Message-ID: <CABBYNZJNrnmw6uUwQekqz1zQnG++kAHDqGfHJOxO082g+1Y1kw@mail.gmail.com>
+Subject: Re: [PATCH v2] Bluetooth: Call shutdown for HCI_USER_CHANNEL
+To:     Abhishek Pandit-Subedi <abhishekpandit@google.com>
+Cc:     linux-bluetooth@vger.kernel.org,
+        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -61,162 +62,141 @@ Cc:     Abhishek Pandit-Subedi <abhishekpandit@google.com>,
         Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Actually, yeah that's a much simpler change... Got a little
-tunnel-visioned trying to fix the error :)
-I'll send up a v2 tomorrow after testing.
+Hi Abhishek,
 
-On Mon, Sep 26, 2022 at 4:55 PM Luiz Augusto von Dentz
-<luiz.dentz@gmail.com> wrote:
+On Mon, Sep 26, 2022 at 4:44 PM Abhishek Pandit-Subedi
+<abhishekpandit@google.com> wrote:
 >
-> Hi Abhishek,
+> From: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
 >
-> On Mon, Sep 26, 2022 at 4:31 PM Abhishek Pandit-Subedi
-> <abhishekpandit@google.com> wrote:
-> >
-> > From: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-> >
-> > Suspend notifier should only be registered and unregistered once per
-> > hdev. Since hci_sock and hci_register_dev run in different work queues
-> > (sock vs driver), add hci_dev_lock to avoid double registering.
-> >
-> > Reported-by: syzbot <syzkaller@googlegroups.com>
-> > Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-> > ---
-> > This is fixing a syzbot reported warning. Tested in the following ways:
-> > * Normal start-up of driver with bluez.
-> > * Start/stop loop using HCI_USER_CHANNEL (sock path).
-> > * USB reset triggering hci_dev_unregister (driver path).
-> >
-> > ------------[ cut here ]------------
-> > double register detected
-> > WARNING: CPU: 0 PID: 2657 at kernel/notifier.c:27
-> > notifier_chain_register kernel/notifier.c:27 [inline]
-> > WARNING: CPU: 0 PID: 2657 at kernel/notifier.c:27
-> > notifier_chain_register+0x5c/0x124 kernel/notifier.c:22
-> > Modules linked in:
-> > CPU: 0 PID: 2657 Comm: syz-executor212 Not tainted
-> > 5.10.136-syzkaller-19376-g6f46a5fe0124 #0
-> >   8f0771607702f5ef7184d2ee33bd0acd70219fc4
-> >   Hardware name: Google Google Compute Engine/Google Compute Engine,
-> >   BIOS Google 07/22/2022
-> >   RIP: 0010:notifier_chain_register kernel/notifier.c:27 [inline]
-> >   RIP: 0010:notifier_chain_register+0x5c/0x124 kernel/notifier.c:22
-> >   Code: 6a 41 00 4c 8b 23 4d 85 e4 0f 84 88 00 00 00 e8 c2 1e 19 00 49
-> >   39 ec 75 18 e8 b8 1e 19 00 48 c7 c7 80 6d ca 84 e8 2c 68 48 03 <0f> 0b
-> >      e9 af 00 00 00 e8 a0 1e 19 00 48 8d 7d 10 48 89 f8 48 c1 e8
-> >      RSP: 0018:ffffc900009d7da8 EFLAGS: 00010286
-> >      RAX: 0000000000000000 RBX: ffff8881076fd1d8 RCX: 0000000000000000
-> >      RDX: 0000001810895100 RSI: ffff888110895100 RDI: fffff5200013afa7
-> >      RBP: ffff88811a4191d0 R08: ffffffff813b8ca1 R09: 0000000080000000
-> >      R10: 0000000000000000 R11: 0000000000000005 R12: ffff88811a4191d0
-> >      R13: dffffc0000000000 R14: 0000000000000000 R15: 0000000000000000
-> >      FS: 00005555571f5300(0000) GS:ffff8881f6c00000(0000)
-> >      knlGS:0000000000000000
-> >      CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> >      CR2: 000078e3857f3075 CR3: 000000010d668000 CR4: 00000000003506f0
-> >      DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> >      DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> >      Call Trace:
-> >      blocking_notifier_chain_register+0x8c/0xa6 kernel/notifier.c:254
-> >      hci_register_suspend_notifier net/bluetooth/hci_core.c:2733
-> >      [inline]
-> >      hci_register_suspend_notifier+0x6b/0x7c
-> >      net/bluetooth/hci_core.c:2727
-> >      hci_sock_release+0x270/0x3cf net/bluetooth/hci_sock.c:889
-> >      __sock_release+0xcd/0x1de net/socket.c:597
-> >      sock_close+0x18/0x1c net/socket.c:1267
-> >      __fput+0x418/0x729 fs/file_table.c:281
-> >      task_work_run+0x12b/0x15b kernel/task_work.c:151
-> >      tracehook_notify_resume include/linux/tracehook.h:188 [inline]
-> >      exit_to_user_mode_loop kernel/entry/common.c:165 [inline]
-> >      exit_to_user_mode_prepare+0x8f/0x130 kernel/entry/common.c:192
-> >      syscall_exit_to_user_mode+0x172/0x1b2 kernel/entry/common.c:268
-> >      entry_SYSCALL_64_after_hwframe+0x61/0xc6
-> >      RIP: 0033:0x78e38575e1db
-> >      Code: 0f 05 48 3d 00 f0 ff ff 77 45 c3 0f 1f 40 00 48 83 ec 18 89
-> >      7c 24 0c e8 63 fc ff ff 8b 7c 24 0c 41 89 c0 b8 03 00 00 00 0f 05
-> >      <48> 3d 00 f0 ff ff 77 35 44 89 c7 89 44 24 0c e8 a1 fc ff ff 8b 44
-> >      RSP: 002b:00007ffffc20a0b0 EFLAGS: 00000293 ORIG_RAX:
-> >      0000000000000003
-> >      RAX: 0000000000000000 RBX: 0000000000000006 RCX: 000078e38575e1db
-> >      RDX: ffffffffffffffb8 RSI: 0000000020000000 RDI: 0000000000000005
-> >      RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000150
-> >      R10: 0000000000000000 R11: 0000000000000293 R12: 000000000000e155
-> >      R13: 00007ffffc20a140 R14: 00007ffffc20a130 R15: 00007ffffc20a0e8
-> >
-> >  include/net/bluetooth/hci.h |  1 +
-> >  net/bluetooth/hci_core.c    | 16 ++++++++++++++--
-> >  2 files changed, 15 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-> > index e004ba04a9ae..36304c217151 100644
-> > --- a/include/net/bluetooth/hci.h
-> > +++ b/include/net/bluetooth/hci.h
-> > @@ -353,6 +353,7 @@ enum {
-> >         HCI_OFFLOAD_CODECS_ENABLED,
-> >         HCI_LE_SIMULTANEOUS_ROLES,
-> >         HCI_CMD_DRAIN_WORKQUEUE,
-> > +       HCI_SUSPEND_REGISTERED,
-> >
-> >         HCI_MESH_EXPERIMENTAL,
-> >         HCI_MESH,
-> > diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-> > index 66c7cdba0d32..5a32d17c69b8 100644
-> > --- a/net/bluetooth/hci_core.c
-> > +++ b/net/bluetooth/hci_core.c
-> > @@ -2760,10 +2760,18 @@ int hci_register_suspend_notifier(struct hci_dev *hdev)
-> >  {
-> >         int ret = 0;
-> >
-> > -       if (!test_bit(HCI_QUIRK_NO_SUSPEND_NOTIFIER, &hdev->quirks)) {
-> > +       hci_dev_lock(hdev);
-> > +       if (!test_bit(HCI_QUIRK_NO_SUSPEND_NOTIFIER, &hdev->quirks) &&
-> > +           !hci_dev_test_and_set_flag(hdev, HCI_SUSPEND_REGISTERED)) {
-> > +               memset(&hdev->suspend_notifier, 0,
-> > +                      sizeof(hdev->suspend_notifier));
-> >                 hdev->suspend_notifier.notifier_call = hci_suspend_notifier;
-> >                 ret = register_pm_notifier(&hdev->suspend_notifier);
-> > +
-> > +               if (ret)
-> > +                       hci_dev_clear_flag(hdev, HCI_SUSPEND_REGISTERED);
-> >         }
-> > +       hci_dev_unlock(hdev);
-> >
-> >         return ret;
-> >  }
-> > @@ -2772,8 +2780,12 @@ int hci_unregister_suspend_notifier(struct hci_dev *hdev)
-> >  {
-> >         int ret = 0;
-> >
-> > -       if (!test_bit(HCI_QUIRK_NO_SUSPEND_NOTIFIER, &hdev->quirks))
-> > +       hci_dev_lock(hdev);
-> > +       if (!test_bit(HCI_QUIRK_NO_SUSPEND_NOTIFIER, &hdev->quirks) &&
-> > +           hci_dev_test_and_clear_flag(hdev, HCI_SUSPEND_REGISTERED)) {
-> >                 ret = unregister_pm_notifier(&hdev->suspend_notifier);
-> > +       }
-> > +       hci_dev_unlock(hdev);
-> >
-> >         return ret;
-> >  }
+> Some drivers depend on shutdown being called for proper operation.
+> Unset HCI_USER_CHANNEL and call the full close routine since shutdown is
+> complementary to setup.
 >
-> Perhaps it would have been better to stop calling these on hci_sock.c
-> and just make the notifier callback check
-> hci_dev_test_and_set_flag(hdev, HCI_USER_CHANNEL) return NOTIFY_DONE.
+> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+> ---
 >
-> > --
-> > 2.37.3.998.g577e59143f-goog
-> >
+> Using hci_qca, we can get the controller into a bad state simply by
+> trying to bind to userchannel twice (open+bind+close, then open+bind).
+> Without running the shutdown routine, the device seems to get into a bad
+> state. A similar bug also occurs with btmtksdio (using MT7921).
+>
+> This change properly runs the shutdown routine, which should be
+> complementary to setup. The reason it unsets the HCI_USER_CHANNEL flag
+> is that some drivers have complex operations in their shutdown routine
+> (including sending hci packets) and we need to support the normal data
+> path for them (including cmd_timeout + recovery mechanisms).
+>
+> Note for v2: I've gotten a chance to test this on more devices
+> and figure out why it wasn't working before in v1. I found two problems:
+> I had a signal pending (SIGTERM) that was messing things up in the
+> socket release function and the HCI_USER_CHANNEL flag was preventing
+> hci_sync from operating properly during shutdown on Intel chipsets
+> (which use the sync functions to send a reset command + other commands
+> sometimes).
+>
+> This was tested with hci_qca (QCA6174-A-3), btmtksdio (MT7921-SDIO)
+> and btusb (with AX200).
 >
 >
+> Changes in v2:
+> - Clear HCI_USER_CHANNEL flag at start of close and restore at end.
+> - Add comment explaning why we need to clear flag and run shutdown.
+>
+>  net/bluetooth/hci_sync.c | 19 ++++++++++++++++---
+>  1 file changed, 16 insertions(+), 3 deletions(-)
+>
+> diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
+> index 422f7c6911d9..f9591fcefb8d 100644
+> --- a/net/bluetooth/hci_sync.c
+> +++ b/net/bluetooth/hci_sync.c
+> @@ -4731,9 +4731,18 @@ int hci_dev_close_sync(struct hci_dev *hdev)
+>  {
+>         bool auto_off;
+>         int err = 0;
+> +       bool was_userchannel;
+>
+>         bt_dev_dbg(hdev, "");
+>
+> +       /* Similar to how we first do setup and then set the exclusive access
+> +        * bit for userspace, we must first unset userchannel and then clean up.
+> +        * Otherwise, the kernel can't properly use the hci channel to clean up
+> +        * the controller (some shutdown routines require sending additional
+> +        * commands to the controller for example).
+> +        */
+> +       was_userchannel = hci_dev_test_and_clear_flag(hdev, HCI_USER_CHANNEL);
+> +
+>         cancel_delayed_work(&hdev->power_off);
+>         cancel_delayed_work(&hdev->ncmd_timer);
+>         cancel_delayed_work(&hdev->le_scan_disable);
+> @@ -4747,7 +4756,6 @@ int hci_dev_close_sync(struct hci_dev *hdev)
+>         }
+>
+>         if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
+> -           !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
+>             test_bit(HCI_UP, &hdev->flags)) {
+>                 /* Execute vendor specific shutdown routine */
+>                 if (hdev->shutdown)
+
+I guess the idea here is that shutdown can be run without the
+HCI_USER_CHANNEL flag since the hdev is closing we don't expect any
+traffic from socket/user channel? In that case I'd probably suggest
+having this on its own function e.g. hci_dev_shutdown which can have
+the logic of resetting the flag and restoring at the end. Also it is
+probably a good idea to have some test mimicking this behavior on
+userchan-tester so we do not accidentally break it.
+
+> @@ -4756,6 +4764,8 @@ int hci_dev_close_sync(struct hci_dev *hdev)
+>
+>         if (!test_and_clear_bit(HCI_UP, &hdev->flags)) {
+>                 cancel_delayed_work_sync(&hdev->cmd_timer);
+> +               if (was_userchannel)
+> +                       hci_dev_set_flag(hdev, HCI_USER_CHANNEL);
+>                 return err;
+>         }
+>
+> @@ -4795,7 +4805,7 @@ int hci_dev_close_sync(struct hci_dev *hdev)
+>         auto_off = hci_dev_test_and_clear_flag(hdev, HCI_AUTO_OFF);
+>
+>         if (!auto_off && hdev->dev_type == HCI_PRIMARY &&
+> -           !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
+> +           !was_userchannel &&
+>             hci_dev_test_flag(hdev, HCI_MGMT))
+>                 __mgmt_power_off(hdev);
+>
+> @@ -4808,7 +4818,7 @@ int hci_dev_close_sync(struct hci_dev *hdev)
+>
+>         hci_sock_dev_event(hdev, HCI_DEV_DOWN);
+>
+> -       if (!hci_dev_test_flag(hdev, HCI_USER_CHANNEL)) {
+> +       if (!was_userchannel)
+>                 aosp_do_close(hdev);
+>                 msft_do_close(hdev);
+>         }
+> @@ -4858,6 +4868,9 @@ int hci_dev_close_sync(struct hci_dev *hdev)
+>         memset(hdev->dev_class, 0, sizeof(hdev->dev_class));
+>         bacpy(&hdev->random_addr, BDADDR_ANY);
+>
+> +       if (was_userchannel)
+> +               hci_dev_set_flag(hdev, HCI_USER_CHANNEL);
+> +
+>         hci_dev_put(hdev);
+>         return err;
+>  }
 > --
-> Luiz Augusto von Dentz
+> 2.37.3.998.g577e59143f-goog
+>
+
+
+-- 
+Luiz Augusto von Dentz
