@@ -2,235 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F2BE5EBFC1
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 12:29:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E21C5EBFFE
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 12:43:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231639AbiI0K3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 06:29:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49388 "EHLO
+        id S231167AbiI0KnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 06:43:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231587AbiI0K3I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 06:29:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE6B0CDCE1
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 03:29:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1664274547;
+        with ESMTP id S230169AbiI0KnG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 06:43:06 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC6CC422C3;
+        Tue, 27 Sep 2022 03:43:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7EF01CE178E;
+        Tue, 27 Sep 2022 10:43:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD7B0C433D6;
+        Tue, 27 Sep 2022 10:42:57 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="KrzmBZra"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1664275374;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=dlDKMy7dxWgBEJMLioJwVnTICLhgS/dpJDOmmN0Omgo=;
-        b=Ssyk0w3BQBT7J0qv7MhowUxoKSWI1eaqVcXDdaneAt4vd9pA0Wk3f40qmNiVmpyWQGIn1A
-        DPCq5hOxKGs8IWml/4EUSmt36PFo/KbTYq2tcS5K26ezCvGWMbff5tF7s0l9mMwu2omWoE
-        iNBe3MRunFpFDujWillnXgO4YLmn4fQ=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-638-aGph5n80PJiLW8oIpRZVZw-1; Tue, 27 Sep 2022 06:29:06 -0400
-X-MC-Unique: aGph5n80PJiLW8oIpRZVZw-1
-Received: by mail-qv1-f71.google.com with SMTP id m7-20020a0ce6e7000000b004ad69308f01so5484552qvn.9
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 03:29:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=dlDKMy7dxWgBEJMLioJwVnTICLhgS/dpJDOmmN0Omgo=;
-        b=mz7iJp8GfkHH0AbmieZo7h6hmbEA48VLQTK6zZ2JRhBcl4Bu+2VU9VGBvnxssqsfJz
-         238/QJSIgTngxu83UHvl7PORL+EnQtx/t7XKXAggUUcPfIb+7w2CQeQDJL6MeHWb1c4c
-         aQHbWOgGQDytVyTHeREcZchtd0reAPBJ065EayAxxV1guRTdEQqPcAZwNUrNQS8tv5zo
-         rce0z5yHkSxjgpS7FLOwalcNqHiGkuNivTamgiPhEU07+Co1XI3K1VE7NBzKfL2VZa9Y
-         nyViWd28vulocy4syK4lcJmRkVrVXDlunEzPTEafJgEbjjhrRt9QX+RkmFrJJb965shK
-         Dr9A==
-X-Gm-Message-State: ACrzQf320zV26HqKUmOLX1M0OIbSYSRb4MxqIh4hYZAiDKth6RssLeaH
-        PVPFKULHApfJWNc0fmY0l4cJAUjZdoFSxmo0oPdwbvJpML5nrGRlRtH0X3Oed1Y5iNPzBWI2oPb
-        PFn1IQ6FsJubAxHi5
-X-Received: by 2002:a05:620a:201d:b0:6ce:b005:6113 with SMTP id c29-20020a05620a201d00b006ceb0056113mr16765184qka.346.1664274545523;
-        Tue, 27 Sep 2022 03:29:05 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM7j8NALqdiwiTq4Y82Nd0+4/yGmO56kL+ahpInMElXImD5p0IhdX2DTMB5B1Kn6PCW5+Pg0cw==
-X-Received: by 2002:a05:620a:201d:b0:6ce:b005:6113 with SMTP id c29-20020a05620a201d00b006ceb0056113mr16765175qka.346.1664274545270;
-        Tue, 27 Sep 2022 03:29:05 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-97-96.dyn.eolo.it. [146.241.97.96])
-        by smtp.gmail.com with ESMTPSA id k9-20020ac80749000000b0031eddc83560sm555374qth.90.2022.09.27.03.29.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Sep 2022 03:29:04 -0700 (PDT)
-Message-ID: <52ae3eb45615c5d68a955e9a22f5f4915edc4e23.camel@redhat.com>
-Subject: Re: [PATCH net-next 2/2] net: sched: add helper support in act_ct
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Xin Long <lucien.xin@gmail.com>,
-        network dev <netdev@vger.kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Oz Shlomo <ozsh@nvidia.com>, Paul Blakey <paulb@nvidia.com>,
-        Ilya Maximets <i.maximets@ovn.org>
-Date:   Tue, 27 Sep 2022 12:29:01 +0200
-In-Reply-To: <4781b55b0b7498c574ace703a1481e3688e3f18d.1663946157.git.lucien.xin@gmail.com>
-References: <cover.1663946157.git.lucien.xin@gmail.com>
-         <4781b55b0b7498c574ace703a1481e3688e3f18d.1663946157.git.lucien.xin@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        bh=NJzK5QOVB5hTk/kwHZrgK27Cq8fKAJHhQ1EixID94zk=;
+        b=KrzmBZrab/rZ4Ha1dVmn8AHNvl7bnA78AzAWUmTNPTJD5sKf5k3PmRzQlUVmnqJm/UQ/Zs
+        WCOM07gwSEbBRKNgGcYSoASucoylxwqB+IPCxrVGz7J0diQ6YyWKU4i0RpRlNENpkbw0n8
+        kycWwpaE6/5J4uot1V6EWuxI/godCoA=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 66047c3f (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Tue, 27 Sep 2022 10:42:54 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Sherry Yang <sherry.yang@oracle.com>,
+        Paul Webb <paul.x.webb@oracle.com>,
+        Phillip Goerl <phillip.goerl@oracle.com>,
+        Jack Vogel <jack.vogel@oracle.com>,
+        Nicky Veitch <nicky.veitch@oracle.com>,
+        Colm Harrington <colm.harrington@oracle.com>,
+        Ramanan Govindarajan <ramanan.govindarajan@oracle.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Tejun Heo <tj@kernel.org>,
+        Sultan Alsawaf <sultan@kerneltoast.com>, stable@vger.kernel.org
+Subject: [PATCH v3] random: use expired per-cpu timer rather than wq for mixing fast pool
+Date:   Tue, 27 Sep 2022 12:42:33 +0200
+Message-Id: <20220927104233.1605507-1-Jason@zx2c4.com>
+In-Reply-To: <YzKy+bNedt2vu+a1@zx2c4.com>
+References: <YzKy+bNedt2vu+a1@zx2c4.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2022-09-23 at 11:28 -0400, Xin Long wrote:
-> This patch is to add helper support in act_ct for OVS actions=ct(alg=xxx)
-> offloading, which is corresponding to Commit cae3a2627520 ("openvswitch:
-> Allow attaching helpers to ct action") in OVS kernel part.
-> 
-> The difference is when adding TC actions family and proto cannot be got
-> from the filter/match, other than helper name in tb[TCA_CT_HELPER_NAME],
-> we also need to send the family in tb[TCA_CT_HELPER_FAMILY] and the
-> proto in tb[TCA_CT_HELPER_PROTO] to kernel.
-> 
-> Note when calling helper->help() in tcf_ct_act(), the packet will be
-> dropped if skb's family and proto do not match the helper's.
-> 
-> Reported-by: Ilya Maximets <i.maximets@ovn.org>
+Previously, the fast pool was dumped into the main pool periodically in
+the fast pool's hard IRQ handler. This worked fine and there weren't
+problems with it, until RT came around. Since RT converts spinlocks into
+sleeping locks, problems cropped up. Rather than switching to raw
+spinlocks, the RT developers preferred we make the transformation from
+originally doing:
 
-This tag is a bit out of place here, as it should belong to fixes. Do
-you mean 'Suggested-by' ?
+    do_some_stuff()
+    spin_lock()
+    do_some_other_stuff()
+    spin_unlock()
 
-> Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> ---
->  include/net/tc_act/tc_ct.h        |   1 +
->  include/uapi/linux/tc_act/tc_ct.h |   3 +
->  net/sched/act_ct.c                | 163 +++++++++++++++++++++++++++++-
->  3 files changed, 165 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/net/tc_act/tc_ct.h b/include/net/tc_act/tc_ct.h
-> index 8250d6f0a462..b24ea2d9400b 100644
-> --- a/include/net/tc_act/tc_ct.h
-> +++ b/include/net/tc_act/tc_ct.h
-> @@ -10,6 +10,7 @@
->  #include <net/netfilter/nf_conntrack_labels.h>
->  
->  struct tcf_ct_params {
-> +	struct nf_conntrack_helper *helper;
->  	struct nf_conn *tmpl;
->  	u16 zone;
->  
-> diff --git a/include/uapi/linux/tc_act/tc_ct.h b/include/uapi/linux/tc_act/tc_ct.h
-> index 5fb1d7ac1027..6c5200f0ed38 100644
-> --- a/include/uapi/linux/tc_act/tc_ct.h
-> +++ b/include/uapi/linux/tc_act/tc_ct.h
-> @@ -22,6 +22,9 @@ enum {
->  	TCA_CT_NAT_PORT_MIN,	/* be16 */
->  	TCA_CT_NAT_PORT_MAX,	/* be16 */
->  	TCA_CT_PAD,
-> +	TCA_CT_HELPER_NAME,	/* string */
-> +	TCA_CT_HELPER_FAMILY,	/* u8 */
-> +	TCA_CT_HELPER_PROTO,	/* u8 */
->  	__TCA_CT_MAX
->  };
->  
-> diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-> index 193a460a9d7f..771cf72ee9e1 100644
-> --- a/net/sched/act_ct.c
-> +++ b/net/sched/act_ct.c
-> @@ -33,6 +33,7 @@
->  #include <net/netfilter/nf_conntrack_acct.h>
->  #include <net/netfilter/ipv6/nf_defrag_ipv6.h>
->  #include <net/netfilter/nf_conntrack_act_ct.h>
-> +#include <net/netfilter/nf_conntrack_seqadj.h>
->  #include <uapi/linux/netfilter/nf_nat.h>
->  
->  static struct workqueue_struct *act_ct_wq;
-> @@ -832,6 +833,13 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
->  
->  static void tcf_ct_params_free(struct tcf_ct_params *params)
->  {
-> +	if (params->helper) {
-> +#if IS_ENABLED(CONFIG_NF_NAT)
-> +		if (params->ct_action & TCA_CT_ACT_NAT)
-> +			nf_nat_helper_put(params->helper);
-> +#endif
-> +		nf_conntrack_helper_put(params->helper);
-> +	}
->  	if (params->ct_ft)
->  		tcf_ct_flow_table_put(params->ct_ft);
->  	if (params->tmpl)
-> @@ -1022,6 +1030,69 @@ static int tcf_ct_act_nat(struct sk_buff *skb,
->  #endif
->  }
->  
-> +static int tcf_ct_helper(struct sk_buff *skb, u8 family)
-> +{
+to doing:
 
-This is very similar to ovs_ct_helper(), I'm wondering if a common
-helper could be factored out?
+    do_some_stuff()
+    queue_work_on(some_other_stuff_worker)
 
-> +	const struct nf_conntrack_helper *helper;
-> +	const struct nf_conn_help *help;
-> +	enum ip_conntrack_info ctinfo;
-> +	unsigned int protoff;
-> +	struct nf_conn *ct;
-> +	u8 proto;
-> +	int err;
-> +
-> +	ct = nf_ct_get(skb, &ctinfo);
-> +	if (!ct || ctinfo == IP_CT_RELATED_REPLY)
-> +		return NF_ACCEPT;
-> +
-> +	help = nfct_help(ct);
-> +	if (!help)
-> +		return NF_ACCEPT;
-> +
-> +	helper = rcu_dereference(help->helper);
-> +	if (!helper)
-> +		return NF_ACCEPT;
-> +
-> +	if (helper->tuple.src.l3num != NFPROTO_UNSPEC &&
-> +	    helper->tuple.src.l3num != family)
-> +		return NF_DROP;
-> +
-> +	switch (family) {
-> +	case NFPROTO_IPV4:
-> +		protoff = ip_hdrlen(skb);
-> +		proto = ip_hdr(skb)->protocol;
-> +		break;
-> +	case NFPROTO_IPV6: {
-> +		__be16 frag_off;
-> +		int ofs;
-> +
-> +		proto = ipv6_hdr(skb)->nexthdr;
-> +		ofs = ipv6_skip_exthdr(skb, sizeof(struct ipv6hdr), &proto, &frag_off);
-> +		if (ofs < 0 || (frag_off & htons(~0x7)) != 0) {
-> +			pr_debug("proto header not found\n");
-> +			return NF_DROP;
+This is an ordinary pattern done all over the kernel. However, Sherry
+noticed a 10% performance regression in qperf TCP over a 40gbps
+InfiniBand card. Quoting her message:
 
-Why this is returning NF_DROP while ovs_ct_helper() returns NF_ACCEPT
-here?
+> MT27500 Family [ConnectX-3] cards:
+> Infiniband device 'mlx4_0' port 1 status:
+> default gid: fe80:0000:0000:0000:0010:e000:0178:9eb1
+> base lid: 0x6
+> sm lid: 0x1
+> state: 4: ACTIVE
+> phys state: 5: LinkUp
+> rate: 40 Gb/sec (4X QDR)
+> link_layer: InfiniBand
+>
+> Cards are configured with IP addresses on private subnet for IPoIB
+> performance testing.
+> Regression identified in this bug is in TCP latency in this stack as reported
+> by qperf tcp_lat metric:
+>
+> We have one system listen as a qperf server:
+> [root@yourQperfServer ~]# qperf
+>
+> Have the other system connect to qperf server as a client (in this
+> case, it’s X7 server with Mellanox card):
+> [root@yourQperfClient ~]# numactl -m0 -N0 qperf 20.20.20.101 -v -uu -ub --time 60 --wait_server 20 -oo msg_size:4K:1024K:*2 tcp_lat
 
-> +		}
-> +		protoff = ofs;
-> +		break;
-> +	}
-> +	default:
-> +		WARN_ONCE(1, "helper invoked on non-IP family!");
-> +		return NF_DROP;
-> +	}
-> +
-> +	if (helper->tuple.dst.protonum != proto)
-> +		return NF_DROP;
+Rather than incur the scheduling latency from queue_work_on, we can
+instead switch to running on the next timer tick, on the same core. This
+also batches things a bit more -- once per jiffy -- which is okay now
+that mix_interrupt_randomness() can credit multiple bits at once.
 
-I'm wondering if NF_DROP is appropriate here. This should be a 
-situation similar to the above one: the current packet does not match
-the helper.
+Reported-by: Sherry Yang <sherry.yang@oracle.com>
+Tested-by: Paul Webb <paul.x.webb@oracle.com>
+Cc: Sherry Yang <sherry.yang@oracle.com>
+Cc: Phillip Goerl <phillip.goerl@oracle.com>
+Cc: Jack Vogel <jack.vogel@oracle.com>
+Cc: Nicky Veitch <nicky.veitch@oracle.com>
+Cc: Colm Harrington <colm.harrington@oracle.com>
+Cc: Ramanan Govindarajan <ramanan.govindarajan@oracle.com>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: Tejun Heo <tj@kernel.org>
+Cc: Sultan Alsawaf <sultan@kerneltoast.com>
+Cc: stable@vger.kernel.org
+Fixes: 58340f8e952b ("random: defer fast pool mixing to worker")
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+ drivers/char/random.c | 18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
 
-Thanks!
-
-Paolo
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index a90d96f4b3bb..e591c6aadca4 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -921,17 +921,20 @@ struct fast_pool {
+ 	unsigned long pool[4];
+ 	unsigned long last;
+ 	unsigned int count;
+-	struct work_struct mix;
++	struct timer_list mix;
+ };
+ 
++static void mix_interrupt_randomness(struct timer_list *work);
++
+ static DEFINE_PER_CPU(struct fast_pool, irq_randomness) = {
+ #ifdef CONFIG_64BIT
+ #define FASTMIX_PERM SIPHASH_PERMUTATION
+-	.pool = { SIPHASH_CONST_0, SIPHASH_CONST_1, SIPHASH_CONST_2, SIPHASH_CONST_3 }
++	.pool = { SIPHASH_CONST_0, SIPHASH_CONST_1, SIPHASH_CONST_2, SIPHASH_CONST_3 },
+ #else
+ #define FASTMIX_PERM HSIPHASH_PERMUTATION
+-	.pool = { HSIPHASH_CONST_0, HSIPHASH_CONST_1, HSIPHASH_CONST_2, HSIPHASH_CONST_3 }
++	.pool = { HSIPHASH_CONST_0, HSIPHASH_CONST_1, HSIPHASH_CONST_2, HSIPHASH_CONST_3 },
+ #endif
++	.mix = __TIMER_INITIALIZER(mix_interrupt_randomness, 0)
+ };
+ 
+ /*
+@@ -973,7 +976,7 @@ int __cold random_online_cpu(unsigned int cpu)
+ }
+ #endif
+ 
+-static void mix_interrupt_randomness(struct work_struct *work)
++static void mix_interrupt_randomness(struct timer_list *work)
+ {
+ 	struct fast_pool *fast_pool = container_of(work, struct fast_pool, mix);
+ 	/*
+@@ -1027,10 +1030,11 @@ void add_interrupt_randomness(int irq)
+ 	if (new_count < 1024 && !time_is_before_jiffies(fast_pool->last + HZ))
+ 		return;
+ 
+-	if (unlikely(!fast_pool->mix.func))
+-		INIT_WORK(&fast_pool->mix, mix_interrupt_randomness);
+ 	fast_pool->count |= MIX_INFLIGHT;
+-	queue_work_on(raw_smp_processor_id(), system_highpri_wq, &fast_pool->mix);
++	if (!timer_pending(&fast_pool->mix)) {
++		fast_pool->mix.expires = jiffies;
++		add_timer_on(&fast_pool->mix, raw_smp_processor_id());
++	}
+ }
+ EXPORT_SYMBOL_GPL(add_interrupt_randomness);
+ 
+-- 
+2.37.3
 
