@@ -2,287 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 38D8D5ECF17
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 23:04:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EB0C5ECF3A
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 23:23:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232936AbiI0VEZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 17:04:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39742 "EHLO
+        id S231292AbiI0VXP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 17:23:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232966AbiI0VEV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 17:04:21 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1EAA1ED21E;
-        Tue, 27 Sep 2022 14:04:17 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id rk17so10049356ejb.1;
-        Tue, 27 Sep 2022 14:04:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=dwJjSyJsER8fu8KaFJu/+9H/JRzimbvYtz7bUiJaAMg=;
-        b=LNjkyGy1QJ6wRsWRW9atYqfNX2O5mrLw2YUI0juyHo/Jvf+yMD2xERny2vjwNkUzNQ
-         7/S1Eugns/jTgZQp8KvEHNHG7tcL82D3ZEndC4Fv5pcVWMPZl85aAbllnF6zpjhAwGw7
-         aq6sL5jJsYFo+Y1QreFAtfDj4tJ45G/vhLn84Ml4wi+v+lPBK4lkiqo21tdhbHkgbjcv
-         DjFK7rHfvjajMLuBABPywmc19ftokTM4vFdIefEnI2I7tCyFhRHrk6tBoEcEdj50hgbt
-         fXO4uEfkPAMxGD6JQYkoaI2wqP5jePTN0sqqDKOKDeRUTAcQjfMmr1Gf/JAfcjFrThc/
-         nHKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=dwJjSyJsER8fu8KaFJu/+9H/JRzimbvYtz7bUiJaAMg=;
-        b=DqZLWL7XrcfWivHgyYuLpeGli8FunzFhakS8clvXqJkaxS2Qf8OsTtG6ueLSzah6oA
-         xjWcWC+Mjj60J0nJVtNVwjVaFsjpR2ClCawzBepYHV+sFSULMQeOFZRKhwen15W78Llp
-         qvekYIVdrRmeT0HG3RRCFZTomfkgDSNbc3K/Fo6ST55tpYUtR6dG2LdZu8Oe7ts2cWp6
-         YN6RkDwiJGVJDSni6KMWgaNCH156tewBr4yeq3B4IbNVUlD1ZV7hbsNlTA1joDwiD09m
-         K7DSMuT8MUTyWK2W0Q+kqpeOe3vIs83UFTBMR7ySQtOA5l/gVHN0s7gkLx8Iba9U8wok
-         4kTg==
-X-Gm-Message-State: ACrzQf1GapyMYz/s2xOQOsnDQyCjxJPd6Gbe9ypATiYmHQsvNK7kd56i
-        E5xdmB0nefE+2RO2MYRwtDWLc9xDPrFdnrJI
-X-Google-Smtp-Source: AMsMyM6i6nNNyLuaK2nxSVMc5/lwEZzu06kWlB9WJ0eeM1NNO6aPdH4Eev68mCA6/c4inVvaCFUkJQ==
-X-Received: by 2002:a17:907:3e02:b0:782:1267:f2c8 with SMTP id hp2-20020a1709073e0200b007821267f2c8mr24098245ejc.585.1664312655552;
-        Tue, 27 Sep 2022 14:04:15 -0700 (PDT)
-Received: from skbuf ([188.27.184.197])
-        by smtp.gmail.com with ESMTPSA id r19-20020a05640251d300b0044f21c69608sm2044515edd.10.2022.09.27.14.04.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Sep 2022 14:04:14 -0700 (PDT)
-Date:   Wed, 28 Sep 2022 00:04:11 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Lee Jones <lee@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH v3 net-next 11/14] mfd: ocelot: add regmaps for ocelot_ext
-Message-ID: <20220927210411.6oc3aphlyp4imgsq@skbuf>
-References: <20220926002928.2744638-1-colin.foster@in-advantage.com>
- <20220926002928.2744638-12-colin.foster@in-advantage.com>
+        with ESMTP id S229951AbiI0VXN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 17:23:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CE2C1E2742
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 14:23:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AC37AB81D90
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 21:23:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D77E6C433C1;
+        Tue, 27 Sep 2022 21:23:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664313789;
+        bh=x1sqVtNxGmDjTQI9Pt13+gSuuqKsGBlbdDuYyi6/N4U=;
+        h=From:To:Cc:Subject:Date:From;
+        b=qThyCiWr67p888qdklvd9SFGwTPSyeD7c0NcLA6EZavvHp+SL8zM+tmj+AJSDYBMt
+         4+2y3iHn/yE2Ek8JjF0ILTnF+cWUoXFlE5q/q9hWQoKQoRylY6UnplwqxefdzFHjzq
+         3ysXcJJk4S7riC9qeCz48Nuz0ckAx2KYGT6QhY8/Fx+/Mdo4tA2zY9+8arYTgpKvc2
+         eWtXjAtDDNIXAkTEhyqOYd9Zytw74KPZNfRjB9SDkI5y7BVAWV3T15suNOyQk16QNE
+         cNBejPrchxaew25DSfeViW9VGM/gFLmPtYjJffLVEFcgoaKl0Qd6/YYxCtL8jHmBoi
+         qUvpJdKfXdcVQ==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Florent Fourcot <florent.fourcot@wifirst.fr>,
+        Guillaume Nault <gnault@redhat.com>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCH net-next] docs: netlink: clarify the historical baggage of Netlink flags
+Date:   Tue, 27 Sep 2022 14:23:06 -0700
+Message-Id: <20220927212306.823862-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220926002928.2744638-12-colin.foster@in-advantage.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 25, 2022 at 05:29:25PM -0700, Colin Foster wrote:
-> The Ocelot switch core driver relies heavily on a fixed array of resources
-> for both ports and peripherals. This is in contrast to existing peripherals
-> - pinctrl for example - which have a one-to-one mapping of driver <>
-> resource. As such, these regmaps must be created differently so that
-> enumeration-based offsets are preserved.
-> 
-> Register the regmaps to the core MFD device unconditionally so they can be
-> referenced by the Ocelot switch / Felix DSA systems.
-> 
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> ---
-> 
-> v3
->     * No change
-> 
-> v2
->     * Alignment of variables broken out to a separate patch
->     * Structs now correctly use EXPORT_SYMBOL*
->     * Logic moved and comments added to clear up conditionals around
->       vsc7512_target_io_res[i].start
-> 
-> v1 from previous RFC:
->     * New patch
-> 
-> ---
->  drivers/mfd/ocelot-core.c  | 87 ++++++++++++++++++++++++++++++++++++++
->  include/linux/mfd/ocelot.h |  5 +++
->  2 files changed, 92 insertions(+)
-> 
-> diff --git a/drivers/mfd/ocelot-core.c b/drivers/mfd/ocelot-core.c
-> index 013e83173062..702555fbdcc5 100644
-> --- a/drivers/mfd/ocelot-core.c
-> +++ b/drivers/mfd/ocelot-core.c
-> @@ -45,6 +45,45 @@
->  #define VSC7512_SIO_CTRL_RES_START	0x710700f8
->  #define VSC7512_SIO_CTRL_RES_SIZE	0x00000100
->  
-> +#define VSC7512_HSIO_RES_START		0x710d0000
-> +#define VSC7512_HSIO_RES_SIZE		0x00000128
+nlmsg_flags are full of historical baggage, inconsistencies and
+strangeness. Try to document it more thoroughly. Explain the meaning
+of the ECHO flag (and while at it clarify the comment in the uAPI).
+Handwave a little about the NEW request flags and how they make
+sense on the surface but cater to really old paradigm before commands
+were a thing.
 
-I don't think you should give the HSIO resource to the switching driver.
-In drivers/net/ethernet/mscc/ocelot_vsc7514.c, there is this comment:
+I will add more notes on how to make use of ECHO and discouragement
+for reuse of flags to the kernel-side documentation.
 
-static void ocelot_pll5_init(struct ocelot *ocelot)
-{
-	/* Configure PLL5. This will need a proper CCF driver
-	 * The values are coming from the VTSS API for Ocelot
-	 */
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+--
+CC: Johannes Berg <johannes@sipsolutions.net>
+CC: Pablo Neira Ayuso <pablo@netfilter.org>
+CC: Florian Westphal <fw@strlen.de>
+CC: Jamal Hadi Salim <jhs@mojatatu.com>
+CC: Jacob Keller <jacob.e.keller@intel.com>
+CC: Florent Fourcot <florent.fourcot@wifirst.fr>
+CC: Guillaume Nault <gnault@redhat.com>
+CC: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+CC: Nikolay Aleksandrov <razor@blackwall.org>
+CC: Hangbin Liu <liuhangbin@gmail.com>
+---
+ Documentation/userspace-api/netlink/intro.rst | 61 +++++++++++++++----
+ include/uapi/linux/netlink.h                  |  2 +-
+ 2 files changed, 49 insertions(+), 14 deletions(-)
 
-I believe CCF stands for Common Clock Framework.
+diff --git a/Documentation/userspace-api/netlink/intro.rst b/Documentation/userspace-api/netlink/intro.rst
+index 8f1220756412..0955e9f203d3 100644
+--- a/Documentation/userspace-api/netlink/intro.rst
++++ b/Documentation/userspace-api/netlink/intro.rst
+@@ -623,22 +623,57 @@ Even though other protocols and Generic Netlink commands often use
+ the same verbs in their message names (``GET``, ``SET``) the concept
+ of request types did not find wider adoption.
+ 
+-Message flags
+--------------
++Notification echo
++-----------------
++
++``NLM_F_ECHO`` requests for notifications resulting from the request
++to be queued onto the requesting socket. This is useful to discover
++the impact of the request.
++
++Note that this feature is not universally implemented.
++
++Other request-type-specific flags
++---------------------------------
++
++Classic Netlink defined various flags for its ``GET``, ``NEW``
++and ``DEL`` requests in the upper byte of nlmsg_flags in struct nlmsghdr.
++Since request types have not been generalized the request type specific
++flags are rarely used (and considered deprecated for new families).
++
++For ``GET`` - ``NLM_F_ROOT`` and ``NLM_F_MATCH`` are combined into
++``NLM_F_DUMP``, and not used separately. ``NLM_F_ATOMIC`` is never used.
++
++For ``DEL`` - ``NLM_F_NONREC`` is only used by nftables and ``NLM_F_BULK``
++only by FDB some operations.
++
++The flags for ``NEW`` are used most commonly in classic Netlink. Unfortunately,
++the meaning is not crystal clear. The following description is based on the
++best guess of the intention of the authors, and in practice all families
++stray from it in one way or another. ``NLM_F_REPLACE`` asks to replace
++an existing object, if no matching object exists the operation should fail.
++``NLM_F_EXCL`` has the opposite semantics and only succeeds if object already
++existed.
++``NLM_F_CREATE`` asks for the object to be created if it does not
++exist, it can be combined with ``NLM_F_REPLACE`` and ``NLM_F_EXCL``.
++
++A comment in the main Netlink uAPI header states::
++
++   4.4BSD ADD		NLM_F_CREATE|NLM_F_EXCL
++   4.4BSD CHANGE	NLM_F_REPLACE
+ 
+-The earlier section has already covered the basic request flags
+-(``NLM_F_REQUEST``, ``NLM_F_ACK``, ``NLM_F_DUMP``) and the ``NLMSG_ERROR`` /
+-``NLMSG_DONE`` flags (``NLM_F_CAPPED``, ``NLM_F_ACK_TLVS``).
+-Dump flags were also mentioned (``NLM_F_MULTI``, ``NLM_F_DUMP_INTR``).
++   True CHANGE		NLM_F_CREATE|NLM_F_REPLACE
++   Append		NLM_F_CREATE
++   Check		NLM_F_EXCL
+ 
+-Those are the main flags of note, with a small exception (of ``ieee802154``)
+-Generic Netlink does not make use of other flags. If the protocol needs
+-to communicate special constraints for a request it should use
+-an attribute, not the flags in struct nlmsghdr.
++which seems to indicate that those flags predate request types.
++``NLM_F_REPLACE`` without ``NLM_F_CREATE`` was initially used instead
++of ``SET`` commands.
++``NLM_F_EXCL`` without ``NLM_F_CREATE`` was used to check if object exists
++without creating it, presumably predating ``GET`` commands.
+ 
+-Classic Netlink, however, defined various flags for its ``GET``, ``NEW``
+-and ``DEL`` requests. Since request types have not been generalized
+-the request type specific flags should not be used either.
++``NLM_F_APPEND`` indicates that if one key can have multiple objects associated
++with it (e.g. multiple next-hop objects for a route) the new object should be
++added to the list rather than replacing the entire list.
+ 
+ uAPI reference
+ ==============
+diff --git a/include/uapi/linux/netlink.h b/include/uapi/linux/netlink.h
+index e0689dbd2cde..e2ae82e3f9f7 100644
+--- a/include/uapi/linux/netlink.h
++++ b/include/uapi/linux/netlink.h
+@@ -62,7 +62,7 @@ struct nlmsghdr {
+ #define NLM_F_REQUEST		0x01	/* It is request message. 	*/
+ #define NLM_F_MULTI		0x02	/* Multipart message, terminated by NLMSG_DONE */
+ #define NLM_F_ACK		0x04	/* Reply with ack, with zero or error code */
+-#define NLM_F_ECHO		0x08	/* Echo this request 		*/
++#define NLM_F_ECHO		0x08	/* Receive resulting notifications */
+ #define NLM_F_DUMP_INTR		0x10	/* Dump was inconsistent due to sequence change */
+ #define NLM_F_DUMP_FILTERED	0x20	/* Dump was filtered as requested */
+ 
+-- 
+2.37.3
 
-> +
-> +#define VSC7512_ANA_RES_START		0x71880000
-> +#define VSC7512_ANA_RES_SIZE		0x00010000
-> +
-> +#define VSC7512_QS_RES_START		0x71080000
-> +#define VSC7512_QS_RES_SIZE		0x00000100
-> +
-> +#define VSC7512_QSYS_RES_START		0x71800000
-> +#define VSC7512_QSYS_RES_SIZE		0x00200000
-> +
-> +#define VSC7512_REW_RES_START		0x71030000
-> +#define VSC7512_REW_RES_SIZE		0x00010000
-> +
-> +#define VSC7512_SYS_RES_START		0x71010000
-> +#define VSC7512_SYS_RES_SIZE		0x00010000
-> +
-> +#define VSC7512_S0_RES_START		0x71040000
-> +#define VSC7512_S1_RES_START		0x71050000
-> +#define VSC7512_S2_RES_START		0x71060000
-> +#define VSC7512_S_RES_SIZE		0x00000400
-
-VCAP_RES_SIZE?
-
-> +
-> +#define VSC7512_GCB_RES_START		0x71070000
-> +#define VSC7512_GCB_RES_SIZE		0x0000022c
-
-Again, I don't think devcpu_gcb should be given to a switching-only
-driver. There's nothing switching-related about it.
-
-> +#define VSC7512_PORT_0_RES_START	0x711e0000
-> +#define VSC7512_PORT_1_RES_START	0x711f0000
-> +#define VSC7512_PORT_2_RES_START	0x71200000
-> +#define VSC7512_PORT_3_RES_START	0x71210000
-> +#define VSC7512_PORT_4_RES_START	0x71220000
-> +#define VSC7512_PORT_5_RES_START	0x71230000
-> +#define VSC7512_PORT_6_RES_START	0x71240000
-> +#define VSC7512_PORT_7_RES_START	0x71250000
-> +#define VSC7512_PORT_8_RES_START	0x71260000
-> +#define VSC7512_PORT_9_RES_START	0x71270000
-> +#define VSC7512_PORT_10_RES_START	0x71280000
-> +#define VSC7512_PORT_RES_SIZE		0x00010000
-> +
->  #define VSC7512_GCB_RST_SLEEP_US	100
->  #define VSC7512_GCB_RST_TIMEOUT_US	100000
->  
-> @@ -96,6 +135,36 @@ static const struct resource vsc7512_sgpio_resources[] = {
->  	DEFINE_RES_REG_NAMED(VSC7512_SIO_CTRL_RES_START, VSC7512_SIO_CTRL_RES_SIZE, "gcb_sio"),
->  };
->  
-> +const struct resource vsc7512_target_io_res[TARGET_MAX] = {
-> +	[ANA] = DEFINE_RES_REG_NAMED(VSC7512_ANA_RES_START, VSC7512_ANA_RES_SIZE, "ana"),
-> +	[QS] = DEFINE_RES_REG_NAMED(VSC7512_QS_RES_START, VSC7512_QS_RES_SIZE, "qs"),
-> +	[QSYS] = DEFINE_RES_REG_NAMED(VSC7512_QSYS_RES_START, VSC7512_QSYS_RES_SIZE, "qsys"),
-> +	[REW] = DEFINE_RES_REG_NAMED(VSC7512_REW_RES_START, VSC7512_REW_RES_SIZE, "rew"),
-> +	[SYS] = DEFINE_RES_REG_NAMED(VSC7512_SYS_RES_START, VSC7512_SYS_RES_SIZE, "sys"),
-> +	[S0] = DEFINE_RES_REG_NAMED(VSC7512_S0_RES_START, VSC7512_S_RES_SIZE, "s0"),
-> +	[S1] = DEFINE_RES_REG_NAMED(VSC7512_S1_RES_START, VSC7512_S_RES_SIZE, "s1"),
-> +	[S2] = DEFINE_RES_REG_NAMED(VSC7512_S2_RES_START, VSC7512_S_RES_SIZE, "s2"),
-> +	[GCB] = DEFINE_RES_REG_NAMED(VSC7512_GCB_RES_START, VSC7512_GCB_RES_SIZE, "devcpu_gcb"),
-> +	[HSIO] = DEFINE_RES_REG_NAMED(VSC7512_HSIO_RES_START, VSC7512_HSIO_RES_SIZE, "hsio"),
-> +};
-> +EXPORT_SYMBOL_NS(vsc7512_target_io_res, MFD_OCELOT);
-> +
-> +const struct resource vsc7512_port_io_res[] = {
-
-I hope you will merge these 2 arrays now.
-
-> +	DEFINE_RES_REG_NAMED(VSC7512_PORT_0_RES_START, VSC7512_PORT_RES_SIZE, "port0"),
-> +	DEFINE_RES_REG_NAMED(VSC7512_PORT_1_RES_START, VSC7512_PORT_RES_SIZE, "port1"),
-> +	DEFINE_RES_REG_NAMED(VSC7512_PORT_2_RES_START, VSC7512_PORT_RES_SIZE, "port2"),
-> +	DEFINE_RES_REG_NAMED(VSC7512_PORT_3_RES_START, VSC7512_PORT_RES_SIZE, "port3"),
-> +	DEFINE_RES_REG_NAMED(VSC7512_PORT_4_RES_START, VSC7512_PORT_RES_SIZE, "port4"),
-> +	DEFINE_RES_REG_NAMED(VSC7512_PORT_5_RES_START, VSC7512_PORT_RES_SIZE, "port5"),
-> +	DEFINE_RES_REG_NAMED(VSC7512_PORT_6_RES_START, VSC7512_PORT_RES_SIZE, "port6"),
-> +	DEFINE_RES_REG_NAMED(VSC7512_PORT_7_RES_START, VSC7512_PORT_RES_SIZE, "port7"),
-> +	DEFINE_RES_REG_NAMED(VSC7512_PORT_8_RES_START, VSC7512_PORT_RES_SIZE, "port8"),
-> +	DEFINE_RES_REG_NAMED(VSC7512_PORT_9_RES_START, VSC7512_PORT_RES_SIZE, "port9"),
-> +	DEFINE_RES_REG_NAMED(VSC7512_PORT_10_RES_START, VSC7512_PORT_RES_SIZE, "port10"),
-> +	{}
-> +};
-> +EXPORT_SYMBOL_NS(vsc7512_port_io_res, MFD_OCELOT);
-> +
->  static const struct mfd_cell vsc7512_devs[] = {
->  	{
->  		.name = "ocelot-pinctrl",
-> @@ -144,6 +213,7 @@ static void ocelot_core_try_add_regmaps(struct device *dev,
->  
->  int ocelot_core_init(struct device *dev)
->  {
-> +	const struct resource *port_res;
->  	int i, ndevs;
->  
->  	ndevs = ARRAY_SIZE(vsc7512_devs);
-> @@ -151,6 +221,23 @@ int ocelot_core_init(struct device *dev)
->  	for (i = 0; i < ndevs; i++)
->  		ocelot_core_try_add_regmaps(dev, &vsc7512_devs[i]);
->  
-> +	/*
-> +	 * Both the target_io_res and the port_io_res structs need to be referenced directly by
-> +	 * the ocelot_ext driver, so they can't be attached to the dev directly and referenced by
-> +	 * offset like the rest of the drivers. Instead, create these regmaps always and allow any
-> +	 * children look these up by name.
-> +	 */
-> +	for (i = 0; i < TARGET_MAX; i++)
-> +		/*
-> +		 * The target_io_res array is sparsely populated. Use .start as an indication that
-> +		 * the entry isn't defined
-> +		 */
-> +		if (vsc7512_target_io_res[i].start)
-> +			ocelot_core_try_add_regmap(dev, &vsc7512_target_io_res[i]);
-> +
-> +	for (port_res = vsc7512_port_io_res; port_res->start; port_res++)
-> +		ocelot_core_try_add_regmap(dev, port_res);
-> +
-
-Will need to be updated.
-
->  	return devm_mfd_add_devices(dev, PLATFORM_DEVID_AUTO, vsc7512_devs, ndevs, NULL, 0, NULL);
->  }
->  EXPORT_SYMBOL_NS(ocelot_core_init, MFD_OCELOT);
-> diff --git a/include/linux/mfd/ocelot.h b/include/linux/mfd/ocelot.h
-> index dd72073d2d4f..439ff5256cf0 100644
-> --- a/include/linux/mfd/ocelot.h
-> +++ b/include/linux/mfd/ocelot.h
-> @@ -11,8 +11,13 @@
->  #include <linux/regmap.h>
->  #include <linux/types.h>
->  
-> +#include <soc/mscc/ocelot.h>
-> +
-
-Is this the problematic include that makes it necessary to have the
-pinctrl hack? Can we drop the #undef REG now?
-
->  struct resource;
->  
-> +extern const struct resource vsc7512_target_io_res[TARGET_MAX];
-> +extern const struct resource vsc7512_port_io_res[];
-> +
-
-Will need to be removed.
-
->  static inline struct regmap *
->  ocelot_regmap_from_resource_optional(struct platform_device *pdev,
->  				     unsigned int index,
-> -- 
-> 2.25.1
-> 
