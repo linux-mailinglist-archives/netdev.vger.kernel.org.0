@@ -2,220 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A03C65EBD37
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 10:27:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 558785EBD28
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 10:23:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231513AbiI0I1I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 04:27:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60360 "EHLO
+        id S231475AbiI0IXd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 04:23:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231453AbiI0I1E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 04:27:04 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1177A4B9C
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 01:27:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1664267223; x=1695803223;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=VXhbykHihPAUBFCrh0oJNgEZ3P3H6jJ85FST6uFnx4s=;
-  b=YkZrMmzB749dJDIJX5WUblVCac/yXAJS6rGj6Kt/lywmnvoxjvv+0KQx
-   CpfGbK57lz1bv/QhEya+aLn4xehvy6wwv/KSxYFCMrw7P/9XZpYfX8T1Q
-   IrwwcsIaYlQVkOdn1KcZPQWIJhuXC6JTw+5Pkv8BQ3Idnj2g2XG5ffGOF
-   iMz17lgS2BpYY1al65YTuCfwcHLlqXP9ljhEr+MY58sRscH2g/NjkKdik
-   WxUDRRE3l0JA4mpXkVCnfsLC8LYTD6bLl8Frt72J4JRdpTF1UXl7hfWVz
-   /LnEWl9J7DO9szobdjQKhdTQI02fNChu2j1V9pdn2BbGJPNZic/Tw90lb
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="327612361"
-X-IronPort-AV: E=Sophos;i="5.93,348,1654585200"; 
-   d="scan'208";a="327612361"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Sep 2022 01:27:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="652199940"
-X-IronPort-AV: E=Sophos;i="5.93,348,1654585200"; 
-   d="scan'208";a="652199940"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga008.jf.intel.com with ESMTP; 27 Sep 2022 01:27:02 -0700
-Received: from switcheroo.igk.intel.com (switcheroo.igk.intel.com [172.22.229.137])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 28R8QxxM023862;
-        Tue, 27 Sep 2022 09:27:01 +0100
-From:   Wojciech Drewek <wojciech.drewek@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, stephen@networkplumber.org, gnault@redhat.com
-Subject: [PATCH iproute2-next 3/3] f_flower: Introduce L2TPv3 support
-Date:   Tue, 27 Sep 2022 10:23:18 +0200
-Message-Id: <20220927082318.289252-4-wojciech.drewek@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220927082318.289252-1-wojciech.drewek@intel.com>
-References: <20220927082318.289252-1-wojciech.drewek@intel.com>
+        with ESMTP id S230369AbiI0IXc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 04:23:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9AB6ABF04;
+        Tue, 27 Sep 2022 01:23:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6EA8EB81991;
+        Tue, 27 Sep 2022 08:23:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA1A7C433C1;
+        Tue, 27 Sep 2022 08:23:26 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="J3cVgI6h"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1664267005;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wzK6JDZ0KR+H20bRs0fFogH6oAfl1qEY+rsD3GGd+ik=;
+        b=J3cVgI6hkgm1dUqwQwW1UevcbFzHP34I2SDjq+5cTd9yDqFKn9/ASp/lgCR3eaTUU4XE3E
+        786ATIk/u33X0q+UQ/FgUhEbWWMFi4lNzYewWrNzPdxNn0ngvWdKW1IAHXTlQrsMrv/eN0
+        ZEYBeH3Ze9emuMWU/w3hkiIZTK6xorc=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 5b5765fe (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Tue, 27 Sep 2022 08:23:24 +0000 (UTC)
+Date:   Tue, 27 Sep 2022 10:23:21 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     David Laight <David.Laight@ACULAB.COM>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Sherry Yang <sherry.yang@oracle.com>,
+        Paul Webb <paul.x.webb@oracle.com>,
+        Phillip Goerl <phillip.goerl@oracle.com>,
+        Jack Vogel <jack.vogel@oracle.com>,
+        Nicky Veitch <nicky.veitch@oracle.com>,
+        Colm Harrington <colm.harrington@oracle.com>,
+        Ramanan Govindarajan <ramanan.govindarajan@oracle.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Tejun Heo <tj@kernel.org>,
+        Sultan Alsawaf <sultan@kerneltoast.com>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: Re: [PATCH v2] random: use immediate per-cpu timer rather than
+ workqueue for mixing fast pool
+Message-ID: <YzKy+bNedt2vu+a1@zx2c4.com>
+References: <20220922165528.3679479-1-Jason@zx2c4.com>
+ <20220926220457.1517120-1-Jason@zx2c4.com>
+ <62ae29f10d65401ab79e9bdb6af1576a@AcuMS.aculab.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <62ae29f10d65401ab79e9bdb6af1576a@AcuMS.aculab.com>
+X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for matching on L2TPv3 session ID.
-Session ID can be specified only when ip proto was
-set to IPPROTO_L2TP.
+On Tue, Sep 27, 2022 at 07:41:52AM +0000, David Laight wrote:
+> From: Jason A. Donenfeld
+> > Sent: 26 September 2022 23:05
+> > 
+> > Previously, the fast pool was dumped into the main pool peroidically in
+> > the fast pool's hard IRQ handler. This worked fine and there weren't
+> > problems with it, until RT came around. Since RT converts spinlocks into
+> > sleeping locks, problems cropped up. Rather than switching to raw
+> > spinlocks, the RT developers preferred we make the transformation from
+> > originally doing:
+> > 
+> >     do_some_stuff()
+> >     spin_lock()
+> >     do_some_other_stuff()
+> >     spin_unlock()
+> > 
+> > to doing:
+> > 
+> >     do_some_stuff()
+> >     queue_work_on(some_other_stuff_worker)
+> > 
+> > This is an ordinary pattern done all over the kernel. However, Sherry
+> > noticed a 10% performance regression in qperf TCP over a 40gbps
+> > InfiniBand card. Quoting her message:
+> > 
+> > > MT27500 Family [ConnectX-3] cards:
+> > > Infiniband device 'mlx4_0' port 1 status:
+> > > default gid: fe80:0000:0000:0000:0010:e000:0178:9eb1
+> > > base lid: 0x6
+> > > sm lid: 0x1
+> > > state: 4: ACTIVE
+> > > phys state: 5: LinkUp
+> > > rate: 40 Gb/sec (4X QDR)
+> > > link_layer: InfiniBand
+> > >
+> > > Cards are configured with IP addresses on private subnet for IPoIB
+> > > performance testing.
+> > > Regression identified in this bug is in TCP latency in this stack as reported
+> > > by qperf tcp_lat metric:
+> > >
+> > > We have one system listen as a qperf server:
+> > > [root@yourQperfServer ~]# qperf
+> > >
+> > > Have the other system connect to qperf server as a client (in this
+> > > case, it’s X7 server with Mellanox card):
+> > > [root@yourQperfClient ~]# numactl -m0 -N0 qperf 20.20.20.101 -v -uu -ub --time 60 --wait_server 20 -
+> > oo msg_size:4K:1024K:*2 tcp_lat
+> > 
+> > Rather than incur the scheduling latency from queue_work_on, we can
+> > instead switch to running on the next timer tick, on the same core,
+> > deferrably so. This also batches things a bit more -- once per jiffy --
+> > which is probably okay now that mix_interrupt_randomness() can credit
+> > multiple bits at once. It still puts a bit of pressure on fast_mix(),
+> > but hopefully that's acceptable.
+> 
+> I though NOHZ systems didn't take a timer interrupt every 'jiffy'.
+> If that is true what actually happens?
 
-L2TPv3 might be transported over IP or over UDP,
-this implementation is only about L2TPv3 over IP.
-IPv6 is also supported, in this case next header
-is set to IPPROTO_L2TP.
+The TIMER_DEFERRABLE part of this patch is a mistake; I'm going to make
+that 0. However, since expires==jiffies, there's no difference. It's
+still undesirable though.
 
-Example filter:
-  # tc filter add dev eth0 ingress prio 1 protocol ip \
-      flower \
-        ip_proto l2tp \
-        l2tpv3_sid 1234 \
-        skip_sw \
-      action drop
-
-Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
----
- man/man8/tc-flower.8 | 11 +++++++++--
- tc/f_flower.c        | 45 +++++++++++++++++++++++++++++++++++++++++++-
- 2 files changed, 53 insertions(+), 3 deletions(-)
-
-diff --git a/man/man8/tc-flower.8 b/man/man8/tc-flower.8
-index 5e486ea31d37..4de823e4ef3e 100644
---- a/man/man8/tc-flower.8
-+++ b/man/man8/tc-flower.8
-@@ -54,7 +54,9 @@ flower \- flow based traffic control filter
- .IR BOS " | "
- .B mpls_ttl
- .IR TTL " | "
--.BR ip_proto " { " tcp " | " udp " | " sctp " | " icmp " | " icmpv6 " | "
-+.B l2tpv3_sid
-+.IR LSID " | "
-+.BR ip_proto " { " tcp " | " udp " | " sctp " | " icmp " | " icmpv6 " | " l2tp " | "
- .IR IP_PROTO " } | "
- .B ip_tos
- .IR MASKED_IP_TOS " | "
-@@ -291,11 +293,16 @@ entry.
- .I TTL
- is an unsigned 8 bit value in decimal format.
- .TP
-+.BI l2tpv3_sid " LSID"
-+Match on L2TPv3 session id field transported over IP or IPv6.
-+.I LSID
-+is an unsigned 32 bit value in decimal format.
-+.TP
- .BI ip_proto " IP_PROTO"
- Match on layer four protocol.
- .I IP_PROTO
- may be
--.BR tcp ", " udp ", " sctp ", " icmp ", " icmpv6
-+.BR tcp ", " udp ", " sctp ", " icmp ", " icmpv6 ", " l2tp
- or an unsigned 8bit value in hexadecimal format.
- .TP
- .BI ip_tos " MASKED_IP_TOS"
-diff --git a/tc/f_flower.c b/tc/f_flower.c
-index 069896a48f33..cf19009c63e1 100644
---- a/tc/f_flower.c
-+++ b/tc/f_flower.c
-@@ -60,7 +60,7 @@ static void explain(void)
- 		"			ppp_proto [ ipv4 | ipv6 | mpls_uc | mpls_mc | PPP_PROTO ]"
- 		"			dst_mac MASKED-LLADDR |\n"
- 		"			src_mac MASKED-LLADDR |\n"
--		"			ip_proto [tcp | udp | sctp | icmp | icmpv6 | IP-PROTO ] |\n"
-+		"			ip_proto [tcp | udp | sctp | icmp | icmpv6 | l2tp | IP-PROTO ] |\n"
- 		"			ip_tos MASKED-IP_TOS |\n"
- 		"			ip_ttl MASKED-IP_TTL |\n"
- 		"			mpls LSE-LIST |\n"
-@@ -68,6 +68,7 @@ static void explain(void)
- 		"			mpls_tc TC |\n"
- 		"			mpls_bos BOS |\n"
- 		"			mpls_ttl TTL |\n"
-+		"			l2tpv3_sid LSID |\n"
- 		"			dst_ip PREFIX |\n"
- 		"			src_ip PREFIX |\n"
- 		"			dst_port PORT-NUMBER |\n"
-@@ -428,6 +429,11 @@ static int flower_parse_ip_proto(char *str, __be16 eth_type, int type,
- 		if (eth_type != htons(ETH_P_IPV6))
- 			goto err;
- 		ip_proto = IPPROTO_ICMPV6;
-+	} else if (!strcmp(str, "l2tp")) {
-+		if (eth_type != htons(ETH_P_IP) &&
-+		    eth_type != htons(ETH_P_IPV6))
-+			goto err;
-+		ip_proto = IPPROTO_L2TP;
- 	} else {
- 		ret = get_u8(&ip_proto, str, 16);
- 		if (ret)
-@@ -646,6 +652,28 @@ static int flower_parse_icmp(char *str, __u16 eth_type, __u8 ip_proto,
- 	return flower_parse_u8(str, value_type, mask_type, NULL, NULL, n);
- }
- 
-+static int flower_parse_l2tpv3(char *str, __be16 eth_type, __u8 ip_proto,
-+			       struct nlmsghdr *n)
-+{
-+	__be32 sid;
-+	int ret;
-+
-+	if ((eth_type != htons(ETH_P_IP) && eth_type != htons(ETH_P_IPV6)) ||
-+	    ip_proto != IPPROTO_L2TP) {
-+		fprintf(stderr,
-+			"Can't set \"l2tpv3_sid\" if ethertype isn't IP and IPv6 or ip_proto isn't l2tp\n");
-+		return -1;
-+	}
-+	ret = get_be32(&sid, str, 10);
-+	if (ret < 0) {
-+		fprintf(stderr, "Illegal \"l2tpv3 session id\"\n");
-+		return -1;
-+	}
-+	addattr32(n, MAX_MSG, TCA_FLOWER_KEY_L2TPV3_SID, sid);
-+
-+	return 0;
-+}
-+
- static int flower_port_attr_type(__u8 ip_proto, enum flower_endpoint endpoint)
- {
- 	if (ip_proto == IPPROTO_TCP)
-@@ -1840,6 +1868,11 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
- 				fprintf(stderr, "Illegal \"icmp code\"\n");
- 				return -1;
- 			}
-+		} else if (!strcmp(*argv, "l2tpv3_sid")) {
-+			NEXT_ARG();
-+			ret = flower_parse_l2tpv3(*argv, eth_type, ip_proto, n);
-+			if (ret < 0)
-+				return -1;
- 		} else if (matches(*argv, "arp_tip") == 0) {
- 			NEXT_ARG();
- 			ret = flower_parse_arp_ip_addr(*argv, eth_type,
-@@ -2153,6 +2186,8 @@ static void flower_print_ip_proto(__u8 *p_ip_proto,
- 		sprintf(out, "icmp");
- 	else if (ip_proto == IPPROTO_ICMPV6)
- 		sprintf(out, "icmpv6");
-+	else if (ip_proto == IPPROTO_L2TP)
-+		sprintf(out, "l2tp");
- 	else
- 		sprintf(out, "%02x", ip_proto);
- 
-@@ -2880,6 +2915,14 @@ static int flower_print_opt(struct filter_util *qu, FILE *f,
- 		flower_print_masked_u8("icmp_code", tb[nl_type],
- 				       tb[nl_mask_type], NULL);
- 
-+	if (tb[TCA_FLOWER_KEY_L2TPV3_SID]) {
-+		struct rtattr *attr = tb[TCA_FLOWER_KEY_L2TPV3_SID];
-+
-+		print_nl();
-+		print_uint(PRINT_ANY, "l2tpv3_sid", "  l2tpv3_sid %u",
-+			   rta_getattr_be32(attr));
-+	}
-+
- 	flower_print_ip4_addr("arp_sip", tb[TCA_FLOWER_KEY_ARP_SIP],
- 			     tb[TCA_FLOWER_KEY_ARP_SIP_MASK]);
- 	flower_print_ip4_addr("arp_tip", tb[TCA_FLOWER_KEY_ARP_TIP],
--- 
-2.31.1
-
+Jason
