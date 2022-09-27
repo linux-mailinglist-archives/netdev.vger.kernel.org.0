@@ -2,47 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A5AF85EC4CE
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 15:44:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8F3B5EC55E
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 16:02:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230515AbiI0Noe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 09:44:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53316 "EHLO
+        id S233005AbiI0OCo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 10:02:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229834AbiI0Noc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 09:44:32 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D284B840
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 06:44:30 -0700 (PDT)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4McLNF4M68zlWGG;
-        Tue, 27 Sep 2022 21:40:13 +0800 (CST)
-Received: from kwepemm600008.china.huawei.com (7.193.23.88) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 27 Sep 2022 21:44:28 +0800
-Received: from huawei.com (10.175.100.227) by kwepemm600008.china.huawei.com
- (7.193.23.88) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Tue, 27 Sep
- 2022 21:44:27 +0800
-From:   Shang XiaoJing <shangxiaojing@huawei.com>
-To:     <simon.horman@corigine.com>, <kuba@kernel.org>,
-        <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
-        <ast@kernel.org>, <daniel@iogearbox.net>, <hawk@kernel.org>,
-        <john.fastabend@gmail.com>, <niklas.soderlund@corigine.com>,
-        <oss-drivers@corigine.com>, <netdev@vger.kernel.org>
-CC:     <shangxiaojing@huawei.com>
-Subject: [PATCH -next v2] nfp: Use skb_put_data() instead of skb_put/memcpy pair
-Date:   Tue, 27 Sep 2022 22:18:35 +0800
-Message-ID: <20220927141835.19221-1-shangxiaojing@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S232973AbiI0OCC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 10:02:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FD8221E1C;
+        Tue, 27 Sep 2022 07:01:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 35F27B81B2B;
+        Tue, 27 Sep 2022 14:01:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70851C433D7;
+        Tue, 27 Sep 2022 14:01:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664287295;
+        bh=NAUodwPgnE7GrEVryZvu4qNHr7mbevAz4s3TO23t79w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=LuiosZJoGZ02miUBmsmqdUMGhsCAhmvkY+X0H1Fa4Jceq/WJAtnP5PXAzJeXApsDB
+         +rFeYIsYnbFLG3z9IKRSYcVox4BqxGkoRF24D+Dx5v+NqwijA18XSCUBZI+1JxG9uP
+         hIBufbCYnDExFNHs1yCbolTI1VEUuEb5AcIFRvDjVWhvBYeh90sWoElQ3rHeQFoWqi
+         BTH3m8uvF/gs4DQXLPafNDQMGhq1sYdF6x+SMJGXDdn6PkwrbJPDNJJs6dee/Z1+Me
+         EyORRxFj2Ggg8yTPznfdgeL31Lr/UqrwUBAT5VwsxfkfXa2aDuJoMyNIFIEoCFJGEU
+         5fpSMc+pnvDIQ==
+Date:   Tue, 27 Sep 2022 07:01:34 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     zhangsongyi.cgel@gmail.com
+Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        zhang.songyi@zte.com.cn, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>
+Subject: Re: [PATCH linux-next] net: atm: Convert to use
+ sysfs_emit()/sysfs_emit_at() APIs
+Message-ID: <20220927070134.7cde492d@kernel.org>
+In-Reply-To: <20220927064649.257988-1-zhang.songyi@zte.com.cn>
+References: <20220927064649.257988-1-zhang.songyi@zte.com.cn>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.100.227]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600008.china.huawei.com (7.193.23.88)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -50,29 +54,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use skb_put_data() instead of skb_put() and memcpy(), which is clear.
+On Tue, 27 Sep 2022 06:46:49 +0000 zhangsongyi.cgel@gmail.com wrote:
+> From: zhang songyi <zhang.songyi@zte.com.cn>
+> 
+> Follow the advice of the Documentation/filesystems/sysfs.rst and show()
+> should only use sysfs_emit() or sysfs_emit_at() when formatting the value
+> to be returned to user space.
 
-Signed-off-by: Shang XiaoJing <shangxiaojing@huawei.com>
----
-changes in v2:
-- no change
----
- drivers/net/ethernet/netronome/nfp/nfd3/xsk.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/netronome/nfp/nfd3/xsk.c b/drivers/net/ethernet/netronome/nfp/nfd3/xsk.c
-index 65e243168765..5d9db8c2a5b4 100644
---- a/drivers/net/ethernet/netronome/nfp/nfd3/xsk.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfd3/xsk.c
-@@ -84,7 +84,7 @@ static void nfp_nfd3_xsk_rx_skb(struct nfp_net_rx_ring *rx_ring,
- 		nfp_net_xsk_rx_drop(r_vec, xrxbuf);
- 		return;
- 	}
--	memcpy(skb_put(skb, pkt_len), xrxbuf->xdp->data, pkt_len);
-+	skb_put_data(skb, xrxbuf->xdp->data, pkt_len);
- 
- 	skb->mark = meta->mark;
- 	skb_set_hash(skb, meta->hash, meta->hash_type);
--- 
-2.17.1
-
+Is there an end goal to this? If the code is correct let's leave 
+it as is. ATM is hopefully going to be deleted soon.
