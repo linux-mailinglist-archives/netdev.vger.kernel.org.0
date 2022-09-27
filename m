@@ -2,65 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A69805EBBC3
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 09:41:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 412AD5EBBA6
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 09:36:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230425AbiI0Hly (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 03:41:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36250 "EHLO
+        id S230367AbiI0Hgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 03:36:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230324AbiI0Hlw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 03:41:52 -0400
-X-Greylist: delayed 1801 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 27 Sep 2022 00:41:52 PDT
-Received: from xzrbvego.halloweenbag.com (xzrbvego.halloweenbag.com [194.87.231.147])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 175BE985AC
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 00:41:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; s=dkim; d=halloweenbag.com;
- h=Content-Type:MIME-Version:Content-Transfer-Encoding:Content-Description:Subject:To:From:Date:Message-ID; i=mar.for@halloweenbag.com;
- bh=oZyWtpyOd0g2W+TiHPrJ405bv+w=;
- b=lRrRRZ8+zl7Zk5oEBLrYeaszxKaERbdaaE+l0gXnKhw66o++MGcnYXUln/TMeIeWy7k23tTorNV9
-   9N5XDpaF8h6sq3Hk0/5ni7oKAK4fIPPVYKPCC8ld7SQueSzQY0s8QiAv2WTjIRN/p6w6uIiZXxd2
-   ZVnRt3wJZD58t3BhsXO8rXJ4wsCiRZOeR6OD/uilC2111h6BLEJ7Jke9DEgg+Q5pWYrg9k618+4x
-   d+oCWkEqJWvMTvK7mQ1o0L96YL9VuUozvPn5FxdxB9PN0DydllxXIJjeGmbN66Y43KYlbhqvCb3d
-   1z2OUvnduU2Tdl/EAaxMsUmsJBVdhh4B8f1egg==
-DomainKey-Signature: a=rsa-sha1; c=nofws; q=dns; s=dkim; d=halloweenbag.com;
- b=HPhXeu96NwDwljmsY2/oAEYXQVoGBR2CPxGU4tiUvZMSwJ9ilOgUApiRl+o1pAupvaCoBv/lLwce
-   WH8XDGBS89uJcKCexDTfj/yUUVABcZsICtT9+/GbQohyBerELug5o/VlPk+0UCPFYroIHPQJly9T
-   lhTSXDpAcKS3Nj75afAoTni9415FuyZdMfM0csVh7AWePTuA5LPvzS7vvzTOduG61pDg0oLNMsqz
-   79aZ+BGjZARzPR9OlSz1a+/VMq1A6Fju7IG3O/g8k+ozJ/YBHN9eflEnLgqnSkWSYLzf1cpHisS6
-   DuwD1eD9cCtsS15eXP7vc0PqrMEsEIyJNUqrNg==;
-Content-Type: text/plain; charset="iso-8859-1"
+        with ESMTP id S230402AbiI0HgU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 03:36:20 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 713DC15A36
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 00:36:18 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1od58M-0000Oh-Jy; Tue, 27 Sep 2022 09:36:02 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id AAF41EDC22;
+        Tue, 27 Sep 2022 07:36:00 +0000 (UTC)
+Date:   Tue, 27 Sep 2022 09:35:57 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH][next] can: ucan: Replace zero-length array with
+ DECLARE_FLEX_ARRAY() helper
+Message-ID: <20220927073557.r5ivp4n2jjiwxgoo@pengutronix.de>
+References: <YzIdHDdz30BH4SAv@work>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Description: Mail message body
-Subject: Business Insight
-To:     Recipients <mar.for@halloweenbag.com>
-From:   "Alek Brian" <mar.for@halloweenbag.com>
-Date:   Tue, 27 Sep 2022 09:11:43 +0200
-Message-ID: <0.0.0.AF9.1D8D24068D77E9A.0@xzrbvego.halloweenbag.com>
-X-Spam-Status: No, score=4.6 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NIXSPAM_IXHASH,SPF_HELO_NONE,
-        SPF_PASS,TO_EQ_FM_DIRECT_MX autolearn=no autolearn_force=no
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="xb5k6n6k6ikpfklh"
+Content-Disposition: inline
+In-Reply-To: <YzIdHDdz30BH4SAv@work>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
         version=3.4.6
-X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-My name is Alek Brian, Researcher at a reputable company in the United King=
-dom , I would like to share with you some business insights .
 
-Please Kindly reply me on my personal email brianalek510@gmail.com
+--xb5k6n6k6ikpfklh
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On 26.09.2022 16:43:56, Gustavo A. R. Silva wrote:
+> Zero-length arrays are deprecated and we are moving towards adopting
+> C99 flexible-array members, instead. So, replace zero-length arrays
+> declarations in anonymous union with the new DECLARE_FLEX_ARRAY()
+> helper macro.
+>=20
+> This helper allows for flexible-array members in unions.
+>=20
+> Link: https://github.com/KSPP/linux/issues/193
+> Link: https://github.com/KSPP/linux/issues/214
+> Link: https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 
-Note: You have the right to quit by the end of my detailed explanation and =
-you don't feel like moving forward with me.
+Applied to linux-can-next.
 
-But Trust me, you won't regret it.
+Thanks,
+Marc
 
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-Best Regards
-Alek Brian
-brianalek510@gmail.com
+--xb5k6n6k6ikpfklh
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmMyp9oACgkQrX5LkNig
+012zsQf/WO4Wqmxoc6z0SGE3Dh59i3mGc3x/ZHipNKIHZW5ysGGzkxJdn+eiASve
+RN1kx4Ssw8CMvZ6LQxKrmVw9gYFJM3FQNEte7IaH4Gvuy4sQeZ9DAe6I/ZfnspRi
+NCZK1uHWuy0O54xpyeE8Mi60og7Lf+GNBGOMTeE19n0YjqG6h2uyeyeCLyos0D+B
+M5bsAwS8SSple0dloPvZKp4utVyv/VZEtC9DgcVwMAZVmezyes+y4a2EwQGippTA
+iXzDsLps1gSPU501b7DVtZDgJKbPnYMFazHN7ohVC47+ACW4QelWRvwRysAs5wFg
+18eYJw8DosjPGTCKgS4a2LmynhMbmg==
+=0L/P
+-----END PGP SIGNATURE-----
+
+--xb5k6n6k6ikpfklh--
