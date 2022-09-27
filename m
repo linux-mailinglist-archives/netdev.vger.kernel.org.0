@@ -2,194 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 868005EB76B
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 04:15:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE34A5EB78E
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 04:22:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230017AbiI0CPk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 22:15:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57046 "EHLO
+        id S229875AbiI0CWi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 22:22:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229700AbiI0CPh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 22:15:37 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9814561B1E;
-        Mon, 26 Sep 2022 19:15:35 -0700 (PDT)
-Received: from canpemm100010.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Mc34k6LqFzHtkK;
-        Tue, 27 Sep 2022 10:10:46 +0800 (CST)
-Received: from canpemm500010.china.huawei.com (7.192.105.118) by
- canpemm100010.china.huawei.com (7.192.104.38) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 27 Sep 2022 10:15:33 +0800
-Received: from canpemm500010.china.huawei.com ([7.192.105.118]) by
- canpemm500010.china.huawei.com ([7.192.105.118]) with mapi id 15.01.2375.031;
- Tue, 27 Sep 2022 10:15:33 +0800
-From:   "liujian (CE)" <liujian56@huawei.com>
-To:     John Fastabend <john.fastabend@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>
-CC:     Jakub Sitnicki <jakub@cloudflare.com>,
+        with ESMTP id S229457AbiI0CWh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 22:22:37 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9785CAA372
+        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 19:22:32 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id l65so8430983pfl.8
+        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 19:22:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=4u3DF202lZRW0YOPuz3zxb4HZyH1RZ22Lsn3DoaRjKE=;
+        b=JeE3U11iOk0uuiMw6Ukzurncyh213htFxID3LVptKPtm/h9sEEUbPC1B0I1b7CEKQS
+         GBDx+APAnctavyUBFGJ7JdxI+VOAPGzR7NzYl/4/aLh7ojYEz77xZVqEOnhySNJCVRN9
+         tNh0bUJCXbCN0go3kUhaovd3r62M4f10vHeuk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=4u3DF202lZRW0YOPuz3zxb4HZyH1RZ22Lsn3DoaRjKE=;
+        b=Y6mhZ1v2eDCMmpbMTWmd10+aoXL5scfpIxJdrKtfbd7UFhdHytSY52Zf/vOXh3jcsL
+         gNazHOKQDG0CPLjos5iR2cXkJou8rnZx4fwUGZPI73A31hGEcXkHbW8LbRpswcYBmPYy
+         8zKK7ez3wa6Cn9kDuYXfTqCYoElMbP7Gpln5lt82+L42zgW8t9iMQb4DKRAA+GyvR5t5
+         WloCZd/wBq6gOKVFSTLeyaDyBhpiNKyltveHFrYcmdNBqm6NjV6O92ryFPYrAgRH80CL
+         ka9AtvhpI7IzJzETJit43/yQ+zyMNJxrl2i21pMkYWqoZ/2zLapvN7L65FaS+Px9RM7G
+         2VJQ==
+X-Gm-Message-State: ACrzQf2+42OIarhYnGCnkwazOZslrcBA0JanCcb+E8Yj2naZjJGmHQBD
+        0ap7ZE55PKKx/eIUjh0xnb48Sw==
+X-Google-Smtp-Source: AMsMyM4XIvwSnoqajH9j/PTPQ5c5zIvRChiseWAkIXp1b211TTbIE+Xwz/yjVPu3Po52v+Jq5u9gPQ==
+X-Received: by 2002:a65:6e4a:0:b0:438:874c:53fd with SMTP id be10-20020a656e4a000000b00438874c53fdmr23105047pgb.355.1664245352087;
+        Mon, 26 Sep 2022 19:22:32 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id bg8-20020a056a02010800b004348bd693a8sm189625pgb.31.2022.09.26.19.22.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Sep 2022 19:22:31 -0700 (PDT)
+Date:   Mon, 26 Sep 2022 19:22:30 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Subash Abhinov Kasiviswanathan <quic_subashab@quicinc.com>,
+        Sean Tranchetti <quic_stranche@quicinc.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        davem <davem@davemloft.net>,
-        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
-        "dsahern@kernel.org" <dsahern@kernel.org>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-Subject: RE: [bug report] one possible out-of-order issue in sockmap
-Thread-Topic: [bug report] one possible out-of-order issue in sockmap
-Thread-Index: AdjPzwrK0RHLCS69QbyGLr5ej4bpUwA+hnmAAB7NriAAGXJbAAAayViQ
-Date:   Tue, 27 Sep 2022 02:15:33 +0000
-Message-ID: <0dc1f0f9a8064ec3abd12bdcb069aaaf@huawei.com>
-References: <061d068ccd6f4db899d095cd61f52114@huawei.com>
- <YzCdHXtgKPciEusR@pop-os.localdomain>
- <fb254c963d3549a19c066b6bd2acf9c7@huawei.com>
- <6332169a699f8_4dfb7208e4@john.notmuch>
-In-Reply-To: <6332169a699f8_4dfb7208e4@john.notmuch>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.176.93]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH][next] net: ethernet: rmnet: Replace zero-length array
+ with DECLARE_FLEX_ARRAY() helper
+Message-ID: <202209261920.3A2EA07D4@keescook>
+References: <YzIei3tLO1IWtMjs@work>
+ <202209261502.7DB9C7119@keescook>
+ <20220926172604.71a20b7d@kernel.org>
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220926172604.71a20b7d@kernel.org>
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSm9obiBGYXN0YWJlbmQg
-W21haWx0bzpqb2huLmZhc3RhYmVuZEBnbWFpbC5jb21dDQo+IFNlbnQ6IFR1ZXNkYXksIFNlcHRl
-bWJlciAyNywgMjAyMiA1OjE2IEFNDQo+IFRvOiBsaXVqaWFuIChDRSkgPGxpdWppYW41NkBodWF3
-ZWkuY29tPjsgQ29uZyBXYW5nDQo+IDx4aXlvdS53YW5nY29uZ0BnbWFpbC5jb20+DQo+IENjOiBK
-b2huIEZhc3RhYmVuZCA8am9obi5mYXN0YWJlbmRAZ21haWwuY29tPjsgSmFrdWIgU2l0bmlja2kN
-Cj4gPGpha3ViQGNsb3VkZmxhcmUuY29tPjsgRXJpYyBEdW1hemV0IDxlZHVtYXpldEBnb29nbGUu
-Y29tPjsgZGF2ZW0NCj4gPGRhdmVtQGRhdmVtbG9mdC5uZXQ+OyB5b3NoZnVqaUBsaW51eC1pcHY2
-Lm9yZzsgZHNhaGVybkBrZXJuZWwub3JnOw0KPiBKYWt1YiBLaWNpbnNraSA8a3ViYUBrZXJuZWwu
-b3JnPjsgUGFvbG8gQWJlbmkgPHBhYmVuaUByZWRoYXQuY29tPjsNCj4gbmV0ZGV2IDxuZXRkZXZA
-dmdlci5rZXJuZWwub3JnPjsgYnBmQHZnZXIua2VybmVsLm9yZw0KPiBTdWJqZWN0OiBSRTogW2J1
-ZyByZXBvcnRdIG9uZSBwb3NzaWJsZSBvdXQtb2Ytb3JkZXIgaXNzdWUgaW4gc29ja21hcA0KPiAN
-Cj4gbGl1amlhbiAoQ0UpIHdyb3RlOg0KPiA+DQo+ID4NCj4gPiA+IC0tLS0tT3JpZ2luYWwgTWVz
-c2FnZS0tLS0tDQo+ID4gPiBGcm9tOiBDb25nIFdhbmcgW21haWx0bzp4aXlvdS53YW5nY29uZ0Bn
-bWFpbC5jb21dDQo+ID4gPiBTZW50OiBNb25kYXksIFNlcHRlbWJlciAyNiwgMjAyMiAyOjI2IEFN
-DQo+ID4gPiBUbzogbGl1amlhbiAoQ0UpIDxsaXVqaWFuNTZAaHVhd2VpLmNvbT4NCj4gPiA+IENj
-OiBKb2huIEZhc3RhYmVuZCA8am9obi5mYXN0YWJlbmRAZ21haWwuY29tPjsgSmFrdWIgU2l0bmlj
-a2kNCj4gPiA+IDxqYWt1YkBjbG91ZGZsYXJlLmNvbT47IEVyaWMgRHVtYXpldCA8ZWR1bWF6ZXRA
-Z29vZ2xlLmNvbT47DQo+IGRhdmVtDQo+ID4gPiA8ZGF2ZW1AZGF2ZW1sb2Z0Lm5ldD47IHlvc2hm
-dWppQGxpbnV4LWlwdjYub3JnOyBkc2FoZXJuQGtlcm5lbC5vcmc7DQo+ID4gPiBKYWt1YiBLaWNp
-bnNraSA8a3ViYUBrZXJuZWwub3JnPjsgUGFvbG8gQWJlbmkgPHBhYmVuaUByZWRoYXQuY29tPjsN
-Cj4gPiA+IG5ldGRldiA8bmV0ZGV2QHZnZXIua2VybmVsLm9yZz47IGJwZkB2Z2VyLmtlcm5lbC5v
-cmcNCj4gPiA+IFN1YmplY3Q6IFJlOiBbYnVnIHJlcG9ydF0gb25lIHBvc3NpYmxlIG91dC1vZi1v
-cmRlciBpc3N1ZSBpbiBzb2NrbWFwDQo+ID4gPg0KPiA+ID4gT24gU2F0LCBTZXAgMjQsIDIwMjIg
-YXQgMDc6NTk6MTVBTSArMDAwMCwgbGl1amlhbiAoQ0UpIHdyb3RlOg0KPiA+ID4gPiBIZWxsbywN
-Cj4gPiA+ID4NCj4gPiA+ID4gSSBoYWQgYSBzY3AgZmFpbHVyZSBwcm9ibGVtIGhlcmUuIEkgYW5h
-bHl6ZSB0aGUgY29kZSwgYW5kIHRoZQ0KPiA+ID4gPiByZWFzb25zIG1heQ0KPiA+ID4gYmUgYXMg
-Zm9sbG93czoNCj4gPiA+ID4NCj4gPiA+ID4gRnJvbSBjb21taXQgZTdhNWYxZjFjZDAwICgiYnBm
-L3NvY2ttYXA6IFJlYWQgcHNvY2sgaW5ncmVzc19tc2cNCj4gPiA+IGJlZm9yZQ0KPiA+ID4gPiBz
-a19yZWNlaXZlX3F1ZXVlIiwgaWYgd2UgdXNlIHNvY2tvcHMNCj4gPiA+ID4gKEJQRl9TT0NLX09Q
-U19BQ1RJVkVfRVNUQUJMSVNIRURfQ0INCj4gPiA+ID4gYW5kIEJQRl9TT0NLX09QU19QQVNTSVZF
-X0VTVEFCTElTSEVEX0NCKSB0byBlbmFibGUgc29ja2V0J3MNCj4gPiA+IHNvY2ttYXANCj4gPiA+
-ID4gZnVuY3Rpb24sIGFuZCBkb24ndCBlbmFibGUgc3RycGFyc2UgYW5kIHZlcmRpY3QgZnVuY3Rp
-b24sIHRoZQ0KPiA+ID4gPiBvdXQtb2Ytb3JkZXIgcHJvYmxlbSBtYXkgb2NjdXIgaW4gdGhlIGZv
-bGxvd2luZyBwcm9jZXNzLg0KPiA+ID4gPg0KPiA+ID4gPiBjbGllbnQgU0sgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgIHNlcnZlciBTSw0KPiA+ID4gPiAtLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCj4gPiA+
-ID4gLS0tLQ0KPiA+ID4gPiAtLS0tDQo+ID4gPiA+IHRjcF9yY3Zfc3luc2VudF9zdGF0ZV9wcm9j
-ZXNzDQo+ID4gPiA+ICAgdGNwX2ZpbmlzaF9jb25uZWN0DQo+ID4gPiA+ICAgICB0Y3BfaW5pdF90
-cmFuc2Zlcg0KPiA+ID4gPiAgICAgICB0Y3Bfc2V0X3N0YXRlKHNrLCBUQ1BfRVNUQUJMSVNIRUQp
-Ow0KPiA+ID4gPiAgICAgICAvLyBpbnNlcnQgU0sgdG8gc29ja21hcA0KPiA+ID4gPiAgICAgd2Fr
-ZSB1cCB3YWl0dGVyDQo+ID4gPiA+ICAgICB0Y3Bfc2VuZF9hY2sNCj4gPiA+ID4NCj4gPiA+ID4g
-dGNwX2JwZl9zZW5kbXNnKG1zZ0EpDQo+ID4gPiA+IC8vIG1zZ0Egd2lsbCBnbyB0Y3Agc3RhY2sN
-Cj4gPiA+ID4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB0Y3Bf
-cmN2X3N0YXRlX3Byb2Nlc3MNCj4gPiA+ID4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgIHRjcF9pbml0X3RyYW5zZmVyDQo+ID4gPiA+ICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIC8vaW5zZXJ0IFNLIHRvIHNvY2ttYXAN
-Cj4gPiA+ID4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHRj
-cF9zZXRfc3RhdGUoc2ssDQo+ID4gPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgVENQX0VTVEFCTElTSEVEKQ0KPiA+ID4gPiAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgd2FrZSB1cCB3YWl0dGVyDQo+ID4g
-Pg0KPiA+ID4gSGVyZSBhZnRlciB0aGUgc29ja2V0IGlzIGluc2VydGVkIHRvIGEgc29ja21hcCwg
-aXRzDQo+ID4gPiAtPnNrX2RhdGFfcmVhZHkoKSBpcyBhbHJlYWR5IHJlcGxhY2VkIHdpdGgNCj4g
-PiA+IHNrX3Bzb2NrX3ZlcmRpY3RfZGF0YV9yZWFkeSgpLCBzbyBtc2dBIHNob3VsZCBnbyB0byBz
-b2NrbWFwLCBub3QgVENQDQo+IHN0YWNrPw0KPiA+ID4NCj4gPiBJdCBpcyBUQ1Agc3RhY2suICBI
-ZXJlIEkgb25seSBlbmFibGUgQlBGX1NLX01TR19WRVJESUNUIHR5cGUuDQo+ID4gYnBmdG9vbCBw
-cm9nIGxvYWQgYnBmX3JlZGlyLm8gL3N5cy9mcy9icGYvYnBmX3JlZGlyIG1hcCBuYW1lDQo+ID4g
-c29ja19vcHNfbWFwIHBpbm5lZCAvc3lzL2ZzL2JwZi9zb2NrX29wc19tYXAgYnBmdG9vbCBwcm9n
-IGF0dGFjaA0KPiA+IHBpbm5lZCAvc3lzL2ZzL2JwZi9icGZfcmVkaXIgbXNnX3ZlcmRpY3QgcGlu
-bmVkDQo+ID4gL3N5cy9mcy9icGYvc29ja19vcHNfbWFwDQo+IA0KPiBJcyB0aGUgc2VuZGVyIHVz
-aW5nIEZBU1RfT1BFTiBieSBhbnkgY2hhbmNlPyBXZSBrbm93IHRoaXMgYnVnIGV4aXN0cyBpbg0K
-PiB0aGlzIGNhc2UuIEZpeCB0YmQuDQoNCkZBU1RfT1BFTiBpcyBub3QgdXNlZC4NClRoZSBmb2xs
-b3dpbmcgdGVzdCBjYXNlcyBjYW4gYmUgdXNlZCB0byByZXByb2R1Y2UgdGhlIE9PTyBwcm9ibGVt
-LiANCkJ1dCB0aGUgd29yc3QtY2FzZSBzY2VuYXJpbyBkZXNjcmliZWQgaW4gdGhlIHByb2JsZW0g
-KHRoZSBhcnJpdmFsIG9mIG1zZ0EgaXMgbGF0ZXIgdGhhbiB0aGUgYXJyaXZhbCBvZiBtc2dCKSwg
-SSBoYXZlIG5vdCBiZWVuIGFibGUgdG8gY29uc3RydWN0IGFuIGluZXZpdGFibGUgY2FzZS4NCg0K
-dGNwX3NlcnZlci5jDQoNCmludCBzZXJ2ZXJfcG9ydCA9IDUwMDY7DQppbnQgbWFpbihpbnQgYXJn
-YywgY2hhciAqYXJndltdKQ0Kew0KCWludCBzZXJ2ZXJTb2NrZXQ7DQoJc3RydWN0IHNvY2thZGRy
-X2luIHNlcnZlcl9hZGRyOw0KCXN0cnVjdCBzb2NrYWRkcl9pbiBjbGllbnRBZGRyOw0KCWludCBh
-ZGRyX2xlbiA9IHNpemVvZihjbGllbnRBZGRyKTsNCglpbnQgY2xpZW50Ow0KCWNoYXIgYnVmZmVy
-WzIwMF07DQoJaW50IGlEYXRhTnVtOw0KCWludCBvcHRidWYsIHJldDsNCg0KCWlmIChhcmdjICE9
-IDIpIHsNCgkJcmV0dXJuIC0xOw0KCX0NCg0KCXNlcnZlcl9wb3J0ID0gIGF0b2koYXJndlsxXSk7
-DQoJaWYoIHNlcnZlcl9wb3J0PDEwMjUgfHwgc2VydmVyX3BvcnQ+NjU1MzUgKQ0KCXsNCgkJcmV0
-dXJuIC0xOw0KCX0NCg0KCWlmKChzZXJ2ZXJTb2NrZXQgPSBzb2NrZXQoQUZfSU5FVCwgU09DS19T
-VFJFQU0sIDApKSA8IDApDQoJew0KCQlwZXJyb3IoInNvY2tldCIpOw0KCQlyZXR1cm4gMTsNCgl9
-DQoJb3B0YnVmID0gMTsNCglyZXQgPSBzZXRzb2Nrb3B0KHNlcnZlclNvY2tldCwgU09MX1NPQ0tF
-VCwgU09fUkVVU0VBRERSLCAmb3B0YnVmLCBzaXplb2YoaW50KSk7DQoJaWYgKHJldCAhPSAwKQ0K
-CQlwZXJyb3IoInJldXNlYWRkciBmYWlsZWQiKTsNCgliemVybygmc2VydmVyX2FkZHIsIHNpemVv
-ZihzZXJ2ZXJfYWRkcikpOw0KCXNlcnZlcl9hZGRyLnNpbl9mYW1pbHkgPSBBRl9JTkVUOw0KCXNl
-cnZlcl9hZGRyLnNpbl9wb3J0ID0gaHRvbnMoc2VydmVyX3BvcnQpOw0KCXNlcnZlcl9hZGRyLnNp
-bl9hZGRyLnNfYWRkciA9IGh0b25sKElOQUREUl9BTlkpOw0KCWlmKGJpbmQoc2VydmVyU29ja2V0
-LCAoc3RydWN0IHNvY2thZGRyICopJnNlcnZlcl9hZGRyLCBzaXplb2Yoc2VydmVyX2FkZHIpKSA8
-IDApDQoJew0KCQlwZXJyb3IoImNvbm5lY3QiKTsNCgkJcmV0dXJuIDE7DQoJfQ0KCWlmKGxpc3Rl
-bihzZXJ2ZXJTb2NrZXQsIDUpIDwgMCkNCgl7DQoJCXBlcnJvcigibGlzdGVuIik7DQoJCXJldHVy
-biAxOw0KCX0NCgl3aGlsZSgxKQ0KCXsNCgkJY2xpZW50ID0gYWNjZXB0KHNlcnZlclNvY2tldCwg
-KHN0cnVjdCBzb2NrYWRkciopJmNsaWVudEFkZHIsIChzb2NrbGVuX3QqKSZhZGRyX2xlbik7DQoJ
-CWlmKGNsaWVudCA8IDApDQoJCXsNCgkJCXBlcnJvcigiYWNjZXB0Iik7DQoJCQljb250aW51ZTsN
-CgkJfQ0KCQlwcmludGYoIndhaXQgdW50aWwgdGhlIHR3byBtc2dzIG9mIGNsaWVudCBhcmUgc2Vu
-dC4uLlxuIik7DQoJCXNsZWVwKDUpOw0KCQl3aGlsZSgxKQ0KCQl7DQoJCQlwcmludGYoInJlY3Zt
-c2c6Iik7DQoJCQlidWZmZXJbMF0gPSAnXDAnOw0KCQkJaURhdGFOdW0gPSByZWN2KGNsaWVudCwg
-YnVmZmVyLCAxMDI0LCAwKTsNCgkJCWlmKGlEYXRhTnVtIDwgMCkNCgkJCXsNCgkJCQlwZXJyb3Io
-InJlY3YgbnVsbCIpOw0KCQkJCWNvbnRpbnVlOw0KCQkJfQ0KCQkJYnVmZmVyW2lEYXRhTnVtXSA9
-ICdcMCc7DQoJCQlwcmludGYoIiVzXG4iLCBidWZmZXIpOw0KCQkJc2xlZXAoMik7DQoJCX0NCgl9
-DQoJY2xvc2Uoc2VydmVyU29ja2V0KTsNCglyZXR1cm4gMDsNCn0NCg0KDQoNCnRjcF9jbGllbnQu
-Yw0KDQppbnQgc2VydmVyX3BvcnQgPSA1MDA2Ow0KaW50IG1haW4oaW50IGFyZ2MsIGNoYXIgKmFy
-Z3ZbXSkNCnsNCglpbnQgY2xpZW50U29ja2V0Ow0KCXN0cnVjdCBzb2NrYWRkcl9pbiBzZXJ2ZXJB
-ZGRyOw0KCXN0cnVjdCBzb2NrYWRkcl9pbiBjbGllbnRBZGRyOw0KCWNoYXIgc2VuZGJ1Zls0MDk2
-XTsNCgljaGFyIHJlY3ZidWZbNDA5Nl07DQoJaW50IGlEYXRhTnVtOw0KCWludCByZXQ7DQoJaW50
-IGNsaWVudF9wb3J0Ow0KDQoJaWYgKGFyZ2MgIT0gMykgew0KCQlwcmludGYoImNsaWVudCBbc3Bv
-cnRdIFtkcG9ydF1cbiIpOw0KCQlyZXR1cm4gLTE7DQoJfQ0KDQoJY2xpZW50X3BvcnQgPSAgYXRv
-aShhcmd2WzFdKTsNCglpZihjbGllbnRfcG9ydDwxMDI1IHx8IGNsaWVudF9wb3J0PjY1NTM1ICkN
-Cgl7DQoJCXJldHVybiAtMTsNCgl9DQoNCglzZXJ2ZXJfcG9ydCA9ICBhdG9pKGFyZ3ZbMl0pOw0K
-CWlmKCBzZXJ2ZXJfcG9ydDwxMDI1IHx8IHNlcnZlcl9wb3J0PjY1NTM1ICkNCgl7DQoJCXJldHVy
-biAtMTsNCgl9DQoNCglpZigoY2xpZW50U29ja2V0ID0gc29ja2V0KEFGX0lORVQsIFNPQ0tfU1RS
-RUFNLCAwKSkgPCAwKQ0KCXsNCgkJcGVycm9yKCJzb2NrZXQiKTsNCgkJcmV0dXJuIDE7DQoJfQ0K
-CWJ6ZXJvKCZjbGllbnRBZGRyLCBzaXplb2YoY2xpZW50QWRkcikpOw0KCWNsaWVudEFkZHIuc2lu
-X2ZhbWlseSA9IEFGX0lORVQ7DQoJY2xpZW50QWRkci5zaW5fcG9ydCA9IGh0b25zKGNsaWVudF9w
-b3J0KTsNCgljbGllbnRBZGRyLnNpbl9hZGRyLnNfYWRkciA9IGh0b25sKElOQUREUl9BTlkpOw0K
-CWlmKGJpbmQoY2xpZW50U29ja2V0LCAoc3RydWN0IHNvY2thZGRyICopJmNsaWVudEFkZHIsIHNp
-emVvZihjbGllbnRBZGRyKSkgPCAwKQ0KCXsNCgkJcGVycm9yKCJiaW5kIik7DQoJCXJldHVybiAx
-Ow0KCX0NCgliemVybygmc2VydmVyQWRkciwgc2l6ZW9mKHNlcnZlckFkZHIpKTsNCglzZXJ2ZXJB
-ZGRyLnNpbl9mYW1pbHkgPSBBRl9JTkVUOw0KCXNlcnZlckFkZHIuc2luX3BvcnQgPSBodG9ucyhz
-ZXJ2ZXJfcG9ydCk7DQoJc2VydmVyQWRkci5zaW5fYWRkci5zX2FkZHIgPSBpbmV0X2FkZHIoIjEy
-Ny4wLjAuMSIpOw0KCXN5c3RlbSgiaXB0YWJsZXMgLUEgSU5QVVQgLXAgdGNwIC1tIHRjcCAtLWRw
-b3J0IDUwMDYgLS10Y3AtZmxhZ3MgU1lOLFJTVCxBQ0ssRklOIEFDSyAtaiBEUk9QIik7DQoJaWYo
-Y29ubmVjdChjbGllbnRTb2NrZXQsIChzdHJ1Y3Qgc29ja2FkZHIgKikmc2VydmVyQWRkciwgc2l6
-ZW9mKHNlcnZlckFkZHIpKSA8IDApDQoJew0KCQlwZXJyb3IoImNvbm5lY3QiKTsNCgkJcmV0dXJu
-IDE7DQoJfQ0KDQoJbWVtc2V0KHNlbmRidWYsIDAsIHNpemVvZihzZW5kYnVmKSk7DQoJbWVtY3B5
-KHNlbmRidWYsICJBQUFBQUFBQUFBQSIsIDEwKTsgDQoJcmV0ID0gc2VuZChjbGllbnRTb2NrZXQs
-IHNlbmRidWYsIHN0cmxlbihzZW5kYnVmKSwgMCk7DQoJaWYgKHJldCA8PSAwKSB7DQoJCXBlcnJv
-cigic2VuZCBmYWlsXG4iKTsNCgkJcmV0dXJuIC0xOw0KCX0NCglwcmludGYoImZpbmlzaCBzZW5k
-IEFcbiIpOw0KCXN5c3RlbSgiaXB0YWJsZXMgLUQgSU5QVVQgLXAgdGNwIC1tIHRjcCAtLWRwb3J0
-IDUwMDYgLS10Y3AtZmxhZ3MgU1lOLFJTVCxBQ0ssRklOIEFDSyAtaiBEUk9QIik7DQoJc2xlZXAo
-Mik7IC8vIHdhaXQgc2VydmVyc2sgaW5zZXJ0IHRvIHNvY2ttYXANCglwcmludGYoInN0YXJ0IHNl
-bmQgYlxuIik7DQoJbWVtY3B5KHNlbmRidWYsICJiYmJiYmJiYmJiYmJiIiwgMTApOyANCglyZXQg
-PSBzZW5kKGNsaWVudFNvY2tldCwgc2VuZGJ1Ziwgc3RybGVuKHNlbmRidWYpLCAwKTsNCglpZiAo
-cmV0IDw9IDApIHsNCgkJcGVycm9yKCJzZW5kIGZhaWxcbiIpOw0KCQlyZXR1cm4gLTE7DQoJfQ0K
-DQoJc2xlZXAoMTApOw0KCWNsb3NlKGNsaWVudFNvY2tldCk7DQoJcmV0dXJuIDA7DQp9DQoNClty
-b290QGxvY2FsaG9zdCBzb2NrbWFwX3Rlc3RdIyAuL3NlcnZlciA1MDA2DQp3YWl0IHVudGlsIHRo
-ZSB0d28gbXNncyBvZiBjbGllbnQgYXJlIHNlbnQuLi4NCnJlY3Ztc2c6YmJiYmJiYmJiYg0KcmVj
-dm1zZzpBQUFBQUFBQUFBDQpeQw0K
+On Mon, Sep 26, 2022 at 05:26:04PM -0700, Jakub Kicinski wrote:
+> On Mon, 26 Sep 2022 15:02:48 -0700 Kees Cook wrote:
+> > On Mon, Sep 26, 2022 at 04:50:03PM -0500, Gustavo A. R. Silva wrote:
+> > > Zero-length arrays are deprecated and we are moving towards adopting
+> > > C99 flexible-array members, instead. So, replace zero-length arrays
+> > > declarations in anonymous union with the new DECLARE_FLEX_ARRAY()
+> > > helper macro.
+> > > 
+> > > This helper allows for flexible-array members in unions.
+> > > 
+> > > Link: https://github.com/KSPP/linux/issues/193
+> > > Link: https://github.com/KSPP/linux/issues/221
+> > > Link: https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+> > > Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>  
+> > 
+> > Reviewed-by: Kees Cook <keescook@chromium.org>
+> 
+> Not directly related to this patch, but I just had to look at pahole
+> output for sk_buff and the struct_group() stuff makes is really painful
+> to read :/ Offsets for the members are relative to the "group" and they
+> are all repeated.
+> 
+> Is there any chance you could fix that? Before we sprinkle more pixie
+> dust around, perhaps?
+
+Unfortunately I don't see a way around it until we can make changes to
+the C language spec, and that's measured in decades. :(
+
+Perhaps we could add some kind of heuristic to pahole to "hide" one of
+the internal struct_group() copies, and to hide the empty flexible-array
+wrapper structs? (pahole already can't tell the difference between a
+0-length array and a flexible-array.) Would that be workable?
+
+-- 
+Kees Cook
