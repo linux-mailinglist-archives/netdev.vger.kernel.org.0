@@ -2,179 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D578A5EC027
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 12:53:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F59B5EC087
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 13:06:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231653AbiI0Kw5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 06:52:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39022 "EHLO
+        id S231845AbiI0LGg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 07:06:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231510AbiI0Kwu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 06:52:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C49A81181D1;
-        Tue, 27 Sep 2022 03:52:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D9C3DB81AF4;
-        Tue, 27 Sep 2022 10:52:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28D10C43470;
-        Tue, 27 Sep 2022 10:52:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664275964;
-        bh=V1TaW2oROCwNK3rv/VU134+Cp/5eURuaoMDkbCIgTrE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ViDwanKy4AJR6Y9SER9j+FeVMJGc8JtQfUsByJ+rjVDVECjcnWcVibkjpWu1JZ2of
-         1jWQj+jQAXbzpKj0djfkWwmabv/p7RmElfxnc8n0s9K4lFpJluI2zyCjxsZA/OVZ4n
-         AMXhdh/9g2SaV2UdIM5uIVaDAFBwLNB4HRNCUByWujOlPf7qfKSch+IMlCds+jJsvZ
-         JUntHSCXXyWkfQcfK7MfEIXmW+cDP557GdN4J4wEliuNyGiI8r89ALu3YoFD8RbBGX
-         aG9iz4olkv93+VZAdR3kBNnJE4xLdGkWxXzcqOMr//1E/JwOMKQWHDqHooCuXwCiS3
-         CJ+IFJK/2SvTg==
-Date:   Tue, 27 Sep 2022 13:52:40 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Christian Langrock <christian.langrock@secunet.com>
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
-        herbert@gondor.apana.org.au, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] xfrm: replay: Fix ESN wrap around for GSO
-Message-ID: <YzLV+AntI0xpN6Aq@unreal>
-References: <ebe29739-7027-a95f-160f-8f9d6522a09d@secunet.com>
+        with ESMTP id S231753AbiI0LFv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 07:05:51 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C741B1D306;
+        Tue, 27 Sep 2022 04:04:46 -0700 (PDT)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4McGqY0D5Fz1P6vl;
+        Tue, 27 Sep 2022 19:00:09 +0800 (CST)
+Received: from [10.174.179.191] (10.174.179.191) by
+ canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 27 Sep 2022 19:04:22 +0800
+Message-ID: <d4f9badc-a39d-02f2-192a-3cb07e80bbf7@huawei.com>
+Date:   Tue, 27 Sep 2022 19:04:22 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ebe29739-7027-a95f-160f-8f9d6522a09d@secunet.com>
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [bpf-next v6 1/3] bpftool: Add auto_attach for bpf prog
+ load|loadall
+To:     Quentin Monnet <quentin@isovalent.com>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <martin.lau@linux.dev>, <song@kernel.org>, <yhs@fb.com>,
+        <john.fastabend@gmail.com>, <kpsingh@kernel.org>, <sdf@google.com>,
+        <haoluo@google.com>, <jolsa@kernel.org>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <hawk@kernel.org>, <nathan@kernel.org>,
+        <ndesaulniers@google.com>, <trix@redhat.com>
+CC:     <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <llvm@lists.linux.dev>
+References: <1664014430-5286-1-git-send-email-wangyufen@huawei.com>
+ <2f670f3f-4d91-9b74-4fbe-8ea1351444cb@isovalent.com>
+From:   wangyufen <wangyufen@huawei.com>
+In-Reply-To: <2f670f3f-4d91-9b74-4fbe-8ea1351444cb@isovalent.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.191]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-6.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 27, 2022 at 11:28:08AM +0200, Christian Langrock wrote:
-> When using GSO it can happen that the wrong seq_hi is used for the last
-> packets before the wrap around. To avoid this, we should serialize this
-> last GSO packet.
-> 
-> Fixes: d7dbefc45cf55 ("xfrm: Add xfrm_replay_overflow functions for
-> offloading")
-> 
 
-Please remove extra line between Fixes and SOB.
+在 2022/9/26 18:46, Quentin Monnet 写道:
+> Sat Sep 24 2022 11:13:48 GMT+0100 (British Summer Time) ~ Wang Yufen
+> <wangyufen@huawei.com>
+>> Add auto_attach optional to support one-step load-attach-pin_link.
+>>
+>> For example,
+>>     $ bpftool prog loadall test.o /sys/fs/bpf/test autoattach
+>>
+>>     $ bpftool link
+>>     26: tracing  name test1  tag f0da7d0058c00236  gpl
+>>     	loaded_at 2022-09-09T21:39:49+0800  uid 0
+>>     	xlated 88B  jited 55B  memlock 4096B  map_ids 3
+>>     	btf_id 55
+>>     28: kprobe  name test3  tag 002ef1bef0723833  gpl
+>>     	loaded_at 2022-09-09T21:39:49+0800  uid 0
+>>     	xlated 88B  jited 56B  memlock 4096B  map_ids 3
+>>     	btf_id 55
+>>     57: tracepoint  name oncpu  tag 7aa55dfbdcb78941  gpl
+>>     	loaded_at 2022-09-09T21:41:32+0800  uid 0
+>>     	xlated 456B  jited 265B  memlock 4096B  map_ids 17,13,14,15
+>>     	btf_id 82
+>>
+>>     $ bpftool link
+>>     1: tracing  prog 26
+>>     	prog_type tracing  attach_type trace_fentry
+>>     3: perf_event  prog 28
+>>     10: perf_event  prog 57
+>>
+>> The autoattach optional can support tracepoints, k(ret)probes,
+>> u(ret)probes.
+>>
+>> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+>> Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+>> ---
+>> v5 -> v6: skip the programs not supporting auto-attach,
+>> 	  and change optional name from "auto_attach" to "autoattach"
+>> v4 -> v5: some formatting nits of doc
+>> v3 -> v4: rename functions, update doc, bash and do_help()
+>> v2 -> v3: switch to extend prog load command instead of extend perf
+>> v2: https://patchwork.kernel.org/project/netdevbpf/patch/20220824033837.458197-1-weiyongjun1@huawei.com/
+>> v1: https://patchwork.kernel.org/project/netdevbpf/patch/20220816151725.153343-1-weiyongjun1@huawei.com/
+>>   tools/bpf/bpftool/prog.c | 76 ++++++++++++++++++++++++++++++++++++++--
+>>   1 file changed, 74 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
+>> index c81362a001ba..b1cbd06dee19 100644
+>> --- a/tools/bpf/bpftool/prog.c
+>> +++ b/tools/bpf/bpftool/prog.c
+>> @@ -1453,6 +1453,67 @@ get_prog_type_by_name(const char *name, enum bpf_prog_type *prog_type,
+>>   	return ret;
+>>   }
+>>   
+>> +static int
+>> +auto_attach_program(struct bpf_program *prog, const char *path)
+>> +{
+>> +	struct bpf_link *link;
+>> +	int err;
+>> +
+>> +	link = bpf_program__attach(prog);
+>> +	if (!link)
+>> +		return -1;
+>> +
+>> +	err = bpf_link__pin(link, path);
+>> +	if (err) {
+>> +		bpf_link__destroy(link);
+>> +		return err;
+>> +	}
+>> +	return 0;
+>> +}
+>> +
+>> +static int pathname_concat(const char *path, const char *name, char *buf)
+>> +{
+>> +	int len;
+>> +
+>> +	len = snprintf(buf, PATH_MAX, "%s/%s", path, name);
+>> +	if (len < 0)
+>> +		return -EINVAL;
+>> +	if (len >= PATH_MAX)
+>> +		return -ENAMETOOLONG;
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int
+>> +auto_attach_programs(struct bpf_object *obj, const char *path)
+>> +{
+>> +	struct bpf_program *prog;
+>> +	char buf[PATH_MAX];
+>> +	int err;
+>> +
+>> +	bpf_object__for_each_program(prog, obj) {
+>> +		err = pathname_concat(path, bpf_program__name(prog), buf);
+>> +		if (err)
+>> +			goto err_unpin_programs;
+>> +
+>> +		err = auto_attach_program(prog, buf);
+>> +		if (err && errno != EOPNOTSUPP)
+>> +			goto err_unpin_programs;
+> If I read the above correctly, we skip entirely programs that couldn't
+> be auto-attached. I'm not sure what Andrii had in mind exactly, but it
+> would make sense to me to fallback to regular program pinning if the
+> program couldn't be attached/linked, so we still keep it loaded in the
+> kernel after bpftool exits. Probably with a p_info() message to let
+> users know?
 
-> Signed-off-by: Christian Langrock <christian.langrock@secunet.com>
-> ---
->  include/net/xfrm.h     |  1 +
->  net/xfrm/xfrm_output.c |  2 +-
->  net/xfrm/xfrm_replay.c | 36 ++++++++++++++++++++++++++++++++++++
->  3 files changed, 38 insertions(+), 1 deletion(-)
-> 
-> diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-> index 6e8fa98f786f..49d6d974f493 100644
-> --- a/include/net/xfrm.h
-> +++ b/include/net/xfrm.h
-> @@ -1749,6 +1749,7 @@ void xfrm_replay_advance(struct xfrm_state *x,
-> __be32 net_seq);
->  int xfrm_replay_check(struct xfrm_state *x, struct sk_buff *skb, __be32
-> net_seq);
->  void xfrm_replay_notify(struct xfrm_state *x, int event);
->  int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb);
-> +int xfrm_replay_overflow_check(struct xfrm_state *x, struct sk_buff *skb);
->  int xfrm_replay_recheck(struct xfrm_state *x, struct sk_buff *skb,
-> __be32 net_seq);
-> 
->  static inline int xfrm_aevent_is_on(struct net *net)
-> diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
-> index 9a5e79a38c67..c470a68d9c88 100644
-> --- a/net/xfrm/xfrm_output.c
-> +++ b/net/xfrm/xfrm_output.c
-> @@ -738,7 +738,7 @@ int xfrm_output(struct sock *sk, struct sk_buff *skb)
->  		skb->encapsulation = 1;
-> 
->  		if (skb_is_gso(skb)) {
-> -			if (skb->inner_protocol)
-> +			if (skb->inner_protocol || xfrm_replay_overflow_check(x, skb))
+Thanks for your comment.
+I agree with you.
+add in v7.
 
-Maybe it is perfectly fine to call xfrm_output_gso(), but your commit
-message doesn't explain what is wrong with standard flow.
-
->  				return xfrm_output_gso(net, sk, skb);
-> 
->  			skb_shinfo(skb)->gso_type |= SKB_GSO_ESP;
-> diff --git a/net/xfrm/xfrm_replay.c b/net/xfrm/xfrm_replay.c
-> index 9277d81b344c..6c696b6c0a22 100644
-> --- a/net/xfrm/xfrm_replay.c
-> +++ b/net/xfrm/xfrm_replay.c
-> @@ -750,6 +750,37 @@ int xfrm_replay_overflow(struct xfrm_state *x,
-> struct sk_buff *skb)
-> 
->  	return xfrm_replay_overflow_offload(x, skb);
->  }
-> +
-> +static int xfrm_replay_overflow_check_offload_esn(struct xfrm_state *x,
-> struct sk_buff *skb)
-> +{
-
-The function returns true or false and better to have "static bool ..."
-as a prototype.
-
-> +	int ret = 0;
-> +	struct xfrm_offload *xo = xfrm_offload(skb);
-> +	struct xfrm_replay_state_esn *replay_esn = x->replay_esn;
-> +	__u32 oseq = replay_esn->oseq;
-
-Reversed Christmas tree.
-
-> +
-> +	if (xo && x->type->flags & XFRM_TYPE_REPLAY_PROT) {
-> +		if (skb_is_gso(skb)) {
-
-You already checked this. Maybe it is more future proof to write like
-this, but it is not optimal from performance POV as you perform same
-checks in datapath.
-
-> +			oseq = oseq + 1 + skb_shinfo(skb)->gso_segs;
-> +			if (unlikely(oseq < replay_esn->oseq)) {
-> +				ret = 1;
-> +			}
-> +		}
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +int xfrm_replay_overflow_check(struct xfrm_state *x, struct sk_buff *skb)
-
-This function doesn't do much except call to another function.
-
-> +{
-> +	switch (x->repl_mode) {
-> +	case XFRM_REPLAY_MODE_ESN:
-> +		return xfrm_replay_overflow_check_offload_esn(x, skb);
-> +	}
-> +
-> +	return 0;
-> +
-> +}
-> +
->  #else
->  int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb)
->  {
-> @@ -764,6 +795,11 @@ int xfrm_replay_overflow(struct xfrm_state *x,
-> struct sk_buff *skb)
-> 
->  	return __xfrm_replay_overflow(x, skb);
->  }
-> +
-> +int xfrm_replay_overflow_check(struct xfrm_state *x, struct sk_buff *skb)
-> +{
-> +	return 0;
-> +}
->  #endif
-> 
->  int xfrm_init_replay(struct xfrm_state *x)
-> -- 
-> 2.37.1.223.g6a475b71f8
+>
+>> +	}
+>> +
+>> +	return 0;
+>> +
+>> +err_unpin_programs:
+>> +	while ((prog = bpf_object__prev_program(obj, prog))) {
+>> +		if (pathname_concat(path, bpf_program__name(prog), buf))
+>> +			continue;
+>> +
+>> +		bpf_program__unpin(prog, buf);
+>> +	}
+>> +
+>> +	return err;
+>> +}
