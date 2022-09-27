@@ -2,62 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CAFF35EC720
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 17:01:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EAE945EC731
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 17:05:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231923AbiI0PBn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 11:01:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33614 "EHLO
+        id S231921AbiI0PFK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 11:05:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231600AbiI0PBk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 11:01:40 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C708915F8;
-        Tue, 27 Sep 2022 08:01:32 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id h8-20020a17090a054800b00205ccbae31eso3287937pjf.5;
-        Tue, 27 Sep 2022 08:01:32 -0700 (PDT)
+        with ESMTP id S231926AbiI0PFI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 11:05:08 -0400
+Received: from mail-oa1-x2a.google.com (mail-oa1-x2a.google.com [IPv6:2001:4860:4864:20::2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 995DA4A822
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 08:05:00 -0700 (PDT)
+Received: by mail-oa1-x2a.google.com with SMTP id 586e51a60fabf-1318443dbdfso2276572fac.3
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 08:05:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=gZiBMQs0z73rJMB2fq1G2rEopYe6FV32v/POQXxCThI=;
-        b=BgPo8+N+HAR7bhrUYKwglwPiXoPs75yN7aqZYK7IjxWA34HsOq/O2zoaAnrORCH0wt
-         PCVYZf05hYR/oZXWCTLxoQ9xg8SwJug3ajzuY3XzOq6NJ+kIu4fKogQvGhjv/ajXGCwe
-         wg66r3kRUfz4VtC7KwZyNtE9pm46eCqlEGQLIQsr2NNkJlr8r1eVIysfDnxlIqgQZYa9
-         WNDBve3USNFI6Ev0Bk1FMMXuxkbi9OjpPPLNXCpNeWQT25mFBv2IRvpoylPDz+pwRxo6
-         koRjnwAAPJl/ZlBnwNfm4v4NkFKDgyVghC8L2YyeqJ4axzOMFz4WjwcoixRmkhfgfxBl
-         U5yA==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=4MrVbxtRCiMH3zoesusZRq3iC5K3//wizKjYRHtIfO0=;
+        b=QZ76X3p+pJ6WamI5Xcufw8RaNGnupytCtanhc0rIuLwCKR1mqg1etubqe06dDB4DG8
+         m1gzvSOWu5K1wdqcFLb9SZ2uDutvAR3f7CawO0yf6elIsXvY5Kx6WhKKgt+9rYkqO6xr
+         YoatoovJpULxAWgcNDrIZjuipdDBIURUCVwwARAZmMIY56W3fTtCqKu5W+cBCEZnmmmM
+         62yX6pASa/kJhxH7Ih88KJOZH8two+C9xHYvq6AE9o4y90nWThhQ4XpjOvt936naWfXR
+         7aN3XO74T6sM8OuVqXd0SdEM5CDNe9mPQ5PzCK8BS3LV2hfhU8MEYWD54dJFEJIGo6aU
+         ildA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=gZiBMQs0z73rJMB2fq1G2rEopYe6FV32v/POQXxCThI=;
-        b=a9rTwHcT/UzBshVCeHJN29M3FDM+mRp6hNpjtCdf8peH+PXtqNL8Ji3gNvPHU8DBe7
-         A3vtiJADq4v6ke9CELca2x/k2WbunklQ6JrzhFo8JC7zbkEMMWyy2Xva8cJnGMFSS0lL
-         smObewAevKXPDNMFwJIOeLIPJxrijzhLs/GIgkD+yZRuCgy8WkRokxTrZ0KaJyPWFcXj
-         YDQXcd5A6gTwdU7zsxDrUX/ArlSxe3TBrBtxfShd5UPitAC7B5OnhzjyvngflCTl5Uaz
-         yj6qWyFe4iGeWixKZe03fhtQOcdbcLtWxZpRjjluJ8r2ElnC2bzhHjHKU18BidvQw513
-         SPig==
-X-Gm-Message-State: ACrzQf2fjdG6YS1PWFgn74FWTgmmdcBCT1Rve7rLGCnq1BRPVFOT3gT8
-        iLdiU20lagAG27TjnjNlHuFmi2ktaVI=
-X-Google-Smtp-Source: AMsMyM6xiqjrzeRVGyvvYOMt0uUJUdcZdwvkGUMD7YLVFZvJJ8802sLzaxKNtsFOwZlaTTUbL++60w==
-X-Received: by 2002:a17:90b:3505:b0:203:b7b1:2bc3 with SMTP id ls5-20020a17090b350500b00203b7b12bc3mr5148716pjb.242.1664290891506;
-        Tue, 27 Sep 2022 08:01:31 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id c3-20020a170903234300b001780e4e6b65sm1691015plh.114.2022.09.27.08.01.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Sep 2022 08:01:31 -0700 (PDT)
-Date:   Tue, 27 Sep 2022 08:01:28 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Bo Liu <liubo03@inspur.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ptp: Remove usage of the deprecated ida_simple_xxx API
-Message-ID: <YzMQSJtLA1LDMGOm@hoboy.vegasvil.org>
-References: <20220926012744.3363-1-liubo03@inspur.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=4MrVbxtRCiMH3zoesusZRq3iC5K3//wizKjYRHtIfO0=;
+        b=3vuvLjq5RvdVw9up4dP94R6rc/Tmiurpfp9YITaLZE4CVjaw5UfgHI3xGfO3lsO6AU
+         mG3CxDFsuDR/ICuGs8iS+8SUDNVrBOZZGRHTZ1K4XwR0ucd4YGQm8kYQOvLVzab3ZnQm
+         YpxuOTnmGmNRkuf8aLNnXNSIlcnKb8HJHkMAmVemVNG/48NPn/x49EtL5gSaxniOtnGf
+         5B4YbCfpLGsQ8OtlNYb8FJmGCJQZ8g9B8On4H6NJlfYZwHPiGEyfoWtIe2HRhmuBl8z7
+         7OVBYTTWhGBNGoh1MN7cIb29o8tTdXp2/GyKhZRbu9XumhU64e1ZqRzeahrdbclbCG4A
+         FWyw==
+X-Gm-Message-State: ACrzQf1EO0kPvaHj21FwabPy/GWOD3WCt/jtlsz0bFpZRGhEH+2IAw5P
+        NL5VDcYahRWI8arDrWGr4Wg1ooJPeKfs0ts/JDo=
+X-Google-Smtp-Source: AMsMyM61FRg5tUkAGaOwxV6V/VPYkncbAsVA6Ut/7gP7nE0eIL7mardknTRu2FJec1go8oJMnx395xlYp5u5QCo/NMU=
+X-Received: by 2002:a05:6870:523:b0:131:2d50:e09c with SMTP id
+ j35-20020a056870052300b001312d50e09cmr2544895oao.129.1664291100157; Tue, 27
+ Sep 2022 08:05:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220926012744.3363-1-liubo03@inspur.com>
+References: <cover.1663946157.git.lucien.xin@gmail.com> <4781b55b0b7498c574ace703a1481e3688e3f18d.1663946157.git.lucien.xin@gmail.com>
+ <52ae3eb45615c5d68a955e9a22f5f4915edc4e23.camel@redhat.com>
+In-Reply-To: <52ae3eb45615c5d68a955e9a22f5f4915edc4e23.camel@redhat.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Tue, 27 Sep 2022 11:04:18 -0400
+Message-ID: <CADvbK_eJk_mRp7V4n1JTa5p3FhvqNUK5+yoocQeYskM7z0ioNA@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/2] net: sched: add helper support in act_ct
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
+        kuba@kernel.org, Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Oz Shlomo <ozsh@nvidia.com>, Paul Blakey <paulb@nvidia.com>,
+        Ilya Maximets <i.maximets@ovn.org>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -68,59 +72,167 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 25, 2022 at 09:27:44PM -0400, Bo Liu wrote:
-> Use ida_alloc_xxx()/ida_free() instead of
-> ida_simple_get()/ida_simple_remove().
-> The latter is deprecated and more verbose.
+On Tue, Sep 27, 2022 at 6:29 AM Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> On Fri, 2022-09-23 at 11:28 -0400, Xin Long wrote:
+> > This patch is to add helper support in act_ct for OVS actions=ct(alg=xxx)
+> > offloading, which is corresponding to Commit cae3a2627520 ("openvswitch:
+> > Allow attaching helpers to ct action") in OVS kernel part.
+> >
+> > The difference is when adding TC actions family and proto cannot be got
+> > from the filter/match, other than helper name in tb[TCA_CT_HELPER_NAME],
+> > we also need to send the family in tb[TCA_CT_HELPER_FAMILY] and the
+> > proto in tb[TCA_CT_HELPER_PROTO] to kernel.
+> >
+> > Note when calling helper->help() in tcf_ct_act(), the packet will be
+> > dropped if skb's family and proto do not match the helper's.
+> >
+> > Reported-by: Ilya Maximets <i.maximets@ovn.org>
+>
+> This tag is a bit out of place here, as it should belong to fixes. Do
+> you mean 'Suggested-by' ?
+This one was reported as an OVS bug, but from TC side, it's a feature.
+I will remove it.
 
-I can't say that I am excited about this.  It seems like a way to
-create a regression.  I don't see any need to change.  After all,
-there are many "deprecated" interfaces in use.
+>
+> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> > ---
+> >  include/net/tc_act/tc_ct.h        |   1 +
+> >  include/uapi/linux/tc_act/tc_ct.h |   3 +
+> >  net/sched/act_ct.c                | 163 +++++++++++++++++++++++++++++-
+> >  3 files changed, 165 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/include/net/tc_act/tc_ct.h b/include/net/tc_act/tc_ct.h
+> > index 8250d6f0a462..b24ea2d9400b 100644
+> > --- a/include/net/tc_act/tc_ct.h
+> > +++ b/include/net/tc_act/tc_ct.h
+> > @@ -10,6 +10,7 @@
+> >  #include <net/netfilter/nf_conntrack_labels.h>
+> >
+> >  struct tcf_ct_params {
+> > +     struct nf_conntrack_helper *helper;
+> >       struct nf_conn *tmpl;
+> >       u16 zone;
+> >
+> > diff --git a/include/uapi/linux/tc_act/tc_ct.h b/include/uapi/linux/tc_act/tc_ct.h
+> > index 5fb1d7ac1027..6c5200f0ed38 100644
+> > --- a/include/uapi/linux/tc_act/tc_ct.h
+> > +++ b/include/uapi/linux/tc_act/tc_ct.h
+> > @@ -22,6 +22,9 @@ enum {
+> >       TCA_CT_NAT_PORT_MIN,    /* be16 */
+> >       TCA_CT_NAT_PORT_MAX,    /* be16 */
+> >       TCA_CT_PAD,
+> > +     TCA_CT_HELPER_NAME,     /* string */
+> > +     TCA_CT_HELPER_FAMILY,   /* u8 */
+> > +     TCA_CT_HELPER_PROTO,    /* u8 */
+> >       __TCA_CT_MAX
+> >  };
+> >
+> > diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+> > index 193a460a9d7f..771cf72ee9e1 100644
+> > --- a/net/sched/act_ct.c
+> > +++ b/net/sched/act_ct.c
+> > @@ -33,6 +33,7 @@
+> >  #include <net/netfilter/nf_conntrack_acct.h>
+> >  #include <net/netfilter/ipv6/nf_defrag_ipv6.h>
+> >  #include <net/netfilter/nf_conntrack_act_ct.h>
+> > +#include <net/netfilter/nf_conntrack_seqadj.h>
+> >  #include <uapi/linux/netfilter/nf_nat.h>
+> >
+> >  static struct workqueue_struct *act_ct_wq;
+> > @@ -832,6 +833,13 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
+> >
+> >  static void tcf_ct_params_free(struct tcf_ct_params *params)
+> >  {
+> > +     if (params->helper) {
+> > +#if IS_ENABLED(CONFIG_NF_NAT)
+> > +             if (params->ct_action & TCA_CT_ACT_NAT)
+> > +                     nf_nat_helper_put(params->helper);
+> > +#endif
+> > +             nf_conntrack_helper_put(params->helper);
+> > +     }
+> >       if (params->ct_ft)
+> >               tcf_ct_flow_table_put(params->ct_ft);
+> >       if (params->tmpl)
+> > @@ -1022,6 +1030,69 @@ static int tcf_ct_act_nat(struct sk_buff *skb,
+> >  #endif
+> >  }
+> >
+> > +static int tcf_ct_helper(struct sk_buff *skb, u8 family)
+> > +{
+>
+> This is very similar to ovs_ct_helper(), I'm wondering if a common
+> helper could be factored out?
+I wanted to, but these are two modules, I don't expect one depends another.
+Although this is for OVS offloading, but it can still be used independently.
+maybe I should move this function to nf_conntrack_helper.c in netfilter?
 
-> Signed-off-by: Bo Liu <liubo03@inspur.com>
-> ---
->  drivers/ptp/ptp_clock.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/ptp/ptp_clock.c b/drivers/ptp/ptp_clock.c
-> index 688cde320bb0..51cae72bb6db 100644
-> --- a/drivers/ptp/ptp_clock.c
-> +++ b/drivers/ptp/ptp_clock.c
-> @@ -174,7 +174,7 @@ static void ptp_clock_release(struct device *dev)
->  	mutex_destroy(&ptp->tsevq_mux);
->  	mutex_destroy(&ptp->pincfg_mux);
->  	mutex_destroy(&ptp->n_vclocks_mux);
-> -	ida_simple_remove(&ptp_clocks_map, ptp->index);
-> +	ida_free(&ptp_clocks_map, ptp->index);
->  	kfree(ptp);
->  }
->  
-> @@ -217,7 +217,7 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
->  	if (ptp == NULL)
->  		goto no_memory;
->  
-> -	index = ida_simple_get(&ptp_clocks_map, 0, MINORMASK + 1, GFP_KERNEL);
-> +	index = ida_alloc_max(&ptp_clocks_map, MINORMASK, GFP_KERNEL);
+>
+> > +     const struct nf_conntrack_helper *helper;
+> > +     const struct nf_conn_help *help;
+> > +     enum ip_conntrack_info ctinfo;
+> > +     unsigned int protoff;
+> > +     struct nf_conn *ct;
+> > +     u8 proto;
+> > +     int err;
+> > +
+> > +     ct = nf_ct_get(skb, &ctinfo);
+> > +     if (!ct || ctinfo == IP_CT_RELATED_REPLY)
+> > +             return NF_ACCEPT;
+> > +
+> > +     help = nfct_help(ct);
+> > +     if (!help)
+> > +             return NF_ACCEPT;
+> > +
+> > +     helper = rcu_dereference(help->helper);
+> > +     if (!helper)
+> > +             return NF_ACCEPT;
+> > +
+> > +     if (helper->tuple.src.l3num != NFPROTO_UNSPEC &&
+> > +         helper->tuple.src.l3num != family)
+> > +             return NF_DROP;
+> > +
+> > +     switch (family) {
+> > +     case NFPROTO_IPV4:
+> > +             protoff = ip_hdrlen(skb);
+> > +             proto = ip_hdr(skb)->protocol;
+> > +             break;
+> > +     case NFPROTO_IPV6: {
+> > +             __be16 frag_off;
+> > +             int ofs;
+> > +
+> > +             proto = ipv6_hdr(skb)->nexthdr;
+> > +             ofs = ipv6_skip_exthdr(skb, sizeof(struct ipv6hdr), &proto, &frag_off);
+> > +             if (ofs < 0 || (frag_off & htons(~0x7)) != 0) {
+> > +                     pr_debug("proto header not found\n");
+> > +                     return NF_DROP;
+>
+> Why this is returning NF_DROP while ovs_ct_helper() returns NF_ACCEPT
+> here?
+>
+> > +             }
+> > +             protoff = ofs;
+> > +             break;
+> > +     }
+> > +     default:
+> > +             WARN_ONCE(1, "helper invoked on non-IP family!");
+> > +             return NF_DROP;
+> > +     }
+> > +
+> > +     if (helper->tuple.dst.protonum != proto)
+> > +             return NF_DROP;
+>
+> I'm wondering if NF_DROP is appropriate here. This should be a
+> situation similar to the above one: the current packet does not match
+> the helper.
+I was thinking the packets arriving here should be matched with the helper's,
+this would force users do a right configuration on flower or other match. But
+this might be too harsh and will change to NF_ACCEPT.
 
-Typo?   You changed the value of the second argument.
+Thanks!
 
-Thanks,
-Richard
-
-
-
->  	if (index < 0) {
->  		err = index;
->  		goto no_slot;
-> @@ -332,7 +332,7 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
->  	mutex_destroy(&ptp->tsevq_mux);
->  	mutex_destroy(&ptp->pincfg_mux);
->  	mutex_destroy(&ptp->n_vclocks_mux);
-> -	ida_simple_remove(&ptp_clocks_map, index);
-> +	ida_free(&ptp_clocks_map, index);
->  no_slot:
->  	kfree(ptp);
->  no_memory:
-> -- 
-> 2.27.0
-> 
+>
+> Thanks!
+>
+> Paolo
+>
