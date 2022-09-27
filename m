@@ -2,114 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C60B85EBD4D
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 10:30:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1B235EBD5A
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 10:33:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230324AbiI0Iaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 04:30:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38518 "EHLO
+        id S230175AbiI0IdR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 04:33:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231499AbiI0IaX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 04:30:23 -0400
-Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98187A407D
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 01:30:17 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VQr0FBg_1664267413;
-Received: from localhost(mailfrom:hengqi@linux.alibaba.com fp:SMTPD_---0VQr0FBg_1664267413)
-          by smtp.aliyun-inc.com;
-          Tue, 27 Sep 2022 16:30:14 +0800
-From:   Heng Qi <hengqi@linux.alibaba.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229493AbiI0IdP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 04:33:15 -0400
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B50B9F775;
+        Tue, 27 Sep 2022 01:33:13 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id ED7CD1884A23;
+        Tue, 27 Sep 2022 08:33:10 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id CE0B82500015;
+        Tue, 27 Sep 2022 08:33:10 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id B2A64A0A1E66; Tue, 27 Sep 2022 08:33:10 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+MIME-Version: 1.0
+Date:   Tue, 27 Sep 2022 10:33:10 +0200
+From:   netdev@kapio-technology.com
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Subject: [PATCH net] veth: Avoid drop packets when xdp_redirect performs
-Date:   Tue, 27 Sep 2022 16:30:13 +0800
-Message-Id: <1664267413-75518-1-git-send-email-hengqi@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v5 net-next 6/6] selftests: forwarding: add test of
+ MAC-Auth Bypass to locked port tests
+In-Reply-To: <Yyq6BnUfctLeerqE@shredder>
+References: <YxNo/0+/Sbg9svid@shredder>
+ <5cee059b65f6f7671e099150f9da79c1@kapio-technology.com>
+ <Yxmgs7Du62V1zyjK@shredder>
+ <8dfc9b525f084fa5ad55019f4418a35e@kapio-technology.com>
+ <20220908112044.czjh3xkzb4r27ohq@skbuf>
+ <152c0ceadefbd742331c340bec2f50c0@kapio-technology.com>
+ <20220911001346.qno33l47i6nvgiwy@skbuf>
+ <15ee472a68beca4a151118179da5e663@kapio-technology.com>
+ <Yx73FOpN5uhPQhFl@shredder>
+ <086704ce7f323cc1b3cca78670b42095@kapio-technology.com>
+ <Yyq6BnUfctLeerqE@shredder>
+User-Agent: Gigahost Webmail
+Message-ID: <7a4549d645f9bbbf41e814f087eb07d1@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the current processing logic, when xdp_redirect occurs, it transmits
-the xdp frame based on napi.
+On 2022-09-21 09:15, Ido Schimmel wrote:
+> 	bridge fdb add `mac_get $h2` dev br0 blackhole
 
-If napi of the peer veth is not ready, the veth will drop the packets.
-This doesn't meet our expectations.
+To make this work, I think we need to change the concept, so that 
+blackhole FDB entries are added to ports connected to the bridge, thus
+      bridge fdb add MAC dev $swpX master blackhole
 
-In this context, if napi is not ready, we convert the xdp frame to a skb,
-and then use veth_xmit() to deliver it to the peer veth.
+This makes sense as the driver adds them based on the port where the 
+SMAC is seen, even though the effect of the blackhole FDB entry is 
+switch wide.
 
-Like the following case:
-Even if veth1's napi cannot be used, the packet redirected from the NIC
-will be transmitted to veth1 successfully:
+Adding them to the bridge (e.g. f.ex. br0) will not work in the SW 
+bridge as the entries then are not found. We could deny this possibility 
+or just document the use?
 
-NIC   ->   veth0----veth1
- |                   |
-(XDP)             (no XDP)
 
-Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
-Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
----
- drivers/net/veth.c | 36 +++++++++++++++++++++++++++++++++++-
- 1 file changed, 35 insertions(+), 1 deletion(-)
+For offloaded I can change the add, so that it does a delete (even if 
+none are present) and a add, thus facilitating the replace.
 
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index 466da01..e1f5561 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -469,8 +469,42 @@ static int veth_xdp_xmit(struct net_device *dev, int n,
- 	/* The napi pointer is set if NAPI is enabled, which ensures that
- 	 * xdp_ring is initialized on receive side and the peer device is up.
- 	 */
--	if (!rcu_access_pointer(rq->napi))
-+	if (!rcu_access_pointer(rq->napi)) {
-+		for (i = 0; i < n; i++) {
-+			struct xdp_frame *xdpf = frames[i];
-+			struct netdev_queue *txq = NULL;
-+			struct sk_buff *skb;
-+			int queue_mapping;
-+			u16 mac_len;
-+
-+			skb = xdp_build_skb_from_frame(xdpf, dev);
-+			if (unlikely(!skb)) {
-+				ret = nxmit;
-+				goto out;
-+			}
-+
-+			/* We need to restore ETH header, because it is pulled
-+			 * in eth_type_trans.
-+			 */
-+			mac_len = skb->data - skb_mac_header(skb);
-+			skb_push(skb, mac_len);
-+
-+			nxmit++;
-+
-+			queue_mapping = skb_get_queue_mapping(skb);
-+			txq = netdev_get_tx_queue(dev, netdev_cap_txqueue(dev, queue_mapping));
-+			__netif_tx_lock(txq, smp_processor_id());
-+			if (unlikely(veth_xmit(skb, dev) != NETDEV_TX_OK)) {
-+				__netif_tx_unlock(txq);
-+				ret = nxmit;
-+				goto out;
-+			}
-+			__netif_tx_unlock(txq);
-+		}
-+
-+		ret = nxmit;
- 		goto out;
-+	}
- 
- 	max_len = rcv->mtu + rcv->hard_header_len + VLAN_HLEN;
- 
--- 
-1.8.3.1
-
+How does this sound?
