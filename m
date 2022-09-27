@@ -2,66 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D9CA55EB662
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 02:40:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A29CC5EB66C
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 02:43:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229761AbiI0Akx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Sep 2022 20:40:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40350 "EHLO
+        id S229689AbiI0Anj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Sep 2022 20:43:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230096AbiI0Akk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 20:40:40 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACDE513F9B
-        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 17:40:36 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id d10so7166520pfh.6
-        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 17:40:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=VJtCPwVDtwDjIooJZ4y0gRwQCahGRpaJT9wGcWMjORs=;
-        b=VvuZQBTYao8dMp/XcrA6B5eGOq5huNfpsyfiYiH+2ZtLSq+BmDtB8jbNPZ6pFfMICQ
-         +gBsND5fUECaHOcd7odlIE5mK4qJaPiVBjhxhhsCePIl06KYSL8MMrKHAGTMVIQjM52w
-         ASs2h4yKd/r0HOLw9J9Odu+2wM5mZ/AQK8ZKg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=VJtCPwVDtwDjIooJZ4y0gRwQCahGRpaJT9wGcWMjORs=;
-        b=0vHGSijymvERjwUSChOocKSBsOxLoTnl+kSs1VPqXHYq/DeIO8KtValTYOZyujM0IH
-         hfWrxCsN+bhEN0EL9F+pIztMnrjok/3hZcKBAhuSRf7J7kedll/1P2+RHrM/sZ7GCmW0
-         HmCOjmazqi6OhsQ3B/itrSZUFzb8tCmmvBE1mqzJCxyhMjh9+Z6XcfMR6h0Ak8XqPPau
-         e+8jBK29UQsp/T1BxQiTeRVDAAwCu78w9b0G2I4rDZm9UJLaDo+drjmRUbL65n3Jc6HO
-         Xz+1+zfrpbW+DOthIfiBN4xJ6s9cGccYhiSzkhrJVckQGbCpewH8V8HurAOnVT3sUCzv
-         2mrA==
-X-Gm-Message-State: ACrzQf0ac1o5k+JhqYb2QQ9n5Bb8DcqcrsL9zsXo1Fk24QmdFN9yUct3
-        hkWPZM5a3xNEsPBOnMjOt8PEbR5gsA65+Q==
-X-Google-Smtp-Source: AMsMyM6lAcW419M+QieduWpZQ5tgxZTYWWxDyq0gne5Ik9qQ4QewnuhqSDR3T1g1KxvW29apUwnURQ==
-X-Received: by 2002:a05:6a00:1990:b0:545:aa9e:be3d with SMTP id d16-20020a056a00199000b00545aa9ebe3dmr26702722pfl.59.1664239236206;
-        Mon, 26 Sep 2022 17:40:36 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id f35-20020a17090a28a600b00203125b6394sm53549pjd.40.2022.09.26.17.40.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Sep 2022 17:40:35 -0700 (PDT)
-From:   Kees Cook <keescook@chromium.org>
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     Kees Cook <keescook@chromium.org>, Petr Machata <petrm@nvidia.com>,
+        with ESMTP id S229639AbiI0Ani (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Sep 2022 20:43:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5FA874DF7
+        for <netdev@vger.kernel.org>; Mon, 26 Sep 2022 17:43:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 579E6614AE
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 00:43:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F446C433C1;
+        Tue, 27 Sep 2022 00:43:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664239415;
+        bh=UNWZbaYSFB4u601wDkTmFpuAtyrNmqtFpD4FynF8vdI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=W6ykob/0bXlMi1hOROqhDzRr35GalZH5pLTn9Yep90P9Tp1LaooKrCb8fFAPDYURQ
+         bERQYrSHNEgAGjg23x+JhZn0Ccbl+sCP1Y8wRv8RjYTip3ZLEPHD2904FkvxVhJzst
+         GLnz2bHA+MljSyyh+SIWCLIlLEpWNc2CKr3at+L6z392g96EdV0GhdQY+fiQbvS4ny
+         b7B5qwr8PhnkCVSuvfwjvd4iXNAwJaR/XxhtflyeQ9RktWjjeyrj5oIIe6MZaQrS2o
+         4dhcACaj1HWCUzQSZAW65NwhWweBiij6+2RRoNQsdNfyyLS5s+Z61eORlDhvxvApyA
+         vZU2qEAHka5pA==
+Date:   Mon, 26 Sep 2022 17:43:33 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: [PATCH] mlxsw: core_acl_flex_actions: Split memcpy() of struct flow_action_cookie flexible array
-Date:   Mon, 26 Sep 2022 17:40:33 -0700
-Message-Id: <20220927004033.1942992-1-keescook@chromium.org>
-X-Mailer: git-send-email 2.34.1
+        Paolo Abeni <pabeni@redhat.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Rui Sousa <rui.sousa@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Michael Walle <michael@walle.cc>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Richie Pearn <richard.pearn@nxp.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Gerhard Engleder <gerhard@engleder-embedded.com>
+Subject: Re: [PATCH v2 net-next 02/12] tsnep: deny tc-taprio changes to
+ per-tc max SDU
+Message-ID: <20220926174333.15dbca47@kernel.org>
+In-Reply-To: <20220927002252.mwrxp3wicew3vz6p@skbuf>
+References: <20220923163310.3192733-1-vladimir.oltean@nxp.com>
+        <20220923163310.3192733-3-vladimir.oltean@nxp.com>
+        <20220926134025.5c438a76@kernel.org>
+        <20220926215049.ndvn4ocfvkskzel4@skbuf>
+        <20220926162934.58bf38a6@kernel.org>
+        <20220927002252.mwrxp3wicew3vz6p@skbuf>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1634; h=from:subject; bh=anKrQLY+XsXKgHz694GQioMoU17jgmFoTynuopZyaGg=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBjMkaBfu8qN5shW54b50aHf+icSE8mqDj2fL3Oe3rs UiET1fGJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYzJGgQAKCRCJcvTf3G3AJkJwD/ 4uuK+VZ1mJBwvloZTYwkWWvwMD6O3YJ7TlM8I3YOOzoU110PcLcBRFA7Fc/yXBhhfWyeu8zxZz4mG0 BJvV+bms9nxA+oed4ATwwaSmDBHEA+T+SNurvu3uC+aN5KYlnb1yE/jDO13fvSqQv0I803i+jEcyVO lk+W0UdsTTMivSv6LF80i6YZpfUokBfj1sRj02fhQCXLmxLE1YtiYyf/8kH2c6FM1nDHvTonWV+vyX bTTJeN2PG7tWse9aH2IJSIrCiRmQfLa9WzC2aYTNXaBvepHo+K65zWwJcVnVSn1jdOXD/ExTuFskWf pfdKMPEhjrf/aYNOYT8xk84SsDil50pYL+fpkUPj/qyU0qScRKPwwm5n82NvbbV5o79tn4oW8oqBu/ LGgLek3r0oxVr9ywDqwldNvEDtR3JMSTSyI/wcTWBtP1d1AZqNQHVsYFh3DJ17cDS2NXKYm6bBQkXx gLmYCl8Kp/LfWWxEJXHap6W8Lb1GXO/v1ccXCC3vmNU239OKe4vV2hpfYKLjY1u6KfpVBlo3VclLHV LxPrIANqJQby71uZk10OdGr8G0OgVSBTwGnRC6eIXC45o1pJwUpVXEgBILgskr8F5H0zPsMCtnfG+w KXZrR+CL6okF4VYg791WIUh1eRy9thQpt+y6zi663njUo/Pj39cmCR7+RQHQ==
-X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,41 +85,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To work around a misbehavior of the compiler's ability to see into
-composite flexible array structs (as detailed in the coming memcpy()
-hardening series[1]), split the memcpy() of the header and the payload
-so no false positive run-time overflow warning will be generated.
+On Tue, 27 Sep 2022 00:22:53 +0000 Vladimir Oltean wrote:
+> On Mon, Sep 26, 2022 at 04:29:34PM -0700, Jakub Kicinski wrote:
+> > I usually put a capability field into the ops themselves.  
+> 
+> Do you also have an example for the 'usual' manner?
 
-[1] https://lore.kernel.org/linux-hardening/20220901065914.1417829-2-keescook@chromium.org
+struct devlink_ops {
+	/**
+	 * @supported_flash_update_params:
+	 * mask of parameters supported by the driver's .flash_update
+	 * implemementation.
+	 */
+	u32 supported_flash_update_params;
+	unsigned long reload_actions;
+	unsigned long reload_limits;
 
-Cc: Ido Schimmel <idosch@nvidia.com>
-Cc: Petr Machata <petrm@nvidia.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: netdev@vger.kernel.org
-Signed-off-by: Kees Cook <keescook@chromium.org>
----
- drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+struct ethtool_ops {
+	u32     cap_link_lanes_supported:1;
+	u32	supported_coalesce_params;
+	u32	supported_ring_params;
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c b/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c
-index 636db9a87457..9dfe7148199f 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c
-@@ -737,8 +737,9 @@ mlxsw_afa_cookie_create(struct mlxsw_afa *mlxsw_afa,
- 	if (!cookie)
- 		return ERR_PTR(-ENOMEM);
- 	refcount_set(&cookie->ref_count, 1);
--	memcpy(&cookie->fa_cookie, fa_cookie,
--	       sizeof(*fa_cookie) + fa_cookie->cookie_len);
-+	cookie->fa_cookie = *fa_cookie;
-+	memcpy(cookie->fa_cookie.cookie, fa_cookie->cookie,
-+	       fa_cookie->cookie_len);
- 
- 	err = rhashtable_insert_fast(&mlxsw_afa->cookie_ht, &cookie->ht_node,
- 				     mlxsw_afa_cookie_ht_params);
--- 
-2.34.1
+> > Right, but that's what's in the tree _now_. Experience teaches that
+> > people may have out of tree code which implements TAPRIO and may send
+> > it for upstream review without as much as testing it against net-next :(
+> > As time passes and our memories fade the chances we'd catch such code
+> > when posted upstream go down, perhaps from high to medium but still,
+> > the explicit opt-in is more foolproof.  
+> 
+> You also need to see the flip side. You're making code more self-maintainable
+> by adding bureaucracy to the run time itself. Whereas things could have
+> been sorted out between the qdisc and the driver in just one ndo_setup_tc()
+> call via the straightforward approach (every driver rejects what it
+> doesn't like), now you need two calls for the normal case when the
+> driver will accept a valid configuration.
 
+Right, the lack of a structure we can put it in is quite unfortunate :(
+But I do not dare suggesting we add a structure with qdisc and cls
+specific callbacks instead of the mux-y ndo_setup_tc :)
+I guess we could take a shortcut and put a pointer in netdev_ops for
+just the caps for now, hm.
+
+> I get the point and I think this won't probably make a big difference
+> for a slow path like qdisc offload (at least it won't for me), but from
+> an API perspective, once the mechanism will go in, it will become quite
+> ossified, so it's best to ask some questions about it now.
+> 
+> Like for example you're funneling the caps through ndo_setup_tc(), which
+> has these comments in its description:
+> 
+>  * int (*ndo_setup_tc)(struct net_device *dev, enum tc_setup_type type,
+>  *		       void *type_data);
+>  *	Called to setup any 'tc' scheduler, classifier or action on @dev.
+>  *	This is always called from the stack with the rtnl lock held and netif
+>  *	tx queues stopped. This allows the netdevice to perform queue
+>  *	management safely.
+> 
+> Do we need to offer guarantees of rtnl lock and stopped TX queues to a
+> function which just queries capabilities (and likely doesn't need them),
+> or would it be better to devise a new ndo?
+
+The queues stopped part is not true already for classifier offloads :(
+
+> Generally, when you have a
+> separate method to query caps vs to actually do the work, different
+> calling contexts is generally the justification to do that, as opposed
+> to piggy-backing the caps that the driver acted upon through the same
+> struct tc_taprio_qopt_offload.
+
+If we add a new pointer for netdev_ops I'd go with a struct pointer
+rather than an op, for consistency if nothing else. But if you feel
+strongly either way will work.
