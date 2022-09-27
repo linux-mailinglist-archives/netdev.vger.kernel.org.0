@@ -2,41 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 840775EBCDF
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 10:12:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C6235EBD34
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 10:27:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231209AbiI0IMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 04:12:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44280 "EHLO
+        id S231266AbiI0I1E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 04:27:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229773AbiI0ILL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 04:11:11 -0400
-Received: from mail.fadrush.pl (mail.fadrush.pl [54.37.225.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 102A51EEC8
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 01:06:24 -0700 (PDT)
-Received: by mail.fadrush.pl (Postfix, from userid 1002)
-        id 505F3227BF; Tue, 27 Sep 2022 08:05:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=fadrush.pl; s=mail;
-        t=1664265982; bh=bD6j9gIFU6CLTaCGl0Ow9oeIxtirvTfMeNZSfLEZQ+I=;
-        h=Date:From:To:Subject:From;
-        b=HlZ8q0ifEUk8qJHlMHumw66L8lvjpmL9tOw8mL1uJzDqbF9ykDHZmvR6TXu6Se8AZ
-         NH4z3Uv2lqNtd5KOIbyzekqVGOvDFOjptba/P34lWISXHvWDsZUz0ArALFRFChawYo
-         eRmVc7+bnsSLEV8LGdXQr4Af19oZeMOqFEu3+8S5AZKvpdKTawiWYm1k3mCATb6x2Y
-         sgnR3R+mHUzVP8yfrecleSjPgUkPA3jaQ+OAF4IBzNGmK4Qn7q+5xJ5gyzhFT7Kbcx
-         J0FwFFkh2VnGLPNk3jmhJPqlp5+i0/1NdUk5FqUpo/5OvhQNd4eON47/SzNw7HKjxq
-         k+Eo04NAbAEgA==
-Received: by mail.fadrush.pl for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 08:05:39 GMT
-Message-ID: <20220927064500-0.1.1v.i0hs.0.835695qnb6@fadrush.pl>
-Date:   Tue, 27 Sep 2022 08:05:39 GMT
-From:   "Jakub Olejniczak" <jakub.olejniczak@fadrush.pl>
-To:     <netdev@vger.kernel.org>
-Subject: =?UTF-8?Q?Zwi=C4=99kszenie_p=C5=82ynno=C5=9Bci_finansowej?=
-X-Mailer: mail.fadrush.pl
+        with ESMTP id S230317AbiI0I1D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 04:27:03 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6F6DA4B9C
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 01:27:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1664267222; x=1695803222;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=oRbzxcD/EYelfJirzanDTW2ZtajAcEZtBzGOaqFQF74=;
+  b=bIeTZBif8N3Fnqs0V0d8JY5UsAD2Kb1BtTc8rvYJGWcsYFAsUYIPMlYA
+   PsuQ2LNbLWxTwd6AvTjI7G6FeH8TgaoBttTLz07Vmamo9dLc4Z2+thc0L
+   7MaFU8CWA+VnEN06UjzUlUKJPU9CStZx7+WwmI1KrTfI0V7I6ejO+ESNT
+   3lwnC2jRaXH4IgVPvK9T/ilVMI0CVNB67tpQ3gOZkshIdCkspcSk1gi+Q
+   b769aoD5AUMPPqcXp1eSz0URYTCk0m1ld2Qo8QwLMAUxMFOFWtQb43DFG
+   /Jh6WnJxLJWXJ54C6nKndO5XdzyM3fYPYqf3Imubd0lP+vu66NdzAdHoz
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="327612356"
+X-IronPort-AV: E=Sophos;i="5.93,348,1654585200"; 
+   d="scan'208";a="327612356"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Sep 2022 01:27:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10482"; a="652199934"
+X-IronPort-AV: E=Sophos;i="5.93,348,1654585200"; 
+   d="scan'208";a="652199934"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga008.jf.intel.com with ESMTP; 27 Sep 2022 01:27:01 -0700
+Received: from switcheroo.igk.intel.com (switcheroo.igk.intel.com [172.22.229.137])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 28R8QxxJ023862;
+        Tue, 27 Sep 2022 09:27:00 +0100
+From:   Wojciech Drewek <wojciech.drewek@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     dsahern@gmail.com, stephen@networkplumber.org, gnault@redhat.com
+Subject: [PATCH iproute2-next 0/3] L2TPv3 support in tc-flower
+Date:   Tue, 27 Sep 2022 10:23:15 +0200
+Message-Id: <20220927082318.289252-1-wojciech.drewek@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -44,25 +60,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dzie=C5=84 dobry,
+This patchset implements support for matching
+on L2TPv3 session id using tc-flower.
+First two patches are uapi updates.
 
-kontaktuj=C4=99 si=C4=99 z Pa=C5=84stwem, poniewa=C5=BC chcia=C5=82bym za=
-proponowa=C4=87 wygodne rozwi=C4=85zanie, kt=C3=B3re umo=C5=BCliwi Pa=C5=84=
-stwa firmie stabilny rozw=C3=B3j.=20
+Kernel changes (merged):
+https://lore.kernel.org/netdev/166365901622.22752.10799448124008445080.git-patchwork-notify@kernel.org/
 
-Konkurencyjne otoczenie wymaga ci=C4=85g=C5=82ego ulepszania i poszerzeni=
-a oferty, co z kolei wi=C4=85=C5=BCe si=C4=99 z konieczno=C5=9Bci=C4=85 i=
-nwestowania. Brak odpowiedniego kapita=C5=82u powa=C5=BCnie ogranicza tem=
-po rozwoju firmy.
+Wojciech Drewek (3):
+  uapi: move IPPROTO_L2TP to in.h
+  uapi: Add TCA_FLOWER_KEY_L2TPV3_SID
+  f_flower: Introduce L2TPv3 support
 
-Od wielu lat z powodzeniem pomagam firmom w uzyskaniu najlepszej formy fi=
-nansowania z banku oraz UE. Mam sta=C5=82ych Klient=C3=B3w, kt=C3=B3rzy n=
-adal ch=C4=99tnie korzystaj=C4=85 z moich us=C5=82ug, a tak=C5=BCe poleca=
-j=C4=85 je innym.
+ include/uapi/linux/in.h      |  2 ++
+ include/uapi/linux/l2tp.h    |  2 --
+ include/uapi/linux/pkt_cls.h |  2 ++
+ man/man8/tc-flower.8         | 11 +++++++--
+ tc/f_flower.c                | 45 +++++++++++++++++++++++++++++++++++-
+ 5 files changed, 57 insertions(+), 5 deletions(-)
 
-Czy chcieliby Pa=C5=84stwo skorzysta=C4=87 z pomocy wykwalifikowanego i d=
-o=C5=9Bwiadczonego doradcy finansowego?
+-- 
+2.31.1
 
-
-Pozdrawiam
-Jakub Olejniczak
