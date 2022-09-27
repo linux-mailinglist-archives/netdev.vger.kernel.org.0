@@ -2,298 +2,333 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DF335ED0A1
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 00:59:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15DF65ED0AA
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 01:02:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231773AbiI0W7T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 18:59:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51174 "EHLO
+        id S232177AbiI0XCL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 19:02:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231218AbiI0W7S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 18:59:18 -0400
-Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF450EF090;
-        Tue, 27 Sep 2022 15:59:16 -0700 (PDT)
-Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-13175b79807so5149610fac.9;
-        Tue, 27 Sep 2022 15:59:16 -0700 (PDT)
+        with ESMTP id S231965AbiI0XCC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 19:02:02 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2099.outbound.protection.outlook.com [40.107.220.99])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15CE160D5;
+        Tue, 27 Sep 2022 16:02:01 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WExuBqJ7dF4xuA7RBKapbOmnM/6p0SqkyEX1tpHV2LLXs1Q6W4udNUz6J4sCeDoy9zm6UMH3XT+RM1mu6EVtiitCKc5G0ROKMZbaIqsTsggWjo0GR5dUdNigbiW0JAM48+gWpru1K1L6fFe8sTgc+PfHHp54lhVTsBdvH4aTDnT1MUYOJq6T010ha0rowCFnq5zUJ8qSfSAVPI5VBLQrRKmG4YroDgb0ru1aeIWPhlJ3fIcapkS19SP4tt1/T2I16md1TKG7iTEpNPrZAJh0/aYihSzRMTYsAxD0szEIczaIAwXQGsOd/Bxp835MjKW6aIb+WvUTJ7okxov8DtzW6g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=sQBvWDPleDMQr/XOGSA59C7H9WzrlpNADlmMEBGPQtA=;
+ b=erZJCyZJCznd9RK+MunjfEjkCEd5RBspHpfBsaxSxP26Uxhv9ULcK6rkTYbyjCx3u0DTfjByyO7Ne9Ovkwg/pNf/M2o5PAhkOI4J6f6rsxUuSIEazib3+nS3VPTdYy/2L2AP/z1WnfTR8hIIKbs9uVJw6jgHk+Byo3dDvA4Q3idFMlqIR81Ru2LSvQjt3PuUyRKxg8mazUxTj5SSMXlIra6Hl93PPhAPts2iLyKztyUXCi8F5byvM9uheh7yvk49Qv9amoaRgutvx8MQcyT3aHqGHFNbB3DDa0k/9HaUG7zkH9eVBxWKGgwO9/hhUBHAA1PN0OggZNchHV7hlbbLvA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=ZWhbXo4LHHOgqEY3MQYQGmP0WVsbYvhjsz/W36gZzVI=;
-        b=JrkkY9/wWFIvfQ0dvTDYi6mrEW1SSO1/kcDOUvFeC9xZrG9+kTDhSIuFGxX7OfYA+f
-         KdCMe3aU52bro9i+vmWl72sfBnHMW6+b3IoP4DdmPOfzVqmq9Db8V4g7sf8hCujrgKfA
-         qukyVD3NIHEq3cGlxnfPOrmhiU4O0b/DCGk9UIrMJDID5clZTQ5ZiEfDGxp83Gakr0Gq
-         RkYKzMgkS2jaqOvefEIwTV6k3Kafn7PKNyAhdXlpERAFxDxj9yZx3SZ3RjEa6PWgBXeq
-         CvEWR2bdn3+n4YDbvj8LfJeYXUvZwUEkC6Bcdi1Lx8nCzKa2dcultFN16124x5tEu77a
-         knqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=ZWhbXo4LHHOgqEY3MQYQGmP0WVsbYvhjsz/W36gZzVI=;
-        b=7OE5nv7LpsE48J3NJ1k4G2VO1UwFJcHEqMtLn43MorLbtnn39KiNeKYTha9HYBoed0
-         RvtsrMarTDUWn4A74OVuCkujCYBC6rWYvo6iqYba7d/p9VwiiE/ZCpO2yRpGWcrFMf8C
-         tLnF2uZeW+nXiLId+l2qZXORjisJk5m2CGibve63PkHup3590lQQcDav/qrxQMnASuQv
-         EPODMIonYj/5lxVaQOSOi/GQrDk5R7OoNBP4xQ5d0UXdgZjJ4i3Wci/lv1DaBGoFlnax
-         FOMQxWoD5j6YnwvbkRwg/3iTtiJXWBmx4GKo0MJ5R0o2pyifHhBlZwttrSuirNY4SFUU
-         SWjg==
-X-Gm-Message-State: ACrzQf1ws5KI3GCc8c8DB1F7coNEl5BSP3MWsm+1b9aQR3+EWuC8K5Ij
-        UCM9U68Ie7e2qY5esn4mFNLwxDlIPjHe/LFiclk=
-X-Google-Smtp-Source: AMsMyM5sS4jw0h2JbCUGtPHH2kVbGsiot79GdN1r7qbvIQMBDfUxHd3hBatAL8YCG7cbwtYxOlCxwNZyZa7TCQxI4Uc=
-X-Received: by 2002:a05:6870:9614:b0:11d:3906:18fc with SMTP id
- d20-20020a056870961400b0011d390618fcmr3683600oaq.190.1664319555991; Tue, 27
- Sep 2022 15:59:15 -0700 (PDT)
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sQBvWDPleDMQr/XOGSA59C7H9WzrlpNADlmMEBGPQtA=;
+ b=SJX8M+xhYyu3W4CNOL3zy8ZZyLsUUSuyf9YV15g4zJqfj7Blyryaasnnwj2gyxxKd6f5gDmlnCSu9UcJUrVOKXpmJn0zFQxwHYZQbFXCtHW/As5UHLEyzJhwITSaDyye7Qx2LVSIUonRiZfGULeS28egXPvxiPOYYQO/Vy79/N0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by PH0PR10MB5657.namprd10.prod.outlook.com
+ (2603:10b6:510:fc::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.17; Tue, 27 Sep
+ 2022 23:01:57 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::b417:2ac7:1925:8f69]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::b417:2ac7:1925:8f69%4]) with mapi id 15.20.5654.026; Tue, 27 Sep 2022
+ 23:01:55 +0000
+Date:   Tue, 27 Sep 2022 16:01:51 -0700
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        UNGLinuxDriver@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Lee Jones <lee@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH v3 net-next 11/14] mfd: ocelot: add regmaps for ocelot_ext
+Message-ID: <YzOA35MxZ6S6E6qe@colin-ia-desktop>
+References: <20220926002928.2744638-1-colin.foster@in-advantage.com>
+ <20220926002928.2744638-12-colin.foster@in-advantage.com>
+ <20220927210411.6oc3aphlyp4imgsq@skbuf>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220927210411.6oc3aphlyp4imgsq@skbuf>
+X-ClientProxiedBy: SJ0PR05CA0086.namprd05.prod.outlook.com
+ (2603:10b6:a03:332::31) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
 MIME-Version: 1.0
-References: <000000000000212d3205e9984e12@google.com>
-In-Reply-To: <000000000000212d3205e9984e12@google.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Tue, 27 Sep 2022 18:58:34 -0400
-Message-ID: <CADvbK_csG9_6coaKE0hqnzRudhTi3BXOsaANGfH2QC1Cx8OO5w@mail.gmail.com>
-Subject: Re: [syzbot] KASAN: use-after-free Write in sctp_auth_shkey_hold (2)
-To:     syzbot <syzbot+a236dd8e9622ed8954a3@syzkaller.appspotmail.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-sctp@vger.kernel.org,
-        marcelo.leitner@gmail.com, netdev@vger.kernel.org,
-        nhorman@tuxdriver.com, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MWHPR1001MB2351:EE_|PH0PR10MB5657:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1c06d40f-ee39-40fe-b0a1-08daa0dc45f2
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: uo1vFX4RUxojFf63pkhkS2v9IejbY+PgL8+ZW5BRuIG65B/7H7vWsVT5+XN4sFiXHL/tBAiKGslkXG34j7L8Nh6cN332X/orf/h/2UwjOt41ogou7gu7Lp8xbJm+hOZ+myOzL8sL2U4Ym8q/qc220MqMSIheo74En7qLEAeBcVjH+FFxQ//F/us/7033YnbjVvemJklVR8yHegkbEB7wdKLdsuO9SCt0RJdqPnoFMyvLZK+fDLYcKyhr4zWudJlcUNpc5Gne541jG5nPwayQTxzJwQ+0DdjdgFMSIzNSAJSraVkud93WRIU1ohEdsGD1WYuZ42qfOyTdXRCF8Dg0bBcJ2AWeSp4dysyTnQuzIdfMx/AHwgsn3e73M7JgDfA82bVa7W4FztoQbzCkHc8CQmkxMJLMgPIgiGfBH5A9nhJRzMnI8GszN05NARoTkfjPfec9KqZDI2g6CGuDGUPxWjXiXQ45YBwUHjQPVp1mBwqWlxlsR301HaGDleb8pENn4ve7nZnOnSB+JDsoFEJrT8rzr3PyRiLA4LaQBfOMAXERDf2Aoq1yilcvuQ8/98BngT0AEAN+UaRzichtcekcTPFVObTt2YrIzMdZTdWmUYpJdSuf3B3Z+vBx3r4lfR2g5GYZMiCEgyN3V52Ua22NMoXwNrYhZgx9r7BQd1dUhDPMH9sDcBI94wizUwnEPNseAT9FBzjWIzQv7R9tudnxwA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(396003)(39830400003)(366004)(376002)(136003)(346002)(451199015)(6486002)(478600001)(7416002)(44832011)(6666004)(5660300002)(9686003)(6512007)(26005)(86362001)(8936002)(316002)(33716001)(6506007)(6916009)(186003)(54906003)(66476007)(66946007)(4326008)(38100700002)(66556008)(41300700001)(2906002)(8676002)(83380400001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?zXer53tKHjzkkEFZ/IOHjKOvyL40T0K8XiC91uXZ8kACiROXd4Ce1bFVp4iv?=
+ =?us-ascii?Q?gAy5ASsdJzl5NxegdZmYci/eG6DQymo0MNtdrq63AfChXeZOCUt4wMupx+fk?=
+ =?us-ascii?Q?YtxOZGuoyNc9Tv9TYVcBWURzNM06b9dI40oiRna0HTIRzNV1McAsiEkRFCJ7?=
+ =?us-ascii?Q?WoptDZlKpP2s1Zc8kMgeQIWwf4kFptj0hQyq+Nzcg6knCgnOA+lxUOoaShyS?=
+ =?us-ascii?Q?zzYhIBOcY3up1mhI/e2Mw7RYwy1Lwu5m8tLJdsw4+M0A8xd5kWVREhEf65zD?=
+ =?us-ascii?Q?6BQ+dKCXAMFrYTLWjg/IEP0M+tTtMnpEmX6enKOyvLGoiZpfx++ar8HWRwl9?=
+ =?us-ascii?Q?2fNAScUP7L8x7Gk1MiXp403mJD8c2qAV2dzWrZwwqduk4yORzReQ1tpvNMVx?=
+ =?us-ascii?Q?c1EKQL9GnIwpQs9WHN6NIe+U+jeGbovVl1ba8c8RLu8tkcG+2HBBT9ufSj13?=
+ =?us-ascii?Q?NoP6MlzXpqKJ9mvdFW2RXJn4tPU2pIKGH4H9TtwDhQ9DH1rJBQN6cU7SXMfZ?=
+ =?us-ascii?Q?/uMOM9fBy88M1ePar4UVwxmB2xypHtVq5UVBXda0IWTj+OgdVhIS1nLD0Taj?=
+ =?us-ascii?Q?w9UW5uTi5dXK4AvlebkWZiZTJrKnAYTCwyXIssuDDnT3pOhy5hJfAwsTh1bx?=
+ =?us-ascii?Q?BvBd4/qFIePUhOFiuXli/5qAScHt0VZt6Gpj35kE2Z6cX3HOWJhicVJNBBvj?=
+ =?us-ascii?Q?yO8jY8FygdCpoNO6BJG0yIwV/0yqzzBdAXbOfpfpEkgI4Y0cOKDsO7QtxKsf?=
+ =?us-ascii?Q?ayeNewB3Zhkeq3oy8+Rz0jlcwO+CmzhrBq2JcsMRlGqMJMUA+iRq+o7dbfRb?=
+ =?us-ascii?Q?koJ3nERLog6sY2yqt0z2and9G6+2X4PlZxUFc+Ae3fcbN6nauBzcFhtwRNP8?=
+ =?us-ascii?Q?S2/FUjbExIQZIWq2TRDsk8YOqjQbOMaZRgTG/e0cNnVkBchZZipwslZOnog9?=
+ =?us-ascii?Q?QgB8CizZWMnab2klSwtqexfIloGDA5vHNlgMAPS6172JeYTqGEf9cYlO5jWe?=
+ =?us-ascii?Q?LK/SAjniPWBgd2Xm5PYTlHPFtMnYsE4r80n1YZtfM4s5j8irpkAkB+wsi1Xu?=
+ =?us-ascii?Q?N6XPtgCE2f+p113EeGBVOlP92E25c6MIMYka9cBITvyLHIlOaNRbRD+BnieY?=
+ =?us-ascii?Q?meXcjbPMk1sLKobagU3I/vpdBs9WZI++rFBhvprYI6ZRdUtRNH9H7Mo4o2wn?=
+ =?us-ascii?Q?ggOmeStlKj8mhF2RYDBYAP/TcfuvQgiufMId8roJzaEUbebJg21NYEJJS+SB?=
+ =?us-ascii?Q?ZiDyU2cr77QNdPlPihHgwE21uLa++jg9yonqyh8odc35wsWvN6C/iAP5UsRI?=
+ =?us-ascii?Q?UVWr+LaHlbRhkU2C0HyuixXLIU99v2RJMUKjeqvW+5xkEnmp4hSc38EE74+P?=
+ =?us-ascii?Q?YpysGWKni+9+oA20TI7mswmshOxR/9Ry75+Pb6C6DPkvP4E6BnMUpxVFNzvk?=
+ =?us-ascii?Q?raJ9azOFTbi+BWMAcwUNjqHKWhpDejwGk2jQj2f2Uv7+RXUG2KliW5Q/iIXo?=
+ =?us-ascii?Q?2qi75g7yfbGfxFxGoprpT0nhNQ/gfJw+5lliDKiZk+jMyGFmg0SMaWWqaLe3?=
+ =?us-ascii?Q?Ly4FLLctbLLnuHoqH596jeP0fyW3PZaH/nmr/bExUF+J7OUPnT0cagQW4I7a?=
+ =?us-ascii?Q?IjqbuuYP7zq/E2otpwaqcSc=3D?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1c06d40f-ee39-40fe-b0a1-08daa0dc45f2
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Sep 2022 23:01:55.8440
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: TSsAqPQKCAsJUwbZqlRLydI1LDi+ZBAyRB0xIXm7YmhI9aC7NVf11B57oxEmnaxioNhzTRu1FLdEeSqx4yXlkj/FmGfYwEXLRPt1e/tvKOI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR10MB5657
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 26, 2022 at 2:14 PM syzbot
-<syzbot+a236dd8e9622ed8954a3@syzkaller.appspotmail.com> wrote:
->
-> Hello,
->
-> syzbot found the following issue on:
->
-> HEAD commit:    cb71b93c2dc3 Add linux-next specific files for 20220628
-> git tree:       linux-next
-> console+strace: https://syzkaller.appspot.com/x/log.txt?x=12e40342080000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=badbc1adb2d582eb
-> dashboard link: https://syzkaller.appspot.com/bug?extid=a236dd8e9622ed8954a3
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1689249a080000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1618ab1c080000
->
-> Bisection is inconclusive: the issue happens on the oldest tested release.
->
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1155cda4080000
-> final oops:     https://syzkaller.appspot.com/x/report.txt?x=1355cda4080000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=1555cda4080000
->
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+a236dd8e9622ed8954a3@syzkaller.appspotmail.com
->
-> ==================================================================
-> BUG: KASAN: use-after-free in instrument_atomic_read_write include/linux/instrumented.h:101 [inline]
-> BUG: KASAN: use-after-free in atomic_fetch_add_relaxed include/linux/atomic/atomic-instrumented.h:116 [inline]
-> BUG: KASAN: use-after-free in __refcount_add include/linux/refcount.h:193 [inline]
-> BUG: KASAN: use-after-free in __refcount_inc include/linux/refcount.h:250 [inline]
-> BUG: KASAN: use-after-free in refcount_inc include/linux/refcount.h:267 [inline]
-> BUG: KASAN: use-after-free in sctp_auth_shkey_hold+0x22/0xa0 net/sctp/auth.c:112
-> Write of size 4 at addr ffff88807cd4ad98 by task syz-executor284/3719
->
-> CPU: 0 PID: 3719 Comm: syz-executor284 Not tainted 5.19.0-rc4-next-20220628-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 06/29/2022
-> Call Trace:
->  <TASK>
->  __dump_stack lib/dump_stack.c:88 [inline]
->  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
->  print_address_description mm/kasan/report.c:317 [inline]
->  print_report.cold+0x2ba/0x719 mm/kasan/report.c:433
->  kasan_report+0xbe/0x1f0 mm/kasan/report.c:495
->  check_region_inline mm/kasan/generic.c:183 [inline]
->  kasan_check_range+0x13d/0x180 mm/kasan/generic.c:189
->  instrument_atomic_read_write include/linux/instrumented.h:101 [inline]
->  atomic_fetch_add_relaxed include/linux/atomic/atomic-instrumented.h:116 [inline]
->  __refcount_add include/linux/refcount.h:193 [inline]
->  __refcount_inc include/linux/refcount.h:250 [inline]
->  refcount_inc include/linux/refcount.h:267 [inline]
->  sctp_auth_shkey_hold+0x22/0xa0 net/sctp/auth.c:112
->  sctp_set_owner_w net/sctp/socket.c:132 [inline]
->  sctp_sendmsg_to_asoc+0xbd5/0x1a20 net/sctp/socket.c:1863
->  sctp_sendmsg+0x1053/0x1d50 net/sctp/socket.c:2025
->  inet_sendmsg+0x99/0xe0 net/ipv4/af_inet.c:819
->  sock_sendmsg_nosec net/socket.c:714 [inline]
->  sock_sendmsg+0xcf/0x120 net/socket.c:734
-The call trace is very similar with the one fixed in:
+On Wed, Sep 28, 2022 at 12:04:11AM +0300, Vladimir Oltean wrote:
+> On Sun, Sep 25, 2022 at 05:29:25PM -0700, Colin Foster wrote:
+> > The Ocelot switch core driver relies heavily on a fixed array of resources
+> > for both ports and peripherals. This is in contrast to existing peripherals
+> > - pinctrl for example - which have a one-to-one mapping of driver <>
+> > resource. As such, these regmaps must be created differently so that
+> > enumeration-based offsets are preserved.
+> > 
+> > Register the regmaps to the core MFD device unconditionally so they can be
+> > referenced by the Ocelot switch / Felix DSA systems.
+> > 
+> > Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> > ---
+> > 
+> > v3
+> >     * No change
+> > 
+> > v2
+> >     * Alignment of variables broken out to a separate patch
+> >     * Structs now correctly use EXPORT_SYMBOL*
+> >     * Logic moved and comments added to clear up conditionals around
+> >       vsc7512_target_io_res[i].start
+> > 
+> > v1 from previous RFC:
+> >     * New patch
+> > 
+> > ---
+> >  drivers/mfd/ocelot-core.c  | 87 ++++++++++++++++++++++++++++++++++++++
+> >  include/linux/mfd/ocelot.h |  5 +++
+> >  2 files changed, 92 insertions(+)
+> > 
+> > diff --git a/drivers/mfd/ocelot-core.c b/drivers/mfd/ocelot-core.c
+> > index 013e83173062..702555fbdcc5 100644
+> > --- a/drivers/mfd/ocelot-core.c
+> > +++ b/drivers/mfd/ocelot-core.c
+> > @@ -45,6 +45,45 @@
+> >  #define VSC7512_SIO_CTRL_RES_START	0x710700f8
+> >  #define VSC7512_SIO_CTRL_RES_SIZE	0x00000100
+> >  
+> > +#define VSC7512_HSIO_RES_START		0x710d0000
+> > +#define VSC7512_HSIO_RES_SIZE		0x00000128
+> 
+> I don't think you should give the HSIO resource to the switching driver.
+> In drivers/net/ethernet/mscc/ocelot_vsc7514.c, there is this comment:
+> 
+> static void ocelot_pll5_init(struct ocelot *ocelot)
+> {
+> 	/* Configure PLL5. This will need a proper CCF driver
+> 	 * The values are coming from the VTSS API for Ocelot
+> 	 */
+> 
+> I believe CCF stands for Common Clock Framework.
 
-commit 58acd10092268831e49de279446c314727101292
-Author: Xin Long <lucien.xin@gmail.com>
-Date:   Tue Jul 20 16:07:01 2021 -0400
+It does stand for common clock framework. And this function / comment
+keeps me up at night.
 
-    sctp: update active_key for asoc when old key is being replaced
+Agreed that the HSIO resource isn't currently used, and should be
+dropped from this set. The resource will be brought back in as soon as I
+add in phy-ocelot-serdes support during the third and final (?) patch
+set of adding 7512 copper ethernet support.
 
-It was caused by active_key not being updated.
+My fear is that the lines:
 
-"setsockopt$inet_sctp6_SCTP_AUTH_KEY(r0, 0x84, 0x17,
-&(0x7f00000002c0)={0x0, 0x0, 0x1, "8b"}, 0x9) (fail_nth: 5)"
+if (ocelot->targets[HSIO])
+    ocelot_pll5_init(ocelot);
 
-If the 5th failure is the one in sctp_auth_asoc_init_active_key(),
-this same issue will be triggered.
-
-I will prepare a fix to handle the error returned from
-sctp_auth_asoc_init_active_key() in sctp_auth_set_key().
-
-Thanks.
+won't fly inside felix_setup(), and I'm not sure how far that scope will
+creep. Maybe it is easier than I suspect.
 
 
->  __sys_sendto+0x21a/0x320 net/socket.c:2116
->  __do_sys_sendto net/socket.c:2128 [inline]
->  __se_sys_sendto net/socket.c:2124 [inline]
->  __x64_sys_sendto+0xdd/0x1b0 net/socket.c:2124
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> RIP: 0033:0x7f9b40d281d9
-> Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 a1 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007f9b40cb52d8 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
-> RAX: ffffffffffffffda RBX: 00007f9b40db04b0 RCX: 00007f9b40d281d9
-> RDX: 0000000000000001 RSI: 0000000020000400 RDI: 0000000000000003
-> RBP: 00007f9b40d7d5dc R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 00007f9b40cb52f0
-> R13: 00007f9b40db04b8 R14: 0100000000000000 R15: 0000000000022000
->  </TASK>
->
-> Allocated by task 3717:
->  kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
->  kasan_set_track mm/kasan/common.c:45 [inline]
->  set_alloc_info mm/kasan/common.c:436 [inline]
->  ____kasan_kmalloc mm/kasan/common.c:515 [inline]
->  ____kasan_kmalloc mm/kasan/common.c:474 [inline]
->  __kasan_kmalloc+0xa9/0xd0 mm/kasan/common.c:524
->  kmalloc include/linux/slab.h:600 [inline]
->  kzalloc include/linux/slab.h:733 [inline]
->  sctp_auth_shkey_create+0x85/0x1f0 net/sctp/auth.c:84
->  sctp_auth_asoc_copy_shkeys+0x1e8/0x350 net/sctp/auth.c:363
->  sctp_association_init net/sctp/associola.c:257 [inline]
->  sctp_association_new+0x189e/0x2330 net/sctp/associola.c:298
->  sctp_connect_new_asoc+0x1ac/0x770 net/sctp/socket.c:1089
->  sctp_sendmsg_new_asoc net/sctp/socket.c:1691 [inline]
->  sctp_sendmsg+0x13d7/0x1d50 net/sctp/socket.c:1998
->  inet_sendmsg+0x99/0xe0 net/ipv4/af_inet.c:819
->  sock_sendmsg_nosec net/socket.c:714 [inline]
->  sock_sendmsg+0xcf/0x120 net/socket.c:734
->  __sys_sendto+0x21a/0x320 net/socket.c:2116
->  __do_sys_sendto net/socket.c:2128 [inline]
->  __se_sys_sendto net/socket.c:2124 [inline]
->  __x64_sys_sendto+0xdd/0x1b0 net/socket.c:2124
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x46/0xb0
->
-> Freed by task 3720:
->  kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
->  kasan_set_track+0x21/0x30 mm/kasan/common.c:45
->  kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
->  ____kasan_slab_free mm/kasan/common.c:366 [inline]
->  ____kasan_slab_free+0x166/0x1c0 mm/kasan/common.c:328
->  kasan_slab_free include/linux/kasan.h:200 [inline]
->  slab_free_hook mm/slub.c:1754 [inline]
->  slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1780
->  slab_free mm/slub.c:3534 [inline]
->  kfree+0xe2/0x4d0 mm/slub.c:4562
->  sctp_auth_shkey_destroy net/sctp/auth.c:101 [inline]
->  sctp_auth_shkey_release+0x100/0x160 net/sctp/auth.c:107
->  sctp_auth_set_key+0x443/0x960 net/sctp/auth.c:866
->  sctp_setsockopt_auth_key net/sctp/socket.c:3640 [inline]
->  sctp_setsockopt+0x4c33/0xa9a0 net/sctp/socket.c:4683
->  __sys_setsockopt+0x2d6/0x690 net/socket.c:2251
->  __do_sys_setsockopt net/socket.c:2262 [inline]
->  __se_sys_setsockopt net/socket.c:2259 [inline]
->  __x64_sys_setsockopt+0xba/0x150 net/socket.c:2259
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x46/0xb0
->
-> The buggy address belongs to the object at ffff88807cd4ad80
->  which belongs to the cache kmalloc-32 of size 32
-> The buggy address is located 24 bytes inside of
->  32-byte region [ffff88807cd4ad80, ffff88807cd4ada0)
->
-> The buggy address belongs to the physical page:
-> page:ffffea0001f35280 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x7cd4a
-> flags: 0xfff00000000200(slab|node=0|zone=1|lastcpupid=0x7ff)
-> raw: 00fff00000000200 0000000000000000 dead000000000122 ffff888011841500
-> raw: 0000000000000000 0000000000400040 00000001ffffffff 0000000000000000
-> page dumped because: kasan: bad access detected
-> page_owner tracks the page as allocated
-> page last allocated via order 0, migratetype Unmovable, gfp_mask 0x12820(GFP_ATOMIC|__GFP_NOWARN|__GFP_NORETRY), pid 3653, tgid 3653 (kworker/1:6), ts 62971434672, free_ts 62952459810
->  prep_new_page mm/page_alloc.c:2535 [inline]
->  get_page_from_freelist+0x210d/0x3a30 mm/page_alloc.c:4282
->  __alloc_pages+0x1c7/0x510 mm/page_alloc.c:5506
->  alloc_pages+0x1aa/0x310 mm/mempolicy.c:2280
->  alloc_slab_page mm/slub.c:1824 [inline]
->  allocate_slab+0x27e/0x3d0 mm/slub.c:1969
->  new_slab mm/slub.c:2029 [inline]
->  ___slab_alloc+0x89d/0xef0 mm/slub.c:3031
->  __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3118
->  slab_alloc_node mm/slub.c:3209 [inline]
->  slab_alloc mm/slub.c:3251 [inline]
->  kmem_cache_alloc_trace+0x323/0x3e0 mm/slub.c:3282
->  kmalloc include/linux/slab.h:600 [inline]
->  kzalloc include/linux/slab.h:733 [inline]
->  ref_tracker_alloc+0x14c/0x550 lib/ref_tracker.c:85
->  __netdev_tracker_alloc include/linux/netdevice.h:3960 [inline]
->  netdev_hold include/linux/netdevice.h:3989 [inline]
->  dst_init+0xe0/0x520 net/core/dst.c:52
->  dst_alloc+0x16b/0x1f0 net/core/dst.c:96
->  ip6_dst_alloc+0x2e/0x90 net/ipv6/route.c:344
->  icmp6_dst_alloc+0x6d/0x680 net/ipv6/route.c:3261
->  ndisc_send_skb+0x10eb/0x1730 net/ipv6/ndisc.c:487
->  ndisc_send_ns+0xa6/0x120 net/ipv6/ndisc.c:665
->  addrconf_dad_work+0xbf9/0x12d0 net/ipv6/addrconf.c:4171
->  process_one_work+0x991/0x1610 kernel/workqueue.c:2289
-> page last free stack trace:
->  reset_page_owner include/linux/page_owner.h:24 [inline]
->  free_pages_prepare mm/page_alloc.c:1453 [inline]
->  free_pcp_prepare+0x5e4/0xd20 mm/page_alloc.c:1503
->  free_unref_page_prepare mm/page_alloc.c:3383 [inline]
->  free_unref_page_list+0x16f/0xb90 mm/page_alloc.c:3525
->  release_pages+0xbe8/0x1810 mm/swap.c:1017
->  tlb_batch_pages_flush+0xa8/0x1a0 mm/mmu_gather.c:58
->  tlb_flush_mmu_free mm/mmu_gather.c:255 [inline]
->  tlb_flush_mmu mm/mmu_gather.c:262 [inline]
->  tlb_finish_mmu+0x147/0x7e0 mm/mmu_gather.c:353
->  exit_mmap+0x1fe/0x720 mm/mmap.c:3212
->  __mmput+0x128/0x4c0 kernel/fork.c:1180
->  mmput+0x5c/0x70 kernel/fork.c:1201
->  exit_mm kernel/exit.c:510 [inline]
->  do_exit+0xa09/0x29f0 kernel/exit.c:782
->  do_group_exit+0xd2/0x2f0 kernel/exit.c:925
->  __do_sys_exit_group kernel/exit.c:936 [inline]
->  __se_sys_exit_group kernel/exit.c:934 [inline]
->  __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:934
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x46/0xb0
->
-> Memory state around the buggy address:
->  ffff88807cd4ac80: 00 00 00 00 fc fc fc fc 00 00 00 00 fc fc fc fc
->  ffff88807cd4ad00: 00 00 00 00 fc fc fc fc fa fb fb fb fc fc fc fc
-> >ffff88807cd4ad80: fa fb fb fb fc fc fc fc fa fb fb fb fc fc fc fc
->                             ^
->  ffff88807cd4ae00: 00 00 00 00 fc fc fc fc 00 00 00 00 fc fc fc fc
->  ffff88807cd4ae80: 00 00 00 00 fc fc fc fc 00 00 00 00 fc fc fc fc
-> ==================================================================
->
->
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
->
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-> syzbot can test patches for this issue, for details see:
-> https://goo.gl/tpsmEJ#testing-patches
+But I'm getting ahead of myself. I'll remove this for now.
+
+> 
+> > +
+> > +#define VSC7512_ANA_RES_START		0x71880000
+> > +#define VSC7512_ANA_RES_SIZE		0x00010000
+> > +
+> > +#define VSC7512_QS_RES_START		0x71080000
+> > +#define VSC7512_QS_RES_SIZE		0x00000100
+> > +
+> > +#define VSC7512_QSYS_RES_START		0x71800000
+> > +#define VSC7512_QSYS_RES_SIZE		0x00200000
+> > +
+> > +#define VSC7512_REW_RES_START		0x71030000
+> > +#define VSC7512_REW_RES_SIZE		0x00010000
+> > +
+> > +#define VSC7512_SYS_RES_START		0x71010000
+> > +#define VSC7512_SYS_RES_SIZE		0x00010000
+> > +
+> > +#define VSC7512_S0_RES_START		0x71040000
+> > +#define VSC7512_S1_RES_START		0x71050000
+> > +#define VSC7512_S2_RES_START		0x71060000
+> > +#define VSC7512_S_RES_SIZE		0x00000400
+> 
+> VCAP_RES_SIZE?
+
+I'll change this name to VCAP_RES_SIZE.
+
+> 
+> > +
+> > +#define VSC7512_GCB_RES_START		0x71070000
+> > +#define VSC7512_GCB_RES_SIZE		0x0000022c
+> 
+> Again, I don't think devcpu_gcb should be given to a switching-only
+> driver. There's nothing switching-related about it.
+
+Yes, this is no longer necessary and I missed this. I think you caught
+them all, but I'll do another sweep just in case.
+
+> > +const struct resource vsc7512_target_io_res[TARGET_MAX] = {
+> > +	[ANA] = DEFINE_RES_REG_NAMED(VSC7512_ANA_RES_START, VSC7512_ANA_RES_SIZE, "ana"),
+> > +	[QS] = DEFINE_RES_REG_NAMED(VSC7512_QS_RES_START, VSC7512_QS_RES_SIZE, "qs"),
+> > +	[QSYS] = DEFINE_RES_REG_NAMED(VSC7512_QSYS_RES_START, VSC7512_QSYS_RES_SIZE, "qsys"),
+> > +	[REW] = DEFINE_RES_REG_NAMED(VSC7512_REW_RES_START, VSC7512_REW_RES_SIZE, "rew"),
+> > +	[SYS] = DEFINE_RES_REG_NAMED(VSC7512_SYS_RES_START, VSC7512_SYS_RES_SIZE, "sys"),
+> > +	[S0] = DEFINE_RES_REG_NAMED(VSC7512_S0_RES_START, VSC7512_S_RES_SIZE, "s0"),
+> > +	[S1] = DEFINE_RES_REG_NAMED(VSC7512_S1_RES_START, VSC7512_S_RES_SIZE, "s1"),
+> > +	[S2] = DEFINE_RES_REG_NAMED(VSC7512_S2_RES_START, VSC7512_S_RES_SIZE, "s2"),
+> > +	[GCB] = DEFINE_RES_REG_NAMED(VSC7512_GCB_RES_START, VSC7512_GCB_RES_SIZE, "devcpu_gcb"),
+> > +	[HSIO] = DEFINE_RES_REG_NAMED(VSC7512_HSIO_RES_START, VSC7512_HSIO_RES_SIZE, "hsio"),
+> > +};
+> > +EXPORT_SYMBOL_NS(vsc7512_target_io_res, MFD_OCELOT);
+> > +
+> > +const struct resource vsc7512_port_io_res[] = {
+> 
+> I hope you will merge these 2 arrays now.
+
+Yep. And with that I should be able to add them via the standard
+.num_resources, .resources method all the other drivers use. As
+mentioned, without the GCB and HSIO entries.
+
+> >  int ocelot_core_init(struct device *dev)
+> >  {
+> > +	const struct resource *port_res;
+> >  	int i, ndevs;
+> >  
+> >  	ndevs = ARRAY_SIZE(vsc7512_devs);
+> > @@ -151,6 +221,23 @@ int ocelot_core_init(struct device *dev)
+> >  	for (i = 0; i < ndevs; i++)
+> >  		ocelot_core_try_add_regmaps(dev, &vsc7512_devs[i]);
+> >  
+> > +	/*
+> > +	 * Both the target_io_res and the port_io_res structs need to be referenced directly by
+> > +	 * the ocelot_ext driver, so they can't be attached to the dev directly and referenced by
+> > +	 * offset like the rest of the drivers. Instead, create these regmaps always and allow any
+> > +	 * children look these up by name.
+> > +	 */
+> > +	for (i = 0; i < TARGET_MAX; i++)
+> > +		/*
+> > +		 * The target_io_res array is sparsely populated. Use .start as an indication that
+> > +		 * the entry isn't defined
+> > +		 */
+> > +		if (vsc7512_target_io_res[i].start)
+> > +			ocelot_core_try_add_regmap(dev, &vsc7512_target_io_res[i]);
+> > +
+> > +	for (port_res = vsc7512_port_io_res; port_res->start; port_res++)
+> > +		ocelot_core_try_add_regmap(dev, port_res);
+> > +
+> 
+> Will need to be updated.
+
+Yep. I think it can all go away for the above
+ocelot_core_try_add_regmaps() call now.
+
+> 
+> >  	return devm_mfd_add_devices(dev, PLATFORM_DEVID_AUTO, vsc7512_devs, ndevs, NULL, 0, NULL);
+> >  }
+> >  EXPORT_SYMBOL_NS(ocelot_core_init, MFD_OCELOT);
+> > diff --git a/include/linux/mfd/ocelot.h b/include/linux/mfd/ocelot.h
+> > index dd72073d2d4f..439ff5256cf0 100644
+> > --- a/include/linux/mfd/ocelot.h
+> > +++ b/include/linux/mfd/ocelot.h
+> > @@ -11,8 +11,13 @@
+> >  #include <linux/regmap.h>
+> >  #include <linux/types.h>
+> >  
+> > +#include <soc/mscc/ocelot.h>
+> > +
+> 
+> Is this the problematic include that makes it necessary to have the
+> pinctrl hack? Can we drop the #undef REG now?
+
+Yes, this include was specifically for TARGET_MAX below. That undef REG
+should not be necessary anymore. I'll drop it.
+
+> 
+> >  struct resource;
+> >  
+> > +extern const struct resource vsc7512_target_io_res[TARGET_MAX];
+> > +extern const struct resource vsc7512_port_io_res[];
+> > +
+> 
+> Will need to be removed.
+
+Gladly :-)
+
+> 
+> >  static inline struct regmap *
+> >  ocelot_regmap_from_resource_optional(struct platform_device *pdev,
+> >  				     unsigned int index,
+> > -- 
+> > 2.25.1
+> > 
