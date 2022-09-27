@@ -2,69 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 55B805ECE41
-	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 22:19:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 709FF5ECE48
+	for <lists+netdev@lfdr.de>; Tue, 27 Sep 2022 22:19:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233055AbiI0USe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 16:18:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37916 "EHLO
+        id S233070AbiI0UTZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 16:19:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232453AbiI0USB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 16:18:01 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8FF019281
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 13:17:23 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id b9-20020a17090a6e0900b00203a8013b45so4094536pjk.5
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 13:17:23 -0700 (PDT)
+        with ESMTP id S233226AbiI0USz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 16:18:55 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F919F7B;
+        Tue, 27 Sep 2022 13:18:54 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id cc5so16680255wrb.6;
+        Tue, 27 Sep 2022 13:18:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date;
-        bh=F72lE+m5jUyXJTZtAHspzg4fSLtIEdJfsL6DV7/dUu4=;
-        b=Mn8MbU84gVPCY9rdXSLA84U8EL0aqabNS24qrZWJ2AnahzfD2GFj4FE4Z0n05/O/Zt
-         V/aIs40HUCDBjONjB/LyF+BOhm2UoyobiRZGpXu8lr1esxucb3JZeu+8OKc2pVc2hh+x
-         UbnmqFSEJ68jJdDpoYY6FLvV3Seo1t7Gv9OPvEIWZJuj7+TsSj0WhD3vvSxJxaBFJcr0
-         ld8bUZgzL82VhOu3rnVqg118AzBJEQHny195aliXzFCnm2SSzbP2u1ixIV6zu1pdNmo5
-         8zrLlDxN1AZsVn+LXYQQ7GgkBbtgIuNb5lkEruA8D7OJ2ywQrsl3f6gNazJf9QttXIYO
-         gHbA==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=VYiQC0+hw/YN0HXUIX2ZHIj06ZGTMESETEb91ek6mio=;
+        b=b+d1TFFX1HXrnCaj7FfV0JH6lWEvDi7u3jNGbto0NjhdTpD6ERgE7IZlMeUVVKagS3
+         tAsXx4Z6ZmRtpNFpwpxDVJPUF7h5h/m+dvjMfh69N0kHhjdsGOlPbcdGFjPe3dIamT8v
+         q7TwybO/csHrDvvde2hc5jWTaSOMBDxPgCFs4rJEcVW2Wza3nWPY1r7D8Q6xQaRVfGVO
+         x6hQERoCR+sQon+7K602PQLtOTJI4fdHVnOIBlQyCQKkl8kKxYNVRzBpgHiZR8VozqwO
+         dhDUyaw7//V8D4F1HfY5TRpbllYVg9mn6ql2NwHov4/vATDDt8Oa8QIsfUomFfI1owfC
+         8IZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=F72lE+m5jUyXJTZtAHspzg4fSLtIEdJfsL6DV7/dUu4=;
-        b=K4I/i+3Wci0PJA+eaOtE5jukiTYc5hwm/wI21K+vP49efULoGbLu4oVeVKMn16+z9e
-         b+oUsJLnJ1/KoQTZL8DASAlTBFEtxcATekmUdw438Mc2wjR9prAqE6jn97qiSftK9LHv
-         aygSVzaW7mrm/hRbUZuolzv8cQmJhGu7nXjBq2CQ23N9ex2gtm6TQESBs/KraM0K/qCG
-         dT1E19nXjEPv+/QrB8JniKY9TbbZVk7rUIfGq5O3lrJPFJgbmgUP9Ah92iqI7pQiJVmI
-         1O1Vjco/OIyAbdvScemsYOQ964dZ4SjThTfH641c1cmyDaHmi/u84L6Q+ls1JIoEz9z0
-         8Qzg==
-X-Gm-Message-State: ACrzQf3/JKrIgW/lTZse+s64j72rI3eVM6xfvCGObsLSKHd1iUEE40e6
-        s2vTCPxy4tGYNnjd50OREHUAS1Y2xNegl+EoyzELHw==
-X-Google-Smtp-Source: AMsMyM4YN8OcX/N4kLK/55u37LO9rUT0u12bu6lrEYV/DZXomjgyk3g5okkp2Zpf8VEXOnvAkp4pZZsMv5Jul6oz+V5raQ==
-X-Received: from abps.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:9b4])
- (user=abhishekpandit job=sendgmr) by 2002:aa7:9e0d:0:b0:540:94a7:9051 with
- SMTP id y13-20020aa79e0d000000b0054094a79051mr31047543pfq.59.1664309843219;
- Tue, 27 Sep 2022 13:17:23 -0700 (PDT)
-Date:   Tue, 27 Sep 2022 13:17:20 -0700
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.38.0.rc1.362.ged0d419d3c-goog
-Message-ID: <20220927131717.v3.1.Ic8eabc8ed89a07c3d52726dd017539069faac6c4@changeid>
-Subject: [PATCH v3] Bluetooth: Call shutdown for HCI_USER_CHANNEL
-From:   Abhishek Pandit-Subedi <abhishekpandit@google.com>
-To:     linux-bluetooth@vger.kernel.org
-Cc:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=unavailable
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=VYiQC0+hw/YN0HXUIX2ZHIj06ZGTMESETEb91ek6mio=;
+        b=vA5/uerW8DcNZj2140wQdU7YkI1DiN8+lAktK2KMIzxHAObcUVm4129GxoKNR+zc+m
+         StbsmDuLrGkS9thd39vt6V/XgBZxBo5CjVdcQm0OVCKkjC2Q/JMRv6mXON3+M/9QEUhT
+         dHQaLxQUWlf7VXSt2ezvDZw1K8EPqVNmtqVVhIJL9tFKEtuFFMV9es1eqbL4+1+vEd5A
+         FOVO1fQqENDuzcnWj8yB0nNrF7kC8fxMlFHoHXO94WcxvsMSqLgutJ1TY7y4Y+qVqOaJ
+         2sjkjrYPnocPXjEAeJgQl+sws+KlD76OezKxR6x2vl3lsF5kYxiSCI04lK0IWbT1X++h
+         XQGw==
+X-Gm-Message-State: ACrzQf3R8XB2BauifgRn+gKmHI79HABv9+qWwTohsA5sYlFBo50Cg0wX
+        Xk8lyl3ITH04BqNNG43nyeI=
+X-Google-Smtp-Source: AMsMyM72QF1jZuXSKJAZ2BYNMNBdePc6il3Rd6JK8twIGapZblKS+cSGVMGc37PNt4I9uTYnAXgKHg==
+X-Received: by 2002:a05:6000:186e:b0:22a:e3b1:9c7d with SMTP id d14-20020a056000186e00b0022ae3b19c7dmr19019256wri.113.1664309932648;
+        Tue, 27 Sep 2022 13:18:52 -0700 (PDT)
+Received: from [192.168.8.100] (94.196.228.157.threembb.co.uk. [94.196.228.157])
+        by smtp.gmail.com with ESMTPSA id h6-20020a05600c2ca600b003b4c40378casm15913221wmc.39.2022.09.27.13.18.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 27 Sep 2022 13:18:52 -0700 (PDT)
+Message-ID: <eb543907-190f-c661-b5d6-b4d67b6184e6@gmail.com>
+Date:   Tue, 27 Sep 2022 21:17:26 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH net-next 0/4] shrink struct ubuf_info
+Content-Language: en-US
+To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        xen-devel@lists.xenproject.org, Wei Liu <wei.liu@kernel.org>,
+        Paul Durrant <paul@xen.org>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>
+References: <cover.1663892211.git.asml.silence@gmail.com>
+ <7fef56880d40b9d83cc99317df9060c4e7cdf919.camel@redhat.com>
+ <021d8ea4-891c-237d-686e-64cecc2cc842@gmail.com>
+ <bbb212f6-0165-0747-d99d-b49acbb02a80@gmail.com>
+ <85cccb780608e830024fc82a8e4f703031646f4e.camel@redhat.com>
+ <c06897d4-4883-2756-87f9-9b10ab495c43@gmail.com>
+ <6502e1a45526f97a1e6d7d27bbe07e3bb3623de3.camel@redhat.com>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <6502e1a45526f97a1e6d7d27bbe07e3bb3623de3.camel@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,99 +85,165 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+On 9/27/22 20:59, Paolo Abeni wrote:
+> On Tue, 2022-09-27 at 19:48 +0100, Pavel Begunkov wrote:
+>> On 9/27/22 18:56, Paolo Abeni wrote:
+>>> On Tue, 2022-09-27 at 18:16 +0100, Pavel Begunkov wrote:
+>>>> On 9/27/22 15:28, Pavel Begunkov wrote:
+>>>>> Hello Paolo,
+>>>>>
+>>>>> On 9/27/22 14:49, Paolo Abeni wrote:
+>>>>>> Hello,
+>>>>>>
+>>>>>> On Fri, 2022-09-23 at 17:39 +0100, Pavel Begunkov wrote:
+>>>>>>> struct ubuf_info is large but not all fields are needed for all
+>>>>>>> cases. We have limited space in io_uring for it and large ubuf_info
+>>>>>>> prevents some struct embedding, even though we use only a subset
+>>>>>>> of the fields. It's also not very clean trying to use this typeless
+>>>>>>> extra space.
+>>>>>>>
+>>>>>>> Shrink struct ubuf_info to only necessary fields used in generic paths,
+>>>>>>> namely ->callback, ->refcnt and ->flags, which take only 16 bytes. And
+>>>>>>> make MSG_ZEROCOPY and some other users to embed it into a larger struct
+>>>>>>> ubuf_info_msgzc mimicking the former ubuf_info.
+>>>>>>>
+>>>>>>> Note, xen/vhost may also have some cleaning on top by creating
+>>>>>>> new structs containing ubuf_info but with proper types.
+>>>>>>
+>>>>>> That sounds a bit scaring to me. If I read correctly, every uarg user
+>>>>>> should check 'uarg->callback == msg_zerocopy_callback' before accessing
+>>>>>> any 'extend' fields.
+>>>>>
+>>>>> Providers of ubuf_info access those fields via callbacks and so already
+>>>>> know the actual structure used. The net core, on the opposite, should
+>>>>> keep it encapsulated and not touch them at all.
+>>>>>
+>>>>> The series lists all places where we use extended fields just on the
+>>>>> merit of stripping the structure of those fields and successfully
+>>>>> building it. The only user in net/ipv{4,6}/* is MSG_ZEROCOPY, which
+>>>>> again uses callbacks.
+>>>>>
+>>>>> Sounds like the right direction for me. There is a couple of
+>>>>> places where it might get type safer, i.e. adding types instead
+>>>>> of void* in for struct tun_msg_ctl and getting rid of one macro
+>>>>> hiding types in xen. But seems more like TODO for later.
+>>>>>
+>>>>>> AFAICS the current code sometimes don't do the
+>>>>>> explicit test because the condition is somewhat implied, which in turn
+>>>>>> is quite hard to track.
+>>>>>>
+>>>>>> clearing uarg->zerocopy for the 'wrong' uarg was armless and undetected
+>>>>>> before this series, and after will trigger an oops..
+>>>>>
+>>>>> And now we don't have this field at all to access, considering that
+>>>>> nobody blindly casts it.
+>>>>>
+>>>>>> There is some noise due to uarg -> uarg_zc renaming which make the
+>>>>>> series harder to review. Have you considered instead keeping the old
+>>>>>> name and introducing a smaller 'struct ubuf_info_common'? the overall
+>>>>>> code should be mostly the same, but it will avoid the above mentioned
+>>>>>> noise.
+>>>>>
+>>>>> I don't think there will be less noise this way, but let me try
+>>>>> and see if I can get rid of some churn.
+>>>>
+>>>> It doesn't look any better for me
+>>>>
+>>>> TL;DR; This series converts only 3 users: tap, xen and MSG_ZEROCOPY
+>>>> and doesn't touch core code. If we do ubuf_info_common though I'd need
+>>>> to convert lots of places in skbuff.c and multiple places across
+>>>> tcp/udp, which is much worse.
+>>>
+>>> Uhmm... I underlook the fact we must preserve the current accessors for
+>>> the common fields.
+>>>
+>>> I guess something like the following could do (completely untested,
+>>> hopefully should illustrate the idea):
+>>>
+>>> struct ubuf_info {
+>>> 	struct_group_tagged(ubuf_info_common, common,
+>>> 		void (*callback)(struct sk_buff *, struct ubuf_info *,
+>>>                            bool zerocopy_success);
+>>> 		refcount_t refcnt;
+>>> 	        u8 flags;
+>>> 	);
+>>>
+>>> 	union {
+>>>                   struct {
+>>>                           unsigned long desc;
+>>>                           void *ctx;
+>>>                   };
+>>>                   struct {
+>>>                           u32 id;
+>>>                           u16 len;
+>>>                           u16 zerocopy:1;
+>>>                           u32 bytelen;
+>>>                   };
+>>>           };
+>>>
+>>>           struct mmpin {
+>>>                   struct user_struct *user;
+>>>                   unsigned int num_pg;
+>>>           } mmp;
+>>> };
+>>>
+>>> Then you should be able to:
+>>> - access ubuf_info->callback,
+>>> - access the same field via ubuf_info->common.callback
+>>> - declare variables as 'struct ubuf_info_commom' with appropriate
+>>> contents.
+>>>
+>>> WDYT?
+>>
+>> Interesting, I didn't think about struct_group, this would
+>> let to split patches better and would limit non-core changes.
+>> But if the plan is to convert the core helpers to
+>> ubuf_info_common, than I think it's still messier than changing
+>> ubuf providers only.
+>>
+>> I can do the exercise, but I don't really see what is the goal.
+>> Let me ask this, if we forget for a second how diffs look,
+>> do you care about which pair is going to be in the end?
+> 
+> Uhm... I proposed this initially with the goal of remove non fuctional
+> changes from a patch that was hard to digest for me (4/4). So it's
+> about diffstat to me ;)
 
-Some drivers depend on shutdown being called for proper operation.
-Unset HCI_USER_CHANNEL and call the full close routine since shutdown is
-complementary to setup.
+Ah, got it
 
-Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
----
+> On the flip side the change suggested would probably not be as
+> straighforward as I would hope for.
+> 
+>> ubuf_info_common/ubuf_info vs ubuf_info/ubuf_info_msgzc?
+> 
+> The specific names used are not much relevant.
+> 
+>> Are there you concerned about naming or is there more to it?
+> 
+> I feel like this series is potentially dangerous, but I could not spot
+> bugs into the code. I would have felt more relaxed eariler in the devel
+> cycle.
 
-Using hci_qca, we can get the controller into a bad state simply by
-trying to bind to userchannel twice (open+bind+close, then open+bind).
-Without running the shutdown routine, the device seems to get into a bad
-state. A similar bug also occurs with btmtksdio (using MT7921).
-
-This change properly runs the shutdown routine, which should be
-complementary to setup. The reason it unsets the HCI_USER_CHANNEL flag
-is that some drivers have complex operations in their shutdown routine
-(including sending hci packets) and we need to support the normal data
-path for them (including cmd_timeout + recovery mechanisms).
-
-Note for v2: I've gotten a chance to test this on more devices
-and figure out why it wasn't working before in v1. I found two problems:
-I had a signal pending (SIGTERM) that was messing things up in the
-socket release function and the HCI_USER_CHANNEL flag was preventing
-hci_sync from operating properly during shutdown on Intel chipsets
-(which use the sync functions to send a reset command + other commands
-sometimes).
-
-This was tested with hci_qca (QCA6174-A-3), btmtksdio (MT7921-SDIO)
-and btusb (with AX200).
+union {
+	struct {
+		unsigned long desc;
+		void *ctx;
+	};
+	struct {
+		u32 id;
+		u16 len;
+		u16 zerocopy:1;
+		u32 bytelen;
+	};
+};
 
 
-Changes in v3:
-- Added hci_dev_shutdown to wrap disabling and re-enabling flag.
+btw, nobody would frivolously change ->zerocopy anyway as it's
+in a union. Even without the series we're absolutely screwed
+if someone does that. If anything it adds a way to get rid of it:
 
-Changes in v2:
-- Clear HCI_USER_CHANNEL flag at start of close and restore at end.
-- Add comment explaning why we need to clear flag and run shutdown.
+1) Make vhost and xen use their own structures with right types.
+2) kill unused struct {ctx, desc} for MSG_ZEROCOPY
 
- net/bluetooth/hci_sync.c | 33 ++++++++++++++++++++++++++-------
- 1 file changed, 26 insertions(+), 7 deletions(-)
-
-diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-index 422f7c6911d9..15c75ef4c271 100644
---- a/net/bluetooth/hci_sync.c
-+++ b/net/bluetooth/hci_sync.c
-@@ -4727,6 +4727,31 @@ static void hci_pend_le_actions_clear(struct hci_dev *hdev)
- 	BT_DBG("All LE pending actions cleared");
- }
- 
-+static int hci_dev_shutdown(struct hci_dev *hdev)
-+{
-+	int err = 0;
-+	/* Similar to how we first do setup and then set the exclusive access
-+	 * bit for userspace, we must first unset userchannel and then clean up.
-+	 * Otherwise, the kernel can't properly use the hci channel to clean up
-+	 * the controller (some shutdown routines require sending additional
-+	 * commands to the controller for example).
-+	 */
-+	bool was_userchannel =
-+		hci_dev_test_and_clear_flag(hdev, HCI_USER_CHANNEL);
-+
-+	if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
-+	    test_bit(HCI_UP, &hdev->flags)) {
-+		/* Execute vendor specific shutdown routine */
-+		if (hdev->shutdown)
-+			err = hdev->shutdown(hdev);
-+	}
-+
-+	if (was_userchannel)
-+		hci_dev_set_flag(hdev, HCI_USER_CHANNEL);
-+
-+	return err;
-+}
-+
- int hci_dev_close_sync(struct hci_dev *hdev)
- {
- 	bool auto_off;
-@@ -4746,13 +4771,7 @@ int hci_dev_close_sync(struct hci_dev *hdev)
- 		hdev->adv_instance_timeout = 0;
- 	}
- 
--	if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
--	    !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
--	    test_bit(HCI_UP, &hdev->flags)) {
--		/* Execute vendor specific shutdown routine */
--		if (hdev->shutdown)
--			err = hdev->shutdown(hdev);
--	}
-+	err = hci_dev_shutdown(hdev);
- 
- 	if (!test_and_clear_bit(HCI_UP, &hdev->flags)) {
- 		cancel_delayed_work_sync(&hdev->cmd_timer);
 -- 
-2.38.0.rc1.362.ged0d419d3c-goog
-
+Pavel Begunkov
