@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1272D5ED256
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 02:59:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08A815ED259
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 02:59:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232103AbiI1A7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 20:59:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55044 "EHLO
+        id S232366AbiI1A73 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 20:59:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231956AbiI1A7Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 20:59:16 -0400
-Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6E98125792
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 17:59:14 -0700 (PDT)
-Received: by mail-qv1-xf36.google.com with SMTP id j8so7249950qvt.13
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 17:59:14 -0700 (PDT)
+        with ESMTP id S230169AbiI1A7R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 20:59:17 -0400
+Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC356133CB9
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 17:59:16 -0700 (PDT)
+Received: by mail-qv1-xf2b.google.com with SMTP id d1so7323957qvs.0
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 17:59:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
          :cc:subject:date;
-        bh=OHwAI3nnJ9ivn9YDdN080Pfup4Gs6WWT6rGnbUcF1Ro=;
-        b=Dg9W8x8lQUG0wqb1+lmTKI2cRvFz9tuEPppS85xBjFXQwHdB0r3yEz/8JeKiIUlyVI
-         i3/A7wuP0xjcPhNCSu7zjO+cOu+3fARYKyrP0rMVCw+u9uxPOxWLfkpmC1jcjnPb+wva
-         FTE8gNPwGmeA1vHUFHSZC+UraEY3pYrlzFOjc=
+        bh=YiOiyM1L1O+Ly/EJcn4Ens4K01PieDn8TFMxXwOUKx0=;
+        b=Tnmh3uYTW4ujUoaTIz2HGJENzKdshu/JYlE6B7sDmW+QS6Ipn+jH+oovAsmoGq7/Bi
+         Nt/KQsT/wmNI90mXqi3at294+4jOQOx9yFRqvBQpySSK80yrEkbC+iGp2Tv1W7g2UsDJ
+         vBadMEAGYm2WnGXnGjtVYqJaPDJAqzyL4KgjY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=references:in-reply-to:message-id:date:subject:cc:to:from
          :x-gm-message-state:from:to:cc:subject:date;
-        bh=OHwAI3nnJ9ivn9YDdN080Pfup4Gs6WWT6rGnbUcF1Ro=;
-        b=rMkyQFgjthxKkWj/o3RPxVnqU/ROcHGdk80kcTlL4FNHesHEPWPnMxwWdy0nKQAAhH
-         nwF6RHJ2z2XUNfZArRwGx5mna3Kmt0kxnNzUKFLKGMwKnnSv0uJxkNisuLtZL+87oS2q
-         btoiKCdr0x0cYnvlJLCkESYlDrEbSp53hGNmFMembDwCN5CQgR6bJlKxOMqgzn4LZwas
-         FbuZPQ5uzQw3uZyxdkn2DacgIc4VE/oX3mJyeevpw2lA1MbZTFofK0FXchZ1+rdoAb+9
-         rvGPR9hiEN/yhAmaFmh3JU+Z53+nPK7ntzd9UztTbX3piMzU9InwHH1danDz3YxZjSPe
-         MS1g==
-X-Gm-Message-State: ACrzQf38tjWT4oeEWxYwEfWS0mjsdBgU0t4p3lCOqLdP4ePoJNqPMRVB
-        /j7akCR6+cJXa/8zy++7/Vnd0g==
-X-Google-Smtp-Source: AMsMyM7KnOHr3BVsfSg1/evOBm0gRk47o8ca7u5o6apB3IlMP5e0QI+oUfpLHoTIUdk6wNiYybeijA==
-X-Received: by 2002:ad4:4eae:0:b0:4af:9a04:ae3d with SMTP id ed14-20020ad44eae000000b004af9a04ae3dmr170100qvb.49.1664326753871;
-        Tue, 27 Sep 2022 17:59:13 -0700 (PDT)
+        bh=YiOiyM1L1O+Ly/EJcn4Ens4K01PieDn8TFMxXwOUKx0=;
+        b=DPbsG4Wo9w6eY1LjZCKjihPJfJ5JF10swZqW86SvI8fg06kAKrU7a+IZMaBPZiDOkq
+         kfA+c74/LFeLX2BSX3jJ1qyYT/4xEUvJAOaiYJ7zjYW6qViDgm0b7ORl7BWJ2gI1Pgo2
+         kXoJ1BoefOu1vHOg0bebzIhgfNImZieMD5JgqbPxZ+/s6GyQAQLZy9v6lThlcyyWaZvr
+         QjqceaoAHBP135fzeMdsZkhXrq8WRDNtlW51ygbGzdATWhefWcT6d5hM6uU57Q7p/MN9
+         kLRBd6j9FG0r2wD8K3+E7WjLjgDmueK3onNY/b85H6hhRobQMOhUL8e1kuheQswL0sM2
+         wdwQ==
+X-Gm-Message-State: ACrzQf2djVAjFIfI1QcQnRMN7LuTdqb+8g6kzweFcF96lWsv7nWeAE3N
+        g03LnrAEMLqZ8MYi0HCfICRgfA==
+X-Google-Smtp-Source: AMsMyM4uYzg1tmfKueiTD8Bthel8ou1zBEODj7yT8D2qR7BJPKBk11Vo401Bh+pW5kDwPpM8DwKv8g==
+X-Received: by 2002:a05:6214:19e7:b0:4aa:216f:5ab5 with SMTP id q7-20020a05621419e700b004aa216f5ab5mr23598655qvc.66.1664326755446;
+        Tue, 27 Sep 2022 17:59:15 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id i11-20020a05620a248b00b006cbb8ca04f8sm2078668qkn.40.2022.09.27.17.59.12
+        by smtp.gmail.com with ESMTPSA id i11-20020a05620a248b00b006cbb8ca04f8sm2078668qkn.40.2022.09.27.17.59.14
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 27 Sep 2022 17:59:13 -0700 (PDT)
+        Tue, 27 Sep 2022 17:59:14 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edumazet@google.com,
         pabeni@redhat.com, gospo@broadcom.com, vikas.gupta@broadcom.com
-Subject: [PATCH net-next 2/6] bnxt_en: add support for QSFP optional EEPROM data
-Date:   Tue, 27 Sep 2022 20:58:40 -0400
-Message-Id: <1664326724-1415-3-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 3/6] bnxt_en: Add bank parameter to bnxt_read_sfp_module_eeprom_info()
+Date:   Tue, 27 Sep 2022 20:58:41 -0400
+Message-Id: <1664326724-1415-4-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1664326724-1415-1-git-send-email-michael.chan@broadcom.com>
 References: <1664326724-1415-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000f9f59205e9b24498"
+        boundary="00000000000012316f05e9b24513"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -66,193 +66,109 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000f9f59205e9b24498
+--00000000000012316f05e9b24513
 
-From: Edwin Peer <edwin.peer@broadcom.com>
+From: Vikas Gupta <vikas.gupta@broadcom.com>
 
-SFF 8636 defines several optional pages. This patch adds support up to
-and including page 3. The ethtool offset needs to be mapped onto the
-appropriate device page and I2C address, which is handled differently
-depending on module type. The necessary linear offset to raw page
-mapping is performed based on a table that is configured according to
-the module capabilities.
+Newer firmware supports the bank number parameter in the
+HWRM_PORT_PHY_I2C_READ command.  Modify the function to pass in
+the optional bank number for eeprom.  Existing callers will not use the
+new bank number.  It will be used in subsequent patches.
 
-Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
+Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     |   5 +
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 120 +++++++++++++++---
- 2 files changed, 108 insertions(+), 17 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  1 +
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 24 ++++++++++++-------
+ 2 files changed, 16 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index b1b17f911300..c54f8c9ab3ad 100644
+index c54f8c9ab3ad..0209f7caf490 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -2206,6 +2206,11 @@ struct bnxt {
- #define SFF_MODULE_ID_QSFP			0xc
- #define SFF_MODULE_ID_QSFP_PLUS			0xd
- #define SFF_MODULE_ID_QSFP28			0x11
-+#define SFF8636_FLATMEM_OFFSET			0x2
-+#define SFF8636_FLATMEM_MASK			0x4
-+#define SFF8636_OPT_PAGES_OFFSET		0xc3
-+#define SFF8636_PAGE1_MASK			0x40
-+#define SFF8636_PAGE2_MASK			0x80
- #define BNXT_MAX_PHY_I2C_RESP_SIZE		64
+@@ -2116,6 +2116,7 @@ struct bnxt {
+ #define BNXT_PHY_FL_NO_FCS		PORT_PHY_QCAPS_RESP_FLAGS_NO_FCS
+ #define BNXT_PHY_FL_NO_PAUSE		(PORT_PHY_QCAPS_RESP_FLAGS2_PAUSE_UNSUPPORTED << 8)
+ #define BNXT_PHY_FL_NO_PFC		(PORT_PHY_QCAPS_RESP_FLAGS2_PFC_UNSUPPORTED << 8)
++#define BNXT_PHY_FL_BANK_SEL		(PORT_PHY_QCAPS_RESP_FLAGS2_BANK_ADDR_SUPPORTED << 8)
  
- static inline u32 bnxt_tx_avail(struct bnxt *bp, struct bnxt_tx_ring_info *txr)
+ 	u8			num_tests;
+ 	struct bnxt_test_info	*test_info;
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index f57e524c7e30..6596dca94c3d 100644
+index 6596dca94c3d..1c8a92fa2f2c 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -3220,7 +3220,9 @@ static int bnxt_get_module_info(struct net_device *dev,
- 			break;
- 		case SFF_MODULE_ID_QSFP28:
- 			modinfo->type = ETH_MODULE_SFF_8636;
--			modinfo->eeprom_len = ETH_MODULE_SFF_8636_LEN;
-+			modinfo->eeprom_len = ETH_MODULE_SFF_8636_MAX_LEN;
-+			if (data[SFF8636_FLATMEM_OFFSET] & SFF8636_FLATMEM_MASK)
-+				modinfo->eeprom_len = ETH_MODULE_SFF_8636_LEN;
- 			break;
- 		default:
- 			rc = -EOPNOTSUPP;
-@@ -3234,32 +3236,116 @@ static int bnxt_get_module_eeprom(struct net_device *dev,
- 				  struct ethtool_eeprom *eeprom,
- 				  u8 *data)
- {
-+	u8 pg_addr[5] = { I2C_DEV_ADDR_A0, I2C_DEV_ADDR_A0 };
-+	u16 offset = eeprom->offset, length = eeprom->len;
-+	u8 module_info[SFF_DIAG_SUPPORT_OFFSET + 1];
- 	struct bnxt *bp = netdev_priv(dev);
--	u16  start = eeprom->offset, length = eeprom->len;
-+	u8 page = offset >> 7;
-+	u8 max_pages = 2;
- 	int rc = 0;
- 
--	memset(data, 0, eeprom->len);
-+	rc = bnxt_read_sfp_module_eeprom_info(bp, I2C_DEV_ADDR_A0, 0, 0,
-+					      SFF_DIAG_SUPPORT_OFFSET + 1,
-+					      module_info);
-+	if (rc)
-+		return rc;
-+
-+	switch (module_info[0]) {
-+	case SFF_MODULE_ID_SFP:
-+		if (module_info[SFF_DIAG_SUPPORT_OFFSET]) {
-+			pg_addr[2] = I2C_DEV_ADDR_A2;
-+			pg_addr[3] = I2C_DEV_ADDR_A2;
-+			max_pages = 4;
-+		}
-+		break;
-+	case SFF_MODULE_ID_QSFP28: {
-+		u8 opt_pages;
- 
--	/* Read A0 portion of the EEPROM */
--	if (start < ETH_MODULE_SFF_8436_LEN) {
--		if (start + eeprom->len > ETH_MODULE_SFF_8436_LEN)
--			length = ETH_MODULE_SFF_8436_LEN - start;
- 		rc = bnxt_read_sfp_module_eeprom_info(bp, I2C_DEV_ADDR_A0, 0,
--						      start, length, data);
-+						      SFF8636_OPT_PAGES_OFFSET,
-+						      1, &opt_pages);
- 		if (rc)
- 			return rc;
--		start += length;
--		data += length;
--		length = eeprom->len - length;
-+
-+		if (opt_pages & SFF8636_PAGE1_MASK) {
-+			pg_addr[2] = I2C_DEV_ADDR_A0;
-+			max_pages = 3;
-+		}
-+		if (opt_pages & SFF8636_PAGE2_MASK) {
-+			pg_addr[3] = I2C_DEV_ADDR_A0;
-+			max_pages = 4;
-+		}
-+		if (~module_info[SFF8636_FLATMEM_OFFSET] & SFF8636_FLATMEM_MASK) {
-+			pg_addr[4] = I2C_DEV_ADDR_A0;
-+			max_pages = 5;
-+		}
-+		break;
- 	}
-+	default:
-+		break;
-+	}
-+
-+	memset(data, 0, eeprom->len);
- 
--	/* Read A2 portion of the EEPROM */
--	if (length) {
--		start -= ETH_MODULE_SFF_8436_LEN;
--		rc = bnxt_read_sfp_module_eeprom_info(bp, I2C_DEV_ADDR_A2, 0,
--						      start, length, data);
-+	/* Read the two 128B base pages in a single pass, since they are
-+	 * always supported and both sourced from I2C_DEV_ADDR_A0. Then,
-+	 * read individual 128B or 256B chunks as appropriate, according
-+	 * to the mappings defined in pg_addr[], which is setup based on
-+	 * module capabilities.
-+	 *
-+	 * The first two pages are both numbered page zero, lower page 0
-+	 * and upper page 0 respectively. Raw device pages are numbered
-+	 * sequentially thereafter. For SFP modules, reads are always
-+	 * from page zero. In this case, the A2 base address is used in
-+	 * lieu of the page number to signal reading the upper 256B, with
-+	 * offsets relative to the base of this larger I2C region.
-+	 *
-+	 * Note there may be gaps in the linear ethtool mapping that are
-+	 * not backed by raw module pages. Reads to such pages should not
-+	 * be attempted because the HWRM call would fail. The caller will
-+	 * simply see the preinitialized zeroes in these holes.
-+	 *
-+	 * Also note, the implementation below depends on pages mapped as
-+	 * I2C_DEV_ADDR_A2 in pg_addr[] appearing as 256B aligned pairs.
-+	 * This constraint means that it doesn't matter whether the even
-+	 * or odd page is used in determining the I2C base address of a
-+	 * given region. This allows for larger chunk sizes to be read
-+	 * for A2 pages and happens to correspond nicely with the memory
-+	 * maps of all currently supported modules. The optional 128B
-+	 * A0 pages need to be read relative to an offset of 128B, which
-+	 * is where they appear in module memory maps, while the 256B A2
-+	 * page pair regions are interpreted by firmware relative to
-+	 * offset 0.
-+	 */
-+	offset &= 0xff;
-+	while (length && page < max_pages) {
-+		u8 raw_page = page ? page - 1 : 0;
-+		u16 chunk;
-+
-+		if (pg_addr[page] == I2C_DEV_ADDR_A2)
-+			raw_page = 0;
-+		else if (page)
-+			offset |= 0x80;
-+		chunk = min_t(u16, length, 256 - offset);
-+
-+		if (pg_addr[page]) {
-+			rc = bnxt_read_sfp_module_eeprom_info(bp, pg_addr[page],
-+							      raw_page, offset,
-+							      chunk, data);
-+			if (rc)
-+				return rc;
-+		}
-+
-+		data += chunk;
-+		length -= chunk;
-+		offset = 0;
-+		page += 1 + (chunk > 128);
- 	}
--	return rc;
-+
-+	if (length)
-+		return -EINVAL;
-+
-+	return 0;
+@@ -3146,7 +3146,8 @@ static int bnxt_get_eee(struct net_device *dev, struct ethtool_eee *edata)
  }
  
- static int bnxt_nway_reset(struct net_device *dev)
+ static int bnxt_read_sfp_module_eeprom_info(struct bnxt *bp, u16 i2c_addr,
+-					    u16 page_number, u16 start_addr,
++					    u16 page_number, u8 bank,
++					    bool bank_sel_en, u16 start_addr,
+ 					    u16 data_length, u8 *buf)
+ {
+ 	struct hwrm_port_phy_i2c_read_output *output;
+@@ -3168,8 +3169,11 @@ static int bnxt_read_sfp_module_eeprom_info(struct bnxt *bp, u16 i2c_addr,
+ 		data_length -= xfer_size;
+ 		req->page_offset = cpu_to_le16(start_addr + byte_offset);
+ 		req->data_length = xfer_size;
+-		req->enables = cpu_to_le32(start_addr + byte_offset ?
+-				 PORT_PHY_I2C_READ_REQ_ENABLES_PAGE_OFFSET : 0);
++		req->bank_number = bank;
++		req->enables = cpu_to_le32((start_addr + byte_offset ?
++				PORT_PHY_I2C_READ_REQ_ENABLES_PAGE_OFFSET : 0) |
++				(bank_sel_en ?
++				PORT_PHY_I2C_READ_REQ_ENABLES_BANK_NUMBER : 0));
+ 		rc = hwrm_req_send(bp, req);
+ 		if (!rc)
+ 			memcpy(buf + byte_offset, output->data, xfer_size);
+@@ -3199,8 +3203,8 @@ static int bnxt_get_module_info(struct net_device *dev,
+ 	if (bp->hwrm_spec_code < 0x10202)
+ 		return -EOPNOTSUPP;
+ 
+-	rc = bnxt_read_sfp_module_eeprom_info(bp, I2C_DEV_ADDR_A0, 0, 0,
+-					      SFF_DIAG_SUPPORT_OFFSET + 1,
++	rc = bnxt_read_sfp_module_eeprom_info(bp, I2C_DEV_ADDR_A0, 0, 0, false,
++					      0, SFF_DIAG_SUPPORT_OFFSET + 1,
+ 					      data);
+ 	if (!rc) {
+ 		u8 module_id = data[0];
+@@ -3244,8 +3248,8 @@ static int bnxt_get_module_eeprom(struct net_device *dev,
+ 	u8 max_pages = 2;
+ 	int rc = 0;
+ 
+-	rc = bnxt_read_sfp_module_eeprom_info(bp, I2C_DEV_ADDR_A0, 0, 0,
+-					      SFF_DIAG_SUPPORT_OFFSET + 1,
++	rc = bnxt_read_sfp_module_eeprom_info(bp, I2C_DEV_ADDR_A0, 0, 0, false,
++					      0, SFF_DIAG_SUPPORT_OFFSET + 1,
+ 					      module_info);
+ 	if (rc)
+ 		return rc;
+@@ -3261,7 +3265,8 @@ static int bnxt_get_module_eeprom(struct net_device *dev,
+ 	case SFF_MODULE_ID_QSFP28: {
+ 		u8 opt_pages;
+ 
+-		rc = bnxt_read_sfp_module_eeprom_info(bp, I2C_DEV_ADDR_A0, 0,
++		rc = bnxt_read_sfp_module_eeprom_info(bp, I2C_DEV_ADDR_A0, 0, 0,
++						      false,
+ 						      SFF8636_OPT_PAGES_OFFSET,
+ 						      1, &opt_pages);
+ 		if (rc)
+@@ -3330,7 +3335,8 @@ static int bnxt_get_module_eeprom(struct net_device *dev,
+ 
+ 		if (pg_addr[page]) {
+ 			rc = bnxt_read_sfp_module_eeprom_info(bp, pg_addr[page],
+-							      raw_page, offset,
++							      raw_page, 0,
++							      false, offset,
+ 							      chunk, data);
+ 			if (rc)
+ 				return rc;
 -- 
 2.18.1
 
 
---000000000000f9f59205e9b24498
+--00000000000012316f05e9b24513
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -323,13 +239,13 @@ hd5wiQXo9B2ncm5P3jFLYLBmPltIn/uzdiYpFj+E9kS9XYDd+boBZhN1Vh0296zLQZobLfKFzClo
 E6IFyTTANonrXvCRgodKS+QJEH8Syu2jSKe023aVemkuZjzvPK7o9iU7BKkPG2pzLPgxggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxeQGjDntHGb2iaQkIw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIN03mSmeLRSTM8c+zzdQFuGPPn3wiGJU
-eQeZMZrll8bXMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDky
-ODAwNTkxNFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEILIEH3is5VyTFdqN1pOV5fVBj8Pi4nEU
+9ltKZVt9cMqGMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDky
+ODAwNTkxNVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBG8eHMOt+imvH4vgSN2h0/XB0iKpqq7Ku+Fogye4DP4G5yLzMH
-HJKaPsuj1djnMJCnuVs5cYEYLS4ZBlqXIRNa4TQyg8da/3g5PYCJmd7iLo2Qz+syL5KF4MaB9bNc
-hSscyVmiRI1dcemlM02Pqzbt3g4hha4Obk7PtSjhDha2YscowEorStMm19dgijftpVsi/dSW+DGR
-Q90NAJWEAMkBQCYzuv82nhb/J2eNPoIgUwcOOQ6ygJp7gZCsquGCs+DKsnjIR7JweBSEHf2xebgm
-2ExzhVcYpE+YPBt+ncHkGXgd2SWtHPu9fBdKOdPS5OB7pNW8hrWDrUbIZV+cfeND
---000000000000f9f59205e9b24498--
+ATANBgkqhkiG9w0BAQEFAASCAQC0yj9M1vTi3VdYzBOADx3U6W8IDbPH4M5xngkecQSQQyy8V/+P
+I6DMudhiahpUI6hkhKI39+77BqMcx7f+h2Q4XdBAO/MKqxh3vf0uzqYXGG2ujTuRnubQK5ahbam8
+TYyXWqbKJE8oyqZaKWf4QVvmQjuywY6Nvn7D1A2iU2uA2A+NVlfrkx9cFi33WkLQ66Tgz3hRd62n
+Ni7c8uEowfI6M3NRXSdRZrrG02060TlPhgBSH2sXrvOxYTVEP+eaODCS4qWH/RGSu94QAafY1dGa
+KbOFb2v1AqLyqnl47qZ3/zpA9IcQ+u/C+bJwLkUxxB7lSCmGptnL21D7s30TulqT
+--00000000000012316f05e9b24513--
