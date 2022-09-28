@@ -2,45 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D8B85ED87C
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 11:11:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAFA15ED886
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 11:12:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233405AbiI1JLX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 05:11:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43630 "EHLO
+        id S233520AbiI1JL0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 05:11:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230140AbiI1JLS (ORCPT
+        with ESMTP id S233252AbiI1JLS (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 05:11:18 -0400
 Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6521F5FF42;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09AFE61D83;
         Wed, 28 Sep 2022 02:11:11 -0700 (PDT)
-X-UUID: e624599bd10e49e7a1f6bee25eb90c5c-20220928
+X-UUID: e3994a2d20534c51af314c113de65013-20220928
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=6EbUE9eXICSrLDk/g7xuI/oop7XTueJZWuVc89h51mU=;
-        b=prPVIhzbDU88s18OPlw9HRbyyvGMvOc0FMgzvnkrWu8rHU4VgWR3LEHtEST4NAbwff0QebA/BnWQvdEL3ZnW5MMZE4YS5qP6vUHCNcYJHLT8/i6Ymp/ZSXg6ukF14BUw4Fm7+GQ/L7mdybzXQ7kMEZMhs2RgVHkDKl7QgzCclxc=;
+        h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=3cDQVA9bjdmMpcOqCndMC32qsr5AQsK3J0savjTAlgE=;
+        b=gY9R8YK3d+oxSh6IIRkXt1uqvlsFrlpPM6KPZzxwPDVqyaOdruDr+bnKblctiMrSGx44lx2gMv+tkedEBT8NQ88oH7IOCrAUA0zk1b84VCRg4IUi6TcUuQ4k1KG+9txeVcdViofWh/axfBLDoKzfL34SouEa/G4u5Yk7B6Jk2t8=;
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.11,REQID:a180078f-3e6c-4d4b-b2bd-15599b4e9003,IP:0,U
-        RL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Release_Ham,ACTIO
-        N:release,TS:90
-X-CID-INFO: VERSION:1.1.11,REQID:a180078f-3e6c-4d4b-b2bd-15599b4e9003,IP:0,URL
-        :0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Spam_GS981B3D,ACTIO
-        N:quarantine,TS:90
-X-CID-META: VersionHash:39a5ff1,CLOUDID:81b34d07-1cee-4c38-b21b-a45f9682fdc0,B
-        ulkID:220928171106D7S31BD0,BulkQuantity:0,Recheck:0,SF:38|28|17|19|48|823|
-        824,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,
-        COL:0
-X-UUID: e624599bd10e49e7a1f6bee25eb90c5c-20220928
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+X-CID-O-INFO: VERSION:1.1.11,REQID:52f7bde5-f76a-43a4-9b4e-be8f56fe004a,IP:0,U
+        RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
+        release,TS:0
+X-CID-META: VersionHash:39a5ff1,CLOUDID:ab2982e4-87f9-4bb0-97b6-34957dc0fbbe,B
+        ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
+X-UUID: e3994a2d20534c51af314c113de65013-20220928
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
         (envelope-from <jianguo.zhang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 232848167; Wed, 28 Sep 2022 17:11:03 +0800
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1842300603; Wed, 28 Sep 2022 17:11:05 +0800
 Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Wed, 28 Sep 2022 17:11:02 +0800
+ 15.2.792.15; Wed, 28 Sep 2022 17:11:03 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 28 Sep 2022 17:11:00 +0800
+ Transport; Wed, 28 Sep 2022 17:11:02 +0800
 From:   Jianguo Zhang <jianguo.zhang@mediatek.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Rob Herring <robh+dt@kernel.org>,
@@ -54,17 +50,20 @@ CC:     Eric Dumazet <edumazet@google.com>,
         Alexandre Torgue <alexandre.torgue@foss.st.com>,
         Jose Abreu <joabreu@synopsys.com>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
         Biao Huang <biao.huang@mediatek.com>, <netdev@vger.kernel.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-mediatek@lists.infradead.org>,
-        Jianguo Zhang <jianguo.zhang@mediatek.com>
-Subject: [PATCH v6 0/4]  Mediatek ethernet patches for mt8188
-Date:   Wed, 28 Sep 2022 17:10:48 +0800
-Message-ID: <20220928091052.18490-1-jianguo.zhang@mediatek.com>
+        Jianguo Zhang <jianguo.zhang@mediatek.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v6 1/4] dt-bindings: net: mediatek-dwmac: add support for mt8188
+Date:   Wed, 28 Sep 2022 17:10:49 +0800
+Message-ID: <20220928091052.18490-2-jianguo.zhang@mediatek.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220928091052.18490-1-jianguo.zhang@mediatek.com>
+References: <20220928091052.18490-1-jianguo.zhang@mediatek.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -79,52 +78,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Changes in v6:
+Add binding document for the ethernet on mt8188
 
-v6:
-1) Update commit message of patch 'dt-bindings: net: snps,dwmac: add new property snps,clk-csr'
-2) Add a parse for new property 'snps,clk-csr' in patch
-'net: stmmac: add a parse for new property 'snps,clk-csr''
-
-v5:
-1) Rename the property 'clk_csr' as 'snps,clk-csr' in binding
-file as Krzysztof Kozlowski'comment.
-2) Add DTS patch 'arm64: dts: mediatek: mt2712e: Update the name of property 'clk_csr''
-as Krzysztof Kozlowski'comment.
-3) Add driver patch 'net: stmmac: Update the name of property 'clk_csr''
-as Krzysztof Kozlowski'comment.
-
-v4:
-1) Update the commit message of patch 'dt-bindings: net: snps,dwmac: add clk_csr property'
-as Krzysztof Kozlowski'comment.
-
-v3:
-1) List the names of SoCs mt8188 and mt8195 in correct order as
-AngeloGioacchino Del Regno's comment.
-2) Add patch version info as Krzysztof Kozlowski'comment.
-
-v2:
-1) Delete patch 'stmmac: dwmac-mediatek: add support for mt8188' as
-Krzysztof Kozlowski's comment.
-2) Update patch 'dt-bindings: net: mediatek-dwmac: add support for
-mt8188' as Krzysztof Kozlowski's comment.
-3) Add clk_csr property to fix warning ('clk_csr' was unexpected) when
-runnig 'make dtbs_check'.
-
-v1:
-1) Add ethernet driver entry for mt8188.
-2) Add binding document for ethernet on mt8188.
-
-Jianguo Zhang (4):
-  dt-bindings: net: mediatek-dwmac: add support for mt8188
-  dt-bindings: net: snps,dwmac: add new property snps,clk-csr
-  arm64: dts: mediatek: mt2712e: Update the name of property 'clk_csr'
-  net: stmmac: add a parse for new property 'snps,clk-csr'
-
+Signed-off-by: Jianguo Zhang <jianguo.zhang@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
  .../devicetree/bindings/net/mediatek-dwmac.yaml        | 10 ++++++++--
- Documentation/devicetree/bindings/net/snps,dwmac.yaml  |  5 +++++
- arch/arm64/boot/dts/mediatek/mt2712e.dtsi              |  2 +-
- drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c  |  4 +++-
- 4 files changed, 17 insertions(+), 4 deletions(-)
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
+diff --git a/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml b/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
+index 61b2fb9e141b..0fa2132fa4f4 100644
+--- a/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
++++ b/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
+@@ -19,6 +19,7 @@ select:
+       contains:
+         enum:
+           - mediatek,mt2712-gmac
++          - mediatek,mt8188-gmac
+           - mediatek,mt8195-gmac
+   required:
+     - compatible
+@@ -37,6 +38,11 @@ properties:
+           - enum:
+               - mediatek,mt8195-gmac
+           - const: snps,dwmac-5.10a
++      - items:
++          - enum:
++              - mediatek,mt8188-gmac
++          - const: mediatek,mt8195-gmac
++          - const: snps,dwmac-5.10a
+ 
+   clocks:
+     minItems: 5
+@@ -74,7 +80,7 @@ properties:
+       or will round down. Range 0~31*170.
+       For MT2712 RMII/MII interface, Allowed value need to be a multiple of 550,
+       or will round down. Range 0~31*550.
+-      For MT8195 RGMII/RMII/MII interface, Allowed value need to be a multiple of 290,
++      For MT8188/MT8195 RGMII/RMII/MII interface, Allowed value need to be a multiple of 290,
+       or will round down. Range 0~31*290.
+ 
+   mediatek,rx-delay-ps:
+@@ -84,7 +90,7 @@ properties:
+       or will round down. Range 0~31*170.
+       For MT2712 RMII/MII interface, Allowed value need to be a multiple of 550,
+       or will round down. Range 0~31*550.
+-      For MT8195 RGMII/RMII/MII interface, Allowed value need to be a multiple
++      For MT8188/MT8195 RGMII/RMII/MII interface, Allowed value need to be a multiple
+       of 290, or will round down. Range 0~31*290.
+ 
+   mediatek,rmii-rxc:
+-- 
+2.25.1
 
