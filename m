@@ -2,52 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C75FE5ED20C
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 02:30:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A11425ED213
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 02:38:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232684AbiI1Aa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 20:30:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60766 "EHLO
+        id S232006AbiI1AiP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 20:38:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231273AbiI1AaR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 20:30:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A58F112FCA;
-        Tue, 27 Sep 2022 17:30:16 -0700 (PDT)
+        with ESMTP id S231273AbiI1AiO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 20:38:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A93011267D
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 17:38:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AB38D61CCB;
-        Wed, 28 Sep 2022 00:30:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1231AC433C1;
-        Wed, 28 Sep 2022 00:30:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A69F4B81E6D
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 00:38:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21322C433D6;
+        Wed, 28 Sep 2022 00:38:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664325015;
-        bh=Ctfu79cjyl7XhDno0CcHF0G/Jwk0+MIz5Kq5ikCqY9Y=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=JhxtPe3dHBYMO7olb9QwkwkAeQ7FviLxDdiu8yLz0WHaC3Gw6eFvMr0NDuLYMNAVk
-         ZKVy8E01Nv4vTRfCNUvlTVVSi8Qys9qIwRJhAnrOZ6SJPien2b0WNopoG3nCmC74UG
-         cZPP9CuFnM6rRbEAU4n9lJ2q8lSG7ZKKjfZMtW4LpoIorZNTkLmH6GM5YRbbgwNU2U
-         TF19V4N6Ots0QE06VV1+w389lDtFJ5cJP3byDKBRCusQCT0F3C0JYiRULuqH+UpeuX
-         qd6NimSTf5TxefZD24piNcqRzbKbv1SSX6xQAfOn8MjbXLvWI25O3ENZ7uLCudMXlV
-         FE4w5Mn3B1EBQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E772EE21EC6;
-        Wed, 28 Sep 2022 00:30:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1664325491;
+        bh=eTBs14Kitj2NXDAUfuciY+zuxiz9TzLNB3Ejti5LzEU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=jpSQyKB7c2efmcwgK7BtH+bB8oTAq7j07xfW2qflW25vjJb3llwZtB0BxvBGCkJ2d
+         AN1puRwpehoGVlT0Pa/lTDrYESHVZ4UMd7vG5TWkJ7Y/UTbMFmq4QGmbAQLsOVq3mH
+         qouT8o6xjecDL5fLINjR43dd5pA8cJf9LqKcqKlHvhsu9OfBMQ65GRHvEjYTa4b+ii
+         Fu+WTZ4g9olMn4Yrk8ZGFZ3QCgzWDdhTBISmC6JlzEwH2lQIugcYu/8fqcfhxnpm8/
+         F+S5Sqwud/Phe8vhvZbqK0ExoGUBn4l5dBFwBmUpfkG3Z3PhXswMZiPuQyTfZMBqt8
+         yRB9PwgqeOarA==
+Date:   Tue, 27 Sep 2022 17:38:10 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Chunhao Lin <hau@realtek.com>
+Cc:     <hkallweit1@gmail.com>, <netdev@vger.kernel.org>,
+        <nic_swsd@realtek.com>
+Subject: Re: [PATCH net-next] r8169: add rtl_disable_rxdvgate()
+Message-ID: <20220927173810.6caad4f3@kernel.org>
+In-Reply-To: <20220926074813.3619-1-hau@realtek.com>
+References: <20220926074813.3619-1-hau@realtek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: stmmac: Minor spell fix related to
- 'stmmac_clk_csr_set()'
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166432501494.19774.3663768296307691962.git-patchwork-notify@kernel.org>
-Date:   Wed, 28 Sep 2022 00:30:14 +0000
-References: <20220924104514.1666947-1-bhupesh.sharma@linaro.org>
-In-Reply-To: <20220924104514.1666947-1-bhupesh.sharma@linaro.org>
-To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>
-Cc:     netdev@vger.kernel.org, bhupesh.linux@gmail.com,
-        linux-kernel@vger.kernel.org, biao.huang@mediatek.com,
-        davem@davemloft.net
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
@@ -57,28 +52,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Mon, 26 Sep 2022 15:48:13 +0800 Chunhao Lin wrote:
+> rtl_disable_rxdvgate() is used for disable RXDV_GATE.
+> It is opposite function of rtl_enable_rxdvgate().
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Sat, 24 Sep 2022 16:15:14 +0530 you wrote:
-> Minor spell fix related to 'stmmac_clk_csr_set()' inside a
-> comment used in the 'stmmac_probe_config_dt()' function.
-> 
-> Cc: Biao Huang <biao.huang@mediatek.com>
-> Cc: David Miller <davem@davemloft.net>
-> Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next] net: stmmac: Minor spell fix related to 'stmmac_clk_csr_set()'
-    https://git.kernel.org/netdev/net-next/c/c64655f32fef
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+You should mention that you're dropping the udelay() and
+if you know why it was there in the first place - why it's
+no longer needed.
