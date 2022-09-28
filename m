@@ -2,109 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F9BF5ED36F
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 05:22:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD7BB5ED37F
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 05:30:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230506AbiI1DWZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 23:22:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54566 "EHLO
+        id S231512AbiI1DaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 23:30:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229951AbiI1DWX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 23:22:23 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C58242125B
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 20:22:18 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id x1-20020a17090ab00100b001fda21bbc90so643123pjq.3
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 20:22:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=MWmhtztMEox7VVKGK6uybYYECsNBNiJUJsG+PcRMBEg=;
-        b=ehO8VuvybkrY1SLq7NWzlJMl9wtatxA5zjZepIrHAAgxLNJ26OsGzpJXtfdGbpEnID
-         GymGAFCsDdILb3l/E9ldCMtRwzDoiyjLKW1LuaPffGDwW5VFFPhsHl1y+/ebvHFSzuj4
-         m1rcycrl49MTKyBQ94HZyj6zx3/gtSogBWP07ICtqI0S87zdfVgtuIzVAxXJ7wL9d/EF
-         iQWXQlcJlIG9Jp+I7B8V141s68Aq2Z1IylZxcGobCBkJVOWC0JdqAZThZFvHRqxiZchj
-         IwqEV1uGBQS2nKP9vWg4rnaOPU+xXZBGPa6++RQUwMOmZ4NfzPGPJPwPbHZAOvbvCNkW
-         qpPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=MWmhtztMEox7VVKGK6uybYYECsNBNiJUJsG+PcRMBEg=;
-        b=X00HUIs0qkWg/Eck0RXpXUTYdo1Jz/L6XOfqlHm16rsVPurRyMPPfG7+gdWw1Goqte
-         ynT+bJU3NAPjPG8LWImckxgOg05Zh6WP2mAbPfFjYgfRWQptiCyJC9limuXJe7Eo9ZfA
-         5UurWJTQ+Bl4ZvV6UFGxHexfO2xTiQdgGqM2cULNrRws8ynjyKxALTvlTrVl8limV6Aq
-         IB9dDkSOmv9j/ATRmz3KoRMRFvFF6H62FcwU1DCkUHE8oxEjlfWn6+AjAmcWxJk1v3lG
-         F0Y5tAhHE6lCSMZmi3mXF7eEToEVLkgjTue1AZBp+Q0P47nZ55dmQedfhZ1qPqupt2AG
-         Vldg==
-X-Gm-Message-State: ACrzQf2ysSjPVb0sg4fnzfF9ZLdCz80a1BPi8ztL3kmhMOyrw4ue2wqN
-        mB2r9mXZlKO/4dOQbTLiml0=
-X-Google-Smtp-Source: AMsMyM7T/a7xK+tCMWInr1RURuEpd/5RFu0cuWbT2ONObPFbgukvjvx9vzM2e4Ca0zOYstQoRZdw1Q==
-X-Received: by 2002:a17:903:186:b0:179:e238:bbe8 with SMTP id z6-20020a170903018600b00179e238bbe8mr8159138plg.81.1664335338340;
-        Tue, 27 Sep 2022 20:22:18 -0700 (PDT)
-Received: from Laptop-X1 ([43.228.180.230])
-        by smtp.gmail.com with ESMTPSA id h13-20020a170902f54d00b001752216ca51sm2366741plf.39.2022.09.27.20.22.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Sep 2022 20:22:17 -0700 (PDT)
-Date:   Wed, 28 Sep 2022 11:22:11 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Florent Fourcot <florent.fourcot@wifirst.fr>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCHv3 net-next] rtnetlink: Honour NLM_F_ECHO flag in
- rtnl_{new, set, del}link
-Message-ID: <YzO943B4Id2jLZkI@Laptop-X1>
-References: <20220927041303.152877-1-liuhangbin@gmail.com>
+        with ESMTP id S229838AbiI1DaT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 23:30:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27414FAED
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 20:30:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E49E61D08
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 03:30:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D90D7C433B5;
+        Wed, 28 Sep 2022 03:30:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664335815;
+        bh=UdwTebeJWgHsMdLAQxvUhbMNJgKyAJKTBYGq9QhoIRE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=r3aYqKsL5cTdOTSE3fvJUqk5gaFGOn9YmdOZCjYYVIa/rI8p/NaFFDFujd/iL9ckF
+         eLJlBfpFqUthHIxXIwAT+ZXZIEo6z8OlDDBanyePvSrfzqgv16fLyJoFmwT7dFvMLQ
+         PtDEVYGC7wx++JYIUCcMCAMVhffPn0dtPU6gyx6IYZtfpHre/5v3N0eL8o6rrhVKNh
+         VQYvrG8jRD21Hq8nud6MBB0uDXIh2lOGMk45Pyc9Z3id+mKAHDpiBqJ2yw0hPYTYGb
+         UWcLS62wlVU9+PR6QQwdpPTmJJb0qK90Qyo0bvhCW+Zo6vN5Z7xDvhkRo5DAm5TkjG
+         pk5gDm/5SPQKg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BEB3AE4D035;
+        Wed, 28 Sep 2022 03:30:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220927041303.152877-1-liuhangbin@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] sched: add extack for tfilter_notify
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166433581577.10603.15313432239904664550.git-patchwork-notify@kernel.org>
+Date:   Wed, 28 Sep 2022 03:30:15 +0000
+References: <20220927101755.191352-1-liuhangbin@gmail.com>
+In-Reply-To: <20220927101755.191352-1-liuhangbin@gmail.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, marcelo.leitner@gmail.com
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
-On Tue, Sep 27, 2022 at 12:13:03PM +0800, Hangbin Liu wrote:
-> @@ -3009,6 +3012,11 @@ static int do_setlink(const struct sk_buff *skb,
->  		}
->  	}
->  
-> +	nskb = rtmsg_ifinfo_build_skb(RTM_NEWLINK, dev, 0, 0, GFP_KERNEL, NULL,
-> +				      0, pid, nlh->nlmsg_seq);
-> +	if (nskb)
-> +		rtnl_notify(nskb, dev_net(dev), pid, RTNLGRP_LINK, nlh, GFP_KERNEL);
+Hello:
 
-BTW, in do_setlink() I planed to use RTM_SETLINK. But I found iproute2 use
-RTM_NEWLINK to set links. And I saw an old doc[1] said
+This series was applied to iproute2/iproute2-next.git (main)
+by David Ahern <dsahern@kernel.org>:
 
-"""
-- RTM_SETLINK does not follow the usual rtnetlink conventions and ignores
-  all netlink flags
+On Tue, 27 Sep 2022 18:17:55 +0800 you wrote:
+> In commit 81c7288b170a ("sched: cls: enable verbose logging") Marcelo
+> made cls could log verbose info for offloading failures, which helps
+> improving Open vSwitch debuggability when using flower offloading.
+> 
+> It would also be helpful if "tc monitor" could log this message, as it
+> doesn't require vswitchd log level adjusment. Let's add the extack message
+> in tfilter_notify so the monitor program could receive the failures.
+> e.g.
+> 
+> [...]
 
-The RTM_NEWLINK message type is a superset of RTM_SETLINK, it allows
-to change both driver specific and generic attributes of the device.
-"""
+Here is the summary with links:
+  - [net-next] sched: add extack for tfilter_notify
+    (no matching commit)
+  - [iproute2-next,2/2] tc/tc_monitor: print netlink extack message
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=0cc5533b71dc
 
-So I just use RTM_NEWLINK for the notification. Do you think if we should
-use RTM_SETLINK?
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-[1] https://lwn.net/Articles/236919/
 
-Thanks
-Hangbin
