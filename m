@@ -2,140 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A85E5EDA26
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 12:34:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82ED05EDA4A
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 12:44:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233576AbiI1Ken (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 06:34:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47000 "EHLO
+        id S233396AbiI1KoL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 06:44:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233284AbiI1Kel (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 06:34:41 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A78AB1D2;
-        Wed, 28 Sep 2022 03:34:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1664361275; x=1695897275;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=uUdZjM/O0ckF9ng08ULrkoN8fjainSglLhr4VF70z2k=;
-  b=X86z+BKnLOQh9w2s/1NQedWpZTtUICmJmnncwQLH94U+hvrRikS+tcdh
-   eY5LKyiSVR3vehfXwn2zss01S4jo0G6XfkP5O2+AdLSQngLPomjVYcB5F
-   veSvD/l4z46sid3OEkgf9FDDIhQyEPFHCvoJCj3r7X/j0Ml87Qo9smzhV
-   6FHmxudyxOkAuGBhZUVet0MZMpy8wCcFiN2YG0wFLSVgfFWQGzEP5i17t
-   LHh4QqtY0NDEER5rrkOixMaUFBfWTe3a/ZoPzA66TSGqt2xA902uGo1gm
-   aI4craCsrEhbE6rAZOmn5iF+lVWxA373Hb9snpo83kEWHKhaSVMZpR02M
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.93,351,1654585200"; 
-   d="scan'208";a="175980659"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Sep 2022 03:34:34 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Wed, 28 Sep 2022 03:34:32 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
- Transport; Wed, 28 Sep 2022 03:34:32 -0700
-Date:   Wed, 28 Sep 2022 12:39:00 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
-CC:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bryan.whitehead@microchip.com>,
-        <edumazet@google.com>, <pabeni@redhat.com>,
-        <UNGLinuxDriver@microchip.com>, <Ian.Saturley@microchip.com>
-Subject: Re: [PATCH net V4] eth: lan743x: reject extts for non-pci11x1x
- devices
-Message-ID: <20220928103900.bwtbtmfhnyhr5cnz@soft-dev3-1.localhost>
-References: <20220928090311.93361-1-Raju.Lakkaraju@microchip.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20220928090311.93361-1-Raju.Lakkaraju@microchip.com>
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S233181AbiI1KoI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 06:44:08 -0400
+Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E4798FD4F;
+        Wed, 28 Sep 2022 03:44:04 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id 7E4ADC023; Wed, 28 Sep 2022 12:44:01 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1664361841; bh=EvXbEFxQNdXNjXs7AJIIbkBlKOTDWURW3rNF1wbER1E=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=vokmBuvKdWBfIpUbwZ7i/3q2hrKrm2wEuzat92Z1AF/zj0D9kzGs09EGTskVFdcp5
+         RPctkXOosyC+QnxuVv7WYeNd3iV1fOi1S1z04oEABiRdNqGvKeIypr0AUEKcHcklGS
+         U6Fn4YT6mTUbezR3aOe0sszkBSqEdaxHsKBirFEvegr40psAIcHiDGj2r1fhSb91Xj
+         IeZoNjbpSsW3AsJEo1YNp8NSpG+dAtbGYSFRZodtaZqE2GQOrtxNAGyZvdsLUvefHu
+         O/6qoNFdVSYuBnvkCIOjQaW1AGyX9mlDEqbnaETdilWVqY3cKtDnlHotEici9VIHKo
+         DLb2U87rc5XmA==
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 0F6EFC009;
+        Wed, 28 Sep 2022 12:43:55 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1664361839; bh=EvXbEFxQNdXNjXs7AJIIbkBlKOTDWURW3rNF1wbER1E=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=AXSJASx2rKt3OmXZHdDAhyLDgaBuDsRfjikOIp0W5tPVaAKfuxOGXlRUUw31K3qC4
+         PnF8Gi3tOFo8OMlC7gNyMRG6Lvx369KHzi2VkpJf0LNljef6nuKFHAEWkjTxMtdNY1
+         4D4ELzPTvgilOIqebWxX38SORBWA3xYRnzcOXNPCprhmYplTpH+pmjEZf9tmgl9BdQ
+         yTeqVMQXOIgXz1vqdv+za4CjStU9IuuOBeCDMoUkj6h66u88a/pJPgajrUxe7uqVRM
+         azi0lrDCSS5cxI2NKcLdJX/kd3dX0oNGxsWR8fBOuCjj39NJZktnx+OcrhrOmYCi0m
+         PyiYOvvDBhJcA==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 9a16ec6e;
+        Wed, 28 Sep 2022 10:43:53 +0000 (UTC)
+Date:   Wed, 28 Sep 2022 19:43:38 +0900
+From:   asmadeus@codewreck.org
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     syzbot <syzbot+67d13108d855f451cafc@syzkaller.appspotmail.com>,
+        davem@davemloft.net, edumazet@google.com, ericvh@gmail.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux_oss@crudebyte.com, lucho@ionkov.net, netdev@vger.kernel.org,
+        pabeni@redhat.com, syzkaller-bugs@googlegroups.com,
+        v9fs-developer@lists.sourceforge.net
+Subject: Re: [syzbot] KASAN: use-after-free Read in rdma_close
+Message-ID: <YzQlWq9EOi9jpy46@codewreck.org>
+References: <00000000000015ac7905e97ebaed@google.com>
+ <YzQc2yaDufjp+rHc@unreal>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YzQc2yaDufjp+rHc@unreal>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 09/28/2022 14:33, Raju Lakkaraju wrote:
+Leon Romanovsky wrote on Wed, Sep 28, 2022 at 01:07:23PM +0300:
+> The bug is in commit 3ff51294a055 ("9p: p9_client_create: use p9_client_destroy on failure").
 
-Hi Raju,
+Thanks for looking
 
-I think there is a 24h waiting period before sending new patches for the
-same series, just to give time for other people to review it.
+> It is wrong to call to p9_client_destroy() if clnt->trans_mod->create fails.
 
-> Remove PTP_PF_EXTTS support for non-PCI11x1x devices since they do not support
-> the PTP-IO Input event triggered timestamping mechanisms added
-> 
-> Fixes: 60942c397af6 ("Add support for PTP-IO Event Input External  Timestamp (extts)")
+hmm that's a bit broad :)
 
-This still fails for 2 reasons:
-1. Empty lines around fixes tag
-2. The subject line is still wrong. It doesn't match the SHA.
+But I agree I did get that wrong: trans_mod->close() wasn't called if
+create failed.
+We do want the idr_for_each_entry() that is in p9_client_destroy so
+rather than revert the commit (fix a bug, create a new one..) I'd rather
+split it out in an internal function that takes a 'bool close' or
+something to not duplicate the rest.
+(Bit of a nitpick, sure)
 
-I would do something like:
----
-Fixes: 60942c397af60 ("net: lan743x: Add support for PTP-IO Event Input External Timestamp (extts)")
-Signed-off-by: Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
----
-
-As you noticed I have skipped Jakub's reviewed-by tag because I can't find
-it where you get it. Because I can't see it that you received it in v2
-and you already added in v3.
-
-> 
-> Reviewed-by: Jakub Kicinski <kuba@kernel.org>
-> 
-> Signed-off-by: Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
-> ---
-> Changes:
-> ========
-> V3 -> V4:
->   - Fix the Fixes tag line split
-> 
-> V2 -> V3:
->  - Correct the Fixes tag
-> 
-> V1 -> V2:
->  - Repost against net with a Fixes tag
-> 
->  drivers/net/ethernet/microchip/lan743x_ptp.c | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/microchip/lan743x_ptp.c b/drivers/net/ethernet/microchip/lan743x_ptp.c
-> index 6a11e2ceb013..da3ea905adbb 100644
-> --- a/drivers/net/ethernet/microchip/lan743x_ptp.c
-> +++ b/drivers/net/ethernet/microchip/lan743x_ptp.c
-> @@ -1049,6 +1049,10 @@ static int lan743x_ptpci_verify_pin_config(struct ptp_clock_info *ptp,
->  					   enum ptp_pin_function func,
->  					   unsigned int chan)
->  {
-> +	struct lan743x_ptp *lan_ptp =
-> +		container_of(ptp, struct lan743x_ptp, ptp_clock_info);
-> +	struct lan743x_adapter *adapter =
-> +		container_of(lan_ptp, struct lan743x_adapter, ptp);
->  	int result = 0;
->  
->  	/* Confirm the requested function is supported. Parameter
-> @@ -1057,7 +1061,10 @@ static int lan743x_ptpci_verify_pin_config(struct ptp_clock_info *ptp,
->  	switch (func) {
->  	case PTP_PF_NONE:
->  	case PTP_PF_PEROUT:
-> +		break;
->  	case PTP_PF_EXTTS:
-> +		if (!adapter->is_pci11x1x)
-> +			result = -1;
->  		break;
->  	case PTP_PF_PHYSYNC:
->  	default:
-> -- 
-> 2.25.1
-> 
+I'll send a patch and credit you in Reported-by unless you don't want
+to.
 
 -- 
-/Horatiu
+Dominique
