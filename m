@@ -2,63 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 03E0B5EE8B5
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 23:55:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D5795EE924
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 00:08:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234713AbiI1VzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 17:55:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45946 "EHLO
+        id S233963AbiI1WIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 18:08:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234680AbiI1Vyn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 17:54:43 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E8FF219B;
-        Wed, 28 Sep 2022 14:54:42 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id bq9so21782925wrb.4;
-        Wed, 28 Sep 2022 14:54:42 -0700 (PDT)
+        with ESMTP id S233698AbiI1WH7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 18:07:59 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D63FAF0EB;
+        Wed, 28 Sep 2022 15:07:58 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id o20-20020a05600c4fd400b003b4a516c479so1731677wmq.1;
+        Wed, 28 Sep 2022 15:07:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date;
-        bh=CKa2zfuYvT6LOzaaLAsgRC9dlcWDXJe/7p1IdjAyr8E=;
-        b=kEbhFWc+NkQemJ8VWiryQHBDTc+57yXQWoIt8aqDZ+djNOyIZE1cKt8e6drPAZL11K
-         xHoiJNYRgboK0WTs5iEkM2qTMmg2zGHUsNlQVwWvmi36QndSdmDhM5lsIWBv9epjn6k9
-         VChIiz64NuxkS0euR/A6MUwscMzRna0SjBnKw0XnJ1pJeZKqKOzO1kwvq6ZJ2h/imMf2
-         zZHrYQGLlLd4qZ27xo5OL2Mp94kEhnBIMlpwXQY4mGhh+jdXnRGDH6eERdrzLWPiBTsv
-         tAS1j408EhdDBS/OL93rKwOEcBlodzr9dvAIOxKUqNFpzG1uvTgDCD94XbR4Pi/bR5Ca
-         L43A==
+        bh=iuT26ScGvRggN3peNOuf2lq9UIzLkSCceSdt7cOIh94=;
+        b=qzAajm8ofrzy4fUaHbU1aSX8zXd06RoBr4GNIboWOY/5hVss3kW8bErysP6SeMzsCb
+         AM3fbzLpcs0j0xBHTGfPVZc2kQEIDkIKD/vCmq9khibI3fyiRs29FUO8Xn+rhZhB/GC1
+         ALrg65acn5y+fk6QzpKFTCwkTtlLLrH23Ddl9F5d89HncQLcxcTCHDyxfGhb2SpNwubR
+         9mmHrIVPGCJ1tcZRpdrf5r4kVH2ys4wdOGI6Wu2006Y5Xppp6F4pbVp7vTi1ojSARwgY
+         HQvGvzz6v/uLaixVw5Jvaz7qzyGJzsd/QTz5jwECVS7Hzp5oxNUbQtWBmqtCx6t1z68b
+         dwmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=CKa2zfuYvT6LOzaaLAsgRC9dlcWDXJe/7p1IdjAyr8E=;
-        b=dLi+D6HZzJBH52X1KzDZg+KWfnZ7beTwbhLFOsil5rwah7bCqgFpbvD4OXqf2VKwPY
-         aUWs0xrU+9IE8unfESQ4YcIikCtEuP3CdQi0xkc5gMQ4nybEzlPYoNxM7an8Ose8LytF
-         vH6ZqRh8Fsqh/XZ6nJF3Oom5FMmgy+o4L6WgNUJ2Cmf1wIqliAenJRPoKCrEi83uyL8Z
-         G1nHTcetthTndoHa1CsMXo6989L2582NPw12xDVKUBIKq/t6UAHDDEX7Y7j435BhI4mL
-         5lV3Q7+AwFURLnoUac9MF5GaP1A5X6DVxtb8jznZ83h2mASAjfxBAVcoDdHmFAAAn6i+
-         dWgQ==
-X-Gm-Message-State: ACrzQf3L0tIYekojez3q1HTmLXWaZT9tOp/uaK0xzu5Z4qaXJU3U0pug
-        LJwsdF0bkYe91UgHFKTgZfY=
-X-Google-Smtp-Source: AMsMyM6dtN1fo3Ta/Ms6G6asBfg0HUDlyUNoNan/kA+NNO9UyF/NDUwPjHly97fMJeJFKkXRCxxADQ==
-X-Received: by 2002:adf:fe08:0:b0:22b:311:afcd with SMTP id n8-20020adffe08000000b0022b0311afcdmr22378891wrr.629.1664402081030;
-        Wed, 28 Sep 2022 14:54:41 -0700 (PDT)
+        bh=iuT26ScGvRggN3peNOuf2lq9UIzLkSCceSdt7cOIh94=;
+        b=VV265+yr41tZcqwC2ouDtqTBc81h7oOcCrFA5cGZWmfGkbSbHS5cShl/FKTFIVH7zX
+         yJvVZkiSHgAekyRn5GCUa+if7iVPupQL3++ByBgFosiNyErnQRuSiCBWgilxQahrIdtb
+         nPJBK08xURHeDbaqpL/YhU99WIjbtXI3e9/E30Wt04wGNpSJavHKrq2i4K5DYraE5Vin
+         UXDTElro+L6Ub2TomN/J+BnqiQ1R2LYRvgTJ1fWgiyO5ZUy+DHEA6hUOU1UnltTqNwiq
+         Asv5k7p7zHuvPz9KyAfSwC2sb72VlUCsHiO8yFnaJ6SpnlySi+lwc1+ZP2KVQdo5NVHM
+         qamg==
+X-Gm-Message-State: ACrzQf0BaiIveWYHfL9dML06tUHjJlwvtZ1RBJM2sN4Q5JCAxNGKfKN6
+        kpXL2IEGcBKE0GFR8LuGAb2amGEewxyP+A==
+X-Google-Smtp-Source: AMsMyM58agWNgDZUGNIkFEif92ZBKQAeoDyl3w1bfZ6cJIvaOmRe89aYUpInFdhwTG2uU5ccbBnjkg==
+X-Received: by 2002:a05:600c:27d1:b0:3b4:5e9c:23ed with SMTP id l17-20020a05600c27d100b003b45e9c23edmr85780wmb.180.1664402876830;
+        Wed, 28 Sep 2022 15:07:56 -0700 (PDT)
 Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id r7-20020adfda47000000b0021e51c039c5sm5053071wrl.80.2022.09.28.14.54.40
+        by smtp.gmail.com with ESMTPSA id l17-20020a05600c4f1100b003b4ff30e566sm558010wmq.3.2022.09.28.15.07.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Sep 2022 14:54:40 -0700 (PDT)
+        Wed, 28 Sep 2022 15:07:56 -0700 (PDT)
 From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Rasesh Mody <rmody@marvell.com>,
-        Sudarsana Kalluru <skalluru@marvell.com>,
-        GR-Linux-NIC-Dev@marvell.com,
+To:     Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
         "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
 Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: bna: Fix spelling mistake "muliple" -> "multiple"
-Date:   Wed, 28 Sep 2022 22:54:39 +0100
-Message-Id: <20220928215439.65962-1-colin.i.king@gmail.com>
+Subject: [PATCH] net/mlx5: Fix spelling mistake "syndrom" -> "syndrome"
+Date:   Wed, 28 Sep 2022 23:07:55 +0100
+Message-Id: <20220928220755.67137-1-colin.i.king@gmail.com>
 X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -73,27 +73,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a spelling mistake in a literal string in the array
-bnad_net_stats_strings. Fix it.
+There is a spelling mistake in a devlink_health_report message. Fix it.
 
 Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 ---
- drivers/net/ethernet/brocade/bna/bnad_ethtool.c | 2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/health.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/brocade/bna/bnad_ethtool.c b/drivers/net/ethernet/brocade/bna/bnad_ethtool.c
-index 5d2c68ee1ea9..df10edff5603 100644
---- a/drivers/net/ethernet/brocade/bna/bnad_ethtool.c
-+++ b/drivers/net/ethernet/brocade/bna/bnad_ethtool.c
-@@ -114,7 +114,7 @@ static const char *bnad_net_stats_strings[] = {
- 	"mac_tx_deferral",
- 	"mac_tx_excessive_deferral",
- 	"mac_tx_single_collision",
--	"mac_tx_muliple_collision",
-+	"mac_tx_multiple_collision",
- 	"mac_tx_late_collision",
- 	"mac_tx_excessive_collision",
- 	"mac_tx_total_collision",
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/health.c b/drivers/net/ethernet/mellanox/mlx5/core/health.c
+index b7ef891836f0..59205ba2ef7b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/health.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/health.c
+@@ -601,7 +601,7 @@ static void mlx5_fw_reporter_err_work(struct work_struct *work)
+ 	fw_reporter_ctx.miss_counter = health->miss_counter;
+ 	if (fw_reporter_ctx.err_synd) {
+ 		devlink_health_report(health->fw_reporter,
+-				      "FW syndrom reported", &fw_reporter_ctx);
++				      "FW syndrome reported", &fw_reporter_ctx);
+ 		return;
+ 	}
+ 	if (fw_reporter_ctx.miss_counter)
 -- 
 2.37.1
 
