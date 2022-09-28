@@ -2,96 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B5385EDEF0
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 16:38:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B2075EDEFC
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 16:40:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234434AbiI1Oio (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 10:38:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41760 "EHLO
+        id S233614AbiI1Ok2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 10:40:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234438AbiI1Oij (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 10:38:39 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEED0AD9B5;
-        Wed, 28 Sep 2022 07:38:37 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id h7so7728726wru.10;
-        Wed, 28 Sep 2022 07:38:37 -0700 (PDT)
+        with ESMTP id S234452AbiI1OkX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 10:40:23 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7428D814EA
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 07:40:21 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id 13so27605138ejn.3
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 07:40:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=jzb2tlFDO7113hwXJyTmEyrv070pVMBorQWNbdu3q1M=;
-        b=pBx0BuzdgJDgcsZ8f57VP8/c2/uyQYL9ycGYHrIIRZDcL1Ro2p68mQIBRfzCgvNjnY
-         VqKRqE/z07+oRnE+K4Wxw1BU5KlQ3fzHUdPOG1sc7nA94tOjZbyyyJU+e8xXEaHqKpX0
-         kKtdPXKPTHNSNxIsowDyubr5YzqTW/XAmPFYC85wX4bgz+nzXHIHreN3SbBV2Z8WgX/F
-         wjg29IJrg4y0IGZUDqO6AEYezVmWt1CY5iTzwiiHUfX2Wa1Qosh97IcEJI1FqeMBUtsc
-         hWWwAXRbwYVW1/Rq7AMxeMvImunrzyX7Puxj0RnZDi4SlUxIJhKa5bVsy5ngu0Qt8dyK
-         JcmQ==
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=yLfWyMSmxxr3Hiy82ggkGXf/cv3f4ok6o+BDH04/SRM=;
+        b=kcxl76KcEfPbZ6YMZfiOTaabV+vCe3K75vl9C84yDE14i8zui0U2UIQlDj5bIt1P/f
+         fGcjU/rjrbGm/qeIPGpnYAh3urEvfSFx2f77bxc38lzIn7Htjk/KMFMFgooE29tA2v3w
+         FUiLtqmAznfaDGK6w7z/pZiz4LBnZYrGJnrxzE4o+xsE016X29H1uw/LT44xyTTFQp7Y
+         YuTF2BHwdAvU5E6Sz1gmLUqBNSL76o1HEKAbIfQogy5WmCe5nfLZDAB0uD8meUNb3jbS
+         RF4VPXnIa6OJom8e1O59fIbTchliXTn86HeViAa8t9vo+P/nbpXjuuZ4Lg+nijtjx0aL
+         69cA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=jzb2tlFDO7113hwXJyTmEyrv070pVMBorQWNbdu3q1M=;
-        b=yHLXzJDrIIa4JBA1QrsR5Zuq+F1gRXrADqu5ys41F98JdedtnriDz12vuVJkOvBynK
-         z09XUX1FgKQ+LsGpcuDgPi2lTmOsvUfXvOrx5iEj29H7MhwspNVlLtpd7ijO/KwKe0wB
-         XN5YmANdA7OA2DTUS36SNuZ3i1uc1WeoyftC9fQWsRbJNQFIXQCn5+abIG91HjLYuqMt
-         /uT22kTm0BJy7W2m4bSQw2d7KS58M+ftz9lHQWyPvBObV9MXJUoRd/z9x65eyDF3phEM
-         3KnvotYkGC0EAjQb2B3dbh2OekwWzBeq3yFwCypdN0XunGOMMzzKbbuXklS2u+459qmA
-         gF1w==
-X-Gm-Message-State: ACrzQf2+4VKS+MAuIhroH2fbiBq6cNVc7E1AYZr6JxW2evnwYDVtenHX
-        HDhfDy1iiqQp7XfP9F/YEKFbrpq5sjKLpnEi
-X-Google-Smtp-Source: AMsMyM7D4vDM49WeiylJ/FA5Xb/66OVGI9cD1+tX27Tc7I3mrmERqFSLMPH9fv7f7EwlHDt/UpfGAg==
-X-Received: by 2002:a5d:6484:0:b0:226:dd0e:b09c with SMTP id o4-20020a5d6484000000b00226dd0eb09cmr21343882wri.388.1664375916303;
-        Wed, 28 Sep 2022 07:38:36 -0700 (PDT)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id p25-20020a1c5459000000b003a5c7a942edsm1940253wmi.28.2022.09.28.07.38.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Sep 2022 07:38:35 -0700 (PDT)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Kalle Valo <kvalo@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][next] wifi: ath11k: Fix spelling mistake "chnange" -> "change"
-Date:   Wed, 28 Sep 2022 15:38:34 +0100
-Message-Id: <20220928143834.35189-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.37.1
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=yLfWyMSmxxr3Hiy82ggkGXf/cv3f4ok6o+BDH04/SRM=;
+        b=M/hkYxlgNyI1GZ0mK0+vmpCFWR9woE+RyJrmSv+oHenIlBvUCdyt2jG76MuZ2R06Ep
+         4sxwZvd+HAgeagrxeR0PsUpRCFdupLoH1vud2SQasfoaftWrS+9thkTKk43I1pwT2oG2
+         YWhfmlv9Ea9xzZWXLu5rgO0ki7eiR09K/BbuIsV48N+RvcDAuhz8BC9rv4H90msvi1RI
+         87GnCttA04Up7WuJPLMtQwqu+o90T6DpVRvAY6XJWt2DPg+ffmZDMsG4tem9kupUkvZH
+         9I2ihQk9PxILwEj27NxaLmbrHQ0fRxRd+cNhMk4rFCHpVwRWdUGP6AZV6+4YcvqU9Fco
+         tcXw==
+X-Gm-Message-State: ACrzQf1h00saiN47VrHeukLgYAxhVcr9z0cijpyN7ppKDBakGv3Bcssm
+        fDVINXjOjB+08+QbIUZgn/VviQ==
+X-Google-Smtp-Source: AMsMyM4VTLc7wfYFh2YIZ2iJ8kWOWG9f8rVl+/o7ALXCwMWR3xSLvkCH86LlhF+ssbW9t2aeudZPvw==
+X-Received: by 2002:a17:907:7fa3:b0:782:3034:cbc5 with SMTP id qk35-20020a1709077fa300b007823034cbc5mr27298081ejc.96.1664376019804;
+        Wed, 28 Sep 2022 07:40:19 -0700 (PDT)
+Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
+        by smtp.gmail.com with ESMTPSA id kx17-20020a170907775100b007262a5e2204sm2495214ejc.153.2022.09.28.07.40.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 28 Sep 2022 07:40:19 -0700 (PDT)
+Message-ID: <08b070c9-fee6-0eab-c04a-281053c52a92@blackwall.org>
+Date:   Wed, 28 Sep 2022 17:40:17 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.1
+Subject: Re: [PATCH net-next] docs: netlink: clarify the historical baggage of
+ Netlink flags
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, Johannes Berg <johannes@sipsolutions.net>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Florent Fourcot <florent.fourcot@wifirst.fr>,
+        Guillaume Nault <gnault@redhat.com>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+References: <20220927212306.823862-1-kuba@kernel.org>
+ <a3dbb76a-5ee8-5445-26f1-c805a81c4b22@blackwall.org>
+ <20220928072155.600569db@kernel.org>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20220928072155.600569db@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a spelling mistake in an ath11k_dbg debug message. Fix it.
+On 28/09/2022 17:21, Jakub Kicinski wrote:
+> On Wed, 28 Sep 2022 10:03:07 +0300 Nikolay Aleksandrov wrote:
+>> The part about NLM_F_BULK is correct now, but won't be soon. I have patches to add
+>> bulk delete to mdbs as well, and IIRC there were plans for other object types.
+>> I can update the doc once they are applied, but IMO it will be more useful to explain
+>> why they are used instead of who's using them, i.e. the BULK was added to support
+>> flush for FDBs w/ filtering initially and it's a flag so others can re-use it
+>> (my first attempt targeted only FDBs[1], but after a discussion it became clear that
+>> it will be more beneficial if other object types can re-use it so moved to a flag).
+>> The first version of the fdb flush support used only netlink attributes to do the
+>> flush via setlink, later moved to a specific RTM command (RTM_FLUSHNEIGH)[2] and
+>> finally settled on the flag[3][4] so everyone can use it.
+> 
+> I thought that's all FDB-ish stuff. Not really looking forward to the
+> use of flags spreading but within rtnl it may make some sense. We can
+> just update the docs tho, no?
+> 
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- drivers/net/wireless/ath/ath11k/wmi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Sure, that's ok.
 
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
-index fad9f8d308a2..2a8a3e3dcff6 100644
---- a/drivers/net/wireless/ath/ath11k/wmi.c
-+++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -6829,7 +6829,7 @@ static void ath11k_wmi_event_peer_sta_ps_state_chg(struct ath11k_base *ab,
- 	}
- 
- 	ath11k_dbg(ab, ATH11K_DBG_WMI,
--		   "peer sta ps chnange ev addr %pM state %u sup_bitmap %x ps_valid %u ts %u\n",
-+		   "peer sta ps change ev addr %pM state %u sup_bitmap %x ps_valid %u ts %u\n",
- 		   ev->peer_macaddr.addr, ev->peer_ps_state,
- 		   ev->ps_supported_bitmap, ev->peer_ps_valid,
- 		   ev->peer_ps_timestamp);
--- 
-2.37.1
+> BTW how would you define the exact semantics of NLM_F_BULK vs it not
+> being set, in abstract terms?
+
+Well, BULK is a delete modified to act on multiple objects, so I'd say if it is not
+set the DELETE targets a single object vs multiple objects if set. Obviously in more
+formal terms, sorry not at a PC right now. :)
+
+
 
