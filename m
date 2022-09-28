@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B653E5ED980
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 11:53:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 974115ED97D
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 11:52:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233369AbiI1JxA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 05:53:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39730 "EHLO
+        id S233299AbiI1Jwy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 05:52:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233386AbiI1Jww (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 05:52:52 -0400
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70088.outbound.protection.outlook.com [40.107.7.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FAF1A9C34;
-        Wed, 28 Sep 2022 02:52:32 -0700 (PDT)
+        with ESMTP id S233338AbiI1Jwa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 05:52:30 -0400
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70059.outbound.protection.outlook.com [40.107.7.59])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 054B4A74D0;
+        Wed, 28 Sep 2022 02:52:27 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Co4yDtg+Q/UipV/E9cEtoQ1DARYeTPli1njAiOrXS94E593fDEnDFFV75ztoK+wbtK+qnv7EeyqzIpsy88twxoYLvgxatkKly3aisDe8oPjn+9Y1t408IC7/pVYRtl3Nm/1MpfMtlTgd+oA+KZtRG+L8TQIhrtYBi8rbPpoGNmzN6hIBBD3f94O3/zbHSvfI5NN4tXsfkm4b1o5VG0FWKNLGRApJc4BOZQePP1o5tCV28T4gt9TGpgBeteDTeLZmcb3mt9lFxRtbjX+DhGODVCcBDv7BhXjluKj3JINDtisYfag7qDfo3BuiGib0PnIwoZ5vNdRXoGTQQHcp8gSOkQ==
+ b=VcBKOxLrygTnoQFb2AuZ1AWCqhJDmVLjv14nbwi+jkXF45fUpjpryKvDpj/ZRmwhRbr62ymccH4alVPkjTyn59XRBroiZTFC7kN6Gh8JycqoSQgAPwJewZ9s2vDcntD4mR+HhdBLnZcIxFQE+5uUW4hSHAJINI+KobXZ4qPHbvMIgkvX02B3KclsxlZ7+upq55YN3GnoO52biRhHkS3Lhtqq147pysLhmXqMNgCvar97a+qaTPHwJs0Gfli1740tZirQUF1I2KcnObwKJsHUUhklpxaAb+qoldAXXtLxuC7O4o4GsVDuz08CYkMLiKbhBUmX59WDlCuZToDdrMFS0A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EEoDOH+vOOUDRMtYSVa0AR2Ke7DDI+qIDmHY0H1Mwug=;
- b=X1rJ/aJ4nDGbLq3dw4x9OyKVxlTfPU+Khgw4DN2zRKFzKXPXrRTEwpqjAbNf7RM5gYQ6sTbK1phU1YT6yhOZg2EAKHkmX4/V1pEo2Uiuhsojv77yad+RvsKF5FJNrKO8YikFGHGqEqgzTEp6qPi09AU8350yBxaWIQBPe0zZILkwyw7KJ8DaAUa4XULdueSu81gZoXNuFR0ViWGyCJykERFP89Rm+a+KYCcRUSWObVKU4esnFNM/MIjIPHaDY6hdjILQaxQRSVUXqu4gGybSrhAdd/Tt0rRwAzi6UjoxIPua+hn5EQQsdSDmRkgumXmsSRAOywyAslplJ2DbHe8JvA==
+ bh=Ejre59hbPpz0puKCrCdUbHmBZZ812ZiH8mmGQWF6RyQ=;
+ b=lGb/CWaM1acF76WaaKf/hOkIgdj96Id0QWD6VbcILbsU4VB+ACGdwBu+eaGvX9S6u4uyCdGqXO/2gUYMjwQkRFVYBIWKgpDkY2gz/xrv5soS2WO1oS08kGXZs9dKtGSWfVWKZVgvllrBC+G4Sl8ezgfUsjLDUfZV9rGYtEvJI17VNHO8kzzzxsYADkvMbU4h9VfOOw/DQ+tccFiMj4dv/xbShFaTVmhpCelo8VbpL0Ch/wBndrHvOKnPcvurqciDra9Oj+aaw8zQMFTl5tpDIMg8J8W5RrXbMIs4Z+P4eS3mum72kH+DHNAB5zb4K/wkSjV6AN2yExIzwPVxx/hRxQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EEoDOH+vOOUDRMtYSVa0AR2Ke7DDI+qIDmHY0H1Mwug=;
- b=FZKUmesKzKvGt7JC+GGMyz1z+ygBBfDGbbzf0JwXZW4WYUOSWRfRfpgtb89Atl1IMcXeWbhpjd8z/XewULA40mAucecfsM5BHTt2pUWSu9i7cRCUgni1odgwob7hsFOpn7ujg4B07i0hQ67SPrEYODrQiaFWUQZ/rArAUpS/ORs=
+ bh=Ejre59hbPpz0puKCrCdUbHmBZZ812ZiH8mmGQWF6RyQ=;
+ b=N7HnIr7MS6dA3Dx+/G+Vyd8UHpwv5K0MbPk/b4Z+obpcL8UBXGqAI/sxWBExU4PQIA2/auhrfpsIhK4C8cIoL0gKvo31wMYy/jFyICQPijeSEnSZfUW7hZOe4yvSURwfO98GD4hbBm3PxynUIDMzyHymIZz82o0UY6RuoH3yHPY=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by AS8PR04MB7752.eurprd04.prod.outlook.com (2603:10a6:20b:288::7) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.15; Wed, 28 Sep
- 2022 09:52:21 +0000
+ 2022 09:52:23 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::a67a:849c:aeff:cad1]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::a67a:849c:aeff:cad1%7]) with mapi id 15.20.5654.025; Wed, 28 Sep 2022
- 09:52:21 +0000
+ 09:52:23 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -64,9 +64,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Jamal Hadi Salim <jhs@mojatatu.com>,
         Cong Wang <xiyou.wangcong@gmail.com>,
         Jiri Pirko <jiri@resnulli.us>, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 net-next 2/8] net/sched: taprio: allow user input of per-tc max SDU
-Date:   Wed, 28 Sep 2022 12:51:58 +0300
-Message-Id: <20220928095204.2093716-3-vladimir.oltean@nxp.com>
+Subject: [PATCH v4 net-next 3/8] net: dsa: felix: offload per-tc max SDU from tc-taprio
+Date:   Wed, 28 Sep 2022 12:51:59 +0300
+Message-Id: <20220928095204.2093716-4-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220928095204.2093716-1-vladimir.oltean@nxp.com>
 References: <20220928095204.2093716-1-vladimir.oltean@nxp.com>
@@ -78,51 +78,51 @@ X-ClientProxiedBy: VI1PR0501CA0006.eurprd05.prod.outlook.com
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AS8PR04MB7752:EE_
-X-MS-Office365-Filtering-Correlation-Id: fac97b3e-bb07-4729-66bb-08daa1372353
+X-MS-Office365-Filtering-Correlation-Id: 5496e680-2c4b-4949-cfa1-08daa1372422
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: hcF3H77FtZpzBLLLMr3ahJaq6Wb3ZuBAH5AgwZA8ZGa6iz6C6Se7hSfqVLLnOVHiwDiaPqF8qRN1xZKh3kUJH/MGfcQVMQbKIeCcM/cM6A9DxRGR7n4v0ajqCxzu4jSNdgf08hqwYdDpqIRQcOme+WZ6rcjnWWruVFiRz0jZNYIkNPbYQgphD9WDd8K+/5AOEXdDDP+0gybze37g8tyUPlGr6ACYXZAOtNivI7/fuzESvQ7SoQGxMOOJdwA399ov5Dv/wFpTeuyDdINLIBIEy13tntwywmez7pllxMyUpr+Y0qAgb/Ul7uGyhjWBNF71kssNkPQM9ZWsrQzQoOZD+BlDkqWAq2gccMLVMONXtZUxfr9FWHGxvmtHSSIAfMoEaZyPJs+Hb5uVKKTYzQK9QdguON1BfDq6PWRZL6+YzpReKyphqizVg6xmL34VHQYs7Y4IKNj1Ps40zB6/BblhPOTzuGMbqYXJ53ZEIkEQDRxs48QWEY2vgancAHLDPUQD3qc9A4MH/eJyIwOPz5NgpRj5mVfRkCvhN8ca1HX7HpM/boxKuvh26TL+rHJSVcUKOOpRMSuECOJLK4HqLenCMu6uzXrChVWaTKkKebrEYvyeoVMKOA1DYLSNeA28LgYd37umO+Ix/AFzc08n/mQHsDjypoOKRTRr/jlmeLLpZ/cOWVVdSuJ+PIoDhNPcOQKIgUxpg5xWM/k0Rp4JXuO5EshoKBQ7eSrRxV9GPPx8lx4HIlIgQyUCymO+m5zP1wBhMdxLzYBJYJO7W2Cs5rXodw==
+X-Microsoft-Antispam-Message-Info: 76eRd0XArHAVXia29BBlqQoiK920JS+OPzxMPJF65cDSLwctpcaPuf+yzy0efHSzeeBDum1OyTPrQPSxYk1Ykwrxl5CQXUZUZXgMW0XUjK/s9k89EhoAMrKt8UoAXXnN86PAnDbr9qjgoxZ29He+B4JptP5sDgpYCZqDsmSVWb+mRXvx50LV00lwkqAreYZHx4oJdjqTaI4UfkCNqX52AG8xQXicHE0tyEX50A8A5ssggSvrqK8n0sEZEvIKjQiE/IzHwbnk2XL+wvvycA6NMN63T7rjwCEwphQJ39chMWmT3aGjYnyszvascaWwCTnWBOH9Eq3ilkfQN3FVH1VuVRC6IViYwTZTlYrmDpkOSLUTD9YS5UkGUggehpg8CGOYTpr4CgG6MyzOUIPOxPih9bi6tXQrKmcCS6QGsm7S6TjocAqxWvJBHX3C2aVipFWZTzdIkU57IWTixvuyhU1527t6YPvPp9b7ed2khZm+Ujf4jVgOi8qhCwBF+L1uHaf+8xLXIz5YKlgIZGog8Ou9XXUd/hlmH1CVZEZjvDv8rLcAe8QObDwbC6egMqz17PXW2wOZ03RosX9XmLOyFEuEZ7fQtz/N650CcFD8g7g6zPhxDhiJlIEvvu+DcBQ0YiFeJ7rOexpQY0fmC6iIAFlahpoNnie9Wj9vcKb6qeQcJeyW++y1ZuIRg9NC4iwG+Ww7MtwDlMpHDWJNG3PLC2RmpyJ9yCHDG8WWtKXfFDAuW+bAt5KMmYWwQexiWD/ktDniq8WcV21jK7mSBXgBxS5GYw==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(136003)(346002)(366004)(396003)(39860400002)(451199015)(38350700002)(38100700002)(5660300002)(6506007)(52116002)(6666004)(6512007)(8936002)(7416002)(2906002)(41300700001)(44832011)(36756003)(6486002)(478600001)(86362001)(54906003)(6916009)(26005)(4326008)(83380400001)(1076003)(186003)(8676002)(66476007)(66946007)(66556008)(2616005)(316002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LuTW6l9jRfq2lh4mPEXt1XcHABbSEST0/pP+WKki9vr0vJWeEnhkqHp08UiK?=
- =?us-ascii?Q?O8pn13IZIo9vOIEe41fnz7VV8boBxJbG9OPEDN5e/SiLV3Hv3mGWGzAt6hIh?=
- =?us-ascii?Q?GC+EphXFZdvCOgrS0xVJHxZ1CyMdM8dWj2rjEfgpO7UPoPLhNyEEX5BqlS+z?=
- =?us-ascii?Q?G80JtYiB/ZjK9jheFw9wOvN+9rD7ofXnBcM8ZZXViLB0Ynzi23j5NQscMeb0?=
- =?us-ascii?Q?LxwA/c2heZCPCU/BoPvX7ZJAhC7icdQSEhDR9Twq7cyA7MXRjXK73PDqZjnT?=
- =?us-ascii?Q?6cpXvOIjW016hYhX4ZQGg82XV/eRGG4MsiNPbjtqQCIcDJVlmYPOeqzvtqBZ?=
- =?us-ascii?Q?rbXYU8ErguIfiqS5nSVeqG64OjmNbX8u6wvE8Y2rLKRe0n8P1uujI5p+ZIZ+?=
- =?us-ascii?Q?CNx3lKO5A5iMS+Dk5YvgQXt80GL/oBkvS+9vF/2vzdap4QzIrdwN6ALfwWh/?=
- =?us-ascii?Q?cV9Poa4i9WtlGUNGHO3ZpucM4DpsJrgZRExuz0KWy7WCafOX8PfEGF09WqvJ?=
- =?us-ascii?Q?AEeDkVvZfGLf75UAzvu6Q2Fw6Blo2IsQDTtRYfSBT96eNEaB4B97dyRTJd1A?=
- =?us-ascii?Q?peqShP8mkGrcYRRLiSDt/n6DIqhzCPLc4p7RGsFO/6zThM7YPLZnKq6uOdHL?=
- =?us-ascii?Q?UeVAErCsJt+GcbFbr/wmuvs4V4Tij+Z8WLvXZXfVm2CtHigWBojg2Udk9ErT?=
- =?us-ascii?Q?KkpfSna/MXccKaM20BFL9l746H+Dw7WOqeFUgVNzEhiPn7DOJzf4KVhDbyiz?=
- =?us-ascii?Q?tpwBFysiFhwBCaheZx2pTfUx20qLdyNnEEIRmVHvx0MNC3igzRZMzSIFiQ8C?=
- =?us-ascii?Q?p8x0ddVvym75A1EHr2T198RIXifRUqLnJ/Vbb5VXhrNhQmIy3yMnS2jyN8Cj?=
- =?us-ascii?Q?AUWChX8ObEifLCvwRhdHPNjhyW6OyTAqelOQn3tt5+TvSReY2VfpwFygRnxv?=
- =?us-ascii?Q?7EXkOZyF+ikzZoJYWqIoo3ZR+Buwb2RRFQwuXCbyg59Ynz9Vhs08xHodchfA?=
- =?us-ascii?Q?8ZwOgap7aDrPMzMpwp/d9BpejMtCkT4NWOoitkjdRDxcGjNF/9TMkVqBnaBH?=
- =?us-ascii?Q?/JwvsgedFMjv9rBTp/v1ljTyQ4DbZbwOqxi4ktP8Cr4PRRyoW+kKXV7IzkZF?=
- =?us-ascii?Q?hrdDe+U5SuHoClNg9AENb5eDoF5FCFAAJdysSPJCoR+Kf9k1+Bx9LQt4qvJH?=
- =?us-ascii?Q?JayhM7junAOYzD5biQphQx3G8zrW8f1U5rqJ623wLQe10aKXsHz7AH7rdaRI?=
- =?us-ascii?Q?nS8rMdXbdvILwsd99Yvet+nMzUDAMeYYh2+U7lkeb/gCJd4w5Wtqh5j6NT0I?=
- =?us-ascii?Q?5lkT1EK/FlhuqFFZpn8p9ziOQc1E3ew5IlDCwSq21i0/Yy/OZZsNahgB429o?=
- =?us-ascii?Q?cCCr7TW349kM37QoERPjTMh3A0sLvB+FR29cP4QyXO7Y3yW1LsmnqrNtryhv?=
- =?us-ascii?Q?gfGGCDSrAqSdJ/jiyeh2HPoQqyAUjo4gJiOgz5C0VuQl2icOG0TdERRGz3ja?=
- =?us-ascii?Q?/8IwrlhDLz8PV3SxjJS+peMw9tPV8ishAmjxbIfbRw8NfYAoYf12/fPTURDZ?=
- =?us-ascii?Q?7Oq1sR2S2Giuh3p6ld9eCVImRALVIU/kHnHwbHooYMKjTFW/XZjHD1IbZxiE?=
- =?us-ascii?Q?gw=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?AWm2cQqQcEDHwmJI1UHMvkIfwEyA6MMLvUiEt6hkEqXWS0r0qUowfNcdkS5G?=
+ =?us-ascii?Q?/JYGq84pdzddUru2DSptPx2B+vVcb8U3Q3a+S1SAl1RbbcDfjP6GoOdkdkRu?=
+ =?us-ascii?Q?7xgj0qpL7iS9JZDVu/qFzh52MnWcVGAh7VGbYdOVirCcsBvfq1ciUVxlvOs/?=
+ =?us-ascii?Q?AcEuqRLVGCv7kE1xGTc/k7XvMVI/DZUJB24g0lpZgW+l48pY3DHVKbWa3KAJ?=
+ =?us-ascii?Q?cbpmkWdopA0/TD3obnub5sD3wBMKBbXGNbP7Z5ZzrkWFx8dvKfpbLK9rfSKv?=
+ =?us-ascii?Q?Sbmg/raSfIdbuQpu9EkudrwCLQMVwCDmuKz6aRmYI/LDbCR8Nax4tujef82P?=
+ =?us-ascii?Q?VZMqIokqXhF542phzzj6Rq4Kj1oCVV25HJB3hDelCMNagI4tkyYzOnU/y6Vv?=
+ =?us-ascii?Q?zQ+fQY5Uc5HWACo4tXPgkwsJZM00Eb4ngmXkSMg8dn13ucO6b/W/+5FtTz5z?=
+ =?us-ascii?Q?6rm074hA25w7hteT6SYCtov1H7EOISwHnE9wu9QKmw2BVd+I6qt0fP7hUgAJ?=
+ =?us-ascii?Q?ff8Swz91EKKb9lngWmuHeAu39ieu62eWNW/tSVgWZJjjQVC5Tq6xv8EBrU3I?=
+ =?us-ascii?Q?3clFayxVQAWj8s7fx2rBuO/fAM2HllsjYgiCNQ7gnwUwCTbV9vB/AHiGv3Dx?=
+ =?us-ascii?Q?QAGBUZMlJYmzVqm4YUPgtWo8cS9qMRrhG2UG6md5U+oWu6t8jDsCtSTzcNKc?=
+ =?us-ascii?Q?Gbcf0mUnzUJGYCbENKK5+AM/9C5N93qTOX4jEThhzjuaM09Xnj2OQTdYOhOp?=
+ =?us-ascii?Q?EUaJu3abFAJ53dsNOEcnXwD8Agra0yXjR40YQHNXfrCW1KxJKb1gGbj0ft1G?=
+ =?us-ascii?Q?BmaG7qWLwm8W6rc6iv1/L0dUZDlimF/pprcztYt9ifBTwZKn8pjywpCZu6a1?=
+ =?us-ascii?Q?YnhkayvrjZz6lezjscZdHEffcJxzZrv1p/UAD5KG8c9YbJOlBJuRe3/p7TR/?=
+ =?us-ascii?Q?VXMwoB0pz4PxLe4HENrvw6Mm1TsDj2Dg45qtnp0JuWL/lzkErKC2CfOueyqW?=
+ =?us-ascii?Q?FPhPhRpdEynYbSPOQaAT/tRBlWXO/H9Tn5+edxY89d4rj9N5YawxcFvnxLd0?=
+ =?us-ascii?Q?QAQF1R0JMhLQHx1cqCR2RtB/acOWL9wn8QML3LZcJf2rdytyTTddUOY+T7mZ?=
+ =?us-ascii?Q?1RvI7TOv1Ze+07tlni1MMNEXa/UpdTBlALbs+cn7ucMqvzEZvPkGFPE1P9nK?=
+ =?us-ascii?Q?TN+hgmxYNR8xEYAAIpJAK6bSY1bSBQKg9zbriKSjZDWYeQJxIANz4gjX4uzH?=
+ =?us-ascii?Q?uyolTrsoLy7Np9HrYG/wHXP+TLQJvUxXngrrzuNHMdh/RtAG2hr7idrNzj9Q?=
+ =?us-ascii?Q?moa0J4PRHe567DlIKu+CZ24trnIJ6vgpOEBbK/pj/0EAUETUtUT2XcWhBbRN?=
+ =?us-ascii?Q?hZOqK0ElprNmrRvZC7M5Cf9yGFKydpX5etVHQVu5mlmoa3Vq8AOHzwm/fo8f?=
+ =?us-ascii?Q?7ikzQrLeOYhw/ZOYexYKnAyYIKeD7dv2fXxgFbEGmNtqR5wvZZcbQPIoorBL?=
+ =?us-ascii?Q?FPja1x9zm2uaE924YXhKZkXerYd92HK70SLJeROBXv5gLrABynbwVrRscMYq?=
+ =?us-ascii?Q?iWcoVWCsp0vqohTJMghXtPwRNrkPzPIJOGpG220WrmIyrEUf7qOyQDinMtHD?=
+ =?us-ascii?Q?dA=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fac97b3e-bb07-4729-66bb-08daa1372353
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5496e680-2c4b-4949-cfa1-08daa1372422
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Sep 2022 09:52:21.6631
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Sep 2022 09:52:23.0693
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: hP52wCMH+qUt5aLR8Gv2BJwdFGU+vdFfm5XUgL/DncyNrTuuymCEmUYuOKgkWo4MX1S8pINxOOGWQvYoKeokAA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: CGDQKB1x28dU4O+l7A2tyR1u/QJScW3lOi3v4OEJUMydzsgstbFH5QIVHTOrC630a8kakrLLguH1eAQnoap1ZQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB7752
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -134,332 +134,144 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-IEEE 802.1Q clause 12.29.1.1 "The queueMaxSDUTable structure and data
-types" and 8.6.8.4 "Enhancements for scheduled traffic" talk about the
-existence of a per traffic class limitation of maximum frame sizes, with
-a fallback on the port-based MTU.
+Our current vsc9959_tas_guard_bands_update() algorithm has a limitation
+imposed by the hardware design. To avoid packet overruns between one
+gate interval and the next (which would add jitter for scheduled traffic
+in the next gate), we configure the switch to use guard bands. These are
+as large as the largest packet which is possible to be transmitted.
 
-As far as I am able to understand, the 802.1Q Service Data Unit (SDU)
-represents the MAC Service Data Unit (MSDU, i.e. L2 payload), excluding
-any number of prepended VLAN headers which may be otherwise present in
-the MSDU. Therefore, the queueMaxSDU is directly comparable to the
-device MTU (1500 means L2 payload sizes are accepted, or frame sizes of
-1518 octets, or 1522 plus one VLAN header). Drivers which offload this
-are directly responsible of translating into other units of measurement.
+The problem is that at tc-taprio intervals of sizes comparable to a
+guard band, there isn't an obvious place in which to split the interval
+between the useful portion (for scheduling) and the guard band portion
+(where scheduling is blocked).
 
-To keep the fast path checks optimized, we keep 2 arrays in the qdisc,
-one for max_sdu translated into frame length (so that it's comparable to
-skb->len), and another for offloading and for dumping back to the user.
+For example, a 10 us interval at 1Gbps allows 1225 octets to be
+transmitted. We currently split the interval between the bare minimum of
+33 ns useful time (required to schedule a single packet) and the rest as
+guard band.
+
+But 33 ns of useful scheduling time will only allow a single packet to
+be sent, be that packet 1200 octets in size, or 60 octets in size. It is
+impossible to send 2 60 octets frames in the 10 us window. Except that
+if we reduced the guard band (and therefore the maximum allowable SDU
+size) to 5 us, the useful time for scheduling is now also 5 us, so more
+packets could be scheduled.
+
+The hardware inflexibility of not scheduling according to individual
+packet lengths must unfortunately propagate to the user, who needs to
+tune the queueMaxSDU values if he wants to fit more small packets into a
+10 us interval, rather than one large packet.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
-v1->v2:
-- precompute the max_frm_len using dev->hard_header_len, so that the
-  fast path can directly check against skb->len
-v2->v3:
-- use qdisc_offload_query_caps(). This also gives an extack message to
-  the user on lack of support for queueMaxSDU, which was not available
-  before.
-v3->v4:
-- none
+v1->v2: none
+v2->v3: implement TC_QUERY_CAPS for TC_SETUP_QDISC_TAPRIO
+v3->v4: fix bogus fall-through in vsc9959_qos_query_caps()
 
- include/net/pkt_sched.h        |   5 ++
- include/uapi/linux/pkt_sched.h |  11 +++
- net/sched/sch_taprio.c         | 152 ++++++++++++++++++++++++++++++++-
- 3 files changed, 167 insertions(+), 1 deletion(-)
+ drivers/net/dsa/ocelot/felix_vsc9959.c | 37 ++++++++++++++++++++++++--
+ 1 file changed, 35 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
-index 34600292fdfb..38207873eda6 100644
---- a/include/net/pkt_sched.h
-+++ b/include/net/pkt_sched.h
-@@ -160,6 +160,10 @@ struct tc_etf_qopt_offload {
- 	s32 queue;
- };
- 
-+struct tc_taprio_caps {
-+	bool supports_queue_max_sdu:1;
-+};
-+
- struct tc_taprio_sched_entry {
- 	u8 command; /* TC_TAPRIO_CMD_* */
- 
-@@ -173,6 +177,7 @@ struct tc_taprio_qopt_offload {
- 	ktime_t base_time;
- 	u64 cycle_time;
- 	u64 cycle_time_extension;
-+	u32 max_sdu[TC_MAX_QUEUE];
- 
- 	size_t num_entries;
- 	struct tc_taprio_sched_entry entries[];
-diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
-index f292b467b27f..000eec106856 100644
---- a/include/uapi/linux/pkt_sched.h
-+++ b/include/uapi/linux/pkt_sched.h
-@@ -1232,6 +1232,16 @@ enum {
- #define TCA_TAPRIO_ATTR_FLAG_TXTIME_ASSIST	_BITUL(0)
- #define TCA_TAPRIO_ATTR_FLAG_FULL_OFFLOAD	_BITUL(1)
- 
-+enum {
-+	TCA_TAPRIO_TC_ENTRY_UNSPEC,
-+	TCA_TAPRIO_TC_ENTRY_INDEX,		/* u32 */
-+	TCA_TAPRIO_TC_ENTRY_MAX_SDU,		/* u32 */
-+
-+	/* add new constants above here */
-+	__TCA_TAPRIO_TC_ENTRY_CNT,
-+	TCA_TAPRIO_TC_ENTRY_MAX = (__TCA_TAPRIO_TC_ENTRY_CNT - 1)
-+};
-+
- enum {
- 	TCA_TAPRIO_ATTR_UNSPEC,
- 	TCA_TAPRIO_ATTR_PRIOMAP, /* struct tc_mqprio_qopt */
-@@ -1245,6 +1255,7 @@ enum {
- 	TCA_TAPRIO_ATTR_SCHED_CYCLE_TIME_EXTENSION, /* s64 */
- 	TCA_TAPRIO_ATTR_FLAGS, /* u32 */
- 	TCA_TAPRIO_ATTR_TXTIME_DELAY, /* u32 */
-+	TCA_TAPRIO_ATTR_TC_ENTRY, /* nest */
- 	__TCA_TAPRIO_ATTR_MAX,
- };
- 
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 0bc6d90e1e51..435d866fcfa0 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -78,6 +78,8 @@ struct taprio_sched {
- 	struct sched_gate_list __rcu *admin_sched;
- 	struct hrtimer advance_timer;
- 	struct list_head taprio_list;
-+	u32 max_frm_len[TC_MAX_QUEUE]; /* for the fast path */
-+	u32 max_sdu[TC_MAX_QUEUE]; /* for dump and offloading */
- 	u32 txtime_delay;
- };
- 
-@@ -415,6 +417,9 @@ static int taprio_enqueue_one(struct sk_buff *skb, struct Qdisc *sch,
- 			      struct Qdisc *child, struct sk_buff **to_free)
- {
- 	struct taprio_sched *q = qdisc_priv(sch);
-+	struct net_device *dev = qdisc_dev(sch);
-+	int prio = skb->priority;
-+	u8 tc;
- 
- 	/* sk_flags are only safe to use on full sockets. */
- 	if (skb->sk && sk_fullsock(skb->sk) && sock_flag(skb->sk, SOCK_TXTIME)) {
-@@ -426,6 +431,11 @@ static int taprio_enqueue_one(struct sk_buff *skb, struct Qdisc *sch,
- 			return qdisc_drop(skb, sch, to_free);
+diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+index 2ec49e42b3f4..c78cef0e2b08 100644
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -1248,6 +1248,14 @@ static u32 vsc9959_port_qmaxsdu_get(struct ocelot *ocelot, int port, int tc)
  	}
- 
-+	/* Devices with full offload are expected to honor this in hardware */
-+	tc = netdev_get_prio_tc_map(dev, prio);
-+	if (skb->len > q->max_frm_len[tc])
-+		return qdisc_drop(skb, sch, to_free);
-+
- 	qdisc_qstats_backlog_inc(sch, skb);
- 	sch->q.qlen++;
- 
-@@ -754,6 +764,11 @@ static const struct nla_policy entry_policy[TCA_TAPRIO_SCHED_ENTRY_MAX + 1] = {
- 	[TCA_TAPRIO_SCHED_ENTRY_INTERVAL]  = { .type = NLA_U32 },
- };
- 
-+static const struct nla_policy taprio_tc_policy[TCA_TAPRIO_TC_ENTRY_MAX + 1] = {
-+	[TCA_TAPRIO_TC_ENTRY_INDEX]	   = { .type = NLA_U32 },
-+	[TCA_TAPRIO_TC_ENTRY_MAX_SDU]	   = { .type = NLA_U32 },
-+};
-+
- static const struct nla_policy taprio_policy[TCA_TAPRIO_ATTR_MAX + 1] = {
- 	[TCA_TAPRIO_ATTR_PRIOMAP]	       = {
- 		.len = sizeof(struct tc_mqprio_qopt)
-@@ -766,6 +781,7 @@ static const struct nla_policy taprio_policy[TCA_TAPRIO_ATTR_MAX + 1] = {
- 	[TCA_TAPRIO_ATTR_SCHED_CYCLE_TIME_EXTENSION] = { .type = NLA_S64 },
- 	[TCA_TAPRIO_ATTR_FLAGS]                      = { .type = NLA_U32 },
- 	[TCA_TAPRIO_ATTR_TXTIME_DELAY]		     = { .type = NLA_U32 },
-+	[TCA_TAPRIO_ATTR_TC_ENTRY]		     = { .type = NLA_NESTED },
- };
- 
- static int fill_sched_entry(struct taprio_sched *q, struct nlattr **tb,
-@@ -1216,7 +1232,8 @@ static int taprio_enable_offload(struct net_device *dev,
- {
- 	const struct net_device_ops *ops = dev->netdev_ops;
- 	struct tc_taprio_qopt_offload *offload;
--	int err = 0;
-+	struct tc_taprio_caps caps;
-+	int tc, err = 0;
- 
- 	if (!ops->ndo_setup_tc) {
- 		NL_SET_ERR_MSG(extack,
-@@ -1224,6 +1241,19 @@ static int taprio_enable_offload(struct net_device *dev,
- 		return -EOPNOTSUPP;
- 	}
- 
-+	qdisc_offload_query_caps(dev, TC_SETUP_QDISC_TAPRIO,
-+				 &caps, sizeof(caps));
-+
-+	if (!caps.supports_queue_max_sdu) {
-+		for (tc = 0; tc < TC_MAX_QUEUE; tc++) {
-+			if (q->max_sdu[tc]) {
-+				NL_SET_ERR_MSG_MOD(extack,
-+						   "Device does not handle queueMaxSDU");
-+				return -EOPNOTSUPP;
-+			}
-+		}
-+	}
-+
- 	offload = taprio_offload_alloc(sched->num_entries);
- 	if (!offload) {
- 		NL_SET_ERR_MSG(extack,
-@@ -1233,6 +1263,9 @@ static int taprio_enable_offload(struct net_device *dev,
- 	offload->enable = 1;
- 	taprio_sched_to_offload(dev, sched, offload);
- 
-+	for (tc = 0; tc < TC_MAX_QUEUE; tc++)
-+		offload->max_sdu[tc] = q->max_sdu[tc];
-+
- 	err = ops->ndo_setup_tc(dev, TC_SETUP_QDISC_TAPRIO, offload);
- 	if (err < 0) {
- 		NL_SET_ERR_MSG(extack,
-@@ -1367,6 +1400,89 @@ static int taprio_parse_clockid(struct Qdisc *sch, struct nlattr **tb,
- 	return err;
  }
  
-+static int taprio_parse_tc_entry(struct Qdisc *sch,
-+				 struct nlattr *opt,
-+				 u32 max_sdu[TC_QOPT_MAX_QUEUE],
-+				 unsigned long *seen_tcs,
-+				 struct netlink_ext_ack *extack)
++static u32 vsc9959_tas_tc_max_sdu(struct tc_taprio_qopt_offload *taprio, int tc)
 +{
-+	struct nlattr *tb[TCA_TAPRIO_TC_ENTRY_MAX + 1] = { };
-+	struct net_device *dev = qdisc_dev(sch);
-+	u32 val = 0;
-+	int err, tc;
++	if (!taprio || !taprio->max_sdu[tc])
++		return 0;
 +
-+	err = nla_parse_nested(tb, TCA_TAPRIO_TC_ENTRY_MAX, opt,
-+			       taprio_tc_policy, extack);
-+	if (err < 0)
-+		return err;
-+
-+	if (!tb[TCA_TAPRIO_TC_ENTRY_INDEX]) {
-+		NL_SET_ERR_MSG_MOD(extack, "TC entry index missing");
-+		return -EINVAL;
-+	}
-+
-+	tc = nla_get_u32(tb[TCA_TAPRIO_TC_ENTRY_INDEX]);
-+	if (tc >= TC_QOPT_MAX_QUEUE) {
-+		NL_SET_ERR_MSG_MOD(extack, "TC entry index out of range");
-+		return -ERANGE;
-+	}
-+
-+	if (*seen_tcs & BIT(tc)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Duplicate TC entry");
-+		return -EINVAL;
-+	}
-+
-+	*seen_tcs |= BIT(tc);
-+
-+	if (tb[TCA_TAPRIO_TC_ENTRY_MAX_SDU])
-+		val = nla_get_u32(tb[TCA_TAPRIO_TC_ENTRY_MAX_SDU]);
-+
-+	if (val > dev->max_mtu) {
-+		NL_SET_ERR_MSG_MOD(extack, "TC max SDU exceeds device max MTU");
-+		return -ERANGE;
-+	}
-+
-+	max_sdu[tc] = val;
-+
-+	return 0;
++	return taprio->max_sdu[tc] + ETH_HLEN + 2 * VLAN_HLEN + ETH_FCS_LEN;
 +}
 +
-+static int taprio_parse_tc_entries(struct Qdisc *sch,
-+				   struct nlattr *opt,
-+				   struct netlink_ext_ack *extack)
-+{
-+	struct taprio_sched *q = qdisc_priv(sch);
-+	struct net_device *dev = qdisc_dev(sch);
-+	u32 max_sdu[TC_QOPT_MAX_QUEUE];
-+	unsigned long seen_tcs = 0;
-+	struct nlattr *n;
-+	int tc, rem;
-+	int err = 0;
-+
-+	for (tc = 0; tc < TC_QOPT_MAX_QUEUE; tc++)
-+		max_sdu[tc] = q->max_sdu[tc];
-+
-+	nla_for_each_nested(n, opt, rem) {
-+		if (nla_type(n) != TCA_TAPRIO_ATTR_TC_ENTRY)
-+			continue;
-+
-+		err = taprio_parse_tc_entry(sch, n, max_sdu, &seen_tcs, extack);
-+		if (err)
-+			goto out;
-+	}
-+
-+	for (tc = 0; tc < TC_QOPT_MAX_QUEUE; tc++) {
-+		q->max_sdu[tc] = max_sdu[tc];
-+		if (max_sdu[tc])
-+			q->max_frm_len[tc] = max_sdu[tc] + dev->hard_header_len;
-+		else
-+			q->max_frm_len[tc] = U32_MAX; /* never oversized */
-+	}
-+
-+out:
-+	return err;
-+}
-+
- static int taprio_mqprio_cmp(const struct net_device *dev,
- 			     const struct tc_mqprio_qopt *mqprio)
+ /* Update QSYS_PORT_MAX_SDU to make sure the static guard bands added by the
+  * switch (see the ALWAYS_GUARD_BAND_SCH_Q comment) are correct at all MTU
+  * values (the default value is 1518). Also, for traffic class windows smaller
+@@ -1257,6 +1265,7 @@ static u32 vsc9959_port_qmaxsdu_get(struct ocelot *ocelot, int port, int tc)
+ static void vsc9959_tas_guard_bands_update(struct ocelot *ocelot, int port)
  {
-@@ -1445,6 +1561,10 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
- 	if (err < 0)
- 		return err;
+ 	struct ocelot_port *ocelot_port = ocelot->ports[port];
++	struct tc_taprio_qopt_offload *taprio;
+ 	u64 min_gate_len[OCELOT_NUM_TC];
+ 	int speed, picos_per_byte;
+ 	u64 needed_bit_time_ps;
+@@ -1266,6 +1275,8 @@ static void vsc9959_tas_guard_bands_update(struct ocelot *ocelot, int port)
  
-+	err = taprio_parse_tc_entries(sch, opt, extack);
-+	if (err)
-+		return err;
+ 	lockdep_assert_held(&ocelot->tas_lock);
+ 
++	taprio = ocelot_port->taprio;
 +
- 	new_admin = kzalloc(sizeof(*new_admin), GFP_KERNEL);
- 	if (!new_admin) {
- 		NL_SET_ERR_MSG(extack, "Not enough memory for a new schedule");
-@@ -1825,6 +1945,33 @@ static int dump_schedule(struct sk_buff *msg,
- 	return -1;
+ 	val = ocelot_read_rix(ocelot, QSYS_TAG_CONFIG, port);
+ 	tas_speed = QSYS_TAG_CONFIG_LINK_SPEED_X(val);
+ 
+@@ -1302,11 +1313,12 @@ static void vsc9959_tas_guard_bands_update(struct ocelot *ocelot, int port)
+ 		"port %d: max frame size %d needs %llu ps at speed %d\n",
+ 		port, maxlen, needed_bit_time_ps, speed);
+ 
+-	vsc9959_tas_min_gate_lengths(ocelot_port->taprio, min_gate_len);
++	vsc9959_tas_min_gate_lengths(taprio, min_gate_len);
+ 
+ 	mutex_lock(&ocelot->fwd_domain_lock);
+ 
+ 	for (tc = 0; tc < OCELOT_NUM_TC; tc++) {
++		u32 requested_max_sdu = vsc9959_tas_tc_max_sdu(taprio, tc);
+ 		u64 remaining_gate_len_ps;
+ 		u32 max_sdu;
+ 
+@@ -1317,7 +1329,7 @@ static void vsc9959_tas_guard_bands_update(struct ocelot *ocelot, int port)
+ 			/* Setting QMAXSDU_CFG to 0 disables oversized frame
+ 			 * dropping.
+ 			 */
+-			max_sdu = 0;
++			max_sdu = requested_max_sdu;
+ 			dev_dbg(ocelot->dev,
+ 				"port %d tc %d min gate len %llu"
+ 				", sending all frames\n",
+@@ -1348,6 +1360,10 @@ static void vsc9959_tas_guard_bands_update(struct ocelot *ocelot, int port)
+ 			 */
+ 			if (max_sdu > 20)
+ 				max_sdu -= 20;
++
++			if (requested_max_sdu && requested_max_sdu < max_sdu)
++				max_sdu = requested_max_sdu;
++
+ 			dev_info(ocelot->dev,
+ 				 "port %d tc %d min gate length %llu"
+ 				 " ns not enough for max frame size %d at %d"
+@@ -1637,6 +1653,21 @@ static int vsc9959_qos_port_cbs_set(struct dsa_switch *ds, int port,
+ 	return 0;
  }
  
-+static int taprio_dump_tc_entries(struct taprio_sched *q, struct sk_buff *skb)
++static int vsc9959_qos_query_caps(struct tc_query_caps_base *base)
 +{
-+	struct nlattr *n;
-+	int tc;
++	switch (base->type) {
++	case TC_SETUP_QDISC_TAPRIO: {
++		struct tc_taprio_caps *caps = base->caps;
 +
-+	for (tc = 0; tc < TC_MAX_QUEUE; tc++) {
-+		n = nla_nest_start(skb, TCA_TAPRIO_ATTR_TC_ENTRY);
-+		if (!n)
-+			return -EMSGSIZE;
++		caps->supports_queue_max_sdu = true;
 +
-+		if (nla_put_u32(skb, TCA_TAPRIO_TC_ENTRY_INDEX, tc))
-+			goto nla_put_failure;
-+
-+		if (nla_put_u32(skb, TCA_TAPRIO_TC_ENTRY_MAX_SDU,
-+				q->max_sdu[tc]))
-+			goto nla_put_failure;
-+
-+		nla_nest_end(skb, n);
++		return 0;
 +	}
-+
-+	return 0;
-+
-+nla_put_failure:
-+	nla_nest_cancel(skb, n);
-+	return -EMSGSIZE;
++	default:
++		return -EOPNOTSUPP;
++	}
 +}
 +
- static int taprio_dump(struct Qdisc *sch, struct sk_buff *skb)
- {
- 	struct taprio_sched *q = qdisc_priv(sch);
-@@ -1863,6 +2010,9 @@ static int taprio_dump(struct Qdisc *sch, struct sk_buff *skb)
- 	    nla_put_u32(skb, TCA_TAPRIO_ATTR_TXTIME_DELAY, q->txtime_delay))
- 		goto options_error;
+ static int vsc9959_port_setup_tc(struct dsa_switch *ds, int port,
+ 				 enum tc_setup_type type,
+ 				 void *type_data)
+@@ -1644,6 +1675,8 @@ static int vsc9959_port_setup_tc(struct dsa_switch *ds, int port,
+ 	struct ocelot *ocelot = ds->priv;
  
-+	if (taprio_dump_tc_entries(q, skb))
-+		goto options_error;
-+
- 	if (oper && dump_schedule(skb, oper))
- 		goto options_error;
- 
+ 	switch (type) {
++	case TC_QUERY_CAPS:
++		return vsc9959_qos_query_caps(type_data);
+ 	case TC_SETUP_QDISC_TAPRIO:
+ 		return vsc9959_qos_port_tas_set(ocelot, port, type_data);
+ 	case TC_SETUP_QDISC_CBS:
 -- 
 2.34.1
 
