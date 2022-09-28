@@ -2,225 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 984285ED25C
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 02:59:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 409535ED260
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 03:01:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230172AbiI1A7d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 20:59:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55092 "EHLO
+        id S231627AbiI1BBI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 21:01:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231938AbiI1A72 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 20:59:28 -0400
-Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 818B8160E7B
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 17:59:21 -0700 (PDT)
-Received: by mail-qv1-xf2f.google.com with SMTP id w9so1439970qvn.11
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 17:59:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
-         :cc:subject:date;
-        bh=/8ANvmu+ien/gHvB0OZs/R0iiX33ilJLPxiQyamxSbs=;
-        b=DkafteW2OMO+4KggWIpIEJUZJAwzFuxRtHoFvtHnE3RrKozv9VzkbX0Y2IfkNY3C37
-         6gJLyMj2+UXY4tYcGUOenauPXz7Axf18srLFvD9HGuZWIbHaB6B7AyRU/okM0pNfkI2Q
-         nMmcoaAmPJ5VFPQN46HE0KguwT47FRTEPaPa4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=references:in-reply-to:message-id:date:subject:cc:to:from
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=/8ANvmu+ien/gHvB0OZs/R0iiX33ilJLPxiQyamxSbs=;
-        b=38CSefdXSSu/VLrC+4VaTP0HUMMNY2ucV3vS3sJDzu6ZDGVsGfYiCDrDSLBC6ND9Fs
-         xCKc5PIMjpv1retij47Yj5a+W5iqIzAR5aUN9Bz1GZZBcXjGiQ5VLrtBCWBHGZAs1vGH
-         NOSmoziweTwG4bqbwyL8cKzeNLBlKQtURPB6iDP8SnHjFHJ4RITcvUqjXEaTLjTeo+c7
-         Fle41iLWpiaHEZkP3gvYN19wRm6lVMc3YKYsUVYacW8dGJhBssp7cXH4eR4N/6Xv5xsF
-         ZEM0SUYC2VvT6obHuhiVY7AQj5rBaPJ668bE66SfQeGJpMAPg/rU9CGOycerzgRbmolp
-         +bfw==
-X-Gm-Message-State: ACrzQf1awaC3YiQE8NAGC5oZQxfMEKvRFyMIE4aTAwZhIivGThZx8UTC
-        R7zPX1Ju4IVkdxQmGZgZL7xqnH2pd2hVmmaZ
-X-Google-Smtp-Source: AMsMyM4BKcJHYbRn9D0frGUtGJ3jUDBJ1EmznkH1xP7LOU3U9z3xl0C1duKtZFPLgImsokGVrgLBag==
-X-Received: by 2002:a05:6214:21e9:b0:4ac:9bfb:e7b1 with SMTP id p9-20020a05621421e900b004ac9bfbe7b1mr24437132qvj.99.1664326760732;
-        Tue, 27 Sep 2022 17:59:20 -0700 (PDT)
-Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id i11-20020a05620a248b00b006cbb8ca04f8sm2078668qkn.40.2022.09.27.17.59.19
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 27 Sep 2022 17:59:20 -0700 (PDT)
-From:   Michael Chan <michael.chan@broadcom.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, gospo@broadcom.com, vikas.gupta@broadcom.com
-Subject: [PATCH net-next 6/6] bnxt_en: check and resize NVRAM UPDATE entry before flashing
-Date:   Tue, 27 Sep 2022 20:58:44 -0400
-Message-Id: <1664326724-1415-7-git-send-email-michael.chan@broadcom.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1664326724-1415-1-git-send-email-michael.chan@broadcom.com>
-References: <1664326724-1415-1-git-send-email-michael.chan@broadcom.com>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000674d5d05e9b2458a"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_TVD_MIME_NO_HEADERS autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S231502AbiI1BBF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 21:01:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A300E7C1B6;
+        Tue, 27 Sep 2022 18:01:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4865AB81E77;
+        Wed, 28 Sep 2022 01:01:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39189C433C1;
+        Wed, 28 Sep 2022 01:00:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664326859;
+        bh=xf1KWcWWS/gh3cdjZ1hQdsIxEkddHB6FWg7h2R0XIyg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ooGTwwJBeQ/H2anhobyE2MPRwc5h0zHcLfIty52xhbxEmlK/YNjS4jwmXVn8AUqNv
+         kl3dImqZ2P78pGe5w5eGVlmsIf0QjphI/g6v5VoKrUG3yX2I245yctSl6/IpcKUqHO
+         BATpPx+MERbQrou4UMiiIyAte7HWJksdXd2+82y8xfmWv+iKaxU+3vr4MKs1RksUZH
+         vPnLU+wO/6ZpcdrW7oG5eBD4EGDoHw9gC62PFktvfhsjVLVtTKROdAjH/LRLVlrzuM
+         wyKNYciPASh2GeYYfssY+nd2Vgtxh+t0RPrmMf72xERNxUWUILXVMzjZ2zpOmZSHxF
+         JbidGACtGbRuA==
+Date:   Tue, 27 Sep 2022 18:00:56 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
+        David Jander <david@protonic.nl>,
+        Luka Perkov <luka.perkov@sartura.hr>,
+        Robert Marko <robert.marko@sartura.hr>
+Subject: Re: [PATCH net-next v7 2/7] net: add framework to support Ethernet
+ PSE and PDs devices
+Message-ID: <20220927180056.5e8e410c@kernel.org>
+In-Reply-To: <20220926112500.990705-3-o.rempel@pengutronix.de>
+References: <20220926112500.990705-1-o.rempel@pengutronix.de>
+        <20220926112500.990705-3-o.rempel@pengutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000674d5d05e9b2458a
+On Mon, 26 Sep 2022 13:24:55 +0200 Oleksij Rempel wrote:
+> +static inline int pse_controller_register(struct pse_controller_dev *pcdev)
+> +{
+> +	return -ENOTSUPP;
+> +}
+> +
+> +static inline void pse_controller_unregister(struct pse_controller_dev *pcdev)
+> +{
+> +}
+> +
+> +static inline int devm_pse_controller_register(struct device *dev,
+> +						 struct pse_controller_dev *pcdev)
+> +{
+> +	return -ENOTSUPP;
+> +}
 
-From: Vikas Gupta <vikas.gupta@broadcom.com>
+Presumably only PSE controller drivers would try to register themselves.
+Such drivers should depend on the right config, and therefore we don't
+need static inline stubs for the register/unregister API.
 
-Resize of the UPDATE entry is required if the image to
-be flashed is larger than the available space. Add this step,
-otherwise flashing larger firmware images by ethtool or devlink
-may fail.
+> +static inline struct pse_control *pse_control_get(struct device *dev)
+> +{
+> +	return ERR_PTR(-ENOTSUPP);
+> +}
+> +
+> +static inline struct pse_control *devm_pse_control_get( struct device *dev)
 
-Reviewed-by: Andy Gospodarek <andrew.gospodarek@broadcom.com>
-Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
----
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 32 +++++++++++++++++++
- 1 file changed, 32 insertions(+)
+nit: extra space after (
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index 2b18af95aacb..2f97f41408e7 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -2514,6 +2514,7 @@ static int bnxt_flash_firmware_from_file(struct net_device *dev,
- #define MSG_INTERNAL_ERR "PKG install error : Internal error"
- #define MSG_NO_PKG_UPDATE_AREA_ERR "PKG update area not created in nvram"
- #define MSG_NO_SPACE_ERR "PKG insufficient update area in nvram"
-+#define MSG_RESIZE_UPDATE_ERR "Resize UPDATE entry error"
- #define MSG_ANTI_ROLLBACK_ERR "HWRM_NVM_INSTALL_UPDATE failure due to Anti-rollback detected"
- #define MSG_GENERIC_FAILURE_ERR "HWRM_NVM_INSTALL_UPDATE failure"
- 
-@@ -2564,6 +2565,32 @@ static int nvm_update_err_to_stderr(struct net_device *dev, u8 result,
- #define BNXT_NVM_MORE_FLAG	(cpu_to_le16(NVM_MODIFY_REQ_FLAGS_BATCH_MODE))
- #define BNXT_NVM_LAST_FLAG	(cpu_to_le16(NVM_MODIFY_REQ_FLAGS_BATCH_LAST))
- 
-+static int bnxt_resize_update_entry(struct net_device *dev, size_t fw_size,
-+				    struct netlink_ext_ack *extack)
-+{
-+	u32 item_len;
-+	int rc;
-+
-+	rc = bnxt_find_nvram_item(dev, BNX_DIR_TYPE_UPDATE,
-+				  BNX_DIR_ORDINAL_FIRST, BNX_DIR_EXT_NONE, NULL,
-+				  &item_len, NULL);
-+	if (rc) {
-+		BNXT_NVM_ERR_MSG(dev, extack, MSG_NO_PKG_UPDATE_AREA_ERR);
-+		return rc;
-+	}
-+
-+	if (fw_size > item_len) {
-+		rc = bnxt_flash_nvram(dev, BNX_DIR_TYPE_UPDATE,
-+				      BNX_DIR_ORDINAL_FIRST, 0, 1,
-+				      round_up(fw_size, 4096), NULL, 0);
-+		if (rc) {
-+			BNXT_NVM_ERR_MSG(dev, extack, MSG_RESIZE_UPDATE_ERR);
-+			return rc;
-+		}
-+	}
-+	return 0;
-+}
-+
- int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware *fw,
- 				   u32 install_type, struct netlink_ext_ack *extack)
- {
-@@ -2580,6 +2607,11 @@ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware
- 	u16 index;
- 	int rc;
- 
-+	/* resize before flashing larger image than available space */
-+	rc = bnxt_resize_update_entry(dev, fw->size, extack);
-+	if (rc)
-+		return rc;
-+
- 	bnxt_hwrm_fw_set_time(bp);
- 
- 	rc = hwrm_req_init(bp, modify, HWRM_NVM_MODIFY);
--- 
-2.18.1
+> +{
+> +	return ERR_PTR(-ENOTSUPP);
+> +}
 
+These two I don't see any calls to outside drivers/net/pse-pd/pse_core.c
+so they should go from the API until we get an in-tree caller.
 
---000000000000674d5d05e9b2458a
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+> +static inline struct pse_control *of_pse_control_get(struct device_node *node)
+> +{
+> +	return ERR_PTR(-ENOTSUPP);
+> +}
 
-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
-OnaLEot1MoQO7BIe5S9H4AcCEXXcrJJiAtMCl47ARpyHmvQFQFFTrHgUYEd9V+9bOzY7MBIGSV1N
-/JfsT1sZw6HT0lJkSQefhPGpBniAob62DJP3qr11tu8CAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
-AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
-c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
-AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
-TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
-bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
-L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
-BB0wG4EZbWljaGFlbC5jaGFuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
-HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQU31rAyTdZweIF0tJTFYwfOv2w
-L4QwDQYJKoZIhvcNAQELBQADggEBACcuyaGmk0NSZ7Kio7O7WSZ0j0f9xXcBnLbJvQXFYM7JI5uS
-kw5ozATEN5gfmNIe0AHzqwoYjAf3x8Dv2w7HgyrxWdpjTKQFv5jojxa3A5LVuM8mhPGZfR/L5jSk
-5xc3llsKqrWI4ov4JyW79p0E99gfPA6Waixoavxvv1CZBQ4Stu7N660kTu9sJrACf20E+hdKLoiU
-hd5wiQXo9B2ncm5P3jFLYLBmPltIn/uzdiYpFj+E9kS9XYDd+boBZhN1Vh0296zLQZobLfKFzClo
-E6IFyTTANonrXvCRgodKS+QJEH8Syu2jSKe023aVemkuZjzvPK7o9iU7BKkPG2pzLPgxggJtMIIC
-aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
-EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxeQGjDntHGb2iaQkIw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIBCHjkbdtrTwlbTXefLBSkSDY1Eb9iqi
-CAEnXL9FrQPRMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDky
-ODAwNTkyMVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
-SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAWC/cqLggPs8UYeFsb8sGGvLFWIrU+aCbmf1lNk6uClLT9YVwu
-uce2eaBNRhnMQhJ/h4Nojui4sE3tXwiczq/W1O+vW9B64lBvjNTTVkebVTbaJ9+pJx8P2v6I2/gh
-gejPWzGFeeTAMA1MbidoWV2upeX+ITTKN9SrAHecT7pd5rqNWah6eYSsHmIma8R8NqX+WwassQON
-eN13PKaglDCTuc3VXXsN4c98yXT5C8hNEx7fRKR8f97DEyd9/yEQiXveMSfERQkKTa6w9bx8mn/+
-n2I5mnce3uh3aotsnEgSymejEyZO/XOkCvP0pWfhFfRsXnqkExccSswr6EZX16q/
---000000000000674d5d05e9b2458a--
+This one should prolly return -ENOENT as noted on patch 4.
+
+If you could sed -i 's/ENOTSUPP/EOPNOTSUPP/' on the patches that'd be
+great, I don't think those errno can leak to user space but why risk
+it...
