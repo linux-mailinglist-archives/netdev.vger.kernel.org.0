@@ -2,163 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 31C7F5EDF16
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 16:46:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81BB35EDF3C
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 16:52:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233931AbiI1Oqe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 10:46:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37010 "EHLO
+        id S234568AbiI1Owc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 10:52:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233614AbiI1Oqd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 10:46:33 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D7798E440
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 07:46:32 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id hy2so27616550ejc.8
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 07:46:32 -0700 (PDT)
+        with ESMTP id S234562AbiI1OwL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 10:52:11 -0400
+Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56E7FB2CC5;
+        Wed, 28 Sep 2022 07:52:02 -0700 (PDT)
+Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-13175b79807so7504835fac.9;
+        Wed, 28 Sep 2022 07:52:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=Rg8q6sr0v63hGHCdlAeSjJTGQsexDzdClJbGCM6Q6pE=;
-        b=XXG78eYCHRQkQwxiVGu57fvcz9y2pDrOrFgIl65g6yUT8Bbb8e+lqKAATrBeF3+C9Z
-         JVh8HjZ9Vwyr/faIBiia5/BAea7GzYuIndaI8dFnRVMRLOu6t5i3b0T/d0Axr1WIcWnk
-         7iL1SVDMzC1JDTTfPxzgr1H1yaqi3BDfnnXDf9jBKH3+y13i8v8QpMyg1B7n+6Bg3Tt6
-         DCeVw8O44pgKnu/lv2JKjRwKo7XOMvYhC3Egd+5Ng0NEJzY3UedHsvkdvA8yPpe8E/Qq
-         /f+yeSybwwNQhxz7b8HVthWHnM5OiX01RrbPR9idCw5WRU+KN1trteMNRvL/ZHBbBq8Y
-         xFgQ==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=TIZXzEKYi8YkccEetyBjMgWXZYUaHtf6GUbWjD4kbBI=;
+        b=JVValpnyOwlAuIhkmcDbq0qeAKvw0R/3cXOXm8z80Vy6Hfs3QqwFaRA69kqQkDhuuk
+         zr2D0zU+f1Y6wOt7NCBIT2K8b+4jb/Dle69t7b3VbY7B1XDtxZAUzbseMIuhuhtbfwWK
+         jvwFSYfbpBmgLDClsYJ5kKciNQlWxjkcaIiGWhGhz1bBN44LoLl54AKjna6FWzuXxOui
+         10HucYYI+duWD/Bbuf/JZ3B+kyVGQf84OS/kgKrNjutdGZxR17MyT+DAX9YzpAq5LY1Y
+         wsTf1DqBh2LSsYwDVgB+UcfUCkaBYwLiXHETDqBEKgcMS9x/nh3XNoAy+oWdulk9A1AI
+         jBqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=Rg8q6sr0v63hGHCdlAeSjJTGQsexDzdClJbGCM6Q6pE=;
-        b=K9SYxwykhMAMjehM57eCoyzflkjru8u4yW/zR8q0PK9nwxkLSN24eqI6OvvoneaMoC
-         5LW6YK33hUbvDqKSGziftEC0kXM0xtQfW5PSHEtDSUZo5jCRNwY5gVy20q7khTjTOSk6
-         WvOolSiYDoovDU+Lg1NbkTWITNp4taMgI3+SAyvcwA7oL17mHdpFqHT779X/rQUVP84k
-         PGyyx6E0DA8lJRHaeT+XM6eiYB3p1xBOhMqgOUn0JyXbtgLaOTFNa69vUR5LUYv3Sxon
-         vuVWV5uOAxrnO4bHohstIM4lzguWE3iRX3ThXGG2K5Dg82Z8p/qL+cdjj0uJXVYPaw/6
-         Accg==
-X-Gm-Message-State: ACrzQf2bdGOA0MT2u+A+wOuDaX3FnXPYOBY6wFOzAZWLPbzW4jSqkOcS
-        oZW+gPhYXqKPiuDgEBV1c7J4V0m6Rd9/QIKs9Ck=
-X-Google-Smtp-Source: AMsMyM7JpJuxXrSwM9LCUK/JBCYow7iy+rMxDZ1N6uy2NrqZVMTPAmXObJZhjHKEuGvJCIJ6PUJz9w==
-X-Received: by 2002:a17:907:72d4:b0:783:22e1:43a1 with SMTP id du20-20020a17090772d400b0078322e143a1mr17231900ejc.47.1664376390740;
-        Wed, 28 Sep 2022 07:46:30 -0700 (PDT)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id c17-20020a17090618b100b0077ce503bd77sm2466670ejf.129.2022.09.28.07.46.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 28 Sep 2022 07:46:30 -0700 (PDT)
-Message-ID: <60f75b7a-e9c3-ed30-0992-711c7ab23bc1@blackwall.org>
-Date:   Wed, 28 Sep 2022 17:46:28 +0300
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=TIZXzEKYi8YkccEetyBjMgWXZYUaHtf6GUbWjD4kbBI=;
+        b=n92Unyp5h8oksTNWXnvhLLrPaSu5FjDlZbU2bxkS3n60PhRWIdXxK5aPBDqXHpLSdN
+         jJepsTNvXIL0+c4qwOv2uJkoAEbglEfOiH8ejOsYFoVEYEqEEiFTaHQY+gFic1tAftDO
+         VTf4kMCjP9L0IoZxW1fdXjX1+RaW8Q5vqi1nG9KmvXlyEZyiuWG0OI06Vs+1jWcJwWUH
+         E/7Gr1gJdyOIlZMWmXpvBdFLtAhnHJFBy8bOZpMp4kdKTY+m6pvO32Wv2R+ce+BRAYdy
+         M9FtuZplnPcMTNWl5zqABe0Gf1UMd0nVjPHI4e2xrt9Q3oF/uqeZQtd4qLsFlSzWTalm
+         Dqbw==
+X-Gm-Message-State: ACrzQf2SEItynjVlUuzdj3TFo5HetPRiHXI4xL8FEyBeowWv7b9og3fe
+        HSK5l9z4ikU6Y++UXWHtZa8=
+X-Google-Smtp-Source: AMsMyM4II/936alaoenNFePZ24iaLn0fbfgLrQ7d70SFig8ZY4YqnEZqQTgZycuf3hiIqQIclDYJWg==
+X-Received: by 2002:a05:6870:d24e:b0:127:ba61:5343 with SMTP id h14-20020a056870d24e00b00127ba615343mr5434001oac.81.1664376721539;
+        Wed, 28 Sep 2022 07:52:01 -0700 (PDT)
+Received: from localhost ([12.97.180.36])
+        by smtp.gmail.com with ESMTPSA id k9-20020a056830168900b0063695ad0cbesm2136923otr.66.2022.09.28.07.52.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 28 Sep 2022 07:52:01 -0700 (PDT)
+Date:   Wed, 28 Sep 2022 07:49:51 -0700
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Valentin Schneider <vschneid@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Subject: Re: [PATCH 1/7] cpumask: fix checking valid cpu range
+Message-ID: <YzRfD2aAID8DuHL1@yury-laptop>
+References: <20220919210559.1509179-1-yury.norov@gmail.com>
+ <20220919210559.1509179-2-yury.norov@gmail.com>
+ <xhsmhbkqz4rqr.mognet@vschneid.remote.csb>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Subject: Re: [PATCH net-next] docs: netlink: clarify the historical baggage of
- Netlink flags
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     nicolas.dichtel@6wind.com,
-        Florent Fourcot <florent.fourcot@wifirst.fr>,
-        netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, Johannes Berg <johannes@sipsolutions.net>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-References: <20220927212306.823862-1-kuba@kernel.org>
- <a93cea13-21e9-f714-270c-559d51f68716@wifirst.fr>
- <d93ee260-9199-b760-40fe-f3d61a0af701@6wind.com>
- <e4db8d52-5bbb-8667-86a6-c7a2154598d1@blackwall.org>
- <20220928073709.1b93b74a@kernel.org>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20220928073709.1b93b74a@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <xhsmhbkqz4rqr.mognet@vschneid.remote.csb>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28/09/2022 17:37, Jakub Kicinski wrote:
-> On Wed, 28 Sep 2022 12:21:57 +0300 Nikolay Aleksandrov wrote:
->> On 28/09/2022 11:55, Nicolas Dichtel wrote:
->>> Le 28/09/2022 à 10:04, Florent Fourcot a écrit :  
->>>> About NLM_F_EXCL, I'm not sure that my comment is relevant for your intro.rst
->>>> document, but it has another usage in ipset submodule. For IPSET_CMD_DEL,
->>>> setting NLM_F_EXCL means "raise an error if entry does not exist before the
->>>> delete".  
+On Wed, Sep 28, 2022 at 01:18:20PM +0100, Valentin Schneider wrote:
+> On 19/09/22 14:05, Yury Norov wrote:
+> > The range of valid CPUs is [0, nr_cpu_ids). Some cpumask functions are
+> > passed with a shifted CPU index, and for them, the valid range is
+> > [-1, nr_cpu_ids-1). Currently for those functions, we check the index
+> > against [-1, nr_cpu_ids), which is wrong.
+> >
+> > Signed-off-by: Yury Norov <yury.norov@gmail.com>
+> > ---
+> >  include/linux/cpumask.h | 19 ++++++++-----------
+> >  1 file changed, 8 insertions(+), 11 deletions(-)
+> >
+> > diff --git a/include/linux/cpumask.h b/include/linux/cpumask.h
+> > index e4f9136a4a63..a1cd4eb1a3d6 100644
+> > --- a/include/linux/cpumask.h
+> > +++ b/include/linux/cpumask.h
+> > @@ -174,9 +174,8 @@ static inline unsigned int cpumask_last(const struct cpumask *srcp)
+> >  static inline
+> >  unsigned int cpumask_next(int n, const struct cpumask *srcp)
+> >  {
+> > -	/* -1 is a legal arg here. */
+> > -	if (n != -1)
+> > -		cpumask_check(n);
+> > +	/* n is a prior cpu */
+> > +	cpumask_check(n + 1);
+> >       return find_next_bit(cpumask_bits(srcp), nr_cpumask_bits, n + 1);
 > 
-> Interesting.
+> I'm confused, this makes passing nr_cpu_ids-1 to cpumask_next*() trigger a
+> warning. The documentation does states:
 > 
->>> So NLM_F_EXCL could be used with DEL command for netfilter netlink but cannot be
->>> used (it overlaps with NLM_F_BULK, see [1]) with DEL command for rtnetlink.
->>> Sigh :(
->>>
->>> [1] https://lore.kernel.org/netdev/0198618f-7b52-3023-5e9f-b38c49af1677@6wind.com/
->>
->> One could argue that's abuse of the api, but since it's part of a different family
->> I guess it's ok. NLM_F_EXCL is a modifier of NEW cmd as the comment above it says
->> and has never had rtnetlink DEL users.
+> * @n: the cpu prior to the place to search (ie. return will be > @n)
 > 
-> It's fine in the sense that it works, but it's rather pointless to call
-> the flags common if they have different semantics depending on the
-> corner of the kernel they are used in, right?
-> 
+> So n is a valid CPU number (with -1 being the exception for scan
+> initialization), this shouldn't exclude nr_cpu_ids-1.
 
-Right, and their comments and docs become kind of meaningless because of that.
+For a regular cpumask function, like cpumask_any_but(), the valid range is
+[0, nr_cpu_ids).
 
-> I was very tempted to send a patch which would validate the top
-> byte of flags in genetlink for new commands, this way we may some day
-> find a truly common (as in enforced by the code) use for the bits. 
+'Special' functions shift by 1 when call underlying find API:
+
+  static inline
+  unsigned int cpumask_next(int n, const struct cpumask *srcp)
+  {
+          /* n is a prior cpu */
+          cpumask_check(n + 1);
+          return find_next_bit(cpumask_bits(srcp), nr_cpumask_bits, n + 1);
+  }
+
+So, for them the valid range [0, nr_cpu_ids) must be shifted in other
+direction: [-1, nr_cpu_ids-1). 
+
+> IMO passing nr_cpu_ids-1 should be treated the same as passing the
+> last set bit in a bitmap: no warning, and returns the bitmap
+> size.
+
+This is how cpumask_check() works for normal functions. For
+cpumask_next() passing nr_cpu_ids-1 is the same as passing nr_cpu_ids
+for cpumask_any_but(), and it should trigger warning in both cases.
+(Or should not, but it's a different story.)
+
+> calling code which seems like unnecessary boiler plate
 > 
-> WDYT?
+> For instance, I trigger the cpumask_check() warning there:
 > 
+> 3d2dcab932d0:block/blk-mq.c @l2047
+>         if (--hctx->next_cpu_batch <= 0) {
+> select_cpu:
+>                 next_cpu = cpumask_next_and(next_cpu, hctx->cpumask, <-----
+>                                 cpu_online_mask);
+>                 if (next_cpu >= nr_cpu_ids)
+>                         next_cpu = blk_mq_first_mapped_cpu(hctx);
+>                 hctx->next_cpu_batch = BLK_MQ_CPU_WORK_BATCH;
+>         }
+> 
+> next_cpu is a valid CPU number, shifting it doesn't seem to make sense, and
+> we do want it to reach nr_cpu_ids-1.
 
-I like it, can't check right now if we can get into the same issue as with BULK where
-someone is passing unused/wrong flags with the command and we break him though.
-But I'd bite the bullet and maybe issue an extack msg as well.
+next_cpu is a valid CPU number for all, but not for cpumask_next().
+The warning is valid. If we are at the very last cpu, what for we look
+for next?
 
-> diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
-> index 7c136de117eb..0fbaed49e23f 100644
-> --- a/net/netlink/genetlink.c
-> +++ b/net/netlink/genetlink.c
-> @@ -739,6 +739,22 @@ static int genl_family_rcv_msg_doit(const struct genl_family *family,
->  	return err;
->  }
->  
-> +static int genl_header_check(struct nlmsghdr *nlh, struct genlmsghdr *hdr)
-> +{
-> +	if (hdr->reserved)
-> +		return -EINVAL;
-> +
-> +	/* Flags - lower byte check */
-> +	if (nlh->nlmsg_flags & 0xff & ~(NLM_F_REQUEST | NLM_F_ACK | NLM_F_ECHO))
-> +		return -EINVAL;
-> +	/* Flags - higher byte check */
-> +	if (nlh->nlmsg_flags & 0xff00 &&
-> +	    nlh->nlmsg_flags & 0xff00 != NLM_F_DUMP)
-> +		return -EINVAL;
-> +
-> +	return 0;
-> +}
-> +
->  static int genl_family_rcv_msg(const struct genl_family *family,
->  			       struct sk_buff *skb,
->  			       struct nlmsghdr *nlh,
-> @@ -757,7 +773,7 @@ static int genl_family_rcv_msg(const struct genl_family *family,
->  	if (nlh->nlmsg_len < nlmsg_msg_size(hdrlen))
->  		return -EINVAL;
->  
-> -	if (hdr->cmd >= family->resv_start_op && hdr->reserved)
-> +	if (hdr->cmd >= family->resv_start_op && genl_header_check(nlh, hdr))
->  		return -EINVAL;
->  
->  	if (genl_get_cmd(hdr->cmd, family, &op))
+The snippet above should be fixed like this:
 
+          if (--hctx->next_cpu_batch <= 0) {
+  select_cpu:
+                  if (next_cpu == nr_cpu_ids - 1)
+                          next_cpu = nr_cpu_ids;
+                  else
+                          next_cpu = cpumask_next_and(next_cpu,
+                                                      hctx->cpumask,
+                                                      cpu_online_mask);
+                  if (next_cpu >= nr_cpu_ids)
+                          next_cpu = blk_mq_first_mapped_cpu(hctx);
+                  hctx->next_cpu_batch = BLK_MQ_CPU_WORK_BATCH;
+          }
+
+The original motivation for this special shifted semantics was to
+avoid passing '+1' in cpumask_next() everywhere where it's used to
+iterate over cpumask. This is especially ugly because it brings negative
+semantics in such a simple thing like an index, and makes people confused.
+It was a bad decision, but now it's so broadly used that we have to live
+with it.
+
+The strategy to mitigate this is to minimize using of that 'special'
+functions. They all are cpumask_next()-like. In this series I reworked
+for_each_cpu() to not use cpumask_next().
+
+Often, cpumask_next() is a part of opencoded for_each_cpu(), and this
+is relatively easy to fix. In case of blk_mq_hctx_next_cpu() that you
+mentioned above, cpumask_next_and() usage looks unavoidable, and
+there's nothing to do with that, except that being careful.
+
+It didn't trigger the warning in my test setup, so I didn't fix it.
+Feel free to submit a patch, if you observe the warning for yourself.
+
+Maybe we should consider nr_cpu_ids as a special valid index for
+cpumask_check(), a sign of the end of an array. This would help to
+silence many warnings, like this one. For now I'm leaning towards that
+it's more a hack than a meaningful change. 
+
+Thanks,
+Yury
