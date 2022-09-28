@@ -2,138 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0319C5EE25F
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 18:56:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9A6E5EE269
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 18:59:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233776AbiI1Q4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 12:56:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55098 "EHLO
+        id S233733AbiI1Q7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 12:59:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233707AbiI1Q4W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 12:56:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F386C13D1D
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 09:56:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4494361F26
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 16:56:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FA8BC433C1;
-        Wed, 28 Sep 2022 16:56:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664384180;
-        bh=qyG3KrU5/BOf/jkM+WR4aIYGEy1Z3apHxT+ImXIiPPA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=pGrgoJITV+Fk+noiuQYgVjzJPxvwMRhQodTJkhcbMWi9VjBpI71pO3jIK6s1gt+MG
-         D3t28KBhzNWgNnttGgxz+aAEZYmhVlIKcs4W73FbWqbMBougcGYno19OJGjO8BA1+1
-         TIE7oK3OZlUVb+eyuj08mxQj9WIFBIJSDOZmmPvWcpt743lrVBVCjXiCVPkrSV6MNs
-         qYBC7QsgNApde6jMQ1LEtiixIFk8gN2bXxYh/7IScgucRdD5fmGTNV5/H6azCAQsrn
-         VDslTeeEuc9um81XwL77YHKFtPHoJjP5n8ZLZmjvoHMBf8SbV0MtpkMHUpnVTq6apH
-         f1NR5wqPVrSCA==
-Date:   Wed, 28 Sep 2022 19:56:16 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Chunhao Lin <hau@realtek.com>
-Cc:     hkallweit1@gmail.com, netdev@vger.kernel.org, nic_swsd@realtek.com
-Subject: Re: [PATCH net-next v2] r8169: add rtl_disable_rxdvgate()
-Message-ID: <YzR8sHxXsHoenMA7@unreal>
-References: <20220928130317.3522-1-hau@realtek.com>
+        with ESMTP id S231419AbiI1Q7E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 12:59:04 -0400
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01C277D783;
+        Wed, 28 Sep 2022 09:59:04 -0700 (PDT)
+Received: by mail-qk1-x731.google.com with SMTP id g2so8269578qkk.1;
+        Wed, 28 Sep 2022 09:59:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=Au941G7l7BgqQ/wE2oSbMdBllGGF8B4MeZUvzUpdMXA=;
+        b=ABYUHFhN4/WtrDIGyD9Eyb9+xb7CvD5L+/2LwO7wTjjanycyJAJaTkfL8maQWXf5zA
+         ZZTWGwGKpPPFD+J0nd2DIzxf9XBsHP9JTXrIvK9FPRTf3U8SOC681bXif6YN5EKkT6uo
+         T3+KbyvSBMmB9MN7REaES+J5zGAVcm0WTDT28CeIVAZMRwfqZeB6XWY3TFZEHvcMRPDV
+         dUajJ/XqZ4no0ZMNorQa3ylgMO2fm4jARnLlwIP3I+gDtXfjkgFfghCm0TLjV37SsWxv
+         dPvGDT+aPFfPXLlBpmlbU+Svkuiv6kEBEZjdzwcxyyepKVhVP/4cf/T5evjhS+RAttzR
+         /eaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=Au941G7l7BgqQ/wE2oSbMdBllGGF8B4MeZUvzUpdMXA=;
+        b=Iwy2fDscEE+mXp0XQYOxDW5ZRjIqoAIkFKuTv6D+3LxHxBSISg9dS1J/rFhwCDkfJ0
+         H5QtG4C+4gdIfy+my2UzOCjUoyioX9j7WJ2/MLg3OdwqBF+TjYRtcoWQBM+tyU1d4kXA
+         xQABdhpHX1RF+yFA0vTGcx9CGMFp0VXckcPe4GQA+iS6RHuTPfjJKnUAoCkxLD3VmC9i
+         fyDDQmQSHbkwyi2LP68s8/sY/qfoEa5zssWBd1TpTmUMTk8dwrYuMZyu8c++pJgul+sc
+         UivH9+Kqb2iW7WMyMubqoB9taQzzfRVVll1+r21X4tvzWImIzemwplfz/t9HSqu6it8I
+         ROhw==
+X-Gm-Message-State: ACrzQf000snSzT5hNXuzSri6yUwrw0OxSDRJNtKoqUwHrQy4WzrnviFN
+        Q0TXrYUEzXXOFcunG+NQEkA=
+X-Google-Smtp-Source: AMsMyM73YhIVgNdyVXFvOvr7hz+MtrfrH12dFBPodOm+DrlyyZXWSYZtHiaN8ACohotTHJad7iiu1g==
+X-Received: by 2002:a05:620a:c90:b0:6ce:710:eefe with SMTP id q16-20020a05620a0c9000b006ce0710eefemr22514785qki.419.1664384342972;
+        Wed, 28 Sep 2022 09:59:02 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id v32-20020a05622a18a000b0035cf2995ad8sm3416236qtc.51.2022.09.28.09.59.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 28 Sep 2022 09:59:02 -0700 (PDT)
+Message-ID: <beb1fe93-5ef5-0cb0-c375-7fa99d8650c6@gmail.com>
+Date:   Wed, 28 Sep 2022 09:59:00 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220928130317.3522-1-hau@realtek.com>
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH -next] net: cpmac: Add __init/__exit annotations to module
+ init/exit funcs
+Content-Language: en-US
+To:     ruanjinjie <ruanjinjie@huawei.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220928031708.89120-1-ruanjinjie@huawei.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220928031708.89120-1-ruanjinjie@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 28, 2022 at 09:03:17PM +0800, Chunhao Lin wrote:
-> rtl_disable_rxdvgate() is used for disable RXDV_GATE. It is opposite function
-> of rtl_enable_rxdvgate().
+On 9/27/22 20:17, ruanjinjie wrote:
+> Add __init/__exit annotations to module init/exit funcs
 > 
-> Disable RXDV_GATE does not have to delay. So in this patch, also remove the
-> delay after disale RXDV_GATE.
-> 
-> v2:
-> - update commit message.
+> Signed-off-by: ruanjinjie <ruanjinjie@huawei.com>
 
-
-Please put changelog after --- trailing.
-
-Thanks
-
-> 
-> Signed-off-by: Chunhao Lin <hau@realtek.com>
-> ---
->  drivers/net/ethernet/realtek/r8169_main.c | 16 ++++++++++------
->  1 file changed, 10 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-> index 9c21894d0518..956562797496 100644
-> --- a/drivers/net/ethernet/realtek/r8169_main.c
-> +++ b/drivers/net/ethernet/realtek/r8169_main.c
-> @@ -2443,6 +2443,11 @@ static void rtl_wait_txrx_fifo_empty(struct rtl8169_private *tp)
->  	}
->  }
->  
-> +static void rtl_disable_rxdvgate(struct rtl8169_private *tp)
-> +{
-> +	RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
-> +}
-> +
->  static void rtl_enable_rxdvgate(struct rtl8169_private *tp)
->  {
->  	RTL_W32(tp, MISC, RTL_R32(tp, MISC) | RXDV_GATED_EN);
-> @@ -2960,7 +2965,7 @@ static void rtl_hw_start_8168g(struct rtl8169_private *tp)
->  	rtl_reset_packet_filter(tp);
->  	rtl_eri_write(tp, 0x2f8, ERIAR_MASK_0011, 0x1d8f);
->  
-> -	RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
-> +	rtl_disable_rxdvgate(tp);
->  
->  	rtl_eri_write(tp, 0xc0, ERIAR_MASK_0011, 0x0000);
->  	rtl_eri_write(tp, 0xb8, ERIAR_MASK_0011, 0x0000);
-> @@ -3198,7 +3203,7 @@ static void rtl_hw_start_8168h_1(struct rtl8169_private *tp)
->  
->  	rtl_eri_write(tp, 0x5f0, ERIAR_MASK_0011, 0x4f87);
->  
-> -	RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
-> +	rtl_disable_rxdvgate(tp);
->  
->  	rtl_eri_write(tp, 0xc0, ERIAR_MASK_0011, 0x0000);
->  	rtl_eri_write(tp, 0xb8, ERIAR_MASK_0011, 0x0000);
-> @@ -3249,7 +3254,7 @@ static void rtl_hw_start_8168ep(struct rtl8169_private *tp)
->  
->  	rtl_eri_write(tp, 0x5f0, ERIAR_MASK_0011, 0x4f87);
->  
-> -	RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
-> +	rtl_disable_rxdvgate(tp);
->  
->  	rtl_eri_write(tp, 0xc0, ERIAR_MASK_0011, 0x0000);
->  	rtl_eri_write(tp, 0xb8, ERIAR_MASK_0011, 0x0000);
-> @@ -3313,7 +3318,7 @@ static void rtl_hw_start_8117(struct rtl8169_private *tp)
->  
->  	rtl_eri_write(tp, 0x5f0, ERIAR_MASK_0011, 0x4f87);
->  
-> -	RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
-> +	rtl_disable_rxdvgate(tp);
->  
->  	rtl_eri_write(tp, 0xc0, ERIAR_MASK_0011, 0x0000);
->  	rtl_eri_write(tp, 0xb8, ERIAR_MASK_0011, 0x0000);
-> @@ -3557,8 +3562,7 @@ static void rtl_hw_start_8125_common(struct rtl8169_private *tp)
->  	else
->  		rtl8125a_config_eee_mac(tp);
->  
-> -	RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
-> -	udelay(10);
-> +	rtl_disable_rxdvgate(tp);
->  }
->  
->  static void rtl_hw_start_8125a_2(struct rtl8169_private *tp)
-> -- 
-> 2.25.1
-> 
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
