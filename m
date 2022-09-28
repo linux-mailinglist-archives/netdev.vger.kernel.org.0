@@ -2,118 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0133E5EE4C7
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 21:08:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 449B45EE580
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 21:24:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232599AbiI1TIB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 15:08:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38818 "EHLO
+        id S232702AbiI1TYB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 15:24:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229486AbiI1TH7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 15:07:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AD1F6E2D5
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 12:07:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1197BB821C3
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 19:07:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80FC3C433C1;
-        Wed, 28 Sep 2022 19:07:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664392075;
-        bh=yAg89lI43v4w78qDCwQIoHUMZS32XlPZ3o97pn1ClPU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Pakimi1MXQJ1tCMQV2yvrYinWVBnvSkQWDnltPlhuEJju4k2MgfWdzV7vXdIdXGuR
-         PzM3hjY0aHXwbgS46wVJIVPJXsvKl8zs/px+Ch0kv7ZkehAxBGtr5ka/LIQWYexz3i
-         s2V8ogTxUtApF+fy/PQ/PLeocjoL+SVlnPX89AL7UkfXhaVkjvcGnt5xXHLcw/1f+m
-         47hLG0xCMekQYdde0ADxM0SsQIWQ6QxnRfkZPSJwqgBvUb3kp4sQPduvlpSG6C+hfh
-         SKX9jFpXgKOglcJUPPcNs+AISYb8ErpfxmEGcKkSU2es5hNfmBUsFy/PStySGzUxiW
-         ylhpKsri3pJ9A==
-Date:   Wed, 28 Sep 2022 12:07:54 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Edward Cree <ecree.xilinx@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-net-drivers@amd.com,
-        davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
-        habetsm.xilinx@gmail.com
-Subject: Re: [PATCH v2 net-next 3/6] sfc: optional logging of TC offload
- errors
-Message-ID: <20220928120754.5671c0d7@kernel.org>
-In-Reply-To: <cd10c58a-5b82-10a3-8cf8-4c08f85f87e6@gmail.com>
-References: <cover.1664218348.git.ecree.xilinx@gmail.com>
-        <a1ff1d57bcd5a8229dd5f2147b09c4b2b896ecc9.1664218348.git.ecree.xilinx@gmail.com>
-        <20220928104426.1edd2fa2@kernel.org>
-        <b4359f7e-2625-1662-0a78-9dd65bfc8078@gmail.com>
-        <20220928113253.1823c7e1@kernel.org>
-        <cd10c58a-5b82-10a3-8cf8-4c08f85f87e6@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+        with ESMTP id S234542AbiI1TX1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 15:23:27 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DFC5FA0CD
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 12:21:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=5kRQES51GWB6vCE6GW1HnR9MLQG1jthx7+279xcRF0c=;
+        t=1664392903; x=1665602503; b=LEvJWYybAKejjOd7ECSuD4cU9ZegrdwNehWu5Gy67x7ZiMm
+        R2SPHARCGPWhg6UpP47nuJnPMZbhNMHOC+lxE6qwCBglSM1YgSdVvBDR6HrME4ddtR11vTxlsSC+7
+        VFWGj+OnecOHm009fkWC9JvfrLdBGkXxIH2GWmlOdlk1FEZ4yQANMuI+wGLaldCpCp4T2hXRVnOs5
+        AbRCJwpEvoKKZUwyEE2inDpWqKao1Tu5ngTBWfOPntH9ND5vF8ink/LPIB12wGVk68zxw90INT15l
+        7gWB737cCKlzlCeUQeDODvdAB4ng8kl4PwvTsu6RuQVglVgxVjl2mWOKY3y2/SeQ==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.96)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1odcbt-00AVQc-0H;
+        Wed, 28 Sep 2022 21:20:45 +0200
+Message-ID: <68862d82fe886c8c7e3992bb9b892a14f6225bf7.camel@sipsolutions.net>
+Subject: Re: [PATCH net] genetlink: reject use of nlmsg_flags for new
+ commands
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        Florent Fourcot <florent.fourcot@wifirst.fr>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Date:   Wed, 28 Sep 2022 21:20:43 +0200
+In-Reply-To: <20220928183515.1063481-1-kuba@kernel.org>
+References: <20220928183515.1063481-1-kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
+MIME-Version: 1.0
+X-malware-bazaar: not-scanned
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 28 Sep 2022 19:58:23 +0100 Edward Cree wrote:
-> On 28/09/2022 19:32, Jakub Kicinski wrote:
-> > I won't help with the indirect stuff, I fixed it once a while
-> > back already and it keeps getting broken. It must be a case of=20
-> > the extack not being plumbed thru, or people being conservative
-> > because the errors are not fatal, right? Solvable. =20
+On Wed, 2022-09-28 at 11:35 -0700, Jakub Kicinski wrote:
+> Commit 9c5d03d36251 ("genetlink: start to validate reserved header bytes"=
+)
+> introduced extra validation for genetlink headers. We had to gate it
+> to only apply to new commands, to maintain bug-wards compatibility.
+> Use this opportunity (before the new checks make it to Linus's tree)
+> to add more conditions.
 >=20
-> The conceptual problem, as I see it, is that multiple hw drivers /
->  driver instances might be trying to offload the same tunnel rule,
->  because the ingress device isn't actually specified anywhere in
->  the weird inside-out way TC tunnel rules work.
-> So how do you deal with the case where one driver succeeds and
->  another fails to offload, or two fail with different rc and
->  extack messages?
+> Validate that Generic Netlink families do not use nlmsg_flags outside
+> of the well-understood set.
 
-Let's solve practical problems first :) The cases with multiple devices
-offloading are rare AFAIK.
+Makes sense.
 
-> But I really need to go and check what it does right now, because
->  my information might be out of date =E2=80=94 some of this driver code
->  was first written two years ago so maybe it's since been solved.
->=20
-> > The printf'ing? I recon something simple like adding a destructor=20
-> > for the message to the exack struct so you can allocate the message,  =
-=20
->=20
-> What about just a flag to say "please kfree() the msg on destruct"?
-> I have a hard time imagining a destructor that would need to do
->  anything different.
+Reviewed-by: Johannes Berg <johannes@sipsolutions.net>
 
-Yes, seems like that could be good enough. I was wondering if perhaps
-someone would like to have a "static" buffer and manage ownership (given
-most of the config happens under rtnl_lock) but perhaps that's
-unnecessary complexity.
+Thanks for doing this :)
 
-BTW we will prolly need two bits, one to indicate the creator will
-actually call free and the other to mark that it's needed. Otherwise
-we'd need to sift thru the stack and find all extack instances.
-You can if you want to but...
-
-> > or adding a small buffer in place (the messages aren't very long,
-> > usually) come to mind. =20
->=20
-> Also an option, yeah.  Downside is that it consumes that memory
->  (I guess 80B or so?) for every netlink response whether it's using
->  formatted extack or not; idk if people with lots of netlink
->  traffic might start to care about that.
-
-It's just a buffer on the stack, in the struct, the extack is
-transformed into netlink attrs in the same way regardless.
-Stack use is the only concern, no other impact on those not using it.
-
-> Should I rustle up an RFC patch for one of these, or post an RFD to
->  the list to canvass other vendors' opinions?
-
-Would be great! Maybe also grep the archive, cause this came up before.
-Someone was against this in the past, perhaps, perhaps even me :)
-But if it wasn't me we should CC them.
+johannes
