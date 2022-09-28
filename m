@@ -2,95 +2,257 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E01175ED6BD
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 09:50:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC3095ED6C3
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 09:50:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233898AbiI1Ht7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 03:49:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60418 "EHLO
+        id S233084AbiI1Hu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 03:50:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233642AbiI1HtS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 03:49:18 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E9212D744;
-        Wed, 28 Sep 2022 00:47:44 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 1169C1884B7D;
-        Wed, 28 Sep 2022 07:47:43 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id E96B42500370;
-        Wed, 28 Sep 2022 07:47:42 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id DA92A9EC0019; Wed, 28 Sep 2022 07:47:42 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+        with ESMTP id S231167AbiI1Htw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 03:49:52 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FF0810AB39
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 00:47:59 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id s6so19112913lfo.7
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 00:47:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=3u2lwefLPXnmYQ6lmup0QT7+cqk+0mIC6fnyCD0Or/A=;
+        b=FDSHUOiHB0E5Xq30bp5wadIDxjcFsODbay2U4npKAh8hpuqDXHOBKdrKS/aVSqxOig
+         QqrWAAKqPq/mx0gtntQOOPjs5noDdeQVnA3E6QitgQZC4xflRqIADIlABwEcqLoUW1TW
+         IwQn26g/mgojT9++IqMvpupNoM7XeQ7tKFdUdFhd5cyjb+2ByJ8VxNGqhz/dChGREuT6
+         F7MX4Gfqv3nN78XqcM1UkXhPtCgVNj7ukydV4YkF2lNDhMUvdLgwZlsmoc10PUDy4Fon
+         TxIMTJgQyxkpFg4J/nh/q/PoXXboTiomplxsC0Rm8NAabGzq6F7wurHKyjkwR/uOY+cB
+         8VKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=3u2lwefLPXnmYQ6lmup0QT7+cqk+0mIC6fnyCD0Or/A=;
+        b=PBi9/IgNFwapTzfhjYzs9Hc+43781P2S4WOHaQo9UHJzgEKeaY1j3klHVtOO01AxVd
+         uVSrMmS5sme0YSUcaIp5fFXA+9/zlVAFGl5J/wS3fTR8gCcy/I6siu7W+NpPgTvqr1OT
+         HcNPZGqYFicKnL/CZdvnNx6fpWu2573yXe3gsRw9RV9dZSYUTZQmRAv1ld4cE2/W5t43
+         Dhak755LyMWWln3oY9sPyNxaTEh5a/kzEfKMiAR0WqK8memljs8beGXDDwB3kCtkvLd5
+         XiLqt5P8jdRrx3XhGQfC3Jo7Lxh/buYk+m/L0lyV4RDz92j+v61c54hCP2Der43dKk3Q
+         DZ3A==
+X-Gm-Message-State: ACrzQf0gx65mahApDpn3FBCVHh8g8UwMk+SGVR9yIWlUoeUjctnoeB/d
+        X5F45jGnh7IfXPIgvzvA4FTTqw==
+X-Google-Smtp-Source: AMsMyM5jFe8AXE9vKqxdB0+1hvio/vmanBrP0lg0x2ZB15OFwIviosmDyRIUvskqa+3GZxP87bqKIQ==
+X-Received: by 2002:a05:6512:2806:b0:498:f7ae:75ba with SMTP id cf6-20020a056512280600b00498f7ae75bamr12357796lfb.15.1664351277244;
+        Wed, 28 Sep 2022 00:47:57 -0700 (PDT)
+Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id u10-20020a2e2e0a000000b0026bf04aafd2sm369148lju.9.2022.09.28.00.47.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 28 Sep 2022 00:47:56 -0700 (PDT)
+Message-ID: <db7055da-b01f-3ca6-20f8-e9bc7ed892bc@linaro.org>
+Date:   Wed, 28 Sep 2022 09:47:55 +0200
 MIME-Version: 1.0
-Date:   Wed, 28 Sep 2022 09:47:42 +0200
-From:   netdev@kapio-technology.com
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v5 net-next 6/6] selftests: forwarding: add test of
- MAC-Auth Bypass to locked port tests
-In-Reply-To: <YzPwwuCe0HkJpkQe@shredder>
-References: <Yxmgs7Du62V1zyjK@shredder>
- <8dfc9b525f084fa5ad55019f4418a35e@kapio-technology.com>
- <20220908112044.czjh3xkzb4r27ohq@skbuf>
- <152c0ceadefbd742331c340bec2f50c0@kapio-technology.com>
- <20220911001346.qno33l47i6nvgiwy@skbuf>
- <15ee472a68beca4a151118179da5e663@kapio-technology.com>
- <Yx73FOpN5uhPQhFl@shredder>
- <086704ce7f323cc1b3cca78670b42095@kapio-technology.com>
- <Yyq6BnUfctLeerqE@shredder>
- <7a4549d645f9bbbf41e814f087eb07d1@kapio-technology.com>
- <YzPwwuCe0HkJpkQe@shredder>
-User-Agent: Gigahost Webmail
-Message-ID: <0c6b93c828d9b52346ddb3d445446734@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.0
+Subject: Re: [PATCH v2] dt-bindings: net: marvell,pp2: convert to json-schema
+Content-Language: en-US
+To:     =?UTF-8?Q?Micha=c5=82_Grzelak?= <mig@semihalf.com>,
+        devicetree@vger.kernel.org
+Cc:     mw@semihalf.com, linux@armlinux.org.uk, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        upstream@semihalf.com
+References: <20220926232136.38567-1-mig@semihalf.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220926232136.38567-1-mig@semihalf.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-09-28 08:59, Ido Schimmel wrote:
-
-> Why not found? This works:
+On 27/09/2022 01:21, Michał Grzelak wrote:
+> This converts the marvell,pp2 bindings from text to proper schema.
 > 
->  # bridge fdb add 00:11:22:33:44:55 dev br0 self local
->  $ bridge fdb get 00:11:22:33:44:55 br br0
+> Move 'marvell,system-controller' and 'dma-coherent' properties from
+> port up to the controller node, to match what is actually done in DT.
+> 
+> Signed-off-by: Michał Grzelak <mig@semihalf.com>
+> ---
+>  .../devicetree/bindings/net/marvell,pp2.yaml  | 241 ++++++++++++++++++
+>  .../devicetree/bindings/net/marvell-pp2.txt   | 141 ----------
 
-With:
-  # bridge fdb replace 00.11.22.33.44.55 dev $swpX static
+Thank you for your patch. There is something to discuss/improve.
 
-fdb_find_rcu() will not find the entry added with 'dev br0' above, and 
-will thus add a new entry afaik.
+
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - marvell,armada-375-pp2
+> +      - marvell,armada-7k-pp22
+> +
+> +  reg:
+> +    minItems: 3
+> +    maxItems: 4
+> +    description: |
+> +      For "marvell,armada-375-pp2", must contain the following register sets:
+> +        - common controller registers
+> +        - LMS registers
+> +        - one register area per Ethernet port
+> +      For "marvell,armada-7k-pp22" used by 7K/8K and CN913X, must contain the following register sets:
+> +        - packet processor registers
+> +        - networking interfaces registers
+> +        - CM3 address space used for TX Flow Control
+
+Instead of this description, in define them for each variant in
+allOf:if:then (just like for clocks below)
+
+> +
+> +  clocks:
+> +    minItems: 2
+> +    items:
+> +      - description: main controller clock
+> +      - description: GOP clock
+> +      - description: MG clock
+> +      - description: MG Core clock
+> +      - description: AXI clock
+
+This needs to be restricted per variant - minItems and maxItems in
+allOf:if:then.
+
+> +
+> +  clock-names:
+> +    minItems: 2
+> +    items:
+> +      - const: pp_clk
+> +      - const: gop_clk
+> +      - const: mg_clk
+> +      - const: mg_core_clk
+> +      - const: axi_clk
+
+The same.
+
+> +
+> +  dma-coherent: true
+> +  '#size-cells': true
+> +  '#address-cells': true
+
+You need const:X for both cells (unless they come from some other schema
+but then you would not need to list them here).
+
+> +
+> +  marvell,system-controller:
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+> +    description: a phandle to the system controller.
+> +
+> +patternProperties:
+> +  '^eth[0-9a-f]*(@.*)?$':
+
+The name should be "(ethernet-)?port", unless anything depends on
+particular naming?
+
+> +    type: object
+
+You need description here.
+
+> +    properties:
+> +      interrupts:
+> +        minItems: 1
+> +        maxItems: 10
+> +        description: interrupt(s) for the port
+> +
+> +      interrupt-names:
+> +        items:
+
+minItems: 1
+
+> +          - const: hif0
+> +          - const: hif1
+> +          - const: hif2
+> +          - const: hif3
+> +          - const: hif4
+> +          - const: hif5
+> +          - const: hif6
+> +          - const: hif7
+> +          - const: hif8
+> +          - const: link
+> +
+> +        description: >
+> +          if more than a single interrupt for is given, must be the
+> +          name associated to the interrupts listed. Valid names are:
+> +          "hifX", with X in [0..8], and "link". The names "tx-cpu0",
+> +          "tx-cpu1", "tx-cpu2", "tx-cpu3" and "rx-shared" are supported
+> +          for backward compatibility but shouldn't be used for new
+> +          additions.
+> +
+> +      port-id:
+> +        $ref: /schemas/types.yaml#/definitions/uint32
+> +        description: ID of the port from the MAC point of view.
+> +
+> +      phy:
+> +        $ref: /schemas/types.yaml#/definitions/phandle
+> +        description: >
+> +          a phandle to a phy node defining the PHY address
+> +          (as the reg property, a single integer).
+> +
+> +      phy-mode:
+> +        $ref: "ethernet-controller.yaml#/properties/phy-mode"
+
+You can skip quotes.
+
+> +
+> +      marvell,loopback:
+> +        $ref: /schemas/types.yaml#/definitions/flag
+> +        description: port is loopback mode.
+> +
+> +      gop-port-id:
+> +        $ref: /schemas/types.yaml#/definitions/uint32
+> +        description: >
+> +          only for marvell,armada-7k-pp22, ID of the port from the
+> +          GOP (Group Of Ports) point of view. This ID is used to index the
+> +          per-port registers in the second register area.
+> +
+> +    required:
+> +      - interrupts
+> +      - port-id
+> +      - phy-mode
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - clocks
+> +  - clock-names
+> +
+> +allOf:
+> +  - $ref: ethernet-controller.yaml#
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          const: marvell,armada-7k-pp22
+> +    then:
+> +      patternProperties:
+> +        '^eth[0-9a-f]*(@.*)?$':
+> +          required:
+> +            - gop-port-id
+
+else:
+  patternProperties:
+     ....
+       gop-port-id: false
+
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+
+Best regards,
+Krzysztof
+
