@@ -2,620 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 01F735EDFB3
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 17:07:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22BBB5EDFD7
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 17:11:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234662AbiI1PGj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 11:06:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55942 "EHLO
+        id S234396AbiI1PLv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 11:11:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234653AbiI1PGd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 11:06:33 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51A799082E;
-        Wed, 28 Sep 2022 08:06:29 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 6EF4D1884BE0;
-        Wed, 28 Sep 2022 15:06:26 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 67B8B2500370;
-        Wed, 28 Sep 2022 15:06:26 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 5EB809EC0009; Wed, 28 Sep 2022 15:06:26 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
-Received: from fujitsu.vestervang (2-104-116-184-cable.dk.customer.tdc.net [2.104.116.184])
-        by smtp.gigahost.dk (Postfix) with ESMTPSA id 918A39120FED;
-        Wed, 28 Sep 2022 15:06:25 +0000 (UTC)
-From:   Hans Schultz <netdev@kapio-technology.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org,
-        "Hans J. Schultz" <netdev@kapio-technology.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Florent Fourcot <florent.fourcot@wifirst.fr>,
-        Hans Schultz <schultz.hans@gmail.com>,
-        Joachim Wiberg <troglobit@gmail.com>,
-        Amit Cohen <amcohen@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH v6 net-next 5/9] drivers: net: dsa: add fdb entry flags to drivers
-Date:   Wed, 28 Sep 2022 17:02:52 +0200
-Message-Id: <20220928150256.115248-6-netdev@kapio-technology.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220928150256.115248-1-netdev@kapio-technology.com>
-References: <20220928150256.115248-1-netdev@kapio-technology.com>
+        with ESMTP id S234277AbiI1PLu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 11:11:50 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1666A8E4F5
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 08:11:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1664377906;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=N//yqD+aufpyhJZtChEf3+2TXlqXFfc1L7JPLKS/TRs=;
+        b=JQaCAnqWkm0UfUis46yCIr28O15cI2bg3jV2uR+Ndzzb99SIbOIOYf8uDV97xUIg/kdk0+
+        iXKP3FuTnLSOPMA3GTZBGxrYalDFRAk43mSZJpkQG6aBg7MW3CyVP1AWlQAR9MiSAPqsWF
+        FDs4QSJbfnm0o78tsPE85IZEdrd+1g0=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-140-JMqO4A3dPnizU8OiVxDTLA-1; Wed, 28 Sep 2022 11:11:45 -0400
+X-MC-Unique: JMqO4A3dPnizU8OiVxDTLA-1
+Received: by mail-qk1-f198.google.com with SMTP id bs33-20020a05620a472100b006cef8cfabe2so9709398qkb.12
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 08:11:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=N//yqD+aufpyhJZtChEf3+2TXlqXFfc1L7JPLKS/TRs=;
+        b=NsX9fkzKll1pfyO4Ezef5WoAg2YIT6fLlWJl4WuewR8Pm/3IMRVBaSAQhHcDq+izOC
+         7hj4knT1/3d6wLhdyo1JegFAFc9DJee/1LjXnph1DNuVDczRlHt82uzItvflsypecLEk
+         jpxyTcNTmb7MhEQ9shvan6YeFs2uYbUm4/J06FIAfHPoCiTmGiRowv+LbKcwms23m2Dy
+         ndjxVZycrVUYPtXc+wcM44QtdzY8mzMlt4ub3QYLiH5hpZUXNj8mye1WsqXlEdn8iDHW
+         TWVC4OE/laMP492Z0rg+ro/DTtP3/qLDLZxlFosnRyDCDctMtY8VBK2eaHsd95zyWX/h
+         pp7g==
+X-Gm-Message-State: ACrzQf1pRT5sAMPS0mL5+a1o7ZJA4z6cpM2WElC4twQXp9qbslqcnyvI
+        YNDqCP3lF0cnykC4g4xgzUtzWYbsTtzJHeIAhGRy7bzGtywR8uzJ60M5mOpn0AmId+KacWj011i
+        Cgcx5YnKBaHfOSiK7
+X-Received: by 2002:a37:68d6:0:b0:6cb:cf29:dfb with SMTP id d205-20020a3768d6000000b006cbcf290dfbmr21582930qkc.406.1664377905057;
+        Wed, 28 Sep 2022 08:11:45 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM6F5FAU27MZ7cS3Ks7xMKNVxbwnEj7yH65umY8MeviEbyJkDkQQ9uEbZ9y2Bnsn/Fvx15R7pQ==
+X-Received: by 2002:a37:68d6:0:b0:6cb:cf29:dfb with SMTP id d205-20020a3768d6000000b006cbcf290dfbmr21582904qkc.406.1664377904744;
+        Wed, 28 Sep 2022 08:11:44 -0700 (PDT)
+Received: from sgarzare-redhat (host-79-46-200-222.retail.telecomitalia.it. [79.46.200.222])
+        by smtp.gmail.com with ESMTPSA id h18-20020a05620a245200b006ced196a73fsm3185370qkn.135.2022.09.28.08.11.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 28 Sep 2022 08:11:43 -0700 (PDT)
+Date:   Wed, 28 Sep 2022 17:11:35 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Junichi Uekawa <uekawa@chromium.org>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        Bobby Eshleman <bobby.eshleman@gmail.com>
+Subject: Re: [PATCH] vhost/vsock: Use kvmalloc/kvfree for larger packets.
+Message-ID: <20220928151135.pvrlsylg6j3hzh74@sgarzare-redhat>
+References: <20220928064538.667678-1-uekawa@chromium.org>
+ <20220928082823.wyxplop5wtpuurwo@sgarzare-redhat>
+ <20220928052738-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20220928052738-mutt-send-email-mst@kernel.org>
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Hans J. Schultz" <netdev@kapio-technology.com>
+On Wed, Sep 28, 2022 at 05:31:58AM -0400, Michael S. Tsirkin wrote:
+>On Wed, Sep 28, 2022 at 10:28:23AM +0200, Stefano Garzarella wrote:
+>> On Wed, Sep 28, 2022 at 03:45:38PM +0900, Junichi Uekawa wrote:
+>> > When copying a large file over sftp over vsock, data size is usually 32kB,
+>> > and kmalloc seems to fail to try to allocate 32 32kB regions.
+>> >
+>> > Call Trace:
+>> >  [<ffffffffb6a0df64>] dump_stack+0x97/0xdb
+>> >  [<ffffffffb68d6aed>] warn_alloc_failed+0x10f/0x138
+>> >  [<ffffffffb68d868a>] ? __alloc_pages_direct_compact+0x38/0xc8
+>> >  [<ffffffffb664619f>] __alloc_pages_nodemask+0x84c/0x90d
+>> >  [<ffffffffb6646e56>] alloc_kmem_pages+0x17/0x19
+>> >  [<ffffffffb6653a26>] kmalloc_order_trace+0x2b/0xdb
+>> >  [<ffffffffb66682f3>] __kmalloc+0x177/0x1f7
+>> >  [<ffffffffb66e0d94>] ? copy_from_iter+0x8d/0x31d
+>> >  [<ffffffffc0689ab7>] vhost_vsock_handle_tx_kick+0x1fa/0x301 [vhost_vsock]
+>> >  [<ffffffffc06828d9>] vhost_worker+0xf7/0x157 [vhost]
+>> >  [<ffffffffb683ddce>] kthread+0xfd/0x105
+>> >  [<ffffffffc06827e2>] ? vhost_dev_set_owner+0x22e/0x22e [vhost]
+>> >  [<ffffffffb683dcd1>] ? flush_kthread_worker+0xf3/0xf3
+>> >  [<ffffffffb6eb332e>] ret_from_fork+0x4e/0x80
+>> >  [<ffffffffb683dcd1>] ? flush_kthread_worker+0xf3/0xf3
+>> >
+>> > Work around by doing kvmalloc instead.
+>> >
+>> > Signed-off-by: Junichi Uekawa <uekawa@chromium.org>
+>
+>My worry here is that this in more of a work around.
+>It would be better to not allocate memory so aggressively:
+>if we are so short on memory we should probably process
+>packets one at a time. Is that very hard to implement?
 
-Ignore fdb entries with set flags coming in on all drivers.
+Currently the "virtio_vsock_pkt" is allocated in the "handle_kick" 
+callback of TX virtqueue. Then the packet is multiplexed on the right 
+socket queue, then the user space can de-queue it whenever they want.
 
-Signed-off-by: Hans J. Schultz <netdev@kapio-technology.com>
----
- drivers/net/dsa/b53/b53_common.c       | 12 ++++++++++--
- drivers/net/dsa/b53/b53_priv.h         |  4 ++--
- drivers/net/dsa/hirschmann/hellcreek.c | 12 ++++++++++--
- drivers/net/dsa/lan9303-core.c         | 12 ++++++++++--
- drivers/net/dsa/lantiq_gswip.c         | 12 ++++++++++--
- drivers/net/dsa/microchip/ksz9477.c    |  8 ++++----
- drivers/net/dsa/microchip/ksz9477.h    |  8 ++++----
- drivers/net/dsa/microchip/ksz_common.c | 14 +++++++++++---
- drivers/net/dsa/mt7530.c               | 12 ++++++++++--
- drivers/net/dsa/mv88e6xxx/chip.c       | 12 ++++++++++--
- drivers/net/dsa/ocelot/felix.c         | 12 ++++++++++--
- drivers/net/dsa/qca/qca8k-common.c     | 10 +++++++++-
- drivers/net/dsa/qca/qca8k.h            |  4 ++--
- drivers/net/dsa/sja1105/sja1105_main.c | 14 +++++++++++---
- include/net/dsa.h                      |  4 ++--
- net/dsa/switch.c                       |  8 ++++----
- 16 files changed, 119 insertions(+), 39 deletions(-)
+So maybe we can stop processing the virtqueue if we are short on memory, 
+but when can we restart the TX virtqueue processing?
 
-diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index 59cdfc51ce06..cec60af6dfdc 100644
---- a/drivers/net/dsa/b53/b53_common.c
-+++ b/drivers/net/dsa/b53/b53_common.c
-@@ -1684,11 +1684,15 @@ static int b53_arl_op(struct b53_device *dev, int op, int port,
- 
- int b53_fdb_add(struct dsa_switch *ds, int port,
- 		const unsigned char *addr, u16 vid,
--		struct dsa_db db)
-+		u16 fdb_flags, struct dsa_db db)
- {
- 	struct b53_device *priv = ds->priv;
- 	int ret;
- 
-+	/* Ignore entries with set flags */
-+	if (fdb_flags)
-+		return 0;
-+
- 	/* 5325 and 5365 require some more massaging, but could
- 	 * be supported eventually
- 	 */
-@@ -1705,11 +1709,15 @@ EXPORT_SYMBOL(b53_fdb_add);
- 
- int b53_fdb_del(struct dsa_switch *ds, int port,
- 		const unsigned char *addr, u16 vid,
--		struct dsa_db db)
-+		u16 fdb_flags, struct dsa_db db)
- {
- 	struct b53_device *priv = ds->priv;
- 	int ret;
- 
-+	/* Ignore entries with set flags */
-+	if (fdb_flags)
-+		return 0;
-+
- 	mutex_lock(&priv->arl_mutex);
- 	ret = b53_arl_op(priv, 0, port, addr, vid, false);
- 	mutex_unlock(&priv->arl_mutex);
-diff --git a/drivers/net/dsa/b53/b53_priv.h b/drivers/net/dsa/b53/b53_priv.h
-index 795cbffd5c2b..7673c4e712bb 100644
---- a/drivers/net/dsa/b53/b53_priv.h
-+++ b/drivers/net/dsa/b53/b53_priv.h
-@@ -362,10 +362,10 @@ int b53_vlan_del(struct dsa_switch *ds, int port,
- 		 const struct switchdev_obj_port_vlan *vlan);
- int b53_fdb_add(struct dsa_switch *ds, int port,
- 		const unsigned char *addr, u16 vid,
--		struct dsa_db db);
-+		u16 fdb_flags, struct dsa_db db);
- int b53_fdb_del(struct dsa_switch *ds, int port,
- 		const unsigned char *addr, u16 vid,
--		struct dsa_db db);
-+		u16 fdb_flags, struct dsa_db db);
- int b53_fdb_dump(struct dsa_switch *ds, int port,
- 		 dsa_fdb_dump_cb_t *cb, void *data);
- int b53_mdb_add(struct dsa_switch *ds, int port,
-diff --git a/drivers/net/dsa/hirschmann/hellcreek.c b/drivers/net/dsa/hirschmann/hellcreek.c
-index eac6ace7c5f9..8988b930225c 100644
---- a/drivers/net/dsa/hirschmann/hellcreek.c
-+++ b/drivers/net/dsa/hirschmann/hellcreek.c
-@@ -829,12 +829,16 @@ static int hellcreek_fdb_get(struct hellcreek *hellcreek,
- 
- static int hellcreek_fdb_add(struct dsa_switch *ds, int port,
- 			     const unsigned char *addr, u16 vid,
--			     struct dsa_db db)
-+			     u16 fdb_flags, struct dsa_db db)
- {
- 	struct hellcreek_fdb_entry entry = { 0 };
- 	struct hellcreek *hellcreek = ds->priv;
- 	int ret;
- 
-+	/* Ignore entries with set flags */
-+	if (fdb_flags)
-+		return 0;
-+
- 	dev_dbg(hellcreek->dev, "Add FDB entry for MAC=%pM\n", addr);
- 
- 	mutex_lock(&hellcreek->reg_lock);
-@@ -875,12 +879,16 @@ static int hellcreek_fdb_add(struct dsa_switch *ds, int port,
- 
- static int hellcreek_fdb_del(struct dsa_switch *ds, int port,
- 			     const unsigned char *addr, u16 vid,
--			     struct dsa_db db)
-+			     u16 fdb_flags, struct dsa_db db)
- {
- 	struct hellcreek_fdb_entry entry = { 0 };
- 	struct hellcreek *hellcreek = ds->priv;
- 	int ret;
- 
-+	/* Ignore entries with set flags */
-+	if (fdb_flags)
-+		return 0;
-+
- 	dev_dbg(hellcreek->dev, "Delete FDB entry for MAC=%pM\n", addr);
- 
- 	mutex_lock(&hellcreek->reg_lock);
-diff --git a/drivers/net/dsa/lan9303-core.c b/drivers/net/dsa/lan9303-core.c
-index 438e46af03e9..36187705833f 100644
---- a/drivers/net/dsa/lan9303-core.c
-+++ b/drivers/net/dsa/lan9303-core.c
-@@ -1192,10 +1192,14 @@ static void lan9303_port_fast_age(struct dsa_switch *ds, int port)
- 
- static int lan9303_port_fdb_add(struct dsa_switch *ds, int port,
- 				const unsigned char *addr, u16 vid,
--				struct dsa_db db)
-+				u16 fdb_flags, struct dsa_db db)
- {
- 	struct lan9303 *chip = ds->priv;
- 
-+	/* Ignore entries with set flags */
-+	if (fdb_flags)
-+		return 0;
-+
- 	dev_dbg(chip->dev, "%s(%d, %pM, %d)\n", __func__, port, addr, vid);
- 	if (vid)
- 		return -EOPNOTSUPP;
-@@ -1205,10 +1209,14 @@ static int lan9303_port_fdb_add(struct dsa_switch *ds, int port,
- 
- static int lan9303_port_fdb_del(struct dsa_switch *ds, int port,
- 				const unsigned char *addr, u16 vid,
--				struct dsa_db db)
-+				u16 fdb_flags, struct dsa_db db)
- {
- 	struct lan9303 *chip = ds->priv;
- 
-+	/* Ignore entries with set flags */
-+	if (fdb_flags)
-+		return 0;
-+
- 	dev_dbg(chip->dev, "%s(%d, %pM, %d)\n", __func__, port, addr, vid);
- 	if (vid)
- 		return -EOPNOTSUPP;
-diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
-index 05ecaa007ab1..a945e8e62232 100644
---- a/drivers/net/dsa/lantiq_gswip.c
-+++ b/drivers/net/dsa/lantiq_gswip.c
-@@ -1399,15 +1399,23 @@ static int gswip_port_fdb(struct dsa_switch *ds, int port,
- 
- static int gswip_port_fdb_add(struct dsa_switch *ds, int port,
- 			      const unsigned char *addr, u16 vid,
--			      struct dsa_db db)
-+			      u16 fdb_flags, struct dsa_db db)
- {
-+	/* Ignore entries with set flags */
-+	if (fdb_flags)
-+		return 0;
-+
- 	return gswip_port_fdb(ds, port, addr, vid, true);
- }
- 
- static int gswip_port_fdb_del(struct dsa_switch *ds, int port,
- 			      const unsigned char *addr, u16 vid,
--			      struct dsa_db db)
-+			      u16 fdb_flags, struct dsa_db db)
- {
-+	/* Ignore entries with set flags */
-+	if (fdb_flags)
-+		return 0;
-+
- 	return gswip_port_fdb(ds, port, addr, vid, false);
- }
- 
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index a6a0321a8931..e65daabf9865 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -457,8 +457,8 @@ int ksz9477_port_vlan_del(struct ksz_device *dev, int port,
- 	return 0;
- }
- 
--int ksz9477_fdb_add(struct ksz_device *dev, int port,
--		    const unsigned char *addr, u16 vid, struct dsa_db db)
-+int ksz9477_fdb_add(struct ksz_device *dev, int port, const unsigned char *addr,
-+		    u16 vid, struct dsa_db db)
- {
- 	u32 alu_table[4];
- 	u32 data;
-@@ -513,8 +513,8 @@ int ksz9477_fdb_add(struct ksz_device *dev, int port,
- 	return ret;
- }
- 
--int ksz9477_fdb_del(struct ksz_device *dev, int port,
--		    const unsigned char *addr, u16 vid, struct dsa_db db)
-+int ksz9477_fdb_del(struct ksz_device *dev, int port, const unsigned char *addr,
-+		    u16 vid, struct dsa_db db)
- {
- 	u32 alu_table[4];
- 	u32 data;
-diff --git a/drivers/net/dsa/microchip/ksz9477.h b/drivers/net/dsa/microchip/ksz9477.h
-index 00862c4cfb7f..a9c64e166cca 100644
---- a/drivers/net/dsa/microchip/ksz9477.h
-+++ b/drivers/net/dsa/microchip/ksz9477.h
-@@ -41,10 +41,10 @@ void ksz9477_get_caps(struct ksz_device *dev, int port,
- 		      struct phylink_config *config);
- int ksz9477_fdb_dump(struct ksz_device *dev, int port,
- 		     dsa_fdb_dump_cb_t *cb, void *data);
--int ksz9477_fdb_add(struct ksz_device *dev, int port,
--		    const unsigned char *addr, u16 vid, struct dsa_db db);
--int ksz9477_fdb_del(struct ksz_device *dev, int port,
--		    const unsigned char *addr, u16 vid, struct dsa_db db);
-+int ksz9477_fdb_add(struct ksz_device *dev, int port, const unsigned char *addr,
-+		    u16 vid, struct dsa_db db);
-+int ksz9477_fdb_del(struct ksz_device *dev, int port, const unsigned char *addr,
-+		    u16 vid, struct dsa_db db);
- int ksz9477_mdb_add(struct ksz_device *dev, int port,
- 		    const struct switchdev_obj_port_mdb *mdb, struct dsa_db db);
- int ksz9477_mdb_del(struct ksz_device *dev, int port,
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index d612181b3226..cfcfc725fed9 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -2227,10 +2227,14 @@ static int ksz_set_ageing_time(struct dsa_switch *ds, unsigned int msecs)
- 
- static int ksz_port_fdb_add(struct dsa_switch *ds, int port,
- 			    const unsigned char *addr, u16 vid,
--			    struct dsa_db db)
-+			    u16 fdb_flags, struct dsa_db db)
- {
- 	struct ksz_device *dev = ds->priv;
- 
-+	/* Ignore entries with set flags */
-+	if (fdb_flags)
-+		return 0;
-+
- 	if (!dev->dev_ops->fdb_add)
- 		return -EOPNOTSUPP;
- 
-@@ -2238,11 +2242,15 @@ static int ksz_port_fdb_add(struct dsa_switch *ds, int port,
- }
- 
- static int ksz_port_fdb_del(struct dsa_switch *ds, int port,
--			    const unsigned char *addr,
--			    u16 vid, struct dsa_db db)
-+			    const unsigned char *addr, u16 vid,
-+			    u16 fdb_flags, struct dsa_db db)
- {
- 	struct ksz_device *dev = ds->priv;
- 
-+	/* Ignore entries with set flags */
-+	if (fdb_flags)
-+		return 0;
-+
- 	if (!dev->dev_ops->fdb_del)
- 		return -EOPNOTSUPP;
- 
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index e87f16a5756b..ff36b05bd03c 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -1366,12 +1366,16 @@ mt7530_port_bridge_leave(struct dsa_switch *ds, int port,
- static int
- mt7530_port_fdb_add(struct dsa_switch *ds, int port,
- 		    const unsigned char *addr, u16 vid,
--		    struct dsa_db db)
-+		    u16 fdb_flags, struct dsa_db db)
- {
- 	struct mt7530_priv *priv = ds->priv;
- 	int ret;
- 	u8 port_mask = BIT(port);
- 
-+	/* Ignore entries with set flags */
-+	if (fdb_flags)
-+		return 0;
-+
- 	mutex_lock(&priv->reg_mutex);
- 	mt7530_fdb_write(priv, vid, port_mask, addr, -1, STATIC_ENT);
- 	ret = mt7530_fdb_cmd(priv, MT7530_FDB_WRITE, NULL);
-@@ -1383,12 +1387,16 @@ mt7530_port_fdb_add(struct dsa_switch *ds, int port,
- static int
- mt7530_port_fdb_del(struct dsa_switch *ds, int port,
- 		    const unsigned char *addr, u16 vid,
--		    struct dsa_db db)
-+		    u16 fdb_flags, struct dsa_db db)
- {
- 	struct mt7530_priv *priv = ds->priv;
- 	int ret;
- 	u8 port_mask = BIT(port);
- 
-+	/* Ignore entries with set flags */
-+	if (fdb_flags)
-+		return 0;
-+
- 	mutex_lock(&priv->reg_mutex);
- 	mt7530_fdb_write(priv, vid, port_mask, addr, -1, STATIC_EMP);
- 	ret = mt7530_fdb_cmd(priv, MT7530_FDB_WRITE, NULL);
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 2479be3a1e35..352121cce77e 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -2722,11 +2722,15 @@ static int mv88e6xxx_vlan_msti_set(struct dsa_switch *ds,
- 
- static int mv88e6xxx_port_fdb_add(struct dsa_switch *ds, int port,
- 				  const unsigned char *addr, u16 vid,
--				  struct dsa_db db)
-+				  u16 fdb_flags, struct dsa_db db)
- {
- 	struct mv88e6xxx_chip *chip = ds->priv;
- 	int err;
- 
-+	/* Ignore entries with flags set */
-+	if (fdb_flags)
-+		return 0;
-+
- 	mv88e6xxx_reg_lock(chip);
- 	err = mv88e6xxx_port_db_load_purge(chip, port, addr, vid,
- 					   MV88E6XXX_G1_ATU_DATA_STATE_UC_STATIC);
-@@ -2737,11 +2741,15 @@ static int mv88e6xxx_port_fdb_add(struct dsa_switch *ds, int port,
- 
- static int mv88e6xxx_port_fdb_del(struct dsa_switch *ds, int port,
- 				  const unsigned char *addr, u16 vid,
--				  struct dsa_db db)
-+				  u16 fdb_flags, struct dsa_db db)
- {
- 	struct mv88e6xxx_chip *chip = ds->priv;
- 	int err;
- 
-+	/* Ignore entries with flags set */
-+	if (fdb_flags)
-+		return 0;
-+
- 	mv88e6xxx_reg_lock(chip);
- 	err = mv88e6xxx_port_db_load_purge(chip, port, addr, vid, 0);
- 	mv88e6xxx_reg_unlock(chip);
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index d2a9d292160c..0816cce715fe 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -782,12 +782,16 @@ static int felix_fdb_dump(struct dsa_switch *ds, int port,
- 
- static int felix_fdb_add(struct dsa_switch *ds, int port,
- 			 const unsigned char *addr, u16 vid,
--			 struct dsa_db db)
-+			 u16 fdb_flags, struct dsa_db db)
- {
- 	struct net_device *bridge_dev = felix_classify_db(db);
- 	struct dsa_port *dp = dsa_to_port(ds, port);
- 	struct ocelot *ocelot = ds->priv;
- 
-+	/* Ignore entries with set flags */
-+	if (fdb_flags)
-+		return 0;
-+
- 	if (IS_ERR(bridge_dev))
- 		return PTR_ERR(bridge_dev);
- 
-@@ -803,12 +807,16 @@ static int felix_fdb_add(struct dsa_switch *ds, int port,
- 
- static int felix_fdb_del(struct dsa_switch *ds, int port,
- 			 const unsigned char *addr, u16 vid,
--			 struct dsa_db db)
-+			 u16 fdb_flags, struct dsa_db db)
- {
- 	struct net_device *bridge_dev = felix_classify_db(db);
- 	struct dsa_port *dp = dsa_to_port(ds, port);
- 	struct ocelot *ocelot = ds->priv;
- 
-+	/* Ignore entries with set flags */
-+	if (fdb_flags)
-+		return 0;
-+
- 	if (IS_ERR(bridge_dev))
- 		return PTR_ERR(bridge_dev);
- 
-diff --git a/drivers/net/dsa/qca/qca8k-common.c b/drivers/net/dsa/qca/qca8k-common.c
-index fb45b598847b..0c5f49de6729 100644
---- a/drivers/net/dsa/qca/qca8k-common.c
-+++ b/drivers/net/dsa/qca/qca8k-common.c
-@@ -795,11 +795,15 @@ int qca8k_port_fdb_insert(struct qca8k_priv *priv, const u8 *addr,
- 
- int qca8k_port_fdb_add(struct dsa_switch *ds, int port,
- 		       const unsigned char *addr, u16 vid,
--		       struct dsa_db db)
-+		       u16 fdb_flags, struct dsa_db db)
- {
- 	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
- 	u16 port_mask = BIT(port);
- 
-+	/* Ignore entries with set flags */
-+	if (fdb_flags)
-+		return 0;
-+
- 	return qca8k_port_fdb_insert(priv, addr, port_mask, vid);
- }
- 
-@@ -810,6 +814,10 @@ int qca8k_port_fdb_del(struct dsa_switch *ds, int port,
- 	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
- 	u16 port_mask = BIT(port);
- 
-+	/* Ignore entries with set flags */
-+	if (fdb_flags)
-+		return 0;
-+
- 	if (!vid)
- 		vid = QCA8K_PORT_VID_DEF;
- 
-diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
-index 0b7a5cb12321..5d47e840ae1e 100644
---- a/drivers/net/dsa/qca/qca8k.h
-+++ b/drivers/net/dsa/qca/qca8k.h
-@@ -479,10 +479,10 @@ int qca8k_port_fdb_insert(struct qca8k_priv *priv, const u8 *addr,
- 			  u16 port_mask, u16 vid);
- int qca8k_port_fdb_add(struct dsa_switch *ds, int port,
- 		       const unsigned char *addr, u16 vid,
--		       struct dsa_db db);
-+		       u16 fdb_flags, struct dsa_db db);
- int qca8k_port_fdb_del(struct dsa_switch *ds, int port,
- 		       const unsigned char *addr, u16 vid,
--		       struct dsa_db db);
-+		       u16 fdb_flags, struct dsa_db db);
- int qca8k_port_fdb_dump(struct dsa_switch *ds, int port,
- 			dsa_fdb_dump_cb_t *cb, void *data);
- 
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 412666111b0c..1f12a5b89c91 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -1802,10 +1802,14 @@ int sja1105pqrs_fdb_del(struct dsa_switch *ds, int port,
- 
- static int sja1105_fdb_add(struct dsa_switch *ds, int port,
- 			   const unsigned char *addr, u16 vid,
--			   struct dsa_db db)
-+			   u16 fdb_flags, struct dsa_db db)
- {
- 	struct sja1105_private *priv = ds->priv;
- 
-+	/* Ignore entries with set flags */
-+	if (fdb_flags)
-+		return 0;
-+
- 	if (!vid) {
- 		switch (db.type) {
- 		case DSA_DB_PORT:
-@@ -1824,10 +1828,14 @@ static int sja1105_fdb_add(struct dsa_switch *ds, int port,
- 
- static int sja1105_fdb_del(struct dsa_switch *ds, int port,
- 			   const unsigned char *addr, u16 vid,
--			   struct dsa_db db)
-+			   u16 fdb_flags, struct dsa_db db)
- {
- 	struct sja1105_private *priv = ds->priv;
- 
-+	/* Ignore entries with set flags */
-+	if (fdb_flags)
-+		return 0;
-+
- 	if (!vid) {
- 		switch (db.type) {
- 		case DSA_DB_PORT:
-@@ -1944,7 +1952,7 @@ static int sja1105_mdb_add(struct dsa_switch *ds, int port,
- 			   const struct switchdev_obj_port_mdb *mdb,
- 			   struct dsa_db db)
- {
--	return sja1105_fdb_add(ds, port, mdb->addr, mdb->vid, db);
-+	return sja1105_fdb_add(ds, port, mdb->addr, mdb->vid, false, db);
- }
- 
- static int sja1105_mdb_del(struct dsa_switch *ds, int port,
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 26d82d71988e..875b20b910b9 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -1045,10 +1045,10 @@ struct dsa_switch_ops {
- 	 */
- 	int	(*port_fdb_add)(struct dsa_switch *ds, int port,
- 				const unsigned char *addr, u16 vid,
--				struct dsa_db db);
-+				u16 fdb_flags, struct dsa_db db);
- 	int	(*port_fdb_del)(struct dsa_switch *ds, int port,
- 				const unsigned char *addr, u16 vid,
--				struct dsa_db db);
-+				u16 fdb_flags, struct dsa_db db);
- 	int	(*port_fdb_dump)(struct dsa_switch *ds, int port,
- 				 dsa_fdb_dump_cb_t *cb, void *data);
- 	int	(*lag_fdb_add)(struct dsa_switch *ds, struct dsa_lag lag,
-diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index dd355556892e..6dacab9c1428 100644
---- a/net/dsa/switch.c
-+++ b/net/dsa/switch.c
-@@ -243,7 +243,7 @@ static int dsa_port_do_fdb_add(struct dsa_port *dp, const unsigned char *addr,
- 
- 	/* No need to bother with refcounting for user ports */
- 	if (!(dsa_port_is_cpu(dp) || dsa_port_is_dsa(dp)))
--		return ds->ops->port_fdb_add(ds, port, addr, vid, db);
-+		return ds->ops->port_fdb_add(ds, port, addr, vid, fdb_flags, db);
- 
- 	mutex_lock(&dp->addr_lists_lock);
- 
-@@ -259,7 +259,7 @@ static int dsa_port_do_fdb_add(struct dsa_port *dp, const unsigned char *addr,
- 		goto out;
- 	}
- 
--	err = ds->ops->port_fdb_add(ds, port, addr, vid, db);
-+	err = ds->ops->port_fdb_add(ds, port, addr, vid, fdb_flags, db);
- 	if (err) {
- 		kfree(a);
- 		goto out;
-@@ -287,7 +287,7 @@ static int dsa_port_do_fdb_del(struct dsa_port *dp, const unsigned char *addr,
- 
- 	/* No need to bother with refcounting for user ports */
- 	if (!(dsa_port_is_cpu(dp) || dsa_port_is_dsa(dp)))
--		return ds->ops->port_fdb_del(ds, port, addr, vid, db);
-+		return ds->ops->port_fdb_del(ds, port, addr, vid, fdb_flags, db);
- 
- 	mutex_lock(&dp->addr_lists_lock);
- 
-@@ -300,7 +300,7 @@ static int dsa_port_do_fdb_del(struct dsa_port *dp, const unsigned char *addr,
- 	if (!refcount_dec_and_test(&a->refcount))
- 		goto out;
- 
--	err = ds->ops->port_fdb_del(ds, port, addr, vid, db);
-+	err = ds->ops->port_fdb_del(ds, port, addr, vid, fdb_flags, db);
- 	if (err) {
- 		refcount_set(&a->refcount, 1);
- 		goto out;
--- 
-2.34.1
+I think as long as the guest used only 4K buffers we had no problem, but 
+now that it can create larger buffers the host may not be able to 
+allocate it contiguously. Since there is no need to have them contiguous 
+here, I think this patch is okay.
+
+However, if we switch to sk_buff (as Bobby is already doing), maybe we 
+don't have this problem because I think there is some kind of 
+pre-allocated pool.
+
+>
+>
+>
+>> > ---
+>> >
+>> > drivers/vhost/vsock.c                   | 2 +-
+>> > net/vmw_vsock/virtio_transport_common.c | 2 +-
+>> > 2 files changed, 2 insertions(+), 2 deletions(-)
+>> >
+>> > diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+>> > index 368330417bde..5703775af129 100644
+>> > --- a/drivers/vhost/vsock.c
+>> > +++ b/drivers/vhost/vsock.c
+>> > @@ -393,7 +393,7 @@ vhost_vsock_alloc_pkt(struct vhost_virtqueue *vq,
+>> > 		return NULL;
+>> > 	}
+>> >
+>> > -	pkt->buf = kmalloc(pkt->len, GFP_KERNEL);
+>> > +	pkt->buf = kvmalloc(pkt->len, GFP_KERNEL);
+>> > 	if (!pkt->buf) {
+>> > 		kfree(pkt);
+>> > 		return NULL;
+>> > diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+>> > index ec2c2afbf0d0..3a12aee33e92 100644
+>> > --- a/net/vmw_vsock/virtio_transport_common.c
+>> > +++ b/net/vmw_vsock/virtio_transport_common.c
+>> > @@ -1342,7 +1342,7 @@ EXPORT_SYMBOL_GPL(virtio_transport_recv_pkt);
+>> >
+>> > void virtio_transport_free_pkt(struct virtio_vsock_pkt *pkt)
+>> > {
+>> > -	kfree(pkt->buf);
+>> > +	kvfree(pkt->buf);
+>>
+>> virtio_transport_free_pkt() is used also in virtio_transport.c and
+>> vsock_loopback.c where pkt->buf is allocated with kmalloc(), but IIUC
+>> kvfree() can be used with that memory, so this should be fine.
+>>
+>> > 	kfree(pkt);
+>> > }
+>> > EXPORT_SYMBOL_GPL(virtio_transport_free_pkt);
+>> > --
+>> > 2.37.3.998.g577e59143f-goog
+>> >
+>>
+>> This issue should go away with the Bobby's work about introducing sk_buff
+>> [1], but we can queue this for now.
+>>
+>> I'm not sure if we should do the same also in the virtio-vsock driver
+>> (virtio_transport.c). Here in vhost-vsock the buf allocated is only used in
+>> the host, while in the virtio-vsock driver the buffer is exposed to the
+>> device emulated in the host, so it should be physically contiguous (if not,
+>> maybe we need to adjust virtio_vsock_rx_fill()).
+>
+>More importantly it needs to support DMA API which IIUC kvmalloc
+>memory does not.
+>
+
+Right, good point!
+
+Thanks,
+Stefano
 
