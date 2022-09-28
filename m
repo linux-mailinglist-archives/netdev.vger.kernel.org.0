@@ -2,97 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 281B65EDC49
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 14:06:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9262E5EDC65
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 14:18:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232505AbiI1MGu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 08:06:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52230 "EHLO
+        id S232140AbiI1MSj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 08:18:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230357AbiI1MGt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 08:06:49 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F6E473914;
-        Wed, 28 Sep 2022 05:06:48 -0700 (PDT)
-Date:   Wed, 28 Sep 2022 14:06:45 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1664366807;
+        with ESMTP id S230015AbiI1MSb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 08:18:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61E9A7E03D
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 05:18:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1664367507;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=s6lQAgh7enonjhj6PjJx0/AsS46rxYHX/hQJLChO0RM=;
-        b=C+rectd6LxzA8wzjvdfl0Rh1UXgpt9QW/NxZ2mspzhqQV1PQNziRV63YtvNgq0NOVsKgF/
-        55tMkeDZ0CqFfR6gCuuOno5B/YpfufR5ii2qAZ+82QX0mbHcwhj2NxTcyQkgyvExz7QlAK
-        TpGKI6iZiEJAqiKTvV4zo5MWjxn7A35MhCYPwQNdgFJet/oqcjGUMadbMQVLPo9HrblqsV
-        GXif2jAcMYFryITVPZWU4McuEBhXcSk73PV5OjD4xn+QWarODTKyrRY+RrpBXqUk49wu5A
-        JqYD+lTffSde193nkfjvqMkh80QSJx56Ze2iDrPD2ku9IX430WZBKV6gn28tOg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1664366807;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=s6lQAgh7enonjhj6PjJx0/AsS46rxYHX/hQJLChO0RM=;
-        b=u+d08PNpLEfTCXvR58fhvt2JoqlEDDDVEZ4C9DDFFRADPfI7lx+JSXJS5oFWFjyapmGigx
-        DnIYnc/GD6WWBsAw==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Sherry Yang <sherry.yang@oracle.com>,
-        Paul Webb <paul.x.webb@oracle.com>,
-        Phillip Goerl <phillip.goerl@oracle.com>,
-        Jack Vogel <jack.vogel@oracle.com>,
-        Nicky Veitch <nicky.veitch@oracle.com>,
-        Colm Harrington <colm.harrington@oracle.com>,
-        Ramanan Govindarajan <ramanan.govindarajan@oracle.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Tejun Heo <tj@kernel.org>,
-        Sultan Alsawaf <sultan@kerneltoast.com>, stable@vger.kernel.org
-Subject: Re: [PATCH v3] random: use expired per-cpu timer rather than wq for
- mixing fast pool
-Message-ID: <YzQ41ZhCojbyZq6L@linutronix.de>
-References: <YzKy+bNedt2vu+a1@zx2c4.com>
- <20220927104233.1605507-1-Jason@zx2c4.com>
+        bh=9q51bLxm262eHLp+720Tq41cE09C48zOVN9jMN9Lyno=;
+        b=BfAr2JUko5PPruEgdWDI3cuLmOwL8+9VLACawtqq8ZvYViDXdW8OkFhF/Cd8UmViB73zct
+        I4HEnaVKtQyjIFLBcwvqp8My5bQavTp/BOTsyc/tKXltw1RiaOswvsg2uKka1TyTt7XUPS
+        lg1s8X/6d+ktX9zrkX6MH83kOYgMEF4=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-266-0RlXhjOaNS-yKONPk8BHfA-1; Wed, 28 Sep 2022 08:18:24 -0400
+X-MC-Unique: 0RlXhjOaNS-yKONPk8BHfA-1
+Received: by mail-wm1-f69.google.com with SMTP id 84-20020a1c0257000000b003b4be28d7e3so1129318wmc.0
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 05:18:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:message-id:date:references:in-reply-to:subject:to:from
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=9q51bLxm262eHLp+720Tq41cE09C48zOVN9jMN9Lyno=;
+        b=IAbuHOcgNEGkpRvAj2zEusLBL+iYr4VSC1B0OHhM2Ru1xKtR/9mnC1omOfBwR27mOy
+         rea4pPfNpqT1h+sI6ZtJpfjCyTa6ggBC8TBZNUKxkAOqXCDN+fjKYK4UdcFRcStkULKY
+         8vE9tZFkg+SIoLACDYGLb9JazRtlwW9Bd73AVQHjsP9lQprMbLXGcDmZbbL+t5f3vr5S
+         IZYMPAtXMM42fFqkoKq1VcGQkV5jx1IyXuAqJjtbG9I3kQS5tJuAG4QklnHZQWzYWEEq
+         kXX5qq5SbrrK1zMEffq/EJJZPMLnhaAsmyL6CuDhugrlU8kbUxOl771FfaUzw2Pb5wXc
+         eAFQ==
+X-Gm-Message-State: ACrzQf2L0flE5m8dYKnM0d0JF8NcwOuqUZZhi/XEDFLTeoWLBq3uD8Yn
+        ntts86v9Jdn4Ii8D0zu4XNPNHQsRY+kBBvW6i6GbHgaOu1qUuLTUPAoifwBUgrhw+cYoDTsRewJ
+        YTVsIsuldBPEYjJhY
+X-Received: by 2002:a5d:59c8:0:b0:22b:237c:3e1b with SMTP id v8-20020a5d59c8000000b0022b237c3e1bmr20184084wry.635.1664367502407;
+        Wed, 28 Sep 2022 05:18:22 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM5F21mxUsopIrv+BjQ0rBl7FMBJ+q8hvQ5AxqVNgdtgM5vgfCffsdEX02IpVWR/86LHrmwYaA==
+X-Received: by 2002:a5d:59c8:0:b0:22b:237c:3e1b with SMTP id v8-20020a5d59c8000000b0022b237c3e1bmr20184068wry.635.1664367502149;
+        Wed, 28 Sep 2022 05:18:22 -0700 (PDT)
+Received: from vschneid.remote.csb ([185.11.37.247])
+        by smtp.gmail.com with ESMTPSA id bg33-20020a05600c3ca100b003a5f4fccd4asm1660707wmb.35.2022.09.28.05.18.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 28 Sep 2022 05:18:21 -0700 (PDT)
+From:   Valentin Schneider <vschneid@redhat.com>
+To:     Yury Norov <yury.norov@gmail.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Yury Norov <yury.norov@gmail.com>
+Subject: Re: [PATCH 1/7] cpumask: fix checking valid cpu range
+In-Reply-To: <20220919210559.1509179-2-yury.norov@gmail.com>
+References: <20220919210559.1509179-1-yury.norov@gmail.com>
+ <20220919210559.1509179-2-yury.norov@gmail.com>
+Date:   Wed, 28 Sep 2022 13:18:20 +0100
+Message-ID: <xhsmhbkqz4rqr.mognet@vschneid.remote.csb>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220927104233.1605507-1-Jason@zx2c4.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-09-27 12:42:33 [+0200], Jason A. Donenfeld wrote:
-=E2=80=A6
-> This is an ordinary pattern done all over the kernel. However, Sherry
-> noticed a 10% performance regression in qperf TCP over a 40gbps
-> InfiniBand card. Quoting her message:
->=20
-> > MT27500 Family [ConnectX-3] cards:
-> > Infiniband device 'mlx4_0' port 1 status:
-=E2=80=A6
+On 19/09/22 14:05, Yury Norov wrote:
+> The range of valid CPUs is [0, nr_cpu_ids). Some cpumask functions are
+> passed with a shifted CPU index, and for them, the valid range is
+> [-1, nr_cpu_ids-1). Currently for those functions, we check the index
+> against [-1, nr_cpu_ids), which is wrong.
+>
+> Signed-off-by: Yury Norov <yury.norov@gmail.com>
+> ---
+>  include/linux/cpumask.h | 19 ++++++++-----------
+>  1 file changed, 8 insertions(+), 11 deletions(-)
+>
+> diff --git a/include/linux/cpumask.h b/include/linux/cpumask.h
+> index e4f9136a4a63..a1cd4eb1a3d6 100644
+> --- a/include/linux/cpumask.h
+> +++ b/include/linux/cpumask.h
+> @@ -174,9 +174,8 @@ static inline unsigned int cpumask_last(const struct cpumask *srcp)
+>  static inline
+>  unsigned int cpumask_next(int n, const struct cpumask *srcp)
+>  {
+> -	/* -1 is a legal arg here. */
+> -	if (n != -1)
+> -		cpumask_check(n);
+> +	/* n is a prior cpu */
+> +	cpumask_check(n + 1);
+>       return find_next_bit(cpumask_bits(srcp), nr_cpumask_bits, n + 1);
 
-While looking at the mlx4 driver, it looks like they don't use any NAPI
-handling in their interrupt handler which _might_ be the case that they
-handle more than 1k interrupts a second. I'm still curious to get that
-ACKed from Sherry's side.
+I'm confused, this makes passing nr_cpu_ids-1 to cpumask_next*() trigger a
+warning. The documentation does states:
 
-Jason, from random's point of view: deferring until 1k interrupts + 1sec
-delay is not desired due to low entropy, right?
+* @n: the cpu prior to the place to search (ie. return will be > @n)
 
-> Rather than incur the scheduling latency from queue_work_on, we can
-> instead switch to running on the next timer tick, on the same core. This
-> also batches things a bit more -- once per jiffy -- which is okay now
-> that mix_interrupt_randomness() can credit multiple bits at once.
+So n is a valid CPU number (with -1 being the exception for scan
+initialization), this shouldn't exclude nr_cpu_ids-1.
 
-Hmmm. Do you see higher contention on input_pool.lock? Just asking
-because if more than once CPUs invokes this timer callback aligned, then
-they block on the same lock.
+IMO passing nr_cpu_ids-1 should be treated the same as passing the
+last set bit in a bitmap: no warning, and returns the bitmap
+size. Otherwise reaching nr_cpu_ids-1 has to be special-cased by the
+calling code which seems like unnecessary boiler plate
 
-Sebastian
+For instance, I trigger the cpumask_check() warning there:
+
+3d2dcab932d0:block/blk-mq.c @l2047
+        if (--hctx->next_cpu_batch <= 0) {
+select_cpu:
+                next_cpu = cpumask_next_and(next_cpu, hctx->cpumask, <-----
+                                cpu_online_mask);
+                if (next_cpu >= nr_cpu_ids)
+                        next_cpu = blk_mq_first_mapped_cpu(hctx);
+                hctx->next_cpu_batch = BLK_MQ_CPU_WORK_BATCH;
+        }
+
+next_cpu is a valid CPU number, shifting it doesn't seem to make sense, and
+we do want it to reach nr_cpu_ids-1.
+
