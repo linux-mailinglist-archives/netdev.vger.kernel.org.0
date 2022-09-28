@@ -2,123 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 685D05EE403
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 20:12:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09BA45EE435
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 20:19:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234032AbiI1SMv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 14:12:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39490 "EHLO
+        id S234050AbiI1ST2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 14:19:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234454AbiI1SMo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 14:12:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E54EABF17
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 11:12:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8182C61F4D
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 18:12:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DFA6C433C1;
-        Wed, 28 Sep 2022 18:12:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664388761;
-        bh=fPV/RiIx/VCD/CnQYa94sSikfKUKXfmn5fNibwNFvGU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=khEfdoH7urZY+sFxMKVVotpgl2VnJbqSQ0We6fsJq3hOG4ntWe+DhLI4bM72VD6QM
-         2MRhiTarr8hACfl3RiLLeR8skARwJXELKJ4jVYb1tFHyCcE5QTA6Ujs0Ka4GYwXn9O
-         2ZTjzi5u/Sc6FKLIQedHn3L3D7InQfTu6XKn4vv8AzPOxWl40z7UiJbx1zrqofa6S8
-         8VjJDrNV02Py/O2XqixY5124Wfd1NRrGazZ1aStZXYT3uqfboS+s7T9eaUNlE4CQc6
-         no8evHugxKwHTCoXaN83JML5ak1ScoLLjgtV+Z0N0sK4RVI2PDXaNwOYbGbJlJhKbk
-         9Mnrp8V8/CSAA==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        Jakub Kicinski <kuba@kernel.org>,
-        Zbynek Michl <zbynek.michl@gmail.com>, chris.snook@gmail.com,
-        dossche.niels@gmail.com, johannes@sipsolutions.net
-Subject: [PATCH net] eth: alx: take rtnl_lock on resume
-Date:   Wed, 28 Sep 2022 11:12:36 -0700
-Message-Id: <20220928181236.1053043-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.37.3
+        with ESMTP id S234306AbiI1STC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 14:19:02 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E94A109774
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 11:18:04 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id c11so21008952wrp.11
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 11:18:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:references:cc:to:subject:from:from:to:cc
+         :subject:date;
+        bh=WvZfjT+KGPncwoli27cObekkWViFSqFqrZCljMfZ7nY=;
+        b=MVhhcYCeUIa7oHQ5EzsGc+3ojbNkjckmyam6dhq4YQMf9Qyrkw0a8Nc9O5OI2e9e3a
+         HGJWp6AvlDLeVDauVt8ATm96yu7Tho3TKzEDGTO3hWzPoG49fP+ynQPvMQJFH2VGKAVM
+         9du5rssjtXeS4XKbP+tI3M22mpTykojQYP3cLZJhbx5P1ZKdRDrWNpGiPvNHhRQuJ+IC
+         iP+RCC3i/JAYxhpHdMy/uZEWv67DP+bdrEAUbpGB3aVIBCdyqc1+YJn5TMj8hegRCj4A
+         qt7TOT6iGb0tkSIy332w42nYnelVWiedNq5ysbtM41wSphWJ62irF1MmpKM1CYNt7Qf4
+         BdHw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:references:cc:to:subject:from
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=WvZfjT+KGPncwoli27cObekkWViFSqFqrZCljMfZ7nY=;
+        b=k9np+U2xCr+sso8bjbkthkXYYrn59B3tX3Du4eMvv0yXNGJO+qIseOCowTe/F+gD/6
+         SMiIyi8PBe5hPWTlJ8IsR1DgIeoD7gaDbXFoxmI7RibpFLjSxzCu1WUgx/J1cO8C0s9q
+         bSsDC8wO+8jGgIse++ucFlFz4TDTjhX2+vM26YrMsd1HngUJkLZ617MBQQIZr5PxhzqD
+         +h8u5A2i0WIXBAmM/31qh4u6+9S5w7PgfxSmDX0qwcB9tHGCBbAZk2ABFUFC/kc9h7Z3
+         46eFxzoWVhv8aBLlgnxssZt0yQ1eyU1eDk683FMhQF+Yo3DSCwz7C5I92FvmqWjsrb4B
+         d5fg==
+X-Gm-Message-State: ACrzQf1ACnjo63g+C9+nFGjkx8vqF8Xxu2Dy4cEEdhWH3UfI3KFMUVle
+        7DeX33kh2alXk8AyBfVXSLg=
+X-Google-Smtp-Source: AMsMyM6BPYGALQmpGouck54b+aVE3hF/QzEQvl81QJCTKV8EUkzbgPortzGbPQQzIHaAvGrkmGhNow==
+X-Received: by 2002:adf:eb84:0:b0:22a:917e:1c20 with SMTP id t4-20020adfeb84000000b0022a917e1c20mr21449509wrn.223.1664389082511;
+        Wed, 28 Sep 2022 11:18:02 -0700 (PDT)
+Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
+        by smtp.gmail.com with ESMTPSA id e9-20020adfe389000000b00228daaa84aesm4693343wrm.25.2022.09.28.11.18.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 28 Sep 2022 11:18:01 -0700 (PDT)
+From:   Edward Cree <ecree.xilinx@gmail.com>
+Subject: Re: [PATCH v2 net-next 3/6] sfc: optional logging of TC offload
+ errors
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-net-drivers@amd.com,
+        davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
+        habetsm.xilinx@gmail.com
+References: <cover.1664218348.git.ecree.xilinx@gmail.com>
+ <a1ff1d57bcd5a8229dd5f2147b09c4b2b896ecc9.1664218348.git.ecree.xilinx@gmail.com>
+ <20220928104426.1edd2fa2@kernel.org>
+Message-ID: <b4359f7e-2625-1662-0a78-9dd65bfc8078@gmail.com>
+Date:   Wed, 28 Sep 2022 19:17:51 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220928104426.1edd2fa2@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Zbynek reports that alx trips an rtnl assertion on resume:
+On 28/09/2022 18:44, Jakub Kicinski wrote:
+> On Mon, 26 Sep 2022 19:57:33 +0100 ecree@xilinx.com wrote:
+>> TC offload support will involve complex limitations on what matches and
+>>  actions a rule can do, in some cases potentially depending on rules
+>>  already offloaded.  So add an ethtool private flag "log-tc-errors" which
+>>  controls reporting the reasons for un-offloadable TC rules at NETIF_INFO.
+> 
+> Because extack does not work somehow?
 
- RTNL: assertion failed at net/core/dev.c (2891)
- RIP: 0010:netif_set_real_num_tx_queues+0x1ac/0x1c0
- Call Trace:
-  <TASK>
-  __alx_open+0x230/0x570 [alx]
-  alx_resume+0x54/0x80 [alx]
-  ? pci_legacy_resume+0x80/0x80
-  dpm_run_callback+0x4a/0x150
-  device_resume+0x8b/0x190
-  async_resume+0x19/0x30
-  async_run_entry_fn+0x30/0x130
-  process_one_work+0x1e5/0x3b0
+Last I checked, flow rules coming from an indirect binding to a tunnel
+ netdev did not report the hw driver's extack (or even rc) back to the
+ user.
+Also, extack can only contain fixed strings (netlink.h: "/* Currently
+ string formatting is not supported (due to the lack of an output
+ buffer.) */") which was a real problem for us.
 
-indeed the driver does not hold rtnl_lock during its internal close
-and re-open functions during suspend/resume. Note that this is not
-a huge bug as the driver implements its own locking, and does not
-implement changing the number of queues, but we need to silence
-the splat.
+> Somehow you limitations are harder to debug that everyone else's so you
+> need a private flag? :/
 
-Fixes: 4a5fe57e7751 ("alx: use fine-grained locking instead of RTNL")
-Reported-and-tested-by: Zbynek Michl <zbynek.michl@gmail.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
-CC: chris.snook@gmail.com
-CC: dossche.niels@gmail.com
-CC: johannes@sipsolutions.net
----
- drivers/net/ethernet/atheros/alx/main.c | 5 +++++
- 1 file changed, 5 insertions(+)
+It's not about debugging the driver, it's about communicating the
+ limitations to the end user.  Having TC rules mysteriously fail to be
+ offloaded with no indication of why is not a great UX :(
+I couldn't see a way to handle this without vendor-specific ugliness,
+ but if you have a proposal I don't mind putting in some work to
+ implement it.
 
-diff --git a/drivers/net/ethernet/atheros/alx/main.c b/drivers/net/ethernet/atheros/alx/main.c
-index a89b93cb4e26..d5939586c82e 100644
---- a/drivers/net/ethernet/atheros/alx/main.c
-+++ b/drivers/net/ethernet/atheros/alx/main.c
-@@ -1912,11 +1912,14 @@ static int alx_suspend(struct device *dev)
- 
- 	if (!netif_running(alx->dev))
- 		return 0;
-+
-+	rtnl_lock();
- 	netif_device_detach(alx->dev);
- 
- 	mutex_lock(&alx->mtx);
- 	__alx_stop(alx);
- 	mutex_unlock(&alx->mtx);
-+	rtnl_unlock();
- 
- 	return 0;
- }
-@@ -1927,6 +1930,7 @@ static int alx_resume(struct device *dev)
- 	struct alx_hw *hw = &alx->hw;
- 	int err;
- 
-+	rtnl_lock();
- 	mutex_lock(&alx->mtx);
- 	alx_reset_phy(hw);
- 
-@@ -1943,6 +1947,7 @@ static int alx_resume(struct device *dev)
- 
- unlock:
- 	mutex_unlock(&alx->mtx);
-+	rtnl_unlock();
- 	return err;
- }
- 
--- 
-2.37.3
-
+-ed
