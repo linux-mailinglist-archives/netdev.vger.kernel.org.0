@@ -2,149 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 754EC5EEA13
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 01:20:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CD2D5EEA17
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 01:21:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232788AbiI1XUl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 19:20:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39296 "EHLO
+        id S232511AbiI1XVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 19:21:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230015AbiI1XUk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 19:20:40 -0400
-Received: from mail-pj1-x1063.google.com (mail-pj1-x1063.google.com [IPv6:2607:f8b0:4864:20::1063])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F13D2A722
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 16:20:36 -0700 (PDT)
-Received: by mail-pj1-x1063.google.com with SMTP id u12so5097988pjj.1
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 16:20:36 -0700 (PDT)
+        with ESMTP id S233141AbiI1XV3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 19:21:29 -0400
+Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B091431378
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 16:21:28 -0700 (PDT)
+Received: by mail-qt1-x82e.google.com with SMTP id y2so8933111qtv.5
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 16:21:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=88dorG/WRQJB/XicIkfUTuz0A9yUzHdVFNlvpyOdr+Y=;
+        b=n2+/wszcCWX38nnfqrROvCXZLwx1vlwlUniDxpseaUjUCssGuGceXNxjMoejXXzPWa
+         xcynKl38c0+pBPn4A/6LIwJNdY3OuLxy7PLZkAmPTV1XEorx0iWtd/oY+q55fXYEzP32
+         ZSR9V/VRW9prIVX6TRNdnSMbbfDiRayLQlubcYG2IV+R86OcH3OnG/2mm7j6zZM09mIe
+         P98TTHbPmqjtjROPmC3vO8PA7hm20Dz5fz/k3dtWnXUSuF7tFe+Zz0yqygS233TBLgWh
+         UoMRogLgA7YfFpC3JqjBI+ySK2/ltB1lyT2ueFW9QO4myd+U5ufVxYN6qffxeyUqdvND
+         +nbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:references:message-id:subject:cc:to
-         :from:date:dkim-signature:x-gm-message-state:from:to:cc:subject:date;
-        bh=P+xjXaurwhtJmqmMf0PJEzjAO1MMXyc/q6GQ8sS6wLs=;
-        b=ppvbygbgb1Lw/TH+4F+kn/xyyFeIUb5VByZffpnE/3K6xTFjXGinFR+mZ2CxPuHcoU
-         8wLJ4WPEVEg13ZFiXKceoT40Z317gX9xnfsk92uloCCxoYISFaTHCYSiQMqssfDAM3Ai
-         5RY5Q8mVIqd+JLbgW3Sdpk8730vjAaIQeJefwd+6jc0j3M1b+UFau4zUG7Z7KseIAfSK
-         CyV8yYl93aX2qtzwI00hEC6jWmpOK0/Fu8JuP6Mih780g/o61BNitoA5iEm6Ce4diFuc
-         PkVc11v7+g033eKtCgYY9mB8m7UzXacmEkAdAhVxoZEHzvae9Zxzn4UQlvChI+NQqDSi
-         fjCg==
-X-Gm-Message-State: ACrzQf1qFknoJkwoSuCQrleUU95to4koMokU7I8qslHMB9cBWdxncn2A
-        oPyGHK2nCa0pxrxwvxvySIKadwNQrrpEpnVVduqgGd4CiqR5
-X-Google-Smtp-Source: AMsMyM4Psc2ub1XLhg771C+RWiqbj5BvQWHnC6aLQRGXvnUrNmcInm+SYK4mMjkHMWwToI5/HHnXGWMgS48Z
-X-Received: by 2002:a17:903:11cf:b0:178:a8f4:d511 with SMTP id q15-20020a17090311cf00b00178a8f4d511mr410333plh.72.1664407235579;
-        Wed, 28 Sep 2022 16:20:35 -0700 (PDT)
-Received: from smtp.aristanetworks.com (smtp.aristanetworks.com. [54.193.82.35])
-        by smtp-relay.gmail.com with ESMTPS id u11-20020a170902714b00b0016ee647ca85sm223889plm.93.2022.09.28.16.20.35
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 28 Sep 2022 16:20:35 -0700 (PDT)
-X-Relaying-Domain: arista.com
-Received: from chmeee (unknown [10.95.71.70])
-        by smtp.aristanetworks.com (Postfix) with ESMTPS id 23A60301BD94;
-        Wed, 28 Sep 2022 16:20:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arista.com;
-        s=Arista-B; t=1664407235;
-        bh=P+xjXaurwhtJmqmMf0PJEzjAO1MMXyc/q6GQ8sS6wLs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=EKAGIolPTBrjq14fjU+yv8WHtOnQNJEyyjVWQRvq230g1uiLby3q4VxaAWbqI31jP
-         np9Jthr79J0qp/NGRmhzcT7gBnApItlwuM+igi7XdudHhMYVFqa7NWHMxAYYhAzPH7
-         04jcvxWW0K/W7AHNaqgn8WEMnNO5C+gXumZQ19Ic=
-Received: from kevmitch by chmeee with local (Exim 4.96)
-        (envelope-from <kevmitch@arista.com>)
-        id 1odgLx-000WEQ-2s;
-        Wed, 28 Sep 2022 16:20:33 -0700
-Date:   Wed, 28 Sep 2022 16:20:33 -0700
-From:   Kevin Mitchell <kevmitch@arista.com>
-To:     Antoine Tenart <atenart@kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: new warning caused by ("net-sysfs: update the queue counts in
- the unregistration path")
-Message-ID: <YzTWwf/FyzBKGaww@chmeee>
-References: <YzOjEqBMtF+Ib72v@chmeee>
- <166435838013.3919.14607521178984182789@kwain>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <166435838013.3919.14607521178984182789@kwain>
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=88dorG/WRQJB/XicIkfUTuz0A9yUzHdVFNlvpyOdr+Y=;
+        b=L653T5YwBuo2fKCy4eKWK8MB/Ec1gqJCiY1p3LPaWxHEmXTBdDVQCgI0K6vWZAbNU2
+         LDQoLU6dWnWjUeIcT9ZT/2kd/ISWv8qNQe/hMmyUdvtLqqzwEosIx0Ja3JJDMheJ0KLA
+         ABwyO0j0apZGopud2TtU2cuAx/Sqd9fL6AiG00CDa23o7GAS8a1awmFBIsT/zjftbuqP
+         Pt7gsNyS3ol4xoVcIuhElLMoeUa+s0+/n/qZZSv2tYmdZSA0uEAhN5yyBDorodVAMDMi
+         z1Y7fv6JKw7GuqfwkkHH8b2SM24Y6tMAet8675DDQLenRBHwp8zc5e96NHs9WXmAV5dk
+         1Mxg==
+X-Gm-Message-State: ACrzQf0pn6KbS+IP8x5WDJPkNVO3vCLumWW4bZzIQ3XbFFuwOcxgTpjw
+        X8zMHU1O5FCo7vTtSojFPWsX8Ux3CY0=
+X-Google-Smtp-Source: AMsMyM57fjI5W/rZ90NxLO+FHBEXyk3gpNTTdDaar5gUoRHv9Fj6khgOtmhjexgs3pcBOge14LkxKA==
+X-Received: by 2002:ac8:5a15:0:b0:35d:ef5:811a with SMTP id n21-20020ac85a15000000b0035d0ef5811amr162253qta.667.1664407287783;
+        Wed, 28 Sep 2022 16:21:27 -0700 (PDT)
+Received: from mubashirq.c.googlers.com.com (74.206.145.34.bc.googleusercontent.com. [34.145.206.74])
+        by smtp.gmail.com with ESMTPSA id t18-20020ac86a12000000b0035d43c82da8sm3919837qtr.80.2022.09.28.16.21.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 28 Sep 2022 16:21:27 -0700 (PDT)
+From:   Mubashir Adnan Qureshi <mubashirmaq@gmail.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org,
+        Mubashir Adnan Qureshi <mubashirq@google.com>
+Subject: [PATCH net-next 0/5] Add PLB functionality to TCP
+Date:   Wed, 28 Sep 2022 23:20:46 +0000
+Message-Id: <20220928232051.3728844-1-mubashirmaq@gmail.com>
+X-Mailer: git-send-email 2.37.3.998.g577e59143f-goog
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 28, 2022 at 11:46:20AM +0200, Antoine Tenart wrote:
-> Quoting Kevin Mitchell (2022-09-28 03:27:46)
-> > With the inclusion of d7dac083414e ("net-sysfs: update the queue counts in the
-> > unregistration path"), we have started see the following message during one of
-> > our stress tests that brings an interface up and down while continuously
-> > trying to send out packets on it:
-> >
-> > et3_11_1 selects TX queue 0, but real number of TX queues is 0
-> >
-> > It seems that this is a result of a race between remove_queue_kobjects() and
-> > netdev_cap_txqueue() for the last packets before setting dev->flags &= ~IFF_UP
-> > in __dev_close_many(). When this message is displayed, netdev_cap_txqueue()
-> > selects queue 0 anyway (the noop queue at this point). As it did before the
-> > above commit, that queue (which I guess is still around due to reference
-> > counting) proceeds to drop the packet and return NET_XMIT_CN. So there doesn't
-> > appear to be a functional change. However, the warning message seems to be
-> > spurious if not slightly confusing.
->
-> Do you know the call traces leading to this? Also I'm not 100% sure to
-> follow as remove_queue_kobjects is called in the unregistration path
-> while the test is setting the iface up & down. What driver is used?
+From: Mubashir Adnan Qureshi <mubashirq@google.com>
 
-Sorry, my language was imprecise. The device is being unregistered and
-re-registered. The driver is out of tree for our front panel ports. I don't
-think this is specific to the driver, but I'd be happy to be convinced
-otherwise.
+This patch series adds PLB (Protective Load Balancing) to TCP and hooks
+it up to DCTCP. PLB is disabled by default and can be enabled using
+relevant sysctls and support from underlying CC.
 
-The call trace to the queue removal is
+PLB (Protective Load Balancing) is a host based mechanism for load
+balancing across switch links. It leverages congestion signals(e.g. ECN)
+from transport layer to randomly change the path of the connection
+experiencing congestion. PLB changes the path of the connection by
+changing the outgoing IPv6 flow label for IPv6 connections (implemented
+in Linux by calling sk_rethink_txhash()). Because of this implementation
+mechanism, PLB can currently only work for IPv6 traffic. For more
+information, see the SIGCOMM 2022 paper:
+  https://doi.org/10.1145/3544216.3544226
 
-[  628.165565]  dump_stack+0x74/0x90
-(remove_queue_kobject)
-[  628.165569]  netdev_unregister_kobject+0x7a/0xb3
-[  628.165572]  rollback_registered_many+0x560/0x5c4
-[  628.165576]  unregister_netdevice_queue+0xa3/0xfc
-[  628.165578]  unregister_netdev+0x1e/0x25
-[  628.165589]  fdev_free+0x26e/0x29d [strata_dma_drv]
+Mubashir Adnan Qureshi (5):
+  tcp: add sysctls for TCP PLB parameters
+  tcp: add PLB functionality for TCP
+  tcp: add support for PLB in DCTCP
+  tcp: add u32 counter in tcp_sock and an SNMP counter for PLB
+  tcp: add rcv_wnd and plb_rehash to TCP_INFO
 
-The call trace to the warning message is
+ Documentation/networking/ip-sysctl.rst |  75 ++++++++++++++++++
+ include/linux/tcp.h                    |   1 +
+ include/net/netns/ipv4.h               |   5 ++
+ include/net/tcp.h                      |  28 +++++++
+ include/uapi/linux/snmp.h              |   1 +
+ include/uapi/linux/tcp.h               |   6 ++
+ net/ipv4/Makefile                      |   2 +-
+ net/ipv4/proc.c                        |   1 +
+ net/ipv4/sysctl_net_ipv4.c             |  43 ++++++++++
+ net/ipv4/tcp.c                         |   5 ++
+ net/ipv4/tcp_dctcp.c                   |  23 +++++-
+ net/ipv4/tcp_ipv4.c                    |   8 ++
+ net/ipv4/tcp_plb.c                     | 104 +++++++++++++++++++++++++
+ 13 files changed, 300 insertions(+), 2 deletions(-)
+ create mode 100644 net/ipv4/tcp_plb.c
 
-[ 1094.355489]  dump_stack+0x74/0x90
-(netdev_cap_txqueue)
-[ 1094.355495]  netdev_core_pick_tx+0x91/0xaf
-[ 1094.355500]  __dev_queue_xmit+0x249/0x602
-[ 1094.355503]  ? printk+0x58/0x6f
-[ 1094.355510]  dev_queue_xmit+0x10/0x12
-[ 1094.355518]  packet_sendmsg+0xe88/0xeee
-[ 1094.355524]  ? update_curr+0x6b/0x15d
-[ 1094.355530]  sock_sendmsg_nosec+0x12/0x1d
-[ 1094.355533]  sock_write_iter+0x8a/0xb6
-[ 1094.355539]  new_sync_write+0x7c/0xb4
-[ 1094.355543]  vfs_write+0xfe/0x12a
-[ 1094.355547]  ksys_write+0x6e/0xb9
-[ 1094.355552]  ? exit_to_user_mode_prepare+0xd3/0xf0
-[ 1094.355555]  __x64_sys_write+0x1a/0x1c
-[ 1094.355559]  do_syscall_64+0x31/0x40
-[ 1094.355564]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+-- 
+2.37.3.998.g577e59143f-goog
 
->
-> As you said and looking around queue 0 is somewhat special and used as a
-> fallback. My suggestion would be to 1) check if the above race is
-> expected 2) if yes, a possible solution would be not to warn when
-> real_num_tx_queues == 0 as in such cases selecting queue 0 would be the
-> expected fallback (and you might want to check places like [1]).
-
-Yes this is exactly where this is happening and that sounds like a good idea to
-me. As far as I can tell, the message is completely innocuous. If there really
-are no cases where it is useful to have this warning for real_num_tx_queues ==
-0, I could submit a patch to not emit it in that case.
-
->
-> Thanks,
-> Antoine
->
-> [1] https://elixir.bootlin.com/linux/latest/source/net/core/dev.c#L4126
