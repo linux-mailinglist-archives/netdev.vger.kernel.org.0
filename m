@@ -2,84 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 31CE65EDC78
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 14:23:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A17D85EDC89
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 14:28:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233335AbiI1MXa convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 28 Sep 2022 08:23:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53092 "EHLO
+        id S233622AbiI1M2g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 08:28:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229486AbiI1MX2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 08:23:28 -0400
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C06D6868BE
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 05:23:26 -0700 (PDT)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 28SCMqRkA029858, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 28SCMqRkA029858
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Wed, 28 Sep 2022 20:22:52 +0800
-Received: from RTEXMBS05.realtek.com.tw (172.21.6.98) by
- RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.7; Wed, 28 Sep 2022 20:23:17 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS05.realtek.com.tw (172.21.6.98) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 28 Sep 2022 20:23:16 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::402d:f52e:eaf0:28a2]) by
- RTEXMBS04.realtek.com.tw ([fe80::402d:f52e:eaf0:28a2%5]) with mapi id
- 15.01.2375.007; Wed, 28 Sep 2022 20:23:16 +0800
-From:   Hau <hau@realtek.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>
-Subject: RE: [PATCH net-next] r8169: add rtl_disable_rxdvgate()
-Thread-Topic: [PATCH net-next] r8169: add rtl_disable_rxdvgate()
-Thread-Index: AQHY0XxXdq+4NufuW0SXKPsMbVmGvK3zfBUAgAFK1nA=
-Date:   Wed, 28 Sep 2022 12:23:16 +0000
-Message-ID: <500db480aa314e4d96c0a7f6a9da1260@realtek.com>
-References: <20220926074813.3619-1-hau@realtek.com>
- <20220927173810.6caad4f3@kernel.org>
-In-Reply-To: <20220927173810.6caad4f3@kernel.org>
-Accept-Language: zh-TW, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.129]
-x-kse-serverinfo: RTEXMBS05.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/9/28_=3F=3F_09:39:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        with ESMTP id S233366AbiI1M2f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 08:28:35 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02965915E5
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 05:28:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=caO/NyWvIB+GVRvWL4Vty1AZuL9FqF+80AH7f4hn/po=; b=lErWb56kbBzPhF3FSuh1BQjkW4
+        01td97xiupY7pQqUF1Mw40EbyZnQkf8mQ6iWM4YnL+eBA5ou6FHC/t3mAD28mSiypZnEd+XG7WBBx
+        viwuDumYwhZGBg+t4AHAlYt5UlY9OCMNXSbvd/Wf/kwhYQgHMFpD3mSd6azl4RrywfKc=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1odWAt-000Vfc-OL; Wed, 28 Sep 2022 14:28:27 +0200
+Date:   Wed, 28 Sep 2022 14:28:27 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org
+Subject: Re: PHY firmware update method
+Message-ID: <YzQ96z73MneBIfvZ@lunn.ch>
+References: <bf53b9b3660f992d53fe8d68ea29124a@walle.cc>
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
-X-KSE-AntiSpam-Interceptor-Info: fallback
-X-KSE-Antivirus-Interceptor-Info: fallback
-X-KSE-AntiSpam-Interceptor-Info: fallback
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bf53b9b3660f992d53fe8d68ea29124a@walle.cc>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Sep 28, 2022 at 01:27:13PM +0200, Michael Walle wrote:
+> Hi,
 > 
-> On Mon, 26 Sep 2022 15:48:13 +0800 Chunhao Lin wrote:
-> > rtl_disable_rxdvgate() is used for disable RXDV_GATE.
-> > It is opposite function of rtl_enable_rxdvgate().
+> There are PHYs whose firmware can be updated. Usually, they have
+> an internal ROM and you can add patches on top of that, or there
+> might be an external flash device which can have a more recent
+> firmware version installed which can be programmed in-place
+> through the PHY.
 > 
-> You should mention that you're dropping the udelay() and if you know why it
-> was there in the first place - why it's no longer needed.
+> The firmware update for a PHY is usually quite simple, but there
+> seems to be no infrastructure in the kernel for that. There is the
+> ETHTOOL_FLASHDEV ioctl for upgrading the firmware of a NIC it seems.
+> Other than that I haven't found anything. And before going in a wrong
+> directions I'd like to hear your thoughts on how to do it. I.e. how
+> should the interface to the userspace look like.
 > 
-I will update the commit message and resubmit the patch.
+> Also I think the PHY should be taken offline, similar to the cable
+> test.
 
-Thanks.
+I've seen a few different ways of doing this.
 
-------Please consider the environment before printing this e-mail.
+One is to load the firmware from disk every boot using
+request_firmware(). Then parse the header, determine if it is newer
+than what the PHY is already using, and if so, upgrade the PHY. If you
+do this during probe, it should be transparent, no user interaction
+required.
+
+I've also seen the FLASH made available as just another mtd
+device. User space can then write to it, and then do a {cold} boot.
+
+devlink has become the standard way for upgrading firmware on complex
+network devices, like NICs and TOR switches. That is probably a good
+solution here. The problem is, what devlink instance to use. Only a
+few MAC drivers are using devlink, so it is unlikely the MAC driver
+the PHY is attached to has a devlink instance. Do we create a devlink
+instance for the PHY?
+
+You might want to talk to Jiri about this.
+
+The other issue is actually getting the firmware. Many manufactures
+seem reluctant to allow redistribution as required by linux-firmware.
+There is no point adding firmware upgrade if you cannot redistribute
+the firmware.
+
+    Andrew
