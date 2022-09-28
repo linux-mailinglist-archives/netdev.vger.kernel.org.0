@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E47075ED25B
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 02:59:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 984285ED25C
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 02:59:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232210AbiI1A7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Sep 2022 20:59:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55356 "EHLO
+        id S230172AbiI1A7d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Sep 2022 20:59:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232166AbiI1A71 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 20:59:27 -0400
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB9C815EF8C
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 17:59:20 -0700 (PDT)
-Received: by mail-qt1-x82f.google.com with SMTP id ay9so7174434qtb.0
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 17:59:20 -0700 (PDT)
+        with ESMTP id S231938AbiI1A72 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Sep 2022 20:59:28 -0400
+Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 818B8160E7B
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 17:59:21 -0700 (PDT)
+Received: by mail-qv1-xf2f.google.com with SMTP id w9so1439970qvn.11
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 17:59:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
          :cc:subject:date;
-        bh=dXgzPooGk4oqaL9KEhjoxsvVh87wIf1K1w/56HGIIHk=;
-        b=DVYZ2e63G/JB8DdigcEE1LTLq198k10EwaUUfYZHGZwHZHxjNozWugjQb1QoNZqFdM
-         fVPukfevJcTzDeoW5O3Mnsmu0F4KMnhUNgnjWNL37P5PfVqh+6UPTSr2oPqwf4d6W03i
-         yaeTqD9o/KjmT4YLLv57PTpOF06I/HTlYFpr8=
+        bh=/8ANvmu+ien/gHvB0OZs/R0iiX33ilJLPxiQyamxSbs=;
+        b=DkafteW2OMO+4KggWIpIEJUZJAwzFuxRtHoFvtHnE3RrKozv9VzkbX0Y2IfkNY3C37
+         6gJLyMj2+UXY4tYcGUOenauPXz7Axf18srLFvD9HGuZWIbHaB6B7AyRU/okM0pNfkI2Q
+         nMmcoaAmPJ5VFPQN46HE0KguwT47FRTEPaPa4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=references:in-reply-to:message-id:date:subject:cc:to:from
          :x-gm-message-state:from:to:cc:subject:date;
-        bh=dXgzPooGk4oqaL9KEhjoxsvVh87wIf1K1w/56HGIIHk=;
-        b=5TINW28dw2ZmHlB/COHFzXXSQC9jJiPJqSEenD72RZfImFEhwDVugKHGsqleDvxgKr
-         Ud6EEwRMzhOJmCOj1F4gOpqGZKICTKkphUQYEhaPUnf7Sv73ee9/Cytc55gr2u2/8gSc
-         VDrBBfWP+EmdeiWVn7/efXRQS2udrelEz3Ir6SJaCQ1HeYbo1XnWD5OoHhFoMkCMgPHQ
-         zjtiltzvWZMh/Qri96QDSDg4NOCFenXJwXhAOpOPLec5GRr3bsMOqk6QUSEky69hvYtG
-         EdyX8KemdRn1D31k5Gz6URV+gbG8AV18v0uvGh12b7DvzFiueXlRFy6yrf13+gaHQMXi
-         zDwA==
-X-Gm-Message-State: ACrzQf0SXZTg6C/ym+HkIUCCIL3abp75G+GxU9Hq+R72ScNnATOsU3J3
-        6sOBcnOdIjpkQyEvXn2Tbq/1qA==
-X-Google-Smtp-Source: AMsMyM7tjysYVrW7oRy+IbZ1GXmJML9hS+cyreT1uzKUI7XO2ZxTCTqt8J3Z97nhwo0w+1cvUC6Htg==
-X-Received: by 2002:a05:622a:174d:b0:35c:bf34:fc7 with SMTP id l13-20020a05622a174d00b0035cbf340fc7mr25146802qtk.13.1664326759109;
-        Tue, 27 Sep 2022 17:59:19 -0700 (PDT)
+        bh=/8ANvmu+ien/gHvB0OZs/R0iiX33ilJLPxiQyamxSbs=;
+        b=38CSefdXSSu/VLrC+4VaTP0HUMMNY2ucV3vS3sJDzu6ZDGVsGfYiCDrDSLBC6ND9Fs
+         xCKc5PIMjpv1retij47Yj5a+W5iqIzAR5aUN9Bz1GZZBcXjGiQ5VLrtBCWBHGZAs1vGH
+         NOSmoziweTwG4bqbwyL8cKzeNLBlKQtURPB6iDP8SnHjFHJ4RITcvUqjXEaTLjTeo+c7
+         Fle41iLWpiaHEZkP3gvYN19wRm6lVMc3YKYsUVYacW8dGJhBssp7cXH4eR4N/6Xv5xsF
+         ZEM0SUYC2VvT6obHuhiVY7AQj5rBaPJ668bE66SfQeGJpMAPg/rU9CGOycerzgRbmolp
+         +bfw==
+X-Gm-Message-State: ACrzQf1awaC3YiQE8NAGC5oZQxfMEKvRFyMIE4aTAwZhIivGThZx8UTC
+        R7zPX1Ju4IVkdxQmGZgZL7xqnH2pd2hVmmaZ
+X-Google-Smtp-Source: AMsMyM4BKcJHYbRn9D0frGUtGJ3jUDBJ1EmznkH1xP7LOU3U9z3xl0C1duKtZFPLgImsokGVrgLBag==
+X-Received: by 2002:a05:6214:21e9:b0:4ac:9bfb:e7b1 with SMTP id p9-20020a05621421e900b004ac9bfbe7b1mr24437132qvj.99.1664326760732;
+        Tue, 27 Sep 2022 17:59:20 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id i11-20020a05620a248b00b006cbb8ca04f8sm2078668qkn.40.2022.09.27.17.59.17
+        by smtp.gmail.com with ESMTPSA id i11-20020a05620a248b00b006cbb8ca04f8sm2078668qkn.40.2022.09.27.17.59.19
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 27 Sep 2022 17:59:18 -0700 (PDT)
+        Tue, 27 Sep 2022 17:59:20 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edumazet@google.com,
         pabeni@redhat.com, gospo@broadcom.com, vikas.gupta@broadcom.com
-Subject: [PATCH net-next 5/6] bnxt_en: add .get_module_eeprom_by_page() support
-Date:   Tue, 27 Sep 2022 20:58:43 -0400
-Message-Id: <1664326724-1415-6-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 6/6] bnxt_en: check and resize NVRAM UPDATE entry before flashing
+Date:   Tue, 27 Sep 2022 20:58:44 -0400
+Message-Id: <1664326724-1415-7-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1664326724-1415-1-git-send-email-michael.chan@broadcom.com>
 References: <1664326724-1415-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000049d1af05e9b24514"
+        boundary="000000000000674d5d05e9b2458a"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -66,121 +66,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000049d1af05e9b24514
+--000000000000674d5d05e9b2458a
 
 From: Vikas Gupta <vikas.gupta@broadcom.com>
 
-Add support for .get_module_eeprom_by_page() callback
-which enables CMIS for pluggable modules.
-In the case that bank select is not enabled by f/w then
-all the requests fallback to .get_module_eeprom() callback.
+Resize of the UPDATE entry is required if the image to
+be flashed is larger than the available space. Add this step,
+otherwise flashing larger firmware images by ethtool or devlink
+may fail.
 
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Reviewed-by: Andy Gospodarek <andrew.gospodarek@broadcom.com>
 Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  9 +++
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 55 +++++++++++++++++++
- 2 files changed, 64 insertions(+)
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 32 +++++++++++++++++++
+ 1 file changed, 32 insertions(+)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 0209f7caf490..03b1a0301a46 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -2207,6 +2207,15 @@ struct bnxt {
- #define SFF_MODULE_ID_QSFP			0xc
- #define SFF_MODULE_ID_QSFP_PLUS			0xd
- #define SFF_MODULE_ID_QSFP28			0x11
-+#define SFF_MODULE_ID_QSFP_DD			0x18
-+#define SFF_MODULE_ID_DSFP			0x1b
-+#define SFF_MODULE_ID_QSFP_PLUS_CMIS		0x1e
-+
-+#define BNXT_SFF_MODULE_BANK_SUPPORTED(module_id)	\
-+	((module_id) == SFF_MODULE_ID_QSFP_DD ||	\
-+	 (module_id) == SFF_MODULE_ID_QSFP28 ||		\
-+	 (module_id) == SFF_MODULE_ID_QSFP_PLUS_CMIS)
-+
- #define SFF8636_FLATMEM_OFFSET			0x2
- #define SFF8636_FLATMEM_MASK			0x4
- #define SFF8636_OPT_PAGES_OFFSET		0xc3
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index 379afa670494..2b18af95aacb 100644
+index 2b18af95aacb..2f97f41408e7 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -3363,6 +3363,60 @@ static int bnxt_get_module_eeprom(struct net_device *dev,
- 	return 0;
- }
+@@ -2514,6 +2514,7 @@ static int bnxt_flash_firmware_from_file(struct net_device *dev,
+ #define MSG_INTERNAL_ERR "PKG install error : Internal error"
+ #define MSG_NO_PKG_UPDATE_AREA_ERR "PKG update area not created in nvram"
+ #define MSG_NO_SPACE_ERR "PKG insufficient update area in nvram"
++#define MSG_RESIZE_UPDATE_ERR "Resize UPDATE entry error"
+ #define MSG_ANTI_ROLLBACK_ERR "HWRM_NVM_INSTALL_UPDATE failure due to Anti-rollback detected"
+ #define MSG_GENERIC_FAILURE_ERR "HWRM_NVM_INSTALL_UPDATE failure"
  
-+static int bnxt_get_module_eeprom_by_page(struct net_device *dev,
-+					  const struct ethtool_module_eeprom *page_data,
-+					  struct netlink_ext_ack *extack)
+@@ -2564,6 +2565,32 @@ static int nvm_update_err_to_stderr(struct net_device *dev, u8 result,
+ #define BNXT_NVM_MORE_FLAG	(cpu_to_le16(NVM_MODIFY_REQ_FLAGS_BATCH_MODE))
+ #define BNXT_NVM_LAST_FLAG	(cpu_to_le16(NVM_MODIFY_REQ_FLAGS_BATCH_LAST))
+ 
++static int bnxt_resize_update_entry(struct net_device *dev, size_t fw_size,
++				    struct netlink_ext_ack *extack)
 +{
-+	struct bnxt *bp = netdev_priv(dev);
-+	u16 length = page_data->length;
-+	u8 *data = page_data->data;
-+	u8 page = page_data->page;
-+	u8 bank = page_data->bank;
-+	u16 bytes_copied = 0;
-+	u8 module_id;
++	u32 item_len;
 +	int rc;
 +
-+	/* Return -EOPNOTSUPP to fallback on .get_module_eeprom */
-+	if (!(bp->phy_flags & BNXT_PHY_FL_BANK_SEL))
-+		return -EOPNOTSUPP;
-+
-+	rc = bnxt_module_status_check(bp);
-+	if (rc)
++	rc = bnxt_find_nvram_item(dev, BNX_DIR_TYPE_UPDATE,
++				  BNX_DIR_ORDINAL_FIRST, BNX_DIR_EXT_NONE, NULL,
++				  &item_len, NULL);
++	if (rc) {
++		BNXT_NVM_ERR_MSG(dev, extack, MSG_NO_PKG_UPDATE_AREA_ERR);
 +		return rc;
-+
-+	rc = bnxt_read_sfp_module_eeprom_info(bp, I2C_DEV_ADDR_A0, 0, 0, false,
-+					      0, 1, &module_id);
-+	if (rc)
-+		return rc;
-+
-+	if (!BNXT_SFF_MODULE_BANK_SUPPORTED(module_id))
-+		return -EOPNOTSUPP;
-+
-+	while (length > 0) {
-+		u16 chunk = ETH_MODULE_EEPROM_PAGE_LEN;
-+		int rc;
-+
-+		/* Do not access more than required */
-+		if (length < ETH_MODULE_EEPROM_PAGE_LEN)
-+			chunk = length;
-+
-+		rc = bnxt_read_sfp_module_eeprom_info(bp,
-+						      I2C_DEV_ADDR_A0,
-+						      page, bank,
-+						      true, page_data->offset,
-+						      chunk, data);
-+		if (rc)
-+			return rc;
-+
-+		data += chunk;
-+		length -= chunk;
-+		bytes_copied += chunk;
-+		page++;
 +	}
 +
-+	return bytes_copied;
++	if (fw_size > item_len) {
++		rc = bnxt_flash_nvram(dev, BNX_DIR_TYPE_UPDATE,
++				      BNX_DIR_ORDINAL_FIRST, 0, 1,
++				      round_up(fw_size, 4096), NULL, 0);
++		if (rc) {
++			BNXT_NVM_ERR_MSG(dev, extack, MSG_RESIZE_UPDATE_ERR);
++			return rc;
++		}
++	}
++	return 0;
 +}
 +
- static int bnxt_nway_reset(struct net_device *dev)
+ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware *fw,
+ 				   u32 install_type, struct netlink_ext_ack *extack)
  {
- 	int rc = 0;
-@@ -4172,6 +4226,7 @@ const struct ethtool_ops bnxt_ethtool_ops = {
- 	.set_eee		= bnxt_set_eee,
- 	.get_module_info	= bnxt_get_module_info,
- 	.get_module_eeprom	= bnxt_get_module_eeprom,
-+	.get_module_eeprom_by_page = bnxt_get_module_eeprom_by_page,
- 	.nway_reset		= bnxt_nway_reset,
- 	.set_phys_id		= bnxt_set_phys_id,
- 	.self_test		= bnxt_self_test,
+@@ -2580,6 +2607,11 @@ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware
+ 	u16 index;
+ 	int rc;
+ 
++	/* resize before flashing larger image than available space */
++	rc = bnxt_resize_update_entry(dev, fw->size, extack);
++	if (rc)
++		return rc;
++
+ 	bnxt_hwrm_fw_set_time(bp);
+ 
+ 	rc = hwrm_req_init(bp, modify, HWRM_NVM_MODIFY);
 -- 
 2.18.1
 
 
---00000000000049d1af05e9b24514
+--000000000000674d5d05e9b2458a
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -251,13 +214,13 @@ hd5wiQXo9B2ncm5P3jFLYLBmPltIn/uzdiYpFj+E9kS9XYDd+boBZhN1Vh0296zLQZobLfKFzClo
 E6IFyTTANonrXvCRgodKS+QJEH8Syu2jSKe023aVemkuZjzvPK7o9iU7BKkPG2pzLPgxggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxeQGjDntHGb2iaQkIw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIBgwH23y3iDRKmqh6INsBVFuywNhc5Fi
-v7DcEx23H9PJMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDky
-ODAwNTkxOVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIBCHjkbdtrTwlbTXefLBSkSDY1Eb9iqi
+CAEnXL9FrQPRMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDky
+ODAwNTkyMVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQA5G172PScN5yuMcm/eFH1xhhx/b5McKD+7SYzqed9HCxyByXhx
-Udd0R658+vf5ppqmLfqNuJqKT+M4MWwAh+swrP3/XUFMbXl/jaGB5FsHhzFHzI8a/IL6QNDNjRnh
-9fFBLsAqjphS5SBAF0ldj01euYFBu21xMBIqAv7lr6g1nWQUtG8r8IohtSKxzh6LwypDw9audQAM
-bOTxfXGim2+fEhxA0yhBHbXTIA4vrAXHJU2TwmHYcSsSILx7xaY/mKXDLK3Q0oyQ9yEtHY6rHOuL
-oNU91lNVd12s/0ZVfvnXKqggpSoUfWXcKxGIadgAZNxWlE7sZsihkfAZZ6scwjAh
---00000000000049d1af05e9b24514--
+ATANBgkqhkiG9w0BAQEFAASCAQAWC/cqLggPs8UYeFsb8sGGvLFWIrU+aCbmf1lNk6uClLT9YVwu
+uce2eaBNRhnMQhJ/h4Nojui4sE3tXwiczq/W1O+vW9B64lBvjNTTVkebVTbaJ9+pJx8P2v6I2/gh
+gejPWzGFeeTAMA1MbidoWV2upeX+ITTKN9SrAHecT7pd5rqNWah6eYSsHmIma8R8NqX+WwassQON
+eN13PKaglDCTuc3VXXsN4c98yXT5C8hNEx7fRKR8f97DEyd9/yEQiXveMSfERQkKTa6w9bx8mn/+
+n2I5mnce3uh3aotsnEgSymejEyZO/XOkCvP0pWfhFfRsXnqkExccSswr6EZX16q/
+--000000000000674d5d05e9b2458a--
