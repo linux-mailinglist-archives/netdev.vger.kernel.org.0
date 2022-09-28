@@ -2,90 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D7F1D5EDBBE
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 13:27:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 084AE5EDB81
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 13:14:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229951AbiI1L1j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 07:27:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41586 "EHLO
+        id S233308AbiI1LOs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 07:14:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230514AbiI1L1h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 07:27:37 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF38CA3D20
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 04:27:36 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id b2so3573855eja.6
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 04:27:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=BEulo8v4FULYUtAwJzns1q2E/oGE4rNqGkXRPC+evRw=;
-        b=vDJR8A4LrLfK5SfbkvqM8JiOZMNuw6LRWtL77+VzD58cOyRFvmorwGfYF+yIsmwkHQ
-         pH7qHvbUyG11xyx8wfl7ukzd2wCUbX/sx+vutiInhlnEIWH38bzw+JlBK4PGTPm9ZL4B
-         0/bQUPHKQTCqjmfnVkyBLqrs05oMYKa2ODGe/X08SeJegegFPYpjva3Paz2kZBZ1pDCt
-         /zfUZlKHjcdLM2N1H7hkJGhzTnNWF7qdGbkAlMX1m1dv540e06lQDnQ2ph2GOGEBtAoU
-         T00sv1GwK38GbqPzgS3MAY7KHEnn+LDMyWS/bEFV67Cyjbx+dOciJB3uNCDyzAIHC2il
-         ThKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=BEulo8v4FULYUtAwJzns1q2E/oGE4rNqGkXRPC+evRw=;
-        b=KjNl7bo/Iv0Z4vopnHA8tKGnfKouHJ4h5W3PbUbWwF3i/wJtOTsB4REoffAe07L8jp
-         lbL7jnpGZqoPzhkOrNZ2dZ5iJvdxEszNLK0E3pyhaZno7463MkaoN7GeFrE1mCtj/FPH
-         ziY2axK8I8uhaWZF3WAWyRThqVXjJ/+JDBuDlU4Mvp6EL/RcD1Mi4TnmsjAQ0sYe9BZf
-         84Vc5ydIYVPbEcX+ba8hrzgoLrxXmAlPGEY3stZ/yWbShA6ROQES2Vq9vSiWFiLojXeP
-         lZ8TBibpmyMZjFcbPb/9/FIokHpXN/GikpCG2+Jy9VEM/T+Sw9p/XouHu6tbU0U/B4lW
-         SIBg==
-X-Gm-Message-State: ACrzQf2l5l1iORidy82eNtcolaoHol8jEoSosaO8tnpBAcY+aVon3Zcl
-        BGRRsx25q9HhaMO5UR6kypfHtQ==
-X-Google-Smtp-Source: AMsMyM4ImuIRdhck7lgAOll2GNC62razucMPSc+8JPl8geUbP1+Pf2goAHtZP3G5it6Bf3fs1W49hA==
-X-Received: by 2002:a17:907:70a:b0:750:bf91:caa3 with SMTP id xb10-20020a170907070a00b00750bf91caa3mr27135086ejb.711.1664364455174;
-        Wed, 28 Sep 2022 04:27:35 -0700 (PDT)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id t15-20020a1709067c0f00b007789e7b47besm2258579ejo.25.2022.09.28.04.27.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 28 Sep 2022 04:27:34 -0700 (PDT)
-Message-ID: <599636e0-ebf2-c954-ef2b-80a642771bb7@blackwall.org>
-Date:   Wed, 28 Sep 2022 14:27:32 +0300
+        with ESMTP id S233313AbiI1LOS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 07:14:18 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8FEEB05
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 04:13:27 -0700 (PDT)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MctzV0VVVz1P6rc;
+        Wed, 28 Sep 2022 19:09:10 +0800 (CST)
+Received: from localhost.localdomain (10.175.112.70) by
+ canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 28 Sep 2022 19:13:25 +0800
+From:   Wang Yufen <wangyufen@huawei.com>
+To:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>
+CC:     <netdev@vger.kernel.org>
+Subject: [net-next] net: phy: Convert to use sysfs_emit() APIs
+Date:   Wed, 28 Sep 2022 19:34:20 +0800
+Message-ID: <1664364860-29153-1-git-send-email-wangyufen@huawei.com>
+X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Subject: Re: [net-next] net: bonding: Convert to use sysfs_emit() APIs
-Content-Language: en-US
-To:     Wang Yufen <wangyufen@huawei.com>, j.vosburgh@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Cc:     netdev@vger.kernel.org
-References: <1664365222-30004-1-git-send-email-wangyufen@huawei.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <1664365222-30004-1-git-send-email-wangyufen@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.70]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28/09/2022 14:40, Wang Yufen wrote:
-> Follow the advice of the Documentation/filesystems/sysfs.rst and show()
-> should only use sysfs_emit() or sysfs_emit_at() when formatting the value
-> to be returned to user space.
-> 
-> Signed-off-by: Wang Yufen <wangyufen@huawei.com>
-> ---
->  drivers/net/bonding/bond_sysfs_slave.c | 24 ++++++++++++------------
->  1 file changed, 12 insertions(+), 12 deletions(-)
-> 
+Follow the advice of the Documentation/filesystems/sysfs.rst and show()
+should only use sysfs_emit() or sysfs_emit_at() when formatting the value
+to be returned to user space.
 
-This converts only the bonding partially (bond_sysfs_slave.c).
-Why not do it all in one go?
+Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+---
+ drivers/net/phy/mdio_bus.c   |  4 ++--
+ drivers/net/phy/phy_device.c | 10 +++++-----
+ 2 files changed, 7 insertions(+), 7 deletions(-)
 
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index 8a2dbe8..f82090b 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -232,7 +232,7 @@ static ssize_t mdio_bus_stat_field_show(struct device *dev,
+ 		val = mdio_bus_get_stat(&bus->stats[sattr->addr],
+ 					sattr->field_offset);
+ 
+-	return sprintf(buf, "%llu\n", val);
++	return sysfs_emit(buf, "%llu\n", val);
+ }
+ 
+ static ssize_t mdio_bus_device_stat_field_show(struct device *dev,
+@@ -251,7 +251,7 @@ static ssize_t mdio_bus_device_stat_field_show(struct device *dev,
+ 
+ 	val = mdio_bus_get_stat(&bus->stats[addr], sattr->field_offset);
+ 
+-	return sprintf(buf, "%llu\n", val);
++	return sysfs_emit(buf, "%llu\n", val);
+ }
+ 
+ #define MDIO_BUS_STATS_ATTR_DECL(field, file)				\
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 2198f13..7c9d871 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -520,7 +520,7 @@ static int phy_bus_match(struct device *dev, struct device_driver *drv)
+ {
+ 	struct phy_device *phydev = to_phy_device(dev);
+ 
+-	return sprintf(buf, "0x%.8lx\n", (unsigned long)phydev->phy_id);
++	return sysfs_emit(buf, "0x%.8lx\n", (unsigned long)phydev->phy_id);
+ }
+ static DEVICE_ATTR_RO(phy_id);
+ 
+@@ -535,7 +535,7 @@ static int phy_bus_match(struct device *dev, struct device_driver *drv)
+ 	else
+ 		mode = phy_modes(phydev->interface);
+ 
+-	return sprintf(buf, "%s\n", mode);
++	return sysfs_emit(buf, "%s\n", mode);
+ }
+ static DEVICE_ATTR_RO(phy_interface);
+ 
+@@ -545,7 +545,7 @@ static int phy_bus_match(struct device *dev, struct device_driver *drv)
+ {
+ 	struct phy_device *phydev = to_phy_device(dev);
+ 
+-	return sprintf(buf, "%d\n", phydev->has_fixups);
++	return sysfs_emit(buf, "%d\n", phydev->has_fixups);
+ }
+ static DEVICE_ATTR_RO(phy_has_fixups);
+ 
+@@ -555,7 +555,7 @@ static ssize_t phy_dev_flags_show(struct device *dev,
+ {
+ 	struct phy_device *phydev = to_phy_device(dev);
+ 
+-	return sprintf(buf, "0x%08x\n", phydev->dev_flags);
++	return sysfs_emit(buf, "0x%08x\n", phydev->dev_flags);
+ }
+ static DEVICE_ATTR_RO(phy_dev_flags);
+ 
+@@ -1310,7 +1310,7 @@ static void phy_sysfs_create_links(struct phy_device *phydev)
+ {
+ 	struct phy_device *phydev = to_phy_device(dev);
+ 
+-	return sprintf(buf, "%d\n", !phydev->attached_dev);
++	return sysfs_emit(buf, "%d\n", !phydev->attached_dev);
+ }
+ static DEVICE_ATTR_RO(phy_standalone);
+ 
+-- 
+1.8.3.1
 
