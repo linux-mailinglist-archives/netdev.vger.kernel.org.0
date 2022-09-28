@@ -2,170 +2,467 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 41E755EE87C
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 23:41:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D95CB5EE880
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 23:44:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234141AbiI1Vk4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 17:40:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48580 "EHLO
+        id S234315AbiI1VoE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 17:44:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231949AbiI1Vky (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 17:40:54 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38444AA367;
-        Wed, 28 Sep 2022 14:40:51 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 19CC21F45F;
-        Wed, 28 Sep 2022 21:40:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1664401248; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=C18vkSCkEp0R0j/E8doyhXlqBRc6MmmoczHaFz5Tq/o=;
-        b=O8ZKN2zJZST2anqWW6kCZ7PFlJtkR+DhFF/E1xFtpBjfMisY/NEE2VUHIT0ctG6+BRKpcm
-        TFzItcWnIOwSwp96McUWnDjo0baCWUX3p/6aNYk16N1G1gVpmFAU0HxXjLM93Ltz5am9pC
-        6mcBPOCE9PClr4mk2WyQ3I6f95q7OjY=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1664401248;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=C18vkSCkEp0R0j/E8doyhXlqBRc6MmmoczHaFz5Tq/o=;
-        b=QuVwGzEY77p785Z+8T99wXOp96mLv9PVymdpRO3H5bysX/SgsIeBkJWmKXpwJqWMN6hRxn
-        P80vd3XHeULykLAg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id DA18F13A84;
-        Wed, 28 Sep 2022 21:40:46 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id pwxsNF6/NGNaHwAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Wed, 28 Sep 2022 21:40:46 +0000
-Message-ID: <d5cb63f4-b1f5-9862-c31c-c8c6c4cb41df@suse.cz>
-Date:   Wed, 28 Sep 2022 23:39:06 +0200
+        with ESMTP id S230071AbiI1VoB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 17:44:01 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DA48B1B8E
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 14:44:00 -0700 (PDT)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28SJV5Jj020285
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 21:43:59 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=QiPlgseaIbcQnQ4RZ4cXwAJWGB29qa77wWukccW1hos=;
+ b=Sv5DRS7F0q3qf7w9MUT2JZOWYyI85yzvf1YHKkR7G27CURnEKGaI+MzoKBhh871MGXyI
+ tqY+wjRucszB1s2VKH9rlFgTWp7t+gZpw4pfno3/SlMZZ8qPMs5J0p+MvJfTm9DEI9hN
+ Gfr8zUoiHhAZy/UaFHdWziCrg+ZpHnM9rovNemqA+Mxwc28YG1ooykgAbb2tOI+BAHda
+ JoNJ3F2q51btRa/wTOwIfVFPWxjfjLKYzxSomDgxDiVBkCDolHljz8asb73fHM9AvXLe
+ vFjPoPnciSGGEHhLvosKKZRs1W6rHsjW57D2CoystB255dD13QYLnV7ZNPWaOEqflWnh Iw== 
+Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jvsa69v35-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 21:43:59 +0000
+Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
+        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 28SLae8H030413
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 21:43:59 GMT
+Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
+        by ppma02wdc.us.ibm.com with ESMTP id 3jssh9np07-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 21:43:59 +0000
+Received: from smtpav01.wdc07v.mail.ibm.com ([9.208.128.113])
+        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 28SLhvAP15532660
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 28 Sep 2022 21:43:58 GMT
+Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 464B458063;
+        Wed, 28 Sep 2022 21:43:57 +0000 (GMT)
+Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A0A2B5804B;
+        Wed, 28 Sep 2022 21:43:56 +0000 (GMT)
+Received: from li-8d37cfcc-31b9-11b2-a85c-83226d7135c9.ibm.com (unknown [9.160.14.153])
+        by smtpav01.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+        Wed, 28 Sep 2022 21:43:56 +0000 (GMT)
+From:   Nick Child <nnac123@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     Nick Child <nnac123@linux.ibm.com>
+Subject: [PATCH v2 net-next 1/3] ibmveth: Copy tx skbs into a premapped buffer
+Date:   Wed, 28 Sep 2022 16:43:48 -0500
+Message-Id: <20220928214350.29795-1-nnac123@linux.ibm.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.0
-Subject: Re: [PATCH v2 01/16] slab: Remove __malloc attribute from realloc
- functions
-Content-Language: en-US
-To:     Kees Cook <keescook@chromium.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Marco Elver <elver@google.com>, linux-mm@kvack.org,
-        "Ruhl, Michael J" <michael.j.ruhl@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Alex Elder <elder@kernel.org>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Daniel Micay <danielmicay@gmail.com>,
-        Yonghong Song <yhs@fb.com>, Miguel Ojeda <ojeda@kernel.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, linux-media@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-        linux-fsdevel@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        dev@openvswitch.org, x86@kernel.org, llvm@lists.linux.dev,
-        linux-hardening@vger.kernel.org
-References: <20220923202822.2667581-1-keescook@chromium.org>
- <20220923202822.2667581-2-keescook@chromium.org>
- <CAMuHMdXK+UN1YVZm9DenuXAM8hZRUZJwp=SXsueP7sWiVU3a9A@mail.gmail.com>
- <202209281011.66DD717D@keescook>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <202209281011.66DD717D@keescook>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 9BCMHQ1BRqUHbAiNFi0F8CBvNBzQ-nt4
+X-Proofpoint-ORIG-GUID: 9BCMHQ1BRqUHbAiNFi0F8CBvNBzQ-nt4
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
+ definitions=2022-09-28_09,2022-09-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ priorityscore=1501 adultscore=0 impostorscore=0 suspectscore=0 bulkscore=0
+ clxscore=1015 mlxlogscore=999 spamscore=0 mlxscore=0 lowpriorityscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2209130000 definitions=main-2209280127
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/28/22 19:13, Kees Cook wrote:
-> On Wed, Sep 28, 2022 at 09:26:15AM +0200, Geert Uytterhoeven wrote:
->> Hi Kees,
->>
->> On Fri, Sep 23, 2022 at 10:35 PM Kees Cook <keescook@chromium.org> wrote:
->>> The __malloc attribute should not be applied to "realloc" functions, as
->>> the returned pointer may alias the storage of the prior pointer. Instead
->>> of splitting __malloc from __alloc_size, which would be a huge amount of
->>> churn, just create __realloc_size for the few cases where it is needed.
->>>
->>> Additionally removes the conditional test for __alloc_size__, which is
->>> always defined now.
->>>
->>> Cc: Christoph Lameter <cl@linux.com>
->>> Cc: Pekka Enberg <penberg@kernel.org>
->>> Cc: David Rientjes <rientjes@google.com>
->>> Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
->>> Cc: Andrew Morton <akpm@linux-foundation.org>
->>> Cc: Vlastimil Babka <vbabka@suse.cz>
->>> Cc: Roman Gushchin <roman.gushchin@linux.dev>
->>> Cc: Hyeonggon Yoo <42.hyeyoo@gmail.com>
->>> Cc: Marco Elver <elver@google.com>
->>> Cc: linux-mm@kvack.org
->>> Signed-off-by: Kees Cook <keescook@chromium.org>
->>
->> Thanks for your patch, which is now commit 63caa04ec60583b1 ("slab:
->> Remove __malloc attribute from realloc functions") in next-20220927.
->>
->> Noreply@ellerman.id.au reported all gcc8-based builds to fail
->> (e.g. [1], more at [2]):
->>
->>      In file included from <command-line>:
->>      ./include/linux/percpu.h: In function ‘__alloc_reserved_percpu’:
->>      ././include/linux/compiler_types.h:279:30: error: expected
->> declaration specifiers before ‘__alloc_size__’
->>       #define __alloc_size(x, ...) __alloc_size__(x, ## __VA_ARGS__) __malloc
->>                                    ^~~~~~~~~~~~~~
->>      ./include/linux/percpu.h:120:74: note: in expansion of macro ‘__alloc_size’
->>      [...]
->>
->> It's building fine with e.g. gcc-9 (which is my usual m68k cross-compiler).
->> Reverting this commit on next-20220927 fixes the issue.
->>
->> [1] http://kisskb.ellerman.id.au/kisskb/buildresult/14803908/
->> [2] http://kisskb.ellerman.id.au/kisskb/head/1bd8b75fe6adeaa89d02968bdd811ffe708cf839/
-> 
-> Eek! Thanks for letting me know. I'm confused about this --
-> __alloc_size__ wasn't optional in compiler_attributes.h -- but obviously
-> I broke something! I'll go figure this out.
+Rather than DMA mapping and unmapping every outgoing skb, copy the skb
+into a buffer that was mapped during the drivers open function. Copying
+the skb and its frags have proven to be more time efficient than
+mapping and unmapping. As an effect, performance increases by 3-5
+Gbits/s.
 
-Even in latest next I can see at the end of include/linux/compiler-gcc.h
+Allocate and DMA map one continuous 64KB buffer at `ndo_open`. This
+buffer is maintained until `ibmveth_close` is called. This buffer is
+large enough to hold the largest possible linnear skb. During
+`ndo_start_xmit`, copy the skb and all of it's frags into the continuous
+buffer. By manually linnearizing all the socket buffers, time is saved
+during memcpy as well as more efficient handling in FW.
+As a result, we no longer need to worry about the firmware limitation
+of handling a max of 6 frags. So, we only need to maintain 1 descriptor
+instead of 6 and can hardcode 0 for the other 5 descriptors during
+h_send_logical_lan.
 
-/*
-  * Prior to 9.1, -Wno-alloc-size-larger-than (and therefore the "alloc_size"
-  * attribute) do not work, and must be disabled.
-  */
-#if GCC_VERSION < 90100
-#undef __alloc_size__
-#endif
+Since, DMA allocation/mapping issues can no longer arise in xmit
+functions, we can further reduce code size by removing the need for a
+bounce buffer on DMA errors.
 
+Signed-off-by: Nick Child <nnac123@linux.ibm.com>
+---
 
+Changes in v2:
+ - Respond to feedback from Jakub Kicinski:
+   - use min function in ibmveth_real_max_tx_queues
+   - assume unused channels are initialized in `get_channel`
+   - allow the core ethtool functions to perform argument validity checks
+     in set_channel
+   - rename 'fallback' variable to 'old' in set_channel
+   - skip allocation steps if the device is not UP in set_channel
+   - simplify error handling by making logical assumptions in set_channel
+   - set IBMVETH_MAX_QUEUES to 16 instead of 8
 
-> -Kees
-> 
+ drivers/net/ethernet/ibm/ibmveth.c | 185 ++++++++++-------------------
+ drivers/net/ethernet/ibm/ibmveth.h |  22 ++--
+ 2 files changed, 74 insertions(+), 133 deletions(-)
+
+diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
+index ee4548e08446..675eaeed7a7b 100644
+--- a/drivers/net/ethernet/ibm/ibmveth.c
++++ b/drivers/net/ethernet/ibm/ibmveth.c
+@@ -538,6 +538,22 @@ static int ibmveth_open(struct net_device *netdev)
+ 		goto out_unmap_buffer_list;
+ 	}
+ 
++	adapter->tx_ltb_size = PAGE_ALIGN(IBMVETH_MAX_TX_BUF_SIZE);
++	adapter->tx_ltb_ptr = kzalloc(adapter->tx_ltb_size, GFP_KERNEL);
++	if (!adapter->tx_ltb_ptr) {
++		netdev_err(netdev,
++			   "unable to allocate transmit long term buffer\n");
++		goto out_unmap_buffer_list;
++	}
++	adapter->tx_ltb_dma = dma_map_single(dev, adapter->tx_ltb_ptr,
++					     adapter->tx_ltb_size,
++					     DMA_TO_DEVICE);
++	if (dma_mapping_error(dev, adapter->tx_ltb_dma)) {
++		netdev_err(netdev,
++			   "unable to DMA map transmit long term buffer\n");
++		goto out_unmap_tx_dma;
++	}
++
+ 	adapter->rx_queue.index = 0;
+ 	adapter->rx_queue.num_slots = rxq_entries;
+ 	adapter->rx_queue.toggle = 1;
+@@ -595,14 +611,6 @@ static int ibmveth_open(struct net_device *netdev)
+ 
+ 	rc = -ENOMEM;
+ 
+-	adapter->bounce_buffer = dma_alloc_coherent(&adapter->vdev->dev,
+-						    netdev->mtu + IBMVETH_BUFF_OH,
+-						    &adapter->bounce_buffer_dma, GFP_KERNEL);
+-	if (!adapter->bounce_buffer) {
+-		netdev_err(netdev, "unable to alloc bounce buffer\n");
+-		goto out_free_irq;
+-	}
+-
+ 	netdev_dbg(netdev, "initial replenish cycle\n");
+ 	ibmveth_interrupt(netdev->irq, netdev);
+ 
+@@ -612,8 +620,6 @@ static int ibmveth_open(struct net_device *netdev)
+ 
+ 	return 0;
+ 
+-out_free_irq:
+-	free_irq(netdev->irq, netdev);
+ out_free_buffer_pools:
+ 	while (--i >= 0) {
+ 		if (adapter->rx_buff_pool[i].active)
+@@ -623,6 +629,10 @@ static int ibmveth_open(struct net_device *netdev)
+ out_unmap_filter_list:
+ 	dma_unmap_single(dev, adapter->filter_list_dma, 4096,
+ 			 DMA_BIDIRECTIONAL);
++
++out_unmap_tx_dma:
++	kfree(adapter->tx_ltb_ptr);
++
+ out_unmap_buffer_list:
+ 	dma_unmap_single(dev, adapter->buffer_list_dma, 4096,
+ 			 DMA_BIDIRECTIONAL);
+@@ -685,9 +695,9 @@ static int ibmveth_close(struct net_device *netdev)
+ 			ibmveth_free_buffer_pool(adapter,
+ 						 &adapter->rx_buff_pool[i]);
+ 
+-	dma_free_coherent(&adapter->vdev->dev,
+-			  adapter->netdev->mtu + IBMVETH_BUFF_OH,
+-			  adapter->bounce_buffer, adapter->bounce_buffer_dma);
++	dma_unmap_single(dev, adapter->tx_ltb_dma, adapter->tx_ltb_size,
++			 DMA_TO_DEVICE);
++	kfree(adapter->tx_ltb_ptr);
+ 
+ 	netdev_dbg(netdev, "close complete\n");
+ 
+@@ -969,7 +979,7 @@ static int ibmveth_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+ }
+ 
+ static int ibmveth_send(struct ibmveth_adapter *adapter,
+-			union ibmveth_buf_desc *descs, unsigned long mss)
++			unsigned long desc, unsigned long mss)
+ {
+ 	unsigned long correlator;
+ 	unsigned int retry_count;
+@@ -982,12 +992,9 @@ static int ibmveth_send(struct ibmveth_adapter *adapter,
+ 	retry_count = 1024;
+ 	correlator = 0;
+ 	do {
+-		ret = h_send_logical_lan(adapter->vdev->unit_address,
+-					     descs[0].desc, descs[1].desc,
+-					     descs[2].desc, descs[3].desc,
+-					     descs[4].desc, descs[5].desc,
+-					     correlator, &correlator, mss,
+-					     adapter->fw_large_send_support);
++		ret = h_send_logical_lan(adapter->vdev->unit_address, desc,
++					 correlator, &correlator, mss,
++					 adapter->fw_large_send_support);
+ 	} while ((ret == H_BUSY) && (retry_count--));
+ 
+ 	if (ret != H_SUCCESS && ret != H_DROPPED) {
+@@ -1021,33 +1028,14 @@ static netdev_tx_t ibmveth_start_xmit(struct sk_buff *skb,
+ {
+ 	struct ibmveth_adapter *adapter = netdev_priv(netdev);
+ 	unsigned int desc_flags;
+-	union ibmveth_buf_desc descs[6];
+-	int last, i;
+-	int force_bounce = 0;
+-	dma_addr_t dma_addr;
++	union ibmveth_buf_desc desc;
++	int i;
+ 	unsigned long mss = 0;
++	size_t total_bytes;
+ 
+ 	if (ibmveth_is_packet_unsupported(skb, netdev))
+ 		goto out;
+ 
+-	/* veth doesn't handle frag_list, so linearize the skb.
+-	 * When GRO is enabled SKB's can have frag_list.
+-	 */
+-	if (adapter->is_active_trunk &&
+-	    skb_has_frag_list(skb) && __skb_linearize(skb)) {
+-		netdev->stats.tx_dropped++;
+-		goto out;
+-	}
+-
+-	/*
+-	 * veth handles a maximum of 6 segments including the header, so
+-	 * we have to linearize the skb if there are more than this.
+-	 */
+-	if (skb_shinfo(skb)->nr_frags > 5 && __skb_linearize(skb)) {
+-		netdev->stats.tx_dropped++;
+-		goto out;
+-	}
+-
+ 	/* veth can't checksum offload UDP */
+ 	if (skb->ip_summed == CHECKSUM_PARTIAL &&
+ 	    ((skb->protocol == htons(ETH_P_IP) &&
+@@ -1077,56 +1065,6 @@ static netdev_tx_t ibmveth_start_xmit(struct sk_buff *skb,
+ 			desc_flags |= IBMVETH_BUF_LRG_SND;
+ 	}
+ 
+-retry_bounce:
+-	memset(descs, 0, sizeof(descs));
+-
+-	/*
+-	 * If a linear packet is below the rx threshold then
+-	 * copy it into the static bounce buffer. This avoids the
+-	 * cost of a TCE insert and remove.
+-	 */
+-	if (force_bounce || (!skb_is_nonlinear(skb) &&
+-				(skb->len < tx_copybreak))) {
+-		skb_copy_from_linear_data(skb, adapter->bounce_buffer,
+-					  skb->len);
+-
+-		descs[0].fields.flags_len = desc_flags | skb->len;
+-		descs[0].fields.address = adapter->bounce_buffer_dma;
+-
+-		if (ibmveth_send(adapter, descs, 0)) {
+-			adapter->tx_send_failed++;
+-			netdev->stats.tx_dropped++;
+-		} else {
+-			netdev->stats.tx_packets++;
+-			netdev->stats.tx_bytes += skb->len;
+-		}
+-
+-		goto out;
+-	}
+-
+-	/* Map the header */
+-	dma_addr = dma_map_single(&adapter->vdev->dev, skb->data,
+-				  skb_headlen(skb), DMA_TO_DEVICE);
+-	if (dma_mapping_error(&adapter->vdev->dev, dma_addr))
+-		goto map_failed;
+-
+-	descs[0].fields.flags_len = desc_flags | skb_headlen(skb);
+-	descs[0].fields.address = dma_addr;
+-
+-	/* Map the frags */
+-	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
+-		const skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
+-
+-		dma_addr = skb_frag_dma_map(&adapter->vdev->dev, frag, 0,
+-					    skb_frag_size(frag), DMA_TO_DEVICE);
+-
+-		if (dma_mapping_error(&adapter->vdev->dev, dma_addr))
+-			goto map_failed_frags;
+-
+-		descs[i+1].fields.flags_len = desc_flags | skb_frag_size(frag);
+-		descs[i+1].fields.address = dma_addr;
+-	}
+-
+ 	if (skb->ip_summed == CHECKSUM_PARTIAL && skb_is_gso(skb)) {
+ 		if (adapter->fw_large_send_support) {
+ 			mss = (unsigned long)skb_shinfo(skb)->gso_size;
+@@ -1143,7 +1081,36 @@ static netdev_tx_t ibmveth_start_xmit(struct sk_buff *skb,
+ 		}
+ 	}
+ 
+-	if (ibmveth_send(adapter, descs, mss)) {
++	/* Copy header into mapped buffer */
++	if (unlikely(skb->len > adapter->tx_ltb_size)) {
++		netdev_err(adapter->netdev, "tx: packet size (%u) exceeds ltb (%u)\n",
++			   skb->len, adapter->tx_ltb_size);
++		netdev->stats.tx_dropped++;
++		goto out;
++	}
++	memcpy(adapter->tx_ltb_ptr, skb->data, skb_headlen(skb));
++	total_bytes = skb_headlen(skb);
++	/* Copy frags into mapped buffers */
++	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
++		const skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
++
++		memcpy(adapter->tx_ltb_ptr + total_bytes, skb_frag_address_safe(frag),
++		       skb_frag_size(frag));
++		total_bytes += skb_frag_size(frag);
++	}
++
++	if (unlikely(total_bytes != skb->len)) {
++		netdev_err(adapter->netdev, "tx: incorrect packet len copied into ltb (%u != %u)\n",
++			   skb->len, total_bytes);
++		netdev->stats.tx_dropped++;
++		goto out;
++	}
++	desc.fields.flags_len = desc_flags | skb->len;
++	desc.fields.address = adapter->tx_ltb_dma;
++	/* finish writing to long_term_buff before VIOS accessing it */
++	dma_wmb();
++
++	if (ibmveth_send(adapter, desc.desc, mss)) {
+ 		adapter->tx_send_failed++;
+ 		netdev->stats.tx_dropped++;
+ 	} else {
+@@ -1151,41 +1118,11 @@ static netdev_tx_t ibmveth_start_xmit(struct sk_buff *skb,
+ 		netdev->stats.tx_bytes += skb->len;
+ 	}
+ 
+-	dma_unmap_single(&adapter->vdev->dev,
+-			 descs[0].fields.address,
+-			 descs[0].fields.flags_len & IBMVETH_BUF_LEN_MASK,
+-			 DMA_TO_DEVICE);
+-
+-	for (i = 1; i < skb_shinfo(skb)->nr_frags + 1; i++)
+-		dma_unmap_page(&adapter->vdev->dev, descs[i].fields.address,
+-			       descs[i].fields.flags_len & IBMVETH_BUF_LEN_MASK,
+-			       DMA_TO_DEVICE);
+-
+ out:
+ 	dev_consume_skb_any(skb);
+ 	return NETDEV_TX_OK;
+ 
+-map_failed_frags:
+-	last = i+1;
+-	for (i = 1; i < last; i++)
+-		dma_unmap_page(&adapter->vdev->dev, descs[i].fields.address,
+-			       descs[i].fields.flags_len & IBMVETH_BUF_LEN_MASK,
+-			       DMA_TO_DEVICE);
+ 
+-	dma_unmap_single(&adapter->vdev->dev,
+-			 descs[0].fields.address,
+-			 descs[0].fields.flags_len & IBMVETH_BUF_LEN_MASK,
+-			 DMA_TO_DEVICE);
+-map_failed:
+-	if (!firmware_has_feature(FW_FEATURE_CMO))
+-		netdev_err(netdev, "tx: unable to map xmit buffer\n");
+-	adapter->tx_map_failed++;
+-	if (skb_linearize(skb)) {
+-		netdev->stats.tx_dropped++;
+-		goto out;
+-	}
+-	force_bounce = 1;
+-	goto retry_bounce;
+ }
+ 
+ static void ibmveth_rx_mss_helper(struct sk_buff *skb, u16 mss, int lrg_pkt)
+@@ -1568,6 +1505,8 @@ static unsigned long ibmveth_get_desired_dma(struct vio_dev *vdev)
+ 
+ 	ret = IBMVETH_BUFF_LIST_SIZE + IBMVETH_FILT_LIST_SIZE;
+ 	ret += IOMMU_PAGE_ALIGN(netdev->mtu, tbl);
++	/* add size of mapped tx buffers */
++	ret += IOMMU_PAGE_ALIGN(IBMVETH_MAX_TX_BUF_SIZE, tbl);
+ 
+ 	for (i = 0; i < IBMVETH_NUM_BUFF_POOLS; i++) {
+ 		/* add the size of the active receive buffers */
+diff --git a/drivers/net/ethernet/ibm/ibmveth.h b/drivers/net/ethernet/ibm/ibmveth.h
+index 27dfff200166..a46ead9b31de 100644
+--- a/drivers/net/ethernet/ibm/ibmveth.h
++++ b/drivers/net/ethernet/ibm/ibmveth.h
+@@ -46,23 +46,23 @@
+ #define h_add_logical_lan_buffer(ua, buf) \
+   plpar_hcall_norets(H_ADD_LOGICAL_LAN_BUFFER, ua, buf)
+ 
++/* FW allows us to send 6 descriptors but we only use one so mark
++ * the other 5 as unused (0)
++ */
+ static inline long h_send_logical_lan(unsigned long unit_address,
+-		unsigned long desc1, unsigned long desc2, unsigned long desc3,
+-		unsigned long desc4, unsigned long desc5, unsigned long desc6,
+-		unsigned long corellator_in, unsigned long *corellator_out,
+-		unsigned long mss, unsigned long large_send_support)
++		unsigned long desc, unsigned long corellator_in,
++		unsigned long *corellator_out, unsigned long mss,
++		unsigned long large_send_support)
+ {
+ 	long rc;
+ 	unsigned long retbuf[PLPAR_HCALL9_BUFSIZE];
+ 
+ 	if (large_send_support)
+ 		rc = plpar_hcall9(H_SEND_LOGICAL_LAN, retbuf, unit_address,
+-				  desc1, desc2, desc3, desc4, desc5, desc6,
+-				  corellator_in, mss);
++				  desc, 0, 0, 0, 0, 0, corellator_in, mss);
+ 	else
+ 		rc = plpar_hcall9(H_SEND_LOGICAL_LAN, retbuf, unit_address,
+-				  desc1, desc2, desc3, desc4, desc5, desc6,
+-				  corellator_in);
++				  desc, 0, 0, 0, 0, 0, corellator_in);
+ 
+ 	*corellator_out = retbuf[0];
+ 
+@@ -98,6 +98,7 @@ static inline long h_illan_attributes(unsigned long unit_address,
+ #define IBMVETH_BUFF_LIST_SIZE 4096
+ #define IBMVETH_FILT_LIST_SIZE 4096
+ #define IBMVETH_MAX_BUF_SIZE (1024 * 128)
++#define IBMVETH_MAX_TX_BUF_SIZE (1024 * 64)
+ 
+ static int pool_size[] = { 512, 1024 * 2, 1024 * 16, 1024 * 32, 1024 * 64 };
+ static int pool_count[] = { 256, 512, 256, 256, 256 };
+@@ -137,6 +138,9 @@ struct ibmveth_adapter {
+     unsigned int mcastFilterSize;
+     void * buffer_list_addr;
+     void * filter_list_addr;
++    void *tx_ltb_ptr;
++    unsigned int tx_ltb_size;
++    dma_addr_t tx_ltb_dma;
+     dma_addr_t buffer_list_dma;
+     dma_addr_t filter_list_dma;
+     struct ibmveth_buff_pool rx_buff_pool[IBMVETH_NUM_BUFF_POOLS];
+@@ -145,8 +149,6 @@ struct ibmveth_adapter {
+     int rx_csum;
+     int large_send;
+     bool is_active_trunk;
+-    void *bounce_buffer;
+-    dma_addr_t bounce_buffer_dma;
+ 
+     u64 fw_ipv6_csum_support;
+     u64 fw_ipv4_csum_support;
+-- 
+2.31.1
 
