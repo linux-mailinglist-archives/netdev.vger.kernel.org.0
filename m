@@ -2,89 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D8CA5EE3C1
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 20:00:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79B465EE424
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 20:16:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233790AbiI1SAa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 14:00:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34784 "EHLO
+        id S233629AbiI1SQI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 14:16:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234000AbiI1SAX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 14:00:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDEA1785B7;
-        Wed, 28 Sep 2022 11:00:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 35771B821B6;
-        Wed, 28 Sep 2022 18:00:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EC4C1C433D6;
-        Wed, 28 Sep 2022 18:00:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664388016;
-        bh=x5vCGLUgiKM9GgDpJcD1e9Nm0haZqVbgAKbjfFedsak=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=b0pq3zcSTnPA47ezhG78x+OqOr2jGwsjkjRSlTNhdxivblf900VJkDSjEiRCXorKi
-         v75YcF2flfHvAlzN1TaPZ+zUE4L8FfciLuayO8di9ocbx/oYyHiVKYjP72x6w2PXEI
-         RejK1D4+G2VRBukuujtDHvkzvF6gcnuMOWi3xC/pjmRFEkKGgwTZ9lc5SRNM/MzRk1
-         cLcq8OmacO7TQnL+4EO1+7kQsp9dZ93tf+QeexYiDFjvbDpT4BDRZJTbIvGaQfha7Y
-         u6sjrDknmdk3akCW0Qby3zGHI2kt+lVlSPFBtNp0fNEj4TG7ZPTqinxQxq+X9IXYtj
-         GMW5YpnXUwySg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D2673E21EC5;
-        Wed, 28 Sep 2022 18:00:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S234316AbiI1SPw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 14:15:52 -0400
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CD61AED9C;
+        Wed, 28 Sep 2022 11:15:49 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 828BB1884BD2;
+        Wed, 28 Sep 2022 18:15:41 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id 6E77B2500370;
+        Wed, 28 Sep 2022 18:15:41 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 0)
+        id 383439EC000A; Wed, 28 Sep 2022 18:15:41 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+Received: from fujitsu.vestervang (2-104-116-184-cable.dk.customer.tdc.net [2.104.116.184])
+        by smtp.gigahost.dk (Postfix) with ESMTPSA id 1D24A9120FED;
+        Wed, 28 Sep 2022 15:06:27 +0000 (UTC)
+From:   Hans Schultz <netdev@kapio-technology.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org,
+        "Hans J. Schultz" <netdev@kapio-technology.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Florent Fourcot <florent.fourcot@wifirst.fr>,
+        Hans Schultz <schultz.hans@gmail.com>,
+        Joachim Wiberg <troglobit@gmail.com>,
+        Amit Cohen <amcohen@nvidia.com>, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH v6 net-next 6/9] net: dsa: mv88e6xxx: allow reading FID when handling ATU violations
+Date:   Wed, 28 Sep 2022 17:02:53 +0200
+Message-Id: <20220928150256.115248-7-netdev@kapio-technology.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220928150256.115248-1-netdev@kapio-technology.com>
+References: <20220928150256.115248-1-netdev@kapio-technology.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] can: c_can: don't cache TX messages for C_CAN cores
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166438801585.1002.4512212910588751772.git-patchwork-notify@kernel.org>
-Date:   Wed, 28 Sep 2022 18:00:15 +0000
-References: <20220928090629.1124190-2-mkl@pengutronix.de>
-In-Reply-To: <20220928090629.1124190-2-mkl@pengutronix.de>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-can@vger.kernel.org, kernel@pengutronix.de,
-        jacob.kroon@gmail.com, stable@vger.kernel.org
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: "Hans J. Schultz" <netdev@kapio-technology.com>
 
-This patch was applied to netdev/net.git (master)
-by Marc Kleine-Budde <mkl@pengutronix.de>:
+The FID is needed to get hold of which VID was involved in a violation,
+thus the need to be able to read the FID.
 
-On Wed, 28 Sep 2022 11:06:29 +0200 you wrote:
-> As Jacob noticed, the optimization introduced in 387da6bc7a82 ("can:
-> c_can: cache frames to operate as a true FIFO") doesn't properly work
-> on C_CAN, but on D_CAN IP cores. The exact reasons are still unknown.
-> 
-> For now disable caching if CAN frames in the TX path for C_CAN cores.
-> 
-> Fixes: 387da6bc7a82 ("can: c_can: cache frames to operate as a true FIFO")
-> Link: https://lore.kernel.org/all/20220928083354.1062321-1-mkl@pengutronix.de
-> Link: https://lore.kernel.org/all/15a8084b-9617-2da1-6704-d7e39d60643b@gmail.com
-> Reported-by: Jacob Kroon <jacob.kroon@gmail.com>
-> Tested-by: Jacob Kroon <jacob.kroon@gmail.com>
-> Cc: stable@vger.kernel.org # v5.15
-> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-> 
-> [...]
+For convenience the function mv88e6xxx_g1_atu_op() has been used to read
+ATU violations, but the function invalidates reading the fid, so to both
+read ATU violations without zeroing the fid, and read the fid, functions
+have been added to ensure both are done correctly.
 
-Here is the summary with links:
-  - [net] can: c_can: don't cache TX messages for C_CAN cores
-    https://git.kernel.org/netdev/net/c/81d192c2ce74
+Signed-off-by: Hans J. Schultz <netdev@kapio-technology.com>
+---
+ drivers/net/dsa/mv88e6xxx/global1_atu.c | 60 ++++++++++++++++++++++---
+ 1 file changed, 55 insertions(+), 5 deletions(-)
 
-You are awesome, thank you!
+diff --git a/drivers/net/dsa/mv88e6xxx/global1_atu.c b/drivers/net/dsa/mv88e6xxx/global1_atu.c
+index 40bd67a5c8e9..d9dfa1159cde 100644
+--- a/drivers/net/dsa/mv88e6xxx/global1_atu.c
++++ b/drivers/net/dsa/mv88e6xxx/global1_atu.c
+@@ -114,6 +114,19 @@ static int mv88e6xxx_g1_atu_op_wait(struct mv88e6xxx_chip *chip)
+ 	return mv88e6xxx_g1_wait_bit(chip, MV88E6XXX_G1_ATU_OP, bit, 0);
+ }
+ 
++static int mv88e6xxx_g1_read_atu_violation(struct mv88e6xxx_chip *chip)
++{
++	int err;
++
++	err = mv88e6xxx_g1_write(chip, MV88E6XXX_G1_ATU_OP,
++				 MV88E6XXX_G1_ATU_OP_BUSY |
++				 MV88E6XXX_G1_ATU_OP_GET_CLR_VIOLATION);
++	if (err)
++		return err;
++
++	return mv88e6xxx_g1_atu_op_wait(chip);
++}
++
+ static int mv88e6xxx_g1_atu_op(struct mv88e6xxx_chip *chip, u16 fid, u16 op)
+ {
+ 	u16 val;
+@@ -159,6 +172,41 @@ int mv88e6xxx_g1_atu_get_next(struct mv88e6xxx_chip *chip, u16 fid)
+ 	return mv88e6xxx_g1_atu_op(chip, fid, MV88E6XXX_G1_ATU_OP_GET_NEXT_DB);
+ }
+ 
++static int mv88e6xxx_g1_atu_fid_read(struct mv88e6xxx_chip *chip, u16 *fid)
++{
++	u16 val = 0, upper = 0, op = 0;
++	int err = -EOPNOTSUPP;
++
++	if (mv88e6xxx_num_databases(chip) > 256) {
++		err = mv88e6xxx_g1_read(chip, MV88E6352_G1_ATU_FID, &val);
++		val &= 0xfff;
++		if (err)
++			return err;
++	} else {
++		err = mv88e6xxx_g1_read(chip, MV88E6XXX_G1_ATU_OP, &op);
++		if (err)
++			return err;
++		if (mv88e6xxx_num_databases(chip) > 64) {
++			/* ATU DBNum[7:4] are located in ATU Control 15:12 */
++			err = mv88e6xxx_g1_read(chip, MV88E6XXX_G1_ATU_CTL, &upper);
++			if (err)
++				return err;
++
++			upper = (upper >> 8) & 0x00f0;
++		} else if (mv88e6xxx_num_databases(chip) > 16) {
++			/* ATU DBNum[5:4] are located in ATU Operation 9:8 */
++
++			upper = (op >> 4) & 0x30;
++		}
++		/* ATU DBNum[3:0] are located in ATU Operation 3:0 */
++
++		val = (op & 0xf) | upper;
++	}
++	*fid = val;
++
++	return err;
++}
++
+ /* Offset 0x0C: ATU Data Register */
+ 
+ static int mv88e6xxx_g1_atu_data_read(struct mv88e6xxx_chip *chip,
+@@ -353,14 +401,12 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
+ {
+ 	struct mv88e6xxx_chip *chip = dev_id;
+ 	struct mv88e6xxx_atu_entry entry;
+-	int spid;
+-	int err;
+-	u16 val;
++	int err, spid;
++	u16 val, fid;
+ 
+ 	mv88e6xxx_reg_lock(chip);
+ 
+-	err = mv88e6xxx_g1_atu_op(chip, 0,
+-				  MV88E6XXX_G1_ATU_OP_GET_CLR_VIOLATION);
++	err = mv88e6xxx_g1_read_atu_violation(chip);
+ 	if (err)
+ 		goto out;
+ 
+@@ -368,6 +414,10 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
+ 	if (err)
+ 		goto out;
+ 
++	err = mv88e6xxx_g1_atu_fid_read(chip, &fid);
++	if (err)
++		goto out;
++
+ 	err = mv88e6xxx_g1_atu_data_read(chip, &entry);
+ 	if (err)
+ 		goto out;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.34.1
 
