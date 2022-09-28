@@ -2,73 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D95CB5EE880
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 23:44:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56C495EE881
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 23:44:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234315AbiI1VoE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 17:44:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51976 "EHLO
+        id S230076AbiI1VoF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 17:44:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230071AbiI1VoB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 17:44:01 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DA48B1B8E
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 14:44:00 -0700 (PDT)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28SJV5Jj020285
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 21:43:59 GMT
+        with ESMTP id S233045AbiI1VoC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 17:44:02 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 791C2B2491
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 14:44:01 -0700 (PDT)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28SJSTXO006992
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 21:44:01 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=QiPlgseaIbcQnQ4RZ4cXwAJWGB29qa77wWukccW1hos=;
- b=Sv5DRS7F0q3qf7w9MUT2JZOWYyI85yzvf1YHKkR7G27CURnEKGaI+MzoKBhh871MGXyI
- tqY+wjRucszB1s2VKH9rlFgTWp7t+gZpw4pfno3/SlMZZ8qPMs5J0p+MvJfTm9DEI9hN
- Gfr8zUoiHhAZy/UaFHdWziCrg+ZpHnM9rovNemqA+Mxwc28YG1ooykgAbb2tOI+BAHda
- JoNJ3F2q51btRa/wTOwIfVFPWxjfjLKYzxSomDgxDiVBkCDolHljz8asb73fHM9AvXLe
- vFjPoPnciSGGEHhLvosKKZRs1W6rHsjW57D2CoystB255dD13QYLnV7ZNPWaOEqflWnh Iw== 
-Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jvsa69v35-1
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=vDmYW+ho6Rbvqs/0duGhQR2ljy4iGcaFGLK0HPRimeo=;
+ b=EB/VxAB11jIroOB3BSlHlzDDQoH8kd1IDvGCtTj/XLh6l4QgIVpyHYbjh1z23PvATfue
+ SGE6l8IpB6L9RetH28DgZiu0re2NxRQUdjr4mtSeW1REuCFGn/voPD0YV4jOaifQSgwY
+ ewSUSQdomf+mDcODnkeyUFecDklSyaoKH0ZYveDITPwSFRKioKWzAlwz7U9xV5CFwcph
+ YFx4x/kiTiyd3CXNkZL5qerneL+O4ub4NXF08olJp2+c0lhJgh1ftL7dbFdUquXz/iSA
+ 0TjViBbHsmfJbVjN0DQXJf2Cibsp0YSN6IYDSOZ0BCVq+X8V4h4ANLKTFjDYRuT9JTYl 2Q== 
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jvt6jgb9w-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 21:43:59 +0000
-Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
-        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 28SLae8H030413
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 21:43:59 GMT
-Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
-        by ppma02wdc.us.ibm.com with ESMTP id 3jssh9np07-1
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 21:44:00 +0000
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 28SLabEd023280
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 21:44:00 GMT
+Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com [9.57.198.25])
+        by ppma04dal.us.ibm.com with ESMTP id 3jsshb52dy-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 21:43:59 +0000
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 21:44:00 +0000
 Received: from smtpav01.wdc07v.mail.ibm.com ([9.208.128.113])
-        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 28SLhvAP15532660
+        by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 28SLhwBN10355356
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
         Wed, 28 Sep 2022 21:43:58 GMT
 Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 464B458063;
-        Wed, 28 Sep 2022 21:43:57 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 1B70F58055;
+        Wed, 28 Sep 2022 21:43:58 +0000 (GMT)
 Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A0A2B5804B;
-        Wed, 28 Sep 2022 21:43:56 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 858B158066;
+        Wed, 28 Sep 2022 21:43:57 +0000 (GMT)
 Received: from li-8d37cfcc-31b9-11b2-a85c-83226d7135c9.ibm.com (unknown [9.160.14.153])
         by smtpav01.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-        Wed, 28 Sep 2022 21:43:56 +0000 (GMT)
+        Wed, 28 Sep 2022 21:43:57 +0000 (GMT)
 From:   Nick Child <nnac123@linux.ibm.com>
 To:     netdev@vger.kernel.org
 Cc:     Nick Child <nnac123@linux.ibm.com>
-Subject: [PATCH v2 net-next 1/3] ibmveth: Copy tx skbs into a premapped buffer
-Date:   Wed, 28 Sep 2022 16:43:48 -0500
-Message-Id: <20220928214350.29795-1-nnac123@linux.ibm.com>
+Subject: [PATCH v2 net-next 2/3] ibmveth: Implement multi queue on xmit
+Date:   Wed, 28 Sep 2022 16:43:49 -0500
+Message-Id: <20220928214350.29795-2-nnac123@linux.ibm.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220928214350.29795-1-nnac123@linux.ibm.com>
+References: <20220928214350.29795-1-nnac123@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 9BCMHQ1BRqUHbAiNFi0F8CBvNBzQ-nt4
-X-Proofpoint-ORIG-GUID: 9BCMHQ1BRqUHbAiNFi0F8CBvNBzQ-nt4
+X-Proofpoint-GUID: hGNah82Os68G4zRbAtwfEz_mLoOca0mE
+X-Proofpoint-ORIG-GUID: hGNah82Os68G4zRbAtwfEz_mLoOca0mE
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
  definitions=2022-09-28_09,2022-09-28_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- priorityscore=1501 adultscore=0 impostorscore=0 suspectscore=0 bulkscore=0
- clxscore=1015 mlxlogscore=999 spamscore=0 mlxscore=0 lowpriorityscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2209130000 definitions=main-2209280127
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 mlxlogscore=471
+ malwarescore=0 mlxscore=0 suspectscore=0 clxscore=1015 priorityscore=1501
+ spamscore=0 adultscore=0 phishscore=0 impostorscore=0 lowpriorityscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2209130000
+ definitions=main-2209280127
 X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
         autolearn=ham autolearn_force=no version=3.4.6
@@ -78,391 +81,197 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rather than DMA mapping and unmapping every outgoing skb, copy the skb
-into a buffer that was mapped during the drivers open function. Copying
-the skb and its frags have proven to be more time efficient than
-mapping and unmapping. As an effect, performance increases by 3-5
-Gbits/s.
+The `ndo_start_xmit` function is protected by a spinlock on the tx queue
+being used to transmit the skb. Allow concurrent calls to
+`ndo_start_xmit` by using more than one tx queue. This allows for
+greater throughput when several jobs are trying to transmit data.
 
-Allocate and DMA map one continuous 64KB buffer at `ndo_open`. This
-buffer is maintained until `ibmveth_close` is called. This buffer is
-large enough to hold the largest possible linnear skb. During
-`ndo_start_xmit`, copy the skb and all of it's frags into the continuous
-buffer. By manually linnearizing all the socket buffers, time is saved
-during memcpy as well as more efficient handling in FW.
-As a result, we no longer need to worry about the firmware limitation
-of handling a max of 6 frags. So, we only need to maintain 1 descriptor
-instead of 6 and can hardcode 0 for the other 5 descriptors during
-h_send_logical_lan.
-
-Since, DMA allocation/mapping issues can no longer arise in xmit
-functions, we can further reduce code size by removing the need for a
-bounce buffer on DMA errors.
+Introduce 16 tx queues (leave single rx queue as is) which each
+correspond to one DMA mapped long term buffer.
 
 Signed-off-by: Nick Child <nnac123@linux.ibm.com>
 ---
-
-Changes in v2:
- - Respond to feedback from Jakub Kicinski:
-   - use min function in ibmveth_real_max_tx_queues
-   - assume unused channels are initialized in `get_channel`
-   - allow the core ethtool functions to perform argument validity checks
-     in set_channel
-   - rename 'fallback' variable to 'old' in set_channel
-   - skip allocation steps if the device is not UP in set_channel
-   - simplify error handling by making logical assumptions in set_channel
-   - set IBMVETH_MAX_QUEUES to 16 instead of 8
-
- drivers/net/ethernet/ibm/ibmveth.c | 185 ++++++++++-------------------
- drivers/net/ethernet/ibm/ibmveth.h |  22 ++--
- 2 files changed, 74 insertions(+), 133 deletions(-)
+ drivers/net/ethernet/ibm/ibmveth.c | 69 +++++++++++++++++-------------
+ drivers/net/ethernet/ibm/ibmveth.h |  5 ++-
+ 2 files changed, 43 insertions(+), 31 deletions(-)
 
 diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
-index ee4548e08446..675eaeed7a7b 100644
+index 675eaeed7a7b..7abd67c2336e 100644
 --- a/drivers/net/ethernet/ibm/ibmveth.c
 +++ b/drivers/net/ethernet/ibm/ibmveth.c
-@@ -538,6 +538,22 @@ static int ibmveth_open(struct net_device *netdev)
+@@ -538,20 +538,22 @@ static int ibmveth_open(struct net_device *netdev)
  		goto out_unmap_buffer_list;
  	}
  
-+	adapter->tx_ltb_size = PAGE_ALIGN(IBMVETH_MAX_TX_BUF_SIZE);
-+	adapter->tx_ltb_ptr = kzalloc(adapter->tx_ltb_size, GFP_KERNEL);
-+	if (!adapter->tx_ltb_ptr) {
-+		netdev_err(netdev,
-+			   "unable to allocate transmit long term buffer\n");
-+		goto out_unmap_buffer_list;
-+	}
-+	adapter->tx_ltb_dma = dma_map_single(dev, adapter->tx_ltb_ptr,
-+					     adapter->tx_ltb_size,
-+					     DMA_TO_DEVICE);
-+	if (dma_mapping_error(dev, adapter->tx_ltb_dma)) {
-+		netdev_err(netdev,
-+			   "unable to DMA map transmit long term buffer\n");
-+		goto out_unmap_tx_dma;
-+	}
-+
- 	adapter->rx_queue.index = 0;
- 	adapter->rx_queue.num_slots = rxq_entries;
- 	adapter->rx_queue.toggle = 1;
-@@ -595,14 +611,6 @@ static int ibmveth_open(struct net_device *netdev)
- 
- 	rc = -ENOMEM;
- 
--	adapter->bounce_buffer = dma_alloc_coherent(&adapter->vdev->dev,
--						    netdev->mtu + IBMVETH_BUFF_OH,
--						    &adapter->bounce_buffer_dma, GFP_KERNEL);
--	if (!adapter->bounce_buffer) {
--		netdev_err(netdev, "unable to alloc bounce buffer\n");
--		goto out_free_irq;
+-	adapter->tx_ltb_size = PAGE_ALIGN(IBMVETH_MAX_TX_BUF_SIZE);
+-	adapter->tx_ltb_ptr = kzalloc(adapter->tx_ltb_size, GFP_KERNEL);
+-	if (!adapter->tx_ltb_ptr) {
+-		netdev_err(netdev,
+-			   "unable to allocate transmit long term buffer\n");
+-		goto out_unmap_buffer_list;
 -	}
--
+-	adapter->tx_ltb_dma = dma_map_single(dev, adapter->tx_ltb_ptr,
+-					     adapter->tx_ltb_size,
+-					     DMA_TO_DEVICE);
+-	if (dma_mapping_error(dev, adapter->tx_ltb_dma)) {
+-		netdev_err(netdev,
+-			   "unable to DMA map transmit long term buffer\n");
+-		goto out_unmap_tx_dma;
++	for (i = 0; i < IBMVETH_MAX_QUEUES; i++) {
++		adapter->tx_ltb_ptr[i] = kzalloc(adapter->tx_ltb_size,
++						 GFP_KERNEL);
++		if (!adapter->tx_ltb_ptr[i]) {
++			netdev_err(netdev,
++				   "unable to allocate transmit long term buffer\n");
++			goto out_free_tx_ltb_ptrs;
++		}
++		adapter->tx_ltb_dma[i] = dma_map_single(dev,
++							adapter->tx_ltb_ptr[i],
++							adapter->tx_ltb_size,
++							DMA_TO_DEVICE);
++		if (dma_mapping_error(dev, adapter->tx_ltb_dma[i])) {
++			netdev_err(netdev, "unable to DMA map transmit long term buffer\n");
++			goto out_unmap_tx_dma;
++		}
+ 	}
+ 
+ 	adapter->rx_queue.index = 0;
+@@ -614,7 +616,7 @@ static int ibmveth_open(struct net_device *netdev)
  	netdev_dbg(netdev, "initial replenish cycle\n");
  	ibmveth_interrupt(netdev->irq, netdev);
  
-@@ -612,8 +620,6 @@ static int ibmveth_open(struct net_device *netdev)
+-	netif_start_queue(netdev);
++	netif_tx_start_all_queues(netdev);
  
- 	return 0;
+ 	netdev_dbg(netdev, "open complete\n");
  
--out_free_irq:
--	free_irq(netdev->irq, netdev);
- out_free_buffer_pools:
- 	while (--i >= 0) {
- 		if (adapter->rx_buff_pool[i].active)
-@@ -623,6 +629,10 @@ static int ibmveth_open(struct net_device *netdev)
- out_unmap_filter_list:
- 	dma_unmap_single(dev, adapter->filter_list_dma, 4096,
+@@ -631,7 +633,14 @@ static int ibmveth_open(struct net_device *netdev)
  			 DMA_BIDIRECTIONAL);
+ 
+ out_unmap_tx_dma:
+-	kfree(adapter->tx_ltb_ptr);
++	kfree(adapter->tx_ltb_ptr[i]);
 +
-+out_unmap_tx_dma:
-+	kfree(adapter->tx_ltb_ptr);
-+
++out_free_tx_ltb_ptrs:
++	while (--i >= 0) {
++		dma_unmap_single(dev, adapter->tx_ltb_dma[i],
++				 adapter->tx_ltb_size, DMA_TO_DEVICE);
++		kfree(adapter->tx_ltb_ptr[i]);
++	}
+ 
  out_unmap_buffer_list:
  	dma_unmap_single(dev, adapter->buffer_list_dma, 4096,
- 			 DMA_BIDIRECTIONAL);
-@@ -685,9 +695,9 @@ static int ibmveth_close(struct net_device *netdev)
+@@ -661,7 +670,7 @@ static int ibmveth_close(struct net_device *netdev)
+ 	napi_disable(&adapter->napi);
+ 
+ 	if (!adapter->pool_config)
+-		netif_stop_queue(netdev);
++		netif_tx_stop_all_queues(netdev);
+ 
+ 	h_vio_signal(adapter->vdev->unit_address, VIO_IRQ_DISABLE);
+ 
+@@ -695,9 +704,11 @@ static int ibmveth_close(struct net_device *netdev)
  			ibmveth_free_buffer_pool(adapter,
  						 &adapter->rx_buff_pool[i]);
  
--	dma_free_coherent(&adapter->vdev->dev,
--			  adapter->netdev->mtu + IBMVETH_BUFF_OH,
--			  adapter->bounce_buffer, adapter->bounce_buffer_dma);
-+	dma_unmap_single(dev, adapter->tx_ltb_dma, adapter->tx_ltb_size,
-+			 DMA_TO_DEVICE);
-+	kfree(adapter->tx_ltb_ptr);
+-	dma_unmap_single(dev, adapter->tx_ltb_dma, adapter->tx_ltb_size,
+-			 DMA_TO_DEVICE);
+-	kfree(adapter->tx_ltb_ptr);
++	for (i = 0; i < IBMVETH_MAX_QUEUES; i++) {
++		dma_unmap_single(dev, adapter->tx_ltb_dma[i],
++				 adapter->tx_ltb_size, DMA_TO_DEVICE);
++		kfree(adapter->tx_ltb_ptr[i]);
++	}
  
  	netdev_dbg(netdev, "close complete\n");
  
-@@ -969,7 +979,7 @@ static int ibmveth_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- }
- 
- static int ibmveth_send(struct ibmveth_adapter *adapter,
--			union ibmveth_buf_desc *descs, unsigned long mss)
-+			unsigned long desc, unsigned long mss)
- {
- 	unsigned long correlator;
- 	unsigned int retry_count;
-@@ -982,12 +992,9 @@ static int ibmveth_send(struct ibmveth_adapter *adapter,
- 	retry_count = 1024;
- 	correlator = 0;
- 	do {
--		ret = h_send_logical_lan(adapter->vdev->unit_address,
--					     descs[0].desc, descs[1].desc,
--					     descs[2].desc, descs[3].desc,
--					     descs[4].desc, descs[5].desc,
--					     correlator, &correlator, mss,
--					     adapter->fw_large_send_support);
-+		ret = h_send_logical_lan(adapter->vdev->unit_address, desc,
-+					 correlator, &correlator, mss,
-+					 adapter->fw_large_send_support);
- 	} while ((ret == H_BUSY) && (retry_count--));
- 
- 	if (ret != H_SUCCESS && ret != H_DROPPED) {
-@@ -1021,33 +1028,14 @@ static netdev_tx_t ibmveth_start_xmit(struct sk_buff *skb,
+@@ -1027,15 +1038,13 @@ static netdev_tx_t ibmveth_start_xmit(struct sk_buff *skb,
+ 				      struct net_device *netdev)
  {
  	struct ibmveth_adapter *adapter = netdev_priv(netdev);
- 	unsigned int desc_flags;
--	union ibmveth_buf_desc descs[6];
--	int last, i;
--	int force_bounce = 0;
--	dma_addr_t dma_addr;
-+	union ibmveth_buf_desc desc;
-+	int i;
+-	unsigned int desc_flags;
++	unsigned int desc_flags, total_bytes;
+ 	union ibmveth_buf_desc desc;
+-	int i;
++	int i, queue_num = skb_get_queue_mapping(skb);
  	unsigned long mss = 0;
-+	size_t total_bytes;
+-	size_t total_bytes;
  
  	if (ibmveth_is_packet_unsupported(skb, netdev))
  		goto out;
- 
--	/* veth doesn't handle frag_list, so linearize the skb.
--	 * When GRO is enabled SKB's can have frag_list.
--	 */
--	if (adapter->is_active_trunk &&
--	    skb_has_frag_list(skb) && __skb_linearize(skb)) {
--		netdev->stats.tx_dropped++;
--		goto out;
--	}
--
--	/*
--	 * veth handles a maximum of 6 segments including the header, so
--	 * we have to linearize the skb if there are more than this.
--	 */
--	if (skb_shinfo(skb)->nr_frags > 5 && __skb_linearize(skb)) {
--		netdev->stats.tx_dropped++;
--		goto out;
--	}
 -
  	/* veth can't checksum offload UDP */
  	if (skb->ip_summed == CHECKSUM_PARTIAL &&
  	    ((skb->protocol == htons(ETH_P_IP) &&
-@@ -1077,56 +1065,6 @@ static netdev_tx_t ibmveth_start_xmit(struct sk_buff *skb,
- 			desc_flags |= IBMVETH_BUF_LRG_SND;
- 	}
- 
--retry_bounce:
--	memset(descs, 0, sizeof(descs));
--
--	/*
--	 * If a linear packet is below the rx threshold then
--	 * copy it into the static bounce buffer. This avoids the
--	 * cost of a TCE insert and remove.
--	 */
--	if (force_bounce || (!skb_is_nonlinear(skb) &&
--				(skb->len < tx_copybreak))) {
--		skb_copy_from_linear_data(skb, adapter->bounce_buffer,
--					  skb->len);
--
--		descs[0].fields.flags_len = desc_flags | skb->len;
--		descs[0].fields.address = adapter->bounce_buffer_dma;
--
--		if (ibmveth_send(adapter, descs, 0)) {
--			adapter->tx_send_failed++;
--			netdev->stats.tx_dropped++;
--		} else {
--			netdev->stats.tx_packets++;
--			netdev->stats.tx_bytes += skb->len;
--		}
--
--		goto out;
--	}
--
--	/* Map the header */
--	dma_addr = dma_map_single(&adapter->vdev->dev, skb->data,
--				  skb_headlen(skb), DMA_TO_DEVICE);
--	if (dma_mapping_error(&adapter->vdev->dev, dma_addr))
--		goto map_failed;
--
--	descs[0].fields.flags_len = desc_flags | skb_headlen(skb);
--	descs[0].fields.address = dma_addr;
--
--	/* Map the frags */
--	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
--		const skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
--
--		dma_addr = skb_frag_dma_map(&adapter->vdev->dev, frag, 0,
--					    skb_frag_size(frag), DMA_TO_DEVICE);
--
--		if (dma_mapping_error(&adapter->vdev->dev, dma_addr))
--			goto map_failed_frags;
--
--		descs[i+1].fields.flags_len = desc_flags | skb_frag_size(frag);
--		descs[i+1].fields.address = dma_addr;
--	}
--
- 	if (skb->ip_summed == CHECKSUM_PARTIAL && skb_is_gso(skb)) {
- 		if (adapter->fw_large_send_support) {
- 			mss = (unsigned long)skb_shinfo(skb)->gso_size;
-@@ -1143,7 +1081,36 @@ static netdev_tx_t ibmveth_start_xmit(struct sk_buff *skb,
- 		}
- 	}
- 
--	if (ibmveth_send(adapter, descs, mss)) {
-+	/* Copy header into mapped buffer */
-+	if (unlikely(skb->len > adapter->tx_ltb_size)) {
-+		netdev_err(adapter->netdev, "tx: packet size (%u) exceeds ltb (%u)\n",
-+			   skb->len, adapter->tx_ltb_size);
-+		netdev->stats.tx_dropped++;
-+		goto out;
-+	}
-+	memcpy(adapter->tx_ltb_ptr, skb->data, skb_headlen(skb));
-+	total_bytes = skb_headlen(skb);
-+	/* Copy frags into mapped buffers */
-+	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
-+		const skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
-+
-+		memcpy(adapter->tx_ltb_ptr + total_bytes, skb_frag_address_safe(frag),
-+		       skb_frag_size(frag));
-+		total_bytes += skb_frag_size(frag);
-+	}
-+
-+	if (unlikely(total_bytes != skb->len)) {
-+		netdev_err(adapter->netdev, "tx: incorrect packet len copied into ltb (%u != %u)\n",
-+			   skb->len, total_bytes);
-+		netdev->stats.tx_dropped++;
-+		goto out;
-+	}
-+	desc.fields.flags_len = desc_flags | skb->len;
-+	desc.fields.address = adapter->tx_ltb_dma;
-+	/* finish writing to long_term_buff before VIOS accessing it */
-+	dma_wmb();
-+
-+	if (ibmveth_send(adapter, desc.desc, mss)) {
- 		adapter->tx_send_failed++;
+@@ -1088,14 +1097,14 @@ static netdev_tx_t ibmveth_start_xmit(struct sk_buff *skb,
  		netdev->stats.tx_dropped++;
- 	} else {
-@@ -1151,41 +1118,11 @@ static netdev_tx_t ibmveth_start_xmit(struct sk_buff *skb,
- 		netdev->stats.tx_bytes += skb->len;
+ 		goto out;
+ 	}
+-	memcpy(adapter->tx_ltb_ptr, skb->data, skb_headlen(skb));
++	memcpy(adapter->tx_ltb_ptr[queue_num], skb->data, skb_headlen(skb));
+ 	total_bytes = skb_headlen(skb);
+ 	/* Copy frags into mapped buffers */
+ 	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
+ 		const skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
+ 
+-		memcpy(adapter->tx_ltb_ptr + total_bytes, skb_frag_address_safe(frag),
+-		       skb_frag_size(frag));
++		memcpy(adapter->tx_ltb_ptr[queue_num] + total_bytes,
++		       skb_frag_address_safe(frag), skb_frag_size(frag));
+ 		total_bytes += skb_frag_size(frag);
  	}
  
--	dma_unmap_single(&adapter->vdev->dev,
--			 descs[0].fields.address,
--			 descs[0].fields.flags_len & IBMVETH_BUF_LEN_MASK,
--			 DMA_TO_DEVICE);
--
--	for (i = 1; i < skb_shinfo(skb)->nr_frags + 1; i++)
--		dma_unmap_page(&adapter->vdev->dev, descs[i].fields.address,
--			       descs[i].fields.flags_len & IBMVETH_BUF_LEN_MASK,
--			       DMA_TO_DEVICE);
--
- out:
- 	dev_consume_skb_any(skb);
- 	return NETDEV_TX_OK;
+@@ -1106,7 +1115,7 @@ static netdev_tx_t ibmveth_start_xmit(struct sk_buff *skb,
+ 		goto out;
+ 	}
+ 	desc.fields.flags_len = desc_flags | skb->len;
+-	desc.fields.address = adapter->tx_ltb_dma;
++	desc.fields.address = adapter->tx_ltb_dma[queue_num];
+ 	/* finish writing to long_term_buff before VIOS accessing it */
+ 	dma_wmb();
  
--map_failed_frags:
--	last = i+1;
--	for (i = 1; i < last; i++)
--		dma_unmap_page(&adapter->vdev->dev, descs[i].fields.address,
--			       descs[i].fields.flags_len & IBMVETH_BUF_LEN_MASK,
--			       DMA_TO_DEVICE);
+@@ -1599,7 +1608,7 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
+ 		return -EINVAL;
+ 	}
  
--	dma_unmap_single(&adapter->vdev->dev,
--			 descs[0].fields.address,
--			 descs[0].fields.flags_len & IBMVETH_BUF_LEN_MASK,
--			 DMA_TO_DEVICE);
--map_failed:
--	if (!firmware_has_feature(FW_FEATURE_CMO))
--		netdev_err(netdev, "tx: unable to map xmit buffer\n");
--	adapter->tx_map_failed++;
--	if (skb_linearize(skb)) {
--		netdev->stats.tx_dropped++;
--		goto out;
--	}
--	force_bounce = 1;
--	goto retry_bounce;
- }
+-	netdev = alloc_etherdev(sizeof(struct ibmveth_adapter));
++	netdev = alloc_etherdev_mqs(sizeof(struct ibmveth_adapter), IBMVETH_MAX_QUEUES, 1);
  
- static void ibmveth_rx_mss_helper(struct sk_buff *skb, u16 mss, int lrg_pkt)
-@@ -1568,6 +1505,8 @@ static unsigned long ibmveth_get_desired_dma(struct vio_dev *vdev)
+ 	if (!netdev)
+ 		return -ENOMEM;
+@@ -1666,6 +1675,8 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
+ 			kobject_uevent(kobj, KOBJ_ADD);
+ 	}
  
- 	ret = IBMVETH_BUFF_LIST_SIZE + IBMVETH_FILT_LIST_SIZE;
- 	ret += IOMMU_PAGE_ALIGN(netdev->mtu, tbl);
-+	/* add size of mapped tx buffers */
-+	ret += IOMMU_PAGE_ALIGN(IBMVETH_MAX_TX_BUF_SIZE, tbl);
++	adapter->tx_ltb_size = PAGE_ALIGN(IBMVETH_MAX_TX_BUF_SIZE);
++
+ 	netdev_dbg(netdev, "adapter @ 0x%p\n", adapter);
+ 	netdev_dbg(netdev, "registering netdev...\n");
  
- 	for (i = 0; i < IBMVETH_NUM_BUFF_POOLS; i++) {
- 		/* add the size of the active receive buffers */
 diff --git a/drivers/net/ethernet/ibm/ibmveth.h b/drivers/net/ethernet/ibm/ibmveth.h
-index 27dfff200166..a46ead9b31de 100644
+index a46ead9b31de..daf6f615c03f 100644
 --- a/drivers/net/ethernet/ibm/ibmveth.h
 +++ b/drivers/net/ethernet/ibm/ibmveth.h
-@@ -46,23 +46,23 @@
- #define h_add_logical_lan_buffer(ua, buf) \
-   plpar_hcall_norets(H_ADD_LOGICAL_LAN_BUFFER, ua, buf)
- 
-+/* FW allows us to send 6 descriptors but we only use one so mark
-+ * the other 5 as unused (0)
-+ */
- static inline long h_send_logical_lan(unsigned long unit_address,
--		unsigned long desc1, unsigned long desc2, unsigned long desc3,
--		unsigned long desc4, unsigned long desc5, unsigned long desc6,
--		unsigned long corellator_in, unsigned long *corellator_out,
--		unsigned long mss, unsigned long large_send_support)
-+		unsigned long desc, unsigned long corellator_in,
-+		unsigned long *corellator_out, unsigned long mss,
-+		unsigned long large_send_support)
- {
- 	long rc;
- 	unsigned long retbuf[PLPAR_HCALL9_BUFSIZE];
- 
- 	if (large_send_support)
- 		rc = plpar_hcall9(H_SEND_LOGICAL_LAN, retbuf, unit_address,
--				  desc1, desc2, desc3, desc4, desc5, desc6,
--				  corellator_in, mss);
-+				  desc, 0, 0, 0, 0, 0, corellator_in, mss);
- 	else
- 		rc = plpar_hcall9(H_SEND_LOGICAL_LAN, retbuf, unit_address,
--				  desc1, desc2, desc3, desc4, desc5, desc6,
--				  corellator_in);
-+				  desc, 0, 0, 0, 0, 0, corellator_in);
- 
- 	*corellator_out = retbuf[0];
- 
-@@ -98,6 +98,7 @@ static inline long h_illan_attributes(unsigned long unit_address,
- #define IBMVETH_BUFF_LIST_SIZE 4096
+@@ -99,6 +99,7 @@ static inline long h_illan_attributes(unsigned long unit_address,
  #define IBMVETH_FILT_LIST_SIZE 4096
  #define IBMVETH_MAX_BUF_SIZE (1024 * 128)
-+#define IBMVETH_MAX_TX_BUF_SIZE (1024 * 64)
+ #define IBMVETH_MAX_TX_BUF_SIZE (1024 * 64)
++#define IBMVETH_MAX_QUEUES 16U
  
  static int pool_size[] = { 512, 1024 * 2, 1024 * 16, 1024 * 32, 1024 * 64 };
  static int pool_count[] = { 256, 512, 256, 256, 256 };
-@@ -137,6 +138,9 @@ struct ibmveth_adapter {
+@@ -138,9 +139,9 @@ struct ibmveth_adapter {
      unsigned int mcastFilterSize;
      void * buffer_list_addr;
      void * filter_list_addr;
-+    void *tx_ltb_ptr;
-+    unsigned int tx_ltb_size;
-+    dma_addr_t tx_ltb_dma;
+-    void *tx_ltb_ptr;
++    void *tx_ltb_ptr[IBMVETH_MAX_QUEUES];
+     unsigned int tx_ltb_size;
+-    dma_addr_t tx_ltb_dma;
++    dma_addr_t tx_ltb_dma[IBMVETH_MAX_QUEUES];
      dma_addr_t buffer_list_dma;
      dma_addr_t filter_list_dma;
      struct ibmveth_buff_pool rx_buff_pool[IBMVETH_NUM_BUFF_POOLS];
-@@ -145,8 +149,6 @@ struct ibmveth_adapter {
-     int rx_csum;
-     int large_send;
-     bool is_active_trunk;
--    void *bounce_buffer;
--    dma_addr_t bounce_buffer_dma;
- 
-     u64 fw_ipv6_csum_support;
-     u64 fw_ipv4_csum_support;
 -- 
 2.31.1
 
