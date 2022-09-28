@@ -2,101 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A1AC5EE864
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 23:38:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41E755EE87C
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 23:41:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234338AbiI1Vh7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 17:37:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39956 "EHLO
+        id S234141AbiI1Vk4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 17:40:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234166AbiI1Vh5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 17:37:57 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 772F78A7C6;
-        Wed, 28 Sep 2022 14:37:56 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id u16-20020a05600c211000b003b5152ebf09so2094701wml.5;
-        Wed, 28 Sep 2022 14:37:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=rUM2aW+DGDXanWCdc+mwoRm7T1Ng16porQzPW5bnT68=;
-        b=gCmDQHezOruhG4NU0X2rFe4/f5TI833m5vGO+Ru/0Ypx3qcgf8R83gDNHEp/KoBiyF
-         WXsySZTtMxgiQvZjrQmNb7F9p3W/V22bd35ShPx3VT8hJT7tyZoi5RP5VnG3DPdbAz3Y
-         eJERqPIx1PI9yEFi1oLlii0qh+ONZib8vwCxKttrc4K/2hogL+eisAaUeV0rZwNOH00G
-         ZzIpigJGpkhu4ZVk2GqILmRDPG+SY+VoFW6NwIfXEzfESidjdKgGE1DGeBFr34tibzds
-         oLcujW3C2b6oMG7o+q/d4ExABXZ7snEx2XC2lmm46AfZFhZWfCWV5piThVrBMcxlux0l
-         /VfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=rUM2aW+DGDXanWCdc+mwoRm7T1Ng16porQzPW5bnT68=;
-        b=W8mAxY47BYkIvq+Dq9IAW4msD9GLTN4DD6KY4O19wGD73pqYZ15Cs9oEsy6qOJ9ol+
-         x+qU3lL056bUAs/y+x2SL6oybfUvm0OYIzUlnpbVrvKSGYOXwY2w3J845RfFYEUy0mPk
-         +6u9LrLEtfWwXAhngJFW8W3/Wrx2e1tYc2ScP5Tw+tD6lG3kHNBZD48FFoyROzGnjFZQ
-         1YpKuCwan0OerLTknYcrCPWAHQDjVgsOf6GEOPztU9IOtOOiosHmdhLnV74Wj8HhmNLU
-         nJ+qK7ZggzVnKjXqePV8GjLvjXT6mgwlOLkznR98SOzMjItGHJnQ5pAcfUR8V6Dks2A7
-         0j/w==
-X-Gm-Message-State: ACrzQf28R7gb02JqdziDQhdA5ZP7+UxRbbj1zNFbWgw4eHSRBoGtXqNP
-        rVI+X4TSXJRMWQzu/kJl4YU=
-X-Google-Smtp-Source: AMsMyM60Wxnr54EUrqhnbxDpHDSl2eN+WPEqNCfd39U/NxNPYyBp2DnNK2zqHZjaUT3IedG0m9aZ8A==
-X-Received: by 2002:a05:600c:4f53:b0:3b4:9aad:7845 with SMTP id m19-20020a05600c4f5300b003b49aad7845mr11844wmq.159.1664401075103;
-        Wed, 28 Sep 2022 14:37:55 -0700 (PDT)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id h9-20020a1c2109000000b003b4fac020c8sm2583719wmh.16.2022.09.28.14.37.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Sep 2022 14:37:54 -0700 (PDT)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Rasesh Mody <rmody@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S231949AbiI1Vky (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 17:40:54 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38444AA367;
+        Wed, 28 Sep 2022 14:40:51 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 19CC21F45F;
+        Wed, 28 Sep 2022 21:40:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1664401248; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=C18vkSCkEp0R0j/E8doyhXlqBRc6MmmoczHaFz5Tq/o=;
+        b=O8ZKN2zJZST2anqWW6kCZ7PFlJtkR+DhFF/E1xFtpBjfMisY/NEE2VUHIT0ctG6+BRKpcm
+        TFzItcWnIOwSwp96McUWnDjo0baCWUX3p/6aNYk16N1G1gVpmFAU0HxXjLM93Ltz5am9pC
+        6mcBPOCE9PClr4mk2WyQ3I6f95q7OjY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1664401248;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=C18vkSCkEp0R0j/E8doyhXlqBRc6MmmoczHaFz5Tq/o=;
+        b=QuVwGzEY77p785Z+8T99wXOp96mLv9PVymdpRO3H5bysX/SgsIeBkJWmKXpwJqWMN6hRxn
+        P80vd3XHeULykLAg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id DA18F13A84;
+        Wed, 28 Sep 2022 21:40:46 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id pwxsNF6/NGNaHwAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Wed, 28 Sep 2022 21:40:46 +0000
+Message-ID: <d5cb63f4-b1f5-9862-c31c-c8c6c4cb41df@suse.cz>
+Date:   Wed, 28 Sep 2022 23:39:06 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.0
+Subject: Re: [PATCH v2 01/16] slab: Remove __malloc attribute from realloc
+ functions
+Content-Language: en-US
+To:     Kees Cook <keescook@chromium.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Marco Elver <elver@google.com>, linux-mm@kvack.org,
+        "Ruhl, Michael J" <michael.j.ruhl@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] bnx2: Fix spelling mistake "bufferred" -> "buffered"
-Date:   Wed, 28 Sep 2022 22:37:53 +0100
-Message-Id: <20220928213753.64396-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.37.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+        Paolo Abeni <pabeni@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Alex Elder <elder@kernel.org>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Daniel Micay <danielmicay@gmail.com>,
+        Yonghong Song <yhs@fb.com>, Miguel Ojeda <ojeda@kernel.org>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-btrfs@vger.kernel.org, linux-media@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+        linux-fsdevel@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        dev@openvswitch.org, x86@kernel.org, llvm@lists.linux.dev,
+        linux-hardening@vger.kernel.org
+References: <20220923202822.2667581-1-keescook@chromium.org>
+ <20220923202822.2667581-2-keescook@chromium.org>
+ <CAMuHMdXK+UN1YVZm9DenuXAM8hZRUZJwp=SXsueP7sWiVU3a9A@mail.gmail.com>
+ <202209281011.66DD717D@keescook>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <202209281011.66DD717D@keescook>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are spelling mistakes in two literal strings. Fix these.
+On 9/28/22 19:13, Kees Cook wrote:
+> On Wed, Sep 28, 2022 at 09:26:15AM +0200, Geert Uytterhoeven wrote:
+>> Hi Kees,
+>>
+>> On Fri, Sep 23, 2022 at 10:35 PM Kees Cook <keescook@chromium.org> wrote:
+>>> The __malloc attribute should not be applied to "realloc" functions, as
+>>> the returned pointer may alias the storage of the prior pointer. Instead
+>>> of splitting __malloc from __alloc_size, which would be a huge amount of
+>>> churn, just create __realloc_size for the few cases where it is needed.
+>>>
+>>> Additionally removes the conditional test for __alloc_size__, which is
+>>> always defined now.
+>>>
+>>> Cc: Christoph Lameter <cl@linux.com>
+>>> Cc: Pekka Enberg <penberg@kernel.org>
+>>> Cc: David Rientjes <rientjes@google.com>
+>>> Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
+>>> Cc: Andrew Morton <akpm@linux-foundation.org>
+>>> Cc: Vlastimil Babka <vbabka@suse.cz>
+>>> Cc: Roman Gushchin <roman.gushchin@linux.dev>
+>>> Cc: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+>>> Cc: Marco Elver <elver@google.com>
+>>> Cc: linux-mm@kvack.org
+>>> Signed-off-by: Kees Cook <keescook@chromium.org>
+>>
+>> Thanks for your patch, which is now commit 63caa04ec60583b1 ("slab:
+>> Remove __malloc attribute from realloc functions") in next-20220927.
+>>
+>> Noreply@ellerman.id.au reported all gcc8-based builds to fail
+>> (e.g. [1], more at [2]):
+>>
+>>      In file included from <command-line>:
+>>      ./include/linux/percpu.h: In function ‘__alloc_reserved_percpu’:
+>>      ././include/linux/compiler_types.h:279:30: error: expected
+>> declaration specifiers before ‘__alloc_size__’
+>>       #define __alloc_size(x, ...) __alloc_size__(x, ## __VA_ARGS__) __malloc
+>>                                    ^~~~~~~~~~~~~~
+>>      ./include/linux/percpu.h:120:74: note: in expansion of macro ‘__alloc_size’
+>>      [...]
+>>
+>> It's building fine with e.g. gcc-9 (which is my usual m68k cross-compiler).
+>> Reverting this commit on next-20220927 fixes the issue.
+>>
+>> [1] http://kisskb.ellerman.id.au/kisskb/buildresult/14803908/
+>> [2] http://kisskb.ellerman.id.au/kisskb/head/1bd8b75fe6adeaa89d02968bdd811ffe708cf839/
+> 
+> Eek! Thanks for letting me know. I'm confused about this --
+> __alloc_size__ wasn't optional in compiler_attributes.h -- but obviously
+> I broke something! I'll go figure this out.
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- drivers/net/ethernet/broadcom/bnx2.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Even in latest next I can see at the end of include/linux/compiler-gcc.h
 
-diff --git a/drivers/net/ethernet/broadcom/bnx2.c b/drivers/net/ethernet/broadcom/bnx2.c
-index b612781be893..6e22000074b3 100644
---- a/drivers/net/ethernet/broadcom/bnx2.c
-+++ b/drivers/net/ethernet/broadcom/bnx2.c
-@@ -176,12 +176,12 @@ static const struct flash_spec flash_table[] =
- 	{0x19000002, 0x5b808201, 0x000500db, 0x03840253, 0xaf020406,
- 	 NONBUFFERED_FLAGS, ST_MICRO_FLASH_PAGE_BITS, ST_MICRO_FLASH_PAGE_SIZE,
- 	 ST_MICRO_FLASH_BYTE_ADDR_MASK, ST_MICRO_FLASH_BASE_TOTAL_SIZE*2,
--	 "Entry 0101: ST M45PE10 (128kB non-bufferred)"},
-+	 "Entry 0101: ST M45PE10 (128kB non-buffered)"},
- 	/* Entry 0110: ST M45PE20 (non-buffered flash)*/
- 	{0x15000001, 0x57808201, 0x000500db, 0x03840253, 0xaf020406,
- 	 NONBUFFERED_FLAGS, ST_MICRO_FLASH_PAGE_BITS, ST_MICRO_FLASH_PAGE_SIZE,
- 	 ST_MICRO_FLASH_BYTE_ADDR_MASK, ST_MICRO_FLASH_BASE_TOTAL_SIZE*4,
--	 "Entry 0110: ST M45PE20 (256kB non-bufferred)"},
-+	 "Entry 0110: ST M45PE20 (256kB non-buffered)"},
- 	/* Saifun SA25F005 (non-buffered flash) */
- 	/* strap, cfg1, & write1 need updates */
- 	{0x1d000003, 0x5f808201, 0x00050081, 0x03840253, 0xaf020406,
--- 
-2.37.1
+/*
+  * Prior to 9.1, -Wno-alloc-size-larger-than (and therefore the "alloc_size"
+  * attribute) do not work, and must be disabled.
+  */
+#if GCC_VERSION < 90100
+#undef __alloc_size__
+#endif
+
+
+
+> -Kees
+> 
 
