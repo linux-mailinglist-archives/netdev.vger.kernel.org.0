@@ -2,70 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81BB35EDF3C
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 16:52:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 024895EDF61
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 16:58:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234568AbiI1Owc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 10:52:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43424 "EHLO
+        id S234476AbiI1O6t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 10:58:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234562AbiI1OwL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 10:52:11 -0400
-Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56E7FB2CC5;
-        Wed, 28 Sep 2022 07:52:02 -0700 (PDT)
-Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-13175b79807so7504835fac.9;
-        Wed, 28 Sep 2022 07:52:02 -0700 (PDT)
+        with ESMTP id S234535AbiI1O62 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 10:58:28 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFBC09B86A
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 07:58:25 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id g1so3160944lfu.12
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 07:58:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=TIZXzEKYi8YkccEetyBjMgWXZYUaHtf6GUbWjD4kbBI=;
-        b=JVValpnyOwlAuIhkmcDbq0qeAKvw0R/3cXOXm8z80Vy6Hfs3QqwFaRA69kqQkDhuuk
-         zr2D0zU+f1Y6wOt7NCBIT2K8b+4jb/Dle69t7b3VbY7B1XDtxZAUzbseMIuhuhtbfwWK
-         jvwFSYfbpBmgLDClsYJ5kKciNQlWxjkcaIiGWhGhz1bBN44LoLl54AKjna6FWzuXxOui
-         10HucYYI+duWD/Bbuf/JZ3B+kyVGQf84OS/kgKrNjutdGZxR17MyT+DAX9YzpAq5LY1Y
-         wsTf1DqBh2LSsYwDVgB+UcfUCkaBYwLiXHETDqBEKgcMS9x/nh3XNoAy+oWdulk9A1AI
-         jBqQ==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=XjBlcN0ist98FlU5W2baWEFCDfCTo7aPIftrNtx80L0=;
+        b=RoBSDWAJomLh8smmqUsbXKb2v+paiOBkSF3OCZEIULNmT5DlrORcBVCgW1VRUkXcKt
+         r48X+yDDOmDtFU4ZRuk/pyUgjp+Ec97AMiXtJcBesciURsRo7QgpaiiKA3Cd/v+MecsE
+         N6dsPdap91dAJ/B4mEVKzJoO/hp7KXw6psi2TfogCI56+FRUoSE9K0QdBPwXZbEP4dfA
+         Ugz0kViBs9bHEmDqnfTc+YPkxXW5onuiMlcu60mXrAy1EA3QwIvxM8SgT13s+YwIwoNr
+         N/ir9xBmSaynjde4+KI2bfPIvhmVhOle0MsFBqpU/zg68tpXkikAmRpYebQx60B1GVc2
+         CVoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=TIZXzEKYi8YkccEetyBjMgWXZYUaHtf6GUbWjD4kbBI=;
-        b=n92Unyp5h8oksTNWXnvhLLrPaSu5FjDlZbU2bxkS3n60PhRWIdXxK5aPBDqXHpLSdN
-         jJepsTNvXIL0+c4qwOv2uJkoAEbglEfOiH8ejOsYFoVEYEqEEiFTaHQY+gFic1tAftDO
-         VTf4kMCjP9L0IoZxW1fdXjX1+RaW8Q5vqi1nG9KmvXlyEZyiuWG0OI06Vs+1jWcJwWUH
-         E/7Gr1gJdyOIlZMWmXpvBdFLtAhnHJFBy8bOZpMp4kdKTY+m6pvO32Wv2R+ce+BRAYdy
-         M9FtuZplnPcMTNWl5zqABe0Gf1UMd0nVjPHI4e2xrt9Q3oF/uqeZQtd4qLsFlSzWTalm
-         Dqbw==
-X-Gm-Message-State: ACrzQf2SEItynjVlUuzdj3TFo5HetPRiHXI4xL8FEyBeowWv7b9og3fe
-        HSK5l9z4ikU6Y++UXWHtZa8=
-X-Google-Smtp-Source: AMsMyM4II/936alaoenNFePZ24iaLn0fbfgLrQ7d70SFig8ZY4YqnEZqQTgZycuf3hiIqQIclDYJWg==
-X-Received: by 2002:a05:6870:d24e:b0:127:ba61:5343 with SMTP id h14-20020a056870d24e00b00127ba615343mr5434001oac.81.1664376721539;
-        Wed, 28 Sep 2022 07:52:01 -0700 (PDT)
-Received: from localhost ([12.97.180.36])
-        by smtp.gmail.com with ESMTPSA id k9-20020a056830168900b0063695ad0cbesm2136923otr.66.2022.09.28.07.52.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Sep 2022 07:52:01 -0700 (PDT)
-Date:   Wed, 28 Sep 2022 07:49:51 -0700
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Valentin Schneider <vschneid@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: Re: [PATCH 1/7] cpumask: fix checking valid cpu range
-Message-ID: <YzRfD2aAID8DuHL1@yury-laptop>
-References: <20220919210559.1509179-1-yury.norov@gmail.com>
- <20220919210559.1509179-2-yury.norov@gmail.com>
- <xhsmhbkqz4rqr.mognet@vschneid.remote.csb>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=XjBlcN0ist98FlU5W2baWEFCDfCTo7aPIftrNtx80L0=;
+        b=o0tOP6IA9+Sfy675nyPjVTblW1inBistYwyzGyqFc/7muOnXAlWBNwKuV35ncDGoH8
+         HpZ+DXzWVf8FvlPMIe+Vfh/P5Qeh2V1cyE7tV6RQkkrB+RwGf1r6uFUC2ZuNsWTmoXaH
+         acm2Kj7foQ4wvNltDXwC64ZVgNULUZsibcqggkMATev8Bl5vMuHrq/2GMV5HZBxo9KuM
+         cC5jp7QE1W2kMMuVMHu/1X9upyKylSey4z96Tw25VYNnCXUxawmkWp6iOlVPRnxuM0dc
+         /ylWs/gq3Z34K4mKTncW598HpUFJXLtK5rq3UwdBq+9S3L3LaaCIn2enZLc8ZbdZ+VUS
+         56Gw==
+X-Gm-Message-State: ACrzQf1t5lJFaJU8bSQa0AlLecW/Ycka7TfVrMLvQHNa3KCGieplnxS6
+        fowBM7sGdUFYbY9cTYm1xyCWsDZchKVrhW322S8=
+X-Google-Smtp-Source: AMsMyM5rKP68DD2w7S8cpKaRjG3Zk3AkPm/OOTuIl7Ox7yVGfiYXsU8YCfs1QdemxgQqWbx6PByH96VUk3Jb2sl08dc=
+X-Received: by 2002:a05:6512:2805:b0:4a0:4fac:a958 with SMTP id
+ cf5-20020a056512280500b004a04faca958mr12841073lfb.291.1664377103858; Wed, 28
+ Sep 2022 07:58:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <xhsmhbkqz4rqr.mognet@vschneid.remote.csb>
+References: <20220923160937.1912-1-claudiajkang@gmail.com> <YzFYYXcZaoPXcLz/@corigine.com>
+ <CAK+SQuRj=caHiyrtVySVoxRrhNttfg_cSbNFjG2PL7Fc0_ObGg@mail.gmail.com>
+ <YzFgnIUFy49QX2b6@corigine.com> <CAK+SQuTHciJWhCi-YAQKPG4cwh7zB9_WR=-zK3xTUq9eTtE4+g@mail.gmail.com>
+ <YzFiXabip3LRy5e2@corigine.com> <CAK+SQuRJd8mmwKNKNM_qsQ-h4WhLX9OcUcV9YSgAQnzG1wGMwg@mail.gmail.com>
+ <20220926100444.2e93bf28@kernel.org> <20220926104506.559c183d@kernel.org>
+In-Reply-To: <20220926104506.559c183d@kernel.org>
+From:   Juhee Kang <claudiajkang@gmail.com>
+Date:   Wed, 28 Sep 2022 23:57:47 +0900
+Message-ID: <CAK+SQuS-PHYDjRcDf0gmX4ot8pKDoK9G00EzwKkX=o6Jh_fXQA@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/3] net: use netdev_unregistering instead of
+ open code
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Simon Horman <simon.horman@corigine.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        skhan@linuxfoundation.org
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
@@ -76,125 +71,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 28, 2022 at 01:18:20PM +0100, Valentin Schneider wrote:
-> On 19/09/22 14:05, Yury Norov wrote:
-> > The range of valid CPUs is [0, nr_cpu_ids). Some cpumask functions are
-> > passed with a shifted CPU index, and for them, the valid range is
-> > [-1, nr_cpu_ids-1). Currently for those functions, we check the index
-> > against [-1, nr_cpu_ids), which is wrong.
+Hi Jakub,
+
+On Tue, Sep 27, 2022 at 2:45 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Mon, 26 Sep 2022 10:04:44 -0700 Jakub Kicinski wrote:
+> > On Mon, 26 Sep 2022 17:29:39 +0900 Juhee Kang wrote:
+> > > I will send a patch by applying netdev_registered() helper function by
+> > > directory.
 > >
-> > Signed-off-by: Yury Norov <yury.norov@gmail.com>
-> > ---
-> >  include/linux/cpumask.h | 19 ++++++++-----------
-> >  1 file changed, 8 insertions(+), 11 deletions(-)
-> >
-> > diff --git a/include/linux/cpumask.h b/include/linux/cpumask.h
-> > index e4f9136a4a63..a1cd4eb1a3d6 100644
-> > --- a/include/linux/cpumask.h
-> > +++ b/include/linux/cpumask.h
-> > @@ -174,9 +174,8 @@ static inline unsigned int cpumask_last(const struct cpumask *srcp)
-> >  static inline
-> >  unsigned int cpumask_next(int n, const struct cpumask *srcp)
-> >  {
-> > -	/* -1 is a legal arg here. */
-> > -	if (n != -1)
-> > -		cpumask_check(n);
-> > +	/* n is a prior cpu */
-> > +	cpumask_check(n + 1);
-> >       return find_next_bit(cpumask_bits(srcp), nr_cpumask_bits, n + 1);
-> 
-> I'm confused, this makes passing nr_cpu_ids-1 to cpumask_next*() trigger a
-> warning. The documentation does states:
-> 
-> * @n: the cpu prior to the place to search (ie. return will be > @n)
-> 
-> So n is a valid CPU number (with -1 being the exception for scan
-> initialization), this shouldn't exclude nr_cpu_ids-1.
+> > Please hold off doing that. My preference would be to remove
+> > netdev_unregistering(), this is all low-gain churn.
+> > IMHO the helpers don't add much to readability and increase
+> > the number of random helpers programmer must be aware of.
+> > Let me check with other netdev maintainers and get back to you.
+>
+> I got hold of Paolo and he concurred. Let's remove
+> netdev_unregistering() instead. Thanks!
 
-For a regular cpumask function, like cpumask_any_but(), the valid range is
-[0, nr_cpu_ids).
+Thank you for your review!
+I will send the next version which includes removing netdev_unregistering()
+as soon as possible.
 
-'Special' functions shift by 1 when call underlying find API:
-
-  static inline
-  unsigned int cpumask_next(int n, const struct cpumask *srcp)
-  {
-          /* n is a prior cpu */
-          cpumask_check(n + 1);
-          return find_next_bit(cpumask_bits(srcp), nr_cpumask_bits, n + 1);
-  }
-
-So, for them the valid range [0, nr_cpu_ids) must be shifted in other
-direction: [-1, nr_cpu_ids-1). 
-
-> IMO passing nr_cpu_ids-1 should be treated the same as passing the
-> last set bit in a bitmap: no warning, and returns the bitmap
-> size.
-
-This is how cpumask_check() works for normal functions. For
-cpumask_next() passing nr_cpu_ids-1 is the same as passing nr_cpu_ids
-for cpumask_any_but(), and it should trigger warning in both cases.
-(Or should not, but it's a different story.)
-
-> calling code which seems like unnecessary boiler plate
-> 
-> For instance, I trigger the cpumask_check() warning there:
-> 
-> 3d2dcab932d0:block/blk-mq.c @l2047
->         if (--hctx->next_cpu_batch <= 0) {
-> select_cpu:
->                 next_cpu = cpumask_next_and(next_cpu, hctx->cpumask, <-----
->                                 cpu_online_mask);
->                 if (next_cpu >= nr_cpu_ids)
->                         next_cpu = blk_mq_first_mapped_cpu(hctx);
->                 hctx->next_cpu_batch = BLK_MQ_CPU_WORK_BATCH;
->         }
-> 
-> next_cpu is a valid CPU number, shifting it doesn't seem to make sense, and
-> we do want it to reach nr_cpu_ids-1.
-
-next_cpu is a valid CPU number for all, but not for cpumask_next().
-The warning is valid. If we are at the very last cpu, what for we look
-for next?
-
-The snippet above should be fixed like this:
-
-          if (--hctx->next_cpu_batch <= 0) {
-  select_cpu:
-                  if (next_cpu == nr_cpu_ids - 1)
-                          next_cpu = nr_cpu_ids;
-                  else
-                          next_cpu = cpumask_next_and(next_cpu,
-                                                      hctx->cpumask,
-                                                      cpu_online_mask);
-                  if (next_cpu >= nr_cpu_ids)
-                          next_cpu = blk_mq_first_mapped_cpu(hctx);
-                  hctx->next_cpu_batch = BLK_MQ_CPU_WORK_BATCH;
-          }
-
-The original motivation for this special shifted semantics was to
-avoid passing '+1' in cpumask_next() everywhere where it's used to
-iterate over cpumask. This is especially ugly because it brings negative
-semantics in such a simple thing like an index, and makes people confused.
-It was a bad decision, but now it's so broadly used that we have to live
-with it.
-
-The strategy to mitigate this is to minimize using of that 'special'
-functions. They all are cpumask_next()-like. In this series I reworked
-for_each_cpu() to not use cpumask_next().
-
-Often, cpumask_next() is a part of opencoded for_each_cpu(), and this
-is relatively easy to fix. In case of blk_mq_hctx_next_cpu() that you
-mentioned above, cpumask_next_and() usage looks unavoidable, and
-there's nothing to do with that, except that being careful.
-
-It didn't trigger the warning in my test setup, so I didn't fix it.
-Feel free to submit a patch, if you observe the warning for yourself.
-
-Maybe we should consider nr_cpu_ids as a special valid index for
-cpumask_check(), a sign of the end of an array. This would help to
-silence many warnings, like this one. For now I'm leaning towards that
-it's more a hack than a meaningful change. 
-
-Thanks,
-Yury
+Best regards,
+Juhee
