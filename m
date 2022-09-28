@@ -2,114 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 41D185EDD91
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 15:17:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 304A75EDDA7
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 15:28:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231919AbiI1NRz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 09:17:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34808 "EHLO
+        id S233425AbiI1N1u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 09:27:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232792AbiI1NRw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 09:17:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E284A0625
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 06:17:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1664371069;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=O8CHATsj+W21+19tV87eTnDiAyPk+14vnUWU7b9stwM=;
-        b=gwKJXtex+qb+Gj6QPpnTHz6Emt1gsflJDSDS+nLFud79yPkxCCKVl2JoDbyHvK9JYM928I
-        Vghkk+mwIC52uY2n4YT24TOGA9KMHXdCWhx9gduGznzuSE80aSudrYuHaUye3xo0WVq1Hk
-        yfmDz6Vcp/ZwA42h0XhEGFOmqDH0u1Y=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-453-9ijaaoPmN_OEdbLnAHLEyA-1; Wed, 28 Sep 2022 09:17:48 -0400
-X-MC-Unique: 9ijaaoPmN_OEdbLnAHLEyA-1
-Received: by mail-qt1-f198.google.com with SMTP id e22-20020ac84b56000000b0035bb64ad562so8901813qts.17
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 06:17:48 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=O8CHATsj+W21+19tV87eTnDiAyPk+14vnUWU7b9stwM=;
-        b=xcjUN7HxRl3SiIOms49BQFja8vz/0tIH/IAijVYvWeGz5tDrAfvfiw6GAMcyWslGz6
-         9WmBekLiZL6kL2nVkOF/1ZZmOZk8HL57qPcWChx0OvrA+E3W9utMDJIaMSgF3GozPAUo
-         iwBMEWsAf6JZCS9HznVWMe5ca3DV1li/ZnxC4sgt28kSMVCg3PkJfYxk5DxlLv6isIA6
-         JZ/exhMhra8Jnh8Hi13ur4yFbITCBU+hBljgeH4sBZ4xpMEttqr/rdVe8AGgZtXR9Ouz
-         E7+y86g76marRc1wtQdmjJ75vxAB4Vnv7UrTVEdhdIlEMNl1lR79DDsmeWmr99+VgO3e
-         JViA==
-X-Gm-Message-State: ACrzQf2YqDyQXbIyx7T+Bcx5bwUKhzSnTMfeOFesMfGWTjNlmmuHuzAT
-        lGhYidZW49obRZp4/oI2yfJeoUboqbhdINyilv+lUo1R/4Os/A6zzRio3T0rykmuKLRrziwHLej
-        p/8c3ol5+U+okxYtD
-X-Received: by 2002:a05:622a:648:b0:35d:4b13:362d with SMTP id a8-20020a05622a064800b0035d4b13362dmr7498462qtb.283.1664371067783;
-        Wed, 28 Sep 2022 06:17:47 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM6rWOKRCql6jp+ThtkcUj/iVHpzkuOy1DcinAZ1erkLV+yzruSMLBErZUaZakiMOPlE9rUUDw==
-X-Received: by 2002:a05:622a:648:b0:35d:4b13:362d with SMTP id a8-20020a05622a064800b0035d4b13362dmr7498435qtb.283.1664371067508;
-        Wed, 28 Sep 2022 06:17:47 -0700 (PDT)
-Received: from [10.0.0.96] ([24.225.241.171])
-        by smtp.gmail.com with ESMTPSA id fg12-20020a05622a580c00b0035d5374efccsm2015266qtb.16.2022.09.28.06.17.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 28 Sep 2022 06:17:46 -0700 (PDT)
-Message-ID: <b08b12ca-c729-c50b-9364-76d940bf80f3@redhat.com>
-Date:   Wed, 28 Sep 2022 09:17:45 -0400
+        with ESMTP id S233335AbiI1N1t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 09:27:49 -0400
+Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 77CCAA1D13;
+        Wed, 28 Sep 2022 06:27:47 -0700 (PDT)
+Received: by ajax-webmail-mail-app4 (Coremail) ; Wed, 28 Sep 2022 21:27:40
+ +0800 (GMT+08:00)
+X-Originating-IP: [10.192.100.195]
+Date:   Wed, 28 Sep 2022 21:27:40 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   duoming@zju.edu.cn
+To:     "Jakub Kicinski" <kuba@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        isdn@linux-pingi.de
+Subject: Re: [PATCH V3] mISDN: fix use-after-free bugs in l1oip timer
+ handlers
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
+In-Reply-To: <20220927172618.58f238d6@kernel.org>
+References: <20220924021842.71754-1-duoming@zju.edu.cn>
+ <20220927172618.58f238d6@kernel.org>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] net/tipc: Remove unused struct distr_queue_item
-Content-Language: en-US
-To:     Yuan Can <yuancan@huawei.com>, ying.xue@windriver.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net
-References: <20220928085636.71749-1-yuancan@huawei.com>
-From:   Jon Maloy <jmaloy@redhat.com>
-In-Reply-To: <20220928085636.71749-1-yuancan@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+Message-ID: <51008dca.fbc35.1838448187b.Coremail.duoming@zju.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: cS_KCgCXnP3NSzRjlKusBg--.20265W
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAggHAVZdtbsZ2wBAsL
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VW7Jw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 9/28/22 04:56, Yuan Can wrote:
-> After commit 09b5678c778f("tipc: remove dead code in tipc_net and relatives"),
-> struct distr_queue_item is not used any more and can be removed as well.
->
-> Signed-off-by: Yuan Can <yuancan@huawei.com>
-> ---
->   net/tipc/name_distr.c | 8 --------
->   1 file changed, 8 deletions(-)
->
-> diff --git a/net/tipc/name_distr.c b/net/tipc/name_distr.c
-> index 8267b751a526..190b49c5cbc3 100644
-> --- a/net/tipc/name_distr.c
-> +++ b/net/tipc/name_distr.c
-> @@ -41,14 +41,6 @@
->   
->   int sysctl_tipc_named_timeout __read_mostly = 2000;
->   
-> -struct distr_queue_item {
-> -	struct distr_item i;
-> -	u32 dtype;
-> -	u32 node;
-> -	unsigned long expires;
-> -	struct list_head next;
-> -};
-> -
->   /**
->    * publ_to_item - add publication info to a publication message
->    * @p: publication info
-Acked-by: Jon Maloy <jmaloy@redhat.com>
-
+SGVsbG8sCgpPbiBUdWUsIDI3IFNlcCAyMDIyIDE3OjI2OjE4IC0wNzAwIEpha3ViIEtpY2luc2tp
+IHdyb3RlOgoKPiBPbiBTYXQsIDI0IFNlcCAyMDIyIDEwOjE4OjQyICswODAwIER1b21pbmcgWmhv
+dSB3cm90ZToKPiA+ICsJZGVsX3RpbWVyX3N5bmMoJmhjLT5rZWVwX3RsKTsKPiA+ICsJZGVsX3Rp
+bWVyX3N5bmMoJmhjLT50aW1lb3V0X3RsKTsKPiA+ICsJY2FuY2VsX3dvcmtfc3luYygmaGMtPndv
+cmtxKTsKPiA+ICsJZGVsX3RpbWVyX3N5bmMoJmhjLT5rZWVwX3RsKTsKPiA+ICAJY2FuY2VsX3dv
+cmtfc3luYygmaGMtPndvcmtxKTsKPiAKPiBXaHkgbm90IGFkZCBhIGJpdCB3aGljaCB3aWxsIGlu
+ZGljYXRlIHRoYXQgdGhlIGRldmljZSBpcyBzaHV0dGluZyAKPiBkb3duIGFuZCBjaGVjayBpdCBp
+biBwbGFjZXMgd2hpY2ggc2NoZWR1bGUgdGhlIHRpbWVyPwo+IEkgdGhpbmsgdGhhdCdzIG11Y2gg
+ZWFzaWVyIHRvIHJlYXNvbiBhYm91dCBhbmQgd2Ugd29uJ3QgbmVlZCB0byBkbyAKPiB0aGlzIHJl
+cCBjYW5jZWwgcHJvY2VkdXJlLgoKVGhhbmsgeW91IGZvciB5b3VyIHRpbWUgYW5kIHN1Z2dlc3Rp
+b25zIQoKQmVzdCByZWdhcmRzLApEdW9taW5nIFpob3UK
