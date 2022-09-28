@@ -2,99 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1461B5EDC0E
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 13:54:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F287A5EDC15
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 13:57:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233631AbiI1LyO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 07:54:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48430 "EHLO
+        id S233682AbiI1L5q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 07:57:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233582AbiI1LyN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 07:54:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB0405E56F;
-        Wed, 28 Sep 2022 04:54:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0E38FB82056;
-        Wed, 28 Sep 2022 11:54:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB66AC433C1;
-        Wed, 28 Sep 2022 11:54:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664366048;
-        bh=hulhezLqRBKK8E1gjp7vWO38O+DMT/KxUVnBXOBSOQs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ciZbc4xklNIJ97bZwBY5d7bmodICuHbMRWrgm8tempqdCWxWdya+TI6BcT5FCDlVb
-         83spigJLPisO/aER9kNRqrXLyGJY7q1tKoxORHltsXfb/JjO6EC/8zdQXRYUviXJhA
-         lKgb3UJjuBtBGGNb1mjDWlVU/co4yEAVssSepnumbGj5qYHzA172ZKI2iVtnvyHzd5
-         vlIAE0ginJ3c2F7mJ0ZTI/0CzkiwkIYSZfuGwDPZkS/eVMkd7Zq3Z1co8eP/egAzGd
-         dR8AubT7rWigPqSLxaxuwgjBP7IFL1z0eV9U2gF/VFYnk9ocCPk3uap3XbTCATHap0
-         ZdXVmuBB8RiuA==
-Date:   Wed, 28 Sep 2022 14:54:03 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     asmadeus@codewreck.org
-Cc:     syzbot <syzbot+67d13108d855f451cafc@syzkaller.appspotmail.com>,
-        davem@davemloft.net, edumazet@google.com, ericvh@gmail.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux_oss@crudebyte.com, lucho@ionkov.net, netdev@vger.kernel.org,
-        pabeni@redhat.com, syzkaller-bugs@googlegroups.com,
-        v9fs-developer@lists.sourceforge.net
-Subject: Re: [syzbot] KASAN: use-after-free Read in rdma_close
-Message-ID: <YzQ12+jtARpwS5bw@unreal>
-References: <00000000000015ac7905e97ebaed@google.com>
- <YzQc2yaDufjp+rHc@unreal>
- <YzQlWq9EOi9jpy46@codewreck.org>
- <YzQmr8LVTmUj9+zB@unreal>
- <YzQuoqyGsooyDfId@codewreck.org>
+        with ESMTP id S233604AbiI1L5n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 07:57:43 -0400
+Received: from out199-5.us.a.mail.aliyun.com (out199-5.us.a.mail.aliyun.com [47.90.199.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7210F65274
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 04:57:40 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VQw5-Ng_1664366255;
+Received: from 30.221.148.229(mailfrom:hengqi@linux.alibaba.com fp:SMTPD_---0VQw5-Ng_1664366255)
+          by smtp.aliyun-inc.com;
+          Wed, 28 Sep 2022 19:57:36 +0800
+Message-ID: <f760701a-fb9d-11e5-f555-ebcf773922c3@linux.alibaba.com>
+Date:   Wed, 28 Sep 2022 19:57:34 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YzQuoqyGsooyDfId@codewreck.org>
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:106.0)
+ Gecko/20100101 Thunderbird/106.0
+Subject: Re: [PATCH net] veth: Avoid drop packets when xdp_redirect performs
+To:     =?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+References: <1664267413-75518-1-git-send-email-hengqi@linux.alibaba.com>
+ <87wn9proty.fsf@toke.dk>
+From:   Heng Qi <hengqi@linux.alibaba.com>
+In-Reply-To: <87wn9proty.fsf@toke.dk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-12.2 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 28, 2022 at 08:23:14PM +0900, asmadeus@codewreck.org wrote:
-> Leon Romanovsky wrote on Wed, Sep 28, 2022 at 01:49:19PM +0300:
-> > > But I agree I did get that wrong: trans_mod->close() wasn't called if
-> > > create failed.
-> > > We do want the idr_for_each_entry() that is in p9_client_destroy so
-> > > rather than revert the commit (fix a bug, create a new one..) I'd rather
-> > > split it out in an internal function that takes a 'bool close' or
-> > > something to not duplicate the rest.
-> > > (Bit of a nitpick, sure)
-> > 
-> > Please do proper unwind without extra variable.
-> > 
-> > Proper unwind means that you will call to symmetrical functions in
-> > destroy as you used in create:
-> > alloc -> free
-> > create -> close
-> > e.t.c
-> > 
-> > When you use some global function like you did, there is huge chance
-> > to see unwind bugs.
-> 
-> No.
 
-Let's agree to disagree.
 
-> 
-> Duplicating complicated cleanup code leads to leaks like we used to
-> have; that destroy function already frees up things in the right order.
+在 2022/9/27 下午8:20, Toke Høiland-Jørgensen 写道:
+> Heng Qi <hengqi@linux.alibaba.com> writes:
+>
+>> In the current processing logic, when xdp_redirect occurs, it transmits
+>> the xdp frame based on napi.
+>>
+>> If napi of the peer veth is not ready, the veth will drop the packets.
+>> This doesn't meet our expectations.
+> Erm, why don't you just enable NAPI? Loading an XDP program is not
+> needed these days, you can just enable GRO on both peers...
 
-It is pretty straightforward code, nothing complex there.
+In general, we don't expect veth to drop packets when it doesn't mount
+the xdp program or otherwise, because this is not as expected.
 
-Just pause for a minute, and ask yourself how totally random guy who
-looked on this syzbot bug just because RDMA name in it, found the issue
-so quickly.
+>> In this context, if napi is not ready, we convert the xdp frame to a skb,
+>> and then use veth_xmit() to deliver it to the peer veth.
+>>
+>> Like the following case:
+>> Even if veth1's napi cannot be used, the packet redirected from the NIC
+>> will be transmitted to veth1 successfully:
+>>
+>> NIC   ->   veth0----veth1
+>>   |                   |
+>> (XDP)             (no XDP)
+>>
+>> Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
+>> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+>> ---
+>>   drivers/net/veth.c | 36 +++++++++++++++++++++++++++++++++++-
+>>   1 file changed, 35 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+>> index 466da01..e1f5561 100644
+>> --- a/drivers/net/veth.c
+>> +++ b/drivers/net/veth.c
+>> @@ -469,8 +469,42 @@ static int veth_xdp_xmit(struct net_device *dev, int n,
+>>   	/* The napi pointer is set if NAPI is enabled, which ensures that
+>>   	 * xdp_ring is initialized on receive side and the peer device is up.
+>>   	 */
+>> -	if (!rcu_access_pointer(rq->napi))
+>> +	if (!rcu_access_pointer(rq->napi)) {
+>> +		for (i = 0; i < n; i++) {
+>> +			struct xdp_frame *xdpf = frames[i];
+>> +			struct netdev_queue *txq = NULL;
+>> +			struct sk_buff *skb;
+>> +			int queue_mapping;
+>> +			u16 mac_len;
+>> +
+>> +			skb = xdp_build_skb_from_frame(xdpf, dev);
+>> +			if (unlikely(!skb)) {
+>> +				ret = nxmit;
+>> +				goto out;
+>> +			}
+>> +
+>> +			/* We need to restore ETH header, because it is pulled
+>> +			 * in eth_type_trans.
+>> +			 */
+>> +			mac_len = skb->data - skb_mac_header(skb);
+>> +			skb_push(skb, mac_len);
+>> +
+>> +			nxmit++;
+>> +
+>> +			queue_mapping = skb_get_queue_mapping(skb);
+>> +			txq = netdev_get_tx_queue(dev, netdev_cap_txqueue(dev, queue_mapping));
+>> +			__netif_tx_lock(txq, smp_processor_id());
+>> +			if (unlikely(veth_xmit(skb, dev) != NETDEV_TX_OK)) {
+>> +				__netif_tx_unlock(txq);
+>> +				ret = nxmit;
+>> +				goto out;
+>> +			}
+>> +			__netif_tx_unlock(txq);
+> Locking and unlocking the txq repeatedly for each packet? Yikes! Did you
+> measure the performance overhead of this?
 
-I will give a hint, I saw not symmetrical error unwind in call trace.
+Yes, there are indeed some optimizations that can be done here,
+like putting the lock outside the loop.
+But in __dev_queue_xmit(), where each packet sent is also protected by a lock.
 
-Thanks
+Thanks.
+
+>
+> -Toke
+
