@@ -2,95 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EF225EDE7A
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 16:11:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43F8B5EDE83
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 16:12:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233512AbiI1OLQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 10:11:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39576 "EHLO
+        id S234226AbiI1OMT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 10:12:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232117AbiI1OLP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 10:11:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68CD73A4B6
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 07:11:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2779BB820E5
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 14:11:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69A95C433D6;
-        Wed, 28 Sep 2022 14:11:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664374271;
-        bh=aKkpUc9FO6ApQd0OTjv11rblqLxx2Sgdf2yc06Tjz2k=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nCglVDHIAA7St6pwISTeSdqDsPXCS1mtWn9MOsHHCSLk/SUl9US66f/D1TPWvVp+O
-         yAcinFLHrk2AFHIJihmfJaz7YZp5O0pSEba8iXLMZSB877qtrBIly8uU0BBiq/h0Ep
-         gMyttWSnWcquoirGqfnou5TREWdcjF+Ity+nqk2deOLaWUMsAM4Ehgn5yyZzaosmUy
-         u/MRpxI0vulbxN0D7g+87y3mv7cQR4FlskU4NQOw5UHQdCsJvTKqoSb6NsZwa/CVbf
-         l5/pYtAb5VWZAL5Ujm5Vrh71IRCsL8Qo6kpzk8XuwosILZqGj2vUklKwDTeI3lzJx4
-         4bq7Puc8xftfg==
-Date:   Wed, 28 Sep 2022 07:11:10 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Jaron, MichalX" <michalx.jaron@intel.com>
-Cc:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Maziarz, Kamil" <kamil.maziarz@intel.com>,
-        "G, GurucharanX" <gurucharanx.g@intel.com>,
-        "Dziedziuch, SylwesterX" <sylwesterx.dziedziuch@intel.com>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>
-Subject: Re: [PATCH net 2/3] i40e: Fix not setting xps_cpus after reset
-Message-ID: <20220928071110.365a2fcd@kernel.org>
-In-Reply-To: <CY5SPRMB001206C679A78691032E6E73E3549@CY5SPRMB0012.namprd11.prod.outlook.com>
-References: <20220926203214.3678419-1-anthony.l.nguyen@intel.com>
-        <20220926203214.3678419-3-anthony.l.nguyen@intel.com>
-        <20220927182933.30d691d2@kernel.org>
-        <CY5SPRMB001206C679A78691032E6E73E3549@CY5SPRMB0012.namprd11.prod.outlook.com>
+        with ESMTP id S232702AbiI1OMR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 10:12:17 -0400
+Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0496C9E0FC
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 07:12:13 -0700 (PDT)
+Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-3529c491327so36455027b3.13
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 07:12:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=ZC+JTcGztSKl+RjKLwGKj/o8HbqE0xt0q2yyLJn8QCg=;
+        b=rQNXEyB/J42WFQx1vYAH9CBRpkSqjcgTgMqF/3AraY0P/UgUgdT5KWxjQBP/xro4tB
+         9w2Ec9U+bW8r72c+d6wca0RSUvB6a17vtOP0fPcbHVRDd89dRa79d5tuf0bCAblvwOYP
+         j5mz0T/RSYf73mA2Ie8kYuM75QMiQwbu3hECQ1W9rSZG3BbnKZRmN0WZQUI+0v4qAV4z
+         7Ba/WGv1U5hcTRDfOQxv5UE3SskgwbttjvRUw+fqtzxamXU5u8tG7dNd2DFSb5qoOkhM
+         hPzShNHZVCF7yryDi9CkW8xPfXwufCSmlgt3Kk82Bakfifv9oCBW4o+ytIzE6ISt/C6G
+         yfZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=ZC+JTcGztSKl+RjKLwGKj/o8HbqE0xt0q2yyLJn8QCg=;
+        b=IQgNf4hexRcw/eePck2oE3mOw6E6gmvNymAiX7/eJVp8tuEXo3BBS5d4G0PUfeQZ7b
+         MR9giIjHrlQJKUhkvEebxGkBJCiEevdUMbdiCjzZckhip5Q8RCjIF53lh4i5Q7pY4nFa
+         S0ZI37tp/adXrxXCvy8h6eaYrsuh51L8yXRtl27gEyk19vbO8HWKY3bURSHDrnB08m9F
+         g/5W0zqoSwSW0QyznhAfbtsvjIT/tGE5cGuvqOODGERRaYTirlV8fvO4NJnkrLuqAwrn
+         NIQ912aDT+rhij0/BrXlmi6Rvmg8dO9SjKyxHW99Zp9UMacosCYZU7gE2WIgaBhBWUPa
+         oQxA==
+X-Gm-Message-State: ACrzQf2i6nkpcweCyFnbUn3JRTLniQ+MNLmwn/Ys9JiPXpyyOcVmJoYK
+        FcT3FYmszpaOmtBaRIvouTAvZw8Vw9J//JMVa6FtbA==
+X-Google-Smtp-Source: AMsMyM6Xj55/2opV90t0yd1EijPH3xcxgUXpi/m4kiNubkL6itrp47qTLSZaWKxZAfWtPO39vHKLm3WgHdiAkiK4KRc=
+X-Received: by 2002:a0d:e244:0:b0:351:ce09:1b13 with SMTP id
+ l65-20020a0de244000000b00351ce091b13mr8303180ywe.332.1664374331914; Wed, 28
+ Sep 2022 07:12:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <6b6f65957c59f86a353fc09a5127e83a32ab5999.1664350652.git.pabeni@redhat.com>
+In-Reply-To: <6b6f65957c59f86a353fc09a5127e83a32ab5999.1664350652.git.pabeni@redhat.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 28 Sep 2022 07:11:59 -0700
+Message-ID: <CANn89iJ3B1kcYFurAw=84cswXNSS26ER5cutYG9k9YN+zJNJ+w@mail.gmail.com>
+Subject: Re: [PATCH net-next v4] net: skb: introduce and use a single page
+ frag cache
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexander H Duyck <alexanderduyck@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 28 Sep 2022 13:32:41 +0000 Jaron, MichalX wrote:
-> > Not sure this is a fix, are there other drivers in the tree which do this? In the
-> > drivers I work with IRQ mapping and XPS are just seemingly randomly reset
-> > on reconfiguration changes. User space needs to rerun its affinitization script
-> > after all changes it makes.
-> > 
-> > Apart from the fact that I don't think this is a fix, if we were to solve it we
-> > should shoot for a more generic solution and not sprinkle all drivers with
-> > #ifdef CONFIG_XPS blocks :S  
-> 
-> XPS to CPUs maps are configured by i40e driver, based on active cpus,
-> after initialization or after drivers reset with reinit (i.e. when
-> queues count changes). User may want to leave this mapping or set his
-> own mapping by writing to xps_cpus file. In case when we do reset on
-> our network interface without changing number of queues(when reinit
-> is not true), i.e. by calling ethtool -t <interface>, in
-> i40e_rebuild() those maps were cleared (set to 0) for every tx by
-> netdev_set_num_tc(). After reset those maps were still set to 0
-> despite that it was set by driver or by user and user was not
-> informed about it.
+On Wed, Sep 28, 2022 at 1:43 AM Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> After commit 3226b158e67c ("net: avoid 32 x truesize under-estimation
+> for tiny skbs") we are observing 10-20% regressions in performance
+> tests with small packets. The perf trace points to high pressure on
+> the slab allocator.
+>
+> This change tries to improve the allocation schema for small packets
+> using an idea originally suggested by Eric: a new per CPU page frag is
+> introduced and used in __napi_alloc_skb to cope with small allocation
+> requests.
+>
+> To ensure that the above does not lead to excessive truesize
+> underestimation, the frag size for small allocation is inflated to 1K
+> and all the above is restricted to build with 4K page size.
+>
+> Note that we need to update accordingly the run-time check introduced
+> with commit fd9ea57f4e95 ("net: add napi_get_frags_check() helper").
+>
+> Alex suggested a smart page refcount schema to reduce the number
+> of atomic operations and deal properly with pfmemalloc pages.
+>
+> Under small packet UDP flood, I measure a 15% peak tput increases.
+>
+> Suggested-by: Eric Dumazet <eric.dumazet@gmail.com>
+> Suggested-by: Alexander H Duyck <alexanderduyck@fb.com>
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> ---
 
-Set to 0 or reset to default (which I would hope is spread across 
-the CPUs in the same fashion as affinity hint)?
+Reviewed-by: Eric Dumazet <edumazet@google.com>
 
-> With this fix maps are preserved and restored
-> after reset to not surprise user that maps have changed when user
-> doesn't want it. Mapping restoration is based on CPUs mapping and is
-> done by netif_set_xps_queue() which is XPS function, then I think
-> this affinization should be performed well.
-> 
-> If user doesn't want to change queues then those maps should be
-> restored to the way it was.
+Thanks !
