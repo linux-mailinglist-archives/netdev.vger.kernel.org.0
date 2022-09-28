@@ -2,187 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 78C8F5EDEC3
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 16:28:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 276505EDE62
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 16:04:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234373AbiI1O20 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 10:28:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49208 "EHLO
+        id S234035AbiI1OE1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 10:04:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234042AbiI1O2Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 10:28:24 -0400
-X-Greylist: delayed 901 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 28 Sep 2022 07:28:20 PDT
-Received: from pm.theglu.org (pm.theglu.org [5.39.81.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A99CFAB05D;
-        Wed, 28 Sep 2022 07:28:20 -0700 (PDT)
-Received: from pm.theglu.org (localhost [127.0.0.1])
-        by pm.theglu.org (Postfix) with ESMTP id 1A4C3400D6;
-        Wed, 28 Sep 2022 14:03:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=simple; d=theglu.org; h=message-id
-        :date:mime-version:from:subject:to:cc:content-type
-        :content-transfer-encoding; s=postier; bh=0q+mQXOvVlS/bsQ+pcFcyb
-        Vrrl0=; b=lrBhGH/X5n5qpnZ+ACyXZ5z9O14kh4ALeq4KNfxBf6mSDHug8gn0rf
-        UsEFTHaHt/wMGnXV1/yBbLFby78eJPaDxoN9Q7L/aiiiUsDWQb8tEhobxjnUCrMF
-        JMz8QUpQ6PsXIMI5y9K5e3ABIXVFrtYUdkiCLs3Wo5Sx+MBu/MJPw=
-Received: from [10.0.17.2] (people.swisscom.puidoux-infra.ch [146.4.119.107])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        with ESMTP id S231567AbiI1OE0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 10:04:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2DF07C77B;
+        Wed, 28 Sep 2022 07:04:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by pm.theglu.org (Postfix) with ESMTPSA id 9B65040095;
-        Wed, 28 Sep 2022 14:02:44 +0000 (UTC)
-Message-ID: <98348818-28c5-4cb2-556b-5061f77e112c@arcanite.ch>
-Date:   Wed, 28 Sep 2022 16:02:43 +0200
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F4C961EB0;
+        Wed, 28 Sep 2022 14:04:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02F13C433D6;
+        Wed, 28 Sep 2022 14:04:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664373863;
+        bh=eGsDXMtLRzTOXZ9qGIM2z2RwI0km/E3ySdsgOm3wVCU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=bp5QH/+e3R/xu5ro+6KrGaH/s19oKhKmoF8XDk75ck6tI8f5ak9nKFJrgekgHxDPz
+         jSsLbvD81N1OUnnOZ3hbkDQ0OwaFhwkvOBX6vVV3gDEK58zEN/Mhww0jkQZMXKjiLa
+         7RBWKqIM8gT2LB7ampbVNhbHK+8DRJurMKdsSooa+7ofdE4896u6ftgCP0Syw+LgFP
+         ROKY9TLk3tHyoSNs2nUd34nMkfzHDIFoT+XzABtHdSIlrnmoDO9oK/sCugaqmECgwX
+         +iSjcECXlAh5ZcRGINTN5eVROIraBYudoI2OaeNOAUNTY0RP/347CSTFCt9FihOgd5
+         M4zFpaduNyqag==
+Date:   Wed, 28 Sep 2022 07:04:21 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Konstantin Ryabitsev <konstantin@linuxfoundation.org>
+Cc:     patchwork-bot+netdevbpf@kernel.org, Alex Elder <elder@linaro.org>,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        mka@chromium.org, evgreen@chromium.org, andersson@kernel.org,
+        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
+        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
+        elder@kernel.org, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 00/15] net: ipa: generalized register
+ definitions
+Message-ID: <20220928070421.12b7021a@kernel.org>
+In-Reply-To: <166433041840.32421.1858136173918846349.git-patchwork-notify@kernel.org>
+References: <20220926220931.3261749-1-elder@linaro.org>
+        <166433041840.32421.1858136173918846349.git-patchwork-notify@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.0
-From:   Maximilien Cuony <maximilien.cuony@arcanite.ch>
-Subject: [REGRESSION] Unable to NAT own TCP packets from another VRF with
- tcp_l3mdev_accept = 1
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Language: en-US-large
-Organization: Arcanite Solutions SARL
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Wed, 28 Sep 2022 02:00:18 +0000 patchwork-bot+netdevbpf@kernel.org
+wrote:
+> Hello:
+> 
+> This series was applied to netdev/net-next.git (master)
+> by Jakub Kicinski <kuba@kernel.org>:
+> 
+> On Mon, 26 Sep 2022 17:09:16 -0500 you wrote:
+> > This series is quite a bit bigger than what I normally like to send,
+> > and I apologize for that.  I would like it to get incorporated in
+> > its entirety this week if possible, and splitting up the series
+> > carries a small risk that wouldn't happen.
+> > 
+> > Each IPA register has a defined offset, and in most cases, a set
+> > of masks that define the width and position of fields within the
+> > register.  Most registers currently use the same offset for all
+> > versions of IPA.  Usually fields within registers are also the same
+> > across many versions.  Offsets and fields like this are defined
+> > using preprocessor constants.
+> > 
+> > [...]  
+> 
+> Here is the summary with links:
+>   - [net-next,01/15] net: ipa: introduce IPA register IDs
+>     https://git.kernel.org/netdev/net-next/c/98e2dd71a826
+>   - [net-next,02/15] net: ipa: use IPA register IDs to determine offsets
+>     https://git.kernel.org/netdev/net-next/c/6bfb753850d3
+>   - [net-next,03/15] net: ipa: add per-version IPA register definition files
+>     https://git.kernel.org/netdev/net-next/c/07f120bcf76b
+>   - [net-next,04/15] net: ipa: use ipa_reg[] array for register offsets
+>     https://git.kernel.org/netdev/net-next/c/82a06807453a
+>   - [net-next,05/15] net: ipa: introduce ipa_reg()
+>     (no matching commit)
+>   - [net-next,06/15] net: ipa: introduce ipa_reg field masks
+>     https://git.kernel.org/netdev/net-next/c/a5ad8956f97a
+>   - [net-next,07/15] net: ipa: define COMP_CFG IPA register fields
+>     https://git.kernel.org/netdev/net-next/c/12c7ea7dfd2c
+>   - [net-next,08/15] net: ipa: define CLKON_CFG and ROUTE IPA register fields
+>     (no matching commit)
+>   - [net-next,09/15] net: ipa: define some more IPA register fields
+>     (no matching commit)
+>   - [net-next,10/15] net: ipa: define more IPA register fields
+>     (no matching commit)
+>   - [net-next,11/15] net: ipa: define even more IPA register fields
+>     (no matching commit)
+>   - [net-next,12/15] net: ipa: define resource group/type IPA register fields
+>     (no matching commit)
+>   - [net-next,13/15] net: ipa: define some IPA endpoint register fields
+>     (no matching commit)
+>   - [net-next,14/15] net: ipa: define more IPA endpoint register fields
+>     (no matching commit)
+>   - [net-next,15/15] net: ipa: define remaining IPA register fields
+>     (no matching commit)
+> 
+> You are awesome, thank you!
 
-We're using VRF with a machine used as a router and have a specific 
-issue where the router doesn't handle his own packets correctly during 
-NATing if the packet is coming from a different VRF.
+Hi Konstantin,
 
-We had the issue with debian buster (4.19), but the issue solved itself 
-when we updated to debian bullseye (5.10.92).
+did anything change in the pw-bot in the last couple of weeks?
 
-However, during an upgrade of debian bullseye to the latest kernel, the 
-issue appeared again (5.10.140).
-
-We did a bisection and this leaded us to 
-"b0d67ef5b43aedbb558b9def2da5b4fffeb19966 net: allow unbound socket for 
-packets in VRF when tcp_l3mdev_accept set [ Upstream commit 
-944fd1aeacb627fa617f85f8e5a34f7ae8ea4d8e ]".
-
-Simplified case setup:
-
-There is two machines in the setup. They both forward packets 
-(net.ipv4.ip_forward = 1) and there is two interface between them.
-
-The main machine has two VRF. The default VRF is using the second 
-machine as the default route, on a specific interface.
-The second machine has as default route to main machine, on the other 
-VRF using the second pair of interfaces.
-
-On the main machine, the second interface is in a specific VRF. In that 
-VRF, packets are NATed to the internet on a third interface.
-
-A visual schema with the normal flow is available there: 
-https://etinacra.ch/kernel.png
-
-Configuration command:
-
-Main machine:
-sysctl -w net.ipv4.tcp_l3mdev_accept = 1
-sysctl -w systnet.ipv4.ip_forward = 1
-iptables -t raw -A PREROUTING -i eth0 -j CT --zone 5
-iptables -t raw -A OUTPUT -o eth0 -j CT --zone 5
-iptables -t nat -A POSTROUTING -o eth2 -j SNAT --to 192.168.1.1
-cat /etc/network/interfaces
-
-auto firewall
-iface firewall
-     vrf-table 1200
-
-auto eth0
-iface eth0
-     address 192.168.5.1/24
-     gateway 192.168.5.2
-
-auto eth1
-iface eth1
-     address 192.168.10.1/24
-     vrf firewall
-     up ip route add 192.168.5.0/24 via 192.168.10.2 vrf firewall
-
-auto eth2
-iface eth2
-     address 192.168.1.1/24
-     gateway 192.168.1.250
-     vrf firewall
-
-==
-
-Second machine:
-
-sysctl -w net.ipv4.ip_forward = 1
-
-cat /etc/network/interfaces
-
-auto eth0
-iface eth0
-     address 192.168.5.2/24
-
-auto eth1
-iface eth1
-     address 192.168.10.2/24
-     gateway 192.168.10.1
-
-==
-
-Without issue, if we look at a tcpdump on all interface on the main 
-machine, everything is fine (output truncated):
-
-10:28:32.811283 eth0 Out IP 192.168.5.1.55750 > 99.99.99.99.80: Flags 
-[S], seq 2216112145
-10:28:32.811666 eth1 In  IP 192.168.5.1.55750 > 99.99.99.99.80: Flags 
-[S], seq 2216112145
-10:28:32.811679 eth2 Out IP 192.168.1.1.55750 > 99.99.99.99.80: Flags 
-[S], seq 2216112145
-10:28:32.835138 eth2 In  IP 99.99.99.99.80 > 192.168.1.1.55750: Flags 
-[S.], seq 383992840, ack 2216112146
-10:28:32.835152 eth1 Out IP 99.99.99.99.80 > 192.168.5.1.55750: Flags 
-[S.], seq 383992840, ack 2216112146
-10:28:32.835457 eth0 In  IP 99.99.99.99.80 > 192.168.5.1.55750: Flags 
-[S.], seq 383992840, ack 2216112146
-10:28:32.835511 eth0 Out IP 192.168.5.1.55750 > 99.99.99.99.80: Flags 
-[.], ack 1, win 502
-
-However when the issue is present, the SYNACK does arrives on eth2, but 
-is never "unNATed" back to eth1:
-
-10:25:07.644433 eth0 Out IP 192.168.5.1.48684 > 99.99.99.99.80: Flags 
-[S], seq 3207393154
-10:25:07.644782 eth1 In  IP 192.168.5.1.48684 > 99.99.99.99.80: Flags 
-[S], seq 3207393154
-10:25:07.644793 eth2 Out IP 192.168.1.1.48684 > 99.99.99.99.80: Flags 
-[S], seq 3207393154
-10:25:07.668551 eth2 In  IP 54.36.61.42.80 > 192.168.1.1.48684: Flags 
-[S.], seq 823335485, ack 3207393155
-
-The issue is only with TCP connections. UDP or ICMP works fine.
-
-Turing off net.ipv4.tcp_l3mdev_accept back to 0 also fix the issue, but 
-we need this flag since we use some sockets that does not understand VRFs.
-
-We did have a look at the diff and the code of inet_bound_dev_eq, but we 
-didn't understand much the real problem - but it does seem now that 
-bound_dev_if if now checked not to be False before the bound_dev_if == 
-dif || bound_dev_if == sdif comparison, something that was not the case 
-before (especially since it's dependent on l3mdev_accept).
-
-Maybe our setup is wrong and we should not be able to route packets like 
-that?
-
-Thanks a lot and have a nice day!
-
-Maximilien Cuony
-
-
+I didn't touch these patches and yet half got missed.
+Do you recommend we slap a Link on all patches? Currently I only 
+add it to the cover letter / merge commit.
