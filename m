@@ -2,95 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 87E3A5ED9F8
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 12:21:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E257F5EDA10
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 12:29:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233791AbiI1KVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 06:21:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45970 "EHLO
+        id S233301AbiI1K26 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 06:28:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233798AbiI1KUX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 06:20:23 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E06B860F3;
-        Wed, 28 Sep 2022 03:19:47 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 053E518842DD;
-        Wed, 28 Sep 2022 10:19:46 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id F04072500370;
-        Wed, 28 Sep 2022 10:19:45 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id D62909EC0009; Wed, 28 Sep 2022 10:19:45 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+        with ESMTP id S233380AbiI1K25 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 06:28:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BD83B5A58;
+        Wed, 28 Sep 2022 03:28:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0357AB82028;
+        Wed, 28 Sep 2022 10:28:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D63F2C433B5;
+        Wed, 28 Sep 2022 10:28:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664360933;
+        bh=JQkn5onyISFjj1y5bxlLavURPwJ1xFe9vL4EEXhTo/A=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=EakhRokn91Pp1992kA7HFs5zF5pllAU7RzZAFHXXQc85WQ8QJUKYcu4nuV/HpOwua
+         ffl3/QVn89OrX2pq7QUkBgajZZ+kIcmr09PS15nScjRBDzP6w85fcBwuohGJsbgFSo
+         N1n2grttjk78PxUibf9mc3FBoiUnA1QbbL9/4iz8MzgaQBsg/ermHv8RjFum0UXTRh
+         75ksSBs9QpRahaUL2h6GtLDjk5ppyE5Y1EVIGL//HmXxyBptYBYSmQXIS2+ipbhtBO
+         6s4L6sr1kNsIKgAaO1dShscquKh6OxVvTnXIMHnatoPk7Xet4B0nOY0uck8Dte/X8l
+         3z+pJ7UFiRT8A==
+Date:   Wed, 28 Sep 2022 13:28:49 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Guangbin Huang <huangguangbin2@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, shenjian15@huawei.com,
+        lanhao@huawei.com
+Subject: Re: [PATCH net-next 1/4] net: hns3: refine the tcam key convert
+ handle
+Message-ID: <YzQh4Zu3Md1+Npeo@unreal>
+References: <20220927111205.18060-1-huangguangbin2@huawei.com>
+ <20220927111205.18060-2-huangguangbin2@huawei.com>
 MIME-Version: 1.0
-Date:   Wed, 28 Sep 2022 12:19:45 +0200
-From:   netdev@kapio-technology.com
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v5 net-next 6/6] selftests: forwarding: add test of
- MAC-Auth Bypass to locked port tests
-In-Reply-To: <YzQJ5MRSL/ShRSgP@shredder>
-References: <20220908112044.czjh3xkzb4r27ohq@skbuf>
- <152c0ceadefbd742331c340bec2f50c0@kapio-technology.com>
- <20220911001346.qno33l47i6nvgiwy@skbuf>
- <15ee472a68beca4a151118179da5e663@kapio-technology.com>
- <Yx73FOpN5uhPQhFl@shredder>
- <086704ce7f323cc1b3cca78670b42095@kapio-technology.com>
- <Yyq6BnUfctLeerqE@shredder>
- <7a4549d645f9bbbf41e814f087eb07d1@kapio-technology.com>
- <YzPwwuCe0HkJpkQe@shredder>
- <0c6b93c828d9b52346ddb3d445446734@kapio-technology.com>
- <YzQJ5MRSL/ShRSgP@shredder>
-User-Agent: Gigahost Webmail
-Message-ID: <cc0f4d54e8c24d6d496ea617e654b661@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220927111205.18060-2-huangguangbin2@huawei.com>
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-09-28 10:46, Ido Schimmel wrote:
-> On Wed, Sep 28, 2022 at 09:47:42AM +0200, netdev@kapio-technology.com 
-> wrote:
->> On 2022-09-28 08:59, Ido Schimmel wrote:
->> 
+On Tue, Sep 27, 2022 at 07:12:02PM +0800, Guangbin Huang wrote:
+> From: Jian Shen <shenjian15@huawei.com>
+> 
+> The expression '(k ^ ~v)' is exaclty '(k & v)', and
+> '(k & v) & k' is exaclty 'k & v'. So simplify the
+> expression for tcam key convert.
+> 
+> It also add necessary brackets for them.
+> 
+> Signed-off-by: Jian Shen <shenjian15@huawei.com>
+> Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+> ---
+>  .../net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h   | 11 +++--------
+>  1 file changed, 3 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+> index 495b639b0dc2..59bfacc687c9 100644
+> --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+> @@ -827,15 +827,10 @@ struct hclge_vf_vlan_cfg {
+>   * Then for input key(k) and mask(v), we can calculate the value by
+>   * the formulae:
+>   *	x = (~k) & v
+> - *	y = (k ^ ~v) & k
+> + *	y = k & v
+>   */
+> -#define calc_x(x, k, v) (x = ~(k) & (v))
+> -#define calc_y(y, k, v) \
+> -	do { \
+> -		const typeof(k) _k_ = (k); \
+> -		const typeof(v) _v_ = (v); \
+> -		(y) = (_k_ ^ ~_v_) & (_k_); \
+> -	} while (0)
+> +#define calc_x(x, k, v) ((x) = ~(k) & (v))
+> +#define calc_y(y, k, v) ((y) = (k) & (v))
 
-BTW, I have added FDB flags in the DSA layer as a u16, so that now 
-port_fdb_add() is as:
+Can you please explain why do you need special define for boolean AND?
 
-         int     (*port_fdb_add)(struct dsa_switch *ds, int port,
-                                 const unsigned char *addr, u16 vid,
-                                 u16 fdb_flags, struct dsa_db db);
+Thanks
+
+>  
+>  #define HCLGE_MAC_STATS_FIELD_OFF(f) (offsetof(struct hclge_mac_stats, f))
+>  #define HCLGE_STATS_READ(p, offset) (*(u64 *)((u8 *)(p) + (offset)))
+> -- 
+> 2.33.0
+> 
