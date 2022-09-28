@@ -2,102 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D7FFA5EE46D
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 20:33:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 167035EE470
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 20:35:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234049AbiI1SdH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 14:33:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56386 "EHLO
+        id S231652AbiI1SfZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 14:35:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231650AbiI1SdE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 14:33:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9F567285D
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 11:33:03 -0700 (PDT)
+        with ESMTP id S230340AbiI1SfX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 14:35:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA0BE286FF
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 11:35:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 470A161F78
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 18:33:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86302C433D6;
-        Wed, 28 Sep 2022 18:33:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AC07DB82186
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 18:35:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8094C433C1;
+        Wed, 28 Sep 2022 18:35:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664389982;
-        bh=dMVFJL7CfkjUXAsEx3N0RtjWPYHxFdJ5OT4UbRw/Z/g=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=N/dIvDNAS97050r1Ytd8QSHCJW60VzGoAb6UTkpGGouFbjevSHxn+F3NXKibAncy2
-         ZREyqQrzBOgmxVD4EOi6b3agXPbSTtcWmQGKPADKKvORhUiQEom8+cwnUXbfdCA9Eu
-         BAuAOhuIo5IVVtdvv73WuX/rFAjEYOwHznEvWPOJ9DWL/tcvOlD1LMeehnsy6S7rsP
-         L/igH+ILHjYjtoVDVvPNob4utMTmnKskcXaKNhEK22aZIodJ33fLBHnIhueN1lPD0Q
-         fe60eoKzKIB/zgkdWdxOtBRPPNQm75mwu/uZO1dmqvCPR8iqnyICW3R1FCJkTXYjMQ
-         KJD0/pjRu6mxw==
-Message-ID: <55fa5039-9273-3f5e-f911-f4baf1b01a4b@kernel.org>
-Date:   Wed, 28 Sep 2022 12:33:01 -0600
+        s=k20201202; t=1664390117;
+        bh=ffCylb8tV986+n0BpD+n1ShDQKMVVkXi51coeGnyDqU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=lGH55AttciAIBz6KUcmSO2k8TmloJk6KAsaIkdWsKrgjwGEpc9c9oDBhqjr3Ghsbp
+         +M5D8axqcFqpkb1ns7GxYtJLSbWHYhKD25D0/N0os1pxodX5l+U65XxlS0WJP+m4CP
+         +D6b6V2mH9i6Qjn2QLuUhX9JtYSDwaTdabn5wZ+YHui3qoiZFbQSTTaeuYZzL1zIrL
+         q1Gf6w2XhlZ93Hjo6O1lrWPGu8JDfzIkSp6F7AUMQtsTa/YKnkOVQQCcWQEsfGDMtg
+         e9L2FEpYv3ox6VhhlcvjwdMqbVmtJRhzH6HAMxvC5ELbGdZxThe/m9smW+xKQAmfao
+         pysbNA1L6MGNw==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        Jakub Kicinski <kuba@kernel.org>,
+        Florent Fourcot <florent.fourcot@wifirst.fr>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCH net] genetlink: reject use of nlmsg_flags for new commands
+Date:   Wed, 28 Sep 2022 11:35:15 -0700
+Message-Id: <20220928183515.1063481-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.13.0
-Subject: Re: [PATCH iproute2-next] rtnetlink: add new function
- rtnl_echo_talk()
-Content-Language: en-US
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Guillaume Nault <gnault@redhat.com>
-References: <20220923042000.602250-1-liuhangbin@gmail.com>
- <115c54d7-87fc-2c50-bc27-ad7cdb27bb2c@kernel.org>
- <YzPrjj0h0o0Imsvy@Laptop-X1>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <YzPrjj0h0o0Imsvy@Laptop-X1>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-9.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/28/22 11:37 PM, Hangbin Liu wrote:
-> Hi David,
-> 
-> On Tue, Sep 27, 2022 at 09:12:35PM -0600, David Ahern wrote:
->>>  
->>> -	if (echo_request)
->>> -		ret = rtnl_talk(&rth, &req.n, &answer);
->>> -	else
->>> -		ret = rtnl_talk(&rth, &req.n, NULL);
->>> -
->>> -	if (ret < 0)
->>> -		return -2;
->>> -
->>> -	if (echo_request) {
->>> -		new_json_obj(json);
->>> -		open_json_object(NULL);
->>> -		print_addrinfo(answer, stdout);
->>> -		close_json_object();
->>> -		delete_json_obj();
->>> -		free(answer);
->>> -	}
->>> -
->>> -	return 0;
->>> +	return rtnl_echo_talk(&rth, &req.n, print_addrinfo);
->>
->> I was thinking something more like:
->>
->> if (echo_request)
->> 	return rtnl_echo_talk(&rth, &req.n, print_addrinfo);
->>
->> return rtnl_talk(&rth, &req.n, NULL);
-> 
-> OK, I will update the patch. I have one question about the return value.
-> In previous code, the function return -2 if rtnl_talk() fails. I don't know
-> why we use "-2" here. And you suggested to just return rtnl_talk() directly.
-> 
-> Does this means we can ignore the -2 return values for all the places safely,
-> and just return rtnl_talk()?
-> 
+Commit 9c5d03d36251 ("genetlink: start to validate reserved header bytes")
+introduced extra validation for genetlink headers. We had to gate it
+to only apply to new commands, to maintain bug-wards compatibility.
+Use this opportunity (before the new checks make it to Linus's tree)
+to add more conditions.
 
-I do not recall why '-2'. Seems arbitrary to me.
+Validate that Generic Netlink families do not use nlmsg_flags outside
+of the well-understood set.
+
+Link: https://lore.kernel.org/all/20220928073709.1b93b74a@kernel.org/
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+--
+CC: Florent Fourcot <florent.fourcot@wifirst.fr>
+CC: Nikolay Aleksandrov <razor@blackwall.org>
+CC: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+CC: Johannes Berg <johannes@sipsolutions.net>
+CC: Pablo Neira Ayuso <pablo@netfilter.org>
+CC: Florian Westphal <fw@strlen.de>
+CC: Jamal Hadi Salim <jhs@mojatatu.com>
+CC: Jacob Keller <jacob.e.keller@intel.com>
+CC: Guillaume Nault <gnault@redhat.com>
+CC: Hangbin Liu <liuhangbin@gmail.com>
+---
+ net/netlink/genetlink.c | 32 +++++++++++++++++++++++++++++++-
+ 1 file changed, 31 insertions(+), 1 deletion(-)
+
+diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
+index 7c136de117eb..39b7c00e4cef 100644
+--- a/net/netlink/genetlink.c
++++ b/net/netlink/genetlink.c
+@@ -739,6 +739,36 @@ static int genl_family_rcv_msg_doit(const struct genl_family *family,
+ 	return err;
+ }
+ 
++static int genl_header_check(const struct genl_family *family,
++			     struct nlmsghdr *nlh, struct genlmsghdr *hdr,
++			     struct netlink_ext_ack *extack)
++{
++	u16 flags;
++
++	/* Only for commands added after we started validating */
++	if (hdr->cmd < family->resv_start_op)
++		return 0;
++
++	if (hdr->reserved) {
++		NL_SET_ERR_MSG(extack, "genlmsghdr.reserved field is not 0");
++		return -EINVAL;
++	}
++
++	/* Old netlink flags have pretty loose semantics, allow only the flags
++	 * consumed by the core where we can enforce the meaning.
++	 */
++	flags = nlh->nlmsg_flags;
++	if ((flags & NLM_F_DUMP) == NLM_F_DUMP) /* DUMP is 2 bits */
++		flags &= ~NLM_F_DUMP;
++	if (flags & ~(NLM_F_REQUEST | NLM_F_ACK | NLM_F_ECHO)) {
++		NL_SET_ERR_MSG(extack,
++			       "ambiguous or reserved bits set in nlmsg_flags");
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
+ static int genl_family_rcv_msg(const struct genl_family *family,
+ 			       struct sk_buff *skb,
+ 			       struct nlmsghdr *nlh,
+@@ -757,7 +787,7 @@ static int genl_family_rcv_msg(const struct genl_family *family,
+ 	if (nlh->nlmsg_len < nlmsg_msg_size(hdrlen))
+ 		return -EINVAL;
+ 
+-	if (hdr->cmd >= family->resv_start_op && hdr->reserved)
++	if (genl_header_check(family, nlh, hdr, extack))
+ 		return -EINVAL;
+ 
+ 	if (genl_get_cmd(hdr->cmd, family, &op))
+-- 
+2.37.3
+
