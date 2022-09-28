@@ -2,238 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 971EC5ED621
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 09:31:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23EAB5ED606
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 09:27:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233495AbiI1Hbh convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 28 Sep 2022 03:31:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42920 "EHLO
+        id S233648AbiI1H1Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 03:27:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233487AbiI1Hbe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 03:31:34 -0400
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45883EFA5B;
-        Wed, 28 Sep 2022 00:31:13 -0700 (PDT)
-Received: by mail-qt1-x82b.google.com with SMTP id a20so7436705qtw.10;
-        Wed, 28 Sep 2022 00:31:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=qLaRR+atoHoSJaoPeYCH+z3TJyk6r6Xbl1EdBW345pA=;
-        b=6NnEPABEVDJzwh6yCurfx1Cif5DMapO+bg1iMikzghyO38AmfDSR94isRYQCdZjRIk
-         pyZZpIknvj8ECkP8iVx5yjZC10ic9v7bNmeVzwZ9pum0Y0TRGa9SgYNq13DLkvBkN2z5
-         8CMqpnp/IyQTSxyGZ9Dv2SUWJ4CzzvvRYl3cSmk5/LKtSSbMkhtBxVtgnnUhC4nTRXq1
-         GPvaysL3BVE8WVVXEBvhEgzS1ghJ6swCy7oiCxSVlIwgztHn8DndlXSHRwcOiqPxauth
-         IXo8pdKoZz69P+7kWBAuGiDAvhvxvmrs70k/ThsZJZBsd96TGkHpEmrikmijgqml2D3u
-         U3rw==
-X-Gm-Message-State: ACrzQf3xXpKbb7hm4jsTAbm5KlnbQW8kiPjsABe0wd8k2h4dOmzHAlmy
-        6OkP9PbmtEEraX6MRFqBxqNQDtejTlb2Fw==
-X-Google-Smtp-Source: AMsMyM4+PNFxoIXXZBmtdzqe4MriABDPe51IFn1BULr+he2jCjsTHGWgMj7oO+fZnDBoWSErj88otg==
-X-Received: by 2002:ac8:5ccd:0:b0:35c:e18b:2be3 with SMTP id s13-20020ac85ccd000000b0035ce18b2be3mr25152912qta.502.1664349989011;
-        Wed, 28 Sep 2022 00:26:29 -0700 (PDT)
-Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com. [209.85.128.174])
-        by smtp.gmail.com with ESMTPSA id n8-20020a05620a294800b006cfc1d827cbsm1140417qkp.9.2022.09.28.00.26.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 28 Sep 2022 00:26:28 -0700 (PDT)
-Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-35393e71e1eso4939837b3.9;
-        Wed, 28 Sep 2022 00:26:27 -0700 (PDT)
-X-Received: by 2002:a81:758a:0:b0:345:450b:6668 with SMTP id
- q132-20020a81758a000000b00345450b6668mr28433710ywc.316.1664349987412; Wed, 28
- Sep 2022 00:26:27 -0700 (PDT)
+        with ESMTP id S233450AbiI1HZu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 03:25:50 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8754BE1193;
+        Wed, 28 Sep 2022 00:23:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1664349799; x=1695885799;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=bJ9QNJ3BHmOh0N77gr9size0L1ABS8z/Hgdq7Xfjzqo=;
+  b=ikR0K9KBCgWWkJ9RAk10GP2Y5Ng/Jq0LhEM5oL/z3oY9Cc9jRlMcL2JP
+   e7JpvWN8ZY/s5tJoNXgoAxJ7ij2xYGxE1OXp1E1UVvGQJUaNHFgX68XD0
+   i5vFrel5rbw7hn+fWYONk2NTRjI9PzScQpZEuBDT7HeOg0oOsZQ1zrcrb
+   9B0fOxQuFmPFVAHgN691TA0g5cN2ptkLIuk//zguyFkUXa0ThPg66zbxU
+   BAjJpLqENOOZkTA6LEdzm49szi9OvsUY7Ih+1HqquWGOcGKvjnf202Ox7
+   e9Dxozx+dTEKYEVolo1uupxQ34zvWR5PLxXnOpUQ1H0DSuJVQPFHZyA+w
+   w==;
+X-IronPort-AV: E=Sophos;i="5.93,351,1654585200"; 
+   d="scan'208";a="115771835"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Sep 2022 00:22:57 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Wed, 28 Sep 2022 00:22:57 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
+ Transport; Wed, 28 Sep 2022 00:22:56 -0700
+Date:   Wed, 28 Sep 2022 09:27:25 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
+CC:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <bryan.whitehead@microchip.com>,
+        <edumazet@google.com>, <pabeni@redhat.com>,
+        <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH net V3] eth: lan743x: reject extts for non-pci11x1x
+ devices
+Message-ID: <20220928072725.t7otq35ui5xw3kzq@soft-dev3-1.localhost>
+References: <20220928070830.22517-1-Raju.Lakkaraju@microchip.com>
 MIME-Version: 1.0
-References: <20220923202822.2667581-1-keescook@chromium.org> <20220923202822.2667581-2-keescook@chromium.org>
-In-Reply-To: <20220923202822.2667581-2-keescook@chromium.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 28 Sep 2022 09:26:15 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXK+UN1YVZm9DenuXAM8hZRUZJwp=SXsueP7sWiVU3a9A@mail.gmail.com>
-Message-ID: <CAMuHMdXK+UN1YVZm9DenuXAM8hZRUZJwp=SXsueP7sWiVU3a9A@mail.gmail.com>
-Subject: Re: [PATCH v2 01/16] slab: Remove __malloc attribute from realloc functions
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Vlastimil Babka <vbabka@suse.cz>, Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Marco Elver <elver@google.com>, linux-mm@kvack.org,
-        "Ruhl, Michael J" <michael.j.ruhl@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Alex Elder <elder@kernel.org>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Daniel Micay <danielmicay@gmail.com>,
-        Yonghong Song <yhs@fb.com>, Miguel Ojeda <ojeda@kernel.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, linux-media@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-        linux-fsdevel@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        dev@openvswitch.org, x86@kernel.org, llvm@lists.linux.dev,
-        linux-hardening@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20220928070830.22517-1-Raju.Lakkaraju@microchip.com>
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Kees,
+The 09/28/2022 12:38, Raju Lakkaraju wrote:
 
-On Fri, Sep 23, 2022 at 10:35 PM Kees Cook <keescook@chromium.org> wrote:
-> The __malloc attribute should not be applied to "realloc" functions, as
-> the returned pointer may alias the storage of the prior pointer. Instead
-> of splitting __malloc from __alloc_size, which would be a huge amount of
-> churn, just create __realloc_size for the few cases where it is needed.
->
-> Additionally removes the conditional test for __alloc_size__, which is
-> always defined now.
->
-> Cc: Christoph Lameter <cl@linux.com>
-> Cc: Pekka Enberg <penberg@kernel.org>
-> Cc: David Rientjes <rientjes@google.com>
-> Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
-> Cc: Andrew Morton <akpm@linux-foundation.org>
-> Cc: Vlastimil Babka <vbabka@suse.cz>
-> Cc: Roman Gushchin <roman.gushchin@linux.dev>
-> Cc: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-> Cc: Marco Elver <elver@google.com>
-> Cc: linux-mm@kvack.org
-> Signed-off-by: Kees Cook <keescook@chromium.org>
+Hi Raju,
 
-Thanks for your patch, which is now commit 63caa04ec60583b1 ("slab:
-Remove __malloc attribute from realloc functions") in next-20220927.
+> Remove PTP_PF_EXTTS support for non-PCI11x1x devices since they do not support
+> the PTP-IO Input event triggered timestamping mechanisms added
+> 
+> Fixes: 60942c397af6 ("Add support for PTP-IO Event Input External  Timestamp
+>  (extts)")
 
-Noreply@ellerman.id.au reported all gcc8-based builds to fail
-(e.g. [1], more at [2]):
+The fixes tag should not spread over multiple lines. Also you have extra
+spaces between External and Timestamp which doesn't appear in the actual
+commit.
 
-    In file included from <command-line>:
-    ./include/linux/percpu.h: In function ‘__alloc_reserved_percpu’:
-    ././include/linux/compiler_types.h:279:30: error: expected
-declaration specifiers before ‘__alloc_size__’
-     #define __alloc_size(x, ...) __alloc_size__(x, ## __VA_ARGS__) __malloc
-                                  ^~~~~~~~~~~~~~
-    ./include/linux/percpu.h:120:74: note: in expansion of macro ‘__alloc_size’
-    [...]
+Also you have an empty line between Fixes and Reviewed-by tags.
+> 
+> Reviewed-by: Jakub Kicinski <kuba@kernel.org>
 
-It's building fine with e.g. gcc-9 (which is my usual m68k cross-compiler).
-Reverting this commit on next-20220927 fixes the issue.
+I am not sure that Jakub gave his Reviewed-by, but maybe I have missed
+that.
 
-[1] http://kisskb.ellerman.id.au/kisskb/buildresult/14803908/
-[2] http://kisskb.ellerman.id.au/kisskb/head/1bd8b75fe6adeaa89d02968bdd811ffe708cf839/
-
-
-
+> Signed-off-by: Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
 > ---
->  include/linux/compiler_types.h | 13 +++++--------
->  include/linux/slab.h           | 12 ++++++------
->  mm/slab_common.c               |  4 ++--
->  3 files changed, 13 insertions(+), 16 deletions(-)
->
-> diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
-> index 4f2a819fd60a..f141a6f6b9f6 100644
-> --- a/include/linux/compiler_types.h
-> +++ b/include/linux/compiler_types.h
-> @@ -271,15 +271,12 @@ struct ftrace_likely_data {
->
->  /*
->   * Any place that could be marked with the "alloc_size" attribute is also
-> - * a place to be marked with the "malloc" attribute. Do this as part of the
-> - * __alloc_size macro to avoid redundant attributes and to avoid missing a
-> - * __malloc marking.
-> + * a place to be marked with the "malloc" attribute, except those that may
-> + * be performing a _reallocation_, as that may alias the existing pointer.
-> + * For these, use __realloc_size().
->   */
-> -#ifdef __alloc_size__
-> -# define __alloc_size(x, ...)  __alloc_size__(x, ## __VA_ARGS__) __malloc
-> -#else
-> -# define __alloc_size(x, ...)  __malloc
-> -#endif
-> +#define __alloc_size(x, ...)   __alloc_size__(x, ## __VA_ARGS__) __malloc
-> +#define __realloc_size(x, ...) __alloc_size__(x, ## __VA_ARGS__)
->
->  #ifndef asm_volatile_goto
->  #define asm_volatile_goto(x...) asm goto(x)
-> diff --git a/include/linux/slab.h b/include/linux/slab.h
-> index 0fefdf528e0d..41bd036e7551 100644
-> --- a/include/linux/slab.h
-> +++ b/include/linux/slab.h
-> @@ -184,7 +184,7 @@ int kmem_cache_shrink(struct kmem_cache *s);
->  /*
->   * Common kmalloc functions provided by all allocators
->   */
-> -void * __must_check krealloc(const void *objp, size_t new_size, gfp_t flags) __alloc_size(2);
-> +void * __must_check krealloc(const void *objp, size_t new_size, gfp_t flags) __realloc_size(2);
->  void kfree(const void *objp);
->  void kfree_sensitive(const void *objp);
->  size_t __ksize(const void *objp);
-> @@ -647,10 +647,10 @@ static inline __alloc_size(1, 2) void *kmalloc_array(size_t n, size_t size, gfp_
->   * @new_size: new size of a single member of the array
->   * @flags: the type of memory to allocate (see kmalloc)
->   */
-> -static inline __alloc_size(2, 3) void * __must_check krealloc_array(void *p,
-> -                                                                   size_t new_n,
-> -                                                                   size_t new_size,
-> -                                                                   gfp_t flags)
-> +static inline __realloc_size(2, 3) void * __must_check krealloc_array(void *p,
-> +                                                                     size_t new_n,
-> +                                                                     size_t new_size,
-> +                                                                     gfp_t flags)
+> Changes:                                                                        
+> ========
+> V2 -> V3:
+>  - Correct the Fixes tag
+> 
+> V1 -> V2:
+>  - Repost against net with a Fixes tag
+> 
+>  drivers/net/ethernet/microchip/lan743x_ptp.c | 7 +++++++
+>  1 file changed, 7 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/microchip/lan743x_ptp.c b/drivers/net/ethernet/microchip/lan743x_ptp.c
+> index 6a11e2ceb013..da3ea905adbb 100644
+> --- a/drivers/net/ethernet/microchip/lan743x_ptp.c
+> +++ b/drivers/net/ethernet/microchip/lan743x_ptp.c
+> @@ -1049,6 +1049,10 @@ static int lan743x_ptpci_verify_pin_config(struct ptp_clock_info *ptp,
+>  					   enum ptp_pin_function func,
+>  					   unsigned int chan)
 >  {
->         size_t bytes;
->
-> @@ -774,7 +774,7 @@ static inline __alloc_size(1, 2) void *kvcalloc(size_t n, size_t size, gfp_t fla
->  }
->
->  extern void *kvrealloc(const void *p, size_t oldsize, size_t newsize, gfp_t flags)
-> -                     __alloc_size(3);
-> +                     __realloc_size(3);
->  extern void kvfree(const void *addr);
->  extern void kvfree_sensitive(const void *addr, size_t len);
->
-> diff --git a/mm/slab_common.c b/mm/slab_common.c
-> index 17996649cfe3..457671ace7eb 100644
-> --- a/mm/slab_common.c
-> +++ b/mm/slab_common.c
-> @@ -1134,8 +1134,8 @@ module_init(slab_proc_init);
->
->  #endif /* CONFIG_SLAB || CONFIG_SLUB_DEBUG */
->
-> -static __always_inline void *__do_krealloc(const void *p, size_t new_size,
-> -                                          gfp_t flags)
-> +static __always_inline __realloc_size(2) void *
-> +__do_krealloc(const void *p, size_t new_size, gfp_t flags)
->  {
->         void *ret;
->         size_t ks;
-> --
-> 2.34.1
->
+> +	struct lan743x_ptp *lan_ptp =
+> +		container_of(ptp, struct lan743x_ptp, ptp_clock_info);
+> +	struct lan743x_adapter *adapter =
+> +		container_of(lan_ptp, struct lan743x_adapter, ptp);
+>  	int result = 0;
+>  
+>  	/* Confirm the requested function is supported. Parameter
+> @@ -1057,7 +1061,10 @@ static int lan743x_ptpci_verify_pin_config(struct ptp_clock_info *ptp,
+>  	switch (func) {
+>  	case PTP_PF_NONE:
+>  	case PTP_PF_PEROUT:
+> +		break;
+>  	case PTP_PF_EXTTS:
+> +		if (!adapter->is_pci11x1x)
+> +			result = -1;
+>  		break;
+>  	case PTP_PF_PHYSYNC:
+>  	default:
+> -- 
+> 2.25.1
+> 
 
-
---
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+-- 
+/Horatiu
