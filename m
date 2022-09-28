@@ -2,179 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FC815EDD2D
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 14:52:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82ADE5EDD4B
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 14:57:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233903AbiI1Mwv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 08:52:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34486 "EHLO
+        id S234117AbiI1M5k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 08:57:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233467AbiI1Mwv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 08:52:51 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB63C31EE8;
-        Wed, 28 Sep 2022 05:52:49 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id z6so19697289wrq.1;
-        Wed, 28 Sep 2022 05:52:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=user-agent:content-disposition:mime-version:message-id:subject:to
-         :from:date:from:to:cc:subject:date;
-        bh=1hzqiG7HrSUyrZce/1V3TgS1EDe5OFJVRs80nT+qH8M=;
-        b=LUZHQXbpTD8cGM/dTvZySYSmQFfRhska9SS0ycvF9CtKf1nVXPwXqNR3eIYbb7r55Q
-         e/rXq99bJ9UWi0JEhJW94NkXweAURXP0hoPP+nPRNvyasRaTBKWHQZRdgLk+QYHkIaY3
-         T83Gej4RBHm5RKSHCRXUDUOusvgHFbnoWIh5sKIszCdl+sESLIZGAye1mnR2Pfb5uY6v
-         tB49QBpn3eXQfOnKbK5iWu/MCbh1UXhsbnk6IVgjgIKOCPb6s5YHi7wqwXAZvGS5j0d0
-         MywOq12zVey+nSw8Jzo8wWSrT1FGEOQ56/arrFi3F4+rDxpMEkC/j+o3rA4KETmOSUMw
-         snTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=user-agent:content-disposition:mime-version:message-id:subject:to
-         :from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=1hzqiG7HrSUyrZce/1V3TgS1EDe5OFJVRs80nT+qH8M=;
-        b=MtsGU8Aw+zmnxMF5JWPZODUgaB5zOFimsVZ2XbzRycM8pTLPFIPDaUtpXIg292Nqzr
-         wq36Svvbr+iFCLobtfaMtTDYJLj6d0Goa/suNO0odXL7Oq3lccTdGqIzs/fY4JVyMelv
-         S8r5yUxC7NhZqElPu7QSPgiaYaI/JXN4ujoLudiTPa5zomP0TaxqXSYHtXzrxfU+CPwf
-         KIcxortDykTHdkRYxFThIwpt1TLwCJ9zYUdbE22tcb6bgHtNvEuB4dRpKSOMIeOqfWZz
-         BSn0iBETvtA/jcUPIE65E55RVXR35If0IWR+J9P62pgO8BPqG3HM++vncbNh/Wk4BHnZ
-         SEkA==
-X-Gm-Message-State: ACrzQf3cBewqWvUDU2IgvFRdHHBDqVXPO5w+BTTpiI2qcb74qVnMgM4u
-        7UjblXt6p+ztTE69Pi1rjSE=
-X-Google-Smtp-Source: AMsMyM7PEGqEafMK3+1QAtnaexhIdk5J0T6/kg3u9T089hxyPQP47pTZbBpqvqO9iMyIpA4+QX+vFQ==
-X-Received: by 2002:a05:6000:689:b0:228:e2cf:d20e with SMTP id bo9-20020a056000068900b00228e2cfd20emr19673995wrb.147.1664369568444;
-        Wed, 28 Sep 2022 05:52:48 -0700 (PDT)
-Received: from debian ([89.238.191.199])
-        by smtp.gmail.com with ESMTPSA id j8-20020a5d6188000000b0022cc3e67fc5sm2961687wru.65.2022.09.28.05.52.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Sep 2022 05:52:48 -0700 (PDT)
-Date:   Wed, 28 Sep 2022 14:55:31 +0200
-From:   Richard Gobert <richardbgobert@gmail.com>
-To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        johannes@sipsolutions.net, steffen.klassert@secunet.com,
-        herbert@gondor.apana.org.au, imagedong@tencent.com, kafai@fb.com,
-        asml.silence@gmail.com, keescook@chromium.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org
-Subject: [PATCH] net-next: skbuff: refactor pskb_pull
-Message-ID: <20220928125522.GA100793@debian>
+        with ESMTP id S234037AbiI1M50 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 08:57:26 -0400
+Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52C3B5F9AE;
+        Wed, 28 Sep 2022 05:57:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+        Content-ID:Content-Description;
+        bh=pCtCdR4hcSJXdfEpM15FpAxB0Mo5A7EEJ67NwSJQlD4=; b=WitypfhxKF/58dGgak3ePV28B/
+        CECE5zOa4g68BOwEybMiWzUgh2lQSafiaBV2qFyMz8gOMuwT4IV4XkNqO1UZfOpESzwm4xEAWte/u
+        R3hWHy0ORt6fyyRgaGy2Odv5a54K4lSOH8SCGVCvBNzyd0WMHs2WYt0D6FtDyo6m/K67nAUZ9E9gS
+        qRJLWU+ZqcLPVCI3TiUdO5g567g7LJ3n6f9FnOjO3fBXgD8jV+JR4ldxDYSHPNFpHH2U+dsmBu0u4
+        MRl3HH/BzdfUMDGobLcUpecgrQCui8v3G/BsIdZSuPgLF8Y+UibNF0Lok8OTHtGei5TNSKv59dAT5
+        Y1CZR/vWFMo3C2zYD1wU2ZImYASUdiQwU5R7NeG6KGHvLCP5Hc3y+00cPFqOj/FILyafqPs6vYkPL
+        5H8LB0hb/IR+nRtqlNze3u2gjPRgMJ8GglWJmHJwI66fKwHQVJ3sDL9gUgezv/GvAnIbRCI5GtU/b
+        ffifn6sVUapBgVBNa8fAiySfZaAyIC6pAgbDgtfDNS/LTl/ZKzpzy37C6Y1qVh8n1GDuaKG3h1iuS
+        cTtjb3pxHR5pcfXJRhIWra5suQ/eCXw2PIsUhbmYn5uxXOELlDUt82xbKKEV9EIs5dnmzqA7345uV
+        us8/rw0VHUc2l0Rd0z3pG41OB6/SONYUPxrz2bz4k=;
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+To:     asmadeus@codewreck.org, Leon Romanovsky <leon@kernel.org>
+Cc:     syzbot <syzbot+67d13108d855f451cafc@syzkaller.appspotmail.com>,
+        davem@davemloft.net, edumazet@google.com, ericvh@gmail.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org, lucho@ionkov.net,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com,
+        v9fs-developer@lists.sourceforge.net
+Subject: Re: [syzbot] KASAN: use-after-free Read in rdma_close
+Date:   Wed, 28 Sep 2022 14:57:07 +0200
+Message-ID: <1783490.kFEjeSjHVE@silver>
+In-Reply-To: <YzQ12+jtARpwS5bw@unreal>
+References: <00000000000015ac7905e97ebaed@google.com> <YzQuoqyGsooyDfId@codewreck.org>
+ <YzQ12+jtARpwS5bw@unreal>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-pskb_may_pull already contains all of the checks performed by
-pskb_pull.
-Use pskb_may_pull for validation in pskb_pull, eliminating the
-duplication and making __pskb_pull obsolete.
-Replace __pskb_pull with pskb_pull where applicable.
+On Mittwoch, 28. September 2022 13:54:03 CEST Leon Romanovsky wrote:
+> On Wed, Sep 28, 2022 at 08:23:14PM +0900, asmadeus@codewreck.org wrote:
+> > Leon Romanovsky wrote on Wed, Sep 28, 2022 at 01:49:19PM +0300:
+> > > > But I agree I did get that wrong: trans_mod->close() wasn't called if
+> > > > create failed.
+> > > > We do want the idr_for_each_entry() that is in p9_client_destroy so
+> > > > rather than revert the commit (fix a bug, create a new one..) I'd
+> > > > rather
+> > > > split it out in an internal function that takes a 'bool close' or
+> > > > something to not duplicate the rest.
+> > > > (Bit of a nitpick, sure)
+> > > 
+> > > Please do proper unwind without extra variable.
+> > > 
+> > > Proper unwind means that you will call to symmetrical functions in
+> > > destroy as you used in create:
+> > > alloc -> free
+> > > create -> close
+> > > e.t.c
+> > > 
+> > > When you use some global function like you did, there is huge chance
+> > > to see unwind bugs.
+> > 
+> > No.
+> 
+> Let's agree to disagree.
+> 
+> > Duplicating complicated cleanup code leads to leaks like we used to
+> > have; that destroy function already frees up things in the right order.
+> 
+> It is pretty straightforward code, nothing complex there.
+> 
+> Just pause for a minute, and ask yourself how totally random guy who
+> looked on this syzbot bug just because RDMA name in it, found the issue
+> so quickly.
+> 
+> I will give a hint, I saw not symmetrical error unwind in call trace.
 
-Signed-off-by: Richard Gobert <richardbgobert@gmail.com>
----
- include/linux/skbuff.h | 23 +++++++++--------------
- net/ipv6/ip6_offload.c |  2 +-
- net/mac80211/rx.c      |  4 ++--
- net/xfrm/espintcp.c    |  2 +-
- 4 files changed, 13 insertions(+), 18 deletions(-)
+OK, maybe it's just me, but ask yourself Leon, if you were the only guy left 
+(i.e. Dominique) still actively taking care for 9p, would those exactly be 
+motivating phrases for your efforts? Just saying.
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index ca8afa382bf2..615cd660dd69 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -2587,20 +2587,6 @@ void *skb_pull_data(struct sk_buff *skb, size_t len);
- 
- void *__pskb_pull_tail(struct sk_buff *skb, int delta);
- 
--static inline void *__pskb_pull(struct sk_buff *skb, unsigned int len)
--{
--	if (len > skb_headlen(skb) &&
--	    !__pskb_pull_tail(skb, len - skb_headlen(skb)))
--		return NULL;
--	skb->len -= len;
--	return skb->data += len;
--}
--
--static inline void *pskb_pull(struct sk_buff *skb, unsigned int len)
--{
--	return unlikely(len > skb->len) ? NULL : __pskb_pull(skb, len);
--}
--
- static inline bool pskb_may_pull(struct sk_buff *skb, unsigned int len)
- {
- 	if (likely(len <= skb_headlen(skb)))
-@@ -2610,6 +2596,15 @@ static inline bool pskb_may_pull(struct sk_buff *skb, unsigned int len)
- 	return __pskb_pull_tail(skb, len - skb_headlen(skb)) != NULL;
- }
- 
-+static inline void *pskb_pull(struct sk_buff *skb, unsigned int len)
-+{
-+	if (!pskb_may_pull(skb, len))
-+		return NULL;
-+
-+	skb->len -= len;
-+	return skb->data += len;
-+}
-+
- void skb_condense(struct sk_buff *skb);
- 
- /**
-diff --git a/net/ipv6/ip6_offload.c b/net/ipv6/ip6_offload.c
-index d12dba2dd535..d31775b87b6a 100644
---- a/net/ipv6/ip6_offload.c
-+++ b/net/ipv6/ip6_offload.c
-@@ -235,7 +235,7 @@ INDIRECT_CALLABLE_SCOPE struct sk_buff *ipv6_gro_receive(struct list_head *head,
- 	proto = iph->nexthdr;
- 	ops = rcu_dereference(inet6_offloads[proto]);
- 	if (!ops || !ops->callbacks.gro_receive) {
--		__pskb_pull(skb, skb_gro_offset(skb));
-+		pskb_pull(skb, skb_gro_offset(skb));
- 		skb_gro_frag0_invalidate(skb);
- 		proto = ipv6_gso_pull_exthdrs(skb, proto);
- 		skb_gro_pull(skb, -skb_transport_offset(skb));
-diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
-index 57df21e2170a..addc8294198b 100644
---- a/net/mac80211/rx.c
-+++ b/net/mac80211/rx.c
-@@ -49,7 +49,7 @@ static struct sk_buff *ieee80211_clean_skb(struct sk_buff *skb,
- 
- 	if (present_fcs_len)
- 		__pskb_trim(skb, skb->len - present_fcs_len);
--	__pskb_pull(skb, rtap_space);
-+	pskb_pull(skb, rtap_space);
- 
- 	hdr = (void *)skb->data;
- 	fc = hdr->frame_control;
-@@ -74,7 +74,7 @@ static struct sk_buff *ieee80211_clean_skb(struct sk_buff *skb,
- 
- 	memmove(skb->data + IEEE80211_HT_CTL_LEN, skb->data,
- 		hdrlen - IEEE80211_HT_CTL_LEN);
--	__pskb_pull(skb, IEEE80211_HT_CTL_LEN);
-+	pskb_pull(skb, IEEE80211_HT_CTL_LEN);
- 
- 	return skb;
- }
-diff --git a/net/xfrm/espintcp.c b/net/xfrm/espintcp.c
-index 82d14eea1b5a..2000d67f9982 100644
---- a/net/xfrm/espintcp.c
-+++ b/net/xfrm/espintcp.c
-@@ -91,7 +91,7 @@ static void espintcp_rcv(struct strparser *strp, struct sk_buff *skb)
- 	}
- 
- 	/* remove header, leave non-ESP marker/SPI */
--	if (!__pskb_pull(skb, rxm->offset + 2)) {
-+	if (!pskb_pull(skb, rxm->offset + 2)) {
- 		XFRM_INC_STATS(sock_net(strp->sk), LINUX_MIB_XFRMINERROR);
- 		kfree_skb(skb);
- 		return;
--- 
-2.20.1
+From technical perspective, yes, destruction in reverse order is usually the 
+better way to go. Whether I would carve that in stone, without any exception, 
+probably not.
+
+Best regards,
+Christian Schoenebeck
+
 
