@@ -2,203 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 425985EE65B
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 22:01:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4D205EE663
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 22:03:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234820AbiI1UB0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 16:01:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45540 "EHLO
+        id S234607AbiI1UDR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 16:03:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234489AbiI1UAh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 16:00:37 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B46957E2E
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 13:00:35 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id f34-20020a17090a28a500b00205ee236c9cso1337715pjd.9
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 13:00:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date;
-        bh=1XVt61fwIRlQnnx05UC8Uhtil1RjW5oskZubiQ8RtxQ=;
-        b=oFaWlZs8gKJiEIfk+o453v9kpADovk4Tl19/w9FnTR8HnIZSTGWy+izcUYkK+HgQhu
-         YLMOGCrXm5DCbjOqIRQ2paAJSAugBFlIKrV10/HLwBtcVB5G7EL3cvu5Ql4NuCbH1Z61
-         KivuPF0yZKr0VHAM9gQanpeIIlhbKyLZMmtee+6Ob16kes6rdlxrtyYKo7E0xTJHSy3B
-         glQDgPeAOPdOY/kuHfeRAAb4eQFDRx8tplPwD2Rl3WMvGyGWOKC//B7zqpIKdFmTSocP
-         con/y4kt34eVVG1Mo0T6FbBl08j+QnRRH86tCjnVq/a3xomL1NODJGuFbNIuv2HVoyje
-         PF1Q==
+        with ESMTP id S234754AbiI1UC5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 16:02:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 190B79352D
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 13:02:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1664395340;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=d3cN46yR7NWOicCiy/yGPpGpvzjMsqsVRHSBsY1m+T4=;
+        b=YdXkMvwKKyn0P8+3yz/R9XV49RTrpvUSKcN+LDiI8+ZXs92Qp2LDuCeH8PVnB3dZo5R7K9
+        pboUbkdEmB/4PUtGB+x9d28n/GZGASDhXDUNkKAYipAoaKn0e33GgSNzDUAjAdmD/PnAsk
+        ax1AxSzFiUedMZCPz9JfsCtdCCbFShw=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-433-o53SBNhbNKSzy_ya24-YJA-1; Wed, 28 Sep 2022 16:02:18 -0400
+X-MC-Unique: o53SBNhbNKSzy_ya24-YJA-1
+Received: by mail-wm1-f70.google.com with SMTP id 84-20020a1c0257000000b003b4be28d7e3so1811278wmc.0
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 13:02:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=1XVt61fwIRlQnnx05UC8Uhtil1RjW5oskZubiQ8RtxQ=;
-        b=0DEC7nGGeqhwiJe2Ol/LcB+LI87c9qDslk3pqQ4NL7vdunNXc5eDRebZu2Ak2ExFmj
-         Da9ptI5GAlmqEpM3Fak1M3vTI94sUT9BXjQFdumEjFpC1ms18tm4RuqDP7apLlvpjN2u
-         ernOBHd7NoxqrB9w+4LUs7BwL3gUVpygfTKXklpGtAGmKj1QTKT5Udg1uDkPQVy+7Obr
-         UnXDqv6X5kVtj9xSBMSg7Cl9zj12nsQQ2+RJhD+C7uueo9kSJJiNNtTr9wkjRyzd+7wi
-         q84PCi3wu1tjpwbPu2TBIgJ5hpV0W6WNWxJkcu1A6g6U8ddQ4XL7QdSoErkGyKiz9A4m
-         huyw==
-X-Gm-Message-State: ACrzQf2MpWrN68/C0AgYcorece+z0oAXGVvZR7bB+v9Md9O1IhWRGoTd
-        7tmacRfd0liDTS783DzZ2tTgPJGdUV2dtJWP/Ra3lg==
-X-Google-Smtp-Source: AMsMyM66OTYEOPk5/tM9yOusnPXyXw1ZTHDWmB46rYttITZeSTJH1s7mvNHy+/ZV/4g8YVMb/yM6uP6J/OGB4lnsM4EiUw==
-X-Received: from abps.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:9b4])
- (user=abhishekpandit job=sendgmr) by 2002:aa7:95a2:0:b0:541:123f:bcac with
- SMTP id a2-20020aa795a2000000b00541123fbcacmr36814510pfk.52.1664395234518;
- Wed, 28 Sep 2022 13:00:34 -0700 (PDT)
-Date:   Wed, 28 Sep 2022 13:00:30 -0700
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.38.0.rc1.362.ged0d419d3c-goog
-Message-ID: <20220928130027.v3.1.Ia168b651a69b253059f2bbaa60b98083e619545c@changeid>
-Subject: [PATCH v3] Bluetooth: Prevent double register of suspend
-From:   Abhishek Pandit-Subedi <abhishekpandit@google.com>
-To:     linux-bluetooth@vger.kernel.org
-Cc:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        syzbot <syzkaller@googlegroups.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=d3cN46yR7NWOicCiy/yGPpGpvzjMsqsVRHSBsY1m+T4=;
+        b=RjDNsNEYOWEZquTrbM2+W2kOKh75YJIxGxU3ZDZRf3RvkffVJUZJJmihrlSXWytOsU
+         G2KYstOb9VYh2tQeE1Yh1F9ql6gBzN9djkICURHwzOM9ogqdTdwlblhjY8mKzAWImEjn
+         Bsy7aRHIQqEHB/IPsYDEEEaQmgEzSTZoDbDEHouaummSoDtJry0875tK+8JVr6e3/hQS
+         7VIWVnffMXZDH9DYYvgFBF9Xex95zZhfNL25VpE3Gev8U/a5lxO7xUz+VQiqyH7mz9l2
+         OTcsgIH2+UakiIavgUMRvF7dmCmLfBjHHZibhgE69wGrCYU6qkRnElA1AfnraIcaexBJ
+         n47Q==
+X-Gm-Message-State: ACrzQf1s7ujKtnNM3g8IJ2Zi/qGptEhHZJ5xw+MV5nx/h+FidcgPTLyS
+        a92DA66SxUqkOwwEAElhFrkCmdw6zNr8HuDa8n8FUq4OEs+QzPDblw/2mcip7pznErxgDXmyFkb
+        ruF4TLWhOeJnLW7KS
+X-Received: by 2002:a5d:4903:0:b0:22c:c960:dd23 with SMTP id x3-20020a5d4903000000b0022cc960dd23mr3052896wrq.475.1664395337467;
+        Wed, 28 Sep 2022 13:02:17 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM6rEH2X/vqm2gUOiwMyg5FCm2mYadAC0QuRkERmGHmC+5pWEVfjq4D2qb3iApkApTXtLPurEQ==
+X-Received: by 2002:a5d:4903:0:b0:22c:c960:dd23 with SMTP id x3-20020a5d4903000000b0022cc960dd23mr3052879wrq.475.1664395337220;
+        Wed, 28 Sep 2022 13:02:17 -0700 (PDT)
+Received: from redhat.com ([2.55.47.213])
+        by smtp.gmail.com with ESMTPSA id l7-20020a05600c4f0700b003b4c979e6bcsm2621685wmq.10.2022.09.28.13.02.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 28 Sep 2022 13:02:16 -0700 (PDT)
+Date:   Wed, 28 Sep 2022 16:02:12 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     Junichi Uekawa <uekawa@chromium.org>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
         Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+        Bobby Eshleman <bobby.eshleman@gmail.com>
+Subject: Re: [PATCH] vhost/vsock: Use kvmalloc/kvfree for larger packets.
+Message-ID: <20220928160116-mutt-send-email-mst@kernel.org>
+References: <20220928064538.667678-1-uekawa@chromium.org>
+ <20220928082823.wyxplop5wtpuurwo@sgarzare-redhat>
+ <20220928052738-mutt-send-email-mst@kernel.org>
+ <20220928151135.pvrlsylg6j3hzh74@sgarzare-redhat>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220928151135.pvrlsylg6j3hzh74@sgarzare-redhat>
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+On Wed, Sep 28, 2022 at 05:11:35PM +0200, Stefano Garzarella wrote:
+> On Wed, Sep 28, 2022 at 05:31:58AM -0400, Michael S. Tsirkin wrote:
+> > On Wed, Sep 28, 2022 at 10:28:23AM +0200, Stefano Garzarella wrote:
+> > > On Wed, Sep 28, 2022 at 03:45:38PM +0900, Junichi Uekawa wrote:
+> > > > When copying a large file over sftp over vsock, data size is usually 32kB,
+> > > > and kmalloc seems to fail to try to allocate 32 32kB regions.
+> > > >
+> > > > Call Trace:
+> > > >  [<ffffffffb6a0df64>] dump_stack+0x97/0xdb
+> > > >  [<ffffffffb68d6aed>] warn_alloc_failed+0x10f/0x138
+> > > >  [<ffffffffb68d868a>] ? __alloc_pages_direct_compact+0x38/0xc8
+> > > >  [<ffffffffb664619f>] __alloc_pages_nodemask+0x84c/0x90d
+> > > >  [<ffffffffb6646e56>] alloc_kmem_pages+0x17/0x19
+> > > >  [<ffffffffb6653a26>] kmalloc_order_trace+0x2b/0xdb
+> > > >  [<ffffffffb66682f3>] __kmalloc+0x177/0x1f7
+> > > >  [<ffffffffb66e0d94>] ? copy_from_iter+0x8d/0x31d
+> > > >  [<ffffffffc0689ab7>] vhost_vsock_handle_tx_kick+0x1fa/0x301 [vhost_vsock]
+> > > >  [<ffffffffc06828d9>] vhost_worker+0xf7/0x157 [vhost]
+> > > >  [<ffffffffb683ddce>] kthread+0xfd/0x105
+> > > >  [<ffffffffc06827e2>] ? vhost_dev_set_owner+0x22e/0x22e [vhost]
+> > > >  [<ffffffffb683dcd1>] ? flush_kthread_worker+0xf3/0xf3
+> > > >  [<ffffffffb6eb332e>] ret_from_fork+0x4e/0x80
+> > > >  [<ffffffffb683dcd1>] ? flush_kthread_worker+0xf3/0xf3
+> > > >
+> > > > Work around by doing kvmalloc instead.
+> > > >
+> > > > Signed-off-by: Junichi Uekawa <uekawa@chromium.org>
+> > 
+> > My worry here is that this in more of a work around.
+> > It would be better to not allocate memory so aggressively:
+> > if we are so short on memory we should probably process
+> > packets one at a time. Is that very hard to implement?
+> 
+> Currently the "virtio_vsock_pkt" is allocated in the "handle_kick" callback
+> of TX virtqueue. Then the packet is multiplexed on the right socket queue,
+> then the user space can de-queue it whenever they want.
+> 
+> So maybe we can stop processing the virtqueue if we are short on memory, but
+> when can we restart the TX virtqueue processing?
 
-Suspend notifier should only be registered and unregistered once per
-hdev. Simplify this by only registering during driver registration and
-simply exiting early when HCI_USER_CHANNEL is set.
+Assuming you added at least one buffer, the time to restart would be
+after that buffer has been used.
 
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Fixes: 359ee4f834f5 (Bluetooth: Unregister suspend with userchannel)
-Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
----
-This is fixing a syzbot reported warning. Tested in the following ways:
-* Normal start-up of driver with bluez.
-* Start/stop loop using HCI_USER_CHANNEL (sock path).
-* USB reset triggering hci_dev_unregister (driver path).
 
-------------[ cut here ]------------
-double register detected
-WARNING: CPU: 0 PID: 2657 at kernel/notifier.c:27
-notifier_chain_register kernel/notifier.c:27 [inline]
-WARNING: CPU: 0 PID: 2657 at kernel/notifier.c:27
-notifier_chain_register+0x5c/0x124 kernel/notifier.c:22
-Modules linked in:
-CPU: 0 PID: 2657 Comm: syz-executor212 Not tainted
-5.10.136-syzkaller-19376-g6f46a5fe0124 #0
-    8f0771607702f5ef7184d2ee33bd0acd70219fc4
-    Hardware name: Google Google Compute Engine/Google Compute Engine,
-    BIOS Google 07/22/2022
-    RIP: 0010:notifier_chain_register kernel/notifier.c:27 [inline]
-    RIP: 0010:notifier_chain_register+0x5c/0x124 kernel/notifier.c:22
-    Code: 6a 41 00 4c 8b 23 4d 85 e4 0f 84 88 00 00 00 e8 c2 1e 19 00 49
-    39 ec 75 18 e8 b8 1e 19 00 48 c7 c7 80 6d ca 84 e8 2c 68 48 03 <0f> 0b
-        e9 af 00 00 00 e8 a0 1e 19 00 48 8d 7d 10 48 89 f8 48 c1 e8
-        RSP: 0018:ffffc900009d7da8 EFLAGS: 00010286
-        RAX: 0000000000000000 RBX: ffff8881076fd1d8 RCX: 0000000000000000
-        RDX: 0000001810895100 RSI: ffff888110895100 RDI: fffff5200013afa7
-        RBP: ffff88811a4191d0 R08: ffffffff813b8ca1 R09: 0000000080000000
-        R10: 0000000000000000 R11: 0000000000000005 R12: ffff88811a4191d0
-        R13: dffffc0000000000 R14: 0000000000000000 R15: 0000000000000000
-        FS: 00005555571f5300(0000) GS:ffff8881f6c00000(0000)
-        knlGS:0000000000000000
-        CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-        CR2: 000078e3857f3075 CR3: 000000010d668000 CR4: 00000000003506f0
-        DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-        DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-        Call Trace:
-        blocking_notifier_chain_register+0x8c/0xa6 kernel/notifier.c:254
-        hci_register_suspend_notifier net/bluetooth/hci_core.c:2733
-        [inline]
-        hci_register_suspend_notifier+0x6b/0x7c
-        net/bluetooth/hci_core.c:2727
-        hci_sock_release+0x270/0x3cf net/bluetooth/hci_sock.c:889
-        __sock_release+0xcd/0x1de net/socket.c:597
-        sock_close+0x18/0x1c net/socket.c:1267
-        __fput+0x418/0x729 fs/file_table.c:281
-        task_work_run+0x12b/0x15b kernel/task_work.c:151
-        tracehook_notify_resume include/linux/tracehook.h:188 [inline]
-        exit_to_user_mode_loop kernel/entry/common.c:165 [inline]
-        exit_to_user_mode_prepare+0x8f/0x130 kernel/entry/common.c:192
-        syscall_exit_to_user_mode+0x172/0x1b2 kernel/entry/common.c:268
-        entry_SYSCALL_64_after_hwframe+0x61/0xc6
-        RIP: 0033:0x78e38575e1db
-        Code: 0f 05 48 3d 00 f0 ff ff 77 45 c3 0f 1f 40 00 48 83 ec 18 89
-        7c 24 0c e8 63 fc ff ff 8b 7c 24 0c 41 89 c0 b8 03 00 00 00 0f 05
-        <48> 3d 00 f0 ff ff 77 35 44 89 c7 89 44 24 0c e8 a1 fc ff ff 8b 44
-        RSP: 002b:00007ffffc20a0b0 EFLAGS: 00000293 ORIG_RAX:
-        0000000000000003
-        RAX: 0000000000000000 RBX: 0000000000000006 RCX: 000078e38575e1db
-        RDX: ffffffffffffffb8 RSI: 0000000020000000 RDI: 0000000000000005
-        RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000150
-        R10: 0000000000000000 R11: 0000000000000293 R12: 000000000000e155
-        R13: 00007ffffc20a140 R14: 00007ffffc20a130 R15: 00007ffffc20a0e8
-
-Changes in v3:
-- No changes.
-
-Changes in v2:
-- Removed suspend registration from hci_sock.
-- Exit hci_suspend_notifier early if user channel.
-
- net/bluetooth/hci_core.c | 4 ++++
- net/bluetooth/hci_sock.c | 3 ---
- 2 files changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 66c7cdba0d32..86ce2dd1c7fb 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -2406,6 +2406,10 @@ static int hci_suspend_notifier(struct notifier_block *nb, unsigned long action,
- 		container_of(nb, struct hci_dev, suspend_notifier);
- 	int ret = 0;
- 
-+	/* Userspace has full control of this device. Do nothing. */
-+	if (hci_dev_test_flag(hdev, HCI_USER_CHANNEL))
-+		return NOTIFY_DONE;
-+
- 	if (action == PM_SUSPEND_PREPARE)
- 		ret = hci_suspend_dev(hdev);
- 	else if (action == PM_POST_SUSPEND)
-diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
-index b2a33a05c93e..06581223238c 100644
---- a/net/bluetooth/hci_sock.c
-+++ b/net/bluetooth/hci_sock.c
-@@ -887,7 +887,6 @@ static int hci_sock_release(struct socket *sock)
- 			 */
- 			hci_dev_do_close(hdev);
- 			hci_dev_clear_flag(hdev, HCI_USER_CHANNEL);
--			hci_register_suspend_notifier(hdev);
- 			mgmt_index_added(hdev);
- 		}
- 
-@@ -1216,7 +1215,6 @@ static int hci_sock_bind(struct socket *sock, struct sockaddr *addr,
- 		}
- 
- 		mgmt_index_removed(hdev);
--		hci_unregister_suspend_notifier(hdev);
- 
- 		err = hci_dev_open(hdev->id);
- 		if (err) {
-@@ -1231,7 +1229,6 @@ static int hci_sock_bind(struct socket *sock, struct sockaddr *addr,
- 				err = 0;
- 			} else {
- 				hci_dev_clear_flag(hdev, HCI_USER_CHANNEL);
--				hci_register_suspend_notifier(hdev);
- 				mgmt_index_added(hdev);
- 				hci_dev_put(hdev);
- 				goto done;
--- 
-2.38.0.rc1.362.ged0d419d3c-goog
+> I think as long as the guest used only 4K buffers we had no problem, but now
+> that it can create larger buffers the host may not be able to allocate it
+> contiguously. Since there is no need to have them contiguous here, I think
+> this patch is okay.
+> 
+> However, if we switch to sk_buff (as Bobby is already doing), maybe we don't
+> have this problem because I think there is some kind of pre-allocated pool.
+> 
+> > 
+> > 
+> > 
+> > > > ---
+> > > >
+> > > > drivers/vhost/vsock.c                   | 2 +-
+> > > > net/vmw_vsock/virtio_transport_common.c | 2 +-
+> > > > 2 files changed, 2 insertions(+), 2 deletions(-)
+> > > >
+> > > > diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+> > > > index 368330417bde..5703775af129 100644
+> > > > --- a/drivers/vhost/vsock.c
+> > > > +++ b/drivers/vhost/vsock.c
+> > > > @@ -393,7 +393,7 @@ vhost_vsock_alloc_pkt(struct vhost_virtqueue *vq,
+> > > > 		return NULL;
+> > > > 	}
+> > > >
+> > > > -	pkt->buf = kmalloc(pkt->len, GFP_KERNEL);
+> > > > +	pkt->buf = kvmalloc(pkt->len, GFP_KERNEL);
+> > > > 	if (!pkt->buf) {
+> > > > 		kfree(pkt);
+> > > > 		return NULL;
+> > > > diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+> > > > index ec2c2afbf0d0..3a12aee33e92 100644
+> > > > --- a/net/vmw_vsock/virtio_transport_common.c
+> > > > +++ b/net/vmw_vsock/virtio_transport_common.c
+> > > > @@ -1342,7 +1342,7 @@ EXPORT_SYMBOL_GPL(virtio_transport_recv_pkt);
+> > > >
+> > > > void virtio_transport_free_pkt(struct virtio_vsock_pkt *pkt)
+> > > > {
+> > > > -	kfree(pkt->buf);
+> > > > +	kvfree(pkt->buf);
+> > > 
+> > > virtio_transport_free_pkt() is used also in virtio_transport.c and
+> > > vsock_loopback.c where pkt->buf is allocated with kmalloc(), but IIUC
+> > > kvfree() can be used with that memory, so this should be fine.
+> > > 
+> > > > 	kfree(pkt);
+> > > > }
+> > > > EXPORT_SYMBOL_GPL(virtio_transport_free_pkt);
+> > > > --
+> > > > 2.37.3.998.g577e59143f-goog
+> > > >
+> > > 
+> > > This issue should go away with the Bobby's work about introducing sk_buff
+> > > [1], but we can queue this for now.
+> > > 
+> > > I'm not sure if we should do the same also in the virtio-vsock driver
+> > > (virtio_transport.c). Here in vhost-vsock the buf allocated is only used in
+> > > the host, while in the virtio-vsock driver the buffer is exposed to the
+> > > device emulated in the host, so it should be physically contiguous (if not,
+> > > maybe we need to adjust virtio_vsock_rx_fill()).
+> > 
+> > More importantly it needs to support DMA API which IIUC kvmalloc
+> > memory does not.
+> > 
+> 
+> Right, good point!
+> 
+> Thanks,
+> Stefano
 
