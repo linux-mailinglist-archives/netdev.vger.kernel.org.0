@@ -2,55 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FE355ED86E
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 11:06:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D8B85ED87C
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 11:11:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231587AbiI1JGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 05:06:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36532 "EHLO
+        id S233405AbiI1JLX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 05:11:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233333AbiI1JGg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 05:06:36 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 148BF140C2
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 02:06:35 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1odT1V-00075H-Fx
-        for netdev@vger.kernel.org; Wed, 28 Sep 2022 11:06:33 +0200
-Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id CC2C0EF6A4
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 09:06:32 +0000 (UTC)
-Received: from hardanger.blackshift.org (unknown [172.20.34.65])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id D0E1DEF698;
-        Wed, 28 Sep 2022 09:06:30 +0000 (UTC)
-Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 1931824f;
-        Wed, 28 Sep 2022 09:06:29 +0000 (UTC)
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Marc Kleine-Budde <mkl@pengutronix.de>,
-        Jacob Kroon <jacob.kroon@gmail.com>, stable@vger.kernel.org
-Subject: [PATCH net] can: c_can: don't cache TX messages for C_CAN cores
-Date:   Wed, 28 Sep 2022 11:06:29 +0200
-Message-Id: <20220928090629.1124190-2-mkl@pengutronix.de>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220928090629.1124190-1-mkl@pengutronix.de>
-References: <20220928090629.1124190-1-mkl@pengutronix.de>
+        with ESMTP id S230140AbiI1JLS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 05:11:18 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6521F5FF42;
+        Wed, 28 Sep 2022 02:11:11 -0700 (PDT)
+X-UUID: e624599bd10e49e7a1f6bee25eb90c5c-20220928
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=6EbUE9eXICSrLDk/g7xuI/oop7XTueJZWuVc89h51mU=;
+        b=prPVIhzbDU88s18OPlw9HRbyyvGMvOc0FMgzvnkrWu8rHU4VgWR3LEHtEST4NAbwff0QebA/BnWQvdEL3ZnW5MMZE4YS5qP6vUHCNcYJHLT8/i6Ymp/ZSXg6ukF14BUw4Fm7+GQ/L7mdybzXQ7kMEZMhs2RgVHkDKl7QgzCclxc=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.11,REQID:a180078f-3e6c-4d4b-b2bd-15599b4e9003,IP:0,U
+        RL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Release_Ham,ACTIO
+        N:release,TS:90
+X-CID-INFO: VERSION:1.1.11,REQID:a180078f-3e6c-4d4b-b2bd-15599b4e9003,IP:0,URL
+        :0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Spam_GS981B3D,ACTIO
+        N:quarantine,TS:90
+X-CID-META: VersionHash:39a5ff1,CLOUDID:81b34d07-1cee-4c38-b21b-a45f9682fdc0,B
+        ulkID:220928171106D7S31BD0,BulkQuantity:0,Recheck:0,SF:38|28|17|19|48|823|
+        824,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,
+        COL:0
+X-UUID: e624599bd10e49e7a1f6bee25eb90c5c-20220928
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        (envelope-from <jianguo.zhang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 232848167; Wed, 28 Sep 2022 17:11:03 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 28 Sep 2022 17:11:02 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 28 Sep 2022 17:11:00 +0800
+From:   Jianguo Zhang <jianguo.zhang@mediatek.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+CC:     Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Biao Huang <biao.huang@mediatek.com>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        Jianguo Zhang <jianguo.zhang@mediatek.com>
+Subject: [PATCH v6 0/4]  Mediatek ethernet patches for mt8188
+Date:   Wed, 28 Sep 2022 17:10:48 +0800
+Message-ID: <20220928091052.18490-1-jianguo.zhang@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+Content-Type: text/plain
+X-MTK:  N
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_PASS,UNPARSEABLE_RELAY,URIBL_CSS autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,106 +79,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As Jacob noticed, the optimization introduced in 387da6bc7a82 ("can:
-c_can: cache frames to operate as a true FIFO") doesn't properly work
-on C_CAN, but on D_CAN IP cores. The exact reasons are still unknown.
+Changes in v6:
 
-For now disable caching if CAN frames in the TX path for C_CAN cores.
+v6:
+1) Update commit message of patch 'dt-bindings: net: snps,dwmac: add new property snps,clk-csr'
+2) Add a parse for new property 'snps,clk-csr' in patch
+'net: stmmac: add a parse for new property 'snps,clk-csr''
 
-Fixes: 387da6bc7a82 ("can: c_can: cache frames to operate as a true FIFO")
-Link: https://lore.kernel.org/all/20220928083354.1062321-1-mkl@pengutronix.de
-Link: https://lore.kernel.org/all/15a8084b-9617-2da1-6704-d7e39d60643b@gmail.com
-Reported-by: Jacob Kroon <jacob.kroon@gmail.com>
-Tested-by: Jacob Kroon <jacob.kroon@gmail.com>
-Cc: stable@vger.kernel.org # v5.15
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
----
- drivers/net/can/c_can/c_can.h      | 17 +++++++++++++++--
- drivers/net/can/c_can/c_can_main.c | 11 +++++------
- 2 files changed, 20 insertions(+), 8 deletions(-)
+v5:
+1) Rename the property 'clk_csr' as 'snps,clk-csr' in binding
+file as Krzysztof Kozlowski'comment.
+2) Add DTS patch 'arm64: dts: mediatek: mt2712e: Update the name of property 'clk_csr''
+as Krzysztof Kozlowski'comment.
+3) Add driver patch 'net: stmmac: Update the name of property 'clk_csr''
+as Krzysztof Kozlowski'comment.
 
-diff --git a/drivers/net/can/c_can/c_can.h b/drivers/net/can/c_can/c_can.h
-index f23a03300a81..029cd8194ed5 100644
---- a/drivers/net/can/c_can/c_can.h
-+++ b/drivers/net/can/c_can/c_can.h
-@@ -235,9 +235,22 @@ static inline u8 c_can_get_tx_tail(const struct c_can_tx_ring *ring)
- 	return ring->tail & (ring->obj_num - 1);
- }
- 
--static inline u8 c_can_get_tx_free(const struct c_can_tx_ring *ring)
-+static inline u8 c_can_get_tx_free(const struct c_can_priv *priv,
-+				   const struct c_can_tx_ring *ring)
- {
--	return ring->obj_num - (ring->head - ring->tail);
-+	u8 head = c_can_get_tx_head(ring);
-+	u8 tail = c_can_get_tx_tail(ring);
-+
-+	if (priv->type == BOSCH_D_CAN)
-+		return ring->obj_num - (ring->head - ring->tail);
-+
-+	/* This is not a FIFO. C/D_CAN sends out the buffers
-+	 * prioritized. The lowest buffer number wins.
-+	 */
-+	if (head < tail)
-+		return 0;
-+
-+	return ring->obj_num - head;
- }
- 
- #endif /* C_CAN_H */
-diff --git a/drivers/net/can/c_can/c_can_main.c b/drivers/net/can/c_can/c_can_main.c
-index dc8132862f33..d6605dbb7737 100644
---- a/drivers/net/can/c_can/c_can_main.c
-+++ b/drivers/net/can/c_can/c_can_main.c
-@@ -429,7 +429,7 @@ static void c_can_setup_receive_object(struct net_device *dev, int iface,
- static bool c_can_tx_busy(const struct c_can_priv *priv,
- 			  const struct c_can_tx_ring *tx_ring)
- {
--	if (c_can_get_tx_free(tx_ring) > 0)
-+	if (c_can_get_tx_free(priv, tx_ring) > 0)
- 		return false;
- 
- 	netif_stop_queue(priv->dev);
-@@ -437,7 +437,7 @@ static bool c_can_tx_busy(const struct c_can_priv *priv,
- 	/* Memory barrier before checking tx_free (head and tail) */
- 	smp_mb();
- 
--	if (c_can_get_tx_free(tx_ring) == 0) {
-+	if (c_can_get_tx_free(priv, tx_ring) == 0) {
- 		netdev_dbg(priv->dev,
- 			   "Stopping tx-queue (tx_head=0x%08x, tx_tail=0x%08x, len=%d).\n",
- 			   tx_ring->head, tx_ring->tail,
-@@ -465,7 +465,7 @@ static netdev_tx_t c_can_start_xmit(struct sk_buff *skb,
- 
- 	idx = c_can_get_tx_head(tx_ring);
- 	tx_ring->head++;
--	if (c_can_get_tx_free(tx_ring) == 0)
-+	if (c_can_get_tx_free(priv, tx_ring) == 0)
- 		netif_stop_queue(dev);
- 
- 	if (idx < c_can_get_tx_tail(tx_ring))
-@@ -748,7 +748,7 @@ static void c_can_do_tx(struct net_device *dev)
- 		return;
- 
- 	tx_ring->tail += pkts;
--	if (c_can_get_tx_free(tx_ring)) {
-+	if (c_can_get_tx_free(priv, tx_ring)) {
- 		/* Make sure that anybody stopping the queue after
- 		 * this sees the new tx_ring->tail.
- 		 */
-@@ -760,8 +760,7 @@ static void c_can_do_tx(struct net_device *dev)
- 	stats->tx_packets += pkts;
- 
- 	tail = c_can_get_tx_tail(tx_ring);
--
--	if (tail == 0) {
-+	if (priv->type == BOSCH_D_CAN && tail == 0) {
- 		u8 head = c_can_get_tx_head(tx_ring);
- 
- 		/* Start transmission for all cached messages */
+v4:
+1) Update the commit message of patch 'dt-bindings: net: snps,dwmac: add clk_csr property'
+as Krzysztof Kozlowski'comment.
 
-base-commit: 44d70bb561dac9363f45787aa93dfca36877ee01
--- 
-2.35.1
+v3:
+1) List the names of SoCs mt8188 and mt8195 in correct order as
+AngeloGioacchino Del Regno's comment.
+2) Add patch version info as Krzysztof Kozlowski'comment.
+
+v2:
+1) Delete patch 'stmmac: dwmac-mediatek: add support for mt8188' as
+Krzysztof Kozlowski's comment.
+2) Update patch 'dt-bindings: net: mediatek-dwmac: add support for
+mt8188' as Krzysztof Kozlowski's comment.
+3) Add clk_csr property to fix warning ('clk_csr' was unexpected) when
+runnig 'make dtbs_check'.
+
+v1:
+1) Add ethernet driver entry for mt8188.
+2) Add binding document for ethernet on mt8188.
+
+Jianguo Zhang (4):
+  dt-bindings: net: mediatek-dwmac: add support for mt8188
+  dt-bindings: net: snps,dwmac: add new property snps,clk-csr
+  arm64: dts: mediatek: mt2712e: Update the name of property 'clk_csr'
+  net: stmmac: add a parse for new property 'snps,clk-csr'
+
+ .../devicetree/bindings/net/mediatek-dwmac.yaml        | 10 ++++++++--
+ Documentation/devicetree/bindings/net/snps,dwmac.yaml  |  5 +++++
+ arch/arm64/boot/dts/mediatek/mt2712e.dtsi              |  2 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c  |  4 +++-
+ 4 files changed, 17 insertions(+), 4 deletions(-)
 
 
