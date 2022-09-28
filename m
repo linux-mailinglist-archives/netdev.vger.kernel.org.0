@@ -2,66 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DF5D5F0328
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 05:19:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EF025F03B8
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 06:40:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230042AbiI3DTz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 23:19:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57712 "EHLO
+        id S229987AbiI3EkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 00:40:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229719AbiI3DTx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 23:19:53 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BC7E18340;
-        Thu, 29 Sep 2022 20:19:46 -0700 (PDT)
+        with ESMTP id S230248AbiI3EkE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 00:40:04 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 906D34DF0F
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 21:39:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1664507986; x=1696043986;
+  t=1664512799; x=1696048799;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=PB8jmoi7E4ctBbVeM01PvOOQGCxbf5GaAT8KvCaoHBg=;
-  b=SkacNQ9NVZ5N95eAsBfips4p6ydCAdY1b9F+Uzbkq1DISgjhoou9vJUH
-   ls8OuyQjgUj8kE4ftTm6vOMGuOlD267LK2qYXXEMQt4MHn6J1HxVEC04W
-   YjeuUdLhDVbbxvexO+w3jqskFFENxH8rmN9wYZ8cfjBX3wtSRblqbt6Wm
-   V2r8zAA+g+tIO2NSiMs73LqtiesV8iGhH5a1sy38TXJEfSXsoGxRB4xeC
-   3aPKciueELlIDOClb6VFwzYeNj64j0D/x7kekDwJRVaoQmmMNo72UErMV
-   dpPzGSewAZLMELTyHLjUEGk/aXa+i1pmbmuVFFc2GJsj8ScJv00dAkU+6
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10485"; a="285228273"
+  bh=FySpV54XcmPpNvCHvgje/pCYIuXunqXKGk3jPRk7GLc=;
+  b=eJv3vS6J2Q9B18wB5P2s0qBH+3y3M4hQqQeZhUl1Y1ni6ZsRhgKIXIEt
+   ZYiLFTcLojDGOaa9ZMSJX5+19qtL38FidTEvJC/JKG5Mv5JkYdvVRWsTN
+   U3o/31FAn2aOvnRfe4dB+GU6woEwWPcwSsCMxzqx+IRfEd/gQrN4lNAW8
+   ijaHtSjIfw1P/jb9UApqeSQpvx/UvlsSR9gfuQQ/NTcLykzXlkZGKbSK7
+   DF2RkT1cag1B0u64GwKRbk9tEWHBYFJFNxXXOGPUevea6LJjXaflMAmE7
+   /12/M+jtoWQshjCIvftNR+YO7YDHACc0whXhC6RxhLqhRy3r+bqSLOovk
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10485"; a="281812334"
 X-IronPort-AV: E=Sophos;i="5.93,357,1654585200"; 
-   d="scan'208";a="285228273"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2022 20:19:45 -0700
+   d="scan'208";a="281812334"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2022 21:39:58 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10485"; a="726691851"
+X-IronPort-AV: E=McAfee;i="6500,9779,10485"; a="573733321"
 X-IronPort-AV: E=Sophos;i="5.93,357,1654585200"; 
-   d="scan'208";a="726691851"
-Received: from lkp-server01.sh.intel.com (HELO 6126f2790925) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 29 Sep 2022 20:19:42 -0700
-Received: from kbuild by 6126f2790925 with local (Exim 4.96)
+   d="scan'208";a="573733321"
+Received: from lkp-server01.sh.intel.com (HELO 14cc182da2d0) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 29 Sep 2022 21:39:56 -0700
+Received: from kbuild by 14cc182da2d0 with local (Exim 4.96)
         (envelope-from <lkp@intel.com>)
-        id 1oe6Yq-0001yc-1G;
-        Fri, 30 Sep 2022 03:19:36 +0000
-Date:   Fri, 30 Sep 2022 11:19:21 +0800
+        id 1oe7oZ-0000NN-1i;
+        Fri, 30 Sep 2022 04:39:55 +0000
+Date:   Thu, 29 Sep 2022 05:07:43 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     kbuild-all@lists.01.org, LKML <linux-kernel@vger.kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        David Laight <David.Laight@aculab.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>
-Subject: Re: [CFT][PATCH] proc: Update /proc/net to point at the accessing
- threads network namespace
-Message-ID: <202209301125.1rijsyEy-lkp@intel.com>
-References: <87ill53igy.fsf_-_@email.froward.int.ebiederm.org>
+To:     Sabrina Dubroca <sd@queasysnail.net>, netdev@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, Sabrina Dubroca <sd@queasysnail.net>
+Subject: Re: [PATCH net-next 08/12] macsec: use NLA_POLICY_VALIDATE_FN to
+ validate IFLA_MACSEC_CIPHER_SUITE
+Message-ID: <202209290426.ja8Va8k8-lkp@intel.com>
+References: <5d4541915e5229c0329ff8e6618439ca21767b18.1664379352.git.sd@queasysnail.net>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="dBpjKgKg1JKxNs6J"
+Content-Type: multipart/mixed; boundary="zQIpGnYs5doxIoFy"
 Content-Disposition: inline
-In-Reply-To: <87ill53igy.fsf_-_@email.froward.int.ebiederm.org>
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
-        SPF_NONE,UPPERCASE_75_100 autolearn=no autolearn_force=no version=3.4.6
+In-Reply-To: <5d4541915e5229c0329ff8e6618439ca21767b18.1664379352.git.sd@queasysnail.net>
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DATE_IN_PAST_24_48,
+        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_NONE,UPPERCASE_75_100
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -69,65 +65,119 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---dBpjKgKg1JKxNs6J
+--zQIpGnYs5doxIoFy
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
-Hi Eric,
+Hi Sabrina,
 
 Thank you for the patch! Perhaps something to improve:
 
-[auto build test WARNING on linux/master]
-[also build test WARNING on linus/master v6.0-rc7 next-20220929]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+[auto build test WARNING on net-next/master]
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Eric-W-Biederman/proc-Update-proc-net-to-point-at-the-accessing-threads-network-namespace/20220930-065017
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 987a926c1d8a40e4256953b04771fbdb63bc7938
+url:    https://github.com/intel-lab-lkp/linux/commits/Sabrina-Dubroca/macsec-replace-custom-netlink-attribute-checks-with-policy-level-checks/20220929-003145
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git b9a5cbf8ba24e88071a97a51a09ef5cdf0d1f6a1
 config: m68k-allyesconfig
 compiler: m68k-linux-gcc (GCC) 12.1.0
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/5336f1902b4ba8a646f082f32fbb183850a13080
+        # https://github.com/intel-lab-lkp/linux/commit/a58673e9703907581b22fff5004b3a080d50feeb
         git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Eric-W-Biederman/proc-Update-proc-net-to-point-at-the-accessing-threads-network-namespace/20220930-065017
-        git checkout 5336f1902b4ba8a646f082f32fbb183850a13080
+        git fetch --no-tags linux-review Sabrina-Dubroca/macsec-replace-custom-netlink-attribute-checks-with-policy-level-checks/20220929-003145
+        git checkout a58673e9703907581b22fff5004b3a080d50feeb
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash fs/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash drivers/net/
 
 If you fix the issue, kindly add following tag where applicable
 | Reported-by: kernel test robot <lkp@intel.com>
 
 All warnings (new ones prefixed by >>):
 
->> fs/proc/proc_net.c:472:13: warning: no previous prototype for 'proc_net_symlink_init' [-Wmissing-prototypes]
-     472 | void __init proc_net_symlink_init(void)
-         |             ^~~~~~~~~~~~~~~~~~~~~
+   drivers/net/macsec.c: In function 'macsec_validate_attr':
+>> drivers/net/macsec.c:4122:13: warning: variable 'csid' set but not used [-Wunused-but-set-variable]
+    4122 |         u64 csid = MACSEC_DEFAULT_CIPHER_ID;
+         |             ^~~~
 
 
-vim +/proc_net_symlink_init +472 fs/proc/proc_net.c
+vim +/csid +4122 drivers/net/macsec.c
 
-   471	
- > 472	void __init proc_net_symlink_init(void)
-   473	{
-   474		proc_alloc_inum(&net_symlink_inum);
-   475	}
-   476	
+a58673e9703907 Sabrina Dubroca   2022-09-28  4118  
+a8b8a889e369de Matthias Schiffer 2017-06-25  4119  static int macsec_validate_attr(struct nlattr *tb[], struct nlattr *data[],
+a8b8a889e369de Matthias Schiffer 2017-06-25  4120  				struct netlink_ext_ack *extack)
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4121  {
+748164802c1bd2 Sabrina Dubroca   2016-04-22 @4122  	u64 csid = MACSEC_DEFAULT_CIPHER_ID;
+b1671253c60158 Lior Nahmanson    2022-09-05  4123  	u8 icv_len = MACSEC_DEFAULT_ICV_LEN;
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4124  	int flag;
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4125  	bool es, scb, sci;
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4126  
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4127  	if (!data)
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4128  		return 0;
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4129  
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4130  	if (data[IFLA_MACSEC_CIPHER_SUITE])
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4131  		csid = nla_get_u64(data[IFLA_MACSEC_CIPHER_SUITE]);
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4132  
+f04c392d2dd97a Davide Caratti    2016-07-22  4133  	if (data[IFLA_MACSEC_ICV_LEN]) {
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4134  		icv_len = nla_get_u8(data[IFLA_MACSEC_ICV_LEN]);
+b1671253c60158 Lior Nahmanson    2022-09-05  4135  		if (icv_len != MACSEC_DEFAULT_ICV_LEN) {
+f04c392d2dd97a Davide Caratti    2016-07-22  4136  			char dummy_key[DEFAULT_SAK_LEN] = { 0 };
+f04c392d2dd97a Davide Caratti    2016-07-22  4137  			struct crypto_aead *dummy_tfm;
+f04c392d2dd97a Davide Caratti    2016-07-22  4138  
+f04c392d2dd97a Davide Caratti    2016-07-22  4139  			dummy_tfm = macsec_alloc_tfm(dummy_key,
+f04c392d2dd97a Davide Caratti    2016-07-22  4140  						     DEFAULT_SAK_LEN,
+f04c392d2dd97a Davide Caratti    2016-07-22  4141  						     icv_len);
+f04c392d2dd97a Davide Caratti    2016-07-22  4142  			if (IS_ERR(dummy_tfm))
+f04c392d2dd97a Davide Caratti    2016-07-22  4143  				return PTR_ERR(dummy_tfm);
+f04c392d2dd97a Davide Caratti    2016-07-22  4144  			crypto_free_aead(dummy_tfm);
+f04c392d2dd97a Davide Caratti    2016-07-22  4145  		}
+f04c392d2dd97a Davide Caratti    2016-07-22  4146  	}
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4147  
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4148  	if (data[IFLA_MACSEC_ENCODING_SA]) {
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4149  		if (nla_get_u8(data[IFLA_MACSEC_ENCODING_SA]) >= MACSEC_NUM_AN)
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4150  			return -EINVAL;
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4151  	}
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4152  
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4153  	for (flag = IFLA_MACSEC_ENCODING_SA + 1;
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4154  	     flag < IFLA_MACSEC_VALIDATION;
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4155  	     flag++) {
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4156  		if (data[flag]) {
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4157  			if (nla_get_u8(data[flag]) > 1)
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4158  				return -EINVAL;
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4159  		}
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4160  	}
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4161  
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4162  	es  = data[IFLA_MACSEC_ES] ? nla_get_u8(data[IFLA_MACSEC_ES]) : false;
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4163  	sci = data[IFLA_MACSEC_INC_SCI] ? nla_get_u8(data[IFLA_MACSEC_INC_SCI]) : false;
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4164  	scb = data[IFLA_MACSEC_SCB] ? nla_get_u8(data[IFLA_MACSEC_SCB]) : false;
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4165  
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4166  	if ((sci && (scb || es)) || (scb && es))
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4167  		return -EINVAL;
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4168  
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4169  	if (data[IFLA_MACSEC_VALIDATION] &&
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4170  	    nla_get_u8(data[IFLA_MACSEC_VALIDATION]) > MACSEC_VALIDATE_MAX)
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4171  		return -EINVAL;
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4172  
+4b1fb9352f351f Sabrina Dubroca   2016-04-22  4173  	if ((data[IFLA_MACSEC_REPLAY_PROTECT] &&
+4b1fb9352f351f Sabrina Dubroca   2016-04-22  4174  	     nla_get_u8(data[IFLA_MACSEC_REPLAY_PROTECT])) &&
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4175  	    !data[IFLA_MACSEC_WINDOW])
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4176  		return -EINVAL;
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4177  
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4178  	return 0;
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4179  }
+c09440f7dcb304 Sabrina Dubroca   2016-03-11  4180  
 
 -- 
 0-DAY CI Kernel Test Service
 https://01.org/lkp
 
---dBpjKgKg1JKxNs6J
+--zQIpGnYs5doxIoFy
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: attachment; filename=config
 
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/m68k 6.0.0-rc7 Kernel Configuration
+# Linux/m68k 6.0.0-rc6 Kernel Configuration
 #
 CONFIG_CC_VERSION_TEXT="m68k-linux-gcc (GCC) 12.1.0"
 CONFIG_CC_IS_GCC=y
@@ -1148,13 +1198,6 @@ CONFIG_IP6_NF_TARGET_NPT=y
 # end of IPv6: Netfilter Configuration
 
 CONFIG_NF_DEFRAG_IPV6=y
-
-#
-# DECnet: Netfilter Configuration
-#
-CONFIG_DECNET_NF_GRABULATOR=y
-# end of DECnet: Netfilter Configuration
-
 CONFIG_NF_TABLES_BRIDGE=y
 CONFIG_NFT_BRIDGE_META=y
 CONFIG_NFT_BRIDGE_REJECT=y
@@ -1263,8 +1306,6 @@ CONFIG_NET_DSA_TAG_XRS700X=y
 CONFIG_VLAN_8021Q=y
 CONFIG_VLAN_8021Q_GVRP=y
 CONFIG_VLAN_8021Q_MVRP=y
-CONFIG_DECNET=y
-CONFIG_DECNET_ROUTER=y
 CONFIG_LLC=y
 CONFIG_LLC2=y
 CONFIG_ATALK=y
@@ -2657,6 +2698,8 @@ CONFIG_MVME16x_NET=y
 CONFIG_NET_VENDOR_INTEL=y
 CONFIG_NET_VENDOR_WANGXUN=y
 CONFIG_KORINA=y
+CONFIG_NET_VENDOR_ADI=y
+CONFIG_ADIN1110=y
 CONFIG_NET_VENDOR_LITEX=y
 CONFIG_LITEX_LITEETH=y
 CONFIG_NET_VENDOR_MARVELL=y
@@ -2954,6 +2997,7 @@ CONFIG_MDIO_BUS_MUX_MMIOREG=y
 CONFIG_PCS_XPCS=y
 CONFIG_PCS_LYNX=y
 CONFIG_PCS_RZN1_MIIC=y
+CONFIG_PCS_ALTERA_TSE=y
 # end of PCS device drivers
 
 CONFIG_PLIP=y
@@ -5320,6 +5364,7 @@ CONFIG_MFD_MAX8998=y
 CONFIG_MFD_MT6360=y
 CONFIG_MFD_MT6397=y
 CONFIG_MFD_MENF21BMC=y
+CONFIG_MFD_OCELOT=y
 CONFIG_EZX_PCAP=y
 CONFIG_MFD_CPCAP=y
 CONFIG_MFD_VIPERBOARD=y
@@ -12495,4 +12540,4 @@ CONFIG_WARN_MISSING_DOCUMENTS=y
 CONFIG_WARN_ABI_ERRORS=y
 # end of Kernel hacking
 
---dBpjKgKg1JKxNs6J--
+--zQIpGnYs5doxIoFy--
