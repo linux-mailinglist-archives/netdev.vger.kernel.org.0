@@ -2,153 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 91AE05EE2CC
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 19:14:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56E455EE2D4
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 19:15:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234066AbiI1ROM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 13:14:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33580 "EHLO
+        id S234488AbiI1RPg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 13:15:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234606AbiI1RNp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 13:13:45 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89CD0F1854
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 10:13:15 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id v1so12270260plo.9
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 10:13:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date;
-        bh=d6n7vVcWWAUhY50nx1oX+SjTLgFqeY1Yq8iTalyfqd0=;
-        b=lIRHIZiWHITqRmakxRZHSG2SU2bpWinoR3Swar+fPYJBmT1qOO/MT6WnWN5yBDlhGu
-         /lQXgjvlz0O4V2+hnYy+98Yh09p4wB3YUjZ22bnBWEa9dMSwUm7gVI6Ae5kXcacwBn8L
-         BoOjiPYblWsCdJGhH6goLGXzHmU5/JoB80oyI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=d6n7vVcWWAUhY50nx1oX+SjTLgFqeY1Yq8iTalyfqd0=;
-        b=0Yb49KZb68S6h4pxZ3shgnhUnr8m6a5bDDTmesaSzUdjx97RIXbRBOFZxTjtRp3yBh
-         xzCm0gDClnZlWoNNSAL64xDouBFTuyQmRs09pSi8IvodTBACHih7VDau6D16FYl//ZkT
-         Rlb5MI1LbxicouZzZoz+RKWHvXyNR+4LANjVVcBiVS0TOOEdlLHflQm4nNSfTuOpt1U/
-         +CIuKukugE+quM2Mhdf3r7qWxtX+97Fi6CfUtTWAsrSd2wNSzYoC642u/Z2pHbiYZf+K
-         UlXelAzhDF5D10T4cHLmO+5y17YnXABZEFNaHWugrpE+O5tyQqOOtubSPuY4Ti1b39hg
-         sW+Q==
-X-Gm-Message-State: ACrzQf3CcQ7AgcxDEt4+/HgUEY+fAydfk1bBe2wshVVFnotZLVvV/xWe
-        P8CYn4Cgo7efK1ppjAie26PTMw==
-X-Google-Smtp-Source: AMsMyM6sCBBdOCLg/ekAp2unP2+2il2GSYEdTvWU2WPyIonTKW/L3Ua/pLmu7ZGbcH4WrqStMgqaPQ==
-X-Received: by 2002:a17:902:db08:b0:176:d40e:4b57 with SMTP id m8-20020a170902db0800b00176d40e4b57mr799977plx.172.1664385194575;
-        Wed, 28 Sep 2022 10:13:14 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id q3-20020a170902dac300b00177faf558b5sm4082449plx.250.2022.09.28.10.13.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Sep 2022 10:13:13 -0700 (PDT)
-Date:   Wed, 28 Sep 2022 10:13:12 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Vlastimil Babka <vbabka@suse.cz>, Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Marco Elver <elver@google.com>, linux-mm@kvack.org,
-        "Ruhl, Michael J" <michael.j.ruhl@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Alex Elder <elder@kernel.org>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Daniel Micay <danielmicay@gmail.com>,
-        Yonghong Song <yhs@fb.com>, Miguel Ojeda <ojeda@kernel.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, linux-media@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-        linux-fsdevel@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        dev@openvswitch.org, x86@kernel.org, llvm@lists.linux.dev,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH v2 01/16] slab: Remove __malloc attribute from realloc
- functions
-Message-ID: <202209281011.66DD717D@keescook>
-References: <20220923202822.2667581-1-keescook@chromium.org>
- <20220923202822.2667581-2-keescook@chromium.org>
- <CAMuHMdXK+UN1YVZm9DenuXAM8hZRUZJwp=SXsueP7sWiVU3a9A@mail.gmail.com>
+        with ESMTP id S234479AbiI1RPE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 13:15:04 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CEB05ED5D7
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 10:14:08 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 28SHDdYH2031149, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 28SHDdYH2031149
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Thu, 29 Sep 2022 01:13:39 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 29 Sep 2022 01:14:05 +0800
+Received: from localhost.localdomain (172.21.182.184) by
+ RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Thu, 29 Sep 2022 01:14:04 +0800
+From:   Chunhao Lin <hau@realtek.com>
+To:     <hkallweit1@gmail.com>
+CC:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
+        Chunhao Lin <hau@realtek.com>
+Subject: [PATCH net-next v3] r8169: add rtl_disable_rxdvgate()
+Date:   Thu, 29 Sep 2022 01:13:56 +0800
+Message-ID: <20220928171356.3951-1-hau@realtek.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAMuHMdXK+UN1YVZm9DenuXAM8hZRUZJwp=SXsueP7sWiVU3a9A@mail.gmail.com>
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [172.21.182.184]
+X-ClientProxiedBy: RTEXH36504.realtek.com.tw (172.21.6.27) To
+ RTEXMBS04.realtek.com.tw (172.21.6.97)
+X-KSE-ServerInfo: RTEXMBS04.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: trusted connection
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 09/28/2022 17:00:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzkvMjggpFWkyCAwMzoyMTowMA==?=
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 28, 2022 at 09:26:15AM +0200, Geert Uytterhoeven wrote:
-> Hi Kees,
-> 
-> On Fri, Sep 23, 2022 at 10:35 PM Kees Cook <keescook@chromium.org> wrote:
-> > The __malloc attribute should not be applied to "realloc" functions, as
-> > the returned pointer may alias the storage of the prior pointer. Instead
-> > of splitting __malloc from __alloc_size, which would be a huge amount of
-> > churn, just create __realloc_size for the few cases where it is needed.
-> >
-> > Additionally removes the conditional test for __alloc_size__, which is
-> > always defined now.
-> >
-> > Cc: Christoph Lameter <cl@linux.com>
-> > Cc: Pekka Enberg <penberg@kernel.org>
-> > Cc: David Rientjes <rientjes@google.com>
-> > Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
-> > Cc: Andrew Morton <akpm@linux-foundation.org>
-> > Cc: Vlastimil Babka <vbabka@suse.cz>
-> > Cc: Roman Gushchin <roman.gushchin@linux.dev>
-> > Cc: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-> > Cc: Marco Elver <elver@google.com>
-> > Cc: linux-mm@kvack.org
-> > Signed-off-by: Kees Cook <keescook@chromium.org>
-> 
-> Thanks for your patch, which is now commit 63caa04ec60583b1 ("slab:
-> Remove __malloc attribute from realloc functions") in next-20220927.
-> 
-> Noreply@ellerman.id.au reported all gcc8-based builds to fail
-> (e.g. [1], more at [2]):
-> 
->     In file included from <command-line>:
->     ./include/linux/percpu.h: In function ‘__alloc_reserved_percpu’:
->     ././include/linux/compiler_types.h:279:30: error: expected
-> declaration specifiers before ‘__alloc_size__’
->      #define __alloc_size(x, ...) __alloc_size__(x, ## __VA_ARGS__) __malloc
->                                   ^~~~~~~~~~~~~~
->     ./include/linux/percpu.h:120:74: note: in expansion of macro ‘__alloc_size’
->     [...]
-> 
-> It's building fine with e.g. gcc-9 (which is my usual m68k cross-compiler).
-> Reverting this commit on next-20220927 fixes the issue.
-> 
-> [1] http://kisskb.ellerman.id.au/kisskb/buildresult/14803908/
-> [2] http://kisskb.ellerman.id.au/kisskb/head/1bd8b75fe6adeaa89d02968bdd811ffe708cf839/
+rtl_disable_rxdvgate() is used for disable RXDV_GATE. It is opposite function
+of rtl_enable_rxdvgate().
 
-Eek! Thanks for letting me know. I'm confused about this --
-__alloc_size__ wasn't optional in compiler_attributes.h -- but obviously
-I broke something! I'll go figure this out.
+Disable RXDV_GATE does not have to delay. So in this patch, also remove the
+delay after disale RXDV_GATE.
 
--Kees
+Signed-off-by: Chunhao Lin <hau@realtek.com>
+---
+v2 -> v3: update chagelog
+v1 -> v2: update commit message
 
+ drivers/net/ethernet/realtek/r8169_main.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 9c21894d0518..956562797496 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -2443,6 +2443,11 @@ static void rtl_wait_txrx_fifo_empty(struct rtl8169_private *tp)
+ 	}
+ }
+ 
++static void rtl_disable_rxdvgate(struct rtl8169_private *tp)
++{
++	RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
++}
++
+ static void rtl_enable_rxdvgate(struct rtl8169_private *tp)
+ {
+ 	RTL_W32(tp, MISC, RTL_R32(tp, MISC) | RXDV_GATED_EN);
+@@ -2960,7 +2965,7 @@ static void rtl_hw_start_8168g(struct rtl8169_private *tp)
+ 	rtl_reset_packet_filter(tp);
+ 	rtl_eri_write(tp, 0x2f8, ERIAR_MASK_0011, 0x1d8f);
+ 
+-	RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
++	rtl_disable_rxdvgate(tp);
+ 
+ 	rtl_eri_write(tp, 0xc0, ERIAR_MASK_0011, 0x0000);
+ 	rtl_eri_write(tp, 0xb8, ERIAR_MASK_0011, 0x0000);
+@@ -3198,7 +3203,7 @@ static void rtl_hw_start_8168h_1(struct rtl8169_private *tp)
+ 
+ 	rtl_eri_write(tp, 0x5f0, ERIAR_MASK_0011, 0x4f87);
+ 
+-	RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
++	rtl_disable_rxdvgate(tp);
+ 
+ 	rtl_eri_write(tp, 0xc0, ERIAR_MASK_0011, 0x0000);
+ 	rtl_eri_write(tp, 0xb8, ERIAR_MASK_0011, 0x0000);
+@@ -3249,7 +3254,7 @@ static void rtl_hw_start_8168ep(struct rtl8169_private *tp)
+ 
+ 	rtl_eri_write(tp, 0x5f0, ERIAR_MASK_0011, 0x4f87);
+ 
+-	RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
++	rtl_disable_rxdvgate(tp);
+ 
+ 	rtl_eri_write(tp, 0xc0, ERIAR_MASK_0011, 0x0000);
+ 	rtl_eri_write(tp, 0xb8, ERIAR_MASK_0011, 0x0000);
+@@ -3313,7 +3318,7 @@ static void rtl_hw_start_8117(struct rtl8169_private *tp)
+ 
+ 	rtl_eri_write(tp, 0x5f0, ERIAR_MASK_0011, 0x4f87);
+ 
+-	RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
++	rtl_disable_rxdvgate(tp);
+ 
+ 	rtl_eri_write(tp, 0xc0, ERIAR_MASK_0011, 0x0000);
+ 	rtl_eri_write(tp, 0xb8, ERIAR_MASK_0011, 0x0000);
+@@ -3557,8 +3562,7 @@ static void rtl_hw_start_8125_common(struct rtl8169_private *tp)
+ 	else
+ 		rtl8125a_config_eee_mac(tp);
+ 
+-	RTL_W32(tp, MISC, RTL_R32(tp, MISC) & ~RXDV_GATED_EN);
+-	udelay(10);
++	rtl_disable_rxdvgate(tp);
+ }
+ 
+ static void rtl_hw_start_8125a_2(struct rtl8169_private *tp)
 -- 
-Kees Cook
+2.25.1
+
