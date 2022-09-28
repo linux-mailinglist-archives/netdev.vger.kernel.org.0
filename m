@@ -2,102 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 43F8B5EDE83
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 16:12:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 369285EDE97
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 16:16:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234226AbiI1OMT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 10:12:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40948 "EHLO
+        id S234302AbiI1OQQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 10:16:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232702AbiI1OMR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 10:12:17 -0400
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0496C9E0FC
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 07:12:13 -0700 (PDT)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-3529c491327so36455027b3.13
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 07:12:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=ZC+JTcGztSKl+RjKLwGKj/o8HbqE0xt0q2yyLJn8QCg=;
-        b=rQNXEyB/J42WFQx1vYAH9CBRpkSqjcgTgMqF/3AraY0P/UgUgdT5KWxjQBP/xro4tB
-         9w2Ec9U+bW8r72c+d6wca0RSUvB6a17vtOP0fPcbHVRDd89dRa79d5tuf0bCAblvwOYP
-         j5mz0T/RSYf73mA2Ie8kYuM75QMiQwbu3hECQ1W9rSZG3BbnKZRmN0WZQUI+0v4qAV4z
-         7Ba/WGv1U5hcTRDfOQxv5UE3SskgwbttjvRUw+fqtzxamXU5u8tG7dNd2DFSb5qoOkhM
-         hPzShNHZVCF7yryDi9CkW8xPfXwufCSmlgt3Kk82Bakfifv9oCBW4o+ytIzE6ISt/C6G
-         yfZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=ZC+JTcGztSKl+RjKLwGKj/o8HbqE0xt0q2yyLJn8QCg=;
-        b=IQgNf4hexRcw/eePck2oE3mOw6E6gmvNymAiX7/eJVp8tuEXo3BBS5d4G0PUfeQZ7b
-         MR9giIjHrlQJKUhkvEebxGkBJCiEevdUMbdiCjzZckhip5Q8RCjIF53lh4i5Q7pY4nFa
-         S0ZI37tp/adXrxXCvy8h6eaYrsuh51L8yXRtl27gEyk19vbO8HWKY3bURSHDrnB08m9F
-         g/5W0zqoSwSW0QyznhAfbtsvjIT/tGE5cGuvqOODGERRaYTirlV8fvO4NJnkrLuqAwrn
-         NIQ912aDT+rhij0/BrXlmi6Rvmg8dO9SjKyxHW99Zp9UMacosCYZU7gE2WIgaBhBWUPa
-         oQxA==
-X-Gm-Message-State: ACrzQf2i6nkpcweCyFnbUn3JRTLniQ+MNLmwn/Ys9JiPXpyyOcVmJoYK
-        FcT3FYmszpaOmtBaRIvouTAvZw8Vw9J//JMVa6FtbA==
-X-Google-Smtp-Source: AMsMyM6Xj55/2opV90t0yd1EijPH3xcxgUXpi/m4kiNubkL6itrp47qTLSZaWKxZAfWtPO39vHKLm3WgHdiAkiK4KRc=
-X-Received: by 2002:a0d:e244:0:b0:351:ce09:1b13 with SMTP id
- l65-20020a0de244000000b00351ce091b13mr8303180ywe.332.1664374331914; Wed, 28
- Sep 2022 07:12:11 -0700 (PDT)
+        with ESMTP id S234297AbiI1OQN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 10:16:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DF65642FE
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 07:16:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6098E61E8B
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 14:16:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41A54C433D7;
+        Wed, 28 Sep 2022 14:16:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664374570;
+        bh=8m53XULflZ94piZwa4qAbvBCkDL2SDvWTKQatuyS2ao=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=N+NqUfiyJJ9uTrLiGsubVkcaM+VhZ/daCMTZBFHRiaHsbRBy3Q0g9Gec4A1h04TSW
+         kBYdMVyBRwnUPjO0qKErTCbWd7ARbOq8/higdDj1vC9w+Dck+4mEVNzbLPjwLCcc1V
+         6/au5Pxdoh2qBZxoeB4gcwwvvO0HJzo09sSVbUXc5+0fsmi/zhDdlvtSIvzyjPiKnC
+         b42vckkHNwplCUjNwI+wb7zPts2bVD/QQakMs6XYjHJ2tiDWeVaVcLi9cy1W4PVK34
+         Xx6uLB30YnxrnDsA5SpZuOLebWf5l+FYSE2FhUmIXCOrfNnZEeO1SMCtpV7sZKznV+
+         RQYUm9tlXkotw==
+Date:   Wed, 28 Sep 2022 07:16:09 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Florent Fourcot <florent.fourcot@wifirst.fr>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCHv3 net-next] rtnetlink: Honour NLM_F_ECHO flag in
+ rtnl_{new, set, del}link
+Message-ID: <20220928071609.5af4bb4f@kernel.org>
+In-Reply-To: <YzO943B4Id2jLZkI@Laptop-X1>
+References: <20220927041303.152877-1-liuhangbin@gmail.com>
+        <YzO943B4Id2jLZkI@Laptop-X1>
 MIME-Version: 1.0
-References: <6b6f65957c59f86a353fc09a5127e83a32ab5999.1664350652.git.pabeni@redhat.com>
-In-Reply-To: <6b6f65957c59f86a353fc09a5127e83a32ab5999.1664350652.git.pabeni@redhat.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 28 Sep 2022 07:11:59 -0700
-Message-ID: <CANn89iJ3B1kcYFurAw=84cswXNSS26ER5cutYG9k9YN+zJNJ+w@mail.gmail.com>
-Subject: Re: [PATCH net-next v4] net: skb: introduce and use a single page
- frag cache
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexander H Duyck <alexanderduyck@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 28, 2022 at 1:43 AM Paolo Abeni <pabeni@redhat.com> wrote:
->
-> After commit 3226b158e67c ("net: avoid 32 x truesize under-estimation
-> for tiny skbs") we are observing 10-20% regressions in performance
-> tests with small packets. The perf trace points to high pressure on
-> the slab allocator.
->
-> This change tries to improve the allocation schema for small packets
-> using an idea originally suggested by Eric: a new per CPU page frag is
-> introduced and used in __napi_alloc_skb to cope with small allocation
-> requests.
->
-> To ensure that the above does not lead to excessive truesize
-> underestimation, the frag size for small allocation is inflated to 1K
-> and all the above is restricted to build with 4K page size.
->
-> Note that we need to update accordingly the run-time check introduced
-> with commit fd9ea57f4e95 ("net: add napi_get_frags_check() helper").
->
-> Alex suggested a smart page refcount schema to reduce the number
-> of atomic operations and deal properly with pfmemalloc pages.
->
-> Under small packet UDP flood, I measure a 15% peak tput increases.
->
-> Suggested-by: Eric Dumazet <eric.dumazet@gmail.com>
-> Suggested-by: Alexander H Duyck <alexanderduyck@fb.com>
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> ---
+On Wed, 28 Sep 2022 11:22:11 +0800 Hangbin Liu wrote:
+> Hi Jakub,
+> On Tue, Sep 27, 2022 at 12:13:03PM +0800, Hangbin Liu wrote:
+> > @@ -3009,6 +3012,11 @@ static int do_setlink(const struct sk_buff *skb,
+> >  		}
+> >  	}
+> >  
+> > +	nskb = rtmsg_ifinfo_build_skb(RTM_NEWLINK, dev, 0, 0, GFP_KERNEL, NULL,
+> > +				      0, pid, nlh->nlmsg_seq);
+> > +	if (nskb)
+> > +		rtnl_notify(nskb, dev_net(dev), pid, RTNLGRP_LINK, nlh, GFP_KERNEL);  
+> 
+> BTW, in do_setlink() I planed to use RTM_SETLINK. But I found iproute2 use
+> RTM_NEWLINK to set links. And I saw an old doc[1] said
+> 
+> """
+> - RTM_SETLINK does not follow the usual rtnetlink conventions and ignores
+>   all netlink flags
+> 
+> The RTM_NEWLINK message type is a superset of RTM_SETLINK, it allows
+> to change both driver specific and generic attributes of the device.
+> """
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+Interesting, so we actually do use this "NEW as SET" thing.
 
-Thanks !
+> So I just use RTM_NEWLINK for the notification. Do you think if we should
+> use RTM_SETLINK?
+
+FWIW I think it's typical for rtnl / classic netlink to generate 
+"new object" notification whenever object is changed, rather than
+a notification about just the change.
