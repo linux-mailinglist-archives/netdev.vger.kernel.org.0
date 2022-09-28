@@ -2,61 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 878515ED3C4
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 06:05:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E92D5ED3CD
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 06:10:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230038AbiI1EFT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 00:05:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46960 "EHLO
+        id S231419AbiI1EKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 00:10:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231419AbiI1EFR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 00:05:17 -0400
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7F05E1189
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 21:05:13 -0700 (PDT)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-3511e80f908so55826157b3.2
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 21:05:13 -0700 (PDT)
+        with ESMTP id S229838AbiI1EKg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 00:10:36 -0400
+Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D30DF127C86
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 21:10:34 -0700 (PDT)
+Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-35393e71e1eso1831287b3.9
+        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 21:10:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date;
-        bh=RPf4151VG3PqLiTuQMZei3P/bXFjSC+7L6moUhbV24Q=;
-        b=C0Mbe//EoVN+AFTPrufHnV6QnEf8K6fI5pOkqmq5QI+EDohT8Mi4kp6w4fPWm3Sk5E
-         pVZ1g80EeLkQWbGaAo1fbjfFsnkvKpceAXiuT2UrfeUJ77a0AGejk0SlCRtqmt0Z5E31
-         iXAL0GiCqtY2CP+SaDuZKJfDA1su6LlbKyxKly/949xsA2Vrwzoxpo9HXzTH5IMtgC0o
-         XXI2m23GBKh7Uc7NjhAR+CrwSC4SqGDp8ZwyYJxyCLcNG9D6GeRastiFCZmuBfhw+NgI
-         FMD5pamuwgZuuXDTDRRG1yDl3QbG64OgLGe6TCR23PnzVYxkSMecq/fiLHNpVubuTYAB
-         DwAQ==
+        bh=QjIVaKLzClHMiAxq9fOZFFdrChnDpkTP4k4IQgSTM8U=;
+        b=MGx0BreEOY/Q8jUkfiwrckK9ze5Xv+ZeERkrXpBh7tg36Bca5OroQv1Onh36njsAGH
+         OkYjEwWXH8N8oVOyf7X4MIo6+/+W6nPF4lrqitm6rQjZl9E2GH4J8tLFQ+yDodkvIoO0
+         kpfkSYUa8sfjXdK7cGq4lrh9M04CkzlwC3yNdlmdTlDhDX5DEYjNzvqQ5ZQ+32pc/jwR
+         xjT6PcLzwp1z7HTeYXfOg0NTbrIPofpaBuPMAZiq2d8f2kp+AYkaFXz/NPRWGn8Ric6Q
+         RYZnqmsCGFpwGmcdboC9mM3gVwb3u2SjUiHfUL1V2EPPbDQeiEXgtu0p9zo1ngxCfzk5
+         kYTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=RPf4151VG3PqLiTuQMZei3P/bXFjSC+7L6moUhbV24Q=;
-        b=OEM1vaK3J3jC3y5Pvflet7O/o7Rh/eulrr9r3uAuSdSPzsRY5eMCX9vFm9Z3njA6Bi
-         jyPXeq1BVgxk7pzBFwwiUHUU51PqRMhz+5gfuescEVw02y7QTnb1P7rXuT2mX7b8xio/
-         dohH5isefIvG5z10/IdZX/kkTq0ECwlpiNDie1/1Cj/+TFmtQqfqSG4pDBTtJtV00U2Z
-         98a759mlIHPyrdSNWCcB4eKiYRZ6H/ZzMWgLzuyYnIAH1czuYTppXH6d2ifbZ84xHZfl
-         EyhsKhLfyLr061WusT9IEWjcS6HRGcXHD/rKa4YZZje/fV+3yq+xbhNXG5KxR/keuc6/
-         IbJA==
-X-Gm-Message-State: ACrzQf2X55nL03olurJlauFYmbtCClM8045oPOtjmOZAc4kw2etFyKt7
-        ZIKvVJrJwQFdQRzvu1pzKFkoqeLx+riO27d5Q+pQ80ywj9PG+g==
-X-Google-Smtp-Source: AMsMyM6GVN09ot7T3GipxCytlw8bG4CGhtuCfNG/3eqfOiZoW3I8dA9IlSCA3RtKONtlhuUvuTv24yq7KtcFCds7ns0=
-X-Received: by 2002:a81:4e0d:0:b0:351:99d8:1862 with SMTP id
- c13-20020a814e0d000000b0035199d81862mr7376833ywb.278.1664337912381; Tue, 27
- Sep 2022 21:05:12 -0700 (PDT)
+        bh=QjIVaKLzClHMiAxq9fOZFFdrChnDpkTP4k4IQgSTM8U=;
+        b=vIS8+yR7gzErjP0vqDh+TDDbkTmwCotgztvaG651ij1oED0vl3lwrBaDf6iXRFhhrH
+         LzaOXe67F7Fl8OSzQ3e7zEbiCsWZE930WzdQuZRm4XdT36xt0TEv7G+Ojpodk4DN4h+Y
+         RKrX8YEtRlv0olS8Pv+mrbP2oOp0D3W9ZLA21lvh3GiPCoD/tlHtG7lAIll1X6XR/+v9
+         e7XXcjSM8VMEdL6r0ChowbqdzbkWlSCDYhqL1vXIkKjfSmQKYic3pd+Ok+c/Bo/Tlh6w
+         l6RqnfzaZK4PbSM5tJYnGEjDTdQ6BvYVSFzqkY7Q5jBhJYJOU6A/2fjKvPYzDXYDA+oo
+         eZVA==
+X-Gm-Message-State: ACrzQf1Uh2JuhEOvQhkThLuom23Q29AervV9h0smhFRbrFhx8itS76iC
+        QZ911gAh14El4FcVZmuY4cIFurWyAqshiFd1SUd4mg==
+X-Google-Smtp-Source: AMsMyM5zeG7WVWRP20SS9ErK3iovobrvHs5OYA28laXXtpSwaoY0noGE29PYMqRAgzme8WZGEVUZx7i/XoWbIqeup2E=
+X-Received: by 2002:a0d:d508:0:b0:352:43a6:7ddc with SMTP id
+ x8-20020a0dd508000000b0035243a67ddcmr5223195ywd.55.1664338233797; Tue, 27 Sep
+ 2022 21:10:33 -0700 (PDT)
 MIME-Version: 1.0
-References: <8596dd058b9f94f519a8f035dbf8a94670c1ccea.1663953061.git.pabeni@redhat.com>
-In-Reply-To: <8596dd058b9f94f519a8f035dbf8a94670c1ccea.1663953061.git.pabeni@redhat.com>
+References: <CANn89iL00_Gz+jiczvmHPCV9nO7Lzctq_JLyp1V-0obuPWBanQ@mail.gmail.com>
+ <20220928040014.76884-1-kuniyu@amazon.com>
+In-Reply-To: <20220928040014.76884-1-kuniyu@amazon.com>
 From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 27 Sep 2022 21:05:01 -0700
-Message-ID: <CANn89i+NWzLxyXPMysaLrMZ-_fWmKUBTFdoL74exBzsSPi8Www@mail.gmail.com>
-Subject: Re: [PATCH net-next v3] net: skb: introduce and use a single page
- frag cache
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+Date:   Tue, 27 Sep 2022 21:10:22 -0700
+Message-ID: <CANn89iKZg3y41TXJgv3UPD-puOhtZ=NqVBU6G-RL8TPONEwy_Q@mail.gmail.com>
+Subject: Re: [PATCH v2 net 3/5] tcp/udp: Call inet6_destroy_sock() in IPv6 sk->sk_destruct().
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     David Miller <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexander H Duyck <alexanderduyck@fb.com>
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
@@ -69,267 +72,187 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 23, 2022 at 10:14 AM Paolo Abeni <pabeni@redhat.com> wrote:
+On Tue, Sep 27, 2022 at 9:00 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
 >
-> After commit 3226b158e67c ("net: avoid 32 x truesize under-estimation
-> for tiny skbs") we are observing 10-20% regressions in performance
-> tests with small packets. The perf trace points to high pressure on
-> the slab allocator.
+> From:   Eric Dumazet <edumazet@google.com>
+> Date:   Tue, 27 Sep 2022 20:43:51 -0700
+> > On Tue, Sep 27, 2022 at 5:29 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+> > >
+> > > Originally, inet6_sk(sk)->XXX were changed under lock_sock(), so we were
+> > > able to clean them up by calling inet6_destroy_sock() during the IPv6 ->
+> > > IPv4 conversion by IPV6_ADDRFORM.  However, commit 03485f2adcde ("udpv6:
+> > > Add lockless sendmsg() support") added a lockless memory allocation path,
+> > > which could cause a memory leak:
+> > >
+> > > setsockopt(IPV6_ADDRFORM)                 sendmsg()
+> > > +-----------------------+                 +-------+
+> > > - do_ipv6_setsockopt(sk, ...)             - udpv6_sendmsg(sk, ...)
+> > >   - lock_sock(sk)                           ^._ called via udpv6_prot
+> > >   - WRITE_ONCE(sk->sk_prot, &tcp_prot)          before WRITE_ONCE()
+> > >   - inet6_destroy_sock()
+> > >   - release_sock(sk)                        - ip6_make_skb(sk, ...)
+> > >                                               ^._ lockless fast path for
+> > >                                                   the non-corking case
+> > >
+> > >                                               - __ip6_append_data(sk, ...)
+> > >                                                 - ipv6_local_rxpmtu(sk, ...)
+> > >                                                   - xchg(&np->rxpmtu, skb)
+> > >                                                     ^._ rxpmtu is never freed.
+> > >
+> > >                                             - lock_sock(sk)
+> > >
+> > > For now, rxpmtu is only the case, but let's call inet6_destroy_sock()
+> > > in IPv6 sk->sk_destruct() not to miss the future change and a similar
+> > > bug fixed in commit e27326009a3d ("net: ping6: Fix memleak in
+> > > ipv6_renew_options().")
+> >
+> > I do not see how your patches prevent rxpmtu to be created at the time
+> > of IPV6_ADDRFROM ?
+> >
+> > There seem to be races.
+> >
+> > lockless UDP sendmsg() is a disaster really.
 >
-> This change tries to improve the allocation schema for small packets
-> using an idea originally suggested by Eric: a new per CPU page frag is
-> introduced and used in __napi_alloc_skb to cope with small allocation
-> requests.
->
-> To ensure that the above does not lead to excessive truesize
-> underestimation, the frag size for small allocation is inflated to 1K
-> and all the above is restricted to build with 4K page size.
->
-> Note that we need to update accordingly the run-time check introduced
-> with commit fd9ea57f4e95 ("net: add napi_get_frags_check() helper").
->
-> Alex suggested a smart page refcount schema to reduce the number
-> of atomic operations and deal properly with pfmemalloc pages.
->
-> Under small packet UDP flood, I measure a 15% peak tput increases.
->
-> Suggested-by: Eric Dumazet <eric.dumazet@gmail.com>
-> Suggested-by: Alexander H Duyck <alexanderduyck@fb.com>
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> ---
-> v2 -> v3:
->  - updated Alex email address
->  - fixed build with !NAPI_HAS_SMALL_PAGE_FRAG
->
-> v1 -> v2:
->  - better page_frag_alloc_1k() (Alex & Eric)
->  - avoid duplicate code and gfp_flags misuse in __napi_alloc_skb() (Alex)
-> ---
->  include/linux/netdevice.h |   1 +
->  net/core/dev.c            |  17 ------
->  net/core/skbuff.c         | 112 ++++++++++++++++++++++++++++++++++++--
->  3 files changed, 108 insertions(+), 22 deletions(-)
->
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index 9f42fc871c3b..a1938560192a 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -3822,6 +3822,7 @@ void netif_receive_skb_list(struct list_head *head);
->  gro_result_t napi_gro_receive(struct napi_struct *napi, struct sk_buff *skb);
->  void napi_gro_flush(struct napi_struct *napi, bool flush_old);
->  struct sk_buff *napi_get_frags(struct napi_struct *napi);
-> +void napi_get_frags_check(struct napi_struct *napi);
->  gro_result_t napi_gro_frags(struct napi_struct *napi);
->  struct packet_offload *gro_find_receive_by_type(__be16 type);
->  struct packet_offload *gro_find_complete_by_type(__be16 type);
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index d66c73c1c734..fa53830d0683 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -6358,23 +6358,6 @@ int dev_set_threaded(struct net_device *dev, bool threaded)
->  }
->  EXPORT_SYMBOL(dev_set_threaded);
->
-> -/* Double check that napi_get_frags() allocates skbs with
-> - * skb->head being backed by slab, not a page fragment.
-> - * This is to make sure bug fixed in 3226b158e67c
-> - * ("net: avoid 32 x truesize under-estimation for tiny skbs")
-> - * does not accidentally come back.
-> - */
-> -static void napi_get_frags_check(struct napi_struct *napi)
-> -{
-> -       struct sk_buff *skb;
-> -
-> -       local_bh_disable();
-> -       skb = napi_get_frags(napi);
-> -       WARN_ON_ONCE(skb && skb->head_frag);
-> -       napi_free_frags(napi);
-> -       local_bh_enable();
-> -}
-> -
->  void netif_napi_add_weight(struct net_device *dev, struct napi_struct *napi,
->                            int (*poll)(struct napi_struct *, int), int weight)
->  {
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index f1b8b20fc20b..e7578549a561 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -134,8 +134,73 @@ static void skb_under_panic(struct sk_buff *skb, unsigned int sz, void *addr)
->  #define NAPI_SKB_CACHE_BULK    16
->  #define NAPI_SKB_CACHE_HALF    (NAPI_SKB_CACHE_SIZE / 2)
->
-> +/* the compiler doesn't like 'SKB_TRUESIZE(GRO_MAX_HEAD) > 512', but we
-> + * can imply such condition checking the double word and MAX_HEADER size
-> + */
-> +#if PAGE_SIZE == SZ_4K && (defined(CONFIG_64BIT) || MAX_HEADER > 64)
+> I think we are never able to prevent it and races exist unless we remove
+> the lockless path itself, so the patch makes sure to free rxpmtu at least
+> when we close() the socket.  Currently, we can not even free it.
 
-This looks quite convoluted to me.
-It hides the relation between GRO_MAX_HEAD and MAX_HEADER ?
-Is anyone going to notice if we consume 1K instead of 512 bytes on
-32bit arches, and when LL_MAX_HEADER==32
-and no tunnel is enabled ?
+I am saying your patches do not guarantee the rxpmtu is freed at close() time.
 
-I would simply use
-
-#if PAGE_SIZE == SZ_4K
+Once the v6 socket has been transformed to IPv4 one,
+inet6_sock_destruct() is not going to be called.
 
 
-> +
-> +#define NAPI_HAS_SMALL_PAGE_FRAG       1
-> +#define NAPI_SMALL_PAGE_PFMEMALLOC(nc) ((nc).pfmemalloc)
-> +
-> +/* specializzed page frag allocator using a single order 0 page
 
-specialized
-
-> + * and slicing it into 1K sized fragment. Constrained to system
-> + * with:
-> + * - a very limited amount of 1K fragments fitting a single
-> + *   page - to avoid excessive truesize underestimation
-> + * - reasonably high truesize value for napi_get_frags()
-> + *   allocation - to avoid memory usage increased compared
-> + *   to kalloc, see __napi_alloc_skb()
-> + */
-> +
-> +struct page_frag_1k {
-> +       void *va;
-> +       u16 offset;
-> +       bool pfmemalloc;
-> +};
-> +
-> +static void *page_frag_alloc_1k(struct page_frag_1k *nc, gfp_t gfp)
-> +{
-> +       struct page *page;
-> +       int offset;
-> +
-> +       offset = nc->offset - SZ_1K;
-> +       if (likely(offset >= 0))
-> +               goto use_frag;
-> +
-> +       page = alloc_pages_node(NUMA_NO_NODE, gfp, 0);
-> +       if (!page)
-> +               return NULL;
-> +
-> +       nc->va = page_address(page);
-> +       nc->pfmemalloc = page_is_pfmemalloc(page);
-> +       offset = PAGE_SIZE - SZ_1K;
-> +       page_ref_add(page, offset / SZ_1K);
-> +
-> +use_frag:
-> +       nc->offset = offset;
-> +       return nc->va + offset;
-> +}
-> +#else
-> +
-> +/* the small page is actually unused in this build; add dummy helpers
-> + * to plase the compiler and avoiding later preprocessor's conditionals
-> + */
-> +#define NAPI_HAS_SMALL_PAGE_FRAG       0
-> +#define NAPI_SMALL_PAGE_PFMEMALLOC(nc) false
-> +
-> +struct page_frag_1k {
-> +};
-> +
-> +static void *page_frag_alloc_1k(struct page_frag_1k *nc, gfp_t gfp_mask)
-> +{
-> +       return NULL;
-> +}
-> +
-> +#endif
-> +
->  struct napi_alloc_cache {
->         struct page_frag_cache page;
-> +       struct page_frag_1k page_small;
->         unsigned int skb_count;
->         void *skb_cache[NAPI_SKB_CACHE_SIZE];
->  };
-> @@ -143,6 +208,23 @@ struct napi_alloc_cache {
->  static DEFINE_PER_CPU(struct page_frag_cache, netdev_alloc_cache);
->  static DEFINE_PER_CPU(struct napi_alloc_cache, napi_alloc_cache);
 >
-> +/* Double check that napi_get_frags() allocates skbs with
-> + * skb->head being backed by slab, not a page fragment.
-> + * This is to make sure bug fixed in 3226b158e67c
-> + * ("net: avoid 32 x truesize under-estimation for tiny skbs")
-> + * does not accidentally come back.
-> + */
-> +void napi_get_frags_check(struct napi_struct *napi)
-> +{
-> +       struct sk_buff *skb;
-> +
-> +       local_bh_disable();
-> +       skb = napi_get_frags(napi);
-> +       WARN_ON_ONCE(!NAPI_HAS_SMALL_PAGE_FRAG && skb && skb->head_frag);
-> +       napi_free_frags(napi);
-> +       local_bh_enable();
-> +}
-> +
->  void *__napi_alloc_frag_align(unsigned int fragsz, unsigned int align_mask)
->  {
->         struct napi_alloc_cache *nc = this_cpu_ptr(&napi_alloc_cache);
-> @@ -561,6 +643,7 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
->  {
->         struct napi_alloc_cache *nc;
->         struct sk_buff *skb;
-> +       bool pfmemalloc;
->         void *data;
 >
->         DEBUG_NET_WARN_ON_ONCE(!in_softirq());
-> @@ -568,8 +651,10 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
->
->         /* If requested length is either too small or too big,
->          * we use kmalloc() for skb->head allocation.
-> +        * When the small frag allocator is available, prefer it over kmalloc
-> +        * for small fragments
->          */
-> -       if (len <= SKB_WITH_OVERHEAD(1024) ||
-> +       if ((!NAPI_HAS_SMALL_PAGE_FRAG && len <= SKB_WITH_OVERHEAD(1024)) ||
->             len > SKB_WITH_OVERHEAD(PAGE_SIZE) ||
->             (gfp_mask & (__GFP_DIRECT_RECLAIM | GFP_DMA))) {
->                 skb = __alloc_skb(len, gfp_mask, SKB_ALLOC_RX | SKB_ALLOC_NAPI,
-> @@ -580,13 +665,30 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
->         }
->
->         nc = this_cpu_ptr(&napi_alloc_cache);
-> -       len += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-> -       len = SKB_DATA_ALIGN(len);
->
->         if (sk_memalloc_socks())
->                 gfp_mask |= __GFP_MEMALLOC;
->
-> -       data = page_frag_alloc(&nc->page, len, gfp_mask);
-> +       if (NAPI_HAS_SMALL_PAGE_FRAG && len <= SKB_WITH_OVERHEAD(1024)) {
-> +               /* we are artificially inflating the allocation size, but
-> +                * that is not as bad as it may look like, as:
-> +                * - 'len' less then GRO_MAX_HEAD makes little sense
-> +                * - larger 'len' values lead to fragment size above 512 bytes
-> +                *   as per NAPI_HAS_SMALL_PAGE_FRAG definition
-> +                * - kmalloc would use the kmalloc-1k slab for such values
-> +                */
-> +               len = SZ_1K;
-> +
-> +               data = page_frag_alloc_1k(&nc->page_small, gfp_mask);
-> +               pfmemalloc = NAPI_SMALL_PAGE_PFMEMALLOC(nc->page_small);
-> +       } else {
-> +               len += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-> +               len = SKB_DATA_ALIGN(len);
-> +
-> +               data = page_frag_alloc(&nc->page, len, gfp_mask);
-> +               pfmemalloc = nc->page.pfmemalloc;
-> +       }
-> +
->         if (unlikely(!data))
->                 return NULL;
->
-> @@ -596,7 +698,7 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
->                 return NULL;
->         }
->
-> -       if (nc->page.pfmemalloc)
-> +       if (pfmemalloc)
->                 skb->pfmemalloc = 1;
->         skb->head_frag = 1;
->
-> --
-> 2.37.3
->
+> > > We can now remove all inet6_destroy_sock() calls from IPv6 protocol
+> > > specific ->destroy() functions, but such changes are invasive to
+> > > backport.  So they can be posted as a follow-up later for net-next.
+> > >
+> > > Fixes: 03485f2adcde ("udpv6: Add lockless sendmsg() support")
+> > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> > > ---
+> > >  include/net/ipv6.h  |  1 +
+> > >  include/net/udp.h   |  2 +-
+> > >  net/ipv4/udp.c      |  8 ++++++--
+> > >  net/ipv6/af_inet6.c |  9 ++++++++-
+> > >  net/ipv6/udp.c      | 15 ++++++++++++++-
+> > >  5 files changed, 30 insertions(+), 5 deletions(-)
+> > >
+> > > diff --git a/include/net/ipv6.h b/include/net/ipv6.h
+> > > index de9dcc5652c4..11f1a9a8b066 100644
+> > > --- a/include/net/ipv6.h
+> > > +++ b/include/net/ipv6.h
+> > > @@ -1178,6 +1178,7 @@ void ipv6_icmp_error(struct sock *sk, struct sk_buff *skb, int err, __be16 port,
+> > >  void ipv6_local_error(struct sock *sk, int err, struct flowi6 *fl6, u32 info);
+> > >  void ipv6_local_rxpmtu(struct sock *sk, struct flowi6 *fl6, u32 mtu);
+> > >
+> > > +void inet6_sock_destruct(struct sock *sk);
+> > >  int inet6_release(struct socket *sock);
+> > >  int inet6_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len);
+> > >  int inet6_getname(struct socket *sock, struct sockaddr *uaddr,
+> > > diff --git a/include/net/udp.h b/include/net/udp.h
+> > > index 5ee88ddf79c3..fee053bcd17c 100644
+> > > --- a/include/net/udp.h
+> > > +++ b/include/net/udp.h
+> > > @@ -247,7 +247,7 @@ static inline bool udp_sk_bound_dev_eq(struct net *net, int bound_dev_if,
+> > >  }
+> > >
+> > >  /* net/ipv4/udp.c */
+> > > -void udp_destruct_sock(struct sock *sk);
+> > > +void udp_destruct_common(struct sock *sk);
+> > >  void skb_consume_udp(struct sock *sk, struct sk_buff *skb, int len);
+> > >  int __udp_enqueue_schedule_skb(struct sock *sk, struct sk_buff *skb);
+> > >  void udp_skb_destructor(struct sock *sk, struct sk_buff *skb);
+> > > diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+> > > index 560d9eadeaa5..a84ae44db7e2 100644
+> > > --- a/net/ipv4/udp.c
+> > > +++ b/net/ipv4/udp.c
+> > > @@ -1598,7 +1598,7 @@ int __udp_enqueue_schedule_skb(struct sock *sk, struct sk_buff *skb)
+> > >  }
+> > >  EXPORT_SYMBOL_GPL(__udp_enqueue_schedule_skb);
+> > >
+> > > -void udp_destruct_sock(struct sock *sk)
+> > > +void udp_destruct_common(struct sock *sk)
+> > >  {
+> > >         /* reclaim completely the forward allocated memory */
+> > >         struct udp_sock *up = udp_sk(sk);
+> > > @@ -1611,10 +1611,14 @@ void udp_destruct_sock(struct sock *sk)
+> > >                 kfree_skb(skb);
+> > >         }
+> > >         udp_rmem_release(sk, total, 0, true);
+> > > +}
+> > > +EXPORT_SYMBOL_GPL(udp_destruct_common);
+> > >
+> > > +static void udp_destruct_sock(struct sock *sk)
+> > > +{
+> > > +       udp_destruct_common(sk);
+> > >         inet_sock_destruct(sk);
+> > >  }
+> > > -EXPORT_SYMBOL_GPL(udp_destruct_sock);
+> > >
+> > >  int udp_init_sock(struct sock *sk)
+> > >  {
+> > > diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
+> > > index dbb1430d6cc2..0774cff62f2d 100644
+> > > --- a/net/ipv6/af_inet6.c
+> > > +++ b/net/ipv6/af_inet6.c
+> > > @@ -109,6 +109,13 @@ static __inline__ struct ipv6_pinfo *inet6_sk_generic(struct sock *sk)
+> > >         return (struct ipv6_pinfo *)(((u8 *)sk) + offset);
+> > >  }
+> > >
+> > > +void inet6_sock_destruct(struct sock *sk)
+> > > +{
+> > > +       inet6_destroy_sock(sk);
+> > > +       inet_sock_destruct(sk);
+> > > +}
+> > > +EXPORT_SYMBOL_GPL(inet6_sock_destruct);
+> > > +
+> > >  static int inet6_create(struct net *net, struct socket *sock, int protocol,
+> > >                         int kern)
+> > >  {
+> > > @@ -201,7 +208,7 @@ static int inet6_create(struct net *net, struct socket *sock, int protocol,
+> > >                         inet->hdrincl = 1;
+> > >         }
+> > >
+> > > -       sk->sk_destruct         = inet_sock_destruct;
+> > > +       sk->sk_destruct         = inet6_sock_destruct;
+> > >         sk->sk_family           = PF_INET6;
+> > >         sk->sk_protocol         = protocol;
+> > >
+> > > diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+> > > index 3366d6a77ff2..a5256f7184ab 100644
+> > > --- a/net/ipv6/udp.c
+> > > +++ b/net/ipv6/udp.c
+> > > @@ -56,6 +56,19 @@
+> > >  #include <trace/events/skb.h>
+> > >  #include "udp_impl.h"
+> > >
+> > > +static void udpv6_destruct_sock(struct sock *sk)
+> > > +{
+> > > +       udp_destruct_common(sk);
+> > > +       inet6_sock_destruct(sk);
+> > > +}
+> > > +
+> > > +static int udpv6_init_sock(struct sock *sk)
+> > > +{
+> > > +       skb_queue_head_init(&udp_sk(sk)->reader_queue);
+> > > +       sk->sk_destruct = udpv6_destruct_sock;
+> > > +       return 0;
+> > > +}
+> > > +
+> > >  static u32 udp6_ehashfn(const struct net *net,
+> > >                         const struct in6_addr *laddr,
+> > >                         const u16 lport,
+> > > @@ -1723,7 +1736,7 @@ struct proto udpv6_prot = {
+> > >         .connect                = ip6_datagram_connect,
+> > >         .disconnect             = udp_disconnect,
+> > >         .ioctl                  = udp_ioctl,
+> > > -       .init                   = udp_init_sock,
+> > > +       .init                   = udpv6_init_sock,
+> > >         .destroy                = udpv6_destroy_sock,
+> > >         .setsockopt             = udpv6_setsockopt,
+> > >         .getsockopt             = udpv6_getsockopt,
+> > > --
+> > > 2.30.2
