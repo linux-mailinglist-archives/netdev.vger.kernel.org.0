@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 82B635ED9F0
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 12:18:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87E3A5ED9F8
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 12:21:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233659AbiI1KSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 06:18:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41650 "EHLO
+        id S233791AbiI1KVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 06:21:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233528AbiI1KQ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 06:16:56 -0400
+        with ESMTP id S233798AbiI1KUX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 06:20:23 -0400
 Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B0E2303E2;
-        Wed, 28 Sep 2022 03:16:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E06B860F3;
+        Wed, 28 Sep 2022 03:19:47 -0700 (PDT)
 Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id C8A0C1884BBF;
-        Wed, 28 Sep 2022 10:16:21 +0000 (UTC)
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 053E518842DD;
+        Wed, 28 Sep 2022 10:19:46 +0000 (UTC)
 Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id B328C2500370;
-        Wed, 28 Sep 2022 10:16:21 +0000 (UTC)
+        by mailout.gigahost.dk (Postfix) with ESMTP id F04072500370;
+        Wed, 28 Sep 2022 10:19:45 +0000 (UTC)
 Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id A55E89EC000D; Wed, 28 Sep 2022 10:16:21 +0000 (UTC)
+        id D62909EC0009; Wed, 28 Sep 2022 10:19:45 +0000 (UTC)
 X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 MIME-Version: 1.0
-Date:   Wed, 28 Sep 2022 12:16:21 +0200
+Date:   Wed, 28 Sep 2022 12:19:45 +0200
 From:   netdev@kapio-technology.com
 To:     Ido Schimmel <idosch@nvidia.com>
 Cc:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
@@ -69,7 +69,7 @@ References: <20220908112044.czjh3xkzb4r27ohq@skbuf>
  <0c6b93c828d9b52346ddb3d445446734@kapio-technology.com>
  <YzQJ5MRSL/ShRSgP@shredder>
 User-Agent: Gigahost Webmail
-Message-ID: <7a1683c86e02305e90f7b1ceaaabdabe@kapio-technology.com>
+Message-ID: <cc0f4d54e8c24d6d496ea617e654b661@kapio-technology.com>
 X-Sender: netdev@kapio-technology.com
 Content-Type: text/plain; charset=US-ASCII;
  format=flowed
@@ -85,16 +85,12 @@ X-Mailing-List: netdev@vger.kernel.org
 On 2022-09-28 10:46, Ido Schimmel wrote:
 > On Wed, Sep 28, 2022 at 09:47:42AM +0200, netdev@kapio-technology.com 
 > wrote:
+>> On 2022-09-28 08:59, Ido Schimmel wrote:
+>> 
 
-> It needs "master" keyword:
-> 
+BTW, I have added FDB flags in the DSA layer as a u16, so that now 
+port_fdb_add() is as:
 
-I must have forgotten it when I tested at some point...
-
-It seems to be working, only that I am at a loss to why port_fdb_add() 
-is called for each port after going through the DSA layer. I understand 
-that all slave devices are listening on events, but I think the ops 
-should only be called when the port matches?
-Also for some reason the blackhole (zero-DPV) ATU entry is not added on 
-my device in case of no vlan (vid = 0), but there is also some phy 
-problems that are unrelated to this patch set.
+         int     (*port_fdb_add)(struct dsa_switch *ds, int port,
+                                 const unsigned char *addr, u16 vid,
+                                 u16 fdb_flags, struct dsa_db db);
