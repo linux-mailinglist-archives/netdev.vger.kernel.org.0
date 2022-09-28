@@ -2,113 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4321F5ED4F2
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 08:37:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3134B5ED542
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 08:47:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232750AbiI1GhO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 02:37:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48744 "EHLO
+        id S233394AbiI1GrN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 02:47:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231533AbiI1GhL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 02:37:11 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 542899F0E2
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 23:37:07 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id w2so11737187pfb.0
-        for <netdev@vger.kernel.org>; Tue, 27 Sep 2022 23:37:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=gtMbsQdrkXrdSK+9ZBU1nddAaTCHY9MtYZDHuUmps0o=;
-        b=E8MupokRE7VmpCdQpCJBAYTrS53w5zyNRJCXn9kPVwFRLVGhSIiA+AVz94aeK8XYU6
-         w5euHEpllqiWNaWVDXiExyrPfqxl6pFo5TsxuNaOIN7M02xUM5WwYhAv4mTGxnc1/0DA
-         6NMeWZaYSmjJTVbiZicXa9DaWJLleYUxMYD/8p+F9U4yNhvlAojceAFqZLt89j7ICIGB
-         jB4OTDXyZebKnU10Pb6NRMrnaw+3rlzQmUGPDpOX9k5sgqRnm3DAC1hu1dipnnvCDxGx
-         XHMCpY5+7usX4nNqe+0q8678Sm1rzEz6oUNeplOGmB79OzOAbUldsH4gUjMxhYVx1DSg
-         erjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=gtMbsQdrkXrdSK+9ZBU1nddAaTCHY9MtYZDHuUmps0o=;
-        b=xp6Uz3Bd/jimL4+McPnbjeTEFI1B2lgmLN4Mv9tYiAgAXp0ZX9p/f/m3lh1ZqdRD56
-         saLqtBJxC7jS9cnANVlubnJs/Pp9HBHokVn7n+Rn9leA5COZKPnlGV0kO003BayHkjng
-         9SFxJ8JVxzdCzaxWi8wocckwBE0LSZSjNys+itWK5uBuK65uXRbzI8Kj1HWGKLFbVWoz
-         p6ZR9bbXACS98/Lp4QKhA8IWY7qgfjO1L8X4o6CUUQ7MPGyG6O3ubUg+S7kXHYJtfj2e
-         OuGHqCJWH8+m5vqlHdHkyXBFtSCB2pnJQTVk22zu8FbX7xH46JwoPb7q4PqQYwNn40kn
-         WZcg==
-X-Gm-Message-State: ACrzQf221Ue3Ov1df43hxAqOFBiMOZnzW4ivHAG4xfYbCOZGOQu3W27N
-        8GL54XdnMpkZD7cD02oYGpxDRw9Ai1MEkg==
-X-Google-Smtp-Source: AMsMyM6IiHp2XNOTZhUcP3VNoR+3Ot13DstUJDtxLn0igyg+CYw6OKZbhZER3X+mBTrZezLWQzKooA==
-X-Received: by 2002:a65:408b:0:b0:42a:55fb:60b0 with SMTP id t11-20020a65408b000000b0042a55fb60b0mr28035702pgp.431.1664347026921;
-        Tue, 27 Sep 2022 23:37:06 -0700 (PDT)
-Received: from Laptop-X1 ([43.228.180.230])
-        by smtp.gmail.com with ESMTPSA id oa15-20020a17090b1bcf00b00205db4ff6dfsm644812pjb.46.2022.09.27.23.37.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Sep 2022 23:37:06 -0700 (PDT)
-Date:   Wed, 28 Sep 2022 14:37:02 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     David Ahern <dsahern@kernel.org>
-Cc:     netdev@vger.kernel.org,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Guillaume Nault <gnault@redhat.com>
-Subject: Re: [PATCH iproute2-next] rtnetlink: add new function
- rtnl_echo_talk()
-Message-ID: <YzPrjj0h0o0Imsvy@Laptop-X1>
-References: <20220923042000.602250-1-liuhangbin@gmail.com>
- <115c54d7-87fc-2c50-bc27-ad7cdb27bb2c@kernel.org>
+        with ESMTP id S233221AbiI1Gqf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 02:46:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D12A465E3;
+        Tue, 27 Sep 2022 23:44:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 43B1BB81EF3;
+        Wed, 28 Sep 2022 06:44:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8913C433D6;
+        Wed, 28 Sep 2022 06:44:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664347468;
+        bh=IvPHXslRQZhomYKYU67FC3SAD/LfrbtQCi7MMw3aSGk=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=hFuXhJFOFVZ0k02hFUtLziV8Zyn3eBvEcuaNGnTkNa287leV1uKXA+GqhZ5UdXJUD
+         x/sj4bR1lB3V315XTPpTjcnM79Uky7O/+hl6mlVd/G5JYXzMUNy4JCisCAjrZM/Lkx
+         j9wy8Ipyyd26ZXdC6Ta6rqxNnReO0kIGKpn36mw1SYHRvt18Tc9rAff2gVEnwr6f+T
+         6q9vt46L3Iq10orv51F1S7oprpOfowbnffiYsRJ+CjCutrmealWtE66uj/e9cvgZsz
+         ZVEGvb8kJxEfpCQshJUa6ZQfV29CCy+lJl3q/IXVQ7ybKenVDLHkgpZKkxuo/cBGEp
+         nabe5znPeQpLw==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <115c54d7-87fc-2c50-bc27-ad7cdb27bb2c@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+Subject: Re: [v2] wifi: iwlwifi: Track scan_cmd allocation size explicitly
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20220923220853.3302056-1-keescook@chromium.org>
+References: <20220923220853.3302056-1-keescook@chromium.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Gregory Greenman <gregory.greenman@intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Miri Korenblit <miriam.rachel.korenblit@intel.com>,
+        Ilan Peer <ilan.peer@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Nathan Errera <nathan.errera@intel.com>,
+        Mordechay Goodstein <mordechay.goodstein@intel.com>,
+        Mike Golant <michael.golant@intel.com>,
+        Ayala Beker <ayala.beker@intel.com>,
+        Avraham Stern <avraham.stern@intel.com>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <166434745921.25202.14807122782914947195.kvalo@kernel.org>
+Date:   Wed, 28 Sep 2022 06:44:23 +0000 (UTC)
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+Kees Cook <keescook@chromium.org> wrote:
 
-On Tue, Sep 27, 2022 at 09:12:35PM -0600, David Ahern wrote:
-> >  
-> > -	if (echo_request)
-> > -		ret = rtnl_talk(&rth, &req.n, &answer);
-> > -	else
-> > -		ret = rtnl_talk(&rth, &req.n, NULL);
-> > -
-> > -	if (ret < 0)
-> > -		return -2;
-> > -
-> > -	if (echo_request) {
-> > -		new_json_obj(json);
-> > -		open_json_object(NULL);
-> > -		print_addrinfo(answer, stdout);
-> > -		close_json_object();
-> > -		delete_json_obj();
-> > -		free(answer);
-> > -	}
-> > -
-> > -	return 0;
-> > +	return rtnl_echo_talk(&rth, &req.n, print_addrinfo);
+> In preparation for reducing the use of ksize(), explicitly track the
+> size of scan_cmd allocations. This also allows for noticing if the scan
+> size changes unexpectedly. Note that using ksize() was already incorrect
+> here, in the sense that ksize() would not match the actual allocation
+> size, which would trigger future run-time allocation bounds checking.
+> (In other words, memset() may know how large scan_cmd was allocated for,
+> but ksize() will return the upper bounds of the actually allocated memory,
+> causing a run-time warning about an overflow.)
 > 
-> I was thinking something more like:
-> 
-> if (echo_request)
-> 	return rtnl_echo_talk(&rth, &req.n, print_addrinfo);
-> 
-> return rtnl_talk(&rth, &req.n, NULL);
+> Cc: Gregory Greenman <gregory.greenman@intel.com>
+> Cc: Kalle Valo <kvalo@kernel.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: Luca Coelho <luciano.coelho@intel.com>
+> Cc: Johannes Berg <johannes.berg@intel.com>
+> Cc: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+> Cc: Miri Korenblit <miriam.rachel.korenblit@intel.com>
+> Cc: Ilan Peer <ilan.peer@intel.com>
+> Cc: linux-wireless@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Kees Cook <keescook@chromium.org>
 
-OK, I will update the patch. I have one question about the return value.
-In previous code, the function return -2 if rtnl_talk() fails. I don't know
-why we use "-2" here. And you suggested to just return rtnl_talk() directly.
+Patch applied to wireless-next.git, thanks.
 
-Does this means we can ignore the -2 return values for all the places safely,
-and just return rtnl_talk()?
+72c08d9f4c72 wifi: iwlwifi: Track scan_cmd allocation size explicitly
 
-Thanks
-Hangbin
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20220923220853.3302056-1-keescook@chromium.org/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
