@@ -2,129 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 23EAB5ED606
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 09:27:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB56D5ED623
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 09:32:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233648AbiI1H1Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 03:27:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51960 "EHLO
+        id S233581AbiI1HcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 03:32:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233450AbiI1HZu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 03:25:50 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8754BE1193;
-        Wed, 28 Sep 2022 00:23:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1664349799; x=1695885799;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=bJ9QNJ3BHmOh0N77gr9size0L1ABS8z/Hgdq7Xfjzqo=;
-  b=ikR0K9KBCgWWkJ9RAk10GP2Y5Ng/Jq0LhEM5oL/z3oY9Cc9jRlMcL2JP
-   e7JpvWN8ZY/s5tJoNXgoAxJ7ij2xYGxE1OXp1E1UVvGQJUaNHFgX68XD0
-   i5vFrel5rbw7hn+fWYONk2NTRjI9PzScQpZEuBDT7HeOg0oOsZQ1zrcrb
-   9B0fOxQuFmPFVAHgN691TA0g5cN2ptkLIuk//zguyFkUXa0ThPg66zbxU
-   BAjJpLqENOOZkTA6LEdzm49szi9OvsUY7Ih+1HqquWGOcGKvjnf202Ox7
-   e9Dxozx+dTEKYEVolo1uupxQ34zvWR5PLxXnOpUQ1H0DSuJVQPFHZyA+w
-   w==;
-X-IronPort-AV: E=Sophos;i="5.93,351,1654585200"; 
-   d="scan'208";a="115771835"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Sep 2022 00:22:57 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Wed, 28 Sep 2022 00:22:57 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
- Transport; Wed, 28 Sep 2022 00:22:56 -0700
-Date:   Wed, 28 Sep 2022 09:27:25 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
-CC:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bryan.whitehead@microchip.com>,
-        <edumazet@google.com>, <pabeni@redhat.com>,
-        <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH net V3] eth: lan743x: reject extts for non-pci11x1x
- devices
-Message-ID: <20220928072725.t7otq35ui5xw3kzq@soft-dev3-1.localhost>
-References: <20220928070830.22517-1-Raju.Lakkaraju@microchip.com>
+        with ESMTP id S233501AbiI1HcS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 03:32:18 -0400
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10DE7F313E;
+        Wed, 28 Sep 2022 00:31:48 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id D2A211883981;
+        Wed, 28 Sep 2022 07:29:00 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id C75842500370;
+        Wed, 28 Sep 2022 07:29:00 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id B3B719EC0019; Wed, 28 Sep 2022 07:29:00 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20220928070830.22517-1-Raju.Lakkaraju@microchip.com>
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Date:   Wed, 28 Sep 2022 09:29:00 +0200
+From:   netdev@kapio-technology.com
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v5 net-next 6/6] selftests: forwarding: add test of
+ MAC-Auth Bypass to locked port tests
+In-Reply-To: <YzPwwuCe0HkJpkQe@shredder>
+References: <Yxmgs7Du62V1zyjK@shredder>
+ <8dfc9b525f084fa5ad55019f4418a35e@kapio-technology.com>
+ <20220908112044.czjh3xkzb4r27ohq@skbuf>
+ <152c0ceadefbd742331c340bec2f50c0@kapio-technology.com>
+ <20220911001346.qno33l47i6nvgiwy@skbuf>
+ <15ee472a68beca4a151118179da5e663@kapio-technology.com>
+ <Yx73FOpN5uhPQhFl@shredder>
+ <086704ce7f323cc1b3cca78670b42095@kapio-technology.com>
+ <Yyq6BnUfctLeerqE@shredder>
+ <7a4549d645f9bbbf41e814f087eb07d1@kapio-technology.com>
+ <YzPwwuCe0HkJpkQe@shredder>
+User-Agent: Gigahost Webmail
+Message-ID: <d020fe746b30dd048970b3668ffad498@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 09/28/2022 12:38, Raju Lakkaraju wrote:
+On 2022-09-28 08:59, Ido Schimmel wrote:
+> Sorry for the delay, was away.
 
-Hi Raju,
+Good to have you back. :-)
 
-> Remove PTP_PF_EXTTS support for non-PCI11x1x devices since they do not support
-> the PTP-IO Input event triggered timestamping mechanisms added
 > 
-> Fixes: 60942c397af6 ("Add support for PTP-IO Event Input External  Timestamp
->  (extts)")
-
-The fixes tag should not spread over multiple lines. Also you have extra
-spaces between External and Timestamp which doesn't appear in the actual
-commit.
-
-Also you have an empty line between Fixes and Reviewed-by tags.
+> On Tue, Sep 27, 2022 at 10:33:10AM +0200, netdev@kapio-technology.com 
+> wrote:
+>> On 2022-09-21 09:15, Ido Schimmel wrote:
+>> > 	bridge fdb add `mac_get $h2` dev br0 blackhole
+>> 
+>> To make this work, I think we need to change the concept, so that 
+>> blackhole
+>> FDB entries are added to ports connected to the bridge, thus
+>>      bridge fdb add MAC dev $swpX master blackhole
+>> 
+>> This makes sense as the driver adds them based on the port where the 
+>> SMAC is
+>> seen, even though the effect of the blackhole FDB entry is switch 
+>> wide.
 > 
-> Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+> Asking user space to associate a blackhole entry with a bridge port 
+> does
+> not make sense to me because unlike regular entries, blackhole entries
+> do not forward packets out of this port. Blackhole routes and nexthops
+> are not associated with a device either.
+> 
+>> Adding them to the bridge (e.g. f.ex. br0) will not work in the SW 
+>> bridge as
+>> the entries then are not found.
+> 
+> Why not found? This works:
+> 
+>  # bridge fdb add 00:11:22:33:44:55 dev br0 self local
+>  $ bridge fdb get 00:11:22:33:44:55 br br0
+>  00:11:22:33:44:55 dev br0 master br0 permanent
+> 
+> With blackhole support I expect:
+> 
+>  # bridge fdb add 00:11:22:33:44:55 dev br0 self local blackhole
+>  $ bridge fdb get 00:11:22:33:44:55 br br0
+>  00:11:22:33:44:55 dev br0 master br0 permanent blackhole
 
-I am not sure that Jakub gave his Reviewed-by, but maybe I have missed
-that.
+In my previous replies, I have notified that fdb_find_rcu() does not 
+find the entry added with br0, and thus fdb_add_entry() that does the 
+replace does not replace but adds a new entry. I have been thinking that 
+it is because when added with br0 as dev it is added to dev br0's fdb, 
+which is not the same as 'dev <Dev> master' fdb...
 
-> Signed-off-by: Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
-> ---
-> Changes:                                                                        
-> ========
-> V2 -> V3:
->  - Correct the Fixes tag
-> 
-> V1 -> V2:
->  - Repost against net with a Fixes tag
-> 
->  drivers/net/ethernet/microchip/lan743x_ptp.c | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/microchip/lan743x_ptp.c b/drivers/net/ethernet/microchip/lan743x_ptp.c
-> index 6a11e2ceb013..da3ea905adbb 100644
-> --- a/drivers/net/ethernet/microchip/lan743x_ptp.c
-> +++ b/drivers/net/ethernet/microchip/lan743x_ptp.c
-> @@ -1049,6 +1049,10 @@ static int lan743x_ptpci_verify_pin_config(struct ptp_clock_info *ptp,
->  					   enum ptp_pin_function func,
->  					   unsigned int chan)
->  {
-> +	struct lan743x_ptp *lan_ptp =
-> +		container_of(ptp, struct lan743x_ptp, ptp_clock_info);
-> +	struct lan743x_adapter *adapter =
-> +		container_of(lan_ptp, struct lan743x_adapter, ptp);
->  	int result = 0;
->  
->  	/* Confirm the requested function is supported. Parameter
-> @@ -1057,7 +1061,10 @@ static int lan743x_ptpci_verify_pin_config(struct ptp_clock_info *ptp,
->  	switch (func) {
->  	case PTP_PF_NONE:
->  	case PTP_PF_PEROUT:
-> +		break;
->  	case PTP_PF_EXTTS:
-> +		if (!adapter->is_pci11x1x)
-> +			result = -1;
->  		break;
->  	case PTP_PF_PHYSYNC:
->  	default:
-> -- 
-> 2.25.1
-> 
-
--- 
-/Horatiu
+I think bridge fdb get works in a different way, as I know the get 
+functionality gets all fdb entries from all devices and filters them (if 
+I am not mistaken)...
