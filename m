@@ -2,70 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5912F5EDBE9
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 13:38:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FA625EDBF0
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 13:39:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233502AbiI1Li4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 07:38:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43802 "EHLO
+        id S233556AbiI1Ljl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 07:39:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232439AbiI1Liz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 07:38:55 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCEA5D4
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 04:38:53 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Mcvb65XPbzHqLr;
-        Wed, 28 Sep 2022 19:36:34 +0800 (CST)
-Received: from [10.174.179.191] (10.174.179.191) by
- canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 28 Sep 2022 19:38:51 +0800
-Message-ID: <e8349423-25ee-65c8-a630-07f9a9dc5931@huawei.com>
-Date:   Wed, 28 Sep 2022 19:38:51 +0800
+        with ESMTP id S232346AbiI1Lji (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 07:39:38 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D87D6F42;
+        Wed, 28 Sep 2022 04:39:33 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@breakpoint.cc>)
+        id 1odVPP-0003vL-6q; Wed, 28 Sep 2022 13:39:23 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     <netdev@vger.kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        <netfilter-devel@vger.kernel.org>, Florian Westphal <fw@strlen.de>
+Subject: [PATCH net-next 0/1] netfilter fix for net-next
+Date:   Wed, 28 Sep 2022 13:39:07 +0200
+Message-Id: <20220928113908.4525-1-fw@strlen.de>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [net-next] net: bonding: Convert to use sysfs_emit() APIs
-To:     Nikolay Aleksandrov <razor@blackwall.org>, <j.vosburgh@gmail.com>,
-        <vfalico@gmail.com>, <andy@greyhouse.net>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
-CC:     <netdev@vger.kernel.org>
-References: <1664365222-30004-1-git-send-email-wangyufen@huawei.com>
- <599636e0-ebf2-c954-ef2b-80a642771bb7@blackwall.org>
-From:   wangyufen <wangyufen@huawei.com>
-In-Reply-To: <599636e0-ebf2-c954-ef2b-80a642771bb7@blackwall.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.191]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-6.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
 
-在 2022/9/28 19:27, Nikolay Aleksandrov 写道:
-> On 28/09/2022 14:40, Wang Yufen wrote:
->> Follow the advice of the Documentation/filesystems/sysfs.rst and show()
->> should only use sysfs_emit() or sysfs_emit_at() when formatting the value
->> to be returned to user space.
->>
->> Signed-off-by: Wang Yufen <wangyufen@huawei.com>
->> ---
->>   drivers/net/bonding/bond_sysfs_slave.c | 24 ++++++++++++------------
->>   1 file changed, 12 insertions(+), 12 deletions(-)
->>
-> This converts only the bonding partially (bond_sysfs_slave.c).
-> Why not do it all in one go?
->
-Sorry, my mistake, I missed a place and bond_sysfs.c will send v2 together.
+This is a late bug fix for the *net-next* tree to make nftables
+"fib" expression play nice with VRF devices.
 
+This was broken since day 1 (v4.10) so I don't see a compelling reason
+to push this via net at the last minute.
 
->
+Please consider pulling this change from
+  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git
+
+----------------------------------------------------------------
+The following changes since commit b9a5cbf8ba24e88071a97a51a09ef5cdf0d1f6a1:
+
+  Merge branch 'sfc-tc-offload' (2022-09-28 09:43:22 +0100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git master
+
+for you to fetch changes up to 2a8a7c0eaa8747c16aa4a48d573aa920d5c00a5c:
+
+  netfilter: nft_fib: Fix for rpath check with VRF devices (2022-09-28 13:33:26 +0200)
+
+----------------------------------------------------------------
+Phil Sutter (1):
+      netfilter: nft_fib: Fix for rpath check with VRF devices
+
+ net/ipv4/netfilter/nft_fib_ipv4.c | 3 +++
+ net/ipv6/netfilter/nft_fib_ipv6.c | 6 +++++-
+ 2 files changed, 8 insertions(+), 1 deletion(-)
+
