@@ -2,404 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD4BE5EE41C
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 20:16:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60A145EE3F1
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 20:10:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234390AbiI1SP5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 14:15:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48340 "EHLO
+        id S233137AbiI1SKV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 14:10:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234049AbiI1SPu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 14:15:50 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50B49DCEA5;
-        Wed, 28 Sep 2022 11:15:44 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 42E951884BE5;
-        Wed, 28 Sep 2022 18:15:41 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 39ED02500709;
-        Wed, 28 Sep 2022 18:15:41 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 0)
-        id 269CF9EC000D; Wed, 28 Sep 2022 18:15:41 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
-Received: from fujitsu.vestervang (2-104-116-184-cable.dk.customer.tdc.net [2.104.116.184])
-        by smtp.gigahost.dk (Postfix) with ESMTPSA id 26EAA9120FED;
-        Wed, 28 Sep 2022 17:52:14 +0000 (UTC)
-From:   Hans Schultz <netdev@kapio-technology.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org,
-        "Hans J. Schultz" <netdev@kapio-technology.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Florent Fourcot <florent.fourcot@wifirst.fr>,
-        Hans Schultz <schultz.hans@gmail.com>,
-        Joachim Wiberg <troglobit@gmail.com>,
-        Amit Cohen <amcohen@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH v6 net-next 9/9] selftests: forwarding: add test of MAC-Auth Bypass to locked port tests
-Date:   Wed, 28 Sep 2022 19:49:04 +0200
-Message-Id: <20220928174904.117131-1-netdev@kapio-technology.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S234401AbiI1SKS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 14:10:18 -0400
+Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9398780BF9;
+        Wed, 28 Sep 2022 11:10:16 -0700 (PDT)
+Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-131886d366cso6680329fac.10;
+        Wed, 28 Sep 2022 11:10:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=arM2Bs8QnOGMnG64FDvQIEvqu+HWfon6/YutU6YooRw=;
+        b=pHZ+HFdVtIOElIUzZxDNlcslllZwJCldhDp2KajG17dEXbKWI5gUklt1ikx1FljMcI
+         XozS7i5qVIZK6FihIwq6eJPYqake0snA5kFp9FSSesrYQj/CfYJoBs7AuDSb/HfQj9/E
+         5pbldJGue+iTvs0iudis6UB5O6NEvb3ZhQ33xTOig3FZDz3w6mqqkqd/5b4vF93SvYzN
+         0FtfXgjwcdPyi+ooXk9DSqSsNIAtNILWHVRydSL4l8ytsKTcHL1nUCIkLolCrnjZ40EC
+         LgkMURCmnz4cwETfzR5lLKAHAAybK9BhU7evljTKuS5QejGfvoLfo9v4KQGPOxdWwQfb
+         PmQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=arM2Bs8QnOGMnG64FDvQIEvqu+HWfon6/YutU6YooRw=;
+        b=HbuVt9HqUC8rGftf3DHeRGFH715hO5tsaMF/mefBXaGOa+TQKkylH6MOarm3ST3zo6
+         xesLRQEjMESnr3E4GhtCE/7RlHK/xjBGl8nKUSeSP8cw5IAIkRQujghv6PK6mPmIEepb
+         jgwJlz1mVqDQAyehLmsErOUYNiM0sdrzBmw8xMN9+h/azuMy1DygmEfTrI7fW9TicdEO
+         YTK68Vqcz54eXE3mWWz01eGQoN1EMy7ApD2b3z7gcYDPpFnxAukgnH4xZNT3ULTsfX2f
+         r6CV87hRTx5aSBlvTS5ihsAM170T7X+iQPCI23kcfAVOCIxKtNkvR6nhwXz8LgPlG/TN
+         WRwQ==
+X-Gm-Message-State: ACrzQf2lzgo9nzZRRnXs7P8yRx9fHt9T7mAGKiP289tQJMTO8HYsxiL3
+        IVeb77Mk6/iP3fLMYbDyTX0pccGpFisoXg==
+X-Google-Smtp-Source: AMsMyM5+VoruVlxqjPGOl9CN4FyP1QWv8vSz1GUN2yKuRjA3t/Je8oYTxTBg4FFUZcfFRindqVfpVQ==
+X-Received: by 2002:a05:6870:562c:b0:127:bbe4:3f35 with SMTP id m44-20020a056870562c00b00127bbe43f35mr6388446oao.284.1664388615262;
+        Wed, 28 Sep 2022 11:10:15 -0700 (PDT)
+Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id h17-20020a4adcd1000000b004761fdccd76sm2185683oou.17.2022.09.28.11.10.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 28 Sep 2022 11:10:14 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Subject: [PATCH net] sctp: handle the error returned from sctp_auth_asoc_init_active_key
+Date:   Wed, 28 Sep 2022 14:10:13 -0400
+Message-Id: <035e28d623263b9c3ccbbea689883d6437aa5aa0.1664388613.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Hans J. Schultz" <netdev@kapio-technology.com>
+When it returns an error from sctp_auth_asoc_init_active_key(), the
+active_key is actually not updated. The old sh_key will be freeed
+while it's still used as active key in asoc. Then an use-after-free
+will be triggered when sending patckets, as found by syzbot:
 
-Verify that the MAC-Auth mechanism works by adding a FDB entry with the
-locked flag set, denying access until the FDB entry is replaced with a
-FDB entry without the locked flag set.
+  sctp_auth_shkey_hold+0x22/0xa0 net/sctp/auth.c:112
+  sctp_set_owner_w net/sctp/socket.c:132 [inline]
+  sctp_sendmsg_to_asoc+0xbd5/0x1a20 net/sctp/socket.c:1863
+  sctp_sendmsg+0x1053/0x1d50 net/sctp/socket.c:2025
+  inet_sendmsg+0x99/0xe0 net/ipv4/af_inet.c:819
+  sock_sendmsg_nosec net/socket.c:714 [inline]
+  sock_sendmsg+0xcf/0x120 net/socket.c:734
 
-Add test of blackhole fdb entries, verifying that there is no forwarding
-to a blackhole entry from any port, and that the blackhole entry can be
-replaced.
+This patch is to fix it by not replacing the sh_key when it returns
+errors from sctp_auth_asoc_init_active_key() in sctp_auth_set_key().
+For sctp_auth_set_active_key(), old active_key_id will be set back
+to asoc->active_key_id when the same thing happens.
 
-Also add a test that verifies that sticky FDB entries cannot roam (this
-is not needed for now, but should in general be present anyhow for future
-applications).
-
-Signed-off-by: Hans J. Schultz <netdev@kapio-technology.com>
+Fixes: 58acd1009226 ("sctp: update active_key for asoc when old key is being replaced")
+Reported-by: syzbot+a236dd8e9622ed8954a3@syzkaller.appspotmail.com
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- .../net/forwarding/bridge_blackhole_fdb.sh    | 102 +++++++++++++++++
- .../net/forwarding/bridge_locked_port.sh      | 106 +++++++++++++++++-
- .../net/forwarding/bridge_sticky_fdb.sh       |  21 +++-
- tools/testing/selftests/net/forwarding/lib.sh |  18 +++
- 4 files changed, 245 insertions(+), 2 deletions(-)
- create mode 100755 tools/testing/selftests/net/forwarding/bridge_blackhole_fdb.sh
+ net/sctp/auth.c | 18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
 
-diff --git a/tools/testing/selftests/net/forwarding/bridge_blackhole_fdb.sh b/tools/testing/selftests/net/forwarding/bridge_blackhole_fdb.sh
-new file mode 100755
-index 000000000000..54b1a51e1ed6
---- /dev/null
-+++ b/tools/testing/selftests/net/forwarding/bridge_blackhole_fdb.sh
-@@ -0,0 +1,102 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+
-+ALL_TESTS="blackhole_fdb"
-+NUM_NETIFS=4
-+source lib.sh
-+
-+switch_create()
-+{
-+        ip link add dev br0 type bridge
-+
-+        ip link set dev $swp1 master br0
-+        ip link set dev $swp2 master br0
-+
-+        ip link set dev br0 up
-+        ip link set dev $h1 up
-+        ip link set dev $swp1 up
-+        ip link set dev $h2 up
-+        ip link set dev $swp2 up
-+
-+	tc qdisc add dev $swp2 clsact
-+}
-+
-+switch_destroy()
-+{
-+	tc qdisc del dev $swp2 clsact
-+
-+        ip link set dev $swp2 down
-+        ip link set dev $h2 down
-+        ip link set dev $swp1 down
-+        ip link set dev $h1 down
-+
-+        ip link del dev br0
-+}
-+
-+setup_prepare()
-+{
-+        h1=${NETIFS[p1]}
-+        swp1=${NETIFS[p2]}
-+        h2=${NETIFS[p3]}
-+        swp2=${NETIFS[p4]}
-+
-+        switch_create
-+}
-+
-+cleanup()
-+{
-+        pre_cleanup
-+        switch_destroy
-+}
-+
-+# Check that there is no egress with blackhole entry and that blackhole entries can be replaced
-+blackhole_fdb()
-+{
-+        RET=0
-+
-+	check_blackhole_fdb_support || return 0
-+
-+	tc filter add dev $swp2 egress protocol ip pref 1 handle 1 flower \
-+		dst_ip 192.0.2.2 ip_proto udp dst_port 12345 action pass
-+
-+	$MZ $h1 -c 1 -p 128 -t udp "sp=54321,dp=12345" \
-+		-a own -b `mac_get $h2` -A 192.0.2.1 -B 192.0.2.2 -q
-+
-+	tc_check_packets "dev $swp2 egress" 1 1
-+	check_err $? "Packet not seen on egress before adding blackhole entry"
-+
-+	bridge fdb add `mac_get $h2` dev br0 blackhole
-+	bridge fdb get `mac_get $h2` br br0 | grep -q blackhole
-+	check_err $? "Blackhole entry not found"
-+
-+	$MZ $h1 -c 1 -p 128 -t udp "sp=54321,dp=12345" \
-+		-a own -b `mac_get $h2` -A 192.0.2.1 -B 192.0.2.2 -q
-+
-+	tc_check_packets "dev $swp2 egress" 1 1
-+	check_err $? "Packet seen on egress after adding blackhole entry"
-+
-+	# Check blackhole entries can be replaced.
-+	bridge fdb replace `mac_get $h2` dev $swp2 master static
-+	bridge fdb get `mac_get $h2` br br0 | grep -q blackhole
-+	check_fail $? "Blackhole entry found after replacement"
-+
-+	$MZ $h1 -c 1 -p 128 -t udp "sp=54321,dp=12345" \
-+		-a own -b `mac_get $h2` -A 192.0.2.1 -B 192.0.2.2 -q
-+
-+	tc_check_packets "dev $swp2 egress" 1 2
-+	check_err $? "Packet not seen on egress after replacing blackhole entry"
-+
-+	bridge fdb del `mac_get $h2` dev $swp2 master static
-+	tc filter del dev $swp2 egress protocol ip pref 1 handle 1 flower
-+
-+        log_test "Blackhole FDB entry"
-+}
-+
-+trap cleanup EXIT
-+
-+setup_prepare
-+setup_wait
-+
-+tests_run
-+
-+exit $EXIT_STATUS
-diff --git a/tools/testing/selftests/net/forwarding/bridge_locked_port.sh b/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
-index 5b02b6b60ce7..59b8b7666eab 100755
---- a/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
-+++ b/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
-@@ -1,7 +1,15 @@
- #!/bin/bash
- # SPDX-License-Identifier: GPL-2.0
+diff --git a/net/sctp/auth.c b/net/sctp/auth.c
+index db6b7373d16c..34964145514e 100644
+--- a/net/sctp/auth.c
++++ b/net/sctp/auth.c
+@@ -863,12 +863,17 @@ int sctp_auth_set_key(struct sctp_endpoint *ep,
+ 	}
  
--ALL_TESTS="locked_port_ipv4 locked_port_ipv6 locked_port_vlan"
-+ALL_TESTS="
-+	locked_port_ipv4
-+	locked_port_ipv6
-+	locked_port_vlan
-+	locked_port_mab
-+	locked_port_station_move
-+	locked_port_mab_station_move
-+"
-+
- NUM_NETIFS=4
- CHECK_TC="no"
- source lib.sh
-@@ -166,6 +174,102 @@ locked_port_ipv6()
- 	log_test "Locked port ipv6"
+ 	list_del_init(&shkey->key_list);
+-	sctp_auth_shkey_release(shkey);
+ 	list_add(&cur_key->key_list, sh_keys);
+ 
+-	if (asoc && asoc->active_key_id == auth_key->sca_keynumber)
+-		sctp_auth_asoc_init_active_key(asoc, GFP_KERNEL);
++	if (asoc && asoc->active_key_id == auth_key->sca_keynumber &&
++	    sctp_auth_asoc_init_active_key(asoc, GFP_KERNEL)) {
++		list_del_init(&cur_key->key_list);
++		sctp_auth_shkey_release(cur_key);
++		list_add(&shkey->key_list, sh_keys);
++		return -ENOMEM;
++	}
+ 
++	sctp_auth_shkey_release(shkey);
+ 	return 0;
  }
  
-+locked_port_mab()
-+{
-+	RET=0
-+	check_locked_port_support || return 0
-+
-+	ping_do $h1 192.0.2.2
-+	check_err $? "MAB: Ping did not work before locking port"
-+
-+	bridge link set dev $swp1 locked on
-+	check_port_mab_support $swp1 || return 0
-+
-+	ping_do $h1 192.0.2.2
-+	check_fail $? "MAB: Ping worked on locked port without FDB entry"
-+
-+	bridge fdb show | grep `mac_get $h1` | grep -q "locked"
-+	check_err $? "MAB: No locked fdb entry after ping on locked port"
-+
-+	bridge fdb replace `mac_get $h1` dev $swp1 master static
-+
-+	ping_do $h1 192.0.2.2
-+	check_err $? "MAB: Ping did not work with fdb entry without locked flag"
-+
-+	bridge fdb del `mac_get $h1` dev $swp1 master
-+	bridge link set dev $swp1 locked off mab off
-+
-+	log_test "Locked port MAB"
-+}
-+
-+# No roaming allowed to a simple locked port
-+locked_port_station_move()
-+{
-+	local mac=a0:b0:c0:c0:b0:a0
-+
-+	RET=0
-+	check_locked_port_support || return 0
-+
-+	bridge link set dev $swp1 locked on
-+
-+	$MZ $h1 -q -t udp -a $mac -b rand
-+	bridge fdb show dev $swp1 | grep "$mac vlan 1" | grep -q "master br0"
-+	check_fail $? "Locked port station move: FDB entry on first injection"
-+
-+	$MZ $h2 -q -t udp -a $mac -b rand
-+	bridge fdb show dev $swp2 | grep "$mac vlan 1" | grep -q "master br0"
-+	check_err $? "Locked port station move: Entry not found on unlocked port"
-+
-+	$MZ $h1 -q -t udp -a $mac -b rand
-+	bridge fdb show dev $swp1 | grep "$mac vlan 1" | grep -q "master br0"
-+	check_fail $? "Locked port station move: entry roamed to locked port"
-+
-+	bridge link set dev $swp1 locked off
-+
-+	log_test "Locked port station move"
-+}
-+
-+# Roaming to and from a MAB enabled port should work if sticky flag is not set
-+locked_port_mab_station_move()
-+{
-+	local mac=10:20:30:30:20:10
-+
-+	RET=0
-+	check_locked_port_support || return 0
-+
-+	bridge link set dev $swp1 locked on
-+
-+	check_port_mab_support $swp1 || return 0
-+
-+	$MZ $h1 -q -t udp -a $mac -b rand
-+	if bridge fdb show dev $swp1 | grep "$mac vlan 1" | grep -q "permanent"; then
-+		echo "SKIP: Roaming not possible with local flag, skipping test..."
-+		bridge link set dev $swp1 locked off mab off
-+		return $ksft_skip
-+	fi
-+
-+	bridge fdb show dev $swp1 | grep "$mac vlan 1" | grep -q "locked"
-+	check_err $? "MAB station move: no locked entry on first injection"
-+
-+	$MZ $h2 -q -t udp -a $mac -b rand
-+	bridge fdb show dev $swp1 | grep "$mac vlan 1" | grep -q "locked"
-+	check_fail $? "MAB station move: locked entry did not move"
-+
-+	bridge fdb show dev $swp2 | grep "$mac vlan 1" | grep -q "locked"
-+	check_fail $? "MAB station move: roamed entry to unlocked port had locked flag on"
-+
-+	bridge fdb show dev $swp2 | grep "$mac vlan 1" | grep -q "master br0"
-+	check_err $? "MAB station move: roamed entry not found"
-+
-+	$MZ $h1 -q -t udp -a $mac -b rand
-+	bridge fdb show dev $swp1 | grep "$mac vlan 1" | grep "master br0" | grep -q "locked"
-+	check_fail $? "MAB station move: entry roamed back to locked port"
-+
-+	bridge link set dev $swp1 locked off mab off
-+
-+	log_test "Locked port MAB station move"
-+}
-+
- trap cleanup EXIT
+@@ -902,8 +907,13 @@ int sctp_auth_set_active_key(struct sctp_endpoint *ep,
+ 		return -EINVAL;
  
- setup_prepare
-diff --git a/tools/testing/selftests/net/forwarding/bridge_sticky_fdb.sh b/tools/testing/selftests/net/forwarding/bridge_sticky_fdb.sh
-index 1f8ef0eff862..bca77bc3fe09 100755
---- a/tools/testing/selftests/net/forwarding/bridge_sticky_fdb.sh
-+++ b/tools/testing/selftests/net/forwarding/bridge_sticky_fdb.sh
-@@ -1,7 +1,7 @@
- #!/bin/bash
- # SPDX-License-Identifier: GPL-2.0
+ 	if (asoc) {
++		__u16  active_key_id = asoc->active_key_id;
++
+ 		asoc->active_key_id = key_id;
+-		sctp_auth_asoc_init_active_key(asoc, GFP_KERNEL);
++		if (sctp_auth_asoc_init_active_key(asoc, GFP_KERNEL)) {
++			asoc->active_key_id = active_key_id;
++			return -ENOMEM;
++		}
+ 	} else
+ 		ep->active_key_id = key_id;
  
--ALL_TESTS="sticky"
-+ALL_TESTS="sticky sticky_no_roaming"
- NUM_NETIFS=4
- TEST_MAC=de:ad:be:ef:13:37
- source lib.sh
-@@ -59,6 +59,25 @@ sticky()
- 	log_test "Sticky fdb entry"
- }
- 
-+# No roaming allowed with the sticky flag set
-+sticky_no_roaming()
-+{
-+	local mac=a8:b4:c2:c2:b4:a8
-+
-+	RET=0
-+
-+	bridge link set dev $swp2 learning on
-+	bridge fdb add $mac dev $swp1 master static sticky
-+	bridge fdb show dev $swp1 | grep "$mac master br0" | grep -q sticky
-+	check_err $? "Sticky no roaming: No sticky FDB entry found after adding"
-+
-+	$MZ $h2 -q -t udp -c 10 -d 100msec -a $mac -b rand
-+	bridge fdb show dev $swp2 | grep "$mac master br0" | grep -q sticky
-+	check_fail $? "Sticky no roaming: Sticky entry roamed"
-+
-+	log_test "Sticky no roaming"
-+}
-+
- trap cleanup EXIT
- 
- setup_prepare
-diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
-index 3ffb9d6c0950..642fbf217c20 100755
---- a/tools/testing/selftests/net/forwarding/lib.sh
-+++ b/tools/testing/selftests/net/forwarding/lib.sh
-@@ -137,6 +137,24 @@ check_locked_port_support()
- 	fi
- }
- 
-+check_port_mab_support()
-+{
-+	local dev=$1;
-+
-+	if ! bridge link set dev $dev mab on 2>/dev/null; then
-+		echo "SKIP: iproute2 too old; MacAuth feature not supported."
-+		return $ksft_skip
-+	fi
-+}
-+
-+check_blackhole_fdb_support()
-+{
-+	if ! bridge fdb help | grep -q "blackhole"; then
-+		echo "SKIP: Blackhole fdb feature not supported."
-+		return $ksft_skip
-+	fi
-+}
-+
- if [[ "$(id -u)" -ne 0 ]]; then
- 	echo "SKIP: need root privileges"
- 	exit $ksft_skip
 -- 
-2.34.1
+2.31.1
 
