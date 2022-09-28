@@ -2,135 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB56D5ED623
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 09:32:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A65585ED699
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 09:44:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233581AbiI1HcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 03:32:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44108 "EHLO
+        id S232648AbiI1HoB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 03:44:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233501AbiI1HcS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 03:32:18 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10DE7F313E;
-        Wed, 28 Sep 2022 00:31:48 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id D2A211883981;
-        Wed, 28 Sep 2022 07:29:00 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id C75842500370;
-        Wed, 28 Sep 2022 07:29:00 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id B3B719EC0019; Wed, 28 Sep 2022 07:29:00 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
-MIME-Version: 1.0
-Date:   Wed, 28 Sep 2022 09:29:00 +0200
-From:   netdev@kapio-technology.com
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S233847AbiI1HnR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 03:43:17 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F60911265A;
+        Wed, 28 Sep 2022 00:40:12 -0700 (PDT)
+X-UUID: eefd5cc0ca874c7787e6b04e87e2627d-20220928
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=twBFZvQndTAJep03Qp9HrLxape++Wqs0xYwSivoNI3Q=;
+        b=DIwcsLObG97GUH7hrj9xrg44qEOueuXU1Die6rl0wEQcHA5K+5lj/K5jty7CeCc0Ue/mgOV1fjJeahmCYWBOzEP5rp3UMNzmhRqXy+Pyap0u1ZTFfeTHGEolhKugoedDC5T9YYRklKkhVNor23vVGeOGeTPNzp3srtQIs+jy0u0=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.11,REQID:e802330c-8d41-4808-be8b-4d6b26b37f10,IP:0,U
+        RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
+        release,TS:0
+X-CID-META: VersionHash:39a5ff1,CLOUDID:42bd4907-1cee-4c38-b21b-a45f9682fdc0,B
+        ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
+X-UUID: eefd5cc0ca874c7787e6b04e87e2627d-20220928
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
+        (envelope-from <jianguo.zhang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 2003581825; Wed, 28 Sep 2022 15:40:02 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 28 Sep 2022 15:40:01 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 28 Sep 2022 15:40:00 +0800
+Message-ID: <7c46b223e4ba5d1ceb587facf7dd060e6cab9f17.camel@mediatek.com>
+Subject: Re: [PATCH v5 4/4] net: stmmac: Update the name of property
+ 'clk_csr'
+From:   Jianguo Zhang <jianguo.zhang@mediatek.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "AngeloGioacchino Del Regno" 
+        <angelogioacchino.delregno@collabora.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>
+CC:     Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v5 net-next 6/6] selftests: forwarding: add test of
- MAC-Auth Bypass to locked port tests
-In-Reply-To: <YzPwwuCe0HkJpkQe@shredder>
-References: <Yxmgs7Du62V1zyjK@shredder>
- <8dfc9b525f084fa5ad55019f4418a35e@kapio-technology.com>
- <20220908112044.czjh3xkzb4r27ohq@skbuf>
- <152c0ceadefbd742331c340bec2f50c0@kapio-technology.com>
- <20220911001346.qno33l47i6nvgiwy@skbuf>
- <15ee472a68beca4a151118179da5e663@kapio-technology.com>
- <Yx73FOpN5uhPQhFl@shredder>
- <086704ce7f323cc1b3cca78670b42095@kapio-technology.com>
- <Yyq6BnUfctLeerqE@shredder>
- <7a4549d645f9bbbf41e814f087eb07d1@kapio-technology.com>
- <YzPwwuCe0HkJpkQe@shredder>
-User-Agent: Gigahost Webmail
-Message-ID: <d020fe746b30dd048970b3668ffad498@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        Biao Huang <biao.huang@mediatek.com>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>
+Date:   Wed, 28 Sep 2022 15:40:00 +0800
+In-Reply-To: <ff577b86-44c8-3146-3388-78021bb7edb4@linaro.org>
+References: <20220923052828.16581-1-jianguo.zhang@mediatek.com>
+         <20220923052828.16581-5-jianguo.zhang@mediatek.com>
+         <e0fa3ddf-575d-9e25-73d8-e0858782b73f@collabora.com>
+         <ac24dc0f-0038-5068-3ce6-bbace55c7027@linaro.org>
+         <4f205f0d-420d-8f51-ad26-0c2475c0decd@linaro.org>
+         <80c59c9462955037981a1eab6409ba69fc9b7c34.camel@mediatek.com>
+         <888703a8-a8e5-e691-7a53-294f88ad7a4e@collabora.com>
+         <ff577b86-44c8-3146-3388-78021bb7edb4@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-MTK:  N
+X-Spam-Status: No, score=-0.8 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,RCVD_IN_MSPIKE_H2,RDNS_NONE,SPF_HELO_PASS,T_SPF_TEMPERROR,
+        UNPARSEABLE_RELAY,URIBL_CSS autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-09-28 08:59, Ido Schimmel wrote:
-> Sorry for the delay, was away.
+Dear Krzysztof,
 
-Good to have you back. :-)
+	Thanks for your comment.
 
+On Wed, 2022-09-28 at 09:17 +0200, Krzysztof Kozlowski wrote:
+> On 27/09/2022 12:44, AngeloGioacchino Del Regno wrote:
 > 
-> On Tue, Sep 27, 2022 at 10:33:10AM +0200, netdev@kapio-technology.com 
-> wrote:
->> On 2022-09-21 09:15, Ido Schimmel wrote:
->> > 	bridge fdb add `mac_get $h2` dev br0 blackhole
->> 
->> To make this work, I think we need to change the concept, so that 
->> blackhole
->> FDB entries are added to ports connected to the bridge, thus
->>      bridge fdb add MAC dev $swpX master blackhole
->> 
->> This makes sense as the driver adds them based on the port where the 
->> SMAC is
->> seen, even though the effect of the blackhole FDB entry is switch 
->> wide.
+> > > > OTOH, as Angelo pointed out, handling old and new properties is
+> > > > quite
+> > > > easy to achieve, so... :)
+> > > > 
+> > > 
+> > > So, the conclusion is as following:
+> > > 
+> > > 1. add new property 'snps,clk-csr' and document it in binding
+> > > file.
+> > > 2. parse new property 'snps,clk-csr' firstly, if failed, fall
+> > > back to
+> > > old property 'clk_csr' in driver.
+> > > 
+> > > Is my understanding correct?
+> > 
+> > Yes, please.
+> > 
+> > I think that bindings should also get a 'clk_csr' with deprecated:
+> > true,
+> > but that's Krzysztof's call.
 > 
-> Asking user space to associate a blackhole entry with a bridge port 
-> does
-> not make sense to me because unlike regular entries, blackhole entries
-> do not forward packets out of this port. Blackhole routes and nexthops
-> are not associated with a device either.
+> The property was never documented, so I think we can skip it as
+> deprecated.
 > 
->> Adding them to the bridge (e.g. f.ex. br0) will not work in the SW 
->> bridge as
->> the entries then are not found.
+We will send next version patches according to the conclusion.
+> Best regards,
+> Krzysztof
 > 
-> Why not found? This works:
-> 
->  # bridge fdb add 00:11:22:33:44:55 dev br0 self local
->  $ bridge fdb get 00:11:22:33:44:55 br br0
->  00:11:22:33:44:55 dev br0 master br0 permanent
-> 
-> With blackhole support I expect:
-> 
->  # bridge fdb add 00:11:22:33:44:55 dev br0 self local blackhole
->  $ bridge fdb get 00:11:22:33:44:55 br br0
->  00:11:22:33:44:55 dev br0 master br0 permanent blackhole
+BRS
+Jianguo
 
-In my previous replies, I have notified that fdb_find_rcu() does not 
-find the entry added with br0, and thus fdb_add_entry() that does the 
-replace does not replace but adds a new entry. I have been thinking that 
-it is because when added with br0 as dev it is added to dev br0's fdb, 
-which is not the same as 'dev <Dev> master' fdb...
-
-I think bridge fdb get works in a different way, as I know the get 
-functionality gets all fdb entries from all devices and filters them (if 
-I am not mistaken)...
