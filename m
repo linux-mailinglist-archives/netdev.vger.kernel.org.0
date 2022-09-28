@@ -2,111 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B20F55ED8C1
-	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 11:22:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 187815ED8D2
+	for <lists+netdev@lfdr.de>; Wed, 28 Sep 2022 11:23:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233631AbiI1JWF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 05:22:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46580 "EHLO
+        id S233725AbiI1JXW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 05:23:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233543AbiI1JWE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 05:22:04 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 270CE5F9A3
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 02:22:01 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id a13so1325005edj.0
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 02:22:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=FaaOgDtK9TyS0PoRrl8QZ7NwsI6ddEBCIDU/7HAk3aM=;
-        b=zsgx/kJsmIDXu6++WpqIJO74LDVjtUusm8cN25QFWv2kSciJlpepE27BJBMTwFHCPB
-         r0arArW9e570sNNgRqcVgflL/OjYOam2y1TfRsnNlQbhaLS3ZkO+ntxRRGZdu9x2wUua
-         PiqWoXeLMKeBZiHbPMSpNpyhGATjFUJ6iuXoTbWCP7mJoDOfITi1KE/yAP1T0X+Ay89z
-         It1znFuNqx2YhjGcx9Q7AdzhvxowdlQOvtpJ+bXoT3NLCcU6lMXmL37aqUHu2a5DFM0V
-         way/sOq+/K9lpFzFXM2W5S1vkD++ZhYt/Pjowo06qzXdZI9D4az+eo9mhPL3K4McMqNB
-         FqrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=FaaOgDtK9TyS0PoRrl8QZ7NwsI6ddEBCIDU/7HAk3aM=;
-        b=1JopZvYfjuV1p9qKHlIiz0aGhI0L0/yNkSibKj6rRPbZK3b+bh5/F/tNRuXhhoJkWW
-         WKDZemyF1eD3t0cyOF3t9QpIgx9jjzcKGucHxuAyfQHbVTC7p1I0++P2G22gjWsc/owJ
-         fFzonMLrzw9/BtKBsMxIz8yQx54W9RgCiQtDbIt+quGUsiY9yqIR+PQzEWbeltYOXuUL
-         l6vSbXBOmSN5B9H+b1gCx6ImNOkO1UOdNJ8TMmYQ1jYuaTdDVFY4wV2nfPgk92eckjvK
-         TLp5axxmdC8+CPw++SIlruLZ63iL4XSUbspk6PjiqYkRnokTDmBLGZa6uGuO/9vs1NIi
-         PKAg==
-X-Gm-Message-State: ACrzQf0sNc8OHe5ShcGvCqubCd133+l0lwudhegtoiOOz2Y2e0gPuMGD
-        CYGFtfw7r1gpseXfDXLokTe08Q==
-X-Google-Smtp-Source: AMsMyM5v/YQV1SftdRhGHhSf2rrVrDzDcuLd1V1Y4YRZiKiYMMRMldeqzindC70eUewgNuJk938HiA==
-X-Received: by 2002:aa7:d28a:0:b0:457:caea:9585 with SMTP id w10-20020aa7d28a000000b00457caea9585mr5760396edq.400.1664356919573;
-        Wed, 28 Sep 2022 02:21:59 -0700 (PDT)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id ku18-20020a170907789200b0073100dfa7b0sm2104337ejc.8.2022.09.28.02.21.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 28 Sep 2022 02:21:59 -0700 (PDT)
-Message-ID: <e4db8d52-5bbb-8667-86a6-c7a2154598d1@blackwall.org>
-Date:   Wed, 28 Sep 2022 12:21:57 +0300
+        with ESMTP id S233699AbiI1JXU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 05:23:20 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 363153A8;
+        Wed, 28 Sep 2022 02:23:19 -0700 (PDT)
+X-UUID: fa7c5b3a344e485b927bd33586b67aa4-20220928
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=2uADcVBm2MA8/ZbP+Ufkh5pJvzBgS3FAoKOhSw3g01s=;
+        b=tKOweisj8/Xbe9plEa9u1VsSmK14ad//3/ANabBavwv8DluWAlcl4jwiaCRute/7EXREFNh8k4J/o2Lu24S+IYd8jBINBwX7iFT4VOO33/GykrmfySt9DdVYTMHwGQGuIkMT/Dn4Rj4u6Degvh20bu/PVIcvO3VxRlx7KxvQxF8=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.11,REQID:15c24b6d-b8e3-402c-86cd-2d956dbdf72f,IP:0,U
+        RL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION
+        :release,TS:-5
+X-CID-META: VersionHash:39a5ff1,CLOUDID:039782e4-87f9-4bb0-97b6-34957dc0fbbe,B
+        ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
+X-UUID: fa7c5b3a344e485b927bd33586b67aa4-20220928
+Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw02.mediatek.com
+        (envelope-from <jianguo.zhang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1496351288; Wed, 28 Sep 2022 17:23:13 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 28 Sep 2022 17:23:12 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 28 Sep 2022 17:23:11 +0800
+From:   Jianguo Zhang <jianguo.zhang@mediatek.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+CC:     Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Biao Huang <biao.huang@mediatek.com>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        Jianguo Zhang <jianguo.zhang@mediatek.com>
+Subject: [resend PATCH v6 0/4]  Mediatek ethernet patches for mt8188
+Date:   Wed, 28 Sep 2022 17:23:04 +0800
+Message-ID: <20220928092308.26019-1-jianguo.zhang@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Subject: Re: [PATCH net-next] docs: netlink: clarify the historical baggage of
- Netlink flags
-Content-Language: en-US
-To:     nicolas.dichtel@6wind.com,
-        Florent Fourcot <florent.fourcot@wifirst.fr>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-References: <20220927212306.823862-1-kuba@kernel.org>
- <a93cea13-21e9-f714-270c-559d51f68716@wifirst.fr>
- <d93ee260-9199-b760-40fe-f3d61a0af701@6wind.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <d93ee260-9199-b760-40fe-f3d61a0af701@6wind.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-MTK:  N
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_PASS,UNPARSEABLE_RELAY,URIBL_CSS autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28/09/2022 11:55, Nicolas Dichtel wrote:
-> 
-> Hello,
-> 
-> Le 28/09/2022 à 10:04, Florent Fourcot a écrit :
->> Hello,
->>
->> About NLM_F_EXCL, I'm not sure that my comment is relevant for your intro.rst
->> document, but it has another usage in ipset submodule. For IPSET_CMD_DEL,
->> setting NLM_F_EXCL means "raise an error if entry does not exist before the
->> delete".
-> So NLM_F_EXCL could be used with DEL command for netfilter netlink but cannot be
-> used (it overlaps with NLM_F_BULK, see [1]) with DEL command for rtnetlink.
-> Sigh :(
-> 
-> [1] https://lore.kernel.org/netdev/0198618f-7b52-3023-5e9f-b38c49af1677@6wind.com/
-> 
-> 
-> Regards,
-> Nicolas
+Changes in v6:
 
-One could argue that's abuse of the api, but since it's part of a different family
-I guess it's ok. NLM_F_EXCL is a modifier of NEW cmd as the comment above it says
-and has never had rtnetlink DEL users.
+v6:
+1) Update commit message of patch 'dt-bindings: net: snps,dwmac: add new property snps,clk-csr'
+as Krzysztof Kozlowski'comment.
+2) Add a parse for new property 'snps,clk-csr' in patch
+'net: stmmac: add a parse for new property 'snps,clk-csr''
+as AngeloGioacchino Del Regno's comment.
+
+v5:
+1) Rename the property 'clk_csr' as 'snps,clk-csr' in binding
+file as Krzysztof Kozlowski'comment.
+2) Add DTS patch 'arm64: dts: mediatek: mt2712e: Update the name of property 'clk_csr''
+as Krzysztof Kozlowski'comment.
+3) Add driver patch 'net: stmmac: Update the name of property 'clk_csr''
+as Krzysztof Kozlowski'comment.
+
+v4:
+1) Update the commit message of patch 'dt-bindings: net: snps,dwmac: add clk_csr property'
+as Krzysztof Kozlowski'comment.
+
+v3:
+1) List the names of SoCs mt8188 and mt8195 in correct order as
+AngeloGioacchino Del Regno's comment.
+2) Add patch version info as Krzysztof Kozlowski'comment.
+
+v2:
+1) Delete patch 'stmmac: dwmac-mediatek: add support for mt8188' as
+Krzysztof Kozlowski's comment.
+2) Update patch 'dt-bindings: net: mediatek-dwmac: add support for
+mt8188' as Krzysztof Kozlowski's comment.
+3) Add clk_csr property to fix warning ('clk_csr' was unexpected) when
+runnig 'make dtbs_check'.
+
+v1:
+1) Add ethernet driver entry for mt8188.
+2) Add binding document for ethernet on mt8188.
+
+Jianguo Zhang (4):
+  dt-bindings: net: mediatek-dwmac: add support for mt8188
+  dt-bindings: net: snps,dwmac: add new property snps,clk-csr
+  arm64: dts: mediatek: mt2712e: Update the name of property 'clk_csr'
+  net: stmmac: add a parse for new property 'snps,clk-csr'
+
+ .../devicetree/bindings/net/mediatek-dwmac.yaml        | 10 ++++++++--
+ Documentation/devicetree/bindings/net/snps,dwmac.yaml  |  5 +++++
+ arch/arm64/boot/dts/mediatek/mt2712e.dtsi              |  2 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c  |  4 +++-
+ 4 files changed, 17 insertions(+), 4 deletions(-)
 
 
