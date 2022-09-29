@@ -2,97 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D53265EFFE6
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 00:08:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B271D5EFFF5
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 00:15:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229437AbiI2WIV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 18:08:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38522 "EHLO
+        id S229944AbiI2WPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 18:15:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbiI2WIT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 18:08:19 -0400
-Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B43DB654A;
-        Thu, 29 Sep 2022 15:08:16 -0700 (PDT)
-Received: by mail-oi1-f170.google.com with SMTP id q10so3009666oib.5;
-        Thu, 29 Sep 2022 15:08:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=6O8Jjng3iyin8rOht5eSYjzFn9Bme9u5OQK0LkD2pu8=;
-        b=afFAa1bBvksKz6COSVbXYnb7pUt6qzXpToTUPMF8v+70SBL7B0fOZSCAcN0Ri/9Pj8
-         0b4T2wbO8kHyxRsrF/qCn5bsIfysH7Ss+JWTWElT6gt/dTEusUfUOmTz7jbBzalyBLAT
-         VnUMW99LW3ma0ESU5Ln6SDy4EXtIHEPiJACDD1vRY3PdcpBTv8aIZmoFEqB8dVTLkxBD
-         KbNJypqpLIaG/t0Govcyj4gZFMx491dwdbZ8F1g6aqKWHI5EVF/SP0J1g8YBNrBL0rLz
-         5nevo7tS8rZfnuGdhT57sfgabEdHBPWhlKnn4+M0jEPG9Rf+EOETMvr9Fs1Jp2x06PuW
-         uzOw==
-X-Gm-Message-State: ACrzQf3AZAmkEgQ/8SBkQDaeJRRLHWfYILLjhMffNjjL85yriAF8yXpu
-        RlFUxFLzxPq6RX4QmClBy4E/Erjnmw==
-X-Google-Smtp-Source: AMsMyM6BAUAzcU5iHjhtArwxDH4lLKHBTagWqW15z6CnS+PiBi2+/SsRCLz0KEtcFaae12p9OiVr+Q==
-X-Received: by 2002:aca:1018:0:b0:34d:8f7a:27e1 with SMTP id 24-20020aca1018000000b0034d8f7a27e1mr8214159oiq.284.1664489295603;
-        Thu, 29 Sep 2022 15:08:15 -0700 (PDT)
-Received: from macbook.herring.priv (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id l13-20020a056870218d00b0010bf07976c9sm239823oae.41.2022.09.29.15.08.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Sep 2022 15:08:14 -0700 (PDT)
-Received: (nullmailer pid 2832554 invoked by uid 1000);
-        Thu, 29 Sep 2022 22:08:13 -0000
-Date:   Thu, 29 Sep 2022 17:08:13 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Marek Vasut <marex@denx.de>
-Cc:     Jose Abreu <joabreu@synopsys.com>, devicetree@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH] dt-bindings: net: snps,dwmac: Document stmmac-axi-config
- subnode
-Message-ID: <166448929263.2832109.15881411107607706980.robh@kernel.org>
-References: <20220927012449.698915-1-marex@denx.de>
+        with ESMTP id S229908AbiI2WPw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 18:15:52 -0400
+Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D655FE066;
+        Thu, 29 Sep 2022 15:15:51 -0700 (PDT)
+Received: from in02.mta.xmission.com ([166.70.13.52]:55560)
+        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1oe1oq-002lCZ-1p; Thu, 29 Sep 2022 16:15:48 -0600
+Received: from ip68-110-29-46.om.om.cox.net ([68.110.29.46]:45284 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1oe1op-000Pl2-7Q; Thu, 29 Sep 2022 16:15:47 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Al Viro <viro@zeniv.linux.org.uk>,
+        David Laight <David.Laight@aculab.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>
+References: <dacfc18d6667421d97127451eafe4f29@AcuMS.aculab.com>
+        <CAHk-=wgS_XpzEL140ovgLwGv6yXvV7Pu9nKJbCuo5pnRfcEbvg@mail.gmail.com>
+        <YzXo/DIwq65ypHNH@ZenIV> <YzXrOFpPStEwZH/O@ZenIV>
+        <CAHk-=wjLgM06JrS21W4g2VquqCLab+qu_My67cv6xuH7NhgHpw@mail.gmail.com>
+        <YzXzXNAgcJeJ3M0d@ZenIV> <YzYK7k3tgZy3Pwht@ZenIV>
+        <CAHk-=wihPFFE5KcsmOnOm1CALQDWqC1JTvrwSGBS08N5avVmEA@mail.gmail.com>
+Date:   Thu, 29 Sep 2022 17:14:15 -0500
+In-Reply-To: <CAHk-=wihPFFE5KcsmOnOm1CALQDWqC1JTvrwSGBS08N5avVmEA@mail.gmail.com>
+        (Linus Torvalds's message of "Thu, 29 Sep 2022 14:29:03 -0700")
+Message-ID: <871qrt4ymg.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220927012449.698915-1-marex@denx.de>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-XM-SPF: eid=1oe1op-000Pl2-7Q;;;mid=<871qrt4ymg.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.110.29.46;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX1/Kgg40InDQOLmiJmmc2A5ti3S+yB3YXvs=
+X-SA-Exim-Connect-IP: 68.110.29.46
+X-SA-Exim-Mail-From: ebiederm@xmission.com
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-DCC: XMission; sa04 1397; Body=1 Fuz1=1 Fuz2=1 
+X-Spam-Combo: ****;Linus Torvalds <torvalds@linux-foundation.org>
+X-Spam-Relay-Country: 
+X-Spam-Timing: total 305 ms - load_scoreonly_sql: 0.06 (0.0%),
+        signal_user_changed: 10 (3.2%), b_tie_ro: 8 (2.7%), parse: 1.05 (0.3%),
+         extract_message_metadata: 13 (4.1%), get_uri_detail_list: 0.91 (0.3%),
+         tests_pri_-1000: 9 (3.0%), tests_pri_-950: 1.06 (0.3%),
+        tests_pri_-900: 0.80 (0.3%), tests_pri_-90: 114 (37.2%), check_bayes:
+        111 (36.4%), b_tokenize: 4.7 (1.5%), b_tok_get_all: 5 (1.8%),
+        b_comp_prob: 1.72 (0.6%), b_tok_touch_all: 96 (31.4%), b_finish: 0.99
+        (0.3%), tests_pri_0: 145 (47.4%), check_dkim_signature: 0.45 (0.1%),
+        check_dkim_adsp: 10 (3.2%), poll_dns_idle: 0.74 (0.2%), tests_pri_10:
+        2.0 (0.7%), tests_pri_500: 7 (2.4%), rewrite_mail: 0.00 (0.0%)
+Subject: Re: [PATCH 3/4] proc: Point /proc/net at /proc/thread-self/net
+ instead of /proc/self/net
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 27 Sep 2022 03:24:49 +0200, Marek Vasut wrote:
-> The stmmac-axi-config subnode is present in multiple dwmac instance DTs,
-> document its content per snps,axi-config property description which is
-> a phandle to this subnode.
-> 
-> Signed-off-by: Marek Vasut <marex@denx.de>
-> ---
-> Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Jose Abreu <joabreu@synopsys.com>
-> Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: Rob Herring <robh+dt@kernel.org>
-> Cc: devicetree@vger.kernel.org
-> Cc: linux-stm32@st-md-mailman.stormreply.com
-> Cc: netdev@vger.kernel.org
-> To: linux-arm-kernel@lists.infradead.org
-> ---
->  .../devicetree/bindings/net/snps,dwmac.yaml   | 54 +++++++++++++++++++
->  1 file changed, 54 insertions(+)
-> 
+Linus Torvalds <torvalds@linux-foundation.org> writes:
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+> On Thu, Sep 29, 2022 at 2:15 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
+>>
+>> FWIW, what e.g. debian profile for dhclient has is
+>>   @{PROC}/@{pid}/net/dev      r,
+>>
+>> Note that it's not
+>>   @{PROC}/net/dev      r,
+>
+> Argh. Yeah, then a bind mount or a hardlink won't work either, you're
+> right. I was assuming that any Apparmor rules allowed for just
+> /proc/net.
+>
+> Oh well. I guess we're screwed any which way we turn.
+
+I actually think there is a solution.
+
+Instead of going to /proc/self/net -> /proc/tgid/net
+or /proc/thread-self/net -> /proc/tgid/task/tid/net
+
+We should be able to go to: /proc/tid/net
+
+That directory does not show up in readdir, but the tid directories were
+put in /proc because of how our pthread support evolved and gdb which
+made gdb expect them to be their.
+
+That should continue to work with the incomplete apparmor rules that
+don't allow accessing /proc/tgid/tid/net for some reason.
+
+Eric
