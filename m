@@ -2,182 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4306B5EF11E
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 11:01:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F62C5EF128
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 11:02:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235092AbiI2JA4 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 29 Sep 2022 05:00:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35632 "EHLO
+        id S235039AbiI2JCH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 05:02:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235070AbiI2JAy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 05:00:54 -0400
-Received: from mail-oi1-f182.google.com (mail-oi1-f182.google.com [209.85.167.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A61C126B56;
-        Thu, 29 Sep 2022 02:00:53 -0700 (PDT)
-Received: by mail-oi1-f182.google.com with SMTP id m130so948069oif.6;
-        Thu, 29 Sep 2022 02:00:53 -0700 (PDT)
+        with ESMTP id S235655AbiI2JCD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 05:02:03 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4949313A95C;
+        Thu, 29 Sep 2022 02:01:59 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id l8so496137wmi.2;
+        Thu, 29 Sep 2022 02:01:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=BbbyRqTZb58MZyknIV18c+dkMwpbAIaYbZKhhMdqf6A=;
+        b=End0u7rPhEoJ1n00iYcAkQL65pJHfxorC5uDkAMnUvayY6+uhkamQjgJ0WAWJdjpf9
+         iNErOSYucEDOB4oZ3RxsTNn6vJGKeV53+9yHETPb+tNN+TPhcSrx6CQDxTBPo8RmihzH
+         CB9P6q/RyvdJ/pZlwfxjDv067056BQcyPpzCQ1N4sSXIYcYgcnOQZ4S6SCKp9NIFE/lW
+         v1zZvMLBDAcNl7tzSYXNEG55xOUEM7tvXQIWdU5g2K1bZH3kv9j+WvEvajUbLw2JQVaP
+         ZjDhr0bfC66HH8K985nIPX8wce+kZQ9Bti1lspTU31v1m6bHIur8vR+qL+Hcs55Q8qvY
+         hDSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=Ir+IzupNAXvXvPBkZ1yh/qacu5xVXDJ2KC3L3ZMV+D4=;
-        b=EED+KU8eMYhPRbakg8ufk7N7udWD/ajW0taKcnMaub1VgUUEk6pJVhDivnToBjIDFI
-         Ii4QoNk4pYr3EVXDi0seakF39cCNV7UWcpTXbkVpyjE2enfVAMsTmn8Iff3bfBE3q5+G
-         4jYiOEJaPb4iENUuMm+etMhu8E4F05mWl1qUHgE9DIabskklCZuNGzsA8luMoyNv6PPn
-         6Z/AalBN6VZU8RWNIUO6wUP5mAiRuereep444i3efUrI8CVrDXgOYQ/QKFTO2dAzLW5V
-         5KYpQss9DxkuKVysmb+te+tPo4ecJsWw0rHH7Qyh7+TDyDGm+cpu1Y/x10PkExBmweTQ
-         zO3g==
-X-Gm-Message-State: ACrzQf3jeNWP+lf1eYUBdQuOBkGrMyqOPc9rTX4d6jbuwwycQa1EufVP
-        7oJ07yldNkV/XT8X9pEjfKl8QWnroUGLsQ==
-X-Google-Smtp-Source: AMsMyM5vrNCkseckAA8F+Eoio9F3dk/sAQm6yX/uZ2lAkUbFkJg4rOwOGUF0gV17QHA7TmWXxYAzaQ==
-X-Received: by 2002:a05:6808:13c9:b0:350:109d:4916 with SMTP id d9-20020a05680813c900b00350109d4916mr6110929oiw.97.1664442052395;
-        Thu, 29 Sep 2022 02:00:52 -0700 (PDT)
-Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com. [209.85.210.54])
-        by smtp.gmail.com with ESMTPSA id cm30-20020a056870b61e00b0012c21a64a76sm3622029oab.24.2022.09.29.02.00.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 29 Sep 2022 02:00:52 -0700 (PDT)
-Received: by mail-ot1-f54.google.com with SMTP id f20-20020a9d7b54000000b006574e21f1b6so500473oto.5;
-        Thu, 29 Sep 2022 02:00:52 -0700 (PDT)
-X-Received: by 2002:a5b:104:0:b0:6b0:429:3fe9 with SMTP id 4-20020a5b0104000000b006b004293fe9mr2016091ybx.543.1664442041163;
- Thu, 29 Sep 2022 02:00:41 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=BbbyRqTZb58MZyknIV18c+dkMwpbAIaYbZKhhMdqf6A=;
+        b=7F+GAucpug4bz/d63i3GjSoUodUo6wEmWlg1I80scEnAnrgl/ZkjXBj2r7ZFOa9aoW
+         O737ltxfT/tHhlwvNLoy1wgCLvF20akaeHmqGn+UNRdyK5GAkELVxszwZmEOh+oZ5uYK
+         pU6n2ayEWj9xgAvCWykbAQYPq/03zNJrvqspj6LWOUI0GW5GlmWm8UNemG4dBvlCMSEE
+         7XbnH8vjESiMVDbG4ocXHAccLrw1sgKIomkjCzb1cUoRqeMmeCMd83M/blEd2BIu+RHT
+         5dIf149b65hZZBQhHfD80Ptv1DJU1nPfYuFEUnaTShC3po3YhV3b/wtQObfMypkIp8pe
+         w8Lg==
+X-Gm-Message-State: ACrzQf2PYFk0ZJKZWHHInJyXVaaZKzZeoJwe4KgKxr2oo/nfnGkh4w3G
+        jSn5gYazIKER5qUx5nCh7nE=
+X-Google-Smtp-Source: AMsMyM5v4ACY3+42OnBQwHiIQO/hoaUCaRWKCu116YhNJE55vp9DxPA055iRWoSLnAr62hz6dDJjJQ==
+X-Received: by 2002:a05:600c:524a:b0:3b5:290:1a7c with SMTP id fc10-20020a05600c524a00b003b502901a7cmr10009010wmb.75.1664442117513;
+        Thu, 29 Sep 2022 02:01:57 -0700 (PDT)
+Received: from localhost.localdomain (90-231-185-32-no122.tbcn.telia.com. [90.231.185.32])
+        by smtp.gmail.com with ESMTPSA id v4-20020a5d4b04000000b0022c96d3b6f2sm7951062wrq.54.2022.09.29.02.01.56
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 29 Sep 2022 02:01:56 -0700 (PDT)
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        maciej.fijalkowski@intel.com
+Cc:     jonathan.lemon@gmail.com, bpf@vger.kernel.org
+Subject: [PATCH bpf-next] selftests/xsk: fix double free
+Date:   Thu, 29 Sep 2022 11:01:33 +0200
+Message-Id: <20220929090133.7869-1-magnus.karlsson@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220923202822.2667581-1-keescook@chromium.org>
- <20220923202822.2667581-2-keescook@chromium.org> <CAMuHMdXK+UN1YVZm9DenuXAM8hZRUZJwp=SXsueP7sWiVU3a9A@mail.gmail.com>
- <202209281011.66DD717D@keescook> <874jwqfuh6.fsf@mpe.ellerman.id.au>
-In-Reply-To: <874jwqfuh6.fsf@mpe.ellerman.id.au>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 29 Sep 2022 11:00:28 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVOvs4adSV7G6ucZ8dcr+RxfZOOK=jXeO2tEAaXkv80Xg@mail.gmail.com>
-Message-ID: <CAMuHMdVOvs4adSV7G6ucZ8dcr+RxfZOOK=jXeO2tEAaXkv80Xg@mail.gmail.com>
-Subject: Re: [PATCH v2 01/16] slab: Remove __malloc attribute from realloc functions
-To:     Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Marco Elver <elver@google.com>, linux-mm@kvack.org,
-        "Ruhl, Michael J" <michael.j.ruhl@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Alex Elder <elder@kernel.org>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Daniel Micay <danielmicay@gmail.com>,
-        Yonghong Song <yhs@fb.com>, Miguel Ojeda <ojeda@kernel.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, linux-media@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-        linux-fsdevel@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        dev@openvswitch.org, x86@kernel.org, llvm@lists.linux.dev,
-        linux-hardening@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Michael,
+From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-On Thu, Sep 29, 2022 at 10:36 AM Michael Ellerman <mpe@ellerman.id.au> wrote:
-> Kees Cook <keescook@chromium.org> writes:
-> > On Wed, Sep 28, 2022 at 09:26:15AM +0200, Geert Uytterhoeven wrote:
-> >> On Fri, Sep 23, 2022 at 10:35 PM Kees Cook <keescook@chromium.org> wrote:
-> >> > The __malloc attribute should not be applied to "realloc" functions, as
-> >> > the returned pointer may alias the storage of the prior pointer. Instead
-> >> > of splitting __malloc from __alloc_size, which would be a huge amount of
-> >> > churn, just create __realloc_size for the few cases where it is needed.
-> >> >
-> >> > Additionally removes the conditional test for __alloc_size__, which is
-> >> > always defined now.
-> >> >
-> >> > Cc: Christoph Lameter <cl@linux.com>
-> >> > Cc: Pekka Enberg <penberg@kernel.org>
-> >> > Cc: David Rientjes <rientjes@google.com>
-> >> > Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
-> >> > Cc: Andrew Morton <akpm@linux-foundation.org>
-> >> > Cc: Vlastimil Babka <vbabka@suse.cz>
-> >> > Cc: Roman Gushchin <roman.gushchin@linux.dev>
-> >> > Cc: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-> >> > Cc: Marco Elver <elver@google.com>
-> >> > Cc: linux-mm@kvack.org
-> >> > Signed-off-by: Kees Cook <keescook@chromium.org>
-> >>
-> >> Thanks for your patch, which is now commit 63caa04ec60583b1 ("slab:
-> >> Remove __malloc attribute from realloc functions") in next-20220927.
-> >>
-> >> Noreply@ellerman.id.au reported all gcc8-based builds to fail
-> >> (e.g. [1], more at [2]):
-> >>
-> >>     In file included from <command-line>:
-> >>     ./include/linux/percpu.h: In function ‘__alloc_reserved_percpu’:
-> >>     ././include/linux/compiler_types.h:279:30: error: expected
-> >> declaration specifiers before ‘__alloc_size__’
-> >>      #define __alloc_size(x, ...) __alloc_size__(x, ## __VA_ARGS__) __malloc
-> >>                                   ^~~~~~~~~~~~~~
-> >>     ./include/linux/percpu.h:120:74: note: in expansion of macro ‘__alloc_size’
-> >>     [...]
-> >>
-> >> It's building fine with e.g. gcc-9 (which is my usual m68k cross-compiler).
-> >> Reverting this commit on next-20220927 fixes the issue.
-> >>
-> >> [1] http://kisskb.ellerman.id.au/kisskb/buildresult/14803908/
-> >> [2] http://kisskb.ellerman.id.au/kisskb/head/1bd8b75fe6adeaa89d02968bdd811ffe708cf839/
-> >
-> > Eek! Thanks for letting me know. I'm confused about this --
-> > __alloc_size__ wasn't optional in compiler_attributes.h -- but obviously
-> > I broke something! I'll go figure this out.
->
-> This fixes it for me.
+Fix a double free at exit of the test suite.
 
-Kees submitted a similar patch 20 minutes before:
-https://lore.kernel.org/all/20220929081642.1932200-1-keescook@chromium.org
+Fixes: a693ff3ed561 ("selftests/xsk: Add support for executing tests on physical device")
+Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+---
+ tools/testing/selftests/bpf/xskxceiver.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-> --- a/include/linux/compiler_types.h
-> +++ b/include/linux/compiler_types.h
-> @@ -275,8 +275,13 @@ struct ftrace_likely_data {
->   * be performing a _reallocation_, as that may alias the existing pointer.
->   * For these, use __realloc_size().
->   */
-> -#define __alloc_size(x, ...)   __alloc_size__(x, ## __VA_ARGS__) __malloc
-> -#define __realloc_size(x, ...) __alloc_size__(x, ## __VA_ARGS__)
-> +#ifdef __alloc_size__
-> +# define __alloc_size(x, ...)  __alloc_size__(x, ## __VA_ARGS__) __malloc
-> +# define __realloc_size(x, ...)        __alloc_size__(x, ## __VA_ARGS__)
-> +#else
-> +# define __alloc_size(x, ...)  __malloc
-> +# define __realloc_size(x, ...)
-> +#endif
->
->  #ifndef asm_volatile_goto
->  #define asm_volatile_goto(x...) asm goto(x)
+diff --git a/tools/testing/selftests/bpf/xskxceiver.c b/tools/testing/selftests/bpf/xskxceiver.c
+index ef33309bbe49..d1a5f3218c34 100644
+--- a/tools/testing/selftests/bpf/xskxceiver.c
++++ b/tools/testing/selftests/bpf/xskxceiver.c
+@@ -1953,9 +1953,6 @@ int main(int argc, char **argv)
+ 
+ 	pkt_stream_delete(tx_pkt_stream_default);
+ 	pkt_stream_delete(rx_pkt_stream_default);
+-	free(ifobj_rx->umem);
+-	if (!ifobj_tx->shared_umem)
+-		free(ifobj_tx->umem);
+ 	ifobject_delete(ifobj_tx);
+ 	ifobject_delete(ifobj_rx);
+ 
 
+base-commit: 8526f0d6135f77451566463ace6f0fb8b72cedaa
+-- 
+2.34.1
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
