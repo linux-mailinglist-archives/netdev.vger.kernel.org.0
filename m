@@ -2,121 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 26C525EF774
+	by mail.lfdr.de (Postfix) with ESMTP id 711B95EF775
 	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 16:26:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235662AbiI2OZl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 10:25:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54808 "EHLO
+        id S235037AbiI2O0J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 10:26:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235037AbiI2OZT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 10:25:19 -0400
-Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2040A371B1
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 07:25:17 -0700 (PDT)
-Received: by mail-qv1-xf2e.google.com with SMTP id j8so976643qvt.13
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 07:25:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=QpSUqvuYKWyxulQJNLmEPQOpbUSNuFMaRfMdKlbnkag=;
-        b=l/GWf25EWMBKnnuA43FYzGfnccDl4ssXZNkQSWhhK+6LeFwrSAfPhTbOzMVWqAGHa2
-         eC6u+opJf2WW/go7aAYipVtkZomE2KKspc0K8J0kpO4bjmqXkKClVRCMNWdafv4I3Q4y
-         UG2b1Sss+JDF+a4yzg/x0ETjgEkT/lT8gQhW8Jikt52hH2lM2NhCwQGYAw77Cb95g2PD
-         5+pK8HTzA3tz8q2VO0T8tG49igG1iOQkpBpytGJ1kFcHkbwwWM0ZtlQ1PNbisaLgUKXB
-         49gGuVFJNTZsrPYjn3rRruLAAVOEztqm73EZDQjwoURyB5Jjyvbc9f1rI34cyLmjdvWL
-         dPOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=QpSUqvuYKWyxulQJNLmEPQOpbUSNuFMaRfMdKlbnkag=;
-        b=UbJYYR2pFTMaI8wzntUhKwplVCC2fffEkpQP3rVLXjOUY1XXCjDzdwi8bCD+WbMI7H
-         GlW6fUK+xaZYbgbO4ehJVakXQboBdciW5sKn8jKp9oaqIZnsICDakkWMLWiIFRH9Qt9b
-         QOUSJDzDTAIjTfGauAfOdcGZWbOpQeVwPt7qU178ixPGBT4biNSkh8PHXmrycRAh0yUN
-         LFKUGOG/fUHRn6hnoRBWVz5pmHmx28yaAw3n9mP1YxXojEDwyON6660HEvl+hVrFFD7R
-         cXQ+xspSiaMnJ9QuApnhaOztdTWIVJcEANgZKXB0ZdlBhlfpTYaeJ5fe4vh+kxzBR1yR
-         0p3w==
-X-Gm-Message-State: ACrzQf1SZJ45Y7G9Wye4pSbGMefVE9NziTnL09nC5OpFzAZAMbHaJHL+
-        T0odiOt5CyYe2pbL3O8s7eT+uN/YOaU=
-X-Google-Smtp-Source: AMsMyM4NiAQ577AwqK8JOIVcT9U1EoOf82EYtLzFhNjez0JyYmtX2flAo/bYAOYeSUeTWsgIRbfREw==
-X-Received: by 2002:a05:6214:1cce:b0:4ad:72d5:d2e1 with SMTP id g14-20020a0562141cce00b004ad72d5d2e1mr2731333qvd.43.1664461516196;
-        Thu, 29 Sep 2022 07:25:16 -0700 (PDT)
-Received: from mubashirq.c.googlers.com.com (74.206.145.34.bc.googleusercontent.com. [34.145.206.74])
-        by smtp.gmail.com with ESMTPSA id z21-20020ac87f95000000b00342f8984348sm5889952qtj.87.2022.09.29.07.25.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Sep 2022 07:25:15 -0700 (PDT)
-From:   Mubashir Adnan Qureshi <mubashirmaq@gmail.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org,
-        Mubashir Adnan Qureshi <mubashirq@google.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Eric Dumazet <edumazet@google.com>
-Subject: [PATCH net-next 5/5] tcp: add rcv_wnd and plb_rehash to TCP_INFO
-Date:   Thu, 29 Sep 2022 14:24:47 +0000
-Message-Id: <20220929142447.3821638-6-mubashirmaq@gmail.com>
-X-Mailer: git-send-email 2.37.3.998.g577e59143f-goog
-In-Reply-To: <20220929142447.3821638-1-mubashirmaq@gmail.com>
-References: <20220929142447.3821638-1-mubashirmaq@gmail.com>
+        with ESMTP id S235661AbiI2OZl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 10:25:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E6F2B07CA;
+        Thu, 29 Sep 2022 07:25:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C1A9E613B3;
+        Thu, 29 Sep 2022 14:25:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A10FC433C1;
+        Thu, 29 Sep 2022 14:25:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664461538;
+        bh=dbabHMGfEfLEGS3hjsP2RvaXwXtnmcqRdOWhJhnHSRI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TyomQpdILBEerbw0vhH5xbo1BouQ0M6mV9uzRxefVwGwM7DpyEaql6PvfaABIfucv
+         YbsbbfNQHNK9Kl4aRQ3t7Wd1pr0tXvz7OxlqumKV8AuqSG46XCc+CPYlavIRw4tUDC
+         IsDjjA0M0GK+4xdnNd1Tk2TJRx2u1EZVENDrpbgWj3lbSJdDrIsuXtQiCeNmgIrPwU
+         aIrZQ2ZUSDGw8TSrwITGqFjSh6UTURBa6/RxRWDhWAt8gl6YuM73i4ybJOT5RU4nxe
+         DJnyzWO76CRh13Orojanbu4XXm69YYB6Wo2ieArDL8jeaW9pzkiICbZEv6gLwWamcK
+         DHGzRKhxJPwNA==
+Date:   Thu, 29 Sep 2022 17:25:33 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Christian Langrock <christian.langrock@secunet.com>
+Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
+        herbert@gondor.apana.org.au, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH ipsec v4] xfrm: replay: Fix ESN wrap around for GSO
+Message-ID: <YzWq3aENyZe4RksO@unreal>
+References: <778339a5-e069-0755-8287-75e39d8050e0@secunet.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <778339a5-e069-0755-8287-75e39d8050e0@secunet.com>
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mubashir Adnan Qureshi <mubashirq@google.com>
+On Thu, Sep 29, 2022 at 01:52:07PM +0200, Christian Langrock wrote:
+> When using GSO it can happen that the wrong seq_hi is used for the last
+> packets before the wrap around. This can lead to double usage of a
+> sequence number. To avoid this, we should serialize this last GSO
+> packet.
+> 
+> Fixes: d7dbefc45cf5 ("xfrm: Add xfrm_replay_overflow functions for...")
 
-rcv_wnd can be useful to diagnose TCP performance where receiver window
-becomes the bottleneck. rehash reports the PLB and timeout triggered
-rehash attempts by the TCP connection.
+Sorry that I missed it in previous reviews, but please never truncate
+fixes line.
 
-Signed-off-by: Mubashir Adnan Qureshi <mubashirq@google.com>
-Signed-off-by: Yuchung Cheng <ycheng@google.com>
-Signed-off-by: Neal Cardwell <ncardwell@google.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
----
- include/uapi/linux/tcp.h | 5 +++++
- net/ipv4/tcp.c           | 2 ++
- 2 files changed, 7 insertions(+)
-
-diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
-index c9abe86eda5f..879eeb0a084b 100644
---- a/include/uapi/linux/tcp.h
-+++ b/include/uapi/linux/tcp.h
-@@ -284,6 +284,11 @@ struct tcp_info {
- 	__u32	tcpi_snd_wnd;	     /* peer's advertised receive window after
- 				      * scaling (bytes)
- 				      */
-+	__u32	tcpi_rcv_wnd;	     /* local advertised receive window after
-+				      * scaling (bytes)
-+				      */
-+
-+	__u32   tcpi_rehash;         /* PLB or timeout triggered rehash attempts */
- };
- 
- /* netlink attributes types for SCM_TIMESTAMPING_OPT_STATS */
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index f5902a965693..aa100f52f330 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -3937,6 +3937,8 @@ void tcp_get_info(struct sock *sk, struct tcp_info *info)
- 	info->tcpi_reord_seen = tp->reord_seen;
- 	info->tcpi_rcv_ooopack = tp->rcv_ooopack;
- 	info->tcpi_snd_wnd = tp->snd_wnd;
-+	info->tcpi_rcv_wnd = tp->rcv_wnd;
-+	info->tcpi_rehash = tp->plb_rehash + tp->timeout_rehash;
- 	info->tcpi_fastopen_client_fail = tp->fastopen_client_fail;
- 	unlock_sock_fast(sk, slow);
- }
--- 
-2.37.3.998.g577e59143f-goog
-
+> Signed-off-by: Christian Langrock <christian.langrock@secunet.com>
+> Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+> ---
+> Changes in v4:
+>  - move changelog within comment
+>  - add reviewer
+> 
+> Changes in v3:
+> - fix build
+> - remove wrapper function
+> 
+> Changes in v2:
+> - switch to bool as return value
+> - remove switch case in wrapper function
+> ---
+>  include/net/xfrm.h     |  1 +
+>  net/xfrm/xfrm_output.c |  2 +-
+>  net/xfrm/xfrm_replay.c | 26 ++++++++++++++++++++++++++
+>  3 files changed, 28 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/net/xfrm.h b/include/net/xfrm.h
+> index 6e8fa98f786f..b845f911767c 100644
+> --- a/include/net/xfrm.h
+> +++ b/include/net/xfrm.h
+> @@ -1749,6 +1749,7 @@ void xfrm_replay_advance(struct xfrm_state *x, __be32 net_seq);
+>  int xfrm_replay_check(struct xfrm_state *x, struct sk_buff *skb, __be32 net_seq);
+>  void xfrm_replay_notify(struct xfrm_state *x, int event);
+>  int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb);
+> +bool xfrm_replay_overflow_check(struct xfrm_state *x, struct sk_buff *skb);
+>  int xfrm_replay_recheck(struct xfrm_state *x, struct sk_buff *skb, __be32 net_seq);
+>  
+>  static inline int xfrm_aevent_is_on(struct net *net)
+> diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
+> index 9a5e79a38c67..c470a68d9c88 100644
+> --- a/net/xfrm/xfrm_output.c
+> +++ b/net/xfrm/xfrm_output.c
+> @@ -738,7 +738,7 @@ int xfrm_output(struct sock *sk, struct sk_buff *skb)
+>  		skb->encapsulation = 1;
+>  
+>  		if (skb_is_gso(skb)) {
+> -			if (skb->inner_protocol)
+> +			if (skb->inner_protocol || xfrm_replay_overflow_check(x, skb))
+>  				return xfrm_output_gso(net, sk, skb);
+>  
+>  			skb_shinfo(skb)->gso_type |= SKB_GSO_ESP;
+> diff --git a/net/xfrm/xfrm_replay.c b/net/xfrm/xfrm_replay.c
+> index 9277d81b344c..23858eb5eab4 100644
+> --- a/net/xfrm/xfrm_replay.c
+> +++ b/net/xfrm/xfrm_replay.c
+> @@ -750,6 +750,27 @@ int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb)
+>  
+>  	return xfrm_replay_overflow_offload(x, skb);
+>  }
+> +
+> +static bool xfrm_replay_overflow_check(struct xfrm_state *x, struct sk_buff *skb)
+> +{
+> +	struct xfrm_replay_state_esn *replay_esn = x->replay_esn;
+> +	__u32 oseq = replay_esn->oseq;
+> +
+> +	/* We assume that this function is called with
+> +	 * skb_is_gso(skb) == true
+> +	 */
+> +
+> +	if (x->repl_mode == XFRM_REPLAY_MODE_ESN) {
+> +		if (x->type->flags & XFRM_TYPE_REPLAY_PROT) {
+> +			oseq = oseq + 1 + skb_shinfo(skb)->gso_segs;
+> +			if (unlikely(oseq < replay_esn->oseq))
+> +				return true;
+> +		}
+> +	}
+> +
+> +	return false;
+> +}
+> +
+>  #else
+>  int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb)
+>  {
+> @@ -764,6 +785,11 @@ int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb)
+>  
+>  	return __xfrm_replay_overflow(x, skb);
+>  }
+> +
+> +bool xfrm_replay_overflow_check(struct xfrm_state *x, struct sk_buff *skb)
+> +{
+> +	return false;
+> +}
+>  #endif
+>  
+>  int xfrm_init_replay(struct xfrm_state *x)
+> -- 
+> 2.37.1.223.g6a475b71f8
+> 
+> 
