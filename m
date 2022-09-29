@@ -2,190 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 68FF95EFD09
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 20:28:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF3645EFD4B
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 20:44:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235735AbiI2S2X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 14:28:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51760 "EHLO
+        id S235952AbiI2Soe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 14:44:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234987AbiI2S1w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 14:27:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F1501438C8;
-        Thu, 29 Sep 2022 11:27:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4DEB3B82646;
-        Thu, 29 Sep 2022 18:27:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D73EC433C1;
-        Thu, 29 Sep 2022 18:27:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664476067;
-        bh=peXm6EYz/EMFFA8zuW/FKucf85TPZxTNbaodSHoZ7Wg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Kv7xhea2uFIbwtuFQLZh9XSjU1NQfjbcVqi7NBdfo1YmhLPr/oFL/8Xy7h8nVd63Y
-         1QbyuerlojcUMR9UJXqyqMMe/stYLXuAEzjAn5YgYL+gSYYe2Mgq5Jy1q1QOi5phs9
-         LUXrQ/s2M+7o3FfgPVpda31wV2wVBaOYzo8yfTohR2fDzhGsJx5Pf63zWtPQKojM9F
-         jn5yUhRAxSZA/Yu9rBhiUcBtbQl8G7FuabZv9yLUhOJjlvUZ798HikAJYp4pUIjm//
-         HnqLKE0lE+TxmEdaYgq6OQOzGouYBxg3CmBkmarKcPIbw5qPRqYRZam7X/YTCqQye3
-         IoYyggPAxMHZw==
-Date:   Thu, 29 Sep 2022 11:27:44 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     netdev@kapio-technology.com
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Florent Fourcot <florent.fourcot@wifirst.fr>,
-        Hans Schultz <schultz.hans@gmail.com>,
-        Joachim Wiberg <troglobit@gmail.com>,
-        Amit Cohen <amcohen@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v6 net-next 0/9] Extend locked port feature with FDB
- locked flag (MAC-Auth/MAB)
-Message-ID: <20220929112744.27cc969b@kernel.org>
-In-Reply-To: <12587604af1ed79be4d3a1607987483a@kapio-technology.com>
-References: <20220928150256.115248-1-netdev@kapio-technology.com>
-        <20220929091036.3812327f@kernel.org>
-        <12587604af1ed79be4d3a1607987483a@kapio-technology.com>
+        with ESMTP id S235902AbiI2SoJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 14:44:09 -0400
+Received: from mg.ssi.bg (mg.ssi.bg [193.238.174.37])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 48C7D1D929A
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 11:43:44 -0700 (PDT)
+Received: from mg.ssi.bg (localhost [127.0.0.1])
+        by mg.ssi.bg (Proxmox) with ESMTP id A76921023F;
+        Thu, 29 Sep 2022 21:43:41 +0300 (EEST)
+Received: from ink.ssi.bg (unknown [193.238.174.40])
+        by mg.ssi.bg (Proxmox) with ESMTP id 41C88102D4;
+        Thu, 29 Sep 2022 21:43:40 +0300 (EEST)
+Received: from ja.ssi.bg (unknown [178.16.129.10])
+        by ink.ssi.bg (Postfix) with ESMTPS id E87063C0325;
+        Thu, 29 Sep 2022 21:43:39 +0300 (EEST)
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+        by ja.ssi.bg (8.17.1/8.16.1) with ESMTP id 28TIhcIs136951;
+        Thu, 29 Sep 2022 21:43:39 +0300
+Date:   Thu, 29 Sep 2022 21:43:38 +0300 (EEST)
+From:   Julian Anastasov <ja@ssi.bg>
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
+cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH net] ip: fix triggering of 'icmp redirect'
+In-Reply-To: <aaddae1d-ad4e-425c-b88a-0830d839a3ce@6wind.com>
+Message-ID: <28c0db52-cfc9-d528-da5c-2ff01b482b77@ssi.bg>
+References: <20220829100121.3821-1-nicolas.dichtel@6wind.com> <6c8a44ba-c2d5-cdf-c5c7-5baf97cba38@ssi.bg> <aaddae1d-ad4e-425c-b88a-0830d839a3ce@6wind.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/mixed; boundary="-1463811672-223533272-1664477019=:42780"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 29 Sep 2022 18:37:09 +0200 netdev@kapio-technology.com wrote:
-> On 2022-09-29 18:10, Jakub Kicinski wrote:
-> > On Wed, 28 Sep 2022 17:02:47 +0200 Hans Schultz wrote: =20
-> >> From: "Hans J. Schultz" <netdev@kapio-technology.com>
-> >>=20
-> >> This patch set extends the locked port feature for devices
-> >> that are behind a locked port, but do not have the ability to
-> >> authorize themselves as a supplicant using IEEE 802.1X.
-> >> Such devices can be printers, meters or anything related to
-> >> fixed installations. Instead of 802.1X authorization, devices
-> >> can get access based on their MAC addresses being whitelisted. =20
-> >=20
-> > Try a allmodconfig build on latest net-next, seems broken. =20
->=20
-> I have all different switch drivers enabled and I see no compile=20
-> warnings or errors.=20
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Just do what I told you - rebase on net-next, allmodconfig.
+---1463811672-223533272-1664477019=:42780
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-> I guess I will get a robot update if that is the=20
-> case but please be specific as to what does not build.
 
-The maintainers simply don't have time to hold everyone by the hand.
-Sometimes I wish it was still okay to yell at people who post code
-which does not build. Oh well.
+	Hello,
 
-../drivers/net/dsa/qca/qca8k-common.c:810:5: error: conflicting types for =
-=E2=80=98qca8k_port_fdb_del=E2=80=99
- int qca8k_port_fdb_del(struct dsa_switch *ds, int port,
-     ^~~~~~~~~~~~~~~~~~
-In file included from ../drivers/net/dsa/qca/qca8k-common.c:13:
-../drivers/net/dsa/qca/qca8k.h:483:5: note: previous declaration of =E2=80=
-=98qca8k_port_fdb_del=E2=80=99 was here
- int qca8k_port_fdb_del(struct dsa_switch *ds, int port,
-     ^~~~~~~~~~~~~~~~~~
-../drivers/net/dsa/qca/qca8k-common.c: In function =E2=80=98qca8k_port_fdb_=
-del=E2=80=99:
-../drivers/net/dsa/qca/qca8k-common.c:818:6: error: =E2=80=98fdb_flags=E2=
-=80=99 undeclared (first use in this function); did you mean =E2=80=98tsq_f=
-lags=E2=80=99?
-  if (fdb_flags)
-      ^~~~~~~~~
-      tsq_flags
-../drivers/net/dsa/qca/qca8k-common.c:818:6: note: each undeclared identifi=
-er is reported only once for each function it appears in
-make[5]: *** [../scripts/Makefile.build:249: drivers/net/dsa/qca/qca8k-comm=
-on.o] Error 1
-make[5]: *** Waiting for unfinished jobs....
-make[4]: *** [../scripts/Makefile.build:465: drivers/net/dsa/qca] Error 2
-make[4]: *** Waiting for unfinished jobs....
-../drivers/net/dsa/sja1105/sja1105_main.c: In function =E2=80=98sja1105_fas=
-t_age=E2=80=99:
-../drivers/net/dsa/sja1105/sja1105_main.c:1941:61: error: incompatible type=
- for argument 5 of =E2=80=98sja1105_fdb_del=E2=80=99
-   rc =3D sja1105_fdb_del(ds, port, macaddr, l2_lookup.vlanid, db);
-                                                             ^~
-../drivers/net/dsa/sja1105/sja1105_main.c:1831:11: note: expected =E2=80=98=
-u16=E2=80=99 {aka =E2=80=98short unsigned int=E2=80=99} but argument is of =
-type =E2=80=98struct dsa_db=E2=80=99
-       u16 fdb_flags, struct dsa_db db)
-       ~~~~^~~~~~~~~
-../drivers/net/dsa/sja1105/sja1105_main.c:1941:8: error: too few arguments =
-to function =E2=80=98sja1105_fdb_del=E2=80=99
-   rc =3D sja1105_fdb_del(ds, port, macaddr, l2_lookup.vlanid, db);
-        ^~~~~~~~~~~~~~~
-../drivers/net/dsa/sja1105/sja1105_main.c:1829:12: note: declared here
- static int sja1105_fdb_del(struct dsa_switch *ds, int port,
-            ^~~~~~~~~~~~~~~
-../drivers/net/dsa/sja1105/sja1105_main.c: In function =E2=80=98sja1105_mdb=
-_del=E2=80=99:
-../drivers/net/dsa/sja1105/sja1105_main.c:1962:56: error: incompatible type=
- for argument 5 of =E2=80=98sja1105_fdb_del=E2=80=99
-  return sja1105_fdb_del(ds, port, mdb->addr, mdb->vid, db);
-                                                        ^~
-../drivers/net/dsa/sja1105/sja1105_main.c:1831:11: note: expected =E2=80=98=
-u16=E2=80=99 {aka =E2=80=98short unsigned int=E2=80=99} but argument is of =
-type =E2=80=98struct dsa_db=E2=80=99
-       u16 fdb_flags, struct dsa_db db)
-       ~~~~^~~~~~~~~
-../drivers/net/dsa/sja1105/sja1105_main.c:1962:9: error: too few arguments =
-to function =E2=80=98sja1105_fdb_del=E2=80=99
-  return sja1105_fdb_del(ds, port, mdb->addr, mdb->vid, db);
-         ^~~~~~~~~~~~~~~
-../drivers/net/dsa/sja1105/sja1105_main.c:1829:12: note: declared here
- static int sja1105_fdb_del(struct dsa_switch *ds, int port,
-            ^~~~~~~~~~~~~~~
-../drivers/net/dsa/sja1105/sja1105_main.c:1963:1: error: control reaches en=
-d of non-void function [-Werror=3Dreturn-type]
- }
- ^
-cc1: some warnings being treated as errors
-make[5]: *** [../scripts/Makefile.build:249: drivers/net/dsa/sja1105/sja110=
-5_main.o] Error 1
-make[5]: *** Waiting for unfinished jobs....
-make[4]: *** [../scripts/Makefile.build:465: drivers/net/dsa/sja1105] Error=
- 2
-make[3]: *** [../scripts/Makefile.build:465: drivers/net/dsa] Error 2
-make[3]: *** Waiting for unfinished jobs....
-make[2]: *** [../scripts/Makefile.build:465: drivers/net] Error 2
-make[1]: *** [/home/kicinski/linux/Makefile:1852: drivers] Error 2
-make[1]: *** Waiting for unfinished jobs....
-make: *** [Makefile:222: __sub-make] Error 2
+On Thu, 29 Sep 2022, Nicolas Dichtel wrote:
+
+> Le 27/09/2022 à 14:56, Julian Anastasov a écrit :
+> > 
+> > nhc_gw	nhc_scope		rt_gw4		fib_scope (route)
+> > ---------------------------------------------------------------------------
+> > 0	RT_SCOPE_NOWHERE	Host		RT_SCOPE_HOST (local)
+> > 0	RT_SCOPE_HOST		LAN_TARGET	RT_SCOPE_LINK (link)
+> > LOCAL1	RT_SCOPE_HOST		LAN_TARGET	RT_SCOPE_LINK (link)
+> > REM_GW1	RT_SCOPE_LINK		Universe	RT_SCOPE_UNIVERSE (indirect)
+> > 
+> > 	For the code above: we do not check res->scope,
+> > we are interested what is the nhc_gw's scope (LINK/HOST/NOWHERE).
+> > It means, reverse route points back to same device and sender is not
+> > reached via gateway REM_GW1.
+
+	In short, to send redirects, sender should be
+reachable via link route (with nhc_scope = RT_SCOPE_HOST).
+
+> iproute2 reject a gw which is not directly connected, am I wrong?
+
+	ip tool can not do it. It only provides route's scope
+specified by user and the GW's scope is determined by 
+fib_check_nh_v4_gw() as route's scope + 1 but at least RT_SCOPE_LINK:
+
+                /* It is not necessary, but requires a bit of thinking */
+                if (fl4.flowi4_scope < RT_SCOPE_LINK)
+                        fl4.flowi4_scope = RT_SCOPE_LINK;
+
+	The other allowed value for nhc_scope when rt_gw4 is not 0 is
+RT_SCOPE_HOST (GW is a local IP, useful when autoselecting source
+address from same subnet). It is set by fib_check_nh_v4_gw() when
+res.type = RTN_LOCAL.
+
+> > 	By changing it to nhc_scope >= RT_SCOPE_LINK, ret always
+> > will be 1 because nhc_scope is not set below RT_SCOPE_LINK (253).
+> > Note that RT_SCOPE_HOST is 254.
+> Do you have a setup which shows the problem?
+
+	No, just by analyze. RT_SCOPE_LINK indicates sender
+is reached via GW.
+
+> After reverting the two commits (747c14307214 and eb55dc09b5dd) and putting the
+> below patch, the initial problem is fixed. But it's not clear what is broken
+> with the current code. Before sending these patches formally, it would be nice
+> to be able to add a selftest to demonstrate what is wrong.
+
+	What is broken? I guess, __fib_validate_source always
+returns 1 causing redirects.
+
+	As for nh_create_ipv4(), may be using scope=0 as
+arg to fib_check_nh() should work. Now I can not find example
+for corner case where this can fail.
+
+> @@ -2534,7 +2534,7 @@ static int nh_create_ipv4(struct net *net, struct nexthop *nh,
+>  	if (!err) {
+>  		nh->nh_flags = fib_nh->fib_nh_flags;
+>  		fib_info_update_nhc_saddr(net, &fib_nh->nh_common,
+> -					  fib_nh->fib_nh_scope);
+> +					  !fib_nh->fib_nh_scope ? 0 : fib_nh->fib_nh_scope - 1);
+
+	And this fix is needed to not expose scope host
+saddr (127.0.0.1) when nexthop is without GW and to
+not expose scope link saddr when nexthop is with GW (for
+traffic via scope global routes).
+
+>  	} else {
+>  		fib_nh_release(net, fib_nh);
+>  	}
+
+Regards
+
+--
+Julian Anastasov <ja@ssi.bg>
+---1463811672-223533272-1664477019=:42780--
+
