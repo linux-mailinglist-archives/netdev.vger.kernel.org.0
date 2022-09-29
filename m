@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B15C5EEED8
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:24:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4BCD5EEEDC
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:24:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234996AbiI2HXD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 03:23:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56930 "EHLO
+        id S235241AbiI2HXH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 03:23:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235197AbiI2HWx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:22:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 878C81166C4
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:22:47 -0700 (PDT)
+        with ESMTP id S235209AbiI2HW5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:22:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E61E1181FF
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:22:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A665F6205C
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 07:22:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02B10C433D6;
-        Thu, 29 Sep 2022 07:22:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4580EB82344
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 07:22:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3C45C433D6;
+        Thu, 29 Sep 2022 07:22:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664436166;
-        bh=7F3AXLGhiZgt4ss5nRFHzMhjEPZ29acwYGw186U+ezo=;
+        s=k20201202; t=1664436167;
+        bh=JJNkTrSOp2ur6TiDvp+CDKzoBNnfNhdOGgCXBNK0efE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QKc1bWYeVSx2cvmSjccmX5G7qFB8F0sFcB2J7CzexVIpZnWMP22ZCQQWFp/umXZ1r
-         eGcG2L9NWFEsQ75UqxbdoiTsCGIAvB98PqTekS1uYdBHaugeDvG6OeRu7XI+orTLoK
-         astlwD3ZW8Ts9f2wOEEWunS1CcHpWfwyGxs/GYX2s8QgwExlxBZEeJIUG7eF27dLtd
-         azPUzm5tQZgYF0aei4BbbaR9gLCIufC4nvZe1X/maGsR0JjqulK/cDneaBcCxEI8fk
-         xz96uSV/FBBE605/Q4+Uw3a7y9mMsqQlXTEj6DOnPFZjnSOMMkBR9qtLX44CknTjNX
-         Eftpf02SUdN5A==
+        b=S1jqHWespM2XpeKzxzgMQyp6tMruJ9UaVrZEj+X4M6nhW0YXztOJErYeTIsPwTUyR
+         LX30G3uB7uVy0Gdo5Of7UcVyvAXaBRdy2n7uBL3QyXd12q2rTWWTXPrAeCwqLlHeim
+         jIVLDjjORMDLAbHAkeIo/BJfw7EoB8HAQwZjYGQ6HLJuoL6vpvRIM0ZMTtM5oW6z1D
+         6nFUUJ6KPrG4g2mGuW1QMn6bAomCqjMJsL44FNCG2JSONYayS79arEhwg+npzGUAp0
+         aTbjWa1O7Iy3tfXtQQZnur3dDoiHrSCMWyBeruzigi6cjALZlAt45ge+YGgVkBI+Xd
+         joI1mxRWQqbag==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -39,9 +39,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
         Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: [PATCH net-next 08/16] net/mlx5e: Fix calculations for ICOSQ size
-Date:   Thu, 29 Sep 2022 00:21:48 -0700
-Message-Id: <20220929072156.93299-9-saeed@kernel.org>
+Subject: [PATCH net-next 09/16] net/mlx5e: Optimize the page cache reducing its size 2x
+Date:   Thu, 29 Sep 2022 00:21:49 -0700
+Message-Id: <20220929072156.93299-10-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220929072156.93299-1-saeed@kernel.org>
 References: <20220929072156.93299-1-saeed@kernel.org>
@@ -58,70 +58,85 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-WQEs must not cross page boundaries, they are padded with NOPs if they
-don't fit the page. mlx5e_mpwrq_total_umr_wqebbs doesn't take into
-account this padding, risking reserving not enough space.
-
-The padding is not straightforward to add to this calculation, because
-WQEs of different sizes may be mixed together in the queue. If each page
-ends with a big WQE that doesn't fit and requires at most its size minus
-1 WQEBB of padding, the total space can be much bigger than in case when
-smaller WQEs take advantage of this padding.
-
-Replace the wrong exact calculation by the following estimation. Each
-padding can be at most the size of the maximum WQE used in the queue
-minus one WQEBB. Let's call the rest of the page "useful space". If we
-divide the total size of all needed WQEs by this useful space, rounding
-up, we'll get the number of pages, which is enough to contain all these
-WQEs. It's correct, because every WQE that appeared on the boundary
-between two blocks of useful space would start in the useful space of
-one page and end in the padding of the same page, while our estimation
-reserved space for its tail in the next space, making the estimation not
-smaller than the real space occupied in the queue.
-
-The code actually uses a looser estimation: instead of taking the
-maximum size of all used WQE types minus 1 WQEBB, it takes the maximum
-hardware size of a WQE. It's made for simplicity and extensibility.
+RX page cache stores dma_info structs, that consist of a pointer to
+struct page and a DMA address. In fact, the DMA address is extracted
+from struct page using page_pool_get_dma_addr when a page is pushed to
+the cache. By moving this call to the point when a page is popped from
+the cache, we can avoid storing the DMA address in the cache,
+effectively reducing its size by two times without losing any
+functionality.
 
 Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
 Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en/params.c    | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en.h      | 2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 4 +---
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c   | 8 ++++----
+ 3 files changed, 6 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-index 0f18031a871a..68bc66cbd8a5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-@@ -951,7 +951,7 @@ static u8 mlx5e_build_icosq_log_wq_sz(struct mlx5_core_dev *mdev,
- 				      struct mlx5e_params *params,
- 				      struct mlx5e_rq_param *rqp)
- {
--	u32 wqebbs;
-+	u32 wqebbs, total_pages, useful_space;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+index 449c016262f4..6b91fa7f2221 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+@@ -630,7 +630,7 @@ struct mlx5e_mpw_info {
+ struct mlx5e_page_cache {
+ 	u32 head;
+ 	u32 tail;
+-	struct mlx5e_dma_info page_cache[MLX5E_CACHE_SIZE];
++	struct page *page_cache[MLX5E_CACHE_SIZE];
+ };
  
- 	/* MLX5_WQ_TYPE_CYCLIC */
- 	if (params->rq_wq_type != MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ)
-@@ -998,6 +998,18 @@ static u8 mlx5e_build_icosq_log_wq_sz(struct mlx5_core_dev *mdev,
- 	if (params->packet_merge.type == MLX5E_PACKET_MERGE_SHAMPO)
- 		wqebbs += mlx5e_shampo_icosq_sz(mdev, params, rqp);
+ struct mlx5e_rq;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index fbbc2e792c27..b1d8fd08887b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -830,13 +830,11 @@ static void mlx5e_free_rq(struct mlx5e_rq *rq)
  
-+	/* UMR WQEs don't cross the page boundary, they are padded with NOPs.
-+	 * This padding is always smaller than the max WQE size. That gives us
-+	 * at least (PAGE_SIZE - (max WQE size - MLX5_SEND_WQE_BB)) useful bytes
-+	 * per page. The number of pages is estimated as the total size of WQEs
-+	 * divided by the useful space in page, rounding up. If some WQEs don't
-+	 * fully fit into the useful space, they can occupy part of the padding,
-+	 * which proves this estimation to be correct (reserve enough space).
-+	 */
-+	useful_space = PAGE_SIZE - mlx5e_get_max_sq_wqebbs(mdev) + MLX5_SEND_WQE_BB;
-+	total_pages = DIV_ROUND_UP(wqebbs * MLX5_SEND_WQE_BB, useful_space);
-+	wqebbs = total_pages * (PAGE_SIZE / MLX5_SEND_WQE_BB);
-+
- 	return max_t(u8, MLX5E_PARAMS_MINIMUM_LOG_SQ_SIZE, order_base_2(wqebbs));
+ 	for (i = rq->page_cache.head; i != rq->page_cache.tail;
+ 	     i = (i + 1) & (MLX5E_CACHE_SIZE - 1)) {
+-		struct mlx5e_dma_info *dma_info = &rq->page_cache.page_cache[i];
+-
+ 		/* With AF_XDP, page_cache is not used, so this loop is not
+ 		 * entered, and it's safe to call mlx5e_page_release_dynamic
+ 		 * directly.
+ 		 */
+-		mlx5e_page_release_dynamic(rq, dma_info->page, false);
++		mlx5e_page_release_dynamic(rq, rq->page_cache.page_cache[i], false);
+ 	}
+ 
+ 	xdp_rxq_info_unreg(&rq->xdp_rxq);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+index de929fde8cc6..b8aa6f843675 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+@@ -245,8 +245,7 @@ static inline bool mlx5e_rx_cache_put(struct mlx5e_rq *rq, struct page *page)
+ 		return false;
+ 	}
+ 
+-	cache->page_cache[cache->tail].page = page;
+-	cache->page_cache[cache->tail].addr = page_pool_get_dma_addr(page);
++	cache->page_cache[cache->tail] = page;
+ 	cache->tail = tail_next;
+ 	return true;
  }
+@@ -262,12 +261,13 @@ static inline bool mlx5e_rx_cache_get(struct mlx5e_rq *rq,
+ 		return false;
+ 	}
+ 
+-	if (page_ref_count(cache->page_cache[cache->head].page) != 1) {
++	if (page_ref_count(cache->page_cache[cache->head]) != 1) {
+ 		stats->cache_busy++;
+ 		return false;
+ 	}
+ 
+-	*dma_info = cache->page_cache[cache->head];
++	dma_info->page = cache->page_cache[cache->head];
++	dma_info->addr = page_pool_get_dma_addr(dma_info->page);
+ 	cache->head = (cache->head + 1) & (MLX5E_CACHE_SIZE - 1);
+ 	stats->cache_reuse++;
  
 -- 
 2.37.3
