@@ -2,139 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FB8B5EF751
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 16:19:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5C345EF776
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 16:26:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235509AbiI2OTA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 10:19:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37896 "EHLO
+        id S234946AbiI2OZO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 10:25:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234340AbiI2OS6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 10:18:58 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD52A17A5FE;
-        Thu, 29 Sep 2022 07:18:57 -0700 (PDT)
-Date:   Thu, 29 Sep 2022 16:18:55 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1664461136;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8zj0w2Vgi49HfUr/IZs8+gOkOwPoTluB/6siD/jB8/k=;
-        b=lfO4rmZLV2Wi5LX2ZcCR9f5RLRCxPy1zaUwTPlXdl+hg+mYBx3MrzZLWWobgHsD98CGv7H
-        MOEw6ZantZNpc+vThhTT+nyFqPlB0DCu9b9Qx3egJo8RsLKYBXY0GCZd3Sxgbl6KcBkSKr
-        Rt4A+5+QyDooU3e+RDugj1cILWg/HJ00pe6KScvCm7vxv1JIRFS2k4nbTx7JuTQxrzhpPC
-        HAVFBvnUByyRAtDrbSMqfJNzD3gX1s3EhsvnafIVYwEjatH3jttJTG4E2dY4A5Ii+Av9lz
-        eGn9Fj1RNNgXMVJlvoXKmA2Bhva2+QAfDRfKhbE/KHwx861t34y4Ed718n0how==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1664461136;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8zj0w2Vgi49HfUr/IZs8+gOkOwPoTluB/6siD/jB8/k=;
-        b=0eZRfOeH9xxXlSrlwKeTWege4p8EQ4DpWyt/GbShjyrjyv77pQsbMUZqaIeMR3iHPK21dn
-        yht3X5Ve6H3MudCQ==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Sherry Yang <sherry.yang@oracle.com>,
-        Paul Webb <paul.x.webb@oracle.com>,
-        Phillip Goerl <phillip.goerl@oracle.com>,
-        Jack Vogel <jack.vogel@oracle.com>,
-        Nicky Veitch <nicky.veitch@oracle.com>,
-        Colm Harrington <colm.harrington@oracle.com>,
-        Ramanan Govindarajan <ramanan.govindarajan@oracle.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Tejun Heo <tj@kernel.org>,
-        Sultan Alsawaf <sultan@kerneltoast.com>, stable@vger.kernel.org
-Subject: Re: [PATCH v3] random: use expired per-cpu timer rather than wq for
- mixing fast pool
-Message-ID: <YzWpT/NfDzhnsiTI@linutronix.de>
-References: <YzKy+bNedt2vu+a1@zx2c4.com>
- <20220927104233.1605507-1-Jason@zx2c4.com>
- <YzQ41ZhCojbyZq6L@linutronix.de>
- <YzRzMsORHpzFydO7@zx2c4.com>
+        with ESMTP id S235319AbiI2OZH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 10:25:07 -0400
+Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65AC536866
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 07:25:03 -0700 (PDT)
+Received: by mail-qk1-x734.google.com with SMTP id g2so926277qkk.1
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 07:25:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=88dorG/WRQJB/XicIkfUTuz0A9yUzHdVFNlvpyOdr+Y=;
+        b=APPXwF4NtZGSeDCsbSZtPn6RKhTGegIg3ygGqGCZdmmxzyED3TjrKtl1NxbxawHXQK
+         5rd8La5YrkQibq3jGnLHhWnrWWAXfMRxCNM63FLe4q5lbv23ozvR1ss6ySPZgTokLVTe
+         MyogOcgc8uXZOSllPaUFz23LE+9hcGuPc7UW3HR9Looyxhlh1mFg66yLT3uWF9t0o+06
+         KRedo6PaEtgUnaPgOBsokOkmxXMx4W5aD0jjXqwBbZ46Wxc1xh7i+0PWzeo9euvGzlrY
+         /xw/KqQPwK/l//cYXbArsMfLWZgyeMob06HJCVqv3hAcijW9slk/GSnT+HE087qlu4yI
+         IeLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=88dorG/WRQJB/XicIkfUTuz0A9yUzHdVFNlvpyOdr+Y=;
+        b=wUuiI2lmE377PXp3SKDqGUzxNqZB+49gfDItgUySgnL6JCIeN0zjXuvEo+4Qd2rLPH
+         LYMXRh0XFg0jXNGEUpVpeOXH2hsQXLes+Haw21fHoJY4vmYm7NO1hka1j9EaDynMrfU2
+         CqbEcALuNFeo8wnKtyrJvOHrfmGvlHXz+D5g+wrSktP08wyugMtqN3M0KR2zUIpm2cPp
+         Dlvkov9P8QyZ2xyyImAb9HmV47kj1vDU+O+4XdTnM1M0VAPej/+jwSoWPsiAEWsW4ean
+         POEDwDij2M60asIUToQTvFuKCIEWlAkJf+d5E23uZun6lgfKbqLHygByDRl5aIkRSxto
+         BFlg==
+X-Gm-Message-State: ACrzQf1FnXpOCkyX/dV5r+GWbc4nClISZ1KWqG9Zz6qZU8h37W+tKOEI
+        dVyIlcSeuWP58obwRnK4ifo=
+X-Google-Smtp-Source: AMsMyM5K0f7FlUyqDA4s8+vVVXiIQ6UogOx6Tpg+6AW2B7SZElbDWJTlKCDYjvd6B1FXkQJnobPsAA==
+X-Received: by 2002:a05:620a:b8d:b0:6ce:1be3:fee7 with SMTP id k13-20020a05620a0b8d00b006ce1be3fee7mr2325024qkh.725.1664461502716;
+        Thu, 29 Sep 2022 07:25:02 -0700 (PDT)
+Received: from mubashirq.c.googlers.com.com (74.206.145.34.bc.googleusercontent.com. [34.145.206.74])
+        by smtp.gmail.com with ESMTPSA id z21-20020ac87f95000000b00342f8984348sm5889952qtj.87.2022.09.29.07.25.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Sep 2022 07:25:02 -0700 (PDT)
+From:   Mubashir Adnan Qureshi <mubashirmaq@gmail.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org,
+        Mubashir Adnan Qureshi <mubashirq@google.com>
+Subject: [PATCH net-next 0/5] Add PLB functionality to TCP
+Date:   Thu, 29 Sep 2022 14:24:42 +0000
+Message-Id: <20220929142447.3821638-1-mubashirmaq@gmail.com>
+X-Mailer: git-send-email 2.37.3.998.g577e59143f-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <YzRzMsORHpzFydO7@zx2c4.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-09-28 18:15:46 [+0200], Jason A. Donenfeld wrote:
-> Hi Sebastian,
-Hi Jason,
+From: Mubashir Adnan Qureshi <mubashirq@google.com>
 
-> On Wed, Sep 28, 2022 at 02:06:45PM +0200, Sebastian Andrzej Siewior wrote:
-> > On 2022-09-27 12:42:33 [+0200], Jason A. Donenfeld wrote:
-> > =E2=80=A6
-> > > This is an ordinary pattern done all over the kernel. However, Sherry
-> > > noticed a 10% performance regression in qperf TCP over a 40gbps
-> > > InfiniBand card. Quoting her message:
-> > >=20
-> > > > MT27500 Family [ConnectX-3] cards:
-> > > > Infiniband device 'mlx4_0' port 1 status:
-> > =E2=80=A6
-> >=20
-> > While looking at the mlx4 driver, it looks like they don't use any NAPI
-> > handling in their interrupt handler which _might_ be the case that they
-> > handle more than 1k interrupts a second. I'm still curious to get that
-> > ACKed from Sherry's side.
->=20
-> Are you sure about that? So far as I can tell drivers/net/ethernet/
-> mellanox/mlx4 has plenty of napi_schedule/napi_enable and such. Or are
-> you looking at the infiniband driver instead? I don't really know how
-> these interact.
+This patch series adds PLB (Protective Load Balancing) to TCP and hooks
+it up to DCTCP. PLB is disabled by default and can be enabled using
+relevant sysctls and support from underlying CC.
 
-I've been looking at mlx4_msi_x_interrupt() and it appears that it
-iterates over a ring buffer. I guess that mlx4_cq_completion() will
-invoke mlx4_en_rx_irq() which schedules NAPI.
+PLB (Protective Load Balancing) is a host based mechanism for load
+balancing across switch links. It leverages congestion signals(e.g. ECN)
+from transport layer to randomly change the path of the connection
+experiencing congestion. PLB changes the path of the connection by
+changing the outgoing IPv6 flow label for IPv6 connections (implemented
+in Linux by calling sk_rethink_txhash()). Because of this implementation
+mechanism, PLB can currently only work for IPv6 traffic. For more
+information, see the SIGCOMM 2022 paper:
+  https://doi.org/10.1145/3544216.3544226
 
-> But yea, if we've got a driver not using NAPI at 40gbps that's obviously
-> going to be a problem.
+Mubashir Adnan Qureshi (5):
+  tcp: add sysctls for TCP PLB parameters
+  tcp: add PLB functionality for TCP
+  tcp: add support for PLB in DCTCP
+  tcp: add u32 counter in tcp_sock and an SNMP counter for PLB
+  tcp: add rcv_wnd and plb_rehash to TCP_INFO
 
-So I'm wondering if we get 1 worker a second which kills the performance
-or if we get more than 1k interrupts in less than second resulting in
-more wakeups within a second..
+ Documentation/networking/ip-sysctl.rst |  75 ++++++++++++++++++
+ include/linux/tcp.h                    |   1 +
+ include/net/netns/ipv4.h               |   5 ++
+ include/net/tcp.h                      |  28 +++++++
+ include/uapi/linux/snmp.h              |   1 +
+ include/uapi/linux/tcp.h               |   6 ++
+ net/ipv4/Makefile                      |   2 +-
+ net/ipv4/proc.c                        |   1 +
+ net/ipv4/sysctl_net_ipv4.c             |  43 ++++++++++
+ net/ipv4/tcp.c                         |   5 ++
+ net/ipv4/tcp_dctcp.c                   |  23 +++++-
+ net/ipv4/tcp_ipv4.c                    |   8 ++
+ net/ipv4/tcp_plb.c                     | 104 +++++++++++++++++++++++++
+ 13 files changed, 300 insertions(+), 2 deletions(-)
+ create mode 100644 net/ipv4/tcp_plb.c
 
-> > Jason, from random's point of view: deferring until 1k interrupts + 1sec
-> > delay is not desired due to low entropy, right?
->=20
-> Definitely || is preferable to &&.
->=20
-> >=20
-> > > Rather than incur the scheduling latency from queue_work_on, we can
-> > > instead switch to running on the next timer tick, on the same core. T=
-his
-> > > also batches things a bit more -- once per jiffy -- which is okay now
-> > > that mix_interrupt_randomness() can credit multiple bits at once.
-> >=20
-> > Hmmm. Do you see higher contention on input_pool.lock? Just asking
-> > because if more than once CPUs invokes this timer callback aligned, then
-> > they block on the same lock.
->=20
-> I've been doing various experiments, sending mini patches to Oracle and
-> having them test this in their rig. So far, it looks like the cost of
-> the body of the worker itself doesn't matter much, but rather the cost
-> of the enqueueing function is key. Still investigating though.
->=20
-> It's a bit frustrating, as all I have to work with are results from the
-> tests, and no perf analysis. It'd be great if an engineer at Oracle was
-> capable of tackling this interactively, but at the moment it's just me
-> sending them patches. So we'll see. Getting closer though, albeit very
-> slowly.
+-- 
+2.37.3.998.g577e59143f-goog
 
-Oh boy. Okay.
-
-> Jason
-
-Sebastian
