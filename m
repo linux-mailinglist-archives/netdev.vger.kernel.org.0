@@ -2,97 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 945215EFB02
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 18:37:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49DC25EFB18
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 18:40:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235646AbiI2QhT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 12:37:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34068 "EHLO
+        id S235707AbiI2QkY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 12:40:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235657AbiI2QhO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 12:37:14 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC2D626F5;
-        Thu, 29 Sep 2022 09:37:12 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 3B0671884CC9;
-        Thu, 29 Sep 2022 16:37:10 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 2AB242500370;
-        Thu, 29 Sep 2022 16:37:10 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 0C5179EC0002; Thu, 29 Sep 2022 16:37:10 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+        with ESMTP id S235854AbiI2QkS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 12:40:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 341843BC48;
+        Thu, 29 Sep 2022 09:40:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C46C361F53;
+        Thu, 29 Sep 2022 16:40:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1E272C433D6;
+        Thu, 29 Sep 2022 16:40:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664469617;
+        bh=YQX6FHarcS1X79StWM0OSs/gPzgguwYJmabxg1b2Sg8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=AIqE52QrH6MBjdURuZbfCOBq3wpkLgNLP+cDK6Qe2hTHfsGIbwpuXEh8/IfC/n9KG
+         uMy+QxDM8RsmW+1s93nE1KM5ybhODMMXWiAF3zFJA5Cpiaj+e4bJYFNWOuvkKq/FB3
+         BFRjWNBeOz5WOxIB/ju3VxU/X7V9b6ceUFX4zZ4m1svLRxn4ysfz+h5WY6HC+P1zO+
+         donS2bgfxztSrRmdsDO0sG6WQb49S4OZQNn6z6iNbGXNC+41ejCw6tkf5DCHWaYAhS
+         M83Rskt8912G1AceStx/RJr+88Ox3EXAEretFPqLTHVYBaLS3P/VqVSAa/+f3bqNek
+         mvCXOt3+DPJzQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E8515E4D018;
+        Thu, 29 Sep 2022 16:40:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Date:   Thu, 29 Sep 2022 18:37:09 +0200
-From:   netdev@kapio-technology.com
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Florent Fourcot <florent.fourcot@wifirst.fr>,
-        Hans Schultz <schultz.hans@gmail.com>,
-        Joachim Wiberg <troglobit@gmail.com>,
-        Amit Cohen <amcohen@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v6 net-next 0/9] Extend locked port feature with FDB
- locked flag (MAC-Auth/MAB)
-In-Reply-To: <20220929091036.3812327f@kernel.org>
-References: <20220928150256.115248-1-netdev@kapio-technology.com>
- <20220929091036.3812327f@kernel.org>
-User-Agent: Gigahost Webmail
-Message-ID: <12587604af1ed79be4d3a1607987483a@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v3 bpf-next 0/5] bpf: Remove recursion check for struct_ops
+ prog
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166446961694.21206.2321358464670286333.git-patchwork-notify@kernel.org>
+Date:   Thu, 29 Sep 2022 16:40:16 +0000
+References: <20220929070407.965581-1-martin.lau@linux.dev>
+In-Reply-To: <20220929070407.965581-1-martin.lau@linux.dev>
+To:     Martin KaFai Lau <martin.lau@linux.dev>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
+        andrii@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
+        kernel-team@fb.com
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-09-29 18:10, Jakub Kicinski wrote:
-> On Wed, 28 Sep 2022 17:02:47 +0200 Hans Schultz wrote:
->> From: "Hans J. Schultz" <netdev@kapio-technology.com>
->> 
->> This patch set extends the locked port feature for devices
->> that are behind a locked port, but do not have the ability to
->> authorize themselves as a supplicant using IEEE 802.1X.
->> Such devices can be printers, meters or anything related to
->> fixed installations. Instead of 802.1X authorization, devices
->> can get access based on their MAC addresses being whitelisted.
-> 
-> Try a allmodconfig build on latest net-next, seems broken.
+Hello:
 
-I have all different switch drivers enabled and I see no compile 
-warnings or errors. I guess I will get a robot update if that is the 
-case, but please be specific as to what does not build.
+This series was applied to bpf/bpf-next.git (master)
+by Alexei Starovoitov <ast@kernel.org>:
+
+On Thu, 29 Sep 2022 00:04:02 -0700 you wrote:
+> From: Martin KaFai Lau <martin.lau@kernel.org>
+> 
+> The struct_ops is sharing the tracing-trampoline's enter/exit
+> function which tracks prog->active to avoid recursion.  It turns
+> out the struct_ops bpf prog will hit this prog->active and
+> unnecessarily skipped running the struct_ops prog.  eg.  The
+> '.ssthresh' may run in_task() and then interrupted by softirq
+> that runs the same '.ssthresh'.
+> 
+> [...]
+
+Here is the summary with links:
+  - [v3,bpf-next,1/5] bpf: Add __bpf_prog_{enter,exit}_struct_ops for struct_ops trampoline
+    https://git.kernel.org/bpf/bpf-next/c/64696c40d03c
+  - [v3,bpf-next,2/5] bpf: Move the "cdg" tcp-cc check to the common sol_tcp_sockopt()
+    https://git.kernel.org/bpf/bpf-next/c/37cfbe0bf2e8
+  - [v3,bpf-next,3/5] bpf: Refactor bpf_setsockopt(TCP_CONGESTION) handling into another function
+    https://git.kernel.org/bpf/bpf-next/c/1e7d217faa11
+  - [v3,bpf-next,4/5] bpf: tcp: Stop bpf_setsockopt(TCP_CONGESTION) in init ops to recur itself
+    https://git.kernel.org/bpf/bpf-next/c/061ff040710e
+  - [v3,bpf-next,5/5] selftests/bpf: Check -EBUSY for the recurred bpf_setsockopt(TCP_CONGESTION)
+    https://git.kernel.org/bpf/bpf-next/c/3411c5b6f8d6
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
