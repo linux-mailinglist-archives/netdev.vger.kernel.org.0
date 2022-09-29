@@ -2,77 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DE4F25EF25F
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 11:43:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A4535EF2C9
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 11:55:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234683AbiI2JnM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 05:43:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39458 "EHLO
+        id S235011AbiI2JzQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 05:55:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230133AbiI2JnK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 05:43:10 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F0F3115F75
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 02:43:09 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id r6so1268071wru.8
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 02:43:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:reply-to:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date;
-        bh=urTVIrWloEhuN9BRo3MjHeH2nBIGra4s73hlS3mUcXs=;
-        b=BAE+FtXdUy+seg9gFStYIDEyQ8AeUSklQB9i6hVLbqDDZ1+ldY/ZbFFLfwNKhD5QtY
-         kElCX0Air2B/jaqt6J690g0Ayz0tBBSH9pWwJJuwfjbr+N5nLBaYZ2twetXtARBa53N8
-         5iTL7r2t+D4/I+RCwm+0X43DyhpKvgmtmHKn8FHXsN0oDI9MMHEENHUkIneEJVCMucan
-         uXvdtR0VGJY5EALLixmjB7qpTSLO8CZQdbMeSMARrl/0e3hGPbxZMS5kh4rdT/a4x7Qx
-         dYuDHkLHai6y7xsX4Lt4DCjrDZaJ/jSP8C014IxdQUkwvj+HyoXXnhRSe6mVqWWksvLZ
-         tcKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:reply-to:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date;
-        bh=urTVIrWloEhuN9BRo3MjHeH2nBIGra4s73hlS3mUcXs=;
-        b=z/UkOYX2yt4zAKlYxGgv3sxM+xwEod4RymHmJvwkCGkJsCxC1nkLEtc8oWg2hC5CpX
-         eC8t2YKYbIWkPgQYh+DpZOJNmu2ukAWRD/9v8KEwn/usmU19oC+A+Z1R9z49BKN7lEkp
-         3db+B5oXph4tWpiwueCec4CBqYjP6pk8kXM2YQxVx80CfJHFU44zX4USL1xjAEZ9IXlF
-         h6mpJ08sRcuiFAxP/x90EhdP8EG4AZh4sbmKIb5dB8uSEeLNL5HHoLlF+aPFV5xKEH6H
-         I7QI+9r0idDnNX/JjS8BrQeMWPWKshLPGnunUxr1+H9WowQc0EO4vlHep9i5vu2KP+9Z
-         xwag==
-X-Gm-Message-State: ACrzQf26FMWrQio08bc/hbEQH4PwYhQBLRalD+Amt1iWyuv6manwd3NL
-        Y6lcNGcb048vdy2/tGg6nUgHYQ==
-X-Google-Smtp-Source: AMsMyM7xAkmOivq3RrYULkpZFdERGOaKNGhBNFZyKYoMpD3aPZKwAb1MSzF90ilJ+I79JHbnC6Z6Lg==
-X-Received: by 2002:adf:f8ca:0:b0:226:e456:1896 with SMTP id f10-20020adff8ca000000b00226e4561896mr1548503wrq.177.1664444588108;
-        Thu, 29 Sep 2022 02:43:08 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:b41:c160:c9dd:4896:ac7a:b9e1? ([2a01:e0a:b41:c160:c9dd:4896:ac7a:b9e1])
-        by smtp.gmail.com with ESMTPSA id n2-20020a05600c3b8200b003a540fef440sm3966571wms.1.2022.09.29.02.43.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 29 Sep 2022 02:43:07 -0700 (PDT)
-Message-ID: <06ab9e40-8a90-6c87-81fa-515a9c6c2290@6wind.com>
-Date:   Thu, 29 Sep 2022 11:43:06 +0200
+        with ESMTP id S235002AbiI2JzP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 05:55:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A9D9357F6;
+        Thu, 29 Sep 2022 02:55:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5649AB82344;
+        Thu, 29 Sep 2022 09:55:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74417C433C1;
+        Thu, 29 Sep 2022 09:55:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664445311;
+        bh=SF7iV+1iV70j6hczBd2MAd5v2bFdyA/U9sYfAR6RpuE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RBc51JmE3jFPSucRCA0lQO49jprDTX5qpVfxgv7dfCq1xqZrNXb6T7agCSPy/sogt
+         2lUzCeOY+n4CITVM6cZb98S5WB/M2Nm/+7O6xRvgPlwGNJ7naNLtNr94jfcHNM938k
+         C50RE1PypUX4xmv1wviCqoXKw4Rcw7qQFnFOTcl439KYE5XNC8ieV5DczfnISBys2q
+         Pg858cKj4745LXMBWpxkqfvH4U32eg1FTHaLqEtYAgwxcBQ8o1Vog9aBNCGkzc8Tu2
+         ikHlCSabpv2sI/K1ccLmLtyVBCTgL/Rm2JMrMgmgtui4S41Y/vJMYV0LzJxwHA6MUU
+         +BmmGnwRhgMyQ==
+Date:   Thu, 29 Sep 2022 12:54:52 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Christian Langrock <christian.langrock@secunet.com>
+Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
+        herbert@gondor.apana.org.au, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH ipsec v3] xfrm: replay: Fix ESN wrap around for GSO
+Message-ID: <YzVrbHw9LMoTjYzI@unreal>
+References: <02b5650c-29f4-568f-b3be-689594dfacc2@secunet.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH net-next 1/6] docs: add more netlink docs (incl. spec
- docs)
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        robh@kernel.org, johannes@sipsolutions.net, ecree.xilinx@gmail.com,
-        stephen@networkplumber.org, sdf@google.com, f.fainelli@gmail.com,
-        fw@strlen.de, linux-doc@vger.kernel.org, razor@blackwall.org,
-        gnault@redhat.com
-References: <20220929011122.1139374-1-kuba@kernel.org>
- <20220929011122.1139374-2-kuba@kernel.org>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-In-Reply-To: <20220929011122.1139374-2-kuba@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-6.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <02b5650c-29f4-568f-b3be-689594dfacc2@secunet.com>
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,38 +54,80 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-Le 29/09/2022 à 03:11, Jakub Kicinski a écrit :
-> Add documentation about the upcoming Netlink protocol specs.
+On Thu, Sep 29, 2022 at 07:59:31AM +0200, Christian Langrock wrote:
+> When using GSO it can happen that the wrong seq_hi is used for the last
+> packets before the wrap around. This can lead to double usage of a
+> sequence number. To avoid this, we should serialize this last GSO
+> packet.
 > 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> Changes in v3:
+> - fix build
+> - remove wrapper function
+> 
+> Changes in v2:
+> - switch to bool as return value
+> - remove switch case in wrapper function
+> 
+> Fixes: d7dbefc45cf5 ("xfrm: Add xfrm_replay_overflow functions for...")
+> Signed-off-by: Christian Langrock <christian.langrock@secunet.com>
+> ---
 
-[snip]
+Please put changelog after "---" trailer.
 
-> +Attribute enums
-> +---------------
+>  include/net/xfrm.h     |  1 +
+>  net/xfrm/xfrm_output.c |  2 +-
+>  net/xfrm/xfrm_replay.c | 26 ++++++++++++++++++++++++++
+>  3 files changed, 28 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/net/xfrm.h b/include/net/xfrm.h
+> index 6e8fa98f786f..b845f911767c 100644
+> --- a/include/net/xfrm.h
+> +++ b/include/net/xfrm.h
+> @@ -1749,6 +1749,7 @@ void xfrm_replay_advance(struct xfrm_state *x, __be32 net_seq);
+>  int xfrm_replay_check(struct xfrm_state *x, struct sk_buff *skb, __be32 net_seq);
+>  void xfrm_replay_notify(struct xfrm_state *x, int event);
+>  int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb);
+> +bool xfrm_replay_overflow_check(struct xfrm_state *x, struct sk_buff *skb);
+>  int xfrm_replay_recheck(struct xfrm_state *x, struct sk_buff *skb, __be32 net_seq);
+>  
+>  static inline int xfrm_aevent_is_on(struct net *net)
+> diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
+> index 9a5e79a38c67..c470a68d9c88 100644
+> --- a/net/xfrm/xfrm_output.c
+> +++ b/net/xfrm/xfrm_output.c
+> @@ -738,7 +738,7 @@ int xfrm_output(struct sock *sk, struct sk_buff *skb)
+>  		skb->encapsulation = 1;
+>  
+>  		if (skb_is_gso(skb)) {
+> -			if (skb->inner_protocol)
+> +			if (skb->inner_protocol || xfrm_replay_overflow_check(x, skb))
+>  				return xfrm_output_gso(net, sk, skb);
+>  
+>  			skb_shinfo(skb)->gso_type |= SKB_GSO_ESP;
+> diff --git a/net/xfrm/xfrm_replay.c b/net/xfrm/xfrm_replay.c
+> index 9277d81b344c..23858eb5eab4 100644
+> --- a/net/xfrm/xfrm_replay.c
+> +++ b/net/xfrm/xfrm_replay.c
+> @@ -750,6 +750,27 @@ int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb)
+>  
+>  	return xfrm_replay_overflow_offload(x, skb);
+>  }
 > +
-> +Older families often define "null" attributes and commands with value
-> +of ``0`` and named ``unspec``. This is supported (``type: unspec``)
-> +but should be avoided in new families. The ``unspec`` enum values are
-> +not used in practice, so just set the value of the first attribute to ``1``.
-
-[snip]
-
-> +The payload of the attribute is the integer in host order unless ``byte-order``
-> +specifies otherwise.
+> +static bool xfrm_replay_overflow_check(struct xfrm_state *x, struct sk_buff *skb)
+> +{
+> +	struct xfrm_replay_state_esn *replay_esn = x->replay_esn;
+> +	__u32 oseq = replay_esn->oseq;
 > +
-> +.. _pad_type:
+> +	/* We assume that this function is called with
+> +	 * skb_is_gso(skb) == true
+> +	 */
 > +
-> +pad
-> +---
-> +
-> +Special attribute type used for padding attributes which require alignment
-> +bigger than standard 4B alignment required by netlink (e.g. 64 bit integers).
-> +There can only be a single attribute of the ``pad`` type in any attribute set
-> +and it should be automatically used for padding when needed.
-This answers my question.
+> +	if (x->repl_mode == XFRM_REPLAY_MODE_ESN) {
+> +		if (x->type->flags & XFRM_TYPE_REPLAY_PROT) {
 
-Nice job!
+It can be one if( ... && ...), but not critical.
 
-Reviewed-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Once you fix commit message, feel free to add my tag.
+
+Thanks,
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
