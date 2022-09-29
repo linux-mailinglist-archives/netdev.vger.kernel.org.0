@@ -2,116 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C559A5EFC14
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 19:35:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A0C75EFC68
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 19:55:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236106AbiI2Rfm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 13:35:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39550 "EHLO
+        id S230114AbiI2RzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 13:55:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235442AbiI2Rfk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 13:35:40 -0400
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEAC210F729;
-        Thu, 29 Sep 2022 10:35:39 -0700 (PDT)
-Received: by mail-qk1-x72b.google.com with SMTP id i17so1289470qkk.12;
-        Thu, 29 Sep 2022 10:35:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=zA6Y5hkQML6R8vIpJqVNEmC/+vTq2vUA6WDac9IkZHQ=;
-        b=oDEM1tP1F7UAQVNZ91VmNnenaUm4qws7hEHmiEJRTthVohQUH5kO4G1hktHhuWt4CM
-         EXQeLMeZeFlF32hqNkCbnw4vAAccKlVWEdhS89TBTSAWS4VrzAAwYropIGyq+4fzcIO5
-         eDhJkFzHIo9VN1Dc2ixvSF25dp8FYQaXt+ADjX3g7d9JFEJEKQoi5HInCc8iua/m7T9X
-         /0LdiHd4Ua5124nOwY/J4/lsmG9wSL2LOzz4GJGQ4eSC41jVmv1amWgIwgY0SoTz1KV5
-         gLSqULVmTuciVMrXMzGbthl1K7bl/z5QNTi7Uzp1DXtwPIrBwOoRdLlgk9Tzp/smlRHe
-         lBUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=zA6Y5hkQML6R8vIpJqVNEmC/+vTq2vUA6WDac9IkZHQ=;
-        b=stlfClGuOeRKo9IdjBO6QsPE5ItAzVKAq408AgvN/UoWm2gpXniOujvhlmlhqXw8ua
-         7lA8JrGZoD9Scrdo5qhhoZqP9k0HnKl6hAxgWCtVgLw/qz72hlm9rVOvqVJ5mAuADnsF
-         MYN7+8meZDGPPtZNCQICAftGSJfrCMjGVrFNqFqSqPNKtIFWRD5tCdyOay0NKMjnyHC6
-         qrVQ/ML1V3kNHkIkLrO6JDfT0Dpx0ikRw/h1OojmFx1FFdhqXLZ55CFLX8cme5urb8wU
-         PecmgWsExTbvc/ztOW1m2oHtZA5KMOYO3iSQDX1JAXAlVQbC9BpJNzyXrG6FYQFpSFfA
-         dvEg==
-X-Gm-Message-State: ACrzQf3JaelOPEMIF4soYIABCAC7Bm8JMoU7zfl65Ac3e8xzhuMCB4oe
-        OF9CZENOXkOttkiXUemnvV8=
-X-Google-Smtp-Source: AMsMyM4Yah3QrJm+TCHsStE8k6mas/dBTRodARjXJOj7YfvBpRznPsuKIDoMU9NryiwLqSH3VhMzdQ==
-X-Received: by 2002:a05:620a:2683:b0:6cf:3768:8e4b with SMTP id c3-20020a05620a268300b006cf37688e4bmr3058946qkp.768.1664472938687;
-        Thu, 29 Sep 2022 10:35:38 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id l19-20020ac84593000000b003437a694049sm5992207qtn.96.2022.09.29.10.35.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 29 Sep 2022 10:35:37 -0700 (PDT)
-Message-ID: <bc0fd01d-4d05-ef97-dbb9-d92b4549b9a3@gmail.com>
-Date:   Thu, 29 Sep 2022 10:34:57 -0700
+        with ESMTP id S235001AbiI2Ryv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 13:54:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8913D2A71D;
+        Thu, 29 Sep 2022 10:54:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B9F04B82623;
+        Thu, 29 Sep 2022 17:54:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11E2DC433D7;
+        Thu, 29 Sep 2022 17:54:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664474083;
+        bh=5cNXRd1M33fpSuvsDPGvMhqGKl7X3rs5VlVMGC+403Y=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=T+dclZFurVocAMmJNGZcNV8fYAWhhDFYo7tUQdF5/IE3WFJpZCePxUlijyxsRsS/6
+         b/UFpmq8GlAqPDpHet++6/KSsEMGbLFgZa5VBPDVff2C3S9D/+j6P911Ocdkpg7z1w
+         UvbbNOpPlvSJp2ud7Upu+f4Lh3A18T7jrjv4eu9XHG9Ymj+e7w4/RWlrjDIXskXZc+
+         RWXNQDVUlKyYtVV1eI7bqyysxMsOHHDxTfvx6oYGh31O4Ot9FIf5UAt3o5k6YGgZ4O
+         8nqarYTpOYy4869N5f64AznSA8fQZVUEGq1Gj9hbopepDVUGHFMuJ1kW62w+sKQPOb
+         2sM7f/mTnGhsQ==
+Message-ID: <d8adea18-2e1c-6c99-f334-bf6c19373baa@kernel.org>
+Date:   Thu, 29 Sep 2022 11:54:42 -0600
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v7 23/29] thermal/drivers/broadcom: Use generic
- thermal_zone_get_trip() function
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.13.0
+Subject: Re: [PATCH 1/1] netfilter: nft_fib: Fix for rpath check with VRF
+ devices
 Content-Language: en-US
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>, rafael@kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        rui.zhang@intel.com, Raju Rangoju <rajur@chelsio.com>,
+To:     Florian Westphal <fw@strlen.de>,
+        Guillaume Nault <gnault@redhat.com>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Peter Kaestle <peter@piie.net>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Amit Kucheria <amitk@kernel.org>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Broadcom Kernel Team <bcm-kernel-feedback-list@broadcom.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Support Opensource <support.opensource@diasemi.com>,
-        Lukasz Luba <lukasz.luba@arm.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Thara Gopinath <thara.gopinath@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
-        Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Eduardo Valentin <edubezval@gmail.com>,
-        Keerthy <j-keerthy@ti.com>,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Antoine Tenart <atenart@kernel.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Dmitry Osipenko <digetx@gmail.com>, netdev@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-omap@vger.kernel.org
-References: <20220928210059.891387-1-daniel.lezcano@linaro.org>
- <20220928210059.891387-24-daniel.lezcano@linaro.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220928210059.891387-24-daniel.lezcano@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        netfilter-devel@vger.kernel.org, Phil Sutter <phil@nwl.cc>
+References: <20220928113908.4525-1-fw@strlen.de>
+ <20220928113908.4525-2-fw@strlen.de>
+ <20220929161035.GE6761@localhost.localdomain>
+ <20220929162129.GA10152@breakpoint.cc>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20220929162129.GA10152@breakpoint.cc>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-11.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -119,16 +64,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/28/22 14:00, Daniel Lezcano wrote:
-> The thermal framework gives the possibility to register the trip
-> points with the thermal zone. When that is done, no get_trip_* ops are
-> needed and they can be removed.
+On 9/29/22 9:21 AM, Florian Westphal wrote:
+> Guillaume Nault <gnault@redhat.com> wrote:
 > 
-> Convert ops content logic into generic trip points and register them with the
-> thermal zone.
+> [ CC David Ahern ]
 > 
-> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+>> On Wed, Sep 28, 2022 at 01:39:08PM +0200, Florian Westphal wrote:
+>>> From: Phil Sutter <phil@nwl.cc>
+>>>
+>>> Analogous to commit b575b24b8eee3 ("netfilter: Fix rpfilter
+>>> dropping vrf packets by mistake") but for nftables fib expression:
+>>> Add special treatment of VRF devices so that typical reverse path
+>>> filtering via 'fib saddr . iif oif' expression works as expected.
+>>>
+>>> Fixes: f6d0cbcf09c50 ("netfilter: nf_tables: add fib expression")
+>>> Signed-off-by: Phil Sutter <phil@nwl.cc>
+>>> Signed-off-by: Florian Westphal <fw@strlen.de>
+>>> ---
+>>>  net/ipv4/netfilter/nft_fib_ipv4.c | 3 +++
+>>>  net/ipv6/netfilter/nft_fib_ipv6.c | 6 +++++-
+>>>  2 files changed, 8 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/net/ipv4/netfilter/nft_fib_ipv4.c b/net/ipv4/netfilter/nft_fib_ipv4.c
+>>> index b75cac69bd7e..7ade04ff972d 100644
+>>> --- a/net/ipv4/netfilter/nft_fib_ipv4.c
+>>> +++ b/net/ipv4/netfilter/nft_fib_ipv4.c
+>>> @@ -83,6 +83,9 @@ void nft_fib4_eval(const struct nft_expr *expr, struct nft_regs *regs,
+>>>  	else
+>>>  		oif = NULL;
+>>>  
+>>> +	if (priv->flags & NFTA_FIB_F_IIF)
+>>> +		fl4.flowi4_oif = l3mdev_master_ifindex_rcu(oif);
+>>> +
+>>
+>> Shouldn't we set .flowi4_l3mdev instead of .flowi4_oif?
+> 
+> No idea.
+> db53cd3d88dc328dea2e968c9c8d3b4294a8a674 sets both.
+> rp_filter modules in iptables only set flowi(6)_oif.
+> 
+> David, can you give advice on what the correct fix is?
+> 
+> Then we could change all users in netfilter at once rather than the
+> current collection of random-looking guesses...
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+Old usage is setting flow oif and it gets converted to the L3 device if
+there is one. The new usage is flow l3mdev, but I only updated places I
+new I was testing.
+
+ie.., use l3mdev in the flow struct if you have a VRF test case for it.
