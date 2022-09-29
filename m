@@ -2,108 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 842525EFCED
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 20:22:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6ADC95EFD02
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 20:27:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234278AbiI2SV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 14:21:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42964 "EHLO
+        id S234896AbiI2S1R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 14:27:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233870AbiI2SV4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 14:21:56 -0400
-Received: from mail-oo1-xc2a.google.com (mail-oo1-xc2a.google.com [IPv6:2607:f8b0:4864:20::c2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 221D711BCE9
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 11:21:55 -0700 (PDT)
-Received: by mail-oo1-xc2a.google.com with SMTP id m11-20020a4aab8b000000b00476743c0743so665751oon.10
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 11:21:55 -0700 (PDT)
+        with ESMTP id S234278AbiI2S1P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 14:27:15 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD24E13EAE5
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 11:27:14 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id r62-20020a252b41000000b006af00577c42so1835956ybr.10
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 11:27:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=hxDmnM1IL2wJ6pbSJipbjQaG4VApgtgIvJlR8md9+aM=;
-        b=PenDZ4du+ECiK5JkhEN/8v2etfVrHhJu4FghACXwbcptNy/wJ70A8VBSZT9NkSkTWz
-         65vvWHEwnH8ygm1rMdIUcQ5V5pwA3WRX3FrNxMbeLYUxHwne4hNdXGhX0d1rE7XDH+WL
-         m38r0MlN5hRKyvv9BMtAFTNTtBfUfjwsz3DP4=
+        d=google.com; s=20210112;
+        h=cc:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date;
+        bh=TCNjSWh2khixhi5M5S96BCZPDyWIajI7MNk5y1CP4tQ=;
+        b=Yo13DwjTXnaoeS0y6g7A4ryURj7HmjxBjY1CIx8TA8YG0TkQeid3iS0nI73l52wOPY
+         OG7zCxcPiuHhWJBN1wbHSYfw7cwCn5I35So62E5eR1kE8BK1SFxRmn3B89ABq5Lb0XCA
+         c17V4jSFwNhveOL7+DoIvuf/GoktBvkCGTAZ6+BGzXcKPIcD7H4cYGGgvXGK7mjY9qT3
+         Ok5lfnDgUNuXR8dXwGPndNvqxGPJSya/3tbK7N7qzE50pusBYGqq4fr9UJq1WdhrOaC5
+         2yroxqPOSJx3ghVVkZkHFKDy/eVWAZdhB57BpYvOzbIwfAkbQaqOZGbYVChXyDnJex8Q
+         WObQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=hxDmnM1IL2wJ6pbSJipbjQaG4VApgtgIvJlR8md9+aM=;
-        b=Q2hw23cyPnTNCdMNvXdWte9uWyBIHGcyIKpIUi3Vq7/1xz7YGKlPu+Kc7xE3iOH5Gp
-         uYLktVlx3MwXkteSJioc+Qw3sT6hIB4vjdAfCJy8TQQq1J1hS7xkciHD3V3LmMjahwfo
-         Xr3R3rYGZ7/7tK6GyfBx92klltgoakjkKt38lqPF263FRrwuAxL5U3rRhvGjgO4e/st/
-         vsPLkof0YGc374m5S3Pa0q+jIBTqGSiPe4y1Sv7L3vm6+gCC3k2RTmf6LP36wtH2O/qA
-         cftgvwywN+tBVOZROXJwCmzNkCixqjUWU5gSqMcGry9/ZqlU0+g9JzdOGGvSf8XlGYKt
-         jrEQ==
-X-Gm-Message-State: ACrzQf24G0+jNPukbWex4FuKe0yDgm1BLal1wakKjRRWNfokSZa9ALPn
-        E+Ppl9pUV6A9dxAzPkPl5lUkRrMVwFlc+Q==
-X-Google-Smtp-Source: AMsMyM6LfqlhITMGds3RvWuyCaKZCCFYMPttzZLX6QDBa7R0AoVnogZ5CV3sTC2RbzJLdcZ2bm/JLA==
-X-Received: by 2002:a4a:434d:0:b0:441:9b4:ffad with SMTP id l13-20020a4a434d000000b0044109b4ffadmr1868459ooj.31.1664475713544;
-        Thu, 29 Sep 2022 11:21:53 -0700 (PDT)
-Received: from mail-oo1-f42.google.com (mail-oo1-f42.google.com. [209.85.161.42])
-        by smtp.gmail.com with ESMTPSA id g189-20020aca39c6000000b003431d9b3edfsm25955oia.2.2022.09.29.11.21.52
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 29 Sep 2022 11:21:52 -0700 (PDT)
-Received: by mail-oo1-f42.google.com with SMTP id m11-20020a4aab8b000000b00476743c0743so665674oon.10
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 11:21:52 -0700 (PDT)
-X-Received: by 2002:a05:6830:611:b0:65c:26ce:5dc with SMTP id
- w17-20020a056830061100b0065c26ce05dcmr1952667oti.176.1664475712268; Thu, 29
- Sep 2022 11:21:52 -0700 (PDT)
-MIME-Version: 1.0
-References: <dacfc18d6667421d97127451eafe4f29@AcuMS.aculab.com>
-In-Reply-To: <dacfc18d6667421d97127451eafe4f29@AcuMS.aculab.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 29 Sep 2022 11:21:36 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgS_XpzEL140ovgLwGv6yXvV7Pu9nKJbCuo5pnRfcEbvg@mail.gmail.com>
-Message-ID: <CAHk-=wgS_XpzEL140ovgLwGv6yXvV7Pu9nKJbCuo5pnRfcEbvg@mail.gmail.com>
-Subject: Re: [PATCH 3/4] proc: Point /proc/net at /proc/thread-self/net
- instead of /proc/self/net
-To:     David Laight <David.Laight@aculab.com>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        "Serge E. Hallyn" <serge@hallyn.com>
+        h=cc:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=TCNjSWh2khixhi5M5S96BCZPDyWIajI7MNk5y1CP4tQ=;
+        b=M5YkVmnWoQ+JIjkY0ywDwGegi+h/qTTgn3U5NJhCNmp9CKWWuCOSQOqN8QQ7zUEpXb
+         4CpVrLoe9atjUTp0FxqEbkXT4xbFnn90OSgCGuVUzw1SL9bjVrdXfy3gBx4BAPdnrHg3
+         SSGcz4dHO+zj+FYhH3fSu/2MkcFRaENzThpXNqbiVo9DVGWYGP496QOTE2ThrpMdWxZA
+         pPEJn38+2iVThOqX4yJpTZ+6t5hRzfeDGIO62Y1jvdK66ll+jMR+3PF8jG/vIhmkQg9C
+         /xNMvohmCwSJtIgoYFDOzWrAcUVi5aYHJg85k/B1XQWWd4S6lDzPbwiNk1mqMck6x3Ap
+         3Cgg==
+X-Gm-Message-State: ACrzQf2L//RBCf0Aon8ITozQ36Oij/tLTG2jyd164qXUvOx5+IAF5c2T
+        iYHmIFZuUBUdZTY1G8Ztlc0WqiCGeg==
+X-Google-Smtp-Source: AMsMyM7izNOHKJTh4Ttf/2FZTV0VPOoAFMNNllUoSw1AaASTnPFHL4tWGLHJ4a22FeLFfd2iILIYokFOUg==
+X-Received: from nhuck.c.googlers.com ([fda3:e722:ac3:cc00:14:4d90:c0a8:39cc])
+ (user=nhuck job=sendgmr) by 2002:a0d:d708:0:b0:354:b610:fd3d with SMTP id
+ z8-20020a0dd708000000b00354b610fd3dmr4693272ywd.28.1664476033986; Thu, 29 Sep
+ 2022 11:27:13 -0700 (PDT)
+Date:   Thu, 29 Sep 2022 11:27:03 -0700
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.38.0.rc1.362.ged0d419d3c-goog
+Message-ID: <20220929182704.64438-1-nhuck@google.com>
+Subject: [PATCH] net: lan966x: Fix return type of lan966x_port_xmit
+From:   Nathan Huckleberry <nhuck@google.com>
+Cc:     Nathan Huckleberry <nhuck@google.com>,
+        Dan Carpenter <error27@gmail.com>, llvm@lists.linux.dev,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,MISSING_HEADERS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 29, 2022 at 8:22 AM David Laight <David.Laight@aculab.com> wrote:
->
-> This was applied and then reverted by Linus (I can't find anything
-> in the LKML archive) - see git show 155134fef - because of
-> issues with apparmor and dhclient.
+The ndo_start_xmit field in net_device_ops is expected to be of type
+netdev_tx_t (*ndo_start_xmit)(struct sk_buff *skb, struct net_device *dev).
 
-lkml archive link:
+The mismatched return type breaks forward edge kCFI since the underlying
+function definition does not match the function hook definition.
 
-  https://lore.kernel.org/all/CADDKRnDD_W5yJLo2otWXH8oEgmGdMP0N_p7wenBQbh17xKGZJg@mail.gmail.com/
+The return type of lan966x_port_xmit should be changed from int to
+netdev_tx_t.
 
-in case anybody cares.
+Reported-by: Dan Carpenter <error27@gmail.com>
+Link: https://github.com/ClangBuiltLinux/linux/issues/1703
+Cc: llvm@lists.linux.dev
+Signed-off-by: Nathan Huckleberry <nhuck@google.com>
+---
+ drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-I wonder if the fix is to replace the symlink with a hardcoded lookup
-(ie basically make it *act* like a hardlink - we don't really support
-hardlinked directories, but we could basically fake the lookup in
-proc). Since the problem was AppArmor reacting to the name in the
-symlink.
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+index b98d37c76edb..be2fd030cccb 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+@@ -344,7 +344,8 @@ static void lan966x_ifh_set_timestamp(void *ifh, u64 timestamp)
+ 		IFH_POS_TIMESTAMP, IFH_LEN * 4, PACK, 0);
+ }
+ 
+-static int lan966x_port_xmit(struct sk_buff *skb, struct net_device *dev)
++static netdev_tx_t lan966x_port_xmit(struct sk_buff *skb,
++				     struct net_device *dev)
+ {
+ 	struct lan966x_port *port = netdev_priv(dev);
+ 	struct lan966x *lan966x = port->lan966x;
+-- 
+2.38.0.rc1.362.ged0d419d3c-goog
 
-Al added the participants so that he can say "hell no".
-
-Actually, it might be cleaner to make it act like a dynamic
-mount-point instead - kind of "automount" style. Again, Al would be
-the person who can say "sure, that makes sense" or "over my dead
-body".
-
-Al?
-
-Or maybe that crazy AppArmor rule just doesn't exist any more. It's
-been 8 years, after all.
-
-                   Linus
