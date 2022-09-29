@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 36DE95EEE7C
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:08:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38D855EEE8C
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:13:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235009AbiI2HI3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 03:08:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48280 "EHLO
+        id S235080AbiI2HNJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 03:13:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235037AbiI2HI1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:08:27 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C156E6DDF
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:08:25 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id bj12so835533ejb.13
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:08:24 -0700 (PDT)
+        with ESMTP id S235033AbiI2HNI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:13:08 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E09161323EB
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:13:02 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id z2so748694edi.1
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:13:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:from:to
          :cc:subject:date;
-        bh=+AW/3bga438rCB765SwrbsyApmIQG3fWe3PDegwvZGY=;
-        b=S6SIKvJoPzJeZ11QypKS3ijtVGTvanlbinZMY/fSkQXIaCNIqRRP+e10aHzIvY01vu
-         i3b840N2XgbSxdSjX0rp/m+pJKclqdoWMc699w59JI4GsD3LQsmSo6qprC15YkMktwKB
-         OsCFTHQ9KuWvpeYBH9ywl52fMGLC+HpEMuIUkNo1aSbIlq2rtRi2TChsSeU7qDwHEcNm
-         gLY8sUdKXnlVx+gcw/EiyMIH1rBq0ZwAyH3cRpUibe5sAu7GpuzDYU0dwp3HZy9nBPe9
-         QfjWcLPzbY2HKSnHwLu5X7QneMFpa7H5ip+0HT9AeQmN+lPO12NZJyp8E4iq5HSXkBnr
-         LkRA==
+        bh=LSRZBCTmT0hL5snj+rYRmgRi1ZmoMU67Lr450OsGSWo=;
+        b=8DPTl93vctSpYxcEPLkbc/lAT0wdrye4YLGpPYsp8w6VrFhfP0z9PG4rjqXLyrFC/R
+         YnHFLfvlBWHHyHCFri0g9T4znBo+kSdUHiobtYStUWe84hmHICUIjU6QEr86lmiGyAtB
+         SsK35YeR1tSc0gWEax4OTZgSi0BMXpg702pJTcyWV1p/1Yapz5BZIzyRamh4aZTComn/
+         4iWF/dpGOqj7U2oknBABM4j8dytv4lXkH659oHOaoY5L85eGM9QcurH7NfhRclGVylG6
+         8Qcfvp9qxjYNVcrqCO6Po3hA8tSb4Mssq6yMOeXMc0SMa5uzd2NOWtTJq2ULhy8z0wCR
+         xJeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date;
-        bh=+AW/3bga438rCB765SwrbsyApmIQG3fWe3PDegwvZGY=;
-        b=k5MIbuBIJ0tUNh1E4uPnnh/u9oETCdiPLQAPuFVNkhVGLA1a6HHKv7ZB5jlMfHaRWo
-         Mznq51PT5DQo2QnIinD1WpK9KwfTXio6ypOyQuAL8VUMRcPS3HbOac89hyLdtY54x9/D
-         hCrjUxrTbZ+2SBHa+ZxO4vMmB6DqOZN/2TMFFZ8dfEPM5xg6oMWNceoLno8hJNIHTotr
-         DNZ96QjrTvnCsX6pYU2nGMa839qS0xDb3ItMRjw+54INUWJSgey2C+NwAKxTCXmRyTdi
-         z35MHImsGVxLJtJjUh3PepkACnEaj9LeBKhZeDznAC79uf72JEE5l9Cu4RJxqKxHHE9Q
-         6kYA==
-X-Gm-Message-State: ACrzQf3e2SGni49CozWNlrwdWPi4fzGtEveNVf7khGvo0klNvjNSq5iH
-        MG7IGHYqHH3RbiNGn6eQf/5gMA==
-X-Google-Smtp-Source: AMsMyM47Az6QiOYvYKy2/XXTS/NsUzSwmwT2sgUGy6cb0DYNL39s+U6rNHJSf3T3T2Zm8jQ6qV34QQ==
-X-Received: by 2002:a17:907:2c47:b0:787:6f95:2bfe with SMTP id hf7-20020a1709072c4700b007876f952bfemr1518581ejc.705.1664435303006;
-        Thu, 29 Sep 2022 00:08:23 -0700 (PDT)
+        bh=LSRZBCTmT0hL5snj+rYRmgRi1ZmoMU67Lr450OsGSWo=;
+        b=yIj0Kca/eslrSOzFjsQUIvEtX3dNc8XYRPDfub9nGZBZQ70ryaTn54GIyz+0xAwvRC
+         sEReD0ovGybgxsMHkYK/X8UHTDVbk5NCat4sXrSSn3J8I81duHWRzOs7+Wk1Lp7YueNQ
+         6aWLcK6NTPTb7GEKSgLwqgyauUk4Jqfwjd7SCs2W5uDFWQgVY5nrkeoXcJwNEn0WjfXt
+         TTRrqfXxC3btbtulGMICHCQ98c1LxaFDlK1yMKVklCWQc/EE1EgXKO4NFRPDlAHQ+wPB
+         iit8Ulayr6Pvn7hRMlvXnRbWbP0WZ1USxeoNuA60LJ04Xox195GRhHtVgjFyzatjCLOg
+         k6mg==
+X-Gm-Message-State: ACrzQf29Wx/BIIprcZwoigwUhjFizagsNHxK22Ne/eXTr0+glKV/WuZZ
+        pgC97mnX7b9DTsTRIaYtTnqmrA==
+X-Google-Smtp-Source: AMsMyM7XPSrfwzHFox0czvQ4aCnORhQ6GUP0JQlNW9t2t7mnZmZJ9pwtE4YqC8LCsGmim1hWOm/vHw==
+X-Received: by 2002:a05:6402:3215:b0:451:4ce5:d7b8 with SMTP id g21-20020a056402321500b004514ce5d7b8mr1835592eda.223.1664435581314;
+        Thu, 29 Sep 2022 00:13:01 -0700 (PDT)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id c10-20020a17090618aa00b0073dd1ac2fc8sm3514244ejf.195.2022.09.29.00.08.22
+        by smtp.gmail.com with ESMTPSA id x2-20020a1709060ee200b0073dde62713asm3531818eji.89.2022.09.29.00.13.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Sep 2022 00:08:22 -0700 (PDT)
-Date:   Thu, 29 Sep 2022 09:08:21 +0200
+        Thu, 29 Sep 2022 00:13:00 -0700 (PDT)
+Date:   Thu, 29 Sep 2022 09:12:59 +0200
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     "Wilczynski, Michal" <michal.wilczynski@intel.com>
 Cc:     Edward Cree <ecree.xilinx@gmail.com>, netdev@vger.kernel.org,
@@ -58,21 +58,18 @@ Cc:     Edward Cree <ecree.xilinx@gmail.com>, netdev@vger.kernel.org,
         jesse.brandeburg@intel.com, przemyslaw.kitszel@intel.com
 Subject: Re: [RFC PATCH net-next v4 2/6] devlink: Extend devlink-rate api
  with queues and new parameters
-Message-ID: <YzVEZWioeVNgMNvK@nanopsycho>
+Message-ID: <YzVFez0OXL98hyBt@nanopsycho>
 References: <20220915134239.1935604-1-michal.wilczynski@intel.com>
  <20220915134239.1935604-3-michal.wilczynski@intel.com>
  <f17166c7-312d-ac13-989e-b064cddcb49e@gmail.com>
  <401d70a9-5f6d-ed46-117b-de0b82a5f52c@intel.com>
- <df4cd224-fc1b-dcd0-b7d4-22b80e6c1821@gmail.com>
- <7ce70b9f-23dc-03c9-f83a-4b620cdc8a7d@intel.com>
- <24690f01-5a4b-840b-52b7-bdc0e6b9376a@gmail.com>
- <YzGT98W0+Pzhahl8@nanopsycho>
- <c89ce464-4374-a3c3-3f58-727a913af870@intel.com>
+ <YzGSPMx2yZT/W6Gw@nanopsycho>
+ <0a201dd1-55bb-925f-ee95-75bb9451bb8c@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <c89ce464-4374-a3c3-3f58-727a913af870@intel.com>
+In-Reply-To: <0a201dd1-55bb-925f-ee95-75bb9451bb8c@intel.com>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
         autolearn_force=no version=3.4.6
@@ -82,74 +79,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Sep 28, 2022 at 01:53:24PM CEST, michal.wilczynski@intel.com wrote:
+Wed, Sep 28, 2022 at 01:47:03PM CEST, michal.wilczynski@intel.com wrote:
 >
 >
->On 9/26/2022 1:58 PM, Jiri Pirko wrote:
->> Tue, Sep 20, 2022 at 01:09:04PM CEST, ecree.xilinx@gmail.com wrote:
->> > On 19/09/2022 14:12, Wilczynski, Michal wrote:
->> > > Maybe a switchdev case would be a good parallel here. When you enable switchdev, you get port representors on
->> > > the host for each VF that is already attached to the VM. Something that gives the host power to configure
->> > > netdev that it doesn't 'own'. So it seems to me like giving user more power to configure things from the host
->> Well, not really. It gives the user on hypervisor possibility
->> to configure the eswitch vport side. The other side of the wire, which
->> is in VM, is autonomous.
->
->Frankly speaking the VM is still free to assign traffic to queues as before,
->I guess the networking card scheduling algorithm will just drain those
->queues at different pace.
-
-That was not my point, my point is, that with per-queue shaping, you are
-basically configuring the other side of the wire (VF), when this config
-is out of the domain of hypervisor.
-
->
->> 
->> 
->> > > is acceptable.
->> > Right that's the thing though: I instinctively Want this to be done
->> > through representors somehow, because it _looks_ like it ought to
->> > be scoped to a single netdev; but that forces the hierarchy to
->> > respect netdev boundaries which as we've discussed is an unwelcome
->> > limitation.
->> Why exacly? Do you want to share a single queue between multiple vport?
->> Or what exactly would the the usecase where you hit the limitation?
->
->Like you've noticed in previous comment traffic is assigned from inside the
->VM,
->this tree simply represents scheduling algorithm in the HW i.e how fast the
->card
->will drain from each queue. So if you have a queue carrying real-time data,
->and the rest carrying bulk, you might want to prioritze real-time data
->it i.e put it on a completely different branch on the scheduling tree.
-
-Yep, so, if you forget about how this is implemented in HW/FW, this is
-the VM-side config, correct?
-
-
->
->BR,
->Michał
->
->> 
->> 
->> > > In my mind this is a device-wide configuration, since the ice driver registers each port as a separate pci device.
->> > > And each of this devices have their own hardware Tx Scheduler tree global to that port. Queues that we're
->> > > discussing are actually hardware queues, and are identified by hardware assigned txq_id.
->> > In general, hardware being a single unit at the device level does
->> > not necessarily mean its configuration should be device-wide.
->> > For instance, in many NICs each port has a single hardware v-switch,
->> > but we do not have some kind of "devlink filter" API to program it
->> > directly.  Instead we attach TC rules to _many_ netdevs, and driver
->> > code transforms and combines these to program the unitary device.
->> > "device-wide configuration" originally meant things like firmware
->> > version or operating mode (legacy vs. switchdev) that do not relate
->> > directly to netdevs.
+>On 9/26/2022 1:51 PM, Jiri Pirko wrote:
+>> Thu, Sep 15, 2022 at 08:41:52PM CEST, michal.wilczynski@intel.com wrote:
 >> > 
->> > But I agree with you that your approach is the "least evil method";
->> > if properly explained and documented then I don't have any
->> > remaining objection to your patch, despite that I'm continuing to
->> > take the opportunity to proselytise for "reprs >> devlink" ;)
+>> > On 9/15/2022 5:31 PM, Edward Cree wrote:
+>> > > On 15/09/2022 14:42, Michal Wilczynski wrote:
+>> > > > Currently devlink-rate only have two types of objects: nodes and leafs.
+>> > > > There is a need to extend this interface to account for a third type of
+>> > > > scheduling elements - queues. In our use case customer is sending
+>> > > > different types of traffic on each queue, which requires an ability to
+>> > > > assign rate parameters to individual queues.
+>> > > Is there a use-case for this queue scheduling in the absence of a netdevice?
+>> > > If not, then I don't see how this belongs in devlink; the configuration
+>> > >    should instead be done in two parts: devlink-rate to schedule between
+>> > >    different netdevices (e.g. VFs) and tc qdiscs (or some other netdev-level
+>> > >    API) to schedule different queues within each single netdevice.
+>> > > Please explain why this existing separation does not support your use-case.
+>> > > 
+>> > > Also I would like to see some documentation as part of this patch.  It looks
+>> > >    like there's no kernel document for devlink-rate unlike most other devlink
+>> > >    objects; perhaps you could add one?
+>> > > 
+>> > > -ed
+>> > Hi,
+>> > Previously we discussed adding queues to devlink-rate in this thread:
+>> > https://lore.kernel.org/netdev/20220704114513.2958937-1-michal.wilczynski@intel.com/T/#u
+>> > In our use case we are trying to find a way to expose hardware Tx scheduler
+>> > tree that is defined
+>> > per port to user. Obviously if the tree is defined per physical port, all the
+>> > scheduling nodes will reside
+>> > on the same tree.
 >> > 
->> > -ed
+>> > Our customer is trying to send different types of traffic that require
+>> > different QoS levels on the same
+>> Do I understand that correctly, that you are assigning traffic to queues
+>> in VM, and you rate the queues on hypervisor? Is that the goal?
+>
+>Yes.
+
+Why do you have this mismatch? If forces the hypervisor and VM admin to
+somehow sync upon the configuration. That does not sound correct to me.
+
+
+>
+>> 
+>> 
+>> > VM, but on a different queues. This requires completely different rate setups
+>> > for that queue - in the
+>> > implementation that you're mentioning we wouldn't be able to arbitrarily
+>> > reassign the queue to any node.
+>> > Those queues would still need to share a single parent - their netdev. This
+>> So that replies to Edward's note about having the queues maintained
+>> within the single netdev/vport, correct?
+>
+> Correct ;)
+
+Okay. So you don't really need any kind of sharing devlink might be able
+to provide.
+
+From what you say and how I see this, it's clear. You should handle the
+per-queue shaping on the VM, on netdevice level, most probably by
+offloading some of the TC qdisc.
+
+
+>
+>> 
+>> 
+>> > wouldn't allow us to fully take
+>> > advantage of the HQoS and would introduce arbitrary limitations.
+>> > 
+>> > Also I would think that since there is only one vendor implementing this
+>> > particular devlink-rate API, there is
+>> > some room for flexibility.
+>> > 
+>> > Regarding the documentation,  sure. I just wanted to get all the feedback
+>> >from the mailing list and arrive at the final
+>> > solution before writing the docs.
+>> > 
+>> > BTW, I'm going to be out of office tomorrow, so will respond in this thread
+>> > on Monday.
+>> > BR,
+>> > Michał
+>> > 
+>> > 
 >
