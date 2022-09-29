@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E5BE5EEED7
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:24:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8148E5EEEE4
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:24:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235227AbiI2HXw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 03:23:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57100 "EHLO
+        id S235286AbiI2HXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 03:23:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235229AbiI2HW7 (ORCPT
+        with ESMTP id S235225AbiI2HW7 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:22:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9261C118DEB
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:22:54 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9774118B31
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:22:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 81E6BB8232C
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C98A462061
         for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 07:22:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 298F8C433B5;
-        Thu, 29 Sep 2022 07:22:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21076C433C1;
+        Thu, 29 Sep 2022 07:22:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664436171;
-        bh=z5YzZ4/IyOI4Anay2tpK29Z8CEYk90vNjlu9drhFRLw=;
+        s=k20201202; t=1664436172;
+        bh=OksYJsOXLGXn47DiEiZjh0ikh7D4Grz1z6RvFm8KV3g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EvC17If/oBKikrHwISY10MX66asVF+NlEs9ogoxuBryNBS2i7XWTf5KCovc7OhcLP
-         vTaCpwg17zIrrGArOOE+eCkQAssB9du221Pbeh6AIIJAnpuoOE0n4ycOHABplNZsIq
-         4RgJ/fiEmcyB8vsBG1J8JMOikWUcmY71EzSsLW9JCDpENc3KLZEEBAjtfhkOwAdtqY
-         HPkGWHtKP7TaMwQXcvhGlrhDKzViqGZz5poeKl/ymMM6j57RhCMo2cXifmOBe0KcPh
-         iAEPP904NZX8i8h9QG7/wY3+1jSIxdSQ7nvSg5NBECE5QblL3kuYcjf2o2be5n+YTW
-         Q3kl4t48sJsjQ==
+        b=XpJpora1IJWMcFFUlI7yxCoNv31Jv67Gcw4ILesG0CZYhw5+rxGvhblBultZAL8oa
+         VHePW4P754gbx9O3c04jNWxrlpyjkZps0V8DWWIfju1jLZlkC8aIogZp2vZqtdHE7s
+         mWaekYNo3yZWpvnYYvsyqqzbvoAeJM1lwnPjRhTX/y6Uy1v5D0Jb+HF7MUw/iBPhSg
+         V9a/r7GpT1P+KBMKJvSrYaaNzL6o04kPaEuF+kqWZBJudU9wDtR/WrHiG38ySmlIyl
+         5B57m3IsOwVdAJY+3ciC36i9pYbbN5K+yg6vTvmlxCiOND9dnJp1Fh3zCW6IlQMab1
+         yMGYt2GmQZNhw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -39,9 +39,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
         Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: [PATCH net-next 13/16] net/mlx5e: xsk: Remove mlx5e_xsk_page_alloc_pool
-Date:   Thu, 29 Sep 2022 00:21:53 -0700
-Message-Id: <20220929072156.93299-14-saeed@kernel.org>
+Subject: [PATCH net-next 14/16] net/mlx5e: Split out channel (de)activation in rx_res
+Date:   Thu, 29 Sep 2022 00:21:54 -0700
+Message-Id: <20220929072156.93299-15-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220929072156.93299-1-saeed@kernel.org>
 References: <20220929072156.93299-1-saeed@kernel.org>
@@ -58,59 +58,149 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-mlx5e_xsk_page_alloc_pool became a thin wrapper around xsk_buff_alloc.
-Drop it and call xsk_buff_alloc directly.
+To decrease the nesting level and reduce duplication of code, create
+functions to redirect direct RQTs to the actual RQs or drop_rq, which
+are used in the activation and deactivation flows of channels.
 
 Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
 Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h | 10 ----------
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c     |  8 +++++---
- 2 files changed, 5 insertions(+), 13 deletions(-)
+ .../ethernet/mellanox/mlx5/core/en/rx_res.c   | 106 +++++++++---------
+ 1 file changed, 53 insertions(+), 53 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
-index 53a833c9b09e..e702cb790476 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
-@@ -18,16 +18,6 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_linear(struct mlx5e_rq *rq,
- 					      struct mlx5e_wqe_frag_info *wi,
- 					      u32 cqe_bcnt);
- 
--static inline int mlx5e_xsk_page_alloc_pool(struct mlx5e_rq *rq,
--					    union mlx5e_alloc_unit *au)
--{
--	au->xsk = xsk_buff_alloc(rq->xsk_pool);
--	if (!au->xsk)
--		return -ENOMEM;
--
--	return 0;
--}
--
- static inline bool mlx5e_xsk_update_rx_wakeup(struct mlx5e_rq *rq, bool alloc_err)
- {
- 	if (!xsk_uses_need_wakeup(rq->xsk_pool))
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index 0d0064d66c09..72d74de3ee99 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -302,10 +302,12 @@ static inline int mlx5e_page_alloc_pool(struct mlx5e_rq *rq, union mlx5e_alloc_u
- 
- static inline int mlx5e_page_alloc(struct mlx5e_rq *rq, union mlx5e_alloc_unit *au)
- {
--	if (rq->xsk_pool)
--		return mlx5e_xsk_page_alloc_pool(rq, au);
--	else
-+	if (rq->xsk_pool) {
-+		au->xsk = xsk_buff_alloc(rq->xsk_pool);
-+		return likely(au->xsk) ? 0 : -ENOMEM;
-+	} else {
- 		return mlx5e_page_alloc_pool(rq, au);
-+	}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rx_res.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rx_res.c
+index 24c32f73040a..3436ecfcbc2f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/rx_res.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rx_res.c
+@@ -523,6 +523,53 @@ static u32 mlx5e_rx_res_get_rqtn_direct(struct mlx5e_rx_res *res, unsigned int i
+ 	return mlx5e_rqt_get_rqtn(&res->channels[ix].direct_rqt);
  }
  
- void mlx5e_page_dma_unmap(struct mlx5e_rq *rq, struct page *page)
++static void mlx5e_rx_res_channel_activate_direct(struct mlx5e_rx_res *res,
++						 struct mlx5e_channels *chs,
++						 unsigned int ix)
++{
++	u32 rqn;
++	int err;
++
++	mlx5e_channels_get_regular_rqn(chs, ix, &rqn);
++	err = mlx5e_rqt_redirect_direct(&res->channels[ix].direct_rqt, rqn);
++	if (err)
++		mlx5_core_warn(res->mdev, "Failed to redirect direct RQT %#x to RQ %#x (channel %u): err = %d\n",
++			       mlx5e_rqt_get_rqtn(&res->channels[ix].direct_rqt),
++			       rqn, ix, err);
++
++	if (!(res->features & MLX5E_RX_RES_FEATURE_XSK))
++		return;
++
++	if (!mlx5e_channels_get_xsk_rqn(chs, ix, &rqn))
++		rqn = res->drop_rqn;
++	err = mlx5e_rqt_redirect_direct(&res->channels[ix].xsk_rqt, rqn);
++	if (err)
++		mlx5_core_warn(res->mdev, "Failed to redirect XSK RQT %#x to RQ %#x (channel %u): err = %d\n",
++			       mlx5e_rqt_get_rqtn(&res->channels[ix].xsk_rqt),
++			       rqn, ix, err);
++}
++
++static void mlx5e_rx_res_channel_deactivate_direct(struct mlx5e_rx_res *res,
++						   unsigned int ix)
++{
++	int err;
++
++	err = mlx5e_rqt_redirect_direct(&res->channels[ix].direct_rqt, res->drop_rqn);
++	if (err)
++		mlx5_core_warn(res->mdev, "Failed to redirect direct RQT %#x to drop RQ %#x (channel %u): err = %d\n",
++			       mlx5e_rqt_get_rqtn(&res->channels[ix].direct_rqt),
++			       res->drop_rqn, ix, err);
++
++	if (!(res->features & MLX5E_RX_RES_FEATURE_XSK))
++		return;
++
++	err = mlx5e_rqt_redirect_direct(&res->channels[ix].xsk_rqt, res->drop_rqn);
++	if (err)
++		mlx5_core_warn(res->mdev, "Failed to redirect XSK RQT %#x to drop RQ %#x (channel %u): err = %d\n",
++			       mlx5e_rqt_get_rqtn(&res->channels[ix].xsk_rqt),
++			       res->drop_rqn, ix, err);
++}
++
+ void mlx5e_rx_res_channels_activate(struct mlx5e_rx_res *res, struct mlx5e_channels *chs)
+ {
+ 	unsigned int nch, ix;
+@@ -536,43 +583,10 @@ void mlx5e_rx_res_channels_activate(struct mlx5e_rx_res *res, struct mlx5e_chann
+ 
+ 	mlx5e_rx_res_rss_enable(res);
+ 
+-	for (ix = 0; ix < nch; ix++) {
+-		u32 rqn;
+-
+-		mlx5e_channels_get_regular_rqn(chs, ix, &rqn);
+-		err = mlx5e_rqt_redirect_direct(&res->channels[ix].direct_rqt, rqn);
+-		if (err)
+-			mlx5_core_warn(res->mdev, "Failed to redirect direct RQT %#x to RQ %#x (channel %u): err = %d\n",
+-				       mlx5e_rqt_get_rqtn(&res->channels[ix].direct_rqt),
+-				       rqn, ix, err);
+-
+-		if (!(res->features & MLX5E_RX_RES_FEATURE_XSK))
+-			continue;
+-
+-		if (!mlx5e_channels_get_xsk_rqn(chs, ix, &rqn))
+-			rqn = res->drop_rqn;
+-		err = mlx5e_rqt_redirect_direct(&res->channels[ix].xsk_rqt, rqn);
+-		if (err)
+-			mlx5_core_warn(res->mdev, "Failed to redirect XSK RQT %#x to RQ %#x (channel %u): err = %d\n",
+-				       mlx5e_rqt_get_rqtn(&res->channels[ix].xsk_rqt),
+-				       rqn, ix, err);
+-	}
+-	for (ix = nch; ix < res->max_nch; ix++) {
+-		err = mlx5e_rqt_redirect_direct(&res->channels[ix].direct_rqt, res->drop_rqn);
+-		if (err)
+-			mlx5_core_warn(res->mdev, "Failed to redirect direct RQT %#x to drop RQ %#x (channel %u): err = %d\n",
+-				       mlx5e_rqt_get_rqtn(&res->channels[ix].direct_rqt),
+-				       res->drop_rqn, ix, err);
+-
+-		if (!(res->features & MLX5E_RX_RES_FEATURE_XSK))
+-			continue;
+-
+-		err = mlx5e_rqt_redirect_direct(&res->channels[ix].xsk_rqt, res->drop_rqn);
+-		if (err)
+-			mlx5_core_warn(res->mdev, "Failed to redirect XSK RQT %#x to drop RQ %#x (channel %u): err = %d\n",
+-				       mlx5e_rqt_get_rqtn(&res->channels[ix].xsk_rqt),
+-				       res->drop_rqn, ix, err);
+-	}
++	for (ix = 0; ix < nch; ix++)
++		mlx5e_rx_res_channel_activate_direct(res, chs, ix);
++	for (ix = nch; ix < res->max_nch; ix++)
++		mlx5e_rx_res_channel_deactivate_direct(res, ix);
+ 
+ 	if (res->features & MLX5E_RX_RES_FEATURE_PTP) {
+ 		u32 rqn;
+@@ -595,22 +609,8 @@ void mlx5e_rx_res_channels_deactivate(struct mlx5e_rx_res *res)
+ 
+ 	mlx5e_rx_res_rss_disable(res);
+ 
+-	for (ix = 0; ix < res->max_nch; ix++) {
+-		err = mlx5e_rqt_redirect_direct(&res->channels[ix].direct_rqt, res->drop_rqn);
+-		if (err)
+-			mlx5_core_warn(res->mdev, "Failed to redirect direct RQT %#x to drop RQ %#x (channel %u): err = %d\n",
+-				       mlx5e_rqt_get_rqtn(&res->channels[ix].direct_rqt),
+-				       res->drop_rqn, ix, err);
+-
+-		if (!(res->features & MLX5E_RX_RES_FEATURE_XSK))
+-			continue;
+-
+-		err = mlx5e_rqt_redirect_direct(&res->channels[ix].xsk_rqt, res->drop_rqn);
+-		if (err)
+-			mlx5_core_warn(res->mdev, "Failed to redirect XSK RQT %#x to drop RQ %#x (channel %u): err = %d\n",
+-				       mlx5e_rqt_get_rqtn(&res->channels[ix].xsk_rqt),
+-				       res->drop_rqn, ix, err);
+-	}
++	for (ix = 0; ix < res->max_nch; ix++)
++		mlx5e_rx_res_channel_deactivate_direct(res, ix);
+ 
+ 	if (res->features & MLX5E_RX_RES_FEATURE_PTP) {
+ 		err = mlx5e_rqt_redirect_direct(&res->ptp.rqt, res->drop_rqn);
 -- 
 2.37.3
 
