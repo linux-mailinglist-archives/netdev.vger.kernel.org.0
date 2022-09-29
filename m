@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 29B635EEED2
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:23:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 328C85EEED5
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:24:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234738AbiI2HWo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 03:22:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56432 "EHLO
+        id S235235AbiI2HXB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 03:23:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235145AbiI2HWm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:22:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1823E3699
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:22:41 -0700 (PDT)
+        with ESMTP id S235199AbiI2HWx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:22:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FBAF1176D0
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:22:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D55F62062
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 07:22:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7BBBC433D6;
-        Thu, 29 Sep 2022 07:22:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 30371B8232C
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 07:22:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF16AC43470;
+        Thu, 29 Sep 2022 07:22:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664436160;
-        bh=+8rJaM+Ye2oy+K9s6aGi6FlDUzQxDpY2CdYhmosY0EI=;
+        s=k20201202; t=1664436161;
+        bh=3DpKZcuz7iAiZ1DUREIQpRHyJBiVLrsybJbYMp0hRzk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PWKMMDAZYAhPBi74arODr+ZjstIYxu8Y0eqmodvmKPFE3OMxmuA4tOpCl9mXZIYim
-         xMTH70kVrxwRP8LIZQbVdRaAFDR0xgbTz1jCuMFm1U2aQrhi5ha5kzgcGhXYeojnkA
-         VxA9vbcntCnzcKO2Q3dvqGVxnc49QwidB3dKUWXrQFrSnrUkyDbR4kQ8vjJ9NyNsyg
-         a0lanpiI89nvi+b2BAd3eJuBq52tVqL7YDA8kkQrehCAYvJDdZW6vZzr91xSwvE7Yp
-         jFfpuCLpKP1xhFpzeRqRu5/KnUDzcGsd0voIOz6sZ0hAHbO2EpRRxOomgX7GPk9iBc
-         zHDz4rnKyExew==
+        b=pdEzGgjDA/82zw7xzVwPWzz7ljW94e96KIZyFoyhDiTHVygGaOGeEscet+PDXyHid
+         md+p2EDjYaAw/sTcRmgk4SrNouB4sXzH97HVmsNQqOJ+laIy/zzPQ9A+Xkb+87wetG
+         uk9SQ9n7ihM7EO2E59clp9nKTF8pX3+d8GVxnPva/2XzXxP3MezWjZWRY3N5/LJ5rQ
+         35PwmnRLDtQJt+GCy+d/lYQgRCJM9Nb+UDdA8cHn7qZcfzr3MgkcLOzhtnBBkXeDNY
+         kZWjXCZg9rlNw3u9IKkI3oI5agTbOoCoypKuP/h6vkP9/f5ansjfa/H17NefHKb58g
+         +eojWM5O/FkPw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -39,9 +39,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
         Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: [PATCH net-next 03/16] net/mlx5e: xsk: Use XSK frame size as striding RQ page size
-Date:   Thu, 29 Sep 2022 00:21:43 -0700
-Message-Id: <20220929072156.93299-4-saeed@kernel.org>
+Subject: [PATCH net-next 04/16] net/mlx5e: Keep a separate MKey for striding RQ
+Date:   Thu, 29 Sep 2022 00:21:44 -0700
+Message-Id: <20220929072156.93299-5-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220929072156.93299-1-saeed@kernel.org>
 References: <20220929072156.93299-1-saeed@kernel.org>
@@ -58,95 +58,129 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-XSK RQs support striding RQ linear mode, but the stride size is always
-set to PAGE_SIZE. It may be larger than the XSK frame size,
-unnecessarily reducing the useful space in a WQE, but more importantly
-causing UMEM data corruption in certain cases.
+Currently, rq->mkey_be keeps a big-endian value of either the PA MKey
+(for legacy RQ, no address translation) or MTT MKey (for striding RQ,
+direct address translation). Striding RQ stores the same value in
+rq->umr_mkey in the native endianness.
 
-Normally, stride size bigger than XSK frame size is not a problem if the
-hardware enforces the MTU. However, traffic between vports skips the
-hardware MTU check, and oversized packets may be received.
-
-If an oversized packet is bigger than the XSK frame but not bigger than
-the stride, it will cause overwriting of the adjacent UMEM region. If
-the packet takes more than one stride, they can be recycled for reuse
-so it's not a problem when the XSK frame size matches the stride size.
-
-To reduce the impact of the above issue, attempt to use the MTT page
-size for striding RQ that matches the XSK frame size, allowing to safely
-use 2048-byte frames on an up-to-date firmware.
+The next commit will make striding RQ use KSM MKey (indirect address
+translation) for the unaligned mode of XSK, which will require storing
+both KSM MKey and PA MKey in the RQ struct. This commit optimizes fields
+of mlx5e_rq: umr_mkey is removed (it's redundant), mkey_be always points
+to the PA MKey, and mpwqe.umr_mkey_be points to the MTT MKey (or to the
+KSM MKey, starting from the next commit).
 
 Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/en/params.c   | 37 ++++++++++++++++---
- 1 file changed, 31 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en.h  |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/en_main.c | 21 +++++++++++--------
+ 2 files changed, 13 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-index 1a0d8f9102df..593b684d21d5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-@@ -6,6 +6,7 @@
- #include "en/port.h"
- #include "en_accel/en_accel.h"
- #include "en_accel/ipsec.h"
-+#include <net/xdp_sock_drv.h>
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+index 7e56a45d0c24..308ef06df0d5 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+@@ -696,6 +696,7 @@ struct mlx5e_rq {
+ 			struct mlx5e_umr_wqe   umr_wqe;
+ 			struct mlx5e_mpw_info *info;
+ 			mlx5e_fp_skb_from_cqe_mpwrq skb_from_cqe_mpwrq;
++			__be32                 umr_mkey_be;
+ 			u16                    num_strides;
+ 			u16                    actual_wq_head;
+ 			u8                     log_stride_sz;
+@@ -757,7 +758,6 @@ struct mlx5e_rq {
+ 	u32                    rqn;
+ 	struct mlx5_core_dev  *mdev;
+ 	struct mlx5e_channel  *channel;
+-	u32  umr_mkey;
+ 	struct mlx5e_dma_info  wqe_overflow;
  
- static u8 mlx5e_mpwrq_min_page_shift(struct mlx5_core_dev *mdev)
+ 	/* XDP read-mostly */
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index 733451de1664..a4edbb85706e 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -215,7 +215,7 @@ static inline void mlx5e_build_umr_wqe(struct mlx5e_rq *rq,
+ 
+ 	cseg->qpn_ds    = cpu_to_be32((sq->sqn << MLX5_WQE_CTRL_QPN_SHIFT) |
+ 				      ds_cnt);
+-	cseg->umr_mkey  = rq->mkey_be;
++	cseg->umr_mkey  = rq->mpwqe.umr_mkey_be;
+ 
+ 	ucseg->flags = MLX5_UMR_TRANSLATION_OFFSET_EN | MLX5_UMR_INLINE;
+ 	ucseg->xlt_octowords =
+@@ -365,9 +365,13 @@ static int mlx5e_create_umr_klm_mkey(struct mlx5_core_dev *mdev,
+ static int mlx5e_create_rq_umr_mkey(struct mlx5_core_dev *mdev, struct mlx5e_rq *rq)
  {
-@@ -16,8 +17,8 @@ static u8 mlx5e_mpwrq_min_page_shift(struct mlx5_core_dev *mdev)
+ 	u64 num_mtts = mlx5_wq_ll_get_size(&rq->mpwqe.wq) * rq->mpwqe.mtts_per_wqe;
++	u32 umr_mkey;
++	int err;
  
- u8 mlx5e_mpwrq_page_shift(struct mlx5_core_dev *mdev, struct mlx5e_xsk_param *xsk)
- {
-+	u8 req_page_shift = xsk ? order_base_2(xsk->chunk_size) : PAGE_SHIFT;
- 	u8 min_page_shift = mlx5e_mpwrq_min_page_shift(mdev);
--	u8 req_page_shift = PAGE_SHIFT;
+-	return mlx5e_create_umr_mtt_mkey(mdev, num_mtts, rq->mpwqe.page_shift,
+-					 &rq->umr_mkey, rq->wqe_overflow.addr);
++	err = mlx5e_create_umr_mtt_mkey(mdev, num_mtts, rq->mpwqe.page_shift,
++					&umr_mkey, rq->wqe_overflow.addr);
++	rq->mpwqe.umr_mkey_be = cpu_to_be32(umr_mkey);
++	return err;
+ }
  
- 	/* Regular RQ uses order-0 pages, the NIC must be able to map them. */
- 	if (WARN_ON_ONCE(!xsk && req_page_shift < min_page_shift))
-@@ -933,12 +934,36 @@ static u8 mlx5e_build_icosq_log_wq_sz(struct mlx5_core_dev *mdev,
- 	/* If XDP program is attached, XSK may be turned on at any time without
- 	 * restarting the channel. ICOSQ must be big enough to fit UMR WQEs of
- 	 * both regular RQ and XSK RQ.
--	 * Although mlx5e_mpwqe_get_log_rq_size accepts mlx5e_xsk_param, it
--	 * doesn't affect its return value, as long as params->xdp_prog != NULL,
--	 * so we can just multiply by 2.
-+	 *
-+	 * XSK uses different values of page_shift, and the total number of UMR
-+	 * WQEBBs depends on it. This dependency is complex and not monotonic,
-+	 * especially taking into consideration that some of the parameters come
-+	 * from capabilities. Hence, we have to try all valid values of XSK
-+	 * frame size (and page_shift) to find the maximum.
- 	 */
--	if (params->xdp_prog)
--		wqebbs *= 2;
-+	if (params->xdp_prog) {
-+		u32 max_xsk_wqebbs = 0;
-+		u8 frame_shift;
-+
-+		for (frame_shift = XDP_UMEM_MIN_CHUNK_SHIFT;
-+		     frame_shift <= PAGE_SHIFT; frame_shift++) {
-+			/* The headroom doesn't affect the calculation. */
-+			struct mlx5e_xsk_param xsk = {
-+				.chunk_size = 1 << frame_shift,
-+			};
-+			u32 xsk_wqebbs;
-+			u8 page_shift;
-+
-+			page_shift = mlx5e_mpwrq_page_shift(mdev, &xsk);
-+			xsk_wqebbs = mlx5e_mpwrq_umr_wqebbs(mdev, page_shift) *
-+				(1 << mlx5e_mpwqe_get_log_rq_size(mdev, params, &xsk));
-+
-+			if (xsk_wqebbs > max_xsk_wqebbs)
-+				max_xsk_wqebbs = xsk_wqebbs;
-+		}
-+
-+		wqebbs += max_xsk_wqebbs;
-+	}
+ static int mlx5e_create_rq_hd_umr_mkey(struct mlx5_core_dev *mdev,
+@@ -575,6 +579,8 @@ static int mlx5e_alloc_rq(struct mlx5e_params *params,
+ 	rq->buff.headroom = mlx5e_get_rq_headroom(mdev, params, xsk);
+ 	pool_size = 1 << params->log_rq_mtu_frames;
  
- 	if (params->packet_merge.type == MLX5E_PACKET_MERGE_SHAMPO)
- 		wqebbs += mlx5e_shampo_icosq_sz(mdev, params, rqp);
++	rq->mkey_be = cpu_to_be32(mdev->mlx5e_res.hw_objs.mkey);
++
+ 	switch (rq->wq_type) {
+ 	case MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ:
+ 		err = mlx5_wq_ll_create(mdev, &rqp->wq, rqc_wq, &rq->mpwqe.wq,
+@@ -611,7 +617,6 @@ static int mlx5e_alloc_rq(struct mlx5e_params *params,
+ 		err = mlx5e_create_rq_umr_mkey(mdev, rq);
+ 		if (err)
+ 			goto err_rq_drop_page;
+-		rq->mkey_be = cpu_to_be32(rq->umr_mkey);
+ 
+ 		err = mlx5e_rq_alloc_mpwqe_info(rq, node);
+ 		if (err)
+@@ -647,8 +652,6 @@ static int mlx5e_alloc_rq(struct mlx5e_params *params,
+ 		err = mlx5e_init_di_list(rq, wq_sz, node);
+ 		if (err)
+ 			goto err_rq_frags;
+-
+-		rq->mkey_be = cpu_to_be32(mdev->mlx5e_res.hw_objs.mkey);
+ 	}
+ 
+ 	if (xsk) {
+@@ -695,7 +698,7 @@ static int mlx5e_alloc_rq(struct mlx5e_params *params,
+ 
+ 			wqe->data[0].addr = cpu_to_be64(dma_offset + headroom);
+ 			wqe->data[0].byte_count = cpu_to_be32(byte_count);
+-			wqe->data[0].lkey = rq->mkey_be;
++			wqe->data[0].lkey = rq->mpwqe.umr_mkey_be;
+ 		} else {
+ 			struct mlx5e_rx_wqe_cyc *wqe =
+ 				mlx5_wq_cyc_get_wqe(&rq->wqe.wq, i);
+@@ -740,7 +743,7 @@ static int mlx5e_alloc_rq(struct mlx5e_params *params,
+ 	case MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ:
+ 		kvfree(rq->mpwqe.info);
+ err_rq_mkey:
+-		mlx5_core_destroy_mkey(mdev, rq->umr_mkey);
++		mlx5_core_destroy_mkey(mdev, be32_to_cpu(rq->mpwqe.umr_mkey_be));
+ err_rq_drop_page:
+ 		mlx5e_free_mpwqe_rq_drop_page(rq);
+ 		break;
+@@ -773,7 +776,7 @@ static void mlx5e_free_rq(struct mlx5e_rq *rq)
+ 	switch (rq->wq_type) {
+ 	case MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ:
+ 		kvfree(rq->mpwqe.info);
+-		mlx5_core_destroy_mkey(rq->mdev, rq->umr_mkey);
++		mlx5_core_destroy_mkey(rq->mdev, be32_to_cpu(rq->mpwqe.umr_mkey_be));
+ 		mlx5e_free_mpwqe_rq_drop_page(rq);
+ 		mlx5e_rq_free_shampo(rq);
+ 		break;
 -- 
 2.37.3
 
