@@ -2,160 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD01E5EFF2F
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 23:16:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 434065EFF35
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 23:21:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229551AbiI2VQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 17:16:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34048 "EHLO
+        id S229912AbiI2VVI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 17:21:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229915AbiI2VQn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 17:16:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10F2D1C6A6F;
-        Thu, 29 Sep 2022 14:16:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 891F3B8267F;
-        Thu, 29 Sep 2022 21:16:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4007C433D7;
-        Thu, 29 Sep 2022 21:16:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664486199;
-        bh=GcuqMUS9NVNUzu0FIsCbbFvVJvXHP9GPGBq15bzlttU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RPgjSZUbeZzRkl7x5eJJulKFMhI/B41enBlK1SM1DrqFG7OsB0kajn3YinuXRw4I4
-         AsBhcYwm2y/9jg6PAZfotcSHNKEvQpNHDMIYzDTByOymJLbbT+T2jGFLkf16pOCCpL
-         pm5WE9XdpgJnFBw4JLuyi0p6EM8JrFmUjSLDYJVrfJdWjnmWoWMoO+R0sMyWJA4hpd
-         mmUH4Pa2520r/yrJajbP5+OD/Lj3DYqxMkenMHs75i005t1Z05KKLcOkImG1U6afVw
-         FDn6+TSBenfXhRJ/ssuHtFW1dwGdreXZKG0KaCmnaIYs9akCErsGtm0fyWr1MZWNZm
-         LdLARHnhzhNUg==
-Date:   Thu, 29 Sep 2022 23:16:35 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Martin KaFai Lau <martin.lau@linux.dev>, netdev@vger.kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, fw@strlen.de, netfilter-devel@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, brouer@redhat.com, toke@redhat.com,
-        memxor@gmail.com, nathan@kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next] net: netfilter: move bpf_ct_set_nat_info kfunc
- in nf_nat_bpf.c
-Message-ID: <YzYLM7i1Id4uvRmX@lore-desk>
-References: <ddd17d808fe25917893eb035b20146479810124c.1664111646.git.lorenzo@kernel.org>
- <6cf2c440-79a6-24ce-c9bb-1f1f92af4a0b@linux.dev>
- <YzXwCggIANDo9Gyu@salvia>
+        with ESMTP id S229551AbiI2VVI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 17:21:08 -0400
+Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18D50792DA;
+        Thu, 29 Sep 2022 14:21:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=82CVBJMMg98pUNlHUvfZc77iRO0SkRHuyncOXZOobb0=; b=gNmVA9qql9f+jgH9jCCrya+yQ9
+        iPMje2hMZ1ZSzQr8S2Ien0bIoiMdJCUAi7nOfsPyYCZ83wCWoCBXlR7gZFEHLM15XWGdWHtkcp1ZH
+        ZzQ7iAMDAqU8MyYl23SGseHPoZl/lSnOycCO4PneM5k9ZDWwuYlX3Uo/7dhpX7F1K28PhZHOaRpPh
+        C6i4et6apdoYHo/rbilXZz5lVFtuwRHVKbjLCZY+EKJxWaNT4qK+gRG8bvw2rc096AFjclk4brjxW
+        JkOuxbko4XUznNtchVGgJ9Sx0JJuU9vLLEjjfnxU5ykSWez+ZEdM1nw2KRRqjfsaT6IosmeE7Qcew
+        zv+qkzLg==;
+Received: from viro by zeniv.linux.org.uk with local (Exim 4.96 #2 (Red Hat Linux))
+        id 1oe0xs-00562S-0g;
+        Thu, 29 Sep 2022 21:21:04 +0000
+Date:   Thu, 29 Sep 2022 22:21:04 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     David Laight <David.Laight@aculab.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        "Serge E. Hallyn" <serge@hallyn.com>
+Subject: Re: [PATCH 3/4] proc: Point /proc/net at /proc/thread-self/net
+ instead of /proc/self/net
+Message-ID: <YzYMQDTAYCCax0WZ@ZenIV>
+References: <dacfc18d6667421d97127451eafe4f29@AcuMS.aculab.com>
+ <CAHk-=wgS_XpzEL140ovgLwGv6yXvV7Pu9nKJbCuo5pnRfcEbvg@mail.gmail.com>
+ <YzXo/DIwq65ypHNH@ZenIV>
+ <YzXrOFpPStEwZH/O@ZenIV>
+ <CAHk-=wjLgM06JrS21W4g2VquqCLab+qu_My67cv6xuH7NhgHpw@mail.gmail.com>
+ <YzXzXNAgcJeJ3M0d@ZenIV>
+ <CAHk-=wgiBBXeY9ioZ8GtsxAcd42c265zwN7bYVY=cir01OimzA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="R2PVonCrJXBYLLJt"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YzXwCggIANDo9Gyu@salvia>
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <CAHk-=wgiBBXeY9ioZ8GtsxAcd42c265zwN7bYVY=cir01OimzA@mail.gmail.com>
+Sender: Al Viro <viro@ftp.linux.org.uk>
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Sep 29, 2022 at 02:13:57PM -0700, Linus Torvalds wrote:
+> On Thu, Sep 29, 2022 at 12:34 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
+> >
+> > Apparmor takes mount+dentry and turns that into pathname.  Then acts
+> > upon the resulting string.  *AFTER* the original had been resolved.
+> 
+> Ok. So it would have to act like a bind mount.
+> 
+> Which is probably not too bad.
+> 
+> In fact, maybe it would be ok for this to act like a hardlink and just
+> fill in the inode - not safe for a filesystem in general due to the
+> whole rename loop issue, but for /proc it might be fine?
 
---R2PVonCrJXBYLLJt
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+_Which_ hardlink?
 
-On Sep 29, Pablo Neira Ayuso wrote:
-> On Thu, Sep 29, 2022 at 12:13:45PM -0700, Martin KaFai Lau wrote:
-> > On 9/25/22 6:26 AM, Lorenzo Bianconi wrote:
-> > > Remove circular dependency between nf_nat module and nf_conntrack one
-> > > moving bpf_ct_set_nat_info kfunc in nf_nat_bpf.c
-> > >=20
-> > > Fixes: 0fabd2aa199f ("net: netfilter: add bpf_ct_set_nat_info kfunc h=
-elper")
-> > > Suggested-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> > > Tested-by: Nathan Chancellor <nathan@kernel.org>
-> > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > > ---
-> > >   include/net/netfilter/nf_conntrack_bpf.h |  5 ++
-> > >   include/net/netfilter/nf_nat.h           | 14 +++++
-> > >   net/netfilter/Makefile                   |  6 ++
-> > >   net/netfilter/nf_conntrack_bpf.c         | 49 ---------------
-> > >   net/netfilter/nf_nat_bpf.c               | 79 +++++++++++++++++++++=
-+++
-> > >   net/netfilter/nf_nat_core.c              |  2 +-
-> > >   6 files changed, 105 insertions(+), 50 deletions(-)
-> > >   create mode 100644 net/netfilter/nf_nat_bpf.c
-> > >=20
-> > > diff --git a/include/net/netfilter/nf_conntrack_bpf.h b/include/net/n=
-etfilter/nf_conntrack_bpf.h
-> > > index c8b80add1142..1ce46e406062 100644
-> > > --- a/include/net/netfilter/nf_conntrack_bpf.h
-> > > +++ b/include/net/netfilter/nf_conntrack_bpf.h
-> > > @@ -4,6 +4,11 @@
-> > >   #define _NF_CONNTRACK_BPF_H
-> > >   #include <linux/kconfig.h>
-> > > +#include <net/netfilter/nf_conntrack.h>
-> > > +
-> > > +struct nf_conn___init {
-> > > +	struct nf_conn ct;
-> > > +};
-> > >   #if (IS_BUILTIN(CONFIG_NF_CONNTRACK) && IS_ENABLED(CONFIG_DEBUG_INF=
-O_BTF)) || \
-> > >       (IS_MODULE(CONFIG_NF_CONNTRACK) && IS_ENABLED(CONFIG_DEBUG_INFO=
-_BTF_MODULES))
-> > > diff --git a/include/net/netfilter/nf_nat.h b/include/net/netfilter/n=
-f_nat.h
-> > > index e9eb01e99d2f..cd084059a953 100644
-> > > --- a/include/net/netfilter/nf_nat.h
-> > > +++ b/include/net/netfilter/nf_nat.h
-> > > @@ -68,6 +68,20 @@ static inline bool nf_nat_oif_changed(unsigned int=
- hooknum,
-> > >   #endif
-> > >   }
-> > > +#if (IS_BUILTIN(CONFIG_NF_NAT) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF))=
- || \
-> > > +    (IS_MODULE(CONFIG_NF_NAT) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF_MO=
-DULES))
-> > > +
-> > > +extern int register_nf_nat_bpf(void);
-> > > +
-> > > +#else
-> > > +
-> > > +static inline int register_nf_nat_bpf(void)
-> > > +{
-> > > +	return 0;
-> > > +}
-> > > +
-> > > +#endif
-> > > +
-> >=20
-> > This looks similar to the ones in nf_conntrack_bpf.h.  Does it belong t=
-here
-> > better?  No strong opinion here.
-> >=20
-> > The change looks good to me.  Can someone from the netfilter team ack t=
-his
-> > piece also?
->=20
-> Could you move this into nf_conntrack_bpf.h ?
+Linus, where in dentry tree would you want it to be seen?  Because
+apparmor profile wants /proc/net/dev to land at /proc/<pid>/net/dev
+and will fail with anything else.
 
-ack, I will fix it in v2.
+Do you really want multiple dentries with the same name in the same
+parent, refering to different directory inodes with different contents?
 
-Regards,
-Lorenzo
-
-
---R2PVonCrJXBYLLJt
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYzYLMwAKCRA6cBh0uS2t
-rF7BAQCLfn7jOS73Ln0dNouKHpc/GWuyklxxmF84ZHumZTYb+gD+K3M3F12Af/w7
-/hN+v8HijMcYYwh1gY07kE5B1dsQeAM=
-=4rb2
------END PGP SIGNATURE-----
-
---R2PVonCrJXBYLLJt--
+And that's different inodes with different contents - David's complaint
+is precisely about seeing the same thing for all threads and apparmor
+issue is with *NOT* seeing each of those things at the same location.
