@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 37FED5EEEE0
+	by mail.lfdr.de (Postfix) with ESMTP id 84E105EEEE1
 	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:24:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235223AbiI2HX0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 03:23:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57162 "EHLO
+        id S235308AbiI2HYA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 03:24:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235224AbiI2HW7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:22:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9071C118DE5
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:22:54 -0700 (PDT)
+        with ESMTP id S235236AbiI2HXB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:23:01 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CD0F1176F9
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:22:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B863662062
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 07:22:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14F77C433D7;
-        Thu, 29 Sep 2022 07:22:53 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E6B58CE20D3
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 07:22:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F3C2C433D6;
+        Thu, 29 Sep 2022 07:22:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664436173;
-        bh=Qvckc+zAeLwwFVpqblPRR/vLxKr6P0VeVZAZiM65WM0=;
+        s=k20201202; t=1664436174;
+        bh=5H62pWWTbMXELDAIcpxMO2VeUMXRVUOgenPdG0v4k6o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ha2Wi351MMk9AQ6yM85TX/f1kUnB6e8NUne/cTrPm4n0Zj/Z5eKq2wlxtPO8wqtZE
-         UL/kZMmn5lwVGiR7QD07M2ZUsYbBgkkoFhumz6MKu7fWlPrFRckyZOQP10rjnZUYvk
-         sKZqHfMTf4ECcLxOPD3P4LmsOyv46cUpd0UEKYNwT+Q7HwahW4vBWrbMJsftrBjwqK
-         yUcm4UCjwp8GvY9u3PvblOw6Xe4VKegWpcy+DmvE4FFG+sird2M6AzGXVtAYvHpUuL
-         eLJ8dkTh3/vw5Lguesv4nMRGFvH6z7KXdxoj7pct974jSPPpRW4MxYb4mXX7Ozawx2
-         JEU5p9yo6rHQg==
+        b=qFLptN6t9rYWYjnHTzchaGbDkJf2ywSPScskxHH3PNXT6L5YDvz/kdPzvokH6wFLo
+         x44zdmZyFMKQKHCWhOMQtCEyrK6Vf9WvL0zq77ZnzEfsCugk+g2NN5yipso7evZIzf
+         BILrH+tscEfjaEapHEBtu3ICo7LnwzzrqXwnjysEhPiqICH7qv3WFHu71MK1Boksxn
+         WPHm6+Rh0rBqE7JCZEVBdxORMNcjJ9yfWDpGRtx2fUSB6HggFxVEYWCTD8WAeiXb5W
+         YaGzIWjxG+XS6NsZ6deKc9rKrRPdsSOB2RvBWTph4Lrk1AmSA4iA7WT3BMfcVYNfod
+         2knGZE1V+OMyg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -39,9 +39,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
         Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: [PATCH net-next 15/16] net/mlx5e: Move repeating clear_bit in mlx5e_rx_reporter_err_rq_cqe_recover
-Date:   Thu, 29 Sep 2022 00:21:55 -0700
-Message-Id: <20220929072156.93299-16-saeed@kernel.org>
+Subject: [PATCH net-next 16/16] net/mlx5e: Clean up and fix error flows in mlx5e_alloc_rq
+Date:   Thu, 29 Sep 2022 00:21:56 -0700
+Message-Id: <20220929072156.93299-17-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220929072156.93299-1-saeed@kernel.org>
 References: <20220929072156.93299-1-saeed@kernel.org>
@@ -58,44 +58,67 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-The same clear_bit is called in both error and success flows. Move the
-call to do it only once and remove the out label.
+Although mlx5e_rq_free_shampo can be called unconditionally, it belongs
+to case MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ. Move it there to allow to
+add more init/cleanup actions to the striding RQ case.
+
+If xdp_rxq_info_reg_mem_model fails, don't forget to destroy the page
+pool.
 
 Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
 Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
-index fc366e66d0b0..2b946ae1d97f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
-@@ -162,10 +162,10 @@ static int mlx5e_rx_reporter_err_rq_cqe_recover(void *ctx)
- 	mlx5e_free_rx_descs(rq);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index b9591f902760..2719247b18db 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -668,7 +668,7 @@ static int mlx5e_alloc_rq(struct mlx5e_params *params,
  
- 	err = mlx5e_rq_to_ready(rq, MLX5_RQC_STATE_ERR);
-+	clear_bit(MLX5E_RQ_STATE_RECOVERING, &rq->state);
+ 		err = mlx5_rq_shampo_alloc(mdev, params, rqp, rq, &pool_size, node);
+ 		if (err)
+-			goto err_free_by_rq_type;
++			goto err_free_mpwqe_info;
+ 
+ 		break;
+ 	default: /* MLX5_WQ_TYPE_CYCLIC */
+@@ -720,14 +720,14 @@ static int mlx5e_alloc_rq(struct mlx5e_params *params,
+ 		if (IS_ERR(rq->page_pool)) {
+ 			err = PTR_ERR(rq->page_pool);
+ 			rq->page_pool = NULL;
+-			goto err_free_shampo;
++			goto err_free_by_rq_type;
+ 		}
+ 		if (xdp_rxq_info_is_reg(&rq->xdp_rxq))
+ 			err = xdp_rxq_info_reg_mem_model(&rq->xdp_rxq,
+ 							 MEM_TYPE_PAGE_POOL, rq->page_pool);
+ 	}
  	if (err)
--		goto out;
-+		return err;
+-		goto err_free_shampo;
++		goto err_destroy_page_pool;
  
--	clear_bit(MLX5E_RQ_STATE_RECOVERING, &rq->state);
- 	mlx5e_activate_rq(rq);
- 	rq->stats->recover++;
- 	if (rq->channel)
-@@ -173,9 +173,6 @@ static int mlx5e_rx_reporter_err_rq_cqe_recover(void *ctx)
- 	else
- 		mlx5e_trigger_napi_sched(rq->cq.napi);
+ 	for (i = 0; i < wq_sz; i++) {
+ 		if (rq->wq_type == MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ) {
+@@ -780,11 +780,13 @@ static int mlx5e_alloc_rq(struct mlx5e_params *params,
+ 
  	return 0;
--out:
--	clear_bit(MLX5E_RQ_STATE_RECOVERING, &rq->state);
--	return err;
- }
  
- static int mlx5e_rx_reporter_timeout_recover(void *ctx)
+-err_free_shampo:
+-	mlx5e_rq_free_shampo(rq);
++err_destroy_page_pool:
++	page_pool_destroy(rq->page_pool);
+ err_free_by_rq_type:
+ 	switch (rq->wq_type) {
+ 	case MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ:
++		mlx5e_rq_free_shampo(rq);
++err_free_mpwqe_info:
+ 		kvfree(rq->mpwqe.info);
+ err_rq_mkey:
+ 		mlx5_core_destroy_mkey(mdev, be32_to_cpu(rq->mpwqe.umr_mkey_be));
 -- 
 2.37.3
 
