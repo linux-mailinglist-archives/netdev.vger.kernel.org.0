@@ -2,149 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A81285EEF95
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:47:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4453B5EEF9E
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:48:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235252AbiI2HrT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 03:47:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40960 "EHLO
+        id S234909AbiI2HsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 03:48:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234940AbiI2HrS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:47:18 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA60CEEEB4
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:47:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1664437636;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=PsFKA0JcnshzZDoVR/7R357TCzayyacAiy4vW0aVEaY=;
-        b=YduBBko3FML/DaZT+jos0HbhalfuSUQu+jT1EpYznMDU+fdr0vYTmE0wNsBbtPRAUgNAPI
-        UCTfjZz2VDPpr+2wxh6jrPTYfPzPNhnt/TQEEwUk9tTfM29+SQwAolZmT2dlrn2KTmXc2+
-        Y/8v3QO4BSlU8r6ZlR9RagJeTb8aoPo=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-44-Q7aLSrYeO32awCH49MemAA-1; Thu, 29 Sep 2022 03:47:14 -0400
-X-MC-Unique: Q7aLSrYeO32awCH49MemAA-1
-Received: by mail-wr1-f69.google.com with SMTP id u20-20020adfc654000000b0022cc05e9119so188737wrg.16
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:47:14 -0700 (PDT)
+        with ESMTP id S235375AbiI2HsF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:48:05 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D210139420
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:48:03 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id hy2so1050581ejc.8
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:48:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=4eDDdFcESkhJvsytqd+Yc38so22tAdDSizQ5vMRnBI8=;
+        b=W31fImQGHNBX/YFOA5QA2NJhCt4DC22Cg7MKewhqq77nz/g35tdgDcSeILAAtQUvoL
+         yPhDW6IS7KU9NgKVu+0lzgz7ivdany+OWngYjBAYZFMIiQJo2tda0d8629VMcf6QGz5B
+         Ixj1q9D3kwZ1bFg5cUZ2j9rTJpStDDXGtE5mXPgPW656BsguDGZMsTV/W1tJEWPbLpeP
+         nB1L0X4H+1RTndaVA/4LxcJ9UG8MQprbIz3S8LzUo8eL7fTZqg/d57DOUIdsnysyjsSf
+         ax+nI5i/HMssu/b0+OqlHj11fP25dPJ/9INgvh+WA40NOBlZ4xnyEKuyZXvD8bDA7wgX
+         lt6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=PsFKA0JcnshzZDoVR/7R357TCzayyacAiy4vW0aVEaY=;
-        b=tpJe1hLHd3rJEQTijiYca3xXny1Tgiv1OMF1ylAVZSuACukv0CT4Ud+niz7O0/5hug
-         S9pPLlyOuHY+kQDTeCZS/331lVVU7ADyPY8YZQqwc08F0egk5PXVO3lYmXkbfHkhv3SQ
-         lRT2kgpP1VscjXFvFChWFIHK/uP3h/qwmI4ZjV7nDQZ77S/cWS5FGNPmhvhkm3gGe+1i
-         GrR5fVkg/d3Jabpo6bTx/7kXv9kf06BT5C/LADEc4yYYuEHX3ZvE26eiGIbMgKih0E5A
-         DN9SVd/1psbOn/dMQsFsLAZiZsyDEwjxt+MGH7U5bU57vdlUeIaNrKIuC33YqGR6Iqlt
-         hBYg==
-X-Gm-Message-State: ACrzQf3ophJde+ySb056IpeGUFeeNbU/jEv5Te5h0qhK3Ezj7unWpLVo
-        3QSx0AiMqHpdtAgeIw+wGiFHHJVN+bBRhH9pEVJLvlUYyjRMJxBQYgmMj3DxUMelb16486O1goa
-        0DpEEAXRjsyEV4cpv
-X-Received: by 2002:a5d:4284:0:b0:22a:291e:fa8f with SMTP id k4-20020a5d4284000000b0022a291efa8fmr1154735wrq.553.1664437633412;
-        Thu, 29 Sep 2022 00:47:13 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM4+U+FYi8gr6euyVSrck8fFbYRHG3C6n/KBq6oIquAU+3k+fHj1pTJKlSFhr1Cm9nI7F+MMDw==
-X-Received: by 2002:a5d:4284:0:b0:22a:291e:fa8f with SMTP id k4-20020a5d4284000000b0022a291efa8fmr1154726wrq.553.1664437633210;
-        Thu, 29 Sep 2022 00:47:13 -0700 (PDT)
-Received: from redhat.com ([2.55.17.78])
-        by smtp.gmail.com with ESMTPSA id 3-20020a05600c230300b003b4727d199asm3639886wmo.15.2022.09.29.00.47.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Sep 2022 00:47:12 -0700 (PDT)
-Date:   Thu, 29 Sep 2022 03:47:08 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     Junichi Uekawa <uekawa@chromium.org>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        Bobby Eshleman <bobby.eshleman@gmail.com>
-Subject: Re: [PATCH] vhost/vsock: Use kvmalloc/kvfree for larger packets.
-Message-ID: <20220929034552-mutt-send-email-mst@kernel.org>
-References: <20220928064538.667678-1-uekawa@chromium.org>
- <20220928082823.wyxplop5wtpuurwo@sgarzare-redhat>
- <20220928052738-mutt-send-email-mst@kernel.org>
- <20220928151135.pvrlsylg6j3hzh74@sgarzare-redhat>
- <20220928160116-mutt-send-email-mst@kernel.org>
- <20220929074010.37mksjmwr3l4wlwt@sgarzare-redhat>
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=4eDDdFcESkhJvsytqd+Yc38so22tAdDSizQ5vMRnBI8=;
+        b=wxfP+QzmhvIhwnc6ewQyiwOBo0GGAobCmLbePxTQgEdqJ82NtDdWrmlzT+K629Z7rh
+         N+/Uw4SWnDqrcg0e4407C1KqmpCqUEnOTEZzZf57CErBVNKahqQAaKJd8ig9pZ7JVvaP
+         Nx4JTheXvGzfTIN4+W+m//YKpb79zK8dGIv3a5JjBp2ald50EwFM4rpKuZr5jlUQwdW8
+         e2geEya8vQgYJkzJQXRouURfSul0PyDhLTUTCp1owlQE3viUsk2/oq5bErNY7jk2eBjo
+         vj5DV3TczEJB202Zua9l+soaQB8m9LxAZ902hW1eOwtqjYSaN4qqy7ELoolbJRhilqrj
+         hBDA==
+X-Gm-Message-State: ACrzQf1Z8Ft6SnGyZmLiir/mhOlFcT4GQRPlx2OBaHcKgOqPwQAQK7G3
+        WZGLLcZ9Zgj/Zd/GOiFfbKI=
+X-Google-Smtp-Source: AMsMyM4frXq7gdfvGu5Xy3hahOy0YhnX8jZQTb9TBo8Tf9IQ1ALNU1WMEr4cxVXLBhhYD3zAoO7Uaw==
+X-Received: by 2002:a17:907:8a17:b0:782:6e72:7aba with SMTP id sc23-20020a1709078a1700b007826e727abamr1644137ejc.474.1664437682058;
+        Thu, 29 Sep 2022 00:48:02 -0700 (PDT)
+Received: from [172.17.234.34] (nata192.ugent.be. [157.193.240.192])
+        by smtp.gmail.com with ESMTPSA id f24-20020a17090631d800b00783975025c8sm3533909ejf.121.2022.09.29.00.48.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 29 Sep 2022 00:48:01 -0700 (PDT)
+Message-ID: <36bb049a-2ca8-d3b3-1db4-2ea665e7ab80@gmail.com>
+Date:   Thu, 29 Sep 2022 09:48:01 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220929074010.37mksjmwr3l4wlwt@sgarzare-redhat>
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [PATCH net] eth: alx: take rtnl_lock on resume
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        Zbynek Michl <zbynek.michl@gmail.com>, chris.snook@gmail.com,
+        johannes@sipsolutions.net
+References: <20220928181236.1053043-1-kuba@kernel.org>
+Content-Language: en-US
+From:   Niels Dossche <dossche.niels@gmail.com>
+In-Reply-To: <20220928181236.1053043-1-kuba@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLY,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 29, 2022 at 09:40:10AM +0200, Stefano Garzarella wrote:
-> On Wed, Sep 28, 2022 at 04:02:12PM -0400, Michael S. Tsirkin wrote:
-> > On Wed, Sep 28, 2022 at 05:11:35PM +0200, Stefano Garzarella wrote:
-> > > On Wed, Sep 28, 2022 at 05:31:58AM -0400, Michael S. Tsirkin wrote:
-> > > > On Wed, Sep 28, 2022 at 10:28:23AM +0200, Stefano Garzarella wrote:
-> > > > > On Wed, Sep 28, 2022 at 03:45:38PM +0900, Junichi Uekawa wrote:
-> > > > > > When copying a large file over sftp over vsock, data size is usually 32kB,
-> > > > > > and kmalloc seems to fail to try to allocate 32 32kB regions.
-> > > > > >
-> > > > > > Call Trace:
-> > > > > >  [<ffffffffb6a0df64>] dump_stack+0x97/0xdb
-> > > > > >  [<ffffffffb68d6aed>] warn_alloc_failed+0x10f/0x138
-> > > > > >  [<ffffffffb68d868a>] ? __alloc_pages_direct_compact+0x38/0xc8
-> > > > > >  [<ffffffffb664619f>] __alloc_pages_nodemask+0x84c/0x90d
-> > > > > >  [<ffffffffb6646e56>] alloc_kmem_pages+0x17/0x19
-> > > > > >  [<ffffffffb6653a26>] kmalloc_order_trace+0x2b/0xdb
-> > > > > >  [<ffffffffb66682f3>] __kmalloc+0x177/0x1f7
-> > > > > >  [<ffffffffb66e0d94>] ? copy_from_iter+0x8d/0x31d
-> > > > > >  [<ffffffffc0689ab7>] vhost_vsock_handle_tx_kick+0x1fa/0x301 [vhost_vsock]
-> > > > > >  [<ffffffffc06828d9>] vhost_worker+0xf7/0x157 [vhost]
-> > > > > >  [<ffffffffb683ddce>] kthread+0xfd/0x105
-> > > > > >  [<ffffffffc06827e2>] ? vhost_dev_set_owner+0x22e/0x22e [vhost]
-> > > > > >  [<ffffffffb683dcd1>] ? flush_kthread_worker+0xf3/0xf3
-> > > > > >  [<ffffffffb6eb332e>] ret_from_fork+0x4e/0x80
-> > > > > >  [<ffffffffb683dcd1>] ? flush_kthread_worker+0xf3/0xf3
-> > > > > >
-> > > > > > Work around by doing kvmalloc instead.
-> > > > > >
-> > > > > > Signed-off-by: Junichi Uekawa <uekawa@chromium.org>
-> > > >
-> > > > My worry here is that this in more of a work around.
-> > > > It would be better to not allocate memory so aggressively:
-> > > > if we are so short on memory we should probably process
-> > > > packets one at a time. Is that very hard to implement?
-> > > 
-> > > Currently the "virtio_vsock_pkt" is allocated in the "handle_kick" callback
-> > > of TX virtqueue. Then the packet is multiplexed on the right socket queue,
-> > > then the user space can de-queue it whenever they want.
-> > > 
-> > > So maybe we can stop processing the virtqueue if we are short on memory, but
-> > > when can we restart the TX virtqueue processing?
-> > 
-> > Assuming you added at least one buffer, the time to restart would be
-> > after that buffer has been used.
+On 9/28/22 20:12, Jakub Kicinski wrote:
+> Zbynek reports that alx trips an rtnl assertion on resume:
 > 
-> Yes, but we still might not have as many continuous pages to allocate, so I
-> would use kvmalloc the same.
-
-
-you would do something like
-	if (is_vmalloc_addr())
-		stop adding buffers.
-
-
-
-> I agree that we should do better, I hope that moving to sk_buff will allow
-> us to better manage allocation. Maybe after we merge that part we should
-> spend some time to solve these problems.
+>  RTNL: assertion failed at net/core/dev.c (2891)
+>  RIP: 0010:netif_set_real_num_tx_queues+0x1ac/0x1c0
+>  Call Trace:
+>   <TASK>
+>   __alx_open+0x230/0x570 [alx]
+>   alx_resume+0x54/0x80 [alx]
+>   ? pci_legacy_resume+0x80/0x80
+>   dpm_run_callback+0x4a/0x150
+>   device_resume+0x8b/0x190
+>   async_resume+0x19/0x30
+>   async_run_entry_fn+0x30/0x130
+>   process_one_work+0x1e5/0x3b0
 > 
-> Thanks,
-> Stefano
+> indeed the driver does not hold rtnl_lock during its internal close
+> and re-open functions during suspend/resume. Note that this is not
+> a huge bug as the driver implements its own locking, and does not
+> implement changing the number of queues, but we need to silence
+> the splat.
+> 
+> Fixes: 4a5fe57e7751 ("alx: use fine-grained locking instead of RTNL")
+> Reported-and-tested-by: Zbynek Michl <zbynek.michl@gmail.com>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+> CC: chris.snook@gmail.com
+> CC: dossche.niels@gmail.com
+> CC: johannes@sipsolutions.net
+> ---
+>  drivers/net/ethernet/atheros/alx/main.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/atheros/alx/main.c b/drivers/net/ethernet/atheros/alx/main.c
+> index a89b93cb4e26..d5939586c82e 100644
+> --- a/drivers/net/ethernet/atheros/alx/main.c
+> +++ b/drivers/net/ethernet/atheros/alx/main.c
+> @@ -1912,11 +1912,14 @@ static int alx_suspend(struct device *dev)
+>  
+>  	if (!netif_running(alx->dev))
+>  		return 0;
+> +
+> +	rtnl_lock();
+>  	netif_device_detach(alx->dev);
+>  
+>  	mutex_lock(&alx->mtx);
+>  	__alx_stop(alx);
+>  	mutex_unlock(&alx->mtx);
+> +	rtnl_unlock();
+>  
+>  	return 0;
+>  }
+> @@ -1927,6 +1930,7 @@ static int alx_resume(struct device *dev)
+>  	struct alx_hw *hw = &alx->hw;
+>  	int err;
+>  
+> +	rtnl_lock();
+>  	mutex_lock(&alx->mtx);
+>  	alx_reset_phy(hw);
+>  
+> @@ -1943,6 +1947,7 @@ static int alx_resume(struct device *dev)
+>  
+>  unlock:
+>  	mutex_unlock(&alx->mtx);
+> +	rtnl_unlock();
+>  	return err;
+>  }
+>  
+
+Reviewed-by: Niels Dossche <dossche.niels@gmail.com>
 
