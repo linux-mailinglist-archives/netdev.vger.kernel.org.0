@@ -2,283 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C33D5EEAC1
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 03:11:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 147145EEAC7
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 03:12:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233911AbiI2BLm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 21:11:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41054 "EHLO
+        id S232007AbiI2BMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 21:12:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232298AbiI2BLh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 21:11:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0995310D65B;
-        Wed, 28 Sep 2022 18:11:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A3F361738;
-        Thu, 29 Sep 2022 01:11:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1467C4347C;
-        Thu, 29 Sep 2022 01:11:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664413895;
-        bh=v2UP+iEo6ZLMzxoyIUNMhK1QWQXUvkj+AhgDe4iNxL0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TyXco8+a2fFPIIGG232FNhlGMOHzf27dSldR2N/IrqjhCnvKWSolXCvZFMAXlwpr1
-         6EeUp7jHRgMXG/11cBZ0bYb8D61zqjEOr+GNNI/FivLUlhA3mJ91GyxHcY6NyB1Uc3
-         ObQAClKTyxEM15NuXn9kzoxZ2VNtSJjYJK7JelPsoxA/AA9uvM3Udj2i3jgV/xHyeh
-         cEvWf54CKui9oIksgQO0rP3wIbKWfmt6itJsPUowWlARkHwBmNaa4FTi+yimdyLfTd
-         8rIPRwIdU/MAAjCi5nYThWZm+8gKm9eZQ8RQBOxp8FEkINpJsDTKJIirtb3Q51Pf6p
-         7bSlbbhtJ4phw==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        robh@kernel.org, johannes@sipsolutions.net, ecree.xilinx@gmail.com,
-        stephen@networkplumber.org, sdf@google.com, f.fainelli@gmail.com,
-        fw@strlen.de, linux-doc@vger.kernel.org, razor@blackwall.org,
-        nicolas.dichtel@6wind.com, gnault@redhat.com,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 6/6] net: fou: use policy and operation tables generated from the spec
-Date:   Wed, 28 Sep 2022 18:11:22 -0700
-Message-Id: <20220929011122.1139374-7-kuba@kernel.org>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220929011122.1139374-1-kuba@kernel.org>
-References: <20220929011122.1139374-1-kuba@kernel.org>
+        with ESMTP id S234059AbiI2BMY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 21:12:24 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47A9A11D0C9;
+        Wed, 28 Sep 2022 18:12:14 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id z97so18496ede.8;
+        Wed, 28 Sep 2022 18:12:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=cHToZx6wjQGjCx2ekRKNqNyuqI7/vfdpwwrkM2pgFRA=;
+        b=PaKoie8sFeFN5DocXsjMsWZ/lkPYRqdLL+/ieKvIS3Ca3F5nvGm/c87tdMqCNgnqBg
+         oVdob4/Ho4loboe+8RrmLsGHX+dhM49vdJVnzsV8s8yfqemNRz3XNs2jSHtVjen4r9Sc
+         /fxQ3iwjBP/Y2TgZ9jON/a9P7yKagTZ5ql1Wn8/FMYjkCfM+DoGrxeQa4I8FFgNW6zyV
+         1zZj/c8n8/qDAfro8NFusOl/nmNGzbBgJnH8RFoe/whGZYO3RHajTbWn+nzA1plfbqTx
+         jM9WnNcAJLLrvRWF5iK0iyved0hRctOEnBDmvgZHC9Cq1IZ9jrlJxxjhDU3ZcqctyDOt
+         qgig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=cHToZx6wjQGjCx2ekRKNqNyuqI7/vfdpwwrkM2pgFRA=;
+        b=JhlHhPUcC5qtR4jKStnEbWbLYhtZwUmoNX/kV/BZ55GCc73/nWVSKyLbvjT/cm3e6s
+         /RuBjvoMwcyWjyydw9TQajR+zeap7g+wJ01UFD8LJFQKk9KiEuI30EhnJrHBrH9kW9Og
+         /ChjPnWCbM5J/p4+0iFPuCB7L7DKtHPHP5YMMej6FNJAjR07iOKsJ8NScYTBObB53Fb2
+         LHMZds+Ge/uUgpZZ0rxlMTJyvF9h9LQY4hMJYqrjni+B1NWts1XxucaOAxGMQsd85gDM
+         jxRftcJpudcfEAPukoXXZA9FctKLkYw3hWacaKd/5jt1D/xrIjMs4VdkihQgc+eWRzsf
+         YiDQ==
+X-Gm-Message-State: ACrzQf0RbrYKmVGeJrBzg7nEPK011L7PQ/PkfOSSJHKTkKChl6e8cQ7B
+        jLNsbLdF3LtwFbFUXBBnx3/fkCiYuF4dtLnfWE/GJpbn
+X-Google-Smtp-Source: AMsMyM7Gx6t1nioEPm8vDSHHPKF78tDZpWt3K5fzZSPOsVjFAR/ogpmQ/+BPwYVAaZZf4T5h/K6Az8PLMh3RWqxdlrQ=
+X-Received: by 2002:aa7:c601:0:b0:458:1e8b:ada0 with SMTP id
+ h1-20020aa7c601000000b004581e8bada0mr786058edq.338.1664413932648; Wed, 28 Sep
+ 2022 18:12:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20220923224453.2351753-1-kafai@fb.com> <20220923224518.2353383-1-kafai@fb.com>
+ <CAADnVQ+Hm3wbGjXzEKz+ody7kdZBnZH11GLXjbMzUxUz1wGuHg@mail.gmail.com>
+In-Reply-To: <CAADnVQ+Hm3wbGjXzEKz+ody7kdZBnZH11GLXjbMzUxUz1wGuHg@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 28 Sep 2022 18:12:01 -0700
+Message-ID: <CAADnVQJddHYrjRDMdKCuHtizuLNZU58Qg7-HKoJ4pSV17suMzw@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 4/5] bpf: tcp: Stop bpf_setsockopt(TCP_CONGESTION)
+ in init ops to recur itself
+To:     Martin KaFai Lau <kafai@fb.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kernel Team <kernel-team@fb.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Martin KaFai Lau <martin.lau@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Generate and plug in the spec-based tables.
+Eric,
 
-A little bit of renaming is needed in the FOU code.
+Ping! This is an important fix for anyone using bpf-based tcp-cc.
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- net/ipv4/Makefile |  2 +-
- net/ipv4/fou-nl.c | 48 ++++++++++++++++++++++++++++++++++++++++++++
- net/ipv4/fou-nl.h | 25 +++++++++++++++++++++++
- net/ipv4/fou.c    | 51 +++++++++--------------------------------------
- 4 files changed, 83 insertions(+), 43 deletions(-)
- create mode 100644 net/ipv4/fou-nl.c
- create mode 100644 net/ipv4/fou-nl.h
-
-diff --git a/net/ipv4/Makefile b/net/ipv4/Makefile
-index bbdd9c44f14e..7c6bfc035cf3 100644
---- a/net/ipv4/Makefile
-+++ b/net/ipv4/Makefile
-@@ -26,7 +26,7 @@ obj-$(CONFIG_IP_MROUTE) += ipmr.o
- obj-$(CONFIG_IP_MROUTE_COMMON) += ipmr_base.o
- obj-$(CONFIG_NET_IPIP) += ipip.o
- gre-y := gre_demux.o
--obj-$(CONFIG_NET_FOU) += fou.o
-+obj-$(CONFIG_NET_FOU) += fou.o fou-nl.o
- obj-$(CONFIG_NET_IPGRE_DEMUX) += gre.o
- obj-$(CONFIG_NET_IPGRE) += ip_gre.o
- udp_tunnel-y := udp_tunnel_core.o udp_tunnel_nic.o
-diff --git a/net/ipv4/fou-nl.c b/net/ipv4/fou-nl.c
-new file mode 100644
-index 000000000000..cc872b40dd78
---- /dev/null
-+++ b/net/ipv4/fou-nl.c
-@@ -0,0 +1,48 @@
-+// SPDX-License-Identifier: BSD-3-Clause
-+// Do not edit directly, auto-generated from:
-+//	Documentation/netlink/specs/fou.yaml
-+// YNL-GEN kernel source
-+
-+#include <net/netlink.h>
-+#include <net/genetlink.h>
-+
-+#include "fou-nl.h"
-+
-+#include <linux/fou.h>
-+
-+// Global operation policy for fou
-+const struct nla_policy fou_policy[FOU_ATTR_IFINDEX + 1] = {
-+	[FOU_ATTR_PORT] = { .type = NLA_U16, },
-+	[FOU_ATTR_AF] = { .type = NLA_U8, },
-+	[FOU_ATTR_IPPROTO] = { .type = NLA_U8, },
-+	[FOU_ATTR_TYPE] = { .type = NLA_U8, },
-+	[FOU_ATTR_REMCSUM_NOPARTIAL] = { .type = NLA_FLAG, },
-+	[FOU_ATTR_LOCAL_V4] = { .type = NLA_U32, },
-+	[FOU_ATTR_LOCAL_V6] = { .len = 16, },
-+	[FOU_ATTR_PEER_V4] = { .type = NLA_U32, },
-+	[FOU_ATTR_PEER_V6] = { .len = 16, },
-+	[FOU_ATTR_PEER_PORT] = { .type = NLA_U16, },
-+	[FOU_ATTR_IFINDEX] = { .type = NLA_S32, },
-+};
-+
-+// Ops table for fou
-+const struct genl_small_ops fou_ops[3] = {
-+	{
-+		.cmd = FOU_CMD_ADD,
-+		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-+		.doit = fou_add_doit,
-+		.flags = GENL_ADMIN_PERM,
-+	},
-+	{
-+		.cmd = FOU_CMD_DEL,
-+		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-+		.doit = fou_del_doit,
-+		.flags = GENL_ADMIN_PERM,
-+	},
-+	{
-+		.cmd = FOU_CMD_GET,
-+		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-+		.doit = fou_get_doit,
-+		.dumpit = fou_get_dumpit,
-+	},
-+};
-diff --git a/net/ipv4/fou-nl.h b/net/ipv4/fou-nl.h
-new file mode 100644
-index 000000000000..1610396a18bb
---- /dev/null
-+++ b/net/ipv4/fou-nl.h
-@@ -0,0 +1,25 @@
-+// SPDX-License-Identifier: BSD-3-Clause
-+// Do not edit directly, auto-generated from:
-+//	Documentation/netlink/specs/fou.yaml
-+// YNL-GEN kernel header
-+
-+#ifndef _LINUX_FOU_GEN_H
-+#define _LINUX_FOU_GEN_H
-+
-+#include <net/netlink.h>
-+#include <net/genetlink.h>
-+
-+#include <linux/fou.h>
-+
-+// Global operation policy for fou
-+extern const struct nla_policy fou_policy[FOU_ATTR_IFINDEX + 1];
-+
-+// Ops table for fou
-+extern const struct genl_small_ops fou_ops[3];
-+
-+int fou_add_doit(struct sk_buff *skb, struct genl_info *info);
-+int fou_del_doit(struct sk_buff *skb, struct genl_info *info);
-+int fou_get_doit(struct sk_buff *skb, struct genl_info *info);
-+int fou_get_dumpit(struct sk_buff *skb, struct netlink_callback *cb);
-+
-+#endif /* _LINUX_FOU_GEN_H */
-diff --git a/net/ipv4/fou.c b/net/ipv4/fou.c
-index 0c3c6d0cee29..6f934ae82d1d 100644
---- a/net/ipv4/fou.c
-+++ b/net/ipv4/fou.c
-@@ -19,6 +19,8 @@
- #include <uapi/linux/fou.h>
- #include <uapi/linux/genetlink.h>
- 
-+#include "fou-nl.h"
-+
- struct fou {
- 	struct socket *sock;
- 	u8 protocol;
-@@ -640,20 +642,6 @@ static int fou_destroy(struct net *net, struct fou_cfg *cfg)
- 
- static struct genl_family fou_nl_family;
- 
--static const struct nla_policy fou_nl_policy[FOU_ATTR_MAX + 1] = {
--	[FOU_ATTR_PORT]			= { .type = NLA_U16, },
--	[FOU_ATTR_AF]			= { .type = NLA_U8, },
--	[FOU_ATTR_IPPROTO]		= { .type = NLA_U8, },
--	[FOU_ATTR_TYPE]			= { .type = NLA_U8, },
--	[FOU_ATTR_REMCSUM_NOPARTIAL]	= { .type = NLA_FLAG, },
--	[FOU_ATTR_LOCAL_V4]		= { .type = NLA_U32, },
--	[FOU_ATTR_PEER_V4]		= { .type = NLA_U32, },
--	[FOU_ATTR_LOCAL_V6]		= { .len = sizeof(struct in6_addr), },
--	[FOU_ATTR_PEER_V6]		= { .len = sizeof(struct in6_addr), },
--	[FOU_ATTR_PEER_PORT]		= { .type = NLA_U16, },
--	[FOU_ATTR_IFINDEX]		= { .type = NLA_S32, },
--};
--
- static int parse_nl_config(struct genl_info *info,
- 			   struct fou_cfg *cfg)
- {
-@@ -745,7 +733,7 @@ static int parse_nl_config(struct genl_info *info,
- 	return 0;
- }
- 
--static int fou_nl_cmd_add_port(struct sk_buff *skb, struct genl_info *info)
-+int fou_add_doit(struct sk_buff *skb, struct genl_info *info)
- {
- 	struct net *net = genl_info_net(info);
- 	struct fou_cfg cfg;
-@@ -758,7 +746,7 @@ static int fou_nl_cmd_add_port(struct sk_buff *skb, struct genl_info *info)
- 	return fou_create(net, &cfg, NULL);
- }
- 
--static int fou_nl_cmd_rm_port(struct sk_buff *skb, struct genl_info *info)
-+int fou_del_doit(struct sk_buff *skb, struct genl_info *info)
- {
- 	struct net *net = genl_info_net(info);
- 	struct fou_cfg cfg;
-@@ -827,7 +815,7 @@ static int fou_dump_info(struct fou *fou, u32 portid, u32 seq,
- 	return -EMSGSIZE;
- }
- 
--static int fou_nl_cmd_get_port(struct sk_buff *skb, struct genl_info *info)
-+int fou_get_doit(struct sk_buff *skb, struct genl_info *info)
- {
- 	struct net *net = genl_info_net(info);
- 	struct fou_net *fn = net_generic(net, fou_net_id);
-@@ -874,7 +862,7 @@ static int fou_nl_cmd_get_port(struct sk_buff *skb, struct genl_info *info)
- 	return ret;
- }
- 
--static int fou_nl_dump(struct sk_buff *skb, struct netlink_callback *cb)
-+int fou_get_dumpit(struct sk_buff *skb, struct netlink_callback *cb)
- {
- 	struct net *net = sock_net(skb->sk);
- 	struct fou_net *fn = net_generic(net, fou_net_id);
-@@ -897,37 +885,16 @@ static int fou_nl_dump(struct sk_buff *skb, struct netlink_callback *cb)
- 	return skb->len;
- }
- 
--static const struct genl_small_ops fou_nl_ops[] = {
--	{
--		.cmd = FOU_CMD_ADD,
--		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.doit = fou_nl_cmd_add_port,
--		.flags = GENL_ADMIN_PERM,
--	},
--	{
--		.cmd = FOU_CMD_DEL,
--		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.doit = fou_nl_cmd_rm_port,
--		.flags = GENL_ADMIN_PERM,
--	},
--	{
--		.cmd = FOU_CMD_GET,
--		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.doit = fou_nl_cmd_get_port,
--		.dumpit = fou_nl_dump,
--	},
--};
--
- static struct genl_family fou_nl_family __ro_after_init = {
- 	.hdrsize	= 0,
- 	.name		= FOU_GENL_NAME,
- 	.version	= FOU_GENL_VERSION,
- 	.maxattr	= FOU_ATTR_MAX,
--	.policy = fou_nl_policy,
-+	.policy		= fou_policy,
- 	.netnsok	= true,
- 	.module		= THIS_MODULE,
--	.small_ops	= fou_nl_ops,
--	.n_small_ops	= ARRAY_SIZE(fou_nl_ops),
-+	.small_ops	= fou_ops,
-+	.n_small_ops	= ARRAY_SIZE(fou_ops),
- 	.resv_start_op	= FOU_CMD_GET + 1,
- };
- 
--- 
-2.37.3
-
+On Mon, Sep 26, 2022 at 8:34 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Fri, Sep 23, 2022 at 3:48 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> >
+> > From: Martin KaFai Lau <martin.lau@kernel.org>
+> >
+> > When a bad bpf prog '.init' calls
+> > bpf_setsockopt(TCP_CONGESTION, "itself"), it will trigger this loop:
+> >
+> > .init => bpf_setsockopt(tcp_cc) => .init => bpf_setsockopt(tcp_cc) ...
+> > ... => .init => bpf_setsockopt(tcp_cc).
+> >
+> > It was prevented by the prog->active counter before but the prog->active
+> > detection cannot be used in struct_ops as explained in the earlier
+> > patch of the set.
+> >
+> > In this patch, the second bpf_setsockopt(tcp_cc) is not allowed
+> > in order to break the loop.  This is done by using a bit of
+> > an existing 1 byte hole in tcp_sock to check if there is
+> > on-going bpf_setsockopt(TCP_CONGESTION) in this tcp_sock.
+> >
+> > Note that this essentially limits only the first '.init' can
+> > call bpf_setsockopt(TCP_CONGESTION) to pick a fallback cc (eg. peer
+> > does not support ECN) and the second '.init' cannot fallback to
+> > another cc.  This applies even the second
+> > bpf_setsockopt(TCP_CONGESTION) will not cause a loop.
+> >
+> > Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
+> > ---
+> >  include/linux/tcp.h |  6 ++++++
+> >  net/core/filter.c   | 28 +++++++++++++++++++++++++++-
+> >  2 files changed, 33 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/include/linux/tcp.h b/include/linux/tcp.h
+> > index a9fbe22732c3..3bdf687e2fb3 100644
+> > --- a/include/linux/tcp.h
+> > +++ b/include/linux/tcp.h
+> > @@ -388,6 +388,12 @@ struct tcp_sock {
+> >         u8      bpf_sock_ops_cb_flags;  /* Control calling BPF programs
+> >                                          * values defined in uapi/linux/tcp.h
+> >                                          */
+> > +       u8      bpf_chg_cc_inprogress:1; /* In the middle of
+> > +                                         * bpf_setsockopt(TCP_CONGESTION),
+> > +                                         * it is to avoid the bpf_tcp_cc->init()
+> > +                                         * to recur itself by calling
+> > +                                         * bpf_setsockopt(TCP_CONGESTION, "itself").
+> > +                                         */
+> >  #define BPF_SOCK_OPS_TEST_FLAG(TP, ARG) (TP->bpf_sock_ops_cb_flags & ARG)
+> >  #else
+> >  #define BPF_SOCK_OPS_TEST_FLAG(TP, ARG) 0
+> > diff --git a/net/core/filter.c b/net/core/filter.c
+> > index 96f2f7a65e65..ac4c45c02da5 100644
+> > --- a/net/core/filter.c
+> > +++ b/net/core/filter.c
+> > @@ -5105,6 +5105,9 @@ static int bpf_sol_tcp_setsockopt(struct sock *sk, int optname,
+> >  static int sol_tcp_sockopt_congestion(struct sock *sk, char *optval,
+> >                                       int *optlen, bool getopt)
+> >  {
+> > +       struct tcp_sock *tp;
+> > +       int ret;
+> > +
+> >         if (*optlen < 2)
+> >                 return -EINVAL;
+> >
+> > @@ -5125,8 +5128,31 @@ static int sol_tcp_sockopt_congestion(struct sock *sk, char *optval,
+> >         if (*optlen >= sizeof("cdg") - 1 && !strncmp("cdg", optval, *optlen))
+> >                 return -ENOTSUPP;
+> >
+> > -       return do_tcp_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
+> > +       /* It stops this looping
+> > +        *
+> > +        * .init => bpf_setsockopt(tcp_cc) => .init =>
+> > +        * bpf_setsockopt(tcp_cc)" => .init => ....
+> > +        *
+> > +        * The second bpf_setsockopt(tcp_cc) is not allowed
+> > +        * in order to break the loop when both .init
+> > +        * are the same bpf prog.
+> > +        *
+> > +        * This applies even the second bpf_setsockopt(tcp_cc)
+> > +        * does not cause a loop.  This limits only the first
+> > +        * '.init' can call bpf_setsockopt(TCP_CONGESTION) to
+> > +        * pick a fallback cc (eg. peer does not support ECN)
+> > +        * and the second '.init' cannot fallback to
+> > +        * another.
+> > +        */
+> > +       tp = tcp_sk(sk);
+> > +       if (tp->bpf_chg_cc_inprogress)
+> > +               return -EBUSY;
+> > +
+> > +       tp->bpf_chg_cc_inprogress = 1;
+> > +       ret = do_tcp_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
+> >                                 KERNEL_SOCKPTR(optval), *optlen);
+> > +       tp->bpf_chg_cc_inprogress = 0;
+> > +       return ret;
+>
+> Eric,
+>
+> Could you please ack this patch?
