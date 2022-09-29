@@ -2,289 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D94675EEF11
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:32:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1ED065EEF19
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:33:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235026AbiI2HcZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 03:32:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56058 "EHLO
+        id S235249AbiI2Hdb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 03:33:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234900AbiI2HcX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:32:23 -0400
-Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D426137937
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:32:21 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id 82FE75C00DA;
-        Thu, 29 Sep 2022 03:32:19 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Thu, 29 Sep 2022 03:32:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; t=1664436739; x=1664523139; bh=6ml2NsvR8Ahwy9CSVAbn3mTEO3IC
-        rcfBv35oArsnigs=; b=KRBTPachGymKtHKLYK8PoPSQiLSCX3WnEqK0AHtC5MTr
-        sTXmstyIlleY/o5aeWIzagcZrTL7Sal+btbWPhTdAr8rdyaDpk28JykSZmDe3fVI
-        lWplj7CxT2v41ZxsM1YtkiY8W59cqT9R5Do6T5nvZ+dV+mV9OCbp2OboLFLm+zUd
-        Bt3LUhRpWsRvoP+D/I8u6/3/hi4Mn7elC//m0YmNr15bgqS77B7tbPMpTJm+lJGq
-        VBQ7XDCGoU5YwkzXg2Yh/yWIU8BdOb7tSpZrFwdM+w018nIeqrKdGQfy/3tecNiS
-        Rv7RLtY74B4Li5+M6OtetiKCP4khZkCad4Zy1VN7uA==
-X-ME-Sender: <xms:A0o1Yy_P159VaOO2ohUH3jEd-Hdf6-rVRoU3yuIAwJjkaUGxjZKU2g>
-    <xme:A0o1YyuNUfzlHLXxCJYJC9QAxbK3BUIJdFUsZLqU5Ajbm85lp5AXUniwicsAr5tXK
-    oVJKLuWEXs8wZQ>
-X-ME-Received: <xmr:A0o1Y4AVkhgYSBbJJabeHkKnzfwi3szdBLkKa6h0-AARWeINCUKS6bQY8n6wAMD8DJ3gLsX9ta8Ts7P1x_-82q9wpY4>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfeegledguddvudcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkugho
-    ucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrg
-    htthgvrhhnpeehhfdtjedviefffeduuddvffegteeiieeguefgudffvdfftdefheeijedt
-    hfejkeenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivg
-    eptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhr
-    gh
-X-ME-Proxy: <xmx:A0o1Y6eTZ8wlmckxk9taRGQpQsWLg-RLeoh6cuJh8TtbZTX1bfA7eA>
-    <xmx:A0o1Y3Os-UIZ4JhdirM8nlSBtTtlP487ZA-XcL6MkIgH-sr2FAba-g>
-    <xmx:A0o1Y0lbKApQXBoe4ZZneDHb7pYw4nSCA5T37hlRUF-mYjKBZ7nT-A>
-    <xmx:A0o1Yy1k6hVn5a-20vqvav_Yr8sc5zNgxyt7rdhoIGqPHUioKPbZuA>
-Feedback-ID: i494840e7:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 29 Sep 2022 03:32:18 -0400 (EDT)
-Date:   Thu, 29 Sep 2022 10:32:14 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vikas Gupta <vikas.gupta@broadcom.com>
-Cc:     Michael Chan <michael.chan@broadcom.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, gospo@broadcom.com
-Subject: Re: [PATCH net-next 5/6] bnxt_en: add .get_module_eeprom_by_page()
- support
-Message-ID: <YzVJ/vKJugoz15yV@shredder>
-References: <1664326724-1415-1-git-send-email-michael.chan@broadcom.com>
- <1664326724-1415-6-git-send-email-michael.chan@broadcom.com>
- <YzQVDXDTRnM/Oz4z@shredder>
- <CAHLZf_s3en3Lgjxu6u1ii254vow-0CkHWk0j3jhBzY2MHCcLUw@mail.gmail.com>
+        with ESMTP id S235003AbiI2Hda (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:33:30 -0400
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E426413793C
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:33:28 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R621e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=hengqi@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VQz0zcf_1664436804;
+Received: from 30.221.148.4(mailfrom:hengqi@linux.alibaba.com fp:SMTPD_---0VQz0zcf_1664436804)
+          by smtp.aliyun-inc.com;
+          Thu, 29 Sep 2022 15:33:26 +0800
+Message-ID: <c1831b89-c896-80c3-7258-01bcf2defcbc@linux.alibaba.com>
+Date:   Thu, 29 Sep 2022 15:33:23 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHLZf_s3en3Lgjxu6u1ii254vow-0CkHWk0j3jhBzY2MHCcLUw@mail.gmail.com>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_PASS,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:106.0)
+ Gecko/20100101 Thunderbird/106.0
+Subject: Re: [PATCH net] veth: Avoid drop packets when xdp_redirect performs
+To:     Paolo Abeni <pabeni@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vu?= =?UTF-8?Q?sen?= 
+        <toke@redhat.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+References: <1664267413-75518-1-git-send-email-hengqi@linux.alibaba.com>
+ <87wn9proty.fsf@toke.dk>
+ <f760701a-fb9d-11e5-f555-ebcf773922c3@linux.alibaba.com>
+ <87v8p7r1f2.fsf@toke.dk>
+ <189b8159-c05f-1730-93f3-365999755f72@linux.alibaba.com>
+ <567d3635f6e7969c4e1a0e4bc759556c472d1dff.camel@redhat.com>
+From:   Heng Qi <hengqi@linux.alibaba.com>
+In-Reply-To: <567d3635f6e7969c4e1a0e4bc759556c472d1dff.camel@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-12.2 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 29, 2022 at 11:05:15AM +0530, Vikas Gupta wrote:
-> On Wed, Sep 28, 2022 at 3:04 PM Ido Schimmel <idosch@idosch.org> wrote:
-> >
-> > On Tue, Sep 27, 2022 at 08:58:43PM -0400, Michael Chan wrote:
-> > > diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-> > > index 0209f7caf490..03b1a0301a46 100644
-> > > --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-> > > +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-> > > @@ -2207,6 +2207,15 @@ struct bnxt {
-> > >  #define SFF_MODULE_ID_QSFP                   0xc
-> > >  #define SFF_MODULE_ID_QSFP_PLUS                      0xd
-> > >  #define SFF_MODULE_ID_QSFP28                 0x11
-> > > +#define SFF_MODULE_ID_QSFP_DD                        0x18
-> > > +#define SFF_MODULE_ID_DSFP                   0x1b
 
-Does not seem to be used.
 
-> > > +#define SFF_MODULE_ID_QSFP_PLUS_CMIS         0x1e
-> > > +
-> > > +#define BNXT_SFF_MODULE_BANK_SUPPORTED(module_id)    \
-> > > +     ((module_id) == SFF_MODULE_ID_QSFP_DD ||        \
-> > > +      (module_id) == SFF_MODULE_ID_QSFP28 ||         \
+在 2022/9/29 下午2:57, Paolo Abeni 写道:
+> Hello,
+>
+> On Thu, 2022-09-29 at 10:50 +0800, Heng Qi wrote:
+>> 在 2022/9/28 下午10:58, Toke Høiland-Jørgensen 写道:
+>>> Heng Qi <hengqi@linux.alibaba.com> writes:
+>>>
+>>>> 在 2022/9/27 下午8:20, Toke Høiland-Jørgensen 写道:
+>>>>> Heng Qi <hengqi@linux.alibaba.com> writes:
+>>>>>
+>>>>>> In the current processing logic, when xdp_redirect occurs, it transmits
+>>>>>> the xdp frame based on napi.
+>>>>>>
+>>>>>> If napi of the peer veth is not ready, the veth will drop the packets.
+>>>>>> This doesn't meet our expectations.
+>>>>> Erm, why don't you just enable NAPI? Loading an XDP program is not
+>>>>> needed these days, you can just enable GRO on both peers...
+>>>> In general, we don't expect veth to drop packets when it doesn't mount
+>>>> the xdp program or otherwise, because this is not as expected.
+>>> Well, did you consider that maybe your expectation is wrong? ;)
+>> For users who don't know what other conditions are required for the readiness of napi,
+>> all they can observe is why the packets cannot be sent to the peer veth, which is also
+>> the problem we encountered in the actual case scenarios.
+>>
+>>
+>>>>>> In this context, if napi is not ready, we convert the xdp frame to a skb,
+>>>>>> and then use veth_xmit() to deliver it to the peer veth.
+>>>>>>
+>>>>>> Like the following case:
+>>>>>> Even if veth1's napi cannot be used, the packet redirected from the NIC
+>>>>>> will be transmitted to veth1 successfully:
+>>>>>>
+>>>>>> NIC   ->   veth0----veth1
+>>>>>>     |                   |
+>>>>>> (XDP)             (no XDP)
+>>>>>>
+>>>>>> Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
+>>>>>> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+>>>>>> ---
+>>>>>>     drivers/net/veth.c | 36 +++++++++++++++++++++++++++++++++++-
+>>>>>>     1 file changed, 35 insertions(+), 1 deletion(-)
+>>>>>>
+>>>>>> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+>>>>>> index 466da01..e1f5561 100644
+>>>>>> --- a/drivers/net/veth.c
+>>>>>> +++ b/drivers/net/veth.c
+>>>>>> @@ -469,8 +469,42 @@ static int veth_xdp_xmit(struct net_device *dev, int n,
+>>>>>>     	/* The napi pointer is set if NAPI is enabled, which ensures that
+>>>>>>     	 * xdp_ring is initialized on receive side and the peer device is up.
+>>>>>>     	 */
+>>>>>> -	if (!rcu_access_pointer(rq->napi))
+>>>>>> +	if (!rcu_access_pointer(rq->napi)) {
+>>>>>> +		for (i = 0; i < n; i++) {
+>>>>>> +			struct xdp_frame *xdpf = frames[i];
+>>>>>> +			struct netdev_queue *txq = NULL;
+>>>>>> +			struct sk_buff *skb;
+>>>>>> +			int queue_mapping;
+>>>>>> +			u16 mac_len;
+>>>>>> +
+>>>>>> +			skb = xdp_build_skb_from_frame(xdpf, dev);
+>>>>>> +			if (unlikely(!skb)) {
+>>>>>> +				ret = nxmit;
+>>>>>> +				goto out;
+>>>>>> +			}
+>>>>>> +
+>>>>>> +			/* We need to restore ETH header, because it is pulled
+>>>>>> +			 * in eth_type_trans.
+>>>>>> +			 */
+>>>>>> +			mac_len = skb->data - skb_mac_header(skb);
+>>>>>> +			skb_push(skb, mac_len);
+>>>>>> +
+>>>>>> +			nxmit++;
+>>>>>> +
+>>>>>> +			queue_mapping = skb_get_queue_mapping(skb);
+>>>>>> +			txq = netdev_get_tx_queue(dev, netdev_cap_txqueue(dev, queue_mapping));
+>>>>>> +			__netif_tx_lock(txq, smp_processor_id());
+>>>>>> +			if (unlikely(veth_xmit(skb, dev) != NETDEV_TX_OK)) {
+>>>>>> +				__netif_tx_unlock(txq);
+>>>>>> +				ret = nxmit;
+>>>>>> +				goto out;
+>>>>>> +			}
+>>>>>> +			__netif_tx_unlock(txq);
+>>>>> Locking and unlocking the txq repeatedly for each packet? Yikes! Did you
+>>>>> measure the performance overhead of this?
+>>>> Yes, there are indeed some optimizations that can be done here,
+>>>> like putting the lock outside the loop.
+>>>> But in __dev_queue_xmit(), where each packet sent is also protected by a lock.
+>>> ...which is another reason why this is a bad idea: it's going to perform
+>>> terribly, which means we'll just end up with users wondering why their
+>>> XDP performance is terrible and we're going to have to tell them to turn
+>>> on GRO anyway. So why not do this from the beginning?
+>>>
+>>> If you want to change the default, flipping GRO to be on by default is a
+>>> better solution IMO. I don't actually recall why we didn't do that when
+>>> the support was added, but maybe Paolo remembers?
+> I preferred to avoid changing the default behavior. Additionally, the
+> veth GRO stage needs some tuning to really be able to  aggregate the
+> packets (e.g. napi thread or gro_flush_timeout > 0)
+>
+>> As I said above in the real case, the user's concern is not why the performance
+>> of xdp becomes bad, but why the data packets are not received.
+> Well, that arguably tells the end-user there is something wrong in
+> their setup. On the flip side, having a functionally working setup with
+> horrible performances would likely lead the users (perhaps not yours,
+> surely others) in very wrong directions (from "XDP is slow" to "the
+> problem is in the application")...
+>
+>> The default number of veth queues is not num_possible_cpus(). When GRO is enabled
+>> by default, if there is only one veth queue, but multiple CPUs read and write at the
+>> same time, the efficiency of napi is actually very low due to the existence of
+>> production locks and races. On the contrary, the default veth_xmit() each cpu has
+>> its own unique queue, and this way of sending and receiving packets is also efficient.
+>>
+> This patch adds a bit of complexity and it looks completely avoidable
+> with some configuration - you could enable GRO and set the number of
+> queues to num_possible_cpus().
+>
+> I agree with Toke, you should explain the end-users that their
+> expecations are wrong, and guide them towards a better setup.
+>
+> Thanks!
 
-Did you mean DSFP here? QSFP28 is SFF-8636, not CMIS.
+Well, one thing I want to know is that in the following scenario,
 
-> > > +      (module_id) == SFF_MODULE_ID_QSFP_PLUS_CMIS)
-> >
-> > I suggest dropping this check unless you have a good reason to keep it.
-> > There are other modules out there that implement CMIS (e.g., OSFP) and
-> > given bnxt implements ethtool_ops::get_module_eeprom_by_page, it should
-> > be able to support them without kernel changes.
-> >
-> > See:
-> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=970adfb76095fa719778d70a6b86030d2feb88dd
-> >
-> > The problem there was more severe because the driver returned '-EINVAL'
-> > instead of '-EOPNOTSUPP'.
-> >
-> We want to fallback on get_module_eeprom callback in case modules do
-> not implement CMIS and we pass the bank parameter accordingly to the
-> firmware.
+NIC   ->   veth0----veth1
+  |           |        |
+(XDP)      (XDP)    (no XDP)
 
-ethtool_ops::get_module_eeprom_by_page has nothing to do with CMIS. It
-is a generic operation to retrieve module EEPROM data based on a "3D
-address": bank, page and offset.
+xdp_redirect is triggered,
+and NIC and veth0 are both mounted with the xdp program, then why our default behavior
+is to drop packets that should be sent to veth1 instead of when veth0 is mounted with xdp
+program, the napi ring of veth1 is opened by default at the same time? Why not make it like
+this, but we must configure a simple xdp program on veth1?
 
-The driving motivation behind it was CMIS modules, but it must be
-implemented in a way that it can retrieve information from modules that
-implement a different management interface such as SFF-8636.
+Thanks.
 
-Let's say that tomorrow a user asks to retrieve pages 20h-21h from a
-QSFP module that implements SFF-8636, how will you support it? You can't
-extend the legacy ethtool::get_module_eeprom operation and your current
-implementation of ethtool_ops::get_module_eeprom_by_page has an
-artificial limitation to support only CMIS modules.
-
-By making sure that your implementation is generic as possible you will
-be able to support all possible requests and will not need to
-continuously patch the kernel (and users will not need to continuously
-upgrade).
-
-> 
-> > > +
-> > >  #define SFF8636_FLATMEM_OFFSET                       0x2
-> > >  #define SFF8636_FLATMEM_MASK                 0x4
-> > >  #define SFF8636_OPT_PAGES_OFFSET             0xc3
-> > > diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-> > > index 379afa670494..2b18af95aacb 100644
-> > > --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-> > > +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-> > > @@ -3363,6 +3363,60 @@ static int bnxt_get_module_eeprom(struct net_device *dev,
-> > >       return 0;
-> > >  }
-> > >
-> > > +static int bnxt_get_module_eeprom_by_page(struct net_device *dev,
-> > > +                                       const struct ethtool_module_eeprom *page_data,
-> > > +                                       struct netlink_ext_ack *extack)
-> > > +{
-> > > +     struct bnxt *bp = netdev_priv(dev);
-> > > +     u16 length = page_data->length;
-> > > +     u8 *data = page_data->data;
-> > > +     u8 page = page_data->page;
-> > > +     u8 bank = page_data->bank;
-> > > +     u16 bytes_copied = 0;
-> > > +     u8 module_id;
-> > > +     int rc;
-> > > +
-> > > +     /* Return -EOPNOTSUPP to fallback on .get_module_eeprom */
-> > > +     if (!(bp->phy_flags & BNXT_PHY_FL_BANK_SEL))
-> > > +             return -EOPNOTSUPP;
-> >
-> > Maybe:
-> >
-> > if (bank && !(bp->phy_flags & BNXT_PHY_FL_BANK_SEL)) {
-> >         // extack
-> >         return -EINVAL;
-> > }
-> 
-> BNXT_PHY_FL_BANK_SEL is a firmware capability to handle CMIS/bank
-> parameters. It does not tell whether the hooked module is CMIS
-> compliant.
-> I think EOPNOTSUPP is an appropriate choice here.
-
-See my comment above. This operation needs to be able to retrieve EEPROM
-data from non-CMIS modules as well.
-
-> 
-> 
-> >
-> > This should allow you to get rid of patch #2.
-> 
-> I am not sure how we can get rid of patch #2. Patch #2 handles non CMIS modules.
-> Can you please elaborate more.
-
-All the complicated parsing performed in patch #2 is already performed
-in ethtool(8) that knows to request the available pages. The kernel
-will first try to retrieve these pages using
-ethtool_ops::get_module_eeprom_by_page and fallback to
-ethtool::get_module_eeprom in case of '-EOPNOTSUPP'.
-
-By adjusting your implementation of
-ethtool_ops::get_module_eeprom_by_page to handle non-CMIS modules you
-will be able to avoid extending the legacy operation with all this
-complex parsing.
-
-> 
-> >
-> > > +
-> > > +     rc = bnxt_module_status_check(bp);
-> > > +     if (rc)
-> > > +             return rc;
-> >
-> > You can add extack here. I see that this function always returns
-> > '-EOPNOTSUPP' in case of errors, even when it does not make sense to
-> > fallback to ethtool_ops::get_module_eeprom.
-> Maybe -EIO can be used in one of these cases. I`ll check.
-> 
-> >
-> > > +
-> > > +     rc = bnxt_read_sfp_module_eeprom_info(bp, I2C_DEV_ADDR_A0, 0, 0, false,
-> > > +                                           0, 1, &module_id);
-> > > +     if (rc)
-> > > +             return rc;
-> > > +
-> > > +     if (!BNXT_SFF_MODULE_BANK_SUPPORTED(module_id))
-> > > +             return -EOPNOTSUPP;
-> >
-> > I believe this hunk can be removed given the first comment.
->   As I mentioned above we need this here to fallback.
-
-No need to fallback, simply avoid making this operation CMIS specific.
-
-> 
-> Thanks,
-> Vikas
-> >
-> > > +
-> > > +     while (length > 0) {
-> > > +             u16 chunk = ETH_MODULE_EEPROM_PAGE_LEN;
-> > > +             int rc;
-> > > +
-> > > +             /* Do not access more than required */
-> > > +             if (length < ETH_MODULE_EEPROM_PAGE_LEN)
-> > > +                     chunk = length;
-> > > +
-> > > +             rc = bnxt_read_sfp_module_eeprom_info(bp,
-> > > +                                                   I2C_DEV_ADDR_A0,
-> >
-> > page_data->i2c_address
-> >
-> > > +                                                   page, bank,
-> > > +                                                   true, page_data->offset,
-> > > +                                                   chunk, data);
-> > > +             if (rc)
-> >
-> > You can add a meaningful extack here according to the return code.
-> >
-> > > +                     return rc;
-> > > +
-> > > +             data += chunk;
-> > > +             length -= chunk;
-> > > +             bytes_copied += chunk;
-> > > +             page++;
-> > > +     }
-> >
-> > I'm not sure why the loop is required? It seems
-> > bnxt_read_sfp_module_eeprom_info() is able to read
-> > 'ETH_MODULE_EEPROM_PAGE_LEN' bytes at once, which is the maximum:
-> >
-> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/net/ethtool/eeprom.c#n234
-> >
-> > > +
-> > > +     return bytes_copied;
-> > > +}
-> > > +
-> > >  static int bnxt_nway_reset(struct net_device *dev)
-> > >  {
-> > >       int rc = 0;
-> > > @@ -4172,6 +4226,7 @@ const struct ethtool_ops bnxt_ethtool_ops = {
-> > >       .set_eee                = bnxt_set_eee,
-> > >       .get_module_info        = bnxt_get_module_info,
-> > >       .get_module_eeprom      = bnxt_get_module_eeprom,
-> > > +     .get_module_eeprom_by_page = bnxt_get_module_eeprom_by_page,
-> > >       .nway_reset             = bnxt_nway_reset,
-> > >       .set_phys_id            = bnxt_set_phys_id,
-> > >       .self_test              = bnxt_self_test,
-> > > --
-> > > 2.18.1
-> > >
-
+>
+> Paolo
 
