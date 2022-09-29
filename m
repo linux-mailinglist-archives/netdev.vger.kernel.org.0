@@ -2,167 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 38D855EEE8C
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:13:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D70F55EEEB0
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:17:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235080AbiI2HNJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 03:13:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33402 "EHLO
+        id S235034AbiI2HRR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 03:17:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235033AbiI2HNI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:13:08 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E09161323EB
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:13:02 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id z2so748694edi.1
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:13:02 -0700 (PDT)
+        with ESMTP id S235039AbiI2HRP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:17:15 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22109115F75
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:17:13 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id k10so925382lfm.4
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:17:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date;
-        bh=LSRZBCTmT0hL5snj+rYRmgRi1ZmoMU67Lr450OsGSWo=;
-        b=8DPTl93vctSpYxcEPLkbc/lAT0wdrye4YLGpPYsp8w6VrFhfP0z9PG4rjqXLyrFC/R
-         YnHFLfvlBWHHyHCFri0g9T4znBo+kSdUHiobtYStUWe84hmHICUIjU6QEr86lmiGyAtB
-         SsK35YeR1tSc0gWEax4OTZgSi0BMXpg702pJTcyWV1p/1Yapz5BZIzyRamh4aZTComn/
-         4iWF/dpGOqj7U2oknBABM4j8dytv4lXkH659oHOaoY5L85eGM9QcurH7NfhRclGVylG6
-         8Qcfvp9qxjYNVcrqCO6Po3hA8tSb4Mssq6yMOeXMc0SMa5uzd2NOWtTJq2ULhy8z0wCR
-         xJeg==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=VV14SN0wq48/xruHCsu1VKPTfNLR6vqna8T/ci26yZ4=;
+        b=InfhY58eTl/Cv7rMpEYc1moFqD3wqvorMh+S24CCzRrdabIne33Oj1aH2ZEThb16yS
+         HPO+0v57kGlh/QCU01lOPa+W0lh1ACQ0x23VeTOcjCDV1T9sy8LXwKat6uyhTH+zDNVI
+         ZloslMv9UEocJOgIP6HFtBskJkRvZRaQ3/M5RVreuHjQDYm+3C2uy2oadVlkbDCAX6s2
+         sQYkWlmkFlepWunQejGBbrYRdBkevTefWSg3QaN6k3wxQo1PFrxaQfFh7NhH+RW5eqkW
+         xmSI/IlLcW/omwTyvdIxYj+gKLUDgAjIqk7avSTNyp5eBYhp4c4Gkl1yqc0eFwaw884w
+         +zmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date;
-        bh=LSRZBCTmT0hL5snj+rYRmgRi1ZmoMU67Lr450OsGSWo=;
-        b=yIj0Kca/eslrSOzFjsQUIvEtX3dNc8XYRPDfub9nGZBZQ70ryaTn54GIyz+0xAwvRC
-         sEReD0ovGybgxsMHkYK/X8UHTDVbk5NCat4sXrSSn3J8I81duHWRzOs7+Wk1Lp7YueNQ
-         6aWLcK6NTPTb7GEKSgLwqgyauUk4Jqfwjd7SCs2W5uDFWQgVY5nrkeoXcJwNEn0WjfXt
-         TTRrqfXxC3btbtulGMICHCQ98c1LxaFDlK1yMKVklCWQc/EE1EgXKO4NFRPDlAHQ+wPB
-         iit8Ulayr6Pvn7hRMlvXnRbWbP0WZ1USxeoNuA60LJ04Xox195GRhHtVgjFyzatjCLOg
-         k6mg==
-X-Gm-Message-State: ACrzQf29Wx/BIIprcZwoigwUhjFizagsNHxK22Ne/eXTr0+glKV/WuZZ
-        pgC97mnX7b9DTsTRIaYtTnqmrA==
-X-Google-Smtp-Source: AMsMyM7XPSrfwzHFox0czvQ4aCnORhQ6GUP0JQlNW9t2t7mnZmZJ9pwtE4YqC8LCsGmim1hWOm/vHw==
-X-Received: by 2002:a05:6402:3215:b0:451:4ce5:d7b8 with SMTP id g21-20020a056402321500b004514ce5d7b8mr1835592eda.223.1664435581314;
-        Thu, 29 Sep 2022 00:13:01 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id x2-20020a1709060ee200b0073dde62713asm3531818eji.89.2022.09.29.00.13.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Sep 2022 00:13:00 -0700 (PDT)
-Date:   Thu, 29 Sep 2022 09:12:59 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     "Wilczynski, Michal" <michal.wilczynski@intel.com>
-Cc:     Edward Cree <ecree.xilinx@gmail.com>, netdev@vger.kernel.org,
-        alexandr.lobakin@intel.com, dchumak@nvidia.com, maximmi@nvidia.com,
-        simon.horman@corigine.com, jacob.e.keller@intel.com,
-        jesse.brandeburg@intel.com, przemyslaw.kitszel@intel.com
-Subject: Re: [RFC PATCH net-next v4 2/6] devlink: Extend devlink-rate api
- with queues and new parameters
-Message-ID: <YzVFez0OXL98hyBt@nanopsycho>
-References: <20220915134239.1935604-1-michal.wilczynski@intel.com>
- <20220915134239.1935604-3-michal.wilczynski@intel.com>
- <f17166c7-312d-ac13-989e-b064cddcb49e@gmail.com>
- <401d70a9-5f6d-ed46-117b-de0b82a5f52c@intel.com>
- <YzGSPMx2yZT/W6Gw@nanopsycho>
- <0a201dd1-55bb-925f-ee95-75bb9451bb8c@intel.com>
+        bh=VV14SN0wq48/xruHCsu1VKPTfNLR6vqna8T/ci26yZ4=;
+        b=BbPO49ljEIqO55MWhpJv6rJrPrnNKnjK9/8Dgxlm3RzmFARunqp1CXJ5Wghebte0mn
+         s82zLys6nVHH+NM7CTHvKvZmf8bKpH/zha4D2EOfe044yB22TfyvKNeAXPmCM/AG6KMv
+         wumCTB7LjZ4JEJKaEQtxzSyADza+Ev0VsdwVB5r/EL/p9JxOHl18rXOAeBpJeDp0owSZ
+         tt+HSy8DB3jyAdkkAAd0OR1P9lF9WyeAj3ib6IUQaWGjlltxQSOowyPp/kioO0TF3H5U
+         21Ln58tjFAwsTxQ8Xez6VIy3S3a0ySQIM2TZCWbQ5U7GB/0HJxk015bvo5xI3ZxtyFf3
+         n8GA==
+X-Gm-Message-State: ACrzQf1sPo2C3MEjK22f80WrI1GnSdaCqF2dtmXr4fWkhzttamyZzAFV
+        ZnSDhi1ChbtW8AFwXxbS06HkWg==
+X-Google-Smtp-Source: AMsMyM4Ve26xtYplTF/bm8INXv398LABxanI2DUP5ewhXXX6KeYoVcNAI8xF4H5umOsN0/OliXb4Ww==
+X-Received: by 2002:ac2:4f03:0:b0:496:d15:e70c with SMTP id k3-20020ac24f03000000b004960d15e70cmr717138lfr.102.1664435831518;
+        Thu, 29 Sep 2022 00:17:11 -0700 (PDT)
+Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id 9-20020ac25f09000000b004977e865220sm701306lfq.55.2022.09.29.00.17.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 29 Sep 2022 00:17:11 -0700 (PDT)
+Message-ID: <288e0496-7411-138f-4494-20a38d1195c1@linaro.org>
+Date:   Thu, 29 Sep 2022 09:17:10 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <0a201dd1-55bb-925f-ee95-75bb9451bb8c@intel.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.0
+Subject: Re: [PATCH v2 1/4] dt-bindings: net: snps,dwmac: Update
+ interrupt-names
+Content-Language: en-US
+To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+        devicetree@vger.kernel.org
+Cc:     linux-arm-msm@vger.kernel.org, agross@kernel.org,
+        bhupesh.linux@gmail.com, linux-kernel@vger.kernel.org,
+        robh+dt@kernel.org, netdev@vger.kernel.org,
+        Bjorn Andersson <andersson@kernel.org>,
+        Rob Herring <robh@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+        David Miller <davem@davemloft.net>
+References: <20220929060405.2445745-1-bhupesh.sharma@linaro.org>
+ <20220929060405.2445745-2-bhupesh.sharma@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220929060405.2445745-2-bhupesh.sharma@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Sep 28, 2022 at 01:47:03PM CEST, michal.wilczynski@intel.com wrote:
->
->
->On 9/26/2022 1:51 PM, Jiri Pirko wrote:
->> Thu, Sep 15, 2022 at 08:41:52PM CEST, michal.wilczynski@intel.com wrote:
->> > 
->> > On 9/15/2022 5:31 PM, Edward Cree wrote:
->> > > On 15/09/2022 14:42, Michal Wilczynski wrote:
->> > > > Currently devlink-rate only have two types of objects: nodes and leafs.
->> > > > There is a need to extend this interface to account for a third type of
->> > > > scheduling elements - queues. In our use case customer is sending
->> > > > different types of traffic on each queue, which requires an ability to
->> > > > assign rate parameters to individual queues.
->> > > Is there a use-case for this queue scheduling in the absence of a netdevice?
->> > > If not, then I don't see how this belongs in devlink; the configuration
->> > >    should instead be done in two parts: devlink-rate to schedule between
->> > >    different netdevices (e.g. VFs) and tc qdiscs (or some other netdev-level
->> > >    API) to schedule different queues within each single netdevice.
->> > > Please explain why this existing separation does not support your use-case.
->> > > 
->> > > Also I would like to see some documentation as part of this patch.  It looks
->> > >    like there's no kernel document for devlink-rate unlike most other devlink
->> > >    objects; perhaps you could add one?
->> > > 
->> > > -ed
->> > Hi,
->> > Previously we discussed adding queues to devlink-rate in this thread:
->> > https://lore.kernel.org/netdev/20220704114513.2958937-1-michal.wilczynski@intel.com/T/#u
->> > In our use case we are trying to find a way to expose hardware Tx scheduler
->> > tree that is defined
->> > per port to user. Obviously if the tree is defined per physical port, all the
->> > scheduling nodes will reside
->> > on the same tree.
->> > 
->> > Our customer is trying to send different types of traffic that require
->> > different QoS levels on the same
->> Do I understand that correctly, that you are assigning traffic to queues
->> in VM, and you rate the queues on hypervisor? Is that the goal?
->
->Yes.
-
-Why do you have this mismatch? If forces the hypervisor and VM admin to
-somehow sync upon the configuration. That does not sound correct to me.
+On 29/09/2022 08:04, Bhupesh Sharma wrote:
+> As commit fc191af1bb0d ("net: stmmac: platform: Fix misleading
+> interrupt error msg") noted, not every stmmac based platform
+> makes use of the 'eth_wake_irq' or 'eth_lpi' interrupts.
+> 
+> So, update the 'interrupt-names' inside 'snps,dwmac' YAML
 
 
->
->> 
->> 
->> > VM, but on a different queues. This requires completely different rate setups
->> > for that queue - in the
->> > implementation that you're mentioning we wouldn't be able to arbitrarily
->> > reassign the queue to any node.
->> > Those queues would still need to share a single parent - their netdev. This
->> So that replies to Edward's note about having the queues maintained
->> within the single netdev/vport, correct?
->
-> Correct ;)
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Okay. So you don't really need any kind of sharing devlink might be able
-to provide.
+Best regards,
+Krzysztof
 
-From what you say and how I see this, it's clear. You should handle the
-per-queue shaping on the VM, on netdevice level, most probably by
-offloading some of the TC qdisc.
-
-
->
->> 
->> 
->> > wouldn't allow us to fully take
->> > advantage of the HQoS and would introduce arbitrary limitations.
->> > 
->> > Also I would think that since there is only one vendor implementing this
->> > particular devlink-rate API, there is
->> > some room for flexibility.
->> > 
->> > Regarding the documentation,  sure. I just wanted to get all the feedback
->> >from the mailing list and arrive at the final
->> > solution before writing the docs.
->> > 
->> > BTW, I'm going to be out of office tomorrow, so will respond in this thread
->> > on Monday.
->> > BR,
->> > Michał
->> > 
->> > 
->
