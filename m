@@ -2,133 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EEB95EEE60
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:05:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B9FC5EEE55
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:04:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234542AbiI2HFK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 03:05:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34750 "EHLO
+        id S234352AbiI2HEf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 03:04:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235025AbiI2HEq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:04:46 -0400
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2289EE16;
-        Thu, 29 Sep 2022 00:04:39 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1664435077;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VvIKaWyrD++47cob00FLRKjCXfixbyYJJB5mAod9z80=;
-        b=kvMJ5uJ+vqDnrPMsi6q9nrtcFEEMXbNUE8hOsYzvwoksSgl9RC/087RhIyhbtIb7GPqeCY
-        +a+RQsVAKWdoMB9V0tmvbRXMt2w/P+nMtI6QumgALGxH+FOW1626DNjkr2RNzAQ00UP5h3
-        weTATx8C7OWYYYVEi64kTpNcs1gl9b4=
-From:   Martin KaFai Lau <martin.lau@linux.dev>
-To:     ' ' <bpf@vger.kernel.org>, ' ' <netdev@vger.kernel.org>
-Cc:     'Alexei Starovoitov ' <ast@kernel.org>,
-        'Andrii Nakryiko ' <andrii@kernel.org>,
-        'Daniel Borkmann ' <daniel@iogearbox.net>,
-        'David Miller ' <davem@davemloft.net>,
-        'Jakub Kicinski ' <kuba@kernel.org>,
-        'Eric Dumazet ' <edumazet@google.com>,
-        'Paolo Abeni ' <pabeni@redhat.com>, ' ' <kernel-team@fb.com>
-Subject: [PATCH v3 bpf-next 5/5] selftests/bpf: Check -EBUSY for the recurred bpf_setsockopt(TCP_CONGESTION)
-Date:   Thu, 29 Sep 2022 00:04:07 -0700
-Message-Id: <20220929070407.965581-6-martin.lau@linux.dev>
-In-Reply-To: <20220929070407.965581-1-martin.lau@linux.dev>
-References: <20220929070407.965581-1-martin.lau@linux.dev>
+        with ESMTP id S235019AbiI2HEZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:04:25 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC6DE131987
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:04:11 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id lh5so831021ejb.10
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:04:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=d5cWEHp4FPuxbC+ChRAeF1CHpCFEFDxD9mJ2sCg0o1o=;
+        b=BSX3+UNKE2j8Vx8FhBUoATgQVelpLxurXIQoKnXjD4Dhl+j2RN7lZTVff/j+75TdgI
+         GzTtowDpuComrCo/BfsfI1FO575+mtMhGS1iuluM6Ojdo5nhYHo/kNObCtHWQHQ5udim
+         5SxiewkfmawNsRI5JHkqqJoo7H/igPlPjfcFS7AMaDFrTpZI1vxzn6+n22CHaLqXKE9t
+         BBazstTZIkZxOwogiJG6c47DrJ5jjPnE1f0h3FmPY+6bN3CNiyhop8qiDvlMQWivEGOI
+         ZTHFlKx6Cls+c1qmSUMcEZStRLSWP/fiFMkyO3EEWZsa6jp+/au0vxDV6E2w36HMELiF
+         fbyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=d5cWEHp4FPuxbC+ChRAeF1CHpCFEFDxD9mJ2sCg0o1o=;
+        b=QVyGcAl4+kSH2PjU8fk9gzcdMnIeFu4wHeIUxqgJXvY1GG/otGoJmXSSqPtxNpZbeQ
+         2b7RQyvOMlGZWkqpCHXZJ4w2kOe8rHH5K0NAkwj4R8e7e1TUFUYmw5MkVJcSdInZL/aZ
+         GpqbR2OPLuuEvGunRRbLfJlP0Ao1fZCIrJnR0K5vEKz/7LU4wAy4/B/v72R/CXXuuyNK
+         xAxoU/FgGUwFUSFyhqV5sYEEa/4gyLpw2MadvwpMjIH5h82xvykStmG2RlsB+3lI0MJb
+         6K598rF/g0d2MAQmN+I/IIxinzhgagEDPkQfXsVnHM9kysT/N6m1HHIcUIVvZQ7X9nlT
+         n/Tw==
+X-Gm-Message-State: ACrzQf0rkpuIxVkFXBXvjnosgdKknq+oTt+9pNQtMTft2DN/u6hejMsC
+        iCxyXts+KE3isI54X+Tkd80aoA==
+X-Google-Smtp-Source: AMsMyM5fa9Xa2tUqRXJuhcYA/+6KKcB+gt0Efh89vHUkgZ04yC+uPJmiFnj8CY6StWd+mRw+Zb4mhw==
+X-Received: by 2002:a17:907:162a:b0:783:d11a:a553 with SMTP id hb42-20020a170907162a00b00783d11aa553mr1498203ejc.482.1664435049707;
+        Thu, 29 Sep 2022 00:04:09 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id l16-20020aa7d950000000b00456c9619ed8sm2105725eds.1.2022.09.29.00.04.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Sep 2022 00:04:08 -0700 (PDT)
+Date:   Thu, 29 Sep 2022 09:04:07 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Michael Walle <michael@walle.cc>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        kuba@kernel.org
+Subject: Re: PHY firmware update method
+Message-ID: <YzVDZ4qrBnANEUpm@nanopsycho>
+References: <bf53b9b3660f992d53fe8d68ea29124a@walle.cc>
+ <YzQ96z73MneBIfvZ@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YzQ96z73MneBIfvZ@lunn.ch>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Martin KaFai Lau <martin.lau@kernel.org>
+Wed, Sep 28, 2022 at 02:28:27PM CEST, andrew@lunn.ch wrote:
+>On Wed, Sep 28, 2022 at 01:27:13PM +0200, Michael Walle wrote:
+>> Hi,
+>> 
+>> There are PHYs whose firmware can be updated. Usually, they have
+>> an internal ROM and you can add patches on top of that, or there
+>> might be an external flash device which can have a more recent
+>> firmware version installed which can be programmed in-place
+>> through the PHY.
+>> 
+>> The firmware update for a PHY is usually quite simple, but there
+>> seems to be no infrastructure in the kernel for that. There is the
+>> ETHTOOL_FLASHDEV ioctl for upgrading the firmware of a NIC it seems.
+>> Other than that I haven't found anything. And before going in a wrong
+>> directions I'd like to hear your thoughts on how to do it. I.e. how
+>> should the interface to the userspace look like.
+>> 
+>> Also I think the PHY should be taken offline, similar to the cable
+>> test.
+>
+>I've seen a few different ways of doing this.
+>
+>One is to load the firmware from disk every boot using
+>request_firmware(). Then parse the header, determine if it is newer
+>than what the PHY is already using, and if so, upgrade the PHY. If you
+>do this during probe, it should be transparent, no user interaction
+>required.
+>
+>I've also seen the FLASH made available as just another mtd
+>device. User space can then write to it, and then do a {cold} boot.
+>
+>devlink has become the standard way for upgrading firmware on complex
+>network devices, like NICs and TOR switches. That is probably a good
+>solution here. The problem is, what devlink instance to use. Only a
+>few MAC drivers are using devlink, so it is unlikely the MAC driver
+>the PHY is attached to has a devlink instance. Do we create a devlink
+>instance for the PHY?
 
-This patch changes the bpf_dctcp test to ensure the recurred
-bpf_setsockopt(TCP_CONGESTION) returns -EBUSY.
+Ccing Jakub. I don't think it is good idea to create a devlink instance
+per-PHY. However, on the other hand, we have a devlink instance per
+devlink linecard now. The devlink linecard however has devlink
+representation, which PHY does not have.
 
-Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
----
- .../selftests/bpf/prog_tests/bpf_tcp_ca.c     |  4 +++
- tools/testing/selftests/bpf/progs/bpf_dctcp.c | 25 +++++++++++++------
- 2 files changed, 21 insertions(+), 8 deletions(-)
+Perhaps now is the time to dust-off my devlink components implementation
+and use it for PHYs? IDF. Jakub, WDYT.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c b/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
-index 2959a52ced06..e980188d4124 100644
---- a/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
-+++ b/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
-@@ -290,6 +290,10 @@ static void test_dctcp_fallback(void)
- 		goto done;
- 	ASSERT_STREQ(dctcp_skel->bss->cc_res, "cubic", "cc_res");
- 	ASSERT_EQ(dctcp_skel->bss->tcp_cdg_res, -ENOTSUPP, "tcp_cdg_res");
-+	/* All setsockopt(TCP_CONGESTION) in the recurred
-+	 * bpf_dctcp->init() should fail with -EBUSY.
-+	 */
-+	ASSERT_EQ(dctcp_skel->bss->ebusy_cnt, 3, "ebusy_cnt");
- 
- 	err = getsockopt(srv_fd, SOL_TCP, TCP_CONGESTION, srv_cc, &cc_len);
- 	if (!ASSERT_OK(err, "getsockopt(srv_fd, TCP_CONGESTION)"))
-diff --git a/tools/testing/selftests/bpf/progs/bpf_dctcp.c b/tools/testing/selftests/bpf/progs/bpf_dctcp.c
-index 9573be6122be..460682759aed 100644
---- a/tools/testing/selftests/bpf/progs/bpf_dctcp.c
-+++ b/tools/testing/selftests/bpf/progs/bpf_dctcp.c
-@@ -11,6 +11,7 @@
- #include <linux/types.h>
- #include <linux/stddef.h>
- #include <linux/tcp.h>
-+#include <errno.h>
- #include <bpf/bpf_helpers.h>
- #include <bpf/bpf_tracing.h>
- #include "bpf_tcp_helpers.h"
-@@ -23,6 +24,7 @@ const char tcp_cdg[] = "cdg";
- char cc_res[TCP_CA_NAME_MAX];
- int tcp_cdg_res = 0;
- int stg_result = 0;
-+int ebusy_cnt = 0;
- 
- struct {
- 	__uint(type, BPF_MAP_TYPE_SK_STORAGE);
-@@ -64,16 +66,23 @@ void BPF_PROG(dctcp_init, struct sock *sk)
- 
- 	if (!(tp->ecn_flags & TCP_ECN_OK) && fallback[0]) {
- 		/* Switch to fallback */
--		bpf_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
--			       (void *)fallback, sizeof(fallback));
--		/* Switch back to myself which the bpf trampoline
--		 * stopped calling dctcp_init recursively.
-+		if (bpf_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
-+				   (void *)fallback, sizeof(fallback)) == -EBUSY)
-+			ebusy_cnt++;
-+
-+		/* Switch back to myself and the recurred dctcp_init()
-+		 * will get -EBUSY for all bpf_setsockopt(TCP_CONGESTION),
-+		 * except the last "cdg" one.
- 		 */
--		bpf_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
--			       (void *)bpf_dctcp, sizeof(bpf_dctcp));
-+		if (bpf_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
-+				   (void *)bpf_dctcp, sizeof(bpf_dctcp)) == -EBUSY)
-+			ebusy_cnt++;
-+
- 		/* Switch back to fallback */
--		bpf_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
--			       (void *)fallback, sizeof(fallback));
-+		if (bpf_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
-+				   (void *)fallback, sizeof(fallback)) == -EBUSY)
-+			ebusy_cnt++;
-+
- 		/* Expecting -ENOTSUPP for tcp_cdg_res */
- 		tcp_cdg_res = bpf_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
- 					     (void *)tcp_cdg, sizeof(tcp_cdg));
--- 
-2.30.2
 
+>
+>You might want to talk to Jiri about this.
+>
+>The other issue is actually getting the firmware. Many manufactures
+>seem reluctant to allow redistribution as required by linux-firmware.
+>There is no point adding firmware upgrade if you cannot redistribute
+>the firmware.
+>
+>    Andrew
