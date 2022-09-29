@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BCCA5EF772
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 16:26:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C51E5EF777
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 16:26:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235001AbiI2OZd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 10:25:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54810 "EHLO
+        id S235406AbiI2OZe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 10:25:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235612AbiI2OZM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 10:25:12 -0400
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B153C422F3
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 07:25:07 -0700 (PDT)
-Received: by mail-qt1-x82b.google.com with SMTP id gb14so850633qtb.3
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 07:25:07 -0700 (PDT)
+        with ESMTP id S235226AbiI2OZR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 10:25:17 -0400
+Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0AB148EBB
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 07:25:09 -0700 (PDT)
+Received: by mail-qt1-x829.google.com with SMTP id a20so837969qtw.10
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 07:25:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=MbXwZU7apkd1QB2b4k6ms/VmPivS0Z+iUzBbJkVDcW4=;
-        b=EDVaV/tZrk9Abmo2IzoZccbfX8BfKY/r7L6lymDLwc6xS2iYJCDOLPWgYKNOcw3tOJ
-         JMzscRg8CI/q+xMVLqClP7HcbnbEULPWduDEZyRSKyRvZSPESN/ghbfd9iYPrIXJ/UuF
-         JGAeLt/dDGGyUfmUoGaoYCo1nQIjj3izfbRqnN6Ktae4J2jyC+WlWJz4cg5E5tRRRMSc
-         AeNWUKmbClrbHWecMB9bdRphRrn6rJ0Oq5nXIcdFqOZRKuBG6bzWb4tCWMn3Tf+0yImE
-         bLbwqhT/im0loLTTGGKR8iTCDjQKuyT8qyKsSJU23BM/AL2dJ429OtEhhQIJ+71YvNki
-         e7fQ==
+        bh=GtHYf3iVdc+f30XeS9Wq+jWVJNM2b9jhjVfLKOLClTo=;
+        b=YnKSwXpUmQ8UUSddlydFw7KFJyVDQFNUlp15V6kDKoUop1Kh135GLHMS9AgZreMCQT
+         E+cVVe0hsswA2orm4JNjD5rt+I1n823bISq0p69zvhrntRMZQJfaJkrWE8v+L7co1510
+         bshQRGEitsv2eKdFoCtLxENMxyFWA+qZ6OIwZllD4yaba6C0QLi1TvtM/60tUi4j0ud1
+         en/KvWWksfZAx/dm7rQMSZUFtKhU9tzQ3amBuGABBDMprxRviNYhZodS0Jw2QlhS1SsT
+         EFZuM5kNuNZA1Os6bYze8zxYmTiOp773WW3M98sFmEAgoCG+LblD1YclnDW/vggsKRik
+         86ZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=MbXwZU7apkd1QB2b4k6ms/VmPivS0Z+iUzBbJkVDcW4=;
-        b=AGCbgH0uU8w6hcqsYWrMc+Rrk1bGTfTrdrnZaOL2i6nM/rQU/0rjI71nQQ5ddydKqc
-         9Coede8JhuN45TXocWLRxXayosb+DD6uAgTHzWxh+dTZN+AZaOxvdJi9WPaDLchLd5J4
-         gkqJ9UJAWe96m7ai6P8fbC0aqtj45/HBilxxWnd9dJxMxSNQLBauMMTecSKWKZWQlABJ
-         /F2ucxpz32HIslcd067chdAp9uOtKUxY9wibYrlbs2rIRCKomfuqGjxatqNy9BxvLmal
-         J/l5bJ5DoHID7ClsDTmyynylFsuJMG9bxHbAyPG9QfXzVNfJkOWk7nO8n95MmzW9es3B
-         p7Ew==
-X-Gm-Message-State: ACrzQf3q9/5TZHGBJEdJc6yO7GBecWXKgnSYeop8HndTvt/Ccv7SX6AK
-        wy+6okZTVeo0HYXqFwIlddw=
-X-Google-Smtp-Source: AMsMyM46pgZWDvC2J78ZhAayyhdLUNUVXonjqe064cxUvOLU1/CefXuBi0eMCJI8kqSMFqyla3XICQ==
-X-Received: by 2002:ac8:59d0:0:b0:35b:b656:cb93 with SMTP id f16-20020ac859d0000000b0035bb656cb93mr2543458qtf.636.1664461506126;
-        Thu, 29 Sep 2022 07:25:06 -0700 (PDT)
+        bh=GtHYf3iVdc+f30XeS9Wq+jWVJNM2b9jhjVfLKOLClTo=;
+        b=gBv42ausSKPR7jyqmpnnETjYNfFNv9kg8F67uoK4+d40c/wY/XbpT5WjQy/9Mz1/rp
+         VqD1zYRzGpug2Niua0omBjW5z5SDebB2uHmarnGMrExo3tr+St8rY+raoP5c+NrGaZ9u
+         FHhPwFuG3TCACVWVO+mBlaHVp+ZxvIX6WnI+2pbOrUTDw1SdxpNSmMgtI8NQfy7h2BSY
+         1hsM5jkJngpJe6pJaECpK4c+1l9e0ijKsvqAgFhD0f4+xQkO1y0r79WvRVv28PXP0HHV
+         G2jZJaGn/gA9YJksrg45pE39n4PIDCamaC2Vu+YJTRGLr+lC3iiDQQJcM1lWjA09S4fL
+         9Uxw==
+X-Gm-Message-State: ACrzQf2z0tKnGDpDg2kYNwOSYXLYWb3+A0ZflMBhLGNEWKzo/Q5nRsvE
+        qtSsHQnYznnUSjrChi83h4Vp8FaU3ow=
+X-Google-Smtp-Source: AMsMyM4+/CsIyrPsbTxUY5ZmOZEYfFUWP9k6D9jPqLj/lI3RRPE74ETYZoLW+sONAoPykm20ywtipA==
+X-Received: by 2002:a05:622a:10c:b0:35d:4d0f:fead with SMTP id u12-20020a05622a010c00b0035d4d0ffeadmr2583401qtw.325.1664461508206;
+        Thu, 29 Sep 2022 07:25:08 -0700 (PDT)
 Received: from mubashirq.c.googlers.com.com (74.206.145.34.bc.googleusercontent.com. [34.145.206.74])
-        by smtp.gmail.com with ESMTPSA id z21-20020ac87f95000000b00342f8984348sm5889952qtj.87.2022.09.29.07.25.05
+        by smtp.gmail.com with ESMTPSA id z21-20020ac87f95000000b00342f8984348sm5889952qtj.87.2022.09.29.07.25.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Sep 2022 07:25:05 -0700 (PDT)
+        Thu, 29 Sep 2022 07:25:07 -0700 (PDT)
 From:   Mubashir Adnan Qureshi <mubashirmaq@gmail.com>
 To:     David Miller <davem@davemloft.net>
 Cc:     netdev@vger.kernel.org,
@@ -55,9 +55,9 @@ Cc:     netdev@vger.kernel.org,
         Yuchung Cheng <ycheng@google.com>,
         Neal Cardwell <ncardwell@google.com>,
         Eric Dumazet <edumazet@google.com>
-Subject: [PATCH net-next 1/5] tcp: add sysctls for TCP PLB parameters
-Date:   Thu, 29 Sep 2022 14:24:43 +0000
-Message-Id: <20220929142447.3821638-2-mubashirmaq@gmail.com>
+Subject: [PATCH net-next 2/5] tcp: add PLB functionality for TCP
+Date:   Thu, 29 Sep 2022 14:24:44 +0000
+Message-Id: <20220929142447.3821638-3-mubashirmaq@gmail.com>
 X-Mailer: git-send-email 2.37.3.998.g577e59143f-goog
 In-Reply-To: <20220929142447.3821638-1-mubashirmaq@gmail.com>
 References: <20220929142447.3821638-1-mubashirmaq@gmail.com>
@@ -75,212 +75,192 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Mubashir Adnan Qureshi <mubashirq@google.com>
 
-PLB (Protective Load Balancing) is a host based mechanism for load
-balancing across switch links. It leverages congestion signals(e.g. ECN)
-from transport layer to randomly change the path of the connection
-experiencing congestion. PLB changes the path of the connection by
-changing the outgoing IPv6 flow label for IPv6 connections (implemented
-in Linux by calling sk_rethink_txhash()). Because of this implementation
-mechanism, PLB can currently only work for IPv6 traffic. For more
-information, see the SIGCOMM 2022 paper:
-  https://doi.org/10.1145/3544216.3544226
+Congestion control algorithms track PLB state and cause the connection
+to trigger a path change when either of the 2 conditions is satisfied:
 
-This commit adds new sysctl knobs and sets their default values for
-TCP PLB.
+- No packets are in flight and (# consecutive congested rounds >=
+  sysctl_tcp_plb_idle_rehash_rounds)
+- (# consecutive congested rounds >= sysctl_tcp_plb_rehash_rounds)
+
+A round (RTT) is marked as congested when congestion signal
+(ECN ce_ratio) over an RTT is greater than sysctl_tcp_plb_cong_thresh.
+In the event of RTO, PLB (via tcp_write_timeout()) triggers a path
+change and disables congestion-triggered path changes for random time
+between (sysctl_tcp_plb_suspend_rto_sec, 2*sysctl_tcp_plb_suspend_rto_sec)
+to avoid hopping onto the "connectivity blackhole". RTO-triggered
+path changes can still happen during this cool-off period.
 
 Signed-off-by: Mubashir Adnan Qureshi <mubashirq@google.com>
 Signed-off-by: Yuchung Cheng <ycheng@google.com>
 Signed-off-by: Neal Cardwell <ncardwell@google.com>
 Reviewed-by: Eric Dumazet <edumazet@google.com>
 ---
- Documentation/networking/ip-sysctl.rst | 75 ++++++++++++++++++++++++++
- include/net/netns/ipv4.h               |  5 ++
- net/ipv4/sysctl_net_ipv4.c             | 43 +++++++++++++++
- net/ipv4/tcp_ipv4.c                    |  8 +++
- 4 files changed, 131 insertions(+)
+ include/net/tcp.h  |  28 +++++++++++++
+ net/ipv4/Makefile  |   2 +-
+ net/ipv4/tcp_plb.c | 102 +++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 131 insertions(+), 1 deletion(-)
+ create mode 100644 net/ipv4/tcp_plb.c
 
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index e7b3fa7bb3f7..815efc89ad73 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -1069,6 +1069,81 @@ tcp_child_ehash_entries - INTEGER
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 27e8d378c70a..c50af63addea 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -2135,6 +2135,34 @@ extern void tcp_rack_advance(struct tcp_sock *tp, u8 sacked, u32 end_seq,
+ extern void tcp_rack_reo_timeout(struct sock *sk);
+ extern void tcp_rack_update_reo_wnd(struct sock *sk, struct rate_sample *rs);
  
- 	Default: 0
- 
-+tcp_plb_enabled - BOOLEAN
-+	If set and the underlying congestion control (e.g. DCTCP) supports
-+	and enables PLB feature, TCP PLB (Protective Load Balancing) is
-+	enabled. PLB is described in the following paper:
-+	https://doi.org/10.1145/3544216.3544226. Based on PLB parameters,
-+	upon sensing sustained congestion, TCP triggers a change in
-+	flow label field for outgoing IPv6 packets. A change in flow label
-+	field potentially changes the path of outgoing packets for switches
-+	that use ECMP/WCMP for routing.
++/* tcp_plb.c */
 +
-+	PLB changes socket txhash which results in a change in IPv6 Flow Label
-+	field, and currently no-op for IPv4 headers. It is possible
-+	to apply PLB for IPv4 with other network header fields (e.g. TCP
-+	or IPv4 options) or using encapsulation where outer header is used
-+	by switches to determine next hop. In either case, further host
-+	and switch side changes will be needed.
++/*
++ * Scaling factor for fractions in PLB. For example, tcp_plb_update_state
++ * expects cong_ratio which represents fraction of traffic that experienced
++ * congestion over a single RTT. In order to avoid floating point operations,
++ * this fraction should be mapped to (1 << TCP_PLB_SCALE) and passed in.
++ */
++#define TCP_PLB_SCALE 8
 +
-+	When set, PLB assumes that congestion signal (e.g. ECN) is made
-+	available and used by congestion control module to estimate a
-+	congestion measure (e.g. ce_ratio). PLB needs a congestion measure to
-+	make repathing decisions.
++/* State for PLB (Protective Load Balancing) for a single TCP connection. */
++struct tcp_plb_state {
++	u8	consec_cong_rounds:5, /* consecutive congested rounds */
++		unused:3;
++	u32	pause_until; /* jiffies32 when PLB can resume rerouting */
++};
 +
-+	Default: FALSE
++static inline void tcp_plb_init(const struct sock *sk,
++				struct tcp_plb_state *plb)
++{
++	plb->consec_cong_rounds = 0;
++	plb->pause_until = 0;
++}
++void tcp_plb_update_state(const struct sock *sk, struct tcp_plb_state *plb,
++			  const int cong_ratio);
++void tcp_plb_check_rehash(struct sock *sk, struct tcp_plb_state *plb);
++void tcp_plb_update_state_upon_rto(struct sock *sk, struct tcp_plb_state *plb);
 +
-+tcp_plb_idle_rehash_rounds - INTEGER
-+	Number of consecutive congested rounds (RTT) seen after which
-+	a rehash can be performed, given there are no packets in flight.
-+	This is referred to as M in PLB paper:
-+	https://doi.org/10.1145/3544216.3544226.
+ /* At how many usecs into the future should the RTO fire? */
+ static inline s64 tcp_rto_delta_us(const struct sock *sk)
+ {
+diff --git a/net/ipv4/Makefile b/net/ipv4/Makefile
+index bbdd9c44f14e..af7d2cf490fb 100644
+--- a/net/ipv4/Makefile
++++ b/net/ipv4/Makefile
+@@ -10,7 +10,7 @@ obj-y     := route.o inetpeer.o protocol.o \
+ 	     tcp.o tcp_input.o tcp_output.o tcp_timer.o tcp_ipv4.o \
+ 	     tcp_minisocks.o tcp_cong.o tcp_metrics.o tcp_fastopen.o \
+ 	     tcp_rate.o tcp_recovery.o tcp_ulp.o \
+-	     tcp_offload.o datagram.o raw.o udp.o udplite.o \
++	     tcp_offload.o tcp_plb.o datagram.o raw.o udp.o udplite.o \
+ 	     udp_offload.o arp.o icmp.o devinet.o af_inet.o igmp.o \
+ 	     fib_frontend.o fib_semantics.o fib_trie.o fib_notifier.o \
+ 	     inet_fragment.o ping.o ip_tunnel_core.o gre_offload.o \
+diff --git a/net/ipv4/tcp_plb.c b/net/ipv4/tcp_plb.c
+new file mode 100644
+index 000000000000..26ffc5a45f53
+--- /dev/null
++++ b/net/ipv4/tcp_plb.c
+@@ -0,0 +1,102 @@
++/* Protective Load Balancing (PLB)
++ *
++ * PLB was designed to reduce link load imbalance across datacenter
++ * switches. PLB is a host-based optimization; it leverages congestion
++ * signals from the transport layer to randomly change the path of the
++ * connection experiencing sustained congestion. PLB prefers to repath
++ * after idle periods to minimize packet reordering. It repaths by
++ * changing the IPv6 Flow Label on the packets of a connection, which
++ * datacenter switches include as part of ECMP/WCMP hashing.
++ *
++ * PLB is described in detail in:
++ *
++ *	Mubashir Adnan Qureshi, Yuchung Cheng, Qianwen Yin, Qiaobin Fu,
++ *	Gautam Kumar, Masoud Moshref, Junhua Yan, Van Jacobson,
++ *	David Wetherall,Abdul Kabbani:
++ *	"PLB: Congestion Signals are Simple and Effective for
++ *	 Network Load Balancing"
++ *	In ACM SIGCOMM 2022, Amsterdam Netherlands.
++ *
++ */
 +
-+	Possible Values: 0 - 31
++#include <net/tcp.h>
 +
-+	Default: 3
++/* Called once per round-trip to update PLB state for a connection. */
++void tcp_plb_update_state(const struct sock *sk, struct tcp_plb_state *plb,
++			  const int cong_ratio)
++{
++	struct net *net = sock_net(sk);
 +
-+tcp_plb_rehash_rounds - INTEGER
-+	Number of consecutive congested rounds (RTT) seen after which
-+	a forced rehash can be performed. Be careful when setting this
-+	parameter, as a small value increases the risk of retransmissions.
-+	This is referred to as N in PLB paper:
-+	https://doi.org/10.1145/3544216.3544226.
++	if (!READ_ONCE(net->ipv4.sysctl_tcp_plb_enabled))
++		return;
 +
-+	Possible Values: 0 - 31
++	if (cong_ratio >= 0) {
++		if (cong_ratio < READ_ONCE(net->ipv4.sysctl_tcp_plb_cong_thresh))
++			plb->consec_cong_rounds = 0;
++		else if (plb->consec_cong_rounds <
++			 READ_ONCE(net->ipv4.sysctl_tcp_plb_rehash_rounds))
++			plb->consec_cong_rounds++;
++	}
++}
++EXPORT_SYMBOL_GPL(tcp_plb_update_state);
 +
-+	Default: 12
++/* Check whether recent congestion has been persistent enough to warrant
++ * a load balancing decision that switches the connection to another path.
++ */
++void tcp_plb_check_rehash(struct sock *sk, struct tcp_plb_state *plb)
++{
++	struct net *net = sock_net(sk);
++	bool can_idle_rehash, can_force_rehash;
++	u32 max_suspend;
 +
-+tcp_plb_suspend_rto_sec - INTEGER
-+	Time, in seconds, to suspend PLB in event of an RTO. In order to avoid
-+	having PLB repath onto a connectivity "black hole", after an RTO a TCP
-+	connection suspends PLB repathing for a random duration between 1x and
-+	2x of this parameter. Randomness is added to avoid concurrent rehashing
-+	of multiple TCP connections. This should be set corresponding to the
-+	amount of time it takes to repair a failed link.
++	if (!READ_ONCE(net->ipv4.sysctl_tcp_plb_enabled))
++		return;
 +
-+	Possible Values: 0 - 255
++	/* Note that tcp_jiffies32 can wrap; we detect wraps by checking for
++	 * cases where the max suspension end is before the actual suspension
++	 * end. We clear pause_until to 0 to indicate there is no recent
++	 * RTO event that constrains PLB rehashing.
++	 */
++	max_suspend = 2 * READ_ONCE(net->ipv4.sysctl_tcp_plb_suspend_rto_sec) * HZ;
++	if (plb->pause_until &&
++	    (!before(tcp_jiffies32, plb->pause_until) ||
++	     before(tcp_jiffies32 + max_suspend, plb->pause_until)))
++		plb->pause_until = 0;
 +
-+	Default: 60
++	can_idle_rehash = READ_ONCE(net->ipv4.sysctl_tcp_plb_idle_rehash_rounds) &&
++			  !tcp_sk(sk)->packets_out &&
++			  plb->consec_cong_rounds >=
++			  READ_ONCE(net->ipv4.sysctl_tcp_plb_idle_rehash_rounds);
++	can_force_rehash = plb->consec_cong_rounds >=
++			   READ_ONCE(net->ipv4.sysctl_tcp_plb_rehash_rounds);
 +
-+tcp_plb_cong_thresh - INTEGER
-+	Fraction of packets marked with congestion over a round (RTT) to
-+	tag that round as congested. This is referred to as K in the PLB paper:
-+	https://doi.org/10.1145/3544216.3544226.
++	if (!plb->pause_until && (can_idle_rehash || can_force_rehash)) {
++		sk_rethink_txhash(sk);
++		plb->consec_cong_rounds = 0;
++	}
++}
++EXPORT_SYMBOL_GPL(tcp_plb_check_rehash);
 +
-+	The 0-1 fraction range is mapped to 0-256 range to avoid floating
-+	point operations. For example, 128 means that if at least 50% of
-+	the packets in a round were marked as congested then the round
-+	will be tagged as congested.
++/* Upon RTO, disallow load balancing for a while, to avoid having load
++ * balancing decisions switch traffic to a black-holed path that was
++ * previously avoided with a sk_rethink_txhash() call at RTO time.
++ */
++void tcp_plb_update_state_upon_rto(struct sock *sk, struct tcp_plb_state *plb)
++{
++	struct net *net = sock_net(sk);
++	u32 pause;
 +
-+	Setting threshold to 0 means that PLB repaths every RTT regardless
-+	of congestion. This is not intended behavior for PLB and should be
-+	used only for experimentation purpose.
++	if (!READ_ONCE(net->ipv4.sysctl_tcp_plb_enabled))
++		return;
 +
-+	Possible Values: 0 - 256
++	pause = READ_ONCE(net->ipv4.sysctl_tcp_plb_suspend_rto_sec) * HZ;
++	pause += prandom_u32_max(pause);
++	plb->pause_until = tcp_jiffies32 + pause;
 +
-+	Default: 128
-+
- UDP variables
- =============
- 
-diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
-index 1b8004679445..25f90bba4889 100644
---- a/include/net/netns/ipv4.h
-+++ b/include/net/netns/ipv4.h
-@@ -183,6 +183,11 @@ struct netns_ipv4 {
- 	unsigned long tfo_active_disable_stamp;
- 	u32 tcp_challenge_timestamp;
- 	u32 tcp_challenge_count;
-+	u8 sysctl_tcp_plb_enabled;
-+	u8 sysctl_tcp_plb_idle_rehash_rounds;
-+	u8 sysctl_tcp_plb_rehash_rounds;
-+	u8 sysctl_tcp_plb_suspend_rto_sec;
-+	int sysctl_tcp_plb_cong_thresh;
- 
- 	int sysctl_udp_wmem_min;
- 	int sysctl_udp_rmem_min;
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index 9b8a6db7a66b..0af28cedd071 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -40,6 +40,8 @@ static int one_day_secs = 24 * 3600;
- static u32 fib_multipath_hash_fields_all_mask __maybe_unused =
- 	FIB_MULTIPATH_HASH_FIELD_ALL_MASK;
- static unsigned int tcp_child_ehash_entries_max = 16 * 1024 * 1024;
-+static int tcp_plb_max_rounds = 31;
-+static int tcp_plb_max_cong_thresh = 256;
- 
- /* obsolete */
- static int sysctl_tcp_low_latency __read_mostly;
-@@ -1384,6 +1386,47 @@ static struct ctl_table ipv4_net_table[] = {
- 		.extra1		= SYSCTL_ZERO,
- 		.extra2		= SYSCTL_TWO,
- 	},
-+	{
-+		.procname       = "tcp_plb_enabled",
-+		.data           = &init_net.ipv4.sysctl_tcp_plb_enabled,
-+		.maxlen         = sizeof(u8),
-+		.mode           = 0644,
-+		.proc_handler   = proc_dou8vec_minmax,
-+		.extra1         = SYSCTL_ZERO,
-+		.extra2         = SYSCTL_ONE,
-+	},
-+	{
-+		.procname       = "tcp_plb_idle_rehash_rounds",
-+		.data           = &init_net.ipv4.sysctl_tcp_plb_idle_rehash_rounds,
-+		.maxlen         = sizeof(u8),
-+		.mode           = 0644,
-+		.proc_handler   = proc_dou8vec_minmax,
-+		.extra2		= &tcp_plb_max_rounds,
-+	},
-+	{
-+		.procname       = "tcp_plb_rehash_rounds",
-+		.data           = &init_net.ipv4.sysctl_tcp_plb_rehash_rounds,
-+		.maxlen         = sizeof(u8),
-+		.mode           = 0644,
-+		.proc_handler   = proc_dou8vec_minmax,
-+		.extra2         = &tcp_plb_max_rounds,
-+	},
-+	{
-+		.procname       = "tcp_plb_suspend_rto_sec",
-+		.data           = &init_net.ipv4.sysctl_tcp_plb_suspend_rto_sec,
-+		.maxlen         = sizeof(u8),
-+		.mode           = 0644,
-+		.proc_handler   = proc_dou8vec_minmax,
-+	},
-+	{
-+		.procname       = "tcp_plb_cong_thresh",
-+		.data           = &init_net.ipv4.sysctl_tcp_plb_cong_thresh,
-+		.maxlen         = sizeof(int),
-+		.mode           = 0644,
-+		.proc_handler   = proc_dointvec_minmax,
-+		.extra1         = SYSCTL_ZERO,
-+		.extra2         = &tcp_plb_max_cong_thresh,
-+	},
- 	{ }
- };
- 
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 6376ad915765..3b23410a3aea 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -3216,6 +3216,14 @@ static int __net_init tcp_sk_init(struct net *net)
- 	net->ipv4.sysctl_tcp_fastopen_blackhole_timeout = 0;
- 	atomic_set(&net->ipv4.tfo_active_disable_times, 0);
- 
-+	/* Set default values for PLB */
-+	net->ipv4.sysctl_tcp_plb_enabled = 0; /* Disabled by default */
-+	net->ipv4.sysctl_tcp_plb_idle_rehash_rounds = 3;
-+	net->ipv4.sysctl_tcp_plb_rehash_rounds = 12;
-+	net->ipv4.sysctl_tcp_plb_suspend_rto_sec = 60;
-+	/* Default congestion threshold for PLB to mark a round is 50% */
-+	net->ipv4.sysctl_tcp_plb_cong_thresh = (1 << TCP_PLB_SCALE) / 2;
-+
- 	/* Reno is always built in */
- 	if (!net_eq(net, &init_net) &&
- 	    bpf_try_module_get(init_net.ipv4.tcp_congestion_control,
++	/* Reset PLB state upon RTO, since an RTO causes a sk_rethink_txhash() call
++	 * that may switch this connection to a path with completely different
++	 * congestion characteristics.
++	 */
++	plb->consec_cong_rounds = 0;
++}
++EXPORT_SYMBOL_GPL(tcp_plb_update_state_upon_rto);
 -- 
 2.37.3.998.g577e59143f-goog
 
