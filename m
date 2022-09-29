@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C08705EF237
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 11:37:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48F295EF23C
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 11:37:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235679AbiI2Jgm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 05:36:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48330 "EHLO
+        id S234223AbiI2Jhi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 05:37:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235497AbiI2JgD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 05:36:03 -0400
-Received: from smtpbguseast3.qq.com (smtpbguseast3.qq.com [54.243.244.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F44959251
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 02:35:42 -0700 (PDT)
-X-QQ-mid: bizesmtp88t1664444136tr9qe67j
+        with ESMTP id S235111AbiI2JhI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 05:37:08 -0400
+Received: from smtpbguseast2.qq.com (smtpbguseast2.qq.com [54.204.34.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B503C65828
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 02:36:48 -0700 (PDT)
+X-QQ-mid: bizesmtp88t1664444139tr9n5383
 Received: from wxdbg.localdomain.com ( [183.129.236.74])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 29 Sep 2022 17:35:36 +0800 (CST)
+        id ; Thu, 29 Sep 2022 17:35:39 +0800 (CST)
 X-QQ-SSF: 01400000000000G0U000000A0000000
-X-QQ-FEAT: oGOjGSUjcuDiL9oP+ReGU9KJMzi22EYQAdBZVhJ6NB5V+wbZpIcSgLzfXxa7S
-        w0J8gDuLxzoKEckFfoIiW2Kmia4drFnP6RAYohLPhNMmlUitO7n9BtBMKvQukWyH3bE/ttS
-        QGasijcgPc1abHG21rZeED5HaNpudTr9xqpDR/NscBPrP9xxlzA+laOc0VvNzVIXfehcRAC
-        aKqOWPKfy7YCd+8RtLVzdsrJlG31YDUhTqHKMIhKivJ8+polimgHZ3uNQ4uaznsaHikvrhO
-        EUcydew3bNa5urjMYbpq1Pj1sV177FCAlAOiioYgZxWp2GYvr23yHyeMI8+FgelYpmVRJr3
-        b+7Tgz3e09MPyilbTTDgkiUFKk+Ikb4kMez1gjrddsjn1UHhiDDeIBZ6sgFkB2/mGGhaCCR
-        N2iRLdOcfUU=
+X-QQ-FEAT: 1poecK7e7zXrn60fDCCMomBlFwOpu0KAuH0/0YEqIFCoVSlXVlxupSujJ4JQm
+        nCqq1nnpyHBdYTNzlBE5YxHw+ZOqst/alXdq5aAHytnTZDV1AWcXcoydPir/RuBJ9e86DTi
+        s69RqksfZInXBdg+3vL6Q2qwXpzw2tdRqTuGG0cSq3wbri1RSZUMm6Fp875oFoSIWpB1Wxt
+        ejB2zrz4vYUloFch72yUCvp3ZaDL+OgmMsYTnu4qwj6NsmCkb4jJsd1ZsFLFsUoPvDaV/HN
+        bhRQjZuhWJVrgtIEvfoD9oSDncRfx6MEBw2YIo50mT60ZECNyfbjvjNkYlqzglw4q5+udDK
+        93l2udnV3vx8tsS3Glb4t+nnSnDTyrfvpyvGlNbbs106N5q/5JEErWDdkg/ugc3ad6/akZX
+        4sSUP2Of7ys=
 X-QQ-GoodBg: 2
 From:   Jiawen Wu <jiawenwu@trustnetic.com>
 To:     netdev@vger.kernel.org
 Cc:     mengyuanlou@net-swift.com, Jiawen Wu <jiawenwu@trustnetic.com>
-Subject: [PATCH net-next v3 2/3] net: txgbe: Reset hardware
-Date:   Thu, 29 Sep 2022 17:34:23 +0800
-Message-Id: <20220929093424.2104246-3-jiawenwu@trustnetic.com>
+Subject: [PATCH net-next v3 3/3] net: txgbe: Set MAC address and register netdev
+Date:   Thu, 29 Sep 2022 17:34:24 +0800
+Message-Id: <20220929093424.2104246-4-jiawenwu@trustnetic.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220929093424.2104246-1-jiawenwu@trustnetic.com>
 References: <20220929093424.2104246-1-jiawenwu@trustnetic.com>
@@ -49,615 +49,980 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Reset and initialize the hardware by configuring the MAC layer.
+Add MAC address related operations, and register netdev.
 
 Signed-off-by: Jiawen Wu <jiawenwu@trustnetic.com>
 ---
- drivers/net/ethernet/wangxun/libwx/wx_hw.c    | 160 ++++++++++++++++++
- drivers/net/ethernet/wangxun/libwx/wx_hw.h    |   2 +
- drivers/net/ethernet/wangxun/libwx/wx_type.h  | 144 ++++++++++++++++
- drivers/net/ethernet/wangxun/txgbe/Makefile   |   3 +-
- drivers/net/ethernet/wangxun/txgbe/txgbe.h    |   5 +-
- drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c |  86 ++++++++++
- drivers/net/ethernet/wangxun/txgbe/txgbe_hw.h |   9 +
- .../net/ethernet/wangxun/txgbe/txgbe_main.c   |  21 +++
- .../net/ethernet/wangxun/txgbe/txgbe_type.h   |  11 +-
- 9 files changed, 432 insertions(+), 9 deletions(-)
- create mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c
- create mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe_hw.h
+ drivers/net/ethernet/wangxun/libwx/wx_hw.c    | 231 +++++++++++-
+ drivers/net/ethernet/wangxun/libwx/wx_hw.h    |   6 +
+ drivers/net/ethernet/wangxun/libwx/wx_type.h  |  37 ++
+ drivers/net/ethernet/wangxun/txgbe/txgbe.h    |  14 +
+ drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c |  67 ++++
+ drivers/net/ethernet/wangxun/txgbe/txgbe_hw.h |   1 +
+ .../net/ethernet/wangxun/txgbe/txgbe_main.c   | 335 +++++++++++++++++-
+ .../net/ethernet/wangxun/txgbe/txgbe_type.h   |  10 +
+ 8 files changed, 695 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/net/ethernet/wangxun/libwx/wx_hw.c b/drivers/net/ethernet/wangxun/libwx/wx_hw.c
-index fed51c2f3071..76f88cfb2476 100644
+index 76f88cfb2476..9005d142e444 100644
 --- a/drivers/net/ethernet/wangxun/libwx/wx_hw.c
 +++ b/drivers/net/ethernet/wangxun/libwx/wx_hw.c
-@@ -7,6 +7,21 @@
- #include "wx_type.h"
- #include "wx_hw.h"
+@@ -1,6 +1,8 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /* Copyright (c) 2015 - 2022 Beijing WangXun Technology Co., Ltd. */
  
-+static void wx_intr_disable(struct wx_hw *wxhw, u64 qmask)
-+{
-+	u32 mask;
-+
-+	mask = (qmask & 0xFFFFFFFF);
-+	if (mask)
-+		wr32(wxhw, WX_PX_IMS(0), mask);
-+
-+	if (wxhw->mac.type == wx_mac_sp) {
-+		mask = (qmask >> 32);
-+		if (mask)
-+			wr32(wxhw, WX_PX_IMS(1), mask);
-+	}
-+}
-+
- /* cmd_addr is used for some special command:
-  * 1. to be sector address, when implemented erase sector command
-  * 2. to be flash address when implemented read, write flash address
-@@ -56,6 +71,151 @@ int wx_check_flash_load(struct wx_hw *hw, u32 check_bit)
++#include <linux/etherdevice.h>
++#include <linux/if_ether.h>
+ #include <linux/iopoll.h>
+ #include <linux/pci.h>
+ 
+@@ -71,7 +73,230 @@ int wx_check_flash_load(struct wx_hw *hw, u32 check_bit)
  }
  EXPORT_SYMBOL(wx_check_flash_load);
  
-+static void wx_disable_rx(struct wx_hw *wxhw)
-+{
-+	u32 pfdtxgswc;
-+	u32 rxctrl;
-+
-+	rxctrl = rd32(wxhw, WX_RDB_PB_CTL);
-+	if (rxctrl & WX_RDB_PB_CTL_RXEN) {
-+		pfdtxgswc = rd32(wxhw, WX_PSR_CTL);
-+		if (pfdtxgswc & WX_PSR_CTL_SW_EN) {
-+			pfdtxgswc &= ~WX_PSR_CTL_SW_EN;
-+			wr32(wxhw, WX_PSR_CTL, pfdtxgswc);
-+			wxhw->mac.set_lben = true;
-+		} else {
-+			wxhw->mac.set_lben = false;
-+		}
-+		rxctrl &= ~WX_RDB_PB_CTL_RXEN;
-+		wr32(wxhw, WX_RDB_PB_CTL, rxctrl);
-+
-+		if (!(((wxhw->subsystem_device_id & WX_NCSI_MASK) == WX_NCSI_SUP) ||
-+		      ((wxhw->subsystem_device_id & WX_WOL_MASK) == WX_WOL_SUP))) {
-+			/* disable mac receiver */
-+			wr32m(wxhw, WX_MAC_RX_CFG,
-+			      WX_MAC_RX_CFG_RE, 0);
-+		}
-+	}
-+}
-+
+-static void wx_disable_rx(struct wx_hw *wxhw)
 +/**
-+ *  wx_disable_pcie_master - Disable PCI-express master access
++ *  wx_get_mac_addr - Generic get MAC address
 + *  @wxhw: pointer to hardware structure
++ *  @mac_addr: Adapter MAC address
 + *
-+ *  Disables PCI-Express master access and verifies there are no pending
-+ *  requests.
++ *  Reads the adapter's MAC address from first Receive Address Register (RAR0)
++ *  A reset of the adapter must be performed prior to calling this function
++ *  in order for the MAC address to have been loaded from the EEPROM into RAR0
 + **/
-+static int wx_disable_pcie_master(struct wx_hw *wxhw)
++void wx_get_mac_addr(struct wx_hw *wxhw, u8 *mac_addr)
 +{
-+	int status = 0;
-+	u32 val;
-+
-+	/* Always set this bit to ensure any future transactions are blocked */
-+	pci_clear_master(wxhw->pdev);
-+
-+	/* Exit if master requests are blocked */
-+	if (!(rd32(wxhw, WX_PX_TRANSACTION_PENDING)))
-+		return 0;
-+
-+	/* Poll for master request bit to clear */
-+	status = read_poll_timeout(rd32, val, !val, 100, WX_PCI_MASTER_DISABLE_TIMEOUT,
-+				   false, wxhw, WX_PX_TRANSACTION_PENDING);
-+	if (status < 0)
-+		wx_err(wxhw, "PCIe transaction pending bit did not clear.\n");
-+
-+	return status;
-+}
-+
-+/**
-+ *  wx_stop_adapter - Generic stop Tx/Rx units
-+ *  @hw: pointer to hardware structure
-+ *
-+ *  Sets the adapter_stopped flag within wx_hw struct. Clears interrupts,
-+ *  disables transmit and receive units. The adapter_stopped flag is used by
-+ *  the shared code and drivers to determine if the adapter is in a stopped
-+ *  state and should not touch the hardware.
-+ **/
-+int wx_stop_adapter(struct wx_hw *wxhw)
-+{
++	u32 rar_high;
++	u32 rar_low;
 +	u16 i;
 +
-+	/* Set the adapter_stopped flag so other driver functions stop touching
-+	 * the hardware
-+	 */
-+	wxhw->adapter_stopped = true;
++	wr32(wxhw, WX_PSR_MAC_SWC_IDX, 0);
++	rar_high = rd32(wxhw, WX_PSR_MAC_SWC_AD_H);
++	rar_low = rd32(wxhw, WX_PSR_MAC_SWC_AD_L);
 +
-+	/* Disable the receive unit */
-+	wx_disable_rx(wxhw);
++	for (i = 0; i < 2; i++)
++		mac_addr[i] = (u8)(rar_high >> (1 - i) * 8);
 +
-+	/* Set interrupt mask to stop interrupts from being generated */
-+	wx_intr_disable(wxhw, WX_INTR_ALL);
-+
-+	/* Clear any pending interrupts, flush previous writes */
-+	wr32(wxhw, WX_PX_MISC_IC, 0xffffffff);
-+	wr32(wxhw, WX_BME_CTL, 0x3);
-+
-+	/* Disable the transmit unit.  Each queue must be disabled. */
-+	for (i = 0; i < wxhw->mac.max_tx_queues; i++) {
-+		wr32m(wxhw, WX_PX_TR_CFG(i),
-+		      WX_PX_TR_CFG_SWFLSH | WX_PX_TR_CFG_ENABLE,
-+		      WX_PX_TR_CFG_SWFLSH);
-+	}
-+
-+	/* Disable the receive unit by stopping each queue */
-+	for (i = 0; i < wxhw->mac.max_rx_queues; i++) {
-+		wr32m(wxhw, WX_PX_RR_CFG(i),
-+		      WX_PX_RR_CFG_RR_EN, 0);
-+	}
-+
-+	/* flush all queues disables */
-+	WX_WRITE_FLUSH(wxhw);
-+
-+	/* Prevent the PCI-E bus from hanging by disabling PCI-E master
-+	 * access and verify no pending requests
-+	 */
-+	return wx_disable_pcie_master(wxhw);
++	for (i = 0; i < 4; i++)
++		mac_addr[i + 2] = (u8)(rar_low >> (3 - i) * 8);
 +}
-+EXPORT_SYMBOL(wx_stop_adapter);
++EXPORT_SYMBOL(wx_get_mac_addr);
 +
-+void wx_reset_misc(struct wx_hw *wxhw)
++/**
++ *  wx_set_rar - Set Rx address register
++ *  @wxhw: pointer to hardware structure
++ *  @index: Receive address register to write
++ *  @addr: Address to put into receive address register
++ *  @pools: VMDq "set" or "pool" index
++ *  @enable_addr: set flag that address is active
++ *
++ *  Puts an ethernet address into a receive address register.
++ **/
++int wx_set_rar(struct wx_hw *wxhw, u32 index, u8 *addr, u64 pools,
++	       u32 enable_addr)
++{
++	u32 rar_entries = wxhw->mac.num_rar_entries;
++	u32 rar_low, rar_high;
++
++	/* Make sure we are using a valid rar index range */
++	if (index >= rar_entries) {
++		wx_err(wxhw, "RAR index %d is out of range.\n", index);
++		return -EINVAL;
++	}
++
++	/* select the MAC address */
++	wr32(wxhw, WX_PSR_MAC_SWC_IDX, index);
++
++	/* setup VMDq pool mapping */
++	wr32(wxhw, WX_PSR_MAC_SWC_VM_L, pools & 0xFFFFFFFF);
++	if (wxhw->mac.type == wx_mac_sp)
++		wr32(wxhw, WX_PSR_MAC_SWC_VM_H, pools >> 32);
++
++	/* HW expects these in little endian so we reverse the byte
++	 * order from network order (big endian) to little endian
++	 *
++	 * Some parts put the VMDq setting in the extra RAH bits,
++	 * so save everything except the lower 16 bits that hold part
++	 * of the address and the address valid bit.
++	 */
++	rar_low = ((u32)addr[5] |
++		  ((u32)addr[4] << 8) |
++		  ((u32)addr[3] << 16) |
++		  ((u32)addr[2] << 24));
++	rar_high = ((u32)addr[1] |
++		   ((u32)addr[0] << 8));
++	if (enable_addr != 0)
++		rar_high |= WX_PSR_MAC_SWC_AD_H_AV;
++
++	wr32(wxhw, WX_PSR_MAC_SWC_AD_L, rar_low);
++	wr32m(wxhw, WX_PSR_MAC_SWC_AD_H,
++	      (WX_PSR_MAC_SWC_AD_H_AD(~0) |
++	       WX_PSR_MAC_SWC_AD_H_ADTYPE(~0) |
++	       WX_PSR_MAC_SWC_AD_H_AV),
++	      rar_high);
++
++	return 0;
++}
++EXPORT_SYMBOL(wx_set_rar);
++
++/**
++ *  wx_clear_rar - Remove Rx address register
++ *  @wxhw: pointer to hardware structure
++ *  @index: Receive address register to write
++ *
++ *  Clears an ethernet address from a receive address register.
++ **/
++int wx_clear_rar(struct wx_hw *wxhw, u32 index)
++{
++	u32 rar_entries = wxhw->mac.num_rar_entries;
++
++	/* Make sure we are using a valid rar index range */
++	if (index >= rar_entries) {
++		wx_err(wxhw, "RAR index %d is out of range.\n", index);
++		return -EINVAL;
++	}
++
++	/* Some parts put the VMDq setting in the extra RAH bits,
++	 * so save everything except the lower 16 bits that hold part
++	 * of the address and the address valid bit.
++	 */
++	wr32(wxhw, WX_PSR_MAC_SWC_IDX, index);
++
++	wr32(wxhw, WX_PSR_MAC_SWC_VM_L, 0);
++	wr32(wxhw, WX_PSR_MAC_SWC_VM_H, 0);
++
++	wr32(wxhw, WX_PSR_MAC_SWC_AD_L, 0);
++	wr32m(wxhw, WX_PSR_MAC_SWC_AD_H,
++	      (WX_PSR_MAC_SWC_AD_H_AD(~0) |
++	       WX_PSR_MAC_SWC_AD_H_ADTYPE(~0) |
++	       WX_PSR_MAC_SWC_AD_H_AV),
++	      0);
++
++	return 0;
++}
++EXPORT_SYMBOL(wx_clear_rar);
++
++/**
++ *  wx_clear_vmdq - Disassociate a VMDq pool index from a rx address
++ *  @wxhw: pointer to hardware struct
++ *  @rar: receive address register index to disassociate
++ *  @vmdq: VMDq pool index to remove from the rar
++ **/
++static int wx_clear_vmdq(struct wx_hw *wxhw, u32 rar, u32 __maybe_unused vmdq)
++{
++	u32 rar_entries = wxhw->mac.num_rar_entries;
++	u32 mpsar_lo, mpsar_hi;
++
++	/* Make sure we are using a valid rar index range */
++	if (rar >= rar_entries) {
++		wx_err(wxhw, "RAR index %d is out of range.\n", rar);
++		return -EINVAL;
++	}
++
++	wr32(wxhw, WX_PSR_MAC_SWC_IDX, rar);
++	mpsar_lo = rd32(wxhw, WX_PSR_MAC_SWC_VM_L);
++	mpsar_hi = rd32(wxhw, WX_PSR_MAC_SWC_VM_H);
++
++	if (!mpsar_lo && !mpsar_hi)
++		return 0;
++
++	/* was that the last pool using this rar? */
++	if (mpsar_lo == 0 && mpsar_hi == 0 && rar != 0)
++		wx_clear_rar(wxhw, rar);
++
++	return 0;
++}
++
++/**
++ *  wx_init_uta_tables - Initialize the Unicast Table Array
++ *  @wxhw: pointer to hardware structure
++ **/
++static void wx_init_uta_tables(struct wx_hw *wxhw)
 +{
 +	int i;
 +
-+	/* receive packets that size > 2048 */
-+	wr32m(wxhw, WX_MAC_RX_CFG, WX_MAC_RX_CFG_JE, WX_MAC_RX_CFG_JE);
++	wx_dbg(wxhw, " Clearing UTA\n");
 +
-+	/* clear counters on read */
-+	wr32m(wxhw, WX_MMC_CONTROL,
-+	      WX_MMC_CONTROL_RSTONRD, WX_MMC_CONTROL_RSTONRD);
-+
-+	wr32m(wxhw, WX_MAC_RX_FLOW_CTRL,
-+	      WX_MAC_RX_FLOW_CTRL_RFE, WX_MAC_RX_FLOW_CTRL_RFE);
-+
-+	wr32(wxhw, WX_MAC_PKT_FLT, WX_MAC_PKT_FLT_PR);
-+
-+	wr32m(wxhw, WX_MIS_RST_ST,
-+	      WX_MIS_RST_ST_RST_INIT, 0x1E00);
-+
-+	/* errata 4: initialize mng flex tbl and wakeup flex tbl*/
-+	wr32(wxhw, WX_PSR_MNG_FLEX_SEL, 0);
-+	for (i = 0; i < 16; i++) {
-+		wr32(wxhw, WX_PSR_MNG_FLEX_DW_L(i), 0);
-+		wr32(wxhw, WX_PSR_MNG_FLEX_DW_H(i), 0);
-+		wr32(wxhw, WX_PSR_MNG_FLEX_MSK(i), 0);
-+	}
-+	wr32(wxhw, WX_PSR_LAN_FLEX_SEL, 0);
-+	for (i = 0; i < 16; i++) {
-+		wr32(wxhw, WX_PSR_LAN_FLEX_DW_L(i), 0);
-+		wr32(wxhw, WX_PSR_LAN_FLEX_DW_H(i), 0);
-+		wr32(wxhw, WX_PSR_LAN_FLEX_MSK(i), 0);
-+	}
-+
-+	/* set pause frame dst mac addr */
-+	wr32(wxhw, WX_RDB_PFCMACDAL, 0xC2000001);
-+	wr32(wxhw, WX_RDB_PFCMACDAH, 0x0180);
++	for (i = 0; i < 128; i++)
++		wr32(wxhw, WX_PSR_UC_TBL(i), 0);
 +}
-+EXPORT_SYMBOL(wx_reset_misc);
 +
- int wx_sw_init(struct wx_hw *wxhw)
++/**
++ *  wx_init_rx_addrs - Initializes receive address filters.
++ *  @wxhw: pointer to hardware structure
++ *
++ *  Places the MAC address in receive address register 0 and clears the rest
++ *  of the receive address registers. Clears the multicast table. Assumes
++ *  the receiver is in reset when the routine is called.
++ **/
++void wx_init_rx_addrs(struct wx_hw *wxhw)
++{
++	u32 rar_entries = wxhw->mac.num_rar_entries;
++	u32 psrctl;
++	int i;
++
++	/* If the current mac address is valid, assume it is a software override
++	 * to the permanent address.
++	 * Otherwise, use the permanent address from the eeprom.
++	 */
++	if (!is_valid_ether_addr(wxhw->mac.addr)) {
++		/* Get the MAC address from the RAR0 for later reference */
++		wx_get_mac_addr(wxhw, wxhw->mac.addr);
++		wx_dbg(wxhw, "Keeping Current RAR0 Addr = %pM\n", wxhw->mac.addr);
++	} else {
++		/* Setup the receive address. */
++		wx_dbg(wxhw, "Overriding MAC Address in RAR[0]\n");
++		wx_dbg(wxhw, "New MAC Addr = %pM\n", wxhw->mac.addr);
++
++		wx_set_rar(wxhw, 0, wxhw->mac.addr, 0, WX_PSR_MAC_SWC_AD_H_AV);
++
++		if (wxhw->mac.type == wx_mac_sp) {
++			/* clear VMDq pool/queue selection for RAR 0 */
++			wx_clear_vmdq(wxhw, 0, WX_CLEAR_VMDQ_ALL);
++		}
++	}
++
++	/* Zero out the other receive addresses. */
++	wx_dbg(wxhw, "Clearing RAR[1-%d]\n", rar_entries - 1);
++	for (i = 1; i < rar_entries; i++) {
++		wr32(wxhw, WX_PSR_MAC_SWC_IDX, i);
++		wr32(wxhw, WX_PSR_MAC_SWC_AD_L, 0);
++		wr32(wxhw, WX_PSR_MAC_SWC_AD_H, 0);
++	}
++
++	/* Clear the MTA */
++	wxhw->addr_ctrl.mta_in_use = 0;
++	psrctl = rd32(wxhw, WX_PSR_CTL);
++	psrctl &= ~(WX_PSR_CTL_MO | WX_PSR_CTL_MFE);
++	psrctl |= wxhw->mac.mc_filter_type << WX_PSR_CTL_MO_SHIFT;
++	wr32(wxhw, WX_PSR_CTL, psrctl);
++	wx_dbg(wxhw, " Clearing MTA\n");
++	for (i = 0; i < wxhw->mac.mcft_size; i++)
++		wr32(wxhw, WX_PSR_MC_TBL(i), 0);
++
++	wx_init_uta_tables(wxhw);
++}
++EXPORT_SYMBOL(wx_init_rx_addrs);
++
++void wx_disable_rx(struct wx_hw *wxhw)
  {
- 	struct pci_dev *pdev = wxhw->pdev;
+ 	u32 pfdtxgswc;
+ 	u32 rxctrl;
+@@ -97,6 +322,7 @@ static void wx_disable_rx(struct wx_hw *wxhw)
+ 		}
+ 	}
+ }
++EXPORT_SYMBOL(wx_disable_rx);
+ 
+ /**
+  *  wx_disable_pcie_master - Disable PCI-express master access
+@@ -105,7 +331,7 @@ static void wx_disable_rx(struct wx_hw *wxhw)
+  *  Disables PCI-Express master access and verifies there are no pending
+  *  requests.
+  **/
+-static int wx_disable_pcie_master(struct wx_hw *wxhw)
++int wx_disable_pcie_master(struct wx_hw *wxhw)
+ {
+ 	int status = 0;
+ 	u32 val;
+@@ -125,6 +351,7 @@ static int wx_disable_pcie_master(struct wx_hw *wxhw)
+ 
+ 	return status;
+ }
++EXPORT_SYMBOL(wx_disable_pcie_master);
+ 
+ /**
+  *  wx_stop_adapter - Generic stop Tx/Rx units
 diff --git a/drivers/net/ethernet/wangxun/libwx/wx_hw.h b/drivers/net/ethernet/wangxun/libwx/wx_hw.h
-index 42e95283242c..2c4c4cbbfb46 100644
+index 2c4c4cbbfb46..58a943dc76c1 100644
 --- a/drivers/net/ethernet/wangxun/libwx/wx_hw.h
 +++ b/drivers/net/ethernet/wangxun/libwx/wx_hw.h
-@@ -5,6 +5,8 @@
+@@ -5,6 +5,12 @@
  #define _WX_HW_H_
  
  int wx_check_flash_load(struct wx_hw *hw, u32 check_bit);
-+int wx_stop_adapter(struct wx_hw *wxhw);
-+void wx_reset_misc(struct wx_hw *wxhw);
++void wx_get_mac_addr(struct wx_hw *wxhw, u8 *mac_addr);
++int wx_set_rar(struct wx_hw *wxhw, u32 index, u8 *addr, u64 pools, u32 enable_addr);
++int wx_clear_rar(struct wx_hw *wxhw, u32 index);
++void wx_init_rx_addrs(struct wx_hw *wxhw);
++void wx_disable_rx(struct wx_hw *wxhw);
++int wx_disable_pcie_master(struct wx_hw *wxhw);
+ int wx_stop_adapter(struct wx_hw *wxhw);
+ void wx_reset_misc(struct wx_hw *wxhw);
  int wx_sw_init(struct wx_hw *wxhw);
- 
- #endif /* _WX_HW_H_ */
 diff --git a/drivers/net/ethernet/wangxun/libwx/wx_type.h b/drivers/net/ethernet/wangxun/libwx/wx_type.h
-index fa06443ca4f5..b9b182d38e3a 100644
+index b9b182d38e3a..70cc0cb116a8 100644
 --- a/drivers/net/ethernet/wangxun/libwx/wx_type.h
 +++ b/drivers/net/ethernet/wangxun/libwx/wx_type.h
-@@ -9,6 +9,20 @@
- #define PCI_VENDOR_ID_WANGXUN                   0x8088
- #endif
+@@ -51,6 +51,12 @@
+ #define WX_TS_ALARM_ST_DALARM        BIT(1)
+ #define WX_TS_ALARM_ST_ALARM         BIT(0)
  
-+#define WX_NCSI_SUP                             0x8000
-+#define WX_NCSI_MASK                            0x8000
-+#define WX_WOL_SUP                              0x4000
-+#define WX_WOL_MASK                             0x4000
++/*********************** Transmit DMA registers **************************/
++/* transmit global control */
++#define WX_TDM_CTL                   0x18000
++/* TDM CTL BIT */
++#define WX_TDM_CTL_TE                BIT(0) /* Transmit Enable */
 +
-+/**************** Global Registers ****************************/
-+/* chip control Registers */
-+#define WX_MIS_PWR                   0x10000
-+#define WX_MIS_RST                   0x1000C
-+#define WX_MIS_RST_LAN_RST(_i)       BIT((_i) + 1)
-+#define WX_MIS_RST_ST                0x10030
-+#define WX_MIS_RST_ST_RST_INI_SHIFT  8
-+#define WX_MIS_RST_ST_RST_INIT       (0xFF << WX_MIS_RST_ST_RST_INI_SHIFT)
-+
- /* FMGR Registers */
- #define WX_SPI_CMD                   0x10104
- #define WX_SPI_CMD_READ_DWORD        0x1
-@@ -25,16 +39,120 @@
- #define WX_SPI_STATUS_FLASH_BYPASS   BIT(31)
- #define WX_SPI_ILDR_STATUS           0x10120
+ /***************************** RDB registers *********************************/
+ /* receive packet buffer */
+ #define WX_RDB_PB_CTL                0x19000
+@@ -76,6 +82,9 @@
+ #define WX_PSR_CTL_MO_SHIFT          5
+ #define WX_PSR_CTL_MO                (0x3 << WX_PSR_CTL_MO_SHIFT)
+ #define WX_PSR_CTL_TPE               BIT(4)
++/* mcasst/ucast overflow tbl */
++#define WX_PSR_MC_TBL(_i)            (0x15200  + ((_i) * 4))
++#define WX_PSR_UC_TBL(_i)            (0x15400 + ((_i) * 4))
  
-+/* Sensors for PVT(Process Voltage Temperature) */
-+#define WX_TS_EN                     0x10304
-+#define WX_TS_EN_ENA                 BIT(0)
-+#define WX_TS_ALARM_THRE             0x1030C
-+#define WX_TS_DALARM_THRE            0x10310
-+#define WX_TS_INT_EN                 0x10314
-+#define WX_TS_INT_EN_DALARM_INT_EN   BIT(1)
-+#define WX_TS_INT_EN_ALARM_INT_EN    BIT(0)
-+#define WX_TS_ALARM_ST               0x10318
-+#define WX_TS_ALARM_ST_DALARM        BIT(1)
-+#define WX_TS_ALARM_ST_ALARM         BIT(0)
+ /* Management */
+ #define WX_PSR_MNG_FLEX_SEL          0x1582C
+@@ -87,7 +96,20 @@
+ #define WX_PSR_LAN_FLEX_DW_H(_i)     (0x15C04 + ((_i) * 16))
+ #define WX_PSR_LAN_FLEX_MSK(_i)      (0x15C08 + ((_i) * 16))
+ 
++/* mac switcher */
++#define WX_PSR_MAC_SWC_AD_L          0x16200
++#define WX_PSR_MAC_SWC_AD_H          0x16204
++#define WX_PSR_MAC_SWC_AD_H_AD(v)       (((v) & 0xFFFF))
++#define WX_PSR_MAC_SWC_AD_H_ADTYPE(v)   (((v) & 0x1) << 30)
++#define WX_PSR_MAC_SWC_AD_H_AV       BIT(31)
++#define WX_PSR_MAC_SWC_VM_L          0x16208
++#define WX_PSR_MAC_SWC_VM_H          0x1620C
++#define WX_PSR_MAC_SWC_IDX           0x16210
++#define WX_CLEAR_VMDQ_ALL            0xFFFFFFFFU
 +
-+/***************************** RDB registers *********************************/
-+/* receive packet buffer */
-+#define WX_RDB_PB_CTL                0x19000
-+#define WX_RDB_PB_CTL_RXEN           BIT(31) /* Enable Receiver */
-+#define WX_RDB_PB_CTL_DISABLED       BIT(0)
-+/* statistic */
-+#define WX_RDB_PFCMACDAL             0x19210
-+#define WX_RDB_PFCMACDAH             0x19214
-+
-+/******************************* PSR Registers *******************************/
-+/* psr control */
-+#define WX_PSR_CTL                   0x15000
-+/* Header split receive */
-+#define WX_PSR_CTL_SW_EN             BIT(18)
-+#define WX_PSR_CTL_RSC_ACK           BIT(17)
-+#define WX_PSR_CTL_RSC_DIS           BIT(16)
-+#define WX_PSR_CTL_PCSD              BIT(13)
-+#define WX_PSR_CTL_IPPCSE            BIT(12)
-+#define WX_PSR_CTL_BAM               BIT(10)
-+#define WX_PSR_CTL_UPE               BIT(9)
-+#define WX_PSR_CTL_MPE               BIT(8)
-+#define WX_PSR_CTL_MFE               BIT(7)
-+#define WX_PSR_CTL_MO_SHIFT          5
-+#define WX_PSR_CTL_MO                (0x3 << WX_PSR_CTL_MO_SHIFT)
-+#define WX_PSR_CTL_TPE               BIT(4)
-+
-+/* Management */
-+#define WX_PSR_MNG_FLEX_SEL          0x1582C
-+#define WX_PSR_MNG_FLEX_DW_L(_i)     (0x15A00 + ((_i) * 16))
-+#define WX_PSR_MNG_FLEX_DW_H(_i)     (0x15A04 + ((_i) * 16))
-+#define WX_PSR_MNG_FLEX_MSK(_i)      (0x15A08 + ((_i) * 16))
-+#define WX_PSR_LAN_FLEX_SEL          0x15B8C
-+#define WX_PSR_LAN_FLEX_DW_L(_i)     (0x15C00 + ((_i) * 16))
-+#define WX_PSR_LAN_FLEX_DW_H(_i)     (0x15C04 + ((_i) * 16))
-+#define WX_PSR_LAN_FLEX_MSK(_i)      (0x15C08 + ((_i) * 16))
-+
-+/************************************* ETH MAC *****************************/
-+#define WX_MAC_RX_CFG                0x11004
-+#define WX_MAC_RX_CFG_RE             BIT(0)
-+#define WX_MAC_RX_CFG_JE             BIT(8)
-+#define WX_MAC_PKT_FLT               0x11008
-+#define WX_MAC_PKT_FLT_PR            BIT(0) /* promiscuous mode */
-+#define WX_MAC_RX_FLOW_CTRL          0x11090
-+#define WX_MAC_RX_FLOW_CTRL_RFE      BIT(0) /* receive fc enable */
-+#define WX_MMC_CONTROL               0x11800
-+#define WX_MMC_CONTROL_RSTONRD       BIT(2) /* reset on read */
-+
-+/********************************* BAR registers ***************************/
-+/* Interrupt Registers */
-+#define WX_BME_CTL                   0x12020
-+#define WX_PX_MISC_IC                0x100
-+#define WX_PX_IMS(_i)                (0x140 + (_i) * 4)
-+#define WX_PX_TRANSACTION_PENDING    0x168
-+
-+/* transmit DMA Registers */
-+#define WX_PX_TR_CFG(_i)             (0x03010 + ((_i) * 0x40))
-+/* Transmit Config masks */
-+#define WX_PX_TR_CFG_ENABLE          BIT(0) /* Ena specific Tx Queue */
-+#define WX_PX_TR_CFG_TR_SIZE_SHIFT   1 /* tx desc number per ring */
-+#define WX_PX_TR_CFG_SWFLSH          BIT(26) /* Tx Desc. wr-bk flushing */
-+#define WX_PX_TR_CFG_WTHRESH_SHIFT   16 /* shift to WTHRESH bits */
-+#define WX_PX_TR_CFG_THRE_SHIFT      8
-+
-+/* Receive DMA Registers */
-+#define WX_PX_RR_CFG(_i)             (0x01010 + ((_i) * 0x40))
-+/* PX_RR_CFG bit definitions */
-+#define WX_PX_RR_CFG_RR_EN           BIT(0)
-+
-+/* Number of 80 microseconds we wait for PCI Express master disable */
-+#define WX_PCI_MASTER_DISABLE_TIMEOUT        80000
-+
- /* Bus parameters */
- struct wx_bus_info {
- 	u8 func;
- 	u16 device;
+ /************************************* ETH MAC *****************************/
++#define WX_MAC_TX_CFG                0x11000
++#define WX_MAC_TX_CFG_TE             BIT(0)
+ #define WX_MAC_RX_CFG                0x11004
+ #define WX_MAC_RX_CFG_RE             BIT(0)
+ #define WX_MAC_RX_CFG_JE             BIT(8)
+@@ -143,16 +165,28 @@ enum wx_mac_type {
+ struct wx_mac_info {
+ 	enum wx_mac_type type;
+ 	bool set_lben;
++	u8 addr[ETH_ALEN];
++	u8 perm_addr[ETH_ALEN];
++	s32 mc_filter_type;
++	u32 mcft_size;
++	u32 num_rar_entries;
+ 	u32 max_tx_queues;
+ 	u32 max_rx_queues;
+ 	struct wx_thermal_sensor_data sensor;
  };
  
-+struct wx_thermal_sensor_data {
-+	s16 temp;
-+	s16 alarm_thresh;
-+	s16 dalarm_thresh;
-+};
-+
-+enum wx_mac_type {
-+	wx_mac_unknown = 0,
-+	wx_mac_sp,
-+	wx_mac_em
-+};
-+
-+struct wx_mac_info {
-+	enum wx_mac_type type;
-+	bool set_lben;
-+	u32 max_tx_queues;
-+	u32 max_rx_queues;
-+	struct wx_thermal_sensor_data sensor;
++struct wx_addr_filter_info {
++	u32 num_mc_addrs;
++	u32 mta_in_use;
++	bool user_set_promisc;
 +};
 +
  struct wx_hw {
  	u8 __iomem *hw_addr;
  	struct pci_dev *pdev;
  	struct wx_bus_info bus;
-+	struct wx_mac_info mac;
+ 	struct wx_mac_info mac;
++	struct wx_addr_filter_info addr_ctrl;
  	u16 device_id;
  	u16 vendor_id;
  	u16 subsystem_device_id;
-@@ -42,14 +160,40 @@ struct wx_hw {
- 	u8 revision_id;
- 	u16 oem_ssid;
- 	u16 oem_svid;
-+	bool adapter_stopped;
- };
- 
-+#define WX_INTR_ALL (~0ULL)
-+
- /**
-  * register operations
-  **/
- #define wr32(a, reg, value)	writel((value), ((a)->hw_addr + (reg)))
- #define rd32(a, reg)		readl((a)->hw_addr + (reg))
- 
-+static inline u32
-+rd32m(struct wx_hw *wxhw, u32 reg, u32 mask)
-+{
-+	u32 val;
-+
-+	val = rd32(wxhw, reg);
-+	return val & mask;
-+}
-+
-+static inline void
-+wr32m(struct wx_hw *wxhw, u32 reg, u32 mask, u32 field)
-+{
-+	u32 val;
-+
-+	val = rd32(wxhw, reg);
-+	val = ((val & ~mask) | (field & mask));
-+
-+	wr32(wxhw, reg, val);
-+}
-+
-+/* flush PCI read and write */
-+#define WX_WRITE_FLUSH(H) rd32(H, WX_MIS_PWR)
-+
+@@ -197,4 +231,7 @@ wr32m(struct wx_hw *wxhw, u32 reg, u32 mask, u32 field)
  #define wx_err(wxhw, fmt, arg...) \
  	dev_err(&(wxhw)->pdev->dev, fmt, ##arg)
  
-diff --git a/drivers/net/ethernet/wangxun/txgbe/Makefile b/drivers/net/ethernet/wangxun/txgbe/Makefile
-index 431303ca75b4..78484c58b78b 100644
---- a/drivers/net/ethernet/wangxun/txgbe/Makefile
-+++ b/drivers/net/ethernet/wangxun/txgbe/Makefile
-@@ -6,4 +6,5 @@
- 
- obj-$(CONFIG_TXGBE) += txgbe.o
- 
--txgbe-objs := txgbe_main.o
-+txgbe-objs := txgbe_main.o \
-+              txgbe_hw.o
++#define wx_dbg(wxhw, fmt, arg...) \
++	dev_dbg(&(wxhw)->pdev->dev, fmt, ##arg)
++
+ #endif /* _WX_TYPE_H_ */
 diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe.h b/drivers/net/ethernet/wangxun/txgbe/txgbe.h
-index 9a97b85be3ac..f866d7fa7161 100644
+index f866d7fa7161..a2ca26b85966 100644
 --- a/drivers/net/ethernet/wangxun/txgbe/txgbe.h
 +++ b/drivers/net/ethernet/wangxun/txgbe/txgbe.h
-@@ -4,13 +4,14 @@
- #ifndef _TXGBE_H_
- #define _TXGBE_H_
+@@ -11,6 +11,18 @@
  
--#include "txgbe_type.h"
--
- #define TXGBE_MAX_FDIR_INDICES          63
- 
- #define TXGBE_MAX_RX_QUEUES   (TXGBE_MAX_FDIR_INDICES + 1)
- #define TXGBE_MAX_TX_QUEUES   (TXGBE_MAX_FDIR_INDICES + 1)
- 
-+#define TXGBE_SP_MAX_TX_QUEUES  128
-+#define TXGBE_SP_MAX_RX_QUEUES  128
+ #define TXGBE_SP_MAX_TX_QUEUES  128
+ #define TXGBE_SP_MAX_RX_QUEUES  128
++#define TXGBE_SP_RAR_ENTRIES    128
++#define TXGBE_SP_MC_TBL_SIZE    128
 +
++struct txgbe_mac_addr {
++	u8 addr[ETH_ALEN];
++	u16 state; /* bitmask */
++	u64 pools;
++};
++
++#define TXGBE_MAC_STATE_DEFAULT         0x1
++#define TXGBE_MAC_STATE_MODIFIED        0x2
++#define TXGBE_MAC_STATE_IN_USE          0x4
+ 
  /* board specific private data structure */
  struct txgbe_adapter {
- 	u8 __iomem *io_addr;    /* Mainly for iounmap use */
+@@ -22,6 +34,8 @@ struct txgbe_adapter {
+ 	/* structs defined in txgbe_type.h */
+ 	struct txgbe_hw hw;
+ 	u16 msg_enable;
++	bool netdev_registered;
++	struct txgbe_mac_addr *mac_table;
+ };
+ 
+ extern char txgbe_driver_name[];
 diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c
-new file mode 100644
-index 000000000000..a679db3f2e41
---- /dev/null
+index a679db3f2e41..ccc9f7396914 100644
+--- a/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c
 +++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c
-@@ -0,0 +1,86 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2015 - 2022 Beijing WangXun Technology Co., Ltd. */
-+
-+#include <linux/string.h>
-+#include <linux/iopoll.h>
-+#include <linux/types.h>
-+#include <linux/pci.h>
-+
-+#include "../libwx/wx_type.h"
-+#include "../libwx/wx_hw.h"
-+#include "txgbe_type.h"
-+#include "txgbe_hw.h"
-+#include "txgbe.h"
-+
+@@ -1,6 +1,8 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /* Copyright (c) 2015 - 2022 Beijing WangXun Technology Co., Ltd. */
+ 
++#include <linux/etherdevice.h>
++#include <linux/if_ether.h>
+ #include <linux/string.h>
+ #include <linux/iopoll.h>
+ #include <linux/types.h>
+@@ -50,6 +52,44 @@ static void txgbe_reset_misc(struct txgbe_hw *hw)
+ 	txgbe_init_thermal_sensor_thresh(hw);
+ }
+ 
 +/**
-+ *  txgbe_init_thermal_sensor_thresh - Inits thermal sensor thresholds
++ *  txgbe_get_san_mac_addr - SAN MAC address retrieval from the EEPROM
 + *  @hw: pointer to hardware structure
++ *  @san_mac_addr: SAN MAC address
 + *
-+ *  Inits the thermal sensor thresholds according to the NVM map
-+ *  and save off the threshold and location values into mac.thermal_sensor_data
++ *  Reads the SAN MAC address.
 + **/
-+static void txgbe_init_thermal_sensor_thresh(struct txgbe_hw *hw)
++static void txgbe_get_san_mac_addr(struct txgbe_hw *hw, u8 *san_mac_addr)
 +{
-+	struct wx_hw *wxhw = &hw->wxhw;
-+	struct wx_thermal_sensor_data *data = &wxhw->mac.sensor;
++	u8 i;
 +
-+	memset(data, 0, sizeof(struct wx_thermal_sensor_data));
-+
-+	/* Only support thermal sensors attached to SP physical port 0 */
-+	if (wxhw->bus.func)
-+		return;
-+
-+	wr32(wxhw, TXGBE_TS_CTL, TXGBE_TS_CTL_EVAL_MD);
-+
-+	wr32(wxhw, WX_TS_INT_EN,
-+	     WX_TS_INT_EN_ALARM_INT_EN | WX_TS_INT_EN_DALARM_INT_EN);
-+	wr32(wxhw, WX_TS_EN, WX_TS_EN_ENA);
-+
-+	data->alarm_thresh = 100;
-+	wr32(wxhw, WX_TS_ALARM_THRE, 677);
-+	data->dalarm_thresh = 90;
-+	wr32(wxhw, WX_TS_DALARM_THRE, 614);
-+}
-+
-+static void txgbe_reset_misc(struct txgbe_hw *hw)
-+{
-+	struct wx_hw *wxhw = &hw->wxhw;
-+
-+	wx_reset_misc(wxhw);
-+	txgbe_init_thermal_sensor_thresh(hw);
++	/* No addresses available in this EEPROM.  It's not an
++	 * error though, so just wipe the local address and return.
++	 */
++	for (i = 0; i < ETH_ALEN; i++)
++		san_mac_addr[i] = 0xFF;
 +}
 +
 +/**
-+ *  txgbe_reset_hw - Perform hardware reset
-+ *  @hw: pointer to hardware structure
-+ *
-+ *  Resets the hardware by resetting the transmit and receive units, masks
-+ *  and clears all interrupts, perform a PHY reset, and perform a link (MAC)
-+ *  reset.
++ *  txgbe_set_vmdq_san_mac - Associate default VMDq pool index with a rx address
++ *  @hw: pointer to hardware struct
++ *  @vmdq: VMDq pool index
 + **/
-+int txgbe_reset_hw(struct txgbe_hw *hw)
++void txgbe_set_vmdq_san_mac(struct txgbe_hw *hw, u32 vmdq)
 +{
++	u32 rar = hw->mac.san_mac_rar_index;
 +	struct wx_hw *wxhw = &hw->wxhw;
-+	u32 reset = 0;
-+	int status;
 +
-+	/* Call adapter stop to disable tx/rx and clear interrupts */
-+	status = wx_stop_adapter(wxhw);
-+	if (status != 0)
-+		return status;
-+
-+	reset = WX_MIS_RST_LAN_RST(wxhw->bus.func);
-+	wr32(wxhw, WX_MIS_RST, reset | rd32(wxhw, WX_MIS_RST));
-+
-+	WX_WRITE_FLUSH(wxhw);
-+	usleep_range(10, 100);
-+
-+	status = wx_check_flash_load(wxhw, TXGBE_SPI_ILDR_STATUS_LAN_SW_RST(wxhw->bus.func));
-+	if (status != 0)
-+		return status;
-+
-+	txgbe_reset_misc(hw);
-+	pci_set_master(wxhw->pdev);
-+
-+	return 0;
++	wr32(wxhw, WX_PSR_MAC_SWC_IDX, rar);
++	if (vmdq < 32) {
++		wr32(wxhw, WX_PSR_MAC_SWC_VM_L, 1 << vmdq);
++		wr32(wxhw, WX_PSR_MAC_SWC_VM_H, 0);
++	} else {
++		wr32(wxhw, WX_PSR_MAC_SWC_VM_L, 0);
++		wr32(wxhw, WX_PSR_MAC_SWC_VM_H, 1 << (vmdq - 32));
++	}
 +}
++
+ /**
+  *  txgbe_reset_hw - Perform hardware reset
+  *  @hw: pointer to hardware structure
+@@ -80,6 +120,33 @@ int txgbe_reset_hw(struct txgbe_hw *hw)
+ 		return status;
+ 
+ 	txgbe_reset_misc(hw);
++
++	/* Store the permanent mac address */
++	wx_get_mac_addr(wxhw, wxhw->mac.perm_addr);
++
++	/* Store MAC address from RAR0, clear receive address registers, and
++	 * clear the multicast table.  Also reset num_rar_entries to 128,
++	 * since we modify this value when programming the SAN MAC address.
++	 */
++	wxhw->mac.num_rar_entries = TXGBE_SP_RAR_ENTRIES;
++	wx_init_rx_addrs(wxhw);
++
++	/* Store the permanent SAN mac address */
++	txgbe_get_san_mac_addr(hw, hw->mac.san_addr);
++
++	/* Add the SAN MAC address to the RAR only if it's a valid address */
++	if (is_valid_ether_addr(hw->mac.san_addr)) {
++		wx_set_rar(wxhw, wxhw->mac.num_rar_entries - 1,
++			   hw->mac.san_addr, 0,
++			   WX_PSR_MAC_SWC_AD_H_AV);
++
++		/* Save the SAN MAC RAR index */
++		hw->mac.san_mac_rar_index = wxhw->mac.num_rar_entries - 1;
++
++		/* Reserve the last RAR for the SAN MAC address */
++		wxhw->mac.num_rar_entries--;
++	}
++
+ 	pci_set_master(wxhw->pdev);
+ 
+ 	return 0;
 diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.h b/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.h
-new file mode 100644
-index 000000000000..155f18ea4b8c
---- /dev/null
+index 155f18ea4b8c..d4593586a1db 100644
+--- a/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.h
 +++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.h
-@@ -0,0 +1,9 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (c) 2015 - 2022 Beijing WangXun Technology Co., Ltd. */
-+
-+#ifndef _TXGBE_HW_H_
-+#define _TXGBE_HW_H_
-+
-+int txgbe_reset_hw(struct txgbe_hw *hw);
-+
-+#endif /* _TXGBE_HW_H_ */
+@@ -4,6 +4,7 @@
+ #ifndef _TXGBE_HW_H_
+ #define _TXGBE_HW_H_
+ 
++void txgbe_set_vmdq_san_mac(struct txgbe_hw *hw, u32 vmdq);
+ int txgbe_reset_hw(struct txgbe_hw *hw);
+ 
+ #endif /* _TXGBE_HW_H_ */
 diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-index 71ea197fe299..409103d5ac2b 100644
+index 409103d5ac2b..d231c6ab2029 100644
 --- a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
 +++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-@@ -11,6 +11,8 @@
+@@ -8,6 +8,7 @@
+ #include <linux/string.h>
+ #include <linux/aer.h>
+ #include <linux/etherdevice.h>
++#include <net/ip.h>
  
  #include "../libwx/wx_type.h"
  #include "../libwx/wx_hw.h"
-+#include "txgbe_type.h"
-+#include "txgbe_hw.h"
- #include "txgbe.h"
- 
- char txgbe_driver_name[] = "txgbe";
-@@ -92,6 +94,19 @@ static int txgbe_sw_init(struct txgbe_adapter *adapter)
- 		return err;
- 	}
- 
-+	switch (wxhw->device_id) {
-+	case TXGBE_DEV_ID_SP1000:
-+	case TXGBE_DEV_ID_WX1820:
-+		wxhw->mac.type = wx_mac_sp;
-+		break;
-+	default:
-+		wxhw->mac.type = wx_mac_unknown;
-+		break;
-+	}
-+
-+	wxhw->mac.max_tx_queues = TXGBE_SP_MAX_TX_QUEUES;
-+	wxhw->mac.max_rx_queues = TXGBE_SP_MAX_RX_QUEUES;
-+
- 	return 0;
+@@ -72,6 +73,146 @@ static int txgbe_enumerate_functions(struct txgbe_adapter *adapter)
+ 	return physfns;
  }
  
-@@ -201,6 +216,12 @@ static int txgbe_probe(struct pci_dev *pdev,
- 	if (err)
- 		goto err_pci_release_regions;
- 
++static void txgbe_sync_mac_table(struct txgbe_adapter *adapter)
++{
++	struct txgbe_hw *hw = &adapter->hw;
++	struct wx_hw *wxhw = &hw->wxhw;
++	int i;
++
++	for (i = 0; i < wxhw->mac.num_rar_entries; i++) {
++		if (adapter->mac_table[i].state & TXGBE_MAC_STATE_MODIFIED) {
++			if (adapter->mac_table[i].state & TXGBE_MAC_STATE_IN_USE) {
++				wx_set_rar(wxhw, i,
++					   adapter->mac_table[i].addr,
++					   adapter->mac_table[i].pools,
++					   WX_PSR_MAC_SWC_AD_H_AV);
++			} else {
++				wx_clear_rar(wxhw, i);
++			}
++			adapter->mac_table[i].state &= ~(TXGBE_MAC_STATE_MODIFIED);
++		}
++	}
++}
++
++/* this function destroys the first RAR entry */
++static void txgbe_mac_set_default_filter(struct txgbe_adapter *adapter,
++					 u8 *addr)
++{
++	struct wx_hw *wxhw = &adapter->hw.wxhw;
++
++	memcpy(&adapter->mac_table[0].addr, addr, ETH_ALEN);
++	adapter->mac_table[0].pools = 1ULL;
++	adapter->mac_table[0].state = (TXGBE_MAC_STATE_DEFAULT |
++				       TXGBE_MAC_STATE_IN_USE);
++	wx_set_rar(wxhw, 0, adapter->mac_table[0].addr,
++		   adapter->mac_table[0].pools,
++		   WX_PSR_MAC_SWC_AD_H_AV);
++}
++
++static void txgbe_flush_sw_mac_table(struct txgbe_adapter *adapter)
++{
++	struct wx_hw *wxhw = &adapter->hw.wxhw;
++	u32 i;
++
++	for (i = 0; i < wxhw->mac.num_rar_entries; i++) {
++		adapter->mac_table[i].state |= TXGBE_MAC_STATE_MODIFIED;
++		adapter->mac_table[i].state &= ~TXGBE_MAC_STATE_IN_USE;
++		memset(adapter->mac_table[i].addr, 0, ETH_ALEN);
++		adapter->mac_table[i].pools = 0;
++	}
++	txgbe_sync_mac_table(adapter);
++}
++
++static int txgbe_del_mac_filter(struct txgbe_adapter *adapter, u8 *addr, u16 pool)
++{
++	struct wx_hw *wxhw = &adapter->hw.wxhw;
++	u32 i;
++
++	if (is_zero_ether_addr(addr))
++		return -EINVAL;
++
++	/* search table for addr, if found, set to 0 and sync */
++	for (i = 0; i < wxhw->mac.num_rar_entries; i++) {
++		if (ether_addr_equal(addr, adapter->mac_table[i].addr)) {
++			if (adapter->mac_table[i].pools & (1ULL << pool)) {
++				adapter->mac_table[i].state |= TXGBE_MAC_STATE_MODIFIED;
++				adapter->mac_table[i].state &= ~TXGBE_MAC_STATE_IN_USE;
++				adapter->mac_table[i].pools &= ~(1ULL << pool);
++				txgbe_sync_mac_table(adapter);
++			}
++			return 0;
++		}
++
++		if (adapter->mac_table[i].pools != (1 << pool))
++			continue;
++		if (!ether_addr_equal(addr, adapter->mac_table[i].addr))
++			continue;
++
++		adapter->mac_table[i].state |= TXGBE_MAC_STATE_MODIFIED;
++		adapter->mac_table[i].state &= ~TXGBE_MAC_STATE_IN_USE;
++		memset(adapter->mac_table[i].addr, 0, ETH_ALEN);
++		adapter->mac_table[i].pools = 0;
++		txgbe_sync_mac_table(adapter);
++		return 0;
++	}
++	return -ENOMEM;
++}
++
++static void txgbe_reset(struct txgbe_adapter *adapter)
++{
++	struct net_device *netdev = adapter->netdev;
++	struct txgbe_hw *hw = &adapter->hw;
++	u8 old_addr[ETH_ALEN];
++	int err;
++
 +	err = txgbe_reset_hw(hw);
-+	if (err) {
-+		dev_err(&pdev->dev, "HW Init failed: %d\n", err);
-+		goto err_pci_release_regions;
++	if (err != 0)
++		dev_err(&adapter->pdev->dev, "Hardware Error: %d\n", err);
++
++	/* do not flush user set addresses */
++	memcpy(old_addr, &adapter->mac_table[0].addr, netdev->addr_len);
++	txgbe_flush_sw_mac_table(adapter);
++	txgbe_mac_set_default_filter(adapter, old_addr);
++
++	/* update SAN MAC vmdq pool selection */
++	txgbe_set_vmdq_san_mac(hw, 0);
++}
++
++static void txgbe_disable_device(struct txgbe_adapter *adapter)
++{
++	struct net_device *netdev = adapter->netdev;
++	struct wx_hw *wxhw = &adapter->hw.wxhw;
++
++	wx_disable_pcie_master(wxhw);
++	/* disable receives */
++	wx_disable_rx(wxhw);
++
++	netif_carrier_off(netdev);
++	netif_tx_disable(netdev);
++
++	if (wxhw->bus.func < 2)
++		wr32m(wxhw, TXGBE_MIS_PRB_CTL, TXGBE_MIS_PRB_CTL_LAN_UP(wxhw->bus.func), 0);
++	else
++		dev_err(&adapter->pdev->dev,
++			"%s: invalid bus lan id %d\n",
++			__func__, wxhw->bus.func);
++
++	if (!(((wxhw->subsystem_device_id & WX_NCSI_MASK) == WX_NCSI_SUP) ||
++	      ((wxhw->subsystem_device_id & WX_WOL_MASK) == WX_WOL_SUP))) {
++		/* disable mac transmiter */
++		wr32m(wxhw, WX_MAC_TX_CFG, WX_MAC_TX_CFG_TE, 0);
 +	}
 +
++	/* Disable the Tx DMA engine */
++	wr32m(wxhw, WX_TDM_CTL, WX_TDM_CTL_TE, 0);
++}
++
++static void txgbe_down(struct txgbe_adapter *adapter)
++{
++	txgbe_disable_device(adapter);
++	txgbe_reset(adapter);
++}
++
+ /**
+  * txgbe_sw_init - Initialize general software structures (struct txgbe_adapter)
+  * @adapter: board private structure to initialize
+@@ -104,8 +245,67 @@ static int txgbe_sw_init(struct txgbe_adapter *adapter)
+ 		break;
+ 	}
+ 
++	wxhw->mac.num_rar_entries = TXGBE_SP_RAR_ENTRIES;
+ 	wxhw->mac.max_tx_queues = TXGBE_SP_MAX_TX_QUEUES;
+ 	wxhw->mac.max_rx_queues = TXGBE_SP_MAX_RX_QUEUES;
++	wxhw->mac.mcft_size = TXGBE_SP_MC_TBL_SIZE;
++
++	adapter->mac_table = kcalloc(wxhw->mac.num_rar_entries,
++				     sizeof(struct txgbe_mac_addr),
++				     GFP_KERNEL);
++	if (!adapter->mac_table) {
++		netif_err(adapter, probe, adapter->netdev,
++			  "mac_table allocation failed\n");
++		return -ENOMEM;
++	}
++
++	return 0;
++}
++
++/**
++ * txgbe_open - Called when a network interface is made active
++ * @netdev: network interface device structure
++ *
++ * Returns 0 on success, negative value on failure
++ *
++ * The open entry point is called when a network interface is made
++ * active by the system (IFF_UP).
++ **/
++static int txgbe_open(struct net_device *netdev)
++{
++	netif_carrier_off(netdev);
++
++	return 0;
++}
++
++/**
++ * txgbe_close_suspend - actions necessary to both suspend and close flows
++ * @adapter: the private adapter struct
++ *
++ * This function should contain the necessary work common to both suspending
++ * and closing of the device.
++ */
++static void txgbe_close_suspend(struct txgbe_adapter *adapter)
++{
++	txgbe_disable_device(adapter);
++}
++
++/**
++ * txgbe_close - Disables a network interface
++ * @netdev: network interface device structure
++ *
++ * Returns 0, this is not allowed to fail
++ *
++ * The close entry point is called when an interface is de-activated
++ * by the OS.  The hardware is still under the drivers control, but
++ * needs to be disabled.  A global MAC reset is issued to stop the
++ * hardware, and all transmit and receive resources are freed.
++ **/
++static int txgbe_close(struct net_device *netdev)
++{
++	struct txgbe_adapter *adapter = netdev_priv(netdev);
++
++	txgbe_down(adapter);
+ 
+ 	return 0;
+ }
+@@ -117,6 +317,11 @@ static void txgbe_dev_shutdown(struct pci_dev *pdev, bool *enable_wake)
+ 
+ 	netif_device_detach(netdev);
+ 
++	rtnl_lock();
++	if (netif_running(netdev))
++		txgbe_close_suspend(adapter);
++	rtnl_unlock();
++
+ 	pci_disable_device(pdev);
+ }
+ 
+@@ -132,6 +337,84 @@ static void txgbe_shutdown(struct pci_dev *pdev)
+ 	}
+ }
+ 
++/**
++ * txgbe_set_mac - Change the Ethernet Address of the NIC
++ * @netdev: network interface device structure
++ * @p: pointer to an address structure
++ *
++ * Returns 0 on success, negative on failure
++ **/
++static int txgbe_set_mac(struct net_device *netdev, void *p)
++{
++	struct txgbe_adapter *adapter = netdev_priv(netdev);
++	struct wx_hw *wxhw = &adapter->hw.wxhw;
++	struct sockaddr *addr = p;
++
++	if (!is_valid_ether_addr(addr->sa_data))
++		return -EADDRNOTAVAIL;
++
++	txgbe_del_mac_filter(adapter, wxhw->mac.addr, 0);
++	eth_hw_addr_set(netdev, addr->sa_data);
++	memcpy(wxhw->mac.addr, addr->sa_data, netdev->addr_len);
++
++	txgbe_mac_set_default_filter(adapter, wxhw->mac.addr);
++
++	return 0;
++}
++
++/**
++ * txgbe_add_sanmac_netdev - Add the SAN MAC address to the corresponding
++ * netdev->dev_addr_list
++ * @dev: network interface device structure
++ *
++ * Returns non-zero on failure
++ **/
++static int txgbe_add_sanmac_netdev(struct net_device *dev)
++{
++	struct txgbe_adapter *adapter = netdev_priv(dev);
++	struct txgbe_hw *hw = &adapter->hw;
++	int err = 0;
++
++	if (is_valid_ether_addr(hw->mac.san_addr)) {
++		rtnl_lock();
++		err = dev_addr_add(dev, hw->mac.san_addr,
++				   NETDEV_HW_ADDR_T_SAN);
++		rtnl_unlock();
++
++		/* update SAN MAC vmdq pool selection */
++		txgbe_set_vmdq_san_mac(hw, 0);
++	}
++	return err;
++}
++
++/**
++ * txgbe_del_sanmac_netdev - Removes the SAN MAC address to the corresponding
++ * netdev->dev_addr_list
++ * @dev: network interface device structure
++ *
++ * Returns non-zero on failure
++ **/
++static int txgbe_del_sanmac_netdev(struct net_device *dev)
++{
++	struct txgbe_adapter *adapter = netdev_priv(dev);
++	struct txgbe_mac_info *mac = &adapter->hw.mac;
++	int err = 0;
++
++	if (is_valid_ether_addr(mac->san_addr)) {
++		rtnl_lock();
++		err = dev_addr_del(dev, mac->san_addr, NETDEV_HW_ADDR_T_SAN);
++		rtnl_unlock();
++	}
++	return err;
++}
++
++static const struct net_device_ops txgbe_netdev_ops = {
++	.ndo_open               = txgbe_open,
++	.ndo_stop               = txgbe_close,
++	.ndo_validate_addr      = eth_validate_addr,
++	.ndo_set_mac_address    = txgbe_set_mac,
++};
++
+ /**
+  * txgbe_probe - Device Initialization Routine
+  * @pdev: PCI device information struct
+@@ -201,30 +484,50 @@ static int txgbe_probe(struct pci_dev *pdev,
+ 		goto err_pci_release_regions;
+ 	}
+ 
++	netdev->netdev_ops = &txgbe_netdev_ops;
+ 	strncpy(netdev->name, pci_name(pdev), sizeof(netdev->name) - 1);
+ 
+ 	/* setup the private structure */
+ 	err = txgbe_sw_init(adapter);
+ 	if (err)
+-		goto err_pci_release_regions;
++		goto err_free_mac_table;
+ 
+ 	/* check if flash load is done after hw power up */
+ 	err = wx_check_flash_load(wxhw, TXGBE_SPI_ILDR_STATUS_PERST);
+ 	if (err)
+-		goto err_pci_release_regions;
++		goto err_free_mac_table;
+ 	err = wx_check_flash_load(wxhw, TXGBE_SPI_ILDR_STATUS_PWRRST);
+ 	if (err)
+-		goto err_pci_release_regions;
++		goto err_free_mac_table;
+ 
+ 	err = txgbe_reset_hw(hw);
+ 	if (err) {
+ 		dev_err(&pdev->dev, "HW Init failed: %d\n", err);
+-		goto err_pci_release_regions;
++		goto err_free_mac_table;
+ 	}
+ 
  	netdev->features |= NETIF_F_HIGHDMA;
  
++	eth_hw_addr_set(netdev, wxhw->mac.perm_addr);
++
++	if (!is_valid_ether_addr(netdev->dev_addr)) {
++		dev_err(&pdev->dev, "invalid MAC address\n");
++		err = -EIO;
++		goto err_free_mac_table;
++	}
++
++	txgbe_mac_set_default_filter(adapter, wxhw->mac.perm_addr);
++
++	strcpy(netdev->name, "eth%d");
++	err = register_netdev(netdev);
++	if (err)
++		goto err_free_mac_table;
++
  	pci_set_drvdata(pdev, adapter);
++	adapter->netdev_registered = true;
++
++	/* carrier off reporting is important to ethtool even BEFORE open */
++	netif_carrier_off(netdev);
+ 
+ 	/* calculate the expected PCIe bandwidth required for optimal
+ 	 * performance. Note that some older parts will never have enough
+@@ -240,8 +543,17 @@ static int txgbe_probe(struct pci_dev *pdev,
+ 	else
+ 		dev_warn(&pdev->dev, "Failed to enumerate PF devices.\n");
+ 
++	netif_info(adapter, probe, netdev, "%pM\n", netdev->dev_addr);
++
++	/* add san mac addr to netdev */
++	err = txgbe_add_sanmac_netdev(netdev);
++	if (err)
++		goto err_free_mac_table;
++
+ 	return 0;
+ 
++err_free_mac_table:
++	kfree(adapter->mac_table);
+ err_pci_release_regions:
+ 	pci_disable_pcie_error_reporting(pdev);
+ 	pci_release_selected_regions(pdev,
+@@ -262,9 +574,24 @@ static int txgbe_probe(struct pci_dev *pdev,
+  **/
+ static void txgbe_remove(struct pci_dev *pdev)
+ {
++	struct txgbe_adapter *adapter = pci_get_drvdata(pdev);
++	struct net_device *netdev;
++
++	netdev = adapter->netdev;
++
++	/* remove the added san mac */
++	txgbe_del_sanmac_netdev(netdev);
++
++	if (adapter->netdev_registered) {
++		unregister_netdev(netdev);
++		adapter->netdev_registered = false;
++	}
++
+ 	pci_release_selected_regions(pdev,
+ 				     pci_select_bars(pdev, IORESOURCE_MEM));
+ 
++	kfree(adapter->mac_table);
++
+ 	pci_disable_pcie_error_reporting(pdev);
+ 
+ 	pci_disable_device(pdev);
 diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-index 1d1ead3d3c06..c891b0f07227 100644
+index c891b0f07227..ac2dbd654565 100644
 --- a/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
 +++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-@@ -33,12 +33,6 @@
- #define TXGBE_ID_WX1820_MAC_SGMII               0x2060
- #define TXGBE_ID_MAC_SGMII                      0x60
+@@ -40,6 +40,9 @@
+ #define TXGBE_SP_MPW  1
  
--#define TXGBE_NCSI_SUP                          0x8000
--#define TXGBE_NCSI_MASK                         0x8000
--#define TXGBE_WOL_SUP                           0x4000
--#define TXGBE_WOL_MASK                          0x4000
--#define TXGBE_DEV_MASK                          0xf0
--
- /* Combined interface*/
- #define TXGBE_ID_SFI_XAUI			0x50
- 
-@@ -50,6 +44,11 @@
+ /**************** SP Registers ****************************/
++/* chip control Registers */
++#define TXGBE_MIS_PRB_CTL                       0x10010
++#define TXGBE_MIS_PRB_CTL_LAN_UP(_i)            BIT(1 - (_i))
+ /* FMGR Registers */
  #define TXGBE_SPI_ILDR_STATUS                   0x10120
  #define TXGBE_SPI_ILDR_STATUS_PERST             BIT(0) /* PCIE_PERST is done */
- #define TXGBE_SPI_ILDR_STATUS_PWRRST            BIT(1) /* Power on reset is done */
-+#define TXGBE_SPI_ILDR_STATUS_LAN_SW_RST(_i)    BIT((_i) + 9) /* lan soft reset done */
-+
-+/* Sensors for PVT(Process Voltage Temperature) */
-+#define TXGBE_TS_CTL                            0x10300
-+#define TXGBE_TS_CTL_EVAL_MD                    BIT(31)
+@@ -50,8 +53,15 @@
+ #define TXGBE_TS_CTL                            0x10300
+ #define TXGBE_TS_CTL_EVAL_MD                    BIT(31)
  
++struct txgbe_mac_info {
++	u8 san_addr[ETH_ALEN];
++	u8 san_mac[ETH_ALEN];
++	u8 san_mac_rar_index;
++};
++
  struct txgbe_hw {
  	struct wx_hw wxhw;
++	struct txgbe_mac_info mac;
+ };
+ 
+ #endif /* _TXGBE_TYPE_H_ */
 -- 
 2.27.0
 
