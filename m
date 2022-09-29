@@ -2,141 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 749A45EEE3E
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:02:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E1365EEE56
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:05:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235087AbiI2HBx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 03:01:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56586 "EHLO
+        id S235036AbiI2HEw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 03:04:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235050AbiI2HB0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:01:26 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F27124C01
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:01:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1664434872;
+        with ESMTP id S235034AbiI2HEh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:04:37 -0400
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87806A98DC;
+        Thu, 29 Sep 2022 00:04:24 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1664435061;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=AxK08tpN1f4WSm3Qo4h/uwm/D3uFgyKZ3mg/sBcp48w=;
-        b=axPKG5JF/OHMaeU8ntK28fI65xj8AkTESeNqjc48Tsma5NqCvDxw/y+hUHsA5hY/Xi9Jpr
-        vmQ/WeIVl/zqR2TMuwnUabz46tCDs43ypi4QicRZBIRLXjvofXvfY1+0FN6ONrIsbwNFlp
-        rD/XVx+8uCqOuOiTVeKX49D+9TvEUUs=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-140-ekv5NN0CPguopGffqnvBLg-1; Thu, 29 Sep 2022 03:01:09 -0400
-X-MC-Unique: ekv5NN0CPguopGffqnvBLg-1
-Received: by mail-wm1-f71.google.com with SMTP id p24-20020a05600c1d9800b003b4b226903dso2546917wms.4
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:01:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=AxK08tpN1f4WSm3Qo4h/uwm/D3uFgyKZ3mg/sBcp48w=;
-        b=OHaWxdUsUM8u4l/EjPX/Zwk+4h00xJZTTMRjWGa572KIxfOxChykg3vdYqlTblgDcX
-         P4M5M0QYj79urm1XOzH6vJGKOwuhEtdZzdpkI7Te8615kSO7nWObMwVGRRt7e/NnrR8C
-         YLKZOFdUFjfy9iYe5OIZRIY8+heAhO2N3fMTsMJyfcPui2iJn2se/fEC8urebJQq+UlS
-         oiOcscL7dKyPr49r/4+8RWLm5+vOdhX1hbTb/QHoSMTezylh/BI3+Xkr63k8Kev1Sygo
-         rYGgnCLpvd63mpMmOdd4cEcqV+azXTLD/PK3QMv6FxXaX3skEfsE3UZnGmFre1awkC3w
-         yM7g==
-X-Gm-Message-State: ACrzQf2Ln9IVfPvw7HUYFpC1Q3GwpKyJLJpMjV4+TbQmiWvWSZSQyOCs
-        7Y+BsYteaUIy6JE7aI/ySQBlqeF7ylCQoXR3INcjQ5/1Agv2VdZEuInnwihU7SECe2/WLR5B7fg
-        GZYN1wzSfirx9vBgQ
-X-Received: by 2002:adf:e4ca:0:b0:228:d8b7:48a7 with SMTP id v10-20020adfe4ca000000b00228d8b748a7mr998856wrm.300.1664434867941;
-        Thu, 29 Sep 2022 00:01:07 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM6ZbRji7MbNVQKoWmesvvZxQ9b3Cpq1Lt79TWy3szetsqpegw4eZnLiCCE6V5WfZSRm2OWveg==
-X-Received: by 2002:adf:e4ca:0:b0:228:d8b7:48a7 with SMTP id v10-20020adfe4ca000000b00228d8b748a7mr998833wrm.300.1664434867646;
-        Thu, 29 Sep 2022 00:01:07 -0700 (PDT)
-Received: from redhat.com ([2.55.17.78])
-        by smtp.gmail.com with ESMTPSA id n2-20020a05600c4f8200b003b27f644488sm3861501wmq.29.2022.09.29.00.01.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Sep 2022 00:01:07 -0700 (PDT)
-Date:   Thu, 29 Sep 2022 03:01:03 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Gavin Li <gavinl@nvidia.com>
-Cc:     stephen@networkplumber.org, davem@davemloft.net,
-        jesse.brandeburg@intel.com, kuba@kernel.org,
-        sridhar.samudrala@intel.com, jasowang@redhat.com,
-        loseweigh@gmail.com, netdev@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        virtio-dev@lists.oasis-open.org
-Subject: Re: [virtio-dev] [PATCH v6 0/2] Improve virtio performance for 9k mtu
-Message-ID: <20220929030022-mutt-send-email-mst@kernel.org>
-References: <20220914144911.56422-1-gavinl@nvidia.com>
- <68934c1a-6c75-f410-2c29-1a7edc97aeb9@nvidia.com>
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=JFdunjvLsFhOdctZk0L2M1ZTEvP3hRf2QZ8TjxsFZJc=;
+        b=pPdvdLJHXSOORExVWP6Mxpv2k3VmGElV9TlGZWN6ssMstGLjnDZeAqIIN6eglfSFIF3hi8
+        DY57OvjWXh/VOM3M00Zs9ibSEWe52eUi+BfRNOKUgqGoFhda88b0YpUEgsMB8hLBxPV0gl
+        BfKOVklNcuNQF4yeg0qI8Ss+xLDSPNU=
+From:   Martin KaFai Lau <martin.lau@linux.dev>
+To:     ' ' <bpf@vger.kernel.org>, ' ' <netdev@vger.kernel.org>
+Cc:     'Alexei Starovoitov ' <ast@kernel.org>,
+        'Andrii Nakryiko ' <andrii@kernel.org>,
+        'Daniel Borkmann ' <daniel@iogearbox.net>,
+        'David Miller ' <davem@davemloft.net>,
+        'Jakub Kicinski ' <kuba@kernel.org>,
+        'Eric Dumazet ' <edumazet@google.com>,
+        'Paolo Abeni ' <pabeni@redhat.com>, ' ' <kernel-team@fb.com>
+Subject: [PATCH v3 bpf-next 0/5] bpf: Remove recursion check for struct_ops prog
+Date:   Thu, 29 Sep 2022 00:04:02 -0700
+Message-Id: <20220929070407.965581-1-martin.lau@linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <68934c1a-6c75-f410-2c29-1a7edc97aeb9@nvidia.com>
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 29, 2022 at 02:50:00PM +0800, Gavin Li wrote:
-> 
-> On 9/14/2022 10:49 PM, Gavin Li wrote:
-> > External email: Use caution opening links or attachments
-> > 
-> > 
-> > This small series contains two patches that improves virtio netdevice
-> > performance for 9K mtu when GRO/ guest TSO is disabled.
-> > 
-> > Gavin Li (2):
-> >    virtio-net: introduce and use helper function for guest gso support
-> >      checks
-> > ---
-> > changelog:
-> > v4->v5
-> > - Addressed comments from Michael S. Tsirkin
-> > - Remove unnecessary () in return clause
-> > v1->v2
-> > - Add new patch
-> > ---
-> >    virtio-net: use mtu size as buffer length for big packets
-> > ---
-> > changelog:
-> > v5->v6
-> > - Addressed comments from Jason and Michael S. Tsirkin
-> > - Remove wrong commit log description
-> > - Rename virtnet_set_big_packets_fields with virtnet_set_big_packets
-> > - Add more test results for different feature combinations
-> > v4->v5
-> > - Addressed comments from Michael S. Tsirkin
-> > - Improve commit message
-> > v3->v4
-> > - Addressed comments from Si-Wei
-> > - Rename big_packets_sg_num with big_packets_num_skbfrags
-> > v2->v3
-> > - Addressed comments from Si-Wei
-> > - Simplify the condition check to enable the optimization
-> > v1->v2
-> > - Addressed comments from Jason, Michael, Si-Wei.
-> > - Remove the flag of guest GSO support, set sg_num for big packets and
-> >    use it directly
-> > - Recalculate sg_num for big packets in virtnet_set_guest_offloads
-> > - Replace the round up algorithm with DIV_ROUND_UP
-> > ---
-> > 
-> >   drivers/net/virtio_net.c | 48 ++++++++++++++++++++++++++--------------
-> >   1 file changed, 32 insertions(+), 16 deletions(-)
-> > 
-> > --
-> > 2.31.1
-> > 
-> > 
-> > ---------------------------------------------------------------------
-> > To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> > For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-> Did you get a chance to pull these short series?
+From: Martin KaFai Lau <martin.lau@kernel.org>
 
-Not in net-next yet for some reason, I was hoping it
-will get some testing here. I'll put it in my tree
-for next for now so it gets tested. Thanks!
+The struct_ops is sharing the tracing-trampoline's enter/exit
+function which tracks prog->active to avoid recursion.  It turns
+out the struct_ops bpf prog will hit this prog->active and
+unnecessarily skipped running the struct_ops prog.  eg.  The
+'.ssthresh' may run in_task() and then interrupted by softirq
+that runs the same '.ssthresh'.
+
+The kernel does not call the tcp-cc's ops in a recursive way,
+so this set is to remove the recursion check for struct_ops prog.
+
+v3:
+- Clear the bpf_chg_cc_inprogress from the newly cloned tcp_sock
+  in tcp_create_openreq_child() because the listen sk can
+  be cloned without lock being held. (Eric Dumazet)
+
+v2:
+- v1 [0] turned into a long discussion on a few cases and also
+  whether it needs to follow the bpf_run_ctx chain if there is
+  tracing bpf_run_ctx (kprobe/trace/trampoline) running in between.
+
+  It is a good signal that it is not obvious enough to reason
+  about it and needs a tradeoff for a more straight forward approach.
+
+  This revision uses one bit out of an existing 1 byte hole
+  in the tcp_sock.  It is in Patch 4.
+
+  [0]: https://lore.kernel.org/bpf/20220922225616.3054840-1-kafai@fb.com/T/#md98d40ac5ec295fdadef476c227a3401b2b6b911
+
+Martin KaFai Lau (5):
+  bpf: Add __bpf_prog_{enter,exit}_struct_ops for struct_ops trampoline
+  bpf: Move the "cdg" tcp-cc check to the common sol_tcp_sockopt()
+  bpf: Refactor bpf_setsockopt(TCP_CONGESTION) handling into another
+    function
+  bpf: tcp: Stop bpf_setsockopt(TCP_CONGESTION) in init ops to recur
+    itself
+  selftests/bpf: Check -EBUSY for the recurred
+    bpf_setsockopt(TCP_CONGESTION)
+
+ arch/x86/net/bpf_jit_comp.c                   |  3 +
+ include/linux/bpf.h                           |  4 ++
+ include/linux/tcp.h                           |  6 ++
+ kernel/bpf/trampoline.c                       | 23 ++++++
+ net/core/filter.c                             | 70 ++++++++++++++-----
+ net/ipv4/tcp_minisocks.c                      |  1 +
+ .../selftests/bpf/prog_tests/bpf_tcp_ca.c     |  4 ++
+ tools/testing/selftests/bpf/progs/bpf_dctcp.c | 25 ++++---
+ 8 files changed, 112 insertions(+), 24 deletions(-)
+
+-- 
+2.30.2
 
