@@ -2,177 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AF8255EED4C
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 07:38:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62F2A5EED70
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 07:59:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234367AbiI2FiD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 01:38:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50260 "EHLO
+        id S234856AbiI2F7m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 01:59:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231419AbiI2FiC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 01:38:02 -0400
-Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3591612B481
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 22:38:01 -0700 (PDT)
-Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-353fbfa727cso4142957b3.4
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 22:38:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=vz0fRDjbJOjYUQ/nlWZ1qBnLntPF4vStJr0Z5e5Tnq8=;
-        b=h94bEFgNvlJwIfmXpBOWEDdZoe1CpIvw4ojjnjZMeDnk5xYQl5RafvRKLupXItRsHW
-         ymWTLCS8WG11OdHv42Szl8hxYxzs9ddimiZSUbMMx7OyRZXMZrJofn/kmZ/Juc5zF3v8
-         DdY5oT8PrA4yWVWMgVaicDo7dciGnEGSN4JCcHRONtkNzy0knrFGbML3Au0YiwCFXzig
-         3S/3CFmNoy4WdgFg0p4h0gq5TL9iODevq3bkGJlaU0IJqUK/CJHFrqyeGtaRNewTHZec
-         x5RIPhCH0e8CgIzseJD5VM31Iw+TOazgrcZZ3b+Ed1bj+86TecWawOEWFJ+A5yVcnxCb
-         NtSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=vz0fRDjbJOjYUQ/nlWZ1qBnLntPF4vStJr0Z5e5Tnq8=;
-        b=2zrT6TwbrvvmoSuhsPrR2KC5bYjy53sA8sFz9N6fH2DMV0Eib4r5cr5QsT34SEHns1
-         CY7q1jf7G0zcBW/gzLKNyv1nh0YQ7cIM6gWWp1CPLECpeFFleNoxbaRYnAoMyxRWd5LT
-         /Lq7wkEc7gLjUrGpBa3qqEVxUmI6oY5CBd6jiLkO/V8g1gxVDepFTI5+dk3vHnt4BPKA
-         S/PVzQ/CN+MyjaQiANHSgicj9VJ2smxIeamDEwXWNbeg+A/kdDbx21OR/6QhOUQ+TmMZ
-         EsJGvlrr7xAzACYHBCzZbK0sit2xyxtXwOiMdSmdxBNZEeYOXbczfPKHuJva/QmF97Wx
-         XVSg==
-X-Gm-Message-State: ACrzQf1tje2hvtX6bBfCNM0NemvyOHdC5lyoQvKQGLfiPLfL9fXBSm5F
-        uhqXT4q0box6+oE430yMyXdpNPrVlZJZySQQ0Nh07Q==
-X-Google-Smtp-Source: AMsMyM5Bho2c+hRKT+OulkCUqFdDNTJiJRVsTyA6NryhEowp5N4Er5EgNzU2U4Mif9DS1KuMsOJnGhCYGqRTTNiJxOw=
-X-Received: by 2002:a0d:e244:0:b0:351:ce09:1b13 with SMTP id
- l65-20020a0de244000000b00351ce091b13mr1414430ywe.332.1664429880178; Wed, 28
- Sep 2022 22:38:00 -0700 (PDT)
+        with ESMTP id S234865AbiI2F7k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 01:59:40 -0400
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5015F597;
+        Wed, 28 Sep 2022 22:59:36 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id E9171200AC;
+        Thu, 29 Sep 2022 07:59:33 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id bhf7aBP1-JV1; Thu, 29 Sep 2022 07:59:33 +0200 (CEST)
+Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 637442008D;
+        Thu, 29 Sep 2022 07:59:33 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout2.secunet.com (Postfix) with ESMTP id 53F1C80004A;
+        Thu, 29 Sep 2022 07:59:33 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 29 Sep 2022 07:59:33 +0200
+Received: from [172.18.157.49] (172.18.157.49) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Thu, 29 Sep
+ 2022 07:59:32 +0200
+To:     Steffen Klassert <steffen.klassert@secunet.com>,
+        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+From:   Christian Langrock <christian.langrock@secunet.com>
+Subject: [PATCH ipsec v3] xfrm: replay: Fix ESN wrap around for GSO
+Autocrypt: addr=christian.langrock@secunet.com; keydata=
+ mQENBFee7jkBCACkeMIuzZu/KBA1q3kKGr7d9iiZGF5IpJnIE9dMiK3uaz7uM26VSTJVp6jd
+ GuSGGGmb81OSLEcIEIsYKXvjblAKUX1A74t3WMRcky3MwJbmN6AkN8QlP45mDddtPRf1ElB2
+ S32i9OrEkvw8xcvHYPwbaHenXic4/8fHWEh+vtd/5/5TDTIU/ag9tQfPea13ixXN0PuccMub
+ FeUMpwFCg324+Z19iGvfDWWZmQQGlBjc3Q6z0hXOb/deWL/+lPS4t+tTgpmmZO4XkIs+18Kq
+ xCVukCbnqV0y+04sj3G1GQ/DlGvZHxwywBceAL7BvmdeXQKAS0KRL5zrghIBCgnUyutDABEB
+ AAG0M0NocmlzdGlhbiBMYW5ncm9jayA8Y2hyaXN0aWFuLmxhbmdyb2NrQHNlY3VuZXQuY29t
+ PokBNwQTAQgAIQUCV57uOQIbAwULCQgHAgYVCAkKCwIEFgIDAQIeAQIXgAAKCRCjeMdfgutr
+ Xu3kCACIBx6UHReBtBciNUPkP3fRaGeSOADIrql72VKD9faLAHTt6w8kvyzb8Ctpa77jswJt
+ 21c349mF3maPlpNtpswqH27bTlXYhNcXxcmHPCbNtN3yGUy0UuIJfBMZc8PLqiqYoY5GKD3u
+ imeVbDYjgNhebO2f1cUvwY2wTwX6b0tgKVK0xYYTDpXI1/2MVGsjXqak7PQoqVq0sDu0gIAA
+ i1QO0Fbb6jIaHj6CEM2hpBTBk8qbkPs/MqYGdLl4oXvkWTLduQjm6dMtjxvIt6WJWZQbLjTe
+ QIfc21luNQKDmfT623pVTPPMMAciWfpdw63FblfGcfBnAKCJ8JBj0z9T6/PmuQENBFee7jkB
+ CADS7amJPbY2dWpeGtE+I9yLL53lSriP4L6rI9UoEwNM1OkjnB7wFnH8dm8N68K2OJogkHwo
+ X2OnzGhxJ28NHRuAh++3hIYY+gU4HMLaX3onDK1oqAdYczhJ7f6UCPbYaghkzJ6Vg/FEWpA8
+ u5vG/BX4y+F3/Y98l6mzAX5wLmTapRwdfuRCXRA6jlIHIOwP3NPKK4Pz2E7witsimV1ucN4u
+ XFiZ36CUPAiXXlER9iPZnQUSyCobqJOJKm4C7wUNQ1negCXDBd3KjSyzTIafw/oYG4RrWGul
+ iI2ig/qTUC8cZdAJTMBjUJR6ugJazMB1Rg17p2GRD0AzUOV2qdqYFqQFABEBAAGJAR8EGAEI
+ AAkFAlee7jkCGwwACgkQo3jHX4Lra17vtQgAg2g0JEXVTGT36BDJgVjIUY1evnm1fWwTPpco
+ kP/8/aO2ubmlxtWQ2hV5OPfL5nDday2S4Nq5j3kqQq+rvUrORVmvT4WxYZM1fr2nibuzaUbs
+ JtxphNpjahrsEcLLTzBW4CbHTaL4YTT+ZD/GDeHoxAh9JfMkdMBXHyWTuw+QSP0pp7WvNsDo
+ sukKFyQ0rve9PH2dry6A0oLP7UxtAzEERV2Se0BueZPQuVnU6Cvj3ZStK28JDhMjxIPkZPE5
+ kCV8QNF8OsiwymA3aoPKe5Bw0lOcjuuJkxRa5bazyuubX9pIIgTeGsecgpSgpfA9jsEHKFqo
+ LuxUA+77VQ5hSydVaQ==
+Message-ID: <02b5650c-29f4-568f-b3be-689594dfacc2@secunet.com>
+Date:   Thu, 29 Sep 2022 07:59:31 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20220923224453.2351753-1-kafai@fb.com> <20220923224518.2353383-1-kafai@fb.com>
- <CANn89iLf+=AmMntTqy0HyOfbv6PASLsT+E4PhXMAX+xU1Zh2Yg@mail.gmail.com> <e529a40f-4c77-834e-3ac8-b58763b58993@linux.dev>
-In-Reply-To: <e529a40f-4c77-834e-3ac8-b58763b58993@linux.dev>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 28 Sep 2022 22:37:49 -0700
-Message-ID: <CANn89i+7G7kkN5mG=tEOd4xHAV7LyLQ7yj2a4hjsGb1_gFQ82A@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 4/5] bpf: tcp: Stop bpf_setsockopt(TCP_CONGESTION)
- in init ops to recur itself
-To:     Martin KaFai Lau <martin.lau@linux.dev>
-Cc:     bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        kernel-team <kernel-team@fb.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Martin KaFai Lau <martin.lau@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 28, 2022 at 10:31 PM Martin KaFai Lau <martin.lau@linux.dev> wrote:
->
-> On 9/28/22 7:04 PM, Eric Dumazet wrote:
-> > On Fri, Sep 23, 2022 at 3:48 PM Martin KaFai Lau <kafai@fb.com> wrote:
-> >>
-> >> From: Martin KaFai Lau <martin.lau@kernel.org>
-> >>
-> >> When a bad bpf prog '.init' calls
-> >> bpf_setsockopt(TCP_CONGESTION, "itself"), it will trigger this loop:
-> >>
-> >> .init => bpf_setsockopt(tcp_cc) => .init => bpf_setsockopt(tcp_cc) ...
-> >> ... => .init => bpf_setsockopt(tcp_cc).
-> >>
-> >> It was prevented by the prog->active counter before but the prog->active
-> >> detection cannot be used in struct_ops as explained in the earlier
-> >> patch of the set.
-> >>
-> >> In this patch, the second bpf_setsockopt(tcp_cc) is not allowed
-> >> in order to break the loop.  This is done by using a bit of
-> >> an existing 1 byte hole in tcp_sock to check if there is
-> >> on-going bpf_setsockopt(TCP_CONGESTION) in this tcp_sock.
-> >>
-> >> Note that this essentially limits only the first '.init' can
-> >> call bpf_setsockopt(TCP_CONGESTION) to pick a fallback cc (eg. peer
-> >> does not support ECN) and the second '.init' cannot fallback to
-> >> another cc.  This applies even the second
-> >> bpf_setsockopt(TCP_CONGESTION) will not cause a loop.
-> >>
-> >> Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
-> >> ---
-> >>   include/linux/tcp.h |  6 ++++++
-> >>   net/core/filter.c   | 28 +++++++++++++++++++++++++++-
-> >>   2 files changed, 33 insertions(+), 1 deletion(-)
-> >>
-> >> diff --git a/include/linux/tcp.h b/include/linux/tcp.h
-> >> index a9fbe22732c3..3bdf687e2fb3 100644
-> >> --- a/include/linux/tcp.h
-> >> +++ b/include/linux/tcp.h
-> >> @@ -388,6 +388,12 @@ struct tcp_sock {
-> >>          u8      bpf_sock_ops_cb_flags;  /* Control calling BPF programs
-> >>                                           * values defined in uapi/linux/tcp.h
-> >>                                           */
-> >> +       u8      bpf_chg_cc_inprogress:1; /* In the middle of
-> >> +                                         * bpf_setsockopt(TCP_CONGESTION),
-> >> +                                         * it is to avoid the bpf_tcp_cc->init()
-> >> +                                         * to recur itself by calling
-> >> +                                         * bpf_setsockopt(TCP_CONGESTION, "itself").
-> >> +                                         */
-> >>   #define BPF_SOCK_OPS_TEST_FLAG(TP, ARG) (TP->bpf_sock_ops_cb_flags & ARG)
-> >>   #else
-> >>   #define BPF_SOCK_OPS_TEST_FLAG(TP, ARG) 0
-> >> diff --git a/net/core/filter.c b/net/core/filter.c
-> >> index 96f2f7a65e65..ac4c45c02da5 100644
-> >> --- a/net/core/filter.c
-> >> +++ b/net/core/filter.c
-> >> @@ -5105,6 +5105,9 @@ static int bpf_sol_tcp_setsockopt(struct sock *sk, int optname,
-> >>   static int sol_tcp_sockopt_congestion(struct sock *sk, char *optval,
-> >>                                        int *optlen, bool getopt)
-> >>   {
-> >> +       struct tcp_sock *tp;
-> >> +       int ret;
-> >> +
-> >>          if (*optlen < 2)
-> >>                  return -EINVAL;
-> >>
-> >> @@ -5125,8 +5128,31 @@ static int sol_tcp_sockopt_congestion(struct sock *sk, char *optval,
-> >>          if (*optlen >= sizeof("cdg") - 1 && !strncmp("cdg", optval, *optlen))
-> >>                  return -ENOTSUPP;
-> >>
-> >> -       return do_tcp_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
-> >> +       /* It stops this looping
-> >> +        *
-> >> +        * .init => bpf_setsockopt(tcp_cc) => .init =>
-> >> +        * bpf_setsockopt(tcp_cc)" => .init => ....
-> >> +        *
-> >> +        * The second bpf_setsockopt(tcp_cc) is not allowed
-> >> +        * in order to break the loop when both .init
-> >> +        * are the same bpf prog.
-> >> +        *
-> >> +        * This applies even the second bpf_setsockopt(tcp_cc)
-> >> +        * does not cause a loop.  This limits only the first
-> >> +        * '.init' can call bpf_setsockopt(TCP_CONGESTION) to
-> >> +        * pick a fallback cc (eg. peer does not support ECN)
-> >> +        * and the second '.init' cannot fallback to
-> >> +        * another.
-> >> +        */
-> >> +       tp = tcp_sk(sk);
-> >> +       if (tp->bpf_chg_cc_inprogress)
-> >> +               return -EBUSY;
-> >> +
-> >
-> > Is the socket locked (and owned by current thread) at this point ?
-> > If not, changing bpf_chg_cc_inprogress would be racy.
->
-> Yes, the socket is locked and owned.  There is a sock_owned_by_me check earlier
-> in _bpf_setsockopt().
+When using GSO it can happen that the wrong seq_hi is used for the last
+packets before the wrap around. This can lead to double usage of a
+sequence number. To avoid this, we should serialize this last GSO
+packet.
 
-Good to know. Note a listener can be cloned without socket lock being held.
+Changes in v3:
+- fix build
+- remove wrapper function
 
-In order to avoid surprises, I would clear bpf_chg_cc_inprogress in
-tcp_create_openreq_child()
+Changes in v2:
+- switch to bool as return value
+- remove switch case in wrapper function
+
+Fixes: d7dbefc45cf5 ("xfrm: Add xfrm_replay_overflow functions for...")
+Signed-off-by: Christian Langrock <christian.langrock@secunet.com>
+---
+ include/net/xfrm.h     |  1 +
+ net/xfrm/xfrm_output.c |  2 +-
+ net/xfrm/xfrm_replay.c | 26 ++++++++++++++++++++++++++
+ 3 files changed, 28 insertions(+), 1 deletion(-)
+
+diff --git a/include/net/xfrm.h b/include/net/xfrm.h
+index 6e8fa98f786f..b845f911767c 100644
+--- a/include/net/xfrm.h
++++ b/include/net/xfrm.h
+@@ -1749,6 +1749,7 @@ void xfrm_replay_advance(struct xfrm_state *x, __be32 net_seq);
+ int xfrm_replay_check(struct xfrm_state *x, struct sk_buff *skb, __be32 net_seq);
+ void xfrm_replay_notify(struct xfrm_state *x, int event);
+ int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb);
++bool xfrm_replay_overflow_check(struct xfrm_state *x, struct sk_buff *skb);
+ int xfrm_replay_recheck(struct xfrm_state *x, struct sk_buff *skb, __be32 net_seq);
+ 
+ static inline int xfrm_aevent_is_on(struct net *net)
+diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
+index 9a5e79a38c67..c470a68d9c88 100644
+--- a/net/xfrm/xfrm_output.c
++++ b/net/xfrm/xfrm_output.c
+@@ -738,7 +738,7 @@ int xfrm_output(struct sock *sk, struct sk_buff *skb)
+ 		skb->encapsulation = 1;
+ 
+ 		if (skb_is_gso(skb)) {
+-			if (skb->inner_protocol)
++			if (skb->inner_protocol || xfrm_replay_overflow_check(x, skb))
+ 				return xfrm_output_gso(net, sk, skb);
+ 
+ 			skb_shinfo(skb)->gso_type |= SKB_GSO_ESP;
+diff --git a/net/xfrm/xfrm_replay.c b/net/xfrm/xfrm_replay.c
+index 9277d81b344c..23858eb5eab4 100644
+--- a/net/xfrm/xfrm_replay.c
++++ b/net/xfrm/xfrm_replay.c
+@@ -750,6 +750,27 @@ int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb)
+ 
+ 	return xfrm_replay_overflow_offload(x, skb);
+ }
++
++static bool xfrm_replay_overflow_check(struct xfrm_state *x, struct sk_buff *skb)
++{
++	struct xfrm_replay_state_esn *replay_esn = x->replay_esn;
++	__u32 oseq = replay_esn->oseq;
++
++	/* We assume that this function is called with
++	 * skb_is_gso(skb) == true
++	 */
++
++	if (x->repl_mode == XFRM_REPLAY_MODE_ESN) {
++		if (x->type->flags & XFRM_TYPE_REPLAY_PROT) {
++			oseq = oseq + 1 + skb_shinfo(skb)->gso_segs;
++			if (unlikely(oseq < replay_esn->oseq))
++				return true;
++		}
++	}
++
++	return false;
++}
++
+ #else
+ int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb)
+ {
+@@ -764,6 +785,11 @@ int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb)
+ 
+ 	return __xfrm_replay_overflow(x, skb);
+ }
++
++bool xfrm_replay_overflow_check(struct xfrm_state *x, struct sk_buff *skb)
++{
++	return false;
++}
+ #endif
+ 
+ int xfrm_init_replay(struct xfrm_state *x)
+-- 
+2.37.1.223.g6a475b71f8
+
