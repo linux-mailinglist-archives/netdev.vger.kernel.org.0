@@ -2,77 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DB235EF9E2
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 18:11:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C60A5EF9E8
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 18:13:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236018AbiI2QLz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 12:11:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45292 "EHLO
+        id S235091AbiI2QNJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 12:13:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235705AbiI2QLt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 12:11:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 618111D35B3;
-        Thu, 29 Sep 2022 09:11:48 -0700 (PDT)
+        with ESMTP id S235055AbiI2QNG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 12:13:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D7A41D66FD
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 09:13:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E71D6B8250D;
-        Thu, 29 Sep 2022 16:11:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0464AC433C1;
-        Thu, 29 Sep 2022 16:11:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 023E861A3F
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 16:13:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E2A2C433D6;
+        Thu, 29 Sep 2022 16:13:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664467905;
-        bh=3UNXmMc0XLFmLrPUUGDB5+gyNKMjhdigqOhQGHRSdrA=;
+        s=k20201202; t=1664467983;
+        bh=drRKiLAPoaGIh4dOq8I2mgRFozPK4sMbUP1m09g6MH0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=WNh5qrP20dU0231I3OsV82y6I7NXzOH1OEvW/U+XYIvzP9zf4bw9oKl+OUo6uu+fw
-         FEdMtq7advOwZCOCnuIAxfEsjRcIJB62ZnVUVy0dnTTUdFxBYKxByOiGEZ6F8NxUBZ
-         1gX6UkmBf/lwa9i8heosMZWm9LEmelnaiZ5KuJIG0P3eL7/tfQxpTZ32R60iec3q3g
-         HFlmvjS60DbN75pqxIRqlL54ivAOh4f1InBwTyEQiYjTFN2DT18W58v1pWsyVuin+j
-         9abrb1S1v2Pf8XlhIo0BVZPb1ypyfglLA12eHr04Uijk7zkzuUkuYb+f/b97lfuymk
-         6eqkF7ZPUwOyw==
-Date:   Thu, 29 Sep 2022 09:11:43 -0700
+        b=TVDAmCXBnJuCQZGVKyYkX5vOPW5rm8mo4Jm/3SJDL0pbwLF0AgD2eKC0UTBPphw+c
+         7Lpm/4yRo5RIAriV5jGn6I+4CSLmY7irWoatsnln6jQPd1YbyDraekJXFMlAIreT8L
+         9rHkvqNv8rDvjueawtDBK8DALiw18TXHHMNcjcBj2I/gI5qtNRlrxlBk8lXvpY3zG9
+         LsHwYC0zbHSib1IC6MEZCH28zWJCfJW+kfNYMNPu95X7sB+3vCnDx34yWYs/kD8hzj
+         s7UgcO95LfKrmzJm9cS99behS9uNE0IX29mAbSePMsPCfAMvLJNznp9v77LJZj9rtD
+         N3bj+TUHypF6w==
+Date:   Thu, 29 Sep 2022 09:13:02 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Hans Schultz <netdev@kapio-technology.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Florent Fourcot <florent.fourcot@wifirst.fr>,
-        Hans Schultz <schultz.hans@gmail.com>,
-        Joachim Wiberg <troglobit@gmail.com>,
-        Amit Cohen <amcohen@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v6 net-next 9/9] selftests: forwarding: add test of
- MAC-Auth Bypass to locked port tests
-Message-ID: <20220929091143.468546f2@kernel.org>
-In-Reply-To: <20220928174904.117131-1-netdev@kapio-technology.com>
-References: <20220928174904.117131-1-netdev@kapio-technology.com>
+To:     Subbaraya Sundeep <sbhatta@marvell.com>
+Cc:     <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
+        <netdev@vger.kernel.org>, <sgoutham@marvell.com>,
+        <naveenm@marvell.com>, Geetha sowjanya <gakula@marvell.com>,
+        Vamsi Attunuru <vattunuru@marvell.com>
+Subject: Re: [net-next PATCH v2 6/8] octeontx2-af: cn10k: mcs: Handle MCS
+ block interrupts
+Message-ID: <20220929091302.13d3248e@kernel.org>
+In-Reply-To: <1664337490-20231-7-git-send-email-sbhatta@marvell.com>
+References: <1664337490-20231-1-git-send-email-sbhatta@marvell.com>
+        <1664337490-20231-7-git-send-email-sbhatta@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -85,20 +56,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 28 Sep 2022 19:49:04 +0200 Hans Schultz wrote:
-> From: "Hans J. Schultz" <netdev@kapio-technology.com>
+On Wed, 28 Sep 2022 09:28:08 +0530 Subbaraya Sundeep wrote:
+> From: Geetha sowjanya <gakula@marvell.com>
 > 
-> Verify that the MAC-Auth mechanism works by adding a FDB entry with the
-> locked flag set, denying access until the FDB entry is replaced with a
-> FDB entry without the locked flag set.
+> Hardware triggers an interrupt for events like PN wrap to zero,
+> PN crosses set threshold. This interrupt is received
+> by the MCS_AF. MCS AF then finds the PF/VF to which SA is mapped
+> and notifies them using mcs_intr_notify mbox message.
 > 
-> Add test of blackhole fdb entries, verifying that there is no forwarding
-> to a blackhole entry from any port, and that the blackhole entry can be
-> replaced.
-> 
-> Also add a test that verifies that sticky FDB entries cannot roam (this
-> is not needed for now, but should in general be present anyhow for future
-> applications).
+> PF/VF using mcs_intr_cfg mbox can configure the list
+> of interrupts for which they want to receive the
+> notification from AF.
 
-If you were trying to repost just the broken patches - that's not gonna
-work :(
+clang is still upset at a couple of patches here, for instance:
+
+drivers/net/ethernet/marvell/octeontx2/af/mcs_rvu_if.c:102:6: warning: variable 'err' is uninitialized when used here [-Wuninitialized]
+        if (err)
+            ^~~
+drivers/net/ethernet/marvell/octeontx2/af/mcs_rvu_if.c:87:9: note: initialize the variable 'err' to silence this warning
+        int err, pf;
+               ^
+                = 0
