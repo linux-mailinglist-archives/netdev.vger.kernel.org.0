@@ -2,75 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C6585EEAC9
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 03:15:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D31D15EEAE2
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 03:26:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231419AbiI2BPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 21:15:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47894 "EHLO
+        id S233375AbiI2B0Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 21:26:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231303AbiI2BPI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 21:15:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91DEE17586
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 18:15:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 08F6061787
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 01:15:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30600C433D6;
-        Thu, 29 Sep 2022 01:15:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664414105;
-        bh=xEouCU4tMbXzuAYIYQFgY1b4c71BsMcFAMZN6c+Z6TE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=sZlrYUOxZN5pIwxfwFT52SIpNYULi28s288oCZkQcn3VjIkssTZ/gTd/bUE2JCD5j
-         rAuih92kqYY/Cx8C192ZzcjKQXBcIA/ffUJ1YZwKy5swvh8B5gr9kyHcpEKcwG14NN
-         Jf1OCgc7Kco2Eb2L733TLsJfTwvzTJ6fOalytuYXOoaTwL4/EYV41CpM9k+EgmBsmy
-         YgJ3hIXl36JpNF1yfhsIJZ3togxHg0tiViiPM+j59yeXfROkOA58YSy6ipuImEPblE
-         6s/G6c9spf/vYsIW2ZZM5+1+1FCrYC2YRWIjEyUYHIo4F+h4JiEnisNcqM4340yiCA
-         T8nR0bwV3YqNg==
-Date:   Wed, 28 Sep 2022 18:15:04 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Edward Cree <ecree.xilinx@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-net-drivers@amd.com,
-        davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
-        habetsm.xilinx@gmail.com
-Subject: Re: [PATCH v2 net-next 3/6] sfc: optional logging of TC offload
- errors
-Message-ID: <20220928181504.234644e3@kernel.org>
-In-Reply-To: <bc338a78-a6da-78ad-ca70-d350e8e13422@gmail.com>
-References: <cover.1664218348.git.ecree.xilinx@gmail.com>
-        <a1ff1d57bcd5a8229dd5f2147b09c4b2b896ecc9.1664218348.git.ecree.xilinx@gmail.com>
-        <20220928104426.1edd2fa2@kernel.org>
-        <b4359f7e-2625-1662-0a78-9dd65bfc8078@gmail.com>
-        <20220928113253.1823c7e1@kernel.org>
-        <cd10c58a-5b82-10a3-8cf8-4c08f85f87e6@gmail.com>
-        <20220928120754.5671c0d7@kernel.org>
-        <bc338a78-a6da-78ad-ca70-d350e8e13422@gmail.com>
+        with ESMTP id S229901AbiI2B0X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 21:26:23 -0400
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFC9758B70;
+        Wed, 28 Sep 2022 18:26:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1664414783; x=1695950783;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=6ygTH10tGHqhBcx6g+xK0gjh4ObCKZbmWihfQnUk4O4=;
+  b=W9XACM6TT1LoCPr4vazlfQCjBpXUsn/1jpwcamC1FwZDLt8/qoBwWqyx
+   FSaOWZpLEWMXV+UsV5Scj2QINY4BiiIbg/JD4zotsNHyJ8TeyR+fYHDKo
+   fimOb4aeml6pq/caxCUzEYl2tLzrnY9RbvE9RgDDVdfhwrB+Xc8eFekxk
+   0=;
+X-IronPort-AV: E=Sophos;i="5.93,353,1654560000"; 
+   d="scan'208";a="135110266"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-4ba5c7da.us-east-1.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2022 01:26:07 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-iad-1a-4ba5c7da.us-east-1.amazon.com (Postfix) with ESMTPS id 4EEDD8A6FC;
+        Thu, 29 Sep 2022 01:26:03 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Thu, 29 Sep 2022 01:26:02 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.162.55) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
+ Thu, 29 Sep 2022 01:25:57 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@kernel.org>
+CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        <netdev@vger.kernel.org>, <syzkaller-bugs@googlegroups.com>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v3 net 0/5] tcp/udp: Fix memory leaks and data races around IPV6_ADDRFORM.
+Date:   Wed, 28 Sep 2022 18:25:37 -0700
+Message-ID: <20220929012542.55424-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.55]
+X-ClientProxiedBy: EX13D30UWB004.ant.amazon.com (10.43.161.51) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 28 Sep 2022 22:14:37 +0100 Edward Cree wrote:
-> On 28/09/2022 20:07, Jakub Kicinski wrote:
-> > Let's solve practical problems first :) The cases with multiple devices
-> > offloading are rare AFAIK.  
-> 
-> I know of someone who is working on such a use-case for the Alveo U25N
->  and running into Interesting difficulties with the same rule getting
->  offloaded twice; they probably would care about getting both devices'
->  error messages.  I know the plural of anecdote is not data; but I
->  think it's not so rare that we can completely ignore it.
+This series fixes some memory leaks and data races caused in the
+same scenario where one thread converts an IPv6 socket into IPv4
+with IPV6_ADDRFORM and another accesses the socket concurrently.
 
-Hm. I wonder if throwing a tracepoint into the extack setting
-machinery would be a reasonable stop gap for debugging.
+Note patch 1 and 5 conflict with these commits in net-next, respectively.
+
+  * 24426654ed3a ("bpf: net: Avoid sk_setsockopt() taking sk lock when called from bpf")
+  * 34704ef024ae ("bpf: net: Change do_tcp_getsockopt() to take the sockptr_t argument")
+
+
+Changes:
+  v3:
+    * Patch 2:
+      * Add comment for np->rxopt.all = 0
+      * Add inet6_cleanup_sock()
+    * Patch 3:
+      * Call inet6_cleanup_sock() instead of inet6_destroy_sock()
+
+  v2: https://lore.kernel.org/netdev/20220928002741.64237-1-kuniyu@amazon.com/
+    * Patch 3:
+      * Move inet6_destroy_sock() from sk_prot->destroy()
+        to sk->sk_destruct() and fix CONFIG_IPV6=m build failure
+    * Patch 5:
+      * Add WRITE_ONCE()s in tcp_v6_connect()
+      * Add Reported-by tags and KCSAN log in changelog
+
+  v1: https://lore.kernel.org/netdev/20220927161209.32939-1-kuniyu@amazon.com/
+
+
+Kuniyuki Iwashima (5):
+  tcp/udp: Fix memory leak in ipv6_renew_options().
+  udp: Call inet6_destroy_sock() in setsockopt(IPV6_ADDRFORM).
+  tcp/udp: Call inet6_destroy_sock() in IPv6 sk->sk_destruct().
+  ipv6: Fix data races around sk->sk_prot.
+  tcp: Fix data races around icsk->icsk_af_ops.
+
+ include/net/ipv6.h       |  2 ++
+ include/net/udp.h        |  2 +-
+ net/core/sock.c          |  6 ++++--
+ net/ipv4/af_inet.c       | 23 ++++++++++++++++-------
+ net/ipv4/tcp.c           | 10 ++++++----
+ net/ipv4/udp.c           |  8 ++++++--
+ net/ipv6/af_inet6.c      | 15 ++++++++++++++-
+ net/ipv6/ipv6_sockglue.c | 34 +++++++++++++++++++---------------
+ net/ipv6/tcp_ipv6.c      |  6 ++++--
+ net/ipv6/udp.c           | 15 ++++++++++++++-
+ 10 files changed, 86 insertions(+), 35 deletions(-)
+
+-- 
+2.30.2
+
