@@ -2,53 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E9D415EF896
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 17:23:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 111C95EF899
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 17:23:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235895AbiI2PW2 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 29 Sep 2022 11:22:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53516 "EHLO
+        id S235899AbiI2PXc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 11:23:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235896AbiI2PW0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 11:22:26 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 678B11514DC
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 08:22:16 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-215-KJpOk1o4M2ult_yIQyhK4w-1; Thu, 29 Sep 2022 16:22:11 +0100
-X-MC-Unique: KJpOk1o4M2ult_yIQyhK4w-1
-Received: from AcuMS.Aculab.com (10.202.163.4) by AcuMS.aculab.com
- (10.202.163.4) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Thu, 29 Sep
- 2022 16:22:10 +0100
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.040; Thu, 29 Sep 2022 16:22:10 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: re: [PATCH 3/4] proc: Point /proc/net at /proc/thread-self/net
- instead of /proc/self/net
-Thread-Topic: re: [PATCH 3/4] proc: Point /proc/net at /proc/thread-self/net
- instead of /proc/self/net
-Thread-Index: AdjUFaAzwFjoFpF4RWSGA65kFT23EA==
-Date:   Thu, 29 Sep 2022 15:22:10 +0000
-Message-ID: <dacfc18d6667421d97127451eafe4f29@AcuMS.aculab.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S235808AbiI2PXa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 11:23:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9BB91514D0
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 08:23:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5094461484
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 15:23:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25B2CC433C1;
+        Thu, 29 Sep 2022 15:23:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664465008;
+        bh=YTe9P14YqLojcsFy0//pbq/oilNL4/PiTLUABmITT5o=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dKHScsEP9kA+srQPwLyWwY4qEkixRmiljWfWMcVQXtqIj483h+/LKx2b+cDCMzuHk
+         rEKjuAf5TFwRKzyV00WRHtcr7b+YYaLs8PIcCOQuWD7qDU/3YNzPHElyPyvxgMlS6G
+         yqRYsA0Jskxz53CwLoQeag48dsOhxk+pkyLgBaTfSGTqoCxHMbSlAapnE3JcYoaEly
+         kztBxS8D4ScpirEnIewOVOxxQIgYd1tWPJCWhx7SnVR+nBjxnX36FQGkrOREZcHBw1
+         W7s4kHESUFgVs+cn8o6PABkSpHFLOPpkEKuQgk9FiiDa9qU8nyivSUjW/aeWO01vWo
+         NyrwNKlNunesA==
+Date:   Thu, 29 Sep 2022 08:23:27 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Gal Pressman <gal@nvidia.com>
+Cc:     "Zulkifli, Muhammad Husaini" <muhammad.husaini.zulkifli@intel.com>,
+        "intel-wired-lan@osuosl.org" <intel-wired-lan@osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
+        "Gunasekaran, Aravindhan" <aravindhan.gunasekaran@intel.com>,
+        "Ahmad Tarmizi, Noor Azura" <noor.azura.ahmad.tarmizi@intel.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "leon@kernel.org" <leon@kernel.org>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Andy Gospodarek <andy@greyhouse.net>
+Subject: Re: [PATCH v1 0/4] Add support for DMA timestamp for non-PTP
+ packets
+Message-ID: <20220929082327.209d6227@kernel.org>
+In-Reply-To: <6f6f4487-1c5d-de4e-0c79-452128deae0c@nvidia.com>
+References: <20220927130656.32567-1-muhammad.husaini.zulkifli@intel.com>
+        <20220927170919.3a1dbcc3@kernel.org>
+        <SJ1PR11MB6180CAE122C465AB7CB58B1BB8579@SJ1PR11MB6180.namprd11.prod.outlook.com>
+        <20220929065615.0a717655@kernel.org>
+        <6f6f4487-1c5d-de4e-0c79-452128deae0c@nvidia.com>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 1
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,45 +68,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I've just bumped into (the lack of) this change (from aug 2014):
+On Thu, 29 Sep 2022 17:46:04 +0300 Gal Pressman wrote:
+> What exactly do you mean by DMA stamps?
+> 
+> Our NIC supports two modes of operation (both TX/RX):
+> - CQE timestamp (I think that's what you call DMA timestamp), where the
+> timestamp is written when the completion is being written/generated.
+> - Port timestamp (MAC timestamp), where the timstamp is written when the
+> packet is being sent to the wire, or received from the wire. This
+> doesn't account for the time the packet spent inside the NIC pipeline.
+> 
+> So I believe the answer to your question is yes :).
 
-> In oddball cases where the thread has a different network namespace
-> than the primary thread group leader or more likely in cases where
-> the thread remains and the thread group leader has exited this
-> ensures that /proc/net continues to work.
-
-> -	proc_symlink("net", NULL, "self/net");
-> +	proc_symlink("net", NULL, "thread-self/net");
-
-This was applied and then reverted by Linus (I can't find anything
-in the LKML archive) - see git show 155134fef - because of
-issues with apparmor and dhclient.
-
-In my case we have an application that is started in one
-network namespace (where most of what it needs to do exists)
-but needs one thread to revert to the 'init' namespace in
-order to accept TCP connections from applications.
-
-The thread that reverts is the main thread.
-Until a change made in the last 6 months it actually worked.
-(I'm using 5.10 LTS kernels so I'm not sure when.)
-Then a fix was made to correctly update the mounts when the
-namespace changed - and it suddenly stopped working.
-
-So the 'oddball' case of different threads being in different
-namespaces and then accessing /proc/net (because that is what
-the code always did before being changed to run in a namespace)
-has happened to a real application.
-
-Fortunately it happened in testing and the application could
-be changed.
-
-(I was looking at the kernel sources to propose the change
-that got reverted!)
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+Thanks! I think we should provide the config API for both Tx and Rx,
+then.
