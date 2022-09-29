@@ -2,130 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EFF15EEF3B
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:38:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFDE15EEF58
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:41:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235303AbiI2HiZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 03:38:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41900 "EHLO
+        id S235365AbiI2Hkn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 03:40:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235022AbiI2HiY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:38:24 -0400
+        with ESMTP id S235364AbiI2Hke (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:40:34 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38EB1139406
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:38:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F8187F11D
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:40:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1664437102;
+        s=mimecast20190719; t=1664437223;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=EtU8HP1rRMHMXLmU+RcQMq0RJUO/qXYiXZjHcG/czQU=;
-        b=HH8sLW+Kz593XUMgW1MQpn4WrCXXiCgNkJTYYdaLuYRF2oUYqaHQlcc7AlbeP1DN+mFLgA
-        sB3bGelNrPfbZmgtUNxGJOeqca2p1Enan4iRN45GWTY5gBJMDFCT3s1aladWIlEKkJfacX
-        TAbY6YzhYS0si3mqu+0SA+QAkO5LHps=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=oaCFqrQ5GzdKP7AhOQ10Zj7koIi79amAnF/+mMQ81sg=;
+        b=b4YfKYj08HJibCovZfAlzY12sCe0/NHnIU3gVzbJfhTovGDLxhA9iCLu3YSSJygfvLb8gH
+        3rlxcv8zN4UKPkDZMKH+v3DhSvCl1Db0sGW4hZLki8HgAHlzo/LIRMkcO/xXW/FEQCk9pO
+        34lkHUMat4GskCyzXKEf8VWHqrBiGx4=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-463-0Lyf5-flPuym5s-EFaj6Ag-1; Thu, 29 Sep 2022 03:38:21 -0400
-X-MC-Unique: 0Lyf5-flPuym5s-EFaj6Ag-1
-Received: by mail-wm1-f71.google.com with SMTP id p24-20020a05600c1d9800b003b4b226903dso2585909wms.4
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:38:20 -0700 (PDT)
+ us-mta-67-veOYiquaOYyPx7DyCjlpaw-1; Thu, 29 Sep 2022 03:40:21 -0400
+X-MC-Unique: veOYiquaOYyPx7DyCjlpaw-1
+Received: by mail-qk1-f200.google.com with SMTP id i7-20020a05620a404700b006ced0d02b68so488529qko.10
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:40:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=EtU8HP1rRMHMXLmU+RcQMq0RJUO/qXYiXZjHcG/czQU=;
-        b=uHbqyCnNwIXccttRGdjcIkcp3IuPD6vFM9ShzXDm7YsIpo6OrPTi/FMOhgbyL/qxhR
-         xUTN7xrde/0hKJnmvW58jndS57HSLR/0S6AeLQfJAkFcqdnsG24lijh6drQQX+rfDu6V
-         kZqLiO+72hxToJsEiGA7vuApPw3TukeTmcOprcYHSQ3Yp06gSYwm5cm/lENyUzKUc4uz
-         gvXGC/QPHU74zJ9/Y4+Fe+jNklDg3LG+K/cXmW4nORUOjBeCTvl3aW94LOCaCRHEZ6qk
-         fXLqNBHj4aoD4zqQJDAJ8PdDMlPWPA7N65iTwGLICNeQEeQ6d9vD+36SZMOYsYF/nEPJ
-         tE6Q==
-X-Gm-Message-State: ACrzQf1c+37eHhVzJqHXL00I7Iyq6pht24U4pg0STqlHnsU+fiAYBtmO
-        lnkUs9vDoatmr51I+aLTBTb8SEjDyw6gEFsr/ABIeT+olEVdMXRarC/gvOIRY8aPXIjJDE6s7HS
-        39bGzGNnnap+vDsHm
-X-Received: by 2002:a05:600c:b47:b0:3b4:8604:410c with SMTP id k7-20020a05600c0b4700b003b48604410cmr1224703wmr.51.1664437099831;
-        Thu, 29 Sep 2022 00:38:19 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM5g6rBu5QPYx9aQ8mXAgqZl+RIeinGA8XoV5PQpBXrrGB5+Tr4uCc8Xa8taFU+6U5nEO1ZyHg==
-X-Received: by 2002:a05:600c:b47:b0:3b4:8604:410c with SMTP id k7-20020a05600c0b4700b003b48604410cmr1224688wmr.51.1664437099556;
-        Thu, 29 Sep 2022 00:38:19 -0700 (PDT)
-Received: from redhat.com ([2.55.47.213])
-        by smtp.gmail.com with ESMTPSA id z2-20020a05600c0a0200b003b48dac344esm3808228wmp.43.2022.09.29.00.38.18
+        bh=oaCFqrQ5GzdKP7AhOQ10Zj7koIi79amAnF/+mMQ81sg=;
+        b=5Ug9c6dLGeWit/nXfIU9NBK/YiTNjBM/t4s+5bfLbhsA+GGv7w/vWAlfVOxdu7ym74
+         GHWXvxT6EEEOa125inGOpTpHaaIF9WOIwvvKo3J/cp1Y6Q+htMKPqFZ++sfoVW1w11oM
+         oC0CFROfAB6f+/z0J7AgzrdMOugjZZQ5u2py+oP7cYLDTyTqra40/zURGj9tA6BTASgL
+         xuXuCSCrrpOxWvV3QXuiYSg3obS00QywTtbdBgraBrM+Hhjq6psi+SflKEpZhyokvvGf
+         etRKNndb3bID1vK3OQbu/ip1AEsTa0EadgWtFJNgi0C+yMkAHc2EeRJTVLKjNKmfdrZt
+         7ifA==
+X-Gm-Message-State: ACrzQf0I4vsjW4qip/mllv8dx5BxindjgvYznfJZ8KcJkAwnZK4FHaIY
+        LT3VgSXZnEasEkxLybFDfIpOlceOy+pzUR1iXLPUc4NaFCXJiXwhPisrqu2YAqZ6Rd4Smv1ogwf
+        0ti8hhw4ajPG8iHeB
+X-Received: by 2002:a05:620a:c15:b0:6ce:d1db:f7dc with SMTP id l21-20020a05620a0c1500b006ced1dbf7dcmr1200823qki.259.1664437221183;
+        Thu, 29 Sep 2022 00:40:21 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM7ojPjmY7apjIi1WK+7gxu/7NwTtehomIcT45iZfLQ6HJTQ6dVYty87P02i03q/EK/PFipsQA==
+X-Received: by 2002:a05:620a:c15:b0:6ce:d1db:f7dc with SMTP id l21-20020a05620a0c1500b006ced1dbf7dcmr1200814qki.259.1664437220936;
+        Thu, 29 Sep 2022 00:40:20 -0700 (PDT)
+Received: from sgarzare-redhat (host-79-46-200-222.retail.telecomitalia.it. [79.46.200.222])
+        by smtp.gmail.com with ESMTPSA id x11-20020a05620a258b00b006bac157ec19sm5392848qko.123.2022.09.29.00.40.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Sep 2022 00:38:19 -0700 (PDT)
-Date:   Thu, 29 Sep 2022 03:38:15 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     "Zhu, Lingshan" <lingshan.zhu@intel.com>
-Cc:     jasowang@redhat.com, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, kvm@vger.kernel.org
-Subject: Re: [PATCH V3 0/6] Conditionally read fields in dev cfg space
-Message-ID: <20220929033805-mutt-send-email-mst@kernel.org>
-References: <20220929014555.112323-1-lingshan.zhu@intel.com>
- <896fe0b9-5da2-2bc6-0e46-219aa4b9f44f@intel.com>
+        Thu, 29 Sep 2022 00:40:20 -0700 (PDT)
+Date:   Thu, 29 Sep 2022 09:40:10 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Junichi Uekawa <uekawa@chromium.org>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        Bobby Eshleman <bobby.eshleman@gmail.com>
+Subject: Re: [PATCH] vhost/vsock: Use kvmalloc/kvfree for larger packets.
+Message-ID: <20220929074010.37mksjmwr3l4wlwt@sgarzare-redhat>
+References: <20220928064538.667678-1-uekawa@chromium.org>
+ <20220928082823.wyxplop5wtpuurwo@sgarzare-redhat>
+ <20220928052738-mutt-send-email-mst@kernel.org>
+ <20220928151135.pvrlsylg6j3hzh74@sgarzare-redhat>
+ <20220928160116-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <896fe0b9-5da2-2bc6-0e46-219aa4b9f44f@intel.com>
+In-Reply-To: <20220928160116-mutt-send-email-mst@kernel.org>
 X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 29, 2022 at 03:23:46PM +0800, Zhu, Lingshan wrote:
-> Hi Michael,
-> 
-> Jason starts his vacation this afternoon, and next week is our national
-> holiday.
-> He has acked 3 ~ 6 of this series before, and I have made improvements based
-> on his comments.
-> Do you have any comments on patches 1 and 2?
+On Wed, Sep 28, 2022 at 04:02:12PM -0400, Michael S. Tsirkin wrote:
+>On Wed, Sep 28, 2022 at 05:11:35PM +0200, Stefano Garzarella wrote:
+>> On Wed, Sep 28, 2022 at 05:31:58AM -0400, Michael S. Tsirkin wrote:
+>> > On Wed, Sep 28, 2022 at 10:28:23AM +0200, Stefano Garzarella wrote:
+>> > > On Wed, Sep 28, 2022 at 03:45:38PM +0900, Junichi Uekawa wrote:
+>> > > > When copying a large file over sftp over vsock, data size is usually 32kB,
+>> > > > and kmalloc seems to fail to try to allocate 32 32kB regions.
+>> > > >
+>> > > > Call Trace:
+>> > > >  [<ffffffffb6a0df64>] dump_stack+0x97/0xdb
+>> > > >  [<ffffffffb68d6aed>] warn_alloc_failed+0x10f/0x138
+>> > > >  [<ffffffffb68d868a>] ? __alloc_pages_direct_compact+0x38/0xc8
+>> > > >  [<ffffffffb664619f>] __alloc_pages_nodemask+0x84c/0x90d
+>> > > >  [<ffffffffb6646e56>] alloc_kmem_pages+0x17/0x19
+>> > > >  [<ffffffffb6653a26>] kmalloc_order_trace+0x2b/0xdb
+>> > > >  [<ffffffffb66682f3>] __kmalloc+0x177/0x1f7
+>> > > >  [<ffffffffb66e0d94>] ? copy_from_iter+0x8d/0x31d
+>> > > >  [<ffffffffc0689ab7>] vhost_vsock_handle_tx_kick+0x1fa/0x301 [vhost_vsock]
+>> > > >  [<ffffffffc06828d9>] vhost_worker+0xf7/0x157 [vhost]
+>> > > >  [<ffffffffb683ddce>] kthread+0xfd/0x105
+>> > > >  [<ffffffffc06827e2>] ? vhost_dev_set_owner+0x22e/0x22e [vhost]
+>> > > >  [<ffffffffb683dcd1>] ? flush_kthread_worker+0xf3/0xf3
+>> > > >  [<ffffffffb6eb332e>] ret_from_fork+0x4e/0x80
+>> > > >  [<ffffffffb683dcd1>] ? flush_kthread_worker+0xf3/0xf3
+>> > > >
+>> > > > Work around by doing kvmalloc instead.
+>> > > >
+>> > > > Signed-off-by: Junichi Uekawa <uekawa@chromium.org>
+>> >
+>> > My worry here is that this in more of a work around.
+>> > It would be better to not allocate memory so aggressively:
+>> > if we are so short on memory we should probably process
+>> > packets one at a time. Is that very hard to implement?
+>>
+>> Currently the "virtio_vsock_pkt" is allocated in the "handle_kick" callback
+>> of TX virtqueue. Then the packet is multiplexed on the right socket queue,
+>> then the user space can de-queue it whenever they want.
+>>
+>> So maybe we can stop processing the virtqueue if we are short on memory, but
+>> when can we restart the TX virtqueue processing?
+>
+>Assuming you added at least one buffer, the time to restart would be
+>after that buffer has been used.
 
+Yes, but we still might not have as many continuous pages to allocate, 
+so I would use kvmalloc the same.
 
-No, I'll merge for next.
+I agree that we should do better, I hope that moving to sk_buff will 
+allow us to better manage allocation. Maybe after we merge that part we 
+should spend some time to solve these problems.
 
-> Thanks,
-> Zhu Lingshan
-> On 9/29/2022 9:45 AM, Zhu Lingshan wrote:
-> > This series intends to read the fields in virtio-net device
-> > configuration space conditionally on the feature bits,
-> > this means:
-> > 
-> > MTU exists if VIRTIO_NET_F_MTU is set
-> > MAC exists if VIRTIO_NET_F_NET is set
-> > MQ exists if VIRTIO_NET_F_MQ or VIRTIO_NET_F_RSS is set.
-> > 
-> > This series report device features to userspace and invokes
-> > vdpa_config_ops.get_config() rather than
-> > vdpa_get_config_unlocked() to read the device config spcae,
-> > so no races in vdpa_set_features_unlocked()
-> > 
-> > Thanks!
-> > 
-> > Changes form V2:
-> > remove unnacessary checking for vdev->config->get_status (Jason)
-> > 
-> > Changes from V1:
-> > 1)Better comments for VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES,
-> > only in the header file(Jason)
-> > 2)Split original 3/4 into separate patches(Jason)
-> > 3)Check FEATURES_OK for reporting driver features
-> > in vdpa_dev_config_fill (Jason)
-> > 4) Add iproute2 example for reporting device features
-> > 
-> > Zhu Lingshan (6):
-> >    vDPA: allow userspace to query features of a vDPA device
-> >    vDPA: only report driver features if FEATURES_OK is set
-> >    vDPA: check VIRTIO_NET_F_RSS for max_virtqueue_paris's presence
-> >    vDPA: check virtio device features to detect MQ
-> >    vDPA: fix spars cast warning in vdpa_dev_net_mq_config_fill
-> >    vDPA: conditionally read MTU and MAC in dev cfg space
-> > 
-> >   drivers/vdpa/vdpa.c       | 68 ++++++++++++++++++++++++++++++---------
-> >   include/uapi/linux/vdpa.h |  4 +++
-> >   2 files changed, 56 insertions(+), 16 deletions(-)
-> > 
+Thanks,
+Stefano
 
