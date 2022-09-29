@@ -2,110 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6ADC95EFD02
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 20:27:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68FF95EFD09
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 20:28:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234896AbiI2S1R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 14:27:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51240 "EHLO
+        id S235735AbiI2S2X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 14:28:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234278AbiI2S1P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 14:27:15 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD24E13EAE5
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 11:27:14 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id r62-20020a252b41000000b006af00577c42so1835956ybr.10
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 11:27:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date;
-        bh=TCNjSWh2khixhi5M5S96BCZPDyWIajI7MNk5y1CP4tQ=;
-        b=Yo13DwjTXnaoeS0y6g7A4ryURj7HmjxBjY1CIx8TA8YG0TkQeid3iS0nI73l52wOPY
-         OG7zCxcPiuHhWJBN1wbHSYfw7cwCn5I35So62E5eR1kE8BK1SFxRmn3B89ABq5Lb0XCA
-         c17V4jSFwNhveOL7+DoIvuf/GoktBvkCGTAZ6+BGzXcKPIcD7H4cYGGgvXGK7mjY9qT3
-         Ok5lfnDgUNuXR8dXwGPndNvqxGPJSya/3tbK7N7qzE50pusBYGqq4fr9UJq1WdhrOaC5
-         2yroxqPOSJx3ghVVkZkHFKDy/eVWAZdhB57BpYvOzbIwfAkbQaqOZGbYVChXyDnJex8Q
-         WObQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=TCNjSWh2khixhi5M5S96BCZPDyWIajI7MNk5y1CP4tQ=;
-        b=M5YkVmnWoQ+JIjkY0ywDwGegi+h/qTTgn3U5NJhCNmp9CKWWuCOSQOqN8QQ7zUEpXb
-         4CpVrLoe9atjUTp0FxqEbkXT4xbFnn90OSgCGuVUzw1SL9bjVrdXfy3gBx4BAPdnrHg3
-         SSGcz4dHO+zj+FYhH3fSu/2MkcFRaENzThpXNqbiVo9DVGWYGP496QOTE2ThrpMdWxZA
-         pPEJn38+2iVThOqX4yJpTZ+6t5hRzfeDGIO62Y1jvdK66ll+jMR+3PF8jG/vIhmkQg9C
-         /xNMvohmCwSJtIgoYFDOzWrAcUVi5aYHJg85k/B1XQWWd4S6lDzPbwiNk1mqMck6x3Ap
-         3Cgg==
-X-Gm-Message-State: ACrzQf2L//RBCf0Aon8ITozQ36Oij/tLTG2jyd164qXUvOx5+IAF5c2T
-        iYHmIFZuUBUdZTY1G8Ztlc0WqiCGeg==
-X-Google-Smtp-Source: AMsMyM7izNOHKJTh4Ttf/2FZTV0VPOoAFMNNllUoSw1AaASTnPFHL4tWGLHJ4a22FeLFfd2iILIYokFOUg==
-X-Received: from nhuck.c.googlers.com ([fda3:e722:ac3:cc00:14:4d90:c0a8:39cc])
- (user=nhuck job=sendgmr) by 2002:a0d:d708:0:b0:354:b610:fd3d with SMTP id
- z8-20020a0dd708000000b00354b610fd3dmr4693272ywd.28.1664476033986; Thu, 29 Sep
- 2022 11:27:13 -0700 (PDT)
-Date:   Thu, 29 Sep 2022 11:27:03 -0700
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.38.0.rc1.362.ged0d419d3c-goog
-Message-ID: <20220929182704.64438-1-nhuck@google.com>
-Subject: [PATCH] net: lan966x: Fix return type of lan966x_port_xmit
-From:   Nathan Huckleberry <nhuck@google.com>
-Cc:     Nathan Huckleberry <nhuck@google.com>,
-        Dan Carpenter <error27@gmail.com>, llvm@lists.linux.dev,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S234987AbiI2S1w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 14:27:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F1501438C8;
+        Thu, 29 Sep 2022 11:27:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4DEB3B82646;
+        Thu, 29 Sep 2022 18:27:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D73EC433C1;
+        Thu, 29 Sep 2022 18:27:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664476067;
+        bh=peXm6EYz/EMFFA8zuW/FKucf85TPZxTNbaodSHoZ7Wg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Kv7xhea2uFIbwtuFQLZh9XSjU1NQfjbcVqi7NBdfo1YmhLPr/oFL/8Xy7h8nVd63Y
+         1QbyuerlojcUMR9UJXqyqMMe/stYLXuAEzjAn5YgYL+gSYYe2Mgq5Jy1q1QOi5phs9
+         LUXrQ/s2M+7o3FfgPVpda31wV2wVBaOYzo8yfTohR2fDzhGsJx5Pf63zWtPQKojM9F
+         jn5yUhRAxSZA/Yu9rBhiUcBtbQl8G7FuabZv9yLUhOJjlvUZ798HikAJYp4pUIjm//
+         HnqLKE0lE+TxmEdaYgq6OQOzGouYBxg3CmBkmarKcPIbw5qPRqYRZam7X/YTCqQye3
+         IoYyggPAxMHZw==
+Date:   Thu, 29 Sep 2022 11:27:44 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     netdev@kapio-technology.com
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,MISSING_HEADERS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,USER_IN_DEF_DKIM_WL
-        autolearn=no autolearn_force=no version=3.4.6
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Florent Fourcot <florent.fourcot@wifirst.fr>,
+        Hans Schultz <schultz.hans@gmail.com>,
+        Joachim Wiberg <troglobit@gmail.com>,
+        Amit Cohen <amcohen@nvidia.com>, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v6 net-next 0/9] Extend locked port feature with FDB
+ locked flag (MAC-Auth/MAB)
+Message-ID: <20220929112744.27cc969b@kernel.org>
+In-Reply-To: <12587604af1ed79be4d3a1607987483a@kapio-technology.com>
+References: <20220928150256.115248-1-netdev@kapio-technology.com>
+        <20220929091036.3812327f@kernel.org>
+        <12587604af1ed79be4d3a1607987483a@kapio-technology.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ndo_start_xmit field in net_device_ops is expected to be of type
-netdev_tx_t (*ndo_start_xmit)(struct sk_buff *skb, struct net_device *dev).
+On Thu, 29 Sep 2022 18:37:09 +0200 netdev@kapio-technology.com wrote:
+> On 2022-09-29 18:10, Jakub Kicinski wrote:
+> > On Wed, 28 Sep 2022 17:02:47 +0200 Hans Schultz wrote: =20
+> >> From: "Hans J. Schultz" <netdev@kapio-technology.com>
+> >>=20
+> >> This patch set extends the locked port feature for devices
+> >> that are behind a locked port, but do not have the ability to
+> >> authorize themselves as a supplicant using IEEE 802.1X.
+> >> Such devices can be printers, meters or anything related to
+> >> fixed installations. Instead of 802.1X authorization, devices
+> >> can get access based on their MAC addresses being whitelisted. =20
+> >=20
+> > Try a allmodconfig build on latest net-next, seems broken. =20
+>=20
+> I have all different switch drivers enabled and I see no compile=20
+> warnings or errors.=20
 
-The mismatched return type breaks forward edge kCFI since the underlying
-function definition does not match the function hook definition.
+Just do what I told you - rebase on net-next, allmodconfig.
 
-The return type of lan966x_port_xmit should be changed from int to
-netdev_tx_t.
+> I guess I will get a robot update if that is the=20
+> case but please be specific as to what does not build.
 
-Reported-by: Dan Carpenter <error27@gmail.com>
-Link: https://github.com/ClangBuiltLinux/linux/issues/1703
-Cc: llvm@lists.linux.dev
-Signed-off-by: Nathan Huckleberry <nhuck@google.com>
----
- drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+The maintainers simply don't have time to hold everyone by the hand.
+Sometimes I wish it was still okay to yell at people who post code
+which does not build. Oh well.
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-index b98d37c76edb..be2fd030cccb 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-@@ -344,7 +344,8 @@ static void lan966x_ifh_set_timestamp(void *ifh, u64 timestamp)
- 		IFH_POS_TIMESTAMP, IFH_LEN * 4, PACK, 0);
+../drivers/net/dsa/qca/qca8k-common.c:810:5: error: conflicting types for =
+=E2=80=98qca8k_port_fdb_del=E2=80=99
+ int qca8k_port_fdb_del(struct dsa_switch *ds, int port,
+     ^~~~~~~~~~~~~~~~~~
+In file included from ../drivers/net/dsa/qca/qca8k-common.c:13:
+../drivers/net/dsa/qca/qca8k.h:483:5: note: previous declaration of =E2=80=
+=98qca8k_port_fdb_del=E2=80=99 was here
+ int qca8k_port_fdb_del(struct dsa_switch *ds, int port,
+     ^~~~~~~~~~~~~~~~~~
+../drivers/net/dsa/qca/qca8k-common.c: In function =E2=80=98qca8k_port_fdb_=
+del=E2=80=99:
+../drivers/net/dsa/qca/qca8k-common.c:818:6: error: =E2=80=98fdb_flags=E2=
+=80=99 undeclared (first use in this function); did you mean =E2=80=98tsq_f=
+lags=E2=80=99?
+  if (fdb_flags)
+      ^~~~~~~~~
+      tsq_flags
+../drivers/net/dsa/qca/qca8k-common.c:818:6: note: each undeclared identifi=
+er is reported only once for each function it appears in
+make[5]: *** [../scripts/Makefile.build:249: drivers/net/dsa/qca/qca8k-comm=
+on.o] Error 1
+make[5]: *** Waiting for unfinished jobs....
+make[4]: *** [../scripts/Makefile.build:465: drivers/net/dsa/qca] Error 2
+make[4]: *** Waiting for unfinished jobs....
+../drivers/net/dsa/sja1105/sja1105_main.c: In function =E2=80=98sja1105_fas=
+t_age=E2=80=99:
+../drivers/net/dsa/sja1105/sja1105_main.c:1941:61: error: incompatible type=
+ for argument 5 of =E2=80=98sja1105_fdb_del=E2=80=99
+   rc =3D sja1105_fdb_del(ds, port, macaddr, l2_lookup.vlanid, db);
+                                                             ^~
+../drivers/net/dsa/sja1105/sja1105_main.c:1831:11: note: expected =E2=80=98=
+u16=E2=80=99 {aka =E2=80=98short unsigned int=E2=80=99} but argument is of =
+type =E2=80=98struct dsa_db=E2=80=99
+       u16 fdb_flags, struct dsa_db db)
+       ~~~~^~~~~~~~~
+../drivers/net/dsa/sja1105/sja1105_main.c:1941:8: error: too few arguments =
+to function =E2=80=98sja1105_fdb_del=E2=80=99
+   rc =3D sja1105_fdb_del(ds, port, macaddr, l2_lookup.vlanid, db);
+        ^~~~~~~~~~~~~~~
+../drivers/net/dsa/sja1105/sja1105_main.c:1829:12: note: declared here
+ static int sja1105_fdb_del(struct dsa_switch *ds, int port,
+            ^~~~~~~~~~~~~~~
+../drivers/net/dsa/sja1105/sja1105_main.c: In function =E2=80=98sja1105_mdb=
+_del=E2=80=99:
+../drivers/net/dsa/sja1105/sja1105_main.c:1962:56: error: incompatible type=
+ for argument 5 of =E2=80=98sja1105_fdb_del=E2=80=99
+  return sja1105_fdb_del(ds, port, mdb->addr, mdb->vid, db);
+                                                        ^~
+../drivers/net/dsa/sja1105/sja1105_main.c:1831:11: note: expected =E2=80=98=
+u16=E2=80=99 {aka =E2=80=98short unsigned int=E2=80=99} but argument is of =
+type =E2=80=98struct dsa_db=E2=80=99
+       u16 fdb_flags, struct dsa_db db)
+       ~~~~^~~~~~~~~
+../drivers/net/dsa/sja1105/sja1105_main.c:1962:9: error: too few arguments =
+to function =E2=80=98sja1105_fdb_del=E2=80=99
+  return sja1105_fdb_del(ds, port, mdb->addr, mdb->vid, db);
+         ^~~~~~~~~~~~~~~
+../drivers/net/dsa/sja1105/sja1105_main.c:1829:12: note: declared here
+ static int sja1105_fdb_del(struct dsa_switch *ds, int port,
+            ^~~~~~~~~~~~~~~
+../drivers/net/dsa/sja1105/sja1105_main.c:1963:1: error: control reaches en=
+d of non-void function [-Werror=3Dreturn-type]
  }
- 
--static int lan966x_port_xmit(struct sk_buff *skb, struct net_device *dev)
-+static netdev_tx_t lan966x_port_xmit(struct sk_buff *skb,
-+				     struct net_device *dev)
- {
- 	struct lan966x_port *port = netdev_priv(dev);
- 	struct lan966x *lan966x = port->lan966x;
--- 
-2.38.0.rc1.362.ged0d419d3c-goog
-
+ ^
+cc1: some warnings being treated as errors
+make[5]: *** [../scripts/Makefile.build:249: drivers/net/dsa/sja1105/sja110=
+5_main.o] Error 1
+make[5]: *** Waiting for unfinished jobs....
+make[4]: *** [../scripts/Makefile.build:465: drivers/net/dsa/sja1105] Error=
+ 2
+make[3]: *** [../scripts/Makefile.build:465: drivers/net/dsa] Error 2
+make[3]: *** Waiting for unfinished jobs....
+make[2]: *** [../scripts/Makefile.build:465: drivers/net] Error 2
+make[1]: *** [/home/kicinski/linux/Makefile:1852: drivers] Error 2
+make[1]: *** Waiting for unfinished jobs....
+make: *** [Makefile:222: __sub-make] Error 2
