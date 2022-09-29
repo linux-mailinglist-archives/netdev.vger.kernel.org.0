@@ -2,99 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 595F45EF34D
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 12:19:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62F395EF35E
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 12:24:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235274AbiI2KT2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 06:19:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38630 "EHLO
+        id S235080AbiI2KYt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 06:24:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235379AbiI2KS7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 06:18:59 -0400
-Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE93712ED9F
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 03:18:28 -0700 (PDT)
-Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-131dda37dddso293332fac.0
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 03:18:28 -0700 (PDT)
+        with ESMTP id S233587AbiI2KYq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 06:24:46 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22C9DE080
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 03:24:40 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id bj12so1784840ejb.13
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 03:24:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=1Cl0X39qkQEt/y9Mr2rlDhC6cvyU1oB8bqUhsRPfFjw=;
-        b=oKXPJbkf45R1vzWZcxh4YaF25ZAkn4xfL1s/pYp2qTAZiSUrtiJ44rgSQI1VfGTQjH
-         vClfq5dYd8DiJ+2lMY8t8pT02diUCStyJykW4WeGUv3fgFetRDkA7VpkRFw6Sw8Z4UwI
-         QJrkB0bbE0OgnaA/xoSDRrFQJVRlVOrRdEFQpDJAphXLbsOFLeOh0LPQDsQt5vZBC9xq
-         mAi36oTLrnTchR7U4zksdaUwv6HzcIZBlzBfD6ls+K6JMewBOiBovZ9DmD9fu+1oUmMp
-         G4TQL7NKWwrJkPefPX7P/QimpvV6kTEeDNSbpTfKFzK2JR6/ZFmcB5dR2pZE3HDwH65n
-         0w3g==
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=bMddGAj3jSV8YAm337XHEgs7AyIDjjyq7hwfgzwMEbI=;
+        b=oFU8eMhRLxAVr/dG/pixoT4m8YhgdySxKv3Rzo7jvAA532wq3sXs/1tuJ+QpNrW7NA
+         B3heKg01vUnCVrWyN4Xl2XPHlR9EuCF86Y+9tbgzhdsHvHaGHAyA5G5wKXz7vWMXU6QK
+         PSN4oLarrJ3qVR5zj1UpRHOqxS3RdTG6hCYosput8DC3LEokvWdhBVD4JJmDGIKpJLw0
+         JPl2rkmALaXYAYyP624J8CS/k/KS6L82bHBosvUG5DTY9uAalu2pqByrOVgGdloOCcnO
+         i9lKYKNpmZKEvi98vFTHFdKhMp4bVA43Mcu4z6dvWVelaCuJckvSsHbCrgIMfELh4J2b
+         pOdg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=1Cl0X39qkQEt/y9Mr2rlDhC6cvyU1oB8bqUhsRPfFjw=;
-        b=EAgkTN6YSVqhdEcoQGnqkPaJj0rwksxlEy2O6ndcnli4YIvZ4vkNGZXpw/Wkh9nw7t
-         MxDtrnGhk2T7ddN9KJBGjcEU8Hj7acwFOwzlIBYkRAVINDx+7nT/kw5L1nxOnwObbRal
-         nBpugLBQxNTRizr3RCefou9Ba1dG6gTJV1jMoxY2qUiKN1bkg06Ay5j9rR83zqfR+pAJ
-         2m5xFn8M8afeOK86+uvvhbdbPR1gI1uvMlR8nn3EHjQ5VbX73/bwfGDwTbpl6SctTIFt
-         7JatU8ggOc65kRaCRqFtHuiBQyTYDPp4NhQqwhnvwGiacSGgnHBxnotA8uj5ckW+GKYK
-         yr5w==
-X-Gm-Message-State: ACrzQf3u+9VfxYpX/Ne6T+ehySbVKSjKn9sz1vYIcwkGx7ClpaVGUEan
-        PY8Et1+/ilkOB4OYNPoNamTtO5RsBjUJ8hJlrY/t3A==
-X-Google-Smtp-Source: AMsMyM4w85ys+LTV212qG29Xx/YrH+bZHF0Uy+vFG3Y/DUYbV2ChkuLHHdknY7dc+LEqTrikKz9uRVJ4xSMLyjSgruQ=
-X-Received: by 2002:a05:6870:a10c:b0:131:c133:39bd with SMTP id
- m12-20020a056870a10c00b00131c13339bdmr1338610oae.106.1664446707905; Thu, 29
- Sep 2022 03:18:27 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=bMddGAj3jSV8YAm337XHEgs7AyIDjjyq7hwfgzwMEbI=;
+        b=fQBY0iX/Ww3BtyF5YazVLhqudj/ku5DaN/qxnR8+q3rTGX+HSFA2NlfIcuSdD7CPsO
+         kDM9mbd7/YTHnNaqBA8hfG2snsGw3xi1L9JLzIzoRMmYMRekwyJTDgxlR2SpqM4mPLYT
+         awni6P0XVKdrfBCjj+Ob9Ir2Iqo/8NrBTupMQusGKlJb+BFrnMcIsG3FcToT5y1cx4SB
+         aqBT/kZQLhqW63OQ1f9FmXx4vEL0q9A7vVqB0suDclRUUONQMTblhbBjbQiJGURIBJEU
+         lOcmS8cAYrE7CA4d8vbZFwiC9Nll09lhvdgKOefoSE+W+jhO9yeO/yoAQweNQlRh4hHi
+         /KOg==
+X-Gm-Message-State: ACrzQf04WDrFWJE7br6HFiSGjXsk2MhF0eQfmicKuc4kw1YmO5AXoymu
+        T1Xstul+pTIsM9LXpD1V9J6B0g2gv2xlzZuK
+X-Google-Smtp-Source: AMsMyM7PNXEJv4TOtTwUxYC97Yac+cUxJqIqgRcsxPWQkp9HADS/w76HQI3AWrFUZuucEvoT4LAWsQ==
+X-Received: by 2002:a17:906:ee8e:b0:730:3646:d178 with SMTP id wt14-20020a170906ee8e00b007303646d178mr2107800ejb.426.1664447078578;
+        Thu, 29 Sep 2022 03:24:38 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id kx9-20020a170907774900b0073dc8d0eabesm3746990ejc.15.2022.09.29.03.24.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Sep 2022 03:24:37 -0700 (PDT)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     sthemmin@microsoft.com, dsahern@gmail.com
+Subject: [patch iproute2-next 0/2] devlink: fix couple of cosmetic issues
+Date:   Thu, 29 Sep 2022 12:24:34 +0200
+Message-Id: <20220929102436.3047138-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-References: <20220927153700.3071688-1-keescook@chromium.org>
-In-Reply-To: <20220927153700.3071688-1-keescook@chromium.org>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Date:   Thu, 29 Sep 2022 06:18:17 -0400
-Message-ID: <CAM0EoMnGbS-KHknPU+3gf2CaQO7XtKt-jFRZEZ42ZxAS=3ZzMQ@mail.gmail.com>
-Subject: Re: [PATCH] net: sched: cls_u32: Avoid memcpy() false-positive warning
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        syzbot+a2c4601efc75848ba321@syzkaller.appspotmail.com,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 27, 2022 at 11:37 AM Kees Cook <keescook@chromium.org> wrote:
->
-> To work around a misbehavior of the compiler's ability to see into
-> composite flexible array structs (as detailed in the coming memcpy()
-> hardening series[1]), use unsafe_memcpy(), as the sizing,
-> bounds-checking, and allocation are all very tightly coupled here.
-> This silences the false-positive reported by syzbot:
->
->   memcpy: detected field-spanning write (size 80) of single field "&n->sel" at net/sched/cls_u32.c:1043 (size 16)
->
-> [1] https://lore.kernel.org/linux-hardening/20220901065914.1417829-2-keescook@chromium.org
->
-> Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Cong Wang <xiyou.wangcong@gmail.com>
-> Cc: Jiri Pirko <jiri@resnulli.us>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: netdev@vger.kernel.org
-> Reported-by: syzbot+a2c4601efc75848ba321@syzkaller.appspotmail.com
-> Link: https://lore.kernel.org/lkml/000000000000a96c0b05e97f0444@google.com/
-> Signed-off-by: Kees Cook <keescook@chromium.org>
+From: Jiri Pirko <jiri@nvidia.com>
 
-Reviewed-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Just cosmetics, more or less.
 
-cheers,
-jamal
+Jiri Pirko (2):
+  devlink: move use_iec into struct dl
+  devlink: fix typo in variable name in ifname_map_cb()
+
+ devlink/devlink.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
+
+-- 
+2.37.1
+
