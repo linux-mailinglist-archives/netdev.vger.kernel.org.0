@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D6BD5EEE5E
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:05:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EEB95EEE60
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:05:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234820AbiI2HFK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S234542AbiI2HFK (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 29 Sep 2022 03:05:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58382 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235075AbiI2HEn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:04:43 -0400
+        with ESMTP id S235025AbiI2HEq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:04:46 -0400
 Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABABF5F8C;
-        Thu, 29 Sep 2022 00:04:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2289EE16;
+        Thu, 29 Sep 2022 00:04:39 -0700 (PDT)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1664435074;
+        t=1664435077;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=mrtWExq0wBIpyOPOl96p4X+vkDCpxYHVu/CvZF0R/5Y=;
-        b=uEamq2QYjtyqsfp4pDJigvVn1gC3erCNRlj4CjW3pNjI9vZb5z1o3tUeygE6FcMTKRoYhL
-        nWMjh3PONjzLnHBBJrZ7jGBKC6BLEnG45CNuiFpiJDvSNj87bbo6pTkTGrcCoEsUrizPyb
-        2hCX2RZanCnFocQTtgQaSdojjhpzvTk=
+        bh=VvIKaWyrD++47cob00FLRKjCXfixbyYJJB5mAod9z80=;
+        b=kvMJ5uJ+vqDnrPMsi6q9nrtcFEEMXbNUE8hOsYzvwoksSgl9RC/087RhIyhbtIb7GPqeCY
+        +a+RQsVAKWdoMB9V0tmvbRXMt2w/P+nMtI6QumgALGxH+FOW1626DNjkr2RNzAQ00UP5h3
+        weTATx8C7OWYYYVEi64kTpNcs1gl9b4=
 From:   Martin KaFai Lau <martin.lau@linux.dev>
 To:     ' ' <bpf@vger.kernel.org>, ' ' <netdev@vger.kernel.org>
 Cc:     'Alexei Starovoitov ' <ast@kernel.org>,
@@ -34,9 +34,9 @@ Cc:     'Alexei Starovoitov ' <ast@kernel.org>,
         'Jakub Kicinski ' <kuba@kernel.org>,
         'Eric Dumazet ' <edumazet@google.com>,
         'Paolo Abeni ' <pabeni@redhat.com>, ' ' <kernel-team@fb.com>
-Subject: [PATCH v3 bpf-next 4/5] bpf: tcp: Stop bpf_setsockopt(TCP_CONGESTION) in init ops to recur itself
-Date:   Thu, 29 Sep 2022 00:04:06 -0700
-Message-Id: <20220929070407.965581-5-martin.lau@linux.dev>
+Subject: [PATCH v3 bpf-next 5/5] selftests/bpf: Check -EBUSY for the recurred bpf_setsockopt(TCP_CONGESTION)
+Date:   Thu, 29 Sep 2022 00:04:07 -0700
+Message-Id: <20220929070407.965581-6-martin.lau@linux.dev>
 In-Reply-To: <20220929070407.965581-1-martin.lau@linux.dev>
 References: <20220929070407.965581-1-martin.lau@linux.dev>
 MIME-Version: 1.0
@@ -53,110 +53,82 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Martin KaFai Lau <martin.lau@kernel.org>
 
-When a bad bpf prog '.init' calls
-bpf_setsockopt(TCP_CONGESTION, "itself"), it will trigger this loop:
-
-.init => bpf_setsockopt(tcp_cc) => .init => bpf_setsockopt(tcp_cc) ...
-... => .init => bpf_setsockopt(tcp_cc).
-
-It was prevented by the prog->active counter before but the prog->active
-detection cannot be used in struct_ops as explained in the earlier
-patch of the set.
-
-In this patch, the second bpf_setsockopt(tcp_cc) is not allowed
-in order to break the loop.  This is done by using a bit of
-an existing 1 byte hole in tcp_sock to check if there is
-on-going bpf_setsockopt(TCP_CONGESTION) in this tcp_sock.
-
-Note that this essentially limits only the first '.init' can
-call bpf_setsockopt(TCP_CONGESTION) to pick a fallback cc (eg. peer
-does not support ECN) and the second '.init' cannot fallback to
-another cc.  This applies even the second
-bpf_setsockopt(TCP_CONGESTION) will not cause a loop.
+This patch changes the bpf_dctcp test to ensure the recurred
+bpf_setsockopt(TCP_CONGESTION) returns -EBUSY.
 
 Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
 ---
- include/linux/tcp.h      |  6 ++++++
- net/core/filter.c        | 28 +++++++++++++++++++++++++++-
- net/ipv4/tcp_minisocks.c |  1 +
- 3 files changed, 34 insertions(+), 1 deletion(-)
+ .../selftests/bpf/prog_tests/bpf_tcp_ca.c     |  4 +++
+ tools/testing/selftests/bpf/progs/bpf_dctcp.c | 25 +++++++++++++------
+ 2 files changed, 21 insertions(+), 8 deletions(-)
 
-diff --git a/include/linux/tcp.h b/include/linux/tcp.h
-index a9fbe22732c3..3bdf687e2fb3 100644
---- a/include/linux/tcp.h
-+++ b/include/linux/tcp.h
-@@ -388,6 +388,12 @@ struct tcp_sock {
- 	u8	bpf_sock_ops_cb_flags;  /* Control calling BPF programs
- 					 * values defined in uapi/linux/tcp.h
- 					 */
-+	u8	bpf_chg_cc_inprogress:1; /* In the middle of
-+					  * bpf_setsockopt(TCP_CONGESTION),
-+					  * it is to avoid the bpf_tcp_cc->init()
-+					  * to recur itself by calling
-+					  * bpf_setsockopt(TCP_CONGESTION, "itself").
-+					  */
- #define BPF_SOCK_OPS_TEST_FLAG(TP, ARG) (TP->bpf_sock_ops_cb_flags & ARG)
- #else
- #define BPF_SOCK_OPS_TEST_FLAG(TP, ARG) 0
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 96f2f7a65e65..ac4c45c02da5 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -5105,6 +5105,9 @@ static int bpf_sol_tcp_setsockopt(struct sock *sk, int optname,
- static int sol_tcp_sockopt_congestion(struct sock *sk, char *optval,
- 				      int *optlen, bool getopt)
- {
-+	struct tcp_sock *tp;
-+	int ret;
-+
- 	if (*optlen < 2)
- 		return -EINVAL;
- 
-@@ -5125,8 +5128,31 @@ static int sol_tcp_sockopt_congestion(struct sock *sk, char *optval,
- 	if (*optlen >= sizeof("cdg") - 1 && !strncmp("cdg", optval, *optlen))
- 		return -ENOTSUPP;
- 
--	return do_tcp_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
-+	/* It stops this looping
-+	 *
-+	 * .init => bpf_setsockopt(tcp_cc) => .init =>
-+	 * bpf_setsockopt(tcp_cc)" => .init => ....
-+	 *
-+	 * The second bpf_setsockopt(tcp_cc) is not allowed
-+	 * in order to break the loop when both .init
-+	 * are the same bpf prog.
-+	 *
-+	 * This applies even the second bpf_setsockopt(tcp_cc)
-+	 * does not cause a loop.  This limits only the first
-+	 * '.init' can call bpf_setsockopt(TCP_CONGESTION) to
-+	 * pick a fallback cc (eg. peer does not support ECN)
-+	 * and the second '.init' cannot fallback to
-+	 * another.
+diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c b/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
+index 2959a52ced06..e980188d4124 100644
+--- a/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
++++ b/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
+@@ -290,6 +290,10 @@ static void test_dctcp_fallback(void)
+ 		goto done;
+ 	ASSERT_STREQ(dctcp_skel->bss->cc_res, "cubic", "cc_res");
+ 	ASSERT_EQ(dctcp_skel->bss->tcp_cdg_res, -ENOTSUPP, "tcp_cdg_res");
++	/* All setsockopt(TCP_CONGESTION) in the recurred
++	 * bpf_dctcp->init() should fail with -EBUSY.
 +	 */
-+	tp = tcp_sk(sk);
-+	if (tp->bpf_chg_cc_inprogress)
-+		return -EBUSY;
++	ASSERT_EQ(dctcp_skel->bss->ebusy_cnt, 3, "ebusy_cnt");
+ 
+ 	err = getsockopt(srv_fd, SOL_TCP, TCP_CONGESTION, srv_cc, &cc_len);
+ 	if (!ASSERT_OK(err, "getsockopt(srv_fd, TCP_CONGESTION)"))
+diff --git a/tools/testing/selftests/bpf/progs/bpf_dctcp.c b/tools/testing/selftests/bpf/progs/bpf_dctcp.c
+index 9573be6122be..460682759aed 100644
+--- a/tools/testing/selftests/bpf/progs/bpf_dctcp.c
++++ b/tools/testing/selftests/bpf/progs/bpf_dctcp.c
+@@ -11,6 +11,7 @@
+ #include <linux/types.h>
+ #include <linux/stddef.h>
+ #include <linux/tcp.h>
++#include <errno.h>
+ #include <bpf/bpf_helpers.h>
+ #include <bpf/bpf_tracing.h>
+ #include "bpf_tcp_helpers.h"
+@@ -23,6 +24,7 @@ const char tcp_cdg[] = "cdg";
+ char cc_res[TCP_CA_NAME_MAX];
+ int tcp_cdg_res = 0;
+ int stg_result = 0;
++int ebusy_cnt = 0;
+ 
+ struct {
+ 	__uint(type, BPF_MAP_TYPE_SK_STORAGE);
+@@ -64,16 +66,23 @@ void BPF_PROG(dctcp_init, struct sock *sk)
+ 
+ 	if (!(tp->ecn_flags & TCP_ECN_OK) && fallback[0]) {
+ 		/* Switch to fallback */
+-		bpf_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
+-			       (void *)fallback, sizeof(fallback));
+-		/* Switch back to myself which the bpf trampoline
+-		 * stopped calling dctcp_init recursively.
++		if (bpf_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
++				   (void *)fallback, sizeof(fallback)) == -EBUSY)
++			ebusy_cnt++;
 +
-+	tp->bpf_chg_cc_inprogress = 1;
-+	ret = do_tcp_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
- 				KERNEL_SOCKPTR(optval), *optlen);
-+	tp->bpf_chg_cc_inprogress = 0;
-+	return ret;
- }
- 
- static int sol_tcp_sockopt(struct sock *sk, int optname,
-diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-index cb95d88497ae..ddcdc2bc4c04 100644
---- a/net/ipv4/tcp_minisocks.c
-+++ b/net/ipv4/tcp_minisocks.c
-@@ -541,6 +541,7 @@ struct sock *tcp_create_openreq_child(const struct sock *sk,
- 	newtp->fastopen_req = NULL;
- 	RCU_INIT_POINTER(newtp->fastopen_rsk, NULL);
- 
-+	newtp->bpf_chg_cc_inprogress = 0;
- 	tcp_bpf_clone(sk, newsk);
- 
- 	__TCP_INC_STATS(sock_net(sk), TCP_MIB_PASSIVEOPENS);
++		/* Switch back to myself and the recurred dctcp_init()
++		 * will get -EBUSY for all bpf_setsockopt(TCP_CONGESTION),
++		 * except the last "cdg" one.
+ 		 */
+-		bpf_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
+-			       (void *)bpf_dctcp, sizeof(bpf_dctcp));
++		if (bpf_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
++				   (void *)bpf_dctcp, sizeof(bpf_dctcp)) == -EBUSY)
++			ebusy_cnt++;
++
+ 		/* Switch back to fallback */
+-		bpf_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
+-			       (void *)fallback, sizeof(fallback));
++		if (bpf_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
++				   (void *)fallback, sizeof(fallback)) == -EBUSY)
++			ebusy_cnt++;
++
+ 		/* Expecting -ENOTSUPP for tcp_cdg_res */
+ 		tcp_cdg_res = bpf_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
+ 					     (void *)tcp_cdg, sizeof(tcp_cdg));
 -- 
 2.30.2
 
