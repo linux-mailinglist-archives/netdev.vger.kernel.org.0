@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EA125EF4CE
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 13:55:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 111545EF4C9
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 13:55:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235467AbiI2Lzh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 07:55:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45414 "EHLO
+        id S235610AbiI2LzC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 07:55:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235626AbiI2LzD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 07:55:03 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1170E081;
-        Thu, 29 Sep 2022 04:54:49 -0700 (PDT)
+        with ESMTP id S235518AbiI2Lyy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 07:54:54 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67294E56;
+        Thu, 29 Sep 2022 04:54:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1664452490; x=1695988490;
+  t=1664452477; x=1695988477;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=ck/qql8qXHlE4fhSzM5suaEzx+6qabvGYO6XlUEpLEc=;
-  b=QqDY3IvrY/icusIMxrUWRbbpSOiGBe4GulF93TQ6mZz78kUq6buACVkb
-   3ptpyln5bd1o4QetZESJDbdJCMD6i9WDdHy04G4Qvc71rIe1Vmjz/xVlO
-   IZBZMWqaTD+BtXMtLZg6P+tHgPH3i3C1XgxkzqUdT+xE7mpNtDiXyg6Om
-   YZeifHG9AVnqPzgN+EQ3DVBQ7Ae9uuW8VTeqZFpYB13tTeifwx3Tshbtg
-   TxOsFXtUnnZRTiDl2w5dkOzOrB1pS/Y5kocbvIOa9niIZ2AulNR110FRF
-   OO9+Bjc6xheZVHKeoX2DT35u062kOnaHIZ1r2QkgB0DUna1r1canlogiE
+  bh=qJ+zrxUpSF77Im9X9JIA7IwvzNSfnsnDEQ1UQw2LDyw=;
+  b=zz0CYyXxRoS9FY45BGBd/a+pRpEahmsJ+pM8m2k5tRopT4zszuoI3zbQ
+   qmW+OV/07F7IipTOI+CiBAAa9kH+QPCWRB5orAehs22g8e2eMUS28rfLo
+   nRPw6JhP9Gt5nCxFQcl5zQk/YpW4XV6y53tGsWAlyoEgYDTrw+f1qeh2m
+   RqkULgk2kZbde9Yf8vl23nXD1b3pQUu9oNt2HUZ6t/CjPsJJaakp6UJPX
+   hzB42rIa1R5uKAzbALGCgaH67SmUJd3L65aqGa8ikachiwvYdXVNxggmz
+   x2uEKd78PLPmb0PdSjKRcFnpAhfD9f9dCtG/ZAr2+9e/BSbR4ZT6Z9LWA
    w==;
 X-IronPort-AV: E=Sophos;i="5.93,355,1654585200"; 
-   d="scan'208";a="179507750"
+   d="scan'208";a="182465579"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Sep 2022 04:54:48 -0700
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Sep 2022 04:54:35 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Thu, 29 Sep 2022 04:54:30 -0700
+ 15.1.2507.12; Thu, 29 Sep 2022 04:54:34 -0700
 Received: from DEN-LT-70577.microchip.com (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Thu, 29 Sep 2022 04:54:26 -0700
+ 15.1.2507.12 via Frontend Transport; Thu, 29 Sep 2022 04:54:30 -0700
 From:   Daniel Machon <daniel.machon@microchip.com>
 To:     <netdev@vger.kernel.org>
 CC:     <davem@davemloft.net>, <petrm@nvidia.com>,
@@ -49,9 +49,9 @@ CC:     <davem@davemloft.net>, <petrm@nvidia.com>,
         <horatiu.vultur@microchip.com>, <Julia.Lawall@inria.fr>,
         <vladimir.oltean@nxp.com>, <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>
-Subject: [PATCH net-next 3/6] net: microchip: sparx5: add support for offloading pcp table
-Date:   Thu, 29 Sep 2022 14:03:39 +0200
-Message-ID: <20220929120342.2069359-4-daniel.machon@microchip.com>
+Subject: [PATCH net-next 4/6] net: microchip: sparx5: add support for apptrust
+Date:   Thu, 29 Sep 2022 14:03:40 +0200
+Message-ID: <20220929120342.2069359-5-daniel.machon@microchip.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220929120342.2069359-1-daniel.machon@microchip.com>
 References: <20220929120342.2069359-1-daniel.machon@microchip.com>
@@ -67,392 +67,230 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add new registers and functions to support offload of pcp app entries.
+Make use of set/getapptrust() to implement per-selector trust and trust
+order.
 
 Signed-off-by: Daniel Machon <daniel.machon@microchip.com>
 ---
- .../net/ethernet/microchip/sparx5/Makefile    |   2 +-
- .../ethernet/microchip/sparx5/sparx5_dcb.c    | 101 ++++++++++++++
- .../ethernet/microchip/sparx5/sparx5_main.h   |   1 +
- .../microchip/sparx5/sparx5_main_regs.h       | 127 +++++++++++++++++-
- .../ethernet/microchip/sparx5/sparx5_netdev.c |   1 +
- .../ethernet/microchip/sparx5/sparx5_port.c   |  37 +++++
- .../ethernet/microchip/sparx5/sparx5_port.h   |  17 +++
- 7 files changed, 283 insertions(+), 3 deletions(-)
- create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_dcb.c
+ .../ethernet/microchip/sparx5/sparx5_dcb.c    | 116 ++++++++++++++++++
+ .../ethernet/microchip/sparx5/sparx5_port.c   |   4 +-
+ .../ethernet/microchip/sparx5/sparx5_port.h   |   2 +
+ .../ethernet/microchip/sparx5/sparx5_qos.c    |   4 +
+ .../ethernet/microchip/sparx5/sparx5_qos.h    |   3 +
+ 5 files changed, 127 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/Makefile b/drivers/net/ethernet/microchip/sparx5/Makefile
-index d1c6ad966747..e3460e16f8fc 100644
---- a/drivers/net/ethernet/microchip/sparx5/Makefile
-+++ b/drivers/net/ethernet/microchip/sparx5/Makefile
-@@ -8,4 +8,4 @@ obj-$(CONFIG_SPARX5_SWITCH) += sparx5-switch.o
- sparx5-switch-objs  := sparx5_main.o sparx5_packet.o \
-  sparx5_netdev.o sparx5_phylink.o sparx5_port.o sparx5_mactable.o sparx5_vlan.o \
-  sparx5_switchdev.o sparx5_calendar.o sparx5_ethtool.o sparx5_fdma.o \
-- sparx5_ptp.o sparx5_pgid.o sparx5_tc.o sparx5_qos.o
-+ sparx5_ptp.o sparx5_pgid.o sparx5_tc.o sparx5_qos.o sparx5_dcb.o
-\ No newline at end of file
 diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_dcb.c b/drivers/net/ethernet/microchip/sparx5/sparx5_dcb.c
-new file mode 100644
-index 000000000000..db17c124dac8
---- /dev/null
+index db17c124dac8..10aeb422b1ae 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_dcb.c
 +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_dcb.c
-@@ -0,0 +1,101 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/* Microchip Sparx5 Switch driver
+@@ -8,6 +8,22 @@
+ 
+ #include "sparx5_port.h"
+ 
++static const struct sparx5_dcb_apptrust {
++	u8 selectors[256];
++	int nselectors;
++	char *names;
++} *apptrust[SPX5_PORTS];
++
++/* Sparx5 supported apptrust configurations */
++static const struct sparx5_dcb_apptrust apptrust_conf[4] = {
++	/* Empty *must* be first */
++	{ { 0                         }, 0, "empty"    },
++	{ { IEEE_8021QAZ_APP_SEL_DSCP }, 1, "dscp"     },
++	{ { DCB_APP_SEL_PCP           }, 1, "pcp"      },
++	{ { IEEE_8021QAZ_APP_SEL_DSCP,
++	    DCB_APP_SEL_PCP           }, 2, "dscp pcp" },
++};
++
+ /* Validate app entry.
+  *
+  * Check for valid selectors and valid protocol and priority ranges.
+@@ -37,12 +53,59 @@ static int sparx5_dcb_app_validate(struct net_device *dev,
+ 	return err;
+ }
+ 
++/* Validate apptrust configuration.
 + *
-+ * Copyright (c) 2022 Microchip Technology Inc. and its subsidiaries.
++ * Return index of supported apptrust configuration if valid, otherwise return
++ * error.
 + */
-+
-+#include <net/dcbnl.h>
-+
-+#include "sparx5_port.h"
-+
-+/* Validate app entry.
-+ *
-+ * Check for valid selectors and valid protocol and priority ranges.
-+ */
-+static int sparx5_dcb_app_validate(struct net_device *dev,
-+				   const struct dcb_app *app)
++static int sparx5_dcb_apptrust_validate(struct net_device *dev, u8 *selectors,
++					int nselectors, int *err)
 +{
-+	int err = 0;
++	bool match;
++	int i, ii;
 +
-+	switch (app->selector) {
-+	/* Pcp checks */
-+	case DCB_APP_SEL_PCP:
-+		if (app->protocol > 15)
-+			err = -EINVAL;
-+		else if (app->priority >= SPX5_PRIOS)
-+			err = -ERANGE;
-+		break;
-+	default:
-+		err = -EINVAL;
-+		break;
++	for (i = 0; i < ARRAY_SIZE(apptrust_conf); i++) {
++		match = true;
++		for (ii = 0; ii < nselectors; ii++) {
++			if (apptrust_conf[i].selectors[ii] !=
++			    *(selectors + ii)) {
++				match = false;
++				break;
++			}
++		}
++		if (match)
++			break;
 +	}
 +
-+	if (err)
-+		netdev_err(dev, "Invalid entry: %d:%d\n", app->protocol,
-+			   app->priority);
++	/* Requested trust configuration is not supported */
++	if (!match) {
++		netdev_err(dev, "Valid apptrust configurations are:\n");
++		for (i = 0; i < ARRAY_SIZE(apptrust_conf); i++)
++			pr_info("order: %s\n", apptrust_conf[i].names);
++		*err = -EOPNOTSUPP;
++	}
 +
-+	return err;
++	return i;
 +}
 +
-+static int sparx5_dcb_app_update(struct net_device *dev)
++static bool sparx5_dcb_apptrust_contains(int portno, u8 selector)
 +{
-+	struct dcb_app app_itr = { .selector = DCB_APP_SEL_PCP };
-+	struct sparx5_port *port = netdev_priv(dev);
-+	struct sparx5_port_qos_pcp_map *pcp_map;
-+	struct sparx5_port_qos qos = {0};
 +	int i;
 +
-+	pcp_map = &qos.pcp.map;
++	for (i = 0; i < IEEE_8021QAZ_APP_SEL_MAX + 1; i++)
++		if (apptrust[portno]->selectors[i] == selector)
++			return true;
 +
-+	/* Get pcp ingress mapping */
-+	for (i = 0; i < ARRAY_SIZE(pcp_map->map); i++) {
-+		app_itr.protocol = i;
-+		pcp_map->map[i] = dcb_getapp(dev, &app_itr);
-+	}
-+
-+	return sparx5_port_qos_set(port, &qos);
++	return false;
 +}
 +
-+static int sparx5_dcb_ieee_setapp(struct net_device *dev, struct dcb_app *app)
-+{
-+	struct dcb_app app_itr;
-+	int err = 0;
-+	u8 prio;
-+
-+	err = sparx5_dcb_app_validate(dev, app);
-+	if (err)
-+		goto out;
-+
-+	/* Delete current mapping, if it exists */
-+	prio = dcb_getapp(dev, app);
-+	if (prio) {
-+		app_itr = *app;
-+		app_itr.priority = prio;
-+		dcb_ieee_delapp(dev, &app_itr);
+ static int sparx5_dcb_app_update(struct net_device *dev)
+ {
+ 	struct dcb_app app_itr = { .selector = DCB_APP_SEL_PCP };
+ 	struct sparx5_port *port = netdev_priv(dev);
+ 	struct sparx5_port_qos_pcp_map *pcp_map;
+ 	struct sparx5_port_qos qos = {0};
++	int portno = port->portno;
+ 	int i;
+ 
+ 	pcp_map = &qos.pcp.map;
+@@ -53,6 +116,12 @@ static int sparx5_dcb_app_update(struct net_device *dev)
+ 		pcp_map->map[i] = dcb_getapp(dev, &app_itr);
+ 	}
+ 
++	/* Enable use of pcp for queue classification ? */
++	if (sparx5_dcb_apptrust_contains(portno, DCB_APP_SEL_PCP)) {
++		qos.pcp.qos_enable = true;
++		qos.pcp.dp_enable = qos.pcp.qos_enable;
 +	}
 +
-+	err = dcb_ieee_setapp(dev, app);
-+	if (err)
-+		goto out;
-+
-+	sparx5_dcb_app_update(dev);
-+
-+out:
-+	return err;
-+}
-+
-+static int sparx5_dcb_ieee_delapp(struct net_device *dev, struct dcb_app *app)
+ 	return sparx5_port_qos_set(port, &qos);
+ }
+ 
+@@ -95,7 +164,54 @@ static int sparx5_dcb_ieee_delapp(struct net_device *dev, struct dcb_app *app)
+ 	return sparx5_dcb_app_update(dev);
+ }
+ 
++static int sparx5_dcb_setapptrust(struct net_device *dev, u8 *selectors,
++				  int nselectors)
 +{
-+	int err;
++	struct sparx5_port *port = netdev_priv(dev);
++	int err = 0, idx;
 +
-+	err = dcb_ieee_delapp(dev, app);
++	idx = sparx5_dcb_apptrust_validate(dev, selectors, nselectors, &err);
 +	if (err < 0)
 +		return err;
++
++	apptrust[port->portno] = &apptrust_conf[idx];
 +
 +	return sparx5_dcb_app_update(dev);
 +}
 +
-+const struct dcbnl_rtnl_ops sparx5_dcbnl_ops = {
-+	.ieee_setapp = sparx5_dcb_ieee_setapp,
-+	.ieee_delapp = sparx5_dcb_ieee_delapp,
-+};
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_main.h b/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
-index 8b42cad0e49c..0d8e04c64584 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
-@@ -418,6 +418,7 @@ static inline bool sparx5_is_baser(phy_interface_t interface)
- extern const struct phylink_mac_ops sparx5_phylink_mac_ops;
- extern const struct phylink_pcs_ops sparx5_phylink_pcs_ops;
- extern const struct ethtool_ops sparx5_ethtool_ops;
-+extern const struct dcbnl_rtnl_ops sparx5_dcbnl_ops;
- 
- /* Calculate raw offset */
- static inline __pure int spx5_offset(int id, int tinst, int tcnt,
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_main_regs.h b/drivers/net/ethernet/microchip/sparx5/sparx5_main_regs.h
-index fa2eb70f487a..e8c3a0d6074f 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_main_regs.h
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_main_regs.h
-@@ -4,8 +4,8 @@
-  * Copyright (c) 2021 Microchip Technology Inc.
-  */
- 
--/* This file is autogenerated by cml-utils 2022-02-26 14:15:01 +0100.
-- * Commit ID: 98bdd3d171cc2a1afd30d241d41a4281d471a48c (dirty)
-+/* This file is autogenerated by cml-utils 2022-09-28 11:17:02 +0200.
-+ * Commit ID: 385c8a11d71a9f6a60368d3a3cb648fa257b479a
-  */
- 
- #ifndef _SPARX5_MAIN_REGS_H_
-@@ -426,6 +426,96 @@ enum sparx5_target {
- #define ANA_CL_VLAN_CTRL_2_VLAN_PUSH_CNT_GET(x)\
- 	FIELD_GET(ANA_CL_VLAN_CTRL_2_VLAN_PUSH_CNT, x)
- 
-+/*      ANA_CL:PORT:PCP_DEI_MAP_CFG */
-+#define ANA_CL_PCP_DEI_MAP_CFG(g, r) __REG(TARGET_ANA_CL, 0, 1, 131072, g, 70, 512, 108, r, 16, 4)
-+
-+#define ANA_CL_PCP_DEI_MAP_CFG_PCP_DEI_DP_VAL    GENMASK(4, 3)
-+#define ANA_CL_PCP_DEI_MAP_CFG_PCP_DEI_DP_VAL_SET(x)\
-+	FIELD_PREP(ANA_CL_PCP_DEI_MAP_CFG_PCP_DEI_DP_VAL, x)
-+#define ANA_CL_PCP_DEI_MAP_CFG_PCP_DEI_DP_VAL_GET(x)\
-+	FIELD_GET(ANA_CL_PCP_DEI_MAP_CFG_PCP_DEI_DP_VAL, x)
-+
-+#define ANA_CL_PCP_DEI_MAP_CFG_PCP_DEI_QOS_VAL   GENMASK(2, 0)
-+#define ANA_CL_PCP_DEI_MAP_CFG_PCP_DEI_QOS_VAL_SET(x)\
-+	FIELD_PREP(ANA_CL_PCP_DEI_MAP_CFG_PCP_DEI_QOS_VAL, x)
-+#define ANA_CL_PCP_DEI_MAP_CFG_PCP_DEI_QOS_VAL_GET(x)\
-+	FIELD_GET(ANA_CL_PCP_DEI_MAP_CFG_PCP_DEI_QOS_VAL, x)
-+
-+/*      ANA_CL:PORT:QOS_CFG */
-+#define ANA_CL_QOS_CFG(g)         __REG(TARGET_ANA_CL, 0, 1, 131072, g, 70, 512, 172, 0, 1, 4)
-+
-+#define ANA_CL_QOS_CFG_DEFAULT_COSID_ENA         BIT(17)
-+#define ANA_CL_QOS_CFG_DEFAULT_COSID_ENA_SET(x)\
-+	FIELD_PREP(ANA_CL_QOS_CFG_DEFAULT_COSID_ENA, x)
-+#define ANA_CL_QOS_CFG_DEFAULT_COSID_ENA_GET(x)\
-+	FIELD_GET(ANA_CL_QOS_CFG_DEFAULT_COSID_ENA, x)
-+
-+#define ANA_CL_QOS_CFG_DEFAULT_COSID_VAL         GENMASK(16, 14)
-+#define ANA_CL_QOS_CFG_DEFAULT_COSID_VAL_SET(x)\
-+	FIELD_PREP(ANA_CL_QOS_CFG_DEFAULT_COSID_VAL, x)
-+#define ANA_CL_QOS_CFG_DEFAULT_COSID_VAL_GET(x)\
-+	FIELD_GET(ANA_CL_QOS_CFG_DEFAULT_COSID_VAL, x)
-+
-+#define ANA_CL_QOS_CFG_DSCP_REWR_MODE_SEL        GENMASK(13, 12)
-+#define ANA_CL_QOS_CFG_DSCP_REWR_MODE_SEL_SET(x)\
-+	FIELD_PREP(ANA_CL_QOS_CFG_DSCP_REWR_MODE_SEL, x)
-+#define ANA_CL_QOS_CFG_DSCP_REWR_MODE_SEL_GET(x)\
-+	FIELD_GET(ANA_CL_QOS_CFG_DSCP_REWR_MODE_SEL, x)
-+
-+#define ANA_CL_QOS_CFG_DSCP_TRANSLATE_ENA        BIT(11)
-+#define ANA_CL_QOS_CFG_DSCP_TRANSLATE_ENA_SET(x)\
-+	FIELD_PREP(ANA_CL_QOS_CFG_DSCP_TRANSLATE_ENA, x)
-+#define ANA_CL_QOS_CFG_DSCP_TRANSLATE_ENA_GET(x)\
-+	FIELD_GET(ANA_CL_QOS_CFG_DSCP_TRANSLATE_ENA, x)
-+
-+#define ANA_CL_QOS_CFG_DSCP_KEEP_ENA             BIT(10)
-+#define ANA_CL_QOS_CFG_DSCP_KEEP_ENA_SET(x)\
-+	FIELD_PREP(ANA_CL_QOS_CFG_DSCP_KEEP_ENA, x)
-+#define ANA_CL_QOS_CFG_DSCP_KEEP_ENA_GET(x)\
-+	FIELD_GET(ANA_CL_QOS_CFG_DSCP_KEEP_ENA, x)
-+
-+#define ANA_CL_QOS_CFG_KEEP_ENA                  BIT(9)
-+#define ANA_CL_QOS_CFG_KEEP_ENA_SET(x)\
-+	FIELD_PREP(ANA_CL_QOS_CFG_KEEP_ENA, x)
-+#define ANA_CL_QOS_CFG_KEEP_ENA_GET(x)\
-+	FIELD_GET(ANA_CL_QOS_CFG_KEEP_ENA, x)
-+
-+#define ANA_CL_QOS_CFG_PCP_DEI_DP_ENA            BIT(8)
-+#define ANA_CL_QOS_CFG_PCP_DEI_DP_ENA_SET(x)\
-+	FIELD_PREP(ANA_CL_QOS_CFG_PCP_DEI_DP_ENA, x)
-+#define ANA_CL_QOS_CFG_PCP_DEI_DP_ENA_GET(x)\
-+	FIELD_GET(ANA_CL_QOS_CFG_PCP_DEI_DP_ENA, x)
-+
-+#define ANA_CL_QOS_CFG_PCP_DEI_QOS_ENA           BIT(7)
-+#define ANA_CL_QOS_CFG_PCP_DEI_QOS_ENA_SET(x)\
-+	FIELD_PREP(ANA_CL_QOS_CFG_PCP_DEI_QOS_ENA, x)
-+#define ANA_CL_QOS_CFG_PCP_DEI_QOS_ENA_GET(x)\
-+	FIELD_GET(ANA_CL_QOS_CFG_PCP_DEI_QOS_ENA, x)
-+
-+#define ANA_CL_QOS_CFG_DSCP_DP_ENA               BIT(6)
-+#define ANA_CL_QOS_CFG_DSCP_DP_ENA_SET(x)\
-+	FIELD_PREP(ANA_CL_QOS_CFG_DSCP_DP_ENA, x)
-+#define ANA_CL_QOS_CFG_DSCP_DP_ENA_GET(x)\
-+	FIELD_GET(ANA_CL_QOS_CFG_DSCP_DP_ENA, x)
-+
-+#define ANA_CL_QOS_CFG_DSCP_QOS_ENA              BIT(5)
-+#define ANA_CL_QOS_CFG_DSCP_QOS_ENA_SET(x)\
-+	FIELD_PREP(ANA_CL_QOS_CFG_DSCP_QOS_ENA, x)
-+#define ANA_CL_QOS_CFG_DSCP_QOS_ENA_GET(x)\
-+	FIELD_GET(ANA_CL_QOS_CFG_DSCP_QOS_ENA, x)
-+
-+#define ANA_CL_QOS_CFG_DEFAULT_DP_VAL            GENMASK(4, 3)
-+#define ANA_CL_QOS_CFG_DEFAULT_DP_VAL_SET(x)\
-+	FIELD_PREP(ANA_CL_QOS_CFG_DEFAULT_DP_VAL, x)
-+#define ANA_CL_QOS_CFG_DEFAULT_DP_VAL_GET(x)\
-+	FIELD_GET(ANA_CL_QOS_CFG_DEFAULT_DP_VAL, x)
-+
-+#define ANA_CL_QOS_CFG_DEFAULT_QOS_VAL           GENMASK(2, 0)
-+#define ANA_CL_QOS_CFG_DEFAULT_QOS_VAL_SET(x)\
-+	FIELD_PREP(ANA_CL_QOS_CFG_DEFAULT_QOS_VAL, x)
-+#define ANA_CL_QOS_CFG_DEFAULT_QOS_VAL_GET(x)\
-+	FIELD_GET(ANA_CL_QOS_CFG_DEFAULT_QOS_VAL, x)
-+
- /*      ANA_CL:PORT:CAPTURE_BPDU_CFG */
- #define ANA_CL_CAPTURE_BPDU_CFG(g) __REG(TARGET_ANA_CL, 0, 1, 131072, g, 70, 512, 196, 0, 1, 4)
- 
-@@ -438,6 +528,39 @@ enum sparx5_target {
- #define ANA_CL_OWN_UPSID_OWN_UPSID_GET(x)\
- 	FIELD_GET(ANA_CL_OWN_UPSID_OWN_UPSID, x)
- 
-+/*      ANA_CL:COMMON:DSCP_CFG */
-+#define ANA_CL_DSCP_CFG(r)        __REG(TARGET_ANA_CL, 0, 1, 166912, 0, 1, 756, 256, r, 64, 4)
-+
-+#define ANA_CL_DSCP_CFG_DSCP_TRANSLATE_VAL       GENMASK(12, 7)
-+#define ANA_CL_DSCP_CFG_DSCP_TRANSLATE_VAL_SET(x)\
-+	FIELD_PREP(ANA_CL_DSCP_CFG_DSCP_TRANSLATE_VAL, x)
-+#define ANA_CL_DSCP_CFG_DSCP_TRANSLATE_VAL_GET(x)\
-+	FIELD_GET(ANA_CL_DSCP_CFG_DSCP_TRANSLATE_VAL, x)
-+
-+#define ANA_CL_DSCP_CFG_DSCP_QOS_VAL             GENMASK(6, 4)
-+#define ANA_CL_DSCP_CFG_DSCP_QOS_VAL_SET(x)\
-+	FIELD_PREP(ANA_CL_DSCP_CFG_DSCP_QOS_VAL, x)
-+#define ANA_CL_DSCP_CFG_DSCP_QOS_VAL_GET(x)\
-+	FIELD_GET(ANA_CL_DSCP_CFG_DSCP_QOS_VAL, x)
-+
-+#define ANA_CL_DSCP_CFG_DSCP_DP_VAL              GENMASK(3, 2)
-+#define ANA_CL_DSCP_CFG_DSCP_DP_VAL_SET(x)\
-+	FIELD_PREP(ANA_CL_DSCP_CFG_DSCP_DP_VAL, x)
-+#define ANA_CL_DSCP_CFG_DSCP_DP_VAL_GET(x)\
-+	FIELD_GET(ANA_CL_DSCP_CFG_DSCP_DP_VAL, x)
-+
-+#define ANA_CL_DSCP_CFG_DSCP_REWR_ENA            BIT(1)
-+#define ANA_CL_DSCP_CFG_DSCP_REWR_ENA_SET(x)\
-+	FIELD_PREP(ANA_CL_DSCP_CFG_DSCP_REWR_ENA, x)
-+#define ANA_CL_DSCP_CFG_DSCP_REWR_ENA_GET(x)\
-+	FIELD_GET(ANA_CL_DSCP_CFG_DSCP_REWR_ENA, x)
-+
-+#define ANA_CL_DSCP_CFG_DSCP_TRUST_ENA           BIT(0)
-+#define ANA_CL_DSCP_CFG_DSCP_TRUST_ENA_SET(x)\
-+	FIELD_PREP(ANA_CL_DSCP_CFG_DSCP_TRUST_ENA, x)
-+#define ANA_CL_DSCP_CFG_DSCP_TRUST_ENA_GET(x)\
-+	FIELD_GET(ANA_CL_DSCP_CFG_DSCP_TRUST_ENA, x)
-+
- /*      ANA_L2:COMMON:AUTO_LRN_CFG */
- #define ANA_L2_AUTO_LRN_CFG       __REG(TARGET_ANA_L2, 0, 1, 566024, 0, 1, 700, 24, 0, 1, 4)
- 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c b/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c
-index 19516ccad533..afe117736e25 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c
-@@ -258,6 +258,7 @@ struct net_device *sparx5_create_netdev(struct sparx5 *sparx5, u32 portno)
- 
- 	ndev->netdev_ops = &sparx5_port_netdev_ops;
- 	ndev->ethtool_ops = &sparx5_ethtool_ops;
-+	ndev->dcbnl_ops = &sparx5_dcbnl_ops;
- 
- 	eth_hw_addr_gen(ndev, sparx5->base_mac, portno + 1);
- 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_port.c b/drivers/net/ethernet/microchip/sparx5/sparx5_port.c
-index 32709d21ab2f..9ffaaf34d196 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_port.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_port.c
-@@ -6,6 +6,7 @@
- 
- #include <linux/module.h>
- #include <linux/phy/phy.h>
-+#include <net/dcbnl.h>
- 
- #include "sparx5_main_regs.h"
- #include "sparx5_main.h"
-@@ -1144,3 +1145,39 @@ void sparx5_port_enable(struct sparx5_port *port, bool enable)
- 		 sparx5,
- 		 QFWD_SWITCH_PORT_MODE(port->portno));
- }
-+
-+int sparx5_port_qos_set(struct sparx5_port *port,
-+			struct sparx5_port_qos *qos)
++static int sparx5_dcb_getapptrust(struct net_device *dev, u8 *selectors,
++				  int *nselectors)
 +{
-+	sparx5_port_qos_pcp_set(port, &qos->pcp);
++	struct sparx5_port *port = netdev_priv(dev);
++	const struct sparx5_dcb_apptrust *trust;
++
++	trust = apptrust[port->portno];
++
++	memcpy(selectors, trust->selectors, trust->nselectors);
++	*nselectors = trust->nselectors;
 +
 +	return 0;
 +}
 +
-+int sparx5_port_qos_pcp_set(const struct sparx5_port *port,
-+			    struct sparx5_port_qos_pcp *qos)
++int sparx5_dcb_init(struct sparx5 *sparx5)
 +{
-+	struct sparx5 *sparx5 = port->sparx5;
-+	u8 *pcp_itr = qos->map.map;
-+	u8 pcp, dp;
++	struct sparx5_port *port;
 +	int i;
 +
-+	/* Enable/disable pcp and dp for qos classification. */
-+	spx5_rmw(ANA_CL_QOS_CFG_PCP_DEI_QOS_ENA_SET(1) |
-+		 ANA_CL_QOS_CFG_PCP_DEI_DP_ENA_SET(1),
-+		 ANA_CL_QOS_CFG_PCP_DEI_QOS_ENA | ANA_CL_QOS_CFG_PCP_DEI_DP_ENA,
-+		 sparx5, ANA_CL_QOS_CFG(port->portno));
-+
-+	/* Map each pcp and dei value to priority and dp */
-+	for (i = 0; i < ARRAY_SIZE(qos->map.map); i++) {
-+		pcp = *(pcp_itr + i);
-+		dp = (i <= 7) ? 0 : 1;
-+		spx5_rmw(ANA_CL_PCP_DEI_MAP_CFG_PCP_DEI_QOS_VAL_SET(pcp) |
-+			 ANA_CL_PCP_DEI_MAP_CFG_PCP_DEI_DP_VAL_SET(dp),
-+			 ANA_CL_PCP_DEI_MAP_CFG_PCP_DEI_QOS_VAL |
-+			 ANA_CL_PCP_DEI_MAP_CFG_PCP_DEI_DP_VAL, sparx5,
-+			 ANA_CL_PCP_DEI_MAP_CFG(port->portno, i));
++	for (i = 0; i < SPX5_PORTS; i++) {
++		port = sparx5->ports[i];
++		if (!port)
++			continue;
++		/* Initialize [dscp, pcp] default trust */
++		apptrust[port->portno] = &apptrust_conf[3];
 +	}
 +
-+	return 0;
++	return sparx5_dcb_app_update(port->ndev);
 +}
++
+ const struct dcbnl_rtnl_ops sparx5_dcbnl_ops = {
+ 	.ieee_setapp = sparx5_dcb_ieee_setapp,
+ 	.ieee_delapp = sparx5_dcb_ieee_delapp,
++	.dcbnl_setapptrust = sparx5_dcb_setapptrust,
++	.dcbnl_getapptrust = sparx5_dcb_getapptrust,
+ };
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_port.c b/drivers/net/ethernet/microchip/sparx5/sparx5_port.c
+index 9ffaaf34d196..99e86e87aa16 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_port.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_port.c
+@@ -1163,8 +1163,8 @@ int sparx5_port_qos_pcp_set(const struct sparx5_port *port,
+ 	int i;
+ 
+ 	/* Enable/disable pcp and dp for qos classification. */
+-	spx5_rmw(ANA_CL_QOS_CFG_PCP_DEI_QOS_ENA_SET(1) |
+-		 ANA_CL_QOS_CFG_PCP_DEI_DP_ENA_SET(1),
++	spx5_rmw(ANA_CL_QOS_CFG_PCP_DEI_QOS_ENA_SET(qos->qos_enable) |
++		 ANA_CL_QOS_CFG_PCP_DEI_DP_ENA_SET(qos->dp_enable),
+ 		 ANA_CL_QOS_CFG_PCP_DEI_QOS_ENA | ANA_CL_QOS_CFG_PCP_DEI_DP_ENA,
+ 		 sparx5, ANA_CL_QOS_CFG(port->portno));
+ 
 diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_port.h b/drivers/net/ethernet/microchip/sparx5/sparx5_port.h
-index 2f8043eac71b..9c5fb6b651db 100644
+index 9c5fb6b651db..fae9f5464548 100644
 --- a/drivers/net/ethernet/microchip/sparx5/sparx5_port.h
 +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_port.h
-@@ -91,4 +91,21 @@ int sparx5_get_port_status(struct sparx5 *sparx5,
- void sparx5_port_enable(struct sparx5_port *port, bool enable);
- int sparx5_port_fwd_urg(struct sparx5 *sparx5, u32 speed);
+@@ -97,6 +97,8 @@ struct sparx5_port_qos_pcp_map {
  
-+struct sparx5_port_qos_pcp_map {
-+	u8 map[16];
-+};
+ struct sparx5_port_qos_pcp {
+ 	struct sparx5_port_qos_pcp_map map;
++	bool qos_enable;
++	bool dp_enable;
+ };
+ 
+ struct sparx5_port_qos {
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_qos.c b/drivers/net/ethernet/microchip/sparx5/sparx5_qos.c
+index 1e79d0ef0cb8..379e540e5e6a 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_qos.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_qos.c
+@@ -389,6 +389,10 @@ int sparx5_qos_init(struct sparx5 *sparx5)
+ 	if (ret < 0)
+ 		return ret;
+ 
++	ret = sparx5_dcb_init(sparx5);
++	if (ret < 0)
++		return ret;
 +
-+struct sparx5_port_qos_pcp {
-+	struct sparx5_port_qos_pcp_map map;
-+};
+ 	return 0;
+ }
+ 
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_qos.h b/drivers/net/ethernet/microchip/sparx5/sparx5_qos.h
+index ced35033a6c5..6d248cbd485b 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_qos.h
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_qos.h
+@@ -61,6 +61,9 @@ struct sparx5_dwrr {
+ 
+ int sparx5_qos_init(struct sparx5 *sparx5);
+ 
++/* sparx5_dcb.c */
++int sparx5_dcb_init(struct sparx5 *sparx5);
 +
-+struct sparx5_port_qos {
-+	struct sparx5_port_qos_pcp pcp;
-+};
-+
-+int sparx5_port_qos_set(struct sparx5_port *port, struct sparx5_port_qos *qos);
-+
-+int sparx5_port_qos_pcp_set(const struct sparx5_port *port,
-+			    struct sparx5_port_qos_pcp *qos);
-+
- #endif	/* __SPARX5_PORT_H__ */
+ /* Multi-Queue Priority */
+ int sparx5_tc_mqprio_add(struct net_device *ndev, u8 num_tc);
+ int sparx5_tc_mqprio_del(struct net_device *ndev);
 -- 
 2.34.1
 
