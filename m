@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ABABD5EF113
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 10:59:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2285E5EF115
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 10:59:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235505AbiI2I7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 04:59:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55010 "EHLO
+        id S235108AbiI2I7U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 04:59:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232396AbiI2I7D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 04:59:03 -0400
+        with ESMTP id S234841AbiI2I7H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 04:59:07 -0400
 Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2117.outbound.protection.outlook.com [40.107.223.117])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6377C13EAF4
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 01:59:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E62D13EEBA
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 01:59:06 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NlmtalSLSAG2i1A0/mDLIeH2B9SKvCK2SQSEaOKFNCu5ju34YXB3Fp9zg5BAJpBExoXip/uhNO23vM07oPodbKyhU1JTdREwG9tZCKt0T1KiZZfSrh7RUVH8OaxoNJm6Ceb0SvAfEjUeAvw/KkZEcqYZ4cLzeuXpR9+VEFCje8d3WnLKwbVgbm7ax0M/L/Z/+5W8L/XzIau79OtlXW8Y3IQPXmQNXQOX7scXIh+ZoIq3ZbqvLA5SCQO+flsBiYQQHWgYfsz93Ft2bHGTpYOqe32nJ8CGs2kncDopIQu1VxXFvGO15Vr0+6pTIXah2XEoKfmeeuUR2Fl7lKLLOsguhg==
+ b=Jn6yxUlpRvX5bBjMTvJkTY5Bo4BKW8syVvD6vsBtRwarNTLBqr5aidcU+6OX/0Rafsemh1WL1RPRGezFsB2NuvJX6IV5E3a6+Np8Sk2WNKWCRN6eo0mUD7MUrSLhnssVtp5SBwNMxk3lDOLLz1eiuUsIBnqaIs6gpq2NLqaIbw67FdzAnNDTyvQtbBJbZ2XGI8aapq/EiPwoRAEw4Da0zIkgPI5Wr11h7rTL8rGZyL/djlQWvB6K2JJWP6jGIL7nIw9Vgnq1p85eR8FL3a/DRenCUXeVXtlIayOnvZygAtaILOKEArN4yR5737CK55uYii+A52mH3NcoUIxVpOJ0zQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=clhz0dJs2A9w8BZrPYGZ6A9jedoEeB893xPGevx0jX0=;
- b=DTRUSm0Wc0EuE+YTOCJhd83sL1hIeUhm126sNI6eE0JgNhCIzwLJPn75beX12sgyspaXVUqBeecWrL69g8io4/+awIO31DwTJ0VjejI0Fj3v3d80Tz9bp7kU+lVJrZo+2slfmKaJ9HJqdUpyjX0JLrQmgL9PNc5RauYr82P8kLrWa62MhnzBRUw6vWtETAg4oUOfiIlus9yc5WltP37j6STxUYHBCbUUuwwbKIYyU2C2zHcL+4sWKaevZD5PJDBRzw23qTVU016e6qXbDjT22/cmpFYzFfWGNT0WYI875wwxXBQ2Yba64OpSCa60+U0pOpkn8AQPw4Jabl9jai1xGA==
+ bh=URgznGOsKOJaeYxYk6t+Yda+OB/psrONMj5do3nuO3o=;
+ b=oUWopARpV79WnuWVWlmhj+0/kcZLqmPhNnFRS4RzHPJB1B3ttlNn853wRa0LR5AhBcYGUsHctag2nYcof5Z5w6sQjaGiWBw+MC01+NwrF2+iBS7ag4HBJ9PrqUrrvNutH1jZ6lmz016bwbnTIZILhgjmGD8xqYEX+A+FFbQ7pas4zhhHEr3U68/05rFLsYBM74thYKVLQyN1vAnhnG1bywIn/4xT/yWnhHB4M3RUHgRSoSQBj66iUbxZg+s0YVdLHnvRpT9CwCJizkk5UmQQvdkmqrjuCbTK8F7XvZy37JrFZGpd5D7chnQkH+i5oeGy1TRsB4N6HAgGGRnqr/BTvA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=clhz0dJs2A9w8BZrPYGZ6A9jedoEeB893xPGevx0jX0=;
- b=ez3ikjSue8iXaWp3cWCtWG0fZSRWXkGxRDsyKan3J9jO988zpzYbJyqj3nj/6axmNTyEEnAQlsu6BzXpkQRfgM686BBz7DFD0fEudu8MYgiHzI0Nk2tAOi9vAWswRFdKlBa6XxD0Th/VjmLD5O4ki9gZLl+jHPDB/fijwo/mvU8=
+ bh=URgznGOsKOJaeYxYk6t+Yda+OB/psrONMj5do3nuO3o=;
+ b=uFgB5tW+0ItxJIhVXFEXREJ5xxcZK8/CDVAEckKsNHoGX0E1/3wwENIaW+1jDodV36F2bmwmUrkKwtwaB5ao4ACctdMXSiefOpmdPA6FJpSvHhwCspiIjaZkCmRE4wa+qqKgpxQ/lII6J+M20SlMMou1ln6Ew7TDaYRlToQXskg=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
  by MN2PR13MB3854.namprd13.prod.outlook.com (2603:10b6:208:19e::23) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.17; Thu, 29 Sep
- 2022 08:58:59 +0000
+ 2022 08:59:01 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::2cbf:e4b1:5bbf:3e54]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::2cbf:e4b1:5bbf:3e54%5]) with mapi id 15.20.5676.011; Thu, 29 Sep 2022
- 08:58:59 +0000
+ 08:59:01 +0000
 From:   Simon Horman <simon.horman@corigine.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -47,9 +47,9 @@ To:     David Miller <davem@davemloft.net>,
 Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
         Yinjun Zhang <yinjun.zhang@corigine.com>,
         Fei Qin <fei.qin@corigine.com>
-Subject: [PATCH net-next v2 4/5] nfp: add support for link auto negotiation
-Date:   Thu, 29 Sep 2022 10:58:31 +0200
-Message-Id: <20220929085832.622510-5-simon.horman@corigine.com>
+Subject: [PATCH net-next v2 5/5] nfp: add support restart of link auto-negotiation
+Date:   Thu, 29 Sep 2022 10:58:32 +0200
+Message-Id: <20220929085832.622510-6-simon.horman@corigine.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220929085832.622510-1-simon.horman@corigine.com>
 References: <20220929085832.622510-1-simon.horman@corigine.com>
@@ -61,52 +61,52 @@ X-ClientProxiedBy: AS4P190CA0036.EURP190.PROD.OUTLOOK.COM
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: PH0PR13MB4842:EE_|MN2PR13MB3854:EE_
-X-MS-Office365-Filtering-Correlation-Id: c4be5d6a-ec7c-4e97-1598-08daa1f8d928
+X-MS-Office365-Filtering-Correlation-Id: 2135f95f-1263-42b0-eb57-08daa1f8da18
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /WC3KyEN1Re/lqXZ4JzoPgsYOrt+wm2m+p/RJ5FQdQAomLOGa0WhKIuU40ySeRJC292cPcDz4y5kVPBwrei2Y7UxC6O6beOPsiBbyCHG6au6bDMAIXzNx7xIyDxcAPJq3MNCLAlo+5TEN9Mj36YQmrT3FUeqQf/y5JKP7BN8xjwJVjrnrAvV957z1qVePQ3H+aS1/Lql9i5hRnLjskAd9Fjlkc2dKHsiYyN/F+G0BV4L4RGYTqEGrJnqek5N2I3PHuJu83euDPfoTJcNR9jJtLOlwVed+gLR2nvGICwbsU46KVyOczWxCcmoZsCifXH2ftvksuiAYKFqIJPtjnLwGb/K3EqMA5fLfcmq2KBPNp/Yp5qL6bQPBmOifhk1m9YlVxxULDQ8YXBUgEPrmAVWhuIl097LjcnAK311duUmZu41T1vVUfZYx9VGl4JJQ97+c67qkHWveXSFLsmVTPtWrdWhKU8yIzxulHBlGFHN+hNSaQwIjPfb7PqAqdWShFZ0e67BGF2Y5s0/4vtUj4nfnUd+8ZczzgrvnAlfo9QCG2cqJ1ljacjlYY+WhfhZWKFzn9gegs3vkgbvhZTVAXMlYVdsDAQdho1OOgoN5JRtJK31h2nalU4ayrZ6zS1Mzq5YFwTGbcnBjIKGyh7gj7to2Vhr5qlUgwj47ziIM8IF/nYP3gLrdpbqWiuApOzSuMBlq/qmubEAj35Ldgnz3svAW8AgfQ2i8UKJF3sZ3eF4UtJpaeCq2aPoulP0XLJfJ5bM
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(346002)(396003)(366004)(39840400004)(136003)(451199015)(8676002)(2616005)(1076003)(186003)(83380400001)(6512007)(86362001)(66946007)(4326008)(54906003)(5660300002)(66476007)(6666004)(107886003)(2906002)(36756003)(6506007)(38100700002)(66556008)(6486002)(44832011)(52116002)(41300700001)(478600001)(8936002)(316002)(110136005);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: bFlZiiXee17H1bKMj229nMSQcWL4Vw8uMdN4EniXV3tV1OeGhCjvfQ2CXhPD3BKqTCG2CB6q0iaky8yy+csJvetH60lxm43YPVQ1xJQpJaqh/uieirdIKMUUIYhMvEdgouVYJchJYpxd0hlCv1cNjZduldKm2o1CG5ErfL+mX7SC3OS10eSmVIPQ+qjExtguNKbWFobiMCjLngsuYWoZ+8ntU3V0dCyLVm0TSdcc3SALZV4yiYJgOEX/n5r1nvDMuq80mUDzgoHT+uDOcnFIpoNBijfL6k/CxBUtOf7hwpeMHIn2ctoUHgTOFspPwqF0Z9TYpUPiaoDDf7UVNqIMHIdy4V1Vy4WYUQ3PhD3rmXIqQM3XhERw6FCWBh8plyZpCqnRqVn/eCuIhuFpiCZcN5h987+3OmyHs73g9Lk5K0eTMuL80Ys4O1G8bLiJe+krZBD66M/EcwS5WRo0itjrHG3RxMbYj9gDZZpcEnqUlkQUwWi0IHxcfCHWM6CQuy6Aq2xejokcwXm9w6xZxQeARi+i3wcz8RsN+xAHE+Q6qGXZXBIDYPbJkwUQaWCUueDEBtAQJdTlDg11YV9MYG3c4moQhp+0AYWxRg4d36y7dAqDrDinyn3e9riXCDdewilmjwCDIFH4DLmh+idodp8386VTAce/lxVqN6d1031qMUptqixFHZ6FIb1PceOlAv2yAGxNGW9pWza8f6p8Q0X2iFyOENv8ctdHsZ6PJO9DKM1gfJBMa8Mk8bXseqTS+Gk0
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(346002)(396003)(366004)(39840400004)(136003)(451199015)(8676002)(2616005)(1076003)(186003)(6512007)(86362001)(66946007)(4326008)(54906003)(5660300002)(66476007)(6666004)(107886003)(2906002)(36756003)(6506007)(38100700002)(66556008)(6486002)(44832011)(52116002)(41300700001)(478600001)(8936002)(316002)(110136005);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?HSSJCX18+uTwTlycjs4fbXSAszBv81VaO6Vv5ROHH3VFgUojtWoG2baBCGfg?=
- =?us-ascii?Q?4lSJ4WGIGovAVX9crbkN8GMI6qD4ZBCjtk6eFESsLnH1SDso9v/5MX2XbCkl?=
- =?us-ascii?Q?tPr0WDjj9Vr1Sxo6VNX8Ynjrwnu0DZZqg7PYRMfPtw451FDpQblSxwkNhLdZ?=
- =?us-ascii?Q?opb2rSkUVua0Ys31dRRr2Ss/hntGcjoSSlXIpkDw1rhSnjOXfMPin15GXAZX?=
- =?us-ascii?Q?St3qmqSgfre4jcUQPRYBVeNO6qYnHnxyUYe6XpkxAZekPpNdm+7sjJytjdf8?=
- =?us-ascii?Q?DPWb/rGtYX05T9K3k1qKIALnA4Wn08T39an0qW15aZZz47UQ8DGyD5Oale0n?=
- =?us-ascii?Q?CGAvsgdtxeDLqvdpvqVE95tzbzfN57QH1b1PYbgSznAncEs12JOKFjM2IfcF?=
- =?us-ascii?Q?EDJ/P52FhkM6cw6zMbEEnHv5+092k7L+1YGFX2Z/mHqFK5rVtynvRtwgr6Wa?=
- =?us-ascii?Q?E0Ca/WpHEEKK4RYy7Ug4rETa0PpL3sWimC+A/mv3jPNDcgf9ndls3xCZh22N?=
- =?us-ascii?Q?DPhQark6z8Mt3fMyGf5de1HT5dlSmHgxe9SvScD2K0RByLFY/H6CN5QIZ+L+?=
- =?us-ascii?Q?FAkBiQvS0UFegv4M+eZ145uBAXQy8dHOqiN4QhFVZiZYcGsY9dR2fI+Aid+K?=
- =?us-ascii?Q?iMSQzG4BqAlyBWN7tQqRD0CCrsyHVgJYEpd4/3WQij8UkF1N+SLSHRmP/iPc?=
- =?us-ascii?Q?hbAnClP7NlNAimJH2Lksu3B82vG8XNP8KSdZtoGaxtY5fRyz+sGlPWq6nCM8?=
- =?us-ascii?Q?wMRJw2B4TC3KTi4HyhMAIi8XfDEnReAXDdC3g8O2wYcD6FNyKF9eDvJ83UoB?=
- =?us-ascii?Q?ezPLMaf/+hoS/Z5mLsikFZ7ryELq0V6hY0fLv9lRMEwzco6oAZU20G1b2p4q?=
- =?us-ascii?Q?XQQr+eIu4Lpl+usgjxO4N/z3PgfOIyzAjUBYpc0PEz3yMLz8/9uarILXWXer?=
- =?us-ascii?Q?E+vjQG/ROqzku7u3eipDNGZ9df8pdEuHvcxKECJFVxYMdIf7QFvCUoOgvap6?=
- =?us-ascii?Q?1piwFvA1+aCUIgZhud/a5WdRk2UhDNycWI5lZPJq9z3InsdaS0xxJUxaPBH1?=
- =?us-ascii?Q?7s1CI0k6VVeL3KO9bDK/BZe+qTBXB913U/kTPfDUMLPcx6z7l5OX4FOgJQpQ?=
- =?us-ascii?Q?YudBTv4Ce4B6n+8RKP0YeVCVJ8sJioOeLMf3j6CU8fWbXZV/b7ZU21dc8JLa?=
- =?us-ascii?Q?F8WIA/oYLaWy2YTMU29CuKf9VDuMaOu576cdPvhU7tkoBOH0pwKsoZv97C7B?=
- =?us-ascii?Q?67E5k8nr1fw/WrKwddHAN9hsH3Y5dqgmshitZCJr5j2qOK6M3WDfPGL8hwgg?=
- =?us-ascii?Q?9zgY5UKsBzcPDUfWkyQDKziH/eoq8bg3sWcLqcheOhgcHp4SPV1yXFBnKW/G?=
- =?us-ascii?Q?aK/muDmTp93cb39tR96QzwRkXNNiEk6VvMVUIGrwyMpNNLz5kGE9kQauZC7y?=
- =?us-ascii?Q?GumhIsszEnZDuxVfHWfUZW0yIXSscYVhcR9i37SENCl85GYSjotTJG/H1h24?=
- =?us-ascii?Q?Y5K7+iWoc0yGCem4G4vqniIfEm15aXowROsf9/Unjlf19NiWnAcekazuPxSJ?=
- =?us-ascii?Q?CdSidPh13m40/R9whPzMNPKLoDjT9ugw7SUt6j29FPlUpd4qpsRuu3RwdDxq?=
- =?us-ascii?Q?h3FxV7RnHfKCVGfO5oBrCcAhhNV7PVydA7f0syLra+Zqy2JSZILfy9wkMEdU?=
- =?us-ascii?Q?oQ9vxg=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?YocRzB0IkP2IKsQDKJ+H1QpQzaqnGHJc+aDKTyHrNwLPkBL2Eu23DHHv0mX0?=
+ =?us-ascii?Q?vs1OBHNy6655EaxPk7iJNFIFo/ZLf4/BHwleRqX9V7Yew27BbxgcOrQBVXGD?=
+ =?us-ascii?Q?WVbkyGcYd8uhMms9PQm2MYuuo2aSU0OGIhX/jwBZ5zhlv6P941QgExgvEH8x?=
+ =?us-ascii?Q?SmqHMr/UXZEgLQeSeUUyGLdiLwKS97lZ6WuKC3OjgKZKl5dMmtBlb0ETTRZv?=
+ =?us-ascii?Q?7upVbWFyRvnf743DEQHJaS0t5T+xXBPrUmBF1XerN+xPZ742bo7O3TEGBP3K?=
+ =?us-ascii?Q?9SRqAZzoSdgyPPFBaSjhKs6Vo6Xp4g8e2rNgo0OTTnAmYsKZVLjceN4zXl3+?=
+ =?us-ascii?Q?V0Oe9drY/zz1ww/NO1FVdWu+THozO/dikh1buHeJa4rH/gmA5H9jBssAileE?=
+ =?us-ascii?Q?95YlgIrwJnvNUyv3BxU+x4myrRfPyGrSNjFNT3nqrhF2bnnoOkyePc4bx3Ev?=
+ =?us-ascii?Q?Ywf8a61O6FXM3htY3veqUZQsi/DjmJEf2n+dEV22ZYf4Q/O2zjLr5r0MtDLY?=
+ =?us-ascii?Q?uZ7gM1G1xP+VVBVhjYsPoDRQdN14RVBiVs5qUpKw5rPEuUm3uAkhPOVCw2KT?=
+ =?us-ascii?Q?VGqk1hpC4c5yMdpd3U9ens3gUZCWbns9Y/66x08cP3Mxlc1CTgP3IWVvjEhx?=
+ =?us-ascii?Q?muWhlMijmD/SRYd70dbPEQrl+LP4Gr5SV8cRov4m4+39k//TA763hHjvz2Bv?=
+ =?us-ascii?Q?dcOeqPUHOK0G52TX7RibNOHaxqx0O+fJV8u6/1MYqVvYerYxlc1ISLO59aS3?=
+ =?us-ascii?Q?eh0K+JYikG3f/OTMmMa+claOLFQGax7ydQuOQfe7S8yTjPyEn6NjgoX1knKP?=
+ =?us-ascii?Q?DA44wUKEx1EjumXzal2eTyaXOrYg7EZB3YDZkHVZu0vWXEBZLZ+sF5K6w5jz?=
+ =?us-ascii?Q?/ypZR3n+5CyWXXDxD8PYRRuXzAsS4ArAja+OucoyhhD5xkfHoDMW1fi+QVwi?=
+ =?us-ascii?Q?9jOvbX4FKQAx4877UMQPTb0WsIykCd3UO4UVfK0MaA3LeblyDXVROOAtNAV9?=
+ =?us-ascii?Q?hpB8P1+ZvGK7+dgUHlY62NW22Xy+qX4KEUJnNyj7QSoiTjpkJVQCydTscW3o?=
+ =?us-ascii?Q?tBTedgkJHQHxZW+RWqaqslDk2r+BA3o0MjMdhqg6b5miRioE9kU+x4UkLnnP?=
+ =?us-ascii?Q?e/1/nx8sP0MXGdUNUNJVWqbhu9H3jdWDdDyFHJpk7TtYfvvzwuLXmcnFDd5I?=
+ =?us-ascii?Q?OUToI3xGuJF2ekrHpJt8Sms0UAwCUH+7m1nAFGKtEauDpOWnDrZpeozXtMlC?=
+ =?us-ascii?Q?qwVs3V4whY2TiaCi+OYXvDgpNgcOaN2SSSl3+8pftA32sDBZ1OMUObd/aXfz?=
+ =?us-ascii?Q?8RZn2F+tWhdnwQNIOdUqa84WEfpngqkNWy7PU5PuamdsCn7FRFmUirR2VjHW?=
+ =?us-ascii?Q?3cS8Dk3Ucka5wAk4xYsjJaoPQGox9t5qzYx//Xi7V6B4nEuYJLo0cPsXEGhh?=
+ =?us-ascii?Q?KXL8YkIi0T8yCuht0nT9tc9OFXLtqVIR24fvXT5Dx/9/SHwGwUlZNULcnP5k?=
+ =?us-ascii?Q?Ba17Uybcs3+L2KX5JWvfOphivWRE6Rb9XHi6CVkSFArWpHXHysFCElJfiY1M?=
+ =?us-ascii?Q?BQ9IetGGK474nxrjy1JFIIFW3Dqo3iFRpMa9/n82FS6nkEy52ZuvSU6VgAjW?=
+ =?us-ascii?Q?wk6Kr1/n1uL11Z4w/1dz96O5lhXM3s3DwnKxDVpwB6porjlVPRfSOsCa5369?=
+ =?us-ascii?Q?sXw4yw=3D=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c4be5d6a-ec7c-4e97-1598-08daa1f8d928
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2135f95f-1263-42b0-eb57-08daa1f8da18
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Sep 2022 08:58:59.4840
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Sep 2022 08:59:01.0780
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +oXLEjxloiTW700mOAGSoUuzHUuq03WOw0NxUauS0rz5YznV8EOgzwfEtfp3fsSYhseOuXO3PnBm2FMTlSUEswVJ0P+GoGQuhDHx264AAxs=
+X-MS-Exchange-CrossTenant-UserPrincipalName: 3FgQ8WJRDRYRuZ/cSvFLXjEZsl4Y3QkRYnz4ceT/ZE3YwJkUktkgeWSy+gmRjhqSA/SlceSiJbDETqRAklUFQKWpTNLQ7QUlWw/9WjWX2F0=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR13MB3854
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS
@@ -117,151 +117,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yinjun Zhang <yinjun.zhang@corigine.com>
+From: Fei Qin <fei.qin@corigine.com>
 
-Report the auto negotiation capability if it's supported
-in management firmware, and advertise it if it's enabled.
-Changing port speed is not allowed when autoneg is enabled.
+Add support restart of link auto-negotiation.
+This may be initiated using:
 
-The ethtool <intf> command displays the auto-neg capability:
+  # ethtool -r <intf>
 
-  # ethtool enp1s0np0
-  Settings for enp1s0np0:
-          Supported ports: [ FIBRE ]
-          Supported link modes:   Not reported
-          Supported pause frame use: Symmetric
-          Supports auto-negotiation: Yes
-          Supported FEC modes: None        RS      BASER
-          Advertised link modes:  Not reported
-          Advertised pause frame use: Symmetric
-          Advertised auto-negotiation: Yes
-          Advertised FEC modes: None       RS      BASER
-          Speed: 25000Mb/s
-          Duplex: Full
-          Auto-negotiation: on
-          Port: FIBRE
-          PHYAD: 0
-          Transceiver: internal
-          Link detected: yes
-
-Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
+Signed-off-by: Fei Qin <fei.qin@corigine.com>
 Signed-off-by: Simon Horman <simon.horman@corigine.com>
 ---
- drivers/net/ethernet/netronome/nfp/nfp_main.c |  9 ++++++-
- .../ethernet/netronome/nfp/nfp_net_ethtool.c  | 26 ++++++++++++++++---
- .../ethernet/netronome/nfp/nfpcore/nfp_nsp.h  |  1 +
- .../netronome/nfp/nfpcore/nfp_nsp_eth.c       |  2 ++
- 4 files changed, 33 insertions(+), 5 deletions(-)
+ .../ethernet/netronome/nfp/nfp_net_ethtool.c  | 33 +++++++++++++++++++
+ 1 file changed, 33 insertions(+)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_main.c b/drivers/net/ethernet/netronome/nfp/nfp_main.c
-index 91063f19c97d..e66e548919d4 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_main.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_main.c
-@@ -729,8 +729,15 @@ static int nfp_pf_cfg_hwinfo(struct nfp_pf *pf, bool sp_indiff)
- 	snprintf(hwinfo, sizeof(hwinfo), "sp_indiff=%d", sp_indiff);
- 	err = nfp_nsp_hwinfo_set(nsp, hwinfo, sizeof(hwinfo));
- 	/* Not a fatal error, no need to return error to stop driver from loading */
--	if (err)
-+	if (err) {
- 		nfp_warn(pf->cpp, "HWinfo(sp_indiff=%d) set failed: %d\n", sp_indiff, err);
-+	} else {
-+		/* Need reinit eth_tbl since the eth table state may change
-+		 * after sp_indiff is configured.
-+		 */
-+		kfree(pf->eth_tbl);
-+		pf->eth_tbl = __nfp_eth_read_ports(pf->cpp, nsp);
-+	}
- 
- 	nfp_nsp_close(nsp);
- 	return 0;
 diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-index d50af23642a2..678cea0fd274 100644
+index 678cea0fd274..22a5d2419084 100644
 --- a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
 +++ b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-@@ -290,8 +290,13 @@ nfp_net_get_link_ksettings(struct net_device *netdev,
- 	if (eth_port) {
- 		ethtool_link_ksettings_add_link_mode(cmd, supported, Pause);
- 		ethtool_link_ksettings_add_link_mode(cmd, advertising, Pause);
--		cmd->base.autoneg = eth_port->aneg != NFP_ANEG_DISABLED ?
--			AUTONEG_ENABLE : AUTONEG_DISABLE;
-+		if (eth_port->supp_aneg) {
-+			ethtool_link_ksettings_add_link_mode(cmd, supported, Autoneg);
-+			if (eth_port->aneg == NFP_ANEG_AUTO) {
-+				ethtool_link_ksettings_add_link_mode(cmd, advertising, Autoneg);
-+				cmd->base.autoneg = AUTONEG_ENABLE;
-+			}
-+		}
- 		nfp_net_set_fec_link_mode(eth_port, cmd);
- 	}
- 
-@@ -327,6 +332,7 @@ static int
- nfp_net_set_link_ksettings(struct net_device *netdev,
- 			   const struct ethtool_link_ksettings *cmd)
- {
-+	bool req_aneg = (cmd->base.autoneg == AUTONEG_ENABLE);
- 	struct nfp_eth_table_port *eth_port;
- 	struct nfp_port *port;
- 	struct nfp_nsp *nsp;
-@@ -346,13 +352,25 @@ nfp_net_set_link_ksettings(struct net_device *netdev,
- 	if (IS_ERR(nsp))
- 		return PTR_ERR(nsp);
- 
--	err = __nfp_eth_set_aneg(nsp, cmd->base.autoneg == AUTONEG_ENABLE ?
--				 NFP_ANEG_AUTO : NFP_ANEG_DISABLED);
-+	if (req_aneg && !eth_port->supp_aneg) {
-+		netdev_warn(netdev, "Autoneg is not supported.\n");
-+		err = -EOPNOTSUPP;
-+		goto err_bad_set;
-+	}
-+
-+	err = __nfp_eth_set_aneg(nsp, req_aneg ? NFP_ANEG_AUTO : NFP_ANEG_DISABLED);
- 	if (err)
- 		goto err_bad_set;
-+
- 	if (cmd->base.speed != SPEED_UNKNOWN) {
- 		u32 speed = cmd->base.speed / eth_port->lanes;
- 
-+		if (req_aneg) {
-+			netdev_err(netdev, "Speed changing is not allowed when working on autoneg mode.\n");
-+			err = -EINVAL;
-+			goto err_bad_set;
-+		}
-+
- 		err = __nfp_eth_set_speed(nsp, speed);
- 		if (err)
- 			goto err_bad_set;
-diff --git a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp.h b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp.h
-index 52465670a01e..992d72ac98d3 100644
---- a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp.h
-+++ b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp.h
-@@ -174,6 +174,7 @@ struct nfp_eth_table {
- 		bool enabled;
- 		bool tx_enabled;
- 		bool rx_enabled;
-+		bool supp_aneg;
- 
- 		bool override_changed;
- 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp_eth.c b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp_eth.c
-index 18ba7629cdc2..bb64efec4c46 100644
---- a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp_eth.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_nsp_eth.c
-@@ -27,6 +27,7 @@
- #define NSP_ETH_PORT_PHYLABEL		GENMASK_ULL(59, 54)
- #define NSP_ETH_PORT_FEC_SUPP_BASER	BIT_ULL(60)
- #define NSP_ETH_PORT_FEC_SUPP_RS	BIT_ULL(61)
-+#define NSP_ETH_PORT_SUPP_ANEG		BIT_ULL(63)
- 
- #define NSP_ETH_PORT_LANES_MASK		cpu_to_le64(NSP_ETH_PORT_LANES)
- 
-@@ -178,6 +179,7 @@ nfp_eth_port_translate(struct nfp_nsp *nsp, const union eth_table_entry *src,
- 		return;
- 
- 	dst->act_fec = FIELD_GET(NSP_ETH_STATE_ACT_FEC, state);
-+	dst->supp_aneg = FIELD_GET(NSP_ETH_PORT_SUPP_ANEG, port);
+@@ -228,6 +228,37 @@ nfp_net_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *drvinfo)
+ 	nfp_get_drvinfo(nn->app, nn->pdev, vnic_version, drvinfo);
  }
  
++static int
++nfp_net_nway_reset(struct net_device *netdev)
++{
++	struct nfp_eth_table_port *eth_port;
++	struct nfp_port *port;
++	int err;
++
++	port = nfp_port_from_netdev(netdev);
++	eth_port = nfp_port_get_eth_port(port);
++	if (!eth_port)
++		return -EOPNOTSUPP;
++
++	if (!netif_running(netdev))
++		return 0;
++
++	err = nfp_eth_set_configured(port->app->cpp, eth_port->index, false);
++	if (err) {
++		netdev_info(netdev, "Link down failed: %d\n", err);
++		return err;
++	}
++
++	err = nfp_eth_set_configured(port->app->cpp, eth_port->index, true);
++	if (err) {
++		netdev_info(netdev, "Link up failed: %d\n", err);
++		return err;
++	}
++
++	netdev_info(netdev, "Link reset succeeded\n");
++	return 0;
++}
++
  static void
+ nfp_app_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *drvinfo)
+ {
+@@ -1841,6 +1872,7 @@ static const struct ethtool_ops nfp_net_ethtool_ops = {
+ 				     ETHTOOL_COALESCE_MAX_FRAMES |
+ 				     ETHTOOL_COALESCE_USE_ADAPTIVE,
+ 	.get_drvinfo		= nfp_net_get_drvinfo,
++	.nway_reset             = nfp_net_nway_reset,
+ 	.get_link		= ethtool_op_get_link,
+ 	.get_ringparam		= nfp_net_get_ringparam,
+ 	.set_ringparam		= nfp_net_set_ringparam,
+@@ -1878,6 +1910,7 @@ static const struct ethtool_ops nfp_net_ethtool_ops = {
+ 
+ const struct ethtool_ops nfp_port_ethtool_ops = {
+ 	.get_drvinfo		= nfp_app_get_drvinfo,
++	.nway_reset             = nfp_net_nway_reset,
+ 	.get_link		= ethtool_op_get_link,
+ 	.get_strings		= nfp_port_get_strings,
+ 	.get_ethtool_stats	= nfp_port_get_stats,
 -- 
 2.30.2
 
