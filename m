@@ -2,113 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 135BE5EEEE7
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:24:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E01855EEEF3
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:26:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235224AbiI2HYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 03:24:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57864 "EHLO
+        id S234815AbiI2H0p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 03:26:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235305AbiI2HYO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:24:14 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 481E2118B18;
-        Thu, 29 Sep 2022 00:23:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1664436232; x=1695972232;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=51Zl+NOBedzejTddDYPD6LxG7uWtRAFlIesrelk0QbU=;
-  b=ZiGIl+WGhKKPd/G9cYZnceLXZ6JGPmvtZgP6iMxHKa49v3t1gk6z+MT+
-   2qYILAXu4BAZr3ScWF0YF+mMHK+ws+QN0WrEegpNd0fyHCKoNmsUmu8YG
-   Wicg3i/910GVFpKXn9DPjHDhOpav4JF4arA1b2U2SFyZ6cdaNIHlk7NTN
-   AKia5uT7hIiQY/1XeLbnC3AogIKgPhe1OHtBDflQYL5HMq6DoJzzsZWKe
-   vgeQzrNgw534LWJRvKWjHDRVJVHYbd+gwVaOh7OIkY90D98vcl1bwm1MQ
-   ZM5FFejbYUwPOmfA36Q78H9wBYbezIYx0QqrcpGoZD810/mSB2wK4r1Jb
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10484"; a="328191761"
-X-IronPort-AV: E=Sophos;i="5.93,354,1654585200"; 
-   d="scan'208";a="328191761"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2022 00:23:51 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10484"; a="573352319"
-X-IronPort-AV: E=Sophos;i="5.93,354,1654585200"; 
-   d="scan'208";a="573352319"
-Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.249.168.227]) ([10.249.168.227])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2022 00:23:48 -0700
-Message-ID: <896fe0b9-5da2-2bc6-0e46-219aa4b9f44f@intel.com>
-Date:   Thu, 29 Sep 2022 15:23:46 +0800
+        with ESMTP id S234536AbiI2H0m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:26:42 -0400
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C447212C691
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:26:41 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id h3so591662lja.1
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:26:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=0QojmCv3XyXLKahc21RdevQ8wm/OGlW2KEduxpTikTs=;
+        b=wj/ZggVGLQtSixwm02m62S1QU56czuifNAbMW0uaoSWTSgIY88zBE7WzHbcVHxE7sA
+         2FAIWDeeIHOV+PFJipkXix2JHOJBwaywfwqkgtDrxQHoyUyLGT1kXMdFNL6m6/p9FiwO
+         aZLSEQRKIH0BMN2E+0ILif3JZ2DNBYFzPrarDo5Tv3BmNFHXcYqrjhGB1rhRlhNWnkJu
+         u8rBPdYmiP4ZpErdmSQ+4pTzGUgs/Uy27Y/s++DCn/wFhqHE+usYbSM9XHX63/JrcVWl
+         uuwqCPhM6BceXJZf06e/t2+LuO/g2jp/dr23oBT8jKV1tHZ5xQ7g813HW+Aokwe/p1rO
+         eaXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=0QojmCv3XyXLKahc21RdevQ8wm/OGlW2KEduxpTikTs=;
+        b=wwhwUls8CNaV99gvmUz7MyXTTXioyemfRTFEMwXCD2ei9NMT5+HlpPQQeUjIC8sX8z
+         7xjz0wrgU+tiskoa2vQfi+oMxPyhaioIZl1ZZPVHUtNiqUPuAJXOywGG5wHVbaNl43sp
+         LLF2i5UoDg4b24zH0li6rNgE98pKmht4NuYdGSRN0C9FeFqj6/jiLIPPBPoHWQ36PqTW
+         BtpqDt7uZw/j3iARM8Hb4l+DCl8D+LsZ+Bo618DsVjF3fCz71sSTtuWASmcRsZBG5QrR
+         X+H6xr1+OlOypxaVr3+iS47FxFR4O9uiSOU1iPftDDIpDYolUpPutudTX1B5tYf5AQOH
+         hZNw==
+X-Gm-Message-State: ACrzQf3gRXloNejJQU600Cn+L8LUX3FsrQ05g0av267LveN3aLneDuKr
+        p6OSpjQ64A1bTTpDSxUV1Evokw==
+X-Google-Smtp-Source: AMsMyM7bMSu6MsJnPv+Ov3YJTIFzSVfDQHgLZ3onZn0YpYET5Phht0XophDhqVt78myNxyQcu5j9yw==
+X-Received: by 2002:a2e:9bcf:0:b0:26c:5a9d:531f with SMTP id w15-20020a2e9bcf000000b0026c5a9d531fmr610851ljj.144.1664436399972;
+        Thu, 29 Sep 2022 00:26:39 -0700 (PDT)
+Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id g5-20020a2eb5c5000000b0026bfc8d4bbbsm632153ljn.125.2022.09.29.00.26.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 29 Sep 2022 00:26:39 -0700 (PDT)
+Message-ID: <f0982b75-ede3-cc56-1160-8fda0faae356@linaro.org>
+Date:   Thu, 29 Sep 2022 09:26:39 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Firefox/102.0 Thunderbird/102.3.0
-Subject: Re: [PATCH V3 0/6] Conditionally read fields in dev cfg space
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.0
+Subject: Re: [PATCH net-next 1/2] nfc: s3fwrn5: fix order of freeing resources
 Content-Language: en-US
-To:     jasowang@redhat.com, mst@redhat.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org
-References: <20220929014555.112323-1-lingshan.zhu@intel.com>
-From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
-In-Reply-To: <20220929014555.112323-1-lingshan.zhu@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Krzysztof Opasiak <k.opasiak@samsung.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220929050426.955139-1-dmitry.torokhov@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220929050426.955139-1-dmitry.torokhov@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-9.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Michael,
+On 29/09/2022 07:04, Dmitry Torokhov wrote:
+> Caution needs to be exercised when mixing together regular and managed
+> resources. In case of this driver devm_request_threaded_irq() should
+> not be used, because it will result in the interrupt being freed too
+> late, and there being a chance that it fires up at an inopportune
+> moment and reference already freed data structures.
 
-Jason starts his vacation this afternoon, and next week is our national 
-holiday.
-He has acked 3 ~ 6 of this series before, and I have made improvements 
-based on his comments.
-Do you have any comments on patches 1 and 2?
+Non-devm was so far recommended only for IRQF_SHARED, not for regular
+ones. Otherwise you have to fix half of Linux kernel drivers... why is
+s3fwrn5 special?
 
-Thanks,
-Zhu Lingshan
-On 9/29/2022 9:45 AM, Zhu Lingshan wrote:
-> This series intends to read the fields in virtio-net device
-> configuration space conditionally on the feature bits,
-> this means:
->
-> MTU exists if VIRTIO_NET_F_MTU is set
-> MAC exists if VIRTIO_NET_F_NET is set
-> MQ exists if VIRTIO_NET_F_MQ or VIRTIO_NET_F_RSS is set.
->
-> This series report device features to userspace and invokes
-> vdpa_config_ops.get_config() rather than
-> vdpa_get_config_unlocked() to read the device config spcae,
-> so no races in vdpa_set_features_unlocked()
->
-> Thanks!
->
-> Changes form V2:
-> remove unnacessary checking for vdev->config->get_status (Jason)
->
-> Changes from V1:
-> 1)Better comments for VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES,
-> only in the header file(Jason)
-> 2)Split original 3/4 into separate patches(Jason)
-> 3)Check FEATURES_OK for reporting driver features
-> in vdpa_dev_config_fill (Jason)
-> 4) Add iproute2 example for reporting device features
->
-> Zhu Lingshan (6):
->    vDPA: allow userspace to query features of a vDPA device
->    vDPA: only report driver features if FEATURES_OK is set
->    vDPA: check VIRTIO_NET_F_RSS for max_virtqueue_paris's presence
->    vDPA: check virtio device features to detect MQ
->    vDPA: fix spars cast warning in vdpa_dev_net_mq_config_fill
->    vDPA: conditionally read MTU and MAC in dev cfg space
->
->   drivers/vdpa/vdpa.c       | 68 ++++++++++++++++++++++++++++++---------
->   include/uapi/linux/vdpa.h |  4 +++
->   2 files changed, 56 insertions(+), 16 deletions(-)
->
+Please use scripts/get_maintainers.pl to Cc also netdev folks.
+
+> 
+> Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> ---
+>  drivers/nfc/s3fwrn5/i2c.c | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
+> 
+Best regards,
+Krzysztof
 
