@@ -2,96 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E9E75EEEF6
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:27:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 536525EEEF8
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:29:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235052AbiI2H1Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 03:27:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43442 "EHLO
+        id S233495AbiI2H3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 03:29:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234954AbiI2H1Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:27:24 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53265132FD5
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:27:22 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id g20so580539ljg.7
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:27:21 -0700 (PDT)
+        with ESMTP id S232519AbiI2H3G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:29:06 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A20BF12E426
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:29:05 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id l18so734076wrw.9
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:29:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=XSO3srI6djp1POX1SyZaGqeBc+5SE0nSSjoY6i+WAuc=;
-        b=CtfynHm4KOmmGNVTynGggp0RbQnireLLKbmpXefD/v7PTjSOUbW8skOb3jvy9rvDK3
-         WFLXeq/FB18NRk1U+8QyiPdKc/mN7DlCGsXRSchTUjnMoNSLXCiuogfElxYgSPLZpH/3
-         0MdzlViuXEg//iQ/SmB9oCQqTgRhIl0HOVV+Q+L1TsHB+8tL9nfI6IJs2pcgE0TFhoUW
-         4Tf2FodCp5oFSTTauWJZpR34bAt1wqFXUki/DKBqvwXVpWiju59DFtQykxqHkV13QnAa
-         kiNqIZI3ggfkD9BC8Aiyhbw1L9QvgHN1VOCuBVuRZrTE+goDVRK2AVTjDqkLTE3AJDKn
-         weuA==
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=guFK+fRZB7attecE+hOArvpRDVx/SvNZRY94QUAAkQc=;
+        b=ZB6mbeSOoN8kN9WbsbzW0qoVHUpggpEr7V72WLk7CXqoH5SqezIH2xDqU4g00BR3xI
+         HmfgcZXULvAmKqGC61/yNMFrFc6RFkqDfgoLc5X68cAeQ/nm1dCdJSVQ4ZfaSqRUroWI
+         QpkXG3mraZuL5uYtroQopS4TioLDvzEDXYKraou9pZvPw2fEZCI+3rUDDyxG5UqFCwaP
+         wn/rsnaE7rhdBb/6WFWT7btbGtbppDOjWoBkJ3wXse1r5Wg9rTWcVoC2x7MF/evLVCJ3
+         A0Z8AgBjF9wJ/rp/i78XHJxJXoFoQC+NKIBmIBG8S3LPpZv13FOEiTbgzmJ+08xZvbdw
+         JdNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=XSO3srI6djp1POX1SyZaGqeBc+5SE0nSSjoY6i+WAuc=;
-        b=7ixJbmCOYgKT4IxfE5xhsRhJa/MJRX7VF8c9sAcXeIekUMTbwixfe9bthURD5J4y1H
-         347HK8ZLJI3ePc3Z5u7lBULA+YLzb/VkpotEkPiiDsI/5hIGOfeflRw3dHyka3kA3XSH
-         FEmZj6Jvk79wOPPBLO5+4VpznO9UFV8Vxwdx6QTyHbe231sJlb93K2UOl94/TF9GuGyI
-         VUnQiAw25sOPabSKvoKg1vDskpVEqVKuPDIoibmXkzXRNy6VpLaPQe6oE52dCWFU0R5Y
-         10nVFVya03yC4AnRUaxzgzBIbEAbF6PorpMl7xRJVfhArkGeScvWgjuXk5OAv1p+FwKT
-         TtwA==
-X-Gm-Message-State: ACrzQf0AT+4lLV630r22eCMGzsY7B+UI6+//qO1JapJGFjx0PRfs94AO
-        H4QlnmXyidg8RLM9gzt6pUurgXCOWGTHxQ==
-X-Google-Smtp-Source: AMsMyM6y+HQmJ4a8O3aoAn/ZcQ3ygGrxopppEf0m63FToAhyXe0hryOE23en8vxWlsinBlGHALuGNw==
-X-Received: by 2002:a2e:beaa:0:b0:26c:28a1:fd2a with SMTP id a42-20020a2ebeaa000000b0026c28a1fd2amr610588ljr.468.1664436440264;
-        Thu, 29 Sep 2022 00:27:20 -0700 (PDT)
-Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id bf34-20020a2eaa22000000b00261eb75fa5dsm644266ljb.41.2022.09.29.00.27.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 29 Sep 2022 00:27:19 -0700 (PDT)
-Message-ID: <26fd03ad-181c-97c5-f620-6ac296cf1829@linaro.org>
-Date:   Thu, 29 Sep 2022 09:27:19 +0200
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=guFK+fRZB7attecE+hOArvpRDVx/SvNZRY94QUAAkQc=;
+        b=GNhNROvu/rTauJVbjwq8NAh2Ysw92bMLOJuk5tzENoKPeSODW+stEytpmwZ1LuD2DG
+         CxtEzjP+7kbtDx2sbbYBaymfcVv6Tbd09J5JHCkDquWFUnH6RdDjoGKcfB4QZvFqiNcx
+         J46Fb2lCbB5ldummwPbvxyXQjJtH4d80cklmC0WvhNjhmVmhK9pykFUCJrNBdO75bAAl
+         3n7iFZOiSUJMgJEuR60Q61uYT/3AtOfbHa7JouBfiqyW3W6g1AssfMUWzC682z6lbvuJ
+         HxYd0TGtQx/1I9WuIUPzP73MMDKu/Q+lSJ3D8T2xXWd251Di0+gEZC5flRIdZE96XOxH
+         7TWQ==
+X-Gm-Message-State: ACrzQf2dki4bi6in349HC8v5RN42UKGDDdM/Ppph3s5sl8pAhhLtHCr3
+        4/nKaeUplmJqUZZjmbS9kuHR8O8xsoC3gaLx
+X-Google-Smtp-Source: AMsMyM4IpSPvEvUeefig2aJvvNlnC+Y5qDXgB2QqcwQa3yFikg6SceRGj28ngLqljRFJcB+Agvokfw==
+X-Received: by 2002:adf:e6cd:0:b0:22c:c554:5ba4 with SMTP id y13-20020adfe6cd000000b0022cc5545ba4mr1176921wrm.12.1664436543933;
+        Thu, 29 Sep 2022 00:29:03 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id t3-20020a7bc3c3000000b003b4868eb6bbsm4234052wmj.23.2022.09.29.00.29.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Sep 2022 00:29:03 -0700 (PDT)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, tariqt@nvidia.com,
+        moshe@nvidia.com, saeedm@nvidia.com
+Subject: [patch net-next v3 0/7] devlink: sanitize per-port region creation/destruction
+Date:   Thu, 29 Sep 2022 09:28:55 +0200
+Message-Id: <20220929072902.2986539-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.0
-Subject: Re: [PATCH net-next 1/2] nfc: s3fwrn5: fix order of freeing resources
-Content-Language: en-US
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Krzysztof Opasiak <k.opasiak@samsung.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220929050426.955139-1-dmitry.torokhov@gmail.com>
- <f0982b75-ede3-cc56-1160-8fda0faae356@linaro.org>
-In-Reply-To: <f0982b75-ede3-cc56-1160-8fda0faae356@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29/09/2022 09:26, Krzysztof Kozlowski wrote:
-> On 29/09/2022 07:04, Dmitry Torokhov wrote:
->> Caution needs to be exercised when mixing together regular and managed
->> resources. In case of this driver devm_request_threaded_irq() should
->> not be used, because it will result in the interrupt being freed too
->> late, and there being a chance that it fires up at an inopportune
->> moment and reference already freed data structures.
-> 
-> Non-devm was so far recommended only for IRQF_SHARED, not for regular
-> ones. Otherwise you have to fix half of Linux kernel drivers... why is
-> s3fwrn5 special?
-> 
+From: Jiri Pirko <jiri@nvidia.com>
 
+Currently the only user of per-port devlink regions is DSA. All drivers
+that use regions register them before devlink registration. For DSA,
+this was not possible as the internals of struct devlink_port needed for
+region creation are initialized during port registration.
 
-> Please use scripts/get_maintainers.pl to Cc also netdev folks.
+This introduced a mismatch in creation flow of devlink and devlink port
+regions. As you can see, it causes the DSA driver to make the port
+init/exit flow a bit cumbersome.
 
-Ah, they are not printed for NFC drivers. So never mind last comment.
+Fix this by introducing port_init/fini() which could be optionally
+called by drivers like DSA, to prepare struct devlink_port to be used
+for region creation purposes before devlink port register is called.
 
-Best regards,
-Krzysztof
+Tested by Vladimir on his setup.
+
+---
+v2->v3:
+- fixed patch description of patch #3
+
+v1->v2:
+- Netdevsim patch removed and also the patch forcing region creation
+  before register was removed.
+- Two Vladimir's patches were added.
+
+Jiri Pirko (5):
+  net: devlink: introduce port registered assert helper and use it
+  net: devlink: introduce a flag to indicate devlink port being
+    registered
+  net: devlink: add port_init/fini() helpers to allow
+    pre-register/post-unregister functions
+  net: dsa: move port_setup/teardown to be called outside devlink port
+    registered area
+  net: dsa: don't do devlink port setup early
+
+Vladimir Oltean (2):
+  net: dsa: don't leave dangling pointers in dp->pl when failing
+  net: dsa: remove bool devlink_port_setup
+
+ include/net/devlink.h |   7 +-
+ include/net/dsa.h     |   2 -
+ net/core/devlink.c    |  80 ++++++++++++++----
+ net/dsa/dsa2.c        | 184 ++++++++++++++++++------------------------
+ net/dsa/dsa_priv.h    |   1 +
+ net/dsa/port.c        |  22 +++--
+ net/dsa/slave.c       |   6 +-
+ 7 files changed, 166 insertions(+), 136 deletions(-)
+
+-- 
+2.37.1
 
