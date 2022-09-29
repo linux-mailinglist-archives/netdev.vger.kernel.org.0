@@ -2,131 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF3645EFD4B
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 20:44:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DAC35EFD56
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 20:45:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235952AbiI2Soe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 14:44:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53380 "EHLO
+        id S235229AbiI2Spy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 14:45:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235902AbiI2SoJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 14:44:09 -0400
-Received: from mg.ssi.bg (mg.ssi.bg [193.238.174.37])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 48C7D1D929A
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 11:43:44 -0700 (PDT)
-Received: from mg.ssi.bg (localhost [127.0.0.1])
-        by mg.ssi.bg (Proxmox) with ESMTP id A76921023F;
-        Thu, 29 Sep 2022 21:43:41 +0300 (EEST)
-Received: from ink.ssi.bg (unknown [193.238.174.40])
-        by mg.ssi.bg (Proxmox) with ESMTP id 41C88102D4;
-        Thu, 29 Sep 2022 21:43:40 +0300 (EEST)
-Received: from ja.ssi.bg (unknown [178.16.129.10])
-        by ink.ssi.bg (Postfix) with ESMTPS id E87063C0325;
-        Thu, 29 Sep 2022 21:43:39 +0300 (EEST)
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-        by ja.ssi.bg (8.17.1/8.16.1) with ESMTP id 28TIhcIs136951;
-        Thu, 29 Sep 2022 21:43:39 +0300
-Date:   Thu, 29 Sep 2022 21:43:38 +0300 (EEST)
-From:   Julian Anastasov <ja@ssi.bg>
-To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
-cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH net] ip: fix triggering of 'icmp redirect'
-In-Reply-To: <aaddae1d-ad4e-425c-b88a-0830d839a3ce@6wind.com>
-Message-ID: <28c0db52-cfc9-d528-da5c-2ff01b482b77@ssi.bg>
-References: <20220829100121.3821-1-nicolas.dichtel@6wind.com> <6c8a44ba-c2d5-cdf-c5c7-5baf97cba38@ssi.bg> <aaddae1d-ad4e-425c-b88a-0830d839a3ce@6wind.com>
+        with ESMTP id S235576AbiI2SpW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 14:45:22 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC07072B40;
+        Thu, 29 Sep 2022 11:45:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0E5FECE2368;
+        Thu, 29 Sep 2022 18:45:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E786BC433D6;
+        Thu, 29 Sep 2022 18:44:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664477098;
+        bh=GhiMP37z6iD9dr2AzNoaCONOVGPUM81UxwDaptwk07M=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RHTCEw8u6eFHH5yhzKSVA2uqMxZqS/Y3MXr3srRfTRDcnnkuuRId5pPr55qgV6qM8
+         gXAQqGpC5apfQcHqr3TLsJ2NK8o+EqJll4z6J4lDtt7oiZQUrEy4AbyW8YtFUogxTT
+         2vOJaRua/SSmHtvKHB+BSsPCz9prq0Ow1AznHHy8lyZZX/MtmLZGsbPt5EtuRalSbh
+         t5xonO7CSRbEfbfZNpqwBzwP+dWUGZ908qVusv1K9NiEvkRwMwQugoK7VY3yPeh+hP
+         Lx8CUu3LgFKCzg4hBbX1HdfMfvf1m/mynq7IR5ZkQb1Hs5rIvLRWlg+eUnKbeKKLT9
+         b8czLCXht1xnA==
+Date:   Thu, 29 Sep 2022 11:44:56 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Nathan Huckleberry <nhuck@google.com>
+Cc:     Dan Carpenter <error27@gmail.com>, llvm@lists.linux.dev,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: lan966x: Fix return type of lan966x_port_xmit
+Message-ID: <YzXnqJ+fdogA1GHs@dev-arch.thelio-3990X>
+References: <20220929182704.64438-1-nhuck@google.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="-1463811672-223533272-1664477019=:42780"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220929182704.64438-1-nhuck@google.com>
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Thu, Sep 29, 2022 at 11:27:03AM -0700, Nathan Huckleberry wrote:
+> The ndo_start_xmit field in net_device_ops is expected to be of type
+> netdev_tx_t (*ndo_start_xmit)(struct sk_buff *skb, struct net_device *dev).
+> 
+> The mismatched return type breaks forward edge kCFI since the underlying
+> function definition does not match the function hook definition.
+> 
+> The return type of lan966x_port_xmit should be changed from int to
+> netdev_tx_t.
+> 
+> Reported-by: Dan Carpenter <error27@gmail.com>
+> Link: https://github.com/ClangBuiltLinux/linux/issues/1703
+> Cc: llvm@lists.linux.dev
+> Signed-off-by: Nathan Huckleberry <nhuck@google.com>
 
----1463811672-223533272-1664477019=:42780
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
 
-
-	Hello,
-
-On Thu, 29 Sep 2022, Nicolas Dichtel wrote:
-
-> Le 27/09/2022 à 14:56, Julian Anastasov a écrit :
-> > 
-> > nhc_gw	nhc_scope		rt_gw4		fib_scope (route)
-> > ---------------------------------------------------------------------------
-> > 0	RT_SCOPE_NOWHERE	Host		RT_SCOPE_HOST (local)
-> > 0	RT_SCOPE_HOST		LAN_TARGET	RT_SCOPE_LINK (link)
-> > LOCAL1	RT_SCOPE_HOST		LAN_TARGET	RT_SCOPE_LINK (link)
-> > REM_GW1	RT_SCOPE_LINK		Universe	RT_SCOPE_UNIVERSE (indirect)
-> > 
-> > 	For the code above: we do not check res->scope,
-> > we are interested what is the nhc_gw's scope (LINK/HOST/NOWHERE).
-> > It means, reverse route points back to same device and sender is not
-> > reached via gateway REM_GW1.
-
-	In short, to send redirects, sender should be
-reachable via link route (with nhc_scope = RT_SCOPE_HOST).
-
-> iproute2 reject a gw which is not directly connected, am I wrong?
-
-	ip tool can not do it. It only provides route's scope
-specified by user and the GW's scope is determined by 
-fib_check_nh_v4_gw() as route's scope + 1 but at least RT_SCOPE_LINK:
-
-                /* It is not necessary, but requires a bit of thinking */
-                if (fl4.flowi4_scope < RT_SCOPE_LINK)
-                        fl4.flowi4_scope = RT_SCOPE_LINK;
-
-	The other allowed value for nhc_scope when rt_gw4 is not 0 is
-RT_SCOPE_HOST (GW is a local IP, useful when autoselecting source
-address from same subnet). It is set by fib_check_nh_v4_gw() when
-res.type = RTN_LOCAL.
-
-> > 	By changing it to nhc_scope >= RT_SCOPE_LINK, ret always
-> > will be 1 because nhc_scope is not set below RT_SCOPE_LINK (253).
-> > Note that RT_SCOPE_HOST is 254.
-> Do you have a setup which shows the problem?
-
-	No, just by analyze. RT_SCOPE_LINK indicates sender
-is reached via GW.
-
-> After reverting the two commits (747c14307214 and eb55dc09b5dd) and putting the
-> below patch, the initial problem is fixed. But it's not clear what is broken
-> with the current code. Before sending these patches formally, it would be nice
-> to be able to add a selftest to demonstrate what is wrong.
-
-	What is broken? I guess, __fib_validate_source always
-returns 1 causing redirects.
-
-	As for nh_create_ipv4(), may be using scope=0 as
-arg to fib_check_nh() should work. Now I can not find example
-for corner case where this can fail.
-
-> @@ -2534,7 +2534,7 @@ static int nh_create_ipv4(struct net *net, struct nexthop *nh,
->  	if (!err) {
->  		nh->nh_flags = fib_nh->fib_nh_flags;
->  		fib_info_update_nhc_saddr(net, &fib_nh->nh_common,
-> -					  fib_nh->fib_nh_scope);
-> +					  !fib_nh->fib_nh_scope ? 0 : fib_nh->fib_nh_scope - 1);
-
-	And this fix is needed to not expose scope host
-saddr (127.0.0.1) when nexthop is without GW and to
-not expose scope link saddr when nexthop is with GW (for
-traffic via scope global routes).
-
->  	} else {
->  		fib_nh_release(net, fib_nh);
->  	}
-
-Regards
-
---
-Julian Anastasov <ja@ssi.bg>
----1463811672-223533272-1664477019=:42780--
-
+> ---
+>  drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+> index b98d37c76edb..be2fd030cccb 100644
+> --- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+> +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+> @@ -344,7 +344,8 @@ static void lan966x_ifh_set_timestamp(void *ifh, u64 timestamp)
+>  		IFH_POS_TIMESTAMP, IFH_LEN * 4, PACK, 0);
+>  }
+>  
+> -static int lan966x_port_xmit(struct sk_buff *skb, struct net_device *dev)
+> +static netdev_tx_t lan966x_port_xmit(struct sk_buff *skb,
+> +				     struct net_device *dev)
+>  {
+>  	struct lan966x_port *port = netdev_priv(dev);
+>  	struct lan966x *lan966x = port->lan966x;
+> -- 
+> 2.38.0.rc1.362.ged0d419d3c-goog
+> 
