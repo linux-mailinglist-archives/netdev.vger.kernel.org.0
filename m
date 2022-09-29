@@ -2,102 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 50E505EF94A
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 17:42:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 887545EF95A
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 17:45:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236035AbiI2Pli (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 11:41:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40876 "EHLO
+        id S234982AbiI2Poo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 11:44:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236013AbiI2Pkq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 11:40:46 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B31CE38442;
-        Thu, 29 Sep 2022 08:40:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=gihPt2bKu+pozhoRu7JQZyvc66MP3qC1ZK9A68zwRwM=; b=1wW7lP2TaDcg9AXO2Kk7JN4pM6
-        jlDCOUAAun4zRV8fj8m0ZNgD8QauQO8aR/FcAX9UATuNp31jlKfcsweulrmO+AFYbGT6dKvwxPumA
-        GVqkn8lIruIaHI7Z1iK+np15l27nHFGf/kZ4mALioayC3Ro4mQlWtwFb++KVM6p3YHhE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1odvdk-000d5U-OT; Thu, 29 Sep 2022 17:39:56 +0200
-Date:   Thu, 29 Sep 2022 17:39:56 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
-Cc:     Shenwei Wang <shenwei.wang@nxp.com>, brouer@redhat.com,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S234299AbiI2PoU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 11:44:20 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F04611C155
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 08:43:15 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id a29so1792646pfk.5
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 08:43:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=b7VI/lNtki3zEef+0LBeBHdkR7jGYNMrvxJja3PqG/c=;
+        b=Vzksrx3sniIo56OPl72BWHlU0/Df8j/JQCbDZvy1EGrf7kGm7B2aiZfENf5gW44D/J
+         gI9Z0IM1eNvyuoepwUgJtEreELCtd/Yi97PNwccOEhM6E0notm+GqKPkHLkR9oYsyKb8
+         Yoq/pleXGN8k4RyGciZfN2tWjdiAPNPkdJ0GRF8seENVYF2FOicZ45TlpxCNGouCgsOp
+         P0XmWHkJpwHysnW3nZxveeGX+rb2ESXrOcsYARReYp7X/HAFCqXhQu1KdtVjt8W5CRIo
+         QDL3OSbkonYl6GqgtkUeoFLMwgh1qC0e+3cPxCbPucD2iWViRSqwTxmu6i6Uq7X8iEVv
+         wfYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=b7VI/lNtki3zEef+0LBeBHdkR7jGYNMrvxJja3PqG/c=;
+        b=jhP33pOVcNVmIf37hpFICMYoUTo+45T5wQvn/z8A5lWqIhpJKveG5KRXDVuplqo7aP
+         97jY7vnQmM8Y7Hdi82Rk+rM7GvH4PG4scAaN36WVMCZnhCkQMGcowcZfrahz30Wc+zU+
+         Y1s7DM3lBXOy7Ixz0etk91KqpDHnwC/KOHAYMMENRRCfBtOBR6xprqnK9/qegLbouvlL
+         U31vpMOobPOTKXAJruwivjb6UC86GOj8W/EyRwXGrE1VcgwXqSOk78N/HktvWkHGfj2e
+         fcWObKJYGOQCggDMN0/uCO38mXEHX+U77G0tPWgRDM8hZswhEIc8puf1fZg4H1MRk/Iy
+         nTrA==
+X-Gm-Message-State: ACrzQf3D2chrO5RA0T/w35gX9B39qTAtgTARdvW0VwLh/r0T3YV9S4q/
+        8p4sdIXj0gEa3Mh0YVX7Bc3Yaw==
+X-Google-Smtp-Source: AMsMyM5rOGzlC007WW3U9p2PPqvx0IpfKhVuFQ42vcDUakNLelXGGyhbF2WyHTattavi5pSMM7s+ng==
+X-Received: by 2002:a05:6a00:1412:b0:557:d887:2025 with SMTP id l18-20020a056a00141200b00557d8872025mr4076191pfu.39.1664466194646;
+        Thu, 29 Sep 2022 08:43:14 -0700 (PDT)
+Received: from hermes.local (204-195-120-218.wavecable.com. [204.195.120.218])
+        by smtp.gmail.com with ESMTPSA id z3-20020a170903018300b001768452d4d7sm56745plg.14.2022.09.29.08.43.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Sep 2022 08:43:14 -0700 (PDT)
+Date:   Thu, 29 Sep 2022 08:43:12 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Hans Schultz <netdev@kapio-technology.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        linux-kselftest@vger.kernel.org,
+        Joachim Wiberg <troglobit@gmail.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "imx@lists.linux.dev" <imx@lists.linux.dev>
-Subject: Re: [EXT] Re: [PATCH 1/1] net: fec: add initial XDP support
-Message-ID: <YzW8TBUufx5jM9bT@lunn.ch>
-References: <20220928152509.141490-1-shenwei.wang@nxp.com>
- <YzT2An2J5afN1w3L@lunn.ch>
- <PAXPR04MB9185141B58499FD00C43BB6889579@PAXPR04MB9185.eurprd04.prod.outlook.com>
- <YzWcI+U1WYJuZIdk@lunn.ch>
- <PAXPR04MB918545B92E493CB57CDE612B89579@PAXPR04MB9185.eurprd04.prod.outlook.com>
- <ae658987-8763-c6de-7198-1a418e4728b4@redhat.com>
+        Ido Schimmel <idosch@nvidia.com>,
+        bridge@lists.linux-foundation.org,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Jiri Pirko <jiri@resnulli.us>, Amit Cohen <amcohen@nvidia.com>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Hans Schultz <schultz.hans@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        linux-mediatek@lists.infradead.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        Petr Machata <petrm@nvidia.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florent Fourcot <florent.fourcot@wifirst.fr>
+Subject: Re: [Bridge] [PATCH iproute2-next 2/2] bridge: fdb: enable FDB
+ blackhole feature
+Message-ID: <20220929084312.2a216698@hermes.local>
+In-Reply-To: <20220929152137.167626-2-netdev@kapio-technology.com>
+References: <20220929152137.167626-1-netdev@kapio-technology.com>
+        <20220929152137.167626-2-netdev@kapio-technology.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ae658987-8763-c6de-7198-1a418e4728b4@redhat.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 29, 2022 at 05:28:43PM +0200, Jesper Dangaard Brouer wrote:
-> 
-> 
-> On 29/09/2022 15.26, Shenwei Wang wrote:
-> > 
-> > > From: Andrew Lunn <andrew@lunn.ch>
-> > > Sent: Thursday, September 29, 2022 8:23 AM
-> [...]
-> > > 
-> > > > I actually did some compare testing regarding the page pool for normal
-> > > > traffic.  So far I don't see significant improvement in the current
-> > > > implementation. The performance for large packets improves a little,
-> > > > and the performance for small packets get a little worse.
-> > > 
-> > > What hardware was this for? imx51? imx6? imx7 Vybrid? These all use the FEC.
-> > 
-> > I tested on imx8qxp platform. It is ARM64.
-> 
-> On mvneta driver/platform we saw huge speedup replacing:
-> 
->   page_pool_release_page(rxq->page_pool, page);
-> with
->   skb_mark_for_recycle(skb);
-> 
-> As I mentioned: Today page_pool have SKB recycle support (you might have
-> looked at drivers that didn't utilize this yet), thus you don't need to
-> release the page (page_pool_release_page) here.  Instead you could simply
-> mark the SKB for recycling, unless driver does some page refcnt tricks I
-> didn't notice.
-> 
-> On the mvneta driver/platform the DMA unmap (in page_pool_release_page) was
-> very expensive. This imx8qxp platform might have faster DMA unmap in case is
-> it cache-coherent.
+On Thu, 29 Sep 2022 17:21:37 +0200
+Hans Schultz <netdev@kapio-technology.com> wrote:
 
-I don't know about imx8qxp, but i've played with imx6 and Vybrid, and
-cache flush and invalidate are very expensive.
+>  
+> @@ -493,6 +496,8 @@ static int fdb_modify(int cmd, int flags, int argc, char **argv)
+>  			req.ndm.ndm_flags |= NTF_EXT_LEARNED;
+>  		} else if (matches(*argv, "sticky") == 0) {
+>  			req.ndm.ndm_flags |= NTF_STICKY;
+> +		} else if (matches(*argv, "blackhole") == 0) {
+> +			ext_flags |= NTF_EXT_BLACKHOLE;
+>  		} else {
+>  			if (strcmp(*argv, "to") == 0)
+>  				NEXT_ARG();
 
-      Andrew
-
+The parsing of flags is weird here, most of the flags are compared with strcmp()
+but some use matches()..  I should have used strcmp() all the time; but at the
+time did not realize what kind of confusion matches() can cause.
