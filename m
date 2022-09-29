@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D94765EEE57
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:05:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABC575EEE61
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:05:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235083AbiI2HE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 03:04:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35654 "EHLO
+        id S235120AbiI2HFJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 03:05:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235042AbiI2HEi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:04:38 -0400
+        with ESMTP id S235072AbiI2HEm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:04:42 -0400
 Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D585131991;
-        Thu, 29 Sep 2022 00:04:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C128613070A;
+        Thu, 29 Sep 2022 00:04:29 -0700 (PDT)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1664435064;
+        t=1664435068;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=0UfA0PJAoP2y++0RBxRan7HEgfBgWML+qPMCq4fnM70=;
-        b=mRk14q4vNluBZXNfspg7aaGv2Ssf8VeGa2c+QtWLH0sBTVfnGCTDLsqXFMabz/XOnn7Zm7
-        ih90pDyo9Vazg8Ley+J0F62obm2JDthX07ULLtJ7Qej1qoyhyhg0cmnk09izNxhgPjZb+L
-        Bz0ZGvAxA7J8HSmMw55BrPDr7flS4BY=
+        bh=Uh+ejWrx6vnFNK0wy56yr0aj1vBg58V3Md/AW4RsBQQ=;
+        b=TQWjUUP7upW2dOzPQicUtj7yvX9ICrPTkCgil0Emkcmlz3DAr0nIZy3Ws7WBvzGO2TczBk
+        u0LlCR/+4msrBpT+u+QVCO6mVgQV9VmrhObPHHl+ezqbaysQIBekfJ+bz73Ud3w1jOXkr4
+        vgVerwWaYCdfCvqzh54R5bKa2MTCys4=
 From:   Martin KaFai Lau <martin.lau@linux.dev>
 To:     ' ' <bpf@vger.kernel.org>, ' ' <netdev@vger.kernel.org>
 Cc:     'Alexei Starovoitov ' <ast@kernel.org>,
@@ -34,9 +34,9 @@ Cc:     'Alexei Starovoitov ' <ast@kernel.org>,
         'Jakub Kicinski ' <kuba@kernel.org>,
         'Eric Dumazet ' <edumazet@google.com>,
         'Paolo Abeni ' <pabeni@redhat.com>, ' ' <kernel-team@fb.com>
-Subject: [PATCH v3 bpf-next 1/5] bpf: Add __bpf_prog_{enter,exit}_struct_ops for struct_ops trampoline
-Date:   Thu, 29 Sep 2022 00:04:03 -0700
-Message-Id: <20220929070407.965581-2-martin.lau@linux.dev>
+Subject: [PATCH v3 bpf-next 2/5] bpf: Move the "cdg" tcp-cc check to the common sol_tcp_sockopt()
+Date:   Thu, 29 Sep 2022 00:04:04 -0700
+Message-Id: <20220929070407.965581-3-martin.lau@linux.dev>
 In-Reply-To: <20220929070407.965581-1-martin.lau@linux.dev>
 References: <20220929070407.965581-1-martin.lau@linux.dev>
 MIME-Version: 1.0
@@ -53,99 +53,55 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Martin KaFai Lau <martin.lau@kernel.org>
 
-The struct_ops prog is to allow using bpf to implement the functions in
-a struct (eg. kernel module).  The current usage is to implement the
-tcp_congestion.  The kernel does not call the tcp-cc's ops (ie.
-the bpf prog) in a recursive way.
+The check on the tcp-cc, "cdg", is done in the bpf_sk_setsockopt which is
+used by the bpf_tcp_ca, bpf_lsm, cg_sockopt, and tcp_iter hooks.
+However, it is not done for cg sock_ddr, cg sockops, and some of
+the bpf_lsm_cgroup hooks.
 
-The struct_ops is sharing the tracing-trampoline's enter/exit
-function which tracks prog->active to avoid recursion.  It is
-needed for tracing prog.  However, it turns out the struct_ops
-bpf prog will hit this prog->active and unnecessarily skipped
-running the struct_ops prog.  eg.  The '.ssthresh' may run in_task()
-and then interrupted by softirq that runs the same '.ssthresh'.
-Skip running the '.ssthresh' will end up returning random value
-to the caller.
+The tcp-cc "cdg" should have very limited usage.  This patch is to
+move the "cdg" check to the common sol_tcp_sockopt() so that all
+hooks have a consistent behavior.   The motivation to make
+this check consistent now is because the latter patch will
+refactor the bpf_setsockopt(TCP_CONGESTION) into another function,
+so it is better to take this chance to refactor this piece
+also.
 
-The patch adds __bpf_prog_{enter,exit}_struct_ops for the
-struct_ops trampoline.  They do not track the prog->active
-to detect recursion.
-
-One exception is when the tcp_congestion's '.init' ops is doing
-bpf_setsockopt(TCP_CONGESTION) and then recurs to the same
-'.init' ops.  This will be addressed in the following patches.
-
-Fixes: ca06f55b9002 ("bpf: Add per-program recursion prevention mechanism")
 Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
 ---
- arch/x86/net/bpf_jit_comp.c |  3 +++
- include/linux/bpf.h         |  4 ++++
- kernel/bpf/trampoline.c     | 23 +++++++++++++++++++++++
- 3 files changed, 30 insertions(+)
+ net/core/filter.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-index 35796db58116..5b6230779cf3 100644
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -1836,6 +1836,9 @@ static int invoke_bpf_prog(const struct btf_func_model *m, u8 **pprog,
- 	if (p->aux->sleepable) {
- 		enter = __bpf_prog_enter_sleepable;
- 		exit = __bpf_prog_exit_sleepable;
-+	} else if (p->type == BPF_PROG_TYPE_STRUCT_OPS) {
-+		enter = __bpf_prog_enter_struct_ops;
-+		exit = __bpf_prog_exit_struct_ops;
- 	} else if (p->expected_attach_type == BPF_LSM_CGROUP) {
- 		enter = __bpf_prog_enter_lsm_cgroup;
- 		exit = __bpf_prog_exit_lsm_cgroup;
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 5161fac0513f..f98ab36c09d3 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -864,6 +864,10 @@ u64 notrace __bpf_prog_enter_lsm_cgroup(struct bpf_prog *prog,
- 					struct bpf_tramp_run_ctx *run_ctx);
- void notrace __bpf_prog_exit_lsm_cgroup(struct bpf_prog *prog, u64 start,
- 					struct bpf_tramp_run_ctx *run_ctx);
-+u64 notrace __bpf_prog_enter_struct_ops(struct bpf_prog *prog,
-+					struct bpf_tramp_run_ctx *run_ctx);
-+void notrace __bpf_prog_exit_struct_ops(struct bpf_prog *prog, u64 start,
-+					struct bpf_tramp_run_ctx *run_ctx);
- void notrace __bpf_tramp_enter(struct bpf_tramp_image *tr);
- void notrace __bpf_tramp_exit(struct bpf_tramp_image *tr);
- 
-diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
-index 6f7b939321d6..bf0906e1e2b9 100644
---- a/kernel/bpf/trampoline.c
-+++ b/kernel/bpf/trampoline.c
-@@ -964,6 +964,29 @@ void notrace __bpf_prog_exit_sleepable(struct bpf_prog *prog, u64 start,
- 	rcu_read_unlock_trace();
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 2fd9449026aa..f4cea3ff994a 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -5127,6 +5127,13 @@ static int sol_tcp_sockopt(struct sock *sk, int optname,
+ 	case TCP_CONGESTION:
+ 		if (*optlen < 2)
+ 			return -EINVAL;
++		/* "cdg" is the only cc that alloc a ptr
++		 * in inet_csk_ca area.  The bpf-tcp-cc may
++		 * overwrite this ptr after switching to cdg.
++		 */
++		if (!getopt && *optlen >= sizeof("cdg") - 1 &&
++		    !strncmp("cdg", optval, *optlen))
++			return -ENOTSUPP;
+ 		break;
+ 	case TCP_SAVED_SYN:
+ 		if (*optlen < 1)
+@@ -5285,12 +5292,6 @@ static int _bpf_getsockopt(struct sock *sk, int level, int optname,
+ BPF_CALL_5(bpf_sk_setsockopt, struct sock *, sk, int, level,
+ 	   int, optname, char *, optval, int, optlen)
+ {
+-	if (level == SOL_TCP && optname == TCP_CONGESTION) {
+-		if (optlen >= sizeof("cdg") - 1 &&
+-		    !strncmp("cdg", optval, optlen))
+-			return -ENOTSUPP;
+-	}
+-
+ 	return _bpf_setsockopt(sk, level, optname, optval, optlen);
  }
  
-+u64 notrace __bpf_prog_enter_struct_ops(struct bpf_prog *prog,
-+					struct bpf_tramp_run_ctx *run_ctx)
-+	__acquires(RCU)
-+{
-+	rcu_read_lock();
-+	migrate_disable();
-+
-+	run_ctx->saved_run_ctx = bpf_set_run_ctx(&run_ctx->run_ctx);
-+
-+	return bpf_prog_start_time();
-+}
-+
-+void notrace __bpf_prog_exit_struct_ops(struct bpf_prog *prog, u64 start,
-+					struct bpf_tramp_run_ctx *run_ctx)
-+	__releases(RCU)
-+{
-+	bpf_reset_run_ctx(run_ctx->saved_run_ctx);
-+
-+	update_prog_stats(prog, start);
-+	migrate_enable();
-+	rcu_read_unlock();
-+}
-+
- void notrace __bpf_tramp_enter(struct bpf_tramp_image *tr)
- {
- 	percpu_ref_get(&tr->pcref);
 -- 
 2.30.2
 
