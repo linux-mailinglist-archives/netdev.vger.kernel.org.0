@@ -2,84 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D5C505EF226
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 11:35:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF1A65EF230
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 11:36:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234666AbiI2JfQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 05:35:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44476 "EHLO
+        id S235025AbiI2JgY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 05:36:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235524AbiI2Jep (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 05:34:45 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C426B148A34;
-        Thu, 29 Sep 2022 02:33:47 -0700 (PDT)
-Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1odpvO-0004SL-5f; Thu, 29 Sep 2022 11:33:46 +0200
-Message-ID: <d6202c8a-47c4-ed5a-45be-1434c73dcd89@leemhuis.info>
-Date:   Thu, 29 Sep 2022 11:33:45 +0200
+        with ESMTP id S235344AbiI2JgB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 05:36:01 -0400
+Received: from smtpbguseast2.qq.com (smtpbguseast2.qq.com [54.204.34.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9FD82497F
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 02:35:36 -0700 (PDT)
+X-QQ-mid: bizesmtp88t1664444131tai8l380
+Received: from wxdbg.localdomain.com ( [183.129.236.74])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 29 Sep 2022 17:35:22 +0800 (CST)
+X-QQ-SSF: 01400000000000G0U000000A0000000
+X-QQ-FEAT: Wp4pj0u9TIcrbNuY5LESaTg3nCdgFECU90lB6+J1E0jy6RZi4iKss5oaAgPGo
+        TyZnTvlGNmxWzmq2oE4TsUzyes93mIqZxiEFnWGSotM7pa0Pb/vBsU0xBAkmHLqLZjxjpT/
+        UF5z1K6iMTwPZ9UiRS/ZudHfVfumqqEpLu6980vPlpZ4NZVscXSUT0yzkzjZ/qID/lIjlpA
+        9jlc9WwWThJF6IoLabhupJ0IF8+7NIQCOXZ6YIPlgWl7KYKA5+JOuTflqg0/lOLVNnv+i/g
+        Sc9tCEcXGRQR2YTbMhx9Hil4998uhxgH3cl3MOah5Bzs0rWadwVX8D+NSw9N0Q0wYinj4TN
+        iDbYCsSyxofxOKNLWeIk9uvaDvZo7J4AsOSnaxVqqebSAVUVblzQTp/jMG5Lg==
+X-QQ-GoodBg: 2
+From:   Jiawen Wu <jiawenwu@trustnetic.com>
+To:     netdev@vger.kernel.org
+Cc:     mengyuanlou@net-swift.com, Jiawen Wu <jiawenwu@trustnetic.com>
+Subject: [PATCH net-next v3 0/3] net: WangXun txgbe ethernet driver
+Date:   Thu, 29 Sep 2022 17:34:21 +0800
+Message-Id: <20220929093424.2104246-1-jiawenwu@trustnetic.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.0
-Subject: Re: setns() affecting other threads in 5.10.132 and 6.0 #forregzbot
-Content-Language: en-US, de-DE
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     "stable@vger.kernel.org" <stable@vger.kernel.org>
-References: <d9f7a7d26eb5489e93742e57e55ebc02@AcuMS.aculab.com>
- <fcf51181f86e417285a101059d559382@AcuMS.aculab.com>
- <YxYytPTFwYr7vBTo@localhost.localdomain>
- <6204a74ef41a4463a790962d0409d0bc@AcuMS.aculab.com>
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <6204a74ef41a4463a790962d0409d0bc@AcuMS.aculab.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1664444027;4312ca7c;
-X-HE-SMSGID: 1odpvO-0004SL-5f
-X-Spam-Status: No, score=-6.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:trustnetic.com:qybglogicsvr:qybglogicsvr5
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TWIMC: this mail is primarily send for documentation purposes and for
-regzbot, my Linux kernel regression tracking bot. These mails usually
-contain '#forregzbot' in the subject, to make them easy to spot and filter.
+This patch series adds support for WangXun 10 gigabit NIC, to initialize
+hardware, set mac address, and register netdev.
 
-On 06.09.22 12:48, David Laight wrote:
-> From: Alexey Dobriyan
->> Sent: 05 September 2022 18:33
->>>> -----Original Message-----
->>>> From: David Laight <David.Laight@ACULAB.COM>
->>>> Sent: 04 September 2022 15:05
->>>>
->>>> Sometime after 5.10.105 (5.10.132 and 6.0) there is a change that
->>>> makes setns(open("/proc/1/ns/net")) in the main process changes
->>>> the behaviour of other process threads.
->>
->> Not again...
-> 
-> I've realised what is going on.
-> It really isn't obvious at all.
-> Quite possibly the last change did fix it - even though
-> it broke our code.
+Change log:
+v3: address comments:
+    Andrew Lunn: remove hw function ops, reorder functions, use BIT(n)
+                 for register bit offset, move the same code of txgbe
+                 and ngbe to libwx
+v2: address comments:
+    Andrew Lunn: https://lore.kernel.org/netdev/YvRhld5rD%2FxgITEg@lunn.ch/
 
-In that case this seems to be appropriate, unless I misunderstood things:
+Jiawen Wu (3):
+  net: txgbe: Store PCI info
+  net: txgbe: Reset hardware
+  net: txgbe: Set MAC address and register netdev
 
-#regzbot invalid: apparently not a regression
+ drivers/net/ethernet/wangxun/Kconfig          |   6 +
+ drivers/net/ethernet/wangxun/Makefile         |   1 +
+ drivers/net/ethernet/wangxun/libwx/Makefile   |   7 +
+ drivers/net/ethernet/wangxun/libwx/wx_hw.c    | 475 ++++++++++++++++++
+ drivers/net/ethernet/wangxun/libwx/wx_hw.h    |  18 +
+ drivers/net/ethernet/wangxun/libwx/wx_type.h  | 237 +++++++++
+ drivers/net/ethernet/wangxun/txgbe/Makefile   |   3 +-
+ drivers/net/ethernet/wangxun/txgbe/txgbe.h    |  23 +-
+ drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c | 153 ++++++
+ drivers/net/ethernet/wangxun/txgbe/txgbe_hw.h |  10 +
+ .../net/ethernet/wangxun/txgbe/txgbe_main.c   | 449 ++++++++++++++++-
+ .../net/ethernet/wangxun/txgbe/txgbe_type.h   |  40 +-
+ 12 files changed, 1403 insertions(+), 19 deletions(-)
+ create mode 100644 drivers/net/ethernet/wangxun/libwx/Makefile
+ create mode 100644 drivers/net/ethernet/wangxun/libwx/wx_hw.c
+ create mode 100644 drivers/net/ethernet/wangxun/libwx/wx_hw.h
+ create mode 100644 drivers/net/ethernet/wangxun/libwx/wx_type.h
+ create mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c
+ create mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe_hw.h
 
-> /proc/net is a symlink to /proc/self/net.
-> But that isn't what the code wants to open.
-> What it needs is /proc/self/task/self/net.
-> But there isn't a 'self' in /proc/self/task.
-> Which makes it all a bit tedious (especially without gettid() in glibc).
-> (This is a busybox/buildroot system, maybe I could add it!)
-> 
-> I'd probably have noticed earlier if the /proc/net
-> symlink didn't exist.
-> I guess that is for compatibility with pre-netns kernels.
-> 
-> 	David
+-- 
+2.27.0
 
