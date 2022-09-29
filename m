@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 744D45EEEFB
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:29:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A6CC5EEEFD
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:29:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235112AbiI2H3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 03:29:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46056 "EHLO
+        id S235154AbiI2H3S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 03:29:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232519AbiI2H3M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:29:12 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5B23135724
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:29:11 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id iv17so340279wmb.4
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:29:11 -0700 (PDT)
+        with ESMTP id S234939AbiI2H3O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:29:14 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CD4213572D
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:29:13 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id e10-20020a05600c4e4a00b003b4eff4ab2cso2667832wmq.4
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:29:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=5AC9rhXKlJRRXdUWnUqHjLPZfMA6XqruzQhBmxQFAM0=;
-        b=1cMv7DPOtjP8YSzGS0am8sxqUxy9prA3yPjzxfNVQoMtQvwmsh5kFLn9t3nKQmHcUp
-         7n8M5COjP4DHaMkmwR8aEursLNoIv51/tfflaF2vqMMth0+QWOGyzAW2p12C3DG7wg/u
-         e6JmkR/g3sgRC6G84AkTp9aiI2uWRnArtEZAzlqA1WDaOcwmIMdJG3H7EZO/lMM9IKIR
-         rNboUSry8g30ZQ3xNenYUo1Lps0DLoisOe5wHDvbds48NL+zZ1vOnnxiBGVPes3dEM1a
-         inmzmEi9oaL8cZE51WA27Y6izXdBra4PPxPYCHu8VxVTvsfpBv9PsMsR8QBEKHKJMHwt
-         dJxA==
+        bh=afxhdEeIWZKBb7fbjvmfLtmjQY+YpZyKcmvAKwBHZIU=;
+        b=MoyGVR/AzxppFX+vloCtGJN0OhTgZ35MCfp8jHhDCeuZtHRocHrNoAfys6sFc6zdVS
+         KvwFaY51Y000eaEy8Aw922RwDeHDQ0tcivgjHQwlddJHR8Ax1Sb6t4RcTMHoxEWaVePS
+         hHV9IpBHrMGruF1ImkmTIm09VPW5wvDhn3PGYPI3nOUvEoMa/eTRzXgRD5OvGPMrxr1x
+         2cCRmpEyF0sMcbqRPXdfvSjXLLOZwGCXywi/AIwJdbF0+q1C5TJSHdjdF5nEdRle4cRB
+         reZGFutITfXXmSub3zo2k3e/0iUNN4l4+4ZiqEv5hfMzVzUZMqD0A+uIA1Hh0vy8Ckhj
+         bnDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=5AC9rhXKlJRRXdUWnUqHjLPZfMA6XqruzQhBmxQFAM0=;
-        b=bEyKF+uedZKfXvBgaC1lPZCOu6W8XrFUapigaXyyBcCcsCu4FGrL6Ps3SRKMPIwuv7
-         jflWkA58FXBffhTiSpUajJn/zLYUtRLoDH1O8eD/+BKzJFgjLIOu34SGQyCFy6Dvc7JW
-         NwyRYowT2jAKlXsvqjC18weNsgZpMM1/hRePXHs2dG/owsEB1cfz5tplYTqjUJSyPDof
-         lRQ89tbJfLZ2nNpNXIgznLIWBTKv3w+YBc3/ApXW376IZ6o0M+Or6Su86CzXlm7JB4Qt
-         5mkggAhekOZlYUEltSQgpQ/DHSag2M2aHg2S6ay3isUPX91f6Aqeg0AXjT2U6xyLyj+U
-         L4Yg==
-X-Gm-Message-State: ACrzQf1FbI56RVLJIzifQacNH8kSzibnmmDbqKqgSGri861M0uUj2xO0
-        yaRKirpfJakeJXLS2ecCLIfEQNGXpI7Lmlxc
-X-Google-Smtp-Source: AMsMyM4fHxD9RwZCS+nvbEWu3kCmyZ0StLFO328bWEs7zOW6ZbFjKwp5Tt/kmvQZ/w8FWbZHSukoXw==
-X-Received: by 2002:a05:600c:1990:b0:3b4:c326:d099 with SMTP id t16-20020a05600c199000b003b4c326d099mr1139539wmq.19.1664436550235;
-        Thu, 29 Sep 2022 00:29:10 -0700 (PDT)
+        bh=afxhdEeIWZKBb7fbjvmfLtmjQY+YpZyKcmvAKwBHZIU=;
+        b=eMx2Nd/q9uoSHYMVSREie8Wf4XteMaK2U/zK/XQShhG9Z1lYMGszL/4wjWW41PLNni
+         ojnMsq8KGqCJIdHxdLTK+I8lRmhNJZRUefI023ouztYCBVs2iGxycgTYc+aLWPqpMWOc
+         Ksq5bp/haTMVlXkWpcMa5NlYCUM1KY77DXM0BMFiDlh4TX9slz67G0yKHog42jO44BA5
+         9uB3lQQcUCpRtTs1hPlsQW5qHU56Ruu7Yl2bRA7rrNCYSN92cJMqu3cFpcemsv1yxKu0
+         hfaGh9SAFXV1HqxbzP5OcefcUFE31up6UNROVGJwv5a8BHowZpkdoROLw3/phA5u6u6N
+         dYzA==
+X-Gm-Message-State: ACrzQf1Jyd0B/6gr5i6roz2nLJuSQWCyY4xKcKJnPBL0bRr7YNqMnRrr
+        TpfWA5Fju+FKSL4GvBZUzz6a0HJSjitrK6iA
+X-Google-Smtp-Source: AMsMyM4dw2pXEHye4QWnjOb1LOjADPl4jVIps5atuUcZdXYJCLRm7+XZNEH7gVgC2TLfefsEjnN6IQ==
+X-Received: by 2002:a7b:c447:0:b0:3b4:8977:4186 with SMTP id l7-20020a7bc447000000b003b489774186mr1193812wmi.74.1664436551767;
+        Thu, 29 Sep 2022 00:29:11 -0700 (PDT)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id f13-20020a7bc8cd000000b003a62052053csm4182985wml.18.2022.09.29.00.29.09
+        by smtp.gmail.com with ESMTPSA id e9-20020adfe389000000b00228daaa84aesm5857210wrm.25.2022.09.29.00.29.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Sep 2022 00:29:09 -0700 (PDT)
+        Thu, 29 Sep 2022 00:29:11 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, andrew@lunn.ch, vivien.didelot@gmail.com,
         f.fainelli@gmail.com, olteanv@gmail.com, tariqt@nvidia.com,
         moshe@nvidia.com, saeedm@nvidia.com
-Subject: [patch net-next v3 4/7] net: dsa: move port_setup/teardown to be called outside devlink port registered area
-Date:   Thu, 29 Sep 2022 09:28:59 +0200
-Message-Id: <20220929072902.2986539-5-jiri@resnulli.us>
+Subject: [patch net-next v3 5/7] net: dsa: don't leave dangling pointers in dp->pl when failing
+Date:   Thu, 29 Sep 2022 09:29:00 +0200
+Message-Id: <20220929072902.2986539-6-jiri@resnulli.us>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220929072902.2986539-1-jiri@resnulli.us>
 References: <20220929072902.2986539-1-jiri@resnulli.us>
@@ -71,160 +71,167 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@nvidia.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Move port_setup() op to be called before devlink_port_register() and
-port_teardown() after devlink_port_unregister().
+There is a desire to simplify the dsa_port registration path with
+devlink, and this involves reworking a bit how user ports which fail to
+connect to their PHY (because it's missing) get reinitialized as UNUSED
+devlink ports.
 
-Note it makes sense to move this alongside the rest of the devlink port
-code, the reinit() function also gets much nicer, as clearly the fact that
-port_setup()->devlink_port_region_create() was called in dsa_port_setup
-did not fit the flow.
+The desire is for the change to look something like this; basically
+dsa_port_setup() has failed, we just change dp->type and call
+dsa_port_setup() again.
 
+-/* Destroy the current devlink port, and create a new one which has the UNUSED
+- * flavour.
+- */
+-static int dsa_port_reinit_as_unused(struct dsa_port *dp)
++static int dsa_port_setup_as_unused(struct dsa_port *dp)
+ {
+-	dsa_port_devlink_teardown(dp);
+ 	dp->type = DSA_PORT_TYPE_UNUSED;
+-	return dsa_port_devlink_setup(dp);
++	return dsa_port_setup(dp);
+ }
+
+For an UNUSED port, dsa_port_setup() mostly only calls dsa_port_devlink_setup()
+anyway, so we could get away with calling just that. But if we call the
+full blown dsa_port_setup(dp) (which will be needed to properly set
+dp->setup = true), the callee will have the tendency to go through this
+code block too, and call dsa_port_disable(dp):
+
+	switch (dp->type) {
+	case DSA_PORT_TYPE_UNUSED:
+		dsa_port_disable(dp);
+		break;
+
+That is not very good, because dsa_port_disable() has this hidden inside
+of it:
+
+	if (dp->pl)
+		phylink_stop(dp->pl);
+
+Fact is, we are not prepared to handle a call to dsa_port_disable() with
+a struct dsa_port that came from a previous (and failed) call to
+dsa_port_setup(). We do not clean up dp->pl, and this will make the
+second call to dsa_port_setup() call phylink_stop() on a dangling dp->pl
+pointer.
+
+Solve this by creating an API for phylink destruction which is symmetric
+to the phylink creation, and never leave dp->pl set to anything except
+NULL or a valid phylink structure.
+
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- net/dsa/dsa2.c | 68 +++++++++++++++++++-------------------------------
- 1 file changed, 26 insertions(+), 42 deletions(-)
+ net/dsa/dsa_priv.h |  1 +
+ net/dsa/port.c     | 22 +++++++++++++++-------
+ net/dsa/slave.c    |  6 +++---
+ 3 files changed, 19 insertions(+), 10 deletions(-)
 
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index 7024e2120de1..6f555b1bb483 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -472,12 +472,6 @@ static int dsa_port_setup(struct dsa_port *dp)
- 	if (dp->setup)
- 		return 0;
- 
--	if (ds->ops->port_setup) {
--		err = ds->ops->port_setup(ds, dp->index);
--		if (err)
--			return err;
--	}
--
- 	switch (dp->type) {
- 	case DSA_PORT_TYPE_UNUSED:
- 		dsa_port_disable(dp);
-@@ -532,11 +526,8 @@ static int dsa_port_setup(struct dsa_port *dp)
- 		dsa_port_disable(dp);
- 	if (err && dsa_port_link_registered)
- 		dsa_shared_port_link_unregister_of(dp);
--	if (err) {
--		if (ds->ops->port_teardown)
--			ds->ops->port_teardown(ds, dp->index);
-+	if (err)
- 		return err;
--	}
- 
- 	dp->setup = true;
- 
-@@ -549,17 +540,26 @@ static int dsa_port_devlink_setup(struct dsa_port *dp)
- 	struct dsa_switch_tree *dst = dp->ds->dst;
- 	struct devlink_port_attrs attrs = {};
- 	struct devlink *dl = dp->ds->devlink;
-+	struct dsa_switch *ds = dp->ds;
- 	const unsigned char *id;
- 	unsigned char len;
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index 129e4a649c7e..6e65c7ffd6f3 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -294,6 +294,7 @@ int dsa_port_mrp_add_ring_role(const struct dsa_port *dp,
+ int dsa_port_mrp_del_ring_role(const struct dsa_port *dp,
+ 			       const struct switchdev_obj_ring_role_mrp *mrp);
+ int dsa_port_phylink_create(struct dsa_port *dp);
++void dsa_port_phylink_destroy(struct dsa_port *dp);
+ int dsa_shared_port_link_register_of(struct dsa_port *dp);
+ void dsa_shared_port_link_unregister_of(struct dsa_port *dp);
+ int dsa_port_hsr_join(struct dsa_port *dp, struct net_device *hsr);
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index e6289a1db0a0..e4a0513816bb 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -1661,6 +1661,7 @@ int dsa_port_phylink_create(struct dsa_port *dp)
+ {
+ 	struct dsa_switch *ds = dp->ds;
+ 	phy_interface_t mode;
++	struct phylink *pl;
  	int err;
  
-+	memset(dlp, 0, sizeof(*dlp));
-+	devlink_port_init(dl, dlp);
+ 	err = of_get_phy_mode(dp->dn, &mode);
+@@ -1677,16 +1678,24 @@ int dsa_port_phylink_create(struct dsa_port *dp)
+ 	if (ds->ops->phylink_get_caps)
+ 		ds->ops->phylink_get_caps(ds, dp->index, &dp->pl_config);
+ 
+-	dp->pl = phylink_create(&dp->pl_config, of_fwnode_handle(dp->dn),
+-				mode, &dsa_port_phylink_mac_ops);
+-	if (IS_ERR(dp->pl)) {
++	pl = phylink_create(&dp->pl_config, of_fwnode_handle(dp->dn),
++			    mode, &dsa_port_phylink_mac_ops);
++	if (IS_ERR(pl)) {
+ 		pr_err("error creating PHYLINK: %ld\n", PTR_ERR(dp->pl));
+-		return PTR_ERR(dp->pl);
++		return PTR_ERR(pl);
+ 	}
+ 
++	dp->pl = pl;
 +
-+	if (ds->ops->port_setup) {
-+		err = ds->ops->port_setup(ds, dp->index);
-+		if (err)
-+			return err;
-+	}
-+
- 	id = (const unsigned char *)&dst->index;
- 	len = sizeof(dst->index);
- 
- 	attrs.phys.port_number = dp->index;
- 	memcpy(attrs.switch_id.id, id, len);
- 	attrs.switch_id.id_len = len;
--	memset(dlp, 0, sizeof(*dlp));
- 
- 	switch (dp->type) {
- 	case DSA_PORT_TYPE_UNUSED:
-@@ -578,24 +578,23 @@ static int dsa_port_devlink_setup(struct dsa_port *dp)
- 
- 	devlink_port_attrs_set(dlp, &attrs);
- 	err = devlink_port_register(dl, dlp, dp->index);
-+	if (err) {
-+		if (ds->ops->port_teardown)
-+			ds->ops->port_teardown(ds, dp->index);
-+		return err;
-+	}
-+	dp->devlink_port_setup = true;
- 
--	if (!err)
--		dp->devlink_port_setup = true;
--
--	return err;
-+	return 0;
+ 	return 0;
  }
  
- static void dsa_port_teardown(struct dsa_port *dp)
++void dsa_port_phylink_destroy(struct dsa_port *dp)
++{
++	phylink_destroy(dp->pl);
++	dp->pl = NULL;
++}
++
+ static int dsa_shared_port_setup_phy_of(struct dsa_port *dp, bool enable)
  {
- 	struct devlink_port *dlp = &dp->devlink_port;
--	struct dsa_switch *ds = dp->ds;
+ 	struct dsa_switch *ds = dp->ds;
+@@ -1781,7 +1790,7 @@ static int dsa_shared_port_phylink_register(struct dsa_port *dp)
+ 	return 0;
  
- 	if (!dp->setup)
+ err_phy_connect:
+-	phylink_destroy(dp->pl);
++	dsa_port_phylink_destroy(dp);
+ 	return err;
+ }
+ 
+@@ -1983,8 +1992,7 @@ void dsa_shared_port_link_unregister_of(struct dsa_port *dp)
+ 		rtnl_lock();
+ 		phylink_disconnect_phy(dp->pl);
+ 		rtnl_unlock();
+-		phylink_destroy(dp->pl);
+-		dp->pl = NULL;
++		dsa_port_phylink_destroy(dp);
  		return;
+ 	}
  
--	if (ds->ops->port_teardown)
--		ds->ops->port_teardown(ds, dp->index);
--
- 	devlink_port_type_clear(dlp);
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index aa47ddc19fdf..1a59918d3b30 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -2304,7 +2304,7 @@ static int dsa_slave_phy_setup(struct net_device *slave_dev)
+ 	if (ret) {
+ 		netdev_err(slave_dev, "failed to connect to PHY: %pe\n",
+ 			   ERR_PTR(ret));
+-		phylink_destroy(dp->pl);
++		dsa_port_phylink_destroy(dp);
+ 	}
  
- 	switch (dp->type) {
-@@ -625,40 +624,25 @@ static void dsa_port_teardown(struct dsa_port *dp)
- static void dsa_port_devlink_teardown(struct dsa_port *dp)
- {
- 	struct devlink_port *dlp = &dp->devlink_port;
-+	struct dsa_switch *ds = dp->ds;
+ 	return ret;
+@@ -2476,7 +2476,7 @@ int dsa_slave_create(struct dsa_port *port)
+ 	rtnl_lock();
+ 	phylink_disconnect_phy(p->dp->pl);
+ 	rtnl_unlock();
+-	phylink_destroy(p->dp->pl);
++	dsa_port_phylink_destroy(p->dp);
+ out_gcells:
+ 	gro_cells_destroy(&p->gcells);
+ out_free:
+@@ -2499,7 +2499,7 @@ void dsa_slave_destroy(struct net_device *slave_dev)
+ 	phylink_disconnect_phy(dp->pl);
+ 	rtnl_unlock();
  
--	if (dp->devlink_port_setup)
-+	if (dp->devlink_port_setup) {
- 		devlink_port_unregister(dlp);
-+		if (ds->ops->port_teardown)
-+			ds->ops->port_teardown(ds, dp->index);
-+		devlink_port_fini(dlp);
-+	}
- 	dp->devlink_port_setup = false;
- }
- 
- /* Destroy the current devlink port, and create a new one which has the UNUSED
-- * flavour. At this point, any call to ds->ops->port_setup has been already
-- * balanced out by a call to ds->ops->port_teardown, so we know that any
-- * devlink port regions the driver had are now unregistered. We then call its
-- * ds->ops->port_setup again, in order for the driver to re-create them on the
-- * new devlink port.
-+ * flavour.
-  */
- static int dsa_port_reinit_as_unused(struct dsa_port *dp)
- {
--	struct dsa_switch *ds = dp->ds;
--	int err;
--
- 	dsa_port_devlink_teardown(dp);
- 	dp->type = DSA_PORT_TYPE_UNUSED;
--	err = dsa_port_devlink_setup(dp);
--	if (err)
--		return err;
--
--	if (ds->ops->port_setup) {
--		/* On error, leave the devlink port registered,
--		 * dsa_switch_teardown will clean it up later.
--		 */
--		err = ds->ops->port_setup(ds, dp->index);
--		if (err)
--			return err;
--	}
--
--	return 0;
-+	return dsa_port_devlink_setup(dp);
- }
- 
- static int dsa_devlink_info_get(struct devlink *dl,
+-	phylink_destroy(dp->pl);
++	dsa_port_phylink_destroy(dp);
+ 	gro_cells_destroy(&p->gcells);
+ 	free_percpu(slave_dev->tstats);
+ 	free_netdev(slave_dev);
 -- 
 2.37.1
 
