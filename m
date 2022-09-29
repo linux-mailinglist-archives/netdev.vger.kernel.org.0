@@ -2,159 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E9135EF98A
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 17:53:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92D985EF987
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 17:52:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235776AbiI2Pw7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 11:52:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54112 "EHLO
+        id S231199AbiI2Pwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 11:52:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234421AbiI2Pwz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 11:52:55 -0400
-Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23CF4CDCCD
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 08:52:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1664466774; x=1696002774;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=8aSAKc44QgJwZUq1xpcdgScrumZ/Q0qT1pdRJY8r3GM=;
-  b=QxZxmsWK7ecQsIko2u8+J2xEykrzDQvXI1UalqG6Qh/dTocilWLPfQKZ
-   EaHXohPFheJ6JRkbplNjnnxqMW4Tyf2qn0Im8hvc3dxxhb3WrHif6hNNB
-   IezmdiD5sbYOgspkRiNqUwyAJdv3JoeA09BxuropGcm12SNIKf7DbBQ1Y
-   s=;
-X-IronPort-AV: E=Sophos;i="5.93,355,1654560000"; 
-   d="scan'208";a="229560859"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2a-92ba9394.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-33001.sea14.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2022 15:52:37 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-2a-92ba9394.us-west-2.amazon.com (Postfix) with ESMTPS id 4914B45D1C;
-        Thu, 29 Sep 2022 15:52:35 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Thu, 29 Sep 2022 15:52:34 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.160.214) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Thu, 29 Sep 2022 15:52:30 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     Rao Shoaib <rao.shoaib@oracle.com>,
-        Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>, syzbot <syzkaller@googlegroups.com>
-Subject: [PATCH v1 net] af_unix: Fix memory leaks of the whole sk due to OOB skb.
-Date:   Thu, 29 Sep 2022 08:52:04 -0700
-Message-ID: <20220929155204.6816-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S235150AbiI2Pwg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 11:52:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 796AC1C00E8
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 08:52:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1664466754;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=kuiqZx/RAnUtiGssVG4E5Z1MJ/WsbTPAOEY4LpM4ulk=;
+        b=FS7f5f7BfQvyFKZn3Az+KW9H1yjI5DqgnPAqaJ2+bmchT6uzt+4FAZQ5fmtVz5bDfQ0tip
+        ZMBEtMZU7/Ox/5erfDMWabSKMUP1SPxJrKBZdJEZhJpsdMyeremM9aGr4f2Lb5AcImkO6L
+        uLtST7MphxlTDNagdVxd3UBMNnG4bL0=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-152-EE-Y_c9zPkarDlDOzLvkHw-1; Thu, 29 Sep 2022 11:52:33 -0400
+X-MC-Unique: EE-Y_c9zPkarDlDOzLvkHw-1
+Received: by mail-wr1-f72.google.com with SMTP id g27-20020adfa49b000000b0022cd5476cc7so694697wrb.17
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 08:52:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=kuiqZx/RAnUtiGssVG4E5Z1MJ/WsbTPAOEY4LpM4ulk=;
+        b=CQgTlW8tWlLy/tQEbQPH/a+CbUijAkZrUWh8WCDCCSPCIrWy8BmdOu1vWz3Kl4TIUS
+         4Ku2WZWx+dFqCOAjDDlJRaTtFbmW4LELN23WKlfN226IUJZEJWgJFbbg22P3SNE5QcHE
+         SF6fnJljavExN7PTAzqugT6TqSQbzu2rWr+8KfDuJMP8GLsKQVIFBu7c2CoqZpjJ92HD
+         87nAqaYVNsSbt9+jyaDPXqrt1WUXtbcmNc+UWq9b8ELohfBBnVzHGeo5oSmJk9IJqIyZ
+         OFyojNbkqxlN9593bBFInCTnDpJ0g9yNFQxfsqamMdNHQEAvmdspjlkbp5cyQzbZXbkH
+         EGdA==
+X-Gm-Message-State: ACrzQf1aD1KZRsef8tx18IdOzA5BTjapH42kuwcTqXc3yQEY5JuvIM5i
+        afDEfJjxEkITMf05Vl9r1u9FWgew1GdsZFWBQ3J4/3EoxPhG7GedX64Bo+fC+C45OJ5N55mj3CG
+        v854NwAueFOukHRF+
+X-Received: by 2002:adf:eb84:0:b0:22a:917e:1c20 with SMTP id t4-20020adfeb84000000b0022a917e1c20mr2840514wrn.223.1664466751969;
+        Thu, 29 Sep 2022 08:52:31 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM7gNjnJCeI69D5fzgrTmBRuaYmQV7KqBU5sZU7OmM1ftH2fvCIyYE24OYjtg5gKAYHFQgrHHw==
+X-Received: by 2002:adf:eb84:0:b0:22a:917e:1c20 with SMTP id t4-20020adfeb84000000b0022a917e1c20mr2840500wrn.223.1664466751743;
+        Thu, 29 Sep 2022 08:52:31 -0700 (PDT)
+Received: from localhost.localdomain ([92.62.32.42])
+        by smtp.gmail.com with ESMTPSA id f13-20020a056000128d00b0022afcc11f65sm6996484wrx.47.2022.09.29.08.52.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Sep 2022 08:52:31 -0700 (PDT)
+Date:   Thu, 29 Sep 2022 17:52:28 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, robh@kernel.org, johannes@sipsolutions.net,
+        ecree.xilinx@gmail.com, stephen@networkplumber.org, sdf@google.com,
+        f.fainelli@gmail.com, fw@strlen.de, linux-doc@vger.kernel.org,
+        razor@blackwall.org, nicolas.dichtel@6wind.com
+Subject: Re: [PATCH net-next 1/6] docs: add more netlink docs (incl. spec
+ docs)
+Message-ID: <20220929155228.GD6761@localhost.localdomain>
+References: <20220929011122.1139374-1-kuba@kernel.org>
+ <20220929011122.1139374-2-kuba@kernel.org>
+ <20220929133413.GA6761@localhost.localdomain>
+ <20220929073224.2f3869ca@kernel.org>
+ <20220929151145.GC6761@localhost.localdomain>
+ <20220929084715.3c9626f7@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.214]
-X-ClientProxiedBy: EX13D16UWB001.ant.amazon.com (10.43.161.17) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220929084715.3c9626f7@kernel.org>
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot reported a sequence of memory leaks, and one of them indicated we
-failed to free a whole sk:
+On Thu, Sep 29, 2022 at 08:47:15AM -0700, Jakub Kicinski wrote:
+> Folded it a little bit:
+> 
+> diff --git a/Documentation/core-api/netlink.rst b/Documentation/core-api/netlink.rst
+> index 2a97f765d0d2..7b98dd48a6af 100644
+> --- a/Documentation/core-api/netlink.rst
+> +++ b/Documentation/core-api/netlink.rst
+> @@ -37,15 +37,15 @@ added whether it replies with a full message or only an ACK is uAPI and
+>  cannot be changed. It's better to err on the side of replying.
+>  
+>  Specifically NEW and ADD commands should reply with information identifying
+> -the created object such as the allocated object's ID.
+> -
+> -Having to rely on ``NLM_F_ECHO`` is a hack, not a valid design.
+> +the created object such as the allocated object's ID (without having to
+> +resort to using ``NLM_F_ECHO``).
+>  
+>  NLM_F_ECHO
+>  ----------
+>  
+>  Make sure to pass the request info to genl_notify() to allow ``NLM_F_ECHO``
+> -to take effect.
+> +to take effect.  This is useful for programs that need precise feedback
+> +from the kernel (for example for logging purposes).
 
-  unreferenced object 0xffff8880126e0000 (size 1088):
-    comm "syz-executor419", pid 326, jiffies 4294773607 (age 12.609s)
-    hex dump (first 32 bytes):
-      00 00 00 00 00 00 00 00 7d 00 00 00 00 00 00 00  ........}.......
-      01 00 07 40 00 00 00 00 00 00 00 00 00 00 00 00  ...@............
-    backtrace:
-      [<000000006fefe750>] sk_prot_alloc+0x64/0x2a0 net/core/sock.c:1970
-      [<0000000074006db5>] sk_alloc+0x3b/0x800 net/core/sock.c:2029
-      [<00000000728cd434>] unix_create1+0xaf/0x920 net/unix/af_unix.c:928
-      [<00000000a279a139>] unix_create+0x113/0x1d0 net/unix/af_unix.c:997
-      [<0000000068259812>] __sock_create+0x2ab/0x550 net/socket.c:1516
-      [<00000000da1521e1>] sock_create net/socket.c:1566 [inline]
-      [<00000000da1521e1>] __sys_socketpair+0x1a8/0x550 net/socket.c:1698
-      [<000000007ab259e1>] __do_sys_socketpair net/socket.c:1751 [inline]
-      [<000000007ab259e1>] __se_sys_socketpair net/socket.c:1748 [inline]
-      [<000000007ab259e1>] __x64_sys_socketpair+0x97/0x100 net/socket.c:1748
-      [<000000007dedddc1>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-      [<000000007dedddc1>] do_syscall_64+0x38/0x90 arch/x86/entry/common.c:80
-      [<000000009456679f>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-We can reproduce this issue by creating two AF_UNIX SOCK_STREAM sockets,
-send()ing an OOB skb to each other, and close()ing them without consuming
-the OOB skbs.
-
-  int skpair[2];
-
-  socketpair(AF_UNIX, SOCK_STREAM, 0, skpair);
-
-  send(skpair[0], "x", 1, MSG_OOB);
-  send(skpair[1], "x", 1, MSG_OOB);
-
-  close(skpair[0]);
-  close(skpair[1]);
-
-Currently, we free an OOB skb in unix_sock_destructor() which is called via
-__sk_free(), but it's too late because the receiver's unix_sk(sk)->oob_skb
-is accounted against the sender's sk->sk_wmem_alloc and __sk_free() is
-called only when sk->sk_wmem_alloc is 0.
-
-In the repro sequences, we do not consume the OOB skb, so both two sk's
-sock_put() never reach __sk_free() due to the positive sk->sk_wmem_alloc.
-Then, no one can consume the OOB skb nor call __sk_free(), and we finally
-leak the two whole sk.
-
-Thus, we must free the unconsumed OOB skb earlier when close()ing the
-socket.
-
-Fixes: 314001f0bf92 ("af_unix: Add OOB support")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
----
- net/unix/af_unix.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
-
-diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index bf338b782fc4..d686804119c9 100644
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -569,12 +569,6 @@ static void unix_sock_destructor(struct sock *sk)
- 
- 	skb_queue_purge(&sk->sk_receive_queue);
- 
--#if IS_ENABLED(CONFIG_AF_UNIX_OOB)
--	if (u->oob_skb) {
--		kfree_skb(u->oob_skb);
--		u->oob_skb = NULL;
--	}
--#endif
- 	DEBUG_NET_WARN_ON_ONCE(refcount_read(&sk->sk_wmem_alloc));
- 	DEBUG_NET_WARN_ON_ONCE(!sk_unhashed(sk));
- 	DEBUG_NET_WARN_ON_ONCE(sk->sk_socket);
-@@ -620,6 +614,13 @@ static void unix_release_sock(struct sock *sk, int embrion)
- 
- 	unix_state_unlock(sk);
- 
-+#if IS_ENABLED(CONFIG_AF_UNIX_OOB)
-+	if (u->oob_skb) {
-+		kfree_skb(u->oob_skb);
-+		u->oob_skb = NULL;
-+	}
-+#endif
-+
- 	wake_up_interruptible_all(&u->peer_wait);
- 
- 	if (skpair != NULL) {
--- 
-2.30.2
+That's very clear, thanks!
 
