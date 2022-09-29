@@ -2,172 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 186A25EEFAA
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:49:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B3A25EEFB6
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:51:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235430AbiI2Hto (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 03:49:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44202 "EHLO
+        id S235171AbiI2HvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 03:51:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235434AbiI2Hta (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:49:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14D8C13A05E
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:49:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1664437765;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=B5qI7b94+taNEfTbBkn8B22CaCzkL3JdPIVHISnwlAM=;
-        b=L208wYi82H10CqNSRYw74uwGEA7nCMw45v9APz93lT2IrcCVN3BDhBr+mdJqJoxNORjj2B
-        BubTGMEdGBM4qsijX90KMTIs4LNwjsNxgcGpU2yJ8Tum4nT5tFm6aCFTxTzVEAnu83iheH
-        9B0YpmUptED8QgsqgkyULydb1czr6pc=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-641-q8SIOYIrN1uRCxoZG1GKsw-1; Thu, 29 Sep 2022 03:49:24 -0400
-X-MC-Unique: q8SIOYIrN1uRCxoZG1GKsw-1
-Received: by mail-wr1-f70.google.com with SMTP id f9-20020adfc989000000b0022b3bbc7a7eso192938wrh.13
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:49:24 -0700 (PDT)
+        with ESMTP id S234315AbiI2HvF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:51:05 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A54C57227;
+        Thu, 29 Sep 2022 00:51:04 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id c198so722411pfc.13;
+        Thu, 29 Sep 2022 00:51:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
+         :date;
+        bh=yFvmqnF9YgT1RoX/KUss7lgqXi4Gu3CXoG1FdMemSQE=;
+        b=ZmpQ5yGBMi6ylVxwdOyqP1m8Nlc+c0RSeH5eiAZdprmmc+hZpgzoz0UOXoSF3m4GF7
+         gtqXs48XexYHVtDHegySkrOD3FCLqLUgi4vfjB3TSsjFhN+iReODI/MXF5jlouT5W+LR
+         9OOg3F7GzTxWJ5hLNQBZ6KiyGrGKq6C+82SQdzfVmUAuE4kuHHuIF7J5J4lcA+ZV9DX8
+         V2w/bLIaVDFbdRH/U4dpt2F0QC/ZkKn7g7A0renqiJ0TDj+Z3j/I3ATEC2WXIBGJkNmQ
+         E2UiJtT+CnmhBdknuMzzhcMQdViqVzVzt/zw6onSYdmDkQV0rB8bk1Ea9TXut5gDcwcA
+         7SHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=B5qI7b94+taNEfTbBkn8B22CaCzkL3JdPIVHISnwlAM=;
-        b=Y/oVoSEZmIPQB1vD2z1uRGK2WNDpD2f6nsLilIfQAKaQT6EUmpS345XyEbUpG+NzwW
-         tqPKJNqJxu7LDayqCRcLwUetQXLVlVwGpEOxtZgRV0c2EZRxzUvvxh/9cnGg1Iawgbjw
-         sh5LTppHpkofBlbE1PySYunh14jzN67V9lC7TbGSy1DvvBCgN3hm/YN+ODLeUVrs+kjt
-         2EnZqqiGDtlBpg0Mj9lJk6aFQzpqEqIXdHQA8VHxMrrOCJbTO+su5eMBBcY5vwZA1Dw2
-         Wv/Mf0vGCoZw0tfX0WhRKhIcwFpZr9AeNL3Ms0ozyDofPA+vhyx1RP/5mtm4MTCw+eH1
-         TtMA==
-X-Gm-Message-State: ACrzQf36Y7Fs6GyJsa/sdqeOPRFUyDqU952h/V9ydea3YVDQ2D1c1AtF
-        ZjOGQj936pDKLuiy1tABzG65DIUlX1bhWW0iIAqyq83+p2E67LvLeTxQrD4n0ad6jDTJfbVWa1r
-        75EGYCjKJh+yVJMEI
-X-Received: by 2002:a05:600c:4fd2:b0:3b4:cab9:44f0 with SMTP id o18-20020a05600c4fd200b003b4cab944f0mr9860803wmq.73.1664437762949;
-        Thu, 29 Sep 2022 00:49:22 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM4msH8Z/F3t4GcEn/O8enUvxnRZFEtbEHz6nKwdRFvfOH+ZEpp/nXVxoWlaKXFvrX79zD/DFA==
-X-Received: by 2002:a05:600c:4fd2:b0:3b4:cab9:44f0 with SMTP id o18-20020a05600c4fd200b003b4cab944f0mr9860792wmq.73.1664437762720;
-        Thu, 29 Sep 2022 00:49:22 -0700 (PDT)
-Received: from redhat.com ([2.55.17.78])
-        by smtp.gmail.com with ESMTPSA id bi16-20020a05600c3d9000b003b4de550e34sm3503540wmb.40.2022.09.29.00.49.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Sep 2022 00:49:22 -0700 (PDT)
-Date:   Thu, 29 Sep 2022 03:49:18 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     Junichi Uekawa =?utf-8?B?KOS4iuW3nee0lOS4gCk=?= 
-        <uekawa@google.com>, Stefan Hajnoczi <stefanha@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        Bobby Eshleman <bobby.eshleman@gmail.com>
-Subject: Re: [PATCH] vhost/vsock: Use kvmalloc/kvfree for larger packets.
-Message-ID: <20220929034807-mutt-send-email-mst@kernel.org>
-References: <20220928064538.667678-1-uekawa@chromium.org>
- <20220928082823.wyxplop5wtpuurwo@sgarzare-redhat>
- <20220928052738-mutt-send-email-mst@kernel.org>
- <20220928151135.pvrlsylg6j3hzh74@sgarzare-redhat>
- <CADgJSGHxPWXJjbakEeWnqF42A03yK7Dpw6U1SKNLhk+B248Ymg@mail.gmail.com>
- <20220929031419-mutt-send-email-mst@kernel.org>
- <20220929074606.yqzihpcc7cl442c5@sgarzare-redhat>
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=yFvmqnF9YgT1RoX/KUss7lgqXi4Gu3CXoG1FdMemSQE=;
+        b=qYZqCb5D9wJSNNapT/hI1CP37OBkdzz/02vK9Vv5zvujhVHYzuTD9ERulZ85+P48pY
+         R2Tib2B4neFdfuBl1hUT+0KsZacnoRoMqBV6jRqdWmXmP0v/lXp7RwJ10J20vMtM6Wnw
+         pWxxTu2INcZFkTlwzKC9ldTOmHuhCbz5fsEjz/iFBjdkIPgFLRCPPEf10JL+1qMhTCqO
+         BPNDDvz7VZftFJj3wpDU398qQR2shXZtRwDEff1BVQ3dzrjDKt4OGAuZK3yZ1dU8DYcH
+         oi1VjQ4bUDUpSrUF92RqcV1gcgbQBIZW1Dm2ljekHU69GTkhgfOh/oF1Pm47ZiSM/D4s
+         BNOw==
+X-Gm-Message-State: ACrzQf0sMj6Kaa+MBl4/9q30lNtgi9wO09x82uLPstwxluoLE4iDveU0
+        vxNkJL2KbBjwUJeIeN6nPR9xbdVg0QQ=
+X-Google-Smtp-Source: AMsMyM7o5IubPnHRuYknJLpMVIcn0X1JrIzc8nndiAKidbHHdc0KeAK/KwcZjLvQXp+NI5OrhI2KoQ==
+X-Received: by 2002:aa7:9532:0:b0:53e:7875:39e1 with SMTP id c18-20020aa79532000000b0053e787539e1mr2195240pfp.82.1664437863536;
+        Thu, 29 Sep 2022 00:51:03 -0700 (PDT)
+Received: from ?IPv6:::1? ([2601:647:5e00:1473:68e8:ad15:75fc:a64c])
+        by smtp.gmail.com with ESMTPSA id h8-20020a170902680800b00178ab008364sm5105685plk.37.2022.09.29.00.51.02
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 29 Sep 2022 00:51:03 -0700 (PDT)
+Date:   Thu, 29 Sep 2022 00:51:02 -0700
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Krzysztof Opasiak <k.opasiak@samsung.com>
+CC:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 1/2] nfc: s3fwrn5: fix order of freeing resources
+User-Agent: K-9 Mail for Android
+In-Reply-To: <1b81d1ec-3050-b983-654b-52c955091274@linaro.org>
+References: <20220929050426.955139-1-dmitry.torokhov@gmail.com> <f0982b75-ede3-cc56-1160-8fda0faae356@linaro.org> <26fd03ad-181c-97c5-f620-6ac296cf1829@linaro.org> <36AC4067-78C6-4986-8B97-591F93E266D8@gmail.com> <1b81d1ec-3050-b983-654b-52c955091274@linaro.org>
+Message-ID: <DECCEB72-EE37-4DE4-A734-47A681195BDD@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220929074606.yqzihpcc7cl442c5@sgarzare-redhat>
-X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 29, 2022 at 09:46:06AM +0200, Stefano Garzarella wrote:
-> On Thu, Sep 29, 2022 at 03:19:14AM -0400, Michael S. Tsirkin wrote:
-> > On Thu, Sep 29, 2022 at 08:14:24AM +0900, Junichi Uekawa (上川純一) wrote:
-> > > 2022年9月29日(木) 0:11 Stefano Garzarella <sgarzare@redhat.com>:
-> > > >
-> > > > On Wed, Sep 28, 2022 at 05:31:58AM -0400, Michael S. Tsirkin wrote:
-> > > > >On Wed, Sep 28, 2022 at 10:28:23AM +0200, Stefano Garzarella wrote:
-> > > > >> On Wed, Sep 28, 2022 at 03:45:38PM +0900, Junichi Uekawa wrote:
-> > > > >> > When copying a large file over sftp over vsock, data size is usually 32kB,
-> > > > >> > and kmalloc seems to fail to try to allocate 32 32kB regions.
-> > > > >> >
-> > > > >> > Call Trace:
-> > > > >> >  [<ffffffffb6a0df64>] dump_stack+0x97/0xdb
-> > > > >> >  [<ffffffffb68d6aed>] warn_alloc_failed+0x10f/0x138
-> > > > >> >  [<ffffffffb68d868a>] ? __alloc_pages_direct_compact+0x38/0xc8
-> > > > >> >  [<ffffffffb664619f>] __alloc_pages_nodemask+0x84c/0x90d
-> > > > >> >  [<ffffffffb6646e56>] alloc_kmem_pages+0x17/0x19
-> > > > >> >  [<ffffffffb6653a26>] kmalloc_order_trace+0x2b/0xdb
-> > > > >> >  [<ffffffffb66682f3>] __kmalloc+0x177/0x1f7
-> > > > >> >  [<ffffffffb66e0d94>] ? copy_from_iter+0x8d/0x31d
-> > > > >> >  [<ffffffffc0689ab7>] vhost_vsock_handle_tx_kick+0x1fa/0x301 [vhost_vsock]
-> > > > >> >  [<ffffffffc06828d9>] vhost_worker+0xf7/0x157 [vhost]
-> > > > >> >  [<ffffffffb683ddce>] kthread+0xfd/0x105
-> > > > >> >  [<ffffffffc06827e2>] ? vhost_dev_set_owner+0x22e/0x22e [vhost]
-> > > > >> >  [<ffffffffb683dcd1>] ? flush_kthread_worker+0xf3/0xf3
-> > > > >> >  [<ffffffffb6eb332e>] ret_from_fork+0x4e/0x80
-> > > > >> >  [<ffffffffb683dcd1>] ? flush_kthread_worker+0xf3/0xf3
-> > > > >> >
-> > > > >> > Work around by doing kvmalloc instead.
-> > > > >> >
-> > > > >> > Signed-off-by: Junichi Uekawa <uekawa@chromium.org>
-> > > > >
-> > > > >My worry here is that this in more of a work around.
-> > > > >It would be better to not allocate memory so aggressively:
-> > > > >if we are so short on memory we should probably process
-> > > > >packets one at a time. Is that very hard to implement?
-> > > >
-> > > > Currently the "virtio_vsock_pkt" is allocated in the "handle_kick"
-> > > > callback of TX virtqueue. Then the packet is multiplexed on the right
-> > > > socket queue, then the user space can de-queue it whenever they want.
-> > > >
-> > > > So maybe we can stop processing the virtqueue if we are short on memory,
-> > > > but when can we restart the TX virtqueue processing?
-> > > >
-> > > > I think as long as the guest used only 4K buffers we had no problem, but
-> > > > now that it can create larger buffers the host may not be able to
-> > > > allocate it contiguously. Since there is no need to have them contiguous
-> > > > here, I think this patch is okay.
-> > > >
-> > > > However, if we switch to sk_buff (as Bobby is already doing), maybe we
-> > > > don't have this problem because I think there is some kind of
-> > > > pre-allocated pool.
-> > > >
-> > > 
-> > > Thank you for the review! I was wondering if this is a reasonable workaround (as
-> > > we found that this patch makes a reliably crashing system into a
-> > > reliably surviving system.)
-> > > 
-> > > 
-> > > ... Sounds like it is a reasonable patch to use backported to older kernels?
-> > 
-> > Hmm. Good point about stable. OK.
-> 
-> Right, so in this case I think is better to add a Fixes tag. Since we used
-> kmalloc from the beginning we can use the following:
-> 
-> Fixes: 433fc58e6bf2 ("VSOCK: Introduce vhost_vsock.ko")
-> 
-> > 
-> > Acked-by: Michael S. Tsirkin <mst@redhat.com>
-> > 
-> 
-> @Michael are you queueing this, or should it go through net tree?
-> 
-> Thanks,
-> Stefano
+On September 29, 2022 12:42:08 AM PDT, Krzysztof Kozlowski <krzysztof=2Ekoz=
+lowski@linaro=2Eorg> wrote:
+>On 29/09/2022 09:37, Dmitry Torokhov wrote:
+>> On September 29, 2022 12:27:19 AM PDT, Krzysztof Kozlowski <krzysztof=
+=2Ekozlowski@linaro=2Eorg> wrote:
+>>> On 29/09/2022 09:26, Krzysztof Kozlowski wrote:
+>>>> On 29/09/2022 07:04, Dmitry Torokhov wrote:
+>>>>> Caution needs to be exercised when mixing together regular and manag=
+ed
+>>>>> resources=2E In case of this driver devm_request_threaded_irq() shou=
+ld
+>>>>> not be used, because it will result in the interrupt being freed too
+>>>>> late, and there being a chance that it fires up at an inopportune
+>>>>> moment and reference already freed data structures=2E
+>>>>
+>>>> Non-devm was so far recommended only for IRQF_SHARED, not for regular
+>>>> ones=2E
+>>=20
+>> If we are absolutely sure there is no possibility of interrupts firing =
+then devm
+>> should be ok, but it is much safer not to use it=2E Or use custom devm =
+actions
+>> to free non-managed resources=2E
+>
+>I am not sure and the pattern itself is a bit risky, I agree=2E However
+>the driver calls s3fwrn5_remove() which then calls
+>s3fwrn5_phy_power_ctrl() which cuts the power via GPIO pin=2E I assume
+>that the hardware should stop generating interrupts at this point=2E
 
-net tree would be preferable, my pull for this release is kind of ready ... kuba?
+Ok, fair enough=2E The GPIO is mandatory, so I guess the chip will be disa=
+bled=2E
 
--- 
-MST
+>
+>>=20
+>>>> Otherwise you have to fix half of Linux kernel drivers=2E=2E=2E=20
+>>=20
+>> Yes, if they are doing the wrong thing=2E
+>
+>What I meant, that this pattern appears pretty often=2E If we agree that
+>this driver has a risky pattern (hardware might not be off after
+>remove() callback), then we should maybe document it somewhere and
+>include it in usual reviews=2E
 
+I have been saying that mixing managed and non managed resource is
+dangerous for years=2E Disabling clocks before shutting off interrupts, fr=
+eeing
+memory, etc, is not safe=2E The best approach with devm is all or nothing=
+=2E
+
+Thanks=2E
+
+--=20
+Dmitry
