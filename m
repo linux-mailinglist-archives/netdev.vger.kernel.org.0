@@ -2,163 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ADC395EEDC4
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 08:18:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8BA55EEDC8
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 08:21:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233190AbiI2GSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 02:18:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50998 "EHLO
+        id S233904AbiI2GVK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 02:21:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234953AbiI2GSB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 02:18:01 -0400
-Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5355E12968C;
-        Wed, 28 Sep 2022 23:17:44 -0700 (PDT)
-Message-ID: <4e6e14e4-7301-9981-c52f-7715f26f63f3@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1664432262;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=leoja3tLYvuGjML3vnPhoqeOaWUjA8ZGSBxgJ7z0bZc=;
-        b=eRkSpbv1JCEMJ29ENuARH50C63WgLKS0RxvCyY/UpeZFd14wvusG9LwyUKOAn1gPpG60Zi
-        QRgaQWNWMoN0cMO08AnVSKfyDhfzIp7hpfPNfExtliLDAQjFudQCGadRlL+sz5Ns4vvOey
-        iCErjpaNxLTnZyQVs9z39qD6+/7oDKo=
-Date:   Wed, 28 Sep 2022 23:17:38 -0700
+        with ESMTP id S229780AbiI2GVI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 02:21:08 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 162955A155
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 23:21:07 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id i15-20020a17090a4b8f00b0020073b4ac27so420564pjh.3
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 23:21:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=sLe+12DYg/MsGOLMm2PiwRBOcXOJMIlCQlWuW8Bh/Z4=;
+        b=X0gRac3fkiIlOB2YGRyfd+Ue4Rv+jxwT9mPS6EUIoElqbASd7xqUn9sqCZn+G0SQph
+         asgx2+EpRRc+pU2dZMU+WsX9F25/8FybJXs+IJm6l9b+WDsxmZsmy4appAcS27YPaMGm
+         xm75j2xyadmgzAHLSN0POvKmKx2DQMUbbRVQljAy1Wc8FYx7GVCMTLtMnOWmLdeYoTlO
+         6QTYkph7oFAPEsLnpn9H55XyEiRyvlB6fRZ5XNKRKrcyLzq6kO5Cdwr94pjl5fYuDOQL
+         f8umul9nXybOJ4CJCHGhBck3KjH253ln+PeJ2tGH+0laVRMAlV8I71W1CMW835DJi6OE
+         plBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=sLe+12DYg/MsGOLMm2PiwRBOcXOJMIlCQlWuW8Bh/Z4=;
+        b=eTS9rpi6/1TsMX7cacbwpJecjiK1YD+P2SfEcRK7sVkqlMpdzazEeTnkmb6TlDZr/m
+         22qzVq/djQ/HucdZj60ywgQtDe8BIHLhTw7JpgFc3XC5ZAm/Y9UgobQ7WJreerBmtk5F
+         dxFbSbJgCP0QRvOYtvlTst4n+2NB7ujonhqSjcFTbljST8rcFL+U5hG2ef/YeH9vlCNz
+         X8ZEJ3oHveO9m58Tkx7cYpEwT1rG6sQmMWtVTd0pjfLOvHlzIo9l2LUtALnndsDwIZ5A
+         t3Thfa4TxYTXGSg+pI576tI6FlYzuU+DmuWRXYv2mA5MMGvlbq6nXjp6MkrpNTeAxtep
+         3Y7Q==
+X-Gm-Message-State: ACrzQf0xkh6eEfPye4kyRTyCBFPE+G5WQoCYF2SXUP2i3mpTCA5kS6hi
+        5LNHWkhSIG+Cy6FfPuDn3NUF9g==
+X-Google-Smtp-Source: AMsMyM5mA4SyvOWX5ikSyYkozPV7tSVOQb8hJV1XNYZGm319RXQ57g7obi9wIcFoods3WRR9VZiNaw==
+X-Received: by 2002:a17:902:f612:b0:178:a692:b20a with SMTP id n18-20020a170902f61200b00178a692b20amr1858371plg.55.1664432466534;
+        Wed, 28 Sep 2022 23:21:06 -0700 (PDT)
+Received: from ?IPV6:2401:4900:1f3b:3adb:24f8:ac24:2282:1dc7? ([2401:4900:1f3b:3adb:24f8:ac24:2282:1dc7])
+        by smtp.gmail.com with ESMTPSA id n9-20020a170902e54900b0016d295888e3sm4936599plf.241.2022.09.28.23.21.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 28 Sep 2022 23:21:05 -0700 (PDT)
+Message-ID: <11bb755c-b608-a13f-1da1-639c6b3f18d4@linaro.org>
+Date:   Thu, 29 Sep 2022 11:51:00 +0530
 MIME-Version: 1.0
-Subject: Re: [PATCH v2 bpf-next 4/5] bpf: tcp: Stop
- bpf_setsockopt(TCP_CONGESTION) in init ops to recur itself
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 3/4] dt-bindings: net: snps,dwmac: Update reg maxitems
 Content-Language: en-US
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        kernel-team <kernel-team@fb.com>, Paolo Abeni <pabeni@redhat.com>
-References: <20220923224453.2351753-1-kafai@fb.com>
- <20220923224518.2353383-1-kafai@fb.com>
- <CANn89iLf+=AmMntTqy0HyOfbv6PASLsT+E4PhXMAX+xU1Zh2Yg@mail.gmail.com>
- <e529a40f-4c77-834e-3ac8-b58763b58993@linux.dev>
- <CANn89i+7G7kkN5mG=tEOd4xHAV7LyLQ7yj2a4hjsGb1_gFQ82A@mail.gmail.com>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Martin KaFai Lau <martin.lau@linux.dev>
-In-Reply-To: <CANn89i+7G7kkN5mG=tEOd4xHAV7LyLQ7yj2a4hjsGb1_gFQ82A@mail.gmail.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        agross@kernel.org, bhupesh.linux@gmail.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Bjorn Andersson <andersson@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        David Miller <davem@davemloft.net>
+References: <20220907204924.2040384-1-bhupesh.sharma@linaro.org>
+ <20220907204924.2040384-4-bhupesh.sharma@linaro.org>
+ <da383499-fe9f-816e-8180-a9661a9c0496@linaro.org>
+ <46087486-bacd-c408-7ead-5b120412412b@linaro.org>
+ <20220912211447.GB1847448-robh@kernel.org>
+From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
+In-Reply-To: <20220912211447.GB1847448-robh@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/28/22 10:37 PM, Eric Dumazet wrote:
-> On Wed, Sep 28, 2022 at 10:31 PM Martin KaFai Lau <martin.lau@linux.dev> wrote:
->>
->> On 9/28/22 7:04 PM, Eric Dumazet wrote:
->>> On Fri, Sep 23, 2022 at 3:48 PM Martin KaFai Lau <kafai@fb.com> wrote:
->>>>
->>>> From: Martin KaFai Lau <martin.lau@kernel.org>
->>>>
->>>> When a bad bpf prog '.init' calls
->>>> bpf_setsockopt(TCP_CONGESTION, "itself"), it will trigger this loop:
->>>>
->>>> .init => bpf_setsockopt(tcp_cc) => .init => bpf_setsockopt(tcp_cc) ...
->>>> ... => .init => bpf_setsockopt(tcp_cc).
->>>>
->>>> It was prevented by the prog->active counter before but the prog->active
->>>> detection cannot be used in struct_ops as explained in the earlier
->>>> patch of the set.
->>>>
->>>> In this patch, the second bpf_setsockopt(tcp_cc) is not allowed
->>>> in order to break the loop.  This is done by using a bit of
->>>> an existing 1 byte hole in tcp_sock to check if there is
->>>> on-going bpf_setsockopt(TCP_CONGESTION) in this tcp_sock.
->>>>
->>>> Note that this essentially limits only the first '.init' can
->>>> call bpf_setsockopt(TCP_CONGESTION) to pick a fallback cc (eg. peer
->>>> does not support ECN) and the second '.init' cannot fallback to
->>>> another cc.  This applies even the second
->>>> bpf_setsockopt(TCP_CONGESTION) will not cause a loop.
->>>>
->>>> Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
->>>> ---
->>>>    include/linux/tcp.h |  6 ++++++
->>>>    net/core/filter.c   | 28 +++++++++++++++++++++++++++-
->>>>    2 files changed, 33 insertions(+), 1 deletion(-)
->>>>
->>>> diff --git a/include/linux/tcp.h b/include/linux/tcp.h
->>>> index a9fbe22732c3..3bdf687e2fb3 100644
->>>> --- a/include/linux/tcp.h
->>>> +++ b/include/linux/tcp.h
->>>> @@ -388,6 +388,12 @@ struct tcp_sock {
->>>>           u8      bpf_sock_ops_cb_flags;  /* Control calling BPF programs
->>>>                                            * values defined in uapi/linux/tcp.h
->>>>                                            */
->>>> +       u8      bpf_chg_cc_inprogress:1; /* In the middle of
->>>> +                                         * bpf_setsockopt(TCP_CONGESTION),
->>>> +                                         * it is to avoid the bpf_tcp_cc->init()
->>>> +                                         * to recur itself by calling
->>>> +                                         * bpf_setsockopt(TCP_CONGESTION, "itself").
->>>> +                                         */
->>>>    #define BPF_SOCK_OPS_TEST_FLAG(TP, ARG) (TP->bpf_sock_ops_cb_flags & ARG)
->>>>    #else
->>>>    #define BPF_SOCK_OPS_TEST_FLAG(TP, ARG) 0
->>>> diff --git a/net/core/filter.c b/net/core/filter.c
->>>> index 96f2f7a65e65..ac4c45c02da5 100644
->>>> --- a/net/core/filter.c
->>>> +++ b/net/core/filter.c
->>>> @@ -5105,6 +5105,9 @@ static int bpf_sol_tcp_setsockopt(struct sock *sk, int optname,
->>>>    static int sol_tcp_sockopt_congestion(struct sock *sk, char *optval,
->>>>                                         int *optlen, bool getopt)
->>>>    {
->>>> +       struct tcp_sock *tp;
->>>> +       int ret;
->>>> +
->>>>           if (*optlen < 2)
->>>>                   return -EINVAL;
->>>>
->>>> @@ -5125,8 +5128,31 @@ static int sol_tcp_sockopt_congestion(struct sock *sk, char *optval,
->>>>           if (*optlen >= sizeof("cdg") - 1 && !strncmp("cdg", optval, *optlen))
->>>>                   return -ENOTSUPP;
->>>>
->>>> -       return do_tcp_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
->>>> +       /* It stops this looping
->>>> +        *
->>>> +        * .init => bpf_setsockopt(tcp_cc) => .init =>
->>>> +        * bpf_setsockopt(tcp_cc)" => .init => ....
->>>> +        *
->>>> +        * The second bpf_setsockopt(tcp_cc) is not allowed
->>>> +        * in order to break the loop when both .init
->>>> +        * are the same bpf prog.
->>>> +        *
->>>> +        * This applies even the second bpf_setsockopt(tcp_cc)
->>>> +        * does not cause a loop.  This limits only the first
->>>> +        * '.init' can call bpf_setsockopt(TCP_CONGESTION) to
->>>> +        * pick a fallback cc (eg. peer does not support ECN)
->>>> +        * and the second '.init' cannot fallback to
->>>> +        * another.
->>>> +        */
->>>> +       tp = tcp_sk(sk);
->>>> +       if (tp->bpf_chg_cc_inprogress)
->>>> +               return -EBUSY;
->>>> +
->>>
->>> Is the socket locked (and owned by current thread) at this point ?
->>> If not, changing bpf_chg_cc_inprogress would be racy.
->>
->> Yes, the socket is locked and owned.  There is a sock_owned_by_me check earlier
->> in _bpf_setsockopt().
-> 
-> Good to know. Note a listener can be cloned without socket lock being held.
-> 
-> In order to avoid surprises, I would clear bpf_chg_cc_inprogress in
-> tcp_create_openreq_child()
+Hi Rob,
 
-Ah, make sense.  I will re-spin.
+On 9/13/22 2:44 AM, Rob Herring wrote:
+> On Tue, Sep 13, 2022 at 12:23:42AM +0530, Bhupesh Sharma wrote:
+>> On 9/8/22 8:11 PM, Krzysztof Kozlowski wrote:
+>>> On 07/09/2022 22:49, Bhupesh Sharma wrote:
+>>>> Since the Qualcomm dwmac based ETHQOS ethernet block
+>>>> supports 64-bit register addresses, update the
+>>>> reg maxitems inside snps,dwmac YAML bindings.
+>>>
+>>> Please wrap commit message according to Linux coding style / submission
+>>> process:
+>>> https://elixir.bootlin.com/linux/v5.18-rc4/source/Documentation/process/submitting-patches.rst#L586
+>>>
+>>>>
+>>>> Cc: Bjorn Andersson <andersson@kernel.org>
+>>>> Cc: Rob Herring <robh@kernel.org>
+>>>> Cc: Vinod Koul <vkoul@kernel.org>
+>>>> Cc: David Miller <davem@davemloft.net>
+>>>> Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+>>>> ---
+>>>>    Documentation/devicetree/bindings/net/snps,dwmac.yaml | 2 +-
+>>>>    1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+>>>> index 2b6023ce3ac1..f89ca308d55f 100644
+>>>> --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+>>>> +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+>>>> @@ -94,7 +94,7 @@ properties:
+>>>>      reg:
+>>>>        minItems: 1
+>>>> -    maxItems: 2
+>>>> +    maxItems: 4
+>>>
+>>> Qualcomm ETHQOS schema allows only 2 in reg-names, so this does not make
+>>> sense for Qualcomm and there are no users of 4 items.
+>>
+>> On this platform the two reg spaces are 64-bit, whereas for other
+>> platforms based on dwmmac, for e.g. stm32 have 32-bit address space.
+> 
+> The schema for reg is how many addr/size entries regardless of cell
+> sizes.
+> 
+>> Without this fix I was getting the following error with 'make dtbs_check':
+>>
+>> Documentation/devicetree/bindings/net/qcom,ethqos.example.dtb:
+>> ethernet@20000: reg: [[0, 131072], [0, 65536], [0, 221184], [0, 256]] is too
+>> long
+>> 	From schema: /home/bhsharma/code/upstream/linux-bckup/linux/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> 
+> The default cell sizes for examples is 1 for addr/size. If you want it
+> to be 2, you have to write your own parent node. But why? It's just an
+> example. Use 1 cell like the example originally had.
+
+Got your point. Let me revert to the original example in v2.
+
+Thanks,
+Bhupesh
