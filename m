@@ -2,97 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E5AF5EFA5D
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 18:25:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A65945EFA6E
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 18:27:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236356AbiI2QZn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 12:25:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57924 "EHLO
+        id S236128AbiI2Q1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 12:27:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236308AbiI2QZX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 12:25:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 886B511D0DE;
-        Thu, 29 Sep 2022 09:22:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C41B61AC4;
-        Thu, 29 Sep 2022 16:22:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15A4FC433D6;
-        Thu, 29 Sep 2022 16:22:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664468532;
-        bh=d2xbFWd6cZFHqRqtchaW5YtreTtOFcfhK6VaJhknpbI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=n0wLICpr9rwLDoO4I22Q+j9GYGdUKtx6O4WAI2LoMiZB3FDSAWURYHUfaUCVoy0FM
-         qYyRxJgC0jSvph0Coo/utPsy68jMOH4DGqPFWjRqQEKttA/d/0ZrktDUcVfwwNuHYL
-         7S0HoBNZHiImbcIfMeTZSAaIn1zhtANzQbzqt32J/JeYD3OMUq74UVbliF+CfVlu/p
-         J0/ACe8PO1rnEPHBK1ESN38tRjPVVor7iVryP5kv1sA7xGmVWQ0mD3oN4aWaqOEzHm
-         9PdQWpxoqQyzL/n52vrIBKCwHTD8pcJQesLiDsZ8geoyB2WeoZD2mTUT3adNUZloCX
-         4w2/AXVJNLemw==
-Date:   Thu, 29 Sep 2022 09:22:10 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     netdev@kapio-technology.com
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Florent Fourcot <florent.fourcot@wifirst.fr>,
-        Hans Schultz <schultz.hans@gmail.com>,
-        Joachim Wiberg <troglobit@gmail.com>,
-        Amit Cohen <amcohen@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v6 net-next 9/9] selftests: forwarding: add test of
- MAC-Auth Bypass to locked port tests
-Message-ID: <20220929092210.0423e96d@kernel.org>
-In-Reply-To: <6811b44516cf8bf37678bab23bca80ba@kapio-technology.com>
-References: <20220928174904.117131-1-netdev@kapio-technology.com>
-        <20220929091143.468546f2@kernel.org>
-        <6811b44516cf8bf37678bab23bca80ba@kapio-technology.com>
+        with ESMTP id S236048AbiI2Q0j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 12:26:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EFB0D98F6
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 09:25:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1664468729;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=wP+ERui3HiyMQ5txVX6VKAqSsbRuHdNYsyw/tUJPBgg=;
+        b=e6WWsE4E4ZGHsE4cmsJ4vP5BG9qpuFM1A5xuOGRw49e/ScZyGXrizETWzqO1Kke9ShPHTg
+        ziH5SopPKeIIbEoyHUISnKL8QGRV9e5KCd1usBQdzPukuFBHEcxqRPU/qtAQvvJMqm2e11
+        4wpm0JvyIfQ1PFv0Yrm8jSPE9+McxHk=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-3-BkjZcFPsMxSQJJ2fD8A5sA-1; Thu, 29 Sep 2022 12:25:20 -0400
+X-MC-Unique: BkjZcFPsMxSQJJ2fD8A5sA-1
+Received: by mail-wm1-f72.google.com with SMTP id r128-20020a1c4486000000b003b3309435a9so2423858wma.6
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 09:25:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=wP+ERui3HiyMQ5txVX6VKAqSsbRuHdNYsyw/tUJPBgg=;
+        b=CZyWw8Gt7oC5r1ziOaCUdMO/wllLCG+1Z39iLX1d/t9E88nD3JX9/QJxbUzLCx2f92
+         ylB0cV7RoMJ3siO+R2oY+on+h8Fba3TD7PNDgHw9dN8Agl2TFaj+eQ2ZeyjAOoOY24wO
+         i/DHvcj6WysQr0t+Kbk+bvu7Q6B2b0UEwpvJbB/4gvoDZCxnysuU6gcjLVbjHaZvAL3r
+         V3FEIQ/RGgz7T9T/htBTxNM3B1bfym3VWwKMzMZCbsR+Eic8779Uso26I/9B7ldassGu
+         f7FoRHlrD5r/miLsUVzM98fy0lZ/ThZrb+3rcdka6Kmbs0LIasNGN3SbGcdJohbJ99hs
+         +gvQ==
+X-Gm-Message-State: ACrzQf1+U+6petBKlkrCgLoD0UVY8MbEMU6RiOiov57SZBUyEsutFJ8G
+        eub2TMsLe/kKnNHedWIq3Ar2tI3aMna54HCt64i59Dd1pVwi78mHUWR827p2RdZIncil8l/O5zM
+        782tM/jlLXbchsYh6
+X-Received: by 2002:a05:600c:3205:b0:3b3:3813:ae3f with SMTP id r5-20020a05600c320500b003b33813ae3fmr3196834wmp.158.1664468719682;
+        Thu, 29 Sep 2022 09:25:19 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM7GXSxx1LBarzR7zq6U/e87GpBhC/rEY4V4sODPzyAV8maunzFx+24hSqCxT0BLh73br06cHw==
+X-Received: by 2002:a05:600c:3205:b0:3b3:3813:ae3f with SMTP id r5-20020a05600c320500b003b33813ae3fmr3196805wmp.158.1664468719486;
+        Thu, 29 Sep 2022 09:25:19 -0700 (PDT)
+Received: from redhat.com ([2.55.17.78])
+        by smtp.gmail.com with ESMTPSA id t18-20020adfe452000000b00228cd9f6349sm7243877wrm.106.2022.09.29.09.25.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Sep 2022 09:25:18 -0700 (PDT)
+Date:   Thu, 29 Sep 2022 12:25:14 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Stefano Garzarella <sgarzare@redhat.com>,
+        Junichi Uekawa =?utf-8?B?KCDkuIrlt53ntJTkuIAp?= 
+        <uekawa@google.com>, Stefan Hajnoczi <stefanha@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        kvm@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        Bobby Eshleman <bobby.eshleman@gmail.com>
+Subject: Re: [PATCH] vhost/vsock: Use kvmalloc/kvfree for larger packets.
+Message-ID: <20220929122444-mutt-send-email-mst@kernel.org>
+References: <20220928064538.667678-1-uekawa@chromium.org>
+ <20220928082823.wyxplop5wtpuurwo@sgarzare-redhat>
+ <20220928052738-mutt-send-email-mst@kernel.org>
+ <20220928151135.pvrlsylg6j3hzh74@sgarzare-redhat>
+ <CADgJSGHxPWXJjbakEeWnqF42A03yK7Dpw6U1SKNLhk+B248Ymg@mail.gmail.com>
+ <20220929031419-mutt-send-email-mst@kernel.org>
+ <20220929074606.yqzihpcc7cl442c5@sgarzare-redhat>
+ <20220929034807-mutt-send-email-mst@kernel.org>
+ <20220929090731.27cda58c@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220929090731.27cda58c@kernel.org>
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 29 Sep 2022 18:17:40 +0200 netdev@kapio-technology.com wrote:
-> > If you were trying to repost just the broken patches - that's not gonna
-> > work :(  
+On Thu, Sep 29, 2022 at 09:07:31AM -0700, Jakub Kicinski wrote:
+> On Thu, 29 Sep 2022 03:49:18 -0400 Michael S. Tsirkin wrote:
+> > net tree would be preferable, my pull for this release is kind of ready ... kuba?
 > 
-> Sorry, I do not understand what 'broken' patches you are referring to?
-> 
-> I think that the locked port tests should be working?
+> If we're talking about 6.1 - we can take it, no problem.
 
-Ignore it then. v6 does not build, see my other reply.
+I think they want it in 6.0 as it fixes a crash.
+
