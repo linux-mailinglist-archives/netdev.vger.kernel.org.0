@@ -2,102 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B2EC75EF9C8
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 18:08:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 262DD5EF9CC
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 18:09:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236052AbiI2QIa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 12:08:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34342 "EHLO
+        id S236020AbiI2QI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 12:08:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235995AbiI2QIZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 12:08:25 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9993B1D359F
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 09:08:08 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id s14so2117635ybe.7
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 09:08:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=KrzdmdP7A/RvrL6kKLZHl68pd2UTuFHx8ezB4uKekmc=;
-        b=dFKbKMNTrwZUpcAXt72ZT+WtotrUZKRnGipXW+/qWYbAb2YVZ6+D7VGRqeuJkguSB9
-         rvOKyln3WqPo4+oYSlDqVzci4Tz7swvvcyo4IPo8rzGplcSSDcn472Tznu5nsq8Jr8sn
-         pIFGYIeZuNjEZ1GPmDjHafZLfXKlvj/ocEkUdPu7D8tuNNHdTSw/71x96PD+y0bi6uCh
-         b+awXmd2DiB6f+4qdDmMSIAuvL08cY51vGeeprPcFfqCkpHVqMO2iShLs5uHzmVwvAs4
-         f35USWMaat0H39tJvHdEyKWwvFtW5CGyjUkQXZpDkWZTG1Nx9DB4Rdsy4/2biJc7LaFN
-         e99w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=KrzdmdP7A/RvrL6kKLZHl68pd2UTuFHx8ezB4uKekmc=;
-        b=eZ4bcf9uhJQR6u+5XrfLc8lo3Ec70HVRl3qPXHi5bhI7BCygX5PYBxetTgUwvIvSWz
-         uZ3AKtIY9NpmUN2biYOhYHH0UY2lFtxF2VZpeBZsmtXWttjF5zFRlEmMsIeheWOdwqfK
-         WLaA6OhC+lhTFc45Q6/1459bQlgVwFlVGySBj2nBLKEDwHG1UEBSPzPU1LCaMUXZHXNd
-         ysOgCvTPQgZq5i2hb6Eilew35MEtmN9t7Uf/f+LCoJenlKw5N+ElNyL4YD55bkB6KcJi
-         kKNaNjyvMdhCLPi/AdDd3p/kLN2+I33n+sMBC3Dc1RBkz9C9l9s0THFtoC7LomaslVMe
-         TeiA==
-X-Gm-Message-State: ACrzQf1c0cLbEWxeCTLtmamVvHtMdWG+vt0Ytts3fIGAVS5yGefzHlwg
-        8hbnUSI6ON/145fkWAs8D7rd4hokPEQqUTglWvp8zQ==
-X-Google-Smtp-Source: AMsMyM5iMcajf5qkAAiGZ8YX8eut3RMxIjcNl+tBZlHZNtoy3q1v5+MTYAfiIW8W3owhqY3BDggXt0OMlHGfQVyGrVw=
-X-Received: by 2002:a25:2d4e:0:b0:6bc:df1d:9cb with SMTP id
- s14-20020a252d4e000000b006bcdf1d09cbmr139377ybe.55.1664467687000; Thu, 29 Sep
- 2022 09:08:07 -0700 (PDT)
+        with ESMTP id S236018AbiI2QIs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 12:08:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 626551D2D10
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 09:08:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D86E61A0C
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 16:08:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDED2C433C1;
+        Thu, 29 Sep 2022 16:08:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664467721;
+        bh=H9PLbOB0JA8rcGt0T0sisZIgYZE/d5am1O1i9vl1Mv0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DR8pu+WExUJiPR+dkxa8/tYYW9LK9YBT9LRHwuoCMG6gRwVqPezBLapx7qB04UWF2
+         HHPxG0sxCU8CWWx0woVr9MLwXogM9ZhRAdghP8iyAwBkEDGf7VHbZzn+rAnMrJ2DYu
+         nzdfNq2vMoY9I7v75FGrrMdT2jmZymHnd5dxhkRVbb7cqjeCvDF68aRWD+X6cxbBPc
+         uW4Hh8DkJ2ENFKxVwFtEoV1yia3oaxbKcvT/7qzEV7VkkQN957txe1e7L20tHnzVPx
+         lajw3XIpVFDmYODb2iVKqhIxXBH+kbY6jaAOI9zSucoZVZB51MY1yO4Qilbaypelfd
+         IKP5b11okiqGg==
+Date:   Thu, 29 Sep 2022 09:08:40 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Sabrina Dubroca <sd@queasysnail.net>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 08/12] macsec: use NLA_POLICY_VALIDATE_FN to
+ validate IFLA_MACSEC_CIPHER_SUITE
+Message-ID: <20220929090840.062e1ace@kernel.org>
+In-Reply-To: <5d4541915e5229c0329ff8e6618439ca21767b18.1664379352.git.sd@queasysnail.net>
+References: <cover.1664379352.git.sd@queasysnail.net>
+        <5d4541915e5229c0329ff8e6618439ca21767b18.1664379352.git.sd@queasysnail.net>
 MIME-Version: 1.0
-References: <20220929070407.965581-1-martin.lau@linux.dev> <20220929070407.965581-5-martin.lau@linux.dev>
-In-Reply-To: <20220929070407.965581-5-martin.lau@linux.dev>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 29 Sep 2022 09:07:55 -0700
-Message-ID: <CANn89iKGvPA1ChjTQkfoRUR+_fGLrApXG9QD50vwpGECGO8ohQ@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 4/5] bpf: tcp: Stop bpf_setsockopt(TCP_CONGESTION)
- in init ops to recur itself
-To:     Martin KaFai Lau <martin.lau@linux.dev>
-Cc:     bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        kernel-team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 29, 2022 at 12:04 AM Martin KaFai Lau <martin.lau@linux.dev> wrote:
->
-> From: Martin KaFai Lau <martin.lau@kernel.org>
->
-> When a bad bpf prog '.init' calls
-> bpf_setsockopt(TCP_CONGESTION, "itself"), it will trigger this loop:
->
-> .init => bpf_setsockopt(tcp_cc) => .init => bpf_setsockopt(tcp_cc) ...
-> ... => .init => bpf_setsockopt(tcp_cc).
->
-> It was prevented by the prog->active counter before but the prog->active
-> detection cannot be used in struct_ops as explained in the earlier
-> patch of the set.
->
-> In this patch, the second bpf_setsockopt(tcp_cc) is not allowed
-> in order to break the loop.  This is done by using a bit of
-> an existing 1 byte hole in tcp_sock to check if there is
-> on-going bpf_setsockopt(TCP_CONGESTION) in this tcp_sock.
->
-> Note that this essentially limits only the first '.init' can
-> call bpf_setsockopt(TCP_CONGESTION) to pick a fallback cc (eg. peer
-> does not support ECN) and the second '.init' cannot fallback to
-> another cc.  This applies even the second
-> bpf_setsockopt(TCP_CONGESTION) will not cause a loop.
->
-> Signed-off-by: Martin KaFai Lau <martin.lau@kernel.org>
+On Wed, 28 Sep 2022 18:17:21 +0200 Sabrina Dubroca wrote:
+> Unfortunately, since the value of MACSEC_DEFAULT_CIPHER_ID doesn't fit
+> near the others, we can't use a simple range in the policy.
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+This one warns: 
+
+drivers/net/macsec.c:4122:6: warning: variable 'csid' set but not used [-Wunused-but-set-variable]
+        u64 csid = MACSEC_DEFAULT_CIPHER_ID;
+            ^
