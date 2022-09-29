@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 52D7D5EF360
+	by mail.lfdr.de (Postfix) with ESMTP id 084835EF35F
 	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 12:25:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234904AbiI2KYx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 06:24:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34196 "EHLO
+        id S234284AbiI2KYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 06:24:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233870AbiI2KYr (ORCPT
+        with ESMTP id S234788AbiI2KYr (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 06:24:47 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4C611181D
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 03:24:41 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id sb3so1817071ejb.9
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 03:24:41 -0700 (PDT)
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F2AE13F75
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 03:24:43 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id dv25so1795594ejb.12
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 03:24:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=8Fvlf7c27fT3O4GYFOpJAwdYhQ9x2pj1QwpQRq3W8Eo=;
-        b=u3XyuaGzAFCRZoxipleF7fFfjGWbjrYD/rR8X3ZrIn0tyKgMaN1wZ2qqMK7UJPi3+r
-         VKNjRRPK9iIC1/QCKWaRjEfXjkOqSLmV1XSVzojlcyH7Parkcs8jQNj5rX/4HHIYT8pV
-         fgmEyMj73O3aPrYH+LZXng0ljjt4wwc+NhFqxAUKVXWqvpXIjgkJNPJEEINjm69m1o2c
-         W869lDIPq3dla5im3H6hSTmCl7JMqSc97PHmpCl8N39lWXV90Kg7PxjVive17PILmAMZ
-         /B+zbVUR68td1CqFUrkTWl3BsDGvzsaTPl1pyq0VoWAdARrtHc+Z58HyrHiypGl3KBfa
-         HE6w==
+        bh=2/OWC4VkZw6MGa7jzw/XS8dbhw6CFZ1hXk4yOuXpv4k=;
+        b=V7cX/orE+652K2QPWvSZDBEHKddm2nexACKiBIttzjydmE05j3rVoMaCUfETTIPibw
+         m2NLaSbR/1C9F+pRrTtfwn3CQnoKYYq4+WIUd+5v/GJ7WZoLgfxIjwpMOFdHfbOUzqVK
+         x9J4O/20roNnFlnzz0I87FqjsJoH4d+8H3/i5z3V5oKbAWPNcPn+XWBoKmoWvQp9NHkP
+         NLj98y1h83J1p/7zoUPekgAr8AZpQlOm4Xks4Ddi4xJBT2NRMhC6E9Gsj4D0SB2hnraF
+         md2Z6moc+1Mk26VMmEwzizsDSIwYporpyC94uh8Zyky+K60HFYtvlu8yiv3LKGwshzjS
+         fGwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=8Fvlf7c27fT3O4GYFOpJAwdYhQ9x2pj1QwpQRq3W8Eo=;
-        b=4tVzbz7Uo0NdZkYyhALU3hgeCrgv33k/YTqwZkyBKXZcj4kKDTnByKB872CO8lAvIe
-         /vc3H5KBkp12vqhwogukhVnKH59Ac/MLnJWWQ8p28eQhIAiEhvs5I83EW7/nQvnDoAfq
-         GLuBs+LDOIK4KB5uIQsVU/0cxUo6RlvlzT0ti90zhufQj4G7Gg1lNlNotD9aSdl/8vbr
-         wRVkBXkjqoNlqyCgeIPcQQSlRHozwS0krztMOHjqRJeN0Fopv5uCZB8Zu3zEbR1Cq/mh
-         lJEb192hP20h5YSY8O9SOJTxZWGPyivTerxHttf1+mzXcIlII6WW29orp865zWgFiVbQ
-         DjRA==
-X-Gm-Message-State: ACrzQf1hzwFQY+md7T+uBuTWxGPBzfiRrquudg18CiUCqmLx+hWa36W5
-        FbYeK41Cxp76GOukEQWzC0/67w5d6s6lx8/j
-X-Google-Smtp-Source: AMsMyM5fPgnDviaK7P8hsZ7ZB/vWDQkRF+gl6bAfKbRLU89HWo59TyH0O1laD8BdHF0MbNzd+HxemA==
-X-Received: by 2002:a17:907:724b:b0:782:f2bb:24d3 with SMTP id ds11-20020a170907724b00b00782f2bb24d3mr2044316ejc.555.1664447080367;
-        Thu, 29 Sep 2022 03:24:40 -0700 (PDT)
+        bh=2/OWC4VkZw6MGa7jzw/XS8dbhw6CFZ1hXk4yOuXpv4k=;
+        b=u1uLtuQ5XcmQmdnvt1mLDecoxU7+7jcwo9kdRoYTGbBvLvn0TH2i2WFzJZ3zPpIyA4
+         fBmJ5qYuoEe74C1UctBNsmtXcaKtX/x7IrrEt8DtWWprrYRPGSOvMsVp4eaZtMxO4XTw
+         dfDFX5TFqOMtsMTNO7GFxjhsxmqVFxJKswsykqtKjtZcdRVEXXVWQN3ZzS1KmPfm0EHb
+         6UQOIqpkFQQALvKFqfiTEw0CFrNM6ty+ZWn3P/NFkGA14lfEirU9RunYTi5vVWcq48NW
+         TrQuEqAM5A4nPZmQxHkQx5rfv41g21L7DmA5xAz/45XYtaC2Iz/sK/9nV4+Z5gWmEz3w
+         47ZA==
+X-Gm-Message-State: ACrzQf0xAAi0+pyQd4Hph4CDyNVz1VniC/54gzW8IXsBIbBomjdpInyO
+        gMbgq4wBSrqi8VJNAjX0DajUVnAFJ37k0h6g
+X-Google-Smtp-Source: AMsMyM52SLa0y+p9uyPBfFd0k2rp3sHJvV8nFx3T5NWWhc6yTnrJ0xcSye2iFUjoxZTcyTpdtuIGBQ==
+X-Received: by 2002:a17:907:3d8e:b0:783:c8a5:f472 with SMTP id he14-20020a1709073d8e00b00783c8a5f472mr2078023ejc.566.1664447081952;
+        Thu, 29 Sep 2022 03:24:41 -0700 (PDT)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id ky6-20020a170907778600b0073d5948855asm3823168ejc.1.2022.09.29.03.24.39
+        by smtp.gmail.com with ESMTPSA id h7-20020a1709066d8700b0073dbaeb50f6sm3787272ejt.169.2022.09.29.03.24.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Sep 2022 03:24:39 -0700 (PDT)
+        Thu, 29 Sep 2022 03:24:41 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     sthemmin@microsoft.com, dsahern@gmail.com
-Subject: [patch iproute2-next 1/2] devlink: move use_iec into struct dl
-Date:   Thu, 29 Sep 2022 12:24:35 +0200
-Message-Id: <20220929102436.3047138-2-jiri@resnulli.us>
+Subject: [patch iproute2-next 2/2] devlink: fix typo in variable name in ifname_map_cb()
+Date:   Thu, 29 Sep 2022 12:24:36 +0200
+Message-Id: <20220929102436.3047138-3-jiri@resnulli.us>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220929102436.3047138-1-jiri@resnulli.us>
 References: <20220929102436.3047138-1-jiri@resnulli.us>
@@ -70,62 +70,39 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-Similar to other bool opts that could be set by the user, move the
-global variable use_iec to be part of struct dl.
+s/port_ifindex/port_index/
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- devlink/devlink.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ devlink/devlink.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/devlink/devlink.c b/devlink/devlink.c
-index 4f77e42f2d48..0e194c9800b7 100644
+index 0e194c9800b7..8c02730b27a9 100644
 --- a/devlink/devlink.c
 +++ b/devlink/devlink.c
-@@ -71,8 +71,6 @@ static bool g_indent_newline;
- #define INDENT_STR_MAXLEN 32
- static char g_indent_str[INDENT_STR_MAXLEN + 1] = "";
+@@ -782,7 +782,7 @@ static int ifname_map_cb(const struct nlmsghdr *nlh, void *data)
+ 	struct ifname_map *ifname_map;
+ 	const char *bus_name;
+ 	const char *dev_name;
+-	uint32_t port_ifindex;
++	uint32_t port_index;
+ 	const char *port_ifname;
  
--static bool use_iec = false;
--
- static void __attribute__((format(printf, 1, 2)))
- pr_err(const char *fmt, ...)
- {
-@@ -374,6 +372,7 @@ struct dl {
- 	bool verbose;
- 	bool stats;
- 	bool hex;
-+	bool use_iec;
- 	bool map_loaded;
- 	struct {
- 		bool present;
-@@ -4926,7 +4925,7 @@ static void pr_out_port_fn_rate(struct dl *dl, struct nlattr **tb)
- 			mnl_attr_get_u64(tb[DEVLINK_ATTR_RATE_TX_SHARE]);
+ 	mnl_attr_parse(nlh, sizeof(*genl), attr_cb, tb);
+@@ -795,10 +795,10 @@ static int ifname_map_cb(const struct nlmsghdr *nlh, void *data)
  
- 		if (rate)
--			print_rate(use_iec, PRINT_ANY, "tx_share",
-+			print_rate(dl->use_iec, PRINT_ANY, "tx_share",
- 				   " tx_share %s", rate);
- 	}
- 	if (tb[DEVLINK_ATTR_RATE_TX_MAX]) {
-@@ -4934,7 +4933,7 @@ static void pr_out_port_fn_rate(struct dl *dl, struct nlattr **tb)
- 			mnl_attr_get_u64(tb[DEVLINK_ATTR_RATE_TX_MAX]);
- 
- 		if (rate)
--			print_rate(use_iec, PRINT_ANY, "tx_max",
-+			print_rate(dl->use_iec, PRINT_ANY, "tx_max",
- 				   " tx_max %s", rate);
- 	}
- 	if (tb[DEVLINK_ATTR_RATE_PARENT_NODE_NAME]) {
-@@ -9739,7 +9738,7 @@ int main(int argc, char **argv)
- 			}
- 			break;
- 		case 'i':
--			use_iec = true;
-+			dl->use_iec = true;
- 			break;
- 		case 'x':
- 			dl->hex = true;
+ 	bus_name = mnl_attr_get_str(tb[DEVLINK_ATTR_BUS_NAME]);
+ 	dev_name = mnl_attr_get_str(tb[DEVLINK_ATTR_DEV_NAME]);
+-	port_ifindex = mnl_attr_get_u32(tb[DEVLINK_ATTR_PORT_INDEX]);
++	port_index = mnl_attr_get_u32(tb[DEVLINK_ATTR_PORT_INDEX]);
+ 	port_ifname = mnl_attr_get_str(tb[DEVLINK_ATTR_PORT_NETDEV_NAME]);
+ 	ifname_map = ifname_map_alloc(bus_name, dev_name,
+-				      port_ifindex, port_ifname);
++				      port_index, port_ifname);
+ 	if (!ifname_map)
+ 		return MNL_CB_ERROR;
+ 	list_add(&ifname_map->list, &dl->ifname_map_list);
 -- 
 2.37.1
 
