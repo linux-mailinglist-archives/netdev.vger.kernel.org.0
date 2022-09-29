@@ -2,165 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 414005EEF86
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:46:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F2405EEFA1
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 09:48:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235231AbiI2HqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 03:46:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39694 "EHLO
+        id S235031AbiI2Hs4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 03:48:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235219AbiI2HqV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:46:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 297281332F3
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:46:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1664437579;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CTeJi7UgmzQ/b6hrAHhKny7zyVKlQu4YxKFzX8ABb+c=;
-        b=E1kiuWCAIQa9aSBqeFFbQGE77jMl/4uLvm2cotf+xOpcaivfFPOS21sAFPE7Tcu9gMJJ8b
-        Jj9TJ2s+e2w+Pm8iqMr0UqJ/c35Cqp+isPlNa1OWN0gf4vgcBWWZXfg9kYa+qdopjIwur8
-        U2ihRM0CAMuRI5kAkxUfSNbqqe4ny7I=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-318-m5wSq9dDOgeZ1Kwg-Zg1NA-1; Thu, 29 Sep 2022 03:46:17 -0400
-X-MC-Unique: m5wSq9dDOgeZ1Kwg-Zg1NA-1
-Received: by mail-qt1-f198.google.com with SMTP id e22-20020ac84b56000000b0035bb64ad562so386932qts.17
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 00:46:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=CTeJi7UgmzQ/b6hrAHhKny7zyVKlQu4YxKFzX8ABb+c=;
-        b=HyaHjB5cUDbLsqL0CinsARR4mzqjeJGrSp1GSbqIWdzJxQLBWXA/UE9zlMZLkDB9JF
-         OzF8MUu6r8vKFnV7gTFw7qwj+Qnw0wrVDQlUu0Z9UO7Tkpbzq1POs5Mp3q4W1WQOeL8C
-         tf/oxnXMjrMqQvkm24SQyv1AXPBD1pTRFAb5qqAAXjFwOCYTdVr0FiVT9MugstgnavfX
-         PnjL62ODBFmdTsq75I0IcUM1CsULm9xYYzqfUPkVoDFw8GxHi5qQAckJaDk9srR6Zv5o
-         o8pTOpjppAH66huo/g3crNqoVmj8iz+aNXBUplE3CZ6kVYYJAIF9iYKU0vXCNNDurjEi
-         KdXA==
-X-Gm-Message-State: ACrzQf3AUEhf4ocEHtaHu1+jmp/1GIU64QNstGWOYHgR+zIrngrtcJDE
-        hCWS6OaVS/LxEQU77EdTPeUA/lh1YYyRPQu8l8MdyOCpMXV1l+cAkzdLVA8ZFeew8j+FwQoOmDe
-        KkeGpzRBRAUDHUYIU
-X-Received: by 2002:a05:622a:130a:b0:35b:b454:8644 with SMTP id v10-20020a05622a130a00b0035bb4548644mr1290441qtk.624.1664437577106;
-        Thu, 29 Sep 2022 00:46:17 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM7dDCrWsLDOvnsEf6oCJ6887s3Ijw/iX2+31X38ns8+Iv+1dFbn5hFI6/D3we8A3D89rQC8bw==
-X-Received: by 2002:a05:622a:130a:b0:35b:b454:8644 with SMTP id v10-20020a05622a130a00b0035bb4548644mr1290431qtk.624.1664437576804;
-        Thu, 29 Sep 2022 00:46:16 -0700 (PDT)
-Received: from sgarzare-redhat (host-79-46-200-222.retail.telecomitalia.it. [79.46.200.222])
-        by smtp.gmail.com with ESMTPSA id w12-20020ac843cc000000b0035bb6c3811asm4780775qtn.53.2022.09.29.00.46.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Sep 2022 00:46:16 -0700 (PDT)
-Date:   Thu, 29 Sep 2022 09:46:06 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Junichi Uekawa =?utf-8?B?KOS4iuW3nee0lOS4gCk=?= 
-        <uekawa@google.com>, Stefan Hajnoczi <stefanha@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        Bobby Eshleman <bobby.eshleman@gmail.com>
-Subject: Re: [PATCH] vhost/vsock: Use kvmalloc/kvfree for larger packets.
-Message-ID: <20220929074606.yqzihpcc7cl442c5@sgarzare-redhat>
-References: <20220928064538.667678-1-uekawa@chromium.org>
- <20220928082823.wyxplop5wtpuurwo@sgarzare-redhat>
- <20220928052738-mutt-send-email-mst@kernel.org>
- <20220928151135.pvrlsylg6j3hzh74@sgarzare-redhat>
- <CADgJSGHxPWXJjbakEeWnqF42A03yK7Dpw6U1SKNLhk+B248Ymg@mail.gmail.com>
- <20220929031419-mutt-send-email-mst@kernel.org>
+        with ESMTP id S235418AbiI2Hse (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 03:48:34 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAC5313A057;
+        Thu, 29 Sep 2022 00:48:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1664437710; x=1695973710;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=DtraKiNoEnCe1mKscp4RoQO0XkyyEhr54+DxfkZN4UI=;
+  b=TPDmNCpmQQZlfm21d06W4RHytX5mzDQt/E9yJ10rdc6UOVTb6BDh10D/
+   zoQTl1Sb1bTGwfpOe5eEl4Bh7GoW3dDcESgflXGdX+1xe0Sw6c4cIja0r
+   J4zgzy+KIkhdAGIW3O6uL7okr0aSfv2e9ZfbSN1F9dAav7kaoL4yyKyvP
+   Qs3SqOJvQAgWTEzJ9Yu1HP8xT+Q+2B9Jrx0rNjAAGtDeORle4mh0U04d6
+   wBC6a02fk0jgq1qd9+2EmmrJ91SEUW4y+rDFha4H6LM94jdK658bLKmMF
+   pGA9bTbYIqZ+c6C9Tu/iMuD8OiDDRmj87s+BfAtikUdYlpVFOK+MDVrpF
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10484"; a="300540929"
+X-IronPort-AV: E=Sophos;i="5.93,354,1654585200"; 
+   d="scan'208";a="300540929"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2022 00:48:30 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10484"; a="617506033"
+X-IronPort-AV: E=Sophos;i="5.93,354,1654585200"; 
+   d="scan'208";a="617506033"
+Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.249.168.227]) ([10.249.168.227])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2022 00:46:20 -0700
+Message-ID: <5f1f9928-e1b3-b935-c239-1e887e11181a@intel.com>
+Date:   Thu, 29 Sep 2022 15:46:18 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220929031419-mutt-send-email-mst@kernel.org>
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.3.0
+Subject: Re: [PATCH V3 0/6] Conditionally read fields in dev cfg space
+Content-Language: en-US
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     jasowang@redhat.com, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, kvm@vger.kernel.org
+References: <20220929014555.112323-1-lingshan.zhu@intel.com>
+ <896fe0b9-5da2-2bc6-0e46-219aa4b9f44f@intel.com>
+ <20220929033805-mutt-send-email-mst@kernel.org>
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <20220929033805-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 29, 2022 at 03:19:14AM -0400, Michael S. Tsirkin wrote:
->On Thu, Sep 29, 2022 at 08:14:24AM +0900, Junichi Uekawa (上川純一) wrote:
->> 2022年9月29日(木) 0:11 Stefano Garzarella <sgarzare@redhat.com>:
->> >
->> > On Wed, Sep 28, 2022 at 05:31:58AM -0400, Michael S. Tsirkin wrote:
->> > >On Wed, Sep 28, 2022 at 10:28:23AM +0200, Stefano Garzarella wrote:
->> > >> On Wed, Sep 28, 2022 at 03:45:38PM +0900, Junichi Uekawa wrote:
->> > >> > When copying a large file over sftp over vsock, data size is usually 32kB,
->> > >> > and kmalloc seems to fail to try to allocate 32 32kB regions.
->> > >> >
->> > >> > Call Trace:
->> > >> >  [<ffffffffb6a0df64>] dump_stack+0x97/0xdb
->> > >> >  [<ffffffffb68d6aed>] warn_alloc_failed+0x10f/0x138
->> > >> >  [<ffffffffb68d868a>] ? __alloc_pages_direct_compact+0x38/0xc8
->> > >> >  [<ffffffffb664619f>] __alloc_pages_nodemask+0x84c/0x90d
->> > >> >  [<ffffffffb6646e56>] alloc_kmem_pages+0x17/0x19
->> > >> >  [<ffffffffb6653a26>] kmalloc_order_trace+0x2b/0xdb
->> > >> >  [<ffffffffb66682f3>] __kmalloc+0x177/0x1f7
->> > >> >  [<ffffffffb66e0d94>] ? copy_from_iter+0x8d/0x31d
->> > >> >  [<ffffffffc0689ab7>] vhost_vsock_handle_tx_kick+0x1fa/0x301 [vhost_vsock]
->> > >> >  [<ffffffffc06828d9>] vhost_worker+0xf7/0x157 [vhost]
->> > >> >  [<ffffffffb683ddce>] kthread+0xfd/0x105
->> > >> >  [<ffffffffc06827e2>] ? vhost_dev_set_owner+0x22e/0x22e [vhost]
->> > >> >  [<ffffffffb683dcd1>] ? flush_kthread_worker+0xf3/0xf3
->> > >> >  [<ffffffffb6eb332e>] ret_from_fork+0x4e/0x80
->> > >> >  [<ffffffffb683dcd1>] ? flush_kthread_worker+0xf3/0xf3
->> > >> >
->> > >> > Work around by doing kvmalloc instead.
->> > >> >
->> > >> > Signed-off-by: Junichi Uekawa <uekawa@chromium.org>
->> > >
->> > >My worry here is that this in more of a work around.
->> > >It would be better to not allocate memory so aggressively:
->> > >if we are so short on memory we should probably process
->> > >packets one at a time. Is that very hard to implement?
->> >
->> > Currently the "virtio_vsock_pkt" is allocated in the "handle_kick"
->> > callback of TX virtqueue. Then the packet is multiplexed on the right
->> > socket queue, then the user space can de-queue it whenever they want.
->> >
->> > So maybe we can stop processing the virtqueue if we are short on memory,
->> > but when can we restart the TX virtqueue processing?
->> >
->> > I think as long as the guest used only 4K buffers we had no problem, but
->> > now that it can create larger buffers the host may not be able to
->> > allocate it contiguously. Since there is no need to have them contiguous
->> > here, I think this patch is okay.
->> >
->> > However, if we switch to sk_buff (as Bobby is already doing), maybe we
->> > don't have this problem because I think there is some kind of
->> > pre-allocated pool.
->> >
+
+
+On 9/29/2022 3:38 PM, Michael S. Tsirkin wrote:
+> On Thu, Sep 29, 2022 at 03:23:46PM +0800, Zhu, Lingshan wrote:
+>> Hi Michael,
 >>
->> Thank you for the review! I was wondering if this is a reasonable workaround (as
->> we found that this patch makes a reliably crashing system into a
->> reliably surviving system.)
->>
->>
->> ... Sounds like it is a reasonable patch to use backported to older kernels?
+>> Jason starts his vacation this afternoon, and next week is our national
+>> holiday.
+>> He has acked 3 ~ 6 of this series before, and I have made improvements based
+>> on his comments.
+>> Do you have any comments on patches 1 and 2?
 >
->Hmm. Good point about stable. OK.
-
-Right, so in this case I think is better to add a Fixes tag. Since we 
-used kmalloc from the beginning we can use the following:
-
-Fixes: 433fc58e6bf2 ("VSOCK: Introduce vhost_vsock.ko")
-
+> No, I'll merge for next.
+Thanks!
 >
->Acked-by: Michael S. Tsirkin <mst@redhat.com>
->
-
-@Michael are you queueing this, or should it go through net tree?
-
-Thanks,
-Stefano
+>> Thanks,
+>> Zhu Lingshan
+>> On 9/29/2022 9:45 AM, Zhu Lingshan wrote:
+>>> This series intends to read the fields in virtio-net device
+>>> configuration space conditionally on the feature bits,
+>>> this means:
+>>>
+>>> MTU exists if VIRTIO_NET_F_MTU is set
+>>> MAC exists if VIRTIO_NET_F_NET is set
+>>> MQ exists if VIRTIO_NET_F_MQ or VIRTIO_NET_F_RSS is set.
+>>>
+>>> This series report device features to userspace and invokes
+>>> vdpa_config_ops.get_config() rather than
+>>> vdpa_get_config_unlocked() to read the device config spcae,
+>>> so no races in vdpa_set_features_unlocked()
+>>>
+>>> Thanks!
+>>>
+>>> Changes form V2:
+>>> remove unnacessary checking for vdev->config->get_status (Jason)
+>>>
+>>> Changes from V1:
+>>> 1)Better comments for VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES,
+>>> only in the header file(Jason)
+>>> 2)Split original 3/4 into separate patches(Jason)
+>>> 3)Check FEATURES_OK for reporting driver features
+>>> in vdpa_dev_config_fill (Jason)
+>>> 4) Add iproute2 example for reporting device features
+>>>
+>>> Zhu Lingshan (6):
+>>>     vDPA: allow userspace to query features of a vDPA device
+>>>     vDPA: only report driver features if FEATURES_OK is set
+>>>     vDPA: check VIRTIO_NET_F_RSS for max_virtqueue_paris's presence
+>>>     vDPA: check virtio device features to detect MQ
+>>>     vDPA: fix spars cast warning in vdpa_dev_net_mq_config_fill
+>>>     vDPA: conditionally read MTU and MAC in dev cfg space
+>>>
+>>>    drivers/vdpa/vdpa.c       | 68 ++++++++++++++++++++++++++++++---------
+>>>    include/uapi/linux/vdpa.h |  4 +++
+>>>    2 files changed, 56 insertions(+), 16 deletions(-)
+>>>
 
