@@ -2,60 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 519215EEC65
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 05:23:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19B2E5EEC7C
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 05:35:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234523AbiI2DX2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Sep 2022 23:23:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58518 "EHLO
+        id S233899AbiI2DfZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Sep 2022 23:35:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231499AbiI2DX1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 23:23:27 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A26A127CB9
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 20:23:26 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id s26so306233pgv.7
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 20:23:26 -0700 (PDT)
+        with ESMTP id S234453AbiI2DfR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Sep 2022 23:35:17 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6854575FFA
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 20:35:15 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id a5-20020a17090aa50500b002008eeb040eso4458638pjq.1
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 20:35:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date;
-        bh=cog/zk1IieoSmfP7StjvaUPeunMWeBukZVT/T3uZpLQ=;
-        b=okpQE2ATWaD5rt7h4ZcR5X76nBSUyru1Qt+4f6fEXOb0GRWrlmW7pR96eoVonn7Zq2
-         lSRaUCQpY3ZvKcwwxnqk3yw955BWLHYPouyIH9fFXr3zqa7McVa7NPC+xHJuhKpOG3t5
-         6jhvNXEyZkjxYKosNsMfXyFskCMufKw7MFl8NUE9ByygGa+dCQTAa88kdFEkBR5XnnW6
-         ZokdImhHr8JvB7eL/Thx/+SRuSinZcynGFjQCz3Bg7dxFq61uqFb9ku7Sqyd3/zzfJLL
-         BykgdHt6uPPmCWXhkZQpeAEgfUuzn1d7e9Ny1hl4tRO4kxz3bAH8rHpVlCoRrfma3TlT
-         OY8A==
+        bh=E9Zeq5//G0Opldrg47k5z+iMe81VJal5xl3to7qg4dk=;
+        b=QRj+3SdbwVGWt1aGc4s0pJlvQFBZxU1fQuesoLzNpso/VGj9/lzLRXr5oavj8HhkVb
+         zILc+wnwaU0ONeriVrS9YbfyZM/dDXiZybV+Oo2G5hMwz2LCcm7iTCDEMOyBFO6/1+y9
+         PqN4rKoPey9VQEWCA2M+np+wwO9YIe9HrQPLuRwWPNDMTDL4AqLTvM8yCtE7eKmIlR4G
+         fei7vd9ckZ3sKyMRgHy5JPSD8FWPHStzQmWazcsUsJkI+2Zfwbeimatym3te+VWLAvms
+         RWrExD2Ct2jRoR9t9bpsFYqqXffIn4w7jXkkv2NjEsSShjExIdQgVLrgF2QUStcc0xec
+         r/ww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=cog/zk1IieoSmfP7StjvaUPeunMWeBukZVT/T3uZpLQ=;
-        b=Hx7/AAUO2bUOcFTU1Rw2GGtPnmrsbPBkKoYSqCdb6cuSArveFjkJujJdJ5iUx/+6o6
-         Imfqp+tCeaKogJL4SRqyxWGGNqWiBKXBWD2S/lj/043i7guZzGH8mTotIdcxEtH8P8e0
-         wb+ezdHSE5ejwkvcb+WIqVxyqN6vC7sNdAGthqJkCqrR/utMuzUJeWTObKFFD9fkJvSa
-         TB4o/4E+GOxxrevXG+LhoD5DKHATQSHeZXfP+zcESP6AF9ACrAslbA6/y0NtILPBPUU6
-         M57xylcWhje3ZOAvEUqmoxi97lfkPT80459WnRyZ7Wdnel8sRvwNonG8xJtsg9Q2sccj
-         +2rA==
-X-Gm-Message-State: ACrzQf1fnLwSrwg/QJTwjClAVr1g4VJY/ekLkiKkYKooVv91Gg0nxvf3
-        pUaTMJSiVsvSO6Sbr+w4kc0sP0ShRqy86A==
-X-Google-Smtp-Source: AMsMyM7/lFJPWYc1zPxhwcBlZESzrUFAiEG/DUYROifcGN7sqIA9A2JBQqhqIcAGxYP9xczIjij4eA==
-X-Received: by 2002:a05:6a00:21d1:b0:542:b916:c48f with SMTP id t17-20020a056a0021d100b00542b916c48fmr1227312pfj.56.1664421805549;
-        Wed, 28 Sep 2022 20:23:25 -0700 (PDT)
+        bh=E9Zeq5//G0Opldrg47k5z+iMe81VJal5xl3to7qg4dk=;
+        b=BzUrSlN5PWY8nIiM09CLXhh7HJ7c2rt8yj2XQMdTElfHz3I2s2zrmJttu6e3wKm8fJ
+         zKhtHf9H1otVmVs2SurPVJTAgnekuLMfozlaRu3E2PYabyVLFZt5fwHya55qU3xOptIk
+         ziZyBh5LsEZcMEUXOO2OUNEumN8ZR2ZVkN+FQhhU3HFRs2qLq3F2w9OLViKnhJsT9XBw
+         qzSJpeoLqxB45KbczmoDhMXEmDb3chIvhAZ7GkexxkuGrRDZGptqhEwdD3KQrsN2Kl2o
+         sLWOcKwDVOvvz8dB5zixb629TUk2tHhtReKru1123MERw6TnMPeQe35wlTvtgCTcvZeZ
+         pWCg==
+X-Gm-Message-State: ACrzQf0YgKEzkKuHJDSgT+S7/OtQhi3cjaN6e5P8fShOGvx7qBtd2hjE
+        ceJluGH15kFm1BSKvqyU5vaXK5I97TN21A==
+X-Google-Smtp-Source: AMsMyM7IH6nV1EKnJUD40dKu1gK8Q9JNY8D/LZoYtCYP0Z3yXQnlcURgGCZuGwTA5al8a449Yf2Kew==
+X-Received: by 2002:a17:90b:35cf:b0:202:6f3d:53a7 with SMTP id nb15-20020a17090b35cf00b002026f3d53a7mr1424555pjb.63.1664422514661;
+        Wed, 28 Sep 2022 20:35:14 -0700 (PDT)
 Received: from Laptop-X1.redhat.com ([43.228.180.230])
-        by smtp.gmail.com with ESMTPSA id i5-20020a056a00004500b005411a68fe74sm4767075pfk.183.2022.09.28.20.23.23
+        by smtp.gmail.com with ESMTPSA id f9-20020a170902f38900b001783f964fe3sm4460831ple.113.2022.09.28.20.35.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Sep 2022 20:23:24 -0700 (PDT)
+        Wed, 28 Sep 2022 20:35:14 -0700 (PDT)
 From:   Hangbin Liu <liuhangbin@gmail.com>
 To:     netdev@vger.kernel.org
-Cc:     Guillaume Nault <gnault@redhat.com>,
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
         David Ahern <dsahern@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCHv2 iproute2-next] rtnetlink: add new function rtnl_echo_talk()
-Date:   Thu, 29 Sep 2022 11:23:20 +0800
-Message-Id: <20220929032320.455310-1-liuhangbin@gmail.com>
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Subject: [PATCH (repost) net-next] sched: add extack for tfilter_notify
+Date:   Thu, 29 Sep 2022 11:35:05 +0800
+Message-Id: <20220929033505.457172-1-liuhangbin@gmail.com>
 X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -69,299 +75,187 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a new function rtnl_echo_talk() that could be used when the
-sub-component supports NLM_F_ECHO flag. With this function we can
-remove the redundant code added by commit b264b4c6568c7 ("ip: add
-NLM_F_ECHO support").
+In commit 81c7288b170a ("sched: cls: enable verbose logging") Marcelo
+made cls could log verbose info for offloading failures, which helps
+improving Open vSwitch debuggability when using flower offloading.
 
+It would also be helpful if "tc monitor" could log this message, as it
+doesn't require vswitchd log level adjusment. Let's add the extack message
+in tfilter_notify so the monitor program could receive the failures.
+e.g.
+
+  # tc monitor
+  added chain dev enp3s0f1np1 parent ffff: chain 0
+  added filter dev enp3s0f1np1 ingress protocol all pref 49152 flower chain 0 handle 0x1
+    ct_state +trk+new
+    not_in_hw
+          action order 1: gact action drop
+           random type none pass val 0
+           index 1 ref 1 bind 1
+
+  Warning: mlx5_core: matching on ct_state +new isn't supported.
+
+Suggested-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 ---
-v2: only handle echo_request code in helper rtnl_echo_talk()
----
- include/libnetlink.h |  3 +++
- ip/ipaddress.c       | 23 ++---------------------
- ip/iplink.c          | 15 +--------------
- ip/ipnexthop.c       | 23 ++---------------------
- ip/iproute.c         | 23 ++---------------------
- ip/iprule.c          | 23 ++---------------------
- lib/libnetlink.c     | 22 ++++++++++++++++++++++
- 7 files changed, 34 insertions(+), 98 deletions(-)
 
-diff --git a/include/libnetlink.h b/include/libnetlink.h
-index a7b0f352..1b8d29bd 100644
---- a/include/libnetlink.h
-+++ b/include/libnetlink.h
-@@ -171,6 +171,9 @@ int rtnl_dump_filter_errhndlr_nc(struct rtnl_handle *rth,
- #define rtnl_dump_filter_errhndlr(rth, filter, farg, errhndlr, earg) \
- 	rtnl_dump_filter_errhndlr_nc(rth, filter, farg, errhndlr, earg, 0)
- 
-+int rtnl_echo_talk(struct rtnl_handle *rtnl, struct nlmsghdr *n, int json,
-+		   int (*print_info)(struct nlmsghdr *n, void *arg))
-+	__attribute__((warn_unused_result));
- int rtnl_talk(struct rtnl_handle *rtnl, struct nlmsghdr *n,
- 	      struct nlmsghdr **answer)
- 	__attribute__((warn_unused_result));
-diff --git a/ip/ipaddress.c b/ip/ipaddress.c
-index 986cfbc3..2a0f4d7f 100644
---- a/ip/ipaddress.c
-+++ b/ip/ipaddress.c
-@@ -2422,11 +2422,6 @@ static int ipaddr_modify(int cmd, int flags, int argc, char **argv)
- 	__u32 preferred_lft = INFINITY_LIFE_TIME;
- 	__u32 valid_lft = INFINITY_LIFE_TIME;
- 	unsigned int ifa_flags = 0;
--	struct nlmsghdr *answer;
--	int ret;
--
--	if (echo_request)
--		req.n.nlmsg_flags |= NLM_F_ECHO | NLM_F_ACK;
- 
- 	while (argc > 0) {
- 		if (strcmp(*argv, "peer") == 0 ||
-@@ -2609,23 +2604,9 @@ static int ipaddr_modify(int cmd, int flags, int argc, char **argv)
- 	}
- 
- 	if (echo_request)
--		ret = rtnl_talk(&rth, &req.n, &answer);
-+		return rtnl_echo_talk(&rth, &req.n, json, print_addrinfo);
- 	else
--		ret = rtnl_talk(&rth, &req.n, NULL);
--
--	if (ret < 0)
--		return -2;
--
--	if (echo_request) {
--		new_json_obj(json);
--		open_json_object(NULL);
--		print_addrinfo(answer, stdout);
--		close_json_object();
--		delete_json_obj();
--		free(answer);
--	}
--
--	return 0;
-+		return rtnl_talk(&rth, &req.n, NULL);
- }
- 
- int do_ipaddr(int argc, char **argv)
-diff --git a/ip/iplink.c b/ip/iplink.c
-index ad22f2d7..7720e6e6 100644
---- a/ip/iplink.c
-+++ b/ip/iplink.c
-@@ -1073,16 +1073,12 @@ static int iplink_modify(int cmd, unsigned int flags, int argc, char **argv)
- 		.n.nlmsg_type = cmd,
- 		.i.ifi_family = preferred_family,
- 	};
--	struct nlmsghdr *answer;
- 	int ret;
- 
- 	ret = iplink_parse(argc, argv, &req, &type);
- 	if (ret < 0)
- 		return ret;
- 
--	if (echo_request)
--		req.n.nlmsg_flags |= NLM_F_ECHO | NLM_F_ACK;
--
- 	if (type) {
- 		struct link_util *lu;
- 		struct rtattr *linkinfo;
-@@ -1128,22 +1124,13 @@ static int iplink_modify(int cmd, unsigned int flags, int argc, char **argv)
- 	}
- 
- 	if (echo_request)
--		ret = rtnl_talk(&rth, &req.n, &answer);
-+		ret = rtnl_echo_talk(&rth, &req.n, json, print_linkinfo);
- 	else
- 		ret = rtnl_talk(&rth, &req.n, NULL);
- 
- 	if (ret < 0)
- 		return -2;
- 
--	if (echo_request) {
--		new_json_obj(json);
--		open_json_object(NULL);
--		print_linkinfo(answer, stdout);
--		close_json_object();
--		delete_json_obj();
--		free(answer);
--	}
--
- 	/* remove device from cache; next use can refresh with new data */
- 	ll_drop_by_index(req.i.ifi_index);
- 
-diff --git a/ip/ipnexthop.c b/ip/ipnexthop.c
-index 59f8f2fb..b9151d99 100644
---- a/ip/ipnexthop.c
-+++ b/ip/ipnexthop.c
-@@ -919,12 +919,7 @@ static int ipnh_modify(int cmd, unsigned int flags, int argc, char **argv)
- 		.n.nlmsg_type = cmd,
- 		.nhm.nh_family = preferred_family,
- 	};
--	struct nlmsghdr *answer;
- 	__u32 nh_flags = 0;
--	int ret;
--
--	if (echo_request)
--		req.n.nlmsg_flags |= NLM_F_ECHO | NLM_F_ACK;
- 
- 	while (argc > 0) {
- 		if (!strcmp(*argv, "id")) {
-@@ -1005,23 +1000,9 @@ static int ipnh_modify(int cmd, unsigned int flags, int argc, char **argv)
- 	req.nhm.nh_flags = nh_flags;
- 
- 	if (echo_request)
--		ret = rtnl_talk(&rth, &req.n, &answer);
-+		return rtnl_echo_talk(&rth, &req.n, json, print_nexthop_nocache);
- 	else
--		ret = rtnl_talk(&rth, &req.n, NULL);
--
--	if (ret < 0)
--		return -2;
--
--	if (echo_request) {
--		new_json_obj(json);
--		open_json_object(NULL);
--		print_nexthop_nocache(answer, (void *)stdout);
--		close_json_object();
--		delete_json_obj();
--		free(answer);
--	}
--
--	return 0;
-+		return rtnl_talk(&rth, &req.n, NULL);
- }
- 
- static int ipnh_get_id(__u32 id)
-diff --git a/ip/iproute.c b/ip/iproute.c
-index 4774aac0..16f42377 100644
---- a/ip/iproute.c
-+++ b/ip/iproute.c
-@@ -1123,7 +1123,6 @@ static int iproute_modify(int cmd, unsigned int flags, int argc, char **argv)
- 	};
- 	char  mxbuf[256];
- 	struct rtattr *mxrta = (void *)mxbuf;
--	struct nlmsghdr *answer;
- 	unsigned int mxlock = 0;
- 	char  *d = NULL;
- 	int gw_ok = 0;
-@@ -1134,7 +1133,6 @@ static int iproute_modify(int cmd, unsigned int flags, int argc, char **argv)
- 	int raw = 0;
- 	int type_ok = 0;
- 	__u32 nhid = 0;
--	int ret;
- 
- 	if (cmd != RTM_DELROUTE) {
- 		req.r.rtm_protocol = RTPROT_BOOT;
-@@ -1142,9 +1140,6 @@ static int iproute_modify(int cmd, unsigned int flags, int argc, char **argv)
- 		req.r.rtm_type = RTN_UNICAST;
- 	}
- 
--	if (echo_request)
--		req.n.nlmsg_flags |= NLM_F_ECHO | NLM_F_ACK;
--
- 	mxrta->rta_type = RTA_METRICS;
- 	mxrta->rta_len = RTA_LENGTH(0);
- 
-@@ -1592,23 +1587,9 @@ static int iproute_modify(int cmd, unsigned int flags, int argc, char **argv)
- 		req.r.rtm_type = RTN_UNICAST;
- 
- 	if (echo_request)
--		ret = rtnl_talk(&rth, &req.n, &answer);
-+		return rtnl_echo_talk(&rth, &req.n, json, print_route);
- 	else
--		ret = rtnl_talk(&rth, &req.n, NULL);
--
--	if (ret < 0)
--		return -2;
--
--	if (echo_request) {
--		new_json_obj(json);
--		open_json_object(NULL);
--		print_route(answer, (void *)stdout);
--		close_json_object();
--		delete_json_obj();
--		free(answer);
--	}
--
--	return 0;
-+		return rtnl_talk(&rth, &req.n, NULL);
- }
- 
- static int iproute_flush_cache(void)
-diff --git a/ip/iprule.c b/ip/iprule.c
-index af77e62c..361b9cc3 100644
---- a/ip/iprule.c
-+++ b/ip/iprule.c
-@@ -787,11 +787,6 @@ static int iprule_modify(int cmd, int argc, char **argv)
- 		.frh.family = preferred_family,
- 		.frh.action = FR_ACT_UNSPEC,
- 	};
--	struct nlmsghdr *answer;
--	int ret;
--
--	if (echo_request)
--		req.n.nlmsg_flags |= NLM_F_ECHO | NLM_F_ACK;
- 
- 	if (cmd == RTM_NEWRULE) {
- 		if (argc == 0) {
-@@ -1022,23 +1017,9 @@ static int iprule_modify(int cmd, int argc, char **argv)
- 		req.frh.table = RT_TABLE_MAIN;
- 
- 	if (echo_request)
--		ret = rtnl_talk(&rth, &req.n, &answer);
-+		return rtnl_echo_talk(&rth, &req.n, json, print_rule);
- 	else
--		ret = rtnl_talk(&rth, &req.n, NULL);
--
--	if (ret < 0)
--		return -2;
--
--	if (echo_request) {
--		new_json_obj(json);
--		open_json_object(NULL);
--		print_rule(answer, stdout);
--		close_json_object();
--		delete_json_obj();
--		free(answer);
--	}
--
--	return 0;
-+		return rtnl_talk(&rth, &req.n, NULL);
- }
- 
- int do_iprule(int argc, char **argv)
-diff --git a/lib/libnetlink.c b/lib/libnetlink.c
-index c27627fe..07047bc7 100644
---- a/lib/libnetlink.c
-+++ b/lib/libnetlink.c
-@@ -1139,6 +1139,28 @@ static int __rtnl_talk(struct rtnl_handle *rtnl, struct nlmsghdr *n,
- 	return __rtnl_talk_iov(rtnl, &iov, 1, answer, show_rtnl_err, errfn);
- }
- 
-+int rtnl_echo_talk(struct rtnl_handle *rtnl, struct nlmsghdr *n, int json,
-+		   int (*print_info)(struct nlmsghdr *n, void *arg))
-+{
-+	struct nlmsghdr *answer;
-+	int ret;
-+
-+	n->nlmsg_flags |= NLM_F_ECHO | NLM_F_ACK;
-+
-+	ret = rtnl_talk(rtnl, n, &answer);
-+	if (ret)
-+		return ret;
-+
-+	new_json_obj(json);
-+	open_json_object(NULL);
-+	print_info(answer, stdout);
-+	close_json_object();
-+	delete_json_obj();
-+	free(answer);
-+
-+	return 0;
-+}
-+
- int rtnl_talk(struct rtnl_handle *rtnl, struct nlmsghdr *n,
- 	      struct nlmsghdr **answer)
+Rebase the patch to latest net-next as the previous could not
+apply to net-next.
+
+---
+ net/sched/cls_api.c | 45 ++++++++++++++++++++++++++++++---------------
+ 1 file changed, 30 insertions(+), 15 deletions(-)
+
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 50566db45949..7994dfdbd312 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -1816,13 +1816,15 @@ static int tcf_fill_node(struct net *net, struct sk_buff *skb,
+ 			 struct tcf_proto *tp, struct tcf_block *block,
+ 			 struct Qdisc *q, u32 parent, void *fh,
+ 			 u32 portid, u32 seq, u16 flags, int event,
+-			 bool terse_dump, bool rtnl_held)
++			 bool terse_dump, bool rtnl_held,
++			 struct netlink_ext_ack *extack)
  {
+ 	struct tcmsg *tcm;
+ 	struct nlmsghdr  *nlh;
+ 	unsigned char *b = skb_tail_pointer(skb);
+ 
+-	nlh = nlmsg_put(skb, portid, seq, event, sizeof(*tcm), flags);
++	nlh = nlmsg_put(skb, portid, seq, event, sizeof(*tcm),
++			(extack && extack->_msg) ? flags | NLM_F_MULTI : flags);
+ 	if (!nlh)
+ 		goto out_nlmsg_trim;
+ 	tcm = nlmsg_data(nlh);
+@@ -1857,6 +1859,18 @@ static int tcf_fill_node(struct net *net, struct sk_buff *skb,
+ 			goto nla_put_failure;
+ 	}
+ 	nlh->nlmsg_len = skb_tail_pointer(skb) - b;
++
++	if (extack && extack->_msg) {
++		nlh = nlmsg_put(skb, portid, seq, NLMSG_DONE, 0, flags | NLM_F_ACK_TLVS);
++		if (!nlh)
++			goto out_nlmsg_trim;
++
++		if (nla_put_string(skb, NLMSGERR_ATTR_MSG, extack->_msg))
++			goto nla_put_failure;
++
++		nlmsg_end(skb, nlh);
++	}
++
+ 	return skb->len;
+ 
+ out_nlmsg_trim:
+@@ -1870,7 +1884,7 @@ static int tfilter_notify(struct net *net, struct sk_buff *oskb,
+ 			  struct nlmsghdr *n, struct tcf_proto *tp,
+ 			  struct tcf_block *block, struct Qdisc *q,
+ 			  u32 parent, void *fh, int event, bool unicast,
+-			  bool rtnl_held)
++			  bool rtnl_held, struct netlink_ext_ack *extack)
+ {
+ 	struct sk_buff *skb;
+ 	u32 portid = oskb ? NETLINK_CB(oskb).portid : 0;
+@@ -1882,7 +1896,7 @@ static int tfilter_notify(struct net *net, struct sk_buff *oskb,
+ 
+ 	if (tcf_fill_node(net, skb, tp, block, q, parent, fh, portid,
+ 			  n->nlmsg_seq, n->nlmsg_flags, event,
+-			  false, rtnl_held) <= 0) {
++			  false, rtnl_held, extack) <= 0) {
+ 		kfree_skb(skb);
+ 		return -EINVAL;
+ 	}
+@@ -1911,7 +1925,7 @@ static int tfilter_del_notify(struct net *net, struct sk_buff *oskb,
+ 
+ 	if (tcf_fill_node(net, skb, tp, block, q, parent, fh, portid,
+ 			  n->nlmsg_seq, n->nlmsg_flags, RTM_DELTFILTER,
+-			  false, rtnl_held) <= 0) {
++			  false, rtnl_held, extack) <= 0) {
+ 		NL_SET_ERR_MSG(extack, "Failed to build del event notification");
+ 		kfree_skb(skb);
+ 		return -EINVAL;
+@@ -1937,14 +1951,15 @@ static int tfilter_del_notify(struct net *net, struct sk_buff *oskb,
+ static void tfilter_notify_chain(struct net *net, struct sk_buff *oskb,
+ 				 struct tcf_block *block, struct Qdisc *q,
+ 				 u32 parent, struct nlmsghdr *n,
+-				 struct tcf_chain *chain, int event)
++				 struct tcf_chain *chain, int event,
++				 struct netlink_ext_ack *extack)
+ {
+ 	struct tcf_proto *tp;
+ 
+ 	for (tp = tcf_get_next_proto(chain, NULL);
+ 	     tp; tp = tcf_get_next_proto(chain, tp))
+-		tfilter_notify(net, oskb, n, tp, block,
+-			       q, parent, NULL, event, false, true);
++		tfilter_notify(net, oskb, n, tp, block, q, parent, NULL,
++			       event, false, true, extack);
+ }
+ 
+ static void tfilter_put(struct tcf_proto *tp, void *fh)
+@@ -2148,7 +2163,7 @@ static int tc_new_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
+ 			      flags, extack);
+ 	if (err == 0) {
+ 		tfilter_notify(net, skb, n, tp, block, q, parent, fh,
+-			       RTM_NEWTFILTER, false, rtnl_held);
++			       RTM_NEWTFILTER, false, rtnl_held, extack);
+ 		tfilter_put(tp, fh);
+ 		/* q pointer is NULL for shared blocks */
+ 		if (q)
+@@ -2276,7 +2291,7 @@ static int tc_del_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
+ 
+ 	if (prio == 0) {
+ 		tfilter_notify_chain(net, skb, block, q, parent, n,
+-				     chain, RTM_DELTFILTER);
++				     chain, RTM_DELTFILTER, extack);
+ 		tcf_chain_flush(chain, rtnl_held);
+ 		err = 0;
+ 		goto errout;
+@@ -2300,7 +2315,7 @@ static int tc_del_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
+ 
+ 		tcf_proto_put(tp, rtnl_held, NULL);
+ 		tfilter_notify(net, skb, n, tp, block, q, parent, fh,
+-			       RTM_DELTFILTER, false, rtnl_held);
++			       RTM_DELTFILTER, false, rtnl_held, extack);
+ 		err = 0;
+ 		goto errout;
+ 	}
+@@ -2444,7 +2459,7 @@ static int tc_get_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
+ 		err = -ENOENT;
+ 	} else {
+ 		err = tfilter_notify(net, skb, n, tp, block, q, parent,
+-				     fh, RTM_NEWTFILTER, true, rtnl_held);
++				     fh, RTM_NEWTFILTER, true, rtnl_held, extack);
+ 		if (err < 0)
+ 			NL_SET_ERR_MSG(extack, "Failed to send filter notify message");
+ 	}
+@@ -2482,7 +2497,7 @@ static int tcf_node_dump(struct tcf_proto *tp, void *n, struct tcf_walker *arg)
+ 	return tcf_fill_node(net, a->skb, tp, a->block, a->q, a->parent,
+ 			     n, NETLINK_CB(a->cb->skb).portid,
+ 			     a->cb->nlh->nlmsg_seq, NLM_F_MULTI,
+-			     RTM_NEWTFILTER, a->terse_dump, true);
++			     RTM_NEWTFILTER, a->terse_dump, true, NULL);
+ }
+ 
+ static bool tcf_chain_dump(struct tcf_chain *chain, struct Qdisc *q, u32 parent,
+@@ -2516,7 +2531,7 @@ static bool tcf_chain_dump(struct tcf_chain *chain, struct Qdisc *q, u32 parent,
+ 			if (tcf_fill_node(net, skb, tp, block, q, parent, NULL,
+ 					  NETLINK_CB(cb->skb).portid,
+ 					  cb->nlh->nlmsg_seq, NLM_F_MULTI,
+-					  RTM_NEWTFILTER, false, true) <= 0)
++					  RTM_NEWTFILTER, false, true, NULL) <= 0)
+ 				goto errout;
+ 			cb->args[1] = 1;
+ 		}
+@@ -2904,7 +2919,7 @@ static int tc_ctl_chain(struct sk_buff *skb, struct nlmsghdr *n,
+ 		break;
+ 	case RTM_DELCHAIN:
+ 		tfilter_notify_chain(net, skb, block, q, parent, n,
+-				     chain, RTM_DELTFILTER);
++				     chain, RTM_DELTFILTER, extack);
+ 		/* Flush the chain first as the user requested chain removal. */
+ 		tcf_chain_flush(chain, true);
+ 		/* In case the chain was successfully deleted, put a reference
 -- 
 2.37.2
 
