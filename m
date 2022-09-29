@@ -2,182 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D9125EEE0D
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 08:50:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF66A5EEE2B
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 08:57:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234929AbiI2GuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 02:50:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59594 "EHLO
+        id S234973AbiI2G5p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 02:57:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233206AbiI2GuQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 02:50:16 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2045.outbound.protection.outlook.com [40.107.93.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7FDC65655
-        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 23:50:13 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BwinLluHAtD0LlhynmOOPkelHxeJJNlIotKNwXu68lBUgRyDe2LcGnaRBbLYGEp4TBefC/5AER8AkyFmVpm37/rGUiD4vdf7cvLvVb6+PiY79qY1SjkQk5P+77NeIWpfWUq15+TA2vdaopW3kVg9ebBdufywUE9yEHWjpja96pvxgh7V+oblC3IRUdUlGLiQCiXcSORwkaIgJcZOuxd1cu0cx3eWuh8aVIeWUZdVDHswwS0epiVkdMDnsH3/LflnI98zwwfxSx2Cz8Nr5p4V5WNB621ZfW+0wpBS0job50dqSQer5nw8VujmqRZPPdi8Y53DNwA33Xu8iQNnb+UACQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=N7ety/0mz61deOVfHmtUUcBFDHFMJ1SORkNqjoGOP6Q=;
- b=Khb/v4V2XwvwhM7swDiWttRjV3kPHp5XveNGh8cyAhuwU+VbW7XH1D+aPAQ80dFTU5tKO2f4kbzxl6fNPspH89V4wvTL2Q1fJyLeukNnUxSOUS219aaxgmwjL8w1MEFEL5NYB+sAuC9seNgjbhqRS9PM+B3hrLJ78i8k8vO6IVGfW4v+3S24VO1dHIbFt2IIoBuJBGNvQr0ss88y3Ywa2gfZPLEi5am+w5uv38ljgDOQ/4ZIZQyx85dLVoKrxI5yx+lHJzD90I1zPVDPURFb/jhDgz6AyfiPBvzUH0tGV/70spsvSIHKUWRjehKrgSjbCH27zh9YIAYaERuFMM6s1g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=N7ety/0mz61deOVfHmtUUcBFDHFMJ1SORkNqjoGOP6Q=;
- b=DYIEXq3hIXCgBDVt4J8vEDSc/16JVnzxU5v8tJCYwaQhi47NnHYWbV9nz5UGd5RJtFsLm2L/tfbYJF/Sn9EgAqe4vN9OcCusxuy0jOWUr4hz31cbIkHs6ji3wBMeWVaF+wupau3IeVo5Uin4BW0txFGnFeDAznzRAkUmA0evs2ZSzKXZ47wgxqBn/3BO8yo9UnSRJ64054VZI+UHRRbyvvK8sDMJ70T85RN6L9gYDXU7kUiVE1Enms2OU7S3E2QPwe/mNHroKwhovwK7JS8W9sD22nZG/zp2+EV9omKai2FKAT1YjbJFU/9xjvqiVy2owpw6ue6ha6XmWfY4pLJwwg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3835.namprd12.prod.outlook.com (2603:10b6:5:1c7::12)
- by BY5PR12MB4274.namprd12.prod.outlook.com (2603:10b6:a03:206::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.15; Thu, 29 Sep
- 2022 06:50:12 +0000
-Received: from DM6PR12MB3835.namprd12.prod.outlook.com
- ([fe80::7111:f585:6374:74f1]) by DM6PR12MB3835.namprd12.prod.outlook.com
- ([fe80::7111:f585:6374:74f1%6]) with mapi id 15.20.5676.017; Thu, 29 Sep 2022
- 06:50:11 +0000
-Message-ID: <68934c1a-6c75-f410-2c29-1a7edc97aeb9@nvidia.com>
-Date:   Thu, 29 Sep 2022 14:50:00 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.0
-Subject: Re: [virtio-dev] [PATCH v6 0/2] Improve virtio performance for 9k mtu
-Content-Language: en-US
-From:   Gavin Li <gavinl@nvidia.com>
-To:     mst@redhat.com, stephen@networkplumber.org, davem@davemloft.net,
-        jesse.brandeburg@intel.com, kuba@kernel.org,
-        sridhar.samudrala@intel.com, jasowang@redhat.com,
-        loseweigh@gmail.com, netdev@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        virtio-dev@lists.oasis-open.org
-References: <20220914144911.56422-1-gavinl@nvidia.com>
-In-Reply-To: <20220914144911.56422-1-gavinl@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SG2P153CA0045.APCP153.PROD.OUTLOOK.COM (2603:1096:4:c6::14)
- To DM6PR12MB3835.namprd12.prod.outlook.com (2603:10b6:5:1c7::12)
+        with ESMTP id S234977AbiI2G5n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 02:57:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 611D212FF1C
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 23:57:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1664434661;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dhtUm5X0hNsnpOP3asXHoTnezpGseEGhfFLz5qlof/k=;
+        b=Qq9xiCXuWBEawkZHfhR7+eJY5UiOiChHTUqzCR7TWi0TcOBgV0g7hiLR4aWy7MJjtt3Gk0
+        eP3cwkc72Pp7OxOJ1qsMUw3THH9qRGysAFmGxcLRbFHkCT3/W8bcR8580Ygv1mHs25kTUe
+        7ehe8oywspH+KKQ5zqwhVcxeNyzBMqA=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-499-Xy4ZY6O_MlS3rPOnoOMcZw-1; Thu, 29 Sep 2022 02:57:39 -0400
+X-MC-Unique: Xy4ZY6O_MlS3rPOnoOMcZw-1
+Received: by mail-wm1-f70.google.com with SMTP id y15-20020a1c4b0f000000b003b47578405aso128873wma.5
+        for <netdev@vger.kernel.org>; Wed, 28 Sep 2022 23:57:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=dhtUm5X0hNsnpOP3asXHoTnezpGseEGhfFLz5qlof/k=;
+        b=YoWCjTsQJBnUOPE0NTxFlhwK76hq+3vXd/rYii6OAa8b7OTEV9v0njpXHjZu+Ft+J1
+         0DDm622IO73VJ0bwLkDNyrRodBd1Vb4Uq9qhERGx0JoOBEHFAAFhgB4kG63aGZ+SQ5F/
+         btnofXg+M5wWadAjZoEkTCd+CKRQDua6NF12DTgozsOT+as+3sEUH9Ay2JIP1duYe7fo
+         N5b1nU+/QJHvCwk0bp3GIOM7WLFK6y5H6SaochOrtrY5n5pPzwzBXrJqX4tKVDA15NG0
+         RRU9ZA8q65M2F4bDTheRs5U72ts5HIHCpKvcuk6wOtFaNW1n4GQCBPgZbbGQuavMcPjY
+         TEvg==
+X-Gm-Message-State: ACrzQf2E3z1TfOhJls1eRuz4hWtlqIuhpqDHX9hAk5sZK7x26XhfrJrb
+        oxK2bLGtvYuWypw/kFnOxuO8QUVjptAlRUVDhCExBy3qHSz0DvcgkKx4SkgZhMXuZkiWL2bL3iu
+        s1FqLzbC0mdIlqn6z
+X-Received: by 2002:a05:600c:1c05:b0:3b4:c1cb:d45f with SMTP id j5-20020a05600c1c0500b003b4c1cbd45fmr1114055wms.2.1664434658251;
+        Wed, 28 Sep 2022 23:57:38 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM6/IqsuryZCjky1rMvtmRSL4OvJVDCRNROstalce48NOwn+M4AoxnM1FkONewYFElVh5zgrwA==
+X-Received: by 2002:a05:600c:1c05:b0:3b4:c1cb:d45f with SMTP id j5-20020a05600c1c0500b003b4c1cbd45fmr1114041wms.2.1664434657809;
+        Wed, 28 Sep 2022 23:57:37 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-104-40.dyn.eolo.it. [146.241.104.40])
+        by smtp.gmail.com with ESMTPSA id f15-20020a05600c490f00b003a2e92edeccsm3385054wmp.46.2022.09.28.23.57.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 28 Sep 2022 23:57:37 -0700 (PDT)
+Message-ID: <567d3635f6e7969c4e1a0e4bc759556c472d1dff.camel@redhat.com>
+Subject: Re: [PATCH net] veth: Avoid drop packets when xdp_redirect performs
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Heng Qi <hengqi@linux.alibaba.com>,
+        Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Date:   Thu, 29 Sep 2022 08:57:36 +0200
+In-Reply-To: <189b8159-c05f-1730-93f3-365999755f72@linux.alibaba.com>
+References: <1664267413-75518-1-git-send-email-hengqi@linux.alibaba.com>
+         <87wn9proty.fsf@toke.dk>
+         <f760701a-fb9d-11e5-f555-ebcf773922c3@linux.alibaba.com>
+         <87v8p7r1f2.fsf@toke.dk>
+         <189b8159-c05f-1730-93f3-365999755f72@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3835:EE_|BY5PR12MB4274:EE_
-X-MS-Office365-Filtering-Correlation-Id: a1b9ece8-ac9b-4c12-64b8-08daa1e6daad
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 1Hwr7AdgCh9KFK5Bihur3/B1mFAG+4MEH5PdwxvgOz62GQIMDNPa+7CQkL6kuT9b01wZII7qebELzV/ZHmmaYrX0b63DaudTT4q9VX9E35cOdwY/1uY8KjIcW2WoAe+HMG7OHdXAHKlDOHBiUuhYUnO7MPwXemZINjbLdCTXJC5ZdzvTHRKmt7Q5cyqaPzt7ujENEu8W+RWA0/20Gb8pn4ykoUI7yio5oZvMwGMCihVLN2gicm8d4HHAKtd6S68gFs345xzTKdBOU3PVrAOQX5R9Tb3PjKf09ptNONwrLqoMaCefBfgB4tngQ7SMnGLkG9EavqeXspdMBIu0ezdxvoq/McwzQM19FuqN1jAqPURvVLm96nxqVLaFF5mEah9v81eX/VcAC30A/t58kiOV/jdC5hQk0tq1Mg33jfi7f54ZSFKTu8DHmFCggTTk/vFQ0RH4U8xMeBcA2/kxcTIIPLbKFkiKcVZEdhMvsfd3OG+tf6ygSroCfr9Inowy2nLzKiMU7SUkirJVbWAzJGg0kuc80nt9Bdkbtl0K6tp7XdJVVcuBSfGXkAFvXKVdx1YTgmM75SHsBgxBu/zic48yD3pAnDLgojUdCCVstluyyRE25+a0myNvd4tSizjGNuRJhwangJbSF5ZwEI4+0bmePvsqa1Oh22+o7mtUN3DJmHreFJb7gS4OMD6clP3R2D95u7fgaNVjsK5wjFG3wrZ7xGKrMJIlhZJpbDEGccsN5r8Uvbpgzw4wfP9viu/P5Tpmf+IKw1P0BCrxdDjcOzJKf7UUCsSkenncPrG2FguXDouUtd102pOGNEV2DvV/aVZS
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3835.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(396003)(346002)(136003)(376002)(39860400002)(451199015)(86362001)(83380400001)(186003)(66476007)(7416002)(66946007)(8676002)(6666004)(316002)(31696002)(8936002)(921005)(26005)(6512007)(66556008)(38100700002)(5660300002)(36756003)(2616005)(6506007)(53546011)(2906002)(31686004)(6486002)(478600001)(41300700001)(66899015)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?KzRqb1lhaFV6eW9sN3gvUVZYZFJIaXVYVlhOVU0xZVUxZXVlNmVwQmVDNWdt?=
- =?utf-8?B?bk5vVzNqMnl6NnQ4M2xnaUdXWjB3cFZtZW5YOXdvVW9ZYUhpS2F0enlsVmkr?=
- =?utf-8?B?dnd4dWdqL29wTHFXbDFHeSs0UE96Z1EzM2N0OWRoaFdUL3RzclB0V0g1cjd5?=
- =?utf-8?B?VG9kTHZjZGhIancydlVMYzNWN3NxRFhMZjFBWlc0YWlFajdEbWZBVzFkTmgr?=
- =?utf-8?B?cGwyclNCdnR5dG9Od2JGVjY4WE9SRDNkVmlKK2lzSk53M3hKTEhXSndBM2Nu?=
- =?utf-8?B?ZmQxRzBGTU5Oa3Z6UG4rTU5wMTNBWkN1YUkwUlMyWE9WVDhNRmF3TEZlTTNK?=
- =?utf-8?B?Q09QMGZMSis1QXlxUGU3cURRejRGeVRvZjdxV2tiY3VqSTkyVXIyUG1haUoz?=
- =?utf-8?B?MFJmQ1l5WDh4SnB6WUsyOGc3NDhkbktvbWVUTEpxbzAwZHN1emhVay9JSDZF?=
- =?utf-8?B?YXR2RERoSjh4SGRTd2V1NTVDL0M1WHZ4NWJ2VjcrSEc3eFN2QVdScE1UTFc0?=
- =?utf-8?B?ckRCckhMbzRwQkNRNmR5a2tWdnR4QzJvOHpMdHYrSVUvTDVlRmtWOFkzU1Z2?=
- =?utf-8?B?Mmc0bGxHQ01EZ0hYWEdLYmFwc3JPTXpwcjNQeU9FMSs2NlBMcktDRUtTWEpC?=
- =?utf-8?B?NXpIbHR5U29zMlp3eVQvcUxkMnR3UFJDc2NTVnNvQS9PVTlqR3JydytPdTNE?=
- =?utf-8?B?SlIwZFJIcG1DWW95cUlDUzRVQTE2WFM3cndiSThDZlhabjNXcHJVV3Q3UEE2?=
- =?utf-8?B?UUtEQ0Jyb3dJS1AvNDdxMnNSelQzcU5xdk5ZWmR2OStZRVd3SWpjT0dVMElG?=
- =?utf-8?B?cVZoc2hSWDZ3WXYzU2tZc1RnMlZrc2tnUjBhS0puOElvcDJLZ2hBZldoS1hP?=
- =?utf-8?B?aHlVOU9yYkdOSDJ5MTlGeTdpZTFicnZ0V0oxdzdJY0VzSVFIa0UyZW9ENFNy?=
- =?utf-8?B?UEl2d2IwM0VidldtRUlqanpWbkxlOEo5OHoxeGdBSnJaNnhnVWhuWFFUVUNl?=
- =?utf-8?B?aTN2Q1ZNSDkvL0lNcHljc0IzU2FweGFDZDFaRDZ2eGExbGszYURvTHBMUENa?=
- =?utf-8?B?TjRuU3BMNkRWeDVUaFhDOXhvczQrSndZUU1lemVWWElsdUI0Vjl2T3lsZEZL?=
- =?utf-8?B?amhNRzR3enVjRzVGUWViZnIwb1RxeWY3TkVCdDA5Zlh6cnZYZElLR3MwdjFD?=
- =?utf-8?B?ZThvRm1EWG5YSHdYTll3VmlMKzRqOUhtV04yV2F3NzBCL3FFQ2cvRVIzc0JK?=
- =?utf-8?B?YmVZQ096bVBBU0puMzdUTGs2Wm9nRTFNTkptKzEwS1I0WUI4cWQwL3JTV1c3?=
- =?utf-8?B?ci9vTGsxMzZvT0pXeEl1YitoaU5XUm9vZm9oOXhGT1dVQ3JOUlN6SlZTVDkr?=
- =?utf-8?B?K2E1YUtrVEdtS0I5TTUwZ2VNWVVtZ3pGV1htVDkrd2o1UFZpclJQMVVyVk9q?=
- =?utf-8?B?bjBpR2t5UzZVeUVhSmxPSnlFbURVMVhCLzhJU1R4SkttSnhQbnVpRFltWGNZ?=
- =?utf-8?B?VjJISmFOOHRKdlE0TFRJY0RacG5ROVFSa3dRNzBQN0RjMVZoK0JPRHB3bGl2?=
- =?utf-8?B?TTNTeGVoRHFSY2hienRQbFhzZVQ2QlcvUDJBdWRGdkVBREZGSi9IZEVQN20y?=
- =?utf-8?B?TkZjbDJ4eWs5NVZoL3E5Nnd5ZnkzZzFLS1c1STBzMkJ5MkdGMWhkNnFJTStv?=
- =?utf-8?B?UzAwaTBEWTFKMWo2d3daMHQxL3l5TjhnM2JKMlk3dTFHakYvOVBwYk9BU0RH?=
- =?utf-8?B?NFVLSmlham95UEtISlo0WTlsZ1BNQ2d0eHM0R1lNMXNxa3JVSzRhK0xwZERI?=
- =?utf-8?B?bHNIaXI3OWRmcFlkWFdQaFltV3VldUNUSmU2SVF1eGJkUWlBVlVObjFPZXdw?=
- =?utf-8?B?RG9Fc0xlUTQrNW9iS29nclpKUlZPLzRKU1ZPWmlnSStNeHJhNlZrUnRtNVYr?=
- =?utf-8?B?US9FTFpCRU04UGFqQlNncnNEWUlwRTRLcC9pdUtVN2lzODdpWXVxMG9JQStM?=
- =?utf-8?B?TGkwS2FDTDdzeHNMV09jY1QvRlFFbmNiZ0owbmwva1RoU21uUE5QRnFRVHFv?=
- =?utf-8?B?ZG9TUEdJclpJRFZzeDhpRml3dWE1VldOdi9ndG80RDdab1BEYnJVNVI1VUpm?=
- =?utf-8?Q?cKeH5vqH6wak1MCytVZeQwFeB?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a1b9ece8-ac9b-4c12-64b8-08daa1e6daad
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3835.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Sep 2022 06:50:11.3599
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: iUPKCgg5GPTR1gsjgLkgwemd/etDRSuTb1YGR0TGMYIcMAUFgH0WvRyGkMRPP4P2VjOhrKS1BH+A4vOEHsHunA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4274
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
 
-On 9/14/2022 10:49 PM, Gavin Li wrote:
-> External email: Use caution opening links or attachments
->
->
-> This small series contains two patches that improves virtio netdevice
-> performance for 9K mtu when GRO/ guest TSO is disabled.
->
-> Gavin Li (2):
->    virtio-net: introduce and use helper function for guest gso support
->      checks
-> ---
-> changelog:
-> v4->v5
-> - Addressed comments from Michael S. Tsirkin
-> - Remove unnecessary () in return clause
-> v1->v2
-> - Add new patch
-> ---
->    virtio-net: use mtu size as buffer length for big packets
-> ---
-> changelog:
-> v5->v6
-> - Addressed comments from Jason and Michael S. Tsirkin
-> - Remove wrong commit log description
-> - Rename virtnet_set_big_packets_fields with virtnet_set_big_packets
-> - Add more test results for different feature combinations
-> v4->v5
-> - Addressed comments from Michael S. Tsirkin
-> - Improve commit message
-> v3->v4
-> - Addressed comments from Si-Wei
-> - Rename big_packets_sg_num with big_packets_num_skbfrags
-> v2->v3
-> - Addressed comments from Si-Wei
-> - Simplify the condition check to enable the optimization
-> v1->v2
-> - Addressed comments from Jason, Michael, Si-Wei.
-> - Remove the flag of guest GSO support, set sg_num for big packets and
->    use it directly
-> - Recalculate sg_num for big packets in virtnet_set_guest_offloads
-> - Replace the round up algorithm with DIV_ROUND_UP
-> ---
->
->   drivers/net/virtio_net.c | 48 ++++++++++++++++++++++++++--------------
->   1 file changed, 32 insertions(+), 16 deletions(-)
->
-> --
-> 2.31.1
->
->
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
-Did you get a chance to pull these short series?
+On Thu, 2022-09-29 at 10:50 +0800, Heng Qi wrote:
+> 在 2022/9/28 下午10:58, Toke Høiland-Jørgensen 写道:
+> > Heng Qi <hengqi@linux.alibaba.com> writes:
+> > 
+> > > 在 2022/9/27 下午8:20, Toke Høiland-Jørgensen 写道:
+> > > > Heng Qi <hengqi@linux.alibaba.com> writes:
+> > > > 
+> > > > > In the current processing logic, when xdp_redirect occurs, it transmits
+> > > > > the xdp frame based on napi.
+> > > > > 
+> > > > > If napi of the peer veth is not ready, the veth will drop the packets.
+> > > > > This doesn't meet our expectations.
+> > > > Erm, why don't you just enable NAPI? Loading an XDP program is not
+> > > > needed these days, you can just enable GRO on both peers...
+> > > In general, we don't expect veth to drop packets when it doesn't mount
+> > > the xdp program or otherwise, because this is not as expected.
+> > Well, did you consider that maybe your expectation is wrong? ;)
+> 
+> For users who don't know what other conditions are required for the readiness of napi,
+> all they can observe is why the packets cannot be sent to the peer veth, which is also
+> the problem we encountered in the actual case scenarios.
+> 
+> 
+> > 
+> > > > > In this context, if napi is not ready, we convert the xdp frame to a skb,
+> > > > > and then use veth_xmit() to deliver it to the peer veth.
+> > > > > 
+> > > > > Like the following case:
+> > > > > Even if veth1's napi cannot be used, the packet redirected from the NIC
+> > > > > will be transmitted to veth1 successfully:
+> > > > > 
+> > > > > NIC   ->   veth0----veth1
+> > > > >    |                   |
+> > > > > (XDP)             (no XDP)
+> > > > > 
+> > > > > Signed-off-by: Heng Qi <hengqi@linux.alibaba.com>
+> > > > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > > > > ---
+> > > > >    drivers/net/veth.c | 36 +++++++++++++++++++++++++++++++++++-
+> > > > >    1 file changed, 35 insertions(+), 1 deletion(-)
+> > > > > 
+> > > > > diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+> > > > > index 466da01..e1f5561 100644
+> > > > > --- a/drivers/net/veth.c
+> > > > > +++ b/drivers/net/veth.c
+> > > > > @@ -469,8 +469,42 @@ static int veth_xdp_xmit(struct net_device *dev, int n,
+> > > > >    	/* The napi pointer is set if NAPI is enabled, which ensures that
+> > > > >    	 * xdp_ring is initialized on receive side and the peer device is up.
+> > > > >    	 */
+> > > > > -	if (!rcu_access_pointer(rq->napi))
+> > > > > +	if (!rcu_access_pointer(rq->napi)) {
+> > > > > +		for (i = 0; i < n; i++) {
+> > > > > +			struct xdp_frame *xdpf = frames[i];
+> > > > > +			struct netdev_queue *txq = NULL;
+> > > > > +			struct sk_buff *skb;
+> > > > > +			int queue_mapping;
+> > > > > +			u16 mac_len;
+> > > > > +
+> > > > > +			skb = xdp_build_skb_from_frame(xdpf, dev);
+> > > > > +			if (unlikely(!skb)) {
+> > > > > +				ret = nxmit;
+> > > > > +				goto out;
+> > > > > +			}
+> > > > > +
+> > > > > +			/* We need to restore ETH header, because it is pulled
+> > > > > +			 * in eth_type_trans.
+> > > > > +			 */
+> > > > > +			mac_len = skb->data - skb_mac_header(skb);
+> > > > > +			skb_push(skb, mac_len);
+> > > > > +
+> > > > > +			nxmit++;
+> > > > > +
+> > > > > +			queue_mapping = skb_get_queue_mapping(skb);
+> > > > > +			txq = netdev_get_tx_queue(dev, netdev_cap_txqueue(dev, queue_mapping));
+> > > > > +			__netif_tx_lock(txq, smp_processor_id());
+> > > > > +			if (unlikely(veth_xmit(skb, dev) != NETDEV_TX_OK)) {
+> > > > > +				__netif_tx_unlock(txq);
+> > > > > +				ret = nxmit;
+> > > > > +				goto out;
+> > > > > +			}
+> > > > > +			__netif_tx_unlock(txq);
+> > > > Locking and unlocking the txq repeatedly for each packet? Yikes! Did you
+> > > > measure the performance overhead of this?
+> > > Yes, there are indeed some optimizations that can be done here,
+> > > like putting the lock outside the loop.
+> > > But in __dev_queue_xmit(), where each packet sent is also protected by a lock.
+> > ...which is another reason why this is a bad idea: it's going to perform
+> > terribly, which means we'll just end up with users wondering why their
+> > XDP performance is terrible and we're going to have to tell them to turn
+> > on GRO anyway. So why not do this from the beginning?
+> > 
+> > If you want to change the default, flipping GRO to be on by default is a
+> > better solution IMO. I don't actually recall why we didn't do that when
+> > the support was added, but maybe Paolo remembers?
+
+I preferred to avoid changing the default behavior. Additionally, the
+veth GRO stage needs some tuning to really be able to  aggregate the
+packets (e.g. napi thread or gro_flush_timeout > 0)
+
+> As I said above in the real case, the user's concern is not why the performance
+> of xdp becomes bad, but why the data packets are not received.
+
+Well, that arguably tells the end-user there is something wrong in
+their setup. On the flip side, having a functionally working setup with
+horrible performances would likely lead the users (perhaps not yours,
+surely others) in very wrong directions (from "XDP is slow" to "the
+problem is in the application")...
+
+> The default number of veth queues is not num_possible_cpus(). When GRO is enabled
+> by default, if there is only one veth queue, but multiple CPUs read and write at the
+> same time, the efficiency of napi is actually very low due to the existence of
+> production locks and races. On the contrary, the default veth_xmit() each cpu has
+> its own unique queue, and this way of sending and receiving packets is also efficient.
+> 
+This patch adds a bit of complexity and it looks completely avoidable
+with some configuration - you could enable GRO and set the number of
+queues to num_possible_cpus().
+
+I agree with Toke, you should explain the end-users that their
+expecations are wrong, and guide them towards a better setup.
+
+Thanks!
+
+Paolo
+
