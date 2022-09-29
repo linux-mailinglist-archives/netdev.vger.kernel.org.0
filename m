@@ -2,97 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EA1C5EFD98
-	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 21:06:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 259C35EFDB0
+	for <lists+netdev@lfdr.de>; Thu, 29 Sep 2022 21:14:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230180AbiI2TGH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 15:06:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46504 "EHLO
+        id S229507AbiI2TN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 15:13:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230311AbiI2TFy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 15:05:54 -0400
-Received: from mail-oo1-xc34.google.com (mail-oo1-xc34.google.com [IPv6:2607:f8b0:4864:20::c34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 513FD146FA2
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 12:05:52 -0700 (PDT)
-Received: by mail-oo1-xc34.google.com with SMTP id k10-20020a4ad10a000000b004756ab911f8so750590oor.2
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 12:05:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=d0crPrIiHDvTjv4ASul3Goxd2GrqWv18ntDF0Hrl2co=;
-        b=H5ifccgQ3ejZODwR+iA8IAzLi9dYu0f/LWjubXNYIvuq6neuxtgYbJuqppjEF2uYEm
-         XFRqX/6m+EvnCT042dj16sp22LNx4emifWUuDPPtKjkWMVmPKJQKgoy3MUns0MnhYiFa
-         ZyS1bB5jGNU78LB/vrVxnTpd2ZLgqzBlT8X7Y=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=d0crPrIiHDvTjv4ASul3Goxd2GrqWv18ntDF0Hrl2co=;
-        b=Sy2G/FLEeYgmlFtEcHqtSKIK0Y+DDyCYaEcjfzuud8M7FsvKx4q8yEkx54EbQwiU4m
-         iZiAc/jzLyHgj+i+p9ZzBwXzb53g37aVo90oeVrwuyvj7fLM6JGL8qF66cDloNdWbb/H
-         rNKZCIcx57CJI2SU123P+7Uzv1FjcVqHE6WutZEjs1/gW2vKRM8rKz4KoNshojPorLaX
-         bi1a6ccZEGOopPmiwTE2gvKg3KmxTT0a6bmfCuT6moupV9ku/QTnrAONSfFBoV3AgsZN
-         2tewWwhhTLULf4w/pmwLRbDs1vXLEsMwqPnZIggboapgJ9GZPyRPFONEy/I45uVcei/U
-         o9Ww==
-X-Gm-Message-State: ACrzQf1Pit8mnGFjNikGEPSAzDPZFKWIYU3GlqSRIu/yxbrD/1PeCF4V
-        7uylYAoGvD5ifDxAWYg7isFseOTyqF7rtQ==
-X-Google-Smtp-Source: AMsMyM4uKbBLIPUaLThhYA2Nzr84YL3Yi2Y4q5ODW8dbXFt5OlX9MNbWEj73CjIJ2+/P5W70SCPQcA==
-X-Received: by 2002:a4a:d351:0:b0:476:46fd:c2f1 with SMTP id d17-20020a4ad351000000b0047646fdc2f1mr1966289oos.93.1664478350487;
-        Thu, 29 Sep 2022 12:05:50 -0700 (PDT)
-Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com. [209.85.160.48])
-        by smtp.gmail.com with ESMTPSA id m8-20020a4aab88000000b004320b0cc5acsm60083oon.48.2022.09.29.12.05.48
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 29 Sep 2022 12:05:48 -0700 (PDT)
-Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-1318106fe2cso2896577fac.13
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 12:05:48 -0700 (PDT)
-X-Received: by 2002:a05:6870:c888:b0:12c:7f3b:d67d with SMTP id
- er8-20020a056870c88800b0012c7f3bd67dmr2868462oab.229.1664478348247; Thu, 29
- Sep 2022 12:05:48 -0700 (PDT)
+        with ESMTP id S229461AbiI2TN6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 15:13:58 -0400
+Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D530F10B58B;
+        Thu, 29 Sep 2022 12:13:56 -0700 (PDT)
+Message-ID: <6cf2c440-79a6-24ce-c9bb-1f1f92af4a0b@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1664478834;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=42KWQvHN39XmPscGdurGbP1Iyirh1/jHYHbJBbgOEgs=;
+        b=nEkp6hNsw8OyfFNnLm9v4rNgiCGJGbZbAk9mb0IKTzjFTzJ5775s2rxQo/jJtCx3XaCqx4
+        YdTfy/gjKDYEKPTMLiyRZRIO5BuCC1JApZfBqrQMCCmtX6E3TWCIEQ8MLeHrfeYYUYAx9L
+        hNxxS0icymTCT80hpJg1fT7cqdSSuBI=
+Date:   Thu, 29 Sep 2022 12:13:45 -0700
 MIME-Version: 1.0
-References: <dacfc18d6667421d97127451eafe4f29@AcuMS.aculab.com>
- <CAHk-=wgS_XpzEL140ovgLwGv6yXvV7Pu9nKJbCuo5pnRfcEbvg@mail.gmail.com>
- <YzXo/DIwq65ypHNH@ZenIV> <YzXrOFpPStEwZH/O@ZenIV>
-In-Reply-To: <YzXrOFpPStEwZH/O@ZenIV>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 29 Sep 2022 12:05:32 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wjLgM06JrS21W4g2VquqCLab+qu_My67cv6xuH7NhgHpw@mail.gmail.com>
-Message-ID: <CAHk-=wjLgM06JrS21W4g2VquqCLab+qu_My67cv6xuH7NhgHpw@mail.gmail.com>
-Subject: Re: [PATCH 3/4] proc: Point /proc/net at /proc/thread-self/net
- instead of /proc/self/net
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     David Laight <David.Laight@aculab.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        "Serge E. Hallyn" <serge@hallyn.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=no
-        autolearn_force=no version=3.4.6
+Subject: Re: [PATCH bpf-next] net: netfilter: move bpf_ct_set_nat_info kfunc
+ in nf_nat_bpf.c
+Content-Language: en-US
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        edumazet@google.com, pabeni@redhat.com, pablo@netfilter.org,
+        fw@strlen.de, netfilter-devel@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, brouer@redhat.com, toke@redhat.com,
+        memxor@gmail.com, nathan@kernel.org, bpf@vger.kernel.org
+References: <ddd17d808fe25917893eb035b20146479810124c.1664111646.git.lorenzo@kernel.org>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Martin KaFai Lau <martin.lau@linux.dev>
+In-Reply-To: <ddd17d808fe25917893eb035b20146479810124c.1664111646.git.lorenzo@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 29, 2022 at 12:00 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
->
-> Which is insane, especially since the entire problem is due to wanting
-> that directory to be different for different threads...
+On 9/25/22 6:26 AM, Lorenzo Bianconi wrote:
+> Remove circular dependency between nf_nat module and nf_conntrack one
+> moving bpf_ct_set_nat_info kfunc in nf_nat_bpf.c
+> 
+> Fixes: 0fabd2aa199f ("net: netfilter: add bpf_ct_set_nat_info kfunc helper")
+> Suggested-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> Tested-by: Nathan Chancellor <nathan@kernel.org>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>   include/net/netfilter/nf_conntrack_bpf.h |  5 ++
+>   include/net/netfilter/nf_nat.h           | 14 +++++
+>   net/netfilter/Makefile                   |  6 ++
+>   net/netfilter/nf_conntrack_bpf.c         | 49 ---------------
+>   net/netfilter/nf_nat_bpf.c               | 79 ++++++++++++++++++++++++
+>   net/netfilter/nf_nat_core.c              |  2 +-
+>   6 files changed, 105 insertions(+), 50 deletions(-)
+>   create mode 100644 net/netfilter/nf_nat_bpf.c
+> 
+> diff --git a/include/net/netfilter/nf_conntrack_bpf.h b/include/net/netfilter/nf_conntrack_bpf.h
+> index c8b80add1142..1ce46e406062 100644
+> --- a/include/net/netfilter/nf_conntrack_bpf.h
+> +++ b/include/net/netfilter/nf_conntrack_bpf.h
+> @@ -4,6 +4,11 @@
+>   #define _NF_CONNTRACK_BPF_H
+>   
+>   #include <linux/kconfig.h>
+> +#include <net/netfilter/nf_conntrack.h>
+> +
+> +struct nf_conn___init {
+> +	struct nf_conn ct;
+> +};
+>   
+>   #if (IS_BUILTIN(CONFIG_NF_CONNTRACK) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF)) || \
+>       (IS_MODULE(CONFIG_NF_CONNTRACK) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF_MODULES))
+> diff --git a/include/net/netfilter/nf_nat.h b/include/net/netfilter/nf_nat.h
+> index e9eb01e99d2f..cd084059a953 100644
+> --- a/include/net/netfilter/nf_nat.h
+> +++ b/include/net/netfilter/nf_nat.h
+> @@ -68,6 +68,20 @@ static inline bool nf_nat_oif_changed(unsigned int hooknum,
+>   #endif
+>   }
+>   
+> +#if (IS_BUILTIN(CONFIG_NF_NAT) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF)) || \
+> +    (IS_MODULE(CONFIG_NF_NAT) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF_MODULES))
+> +
+> +extern int register_nf_nat_bpf(void);
+> +
+> +#else
+> +
+> +static inline int register_nf_nat_bpf(void)
+> +{
+> +	return 0;
+> +}
+> +
+> +#endif
+> +
 
-Absolutely. This is all due to Apparmor (a) basing things on pathnames
-and (b) then getting those pathnames wrong.
+This looks similar to the ones in nf_conntrack_bpf.h.  Does it belong there 
+better?  No strong opinion here.
 
-Which is why I'm just suggesting we short-circuit the path-name part,
-and not make this be a real symlink that actually walks a real path.
+The change looks good to me.  Can someone from the netfilter team ack this piece 
+also?
 
-The proc <pid> handling uses "readlink" to make it *look* like a
-symlink, but then "get_link" to actually look it up (and never walk it
-as a path).
-
-Something similar?
-
-                 Linus
