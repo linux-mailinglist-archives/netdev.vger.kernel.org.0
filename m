@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 214735F0F74
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 18:01:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE56A5F0F73
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 18:01:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231862AbiI3QBF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 12:01:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33914 "EHLO
+        id S231834AbiI3QBG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 12:01:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231879AbiI3QAh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 12:00:37 -0400
+        with ESMTP id S231880AbiI3QAi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 12:00:38 -0400
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 176DD925A1
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 09:00:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 407B81EAE1
+        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 09:00:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1664553631; x=1696089631;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=VByxH30YMrFFT03SK19iwWzFpOXOu0TywF/XLaKQObI=;
-  b=IL6mpJo9eLdSbs6cnVaFcLId/ktIPQKUEUXudna5IhWf9pkUlX7M0AtR
-   7MgBwP4KhENiNYum97UgkDZS5oxwRmQuKWWmGUHo1D01+hRRsWQnV+D6I
-   5MhdudZgCWbO2ug+soCiuCsws5I3MuTUXBoSSdJEE7RhffhAeZG2ktj9m
-   QOPmdEkVX9FV4bzzoYxRLJAAUI7zxKoxZQrG3Ybp1v5EY70k0zMN6wfxa
-   AcL2bcCA5HMTgJlrUi9rlP0Feu/BxI4h5NwUIFfzJcGEY/VMMBCwdKjvX
-   XfUtpRcIIpa6izi4uOzQoRWjSqc1k6MPTZhyxJ+fQ90RmSnUGGcrjECO5
+  bh=z66rPEvAFA1BnW04dg1ABSJlUprM6g9uqaqeJgn885M=;
+  b=C+7X8/TAAK+ugkLRg50hSREwVLL9QFxSecZsRxAMfREOKqkl4Fl5C//q
+   b+17qD8sunEAs4+EQPvHcx52g1o99h0J9+wKbEc8a74SKZih5mrf12zLQ
+   EYIixvO67wtHwzPc8LhnG1eXyJTxfAihbqifZN2d342YqqeZaNLoa+5wQ
+   DNhUEcDinC+S7p2X/8UEAl2gyzGhFLit0RTy7RaG/Rx+Vsttf4ihB2dIV
+   RLtBkIQ/tY98b+4nW8w0CN7OmSQh8kQtgmfL3WbQxjSZaF5/JW3Rl72/a
+   QpOAjhw6OzFFgFk7swx/k6O7lhgomqWcEElh9/KJEPajL1zckvyfrRC8d
    A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10486"; a="303132489"
+X-IronPort-AV: E=McAfee;i="6500,9779,10486"; a="303132490"
 X-IronPort-AV: E=Sophos;i="5.93,358,1654585200"; 
-   d="scan'208";a="303132489"
+   d="scan'208";a="303132490"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
   by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2022 09:00:28 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10486"; a="655996108"
+X-IronPort-AV: E=McAfee;i="6500,9779,10486"; a="655996109"
 X-IronPort-AV: E=Sophos;i="5.93,358,1654585200"; 
-   d="scan'208";a="655996108"
+   d="scan'208";a="655996109"
 Received: from cmforest-mobl1.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.251.22.5])
   by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2022 09:00:27 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
@@ -43,9 +43,9 @@ Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
         kuba@kernel.org, edumazet@google.com, matthieu.baerts@tessares.net,
         mptcp@lists.linux.dev,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 1/4] mptcp: propagate fastclose error
-Date:   Fri, 30 Sep 2022 08:59:31 -0700
-Message-Id: <20220930155934.404466-2-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 2/4] mptcp: use fastclose on more edge scenarios
+Date:   Fri, 30 Sep 2022 08:59:32 -0700
+Message-Id: <20220930155934.404466-3-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220930155934.404466-1-mathew.j.martineau@linux.intel.com>
 References: <20220930155934.404466-1-mathew.j.martineau@linux.intel.com>
@@ -63,132 +63,140 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Paolo Abeni <pabeni@redhat.com>
 
-When an mptcp socket is closed due to an incoming FASTCLOSE
-option, so specific sk_err is set and later syscall will
-fail usually with EPIPE.
+Daire reported a user-space application hang-up when the
+peer is forcibly closed before the data transfer completion.
 
-Align the current fastclose error handling with TCP reset,
-properly setting the socket error according to the current
-msk state and propagating such error.
+The relevant application expects the peer to either
+do an application-level clean shutdown or a transport-level
+connection reset.
 
-Additionally sendmsg() is currently not handling properly
-the sk_err, always returning EPIPE.
+We can accommodate a such user by extending the fastclose
+usage: at fd close time, if the msk socket has some unread
+data, and at FIN_WAIT timeout.
+
+Note that at MPTCP close time we must ensure that the TCP
+subflows will reset: set the linger socket option to a suitable
+value.
 
 Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- net/mptcp/protocol.c | 47 +++++++++++++++++++++++++++++++++-----------
- 1 file changed, 36 insertions(+), 11 deletions(-)
+ net/mptcp/protocol.c | 63 +++++++++++++++++++++++++++++++-------------
+ 1 file changed, 44 insertions(+), 19 deletions(-)
 
 diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 760404b15cd0..cad0346c9281 100644
+index cad0346c9281..acf44075ba40 100644
 --- a/net/mptcp/protocol.c
 +++ b/net/mptcp/protocol.c
-@@ -1707,7 +1707,7 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 			goto out;
- 		} else if (ret) {
- 			release_sock(ssk);
--			goto out;
-+			goto do_error;
- 		}
- 		release_sock(ssk);
- 	}
-@@ -1717,9 +1717,13 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 	if ((1 << sk->sk_state) & ~(TCPF_ESTABLISHED | TCPF_CLOSE_WAIT)) {
- 		ret = sk_stream_wait_connect(sk, &timeo);
- 		if (ret)
--			goto out;
-+			goto do_error;
- 	}
+@@ -2313,8 +2313,14 @@ static void __mptcp_close_ssk(struct sock *sk, struct sock *ssk,
  
-+	ret = -EPIPE;
-+	if (unlikely(sk->sk_err || (sk->sk_shutdown & SEND_SHUTDOWN)))
-+		goto do_error;
-+
- 	pfrag = sk_page_frag(sk);
+ 	lock_sock_nested(ssk, SINGLE_DEPTH_NESTING);
  
- 	while (msg_data_left(msg)) {
-@@ -1728,11 +1732,6 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 		bool dfrag_collapsed;
- 		size_t psize, offset;
- 
--		if (sk->sk_err || (sk->sk_shutdown & SEND_SHUTDOWN)) {
--			ret = -EPIPE;
--			goto out;
--		}
--
- 		/* reuse tail pfrag, if possible, or carve a new one from the
- 		 * page allocator
- 		 */
-@@ -1764,7 +1763,7 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 		if (copy_page_from_iter(dfrag->page, offset, psize,
- 					&msg->msg_iter) != psize) {
- 			ret = -EFAULT;
--			goto out;
-+			goto do_error;
- 		}
- 
- 		/* data successfully copied into the write queue */
-@@ -1796,7 +1795,7 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 		__mptcp_push_pending(sk, msg->msg_flags);
- 		ret = sk_stream_wait_memory(sk, &timeo);
- 		if (ret)
--			goto out;
-+			goto do_error;
- 	}
- 
- 	if (copied)
-@@ -1804,7 +1803,14 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 
- out:
- 	release_sock(sk);
--	return copied ? : ret;
-+	return copied;
-+
-+do_error:
-+	if (copied)
-+		goto out;
-+
-+	copied = sk_stream_error(sk, msg->msg_flags, ret);
-+	goto out;
- }
- 
- static int __mptcp_recvmsg_mskq(struct mptcp_sock *msk,
-@@ -2441,12 +2447,31 @@ static void mptcp_check_fastclose(struct mptcp_sock *msk)
- 		unlock_sock_fast(tcp_sk, slow);
- 	}
- 
-+	/* Mirror the tcp_reset() error propagation */
-+	switch (sk->sk_state) {
-+	case TCP_SYN_SENT:
-+		sk->sk_err = ECONNREFUSED;
-+		break;
-+	case TCP_CLOSE_WAIT:
-+		sk->sk_err = EPIPE;
-+		break;
-+	case TCP_CLOSE:
-+		return;
-+	default:
-+		sk->sk_err = ECONNRESET;
+-	if (flags & MPTCP_CF_FASTCLOSE)
++	if (flags & MPTCP_CF_FASTCLOSE) {
++		/* be sure to force the tcp_disconnect() path,
++		 * to generate the egress reset
++		 */
++		ssk->sk_lingertime = 0;
++		sock_set_flag(ssk, SOCK_LINGER);
+ 		subflow->send_fastclose = 1;
 +	}
-+
- 	inet_sk_state_store(sk, TCP_CLOSE);
- 	sk->sk_shutdown = SHUTDOWN_MASK;
- 	smp_mb__before_atomic(); /* SHUTDOWN must be visible first */
- 	set_bit(MPTCP_WORK_CLOSE_SUBFLOW, &msk->flags);
  
--	mptcp_close_wake_up(sk);
-+	/* the calling mptcp_worker will properly destroy the socket */
-+	if (sock_flag(sk, SOCK_DEAD))
-+		return;
-+
-+	sk->sk_state_change(sk);
-+	sk_error_report(sk);
+ 	need_push = (flags & MPTCP_CF_PUSH) && __mptcp_retransmit_pending_data(sk);
+ 	if (!dispose_it) {
+@@ -2577,6 +2583,16 @@ static void mptcp_mp_fail_no_response(struct mptcp_sock *msk)
+ 	mptcp_reset_timeout(msk, 0);
  }
  
- static void __mptcp_retrans(struct sock *sk)
++static void mptcp_do_fastclose(struct sock *sk)
++{
++	struct mptcp_subflow_context *subflow, *tmp;
++	struct mptcp_sock *msk = mptcp_sk(sk);
++
++	mptcp_for_each_subflow_safe(msk, subflow, tmp)
++		__mptcp_close_ssk(sk, mptcp_subflow_tcp_sock(subflow),
++				  subflow, MPTCP_CF_FASTCLOSE);
++}
++
+ static void mptcp_worker(struct work_struct *work)
+ {
+ 	struct mptcp_sock *msk = container_of(work, struct mptcp_sock, work);
+@@ -2605,11 +2621,15 @@ static void mptcp_worker(struct work_struct *work)
+ 	 * closed, but we need the msk around to reply to incoming DATA_FIN,
+ 	 * even if it is orphaned and in FIN_WAIT2 state
+ 	 */
+-	if (sock_flag(sk, SOCK_DEAD) &&
+-	    (mptcp_check_close_timeout(sk) || sk->sk_state == TCP_CLOSE)) {
+-		inet_sk_state_store(sk, TCP_CLOSE);
+-		__mptcp_destroy_sock(sk);
+-		goto unlock;
++	if (sock_flag(sk, SOCK_DEAD)) {
++		if (mptcp_check_close_timeout(sk)) {
++			inet_sk_state_store(sk, TCP_CLOSE);
++			mptcp_do_fastclose(sk);
++		}
++		if (sk->sk_state == TCP_CLOSE) {
++			__mptcp_destroy_sock(sk);
++			goto unlock;
++		}
+ 	}
+ 
+ 	if (test_and_clear_bit(MPTCP_WORK_CLOSE_SUBFLOW, &msk->flags))
+@@ -2850,6 +2870,18 @@ static void __mptcp_destroy_sock(struct sock *sk)
+ 	sock_put(sk);
+ }
+ 
++static __poll_t mptcp_check_readable(struct mptcp_sock *msk)
++{
++	/* Concurrent splices from sk_receive_queue into receive_queue will
++	 * always show at least one non-empty queue when checked in this order.
++	 */
++	if (skb_queue_empty_lockless(&((struct sock *)msk)->sk_receive_queue) &&
++	    skb_queue_empty_lockless(&msk->receive_queue))
++		return 0;
++
++	return EPOLLIN | EPOLLRDNORM;
++}
++
+ bool __mptcp_close(struct sock *sk, long timeout)
+ {
+ 	struct mptcp_subflow_context *subflow;
+@@ -2863,8 +2895,13 @@ bool __mptcp_close(struct sock *sk, long timeout)
+ 		goto cleanup;
+ 	}
+ 
+-	if (mptcp_close_state(sk))
++	if (mptcp_check_readable(msk)) {
++		/* the msk has read data, do the MPTCP equivalent of TCP reset */
++		inet_sk_state_store(sk, TCP_CLOSE);
++		mptcp_do_fastclose(sk);
++	} else if (mptcp_close_state(sk)) {
+ 		__mptcp_wr_shutdown(sk);
++	}
+ 
+ 	sk_stream_wait_close(sk, timeout);
+ 
+@@ -3681,18 +3718,6 @@ static int mptcp_stream_accept(struct socket *sock, struct socket *newsock,
+ 	return err;
+ }
+ 
+-static __poll_t mptcp_check_readable(struct mptcp_sock *msk)
+-{
+-	/* Concurrent splices from sk_receive_queue into receive_queue will
+-	 * always show at least one non-empty queue when checked in this order.
+-	 */
+-	if (skb_queue_empty_lockless(&((struct sock *)msk)->sk_receive_queue) &&
+-	    skb_queue_empty_lockless(&msk->receive_queue))
+-		return 0;
+-
+-	return EPOLLIN | EPOLLRDNORM;
+-}
+-
+ static __poll_t mptcp_check_writeable(struct mptcp_sock *msk)
+ {
+ 	struct sock *sk = (struct sock *)msk;
 -- 
 2.37.3
 
