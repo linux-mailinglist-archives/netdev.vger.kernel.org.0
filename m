@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A5C85F03F7
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 06:56:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C3205F03F4
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 06:55:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230507AbiI3Ezm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 00:55:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41652 "EHLO
+        id S230102AbiI3Eze (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 00:55:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230193AbiI3Ez3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 00:55:29 -0400
-Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E06B115BDE
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 21:55:07 -0700 (PDT)
-Received: by mail-qk1-x72e.google.com with SMTP id i17so2167360qkk.12
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 21:55:07 -0700 (PDT)
+        with ESMTP id S230496AbiI3Ez2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 00:55:28 -0400
+Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E1F31162CC
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 21:55:09 -0700 (PDT)
+Received: by mail-qv1-xf30.google.com with SMTP id d1so2208898qvs.0
+        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 21:55:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=bc+iFbFWXwF9CHw32ftfzShfDEeqnlGNgX0fMuKNr/k=;
-        b=gVBjV19gqR0nBEFrgldD/UjuPKw/7T3Bkq4W4ur1WaYob+4c9NqKvO3iv78yhAsxbj
-         G5LDFaiQ8401+obQhmWMqUkqCxEHFMyJf6qtv9Aqh5KptWPMrFvpLROwW66wb7DQlDG9
-         uijFF3fK4Ln6f5H91ajcuoZpRnVuLOgMGUz7J3g5S680sU48W41AEJNzrKrhzHTZ/PJw
-         gftJ8wUVBnV5guPLcubvR4Rn2Oay5khpAUHfjganIUyM5SJhN3GB+PhAM+ykkCj4SHLR
-         N+iU2ILSJ8BKCxzYtUdK7CpNVIr1hw6BFTAuDqF+W6MYIGKof1y3/JsRJHnPqJFKMtMv
-         KxMw==
+        bh=vyoWUCAskGobFqxOR5uj1j2NUhtSVKk5WBoJwN5wJOM=;
+        b=asHZFb/VUKMgzK4CVEmiLt+7uvI3UgwPfhzeCvPcUXHotPBSp6ci0hPrhgVlkbOk7m
+         IGTfg4b+Fil/tliyX9UwsjVRNC9TjgezYtvmC6RSNoDTM2hc0ypUoqoytCrRuzYZTZTJ
+         f1ftj5TBtDFaWrVqXdQUkGm+IrAD6GeD7JG2z6v3wcAbP2jyPurdVmteFHky7re4dbB8
+         8vICKWmue9x6oU/uo8tOXEK+hctsieuYsnlvrInsnOE6je0B8MaNFrnVi+oJi4uxzyax
+         eSkjAdOJ5Rs63k6Y/830MzXKrzhNB/qRP5FRrr3pQ7mjvK1jS0yKSts7FJinUotF1xvn
+         3BdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=bc+iFbFWXwF9CHw32ftfzShfDEeqnlGNgX0fMuKNr/k=;
-        b=4oBvW0ElFcV1+aoRTmUUYIZ32/oBg8dhSRS4NhT+9lPd2nD0VPXOq8eWUE8cS+CPbG
-         uqh173E8EYa4E0rdPeo+iLgn6UMVGcf1Q7y5PuHXIhmsiQnLDPPnDlPFtGiXrmcMnX9y
-         WIpMxA7TNFkk1ki7ix+orT3//Df2W8xz5tj7Y3amKCZz7z+APItDt+MPbQ0AyrMFhWe8
-         eg7tFmEBfnwSFn5mC2OtoH5G2a9RrEB/v2VoP7qUMP8CdU/C3UdCkw4kmMR4wqgHJqx1
-         dBjnUsJPPX7wLFbEw1HCM14O4e/z335sBYl3Ti8XTOINE/7YyHTIPNkJhDaW9BijiX4C
-         t5oQ==
-X-Gm-Message-State: ACrzQf0RDRwFg4bM//p3bHojWUIgNtkb0LL00kgtV2bWo0d2KfpNfBhy
-        sborVBlA4Kn+VielhnlnTqI=
-X-Google-Smtp-Source: AMsMyM6gOoa0Df/hfET+CznaLC1kv8anmVQ/M69K9cT95Au92Puh82Yd7HbcISK1Y7uqFVMqGGFBrQ==
-X-Received: by 2002:a05:620a:4013:b0:6ce:a0ff:13da with SMTP id h19-20020a05620a401300b006cea0ff13damr4776600qko.530.1664513636032;
-        Thu, 29 Sep 2022 21:53:56 -0700 (PDT)
+        bh=vyoWUCAskGobFqxOR5uj1j2NUhtSVKk5WBoJwN5wJOM=;
+        b=Rhwwh8q7dseTMS0aMUcUhFstNmbVgGttgsLlkQKBv1ag5zYuErOWcAMFYDgXtbJqAE
+         XB5ERtlpOfbKjJoM1bDscyN6+N2CXplDjt7yfQG4VcBsntUGkRnvo+yqcCWOt9CDorII
+         dMdAqWgcofFBDvDklW0v0wSQ60HxUxE3sXFyC4uutUfVxbcLfAKTK87HfEKqcziY8eO3
+         SlBiI/GPAfqq2N+PhcTzOk1HmVWzThPays54tY4cc/5239ZR6VVyDWF6ZIQtUi48duV3
+         HqEZlN2JCbaMjdQuAtM5LOVbsmkWWjgYRe0TOlu3BlcUsB6zoa4TDeA4saMdlqCVrIyK
+         i0Vw==
+X-Gm-Message-State: ACrzQf1kOs4o4SYaUtlzwNwX993qM/WT4O64g1rtFYvhJkMkOGI7VfLh
+        AeG64MlVTFKy4zh6k4lWmbjarb5PYrgUeg==
+X-Google-Smtp-Source: AMsMyM6yjw5FYY7askqAW41YfrgMmNQtYYFIGH9AA0uBFZdq4PhWlcPB2pNxtRRxXBlwATO9dGgAAw==
+X-Received: by 2002:ad4:5d43:0:b0:4af:9350:440d with SMTP id jk3-20020ad45d43000000b004af9350440dmr5452602qvb.115.1664513637642;
+        Thu, 29 Sep 2022 21:53:57 -0700 (PDT)
 Received: from mubashirq.c.googlers.com.com (74.206.145.34.bc.googleusercontent.com. [34.145.206.74])
-        by smtp.gmail.com with ESMTPSA id de9-20020a05620a370900b006bb82221013sm1550059qkb.0.2022.09.29.21.53.55
+        by smtp.gmail.com with ESMTPSA id de9-20020a05620a370900b006bb82221013sm1550059qkb.0.2022.09.29.21.53.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Sep 2022 21:53:55 -0700 (PDT)
+        Thu, 29 Sep 2022 21:53:57 -0700 (PDT)
 From:   Mubashir Adnan Qureshi <mubashirmaq@gmail.com>
 To:     David Miller <davem@davemloft.net>
 Cc:     netdev@vger.kernel.org, kuba@kernel.org,
@@ -55,9 +55,9 @@ Cc:     netdev@vger.kernel.org, kuba@kernel.org,
         Yuchung Cheng <ycheng@google.com>,
         Neal Cardwell <ncardwell@google.com>,
         Eric Dumazet <edumazet@google.com>
-Subject: [PATCH net-next v2 4/5] tcp: add u32 counter in tcp_sock and an SNMP counter for PLB
-Date:   Fri, 30 Sep 2022 04:53:19 +0000
-Message-Id: <20220930045320.5252-5-mubashirmaq@gmail.com>
+Subject: [PATCH net-next v2 5/5] tcp: add rcv_wnd and plb_rehash to TCP_INFO
+Date:   Fri, 30 Sep 2022 04:53:20 +0000
+Message-Id: <20220930045320.5252-6-mubashirmaq@gmail.com>
 X-Mailer: git-send-email 2.38.0.rc1.362.ged0d419d3c-goog
 In-Reply-To: <20220930045320.5252-1-mubashirmaq@gmail.com>
 References: <20220929142447.3821638-1-mubashirmaq@gmail.com>
@@ -76,118 +76,48 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Mubashir Adnan Qureshi <mubashirq@google.com>
 
-A u32 counter is added to tcp_sock for counting the number of PLB
-triggered rehashes for a TCP connection. An SNMP counter is also
-added to count overall PLB triggered rehash events for a host. These
-counters are hooked up to PLB implementation for DCTCP.
-
-TCP_NLA_REHASH is added to SCM_TIMESTAMPING_OPT_STATS that reports
-the rehash attempts triggered due to PLB or timeouts. This gives
-a historical view of sustained congestion or timeouts experienced
-by the TCP connection.
+rcv_wnd can be useful to diagnose TCP performance where receiver window
+becomes the bottleneck. rehash reports the PLB and timeout triggered
+rehash attempts by the TCP connection.
 
 Signed-off-by: Mubashir Adnan Qureshi <mubashirq@google.com>
 Signed-off-by: Yuchung Cheng <ycheng@google.com>
 Signed-off-by: Neal Cardwell <ncardwell@google.com>
 Reviewed-by: Eric Dumazet <edumazet@google.com>
 ---
- include/linux/tcp.h       | 1 +
- include/uapi/linux/snmp.h | 1 +
- include/uapi/linux/tcp.h  | 1 +
- net/ipv4/proc.c           | 1 +
- net/ipv4/tcp.c            | 3 +++
- net/ipv4/tcp_plb.c        | 2 ++
- 6 files changed, 9 insertions(+)
+ include/uapi/linux/tcp.h | 5 +++++
+ net/ipv4/tcp.c           | 2 ++
+ 2 files changed, 7 insertions(+)
 
-diff --git a/include/linux/tcp.h b/include/linux/tcp.h
-index a9fbe22732c3..332870bb09fc 100644
---- a/include/linux/tcp.h
-+++ b/include/linux/tcp.h
-@@ -417,6 +417,7 @@ struct tcp_sock {
- 		u32		  probe_seq_start;
- 		u32		  probe_seq_end;
- 	} mtu_probe;
-+	u32     plb_rehash;     /* PLB-triggered rehash attempts */
- 	u32	mtu_info; /* We received an ICMP_FRAG_NEEDED / ICMPV6_PKT_TOOBIG
- 			   * while socket was owned by user.
- 			   */
-diff --git a/include/uapi/linux/snmp.h b/include/uapi/linux/snmp.h
-index 4d7470036a8b..6600cb0164c2 100644
---- a/include/uapi/linux/snmp.h
-+++ b/include/uapi/linux/snmp.h
-@@ -292,6 +292,7 @@ enum
- 	LINUX_MIB_TCPDSACKIGNOREDDUBIOUS,	/* TCPDSACKIgnoredDubious */
- 	LINUX_MIB_TCPMIGRATEREQSUCCESS,		/* TCPMigrateReqSuccess */
- 	LINUX_MIB_TCPMIGRATEREQFAILURE,		/* TCPMigrateReqFailure */
-+	LINUX_MIB_TCPPLBREHASH,			/* TCPPLBRehash */
- 	__LINUX_MIB_MAX
- };
- 
 diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
-index 8fc09e8638b3..c9abe86eda5f 100644
+index c9abe86eda5f..879eeb0a084b 100644
 --- a/include/uapi/linux/tcp.h
 +++ b/include/uapi/linux/tcp.h
-@@ -315,6 +315,7 @@ enum {
- 	TCP_NLA_BYTES_NOTSENT,	/* Bytes in write queue not yet sent */
- 	TCP_NLA_EDT,		/* Earliest departure time (CLOCK_MONOTONIC) */
- 	TCP_NLA_TTL,		/* TTL or hop limit of a packet received */
-+	TCP_NLA_REHASH,         /* PLB and timeout triggered rehash attempts */
+@@ -284,6 +284,11 @@ struct tcp_info {
+ 	__u32	tcpi_snd_wnd;	     /* peer's advertised receive window after
+ 				      * scaling (bytes)
+ 				      */
++	__u32	tcpi_rcv_wnd;	     /* local advertised receive window after
++				      * scaling (bytes)
++				      */
++
++	__u32   tcpi_rehash;         /* PLB or timeout triggered rehash attempts */
  };
  
- /* for TCP_MD5SIG socket option */
-diff --git a/net/ipv4/proc.c b/net/ipv4/proc.c
-index 5386f460bd20..f88daace9de3 100644
---- a/net/ipv4/proc.c
-+++ b/net/ipv4/proc.c
-@@ -297,6 +297,7 @@ static const struct snmp_mib snmp4_net_list[] = {
- 	SNMP_MIB_ITEM("TCPDSACKIgnoredDubious", LINUX_MIB_TCPDSACKIGNOREDDUBIOUS),
- 	SNMP_MIB_ITEM("TCPMigrateReqSuccess", LINUX_MIB_TCPMIGRATEREQSUCCESS),
- 	SNMP_MIB_ITEM("TCPMigrateReqFailure", LINUX_MIB_TCPMIGRATEREQFAILURE),
-+	SNMP_MIB_ITEM("TCPPLBRehash", LINUX_MIB_TCPPLBREHASH),
- 	SNMP_MIB_SENTINEL
- };
- 
+ /* netlink attributes types for SCM_TIMESTAMPING_OPT_STATS */
 diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 648b5c54bb32..685c06c6d33f 100644
+index 685c06c6d33f..a0b518f63c3a 100644
 --- a/net/ipv4/tcp.c
 +++ b/net/ipv4/tcp.c
-@@ -3173,6 +3173,7 @@ int tcp_disconnect(struct sock *sk, int flags)
- 	tp->sacked_out = 0;
- 	tp->tlp_high_seq = 0;
- 	tp->last_oow_ack_time = 0;
-+	tp->plb_rehash = 0;
- 	/* There's a bubble in the pipe until at least the first ACK. */
- 	tp->app_limited = ~0U;
- 	tp->rack.mstamp = 0;
-@@ -3969,6 +3970,7 @@ static size_t tcp_opt_stats_get_size(void)
- 		nla_total_size(sizeof(u32)) + /* TCP_NLA_BYTES_NOTSENT */
- 		nla_total_size_64bit(sizeof(u64)) + /* TCP_NLA_EDT */
- 		nla_total_size(sizeof(u8)) + /* TCP_NLA_TTL */
-+		nla_total_size(sizeof(u32)) + /* TCP_NLA_REHASH */
- 		0;
+@@ -3936,6 +3936,8 @@ void tcp_get_info(struct sock *sk, struct tcp_info *info)
+ 	info->tcpi_reord_seen = tp->reord_seen;
+ 	info->tcpi_rcv_ooopack = tp->rcv_ooopack;
+ 	info->tcpi_snd_wnd = tp->snd_wnd;
++	info->tcpi_rcv_wnd = tp->rcv_wnd;
++	info->tcpi_rehash = tp->plb_rehash + tp->timeout_rehash;
+ 	info->tcpi_fastopen_client_fail = tp->fastopen_client_fail;
+ 	unlock_sock_fast(sk, slow);
  }
- 
-@@ -4045,6 +4047,7 @@ struct sk_buff *tcp_get_timestamping_opt_stats(const struct sock *sk,
- 		nla_put_u8(stats, TCP_NLA_TTL,
- 			   tcp_skb_ttl_or_hop_limit(ack_skb));
- 
-+	nla_put_u32(stats, TCP_NLA_REHASH, tp->plb_rehash + tp->timeout_rehash);
- 	return stats;
- }
- 
-diff --git a/net/ipv4/tcp_plb.c b/net/ipv4/tcp_plb.c
-index 26ffc5a45f53..04f4cac8645b 100644
---- a/net/ipv4/tcp_plb.c
-+++ b/net/ipv4/tcp_plb.c
-@@ -73,6 +73,8 @@ void tcp_plb_check_rehash(struct sock *sk, struct tcp_plb_state *plb)
- 	if (!plb->pause_until && (can_idle_rehash || can_force_rehash)) {
- 		sk_rethink_txhash(sk);
- 		plb->consec_cong_rounds = 0;
-+		tcp_sk(sk)->plb_rehash++;
-+		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPPLBREHASH);
- 	}
- }
- EXPORT_SYMBOL_GPL(tcp_plb_check_rehash);
 -- 
 2.38.0.rc1.362.ged0d419d3c-goog
 
