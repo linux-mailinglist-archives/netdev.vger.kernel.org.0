@@ -2,86 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F6F55F0DDC
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 16:45:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2EF85F0DE7
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 16:48:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230382AbiI3Opy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 10:45:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53532 "EHLO
+        id S231451AbiI3OsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 10:48:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230482AbiI3Opu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 10:45:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17B96691B1
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 07:45:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AC0BA62350
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 14:45:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4BBCC433D6;
-        Fri, 30 Sep 2022 14:45:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664549148;
-        bh=0XcVjxNfa4BwVCnJRuSVkTefkRGOYRt5nAJfvvk+lCg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XihF327+7ZuJhGxPbTFQsaCZxfoAwL4VPxzzyGd2apdCEeHFTxeZ3hadAdRvvjTZ7
-         9yRC9hjmAQvduPFHsoic/FIvEWflheL+++EJFlvYukDE7/n7qPX2ow+O3ZbHtYxP6W
-         E/+k8Wf3bxTKp7KyXaEa8PvAAKKfJrqOuSC6i8DMIKErmlk+poIrb/CVscAhjARDbR
-         l8UfrK5jlnRKGs1RKKthA0xoDOLzunPQVLWhcx84DvkN0dTNxvt/08OzjLsrn94Knv
-         ScuvRk9CmK7ut3tSwOdmiJIGsBi/Sc/fYjcTQdbjdhTGbxHa5bPpOFX/CcNOE7347m
-         7gYAs6AVT/ZIw==
-Date:   Fri, 30 Sep 2022 07:45:46 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Jacob Keller <jacob.e.keller@intel.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>, Michael Walle <michael@walle.cc>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org
-Subject: Re: PHY firmware update method
-Message-ID: <20220930074546.0873af1d@kernel.org>
-In-Reply-To: <Yzbi335GQGbGLL4k@lunn.ch>
-References: <bf53b9b3660f992d53fe8d68ea29124a@walle.cc>
-        <YzQ96z73MneBIfvZ@lunn.ch>
-        <YzVDZ4qrBnANEUpm@nanopsycho>
-        <YzWPXcf8kXrd73PC@lunn.ch>
-        <20220929071209.77b9d6ce@kernel.org>
-        <YzWxV/eqD2UF8GHt@lunn.ch>
-        <Yzan3ZgAw3ImHfeK@nanopsycho>
-        <Yzbi335GQGbGLL4k@lunn.ch>
+        with ESMTP id S231473AbiI3OsF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 10:48:05 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00FF9129FC2;
+        Fri, 30 Sep 2022 07:47:59 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1oeHIu-000305-IO; Fri, 30 Sep 2022 16:47:52 +0200
+Date:   Fri, 30 Sep 2022 16:47:52 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netfilter-devel@vger.kernel.org, Phil Sutter <phil@nwl.cc>
+Subject: Re: [PATCH 1/1] netfilter: nft_fib: Fix for rpath check with VRF
+ devices
+Message-ID: <20220930144752.GA8349@breakpoint.cc>
+References: <20220928113908.4525-1-fw@strlen.de>
+ <20220928113908.4525-2-fw@strlen.de>
+ <20220930141048.GA10057@localhost.localdomain>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220930141048.GA10057@localhost.localdomain>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 30 Sep 2022 14:36:47 +0200 Andrew Lunn wrote:
-> > Yeah, I tend to agree here. I believe that phylib should probably find a
-> > separate way to to the flash.
-> > 
-> > But perhaps it could be a non-user-facing flash. I mean, what if phylib
-> > has internal routine to:
-> > 1) do query phy fw version
-> > 2) load a fw bin related for this phy (easy phy driver may provide the
-> > 				       path/name of the file)
-> > 3) flash if there is a newer version available  
+Guillaume Nault <gnault@redhat.com> wrote:
+> On Wed, Sep 28, 2022 at 01:39:08PM +0200, Florian Westphal wrote:
+> > diff --git a/net/ipv6/netfilter/nft_fib_ipv6.c b/net/ipv6/netfilter/nft_fib_ipv6.c
+> > index 8970d0b4faeb..1d7e520d9966 100644
+> > --- a/net/ipv6/netfilter/nft_fib_ipv6.c
+> > +++ b/net/ipv6/netfilter/nft_fib_ipv6.c
+> > @@ -41,6 +41,9 @@ static int nft_fib6_flowi_init(struct flowi6 *fl6, const struct nft_fib *priv,
+> >  	if (ipv6_addr_type(&fl6->daddr) & IPV6_ADDR_LINKLOCAL) {
+> >  		lookup_flags |= RT6_LOOKUP_F_IFACE;
+> >  		fl6->flowi6_oif = get_ifindex(dev ? dev : pkt->skb->dev);
+> > +	} else if ((priv->flags & NFTA_FIB_F_IIF) &&
+> > +		   (netif_is_l3_master(dev) || netif_is_l3_slave(dev))) {
+> > +		fl6->flowi6_oif = dev->ifindex;
+> >  	}
 > 
-> That was my first suggestion. One problem is getting the version from
-> the binary blob firmware. But this seems like a generic problem for
-> linux-firmware, so maybe somebody has worked on a standardised header
-> which can be preppended with this meta data?
+> I'm not very familiar with nft code, but it seems dev can be NULL here,
+> so netif_is_l3_master() can dereference a NULL pointer.
 
-Not that I know, perhaps the folks that do laptop FW upgrade have some
-thoughts https://fwupd.org/ 
+No, this should never be NULL, NFTA_FIB_F_IIF is restricted to
+input/prerouting chains.
 
-Actually maybe there's something in DMTF, does PLDM have standard image
-format? Adding Jake. Not sure if PHYs would use it tho :S 
+> Shouldn't we test dev in the 'else if' condition?
 
-What's the interface that the PHY FW exposes? Ben H was of the opinion
-that we should just expose the raw mtd devices.. just saying..
+We could do that in case it makes review easier.
