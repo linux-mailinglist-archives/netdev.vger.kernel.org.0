@@ -2,183 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CAA455F14D3
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 23:28:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B56845F14FD
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 23:36:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231342AbiI3V2i convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 30 Sep 2022 17:28:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38818 "EHLO
+        id S232288AbiI3Vf6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 17:35:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230088AbiI3V2h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 17:28:37 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D8D112EDA2
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 14:28:35 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-60-btexz_hZP5eLBde4-fXgNg-1; Fri, 30 Sep 2022 22:28:31 +0100
-X-MC-Unique: btexz_hZP5eLBde4-fXgNg-1
-Received: from AcuMS.Aculab.com (10.202.163.4) by AcuMS.aculab.com
- (10.202.163.4) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Fri, 30 Sep
- 2022 22:28:31 +0100
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.040; Fri, 30 Sep 2022 22:28:31 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     "'Eric W. Biederman'" <ebiederm@xmission.com>
-CC:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>
-Subject: RE: [CFT][PATCH] proc: Update /proc/net to point at the accessing
- threads network namespace
-Thread-Topic: [CFT][PATCH] proc: Update /proc/net to point at the accessing
- threads network namespace
-Thread-Index: AQHY1Ogi381Lc0KOOEGaF1/0a4qSLq34eHYA
-Date:   Fri, 30 Sep 2022 21:28:31 +0000
-Message-ID: <9bf5e96b383e4a979618cb0f729cb833@AcuMS.aculab.com>
-References: <dacfc18d6667421d97127451eafe4f29@AcuMS.aculab.com>
-        <CAHk-=wgS_XpzEL140ovgLwGv6yXvV7Pu9nKJbCuo5pnRfcEbvg@mail.gmail.com>
-        <YzXo/DIwq65ypHNH@ZenIV> <YzXrOFpPStEwZH/O@ZenIV>
-        <CAHk-=wjLgM06JrS21W4g2VquqCLab+qu_My67cv6xuH7NhgHpw@mail.gmail.com>
-        <YzXzXNAgcJeJ3M0d@ZenIV> <YzYK7k3tgZy3Pwht@ZenIV>
-        <CAHk-=wihPFFE5KcsmOnOm1CALQDWqC1JTvrwSGBS08N5avVmEA@mail.gmail.com>
-        <871qrt4ymg.fsf@email.froward.int.ebiederm.org>
-        <87ill53igy.fsf_-_@email.froward.int.ebiederm.org>
-        <ea14288676b045c29960651a649d66b9@AcuMS.aculab.com>
- <87a66g25wm.fsf@email.froward.int.ebiederm.org>
-In-Reply-To: <87a66g25wm.fsf@email.froward.int.ebiederm.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S232267AbiI3Vf4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 17:35:56 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A93621005F9;
+        Fri, 30 Sep 2022 14:35:54 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id u69so5202167pgd.2;
+        Fri, 30 Sep 2022 14:35:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=aehKvygnNVnwWIxV17HHVrvOkb3OM5/7lXvhi9XQib4=;
+        b=hgj9Yl3opLNyN2ew9Q72rD0g/i+rSTBxJNWHJ1VKEs1YIef3zenlNa+PH3ragLaEcB
+         8DEi1uNY0VHu264f09M+K7PE3Q45r9pnMmCyPWH9iwEbj3JN7wSIgjAFHdQjnfPkWMmF
+         Yb+52NPmmRnPymZQ9j0133QdR3pJ2Bre6rh1SUxrDj6hdI2TJio8BEiTtUUuU2NKWcW+
+         Equa8gom0eh6vNMtgz0at4/xqrjaioGFjEXxhifySTVMHbZ86vH8Hb0EULn+8dcUrfc5
+         RwXTaZIMjRhUQGcnYFA7JFqFeylaeQ03f6qTrxT0SE0ZQa7izehmpYsliKDjtrWVxuRY
+         nd3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=aehKvygnNVnwWIxV17HHVrvOkb3OM5/7lXvhi9XQib4=;
+        b=H4MCHSVh0tJiqARDSwQ7HWjD2AO+P1Vu/b7e7wijXEDgbPEVn2Q+3zsKxOU5vmiLbR
+         Nj8TUTst+ygWbZGlveYGpvoBCnx0IbuKlX5Lk9XmiCQ4GYYjfPGGc47G89mYaHERB90W
+         WbgIXsGV6b7ZG2D1NpLdz4iQGFB/y5fD7C4OIoRksMRoeNclnszVyv0+sIgOePP6zNeC
+         ooCPVj6rR/hOezjhytUki1F82XzTMXZmS+Fsm94f1qcrOHNRbosG4DYgXRHWYlANfqnG
+         1PL4MbVuU2FbAv3bxMX/ohuGUsApZErlRz4mkLAQFk/ybWg6nEAyQSbRnlk/vEeutkYa
+         seRA==
+X-Gm-Message-State: ACrzQf2hZLMtTU4gwFeyQ2vKB/3Sul3tFOok029IgQ8HGSON7wE4w21f
+        mrz+Wy2DD9pAfNPCd3PMG4s=
+X-Google-Smtp-Source: AMsMyM7ljjvr/bTd87ubin7tY29cHxp/Q0Tk6wUqxZ/dLU67g9RXnqJiRcazjrNGaWQuggLKJDN5iQ==
+X-Received: by 2002:a63:18c:0:b0:43c:b924:342c with SMTP id 134-20020a63018c000000b0043cb924342cmr9144890pgb.496.1664573754047;
+        Fri, 30 Sep 2022 14:35:54 -0700 (PDT)
+Received: from y.dmz.cipunited.com ([104.28.245.203])
+        by smtp.gmail.com with ESMTPSA id y17-20020a170903011100b001788494b764sm2314192plc.231.2022.09.30.14.35.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 Sep 2022 14:35:53 -0700 (PDT)
+From:   David Yang <mmyangfl@gmail.com>
+To:     mmyangfl@gmail.com
+Cc:     Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3] net: mv643xx_eth: support MII/GMII/RGMII modes for Kirkwood
+Date:   Sat,  1 Oct 2022 05:35:34 +0800
+Message-Id: <20220930213534.962336-1-mmyangfl@gmail.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <YzdaAlg77SyrgjE3@lunn.ch>
+References: <YzdaAlg77SyrgjE3@lunn.ch>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric W. Biederman
-> Sent: 30 September 2022 17:17
-> 
-> David Laight <David.Laight@ACULAB.COM> writes:
-> 
-> > From: Eric W. Biederman
-> >> Sent: 29 September 2022 23:48
-> >>
-> >> Since common apparmor policies don't allow access /proc/tgid/task/tid/net
-> >> point the code at /proc/tid/net instead.
-> >>
-> >> Link: https://lkml.kernel.org/r/dacfc18d6667421d97127451eafe4f29@AcuMS.aculab.com
-> >> Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
-> >> ---
-> >>
-> >> I have only compile tested this.  All of the boiler plate is a copy of
-> >> /proc/self and /proc/thread-self, so it should work.
-> >>
-> >> Can David or someone who cares and has access to the limited apparmor
-> >> configurations could test this to make certain this works?
-> >
-> > It works with a minor 'cut & paste' fixup.
-> > (Not nested inside a program that changes namespaces.)
-> 
-> Were there any apparmor problems?  I just want to confirm that is what
-> you tested.
+Support mode switch properly, which is not available before.
 
-I know nothing about apparmor - I just tested that /proc/net
-pointed to somewhere that looked right.
+If SoC has two Ethernet controllers, by setting both of them into MII
+mode, the first controller enters GMII mode, while the second
+controller is effectively disabled. This requires configuring (and
+maybe enabling) the second controller in the device tree, even though
+it cannot be used.
 
-> Assuming not this patch looks like it reveals a solution to this
-> issue.
-> 
-> > Although if it is reasonable for /proc/net -> /proc/tid/net
-> > why not just make /proc/thread-self -> /proc/tid
-> > Then /proc/net can just be thread-self/net
-> 
-> There are minor differences between the process directories that
-> tend to report process wide information and task directories that
-> only report some of the same information per-task.  So in general
-> thread-self makes much more sense pointing to a per-task directory.
-> 
-> The hidden /proc/tid/ directories use the per process code to generate
-> themselves.  The difference is that they assume the tid is the leading
-> thread instead of the other process.  Those directories are all a bit of
-> a scrambled mess.  I was suspecting the other day we might be able to
-> fix gdb and make them go away entirely in a decade or so.
-> 
-> So I don't think it makes sense in general to point /proc/thread-self at
-> the hidden per /proc/tid/ directories.
+Signed-off-by: David Yang <mmyangfl@gmail.com>
+---
+v2: clarify modes work on controllers, read default value from PSC1
+v3: Kirkwood only
+ drivers/net/ethernet/marvell/mv643xx_eth.c | 48 ++++++++++++++++++++--
+ 1 file changed, 44 insertions(+), 4 deletions(-)
 
-Ok - I hadn't actually looked in them.
-But if you have a long-term plan to remove them directing /proc/net
-thought them might not be such a good idea.
-
-> > I have wondered if the namespace lookup could be done as a 'special'
-> > directory lookup for "net" rather that changing everything when the
-> > namespace is changed.
-> > I can imagine scenarios where a thread needs to keep changing
-> > between two namespaces, at the moment I suspect that is rather
-> > more expensive than a lookup and changing the reference counts.
-> 
-> You can always open the net directories once, and then change as
-> an open directory will not change between namespaces.
-
-Part of the problem is that changing the net namespace isn't
-enough, you also have to remount /sys - which isn't entirely
-trivial.
-It might be possibly to mount a network namespace version
-of /sys on a different mountpoint - I've not tried very
-hard to do that.
-
-> > Notwithstanding the apparmor issues, /proc/net could actuall be
-> > a symlink to (say) /proc/net_namespaces/namespace_name with
-> > readlink returning the name based on the threads actual namespace.
-> 
-> There really aren't good names for namespaces at the kernel level.  As
-> one of their use cases is to make process migration possible between
-> machines.  So any kernel level name would need to be migrated as well.
-> So those kernel level names would need a name in another namespace,
-> or an extra namespace would have to be created for those names.
-
-Network namespaces do seem to have names.
-Although I gave up working out how to change to a named network
-namespace from within the kernel (especially in a non-GPL module).
-
-...
-> > FWIW I'm pretty sure there a sequence involving unshare() that
-> > can get you out of a chroot - but I've not found it yet.
-> 
-> Out of a chroot is essentially just:
-> 	chdir("/");
->         chroot("/somedir");
->         chdir("../../../../../../../../../../../../../../../..");
-
-A chdir() inside a chroot anchors at the base of the chroot.
-fchdir() will get you out if you have an open fd to a directory
-outside the chroot.
-The 'usual' way out requires a process outside the chroot to
-just use mvdir().
-But there isn't supposed to be a way to get out.
-
-I can certainly get the /proc symlinks (for a copy of /proc
-mounted inside a chroot) to report the full paths for files
-that exist inside the chroot.
-These should (and do normally) truncate at the chroot base.
-(This all happened because a pivot_root() was failing.)
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+diff --git a/drivers/net/ethernet/marvell/mv643xx_eth.c b/drivers/net/ethernet/marvell/mv643xx_eth.c
+index b6be0552a..355bb8ba7 100644
+--- a/drivers/net/ethernet/marvell/mv643xx_eth.c
++++ b/drivers/net/ethernet/marvell/mv643xx_eth.c
+@@ -108,6 +108,7 @@ static char mv643xx_eth_driver_version[] = "1.4";
+ #define TXQ_COMMAND			0x0048
+ #define TXQ_FIX_PRIO_CONF		0x004c
+ #define PORT_SERIAL_CONTROL1		0x004c
++#define  RGMII_EN			0x00000008
+ #define  CLK125_BYPASS_EN		0x00000010
+ #define TX_BW_RATE			0x0050
+ #define TX_BW_MTU			0x0058
+@@ -367,6 +368,7 @@ struct mv643xx_eth_private {
+ 	struct mv643xx_eth_shared_private *shared;
+ 	void __iomem *base;
+ 	int port_num;
++	bool kirkwood;
+ 
+ 	struct net_device *dev;
+ 
+@@ -1215,6 +1217,7 @@ static void mv643xx_eth_adjust_link(struct net_device *dev)
+ 	             DISABLE_AUTO_NEG_SPEED_GMII |
+ 		     DISABLE_AUTO_NEG_FOR_FLOW_CTRL |
+ 		     DISABLE_AUTO_NEG_FOR_DUPLEX;
++	u32 psc1r;
+ 
+ 	if (dev->phydev->autoneg == AUTONEG_ENABLE) {
+ 		/* enable auto negotiation */
+@@ -1245,6 +1248,36 @@ static void mv643xx_eth_adjust_link(struct net_device *dev)
+ 
+ out_write:
+ 	wrlp(mp, PORT_SERIAL_CONTROL, pscr);
++
++	if (mp->kirkwood) {
++		psc1r = rdlp(mp, PORT_SERIAL_CONTROL1);
++		/* On Kirkwood with two Ethernet controllers, if both of them
++		 * have RGMII_EN disabled, the first controller will be in GMII
++		 * mode and the second one is effectively disabled, instead of
++		 * two MII interfaces.
++		 *
++		 * To enable GMII in the first controller, the second one must
++		 * also be configured (and may be enabled) with RGMII_EN
++		 * disabled too, even though it cannot be used at all.
++		 */
++		switch (dev->phydev->interface) {
++		case PHY_INTERFACE_MODE_MII:
++		case PHY_INTERFACE_MODE_GMII:
++			psc1r &= ~RGMII_EN;
++			break;
++		case PHY_INTERFACE_MODE_RGMII:
++		case PHY_INTERFACE_MODE_RGMII_ID:
++		case PHY_INTERFACE_MODE_RGMII_RXID:
++		case PHY_INTERFACE_MODE_RGMII_TXID:
++			psc1r |= RGMII_EN;
++			break;
++		default:
++			/* Unknown; don't touch */
++			break;
++		}
++
++		wrlp(mp, PORT_SERIAL_CONTROL1, psc1r);
++	}
+ }
+ 
+ /* statistics ***************************************************************/
+@@ -2975,11 +3008,16 @@ static int get_phy_mode(struct mv643xx_eth_private *mp)
+ 	if (dev->of_node)
+ 		err = of_get_phy_mode(dev->of_node, &iface);
+ 
+-	/* Historical default if unspecified. We could also read/write
+-	 * the interface state in the PSC1
++	/* Read the interface state in the PSC1.
++	 *
++	 * Modes of two devices may interact on Kirkwood. Currently there is no
++	 * way to detect another device within this scope; blindly set MII
++	 * here.
+ 	 */
+ 	if (!dev->of_node || err)
+-		iface = PHY_INTERFACE_MODE_GMII;
++		iface = rdlp(mp, PORT_SERIAL_CONTROL1) & RGMII_EN ?
++			PHY_INTERFACE_MODE_RGMII : mp->kirkwood ?
++			PHY_INTERFACE_MODE_MII : PHY_INTERFACE_MODE_GMII;
+ 	return iface;
+ }
+ 
+@@ -3124,9 +3162,11 @@ static int mv643xx_eth_probe(struct platform_device *pdev)
+ 	 * all other SoCs/System Controllers using this driver.
+ 	 */
+ 	if (of_device_is_compatible(pdev->dev.of_node,
+-				    "marvell,kirkwood-eth-port"))
++				    "marvell,kirkwood-eth-port")) {
+ 		wrlp(mp, PORT_SERIAL_CONTROL1,
+ 		     rdlp(mp, PORT_SERIAL_CONTROL1) & ~CLK125_BYPASS_EN);
++		mp->kirkwood = 1;
++	}
+ 
+ 	/*
+ 	 * Start with a default rate, and if there is a clock, allow
+-- 
+2.35.1
 
