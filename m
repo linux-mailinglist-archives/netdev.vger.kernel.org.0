@@ -2,83 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C54FB5F04C9
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 08:30:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BA5A5F04D2
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 08:32:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230148AbiI3GaH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 02:30:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54576 "EHLO
+        id S229892AbiI3GcI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 02:32:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230091AbiI3GaH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 02:30:07 -0400
-Received: from mail-m975.mail.163.com (mail-m975.mail.163.com [123.126.97.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D0CA42D1D8;
-        Thu, 29 Sep 2022 23:29:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=TeC9G
-        wZOg9/n2xD1WVfGuCZoPfKYMRWZ2un6aSADwLY=; b=T5B8wTcUH2T9lpmd4DtsY
-        xbwZWA5gAysDiN99ay9JZfXLrzI2IAtq02ZtA6/D3aXbu3vMcK8mJ7/DCeI0XHDN
-        aMhgeMjv6NaCDm5i5UGLFp+z4rPN3Ytt6xJpmbFVxcyt7Ri7q/sj2KpaS9ZSVpOH
-        b1WG+x3kcpgXuTQbACMc4w=
-Received: from localhost.localdomain (unknown [36.112.3.106])
-        by smtp5 (Coremail) with SMTP id HdxpCgAXcgicjDZjHxHXgQ--.36896S4;
-        Fri, 30 Sep 2022 14:29:03 +0800 (CST)
-From:   Jianglei Nie <niejianglei2021@163.com>
-To:     aelior@marvell.com, skalluru@marvell.com, manishc@marvell.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jianglei Nie <niejianglei2021@163.com>
-Subject: [PATCH] bnx2x: fix potential memory leak in bnx2x_tpa_stop()
-Date:   Fri, 30 Sep 2022 14:28:43 +0800
-Message-Id: <20220930062843.5654-1-niejianglei2021@163.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S230079AbiI3GcG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 02:32:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C978140F29;
+        Thu, 29 Sep 2022 23:32:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C119FB82750;
+        Fri, 30 Sep 2022 06:32:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 319D5C433D6;
+        Fri, 30 Sep 2022 06:31:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664519522;
+        bh=T9dC/HN79/DV+nRzTJI8gIGMCmG0JWdym4OCQAzTBEk=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=reDRkwVCoNYdIzvsrLWowvtxCgc4rqmladYi3QzhXsRjvU2U2j5dzga9Kf+8BnqFZ
+         9SsNdsIDqMLdNRY0hm+ElHdd1lHAZP20oEqT8nnTdvlJBy8fngkAX2/M+aMB2JUda3
+         JNIrL98ycwrNZYsjfMPMSGktC8NZ5lma+J3mBeam2KZ47tsXHrJUcGMiEysc/KyDUE
+         2LULu9lh+vyhNRodgdNHJ69RhXOZzKeAXpgPQSvfJgx0sMxjGjVQUmtS95tEZCTMp/
+         yIqn/oR4/zG6UeS5J1ns0nMzL/mpqZBGoBaBhItnxVKm0TfWFsgC11uSi4lrKNe9hl
+         f1H/+3yKoG3GA==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: HdxpCgAXcgicjDZjHxHXgQ--.36896S4
-X-Coremail-Antispam: 1Uf129KBjvJXoWrKF13CF1rWw17Gry3WF1rZwb_yoW8Jr1kp3
-        yqqFyDAr18trsYka1DJ3W8Zr98Z3y5t34j9ay3Z3yF93y5tr4UJrsrKay29ryDJrWrKr12
-        vr45Z3sxXa4qvw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0ziCPfPUUUUU=
-X-Originating-IP: [36.112.3.106]
-X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/1tbiWw+MjGI0Wa2DewAAsO
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH][next] carl9170: Replace zero-length array with
+ DECLARE_FLEX_ARRAY() helper
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <YzIdWc8QSdZFHBYg@work>
+References: <YzIdWc8QSdZFHBYg@work>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     Christian Lamparter <chunkeey@googlemail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <166451949633.6083.142608063936593125.kvalo@kernel.org>
+Date:   Fri, 30 Sep 2022 06:31:59 +0000 (UTC)
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-bnx2x_tpa_stop() allocates a memory chunk from new_data with
-bnx2x_frag_alloc(). The new_data should be freed when gets some error.
-But when "pad + len > fp->rx_buf_size" is true, bnx2x_tpa_stop() returns
-without releasing the new_data, which will lead to a memory leak.
+"Gustavo A. R. Silva" <gustavoars@kernel.org> wrote:
 
-We should free the new_data with bnx2x_frag_free() when "pad + len >
-fp->rx_buf_size" is true.
+> Zero-length arrays are deprecated and we are moving towards adopting
+> C99 flexible-array members, instead. So, replace zero-length arrays
+> declarations in anonymous union with the new DECLARE_FLEX_ARRAY()
+> helper macro.
+> 
+> This helper allows for flexible-array members in unions.
+> 
+> Link: https://github.com/KSPP/linux/issues/193
+> Link: https://github.com/KSPP/linux/issues/215
+> Link: https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+> Reviewed-by: Kees Cook <keescook@chromium.org>
+> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
 
-Fixes: 07b0f00964def8af9321cfd6c4a7e84f6362f728 ("bnx2x: fix possible
-panic under memory stress")
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
----
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c | 1 +
- 1 file changed, 1 insertion(+)
+Patch applied to ath-next branch of ath.git, thanks.
 
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-index 712b5595bc39..24bfc65e28e1 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-@@ -789,6 +789,7 @@ static void bnx2x_tpa_stop(struct bnx2x *bp, struct bnx2x_fastpath *fp,
- 			BNX2X_ERR("skb_put is about to fail...  pad %d  len %d  rx_buf_size %d\n",
- 				  pad, len, fp->rx_buf_size);
- 			bnx2x_panic();
-+			bnx2x_frag_free(fp, new_data);
- 			return;
- 		}
- #endif
+9ec6e20776ab carl9170: Replace zero-length array with DECLARE_FLEX_ARRAY() helper
+
 -- 
-2.25.1
+https://patchwork.kernel.org/project/linux-wireless/patch/YzIdWc8QSdZFHBYg@work/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
