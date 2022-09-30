@@ -2,358 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B22B75F067C
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 10:32:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0B145F06C6
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 10:45:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230463AbiI3Icj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 04:32:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36790 "EHLO
+        id S231179AbiI3IpP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 04:45:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230435AbiI3Icg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 04:32:36 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 107A8105D6E;
-        Fri, 30 Sep 2022 01:32:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1664526754; x=1696062754;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=zH67B2lsi//GnVtzo6a5QycTJ3Q3AcLbv3cECyJd+jI=;
-  b=m346LobR+s6BeK7U3eYJx2bThZWjz77cN6A+JpXD+fueL6ZdSXqwQs5Q
-   ClwPHFWmGEUATBOkbguhuQJMxifW5lZYb8J9enBpgO2JcpINIJz0oITtG
-   zcI+rBNDwHO7vdTVOUBWm9BaZWh9sizOBzYC2p7zJkMRfrE7oLJIdlhME
-   7crk2b4FWZ5njgAT0LaXIYUYfoWd2TzgzSQURgDSCZlrYc9rp/WS1UGVv
-   YYzPz6USxi7PM4Hd42nXGy4iZgn2wCbAdpmVQDTJjO4psh3nRodOUCg0h
-   axvQZkm0Fspk3T4TV1TkGD/vPQZnoNIhh4PRm4Qgj6GIxIDzPsaeBE/g3
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.93,357,1654585200"; 
-   d="scan'208";a="116203060"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Sep 2022 01:32:34 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Fri, 30 Sep 2022 01:32:33 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Fri, 30 Sep 2022 01:32:31 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <linux@armlinux.org.uk>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next 2/2] net: lan966x: Add port mirroring support using tc-matchall
-Date:   Fri, 30 Sep 2022 10:35:40 +0200
-Message-ID: <20220930083540.347686-3-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220930083540.347686-1-horatiu.vultur@microchip.com>
-References: <20220930083540.347686-1-horatiu.vultur@microchip.com>
+        with ESMTP id S230358AbiI3IpL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 04:45:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4792CB6D50
+        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 01:45:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1664527508;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=POEMDpnSjKp+ZQIh0/juiKLLmUTnramG9iN46SPV3UI=;
+        b=du0c0XRptHddSU6tXbQzIcXjBm/w6ZMBi57/L1BUi3cQEyV9ErVAbN223S5G/YKI2glatr
+        Lgtsz2CIDPJ7tMtssaf+B9SzBfyRdELnyMJicY8RRV1RRCOSL3ScKtU2ilE4mTnmvIpVEr
+        Ah+xICSoPLVPf5EFA1f1HmF01SYKyj0=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-261-928VsJBnP-epZNkuBUvpdg-1; Fri, 30 Sep 2022 04:45:06 -0400
+X-MC-Unique: 928VsJBnP-epZNkuBUvpdg-1
+Received: by mail-wm1-f69.google.com with SMTP id e3-20020a05600c218300b003b4e4582006so1089879wme.6
+        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 01:45:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=POEMDpnSjKp+ZQIh0/juiKLLmUTnramG9iN46SPV3UI=;
+        b=OTawQUmtiGag4cBUWs5sif6zxCgqLf6OJuRaZ/XQ/LFlmYEgt+qnnUG+xBNdTeiNSZ
+         z8ZAWWWYr2GJbqH32cnuOgNFm6Q7N4sz3OnHEeULwoKkvxhnNC9TFMe28vGDvdcaG8e1
+         eMdVJn2IhdXGMeIpADg/swKoFZuj9hSVRxap1PIzzkhAwm/MTmKGodYaSUhwJMhxlFA6
+         7tthqTnwoLP9KFMbRMiZ+gSgYdCSisGFxpciVFWzPSMyXI0+ZXgq2Lt0Xo1OnGdh7msR
+         PB01m+GF4i/KAUPwSdYGg80QeMmw9O3t9KRs0z2AXt2xL2A89tr27O7rzRpwkaExmoq2
+         S7Lw==
+X-Gm-Message-State: ACrzQf2RtNGfM49AKL/URlwVB9EFEv89wRFTvF7r1HHwk9sjbdNghV8B
+        /ZBPo9v20e6yB6j3hdhJQe4kqpYMK5jPXst2Ec1OHC93bku3FGSm7Lt/vVeSFIr8uusy6ZUKK93
+        riUPLmDfziY2p6jUw
+X-Received: by 2002:a05:600c:1549:b0:3b4:8fd7:af4 with SMTP id f9-20020a05600c154900b003b48fd70af4mr4938102wmg.100.1664527505513;
+        Fri, 30 Sep 2022 01:45:05 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM5GmTtoCh2XpdBafVwqYKZc1d9OHJgQkOJBRJaN5y82hWn7d1v94lKlKaVG3yLCK/3PUAJ21g==
+X-Received: by 2002:a05:600c:1549:b0:3b4:8fd7:af4 with SMTP id f9-20020a05600c154900b003b48fd70af4mr4938087wmg.100.1664527505161;
+        Fri, 30 Sep 2022 01:45:05 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-100-179.dyn.eolo.it. [146.241.100.179])
+        by smtp.gmail.com with ESMTPSA id j19-20020a05600c1c1300b003a5ca627333sm7285158wms.8.2022.09.30.01.45.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 Sep 2022 01:45:04 -0700 (PDT)
+Message-ID: <82d7338e085c156f044ec7bc55c7d78418439963.camel@redhat.com>
+Subject: Re: [PATCH net-next] gro: add support of (hw)gro packets to gro
+ stack
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Coco Li <lixiaoyan@google.com>
+Date:   Fri, 30 Sep 2022 10:45:03 +0200
+In-Reply-To: <20220930014458.1219217-1-eric.dumazet@gmail.com>
+References: <20220930014458.1219217-1-eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for port mirroring. It is possible to mirror only one port
-at a time and it is possible to have both ingress and egress mirroring.
-Frames injected by the CPU don't get egress mirrored because they are
-bypassing the analyzer module.
+On Thu, 2022-09-29 at 18:44 -0700, Eric Dumazet wrote:
+> From: Coco Li <lixiaoyan@google.com>
+> 
+> Current GRO stack only supports incoming packets containing
+> one frame/MSS.
+> 
+> This patch changes GRO to accept packets that are already GRO.
+> 
+> HW-GRO (aka RSC for some vendors) is very often limited in presence
+> of interleaved packets. Linux SW GRO stack can complete the job
+> and provide larger GRO packets, thus reducing rate of ACK packets
+> and cpu overhead.
+> 
+> This also means BIG TCP can be used, even if HW-GRO/RSC was
+> able to cook ~64 KB GRO packets.
+> 
+> Co-Developed-by: Eric Dumazet <edumazet@google.com>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Signed-off-by: Coco Li <lixiaoyan@google.com>
+> ---
+>  net/core/gro.c         | 13 +++++++++----
+>  net/ipv4/tcp_offload.c |  7 ++++++-
+>  2 files changed, 15 insertions(+), 5 deletions(-)
+> 
+> diff --git a/net/core/gro.c b/net/core/gro.c
+> index b4190eb084672fb4f2be8b437eccb4e8507ff63f..d8e159c4bdf553508cd123bee4f5251908ede9fe 100644
+> --- a/net/core/gro.c
+> +++ b/net/core/gro.c
+> @@ -160,6 +160,7 @@ int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb)
+>  	unsigned int gro_max_size;
+>  	unsigned int new_truesize;
+>  	struct sk_buff *lp;
+> +	int segs;
+>  
+>  	/* pairs with WRITE_ONCE() in netif_set_gro_max_size() */
+>  	gro_max_size = READ_ONCE(p->dev->gro_max_size);
+> @@ -175,6 +176,7 @@ int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb)
+>  			return -E2BIG;
+>  	}
+>  
+> +	segs = NAPI_GRO_CB(skb)->count;
+>  	lp = NAPI_GRO_CB(p)->last;
+>  	pinfo = skb_shinfo(lp);
+>  
+> @@ -265,7 +267,7 @@ int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb)
+>  	lp = p;
+>  
+>  done:
+> -	NAPI_GRO_CB(p)->count++;
+> +	NAPI_GRO_CB(p)->count += segs;
+>  	p->data_len += len;
+>  	p->truesize += delta_truesize;
+>  	p->len += len;
+> @@ -496,8 +498,10 @@ static enum gro_result dev_gro_receive(struct napi_struct *napi, struct sk_buff
+>  		BUILD_BUG_ON(!IS_ALIGNED(offsetof(struct napi_gro_cb, zeroed),
+>  					 sizeof(u32))); /* Avoid slow unaligned acc */
+>  		*(u32 *)&NAPI_GRO_CB(skb)->zeroed = 0;
+> -		NAPI_GRO_CB(skb)->flush = skb_is_gso(skb) || skb_has_frag_list(skb);
+> +		NAPI_GRO_CB(skb)->flush = skb_has_frag_list(skb);
+>  		NAPI_GRO_CB(skb)->is_atomic = 1;
+> +		NAPI_GRO_CB(skb)->count = max_t(u16, 1,
+> +						skb_shinfo(skb)->gso_segs);
+>  
+>  		/* Setup for GRO checksum validation */
+>  		switch (skb->ip_summed) {
+> @@ -545,10 +549,10 @@ static enum gro_result dev_gro_receive(struct napi_struct *napi, struct sk_buff
+>  	else
+>  		gro_list->count++;
+>  
+> -	NAPI_GRO_CB(skb)->count = 1;
+>  	NAPI_GRO_CB(skb)->age = jiffies;
+>  	NAPI_GRO_CB(skb)->last = skb;
+> -	skb_shinfo(skb)->gso_size = skb_gro_len(skb);
+> +	if (!skb_is_gso(skb))
+> +		skb_shinfo(skb)->gso_size = skb_gro_len(skb);
+>  	list_add(&skb->list, &gro_list->list);
+>  	ret = GRO_HELD;
+>  
+> @@ -660,6 +664,7 @@ static void napi_reuse_skb(struct napi_struct *napi, struct sk_buff *skb)
+>  
+>  	skb->encapsulation = 0;
+>  	skb_shinfo(skb)->gso_type = 0;
+> +	skb_shinfo(skb)->gso_size = 0;
+>  	if (unlikely(skb->slow_gro)) {
+>  		skb_orphan(skb);
+>  		skb_ext_reset(skb);
+> diff --git a/net/ipv4/tcp_offload.c b/net/ipv4/tcp_offload.c
+> index a844a0d38482d916251f3aca4555c75c9770820c..0223bbfe9568064b47bc6227d342a4d25c9edfa7 100644
+> --- a/net/ipv4/tcp_offload.c
+> +++ b/net/ipv4/tcp_offload.c
+> @@ -255,7 +255,12 @@ struct sk_buff *tcp_gro_receive(struct list_head *head, struct sk_buff *skb)
+>  
+>  	mss = skb_shinfo(p)->gso_size;
+>  
+> -	flush |= (len - 1) >= mss;
+> +	if (skb_is_gso(skb)) {
+> +		flush |= (mss != skb_shinfo(skb)->gso_size);
+> +		flush |= ((skb_gro_len(p) % mss) != 0);
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- .../net/ethernet/microchip/lan966x/Makefile   |   2 +-
- .../ethernet/microchip/lan966x/lan966x_main.h |  20 +++
- .../microchip/lan966x/lan966x_mirror.c        | 138 ++++++++++++++++++
- .../ethernet/microchip/lan966x/lan966x_regs.h |  24 +++
- .../microchip/lan966x/lan966x_tc_matchall.c   |  10 ++
- 5 files changed, 193 insertions(+), 1 deletion(-)
- create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_mirror.c
+If I read correctly, the '(skb_gro_len(p) % mss) != 0' codition can be
+true only if 'p' was an HW GRO packet (or at least a gso packet before
+entering the GRO engine), am I correct? In that case 'p' staged into
+the GRO hash up to the next packet (skb), just to be flushed.
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/Makefile b/drivers/net/ethernet/microchip/lan966x/Makefile
-index d00f7b67b6ecb..962f7c5f9e7dd 100644
---- a/drivers/net/ethernet/microchip/lan966x/Makefile
-+++ b/drivers/net/ethernet/microchip/lan966x/Makefile
-@@ -11,4 +11,4 @@ lan966x-switch-objs  := lan966x_main.o lan966x_phylink.o lan966x_port.o \
- 			lan966x_ptp.o lan966x_fdma.o lan966x_lag.o \
- 			lan966x_tc.o lan966x_mqprio.o lan966x_taprio.o \
- 			lan966x_tbf.o lan966x_cbs.o lan966x_ets.o \
--			lan966x_tc_matchall.o lan966x_police.o
-+			lan966x_tc_matchall.o lan966x_police.o lan966x_mirror.o
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-index 10ffc6a76d39e..9656071b8289e 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-@@ -264,6 +264,11 @@ struct lan966x {
- 	struct lan966x_rx rx;
- 	struct lan966x_tx tx;
- 	struct napi_struct napi;
-+
-+	/* Mirror */
-+	struct lan966x_port *mirror_monitor;
-+	u32 mirror_mask[2];
-+	u32 mirror_count;
- };
- 
- struct lan966x_port_config {
-@@ -279,7 +284,10 @@ struct lan966x_port_config {
- struct lan966x_port_tc {
- 	bool ingress_shared_block;
- 	unsigned long police_id;
-+	unsigned long ingress_mirror_id;
-+	unsigned long egress_mirror_id;
- 	struct flow_stats police_stat;
-+	struct flow_stats mirror_stat;
- };
- 
- struct lan966x_port {
-@@ -505,6 +513,18 @@ int lan966x_police_port_del(struct lan966x_port *port,
- void lan966x_police_port_stats(struct lan966x_port *port,
- 			       struct flow_stats *stats);
- 
-+int lan966x_mirror_port_add(struct lan966x_port *port,
-+			    struct flow_action_entry *action,
-+			    unsigned long mirror_id,
-+			    bool ingress,
-+			    struct netlink_ext_ack *extack);
-+int lan966x_mirror_port_del(struct lan966x_port *port,
-+			    bool ingress,
-+			    struct netlink_ext_ack *extack);
-+void lan966x_mirror_port_stats(struct lan966x_port *port,
-+			       struct flow_stats *stats,
-+			       bool ingress);
-+
- static inline void __iomem *lan_addr(void __iomem *base[],
- 				     int id, int tinst, int tcnt,
- 				     int gbase, int ginst,
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_mirror.c b/drivers/net/ethernet/microchip/lan966x/lan966x_mirror.c
-new file mode 100644
-index 0000000000000..7e1ba3f40c35e
---- /dev/null
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_mirror.c
-@@ -0,0 +1,138 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+
-+#include "lan966x_main.h"
-+
-+int lan966x_mirror_port_add(struct lan966x_port *port,
-+			    struct flow_action_entry *action,
-+			    unsigned long mirror_id,
-+			    bool ingress,
-+			    struct netlink_ext_ack *extack)
-+{
-+	struct lan966x *lan966x = port->lan966x;
-+	struct lan966x_port *monitor_port;
-+
-+	if (!lan966x_netdevice_check(action->dev)) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Destination not an lan966x port");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	monitor_port = netdev_priv(action->dev);
-+
-+	if (lan966x->mirror_mask[ingress] & BIT(port->chip_port)) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Mirror already exists");
-+		return -EEXIST;
-+	}
-+
-+	if (lan966x->mirror_monitor &&
-+	    lan966x->mirror_monitor != monitor_port) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Cannot change mirror port while in use");
-+		return -EBUSY;
-+	}
-+
-+	if (port == monitor_port) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Cannot mirror the monitor port");
-+		return -EINVAL;
-+	}
-+
-+	lan966x->mirror_mask[ingress] |= BIT(port->chip_port);
-+
-+	lan966x->mirror_monitor = monitor_port;
-+	lan_wr(BIT(monitor_port->chip_port), lan966x, ANA_MIRRORPORTS);
-+
-+	if (ingress) {
-+		lan_rmw(ANA_PORT_CFG_SRC_MIRROR_ENA_SET(1),
-+			ANA_PORT_CFG_SRC_MIRROR_ENA,
-+			lan966x, ANA_PORT_CFG(port->chip_port));
-+	} else {
-+		lan_wr(lan966x->mirror_mask[0], lan966x,
-+		       ANA_EMIRRORPORTS);
-+	}
-+
-+	lan966x->mirror_count++;
-+
-+	if (ingress)
-+		port->tc.ingress_mirror_id = mirror_id;
-+	else
-+		port->tc.egress_mirror_id = mirror_id;
-+
-+	return 0;
-+}
-+
-+int lan966x_mirror_port_del(struct lan966x_port *port,
-+			    bool ingress,
-+			    struct netlink_ext_ack *extack)
-+{
-+	struct lan966x *lan966x = port->lan966x;
-+
-+	if (!(lan966x->mirror_mask[ingress] & BIT(port->chip_port))) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "There is no mirroring for this port");
-+		return -ENOENT;
-+	}
-+
-+	lan966x->mirror_mask[ingress] &= ~BIT(port->chip_port);
-+
-+	if (ingress) {
-+		lan_rmw(ANA_PORT_CFG_SRC_MIRROR_ENA_SET(0),
-+			ANA_PORT_CFG_SRC_MIRROR_ENA,
-+			lan966x, ANA_PORT_CFG(port->chip_port));
-+	} else {
-+		lan_wr(lan966x->mirror_mask[0], lan966x,
-+		       ANA_EMIRRORPORTS);
-+	}
-+
-+	lan966x->mirror_count--;
-+
-+	if (lan966x->mirror_count == 0) {
-+		lan966x->mirror_monitor = NULL;
-+		lan_wr(0, lan966x, ANA_MIRRORPORTS);
-+	}
-+
-+	if (ingress)
-+		port->tc.ingress_mirror_id = 0;
-+	else
-+		port->tc.egress_mirror_id = 0;
-+
-+	return 0;
-+}
-+
-+void lan966x_mirror_port_stats(struct lan966x_port *port,
-+			       struct flow_stats *stats,
-+			       bool ingress)
-+{
-+	struct rtnl_link_stats64 new_stats;
-+	struct flow_stats *old_stats;
-+
-+	old_stats = &port->tc.mirror_stat;
-+	lan966x_stats_get(port->dev, &new_stats);
-+
-+	if (ingress) {
-+		flow_stats_update(stats,
-+				  new_stats.rx_bytes - old_stats->bytes,
-+				  new_stats.rx_packets - old_stats->pkts,
-+				  new_stats.rx_dropped - old_stats->drops,
-+				  old_stats->lastused,
-+				  FLOW_ACTION_HW_STATS_IMMEDIATE);
-+
-+		old_stats->bytes = new_stats.rx_bytes;
-+		old_stats->pkts = new_stats.rx_packets;
-+		old_stats->drops = new_stats.rx_dropped;
-+		old_stats->lastused = jiffies;
-+	} else {
-+		flow_stats_update(stats,
-+				  new_stats.tx_bytes - old_stats->bytes,
-+				  new_stats.tx_packets - old_stats->pkts,
-+				  new_stats.tx_dropped - old_stats->drops,
-+				  old_stats->lastused,
-+				  FLOW_ACTION_HW_STATS_IMMEDIATE);
-+
-+		old_stats->bytes = new_stats.tx_bytes;
-+		old_stats->pkts = new_stats.tx_packets;
-+		old_stats->drops = new_stats.tx_dropped;
-+		old_stats->lastused = jiffies;
-+	}
-+}
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h b/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
-index 5cb88d81afbac..1d90b93dd417a 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
-@@ -90,6 +90,24 @@ enum lan966x_target {
- #define ANA_AUTOAGE_AGE_PERIOD_GET(x)\
- 	FIELD_GET(ANA_AUTOAGE_AGE_PERIOD, x)
- 
-+/*      ANA:ANA:MIRRORPORTS */
-+#define ANA_MIRRORPORTS           __REG(TARGET_ANA, 0, 1, 29824, 0, 1, 244, 60, 0, 1, 4)
-+
-+#define ANA_MIRRORPORTS_MIRRORPORTS              GENMASK(8, 0)
-+#define ANA_MIRRORPORTS_MIRRORPORTS_SET(x)\
-+	FIELD_PREP(ANA_MIRRORPORTS_MIRRORPORTS, x)
-+#define ANA_MIRRORPORTS_MIRRORPORTS_GET(x)\
-+	FIELD_GET(ANA_MIRRORPORTS_MIRRORPORTS, x)
-+
-+/*      ANA:ANA:EMIRRORPORTS */
-+#define ANA_EMIRRORPORTS          __REG(TARGET_ANA, 0, 1, 29824, 0, 1, 244, 64, 0, 1, 4)
-+
-+#define ANA_EMIRRORPORTS_EMIRRORPORTS            GENMASK(8, 0)
-+#define ANA_EMIRRORPORTS_EMIRRORPORTS_SET(x)\
-+	FIELD_PREP(ANA_EMIRRORPORTS_EMIRRORPORTS, x)
-+#define ANA_EMIRRORPORTS_EMIRRORPORTS_GET(x)\
-+	FIELD_GET(ANA_EMIRRORPORTS_EMIRRORPORTS, x)
-+
- /*      ANA:ANA:FLOODING */
- #define ANA_FLOODING(r)           __REG(TARGET_ANA, 0, 1, 29824, 0, 1, 244, 68, r, 8, 4)
- 
-@@ -330,6 +348,12 @@ enum lan966x_target {
- /*      ANA:PORT:PORT_CFG */
- #define ANA_PORT_CFG(g)           __REG(TARGET_ANA, 0, 1, 28672, g, 9, 128, 112, 0, 1, 4)
- 
-+#define ANA_PORT_CFG_SRC_MIRROR_ENA              BIT(13)
-+#define ANA_PORT_CFG_SRC_MIRROR_ENA_SET(x)\
-+	FIELD_PREP(ANA_PORT_CFG_SRC_MIRROR_ENA, x)
-+#define ANA_PORT_CFG_SRC_MIRROR_ENA_GET(x)\
-+	FIELD_GET(ANA_PORT_CFG_SRC_MIRROR_ENA, x)
-+
- #define ANA_PORT_CFG_LEARNAUTO                   BIT(6)
- #define ANA_PORT_CFG_LEARNAUTO_SET(x)\
- 	FIELD_PREP(ANA_PORT_CFG_LEARNAUTO, x)
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_tc_matchall.c b/drivers/net/ethernet/microchip/lan966x/lan966x_tc_matchall.c
-index dc065b556ef7b..7368433b9277a 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_tc_matchall.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_tc_matchall.c
-@@ -20,6 +20,9 @@ static int lan966x_tc_matchall_add(struct lan966x_port *port,
- 		return lan966x_police_port_add(port, &f->rule->action, act,
- 					       f->cookie, ingress,
- 					       f->common.extack);
-+	case FLOW_ACTION_MIRRED:
-+		return lan966x_mirror_port_add(port, act, f->cookie,
-+					       ingress, f->common.extack);
- 	default:
- 		NL_SET_ERR_MSG_MOD(f->common.extack,
- 				   "Unsupported action");
-@@ -36,6 +39,10 @@ static int lan966x_tc_matchall_del(struct lan966x_port *port,
- 	if (f->cookie == port->tc.police_id) {
- 		return lan966x_police_port_del(port, f->cookie,
- 					       f->common.extack);
-+	} else if (f->cookie == port->tc.ingress_mirror_id ||
-+		   f->cookie == port->tc.egress_mirror_id) {
-+		return lan966x_mirror_port_del(port, ingress,
-+					       f->common.extack);
- 	} else {
- 		NL_SET_ERR_MSG_MOD(f->common.extack,
- 				   "Unsupported action");
-@@ -51,6 +58,9 @@ static int lan966x_tc_matchall_stats(struct lan966x_port *port,
- {
- 	if (f->cookie == port->tc.police_id) {
- 		lan966x_police_port_stats(port, &f->stats);
-+	} else if (f->cookie == port->tc.ingress_mirror_id ||
-+		   f->cookie == port->tc.egress_mirror_id) {
-+		lan966x_mirror_port_stats(port, &f->stats, ingress);
- 	} else {
- 		NL_SET_ERR_MSG_MOD(f->common.extack,
- 				   "Unsupported action");
--- 
-2.33.0
+Should the above condition be instead:
+
+		flush |= ((skb_gro_len(skb) % mss) != 0);
+?
+
+And possibly use that condition while initializing
+NAPI_GRO_CB(skb)->flush in dev_gro_receive() ?
+
+> +	} else {
+> +		flush |= (len - 1) >= mss;
+> +	}
+>  	flush |= (ntohl(th2->seq) + skb_gro_len(p)) ^ ntohl(th->seq);
+>  #ifdef CONFIG_TLS_DEVICE
+>  	flush |= p->decrypted ^ skb->decrypted;
+
+I could not find a NIC doing HW GRO for UDP, so I guess we don't need
+something similar in udp_offload, right?
+
+Thanks!
+
+Paolo
 
