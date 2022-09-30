@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 87A585F141E
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 22:49:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 980205F141D
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 22:49:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232381AbiI3UtV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 16:49:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42690 "EHLO
+        id S232371AbiI3UtS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 16:49:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232197AbiI3UtE (ORCPT
+        with ESMTP id S232161AbiI3UtE (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 16:49:04 -0400
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0A5963FD6
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0D7063FF2
         for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 13:49:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1664570942; x=1696106942;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=yaZI98PzYiJWjAQu6NN9En/PwNyOg7Uoa43RmvHvDIU=;
-  b=X2YNXUEsiELBmOkCVuZUeYSKeFevFeZEwZRP5reqR2cZAN6TA/bHO4CY
-   ZgMIR+/ANKDkOiaBvYpKm1Fiji3RHpw0Py3QmFgaO316Gmm8vSvJrPEvy
-   Q6gOJlMWmELtkSVzuMse2BoTs7J5N5EhlB5ApL4sXuKoxg1KDcRgmrtDe
-   OFl53uMVo0WkuvvKbyaRZucl2GUEgN0u9DEONAA1uN7LirD4lVerg624x
-   pOa655Kj6R9GKEAJXz2X+XXMPmVVjeZKjlrGNbLWq5SScXuLNThCaGTq+
-   fD9OBH2JjzieFwVQr2VAzGiyAnGLs83vcwuuUbRDvhEKs5EeCvdmLjdNM
+  bh=3Hu+Gtt6+LmYGSMBBIPhfanU4zssRd6VKNRzdFzK7jo=;
+  b=aBCeXt7GptP1uKetx4mLuvEkXqZTN5Y04bm1XcdCs5bwsXmF6eDX4sOO
+   6GVukHwrBMSI4eX7DvjVn69ykKSdOPt32EjndvF9wgwvsK/1FZ7SyXzuB
+   OGzF36A+p3Q8lcft4/PQX+53QFoDZjDZ+BztHGnjsyIwet5NeLb/zrau/
+   7VYHojV4PFQFuiozHhzIKubW6MJJYiIEcjIqxiaaIYSApff+a6LLYcWF3
+   v/kBFIrteM6tEAA/jCSNpPyfT26CLM2XbD/rG0pNBtmN6IpvtvuMy9ken
+   EgcrhccUY8At8RiqpCnOxW1ChajDZJLMdXxTMGAglli9DGGzbBgnC0mD9
    g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10486"; a="289445994"
+X-IronPort-AV: E=McAfee;i="6500,9779,10486"; a="289445997"
 X-IronPort-AV: E=Sophos;i="5.93,358,1654585200"; 
-   d="scan'208";a="289445994"
+   d="scan'208";a="289445997"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2022 13:49:01 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10486"; a="691383700"
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2022 13:49:02 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10486"; a="691383704"
 X-IronPort-AV: E=Sophos;i="5.93,358,1654585200"; 
-   d="scan'208";a="691383700"
+   d="scan'208";a="691383704"
 Received: from jekeller-desk.amr.corp.intel.com (HELO jekeller-desk.jekeller.internal) ([10.166.241.7])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2022 13:49:00 -0700
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2022 13:49:01 -0700
 From:   Jacob Keller <jacob.e.keller@intel.com>
 To:     netdev@vger.kernel.org
 Cc:     Jacob Keller <jacob.e.keller@intel.com>,
@@ -82,11 +82,10 @@ Cc:     Jacob Keller <jacob.e.keller@intel.com>,
         Linus Walleij <linus.walleij@linaro.org>,
         Wan Jiabing <wanjiabing@vivo.com>,
         Lv Ruyi <lv.ruyi@zte.com.cn>, Arnd Bergmann <arnd@arndb.de>,
-        Shirly Ohnona <shirlyo@nvidia.com>,
-        Gal Pressman <gal@nvidia.com>
-Subject: [net-next v2 5/9] ptp: mlx5: convert to .adjfine and adjust_by_scaled_ppm
-Date:   Fri, 30 Sep 2022 13:48:47 -0700
-Message-Id: <20220930204851.1910059-6-jacob.e.keller@intel.com>
+        UNGLinuxDriver@microchip.com
+Subject: [net-next v2 6/9] ptp: lan743x: remove .adjfreq implementation
+Date:   Fri, 30 Sep 2022 13:48:48 -0700
+Message-Id: <20220930204851.1910059-7-jacob.e.keller@intel.com>
 X-Mailer: git-send-email 2.37.1.394.gc50926e1f488
 In-Reply-To: <20220930204851.1910059-1-jacob.e.keller@intel.com>
 References: <20220930204851.1910059-1-jacob.e.keller@intel.com>
@@ -102,80 +101,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The mlx5 implementation of .adjfreq is implemented in terms of a
-straight forward "base * ppb / 1 billion" calculation.
-
-Convert this to the .adjfine interface and use adjust_by_scaled_ppm for the
-calculation  of the new mult value.
-
-Note that the mlx5_ptp_adjfreq_real_time function expects input in terms of
-ppb, so use the scaled_ppm_to_ppb to convert before passing to this
-function.
+The lan743x driver implements both .adjfreq and .adjfine, but the core PTP
+subsystem prefers .adjfine if implemented. There is no reason to carry a
+.adjfreq implementation, so we can remove it.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Tested-by: Shirly Ohnona <shirlyo@nvidia.com>
-Cc: Gal Pressman <gal@nvidia.com>
-Cc: Saeed Mahameed <saeedm@nvidia.com>
-Cc: Leon Romanovsky <leon@kernel.org>
-Cc: Aya Levin <ayal@nvidia.com>
+Cc: Bryan Whitehead <bryan.whitehead@microchip.com>
+Cc: UNGLinuxDriver@microchip.com
 ---
- .../ethernet/mellanox/mlx5/core/lib/clock.c   | 22 +++++--------------
- 1 file changed, 6 insertions(+), 16 deletions(-)
+ drivers/net/ethernet/microchip/lan743x_ptp.c | 35 --------------------
+ 1 file changed, 35 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c
-index d3a9ae80fd30..69cfe60c558a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c
-@@ -339,35 +339,25 @@ static int mlx5_ptp_adjfreq_real_time(struct mlx5_core_dev *mdev, s32 freq)
- 	return mlx5_set_mtutc(mdev, in, sizeof(in));
+diff --git a/drivers/net/ethernet/microchip/lan743x_ptp.c b/drivers/net/ethernet/microchip/lan743x_ptp.c
+index 6a11e2ceb013..130f88b77cfe 100644
+--- a/drivers/net/ethernet/microchip/lan743x_ptp.c
++++ b/drivers/net/ethernet/microchip/lan743x_ptp.c
+@@ -365,40 +365,6 @@ static int lan743x_ptpci_adjfine(struct ptp_clock_info *ptpci, long scaled_ppm)
+ 	return 0;
  }
  
--static int mlx5_ptp_adjfreq(struct ptp_clock_info *ptp, s32 delta)
-+static int mlx5_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
- {
- 	struct mlx5_clock *clock = container_of(ptp, struct mlx5_clock, ptp_info);
- 	struct mlx5_timer *timer = &clock->timer;
- 	struct mlx5_core_dev *mdev;
- 	unsigned long flags;
--	int neg_adj = 0;
--	u32 diff;
--	u64 adj;
-+	u32 mult;
- 	int err;
- 
- 	mdev = container_of(clock, struct mlx5_core_dev, clock);
--	err = mlx5_ptp_adjfreq_real_time(mdev, delta);
-+	err = mlx5_ptp_adjfreq_real_time(mdev, scaled_ppm_to_ppb(scaled_ppm));
- 	if (err)
- 		return err;
- 
--	if (delta < 0) {
--		neg_adj = 1;
--		delta = -delta;
--	}
+-static int lan743x_ptpci_adjfreq(struct ptp_clock_info *ptpci, s32 delta_ppb)
+-{
+-	struct lan743x_ptp *ptp =
+-		container_of(ptpci, struct lan743x_ptp, ptp_clock_info);
+-	struct lan743x_adapter *adapter =
+-		container_of(ptp, struct lan743x_adapter, ptp);
+-	u32 lan743x_rate_adj = 0;
+-	bool positive = true;
+-	u32 u32_delta = 0;
+-	u64 u64_delta = 0;
 -
--	adj = timer->nominal_c_mult;
--	adj *= delta;
--	diff = div_u64(adj, 1000000000ULL);
-+	mult = (u32)adjust_by_scaled_ppm(timer->nominal_c_mult, scaled_ppm);
- 
- 	write_seqlock_irqsave(&clock->lock, flags);
- 	timecounter_read(&timer->tc);
--	timer->cycles.mult = neg_adj ? timer->nominal_c_mult - diff :
--				       timer->nominal_c_mult + diff;
-+	timer->cycles.mult = mult;
- 	mlx5_update_clock_info_page(mdev);
- 	write_sequnlock_irqrestore(&clock->lock, flags);
- 
-@@ -697,7 +687,7 @@ static const struct ptp_clock_info mlx5_ptp_clock_info = {
- 	.n_per_out	= 0,
- 	.n_pins		= 0,
- 	.pps		= 0,
--	.adjfreq	= mlx5_ptp_adjfreq,
-+	.adjfine	= mlx5_ptp_adjfine,
- 	.adjtime	= mlx5_ptp_adjtime,
- 	.gettimex64	= mlx5_ptp_gettimex,
- 	.settime64	= mlx5_ptp_settime,
+-	if ((delta_ppb < (-LAN743X_PTP_MAX_FREQ_ADJ_IN_PPB)) ||
+-	    delta_ppb > LAN743X_PTP_MAX_FREQ_ADJ_IN_PPB) {
+-		return -EINVAL;
+-	}
+-	if (delta_ppb > 0) {
+-		u32_delta = (u32)delta_ppb;
+-		positive = true;
+-	} else {
+-		u32_delta = (u32)(-delta_ppb);
+-		positive = false;
+-	}
+-	u64_delta = (((u64)u32_delta) << 35);
+-	lan743x_rate_adj = div_u64(u64_delta, 1000000000);
+-
+-	if (positive)
+-		lan743x_rate_adj |= PTP_CLOCK_RATE_ADJ_DIR_;
+-
+-	lan743x_csr_write(adapter, PTP_CLOCK_RATE_ADJ,
+-			  lan743x_rate_adj);
+-
+-	return 0;
+-}
+-
+ static int lan743x_ptpci_adjtime(struct ptp_clock_info *ptpci, s64 delta)
+ {
+ 	struct lan743x_ptp *ptp =
+@@ -1576,7 +1542,6 @@ int lan743x_ptp_open(struct lan743x_adapter *adapter)
+ 	ptp->ptp_clock_info.pps = LAN743X_PTP_N_PPS;
+ 	ptp->ptp_clock_info.pin_config = ptp->pin_config;
+ 	ptp->ptp_clock_info.adjfine = lan743x_ptpci_adjfine;
+-	ptp->ptp_clock_info.adjfreq = lan743x_ptpci_adjfreq;
+ 	ptp->ptp_clock_info.adjtime = lan743x_ptpci_adjtime;
+ 	ptp->ptp_clock_info.gettime64 = lan743x_ptpci_gettime64;
+ 	ptp->ptp_clock_info.getcrosststamp = NULL;
 -- 
 2.37.1.394.gc50926e1f488
 
