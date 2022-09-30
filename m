@@ -2,143 +2,230 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B39BA5F1416
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 22:48:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 328395F1418
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 22:49:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232118AbiI3Usq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 16:48:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41304 "EHLO
+        id S231950AbiI3UtI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 16:49:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231129AbiI3UsV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 16:48:21 -0400
-Received: from mail-vs1-xe30.google.com (mail-vs1-xe30.google.com [IPv6:2607:f8b0:4864:20::e30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C260F63FE4;
-        Fri, 30 Sep 2022 13:48:19 -0700 (PDT)
-Received: by mail-vs1-xe30.google.com with SMTP id m65so6036444vsc.1;
-        Fri, 30 Sep 2022 13:48:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date;
-        bh=yuwnQTGE5wlnDoxgDugIzpWfH4VN4qTBEvv2cRmKUZQ=;
-        b=J05VDP7U/IeQr2Jwd49cOEc4ys00gaF+weYFKup8w3ePORrCJaWy+25982lhkjpFZT
-         UYmWHVrnJHC9lA3pg9GCxXEFrI9TFmlluCv4oePRO227DqoSWxADGb9wfTSJCUM03Lpy
-         c8dyCM37fVP41mjX0Q66/IoX1eiN61Or8pnHmeWIaW694XE2AEsktEii8mnRL8vrKc7L
-         iHdMtY6/iIApIh1YX3qscTaIrcLTW58JoiNRT7/d3e/gMIE5CFEWLH/WRMog4wy0vpIS
-         qvZnrXLJTS3a0uRBsWDRKPMQe3dm71LbgPAQjiW+s+SrSkemqkxnC6ZqlzIYnAlMkbsE
-         lRRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=yuwnQTGE5wlnDoxgDugIzpWfH4VN4qTBEvv2cRmKUZQ=;
-        b=TJJ32OAphSSIAjMJS2LukGPz2ykQDuaAgbKq5byXBUnTqKm6t2/AxzcCmHpvZH/Ro8
-         vJoQsnrXmKWWPKr84H9UY7MxN8iDLCLyCTTY1w1sqJ1PPGSucMeutpOchat0b234cR9b
-         WHDgE2GKv4hM+JDudgzNEkM/vVznUmwh5dQvrxSOBxLQ2eLmf0QmPNy4ap/GHnw9Gprn
-         HlCWNuQkpGS7ATJPjAQQ8dyqb/CwoaNHlSgA/Q7FWqA4kfTw+GORpne0lm58pnJ2FXh1
-         B5O2enaKsA73NKUaaB93DJQPDp1rBCywwnjNMsWj4lUPSEy296tYQHmNvhvf812x/7Cm
-         BQPg==
-X-Gm-Message-State: ACrzQf1Op9EJgrLoxkxBNDNGEHlqFXRS6v+k2JIPR9upy7f62qoeXvV5
-        Z0EM5n8YUPyMFgxbI57DUYhESBfnhuApufLaInM=
-X-Google-Smtp-Source: AMsMyM4uu3nAiRF/NdMKAKSdsaJTQhWYKyWb/zYfUZD+5WSQgSlUXEjwykp6umKbQeil0h+8RLSGk2fGmSmA7J7JDug=
-X-Received: by 2002:a67:b848:0:b0:3a5:bdb6:d6a8 with SMTP id
- o8-20020a67b848000000b003a5bdb6d6a8mr4948554vsh.52.1664570898871; Fri, 30 Sep
- 2022 13:48:18 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220930194923.954551-1-mmyangfl@gmail.com> <YzdRdC1qgZY+8gQk@lunn.ch>
-In-Reply-To: <YzdRdC1qgZY+8gQk@lunn.ch>
-From:   Yangfl <mmyangfl@gmail.com>
-Date:   Sat, 1 Oct 2022 04:47:42 +0800
-Message-ID: <CAAXyoMNmf7YMPZYqimxJMo6W=Z-zMXHE9TjnB-SYNnpit8RV4g@mail.gmail.com>
-Subject: Re: [PATCH] net: mv643xx_eth: support MII/GMII/RGMII modes
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        with ESMTP id S232091AbiI3Us7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 16:48:59 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94D5263FF7
+        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 13:48:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1664570937; x=1696106937;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Ut8BC77pf0Q/rBrHF5EtiJNeYgrsGDqkPbHRGpJFo+0=;
+  b=RgvHvAOX8XU5vGbke45HOQun5gns0xTHJrPk7TSbuJaeo003+mVQM6pi
+   2W8eOiL+2hO1g0lAMlabp5d89iL2dSo2mKP4Ig/NoBXU0HWo+5VL2BGQN
+   9Cm7ReQ74RSDLFIYkl61KwhSQsYeP1v2LVASDt3c2k6Up0X3B42aHPab1
+   FL25ikJQhPDIN1ldSh1p/uew3+IArVHXZAFcTF8EnUTHlHo4YGtYiw9uo
+   XGBcFiF0awiZvYYStJ/AFeUJEWc+wV2Hy5wO4dzU4pnKTK6Tx2jvJu7Ra
+   j4y/ffqGLKjP+jpBIKuu9R4VsvDkJhi4Y2gjwCbUvC2ulNgXGDk/5qRZe
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10486"; a="289445984"
+X-IronPort-AV: E=Sophos;i="5.93,358,1654585200"; 
+   d="scan'208";a="289445984"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2022 13:48:57 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10486"; a="691383675"
+X-IronPort-AV: E=Sophos;i="5.93,358,1654585200"; 
+   d="scan'208";a="691383675"
+Received: from jekeller-desk.amr.corp.intel.com (HELO jekeller-desk.jekeller.internal) ([10.166.241.7])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2022 13:48:55 -0700
+From:   Jacob Keller <jacob.e.keller@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Jacob Keller <jacob.e.keller@intel.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Siva Reddy Kallam <siva.kallam@broadcom.com>,
+        Prashant Sreedharan <prashant@broadcom.com>,
+        Michael Chan <mchan@broadcom.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Bryan Whitehead <bryan.whitehead@microchip.com>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Vivek Thampi <vithampi@vmware.com>,
+        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
+        Jie Wang <wangjie125@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Eran Ben Elisha <eranbe@nvidia.com>,
+        Aya Levin <ayal@nvidia.com>,
+        Cai Huoqing <cai.huoqing@linux.dev>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>, Arnd Bergmann <arnd@arndb.de>
+Subject: [net-next v2 0/9] ptp: convert drivers to .adjfine
+Date:   Fri, 30 Sep 2022 13:48:42 -0700
+Message-Id: <20220930204851.1910059-1-jacob.e.keller@intel.com>
+X-Mailer: git-send-email 2.37.1.394.gc50926e1f488
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrew Lunn <andrew@lunn.ch> =E4=BA=8E2022=E5=B9=B410=E6=9C=881=E6=97=A5=E5=
-=91=A8=E5=85=AD 04:28=E5=86=99=E9=81=93=EF=BC=9A
->
-> On Sat, Oct 01, 2022 at 03:49:23AM +0800, David Yang wrote:
-> > On device reset all ports are automatically set to RGMII mode. MII
-> > mode must be explicitly enabled.
-> >
-> > If SoC has two Ethernet controllers, by setting both of them into MII
-> > mode, the first controller enters GMII mode, while the second
-> > controller is effectively disabled. This requires configuring (and
-> > maybe enabling) the second controller in the device tree, even though
-> > it cannot be used.
-> >
-> > Signed-off-by: David Yang <mmyangfl@gmail.com>
-> > ---
-> >  drivers/net/ethernet/marvell/mv643xx_eth.c | 16 ++++++++++++++++
-> >  1 file changed, 16 insertions(+)
-> >
-> > diff --git a/drivers/net/ethernet/marvell/mv643xx_eth.c b/drivers/net/e=
-thernet/marvell/mv643xx_eth.c
-> > index b6be0552a..e2216ce5e 100644
-> > --- a/drivers/net/ethernet/marvell/mv643xx_eth.c
-> > +++ b/drivers/net/ethernet/marvell/mv643xx_eth.c
-> > @@ -108,6 +108,7 @@ static char mv643xx_eth_driver_version[] =3D "1.4";
-> >  #define TXQ_COMMAND                  0x0048
-> >  #define TXQ_FIX_PRIO_CONF            0x004c
-> >  #define PORT_SERIAL_CONTROL1         0x004c
-> > +#define  RGMII_EN                    0x00000008
-> >  #define  CLK125_BYPASS_EN            0x00000010
-> >  #define TX_BW_RATE                   0x0050
-> >  #define TX_BW_MTU                    0x0058
-> > @@ -1245,6 +1246,21 @@ static void mv643xx_eth_adjust_link(struct net_d=
-evice *dev)
-> >
-> >  out_write:
-> >       wrlp(mp, PORT_SERIAL_CONTROL, pscr);
-> > +
-> > +     /* If two Ethernet controllers present in the SoC, MII modes foll=
-ow the
-> > +      * following matrix:
-> > +      *
-> > +      * Port0 Mode   Port1 Mode      Port0 RGMII_EN  Port1 RGMII_EN
-> > +      * RGMII        RGMII           1               1
-> > +      * RGMII        MII/MMII        1               0
-> > +      * MII/MMII     RGMII           0               1
-> > +      * GMII         N/A             0               0
-> > +      *
-> > +      * To enable GMII on Port 0, Port 1 must also disable RGMII_EN to=
-o.
-> > +      */
-> > +     if (!phy_interface_is_rgmii(dev->phydev))
-> > +             wrlp(mp, PORT_SERIAL_CONTROL1,
-> > +                  rdlp(mp, PORT_SERIAL_CONTROL1) & ~RGMII_EN);
->
-> I could be reading this wrong, but doesn't this break the third line:
->
-> > +      * MII/MMII     RGMII           0               1
->
-> Port 1 probes first, phy_interface is rgmii, so nothing happens, port1
-> RGMII_EN is left true.
->
-> Port 0 then probes, MII/MMII is not RGMII, so port1 RGMII_EN is
-> cleared, breaking port1.
->
-> I think you need to be more specific with the comparison.
->
->   Andrew
+Many drivers implementing PTP have not yet migrated to the new .adjfine
+frequency adjustment implementation.
 
-Oh, I see. So you mean "phy-mode" property should belong to
-controller, not port? I thought one controller can have at most one
-port.
+A handful of these drivers use hardware with a simple increment value which
+is adjusted by multiplying by the adjustment factor and then dividing by
+1 billion. This calculation is very easy to convert to .adjfine, by simply
+updating the divisor.
+
+Introduce new helper functions, diff_by_scaled_ppm and adjust_by_scaled_ppm
+which perform the most common calculations used by drivers for this purpose.
+
+The adjust_by_scaled_ppm takes the base increment and scaled PPM value, and
+calculates the new increment to use.
+
+A few drivers need the difference and direction rather than a raw increment
+value. The diff_by_scaled_ppm calculates the difference and returns true if
+it should be a subtraction, false otherwise. This most closely aligns with
+existing driver implementations.
+
+I previously submitted v1 of this series at [1], and got some feedback only
+on a handful of drivers. In the interest of merging the changes which have
+received feedback, I've dropped the following drivers out of this send:
+
+ * ptp_phc
+ * ptp_ipx46x
+ * tg3
+ * hclge
+ * stmac
+ * cpts
+
+I plan to submit those drivers changes again at a later date. As before,
+there are some drivers which are not trivial to convert to the new helper
+functions. While they may be able to work, their implementation is different
+and I lack the hardware or datasheets to determine what the correct
+implementation would be.
+
+
+* drivers/net/ethernet/broadcom/bnx2x
+* drivers/net/ethernet/broadcom/bnxt
+* drivers/net/ethernet/cavium/liquidio
+* drivers/net/ethernet/chelsio/cxgb4
+* drivers/net/ethernet/freescale
+* drivers/net/ethernet/qlogic/qed
+* drivers/net/ethernet/qlogic/qede
+* drivers/net/ethernet/sfc
+* drivers/net/ethernet/sfc/siena
+* drivers/net/ethernet/ti/am65-cpts.c
+* drivers/ptp/ptp_dte.c
+
+My end goal is to drop the .adjfreq implementation entirely, and to that end
+I plan on modifying these drivers in the future to directly use
+scaled_ppm_to_ppb as the simplest method to convert them.
+
+Cc: "K. Y. Srinivasan" <kys@microsoft.com>
+Cc: Haiyang Zhang <haiyangz@microsoft.com>
+Cc: Stephen Hemminger <sthemmin@microsoft.com>
+Cc: Wei Liu <wei.liu@kernel.org>
+Cc: Dexuan Cui <decui@microsoft.com>
+Cc: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Siva Reddy Kallam <siva.kallam@broadcom.com>
+Cc: Prashant Sreedharan <prashant@broadcom.com>
+Cc: Michael Chan <mchan@broadcom.com>
+Cc: Yisen Zhuang <yisen.zhuang@huawei.com>
+Cc: Salil Mehta <salil.mehta@huawei.com>
+Cc: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Cc: Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc: Tariq Toukan <tariqt@nvidia.com>
+Cc: Saeed Mahameed <saeedm@nvidia.com>
+Cc: Leon Romanovsky <leon@kernel.org>
+Cc: Bryan Whitehead <bryan.whitehead@microchip.com>
+Cc: Sergey Shtylyov <s.shtylyov@omp.ru>
+Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc: Jose Abreu <joabreu@synopsys.com>
+Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: Richard Cochran <richardcochran@gmail.com>
+Cc: Vivek Thampi <vithampi@vmware.com>
+Cc: VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
+Cc: Jie Wang <wangjie125@huawei.com>
+Cc: Jacob Keller <jacob.e.keller@intel.com>
+Cc: Guangbin Huang <huangguangbin2@huawei.com>
+Cc: Eran Ben Elisha <eranbe@nvidia.com>
+Cc: Aya Levin <ayal@nvidia.com>
+Cc: Cai Huoqing <cai.huoqing@linux.dev>
+Cc: Biju Das <biju.das.jz@bp.renesas.com>
+Cc: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc: Phil Edworthy <phil.edworthy@renesas.com>
+Cc: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc: "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Wan Jiabing <wanjiabing@vivo.com>
+Cc: Lv Ruyi <lv.ruyi@zte.com.cn>
+Cc: Arnd Bergmann <arnd@arndb.de>
+
+Jacob Keller (9):
+  ptp: add missing documentation for parameters
+  ptp: introduce helpers to adjust by scaled parts per million
+  drivers: convert unsupported .adjfreq to .adjfine
+  ptp: mlx4: convert to .adjfine and adjust_by_scaled_ppm
+  ptp: mlx5: convert to .adjfine and adjust_by_scaled_ppm
+  ptp: lan743x: remove .adjfreq implementation
+  ptp: lan743x: use diff_by_scaled_ppm in .adjfine implementation
+  ptp: ravb: convert to .adjfine and adjust_by_scaled_ppm
+  ptp: xgbe: convert to .adjfine and adjust_by_scaled_ppm
+
+ drivers/hv/hv_util.c                          |  4 +-
+ drivers/net/ethernet/amd/xgbe/xgbe-ptp.c      | 20 ++-----
+ drivers/net/ethernet/intel/e1000e/ptp.c       | 16 ++----
+ drivers/net/ethernet/intel/i40e/i40e_ptp.c    | 17 ++----
+ drivers/net/ethernet/intel/ice/ice_ptp.c      | 18 +------
+ drivers/net/ethernet/intel/igb/igb_ptp.c      | 18 +------
+ drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c  | 24 ++-------
+ drivers/net/ethernet/mellanox/mlx4/en_clock.c | 29 ++++------
+ .../ethernet/mellanox/mlx5/core/lib/clock.c   | 22 +++-----
+ drivers/net/ethernet/microchip/lan743x_ptp.c  | 54 +++----------------
+ drivers/net/ethernet/renesas/ravb_ptp.c       | 17 ++----
+ drivers/ptp/ptp_kvm_common.c                  |  4 +-
+ drivers/ptp/ptp_vmw.c                         |  4 +-
+ include/linux/ptp_clock_kernel.h              | 53 ++++++++++++++++++
+ 14 files changed, 105 insertions(+), 195 deletions(-)
+
+
+base-commit: 915b96c52763e2988e6368b538b487a7138b8fa4
+-- 
+2.37.1.394.gc50926e1f488
+
