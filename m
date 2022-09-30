@@ -2,66 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E2075F1663
-	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 00:58:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 391865F167D
+	for <lists+netdev@lfdr.de>; Sat,  1 Oct 2022 01:07:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231548AbiI3W6p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 18:58:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46218 "EHLO
+        id S231706AbiI3XG5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 19:06:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230291AbiI3W6o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 18:58:44 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 096BE1166F3;
-        Fri, 30 Sep 2022 15:58:43 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id z4so8976168lft.2;
-        Fri, 30 Sep 2022 15:58:42 -0700 (PDT)
+        with ESMTP id S230017AbiI3XGz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 19:06:55 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E3961DBECE;
+        Fri, 30 Sep 2022 16:06:54 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id nb11so11920187ejc.5;
+        Fri, 30 Sep 2022 16:06:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=FPDhyg+fqnd6KI676BphOSnDk1rwd88+iFcjWjngdEk=;
-        b=T+cBzOQMyhh+6jhfOrIUDL6wQFttyucRRtPWsMeZoMN1ydBnJoRcQh5hqbY34Bx3kO
-         ziDWgtrclU3pbCStFb9zWTcpSTljj9imf5FbudgxPedyaZXFruiEC3PhFm+/lcbKavhj
-         7ymDdwIrmL4sUHS4tZEPi6n8EXgNGhJlwbpm444R+mEnAFBvRtkk/gJDZ7HaZFEH8uxt
-         JJ7JUIQPYL/iUG4BDETwX8qjK6OiLBZTqIxd9Xl7NmpqWMhjh8SQ6BdqsI5BDVP/4dZQ
-         ZAyy22UmDFBiTqk++TgKykS7xaBjuGYluQ6OOPDtUdwGl/L/YC6QdfU7tTJ8Q2r252Yh
-         Svyw==
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=TO/Dnojuzy8y7EXQe0eM4OMKkAlOYJMLgdG0Hc9KCnw=;
+        b=mMxmLiS28BO7HNjjP46LE3FvsEBOo3cO9Z8twoFtsONG2b2IUlqBlkP+Ff8MEtaqn6
+         oqyIzuCr9pNvk3HgUnqU9APKvg8j5HDhhJr6S5Q9xxILZ8rmvjPJrPj7AQo7uBZUBI8d
+         vkOEFcfeLyyAItbEi07hCs1pqjw+9gKcDtia1VqG1fP9ZzMTEkiF93E+tylnunDZc2N8
+         3mRvWGnz/v5y76E+1zVWUArPlLLxQZfpoc9LJeO9XCXsfSQzv0MkH63M/6OfCCdkN0t+
+         lv2Ikh/hAmdueqQCTs0FtBU77auTQQbGNa1UPY+WLrnNXWZboTdN/dUaMShdnQfaPEDy
+         K0eA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=FPDhyg+fqnd6KI676BphOSnDk1rwd88+iFcjWjngdEk=;
-        b=48pl/mmMC7ETThEQrFFgHJdtsZvXu+YCNgH5dHh/Dh0O9dlHy05ZZ0itgOCLCg0YNl
-         L9jhp0zz918G2KQ0JQO9XbVkDP+EBIC0vXcBIOd39zg7qMN5395mVhOzovRmsyBO46tU
-         RdjhUWOuz2ikqlUcd3aFvibPz9bTfrbejI0dji2SDfySFlnW9FbkgEy+LRwxUXllTMi0
-         GzjGB8S0ZJ7ArVkIuQWpAvodt9G/oYjTUg/kITTZHXl7DdFfPzxbx9cW5pd/ib4zOPBT
-         UWlr9o1wAZ9mesyozTHBlmCzDjLLma+GcOitDEpT7rbttBmPLTQVvhreha2OUkynyk0d
-         iSOA==
-X-Gm-Message-State: ACrzQf3vDOcwSb5iitfv+4lH7krwCZGy1cw1p6TwqAY13JYeM1d3JX2N
-        pcgi8MsIaqUi021ihU9Bovw5NL3mpiE3AFa/X3g=
-X-Google-Smtp-Source: AMsMyM5qmOCwuqmr0BdDuL5pXdqM+82omWToXEFZMotMSk68eatOJ6BLSqDAbWWV4fDiFJa0edlJ+TrK463ZgHpQ2JM=
-X-Received: by 2002:ac2:4c8b:0:b0:4a2:2432:93ff with SMTP id
- d11-20020ac24c8b000000b004a2243293ffmr128870lfl.26.1664578721152; Fri, 30 Sep
- 2022 15:58:41 -0700 (PDT)
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=TO/Dnojuzy8y7EXQe0eM4OMKkAlOYJMLgdG0Hc9KCnw=;
+        b=MaFxpoB+pJcxhnK64qDzQEr7ABemzpWsI+Gh4WaDBsvH1gi44pXFE2a9iJJ5YPh4F6
+         TG3aBPjgDkQixanZ6CSJ+/KObrMeX9gTvQl8rID1XwqeOM5m7Q8Kc5E20mxraFUAHtVT
+         RlXlq+WlpWEku3ZVXhNx27UEBdVDvYoPW2o3mHtnnHDsPS/vrMrATw0UBW80U/WjFIOd
+         MGTmjK4h/dpHggA1zo0SECinnrHHhXV3/UeQ24OPOTRZAXeEEQISwrj+jcUEyWSOX6Bv
+         8b2QhQvFRfcZWMMdVV7vWTysAPSWIMI6EzDp1saL25wj8taX6I10UCqT0HQnv13UlRDt
+         /qgA==
+X-Gm-Message-State: ACrzQf1wiOmqDsBH2WTQ0OqnpgdyziMKSFXwz2OZFKvZsM1+PIq9kWKf
+        SMrw+kXkLfpFdCJh2uMeHLV/ObmHq6lx9cCTpuw=
+X-Google-Smtp-Source: AMsMyM49ySGZi4kBbux8WzUD5SxWEA4+kXCcbZ6LOv6hUP3ziyE0eR45WcANCyogza6tBQTsfdrsnkwdClJFG8u6t3Q=
+X-Received: by 2002:a17:907:72c1:b0:783:34ce:87b9 with SMTP id
+ du1-20020a17090772c100b0078334ce87b9mr8035561ejc.115.1664579213102; Fri, 30
+ Sep 2022 16:06:53 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220930140655.2723164-1-ajye_huang@compal.corp-partner.google.com>
- <CABBYNZJZcgQ+VsPu68-14=EQGxxZ1VpHth37uO_NnGm+SsOnbw@mail.gmail.com> <CALprXBaUMR0uxMKeJ8f8+BWHDesfB9CxDquy4Muptf4eppmQdA@mail.gmail.com>
-In-Reply-To: <CALprXBaUMR0uxMKeJ8f8+BWHDesfB9CxDquy4Muptf4eppmQdA@mail.gmail.com>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Fri, 30 Sep 2022 15:58:29 -0700
-Message-ID: <CABBYNZ+UPJz2Oh0d-o-v=hURHf2cSfCCF2epoJUHNY9f3GbQDA@mail.gmail.com>
-Subject: Re: [PATCH v1] bluetooth: Fix the bluetooth icon status after running
- hciconfig hci0 up
-To:     Ajye Huang <ajye_huang@compal.corp-partner.google.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+References: <20220930110900.75492-1-asavkov@redhat.com>
+In-Reply-To: <20220930110900.75492-1-asavkov@redhat.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 30 Sep 2022 16:06:41 -0700
+Message-ID: <CAEf4BzZpkgXi9Y6x-_-6mDDW12GvTj0Y_e7cpQMqF3dtiBBhpA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: make libbpf_probe_prog_types
+ testcase aware of kernel configuration
+To:     Artem Savkov <asavkov@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jbenc@redhat.com
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -73,87 +70,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ajye,
-
-On Fri, Sep 30, 2022 at 3:30 PM Ajye Huang
-<ajye_huang@compal.corp-partner.google.com> wrote:
+On Fri, Sep 30, 2022 at 4:09 AM Artem Savkov <asavkov@redhat.com> wrote:
 >
-> On Sat, Oct 1, 2022 at 3:57 AM Luiz Augusto von Dentz
-> <luiz.dentz@gmail.com> wrote:
-> >
-> > Hi Ajye,
-> >
-> > On Fri, Sep 30, 2022 at 7:07 AM Ajye Huang
-> > <ajye_huang@compal.corp-partner.google.com> wrote:
-> > >
-> > > When "hciconfig hci0 up" command is used to bluetooth ON, but
-> > > the bluetooth UI icon in settings still not be turned ON.
-> > >
-> > > Refer to commit 2ff13894cfb8 ("Bluetooth: Perform HCI update for power on synchronously")
-> > > Add back mgmt_power_on(hdev, ret) into function hci_dev_do_open(struct hci_dev *hdev)
-> > > in hci_core.c
-> > >
-> > > Signed-off-by: Ajye Huang <ajye_huang@compal.corp-partner.google.com>
-> > > ---
-> > >  net/bluetooth/hci_core.c | 1 +
-> > >  1 file changed, 1 insertion(+)
-> > >
-> > > diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-> > > index 0540555b3704..5061845c8fc2 100644
-> > > --- a/net/bluetooth/hci_core.c
-> > > +++ b/net/bluetooth/hci_core.c
-> > > @@ -481,6 +481,7 @@ static int hci_dev_do_open(struct hci_dev *hdev)
-> > >         hci_req_sync_lock(hdev);
-> > >
-> > >         ret = hci_dev_open_sync(hdev);
-> > > +       mgmt_power_on(hdev, ret);
-> > >
-> > >         hci_req_sync_unlock(hdev);
-> > >         return ret;
-> > > --
-> > > 2.25.1
-> >
-> >
-> > I believe the culprit is actually the following change:
-> >
-> > git show cf75ad8b41d2a:
-> >
-> > @@ -1489,8 +1488,7 @@ static int hci_dev_do_open(struct hci_dev *hdev)
-> >                     !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
-> >                     hci_dev_test_flag(hdev, HCI_MGMT) &&
-> >                     hdev->dev_type == HCI_PRIMARY) {
-> > -                       ret = __hci_req_hci_power_on(hdev);
-> > -                       mgmt_power_on(hdev, ret);
-> > +                       ret = hci_powered_update_sync(hdev);
-> >
-> > So we should probably restore mgmt_power_on above.
-> >
-> > --
-> > Luiz Augusto von Dentz
+> At the moment libbpf_probe_prog_types test iterates over all available
+> BPF_PROG_TYPE regardless of kernel configuration which can exclude some
+> of those. Unfortunately there is no direct way to tell which types are
+> available, but we can look at struct bpf_ctx_onvert to tell which ones
+> are available.
 >
-> Hi Luiz
+> Signed-off-by: Artem Savkov <asavkov@redhat.com>
+> ---
+
+Many selftests assume correct kernel configuration which is encoded in
+config and config.<arch> files. So it seems fair to assume that all
+defined program types are available on kernel-under-test.
+
+If someone is running selftests under custom more minimal kernel they
+can use denylist to ignore specific prog type subtests?
+
+
+>  .../selftests/bpf/prog_tests/libbpf_probes.c  | 33 +++++++++++++++++--
+>  1 file changed, 31 insertions(+), 2 deletions(-)
 >
-> Now, this code you mentioned in hci_dev_open_sync() was moved from
-> hci_core.c to hci_sync.c
-> The below modification is workable.
-> Do you agree?
-> If so, I will send you the v2 version. Thanks
+> diff --git a/tools/testing/selftests/bpf/prog_tests/libbpf_probes.c b/tools/testing/selftests/bpf/prog_tests/libbpf_probes.c
+> index 9f766ddd946ab..753ddf79cf5e0 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/libbpf_probes.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/libbpf_probes.c
+> @@ -4,12 +4,29 @@
+>  #include <test_progs.h>
+>  #include <bpf/btf.h>
 >
-> index 15c75ef4c271..76c3107c9f91 100644
-> --- a/net/bluetooth/hci_sync.c
-> +++ b/net/bluetooth/hci_sync.c
-> @@ -4676,6 +4676,7 @@ int hci_dev_open_sync(struct hci_dev *hdev)
->                     hci_dev_test_flag(hdev, HCI_MGMT) &&
->                     hdev->dev_type == HCI_PRIMARY) {
->                         ret = hci_powered_update_sync(hdev);
-> +                       mgmt_power_on(hdev, ret);
->                 }
->         } else {
->                 /* Init failed, cleanup */
-
-Ive submitted a change like that already:
-
-https://patchwork.kernel.org/project/bluetooth/patch/20220930201920.225767-1-luiz.dentz@gmail.com/
-
--- 
-Luiz Augusto von Dentz
+> +static int find_type_in_ctx_convert(struct btf *btf,
+> +                                   const char *prog_type_name,
+> +                                   const struct btf_type *t)
+> +{
+> +       const struct btf_member *m;
+> +       size_t cmplen = strlen(prog_type_name);
+> +       int i, n;
+> +
+> +       for (m = btf_members(t), i = 0, n = btf_vlen(t); i < n; m++, i++) {
+> +               const char *member_name = btf__str_by_offset(btf, m->name_off);
+> +
+> +               if (!strncmp(prog_type_name, member_name, cmplen))
+> +                       return 1;
+> +       }
+> +       return 0;
+> +}
+> +
+>  void test_libbpf_probe_prog_types(void)
+>  {
+>         struct btf *btf;
+> -       const struct btf_type *t;
+> +       const struct btf_type *t, *context_convert_t;
+>         const struct btf_enum *e;
+> -       int i, n, id;
+> +       int i, n, id, context_convert_id;
+>
+>         btf = btf__parse("/sys/kernel/btf/vmlinux", NULL);
+>         if (!ASSERT_OK_PTR(btf, "btf_parse"))
+> @@ -23,6 +40,14 @@ void test_libbpf_probe_prog_types(void)
+>         if (!ASSERT_OK_PTR(t, "bpf_prog_type_enum"))
+>                 goto cleanup;
+>
+> +       context_convert_id = btf__find_by_name_kind(btf, "bpf_ctx_convert",
+> +                                                   BTF_KIND_STRUCT);
+> +       if (!ASSERT_GT(context_convert_id, 0, "bpf_ctx_convert_id"))
+> +               goto cleanup;
+> +       context_convert_t = btf__type_by_id(btf, context_convert_id);
+> +       if (!ASSERT_OK_PTR(t, "bpf_ctx_convert_type"))
+> +               goto cleanup;
+> +
+>         for (e = btf_enum(t), i = 0, n = btf_vlen(t); i < n; e++, i++) {
+>                 const char *prog_type_name = btf__str_by_offset(btf, e->name_off);
+>                 enum bpf_prog_type prog_type = (enum bpf_prog_type)e->val;
+> @@ -31,6 +56,10 @@ void test_libbpf_probe_prog_types(void)
+>                 if (prog_type == BPF_PROG_TYPE_UNSPEC)
+>                         continue;
+>
+> +               if (!find_type_in_ctx_convert(btf, prog_type_name,
+> +                                             context_convert_t))
+> +                       continue;
+> +
+>                 if (!test__start_subtest(prog_type_name))
+>                         continue;
+>
+> --
+> 2.37.3
+>
