@@ -2,70 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD98F5F0EAE
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 17:19:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 575775F0EB4
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 17:21:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229615AbiI3PTE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 11:19:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39162 "EHLO
+        id S230257AbiI3PVA convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 30 Sep 2022 11:21:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229548AbiI3PTC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 11:19:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA6AE15D981
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 08:19:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5099A62393
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 15:19:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30C74C433B5;
-        Fri, 30 Sep 2022 15:19:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664551140;
-        bh=PQdOm9OXxxOtiMHQCADH0GQqPKkZ3cX9rxS541ZZi4s=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=MV6MsdJ+5MoYaVLPu4FxweoWochAM+rSs+6/ev+/fsp1Ht6z9fMjAoGQgoKgOhlZW
-         jQU4ch7Iz0q+OHiMGALXGajiEKD5Nk3wezsfZ82Ou9evcepPhaGsC4KG15iNWIc67l
-         beAjEeRgDjpX8wAdH73+E4EiYWipVSJi0Dlfu7PaLAVQT+qNuQ0yGF5F1f9Uc8lkux
-         WNvTwsYkcW+Kwkh2v1Qo5cKHDGdaHYwQKDw2AsvMI7oVsezygtROXCEsnErI1Ylf/9
-         tmMl56vFEH6cCMaVKFR+fyAGdIOfpI5x7WAdjtql1iULJ5JXVLNlHV2/JqyzulyFfu
-         qa3yDXQCjdBzQ==
-Date:   Fri, 30 Sep 2022 08:18:59 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Florent Fourcot <florent.fourcot@wifirst.fr>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        David Ahern <dsahern@kernel.org>
-Subject: Re: [PATCHv5 net-next 2/4] net: add new helper
- unregister_netdevice_many_notify
-Message-ID: <20220930081859.5f1e4ad3@kernel.org>
-In-Reply-To: <20220930142910.GB10057@localhost.localdomain>
-References: <20220930094506.712538-1-liuhangbin@gmail.com>
-        <20220930094506.712538-3-liuhangbin@gmail.com>
-        <aae1926b-fbc3-41ff-aa80-a1196599eacb@6wind.com>
-        <20220930142910.GB10057@localhost.localdomain>
+        with ESMTP id S229548AbiI3PU7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 11:20:59 -0400
+Received: from relay.hostedemail.com (smtprelay0015.hostedemail.com [216.40.44.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4401711D605;
+        Fri, 30 Sep 2022 08:20:56 -0700 (PDT)
+Received: from omf08.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay10.hostedemail.com (Postfix) with ESMTP id CE709C064E;
+        Fri, 30 Sep 2022 15:20:54 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf08.hostedemail.com (Postfix) with ESMTPA id 7554720029;
+        Fri, 30 Sep 2022 15:20:48 +0000 (UTC)
+Message-ID: <e9a52823ea98a0e4a23c38e83d7872faed8c1d6c.camel@perches.com>
+Subject: Re: [PATCH] net: prestera: acl: Add check for kmemdup
+From:   Joe Perches <joe@perches.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     pabeni@redhat.com, davem@davemloft.net, tchornyi@marvell.com,
+        edumazet@google.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Volodymyr Mytnyk <vmytnyk@marvell.com>
+Date:   Fri, 30 Sep 2022 08:20:47 -0700
+In-Reply-To: <20220930072952.2d337b3a@kernel.org>
+References: <20220930050317.32706-1-jiasheng@iscas.ac.cn>
+         <20220930072952.2d337b3a@kernel.org>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Stat-Signature: 94yo7dddwnorg3saaa4etcwumhedqht4
+X-Rspamd-Server: rspamout06
+X-Rspamd-Queue-Id: 7554720029
+X-Spam-Status: No, score=-0.5 required=5.0 tests=BAYES_00,FORGED_SPF_HELO,
+        KHOP_HELO_FCRDNS,SPF_HELO_PASS,SPF_NONE,UNPARSEABLE_RELAY autolearn=no
+        autolearn_force=no version=3.4.6
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX18fCQZXNZYWzufsmUpi5ZRVblyBKPoVJXA=
+X-HE-Tag: 1664551248-829077
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 30 Sep 2022 16:29:10 +0200 Guillaume Nault wrote:
-> Declaring it in net/core/dev.h should be enough.
+On Fri, 2022-09-30 at 07:29 -0700, Jakub Kicinski wrote:
+> On Fri, 30 Sep 2022 13:03:17 +0800 Jiasheng Jiang wrote:
+> > Actually, I used get_maintainer scripts and the results is as follow:
+> > "./scripts/get_maintainer.pl -f drivers/net/ethernet/marvell/prestera/prestera_acl.c"
+> > Taras Chornyi <tchornyi@marvell.com> (supporter:MARVELL PRESTERA ETHERNET SWITCH DRIVER)
+> > "David S. Miller" <davem@davemloft.net> (maintainer:NETWORKING DRIVERS)
+> > Eric Dumazet <edumazet@google.com> (maintainer:NETWORKING DRIVERS)
+> > Jakub Kicinski <kuba@kernel.org> (maintainer:NETWORKING DRIVERS)
+> > Paolo Abeni <pabeni@redhat.com> (maintainer:NETWORKING DRIVERS)
+> > netdev@vger.kernel.org (open list:NETWORKING DRIVERS)
+> > linux-kernel@vger.kernel.org (open list)
+> > 
+> > Therefore, I submitted my patch to the above addresses.
+> > 
+> > And this time I checked the fixes commit, and found that it has two
+> > authors:
+> > Signed-off-by: Volodymyr Mytnyk <vmytnyk@marvell.com>
+> > Signed-off-by: David S. Miller <davem@davemloft.net>
 
-Yes, please. And while you're touching __dev_notify_flags()
-its declaration can be moved to dev.h, too.
+IMO: If Volodymyr wants to be a maintainer here, he should put
+his email as an entry in the MAINTAINERS file for the subsystem.
+
+> > Maybe there is a problem of the script that misses one.
+
+I don't think so.  Maybe you have more evidence...
+
+> > Anyway, I have already submitted the same patch and added
+> > "vmytnyk@marvell.com" this time.
+> 
+> Ha! So you do indeed use it in a way I wasn't expecting :S
+> Thanks for the explanation.
+> 
+> Joe, would you be okay to add a "big fat warning" to get_maintainer
+> when people try to use the -f flag?
+
+No, not really.  -f isn't required when the file is in git anyway.
+
+> Maybe we can also change the message
+> that's displayed when the script is run without arguments to not
+> mention -f?
+
+I think that's a poor idea as frequently the script isn't used
+on patches but simply to identify the maintainers of a particular
+file or subsystem.
+
+> We're getting quite a few fixes which don't CC author, I'm guessing
+> Jiasheng's approach may be a common one.
+
+There's no great way to identify "author" or "original submitter"
+and frequently the "original submitter" isn't a maintainer anyway.
+
