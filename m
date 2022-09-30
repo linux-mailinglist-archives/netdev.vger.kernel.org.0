@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C36755F0FF6
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 18:29:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 530BD5F0FFB
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 18:29:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231509AbiI3Q3i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 12:29:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33466 "EHLO
+        id S232138AbiI3Q3m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 12:29:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232129AbiI3Q3a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 12:29:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16512169E54
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 09:29:30 -0700 (PDT)
+        with ESMTP id S231157AbiI3Q3k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 12:29:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F4055B97
+        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 09:29:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A79DA623D2
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 16:29:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0133AC433D6;
-        Fri, 30 Sep 2022 16:29:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6FF55B82976
+        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 16:29:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 132DFC433B5;
+        Fri, 30 Sep 2022 16:29:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664555369;
-        bh=sKkum5/1Mx2N4Zi5OQvh2iP/l8h+OAO4+6pd7emTGOw=;
+        s=k20201202; t=1664555370;
+        bh=QCGakGkdixx6kvUlm4t3/PGQl1llxl4i2SRQpfup3kA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yqzu409QBgeM3Q5gv5IVDn+SOmkfZbfoRpJds5c0tLetArvIyRt8gFCyddNk6eyZ1
-         5OWCZCwepwWTbP3vj3sW0dFepZUjEfvUkez7xC38NdOFtV5wIk7oObWDzmQlHwrynO
-         1p9iH/Ol144Lg3BeDAJp3sbAScsYrexzw9CSIbftu7jAJr4Oa+ehb7ZkLTMt46tbCj
-         kAdyaKRfxa3fTGJ+B4J6K7CyKqkpZBXY2vxdyFvmLY24G6WbkZ1j01IBiXaFvGCOM3
-         MmFkybK/LjlErw8mRDatWfPn0QLu5MBEy39rFobVybLyXLdN8zYzpKAzov6o/DaLZk
-         Kl5EZ3z9u+eSg==
+        b=YMte5UbsryM95ELyY5Dl816Cth1vcIOA3r8aRf+giZhGyIcDbQM934MSToX+OjrXF
+         yJ6xfC/rscpg+BthvRReHV3F/kG+2Dl9Rssz8vAVA+oAXvYXX1tflz9ZhzH5iLZh3D
+         cLu2eSaxtJIwljnJaPpoW/9XwF4txGDPYdyAwnaDvbAtpbAJxI2Koi9WNFHzgGzKzN
+         tiur5ulRK1stlUyJpUgg9Mz7TDd0RKcOfNtIyrQ/+cHokm/3bl+/XXsvUU/DafwvH2
+         simobFf20MDGtzgdlK365Rv28BaxtIoWncp8NuaVXGFBPYyyJu5a4lWMYCw6gBBORG
+         bUZgvObUhSDTQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -39,9 +39,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
         Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: [PATCH net-next 03/16] net/mlx5e: Introduce wqe_index_mask for legacy RQ
-Date:   Fri, 30 Sep 2022 09:28:50 -0700
-Message-Id: <20220930162903.62262-4-saeed@kernel.org>
+Subject: [PATCH net-next 04/16] net/mlx5e: Make the wqe_index_mask calculation more exact
+Date:   Fri, 30 Sep 2022 09:28:51 -0700
+Message-Id: <20220930162903.62262-5-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.3
 In-Reply-To: <20220930162903.62262-1-saeed@kernel.org>
 References: <20220930162903.62262-1-saeed@kernel.org>
@@ -58,84 +58,52 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-When fragments of different WQEs share the same page, mlx5e_post_rx_wqes
-must wait until the old WQE stops using the page, only then the new WQE
-can allocate the new page. Essentially, it means that if WQE index i is
-still in use, the allocation must stop before `i % bulk`, where bulk is
-the number of WQEs that may share the same page.
+The old calculation of wqe_index_mask may give false positives, i.e.
+request bulking of pairs of WQEs when not strictly needed, for example,
+when the first fragment size is equal to the PAGE_SIZE, bulking is not
+needed, even if the number of fragments is odd.
 
-As bulk is always a power of two, `i % bulk = i & (bulk - 1)`, and the
-new wqe_index_mask field will be equal to `bulk - 1`.
-
-At the same time, wqe_bulk remains for optimization purposes and stores
-`max(bulk, 8)`, which allows to skip the allocation until we have at
-least 8 WQEs free.
+Make the calculation more exact to cut false positives.
 
 Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en.h  |  1 +
- .../ethernet/mellanox/mlx5/core/en/params.c   | 25 ++++++++++++++++---
- 2 files changed, 22 insertions(+), 4 deletions(-)
+ .../ethernet/mellanox/mlx5/core/en/params.c   | 21 ++++++++++++++++++-
+ 1 file changed, 20 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index 95a232fb2127..8e174a7f7c25 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -660,6 +660,7 @@ struct mlx5e_rq_frags_info {
- 	u8 num_frags;
- 	u8 log_num_frags;
- 	u8 wqe_bulk;
-+	u8 wqe_index_mask;
- };
- 
- struct mlx5e_dma_info {
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-index 68bc66cbd8a5..49306a68b3b5 100644
+index 49306a68b3b5..ac4d70bb21e8 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-@@ -586,7 +586,14 @@ static int mlx5e_build_rq_frags_info(struct mlx5_core_dev *mdev,
- 		info->arr[0].frag_size = byte_count;
- 		info->arr[0].frag_stride = frag_stride;
- 		info->num_frags = 1;
--		info->wqe_bulk = PAGE_SIZE / frag_stride;
-+
-+		/* N WQEs share the same page, N = PAGE_SIZE / frag_stride. The
-+		 * first WQE in the page is responsible for allocation of this
-+		 * page, this WQE's index is k*N. If WQEs [k*N+1; k*N+N-1] are
-+		 * still not completed, the allocation must stop before k*N.
+@@ -648,7 +648,26 @@ static int mlx5e_build_rq_frags_info(struct mlx5_core_dev *mdev,
+ 	 * is not completed yet, WQE 2*N must not be allocated, as it's
+ 	 * responsible for allocating a new page.
+ 	 */
+-	info->wqe_index_mask = info->num_frags % 2;
++	if (frag_size_max == PAGE_SIZE) {
++		/* No WQE can start in the middle of a page. */
++		info->wqe_index_mask = 0;
++	} else {
++		/* PAGE_SIZEs starting from 8192 don't use 2K-sized fragments,
++		 * because there would be more than MLX5E_MAX_RX_FRAGS of them.
 +		 */
-+		info->wqe_index_mask = (PAGE_SIZE / frag_stride) - 1;
++		WARN_ON(PAGE_SIZE != 2 * DEFAULT_FRAG_SIZE);
 +
- 		goto out;
- 	}
- 
-@@ -635,11 +642,21 @@ static int mlx5e_build_rq_frags_info(struct mlx5_core_dev *mdev,
- 		i++;
- 	}
- 	info->num_frags = i;
--	/* number of different wqes sharing a page */
--	info->wqe_bulk = 1 + (info->num_frags % 2);
-+
-+	/* The last fragment of WQE with index 2*N may share the page with the
-+	 * first fragment of WQE with index 2*N+1 in certain cases. If WQE 2*N+1
-+	 * is not completed yet, WQE 2*N must not be allocated, as it's
-+	 * responsible for allocating a new page.
-+	 */
-+	info->wqe_index_mask = info->num_frags % 2;
++		/* Odd number of fragments allows to pack the last fragment of
++		 * the previous WQE and the first fragment of the next WQE into
++		 * the same page.
++		 * As long as DEFAULT_FRAG_SIZE is 2048, and MLX5E_MAX_RX_FRAGS
++		 * is 4, the last fragment can be bigger than the rest only if
++		 * it's the fourth one, so WQEs consisting of 3 fragments will
++		 * always share a page.
++		 * When a page is shared, WQE bulk size is 2, otherwise just 1.
++		 */
++		info->wqe_index_mask = info->num_frags % 2;
++	}
  
  out:
--	info->wqe_bulk = max_t(u8, info->wqe_bulk, 8);
-+	/* Bulking optimization to skip allocation until at least 8 WQEs can be
-+	 * allocated in a row. At the same time, never start allocation when
-+	 * the page is still used by older WQEs.
-+	 */
-+	info->wqe_bulk = max_t(u8, info->wqe_index_mask + 1, 8);
-+
- 	info->log_num_frags = order_base_2(info->num_frags);
- 
- 	return 0;
+ 	/* Bulking optimization to skip allocation until at least 8 WQEs can be
 -- 
 2.37.3
 
