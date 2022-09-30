@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 20B915F81AF
-	for <lists+netdev@lfdr.de>; Sat,  8 Oct 2022 02:57:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6FB35F81AE
+	for <lists+netdev@lfdr.de>; Sat,  8 Oct 2022 02:57:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229512AbiJHA4y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 7 Oct 2022 20:56:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33632 "EHLO
+        id S229481AbiJHA4x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 7 Oct 2022 20:56:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiJHA4w (ORCPT
+        with ESMTP id S229437AbiJHA4w (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 7 Oct 2022 20:56:52 -0400
 Received: from mailgw.kylinos.cn (unknown [124.126.103.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A10817AC38;
-        Fri,  7 Oct 2022 17:56:49 -0700 (PDT)
-X-UUID: 9b699ce207254660acd8fe34fb6cf2d1-20220930
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADA72785A7;
+        Fri,  7 Oct 2022 17:56:48 -0700 (PDT)
+X-UUID: c88b482de2794a47a0840c715cebb15c-20220930
 X-Spam-Fingerprint: 0
 X-GW-Reason: 11105
 X-Policy-Incident: 5pS25Lu25Lq66LaF6L+HMTDkurrpnIDopoHlrqHmoLg=
 X-Content-Feature: ica/max.line-size 73
         audit/email.address 1
         dict/adv 1
-        dict/prolog 2
+        dict/prolog 1
         dict/software 1
-X-CPASD-INFO: b899a4f4e6894afbbcbb0de6cbd52e9b@q4hzWY5mlGSRVnqFg6SxnIKUkpJgkIW
-        FpZyEZWCVZYKVhH5xTV5uYFV9fWtVYV9dYVR6eGxQYmBgZFJ4i3-XblBgXoZgUZB3sXpzWZFilg==
-X-CLOUD-ID: b899a4f4e6894afbbcbb0de6cbd52e9b
+X-CPASD-INFO: 254f580429f34f86b91fbde8677aa8d6@e4VuhmJqXmReWah_g6mDcIJqYZaTkIW
+        HeHFXkY9okFaVhH5xTV5uYFV9fWtVYV9dYVR6eGxQY2BgZFJ4i3-XblBgXoZgUZB3gXduhmVmYA==
+X-CLOUD-ID: 254f580429f34f86b91fbde8677aa8d6
 X-CPASD-SUMMARY: SIP:-1,APTIP:-2.0,KEY:0.0,FROMBLOCK:1,OB:0.0,URL:-5,TVAL:155.
-        0,ESV:1.0,ECOM:-5.0,ML:0.0,FD:0.0,CUTS:108.0,IP:-2.0,MAL:-5.0,PHF:-5.0,PHC:-5
+        0,ESV:1.0,ECOM:-5.0,ML:0.0,FD:1.0,CUTS:104.0,IP:-2.0,MAL:-5.0,PHF:-5.0,PHC:-5
         .0,SPF:4.0,EDMS:-5,IPLABEL:-2.0,FROMTO:0,AD:0,FFOB:0.0,CFOB:0.0,SPC:0,SIG:-5,
-        AUF:8,DUF:6097,ACD:96,DCD:96,SL:0,EISP:0,AG:0,CFC:0.439,CFSR:0.08,UAT:0,RAF:2
-        ,IMG:-5.0,DFA:0,DTA:0,IBL:-2.0,ADI:-5,SBL:0,REDM:0,REIP:0,ESB:0,ATTNUM:0,EAF:
-        0,CID:-5.0,VERSION:2.3.17
-X-CPASD-ID: 9b699ce207254660acd8fe34fb6cf2d1-20220930
-X-CPASD-BLOCK: 1000
+        AUF:10,DUF:6100,ACD:96,DCD:96,SL:0,EISP:0,AG:0,CFC:0.265,CFSR:0.134,UAT:0,RAF
+        :2,IMG:-5.0,DFA:0,DTA:0,IBL:-2.0,ADI:-5,SBL:0,REDM:0,REIP:0,ESB:0,ATTNUM:0,EA
+        F:0,CID:-5.0,VERSION:2.3.17
+X-CPASD-ID: c88b482de2794a47a0840c715cebb15c-20220930
+X-CPASD-BLOCK: 1001
 X-CPASD-STAGE: 1
-X-UUID: 9b699ce207254660acd8fe34fb6cf2d1-20220930
+X-UUID: c88b482de2794a47a0840c715cebb15c-20220930
 X-User: jianghaoran@kylinos.cn
 Received: from [192.168.1.105] [(183.242.54.212)] by mailgw
         (envelope-from <jianghaoran@kylinos.cn>)
         (Generic MTA)
-        with ESMTP id 789141754; Fri, 30 Sep 2022 21:51:38 +0800
+        with ESMTP id 2043478387; Fri, 30 Sep 2022 22:22:00 +0800
 Subject: Re: [PATCH] taprio: Set the value of picos_per_byte before fill
  sched_entry
 To:     Jakub Kicinski <kuba@kernel.org>
@@ -51,15 +51,15 @@ Cc:     vinicius.gomes@intel.com, jhs@mojatatu.com,
 References: <20220928065830.1544954-1-jianghaoran@kylinos.cn>
  <20220929191815.51362581@kernel.org>
 From:   jianghaoran <jianghaoran@kylinos.cn>
-Message-ID: <edda6eb6-fa60-5c64-41fa-63e2035348d8@kylinos.cn>
-Date:   Fri, 30 Sep 2022 21:46:47 +0800
+Message-ID: <2434cbd6-cd18-b85f-1bfb-ae2afdcbd9e5@kylinos.cn>
+Date:   Fri, 30 Sep 2022 22:16:47 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.8.1
 MIME-Version: 1.0
 In-Reply-To: <20220929191815.51362581@kernel.org>
 Content-Type: text/plain; charset=gbk; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,KHOP_HELO_FCRDNS,
         NICE_REPLY_A,PDS_RDNS_DYNAMIC_FP,RDNS_DYNAMIC,SPF_HELO_NONE,
         T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
@@ -69,9 +69,6 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-ÔÚ 2022/9/30 ÉÏÎç10:18, Jakub Kicinski Ð´µÀ:
 > On Wed, 28 Sep 2022 14:58:30 +0800 jianghaoran wrote:
 >> If the value of picos_per_byte is set after fill sched_entry,
 >> as a result, the min_duration calculated by length_to_duration is 0,
@@ -81,12 +78,11 @@ X-Mailing-List: netdev@vger.kernel.org
 > Meaning an invalid configuration is accepted but no packets
 > can ever be transmitted?  Could you make the user-visible
 > issue clearer?
-
+> 
 Yes, It's possible that the user specifies an too small interval that 
 couldn't allow any packet to be transmitted.According to the following 
 example, the interval is set to 9, and the network port enp5s0f0 cannot 
 send any data
-> 
 >> It will appear like commit b5b73b26b3ca ("taprio:
 >> Fix allowing too small intervals") described problem.
 >> Here is a further modification of this problem.
