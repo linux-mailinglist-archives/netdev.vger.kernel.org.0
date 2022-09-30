@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A29955F1353
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 22:11:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA2C85F1357
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 22:12:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232657AbiI3ULm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 16:11:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47378 "EHLO
+        id S232671AbiI3UMP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 16:12:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232573AbiI3ULA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 16:11:00 -0400
-Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2054.outbound.protection.outlook.com [40.107.104.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 398EC156F91;
-        Fri, 30 Sep 2022 13:10:25 -0700 (PDT)
+        with ESMTP id S232501AbiI3ULS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 16:11:18 -0400
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2041.outbound.protection.outlook.com [40.107.104.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9457110503F;
+        Fri, 30 Sep 2022 13:10:31 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TsEl3tfE0X3XsxdewoIb3sDBPcwqiRJKVPC9LV+flqOVYc497KYrqzDGMFtyoiFKinAlWp09pxILlLwWmieLVxJv4YPkYXJL9WqioeybD4OZtQHDTUGpzxIoxjhfu5TD8ibz5nU3++Bk1UsBCplZhBRV6uRJwmH2ME3rSjx1z2qE69OgyJgTv+kSYlBirmFk8EU7/RBu0JfapBx+tV2IJljXqyEItcFCReMpkalTxZLtsyGIQ8EK6TUNArhqt+Psr2ImK9vvK1qVW/hktBkDNs5LSlmAlNbj0rgnWqPgkQ39yzmRd2fE/jvBvtgpCXRGMLHVxfO7tHX/xBQgmBNLtQ==
+ b=D54kJBmksJCZfK2FoPO9Zoz9RYt+1EmQT2iALyYkQHNXERPZvPF49G1F+zG+vaoKk8qya54QYH3n9Ubf45O56xofPsQ2Kk84+yw9SO0BbYmbjUmFeVNgY+7dpSpEZew8OOJcx1z4Sz7IbA7d0mKJuHZDNnksVNMo4xoyKzyrvV3wLuAyWQj2XKbK+TNdSHWQgIsVTV9XnJ6+4VA+wXGpphV/yi1cbI60quCEvZp6aYw/E6wocBqnb2Qt5iyFBvW48eB8NmEGU7piD/rNnK/KlfUh4Azhl4wejbCM7J7do7noKpVXX0j154FBWPZhm4BNORBhH1MRyudlASRwEWJzEA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1LpBZZ/E0MzZ0ssr0uah78Z2jasHTDuQGEPDYfnFsYI=;
- b=XXEfDKLOGsbPl4a9eHk4VwZgpQmhag1pSpBs9Gq/4VtaAXo9VTv0c3A8zimusjJlccsxNBg0nP3RAMDN+9pKorUk/uCikzwviVB/XzEC1kBadb3mz/W8JV9srqOKSywkhpb/ozGUyhN54+7JHucTantvBWYCnmPIOhs6l/B1P0MRUjIJMJJvQ2FpI9ZqZOVd88tZRcIqa3Ksa2ltVENxPPCmSiAcSqjz5JdZxTqvZj1QEQZdb+4LTzgqHOT4XpPzPZJi2tpimOlSzM9wXa3QyXjleDIyJK8XsNlG6YyWtM5a47l50wzaxOeJNJX8RpdyfJn+p2PrwbOAv72zulVjaA==
+ bh=U8mr+E5E/bquLjHtd3y1fs2FBigd04YzSdV1VetNIuY=;
+ b=Bwn/YCqR05i7DFzvotfL58doGVzJXI/AUmtpqeryjryXtXgATWrVcRC35mESS5HYhiQlITrIeCxGY1D10Y7PeSCob9UMmQKbM4PyWjH+hqst0GeGHFUwedtUVvtErdrb8mWFT95JJu6CGzk0luMxcvH8olmWn2SCqXlxSaaBKN3/t73x7IE1MQ1R3xL1AsiUrFoJeObOjRGmtz+51Ys7Xz5FrS22GP3M4Dt0F9J5W0iGUUaTWc9t7/hUAGIljo1Irig4o0ax94uEOvMSN21s6RMk0SqpOM51YWWC4Eyeo8gfzAbhZnD5AFo5xNQy7ef8bPBFFE1svScVCfXdtKGd4A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1LpBZZ/E0MzZ0ssr0uah78Z2jasHTDuQGEPDYfnFsYI=;
- b=E93AcAMMjl//kWLkxXKK02Vl4OvtnQqx9cUCEEOAVa/wmmaWHft4owGOtNWLRGBopncH8CtlaRtOQVlX0ACWUKs0OS4+46Azx9PTvgidPlqYnkof65ptEWiv5IxXKFd4gIlZ3Dma09AmylsEQsiC8IQD6SWkQiG9XRWDLz76NII5QPESPYm3We/BPz886yvNxxyDzGcBk2yT/+/6yDJ87TW5rRdAwJOq/BFU9zGZhdJnqenb/8OtkX/KBgAI3HC7sXYIavCf3DZ2POupKkehnUZe1HDzWGevlpMM4MAf960Lia/8JN8U44kNlN9s3BQGgiL7fY3MnLdq4EBamEJDKA==
+ bh=U8mr+E5E/bquLjHtd3y1fs2FBigd04YzSdV1VetNIuY=;
+ b=IiGxYQa7CSxAhymfJM1+6kbvCnQD8AYpH6ldsRc5anVzVeoFEArZN2YNqQ/tW+1739dY2D5qFaLb43Pb4zD1ucrw7ovBulhYW7cBGXgmMw9V+EA8dfInBMK682uBUpmE9X9R0HhqTAEkNJznS3GX8nLENaIShnva/fmKBm9iN5FOcEx7nBDDZ1uNmrYNOrpkAlmZlW9j/6JMJIrNv0JvbAw0TGPnZeemagiAodJ1XKwZo7suLi/onHjdvo1UwDeNLWgZbUvh7+HcbUUJvlLXwwvq0JSuRcebP4dIYqOSa7dvryafSAonvjRQm/R1zweR79cabz6od9e+nDDzwgvYEw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=seco.com;
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
  by AS8PR03MB7749.eurprd03.prod.outlook.com (2603:10a6:20b:404::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.23; Fri, 30 Sep
- 2022 20:10:00 +0000
+ 2022 20:10:02 +0000
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::204a:de22:b651:f86d]) by DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::204a:de22:b651:f86d%6]) with mapi id 15.20.5676.023; Fri, 30 Sep 2022
- 20:10:00 +0000
+ 20:10:02 +0000
 From:   Sean Anderson <sean.anderson@seco.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -56,10 +56,11 @@ Cc:     Russell King <linux@armlinux.org.uk>,
         Li Yang <leoyang.li@nxp.com>,
         Michael Ellerman <mpe@ellerman.id.au>,
         Paul Mackerras <paulus@samba.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
-Subject: [PATCH net-next v6 8/9] powerpc: dts: qoriq: Add nodes for QSGMII PCSs
-Date:   Fri, 30 Sep 2022 16:09:32 -0400
-Message-Id: <20220930200933.4111249-9-sean.anderson@seco.com>
+        Rob Herring <robh+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org
+Subject: [PATCH net-next v6 9/9] arm64: dts: layerscape: Add nodes for QSGMII PCSs
+Date:   Fri, 30 Sep 2022 16:09:33 -0400
+Message-Id: <20220930200933.4111249-10-sean.anderson@seco.com>
 X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
 In-Reply-To: <20220930200933.4111249-1-sean.anderson@seco.com>
 References: <20220930200933.4111249-1-sean.anderson@seco.com>
@@ -71,51 +72,51 @@ X-ClientProxiedBy: BL1PR13CA0144.namprd13.prod.outlook.com
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: DB7PR03MB4972:EE_|AS8PR03MB7749:EE_
-X-MS-Office365-Filtering-Correlation-Id: aa372049-6ef4-4933-b905-08daa31fc121
+X-MS-Office365-Filtering-Correlation-Id: b9996548-7008-4857-b9e5-08daa31fc24b
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: EzadVuOKl0sJJGfeuobrUi3SjghAzMFguY3P7nWM+dse9mfXhs8mfI4HCKjTRhdAtEOu+dRYXA9FdsXep6j3TKG1QV9VLoooa57K/7hYRHXH1PqvxQEoJdM6dzG+GSJ+j8MAJKkhD1CuOABhZMQDoV/dgZhCkUUMlGW0zQen1FtEJWCH6qK4w2CyPbGFsf/dHaxWxCXHendnx0jQeqJbOh3T2+0eFVbpfIevzAkPylMJkcgwwfHAx6GIKCWYmawyK0ofBgjcqxKog9qZw09Kbvb28OVyMPgu2hrYicbYB6lJ6ve5TXieJJSabc4+ryoMtT3VMsQdMoZHmupdMnzMd4euWbwtksoI5I/UGCij/9XGOpTVeKR8reQtA0hlNHXMcGUI+KwyHBVUewnjsbW9S1Ofj5UqeE+n8hv2+yg0oTZw29DaitFrYPTp1IIq0d7TBn62k/CIlrkT88q2PdFU6FXCO+lqYXoEKm6V8mEwGh/UHwvW/ziETtLuhbelC/tHmJM04egbbMOYwLXhQ57moLONBDm2EsyDpPDmlFXwpMs1arxStApzzY2QoIhFZCGrF1BftFC+mCOHNa6QSes+AS+smkAYdck6Fnqyo6WYl4/c2Tx/+Wnbv3LNZPw/6CtWmmeZfClS4CLeQ4HfR1/1S4kYlxHIRhbDm3CP4bpj9SohndUC6rUqtJk986MZWqf2+ufWwvW0X5dcMoHqDQUVTbZioxJtpzotY1wRheW8+5UkjUtwX+6TRFV73SV8ZkGGXdeUl8ndhHF5m1G9ni8aeA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(376002)(136003)(366004)(396003)(346002)(39850400004)(451199015)(66946007)(2906002)(6666004)(38350700002)(38100700002)(8676002)(66476007)(66556008)(4326008)(83380400001)(41300700001)(36756003)(6486002)(6512007)(478600001)(6506007)(52116002)(26005)(110136005)(316002)(54906003)(186003)(1076003)(2616005)(86362001)(8936002)(7416002)(44832011)(5660300002)(30864003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: UGacYtLl/7+x2ybBfyqs4qfyjGhp7ZIeQk29E4XGlOLgOLO7tEV7TUcv19F6AewEFiSpi74ZEPbuxf/RGLuLs+cacxXDqeM3f2MZBkulq0C/mztW/zISXoFmILP3LbKS3m947XMn2KyBH/h7UcItcwWbIQ3g61WWkhAoTpZ/Cl+XYH31fvIlKyNMyMrMRLwQOcTkZdLpxm5ya6UNkmgOCrVzOVUX+tjjV5hC16XdKZVy7c0nczR667UiwdlBtCmmj+XOADY9/vPul9hhNhC9GexDS9fd0Eswn365zrXa0IcH1ZUQ56LaADZJjUhlZ6nz39G1Dxh/E7WOqS+j1UrOETz+ERQaq0eUAq3j376VvyXJSEuJYwpGv4Wff2MNTpe++zNklLjFq+xi/GJkpiX1ez24Ficwbfs50Kulq6lkQirpPwN/SzdlC5EKpaJt79PyU4jRDi6KdnqEYY7EikAmrniu4yc2ZbGqpYoomyTtrUZHsIPnHkTwBCK0/LWHJjNUvGUSrDfQbPR89IyMNCHZ57M2g7iqkcxjMVTVP/SNXpCOf23sXSC82BdLPAZe5dsSLDqjzH3pPTa4IDfiVFD70hlMVGMV8roTjLc2BWnqxgHx3AYbo2sNZIa+u9x8/eOn41yNqKquBUxAJpu06Al7YUt0C12qBLH5g1xmz1KaLmQ2m2kY6NLcu8mNlJ8zmlYjOlFIV0pe0mlUVoddPd4zi7QPte7ancCfRD0EBubO2vzzOM54yqcUYL7qoPTY3KMR5OcpTJUus3j9caukxvyC+A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(376002)(136003)(366004)(396003)(346002)(39850400004)(451199015)(66946007)(2906002)(6666004)(38350700002)(38100700002)(8676002)(66476007)(66556008)(4326008)(41300700001)(36756003)(6486002)(6512007)(478600001)(6506007)(52116002)(26005)(110136005)(316002)(54906003)(186003)(1076003)(2616005)(86362001)(8936002)(7416002)(44832011)(5660300002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?+An1k7CutCtPnIrRDnHSJHau0B4ZErEE5QyP3lDpcvCuX6uZRkxpCjbBFAFt?=
- =?us-ascii?Q?6cNWBFvPxJfnVzHkMj/d8C9gY9VaudNVdwaxajddcpO/HHcOxaJjsWXFMSbg?=
- =?us-ascii?Q?H04bSNjcH2JlJa5adeHWgar7AlXdb3sgmQwajL8F5FV1jwX77HzY5GoYUK0U?=
- =?us-ascii?Q?XMzEeyefj1LwRMLTmcQ6o+RremkfhjPLuLVzVjHmx8SXWW8KZbOiuxU+FjTu?=
- =?us-ascii?Q?B+oB0ZSSlLXYytsaIksU0doi+Qs27SpW1VryAmThURQJu23maq2RTSoGpkPj?=
- =?us-ascii?Q?g0qwX9FCvg4V84eB0goKpW4QF6Jel/WTXDkvrXQfBallVnbXLcn9G0IDunGo?=
- =?us-ascii?Q?pPHHK8lTqNgBayVc9sTFIe6pMh2b28KArdvxIqnwld3SaaDJ0MvSV5h7DZF2?=
- =?us-ascii?Q?TuO0bdo7SDXgFv9ymXvDYc7jvQJp2npuaek8Dieq5pNltrUTtSCETc7TJKOT?=
- =?us-ascii?Q?BYdlN4AKr2P0guaRx9dkhgCWvbiMfFIkOTbmb88pywcuzCGGHhdB0xGPVhJT?=
- =?us-ascii?Q?3TY0Y4HKbdo8Abgd3eSHKJ14eVtGtZ8mtTF8gv+Tws49T41F3OcWFVua6+aU?=
- =?us-ascii?Q?O9TrD56Hg2ewrsSi92AdqM94N29ygANqw7ZN/XpLcLd1MsQoB2uh+d6h1jOi?=
- =?us-ascii?Q?ol3Z0loBh7bTcRcM8EkMn4MDA0Z8sp+Vsi6sglVdbNVinLUtvUGpt0DRVB7o?=
- =?us-ascii?Q?rnmOTXED/CRij1SYoDqMUFWH+4kHfphFxYeUMf9TVsq45umEtLQwcYB2mcaS?=
- =?us-ascii?Q?CbEmaCb32q4DDWyJU2mzrq1e/jMHobC+wveNXotHOrliLz+RWN6hAr+2sbdJ?=
- =?us-ascii?Q?U7r+qui1MhSqyV/bkcytTVnY50PNvUikoLc/FzSKB+wNBJUXin1l4mlaeuB0?=
- =?us-ascii?Q?pazbLGo54HklTzORbgHvZXKK6/E8mLa8xHTLD/MIec8y9ljZSu5SdyBIYNKT?=
- =?us-ascii?Q?UUOsPGClYb0ZO0CZsdwwbWFfBMpIX30HueYJqLBCXkzQwPpl9nIqclPpLmkk?=
- =?us-ascii?Q?Vz1YVdywQ0mw4FR8+OOeusSKAhoZgLHkwUG84yLL6mJtBUO2GOXComlxSTfc?=
- =?us-ascii?Q?kpvObzVPlQHN0vBMRHy1FftPTsuc35CEqjaJtN/h1WUkLgXpa4Jh8IFIsgtv?=
- =?us-ascii?Q?dSgV/SJt/INmkVy7a5/UndowS0XLTVO4UsQjh4YfwcRmO/fOhPhbnrkF7W3x?=
- =?us-ascii?Q?aPLNHWESlrQjCzg5a359awtCVTxrIieCis83slb1XqzgwjVkrK/eSyImK3YI?=
- =?us-ascii?Q?wFq15fOa/OYruup1RvNnP8NAGGu+yJWPqbjhDO9LQp7l1kHxStKUGtXlJlIL?=
- =?us-ascii?Q?tzXsI0MNAnvJ5xNb7kcoFKuyIXGJDmNWb6RJpSElBphuyXBo1oI3fDiseMqN?=
- =?us-ascii?Q?OVlx2qGnmj7E9Fed0lglpiuLIw6WodRQKBKisAIqazkoHWCRhoAT2R7Z+SYf?=
- =?us-ascii?Q?SQEvb937TPgAqBQwy66kQp+QXwtoAC2Ypi0GbqgOyEVUieF/9yN7RiWkmADb?=
- =?us-ascii?Q?j5WTAkmXuaRnQTCRvFNfrGMLRkq07B4ZNGwT+YCcb4hbsrvAd5rkNEsJMi38?=
- =?us-ascii?Q?sjCI9VBoo4V9iSpXNqxdzqNEnv36nKsMfBF/W8fAhHFuqEPzjaQTm8cuAV3S?=
- =?us-ascii?Q?xg=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?x9zRaGiVwyCIK6IFd+AufyqoCF7wDdzZ8BQ+MVjzTrcurFCc/cqwUue3Y5Yo?=
+ =?us-ascii?Q?GwRx0kO3f0jyJUdYwA9Wzw7uX7e7WGXNd2iMONONC2IKVbkrraHitem77NXm?=
+ =?us-ascii?Q?wMP64vYqQo8Fu4zgbtlE6YHuqsa/g4TMKSY0RV6QtyU4Kt7Pm0AuWSoUczP2?=
+ =?us-ascii?Q?ESPY5GUSAEpLto8FdFCkd+5nyffz7u4fbKXg9RJfOwoz8eaFQXdHlkkeAQCX?=
+ =?us-ascii?Q?2TAJZxigfC+eJ6tRMHlCWaNjIIbxI5t+bMSbJpjVjNrq0Nw06uUFvlkDrB1N?=
+ =?us-ascii?Q?VMmqexDhYL4rmDdemS0FyU11yoT9jiuVUXHNinROrPROstvoEv96Rd+kTQTM?=
+ =?us-ascii?Q?2wSTEwWaxevWy1h7hCcb9NHw6JCXh7PWbgAe+ee90PyCE2DsUHoETRd6ySsU?=
+ =?us-ascii?Q?wKa4a4XKvEWkrNbtPQSL4i4+1y8DLCApXBGxOAIwjVvquhxyhyAfec1tKa7O?=
+ =?us-ascii?Q?s0ObkTcqg3e5eTVq/eBQO3Mij4DfgBrcoWx72tE/hxyUT6oImZD0UDItIFm3?=
+ =?us-ascii?Q?jj/7yzIX/VM2tIIGgexiiTYHsU3Y+vJZtFnM866+4XtGPUCySNq71px7St3m?=
+ =?us-ascii?Q?3NlVrL6oOEET3zB359XGP41feKlB0d9HSFa69klKS5BrGYcNlLki8H6SV0rw?=
+ =?us-ascii?Q?qFj79hfCeWDOWI1vzagwq8FhSOrl63i0tQyiLNyPvqEg5EmLx28b0b4jZMPb?=
+ =?us-ascii?Q?2n2H9gkoBGAOHboiujwhvGUfm5+4wTNH51LePCU9zU5trpAvGIFhhBARRPDe?=
+ =?us-ascii?Q?j7aclvOJPwu66Mh8MqdJwbPBtAAzICX40cld/hivqzOrzhnGB0IHBpBhZpNb?=
+ =?us-ascii?Q?GEqIrkOwlzMAT9/G5VWWvT4V8k/vkEddXYVQY3Vu4gDEbnx7xRNnIlciKvR1?=
+ =?us-ascii?Q?igTfPHhAZ0pu5zx6ixC9I5kwUo4J8zKwq+/d2pJbFbGtglfX3jWVUaic6Yz4?=
+ =?us-ascii?Q?KGSbaS+24lJPti/PzvqZwIoK9VjFAgTtpN8BVH0gnfW14jQ69W2oxpMCMg+8?=
+ =?us-ascii?Q?Nw9SkrhnYonATbxrKevC4d7oEuXhbGw7JDK8NArBOKdyZgJR/b+4+qod90r2?=
+ =?us-ascii?Q?qyMw4DImmQjE83iGnTkAeqayb/sMlwafP3k3TWzy9AtZIzQUGEvlZFAM9TVR?=
+ =?us-ascii?Q?fcaD0Q73uTBqN6o89EzqaUzeGptWI9w7DZvAH12RQm6WgJRp/IYFEw73sgj8?=
+ =?us-ascii?Q?Lz0iszo5TqUkMSrCtYkDqthVY6DA5tHVab2Bin7LO8nFP4y/KS1QfzKHQyGK?=
+ =?us-ascii?Q?x5M/kMxr47e1iUuljVQNa+b+JPY+FboLRXI+JA8nsUiASG2wwoh6XjHFz75C?=
+ =?us-ascii?Q?Epr/5CS20Hr4zT+wAJG9B4fke8B5VHiSFl27aTKDFUo9hszN7vmg6F8evlfg?=
+ =?us-ascii?Q?Uso1H1TXsJVzMl0gljQJ185LpIVTe7QnIfz0eiGAVeSeYrvDTfLYGJ8BHJu6?=
+ =?us-ascii?Q?yYOie+3XOf98niExjAPG6WmFuoTxKA/j3oQTDX85JpfqB03MQS7NE7ee63PM?=
+ =?us-ascii?Q?qxvts8iDWy5hvY31kKlnnFQ7GBzuRBCz0zMLNPZMHFwpkfWzBV2xj32Bscyu?=
+ =?us-ascii?Q?CrvwqMDXZcdOaXpzZFAGZNY208TFA60UYGWuHE+fCt+P8n3F8RuHIF7wXSaj?=
+ =?us-ascii?Q?TA=3D=3D?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: aa372049-6ef4-4933-b905-08daa31fc121
+X-MS-Exchange-CrossTenant-Network-Message-Id: b9996548-7008-4857-b9e5-08daa31fc24b
 X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Sep 2022 20:10:00.6810
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Sep 2022 20:10:02.6496
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: qc+nR+WA2pBTl4cBzsxL/pZQM+PBLF2BbJu+hsKhjHys+vwk7gsLtfVsgfRN/EMT4ixlMfjRf9v9cuQHOmMplQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8h04EDgrngAUFTvAbRWnFWxVdQuyRB2sh1T6/VMBM/OrHQT2ixkJaOcxPCfWM+lkeyKrolc+HXdswNoGfV8z2g==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR03MB7749
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -130,8 +131,7 @@ X-Mailing-List: netdev@vger.kernel.org
 Now that we actually read registers from QSGMII PCSs, it's important
 that we have the correct address (instead of hoping that we're the MAC
 with all the QSGMII PCSs on its bus). This adds nodes for the QSGMII
-PCSs. They have the same addresses on all SoCs (e.g. if QSGMIIA is
-present it's used for MACs 1 through 4).
+PCSs.  The exact mapping of QSGMII to MACs depends on the SoC.
 
 Since the first QSGMII PCSs share an address with the SGMII and XFI
 PCSs, we only add new nodes for PCSs 2-4. This avoids address conflicts
@@ -140,411 +140,119 @@ on the bus.
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 ---
 
-(no changes since v4)
-
-Changes in v4:
-- Add XFI PCS for t208x MAC1/MAC2
+(no changes since v3)
 
 Changes in v3:
-- Add compatibles for QSGMII PCSs
-- Split arm and powerpcs dts updates
+- Split this patch off from the previous one
 
 Changes in v2:
 - New
 
- .../boot/dts/fsl/qoriq-fman3-0-10g-0-best-effort.dtsi  |  3 ++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-0.dtsi     | 10 +++++++++-
- .../boot/dts/fsl/qoriq-fman3-0-10g-1-best-effort.dtsi  | 10 +++++++++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-1.dtsi     | 10 +++++++++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-2.dtsi     |  3 ++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-3.dtsi     |  3 ++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-0.dtsi      |  3 ++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-1.dtsi      | 10 +++++++++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-2.dtsi      | 10 +++++++++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-3.dtsi      | 10 +++++++++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-4.dtsi      |  3 ++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-5.dtsi      | 10 +++++++++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-1-10g-0.dtsi     | 10 +++++++++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-1-10g-1.dtsi     | 10 +++++++++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-0.dtsi      |  3 ++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-1.dtsi      | 10 +++++++++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-2.dtsi      | 10 +++++++++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-3.dtsi      | 10 +++++++++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-4.dtsi      |  3 ++-
- arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-5.dtsi      | 10 +++++++++-
- 20 files changed, 131 insertions(+), 20 deletions(-)
+ .../boot/dts/freescale/fsl-ls1043-post.dtsi   | 24 ++++++++++++++++++
+ .../boot/dts/freescale/fsl-ls1046-post.dtsi   | 25 +++++++++++++++++++
+ 2 files changed, 49 insertions(+)
 
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-0-best-effort.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-0-best-effort.dtsi
-index baa0c503e741..7e70977f282a 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-0-best-effort.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-0-best-effort.dtsi
-@@ -55,7 +55,8 @@ ethernet@e0000 {
- 		reg = <0xe0000 0x1000>;
- 		fsl,fman-ports = <&fman0_rx_0x08 &fman0_tx_0x28>;
- 		ptp-timer = <&ptp_timer0>;
--		pcsphy-handle = <&pcsphy0>;
-+		pcsphy-handle = <&pcsphy0>, <&pcsphy0>;
+diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1043-post.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls1043-post.dtsi
+index d237162a8744..5c4d7eef8b61 100644
+--- a/arch/arm64/boot/dts/freescale/fsl-ls1043-post.dtsi
++++ b/arch/arm64/boot/dts/freescale/fsl-ls1043-post.dtsi
+@@ -24,9 +24,12 @@ &fman0 {
+ 
+ 	/* these aliases provide the FMan ports mapping */
+ 	enet0: ethernet@e0000 {
++		pcs-handle-names = "qsgmii";
+ 	};
+ 
+ 	enet1: ethernet@e2000 {
++		pcsphy-handle = <&pcsphy1>, <&qsgmiib_pcs1>;
 +		pcs-handle-names = "sgmii", "qsgmii";
  	};
  
- 	mdio@e1000 {
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-0.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-0.dtsi
-index 93095600e808..5f89f7c1761f 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-0.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-0.dtsi
-@@ -52,7 +52,15 @@ ethernet@f0000 {
- 		compatible = "fsl,fman-memac";
- 		reg = <0xf0000 0x1000>;
- 		fsl,fman-ports = <&fman0_rx_0x10 &fman0_tx_0x30>;
--		pcsphy-handle = <&pcsphy6>;
-+		pcsphy-handle = <&pcsphy6>, <&qsgmiib_pcs2>, <&pcsphy6>;
-+		pcs-handle-names = "sgmii", "qsgmii", "xfi";
-+	};
-+
-+	mdio@e9000 {
-+		qsgmiib_pcs2: ethernet-pcs@2 {
-+			compatible = "fsl,lynx-pcs";
-+			reg = <2>;
-+		};
+ 	enet2: ethernet@e4000 {
+@@ -36,11 +39,32 @@ enet3: ethernet@e6000 {
  	};
  
- 	mdio@f1000 {
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-1-best-effort.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-1-best-effort.dtsi
-index ff4bd38f0645..71eb75e82c2e 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-1-best-effort.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-1-best-effort.dtsi
-@@ -55,7 +55,15 @@ ethernet@e2000 {
- 		reg = <0xe2000 0x1000>;
- 		fsl,fman-ports = <&fman0_rx_0x09 &fman0_tx_0x29>;
- 		ptp-timer = <&ptp_timer0>;
--		pcsphy-handle = <&pcsphy1>;
-+		pcsphy-handle = <&pcsphy1>, <&qsgmiia_pcs1>;
+ 	enet4: ethernet@e8000 {
++		pcsphy-handle = <&pcsphy4>, <&qsgmiib_pcs2>;
 +		pcs-handle-names = "sgmii", "qsgmii";
-+	};
+ 	};
+ 
+ 	enet5: ethernet@ea000 {
++		pcsphy-handle = <&pcsphy5>, <&qsgmiib_pcs3>;
++		pcs-handle-names = "sgmii", "qsgmii";
+ 	};
+ 
+ 	enet6: ethernet@f0000 {
+ 	};
 +
 +	mdio@e1000 {
-+		qsgmiia_pcs1: ethernet-pcs@1 {
-+			compatible = "fsl,lynx-pcs";
-+			reg = <1>;
-+		};
- 	};
- 
- 	mdio@e3000 {
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-1.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-1.dtsi
-index 1fa38ed6f59e..fb7032ddb7fc 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-1.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-1.dtsi
-@@ -52,7 +52,15 @@ ethernet@f2000 {
- 		compatible = "fsl,fman-memac";
- 		reg = <0xf2000 0x1000>;
- 		fsl,fman-ports = <&fman0_rx_0x11 &fman0_tx_0x31>;
--		pcsphy-handle = <&pcsphy7>;
-+		pcsphy-handle = <&pcsphy7>, <&qsgmiib_pcs3>, <&pcsphy7>;
-+		pcs-handle-names = "sgmii", "qsgmii", "xfi";
-+	};
-+
-+	mdio@e9000 {
-+		qsgmiib_pcs3: ethernet-pcs@3 {
-+			compatible = "fsl,lynx-pcs";
-+			reg = <3>;
-+		};
- 	};
- 
- 	mdio@f3000 {
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-2.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-2.dtsi
-index 437dab3fc017..6b3609574b0f 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-2.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-2.dtsi
-@@ -27,7 +27,8 @@ ethernet@e0000 {
- 		reg = <0xe0000 0x1000>;
- 		fsl,fman-ports = <&fman0_rx_0x08 &fman0_tx_0x28>;
- 		ptp-timer = <&ptp_timer0>;
--		pcsphy-handle = <&pcsphy0>;
-+		pcsphy-handle = <&pcsphy0>, <&pcsphy0>;
-+		pcs-handle-names = "sgmii", "xfi";
- 	};
- 
- 	mdio@e1000 {
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-3.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-3.dtsi
-index ad116b17850a..28ed1a85a436 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-3.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-10g-3.dtsi
-@@ -27,7 +27,8 @@ ethernet@e2000 {
- 		reg = <0xe2000 0x1000>;
- 		fsl,fman-ports = <&fman0_rx_0x09 &fman0_tx_0x29>;
- 		ptp-timer = <&ptp_timer0>;
--		pcsphy-handle = <&pcsphy1>;
-+		pcsphy-handle = <&pcsphy1>, <&pcsphy1>;
-+		pcs-handle-names = "sgmii", "xfi";
- 	};
- 
- 	mdio@e3000 {
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-0.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-0.dtsi
-index a8cc9780c0c4..1089d6861bfb 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-0.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-0.dtsi
-@@ -51,7 +51,8 @@ ethernet@e0000 {
- 		reg = <0xe0000 0x1000>;
- 		fsl,fman-ports = <&fman0_rx_0x08 &fman0_tx_0x28>;
- 		ptp-timer = <&ptp_timer0>;
--		pcsphy-handle = <&pcsphy0>;
-+		pcsphy-handle = <&pcsphy0>, <&pcsphy0>;
-+		pcs-handle-names = "sgmii", "qsgmii";
- 	};
- 
- 	mdio@e1000 {
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-1.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-1.dtsi
-index 8b8bd70c9382..a95bbb4fc827 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-1.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-1.dtsi
-@@ -51,7 +51,15 @@ ethernet@e2000 {
- 		reg = <0xe2000 0x1000>;
- 		fsl,fman-ports = <&fman0_rx_0x09 &fman0_tx_0x29>;
- 		ptp-timer = <&ptp_timer0>;
--		pcsphy-handle = <&pcsphy1>;
-+		pcsphy-handle = <&pcsphy1>, <&qsgmiia_pcs1>;
-+		pcs-handle-names = "sgmii", "qsgmii";
-+	};
-+
-+	mdio@e1000 {
-+		qsgmiia_pcs1: ethernet-pcs@1 {
-+			compatible = "fsl,lynx-pcs";
-+			reg = <1>;
-+		};
- 	};
- 
- 	mdio@e3000 {
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-2.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-2.dtsi
-index 619c880b54d8..7d5af0147a25 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-2.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-2.dtsi
-@@ -51,7 +51,15 @@ ethernet@e4000 {
- 		reg = <0xe4000 0x1000>;
- 		fsl,fman-ports = <&fman0_rx_0x0a &fman0_tx_0x2a>;
- 		ptp-timer = <&ptp_timer0>;
--		pcsphy-handle = <&pcsphy2>;
-+		pcsphy-handle = <&pcsphy2>, <&qsgmiia_pcs2>;
-+		pcs-handle-names = "sgmii", "qsgmii";
-+	};
-+
-+	mdio@e1000 {
-+		qsgmiia_pcs2: ethernet-pcs@2 {
-+			compatible = "fsl,lynx-pcs";
-+			reg = <2>;
-+		};
- 	};
- 
- 	mdio@e5000 {
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-3.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-3.dtsi
-index d7ebb73a400d..61e5466ec854 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-3.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-3.dtsi
-@@ -51,7 +51,15 @@ ethernet@e6000 {
- 		reg = <0xe6000 0x1000>;
- 		fsl,fman-ports = <&fman0_rx_0x0b &fman0_tx_0x2b>;
- 		ptp-timer = <&ptp_timer0>;
--		pcsphy-handle = <&pcsphy3>;
-+		pcsphy-handle = <&pcsphy3>, <&qsgmiia_pcs3>;
-+		pcs-handle-names = "sgmii", "qsgmii";
-+	};
-+
-+	mdio@e1000 {
-+		qsgmiia_pcs3: ethernet-pcs@3 {
-+			compatible = "fsl,lynx-pcs";
-+			reg = <3>;
-+		};
- 	};
- 
- 	mdio@e7000 {
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-4.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-4.dtsi
-index b151d696a069..3ba0cdafc069 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-4.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-4.dtsi
-@@ -51,7 +51,8 @@ ethernet@e8000 {
- 		reg = <0xe8000 0x1000>;
- 		fsl,fman-ports = <&fman0_rx_0x0c &fman0_tx_0x2c>;
- 		ptp-timer = <&ptp_timer0>;
--		pcsphy-handle = <&pcsphy4>;
-+		pcsphy-handle = <&pcsphy4>, <&pcsphy4>;
-+		pcs-handle-names = "sgmii", "qsgmii";
- 	};
- 
- 	mdio@e9000 {
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-5.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-5.dtsi
-index adc0ae0013a3..51748de0a289 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-5.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-0-1g-5.dtsi
-@@ -51,7 +51,15 @@ ethernet@ea000 {
- 		reg = <0xea000 0x1000>;
- 		fsl,fman-ports = <&fman0_rx_0x0d &fman0_tx_0x2d>;
- 		ptp-timer = <&ptp_timer0>;
--		pcsphy-handle = <&pcsphy5>;
-+		pcsphy-handle = <&pcsphy5>, <&qsgmiib_pcs1>;
-+		pcs-handle-names = "sgmii", "qsgmii";
-+	};
-+
-+	mdio@e9000 {
 +		qsgmiib_pcs1: ethernet-pcs@1 {
 +			compatible = "fsl,lynx-pcs";
-+			reg = <1>;
++			reg = <0x1>;
 +		};
++
++		qsgmiib_pcs2: ethernet-pcs@2 {
++			compatible = "fsl,lynx-pcs";
++			reg = <0x2>;
++		};
++
++		qsgmiib_pcs3: ethernet-pcs@3 {
++			compatible = "fsl,lynx-pcs";
++			reg = <0x3>;
++		};
++	};
+ };
+diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1046-post.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls1046-post.dtsi
+index d6caaea57d90..4e3345093943 100644
+--- a/arch/arm64/boot/dts/freescale/fsl-ls1046-post.dtsi
++++ b/arch/arm64/boot/dts/freescale/fsl-ls1046-post.dtsi
+@@ -23,6 +23,8 @@ &soc {
+ &fman0 {
+ 	/* these aliases provide the FMan ports mapping */
+ 	enet0: ethernet@e0000 {
++		pcsphy-handle = <&qsgmiib_pcs3>;
++		pcs-handle-names = "qsgmii";
  	};
  
- 	mdio@eb000 {
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-10g-0.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-10g-0.dtsi
-index 435047e0e250..ee4f5170f632 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-10g-0.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-10g-0.dtsi
-@@ -52,7 +52,15 @@ ethernet@f0000 {
- 		compatible = "fsl,fman-memac";
- 		reg = <0xf0000 0x1000>;
- 		fsl,fman-ports = <&fman1_rx_0x10 &fman1_tx_0x30>;
--		pcsphy-handle = <&pcsphy14>;
-+		pcsphy-handle = <&pcsphy14>, <&qsgmiid_pcs2>, <&pcsphy14>;
+ 	enet1: ethernet@e2000 {
+@@ -35,14 +37,37 @@ enet3: ethernet@e6000 {
+ 	};
+ 
+ 	enet4: ethernet@e8000 {
++		pcsphy-handle = <&pcsphy4>, <&qsgmiib_pcs1>;
++		pcs-handle-names = "sgmii", "qsgmii";
+ 	};
+ 
+ 	enet5: ethernet@ea000 {
++		pcsphy-handle = <&pcsphy5>, <&pcsphy5>;
++		pcs-handle-names = "sgmii", "qsgmii";
+ 	};
+ 
+ 	enet6: ethernet@f0000 {
+ 	};
+ 
+ 	enet7: ethernet@f2000 {
++		pcsphy-handle = <&pcsphy7>, <&qsgmiib_pcs2>, <&pcsphy7>;
 +		pcs-handle-names = "sgmii", "qsgmii", "xfi";
 +	};
 +
-+	mdio@e9000 {
-+		qsgmiid_pcs2: ethernet-pcs@2 {
++	mdio@eb000 {
++		qsgmiib_pcs1: ethernet-pcs@1 {
 +			compatible = "fsl,lynx-pcs";
-+			reg = <2>;
++			reg = <0x1>;
 +		};
- 	};
- 
- 	mdio@f1000 {
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-10g-1.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-10g-1.dtsi
-index c098657cca0a..83d2e0ce8f7b 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-10g-1.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-10g-1.dtsi
-@@ -52,7 +52,15 @@ ethernet@f2000 {
- 		compatible = "fsl,fman-memac";
- 		reg = <0xf2000 0x1000>;
- 		fsl,fman-ports = <&fman1_rx_0x11 &fman1_tx_0x31>;
--		pcsphy-handle = <&pcsphy15>;
-+		pcsphy-handle = <&pcsphy15>, <&qsgmiid_pcs3>, <&pcsphy15>;
-+		pcs-handle-names = "sgmii", "qsgmii", "xfi";
-+	};
 +
-+	mdio@e9000 {
-+		qsgmiid_pcs3: ethernet-pcs@3 {
++		qsgmiib_pcs2: ethernet-pcs@2 {
 +			compatible = "fsl,lynx-pcs";
-+			reg = <3>;
++			reg = <0x2>;
 +		};
- 	};
- 
- 	mdio@f3000 {
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-0.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-0.dtsi
-index 9d06824815f3..3132fc73f133 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-0.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-0.dtsi
-@@ -51,7 +51,8 @@ ethernet@e0000 {
- 		reg = <0xe0000 0x1000>;
- 		fsl,fman-ports = <&fman1_rx_0x08 &fman1_tx_0x28>;
- 		ptp-timer = <&ptp_timer1>;
--		pcsphy-handle = <&pcsphy8>;
-+		pcsphy-handle = <&pcsphy8>, <&pcsphy8>;
-+		pcs-handle-names = "sgmii", "qsgmii";
- 	};
- 
- 	mdio@e1000 {
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-1.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-1.dtsi
-index 70e947730c4b..75e904d96602 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-1.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-1.dtsi
-@@ -51,7 +51,15 @@ ethernet@e2000 {
- 		reg = <0xe2000 0x1000>;
- 		fsl,fman-ports = <&fman1_rx_0x09 &fman1_tx_0x29>;
- 		ptp-timer = <&ptp_timer1>;
--		pcsphy-handle = <&pcsphy9>;
-+		pcsphy-handle = <&pcsphy9>, <&qsgmiic_pcs1>;
-+		pcs-handle-names = "sgmii", "qsgmii";
-+	};
 +
-+	mdio@e1000 {
-+		qsgmiic_pcs1: ethernet-pcs@1 {
++		qsgmiib_pcs3: ethernet-pcs@3 {
 +			compatible = "fsl,lynx-pcs";
-+			reg = <1>;
++			reg = <0x3>;
 +		};
  	};
- 
- 	mdio@e3000 {
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-2.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-2.dtsi
-index ad96e6529595..69f2cc7b8f19 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-2.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-2.dtsi
-@@ -51,7 +51,15 @@ ethernet@e4000 {
- 		reg = <0xe4000 0x1000>;
- 		fsl,fman-ports = <&fman1_rx_0x0a &fman1_tx_0x2a>;
- 		ptp-timer = <&ptp_timer1>;
--		pcsphy-handle = <&pcsphy10>;
-+		pcsphy-handle = <&pcsphy10>, <&qsgmiic_pcs2>;
-+		pcs-handle-names = "sgmii", "qsgmii";
-+	};
-+
-+	mdio@e1000 {
-+		qsgmiic_pcs2: ethernet-pcs@2 {
-+			compatible = "fsl,lynx-pcs";
-+			reg = <2>;
-+		};
- 	};
- 
- 	mdio@e5000 {
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-3.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-3.dtsi
-index 034bc4b71f7a..b3aaf01d7da0 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-3.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-3.dtsi
-@@ -51,7 +51,15 @@ ethernet@e6000 {
- 		reg = <0xe6000 0x1000>;
- 		fsl,fman-ports = <&fman1_rx_0x0b &fman1_tx_0x2b>;
- 		ptp-timer = <&ptp_timer1>;
--		pcsphy-handle = <&pcsphy11>;
-+		pcsphy-handle = <&pcsphy11>, <&qsgmiic_pcs3>;
-+		pcs-handle-names = "sgmii", "qsgmii";
-+	};
-+
-+	mdio@e1000 {
-+		qsgmiic_pcs3: ethernet-pcs@3 {
-+			compatible = "fsl,lynx-pcs";
-+			reg = <3>;
-+		};
- 	};
- 
- 	mdio@e7000 {
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-4.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-4.dtsi
-index 93ca23d82b39..18e020432807 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-4.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-4.dtsi
-@@ -51,7 +51,8 @@ ethernet@e8000 {
- 		reg = <0xe8000 0x1000>;
- 		fsl,fman-ports = <&fman1_rx_0x0c &fman1_tx_0x2c>;
- 		ptp-timer = <&ptp_timer1>;
--		pcsphy-handle = <&pcsphy12>;
-+		pcsphy-handle = <&pcsphy12>, <&pcsphy12>;
-+		pcs-handle-names = "sgmii", "qsgmii";
- 	};
- 
- 	mdio@e9000 {
-diff --git a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-5.dtsi b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-5.dtsi
-index 23b3117a2fd2..55f329d13f19 100644
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-5.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3-1-1g-5.dtsi
-@@ -51,7 +51,15 @@ ethernet@ea000 {
- 		reg = <0xea000 0x1000>;
- 		fsl,fman-ports = <&fman1_rx_0x0d &fman1_tx_0x2d>;
- 		ptp-timer = <&ptp_timer1>;
--		pcsphy-handle = <&pcsphy13>;
-+		pcsphy-handle = <&pcsphy13>, <&qsgmiid_pcs1>;
-+		pcs-handle-names = "sgmii", "qsgmii";
-+	};
-+
-+	mdio@e9000 {
-+		qsgmiid_pcs1: ethernet-pcs@1 {
-+			compatible = "fsl,lynx-pcs";
-+			reg = <1>;
-+		};
- 	};
- 
- 	mdio@eb000 {
+ };
 -- 
 2.35.1.1320.gc452695387.dirty
 
