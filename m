@@ -2,49 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E0CD85F0F2B
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 17:44:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACF455F0F3B
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 17:48:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231548AbiI3Pom (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 11:44:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47940 "EHLO
+        id S231673AbiI3Psz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 11:48:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231473AbiI3Pok (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 11:44:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B309FBCB4;
-        Fri, 30 Sep 2022 08:44:35 -0700 (PDT)
+        with ESMTP id S231641AbiI3Psv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 11:48:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B0E81B3A79;
+        Fri, 30 Sep 2022 08:48:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 66503B82931;
-        Fri, 30 Sep 2022 15:44:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E05AC433C1;
-        Fri, 30 Sep 2022 15:44:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 288FD622A9;
+        Fri, 30 Sep 2022 15:48:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20BD1C433C1;
+        Fri, 30 Sep 2022 15:48:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664552673;
-        bh=AcLbAv/XJtLL0m7WOesoWHUm/GUkwsx0vRv9GeXUrds=;
+        s=k20201202; t=1664552928;
+        bh=WTsfxcCetaWj0z8nC52kBDNmHS2wbkEsuXxoixeoHhw=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=r1CuoAerkt/1p1c8v/KtmZOSs+FKGMcS0z4TxJJhamcAU/tlJn8kUPd4TKB5KzPT0
-         x+aAlU2Fdwv6Mk1ccEu676FI+tiFs4nmLo3txQnqiBPppmQ58ahUCFIoPB5HWxmtDj
-         sazegYrm/UNkjJZf7/plKO3tB5JBbDmz6d0zHUbThnjtLEjyzfRsZ+Oziig6f6tEfg
-         gwiusA8lTHX0nEwX7l1veUcN926HVZpPbf8v4YlS2rUsfZz5I0s8POp91mELpkC33E
-         24gvnTq0lq1wkPufmxdSPSV+2ICmDInrIS0lv+9vPYOFQLuZS70sp7QZRmWW5VcNgJ
-         PR1EzDKNvfGwQ==
-Date:   Fri, 30 Sep 2022 08:44:31 -0700
+        b=uG0CqsCRUl99ZNVOtxt+lwLOYX7DyRUFTgEGXyJEld2WTszxirzfu4ihujgXl4rRB
+         Spcyf+MnYU2CKw9dy21QHdBixmZ/rsdwesQojAJJMvAGpC4HJWsLgzlqPy4iGMIpWL
+         pFWjHOczcvbXFsJ+/Ii+Ghzcys5c80dNejmUTBzoT56JxbBwDCcf75q33zeYw2mXt/
+         Gz5pW3h6Ltj+g+BI3YvakbU3keG6XRayJETrm7ugsjs4z6DgmsnVcAhI4GuHczaeHL
+         wKgMgC6DqaTDMmzT0GCtIoAJQsz/wpJkHKGQZbCmstM+d2gMHP2cTJDEM5J0tVgfC2
+         FMbUOhaLOGe1Q==
+Date:   Fri, 30 Sep 2022 08:48:47 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Joe Perches <joe@perches.com>
-Cc:     Jiasheng Jiang <jiasheng@iscas.ac.cn>, pabeni@redhat.com,
-        davem@davemloft.net, tchornyi@marvell.com, edumazet@google.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Volodymyr Mytnyk <vmytnyk@marvell.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] net: prestera: acl: Add check for kmemdup
-Message-ID: <20220930084431.508ce665@kernel.org>
-In-Reply-To: <e9a52823ea98a0e4a23c38e83d7872faed8c1d6c.camel@perches.com>
-References: <20220930050317.32706-1-jiasheng@iscas.ac.cn>
-        <20220930072952.2d337b3a@kernel.org>
-        <e9a52823ea98a0e4a23c38e83d7872faed8c1d6c.camel@perches.com>
+To:     Zheng Wang <zyytlz.wz@163.com>
+Cc:     netdev@vger.kernel.org, wellslutw@gmail.com, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, hackerzheng666@gmail.com,
+        alex000young@gmail.com, security@kernel.org, edumazet@google.com,
+        pabeni@redhat.com
+Subject: Re: [PATCH] eth: sp7021: fix use after free bug in
+ spl2sw_nvmem_get_mac_address
+Message-ID: <20220930084847.2d0b4f4a@kernel.org>
+In-Reply-To: <20220930040310.2221344-1-zyytlz.wz@163.com>
+References: <20220930040310.2221344-1-zyytlz.wz@163.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -57,51 +55,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 30 Sep 2022 08:20:47 -0700 Joe Perches wrote:
-> IMO: If Volodymyr wants to be a maintainer here, he should put
-> his email as an entry in the MAINTAINERS file for the subsystem.
-
-It's about Fixes tags, unfortunately having everyone of note listed 
-in MAINTAINERS is pretty much impossible. Even tho we are trying.
-
-> > > Maybe there is a problem of the script that misses one.  
+On Fri, 30 Sep 2022 12:03:10 +0800 Zheng Wang wrote:
+> This frees "mac" and tries to display its address as part of the error
+> message on the next line.  Swap the order.
 > 
-> I don't think so.  Maybe you have more evidence...
-
-I'll CC you when I tell people to CC authors of patches under Fixes
-going forward, I don't have a list going back.
-
-> > > Anyway, I have already submitted the same patch and added
-> > > "vmytnyk@marvell.com" this time.  
-> > 
-> > Ha! So you do indeed use it in a way I wasn't expecting :S
-> > Thanks for the explanation.
-> > 
-> > Joe, would you be okay to add a "big fat warning" to get_maintainer
-> > when people try to use the -f flag?  
+> Fixes: fd3040b9394c ("net: ethernet: Add driver for Sunplus SP7021")
 > 
-> No, not really.  -f isn't required when the file is in git anyway.
-
-Ah. Yeah. I'd make it error out when run on a source file without -f :S
-
-> > Maybe we can also change the message
-> > that's displayed when the script is run without arguments to not
-> > mention -f?  
+> Reported-by: Zheng Wang <hackerzheng666@gmail.com>
 > 
-> I think that's a poor idea as frequently the script isn't used
-> on patches but simply to identify the maintainers of a particular
-> file or subsystem.
+> Signed-off-by: Zheng Wang <zyytlz.wz@163.com>
 
-Identify the maintainers and report a bug, or something else? As a
-maintainer I can tell you that I don't see bug reports as often as I
-see trivial patches from noobs which miss CCs. And I personally don't
-think I ever used get_maintainer on anything else than a patch.
+Is there reporter and author the same person with different email
+addresses or two people?
 
-> > We're getting quite a few fixes which don't CC author, I'm guessing
-> > Jiasheng's approach may be a common one.  
-> 
-> There's no great way to identify "author" or "original submitter"
-> and frequently the "original submitter" isn't a maintainer anyway.
-
-Confusing sentence. We want for people who s-o-b'd the commit under
-Fixes to be CCed.
