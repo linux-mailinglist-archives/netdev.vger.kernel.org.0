@@ -2,149 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F1F9A5F0FEB
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 18:27:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2ED9B5F0FF7
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 18:29:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232158AbiI3Q1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 12:27:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57892 "EHLO
+        id S232125AbiI3Q3c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 12:29:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232160AbiI3Q1T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 12:27:19 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2085715AB75
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 09:27:13 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id bq9so7639368wrb.4
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 09:27:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=7W3Og/4RNlgYtNzrXgP9eMetXd3+sXqOcX1XfNyoYbg=;
-        b=lQnxFmKReWujc0wGC+kBfGDtBWPj4GUt4tKwBdztRU73AtVWAh392JxqfSMnMAojqx
-         naI8Xcs9SnlRkKo1IW20una+Ww97iGYJZ8xkpG6psoJgnZNE6SCiANfkXtKfh9qarm45
-         /cYQqFwKabPWrxTU/uqDL/83P1GJ4eLxm1eGkZsv3K7tJtWYx3xh4c8xpMr8D4XZlWec
-         EDLnLxKJo7M30uAzQvq7iSD4lhetpjbuTk07sXelD5rELGoBkZmZssedlFClx6/zOsxV
-         qSclPVcj7h9IzapATeyxyArtS8g22IZGlsFO+w9U6vTfAiDXQpkLaG3+OsU4yE7jT6Z3
-         AMng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=7W3Og/4RNlgYtNzrXgP9eMetXd3+sXqOcX1XfNyoYbg=;
-        b=ehAovToyk+iF03W19KqR7xQTMP3tyrbezZ3C9bvEdvQnjTfR6mMLTO6D+w89zkbIY0
-         E9fpSQVUxfZyu184xU/MjDpFlv3qr9BDs5pH7Sb64li+SE/blXc78hWQ63TnrR7haYBX
-         PtHljpOp9XFkMJRiJ7fEcch90qQ1kUxmVvyj5BkdUsM12ZHTCSdL/9skt0GnvBelOyuM
-         dnY26KwAu4S99hzwzXI99xHgC/zN05m1ebV/EELTDbjsHYJAKJ9sw7RhId1cpZaKFqY1
-         +BSbMCfeqKW+vQD58cCe9shD4NSk44rm9TdAmmYa+xiCbPEVegoFeCfPh5mHS8/eFu05
-         0OLg==
-X-Gm-Message-State: ACrzQf1LxaPkR37/LqfhafFJtf5mSIVj7DmDM9eBu1ok4zR3RP6dbDBk
-        wvMuGNji4jBfijZQ+MQnMiiqbw==
-X-Google-Smtp-Source: AMsMyM7/cJuCOeZNl0YTke2gk3elfgNT7Y/M69evvzu+NRzMVx7uur4LbtkDKyUrTPSTI1WIBkzbDw==
-X-Received: by 2002:adf:d1cc:0:b0:22a:450c:6208 with SMTP id b12-20020adfd1cc000000b0022a450c6208mr6649206wrd.696.1664555231593;
-        Fri, 30 Sep 2022 09:27:11 -0700 (PDT)
-Received: from [192.168.178.32] ([51.155.200.13])
-        by smtp.gmail.com with ESMTPSA id be7-20020a05600c1e8700b003b476bb2624sm2091070wmb.6.2022.09.30.09.27.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 30 Sep 2022 09:27:10 -0700 (PDT)
-Message-ID: <26838c8a-d8d3-51df-ba27-b2a27ecdbcaa@isovalent.com>
-Date:   Fri, 30 Sep 2022 17:27:09 +0100
+        with ESMTP id S231316AbiI3Q3a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 12:29:30 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C84A1C3DF9
+        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 09:29:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 965F7CE2619
+        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 16:29:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB8C3C433C1;
+        Fri, 30 Sep 2022 16:29:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664555365;
+        bh=CtyIou0c8NkMQ+tj6MfJ03/EFtW5URsy3jxkZDzA4ZQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=JGyQEm0xPI0RQ+bbGCbBakGNM0P4plBK85TwlhkkGP48yidpfY3Q6U539vwxJ5JoS
+         uc5Je/Lksl+AYEu7H6UqfhoRmQ7SMTTf9fwvSNWIr/X8dw22idkJpj0vm6uMeIyAPz
+         fDd7+7O4h9KO7EOZ0XpTmEowNyaeyU9ABbgs8kAKmLSG8QhyUz8WZcpL1AXQRqnJB7
+         dAtlJg32Njdw+naK+hrapg5Z4MMuV9p0OszAoHa5ZtzC68xZ29rZIZaA2tbYlpBzuW
+         +5yhgZqEzwAH9TmhIco60xjuScNM9139nWQnUIX0Xi77C7+I5L3pNHr4CzB9Hsl3QA
+         KeSRmjfBssjfg==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: [PATCH net-next 00/16] mlx5 xsk updates part3 2022-09-30
+Date:   Fri, 30 Sep 2022 09:28:47 -0700
+Message-Id: <20220930162903.62262-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.0
-Subject: Re: [bpf-next v7 2/3] bpftool: Update doc (add autoattach to prog
- load)
-Content-Language: en-GB
-To:     Wang Yufen <wangyufen@huawei.com>, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, martin.lau@linux.dev,
-        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, sdf@google.com, haoluo@google.com,
-        jolsa@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        hawk@kernel.org, nathan@kernel.org, ndesaulniers@google.com,
-        trix@redhat.com
-Cc:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, llvm@lists.linux.dev
-References: <1664277676-2228-1-git-send-email-wangyufen@huawei.com>
- <1664277676-2228-2-git-send-email-wangyufen@huawei.com>
-From:   Quentin Monnet <quentin@isovalent.com>
-In-Reply-To: <1664277676-2228-2-git-send-email-wangyufen@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue Sep 27 2022 12:21:15 GMT+0100 ~ Wang Yufen <wangyufen@huawei.com>
-> Add autoattach optional to prog load|loadall for supporting
-> one-step load-attach-pin_link.
-> 
-> Signed-off-by: Wang Yufen <wangyufen@huawei.com>
-> ---
->  tools/bpf/bpftool/Documentation/bpftool-prog.rst | 17 +++++++++++++++--
->  1 file changed, 15 insertions(+), 2 deletions(-)
-> 
-> diff --git a/tools/bpf/bpftool/Documentation/bpftool-prog.rst b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
-> index eb1b2a2..b81d3d9 100644
-> --- a/tools/bpf/bpftool/Documentation/bpftool-prog.rst
-> +++ b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
-> @@ -31,7 +31,7 @@ PROG COMMANDS
->  |	**bpftool** **prog dump xlated** *PROG* [{**file** *FILE* | **opcodes** | **visual** | **linum**}]
->  |	**bpftool** **prog dump jited**  *PROG* [{**file** *FILE* | **opcodes** | **linum**}]
->  |	**bpftool** **prog pin** *PROG* *FILE*
-> -|	**bpftool** **prog** { **load** | **loadall** } *OBJ* *PATH* [**type** *TYPE*] [**map** {**idx** *IDX* | **name** *NAME*} *MAP*] [**dev** *NAME*] [**pinmaps** *MAP_DIR*]
-> +|	**bpftool** **prog** { **load** | **loadall** } *OBJ* *PATH* [**type** *TYPE*] [**map** {**idx** *IDX* | **name** *NAME*} *MAP*] [**dev** *NAME*] [**pinmaps** *MAP_DIR*] [**autoattach**]
->  |	**bpftool** **prog attach** *PROG* *ATTACH_TYPE* [*MAP*]
->  |	**bpftool** **prog detach** *PROG* *ATTACH_TYPE* [*MAP*]
->  |	**bpftool** **prog tracelog**
-> @@ -131,7 +131,7 @@ DESCRIPTION
->  		  contain a dot character ('.'), which is reserved for future
->  		  extensions of *bpffs*.
->  
-> -	**bpftool prog { load | loadall }** *OBJ* *PATH* [**type** *TYPE*] [**map** {**idx** *IDX* | **name** *NAME*} *MAP*] [**dev** *NAME*] [**pinmaps** *MAP_DIR*]
-> +	**bpftool prog { load | loadall }** *OBJ* *PATH* [**type** *TYPE*] [**map** {**idx** *IDX* | **name** *NAME*} *MAP*] [**dev** *NAME*] [**pinmaps** *MAP_DIR*] [**autoattach**]
->  		  Load bpf program(s) from binary *OBJ* and pin as *PATH*.
->  		  **bpftool prog load** pins only the first program from the
->  		  *OBJ* as *PATH*. **bpftool prog loadall** pins all programs
-> @@ -150,6 +150,19 @@ DESCRIPTION
->  		  Optional **pinmaps** argument can be provided to pin all
->  		  maps under *MAP_DIR* directory.
->  
-> +		  If **autoattach** is specified program will be attached
-> +		  before pin. In that case, only the link (representing the
-> +		  program attached to its hook) is pinned, not the program as
-> +		  such, so the path won't show in "**bpftool prog show -f**",
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-Nit: no need for double-quotes, the ** markup is enough.
+The gist of this 4 part series is in this patchset's last patch
 
-> +		  only show in "**bpftool link show -f**". Also, this only works
-> +		  when bpftool (libbpf) is able to infer all necessary information
-> +		  from the objectfile, in particular, it's not supported for all
+This series contains performance optimizations. XSK starts using the
+batching allocator, and XSK data path gets separated from the regular
+RX, allowing to drop some branches not relevant for non-XSK use cases.
+Some minor optimizations for indirect calls and need_wakeup are also
+included.
 
-s/objectfile/object file/
+Other than that, this series adds a few features to the mlx5e
+implementation of XSK:
 
-> +		  program types. If the *OBJ* contains multiple programs and
-> +		  *loadall* is used, if the program A in these programs does not
+1. XDP metadata support on XSK RQs.
 
-**loadall** (keyword)
+2. RSS contexts support for XSK RQs.
 
-> +		  support auto-attachi, will skip program A(do no operation on
+3. Some other optimizations 
 
-auto-attach
+4. Last but not least, change the queuing scheme, so that XSK RQs no longer
+use higher indices, but replace the regular RQs.
 
-> +		  program A), print a info message such as "Program A does not
-> +		  support autoattach", and continue to autoattach the next program.
+Maxim Says:
+==========
 
-continue to auto-attach
+In the initial implementation of XSK in mlx5e, XSK RQs coexisted with
+regular RQs in the same channel. The main idea was to allow RSS work the
+same for regular traffic, without need to reconfigure RSS to exclude XSK
+queues.
 
-> +
->  		  Note: *PATH* must be located in *bpffs* mount. It must not
->  		  contain a dot character ('.'), which is reserved for future
->  		  extensions of *bpffs*.
+However, this scheme didn't prove to be beneficial, mainly because of
+incompatibility with other vendors. Some tools don't properly support
+using higher indices for XSK queues, some tools get confused with the
+double amount of RQs exposed in sysfs. Some use cases are purely XSK,
+and allocating the same amount of unused regular RQs is a waste of
+resources.
+
+This commit changes the queuing scheme to the standard one, where XSK
+RQs replace regular RQs on the channels where XSK sockets are open. Two
+RQs still exist in the channel to allow failsafe disable of XSK, but
+only one is exposed at a time. The next commit will achieve the desired
+memory save by flushing the buffers when the regular RQ is unused.
+
+As the result of this transition:
+
+1. It's possible to use RSS contexts over XSK RQs.
+
+2. It's possible to dedicate all queues to XSK.
+
+3. When XSK RQs coexist with regular RQs, the admin should make sure no
+unwanted traffic goes into XSK RQs by either excluding them from RSS or
+settings up the XDP program to return XDP_PASS for non-XSK traffic.
+
+4. When using a mixed fleet of mlx5e devices and other netdevs, the same
+configuration can be applied. If the application supports the fallback
+to copy mode on unsupported drivers, it will work too.
+
+==========
+
+Part 4 will include some final xsk optimizations and minor improvements
+
+part 1: https://lore.kernel.org/netdev/20220927203611.244301-1-saeed@kernel.org/
+part 2: https://lore.kernel.org/netdev/20220929072156.93299-1-saeed@kernel.org/
+
+Maxim Mikityanskiy (16):
+  net/mlx5e: xsk: Use mlx5e_trigger_napi_icosq for XSK wakeup
+  net/mlx5e: xsk: Drop the check for XSK state in mlx5e_xsk_wakeup
+  net/mlx5e: Introduce wqe_index_mask for legacy RQ
+  net/mlx5e: Make the wqe_index_mask calculation more exact
+  net/mlx5e: Use partial batches in legacy RQ
+  net/mlx5e: xsk: Use partial batches in legacy RQ with XSK
+  net/mlx5e: Remove the outer loop when allocating legacy RQ WQEs
+  net/mlx5e: xsk: Split out WQE allocation for legacy XSK RQ
+  net/mlx5e: xsk: Use xsk_buff_alloc_batch on legacy RQ
+  net/mlx5e: xsk: Use xsk_buff_alloc_batch on striding RQ
+  net/mlx5e: Use non-XSK page allocator in SHAMPO
+  net/mlx5e: Call mlx5e_page_release_dynamic directly where possible
+  net/mlx5e: Optimize RQ page deallocation
+  net/mlx5e: xsk: Support XDP metadata on XSK RQs
+  net/mlx5e: Introduce the mlx5e_flush_rq function
+  net/mlx5e: xsk: Use queue indices starting from 0 for XSK queues
+
+ drivers/net/ethernet/mellanox/mlx5/core/en.h  |  10 +-
+ .../ethernet/mellanox/mlx5/core/en/channels.c |  29 ++-
+ .../ethernet/mellanox/mlx5/core/en/channels.h |   3 +-
+ .../ethernet/mellanox/mlx5/core/en/params.c   |  44 +++-
+ .../ethernet/mellanox/mlx5/core/en/params.h   |  32 ---
+ .../mellanox/mlx5/core/en/reporter_rx.c       |  23 +-
+ .../ethernet/mellanox/mlx5/core/en/rx_res.c   | 118 ++--------
+ .../ethernet/mellanox/mlx5/core/en/rx_res.h   |   9 +-
+ .../net/ethernet/mellanox/mlx5/core/en/txrx.h |   7 +
+ .../ethernet/mellanox/mlx5/core/en/xsk/pool.c |  17 +-
+ .../ethernet/mellanox/mlx5/core/en/xsk/rx.c   | 176 ++++++++++++++-
+ .../ethernet/mellanox/mlx5/core/en/xsk/rx.h   |   3 +
+ .../mellanox/mlx5/core/en/xsk/setup.c         |   4 +-
+ .../ethernet/mellanox/mlx5/core/en/xsk/tx.c   |  12 +-
+ .../mellanox/mlx5/core/en_fs_ethtool.c        |  13 +-
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |  52 +++--
+ .../net/ethernet/mellanox/mlx5/core/en_rep.c  |   3 -
+ .../net/ethernet/mellanox/mlx5/core/en_rx.c   | 211 +++++++-----------
+ .../ethernet/mellanox/mlx5/core/ipoib/ipoib.c |   1 -
+ .../mellanox/mlx5/core/ipoib/ipoib_vlan.c     |   1 -
+ drivers/net/ethernet/mellanox/mlx5/core/wq.h  |   2 +-
+ 21 files changed, 385 insertions(+), 385 deletions(-)
+
+-- 
+2.37.3
 
