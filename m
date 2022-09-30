@@ -2,70 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D2EF85F0DE7
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 16:48:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF13F5F0E1A
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 16:54:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231451AbiI3OsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 10:48:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57572 "EHLO
+        id S231338AbiI3OyJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 10:54:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231473AbiI3OsF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 10:48:05 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00FF9129FC2;
-        Fri, 30 Sep 2022 07:47:59 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1oeHIu-000305-IO; Fri, 30 Sep 2022 16:47:52 +0200
-Date:   Fri, 30 Sep 2022 16:47:52 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S231598AbiI3Oxp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 10:53:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7B131C439;
+        Fri, 30 Sep 2022 07:52:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F284EB8291A;
+        Fri, 30 Sep 2022 14:52:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 241ABC433D6;
+        Fri, 30 Sep 2022 14:52:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664549526;
+        bh=wAWWnDm7dRfdfL1HmqTHFE1I+5HoqUMPdvT4lPVEVoE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=bJQRnCgWgZS/Y4k3DPIVn8jCZvgWNT8MnReKAQQxb9c7BvikjAFxBUbelfmcH+g/8
+         BnLeyvMclzeZw9EyFesPMH5HJftJHAQyAVx3uzjeOYbWf+tsLFfVnnsfbNYO/MpRWn
+         89z7zInb1EqAj4CB3WO7e0+pAAsCIxVYGhnMj97QnCAf/VAwvyt2vJZSxob/n17hD+
+         +3qptHAyJuCpgRLDppuF4+PSlZYWUIUx6bspwZuCzGROyytwzBG9k/Sp508GdImeej
+         GXaeifMfOoC2Tut/0wuCnBLHLJgmYvD62nyPwwIezJpkF6cqAL+Bqo2gyw4/wTgMl1
+         HLtS0Q7AAdxAw==
+Date:   Fri, 30 Sep 2022 07:52:04 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     netdev@kapio-technology.com, davem@davemloft.net,
+        netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        netfilter-devel@vger.kernel.org, Phil Sutter <phil@nwl.cc>
-Subject: Re: [PATCH 1/1] netfilter: nft_fib: Fix for rpath check with VRF
- devices
-Message-ID: <20220930144752.GA8349@breakpoint.cc>
-References: <20220928113908.4525-1-fw@strlen.de>
- <20220928113908.4525-2-fw@strlen.de>
- <20220930141048.GA10057@localhost.localdomain>
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Florent Fourcot <florent.fourcot@wifirst.fr>,
+        Hans Schultz <schultz.hans@gmail.com>,
+        Joachim Wiberg <troglobit@gmail.com>,
+        Amit Cohen <amcohen@nvidia.com>, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v6 net-next 0/9] Extend locked port feature with FDB
+ locked flag (MAC-Auth/MAB)
+Message-ID: <20220930075204.608b6351@kernel.org>
+In-Reply-To: <Yzb3oNGNtq4GCS3M@shredder>
+References: <20220928150256.115248-1-netdev@kapio-technology.com>
+        <20220929091036.3812327f@kernel.org>
+        <12587604af1ed79be4d3a1607987483a@kapio-technology.com>
+        <20220929112744.27cc969b@kernel.org>
+        <ab488e3d1b9d456ae96cfd84b724d939@kapio-technology.com>
+        <Yzb3oNGNtq4GCS3M@shredder>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220930141048.GA10057@localhost.localdomain>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Guillaume Nault <gnault@redhat.com> wrote:
-> On Wed, Sep 28, 2022 at 01:39:08PM +0200, Florian Westphal wrote:
-> > diff --git a/net/ipv6/netfilter/nft_fib_ipv6.c b/net/ipv6/netfilter/nft_fib_ipv6.c
-> > index 8970d0b4faeb..1d7e520d9966 100644
-> > --- a/net/ipv6/netfilter/nft_fib_ipv6.c
-> > +++ b/net/ipv6/netfilter/nft_fib_ipv6.c
-> > @@ -41,6 +41,9 @@ static int nft_fib6_flowi_init(struct flowi6 *fl6, const struct nft_fib *priv,
-> >  	if (ipv6_addr_type(&fl6->daddr) & IPV6_ADDR_LINKLOCAL) {
-> >  		lookup_flags |= RT6_LOOKUP_F_IFACE;
-> >  		fl6->flowi6_oif = get_ifindex(dev ? dev : pkt->skb->dev);
-> > +	} else if ((priv->flags & NFTA_FIB_F_IIF) &&
-> > +		   (netif_is_l3_master(dev) || netif_is_l3_slave(dev))) {
-> > +		fl6->flowi6_oif = dev->ifindex;
-> >  	}
-> 
-> I'm not very familiar with nft code, but it seems dev can be NULL here,
-> so netif_is_l3_master() can dereference a NULL pointer.
+On Fri, 30 Sep 2022 17:05:20 +0300 Ido Schimmel wrote:
+> You can see build issues on patchwork:
 
-No, this should never be NULL, NFTA_FIB_F_IIF is restricted to
-input/prerouting chains.
+Overall a helpful response, but that part you got wrong.
 
-> Shouldn't we test dev in the 'else if' condition?
+Do not point people to patchwork checks, please. It will only encourage
+people to post stuff they haven't build tested themselves.
 
-We could do that in case it makes review easier.
+It's documented:
+
+https://www.kernel.org/doc/html/latest/process/maintainer-netdev.html#running-all-the-builds-and-checks-locally-is-a-pain-can-i-post-my-patches-and-have-the-patchwork-bot-validate-them
+
+Only people who helped write the code and maintain the infra can decide
+how to use it which means me, Kees, or Hangbin. Please and thank you :S
