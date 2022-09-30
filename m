@@ -2,89 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CD4D5F0207
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 02:57:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83FED5F0233
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 03:25:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229719AbiI3A5Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Sep 2022 20:57:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42214 "EHLO
+        id S229992AbiI3BZt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Sep 2022 21:25:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229498AbiI3A5X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 20:57:23 -0400
-Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E482145948
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 17:57:22 -0700 (PDT)
-Received: from local
-        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
-         (Exim 4.96)
-        (envelope-from <daniel@makrotopia.org>)
-        id 1oe4Kt-0004si-0S;
-        Fri, 30 Sep 2022 02:57:04 +0200
-Date:   Fri, 30 Sep 2022 01:56:53 +0100
-From:   Daniel Golle <daniel@makrotopia.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-mediatek@lists.infradead.org, netdev@vger.kernel.org,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Sujuan Chen <sujuan.chen@mediatek.com>,
-        Bo Jiao <Bo.Jiao@mediatek.com>, Felix Fietkau <nbd@nbd.name>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Chen Minqiang <ptpt52@gmail.com>,
-        Thomas =?iso-8859-1?Q?H=FChn?= <thomas.huehn@hs-nordhausen.de>
-Subject: [PATCH v2] net: ethernet: mtk_eth_soc: fix state in
- __mtk_foe_entry_clear
-Message-ID: <YzY+1Yg0FBXcnrtc@makrotopia.org>
-References: <20220928190939.3c43516f@kernel.org>
+        with ESMTP id S229449AbiI3BZs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Sep 2022 21:25:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9719413A949;
+        Thu, 29 Sep 2022 18:25:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D9191621FA;
+        Fri, 30 Sep 2022 01:25:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9287C433D6;
+        Fri, 30 Sep 2022 01:25:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1664501145;
+        bh=FVHdWqZOoo23PSZPDFNIeUwiRH5/PCGJfRbuhXU2EZM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ENMVNSKh+670J9mnkbepwmvU1JJirJQR9PJvcpYRUJouOKaM+zZna9YCkTMLaRa/g
+         l8eOCwCYMoMDyOVeJTQKhrvybXqXtiD4rGTN7qDL4JNILEfNMFpSMzLEisv6TPLpLa
+         AJ4a8LdXHRBcJsVTCbv9RwU/nDL3OCSKpyN+wwZEWh0BR+3T+r6cdlMws18eKHxUd7
+         LGQYOFjVXXcuSjseoyzPNjI73xd7o+UDabMywhWGxhNK04K5BtqwEQT1WMDYibQ3ZC
+         B0M3ox86cGPPyRN3/y/VkjhIi8uh3idXz/eouF532sDz309j/S4m1CiJ9CvCwVDY7K
+         3VbOswQIOWESA==
+Date:   Thu, 29 Sep 2022 18:25:43 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Hongbin Wang <wh_bin@126.com>
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH] seg6: Delete invalid code
+Message-ID: <20220929182543.5b7a7593@kernel.org>
+In-Reply-To: <20220929095649.2764540-1-wh_bin@126.com>
+References: <20220929095649.2764540-1-wh_bin@126.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220928190939.3c43516f@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Setting ib1 state to MTK_FOE_STATE_UNBIND in __mtk_foe_entry_clear
-routine as done by commit 0e80707d94e4c8 ("net: ethernet: mtk_eth_soc:
-fix typo in __mtk_foe_entry_clear") breaks flow offloading, at least
-on older MTK_NETSYS_V1 SoCs, OpenWrt users have confirmed the bug on
-MT7622 and MT7621 systems.
-Felix Fietkau suggested to use MTK_FOE_STATE_INVALID instead which
-works well on both, MTK_NETSYS_V1 and MTK_NETSYS_V2.
+On Thu, 29 Sep 2022 05:56:49 -0400 Hongbin Wang wrote:
+> void function return statements are not generally useful
 
-Tested on MT7622 (Linksys E8450) and MT7986 (BananaPi BPI-R3).
-
-Suggested-by: Felix Fietkau <nbd@nbd.name>
-Fixes: 0e80707d94e4c8 ("net: ethernet: mtk_eth_soc: fix typo in __mtk_foe_entry_clear")
-Fixes: 33fc42de33278b ("net: ethernet: mtk_eth_soc: support creating mac address based offload entries")
-Signed-off-by: Daniel Golle <daniel@makrotopia.org>
----
-v2: rebased on top of netdev/net.git;main
-
- drivers/net/ethernet/mediatek/mtk_ppe.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
-index cfe804bc8d2055..148ea636ef9794 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe.c
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
-@@ -412,7 +412,7 @@ __mtk_foe_entry_clear(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
- 	if (entry->hash != 0xffff) {
- 		ppe->foe_table[entry->hash].ib1 &= ~MTK_FOE_IB1_STATE;
- 		ppe->foe_table[entry->hash].ib1 |= FIELD_PREP(MTK_FOE_IB1_STATE,
--							      MTK_FOE_STATE_UNBIND);
-+							      MTK_FOE_STATE_INVALID);
- 		dma_wmb();
- 	}
- 	entry->hash = 0xffff;
--- 
-2.37.3
-
+I don't think this is worth applying, sorry.
