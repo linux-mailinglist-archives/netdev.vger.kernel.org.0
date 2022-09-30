@@ -2,39 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AF13F5F0E1A
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 16:54:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D45A5F0E59
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 17:01:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231338AbiI3OyJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 10:54:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32894 "EHLO
+        id S231526AbiI3PBn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 11:01:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231598AbiI3Oxp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 10:53:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7B131C439;
-        Fri, 30 Sep 2022 07:52:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F284EB8291A;
-        Fri, 30 Sep 2022 14:52:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 241ABC433D6;
-        Fri, 30 Sep 2022 14:52:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664549526;
-        bh=wAWWnDm7dRfdfL1HmqTHFE1I+5HoqUMPdvT4lPVEVoE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bJQRnCgWgZS/Y4k3DPIVn8jCZvgWNT8MnReKAQQxb9c7BvikjAFxBUbelfmcH+g/8
-         BnLeyvMclzeZw9EyFesPMH5HJftJHAQyAVx3uzjeOYbWf+tsLFfVnnsfbNYO/MpRWn
-         89z7zInb1EqAj4CB3WO7e0+pAAsCIxVYGhnMj97QnCAf/VAwvyt2vJZSxob/n17hD+
-         +3qptHAyJuCpgRLDppuF4+PSlZYWUIUx6bspwZuCzGROyytwzBG9k/Sp508GdImeej
-         GXaeifMfOoC2Tut/0wuCnBLHLJgmYvD62nyPwwIezJpkF6cqAL+Bqo2gyw4/wTgMl1
-         HLtS0Q7AAdxAw==
-Date:   Fri, 30 Sep 2022 07:52:04 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
+        with ESMTP id S231473AbiI3PA7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 11:00:59 -0400
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8CB81C2970;
+        Fri, 30 Sep 2022 07:59:16 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 1745C1884494;
+        Fri, 30 Sep 2022 14:59:14 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id 028A62500015;
+        Fri, 30 Sep 2022 14:59:14 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id F0E8B9EC0007; Fri, 30 Sep 2022 14:59:13 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+MIME-Version: 1.0
+Date:   Fri, 30 Sep 2022 16:59:13 +0200
+From:   netdev@kapio-technology.com
 To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     netdev@kapio-technology.com, davem@davemloft.net,
+Cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
         netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -69,37 +62,73 @@ Cc:     netdev@kapio-technology.com, davem@davemloft.net,
         bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
 Subject: Re: [PATCH v6 net-next 0/9] Extend locked port feature with FDB
  locked flag (MAC-Auth/MAB)
-Message-ID: <20220930075204.608b6351@kernel.org>
 In-Reply-To: <Yzb3oNGNtq4GCS3M@shredder>
 References: <20220928150256.115248-1-netdev@kapio-technology.com>
-        <20220929091036.3812327f@kernel.org>
-        <12587604af1ed79be4d3a1607987483a@kapio-technology.com>
-        <20220929112744.27cc969b@kernel.org>
-        <ab488e3d1b9d456ae96cfd84b724d939@kapio-technology.com>
-        <Yzb3oNGNtq4GCS3M@shredder>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+ <20220929091036.3812327f@kernel.org>
+ <12587604af1ed79be4d3a1607987483a@kapio-technology.com>
+ <20220929112744.27cc969b@kernel.org>
+ <ab488e3d1b9d456ae96cfd84b724d939@kapio-technology.com>
+ <Yzb3oNGNtq4GCS3M@shredder>
+User-Agent: Gigahost Webmail
+Message-ID: <16d6db15df0a875e442456ff56234b98@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 30 Sep 2022 17:05:20 +0300 Ido Schimmel wrote:
+On 2022-09-30 16:05, Ido Schimmel wrote:
+> On Fri, Sep 30, 2022 at 07:42:37AM +0200, netdev@kapio-technology.com 
+> wrote:
+>> Obviously my method of selecting all switchcore drivers with 
+>> sub-options
+>> under menuconfig was not sufficient, and I didn't know of the 
+>> allmodconfig
+>> option, otherwise I would have used it.
+> 
 > You can see build issues on patchwork:
+> 
+> https://patchwork.kernel.org/project/netdevbpf/patch/20220928150256.115248-6-netdev@kapio-technology.com/
+> 
+> Also:
+> 
+> https://docs.kernel.org/next/process/maintainer-netdev.html#what-level-of-testing-is-expected-before-i-submit-my-change
+> 
+> https://docs.kernel.org/next/process/maintainer-netdev.html#can-i-reproduce-the-checks-from-patchwork-on-my-local-machine
+> 
+> https://docs.kernel.org/next/process/maintainer-netdev.html#running-all-the-builds-and-checks-locally-is-a-pain-can-i-post-my-patches-and-have-the-patchwork-bot-validate-them
+> 
+>> So the question is if I should repost the fixed patch-set or I need to 
+>> make
+>> a new version?
+> 
+> A new fixed version (v7) is required, but wait for this version to be
+> reviewed first.
+> 
+>> Anyhow I hope that there will not be problems when running the 
+>> selftests, as
+>> I have not been able to do so with my system, so there can be more 
+>> that
+>> needs to be changed.
+> 
+> It's not really acceptable to post tests that you haven't run... What
+> exactly is the issue? You should be able to run the tests with veth
+> pairs in a VM.
 
-Overall a helpful response, but that part you got wrong.
+It is only the blackhole test that I have not been able to run as is, 
+but I have stepped it manually as far as I could.
+My environment has changed lately and in that context the building of 
+the selftests fails and I don't know why,I just get some error 
+messagesabout missing header files, and setting up a whole system like 
+f.ex. linuxfromscratch with the necessary libs and tools to run it in a 
+VM is too time consuming a task at the moment.
 
-Do not point people to patchwork checks, please. It will only encourage
-people to post stuff they haven't build tested themselves.
-
-It's documented:
-
-https://www.kernel.org/doc/html/latest/process/maintainer-netdev.html#running-all-the-builds-and-checks-locally-is-a-pain-can-i-post-my-patches-and-have-the-patchwork-bot-validate-them
-
-Only people who helped write the code and maintain the infra can decide
-how to use it which means me, Kees, or Hangbin. Please and thank you :S
+If there is some freely available system for the purpose out there 
+besides my own system based on Buildroot that does not work now, please 
+let me know...
