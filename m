@@ -2,88 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 96B9F5F0D8F
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 16:30:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7ECA5F0D96
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 16:31:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232043AbiI3OaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 10:30:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39646 "EHLO
+        id S231429AbiI3Obx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 10:31:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231332AbiI3OaN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 10:30:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96EB24B993;
-        Fri, 30 Sep 2022 07:29:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 37D44B828F4;
-        Fri, 30 Sep 2022 14:29:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EA5EC433D6;
-        Fri, 30 Sep 2022 14:29:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664548194;
-        bh=1YSSQKc9IYsNlaO+SLoAcjFZ7kIKPU65vrvkvNyAQA0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=LMPLTR7+R0KuO7NuhDEG7EvRBETpIQfmxgeREwfOHxD5TzQD6pHKChKvUp/PEwf9J
-         iC1AVUFK22V9We03HJ98XrXzBCL2uG8zOzIGSn0yZOnbIfmX1VlVfxEvB+49OXLYNZ
-         6UxIQqTpfJ5kFbXHHAURuginafo9ZB3ywAftYPYNoHVVgOW7LmcmTQXdEsCPUTtKIy
-         SAJ5E6iPhtS3mHPsPr3Yd0GNBxZ3fuAtNQJSjYP6wwakPec8BB0QAB2xSEr5OATJeV
-         JlOekXVvSUF198ePkeyxXtuWbOT5goC7xxzhjGeU0vohSL1Pt7eHtGtniTyVpqq93s
-         vaVuJJy/uGHxQ==
-Date:   Fri, 30 Sep 2022 07:29:52 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Joe Perches <joe@perches.com>
-Cc:     pabeni@redhat.com, davem@davemloft.net, tchornyi@marvell.com,
-        edumazet@google.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Volodymyr Mytnyk <vmytnyk@marvell.com>
-Subject: Re: [PATCH] net: prestera: acl: Add check for kmemdup
-Message-ID: <20220930072952.2d337b3a@kernel.org>
-In-Reply-To: <20220930050317.32706-1-jiasheng@iscas.ac.cn>
-References: <20220930050317.32706-1-jiasheng@iscas.ac.cn>
+        with ESMTP id S231376AbiI3Obu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 10:31:50 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3328C16510C;
+        Fri, 30 Sep 2022 07:31:49 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id d10so4392737pfh.6;
+        Fri, 30 Sep 2022 07:31:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=P/mfulPnToD5m3VhopO0JJf5HkHXOGbekrrPNUqUIfs=;
+        b=P2LrHizLC0JOdFxy4s4hGsTWgwWSku430QDkH9BRLpvfb+BSOgHyMgcFyFHJokLl3K
+         gsXHroqLUivcxo+sIq1rqC701MQq1PJm47zquRyhgXjOV4paTbE4MD3aPY939KD2gFjS
+         CB2W/iZCk80PmaXNlAZC9zxc7OqOn4zqoRl0XQFVwFxQ1MwV57LiXvF1xG/cKFfOZEa1
+         7pLneBOC+kneZTRLdnaN6Z3AnON1EU3PBeeIJ9EcgkC6HcHgFuCuaT/jtHyS+8m/OU9o
+         KAus4GKm4K2OX1uKayD3W0l9h2D0C6MB54VfZXkrnL+/hyG6Z1uzrkdz3MR8SRoEsDFq
+         lPxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=P/mfulPnToD5m3VhopO0JJf5HkHXOGbekrrPNUqUIfs=;
+        b=XVtMYPqixR0mkOmPA6IkWeDS7hkv1L4ZU9Mx62LfTtZgtKBYrSVu4s5QdDPzpzHhZo
+         qDlZ01a/vB1ptwf98tI79E9Noryc/mVt87bjO3pHlGNfvoqtf9I/VUXOYE0g2Nlu2N+r
+         ctqxyV+q/GrWpGAqy6J+5P2yAgb4ymj532tWqoMvGu2kn3Nt71vY2PiWF9ApWkKlJwV8
+         CHRmbLsHqJhAKsE3E84TTgqzgJcaLL7wGKlKWCZfSaYhHQPXZgN+ERL3vnf/TyMM/zFt
+         5UDmwHZ+La2JhLilaKlMA07gUc0CocQrnbvFt70RhpOGLC9MJFyAi8W6RNDIjejs/Xd3
+         YmTg==
+X-Gm-Message-State: ACrzQf3CKnVhH4MZu8JO/PAdQ+ecHOf+qHIIMoQprT9dK/8lm4qxTiAy
+        UCeAnhBR2GAJyFgKYYkwzaTuHHL/eL7oelzfCc8=
+X-Google-Smtp-Source: AMsMyM4L/fl0gfg7Gw+77bK4QC9t/VXKvqOmQDdygqstfx4d3VC458VJ2g+1gtQPzn08bc3bN2UXcZPSUuv6HaVdsiE=
+X-Received: by 2002:a63:8ac2:0:b0:441:358c:f68c with SMTP id
+ y185-20020a638ac2000000b00441358cf68cmr3504828pgd.69.1664548308645; Fri, 30
+ Sep 2022 07:31:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+References: <20220929090133.7869-1-magnus.karlsson@gmail.com>
+ <YzV28OlK+pwlm/B/@boxer> <9d828483-21d0-18da-0870-babcb50d5c03@linux.dev> <CAJ8uoz2Z1amorsKx3Fm7Hy+mfK9+e-KYffT-N9CauYxkapQ29Q@mail.gmail.com>
+In-Reply-To: <CAJ8uoz2Z1amorsKx3Fm7Hy+mfK9+e-KYffT-N9CauYxkapQ29Q@mail.gmail.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Fri, 30 Sep 2022 16:31:37 +0200
+Message-ID: <CAJ8uoz3ncobw=kWGoqdw0f++jgWzVAz_qTCy65OSMH+2ZqeBYQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/xsk: fix double free
+To:     Martin KaFai Lau <martin.lau@linux.dev>
+Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        jonathan.lemon@gmail.com, bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 30 Sep 2022 13:03:17 +0800 Jiasheng Jiang wrote:
-> Actually, I used get_maintainer scripts and the results is as follow:
-> "./scripts/get_maintainer.pl -f drivers/net/ethernet/marvell/prestera/prestera_acl.c"
-> Taras Chornyi <tchornyi@marvell.com> (supporter:MARVELL PRESTERA ETHERNET SWITCH DRIVER)
-> "David S. Miller" <davem@davemloft.net> (maintainer:NETWORKING DRIVERS)
-> Eric Dumazet <edumazet@google.com> (maintainer:NETWORKING DRIVERS)
-> Jakub Kicinski <kuba@kernel.org> (maintainer:NETWORKING DRIVERS)
-> Paolo Abeni <pabeni@redhat.com> (maintainer:NETWORKING DRIVERS)
-> netdev@vger.kernel.org (open list:NETWORKING DRIVERS)
-> linux-kernel@vger.kernel.org (open list)
-> 
-> Therefore, I submitted my patch to the above addresses.
-> 
-> And this time I checked the fixes commit, and found that it has two
-> authors:
-> Signed-off-by: Volodymyr Mytnyk <vmytnyk@marvell.com>
-> Signed-off-by: David S. Miller <davem@davemloft.net>
-> 
-> Maybe there is a problem of the script that misses one.
-> Anyway, I have already submitted the same patch and added
-> "vmytnyk@marvell.com" this time.
+On Fri, Sep 30, 2022 at 9:52 AM Magnus Karlsson
+<magnus.karlsson@gmail.com> wrote:
+>
+> On Fri, Sep 30, 2022 at 2:52 AM Martin KaFai Lau <martin.lau@linux.dev> wrote:
+> >
+> > On 9/29/22 3:44 AM, Maciej Fijalkowski wrote:
+> > > On Thu, Sep 29, 2022 at 11:01:33AM +0200, Magnus Karlsson wrote:
+> > >> From: Magnus Karlsson <magnus.karlsson@intel.com>
+> > >>
+> > >> Fix a double free at exit of the test suite.
+> > >>
+> > >> Fixes: a693ff3ed561 ("selftests/xsk: Add support for executing tests on physical device")
+> > >> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> > >> ---
+> > >>   tools/testing/selftests/bpf/xskxceiver.c | 3 ---
+> > >>   1 file changed, 3 deletions(-)
+> > >>
+> > >> diff --git a/tools/testing/selftests/bpf/xskxceiver.c b/tools/testing/selftests/bpf/xskxceiver.c
+> > >> index ef33309bbe49..d1a5f3218c34 100644
+> > >> --- a/tools/testing/selftests/bpf/xskxceiver.c
+> > >> +++ b/tools/testing/selftests/bpf/xskxceiver.c
+> > >> @@ -1953,9 +1953,6 @@ int main(int argc, char **argv)
+> > >>
+> > >>      pkt_stream_delete(tx_pkt_stream_default);
+> > >>      pkt_stream_delete(rx_pkt_stream_default);
+> > >> -    free(ifobj_rx->umem);
+> > >> -    if (!ifobj_tx->shared_umem)
+> > shared_umem means ifobj_rx->umem and ifobj_tx->umem are the same?  No special
+> > handling is needed and ifobject_delete() will handle it?
+>
+> You are correct, we will still have a double free in that case. Thanks
+> for spotting. Will send a v2.
 
-Ha! So you do indeed use it in a way I wasn't expecting :S
-Thanks for the explanation.
+Sorry, but I have to take my statement back. The v1 is actually
+correct. The umem structure is unconditionally allocated in
+ifobject_create(). Later when setting up the shared_umem, the
+information from one of them is copied over to the other, except for
+some information that is changed for the second umem structure. So the
+v1 still stands.
 
-Joe, would you be okay to add a "big fat warning" to get_maintainer
-when people try to use the -f flag? Maybe we can also change the message
-that's displayed when the script is run without arguments to not
-mention -f?
-
-We're getting quite a few fixes which don't CC author, I'm guessing
-Jiasheng's approach may be a common one.
+> > >> -            free(ifobj_tx->umem);
+> > >>      ifobject_delete(ifobj_tx);
+> > >>      ifobject_delete(ifobj_rx);
+> > >
+> > > So basically we free this inside ifobject_delete().
+> >
