@@ -2,97 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A62A5F0566
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 08:57:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBB485F056E
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 09:00:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230112AbiI3G5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 02:57:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44228 "EHLO
+        id S230440AbiI3HAe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 03:00:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230204AbiI3G5s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 02:57:48 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFDBF15076F
-        for <netdev@vger.kernel.org>; Thu, 29 Sep 2022 23:57:46 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oe9xa-0003og-TX; Fri, 30 Sep 2022 08:57:22 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oe9xY-0004rj-C4; Fri, 30 Sep 2022 08:57:20 +0200
-Date:   Fri, 30 Sep 2022 08:57:20 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Zhang Changzhong <zhangchangzhong@huawei.com>
-Cc:     Robin van der Gracht <robin@protonic.nl>,
-        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S230346AbiI3HA2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 03:00:28 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC2E9642C0
+        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 00:00:10 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id f23so3217673plr.6
+        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 00:00:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=JJxi3Y+/VA8x+wlRxXomkh/ESouc72lf+l299FCiNRA=;
+        b=oCffqG/y0I2yiGLAzcFelFs5hhkcybcevC0n6u098/yoBpBsc3HRNotgJ99v3KdkHe
+         Ro8F9cnjlyRG4JVNBVO0V37asBerA9ptpjh7VUKTMrWV+abWJDWhcZidGRsJiRvAJnCg
+         nglJYOPpjxNfB9aUmG4eJHCeVix4Afp/a3L9jyZl/r4MJHRRzGtu8GXXcYhzjRTi7kMX
+         RQUROUqtO2KkoDk4P2ogoTXuNrXa3se1IUvr3APC1+HjcpINy2BTD/xSCjEj1OdsN/vK
+         RSu8+w6gvT9S+HrS4RmSZzuUPwUzcZ4jthQtQUP1mbQ58wWeF3v2SKrD91wI4Z8fu26O
+         9ddQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=JJxi3Y+/VA8x+wlRxXomkh/ESouc72lf+l299FCiNRA=;
+        b=OrpE8OZZaeVF1PgP08k792EeJsGgw6Tqv6dr9dZa+royl5nCtXFAn2QLmrSjg1GZs+
+         cF4eWTSinwgVBUI7GAAcp0xKJExBdsp45gr8uYKXhrTSX5ktVwfhd8asF9cqrx75NwH6
+         gaft9DDbMokCb2WR2FQJYlbp+e2ds+YdQKVNxNgPk6U++Dipw57RgLmS1oRpzG1j4BG6
+         vcYJ4hirjAF3f3wfmDPlPYm9HKzDI3fgx6yqo4uz8au9cZ0jUgP/dixbNiv3I8ahh1sp
+         qRpDyD1s7c4UYaq4YyCbMw/pxYrPuWYedgp01AyNvu5HwR06QbawOmofb1Zw9MCJIUWR
+         /3hQ==
+X-Gm-Message-State: ACrzQf1y1S5Zg2oRx6OSYV3I9dmj86e03C8xRlJmnJR49Y/pVSR1dTlA
+        riYwIMCoMoT9APgScPRzT1aIQBzkiZweww==
+X-Google-Smtp-Source: AMsMyM7ADdcM0SHwE2a38KeAEv8b9jZaY2Phz+NaqpGGKQ23ayK+M/QBhQejE2ut41aapGssfxK94A==
+X-Received: by 2002:a17:902:cf12:b0:179:fafd:8a1c with SMTP id i18-20020a170902cf1200b00179fafd8a1cmr7649452plg.102.1664521209682;
+        Fri, 30 Sep 2022 00:00:09 -0700 (PDT)
+Received: from Laptop-X1.redhat.com ([43.228.180.230])
+        by smtp.gmail.com with ESMTPSA id j13-20020a63594d000000b0041c0c9c0072sm998268pgm.64.2022.09.30.00.00.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 Sep 2022 00:00:09 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] can: j1939: j1939_session_tx_eoma(): fix debug
- info
-Message-ID: <20220930065720.GC6082@pengutronix.de>
-References: <1664520728-4644-1-git-send-email-zhangchangzhong@huawei.com>
+        Paolo Abeni <pabeni@redhat.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Florent Fourcot <florent.fourcot@wifirst.fr>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        David Ahern <dsahern@kernel.org>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCHv4 net-next 0/4] rtnetlink: Honour NLM_F_ECHO flag in rtnl_{new, del}link
+Date:   Fri, 30 Sep 2022 14:59:53 +0800
+Message-Id: <20220930065957.694263-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <1664520728-4644-1-git-send-email-zhangchangzhong@huawei.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 30, 2022 at 02:52:08PM +0800, Zhang Changzhong wrote:
-> Use "%s" instead of "%p" to print function name in debug info.
-> 
-> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+Netlink messages are used for communicating between user and kernel space.
+When user space configures the kernel with netlink messages, it can set the
+NLM_F_ECHO flag to request the kernel to send the applied configuration back
+to the caller. This allows user space to retrieve configuration information
+that are filled by the kernel (either because these parameters can only be
+set by the kernel or because user space let the kernel choose a default
+value).
 
-Acked-by: Oleksij Rempel <o.rempel@pengutronix.de>
+The kernel has support this feature in some places like RTM_{NEW, DEL}ADDR,
+RTM_{NEW, DEL}ROUTE. This patch set handles NLM_F_ECHO flag and send link
+info back after rtnl_{new, del}link.
 
-Thank you!
+v4:
+1) Add rtnl_configure_link_notify() helper so rtnl_newlink_create could
+   use it instead of creating new notify function.
+2) Add unregister_netdevice_many_notify() helper so rtnl_delete_link()
+   could use it instead of creating new notify function
+3) Split the previous patch to 4 small patches for easier reviewing.
 
-> ---
->  net/can/j1939/transport.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
-> index d7d86c9..6ec48a4 100644
-> --- a/net/can/j1939/transport.c
-> +++ b/net/can/j1939/transport.c
-> @@ -985,7 +985,7 @@ static int j1939_session_tx_eoma(struct j1939_session *session)
->  	/* wait for the EOMA packet to come in */
->  	j1939_tp_set_rxtimeout(session, 1250);
->  
-> -	netdev_dbg(session->priv->ndev, "%p: 0x%p\n", __func__, session);
-> +	netdev_dbg(session->priv->ndev, "%s: 0x%p\n", __func__, session);
->  
->  	return 0;
->  }
-> -- 
-> 2.9.5
-> 
-> 
+v3:
+1) Fix group parameter in rtnl_notify.
+2) Use helper rtmsg_ifinfo_build_skb() instead re-write a new one.
+
+v2:
+1) Rename rtnl_echo_link_info() to rtnl_link_notify().
+2) Remove IFLA_LINK_NETNSID and IFLA_EXT_MASK, which do not fit here.
+3) Add NLM_F_ECHO in rtnl_dellink. But we can't re-use the rtnl_link_notify()
+   helper as we need to get the link info before rtnl_delete_link().
+
+Hangbin Liu (4):
+  rtnetlink: add new helper rtnl_configure_link_notify()
+  net: add new helper unregister_netdevice_many_notify
+  rtnetlink: Honour NLM_F_ECHO flag in rtnl_newlink_create
+  rtnetlink: Honour NLM_F_ECHO flag in rtnl_delete_link
+
+ include/linux/netdevice.h      |  4 ++-
+ include/linux/rtnetlink.h      |  6 ++--
+ include/net/rtnetlink.h        |  2 +-
+ net/core/dev.c                 | 26 +++++++++++-----
+ net/core/rtnetlink.c           | 56 ++++++++++++++++++++++------------
+ net/openvswitch/vport-geneve.c |  2 +-
+ net/openvswitch/vport-gre.c    |  2 +-
+ net/openvswitch/vport-netdev.c |  2 +-
+ net/openvswitch/vport-vxlan.c  |  2 +-
+ 9 files changed, 67 insertions(+), 35 deletions(-)
 
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.37.2
+
