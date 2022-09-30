@@ -2,65 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A04395F1137
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 19:55:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 972795F1142
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 19:58:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231771AbiI3Rzy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 13:55:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59856 "EHLO
+        id S231358AbiI3R6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 13:58:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231341AbiI3Rzu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 13:55:50 -0400
-Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F9FFCA7B;
-        Fri, 30 Sep 2022 10:55:48 -0700 (PDT)
-Received: by mail-qv1-xf35.google.com with SMTP id de14so3133877qvb.5;
-        Fri, 30 Sep 2022 10:55:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=TStWu5xhTWjf+DQY5C/HvZc7/tJjWZr93okZ6oz8m9I=;
-        b=o3KMuM+TyMXuE8VucIlqx29Ar3YQUnGIS/HKNaBUw507MSqTdt6+9eDAb7PcycXrfW
-         lTPhPGOuZpuQsSrOtuxbj15j8fOeti6ossPyq+XhHZg9npOhOqzQ4Spo6EyLSaV4NkXN
-         gKd4Vf6/R+MqVnfuQOpioUA6ooT7rW7bvQ/xHjFhAgbrh8ISsqvQ/iCWhOmbFsvqQWry
-         VgMWnn5GWBTKty1vVXNOhHtXqnnLx4Q+ZaCAGIqeAPALdrSwAp7dv9PRvSVUimjSaR+I
-         4NzFLakBA7e8G0GOx5W4QwHD3NdD5PoMw+mEWTu5lzmECKSYCyiNq2qj07ztye8BPKJW
-         XGzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=TStWu5xhTWjf+DQY5C/HvZc7/tJjWZr93okZ6oz8m9I=;
-        b=shI0901JRVpm+N9dnEMh54j8Y+5BQKoRl5j9IYBdacGVxO/NrgGKiXQCoKpGk5iVRg
-         yuDaL1O5+ACORoRxq/mykOiR5WbJGzxGdmBtwkZStNzWPGmIm85YsZtuPkg8k62pjaN7
-         grbuXYTKq8Pmrske2MDrU6KdgT3kRBrqj4ba7jbqiJsJPk5Ikba4XmjBlGB02uX7Ub1t
-         wXvlWZM944yRqzmFR2RI1k/qr00GGT1nERQ6EEcb3Chq01YE2nmHzyaPAwqrVqLsoYNo
-         fokR6ZHgRQ40zZ3oPRYv2BcsFrRBeAlz7NikltwrCRlK4KSVIgu7A3mrwH6IoCiQkC/E
-         Vi9w==
-X-Gm-Message-State: ACrzQf2Ta69cOMHKzLI8fJ+YZicDVut0k6wCbMMGuRRBvBYeaYm1923P
-        mcV+AhINB7fxbFelg0VqxaWaAANZO7uu4xMfs62U0ExWPLgOWA==
-X-Google-Smtp-Source: AMsMyM4ogXT+Xm+sdqReDqZEd/VyZnFYCNEBrHfjOxjungzM8Q8PKknCDrUWeHJ2iK1WjAOl6h9VkR2dh6QjfHjvflE=
-X-Received: by 2002:a05:6214:3005:b0:4ad:8042:128a with SMTP id
- ke5-20020a056214300500b004ad8042128amr8003856qvb.66.1664560547733; Fri, 30
- Sep 2022 10:55:47 -0700 (PDT)
+        with ESMTP id S230517AbiI3R54 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 13:57:56 -0400
+Received: from mail-m971.mail.163.com (mail-m971.mail.163.com [123.126.97.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 03F7F157FDF;
+        Fri, 30 Sep 2022 10:57:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=zRqlK
+        +Z5OrehcRr3RsfUwmtFXjy6h6AE3UAtz0+5/14=; b=Kr0POa5Fk3D/mgQtqw0Pt
+        jP1TLgbKCEF60Qd2vYcXRW7J1K4DcadDI54FV0CnRUy2eNTpJqJcHE0BXxKo172C
+        4PZTw5gb3tfv+rxu72mqE84NPQptaaG4YhRZXKKPDe5RGjDv6x507oCfxsyv6S6o
+        2uLv3A+4Ccjk90+0sAeBos=
+Received: from leanderwang-LC2.localdomain (unknown [111.206.145.21])
+        by smtp1 (Coremail) with SMTP id GdxpCgBXm+UGLjdjgRbfgg--.33987S2;
+        Sat, 01 Oct 2022 01:57:26 +0800 (CST)
+From:   Zheng Wang <zyytlz.wz@163.com>
+To:     netdev@vger.kernel.org
+Cc:     wellslutw@gmail.com, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, hackerzheng666@gmail.com,
+        alex000young@gmail.com, security@kernel.org, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, Zheng Wang <zyytlz.wz@163.com>
+Subject: [PATCH] eth: sp7021: fix use after free bug in spl2sw_nvmem_get_mac_address
+Date:   Sat,  1 Oct 2022 01:57:25 +0800
+Message-Id: <20220930175725.2548233-1-zyytlz.wz@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220930040310.2221344-1-zyytlz.wz@163.com> <20220930084847.2d0b4f4a@kernel.org>
- <CAJedcCx5F1tFV0h75kQyQ+Gce-ZC4WagycCSbrjMtsYNM85bZg@mail.gmail.com> <20220930102533.03e21808@kernel.org>
-In-Reply-To: <20220930102533.03e21808@kernel.org>
-From:   Zheng Hacker <hackerzheng666@gmail.com>
-Date:   Sat, 1 Oct 2022 01:55:36 +0800
-Message-ID: <CAJedcCwMobzY8eLcqJ9cjacGOuo3n827V4Q2UfJ0vsX1uAUdRQ@mail.gmail.com>
-Subject: Re: [PATCH] eth: sp7021: fix use after free bug in spl2sw_nvmem_get_mac_address
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Zheng Wang <zyytlz.wz@163.com>, netdev@vger.kernel.org,
-        wellslutw@gmail.com, davem@davemloft.net,
-        linux-kernel@vger.kernel.org, alex000young@gmail.com,
-        security@kernel.org, edumazet@google.com, pabeni@redhat.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: GdxpCgBXm+UGLjdjgRbfgg--.33987S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWruw1xXF15XFyxtr4fJFWxXrb_yoWfZFgE9r
+        1j9ryfJw4DGa15ta1Fyr4fZ340vwn5Xrs3CFnrK393tay7uF17Cwn7Zr1xJFy7ur4rCF9r
+        Jw17X347C34xKjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRMwZ2DUUUUU==
+X-Originating-IP: [111.206.145.21]
+X-CM-SenderInfo: h2113zf2oz6qqrwthudrp/xtbB2A+MU2BHMHCVfwAAsF
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,16 +52,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Please repost without the Reported-by tag, then.
-> It's implied that you found the problem yourself
-> if there is no Reported-by tag.
->
-> Please remove the empty line between the Fixes
-> tag and you Signed-off-by tag.
+This frees "mac" and tries to display its address as part of the error
+message on the next line.  Swap the order.
 
-Hi Jakub,
+Fixes: fd3040b9394c ("net: ethernet: Add driver for Sunplus SP7021")
+Signed-off-by: Zheng Wang <zyytlz.wz@163.com>
+---
+ drivers/net/ethernet/sunplus/spl2sw_driver.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I'll fix that and resend the patch right away. Thanks for your advice :)
+diff --git a/drivers/net/ethernet/sunplus/spl2sw_driver.c b/drivers/net/ethernet/sunplus/spl2sw_driver.c
+index 546206640492..61d1d07dc070 100644
+--- a/drivers/net/ethernet/sunplus/spl2sw_driver.c
++++ b/drivers/net/ethernet/sunplus/spl2sw_driver.c
+@@ -248,8 +248,8 @@ static int spl2sw_nvmem_get_mac_address(struct device *dev, struct device_node *
+ 
+ 	/* Check if mac address is valid */
+ 	if (!is_valid_ether_addr(mac)) {
+-		kfree(mac);
+ 		dev_info(dev, "Invalid mac address in nvmem (%pM)!\n", mac);
++		kfree(mac);
+ 		return -EINVAL;
+ 	}
+ 
+-- 
+2.25.1
 
-Regards,
-Zheng Wang
