@@ -2,89 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E1D55F0FF5
-	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 18:29:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D43D5F0FF2
+	for <lists+netdev@lfdr.de>; Fri, 30 Sep 2022 18:29:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232057AbiI3Q33 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 30 Sep 2022 12:29:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33380 "EHLO
+        id S231224AbiI3Q3G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 30 Sep 2022 12:29:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231316AbiI3Q32 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 12:29:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09D75169E54
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 09:29:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A38336235A
-        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 16:29:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE0B9C433D7;
-        Fri, 30 Sep 2022 16:29:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1664555367;
-        bh=8khpaEk2/C2nA91Ssiljq2ls4zPjfNuufXgWhFCvMgI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DNueTZNtjltdzZF0wB5swzj/vjtFpFoDQlR57dfz2ctSoQkzB9p+p/360FE4brfRg
-         icfSoZv3u3iYUhJYzcCcUUYdGzONid6iFCQFbUy5XtMM1cW+Q8EVKuEL+Wqo7Kdn7q
-         yCwBZiAkGb+1haxEsQANER96zqsSTrQZlWiHn/x9tJR4ur1idJEmOhNq3LvCsSC1+V
-         XVUDGLqWMNPPARTJBDGRDrSzCBfm7HP6rmwEtMSTWhuu99QNN48qxIgRM0HDOOqPhs
-         qn130z0cuh+YJsg1QGW/JSMWt+c4HBbEZ6DBEvFEkE0dU36O6TNYRSENp7M0Np+4R4
-         ZSPk+7de/7ypg==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S232112AbiI3Q3C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 30 Sep 2022 12:29:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AC3C169E59
+        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 09:28:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1664555334;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=hkYXsyLaO8u+WlEcttQfBPcTUPYVxBhXMppi5f9oZDs=;
+        b=TBzlPZTBsa00JNuh4v6CXn738dEXkCjxkJdxvysXybGTcHSHXdG5suhNMl8MneahRiY7Si
+        3YHvPWB40xUFsfRdCGZxjCgOxCHX15nmdzXMcjQzF7IThF62RUcBIdFCZau17zNLbz4lrk
+        8j3B55lpxSJokBt26cyeMuZ9WOqH/dM=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-557-TC4UPBPUOo6VmNU-hB-f8A-1; Fri, 30 Sep 2022 12:28:53 -0400
+X-MC-Unique: TC4UPBPUOo6VmNU-hB-f8A-1
+Received: by mail-wr1-f71.google.com with SMTP id p7-20020adfba87000000b0022cc6f805b1so1769178wrg.21
+        for <netdev@vger.kernel.org>; Fri, 30 Sep 2022 09:28:52 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=hkYXsyLaO8u+WlEcttQfBPcTUPYVxBhXMppi5f9oZDs=;
+        b=A2yi4NW3AKnJBxbMrFKT0RY2uOpQvQs4cf18JNm5mTy3kxm3aHQ1wofHJTqeLCe4K9
+         rpDAUlDGmI7PoPcegJe8bq5SMg3QrEpHDq96jHLDU3H4jof4VmdrbTxA6xgCOmy7zPwk
+         ORTIUrw7DbraZ2jVfW2eXJGQLgwN45ljzxmasLfjCNpf1ocQ4uUWht8La8HXX+FveQRp
+         rvfM+lg9H7Avc19ZFvrRSxAKYLS0BaayknYQrahTPqgFg3rC1LqNFJs5IJOjGWFD7XoZ
+         av4KlnYQbAMZZdMporUWpReTshwWMDWrZE+wd5I4a1NebCnVJmWX4CqTXUL/HpZaF4jV
+         +2HQ==
+X-Gm-Message-State: ACrzQf3iR43jOufic/wveh6HkiFkO7Ut2ISMaUa4EOo6qJ7NayeDlvih
+        OMIoVROMtQvaWlIzJLOnNmElovuFKzmiuNcT4uBcRKNJmhZvO65r9IYvHzt9HIe0Ar3KTODAY9w
+        +owuK6s8cG3Z3Va09
+X-Received: by 2002:a5d:59a7:0:b0:22a:47e3:a1b with SMTP id p7-20020a5d59a7000000b0022a47e30a1bmr6207999wrr.319.1664555332105;
+        Fri, 30 Sep 2022 09:28:52 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM63De6YBsBvE61k4HFJv3Owp9zxvemdOz5hKTzGcVxNIYBzmeTJ3ujJ/L6+mA4tYsu/imRRPA==
+X-Received: by 2002:a5d:59a7:0:b0:22a:47e3:a1b with SMTP id p7-20020a5d59a7000000b0022a47e30a1bmr6207989wrr.319.1664555331913;
+        Fri, 30 Sep 2022 09:28:51 -0700 (PDT)
+Received: from localhost.localdomain ([92.62.32.42])
+        by smtp.gmail.com with ESMTPSA id j6-20020a05600c190600b003a5f3f5883dsm8218619wmq.17.2022.09.30.09.28.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 Sep 2022 09:28:51 -0700 (PDT)
+Date:   Fri, 30 Sep 2022 18:28:49 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: [PATCH net-next 01/16] net/mlx5e: xsk: Use mlx5e_trigger_napi_icosq for XSK wakeup
-Date:   Fri, 30 Sep 2022 09:28:48 -0700
-Message-Id: <20220930162903.62262-2-saeed@kernel.org>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220930162903.62262-1-saeed@kernel.org>
-References: <20220930162903.62262-1-saeed@kernel.org>
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Florent Fourcot <florent.fourcot@wifirst.fr>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        David Ahern <dsahern@kernel.org>
+Subject: Re: [PATCHv5 net-next 1/4] rtnetlink: add new helper
+ rtnl_configure_link_notify()
+Message-ID: <20220930162849.GE10057@localhost.localdomain>
+References: <20220930094506.712538-1-liuhangbin@gmail.com>
+ <20220930094506.712538-2-liuhangbin@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220930094506.712538-2-liuhangbin@gmail.com>
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maxim Mikityanskiy <maximmi@nvidia.com>
+> @@ -3856,7 +3856,7 @@ int __dev_change_flags(struct net_device *dev, unsigned int flags,
+>  int dev_change_flags(struct net_device *dev, unsigned int flags,
+>  		     struct netlink_ext_ack *extack);
+>  void __dev_notify_flags(struct net_device *, unsigned int old_flags,
+> -			unsigned int gchanges);
+> +			unsigned int gchanges, u32 pid, struct nlmsghdr *nlh);
 
-mlx5e_xsk_wakeup triggers an IRQ by posting a NOP to async_icosq, taking
-a spinlock to protect from concurrent access. There is already a
-function that does the same: mlx5e_trigger_napi_icosq. Use this function
-in mlx5e_xsk_wakeup.
+In all the modified functions, you could make struct nlmsghdr * a const
+pointer. You just need to also update rtnl_notify() to make its nlh
+parameter const too.
 
-Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+> +void rtmsg_ifinfo_nlh(int type, struct net_device *dev, unsigned int change,
+> +		      gfp_t flags, u32 pid, struct nlmsghdr *nlh)
+> +{
+> +	rtmsg_ifinfo_event(type, dev, change, rtnl_get_event(0), flags,
+> +			   NULL, 0, pid, nlh);
+>  }
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c
-index 4902ef74fedf..1203d7d5f9bd 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c
-@@ -36,9 +36,7 @@ int mlx5e_xsk_wakeup(struct net_device *dev, u32 qid, u32 flags)
- 		if (test_and_set_bit(MLX5E_SQ_STATE_PENDING_XSK_TX, &c->async_icosq.state))
- 			return 0;
- 
--		spin_lock_bh(&c->async_icosq_lock);
--		mlx5e_trigger_irq(&c->async_icosq);
--		spin_unlock_bh(&c->async_icosq_lock);
-+		mlx5e_trigger_napi_icosq(c);
- 	}
- 
- 	return 0;
--- 
-2.37.3
+Can't we just add the extra parameters to rtmsg_ifinfo() and trivially
+adapt the few users to the new prototype? Maybe that's a personal
+taste, but I find such wrapper unnecessary.
 
